@@ -1,10 +1,7 @@
-Subject: Re: [Openvpn-devel] OpenVPN Webmin module
-From: Daniel Lehmann <ov_devel@...300...>
-In-Reply-To: <41F281A8.1040006@...343...>
-References: <41F26AF4.1000307@...343...>
-	 <1106411279.4081.82.camel@...344...>  <41F281A8.1040006@...343...>
-Message-Id: <1106414035.4081.96.camel@...344...>
-Mime-Version: 1.0
+From: "Harsha V. Madhyastha" <harsha@...338...>
+Message-ID: <Pine.LNX.4.58L.0501222145140.16426@...339...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Error with source code archives on webpage
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,23 +12,23 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Jan 22 09:15:41 2005
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Date: Sat Jan 22 21:50:05 2005
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Am Samstag, den 22.01.2005, 17:39 +0100 schrieb Paolo Poletti:
-> i'm pretty curious ... why not Webmin ?
+Hi,
 
-Because I dislike the architecture of it. I think I couldn't sleep well
-if some perl application is managing critical services :-)
+Both the .tar.gz and .zip archives of both the 1.6 and 2.0 versions of 
+OpenVPN available on openvpn.net seem to have some error as both gunzip 
+and unzip, respectively fail to extract the files from them. Can somebody 
+please replace them with correct archives?
 
-Furthermore, I don't like perl (sorry beloved perl-monks). It's quite
-handy for some purposes, but I won't develop a web-application in perl.
-There are other languages like python or ruby (or even java in some
-cases) for such a job.
+Thanks!
+Harsha
 
-ciao
-leh
-
+----------------------------------------------------------------------------
+University of Washington  |  http://www.cs.washington.edu/homes/harsha/
+harsha@...338...  |  http://harshaandsports.blogspot.com/
+----------------------------------------------------------------------------
 
