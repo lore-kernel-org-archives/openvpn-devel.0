@@ -1,9 +1,7 @@
-From: Matthias Andree <ma+ovpnd@...31...>
-Subject: Re: [Openvpn-devel] RPM build of 2.0-rc16 fails on MandrakeSoft
-Message-ID: <20050228092154.GA12690@...33...>
-References: <4220EC61.1000005@...355...> <Pine.LNX.4.58.0502270152590.23437@...41...> <42220B98.2010001@...355...> <42223300.1050402@...355...> <Pine.LNX.4.58.0502271404010.23437@...41...>
+From: Gerd Mueller <gmueller@...279...>
+Message-Id: <1109592455.10523.7.camel@...23...>
 Mime-Version: 1.0
-In-Reply-To: <Pine.LNX.4.58.0502271404010.23437@...41...>
+Subject: [Openvpn-devel] openvpn for the palm
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,21 +12,19 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Feb 28 01:24:10 2005
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+Date: Mon Feb 28 04:10:11 2005
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+To: Openvpn-devel@lists.sourceforge.net
 
-On Sun, 27 Feb 2005, James Yonan wrote:
+Hi all,
 
-> The problem I have with this patch is that it assumes that Mandrake will
-> continue to follow the broken behavior.  The ideal solution would be one
-> which doesn't break when Mandrake gets around to using the same standard
-> LZO RPM spec which everyone else is using.
+I wonder if there are any attempts to port openvpn to the palm. I got
+now the wonderful treo 650 and would like to have openvpn on it. Do you
+think it's much work to port it? The palms support IP, SSL, ... I guess
+everything what is needed should be there.
 
-Are names/provides/whatever standardized in any way? (LSB perhaps)?
+Cheers,
 
--- 
-Matthias Andree
+Gerd
 
