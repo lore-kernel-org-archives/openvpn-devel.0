@@ -1,7 +1,8 @@
-Subject: Re: [Openvpn-devel] --redirect-gateway on FreeBSD
+Subject: Re: [Openvpn-devel] OpenVPN multi instancing
 From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1078498926.20189@...41...>
-In-Reply-To: <200403051358.54465.jrh@...176...>
+Message-ID: <twig.1078553650.41564@...41...>
+In-Reply-To: <20040302100927.GC7417@...33...>
+References: <200402291538.45014.cd@...154...>, <200402291538.45014.cd@...154...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,54 +13,42 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Mar  5 07:09:12 2004
+Date: Fri Mar  5 22:22:00 2004
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Juan Rodriguez Hervella <jrh@...176...>, openvpn-devel@lists.sourceforge.net
+To: Matthias Andree <ma+ovpnd@...31...>, openvpn-devel@lists.sourceforge.net
 
-Juan Rodriguez Hervella <jrh@...176...> said:
+Matthias Andree <ma+ovpnd@...31...> said:
 
-> Hello,
+> On Sun, 29 Feb 2004, Christian Daniel wrote:
 > 
-> I've just subscribed to this list, but I've read on the
-> archives that the --redirect-gateway function is not
-> working yet on FreeBSD because of the problem of
-> retreiving the address of the default gateway.
+> > Hello everybody!
+> > 
+> > For a student research project I'm trying to add multi instance capability to 
+> > OpenVPN. The basic idea is to rip the main openvpn()-function apart, put all 
+> > variables in a struct and then have only one select()-call for all open 
+> > tunnels at once.
 > 
-> I've just written a small program which makes that,
-> looking at /usr/src/sbin/route.c
+> Oh. You're in for plentiful fun with the various select()
+> "features"^Wbugs across the various operating system kernels.
 > 
-> Hope this helps, I've tested it on both FreeBSD-4.9
-> and FreeBSD-5.2
-> 
-> It uses PF_ROUTE sockets.
-> 
-> hope this helps!
-> -- 
-> ******
-> JFRH
-> ******
-> 
-> Go climb a gravity well!
+> Better check out poll() and epoll() where available. These happen to
+> (usually) be more scalable as the number of fds increases.
 
-Juan,
+Luckily, UDP scales up fairly well without hitting up against the limitations
+of select() since a single UDP socket can be used to communicate with an
+unlimited number of clients.  TCP will be harder to scale with select()
+because every incoming client will need its own socket.
 
-It would be ideal if you could code this into OpenVPN's route.c, following the
-form of the other platforms, i.e.:
+I don't see how poll() is that much of an improvement over select() because it
+still requires that you scan all the FDs to see which ones require service.
 
-..
+epoll() looks like a real improvement, and has obviously been designed with
+scalability in mind.
 
-#elif defined(TARGET_FREEBSD)
-
-static bool
-get_default_gateway (in_addr_t *ret)
-{
-  /* code me -- put gateway address into *ret */
-}
-
-#else
-
-..
+It's too bad that poll and epoll move the timeout from microsecond to
+millisecond resolution, as that makes things like traffic shaping harder to
+implement.
 
 James
 
