@@ -1,9 +1,7 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] beta-18 crash
-In-Reply-To: <02b601c4d6e9$fb21b1f0$0600000a@...139...>
-Message-ID: <Pine.LNX.4.58.0411301625200.3572@...41...>
-References: <02b601c4d6e9$fb21b1f0$0600000a@...139...>
-MIME-Version: 1.0
+From: Charles Duffy <cduffy@...294...>
+Message-ID: <pan.2004.12.01.04.17.16.247658@...294...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Management interface -- null-terminated lines
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,36 +12,20 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Nov 30 15:39:01 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Date: Tue Nov 30 20:18:07 2004
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 8bit
-To: Gisle Vanem <giva@...258...>
-Cc: OpenVPN-dev <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-On Tue, 30 Nov 2004, Gisle Vanem wrote:
+James,
 
-> Simply running "openvpn -h" causes a SIGSEGV. I was hoping '-h' would 
-> print the help, but obviously not. Happens with '-v' too.
+I notice that the management interface terminates its lines \0d \0a \00.
 
-Interesting bug.
+Is the null termination intentional? If so, would you mind documenting it?
+It caused a few subtle issues until I figured out what was going on, so I
+wouldn't exactly mind if it went away.
 
-Basically "openvpn -h" is incorrect usage and should produce a basic
-options parsing error message, and in fact it does this on *nix, but
-crashes as you noted on Windows (openvpn --help will print the help).
+(I'm working on a CLR-based library, and maybe when it works a Gtk#
+frontend, for interacting w/ OpenVPN via said interface).
 
-The crash traces back to a simple incompatibility between win
-and *nix.  On Windows, socket descriptors are unsigned, on *nix they are 
-signed.  Commonly, -1 is used to denote an unopened file descriptor, but 
-OpenVPN made the mistake of assuming that (fd >= 0) is sufficient to test 
-for a valid fd.  If fd == -1, then (fd >= 0) is only true if fd is a 
-signed type (yeah C is crazy, if you say "unsigned int fd = -1;" then test
-for fd > 0, the test will be true).
-
-Because of the way the new management interface works on beta18, any early 
-fatal error messages (such as due to command line option errors) will 
-trigger this bug.
-
-I will fix for beta19.
-
-James
 
