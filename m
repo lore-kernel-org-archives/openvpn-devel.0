@@ -1,8 +1,7 @@
-From: Nathanael Rensen <dev@...170...>
-Message-ID: <loom.20040221T101654-540@...171...>
-References: <loom.20040220T055425-265@...171...> <20040220173445.GD18676@...172...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] Re: tap support for freebsd
+From: "Andrew Goodney" <S3070337@...173...>
+MIME-Version: 1.0
+Message-ID: <1078123995.c7b89ba0S3070337@...173...>
+Subject: [Openvpn-devel] winXP strangeness -long
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,101 +12,50 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Feb 21 09:38:19 2004
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Date: Sun Feb 29 22:58:05 2004
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-Thomas Glanzmann <sithglan <at> stud.uni-erlangen.de> writes:
+I may have a worst case senario, and hopefully someone has an idea as to wh=
+at might be wrong. Sorry for the length...
 
-> Could you please send me a patch for this.
+Thanks in advance...
 
-Sure. I'm sorry I didn't include one in the initial post.
-Below is a patch against version 1.41 of tun.c. Apart from
-replacing openbsd with freebsd, it is just a straight copy 
-of the corresponding functions (write_tun and read_tun) for 
-OpenBSD from earlier in the file.
+Set up is as follows:
 
-Nathanael
+(winXP-home, wireless with Novell VPN Client) -> http-proxy -> linux server
 
---- v1.41/tun.c   Sat Feb 21 16:40:01 2004
-+++ tun.c   Sat Feb 21 16:47:55 2004
-@@ -1308,38 +1308,47 @@
- int
- write_tun (struct tuntap* tt, uint8_t *buf, int len)
- {
--  struct iovec iv[2];
--  u_int32_t type;
--  struct ip *iph;
--
--  iph = (struct ip *)buf;
--
--  if(tt->ipv6 && iph->ip_v == 6)
--     type = htonl(AF_INET6);
--   else
--     type = htonl(AF_INET);
--
--  iv[0].iov_base = &type;
--  iv[0].iov_len = sizeof (type);
--  iv[1].iov_base = buf;
--  iv[1].iov_len = len;
--
--  return freebsd_modify_read_write_return (writev (tt->fd, iv, 2));
-+  if (tt->type == DEV_TYPE_TUN)
-+    {
-+      u_int32_t type;
-+      struct iovec iv[2];
-+      struct ip *iph;
-+
-+      iph = (struct ip *) buf;
-+
-+      if (tt->ipv6 && iph->ip_v == 6)
-+        type = htonl (AF_INET6);
-+      else 
-+        type = htonl (AF_INET);
-+
-+      iv[0].iov_base = &type;
-+      iv[0].iov_len = sizeof (type);
-+      iv[1].iov_base = buf;
-+      iv[1].iov_len = len;
-+
-+      return freebsd_modify_read_write_return (writev (tt->fd, iv, 2));
-+    }
-+  else
-+    return write (tt->fd, buf, len);
- }
- 
- int
- read_tun (struct tuntap* tt, uint8_t *buf, int len)
- {
--  u_int32_t type;
--  struct iovec iv[2];
--
--  iv[0].iov_base = &type;
--  iv[0].iov_len = sizeof (type);
--  iv[1].iov_base = buf;
--  iv[1].iov_len = len;
--
--
--  return freebsd_modify_read_write_return (readv (tt->fd, iv, 2));
-+  if (tt->type == DEV_TYPE_TUN)
-+    {
-+      u_int32_t type;
-+      struct iovec iv[2];
-+
-+      iv[0].iov_base = &type;
-+      iv[0].iov_len = sizeof (type);
-+      iv[1].iov_base = buf;
-+      iv[1].iov_len = len;
-+
-+      return freebsd_modify_read_write_return (readv (tt->fd, iv, 2));
-+    }
-+  else
-+    return read (tt->fd, buf, len);
- }
- 
- #elif defined(WIN32)
+I've tried both 1.5.0 and the latest 1.6beta with both tun and tap. Also bo=
+th manual and automatic IP config.
 
+I can get the VPN connection established over the proxy. However the WinXP =
+interface never seems to recieve any packets. Using tcpdump on the linux en=
+d and windump on the XP end I never see a packet recieved on XP.
 
+Pinging XP -> linux you see both the echo request and echo reply in tcpdump=
+ on linux. Windump sees only the echo request.
+
+Pinging linux -> XP tcpdump on linux sees the echo request. windump sees no=
+thing.
+
+Arp seems to work, as I can see arp requests and replys and the arp table o=
+n each machine seems to be correct.
+
+Strangely, the packet counter on the WinXP "Local Area Connection 2" dialog=
+ increases as the ICPM pings come in, but they do not make it to windump. T=
+he openvpn console windows on both linux and XP show the rW etc. as the pac=
+kets are written/recieved.
+
+Using nmap on the linux machine: with tcpdump you can see the packets go ou=
+t on linux, they are not seen on windump. UDP as well as TCP.
+
+command line on linux: --dev tap --mssfix --tun-mtu 1500 --tun-mtu-extra 32=
+ --verb 5 --proto tcp-server
+
+XP command line is complementary.
+
+I've also tried smaller mtu values (with the appropriate change on the XP t=
+ap adapter)
 
 
