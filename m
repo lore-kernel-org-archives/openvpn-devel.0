@@ -1,9 +1,10 @@
-Message-ID: <20686C579479DC438276A726FE80CDAA01BC1A45@...281...>
-From: satinders@...280...
+From: Mathias Sundman <mathias@...209...>
+Subject: Re: [Openvpn-devel] [Patch] Allow multiple TAP devices without
+ --dev-node on Windows
+In-Reply-To: <Pine.WNT.4.60.0410051208240.27592@...254...>
+Message-ID: <Pine.LNX.4.60.0410070800170.32236@...210...>
+References: <Pine.WNT.4.60.0410051208240.27592@...254...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C4AB97.7EC94EB0"
-Subject: [Openvpn-devel] Suggestion: OpenVPN should provide hooks
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,70 +15,46 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Oct  6 04:31:31 2004
+Date: Wed Oct  6 23:40:46 2004
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This message is in MIME format. Since your mail reader does not understand
-this format, some or all of this message may not be legible.
+On Tue, 5 Oct 2004, Mathias Sundman wrote:
 
-------_=_NextPart_001_01C4AB97.7EC94EB0
-Content-Type: text/plain;
-	charset="iso-8859-1"
+> I was going to ask for a feature yesterday, but though I'd write it myself 
+> instead of just asking for others todo things for me :-)
+>
+> I have about 15 OpenVPN configs on my Windows machine, but I only use 2-3 
+> simulatainously. But, as I need be able to connect to more than one site, 
+> I've had to create one TAP device for EVERY config file, as I had to specify 
+> the the dev-node in every config if I had installed more than one TAP device.
+>
+> With the attached patch this behavior is modified so that if dev-node is not 
+> specified, OpenVPN tries to open the first TAP device is finds. If 
+> CreateFile() fails on this device, it moves on and tries to open next device.
+>
+> If all CreateFile() fails on all avaiable TAP devices, first then openvpn 
+> terminates.
+>
+> This works great as long as all TAP configuration is done dynamically from 
+> OpenVPN which is always the case for me. If you have static configuration 
+> done on the TAP devices, you need to use dev-node to specify which device to 
+> use anyway, so I don't think this patch should brake anything.
 
-OpenVPN should provide hooks just like apache server. This will facilitate
-customization of openvpn features. One of the hooks could be
-post_tunnel_read_request  which will be called when openvpn reads message
-from remote peer. One can add his own treament to message through this
-request.
+Now that Eric Tanner has showed us how we can install the TAP device as 
+hidden this patch became even more useful, as it's a little troublesome to 
+change the TAP device name, when it's not visible in "Network Connections" 
+:-)
 
-This will greatly improve openvpn's adaptability.
+James, could you consider applying this patch for the beta12 release?
 
-We can have same implementation as in apache (through modules, function
-registration) or we can have blank callbacks which developer can fill-in to
-acheieve feature enhancments.
+If there's something with the patch you dislike or would like to have 
+implemented in a diffrent way, let me know, and I'll try fixing it...
 
-Developer should be able to write his module having implementation of
-various hooks and then just compile it with openvpn.
-
-Regards,
-Satinder Singh
-
-------_=_NextPart_001_01C4AB97.7EC94EB0
-Content-Type: text/html; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<HTML>
-<HEAD>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; charset=3Diso-8859-=
-1">
-<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version 5.5.2653.12">
-<TITLE>Suggestion: OpenVPN should provide hooks </TITLE>
-</HEAD>
-<BODY>
-
-<P><FONT SIZE=3D2>OpenVPN should provide hooks just like apache server. Thi=
-s will facilitate customization of openvpn features. One of the hooks could=
- be post_tunnel_read_request&nbsp; which will be called when openvpn reads =
-message from remote peer. One can add his own treament to message through t=
-his request.</FONT></P>
-
-<P><FONT SIZE=3D2>This will greatly improve openvpn's adaptability.</FONT>
-</P>
-
-<P><FONT SIZE=3D2>We can have same implementation as in apache (through mod=
-ules, function registration) or we can have blank callbacks which developer=
- can fill-in to acheieve feature enhancments.</FONT></P>
-
-<P><FONT SIZE=3D2>Developer should be able to write his module having imple=
-mentation of various hooks and then just compile it with openvpn.</FONT></P>
-
-<P><FONT SIZE=3D2>Regards,</FONT>
-<BR><FONT SIZE=3D2>Satinder Singh</FONT>
-</P>
-
-</BODY>
-</HTML>=
-
-------_=_NextPart_001_01C4AB97.7EC94EB0--
+-- 
+_________________________________________________________
+Mathias Sundman              (^)   ASCII Ribbon Campaign
+NILINGS AB                    X    NO HTML/RTF in e-mail
+Tel: +46-(0)8-666 32 28      / \   NO Word docs in e-mail
 
