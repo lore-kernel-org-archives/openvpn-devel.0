@@ -1,7 +1,7 @@
-From: "=?windows-1252?q?Fran=E7ois?= Revol" <revol@...260...>
-Message-Id: <18479273504-BeMail@...337...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 1.5 ported to BeOS (BONE) and Zeta
+Message-ID: <41E67DB4.6090504@...255...>
+From: Didier Conchaudron <didier@...255...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Openvpn future: probably certificate problems...
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,34 +12,43 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Jan 13 03:47:19 2005
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Date: Thu Jan 13 06:18:18 2005
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: James Yonan <jim@...41...>
+Cc: Mathias Sundman <mathias@...209...>, openvpn-devel@lists.sourceforge.net, peter@...292...
 
-I've been having a port of 1.5 for some time already, never bothered to
-post about it, since it requires a tuntap driver which I wrote but
-isn't public yet, but will be bundled with Zeta ( http://yellowtab.com
-).
-We should get 2.0 ported soon if it doesn't have quirks, but I thought
-I'd post that one anyway.
+Hi all,
 
-Most changes are just about adding BeOS configurations, and the code to
-open the tuntap driver, which I designed to have the same API as the
-Linux one (except it's published as /dev/misc/tuntap because our devfs
-is hierarchical).
-The syslog stuff is in the gui library (don't ask why).
-The new network stack (BONE, the old one is not on par with VPN anyway)
-has some oddnesses like __inet_aton, but it's been worked around.
-Priorities are different in BeOS.
-BONE CLI tools have an odd syntax as well...
+I'm still working on a renewed openvpn service wrapper( which's heading 
+to allow a non-admin user to start/stop pre-defined tunnels via a tcp 
+socket) and I see some big troubles in a near future.
 
-Fran=E7ois.
+The *great* actual cryptoapi patch allow a user to access local machine 
+and local user certs. It's quite good right now because most of the 
+openvpn users are using it with admin rights or non-interactive 
+processing( like autostart at windows boot).
 
-The diff
-http://clapcrest.free.fr/revol/beos/patches/openvpn-1.5.0-
-beos.patch.002.txt
+I'm worrying about those features when our aim will be to do let 
+non-admin users start their tunnel and authenticate themselves on the 
+openvpn server with their own certificate. In the actual openvpn it's 
+not possible, because the SYSTEM account can only access to his own 
+certs and the local machine certs, but not "Foo Bar User" certs.
 
-P.S. I'm not subscribed.
+We can ask ourselves few questions:
 
+- is it possible to make SYSTEM access user certs?
+- if not, how can we make openvpn access to those users data?
+
+A friend of mine said an answer could be to let the GUI(or a user only 
+component) manage the access to such user-related data, and let openvpn 
+deal with this component in order to use the certs.
+
+Of course, this problem is only windows-related.
+
+What do you think of this problem?
+
+Thanks,
+
+Didier
 
