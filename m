@@ -1,9 +1,7 @@
-Message-ID: <406BE870.3060608@...194...>
-From: Stephan Scholz <sscholz@...194...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] OpenVPN 2.0 -- Project Update and Release Notes
-References: <twig.1080688545.10218@...41...>
-In-Reply-To: <twig.1080688545.10218@...41...>
+From: Arkadiusz Patyk <areq@...104...>
+Message-ID: <20040401100921.GA6102@...104...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] OpenVPN 2.0 feature request - fixed-address
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,29 +12,30 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Apr  1 02:09:14 2004
-Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-To: James Yonan <jim@...41...>
-Cc: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+Date: Thu Apr  1 02:10:17 2004
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-James,
+Hi
 
-this is amazing! :-))) I was happy to get the forking server working
-with multiple clients in 1.6. But 2.0 sounds like a gem! Will give it a try=
- ASAP.
-Great work!
+ifconfig-pool is fine, but I would need an option for IP
+reservation for users.
+The reservation could be realized on thebase of x509name
 
-Stephan
+for example:
 
---=20
-Stephan Scholz <sscholz@...194...> | Development
-Astaro AG | www.astaro.com | Phone +49-721-490069-0 | Fax -55
+fixed-address 10.8.0.46 /C=PL/ST=NA/O=Dot.net/CN=Maciej.Nowak/emailAddress=m.nowak@...195...
+fixed-address 10.8.0.50 /C=PL/ST=NA/O=Dot.net/CN=Zenon.Ptak/emailAddress=z.ptak@...195...
 
-Awards for ASL:
-- N=E4tverk & Kommunikation Magazine, Sweden: "Five Stars" - October 2003
-- Linux Enterprise Readers' Choice Award: Best Firewall - October 2003
-- LinuxWorld Product Excellence Award: Best Security Solution - August 2003
-- "Excellent" Infoworld Magazine - August 2003
+which would guarantee that user X always gets address Y
+as option fixed-address in dhcpd
 
+The possibility of IP reservation will simplify firewall configuration -
+espesially if it is installed on other machine than openvpn server.
+
+-- 
+Arkadiusz Patyk [areq(at)pld-linux.org] [http://rescuecd.pld-linux.org]
+[IRC:areq ICQ:16231667  GG:1383]  [AP3-6BONE] [AP14126-RIPE]
 
