@@ -1,8 +1,10 @@
-From: James Yonan <jim@...41...>
-In-Reply-To: <Pine.LNX.4.61.0502131551270.5891@...210...>
-Message-ID: <Pine.LNX.4.58.0502132017400.12699@...41...>
+From: Mathias Sundman <mathias@...209...>
+In-Reply-To: <Pine.LNX.4.58.0502132017400.12699@...41...>
+Message-ID: <Pine.LNX.4.61.0502141017340.8175@...210...>
 References: <Pine.LNX.4.61.0502131551270.5891@...210...>
+ <Pine.LNX.4.58.0502132017400.12699@...41...>
 MIME-Version: 1.0
+Content-Type: MULTIPART/MIXED; BOUNDARY="230776145-1284942222-1108373023=:8175"
 Subject: [Openvpn-devel] Re: Windows install pkg leaves a ; in path
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
@@ -14,60 +16,186 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Feb 13 19:25:27 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: Mathias Sundman <mathias@...209...>
+Date: Mon Feb 14 01:32:16 2005
+To: James Yonan <jim@...41...>
 Cc: openvpn-devel@lists.sourceforge.net, markku@...124...
 
-On Sun, 13 Feb 2005, Mathias Sundman wrote:
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-> When uninstalling OpenVPN, the installation package leaves a semicolon at 
-> the end of the path.
-> 
-> When OpenVPN is then re-installed, another semicolon is added to the path 
-> before the openvpn path, and you therefore end up with two semicolons 
-> before the OpenVPN path.
-> 
-> Every time you install a new version of OpenVPN an extra semicolon is 
-> added!
-> 
-> I have solved this in the OpenVPN GUI installation package simply by 
-> changing
-> 
->    ; remove previously set path (if any)
->    Push "$INSTDIR\bin"
->    Call RemoveFromPath
-> 
-> to
-> 
->    ; remove previously set path (if any)
->    Push ";$INSTDIR\bin"
->    Call RemoveFromPath
-> 
-> in the two places RemoveFromPath is called from the NSIS script.
-> 
-> I guess a more "correct" solution would be to fix the setpath.nsi 
-> RemoveFromPath function so it removes the preceding semicolon if a such 
-> exists.
-> 
-> Thanks to Markku Leinio for reporting this problem.
+--230776145-1284942222-1108373023=:8175
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
 
-The problem with prepending a semicolon is that it won't match if the 
-OpenVPN path is the only path the user's PATH setting.
+On Sun, 13 Feb 2005, James Yonan wrote:
 
-I just tried to update using this patch and I ended up with two
-OpenVPN paths.
+> On Sun, 13 Feb 2005, Mathias Sundman wrote:
+>
+>> When uninstalling OpenVPN, the installation package leaves a semicolon at
+>> the end of the path.
+>
+> A bit ugly -- maybe we should fix RemoveFromPath?
 
-Maybe something like this?
+Yes, you're right. Attached is a fixed version of setpath.nsi.
 
-; remove previously set path (if any)
-Push ";$INSTDIR\bin"
-Call RemoveFromPath
-Push "$INSTDIR\bin"
-Call RemoveFromPath
+I first found a new version at the NSIS site which had this problem fixed, 
+but that version seemed to have a broken StrStr function, so in some 
+occations it wouldn't add any path at all.
 
-A bit ugly -- maybe we should fix RemoveFromPath?
+I gave up bughunting that code and fixed the old one instead. I've done 
+the following changes:
 
-James
+    Added code to remove the semicolon at the end of the path
+    when uninstalling.
+
+    Added code to make sure we don't insert an extra semicolon
+    before our path if there already exist one at the end of
+    the original path.
+
+    Removed duplicated "un. and install" functions and made
+    macros to duplicate the code instead.
+
+Cheers - Mathias
+--230776145-1284942222-1108373023=:8175
+Content-Type: TEXT/PLAIN; charset=US-ASCII; name="setpath.nsi"
+Content-Transfer-Encoding: BASE64
+Content-ID: <Pine.LNX.4.61.0502141023430.8175@...210...>
+Content-Description: 
+Content-Disposition: attachment; filename="setpath.nsi"
+
+OyBNb2RpZnkgdGhlIHVzZXIncyBQQVRIIHZhcmlhYmxlLg0NCjsNDQo7IE1v
+ZGlmaWVkIGJ5IEpZIHRvIGhhdmUgYm90aCBhIFJlbW92ZUZyb21QYXRoDQ0K
+OyBhbmQgYW4gdW4uUmVtb3ZlRnJvbVBhdGggd2hpY2ggYXJlIGJhc2ljYWxs
+eQ0NCjsgY29waWVzIG9mIGVhY2ggb3RoZXIuICBXaHkgZG9lcyBOU0lTIGRl
+bWFuZA0NCjsgdGhpcyBub25zZW5zZT8NDQo7DQ0KOyBNb2RpZmllZCBGZWIg
+MTQsIDIwMDUgYnkgTWF0aGlhcyBTdW5kbWFuOg0NCjsgICBBZGRlZCBjb2Rl
+IHRvIHJlbW92ZSB0aGUgc2VtaWNvbG9uIGF0IHRoZSBlbmQgb2YgdGhlIHBh
+dGgNDQo7ICAgd2hlbiB1bmluc3RhbGxpbmcuDQ0KOw0NCjsgICBBZGRlZCBj
+b2RlIHRvIG1ha2Ugc3VyZSB3ZSBkb24ndCBpbnNlcnQgYW4gZXh0cmEgc2Vt
+aWNvbG9uDQ0KOyAgIGJlZm9yZSBvdXIgcGF0aCBpZiB0aGVyZSBhbHJlYWR5
+IGV4aXN0IG9uZSBhdCB0aGUgZW5kIG9mDQ0KOyAgIHRoZSBvcmlnaW5hbCBw
+YXRoLg0NCjsNDQo7ICAgUmVtb3ZlZCBkdXBsaWNhdGVkICJ1bi4gYW5kIGlu
+c3RhbGwiIGZ1bmN0aW9ucyBhbmQgbWFkZQ0NCjsgICBtYWNyb3MgdG8gZHVw
+bGljYXRlIHRoZSBjb2RlIGluc3RlYWQuDQ0KDQ0KOyBleGFtcGxlIHVzYWdl
+DQ0KOw0NCjtTZWN0aW9uICJBZGQgdG8gcGF0aCINDQo7ICBQdXNoICRJTlNU
+RElSDQ0KOyAgQ2FsbCBBZGRUb1BhdGgNDQo7U2VjdGlvbkVuZA0NCjsNDQo7
+IyAuLi4NDQo7DQ0KO1NlY3Rpb24gInVuaW5zdGFsbCINDQo7ICAjIC4uLg0N
+CjsgIFB1c2ggJElOU1RESVINDQo7ICBDYWxsIHVuLlJlbW92ZUZyb21QYXRo
+DQ0KOyAgIyAuLi4NDQo7U2VjdGlvbkVuZA0NCg0NCiF2ZXJib3NlIDMNDQoh
+aW5jbHVkZSAiV2luTWVzc2FnZXMuTlNIIg0NCiF2ZXJib3NlIDQNDQoNDQo7
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PQ0NCjsgQWRkVG9QYXRoIC0gQWRkcyB0aGUgZ2l2ZW4gZGlyIHRv
+IHRoZSBzZWFyY2ggcGF0aC4NDQo7ICAgICAgICBJbnB1dCAtIGhlYWQgb2Yg
+dGhlIHN0YWNrDQ0KOyAgICAgICAgTm90ZSAtIFdpbjl4IHN5c3RlbXMgcmVx
+dWlyZXMgcmVib290DQ0KOz09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT0NDQpGdW5jdGlvbiBBZGRUb1BhdGgN
+DQogIEV4Y2ggJDANDQogIFB1c2ggJDENDQogIFB1c2ggJDINDQogIA0NCiAg
+Q2FsbCBJc05UDQ0KICBQb3AgJDENDQogIFN0ckNtcCAkMSAxIEFkZFRvUGF0
+aF9OVA0NCiAgICA7IE5vdCBvbiBOVA0NCiAgICBTdHJDcHkgJDEgJFdJTkRJ
+UiAyDQ0KICAgIEZpbGVPcGVuICQxICIkMVxhdXRvZXhlYy5iYXQiIGENDQog
+ICAgRmlsZVNlZWsgJDEgMCBFTkQNDQogICAgR2V0RnVsbFBhdGhOYW1lIC9T
+SE9SVCAkMCAkMA0NCiAgICBGaWxlV3JpdGUgJDEgIiRcciRcblNFVCBQQVRI
+PSVQQVRIJTskMCRcciRcbiINDQogICAgRmlsZUNsb3NlICQxDQ0KICAgIEdv
+dG8gQWRkVG9QYXRoX2RvbmUNDQoNDQogIEFkZFRvUGF0aF9OVDoNDQogICAg
+UmVhZFJlZ1N0ciAkMSBIS0NVICJFbnZpcm9ubWVudCIgIlBBVEgiDQ0KICAg
+IFN0ckNweSAkMiAkMSAxIC0xICMgY29weSBsYXN0IGNoYXINDQogICAgU3Ry
+Q21wICQyICI7IiAwICsyICMgaWYgbGFzdCBjaGFyID09IDsNDQogICAgICBT
+dHJDcHkgJDEgJDEgLTEgIyByZW1vdmUgbGFzdCBjaGFyDQ0KDQ0KICAgIFN0
+ckNtcCAkMSAiIiBBZGRUb1BhdGhfTlRkb0l0DQ0KICAgICAgU3RyQ3B5ICQw
+ICIkMTskMCINDQogICAgICBHb3RvIEFkZFRvUGF0aF9OVGRvSXQNDQogICAg
+QWRkVG9QYXRoX05UZG9JdDoNDQogICAgICBXcml0ZVJlZ0V4cGFuZFN0ciBI
+S0NVICJFbnZpcm9ubWVudCIgIlBBVEgiICQwDQ0KICAgICAgU2VuZE1lc3Nh
+Z2UgJHtIV05EX0JST0FEQ0FTVH0gJHtXTV9XSU5JTklDSEFOR0V9IDAgIlNU
+UjpFbnZpcm9ubWVudCIgL1RJTUVPVVQ9NTAwMA0NCiAgDQ0KICBBZGRUb1Bh
+dGhfZG9uZToNDQogICAgUG9wICQyDQ0KICAgIFBvcCAkMQ0NCiAgICBQb3Ag
+JDANDQpGdW5jdGlvbkVuZA0NCg0NCjs9PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQ0KOyBSZW1vdmVGcm9t
+UGF0aCAtIFJlbW92ZSBhIGdpdmVuIGRpciBmcm9tIHRoZSBwYXRoDQ0KOyAg
+ICAgSW5wdXQ6IGhlYWQgb2YgdGhlIHN0YWNrDQ0KOz09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NDQohbWFj
+cm8gUmVtb3ZlRnJvbVBhdGggdW4NDQpGdW5jdGlvbiAke3VufVJlbW92ZUZy
+b21QYXRoDQ0KICBFeGNoICQwDQ0KICBQdXNoICQxDQ0KICBQdXNoICQyDQ0K
+ICBQdXNoICQzDQ0KICBQdXNoICQ0DQ0KICBQdXNoICQ1DQ0KICANDQogIENh
+bGwgJHt1bn1Jc05UDQ0KICBQb3AgJDENDQogIFN0ckNtcCAkMSAxIFJlbW92
+ZUZyb21QYXRoX05UDQ0KICAgIDsgTm90IG9uIE5UDQ0KICAgIFN0ckNweSAk
+MSAkV0lORElSIDINDQogICAgRmlsZU9wZW4gJDEgIiQxXGF1dG9leGVjLmJh
+dCIgcg0NCiAgICBHZXRUZW1wRmlsZU5hbWUgJDQNDQogICAgRmlsZU9wZW4g
+JDIgJDQgdw0NCiAgICBHZXRGdWxsUGF0aE5hbWUgL1NIT1JUICQwICQwDQ0K
+ICAgIFN0ckNweSAkMCAiU0VUIFBBVEg9JVBBVEglOyQwIg0NCiAgICBTZXRS
+ZWJvb3RGbGFnIHRydWUNDQogICAgR290byBSZW1vdmVGcm9tUGF0aF9kb3NM
+b29wDQ0KICAgIA0NCiAgICBSZW1vdmVGcm9tUGF0aF9kb3NMb29wOg0NCiAg
+ICAgIEZpbGVSZWFkICQxICQzDQ0KICAgICAgU3RyQ21wICQzICIkMCRcciRc
+biIgUmVtb3ZlRnJvbVBhdGhfZG9zTG9vcA0NCiAgICAgIFN0ckNtcCAkMyAi
+JDAkXG4iIFJlbW92ZUZyb21QYXRoX2Rvc0xvb3ANDQogICAgICBTdHJDbXAg
+JDMgIiQwIiBSZW1vdmVGcm9tUGF0aF9kb3NMb29wDQ0KICAgICAgU3RyQ21w
+ICQzICIiIFJlbW92ZUZyb21QYXRoX2Rvc0xvb3BFbmQNDQogICAgICBGaWxl
+V3JpdGUgJDIgJDMNDQogICAgICBHb3RvIFJlbW92ZUZyb21QYXRoX2Rvc0xv
+b3ANDQogICAgDQ0KICAgIFJlbW92ZUZyb21QYXRoX2Rvc0xvb3BFbmQ6DQ0K
+ICAgICAgRmlsZUNsb3NlICQyDQ0KICAgICAgRmlsZUNsb3NlICQxDQ0KICAg
+ICAgU3RyQ3B5ICQxICRXSU5ESVIgMg0NCiAgICAgIERlbGV0ZSAiJDFcYXV0
+b2V4ZWMuYmF0Ig0NCiAgICAgIENvcHlGaWxlcyAvU0lMRU5UICQ0ICIkMVxh
+dXRvZXhlYy5iYXQiDQ0KICAgICAgRGVsZXRlICQ0DQ0KICAgICAgR290byBS
+ZW1vdmVGcm9tUGF0aF9kb25lDQ0KDQ0KICBSZW1vdmVGcm9tUGF0aF9OVDoN
+DQogICAgU3RyTGVuICQyICQwDQ0KICAgIFJlYWRSZWdTdHIgJDEgSEtDVSAi
+RW52aXJvbm1lbnQiICJQQVRIIg0NCiAgICBQdXNoICQxDQ0KICAgIFB1c2gg
+JDANDQogICAgQ2FsbCAke3VufVN0clN0ciA7IEZpbmQgJDAgaW4gJDENDQog
+ICAgUG9wICQwIDsgcG9zIG9mIG91ciBkaXINDQogICAgSW50Q21wICQwIC0x
+IFJlbW92ZUZyb21QYXRoX2RvbmUNDQogICAgICA7IGVsc2UsIGl0IGlzIGlu
+IHBhdGgNDQogICAgICBTdHJDcHkgJDMgJDEgJDAgOyAkMyBub3cgaGFzIHRo
+ZSBwYXJ0IG9mIHRoZSBwYXRoIGJlZm9yZSBvdXIgZGlyDQ0KICAgICAgSW50
+T3AgJDIgJDIgKyAkMCA7ICQyIG5vdyBjb250YWlucyB0aGUgcG9zIGFmdGVy
+IG91ciBkaXIgaW4gdGhlIHBhdGggKCc7JykNDQogICAgICBJbnRPcCAkMiAk
+MiArIDEgOyAkMiBub3cgY29udGFpbnRzIHRoZSBwb3MgYWZ0ZXIgb3VyIGRp
+ciBhbmQgdGhlIHNlbWljb2xvbi4NDQogICAgICBTdHJMZW4gJDAgJDENDQog
+ICAgICBTdHJDcHkgJDEgJDEgJDAgJDINDQogICAgICBTdHJDcHkgJDMgIiQz
+JDEiDQ0KDQ0KICAgICAgU3RyQ3B5ICQ1ICQzIDEgLTEgIyBjb3B5IGxhc3Qg
+Y2hhcg0NCiAgICAgIFN0ckNtcCAkNSAiOyIgMCArMiAjIGlmIGxhc3QgY2hh
+ciA9PSA7DQ0KICAgICAgICBTdHJDcHkgJDMgJDMgLTEgIyByZW1vdmUgbGFz
+dCBjaGFyDQ0KDQ0KICAgICAgV3JpdGVSZWdFeHBhbmRTdHIgSEtDVSAiRW52
+aXJvbm1lbnQiICJQQVRIIiAkMw0NCiAgICAgIFNlbmRNZXNzYWdlICR7SFdO
+RF9CUk9BRENBU1R9ICR7V01fV0lOSU5JQ0hBTkdFfSAwICJTVFI6RW52aXJv
+bm1lbnQiIC9USU1FT1VUPTUwMDANDQogIA0NCiAgUmVtb3ZlRnJvbVBhdGhf
+ZG9uZToNDQogICAgUG9wICQ1DQ0KICAgIFBvcCAkNA0NCiAgICBQb3AgJDMN
+DQogICAgUG9wICQyDQ0KICAgIFBvcCAkMQ0NCiAgICBQb3AgJDANDQpGdW5j
+dGlvbkVuZA0NCiFtYWNyb2VuZA0NCiFpbnNlcnRtYWNybyBSZW1vdmVGcm9t
+UGF0aCAiIg0NCiFpbnNlcnRtYWNybyBSZW1vdmVGcm9tUGF0aCAidW4uIg0N
+Cg0NCg0NCjs9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09DQ0KOyBTdHJTdHIgLSBGaW5kcyBhIGdpdmVuIHN0
+cmluZyBpbiBhbm90aGVyIGdpdmVuIHN0cmluZy4NDQo7ICAgICAgICAgICAg
+ICAgUmV0dXJucyAtMSBpZiBub3QgZm91bmQgYW5kIHRoZSBwb3MgaWYgZm91
+bmQuDQ0KOyAgICAgICAgICBJbnB1dDogaGVhZCBvZiB0aGUgc3RhY2sgLSBz
+dHJpbmcgdG8gZmluZA0NCjsgICAgICAgICAgICAgICAgICAgICAgc2Vjb25k
+IGluIHRoZSBzdGFjayAtIHN0cmluZyB0byBmaW5kIGluDQ0KOyAgICAgICAg
+ICBPdXRwdXQ6IGhlYWQgb2YgdGhlIHN0YWNrDQ0KOz09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NDQohbWFj
+cm8gU3RyU3RyIHVuDQ0KRnVuY3Rpb24gJHt1bn1TdHJTdHINDQogIFB1c2gg
+JDANDQogIEV4Y2gNDQogIFBvcCAkMCA7ICQwIG5vdyBoYXZlIHRoZSBzdHJp
+bmcgdG8gZmluZA0NCiAgUHVzaCAkMQ0NCiAgRXhjaCAyDQ0KICBQb3AgJDEg
+OyAkMSBub3cgaGF2ZSB0aGUgc3RyaW5nIHRvIGZpbmQgaW4NDQogIEV4Y2gN
+DQogIFB1c2ggJDINDQogIFB1c2ggJDMNDQogIFB1c2ggJDQNDQogIFB1c2gg
+JDUNDQoNDQogIFN0ckNweSAkMiAtMQ0NCiAgU3RyTGVuICQzICQwDQ0KICBT
+dHJMZW4gJDQgJDENDQogIEludE9wICQ0ICQ0IC0gJDMNDQoNDQogIFN0clN0
+cl9sb29wOg0NCiAgICBJbnRPcCAkMiAkMiArIDENDQogICAgSW50Q21wICQy
+ICQ0IDAgMCBTdHJTdHJSZXR1cm5fbm90Rm91bmQNDQogICAgU3RyQ3B5ICQ1
+ICQxICQzICQyDQ0KICAgIFN0ckNtcCAkNSAkMCBTdHJTdHJfZG9uZSBTdHJT
+dHJfbG9vcA0NCg0NCiAgU3RyU3RyUmV0dXJuX25vdEZvdW5kOg0NCiAgICBT
+dHJDcHkgJDIgLTENDQoNDQogIFN0clN0cl9kb25lOg0NCiAgICBQb3AgJDUN
+DQogICAgUG9wICQ0DQ0KICAgIFBvcCAkMw0NCiAgICBFeGNoICQyDQ0KICAg
+IEV4Y2ggMg0NCiAgICBQb3AgJDANDQogICAgUG9wICQxDQ0KRnVuY3Rpb25F
+bmQNDQohbWFjcm9lbmQNDQohaW5zZXJ0bWFjcm8gU3RyU3RyICIiDQ0KIWlu
+c2VydG1hY3JvIFN0clN0ciAidW4uIg0NCg0NCjs9PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQ0KOyBJc05U
+IC0gUmV0dXJucyAxIGlmIHRoZSBjdXJyZW50IHN5c3RlbSBpcyBOVCwgMA0N
+CjsgICAgICAgIG90aGVyd2lzZS4NDQo7ICAgICBPdXRwdXQ6IGhlYWQgb2Yg
+dGhlIHN0YWNrDQ0KOz09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT0NDQohbWFjcm8gSXNOVCB1bg0NCkZ1bmN0
+aW9uICR7dW59SXNOVA0NCiAgUHVzaCAkMA0NCiAgUmVhZFJlZ1N0ciAkMCBI
+S0xNICJTT0ZUV0FSRVxNaWNyb3NvZnRcV2luZG93cyBOVFxDdXJyZW50VmVy
+c2lvbiIgQ3VycmVudFZlcnNpb24NDQogIFN0ckNtcCAkMCAiIiAwIElzTlRf
+eWVzDQ0KICA7IHdlIGFyZSBub3QgTlQuDQ0KICBQb3AgJDANDQogIFB1c2gg
+MA0NCiAgUmV0dXJuDQ0KDQ0KICBJc05UX3llczoNDQogICAgOyBOVCEhIQ0N
+CiAgICBQb3AgJDANDQogICAgUHVzaCAxDQ0KRnVuY3Rpb25FbmQNDQohbWFj
+cm9lbmQNDQohaW5zZXJ0bWFjcm8gSXNOVCAiIg0NCiFpbnNlcnRtYWNybyBJ
+c05UICJ1bi4iDQ0KDQ0K
+
+--230776145-1284942222-1108373023=:8175--
 
