@@ -1,8 +1,7 @@
-Message-ID: <009701c20a62$13fc4d90$1000000a@...4...>
+Message-ID: <021501c20ef0$a4e116f0$1000000a@...4...>
 From: "James Yonan" <jim@...3...>
-References: <003f01c2099e$ee25c290$1000000a@...4...> <20020602090401.GA2902@...6...>
-Subject: Re: [Openvpn-devel] New OpenVPN beta available for testing
 MIME-Version: 1.0
+Subject: [Openvpn-devel] Beta available, please test
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -13,51 +12,63 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://www.geocrawler.com/redir-sf.php3?list=openvpn-devel>
-Date: Sun Jun  2 11:19:02 2002
+Date: Sat Jun  8 15:42:25 2002
 Content-Type: text/plain;
 	charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-To: Alberto Gonzalez Iniesta <agi@...5...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-> > * Added ACX_PTHREAD (from the autoconf
-> >   macro archive) to configure.ac
-> >   to figure out the right pthread
-> >   options for a given platform.
->
-> Hi James,
->
-> I some archs in Debian build binary packages using gcc3, the following
-> patch solved the problem:
->
-> --- openvpn-1.2.0.orig/configure
-> +++ openvpn-1.2.0/configure
-> @@ -9716,7 +9716,7 @@
->                 CFLAGS="$CFLAGS -pthread"
->                 ;;
->           *)
-> -               CFLAGS="$CFLAGS -pthread"
-> +               CFLAGS="$CFLAGS -lpthread"
->                 ;;
->           esac
->
-> --- openvpn-1.2.0.orig/configure.ac
-> +++ openvpn-1.2.0/configure.ac
-> @@ -284,7 +284,7 @@
->                 CFLAGS="$CFLAGS -pthread"
->                 ;;
->           *)
-> -               CFLAGS="$CFLAGS -pthread"
-> +               CFLAGS="$CFLAGS -lpthread"
->                 ;;
->
->
-> The new configure* scripts work flawlessly :-)
+This beta is pretty close to being 1.2.1.  Let me know if there are any
+problems.
 
-Cool!  I did see that patch over on Debian, unfortunately it's not a
-portable solution...  I did some fishing and found ACX_PTHREAD which looks
-like it's the Right way to do this.
+Download from CVS or:
 
-James
+http://openvpn.sourceforge.net/beta/openvpn-1.2.0.10.tar.gz
+
+Change Log since 1.2.0:
+
+* Added --ping-restart option to restart
+  connection on ping timeout using SIGUSR1
+  logic (Matthias Andree).
+* Added --persist-tun, --persist-key,
+  --persist-local-ip, and --persist-remote-ip
+  options for finer-grained control over SIGUSR1
+  and --ping-restart restarts.  To
+  replicate previous SIGUSR1 functionality,
+  use --persist-remote-ip.
+* Changed residual IV fetching code to take
+  IV from tail of ciphertext.
+* Added check to make sure that CFB or OFB
+  cipher modes are only used with SSL/TLS
+  authentication mode, and added a caveat
+  to INSTALL.
+* Changed signal handling during initialization
+  (including re-initialization during restarts)
+  to exit on SIGTERM or SIGINT and ignore other
+  signals which would ordinarily be caught.
+* Added --resolv-retry option to allow
+  retries on hostname resolution.
+* Expanded the --float option to also
+  allow dynamic changes in source port number
+  on incoming datagrams.
+* Added --mute option to limit repetitive
+  logging of similar message types.
+* Added --group option to downgrade GID
+  after initialization.
+* Try to set ifconfig path automatically
+  in configure.
+* Successfully tested with
+  OpenSSL 0.9.7 Beta 1 and AES cipher.
+* Added RPM notes to INSTALL.
+* Added ACX_PTHREAD (from the autoconf
+  macro archive) to configure.ac
+  to figure out the right pthread
+  options for a given platform.
+* Broke out macro definitions from
+  configure.ac to acinclude.m4.
+* Minor changes to docs and HOWTO.
+* All changes maintain protocol compatibility
+  with OpenVPN versions since 1.1.0.
 
 
 
