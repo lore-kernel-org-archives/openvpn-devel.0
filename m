@@ -1,7 +1,10 @@
-Message-Id: <200302242027.h1OKQxf11449@...41...>
-Subject: Re: [Openvpn-devel] MTU
-From: "James Yonan" <jim@...41...>
-In-Reply-To: <1046076005.1358.38.camel@...2...>
+From: 510047448921-0001@...75... (ZLS Software GmbH)
+Message-Id: <20030311203318.200ff724.zls@...76...>
+Reply-To: lademann@...76...
+Mime-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="Multipart_Tue__11_Mar_2003_20:33:18_+0100_0833ffa8"
+Subject: [Openvpn-devel] [PATCH]: add config-variables to OpenVPN-1.3.2
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -12,150 +15,225 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Feb 24 12:30:10 2003
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Jan Johansson <jan.johansson@...1...>, openvpn-devel@lists.sourceforge.net
+Date: Tue Mar 11 11:32:08 2003
+To: openvpn-devel@lists.sourceforge.net
 
-Jan Johansson <jan.johansson@...1...> said:
+This is a multi-part message in MIME format.
 
-> On Sun, 2003-02-23 at 17:10, James Yonan wrote:
-> > Russ,
-> > 
-> > Have you tried the tracepath utility to attempt to measure the Path MTU?
-> > 
-> > Are the routers in the path properly forwarding ICMP code 3 (destination
-> > unreachable), and ICMP code 4 (fragmentation needed but don't-fragment bit
-set)?
-> > 
-> > Most MTU problems are caused by routers and firewalls which do not handle
-> > these ICMP codes correctly, causing path MTU discovery to break.
-> > 
-> > The symptoms of this problem are as you show below...  Running an app over the
-> >  tunnel works fine initially until the first large packet is sent, then the
-> > app hangs.
-> 
-> I have a different theory here. 
-> I am experiencing what I believe to be MTU problems, which have made me
-> switch from RSA-auth to shared-key, just because the RSA auth stuff
-> seems to trigger it also.
+--Multipart_Tue__11_Mar_2003_20:33:18_+0100_0833ffa8
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-That's interesting, though it makes sense that if OpenVPN thinks the MTU is
-higher than it really is, that this would occur.  That's because the SSL/TLS
-handshake involves some relatively large exchanges (several K octets) that are
-fragmented by OpenVPN to the udp-mtu packet size.  In this case, if OpenVPN
-thinks that the udp-mtu is 1300 then it will attempt to send packets of
-exactly 1300 octets in size, until it reaches the last fragment which will
-probably be smaller.  So essentially, OpenVPN's current method of fragmenting
-SSL/TLS handshakes guarantees that it will push the MTU parameter it's given
-to the limit (udp_mtu in this case).
+Hi, Jim,
 
-> My theory is that part of the problem lies in how the Linux kernel
-> handles udp. I already got it into the README-file that openbsd firewall
-> scrub rules will "kill" openvpn the same way it will kill Linux-nfs, but
-> somehow other routers along the route probably do similar things.
-> 
-> One of the problems is that Linux sometimes (this is more a vague
-> feeling and guesswork than the next part) sends fragments in reverse,
-> meaning that the second half of the packet will be sent before the first
-> part of a split packet. This is why, for instance, you can't netboot Sun
-> boxes from Linux tftp-servers. The prom-code (bios sort of) in Sun
-> machines can't reassemble fragged packets, at least not packets that
-> arrive in reverse. This might make routers and firewalls along the way
-> to behave badly, especially with the next part in mind:
-> 
-> The second part is that linux will tag all UDP (or at least all UDP from
-> OpenVPN and NFS) as "Dont fragment". This is sort of ok. The problem is,
-> they do get fragmented anyway. I can't prove that it isn't related to
-> the transport in between me and the peers I have set up, but I find it
-> likely that someone is fragmenting them anyway, perhaps even by the
-> sending linux box itself. Since there is a *BSD box in between in my
-> case, it will regard any fragmented UDP (or ip) packet with DF set as a
-> bug, it silently and without mercy kills them. It may also mean that if
-> the second half of a fragment comes first, with the DF flag on, it's
-> even more suspicious.
+here is another one:
 
-Well actually what you are observing here is RFC 1191 ("Path MTU Discovery")
-in action (or inaction as the case may be :)
+I've added variable-expandion to config-values and the keywords "set" and "unset".
+With this technique you can easily split configuration of one peer across two files:
+one with the specific and one with the common config values in a way that can help to
+minimize the number of "configuration-knobs". 
 
-http://www.faqs.org/rfcs/rfc1191.html
 
-This process causes the DF bit to always be set on outgoing packets, but
-assumes that other routers and firewalls in the path will play nice and return
-an "ICMP need fragmentation but DF set message" if the packet is too big.
+An example:
 
-For linux at least, Path MTU discovery can be turned off for a given UDP
-socket, causing all packets to be sent with DF cleared and no attempt by the
-kernel to offer fragmentation or defragmentation services.
+        /etc/openvpn/customer_123.conf:
 
-I already have a feature in the CVS under branch MTU_EXPERIMENTAL which gives
-command line control over the Path MTU discovery settings on the UDP socket.
- 
-> As far as I can guess, this probably goes for lots of ISP's and other
-> hardware involved in the transport of ip packets between me and my
-> peers. 
-> For some reason, I seem to get the feeling that RSA negotiation doesn't
-> follow the udp-mtu (or tun-mtu-derived udp-mtu) settings, and send too
-> large packets, and them getting fragmented leads to me having to revert
-> back to precalced secrets.
+        # specific configuration for customer #123
+	set CUSTNO 123
+        config ./customers.common
 
-I will check this, but I doubt that SSL/TLS could go over the udp-mtu (I would
-expect lots of errors and/or assertion crashes in OpenVPN if this was the
-case).  It seems more likely to me that the udp-mtu might be too large.
 
-> It also means that I get the same error as you've described in the last
-> mails. I have a remote-backup-over-rsync that is protected by both
-> OpenVPN and ssh inside of that. It goes some 256k and then dies. It dies
-> reliably every time, and almost always on the same byte, some 240506
-> bytes into the RSYNC-stream. (whatever, the number isn't important).
-> If I forego the openvpn and ssh straight into the machine, the rsync
-> doesn't die.
+        /etc/openvpn/customer.common:
 
-I am considering adding a fragmenting feature to OpenVPN where it would
-fragment packets using the very efficient RFC 815 algorithm in the event that
-it received a packet on the TUN/TAP device that was bigger than the udp_mtu
-could accomodate.  In essence, this feature would do fragmentation explicitly
-rather than depending on the OS to do the fragmentation correctly.
+        # meta-configuration for all customers
+        dev-name vpn_$(CUSTNO)             # vpn_001 to vpn_255
+        port     5$(CUSTNO)                # 5001 to 5255
+        ifconfig 10.0.0.1 10.0.$(CUSTNO).1 # 10.0.001.1 to 10.0.255.1
+        dev-type tun                       # other stuff ...
+           .
+           .
+           .
 
-See http://www.faqs.org/rfcs/rfc815.html for more info.
+These are the same variable-expansion routines I committed to the Snort-IDS some time ago.
 
-Matthias Andree suggested that OpenVPN might generate its own "Fragmentation
-needed but DF set" ICMP messages and return them to the TUN/TAP device in this
-case.
+The syntax is  follows:
 
-Adding to this, OpenVPN could set the udp_mtu dynamically, based on its
-history of successfully transmitting packets of a range of sizes to its peer.
+    set name value    define the variable "name" containing "value".
+    unset name        undefine the variable "name".
 
-These changes, when taken as a whole, would take OpenVPN down the path of
-becoming more like an intelligent router, and move away from the model of
-relying on the OS to manage the transport protocol.
- 
-> So there definately exist some sort of issue with MTU's, which I can't
-> seem to solve correctly. The question is, does the SSL-stuff really
-> check the mtu's, and can you make the linux kernel not put DF's on UDP
-> packets? (since they are ip packets, they can be fragmented and
-> reassembled like any other packets I guess)
-> 
-> "man 7 udp" on RedHat says:
-> 
-> UDP fragments a packet when its total length  exceeds  the
->        interface MTU (Maximum Transmission Unit).  A more network
->        friendly alternative is  to  use  path  MTU  discovery  as
->        described in the IP_PMTU_DISCOVER section of ip(7).
-> 
-> From this text, I can't figure out why Linux puts DF on the packets,
-> which tcpdump clearly shows it does.
-> man 7 ip, udp, socket and friends have never shown me a way to stop DF,
-> also none of them mention why Linux puts it there in the first place.
+    $(name)           replace with the contents of variable "name".
 
-This code will stop Path MTU Discovery and the setting of the DF bit on a
-particular UDP socket:
+    $(name:-default)  replace with the contents of the variable "name" or with
+                      "default" if "name" is undefined.
 
-int mtu_type = IP_PMTUDISC_DONT;
-setsockopt(udp_socket, SOL_IP, IP_MTU_DISCOVER, &mtu_type, sizeof (mtu_type)));
+    $(name:?message)  replace with the contents of variable "name" or print out
+                      the error message "message" and exit.
 
-I know it works on linux, but I'm not sure about other OSes.
 
-James
+The next thing could be something like $(( expression or calculation )).
 
+As before, the patch is quite young and certanly needs more testing :-)
+
+
+Regards,
+
+Christian Lademann <lademann@...76...>
+
+-- 
+*  Christian A. Lademann, ZLS Software GmbH          mailto:lademann@...76...
+*  ZLS Software GmbH
+*  Frankfurter Strasse 59       Postfach 1628             mailto:zls@...76...
+*  D-65779 Kelkheim             D-65766 Kelkheim          http://www.zls.de
+*  Telefon +49-6195-9902-0      Telefax +49-6195-900600
+
+
+
+--Multipart_Tue__11_Mar_2003_20:33:18_+0100_0833ffa8
+Content-Type: application/octet-stream;
+ name="openvpn-1.3.2-zls-vars.diff"
+Content-Disposition: attachment;
+ filename="openvpn-1.3.2-zls-vars.diff"
+Content-Transfer-Encoding: base64
+
+ZGlmZiAtcnVOIG9wZW52cG4tMS4zLjItcDEvb3B0aW9ucy5jIG9wZW52cG4tMS4zLjIvb3B0aW9u
+cy5jCi0tLSBvcGVudnBuLTEuMy4yLXAxL29wdGlvbnMuYwlNb24gTWFyIDEwIDE0OjIxOjA2IDIw
+MDMKKysrIG9wZW52cG4tMS4zLjIvb3B0aW9ucy5jCVR1ZSBNYXIgMTEgMTk6MTU6MjEgMjAwMwpA
+QCAtMzgsNiArMzgsMjIgQEAKIAogI2luY2x1ZGUgIm1lbWRiZy5oIgogCisKK3N0cnVjdCBWYXJF
+bnRyeSB7CisJY2hhcgkJCSpuYW1lOworCWNoYXIJCQkqdmFsdWU7CisJc3RydWN0IFZhckVudHJ5
+CSpwcmV2OworCXN0cnVjdCBWYXJFbnRyeQkqbmV4dDsKK307CisKK3N0cnVjdCBWYXJFbnRyeQkq
+VmFySGVhZCA9IE5VTEw7Cit2b2lkCVZhckRlZmluZShjaGFyICosIGNoYXIgKik7Cit2b2lkCVZh
+ckRlbGV0ZShjaGFyICopOworY2hhcgkqRXhwYW5kVmFycyhjaGFyICopOworCitjaGFyCSpWYXJG
+aWxlID0gTlVMTDsKK2ludAkJVmFyTGluZSA9IDA7CisKIHN0YXRpYyBjb25zdCBjaGFyIHVzYWdl
+X21lc3NhZ2VbXSA9CiAgICIlc1xuIgogICAiXG4iCkBAIC00NSw2ICs2MSw4IEBACiAgICItLWhl
+bHAgICAgICAgICAgOiBTaG93IG9wdGlvbnMuXG4iCiAgICItLXZlcnNpb24gICAgICAgOiBTaG93
+IGNvcHlyaWdodCBhbmQgdmVyc2lvbiBpbmZvcm1hdGlvbi5cbiIKICAgIi0tY29uZmlnIGZpbGUg
+ICA6IFJlYWQgY29uZmlndXJhdGlvbiBvcHRpb25zIGZyb20gZmlsZS5cbiIKKyAgIi0tc2V0IG5h
+bWUgdmFsdWU6IFNldCBjb25maWctdmFyaWFibGUuXG4iCisgICItLXVuc2V0IG5hbWUgICAgOiBV
+bnNldCBjb25maWctdmFyaWFibGUuXG4iCiAgICJcbiIKICAgIlR1bm5lbCBPcHRpb25zOlxuIgog
+ICAiLS1sb2NhbCBob3N0ICAgIDogTG9jYWwgaG9zdCBuYW1lIG9yIGlwIGFkZHJlc3MuXG4iCkBA
+IC02MTgsMTAgKzYzNiwzOCBAQAogfQogCiBzdGF0aWMgaW50Ci1hZGRfb3B0aW9uIChzdHJ1Y3Qg
+b3B0aW9ucyAqb3B0aW9ucywgaW50IGksIGNoYXIgKnAxLCBjaGFyICpwMiwgY2hhciAqcDMsCith
+ZGRfb3B0aW9uIChzdHJ1Y3Qgb3B0aW9ucyAqb3B0aW9ucywgaW50IGksIGNoYXIgKnAxLCBjaGFy
+ICpwMnIsIGNoYXIgKnAzciwKIAkgICAgY29uc3QgY2hhciogZmlsZSwgaW50IGxpbmUsIGludCBs
+ZXZlbCkKIHsKLSAgaWYgKCFmaWxlKQorICBjaGFyCSpwMiA9IHAycjsKKyAgY2hhcgkqcDMgPSBw
+M3I7CisKKyAgY2hhcglwZFsxMDI0XTsKKworCisgIGlmKGZpbGUpCisgICAgeworCisgICAgICBW
+YXJGaWxlID0gKGNoYXIqKWZpbGU7CisgICAgICBWYXJMaW5lID0gbGluZTsKKworICAgICAgaWYo
+cDJyKQorICAgICAgICB7CisgICAgICAgICAgbWVtc2V0KHBkLCAwLCBzaXplb2YocGQpKTsKKyAg
+ICAgICAgICBzdHJuY3B5KHBkLCBFeHBhbmRWYXJzKHAyciksIHNpemVvZihwZCkpOworICAgICAg
+ICAgIHAyID0gZ2NfbWFsbG9jKHN0cmxlbihwZCkgKyAxKTsKKyAgICAgICAgICBzdHJuY3B5KHAy
+LCBwZCwgc3RybGVuKHBkKSk7CisgICAgICAgIH0KKworICAgICAgaWYocDNyKQorICAgICAgICB7
+CisgICAgICAgICAgbWVtc2V0KHBkLCAwLCBzaXplb2YocGQpKTsKKyAgICAgICAgICBzdHJuY3B5
+KHBkLCBFeHBhbmRWYXJzKHAzciksIHNpemVvZihwZCkpOworICAgICAgICAgIHAzID0gZ2NfbWFs
+bG9jKHN0cmxlbihwZCkgKyAxKTsKKyAgICAgICAgICBzdHJuY3B5KHAzLCBwZCwgc3RybGVuKHBk
+KSk7CisgICAgICAgIH0KKyAgICB9CisgIGVsc2UKICAgICB7CiAgICAgICBmaWxlID0gIltDTUQt
+TElORV0iOwogICAgICAgbGluZSA9IDE7CkBAIC0xMDYyLDYgKzExMDgsMTYgQEAKICAgICAgIG9w
+dGlvbnMtPnBlcnNpc3RfbW9kZSA9IDE7CiAgICAgfQogI2VuZGlmCisgIGVsc2UgaWYgKHN0cmVx
+IChwMSwgInNldCIpICYmIHAyICYmIHAzKQorICAgIHsKKyAgICAgIGkgKz0gMjsKKyAgICAgIFZh
+ckRlZmluZShwMiwgcDMpOworICAgIH0KKyAgZWxzZSBpZiAoc3RyZXEgKHAxLCAidW5zZXQiKSAm
+JiBwMikKKyAgICB7CisgICAgICArK2k7CisgICAgICBWYXJEZWxldGUocDIpOworICAgIH0KICAg
+ZWxzZQogICAgIHsKICAgICAgIGlmIChmaWxlKQpAQCAtMTEwOSw0ICsxMTY1LDI5MCBAQAogCX0K
+ICAgICAgIGkgPSBhZGRfb3B0aW9uIChvcHRpb25zLCBpLCBwMSwgcDIsIHAzLCBOVUxMLCAwLCAw
+KTsKICAgICB9Cit9CisKKworLyoqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioKKyAqCisgKiBGdW5jdGlvbjog
+VmFyQWxsb2MoKQorICoKKyAqIFB1cnBvc2U6IGFsbG9jYXRlcyBtZW1vcnkgZm9yIGEgdmFyaWFi
+bGUKKyAqCisgKiBBcmd1bWVudHM6IG5vbmUKKyAqCisgKiBSZXR1cm5zOiBwb2ludGVyIHRvIG5l
+dyBWYXJFbnRyeQorICoKKyAqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKiovCitzdHJ1Y3QgVmFyRW50cnkgKgor
+VmFyQWxsb2MoKSB7CisJc3RydWN0IFZhckVudHJ5CSpuZXc7CisKKworCWlmKChuZXcgPSAoc3Ry
+dWN0IFZhckVudHJ5ICopbWFsbG9jKHNpemVvZihzdHJ1Y3QgVmFyRW50cnkpKSkgPT0gTlVMTCkg
+eworCQlmcHJpbnRmKHN0ZGVyciwgIkVSUk9SOiBjYW5ub3QgYWxsb2NhdGUgbWVtb3J5IGZvciBW
+YXJFbnRyeS4iKTsKKwkJZXhpdCgxKTsKKwl9CisKKwluZXctPm5hbWUgPSBOVUxMOworCW5ldy0+
+dmFsdWUgPSBOVUxMOworCW5ldy0+cHJldiA9IE5VTEw7CisJbmV3LT5uZXh0ID0gTlVMTDsKKwor
+CXJldHVybihuZXcpOworfQorCisKKy8qKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqCisgKgorICogRnVuY3Rp
+b246IFZhckRlZmluZShjaGFyICosIGNoYXIgKikKKyAqCisgKiBQdXJwb3NlOiBkZWZpbmUgdGhl
+IGNvbnRlbnRzIG9mIGEgdmFyaWFibGUKKyAqCisgKiBBcmd1bWVudHM6IG5hbWUgPT4gdGhlIG5h
+bWUgb2YgdGhlIHZhcmlhYmxlCisgKiAgICAgICAgICAgIHZhbHVlID0+IHRoZSBjb250ZW50cyBv
+ZiB0aGUgdmFyaWFibGUKKyAqCisgKiBSZXR1cm5zOiB2b2lkIGZ1bmN0aW9uCisgKgorICoqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKi8KK3ZvaWQKK1ZhckRlZmluZShjaGFyICpuYW1lLCBjaGFyICp2YWx1ZSkg
+eworCXN0cnVjdCBWYXJFbnRyeQkqcDsKKwlpbnQJCWZvdW5kID0gMDsKKworCisJaWYoISBWYXJI
+ZWFkKSB7CisJCXAgPSBWYXJBbGxvYygpOworCQlwLT5uYW1lID0gc3RyZHVwKG5hbWUpOworCQlw
+LT52YWx1ZSA9IHN0cmR1cCh2YWx1ZSk7CisJCXAtPnByZXYgPSBwOworCQlwLT5uZXh0ID0gcDsK
+KworCQlWYXJIZWFkID0gcDsKKworCQlyZXR1cm47CisJfQorCisJcCA9IFZhckhlYWQ7CisJZG8g
+eworCQlpZihzdHJjYXNlY21wKHAtPm5hbWUsIG5hbWUpID09IDApIHsKKwkJCWZvdW5kID0gMTsK
+KwkJCWJyZWFrOworCQl9CisKKwkJcCA9IHAtPm5leHQ7CisJfSB3aGlsZShwICE9IFZhckhlYWQp
+OworCisJaWYoZm91bmQpIHsKKwkJaWYocC0+dmFsdWUpCisJCQlmcmVlKHAtPnZhbHVlKTsKKwor
+CQlwLT52YWx1ZSA9IHN0cmR1cCh2YWx1ZSk7CisJfSBlbHNlIHsKKwkJcCA9IFZhckFsbG9jKCk7
+CisJCXAtPm5hbWUgPSBzdHJkdXAobmFtZSk7CisJCXAtPnZhbHVlID0gc3RyZHVwKHZhbHVlKTsK
+KwkJcC0+cHJldiA9IFZhckhlYWQ7CisJCXAtPm5leHQgPSBWYXJIZWFkLT5uZXh0OworCQlwLT5u
+ZXh0LT5wcmV2ID0gcDsKKwkJVmFySGVhZC0+bmV4dCA9IHA7CisJfQkKK30KKworCisvKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKgorICoKKyAqIEZ1bmN0aW9uOiBWYXJEZWxldGUoY2hhciAqKQorICoKKyAq
+IFB1cnBvc2U6IGRlbGV0ZXMgYSBkZWZpbmVkIHZhcmlhYmxlCisgKgorICogQXJndW1lbnRzOiBu
+YW1lID0+IHRoZSBuYW1lIG9mIHRoZSB2YXJpYWJsZQorICoKKyAqIFJldHVybnM6IHZvaWQgZnVu
+Y3Rpb24KKyAqCisgKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqLwordm9pZAorVmFyRGVsZXRlKGNoYXIgKm5h
+bWUpIHsKKwlzdHJ1Y3QgVmFyRW50cnkJKnA7CisKKworCWlmKCEgVmFySGVhZCkKKwkJcmV0dXJu
+OworCisJcCA9IFZhckhlYWQ7CisJZG8geworCQlpZihzdHJjYXNlY21wKHAtPm5hbWUsIG5hbWUp
+ID09IDApIHsKKwkJCXAtPnByZXYtPm5leHQgPSBwLT5uZXh0OworCQkJcC0+bmV4dC0+cHJldiA9
+IHAtPnByZXY7CisKKwkJCWlmKFZhckhlYWQgPT0gcCkKKwkJCQlpZigoVmFySGVhZCA9IHAtPm5l
+eHQpID09IHApCisJCQkJCVZhckhlYWQgPSBOVUxMOworCisJCQlpZihwLT5uYW1lKQorCQkJCWZy
+ZWUocC0+bmFtZSk7CisKKwkJCWlmKHAtPnZhbHVlKQorCQkJCWZyZWUocC0+dmFsdWUpOworCisJ
+CQlmcmVlKHApOworCisJCQlyZXR1cm47CisJCX0KKworCQlwID0gcC0+bmV4dDsKKwl9IHdoaWxl
+KHAgIT0gVmFySGVhZCk7Cit9CisKKworLyoqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioKKyAqCisgKiBGdW5j
+dGlvbjogVmFyR2V0KGNoYXIgKikKKyAqCisgKiBQdXJwb3NlOiBnZXQgdGhlIGNvbnRlbnRzIG9m
+IGEgdmFyaWFibGUKKyAqCisgKiBBcmd1bWVudHM6IG5hbWUgPT4gdGhlIG5hbWUgb2YgdGhlIHZh
+cmlhYmxlCisgKgorICogUmV0dXJuczogY2hhciAqIHRvIGNvbnRlbnRzIG9mIHZhcmlhYmxlIG9y
+IE5VTEwKKyAqCisgKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqLworY2hhciAqCitWYXJHZXQoY2hhciAqbmFt
+ZSkgeworCXN0cnVjdCBWYXJFbnRyeQkqcDsKKworCisJaWYoISBWYXJIZWFkKQorCQlyZXR1cm4o
+TlVMTCk7CisKKwlwID0gVmFySGVhZDsKKwlkbyB7CisJCWlmKHN0cmNhc2VjbXAocC0+bmFtZSwg
+bmFtZSkgPT0gMCkKKwkJCXJldHVybihwLT52YWx1ZSk7CisKKwkJcCA9IHAtPm5leHQ7CisJfSB3
+aGlsZShwICE9IFZhckhlYWQpOworCisJcmV0dXJuKE5VTEwpOworfQorCisKKy8qKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqCisgKgorICogRnVuY3Rpb246IEV4cGFuZFZhcnMoY2hhciAqKQorICoKKyAqIFB1
+cnBvc2U6IGV4cGFuZCBhbGwgdmFyaWFibGVzIGluIGEgc3RyaW5nCisgKgorICogQXJndW1lbnRz
+OiBzdHJpbmcgPT4gdGhlIG5hbWUgb2YgdGhlIHZhcmlhYmxlCisgKgorICogUmV0dXJuczogY2hh
+ciAqIHRvIHRoZSBleHBhbmRlZCBzdHJpbmcKKyAqCisgKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqLworY2hh
+ciAqCitFeHBhbmRWYXJzKGNoYXIgKnN0cmluZykgeworCXN0YXRpYyBjaGFyCWVzdHJpbmdbMTAy
+NF07CisJY2hhcgkJcmF3dmFybmFtZVsxMjhdLAorCQkJdmFybmFtZVsxMjhdLAorCQkJdmFyYXV4
+WzEyOF0sCisJCQl2YXJidWZmZXJbMTI4XSwKKwkJCXZhcm1vZGlmaWVyLAorCQkJKnZhcmNvbnRl
+bnRzOworCWludAkJdmFybmFtZV9jb21wbGV0ZWQsCisJCQljLCBpLCBqLCBpdiwganYsCisJCQls
+X3N0cmluZywKKwkJCW5hbWVfb25seTsKKworCisJaWYoIXN0cmluZyB8fCAhICpzdHJpbmcgfHwg
+ISBzdHJjaHIoc3RyaW5nLCAnJCcpKQorCQlyZXR1cm4oc3RyaW5nKTsKKworCisJYnplcm8oZXN0
+cmluZywgc2l6ZW9mKGVzdHJpbmcpKTsKKworCWkgPSBqID0gMDsKKwlsX3N0cmluZyA9IHN0cmxl
+bihzdHJpbmcpOworCXdoaWxlKGkgPCBsX3N0cmluZyAmJiBqIDwgc2l6ZW9mKGVzdHJpbmcpIC0g
+MSkgeworCQljID0gc3RyaW5nW2krK107CisJCWlmKGMgPT0gJyQnKSB7CisJCQliemVybyhyYXd2
+YXJuYW1lLCBzaXplb2YocmF3dmFybmFtZSkpOworCQkJdmFybmFtZV9jb21wbGV0ZWQgPSAwOwor
+CQkJbmFtZV9vbmx5ID0gMTsKKwkJCWl2ID0gaTsKKwkJCWp2ID0gMDsKKworCQkJaWYoc3RyaW5n
+W2ldID09ICcoJykgeworCQkJCW5hbWVfb25seSA9IDA7CisJCQkJaXYgPSBpICsgMTsKKwkJCX0K
+KworCQkJd2hpbGUoIXZhcm5hbWVfY29tcGxldGVkICYmIGl2IDwgbF9zdHJpbmcgJiYganYgPCBz
+aXplb2YocmF3dmFybmFtZSkgLSAxKSB7CisJCQkJYyA9IHN0cmluZ1tpdisrXTsKKwkJCQlpZigo
+bmFtZV9vbmx5ICYmICEoaXNhbG51bShjKSB8fCBjID09ICdfJykpIHx8ICghIG5hbWVfb25seSAm
+JiBjID09ICcpJykpIHsKKwkJCQkJdmFybmFtZV9jb21wbGV0ZWQgPSAxOworCisJCQkJCWlmKG5h
+bWVfb25seSkKKwkJCQkJCWl2LS07CisJCQkJfSBlbHNlIHsKKwkJCQkJcmF3dmFybmFtZVtqdisr
+XSA9IGM7CisJCQkJfQorCQkJfQorCisJCQlpZih2YXJuYW1lX2NvbXBsZXRlZCkgeworCQkJCWNo
+YXIJKnA7CisKKwkJCQlpID0gaXY7CisKKwkJCQl2YXJjb250ZW50cyA9IE5VTEw7CisKKwkJCQli
+emVybyh2YXJuYW1lLCBzaXplb2YodmFybmFtZSkpOworCQkJCWJ6ZXJvKHZhcmF1eCwgc2l6ZW9m
+KHZhcmF1eCkpOworCQkJCXZhcm1vZGlmaWVyID0gJyAnOworCisJCQkJaWYoKHAgPSBzdHJjaHIo
+cmF3dmFybmFtZSwgJzonKSkpIHsKKwkJCQkJc3RybmNweSh2YXJuYW1lLCByYXd2YXJuYW1lLCBw
+IC0gcmF3dmFybmFtZSk7CisKKwkJCQkJaWYoc3RybGVuKHApID49IDIpIHsKKwkJCQkJCXZhcm1v
+ZGlmaWVyID0gKihwICsgMSk7CisJCQkJCQlzdHJjcHkodmFyYXV4LCBwICsgMik7CisJCQkJCX0K
+KwkJCQl9IGVsc2UKKwkJCQkJc3RyY3B5KHZhcm5hbWUsIHJhd3Zhcm5hbWUpOworCQkJCQkKKwkJ
+CQliemVybyh2YXJidWZmZXIsIHNpemVvZih2YXJidWZmZXIpKTsKKworCQkJCXZhcmNvbnRlbnRz
+ID0gVmFyR2V0KHZhcm5hbWUpOworCisJCQkJc3dpdGNoKHZhcm1vZGlmaWVyKSB7CisJCQkJY2Fz
+ZSAnLSc6CisJCQkJCWlmKCEgdmFyY29udGVudHMgfHwgISBzdHJsZW4odmFyY29udGVudHMpKQor
+CQkJCQkJdmFyY29udGVudHMgPSB2YXJhdXg7CisJCQkJCWJyZWFrOworCisJCQkJY2FzZSAnPyc6
+CisJCQkJCWlmKCEgdmFyY29udGVudHMgfHwgISBzdHJsZW4odmFyY29udGVudHMpKSB7CisgICAg
+ICAgICAgICAgICAgIAkJZnByaW50ZihzdGRlcnIsICJFUlJPUiBMaW5lICVzICglZCk6ICIsIChW
+YXJGaWxlID8gVmFyRmlsZSA6ICI8c3RkaW4+IiksIFZhckxpbmUpOworCisJCQkJCQlpZihzdHJs
+ZW4odmFyYXV4KSkKKyAgICAgICAgICAgICAgICAgCQkJZnByaW50ZihzdGRlcnIsICIlc1xuIiwg
+dmFyYXV4KTsKKwkJCQkJCWVsc2UKKyAgICAgICAgICAgICAgICAgCQkJZnByaW50ZihzdGRlcnIs
+ICJVbmRlZmluZWQgdmFyaWFibGUgXCIlc1wiXG4iLCB2YXJuYW1lKTsKKworCQkJCQkJZXhpdCgx
+KTsKKwkJCQkJfQorCisJCQkJCWJyZWFrOworCQkJCX0KKworCQkJCWlmKHZhcmNvbnRlbnRzKSB7
+CisJCQkJCWludAlsX3ZhcmNvbnRlbnRzID0gc3RybGVuKHZhcmNvbnRlbnRzKTsKKworCQkJCQlp
+diA9IDA7CisJCQkJCXdoaWxlKGl2IDwgbF92YXJjb250ZW50cyAmJiBqIDwgc2l6ZW9mKGVzdHJp
+bmcpIC0gMSkKKwkJCQkJCWVzdHJpbmdbaisrXSA9IHZhcmNvbnRlbnRzW2l2KytdOworCQkJCX0K
+KwkJCX0gZWxzZQorCQkJCWVzdHJpbmdbaisrXSA9ICckJzsKKwkJfSBlbHNlCisJCQllc3RyaW5n
+W2orK10gPSBjOworCX0KKworCXJldHVybihlc3RyaW5nKTsKIH0K
+
+--Multipart_Tue__11_Mar_2003_20:33:18_+0100_0833ffa8--
 
