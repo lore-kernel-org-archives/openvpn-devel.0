@@ -1,10 +1,7 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] RPM build of 2.0-rc16 fails on MandrakeSoft
-In-Reply-To: <42223300.1050402@...355...>
-Message-ID: <Pine.LNX.4.58.0502271404010.23437@...41...>
-References: <4220EC61.1000005@...355...> <Pine.LNX.4.58.0502270152590.23437@...41...>
- <42220B98.2010001@...355...> <42223300.1050402@...355...>
+Message-ID: <1109580659.4222db737a0b4@...358...>
+From: Bram <openvpn@...357...>
 MIME-Version: 1.0
+Subject: [Openvpn-devel] Prefixed bytes
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,35 +12,30 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Feb 27 19:23:54 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Date: Mon Feb 28 00:54:04 2005
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 8bit
-To: TomWalsh <tomw-junk01@...355...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-> I will let the package maintainer of liblzo1 of the problem of it not 
-> saying it provides "liblzo" while the liblzo1-devel does say that.
-> 
-> The correct statement which works around the Mandrake 10.1 problem would be:
-> 
-> ============================ fix ===============================
-> %if "%{_vendor}" == "MandrakeSoft"
-> %{!?without_lzo:BuildRequires: liblzo1-devel >= 1.07}
-> %{!?without_lzo:Requires:      liblzo1       >= 1.07}
-> %else
-> %{!?without_lzo:BuildRequires: lzo-devel >= 1.07}
-> %{!?without_lzo:Requires:      lzo       >= 1.07}
-> %endif
-> ============================ snip ==============================
-> 
-> Either way, there would still be an issue with Mandrake as I see that 
-> the lzo package of SuSE 9.1 provides "lzo" not "liblzo".
+Hello,
 
-The problem I have with this patch is that it assumes that Mandrake will
-continue to follow the broken behavior.  The ideal solution would be one
-which doesn't break when Mandrake gets around to using the same standard
-LZO RPM spec which everyone else is using.
 
-James
+According to this message:
+http://sourceforge.net/mailarchive/message.php?msg_id=10639223 OpenVPN adds a
+cleartext uint16_t length word before every packet, now my question is this: is
+it always the same word? where is it defined/calculated etc?
 
+
+I tried figuring it out by looking at logs of tcpdump but I was unluky, also
+taking a look at the source code turned up some results but not quite what I
+was looking for...
+
+
+I want/need to know this to be able to use l7-filter (an extension to iptables
+to be able to filter on the data of a package)...
+
+
+Thanks,
+
+Bram
 
