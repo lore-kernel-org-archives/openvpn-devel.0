@@ -1,7 +1,7 @@
-Message-ID: <40F41175.9030600@...83...>
+Message-ID: <40F43041.1050001@...83...>
 From: webmaster <uni-webmaster@...83...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Modifying Proxy.c
+Subject: [Openvpn-devel] Change Connect to POST/GET in Proxy.c
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,7 +12,7 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Jul 13 09:45:00 2004
+Date: Tue Jul 13 11:56:03 2004
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
