@@ -1,6 +1,7 @@
-From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1081582648.9602@...41...>
-Subject: [Openvpn-devel] OpenVPN 2.0-test20 released
+Message-ID: <40856D7E.7090907@...199...>
+From: Mike Auty <m.auty@...199...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] OpenVPN 2.0 (test23) and logging
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -11,42 +12,27 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Apr 10 00:38:02 2004
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-users@lists.sourceforge.net
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Tue Apr 20 11:37:01 2004
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-This latest 2.0 beta has some cool new features including tap interface
-support and customization of configuration based on the client certificate
-common name.
-
-The man page on the web site now shows all new 2.0 options, and the release
-notes on the web site shows sample config files for tap-style tunnels.
-
-2004.04.10 -- Version 2.0-test20
-
-* --mode server capability now works with either tun
-  or tap interfaces.  When used with tap interfaces,
-  OpenVPN will internally bridge all client tap
-  interfaces with the server tap interface.
-* Connecting clients can now have a client-specific
-  configuration on the server, based on the client
-  common name embedded in the client certificate.
-  See --client-config-dir and --client-connect.
-  These options can be used to configure client-specific
-  routes.
-* Added an option --client-to-client that enables
-  internal client-to-client routing or bridging.
-  Otherwise, clients will only "see" the server,
-  not other connected clients.
-* Fixed bug in route scheduling which would have caused
-  --mode server to not work on Windows in test18
-  and test19 with the sample config file.
-* Man page is up to date with all new options.
-* OpenVPN 2.0 release notes on web site updated
-  with tap-style tunnel examples.
-
-James
+Hi James,
+     First off, great program, it's really amazing what you and the 
+other developers have achieved.
+     Secondly the new 2.0 seems to be working out quite well, but I ran 
+into a little difficulty.  The problem I was having turned out to be a 
+firewall misconfiguration (read something I should have checked at the 
+beginning, hehe), but whilst I was trying to debug a connection that 
+just wouldn't work I found it very difficult in the server logs to 
+differentiate messages from one connected client and another.
+     I'm guessing this is just a hangover from openvpn 1 having been 
+single connection only, but it would be really helpful to have some kind 
+of identifier that ties all the log messages relating to a particular 
+connection (and I guess one for messages that haven't been associated 
+with a particular connection yet).
+     Anyway, thanks again for a fantastic piece of software, I look 
+forward to trying out the future versions as soon as they get released!
+     Mike  5:)
 
 
