@@ -1,11 +1,6 @@
-Subject: Re: [Openvpn-devel] New feature: --ifconfig for tap devices
-From: Jan Johansson <jan.johansson@...1...>
-In-Reply-To: <20030903104904.GD27875@...33...>
-References: <twig.1062580090.46409@...41...>
-	 <20030903104904.GD27875@...33...>
-Content-Type: multipart/signed; micalg=pgp-sha1; protocol="application/pgp-signature"; boundary="=-DBlLtVsKgZVEFOTqCNNv"
-Message-Id: <1062682176.1372.1.camel@...2...>
-Mime-Version: 1.0
+From: "James Yonan" <jim@...41...>
+Message-ID: <twig.1062740798.74062@...41...>
+Subject: [Openvpn-devel] New feature proposal:  --route option
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -16,50 +11,32 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Sep  4 06:32:21 2003
-To: Matthias Andree <ma+ovpnd@...31...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---=-DBlLtVsKgZVEFOTqCNNv
+Date: Thu Sep  4 22:48:03 2003
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
-> > What I need right now in order to make the TAP version of --ifconfig wo=
-rk
-> > correctly, is the correct ifconfig command syntax for setting the IP ad=
-dress
-> > and netmask of a TAP device, on all the OSes which OpenVPN supports.  I=
-'ve
-> > already coded templates for Linux and Windows, but I still need to know=
- the
-> > appropriate ifconfig syntax for FreeBSD, OpenBSD, NetBSD, Solaris, and =
-Mac OS
-> > X, with respect to setting the IP/netmask on a TAP device.
->=20
-> ## FreeBSD 4.9-PRERELEASE:
->=20
-> ifconfig tap0 inet 10.11.12.42 netmask 255.0.0.0 up
->=20
-> (inet appears to be optional, so the Linux syntax, "ifconfig tap0
-> 10.11.12.42 netmask 255.0.0.0 up", should also work.
+I would like to implement a --route option that will be a proxy for the route
+command, similar to the way that the --ifconfig option is a proxy for the
+ifconfig command.
 
-The above works for OpenBSD too, but do mind that openbsd usually dont come
-with tap drivers, I'm re-porting an older port from FreeBSD to current Open,
-and on my box the above works the same way as in Free.
+The goal would be to present a kind of least-common-denominator route
+functionality which is basic enough to be portable across OpenVPN's platform
+space.
 
+I'm thinking of a syntax such as
 
---=-DBlLtVsKgZVEFOTqCNNv
-Content-Type: application/pgp-signature; name=signature.asc
-Content-Description: This is a digitally signed message part
+  --route network netmask gateway
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.2.2 (GNU/Linux)
+I'm looking for a syntax that will cover basic routing -- for more advanced
+usage, one can always write a script.
 
-iD8DBQA/Vz5ANJYxu+mj1OkRAh2oAJ4lITW2Olj9NyEdKEjOzJxV1pv0VQCgxjof
-DPPhEL9avfdYROHtY4pNyco=
-=lpFW
------END PGP SIGNATURE-----
+The overall goal is to simplify configuration by getting the common operations
+out of --up scripts and into the OpenVPN config file where they will be
+portable and easier to support.
 
---=-DBlLtVsKgZVEFOTqCNNv--
+Comments?
+
+James
 
 
