@@ -1,7 +1,9 @@
+From: Matthias Andree <ma+ovpnd@...31...>
 Subject: Re: [Openvpn-devel] CVS
-From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1066095913.35405@...41...>
-In-Reply-To: <E1A80Yw-0000lA-Gb@...110...>
+Message-ID: <20031014093053.GB3128@...33...>
+References: <E1A80Yw-0000lA-Gb@...110...> <twig.1066095913.35405@...41...>
+Mime-Version: 1.0
+In-Reply-To: <twig.1066095913.35405@...41...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -12,33 +14,24 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Oct 13 19:33:09 2003
-Content-Type: text/plain; charset="utf-8"
+Date: Tue Oct 14 02:31:09 2003
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: peter@...115..., openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Peter Sandström <peter@...115...> said:
+On Tue, 14 Oct 2003, James Yonan wrote:
 
-> Hey,
+> cvs -d:pserver:anonymous@...116...:/cvsroot/openvpn login
 > 
-> What's the current status of the CVS tree? I can't login using anonymous
-> access.
-> 
-> I was planning on implementing multiple-connections-to-one-openvpn-instance
-> since I need it for a usecase.
-> Not beeing able to checkout the source complicates this though :)
+> cvs -z3 -d:pserver:anonymous@...116...:/cvsroot/openvpn co -r EXP15
+> openvpn
 
-I just checked, and it looks like the OpenVPN anonymous CVS is back online,
-and the 24 hour delay seems to have vanished.
+Ah, that beta stuff is on a side branch, with "-r EXP15" being the
+magic. I was wondering why the trunk hadn't changed :-)
 
-So these commands should set you up for working on the 1.5 beta series
-(branch=EXP15):
+-- 
+Matthias Andree
 
-cvs -d:pserver:anonymous@...116...:/cvsroot/openvpn login
-
-cvs -z3 -d:pserver:anonymous@...116...:/cvsroot/openvpn co -r EXP15
-openvpn
-
-James
-
+Encrypt your mail: my GnuPG key ID is 0x052E7D95
 
