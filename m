@@ -1,7 +1,7 @@
-Message-Id: <200305080633.h486XC111141@...41...>
-Subject: Re: [Openvpn-devel] an idea for openvpn..
-From: "James Yonan" <jim@...41...>
-In-Reply-To: <Pine.LNX.4.50.0305071032410.17462-100000@...48...>
+From: Alberto Gonzalez Iniesta <agi@...5...>
+Message-ID: <20030507190341.GA922@...30...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Fwd: Bug#182020: openvpn needs dynamic choice on HAVE_LINUX_IF_TUN_H
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -12,58 +12,72 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed May  7 23:41:05 2003
-Content-Type: text/plain; charset="utf-8"
+Date: Wed May  7 23:52:13 2003
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Aaron Sethman <androsyn@...45...>, openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: OpenVPN devel <openvpn-devel@lists.sourceforge.net>
 
-Aaron,
+Hi all, 
 
-I've found that the linux scheduler on 2.4 does a fairly good job at giving
-openvpn the CPU that it needs, even on a more heavily loaded system.  When
-openvpn is forwarding tunnel packets, it is essentially i/o bound, and as such
-gets a priority boost.  When TLS keys are being negotiated, however, openvpn
-becomes a CPU hog for as much as several seconds, so you wouldn't want to lock
-up the machine during this period, especially given the fact that TLS
-renegotiations are not in the critical path of tunnel packet forwarding
-operations.  Overall, it's not clear to me that we need more scheduling
-flexibility than --nice or --nice-work can give us.  And nice scheduling has
-the safety factor as well of never completely locking up the machine, even if
-something of high priority does a CPU grab.
+Sorry for the delay forwarding this email, but I don't find time to 
+breath lately (and thus Oxygen does not make it to my brain :)
 
-James
-
-Aaron Sethman <androsyn@...45...> said:
-
-> 
-> One of the things that I just thought about is, that we can probably have
-> openvpn call sched_setscheduler() using something like SCHED_RR.  This
-> might be of more use than just renicing the process.  Considering we are
-> in a fairly performance critical path for a userspace process this would
-> seem to make sense.  Not sure how to deal with SCHED_RR wrt to threads
-> though.  On my systems I haven't noticed much of a difference, when doing
-> this, but my systems aren't heavily loaded either.
-> 
-> Thoughts, comments?
-> 
-> -Aaron
-> 
-> 
-> -------------------------------------------------------
-> Enterprise Linux Forum Conference & Expo, June 4-6, 2003, Santa Clara
-> The only event dedicated to issues related to Linux enterprise solutions
-> www.enterpriselinuxforum.com
-> 
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> 
+Hope it's an easy one.
 
 
+----- Forwarded message from Robert de Bath <robert$@mayday.cix.co.uk> -----
+
+From: Robert de Bath <robert$@mayday.cix.co.uk>
+Reply-To: Robert de Bath <robert$@mayday.cix.co.uk>, 182020@...40...
+To: submit@...40...
+Subject: Bug#182020: openvpn needs dynamic choice on HAVE_LINUX_IF_TUN_H
+Date: Sat, 22 Feb 2003 11:03:19 +0000 (GMT)
+X-URL: <http://www.cix.co.uk/~mayday>
+X-Dev86-Version: 0.16.10
+Reply-By: 01 jan 2001 00:00:00
+X-Message-Flag: Linux: The choice of a GNU generation.
+Return-Receipt-To: receipts@...82...
+X-Spam-Level: 
+X-SpamProbe: GOOD 0.0000000 f10cd08f2b096e6bf59bcfea5e2f80a4
+X-Spam-Status: No, hits=-4.5 required=5.0 tests=SENT_BY_BTS,FORGED_RCVD_FOUND version=2.20
+X-Spam-Level: 
+
+Package: openvpn
+Version: 1.3.0-2
+
+When compiled with 2.4.* kernel headers (libc6-dev 2.2.5-14.3 headers)
+it detects this header file and defines HAVE_LINUX_IF_TUN_H. This allow
+openvpn to work correctly with 2.4.18 kernels BUT it stops it working
+with 2.2.X kernels at all (with or without the tun kernel module from
+sourceforge)
+
+Options are:
+
+1) Seperate compiles for 2.2.X and 2.4+ kernels, both binaries in the .deb
+
+2) Patch tun.c to first check if /dev/net/tun exists and works before
+   falling back to the open_tun_generic(..) function if it doesn't.
+
+I'm currently successfully using openvpn between a 2.2.19 and 2.4.18
+kernel using the tun0 tunnel and the driver from sourceforge on the 2.2.19
+machine. (No reboot required to install the tun0 driver) The 2.4.18
+openvpn is standard, the 2.2.19 has HAVE_LINUX_IF_TUN_H undefined.
+
+Both machines are woody with libc6/testing.
 
 -- 
+Rob.                          (Robert de Bath <robert$ @ debath.co.uk>)
+                                       <http://www.cix.co.uk/~mayday>
+Google Homepage:   http://www.google.com/search?btnI&q=Robert+de+Bath
 
 
+----- End forwarded message -----
 
+-- 
+Alberto Gonzalez Iniesta   | BOFH excuse #2:
+agi@(agi.as|debian.org)    | solar flares
+Encrypted mail preferred   | 
+
+Key fingerprint = 9782 04E7 2B75 405C F5E9  0C81 C514 AF8E 4BA4 01C3
 
