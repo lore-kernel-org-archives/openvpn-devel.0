@@ -1,7 +1,6 @@
 From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1063894170.44998@...41...>
-In-Reply-To: <002101c37d68$afaac120$070116ac@...107...>
-Subject: [Openvpn-devel] Re: Beta naming convention?
+Message-ID: <twig.1064398659.1177@...41...>
+Subject: [Openvpn-devel] OpenVPN pre-beta8 is ready for testing.
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -12,53 +11,74 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Sep 18 07:11:09 2003
+Date: Wed Sep 24 03:19:02 2003
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: John Conneely <john@...106...>, James Yonan <jim@...41...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-John Conneely <john@...106...> said:
+I have a new beta release available with some very cool new features:
 
-> Hi James!
-> 
-> First, thanks for such a great product!  I've been using openvpn-1.3.2 on a
-> few Mandrake boxes for a little under a year now, and it's been bulletproof.
+* The TAP-Win32 driver on Windows can now emulate a "tun" point-to-point IP
+interface.  This completes the "compatibility matrix" meaning that OpenVPN on
+Windows can now talk to OpenVPN on any other platform, including those which
+do not have a "tap" driver available.
 
-Cool!
+* The --ifconfig option now works for both "tun" and "tap" interfaces.
 
-> Now I'd like to try out windows support, so I thought I'd upgrade to your
-> latest beta.  (I'm not sure if that's necessary on my linux boxes, but I
-> thought it might be nice to try it out anyway.)
+* --ifconfig also works now on Windows in the same way that it works on other
+OSes (On Windows it is a proxy for the "netsh" command).
 
-While it's possible for the windows version to talk to older linux versions,
-the configuration is somewhat simpler if you stick to the 1.5 beta series on
-both sides.
+* Added a --route option that provides a platform-independent proxy to the
+universal (but syntactically incompatible) route commands of the major OSes. 
+Still need route cases for NetBSD and Mac OS X.
 
-> The problem is that I
-> install everything as RPMs on my Mandrake box, and I got an error when I
-> used the rpmbuild-tb [tarball] command.  This seems to be because you use a
-> dash character "-" in the version number.  I was able to get around this by
-> making the dash character into an underscore, setting version to "1.5_beta7"
-> in openvpn.spec.  I also made the directory name and tar ball use the same
-> convention.  It works fine on the box I upgraded, even working with my other
-> openvpn-1.3.2 installations.
-> 
-> Anyway, I wanted to suggest that you avoid using dash characters in future
-> beta version numbers.
+* Added a --route-up script callback which can optionally be executed n
+seconds after connection establishment.
 
-I'm somewhat reluctant to change the naming convention just because one tool
-doesn't like dashes.  I don't understand why rpmbuild would complain about
-such a universal convention?  After all, a great number of open source
-packages use dashes in the naming convention, especially when designating a
-"pre" or "beta" suffix.  Take the Linux kernel itself for example.  How does
-rpmbuild deal with that?
+* A large number of useful parameters are now made available to scripts
+through environmental variables.
 
-The problem with changing version number conventions midstream is that it
-creates confusion as well as discontinuity with the archived past.  I would
-rather create a workaround that pacifies rpmbuild while keeping the current
-naming convention.  Why not patch rpmbuild to accept rational naming conventions?
+* Added the --mssfix option to control TCP segment size.  --mssfix when used
+in tandem with --fragment may turn out to be the solution we have been looking
+for on the MTU front, where routers and firewalls that block Path MTU
+Discovery have been wreaking havoc with IP encapsulation.  --mssfix lowers the
+TCP packet size by mangling TCP SYN packets (just like iptables can do), and
+--fragment does internal fragmentation on non-TCP packets.  They both work
+together quite well.
+
+* Significantly reworked the TAP-Win32 driver to bring it up to SMP standards.
+
+* All new features are documented in the man page or the Win32 install notes.
+
+There are few caveats as well to be aware of:
+
+* I have experienced stalls in the Linux tap driver that seem to be
+exacerbated when the TCP MSS is lowered using --mssfix.  All analysis so far
+has pointed to the problem being in the Linux kernel.  The problem only occurs
+on tap devices, not tun devices.
+
+* There are a couple points to be aware of when using the new --dev tun
+capability on Linux:  all ifconfig endpoint pairs must be the two usable
+addresses in a /30 subnet.  The Windows install notes have more details about
+this.  Also, --dev tun on Windows uses a --tun-mtu setting of 1500, so the
+other side of the connection (if it is not also on Windows) must explicitly
+have --tun-mtu 1500 in its config.
+
+* The default value of --tun-mtu-extra was lowered from 64 to 32.  This
+parameter describes the extra space over and above the MTU value, used for
+things like the ethernet header.  If you are talking between different
+versions of OpenVPN, and using TLS mode, you will need to explicitly state
+--tun-mtu-extra 32 on both sides of the connection.
+
+This is a limited release, primarily aimed at beta testers, so please report
+experiences, both positive and negative.  If it tests well, it should be
+promoted to 1.5-beta8 shortly.
+
+Download:
+
+http://openvpn.sourceforge.net/beta/
 
 James
+
 
 
