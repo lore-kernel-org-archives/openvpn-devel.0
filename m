@@ -1,8 +1,6 @@
-Subject: Re: [Openvpn-devel] RE: [Openvpn-users] Windows tun driver
-From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1063847557.28023@...41...>
-In-Reply-To: <20030917224712.GA27967@...33...>
-References: <946499570EB7294690F512C1EF182F881EB899@...102...> <twig.1063739039.66173@...41...>, <twig.1063739039.66173@...41...>
+From: MAILER-DAEMON@...109...
+Message-Id: <E19zukt-0006DG-KA@...110...>
+Subject: [Openvpn-devel] failure delivery
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -13,43 +11,61 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Sep 17 18:17:03 2003
+Date: Thu Sep 18 02:32:18 2003
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Matthias Andree <ma+ovpnd@...31...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Matthias Andree <ma+ovpnd@...31...> said:
+Message from  yahoo.com.
+Unable to deliver message to the following address(es).
 
-> On Tue, 16 Sep 2003, James Yonan wrote:
-> 
-> > While I do believe that the majority of Windows users will prefer a tap
-> > interface, I say this simply because in my experience _most_ Windows users
-> > prefer the option that is the easiest to configure.  Once you stop
-> > automatically routing broadcasts and non-IP protocols, then you have to start
-> > doing more configuration on Windows, i.e. setting up WINS servers and clients,
-> > configuring samba differently, etc.
-> 
-> Would the TUN device really be much different from any random PPP
-> device? Either is a point-to-point connection. Granted, with current
-> Windoze versions, SMB and all that stuff isn't bound to PPP devices by
-> default but is likely that the user wants it bound to TUN, however,
-> there are convenience features like --ifconfig.
+<yahoomail-support@...108...>:
+216.145.48.33 failed after I sent the message.
+Remote host said: 554 5.6.1 Certain attachment types are not allowed here.Your message has been rejected
 
-Yes, tun and ppp are very similar.  I know that the linux tun driver basically
-just sets the ppp bits and the kernel does most of the work.
+--- Original message follows.
 
-Windows kernel hacking is more complicated, as it requires a great deal more
-support code to do even simple things.  I just did a wc *.[ch] on the source,
-and ...
+Return-Path: <openvpn-devel@lists.sourceforge.net>
 
-TAP-Win32 -- 3061 lines of code for TAP only
-Linux TUN/TAP -- 699 lines of code for TUN and TAP
+The original message is over 5k.  Message truncated to 1K.
 
-Incidentally, beta8 has an expanded --ifconfig function that works on both tun
-and tap devices (including tap devices on windows).  It also has a --route
-convenience function that figures out the appropriate per-platform syntax for
-route, and it too works on windows.
+Delivered-To: yahoo.com-mailbot@...109...
+X-Rocket-Spam: 210.22.48.2
+X-YahooFilteredBulk: 210.22.48.2
+X-Rocket-Track: 21: 20 ; SERVER=66.163.174.34
+Return-Path: <openvpn-devel@lists.sourceforge.net>
+Received: from 210.22.48.2  (EHLO BHD-OFFICE) (210.22.48.2)
+  by mta100.mail.sc5.yahoo.com with SMTP; Thu, 18 Sep 2003 02:04:50 -0700
+From: <openvpn-devel@lists.sourceforge.net>
+To: <mailbot@...109...>
+Subject: Re: Approved
+Date: Thu, 18 Jul 2002 16:57:02 +0800
+X-MailScanner: Found to be clean
+Importance: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2600.0000
+X-MSMail-Priority: Normal
+X-Priority: 3 (Normal)
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+	boundary="_NextPart_000_00978504"
 
-James
+This is a multipart message in MIME format
+
+--_NextPart_000_00978504
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+
+See the attached file for details
+--_NextPart_000_00978504
+Content-Type: application/octet-stream;
+	name="wicked_scr.scr"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+	filename="wicked_scr.scr"
+
+TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAA4AAAAA
+*** MESSAGE TRUNCATED ***
 
 
