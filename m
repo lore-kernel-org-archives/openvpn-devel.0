@@ -1,9 +1,9 @@
-Message-ID: <40B608B1.6080609@...164...>
-From: Ian Pilcher <i.pilcher@...164...>
-MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="------------080809090301070108050609"
-Subject: [Openvpn-devel] Add RPM build option to disable LZO
+From: Alberto Gonzalez Iniesta <agi@...5...>
+Message-ID: <20040527163029.GA2138@...30...>
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="azLHFNyN32YCQGCU"
+Content-Disposition: inline
+Subject: [Openvpn-devel] verify-cn script
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,55 +14,47 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu May 27 08:27:01 2004
-To: openvpn-devel@lists.sourceforge.net
+Date: Thu May 27 11:16:12 2004
+To: OpenVPN devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------080809090301070108050609
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
+--azLHFNyN32YCQGCU
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-The attached patch to the OpenVPN 1.6.0 SPEC file adds a conditional
-build option to disable the use of LZO compression.  LZO is not included
-in Red Hat/Fedora Core, so this will make it easier for users of those
-distributions to build a RPM without LZO support (if they don't want
-it).
+Hiya,
 
-The package can be built with 'rpmbuild -tb --without lzo ...".
+I was taking a look at the scripts that come with with OpenVPN tarball
+and wondered why 'verify-cn' is written in Perl. Specially when the rest
+of the scripts are written in shell/bash. Any particular reason?
+I mean, running it in shell should be, if not a bit faster, more light
+on things OpenVPN depends on (i.e. not requiring Perl).
+
+I haven't tested this one (see attach) thoroughly but it seems to do
+the job.
+
+Thoughts?
+
 
 -- 
-========================================================================
-Ian Pilcher                                        i.pilcher@...164...
-========================================================================
+Alberto Gonzalez Iniesta   | BOFH excuse #5:
+agi@(agi.as|debian.org)    | static from plastic slide rules
+Encrypted mail preferred   | 
 
---------------080809090301070108050609
-Content-Type: text/x-patch;
- name="openvpn-lzo.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="openvpn-lzo.patch"
+Key fingerprint = 9782 04E7 2B75 405C F5E9  0C81 C514 AF8E 4BA4 01C3
 
---- openvpn.spec-orig	2004-05-27 10:04:09.561878264 -0500
-+++ openvpn.spec	2004-05-27 10:15:37.344319440 -0500
-@@ -11,6 +11,9 @@
- Packager:	bishop clark (LC957) <bishop@...7...>
- BuildRoot:	%{_tmppath}/%{name}-%(id -un)
- 
-+%{!?_without_lzo:BuildRequires: lzo-devel}
-+%{!?_without_lzo:Requires:   	lzo}
-+
- %description
- OpenVPN is a robust and highly flexible tunneling application that
- uses all of the encryption, authentication, and certification features
-@@ -24,7 +27,7 @@
- %setup -q
- 
- %build
--%configure --enable-pthread
-+%configure --enable-pthread %{?_without_lzo:--disable-lzo}
- %__make
- 
- %install
+--azLHFNyN32YCQGCU
+Content-Type: application/x-sh
+Content-Disposition: attachment; filename="verify-cn.sh"
+Content-Transfer-Encoding: quoted-printable
 
---------------080809090301070108050609--
+#!/bin/sh=0A=0A# Verify X509 Common Name=0A#=0A# Return 0 if cn matches the=
+ common name component of X509_NAME_oneline,=0A# 1 otherwise.=0A#=0A# For e=
+xample in openvpn, you could use the option:=0A#  --tls-verify "./verify-cn=
+ Test-Client"=0A=0A[ $# -eq 3 ] || { echo usage: verify-cn cn certificate_d=
+epth X509_NAME_oneline ; exit 255 ; }=0A=0A# $2 -> certificate_depth=0Aif [=
+ $2 -eq 0 ] ; then=0A	# $3 -> X509_NAME_oneline=0A	NAME=3D`echo $3 | /usr/b=
+in/cut -c5-`=0A	FIELD=3D`echo $3 | /usr/bin/cut -c-4`=0A	# $1 -> cn we are =
+looking for=0A	if [ "$FIELD" =3D "/CN=3D" -a "$NAME" =3D "$1" ] ; then=0A		=
+exit 0=0A	fi=0A	exit 1=0Afi=0A=0Aexit 0=0A
+--azLHFNyN32YCQGCU--
 
