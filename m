@@ -1,11 +1,7 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] Core dump ("unaligned access") on OpenBSD3.5
- (DS10 - Alpha arch)
-In-Reply-To: <87wtvg1q71.fsf@...315...>
-Message-ID: <Pine.LNX.4.58.0412180724540.2623@...41...>
-References: <200412161458.49238.csr@...331...> <Pine.LNX.4.58.0412160745480.9763@...41...>
- <87wtvg1q71.fsf@...315...>
+Message-ID: <000f01c4e62e$4e5eb450$0200080a@...333...>
+From: =?iso-8859-1?Q?Tor_H=E5kon_Gjerde?= <thgjerde@...332...>
 MIME-Version: 1.0
+Subject: [Openvpn-devel] openvpn server in client-to-client mode
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -16,47 +12,21 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Dec 18 06:30:03 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: Florian Weimer <fw@...315...>
-Cc: Christian =?iso-8859-1?Q?R=F8snes?= <csr@...331...>, openvpn-devel@lists.sourceforge.net
+Date: Sun Dec 19 16:54:04 2004
+Content-Type: text/plain; charset="iso-8859-1"; format=flowed;
+ reply-type=original
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-On Sat, 18 Dec 2004, Florian Weimer wrote:
+Hi
+I would like to run an openvpn server on a shell account without root.
+A server that does only client-to-client, with no interface on the server=20
+itself.
+But openvpn says it needs an tun or tap device.
+I understand this might require the tun or tap device itself to be emulated.
 
-> * James Yonan:
-> 
-> >> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-> >> Program terminated with signal 10, Bus error.
-> >> #0  0x120023904 in mroute_extract_addr_from_packet 
-> >> (src=0x1ffffb220, dest=0x1ffffb208, buf=0x1, tunnel_type=-20292) at 
-> >> mroute.c:113
-> >> 113                           memcpy (src->addr, &ip->saddr, 4);
-> >> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-> >> 
-> >> I think my system choke on the 'ip->saddr' address in the memcpy statement.
-> >
-> > That's strange that it would hit an alignment fault on a memcpy.  memcpy
-> > is supposed to operate at byte granularity.
-> 
-> I suspect this statement is the problem:
-> 
->   const struct openvpn_iphdr *ip = (const struct openvpn_iphdr *) BPTR (buf);
-> 
-> The cast results in undefined behavior if BPTR (buf) has the wrong
-> alignment.  Recent versions of GCC know this and therefore conclude
-> that BPTR must be properly aligned.  As a result, it is possible to
-> replace memcpy() with something that copies word-wise.
-> 
-> The char * casts in your other message won't fix this, they come too
-> late.  It's a common misconception that char pointers behave like
-> machine addresses.  They don't.
-> 
-> Just to be clear, this is not a bug in GCC.  Your code is not valid C.
+Yours faithfully,
+Tor H=E5kon Gjerde=20
 
-That's a great observation that probably explains the alpha alignment 
-issues -- thanks!
-
-James
 
 
