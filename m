@@ -1,9 +1,9 @@
-Message-ID: <40F816BC.50408@...201...>
-From: Derek Burdick <derek@...201...>
+Message-ID: <1090214667.40fb5b0b3a9cb@...238...>
+From: Brandon Knitter <knitterb@...237...>
+Subject: Re: [Openvpn-devel] Passing private key passphrase to openvpn
+References: <Pine.LNX.4.60.0407132213180.21236@...210...> <Pine.LNX.4.60.0407132309590.21236@...210...>
+In-Reply-To: <Pine.LNX.4.60.0407132309590.21236@...210...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Better understanding Proxy.c vs Socks.c
-References: <40F7F410.70200@...83...>
-In-Reply-To: <40F7F410.70200@...83...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,55 +14,93 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Jul 16 10:57:02 2004
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Date: Sun Jul 18 22:25:13 2004
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+To: Mathias Sundman <mathias@...209...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-webmaster wrote:
+I was thinking about this the other day, and was wondering if you couldn't just
+prompt the person for a password, telling them to "Hit Enter" if they don't have
+one.  Then if one is provided (string != null or length(string)>0) just shove it
+down STDIN's throat?
 
-> Hi,
+If it works, it *is* a hack, but it might be enough to get it implemented? ;-)
+
+This feature is exactly what is precluding me and my userbase from using the
+awesome systray app you provided.
+
+-- 
+-bk
+
+
+Quoting Mathias Sundman <mathias@...209...>:
+
+> On Tue, 13 Jul 2004, Mathias Sundman wrote:
 > 
-> is it right, that proxy.c only is needed to establish a connection via 
-> the proxy. After that the communication is done via Socks.c?
+> > I'd like to implement a way to hand over the private key passphrase to 
+> > openvpn, to be able to add this feature to my GUI.
+> >
+> > We have discussed that this could/should be done via the management
+> interface 
+> > that we've discussed alot. However, I'd like to add the passphrase feature
 > 
-> And what does
+> > now so I wonder which is the best way to do this.
+> >
+> > 1. Add a cmd-line option to pass it. (Considered insecure by some).
+> >
+> > 2. Use an environment variable. Portable? Secure?
+> >
+> > 3. Start the work on this mgmnt interface and add the passphrase passing 
+> > feature as the first cmd.
+> >
+> > (1) is easiest to implement and good enough for my use, on single user 
+> > windows machines, but perhaps not good enough for multi-user unix systems.
+> On 
+> > the other hand, no one is forcing anyone to use this cmd-line option, so we
 > 
-> /* format Socks CONNECT message */
->  buf[0] = '\x05';        /* VER = 5 */
->  buf[1] = '\x01';        /* CMD = 1 (CONNECT) */
->  buf[2] = '\x00';        /* RSV */
->  buf[3] = '\x03';        /* ATYP = 3 (DOMAINNAME) */
+> > might start with adding this feature, and then add a way to pass the 
+> > passphrase over the management interface when we have that ready.
 > 
-> in socks.c mean? Is there any documentation on this?
+> I just realized that (1) won't be good enough even for me :-) I can't 
+> figure out a way for how the GUI should know in advance of starting 
+> openvpn wether it has to quiry to user for a passphrase or not. This would 
+> require adding an option to the config-file that enables this, or some 
+> other way of configuring the gui which connections that require a 
+> passphrase.
 > 
-> Greetings
+> I want to avoid having the gui parsing the config-file for options or 
+> having it's own config file because I'd like it to be possible to use 
+> exactly the same config-file with or without the gui.
 > 
-> Ullrich
+> So, I suppose my only option left is to begin the work on the management 
+> interface. Have you had time starting the work on this, James?
+> 
+> If not, where do I begin?
+> 
+> In what function should I create the socket?
+> 
+> Where do we put the main functionallity for reading and writing to the 
+> socket?
+> 
+> -- 
+> _____________________________________________________________
+> Mathias Sundman                  (^)   ASCII Ribbon Campaign
+> NILINGS AB                        X    NO HTML/RTF in e-mail
+> Tel: +46-(0)8-666 32 28          / \   NO Word docs in e-mail
 > 
 > 
 > -------------------------------------------------------
-> This SF.Net email is sponsored by BEA Weblogic Workshop
-> FREE Java Enterprise J2EE developer tools!
-> Get your free copy of BEA WebLogic Workshop 8.1 today.
-> http://ads.osdn.com/?ad_id=4721&alloc_id=10040&op=click
+> This SF.Net email sponsored by Black Hat Briefings & Training.
+> Attend Black Hat Briefings & Training, Las Vegas July 24-29 - 
+> digital self defense, top technical experts, no vendor pitches, 
+> unmatched networking opportunities. Visit www.blackhat.com
 > _______________________________________________
 > Openvpn-devel mailing list
 > Openvpn-devel@lists.sourceforge.net
 > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-     This looks like a Socks version 5 connect request.  You can find 
-the socks v5 protocol definition here:
-http://www.faqs.org/rfcs/rfc1928.html
+> 
+> 
 
-     Without looking at the code in detail, but with some experience 
-programming using socks and HTTP proxies, I would say yes.  Basically 
-once the connection is brought up through the proxy and authenticated 
-(optional), it just forwards what it sends and receives.
-
-     You may also be interested in the HTTP CONNECT method.  The RFC is 
-here:
-http://www.rfc-editor.org/cgi-bin/rfcdoctype.pl?loc=RFC&letsgo=2818&type=http&file_format=txt
-
--Derek
 
 
