@@ -1,7 +1,9 @@
-Message-Id: <200304171216.h3HCGV131379@...41...>
-Subject: Re: [Openvpn-devel] Re: New beta available + progress update
-From: "James Yonan" <jim@...41...>
-In-Reply-To: <20030417105647.GA4239@...33...>
+From: Matthias Andree <ma+ovpnd@...31...>
+Message-ID: <20030417121516.GA19479@...33...>
+References: <20030417085657.GA5962@...33...> <200304171114.h3HBE7121769@...41...>
+Mime-Version: 1.0
+In-Reply-To: <200304171114.h3HBE7121769@...41...>
+Subject: [Openvpn-devel] Re: New beta available + progress update
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -12,75 +14,73 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Apr 17 05:18:02 2003
-Content-Type: text/plain; charset="utf-8"
+Date: Thu Apr 17 05:19:05 2003
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Matthias Andree <ma+ovpnd@...31...>, openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Matthias Andree <ma+ovpnd@...31...> said:
+On Thu, 17 Apr 2003, James Yonan wrote:
 
-> > http://openvpn.sourceforge.net/beta/openvpn-1.3.2.21.tar.gz (or CVS)
+> A better alternative (orginally suggested by you) is to avoid fragmenting in
+> the first place by bouncing back ICMP_DEST_UNREACH/ICMP_FRAG_NEEDED to the TUN
+> device.  This won't work on TAP devices because the ethernet MTU is fixed at 1500.
 > 
-> I have a next round of patches to fix prototypes and types to quench
-> compiler warnings and get a more robust source code against changed
-> environments, to aid possible later debugging; it also includes GCC
-> extensions (only used when GCC is being used) that allow stricter msg()
-> and buf_printf() format string vs. argument checking, to avoid printing
-> bogus data when type sizes differ (think 64 bit).
+> Unfortunately (or fortunately depending on your perspective), my network
+> connections are not broken enough to benefit from the FRAGMENT_ENABLE stuff
+> just yet, so I can't really test it properly.
 
-Yes, very good ideas.  I will merge.
+Well, the peer that was behind an overloaded 1 Mbps 2 km radio link has
+now moved and has become a V.34+ modem link (33k6 bps), with
+corresponding effects on the MTU. I wonder if running a local pppd pair
+with properly MTU can be used to figure if fragmentation works, but
+there's yet have to be someone who drops individual fragments (unless
+gremlin mode does it already) for real testing.
 
-> 
-> One problem remains after applying the patch:
-> openvpn.c: In function `openvpn':
-> openvpn.c:470: warning: cast discards qualifiers from pointer target type
+OTOH, fragmenting links also have a natural impact on the packet loss:
+if you assume 10% packet loss on the transport layer (that transports
+the fragment), and you fragment a TAP packet of 1500+ bytes into 3 of
+approx 500 bytes (say, MTU=552), the effective packet loss for TCP or
+something is much higher: it takes losing a single fragment to
+retransmit, so the effective packet loss will come out as 27% (not
+taking burst loss into account).
 
-That's a tricky matter, because the struct options object is const, but it
-needs to be passed to a thread, and normally you need to cast something to a
-void* if you want to pass it to a thread as an argument, which then causes the
-constness to be lost.
+I also have another patch to fix prototype warnings:
 
-> Other than that, we have unused parameter warnings (you said before
-> you're not fixing them), shadow parameter warnings (variable names being
-> the same as system functions, such as time or nice)
+diff -u thread.h thread.h
+--- thread.h	17 Apr 2003 10:51:21 -0000
++++ thread.h	17 Apr 2003 11:05:38 -0000
+@@ -118,17 +118,17 @@
+ #define MUTEX_UNLOCK(lock)
+ 
+ static inline void
+-thread_init()
++thread_init(void)
+ {
+ }
+ 
+ static inline void
+-thread_cleanup()
++thread_cleanup(void)
+ {
+ }
+ 
+ static inline int
+-thread_number()
++thread_number(void)
+ {
+   return 0;
+ }
+@@ -139,7 +139,7 @@
+ }
+ 
+ static inline void
+-work_thread_join ()
++work_thread_join (void)
+ {
+ }
+ 
 
-I'm not too worried about the shadow parameters.  I think it's pretty obvious
-when something is being used as a variable vs. a function call.
-
-As for the unused parms, they are mostly a result of conditional compilation
-making certain variables unnecessary.  OpenVPN has a large conditional
-compilation state-space, so I'm not sure that it makes sense to try to
-eliminate all such warnings.
-
-> and in particular,
-> aggregate (struct) values in function calls and function returns, these
-> are inefficient (as the compiler must toss the whole struct on the
-> stack, which involves copy overhead), and some of them (buffer.c in
-> particular) look pretty suspicious. Is there any C standard that
-> guarantees that returning an auto struct works and copies the return
-> value?
-
-While I can't quote chapter and verse, being able to manipulate structures in
-a value context, such as returning them from functions or passing them on the
-stack, has been a part of C for ages, and for a long time compilers have tried
-very hard to optimize this usage as much as possible.
-
-For example, when a function returns an automatic structure, most compilers
-will optimize this into a zero-copy operation, where the functions's
-references to the automatic structure go directly into a variable allocated by
-the caller for its return.
-
-My attitude towards optimization has been to optimize the code across the
-critical path only, which is essentially the event loop in openvpn.c.  Code
-outside the event loop (such as the SSL negotiation) does not need to be
-optimized with respect to CPU usage, because it is executed infrequently in
-relation to the main event loop and OpenSSL EVP crypto code.
-
-Most of the expensive buffer.[ch] code is only executed on startup, shutdown,
-SIGHUP, or when the debug level is high.
-
-[ patch deleted ]
-
-James
-
+-- 
+Matthias Andree
 
