@@ -1,8 +1,8 @@
-Message-ID: <01af01c1dbae$f8ef7680$1000000a@...4...>
+Message-ID: <01ba01c1dbb5$2a3367a0$1000000a@...4...>
 From: "James Yonan" <jim@...3...>
-References: <20020401095130.GD26890@...6...> <000d01c1d9ad$88ef0560$3d5d33c6@...4...> <20020403152813.GA26424@...6...> <014901c1db43$65570ca0$1000000a@...4...> <20020404060239.GA875@...6...>
+References: <1017760165.9891.85.camel@...2...> <008901c1da97$e4ce0b70$1000000a@...4...> <1017818817.1524.56.camel@...2...>
+Subject: Re: [Openvpn-devel] More BSD TUN info.
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Re: Debian package
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -13,55 +13,30 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://www.geocrawler.com/redir-sf.php3?list=openvpn-devel>
-Date: Thu Apr  4 00:01:24 2002
+Date: Thu Apr  4 00:47:08 2002
 Content-Type: text/plain;
 	charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-To: Alberto Gonzalez Iniesta <agi@...5...>
+To: Janne Johansson <jan.johansson@...1...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-> > Are you saying you want OpenVPN to read configuration options from a
-config
-> > file rather than the command line when -f is used?
-> >
-> > James
-> >
->
-> That's right. Configuration files have some advantages from my point of
-> view:
-> - Only one script to start/stop VPNs. A init.d-like script that will
->   call OpenVPN for each one of the conf. files.
-> - Configuration files are easier to edit via scripts than shell scripts
->   with lots of '--option val \' lines
-> - Configuration files are easier to comment and can even have all
->   options OpenVPN support (Soe commented out, some not)
+>I don't know the openvpn data format, but if 45000054 is some sort of
+openvtun identifier, you/we/I could add some code that checked for
+00000002 followed by 45000054 and then strip the first u_int_32 from
+the packet and go on. Perhaps a --remote-is-bsd or something similar?
 
-Hmmm.  I am hesitant to put in a configuration file parser because
-linux/unix already seem to have so many powerful external tools to do this,
-e.g.
+Openvpn doesn't look at the tunnel data... it just encrypts, decrypts,
+forwards etc.  The 45000054 is the beginning of the IP header of the packets
+going over the tunnel.
 
-***********
+Yeah, an option might be right thing.  So --remote-is-bsd would remove the
+AF_INET from incoming packets and add them to outgoing packets.  A bit of a
+kludge.
 
-cat >openvpn.config
-dnl this is a sample OpenVPN config file
+>I wonder if Vtun ever did work between linux-vs-bsd ?
 
-dnl local host
---local near.bar.net
-
-dnl remote host
---remote far.bar.net
-
-dnl tun/tap device
---dev tun1
-
-<control-d>
-
-openvpn `m4 openvpn.config`
-
-********************
-
-which gives you the power of m4 if you want it, but also gives you the
-simplicity to be able to build a tunnel with just a short command line.
+I doubt it.  I did a grep on vtun sources for AF_INET and didn't find any
+usage other than the usual places.
 
 James
 
