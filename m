@@ -1,9 +1,7 @@
-From: Mathias Sundman <mathias@...209...>
-Subject: Re: [Openvpn-devel] openvpn <---SSL---> Apache
-In-Reply-To: <20686C579479DC438276A726FE80CDAA01F70FE7@...281...>
-Message-ID: <Pine.LNX.4.61.0411150954490.32393@...210...>
-References: <20686C579479DC438276A726FE80CDAA01F70FE7@...281...>
-MIME-Version: 1.0
+From: Emil <emil@...314...>
+Message-ID: <loom.20041115T171745-883@...171...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] TAP-Win32 and other NDIS IM drivers
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,28 +12,31 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Nov 15 01:08:05 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Content-Transfer-Encoding: 8bit
-To: satinders@...280...
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Mon Nov 15 08:32:00 2004
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-On Mon, 15 Nov 2004 satinders@...280... wrote:
+I'm using the TAP-Win32 driver from openvpn together with a modified passthru
+example (the passthru NDIS IM driver in windows DDK examples).
 
-> I was just trying out SSL connection set-up between openvpn client with
-> Apache server (openSSL). But it is failing.
-> Is there any way to do so? Can I get openvpn client to successfully create
-> ssl connection with Apache server?
-> What code changes do I need to do in openVPN code?
+However I'm experiencing the following problems (WinXP SP2):
+The computer crashes when I restore from a hybernated system. I found this:
 
-You don't ;-)
+http://www.tech-archive.net/Archive/Development/
+microsoft.public.development.device.drivers/2004-02/1154.html
 
-OpenVPN just uses the OpenSSL library for its encryption and 
-authentication functionallity. Other than that it has nothing in common 
-with SSL protection of HTTP traffic.
+and implemented the fix into my NDIS IM driver.
+The result was no more blue screens but nor can I set the IP of the TAP-Win32
+device using iphlpapi.dll nor the netsh.exe option.
+The same problem persists even with empty functions in the NDIS driver.
+It seams like the fact that ProtocolStatus and ProtocolStatusComplete functions
+being called prevents me from setting the IP of the TAP-device.
 
-Use a web browser or some cmd-line web-tool like wget depending on 
-what you want to do...
+Does anybode recognize this problem and maybe even have any suggestions on how
+to fix it?
 
-/Mathias
+Regards
+/E
+
 
