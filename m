@@ -1,10 +1,10 @@
-Message-ID: <40F129CE.8050708@...83...>
+Message-ID: <40F129DA.4020107@...83...>
 From: Jan Kiszka <jan.kiszka@...83...>
 MIME-Version: 1.0
-References: <40E18559.8020407@...244...> <40EA6CFD.2030603@...83...> <Pine.LNX.4.60.0407061112170.372@...210...> <200407071803.14060.jim@...41...>
-In-Reply-To: <200407071803.14060.jim@...41...>
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg=sha1; boundary="------------ms070205060300060209020901"
-Subject: [Openvpn-devel] Re: Interface with GUI agent
+Subject: Re: [Openvpn-devel] Re: Interface with GUI agent
+References: <40E18559.8020407@...244...> <Pine.LNX.4.60.0407080941160.5287@...210...> <200407081043.25501.jim@...41...> <200407082328.32017.vda@...216...>
+In-Reply-To: <200407082328.32017.vda@...216...>
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg=sha1; boundary="------------ms030703080709020803020203"
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,63 +15,65 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Jul 11 04:53:23 2004
-To: James Yonan <jim@...41...>
-Cc: Mathias Sundman <mathias@...209...>, openvpn-devel@lists.sourceforge.net
+Date: Sun Jul 11 04:53:29 2004
+To: Denis Vlasenko <vda@...216...>
+Cc: James Yonan <jim@...41...>, openvpn-devel@lists.sourceforge.net, Mathias Sundman <mathias@...209...>, upsdev@...251..., rkroll@...252...
 
 This is a cryptographically signed message in MIME format.
 
---------------ms070205060300060209020901
+--------------ms030703080709020803020203
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Transfer-Encoding: 7bit
 
-James Yonan wrote:
-> 
-> I'm not sure that we really need a wrapper for unix, because most unix users 
-> will control OpenVPN by:
-> 
-> (1) editing config files and starting from /etc/init.d, or
-> (2) using some sort of GUI-based admin tool such as YaST
-> 
-> and both of these methods are traditionally done as root.
-> 
-
-You consider the typical openvpn user in a client scenario under unix as 
-a command line freak - might be still true for the moment, but certainly 
-not in the future. An increasing number of gui-oriented users are 
-switching over to unix, in particular linux. And what would be better 
-for a smooth switch-over than finding a similar gui on both platforms? 
-Command line freaks already have anything the need with what openvpn now 
-provides, so this is not the audience we should target.
-
-> ...
->>>Yes, this will work. But I'm afraid - maybe I'm wrong - that the GUI will
->>>then have to be implemented quite differently on Windows and Unix. On
->>>Windows, we would open a socket and both send the commands over it and
->>>receive the status. On Unix, we would first start the process and then
->>>connect to a socket for status information (BTW, which socket would then
->>>be used when multiple instances of openvpn are running?).
+Denis Vlasenko wrote:
+>>>>>1. On Windows, if the the service wrapper has started some openvpn
+>>>>>processes before our gui agent is started, how should find out about
+>>>>>those processes?
+>>>>>
+>>>>>I can think of the following ways:
+>>>>>
+>>>>>1a. Ask the service wrapper via the socket interface that I'm working
+>>>>>on right now. This will require the service wrapper not only start the
+>>>>>processes, but keep a table over running processes.
+>>>>
+>>>>I think it's an important point worth some discussion on whether to (a)
+>>>>put all the "intelligence" in the GUI applet and have the service
+>>>>wrapper just be a basic proxy to an admin-privileged CreateProcess, or
+>>>>(b) write a portable service wrapper that's designed to run on all the
+>>>>OSes which OpenVPN currently supports, and which would do all the
+>>>>"under-the-hood" work in starting/stopping/managing of different
+>>>>OpenVPN processes, and the GUI applet would do nothing more than export
+>>>>the control interface of the portable service wrapper to a
+>>>>platform-specific, lightweight GUI.
 > 
 > 
-> Should the unix GUI be written for generic X, or should we develop admin 
-> modules for specific distros such as YaST?
+> (b) already exists. It's daemontools. (Does not exist on NT, though).
+> Daemontools' license is not open enough, but there is a opensource clone
+> at http://smarden.org/runit/.
 > 
-> I would go for the latter, because it will make the interface fit more 
-> seamlessly into a distribution's existing admin infrastructure.
 > 
 
-I would not think about an admin gui at the moment. Maybe this will 
-never be needed as configuration files are much easier to handle. I'm 
-personally not looking for gui dialogs where I can select and combine 
-graphically any option the openvpn service provides - in case this is 
-the impression you got of my feature request. If SuSE, any other 
-distributor, or projects like webmin are interested in providing some 
-gui for creating the config file, let them do this. But we should first 
-concentrate on an interface for *using* openvpn in daily work!
+I actually don't see why we should add this external dependency to 
+openvpn or its graphical frontend. The daemontools are just another 
+layer which would just take us half the way to a gui, we would then 
+still need to control the daemontools itself (starting/stopping openvpn 
+via the respective command or grabbing the status from the tools).
+
+Basically, the only feature we really need is to start or stop some 
+privileged process, that's all. Coding this into a service wrapper for 
+openvpn takes as much effort as handling something like daemontools 
+itself - both with respect to development time (a few hours up to a day) 
+and to code size. Handling the status information of openvpn is so 
+specific in any way, that daemontools cannot help us here.
+
+But hey, I guess you will never need that wrapper anyhow, because its 
+only purpose will be to enable running the gui. There will be likely no 
+impact on the openvpn core itself besides an extended status interface 
+(probably via stdout only).
 
 Jan
 
---------------ms070205060300060209020901
+--------------ms030703080709020803020203
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -153,7 +155,7 @@ A1UEChMJV0VCLkRFIEFHMRUwEwYDVQQLEwxUcnVzdCBDZW50ZXIxGjAYBgNVBAcTEUQtNzYy
 MjcgS2FybHNydWhlMS0wKwYDVQQDEyRXRUIuREUgVHJ1c3RDZW50ZXIgRU1haWwtWmVydGlm
 aWthdGUxGzAZBgkqhkiG9w0BCQEWDHRydXN0QHdlYi5kZQIEAplQXTAJBgUrDgMCGgUAoIIC
 LTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0wNDA3MTExMTUx
-NDJaMCMGCSqGSIb3DQEJBDEWBBSNg63CVu7wF8hqs42pWKRKsMAs0zBSBgkqhkiG9w0BCQ8x
+NTRaMCMGCSqGSIb3DQEJBDEWBBSsZGfS8NdU8xEXlYMUHW4e522z2DBSBgkqhkiG9w0BCQ8x
 RTBDMAoGCCqGSIb3DQMHMA4GCCqGSIb3DQMCAgIAgDANBggqhkiG9w0DAgIBQDAHBgUrDgMC
 BzANBggqhkiG9w0DAgIBKDCBugYJKwYBBAGCNxAEMYGsMIGpMIGgMQswCQYDVQQGEwJERTES
 MBAGA1UEChMJV0VCLkRFIEFHMRUwEwYDVQQLEwxUcnVzdCBDZW50ZXIxGjAYBgNVBAcTEUQt
@@ -162,9 +164,9 @@ dGlmaWthdGUxGzAZBgkqhkiG9w0BCQEWDHRydXN0QHdlYi5kZQIEAplQXTCBvAYLKoZIhvcN
 AQkQAgsxgayggakwgaAxCzAJBgNVBAYTAkRFMRIwEAYDVQQKEwlXRUIuREUgQUcxFTATBgNV
 BAsTDFRydXN0IENlbnRlcjEaMBgGA1UEBxMRRC03NjIyNyBLYXJsc3J1aGUxLTArBgNVBAMT
 JFdFQi5ERSBUcnVzdENlbnRlciBFTWFpbC1aZXJ0aWZpa2F0ZTEbMBkGCSqGSIb3DQEJARYM
-dHJ1c3RAd2ViLmRlAgQCmVBdMA0GCSqGSIb3DQEBAQUABIGATeTPr2/nUgsxyOKNaCdqm2vT
-8aL6BR5HuS6shAoqAhMk2pz6ehQBo9EuEjD/Opl6lpkrBbXJ7iSVPTpgMEf486Chs0zJqCgm
-NRVyIRxjjDNVcNMUCw4ehXIf+7sJuVZr3lVwTgagVAgag8hyH/0p6RMa4bov6eTtgvBJtvnf
-HkEAAAAAAAA=
---------------ms070205060300060209020901--
+dHJ1c3RAd2ViLmRlAgQCmVBdMA0GCSqGSIb3DQEBAQUABIGAQbFooW+H0ZyUGVx7EQqRdqLA
+fTJ3ptlyu/9gVnHK4Fsau4mYrVdRHNgoOcRRsTtNgvjWIndaegqCmvhVZeKAbZ8VBb3hKYuT
+NEQ9HgBzyqsf/Ydsn8MFE6CM+mBykqBEcwFMR126d2ZsqtngutWDMreROU+8UzlwoFtTlFpF
+MzoAAAAAAAA=
+--------------ms030703080709020803020203--
 
