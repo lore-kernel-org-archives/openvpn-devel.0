@@ -1,10 +1,9 @@
-From: Jon Nelson <jnelson-openvpn@...135...>
+From: Matthias Andree <ma+ovpnd@...31...>
 Subject: Re: [Openvpn-devel] OpenVPN multi instancing
-In-Reply-To: <twig.1078182908.84967@...41...>
-Message-ID: <Pine.LNX.4.58.0403011745030.30913@...136...>
-References: <twig.1078170122.8125@...41...>, <twig.1078170122.8125@...41...>
- <twig.1078182908.84967@...41...>
+Message-ID: <20040302100927.GC7417@...33...>
+References: <200402291538.45014.cd@...154...>
 Mime-Version: 1.0
+In-Reply-To: <200402291538.45014.cd@...154...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,20 +14,44 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Mar  1 15:51:02 2004
+Date: Tue Mar  2 02:16:03 2004
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-On Mon, 1 Mar 2004, James Yonan wrote:
+On Sun, 29 Feb 2004, Christian Daniel wrote:
 
-> One virtual interface per tunnel is supported now and will be supported going
-> forward.
+> Hello everybody!
+> 
+> For a student research project I'm trying to add multi instance capability to 
+> OpenVPN. The basic idea is to rip the main openvpn()-function apart, put all 
+> variables in a struct and then have only one select()-call for all open 
+> tunnels at once.
 
-^^^^^^^^^^^^^ That's the part I needed to hear. Thanks!
+Oh. You're in for plentiful fun with the various select()
+"features"^Wbugs across the various operating system kernels.
 
---
-Life's short and hard, kind of like a bodybuilding elf.
+Better check out poll() and epoll() where available. These happen to
+(usually) be more scalable as the number of fds increases.
 
-Jon Nelson <jnelson-openvpn@...135...>
+> Each tunnel should have it's own tun/tap-device open - the linux kernel has no 
+> problem to cope with so many interfaces... I don't think, that it's a good 
+> idea, to create only one tun-device and then have some kind of internal 
+> routing-engine...
+
+It cannot work. The interfaces have distinct addresses and netmasks, for
+some kind of internal routing-engine, you'd have to re-implement the
+stack on top of raw sockets. Not easy, not portable, not desirable.
+
+> - how to handle the garbage collection? Is it really necessary or is the code 
+> leak-free?
+
+<ducks>go figure as a side project, going to fill your thesis or
+homework or whatever other paper or PDF you're going to turn in. :-)
+
+-- 
+Matthias Andree
+
+Encrypt your mail: my GnuPG key ID is 0x052E7D95
 
