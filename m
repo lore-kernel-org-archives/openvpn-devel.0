@@ -1,10 +1,9 @@
-Message-ID: <4174B824.3090905@...292...>
-From: "Peter 'Luna' Runestig" <peter+openvpn@...292...>
+Message-ID: <20686C579479DC438276A726FE80CDAA01CE9294@...281...>
+From: satinders@...280...
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] PATCH[1/2]: Use certificates from MS Cert Store
- with CryptoAPI
-References: <twig.1098084812.36872@...41...> <417420A6.9090200@...292...> <Pine.LNX.4.58.0410181410180.28940@...269...>
-In-Reply-To: <Pine.LNX.4.58.0410181410180.28940@...269...>
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C4B5AA.4AF00C10"
+Subject: [Openvpn-devel] Code Documentation
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,30 +14,36 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Oct 18 23:47:12 2004
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: James Yonan <jim@...41...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Tue Oct 19 00:05:03 2004
+To: openvpn-devel@lists.sourceforge.net
 
-On 2004-10-18 22:13, James Yonan wrote:
-> On Mon, 18 Oct 2004, Peter 'Luna' Runestig wrote:
-> 
->> On 2004-10-18 09:33, James Yonan wrote:
->> > I've merged the MSVC patch for beta12,
->> 
->> Hmm, what exactly did you merge? I can't see much trace of it...
-> 
-> I merged the first patch only, the one that lets OpenVPN build on MSVC.
+This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
 
-Yes, I understand. Looking closer now, I see that the changes to
-error.h, otime.c and tun.c is applied, but not the changes to
-config-win32.h or the new file makefile.w32-vc.
+------_=_NextPart_001_01C4B5AA.4AF00C10
+Content-Type: text/plain;
+	charset="iso-8859-1"
 
--- 
-Peter 'Luna' Runestig (fd. Altberg), Sweden <peter@...292...>
-PGP Key ID: 0xD07BBE13
-Fingerprint: 7B5C 1F48 2997 C061 DE4B  42EA CB99 A35C D07B BE13
-AOL Instant Messenger Screen name: PRunestig
-Yahoo! Messenger profile name: altberg
+Do we have any documentation about openvpn code to help developers customize
+openvpn?
+
+------_=_NextPart_001_01C4B5AA.4AF00C10
+Content-Type: text/html;
+	charset="iso-8859-1"
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="MS Exchange Server version 5.5.2653.12">
+<TITLE>Code Documentation</TITLE>
+</HEAD>
+<BODY>
+
+<P><FONT SIZE=2>Do we have any documentation about openvpn code to help developers customize openvpn?</FONT>
+</P>
+
+</BODY>
+</HTML>
+------_=_NextPart_001_01C4B5AA.4AF00C10--
 
