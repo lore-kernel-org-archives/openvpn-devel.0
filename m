@@ -1,9 +1,8 @@
-Message-ID: <40E54007.9030206@...231...>
-From: sam <samwun@...231...>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <OF16152585.163DBB30-ON41256EC4.0055E643@...246...> <67CF4F1A72E8B470C95AE917@[192.168.1.22]> <40E51857.3020400@...231...>
-In-Reply-To: <40E51857.3020400@...231...>
-Subject: [Openvpn-devel] Re: [Openvpn-users] Urgent: Limitation to 100  virtual tunnel devices??
+Message-ID: <B531E2D213DD4946B97797232C7C16E18DC009@...248...>
+From: "Tyrone Omidi" <tyrone.omidi@...247...>
+Subject: [Openvpn-devel] RE: [Openvpn-users] Release: OpenVPN-GUI for Windows v1.0-beta2
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,72 +13,60 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Jul  8 09:49:15 2004
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Cc: Juerg.VonBueren@...245..., openvpn-devel@lists.sourceforge.net
+Date: Thu Jul  8 09:49:18 2004
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
+To: Openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-sam wrote:
+How about options manage the service?
 
-> Is this only specific to Linux?
-> how about others using BSD systems?
-> sam
->
-> Claas Hilbrecht wrote:
->
-I just looked at the code in FreeBSD 5 CURRENT, it handles 1000 tunnel 
-by default:
-case MOD_LOAD:
+-----Original Message-----
+From: openvpn-users-admin@lists.sourceforge.net
+[mailto:openvpn-users-admin@lists.sourceforge.net] On Behalf Of Mathias
+Sundman
+Sent: 04 July 2004 00:55
+To: Openvpn-users@lists.sourceforge.net;
+openvpn-devel@lists.sourceforge.net
+Subject: [Openvpn-users] Release: OpenVPN-GUI for Windows v1.0-beta2
 
-               /* intitialize device */  
-               mtx_init(&tapmtx, "tapmtx", NULL, MTX_DEF);
-               SLIST_INIT(&taphead);
+I've got a new version of the GUI ready for testing.
 
-               clone_setup(&tapclones);
-               eh_tag = EVENTHANDLER_REGISTER(dev_clone, tapclone, 0, 
-1000);
-               if (eh_tag == NULL) {
-                       clone_cleanup(&tapclones);
-                       mtx_destroy(&tapmtx);
-                       return (ENOMEM);
-               }
-               return (0);
+New Features:
+    Connect/Disconnect now shows a sub-menu so each connection can be
+    brought up/down individually.
 
-Sit back and relax. :)
-sam
+    Upon connect OpenVPN-GUI will wait for 3 seconds and then check if
+    the openvpn process is still alive and report "Connection
+successful"
+    only if this is the case.
 
->> --Am Donnerstag, 1. Juli 2004 17:18 +0100 Juerg.VonBueren@...245... 
->> schrieb:
->>
->>> We are running into trouble with more than 100 virtual tunnel devices .
->>> The reported problem is as follows:
->>> Jul  1 06:30:19 1100PRVC001 openvpn[15520]: Note: Cannot ioctl 
->>> TUNSETIFF
->>
->>
->>
->> I assume you need the following patch:
->>
->> diff -urN linux-2.4.26.org/net/core/dev.c linux-2.4.26/net/core/dev.c
->> --- linux-2.4.26.org/net/core/dev.c    Wed Apr 14 15:05:41 2004
->> +++ linux-2.4.26/net/core/dev.c    Thu Apr 15 18:54:01 2004
->> @@ -619,8 +619,12 @@
->>
->>     /*
->>      * If you need over 100 please also fix the algorithm...
->> +     *
->> +     * Maybe it's never needed but just to be sure we allow
->> +     * up to 1000 tun/tap devices.
->> +     *
->>      */
->> -    for (i = 0; i < 100; i++) {
->> +    for (i = 0; i < 1000; i++) {
->>         snprintf(buf,sizeof(buf),name,i);
->>         if (__dev_get_by_name(buf) == NULL) {
->>             strcpy(dev->name, buf);
->>
->>
->
->
+    OpenVPN-GUI monitors the openvpn processes it has started, and if a
+    process is terminated before the user has chosen to take it down,
+this
+    will be reported to the user.
 
+    If no config files is found when OpenVPN-GUI is started, it will
+    notify the user of this and terminate.
+
+
+It is available for download from here:
+http://www.nilings.se/openvpn
+
+
+--=20
+_____________________________________________________________
+Mathias Sundman                  (^)   ASCII Ribbon Campaign
+NILINGS AB                        X    NO HTML/RTF in e-mail
+Tel: +46-(0)8-666 32 28          / \   NO Word docs in e-mail
+
+
+-------------------------------------------------------
+This SF.Net email sponsored by Black Hat Briefings & Training.
+Attend Black Hat Briefings & Training, Las Vegas July 24-29 -=20
+digital self defense, top technical experts, no vendor pitches,=20
+unmatched networking opportunities. Visit www.blackhat.com
+_______________________________________________
+Openvpn-users mailing list
+Openvpn-users@lists.sourceforge.net
+https://lists.sourceforge.net/lists/listinfo/openvpn-users
 
