@@ -1,7 +1,11 @@
 From: Mathias Sundman <mathias@...209...>
-Message-ID: <Pine.LNX.4.60.0407050108360.24966@...210...>
+In-Reply-To: <40E744F9.5000700@...83...>
+Message-ID: <Pine.LNX.4.60.0407052042310.29911@...210...>
+References: <40E18559.8020407@...244...> <200406301725.43961.jim@...41...>
+ <1088881994.40e7054a0e5e6@...238...> <200407031601.24438.jim@...41...>
+ <40E744F9.5000700@...83...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Release: OpenVPN-GUI for Windows v1.0-beta5
+Subject: [Openvpn-devel] Re: Interface with GUI agent
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,73 +16,36 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Jul  4 16:53:02 2004
+Date: Mon Jul  5 11:52:07 2004
 Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net, Openvpn-users@lists.sourceforge.net
+To: Jan Kiszka <jan.kiszka@...83...>
+Cc: James Yonan <jim@...41...>, openvpn-devel@lists.sourceforge.net
 
-Available for download from:
-http://www.nilings.se/openvpn
+On Sun, 4 Jul 2004, Jan Kiszka wrote:
 
+> I would like to have some mechanism to fork an openvpn instance and let the 
+> new process use a specific configuration file. This would allow to start only 
+> certain VPN tunnels depending on what the user selects in the GUI.
 
-ChangeLog:
+I've been giving this some more thought... and I agree we definitly need 
+something like this.
 
-[v1.0-beta5 2004-07-04]
-New Features:
-    Menu-commands to Start/Stop/Restart the OpenVPN Service. Enable this
-    feature by setting the following reg-key to 1:
-    HKEY_LM\SOFTWARE\OpenVPN-GUI\allow_service
+Is it possible in windows to install a program as SUID in unix, so the 
+application is ran as administrator even though it is started by an 
+ordinary user? If yes, that would be eliminate the need to fork new 
+processes (as I can think of right now atleast).
 
-Bug Fixes:
-    v1.0-beta4 always opened the registry with write-access, which made
-    it imposible to start it without administator rights.
+If no, Is it only on windows we can't do this, or do we have this problem 
+on other platforms too?
 
+If it's a windows specific problem, then maybe this functionally should be 
+in the service wrapper. If we add a simple interface to the service 
+wrapper our gui client could tell the service wrapper to start new openvpn 
+processes when we want.
 
-[v1.0-beta4 2004-07-04]
-New Features:
-    Menu-command to open a config-file for editing. Enable this feature
-    by setting the following reg-key to 1:
-    HKEY_LM\SOFTWARE\OpenVPN-GUI\allow_edit
-
-
-[v1.0-beta3 2004-07-04]
-New Features:
-    Log Viewer. As default OpenVPN-GUI launches Notepad to view the log.
-    The program used to view the log can be changed with this reg-key:
-    HKEY_LM\SOFTWARE\OpenVPN-GUI\log-viewer
-
-    OpenVPN-GUI now uses its own registry-keys, instead of the same as
-    the service wrapper uses. It now stores its values under this key:
-    HKEY_LM\SOFTWARE\OpenVPN-GUI\
-    If this key does not exist, OpenVPN-GUI will create it with the same
-    default values as the service-wrapper uses, so if you want to use the
-    service-wrapper on config-files indepentent of the GUI you should
-    change the "config-dir" key to another folder.
-
-
-[v1.0-beta2 2004-07-03]
-New Features:
-    Connect/Disconnect now shows a sub-menu so each connection can be
-    brought up/down individually.
-
-    Upon connect OpenVPN-GUI will wait for 3 seconds and then check if
-    the openvpn process is still alive and report "Connection successful"
-    only if this is the case.
-
-    OpenVPN-GUI monitors the openvpn processes it has started, and if a
-    process is terminated before the user has chosen to take it down, this
-    will be reported to the user.
-
-    If no config files is found when OpenVPN-GUI is started, it will
-    notify the user of this and terminate.
-
-
-[v1.0-beta1 2004-07-02] Initial release
-Features:
-    Adds itself as a system tray icon.
-    Menuitem "Connect" - Starts openvpn for all config-files it has found.
-
-
+If it's not a windows specific problem, then I suppost it's best to add 
+the functionallity in the openvpn binary so we get the portability.
 
 -- 
 _____________________________________________________________
