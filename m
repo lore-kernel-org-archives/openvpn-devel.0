@@ -1,8 +1,8 @@
 From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] RPM build of 2.0-rc16 fails on MandrakeSoft
-In-Reply-To: <422BC993.5040206@...355...>
-Message-ID: <Pine.LNX.4.58.0503070841070.1122@...41...>
-References: <4220EC61.1000005@...355...> <422BC993.5040206@...355...>
+Subject: Re: [Openvpn-devel] SSL client / SSL server
+In-Reply-To: <422C7C95.3080209@...361...>
+Message-ID: <Pine.LNX.4.58.0503071440390.1122@...41...>
+References: <422C7C95.3080209@...361...>
 MIME-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
@@ -14,21 +14,30 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Mar  7 09:35:29 2005
+Date: Mon Mar  7 13:47:08 2005
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-To: TomWalsh <tomw-junk01@...355...>
+To: Rolf Fokkens <r.fokkens@...361...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Sun, 6 Mar 2005, TomWalsh wrote:
+On Mon, 7 Mar 2005, Rolf Fokkens wrote:
 
-> As long as we are on the subject of "Requires" in the openvpn.spec file, 
-> shouldn't there also be a:
+> Hi,
 > 
-> Requires:  bridge-utils >= 0.9.7
+> Not having too much programming knowledge about openSSL, I wonder why 
+> each VPN config must specify TLS-client or TLS-server. If full-mesh 
+> bridging/routing will be supported in the future, most nodes are just 
+> peers, without a client-server relationship.
 
-Why is this required?  What if you are not bridging?
+SSL/TLS is a client/server-based protocol.
+
+To do full-mesh peer-to-peer in the future, we will probably use some sort 
+of abstraction where all peers will be a server by default, but will 
+simultaneously take on a client role when initiating a connection with 
+another peer.
+
+This would be an initiator/responder model, which maps fairly cleanly to
+the client/server metaphor.
 
 James
-
 
