@@ -1,9 +1,7 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] [PATCH]: small tweaks to beta16
-In-Reply-To: <41935EF5.4070907@...292...>
-Message-ID: <Pine.LNX.4.58.0411110700410.7012@...41...>
-References: <41935EF5.4070907@...292...>
-MIME-Version: 1.0
+From: Charles Duffy <cduffy@...294...>
+Message-Id: <1100311165.30425.27.camel@...23...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Certificate Wizard 0.3b - code-related feedback
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,93 +12,81 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Nov 11 06:10:02 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: Peter 'Luna' Runestig <peter+openvpn@...292...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Fri Nov 12 18:00:15 2004
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 7bit
+To: Vlada Macek <tuttle@...289...>
+Cc: openvpn-devel@lists.sourceforge.net, it-staff@...296...
 
-On Thu, 11 Nov 2004, Peter 'Luna' Runestig wrote:
+Vlada,
 
-> Hi again! I need this to compile beta16 with Visual C++:
-> 
-> diff -u openvpn-2.0_beta16.orig/config-win32.h openvpn-2.0_beta16/config-win32.h
-> --- openvpn-2.0_beta16.orig/config-win32.h	2004-11-07 10:28:31.000000000 +0100
-> +++ openvpn-2.0_beta16/config-win32.h	2004-11-10 12:36:05.478199500 +0100
-> @@ -271,6 +271,7 @@
->  #define vsnprintf _vsnprintf
->  #define vsnwprintf _vsnwprintf
->  #define snwprintf _snwprintf
-> +#define snprintf _snprintf
->  #define write _write
->  #define open _open
->  #define read _read
-> diff -u openvpn-2.0_beta16.orig/makefile.w32-vc openvpn-2.0_beta16/makefile.w32-vc
-> --- openvpn-2.0_beta16.orig/makefile.w32-vc	2004-10-30 15:06:50.000000000 +0200
-> +++ openvpn-2.0_beta16/makefile.w32-vc	2004-11-10 12:38:59.658540300 +0100
-> @@ -24,7 +24,7 @@
-> 
->  INCLUDE_DIRS = -I$(OPENSSL)/include -I$(LZO)/include
-> 
-> -LIBS = lzo.lib ws2_32.lib iphlpapi.lib winmm.lib gdi32.lib advapi32.lib
-> +LIBS = lzo.lib ws2_32.lib crypt32.lib iphlpapi.lib winmm.lib gdi32.lib advapi32.lib
-> 
->  LIB_DIRS = -LIBPATH:$(OPENSSL)\out -LIBPATH:$(LZO)
+In updating my local Certificate Wizard fork to be based off 0.3b, I
+observed an issue introduced during your cleanup of my CopyOneFile
+function.
 
-I've merged the above 2 patches.
+My original code:
+    snprintf(buffer, MAXLINELEN, "Unable to copy \"%s\" to \"%s\" - error %d: %%s", source, target, errorCode);
+    DisplayErrorToUser(errorCode, "Failure copying files", buffer);
  
-> diff -u openvpn-2.0_beta16.orig/thread.h openvpn-2.0_beta16/thread.h
-> --- openvpn-2.0_beta16.orig/thread.h	2004-11-04 02:21:39.000000000 +0100
-> +++ openvpn-2.0_beta16/thread.h	2004-11-10 12:29:16.048742200 +0100
-> @@ -163,8 +163,8 @@
-> 
->  typedef int openvpn_thread_t;
-> 
-> -#define MUTEX_DEFINE(lock)
-> -#define MUTEX_PTR_DEFINE(lock)
-> +#define MUTEX_DEFINE(lock) int eat_semicolon
-> +#define MUTEX_PTR_DEFINE(lock) int eat_semicolon
-> 
->  #define mutex_init(m)
->  #define mutex_destroy(m)
+Your replacement code:
+    snprintf(buffer, MAXLINELEN, _("Unable to copy '%s' to '%s' - error %d", 0), source, target, errorCode);
+    strcat(buffer, ": %%s");
+    DisplayErrorToUser(errorCode, _("Failure copying files", 0), buffer);
 
-This one I bracketed with #ifdef _MSC_VER
+These aren't functionally equivalent: The latter results in a literal
+'%s' being displayed to the user, whereas the former displays a textual
+description of the error message being substituted for the %s (which
+snprintf replaces %%s with) inside DisplayErrorToUser. Either the strcat
+should only append '%s' rather than '%%s', or '%%s' should be used in
+the snprintf (which is the approach I prefer -- but perhaps it
+interferes with the internationalization or somesuch?).
+
+Additionally, I noticed a bug from my original code that you inherited:
+in DisplayErrorToUser, the MsgBox call should take the description
+parameter (rather than a hardcoded string) as its argument.
+
+
+The sum of non-site-specific changes I've made comes to the following:
+
+diff -ru mycert-src-0.3b.orig/misc.c mycert-src-0.3b.recare/misc.c
+--- mycert-src-0.3b.orig/misc.c 2004-11-09 10:02:44.000000000 -0600
++++ mycert-src-0.3b.recare/misc.c       2004-11-12 19:38:27.000000000 -0600
+@@ -232,7 +232,7 @@
+                  0, NULL);
+     
+        strncpy(msgBuf, lpMsgBuf, MAXLINELEN);
+-       MsgBox(_("Failure copying files", 0), MB_OK, fmt, msgBuf);
++       MsgBox(description, MB_OK, fmt, msgBuf);
+        LocalFree(lpMsgBuf);
+ }
  
-> I.e. "snprintf" must be renamed to "_snprintf", and "crypt32.lib" is missing
-> from the "makefile.w32-vc" file (but that one is autogenerated, yes?). And
-> look at that last, ugly hack: If USE_PTHREAD is NOT defined, stuff like this
-> get a line with a lonely semicolon, that VC++ chokes on:
-> 
-> struct hash_bucket
-> {
->   MUTEX_DEFINE (mutex);
->   struct hash_element * volatile list;
-> };
-> 
-> But there is probably a more elegant solution to that one...
-> 
-> Finally, I always have to do this adjustment, to build with MinGW:
-> 
-> diff -u openvpn-2.0_beta16.orig/makefile.w32 openvpn-2.0_beta16/makefile.w32
-> --- openvpn-2.0_beta16.orig/makefile.w32	2004-11-07 10:27:36.000000000 +0100
-> +++ openvpn-2.0_beta16/makefile.w32	2004-11-10 22:27:42.796479300 +0100
-> @@ -50,7 +50,7 @@
-> 
->  LIBS_DMALLOC = ${LIBS} -ldmalloc
-> 
-> -LIB_DIRS = -L${OPENSSL}/out -L${LZO}/src/.libs
-> +LIB_DIRS = -L${OPENSSL}/out -L${LZO}
-> 
->  LIB_DIRS_DMALLOC = ${LIB_DIRS} -L${DMALLOC}
-> 
-> 
-> I'm using lzo-1.08, and the "liblzo.a" file was created in the
-> base directory there, and the "src/.libs" subdir doesn't even
-> exist. Or is it just me?
+@@ -242,8 +242,7 @@
+                char buffer[MAXLINELEN+1];
+                int errorCode = GetLastError();
+ 
+-               snprintf(buffer, MAXLINELEN, _("Unable to copy '%s' to '%s' - error %d", 0), source, target, errorCode);
+-               strcat(buffer, ": %%s");
++               snprintf(buffer, MAXLINELEN, _("Unable to copy '%s' to '%s' - error %d: %%s", 0), source, target, errorCode);
+                DisplayErrorToUser(errorCode, _("Failure copying files", 0), buffer);
+                return FALSE;
+        }
 
-That's strange because when I build lzo-1.08, it puts the .a file in 
-src/.libs.
+--- mycert-src-0.3b.orig/mycert.ini     2004-11-09 10:02:44.000000000 -0600
++++ mycert-src-0.3b.recare/mycert.ini   2004-11-12 19:51:45.000000000 -0600
+@@ -299,7 +308,7 @@
+ #Filename: %s=
+ #(Cannot read the file.)=
+ #Failure copying files=
+-#Unable to copy '%s' to '%s' - error %d=
++#Unable to copy '%s' to '%s' - error %d: %%s=
+ #Warning=
+ 
+ 
 
-James
+
+(For the record, since this is a public forum: while "recare" is
+mentioned in this message, my employer's name is Catalis Health -- we
+changed it recently because ECARE sued us. If you're an employee of
+ECARE, don't worry, we really are complying).
 
 
