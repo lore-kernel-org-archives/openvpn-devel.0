@@ -1,11 +1,6 @@
-Subject: Re: [Openvpn-devel] Error with source code archives on webpage
-From: Torge Szczepanek <openvpn-devel@...239...>
-In-Reply-To: <Pine.LNX.4.58L.0501230009220.19311@...339...>
-References: <Pine.LNX.4.58L.0501222145140.16426@...339...>
-	 <Pine.LNX.4.58.0501230006470.19782@...41...>
-	 <Pine.LNX.4.58L.0501230009220.19311@...339...>
-Message-Id: <1106470315.6110.2.camel@...257...>
-Mime-Version: 1.0
+From: P Kern <pkern@...345...>
+Message-Id: <05Jan28.134635est.1628422@...346...>
+Subject: [Openvpn-devel] syslog facility config choice
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -16,22 +11,60 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Jan 23 00:53:14 2005
+Date: Fri Jan 28 10:47:45 2005
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: pkern@...345...
 
-Am Sonntag, den 23.01.2005, 00:11 -0800 schrieb Harsha V. Madhyastha:
+Hello.
 
-> -- Yes, from this URL, both 2.0 and 1.6 sources get downloaded fine. 
-> However, on the http://openvpn.net website, the download is linked to 
-> http://prdownloads.sourceforge.net/openvpn/openvpn-2.0_rc6.tar.gz
-> from which a corrupted file is obtained. Same with the source for v1.6.
+It would be useful if the syslog facility could be optionally set to
+something other than LOG_DAEMON.  There are too many things logging
+to LOG_DAEMON, already.  Something like what's included below would be
+great. Then "LOG_OPENVPN" (or whatever) could be chosen at config time.
+(eg. local6.* is idle here so I used "-DLOG_OPENVPN=LOG_LOCAL6").
 
-Take a look at the html file, which is produced by the prdownloads site
-of sourceforge. This is a redirect site, displaying the mirrors of
-Sourceforge and not the openvpn sourcecode.
+Thanks in advance.
+pk.
 
 
-
+===================================================================
+RCS file: error.c,v
+retrieving revision 1.1
+diff -c -r1.1 error.c
+*** error.c	2005/01/25 18:54:13	1.1
+--- error.c	2005/01/25 18:57:35
+***************
+*** 49,54 ****
+--- 49,60 ----
+  
+  #include "memdbg.h"
+  
++ #if SYSLOG_CAPABILITY
++ #ifndef LOG_OPENVPN
++ #define LOG_OPENVPN LOG_DAEMON
++ #endif
++ #endif
++ 
+  /* Globals */
+  unsigned int x_debug_level; /* GLOBAL */
+  
+***************
+*** 394,400 ****
+        if (!use_syslog)
+  	{
+  	  pgmname_syslog = string_alloc (pgmname ? pgmname : PACKAGE, NULL);
+! 	  openlog (pgmname_syslog, LOG_PID, LOG_DAEMON);
+  	  use_syslog = true;
+  
+  	  /* Better idea: somehow pipe stdout/stderr output to msg() */
+--- 400,406 ----
+        if (!use_syslog)
+  	{
+  	  pgmname_syslog = string_alloc (pgmname ? pgmname : PACKAGE, NULL);
+! 	  openlog (pgmname_syslog, LOG_PID, LOG_OPENVPN);
+  	  use_syslog = true;
+  
+  	  /* Better idea: somehow pipe stdout/stderr output to msg() */
 
