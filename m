@@ -1,9 +1,11 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] [PATCH] check crl issuer
-In-Reply-To: <20040929181558.GF27626@...286...>
-Message-ID: <Pine.LNX.4.58.0409291624210.16902@...269...>
-References: <20040929181558.GF27626@...286...>
+From: Manon Goo <manon@...287...>
+Reply-To: Manon Goo <manon@...287...>
+Message-ID: <33A1B960952916C53E05191C@[10.106.103.44]>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="==========31EB073ABDA6FA7C3A7D=========="
+Subject: [Openvpn-devel] Thanks for OpenVPN
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,77 +16,76 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Sep 29 15:30:05 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: Bernhard Weisshuhn <bkw@...286...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Thu Sep 30 23:03:28 2004
+To: openvpn-devel@lists.sourceforge.net
 
-Bernhard,
+--==========31EB073ABDA6FA7C3A7D==========
+Content-Type: text/plain; charset="us-ascii"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Thanks for the patch -- that's a good observation, and I plan to include 
-the patch in beta12.
+Hi,
 
-James
+First of all thanks for Open VPN. I have installed it and it solves almoast=
+=20
+all the problems I had with ipsec for roaming users !
 
-On Wed, 29 Sep 2004, Bernhard Weisshuhn wrote:
 
-> Hi,
-> 
-> I just submitted the following on sourceforge, but since I'm not sure if
-> it gets read frequently, here it is again:
-> 
-> The option crl-verify can bite you, if you use more than one CA to
-> issue certificates (like we do: Server-CA for gateways, User-CA for
-> workstations), since it only checks the serial of the presented certificate
-> against the serials in the crl, without taking the issuer into account,
-> which can make perfectly valid certificates look revoked.
-> 
-> The attached trivial patch spits out a warning and ignores the crl, if it
-> was from another issuer. Should be non-intrusive enough to be considered
-> for 2.0 imho.
-> 
-> The nicer thing to do would be to be able to use multiple CRLs and have
-> openvpn check against the correct one. But I guess that's a little late for
-> 2.0...
-> 
-> Keep up the good work!
-> bkw
-> 
-> 
-> 
-> Patch against cvs branch BETA20:
-> 
-> Index: ssl.c
-> ===================================================================
-> RCS file: /cvsroot/openvpn/openvpn/ssl.c,v
-> retrieving revision 1.38.2.21
-> diff -u -r1.38.2.21 ssl.c
-> --- ssl.c	19 Aug 2004 03:28:10 -0000	1.38.2.21
-> +++ ssl.c	29 Sep 2004 18:03:45 -0000
-> @@ -479,6 +479,12 @@
->  	goto end;
->        }
->  
-> +      if (X509_NAME_cmp(X509_CRL_get_issuer(crl), X509_get_issuer_name(ctx->current_cert)) != 0) {
-> +	msg (M_WARN, "CRL: CRL %s is from a different issuer than the issuer of certificate %s", opt->crl_file, subject);
-> +	retval = 1;
-> +	goto end;
-> +      }
-> +
->        n = sk_num(X509_CRL_get_REVOKED(crl));
->  
->        for (i = 0; i < n; i++) {
-> 
-> 
-> -------------------------------------------------------
-> This SF.net email is sponsored by: IT Product Guide on ITManagersJournal
-> Use IT products in your business? Tell us what you think of them. Give us
-> Your Opinions, Get Free ThinkGeek Gift Certificates! Click to find out more
-> http://productguide.itmanagersjournal.com/guidepromo.tmpl
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> 
+I have discovered some small issues with with openvpn:
+1.) ifconfig and route with non root user.
+I have worked around thie with sudo by configuring
+/configure --prefix=3D/usr/local/openvpn2=20
+--with-ifconfig-path=3D/usr/local/openvpn2/bin/ifconfig=20
+--with-iproute-path=3D/usr/local/openvpn2/bin/route
+
+and putting
+#!/bin/sh
+sudo ifconfig $@
+
+(same for route) into the wrapper scripts defined. Perhaps this would be an=
+=20
+issue for the howto / configuration option.
+
+2.)openvpn calls "ifconfig tun0 delete" under openbsd this should be=20
+"ifconfig tun0 destroy"
+
+3.) Sving IP addresses (Please correct me if I am wrong with this one)
+	the client ist configured
+
+	ifconfig tun0 [local IP]  [local IP + 1 ] .....
+
+	As far as I remember from other tun/tap setups
+
+	ifconfig tun0 [local IP]  [tunnel end IP]  ...
+
+	would work as well and save half of the IP addresses used in a pool (this=
+=20
+is
+	espcialy good for Officaly Assinged Ip addresses because they may be=20
+limited (as in
+	my case )) Is there any way to set this up ?
+
+
+
+
+
+Thanks again
+
+Manon Goo=
+
+--==========31EB073ABDA6FA7C3A7D==========
+Content-Type: application/pgp-signature
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.4 (Darwin)
+
+iD8DBQFBXPL/Gsjj3OYWNZERArKtAJ0Vd94AiBOau0YVjs/yNKEwm+vjRACfcdM3
+ubp1nxrMqkqXoWsUzPnwW5A=
+=PHCY
+-----END PGP SIGNATURE-----
+
+--==========31EB073ABDA6FA7C3A7D==========--
+
+
 
