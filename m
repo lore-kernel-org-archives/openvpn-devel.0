@@ -1,10 +1,12 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] [PATCH]: small tweaks to beta16
-In-Reply-To: <20041117235828.GA27761@...33...>
-Message-ID: <Pine.LNX.4.58.0411180429160.6079@...41...>
-References: <41935EF5.4070907@...292...> <Pine.LNX.4.58.0411110700410.7012@...41...>
- <20041117235828.GA27761@...33...>
-MIME-Version: 1.0
+Message-ID: <1e6368e804111803466164511@...278...>
+From: Leonard Isham <leonard.isham@...277...>
+Reply-To: Leonard Isham <leonard.isham@...277...>
+Subject: Re: [Openvpn-devel] First post and an alternative idea for OpenVPN startup on Linux
+In-Reply-To: <1100764891.19571.15.camel@...318...>
+Mime-Version: 1.0
+References: <1100737211.8135.32.camel@...318...>
+	 <Pine.LNX.4.61.0411180705550.7280@...210...>
+	 <1100764891.19571.15.camel@...318...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,48 +17,59 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Nov 18 03:35:04 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: Matthias Andree <matthias.andree@...68...>
-Cc: Peter 'Luna' Runestig <peter+openvpn@...292...>, openvpn-devel@lists.sourceforge.net
+Date: Thu Nov 18 03:47:00 2004
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+To: Paul Iadonisi <pri.openvpn@...317...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Thu, 18 Nov 2004, Matthias Andree wrote:
-
-> On Thu, 11 Nov 2004, James Yonan wrote:
+On Thu, 18 Nov 2004 03:01:31 -0500, Paul Iadonisi
+<pri.openvpn@...317...> wrote:
+> On Thu, 2004-11-18 at 07:20 +0100, Mathias Sundman wrote:
 > 
-> > On Thu, 11 Nov 2004, Peter 'Luna' Runestig wrote:
-> > 
-> > > --- openvpn-2.0_beta16.orig/makefile.w32	2004-11-07 10:27:36.000000000 +0100
-> > > +++ openvpn-2.0_beta16/makefile.w32	2004-11-10 22:27:42.796479300 +0100
-> > > @@ -50,7 +50,7 @@
-> > > 
-> > >  LIBS_DMALLOC = ${LIBS} -ldmalloc
-> > > 
-> > > -LIB_DIRS = -L${OPENSSL}/out -L${LZO}/src/.libs
-> > > +LIB_DIRS = -L${OPENSSL}/out -L${LZO}
-> > > 
-> > >  LIB_DIRS_DMALLOC = ${LIB_DIRS} -L${DMALLOC}
-> > > 
-> > > 
-> > > I'm using lzo-1.08, and the "liblzo.a" file was created in the
-> > > base directory there, and the "src/.libs" subdir doesn't even
-> > > exist. Or is it just me?
-> > 
-> > That's strange because when I build lzo-1.08, it puts the .a file in 
-> > src/.libs.
+> [snip]
 > 
-> The software that builds the LZO archive and shared library (liblzo.a
-> and .so) in src/.libs is libtool, and libtool should then be used to
-> either _install_ or _link_ against the LZO library. (Libtool stores
-> information that describes the .a and .so files in its .la files.)
+> > I think it's a good idea to have simple "redhat look-alike" scripts to
+> > start / stop individual openvpn tunnels, to make life easier for users.
+> >
+> > But, I hounestly dislike the idea of introducing a new config file format
+> > like this. I don't really see the purpose. Why not just refer to an
+> > OpenVPN config file instead?
 > 
-> Is libtool used for Windows builds?
+>   While I can understand that assessment, and even hesitated at
+> implementing this myself, I'll note that Red Hat does in fact do this
+> both with the built-in IPsec and with dhcp configuration.
+>   I've actually seen this kind of thing as a common tension between the
+> application developers' desire to make an application appear the same,
+> or largely same, no matter what platform you are on, and the platform
+> developers' desire to make things fit nicely into their own platform.  I
+> guess I fit into the later category.
+>   Perhaps its something to be bundled with initscripts instead of
+> openvpn?  It's probably the more appropriate place, anyhow, since I
+> don't think any other packages include their own ifup-*/ifdown-*
+> scripts.
+>   Unfortunately, I may have a *harder* time convincing Red Hat to
+> include it, along with a patch to /etc/sysconfig/network-scripts/ifup
+> because Red Hat doesn't include OpenVPN at all and may not see any
+> justification for customized initscripts to support it.  It is, however,
+> in Fedora Extras (I think only 1.6, though, at the moment), so maybe
+> there is a chance that it will one day be included.
+>   *sigh*  Oh, well, if James doesn't want to include this, I'll
+> understand.  But might I suggest just dropping them in the contrib dir?
+> And if you're really ambitious, you could introduce a --with option to
+> optionally build an rpm with them in the spec file ;-) (or...I could do
+> that, if there's interest).  If not, then, oh well ... I guess I'll just
+> maintain them for my own use.
 
-Right now the Windows build is statically linking with the LZO lib, just 
-as is specified in the makefile.w32.  libtool is used to make the library, 
-but not to link against it.  Is there a problem with this?
+IMHO RH and other distros inhibit customization  by adjusting apps to
+their own liking.  This improves their ability to support their
+distros, but can make it difficult  when you want to upgrade to a
+newer version that is not yet supported by them.
 
-James
+I distinctly remember upgrading RH8 to from httpd 1.??? to the latest
+2.??? Let's just say it wasn't fun.
 
+-- 
+Leonard Isham, CISSP
+Ostendo non ostento.
 
