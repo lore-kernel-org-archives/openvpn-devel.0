@@ -1,8 +1,8 @@
-Message-ID: <68c5481e04092002491ec7e3aa@...278...>
+Message-ID: <68c5481e04092002487a4ee75f@...278...>
 From: Kisero <kisero@...277...>
 Reply-To: Kisero <kisero@...277...>
 Mime-Version: 1.0
-Subject: [Openvpn-devel] logging remote ip disconnection
+Subject: [Openvpn-devel] logging remote peer disconnection
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,7 +13,7 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Sep 20 02:50:26 2004
+Date: Mon Sep 20 02:50:29 2004
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
