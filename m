@@ -1,9 +1,7 @@
 From: Mathias Sundman <mathias@...209...>
-Subject: Re: [Openvpn-devel] CreateFile failed on TAP device
-In-Reply-To: <a6589cd6041105091611d082c6@...278...>
-Message-ID: <Pine.LNX.4.61.0411060032480.1651@...210...>
-References: <a6589cd6041105091611d082c6@...278...>
+Message-ID: <Pine.LNX.4.61.0411060041150.1651@...210...>
 MIME-Version: 1.0
+Subject: [Openvpn-devel] OpenVPN GUI connection configuration
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,43 +12,43 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Nov  5 15:47:40 2004
+Date: Fri Nov  5 16:00:03 2004
 Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
 Content-Transfer-Encoding: 8bit
-To: Hans Fugal <fugalh@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Fri, 5 Nov 2004, Hans Fugal wrote:
+I'd like to start adding connection specific options to OpenVPN GUI, that 
+need to specified somewhere.
 
-> A user is getting this error. She's using XP
->
-> Fri Nov 05 09:07:24 2004 us=747770 CreateFile failed on TAP device:
-> \\.\Global\{A3B605BE-B118-49BA-92C3-C6ADFD7A364C}.tap: The system
-> cannot find the file specified.   (errno=2)
->
-> Attached is her full log. She was connecting just fine yesterday. I've
-> had her stop and start via openvpn gui, with the same results (this
-> log file is from the start after the stop)
->
-> I don't know what to tell her, other than to uninstall, reboot, and
-> reinstall. Does anyone have any other advice?
+The first option I plan to add is:
 
-It's a windows system, right? Reinstall and reboot is always a solution on 
-such a beast ;-)
+* Connection name (instead of the filename)
 
-Is she using --dev-node to specify the tun/tap interface?
+* script to run before starting openvpn, to allow for example a telnet 
+auth session to a PIX firewall before openvpn is started.
 
-Does she have multiple tun/tap interfaces installed?
+I just wonder where the best place to put these options is.
 
-If she run ipconfig can she see the device with the GUID listed above?
+I've thought of two ways.
 
-Does it fail evert time she tries to connect now?
+1) Use a comment prefix in the already existing openvpn config file like:
+### connection-name Office
 
-Did she make any changes when it stopped working? Any new patches applied?
+where ### is used to denote that this is not really a comment but a 
+openvpn-gui option.
 
--- 
-_________________________________________________________
-Mathias Sundman              (^)   ASCII Ribbon Campaign
-NILINGS AB                    X    NO HTML/RTF in e-mail
-Tel: +46-(0)8-666 32 28      / \   NO Word docs in e-mail
+2) Use a new config file with the same name as the openvpn config file, 
+but a diffrent extension like .ogui that can hold openvpn gui settings for 
+each connection.
+
+
+I'd like to get some feedback on what method the communtity would like me 
+to use. Additional ways that I havn't thought of is of cource welcome...
+
+--
+_____________________________________________________________
+Mathias Sundman                  (^)   ASCII Ribbon Campaign
+OpenVPN GUI for Windows           X    NO HTML/RTF in e-mail
+http://www.nilings.se/openvpn    / \   NO Word docs in e-mail
+
 
