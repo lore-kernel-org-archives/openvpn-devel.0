@@ -1,10 +1,7 @@
-Message-ID: <416E4D5E.3040909@...289...>
-From: Vlada Macek <tuttle@...289...>
+From: Mathias Sundman <mathias@...209...>
+Message-ID: <Pine.LNX.4.61.0410141450560.17318@...210...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] PATCH[2/2]: Use certificates from MS Cert Store
- with CryptoAPI
-References: <416D3018.4040704@...292...> <416D3C1D.6000403@...255...> <Pine.LNX.4.58.0410131057240.20018@...269...> <416D8561.3070900@...292...>
-In-Reply-To: <416D8561.3070900@...292...>
+Subject: [Openvpn-devel] Show client IP address in status file
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,26 +12,39 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Oct 14 03:01:13 2004
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
+Date: Thu Oct 14 06:25:35 2004
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Peter 'Luna' Runestig wrote:
+I have a little feature request.
 
->  I don't know. I spent a couple of hours, trying to work around
->  MinGW's limitations when it comes to CryptoAPI, but I just ended up
->  in dead ends.
+I use TAP and bridging in many roadwarrior configurations.
 
-Just a thought: Maybe this addon can be made as a dynamic plug-in. That 
-way both could be compiled in two different compilers and there is no 
-need to port the code for MinGW. The downside of such approach would be 
-that James will not probably support it.
+I would really like to see what IP address that has been assigned to which 
+client in the --status file.
 
-But if it wont change often, it can be shipped as a 3rd party DLL or 
-.so... Maybe in the future there will be some more opportunities to do 
-it this way...
+A while ago we discussed how to protect against the user using another IP 
+address that the one he was assigned, and you, James, changed the code so 
+when using TUN, only the assigned IP address is allowed.
 
-\/.
+However with TAP you said it was much harder as openvpn only keeps track 
+of MAC addresses rather than IP addresses.
 
+I can live with this security issue, but would it be possible to just save 
+the IP address that was assigned to a client so it can be showed in the 
+status file?
+
+How does openvpn work when a client is not a single machine, but a whole 
+bridged network? Does openvpn hand out multiple IP addresses from 
+--ifconfig-pool then?
+
+How does this look like in the status file? One CLIENT LIST line and multi 
+ROUTING TABLE lines?
+
+-- 
+_____________________________________________________________
+Mathias Sundman                  (^)   ASCII Ribbon Campaign
+OpenVPN GUI for Windows           X    NO HTML/RTF in e-mail
+http://www.nilings.se/openvpn    / \   NO Word docs in e-mail
 
