@@ -1,8 +1,7 @@
-From: Charles Duffy <cduffy@...294...>
-Message-ID: <pan.2005.02.10.16.23.42.174190@...294...>
-References: <ee2671e605020907063b5d4138@...278...> <1e6368e805020914263117032e@...278...> <ee2671e605020921475dbd3b12@...278...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] Re: Openvpn 2.0 TAP installation on WindowsXP
+From: Mathias Sundman <mathias@...209...>
+Message-ID: <Pine.LNX.4.61.0502131551270.5891@...210...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Windows install pkg leaves a ; in path
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,18 +12,47 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Feb 10 08:38:26 2005
-Content-Type: text/plain; charset=UTF-8
+Date: Sun Feb 13 07:14:13 2005
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: James Yonan <jim@...41...>, markku@...124...
 
-On Thu, 10 Feb 2005 11:17:38 +0530, Prem Kumar J wrote:
+When uninstalling OpenVPN, the installation package leaves a semicolon at 
+the end of the path.
 
-> Yes I gave duplicate-cn option too in my conf file. I have attached both
-> server and client conf file in my mail. I get the reset problem only when
-> i use TAP whereas TUN I dont have any problem with.
+When OpenVPN is then re-installed, another semicolon is added to the path 
+before the openvpn path, and you therefore end up with two semicolons 
+before the OpenVPN path.
 
-Please repost to openvpn-users; openvpn-devel is for development-centric
-questions.
+Every time you install a new version of OpenVPN an extra semicolon is 
+added!
+
+I have solved this in the OpenVPN GUI installation package simply by 
+changing
+
+   ; remove previously set path (if any)
+   Push "$INSTDIR\bin"
+   Call RemoveFromPath
+
+to
+
+   ; remove previously set path (if any)
+   Push ";$INSTDIR\bin"
+   Call RemoveFromPath
+
+in the two places RemoveFromPath is called from the NSIS script.
+
+I guess a more "correct" solution would be to fix the setpath.nsi 
+RemoveFromPath function so it removes the preceding semicolon if a such 
+exists.
+
+Thanks to Markku Leinio for reporting this problem.
+
+--
+_____________________________________________________________
+Mathias Sundman                  (^)   ASCII Ribbon Campaign
+OpenVPN GUI for Windows           X    NO HTML/RTF in e-mail
+http://openvpn.se                / \   NO Word docs in e-mail
 
 
