@@ -1,9 +1,9 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] Mac OS X tap support
+Mime-Version: 1.0 (Apple Message framework v619)
 In-Reply-To: <20040911143321.GG31609@...271...>
-Message-ID: <Pine.LNX.4.58.0409111018240.23109@...269...>
 References: <20040911143321.GG31609@...271...>
-MIME-Version: 1.0
+Message-Id: <0547CA24-0428-11D9-B480-000A95C4C03E@...68...>
+From: Mattias Nissler <mattias.nissler@...68...>
+Subject: [Openvpn-devel] Re: Mac OS X tap support
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,42 +14,37 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Sep 11 09:33:05 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: Waldemar Brodkorb <wbx@...270...>
-Cc: openvpn-devel@lists.sourceforge.net, Mattias Nissler <mattias.nissler@...68...>
+Date: Sat Sep 11 12:24:04 2004
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-On Sat, 11 Sep 2004, Waldemar Brodkorb wrote:
+Hi,
 
-> Hi,
-> 
-> yesterday we found a new tun/tap kernel extension for Mac OS X
-> here:
-> http://www-user.rhrk.uni-kl.de/~nissler/tuntap/
-> 
-> After some short testing and a small patch to OpenVPN
-> the Mac OS X client seems to work correctly via the
-> TAP device.
-> 
-> It would be nice if this patch and eventually 
+just to say a few words myself...
+
+>
+> It would be nice if this patch and eventually
 > the driver could be integrated into openvpn like the
-> win32 driver. 
-> 
-> If someone is interested we also would provide a binary
-> package, which installs the tap/tun driver and OpenVPN on
-> Mac OS X.
+> win32 driver.
+>
 
-That would be great if you wanted to do it.  OpenVPN on OS X really needs 
-a maintainer.
+do that if you like, therefore I put it under BSD style license. 
+However, I wrote the driver only weeks ago (it is online since August 
+24th), so there may be some bugs/weaknesses. Therefore I am interested 
+in any bugreports, suggestions and problems encountered.
 
 > Mattias Nissler: Thanks for providing this driver, there
 > was a very short timeslice, where I was thinkning to do a tap
 > kernel extension on my own ... but luckily Daniel Lehmann has some
 > greater ability to use google correctly ;)
+>
 
-That's cool -- I didn't even know someone had written a new driver.
+Well, perhaps that's not your fault, google had only two weeks until 
+now to pick it up ;-) I was quite amazed that they are so quick.
 
-James
+Have fun,
+
+Mattias
 
 
