@@ -1,8 +1,8 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] undefined get_netsh_id
-In-Reply-To: <048101c4c5b5$655eca80$0600000a@...139...>
-Message-ID: <Pine.LNX.4.58.0411081452380.13473@...41...>
-References: <048101c4c5b5$655eca80$0600000a@...139...>
+From: Mathias Sundman <mathias@...209...>
+Subject: Re: [Openvpn-devel] OpenVPN GUI not working with ms cert store
+In-Reply-To: <Pine.LNX.4.61.0411082202130.8879@...210...>
+Message-ID: <Pine.LNX.4.61.0411082310460.8879@...210...>
+References: <Pine.LNX.4.61.0411082202130.8879@...210...>
 MIME-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
@@ -14,35 +14,45 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Nov  8 14:02:38 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Date: Mon Nov  8 14:30:30 2004
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
 Content-Transfer-Encoding: 8bit
-To: Gisle Vanem <giva@...258...>
-Cc: OpenVPN-dev <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-On Mon, 8 Nov 2004, Gisle Vanem wrote:
+On Mon, 8 Nov 2004, Mathias Sundman wrote:
 
-> I tried building latest beta16 with gcc 3.4.1 and MingW and
-> struck what I suspect is a gcc bug. While linking I got:
-> 
-> tun.o(.stab+0x11024): In function `ipset2ascii_all':
-> G:/MingW32/src/inet/OpenVPN/tun.c:3321: undefined reference to `get_netsh_id'
-> tun.o(.stab+0x110b4):G:/MingW32/src/inet/OpenVPN/tun.c:3321: 
-> undefined reference to `get_netsh_id'
-> 
-> Line 3321 has no reference to get_netsh_id(). And what is this ".stab" section
-> doing there?
-> 
-> Seems gcc has problems with prototypes at > 1 scope. Moving the protype to
-> file-scope or removing 'static' from the prototype and definition of get_netshid()
-> fixed it though. Anybody else seen this?
+> I got an email from an OpenVPN GUI user today saying that it didn't work 
+> together with passphrase protected keys in the MS certificate store.
+>
+> I had no problem reproducing it. I'm using OpenVPN 2.0-beta16, and all 
+> version of OpenVPN GUI from beta1 to beta22 fails.
+>
+> What happends is that OpenVPN "hangs" when windows is supposed to show the 
+> dialog asking the user to enter his passphrase.
+>
+> If openvpn is run from cmd-line it works fine, and the passphrase dialog is 
+> showed, and even Michael's .NET based GUI works!
+>
+> But not mine ;-( For some reason the dialog is just not showed, so obviously 
+> openvpn can't continue.
 
-I'm using this gcc:
+Why do one always find the problem yourself the minute after posting to a 
+list?!
 
-gcc.exe (GCC) 3.2.3 (mingw special 20030504-1)
+The problem was in the way I called CreateProcess(). I used the 
+dwFlags = STARTF_USESHOWWINDOW and wShowWindow = SW_HIDE in the 
+start_info struct.
 
-which didn't have any problem with it.
+This was no-no! It seemed to suppress also windows dialogs!
 
-James
+If I instead used CREATE_NO_WINDOW as dwCreationFlags in the call to 
+CreateProcess(), then the openvpn console window was still hidden, but 
+Windows still shows the certficate store dialogs correctly.
 
+Thanks to the list for just existing ;-)
+
+There will soon be a new release available of OpenVPN GUI with the fix 
+included...
+
+/Mathias
 
