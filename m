@@ -1,7 +1,7 @@
-Message-ID: <4002F85B.9010103@...61...>
-From: Julien TOUCHE <julien.touche@...61...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] No buffer space available (code=105)
+From: "Robin G. Wenninger" <robin@...152...>
+Message-ID: <20040112203825.GA5857@...152...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] OpenVPN 1.5.0 -> write UDPv4 []: No buffer space available
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,41 +12,43 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Jan 12 11:42:04 2004
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
+Date: Mon Jan 12 12:39:01 2004
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-Recently, i gate the following error with openvpn 1.5
+Hi List,
 
-un Jan 11 21:29:40 2004 554: write UDPv4 []: No buffer space available 
-(code=105)
-Sun Jan 11 21:29:40 2004 555: write UDPv4 []: No buffer space available 
-(code=105)
-Sun Jan 11 21:29:42 2004 556: 352 variation(s) on previous 3 message(s) 
-suppressed by --mute
-Sun Jan 11 21:29:42 2004 557: Adaptive compression state OFF
-Sun Jan 11 21:29:42 2004 558: write UDPv4 []: No buffer space available 
-(code=105)
-Sun Jan 11 21:29:42 2004 559: write UDPv4 []: No buffer space available 
-(code=105)
-Sun Jan 11 21:29:42 2004 560: write UDPv4 []: No buffer space available 
-(code=105)
+I'm not sure about if this is a real bug, but:
 
-and tcpdump shows a lot of frag whereas there is no traffic ...
+Since OpenVPN 1.5.0 I notice this in my log-files:
 
-20:31:38.484979 10.0.1.1.16884 > 10.0.1.2.16884:  udp 204 (DF) (ttl 64, 
-id 0, len 232)
-20:31:38.489019 10.0.1.1.16884 > 10.0.1.2.16884:  udp 1292 (frag 
-64509:1232@...150...+) (ttl 64, len 1252)
-20:31:38.491403 10.0.1.1 > 10.0.1.2: (frag 64509:68@...151...) (ttl 64, len 88)
-20:31:38.497492 10.0.1.1.16884 > 10.0.1.2.16884:  udp 1292 (frag 
-64510:1232@...150...+) (ttl 64, len 1252)
-20:31:38.499898 10.0.1.1 > 10.0.1.2: (frag 64510:68@...151...) (ttl 64, len 88)
+<snip>
+Jan 12 16:55:14 hefti openvpn[20762]: write UDPv4 []: No buffer space
+available (code=105)
+Jan 12 16:56:04 hefti last message repeated 4 times
+Jan 12 16:56:21 hefti last message repeated 3 times
 
-any ideas ?
+(the same with "ping -s 1000 -f")
+Jan 12 21:18:46 hefti last message repeated 976 times
+<snap> ...and so on
 
-Regards
+First I thought it might be a Kernel problem, but I get these error
+under 2.4.20, 2.4.23, 2.6.1 and also this happens only since OVPN
+1.5.0.
 
-		Julien
+It's very easy to reproduce if you try something like
+"ping -s 1000" or even "ping -s 1000 -f" over the tunnel. However I 
+don't assume that this has a major effect to the throughput but I'm 
+wondering about this message.
+
+-> Maybe it's important that I have a xDSL on each side.
+-> OpenVPN 1.5.0 i386-pc-linux-gnu [SSL] [LZO] [PTHREAD]
+
+It you need further information to track down this problem, tell me and
+don't be too angry if I did something wrong - it's my first Bug-Report.
+;)
+
+Best regards rw
 
