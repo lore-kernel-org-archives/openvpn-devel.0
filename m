@@ -1,7 +1,8 @@
-From: Christian Gut <cycloon@...192...>
-Message-ID: <20040625071229.GB17592@...192...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] [claudio@...243...: CVS: cvs.openbsd.org: src]
+Message-ID: <40E18559.8020407@...244...>
+From: Jan Kiszka <kiszka@...244...>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="------------070607000601090907020700"
+Subject: [Openvpn-devel] [Patch] revoke scripts were broken
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,34 +13,60 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Jun 25 00:12:17 2004
-Content-Type: text/plain; charset=iso-8859-15
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
+Date: Wed Jun 30 06:45:03 2004
 To: openvpn-devel@lists.sourceforge.net
 
-just FYI, OpenBSD now supports tap devices in -current.
+This is a multi-part message in MIME format.
+--------------070607000601090907020700
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
 
------ Forwarded message from Claudio Jeker <claudio@...243...> -----
+Hi all,
 
-Date: Thu, 24 Jun 2004 22:09:03 -0600 (MDT)
-From: Claudio Jeker <claudio@...243...>
-Message-Id: <200406250409.i5P4936M017947@...243...>
-To: source-changes@...243...
-Subject: CVS: cvs.openbsd.org: src
-CVSROOT:	/cvs
+here is a tiny patch to make revoke-crt and make-crl work seamlessly 
+within the easy-rsa environment. Seems that no one used it before ;)
 
-Module name:	src
-Changes by:	claudio@...243...	2004/06/24 22:09:03
-
-Modified files:
-	share/man/man4 : tun.4 
-	sys/net        : if_tun.c if_tun.h 
-
-Log message:
-Add tap aka layer 2 tunneling support to tun(4). It can be enabled by setting
-the link0 flag via ifconfig(8). OK markus@, canacar@ also tested by ish@
+Jan
 
 
------ End forwarded message -----
+PS: Has anyone ever thought about some small GUI (taskbar icon with some 
+dialogs) for Windows, KDE, etc. to make the handling of multiple 
+configurations and the status display easier in a roadwarrior scenario? 
+Just a thought, I'm not saying I have the time for doing it - unfortunately.
+
+[If you reply, please add a CC, I'm not on the list]
+
+--------------070607000601090907020700
+Content-Type: text/plain;
+ name="revoke.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="revoke.patch"
+
+diff -Nur /tmp/openvpn-2.0_beta6/easy-rsa/make-crl openvpn-2.0_beta6/easy-rsa/make-crl
+--- /tmp/openvpn-2.0_beta6/easy-rsa/make-crl	2004-06-15 02:01:13.000000000 +0200
++++ openvpn-2.0_beta6/easy-rsa/make-crl	2004-06-29 16:50:09.836098144 +0200
+@@ -12,7 +12,7 @@
+ 
+ if test $KEY_DIR; then
+        cd $KEY_DIR && \
+-       openssl ca -gencrl -out $1
++       openssl ca -gencrl -out $1 -config $KEY_CONFIG
+ else
+        echo you must define KEY_DIR
+ fi
+diff -Nur /tmp/openvpn-2.0_beta6/easy-rsa/revoke-crt openvpn-2.0_beta6/easy-rsa/revoke-crt
+--- /tmp/openvpn-2.0_beta6/easy-rsa/revoke-crt	2004-06-15 02:01:13.000000000 +0200
++++ openvpn-2.0_beta6/easy-rsa/revoke-crt	2004-06-29 16:50:21.703294056 +0200
+@@ -12,7 +12,7 @@
+ 
+ if test $KEY_DIR; then
+        cd $KEY_DIR && \
+-       openssl ca -revoke $1
++       openssl ca -revoke $1 -config $KEY_CONFIG
+ else
+        echo you must define KEY_DIR
+ fi
+
+--------------070607000601090907020700--
 
