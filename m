@@ -1,9 +1,9 @@
-From: Michael Hieb <michael_hieb@...183...>
-Message-Id: <20040316145421.06d2d129.michael_hieb@...183...>
-In-Reply-To: <405756E7.3090906@...180...>
+Message-ID: <405778CA.8030506@...177...>
+From: Farkas Levente <lfarkas@...177...>
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] no chance trying openvpn
 References: <405756E7.3090906@...180...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] Re: [Openvpn-users] no chance trying openvpn
+In-Reply-To: <405756E7.3090906@...180...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,33 +14,13 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Mar 16 13:16:39 2004
-Content-Type: text/plain; charset=US-ASCII
+Date: Tue Mar 16 14:00:07 2004
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Transfer-Encoding: 7bit
 To: pi <list@...180...>
 Cc: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-I have to tell you my experience on SuSE distro(s) [Sparc & Intel] worked like
-a charm. Perhaps if you look at the configure options you can help configure
-find the ssl headers. For example...
-
-fuego:/tmp/openvpn-1.6_beta1 # ./configure --help
-[snip...]
-Optional Packages:
-  --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
-  --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --with-ssl-headers=DIR  Crypto/SSL Include files location
-  --with-ssl-lib=DIR      Crypto/SSL Library location
-[snip...]
-
-Also googling shows you are not alone in having this problem on Redhat, e.g.
-http://www.google.com/search?hl=en&lr=&ie=UTF-8&oe=UTF-8&q=redhat+%22checking+for+openssl%2Fssl.h...+no%22&btnG=Google+Search
-
-Good luck...
-
-On Tue, 16 Mar 2004 20:35:03 +0100
-pi <list@...180...> wrote:
-
+pi wrote:
 > I can really say "I'm not lucky with VPN solutions!!"
 > 
 > 
@@ -68,7 +48,8 @@ pi <list@...180...> wrote:
 > openssl-0.9.7a-20
 > 
 > I post a message on this list but no answer  :-((
-> I tried to attach my config.log to this mail, but there's a limit of 40k/message.
+> I tried to attach my config.log to this mail, but there's a limit of 
+> 40k/message.
 > 
 > 
 > 
@@ -98,29 +79,15 @@ pi <list@...180...> wrote:
 > dynamically
 > Mar 16 20:30:05 moulinsart openvpn[2593]: Exiting
 > Mar 16 20:30:05 moulinsart openvpn:  failed
->  
+> 
 > WHAT CAN I DO ???
-> 
-> Phil
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> -------------------------------------------------------
-> This SF.Net email is sponsored by: IBM Linux Tutorials
-> Free Linux tutorial presented by Daniel Robbins, President and CEO of
-> GenToo technologies. Learn everything from fundamentals to system
-> administration.http://ads.osdn.com/?ad_id=1470&alloc_id=3638&op=click
-> _______________________________________________
-> Openvpn-users mailing list
-> Openvpn-users@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-users
+
+it should have to run. do you use the default latest rh kernel?
+if you need I can send an rpm for rh9.
+put into your /etc/modules.conf a line:
+alias char-major-10-200 tun
+
+-- 
+   Levente                               "Si vis pacem para bellum!"
+
 
