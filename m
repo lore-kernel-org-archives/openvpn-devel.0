@@ -1,5 +1,5 @@
-Message-ID: <021501c20ef0$a4e116f0$1000000a@...4...>
-From: "James Yonan" <jim@...3...>
+From: James Yonan <jim@...3...>
+Message-ID: <Pine.LNX.4.44.0206081324150.13198-100000@...21...>
 MIME-Version: 1.0
 Subject: [Openvpn-devel] Beta available, please test
 Sender: openvpn-devel-admin@lists.sourceforge.net
@@ -12,11 +12,11 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://www.geocrawler.com/redir-sf.php3?list=openvpn-devel>
-Date: Sat Jun  8 15:42:25 2002
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+Date: Sat Jun  8 15:47:50 2002
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: openvpn-users@lists.sourceforge.net
 
 This beta is pretty close to being 1.2.1.  Let me know if there are any
 problems.
@@ -69,6 +69,8 @@ Change Log since 1.2.0:
 * Minor changes to docs and HOWTO.
 * All changes maintain protocol compatibility
   with OpenVPN versions since 1.1.0.
+
+James
 
 
 
