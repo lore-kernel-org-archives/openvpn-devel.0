@@ -1,9 +1,9 @@
-From: Denis Vlasenko <vda@...216...>
-Subject: Re: Interface with GUI agent, was: Re: [Openvpn-devel] [Patch] revoke scripts were broken
-References: <40E18559.8020407@...244...> <200407040154.49974.vda@...216...> <40E75F4E.6030901@...83...>
-In-Reply-To: <40E75F4E.6030901@...83...>
+From: Mathias Sundman <mathias@...209...>
+In-Reply-To: <B531E2D213DD4946B97797232C7C16E18DC009@...248...>
+Message-ID: <Pine.LNX.4.60.0407041155460.21697@...210...>
+References: <B531E2D213DD4946B97797232C7C16E18DC009@...248...>
 MIME-Version: 1.0
-Message-Id: <200407041232.59822.vda@...216...>
+Subject: [Openvpn-devel] RE: [Openvpn-users] Release: OpenVPN-GUI for Windows v1.0-beta2
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,38 +14,39 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Jul  4 02:34:02 2004
-Content-Type: text/plain;
-  charset="windows-1251"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-To: Jan Kiszka <jan.kiszka@...83...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Sun Jul  4 03:10:01 2004
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 8bit
+To: Tyrone Omidi <tyrone.omidi@...247...>
+Cc: Openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-On Sunday 04 July 2004 04:37, Jan Kiszka wrote:
-> >>Thinking ahead, the challenge/response sequence for passing
-> >> authentication info should be open-ended to provide for future
-> >> implementation of alternative authentication methods such as Radius,
-> >> LDAP, NT Auth, etc.
-> >
-> > Please don't do too much of that. I've seen this auth featuritis creeping
-> > in ntp and ups tools(!). Results ain't pretty...
-> >
-> > Reconfiguration of openvpn can always be done by editing config file
-> > and restarting openvpn daemon. Simple. Elegant. No additional coding
-> > - no risk of introducing bugs.
-> >
-> > This can be done via systray app, too.
->
-> I can understand your concerns, and mostly you are right. However, there
-> is one quite important scenario - at least as I see it - where you need
-> the core daemon and the GUI running in different accounts: whenever the
-> key or secret has to be looked away from the user while it shall still
-> be possible for her/him to start/stop VPN connections. One reason for
+On Sun, 4 Jul 2004, Tyrone Omidi wrote:
 
-Easy. openvpn shall start in admin account, then read the key,
-and *then* change its uid to the uid killable by user.
---
-vda
+> How about options manage the service?
 
+How would you like to see this implemented? Just another menu item that 
+can start/stop the service?
+
+What about multiple configs started by the service. Should the GUI be able 
+to start/stop these individually? How do we do this?
+
+When we have the "management protocol" ready we should be able to use this 
+to hook into the processes started by the service.
+
+To be able to stop a process started by the service and then start it 
+again, we would need either:
+
+1. A "SUSPEND" mode in openvpn, so we can tell it to "stop", but the 
+process should still be running, but inactive, so we later can tell it to 
+start again (still running as the same user as the service wrapper started 
+it as.).
+
+2. What Jan Kiszka suggested, an openvpn process running capable of 
+forking of new processes with a specific config-file.
+
+-- 
+_____________________________________________________________
+Mathias Sundman                  (^)   ASCII Ribbon Campaign
+NILINGS AB                        X    NO HTML/RTF in e-mail
+Tel: +46-(0)8-666 32 28          / \   NO Word docs in e-mail
 
