@@ -1,7 +1,9 @@
-Message-ID: <002101c37d68$afaac120$070116ac@...107...>
-From: "John Conneely" <john@...106...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Beta naming convention?
+From: Matthias Andree <ma+ovpnd@...31...>
+Subject: Re: [Openvpn-devel] RE: [Openvpn-users] Windows tun driver
+Message-ID: <20030917224712.GA27967@...33...>
+References: <946499570EB7294690F512C1EF182F881EB899@...102...> <twig.1063739039.66173@...41...>
+Mime-Version: 1.0
+In-Reply-To: <twig.1063739039.66173@...41...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -12,35 +14,29 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Sep 17 15:16:04 2003
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-To: James Yonan <jim@...41...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Wed Sep 17 15:48:05 2003
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Hi James!
+On Tue, 16 Sep 2003, James Yonan wrote:
 
-First, thanks for such a great product!  I've been using openvpn-1.3.2 on a
-few Mandrake boxes for a little under a year now, and it's been bulletproof.
+> While I do believe that the majority of Windows users will prefer a tap
+> interface, I say this simply because in my experience _most_ Windows users
+> prefer the option that is the easiest to configure.  Once you stop
+> automatically routing broadcasts and non-IP protocols, then you have to start
+> doing more configuration on Windows, i.e. setting up WINS servers and clients,
+> configuring samba differently, etc.
 
-Now I'd like to try out windows support, so I thought I'd upgrade to your
-latest beta.  (I'm not sure if that's necessary on my linux boxes, but I
-thought it might be nice to try it out anyway.)  The problem is that I
-install everything as RPMs on my Mandrake box, and I got an error when I
-used the rpmbuild-tb [tarball] command.  This seems to be because you use a
-dash character "-" in the version number.  I was able to get around this by
-making the dash character into an underscore, setting version to "1.5_beta7"
-in openvpn.spec.  I also made the directory name and tar ball use the same
-convention.  It works fine on the box I upgraded, even working with my other
-openvpn-1.3.2 installations.
+Would the TUN device really be much different from any random PPP
+device? Either is a point-to-point connection. Granted, with current
+Windoze versions, SMB and all that stuff isn't bound to PPP devices by
+default but is likely that the user wants it bound to TUN, however,
+there are convenience features like --ifconfig.
 
-Anyway, I wanted to suggest that you avoid using dash characters in future
-beta version numbers.
+-- 
+Matthias Andree
 
-Thanks!
-
-John
-
-
+Encrypt your mail: my GnuPG key ID is 0x052E7D95
 
