@@ -1,8 +1,6 @@
-Subject: Re: [Openvpn-devel] OpenVPN multi instancing
+Subject: Re: [Openvpn-devel] Files missing from BETA20 CVS
 From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1078255119.33941@...41...>
-In-Reply-To: <20040302121623.4177df8a.lademann@...76...>
-References: <twig.1078170122.8125@...41...> <twig.1078170122.8125@...41...> <twig.1078182908.84967@...41...> <Pine.LNX.4.58.0403011745030.30913@...136...>, <Pine.LNX.4.58.0403011745030.30913@...136...>
+Message-ID: <twig.1078262508.49331@...41...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,27 +11,37 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Mar  2 11:24:02 2004
+Date: Tue Mar  2 13:31:01 2004
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: lademann@...76..., openvpn-devel@lists.sourceforge.net
+To: Matthias Andree <ma+ovpnd@...31...>, openvpn-devel@lists.sourceforge.net
 
-Christian Lademann <lademann@...76...> said:
+Matthias Andree <ma+ovpnd@...31...> said:
 
-> Hello, James hello, Christian,
+> Hi,
 > 
-> is it also going to be supported in 2.0 to have multiple tup/tap interfaces
-> but only a single TCP-port on the server side waiting for incoming connections?
+> the files list.c, mroute.c and multi.c appear to be missing from the
+> BETA20 branch in CVS:
+> 
+> ma@...174...:~/cvs-3rdparty/openvpn> LANG=C make -ks 2>&1 | grep ^make
+> make[1]: *** No rule to make target `list.c', needed by `list.o'.
+> make[1]: *** No rule to make target `mroute.c', needed by `mroute.o'.
+> make[1]: *** No rule to make target `multi.c', needed by `multi.o'.
+> make[1]: *** [openvpn.o] Error 1
+> make[1]: Target `all-am' not remade because of errors.
+> make: *** [all] Error 2
 
-The ultimate goal is to have all connection options open in either
-point-to-point or point-to-multipoint mode.  The initial 2.0 beta will
-specialize in serving multiple clients on a single UDP port, single tun/tap
-interface, and single config file.
+Ooops, it looks like I forgot to do a cvs add on some new files.
 
-Actually if you want single TCP-port, one tun/tap interface per client, that
-sounds like the inetd-based forking server model which is already functional
-(in a limited sense) in the 1.6 beta series.  The limitation is that you use
-SSL/TLS + bridging.  See the FAQ for more info.
+It's fixed now, and the BETA20 branch has been updated to reflect my current
+development sources (I also updated the ChangeLog).
+
+The current source should build and run a point-to-point tunnel correctly
+using all the refactored code.  Grep for JYFIXME to see a bunch of gotchas in
+the source -- mostly stuff that's there for debugging purposes.
+
+The point-to-multipoint code is taking shape in multi.[ch] but is not finished
+yet.
 
 James
 
