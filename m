@@ -1,7 +1,8 @@
-Message-ID: <41A057C3.90800@...138...>
-From: "Ian D. Bjorhovde" <ianbjor@...138...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Using miniLZO?
+From: Emil <emil@...314...>
+Message-ID: <loom.20041123T144634-575@...171...>
+References: <loom.20041115T171745-883@...171...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Re: TAP-Win32 and other NDIS IM drivers
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,21 +13,13 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Nov 21 00:56:14 2004
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Date: Tue Nov 23 05:50:06 2004
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-To: OpenVPN devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Has anyone tried using miniLZO instead of the full-blown LZO library?
-I'm looking to build openvpn for the Sveasoft firmware on Linksys
-WRT54G, but don't want the relatively large (216kb) library.
-
-If what I'm reading is correct, moving to lzo1x_1_compress is
-only slightly slower than lzo1x_1_15_compress (~1.5%), and that
-would be the only disadvantage...
-
-Thoughts, anyone?
-
-
+The problem was with the implementation of the ProtocolStatus and
+ProtocolStatusComplete. Both functions must forward the status notifications
+received.
 
 
