@@ -1,10 +1,9 @@
-From: Mathias Sundman <mathias@...209...>
+From: Denis Vlasenko <vda@...216...>
 Subject: Re: [Openvpn-devel] Re: Interface with GUI agent
+References: <40E18559.8020407@...244...> <Pine.LNX.4.60.0407080941160.5287@...210...> <200407081043.25501.jim@...41...>
 In-Reply-To: <200407081043.25501.jim@...41...>
-Message-ID: <Pine.LNX.4.60.0407082214170.6520@...210...>
-References: <40E18559.8020407@...244...> <200407072255.54148.jim@...41...>
- <Pine.LNX.4.60.0407080941160.5287@...210...> <200407081043.25501.jim@...41...>
 MIME-Version: 1.0
+Message-Id: <200407082328.32017.vda@...216...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,62 +14,100 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Jul  8 13:35:05 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Jan Kiszka <jan.kiszka@...83...>
+Date: Thu Jul  8 13:36:08 2004
+Content-Type: text/plain;
+  charset="windows-1251"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+To: James Yonan <jim@...41...>, openvpn-devel@lists.sourceforge.net
+Cc: Mathias Sundman <mathias@...209...>, Jan Kiszka <jan.kiszka@...83...>, upsdev@...251..., rkroll@...252...
 
-On Thu, 8 Jul 2004, James Yonan wrote:
+> > >> 1. On Windows, if the the service wrapper has started some openvpn
+> > >> processes before our gui agent is started, how should find out about
+> > >> those processes?
+> > >>
+> > >> I can think of the following ways:
+> > >>
+> > >> 1a. Ask the service wrapper via the socket interface that I'm working
+> > >> on right now. This will require the service wrapper not only start the
+> > >> processes, but keep a table over running processes.
+> > >
+> > > I think it's an important point worth some discussion on whether to (a)
+> > > put all the "intelligence" in the GUI applet and have the service
+> > > wrapper just be a basic proxy to an admin-privileged CreateProcess, or
+> > > (b) write a portable service wrapper that's designed to run on all the
+> > > OSes which OpenVPN currently supports, and which would do all the
+> > > "under-the-hood" work in starting/stopping/managing of different
+> > > OpenVPN processes, and the GUI applet would do nothing more than export
+> > > the control interface of the portable service wrapper to a
+> > > platform-specific, lightweight GUI.
 
->> 1. On Windows, if the the service wrapper has started some openvpn
->> processes before our gui agent is started, how should find out about
->> those processes?
->
-> I think that the goal here is to work towards putting all of the complexity
-> into the portable service manager, so the GUI applet will only open a single
-> local TCP connection to the service manager, and the service manager will
-> deal with communicating with the individual OpenVPN processes.
+(b) already exists. It's daemontools. (Does not exist on NT, though).
+Daemontools' license is not open enough, but there is a opensource clone
+at http://smarden.org/runit/.
 
-I agree.
+> > > (a) is probably simpler to develop, but (b) may be a better solution
+> > > long-term because it handles the management interface in a portable
+> > > way, and makes the GUI itself (which probably needs a separate admin
+> > > module for Win32, YaST, X, http, etc.) as lightweight and stateless as
+> > > possible.
+
+Let me hijack your attention for a moment.
+
+Once I bought an UPS. I googled for UNIX UPS tools and found package
+named NUT. I downloaded and installed it. It consists of low-level UPS
+drivers, UPS-monitoring daemons, servers listening on TCP and clients
+which can talk to these servers. And maybe something else, I forgot.
+A bunch of config files is used to configure things like how are UPSes
+connected, which users can do what to which UPS, etc, etc, etc.
+
+After an hour spent figuring out how to organize it, I managed to start
+it. Or shall I say 'them', because I needed to run several processes.
+I ended up with 2 Mbites of RSS spent for UPS monitoring.
+
+I didn't like it. I didn't like it at all. I didn't like multiple
+config files. I didn't like additional user auth and crypto (who can
+connect to my UPS daemon, passwords, encryption of TCP protocol used
+to talk with it....). Why do I need Yet Another TCP Server, Auth, Crypto,
+Logging, Etc when ssh/ssl and daemontools already exist and
+is well debugged?
+
+I took NUT apart. I chainsawed away the cruft, all 99% of it,
+and made smallish daemon which connects to serial port
+and can (1) poll UPS about it's state and (2) can command
+UPS to e.g. test battery, shutdown, etc. I put it under
+daemontools. I don't need to control it over the net
+or from another user account, but if I'll need to,
+I will do it using existing tools like ssh.
+For example, ability to stop/restart daemon by user
+is controlled via chmod/chown'ing daemontools' control file.
+Daemontools are very elegant. Instead of reinventing
+ACLs, they _use_ ACLs already designed for filesystem
+access control. Cool, isn't it?
+
+When compiled against dietlibc, my ups daemon consumes 32 _kilobytes_
+of RAM:
+
+PID USER     PRI  NI  SIZE  RSS SHARE STAT %CPU %MEM   TIME CPU COMMAND
+884 root      15   0    32   32    24 S     0.0  0.0   0:01   0 powermust
+
+What I am trying to say? I am very happy that you guys are actively
+working on openvpn. Really.
+
+Just please do not OVERdesign it.
+
+Maybe it's better to try to port daemontools to Windows
+and run openvpn daemon(s) under it.
 
 > All of this of course represents a lot of development effort, so I think it
 > makes a lot of sense to "evolve" towards these goals in small incremental
 > steps.
 
-Agree here to.
+Exactly what I meant. It's counterproductive to
+reinvent the wheel. NUT folks wrote a ton of code duplicated
+in ssh et al, and they need to debug it also. Nnd then it
+just sits there wasting RAM. Ugly.
+--
+vda
 
-One more thing to consider... Should we consider a system running this 
-service manager an open system where all locally logged on users is 
-allowed to fully manage openvpn connections, which includes:
-
-* Start/Stop openvpn processes
-* Create new openvpn configs
-* delete openvpn configs
-
-(Hereby not said that creating/deleting configs should be done via the 
-service manager. I just want to discuss whether a normal user should be 
-able to do this or not)
-
-or, do we need to restrict this somehow. Two ways to restict this:
-
-1. On filesystem level we could have the service manger only read config 
-files from a prespecified directory, and can then disallow normal users 
-access to that directory by normal FS restrictions. This would allow us 
-to control which users is allowed to add/delete/modify config-files, but 
-not stop them from starting/stopping preconfigured connections.
-
-2. Use authentication on the socket to the service manager. This would 
-allow us to fully control which user is allowed to do what, but it would 
-add alot of complexity so I think it should be avoided, if really don't 
-need this.
-
-
-Comments?
-
--- 
-_____________________________________________________________
-Mathias Sundman                  (^)   ASCII Ribbon Campaign
-NILINGS AB                        X    NO HTML/RTF in e-mail
-Tel: +46-(0)8-666 32 28          / \   NO Word docs in e-mail
 
