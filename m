@@ -1,10 +1,9 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] Pass log and passphrase between OpenVPN and
- OpenVPN GUI
-In-Reply-To: <Pine.LNX.4.60.0410012147580.18074@...210...>
-Message-ID: <Pine.LNX.4.58.0410020309540.22850@...269...>
-References: <Pine.LNX.4.60.0410012147580.18074@...210...>
+Message-ID: <415FC76E.7010504@...285...>
+From: Remco Boom <rab@...285...>
 MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] Win 32 Install script bug openvpn.nsi
+References: <20040924023235.M12953@...283...> <Pine.LNX.4.58.0409241345300.26514@...269...> <20040924170928.B8393@...283...> <415AB00E.3030605@...285...> <Pine.LNX.4.58.0409291616060.16902@...269...>
+In-Reply-To: <Pine.LNX.4.58.0409291616060.16902@...269...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,61 +14,62 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Oct  2 02:24:34 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: Mathias Sundman <mathias@...209...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Sun Oct  3 02:38:59 2004
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: James Yonan <jim@...41...>, openvpn-devel@lists.sourceforge.net
 
-On Fri, 1 Oct 2004, Mathias Sundman wrote:
+Hello James
 
-> Didier announced a first release of an improved version of the OpenVPN 
-> Service Wrapper earlier this week. The goal with this is to allow a non 
-> admin user on Windows to start/stop openvpn processes.
-> 
-> It does this by listening on a local TCP socket for commands like "START 
-> config.ovpn" or "STOP config.ovpn".
-> 
-> I've started working on OpenVPN GUI 2.0 that will use this service 
-> wrapper to control openvpn.
-> 
-> There is two things that remain unsolved though that I'd like to bring up 
-> for some discussion.
-> 
-> 1. How do we pass the private key passphrase from the GUI to the openvpn 
-> process?
-> 
-> 2. How do we get the openvpn log to the GUI so we can show it in real time 
-> in the status window?
-> 
-> 
-> I can see a couple of solutions:
-> 
-> A) We create a pipe between the openvpn process and the service wrapper. 
-> The service can then watch the openvpn output for the passphrase prompt, 
-> and pass on the request to the GUI over the TCP socket.
-> 
-> The log is then written to the log file by the service. The GUI will have 
-> to monitor this file for changes to be able to show the log in real-time.
-> 
-> 
-> B) We create another TCP socket for every launched process, and creates a 
-> pipe between this socket and the openvpn process. The GUI can then connect 
-> to this socket to recieve the log in real-time, and can monitor this for 
-> the passphrase prompt itself.
+Ok then I didn't read/understand the code correctly.
+Sorry for the mistake.
 
-I like the idea of having the service wrapper control the 
-stdin/stdout/stderr which is passed to the openvpn process, then have it 
-send password(s) over stdin.
+Grtz,Remco
 
-So the communication between the service wrapper and the openvpn processes 
-would be via standard i/o handles and the communication between the 
-service wrapper and the GUI would be over the management socket.
+James Yonan wrote:
 
-That means the service wrapper would need to be a proxy of sorts, passing 
-passwords and possibly log file output as well between the GUI and openvpn 
-processes.
-
-James
-
+>On Wed, 29 Sep 2004, Remco Boom wrote:
+>
+>  
+>
+>>Hello all
+>>
+>>In the file openvpn.nsi.in version 1.2.2.9, This is the most recent file 
+>>in CVS
+>>http://cvs.sourceforge.net/viewcvs.py/openvpn/openvpn/install-win32/openvpn.nsi.in?rev=1.2.2.9&view=markup
+>>I found a bug,  When you reinstall the same version openvpn the old tap 
+>>driver isn't removed and you endup with 2 tap drivers installed and 
+>>openvpn doesn't work.
+>>To fix it, just change the following in the nsi file:
+>>
+>>At line 348 it says:
+>>nsExec::ExecToLog '"$INSTDIR\bin\tapinstall.exe" remove TAP'
+>>But is must be
+>>nsExec::ExecToLog '"$INSTDIR\bin\tapinstall.exe" remove ${TAP}'
+>>
+>>At line 351 it says:
+>>nsExec::ExecToLog '"$INSTDIR\bin\tapinstall.exe" remove TAPDEV'
+>>This must be
+>>nsExec::ExecToLog '"$INSTDIR\bin\tapinstall.exe" remove ${TAPDRV}'
+>>         
+>>at line 353 
+>>TAPDEV must also be replaced bij ${TAPDRV}
+>>    
+>>
+>
+>Are you sure?
+>
+>The TAP and TAPDEV strings are the actual names of previous TAP-Win32 
+>hardware IDs which we want to delete before installing the new TAP-Win32 
+>driver.
+>
+>For example in OpenVPN 1.x, the hwid is "TAP".  If we change the NSIS code
+>to ${TAP}, now it will expand to "tap0801" which is the hwid for 2.0.  So 
+>we won't be deleting the old instance any longer, which is what this code 
+>is supposed to be doing.
+>
+>James
+>
+>  
+>
 
