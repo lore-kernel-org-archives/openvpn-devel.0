@@ -1,7 +1,9 @@
-Message-ID: <20050318072515.58486.qmail@...363...>
-From: yours <allarefree2000@...362...>
+From: Robin Rosenberg <robin.rosenberg@...221...>
+Subject: Re: [Openvpn-devel] RPM build of 2.0-rc16 fails on MandrakeSoft
+References: <4220EC61.1000005@...355...> <20050311092251.GB14692@...33...> <Pine.LNX.4.58.0503110939510.2608@...41...>
+In-Reply-To: <Pine.LNX.4.58.0503110939510.2608@...41...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] openvpn ported to an ARM based embedded linux system
+Message-Id: <200503222347.24549.robin.rosenberg@...221...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,22 +14,49 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Mar 17 23:27:14 2005
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+Date: Tue Mar 22 14:48:32 2005
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
+Cc: James Yonan <jim@...41...>, Matthias Andree <matthias.andree@...68...>, TomWalsh <tomw-junk01@...355...>
 
-aGksIGV2ZXJ5IG9uZSwKCiAgICBXZSBoYXZlIHN1Y2NlZGVkIGluIHBvcnRpbmcgb3BlbnZwbigy
-LjBfcmMxNikgdG8KYW4gQVJNIGJhc2VkIGVtYmVkZGVkIGxpbnV4IHN5c3RlbSwgd2hpY2ggaGFz
-IDRNQnl0ZQpmbGFzaCBhbmQgMTZNQnl0ZSBTRFJBTS4gYW5kIHNpbXBsZSBidXQgcHJhdGljYWwK
-Y29uZmlndXJhdGlvbiB0b29scyBiYXNlZCB3ZWIgYXJlIHByb3ZpZGVkLgoKICAgIFdlIGhhdmUg
-ZGVwbG95ZWQgYSB2cG4gc3lzdGVtIHdpdGggMSB2cG4gc2VydmVyCmFuZCA4IHZwbiBjbGllbnRz
-LHRoZSB0b3RhbCB0aHJvdWdob3V0IGlzIHVwdG8KOE1icHMoYmlkaXJlY3Rpb24pLgoKICAgYW55
-b25lLCB3aG8gYXJlIGludGVyZXN0ZCBpbiBvdXIgc3lzdGVtLCBwbGVhc2UKY29udGFjdCBtZSBm
-b3IgYW55cXVlc3Rpb24sc3VjaCB0ZWNobmljYWwgZGlzY3Vzc2lvbiwKY29vcGVyYXRpb24gZGV2
-ZWxvcCwgbWFya2V0IGRldmVsb3BtZW50IGluIENoaW5hLCBldGMuCgogICB5b3UgYXJlIHdlbGNv
-bWUuCgogICBiZXN0IHdpc2hlcyBmb3IgeW91IGFsbAogICAKICAgYWxsYXJlZnJlZTIwMDBALi4u
-MzYyLi4uLCBmcm9tIFNoYW5naGFpLCBDaGluYQoKX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkRvIFlvdSBZYWhvbyE/CteisuHKwL3n0rvB
-98a31sq1xNHFu6LD4rfRtefTygpodHRwOi8vY24ucmQueWFob28uY29tL21haWxfY24vdGFnLzFn
-LypodHRwOi8vY24ubWFpbC55YWhvby5jb20vCgo=
+fredag 11 mars 2005 17:47 skrev James Yonan:
+> On Fri, 11 Mar 2005, Matthias Andree wrote:
+> > On Thu, 10 Mar 2005, TomWalsh wrote:
+> > > >True, but SuSE and RH/Fedora both use "lzo" and "lzo-devel" as the
+> > > >provider names.  That seems reasonable, as prepending a "lib" to the
+> > > >provider names for all libraries would render most RPM .spec files
+> > > >incompatible.
+> > > >
+> > > >Any guidance from LSB?
+> > >
+> > > No, LSB seems to deal with more basic issues of the O/S.  What you
+> > > could consider the "primatives" of a GNU/Linux systems contents. 
+> > > Nothing as far reaching as naming conventions for packages other than
+> > > the minimum requisite packages to start & run a basic Linux system, RPM
+> > > construction, etc.
+> >
+> > RPM appears to, at least on Red Hat and Novell/SUSE derived machines,
+> > support the libraries' ELF SONAME, too, which is what my former
+> > suggestion has been about, and AFAICS, the soname is the same on all
+> > machines, namely liblzo.so.1 (use readelf -d to figure).
+>
+> Shorter term, because 2.0 final is so close, I don't want to change
+> anything in the .spec except for stuff which is bracketed by %if
+> "%{_vendor}" == "MandrakeSoft".
+>
+
+Well.. Mandrake is breaking it anyway...  (sic!) In 10.2 beta they changed 
+MandrakeSoft to Mandrakesoft... :), so openvpn is not building fine in 
+cooker. First rpm -ta doesn't find "Specfile", which rpm in 10.2 apparently 
+wants, so I have to extract in manually, and then it fails because vendor is 
+not Mandrakesoft.
+
+I bug reported the lzo-inconsistency a long time ago (they have other 
+libraries that have "compatibility provides", so having one for liblzo would 
+be too miuch, but so far nothing has changed to the better.
+
+-- robin
+
