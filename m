@@ -1,9 +1,9 @@
-From: Mathias Sundman <mathias@...209...>
-Message-ID: <Pine.WNT.4.60.0407101611150.3096@...254...>
+From: Denis Vlasenko <vda@...216...>
+Subject: Re: [Openvpn-devel] Re: Interface with GUI agent
+References: <40E18559.8020407@...244...> <200407090123.51480.vda@...216...> <Pine.LNX.4.60.0407092256040.8983@...210...>
+In-Reply-To: <Pine.LNX.4.60.0407092256040.8983@...210...>
 MIME-Version: 1.0
-Content-Type: MULTIPART/MIXED; boundary="23243-26306-1089468694=:3096"
-Content-ID: <Pine.LNX.4.60.0407101610120.9970@...210...>
-Subject: [Openvpn-devel] Patch: PKCS #12 support
+Message-Id: <200407101914.52001.vda@...216...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,259 +14,244 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Jul 10 07:17:00 2004
-To: openvpn-devel@lists.sourceforge.net
+Date: Sat Jul 10 09:16:03 2004
+Content-Type: text/plain;
+  charset="windows-1251"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+To: Mathias Sundman <mathias@...209...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+> > IMHO daemontools for windows, if ported, can handle quite a variety
+> > of different setups, including one needed by openvpn. Then you can
+> > install it as part of openvpn install.
+>
+> If the only issue we had to solve here was how a normal user should be
+> able to spawn openvpn processes, I agree we should use already existing
+> software to solve this.
+>
+> However, this issue has grown abit larger than that. Our gui client needs
+> to:
+>
+> * Scan a directory for configuration files.
+> * A way to spawn processes (preferable portable)
+> * Maintain a table over on which port it can reach the openvpn
+>    process management interface.
+> * Monitor that all openvpn processes are still alive
+> * Connect to all the openvpn processes and get status info
 
---23243-26306-1089468694=:3096
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Content-ID: <Pine.LNX.4.60.0407101609441.9970@...210...>
+:)  I will append 'man svscan' and 'man supervise'. Judge for
+yourself how many of your points are covered by them.
 
-Here we go...
+Also I'll append my current 'ps -AH e' output. You can see there how
+completely different daemons are controlled by those tools.
 
-Attached is a patch which enables PKCS #12 support i OpenVPN 2.0 beta7. It 
-adds the option --pkcs12 filename, where filename should be a .p12 file 
-contain the private key, certificate and CA cert.
+> There is no fancy hardcoded things we are talking about, so it could all
+> reside in the gui client, however I liked the idea of moving this
+> functionallity into a portable service manager.
+>
+> I need to code this regardless if we put it in the gui agent itself, or in
+> this service manager, so I think it makes more sence to put the effort
+> into a deamon from which other gui clients can benefit on all platforms,
+> instead of into my not-so-portable gui.
 
-I've tested on Linux both as Server and Client.
+No need to code it. Port it to Windows. That's all.
+--
+vda
 
-You can build this .p12 file from your PEM fiels with:
+svscan(8)                                                            svscan(8)
 
-openssl pkcs12 -export -inkey $1.key -in $1.crt -certfile ca.crt \
--out $1.p12
 
-Enjoy!
 
--- 
-_____________________________________________________________
-Mathias Sundman                  (^)   ASCII Ribbon Campaign
-SunGard Availability Services     X    NO HTML/RTF in e-mail
-Tel: +46-(0)8-666 32 28          / \   NO Word docs in e-mail
---23243-26306-1089468694=:3096
-Content-Type: APPLICATION/OCTET-STREAM; name="openvpn-2.0_beta7-pkcs12.patch"
-Content-Transfer-Encoding: BASE64
-Content-ID: <Pine.WNT.4.60.0407101611340.3096@...254...>
-Content-Description: 
-Content-Disposition: attachment; filename="openvpn-2.0_beta7-pkcs12.patch"
+NAME
+       svscan - starts and monitors a collection of services
 
-ZGlmZiAtciAtdSBvcGVudnBuLTIuMF9iZXRhNy9pbml0LmMgb3BlbnZwbi0y
-LjBfYmV0YTctcGtjczEyL2luaXQuYwotLS0gb3BlbnZwbi0yLjBfYmV0YTcv
-aW5pdC5jCTIwMDQtMDYtMjkgMTU6MjQ6MzYuMDAwMDAwMDAwICswMjAwCisr
-KyBvcGVudnBuLTIuMF9iZXRhNy1wa2NzMTIvaW5pdC5jCTIwMDQtMDctMTAg
-MDk6MzA6MTkuMDAwMDAwMDAwICswMjAwCkBAIC04OTEsNiArODkxLDcgQEAK
-IAkJCQkgICBvcHRpb25zLT5kaF9maWxlLAogCQkJCSAgIG9wdGlvbnMtPmNl
-cnRfZmlsZSwKIAkJCQkgICBvcHRpb25zLT5wcml2X2tleV9maWxlLAorCQkJ
-CSAgIG9wdGlvbnMtPnBrY3MxMl9maWxlLAogCQkJCSAgIG9wdGlvbnMtPmNp
-cGhlcl9saXN0KTsKIAogICAgICAgLyogR2V0IGNpcGhlciAmIGhhc2ggYWxn
-b3JpdGhtcyAqLwpkaWZmIC1yIC11IG9wZW52cG4tMi4wX2JldGE3L29wdGlv
-bnMuYyBvcGVudnBuLTIuMF9iZXRhNy1wa2NzMTIvb3B0aW9ucy5jCi0tLSBv
-cGVudnBuLTIuMF9iZXRhNy9vcHRpb25zLmMJMjAwNC0wNi0yOSAxMTozMTow
-Mi4wMDAwMDAwMDAgKzAyMDAKKysrIG9wZW52cG4tMi4wX2JldGE3LXBrY3Mx
-Mi9vcHRpb25zLmMJMjAwNC0wNy0xMCAwOToyMzo1NC4wMDAwMDAwMDAgKzAy
-MDAKQEAgLTMxMiw2ICszMTIsOCBAQAogICAiLS1jZXJ0IGZpbGUgICAgIDog
-TG9jYWwgY2VydGlmaWNhdGUgaW4gLnBlbSBmb3JtYXQgLS0gbXVzdCBiZSBz
-aWduZWRcbiIKICAgIiAgICAgICAgICAgICAgICAgIGJ5IGEgQ2VydGlmaWNh
-dGUgQXV0aG9yaXR5IGluIC0tY2EgZmlsZS5cbiIKICAgIi0ta2V5IGZpbGUg
-ICAgICA6IExvY2FsIHByaXZhdGUga2V5IGluIC5wZW0gZm9ybWF0LlxuIgor
-ICAiLS1wa2NzMTIgZmlsZSAgIDogUEtDUyMxMiBmaWxlIGNvbnRhaW5pbmcg
-bG9jYWwgcHJpdmF0ZSBrZXksIGxvY2FsIGNlcnRpZmljYXRlXG4iCisgICIg
-ICAgICAgICAgICAgICAgICBhbmQgcm9vdCBDQSBjZXJ0aWZpY2F0ZS5cbiIg
-CiAgICItLXRscy1jaXBoZXIgbCAgOiBBIGxpc3QgbCBvZiBhbGxvd2FibGUg
-VExTIGNpcGhlcnMgc2VwYXJhdGVkIGJ5IDogKG9wdGlvbmFsKS5cbiIKICAg
-IiAgICAgICAgICAgICAgICA6IFVzZSAtLXNob3ctdGxzIHRvIHNlZSBhIGxp
-c3Qgb2Ygc3VwcG9ydGVkIFRMUyBjaXBoZXJzLlxuIgogICAiLS10bHMtdGlt
-ZW91dCBuIDogUGFja2V0IHJldHJhbnNtaXQgdGltZW91dCBvbiBUTFMgY29u
-dHJvbCBjaGFubmVsXG4iCkBAIC04MzgsNiArODQwLDcgQEAKICAgU0hPV19T
-VFIgKGRoX2ZpbGUpOwogICBTSE9XX1NUUiAoY2VydF9maWxlKTsKICAgU0hP
-V19TVFIgKHByaXZfa2V5X2ZpbGUpOworICBTSE9XX1NUUiAocGtjczEyX2Zp
-bGUpOwogICBTSE9XX1NUUiAoY2lwaGVyX2xpc3QpOwogICBTSE9XX1NUUiAo
-dGxzX3ZlcmlmeSk7CiAgIFNIT1dfU1RSICh0bHNfcmVtb3RlKTsKQEAgLTEx
-NjAsOSArMTE2MywyMSBAQAogICAgIH0KICAgaWYgKG9wdGlvbnMtPnRsc19z
-ZXJ2ZXIgfHwgb3B0aW9ucy0+dGxzX2NsaWVudCkKICAgICB7Ci0gICAgICBu
-b3RudWxsIChvcHRpb25zLT5jYV9maWxlLCAiQ0EgZmlsZSAoLS1jYSkiKTsK
-LSAgICAgIG5vdG51bGwgKG9wdGlvbnMtPmNlcnRfZmlsZSwgImNlcnRpZmlj
-YXRlIGZpbGUgKC0tY2VydCkiKTsKLSAgICAgIG5vdG51bGwgKG9wdGlvbnMt
-PnByaXZfa2V5X2ZpbGUsICJwcml2YXRlIGtleSBmaWxlICgtLWtleSkiKTsK
-KyAgICAgIGlmIChvcHRpb25zLT5wa2NzMTJfZmlsZSkKKyAgICAgICAgewor
-ICAgICAgICAgIGlmIChvcHRpb25zLT5jYV9maWxlKSAKKwkgICAgbXNnKE1f
-VVNBR0UsICJPcHRpb25zIGVycm9yOiBQYXJhbWV0ZXIgLS1jYSBjYW4gbm90
-IGJlIHVzZWQgd2hlbiAtLXBrY3MxMiBpcyBhbHNvIHNwZWNpZmllZC4iKTsK
-KyAgICAgICAgICBpZiAob3B0aW9ucy0+Y2VydF9maWxlKSAKKwkgICAgbXNn
-KE1fVVNBR0UsICJPcHRpb25zIGVycm9yOiBQYXJhbWV0ZXIgLS1jZXJ0IGNh
-biBub3QgYmUgdXNlZCB3aGVuIC0tcGtjczEyIGlzIGFsc28gc3BlY2lmaWVk
-LiIpOworICAgICAgICAgIGlmIChvcHRpb25zLT5wcml2X2tleV9maWxlKSAK
-KwkgICAgbXNnKE1fVVNBR0UsICJPcHRpb25zIGVycm9yOiBQYXJhbWV0ZXIg
-LS1rZXkgY2FuIG5vdCBiZSB1c2VkIHdoZW4gLS1wa2NzMTIgaXMgYWxzbyBz
-cGVjaWZpZWQuIik7CisgICAgICAgIH0KKyAgICAgIGVsc2UKKyAgICAgICAg
-eworICAgICAgICAgIG5vdG51bGwgKG9wdGlvbnMtPmNhX2ZpbGUsICJDQSBm
-aWxlICgtLWNhKSBvciBQS0NTIzEyIGZpbGUgKC0tcGtjczEyKSIpOworICAg
-ICAgICAgIG5vdG51bGwgKG9wdGlvbnMtPmNlcnRfZmlsZSwgImNlcnRpZmlj
-YXRlIGZpbGUgKC0tY2VydCkgb3IgUEtDUyMxMiBmaWxlICgtLXBrY3MxMiki
-KTsKKyAgICAgICAgICBub3RudWxsIChvcHRpb25zLT5wcml2X2tleV9maWxl
-LCAicHJpdmF0ZSBrZXkgZmlsZSAoLS1rZXkpIG9yIFBLQ1MjMTIgZmlsZSAo
-LS1wa2NzMTIpIik7CisJfQogICAgICAgaWYgKGZpcnN0X3RpbWUgJiYgb3B0
-aW9ucy0+YXNrcGFzcykKIAlwZW1fcGFzc3dvcmRfY2FsbGJhY2sgKE5VTEws
-IDAsIDAsIE5VTEwpOwogICAgIH0KQEAgLTExODEsNiArMTE5Niw3IEBACiAg
-ICAgICBNVVNUX0JFX1VOREVGIChkaF9maWxlKTsKICAgICAgIE1VU1RfQkVf
-VU5ERUYgKGNlcnRfZmlsZSk7CiAgICAgICBNVVNUX0JFX1VOREVGIChwcml2
-X2tleV9maWxlKTsKKyAgICAgIE1VU1RfQkVfVU5ERUYgKHBrY3MxMl9maWxl
-KTsKICAgICAgIE1VU1RfQkVfVU5ERUYgKGNpcGhlcl9saXN0KTsKICAgICAg
-IE1VU1RfQkVfVU5ERUYgKHRsc192ZXJpZnkpOwogICAgICAgTVVTVF9CRV9V
-TkRFRiAodGxzX3JlbW90ZSk7CkBAIC0zMDI1LDYgKzMwNDEsMTIgQEAKICAg
-ICAgIFZFUklGWV9QRVJNSVNTSU9OIChPUFRfUF9HRU5FUkFMKTsKICAgICAg
-IG9wdGlvbnMtPnByaXZfa2V5X2ZpbGUgPSBwWzFdOwogICAgIH0KKyAgZWxz
-ZSBpZiAoc3RyZXEgKHBbMF0sICJwa2NzMTIiKSAmJiBwWzFdKQorICAgIHsK
-KyAgICAgICsraTsKKyAgICAgIFZFUklGWV9QRVJNSVNTSU9OIChPUFRfUF9H
-RU5FUkFMKTsKKyAgICAgIG9wdGlvbnMtPnBrY3MxMl9maWxlID0gcFsxXTsK
-KyAgICB9CiAgIGVsc2UgaWYgKHN0cmVxIChwWzBdLCAiYXNrcGFzcyIpKQog
-ICAgIHsKICAgICAgIFZFUklGWV9QRVJNSVNTSU9OIChPUFRfUF9HRU5FUkFM
-KTsKZGlmZiAtciAtdSBvcGVudnBuLTIuMF9iZXRhNy9vcHRpb25zLmggb3Bl
-bnZwbi0yLjBfYmV0YTctcGtjczEyL29wdGlvbnMuaAotLS0gb3BlbnZwbi0y
-LjBfYmV0YTcvb3B0aW9ucy5oCTIwMDQtMDYtMjcgMDg6MjA6MDQuMDAwMDAw
-MDAwICswMjAwCisrKyBvcGVudnBuLTIuMF9iZXRhNy1wa2NzMTIvb3B0aW9u
-cy5oCTIwMDQtMDctMTAgMDg6MzU6NDIuMDAwMDAwMDAwICswMjAwCkBAIC0y
-NzIsNiArMjcyLDcgQEAKICAgY29uc3QgY2hhciAqZGhfZmlsZTsKICAgY29u
-c3QgY2hhciAqY2VydF9maWxlOwogICBjb25zdCBjaGFyICpwcml2X2tleV9m
-aWxlOworICBjb25zdCBjaGFyICpwa2NzMTJfZmlsZTsKICAgY29uc3QgY2hh
-ciAqY2lwaGVyX2xpc3Q7CiAgIGNvbnN0IGNoYXIgKnRsc192ZXJpZnk7CiAg
-IGNvbnN0IGNoYXIgKnRsc19yZW1vdGU7CmRpZmYgLXIgLXUgb3BlbnZwbi0y
-LjBfYmV0YTcvc3NsLmMgb3BlbnZwbi0yLjBfYmV0YTctcGtjczEyL3NzbC5j
-Ci0tLSBvcGVudnBuLTIuMF9iZXRhNy9zc2wuYwkyMDA0LTA2LTI5IDE0OjQy
-OjU3LjAwMDAwMDAwMCArMDIwMAorKysgb3BlbnZwbi0yLjBfYmV0YTctcGtj
-czEyL3NzbC5jCTIwMDQtMDctMTAgMTQ6Mjc6MDUuMDAwMDAwMDAwICswMjAw
-CkBAIC01NzMsNiArNTczLDcgQEAKIAkgIGNvbnN0IGNoYXIgKmRoX2ZpbGUs
-CiAJICBjb25zdCBjaGFyICpjZXJ0X2ZpbGUsCiAJICBjb25zdCBjaGFyICpw
-cml2X2tleV9maWxlLAorCSAgY29uc3QgY2hhciAqcGtjczEyX2ZpbGUsCiAJ
-ICBjb25zdCBjaGFyICpjaXBoZXJfbGlzdCkKIHsKICAgU1NMX0NUWCAqY3R4
-OwpAQCAtNjE0LDM1ICs2MTUsOTYgQEAKICAgLyogU2V0IGNhbGxiYWNrIGZv
-ciBnZXR0aW5nIHBhc3N3b3JkIGZyb20gdXNlciB0byBkZWNyeXB0IHByaXZh
-dGUga2V5ICovCiAgIFNTTF9DVFhfc2V0X2RlZmF1bHRfcGFzc3dkX2NiIChj
-dHgsIHBlbV9wYXNzd29yZF9jYWxsYmFjayk7CiAKLSAgLyogTG9hZCBDZXJ0
-aWZpY2F0ZSAqLwotICBpZiAoIVNTTF9DVFhfdXNlX2NlcnRpZmljYXRlX2Zp
-bGUgKGN0eCwgY2VydF9maWxlLCBTU0xfRklMRVRZUEVfUEVNKSkKLSAgICBt
-c2cgKE1fU1NMRVJSLCAiQ2Fubm90IGxvYWQgY2VydGlmaWNhdGUgZmlsZSAl
-cyIsIGNlcnRfZmlsZSk7Ci0KLSAgLyogTG9hZCBQcml2YXRlIEtleSAqLwot
-ICBpZiAoIVNTTF9DVFhfdXNlX1ByaXZhdGVLZXlfZmlsZSAoY3R4LCBwcml2
-X2tleV9maWxlLCBTU0xfRklMRVRZUEVfUEVNKSkKLSAgICBtc2cgKE1fU1NM
-RVJSLCAiQ2Fubm90IGxvYWQgcHJpdmF0ZSBrZXkgZmlsZSAlcyIsIHByaXZf
-a2V5X2ZpbGUpOwotICB3YXJuX2lmX2dyb3VwX290aGVyc19hY2Nlc3NpYmxl
-IChwcml2X2tleV9maWxlKTsKLQotICAvKiBDaGVjayBQcml2YXRlIEtleSAq
-LwotICBpZiAoIVNTTF9DVFhfY2hlY2tfcHJpdmF0ZV9rZXkgKGN0eCkpCi0g
-ICAgbXNnIChNX1NTTEVSUiwgIlByaXZhdGUga2V5IGRvZXMgbm90IG1hdGNo
-IHRoZSBjZXJ0aWZpY2F0ZSIpOwotCi0gIC8qIExvYWQgQ0EgZmlsZSBmb3Ig
-dmVyaWZ5aW5nIHBlZXIgc3VwcGxpZWQgY2VydGlmaWNhdGUgKi8KLSAgaWYg
-KCFTU0xfQ1RYX2xvYWRfdmVyaWZ5X2xvY2F0aW9ucyAoY3R4LCBjYV9maWxl
-LCBOVUxMKSkKLSAgICBtc2cgKE1fU1NMRVJSLCAiQ2Fubm90IGxvYWQgQ0Eg
-Y2VydGlmaWNhdGUgZmlsZSAlcyAoU1NMX0NUWF9sb2FkX3ZlcmlmeV9sb2Nh
-dGlvbnMpIiwgY2FfZmlsZSk7CisgIGlmIChwa2NzMTJfZmlsZSkKKyAgICB7
-CisgICAgLyogVXNlIFBLQ1MgIzEyIGZpbGUgZm9yIGtleSwgY2VydCBhbmQg
-Q0EgY2VydHMgKi8KIAotICAvKiBMb2FkIG5hbWVzIG9mIENBcyBmcm9tIGZp
-bGUgYW5kIHVzZSBpdCBhcyBhIGNsaWVudCBDQSBsaXN0ICovCi0gIHsKLSAg
-ICBTVEFDS19PRihYNTA5X05BTUUpICpjZXJ0X25hbWVzOwotICAgIGNlcnRf
-bmFtZXMgPSBTU0xfbG9hZF9jbGllbnRfQ0FfZmlsZSAoY2FfZmlsZSk7Ci0g
-ICAgaWYgKCFjZXJ0X25hbWVzKQotICAgICAgbXNnIChNX1NTTEVSUiwgIkNh
-bm5vdCBsb2FkIENBIGNlcnRpZmljYXRlIGZpbGUgJXMgKFNTTF9sb2FkX2Ns
-aWVudF9DQV9maWxlKSIsIGNhX2ZpbGUpOwotICAgIFNTTF9DVFhfc2V0X2Ns
-aWVudF9DQV9saXN0IChjdHgsIGNlcnRfbmFtZXMpOwotICB9CisgICAgICBG
-SUxFICpmcDsKKyAgICAgIEVWUF9QS0VZICpwa2V5OworICAgICAgWDUwOSAq
-Y2VydDsKKyAgICAgIFNUQUNLX09GKFg1MDkpICpjYSA9IE5VTEw7CisgICAg
-ICBQS0NTMTIgKnAxMjsKKyAgICAgIGludCBpOworICAgICAgY2hhciBwYXNz
-d29yZFsyNTZdOworCisgICAgICAvKiBMb2FkIHRoZSBQS0NTICMxMiBmaWxl
-ICovCisgICAgICBpZiAoIShmcCA9IGZvcGVuKHBrY3MxMl9maWxlLCAicmIi
-KSkpCisgICAgICAgIG1zZyAoTV9TU0xFUlIsICJFcnJvciBvcGVuaW5nIGZp
-bGUgJXMiLCBwa2NzMTJfZmlsZSk7CisgICAgICBwMTIgPSBkMmlfUEtDUzEy
-X2ZwKGZwLCBOVUxMKTsKKyAgICAgIGZjbG9zZSAoZnApOworICAgICAgaWYg
-KCFwMTIpIG1zZyAoTV9TU0xFUlIsICJFcnJvciByZWFkaW5nIFBLQ1MjMTIg
-ZmlsZSAlcyIsIHBrY3MxMl9maWxlKTsKKyAgICAgIAorICAgICAgLyogUGFy
-c2UgdGhlIFBLQ1MgIzEyIGZpbGUgKi8KKyAgICAgIGlmICghUEtDUzEyX3Bh
-cnNlKHAxMiwgIiIsICZwa2V5LCAmY2VydCwgJmNhKSkKKyAgICAgICAgewor
-ICAgICAgICAgIHBlbV9wYXNzd29yZF9jYWxsYmFjayAocGFzc3dvcmQsIHNp
-emVvZihwYXNzd29yZCkgLSAxLCAwLCBOVUxMKTsKKyAgICAgICAgICAvKiBS
-ZXBhcnNlIHRoZSBQS0NTICMxMiBmaWxlIHdpdGggcGFzc3dvcmQgKi8KKyAg
-ICAgICAgICBjYSA9IE5VTEw7CisgICAgICAgICAgaWYgKCFQS0NTMTJfcGFy
-c2UocDEyLCBwYXNzd29yZCwgJnBrZXksICZjZXJ0LCAmY2EpKQorICAgICAg
-ICAgICAgIG1zZyAoTV9TU0xFUlIsICJFcnJvciBwYXJzaW5nIFBLQ1MjMTIg
-ZmlsZSAlcyIsIHBrY3MxMl9maWxlKTsKKyAgICAgICAgfQorICAgICAgUEtD
-UzEyX2ZyZWUocDEyKTsKKworICAgICAgLyogTG9hZCBDZXJ0aWZpY2F0ZSAq
-LworICAgICAgaWYgKCFTU0xfQ1RYX3VzZV9jZXJ0aWZpY2F0ZSAoY3R4LCBj
-ZXJ0KSkKKyAgICAgICAgbXNnIChNX1NTTEVSUiwgIkNhbm5vdCB1c2UgY2Vy
-dGlmaWNhdGUiKTsKKworICAgICAgLyogTG9hZCBQcml2YXRlIEtleSAqLwor
-ICAgICAgaWYgKCFTU0xfQ1RYX3VzZV9Qcml2YXRlS2V5IChjdHgsIHBrZXkp
-KQorICAgICAgICBtc2cgKE1fU1NMRVJSLCAiQ2Fubm90IHVzZSBwcml2YXRl
-IGtleSIpOworICAgICAgd2Fybl9pZl9ncm91cF9vdGhlcnNfYWNjZXNzaWJs
-ZSAocGtjczEyX2ZpbGUpOworCisgICAgICAvKiBDaGVjayBQcml2YXRlIEtl
-eSAqLworICAgICAgaWYgKCFTU0xfQ1RYX2NoZWNrX3ByaXZhdGVfa2V5IChj
-dHgpKQorICAgICAgICBtc2cgKE1fU1NMRVJSLCAiUHJpdmF0ZSBrZXkgZG9l
-cyBub3QgbWF0Y2ggdGhlIGNlcnRpZmljYXRlIik7CisKKyAgICAgIC8qIFNl
-dCBDZXJ0aWZpY2F0ZSBWZXJpZmljYXRpb24gY2hhaW4gKi8KKyAgICAgIGlm
-IChjYSAmJiBza19udW0oY2EpKQorICAgICAgICB7CisgICAgICAgICAgZm9y
-IChpID0gMDsgaSA8IHNrX1g1MDlfbnVtKGNhKTsgaSsrKQorICAgICAgICAg
-ICAgeworCSAgICAgIGlmICghWDUwOV9TVE9SRV9hZGRfY2VydChjdHgtPmNl
-cnRfc3RvcmUsc2tfWDUwOV92YWx1ZShjYSwgaSkpKQorICAgICAgICAgICAg
-ICAgICBtc2cgKE1fU1NMRVJSLCAiQ2Fubm90IGFkZCBjZXJ0aWZpY2F0ZSB0
-byBjZXJ0aWZpY2F0ZSBjaGFpbiAoWDUwOV9TVE9SRV9hZGRfY2VydCkiKTsK
-KyAgICAgICAgICAgICAgaWYgKCFTU0xfQ1RYX2FkZF9jbGllbnRfQ0EoY3R4
-LCBza19YNTA5X3ZhbHVlKGNhLCBpKSkpCisgICAgICAgICAgICAgICAgbXNn
-IChNX1NTTEVSUiwgIkNhbm5vdCBhZGQgY2VydGlmaWNhdGUgdG8gY2xpZW50
-IENBIGxpc3QgKFNTTF9DVFhfYWRkX2NsaWVudF9DQSkiKTsKKyAgICAgICAg
-ICAgIH0KKyAgICAgICAgfQorICAgIH0KKyAgZWxzZQorICAgIHsKKyAgICAv
-KiBVc2Ugc2VwZXJhdGUgUEVNIGZpbGVzIGZvciBrZXksIGNlcnQgYW5kIENB
-IGNlcnRzICovCisKKyAgICAgIC8qIExvYWQgQ2VydGlmaWNhdGUgKi8KKyAg
-ICAgIGlmICghU1NMX0NUWF91c2VfY2VydGlmaWNhdGVfZmlsZSAoY3R4LCBj
-ZXJ0X2ZpbGUsIFNTTF9GSUxFVFlQRV9QRU0pKQorICAgICAgICBtc2cgKE1f
-U1NMRVJSLCAiQ2Fubm90IGxvYWQgY2VydGlmaWNhdGUgZmlsZSAlcyIsIGNl
-cnRfZmlsZSk7CisKKyAgICAgIC8qIExvYWQgUHJpdmF0ZSBLZXkgKi8KKyAg
-ICAgIGlmICghU1NMX0NUWF91c2VfUHJpdmF0ZUtleV9maWxlIChjdHgsIHBy
-aXZfa2V5X2ZpbGUsIFNTTF9GSUxFVFlQRV9QRU0pKQorICAgICAgICBtc2cg
-KE1fU1NMRVJSLCAiQ2Fubm90IGxvYWQgcHJpdmF0ZSBrZXkgZmlsZSAlcyIs
-IHByaXZfa2V5X2ZpbGUpOworICAgICAgd2Fybl9pZl9ncm91cF9vdGhlcnNf
-YWNjZXNzaWJsZSAocHJpdl9rZXlfZmlsZSk7CisKKyAgICAgIC8qIENoZWNr
-IFByaXZhdGUgS2V5ICovCisgICAgICBpZiAoIVNTTF9DVFhfY2hlY2tfcHJp
-dmF0ZV9rZXkgKGN0eCkpCisgICAgICAgIG1zZyAoTV9TU0xFUlIsICJQcml2
-YXRlIGtleSBkb2VzIG5vdCBtYXRjaCB0aGUgY2VydGlmaWNhdGUiKTsKKwor
-ICAgICAgLyogTG9hZCBDQSBmaWxlIGZvciB2ZXJpZnlpbmcgcGVlciBzdXBw
-bGllZCBjZXJ0aWZpY2F0ZSAqLworICAgICAgaWYgKCFTU0xfQ1RYX2xvYWRf
-dmVyaWZ5X2xvY2F0aW9ucyAoY3R4LCBjYV9maWxlLCBOVUxMKSkKKyAgICAg
-ICAgbXNnIChNX1NTTEVSUiwgIkNhbm5vdCBsb2FkIENBIGNlcnRpZmljYXRl
-IGZpbGUgJXMgKFNTTF9DVFhfbG9hZF92ZXJpZnlfbG9jYXRpb25zKSIsIGNh
-X2ZpbGUpOworCisgICAgICAvKiBMb2FkIG5hbWVzIG9mIENBcyBmcm9tIGZp
-bGUgYW5kIHVzZSBpdCBhcyBhIGNsaWVudCBDQSBsaXN0ICovCisgICAgICB7
-CisgICAgICAgIFNUQUNLX09GKFg1MDlfTkFNRSkgKmNlcnRfbmFtZXM7Cisg
-ICAgICAgIGNlcnRfbmFtZXMgPSBTU0xfbG9hZF9jbGllbnRfQ0FfZmlsZSAo
-Y2FfZmlsZSk7CisgICAgICAgIGlmICghY2VydF9uYW1lcykKKyAgICAgICAg
-ICBtc2cgKE1fU1NMRVJSLCAiQ2Fubm90IGxvYWQgQ0EgY2VydGlmaWNhdGUg
-ZmlsZSAlcyAoU1NMX2xvYWRfY2xpZW50X0NBX2ZpbGUpIiwgY2FfZmlsZSk7
-CisgICAgICAgIFNTTF9DVFhfc2V0X2NsaWVudF9DQV9saXN0IChjdHgsIGNl
-cnRfbmFtZXMpOworICAgICAgfQorCisgICAgICAvKiBFbmFibGUgdGhlIHVz
-ZSBvZiBjZXJ0aWZpY2F0ZSBjaGFpbnMgKi8KKyAgICAgIGlmICghU1NMX0NU
-WF91c2VfY2VydGlmaWNhdGVfY2hhaW5fZmlsZSAoY3R4LCBjZXJ0X2ZpbGUp
-KQorICAgICAgICBtc2cgKE1fU1NMRVJSLCAiQ2Fubm90IGxvYWQgY2VydGlm
-aWNhdGUgY2hhaW4gZmlsZSAlcyAoU1NMX3VzZV9jZXJ0aWZpY2F0ZV9jaGFp
-bl9maWxlKSIsIGNlcnRfZmlsZSk7CisgICAgfQogCi0gIC8qIEVuYWJsZSB0
-aGUgdXNlIG9mIGNlcnRpZmljYXRlIGNoYWlucyAqLwotICBpZiAoIVNTTF9D
-VFhfdXNlX2NlcnRpZmljYXRlX2NoYWluX2ZpbGUgKGN0eCwgY2VydF9maWxl
-KSkKLSAgICBtc2cgKE1fU1NMRVJSLCAiQ2Fubm90IGxvYWQgY2VydGlmaWNh
-dGUgY2hhaW4gZmlsZSAlcyAoU1NMX3VzZV9jZXJ0aWZpY2F0ZV9jaGFpbl9m
-aWxlKSIsIGNlcnRfZmlsZSk7CiAKICAgLyogUmVxdWlyZSBwZWVyIGNlcnRp
-ZmljYXRlIHZlcmlmaWNhdGlvbiAqLwogICBTU0xfQ1RYX3NldF92ZXJpZnkg
-KGN0eCwgU1NMX1ZFUklGWV9QRUVSIHwgU1NMX1ZFUklGWV9GQUlMX0lGX05P
-X1BFRVJfQ0VSVCwKZGlmZiAtciAtdSBvcGVudnBuLTIuMF9iZXRhNy9zc2wu
-aCBvcGVudnBuLTIuMF9iZXRhNy1wa2NzMTIvc3NsLmgKLS0tIG9wZW52cG4t
-Mi4wX2JldGE3L3NzbC5oCTIwMDQtMDYtMjkgMTQ6MTA6NDkuMDAwMDAwMDAw
-ICswMjAwCisrKyBvcGVudnBuLTIuMF9iZXRhNy1wa2NzMTIvc3NsLmgJMjAw
-NC0wNy0xMCAxMDowMzo0MC4wMDAwMDAwMDAgKzAyMDAKQEAgLTMyLDYgKzMy
-LDcgQEAKICNpbmNsdWRlIDxvcGVuc3NsL2Jpby5oPgogI2luY2x1ZGUgPG9w
-ZW5zc2wvcmFuZC5oPgogI2luY2x1ZGUgPG9wZW5zc2wvZXJyLmg+CisjaW5j
-bHVkZSA8b3BlbnNzbC9wa2NzMTIuaD4KIAogI2luY2x1ZGUgImJhc2ljLmgi
-CiAjaW5jbHVkZSAiY3J5cHRvLmgiCkBAIC00MzYsNiArNDM3LDcgQEAKIAkJ
-ICAgY29uc3QgY2hhciAqY2FfZmlsZSwKIAkJICAgY29uc3QgY2hhciAqZGhf
-ZmlsZSwKIAkJICAgY29uc3QgY2hhciAqY2VydF9maWxlLAorCQkgICBjb25z
-dCBjaGFyICpwa2NzMTJfZmlsZSwKIAkJICAgY29uc3QgY2hhciAqcHJpdl9r
-ZXlfZmlsZSwgY29uc3QgY2hhciAqY2lwaGVyX2xpc3QpOwogCiBzdHJ1Y3Qg
-dGxzX211bHRpICp0bHNfbXVsdGlfaW5pdCAoc3RydWN0IHRsc19vcHRpb25z
-ICp0bHNfb3B0aW9ucyk7Cg==
+SYNOPSIS
+       svscan [ directory ]
 
---23243-26306-1089468694=:3096--
+DESCRIPTION
+       svscan  starts  one  supervise(8)  process for each subdirectory of the
+       current directory, up to a limit of 1000 subdirectories.  svscan  skips
+       subdirectory  names  starting  with dots.  supervise(8) must be in svs-
+       can's path.
+
+       svscan optionally starts a pair of supervise(8) processes,  one  for  a
+       subdirectory  s,  one for s/log, with a pipe between them. It does this
+       if the name s is at most 255 bytes long and s/log exists. (In  versions
+       0.70  and  below,  it does this if s is sticky.)  svscan needs two free
+       descriptors for each pipe.
+
+       Every five seconds, svscan checks for subdirectories again. If it  sees
+       a new subdirectory, it starts a new supervise(8) process. If it sees an
+       old subdirectory where a supervise(8) process has exited,  it  restarts
+       the  supervise(8)  process.  In the log case it reuses the same pipe so
+       that no data is lost.
+
+       svscan is designed to run forever. If it has trouble creating a pipe or
+       running  supervise(8), it prints a message to stderr; it will try again
+       five seconds later.
+
+       If svscan is given a command-line argument directory,  it  switches  to
+       that directory when it starts.
+
+SEE ALSO
+       supervise(8),  svc(8),  svok(8),  svstat(8), svscanboot(8), readprocti-
+       tle(8), fghack(8), pgrphack(8), multilog(8), tai64n(8), tai64nlocal(8),
+       setuidgid(8), envuidgid(8), envdir(8), softlimit(8), setlock(8)
+
+       http://cr.yp.to/daemontools.html
+
+
+
+                                                                     svscan(8)
+
+
+supervise(8)                                                      supervise(8)
+
+
+
+NAME
+       supervise - starts and monitors a service.
+
+SYNOPSIS
+       supervise s
+
+DESCRIPTION
+       supervise  switches  to  the  directory  named  s  and starts ./run. It
+       restarts ./run if ./run exits. It pauses for a  second  after  starting
+       ./run, so that it does not loop too quickly if ./run exits immediately.
+
+       If the file s/down exists, supervise does not start ./run  immediately.
+       You  can use svc(8) to start ./run and to give other commands to super-
+       vise.
+
+       supervise maintains status information in a binary  format  inside  the
+       directory s/supervise, which must be writable to supervise.  The status
+       information can be read by svstat(8).
+
+       supervise may exit immediately after startup  if  it  cannot  find  the
+       files  it needs in s or if another copy of supervise is already running
+       in s.  Once supervise is successfully running, it will not exit  unless
+       it  is  killed  or  specifically  asked to exit. You can use svok(8) to
+       check whether supervise is successfully running. You can use  svscan(8)
+       to reliably start a collection of supervise processes.
+
+SEE ALSO
+       svc(8), svok(8), svstat(8), svscanboot(8), svscan(8), readproctitle(8),
+       fghack(8), pgrphack(8), multilog(8), tai64n(8),  tai64nlocal(8),  setu-
+       idgid(8), envuidgid(8), envdir(8), softlimit(8), setlock(8)
+
+       http://cr.yp.to/daemontools.html
+
+
+
+                                                                  supervise(8)
+
+# ps -AH e
+  PID TTY      STAT   TIME COMMAND
+    1 ?        S      0:01 /bin/sh /init
+    2 ?        SWN    0:00   [ksoftirqd/0]
+    3 ?        SW<    0:00   [events/0]
+    4 ?        SW<    0:00     [khelper]
+   20 ?        SW<    0:00     [kblockd/0]
+   46 ?        SW     0:00     [pdflush]
+   47 ?        SW     0:00     [pdflush]
+   49 ?        SW<    0:00     [aio/0]
+  479 ?        SW<    0:00     [reiserfs/0]
+   48 ?        SW     0:00   [kswapd0]
+   50 ?        SW     0:00   [cifsoplockd]
+  214 ?        SW     0:00   [kseriod]
+  392 ?        S      0:00   devfsd /dev
+  681 ?        S      0:00   rpc.portmap
+  993 ?        S      0:00   svscan /var/service
+  995 ?        S      0:00     supervise fw
+  996 ?        S      0:00     supervise gpm
+  997 ?        S      0:00       gpm -D -2 -m /dev/psaux -t ps2
+ 1007 ?        S      0:00     supervise ntp
+ 1011 ?        S      0:00       /bin/sh ./run
+ 2274 ?        S<     0:00         ntpdate -b -t 10 -p 4 -k /dev/null 1.1.1.1 PWD=/.local/var/service/ntp SHLVL=1 _=/usr/bin/ntpdate
+ 1008 ?        S      0:00     supervise log
+ 1012 ?        S      0:00       multilog t n5 /var/log/service/ntp
+ 1009 ?        S      0:00     supervise top
+ 1036 ?        S      0:19       top c s TERM=linux
+ 1020 ?        S      0:00     supervise ups
+ 1021 ?        S      0:00     supervise log
+ 1022 ?        S      0:00       multilog t =/var/log/service/ups/last.out /var/log/service/ups
+ 1027 ?        S      0:00     supervise klog
+ 1031 ?        S      0:00       klogd -n -c 3 -x
+ 1028 ?        S      0:00     supervise once
+ 1040 ?        S      0:00     supervise pptp
+ 1041 ?        S      0:00     supervise log
+ 1056 ?        S      0:00       multilog t /var/log/service/pptp
+ 1047 ?        S      0:00     supervise sshd
+ 1048 ?        S      0:00       tcpserver -v -R -H -l 0 -c 40 0.0.0.0 ssh setuidgid root sshd -i -e -u0
+ 1049 ?        S      0:00     supervise log
+ 1091 ?        S      0:00       multilog t /var/log/service/sshd
+ 1064 ?        S      0:00     supervise httpd
+ 1075 ?        S      0:00       tcpserver -v -R -H -l 0 -c 40 0.0.0.0 www setuidgid apache httpd -X -f /.local/var/service/httpd/httpd.conf
+ 1065 ?        S      0:00     supervise log
+ 1076 ?        S      0:00       multilog t /var/log/service/httpd
+ 1066 ?        S      0:00     supervise nmlog
+ 1071 ?        S      0:00       /bin/sh ./run
+ 1072 ?        S      0:00         /bin/sh ./run
+ 1073 ?        S      0:00           nmeter c l x lx  p lp m lm  nif nlo d120000
+ 1074 ?        S      0:00         logger -t
+ 1067 ?        S      0:00     supervise mysql
+ 1068 ?        S      0:00       /bin/sh ./run
+ 1128 ?        S      0:00         mysqld --user=mysql --datadir=/var/app/mysql-3.23.52/data --tmpdir=/var/app/mysql-3.23.52/tmp --socket=/.lo
+ 1069 ?        S      0:00     supervise log
+ 1070 ?        S      0:00       multilog t /var/log/service/mysql
+ 1087 ?        S      0:00     supervise pgsql
+ 1088 ?        S      0:00     supervise log
+ 1101 ?        S      0:00       multilog t /var/log/service/pgsql
+ 1113 ?        S      0:00     supervise serial0
+ 1115 ?        S      0:00     supervise dnscache_local
+ 1130 ?        S      0:00       ./dnscache ROOT=./root IP=0.0.0.0 IPSEND=0.0.0.0 FORWARDONLY=1 DATALIMIT=2000000 CACHESIZE=1000000 GID=50 UID
+ 1116 ?        S      0:00     supervise log
+ 1132 ?        S      0:00       multilog t /var/log/service/dnscache_local
+ 1117 ?        S      0:00     supervise nmeter
+ 1138 ?        S      0:00       nmeter t c l x lx  p lp f lf  b lb  m lm  nif nlo
+ 1118 ?        S      0:00     supervise ovpn-1
+ 1297 ?        S      0:00       openvpn --secret /.local/var/service/ovpn-1/key --dev tun --proto udp --port 8006 --remote 1.1.4.1 --ifconfig
+ 1119 ?        S      0:00     supervise log
+ 1152 ?        S      0:00       multilog /var/log/service/ovpn-1
+ 1163 ?        S      0:00     supervise getty_tty1
+ 1164 ?        S      0:00     supervise getty_tty2
+ 1870 vc/2     S      0:00       agetty 38400 /dev/tty2 linux TERM=linux
+ 1165 ?        S      0:00     supervise getty_tty3
+ 1218 vc/3     S      0:00       agetty 38400 /dev/tty3 linux TERM=linux
+ 1166 ?        S      0:00     supervise getty_tty4
+ 1227 vc/4     S      0:00       agetty 38400 /dev/tty4 linux TERM=linux
+ 1167 ?        S      0:00     supervise getty_tty5
+ 1231 vc/5     S      0:00       agetty 38400 /dev/tty5 linux TERM=linux
+ 1168 ?        S      0:00     supervise getty_tty6
+ 1232 vc/6     S      0:00       agetty 38400 /dev/tty6 linux TERM=linux
+ 1169 ?        S      0:00     supervise getty_tty7
+ 1233 vc/7     S      0:00       agetty 38400 /dev/tty7 linux TERM=linux
+ 1170 ?        S      0:00     supervise getty_tty8
+ 1222 vc/8     S      0:00       agetty 38400 /dev/tty8 linux TERM=linux
+ 1171 ?        S      0:00     supervise syslog
+ 1172 ?        S      0:00       syslogd -n -f /.local/var/service/syslog/syslogd.conf
+ 1247 ?        S      0:00         multilog /var/log/syslog/auth.all
+ 1252 ?        S      0:00         multilog /var/log/syslog/daemon.all
+ 1255 ?        S      0:00         multilog /var/log/syslog/kern.all
+ 1258 ?        S      0:00         multilog /var/log/syslog/mark.all
+ 1261 ?        S      0:00         multilog /var/log/syslog/syslog.all
+ 1264 ?        S      0:00         multilog /var/log/syslog/user.all
+ 1267 ?        S      0:00         multilog /var/log/syslog/7.debug
+ 1270 ?        S      0:00         multilog /var/log/syslog/6.info
+ 1273 ?        S      0:00         multilog /var/log/syslog/5.notice
+ 1276 ?        S      0:00         multilog /var/log/syslog/4.warning
+ 1279 ?        S      0:00         multilog /var/log/syslog/3.err
+ 1282 ?        S      0:00         multilog /var/log/syslog/2.crit
+ 1285 ?        S      0:00         multilog /var/log/syslog/1.alert
+ 1288 ?        S      0:00         multilog /var/log/syslog/0.emerg
+ 1176 ?        S      0:00     supervise watch_quasar
+ 1177 ?        S      0:00     supervise automount
+ 1179 ?        S      0:00       /bin/sh ./run
+ 1306 ?        S      0:00         sleep 32000
+ 1178 ?        S      0:00     supervise watcher
+ 1209 ?        S      0:00       /bin/sh ./run
+ 2278 ?        S      0:00         sleep 33
+
 
