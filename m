@@ -1,6 +1,7 @@
-From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1078266159.60914@...41...>
-Subject: [Openvpn-devel] OpenVPN 1.6-rc1 released
+From: Juan Rodriguez Hervella <jrh@...176...>
+MIME-Version: 1.0
+Message-Id: <200403041012.55329.jrh@...176...>
+Subject: [Openvpn-devel] Question about TCP forking server
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -11,28 +12,34 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Mar  2 14:28:30 2004
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
+Date: Thu Mar  4 01:20:07 2004
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-This is a release candidate for 1.6.0.
+Hello,
 
-The main change from 1.6-beta7 is that the Windows version now uses --ip-win32
-dynamic by default.
+I've just realized that openVPN-1.6rc1 only supports 
+"inetd nowait" for the TLS case.
 
-Change Log:
+I understand that it is not possible to have "nowait" behaviour
+for multiple clients with different secrets, but it would be still possible
+to have "nowait" functionality + a single secret. Every client should
+have the same secret key which is not a good way of having security,
+but anyway...this could be a warning instead of the current message:
+"nowait functionality is only allowed for TLS".
 
-2004.03.02 -- Version 1.6-rc1
+Even if you don't want cryptography at all, the forking server is
+an interesting feature that should be let available, imho.
 
-* For Windows, make "--ip-win32 dynamic" the default.
-* For Windows, make "--route-delay 10" the default
-  unless --ip-win32 dynamic is not used or --route-delay
-  is explicitly specified.
-* L_TLS mutex could have been left in a locked state
-  for certain kinds of TLS errors.
+PS: I'm having problems to subscribe to the list, so CC to me
+off-list. Thank you !
 
-
-James
+-- 
+******
+JFRH
+******
 
 
