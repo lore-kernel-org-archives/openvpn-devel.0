@@ -1,9 +1,7 @@
-From: Mathias Sundman <mathias@...209...>
-Subject: Re: [Openvpn-devel] openvpn 2.0 speed
-In-Reply-To: <1543667019.20050303023941@...359...>
-Message-ID: <Pine.LNX.4.61.0503022205040.19911@...210...>
-References: <1543667019.20050303023941@...359...>
-MIME-Version: 1.0
+From: ullrich dittmer <ullrichdittmer@...360...>
+Message-ID: <loom.20050302T225201-105@...171...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Compile OpenVPN for windows
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,19 +12,21 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Mar  2 13:15:16 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Content-Transfer-Encoding: 8bit
-To: Leonid Zamotaev <profleo@...359...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Thu Mar  3 03:37:09 2005
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-On Thu, 3 Mar 2005, Leonid Zamotaev wrote:
+hi
 
-> Connection speed detected for "TAP-Win32 Adapter V8" is equal 10Mbit and 
-> can`t be changed.  But I NEED to use 100Mbit (fastethernet) tunel.
+i'd like to compile a openvpn for Windows. Is there any howto, which discribes
+the steps for compiling?
 
-Just ignore that info. The TAP device will use up to 100 Mbps if your CPU 
-is fast enough...
+I've installed MinGW, compiled lzo and OpenSSL. When a do a ./configure occurs
+an error that socket_len has no equivalent. Can you help me?
 
-/Mathias
+Greetings
+
+ullrich
+
 
