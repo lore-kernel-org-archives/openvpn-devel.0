@@ -1,9 +1,7 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] Small slash patch
-In-Reply-To: <0c1201c51386$cef07e20$0600000a@...139...>
-Message-ID: <Pine.LNX.4.58.0502151103330.13676@...41...>
-References: <0c1201c51386$cef07e20$0600000a@...139...>
-MIME-Version: 1.0
+From: Waldemar Brodkorb <wbx@...270...>
+Message-ID: <20050218200021.GA13369@...352...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] small issue
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,33 +12,36 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Feb 15 10:06:21 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Date: Fri Feb 18 12:01:16 2005
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-To: Gisle Vanem <giva@...258...>
-Cc: OpenVPN-dev <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-On Tue, 15 Feb 2005, Gisle Vanem wrote:
+Hi,
 
-> Using '\' in #include<> messes up the dependency generation (gcc -MM ..).
-> Or at least MingW's make doesn't like it. So could you please use Unix slashes.
-> 
-> --- CVS-latest\cryptoapi.c      Sun Nov 28 18:22:01 2004
-> +++ cryptoapi.c Sun Jan 23 09:31:06 2005
-> @@ -32,8 +32,8 @@
->  #include <stdio.h>
->  #include <ctype.h>
->  #include <assert.h>
-> -#include <openssl\ssl.h>
-> -#include <openssl\err.h>
-> +#include <openssl/ssl.h>
-> +#include <openssl/err.h>
-> 
->  #ifdef __MINGW32_VERSION
->  /* MinGW w32api is incomplete when it comes to CryptoAPI, as per version 3.1
+small patch for rc14. If you use a stripped down version of openssl
+and openvpn without support for MD4 and NTML you need this patch
+to successfully compile. Needed for some embedded hardware.
 
-Ok, I'll merge that.
+--- openvpn-2.0_rc14/crypto.h 2005-01-10 01:46:08.000000000 +0100
++++ openvpn-2.0_rc14.patched/crypto.h 2005-02-18 20:06:20.000000000
++0100
+@@ -42,7 +42,9 @@
+ #include <openssl/hmac.h>
+ #include <openssl/des.h>
+ #include <openssl/md5.h>
++#if NTML
+ #include <openssl/md4.h>
++#endif
+ #include <openssl/sha.h>
+ #include <openssl/err.h>
 
-James
 
+bye
+    Waldemar
+
+-- 
+blog your mind!
+http://openbsd-geek.de/
 
