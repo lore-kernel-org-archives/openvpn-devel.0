@@ -1,9 +1,9 @@
-From: Torge Szczepanek <openvpn-devel@...239...>
-Subject: Re: [Openvpn-devel] Urgent: Limitation to 100  virtual tunnel devices??
-References: <OF16152585.163DBB30-ON41256EC4.0055E643@...246...>
-In-Reply-To: <OF16152585.163DBB30-ON41256EC4.0055E643@...246...>
+Message-ID: <1088881994.40e7054a0e5e6@...238...>
+From: Brandon Knitter <knitterb@...237...>
+Subject: Re: Interface with GUI agent, was: Re: [Openvpn-devel] [Patch] revoke scripts were broken
+References: <40E18559.8020407@...244...> <200406301202.59262.jim@...41...> <Pine.LNX.4.60.0406301916540.6703@...210...> <200406301725.43961.jim@...41...>
+In-Reply-To: <200406301725.43961.jim@...41...>
 MIME-Version: 1.0
-Message-Id: <200407011903.15901.openvpn-devel@...239...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,73 +14,72 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Jul  1 10:04:07 2004
-Content-Type: Text/Plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Date: Sat Jul  3 12:14:05 2004
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: James Yonan <jim@...41...>, Mathias Sundman <mathias@...209...>, Jan Kiszka <jan.kiszka@...83...>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hey there.  James and I had a prior discussion about the systray app offline,
+but I thought I'd just poke my head in here.  I'm not a strong Windows
+application programmer, but I've been doing a lot of C# these days.
 
-On Thursday 01 July 2004 18:18, Juerg.VonBueren@...245... wrote:
+With that in mind, I was gonna whip together a quickie little systray app in C#
+which could control the openvpn server.  I know that C# adds the rather large
+.NET framework runtime installation, so my app could be considered a prototype
+if you would like!
 
-> Is there any known Limitation to 100 TUN-Devices or how can we break that
-> limitation?
+Where do I start?  Are the namedpipe hooks into the OpenVPN service built?  I'm
+not too familiar with named pipes on Windows (done a bit on *nix), but I'm sure
+it can't be too hard.  I guess what I'd need to know are the command to send to
+the named pipe, and also what I can get from the named pipe in regards to status
+and such.
 
-This is a limitation in the Linux kernel code not in OpenVPN.
+Any suggestions?
 
-The limitation is in net/core/dev.c
+-- 
+-bk
 
-You can change this by modifying the value and kernel recompile.
 
-See in net/core/dev.c:
+Quoting James Yonan <jim@...41...>:
 
-- --------------
+> > James, do you put any preferance in what language/environment a gui for
+> > OpenVPN is developed in, if you would distribute it together with the main
+> > application in the future?
+> 
+> These are my current thoughts on this:
+> 
+> * Preferably, the language development tools and environment are open source,
+> 
+> so there's no impediment to anyone building from source.
+> 
+> * The total size of included libraries should be reasonable, so it doesn't 
+> excessively push up the size of the Windows self-installing exe.
+> 
+> Having said that, I'm certainly going to be pragmatic here -- if someone puts
+> 
+> together a great GUI agent that requires Visual C++ to build, I'm not going 
+> to belabor the point.
+> 
+> On the other hand if it's written in Visual Basic and increases the Windows 
+> package size by 10 MB then I'm going to have to think twice about actually 
+> bundling it.  But if it's up to standard, I'd still link to it from the 
+> website in a heartbeat.
+> 
+> James
+> 
+> 
+> -------------------------------------------------------
+> This SF.Net email sponsored by Black Hat Briefings & Training.
+> Attend Black Hat Briefings & Training, Las Vegas July 24-29 - 
+> digital self defense, top technical experts, no vendor pitches, 
+> unmatched networking opportunities. Visit www.blackhat.com
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> 
+> 
 
-        /*
-         * If you need over 100 please also fix the algorithm...
-         */
-        for (i =3D 0; i < 100; i++) {
-                snprintf(buf,sizeof(buf),name,i);
-                if (__dev_get_by_name(buf) =3D=3D NULL) {
-                        strcpy(dev->name, buf);
-                        return i;
-                }
-        }
-        return -ENFILE; /* Over 100 of the things .. bail out! */
-}
 
-- --------------
-
-Note that performance will be bad when going beyond about 200 or 300 device=
-s=20
-on a modern pc.
-
-It is better to replace the code by a hashed device lookup. I found out tha=
-t=20
-this is the case in my debian 2.6. kernel. I haven't checked when this was=
-=20
-introduced and whether this is a debian patch or present in the vanilla=20
-kernel code.
-
-I can send you a patch by mail for the 2.4.26 kernel which also should appl=
-y=20
-back to 2.4.18 or lower. This was written by Ben Greer for VLAN support and=
- I=20
-modified it to apply cleanly to 2.4.18 and higher. Linus rejected this patc=
-h=20
-for the 2.4 series. It works for me on more than 30 servers without any=20
-problems.
-
-A linux distro including this patch is Adamantix (www.adamantix.org)
-
-Torge
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.2.4 (GNU/Linux)
-
-iD8DBQFA5EPSosmtDiD9dbIRAt/uAJ9gI/O6SQX4+XLmJcPtut/KNQEoewCaAlJt
-UR6wuo9p1IFCUakA1coyLA4=3D
-=3DeOGl
------END PGP SIGNATURE-----
 
