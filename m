@@ -1,8 +1,7 @@
-Content-Class: urn:content-classes:message
+Message-ID: <41C13D04.3060101@...326...>
+From: sam wun <sam.wun@...326...>
 MIME-Version: 1.0
-Message-ID: <2A6C5A0148EE5B4CBAD6C9BD6F590C48023C57@...330...>
-From: "Farid Sarwari" <fsarwari@...329...>
-Subject: [Openvpn-devel] One Time Password support
+Subject: [Openvpn-devel] compiling OpenVPN in  Windows
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,27 +12,18 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Dec 15 16:24:02 2004
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Date: Wed Dec 15 23:47:02 2004
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-If one time passwords are used in the authentication is there a way to tell=
- openvpn to renegotiate the SSL but not AUTH to prevent disconnection after=
- every renegotiation?=20
+Hi,
 
-Or is the only way to use One Time Passwords to set --reneg-sec to somethin=
-g really high?=20
+Is there any instruction about how to compile OpenVPN in windows?
+I m looking for which compiler to use VC++ or Borland C++? and any 
+options have to be added to the EDI file, etc?
 
-I use three factor authentication to connect: username, password, Key (from=
- FOB device).=20
-Key is appended to the username. Would it be possible to tell openvpn to pr=
-ompt once again for a Key?=20
-
-C:\> openvpn home.ovpn
-Enter Auth Username: jsmith
-Enter Auth Password: *******
-Enter Auth Key: 234-2343
-
+Thanks
+Sam
 
 
