@@ -1,9 +1,7 @@
-In-Reply-To: <Pine.LNX.4.58.0412092259480.3257@...41...>
-References: <loom.20041210T063317-259@...171...> <Pine.LNX.4.58.0412092259480.3257@...41...>
-Mime-Version: 1.0 (Apple Message framework v619)
-Message-Id: <0C02273F-4A76-11D9-BB44-000D9335B6B6@...325...>
-From: Steven Palm <n9yty@...325...>
-Subject: Re: [Openvpn-devel] GUI for MacOS X
+From: Mathias Sundman <mathias@...209...>
+Message-ID: <Pine.LNX.4.61.0412121141350.22477@...210...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Password prompts with --log
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,57 +12,34 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Dec  9 22:39:02 2004
-Content-Type: text/plain; charset=US-ASCII; format=flowed
-Content-Transfer-Encoding: 7bit
+Date: Sun Dec 12 03:03:01 2004
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: James Yonan <jim@...41...>
 
-On Dec 10, 2004, at 12:22 AM, James Yonan wrote:
-> That sort of already happens now if you use 
-> --management-query-passwords
-> -- though I agree it would be useful to have a more generic mechanism 
-> for 
-> starting OpenVPN in a hibernated state until it receives a "start" 
-> message
-> from the mangagement interface.
+I had a user report that OpenVPN was working fine from a cmd-line (in 
+Windows), but when using my GUI the Status windows was just empty, and it 
+was impossible to terminate the openvpn connection.
 
-  Ah... My testing initially is done using un-protected key files, so 
-I've
-not tried any of the password stuff. I thought I would add that later 
-when
-I knew all the other stuff was basically working. I'll look into that, 
-though,
-but would welcome the "start hibernated until given a go" idea. :-)
+The cause was that this user was using the --log option in his config 
+file. When using this option, even the passphrase prompts are redirected 
+to the log file, however, if you know that OpenVPN is waiting for a 
+passphrase, you can still give in on stdin.
 
-> Cool, are you going to focus on the client side only, or make the GUI
-> capable of driving an OpenVPN server daemon as well?  (The management
-> interface supports both).
+Would it possible to always print the passphrase prompts to the original 
+stdout instead of the logfile? I can't see any reason why you would want 
+the passphase prompt saved in the log file, or is there? OpenVPN GUI would 
+still not see the log output, but at least the passphrase prompt would be 
+showed, so the user would not get the feeling that openvpn has "hanged".
 
-  Well, I work for a non-profit organization and my immediate need is to 
-make
-this work for our overseas travellers who are frustrated with the IPSec 
-stuff
-not working in too many places due to odd firewalls/etc. Their needs are
-entirely client-side, although I suppose a server-side implementation 
-isn't
-all that much different, just the config stuff up front, the back-end 
-is much
-the same.
+As OpenVPN GUI does not see the passphrase prompt now, it is also not 
+possible for the GUI to terminate the connection as OpenVPN is not 
+checking the exit event while waiting for user input from stdin.
 
-  I also didn't realize work was already underway on a MacOS GUI. :-)  I 
-just
-saw something about it, and sent a note to the developer. My need is 
-for our
-users first and foremost, but I'm very open and willing to share what 
-I've
-got and collaborate to make it better.
-
-  Thanks for a great program to build a GUI around. Your team already 
-did the
-hard part, the GUI is easy. ;-)
-
-  Steve
-
+--
+_____________________________________________________________
+Mathias Sundman                  (^)   ASCII Ribbon Campaign
+OpenVPN GUI for Windows           X    NO HTML/RTF in e-mail
+http://www.nilings.se/openvpn    / \   NO Word docs in e-mail
 
 
