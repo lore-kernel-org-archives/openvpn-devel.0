@@ -1,9 +1,6 @@
-From: Mathias Sundman <mathias@...209...>
-Subject: Re: [Openvpn-devel] undefined get_netsh_id
-In-Reply-To: <048101c4c5b5$655eca80$0600000a@...139...>
-Message-ID: <Pine.LNX.4.61.0411082004230.8879@...210...>
-References: <048101c4c5b5$655eca80$0600000a@...139...>
-MIME-Version: 1.0
+From: "James Yonan" <jim@...41...>
+Message-ID: <twig.1100040511.60533@...41...>
+Subject: [Openvpn-devel] IANA has approved a unique port number for OpenVPN
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,42 +11,30 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Nov  8 21:40:03 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Date: Tue Nov  9 14:49:02 2004
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gisle Vanem <giva@...258...>
-Cc: OpenVPN-dev <openvpn-devel@lists.sourceforge.net>
+To: openvpn-users@lists.sourceforge.net
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Mon, 8 Nov 2004, Gisle Vanem wrote:
+I just got a note from IANA confirming that they've assigned TCP/UDP port 1194
+to OpenVPN.
 
-> I tried building latest beta16 with gcc 3.4.1 and MingW and
-> struck what I suspect is a gcc bug. While linking I got:
->
-> tun.o(.stab+0x11024): In function `ipset2ascii_all':
-> G:/MingW32/src/inet/OpenVPN/tun.c:3321: undefined reference to `get_netsh_id'
-> tun.o(.stab+0x110b4):G:/MingW32/src/inet/OpenVPN/tun.c:3321: undefined 
-> reference to `get_netsh_id'
->
-> Line 3321 has no reference to get_netsh_id(). And what is this ".stab" 
-> section
-> doing there?
->
-> Seems gcc has problems with prototypes at > 1 scope. Moving the protype to
-> file-scope or removing 'static' from the prototype and definition of 
-> get_netshid()
-> fixed it though. Anybody else seen this?
+You can see the allocation here in the global list:
 
-I had no problem building it with gcc 3.2.3 under MinGW.
+http://www.iana.org/assignments/port-numbers
 
-I'm using:
-WinXP SP2
-MinGW-3.1.0-1
-MSYS-1.0.10
+The question, of course, is when should we switch over to using 1194 as the
+default? (We're currently using 5000 which doesn't really belong to us.)
 
---
-_____________________________________________________________
-Mathias Sundman                  (^)   ASCII Ribbon Campaign
-OpenVPN GUI for Windows           X    NO HTML/RTF in e-mail
-http://www.nilings.se/openvpn    / \   NO Word docs in e-mail
+I'd be inclined to make the change before 2.0 final is released.  Any other
+opinions?
+
+Of course, this will be moot for those of you who select your own port number
+using the "port" directive.  It's only a question of changing the default from
+5000 to 1194 when no "port" directive is specified.
+
+James
+
 
 
