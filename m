@@ -1,8 +1,9 @@
-Subject: Re: [Openvpn-devel] route option deleting routes it didn't set
-From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1085784020.8700@...41...>
-In-Reply-To: <200405282334.29774.vda@...216...>
-References: <20040528142953.GG1243@...30...>, <20040528142953.GG1243@...30...>
+From: Denis Vlasenko <vda@...216...>
+Subject: Re: [Openvpn-devel] Radius support, was: Re: [Openvpn-users] Is it possible to assign a specific ip address to a certificate?
+References: <06A32968-AFE3-11D8-96C9-000A95B96B84@...228...> <twig.1085783692.66807@...41...>
+In-Reply-To: <twig.1085783692.66807@...41...>
+MIME-Version: 1.0
+Message-Id: <200405291019.45953.vda@...216...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,36 +14,42 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri May 28 15:53:29 2004
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Denis Vlasenko <vda@...216...>, Alberto Gonzalez Iniesta <agi@...5...>, OpenVPN devel <openvpn-devel@lists.sourceforge.net>
+Date: Sat May 29 00:28:04 2004
+Content-Type: text/plain;
+  charset="koi8-r"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+To: James Yonan <jim@...41...>, Jaye Mathisen <mrcpu@...227...>, Jon Bendtsen <jon.bendtsen@...228...>
+Cc: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-Denis Vlasenko <vda@...216...> said:
+On Saturday 29 May 2004 01:34, James Yonan wrote:
+> Jaye Mathisen <mrcpu@...227...> said:
+> > It would be nice if openvpn could be configure to work with radius for
+>
+> routing and
+>
+> > IP assignment after the certificate was done.  Would allow openvpn to be
+>
+> integrated easily
+>
+> > with existing infrastructure, instead of having to have a whole new
+> > system
+>
+> to maintain
+>
+> > information about it.
+>
+> There have been several requests for radius support, and while it's
+> something I'd like to see done, I'm not going to have time to do it for
+> 2.0.
+>
+> This is the sort of thing where it would be ideal if someone else takes the
+> lead -- I would certainly be happy to technically support anyone who wants
+> to take the project on.
 
-> On Friday 28 May 2004 17:29, Alberto Gonzalez Iniesta wrote:
-> > Hi,
-> >
-> > We got a bug report at Debian [1] regarding the route option.
-> > It turns out that if a route added by openvpn is later
-> > modified (removed and added to other iface), openvpn will modify
-> > (delete) the later one.
-> >
-> > As the bug submitter states, maybe openvpn should specify the device it
-> > wants the route deleted from.
-> 
-> I think openvpn's routing options are intended for 'typical use' only.
-> It is impossible for openvpn to know each and every non-trivial setup
-> possible.
-> 
-> If you modify openvpn-created route after it starts, your setup
-> is at least a bit non-typical.
-
-I'd have to agree here that sensing cases where the user modifies the routes
-set by OpenVPN through the use of the --route directive is beyond the scope of
-what --route is meant to accomplish.  It would be better to just use
---up/--down scripts in this case.
-
-James
+802.11x can be trivially attacked. Read the RFC. I don't see why
+shall I use broken protocol.
+--
+vda
 
 
