@@ -1,9 +1,10 @@
-From: Denis Vlasenko <vda@...216...>
-Subject: Re: [Openvpn-devel] Re: Interface with GUI agent
-References: <40E18559.8020407@...244...> <200407090123.51480.vda@...216...> <Pine.LNX.4.60.0407092256040.8983@...210...>
-In-Reply-To: <Pine.LNX.4.60.0407092256040.8983@...210...>
+Message-ID: <40F129D4.7070909@...83...>
+From: Jan Kiszka <jan.kiszka@...83...>
 MIME-Version: 1.0
-Message-Id: <200407101914.52001.vda@...216...>
+Subject: Re: [Openvpn-devel] Re: Interface with GUI agent
+References: <40E18559.8020407@...244...> <200407072255.54148.jim@...41...> <Pine.LNX.4.60.0407080941160.5287@...210...> <200407081043.25501.jim@...41...> <Pine.LNX.4.60.0407082214170.6520@...210...>
+In-Reply-To: <Pine.LNX.4.60.0407082214170.6520@...210...>
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg=sha1; boundary="------------ms020003000209000702000208"
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,244 +15,138 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Jul 10 09:16:03 2004
-Content-Type: text/plain;
-  charset="windows-1251"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Date: Sun Jul 11 04:52:20 2004
 To: Mathias Sundman <mathias@...209...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-> > IMHO daemontools for windows, if ported, can handle quite a variety
-> > of different setups, including one needed by openvpn. Then you can
-> > install it as part of openvpn install.
->
-> If the only issue we had to solve here was how a normal user should be
-> able to spawn openvpn processes, I agree we should use already existing
-> software to solve this.
->
-> However, this issue has grown abit larger than that. Our gui client needs
-> to:
->
-> * Scan a directory for configuration files.
-> * A way to spawn processes (preferable portable)
-> * Maintain a table over on which port it can reach the openvpn
->    process management interface.
-> * Monitor that all openvpn processes are still alive
-> * Connect to all the openvpn processes and get status info
+This is a cryptographically signed message in MIME format.
 
-:)  I will append 'man svscan' and 'man supervise'. Judge for
-yourself how many of your points are covered by them.
+--------------ms020003000209000702000208
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Also I'll append my current 'ps -AH e' output. You can see there how
-completely different daemons are controlled by those tools.
+Mathias Sundman wrote:
+> ...
+> One more thing to consider... Should we consider a system running this 
+> service manager an open system where all locally logged on users is 
+> allowed to fully manage openvpn connections, which includes:
+> 
+> * Start/Stop openvpn processes
 
-> There is no fancy hardcoded things we are talking about, so it could all
-> reside in the gui client, however I liked the idea of moving this
-> functionallity into a portable service manager.
->
-> I need to code this regardless if we put it in the gui agent itself, or in
-> this service manager, so I think it makes more sence to put the effort
-> into a deamon from which other gui clients can benefit on all platforms,
-> instead of into my not-so-portable gui.
+As a first step, I think we should allow all users to access this 
+service. Later on, one may consider some authorisation mechanism to 
+access specific configurations. This could be some additional parameter 
+in a config file or some meta config file for the wrapping service.
 
-No need to code it. Port it to Windows. That's all.
---
-vda
+> * Create new openvpn configs
+> * delete openvpn configs
+> 
+> (Hereby not said that creating/deleting configs should be done via the 
+> service manager. I just want to discuss whether a normal user should be 
+> able to do this or not)
+> 
 
-svscan(8)                                                            svscan(8)
+As just said in my reply to an earlier mail, I don't think that 
+modifying the configurations shall become part of the gui. This would be 
+feature overloading, especially on a unix system where you typically 
+configure using a text editor.
 
+Jan
 
+--------------ms020003000209000702000208
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
-NAME
-       svscan - starts and monitors a collection of services
-
-SYNOPSIS
-       svscan [ directory ]
-
-DESCRIPTION
-       svscan  starts  one  supervise(8)  process for each subdirectory of the
-       current directory, up to a limit of 1000 subdirectories.  svscan  skips
-       subdirectory  names  starting  with dots.  supervise(8) must be in svs-
-       can's path.
-
-       svscan optionally starts a pair of supervise(8) processes,  one  for  a
-       subdirectory  s,  one for s/log, with a pipe between them. It does this
-       if the name s is at most 255 bytes long and s/log exists. (In  versions
-       0.70  and  below,  it does this if s is sticky.)  svscan needs two free
-       descriptors for each pipe.
-
-       Every five seconds, svscan checks for subdirectories again. If it  sees
-       a new subdirectory, it starts a new supervise(8) process. If it sees an
-       old subdirectory where a supervise(8) process has exited,  it  restarts
-       the  supervise(8)  process.  In the log case it reuses the same pipe so
-       that no data is lost.
-
-       svscan is designed to run forever. If it has trouble creating a pipe or
-       running  supervise(8), it prints a message to stderr; it will try again
-       five seconds later.
-
-       If svscan is given a command-line argument directory,  it  switches  to
-       that directory when it starts.
-
-SEE ALSO
-       supervise(8),  svc(8),  svok(8),  svstat(8), svscanboot(8), readprocti-
-       tle(8), fghack(8), pgrphack(8), multilog(8), tai64n(8), tai64nlocal(8),
-       setuidgid(8), envuidgid(8), envdir(8), softlimit(8), setlock(8)
-
-       http://cr.yp.to/daemontools.html
-
-
-
-                                                                     svscan(8)
-
-
-supervise(8)                                                      supervise(8)
-
-
-
-NAME
-       supervise - starts and monitors a service.
-
-SYNOPSIS
-       supervise s
-
-DESCRIPTION
-       supervise  switches  to  the  directory  named  s  and starts ./run. It
-       restarts ./run if ./run exits. It pauses for a  second  after  starting
-       ./run, so that it does not loop too quickly if ./run exits immediately.
-
-       If the file s/down exists, supervise does not start ./run  immediately.
-       You  can use svc(8) to start ./run and to give other commands to super-
-       vise.
-
-       supervise maintains status information in a binary  format  inside  the
-       directory s/supervise, which must be writable to supervise.  The status
-       information can be read by svstat(8).
-
-       supervise may exit immediately after startup  if  it  cannot  find  the
-       files  it needs in s or if another copy of supervise is already running
-       in s.  Once supervise is successfully running, it will not exit  unless
-       it  is  killed  or  specifically  asked to exit. You can use svok(8) to
-       check whether supervise is successfully running. You can use  svscan(8)
-       to reliably start a collection of supervise processes.
-
-SEE ALSO
-       svc(8), svok(8), svstat(8), svscanboot(8), svscan(8), readproctitle(8),
-       fghack(8), pgrphack(8), multilog(8), tai64n(8),  tai64nlocal(8),  setu-
-       idgid(8), envuidgid(8), envdir(8), softlimit(8), setlock(8)
-
-       http://cr.yp.to/daemontools.html
-
-
-
-                                                                  supervise(8)
-
-# ps -AH e
-  PID TTY      STAT   TIME COMMAND
-    1 ?        S      0:01 /bin/sh /init
-    2 ?        SWN    0:00   [ksoftirqd/0]
-    3 ?        SW<    0:00   [events/0]
-    4 ?        SW<    0:00     [khelper]
-   20 ?        SW<    0:00     [kblockd/0]
-   46 ?        SW     0:00     [pdflush]
-   47 ?        SW     0:00     [pdflush]
-   49 ?        SW<    0:00     [aio/0]
-  479 ?        SW<    0:00     [reiserfs/0]
-   48 ?        SW     0:00   [kswapd0]
-   50 ?        SW     0:00   [cifsoplockd]
-  214 ?        SW     0:00   [kseriod]
-  392 ?        S      0:00   devfsd /dev
-  681 ?        S      0:00   rpc.portmap
-  993 ?        S      0:00   svscan /var/service
-  995 ?        S      0:00     supervise fw
-  996 ?        S      0:00     supervise gpm
-  997 ?        S      0:00       gpm -D -2 -m /dev/psaux -t ps2
- 1007 ?        S      0:00     supervise ntp
- 1011 ?        S      0:00       /bin/sh ./run
- 2274 ?        S<     0:00         ntpdate -b -t 10 -p 4 -k /dev/null 1.1.1.1 PWD=/.local/var/service/ntp SHLVL=1 _=/usr/bin/ntpdate
- 1008 ?        S      0:00     supervise log
- 1012 ?        S      0:00       multilog t n5 /var/log/service/ntp
- 1009 ?        S      0:00     supervise top
- 1036 ?        S      0:19       top c s TERM=linux
- 1020 ?        S      0:00     supervise ups
- 1021 ?        S      0:00     supervise log
- 1022 ?        S      0:00       multilog t =/var/log/service/ups/last.out /var/log/service/ups
- 1027 ?        S      0:00     supervise klog
- 1031 ?        S      0:00       klogd -n -c 3 -x
- 1028 ?        S      0:00     supervise once
- 1040 ?        S      0:00     supervise pptp
- 1041 ?        S      0:00     supervise log
- 1056 ?        S      0:00       multilog t /var/log/service/pptp
- 1047 ?        S      0:00     supervise sshd
- 1048 ?        S      0:00       tcpserver -v -R -H -l 0 -c 40 0.0.0.0 ssh setuidgid root sshd -i -e -u0
- 1049 ?        S      0:00     supervise log
- 1091 ?        S      0:00       multilog t /var/log/service/sshd
- 1064 ?        S      0:00     supervise httpd
- 1075 ?        S      0:00       tcpserver -v -R -H -l 0 -c 40 0.0.0.0 www setuidgid apache httpd -X -f /.local/var/service/httpd/httpd.conf
- 1065 ?        S      0:00     supervise log
- 1076 ?        S      0:00       multilog t /var/log/service/httpd
- 1066 ?        S      0:00     supervise nmlog
- 1071 ?        S      0:00       /bin/sh ./run
- 1072 ?        S      0:00         /bin/sh ./run
- 1073 ?        S      0:00           nmeter c l x lx  p lp m lm  nif nlo d120000
- 1074 ?        S      0:00         logger -t
- 1067 ?        S      0:00     supervise mysql
- 1068 ?        S      0:00       /bin/sh ./run
- 1128 ?        S      0:00         mysqld --user=mysql --datadir=/var/app/mysql-3.23.52/data --tmpdir=/var/app/mysql-3.23.52/tmp --socket=/.lo
- 1069 ?        S      0:00     supervise log
- 1070 ?        S      0:00       multilog t /var/log/service/mysql
- 1087 ?        S      0:00     supervise pgsql
- 1088 ?        S      0:00     supervise log
- 1101 ?        S      0:00       multilog t /var/log/service/pgsql
- 1113 ?        S      0:00     supervise serial0
- 1115 ?        S      0:00     supervise dnscache_local
- 1130 ?        S      0:00       ./dnscache ROOT=./root IP=0.0.0.0 IPSEND=0.0.0.0 FORWARDONLY=1 DATALIMIT=2000000 CACHESIZE=1000000 GID=50 UID
- 1116 ?        S      0:00     supervise log
- 1132 ?        S      0:00       multilog t /var/log/service/dnscache_local
- 1117 ?        S      0:00     supervise nmeter
- 1138 ?        S      0:00       nmeter t c l x lx  p lp f lf  b lb  m lm  nif nlo
- 1118 ?        S      0:00     supervise ovpn-1
- 1297 ?        S      0:00       openvpn --secret /.local/var/service/ovpn-1/key --dev tun --proto udp --port 8006 --remote 1.1.4.1 --ifconfig
- 1119 ?        S      0:00     supervise log
- 1152 ?        S      0:00       multilog /var/log/service/ovpn-1
- 1163 ?        S      0:00     supervise getty_tty1
- 1164 ?        S      0:00     supervise getty_tty2
- 1870 vc/2     S      0:00       agetty 38400 /dev/tty2 linux TERM=linux
- 1165 ?        S      0:00     supervise getty_tty3
- 1218 vc/3     S      0:00       agetty 38400 /dev/tty3 linux TERM=linux
- 1166 ?        S      0:00     supervise getty_tty4
- 1227 vc/4     S      0:00       agetty 38400 /dev/tty4 linux TERM=linux
- 1167 ?        S      0:00     supervise getty_tty5
- 1231 vc/5     S      0:00       agetty 38400 /dev/tty5 linux TERM=linux
- 1168 ?        S      0:00     supervise getty_tty6
- 1232 vc/6     S      0:00       agetty 38400 /dev/tty6 linux TERM=linux
- 1169 ?        S      0:00     supervise getty_tty7
- 1233 vc/7     S      0:00       agetty 38400 /dev/tty7 linux TERM=linux
- 1170 ?        S      0:00     supervise getty_tty8
- 1222 vc/8     S      0:00       agetty 38400 /dev/tty8 linux TERM=linux
- 1171 ?        S      0:00     supervise syslog
- 1172 ?        S      0:00       syslogd -n -f /.local/var/service/syslog/syslogd.conf
- 1247 ?        S      0:00         multilog /var/log/syslog/auth.all
- 1252 ?        S      0:00         multilog /var/log/syslog/daemon.all
- 1255 ?        S      0:00         multilog /var/log/syslog/kern.all
- 1258 ?        S      0:00         multilog /var/log/syslog/mark.all
- 1261 ?        S      0:00         multilog /var/log/syslog/syslog.all
- 1264 ?        S      0:00         multilog /var/log/syslog/user.all
- 1267 ?        S      0:00         multilog /var/log/syslog/7.debug
- 1270 ?        S      0:00         multilog /var/log/syslog/6.info
- 1273 ?        S      0:00         multilog /var/log/syslog/5.notice
- 1276 ?        S      0:00         multilog /var/log/syslog/4.warning
- 1279 ?        S      0:00         multilog /var/log/syslog/3.err
- 1282 ?        S      0:00         multilog /var/log/syslog/2.crit
- 1285 ?        S      0:00         multilog /var/log/syslog/1.alert
- 1288 ?        S      0:00         multilog /var/log/syslog/0.emerg
- 1176 ?        S      0:00     supervise watch_quasar
- 1177 ?        S      0:00     supervise automount
- 1179 ?        S      0:00       /bin/sh ./run
- 1306 ?        S      0:00         sleep 32000
- 1178 ?        S      0:00     supervise watcher
- 1209 ?        S      0:00       /bin/sh ./run
- 2278 ?        S      0:00         sleep 33
-
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIO2TCC
+A+8wggLXoAMCAQICBAKZUF0wDQYJKoZIhvcNAQEEBQAwgaAxCzAJBgNVBAYTAkRFMRIwEAYD
+VQQKEwlXRUIuREUgQUcxFTATBgNVBAsTDFRydXN0IENlbnRlcjEaMBgGA1UEBxMRRC03NjIy
+NyBLYXJsc3J1aGUxLTArBgNVBAMTJFdFQi5ERSBUcnVzdENlbnRlciBFTWFpbC1aZXJ0aWZp
+a2F0ZTEbMBkGCSqGSIb3DQEJARYMdHJ1c3RAd2ViLmRlMB4XDTA0MDYxMzE1MTQyM1oXDTA1
+MDYxMzE1MTQyM1owczELMAkGA1UEBhMCREUxFDASBgNVBAgTC0RldXRzY2hsYW5kMRcwFQYD
+VQQHEw4zMDE2OSBIYW5ub3ZlcjETMBEGA1UEAxMKSmFuIEtpc3prYTEgMB4GCSqGSIb3DQEJ
+ARYRamFuLmtpc3prYUB3ZWIuZGUwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBANozkUHk
+x2pHAdiEX50PQZLRfCk3V1zfCxnVpXKLLsM2IdkrhJMuF5ZneV4NP349hZAs4cM1jGaIKgJy
+RptQynJlcInQ+EeTR07kpPZpt0V3ID731rJEbvlWWPo3tLAAfFd6GXLkpfVX4bsmHzdzW0Zw
+iUw2PC9mo4SDpxAL210FAgMBAAGjgeAwgd0wLAYJYIZIAYb4QgEEBB8WHWh0dHBzOi8vdHJ1
+c3Qud2ViLmRlL3J2Q0EvP3M9MCMGCWCGSAGG+EIBAgQWFhRodHRwczovL3RydXN0LndlYi5k
+ZTAWBglghkgBhvhCAQMECRYHL3J2Lz9zPTAWBglghkgBhvhCAQcECRYHL3JuLz9zPTAaBglg
+hkgBhvhCAQgEDRYLL0hpbGZlL0FHQi8wKQYJYIZIAYb4QgENBBwWGkZyZWVtYWlsIEVtYWls
+IGNlcnRpZmljYXRlMBEGCWCGSAGG+EIBAQQEAwIAsDANBgkqhkiG9w0BAQQFAAOCAQEApl9u
+RxoFZa0gpY3uCD0jUVzlHKU22AjtxhFoPnJT1sEdz0cG+xfBZuOSFGw/QjFV9WPNNe7FlGjK
+x960xb4hlA1EAnnrw/QFefhsNHvMvazEom731JHR5Caf67MQR5ZyDwidXTFx6Hhvf+hMyRxB
+IIpisFPWrz3WjlGa0GEmLjZwKb8/0BOTpuyMIKDzglTgm+xawmjoTau48hnukkAgH5/MMDjN
+lp3j+QwHbdOJN32j5uOuhIVXC63PdWtW+rzBYv7+fzyc7rWIlYLuR4mz0aQEb93Lwuf1w7XA
+BI/Rrf2WANEEXW7OkR8YenDn6ibQYSZaHTRfUVr8A4+rVxiy8TCCA+8wggLXoAMCAQICBAKZ
+UF0wDQYJKoZIhvcNAQEEBQAwgaAxCzAJBgNVBAYTAkRFMRIwEAYDVQQKEwlXRUIuREUgQUcx
+FTATBgNVBAsTDFRydXN0IENlbnRlcjEaMBgGA1UEBxMRRC03NjIyNyBLYXJsc3J1aGUxLTAr
+BgNVBAMTJFdFQi5ERSBUcnVzdENlbnRlciBFTWFpbC1aZXJ0aWZpa2F0ZTEbMBkGCSqGSIb3
+DQEJARYMdHJ1c3RAd2ViLmRlMB4XDTA0MDYxMzE1MTQyM1oXDTA1MDYxMzE1MTQyM1owczEL
+MAkGA1UEBhMCREUxFDASBgNVBAgTC0RldXRzY2hsYW5kMRcwFQYDVQQHEw4zMDE2OSBIYW5u
+b3ZlcjETMBEGA1UEAxMKSmFuIEtpc3prYTEgMB4GCSqGSIb3DQEJARYRamFuLmtpc3prYUB3
+ZWIuZGUwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBANozkUHkx2pHAdiEX50PQZLRfCk3
+V1zfCxnVpXKLLsM2IdkrhJMuF5ZneV4NP349hZAs4cM1jGaIKgJyRptQynJlcInQ+EeTR07k
+pPZpt0V3ID731rJEbvlWWPo3tLAAfFd6GXLkpfVX4bsmHzdzW0ZwiUw2PC9mo4SDpxAL210F
+AgMBAAGjgeAwgd0wLAYJYIZIAYb4QgEEBB8WHWh0dHBzOi8vdHJ1c3Qud2ViLmRlL3J2Q0Ev
+P3M9MCMGCWCGSAGG+EIBAgQWFhRodHRwczovL3RydXN0LndlYi5kZTAWBglghkgBhvhCAQME
+CRYHL3J2Lz9zPTAWBglghkgBhvhCAQcECRYHL3JuLz9zPTAaBglghkgBhvhCAQgEDRYLL0hp
+bGZlL0FHQi8wKQYJYIZIAYb4QgENBBwWGkZyZWVtYWlsIEVtYWlsIGNlcnRpZmljYXRlMBEG
+CWCGSAGG+EIBAQQEAwIAsDANBgkqhkiG9w0BAQQFAAOCAQEApl9uRxoFZa0gpY3uCD0jUVzl
+HKU22AjtxhFoPnJT1sEdz0cG+xfBZuOSFGw/QjFV9WPNNe7FlGjKx960xb4hlA1EAnnrw/QF
+efhsNHvMvazEom731JHR5Caf67MQR5ZyDwidXTFx6Hhvf+hMyRxBIIpisFPWrz3WjlGa0GEm
+LjZwKb8/0BOTpuyMIKDzglTgm+xawmjoTau48hnukkAgH5/MMDjNlp3j+QwHbdOJN32j5uOu
+hIVXC63PdWtW+rzBYv7+fzyc7rWIlYLuR4mz0aQEb93Lwuf1w7XABI/Rrf2WANEEXW7OkR8Y
+enDn6ibQYSZaHTRfUVr8A4+rVxiy8TCCBu8wggTXoAMCAQICAQQwDQYJKoZIhvcNAQEEBQAw
+gY0xCzAJBgNVBAYTAkRFMRowGAYDVQQHExFELTc2MjI3IEthcmxzcnVoZTESMBAGA1UEChMJ
+V0VCLkRFIEFHMRQwEgYDVQQLEwtUcnVzdENlbnRlcjEbMBkGA1UEAxMSV0VCLkRFIFRydXN0
+Q2VudGVyMRswGQYJKoZIhvcNAQkBFgx0cnVzdEB3ZWIuZGUwHhcNMDIxMjAxMDAwMDAwWhcN
+MDkwNjE5MjM1OTU5WjCBoDELMAkGA1UEBhMCREUxEjAQBgNVBAoTCVdFQi5ERSBBRzEVMBMG
+A1UECxMMVHJ1c3QgQ2VudGVyMRowGAYDVQQHExFELTc2MjI3IEthcmxzcnVoZTEtMCsGA1UE
+AxMkV0VCLkRFIFRydXN0Q2VudGVyIEVNYWlsLVplcnRpZmlrYXRlMRswGQYJKoZIhvcNAQkB
+Fgx0cnVzdEB3ZWIuZGUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDvSMwjmwx/
+6m/VNtPHL8e6C4CMyHpkj3Fb+OtVRp6ARU2giHdrQ6YRweVuHhzMRPi/2WKl8Ucd3tinS8G6
+8HZoySafhkYfQtWZ5pumYf1QqEilf45n/BSe0S3jXHX6ksj1E55Y5FQTn6kF4q92IIC7eFAO
+mXnF2aso1Evk1oZwP4kybqulJOtzmMAxhQD5mAeoFcjxcEWZB9a3gWUourcPX5S9AFylkRMi
+Kb9cPwLfQRgzBol755aEd9jipin7S2ri/589JXTtqHwSvfQ8Q/RPfMebbgVAC7CPLlbn3yCy
+334I5feq4pB/Eg8o9t8fZ9rAXHOcl6zYkXnCKU1uyDCLAgMBAAGjggJDMIICPzAMBgNVHRME
+BTADAQH/MDEGA1UdHwQqMCgwJqAkoCKGIGh0dHA6Ly90cnVzdC53ZWIuZGUvY3JsL2NhMDEu
+Y3JsMBEGCWCGSAGG+EIBAQQEAwIABzAjBglghkgBhvhCAQIEFhYUaHR0cHM6Ly90cnVzdC53
+ZWIuZGUwGgYJYIZIAYb4QgEIBA0WCy9IaWxmZS9BR0IvMBYGCWCGSAGG+EIBAwQJFgcvcnYv
+P3M9MBYGCWCGSAGG+EIBBwQJFgcvcm4vP3M9MIIBKwYJYIZIAYb4QgENBIIBHBaCARhUcnVz
+dENlbnRlciB2b24gV0VCLkRFIC0gRU1haWwtWmVydGlmaWthdGUKCkRpZSBOdXR6dW5nIGRp
+ZXNlcyBaZXJ0aWZpa2F0ZXMgd2lyZCB2b24gZGVuIEFsbGdlbWVpbmVuIEdlc2No5GZ0c2Jl
+ZGluZ3VuZ2VuIChBR0IpIC8gWmVydGlmaXppZXJ1bmdzcmljaHRsaW5pZW4gZGVzIFdFQi5E
+RSBUcnVzdENlbnRlcnMgZ2VyZWdlbHQuCkRpZSBBR0JzIHVuZCBaZXJ0aWZpemllcnVuZ3Ny
+aWNodGxpbmllbiBzaW5kIHVudGVyIGh0dHA6Ly90cnVzdC53ZWIuZGUvSGlsZmUvIGVpbnNl
+aGJhci4KMEkGA1UdIARCMEAwPgYLYIZIAYb4RQEHAQEwLzAtBggrBgEFBQcCARYhaHR0cDov
+L3RydXN0LndlYi5kZS9IaWxmZS9Qb2xpY3kvMA0GCSqGSIb3DQEBBAUAA4ICAQAPQ+WZE2G4
+egtLpo1g3lJ2VqNOB+gtBMD1nNfjE6l48j2BTI4GMLc5fTyZKKctApdLI9n2Ln2TBAXD7PJb
+n8siboz1XRo01Dh9LVAZP7SAyRq9W9xfTIKCdFiUmK6SSJHsuDEPfBKW3rN4NvwY7CU9ySVP
+c4aLL1czpTPIkJacsIE+ZxdkB291wY7A8goKMCoFdWAgcnge5c3dkAivBKlYp8otU/vM/lCN
+oZ+Z1UlxzT1Wao0lVJ1AEqNNXscOu7DyVzmwFssC3wcCihyTzpkee1jNUyV0mMbtJOUKp88d
+BocWhkOoJni57wcITGjQYvl6L888XeED0L84zzSc82R/Rgw2LBs4eiXEaafbGqXJ2GBIS9/8
+TNb2DzkqzRehJ8ikr+enJxK5m/hJB30yxp1n7FPS7O0VrUzUShphDqDKRdcpVUkHGEHlqC+f
+GrEibYhJ9Z/XmMHGyl36qxaT+R3cr7JPMdD+/YnyOVgiqXxuWwpEFF8NDhGwb9QV+bA1KAep
+epMAZ3DoCl57uj6glalAWJSMBo17vm1LuqXVXHarBUqAS8k2IRc5DPvEyLLjEJqsRCe1hqQH
+b/c2dGGdGgP1S0V6dsAsSBxdHqadRKd7JKPfw4D5tRJRRSduyAk5ipP1/+EqKngAnDZf5x/h
+NYZMZd0cnlCn2x1JpZjN9YIBBjGCA4EwggN9AgEBMIGpMIGgMQswCQYDVQQGEwJERTESMBAG
+A1UEChMJV0VCLkRFIEFHMRUwEwYDVQQLEwxUcnVzdCBDZW50ZXIxGjAYBgNVBAcTEUQtNzYy
+MjcgS2FybHNydWhlMS0wKwYDVQQDEyRXRUIuREUgVHJ1c3RDZW50ZXIgRU1haWwtWmVydGlm
+aWthdGUxGzAZBgkqhkiG9w0BCQEWDHRydXN0QHdlYi5kZQIEAplQXTAJBgUrDgMCGgUAoIIC
+LTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0wNDA3MTExMTUx
+NDhaMCMGCSqGSIb3DQEJBDEWBBQGGn9KBQt7sbfz/ahY8grVp+/nqzBSBgkqhkiG9w0BCQ8x
+RTBDMAoGCCqGSIb3DQMHMA4GCCqGSIb3DQMCAgIAgDANBggqhkiG9w0DAgIBQDAHBgUrDgMC
+BzANBggqhkiG9w0DAgIBKDCBugYJKwYBBAGCNxAEMYGsMIGpMIGgMQswCQYDVQQGEwJERTES
+MBAGA1UEChMJV0VCLkRFIEFHMRUwEwYDVQQLEwxUcnVzdCBDZW50ZXIxGjAYBgNVBAcTEUQt
+NzYyMjcgS2FybHNydWhlMS0wKwYDVQQDEyRXRUIuREUgVHJ1c3RDZW50ZXIgRU1haWwtWmVy
+dGlmaWthdGUxGzAZBgkqhkiG9w0BCQEWDHRydXN0QHdlYi5kZQIEAplQXTCBvAYLKoZIhvcN
+AQkQAgsxgayggakwgaAxCzAJBgNVBAYTAkRFMRIwEAYDVQQKEwlXRUIuREUgQUcxFTATBgNV
+BAsTDFRydXN0IENlbnRlcjEaMBgGA1UEBxMRRC03NjIyNyBLYXJsc3J1aGUxLTArBgNVBAMT
+JFdFQi5ERSBUcnVzdENlbnRlciBFTWFpbC1aZXJ0aWZpa2F0ZTEbMBkGCSqGSIb3DQEJARYM
+dHJ1c3RAd2ViLmRlAgQCmVBdMA0GCSqGSIb3DQEBAQUABIGAdj0J8MJkrENuqfbV6aDqOnVL
+nR8bRJBheZgSbQomEwciQNHT/1wN84m5gj3TyHkCU4Bm7bN0NDAy5WLJGSE3oySxEN83L5DB
+igW7C8sa49aW1MWJaeeulqjn57SjIwKdaqYFGTMveWT2oVNNI2YTu6Er0rR/Wu3Kb2YE11QI
+ccsAAAAAAAA=
+--------------ms020003000209000702000208--
 
