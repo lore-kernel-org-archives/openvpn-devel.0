@@ -1,9 +1,7 @@
 From: Mathias Sundman <mathias@...209...>
-Subject: Re: [Openvpn-devel] Patch: Output log message after routes is added
-In-Reply-To: <twig.1091957700.34931@...41...>
-Message-ID: <Pine.LNX.4.60.0408081532480.15475@...210...>
-References: <twig.1091957700.34931@...41...>
+Message-ID: <Pine.LNX.4.60.0408092121530.27324@...210...>
 MIME-Version: 1.0
+Subject: [Openvpn-devel] psw in pem_passphrase_callback() static or not?
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,57 +12,30 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Aug  8 06:45:01 2004
+Date: Mon Aug  9 12:36:07 2004
 Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
 Content-Transfer-Encoding: 8bit
-To: James Yonan <jim@...41...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Sun, 8 Aug 2004, James Yonan wrote:
+When i first looked at the pem_passphrase_callback() function in ssl.c, I 
+though that the intention was to save the passphrase so the key could be 
+reloaded after a ping-restart, because you use:
 
-> Mathias Sundman <mathias@...209...> said:
->
->> --- forward-orig.c      Fri Jul 30 22:08:22 2004
->> +++ forward.c   Sun Aug  8 09:48:21 2004
->> @@ -243,6 +243,7 @@
->>         update_time ();
->>         event_timeout_clear (&c->c2.route_wakeup);
->>         event_timeout_clear (&c->c2.route_wakeup_expire);
->> +      msg (M_INFO, "Finished adding routes to system.");
->>       }
->>     else
->>       {
->>
->>
->> James, could you include this in next beta?
->
-> Yes, this is fine.  Regarding the details:
->
-> * I take it that you are using the M_INFO message level so you can be sure the
-> message will be in the log.  Normally I would want to use something like
-> D_ROUTE for this.  And even if M_INFO is used, it can still be silenced with
-> --verb 0.
+static char passbuf[256];
 
-Exactly. I wanted it to be displayed at the lowest possible verb level. I 
-think requirying atleast verb 1 for the GUI to work should be okay for all 
-users.
+So, I was surprised when my GUI now asked me for the passphrase a second 
+time (after a ping-restart).
 
+A closer look at the function revealed that you do a CLEAR(passbuf) 
+before returning.
 
-> * As is, the patch will cause the message to go to the log, even if there are
-> no routes to add.  In such a case, the message will be output showing the
-> point in time at which routes would have been added, had they been present in
-> the config.  So maybe the message should read differently, such as "TUN/TAP
-> interface up".
+So, I just wonder, was the intention to save the passphrase or not? If 
+not, why do declare passbuf as static?
 
-Sure, "TUN/TAP interface up" is fine with me. Lets use that instead.
+Also, is it safe todo
+if (!strlen (passbuf)) 
+when passbuf has not get been assigned any string?
 
-
-> * The message will only be output if c->options.route_delay_defined is true.
-> On Windows, this is always the case, so that's probably what you want.
-
-Well, it's good enough for me, but it would have been better it worked on 
-all platforms in all cases. Is there a better place to put it that will 
-always work (but still after possible routes are added)?
 
 -- 
 _____________________________________________________________
