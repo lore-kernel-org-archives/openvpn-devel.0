@@ -1,11 +1,11 @@
-Message-ID: <40E75F4E.6030901@...83...>
+Message-ID: <40E744F9.5000700@...83...>
 From: Jan Kiszka <jan.kiszka@...83...>
 MIME-Version: 1.0
 Subject: Re: Interface with GUI agent, was: Re: [Openvpn-devel] [Patch] revoke
  scripts were broken
-References: <40E18559.8020407@...244...> <1088881994.40e7054a0e5e6@...238...> <200407031601.24438.jim@...41...> <200407040154.49974.vda@...216...>
-In-Reply-To: <200407040154.49974.vda@...216...>
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg=sha1; boundary="------------ms010201010707080703000109"
+References: <40E18559.8020407@...244...> <200406301725.43961.jim@...41...> <1088881994.40e7054a0e5e6@...238...> <200407031601.24438.jim@...41...>
+In-Reply-To: <200407031601.24438.jim@...41...>
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg=sha1; boundary="------------ms050206040702030602090107"
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -16,58 +16,44 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Jul  3 16:38:03 2004
-To: Denis Vlasenko <vda@...216...>
+Date: Sat Jul  3 16:46:00 2004
+To: James Yonan <jim@...41...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 This is a cryptographically signed message in MIME format.
 
---------------ms010201010707080703000109
+--------------ms050206040702030602090107
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Denis Vlasenko wrote:
-> On Saturday 03 July 2004 23:01, James Yonan wrote:
-> 
->>  management 127.0.0.1 20001
->>
->>This will cause OpenVPN to listen on 127.0.0.1:20001 as its management
->>interface port.
->>
->>It's important, of course, that the management port always be local, since
->>we are using it to potentially pass passwords and other sensitive data that
->>should never actually touch a real network interface.
->>
->>Thinking ahead, the challenge/response sequence for passing authentication
->>info should be open-ended to provide for future implementation of
->>alternative authentication methods such as Radius, LDAP, NT Auth, etc.
-> 
-> 
-> Please don't do too much of that. I've seen this auth featuritis creeping
-> in ntp and ups tools(!). Results ain't pretty...
-> 
-> Reconfiguration of openvpn can always be done by editing config file
-> and restarting openvpn daemon. Simple. Elegant. No additional coding
-> - no risk of introducing bugs.
-> 
-> This can be done via systray app, too.
+James Yonan wrote:
 
-I can understand your concerns, and mostly you are right. However, there 
-is one quite important scenario - at least as I see it - where you need 
-the core daemon and the GUI running in different accounts: whenever the 
-key or secret has to be looked away from the user while it shall still 
-be possible for her/him to start/stop VPN connections. One reason for 
-this may be that the key is bound to the device and not the user. The 
-other one is security. Through this separation, malicious programs 
-running in the context of the user can not so easily access the secret.
+> ...
+> Possible client -> server commands:
+> 
+> (1) send auth credentials
+> (2) get status (as in SIGUSR2)
+> (3) send signal (SIGHUP, SIGUSR1, or SIGUSR2, SIGTERM)
+> 
+> And server -> client commands:
+> 
+> (1) need auth credentials -- GUI should query the user then return them to the 
+> daemon via a "send auth credentials" command
+> 
+> The basic mechanism of operation to enable the management interface would be 
+> to pass an option like this in the config file:
+> 
+>   management 127.0.0.1 20001
+> 
 
-And for those who don't trust this new interface (which will surely need 
-a careful implementation): what about adding a configure switch and 
-putting the respective code in some #ifdefs?
+I would like to have some mechanism to fork an openvpn instance and let 
+the new process use a specific configuration file. This would allow to 
+start only certain VPN tunnels depending on what the user selects in the 
+GUI.
 
 Jan
 
---------------ms010201010707080703000109
+--------------ms050206040702030602090107
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -148,8 +134,8 @@ NYZMZd0cnlCn2x1JpZjN9YIBBjGCA4EwggN9AgEBMIGpMIGgMQswCQYDVQQGEwJERTESMBAG
 A1UEChMJV0VCLkRFIEFHMRUwEwYDVQQLEwxUcnVzdCBDZW50ZXIxGjAYBgNVBAcTEUQtNzYy
 MjcgS2FybHNydWhlMS0wKwYDVQQDEyRXRUIuREUgVHJ1c3RDZW50ZXIgRU1haWwtWmVydGlm
 aWthdGUxGzAZBgkqhkiG9w0BCQEWDHRydXN0QHdlYi5kZQIEAplQXTAJBgUrDgMCGgUAoIIC
-LTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0wNDA3MDQwMTM3
-MThaMCMGCSqGSIb3DQEJBDEWBBS4easN8UzZuQ1vFuu1VTAukhcvNzBSBgkqhkiG9w0BCQ8x
+LTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0wNDA3MDMyMzQ0
+NTdaMCMGCSqGSIb3DQEJBDEWBBR+CgNH0OjygF7kdud58yvXIbhywjBSBgkqhkiG9w0BCQ8x
 RTBDMAoGCCqGSIb3DQMHMA4GCCqGSIb3DQMCAgIAgDANBggqhkiG9w0DAgIBQDAHBgUrDgMC
 BzANBggqhkiG9w0DAgIBKDCBugYJKwYBBAGCNxAEMYGsMIGpMIGgMQswCQYDVQQGEwJERTES
 MBAGA1UEChMJV0VCLkRFIEFHMRUwEwYDVQQLEwxUcnVzdCBDZW50ZXIxGjAYBgNVBAcTEUQt
@@ -158,9 +144,9 @@ dGlmaWthdGUxGzAZBgkqhkiG9w0BCQEWDHRydXN0QHdlYi5kZQIEAplQXTCBvAYLKoZIhvcN
 AQkQAgsxgayggakwgaAxCzAJBgNVBAYTAkRFMRIwEAYDVQQKEwlXRUIuREUgQUcxFTATBgNV
 BAsTDFRydXN0IENlbnRlcjEaMBgGA1UEBxMRRC03NjIyNyBLYXJsc3J1aGUxLTArBgNVBAMT
 JFdFQi5ERSBUcnVzdENlbnRlciBFTWFpbC1aZXJ0aWZpa2F0ZTEbMBkGCSqGSIb3DQEJARYM
-dHJ1c3RAd2ViLmRlAgQCmVBdMA0GCSqGSIb3DQEBAQUABIGAIqBJpAJlHMxPXIQX1Nl5ZAaJ
-kIT1PMEEnzlARqevSOWBzEl3hTseLXmTfWWvPAuEbFX8Anp0DM4zxVjv6N/RSXpAq8F7ZC3G
-4xbd9x/DbjwvOpjxD/YOD4fP+tK5TE+WqSKCe5Bwk7JaK8r0ElSNjwvfYh3CzhUmU03zEBhm
-140AAAAAAAA=
---------------ms010201010707080703000109--
+dHJ1c3RAd2ViLmRlAgQCmVBdMA0GCSqGSIb3DQEBAQUABIGAN3XjfPvx7XfXmO/17q30iOHx
+gR/Igdlk8kAUGCalFsuDap5YdcyV16+Ud1b4HiEWQPH5BgdY2WPuaFSB38ANvojtAIAQJ0EG
+4/NeCJmJiGKo8jIOCNzFyJYue0EzPYJrpjLdvoAPguCj9PzlPcu5VLlW7wdaI/pE7AdXFKF2
+QUEAAAAAAAA=
+--------------ms050206040702030602090107--
 
