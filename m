@@ -1,9 +1,8 @@
-From: Matthias Andree <ma+ovpnd@...31...>
-Subject: Re: [Openvpn-devel] OpenVPN 1.6-beta6 on Windows XP - observations
-Message-ID: <20040221000101.GA4288@...33...>
-References: <20040220222904.GB20552@...33...> <twig.1077318468.22465@...41...>
+From: Nathanael Rensen <dev@...170...>
+Message-ID: <loom.20040221T101654-540@...171...>
+References: <loom.20040220T055425-265@...171...> <20040220173445.GD18676@...172...>
 Mime-Version: 1.0
-In-Reply-To: <twig.1077318468.22465@...41...>
+Subject: [Openvpn-devel] Re: tap support for freebsd
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,67 +13,101 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Feb 20 16:08:27 2004
+Date: Sat Feb 21 09:38:19 2004
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-On Fri, 20 Feb 2004, James Yonan wrote:
+Thomas Glanzmann <sithglan <at> stud.uni-erlangen.de> writes:
 
-> There's a lengthy description of bridging vs. routing in both the
-> win32 notes and the FAQ -- perhaps it should be amplified.  Feel free
-> to submit something.  
+> Could you please send me a patch for this.
 
-I'd think documentation needs to be compact, not spread out and ample.
-Repetition of content doesn't help (although spraying pointers over a
-collection of documents that tell the user where to look can be
-helpful). It's the alternation between TUN and TAP document, one
-paragraph this, next paragraph that, next paragraph this again - that
-appears to confuse people.
+Sure. I'm sorry I didn't include one in the initial post.
+Below is a patch against version 1.41 of tun.c. Apart from
+replacing openbsd with freebsd, it is just a straight copy 
+of the corresponding functions (write_tun and read_tun) for 
+OpenBSD from earlier in the file.
 
-> > 2. "ip-win32 ipapi" (which is the default) doesn't work reliably for
-> > me (it worked after the first install but stopped working after a
-> > reboot - but I also ran Windows Update in between)
-> > 
-> > I've seen logs about OpenVPN being unable to find the TAP interface.
-> > netsh is fine. Maybe netsh could be the default for WinXP and ipapi
-> > the default for Win2K?
-> 
-> Did you try "ip-win32 dynamic"?  If so, also make sure to use a
-> --route-delay of a few seconds.  I'm considering making this the
-> default, but I'd like more feedback first.
+Nathanael
 
-No, I haven't tried DHCP emulation yet but I'll try it on the next WinXP
-machine I'll equip with OpenVPN.
+--- v1.41/tun.c   Sat Feb 21 16:40:01 2004
++++ tun.c   Sat Feb 21 16:47:55 2004
+@@ -1308,38 +1308,47 @@
+ int
+ write_tun (struct tuntap* tt, uint8_t *buf, int len)
+ {
+-  struct iovec iv[2];
+-  u_int32_t type;
+-  struct ip *iph;
+-
+-  iph = (struct ip *)buf;
+-
+-  if(tt->ipv6 && iph->ip_v == 6)
+-     type = htonl(AF_INET6);
+-   else
+-     type = htonl(AF_INET);
+-
+-  iv[0].iov_base = &type;
+-  iv[0].iov_len = sizeof (type);
+-  iv[1].iov_base = buf;
+-  iv[1].iov_len = len;
+-
+-  return freebsd_modify_read_write_return (writev (tt->fd, iv, 2));
++  if (tt->type == DEV_TYPE_TUN)
++    {
++      u_int32_t type;
++      struct iovec iv[2];
++      struct ip *iph;
++
++      iph = (struct ip *) buf;
++
++      if (tt->ipv6 && iph->ip_v == 6)
++        type = htonl (AF_INET6);
++      else 
++        type = htonl (AF_INET);
++
++      iv[0].iov_base = &type;
++      iv[0].iov_len = sizeof (type);
++      iv[1].iov_base = buf;
++      iv[1].iov_len = len;
++
++      return freebsd_modify_read_write_return (writev (tt->fd, iv, 2));
++    }
++  else
++    return write (tt->fd, buf, len);
+ }
+ 
+ int
+ read_tun (struct tuntap* tt, uint8_t *buf, int len)
+ {
+-  u_int32_t type;
+-  struct iovec iv[2];
+-
+-  iv[0].iov_base = &type;
+-  iv[0].iov_len = sizeof (type);
+-  iv[1].iov_base = buf;
+-  iv[1].iov_len = len;
+-
+-
+-  return freebsd_modify_read_write_return (readv (tt->fd, iv, 2));
++  if (tt->type == DEV_TYPE_TUN)
++    {
++      u_int32_t type;
++      struct iovec iv[2];
++
++      iv[0].iov_base = &type;
++      iv[0].iov_len = sizeof (type);
++      iv[1].iov_base = buf;
++      iv[1].iov_len = len;
++
++      return freebsd_modify_read_write_return (readv (tt->fd, iv, 2));
++    }
++  else
++    return read (tt->fd, buf, len);
+ }
+ 
+ #elif defined(WIN32)
 
-> I'm not very happy about the idea of changing defaults based on the OS
-> version being used.
 
-It indeeds adds complexity that propagates to support.
 
-> --redirect-gateway is experimental and unfortunately doesn't always
-> produce the correct result. This has been discussed before on
-> openvpn-users.  It is simply a helper function that generates 3 routes
-> and undoes them on tunnel shutdown.
-
-No need for excuses. It's an experimental feature in a beta branch, so I
-just had to give feedback. :-)
-
-I find this whole Windows routing stuff an order of magnitude less
-transparent than Linux/BSD routing and the Windows XP "route print"
-isn't exactly concise, in the German version that is. Apart from
-outright stupid translations "metric -> Anzahl", the all-numeric
-printout with addresses where BSD has interface names isn't helpful, and
-DNS configuration adds to the confusion. With Samba and
-"net view \\bigserver", WINS also gets into play and I see packets
-coming from the wrong and the right source IP...
-
-It's not OpenVPN's fault, fortunately, and affirms that Windows doesn't
-make a good router for me :->
-
--- 
-Matthias Andree
-
-Encrypt your mail: my GnuPG key ID is 0x052E7D95
 
