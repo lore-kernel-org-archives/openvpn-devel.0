@@ -1,7 +1,9 @@
-From: Alberto Gonzalez Iniesta <agi@...64...>
-Message-ID: <20041117114417.GC1675@...30...>
+From: Matthias Andree <matthias.andree@...68...>
+Subject: Re: [Openvpn-devel] [PATCH]: small tweaks to beta16
+Message-ID: <20041117235828.GA27761@...33...>
+References: <41935EF5.4070907@...292...> <Pine.LNX.4.58.0411110700410.7012@...41...>
 Mime-Version: 1.0
-Subject: [Openvpn-devel] mssfix option changed its behaviour
+In-Reply-To: <Pine.LNX.4.58.0411110700410.7012@...41...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,32 +14,43 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Nov 17 03:45:02 2004
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Date: Wed Nov 17 15:59:01 2004
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-To: OpenVPN devel <openvpn-devel@lists.sourceforge.net>
+To: James Yonan <jim@...41...>
+Cc: Peter 'Luna' Runestig <peter+openvpn@...292...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
+On Thu, 11 Nov 2004, James Yonan wrote:
 
-It seems [1] that specifying mssfix without a value, like the man page
-suggests [2], gives a fatal (Options) error now. Is this a new expected
-behaviour (that should be updated in the man page), or something not
-wanted?
+> On Thu, 11 Nov 2004, Peter 'Luna' Runestig wrote:
+> 
+> > --- openvpn-2.0_beta16.orig/makefile.w32	2004-11-07 10:27:36.000000000 +0100
+> > +++ openvpn-2.0_beta16/makefile.w32	2004-11-10 22:27:42.796479300 +0100
+> > @@ -50,7 +50,7 @@
+> > 
+> >  LIBS_DMALLOC = ${LIBS} -ldmalloc
+> > 
+> > -LIB_DIRS = -L${OPENSSL}/out -L${LZO}/src/.libs
+> > +LIB_DIRS = -L${OPENSSL}/out -L${LZO}
+> > 
+> >  LIB_DIRS_DMALLOC = ${LIB_DIRS} -L${DMALLOC}
+> > 
+> > 
+> > I'm using lzo-1.08, and the "liblzo.a" file was created in the
+> > base directory there, and the "src/.libs" subdir doesn't even
+> > exist. Or is it just me?
+> 
+> That's strange because when I build lzo-1.08, it puts the .a file in 
+> src/.libs.
 
-Thanks,
+The software that builds the LZO archive and shared library (liblzo.a
+and .so) in src/.libs is libtool, and libtool should then be used to
+either _install_ or _link_ against the LZO library. (Libtool stores
+information that describes the .a and .so files in its .la files.)
 
-Alberto
+Is libtool used for Windows builds?
 
-
-
-[1] http://bugs.debian.org/280893
-[2]  --tun-mtu 1500 --fragment 1300 --mssfix
-
---=20
-Alberto Gonzalez Iniesta    | Formaci=F3n, consultor=EDa y soporte t=E9cnico
-agi@(inittab.org|debian.org)| en GNU/Linux y software libre
-Encrypted mail preferred    | http://inittab.org
-
-Key fingerprint =3D 9782 04E7 2B75 405C F5E9  0C81 C514 AF8E 4BA4 01C3
+-- 
+Matthias Andree
 
