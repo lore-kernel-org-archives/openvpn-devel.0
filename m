@@ -1,6 +1,6 @@
 From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1083215794.46751@...41...>
-Subject: [Openvpn-devel] (no subject)
+Message-ID: <twig.1083217597.4062@...41...>
+Subject: [Openvpn-devel] OpenVPN 2.0-test26 released
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -11,10 +11,12 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Apr 28 22:17:01 2004
+Date: Wed Apr 28 22:47:03 2004
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+
+Ooops... let's try that again with the correct subject line.
 
 A new release of the 2.0 beta is available.
 
@@ -128,6 +130,7 @@ Change Log:
 Download:
 
 http://openvpn.sourceforge.net/beta/
+
 
 
 
