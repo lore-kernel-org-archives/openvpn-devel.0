@@ -1,9 +1,8 @@
-Message-ID: <1098453217.417910e126f35@...298...>
-From: William Preston <openvpn@...275...>
-Subject: Re: [Openvpn-devel] proxy ntlm support
-References: <200409151352.49215.openvpn@...275...> <Pine.LNX.4.58.0410180156390.12482@...269...>
-In-Reply-To: <Pine.LNX.4.58.0410180156390.12482@...269...>
-MIME-Version: 1.0
+Message-ID: <a6589cd60410221425748baad@...278...>
+From: Hans Fugal <fugalh@...277...>
+Reply-To: Hans Fugal <fugalh@...277...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Foolproof rollout
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,30 +13,41 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Oct 22 06:58:45 2004
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8bit
+Date: Fri Oct 22 14:27:43 2004
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Quoting James Yonan <jim@...41...>:
+I'm new to openvpn, coming from a PPTP and IPsec background. I like
+what I see. We have been having trouble with connectivity on our IPsec
+(netscreen appliance and netscreen remote (safenet) software on the
+roadwarrior computers), and we're looking at moving to OpenVPN, at
+least for the people that have connectivity issues.
 
-> I merged your patch in the just-released OpenVPN-2.0-beta12.  Would you 
-> mind giving it a test run to make sure I didn't make any mistakes on the 
-> merge (there were some conflicts).  I don't have an ISA server, so I can't 
-> personally test it.
-> 
+The problem is that some of these people are not computer savvy by any
+definition of the word, and as it stands openvpn requires too much
+configuration - there are too many places they can jump off into the
+deep end.
 
-Hi,
-yes it works without problems.
+The ideal situation would be something like this use case: The user
+gets an email from me saying something like: "Run the attached
+installer, reboot, and double click the new VPN icon on your desktop."
 
-thanks,
+I believe this is possible, and this is how I see it working. I create
+and sign the certificate and the config file (which doesn't change
+from user to user). I run a script or make target that creates a
+custom installer that has the certificate, key, and config file and
+will put them in the right place (that part's easy), set up a shortcut
+that will start the vpn (not too hard), and configure the network
+settings (DNS for example - this might not be necessary if we use dhcp
+over tap).
 
-William
+I intend to do this, if there aren't hidden demons that make it
+unfeasible, and if someone else hasn't already done it or isn't
+already doing it. Would this be something that would fit as part of
+openvpn itself, or would it be better to do it as a separate project
+and/or patch? Do you have any pointers on where to start?
 
-> On Wed, 15 Sep 2004, William Preston wrote:
-
-> > here's a patch to add basic ntlm support to openvpn 1.6.0
-> > i've tested it with i386 linux & win32 against MS ISA proxy.
-
-
+-- 
+De gustibus non disputandum est.
 
