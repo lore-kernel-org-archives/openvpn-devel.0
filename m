@@ -1,10 +1,7 @@
-From: Neil Brown <neilb@...253...>
+From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-Message-ID: <16647.429.453589.272763@...253...>
-Subject: Re: [Openvpn-devel] Re: [PATCH - 4 of 4]  support new option "net-type"
-In-Reply-To: message from James Yonan on Tuesday July 27
-References: <16645.49196.829476.656946@...253...>
-	<twig.1090918723.37830@...41...>
+Message-Id: <200407280336.07129.jim@...41...>
+Subject: [Openvpn-devel] OpenVPN 2.0-beta8 released
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,91 +12,89 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Jul 27 18:31:03 2004
-Content-Type: text/plain; charset=us-ascii
+Date: Wed Jul 28 01:36:16 2004
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: James Yonan <jim@...41...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
-On Tuesday July 27, jim@...41... wrote:
-> Neil,
-> 
-> Comments Inline below...
-> 
-> Neil Brown <neilb@...253...> said:
-> 
-> > 
-> > 
-> > As was hinted at with the previous patch, this patch introduces a new
-> > config option "net-type".  It can be either "ptp" or "subnet".
-> > 
-> > If net-type is not explicitly given then:
-> >   if "dev" is "tun", "net-type" will be "ptp"
-> >   if "dev" is "tap", "net-type" will be "subnet"
-> > 
-> > If it is given, then it overrides that default.
-> > 
-> > Probably the most useful usage is to set "net-type subnet" when
-> > using  "dev tap".
-> 
-> I'm not sure I understand this.  Doesn't current OpenVPN usage associate dev
-> tap interfaces with subnet-based networks?
+This release has some cool new stuff, most notably TCP support in server mode.  
+While all OSes which OpenVPN supports should be able to run as a multi-client 
+TCP server, I've added an optimization for Linux 2.6 which takes advantage of 
+the new linearly scalable sys_epoll API.  If you plan on running an OpenVPN 
+TCP server with a larger number of concurrent clients (>50), you will see a 
+noticeable performance benefit by using Linux 2.6.
 
-Uhmm.. yes.  I keep confusing "tap" and "tun".
-I should have said:
+Also included in this release is PKCS #12 support thanks to Mathias Sundman.  
+PKCS #12 is a certificate/key file format which allows you to encapsulate the 
+TLS certificate, key, and root certificate all in a single file.
 
-   Probably the most useful usage is to set "net-type subnet" when
-   using  "dev tun".
+There are a bunch of smaller changes as well on the Windows client -- routes 
+are now added without requiring a call to route.exe and the --route-delay 
+feature has become smarter, only waiting as long as necessary for the 
+TAP-Win32 adapter to come up before adding routes.
 
+2004.07.27 -- Version 2.0-beta8
 
-> 
-> > This allows you to have a simple subnet of all openvpn clients talking
-> > to a given server, and provides some guarantees that only the client
-> > allocated a particular IP address will be able to use it.
-> 
-> Can you post any config file examples showing how you would use this?
-> 
+* Added TCP support in server mode.
+* Added PKCS #12 support (Mathias Sundman).
+* Added patch to make revoke-crt and make-crl work
+  seamlessly within the easy-rsa environment (Jan Kiszka).
+* Modified --mode server ethernet bridge code to forward
+  special IEEE 802.1d MAC Groups, i.e. 01:80:C2:XX:XX:XX.
+* Added --dhcp-renew and --dhcp-release flags to Windows
+  version.  Normally DHCP renewal and release on the TAP
+  adapter occurs automatically under Windows, however
+  if you set the TAP-Win32 adapter Media Status property
+  to "Always Connected", you may need these flags.
+* Added --show-net standalone flag to Windows version to
+  show OpenVPN's view of the system adapter and routing
+  tables.
+* Added --show-net-up flag to Windows version to output
+  the system routing table and network adapter list to
+  the log file after the TAP-Win32 adapter has been brought
+  up and any routes have been added.
+* Modified Windows version to add routes using the IP Helper
+  API rather than by calling route.exe.
+* Fixed bug where --route-up script was not being called
+  if no --route options were specified.
+* Added --mute-replay-warnings to suppress packet replay
+  warnings.  This is a common false alarm on WiFi nets.
+* Added "def1" flag to --redirect-gateway option to override
+  the default gateway by using 0.0.0.0/1 and 128.0.0.0/1
+  rather than 0.0.0.0/0.  This has the benefit of overriding
+  but not wiping out the original default gateway.
+  (Thanks to Jim Carter for pointing out this idea).
+* You can now run OpenVPN with a single config file argument.
+  For example, you can now say "openvpn config.conf"
+  rather than "openvpn --config config.conf".
+* On Windows, made --route and --route-delay more adaptive
+  with respect to waiting for interfaces referenced by the
+  route destination to come up.  Routes added by --route
+  should now be added as soon as the interface comes up,
+  rather than after an obligatory 10 second delay.  The
+  way this works internally is that --route-delay now
+  defaults to 0 on Windows.  Previous versions would
+  wait for --route-delay seconds then add the routes.
+  This version will wait --route-delay seconds and then
+  test the routing table at one second intervals for the
+  next 30 seconds and will not add the routes until they
+  can be added without errors.
+* On Windows, don't setsockopt SO_SNDBUF or SO_RCVBUF by
+  default on TCP/UDP socket in light of reports that this
+  action can have undesirable global side effects on the
+  MTU settings of other adapters.  These parameters can
+  still be set, but you need to explicitly specify
+  --sndbuf and/or --rcvbuf.
+* Added --max-clients option to limit the maximum number
+  of simultaneously connected clients in server mode.
+* Added error message to illuminate shell escape gotcha when
+  single backslashes are used in Windows path names.
+* Added optional netmask parm to --ifconfig-pool.
+* Fixed bug where http-proxy connect retry attempts were
+  incorrectly going to the remote OpenVPN server,
+  not to the HTTP proxy server.
 
-On the server I have:
-    mode server
-    dev tun
-    net-type subnet
-    ifconfig 129.94.33.129 255.255.255.128
-    ifconfig-pool 129.94.33.132 129.94.33.254
-    push "route-gateway 129.94.33.129"
-
-(I'm using a 7bit subnet for this vpn)
-On the client I have
-
-    dev tun
-    net-type subnet
-    pull
-    
-
-> > I'm am not sure how this will work with OPENBSD, NETBSD, or DARWIN as
-> > tun.c doesn't seem to be able to ifconfig these with subnets.  It
-> > definitely works for Linux and should work for WIN32 and FREEBSD.
-> 
-> For portability with tun interfaces across various OSes, OpenVPN tries to
-> treat them all as being point-to-point interfaces, rather than allowing (as
-> some OSes do) a subnet mask to be assigned to a tun endpoint.
-
-I've thought a bit about this...
-I think that a subnet interface can be emulated use a strictly
-point-to-point interface by simply adding a route to the subnet
-through the interface.
-i.e.
-   ifconfig tun0 10.0.0.1 pointopoint 10.0.0.2 netmask 255.255.255.0
-is equivalent to
-   ifconfig tun0 10.0.0.1 pointopoint 10.0.0.2
-   route add net 10.0.0.0 netmask 255.255.255.0 gw 10.0.0.2
-which should work on any OS.
-
-This should allow you to configure a tun interface with an effective
-subnet mask anywhere.
-
-
-thanks,
-
-NeilBrown
+James
 
