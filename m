@@ -1,7 +1,7 @@
-Message-ID: <03a001c1e04e$78231300$1000000a@...4...>
-From: "James Yonan" <jim@...3...>
+Message-ID: <3CBBD7A8.2000707@...8...>
+From: Jean-Eric Cuendet <jean-eric.cuendet@...8...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 1.1.0 released
+Subject: [Openvpn-devel] Multi-user openvpn
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -12,57 +12,56 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://www.geocrawler.com/redir-sf.php3?list=openvpn-devel>
-Date: Tue Apr  9 22:13:04 2002
-Content-Type: text/plain;
-	charset="iso-8859-1"
+Date: Tue Apr 16 00:52:04 2002
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net, =?ISO-8859-15?Q?S=E9bastien_E?= =?ISO-8859-15?Q?gger?= <Sebastien.Egger@...8...>
 
-Download:
+Hi,
+We found openvpn last week and tried it for our needs.
+We have a mix of Windows+Linux clients, some of which wants to connect 
+to the main site through VPN.
+The windows users use CheckPoint securemote and we want that Linux users 
+use openvpn.
+We made some tests and want to congratulate you fr your great job. It's 
+working well and is simple!
 
-http://prdownloads.sourceforge.net/openvpn/openvpn-1.1.0.tar.gz
+Now, our questions.
+We want to be able to let multiple users that have an SSH connection on 
+one VPN server, opens a VPN with openvpn. It must have dynamic 
+addresses, should be opened as users, not root, should not run if there 
+is no more traffic.
+We want to make a server script that:
+- create a tun device as a user
+- assign the client an address
+- create a symmetric key for openvpn
 
-Change Log:
+We are able to:
+- opening a tun device as a simple user
+- run openvpn as a user
+- Providing dynamic address is not simple, but possible with the script.
 
-2002.04.09 -- Version 1.1.0
+What lacks is the ability to let openvpn stop automatically when there 
+is no traffic after a lap of time
+Another problem is that for 1 client to open a VPN, 2 addresses are 
+needed, one for client and one for the server tun device.
+Does TAP device resolve this? Is it possible to use only 1 address for 1 
+client with TAP device? And is it possible to use TAP device with openvpn?
 
-* Strengthened replay protection and IV handling,
-  extending it fully to both static key and
-  TLS dynamic key exchange modes.
-* Added --mlock option to disable paging and ensure that key
-  material and tunnel data is never paged to disk.
-* Added optional traffic shaping feature to cap the maximum
-  data rate of the tunnel.
-* Converted to automake (The Platypus Brothers 2002-04-01).
-* Ported to OpenBSD by Janne Johansson.
-* Added --tun-af-inet option to work around an incompatibility
-  between Linux and BSD tun drivers.
-* Sequence number-based replay protection using the
-  IPSec sliding window model is now the default,
-  disable with --no-replay.
-* Explicit IV is now the default, disable with --no-iv.
-* Disabled all cipher modes except CBC, CFB, and OFB.
-* In CBC mode, use explicit IV and carry forward residuals,
-  using IPSec model.
-* In CFB/OFB mode, IV is timestamp, sequence number.
-* Eliminated --packet-id, --timestamp, and max-delta parameter to
-  the --tls-auth option as they are now supplanted by improved
-  replay code which is enabled by default.
-* Eliminated --rand-iv as it is now obsolete with improved
-  IV code.
-* Eliminated --reneg-err option as it increases vulnerability
-  to DoS attacks.
-* Added weak key check for DES ciphers.
-* --tls-freq option is no longer specified on the command line,
-  instead it now inherits its parameter from the
-  --tls-timeout option.
-* Fixed bug that would try to free memory on exit that was
-  never malloced if --comp-lzo was not specified.
-* Errata fixed in the man page examples: "test-ca" should be
-  "tmp-ca".
-* Updated manual page.
-* Preliminary work in porting to OpenSSL 0.9.7.
-* Changed license to allowing linking with OpenSSL.
+Thanks.
+-jec
+
+PS: Would you be interested in our script in the openvpn distribution?
+
+-- 
+Jean-Eric Cuendet
+Linkvest SA
+Av des Baumettes 19, 1020 Renens Switzerland
+Tel +41 21 632 9043  Fax +41 21 632 9090
+E-mail: jean-eric.cuendet@...8...
+http://www.linkvest.com
+--------------------------------------------------------
+
 
 
 
