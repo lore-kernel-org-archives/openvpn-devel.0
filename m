@@ -1,11 +1,9 @@
-Message-ID: <a6589cd604110609422df836b8@...278...>
-From: Hans Fugal <fugalh@...277...>
-Reply-To: Hans Fugal <fugalh@...277...>
-Subject: Re: [Openvpn-devel] CreateFile failed on TAP device
-In-Reply-To: <Pine.LNX.4.61.0411061639340.3607@...210...>
-Mime-Version: 1.0
-References: <a6589cd6041105091611d082c6@...278...>
-	 <Pine.LNX.4.61.0411061639340.3607@...210...>
+From: James Yonan <jim@...41...>
+Subject: Re: [Openvpn-devel] OpenVPN GUI connection configuration
+In-Reply-To: <Pine.LNX.4.61.0411060041150.1651@...210...>
+Message-ID: <Pine.LNX.4.58.0411061934450.23521@...41...>
+References: <Pine.LNX.4.61.0411060041150.1651@...210...>
+MIME-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -16,58 +14,64 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Nov  6 09:47:02 2004
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-To: Mathias Sundman <mathias@...209...>, openvpn-devel@lists.sourceforge.net
+Date: Sat Nov  6 18:54:10 2004
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+To: Mathias Sundman <mathias@...209...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Ahh, well now I know what that error means if someone accidentally
-disables the TAP device in the future.
+On Sat, 6 Nov 2004, Mathias Sundman wrote:
 
-BTW is there a command-line way to rename the tap device to something
-like OpenVPN TAP Device N or something, rather than Local Area
-Connection N? It would make it easier for phone support. I ask for
-command-line because that could be done automatically in my installer.
+> I'd like to start adding connection specific options to OpenVPN GUI, that 
+> need to specified somewhere.
+> 
+> The first option I plan to add is:
+> 
+> * Connection name (instead of the filename)
+> 
+> * script to run before starting openvpn, to allow for example a telnet 
+> auth session to a PIX firewall before openvpn is started.
+> 
+> I just wonder where the best place to put these options is.
+> 
+> I've thought of two ways.
+> 
+> 1) Use a comment prefix in the already existing openvpn config file like:
+> ### connection-name Office
+> 
+> where ### is used to denote that this is not really a comment but a 
+> openvpn-gui option.
+> 
+> 2) Use a new config file with the same name as the openvpn config file, 
+> but a diffrent extension like .ogui that can hold openvpn gui settings for 
+> each connection.
+> 
+> 
+> I'd like to get some feedback on what method the communtity would like me 
+> to use. Additional ways that I havn't thought of is of cource welcome...
 
+The problem with embedding GUI directives in the config file using some 
+kind of prefix like "###" is that the directives become statically 
+embedded in the config file in a way that makes centralized management 
+more difficult.
 
-On Sat, 6 Nov 2004 16:41:54 +0100 (CET), Mathias Sundman
-<mathias@...209...> wrote:
-> 
-> 
-> On Fri, 5 Nov 2004, Hans Fugal wrote:
-> 
-> > A user is getting this error. She's using XP
-> >
-> > Fri Nov 05 09:07:24 2004 us=747770 CreateFile failed on TAP device:
-> > \\.\Global\{A3B605BE-B118-49BA-92C3-C6ADFD7A364C}.tap: The system
-> > cannot find the file specified.   (errno=2)
-> >
-> > Attached is her full log. She was connecting just fine yesterday. I've
-> > had her stop and start via openvpn gui, with the same results (this
-> > log file is from the start after the stop)
-> >
-> > I don't know what to tell her, other than to uninstall, reboot, and
-> > reinstall. Does anyone have any other advice?
-> 
-> Ahh, now I remember. This was asked a few weeks ago, and then someone gave
-> the tip to check if the TAP device had misstakenly been disabled.
-> 
-> I just checked, and you do get exactly that message if the device is
-> disabled.
-> 
-> I guess reinstalling openvpn re-enables the interface, so that explains
-> why that would solve the problem.
-> 
-> 
-> 
-> --
-> _________________________________________________________
-> Mathias Sundman              (^)   ASCII Ribbon Campaign
-> NILINGS AB                    X    NO HTML/RTF in e-mail
-> Tel: +46-(0)8-666 32 28      / \   NO Word docs in e-mail
-> 
+I would propose an alternative solution:
 
+Add a new pushable option to OpenVPN called "echo".  If OpenVPN encounters
+this in a config file:
 
--- 
-De gustibus non disputandum est.
+  echo "gui connection-name Office"
+
+It will output to the log file:
+
+  ECHO: gui connection-name Office
+
+Now since the GUI is already inhaling OpenVPN log output, it can grep out 
+the ECHO options and treat them as control directives if they start with 
+"gui".
+
+The advantage of using something like echo is that it could be pushed from 
+the server, allowing centralized management of the GUI options.
+
+James
 
