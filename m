@@ -1,8 +1,9 @@
-Message-ID: <068201c23440$a65b7c80$1000000a@...4...>
-From: "James Yonan" <jim@...3...>
-References: <20020725210056.GA6630@...38...>
-Subject: Re: [Openvpn-devel] OpenVPN on NetBSD
-MIME-Version: 1.0
+From: Dimitri Goldin <dmi@...37...>
+Message-ID: <20020726215819.GA11459@...38...>
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="M9NhX3UHpAaciwkO"
+Content-Disposition: inline
+Subject: [Openvpn-devel] NetBSD patch for OpenVPN
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -13,64 +14,118 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://www.geocrawler.com/redir-sf.php3?list=openvpn-devel>
-Date: Thu Jul 25 18:05:02 2002
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-To: dmi@...36..., openvpn-devel@lists.sourceforge.net
+Date: Fri Jul 26 14:59:02 2002
+To: openvpn-devel@lists.sourceforge.net
 
-Hi Dimitri,
+--M9NhX3UHpAaciwkO
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Yes, it would be great if you would like to do a NetBSD port.  I imagine it
-would be pretty straightforward, given the existence of FreeBSD, OpenBSD,
-and Mac OS X ports.
+Hello list,                                                                     
+                                                                                
+The patch for the NetBSD "support" ist ready.                                   
+I only added some entries for NetBSD and used the same ifconfig code            
+as OpenBSD in tun.c.                                                            
+The patch is attached.                                            
+I hope I did everything right.              
+                                                                                
+Cheers,                                                                         
+        Dimitri               
+--                                                                              
+pub  1024D/3A264EA8 2002-07-07 Dimitri Goldin <dmi@...37...>              
+Fingerprint: 3AA9 1264 51AA 0BB5 EB29  A6E3 9648 F42A 3A26 4EA8                 
+                                                "Don't Panic."                  
+                                                                                                                    
 
-The "PORTS" file has a nice rundown on making a clean port, with some points
-on testing to make sure all the major features work correctly.
+--M9NhX3UHpAaciwkO
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename="openvpn-netbsd.diff"
 
-Best Regards,
-James
+*** ../openvpn-1.3.1/configure.ac	Thu Jul 11 07:17:04 2002
+--- configure.ac	Fri Jul 26 22:19:27 2002
+***************
+*** 114,123 ****
+--- 114,126 ----
+  	AC_DEFINE(TARGET_OPENBSD, 1, [Are we running on OpenBSD?])
+  	;;
+  *freebsd*)
+  	AC_DEFINE(TARGET_FREEBSD, 1, [Are we running on FreeBSD?])
+  	;;
++ *netbsd*) 
++ 	AC_DEFINE(TARGET_NETBSD, 1, [Are we running NetBSD?])
++ 	;;
+  *darwin*)
+  	dnl some Mac OS X tendering (we use vararg macros...)
+  	AC_DEFINE(TARGET_DARWIN, 1, [Are we running on Mac OS X?])
+  	CPPFLAGS="$CPPFLAGS -no-cpp-precomp"
+  	;;
+*** ../openvpn-1.3.1/syshead.h	Thu Jun 13 20:50:28 2002
+--- syshead.h	Fri Jul 26 21:14:24 2002
+***************
+*** 194,203 ****
+--- 194,211 ----
+  #include <net/if_tun.h>
+  #endif
+  
+  #endif /* TARGET_FREEBSD */
+  
++ #ifdef TARGET_NETBSD
++ 
++ #ifdef HAVE_NET_IF_TUN_H
++ #include <net/if_tun.h>
++ #endif
++ 
++ #endif /* TAGET_NETBSD */
++ 
+  #ifdef HAVE_SYS_MMAN_H
+  #ifdef TARGET_DARWIN
+  #define _P1003_1B_VISIBLE
+  #endif /* TARGET_DARWIN */
+  #include <sys/mman.h>
+*** ../openvpn-1.3.1/tun.c	Tue Jul  2 19:09:26 2002
+--- tun.c	Fri Jul 26 21:14:24 2002
+***************
+*** 147,156 ****
+--- 147,168 ----
+  		tun_mtu
+  		);
+        msg (M_INFO, "%s", command_line);
+        system_check (command_line, "OpenBSD ifconfig failed", true);
+  
++ #elif defined(TARGET_NETBSD)
++ 
++       snprintf (command_line, sizeof (command_line),
++ 	        IFCONFIG_PATH " %s %s %s mtu %d netmask 255.255.255.255 up",
++ 	        dev,
++ 		ifconfig_local,
++                 ifconfig_remote,
++                 tun_mtu
++                 );
++       msg (M_INFO, "%s", command_line);
++       system_check (command_line, "NetBSD ifconfig failed", true);
++ 
+  #elif defined(TARGET_DARWIN)
+  
+        /*
+         * Darwin seems to exibit similar behaviour to OpenBSD...
+         */
 
-> Hello developers,
->
-> Tried to setup a vpn with a friend today.
-> The box ist running NetBSD 1.5.2.
-> But when I tried to start the openvpn with "ifconfig 10.0.0.2 10.0.0.1" in
-> my config file I've got the error
-> "Sorry, but I don't know how to do 'ifconfig'
-> commands on this operating system. You should ifconfig your tun/tap device
-> manually or use an --up script."
->
-> The --up thing didn't woked. I tried "--up ifconfig 10.0.0.2
-> 10.0.0.2". I don't know why but it always did:
-> 4: tun/tap device /dev/tun1 opened
-> 5: ifconfig tun1 10.0.0.2 10.0.0.1 tun1 1300 1344
->
-> After some testings I've decided to try the OpenBSD ifconfig code in tun.c
-> since the syntax is similar for such simple operations.
-> I replaced the message about unknown ifconfig with this code and it
-> worked without any problems.
-> It's quick and dirty, but if there is interest in a NetBSD port then
-I will add it properly.
+*** ../openvpn-1.3.1/tun.h	Tue Jul  2 19:09:27 2002
+--- tun.h	Fri Jul 26 21:21:58 2002
+***************
+*** 92,100 ****
+--- 92,102 ----
+    return IFCONFIG_AFTER_TUN_OPEN;
+  #elif defined(TARGET_OPENBSD)
+    return IFCONFIG_BEFORE_TUN_OPEN;
+  #elif defined(TARGET_DARWIN)
+    return IFCONFIG_AFTER_TUN_OPEN;
++ #elif defined(TARGET_NETBSD)
++   return IFCONFIG_DEFAULT;
+  #else
+    return IFCONFIG_DEFAULT;
+  #endif
+  }
 
->
-> Greets,
->         Dimitri
-> --
-> "A towel is about the most massively useful
->  thing an interstellar hitch hiker can have." -- Hitchicker's Guide
-> pub  1024D/3A264EA8 2002-07-07 Dimitri Goldin <dmi@...37...>
-> Fingerprint: 3AA9 1264 51AA 0BB5 EB29  A6E3 9648 F42A 3A26 4EA8
->
->
-> -------------------------------------------------------
-> This sf.net email is sponsored by: Jabber - The world's fastest growing
-> real-time communications platform! Don't just IM. Build it in!
-> http://www.jabber.com/osdn/xim
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
-
+--M9NhX3UHpAaciwkO--
 
