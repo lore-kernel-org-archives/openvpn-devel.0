@@ -1,9 +1,7 @@
 From: Mathias Sundman <mathias@...209...>
-In-Reply-To: <B531E2D213DD4946B97797232C7C16E18DC009@...248...>
-Message-ID: <Pine.LNX.4.60.0407041155460.21697@...210...>
-References: <B531E2D213DD4946B97797232C7C16E18DC009@...248...>
+Message-ID: <Pine.LNX.4.60.0407050108360.24966@...210...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] RE: [Openvpn-users] Release: OpenVPN-GUI for Windows v1.0-beta2
+Subject: [Openvpn-devel] Release: OpenVPN-GUI for Windows v1.0-beta5
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,35 +12,73 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Jul  4 03:10:01 2004
+Date: Sun Jul  4 16:53:02 2004
 Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
 Content-Transfer-Encoding: 8bit
-To: Tyrone Omidi <tyrone.omidi@...247...>
-Cc: Openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net, Openvpn-users@lists.sourceforge.net
 
-On Sun, 4 Jul 2004, Tyrone Omidi wrote:
+Available for download from:
+http://www.nilings.se/openvpn
 
-> How about options manage the service?
 
-How would you like to see this implemented? Just another menu item that 
-can start/stop the service?
+ChangeLog:
 
-What about multiple configs started by the service. Should the GUI be able 
-to start/stop these individually? How do we do this?
+[v1.0-beta5 2004-07-04]
+New Features:
+    Menu-commands to Start/Stop/Restart the OpenVPN Service. Enable this
+    feature by setting the following reg-key to 1:
+    HKEY_LM\SOFTWARE\OpenVPN-GUI\allow_service
 
-When we have the "management protocol" ready we should be able to use this 
-to hook into the processes started by the service.
+Bug Fixes:
+    v1.0-beta4 always opened the registry with write-access, which made
+    it imposible to start it without administator rights.
 
-To be able to stop a process started by the service and then start it 
-again, we would need either:
 
-1. A "SUSPEND" mode in openvpn, so we can tell it to "stop", but the 
-process should still be running, but inactive, so we later can tell it to 
-start again (still running as the same user as the service wrapper started 
-it as.).
+[v1.0-beta4 2004-07-04]
+New Features:
+    Menu-command to open a config-file for editing. Enable this feature
+    by setting the following reg-key to 1:
+    HKEY_LM\SOFTWARE\OpenVPN-GUI\allow_edit
 
-2. What Jan Kiszka suggested, an openvpn process running capable of 
-forking of new processes with a specific config-file.
+
+[v1.0-beta3 2004-07-04]
+New Features:
+    Log Viewer. As default OpenVPN-GUI launches Notepad to view the log.
+    The program used to view the log can be changed with this reg-key:
+    HKEY_LM\SOFTWARE\OpenVPN-GUI\log-viewer
+
+    OpenVPN-GUI now uses its own registry-keys, instead of the same as
+    the service wrapper uses. It now stores its values under this key:
+    HKEY_LM\SOFTWARE\OpenVPN-GUI\
+    If this key does not exist, OpenVPN-GUI will create it with the same
+    default values as the service-wrapper uses, so if you want to use the
+    service-wrapper on config-files indepentent of the GUI you should
+    change the "config-dir" key to another folder.
+
+
+[v1.0-beta2 2004-07-03]
+New Features:
+    Connect/Disconnect now shows a sub-menu so each connection can be
+    brought up/down individually.
+
+    Upon connect OpenVPN-GUI will wait for 3 seconds and then check if
+    the openvpn process is still alive and report "Connection successful"
+    only if this is the case.
+
+    OpenVPN-GUI monitors the openvpn processes it has started, and if a
+    process is terminated before the user has chosen to take it down, this
+    will be reported to the user.
+
+    If no config files is found when OpenVPN-GUI is started, it will
+    notify the user of this and terminate.
+
+
+[v1.0-beta1 2004-07-02] Initial release
+Features:
+    Adds itself as a system tray icon.
+    Menuitem "Connect" - Starts openvpn for all config-files it has found.
+
+
 
 -- 
 _____________________________________________________________
