@@ -1,14 +1,11 @@
-From: "Daniel O'Connor" <doconnor@...351...>
-Subject: Re: [Openvpn-devel] OpenVPN patch to load tun/tap dynamically
-References: <200502101302.31213.doconnor@...351...> <20050210034342.GB26410@...352...>
-In-Reply-To: <20050210034342.GB26410@...352...>
-MIME-Version: 1.0
-Content-Type: multipart/signed;
-  boundary="nextPart1139773.WxGlGajVyi";
-  protocol="application/pgp-signature";
-  micalg=pgp-sha1
-Content-Transfer-Encoding: 7bit
-Message-Id: <200502101433.21019.doconnor@...351...>
+Message-ID: <ee2671e605020921475dbd3b12@...278...>
+From: Prem Kumar J <premkumarjayaram@...277...>
+Reply-To: Prem Kumar J <premkumarjayaram@...277...>
+Subject: Re: [Openvpn-devel] Openvpn 2.0 TAP installation on WindowsXP
+In-Reply-To: <1e6368e805020914263117032e@...278...>
+Mime-Version: 1.0
+References: <ee2671e605020907063b5d4138@...278...>
+	 <1e6368e805020914263117032e@...278...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -19,44 +16,52 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Feb  9 20:05:38 2005
-To: Waldemar Brodkorb <wbx@...270...>
-Cc: openvpn-devel@lists.sourceforge.net, matthias.andree@...83...
+Date: Wed Feb  9 21:48:09 2005
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+To: Leonard Isham <leonard.isham@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---nextPart1139773.WxGlGajVyi
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+> You need to allow duplicate certificates.
+> 
+> --duplicate-cn
+Thanks for the response.
+Yes I gave duplicate-cn option too in my conf file.
+I have attached both server and client conf file in my mail.
+I get the reset problem only when i use TAP whereas TUN I dont have
+any problem with.
 
-On Thu, 10 Feb 2005 14:13, Waldemar Brodkorb wrote:
-> > I have a patch for OpenVPN to attempt to load if_tun.ko/if_tap.ko when
-> > the first open attempt fails with either ENOENT or ENXIO. It's FreeBSD
-> > only at the moment but I imagine it would work on (at least) NetBSD and
-> > OpenBSD too.
+Thanks
+-Prem
+
+On Wed, 9 Feb 2005 17:26:14 -0500, Leonard Isham
+<leonard.isham@...277...> wrote:
+> On Wed, 9 Feb 2005 20:36:32 +0530, Prem Kumar J
+> <premkumarjayaram@...277...> wrote:
+> > Hello Group,
+> >
+> > I recently downloaded the OpenVPN 2.0 from the openvpn site and I
+> > wanted to setup a TAP device in multi-client fashion on a Windows XP
+> > box with SP2. As mentioned in the openvpn site, I selected the tap
+> > interface ( tap0 ) and the ethernet adaptor and bridged it. Also, I
+> > assigned the IP address and subnet of the ethernet adaptor to the
+> > bidge interface.
+> >
+> > Now, if I connect more than one client to the server I get connection
+> > reset problem in few seconds just after the connection is extablished.
+> > I took the sample conf files from the sample-config-files folder.
+> >
+> 
+> You need to allow duplicate certificates.
+> 
+> --duplicate-cn
+>    Allow multiple clients with the same common name to concurrently
+> connect. In the absence of this option, OpenVPN will disconnect a
+> client instance upon connection of a new client having the same common
+> name.
+> 
+> --
+> Leonard Isham, CISSP
+> Ostendo non ostento.
 >
-> No need on OpenBSD. It is in GENERIC and kernel modules are not
-> used. (most off the time, 99%)
-
-It's the 1% that is annoying to debug in my experience :)
-
---=20
-Daniel O'Connor software and network engineer
-for Genesis Software - http://www.gsoft.com.au
-"The nice thing about standards is that there
-are so many of them to choose from."
-  -- Andrew Tanenbaum
-GPG Fingerprint - 5596 B766 97C0 0E94 4347 295E E593 DC20 7B3F CE8C
-
---nextPart1139773.WxGlGajVyi
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.2.6 (FreeBSD)
-
-iD8DBQBCCt0I5ZPcIHs/zowRAnffAJ9cmEwWtdw8dGQgCBfYh/LrS3IbsgCfb9Jo
-2ZWcLPRGvx52x7hdHX1QuuQ=
-=dNsf
------END PGP SIGNATURE-----
-
---nextPart1139773.WxGlGajVyi--
 
