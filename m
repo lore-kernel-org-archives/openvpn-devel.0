@@ -1,9 +1,9 @@
-From: James Yonan <jim@...41...>
-In-Reply-To: <05Mar9.114257est.1627338@...346...>
-Message-ID: <Pine.LNX.4.58.0503091410230.18805@...41...>
-References: <05Mar9.114257est.1627338@...346...>
+Message-ID: <423074F9.3010107@...355...>
+From: TomWalsh <tomw-junk01@...355...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Re: [2rc16] PAM plugin bug for PAM_PROMPT_ECHO_ON
+Subject: Re: [Openvpn-devel] RPM build of 2.0-rc16 fails on MandrakeSoft
+References: <4220EC61.1000005@...355...> <Pine.LNX.4.58.0502270152590.23437@...41...> <42220B98.2010001@...355...> <42223300.1050402@...355...> <Pine.LNX.4.58.0502271404010.23437@...41...> <42253BF4.1050000@...355...> <Pine.LNX.4.58.0503071446420.1122@...41...>
+In-Reply-To: <Pine.LNX.4.58.0503071446420.1122@...41...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,82 +14,70 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Mar  9 13:19:06 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: P Kern <pkern@...345...>
+Date: Thu Mar 10 08:26:25 2005
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: James Yonan <jim@...41...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Wed, 9 Mar 2005, P Kern wrote:
-
-> > From yonan.net!jim Tue Mar  8 16:47:54 2005
-> >
-> > On Tue, 8 Mar 2005, P Kern wrote:
-> > > Stumbled across a bug in the auth-pam.c plugin which was causing the
-> > > username to be sent in response (instead of the password) when 
-> > > PAM_PROMPT_ECHO_ON is requested.  The patch below seems to fix this.
-> > > Hope this helps.  pk.
-> >
-> > Are you sure this is a bug?  All of the PAM examples I've seen use 
-> > PAM_PROMPT_ECHO_OFF as the hint that the password is being queried, and 
-> > PAM_PROMPT_ECHO_ON as the username hint.
+James Yonan wrote:
+> On Tue, 1 Mar 2005, TomWalsh wrote:
 > 
-> Yup, pretty sure.  With those examples you saw, which side of the PAM
-> conversation was involved?
 > 
-> The PAM module that we use works okay with SSH.  But it was failing
-> with the openvpn auth-pam plugin.  The logs at the authentication server
-> showed that the username was being sent in place of the password.
+>>James Yonan wrote:
+>>
+>>>>I will let the package maintainer of liblzo1 of the problem of it not 
+>>>>saying it provides "liblzo" while the liblzo1-devel does say that.
+>>>>
+>>>>The correct statement which works around the Mandrake 10.1 problem would be:
+>>>>
+>>>>============================ fix ===============================
+>>>>%if "%{_vendor}" == "MandrakeSoft"
+>>>>%{!?without_lzo:BuildRequires: liblzo1-devel >= 1.07}
+>>>>%{!?without_lzo:Requires:      liblzo1       >= 1.07}
+>>>>%else
+>>>>%{!?without_lzo:BuildRequires: lzo-devel >= 1.07}
+>>>>%{!?without_lzo:Requires:      lzo       >= 1.07}
+>>>>%endif
+>>>>============================ snip ==============================
+>>>>
+>>>>Either way, there would still be an issue with Mandrake as I see that 
+>>>>the lzo package of SuSE 9.1 provides "lzo" not "liblzo".
+>>>
+>>>
+>>>The problem I have with this patch is that it assumes that Mandrake will
+>>>continue to follow the broken behavior.  The ideal solution would be one
+>>>which doesn't break when Mandrake gets around to using the same standard
+>>>LZO RPM spec which everyone else is using.
+>>>
+>>
+>>Yeah, probably the best solution. However, I see that they have been 
+>>calling it liblzo1 since their 8.1 distro, and, technically, it is a 
+>>library?
+>>
+>>The package maintainer has added the missing provide for "liblzo", this 
+>>is now in liblzo1-devel-1.08-5mdk.i586.rpm and the 
+>>liblzo1-1.08-5mdk.i586.rpm.  That would at least clear up some confusion 
+>>between liblzo1 vs. liblzo
 > 
-> According to ...
-> http://www.kernel.org/pub/linux/libs/pam/Linux-PAM-html/pam_appl-3.html
->     PAM_PROMPT_ECHO_OFF  =  Obtain a string without echoing any text 
->     PAM_PROMPT_ECHO_ON   =  Obtain a string whilst echoing text 
 > 
-> The way I think this stuff is supposed to work is that when the
-> application (ie. openvpn) gets a msg_style of PAM_PROMPT_ECHO_x from
-> the other side of the PAM converstion, then it's supposed to use the msg
-> string to prompt the user for a password.  If msg_style is _ECHO_ON,
-> then the application should display the prompt and echo the password as
-> the user types it in.  With _ECHO_OFF, the prompt should be displayed
-> and the password should be hidden when the user types is in.
+> Where are we on this?
 > 
-> [ In our case, we use a couple of authentication methods:
->   old-style unix passwords or one-time SecurID passcodes.
->   The password prompt is used to indicate which authentication method
->   is being used.  But typically our users already know in advance which
->   authentication method they need to use so we're able to work just fine
->   without being able to display indicative prompts.
->   So with old-style unix passwords, what the user types is not echoed.
->   But with one-time SecurID passcodes, what the user types can be echoed
->   because next time the passcode will be different.  ]
+> Should we work around this in the openvpn.spec file, or just leave as-is
+> for 2.0, and wait for the lzo spec to be fixed?
 > 
-> Openvpn seems to fetch the username+password independent of PAM and the
-> auth-pam module is then used for simple authentication.  Which means the
-> prompt styles and strings are not really used in auth-pam. So auth-pam's
-> PAM_PROMPT_ behaviour shouldn't really be any different for _ECHO_ON or
-> for _ECHO_OFF.
+You're not going to see that, at least I doubt it.  I'll contact the 
+maintainer for his views on the subject and perhaps some insight as to 
+where Mandrake is going with naming (LSB and all).
 
-The problem with PAM is that it doesn't give a machine readable indication
-on whether it wants the username or password.  All you have is the
-PAM_PROMPT_ECHO_x hint and a human-readable prompt string that could be 
-anything the PAM module wants it to be.
+TomW
 
-Right now openvpn-auth-pam does what most PAM client examples show --
-assume the password is queried with echo off, and the username with echo
-on. Obviously this is a simplification, and some PAM modules will break
-with this assumption.
 
-A better method would be to look at the human readable query string and
-figure out what it means.  This is tricky because different PAM modules 
-may use different strings.
 
-If you run with --verb 7 or higher, openvpn-auth-pam.so will show the 
-PAM "conversation" strings, so we will see the human readable queries.  If 
-we knew the different ways that different PAM modules query for 
-username/password, i.e. the different query strings they use, we could 
-fix the my_conv() function in auth_pam.c to be smarter.
-
-James
+-- 
+Tom Walsh - WN3L - Embedded Systems Consultant
+email at http://openhardware.net?file=emailcomment.php
+any ReplyTo direct email will disappear (blackhole).
+----------------------------------------------------
 
 
