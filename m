@@ -1,7 +1,7 @@
-Subject: Re: [Openvpn-devel] TINC and OpenVPN tunnel performance on a Windows client
-From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1068159046.77908@...41...>
-In-Reply-To: <1068125943.20994.135.camel@...125...>
+Message-ID: <3FAB963B.3020506@...61...>
+From: Julien TOUCHE <julien.touche@...61...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [Fwd: [Ntop] Unknown DLT types]
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -12,32 +12,44 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Nov  6 14:51:18 2003
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Teemu Kiviniemi <teemuki@...124...>, tinc-devel@...127...
-Cc: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+Date: Fri Nov  7 04:58:11 2003
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-> - Generic OpenVPN settings:
-> cipher bf-cbc
-> dev tap
-> tun-mtu 1500
-> tun-mtu-extra 32
-> - OpenVPN-TCP settings:
-> proto tcp-client
-> - OpenVPN-UDP settings:
-> proto udp
-> - OpenVPN-UDP-LZO settings:
-> proto udp
-> comp-lzo
+i'm testing ntop2 (2.2.95 to be precise on linux) to monitor some 
+openvpn tunnel. one question arise: how could ntop get 
+Headersize/mtu/maybe others from openvpn/proc/else ?
 
-You could improve the UDP performance of this config with two changes:
+Thanks & Regards
 
-(1) Use "dev tun".
+		Julien
 
-(2) Clamp the TCP MSS using the --mssfix option.  You want to use the largest
-mssfix value which will not cause fragmentation.  Try 1400 or 1450.
+-------- Original Message --------
+Subject: [Ntop] Unknown DLT types (was a useless title)
+Date: Fri, 31 Oct 2003 16:21:22 -0600
+From: Burton M. Strauss III <Burton@...131...>
+Reply-To: ntop@...132...
+Organization: Centro di Servizi per la rete di Ateneo - Pisa - Italy
+To: <ntop@...133...>
+CC: <julien.touche@...61...>
 
-James
+If you can figure out the data link level header length and the associated
+DLT code, you can try adding them to the table in globals-core.c at 380ff:
+
+   _mtuSize[DLT_NULL] = 8232                                    /* no
+link-layer encapsulation */;
+   _headerSize[DLT_NULL] = CONST_NULL_HDRLEN;
+
+       /* 1500 + 14 bytes header Courtesy of Andreas Pfaller
+<a.pfaller@...134...> */
+   _mtuSize[DLT_EN10MB] = 1500+sizeof(struct ether_header)      /* Ethernet
+(10Mb) */;
+   _headerSize[DLT_EN10MB] = sizeof(struct ether_header);
+...
+
+
+-----Burton
+
 
 
