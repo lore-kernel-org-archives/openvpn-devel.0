@@ -1,9 +1,7 @@
-From: Denis Vlasenko <vda@...216...>
-Subject: Re: [Openvpn-devel] openvpn-2.0_beta1: Win<->Linux flood ping intermittently stops
-References: <twig.1084476377.22440@...41...>
-In-Reply-To: <twig.1084476377.22440@...41...>
+Message-ID: <40A4FAAF.8000307@...61...>
+From: Julien TOUCHE <julien.touche@...61...>
 MIME-Version: 1.0
-Message-Id: <200405140115.11642.vda@...216...>
+Subject: [Openvpn-devel] openvpn 1.x: route on darwin
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,26 +12,16 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu May 13 15:16:03 2004
-Content-Type: text/plain;
-  charset="koi8-r"
+Date: Fri May 14 09:59:02 2004
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-To: James Yonan <jim@...41...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Thursday 13 May 2004 22:26, James Yonan wrote:
-> Denis,
->
-> Would you mind running the same test with OpenVPN 1.6.0 and see if you get
-> the same behaviour?
+is there any plan to include route patch for darwin in 1.x ?
+http://cvs.sourceforge.net/viewcvs.py/openvpn/openvpn/route.c?r1=1.2.2.4&r2=1.2.2.5
 
-See my other mail. Looks like I can explain both observations.
-openvpn actually not to blame here. :)
+thanks
+Regards
 
-I even realized that 'nice +/-N' config option already exists
-(but not implemented yet it seems. I've got warning about that
-in the log).
---
-vda
-
+		Julien Touche
 
