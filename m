@@ -1,9 +1,9 @@
-From: Torge Szczepanek <openvpn-devel@...239...>
+From: Denis Vlasenko <vda@...216...>
 Subject: Re: [Openvpn-devel] IP adress assignment to tun devices using server mode
 References: <twig.1087235354.15668@...41...>
 In-Reply-To: <twig.1087235354.15668@...41...>
 MIME-Version: 1.0
-Message-Id: <200406142132.40238@...240...>
+Message-Id: <200406142326.05872.vda@...216...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,51 +14,51 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Jun 14 12:32:13 2004
+Date: Mon Jun 14 13:27:00 2004
 Content-Type: text/plain;
-  charset="iso-8859-15"
+  charset="windows-1251"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+To: James Yonan <jim@...41...>, Torge Szczepanek <openvpn-devel@...239...>, openvpn-devel@lists.sourceforge.net
 Cc: openvpn-users@lists.sourceforge.net
 
-On Monday 14 June 2004 19:49, you wrote:
+On Monday 14 June 2004 20:49, James Yonan wrote:
+> Torge Szczepanek <openvpn-devel@...239...> said:
+> > -----BEGIN PGP SIGNED MESSAGE-----
+> > Hash: SHA1
+> >
+> > Hi!
+> >
+> > I am currently trying out OpenVPN 2.0 beta 4 using server mode.
+> >
+> > My config on the server looks like this:
+> >
+> > dev tun
+> > mode server
+> > ifconfig 192.168.100.1 192.168.100.2
+> > ifconfig-pool 192.168.100.4 192.168.100.254
+> > push "route 192.168.100.1 255.255.255.255"
+> > route 192.168.100.0 255.255.255.0
+> > [...]
+> >
+> > Everything works fine as expected. (Which is really great. I appreciate
+> > the good work done here)
+> >
+> > I am wondering why there is a subnet of size /30 assigned to the client.
+> > I would expect a Point-to-Point device to receive only one ip adress and
+> > not a /30 subnet.
+>
 > This is done for the benefit of OSes (such as Windows) which don't support
 > true point-to-point tun interfaces.
+>
+> The Windows TAP-Win32 driver supports tun interface emulation only.  What
+> that means is that the driver can talk to tun interfaces on other OSes, but
+> from the perspective of Windows, it sees the tun interface as a virtual
+> ethernet interface having a subnet mask of 255.255.255.254, containing the
+> two point-to-point interfaces, a network address, and a broadcast address.
 
-Ok. You said enough. :-)
+255.255.255.252 (252 == 0xFC == 11111100 binary)
+--
+vda
 
-> any OS can transparently connect to an OpenVPN server which is also running
-> on any OS, and the /30 subnet standardization was necessary to accomplish
-> that.
-
-I see.
-
-> For one, you don't need to use --ifconfig-pool, you could use DHCP for
-> example.  Or you could use --dev tap.
-
-I'll try this out.
-
-> This maximum can be trivially increased, though I don't think most users
-> will be connecting 65536 clients to a single OpenVPN server instance :)
-
-I asked since I put much work into getting pptp to work with more than 100 or 
-255 authenticated users. But pptp is using a different model, where a ppp 
-device is created for every logged in user. There you get quite some 
-difficulties running with more than 100 users (or devices) and then later on 
-with more than 255 users.
-
-> Some people might claim that using /30 subnets wastes IPv4 addresses,
-> though I don't think this argument holds much water because these addresses
-> are mostly (but not always) taken from private address blocks such as
-> 10.x.x.x where millions of free addresses are always available.
-
-I am using PPTP (and maybe later on openvpn) for authentication of users in a 
-lan for internet access. I assign official IPs to all these users. Therefore 
-I really have to limit official IP usage to 1 adress per authenticated user. 
-Otherwise RIPE would kill me. :-)
-
-Thanks for your answer!
-
-Torge
 
