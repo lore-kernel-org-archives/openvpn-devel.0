@@ -1,9 +1,7 @@
-From: Charles Duffy <cduffy@...294...>
-In-Reply-To: <1100311165.30425.27.camel@...23...>
-References: <1100311165.30425.27.camel@...23...>
-Message-Id: <1100329858.30425.44.camel@...23...>
+From: "die pes" <diepes@...160...>
 Mime-Version: 1.0
-Subject: [Openvpn-devel] Certificate Wizard cross-compilation autodetection
+Message-ID: <BAY19-F4e8tlMazUSxv0000c938@...160...>
+Subject: [Openvpn-devel] TUN Server: Suggested IP allocation change
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,59 +12,53 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Nov 12 23:12:01 2004
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 7bit
-To: Vlada Macek <tuttle@...289...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Sun Nov 14 07:56:04 2004
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-The below patch to the My Certificate Wizard makefile attempts to
-determine whether a cross-compiler is available, and uses it if
-possible. I'd like to see it applied, such that both folks on win32 and
-*nix can use the same makefile w/o needing to twiddle it after checkout.
+Hi I tried Openvpn and it worked great, hardest part is setting up the pki.
 
-I haven't tested it on native win32; if the CROSSFOUND variable's
-determination doesn't work in your environment, I'd appreciate any
-suggestions wrt a better approach.
+Problem with openvpn routing.
 
-Thanks!
+Currently for IP routing using the tun device, each client is assigned a /30 
+subnet.  This does not make sence as the server has only a single IP.  
+(Could work if individual interface created on server with unique IP for 
+each)
 
-(Like my other non-private changes, this is available via GNU Arch; it
-can either be checked out or branched from my archive, or just browsed
-via the web address below once these changes get pulled by
-sourcecontrol.net).
-http://archzoom.sourcecontrol.net/demo/cduffy@...311.../mycert--fixes--0.3
+I suggest we simplify it into a point to multipoint setup with /32 mask per 
+client.
 
+This will reduce IP usage by 400% and simplify setup.
 
---- orig/Makefile
-+++ mod/Makefile
-@@ -15,14 +15,19 @@
- 
- OBJS = mycert.o request.o misc.o mycert-res.o customize.o
- 
-+CROSSTGT := i586-mingw32msvc
-+CROSSFOUND := $(shell which ${CROSSTGT}-gcc 2>/dev/null >/dev/null && echo YES || echo NO )
-+
-+ifeq (${CROSSFOUND},YES)
-+  ## Cross-compiling
-+  CC = ${CROSSTGT}-gcc
-+  WINDRES = ${CROSSTGT}-windres
-+else
-+  ## For Windows using the mingw/msys environment
-+  CC = gcc
-+  WINDRES = windres
-+endif
- 
--## For Windows using the mingw/msys environment
--CC = gcc
--WINDRES = windres
--
--## Cross-compiling from Debian
--#CC = i586-mingw32msvc-gcc
--#WINDRES = i586-mingw32msvc-windres
- 
- CFLAGS = -DREGULAR_EXPRESSIONS -O3 -Wall -Wno-unused-function -Wno-unused-variable -mno-cygwin
- LDFLAGS = -mwindows -s -leay32
+E.G.  server 10.1.0.0 255.255.255.0
+Server:
+ifconfig tun0 10.1.0.1 netmask 255.255.255.255 -broadcast -multicast 
+pointopoint 0.0.0.0
+ip route add 10.1.0.0/24 dev tun0
 
+Client1:
+ifconfig tun0 10.1.0.2 netmask 255.255.255.255 -broadcast -multicast 
+pointopoint 10.1.0.1
+
+Client2:
+ifconfig tun0 10.1.0.3 netmask 255.255.255.255 -broadcast -multicast 
+pointopoint 10.1.0.1
+
+For security, and to enforce iptables rules, the server should not allow ip 
+traffic to or from wrong IP for each client tunnel.  The IP info will also 
+be used to decide witch tunnel to use.
+
+If clients are to talk to each other directly, the host can route traffic in 
+and out on the tun interface after applying iptables rules.
+
+It is just a suggestion.
+
+Regards,
+Pieter
+
+_________________________________________________________________
+Save your chats with a single keystroke - get MSN Toolbar! 
+http://messenger.msn.co.za?DI=1054&XAPID=2532
 
 
