@@ -1,9 +1,7 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] Using miniLZO?
-In-Reply-To: <41A057C3.90800@...138...>
-Message-ID: <Pine.LNX.4.58.0411230848170.21753@...41...>
-References: <41A057C3.90800@...138...>
+Message-ID: <41A437EA.1030209@...321...>
+From: Maarten Koopmans <maarten.koopmans@...321...>
 MIME-Version: 1.0
+Subject: [Openvpn-devel] Configuring TAP-win32
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,25 +12,29 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Nov 23 07:51:03 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: "Ian D. Bjorhovde" <ianbjor@...138...>
-Cc: OpenVPN devel <openvpn-devel@lists.sourceforge.net>
+Date: Tue Nov 23 23:43:16 2004
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-On Sun, 21 Nov 2004, Ian D. Bjorhovde wrote:
+Hi,
 
-> Has anyone tried using miniLZO instead of the full-blown LZO library?
-> I'm looking to build openvpn for the Sveasoft firmware on Linksys
-> WRT54G, but don't want the relatively large (216kb) library.
-> 
-> If what I'm reading is correct, moving to lzo1x_1_compress is
-> only slightly slower than lzo1x_1_15_compress (~1.5%), and that
-> would be the only disadvantage...
+Being a newbie to openvpn, so I hope the answer my question isn't to 
+obvious...
 
-What if you statically link with the full LZO library?  One would think
-that would only bring in a subset of the whole library.
+ From what I have understood openvpn has a TAP-Win32 driver that it uses 
+to tunnel a network device over a TCP or UDP connection. Is it possible 
+to configure the driver in such a way that it simply sends the received 
+data to a well-known host:port (and back)?
 
-James
+I have a process with a TCP or UDP interface that I'd like to "see" as a 
+network device, hence the question.
+
+Or is is a better option to use openvpn as a plain tunnel to a 
+well-known host:port ? Or...?
+
+Thanks!
+
+--Maarten
 
 
