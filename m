@@ -1,10 +1,7 @@
-From: "Doncho N. Gunchev" <mr700@...184...>
-Reply-To: mr700@...184...
-Subject: Re: [Openvpn-devel] no chance trying openvpn
-References: <405756E7.3090906@...180...>
-In-Reply-To: <405756E7.3090906@...180...>
-MIME-Version: 1.0
-Message-Id: <200403171916.00612@...187...>
+From: Andre Morisse <am@...188...>
+Message-ID: <loom.20040317T113337-731@...171...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Building GUI
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,109 +12,116 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Mar 17 09:17:04 2004
-Content-Type: text/plain;
-  charset="windows-1251"
+Date: Wed Mar 17 10:46:06 2004
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-    I have 'rpmbuild --rebuild'-ed dag's 1.5.0 .src.rpm and have it running with
-Mandrake 8.2, RedHat 9 and Fedora Core 1. Then I tryed 1.6.0-test3,4,7, rc1,
-rc2 and rc3 now. No problems rebuilding and running on all systems. I have not
-added any aliases in /etc/sysconfig or whatever, only added configs files
-in /etc/openvpn...
+Hello together
 
-On Tuesday 16 March 2004 21:35, pi wrote:
-> I can really say "I'm not lucky with VPN solutions!!"
-> 
-> 
-> First, I tried superfreeswan then openswan then freeswan with kernel 
-> compiled for NAT-T support.
-> In lab, it worked. Over the internet it never worked.........
-> I had no good support neither answers to some of my questions (surely 
-> due to bugs)
-> 
-> I discovered today openvpn (tada.....),
-> 
-> first: impossible to install it on my redhat9.0
-> I always got the message
-> 
-> configure: checking for OpenSSL SSL Library and Header files...
-> checking openssl/ssl.h usability... no
-> checking openssl/ssl.h presence... no
-> checking for openssl/ssl.h... no
-> configure: error: OpenSSL SSL headers not found.
-> 
-> I have openssl installed on this system:
-> # rpm -qa|grep ssl
-> mod_ssl-2.0.40-21.9
-> openssl-devel-0.9.7a-20
-> openssl-0.9.7a-20
+at the moment I just trying to build up a GUI Interface for Windows to OVPN
+for easier use. The target is to build a GUI that handle a connect-up to a
+OVPN Server without showing the user all the status information and really
+confusing status outputs for "normal" user.
+Short said: Only a button connect, a field to enter a passphrase for the
+rsa key and a status indicator if connect or not.
 
-Here they are:
-[ pts/18:mr700@...185...:~ ]$ rpm -qa \*ssl\*
-openssl-0.9.7a-20
-mod_ssl-2.0.40-21.9
-docbook-style-dsssl-1.76-8
-openssl096b-0.9.6b-12
-openssl-devel-0.9.7a-20
-openssl096-0.9.6-23.9
-openssl-perl-0.9.7a-20
-[pts/18:mr700@...186...:~]$ rpm -q gcc
-gcc-3.2.2-5
+I already programmed the GUI interface based in a system that loads the
+OVPN and starts it with the appropiate config file and redirecting the
+STDInput and STDOutput Handles to named pipes instead of a console.
+With this, the GUI ist able to read from and write to the console
+like a user, all to do is to interpret the status messages and send,
+for example, the passphrase if requested as keyboard-input.
 
-> 
-> I post a message on this list but no answer  :-((
-> I tried to attach my config.log to this mail, but there's a limit of 40k/message.
-> 
-> 
-> 
-> Then I find a RPM package from dag's repository  
-> (http://dag.wieers.com/packages/openvpn/)
+At least, I should announce that, to get this work, I had to make minor
+changes to the io.c file and commented out the check if it is a running
+windows nt service, because redirecting the inputs&outputs is a thing
+a windows nt service would do, too. With this changes, I recompiled the
+ovpn (btw. version 1.5.0).
 
-Yep, I just updated to newer sources and --rebuild-ed...
+Now the following problem:
+When starting the rebuild version from console, everything works fine
+like it should, asking for passphrase, connecting and so on. The VPN
+connection is full usable (this was tested).
 
-> Installation is correct, but when I try to launch openvpn, I got the 
-> following in /var/log/messages:
-> 
-> Mar 16 20:30:05 moulinsart openvpn[2593]: OpenVPN 1.5.0 
-> i386-redhat-linux [SSL] [LZO] [PTHREAD] built on Nov 25 2003
-> Mar 16 20:30:05 moulinsart openvpn[2593]: Static Encrypt: Cipher 
-> 'BF-CBC' initialized with 128 bit key
-> Mar 16 20:30:05 moulinsart openvpn[2593]: Static Encrypt: Using 160 bit 
-> message hash 'SHA1' for HMAC authentication
-> Mar 16 20:30:05 moulinsart openvpn[2593]: Static Decrypt: Cipher 
-> 'BF-CBC' initialized with 128 bit key
-> Mar 16 20:30:05 moulinsart openvpn[2593]: Static Decrypt: Using 160 bit 
-> message hash 'SHA1' for HMAC authentication
-> Mar 16 20:30:05 moulinsart openvpn[2593]: LZO compression initialized
-> Mar 16 20:30:05 moulinsart modprobe: modprobe: Can't locate module 
-> char-major-10-200
-> Mar 16 20:30:05 moulinsart openvpn[2593]: Note: Cannot open TUN/TAP dev 
-> /dev/net/tun: No such device (errno=19)
-> Mar 16 20:30:05 moulinsart openvpn[2593]: Note: Attempting fallback to 
-> kernel 2.2 TUN/TAP interface
-> Mar 16 20:30:05 moulinsart openvpn[2593]: Cannot allocate TUN/TAP dev 
-> dynamically
-> Mar 16 20:30:05 moulinsart openvpn[2593]: Exiting
-> Mar 16 20:30:05 moulinsart openvpn:  failed
->  
-> WHAT CAN I DO ???
-> 
-> Phil
-> 
-    See why tun does not load. Loda it by hand 'modprobe'. Do a
-'rpmverify openssl-devel-0.9.7a-20' and so on to check your packages
-and so on. There's something wrong with your system. For me it worked
-without any problems with Mandrake 8.2, RedHat 9 and Fedora Core 1.
-I tryed 1.4, 1.5, 1.6-test3,4,7, 1.6-rc1,rc2 and rc3 - no problem at all.
-(I am still testing it, so I can update with every new test/rc, even
-1.4 works with 1.6-rc3)
+When connecting with the changed STDInput und STDOutput Params, it
+runs to, ask for the passphrase, which is send by the GUI programm and
+accepted by OVPN, runs further and loads everything like it is in console
+und stops at the message where it say "Local IP: ip:undefined" and
+"Server IP: ip:port". (This can be seen at the screenshots, too).
 
--- 
-Regards,
-  Doncho N. Gunchev    Registered Linux User #291323 at counter.li.org
-  GPG-Key-ID: 1024D/DA454F79
-  Key fingerprint = 684F 688B C508 C609 0371  5E0F A089 CB15 DA45 4F79
+My question is: someone a idea why ovpn stops working when running with
+the redirected Input und Outputs (to a pipe for another programm instead
+to the pipe of the console) at the point where it should connect ?
+
+Another idea is to start it in console, but pass the passphrase for the key
+when calling up by a command-line parameter as entered by the user in a input
+field in the gui interface and checking of a ovpn connection is established
+if there is a Task of the openvpn.exe File running in the system (really bad,
+i know - but this would work ;-)
+Anyone already done a modification for passing the passphrase by commandline
+instead of entering it at the console window and could give me some
+information about what to modify ?
+
+At least, I have two screenshots of the modified ovpn running at console:
+http://www.a-fa.de/am/ovpn/console_screenshot.gif
+
+and running at the gui with the redirected pipes:
+http://www.a-fa.de/am/ovpn/gui_screenshot.gif
+
+both times with the same config and the same key.
+
+thanks for any help or information!
+
+with greetings
+Andre
+
+
+The following is just informational:
+
+The redirecting of the named pipes it done by the STARTUPINFO Structure of
+Windows used by the CreateProcess API Command:
+
+typedef struct _STARTUPINFO { // si  
+    DWORD   cb; 
+    LPTSTR  lpReserved; 
+    LPTSTR  lpDesktop; 
+    LPTSTR  lpTitle; 
+    DWORD   dwX; 
+    DWORD   dwY; 
+    DWORD   dwXSize; 
+    DWORD   dwYSize; 
+    DWORD   dwXCountChars; 
+    DWORD   dwYCountChars; 
+    DWORD   dwFillAttribute; 
+    DWORD   dwFlags; 
+    WORD    wShowWindow; 
+    WORD    cbReserved2; 
+    LPBYTE  lpReserved2; 
+    HANDLE  hStdInput;   <--- there you can give pipes at windows
+    HANDLE  hStdOutput;  <--- there you give the pipes at windows
+    HANDLE  hStdError;   <--- there you give the pipes at windows
+
+} STARTUPINFO, *LPSTARTUPINFO; 
+
+and with this it is called, where you can give an STARTUPINFO to Windows
+
+BOOL CreateProcess(
+
+    LPCTSTR lpApplicationName, // pointer to name of executable module 
+    LPTSTR lpCommandLine, // pointer to command line string
+    LPSECURITY_ATTRIBUTES lpProcessAttributes,
+    	// pointer to process security attributes 
+    LPSECURITY_ATTRIBUTES lpThreadAttributes,
+    	// pointer to thread security attributes 
+    BOOL bInheritHandles, // handle inheritance flag 
+    DWORD dwCreationFlags, // creation flags 
+    LPVOID lpEnvironment, // pointer to new environment block 
+    LPCTSTR lpCurrentDirectory, // pointer to current directory name 
+    LPSTARTUPINFO lpStartupInfo, // pointer to STARTUPINFO 
+    LPPROCESS_INFORMATION lpProcessInformation
+      // pointer to PROCESS_INFORMATION
+   );
+
+
 
