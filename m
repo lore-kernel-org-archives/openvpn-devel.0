@@ -1,11 +1,6 @@
-From: Steffen =?ISO-8859-15?Q?Sch=FCtz?= <st.sch@...95...>
-Subject: Re: [Openvpn-devel] New feature: --ifconfig for tap devices
-Message-Id: <20030907160205.46eb733d.st.sch@...95...>
-In-Reply-To: <3F5B206F.5070402@...61...>
-References: <twig.1062580090.46409@...41...>
-	<3F5B206F.5070402@...61...>
-Reply-To: st.sch@...95...
-Mime-Version: 1.0
+From: "James Yonan" <jim@...41...>
+Message-ID: <twig.1063214225.90210@...41...>
+Subject: [Openvpn-devel] New TAP-Win32 driver needs stress testing
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -16,67 +11,60 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Sep  7 10:06:02 2003
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Date: Wed Sep 10 17:35:31 2003
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
-Hola Julien,
+I've made some significant changes in the TAP-Win32 driver, bringing it up to
+SMP standards, and making some performance improvements in latency and overall
+efficiency.
 
-On Sun, 07 Sep 2003 14:11:27 +0200
-julien Touche <julien.touche@...61...> wrote:
+While it has admirably held up to my stress tests on a single processor XP
+laptop, it needs testing on more machines, especially SMP machines, to flush
+out any bugs that might be remaining.
 
-> 
-> some googling drives me to this thread
-> http://www.monkey.org/openbsd/archive/tech/0111/msg00098.html
-> and
-> find /sys -iname '*tap*' returns nothing
-> 
-> so i'm not sure openbsd stock-kernel has tap ...
+The driver is here:
 
-Yep, OpenBSD has no tap-device support in the kernel.
-Some days ago i was at the same point.
+http://openvpn.sourceforge.net/beta/tapdrvr.sys
 
-> if someone has more information (i will ask about it on misc@)
+Install instructions
+--------------------
 
-Someone has been porting the tap-device driver from FreeBSD
-to OpenBSD. You can find more at http://diehard.n-r-g.com 
-Well, the port and patch you can find on this side are not complete
-for an out of the box start on OpenBSD 3.3-RELEASE.
-The patch is dated at November 2001, so you can expect that this won't
-work on 3.3-RELEASE. So, you've to modify the files by hand.
-What the patch doesn't show, is that you've to modify /sys/conf/GENERIC
-( and/or GENERIC_PART ) - it needs the following line:
+* Install OpenVPN normally.
 
-pseudo-device   tap     2 # number of tap device
+* In Control Panel / Network connections, right click on all TAP-Win32
+adapters and select Disable.
 
-Further the file if_tap.c needs the function
-tapkqfilter; it looks like the following :
+* Copy the new driver (tapdrvr.sys) to [your windows system
+directory]\system32\drivers, overwriting the old copy.
 
-int     
-tapkqfilter(dev_t dev,struct knote *kn)
-{
-        return (1);
-}
+* In Control Panel / Network connections, right click on the TAP-Win32 adapter
+and select Enable.
 
+* To verify that the correct driver is running, go to the adapter properties
+-> Configure -> Driver -> Driver Details, and the file version should be
+1.5-beta7.2 (DEBUG) or higher.
 
-Without this function you'll get an error while compiling the new
-kernel.
-I had success on building a kernel with tap-device on OpenBSD/i386 and
-on Openbsd/Sparc64 ( both 3.3 ).
-So far so good. On an intel-box using it with openvpn i crashed the
-kernel. Until yet no idea why and no time to get closer to the problem.
-Well on the Sparc64 it's working. Means no kernel crash ;-)
-Ok, i tried to get a tunnel working between a linux-intel-box and the
-openbsd-sparc-box using openvpn 1.3.1. With a simple setup i only get
-a "Peer Connection Initiated with ..." from openvpn on both after
-pinging each side. That's all so far. Until yet i wasn't able to see
-the icmp-packets via tcpdump on both tap devices. 
-Maybe i don't see the trees in the wood.
+When you test it, I would encourage you to really STRESS TEST
+it, i.e. copy large files over the tunnel while simultaneously running other
+CPU or disk-intensive apps.
 
+I would also encourage you to run the Driver Verifier.  It's
+called verifier.exe, included on Win2K and later.  It will closely examine the
+behavior of the driver and trigger a bug check if anything looks amiss.
 
-Steffen
--- 
-It's not the matter to break the wall with your head,
-but to find the door with your eyes !
+Another good stress test is to have a heavy session going, then right-click
+and disable the TAP adapter in the network connections control panel, while
+the OpenVPN process is still running.  The OpenVPN process will generate a
+stream of error messages when this happens -- this is okay.
+
+And if you have a laptop, make sure to put it through a few sleep/resume
+cycles, during heavy tunnel action.  The OpenVPN process may hiccup, but
+should get back on track once the system is awake.
+
+If you have any questions about testing the driver, don't hesitate to ask.
+
+James
+
 
