@@ -1,6 +1,9 @@
-Message-Id: <200304230147.h3N1lR116757@...41...>
-From: "James Yonan" <jim@...41...>
-Subject: [Openvpn-devel] Release candidate for 1.4.0
+From: Matthias Andree <ma+ovpnd@...31...>
+Subject: Re: [Openvpn-devel] TCP-over-TCP (was: Multi-channel VPN)
+Message-ID: <20030423083854.GB4080@...33...>
+References: <20030422191429.GD9395@...33...> <200304230114.h3N1Eh112247@...41...>
+Mime-Version: 1.0
+In-Reply-To: <200304230114.h3N1Eh112247@...41...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -11,20 +14,26 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Apr 22 18:48:19 2003
-Content-Type: text/plain; charset="utf-8"
+Date: Wed Apr 23 01:40:09 2003
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-We're on the final stretch for 1.4.0, so if possible, please give this release
-a spin.
+On Wed, 23 Apr 2003, James Yonan wrote:
 
-http://openvpn.sourceforge.net/beta/openvpn-1.3.2.24.tar.gz
+> I wonder if one could build a better tcp-over-tcp by doing some intelligent
+> packet filtering on the higher level tcp connection, such as filtering out
+> retransmits and fudging return ACKs -- essentially removing those elements of
+> the TCP protocol which are designed to make TCP work over an unreliable link.
 
-I plan to release 1.4.0 shortly if there are no problems.
+I wonder if that's necessary. Tunnelling through TCP is inherently
+reliable no matter what you send, so TCP-nested-in-TCP is just overkill.
+Cheating the OS doesn't help. Maybe some LD_PRELOAD library that turns
+stream sockets into dgram sockets for connections that use the tunnel is
+sufficient. However, this doesn't actually apply to openvpn because
+openvpn does TCP-over-UDP.
 
-James
-
-
-
+-- 
+Matthias Andree
 
