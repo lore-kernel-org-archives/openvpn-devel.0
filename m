@@ -1,10 +1,8 @@
-Message-ID: <005701c1f270$beec4a20$1d8c6ad9@...12...>
-Reply-To: "Ildar Gabdulline" <ildar@...11...>
-From: "Ildar Gabdulline" <ildar@...11...>
+Message-ID: <004901c1f2cd$de7f59b0$4b5d33c6@...4...>
+From: "James Yonan" <jim@...3...>
+References: <017001c1f1d5$a102fc20$0600a8c0@...11...> <20020502.150924.02301395.levitte@...13...> <030301c1f212$cf6b66a0$0600a8c0@...11...> <20020502204306.GA19098@...14...> <040a01c1f2b4$758d15a0$1000000a@...4...> <03af01c1f2b6$a85e8160$0600a8c0@...11...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_0054_01C1F292.449D6FC0"
-Subject: [Openvpn-devel] openvpn and openssl 0.9.7+
+Subject: [Openvpn-devel] Re: OpenVPN and OpenSSL 0.9.7 was: Re: Integration of AES algorith to OpenSSL Crypto library
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -15,53 +13,29 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://www.geocrawler.com/redir-sf.php3?list=openvpn-devel>
-Date: Fri May  3 00:00:02 2002
-To: openvpn-devel@lists.sourceforge.net
+Date: Fri May  3 11:29:20 2002
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+To: Ildar Gabdulline <ildar@...11...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
+> I'll be glad to receive such patch because I need to integrate AES
+algorithm
+> to openvpn
+> (my boss requested this).
 
-------=_NextPart_000_0054_01C1F292.449D6FC0
-Content-Type: text/plain; charset="koi8-r"
-Content-Transfer-Encoding: quoted-printable
+If you can wait a few days, I would recommend waiting for the official 0.9.7
+openssl beta which will probably solve the problem.  If you can't wait,
+here's a patch:
 
-Hi,
+http://openvpn.sourceforge.net/patch/openssl097.patch
 
-Is anybody here who uses openvpn with openssl version 0.9.7 (latest snapsho=
-ts)
-with AES encryption algorithm ?
-The problem is that I've tried to compile openvpn with snapshot from 1st Ma=
-y and it crashed.
+Remember, 0.9.7 is pre-beta at this point so you're on your own.  I have not
+extensively tested this patch other than a brief test to confirm that it
+fixed the EVP incompatibility.
 
-Thanks,
+James
 
-Ildar.
-
-
-------=_NextPart_000_0054_01C1F292.449D6FC0
-Content-Type: text/html; charset="koi8-r"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML><HEAD>
-<META content=3D"text/html; charset=3Dkoi8-r" http-equiv=3DContent-Type>
-<META content=3D"MSHTML 5.00.2314.1000" name=3DGENERATOR>
-<STYLE></STYLE>
-</HEAD>
-<BODY bgColor=3D#ffffff>
-<DIV><FONT face=3DVerdana>Hi,</FONT></DIV>
-<DIV>&nbsp;</DIV>
-<DIV><FONT face=3DVerdana>Is anybody here who uses openvpn with openssl ver=
-sion=20
-0.9.7 (latest snapshots)</FONT></DIV>
-<DIV><FONT face=3DVerdana>with AES encryption algorithm ?</FONT></DIV>
-<DIV><FONT face=3DVerdana>The problem is that I've tried to compile openvpn=
- with=20
-snapshot from 1st May and it crashed.</FONT></DIV>
-<DIV><FONT face=3DVerdana></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DVerdana>Thanks,</FONT></DIV>
-<DIV><FONT face=3DVerdana><BR>Ildar.</FONT></DIV>
-<DIV>&nbsp;</DIV></BODY></HTML>
-
-------=_NextPart_000_0054_01C1F292.449D6FC0--
 
 
