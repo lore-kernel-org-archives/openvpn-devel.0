@@ -1,7 +1,9 @@
-Message-ID: <422C7C95.3080209@...361...>
-From: Rolf Fokkens <r.fokkens@...361...>
+From: James Yonan <jim@...41...>
+Subject: Re: [Openvpn-devel] RPM build of 2.0-rc16 fails on MandrakeSoft
+In-Reply-To: <422BC993.5040206@...355...>
+Message-ID: <Pine.LNX.4.58.0503070841070.1122@...41...>
+References: <4220EC61.1000005@...355...> <422BC993.5040206@...355...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] SSL client / SSL server
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,21 +14,21 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Mar  7 08:13:34 2005
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Date: Mon Mar  7 09:35:29 2005
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+To: TomWalsh <tomw-junk01@...355...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+On Sun, 6 Mar 2005, TomWalsh wrote:
 
-Not having too much programming knowledge about openSSL, I wonder why 
-each VPN config must specify TLS-client or TLS-server. If full-mesh 
-bridging/routing will be supported in the future, most nodes are just 
-peers, without a client-server relationship.
+> As long as we are on the subject of "Requires" in the openvpn.spec file, 
+> shouldn't there also be a:
+> 
+> Requires:  bridge-utils >= 0.9.7
 
-Just wondering,
+Why is this required?  What if you are not bridging?
 
-Cheers,
+James
 
-Rolf
 
