@@ -1,8 +1,9 @@
+Message-ID: <406BE870.3060608@...194...>
+From: Stephan Scholz <sscholz@...194...>
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] OpenVPN 2.0 -- Project Update and Release Notes
-From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1080765010.4445@...41...>
-In-Reply-To: <20040331195520.GB24491@...33...>
-References: <twig.1080688545.10218@...41...>, <twig.1080688545.10218@...41...>
+References: <twig.1080688545.10218@...41...>
+In-Reply-To: <twig.1080688545.10218@...41...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,31 +14,29 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Mar 31 12:34:28 2004
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Matthias Andree <ma+ovpnd@...31...>, openvpn-devel@lists.sourceforge.net
+Date: Thu Apr  1 02:09:14 2004
+Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+To: James Yonan <jim@...41...>
+Cc: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
-Matthias Andree <ma+ovpnd@...31...> said:
+James,
 
-> On Tue, 30 Mar 2004, James Yonan wrote:
-> 
-> > OpenVPN 2.0 -- Project Update and Release Notes
-> > 
-> > I'm happy to announce that the first OpenVPN 2.0 beta is here, and well ahead
-> > of schedule.  This is in large part thanks to a generous contribution by
-> > Meetrix Inc. which has allowed me to work full-time on the project during the
-> > last month.
-> 
-> In how far does the new OpenVPN 2.0 server require client upgrades?
+this is amazing! :-))) I was happy to get the forking server working
+with multiple clients in 1.6. But 2.0 sounds like a gem! Will give it a try=
+ ASAP.
+Great work!
 
-If you run 2.0 in point-to-point mode (i.e. 1.x behaviour) no client upgrades
-are required, with the caveat that some default options have changed.
+Stephan
 
-If you want to use --mode server, then both the client and server need to be
-2.0 because the client needs to support the --pull option in order to get
-dynamic configuration info from the server.
+--=20
+Stephan Scholz <sscholz@...194...> | Development
+Astaro AG | www.astaro.com | Phone +49-721-490069-0 | Fax -55
 
-James
+Awards for ASL:
+- N=E4tverk & Kommunikation Magazine, Sweden: "Five Stars" - October 2003
+- Linux Enterprise Readers' Choice Award: Best Firewall - October 2003
+- LinuxWorld Product Excellence Award: Best Security Solution - August 2003
+- "Excellent" Infoworld Magazine - August 2003
 
 
