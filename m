@@ -1,7 +1,9 @@
-Message-ID: <411111B9.2000405@...259...>
-From: Tomasz Chmielewski <mangoo@...259...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] compiling statically - how?
+From: Matthias Andree <matthias.andree@...68...>
+Subject: Re: [Openvpn-devel] compiling statically - how?
+Message-ID: <20040804231213.GB21349@...33...>
+References: <411111B9.2000405@...259...>
+Mime-Version: 1.0
+In-Reply-To: <411111B9.2000405@...259...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,33 +14,25 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Aug  4 09:42:10 2004
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Date: Wed Aug  4 21:56:01 2004
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: Tomasz Chmielewski <mangoo@...259...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hello,
+On Wed, 04 Aug 2004, Tomasz Chmielewski wrote:
 
-OpenVPN is a great tool, however, whenever I persuade someone to using 
-it, I'm having problems with installing it.
+> I was thinking of an option like ./configure --compile-statically - and 
+> with such compiled binary, I wouldn't have to install compilers, compile 
+> OpenVPN, deinstall compilers on every machine I want it to run.
 
-For example, one server is Debian 3.0, second RedHat 7.3, I compiled the 
-binary somewhere else, and the effect is, it will only work on my 
-machine, and not on Debian or Redhat, as OpenSSL libraries differ and so on.
+My first attempt would probably be ./configure CC="gcc -static" - it's
+untested and may require the installation of static libraries on some
+systems.
 
-So my big question is: can OpenVPN be compiled statically? If so, how?
+-- 
+Matthias Andree
 
-I was thinking of an option like ./configure --compile-statically - and 
-with such compiled binary, I wouldn't have to install compilers, compile 
-OpenVPN, deinstall compilers on every machine I want it to run.
-
-
-Regards,
-
-Tomasz Chmielewski
-
-----------------------------------------------------------------------
-Laczysz sie przez modem? Mamy dla Ciebie bonusy! 
->>> http://link.interia.pl/f1826
-
+Encrypted mail welcome: my GnuPG key ID is 0x052E7D95 (PGP/MIME preferred)
 
