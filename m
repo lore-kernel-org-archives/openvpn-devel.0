@@ -1,9 +1,7 @@
-From: Sampo Nurmentaus <audiopoppi-13@...22...>
-Reply-To: <sampo.nurmentaus@...22...>
-Subject: Re: [Openvpn-devel] Multiple VPN connections on the same port
-In-Reply-To: <057d01c23286$4c391110$1000000a@...4...>
-Message-ID: <Pine.LNX.4.33.0207241343250.5299-100000@...23...>
-MIME-Version: 1.0
+From: dmi@...36...
+Message-ID: <20020725210056.GA6630@...38...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] OpenVPN on NetBSD
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -14,82 +12,38 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://www.geocrawler.com/redir-sf.php3?list=openvpn-devel>
-Date: Wed Jul 24 06:00:03 2002
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Date: Thu Jul 25 14:01:07 2002
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: James Yonan <jim@...3...>
-Cc: sampo.nurmentaus@...22..., openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-> > > Hi Sampo,
-> > >
-> > > > I have been busy writing a forking server
-> > > > addon to openvpn.
->
-> Will forking server only work for TLS mode?
-
-No, It works also with shared secret or without
-security.
-
-For prefork security I could use either the key used
-for tls-auth or preshared secret.
-
-Any examples of how to implement tls-auth like
-authentication in simples form?
-
-> > --remote as server addres in the client.
-> >
-> > I just got it running. Still with out dynamic ip address assigment
-> > and proper signal handling in parent process. And there ain't
-> > anykind of DoS protection yet.
->
-> One way to do DoS protection would be to augment --tls-auth with persistent
-> anti-replay protection by saving the Session ID (struct session_id) and
-> reject any Session ID that was seen before.
-
-Let's see when I get it working. :-)
-
-> > port before calling openvpn(). Mayby I could add the exchange of
-> > address info here, since I don't think it needs to be
-> > transferred over a secure channel.
->
-> Actually the temporary keys + options_string() get passed over the secure
-> TLS channel, so you could add further handshaking options and they would be
-> secure.
-
-
-
-> >
-> > > > This way I have been able to keep
-> > > > those well tested procedures and protocol
-> > > > of openvpn untouched.
-> > > >
-> > > > I still have some questions unsolved like
-> > > > DoS protection, dropping root priviledges
-> > > > and how to handel SIGUSR1 and SIGHUP.
->
-> It would be cool if we could get the forking server to work with dropping
-> root privs.
->
-> One of the goals of dropping privs is that no datagram is ever read from the
-> network with root privs.
->
-> It would be great if we could preserve this behavior.
->
-> Otherwise the split privileges model of the new openssh would be a
-> possibility, but it's more complex.
-
-
-For a forking server accepting connections from any ip, I
-consider it even more critical than for a peer2peer version.
-
-I did it simply by calling set_user() in the
-server's main process and everything seems to work at least
-for me.
-
-Don't know if this works in all cases since the server drops
-priviledges before opening tun dev.
-
-
-Sampo
-
+Hello developers,                                                               
+                                                                                
+Tried to setup a vpn with a friend today.                                       
+The box ist running NetBSD 1.5.2.                                               
+But when I tried to start the openvpn with "ifconfig 10.0.0.2 10.0.0.1" in      
+my config file I've got the error                                               
+"Sorry, but I don't know how to do 'ifconfig'                                   
+commands on this operating system. You should ifconfig your tun/tap device      
+manually or use an --up script."                                                
+                                                                                
+The --up thing didn't woked. I tried "--up ifconfig 10.0.0.2                    
+10.0.0.2". I don't know why but it always did:                                  
+4: tun/tap device /dev/tun1 opened                                              
+5: ifconfig tun1 10.0.0.2 10.0.0.1 tun1 1300 1344                               
+                                                                                
+After some testings I've decided to try the OpenBSD ifconfig code in tun.c      
+since the syntax is similar for such simple operations.                         
+I replaced the message about unknown ifconfig with this code and it             
+worked without any problems.                                                    
+It's quick and dirty, but if there is interest in a NetBSD port then            I will add it properly.                                                         
+                                                                                
+Greets,                                                                         
+        Dimitri                                                                 
+--                                                                              
+"A towel is about the most massively useful                                     
+ thing an interstellar hitch hiker can have." -- Hitchicker's Guide             
+pub  1024D/3A264EA8 2002-07-07 Dimitri Goldin <dmi@...37...>              
+Fingerprint: 3AA9 1264 51AA 0BB5 EB29  A6E3 9648 F42A 3A26 4EA8                 
 
