@@ -1,9 +1,7 @@
-Message-ID: <1087183633.40cd1b1160ccc@...238...>
-From: Brandon Knitter <knitterb@...237...>
-Subject: Re: [Openvpn-devel] Windows Command Prompt vs. Systray Icon
-References: <1087017394.40ca91b21df0c@...238...> <200406130001.48507.vda@...216...> <1087085913.40cb9d593793a@...238...> <Pine.LNX.4.60.0406132016470.4959@...210...>
-In-Reply-To: <Pine.LNX.4.60.0406132016470.4959@...210...>
+From: Torge Szczepanek <openvpn-devel@...239...>
 MIME-Version: 1.0
+Message-Id: <200406102012.41488.openvpn-devel@...239...>
+Subject: [Openvpn-devel] IP adress assignment to tun devices using server mode
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,31 +12,71 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Jun 13 20:29:15 2004
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8bit
-To: Mathias Sundman <mathias@...209...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Mon Jun 14 06:46:41 2004
+Content-Type: Text/Plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-> >> I had a few of my users ask why the Windows OpenVPN connection was in a
-> >> Command Prompt window and not just a Systray Icon with a status window.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-> I think it would be cleanest if such a gui could be created as a 
-> standalone application that just calls the openvpn binary. What I'm not 
-> clear about with such a setup is how the gui should be able to communicate 
-> with openvpn to check it's status, and recieve error messages?
+Hi!
 
-I'm actually considering a very simple SysTray icon which would print all the
-STDOUT messages to a little textbox rather than a cmd prompt window.  I don't
-think it would be terrible difficult, and adding in a little "Close Session"
-button which mimics the F4 (SIGTERM?) action would ne simple.   You'd still get
-all the messages and such, but it would minimize to the systray rather than a
-cmd prompt.
+I am currently trying out OpenVPN 2.0 beta 4 using server mode.
 
-Any thoughts out there?  Developers?  Should I waste my time?
+My config on the server looks like this:
 
---
--bk
+dev tun
+mode server
+ifconfig 192.168.100.1 192.168.100.2
+ifconfig-pool 192.168.100.4 192.168.100.254
+push "route 192.168.100.1 255.255.255.255"
+route 192.168.100.0 255.255.255.0
+[...]
 
+Everything works fine as expected. (Which is really great. I appreciate the=
+=20
+good work done here)
 
+I am wondering why there is a subnet of size /30 assigned to the client. I=
+=20
+would expect a Point-to-Point device to receive only one ip adress and not=
+=20
+a /30 subnet.
+
+tun0      Protokoll:Punkt-zu-Punkt Verbindung
+          inet Adresse:192.168.100.6  P-z-P:192.168.100.5=20=20
+Maske:255.255.255.255
+
+The netmask is also not which one would expect for a /30 network.
+
+I have some servers running with lots of ppp devices. I am assigning also=20
+adresses out of a pool. The two addresses do not lie within the same subnet.
+
+ppp138    Link encap:Point-to-Point Protocol
+          inet addr:192.168.1.31  P-t-P:10.3.14.223  Mask:255.255.255.255
+
+Is there any good reason for this /30 assignment?
+
+Is there a config option to change this behaviour (I didn't find one)?
+
+How many IPs can be assigned within a pool?=20
+
+I found:
+
+#define IFCONFIG_POOL_MAX 65536
+
+in pool.h
+
+Has anyone tested this beyond a class-C network?
+
+Torge
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.4 (GNU/Linux)
+
+iD8DBQFAyKSYosmtDiD9dbIRAq95AKCL7mem4ivtrcbLbP7tFs1GdHodmgCfeQJV
+O4ZsPqwgie/iAkry/8G8tvg=3D
+=3D7uEu
+-----END PGP SIGNATURE-----
 
