@@ -1,8 +1,8 @@
-From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1071824797.70236@...41...>
-In-Reply-To: <1071800799.7113.11.camel@...145...>
-References: <20031219015511.7941.qmail@...146...>, <20031219015511.7941.qmail@...146...>
-Subject: [Openvpn-devel] Re: [Openvpn-users] how many connections?
+From: Bill Tabor <bill.tabor@...147...>
+Reply-To: bill.tabor@...147...
+Message-Id: <1071843990.7868.4.camel@...149...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Possible problem with openvpn on W2K
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,57 +13,40 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Dec 19 01:08:02 2003
+Date: Fri Dec 19 06:27:06 2003
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: AthlonRob <AthlonRob@...144...>, openvpn-users@lists.sourceforge.net
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-AthlonRob <AthlonRob@...144...> said:
+There may be a memory leak in openvpn.  When I have the tunnel up for
+more the 24 hours, I start running out of memory.  The only way I get it
+back is with a reboot.
 
-> On Thu, 2003-12-18 at 17:55, Malaba Bibilow wrote:
-> 
-> > Any idea for the planning of the below feature ?
-> > (point-to-multipoint, see attachement below)
-> 
-> Mr. Yonan has written quite long (and very descriptive) emails on the
-> subject to the list in the past... I'm pretty sure the list has archives
-> somewhere... and the subject lines were probably fairly descriptive.
+If someone can either send me a simple document on how to build the code
+on W2K or point to a location with instructions, I will build it with a
+debugger to see if I can spot the problem.
 
-Yes, the point-to-multipoint and forking server features have been discussed
-at length in the archives.
+Bill
 
-I'm leaning towards an ultra-scalable design that would allow a single OpenVPN
-process to accomodate potentially thousands of tunnels, using a single UDP
-port, a single tun/tap interface, and a handful of threads.
+-- 
+William Tabor
+bio-SECURE LLC
+Mission Bay Office Plaza
+20283 State Road 7  Suite 300
+Boca Raton, FL 33498
+Ph:  561-237-2904
+Fax: 561-237-2905
+E-Mail: William.Tabor@...148...
+http://www.bio-secure.us
 
-> > In OpenVPN 1.6 ?
-> > 
-> > Easy ? Hard ?
-> > Any blocking issues ? (re-code of major section ?)
-> 
-> I would guess probably not in OpenVPN 1.6, but I could be wrong, I'm not
-> James.  :-)
-> 
-> The sheer amount of code that would need to be written, maintaining
-> cross-platform compatibility will make it a very difficult task to
-> undertake.  If I were in James' shoes, I would consider continuing along
-> the same path laid out between 1.3, 1.4, and 1.5 for 1.6 and maybe even
-> 1.7, 1.8, and 1.9... but branch it, now, and begin working towards a 2.0
-> release including this added functionality.  I don't think much existing
-> code needs to be rewritten so much as additional code needs to be
-> written to take care of this.
 
-The point-to-multipoint code will be in 2.0 -- I've already forked off a CVS
-branch for it.
+The information contained in this transmission may contain privileged
+and confidential information. It is intended only for the use of the
+person(s) named above. If you are not the intended recipient, you are
+hereby notified that any review, dissemination, distribution or
+duplication of this communication is strictly prohibited. If you are not
+the intended recipient, please contact the sender by reply email and
+destroy all copies of the original message. 
 
-In the meantime, the plan is to keep the 1.5 series fairly stable, with only
-minimalistic changes and bug fixes going into the code at this point.
-
-Keep in mind that 2.0 is a large project that I basically work on during my
-spare time, and that supporting the project with donations or other kinds of
-financial support will measurably accelerate the development schedule :)
-
-James
 
 
