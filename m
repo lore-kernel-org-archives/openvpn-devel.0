@@ -1,7 +1,9 @@
-From: Andrew McGill <andrew2004@...264...>
+Message-ID: <000801c494c3$cb6ae390$0e00a8c0@...267...>
+From: "gary" <linux@...266...>
 MIME-Version: 1.0
-Message-Id: <200408311304.43081@...265...>
-Subject: [Openvpn-devel] Making a lossy link work
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0005_01C49506.D9185750"
+Subject: [Openvpn-devel] openvpn using matrixssl ?
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,57 +14,40 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Aug 31 04:10:16 2004
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Date: Tue Sep  7 03:17:59 2004
 To: openvpn-devel@lists.sourceforge.net
 
-Hello
+This is a multi-part message in MIME format.
 
-I am hoping someone will give me some pointers towards adding an 
-optional semi-reliable data delivery mode to openvpn.
+------=_NextPart_000_0005_01C49506.D9185750
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-I would like to set up OpenVPN on an international link that has a 
-~500ms round trip time, and a round trip packet loss of 50% to 60% 
-(i.e. around 20% to 30% probability of loss in one direction). 
+Hi,
 
-The design is currently like this:
+Anyone knows how feasible it is to use matrixssl instead of openssl ? The m=
+ain advantage is memory footprint for embedded system like the linksys wrt5=
+4g.=
 
- 1. Data packets are incrementally numbered (e.g. 16 bits). Each 
-sender maintains a buffer of packets sent
+------=_NextPart_000_0005_01C49506.D9185750
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
- 2. Each packet is sent with information about data-packets received:
-	Last received data-packet sequence number
-	History of packets received: e.g. 16 bits, 1=received, 0=packet not 
-seen
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=3DContent-Type content=3D"text/html; charset=3Diso-8859-1">
+<META content=3D"MSHTML 6.00.2800.1400" name=3DGENERATOR>
+<STYLE></STYLE>
+</HEAD>
+<BODY bgColor=3D#ffffff>
+<DIV><FONT face=3DArial size=3D2>Hi,</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>Anyone knows how feasible it is to use mat=
+rixssl=20
+instead of openssl ? The main advantage is memory footprint for embedded sy=
+stem=20
+like the linksys wrt54g.</FONT></DIV></BODY></HTML>
 
- 3. When data packets are received, confirmations of received packets 
-are tallied.  If a packet is confirmed un-delivered after a 
-configurable timeout, it is retransmitted a maximum of 2 times 
-(higher level protocols can handle duplicates and loss beyond this - 
-that's their domain).
+------=_NextPart_000_0005_01C49506.D9185750--
 
- 4. A packet about which no further information is received is assumed 
-to have been delivered.  
-
-Now, questions:
-
- - Should I define a separate data protocol for semi-reliable 
-delivery? (e.g. P_DATA_RETRY_V1) - or would it be possible to extend  
-P_DATA_V1?
-
- - Where would I add code? - I think encrypt_sign() function in 
-forward.c for a start, but pointers to other places would be welcome.  
-
- - Is there an existing sequence number for the data packets that I 
-can re-use?
-
- - Should I use/adapt the existing reliable transport code?
-
-&:-)
-
--- 
-I don't believe in evolution or microsoft outlook
 
