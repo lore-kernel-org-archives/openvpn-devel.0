@@ -1,7 +1,9 @@
-From: Mathias Sundman <mathias@...209...>
-Message-ID: <Pine.LNX.4.60.0407040150350.19338@...210...>
+From: James Yonan <jim@...41...>
+Subject: Re: Interface with GUI agent, was: Re: [Openvpn-devel] [Patch] revoke scripts were broken
+References: <40E18559.8020407@...244...> <200407040154.49974.vda@...216...> <40E75F4E.6030901@...83...>
+In-Reply-To: <40E75F4E.6030901@...83...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Release: OpenVPN-GUI for Windows v1.0-beta2
+Message-Id: <200407032016.24981.jim@...41...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,36 +14,54 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Jul  3 16:58:00 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Content-Transfer-Encoding: 8bit
-To: Openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
+Date: Sat Jul  3 17:17:37 2004
+Content-Type: text/plain;
+  charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
+Cc: Jan Kiszka <jan.kiszka@...83...>, Denis Vlasenko <vda@...216...>
 
-I've got a new version of the GUI ready for testing.
+> >>Thinking ahead, the challenge/response sequence for passing
+> >> authentication info should be open-ended to provide for future
+> >> implementation of alternative authentication methods such as Radius,
+> >> LDAP, NT Auth, etc.
+> >
+> > Please don't do too much of that. I've seen this auth featuritis creeping
+> > in ntp and ups tools(!). Results ain't pretty...
 
-New Features:
-    Connect/Disconnect now shows a sub-menu so each connection can be
-    brought up/down individually.
+I don't think that supplying a generalized authentication mechanism (that's 
+method agnostic) will add very much complexity.
 
-    Upon connect OpenVPN-GUI will wait for 3 seconds and then check if
-    the openvpn process is still alive and report "Connection successful"
-    only if this is the case.
+The way I see this working is that the SSL/TLS authentication still provides 
+the real security.  But after SSL/TLS authentication has occurred, one still 
+might want to submit some sort of credentials string to the server (obtained 
+via GUI from the user) to determine the common name which will be assigned to 
+the client.  In any case, OpenVPN on the server is probably going to 
+interface with an authentication library which will handle all the details.
 
-    OpenVPN-GUI monitors the openvpn processes it has started, and if a
-    process is terminated before the user has chosen to take it down, this
-    will be reported to the user.
+> > Reconfiguration of openvpn can always be done by editing config file
+> > and restarting openvpn daemon. Simple. Elegant. No additional coding
+> > - no risk of introducing bugs.
+> >
+> > This can be done via systray app, too.
+>
+> I can understand your concerns, and mostly you are right. However, there
+> is one quite important scenario - at least as I see it - where you need
+> the core daemon and the GUI running in different accounts: whenever the
+> key or secret has to be looked away from the user while it shall still
+> be possible for her/him to start/stop VPN connections. One reason for
+> this may be that the key is bound to the device and not the user. The
+> other one is security. Through this separation, malicious programs
+> running in the context of the user can not so easily access the secret.
+>
+> And for those who don't trust this new interface (which will surely need
+> a careful implementation): what about adding a configure switch and
+> putting the respective code in some #ifdefs?
 
-    If no config files is found when OpenVPN-GUI is started, it will
-    notify the user of this and terminate.
+I agree -- the management interface should not be implicitly enabled by 
+default.  You will need to specify the "management" config option to turn it 
+on.
 
-
-It is available for download from here:
-http://www.nilings.se/openvpn
-
-
--- 
-_____________________________________________________________
-Mathias Sundman                  (^)   ASCII Ribbon Campaign
-NILINGS AB                        X    NO HTML/RTF in e-mail
-Tel: +46-(0)8-666 32 28          / \   NO Word docs in e-mail
+James
 
