@@ -1,9 +1,9 @@
-From: Denis Vlasenko <vda@...216...>
+Message-ID: <1087085913.40cb9d593793a@...238...>
+From: Brandon Knitter <knitterb@...237...>
 Subject: Re: [Openvpn-devel] Windows Command Prompt vs. Systray Icon
-References: <1087017394.40ca91b21df0c@...238...>
-In-Reply-To: <1087017394.40ca91b21df0c@...238...>
+References: <1087017394.40ca91b21df0c@...238...> <200406130001.48507.vda@...216...>
+In-Reply-To: <200406130001.48507.vda@...216...>
 MIME-Version: 1.0
-Message-Id: <200406130001.48507.vda@...216...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,28 +14,33 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Jun 12 14:04:00 2004
-Content-Type: text/plain;
-  charset="koi8-r"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-To: Brandon Knitter <knitterb@...237...>, openvpn-devel@lists.sourceforge.net
+Date: Sat Jun 12 17:20:44 2004
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+To: Denis Vlasenko <vda@...216...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Saturday 12 June 2004 08:16, Brandon Knitter wrote:
-> I had a few of my users ask why the Windows OpenVPN connection was in a
-> Command Prompt window and not just a Systray Icon with a status window.
->
-> You know, that's a great question.  I was going to look into the code and
-> see what it would take, but of course I do that I figured I'd ask if anyone
-> looked into that yet.
->
-> I'm sure it's not a high priority, so if I did it, would you like me to
-> diff against HEAD or a specific version/tag?  2.0b4?
->
-> Thanks for the insight!
+Quoting Denis Vlasenko <vda@...216...>:
 
-It can be run as a service. It is documented.
---
-vda
+> > I had a few of my users ask why the Windows OpenVPN connection was in a
+> > Command Prompt window and not just a Systray Icon with a status window.
+
+> It can be run as a service. It is documented.
+
+I guess this makes sense for the server/gateway side, but I don't think I want
+to force my users to have to start and stop a service each time they want to
+connect to the office VPN, right-clicking is a pretty cool option for starting
+the VPN.  Furthermore, since they still have to enter their password to the
+client certificate, I'm not sure how they would be prompted for such as a
+service is not really designed to interact with the desktop in such a way.
+
+I can't find the documentation on the service setup, I'll keep searching, but
+I'm pretty sure that the service setup is intended for the server/gateway side
+of things.
+
+Thanks,
+bk
+
+
 
 
