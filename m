@@ -1,7 +1,7 @@
-From: Alberto Gonzalez Iniesta <agi@...64...>
-Message-ID: <20041102173519.GD1542@...30...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] When the link used for openvpn goes down, the daemon hangs
+From: Mathias Sundman <mathias@...209...>
+Message-ID: <Pine.LNX.4.61.0411022157360.23349@...210...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] 2.0-beta15 on WinXP: CreateFile failed on TAP device
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,35 +12,45 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Nov  2 09:41:32 2004
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: OpenVPN devel <openvpn-devel@lists.sourceforge.net>
+Date: Tue Nov  2 13:23:07 2004
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi again,
+James,
 
-Another bug report received in the Debian BTS [1]. Quoting:
-|when the link which was used for openvpn transport goes down, it hangs
-|in a D state
-|
-|root      2037  0.0  0.2  3376 1620 pts/1    D    10:45   0:04 openvpn
-|
-|and there is no way to kill it, I have to reboot. Other programs (eg.
-|wavemon) can handle this situation more sanely.
+I think we made a little misstake with the "auto-find free TAP device" 
+feature.
 
+In OpenVPN GUI >= beta20 I close the connections and restart them after a 
+suspend. If multiple connections were running this means that they 
+will all be re-started at the exact same time after the suspend.
 
-Regards,
+I suppose the same thing happends when you start the service wrapper.
 
-Alberto
+Anyway, I had two connections running, and after a suspend, one of the 
+connections started fine, but the other one failed with the following 
+message:
 
+CreateFile failed on TAP device: 
+\\.\Global\{75E5A03B-F1A9-422E-8DBA-EFF4B55C1B07}.tap:
+General failure (ERROR_GEN_FAILURE) (errno=31)
 
-[1] http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D278933
+which is the same interface as the first connection used.
 
---=20
-Alberto Gonzalez Iniesta    | Formaci=F3n, consultor=EDa y soporte t=E9cnico
-agi@(inittab.org|debian.org)| en GNU/Linux y software libre
-Encrypted mail preferred    | http://inittab.org
+I havn't checked the code yet, but I suspect that you changed the code to 
+search for a free adapter when openvpn is started, but not actually open 
+it until later.
 
-Key fingerprint =3D 9782 04E7 2B75 405C F5E9  0C81 C514 AF8E 4BA4 01C3
+Both processes seemed to find the same interface free, but later one of 
+them of cource failed to open it.
+
+/Mathias
+
+--
+_____________________________________________________________
+Mathias Sundman                  (^)   ASCII Ribbon Campaign
+OpenVPN GUI for Windows           X    NO HTML/RTF in e-mail
+http://www.nilings.se/openvpn    / \   NO Word docs in e-mail
+
 
