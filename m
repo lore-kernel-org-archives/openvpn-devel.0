@@ -1,9 +1,10 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] proxy ntlm support
-In-Reply-To: <200409151352.49215.openvpn@...275...>
-Message-ID: <Pine.LNX.4.58.0410180156390.12482@...269...>
-References: <200409151352.49215.openvpn@...275...>
+Message-ID: <417420A6.9090200@...292...>
+From: "Peter 'Luna' Runestig" <peter+openvpn@...292...>
 MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] PATCH[1/2]: Use certificates from MS Cert Store
+ with CryptoAPI
+References: <twig.1098084812.36872@...41...>
+In-Reply-To: <twig.1098084812.36872@...41...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,34 +15,25 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Oct 18 01:01:01 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: William Preston <openvpn@...275...>
+Date: Mon Oct 18 13:00:07 2004
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: James Yonan <jim@...41...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-William,
+On 2004-10-18 09:33, James Yonan wrote:
+> I've merged the MSVC patch for beta12,
 
-I merged your patch in the just-released OpenVPN-2.0-beta12.  Would you 
-mind giving it a test run to make sure I didn't make any mistakes on the 
-merge (there were some conflicts).  I don't have an ISA server, so I can't 
-personally test it.
+Hmm, what exactly did you merge? I can't see much trace of it...
 
-Thanks,
+I have a MinGW solution to the CryptoAPI patch, probably post it tomorrow.
 
-James
-
-On Wed, 15 Sep 2004, William Preston wrote:
-
-> 
-> hello list,
-> 
-> here's a patch to add basic ntlm support to openvpn 1.6.0
-> i've tested it with i386 linux & win32 against MS ISA proxy.
-> 
-> it includes base64 code from heimdal...
-> 
-> - hope it's useful to somebody.
-> 
-> William
+Cheers,
+- Peter
+-- 
+Peter 'Luna' Runestig (fd. Altberg), Sweden <peter@...292...>
+PGP Key ID: 0xD07BBE13
+Fingerprint: 7B5C 1F48 2997 C061 DE4B  42EA CB99 A35C D07B BE13
+AOL Instant Messenger Screen name: PRunestig
+Yahoo! Messenger profile name: altberg
 
