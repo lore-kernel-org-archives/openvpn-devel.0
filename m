@@ -1,6 +1,9 @@
-From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1063214225.90210@...41...>
-Subject: [Openvpn-devel] New TAP-Win32 driver needs stress testing
+From: Mail Delivery Subsystem <MAILER-DAEMON@...97...>
+Message-Id: <200309120640.h8C6eSV23365@...97...>
+MIME-Version: 1.0
+Content-Type: multipart/report; report-type=delivery-status;
+	boundary="h8C6eSV23365.1063348828/boxelder.nsgdata.com"
+Subject: [Openvpn-devel] Returned mail: see transcript for details
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -11,60 +14,77 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Sep 10 17:35:31 2003
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+Date: Fri Sep 12 11:59:51 2003
+To: openvpn-devel@lists.sourceforge.net
 
-I've made some significant changes in the TAP-Win32 driver, bringing it up to
-SMP standards, and making some performance improvements in latency and overall
-efficiency.
+This is a MIME-encapsulated message
 
-While it has admirably held up to my stress tests on a single processor XP
-laptop, it needs testing on more machines, especially SMP machines, to flush
-out any bugs that might be remaining.
+--h8C6eSV23365.1063348828/boxelder.nsgdata.com
+Content-Type: text/plain
 
-The driver is here:
+The original message was received at Fri, 12 Sep 2003 02:40:28 -0400
+from hickok.nsgdata.com [204.91.246.4]
 
-http://openvpn.sourceforge.net/beta/tapdrvr.sys
+   ----- The following addresses had permanent fatal errors -----
+<docs@...96...>
+    (reason: addressee unknown)
+    (expanded from: <docs@...96...>)
 
-Install instructions
---------------------
+   ----- Transcript of session follows -----
+doc_comments: Mailbox does not exist 
+550 5.1.1 <docs@...96...>... User unknown
 
-* Install OpenVPN normally.
+--h8C6eSV23365.1063348828/boxelder.nsgdata.com
+Content-Type: message/delivery-status
 
-* In Control Panel / Network connections, right click on all TAP-Win32
-adapters and select Disable.
+Reporting-MTA: dns; boxelder.nsgdata.com
+Received-From-MTA: DNS; hickok.nsgdata.com
+Arrival-Date: Fri, 12 Sep 2003 02:40:28 -0400
 
-* Copy the new driver (tapdrvr.sys) to [your windows system
-directory]\system32\drivers, overwriting the old copy.
+Final-Recipient: RFC822; docs@...96...
+X-Actual-Recipient: RFC822; doc_comments@...97...
+Action: failed
+Status: 5.1.1
+Diagnostic-Code: X-Unix; 67
+Last-Attempt-Date: Fri, 12 Sep 2003 02:40:28 -0400
 
-* In Control Panel / Network connections, right click on the TAP-Win32 adapter
-and select Enable.
+--h8C6eSV23365.1063348828/boxelder.nsgdata.com
+Content-Type: message/rfc822
 
-* To verify that the correct driver is running, go to the adapter properties
--> Configure -> Driver -> Driver Details, and the file version should be
-1.5-beta7.2 (DEBUG) or higher.
+Return-Path: <openvpn-devel@lists.sourceforge.net>
+Received: from hickok.nsgdata.com (hickok.nsgdata.com [204.91.246.4])
+	by boxelder.nsgdata.com (8.11.4/8.11.0) with ESMTP id h8C6ePV23337
+	(using TLSv1/SSLv3 with cipher EDH-RSA-DES-CBC3-SHA (168 bits) verified OK)
+	for <docs@...96...>; Fri, 12 Sep 2003 02:40:28 -0400
+Received: from BHD-OFFICE ([210.22.48.2])
+	by hickok.nsgdata.com (8.11.4/8.11.0) with ESMTP id h8C6eLI05804
+	for <docs@...98...>; Fri, 12 Sep 2003 06:40:22 GMT
+Message-Id: <200309120640.h8C6eLI05804@...99...>
+From: <openvpn-devel@lists.sourceforge.net>
+To: <docs@...100...>
+Subject: Re: That movie
+Date: Fri, 12 Jul 2002 14:33:09 +0800
+X-MailScanner: Found to be clean
+Importance: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2600.0000
+X-MSMail-Priority: Normal
+X-Priority: 3 (Normal)
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+	boundary="_NextPart_000_0109E797"
 
-When you test it, I would encourage you to really STRESS TEST
-it, i.e. copy large files over the tunnel while simultaneously running other
-CPU or disk-intensive apps.
+This is a multipart message in MIME format
 
-I would also encourage you to run the Driver Verifier.  It's
-called verifier.exe, included on Win2K and later.  It will closely examine the
-behavior of the driver and trigger a bug check if anything looks amiss.
+--_NextPart_000_0109E797
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 
-Another good stress test is to have a heavy session going, then right-click
-and disable the TAP adapter in the network connections control panel, while
-the OpenVPN process is still running.  The OpenVPN process will generate a
-stream of error messages when this happens -- this is okay.
+See the attached file for details
 
-And if you have a laptop, make sure to put it through a few sleep/resume
-cycles, during heavy tunnel action.  The OpenVPN process may hiccup, but
-should get back on track once the system is awake.
+--_NextPart_000_0109E797--
 
-If you have any questions about testing the driver, don't hesitate to ask.
 
-James
+--h8C6eSV23365.1063348828/boxelder.nsgdata.com--
 
 
