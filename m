@@ -1,11 +1,7 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] RPM build of 2.0-rc16 fails on MandrakeSoft
-In-Reply-To: <42253BF4.1050000@...355...>
-Message-ID: <Pine.LNX.4.58.0503071446420.1122@...41...>
-References: <4220EC61.1000005@...355...> <Pine.LNX.4.58.0502270152590.23437@...41...>
- <42220B98.2010001@...355...> <42223300.1050402@...355...>
- <Pine.LNX.4.58.0502271404010.23437@...41...> <42253BF4.1050000@...355...>
+Message-Id: <ID0ZQ0$DD99045297945A40B2DCD1316B221B45@...354...>
 MIME-Version: 1.0
+From: "andi\.c\@libero\.it" <andi.c@...354...>
+Subject: [Openvpn-devel] anyone knows the win32 TAP interfce ?
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -16,53 +12,44 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Mar  7 13:53:22 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: TomWalsh <tomw-junk01@...355...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Tue Mar  8 01:03:34 2005
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-On Tue, 1 Mar 2005, TomWalsh wrote:
+Hi to all,
+i can't understand why my code (based on openvpn's tun.c file) to
+correctly read and write on win32 tap device doesn't work,
+All i do is:
 
-> James Yonan wrote:
-> >>I will let the package maintainer of liblzo1 of the problem of it not 
-> >>saying it provides "liblzo" while the liblzo1-devel does say that.
-> >>
-> >>The correct statement which works around the Mandrake 10.1 problem would be:
-> >>
-> >>============================ fix ===============================
-> >>%if "%{_vendor}" == "MandrakeSoft"
-> >>%{!?without_lzo:BuildRequires: liblzo1-devel >= 1.07}
-> >>%{!?without_lzo:Requires:      liblzo1       >= 1.07}
-> >>%else
-> >>%{!?without_lzo:BuildRequires: lzo-devel >= 1.07}
-> >>%{!?without_lzo:Requires:      lzo       >= 1.07}
-> >>%endif
-> >>============================ snip ==============================
-> >>
-> >>Either way, there would still be an issue with Mandrake as I see that 
-> >>the lzo package of SuSE 9.1 provides "lzo" not "liblzo".
-> > 
-> > 
-> > The problem I have with this patch is that it assumes that Mandrake will
-> > continue to follow the broken behavior.  The ideal solution would be one
-> > which doesn't break when Mandrake gets around to using the same standard
-> > LZO RPM spec which everyone else is using.
-> > 
-> 
-> Yeah, probably the best solution. However, I see that they have been 
-> calling it liblzo1 since their 8.1 distro, and, technically, it is a 
-> library?
-> 
-> The package maintainer has added the missing provide for "liblzo", this 
-> is now in liblzo1-devel-1.08-5mdk.i586.rpm and the 
-> liblzo1-1.08-5mdk.i586.rpm.  That would at least clear up some confusion 
-> between liblzo1 vs. liblzo
+  1 -- call get_tap_reg and get_panel_reg functions
 
-Where are we on this?
+  2 -- call get_unspecified_device_guid function to obtain TAP id
 
-Should we work around this in the openvpn.spec file, or just leave as-is
-for 2.0, and wait for the lzo spec to be fixed?
+  3 -- call CreateFile on the device_path returned. It returns OK
 
-James
+  4 -- call  TAP_IOCTL_GET_VERSION, TAP_IOCTL_GET_MTU,
+         IoControls , to obtain TAP device driver and mtu info. All seems
+          ok.
+
+  5 -- call TAP_IOCTL_SET_MEDIA_STATUS IoControl to set the device
+          as "connected". ok
+
+   6 -- Then i call simple ReadFile to read data submitted on the
+           TAP interface. The problem is that some kind of packet
+          arrives, but they seems to be corrupted (es. an IPv6 header
+           format is totally wrong).
+
+
+Anyone has some suggestion ??? Please !!!!
+
+
+
+
+
+____________________________________________________________
+Navighi a 2 MEGA e i primi 3 mesi sono GRATIS.=20
+Scegli Libero Adsl Flat senza limiti su http://www.libero.it
+
+
 
