@@ -1,7 +1,9 @@
-Message-ID: <40260954.5040003@...61...>
-From: Julien TOUCHE <julien.touche@...61...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] --redirect-gateway
+From: Ian Pilcher <i.pilcher@...164...>
+Message-ID: <c08jv9$jut$1@...165...>
+Mime-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="------------060409010003070602000402"
+Subject: [Openvpn-devel] nice() return value is unreliable
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,129 +14,47 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Feb  8 02:03:18 2004
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
+Date: Tue Feb 10 10:41:04 2004
 To: openvpn-devel@lists.sourceforge.net
 
-one answer from misc@...168...
-or read file /etc/mygate (but not really portable)
+This is a multi-part message in MIME format.
+--------------060409010003070602000402
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Regards
+Attached is a small patch to set_nice() in misc.c that uses errno,
+rather than nice()'s return value to determine if the call succeeded.
+See 'man 2 nice' on a recent Linux distribution for why checking the
+return value is unreliable.
 
-		Julien
-
--------- Original Message --------
-Subject: Re: get gateway address in c
-Date: Sat, 7 Feb 2004 22:03:35 +0100
-From: Henning Brauer <lists-openbsd@...169...>
-To: Julien TOUCHE <julien.touche@...61...>
-References: <40255088.6020005@...61...>
-
-you could fetch the default route. this is not exactly trivial, but not
-too hard either - in usr.sbin/bgpd/kroute.c, fetchtable() has the code
-to do that. might be an inspiration.
-no, it's not trivial ;-)
 -- 
-http://2suck.net/hhwl.html - http://www.bsws.de/
-Unix is very simple, but it takes a genius to understand the simplicity.
-(Dennis Ritchie)
+========================================================================
+Ian Pilcher                                        i.pilcher@...164...
+========================================================================
 
-<<< from kroute.c >>>
-int
-fetchtable(void)
-{
-         size_t                   len;
-         int                      mib[6];
-         char                    *buf, *next, *lim;
-         struct rt_msghdr        *rtm;
-         struct sockaddr         *sa, *rti_info[RTAX_MAX];
-         struct sockaddr_in      *sa_in;
-         struct kroute_node      *kr;
+--------------060409010003070602000402
+Content-Type: text/plain;
+ name="openvpn-set_nice.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="openvpn-set_nice.patch"
 
-         mib[0] = CTL_NET;
-         mib[1] = AF_ROUTE;
-         mib[2] = 0;
-         mib[3] = AF_INET;
-         mib[4] = NET_RT_DUMP;
-         mib[5] = 0;
+diff -urNp ../openvpn-1.5.0-orig/misc.c ./misc.c
+--- ../openvpn-1.5.0-orig/misc.c	2004-02-09 11:38:59.000000000 -0600
++++ ./misc.c	2004-02-09 12:25:08.000000000 -0600
+@@ -139,7 +139,9 @@ set_nice (int niceval)
+   if (niceval)
+     {
+ #ifdef HAVE_NICE
+-      if (nice (niceval) < 0)
++      errno = 0;
++      nice (niceval);
++      if (errno != 0)
+ 	msg (M_WARN | M_ERRNO, "WARNING: nice %d failed", niceval);
+       else
+ 	msg (M_INFO, "nice %d succeeded", niceval);
 
-         if (sysctl(mib, 6, NULL, &len, NULL, 0) == -1) {
-                 log_warn("sysctl");
-                 return (-1);
-         }
-         if ((buf = malloc(len)) == NULL) {
-                 log_warn("fetchtable");
-                 return (-1);
-         }
-         if (sysctl(mib, 6, buf, &len, NULL, 0) == -1) {
-                 log_warn("sysctl");
-                 return (-1);
-         }
-
-         lim = buf + len;
-         for (next = buf; next < lim; next += rtm->rtm_msglen) {
-                 rtm = (struct rt_msghdr *)next;
-                 sa = (struct sockaddr *)(rtm + 1);
-                 get_rtaddrs(rtm->rtm_addrs, sa, rti_info);
-
-                 if ((sa = rti_info[RTAX_DST]) == NULL)
-                         continue;
-
-                 if (rtm->rtm_flags & RTF_LLINFO)        /* arp cache */
-                         continue;
-
-                 if ((kr = calloc(1, sizeof(struct kroute_node))) == NULL) {
-                         log_warn("fetchtable");
-                         return (-1);
-                 }
-
-                 kr->r.flags = F_KERNEL;
-
-                 switch (sa->sa_family) {
-                 case AF_INET:
-                         kr->r.prefix.s_addr =
-                             ((struct sockaddr_in *)sa)->sin_addr.s_addr;
-                         sa_in = (struct sockaddr_in
-*)rti_info[RTAX_NETMASK];
-                         if (kr->r.prefix.s_addr == 0)   /* default route */
-                                 kr->r.prefixlen = 0;
-                         else if (sa_in != NULL)
-                                 kr->r.prefixlen =
-                                     mask2prefixlen(sa_in->sin_addr.s_addr);
-                         else if (rtm->rtm_flags & RTF_HOST)
-                                 kr->r.prefixlen = 32;
-                         else
-                                 kr->r.prefixlen =
-
-prefixlen_classful(kr->r.prefix.s_addr);
-                         break;
-                 default:
-                         continue;
-                         /* not reached */
-                 }
-
-                 if ((sa = rti_info[RTAX_GATEWAY]) != NULL)
-                         switch (sa->sa_family) {
-                         case AF_INET:
-                                 kr->r.nexthop.s_addr =
-                                     ((struct sockaddr_in
-*)sa)->sin_addr.s_addr;
-                                 break;
-                         case AF_LINK:
-                                 kr->r.flags |= F_CONNECTED;
-                                 kr->r.ifindex = rtm->rtm_index;
-                                 break;
-                         }
-
-                 kroute_insert(kr);
-
-         }
-         free(buf);
-         return (0);
-}
-
-
+--------------060409010003070602000402--
 
 
 
