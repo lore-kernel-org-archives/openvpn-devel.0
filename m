@@ -1,9 +1,7 @@
-From: Thomas Glanzmann <sithglan@...162...>
-Subject: Re: [Openvpn-devel] ipv6 netbsd support
-Message-ID: <20040206074248.GB29006@...162...>
-References: <Pine.LNX.4.31.0401281414440.15882-100000@...161...> <20040130082021.GA7679@...162...>
-Mime-Version: 1.0
-In-Reply-To: <20040130082021.GA7679@...162...>
+From: "James Yonan" <jim@...41...>
+Message-ID: <twig.1076185995.51691@...41...>
+In-Reply-To: <200402071929.i17JTKIk012344@...167...>
+Subject: [Openvpn-devel] --redirect-gateway, was: Re: [Openvpn-users] Use at hotels
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,21 +12,32 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Feb  5 23:44:35 2004
-Content-Type: text/plain; charset=us-ascii
+Date: Sat Feb  7 12:34:23 2004
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+To: Tuc at the Beach House <tuc@...166...>, jim@...41...
+Cc: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-Hi together,
+Tuc at the Beach House <tuc@...166...> said:
 
-> If you can give me access to a NetBSD system *including* root access
-> and kernel sources extracted I should be able to patch and test
-> openvpn within hours to support IPv6 via tun devices.
+> Hi,
+> 
+>        --redirect-gateway
+>               Automatically  execute routing commands to cause all outgoing IP
+>               traffic to be redirected over the  VPN.   Currently  implemented
+>               only on Linux and Windows.
 
-one of my openvpn/ipv6 users did patch NetBSD tun device itself and
-maybe openvpn, too. I told him to send his patches to the upstream
-maintainers.
+Ah, yes, that's a problem.
 
-	Thomas
+The --redirect-gateway implementation needs to be able to get the IP address
+of the current default gateway.  Unfortunately the standard Berkeley sockets
+API doesn't give us a portable way of doing this.  Anyone know how to do this
+on FreeBSD?
+
+Having said that, all is not lost.  If you know your gateway address and you
+know your DHCP server address (and if they are both relatively static), you
+can write an --up script with route commands to do this.
+
+James
+
 
