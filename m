@@ -1,7 +1,7 @@
-Message-Id: <200304171114.h3HBE7121769@...41...>
+Message-Id: <200304171216.h3HCGV131379@...41...>
+Subject: Re: [Openvpn-devel] Re: New beta available + progress update
 From: "James Yonan" <jim@...41...>
-In-Reply-To: <20030417085657.GA5962@...33...>
-Subject: [Openvpn-devel] Re: New beta available + progress update
+In-Reply-To: <20030417105647.GA4239@...33...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -12,60 +12,74 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Apr 17 04:16:24 2003
+Date: Thu Apr 17 05:18:02 2003
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Matthias Andree <matthias.andree@...68...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Matthias Andree <ma+ovpnd@...31...>, openvpn-devel@lists.sourceforge.net
 
-Matthias Andree <matthias.andree@...68...> said:
+Matthias Andree <ma+ovpnd@...31...> said:
 
-> > What the FRAGMENT_ENABLE code does is to add an extra 4 byte header to each
-> > datagram that includes, among other things, feedback on the number of
-> > datagrams received as well as the maximum datagram size received.  This
-> > information can then be used by an OpenVPN peer to dynamically set the MTU
-> > size as well as the datagram transmit rate independently of the OS and the
-> > proper functioning of path MTU discovery.  Ultimately this code can make
-> > OpenVPN more robust in situations where fragmentation is necessary (such as in
-> > TAP-based bridged ethernets) when firewalls or routers in the path break PMTU
-> > discovery.
+> > http://openvpn.sourceforge.net/beta/openvpn-1.3.2.21.tar.gz (or CVS)
 > 
-> How about compatibility? Does this need a FRAGMENT_ENABLEd OpenVPN on
-> either side of the tunnel or will OpenVPN negotiate the fragment
-> capability dynamically as well?
+> I have a next round of patches to fix prototypes and types to quench
+> compiler warnings and get a more robust source code against changed
+> environments, to aid possible later debugging; it also includes GCC
+> extensions (only used when GCC is being used) that allow stricter msg()
+> and buf_printf() format string vs. argument checking, to avoid printing
+> bogus data when type sizes differ (think 64 bit).
 
-Negotiation of the fragment capability is similar to how other parameters are
-negotiated, such as cipher algorithm, lzo compression, etc.  The option
-(--mtu-dynamic) must be used on both ends of the connection.  In SSL mode,
-both peers will complain if --mtu-dynamic is used on one end but not the
-other.  In non-SSL mode, there is no negotiation, so each peer assumes that
-the other is using compatible options.
+Yes, very good ideas.  I will merge.
 
-> Does this FRAGMENT_ENABLE rely on SSL or
-> will it work with preshared keys?
+> 
+> One problem remains after applying the patch:
+> openvpn.c: In function `openvpn':
+> openvpn.c:470: warning: cast discards qualifiers from pointer target type
 
-No, it doesn't rely on SSL or pre-shared keys.  It can work even on plaintext
-tunnels.
+That's a tricky matter, because the struct options object is const, but it
+needs to be passed to a thread, and normally you need to cast something to a
+void* if you want to pass it to a thread as an argument, which then causes the
+constness to be lost.
 
-I think the major issue still to be worked out is how to make it efficient. 
-While I've written a simple heuristic (see fragment_adjust_mtu_bandwidth() in
-fragment.c) that is a starting point for determining MTU and transmit throttle
-levels based on feedback from the peer, I'm finding a big performance dropoff
-once the fragmenting code kicks in.  A big reason for this is packet loss,
-that can be seen if you run ftp over the tunnel.  When there is a one-to-one
-correspondence between TUN/TAP packets and UDP datagrams (as there is in
-non-FRAGMENT_ENABLE openvpn), then the TCP level does the heavy lifting in
-terms of pushing packets at the optimal rate to avoid packet loss.  Once
-openvpn starts doing its own fragmenting, then it also needs to take explicit
-control over the transmit rate (as it can now do statically with --shaper).
+> Other than that, we have unused parameter warnings (you said before
+> you're not fixing them), shadow parameter warnings (variable names being
+> the same as system functions, such as time or nice)
 
-A better alternative (orginally suggested by you) is to avoid fragmenting in
-the first place by bouncing back ICMP_DEST_UNREACH/ICMP_FRAG_NEEDED to the TUN
-device.  This won't work on TAP devices because the ethernet MTU is fixed at 1500.
+I'm not too worried about the shadow parameters.  I think it's pretty obvious
+when something is being used as a variable vs. a function call.
 
-Unfortunately (or fortunately depending on your perspective), my network
-connections are not broken enough to benefit from the FRAGMENT_ENABLE stuff
-just yet, so I can't really test it properly.
+As for the unused parms, they are mostly a result of conditional compilation
+making certain variables unnecessary.  OpenVPN has a large conditional
+compilation state-space, so I'm not sure that it makes sense to try to
+eliminate all such warnings.
+
+> and in particular,
+> aggregate (struct) values in function calls and function returns, these
+> are inefficient (as the compiler must toss the whole struct on the
+> stack, which involves copy overhead), and some of them (buffer.c in
+> particular) look pretty suspicious. Is there any C standard that
+> guarantees that returning an auto struct works and copies the return
+> value?
+
+While I can't quote chapter and verse, being able to manipulate structures in
+a value context, such as returning them from functions or passing them on the
+stack, has been a part of C for ages, and for a long time compilers have tried
+very hard to optimize this usage as much as possible.
+
+For example, when a function returns an automatic structure, most compilers
+will optimize this into a zero-copy operation, where the functions's
+references to the automatic structure go directly into a variable allocated by
+the caller for its return.
+
+My attitude towards optimization has been to optimize the code across the
+critical path only, which is essentially the event loop in openvpn.c.  Code
+outside the event loop (such as the SSL negotiation) does not need to be
+optimized with respect to CPU usage, because it is executed infrequently in
+relation to the main event loop and OpenSSL EVP crypto code.
+
+Most of the expensive buffer.[ch] code is only executed on startup, shutdown,
+SIGHUP, or when the debug level is high.
+
+[ patch deleted ]
 
 James
 
