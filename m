@@ -1,10 +1,7 @@
-Subject: Re: [Openvpn-devel] Certificate Wizard 0.3b - code-related feedback
-References: <1100311165.30425.27.camel@...23...>
-From: Florian Weimer <fw@...315...>
-In-Reply-To: <1100311165.30425.27.camel@...23...> (Charles Duffy's message of
-	"Fri, 12 Nov 2004 19:59:25 -0600")
-Message-ID: <87pt2dn1do.fsf@...315...>
-MIME-Version: 1.0
+From: Alberto Gonzalez Iniesta <agi@...64...>
+Message-ID: <20041117114417.GC1675@...30...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] mssfix option changed its behaviour
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,31 +12,32 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Nov 16 09:36:02 2004
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-To: Charles Duffy <cduffy@...294...>
-Cc: Vlada Macek <tuttle@...316...>, openvpn-devel@lists.sourceforge.net, it-staff@...296...
+Date: Wed Nov 17 03:45:02 2004
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: OpenVPN devel <openvpn-devel@lists.sourceforge.net>
 
-* Charles Duffy:
+Hi,
 
-> @@ -242,8 +242,7 @@
->                 char buffer[MAXLINELEN+1];
->                 int errorCode = GetLastError();
->  
-> -               snprintf(buffer, MAXLINELEN, _("Unable to copy '%s' to '%s' - error %d", 0), source, target, errorCode);
-> -               strcat(buffer, ": %%s");
-> +               snprintf(buffer, MAXLINELEN, _("Unable to copy '%s' to '%s' - error %d: %%s", 0), source, target, errorCode);
->                 DisplayErrorToUser(errorCode, _("Failure copying files", 0), buffer);
->                 return FALSE;
->         }
->
+It seems [1] that specifying mssfix without a value, like the man page
+suggests [2], gives a fatal (Options) error now. Is this a new expected
+behaviour (that should be updated in the man page), or something not
+wanted?
+
+Thanks,
+
+Alberto
 
 
-I believe that this is still wrong.  The variables source and target
-might contain '%' characters, too.
 
-In other places, the source code uses strncpy() in a lenient way.  You
-might want to check these places and make sure that the buffer is
-always NUL-terminated.
+[1] http://bugs.debian.org/280893
+[2]  --tun-mtu 1500 --fragment 1300 --mssfix
+
+--=20
+Alberto Gonzalez Iniesta    | Formaci=F3n, consultor=EDa y soporte t=E9cnico
+agi@(inittab.org|debian.org)| en GNU/Linux y software libre
+Encrypted mail preferred    | http://inittab.org
+
+Key fingerprint =3D 9782 04E7 2B75 405C F5E9  0C81 C514 AF8E 4BA4 01C3
 
