@@ -1,7 +1,7 @@
-Subject: Re: [Openvpn-devel] Windows and Shaper
+Subject: Re: [Openvpn-devel] Many to one TCP question
 From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1083091691.91354@...41...>
-In-Reply-To: <001b01c429d0$434a0f80$0a0aef0a@...202...>
+Message-ID: <twig.1083092616.79848@...41...>
+In-Reply-To: <408C37BA.5080806@...203...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,26 +12,34 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Apr 27 12:43:08 2004
+Date: Tue Apr 27 12:43:10 2004
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Derek Burdick <derek@...201...>, openvpn-devel@lists.sourceforge.net
+To: Lonnie Cumberland <lonnie@...203...>, Openvpn-devel@lists.sourceforge.net
 
-Derek Burdick <derek@...201...> said:
+Lonnie Cumberland <lonnie@...203...> said:
 
->     I was browsing the online CVS repository and noticed the
-> config-win32.h.in says that HAVE_GETTIMEOFDAY is specified in misc.c.  When
-> I look in misc.c, I don't see the file.  Is the latest version just not
-> checked in?  I also implemented a gettimeofday for windows.  It is based on
-> QueryPerformanceCounter. If you are interested in this version let me know.
-> If somebody knows the correct status of gettimeofday for the cvs code, I
-> would appreciate an update.
+> Hello All,
+> 
+> Well, I've been away from the list for a little while and was wondering 
+> if someone could please bring me up to speed on the development of the 
+> "Many-to-One" TCP progress?
+> 
+> It is my understanding that in the OpenVPN 2.0 (early) Beta, that UDP 
+> connections can be established in a many to one TAP/TUN interface, but 
+> how about the TCP side?
 
-Derek,
-
-Yes, I'd like to see your gettimeofday for Windows that uses
-QueryPerformanceCounter.  OpenVPN 2.0 will have a gettimeofday function for
-Windows so that --shaper and --mode server can be supported.
+TCP support for multiple-clients going through a single tun/tap interface is
+probably not going to be here for a while unless someone sponsors the work. 
+The problem is that it's difficult to scale, because TCP connections require
+one socket per client, while UDP connections can use a single socket to talk
+to any number of clients.  Most OSes lack an efficient API for waiting on the
+status of a large number of sockets.  The one notable exception is Linux 2.6
+which has the epoll API.  Most application developers get around this
+limitation by using multiple threads or processes, where each thread/process
+waits on a single socket.  But then you have the inefficiency of a large
+number of threads/processes and the interprocess communication overhead
+entailed by that.
 
 James
 
