@@ -1,7 +1,7 @@
-From: Matthias Andree <ma+ovpnd@...31...>
-Message-ID: <20040205145013.GA25559@...33...>
+From: Ian Pilcher <i.pilcher@...164...>
+Message-ID: <bvu60k$bpq$1@...165...>
 Mime-Version: 1.0
-Subject: [Openvpn-devel] Idea for --ifconfig & co.
+Subject: [Openvpn-devel] Daemon as non-root, high priority
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,21 +12,30 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Feb  5 06:53:01 2004
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
+Date: Thu Feb  5 17:23:15 2004
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+I would like to put together a patch that will allow the openvpn daemon
+to run with elevated priority as a non-root user.  This currently
+doesn't work, because the daemon changes its UID before it renices
+itself.
 
-would it be feasible to have openvpn create interfaces (--ifconfig or
-something) in "down" state until a remote peer connects - unless the
-tunnel is marked persistent?
+Questions:
 
-I know I can do this with scripts, but it might be the natural choice to
-reflect the tunnel status in interface configuration.
+   * Are there any "philosophical" objections to this that would prevent
+     such a patch from being accepted?
 
-Thanks,
-Matthias
+   * Any gotchas?  From my brief look at openvpn.c, it seems pretty
+     simple.
+
+Thanks!
+
+-- 
+========================================================================
+Ian Pilcher                                        i.pilcher@...164...
+========================================================================
+
+
 
