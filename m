@@ -1,10 +1,12 @@
-Message-ID: <d51eee50041110000141c9bab4@...278...>
-From: John Favorite <john.favorite@...277...>
-Reply-To: John Favorite <john.favorite@...277...>
-Subject: Re: [Openvpn-devel] IANA has approved a unique port number for OpenVPN
-In-Reply-To: <twig.1100040511.60533@...41...>
+Message-Id: <200411100915.iAA9FINl006025@...309...>
+In-Reply-To: Your message of "Wed, 10 Nov 2004 01:03:35 +0100."
+             <20041110000335.GB17347@...307...> 
 Mime-Version: 1.0
-References: <twig.1100040511.60533@...41...>
+Content-Type: multipart/signed; boundary="==_Exmh_-872148448P";
+	 micalg=pgp-sha1; protocol="application/pgp-signature"
+Content-Transfer-Encoding: 7bit
+From: George Ross <gdmr@...308...>
+Subject: [Openvpn-devel] Re: [Openvpn-users] IANA has approved a unique port number for OpenVPN
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,43 +17,41 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Nov 10 00:02:02 2004
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Date: Wed Nov 10 01:16:05 2004
 To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-Awesome
+--==_Exmh_-872148448P
+Content-Type: text/plain; charset=us-ascii
+
+> > I'd be inclined to make the change before 2.0 final is released.  Any other
+> > opinions?
+> 
+> Can the server support listening on two ports at the same time? This
+> would make migration much easier.
+
+Hear hear.  (Actually, it would be really useful if it could listen on TCP 
+and UDP at the same time too...  I imagine it wouldn't be much harder to 
+put in fully general port/protocol handling than it would be to put in a 
+special case to support just two combinations at a time.)
+-- 
+Dr George D M Ross, School of Informatics, University of Edinburgh
+    Kings Buildings, Mayfield Road, Edinburgh, Scotland, EH9 3JZ
+Mail: gdmr@...308...   Voice: +44 131 650 5147   Fax: +44 131 667 7209
+ PGP: 1024D/AD758CC5  B91E D430 1E0D 5883 EF6A  426C B676 5C2B AD75 8CC5
 
 
-On Tue, 9 Nov 2004 22:48:31 -0000, James Yonan <jim@...41...> wrote:
-> 
-> I just got a note from IANA confirming that they've assigned TCP/UDP port 1194
-> to OpenVPN.
-> 
-> You can see the allocation here in the global list:
-> 
-> http://www.iana.org/assignments/port-numbers
-> 
-> The question, of course, is when should we switch over to using 1194 as the
-> default? (We're currently using 5000 which doesn't really belong to us.)
-> 
-> I'd be inclined to make the change before 2.0 final is released.  Any other
-> opinions?
-> 
-> Of course, this will be moot for those of you who select your own port number
-> using the "port" directive.  It's only a question of changing the default from
-> 5000 to 1194 when no "port" directive is specified.
-> 
-> James
-> 
-> -------------------------------------------------------
-> This SF.Net email is sponsored by:
-> Sybase ASE Linux Express Edition - download now for FREE
-> LinuxWorld Reader's Choice Award Winner for best database on Linux.
-> http://ads.osdn.com/?ad_id=5588&alloc_id=12065&op=click
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+
+--==_Exmh_-872148448P
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.4 (GNU/Linux)
+Comment: Exmh version 2.6.3 2003/04/04
+
+iD8DBQFBkdwmtnZcK611jMURAkuQAKCtVVInQmMvoUzUElxxAADsXgpLoQCePo9O
+lZlqTPdvWbAF7Kj2A53428Y=
+=S/Yh
+-----END PGP SIGNATURE-----
+
+--==_Exmh_-872148448P--
 
