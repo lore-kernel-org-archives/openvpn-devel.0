@@ -1,10 +1,7 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.0 and udev
-In-Reply-To: <20041017161506.GC5221@...30...>
-Message-ID: <Pine.LNX.4.58.0410171615360.3395@...269...>
-References: <20041017102652.GC1621@...30...> <twig.1098020193.10343@...41...>
- <20041017161506.GC5221@...30...>
-MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] PATCH[1/2]: Use certificates from MS Cert Store with CryptoAPI
+From: "James Yonan" <jim@...41...>
+Message-ID: <twig.1098084812.36872@...41...>
+In-Reply-To: <416D2FE2.7080408@...292...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,57 +12,69 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Oct 17 15:21:03 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Date: Mon Oct 18 00:34:03 2004
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Alberto Gonzalez Iniesta <agi@...64...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Peter 'Luna' Runestig <peter+openvpn@...292...>, openvpn-devel@lists.sourceforge.net
 
+Peter 'Luna' Runestig <peter+openvpn@...292...> said:
 
-On Sun, 17 Oct 2004, Alberto Gonzalez Iniesta wrote:
-
-> On Sun, Oct 17, 2004 at 01:36:33PM -0000, James Yonan wrote:
-> > Alberto Gonzalez Iniesta <agi@...64...> said:
-> > 
-> > > Hi all,
-> > > 
-> > > After I decided to push OpenVPN 2.0 into Debian for future inclusion in
-> > > Sarge, I got this [1] bug report from one Debian user. It seems that 2.0
-> > > doesn't get along well with udev, as opposed to 1.6. I don't use udev,
-> > > so I can't really tell, but has anything changed from 1.6 to 2.0 in the
-> > > way the device is handled?
-> > > 
-> > > The suspicious message is:
-> > > 
-> > > Oct 16 16:31:12 gimli wait_for_sysfs[5873]: error: wait_for_sysfs needs an
-> > update to handle the device '/class/net/tun0' properly, please report to
-> > <linux-hotplug-devel@lists.sourceforge.net>
-> > > 
-> > > The bug submitter claims that OpenVPN 1.6 deals correctly with it. Maybe
-> > > it has something to do with device probing?
-> > 
-> > The TUN/TAP handling code in 2.0 is nearly identical to the 1.6 code.  The
-> > only change I can think of is the setting of txqueuelen on the TUN/TAP driver.
+> Hi all!
 > 
-> Ok
+> Let me first say how impressed with the smooth functionality of this
+> excellent piece of software! I have evaluated some other, commercial,
+> SSL/TLS VPN solutions, but this is the best one, and at a much lower
+> price... :-)
 > 
-> > Incidentally, the error shown in the bug report looks like he is trying to
-> > make a tunnel between 1.6 and 2.0 using incompatible key-method parameters. 
-> > He needs to set --key-method 2 on the 1.6 side.
+> What I really wanted to use with OpenVPN, is smart cards for user
+> authentication, on the Microsoft Windows platform. I have written some
+> code that adds the option of using certificates (and their private
+> keys), that resides in the Windows Certificate System Store. That makes
+> it possible to use any smart card, supported by Windows, but also any
+> kind of certificate, residing in the Cert Store, that you have access to
+> the private key of. I have tested this code with a couple of different
+> smart cards (GemSAFE, Cryptoflex and Swedish Post Office eID) on the
+> client side, and also an imported PKCS12 software certificate on the
+> server side.
 > 
+> The code adds a new config option: cryptoapicert
+> To select a certificate, based on a substring search in the
+> certificate's subject:
 > 
-> Has this changed between 1.6 and 2 beta11?
-> The man page says --key-method defaults to 1 and the ChangeLog does not say otherwise.
+> cryptoapicert "SUBJ:Peter Runestig"
+> 
+> To select a certificate, based on certificate's thumbprint:
+> 
+> cryptoapicert "THUMB:f6 49 24 41 01 b4 ..."
+> 
+> The thumbprint hex string can easily be copy-and-pasted from the Windows
+> Certificate Store GUI.
+> 
+> Unfortunately, this code don't build with MinGW; e.g. the
+> CryptAcquireCertificatePrivateKey() isn't implemented in MinGW, so I had
+> to use Microsoft Visual C++ 6.0. So the patch included in this post is
+> actually my hack to build OpenVPN using MSVC++, which must be applied
+> before the actual CryptoAPI patch, which will be in my next post (I
+> split it in two, so the posts don't get so big).
+> 
+> To build this, using MSVC 6.0:
+> 
+> o Unpack openvpn-2.0_beta11.zip, apply the MSVC patch in this post, and
+> the CryptoAPI patch in my next post.
+> 
+> o If the OpenSSL and/or LZO libraries (built with MSVC or something else
+> that gives you .LIB files) isn't reachable using the INCLUDE and LIB
+> environment variables, edit the 'makefile.w32-vc' file to point them out.
+> 
+> o nmake -f makefile.w32-vc
 
-Ah yes, the man page entry for --key-method hasn't been updated for 2.0.  
-I will fix this for beta12.
+I've merged the MSVC patch for beta12, but I will hold off on the CryptoAPI
+patch until we have some kind of MinGW solution, such as
 
-> I don't think this guy changed that to 2 just after he upgraded the
-> package. I'll ask him anyway, yo never know...
-> Could a problem with the TUN/TAP driver confuse the --key-method handling code?
-
-I doubt it.  The SSL/TLS handling code has almost no interactions with the 
-TUN/TAP code.
+(1) Add support for native build with MinGW, or
+(2) Make SSL_CTX_use_CryptoAPI_certificate.[ch] into an MSVC-built DLL which
+can be dynamically linked from MinGW-built code.
 
 James
+
 
