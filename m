@@ -1,7 +1,7 @@
-Message-ID: <1090328908.40fd194cddc1b@...256...>
-From: Didier Conchaudron <didier@...255...>
+From: Mathias Sundman <mathias@...209...>
+Message-ID: <Pine.LNX.4.60.0407230944060.20730@...210...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] develop extended authentication
+Subject: [Openvpn-devel] OpenVPN get stuck in getpass()
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,46 +12,38 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Jul 20 06:09:06 2004
-Content-Type: text/plain; charset=ISO-8859-1
+Date: Fri Jul 23 01:35:08 2004
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi list,
+OpenVPN (2.0-beta7) does not exit when the exit_event is signaled if a 
+passphrase protected key is used, and openvpn in waiting for the password 
+from the console.
 
-I'm actually doing a training in a company looking at openvpn for vpn ssl use.
+This is a problem now that I pass the passphrase from my gui as a cmd-line 
+option. I want to support non passphrase protected keys to, therefor if 
+the user justs hits enter at my passphrase dialog, I do not use the 
+--passphrase option.
 
-But there're actually several not_yet_developped features which are necessary
-for the usage we want to do of openvpn.
+The problem arises if the key IS protected, but the user just hits enter 
+at the passphrase prompt (by mistake perhaps), as then openvpn is launched 
+as normal without knowing about the passphrase, and will therefor ask for 
+the passphrase from the console.
 
-We are satisfied of openvpn certificate handling, but we use them only to
-authenticate a computer and not the user behind the screen, so the first thing
-we would like to develop is extended authentication like a couple of login/password.
-But in this aim, we would like to get these authentication data via a LDAP
-directory which regroup all users/groups authentication data.
+And there it's stuck :-) Even if I signal the exit_event the openvpn 
+process don't exit, so I have to kill the process manually to be able to 
+restart the connection...
 
-And, for now, our final requirement is network ACL support for those
-users/groups: if 'this' user connect to the vpn, so he's allowed to use this
-subnet and this subnet, but not all others. those info would be stored in the
-LDAP dir and apply by a iptables-like firewall located on the openvpn server. I
-think this could be achieve by executing a sh/perl script requiring just the
-username and getting directly ACL in the LDAP dir. So no real FW should be
-include into openvpn.
+Any suggestions how to solve this?
 
-I'm *very* conscient these features are really hard work to do because they ask
-me to add them to openvpn. So my questions are:
-- what do you think about those features?
-- because I'm not yet a good coder, is there people availables to help to begin
-make a patch for openvpn?
-- you great developpers of openvpn, are there some start point to understand
-before trying to 'hack' openvpn?
+Is it possible to have openvpn exit when the exit_event is signaled even 
+if it is in getpass(), or do I have to come up with a way to tell openvpn 
+not to ask for the passphrase from the console at all?
 
-To the question 'GPL?' I answer 'SURE' because my company and I love free software.
-
-I understand all of this represent really hard work, but I've to do it, so I ask
-your help :-)
-
-Didier
-
-ps: and sorry for my horrible english :-/
+-- 
+_____________________________________________________________
+Mathias Sundman                  (^)   ASCII Ribbon Campaign
+NILINGS AB                        X    NO HTML/RTF in e-mail
+Tel: +46-(0)8-666 32 28          / \   NO Word docs in e-mail
 
