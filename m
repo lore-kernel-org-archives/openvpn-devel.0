@@ -1,12 +1,9 @@
-Subject: Re: [Openvpn-devel] More BSD TUN info.
 From: Janne Johansson <jan.johansson@...1...>
-In-Reply-To: <008901c1da97$e4ce0b70$1000000a@...4...>
-References: <1017760165.9891.85.camel@...2...> 
-	<008901c1da97$e4ce0b70$1000000a@...4...>
 Content-Type: multipart/signed; micalg=pgp-sha1; protocol="application/pgp-signature";
-	boundary="=-1KMcmmFQDbAuTlZOhuTv"
-Message-Id: <1017818817.1524.56.camel@...2...>
+	boundary="=-EEtqSMD5wJauP5xXvaMx"
+Message-Id: <1017825803.1524.134.camel@...2...>
 Mime-Version: 1.0
+Subject: [Openvpn-devel] More on BSD vs Linux tun devices.
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -17,93 +14,100 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://www.geocrawler.com/redir-sf.php3?list=openvpn-devel>
-Date: Wed Apr  3 08:05:49 2002
+Date: Wed Apr  3 12:10:06 2002
 To: openvpn-devel@lists.sourceforge.net
 
---=-1KMcmmFQDbAuTlZOhuTv
+--=-EEtqSMD5wJauP5xXvaMx
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 2002-04-03 at 00:44, James Yonan wrote:
-> >Sorry for "spamming" so much with my porting issues.
->=20
-> Hey, I think it's great you're trying to port it!  Post as much as you wa=
-nt.
->=20
-> >Now it seems that BSD (at least Free/OpenBSD) TUN devices send AF_INET
-> as a u_int32_t in network byte order first, which Linux tun-devs
-> dont.
->=20
-> Interesting.  We should post something about that on the TUN/TAP list.  I
-> would think that network byte order should be the correct behaviour.
+There isn't an option to remove the AF_INET attachment on tun packets
+on OpenBSD at least, although there are ioctl's to add more "junk" at
+the beginning, such as the sender ip address.
 
-I'll get back to this further down, but to clarify, _each_ packet read
-from tun will have this u_int_32 prepended.
+After checking the Linux kernel source, there seems to be an
+option that MIGHT add info to packets, called "IFF_NO_PI",
+which you set, meaning that you remove the PI-option and
+don't add info to packets.
 
-> >That's why my last mail contains sending of "00000002" as the first
-> 32 bits, it's telling the other end which AF to use.
->=20
-> >When initiated from the Linux end, the BSD will say
-> "unknown address family" or something very similar, which is true
-> since it gets "45000054" as the first data.
->=20
-> >Is there two types of tun or is the BSD tuns just slightly different and
-> incompatible by design?
->=20
-> Also sounds like a TUN/TAP list question.  I know the TUN/TAP driver beca=
-me
-> an official part of the linux kernel as of the early 2.4 releases.
->=20
-> A fix on the linux side to conform to network byte ordering would be dicey
-> since it would break compatibility.
+Now, I don't know what this PI stuff is for, the comments around it
+are sparse, to say the least. ;-)
 
-Well, sooner or later Linux should do that too, to support big endian
-machines. But the issue was more to the fact that the BSD sends this:
-"00000002 45000054 ..blabla" whereas Linux sends this:
-"45000054 ..blabla".
+Here is a snippet from your code, on the 2.4 dynamic tun-stuff:
 
-The manpage for tun on BSD says:
-"The first u_int32_t of data will always be the address family
- (eg, AF_INET) of the packet in network byte order.
- By default, the packet data follows immediately, but if the PREPADDR
- bit is set, the address to which the packet is to be sent is placed=20=20
- after the address family u_int32_t and before the packet data."
+int
+open_tun (const char *dev, char *actual, int size)
+{
+  <..cut some lines away...>
+  ifr.ifr_flags =3D IFF_NO_PI;
 
-Now, I don't want to rant about OSes, but being able to just type
-"man tun" when you're dealing with tun interfaces and get serious info
-is quite nice. I googled a bit yesterday and could not find neither tun
-info for Linux nor the kernel source as cvsweb, so I could read the
-source at least. 8-/
 
-> My approach would be to do the fix on the linux side but add an extra che=
-ck
-> for compatibility and allow packets if the order is wrong.  Since there
-> aren't too many address families to worry about, the bad ordering test
-> should't be terribly ambiguous.
->=20
-> And since linux kernel changes take a long time to happen, it might be
-> necessary to add a workaround in OpenVPN to deal with this.
->=20
-> What do you think?
+And the corresponding Linux kernel code that gets to run
+if IFF_NO_PI is not set (the flag name is TUN_NO_PI):
 
-I don't know the openvpn data format, but if 45000054 is some sort of
-openvtun identifier, you/we/I could add some code that checked for
-00000002 followed by 45000054 and then strip the first u_int_32 from
-the packet and go on. Perhaps a --remote-is-bsd or something similar?
+/* Get packet from user space buffer(already verified) */
+static __inline__ ssize_t tun_get_user(struct tun_struct *tun, const
+char *buf, size_t count)
+{
+	struct tun_pi pi =3D { 0, __constant_htons(ETH_P_IP) };
+	register const char *ptr =3D buf;=20
+	register int len =3D count;
+	struct sk_buff *skb;
 
-The last bit of the manpage says:
-"NOTES
- Very old versions of the tunnel device did not include the address
- family at the start of the packet.  More recent versions passed the
- address family as a single byte, but this caused problems with bpf,
- hence the current version passes a u_int32_t of address family.
- This was initially pass in host byte order, but the current version
- now uses network byte order."
+	if (!(tun->flags & TUN_NO_PI)) {
+		if ((len -=3D sizeof(pi)) < 0)
+			return -EINVAL;
 
-I checked the CVS for openbsd, and the native -> network byte order
-change was done 3 years ago, which is a really long time.
-I wonder if Vtun ever did work between linux-vs-bsd ?
-Or does it have code to handle this?
+		copy_from_user(&pi, ptr, sizeof(pi));
+		ptr +=3D sizeof(pi);
+	}
+
+
+This seems (to me) to mean:
+if TUN_NO_PI is not set, and len gets sizeof(pi) subtracted but still
+is larger (or eq) than 0, get a "pi" struct from userspace and copy
+it to the beginning of the space that "ptr" is pointing to.
+
+In the receive function, we see:
+
+	struct tun_pi pi =3D { 0, skb->protocol };
+	int len =3D count, total =3D 0;
+	char *ptr =3D buf;
+
+	if (!(tun->flags & TUN_NO_PI)) {
+		if ((len -=3D sizeof(pi)) < 0)
+			return -EINVAL;
+
+		if (len < skb->len) {
+			/* Packet will be striped */
+			pi.flags |=3D TUN_PKT_STRIP;
+		}
+=20
+		copy_to_user(ptr, &pi, sizeof(pi));
+
+		total +=3D sizeof(pi);
+		ptr +=3D sizeof(pi);
+	}
+
+Which seems to indicate that the protocol might be stored in the
+tun_pi struct after all.
+The tun_pi is defined to contain two unsigned shorts, one "flags" and
+one "proto".
+The TUN_PKT_STRIP seems to have no other effect than to just exist
+so that someone might read it in the packet. But that's just my guess.
+
+Next problem. The proto filled in by TUN is "htons(ETH_P_IP)" which
+is 0x0800 in intel byte order, which would be something like
+0x0008 if my htons guess is correct for a short.
+
+So BSD and Linux say different things. BSDs say "here comes IPv4 stuff"
+with AF_INET in a htonl(u_int_32) and Linux says
+"here comes Ethernet IPv4 stuff" with two shorts, one containing
+ETH_P_IP in intel byte order or it says nothing at all.
+
+I think the solution would be to have openvpn disable TUN_NO_IP for
+Linux tun devices and just not care about the actual value when
+the packets arrive.
 
 --=20
 Janne Johansson
@@ -113,7 +117,7 @@ Klarabergsg 37 3tr
 111 21 Stockholm
 
 
---=-1KMcmmFQDbAuTlZOhuTv
+--=-EEtqSMD5wJauP5xXvaMx
 Content-Type: application/pgp-signature; name=signature.asc
 Content-Description: This is a digitally signed message part
 
@@ -121,11 +125,11 @@ Content-Description: This is a digitally signed message part
 Version: GnuPG v1.0.6 (GNU/Linux)
 Comment: For info see http://www.gnupg.org
 
-iD8DBQA8qq7BNJYxu+mj1OkRAsmIAJ9UHkh2jBM171+7GxQvdFJIK1cSpgCfSq18
-2/o3uJS0FslhLHiS4Gf/6QQ=
-=dibU
+iD8DBQA8qsoKNJYxu+mj1OkRAjR7AKDBBMwSffru9sQTVuMOyvK6u57PHgCfR4TP
+luGFstgYyVJDLOEBYPXNPEs=
+=7CeW
 -----END PGP SIGNATURE-----
 
---=-1KMcmmFQDbAuTlZOhuTv--
+--=-EEtqSMD5wJauP5xXvaMx--
 
 
