@@ -1,7 +1,7 @@
-Subject: Re: [Openvpn-devel] route from server?
-From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1079253737.85837@...41...>
-In-Reply-To: <200403111500.i2BF0uFw018614@...179...>
+Message-ID: <405756E7.3090906@...180...>
+From: pi <list@...180...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] no chance trying openvpn
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,39 +12,79 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Mar 14 00:43:45 2004
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Marc Hassman <mhassman@...178...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Tue Mar 16 11:34:13 2004
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-Marc Hassman <mhassman@...178...> said:
+I can really say "I'm not lucky with VPN solutions!!"
 
-> A question and a suggestion:
->  
-> Q: This is probably an XP problem rather than a OpenVPN one. With Windows XP
-> as a client, I can 
-> add an arbitrary route using the 'route' statement and I observe it being
-> added in the 'route print' listing.
-> However, a few seconds later the route disappears from XP's routing table.
-> Has anybody else 
-> experienced this?
 
-Make sure that the TAP-Win32 adapter is getting an IP address.  From a command
-prompt window, "ipconfig /all" will show the currently assigned adapter
-addresses.  If the TAP adapter loses its IP address, all routes connected with
-the adapter will be dropped.
+First, I tried superfreeswan then openswan then freeswan with kernel 
+compiled for NAT-T support.
+In lab, it worked. Over the internet it never worked.........
+I had no good support neither answers to some of my questions (surely 
+due to bugs)
 
-> S: It would be helpful when running in a 1 config file/tcp/tap/inetd setup
-> if the server end of the connection
-> could push static routes to the client thereby making a change a single
-> server file change and not a 
-> per client file change. I think this might be beneficial to other setups as
-> well.
+I discovered today openvpn (tada.....),
 
-This is planned for 2.0.
+first: impossible to install it on my redhat9.0
+I always got the message
 
-James
+configure: checking for OpenSSL SSL Library and Header files...
+checking openssl/ssl.h usability... no
+checking openssl/ssl.h presence... no
+checking for openssl/ssl.h... no
+configure: error: OpenSSL SSL headers not found.
+
+I have openssl installed on this system:
+# rpm -qa|grep ssl
+mod_ssl-2.0.40-21.9
+openssl-devel-0.9.7a-20
+openssl-0.9.7a-20
+
+I post a message on this list but no answer  :-((
+I tried to attach my config.log to this mail, but there's a limit of 40k/message.
+
+
+
+Then I find a RPM package from dag's repository  
+(http://dag.wieers.com/packages/openvpn/)
+Installation is correct, but when I try to launch openvpn, I got the 
+following in /var/log/messages:
+
+Mar 16 20:30:05 moulinsart openvpn[2593]: OpenVPN 1.5.0 
+i386-redhat-linux [SSL] [LZO] [PTHREAD] built on Nov 25 2003
+Mar 16 20:30:05 moulinsart openvpn[2593]: Static Encrypt: Cipher 
+'BF-CBC' initialized with 128 bit key
+Mar 16 20:30:05 moulinsart openvpn[2593]: Static Encrypt: Using 160 bit 
+message hash 'SHA1' for HMAC authentication
+Mar 16 20:30:05 moulinsart openvpn[2593]: Static Decrypt: Cipher 
+'BF-CBC' initialized with 128 bit key
+Mar 16 20:30:05 moulinsart openvpn[2593]: Static Decrypt: Using 160 bit 
+message hash 'SHA1' for HMAC authentication
+Mar 16 20:30:05 moulinsart openvpn[2593]: LZO compression initialized
+Mar 16 20:30:05 moulinsart modprobe: modprobe: Can't locate module 
+char-major-10-200
+Mar 16 20:30:05 moulinsart openvpn[2593]: Note: Cannot open TUN/TAP dev 
+/dev/net/tun: No such device (errno=19)
+Mar 16 20:30:05 moulinsart openvpn[2593]: Note: Attempting fallback to 
+kernel 2.2 TUN/TAP interface
+Mar 16 20:30:05 moulinsart openvpn[2593]: Cannot allocate TUN/TAP dev 
+dynamically
+Mar 16 20:30:05 moulinsart openvpn[2593]: Exiting
+Mar 16 20:30:05 moulinsart openvpn:  failed
+ 
+WHAT CAN I DO ???
+
+Phil
+
+
+
+
+
+
+
 
 
 
