@@ -1,11 +1,7 @@
-Subject: Re: [Openvpn-devel] OpenVPN on PDA ?
-From: Gerd Mueller <gmueller@...303...>
-In-Reply-To: <Pine.LNX.4.61.0410261419100.19661@...210...>
-References: <loom.20041026T011342-944@...171...>
-	 <Pine.LNX.4.61.0410261419100.19661@...210...>
-Content-Type: multipart/signed; micalg=pgp-sha1; protocol="application/pgp-signature"; boundary="=-cY07JqmmADLzWbyzFxPg"
-Message-Id: <1098794197.4114.18.camel@...23...>
-Mime-Version: 1.0
+From: Mathias Sundman <mathias@...209...>
+Message-ID: <Pine.LNX.4.61.0410312241110.16282@...210...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Win32: Event signals
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -16,76 +12,82 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Oct 26 05:38:01 2004
-To: Mathias Sundman <mathias@...209...>
-Cc: Nicolas SANITAS <nicos@...302...>, openvpn-devel@lists.sourceforge.net
+Date: Sun Oct 31 14:22:44 2004
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---=-cY07JqmmADLzWbyzFxPg
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
+Hi James and everyone else,
 
-and what about palmsource devices?
+I'm working on a patch to add events for the other unix signals. I want 
+this because I want the GUI to have the same possibility to send openvpn 
+signals like you have in unix or when running from the console.
 
-/Gerd
+While working on this I think I either found a bug or I've missunderstood 
+something.
 
-Am Di, den 26.10.2004 schrieb Mathias Sundman um 14:22:
-> On Mon, 25 Oct 2004, Nicolas SANITAS wrote:
->=20
-> > Hi everybody !
-> > I'm a french student who has great interest in OpenVPN.
-> > I would like to know if it's (will be) possible to use OpenVPN with a P=
-DA
-> > (Pocket PC or Windows CE) client ?
-> > If no project exists yet, could you tell me if it's technically possibl=
-e ?
-> > Thanks a lot !
->=20
-> Yes, it should be possible, but I don't know of any such project. The=20
-> biggest challange will probably be to port the TAP driver.
->=20
-> The userspace openvpn application should be fairly easy to port.
->=20
-> --
-> _____________________________________________________________
-> Mathias Sundman                  (^)   ASCII Ribbon Campaign
-> OpenVPN GUI for Windows           X    NO HTML/RTF in e-mail
-> http://www.nilings.se/openvpn    / \   NO Word docs in e-mail
->=20
->=20
->=20
-> -------------------------------------------------------
-> This SF.net email is sponsored by: IT Product Guide on ITManagersJournal
-> Use IT products in your business? Tell us what you think of them. Give us
-> Your Opinions, Get Free ThinkGeek Gift Certificates! Click to find out mo=
-re
-> http://productguide.itmanagersjournal.com/guidepromo.tmpl
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
---=20
-Viele Gr=FC=DFe
+What is the purpose of beeing able to set the exit_event initial state 
+with the --service option?
 
-Gerd=20
+Currently I've always done as the service_wrapper. I've created a 
+non-signaled event and then started openvpn with --service 
+exit_event_nameXX 1.
+
+I think this is wrong, as I (and the service wrapper) had created the 
+event in non-signaled state, so shouldn't I tell openvpn that the initial 
+state is non-signaled?
+
+But, as the event is already created as non-signaled state when OpenVPN 
+tries to create the exit_event, it will remain in the non-signaled state, 
+even though openvpn tries to create it signaled, so things works as 
+expected.
+
+What doesn't work as expected is if I create the event in signaled state, 
+then OpenVPN wont start regardless if I pass 1 or 0 as initial_state via 
+--service, because
+
+       if (WaitForSingleObject (event, 0) != WAIT_TIMEOUT)
+         msg (M_FATAL, "ERROR: EventMSN ('%s') is signaled", event_name);
+
+always fails if the event is in signaled state.
+
+So, if it is impossible to start with a signaled event, why would you want 
+to tell openvpn to create the event in signaled state?
+
+
+I found this while rebugging my real problem, which is how to add the new 
+signals. I wanted to avoid adding new options to openvpn if not necessary, 
+so I though that I would create events simply named as the specified 
+exit_event_name and just append _SIGUSR1, _SIGUSR2 and _SIGHUP.
+
+The problem arised when I tried to create these events in the same initial 
+state as specified via --service, which is 1 from both the service_wrapper 
+and my GUI.
+
+As I havn't added support for these events in the GUI, and we have to 
+remain compatibility with the service wrapper, openvpn would fail to start 
+as no such events exist, and openvpn then creates the new events in signal 
+state, which means that the above code will fail, as the event is 
+signaled.
+
+
+So how do we fix this?
+
+For the new signals I could just ignore the initial_state parameter of 
+--service and always create them in non-signaled state.
+
+or, we could fix the code by making it check that the event really is in 
+the state given by --service instead of always checking if it's 
+non-signaled. The drawback of this is that it will break compatiblity with 
+the current version of the service_wrapper and OpenVPN GUI, but maybe it's 
+the only right way to go...
+
+Hope I havn't missunderstood everything and just waisted your time...
 
 --
- Gerd Mueller                 F=F6hrenhain 14
- Tel. +49.9171.60133          91154 Roth
- Fax. +49.9171.60135          Germany
- eMail gmueller@...303...=20=20=20
-
---=-cY07JqmmADLzWbyzFxPg
-Content-Type: application/pgp-signature; name=signature.asc
-Content-Description: Dies ist ein digital signierter Nachrichtenteil
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.2.4 (GNU/Linux)
-
-iD8DBQBBfkTV+UbIvmzJX3wRAvuZAJ97r1BLDJyLFviQe3utqNsphA2nKQCg3e1z
-vXkSOAeyEg+YtrZpPoGTuCs=
-=7L6w
------END PGP SIGNATURE-----
-
---=-cY07JqmmADLzWbyzFxPg--
+_____________________________________________________________
+Mathias Sundman                  (^)   ASCII Ribbon Campaign
+OpenVPN GUI for Windows           X    NO HTML/RTF in e-mail
+http://www.nilings.se/openvpn    / \   NO Word docs in e-mail
 
 
