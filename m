@@ -1,9 +1,7 @@
-Message-ID: <1090214667.40fb5b0b3a9cb@...238...>
-From: Brandon Knitter <knitterb@...237...>
-Subject: Re: [Openvpn-devel] Passing private key passphrase to openvpn
-References: <Pine.LNX.4.60.0407132213180.21236@...210...> <Pine.LNX.4.60.0407132309590.21236@...210...>
-In-Reply-To: <Pine.LNX.4.60.0407132309590.21236@...210...>
+Message-ID: <1090328908.40fd194cddc1b@...256...>
+From: Didier Conchaudron <didier@...255...>
 MIME-Version: 1.0
+Subject: [Openvpn-devel] develop extended authentication
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,93 +12,46 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Jul 18 22:25:13 2004
+Date: Tue Jul 20 06:09:06 2004
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 8bit
-To: Mathias Sundman <mathias@...209...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-I was thinking about this the other day, and was wondering if you couldn't just
-prompt the person for a password, telling them to "Hit Enter" if they don't have
-one.  Then if one is provided (string != null or length(string)>0) just shove it
-down STDIN's throat?
+Hi list,
 
-If it works, it *is* a hack, but it might be enough to get it implemented? ;-)
+I'm actually doing a training in a company looking at openvpn for vpn ssl use.
 
-This feature is exactly what is precluding me and my userbase from using the
-awesome systray app you provided.
+But there're actually several not_yet_developped features which are necessary
+for the usage we want to do of openvpn.
 
--- 
--bk
+We are satisfied of openvpn certificate handling, but we use them only to
+authenticate a computer and not the user behind the screen, so the first thing
+we would like to develop is extended authentication like a couple of login/password.
+But in this aim, we would like to get these authentication data via a LDAP
+directory which regroup all users/groups authentication data.
 
+And, for now, our final requirement is network ACL support for those
+users/groups: if 'this' user connect to the vpn, so he's allowed to use this
+subnet and this subnet, but not all others. those info would be stored in the
+LDAP dir and apply by a iptables-like firewall located on the openvpn server. I
+think this could be achieve by executing a sh/perl script requiring just the
+username and getting directly ACL in the LDAP dir. So no real FW should be
+include into openvpn.
 
-Quoting Mathias Sundman <mathias@...209...>:
+I'm *very* conscient these features are really hard work to do because they ask
+me to add them to openvpn. So my questions are:
+- what do you think about those features?
+- because I'm not yet a good coder, is there people availables to help to begin
+make a patch for openvpn?
+- you great developpers of openvpn, are there some start point to understand
+before trying to 'hack' openvpn?
 
-> On Tue, 13 Jul 2004, Mathias Sundman wrote:
-> 
-> > I'd like to implement a way to hand over the private key passphrase to 
-> > openvpn, to be able to add this feature to my GUI.
-> >
-> > We have discussed that this could/should be done via the management
-> interface 
-> > that we've discussed alot. However, I'd like to add the passphrase feature
-> 
-> > now so I wonder which is the best way to do this.
-> >
-> > 1. Add a cmd-line option to pass it. (Considered insecure by some).
-> >
-> > 2. Use an environment variable. Portable? Secure?
-> >
-> > 3. Start the work on this mgmnt interface and add the passphrase passing 
-> > feature as the first cmd.
-> >
-> > (1) is easiest to implement and good enough for my use, on single user 
-> > windows machines, but perhaps not good enough for multi-user unix systems.
-> On 
-> > the other hand, no one is forcing anyone to use this cmd-line option, so we
-> 
-> > might start with adding this feature, and then add a way to pass the 
-> > passphrase over the management interface when we have that ready.
-> 
-> I just realized that (1) won't be good enough even for me :-) I can't 
-> figure out a way for how the GUI should know in advance of starting 
-> openvpn wether it has to quiry to user for a passphrase or not. This would 
-> require adding an option to the config-file that enables this, or some 
-> other way of configuring the gui which connections that require a 
-> passphrase.
-> 
-> I want to avoid having the gui parsing the config-file for options or 
-> having it's own config file because I'd like it to be possible to use 
-> exactly the same config-file with or without the gui.
-> 
-> So, I suppose my only option left is to begin the work on the management 
-> interface. Have you had time starting the work on this, James?
-> 
-> If not, where do I begin?
-> 
-> In what function should I create the socket?
-> 
-> Where do we put the main functionallity for reading and writing to the 
-> socket?
-> 
-> -- 
-> _____________________________________________________________
-> Mathias Sundman                  (^)   ASCII Ribbon Campaign
-> NILINGS AB                        X    NO HTML/RTF in e-mail
-> Tel: +46-(0)8-666 32 28          / \   NO Word docs in e-mail
-> 
-> 
-> -------------------------------------------------------
-> This SF.Net email sponsored by Black Hat Briefings & Training.
-> Attend Black Hat Briefings & Training, Las Vegas July 24-29 - 
-> digital self defense, top technical experts, no vendor pitches, 
-> unmatched networking opportunities. Visit www.blackhat.com
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> 
-> 
+To the question 'GPL?' I answer 'SURE' because my company and I love free software.
 
+I understand all of this represent really hard work, but I've to do it, so I ask
+your help :-)
 
+Didier
+
+ps: and sorry for my horrible english :-/
 
