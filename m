@@ -1,7 +1,11 @@
-Message-ID: <020001c2260b$424b92e0$1000000a@...4...>
-From: "James Yonan" <jim@...3...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] new beta available
+Subject: Re: [Openvpn-devel] Default MTU
+From: Jan Johansson <jan.johansson@...1...>
+In-Reply-To: <01c101c225f3$932d10c0$1000000a@...4...>
+References: <01c101c225f3$932d10c0$1000000a@...4...>
+Content-Type: multipart/signed; micalg=pgp-sha1; protocol="application/pgp-signature";
+	boundary="=-DoOWoNKmg80iCG6hpBfj"
+Message-Id: <1026111778.1445.4.camel@...2...>
+Mime-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -12,55 +16,69 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://www.geocrawler.com/redir-sf.php3?list=openvpn-devel>
-Date: Sun Jul  7 16:07:02 2002
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-To: openvpn-users@lists.sourceforge.net
+Date: Mon Jul  8 00:04:01 2002
+To: James Yonan <jim@...3...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Download:
+--=-DoOWoNKmg80iCG6hpBfj
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-http://openvpn.sourceforge.net/beta/openvpn-1.2.1.10.tar.gz
+On Sun, 2002-07-07 at 22:19, James Yonan wrote:
+> What should the default MTU be?
+>=20
+> Right now the default UDP MTU is 1500 if you use --ifconfig, which is
+> probably too high, because as Matthias Andree pointed out, 1500 + IP head=
+er
+> size is greater than 1500 and will cause fragmentation on ethernet networ=
+ks
+> where the MTU is 1500.
+>=20
+> 1450 might make more sense because that leaves ample space for the IP
+> header, forming a total packet size of less than 1500.
 
-Changes since 1.2.1:
+> So at this point a static default is certainly the simpler way to go, but
+> any changes to the static default should be carefully considered since th=
+ey
+> would introduce backward incompatibility issues.
 
-* Added --dev-node option to allow explicit selection of
-  tun/tap device node.
-* Removed mlockall call from child thread, as it doesn't
-  appear to be necessary (child thread inherits mlockall
-  state from parent).
-* Added --ping-timer-rem which causes timer for --ping-exit
-  and --ping-restart not to run unless we have a remote IP
-  address.
-* Added condrestart to openvpn.init and openvpn.spec
-  (Bishop Clark).
-* Added --ifconfig case for FreeBSD (Matthias Andree).
-* Call openlog with facility=LOG_DAEMON (Matthias Andree).
-* Changed LOG_INFO messages to LOG_NOTICE.
-* Added warning when key files are group/others accessible.
-* Added --single-session flag for TLS mode.
-* Fixed bug where --writepid would segfault if used with
-  an invalid filename.
-* Fixed bug where --ipchange status message was formatted
-  incorrectly.
-* Print more concise error message when system() call
-  fails.
-* Added --disable-occ option.
-* Added --local, --remote, and --ifconfig options sanity
-  check.
-* Changed default UDP MTU to 1450 and TUN/TAP MTU to
-  1400.
-* Successfully tested with OpenSSL 0.9.7 Beta 2.
-* Broke out debug level definitions to errlevel.h
-* Minor documentation and web site changes.
-* All changes maintain protocol compatibility
-  with OpenVPN versions since 1.1.0, however default
-  MTU changes will require setting the MTU explicitly
-  by command line option, if you want MYVERSION to
-  communicate with previous versions.
+I'd go for 1300 or so. Even if 1450 works now, you could still encounter
+more issues later that require another change. I don't think the
+performance loss will be that great, since all that run TLS now with
+1500-ish packetsizes probably already split lots of packets into one
+large and one tiny packet as it is.
 
-James
+If you are to go for new major version that breaks compat, go for lower
+defaults on MTU too. You might aswell backport some sort of small logic
+for the older OpenVPN-track that tries the lower MTU in case it seems
+like it doesn't work, or a "--compat-v2" setting.
 
+--=20
+Jan Johansson (jan.johansson@...1...)
+BioMat System AB
+Klarabergsgatan 37, III
+SE-111 21 Stockholm, Sweden
+Phone: +46-(0)8-233500, Fax: +46-(0)70-3873952
+
+THIS COMMUNICATION IS ONLY INTENDED FOR THE USE OF THE INDIVIDUAL, OR
+ENTITY, TO WHICH IT IS DIRECTED AND MAY CONTAIN INFORMATION THAT IS
+PRIVILEGED, CONFIDENTIAL AND EXEMPT FROM DISCLOSURE UNDER APPLICABLE
+LAW.  IF RECEIVED IN ERROR: PLEASE NOTIFY US IMMEDIATELY THROUGH
+INFO@...25...
+
+--=-DoOWoNKmg80iCG6hpBfj
+Content-Type: application/pgp-signature; name=signature.asc
+Content-Description: This is a digitally signed message part
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.0.6 (GNU/Linux)
+Comment: For info see http://www.gnupg.org
+
+iD8DBQA9KTkhNJYxu+mj1OkRAsdUAKDLJIktDHWhlWcBKS70AFCFdhkjFgCgqO6P
+YhxpqKe9zfSMZu3oCrtO6YQ=
+=/R7s
+-----END PGP SIGNATURE-----
+
+--=-DoOWoNKmg80iCG6hpBfj--
 
 
