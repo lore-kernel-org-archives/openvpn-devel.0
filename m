@@ -1,9 +1,11 @@
-Message-ID: <42253BF4.1050000@...355...>
-From: TomWalsh <tomw-junk01@...355...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] RPM build of 2.0-rc16 fails on MandrakeSoft
-References: <4220EC61.1000005@...355...> <Pine.LNX.4.58.0502270152590.23437@...41...> <42220B98.2010001@...355...> <42223300.1050402@...355...> <Pine.LNX.4.58.0502271404010.23437@...41...>
-In-Reply-To: <Pine.LNX.4.58.0502271404010.23437@...41...>
+Message-ID: <1e6368e80503020530470d1b7d@...278...>
+From: Leonard Isham <leonard.isham@...277...>
+Reply-To: Leonard Isham <leonard.isham@...277...>
+Subject: Re: [Openvpn-devel] OpenVPN on a palmtop
+In-Reply-To: <pan.2005.03.01.21.06.21.816741@...294...>
+Mime-Version: 1.0
+References: <1109592455.10523.7.camel@...23...>
+	 <pan.2005.03.01.21.06.21.816741@...294...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,53 +16,28 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Mar  1 20:09:45 2005
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Date: Wed Mar  2 05:31:28 2005
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-To: James Yonan <jim@...41...>
+To: Charles Duffy <cduffy@...294...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-James Yonan wrote:
->>I will let the package maintainer of liblzo1 of the problem of it not 
->>saying it provides "liblzo" while the liblzo1-devel does say that.
->>
->>The correct statement which works around the Mandrake 10.1 problem would be:
->>
->>============================ fix ===============================
->>%if "%{_vendor}" == "MandrakeSoft"
->>%{!?without_lzo:BuildRequires: liblzo1-devel >= 1.07}
->>%{!?without_lzo:Requires:      liblzo1       >= 1.07}
->>%else
->>%{!?without_lzo:BuildRequires: lzo-devel >= 1.07}
->>%{!?without_lzo:Requires:      lzo       >= 1.07}
->>%endif
->>============================ snip ==============================
->>
->>Either way, there would still be an issue with Mandrake as I see that 
->>the lzo package of SuSE 9.1 provides "lzo" not "liblzo".
+On Tue, 01 Mar 2005 15:06:22 -0600, Charles Duffy <cduffy@...294...> wrote:
+> Here's another idea:
 > 
-> 
-> The problem I have with this patch is that it assumes that Mandrake will
-> continue to follow the broken behavior.  The ideal solution would be one
-> which doesn't break when Mandrake gets around to using the same standard
-> LZO RPM spec which everyone else is using.
+> Ditch the Palm, and get a Zaurus. OpenVPN should run there with no changes
+> whatsoever.
 > 
 
-Yeah, probably the best solution. However, I see that they have been 
-calling it liblzo1 since their 8.1 distro, and, technically, it is a 
-library?
+The Zaurus is sweet.
 
-The package maintainer has added the missing provide for "liblzo", this 
-is now in liblzo1-devel-1.08-5mdk.i586.rpm and the 
-liblzo1-1.08-5mdk.i586.rpm.  That would at least clear up some confusion 
-between liblzo1 vs. liblzo
+I have not had time and I'm not much at package maintenance creating
+them and keeping them up (and I haven't even looked into cross
+compilation).
 
-TomW
-
+Is there someone keeping up with the RCs for 2.0 or anyone planning to
+do a Zaurus package once it goes "gold?"
 -- 
-Tom Walsh - WN3L - Embedded Systems Consultant
-email at http://openhardware.net?file=emailcomment.php
-any ReplyTo direct email will disappear (blackhole).
-----------------------------------------------------
-
+Leonard Isham, CISSP
+Ostendo non ostento.
 
