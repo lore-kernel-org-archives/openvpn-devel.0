@@ -1,9 +1,10 @@
-From: Mathias Sundman <mathias@...209...>
-Message-ID: <Pine.WNT.4.60.0410051208240.27592@...254...>
+Message-ID: <4162C7B9.8010305@...255...>
+From: Didier Conchaudron <didier@...255...>
 MIME-Version: 1.0
-Content-Type: MULTIPART/MIXED; boundary="32446-14985-1096970929=:27592"
-Content-ID: <Pine.LNX.4.60.0410051214040.26602@...210...>
-Subject: [Openvpn-devel] [Patch] Allow multiple TAP devices without --dev-node on Windows
+Subject: Re: [Openvpn-devel] Pass log and passphrase between OpenVPN and OpenVPN
+ GUI
+References: <Pine.LNX.4.60.0410012147580.18074@...210...> <Pine.LNX.4.58.0410020309540.22850@...269...>
+In-Reply-To: <Pine.LNX.4.58.0410020309540.22850@...269...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,193 +15,99 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Oct  5 03:24:11 2004
+Date: Tue Oct  5 09:14:19 2004
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Hi all,
 
---32446-14985-1096970929=:27592
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Content-ID: <Pine.LNX.4.60.0410051204471.26602@...210...>
+I agree with James for including several things such as monitoring 
+stdin/out/err into the wrapper.
 
-I was going to ask for a feature yesterday, but though I'd write it myself 
-instead of just asking for others todo things for me :-)
+But I'm not very ok for the idea of creating a socket for each 
+connection because our users will probably only use one GUI so this GUI 
+may have to discuss throught a unique socket to make things simpler. Now 
+I agree that they're problems when we run several tunnels. I think of a 
+system where each starting tunnel can ask, throught the same socket, a 
+password or user/pass data just by adding a header like:
 
-I have about 15 OpenVPN configs on my Windows machine, but I only use 2-3 
-simulatainously. But, as I need be able to connect to more than one site, 
-I've had to create one TAP device for EVERY config file, as I had to 
-specify the the dev-node in every config if I had installed more than one 
-TAP device.
+foo.ovpn: asking private key password
+foo2.ovpn: asking extended auth. username
 
-With the attached patch this behavior is modified so that if dev-node is 
-not specified, OpenVPN tries to open the first TAP device is finds. If 
-CreateFile() fails on this device, it moves on and tries to open next 
-device.
+This way the GUI will have to handle just one socket, it could be then 
+simpler to add features to GUI, ITOA it's harder for wrapper to add those.
 
-If all CreateFile() fails on all avaiable TAP devices, first then openvpn 
-terminates.
+An other point is security. Actually the service wrapper need to run as 
+SYSTEM/Admin rights, we have to limit the features and commands which 
+will run as SYSTEM.
 
-This works great as long as all TAP configuration is done dynamically from 
-OpenVPN which is always the case for me. If you have static configuration 
-done on the TAP devices, you need to use dev-node to specify which device 
-to use anyway, so I don't think this patch should brake anything.
+Didier
 
---
-_____________________________________________________________
-Mathias Sundman                  (^)   ASCII Ribbon Campaign
-OpenVPN GUI for Windows           X    NO HTML/RTF in e-mail
-http://www.nilings.se/openvpn    / \   NO Word docs in e-mail
---32446-14985-1096970929=:27592
-Content-Type: APPLICATION/OCTET-STREAM; name="openvpn-autoselectdevice.patch"
-Content-Transfer-Encoding: BASE64
-Content-ID: <Pine.WNT.4.60.0410051208490.27592@...254...>
-Content-Description: 
-Content-Disposition: attachment; filename="openvpn-autoselectdevice.patch"
+James Yonan wrote:
+> On Fri, 1 Oct 2004, Mathias Sundman wrote:
+> 
+> 
+>>Didier announced a first release of an improved version of the OpenVPN 
+>>Service Wrapper earlier this week. The goal with this is to allow a non 
+>>admin user on Windows to start/stop openvpn processes.
+>>
+>>It does this by listening on a local TCP socket for commands like "START 
+>>config.ovpn" or "STOP config.ovpn".
+>>
+>>I've started working on OpenVPN GUI 2.0 that will use this service 
+>>wrapper to control openvpn.
+>>
+>>There is two things that remain unsolved though that I'd like to bring up 
+>>for some discussion.
+>>
+>>1. How do we pass the private key passphrase from the GUI to the openvpn 
+>>process?
+>>
+>>2. How do we get the openvpn log to the GUI so we can show it in real time 
+>>in the status window?
+>>
+>>
+>>I can see a couple of solutions:
+>>
+>>A) We create a pipe between the openvpn process and the service wrapper. 
+>>The service can then watch the openvpn output for the passphrase prompt, 
+>>and pass on the request to the GUI over the TCP socket.
+>>
+>>The log is then written to the log file by the service. The GUI will have 
+>>to monitor this file for changes to be able to show the log in real-time.
+>>
+>>
+>>B) We create another TCP socket for every launched process, and creates a 
+>>pipe between this socket and the openvpn process. The GUI can then connect 
+>>to this socket to recieve the log in real-time, and can monitor this for 
+>>the passphrase prompt itself.
+> 
+> 
+> I like the idea of having the service wrapper control the 
+> stdin/stdout/stderr which is passed to the openvpn process, then have it 
+> send password(s) over stdin.
+> 
+> So the communication between the service wrapper and the openvpn processes 
+> would be via standard i/o handles and the communication between the 
+> service wrapper and the GUI would be over the management socket.
+> 
+> That means the service wrapper would need to be a proxy of sorts, passing 
+> passwords and possibly log file output as well between the GUI and openvpn 
+> processes.
+> 
+> James
+> 
+> 
+> 
+> -------------------------------------------------------
+> This SF.net email is sponsored by: IT Product Guide on ITManagersJournal
+> Use IT products in your business? Tell us what you think of them. Give us
+> Your Opinions, Get Free ThinkGeek Gift Certificates! Click to find out more
+> http://productguide.itmanagersjournal.com/guidepromo.tmpl
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
-ZGlmZiAtciAtdSBvcGVudnBuLTIuMF9iZXRhMTEvdHVuLmMgb3BlbnZwbi0y
-LjBfYmV0YTExLW5ldy90dW4uYwotLS0gb3BlbnZwbi0yLjBfYmV0YTExL3R1
-bi5jCVN1biBBdWcgMTUgMTY6NTk6MTAgMjAwNAorKysgb3BlbnZwbi0yLjBf
-YmV0YTExLW5ldy90dW4uYwlUdWUgT2N0ICA1IDExOjU3OjQ4IDIwMDQKQEAg
-LTEyMiw3ICsxMjIsMTAgQEAKICAgaWYgKGR0ID09IERFVl9UWVBFX1RVTiB8
-fCBkdCA9PSBERVZfVFlQRV9UQVApCiAgICAgewogICAgICAgc3RydWN0IGJ1
-ZmZlciBvdXQgPSBhbGxvY19idWZfZ2MgKDI1NiwgZ2MpOwotICAgICAgZ2V0
-X2RldmljZV9ndWlkIChkZXZfbm9kZSwgQlBUUiAoJm91dCksIGJ1Zl9mb3J3
-YXJkX2NhcGFjaXR5ICgmb3V0KSwgZ2MpOworICAgICAgaWYgKGRldl9ub2Rl
-KQorICAgICAgICBnZXRfZGV2aWNlX2d1aWQgKGRldl9ub2RlLCBCUFRSICgm
-b3V0KSwgYnVmX2ZvcndhcmRfY2FwYWNpdHkgKCZvdXQpLCBnYyk7CisgICAg
-ICBlbHNlCisgICAgICAgIGdldF91bnNwZWNpZmllZF9kZXZpY2VfZ3VpZCAo
-MCwgQlBUUiAoJm91dCksIGJ1Zl9mb3J3YXJkX2NhcGFjaXR5ICgmb3V0KSwg
-Z2MpOwogICAgICAgcmV0dXJuIEJTVFIgKCZvdXQpOwogICAgIH0KICNlbmRp
-ZgpAQCAtMjEwOSw2ICsyMTEyLDUyIEBACiB9CiAKIC8qCisgKiBHZXQgYSBh
-ZGFwdGVkIEdVSUQgYW5kIG9wdGlvbmFsIGFjdHVhbF9uYW1lIGZyb20gdGhl
-IAorICogcmVnaXN0cnkgZm9yIHRoZSBUQVAgZGV2aWNlICMgPSBkZXZpY2Vf
-bnVtYmVyLgorICovCitjb25zdCBjaGFyICoKK2dldF91bnNwZWNpZmllZF9k
-ZXZpY2VfZ3VpZCAoY29uc3QgaW50IGRldmljZV9udW1iZXIsCisJCSAgICAg
-ICAgICAgICBjaGFyICphY3R1YWxfbmFtZSwKKwkJICAgICAgICAgICAgIGlu
-dCBhY3R1YWxfbmFtZV9zaXplLAorCQkgICAgICAgICAgICAgc3RydWN0IGdj
-X2FyZW5hICpnYykKK3sKKyAgY29uc3Qgc3RydWN0IHRhcF9yZWcgKnRyOwor
-ICBjb25zdCBzdHJ1Y3QgcGFuZWxfcmVnICpwcjsKKworICBjb25zdCBzdHJ1
-Y3QgdGFwX3JlZyAqdGFwX3JlZyA9IGdldF90YXBfcmVnIChnYyk7CisgIGNv
-bnN0IHN0cnVjdCBwYW5lbF9yZWcgKnBhbmVsX3JlZyA9IGdldF9wYW5lbF9y
-ZWcgKGdjKTsKKworICBzdHJ1Y3QgYnVmZmVyIHJldCA9IGFsbG9jX2J1Zl9n
-YyAoMjU2LCBnYyk7CisgIHN0cnVjdCBidWZmZXIgYWN0dWFsOworICBpbnQg
-aTsKKworICBidWZfc2V0X3dyaXRlICgmYWN0dWFsLCBhY3R1YWxfbmFtZSwg
-YWN0dWFsX25hbWVfc2l6ZSk7CisKKyAgLyogTWFrZSBzdXJlIHdlIGhhdmUg
-YXQgbGVhc3Qgb25lIFRBUCBhZGFwdGVyICovCisgIGlmICghdGFwX3JlZykK
-KyAgICB7CisgICAgICBtc2cgKE1fRkFUQUwsICJUaGVyZSBhcmUgbm8gVEFQ
-LVdpbjMyIGFkYXB0ZXJzIG9uIHRoaXMgc3lzdGVtLiAgWW91IHNob3VsZCBi
-ZSBhYmxlIHRvIGNyZWF0ZSBhIFRBUC1XaW4zMiBhZGFwdGVyIGJ5IGdvaW5n
-IHRvIFN0YXJ0IC0+IEFsbCBQcm9ncmFtcyAtPiAiIFBBQ0tBR0VfTkFNRSAi
-IC0+IEFkZCBhIG5ldyBUQVAtV2luMzIgdmlydHVhbCBldGhlcm5ldCBhZGFw
-dGVyLiIpOworICAgIH0KKworICAvKiBNb3ZlIG9uIHRvIHNwZWNpZmllZCBk
-ZXZpY2UgbnVtYmVyICovCisgIGZvciAoaT0wOyBpIDwgZGV2aWNlX251bWJl
-cjsgaSsrKQorICAgIHsKKyAgICAgIGlmICghdGFwX3JlZy0+bmV4dCkKKyAg
-ICAgICAgbXNnIChNX0ZBVEFMLCAiVGhlcmUgaXMgbm8gYXZhaWxhYmxlIFRB
-UCBkZXZpY2UuIik7CisgICAgICB0YXBfcmVnID0gdGFwX3JlZy0+bmV4dDsK
-KyAgICB9CisgIAorICBjb25zdCBjaGFyICphY3Q7CisgIGFjdCA9IGd1aWRf
-dG9fbmFtZSAodGFwX3JlZy0+Z3VpZCwgcGFuZWxfcmVnKTsKKyAgYnVmX3By
-aW50ZiAoJnJldCwgIiVzIiwgdGFwX3JlZy0+Z3VpZCk7CisgIGlmIChhY3Qp
-CisgICAgYnVmX3ByaW50ZiAoJmFjdHVhbCwgIiVzIiwgYWN0KTsKKyAgZWxz
-ZQorICAgIGJ1Zl9wcmludGYgKCZhY3R1YWwsICJOVUxMIik7CisgIHJldHVy
-biBCU1RSICgmcmV0KTsKK30KKworLyoKICAqIExvb2t1cCBhIC0tZGV2LW5v
-ZGUgYWRhcHRlciBuYW1lIGluIHRoZSByZWdpc3RyeQogICogcmV0dXJuaW5n
-IHRoZSBHVUlEIGFuZCBvcHRpb25hbCBhY3R1YWxfbmFtZS4KICAqLwpAQCAt
-MjEzNSwyMSArMjE4NCw2IEBACiAgICAgICBtc2cgKE1fRkFUQUwsICJUaGVy
-ZSBhcmUgbm8gVEFQLVdpbjMyIGFkYXB0ZXJzIG9uIHRoaXMgc3lzdGVtLiAg
-WW91IHNob3VsZCBiZSBhYmxlIHRvIGNyZWF0ZSBhIFRBUC1XaW4zMiBhZGFw
-dGVyIGJ5IGdvaW5nIHRvIFN0YXJ0IC0+IEFsbCBQcm9ncmFtcyAtPiAiIFBB
-Q0tBR0VfTkFNRSAiIC0+IEFkZCBhIG5ldyBUQVAtV2luMzIgdmlydHVhbCBl
-dGhlcm5ldCBhZGFwdGVyLiIpOwogICAgIH0KIAotICAvKiBJZiAtLWRldi1u
-b2RlIG5vdCBzcGVjaWZpZWQsIGxvb2sgZm9yIGEgZGVmYXVsdCBUQVAgYWRh
-cHRlciAqLwotICBpZiAoIW5hbWUpCi0gICAgewotICAgICAgY29uc3QgY2hh
-ciAqYWN0OwotICAgICAgaWYgKHRhcF9yZWctPm5leHQpCi0JbXNnIChNX0ZB
-VEFMLCAiWW91IGhhdmUgbW9yZSB0aGFuIG9uZSBUQVAtV2luMzIgYWRhcHRl
-ciBvbiB0aGlzIHN5c3RlbS4gIFlvdSBtdXN0IHVzZSB0aGUgLS1kZXYtbm9k
-ZSBvcHRpb24gdG8gdGVsbCBtZSB3aGljaCBvbmUgdG8gdXNlLiAgVXNlIG9w
-ZW52cG4gLS1zaG93LWFkYXB0ZXJzIHRvIHNlZSBhIGxpc3QuIik7Ci0gICAg
-ICBhY3QgPSBndWlkX3RvX25hbWUgKHRhcF9yZWctPmd1aWQsIHBhbmVsX3Jl
-Zyk7Ci0gICAgICBidWZfcHJpbnRmICgmcmV0LCAiJXMiLCB0YXBfcmVnLT5n
-dWlkKTsKLSAgICAgIGlmIChhY3QpCi0JYnVmX3ByaW50ZiAoJmFjdHVhbCwg
-IiVzIiwgYWN0KTsKLSAgICAgIGVsc2UKLQlidWZfcHJpbnRmICgmYWN0dWFs
-LCAiTlVMTCIpOwotICAgICAgcmV0dXJuIEJTVFIgKCZyZXQpOwotICAgIH0K
-LQogICAvKiBDaGVjayBpZiBHVUlEIHdhcyBleHBsaWNpdGx5IHNwZWNpZmll
-ZCBhcyAtLWRldi1ub2RlIHBhcmFtZXRlciAqLwogICBpZiAoaXNfdGFwX3dp
-bjMyIChuYW1lLCB0YXBfcmVnKSkKICAgICB7CkBAIC0yNzczLDMzICsyODA3
-LDcxIEBACiAgIHsKICAgICBjaGFyIGd1aWRfYnVmZmVyWzI1Nl07CiAKKyAg
-ICBpZiAoZGV2X25vZGUpCisgICAgICB7CisgICAgICAgIC8qIEdldCB0aGUg
-ZGV2aWNlIEdVSUQgZm9yIHRoZSBkZXZpY2Ugc3BlY2lmaWVkIHdpdGggLS1k
-ZXYtbm9kZS4gKi8KKyAgICAgICAgZGV2aWNlX2d1aWQgPSBnZXRfZGV2aWNl
-X2d1aWQgKGRldl9ub2RlLCBndWlkX2J1ZmZlciwgc2l6ZW9mIChndWlkX2J1
-ZmZlciksICZnYyk7CisKKyAgICAgICAgLyogT3BlbiBXaW5kb3dzIFRBUC1X
-aW4zMiBhZGFwdGVyICovCisgICAgICAgIG9wZW52cG5fc25wcmludGYgKGRl
-dmljZV9wYXRoLCBzaXplb2YoZGV2aWNlX3BhdGgpLCAiJXMlcyVzIiwKKyAg
-IAkJICAgICAgICAgIFVTRVJNT0RFREVWSUNFRElSLAorCQkgICAgICAgICAg
-ZGV2aWNlX2d1aWQsCisJCSAgICAgICAgICBUQVBTVUZGSVgpOworCisgICAg
-ICAgIHR0LT5oYW5kID0gQ3JlYXRlRmlsZSAoCisJCQkgICAgICAgZGV2aWNl
-X3BhdGgsCisJCQkgICAgICAgR0VORVJJQ19SRUFEIHwgR0VORVJJQ19XUklU
-RSwKKwkJCSAgICAgICAwLCAvKiB3YXM6IEZJTEVfU0hBUkVfUkVBRCAqLwor
-CQkJICAgICAgIDAsCisJCQkgICAgICAgT1BFTl9FWElTVElORywKKwkJCSAg
-ICAgICBGSUxFX0FUVFJJQlVURV9TWVNURU0gfCBGSUxFX0ZMQUdfT1ZFUkxB
-UFBFRCwKKwkJCSAgICAgICAwCisJCQkgICAgICAgKTsKKworICAgICAgICBp
-ZiAodHQtPmhhbmQgPT0gSU5WQUxJRF9IQU5ETEVfVkFMVUUpCisgICAgICAg
-ICAgbXNnIChNX0VSUiwgIkNyZWF0ZUZpbGUgZmFpbGVkIG9uIFRBUCBkZXZp
-Y2U6ICVzIiwgZGV2aWNlX3BhdGgpOworICAgICAgfQorICAgIGVsc2UgCisg
-ICAgICB7CisgICAgICAgIGludCBkZXZpY2VfbnVtYmVyID0gMDsKKworICAg
-ICAgICAvKiBUcnkgb3BlbmluZyBhbGwgVEFQIGRldmljZXMgdW50aWwgd2Ug
-ZmluZCBvbmUgYXZhaWxhYmxlICovCisgICAgICAgIHdoaWxlKDEpCisgICAg
-ICAgICAgeworICAgICAgICAgICAgZGV2aWNlX2d1aWQgPSBnZXRfdW5zcGVj
-aWZpZWRfZGV2aWNlX2d1aWQgKGRldmljZV9udW1iZXIsIAorCQkJCQkJICAg
-ICAgIGd1aWRfYnVmZmVyLCAKKwkJCQkJCSAgICAgICBzaXplb2YgKGd1aWRf
-YnVmZmVyKSwKKwkJCQkJCSAgICAgICAmZ2MpOworCisgICAgICAgICAgICAv
-KiBPcGVuIFdpbmRvd3MgVEFQLVdpbjMyIGFkYXB0ZXIgKi8KKyAgICAgICAg
-ICAgIG9wZW52cG5fc25wcmludGYgKGRldmljZV9wYXRoLCBzaXplb2YoZGV2
-aWNlX3BhdGgpLCAiJXMlcyVzIiwKKyAgICAgICAJCSAgCSAgICAgIFVTRVJN
-T0RFREVWSUNFRElSLAorCQkJICAgICAgZGV2aWNlX2d1aWQsCisJCQkgICAg
-ICBUQVBTVUZGSVgpOworCisgICAgICAgICAgICB0dC0+aGFuZCA9IENyZWF0
-ZUZpbGUgKAorCQkJIAkgICBkZXZpY2VfcGF0aCwKKwkJCQkgICBHRU5FUklD
-X1JFQUQgfCBHRU5FUklDX1dSSVRFLAorCQkJCSAgIDAsIC8qIHdhczogRklM
-RV9TSEFSRV9SRUFEICovCisJCQkJICAgMCwKKwkJCQkgICBPUEVOX0VYSVNU
-SU5HLAorCQkJCSAgIEZJTEVfQVRUUklCVVRFX1NZU1RFTSB8IEZJTEVfRkxB
-R19PVkVSTEFQUEVELAorCQkJCSAgIDAKKwkJCQkgICApOworCisgICAgICAg
-ICAgICBpZiAodHQtPmhhbmQgPT0gSU5WQUxJRF9IQU5ETEVfVkFMVUUpCisg
-ICAgICAgICAgICAgIG1zZyAoRF9UVU5UQVBfSU5GTywgIkNyZWF0ZUZpbGUg
-ZmFpbGVkIG9uIFRBUCBkZXZpY2U6ICVzIiwgZGV2aWNlX3BhdGgpOworICAg
-ICAgICAgICAgZWxzZQorICAgICAgICAgICAgICBicmVhazsKKyAgICAgICAg
-CisgICAgICAgICAgICBkZXZpY2VfbnVtYmVyKys7CisgICAgICAgICAgfQor
-ICAgICAgfQorCiAgICAgLyogdHJhbnNsYXRlIGhpZ2gtbGV2ZWwgZGV2aWNl
-IG5hbWUgaW50byBhIGRldmljZSBpbnN0YW5jZQogICAgICAgIEdVSUQgdXNp
-bmcgdGhlIHJlZ2lzdHJ5ICovCi0gICAgZGV2aWNlX2d1aWQgPSBnZXRfZGV2
-aWNlX2d1aWQgKGRldl9ub2RlLCBndWlkX2J1ZmZlciwgc2l6ZW9mIChndWlk
-X2J1ZmZlciksICZnYyk7CiAgICAgdHQtPmFjdHVhbF9uYW1lID0gc3RyaW5n
-X2FsbG9jIChndWlkX2J1ZmZlciwgTlVMTCk7CiAgIH0KLQotICAvKgotICAg
-KiBPcGVuIFdpbmRvd3MgVEFQLVdpbjMyIGFkYXB0ZXIKLSAgICovCi0KLSAg
-b3BlbnZwbl9zbnByaW50ZiAoZGV2aWNlX3BhdGgsIHNpemVvZihkZXZpY2Vf
-cGF0aCksICIlcyVzJXMiLAotCQkgICAgVVNFUk1PREVERVZJQ0VESVIsCi0J
-CSAgICBkZXZpY2VfZ3VpZCwKLQkJICAgIFRBUFNVRkZJWCk7Ci0KLSAgdHQt
-PmhhbmQgPSBDcmVhdGVGaWxlICgKLQkJCSBkZXZpY2VfcGF0aCwKLQkJCSBH
-RU5FUklDX1JFQUQgfCBHRU5FUklDX1dSSVRFLAotCQkJIDAsIC8qIHdhczog
-RklMRV9TSEFSRV9SRUFEICovCi0JCQkgMCwKLQkJCSBPUEVOX0VYSVNUSU5H
-LAotCQkJIEZJTEVfQVRUUklCVVRFX1NZU1RFTSB8IEZJTEVfRkxBR19PVkVS
-TEFQUEVELAotCQkJIDAKLQkJCSApOwotCi0gIGlmICh0dC0+aGFuZCA9PSBJ
-TlZBTElEX0hBTkRMRV9WQUxVRSkKLSAgICBtc2cgKE1fRVJSLCAiQ3JlYXRl
-RmlsZSBmYWlsZWQgb24gVEFQIGRldmljZTogJXMiLCBkZXZpY2VfcGF0aCk7
-CiAKICAgbXNnIChNX0lORk8sICJUQVAtV0lOMzIgZGV2aWNlIFslc10gb3Bl
-bmVkOiAlcyIsIHR0LT5hY3R1YWxfbmFtZSwgZGV2aWNlX3BhdGgpOwogCmRp
-ZmYgLXIgLXUgb3BlbnZwbi0yLjBfYmV0YTExL3R1bi5oIG9wZW52cG4tMi4w
-X2JldGExMS1uZXcvdHVuLmgKLS0tIG9wZW52cG4tMi4wX2JldGExMS90dW4u
-aAlTdW4gQXVnIDE1IDE2OjU5OjA4IDIwMDQKKysrIG9wZW52cG4tMi4wX2Jl
-dGExMS1uZXcvdHVuLmgJVHVlIE9jdCAgNSAxMTowNDo1MCAyMDA0CkBAIC0y
-ODYsNiArMjg2LDExIEBACiAJCQkgICAgIGludCBhY3R1YWxfbmFtZV9zaXpl
-LAogCQkJICAgICBzdHJ1Y3QgZ2NfYXJlbmEgKmdjKTsKIAorY29uc3QgY2hh
-ciAqZ2V0X3Vuc3BlY2lmaWVkX2RldmljZV9ndWlkIChjb25zdCBpbnQgZGV2
-aWNlX251bWJlciwKKwkJCSAgICAgICAgICAgICAgICAgY2hhciAqYWN0dWFs
-X25hbWUsCisgIAkJCSAgICAgICAgICAgICAgICAgaW50IGFjdHVhbF9uYW1l
-X3NpemUsCisJCQkgICAgICAgICAgICAgICAgIHN0cnVjdCBnY19hcmVuYSAq
-Z2MpOworCiB2b2lkIHZlcmlmeV8yNTVfMjU1XzI1NV8yNTIgKGluX2FkZHJf
-dCBsb2NhbCwgaW5fYWRkcl90IHJlbW90ZSk7CiAKIGNvbnN0IElQX0FEQVBU
-RVJfSU5GTyAqZ2V0X2FkYXB0ZXJfaW5mb19saXN0IChzdHJ1Y3QgZ2NfYXJl
-bmEgKmdjKTsK
-
---32446-14985-1096970929=:27592--
 
