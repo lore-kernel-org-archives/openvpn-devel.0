@@ -1,9 +1,7 @@
-Message-ID: <20040216221919.GA2697@...85...>
-References: <20040130120412.GA12576@...85...> <20040203222308.GA7843@...85...>
+Message-ID: <20040216222356.GA2713@...85...>
 Mime-Version: 1.0
-In-Reply-To: <20040203222308.GA7843@...85...>
 From: Christof Meerwald <cmeerw@...83...>
-Subject: [Openvpn-devel] Re: Socks proxy support for OpenVPN 1.5.0
+Subject: [Openvpn-devel] Compiling with MinGW 3.1.0-1
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,35 +12,38 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Feb 16 14:27:59 2004
+Date: Mon Feb 16 14:33:27 2004
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-On Tue, 3 Feb 2004 23:23:08 +0100, Christof Meerwald wrote:
-> On Fri, 30 Jan 2004 13:04:12 +0100, Christof Meerwald wrote:
->> I have added support for Socks5 proxies to OpenVPN 1.5.0. It should work for
->> TCP and UDP client modes (but I have only tested it in UDP client mode yet,
->> because that's what I plan to use).
-> UDP packets might be truncated because the Socks server adds a 10-byte
-> header to them - here is a patch (against 1.6 beta5) to fix it.
+Hi,
 
-And here is the fix for the Win32 version:
+I had to apply the following patch to make OpenVPN 1.6-beta6 compile with
+MinGW 3.1.0-1:
 
-diff -ur openvpn-1.6_beta6.orig/socket.c openvpn-1.6_beta6/socket.c
---- openvpn-1.6_beta6.orig/socket.c	Wed Feb 04 00:58:24 2004
-+++ openvpn-1.6_beta6/socket.c	Mon Feb 16 21:38:56 2004
-@@ -1364,6 +1364,9 @@
-       wsabuf[0].len = maxsize ? maxsize : BLEN (&sock->reads.buf);
-       ASSERT (wsabuf[0].len <= BLEN (&sock->reads.buf));
+diff -ur openvpn-1.6_beta6.orig/config-win32.h openvpn-1.6_beta6/config-win32.h
+--- openvpn-1.6_beta6.orig/config-win32.h	Thu Feb 05 21:08:37 2004
++++ openvpn-1.6_beta6/config-win32.h	Mon Feb 16 20:47:37 2004
+@@ -36,6 +36,8 @@
  
-+      if (sock->proto == PROTO_UDPv4 && sock->socks_proxy)
-+	wsabuf[0].len += 10;
-+
-       /* the overlapped read will signal this event on I/O completion */
-       ASSERT (ResetEvent (sock->reads.overlapped.hEvent));
-       sock->reads.flags = 0;
+ #include <windows.h>
+ #include <winsock2.h>
++#include <unistd.h>
++#include <fcntl.h>
+ 
+ #define sleep(x) Sleep((x)*1000)
+ 
+@@ -43,7 +45,7 @@
+ #define srandom srand
+ 
+ typedef unsigned int in_addr_t;
+-typedef unsigned int ssize_t;
++/* typedef unsigned int ssize_t; */
+ 
+ /* Should we print debug info from driver? */
+ /* #define TAP_WIN32_DEBUG */
 
 
 bye, Christof
