@@ -1,7 +1,9 @@
-From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1075215692.69623@...41...>
-In-Reply-To: <Sea2-F37Vz2ce5xOEBW00039f30@...160...>
-Subject: [Openvpn-devel] Re: [Openvpn-users] Problem while compiling openvpn
+From: Matthias Andree <ma+ovpnd@...31...>
+Subject: Re: [Openvpn-devel] Re: [Openvpn-users] Problem while compiling openvpn
+Message-ID: <20040128004914.GA26924@...33...>
+References: <Sea2-F37Vz2ce5xOEBW00039f30@...160...> <twig.1075215692.69623@...41...>
+Mime-Version: 1.0
+In-Reply-To: <twig.1075215692.69623@...41...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,30 +14,27 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Jan 27 07:05:47 2004
-Content-Type: text/plain; charset="utf-8"
+Date: Tue Jan 27 16:50:04 2004
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: PremKumar Jayaram <premkumarjayaram@...160...>, openvpn-users@lists.sourceforge.net
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-PremKumar Jayaram <premkumarjayaram@...160...> said:
+On Tue, 27 Jan 2004, James Yonan wrote:
 
-> Hello Everybody,
-> 
-> I need to compile the opnevpn code on windows 2000. Using Win DDK I was able 
-> to compile the driver code, but I am not able to compile the openvpn.c and 
-> other files. I tired to compile using VC++ 6.0 but there where few header 
-> files under openvpn's "sys" folder which was not defined in VC++.
-> 
-> In build.w32 file header I saw some instructions of compiling the code using 
-> MingW compiler. Is the code supposed to be compiled only with MingW or can I 
-> do with VC++ compiler also ?
+> OpenVPN needs the MinGW compiler to build openvpn.exe on Windows.
+> There would probably be some porting work involved to get it to build
+> under VC++.  I've heard reports that VC++ doesn't like GNU or ISO C99
+> vararg-style macros, which OpenVPN depends on heavily.
 
-OpenVPN needs the MinGW compiler to build openvpn.exe on Windows.  There would
-probably be some porting work involved to get it to build under VC++.  I've
-heard reports that VC++ doesn't like GNU or ISO C99 vararg-style macros, which
-OpenVPN depends on heavily.
+For at least some of these macros, replacement functions were available
+at some point in time. This means it might work, at a performance loss
+depending on global optimizer options and quality (read: how good VC++
+has become after I'd last used 4.0 years ago, which was a rather
+unpleasant experience).
 
-James
+-- 
+Matthias Andree
 
+Encrypt your mail: my GnuPG key ID is 0x052E7D95
 
