@@ -1,7 +1,9 @@
-Message-ID: <41BFC392.2050509@...326...>
-From: sam wun <sam.wun@...326...>
+From: James Yonan <jim@...41...>
+Subject: Re: [Openvpn-devel] OpenVPN samples and rpm requirements - subpackage?
+In-Reply-To: <200412141748.01332@...187...>
+Message-ID: <Pine.LNX.4.58.0412150511100.29338@...41...>
+References: <200412141748.01332@...187...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Perl version of OpenVPN client
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,19 +14,20 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Dec 14 20:56:03 2004
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+Date: Wed Dec 15 04:17:00 2004
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+To: "Doncho N. Gunchev" <mr700@...184...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi list,
+>     Also, for Fedora/Red Hat the right group is not Networking/Tunnels
+> but maybe Applications/Internet (/usr/share/doc/rpm-*/GROUPS is refered
+> as source for groups in fedora), but this is not a big problem... Maybe
+> I'm too pedantic and there's another %if is not needed?
 
-Is there any perl version of OpenVPN client? This is going to be a 
-strip-down version, mainly include functionality that allow road-runner 
-to connect to the OpenVPN server.
+Applications/Internet looks like the best match on SuSE as well.  I'd 
+rather be consistent across distros if possible, and therefore not use 
+another %if.
 
-Sam.
-
-
-
+James
 
