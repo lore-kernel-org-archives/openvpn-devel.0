@@ -1,8 +1,10 @@
-From: Charles Duffy <cduffy@...294...>
-Message-ID: <pan.2005.02.03.18.41.47.693101@...294...>
-References: <42024CEA.7010908@...349...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] Mesh networking, again [was Re: OpenVPN future goals]
+From: James Yonan <jim@...41...>
+Subject: Re: [Openvpn-devel] Re: OpenVPN with OPIE (One Time Passwords in
+ Everything) ??
+In-Reply-To: <pan.2005.02.03.18.39.30.133381@...294...>
+Message-ID: <Pine.LNX.4.58.0502031317270.23846@...41...>
+References: <4202350D.4020708@...348...> <pan.2005.02.03.18.39.30.133381@...294...>
+MIME-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,16 +15,33 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Feb  3 10:52:27 2005
-Content-Type: text/plain; charset=ISO-8859-1
+Date: Thu Feb  3 12:28:32 2005
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Charles Duffy <cduffy@...294...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-There's been much discussion of mesh networking w/ OpenVPN before; check
-the mailing list archives.
 
-In the meantime, as long as it's a fairly small number of endpoints (3, as
-in the case you mention, should be no trouble at all), you can just
-simulate it w/ extra tunnels and an appropriate routing table.
+On Thu, 3 Feb 2005, Charles Duffy wrote:
+
+> On Thu, 03 Feb 2005 15:28:29 +0100, Patrick Steiner wrote:
+> 
+> > Is it possible to use OpenVPN with OPIE (One Time Passwords in
+> > Everything) What i want is to connect from a windows client to a linux
+> > server. But for OPIE i need a interactive password authentication. this
+> > means: the server send password string an the user at the client side
+> > give his password based on the string from the server. Is this possible
+> > to inplement?
+> 
+> It's already implemented. See auth-user-pass and auth-user-pass-verify.
+
+Right, but I think he's asking for a challenge/response mechanism, which 
+doesn't yet exist.
+
+The server would need to generate a challenge string and send it to the
+client BEFORE the client-user enters the password.  It could be done but 
+would require a patch.
+
+James
 
 
