@@ -1,12 +1,7 @@
-From: Matthias Andree <matthias.andree@...32...>
-Subject: Re: [Openvpn-devel] Default MTU
-Message-ID: <20020710093001.GB23249@...33...>
-References: <01c101c225f3$932d10c0$1000000a@...4...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="XWOWbaMNXpFDWE00"
-Content-Disposition: inline
-In-Reply-To: <01c101c225f3$932d10c0$1000000a@...4...>
+Message-ID: <001f01c227fb$01803850$1000000a@...4...>
+From: "James Yonan" <jim@...3...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] OpenVPN 1.3.0 Released
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -17,56 +12,69 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://www.geocrawler.com/redir-sf.php3?list=openvpn-devel>
-Date: Wed Jul 10 02:31:02 2002
-To: openvpn-devel@lists.sourceforge.net
+Date: Wed Jul 10 03:16:06 2002
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
 
---XWOWbaMNXpFDWE00
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Download:
 
-On Sun, 07 Jul 2002, James Yonan wrote:
+http://sourceforge.net/projects/openvpn/
 
-> (1) Static, pre-shared key mode is stateless and handshake-free, so there
-> isn't really an existing context in which PMTU discovery could be
-> implemented.
+Release Notes:
 
-Must the MTU be known to the protocol after all? It might be assymmetric
-when asymmetric routing (satellite downlink with ISDN uplink) is in
-place.
+This is a housekeeping release containing minor fixes and finishing touches
+on larger features introduced in previous versions. The version number has
+incremented to 1.3.x due to a change in default MTU values.
 
-Is not it sufficient if your own secure PMTU discovery is done
-independently for either side? Sorry, I'm still not acquainted with the
-OpenVPN protocol for lack of time.
+The default values for --udp-mtu and --tun-mtu have been lowered to 1300 as
+a conservative measure to reduce the possibility of packet fragmentation and
+loss for users who do not explicitly set a value.
 
-> (2) Path MTU discovery could work in TLS mode, however every time the the
-> MTU changes, the tun or tap device would need to be re-ifconfiged -- this
-> might also involve closing and reopening the tun device which would fail =
-if
-> root privileges have been dropped.
+If you are using OpenVPN 1.3.0 to connect to previous versions of OpenVPN,
+you should set the MTU explicitly on both peers, keeping in mind that in
+pre-1.3.0 versions of OpenVPN, --udp-mtu defaulted to 1500 and --tun-mtu
+defaulted to 1450.
 
-If you do it in the application, yes. If you leave it to the kernel,
-then it's not necessary.
+Change Log from 1.2.1 -> 1.3.0:
 
-> So at this point a static default is certainly the simpler way to go, but
-> any changes to the static default should be carefully considered since th=
-ey
-> would introduce backward incompatibility issues.
+* Added --dev-node option to allow explicit selection of
+  tun/tap device node.
+* Removed mlockall call from child thread, as it doesn't
+  appear to be necessary (child thread inherits mlockall
+  state from parent).
+* Added --ping-timer-rem which causes timer for --ping-exit
+  and --ping-restart not to run unless we have a remote IP
+  address.
+* Added condrestart to openvpn.init and openvpn.spec
+  (Bishop Clark).
+* Added --ifconfig case for FreeBSD (Matthias Andree).
+* Call openlog with facility=LOG_DAEMON (Matthias Andree).
+* Changed LOG_INFO messages to LOG_NOTICE.
+* Added warning when key files are group/others accessible.
+* Added --single-session flag for TLS mode.
+* Fixed bug where --writepid would segfault if used with
+  an invalid filename.
+* Fixed bug where --ipchange status message was formatted
+  incorrectly.
+* Print more concise error message when system() call
+  fails.
+* Added --disable-occ option.
+* Added --local, --remote, and --ifconfig options sanity
+  check.
+* Changed default UDP MTU to 1300 and TUN/TAP MTU to
+  1300.
+* Successfully tested with OpenSSL 0.9.7 Beta 2.
+* Broke out debug level definitions to errlevel.h
+* Minor documentation and web site changes.
+* All changes maintain protocol compatibility
+  with OpenVPN versions since 1.1.0, however default
+  MTU changes will require setting the MTU explicitly
+  by command line option, if you want 1.3.0 to
+  communicate with previous versions.
 
---=20
-Matthias Andree
+James
 
---XWOWbaMNXpFDWE00
-Content-Type: application/pgp-signature
-Content-Disposition: inline
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.0.7 (GNU/Linux)
-
-iD8DBQE9K/6ZFmbjPHp/pcMRAimMAJ9qO+HXqR6qnNjq4FexT1QG7aYAggCghpBl
-ntnbsC6Rqp0c1qV91PPa/jo=
-=Fuok
------END PGP SIGNATURE-----
-
---XWOWbaMNXpFDWE00--
 
