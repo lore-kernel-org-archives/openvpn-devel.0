@@ -1,7 +1,7 @@
-Message-ID: <408EA7E8.2000601@...203...>
-From: Lonnie Cumberland <lonnie@...203...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Bridging Question
+Subject: Re: [Openvpn-devel] Windows and Shaper
+From: "James Yonan" <jim@...41...>
+Message-ID: <twig.1083091691.91354@...41...>
+In-Reply-To: <001b01c429d0$434a0f80$0a0aef0a@...202...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,27 +12,27 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Apr 27 11:36:01 2004
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Openvpn-devel@lists.sourceforge.net
+Date: Tue Apr 27 12:43:08 2004
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Derek Burdick <derek@...201...>, openvpn-devel@lists.sourceforge.net
 
-Hello Al,
+Derek Burdick <derek@...201...> said:
 
-I was looking over the OpenVPN site documentation on the Mini-Bridging 
-HOWTO and came up with a question.
+>     I was browsing the online CVS repository and noticed the
+> config-win32.h.in says that HAVE_GETTIMEOFDAY is specified in misc.c.  When
+> I look in misc.c, I don't see the file.  Is the latest version just not
+> checked in?  I also implemented a gettimeofday for windows.  It is based on
+> QueryPerformanceCounter. If you are interested in this version let me know.
+> If somebody knows the correct status of gettimeofday for the cvs code, I
+> would appreciate an update.
 
-It appears that on each side of the VPN that the hubs are allowing got 
-masked IP on the range of 192.189.0.0/24.
+Derek,
 
-Since each side is allowing the same range of IP's, doesn't this 
-particular set up require that no two machines have the same IP even 
-though they are on different sides of the bridge?
+Yes, I'd like to see your gettimeofday for Windows that uses
+QueryPerformanceCounter.  OpenVPN 2.0 will have a gettimeofday function for
+Windows so that --shaper and --mode server can be supported.
 
-I would think that an IP conflict would occur if that were to happen, right?
-
-Thanks,
-Lonnie
-
+James
 
 
