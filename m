@@ -1,9 +1,7 @@
-From: James Yonan <jim@...3...>
-Subject: Re: [Openvpn-devel] add a server feature to openvpn to share udp
- ports ?
-In-Reply-To: <1024902829.1463.9.camel@...2...>
-Message-ID: <Pine.LNX.4.44.0206241311040.32473-100000@...21...>
-MIME-Version: 1.0
+From: Alberto Gonzalez Iniesta <agi@...5...>
+Message-ID: <20020625142411.GC24695@...6...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Features comments/request
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -14,51 +12,38 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://www.geocrawler.com/redir-sf.php3?list=openvpn-devel>
-Date: Mon Jun 24 12:44:03 2002
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Date: Tue Jun 25 07:26:05 2002
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Jan Johansson <jan.johansson@...1...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-On 24 Jun 2002, Jan Johansson wrote:
+Hi all, James,
 
-> On Sun, 2002-06-23 at 09:18, James Yonan wrote:
-> > Hello Pat,
-> > 
-> > I think it's a good idea, something we're considering for the next release.
-> 
-> I would like to have some info then on how to stop accepting a certain
-> client certificate, since I base my "expirations" on stopping the port
-> in question in case I no longer want a specific certificate to be able
-> to connect to the network. I mean, of course the one-port-per-person
-> will work after such an addition, but for folks that get in later.
+I'd like to ask for a couple of features (little ones) added to OpenVPN.
+Comments welcomed.
 
-One way to stop accepting a certain client certificate is to write a 
---tls-verify script to check the certificate fields.
+1) OpenVPN should refuse to start a connection based on shared secret
+when the file containing that key is world readable (or writable).
+Paranoia won't even like group readable :-)
+Really, that's an important piece (the most?) in that kind of VPN, we 
+don't want it to be public. Just imagine an (non-chrooted) anonymous
+ftp server, a bad configured web server/cgi-script, a malicious user,...
 
-As far as ports are concerned, I am thinking that a forking server 
-implementation of OpenVPN would listen for incoming connections on a fixed 
-port, but then switch over to a dynamic port to finalize initialization of 
-the session.
+2) Each OpenVPN daemon should delete its pidfile when stoping, since it
+was that very same daemon that created it. 
+It has no sense to have the init.d scripts deleting these files (and
+stoping nonexistent daemons) since the daemon could have been killed
+before the init.d script tried to stop it.
 
-There are still a number of design issues that need to be worked out such 
-as:
+Thanks in advance for any comments. 
+Best regards.
 
-(1) How do you fork on new clients without opening yourself up to DoS 
-attacks?  In order to be secure, the server would need to statelessly 
-authenticate the initial packet before forking.  Tricky, because SSL/TLS 
-requires a multi-packet exchange to authenticate.
 
-(2) How does the server know which return routes to set up for the client, 
-without requiring an --up script on the server for every client that might 
-connect?  The client could send its routes to the server as part of the 
-initial authentication exchange, but there would need to be verification 
-machinery to ensure that that client could not attack the server by 
-sending it malformed routes.
+-- 
+Alberto Gonzalez Iniesta       | They that give up essential liberty
+agi@...5...                     | to obtain a little temporary safety
+Encrypted mail preferred       | deserve neither liberty nor safety.
 
-If anyone else has ideas on how to securely implement a forking-server, 
-please share them with the list.
-
-James
-
+Key fingerprint = 9782 04E7 2B75 405C F5E9  0C81 C514 AF8E 4BA4 01C3
 
