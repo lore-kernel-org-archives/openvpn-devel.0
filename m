@@ -1,9 +1,12 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] logging remote ip disconnection
-In-Reply-To: <68c5481e04092002491ec7e3aa@...278...>
-Message-ID: <Pine.LNX.4.58.0409201122540.18881@...269...>
-References: <68c5481e04092002491ec7e3aa@...278...>
 MIME-Version: 1.0
+Content-Type: multipart/signed;
+	boundary="=-fkeN6s8uIqXd6VULWFnK";
+	micalg=pgp-sha1;
+	protocol="application/pgp-signature"
+Content-class: urn:content-classes:message
+Message-ID: <1095756332.3803.2.camel@...23...>
+From: =?iso-8859-1?Q?Gerd_M=FCller?= <gmueller@...279...>
+Subject: [Openvpn-devel] Openvpn on a palm device
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,48 +17,31 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Sep 20 10:29:01 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: Kisero <kisero@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Tue Sep 21 01:46:08 2004
+To: openvpn-devel@lists.sourceforge.net
 
+--=-fkeN6s8uIqXd6VULWFnK
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 20 Sep 2004, Kisero wrote:
+Hi all,
 
-> Hi, ive send two mails already and no answere..if imasking something
-> wrong just tell me :)
-> 
-> i need to know when a remote ip address disconnect..i could not find
-> anything on the man, or raising the verb level , or nothing. so i
-> start looking at the source code to get a patch for myselfe..im not
-> goot at alllll in #c , so maybe someone can help me out with this...
-> :)
-> 
-> i saw that in socket.c at line 1128 you got a msg to the log
-> 
-> msg (D_CLOSE, "TCP/UDP: Closing socket");
-> 
-> when the peer goes down...
-> 
-> the function wich calls that,  gets "link_socket_close (struct
-> link_socket *sock)" as a paramter, in the link_socket structure ,
-> there is a memeber wich is another struct called "struct sockaddr_in"
-> wich i think has the src ip address of the end point vpn wich is
-> closing the socket.
-> 
-> but i couldnt make it work...
-> does anyone have any idea? i dont knwo what else to do really.
-> thanks a lot
+is there any plan? Anh how hard would it be. Palm has got a ssl stack.
+Is there a change to write a client?
 
-When a remote address disconnects, the behavior is somewhat different 
-depending on whether OpenVPN is running in TCP or UDP mode.  In TCP mode 
-there is an explicit connection reset.  In UDP mode, because UDP is 
-connectionless, the disconnection occurs due to a ping timeout, which can 
-be controlled by inactive or ping and ping-restart/ping-exit.
+Gerd
 
-If you want to run custom code when a client disconnects, you might take a 
-look at the "client-disconnect" script directive.
+--=-fkeN6s8uIqXd6VULWFnK
+Content-Type: application/pgp-signature; name=signature.asc
+Content-Description: Dies ist ein digital signierter Nachrichtenteil
 
-James
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.4 (GNU/Linux)
+
+iD8DBQBBT+orZcTO6d55NGwRAkI9AKCQWyRhJZ4rqPptL2pVQmomTc3ONwCePtpH
+ijy+RzUcgTCj0NvTf4za5DY=
+=RS8e
+-----END PGP SIGNATURE-----
+
+--=-fkeN6s8uIqXd6VULWFnK--
 
