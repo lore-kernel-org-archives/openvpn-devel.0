@@ -1,7 +1,7 @@
-Message-ID: <00e901c20193$54b62a40$1000000a@...4...>
+Message-ID: <003f01c2099e$ee25c290$1000000a@...4...>
 From: "James Yonan" <jim@...3...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 1.2.0 Released
+Subject: [Openvpn-devel] New OpenVPN beta available for testing
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -12,82 +12,60 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://www.geocrawler.com/redir-sf.php3?list=openvpn-devel>
-Date: Wed May 22 06:19:12 2002
+Date: Sat Jun  1 12:02:19 2002
 Content-Type: text/plain;
 	charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
+To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-Download:
+This beta revamps SIGUSR1 signal processing to make it like SIGHUP except
+with more fine-grained control over which OpenVPN subsystems are reset.  It
+also allows a SIGUSR1 to be generated internally based on --ping
+and --ping-restart.  The goal is to make OpenVPN as robust as possible on
+dynamic networks where DHCP, NAT, and firewalls must all be negotiated in a
+dynamic context.  The --persist-tun option allows a reset without closing
+and reopening the tun device (which allows seamless connectivity through the
+tunnel across DHCP resets).  The --persist-ip option allows for preservation
+of remote IP address across DHCP resets.  This allows both OpenVPN peers to
+be DHCP clients.
 
-http://prdownloads.sourceforge.net/openvpn/openvpn-1.2.0.tar.gz
+Also changed is the pthread handling in the configure script.  The script
+now uses the ACX_PTHREAD macro from the autoconf macro archive to
+intelligently figure out which cc/gcc option to use when building with POSIX
+thread support.  Some problems were reported when trying to build OpenVPN
+with pthread support using gcc3.
 
-Release Notes:
+I expect to make a new release in a few days if no problems are encountered.
 
-OpenVPN 1.2.0 adds pthread support for background processing of SSL/TLS key
-negotiations, allowing efficient usage of large RSA keys (i.e. 2048 bits or
-larger). The OpenVPN web site has been considerably expanded, including a
-new HOWTO page that gives detailed instructions for setting up a complete
-telecommuting solution with firewall, VPN, NAT, and DHCP support. OpenVPN
-1.2.0 has additional feature improvements including configuration file
-support and running daemon statistics via SIGUSR2.
+Here is the full change log:
 
-Since version 1.1.1, OpenVPN has seen extensive porting activity, including
-ports to Solaris, OpenBSD, Mac OS X (Darwin), and 64-bit Linux.
-
-ChangeLog from 1.1.1 -> 1.2.0
-
-* Added configuration file support via
-  the --config option.
-* Added pthread support to improve latency.
-  With pthread support, OpenVPN
-  will offload CPU-intensive tasks such as RSA
-  key number crunching to a background thread
-  to improve tunnel packet forwarding
-  latency.  pthread support can be enabled
-  with the --enable-pthread configure option.
-  Pthread support is currently available
-  only for Linux and Solaris.
-* Added --dev-type option so that tun/tap
-  device names don't need to begin with
-  "tun" or "tap".
-* Added --writepid option to write main
-  process ID to a file.
-* Numerous portability fixes to ease
-  porting to other OSes including changing
-  all network types to uint8_t and uint32_t,
-  and not assuming that time_t is 32 bits.
-* Backported to OpenSSL 0.9.5.
-* Ported to Solaris.
-* Finished OpenBSD port except for
-  pthread support.
-* Added initialization script:
-  sample-scripts/openvpn.init
-  (Douglas Keller)
-* Ported to Mac OS X (Christoph Pfisterer).
-* Improved resilience to DoS attacks when
-  TLS mode is used without --remote or
-  --tls-auth, or when --float is used
-  with --remote.  Note however that the best
-  defense against DoS attacks in TLS mode
-  is to use --tls-auth.
-* Eliminated automake/autoconf dependency
-  for non-developers.
-* Ported configure.in to configure.ac
-  and autoconf 2.50+.
-* SIGHUP signal now causes OpenVPN to restart
-  and re-read command line and or config file,
-  in conformance with canonical daemon behaviour.
-* SIGUSR1 now does what SIGHUP did in
-  version 1.1.1 and earlier -- close and reopen
-  the UDP socket for use when DHCP changes
-  host's IP address and preserve most recently
-  authenticated peer address without rereading
-  config file.
-* SIGUSR2 added -- outputs current statistics,
-  including compression statistics.
+* Added --ping-restart option to restart
+  connection on ping timeout using SIGUSR1
+  logic (Matthias Andree).
+* Added --persist-tun and --persist-ip options
+  for finer-grained control over SIGUSR1
+  and --ping-restart restarts.  To
+  replicate previous SIGUSR1 functionality,
+  use --persist-ip.
+* Changed residual IV fetching code to take
+  IV from tail of ciphertext.
+* Added check to make sure that CFB or OFB
+  cipher modes are only used with SSL/TLS
+  authentication mode, and added a caveat
+  to INSTALL.
+* Added RPM notes to INSTALL.
+* Added ACX_PTHREAD (from the autoconf
+  macro archive) to configure.ac
+  to figure out the right pthread
+  options for a given platform.
+* Broke out macro definitions from
+  configure.ac to acinclude.m4.
 * All changes maintain protocol compatibility
-  with 1.1.1 and 1.1.0.
+  with 1.1.0+.
+
+Download from CVS or:
+
+http://openvpn.sourceforge.net/beta/openvpn-1.2.0.4.tar.gz
 
 James
 
