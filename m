@@ -1,9 +1,7 @@
-Message-ID: <20686C579479DC438276A726FE80CDAA01B12C8D@...281...>
-From: satinders@...280...
+Message-ID: <415AA77E.1030207@...255...>
+From: Didier Conchaudron <didier@...255...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C4A54D.41ECA870"
-Subject: [Openvpn-devel] customizable authentication
+Subject: [Openvpn-devel] PATCH WIN32: wrapper tcp patch
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,96 +12,59 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Sep 28 04:30:11 2004
+Date: Wed Sep 29 05:24:35 2004
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-This message is in MIME format. Since your mail reader does not understand
-this format, some or all of this message may not be legible.
+Hi list,
 
-------_=_NextPart_001_01C4A54D.41ECA870
-Content-Type: text/plain;
-	charset="iso-8859-1"
+Few weeks ago I've announced on users list that I will publish a patch 
+aiming at adding a tcp server in the wrapper. That's now done.
 
-Hi,
-	I need to add a field in the message sent through tunnel. I will use
-this field to maintain session validity. This session id will be based on
-some user/passwd info. I have seen that a field session_id is there in
-ssl.h.  Should I use this for my purpose?
-Where should I add code for this? I need to set this field in client and
-verify it in server openvpn. In case it does not matches, I will close
-session.
+I'm not familiar with patch making with diff and my modifications only 
+apply on the service-win32 directory in the openvpn source code.
 
-Also, is there any way to disable TLS in server mode?
+What have been added precisely?
 
-Warm Regards,
-Satinder Singh
-ext 162
-SafeNet InfoTech (P) Ltd 
-STP-NSIC, NSIC Bhawan, 
-Okhla Industrial Estate, 
-New Delhi - 110020 
-91-11-26917538 
-www.safenet-inc.com 
+- a client apps (whitout any admin credentials) can talk with a tcp 
+server launched in the actual openvpnserv.exe windows service.
+- on localhost only
+- without any auth. from the client.
+- it's for now possible to start/stop a tunnel via a gui/console app.
+- the actual functions of automatic launch of tunnels is still ok but 
+you have to add the config filename of the tunnel that must be run at 
+startup into a new file named service.cfg (placed into the openvpn 
+config files dir). It's necessary because in the original service, all 
+.ovpn files were ran at startup. So now you can start a tunnel1.ovpn at 
+startup and allow a user to start another tunnel2.ovpn when he want 
+using a GUI/console app.
 
-. . . . . . . . . . . . . . . . . . 
-The information contained in this electronic mail transmission may be
-privileged and confidential, and therefore, protected from disclosure. If
-you have received this communication in error, please notify us immediately
-by replying to this message and deleting it from your computer without
-copying or disclosing it.
+What have change in the original code?
 
+- rewrite of some functions in order to use them more accuratly in the 
+tcp server
+- the makefile have been change a little too.
+- add of tcpser.c and tcpser.h
 
+Where do I get it?
 
-------_=_NextPart_001_01C4A54D.41ECA870
-Content-Type: text/html; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+You can get 2 tarballs for now:
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<HTML>
-<HEAD>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; charset=3Diso-8859-=
-1">
-<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version 5.5.2653.12">
-<TITLE>customizable authentication</TITLE>
-</HEAD>
-<BODY>
+- one including the patched wrapper which just have to replace 
+completely the actual code.
+- one with the client code I use to test the tcp server. This code 
+probably only helps GUI developpers
 
-<P><FONT SIZE=3D2 FACE=3D"Arial">Hi,</FONT>
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <FONT SIZE=3D2 FACE=3D"Arial=
-">I need to add a field in the message sent through tunnel. I will use this=
- field to maintain session validity. This session id will be based on some =
-user/passwd info. I have seen that a field session_id is there in ssl.h.&nb=
-sp; Should I use this for my purpose?</FONT></P>
+http://conchaudron.free.fr/contrib/openvpn/tcp_client_openvpn.tgz
+http://conchaudron.free.fr/contrib/openvpn/tcp_server_openvpn.tgz
 
-<P><FONT SIZE=3D2 FACE=3D"Arial">Where should I add code for this? I need t=
-o set this field in client and verify it in server openvpn. In case it does=
- not matches, I will close session.</FONT></P>
+Mathias Sundman will work on the client code in order to add this 
+feature on his GUI.
 
-<P><FONT SIZE=3D2 FACE=3D"Arial">Also, is there any way to disable TLS in s=
-erver mode?</FONT>
-</P>
+Thanks to the list for his ideas (in an old thread;-) on this kind of 
+features.
+Thanks to Mathias for his help in my first real contribution to opensource.
 
-<P><FONT SIZE=3D2 FACE=3D"Comic Sans MS">Warm Regards,</FONT>
-<BR><FONT SIZE=3D2 FACE=3D"Comic Sans MS">Satinder Singh</FONT>
-<BR><FONT SIZE=3D2 FACE=3D"Comic Sans MS">ext 162</FONT>
-<BR><FONT SIZE=3D2 FACE=3D"Comic Sans MS">SafeNet InfoTech (P) Ltd<BR>
-STP-NSIC, NSIC Bhawan,<BR>
-Okhla Industrial Estate,<BR>
-New Delhi - 110020<BR>
-91-11-26917538<BR>
-www.safenet-inc.com</FONT><FONT FACE=3D"Times New Roman"> </FONT>
-</P>
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">. . . . . . . . . . . . . . . . . .<BR>
-</FONT><FONT SIZE=3D1 FACE=3D"Times New Roman">The information contained in=
- this electronic mail transmission may be privileged and confidential, and =
-therefore, protected from disclosure. If you have received this communicati=
-on in error, please notify us immediately by replying to this message and d=
-eleting it from your computer without copying or disclosing it.</FONT></P>
-<BR>
-
-</BODY>
-</HTML>=
-
-------_=_NextPart_001_01C4A54D.41ECA870--
+Didier
 
