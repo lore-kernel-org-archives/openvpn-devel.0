@@ -1,9 +1,7 @@
-Message-ID: <3F8C08CD.60401@...61...>
-From: julien Touche <julien.touche@...61...>
+From: "Noam Rathaus" <noamr@...117...>
+Message-ID: <016101c39319$401e2a10$3301a8c0@...118...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] comments on beta12
-References: <twig.1066138374.45509@...41...>
-In-Reply-To: <twig.1066138374.45509@...41...>
+Subject: [Openvpn-devel] Visual C++ Compiling
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -14,27 +12,24 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Oct 14 07:45:03 2003
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
+Date: Wed Oct 15 05:40:03 2003
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-James Yonan wrote:
-> Right, but I don't think this behavior has changed since 1.4.x?  You need to
+Hi,
 
-sorry, i was thinking all unix could call "dev tun" or "dev tap". not a 
-real pb.
+I have been trying for a few hours now to get my Visual C++ to compile the =
+OpenVPN user mode client, but without any luck, I would be happy to hear fr=
+om someone who was able to, or has an idea how to do it.
 
-  > Not sure about that -- it would be handled by the tun driver on OpenBSD.
-> OpenVPN never sees the packet when the local endpoint is pinged.
+I have MinGW, MSYS, GCC, etc installed, but I want to create an Open Source=
+ MFC GUI for the client, as opposed to the console one.
 
-i think this too, but was a comment.
-
-in all case, openvpn 1.5 will rock :)
-
-
-Regards
-
-		Julien
+Thanks
+Noam Rathaus
+CTO
+Beyond Security Ltd.
+http://www.securiteam.com=20
 
 
