@@ -1,7 +1,9 @@
-Subject: Re: [Openvpn-devel] Daemon as non-root, high priority
-From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1076036683.40711@...41...>
-In-Reply-To: <bvu60k$bpq$1@...165...>
+From: Thomas Glanzmann <sithglan@...162...>
+Subject: Re: [Openvpn-devel] ipv6 netbsd support
+Message-ID: <20040206074248.GB29006@...162...>
+References: <Pine.LNX.4.31.0401281414440.15882-100000@...161...> <20040130082021.GA7679@...162...>
+Mime-Version: 1.0
+In-Reply-To: <20040130082021.GA7679@...162...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,41 +14,21 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Feb  5 19:07:28 2004
-Content-Type: text/plain; charset="utf-8"
+Date: Thu Feb  5 23:44:35 2004
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Ian Pilcher <i.pilcher@...164...>, openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Ian Pilcher <i.pilcher@...164...> said:
+Hi together,
 
-> I would like to put together a patch that will allow the openvpn daemon
-> to run with elevated priority as a non-root user.  This currently
-> doesn't work, because the daemon changes its UID before it renices
-> itself.
-> 
-> Questions:
-> 
->    * Are there any "philosophical" objections to this that would prevent
->      such a patch from being accepted?
+> If you can give me access to a NetBSD system *including* root access
+> and kernel sources extracted I should be able to patch and test
+> openvpn within hours to support IPv6 via tun devices.
 
-The philosophy has always been to do as much as possible before losing root,
-so that privilege downgrades are practical.
+one of my openvpn/ipv6 users did patch NetBSD tun device itself and
+maybe openvpn, too. I told him to send his patches to the upstream
+maintainers.
 
->    * Any gotchas?  From my brief look at openvpn.c, it seems pretty
->      simple.
-
-Probably not.  Looking at the code, I think the nice call is where it is,
-rather than a few lines up (to put it before the UID/GID downgrade), because
-we wanted it to happen after work thread creation.  But quite honestly, I
-don't really see why it's important that this be the case.  The only thing you
-really gain by this approach is that the work thread doesn't inherit the
-priority from the main thread, meaning that the work thread can set priority
-independently.  But I would agree that being able to raise the main thread
-priority in conjunction with a UID/GID downgrade is a more important capability.
-
-So I would agree with you that we should relocate the nice call to before
-UID/GID downgrade.
-
-James
-
+	Thomas
 
