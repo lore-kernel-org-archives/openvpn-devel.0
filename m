@@ -1,8 +1,9 @@
-Subject: Re: [Openvpn-devel] Many to one TCP question
-From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1083125623.29541@...41...>
-In-Reply-To: <408EDB17.8090204@...203...>
-References: <twig.1083092616.79848@...41...>, <twig.1083092616.79848@...41...>
+From: Mathias Sundman <mathias@...209...>
+Subject: Re: [Openvpn-devel] Bridging Question
+In-Reply-To: <408EA7E8.2000601@...203...>
+Message-ID: <Pine.LNX.4.58.0404280948030.12134@...210...>
+References: <408EA7E8.2000601@...203...>
+MIME-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,35 +14,29 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Apr 27 21:14:01 2004
-Content-Type: text/plain; charset="utf-8"
+Date: Wed Apr 28 00:59:06 2004
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-To: Lonnie Cumberland <lonnie@...203...>, James Yonan <jim@...41...>, Openvpn-devel@lists.sourceforge.net
+To: Lonnie Cumberland <lonnie@...203...>
+Cc: Openvpn-devel@lists.sourceforge.net
 
-Lonnie Cumberland <lonnie@...203...> said:
+On Tue, 27 Apr 2004, Lonnie Cumberland wrote:
 
-> Thanks for replying to my posting on this matter as I am still trying to 
-> get clear understanding as to the advantages/disadvantages of using 
-> TCP/UDP protocals.
-> 
-> My guess is that most things are done via TCP over the Internet and I 
-> seem to remember that there are supposed to be many problems with trying 
-> to use UDP over the Internet because of firewalls, bridges and the like, 
-> or something like that.
-> 
-> Also, is it true that you cannot bridge with UDP connections for road 
-> warriors with Windows (OpenVPN) machines wishing to connect to Linux 
-> (OpenVPN) machines and servers?
+> It appears that on each side of the VPN that the hubs are allowing got
+> masked IP on the range of 192.189.0.0/24.
+>
+> Since each side is allowing the same range of IP's, doesn't this
+> particular set up require that no two machines have the same IP even
+> though they are on different sides of the bridge?
+>
+> I would think that an IP conflict would occur if that were to happen, right?
 
-No, you should have no trouble bridging with UDP.
+Right. All mashines on both sides of the VPN bridge belong to the same ip
+subnet, just like if they were all connected to the same hub/switch.
 
-> I could be totally off base here, but it UDP protos would work then I 
-> could go along that route instead for my project which needs to also 
-> scale to a (potentially maybe) very large number of road wariors.
-
-In general UDP is much more scalable when dealing with a large number of
-connections.
-
-James
-
+-- 
+_____________________________________________________________
+Mathias Sundman                  (^)   ASCII Ribbon Campaign
+NILINGS AB                        X    NO HTML/RTF in e-mail
+Tel: +46-(0)8-666 32 28          / \   NO Word docs in e-mail
 
