@@ -1,7 +1,7 @@
-Subject: Re: [Openvpn-devel] Socks proxy support for OpenVPN 1.5.0
-From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1075827961.71555@...41...>
-In-Reply-To: <20040130120412.GA12576@...85...>
+From: Matthias Andree <ma+ovpnd@...31...>
+Message-ID: <20040205145013.GA25559@...33...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Idea for --ifconfig & co.
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,42 +12,21 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Feb  3 22:24:24 2004
-Content-Type: text/plain; charset="utf-8"
+Date: Thu Feb  5 06:53:01 2004
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Christof Meerwald <cmeerw@...83...>, openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Christof,
+Hi,
 
-Thanks for the patch.
+would it be feasible to have openvpn create interfaces (--ifconfig or
+something) in "down" state until a remote peer connects - unless the
+tunnel is marked persistent?
 
-I've merged it in 1.6-beta5, though I haven't tested it yet.
+I know I can do this with scripts, but it might be the natural choice to
+reflect the tunnel status in interface configuration.
 
-James
-
-Christof Meerwald <cmeerw@...83...> said:
-
-> Hi,
-> 
-> I have added support for Socks5 proxies to OpenVPN 1.5.0. It should work for
-> TCP and UDP client modes (but I have only tested it in UDP client mode yet,
-> because that's what I plan to use).
-> 
-> I hope you find the patch useful and can integrate it in an upcoming OpenVPN
-> release.
-> 
-> 
-> bye, Christof
-> 
-> -- 
-> http://cmeerw.org                                 JID: cmeerw@...84...
-> mailto cmeerw at web.de
-> 
-
-
-
--- 
-
-
-
+Thanks,
+Matthias
 
