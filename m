@@ -1,10 +1,6 @@
-From: Christian Lademann <lademann@...76...>
-Subject: Re: [Openvpn-devel] --dev and --dev-name under linux 2.4+
-Message-Id: <20030603193216.7d87df09.lademann@...76...>
-In-Reply-To: <200306030136.h531atK03067@...41...>
-References: <200306030136.h531atK03067@...41...>
-Reply-To: lademann@...76...
-Mime-Version: 1.0
+From: "James Yonan" <jim@...41...>
+Message-ID: <twig.1057532896.57648@...41...>
+Subject: [Openvpn-devel] 1.4.x efficiency bug + 1.4.2 release candidate
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -15,80 +11,63 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Jun  3 10:25:08 2003
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Date: Sun Jul  6 16:09:09 2003
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
-On Tue, 3 Jun 2003 01:36:55 -0000
-"James Yonan" <jim@...41...> wrote:
+1.4.0 and 1.4.1 have a fairly serious efficiency bug when built by compilers
+which do not support ISO C99 vararg macros.  If you run ./configure with 1.4.0
+or 1.4.1 and you see this line:
 
-Hi, James,
+  checking for ISO C 1999 vararg macro support... no
 
-I wrote this --dev-name - patch. I'm sorry, if I oversaw the interference with --dev.
+you will be experiencing a significant slowdown due to this bug.
 
-What I need is the posibility to group my different openvpn-interfaces by name,
-so I can assign firewall-rules more generally using wildcards for interface-names
-(like "iptables --in-interface office+ ..." or "... --in-interface customer+").
+A minimal patch is available against 1.4.0 and 1.4.1:
 
-If --dev renames the interfaces (--dev "office01" or --dev "customer4711"), that
-perfectly fits my needs.
+http://openvpn.sourceforge.net/patch/isoc99fix.patch
 
-Thank you for your great software!
+Alternatively, you are encouraged to test the first 1.4.2 release candidate
+which also contains a fix for the ISO C99 vararg bug, as well as:
 
-Regards, Christian.
+* Removed adaptive bandwidth from
+  --mtu-dynamic -- its absence appears
+  to work better than its existence (1.4.1.2).
+* Minor changes to --shaper to fix long
+  retransmit timeouts at low bandwidth
+  (1.4.1.2).
+* Added LOG_RW flag to openvpn.h for
+  debugging (1.4.1.2).
+* Silenced spurious configure warnings (1.4.1.2).
+* Backed out --dev-name patch, modified --dev
+  to offer equivalent functionality (1.4.1.4).
+* Added an optional parameter to --daemon and
+  --inetd to support the passing of a custom
+  program name to the system logger (1.4.1.5).
+* Add compiled-in options to the program title
+  (1.4.1.5).
+* Coded the beginnings of a WIN32 port (1.4.1.5).
+* Succeeded in porting to Win32 Mingw environment
+  and running loopback tests (1.4.1.6).  Still
+  need a kernel driver for full Win32
+  functionality.
+* Fixed a bug in error.h where
+  HAVE_CPP_VARARG_MACRO_GCC was misspelled.
+  This would have caused a significant slowdown
+  of OpenVPN when built by compilers that
+  lack ISO C99 vararg macros (1.4.1.6).
+* Created an init script for Gentoo Linux
+  in ./gentoo directory (1.4.1.6).
 
-> A debian bug report was submitted that inspired me to look deeper into the
-> operation of --dev and the new --dev-name flag.
-> 
-> --dev-name was a patch for tun.c which I received a few months ago, which only
-> really does anything for linux 2.4.  On first glance it appeared nominally
-> useful, so I merged it, but on further inspection it appears to be mostly
-> redundant with --dev.
-> 
-> It appears that the motivation for implementing --dev-name was that --dev
-> assumes its argument is either "tun", "tap", "null", or tun/tap with a unit
-> number (e.g. "tun4").  But --dev is limited in that it doesn't allow arbitrary
-> renaming.
-> 
-> In OpenVPN 1.3.2, if the --dev argument was larger than 3 chars, it was
-> assumed that a unit number was present.  In 1.4.1 that test was changed so
-> that an ascii digit needed to be present to assume a unit number.  If a unit
-> number was present, then the name of the device (as it appears in ifconfig)
-> would be changed to reflect the explicit unit number.  What I think probably
-> inspired the debian bug report is that in 1.3.2 if you said "--dev foobar
-> --dev-type tun", openvpn would have renamed the tun device to foobar, because
-> foobar is > 3 characters.  In 1.4.1, no rename would occur because "foobar"
-> doesn't contain any numerical digits.  In 1.4.1, you would need to say "--dev
-> tun --dev-name foobar" to get the same effect.  This seems somewhat arbitrary
-> and confusing.
-> 
-> My conclusion is that the implementation of --dev and --dev-name is mostly
-> redundant because --dev can just as easily set the device name based on its
-> argument, if that argument is something other than "tun", "tap", "null".  The
-> current operation of "--dev tun" or "--dev tap" would be preserved so that a
-> dynamic unit number would be allocated if, for example, "--dev tun4" is given.
->  But you could also specify "--dev foo --dev-type tun" and a tun device named
-> foo would be created.
-> 
-> I've patched the current development release to remove --dev-name, and to
-> allow --dev to set a specific device name as in the above paragraph.
-> 
-> Download:
-> 
-> http://openvpn.sourceforge.net/beta/openvpn-1.4.1.4.tar.gz (or CVS)
-> 
-> James
-> 
-> 
-> 
-> -------------------------------------------------------
-> This SF.net email is sponsored by: eBay
-> Get office equipment for less on eBay!
-> http://adfarm.mediaplex.com/ad/ck/711-11697-6916-5
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> 
+Download the release candidate:
+
+http://openvpn.sourceforge.net/beta/openvpn-1.4.1.8.tar.gz
+
+Release candidate is also available on CVS (note that sourceforge anonymous
+CVS is now 24 hour delayed).
+
+James
+
+
 
