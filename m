@@ -1,9 +1,7 @@
-From: Teemu Kiviniemi <teemuki@...124...>
-Content-Type: multipart/signed; micalg=pgp-sha1; protocol="application/pgp-signature";
-	boundary="=-4VxgLhZs8RXdHo7bOpAT"
-Message-Id: <1067328520.7131.321.camel@...125...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] --tls-cipher documentation bug
+Subject: Re: [Openvpn-devel] --tls-cipher documentation bug
+From: "James Yonan" <jim@...41...>
+Message-ID: <twig.1067375167.55937@...41...>
+In-Reply-To: <1067328520.7131.321.camel@...125...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -14,48 +12,49 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Oct 28 00:10:05 2003
-To: openvpn-devel@lists.sourceforge.net
-
---=-4VxgLhZs8RXdHo7bOpAT
+Date: Tue Oct 28 13:09:04 2003
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: Teemu Kiviniemi <teemuki@...124...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
+Teemu,
 
-I think I found a bug in the openvpn(8) man page:
+Thanks for the --tls-remote and --tls-cipher patches.  I've merged them and
+they will be included in the next 1.5 beta release.
 
-> --tls-cipher l
->     A  list  l  of allowable TLS ciphers separated by |
+James
 
-When I use the character '|' to separate the ciphers, OpenSSL complains.
-The correct format is described in the ciphers(1) man page:
+Teemu Kiviniemi <teemuki@...124...> said:
 
-> CIPHER LIST FORMAT
-> The cipher list consists of one or more cipher strings separated
-> by colons.  Commas or spaces are also acceptable separators but colons
-> are normally used.
+> Hi,
+> 
+> I think I found a bug in the openvpn(8) man page:
+> 
+> > --tls-cipher l
+> >     A  list  l  of allowable TLS ciphers separated by |
+> 
+> When I use the character '|' to separate the ciphers, OpenSSL complains.
+> The correct format is described in the ciphers(1) man page:
+> 
+> > CIPHER LIST FORMAT
+> > The cipher list consists of one or more cipher strings separated
+> > by colons.  Commas or spaces are also acceptable separators but colons
+> > are normally used.
+> 
+> I changed '|' to be ':'. The patch is available at:
+> http://iki.fi/teemuki/openvpn/cvs-docfix.diff
+> 
+> The patch is against EXP15 CVS branch with my cvs-tlsremote.diff merged.
+> The patch changes also the help text in options.c.
+> 
+> Teemu
+> 
+> 
 
-I changed '|' to be ':'. The patch is available at:
-http://iki.fi/teemuki/openvpn/cvs-docfix.diff
-
-The patch is against EXP15 CVS branch with my cvs-tlsremote.diff merged.
-The patch changes also the help text in options.c.
-
-Teemu
 
 
---=-4VxgLhZs8RXdHo7bOpAT
-Content-Type: application/pgp-signature; name=signature.asc
+-- 
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.2.1 (GNU/Linux)
 
-iD8DBQA/niQHq0EylM9fq6oRAhOsAJ0cB6aL//Lb8lwcviOG6L0lLpjn2ACfYMDo
-T+uec28rNj/8dGullisiu2w=
-=w/5G
------END PGP SIGNATURE-----
-
---=-4VxgLhZs8RXdHo7bOpAT--
 
 
