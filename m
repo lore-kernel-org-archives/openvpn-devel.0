@@ -1,9 +1,9 @@
 From: Matthias Andree <ma+ovpnd@...31...>
-Message-ID: <20030219204918.GD18493@...33...>
+Subject: Second half of variadic macro fix (was: [Openvpn-devel] Pre-1.3.3 beta available for testing)
+Message-ID: <20030219211936.GA5358@...33...>
 References: <20030219181048.GA21087@...33...> <Pine.LNX.4.44.0302191128560.12503-100000@...41...>
 Mime-Version: 1.0
 In-Reply-To: <Pine.LNX.4.44.0302191128560.12503-100000@...41...>
-Subject: [Openvpn-devel] First half of macro-vs-function hacks (was: Pre-1.3.3 beta available for testing)
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -14,93 +14,116 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Feb 19 12:50:07 2003
+Date: Wed Feb 19 13:20:18 2003
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-Jim,
+Dear Jim,
 
-this is the configure.ac part of the variadic macro test patch, it seems
-to work OK and cache the results.
+this second patch completes the varargs stuff. Tested on all machines I
+listed last time, and SUNpro 6 is very happy with the ISO C99 stuff and
+uses the macro (rather than the function). I tried to force the function
+underneath gcc 2.95 (edited config.cache, ran ./config.status --recheck,
+./config.status, remade stuff), seems fine here.
 
-I have added also some unrelated AC_CACHE_SAVE (supported since autoconf
-2.13) to checkpoint the cache should some later test fail, so the user
-can more quickly pick up when she typed "./configure -C".
+Please give it a try (sorry for listing the files in the wrong reading
+order, shell globbed .c before .h).
 
-This patch is against my previous one, so if it fails, try patch -F1 or
--F2 to narrow the context patch looks at. If that doesn't help, I can
-send the whole file or a patch against current CVS.
+Cheers,
+Matthias
 
-Feel free to try it. To my astonishment, the SUNpro WorkShop compiler
-seems to know ISO C99 but not the GCC-style variadic macros. I'll
-investigate some more and might refine this test.
-
-diff -u configure.ac configure.ac
---- configure.ac	19 Feb 2003 15:04:00 -0000
-+++ configure.ac	19 Feb 2003 20:39:54 -0000
-@@ -148,6 +148,38 @@
- AC_TYPE_UID_T
- AC_HEADER_TIME
+Index: error.c
+===================================================================
+RCS file: /cvsroot/openvpn/openvpn/error.c,v
+retrieving revision 1.10
+diff -u -r1.10 error.c
+--- error.c	9 Dec 2002 15:40:34 -0000	1.10
++++ error.c	19 Feb 2003 21:13:27 -0000
+@@ -113,10 +113,24 @@
  
-+dnl See if the compiler supports variadic macros
-+dnl GCC-style
-+AC_MSG_CHECKING(if your preprocessor supports GCC-style variadic macros)
-+AC_CACHE_VAL(openvpn_cv_c_varmac_gcc,
-+AC_COMPILE_IFELSE([[
-+		   #include <stdio.h>
-+		   #define mymac(first, second...) printf(first, ## second)
-+		   main() { mymac("%s", "test"); }
-+		   ]],
-+		   [openvpn_cv_c_varmac_gcc=yes],
-+		   [openvpn_cv_c_varmac_gcc=no]))
-+AC_MSG_RESULT($openvpn_cv_c_varmac_gcc)
-+if test $openvpn_cv_c_varmac_gcc = yes ; then
-+    AC_DEFINE(OPENVPN_VARMAC_GCC, [1], [Define to 1 if your preprocessor supports GCC-style variadic macros.])
-+fi
+ int msg_line_num;
+ 
+-void
+-_msg (unsigned int flags, const char *format, ...)
++#if !MSGMACRO
++void msg(unsigned int flags, const char *format, ...) {
++    va_list ap;
++    va_start(ap, format);
++    _msg(flags, format, ap);
++    va_end(ap);
++}
++#endif
 +
-+dnl ISO C99-style
-+AC_MSG_CHECKING(if your preprocessor supports ISO C99 variadic macros)
-+AC_CACHE_VAL(openvpn_cv_c_varmac_isoc99,
-+AC_COMPILE_IFELSE([[
-+		   #include <stdio.h>
-+		   #define mymac(first, ...) printf(first, __VA_ARGS__)
-+		   main() { mymac("%s", "test"); }
-+		   ]],
-+		   [openvpn_cv_c_varmac_isoc99=yes],
-+		   [openvpn_cv_c_varmac_isoc99=no]))
-+AC_MSG_RESULT($openvpn_cv_c_varmac_isoc99)
-+if test $openvpn_cv_c_varmac_isoc99 = yes ; then
-+    AC_DEFINE(OPENVPN_VARMAC_ISOC99, [1], [Define to 1 if your preprocessor supports ISO C99 variadic macros.])
-+fi
-+AC_CACHE_SAVE
-+
- dnl Check for more header files.
- AC_HEADER_SYS_WAIT
- AC_CHECK_HEADERS(sys/time.h)
-@@ -184,6 +216,7 @@
- AC_CHECK_HEADERS(netdb.h)
- AC_CHECK_HEADERS(sys/uio.h)
- AC_CHECK_HEADERS(linux/if_tun.h)
-+AC_CACHE_SAVE
++#if MSGMACRO
++void _msg (unsigned int flags, const char *format, ...)
++#else
++void _msg (unsigned int flags, const char *format, va_list arglist)
++#endif
+ {
++#if MSGMACRO
+   va_list arglist;
++#endif
+   int level;
+   char msg1[ERR_BUF_SIZE];
+   char msg2[ERR_BUF_SIZE];
+@@ -161,9 +175,13 @@
+   m1 = msg1;
+   m2 = msg2;
  
- dnl check that in_addr_t is defined
- AC_CHECK_TYPE(
-@@ -220,6 +253,7 @@
- 	[AC_DEFINE(HAVE_IOVEC, 1, [struct iovec needed for IPv6 support])],
- 	[],
- 	[#include "syshead.h"])
-+AC_CACHE_SAVE
++#if MSGMACRO
+   va_start (arglist, format);
++#endif
+   vsnprintf (m1, ERR_BUF_SIZE, format, arglist);
++#if MSGMACRO
+   va_end (arglist);
++#endif
  
- dnl check for other types
- TYPE_SOCKLEN_T
-@@ -257,6 +291,7 @@
- AC_CHECK_FUNCS(readv)
- AC_CHECK_FUNCS(writev)
- AC_CHECK_FUNCS(setsockopt)
-+AC_CACHE_SAVE
+   if ((flags & M_ERRNO) && e)
+     {
+@@ -180,7 +198,7 @@
+     {
+       int nerrs = 0;
+       int err;
+-      while (err = ERR_get_error ())
++      while ((err = ERR_get_error ()))
+ 	{
+ 	  snprintf (m2, ERR_BUF_SIZE, "%s: %s", m1, ERR_error_string (err, NULL));
+ 	  SWAP;
+Index: error.h
+===================================================================
+RCS file: /cvsroot/openvpn/openvpn/error.h,v
+retrieving revision 1.8
+diff -u -r1.8 error.h
+--- error.h	9 Dec 2002 15:40:34 -0000	1.8
++++ error.h	19 Feb 2003 21:13:27 -0000
+@@ -76,11 +76,26 @@
+  */
+ #define LOGLEV(log_level, mute_level, other) (((log_level)-1) | ENCODE_MUTE_LEVEL(mute_level) | other)
  
- dnl Required library functions
- AC_FUNC_MEMCMP
++#if OPENVPN_VARMAC_ISOC99
++#define msg(flags, ...) \
++    do { if (((flags) & M_DEBUG_LEVEL) < _debug_level || ((flags) & M_FATAL)) \
++    _msg((flags), __VA_ARGS__); } while (false)
++#define MSGMACRO 1
++#elif OPENVPN_VARMAC_GCC
+ #define msg(flags, args...) \
+     do { if (((flags) & M_DEBUG_LEVEL) < _debug_level || ((flags) & M_FATAL)) \
+     _msg((flags), args); } while (false)
++#define MSGMACRO 1
++#else
++#define MSGMACRO 0
++    void msg(unsigned int flags, const char *format, ...);
++#endif
+ 
+-void _msg (unsigned int flags, const char *format, ...); /* should be called via msg above */
++#if MSGMACRO
++void _msg(unsigned int flags, const char *format, ...); /* should be called via msg above */
++#else
++void _msg(unsigned int flags, const char *format, va_list ap);
++#endif
+ 
+ void error_reset ();
+ void set_check_status (int info_level, int verbose_level);
 
