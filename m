@@ -1,10 +1,8 @@
-From: Mathias Sundman <mathias@...209...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.0 and udev
-In-Reply-To: <20041017170327.GG5221@...30...>
-Message-ID: <Pine.LNX.4.61.0410172044001.23798@...210...>
-References: <20041017102652.GC1621@...30...> <twig.1098020193.10343@...41...>
- <20041017161506.GC5221@...30...> <20041017170327.GG5221@...30...>
-MIME-Version: 1.0
+From: Charles Duffy <charlesduffy@...296...>
+Message-Id: <1098050475.13580.8.camel@...23...>
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="=_smtp.isgenesis.com-7286-1098050486-0001-2"
+Subject: [Openvpn-devel] Simple patch to EasyRSA
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,45 +13,180 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Oct 17 11:54:13 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Content-Transfer-Encoding: 8bit
-To: Alberto Gonzalez Iniesta <agi@...64...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Sun Oct 17 15:02:26 2004
+To: openvpn-devel@lists.sourceforge.net
 
-On Sun, 17 Oct 2004, Alberto Gonzalez Iniesta wrote:
+This is a MIME-formatted message.  If you see this text it means that your
+E-mail software does not support MIME-formatted messages.
 
->>> Incidentally, the error shown in the bug report looks like he is trying to
->>> make a tunnel between 1.6 and 2.0 using incompatible key-method parameters.
->>> He needs to set --key-method 2 on the 1.6 side.
->>
->>
->> Has this changed between 1.6 and 2 beta11?
->> The man page says --key-method defaults to 1 and the ChangeLog does not say otherwise.
->> I don't think this guy changed that to 2 just after he upgraded the
->> package. I'll ask him anyway, yo never know...
->> Could a problem with the TUN/TAP driver confuse the --key-method handling code?
->>
->
-> James, as you may see in here [1] now, it seems that setting
-> --key-method to 1 in the OpenVPN 2 side, solved the problem. Maybe that
-> changed but it's not documented? Or there's something weird going on?
+--=_smtp.isgenesis.com-7286-1098050486-0001-2
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 7bit
 
-It is documented, but probably not where you looked :-)
+The attached makes EasyRSA commands source the vars file themselves, if
+they can find it.
 
-1.6 defaults to key-method 1, while 2.0 defaults to key-method 2.
+--=_smtp.isgenesis.com-7286-1098050486-0001-2
+Content-Type: text/x-patch; name="easy-rsa.diff"; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename=easy-rsa.diff
 
-I found it documented in the following two places:
+diff -ru3 openvpn-2.0_beta11/easy-rsa/build-ca easy-rsa/build-ca
+--- openvpn-2.0_beta11/easy-rsa/build-ca	Wed May  8 02:00:30 2002
++++ easy-rsa/build-ca	Thu Oct 14 14:52:36 2004
+@@ -4,6 +4,10 @@
+ # Build a root certificate
+ #
+ 
++if [ -f $(dirname $0)/vars ] ; then
++	source $(dirname $0)/vars
++fi
++
+ if test $KEY_DIR; then
+ 	cd $KEY_DIR && \
+ 	openssl req -days 3650 -nodes -new -x509 -keyout ca.key -out ca.crt -config $KEY_CONFIG
+diff -ru3 openvpn-2.0_beta11/easy-rsa/build-dh easy-rsa/build-dh
+--- openvpn-2.0_beta11/easy-rsa/build-dh	Wed May  8 02:00:30 2002
++++ easy-rsa/build-dh	Thu Oct 14 14:52:44 2004
+@@ -5,6 +5,10 @@
+ # of an SSL/TLS connection.
+ #
+ 
++if [ -f $(dirname $0)/vars ] ; then
++	source $(dirname $0)/vars
++fi
++
+ if test $KEY_DIR; then
+     openssl dhparam -out ${KEY_DIR}/dh${KEY_SIZE}.pem ${KEY_SIZE}
+ else
+diff -ru3 openvpn-2.0_beta11/easy-rsa/build-inter easy-rsa/build-inter
+--- openvpn-2.0_beta11/easy-rsa/build-inter	Thu Jul 18 16:05:30 2002
++++ easy-rsa/build-inter	Thu Oct 14 14:52:51 2004
+@@ -5,6 +5,10 @@
+ # root certificate.
+ #
+ 
++if [ -f $(dirname $0)/vars ] ; then
++	source $(dirname $0)/vars
++fi
++
+ if test $# -ne 1; then
+         echo "usage: build-inter <name>";
+         exit 1
+diff -ru3 openvpn-2.0_beta11/easy-rsa/build-key easy-rsa/build-key
+--- openvpn-2.0_beta11/easy-rsa/build-key	Wed May  8 02:00:30 2002
++++ easy-rsa/build-key	Thu Oct 14 14:53:02 2004
+@@ -5,6 +5,10 @@
+ # root certificate.
+ #
+ 
++if [ -f $(dirname $0)/vars ] ; then
++	source $(dirname $0)/vars
++fi
++
+ if test $# -ne 1; then
+         echo "usage: build-key <name>";
+         exit 1
+diff -ru3 openvpn-2.0_beta11/easy-rsa/build-key-pass easy-rsa/build-key-pass
+--- openvpn-2.0_beta11/easy-rsa/build-key-pass	Wed May  8 02:00:30 2002
++++ easy-rsa/build-key-pass	Thu Oct 14 14:53:09 2004
+@@ -5,6 +5,10 @@
+ # with a password.
+ #
+ 
++if [ -f $(dirname $0)/vars ] ; then
++	source $(dirname $0)/vars
++fi
++
+ if test $# -ne 1; then
+         echo "usage: build-key-pass <name>";
+         exit 1
+diff -ru3 openvpn-2.0_beta11/easy-rsa/build-req easy-rsa/build-req
+--- openvpn-2.0_beta11/easy-rsa/build-req	Wed May  8 02:00:30 2002
++++ easy-rsa/build-req	Thu Oct 14 14:53:16 2004
+@@ -5,6 +5,10 @@
+ # when your root certificate and key is not available locally.
+ #
+ 
++if [ -f $(dirname $0)/vars ] ; then
++	source $(dirname $0)/vars
++fi
++
+ if test $# -ne 1; then
+     echo "usage: build-req <name>";
+     exit 1
+diff -ru3 openvpn-2.0_beta11/easy-rsa/build-req-pass easy-rsa/build-req-pass
+--- openvpn-2.0_beta11/easy-rsa/build-req-pass	Wed May  8 02:00:30 2002
++++ easy-rsa/build-req-pass	Thu Oct 14 14:53:23 2004
+@@ -5,6 +5,10 @@
+ # with a password.
+ #
+ 
++if [ -f $(dirname $0)/vars ] ; then
++	source $(dirname $0)/vars
++fi
++
+ if test $# -ne 1; then
+     echo "usage: build-req-pass <name>";
+     exit 1
+Only in easy-rsa: client-scripts
+diff -ru3 openvpn-2.0_beta11/easy-rsa/list-crl easy-rsa/list-crl
+--- openvpn-2.0_beta11/easy-rsa/list-crl	Mon Jun 14 19:01:13 2004
++++ easy-rsa/list-crl	Thu Oct 14 14:53:31 2004
+@@ -5,6 +5,10 @@
+ #
+ #
+ 
++if [ -f $(dirname $0)/vars ] ; then
++	source $(dirname $0)/vars
++fi
++
+ if test $# -ne 1; then
+         echo "usage: list-crl <crlfile.pem>";
+         exit 1
+diff -ru3 openvpn-2.0_beta11/easy-rsa/make-crl easy-rsa/make-crl
+--- openvpn-2.0_beta11/easy-rsa/make-crl	Wed Jun 30 09:05:52 2004
++++ easy-rsa/make-crl	Thu Oct 14 14:53:38 2004
+@@ -5,6 +5,10 @@
+ #
+ #
+ 
++if [ -f $(dirname $0)/vars ] ; then
++	source $(dirname $0)/vars
++fi
++
+ if test $# -ne 1; then
+         echo "usage: make-crl <crlfile.pem>";
+         exit 1
+diff -ru3 openvpn-2.0_beta11/easy-rsa/revoke-crt easy-rsa/revoke-crt
+--- openvpn-2.0_beta11/easy-rsa/revoke-crt	Wed Jun 30 09:05:52 2004
++++ easy-rsa/revoke-crt	Thu Oct 14 14:53:44 2004
+@@ -5,6 +5,10 @@
+ #
+ #
+ 
++if [ -f $(dirname $0)/vars ] ; then
++	source $(dirname $0)/vars
++fi
++
+ if test $# -ne 1; then
+         echo "usage: revoke-crt <file.crt>";
+         exit 1
+diff -ru3 openvpn-2.0_beta11/easy-rsa/sign-req easy-rsa/sign-req
+--- openvpn-2.0_beta11/easy-rsa/sign-req	Wed Aug  7 04:13:16 2002
++++ easy-rsa/sign-req	Thu Oct 14 14:53:50 2004
+@@ -5,6 +5,10 @@
+ # with a local root certificate and key.
+ #
+ 
++if [ -f $(dirname $0)/vars ] ; then
++	source $(dirname $0)/vars
++fi
++
+ if test $# -ne 1; then
+         echo "usage: sign-req <name>";
+         exit 1
+diff -ru3 openvpn-2.0_beta11/easy-rsa/vars easy-rsa/vars
 
-The 2.0 Release Notes. [1]
-The Compatibility Notes. [2]
-
-[1] http://openvpn.sourceforge.net/20notes.html
-[2] http://openvpn.sourceforge.net/compat.html
-
---
-_____________________________________________________________
-Mathias Sundman                  (^)   ASCII Ribbon Campaign
-OpenVPN GUI for Windows           X    NO HTML/RTF in e-mail
-http://www.nilings.se/openvpn    / \   NO Word docs in e-mail
+--=_smtp.isgenesis.com-7286-1098050486-0001-2--
 
