@@ -1,9 +1,7 @@
-Message-ID: <41B427AE.80000@...324...>
-From: Stefan Engel <mail@...324...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] bugfix: SuSE handling in openvpn.spec
-References: <41B0734E.3010105@...324...> <Pine.LNX.4.58.0412031302050.10000@...41...>
-In-Reply-To: <Pine.LNX.4.58.0412031302050.10000@...41...>
+From: Steve Palm <n9yty@...325...>
+Message-ID: <loom.20041210T063317-259@...171...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] GUI for MacOS X
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,40 +12,47 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Dec  6 01:35:03 2004
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Date: Thu Dec  9 21:52:02 2004
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-To: James Yonan <jim@...41...>
-Cc: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-James Yonan wrote:
-> 
-> On Fri, 3 Dec 2004, Stefan Engel wrote:
-> 
-> 
->>Hi,
->>
->>there is a minor bug in openvpn.spec (v2.0_beta19). In the %files
->>section the init script is always taken from /etc/rc.d/init.d instead
->>of /etc/init.d in case of a SuSE distribution. This results in an
->>rpm build error on SuSE systems.
->>
->>The appended patch should fix this.
->>
->>Regards,
->>
->>Stefan
->>
-> 
-> 
-> Does this patch deal correctly with SuSE 9.1/9.2 differences?
-> 
-> James
-> 
+Greetings!
 
-SuSE 9.1 and SuSE 9.2 use the same location for storing init-scripts,
-i.e. /etc/init.d. Whereas the rpm variable %{_initrddir} seems to be
-broken in 9.1 (pointing to the wrong directory), this is fixed in 9.2.
+For the past week or so I've been working on a GUI client for MacOS X. 
+I just happened to check the website today and saw the new release with
+the management interface. VERY COOL, and this will make my life MUCH
+easier.  I had saved the process of looking at all the return strings
+for last to parse them from the running process, now I have a much
+smaller set of things to worry about. ;-)
 
-Stefan
+One question, though...  Is there a way to have all of the information
+in a config file yet when you start the openvpn program it won't build
+the tunnel until it gets a "go" from the management interface?  The
+trouble I'm trying to avoid is that there is an indeterminate amount of
+time between telling the openvpn client instance to launch and being
+able to connect to the management interface port.  I don't want to loose
+the messages I might need during that interval.
+
+I suppose I could do "state all on" and parse the two forms (immediate
+feedback and real-time notifications), but it would be much simpler to
+fire the openvpn process, wait a second or two for it to stabilize, then
+try to connect at which point I just do a "state on" and "start tunnel"
+or something.
+
+Also, which of the multitude of configuration options would be most
+useful to put into a GUI?  Right now I have an embedded template config
+file (which can be edited) that has placeholders for values the  GUI
+will fill in.  I'm using:  host, port, protocol, http-proxy-host,
+http-proxy-port, and a management routine that stores certificates,
+allows you pick which certs go with which configs, etc...  I've modelled
+the thing almost entirely visually after the program IPSecuritas (a free
+IPSec client for MacOS X) because we're migrating from IPSec to OpenVPN
+and I wanted it to be as transparent to our users as possible.
+
+Anyway, awesome work, and I look forward to feedback on making the MacOS
+X GUI as good as I'm able to. :-)
+
+Steve
+
 
