@@ -1,8 +1,10 @@
 From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] SSL client / SSL server
-In-Reply-To: <422C7C95.3080209@...361...>
-Message-ID: <Pine.LNX.4.58.0503071440390.1122@...41...>
-References: <422C7C95.3080209@...361...>
+Subject: Re: [Openvpn-devel] RPM build of 2.0-rc16 fails on MandrakeSoft
+In-Reply-To: <42253BF4.1050000@...355...>
+Message-ID: <Pine.LNX.4.58.0503071446420.1122@...41...>
+References: <4220EC61.1000005@...355...> <Pine.LNX.4.58.0502270152590.23437@...41...>
+ <42220B98.2010001@...355...> <42223300.1050402@...355...>
+ <Pine.LNX.4.58.0502271404010.23437@...41...> <42253BF4.1050000@...355...>
 MIME-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
@@ -14,30 +16,53 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Mar  7 13:47:08 2005
+Date: Mon Mar  7 13:53:22 2005
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-To: Rolf Fokkens <r.fokkens@...361...>
+To: TomWalsh <tomw-junk01@...355...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Mon, 7 Mar 2005, Rolf Fokkens wrote:
+On Tue, 1 Mar 2005, TomWalsh wrote:
 
-> Hi,
+> James Yonan wrote:
+> >>I will let the package maintainer of liblzo1 of the problem of it not 
+> >>saying it provides "liblzo" while the liblzo1-devel does say that.
+> >>
+> >>The correct statement which works around the Mandrake 10.1 problem would be:
+> >>
+> >>============================ fix ===============================
+> >>%if "%{_vendor}" == "MandrakeSoft"
+> >>%{!?without_lzo:BuildRequires: liblzo1-devel >= 1.07}
+> >>%{!?without_lzo:Requires:      liblzo1       >= 1.07}
+> >>%else
+> >>%{!?without_lzo:BuildRequires: lzo-devel >= 1.07}
+> >>%{!?without_lzo:Requires:      lzo       >= 1.07}
+> >>%endif
+> >>============================ snip ==============================
+> >>
+> >>Either way, there would still be an issue with Mandrake as I see that 
+> >>the lzo package of SuSE 9.1 provides "lzo" not "liblzo".
+> > 
+> > 
+> > The problem I have with this patch is that it assumes that Mandrake will
+> > continue to follow the broken behavior.  The ideal solution would be one
+> > which doesn't break when Mandrake gets around to using the same standard
+> > LZO RPM spec which everyone else is using.
+> > 
 > 
-> Not having too much programming knowledge about openSSL, I wonder why 
-> each VPN config must specify TLS-client or TLS-server. If full-mesh 
-> bridging/routing will be supported in the future, most nodes are just 
-> peers, without a client-server relationship.
+> Yeah, probably the best solution. However, I see that they have been 
+> calling it liblzo1 since their 8.1 distro, and, technically, it is a 
+> library?
+> 
+> The package maintainer has added the missing provide for "liblzo", this 
+> is now in liblzo1-devel-1.08-5mdk.i586.rpm and the 
+> liblzo1-1.08-5mdk.i586.rpm.  That would at least clear up some confusion 
+> between liblzo1 vs. liblzo
 
-SSL/TLS is a client/server-based protocol.
+Where are we on this?
 
-To do full-mesh peer-to-peer in the future, we will probably use some sort 
-of abstraction where all peers will be a server by default, but will 
-simultaneously take on a client role when initiating a connection with 
-another peer.
-
-This would be an initiator/responder model, which maps fairly cleanly to
-the client/server metaphor.
+Should we work around this in the openvpn.spec file, or just leave as-is
+for 2.0, and wait for the lzo spec to be fixed?
 
 James
 
