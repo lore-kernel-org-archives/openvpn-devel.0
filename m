@@ -1,7 +1,7 @@
-From: Nir Yeffet <nir@...336...>
-Message-ID: <Pine.LNX.4.50.0501101115400.14482-100000@...336...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] bugfix: easy-rsa/build-key-server
+From: "=?windows-1252?q?Fran=E7ois?= Revol" <revol@...260...>
+Message-Id: <18479273504-BeMail@...337...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] OpenVPN 1.5 ported to BeOS (BONE) and Zeta
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,28 +12,34 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Jan 10 01:23:07 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
+Date: Thu Jan 13 03:47:19 2005
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-The extension nsCertType "server" is only working if the -extensions 
-server is specified when creating the csr and key.
+I've been having a port of 1.5 for some time already, never bothered to
+post about it, since it requires a tuntap driver which I wrote but
+isn't public yet, but will be bundled with Zeta ( http://yellowtab.com
+).
+We should get 2.0 ported soon if it doesn't have quirks, but I thought
+I'd post that one anyway.
 
-diff -urN build-key-server.orig build-key-server 
---- build-key-server.orig       2005-01-10 11:08:20.000000000 +0200
-+++ build-key-server    2005-01-10 11:09:19.000000000 +0200
-@@ -14,7 +14,7 @@
- 
- if test $KEY_DIR; then
-        cd $KEY_DIR && \
--       openssl req -days 3650 -nodes -new -keyout $1.key -out $1.csr -config $KEY_CONFIG && \
-+       openssl req -days 3650 -nodes -new -keyout $1.key -out $1.csr -extensions server -config $KEY_CONFIG && \
-        openssl ca -days 3650 -out $1.crt -in $1.csr -extensions server -config $KEY_CONFIG
- else
-        echo you must define KEY_DIR
+Most changes are just about adding BeOS configurations, and the code to
+open the tuntap driver, which I designed to have the same API as the
+Linux one (except it's published as /dev/misc/tuntap because our devfs
+is hierarchical).
+The syslog stuff is in the gui library (don't ask why).
+The new network stack (BONE, the old one is not on par with VPN anyway)
+has some oddnesses like __inet_aton, but it's been worked around.
+Priorities are different in BeOS.
+BONE CLI tools have an odd syntax as well...
 
-Cheers,
--- 
-Nir
+Fran=E7ois.
+
+The diff
+http://clapcrest.free.fr/revol/beos/patches/openvpn-1.5.0-
+beos.patch.002.txt
+
+P.S. I'm not subscribed.
+
 
