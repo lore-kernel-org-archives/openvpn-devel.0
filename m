@@ -1,9 +1,7 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] OpenVPN GUI connection configuration
-In-Reply-To: <Pine.LNX.4.61.0411060041150.1651@...210...>
-Message-ID: <Pine.LNX.4.58.0411061934450.23521@...41...>
-References: <Pine.LNX.4.61.0411060041150.1651@...210...>
+Message-ID: <048101c4c5b5$655eca80$0600000a@...139...>
+From: "Gisle Vanem" <giva@...258...>
 MIME-Version: 1.0
+Subject: [Openvpn-devel] undefined get_netsh_id
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,64 +12,30 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Nov  6 18:54:10 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: Mathias Sundman <mathias@...209...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Mon Nov  8 10:14:44 2004
+Content-Type: text/plain;
+	format=flowed;
+	charset="iso-8859-1";
+	reply-type=original
+Content-Transfer-Encoding: 7bit
+To: OpenVPN-dev <openvpn-devel@lists.sourceforge.net>
 
-On Sat, 6 Nov 2004, Mathias Sundman wrote:
+I tried building latest beta16 with gcc 3.4.1 and MingW and
+struck what I suspect is a gcc bug. While linking I got:
 
-> I'd like to start adding connection specific options to OpenVPN GUI, that 
-> need to specified somewhere.
-> 
-> The first option I plan to add is:
-> 
-> * Connection name (instead of the filename)
-> 
-> * script to run before starting openvpn, to allow for example a telnet 
-> auth session to a PIX firewall before openvpn is started.
-> 
-> I just wonder where the best place to put these options is.
-> 
-> I've thought of two ways.
-> 
-> 1) Use a comment prefix in the already existing openvpn config file like:
-> ### connection-name Office
-> 
-> where ### is used to denote that this is not really a comment but a 
-> openvpn-gui option.
-> 
-> 2) Use a new config file with the same name as the openvpn config file, 
-> but a diffrent extension like .ogui that can hold openvpn gui settings for 
-> each connection.
-> 
-> 
-> I'd like to get some feedback on what method the communtity would like me 
-> to use. Additional ways that I havn't thought of is of cource welcome...
+tun.o(.stab+0x11024): In function `ipset2ascii_all':
+G:/MingW32/src/inet/OpenVPN/tun.c:3321: undefined reference to `get_netsh_id'
+tun.o(.stab+0x110b4):G:/MingW32/src/inet/OpenVPN/tun.c:3321: 
+undefined reference to `get_netsh_id'
 
-The problem with embedding GUI directives in the config file using some 
-kind of prefix like "###" is that the directives become statically 
-embedded in the config file in a way that makes centralized management 
-more difficult.
+Line 3321 has no reference to get_netsh_id(). And what is this ".stab" section
+doing there?
 
-I would propose an alternative solution:
+Seems gcc has problems with prototypes at > 1 scope. Moving the protype to
+file-scope or removing 'static' from the prototype and definition of get_netshid()
+fixed it though. Anybody else seen this?
 
-Add a new pushable option to OpenVPN called "echo".  If OpenVPN encounters
-this in a config file:
+--gv
 
-  echo "gui connection-name Office"
 
-It will output to the log file:
-
-  ECHO: gui connection-name Office
-
-Now since the GUI is already inhaling OpenVPN log output, it can grep out 
-the ECHO options and treat them as control directives if they start with 
-"gui".
-
-The advantage of using something like echo is that it could be pushed from 
-the server, allowing centralized management of the GUI options.
-
-James
 
