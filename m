@@ -1,9 +1,9 @@
-From: Robin Rosenberg <robin.rosenberg@...221...>
-Subject: Re: [Openvpn-devel] RPM build of 2.0-rc16 fails on MandrakeSoft
-References: <4220EC61.1000005@...355...> <20050311092251.GB14692@...33...> <Pine.LNX.4.58.0503110939510.2608@...41...>
-In-Reply-To: <Pine.LNX.4.58.0503110939510.2608@...41...>
+Message-ID: <424135B7.5090301@...364...>
+From: Yannick Lecaillez <yl@...364...>
 MIME-Version: 1.0
-Message-Id: <200503222347.24549.robin.rosenberg@...221...>
+Content-Type: multipart/mixed;
+ boundary="------------030904080403040508040304"
+Subject: [Openvpn-devel] Contribution
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,49 +14,53 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Mar 22 14:48:32 2005
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Date: Wed Mar 23 01:28:55 2005
 To: openvpn-devel@lists.sourceforge.net
-Cc: James Yonan <jim@...41...>, Matthias Andree <matthias.andree@...68...>, TomWalsh <tomw-junk01@...355...>
 
-fredag 11 mars 2005 17:47 skrev James Yonan:
-> On Fri, 11 Mar 2005, Matthias Andree wrote:
-> > On Thu, 10 Mar 2005, TomWalsh wrote:
-> > > >True, but SuSE and RH/Fedora both use "lzo" and "lzo-devel" as the
-> > > >provider names.  That seems reasonable, as prepending a "lib" to the
-> > > >provider names for all libraries would render most RPM .spec files
-> > > >incompatible.
-> > > >
-> > > >Any guidance from LSB?
-> > >
-> > > No, LSB seems to deal with more basic issues of the O/S.  What you
-> > > could consider the "primatives" of a GNU/Linux systems contents. 
-> > > Nothing as far reaching as naming conventions for packages other than
-> > > the minimum requisite packages to start & run a basic Linux system, RPM
-> > > construction, etc.
-> >
-> > RPM appears to, at least on Red Hat and Novell/SUSE derived machines,
-> > support the libraries' ELF SONAME, too, which is what my former
-> > suggestion has been about, and AFAICS, the soname is the same on all
-> > machines, namely liblzo.so.1 (use readelf -d to figure).
->
-> Shorter term, because 2.0 final is so close, I don't want to change
-> anything in the .spec except for stuff which is bracketed by %if
-> "%{_vendor}" == "MandrakeSoft".
->
+This is a multi-part message in MIME format.
+--------------030904080403040508040304
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Well.. Mandrake is breaking it anyway...  (sic!) In 10.2 beta they changed 
-MandrakeSoft to Mandrakesoft... :), so openvpn is not building fine in 
-cooker. First rpm -ta doesn't find "Specfile", which rpm in 10.2 apparently 
-wants, so I have to extract in manually, and then it fails because vendor is 
-not Mandrakesoft.
+Hi !
 
-I bug reported the lzo-inconsistency a long time ago (they have other 
-libraries that have "compatibility provides", so having one for liblzo would 
-be too miuch, but so far nothing has changed to the better.
+    I'm using OpenVPN since several month in production
+environment and give me great results. So thanks about
+this product !
 
--- robin
+    Now, i wish to create a fully meshed VPN using
+OpenVPN. I saw this is one of the futur plan of the
+OpenVPN project (OpenVPN v3 ?). So, i would
+help the OpenVPN project and don't just sit down
+and waiting for this feature.
+
+    So my question is, what rest to do about OpenVPN
+2.0 ? Code, test, documentation, translation ? Is there
+any roadmap ? I prefere to do code but i'm open to
+other things :-)
+
+    Thanks, Yannick.
+
+
+
+--------------030904080403040508040304
+Content-Type: text/x-vcard; charset=utf-8;
+ name="yl.vcf"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="yl.vcf"
+
+begin:vcard
+fn:Yannick Lecaillez
+n:Lecaillez;Yannick
+org:Vivaxe Hldi;ItioWeb
+adr;quoted-printable:;;116, Bis All=C3=A9e des Dauphins;St Ismier;;Grenoble;France
+email;internet:yl@...364...
+x-mozilla-html:FALSE
+url:http://www.itioweb.com
+version:2.1
+end:vcard
+
+
+--------------030904080403040508040304--
 
