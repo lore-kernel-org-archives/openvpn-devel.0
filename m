@@ -1,11 +1,9 @@
-Message-ID: <a6589cd60411060723236852f@...278...>
-From: Hans Fugal <fugalh@...277...>
-Reply-To: Hans Fugal <fugalh@...277...>
+From: Mathias Sundman <mathias@...209...>
 Subject: Re: [Openvpn-devel] CreateFile failed on TAP device
-In-Reply-To: <Pine.LNX.4.61.0411060032480.1651@...210...>
-Mime-Version: 1.0
+In-Reply-To: <a6589cd6041105091611d082c6@...278...>
+Message-ID: <Pine.LNX.4.61.0411061639340.3607@...210...>
 References: <a6589cd6041105091611d082c6@...278...>
-	 <Pine.LNX.4.61.0411060032480.1651@...210...>
+MIME-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -16,56 +14,39 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Nov  6 07:28:08 2004
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-To: Mathias Sundman <mathias@...209...>
+Date: Sat Nov  6 07:52:47 2004
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 8bit
+To: Hans Fugal <fugalh@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Sat, 6 Nov 2004 00:36:12 +0100 (CET), Mathias Sundman
-<mathias@...209...> wrote:
-> It's a windows system, right? Reinstall and reboot is always a solution on
-> such a beast ;-)
+On Fri, 5 Nov 2004, Hans Fugal wrote:
 
-Yes, and that's what we ended up doing.
- 
-> Is she using --dev-node to specify the tun/tap interface?
-# Her config file:
-dev tun
-client
-remote 204.96.22.195
+> A user is getting this error. She's using XP
+>
+> Fri Nov 05 09:07:24 2004 us=747770 CreateFile failed on TAP device:
+> \\.\Global\{A3B605BE-B118-49BA-92C3-C6ADFD7A364C}.tap: The system
+> cannot find the file specified.   (errno=2)
+>
+> Attached is her full log. She was connecting just fine yesterday. I've
+> had her stop and start via openvpn gui, with the same results (this
+> log file is from the start after the stop)
+>
+> I don't know what to tell her, other than to uninstall, reboot, and
+> reinstall. Does anyone have any other advice?
 
-ca wencor-cacert.pem
-cert user.pem
-key  user.pem
+Ahh, now I remember. This was asked a few weeks ago, and then someone gave 
+the tip to check if the TAP device had misstakenly been disabled.
 
-keepalive 10 60
-comp-lzo
-mute 5
-verb 4
+I just checked, and you do get exactly that message if the device is 
+disabled.
 
-In addition, I'm pushing a route and a few dhcp-options.
+I guess reinstalling openvpn re-enables the interface, so that explains 
+why that would solve the problem.
 
-> Does she have multiple tun/tap interfaces installed?
-
-She shouldn't, if she followed my instructions properly.
- 
-> If she run ipconfig can she see the device with the GUID listed above?
-
-She had a hard time finding All Programs in the Start Menu. :-)
-
-> Does it fail evert time she tries to connect now?
-
-Yes, it was failing every time.
-
-> Did she make any changes when it stopped working? Any new patches applied?
-
-She claimed she didn't make any changes, and she certainly wouldn't
-have been applying patches or reinstalling components. She may have
-run the original installer again, that's a possibility. I believe she
-was trying to start another openvpn gui instance, FWIW.
-
-Hans
 -- 
-De gustibus non disputandum est.
+_________________________________________________________
+Mathias Sundman              (^)   ASCII Ribbon Campaign
+NILINGS AB                    X    NO HTML/RTF in e-mail
+Tel: +46-(0)8-666 32 28      / \   NO Word docs in e-mail
 
