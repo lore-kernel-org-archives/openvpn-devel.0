@@ -1,6 +1,6 @@
 From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1057532896.57648@...41...>
-Subject: [Openvpn-devel] 1.4.x efficiency bug + 1.4.2 release candidate
+Message-ID: <twig.1057855711.85674@...41...>
+Subject: [Openvpn-devel] OpenVPN 1.4.2 release candidate, please test
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -11,25 +11,23 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Jul  6 16:09:09 2003
+Date: Thu Jul 10 11:48:34 2003
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
-1.4.0 and 1.4.1 have a fairly serious efficiency bug when built by compilers
-which do not support ISO C99 vararg macros.  If you run ./configure with 1.4.0
-or 1.4.1 and you see this line:
+This is a maintenance release which (a) fixes the previously discussed ISO C99
+vararg efficiency bug, and (b) further stabilizes the experimental
+--mtu-dynamic option which causes OpenVPN to perform internal datagram
+fragmentation in cases where native IP fragmentation is broken.
 
-  checking for ISO C 1999 vararg macro support... no
+Testing will be helpful at this point, especially for non-x86-linux platforms.    
 
-you will be experiencing a significant slowdown due to this bug.
+Download:
 
-A minimal patch is available against 1.4.0 and 1.4.1:
+http://openvpn.sourceforge.net/beta/openvpn-1.4.1.9.tar.gz (or CVS)
 
-http://openvpn.sourceforge.net/patch/isoc99fix.patch
-
-Alternatively, you are encouraged to test the first 1.4.2 release candidate
-which also contains a fix for the ISO C99 vararg bug, as well as:
+Change Log:
 
 * Removed adaptive bandwidth from
   --mtu-dynamic -- its absence appears
@@ -60,14 +58,6 @@ which also contains a fix for the ISO C99 vararg bug, as well as:
 * Created an init script for Gentoo Linux
   in ./gentoo directory (1.4.1.6).
 
-Download the release candidate:
-
-http://openvpn.sourceforge.net/beta/openvpn-1.4.1.8.tar.gz
-
-Release candidate is also available on CVS (note that sourceforge anonymous
-CVS is now 24 hour delayed).
-
 James
-
 
 
