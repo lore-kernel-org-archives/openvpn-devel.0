@@ -1,10 +1,10 @@
-Message-ID: <40F129D4.7070909@...83...>
+Message-ID: <40F129CE.8050708@...83...>
 From: Jan Kiszka <jan.kiszka@...83...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Re: Interface with GUI agent
-References: <40E18559.8020407@...244...> <200407072255.54148.jim@...41...> <Pine.LNX.4.60.0407080941160.5287@...210...> <200407081043.25501.jim@...41...> <Pine.LNX.4.60.0407082214170.6520@...210...>
-In-Reply-To: <Pine.LNX.4.60.0407082214170.6520@...210...>
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg=sha1; boundary="------------ms020003000209000702000208"
+References: <40E18559.8020407@...244...> <40EA6CFD.2030603@...83...> <Pine.LNX.4.60.0407061112170.372@...210...> <200407071803.14060.jim@...41...>
+In-Reply-To: <200407071803.14060.jim@...41...>
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg=sha1; boundary="------------ms070205060300060209020901"
+Subject: [Openvpn-devel] Re: Interface with GUI agent
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,45 +15,63 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Jul 11 04:52:20 2004
-To: Mathias Sundman <mathias@...209...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Sun Jul 11 04:53:23 2004
+To: James Yonan <jim@...41...>
+Cc: Mathias Sundman <mathias@...209...>, openvpn-devel@lists.sourceforge.net
 
 This is a cryptographically signed message in MIME format.
 
---------------ms020003000209000702000208
+--------------ms070205060300060209020901
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Mathias Sundman wrote:
+James Yonan wrote:
+> 
+> I'm not sure that we really need a wrapper for unix, because most unix users 
+> will control OpenVPN by:
+> 
+> (1) editing config files and starting from /etc/init.d, or
+> (2) using some sort of GUI-based admin tool such as YaST
+> 
+> and both of these methods are traditionally done as root.
+> 
+
+You consider the typical openvpn user in a client scenario under unix as 
+a command line freak - might be still true for the moment, but certainly 
+not in the future. An increasing number of gui-oriented users are 
+switching over to unix, in particular linux. And what would be better 
+for a smooth switch-over than finding a similar gui on both platforms? 
+Command line freaks already have anything the need with what openvpn now 
+provides, so this is not the audience we should target.
+
 > ...
-> One more thing to consider... Should we consider a system running this 
-> service manager an open system where all locally logged on users is 
-> allowed to fully manage openvpn connections, which includes:
+>>>Yes, this will work. But I'm afraid - maybe I'm wrong - that the GUI will
+>>>then have to be implemented quite differently on Windows and Unix. On
+>>>Windows, we would open a socket and both send the commands over it and
+>>>receive the status. On Unix, we would first start the process and then
+>>>connect to a socket for status information (BTW, which socket would then
+>>>be used when multiple instances of openvpn are running?).
 > 
-> * Start/Stop openvpn processes
-
-As a first step, I think we should allow all users to access this 
-service. Later on, one may consider some authorisation mechanism to 
-access specific configurations. This could be some additional parameter 
-in a config file or some meta config file for the wrapping service.
-
-> * Create new openvpn configs
-> * delete openvpn configs
 > 
-> (Hereby not said that creating/deleting configs should be done via the 
-> service manager. I just want to discuss whether a normal user should be 
-> able to do this or not)
+> Should the unix GUI be written for generic X, or should we develop admin 
+> modules for specific distros such as YaST?
+> 
+> I would go for the latter, because it will make the interface fit more 
+> seamlessly into a distribution's existing admin infrastructure.
 > 
 
-As just said in my reply to an earlier mail, I don't think that 
-modifying the configurations shall become part of the gui. This would be 
-feature overloading, especially on a unix system where you typically 
-configure using a text editor.
+I would not think about an admin gui at the moment. Maybe this will 
+never be needed as configuration files are much easier to handle. I'm 
+personally not looking for gui dialogs where I can select and combine 
+graphically any option the openvpn service provides - in case this is 
+the impression you got of my feature request. If SuSE, any other 
+distributor, or projects like webmin are interested in providing some 
+gui for creating the config file, let them do this. But we should first 
+concentrate on an interface for *using* openvpn in daily work!
 
 Jan
 
---------------ms020003000209000702000208
+--------------ms070205060300060209020901
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -135,7 +153,7 @@ A1UEChMJV0VCLkRFIEFHMRUwEwYDVQQLEwxUcnVzdCBDZW50ZXIxGjAYBgNVBAcTEUQtNzYy
 MjcgS2FybHNydWhlMS0wKwYDVQQDEyRXRUIuREUgVHJ1c3RDZW50ZXIgRU1haWwtWmVydGlm
 aWthdGUxGzAZBgkqhkiG9w0BCQEWDHRydXN0QHdlYi5kZQIEAplQXTAJBgUrDgMCGgUAoIIC
 LTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0wNDA3MTExMTUx
-NDhaMCMGCSqGSIb3DQEJBDEWBBQGGn9KBQt7sbfz/ahY8grVp+/nqzBSBgkqhkiG9w0BCQ8x
+NDJaMCMGCSqGSIb3DQEJBDEWBBSNg63CVu7wF8hqs42pWKRKsMAs0zBSBgkqhkiG9w0BCQ8x
 RTBDMAoGCCqGSIb3DQMHMA4GCCqGSIb3DQMCAgIAgDANBggqhkiG9w0DAgIBQDAHBgUrDgMC
 BzANBggqhkiG9w0DAgIBKDCBugYJKwYBBAGCNxAEMYGsMIGpMIGgMQswCQYDVQQGEwJERTES
 MBAGA1UEChMJV0VCLkRFIEFHMRUwEwYDVQQLEwxUcnVzdCBDZW50ZXIxGjAYBgNVBAcTEUQt
@@ -144,9 +162,9 @@ dGlmaWthdGUxGzAZBgkqhkiG9w0BCQEWDHRydXN0QHdlYi5kZQIEAplQXTCBvAYLKoZIhvcN
 AQkQAgsxgayggakwgaAxCzAJBgNVBAYTAkRFMRIwEAYDVQQKEwlXRUIuREUgQUcxFTATBgNV
 BAsTDFRydXN0IENlbnRlcjEaMBgGA1UEBxMRRC03NjIyNyBLYXJsc3J1aGUxLTArBgNVBAMT
 JFdFQi5ERSBUcnVzdENlbnRlciBFTWFpbC1aZXJ0aWZpa2F0ZTEbMBkGCSqGSIb3DQEJARYM
-dHJ1c3RAd2ViLmRlAgQCmVBdMA0GCSqGSIb3DQEBAQUABIGAdj0J8MJkrENuqfbV6aDqOnVL
-nR8bRJBheZgSbQomEwciQNHT/1wN84m5gj3TyHkCU4Bm7bN0NDAy5WLJGSE3oySxEN83L5DB
-igW7C8sa49aW1MWJaeeulqjn57SjIwKdaqYFGTMveWT2oVNNI2YTu6Er0rR/Wu3Kb2YE11QI
-ccsAAAAAAAA=
---------------ms020003000209000702000208--
+dHJ1c3RAd2ViLmRlAgQCmVBdMA0GCSqGSIb3DQEBAQUABIGATeTPr2/nUgsxyOKNaCdqm2vT
+8aL6BR5HuS6shAoqAhMk2pz6ehQBo9EuEjD/Opl6lpkrBbXJ7iSVPTpgMEf486Chs0zJqCgm
+NRVyIRxjjDNVcNMUCw4ehXIf+7sJuVZr3lVwTgagVAgag8hyH/0p6RMa4bov6eTtgvBJtvnf
+HkEAAAAAAAA=
+--------------ms070205060300060209020901--
 
