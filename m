@@ -1,14 +1,9 @@
-Message-ID: <1e6368e80501140606a9014cf@...278...>
-From: Leonard Isham <leonard.isham@...277...>
-Reply-To: Leonard Isham <leonard.isham@...277...>
-Subject: Re: [Openvpn-devel] Openvpn future: probably certificate problems...
-In-Reply-To: <41E7BAEE.8060802@...255...>
-Mime-Version: 1.0
+From: James Yonan <jim@...41...>
+In-Reply-To: <41E67DB4.6090504@...255...>
+Message-ID: <Pine.LNX.4.58.0501141932270.2801@...41...>
 References: <41E67DB4.6090504@...255...>
-	 <1e6368e805011315343512955f@...278...>
-	 <41E78806.1020700@...255...>
-	 <1e6368e80501140259b1a9a8e@...278...>
-	 <41E7BAEE.8060802@...255...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Re: Openvpn future: probably certificate problems...
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -19,79 +14,66 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Jan 14 06:07:14 2005
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Date: Fri Jan 14 19:04:13 2005
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 To: Didier Conchaudron <didier@...255...>
-Cc: James Yonan <jim@...41...>, Mathias Sundman <mathias@...209...>, openvpn-devel@lists.sourceforge.net, peter@...292...
+Cc: Mathias Sundman <mathias@...209...>, openvpn-devel@lists.sourceforge.net, peter@...292...
 
-On Fri, 14 Jan 2005 13:28:30 +0100, Didier Conchaudron
-<didier@...255...> wrote:
-> Leonard Isham wrote:
-> 
-> [snip]
-> 
-> >>Btw, MSDN cryptoapi docs don't talk about a way to get userspace certs
-> >>from a SYSTEM rights. I think a way to solve this issue would be to make
-> >>  openvpn deals with a userspace component which one could get the
-> >>certificate and supply desired data to openvpn at tunnel startup. This
-> >>userspace component could be openvpn-gui or another program. I really
-> >>don't know if this kind of solution is technicaly possible. Only true
-> >>openvpn hackers could ;-)
-> >>
-> >
-> >
-> > All good points. I must add a couple of my own.
-> >
-> > 1) OpenVPN is cross platform.
-> 
-> Yes, those certificates problems are only windows-related. Linux and
-> *BSD don't have such problems to make user certs available to root.
+On Thu, 13 Jan 2005, Didier Conchaudron wrote:
 
-Exactly what I meant.
+> Hi all,
+> 
+> I'm still working on a renewed openvpn service wrapper( which's heading 
+> to allow a non-admin user to start/stop pre-defined tunnels via a tcp 
+> socket) and I see some big troubles in a near future.
+> 
+> The *great* actual cryptoapi patch allow a user to access local machine 
+> and local user certs. It's quite good right now because most of the 
+> openvpn users are using it with admin rights or non-interactive 
+> processing( like autostart at windows boot).
+> 
+> I'm worrying about those features when our aim will be to do let 
+> non-admin users start their tunnel and authenticate themselves on the 
+> openvpn server with their own certificate. In the actual openvpn it's 
+> not possible, because the SYSTEM account can only access to his own 
+> certs and the local machine certs, but not "Foo Bar User" certs.
+> 
+> We can ask ourselves few questions:
+> 
+> - is it possible to make SYSTEM access user certs?
+> - if not, how can we make openvpn access to those users data?
+> 
+> A friend of mine said an answer could be to let the GUI(or a user only 
+> component) manage the access to such user-related data, and let openvpn 
+> deal with this component in order to use the certs.
+> 
+> Of course, this problem is only windows-related.
+> 
+> What do you think of this problem?
 
-> > 2) Apparently a MS design implementation. Could possible be rectified
-> > by having the service use the user login instead of system.
-> 
-> First, the certificate way of things like MS have coded it is not bad
-> because it's quite usefull to disable user certificate access for
-> admin/system. The MS problem comes from the missing of a su/sudo system
-> in order to allow a user to temporary access other account data/rights.
-> 
-> Your suggestion about moving the service into userspace is not the
-> solution because we need a system-space service in order to set up the
-> tunnels(which require admin/system rights) instead of users, because
-> they're not allowed to.
-> 
-> Finally, on win32 and in a company context, a system-space service is
-> necessary to achieve tunnel set up, a user-space program is necessary in
-> order to get the user certs and to let him choose when he want to set up
-> the tunnel.
+First of all, the current impediments to running OpenVPN on Windows in 
+non-admin user mode is:
 
-I wasn't bashing, just stating that it was due to the MS
-implementation not a bug.
+(1a) The openvpn.exe process needs to open a device handle to the
+TAP-Win32 adapter.  Windows does not provide a convenient way for the
+TAP-Win32 adapter to allow itself to be opened by non-admin apps.
 
-> > 3) At this stage I think changes of this magnitude, as you suggest,
-> > would most likely be post 2.0.  James an the other brains behind this
-> > would know better.
-> 
-> The new service wrapper was soon considered as a post 2.0 feature.
-> Perhaps more.
-> The big problem is that we actually have a single binary which is able
-> to do everything, a great gui which allow end-users to interact easily.
-> And what we are talking about is a global system, actually usefull for
-> few of us, which will need 2 or 3 components in system/user space for
-> just one platform. But this small case is what will bring openvpn on top
-> of proprietary vpn challengers.
-> 
-> Is our community ready to get to a such level? Do we want to? In a
-> personnal point of view, I think openvpn is a great piece of code and it
-> deserve to be famous and widely used.
-> 
+(2a) OpenVPN needs to be able to modify the routing table.  Most OSes 
+(Windows & Linux included) require admin/root privileges for this.
 
-I personally have confidence in the developers.
+Now it appears that we have another obstacle, this time going the other 
+way.
 
--- 
-Leonard Isham, CISSP
-Ostendo non ostento.
+(1b) The SYSTEM account (sort of like "Windows" root, the user under 
+which services/daemons run) can't read a specific user's key from the 
+Crypto API store.
+
+Either we need to run openvpn.exe in user mode and solve (1a) and (2a) or
+run openvpn.exe in service mode and solve (1b).  (1a) and (2a) seem
+relatively difficult to solve, so probably it's worthwhile to attempt to
+solve (1b) -- or at least study its difficulty in relation to (1a) and 
+(2a).
+
+James
 
