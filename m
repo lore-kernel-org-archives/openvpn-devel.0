@@ -1,12 +1,8 @@
-Message-ID: <42032FDD.50002@...348...>
-From: Patrick Steiner <steiner@...348...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Re: OpenVPN with OPIE (One Time Passwords in
- Everything) ??
-References: <4202350D.4020708@...348...> <pan.2005.02.03.18.39.30.133381@...294...> <Pine.LNX.4.58.0502031317270.23846@...41...>
-In-Reply-To: <Pine.LNX.4.58.0502031317270.23846@...41...>
-Content-Type: multipart/alternative;
- boundary="------------050406000905080000000505"
+Message-ID: <ee2671e605020907063b5d4138@...278...>
+From: Prem Kumar J <premkumarjayaram@...277...>
+Reply-To: Prem Kumar J <premkumarjayaram@...277...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Openvpn 2.0 TAP installation on WindowsXP
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -17,157 +13,56 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Feb  4 00:19:37 2005
+Date: Wed Feb  9 07:07:34 2005
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------050406000905080000000505
-X-MIME-Autoconverted: from 8bit to quoted-printable by smtp.hispeed.ch id j148Ib65022336
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Hello Group,
 
-Yes thats what i need, thanks james!
+I recently downloaded the OpenVPN 2.0 from the openvpn site and I
+wanted to setup a TAP device in multi-client fashion on a Windows XP
+box with SP2. As mentioned in the openvpn site, I selected the tap
+interface ( tap0 ) and the ethernet adaptor and bridged it. Also, I
+assigned the IP address and subnet of the ethernet adaptor to the
+bidge interface.
 
-James Yonan wrote:
+Now, if I connect more than one client to the server I get connection
+reset problem in few seconds just after the connection is extablished.
+I took the sample conf files from the sample-config-files folder.
 
->On Thu, 3 Feb 2005, Charles Duffy wrote:
->
->=20=20
->
->>On Thu, 03 Feb 2005 15:28:29 +0100, Patrick Steiner wrote:
->>
->>=20=20=20=20
->>
->>>Is it possible to use OpenVPN with OPIE (One Time Passwords in
->>>Everything) What i want is to connect from a windows client to a linux
->>>server. But for OPIE i need a interactive password authentication. this
->>>means: the server send password string an the user at the client side
->>>give his password based on the string from the server. Is this possible
->>>to inplement?
->>>=20=20=20=20=20=20
->>>
->>It's already implemented. See auth-user-pass and auth-user-pass-verify.
->>=20=20=20=20
->>
->
->Right, but I think he's asking for a challenge/response mechanism, which=20
->doesn't yet exist.
->
->The server would need to generate a challenge string and send it to the
->client BEFORE the client-user enters the password.  It could be done but=20
->would require a patch.
->
->James
->
->
->
->-------------------------------------------------------
->This SF.Net email is sponsored by: IntelliVIEW -- Interactive Reporting
->Tool for open source databases. Create drag-&-drop reports. Save time
->by over 75%! Publish reports on the web. Export to DOC, XLS, RTF, etc.
->Download a FREE copy at http://www.intelliview.com/go/osdn_nl
->_______________________________________________
->Openvpn-devel mailing list
->Openvpn-devel@lists.sourceforge.net
->https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
->=20=20
->
+server TAP conf file:
 
---=20
-******************************************************
-*  Patrick Steiner
-*
-*  AlpNET Engineering AG - CyberMedia Gesamtl=F6sungen
-*  Laurenzgasse 5, 8006 Z=FCrich
-*
-*  Telefon +41(0)1 360 8030
-*  Direkt  +41(0)1 360 8034
-*  Fax     +41(0)1 360 8031
-*
-*  steiner@...348..., http://www.alpnet.ch
-******************************************************
+port 1194
+proto tcp
+dev tap
+ca sample-keys/tmp-ca.crt
+cert sample-keys/server.crt
+key sample-keys/server.key  
+dh sample-keys/dh1024.pem
+server-bridge 192.168.1.241 255.255.255.0 192.168.1.50 192.168.1.100
+duplicate-cn
 
+client conf file:
 
---------------050406000905080000000505
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+client
+dev tap
+proto tcp
+remote 192.168.1.241 1194
+ca sample-keys/tmp-ca.crt
+cert sample-keys/client.crt
+key sample-keys/client.key
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
-  <title></title>
-</head>
-<body bgcolor="#ffffff" text="#000000">
-Yes thats what i need, thanks james!<br>
-<br>
-James Yonan wrote:
-<blockquote cite="midPine.LNX.4.58.0502031317270.23846@...41..."
- type="cite">
-  <pre wrap="">On Thu, 3 Feb 2005, Charles Duffy wrote:
+In the above case 192.168.1.241 is the XP machine on which the TAP
+server is installed.
 
-  </pre>
-  <blockquote type="cite">
-    <pre wrap="">On Thu, 03 Feb 2005 15:28:29 +0100, Patrick Steiner wrote:
+Also, I tried to create more TAP adapters and created a bridge
+assuming that openvpn might require a pool of ceated TAP adapters.
+Even in this case I got "connection reset problem" just few minutes
+after the client gets connected the server.
 
-    </pre>
-    <blockquote type="cite">
-      <pre wrap="">Is it possible to use OpenVPN with OPIE (One Time Passwords in
-Everything) What i want is to connect from a windows client to a linux
-server. But for OPIE i need a interactive password authentication. this
-means: the server send password string an the user at the client side
-give his password based on the string from the server. Is this possible
-to inplement?
-      </pre>
-    </blockquote>
-    <pre wrap="">It's already implemented. See auth-user-pass and auth-user-pass-verify.
-    </pre>
-  </blockquote>
-  <pre wrap=""><!---->
-Right, but I think he's asking for a challenge/response mechanism, which 
-doesn't yet exist.
+Am I missing any important setting in the conf file ?
 
-The server would need to generate a challenge string and send it to the
-client BEFORE the client-user enters the password.  It could be done but 
-would require a patch.
-
-James
-
-
-
--------------------------------------------------------
-This SF.Net email is sponsored by: IntelliVIEW -- Interactive Reporting
-Tool for open source databases. Create drag-&amp;-drop reports. Save time
-by over 75%! Publish reports on the web. Export to DOC, XLS, RTF, etc.
-Download a FREE copy at <a class="moz-txt-link-freetext"
- href="http://www.intelliview.com/go/osdn_nl">http://www.intelliview.com/go/osdn_nl</a>
-_______________________________________________
-Openvpn-devel mailing list
-<a class="moz-txt-link-abbreviated"
- href="mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@lists.sourceforge.net</a>
-<a class="moz-txt-link-freetext"
- href="https://lists.sourceforge.net/lists/listinfo/openvpn-devel">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a>
-
-  </pre>
-</blockquote>
-<br>
-<pre class="moz-signature" cols="72">-- 
-******************************************************
-*  Patrick Steiner
-*
-*  AlpNET Engineering AG - CyberMedia Gesamtl&ouml;sungen
-*  Laurenzgasse 5, 8006 Z&uuml;rich
-*
-*  Telefon +41(0)1 360 8030
-*  Direkt  +41(0)1 360 8034
-*  Fax     +41(0)1 360 8031
-*
-*  <a class="moz-txt-link-abbreviated" href="mailto:steiner@...348...">steiner@...348...</a>, <a
- class="moz-txt-link-freetext" href="http://www.alpnet.ch">http://www.alpnet.ch</a>
-******************************************************</pre>
-</body>
-</html>
-
---------------050406000905080000000505--
+Thanks in advance
+-Prem
 
