@@ -1,7 +1,7 @@
-Message-ID: <007001c2380e$5cd8e0d0$1000000a@...4...>
-From: "James Yonan" <jim@...3...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Ramifications on OpenVPN of OpenSSL security announcement
+From: Alberto Gonzalez Iniesta <agi@...5...>
+Message-ID: <20020827144054.GB1146@...30...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Fwd: Bug#158404: openvpn: Improper error handling
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -12,45 +12,65 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://www.geocrawler.com/redir-sf.php3?list=openvpn-devel>
-Date: Tue Jul 30 14:15:04 2002
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
+Date: Tue Aug 27 07:45:06 2002
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-As many of you have probably noticed, the OpenSSL project released a
-security update today which fixes potential remote buffer overflows.
+Hi James et al,
 
-What you may not have known is that the ASN1 parser bug was independently
-discovered in the process of stress testing OpenVPN, earning yours truly the
-dubious distinction of being acknowledged in the security advisory.
+I just came back from holidays and got this bug report in Debian. (Seems
+like IBM is using OpenVPN). I didn't have time to look at it yet, but
+I'm sure you'll handle it better anyway :)
 
-So here's the scoop for OpenVPN users:
+Best regards,
 
-(1) If you are using preshared static key mode, you are not vulnerable.
-
-(2) If you are using TLS mode with --tls-auth, you are not vulnerable.
-
-(3) If you are using TLS mode without --tls-auth, you may be vulnerable if
-you are also using --float.
-
-If you think you are vulnerable, the quickest fix is to start
-using --tls-auth, which was explicitly designed to protect against buffer
-overflows in OpenSSL by creating a two-tier authentication hierarchy that
-forces ALL incoming packets to authenticate via HMAC before they are passed
-on to the TLS code in OpenSSL.  Think of it as a kind of MAC firewall.
-
-In general you should also consider downgrading privileges with --user
-and/or --group, to limit the damage that would be caused by a remote buffer
-overflow attack.  If for whatever reason you must run as root, then consider
-using the --chroot option to lock the OpenVPN daemon into a restricted
-filesystem, so that a remote attack would not be able to modify sensitive
-files.
-
-Of course most systems have a lot of other apps and daemons that depend on
-OpenSSL so upgrading ASAP is probably the best course.
-
-James
+Alberto
 
 
+
+----- Forwarded message from Richard A Nelson <cowboy@...39...> -----
+
+From: Richard A Nelson <cowboy@...39...>
+Reply-To: Richard A Nelson <cowboy@...39...>,
+	158404@...40...
+To: submit@...40...
+Subject: Bug#158404: openvpn: Improper error handling
+Date: Mon, 26 Aug 2002 17:28:37 -0400
+X-Spam-Status: No, hits=-4.5 required=5.0 tests=SENT_BY_BTS,FORGED_RCVD_FOUND version=2.20
+
+Package: openvpn
+Version: 1.3.0-1
+Severity: important
+
+I often get a flood of these messages:
+openvpn[1239]: read from UDP: Resource temporarily unavailable (errno=11)
+
+The condition persists for a bit, and then clears up...  While the errors
+are occuring, occasionally the session will drop ;(
+
+It seems to be improper handling of EAGAIN !
+The potential solutions would most likely be:
+	1) re-try the systemcall
+	2) redrive the read loop
+	3) set blocking IO
+
+-- System Information
+Debian Release: testing/unstable
+Kernel Version: Linux badlands.lexington.ibm.com 2.4.20-pre4-ac1 #13 Sat Aug 24 19:11:43 EDT 2002 i686 unknown unknown GNU/Linux
+
+Versions of the packages openvpn depends on:
+ii  libc6          2.2.5-14       GNU C Library: Shared libraries and Timezone
+ii  liblzo1        1.07-1         A real-time data compression library.
+ii  libssl0.9.6    0.9.6g-2       SSL shared libraries
+
+----- End forwarded message -----
+
+-- 
+Alberto Gonzalez Iniesta       | They that give up essential liberty
+agi@...5...                     | to obtain a little temporary safety
+Encrypted mail preferred       | deserve neither liberty nor safety.
+
+Key fingerprint = 9782 04E7 2B75 405C F5E9  0C81 C514 AF8E 4BA4 01C3
 
