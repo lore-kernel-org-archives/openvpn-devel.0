@@ -1,9 +1,7 @@
-From: James Yonan <jim@...41...>
-Subject: Re: Interface with GUI agent, was: Re: [Openvpn-devel] [Patch] revoke scripts were broken
-References: <40E18559.8020407@...244...> <200406301202.59262.jim@...41...> <Pine.LNX.4.60.0406301916540.6703@...210...>
-In-Reply-To: <Pine.LNX.4.60.0406301916540.6703@...210...>
+Message-ID: <1088639130.40e3509ab594b@...238...>
+From: Brandon Knitter <knitterb@...237...>
 MIME-Version: 1.0
-Message-Id: <200406301725.43961.jim@...41...>
+Subject: [Openvpn-devel] Recommend: Version Banner
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,34 +12,29 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Jun 30 14:26:04 2004
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Date: Wed Jun 30 16:46:04 2004
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Mathias Sundman <mathias@...209...>, Jan Kiszka <jan.kiszka@...83...>
 
-> James, do you put any preferance in what language/environment a gui for
-> OpenVPN is developed in, if you would distribute it together with the main
-> application in the future?
+I had someone with a config error, and I asked them what version they were
+running, but since there was a config error, OpenVPN didn't show the version
+banner before the config failed to load.
 
-These are my current thoughts on this:
+Turns out they had version 1.6, but I'm able to reproduce this in 2.0.  It would
+have made it easier to figure out what version they were running and get them
+into 2.0 land.
 
-* Preferably, the language development tools and environment are open source, 
-so there's no impediment to anyone building from source.
+The config error was the "pull" option which 1.6 didn't have.  I added the
+config option "eeegads" and I got the same non-banner error in 2.0.
 
-* The total size of included libraries should be reasonable, so it doesn't 
-excessively push up the size of the Windows self-installing exe.
+Thanks,
 
-Having said that, I'm certainly going to be pragmatic here -- if someone puts 
-together a great GUI agent that requires Visual C++ to build, I'm not going 
-to belabor the point.
+-- 
+-bk
 
-On the other hand if it's written in Visual Basic and increases the Windows 
-package size by 10 MB then I'm going to have to think twice about actually 
-bundling it.  But if it's up to standard, I'd still link to it from the 
-website in a heartbeat.
 
-James
+
+
+
 
