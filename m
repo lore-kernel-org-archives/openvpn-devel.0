@@ -1,7 +1,7 @@
-From: Andrew Alston <aalston@...340...>
-Message-ID: <loom.20050120T173100-938@...171...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] Problems with redirect-gateway under windows XP
+From: Mathias Sundman <mathias@...209...>
+Message-ID: <Pine.LNX.4.61.0501212021010.17863@...210...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Problem with --route-method exe and --redirect-gateway
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,42 +12,42 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Jan 20 08:51:38 2005
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Date: Fri Jan 21 11:39:05 2005
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Sven-Erik Fraenell <sven-erik.fraenell@...341...>
 
-Hi All,
+Just because someone reported about problems with route additions via 
+IPAPI when using PPP or PPPoE adapters the other day, one of my users 
+reported the same problem to me today. I'll try to reproduce it on my 
+computer later to night, so we can get to the bottom with that problem.
 
-I'm running redirect-gateway under a windows xp installation, where the 
-installation is connecting as a client to a vpn server running on freebsd.
+While thoubleshouting that problem, I switched to --route-method exe, but 
+found another problem!
 
-The machine connects to the internet via a PPPoE connection over an ADSL link.
+I would call it bug in Windows route.exe rather than in OpenVPN. The 
+problem is that when using --redirect-gateway def1, and disconnecting, 
+OpenVPN executes the command:
 
-When openvpn attempts to insert the route for the vpn server (the route it 
-inserts to avoid route looping, as defined as step 1 in the man page) I get 
-the following:
+ROUTE DELETE 0.0.0.0 MASK 128.0.0.0
 
-Thu Jan 20 17:32:44 2005 us=406432 route ADD 137.158.26.30 MASK 
-255.255.255.255 165.146.135.233
-Thu Jan 20 17:32:44 2005 us=409053 ROUTE: route addition failed using 
-CreateIpForwardEntry: The parameter is incorrect.
+The problem is that route.exe deletes both the 0.0.0.0/1, AND the real 
+0.0.0.0/0 route, regardless if the MASK option is used or not.
 
-The strange thing is that if I do a manual command like:
+I double MS will fix this, so I think we need to work around this.
 
-route add 137.158.26.30 MASK 255.255.255.255 165.146.135.233 
+I can see two solutions:
 
-It works fine, just fails when openvpn tries to do it.
+1) Re-add the old default gw, like we do when not using the def1 
+parameter.
 
-I also noted that if my default gateway is set on my ethernet interface 
-instead of the PPPoE connection when I establish the vpn the route entry works 
-fine, it seems like openvpn just has a problem inserting routes to a PPPoE 
-interface under xp, though I may be wrong
+2) Also specify the gateway parameter on the route delete cmd. This causes 
+route.exe only to delete the correct route.
 
-Any thoughts / help would be appreciated on this one
-
-Andrew Alston
-Senior Technical Specialist - University of Cape Town
-
-
+--
+_____________________________________________________________
+Mathias Sundman                  (^)   ASCII Ribbon Campaign
+OpenVPN GUI for Windows           X    NO HTML/RTF in e-mail
+http://www.nilings.se/openvpn    / \   NO Word docs in e-mail
 
