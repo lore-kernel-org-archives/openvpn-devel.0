@@ -1,13 +1,9 @@
+From: James Yonan <jim@...3...>
 Subject: Re: [Openvpn-devel] add a server feature to openvpn to share udp
-	ports ?
-From: Jan Johansson <jan.johansson@...1...>
-In-Reply-To: <01e501c21a86$244c8690$1000000a@...4...>
-References: <20020621200138.J4523@...27...> 
-	<01e501c21a86$244c8690$1000000a@...4...>
-Content-Type: multipart/signed; micalg=pgp-sha1; protocol="application/pgp-signature";
-	boundary="=-56l+YW9GxG4ggi4/7O2U"
-Message-Id: <1024902829.1463.9.camel@...2...>
-Mime-Version: 1.0
+ ports ?
+In-Reply-To: <1024902829.1463.9.camel@...2...>
+Message-ID: <Pine.LNX.4.44.0206241311040.32473-100000@...21...>
+MIME-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -18,65 +14,51 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://www.geocrawler.com/redir-sf.php3?list=openvpn-devel>
-Date: Mon Jun 24 00:14:03 2002
-To: openvpn-devel@lists.sourceforge.net
+Date: Mon Jun 24 12:44:03 2002
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+To: Jan Johansson <jan.johansson@...1...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---=-56l+YW9GxG4ggi4/7O2U
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+On 24 Jun 2002, Jan Johansson wrote:
 
-On Sun, 2002-06-23 at 09:18, James Yonan wrote:
-> Hello Pat,
->=20
-> I think it's a good idea, something we're considering for the next releas=
-e.
+> On Sun, 2002-06-23 at 09:18, James Yonan wrote:
+> > Hello Pat,
+> > 
+> > I think it's a good idea, something we're considering for the next release.
+> 
+> I would like to have some info then on how to stop accepting a certain
+> client certificate, since I base my "expirations" on stopping the port
+> in question in case I no longer want a specific certificate to be able
+> to connect to the network. I mean, of course the one-port-per-person
+> will work after such an addition, but for folks that get in later.
 
-I would like to have some info then on how to stop accepting a certain
-client certificate, since I base my "expirations" on stopping the port
-in question in case I no longer want a specific certificate to be able
-to connect to the network. I mean, of course the one-port-per-person
-will work after such an addition, but for folks that get in later.
+One way to stop accepting a certain client certificate is to write a 
+--tls-verify script to check the certificate fields.
 
-> > Hi,
-> >
-> > I would like to use openvpn to secure nfs on my network. However, as it=
- is
-> > strictly peer to peer I would have to specify an udp port for every
-> > client-server nfs relationships. I would have liked to avoid that. Thus=
- I
-> > though it could be a nice addition to openvpn if it ws possible to sett=
-le
-> > it as a server, which forks for any childs.
-> >
-> > Does it conflicts with the design of openvpn, or could it accepted as a
-> > feature ?
+As far as ports are concerned, I am thinking that a forking server 
+implementation of OpenVPN would listen for incoming connections on a fixed 
+port, but then switch over to a dynamic port to finalize initialization of 
+the session.
 
---=20
-Jan Johansson (jan.johansson@...1...)
-BioMat System AB
-Klarabergsgatan 37, III
-SE-111 21 Stockholm, Sweden
-Phone: +46-(0)8-233500, Fax: +46-(0)70-3873952
+There are still a number of design issues that need to be worked out such 
+as:
 
-THIS COMMUNICATION IS ONLY INTENDED FOR THE USE OF THE INDIVIDUAL, OR
-ENTITY, TO WHICH IT IS DIRECTED AND MAY CONTAIN INFORMATION THAT IS
-PRIVILEGED, CONFIDENTIAL AND EXEMPT FROM DISCLOSURE UNDER APPLICABLE
-LAW.  IF RECEIVED IN ERROR: PLEASE NOTIFY US IMMEDIATELY THROUGH
-INFO@...25...
+(1) How do you fork on new clients without opening yourself up to DoS 
+attacks?  In order to be secure, the server would need to statelessly 
+authenticate the initial packet before forking.  Tricky, because SSL/TLS 
+requires a multi-packet exchange to authenticate.
 
---=-56l+YW9GxG4ggi4/7O2U
-Content-Type: application/pgp-signature; name=signature.asc
-Content-Description: This is a digitally signed message part
+(2) How does the server know which return routes to set up for the client, 
+without requiring an --up script on the server for every client that might 
+connect?  The client could send its routes to the server as part of the 
+initial authentication exchange, but there would need to be verification 
+machinery to ensure that that client could not attack the server by 
+sending it malformed routes.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.0.6 (GNU/Linux)
-Comment: For info see http://www.gnupg.org
+If anyone else has ideas on how to securely implement a forking-server, 
+please share them with the list.
 
-iD8DBQA9FsasNJYxu+mj1OkRArTdAJ0aKsX9XJh/k6A+qsve8rpBKa5+CwCZAWg8
-kA/6DNV4gZbvxHb/7jLsTlI=
-=lUc0
------END PGP SIGNATURE-----
-
---=-56l+YW9GxG4ggi4/7O2U--
+James
 
 
