@@ -1,7 +1,10 @@
-From: Emil <emil@...314...>
-Message-ID: <loom.20041115T171745-883@...171...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] TAP-Win32 and other NDIS IM drivers
+Subject: Re: [Openvpn-devel] Certificate Wizard 0.3b - code-related feedback
+References: <1100311165.30425.27.camel@...23...>
+From: Florian Weimer <fw@...315...>
+In-Reply-To: <1100311165.30425.27.camel@...23...> (Charles Duffy's message of
+	"Fri, 12 Nov 2004 19:59:25 -0600")
+Message-ID: <87pt2dn1do.fsf@...315...>
+MIME-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,31 +15,31 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Nov 15 08:32:00 2004
+Date: Tue Nov 16 09:36:02 2004
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 8bit
+To: Charles Duffy <cduffy@...294...>
+Cc: Vlada Macek <tuttle@...316...>, openvpn-devel@lists.sourceforge.net, it-staff@...296...
 
-I'm using the TAP-Win32 driver from openvpn together with a modified passthru
-example (the passthru NDIS IM driver in windows DDK examples).
+* Charles Duffy:
 
-However I'm experiencing the following problems (WinXP SP2):
-The computer crashes when I restore from a hybernated system. I found this:
+> @@ -242,8 +242,7 @@
+>                 char buffer[MAXLINELEN+1];
+>                 int errorCode = GetLastError();
+>  
+> -               snprintf(buffer, MAXLINELEN, _("Unable to copy '%s' to '%s' - error %d", 0), source, target, errorCode);
+> -               strcat(buffer, ": %%s");
+> +               snprintf(buffer, MAXLINELEN, _("Unable to copy '%s' to '%s' - error %d: %%s", 0), source, target, errorCode);
+>                 DisplayErrorToUser(errorCode, _("Failure copying files", 0), buffer);
+>                 return FALSE;
+>         }
+>
 
-http://www.tech-archive.net/Archive/Development/
-microsoft.public.development.device.drivers/2004-02/1154.html
 
-and implemented the fix into my NDIS IM driver.
-The result was no more blue screens but nor can I set the IP of the TAP-Win32
-device using iphlpapi.dll nor the netsh.exe option.
-The same problem persists even with empty functions in the NDIS driver.
-It seams like the fact that ProtocolStatus and ProtocolStatusComplete functions
-being called prevents me from setting the IP of the TAP-device.
+I believe that this is still wrong.  The variables source and target
+might contain '%' characters, too.
 
-Does anybode recognize this problem and maybe even have any suggestions on how
-to fix it?
-
-Regards
-/E
-
+In other places, the source code uses strncpy() in a lenient way.  You
+might want to check these places and make sure that the buffer is
+always NUL-terminated.
 
