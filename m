@@ -1,8 +1,7 @@
-Subject: Re: [Openvpn-devel] compiling statically - how?
-From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1091682930.49808@...41...>
-In-Reply-To: <20040804231213.GB21349@...33...>
-References: <411111B9.2000405@...259...>, <411111B9.2000405@...259...>
+From: "=?windows-1252?q?Fran=E7ois?= Revol" <revol@...260...>
+Message-Id: <4215141998-BeMail@...261...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] OpenVPN 1.5.0 ported to BeOS (Zeta)
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,27 +12,29 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Aug  4 22:16:10 2004
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Matthias Andree <matthias.andree@...68...>, Tomasz Chmielewski <mangoo@...259...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Sat Aug  7 07:40:07 2004
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
+Cc: =?windows-1252?q?Fran=E7ois?= Revol <revol@...260...>
 
-Matthias Andree <matthias.andree@...68...> said:
+Hello,
+With the advent of Zeta, the next incarnation of BeOS, using a real BSD
+-like network
+stack, we had the need for a VPN solution.
+Zeta will feature a tuntap driver, which implements the new Linux
+tuntap API,
+and which I wrote some time ago.
+I ported VTun, then OpenVPN 1.5.0.
 
-> On Wed, 04 Aug 2004, Tomasz Chmielewski wrote:
-> 
-> > I was thinking of an option like ./configure --compile-statically - and 
-> > with such compiled binary, I wouldn't have to install compilers, compile 
-> > OpenVPN, deinstall compilers on every machine I want it to run.
-> 
-> My first attempt would probably be ./configure CC="gcc -static" - it's
-> untested and may require the installation of static libraries on some
-> systems.
+The patch is here:
+http://clapcrest.free.fr/revol/beos/patches/openvpn-1.5.0-beos.patch.002.txt
+Might need some more cleanups, but I think I'll have a look at 2.0
+soon.
 
-I've had success with 'gcc -static' when static libraries are present, as they
-are by default on Gentoo Linux.
 
-James
+Cheers,
+Fran=E7ois  Revol -- yellowTAB - http://yellowtab.com
 
+PS. I'm not subscribded yet.
 
