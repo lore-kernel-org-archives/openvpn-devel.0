@@ -1,9 +1,7 @@
-From: Jean-Eric Cuendet <jean-eric.cuendet@...8...>
-In-Reply-To: <1020682047.11451.19.camel@...15...>
-References: <1020682047.11451.19.camel@...15...>
-Message-Id: <1021278073.4232.96.camel@...15...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] Re: [Openvpn-users] autovpn 0.1
+Message-ID: <005501c1ff43$12703600$1000000a@...4...>
+From: "James Yonan" <jim@...3...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] New Beta, Please Test
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -14,21 +12,79 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://www.geocrawler.com/redir-sf.php3?list=openvpn-devel>
-Date: Mon May 13 01:22:05 2002
-Content-Type: text/plain; charset="utf-8"
+Date: Sun May 19 07:39:02 2002
+Content-Type: text/plain;
+	charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-Hi,
+This beta can be considered an initial release candidate for 1.2.0.  See
+changelog below.
 
-> I made a package to us openvpn in a defined configuration, we want to do
-> the same as securemote from CheckPoint since there is no securemote for
+http://openvpn.sourceforge.net/beta/openvpn-1.1.1.18.tar.gz
 
-I had quite no feedback on autovpn. Is there any interest?
-If not, we'll keep it for us :-(
+Beta web site:
 
-Anyone interested?
--jec
+http://openvpn.sourceforge.net/beta/www/
+
+Changes since 1.1.1:
+
+2002.05.19 -- Version 1.1.1.18
+
+* Added configuration file support via
+  the --config option.
+* Added pthread support to improve latency.
+  With pthread support, OpenVPN
+  will offload CPU-intensive tasks such as RSA
+  key number crunching to a background thread
+  to improve tunnel packet forwarding
+  latency.  pthread support can be enabled
+  with the --enable-pthread configure option.
+  Pthread support is currently available
+  only for Linux and Solaris.
+* Added --dev-type option so that tun/tap
+  device names don't need to begin with
+  "tun" or "tap".
+* Added --writepid option to write main
+  process ID to a file.
+* Numerous portability fixes to ease
+  porting to other OSes including changing
+  all network types to uint8_t and uint32_t,
+  and not assuming that time_t is 32 bits.
+* Backported to OpenSSL 0.9.5.
+* Ported to Solaris.
+* Finished OpenBSD port except for
+  pthread support.
+* Added initialization script:
+  sample-scripts/openvpn.init
+  (Douglas Keller)
+* Ported to Mac OS X (Christoph Pfisterer).
+* Improved resilience to DoS attacks when
+  TLS mode is used without --remote or
+  --tls-auth, or when --float is used
+  with --remote.  Note however that the best
+  defense against DoS attacks in TLS mode
+  is to use --tls-auth.
+* Eliminated automake/autoconf dependency
+  for non-developers.
+* Ported configure.in to configure.ac
+  and autoconf 2.50+.
+* SIGHUP signal now causes OpenVPN to restart
+  and re-read command line and or config file,
+  in conformance with canonical daemon behaviour.
+* SIGUSR1 now does what SIGHUP did in
+  version 1.1.1 and earlier -- close and reopen
+  the UDP socket for use when DHCP changes
+  host's IP address and preserve most recently
+  authenticated peer address without rereading
+  config file.
+* SIGUSR2 added -- outputs current statistics,
+  including compression statistics.
+* All changes maintain protocol compatibility
+  with 1.1.1 and 1.1.0.
+
+James
+
 
 
 
