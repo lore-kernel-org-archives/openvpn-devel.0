@@ -1,7 +1,9 @@
-From: James Yonan <jim@...3...>
-Message-ID: <Pine.LNX.4.44.0206122302130.26457-100000@...21...>
+From: Sampo Nurmentaus <audiopoppi-13@...22...>
+Reply-To: <sampo.nurmentaus@...22...>
+Subject: Re: [Openvpn-devel] Porting to an embedded linux
+In-Reply-To: <001701c21234$184b69b0$1000000a@...4...>
+Message-ID: <Pine.LNX.4.33.0206131238520.28574-100000@...23...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 1.2.1 Released
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -12,28 +14,136 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://www.geocrawler.com/redir-sf.php3?list=openvpn-devel>
-Date: Wed Jun 12 22:08:04 2002
+Date: Thu Jun 13 02:46:02 2002
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
+To: James Yonan <jim@...3...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Binary RPMs are now provided for Red Hat 7.2 and 7.3 on the download page.  
-Successfully tested with OpenSSL 0.9.7 Beta 1 and the AES cipher.  Revamp 
-of SIGUSR1 to provide fine-grained control over resets, the goal being to 
-make OpenVPN as robust as possible on dynamic networks where DHCP/Dial-in, 
-NAT, and firewalls must all be negotiated in a dynamic context.  Hostname 
-resolution errors are now non-fatal and can be retried.  Added --mute for 
-logging verbosity control and --group for GID downgrade after 
-initialization.  Smarter pthread handling in configure.  Updates to 
-website and docs.
 
-Download:
+Thanks James,
 
-http://sourceforge.net/project/showfiles.php?group_id=48978&release_id=94530
+It really helped. Simple recrosscompiling first kernel
+and then openvpn fixed it.
 
-Enjoy!
+And now I have faced a new one :-(
 
-James
+ioctl on line 216 in tun.c (TUNSETIFF)  seems to fail
+complainin' about Invalid argument with errno 22.
+I use tun driver shipped with 2.4.14 kernel and
+if_tun.h which is identical to one in the kernel
+source tree.
 
+Any ideas?
+
+
+Sampo Nurmentaus
+
+
+
+> From: "Sampo Nurmentaus" <audiopoppi-13@...22...>
+> To: <openvpn-devel@lists.sourceforge.net>
+> Sent: Wednesday, June 12, 2002 8:31 AM
+> Subject: [Openvpn-devel] Porting to an embedded linux
+>
+>
+> > Hello folks,
+> >
+> >
+> > I have been recently busy porting openssl, openssh
+> > and openvpn to our embended linux environment
+> > build on etrax 100lx processor from axis communications.
+> >
+> > Openvpn's code was, thanks to you guys, quite easy to
+> > port but then I ran into problems when open vpn tries
+> > to ioctl tun device:
+> >
+> > ....
+> > 65: Static Decrypt: Cipher 'BF-CBC' initialized with 128 bit key
+> > 66: Static Decrypt: Using 160 bit message digest 'SHA1' for HMAC
+> > authentication
+> > 67: Data Channel MTU parms: mtu=1456 extra_frame=44 extra_buffer=44
+> > extra_tun=0
+> > 68: Cannot ioctl TUNSETIFF tun0: File descriptor in bad state (errno=77)
+> > 69: Exiting
+> >
+> >
+> > I have changed device to locate
+> > in /tmp/tun, but that shuld not couse this kind of problems.
+> > /dev is on flash image so it is easier to use /tmp for testing.
+> > I created the device as should with:
+> > mknod /tmp/tun c 10 200
+> >
+> > If I try to cat tun device read returns with the very same
+> > error text.
+> >
+> >  I compiled support to kernel (not as a module)
+> > so it should always be there.
+> >
+> >
+> > Any ideas?
+>
+> Sampo,
+>
+> See message below from a previous thread on openvpn-users, and with
+> references to vtun list.
+>
+> James
+>
+> >
+> > Thanx in advange,
+> >
+> > Sampo Nurmentaus
+>
+> James Yonan wrote:
+> >>Hi James,
+> >>
+> >>Thank you for your prompt and detailed reply.  What was happening
+> >>earlier was that I built openvpn first, then realized I needed to build
+> >>the tun/tap kernel module, so built that and then rebuilt openvpn - but
+> >>configure (god bless it) used the cached result of NOT finding if_tun.h.
+> >>  I cleared configure's cache and rebuilt it again - this time it found
+> >>"tun/tap v1.4".  Now I'm onto a new set of problems though.  Now I get:
+> >>
+> >>34: Cannot ioctl TUNSETIFF tun: File descriptor in bad state (errno=77)
+> >
+> >
+> > Though I've never seen this error personally, it has been talked about
+> > extensively on the vtun list (another tunneling daemon that uses the
+> TUN/TAP
+> > driver).
+> >
+> > Go to http://sourceforge.net/mailarchive/forum.php?forum_id=1826
+> >
+> > and search for "bad state".
+> >
+> > It appears to be caused by a mismatch between the tun/tap kernel module
+> and
+> > the kernel itself.
+> >
+> > What kernel version are you using?
+> >
+> > Because in versions 2.4.6 and higher, the TUN/TAP module is integral to
+> the
+> > kernel -- if you try to build an external version of the module, rather
+> than
+> > using the one already bundled, it will likely fail.
+>
+> Also I've read a few posts that suggest that /usr/src/linux needs to point
+> to headers that match the running kernel.  Depending on what Sean has, it
+> may be worthwhile to ensure all the various versions
+> (kernel/headers/tunTap) all match.
+>
+>
+>
+> _______________________________________________________________
+>
+> Sponsored by:
+> ThinkGeek at http://www.ThinkGeek.com/
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
 
 
