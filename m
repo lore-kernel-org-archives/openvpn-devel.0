@@ -1,7 +1,8 @@
-Message-ID: <42024CEA.7010908@...349...>
-From: Mathieu GIANNECCHINI <mathieu.giannecchini@...349...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN future goals
+From: Charles Duffy <cduffy@...294...>
+Message-ID: <pan.2005.02.03.18.39.30.133381@...294...>
+References: <4202350D.4020708@...348...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Re: OpenVPN with OPIE (One Time Passwords in Everything) ??
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,34 +13,20 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Feb  3 08:12:52 2005
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-To: Openvpn-devel@lists.sourceforge.net
+Date: Thu Feb  3 10:47:53 2005
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hello,
+On Thu, 03 Feb 2005 15:28:29 +0100, Patrick Steiner wrote:
 
-I wonder about about OpenVPN future goals. I know that evolution between=20
-the 1.x version and 2.0 with the possiblity to have multiple clients=20
-connected to a single server is a great and very important evolution. =20
+> Is it possible to use OpenVPN with OPIE (One Time Passwords in
+> Everything) What i want is to connect from a windows client to a linux
+> server. But for OPIE i need a interactive password authentication. this
+> means: the server send password string an the user at the client side
+> give his password based on the string from the server. Is this possible
+> to inplement?
 
-For example :
-
-I have a server in Paris connected two clients : one is located in Dakar=20
-and an other one in Hano=EF.
-As the server knows it has two clients connected, my aim is to=20
-automatically initiate a connection between Dakar and Hano=EF ... so that=20
-Dakar and Hano=EF can communicate directly. Of course this suppose that=20
-Paris will diffuse some informations about endpoints, and that Dakar or=20
-Hanoi had a openvpn process that can be client (for Paris) _and_ server=20
-for the other endpoint.
-
-Is it possible to imagine that in the next release ?
-Or is it already possible ? ;-)
-
-Thanks.
-
---=20
-Mathieu GIANNECCHINI <mathieu.giannecchini@...349...> http://www.auf.org
+It's already implemented. See auth-user-pass and auth-user-pass-verify.
 
 
