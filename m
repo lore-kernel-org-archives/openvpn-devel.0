@@ -1,7 +1,6 @@
-Message-Id: <200303120205.h2C25r405986@...41...>
-Subject: Re: [Openvpn-devel] [PATCH]: add config-variables to OpenVPN-1.3.2
+Message-Id: <200303150747.h2F7lE427908@...41...>
 From: "James Yonan" <jim@...41...>
-In-Reply-To: <20030311203318.200ff724.zls@...76...>
+Subject: [Openvpn-devel] New pre-1.3.3 beta
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -12,102 +11,68 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Mar 11 18:07:04 2003
+Date: Fri Mar 14 23:48:09 2003
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: lademann@...76..., ZLS Software GmbH <510047448921-0001@...75...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Christian,
+If you have a chance, please test this beta.  I mostly use linux 2.4 for
+development, so I don't have much of a chance to test on linux 2.2 and
+non-linux OSes.
 
-Rather than put a lot of scripting language infrastructure into OpenVPN's
-config file parser, why not just use a shell script, i.e.:
+Since the last beta announcement on this list, there's been a bunch of changes
+including build system portability fixes, --dev-name, and --mtu-disc.  The
+latter gives access to a linux system call that allows some manual control
+over how and whether Path MTU Discovery is implemented on the UDP socket.
 
-  openvpn --dev-name vpn_${CUSTNO} \
-          --port     5${CUSTNO} \
-          --ifconfig 10.0.0.1 10.0.${CUSTNO}.1 \
-          --dev-type tun \
-          [ ... ]
+You can download via CVS or from a tarball:
 
-After all, isn't this exactly the sort of problem that shell scripting
-languages were supposed to solve?
+http://openvpn.sourceforge.net/beta/openvpn-1.3.2.17.tar.gz
+
+Change Log:
+ 
+* Added --replay-persist feature to allow replay
+  protection across sessions.
+* Fixed bug where --ifconfig could not be used
+  with --tun-mtu.
+* Added --tun-mtu-extra parameter to deal with
+  the situation where a read on a TUN/TAP device
+  returns more data than the device's MTU size.
+* Fixed bug where some IPv6 support code for
+  Linux was not being properly ifdefed out for
+  Linux 2.2, causing compile errors.
+* Added OPENVPN_EXIT_STATUS_x codes to
+  openvpn.h to control which status value
+  openvpn returns to its caller (such as
+  a shell or inetd/xinetd) for various conditions.
+* Added OPENVPN_DEBUG_COMMAND_LINE flag to
+  openvpn.h to allow debugging in situations
+  where stdout, stderr, and syslog cannot be used
+  for message output, such as when OpenVPN is
+  instantiated by inetd/xinetd.
+* Removed owner-execute permission from file
+  created by static key generator (Herbert Xu
+  and Alberto Gonzalez Iniesta).
+* Added --passtos option to allow IPv4 TOS bits
+  to be passed from TUN/TAP input packets to
+  the outgoing UDP socket (Craig Knox).
+* Added code to prevent open socket file descriptors
+  from being accessible to called scripts.
+* Added --dev-name option (Christian Lademann).
+* Added --mtu-disc option for manual control
+  over MTU options.
+* Show OS MTU value on UDP socket write failures
+  (linux only).
+* Numerous build system and portability
+  fixes (Matthias Andree).
+* Added better sensing of compiler support for
+  variable argument macros, including (a) gcc
+  style, (b) ISO C 1999 style, and (c) no support.
+* Removed generated files from CVS.  Note INSTALL
+  file for new CVS build commands.
+* Changed all internal _* symbols to x_*
+  for C standards compliance.
 
 James
-
-ZLS Software GmbH <510047448921-0001@...75...> said:
-
-> Hi, Jim,
-> 
-> here is another one:
-> 
-> I've added variable-expandion to config-values and the keywords "set" and
-"unset".
-> With this technique you can easily split configuration of one peer across
-two files:
-> one with the specific and one with the common config values in a way that
-can help to
-> minimize the number of "configuration-knobs". 
-> 
-> 
-> An example:
-> 
->         /etc/openvpn/customer_123.conf:
-> 
->         # specific configuration for customer #123
-> 	set CUSTNO 123
->         config ./customers.common
-> 
-> 
->         /etc/openvpn/customer.common:
-> 
->         # meta-configuration for all customers
->         dev-name vpn_$(CUSTNO)             # vpn_001 to vpn_255
->         port     5$(CUSTNO)                # 5001 to 5255
->         ifconfig 10.0.0.1 10.0.$(CUSTNO).1 # 10.0.001.1 to 10.0.255.1
->         dev-type tun                       # other stuff ...
->            .
->            .
->            .
-> 
-> These are the same variable-expansion routines I committed to the Snort-IDS
-some time ago.
-> 
-> The syntax is  follows:
-> 
->     set name value    define the variable "name" containing "value".
->     unset name        undefine the variable "name".
-> 
->     $(name)           replace with the contents of variable "name".
-> 
->     $(name:-default)  replace with the contents of the variable "name" or with
->                       "default" if "name" is undefined.
-> 
->     $(name:?message)  replace with the contents of variable "name" or print out
->                       the error message "message" and exit.
-> 
-> 
-> The next thing could be something like $(( expression or calculation )).
-> 
-> As before, the patch is quite young and certanly needs more testing :-)
-> 
-> 
-> Regards,
-> 
-> Christian Lademann <lademann@...76...>
-> 
-> -- 
-> *  Christian A. Lademann, ZLS Software GmbH          mailto:lademann@...76...
-> *  ZLS Software GmbH
-> *  Frankfurter Strasse 59       Postfach 1628             mailto:zls@...76...
-> *  D-65779 Kelkheim             D-65766 Kelkheim          http://www.zls.de
-> *  Telefon +49-6195-9902-0      Telefax +49-6195-900600
-> 
-> 
-> 
-
-
-
--- 
-
-
 
 
