@@ -1,8 +1,9 @@
-From: James Yonan <jim@...41...>
+From: Matthias Andree <ma+ovpnd@...31...>
 Subject: Re: [Openvpn-devel] Pre-1.3.3 beta available for testing
-In-Reply-To: <20030219181048.GA21087@...33...>
-Message-ID: <Pine.LNX.4.44.0302191128560.12503-100000@...41...>
-MIME-Version: 1.0
+Message-ID: <20030219195933.GA12705@...33...>
+References: <20030219153803.GA32749@...33...> <Pine.LNX.4.44.0302191120220.12503-100000@...41...>
+Mime-Version: 1.0
+In-Reply-To: <Pine.LNX.4.44.0302191120220.12503-100000@...41...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -13,78 +14,32 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Feb 19 10:53:16 2003
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Date: Wed Feb 19 12:00:15 2003
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Matthias Andree <ma+ovpnd@...31...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-> There were more warnings that I haven't reported because I think they
-> didn't warrant fixes at this time, some "unused parameter" warnings. Try
-> 
-> make clean
-> make CFLAGS="-W -Wall"
-> 
-> to see more warnings :-)
+On Wed, 19 Feb 2003, James Yonan wrote:
 
-Yes, also ./configure --enable-strict does something like this.
+> > Please also note that _* names are reserved name space. Don't use them
+> > for your functions if you can avoid it, for portability -- they might
+> > screw some linker.
+> 
+> Are __* names reserved?  What's the recommended form for naming "private"  
+> variables (I'm coming from C++/Python where _* names are a common naming
+> style for class-private variables to avoid collisions with similarly named
+> public member functions)?
 
-Most of the warnings that are left (such as unused function call 
-parameters, unused static functions, etc.) would create more obfuscation 
-if they were fixed.  In principle, warnings should direct your attention 
-to possible bugs or things that need to be cleaned up, but I don't believe 
-in making the code harder to read just to fix a warning.  For example, I 
-wouldn't bracket a static function with a complex #if just to 
-eliminate warnings about its non-use (as in tun.c).
+Mostly anything that starts with _ is reserved. There are some
+exceptions, you may name auto variables _[a-z]*, but not functions.
 
-> I have no profiles, sorry, neither of the function call overhead
-> incurred or avoided, nor of the compilers.
-> 
-> Hum. <BRAINSTORMING>
-> 
-> ## idea #1:
-> One thing commonly used to hide prototypes away from compilers that
-> don't support them is enclosing the whole function call in a macro, say:
-> 
-> #ifdef SUPPORT_PROTOS
-> #define D(p) p
-> #else
-> #define D(p) ()
-> #endif
-> 
-> void myfunc D((int name, char name2));
-> 
-> The important thing is that you pass double parentheses here.
-> 
-> However, the "flags" you use probably prevents us from using this approach.
-> 
-> 
-> ## idea #2:
-> Convert the msg macro that you have now to an __inline
-> function and compile with -finline-functions or -O3 and let the global
-> optimizer inline the if (debuglevel high enough) checks. I fear though
-> that the varargs breaks this as well and prevents inlining.
-> 
-> 
-> ## idea #3:
-> Use a fixed-argument msg macro big enough to hold all arguments and fill
-> the unused with NULL (rather than doing a dozen macros on your own).
-> 
-> 
-> ## idea #4:
-> profile if calling the function really slows down things that much.
-> 
-> </BRAINSTORMING>
+You could use x_ as prefix though.
 
-How about we add a new configure option such as --no-vararg-macros that
-makes msg() into a function (as you do in your patch) to pacify older
-compilers?
+I've googled a little and found
+http://oakroadsystems.com/tech/c-predef.htm#Groups to be a very useful
+resource (and it's concise as well).
 
-Even better, is there an autoconf macro which will automatically test 
-whether or not vararg macros are supported?
-
-Then we only take the msg-as-function route if we need to.
-
-James
-
+-- 
+Matthias Andree
 
