@@ -1,6 +1,6 @@
-Message-ID: <a6589cd6041109200272d3b962@...278...>
-From: Hans Fugal <fugalh@...277...>
-Reply-To: Hans Fugal <fugalh@...277...>
+Message-ID: <d51eee50041110000141c9bab4@...278...>
+From: John Favorite <john.favorite@...277...>
+Reply-To: John Favorite <john.favorite@...277...>
 Subject: Re: [Openvpn-devel] IANA has approved a unique port number for OpenVPN
 In-Reply-To: <twig.1100040511.60533@...41...>
 Mime-Version: 1.0
@@ -15,15 +15,12 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Nov  9 20:03:03 2004
+Date: Wed Nov 10 00:02:02 2004
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-To: James Yonan <jim@...41...>
-Cc: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
+To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-ASAP, I think. As has been mentioned it's trivial to forward the port
-with a firewall. I agree being able to listen on multiple ports would
-be slick too.
+Awesome
 
 
 On Tue, 9 Nov 2004 22:48:31 -0000, James Yonan <jim@...41...> wrote:
@@ -56,9 +53,5 @@ On Tue, 9 Nov 2004 22:48:31 -0000, James Yonan <jim@...41...> wrote:
 > Openvpn-devel mailing list
 > Openvpn-devel@lists.sourceforge.net
 > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> 
-
-
--- 
-De gustibus non disputandum est.
+>
 
