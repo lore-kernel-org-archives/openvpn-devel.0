@@ -1,9 +1,7 @@
-From: Daniel Lehmann <ov_devel@...300...>
-Subject: Re: [Openvpn-devel] PATCH[2/2]: Use certificates from MS Cert Store with CryptoAPI
-References: <416D3018.4040704@...292...> <1098629098.3882.27.camel@...299...> <Pine.LNX.4.58.0410241728120.7637@...269...>
-In-Reply-To: <Pine.LNX.4.58.0410241728120.7637@...269...>
+Message-ID: <417D1FAC.5050809@...255...>
+From: Didier Conchaudron <didier@...255...>
 MIME-Version: 1.0
-Message-Id: <200410250643.09944@...301...>
+Subject: [Openvpn-devel] fdopen with winsock on win32
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,27 +12,24 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Oct 24 21:49:02 2004
-Content-Type: text/plain;
-  charset="iso-8859-1"
+Date: Mon Oct 25 08:38:05 2004
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-Am Montag 25 Oktober 2004 01:29 schrieb James Yonan:
->
-> Yes, this is already merged in beta14.
->
-> James
->
+Hi all,
 
-Hi,
-is it possible, that cryptoapi.c and cryptoapi.h are missing in the 2.0 beta14 
-source packages?
+I'm trying to add non-admin mode via a service wrapper for openvpn on 
+win32 and I actually have some problems while opening a socket like a 
+file descriptor.
 
-Though, in the cvs branch of beta14 these files are present.
-Maybe anyone could fix this :-)
+Seems like fdopen doesn't run on socket at all because winsock doesn't 
+work like on POSIX and BTW Mingw haven't any sys/socket.h because it 
+can't due to non-POSIX.
 
-thank you
-Daniel
+Is there someone having an idea to solve this?
+
+Cheers,
+
+Didier
 
