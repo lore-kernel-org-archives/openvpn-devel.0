@@ -1,8 +1,9 @@
 From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] Win32: Event signals
-In-Reply-To: <Pine.LNX.4.61.0410312241110.16282@...210...>
-Message-ID: <Pine.LNX.4.58.0411031212330.17216@...41...>
-References: <Pine.LNX.4.61.0410312241110.16282@...210...>
+Subject: Re: [Openvpn-devel] When the link used for openvpn goes down, the
+ daemon hangs
+In-Reply-To: <20041102173519.GD1542@...30...>
+Message-ID: <Pine.LNX.4.58.0411031221430.17216@...41...>
+References: <20041102173519.GD1542@...30...>
 MIME-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
@@ -14,37 +15,28 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Nov  3 11:24:48 2004
+Date: Wed Nov  3 11:30:05 2004
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-To: Mathias Sundman <mathias@...209...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Alberto Gonzalez Iniesta <agi@...64...>
+Cc: OpenVPN devel <openvpn-devel@lists.sourceforge.net>
 
-On Sun, 31 Oct 2004, Mathias Sundman wrote:
+On Tue, 2 Nov 2004, Alberto Gonzalez Iniesta wrote:
 
-> Hi James and everyone else,
+> Hi again,
 > 
-> I'm working on a patch to add events for the other unix signals. I want 
-> this because I want the GUI to have the same possibility to send openvpn 
-> signals like you have in unix or when running from the console.
-> 
-> While working on this I think I either found a bug or I've missunderstood 
-> something.
-> 
-> What is the purpose of beeing able to set the exit_event initial state 
-> with the --service option?
+> Another bug report received in the Debian BTS [1]. Quoting:
+> |when the link which was used for openvpn transport goes down, it hangs
+> |in a D state
+> |
+> |root      2037  0.0  0.2  3376 1620 pts/1    D    10:45   0:04 openvpn
+> |
+> |and there is no way to kill it, I have to reboot. Other programs (eg.
+> |wavemon) can handle this situation more sanely.
 
-You almost always want to set initial state to 0.
+Any idea how to reproduce it?
 
-The only reason to set it to 1 is to force OpenVPN to exit with an error 
-if the event object does not already exist.
-
-This works because the initial state is only used by the process which 
-creates the event for the first time.
-
-So it is a good way to make the startup of an openvpn process be
-conditional on the exit event having been pre-created by a controlling
-service.
+OpenVPN normally has no problem with intermittent links.
 
 James
 
