@@ -1,7 +1,10 @@
-Message-ID: <001901c1ea83$d0b961b0$1000000a@...4...>
-From: "James Yonan" <jim@...3...>
+Message-ID: <005701c1f270$beec4a20$1d8c6ad9@...12...>
+Reply-To: "Ildar Gabdulline" <ildar@...11...>
+From: "Ildar Gabdulline" <ildar@...11...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 1.1.1 Released
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0054_01C1F292.449D6FC0"
+Subject: [Openvpn-devel] openvpn and openssl 0.9.7+
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -12,64 +15,53 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://www.geocrawler.com/redir-sf.php3?list=openvpn-devel>
-Date: Mon Apr 22 22:00:03 2002
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
+Date: Fri May  3 00:00:02 2002
+To: openvpn-devel@lists.sourceforge.net
 
-Download:
+This is a multi-part message in MIME format.
 
-http://prdownloads.sourceforge.net/openvpn/openvpn-1.1.1.tar.gz
+------=_NextPart_000_0054_01C1F292.449D6FC0
+Content-Type: text/plain; charset="koi8-r"
+Content-Transfer-Encoding: quoted-printable
 
-Release Notes:
+Hi,
 
-OpenVPN 1.1.1 is mostly a bugfix release, but also adds some new options for
-keeping connections through stateful firewalls alive and specifying an
-inactivity disconnect for dynamic VPN sessions.  The new --ifconfig option
-calls ifconfig to configure the tunnel automatically, eliminating the need
-for an --up script.  Also added a loopback test mode (--test-crypto) to
-allow testing of OpenVPN's crypto component independently of its network
-component.  1.1.1 is protocol compatible with 1.1.0.
+Is anybody here who uses openvpn with openssl version 0.9.7 (latest snapsho=
+ts)
+with AES encryption algorithm ?
+The problem is that I've tried to compile openvpn with snapshot from 1st Ma=
+y and it crashed.
 
-Change Log:
+Thanks,
 
-2002.04.22 -- Version 1.1.1
+Ildar.
 
-* Added --ifconfig option to automatically configure
-  TUN device.
-* Added inactivity disconnect (--inactive
-  and --ping-exit options).
-* Added --ping option to keep stateful firewalls
-  from timing out.
-* Added sanity check to command line parser to
-  err if any TLS options are used in non-TLS mode.
-* Fixed build problem with compiler environments that
-  define printf as a macro.
-* Fixed build problem on linux systems that have
-  an integrated TUN/TAP driver but lack the persistent
-  tunnel feature (TUNSETPERSIST).  Some linux kernels
-  >= 2.4.0 and < 2.4.7 fall into this category.
-* Changed all calls to EVP_CipherInit to use explicit
-  encrypt/decrypt mode in order to fix problem with
-  IDEA-CBC and AES-256-CBC ciphers.
-* Minor changes to control channel transmit limiter
-  algorithm to fix problem where TLS control channel
-  might not renegotiate within the default 60 second window.
-* Simplified man page examples by taking advantage
-  of the new --ifconfig option.
-* Minor changes to configure.in to check more
-  rigourously for OpenSSL 0.9.6 or greater.
-* Put back openvpn.spec, eliminated
-  openvpn.spec.in.
-* Modified openvpn.spec to reflect new automake-based
-  build environment (Bishop Clark).
-* Other documentation changes.
-* Added --test-crypto option for debugging.
-* Added "missing" and "mkinstalldirs" automake
-  support files.
 
-James
+------=_NextPart_000_0054_01C1F292.449D6FC0
+Content-Type: text/html; charset="koi8-r"
+Content-Transfer-Encoding: quoted-printable
 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META content=3D"text/html; charset=3Dkoi8-r" http-equiv=3DContent-Type>
+<META content=3D"MSHTML 5.00.2314.1000" name=3DGENERATOR>
+<STYLE></STYLE>
+</HEAD>
+<BODY bgColor=3D#ffffff>
+<DIV><FONT face=3DVerdana>Hi,</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=3DVerdana>Is anybody here who uses openvpn with openssl ver=
+sion=20
+0.9.7 (latest snapshots)</FONT></DIV>
+<DIV><FONT face=3DVerdana>with AES encryption algorithm ?</FONT></DIV>
+<DIV><FONT face=3DVerdana>The problem is that I've tried to compile openvpn=
+ with=20
+snapshot from 1st May and it crashed.</FONT></DIV>
+<DIV><FONT face=3DVerdana></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DVerdana>Thanks,</FONT></DIV>
+<DIV><FONT face=3DVerdana><BR>Ildar.</FONT></DIV>
+<DIV>&nbsp;</DIV></BODY></HTML>
+
+------=_NextPart_000_0054_01C1F292.449D6FC0--
 
 
