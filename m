@@ -1,8 +1,8 @@
 From: James Yonan <jim@...3...>
-In-Reply-To: <20020708124042.GE12659@...33...>
-Message-ID: <Pine.LNX.4.44.0207081155210.18949-100000@...21...>
+Subject: Re: [Openvpn-devel] Default MTU
+In-Reply-To: <1026111778.1445.4.camel@...2...>
+Message-ID: <Pine.LNX.4.44.0207091351170.26064-100000@...21...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Re: OpenVPN and UDP fragmentation
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -13,70 +13,53 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://www.geocrawler.com/redir-sf.php3?list=openvpn-devel>
-Date: Mon Jul  8 11:00:04 2002
+Date: Tue Jul  9 13:01:02 2002
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-To: Matthias Andree <matthias.andree@...32...>
+To: Jan Johansson <jan.johansson@...1...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Mon, 8 Jul 2002, Matthias Andree wrote:
+On 8 Jul 2002, Jan Johansson wrote:
 
-> On Tue, 02 Jul 2002, James Yonan wrote:
-> 
-> > At one point I considered using adaptive code to automatically set the
-> > MTU, then I read a paper that described various DoS attacks against common
-> > path MTU discovery algorithms, so I held off on that.
-> 
-> Is not the kernel itself also susceptible in that case unless PMTU
-> discovery is disabled for that route?
-
-Right, you would need to set the Don't Fragment bit in the socket to 
-disable the kernel's PMTU then implement your own secure PMTU.
-
-> 
-> OTOH, I haven't read a single paper on PMTU discovery DoS attacks, so
-> I cannot comment on the details.
-
-http://www.off.net/~jme/ietf/draft-etienne-secure-pmtud-00.txt
-
-> 
-> > It would be great if there was an easy way of getting the dynamic path MTU 
-> > from the OS, but I'm not aware of any portable method to do this.
+> On Sun, 2002-07-07 at 22:19, James Yonan wrote:
+> > What should the default MTU be?
 > > 
-> > While reducing the default to 1472 or lower might work, it would also
-> > break compatibility...  right now we can brag that the protocol hasn't
-> > changed since 1.1.0, and while this isn't really a protocol change, it
-> > does introduce a slight incompatibility with prior versions.  I would
-> > prefer to hold off on patches that break compatibility until 1.3.0.
-> 
-> Sure. Documenting that the admin who sets up OpenVPN should experiment
-> with the UDP-MTU and lower it until no fragmentation occurs is fine with
-> me.
-> 
-> > > If OpenVPN adapting the UDP MTU, I'd appreciate if the adaption progress
-> > > would be logged akin to LZO adaption.
+> > Right now the default UDP MTU is 1500 if you use --ifconfig, which is
+> > probably too high, because as Matthias Andree pointed out, 1500 + IP header
+> > size is greater than 1500 and will cause fragmentation on ethernet networks
+> > where the MTU is 1500.
 > > 
-> > There is a common algorithm known as Path MTU Discovery where you set the 
-> > Don't Fragment bit on the socket then figure out by heuristics the largest 
-> > packet size that will get through.  But it would be better to let the OS 
-> > figure this out and then tell us in a portable way, if this is possible.
+> > 1450 might make more sense because that leaves ample space for the IP
+> > header, forming a total packet size of less than 1500.
 > 
-> Yes. I recently made some experiences with obtaining interface/netmask
-> configuration. Don't try this for IPv6, it'll boggle your mind. Each
-> system has its own approach. Netlink, a "long" SIOCGIFNETMASK variant,
-> whatever.
+> > So at this point a static default is certainly the simpler way to go, but
+> > any changes to the static default should be carefully considered since they
+> > would introduce backward incompatibility issues.
 > 
-> > > Again, please apologize if I wrote nonsense, I'm not really aware of the
-> > > packet encapsulation and framing process in OpenVPN.
-> > 
-> > No, your ideas are good.  In fact I would vote that we move these 
-> > discussions to openvpn-devel so that more people can participate.
-> 
-> OK, I'll look at that list then. Feel free to bounce this mail and my
-> last one there so people know what we're talking about.
-> 
-> Thanks,
-> 
-> 
+> I'd go for 1300 or so. Even if 1450 works now, you could still encounter
+> more issues later that require another change. I don't think the
+> performance loss will be that great, since all that run TLS now with
+> 1500-ish packetsizes probably already split lots of packets into one
+> large and one tiny packet as it is.
+
+I'm inclined to agree that the default MTU should be set conservatively 
+low so it has a high probability of working, even if it is slightly less 
+efficient.
+
+Once somebody has a setup working, they will be in a better position to 
+optimize the MTU to their liking.
+ 
+> If you are to go for new major version that breaks compat, go for lower
+> defaults on MTU too. You might aswell backport some sort of small logic
+> for the older OpenVPN-track that tries the lower MTU in case it seems
+> like it doesn't work, or a "--compat-v2" setting.
+
+I plan to increment the version number to 1.3.0 due to the default MTU
+change, though there won't be any other breaks in compatibility, and of 
+course 1.3.0 will be able to talk to previous versions simply by defining 
+MTU size explicitly in the config.
+
+James
+
 
 
