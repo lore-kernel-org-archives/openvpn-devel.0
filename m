@@ -1,7 +1,11 @@
-From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1067463490.56118@...41...>
-In-Reply-To: <1067453558.12713.238.camel@...125...>
-Subject: [Openvpn-devel] Re: OpenVPN --resolv-retry and --chroot problem
+Subject: Re: [Openvpn-devel] Re: OpenVPN --resolv-retry and --chroot problem
+From: Teemu Kiviniemi <teemuki@...124...>
+In-Reply-To: <twig.1067463490.56118@...41...>
+References: <twig.1067463490.56118@...41...>
+Content-Type: multipart/signed; micalg=pgp-sha1; protocol="application/pgp-signature";
+	boundary="=-3YCY/tmJrHniJfEDyEuH"
+Message-Id: <1067495953.8347.253.camel@...125...>
+Mime-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -12,47 +16,45 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Oct 29 13:39:11 2003
+Date: Wed Oct 29 22:40:10 2003
+To: James Yonan <jim@...41...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--=-3YCY/tmJrHniJfEDyEuH
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Teemu Kiviniemi <teemuki@...124...>, openvpn-devel@lists.sourceforge.net
-Cc: James Yonan <jim@...41...>
+Content-Transfer-Encoding: quoted-printable
 
-Teemu Kiviniemi <teemuki@...124...> said:
+Wed, 29-10-2003 at 23:38, James Yonan wrote:
 
-> Hi,
-> 
-> OpenVPN 1.5beta12 and the CVS version have a problem when --resolv-retry
-> and --chroot are used at the same time. In chroot environment,
-> gethostbyname() can't resolve the remote IP address:
-> 
-> Wed Oct 29 17:19:17 2003 13: RESOLVE: Cannot resolve host address:
-> somehost.somedomain: [unknown h_errno value]
-> 
-> This problem occurs with Debian Woody. I think it's related to the Glibc
-> dynamic loader. If the name resolver libraries aren't loaded before
-> OpenVPN enters the chroot jail, OpenVPN can't do any DNS queries. If
-> gethostbyname() is run before entering chroot(), the resolver libraries
-> are loaded and everything works as it should.
-> 
-> I changed link_socket_init_phase1() in socket.c to resolve the remote
-> host even if resolve_retry_seconds is set. That way, gethostbyname() is
-> run before chroot(). I don't know if that's the right way to do it, but
-> it fixes the problem for me.
-> 
-> The patch for 1.5 beta12 and the CVS version is available at:
-> http://iki.fi/teemuki/openvpn/openvpn-resolvfix.diff
+> I would rather see this fix accomplished by adding some kind of dummy call
+> early on in the initialization sequence to trigger the dynamic load of th=
+e DNS
+> library -- but which doesn't touch the functionality of the current DNS n=
+ame
+> resolution code.
 
-Teemu,
+Hi,
 
-The DNS name resolution code for --remote is somewhat delicate -- for example,
-the phase1 code cannot block because it's called before daemonization.
+I made a new patch. This time the name lookup is done in openvpn.c if
+options->remote is set, just before entering the chroot jail.
 
-I would rather see this fix accomplished by adding some kind of dummy call
-early on in the initialization sequence to trigger the dynamic load of the DNS
-library -- but which doesn't touch the functionality of the current DNS name
-resolution code.
+http://iki.fi/teemuki/openvpn/cvs-resolvfix2.diff
+The patch is against the current CVS version.
 
-James
+Teemu
+
+
+--=-3YCY/tmJrHniJfEDyEuH
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.1 (GNU/Linux)
+
+iD8DBQA/oLIOq0EylM9fq6oRAjllAJ9qJJA6dY/xeGNDeztGY7m1CMP5yQCfa2vh
+D1kZ5i5DXC/Y2Xo+kf9O2zY=
+=0zcx
+-----END PGP SIGNATURE-----
+
+--=-3YCY/tmJrHniJfEDyEuH--
 
 
