@@ -1,7 +1,7 @@
-From: Mathias Sundman <mathias@...209...>
-Message-ID: <Pine.LNX.4.61.0412121141350.22477@...210...>
+Message-ID: <1b2a01c4e11a$e22dfb00$0600000a@...139...>
+From: "Gisle Vanem" <giva@...258...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Password prompts with --log
+Subject: [Openvpn-devel] status.c patch
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,34 +12,29 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Dec 12 03:03:01 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Date: Mon Dec 13 06:14:10 2004
+Content-Type: text/plain;
+	format=flowed;
+	charset="iso-8859-1";
+	reply-type=original
+Content-Transfer-Encoding: 7bit
+To: OpenVPN-dev <openvpn-devel@lists.sourceforge.net>
 
-I had a user report that OpenVPN was working fine from a cmd-line (in 
-Windows), but when using my GUI the Status windows was just empty, and it 
-was impossible to terminate the openvpn connection.
+It looked rather suspicious to want (S_IRUSR | S_IWUSR) for MingW 
+when opening files in status.c. Patch:
 
-The cause was that this user was using the --log option in his config 
-file. When using this option, even the passphrase prompts are redirected 
-to the log file, however, if you know that OpenVPN is waiting for a 
-passphrase, you can still give in on stdin.
+--- status.c.orig       Wed Dec 08 00:52:04 2004
++++ status.c    Mon Dec 13 14:44:17 2004
+@@ -77,7 +77,7 @@
+        {
+          switch (so->flags)
+            {
+-#ifdef _MSC_VER
++#ifdef WIN32
+             case STATUS_OUTPUT_WRITE:
+               so->fd = open (filename,
+                              O_CREAT | O_TRUNC | O_WRONLY,
 
-Would it possible to always print the passphrase prompts to the original 
-stdout instead of the logfile? I can't see any reason why you would want 
-the passphase prompt saved in the log file, or is there? OpenVPN GUI would 
-still not see the log output, but at least the passphrase prompt would be 
-showed, so the user would not get the feeling that openvpn has "hanged".
-
-As OpenVPN GUI does not see the passphrase prompt now, it is also not 
-possible for the GUI to terminate the connection as OpenVPN is not 
-checking the exit event while waiting for user input from stdin.
-
---
-_____________________________________________________________
-Mathias Sundman                  (^)   ASCII Ribbon Campaign
-OpenVPN GUI for Windows           X    NO HTML/RTF in e-mail
-http://www.nilings.se/openvpn    / \   NO Word docs in e-mail
+--gv
 
 
