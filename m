@@ -1,9 +1,8 @@
-Message-ID: <20686C579479DC438276A726FE80CDAA020E0617@...281...>
-From: satinders@...280...
-Subject: RE: [Openvpn-devel] Plug-in to modify payload flowing over tunnel
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C4D8EE.8C6323A0"
+content-class: urn:content-classes:message
+Message-ID: <4EF2C16D1E0D904981F3C973D745261036D236@...323...>
+From: =?koi8-r?B?7snLz8zByiDhxsHOwdPYxdc=?= <Afanasyev_N@...322...>
+Subject: [Openvpn-devel] FW: Init script/Debian for OpenVPN
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,86 +13,133 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Dec  2 20:10:42 2004
+Date: Thu Dec  2 22:27:01 2004
+Content-Type: text/plain; charset="koi8-r"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-This message is in MIME format. Since your mail reader does not understand
-this format, some or all of this message may not be legible.
+Hello, OpenVPN developers!
 
-------_=_NextPart_001_01C4D8EE.8C6323A0
-Content-Type: text/plain;
-	charset="iso-8859-1"
+ I was advised to send you this shell, and I hope this can be helpful
 
-Reposting in text format. Sorry for the trouble...some configuration problem
-with my email program.
--------------------------------
+Afanasyev Nikolay
+Afanasyev_n@...322...
+=20
 
-Hi, 
-  Does openvpn support any plug-in for viewing and modifying the payload
-to/from tunnel just before encryption and after decryption? I need to add
-some fields in the messages going to and coming from tunnel. I need this for
-both control and data messages.
-I looked into 2.0_beta18 and didn't find any. I am planning to add such
-plug-in. The point I identified are: 
-for changing messages flowing to tunnel: 
-        In the beginning of method encrypt_sign. 
-for changing messages flowing from tunnel: 
-        At the end of method process_incoming_link just before processing of
-ping and occ messages. 
-This is based on my assumption that all messages to tunnel are calling
-encrypt_sign method for encrypting the data. Do you have any plan to change
-the logic/name/location for these methods which may alter this assumption.
-Please comment. 
-Regards, 
-Satinder Singh 
+> -----Original Message-----
+> From: James Yonan [mailto:jim@...41...]=20
+> Sent: Thursday, December 02, 2004 7:21 PM
+> To: =EE=C9=CB=CF=CC=C1=CA =E1=C6=C1=CE=C1=D3=D8=C5=D7
+> Subject: Re: Init script/Debian for OpenVPN
+>=20
+> Thanks for your contribution.
+>=20
+> It would be best if you send it to openvpn-devel@lists.sourceforge.net
+>=20
+> Thanks,
+> James
+>=20
+> On Thu, 2 Dec 2004, [koi8-r] =EE=C9=CB=CF=CC=C1=CA =E1=C6=C1=CE=C1=D3=D8=
+=C5=D7 wrote:
+>=20
+> > Hello, James=20
+> > 	Can I contribute a little to your project? I have init=20
+> script for Debian GNU Linux that I wrote for OpenVPN:=20
+> >=20
+> > PS: sorry bout permissions 8-)
+> >=20
+> > >>>>>>>>>>>> Start openvpn.sh >>>>>>>>>>>>>>>>>>
 
-------_=_NextPart_001_01C4D8EE.8C6323A0
-Content-Type: text/html; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+#!/bin/sh
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<HTML>
-<HEAD>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; charset=3Diso-8859-=
-1">
-<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version 5.5.2653.12">
-<TITLE>RE: [Openvpn-devel] Plug-in to modify payload flowing over tunnel</T=
-ITLE>
-</HEAD>
-<BODY>
+DAEMON=3D"/usr/local/sbin/openvpn"
+piddir=3D"/var/run/openvpn"
+work=3D/etc/openvpn
+export LANG=3DC
+export PATH
 
-<P><FONT SIZE=3D2>Reposting in text format. Sorry for the trouble...some co=
-nfiguration problem with my email program.</FONT>
-<BR><FONT SIZE=3D2>-------------------------------</FONT>
-</P>
+test -f $DAEMON || exit 0
 
-<P><FONT SIZE=3D2>Hi, </FONT>
-<BR><FONT SIZE=3D2>&nbsp; Does openvpn support any plug-in for viewing and =
-modifying the payload to/from tunnel just before encryption and after decry=
-ption? I need to add some fields in the messages going to and coming from t=
-unnel. I need this for both control and data messages.</FONT></P>
 
-<P><FONT SIZE=3D2>I looked into 2.0_beta18 and didn't find any. I am planni=
-ng to add such plug-in. The point I identified are: </FONT>
-<BR><FONT SIZE=3D2>for changing messages flowing to tunnel: </FONT>
-<BR><FONT SIZE=3D2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the beginn=
-ing of method encrypt_sign. </FONT>
-<BR><FONT SIZE=3D2>for changing messages flowing from tunnel: </FONT>
-<BR><FONT SIZE=3D2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; At the end of=
- method process_incoming_link just before processing of ping and occ messag=
-es. </FONT>
-<BR><FONT SIZE=3D2>This is based on my assumption that all messages to tunn=
-el are calling encrypt_sign method for encrypting the data. Do you have any=
- plan to change the logic/name/location for these methods which may alter t=
-his assumption.</FONT></P>
 
-<P><FONT SIZE=3D2>Please comment. </FONT>
-<BR><FONT SIZE=3D2>Regards, </FONT>
-<BR><FONT SIZE=3D2>Satinder Singh </FONT>
-</P>
+case "$1" in
+  start)
+    cd $work
+    # Start every .conf in $work and run .sh if exists
+    for c in `/bin/ls *.conf 2>/dev/null`; do
+      bn=3D${c%%.conf}
+      echo -n "Starting OpenVPN whith config $c"
+      args=3D"--daemon --writepid $piddir/$bn.pid --config $c --cd $work"
+      start-stop-daemon --start --pidfile $piddir/$bn.pid --exec $DAEMON --=
+ $args
+      if [ $? =3D=3D 0 ]; then=20
+       echo " [OK]"=20
+      else=20
+       echo " [failed]"=20
+      fi=20
+    done
+    ;;
 
-</BODY>
-</HTML>=
+  stop)
+    for pidf in `/bin/ls $piddir/*.pid 2>/dev/null`; do
+      if [ -s $pidf ]; then
+        echo -n  "Shuttin' down OpenVPN whith PID file $pidf"
+        start-stop-daemon --stop --pidfile $pidf --oknodo --exec $DAEMON=20=
+=20
+        if [ $? =3D=3D 0 ]; then=20
+	  echo " [OK]"=20
+	else=20
+	  echo " [failed]"=20
+	fi
+	rm -f $pidf
+      fi
+    done
+    ;;
 
-------_=_NextPart_001_01C4D8EE.8C6323A0--
+  reload)
+    for pidf in `/bin/ls $piddir/*.pid 2>/dev/null`; do
+      if [ -s $pidf ]; then
+        echo -n "Reload OpenVPN whith PID file $pidf"
+        start-stop-daemon --stop --pidfile $pidf --signal USR1 --exec $DAEM=
+ON=20=20
+	if [ $? =3D=3D 0 ]; then=20
+	  echo " [OK]"=20
+	else=20
+	  echo " [failed]"=20
+	fi
+      fi
+    done
+    ;;
+
+  restart)
+    $0 stop
+    $0 start
+    exit $?
+    ;;
+
+  *)
+    echo "Usage: $0 {start|stop|reload|restart}"
+    exit 1
+    ;;
+esac
+
+if [ $? =3D=3D 0 ]; then=20
+ exit 0
+else=20
+ exit 1=20
+fi
+
+
+> > <<<<<<<<<<<< End openvpn.sh  <<<<<<<<<<<<<<<<<<
+> >=20
+> >=20
+> >=20
+> >=20
+> > Afanasyev Nikolay
+> > Afanasyev_n@...322...
+> >=20
+> >=20
+>=20
+>=20
+>=20
 
