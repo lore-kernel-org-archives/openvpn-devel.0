@@ -1,11 +1,7 @@
-From: Manon Goo <manon@...287...>
-Reply-To: Manon Goo <manon@...287...>
-Message-ID: <33A1B960952916C53E05191C@[10.106.103.44]>
+From: Mathias Sundman <mathias@...209...>
+Message-ID: <Pine.LNX.4.60.0410012147580.18074@...210...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature";
- boundary="==========31EB073ABDA6FA7C3A7D=========="
-Subject: [Openvpn-devel] Thanks for OpenVPN
+Subject: [Openvpn-devel] Pass log and passphrase between OpenVPN and OpenVPN GUI
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -16,76 +12,52 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Sep 30 23:03:28 2004
+Date: Fri Oct  1 13:18:35 2004
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
---==========31EB073ABDA6FA7C3A7D==========
-Content-Type: text/plain; charset="us-ascii"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Didier announced a first release of an improved version of the OpenVPN 
+Service Wrapper earlier this week. The goal with this is to allow a non 
+admin user on Windows to start/stop openvpn processes.
 
-Hi,
+It does this by listening on a local TCP socket for commands like "START 
+config.ovpn" or "STOP config.ovpn".
 
-First of all thanks for Open VPN. I have installed it and it solves almoast=
-=20
-all the problems I had with ipsec for roaming users !
+I've started working on OpenVPN GUI 2.0 that will use this service 
+wrapper to control openvpn.
 
+There is two things that remain unsolved though that I'd like to bring up 
+for some discussion.
 
-I have discovered some small issues with with openvpn:
-1.) ifconfig and route with non root user.
-I have worked around thie with sudo by configuring
-/configure --prefix=3D/usr/local/openvpn2=20
---with-ifconfig-path=3D/usr/local/openvpn2/bin/ifconfig=20
---with-iproute-path=3D/usr/local/openvpn2/bin/route
+1. How do we pass the private key passphrase from the GUI to the openvpn 
+process?
 
-and putting
-#!/bin/sh
-sudo ifconfig $@
-
-(same for route) into the wrapper scripts defined. Perhaps this would be an=
-=20
-issue for the howto / configuration option.
-
-2.)openvpn calls "ifconfig tun0 delete" under openbsd this should be=20
-"ifconfig tun0 destroy"
-
-3.) Sving IP addresses (Please correct me if I am wrong with this one)
-	the client ist configured
-
-	ifconfig tun0 [local IP]  [local IP + 1 ] .....
-
-	As far as I remember from other tun/tap setups
-
-	ifconfig tun0 [local IP]  [tunnel end IP]  ...
-
-	would work as well and save half of the IP addresses used in a pool (this=
-=20
-is
-	espcialy good for Officaly Assinged Ip addresses because they may be=20
-limited (as in
-	my case )) Is there any way to set this up ?
+2. How do we get the openvpn log to the GUI so we can show it in real time 
+in the status window?
 
 
+I can see a couple of solutions:
+
+A) We create a pipe between the openvpn process and the service wrapper. 
+The service can then watch the openvpn output for the passphrase prompt, 
+and pass on the request to the GUI over the TCP socket.
+
+The log is then written to the log file by the service. The GUI will have 
+to monitor this file for changes to be able to show the log in real-time.
 
 
-
-Thanks again
-
-Manon Goo=
-
---==========31EB073ABDA6FA7C3A7D==========
-Content-Type: application/pgp-signature
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.2.4 (Darwin)
-
-iD8DBQFBXPL/Gsjj3OYWNZERArKtAJ0Vd94AiBOau0YVjs/yNKEwm+vjRACfcdM3
-ubp1nxrMqkqXoWsUzPnwW5A=
-=PHCY
------END PGP SIGNATURE-----
-
---==========31EB073ABDA6FA7C3A7D==========--
+B) We create another TCP socket for every launched process, and creates a 
+pipe between this socket and the openvpn process. The GUI can then connect 
+to this socket to recieve the log in real-time, and can monitor this for 
+the passphrase prompt itself.
 
 
+Comments or suggestions on other solutions are welcome.
+
+-- 
+_____________________________________________________________
+Mathias Sundman                  (^)   ASCII Ribbon Campaign
+OpenVPN GUI for Windows           X    NO HTML/RTF in e-mail
+http://www.nilings.se/openvpn    / \   NO Word docs in e-mail
 
