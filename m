@@ -1,7 +1,8 @@
-From: moshe <makeit_quick@...109...>
-Message-ID: <loom.20041123T220422-499@...171...>
+From: Charles Duffy <cduffy@...294...>
+Message-ID: <pan.2004.11.24.23.07.15.415488@...294...>
+References: <loom.20041123T220422-499@...171...>
 Mime-Version: 1.0
-Subject: [Openvpn-devel] HTTP CONNECT Vs. HTTP POST & GET
+Subject: [Openvpn-devel] Re: HTTP CONNECT Vs. HTTP POST & GET
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,21 +13,18 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Nov 24 12:39:18 2004
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Date: Wed Nov 24 15:08:02 2004
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-My corporate Firewall does not allow an OpenVPN client initiating a connection 
-using HTTP 1.0 CONNECT.
-I succeeded to penetrate the Firewall using a public test application called 
-GNU HTTPTUNNEL (which uses HTTP 1.1 POST & GET).
-Can someone tell me if OpenVPN is planned to support HTTP 1.1 POST & GET in 
-order to improve it's connectivity ? if yes when ?
-If I drill into the code and implement this, what are the chances that it will 
-get into main release ?
+James has stated that he intends OpenVPN to support no features which
+would have it masquerade as another protocol. AIUI, implementing GET or
+POST methods would be effectively doing just that.
 
-thanks
-Moshe
+You could presumably just run OpenVPN through httptunnel without making
+any changes to OpenVPN's source at all.
+
+http://article.gmane.org/gmane.network.openvpn.user/6394/
 
 
