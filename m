@@ -1,7 +1,8 @@
-Message-ID: <3FD3F557.6030209@...140...>
-From: gridrun <gridrun@...140...>
+content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN MTU Problem/Solution
+Message-ID: <1527F40959C109439CBC334DE4758F280C10EA@...142...>
+From: =?iso-8859-2?Q?Lipert_V=E1clav?= <VLipert@...141...>
+Subject: [Openvpn-devel] TCP tunnel problem on Windows
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,61 +13,62 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Dec  7 19:53:01 2003
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
+Date: Tue Dec  9 00:47:02 2003
+Content-Type: text/plain; charset="iso-8859-2"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
-Cc: jim@...41...
 
-Hi there,
+Hello,
 
-I recently set up a OpenVPN connection between two windows servers - a 
-web frontend located in a DMZ, accessing an SQL database over the VPN 
-network. As far as I can tell (the project is far from complete), that 
-works just fine (100mbps ethernet connection between the two boxen). I 
-also used OpenVPN to setup a "maintenance network", so I could log in 
-from home and administer the web server box via RDP, without having to 
-open port 3389 to the world.
+I am using OpenVPN 1.5.0 for Windows (windowsxp - windowsxp, tap, tcp-clien=
+t tcp-server) and I have one problem. After connection establishing work pi=
+nging OK, but when I try connect from server to client with VNC or Remote D=
+esktop Connection (from Microsoft) it is working for few seconds (first scr=
+een loaded) and then stops working all TCP/IP communication (pinging doesnt=
+ work). On side of client it generates this error (on server side it is no =
+error):
 
-I experienced the some difficulty with the "maintenance network" VPN 
-connection:
+Mon Dec 08 18:11:57 2003 672: TCPv4_CLIENT link local: [undef]
+Mon Dec 08 18:11:57 2003 673: TCPv4_CLIENT link remote: 127.0.0.1:2000
+Mon Dec 08 18:11:57 2003 674: read from TUN/TAP  [State=3DAT?c Err=3D[c:\sr=
+c\openvpn\tap-win32\tapdrvr.c/1756] #O=3D5 Tx=3D[315,0] Rx=3D[0,0] IrpQ=3D[=
+16,16,16] PktQ=3D[0,10,64]]: General failure (ERROR_GEN_FAILURE) (code=3D31)
+Mon Dec 08 18:11:57 2003 675: read from TUN/TAP  [State=3DAT?c Err=3D[c:\sr=
+c\openvpn\tap-win32\tapdrvr.c/1756] #O=3D5 Tx=3D[315,0] Rx=3D[0,0] IrpQ=3D[=
+16,16,16] PktQ=3D[0,10,64]]: General failure (ERROR_GEN_FAILURE) (code=3D31)
+Mon Dec 08 18:11:57 2003 676: read from TUN/TAP  [State=3DAT?c Err=3D[c:\sr=
+c\openvpn\tap-win32\tapdrvr.c/1756] #O=3D5 Tx=3D[315,0] Rx=3D[0,0] IrpQ=3D[=
+16,16,16] PktQ=3D[0,10,64]]: General failure (ERROR_GEN_FAILURE) (code=3D31)
+Mon Dec 08 18:11:57 2003 677: read from TUN/TAP  [State=3DAT?c Err=3D[c:\sr=
+c\openvpn\tap-win32\tapdrvr.c/1756] #O=3D5 Tx=3D[315,0] Rx=3D[0,0] IrpQ=3D[=
+16,16,16] PktQ=3D[0,10,64]]: General failure (ERROR_GEN_FAILURE) (code=3D31)
+Mon Dec 08 18:11:57 2003 678: read from TUN/TAP  [State=3DAT?c Err=3D[c:\sr=
+c\openvpn\tap-win32\tapdrvr.c/1756] #O=3D5 Tx=3D[315,0] Rx=3D[0,0] IrpQ=3D[=
+16,16,16] PktQ=3D[0,10,64]]: General failure (ERROR_GEN_FAILURE) (code=3D31)
+Mon Dec 08 18:11:57 2003 679: read from TUN/TAP  [State=3DAT?c Err=3D[c:\sr=
+c\openvpn\tap-win32\tapdrvr.c/1756] #O=3D5 Tx=3D[315,0] Rx=3D[0,0] IrpQ=3D[=
+16,16,16] PktQ=3D[0,10,64]]: General failure (ERROR_GEN_FAILURE) (code=3D31)
+Mon Dec 08 18:11:57 2003 680: read from TUN/TAP  [State=3DAT?c Err=3D[c:\sr=
+c\openvpn\tap-win32\tapdrvr.c/1756] #O=3D5 Tx=3D[315,0] Rx=3D[0,0] IrpQ=3D[=
+16,16,16] PktQ=3D[0,10,64]]: General failure (ERROR_GEN_FAILURE) (code=3D31)
+Mon Dec 08 18:11:58 2003 681: read from TUN/TAP  [State=3DAT?c Err=3D[c:\sr=
+c\openvpn\tap-win32\tapdrvr.c/1756] #O=3D5 Tx=3D[315,0] Rx=3D[0,0] IrpQ=3D[=
+16,16,16] PktQ=3D[0,10,64]]: General failure (ERROR_GEN_FAILURE) (code=3D31)
+Mon Dec 08 18:11:58 2003 682: read from TUN/TAP  [State=3DAT?c Err=3D[c:\sr=
+c\openvpn\tap-win32\tapdrvr.c/1756] #O=3D5 Tx=3D[315,0] Rx=3D[0,0] IrpQ=3D[=
+16,16,16] PktQ=3D[0,10,64]]: General failure (ERROR_GEN_FAILURE) (code=3D31)
+Mon Dec 08 18:11:58 2003 683: read from TUN/TAP  [State=3DAT?c Err=3D[c:\sr=
+c\openvpn\tap-win32\tapdrvr.c/1756] #O=3D5 Tx=3D[315,0] Rx=3D[0,0] IrpQ=3D[=
+16,16,16] PktQ=3D[0,10,64]]: General failure (ERROR_GEN_FAILURE) (code=3D31)
+Mon Dec 08 18:12:27 2003 684: 269 variation(s) on previous 10 message(s) su=
+ppressed by --mute
+Mon Dec 08 18:12:27 2003 685: Connection reset, restarting [0]
+Mon Dec 08 18:12:27 2003 686: Closing TCP/UDP socket
+Mon Dec 08 18:12:27 2003 687: Restart pause, 3 second(s)
 
-After I set things up both local and remote, OpenVPN connected, and I 
-was able to ping mentioned web server from my home box, thru the VPN. 
-However, only pings with -l arguments smaller than 1459. I.e., a <ping 
-10.0.0.1 -l 1458> worked (remote host replied), but a <ping 10.0.0.1 -l 
-1459> would just give timeout. So I read the manual and tried fixmss 
-1300.. no go, still would not work. I might add that Im using a tcp 
-connection, and dev tap for this.
-Anyways, the solution was: I had to set the MTU on the virtual tap 
-network interface to 1300, and magically, it werkz!  (I suspect I could 
-raise that to 1458 for better performance, but have not yet tried, as 
-for now im perfectly happy *that* it works, no matter how fast it works 
-:). I also suspect I could use tun-mtu option to do this from the config 
-file, right? I'll find out shortly...
 
-Other issues I had with OpenVPN:
+Anyone knows, where could be a problem?
 
-- Restarting the OpenVPN service sometimes (not definately sure under 
-what circumstances) gives an error message "cannot create a file that is 
-already there", with the OpenVPN service failing to re-start. The fix 
-for this is to simply start the service again. I wonder tho what might 
-cause this? Does it have something to do with my two VPN tunnels using 
-the same key file (Im gonna change that later)? Might be of interest for 
-developers...
-
-- OpenVPN would not work with an IP defined on the TAP adapter - neither 
-on the client nor on the server. A bit weird is, even tho it would not 
-connect, the TAP adapter (I have it to "application controled") came 
-alive on the client, so I was a bit confused as to why the client would 
-connect, but the server doesnt see it. After I retought, I conclude 
-thats "behaviour by design" - maybe add something to the documentation 
-for newbies (like me :p), so they are not mislead by the TAP icon 
-(connected/not connected), but check logs instead... :)
-
-
-Tought I'd let you know, so u can fix, cuz ur little VPN program rocks! :))
-
---grid
-
+Thanks
+Wally
 
