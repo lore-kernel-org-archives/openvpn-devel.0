@@ -1,10 +1,6 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] PATCH[1/2]: Use certificates from MS Cert Store
- with CryptoAPI
-In-Reply-To: <417420A6.9090200@...292...>
-Message-ID: <Pine.LNX.4.58.0410181410180.28940@...269...>
-References: <twig.1098084812.36872@...41...> <417420A6.9090200@...292...>
-MIME-Version: 1.0
+From: "James Yonan" <jim@...41...>
+Message-ID: <twig.1098137999.96302@...41...>
+Subject: [Openvpn-devel] OpenVPN 2.0_beta13 released
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,24 +11,19 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Oct 18 13:14:00 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Date: Mon Oct 18 15:20:04 2004
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Peter 'Luna' Runestig <peter+openvpn@...292...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
-On Mon, 18 Oct 2004, Peter 'Luna' Runestig wrote:
+If you have download problems, I've added a new "Alternate Download" link on
+the web site.
 
-> On 2004-10-18 09:33, James Yonan wrote:
-> > I've merged the MSVC patch for beta12,
-> 
-> Hmm, what exactly did you merge? I can't see much trace of it...
+2004.10.18 -- Version 2.0-beta13
 
-I merged the first patch only, the one that lets OpenVPN build on MSVC.
-
-> I have a MinGW solution to the CryptoAPI patch, probably post it tomorrow.
-
-Excellent, thanks.
+* Fixed an issue introduced in Beta12 where the private
+  key password would not be prompted for unless --askpass
+  was explicitly specified in the config.
 
 James
 
