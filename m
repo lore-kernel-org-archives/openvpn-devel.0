@@ -1,7 +1,9 @@
-From: "Robin G. Wenninger" <grw@...152...>
-Message-ID: <20040907225456.GA2638@...152...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] Connect several subnets with OpenVPN2.0
+From: James Yonan <jim@...41...>
+Subject: Re: [Openvpn-devel] openvpn using matrixssl ?
+In-Reply-To: <000801c494c3$cb6ae390$0e00a8c0@...267...>
+Message-ID: <Pine.LNX.4.58.0409080858260.28179@...269...>
+References: <000801c494c3$cb6ae390$0e00a8c0@...267...>
+MIME-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,36 +14,26 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Sep  7 15:56:04 2004
-Content-Type: text/plain; charset=us-ascii
+Date: Wed Sep  8 08:03:29 2004
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+To: gary <linux@...266...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi list,
 
-I have a kind of "problem" here.
+On Tue, 7 Sep 2004, gary wrote:
 
-I thought about connecting several subnets with 2.0 and for this purpose
-use the PUSH/PULL-Options.
+> Hi,
+> 
+> Anyone knows how feasible it is to use matrixssl instead of openssl ?
+> The main advantage is memory footprint for embedded system like the
+> linksys wrt54g.
 
-So I used options like
-	push "route 10.0.0.0 255.255.255.0"
-	push "route 192.168.1.0 255.255.255.0"
+It's possible, but development would be required.
 
-To push all known subnets to the Clients. But the problem is, if I push
-route 10.0.0.0 255.255.255.0 to the Client which "owns" this subnet it
-overwrites the old routing entry and kicks its Subnet.
+To the extent that the matrixssl API differs from the OpenSSL API, OpenVPN
+would need to be "ported" to matrixssl.
 
-My recommendation would be a kind of exception list.
-Something like
-	push "route 10.0.0.0 255.255.255.0" except common-name
+James
 
-What do you think about this, is there any other (good to administrate)
-solution?
-
-Kind regards,
-	Robin Wenninger
-
-P.S. (Right me when I'm wrong.)
 
