@@ -1,9 +1,11 @@
-From: Matthias Andree <ma+ovpnd@...31...>
 Subject: Re: [Openvpn-devel] New feature: --ifconfig for tap devices
-Message-ID: <20030903104904.GD27875@...33...>
+From: Jan Johansson <jan.johansson@...1...>
+In-Reply-To: <20030903104904.GD27875@...33...>
 References: <twig.1062580090.46409@...41...>
+	 <20030903104904.GD27875@...33...>
+Content-Type: multipart/signed; micalg=pgp-sha1; protocol="application/pgp-signature"; boundary="=-DBlLtVsKgZVEFOTqCNNv"
+Message-Id: <1062682176.1372.1.camel@...2...>
 Mime-Version: 1.0
-In-Reply-To: <twig.1062580090.46409@...41...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -14,55 +16,50 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Sep  4 00:26:06 2003
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+Date: Thu Sep  4 06:32:21 2003
+To: Matthias Andree <ma+ovpnd@...31...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Wed, 03 Sep 2003, James Yonan wrote:
+--=-DBlLtVsKgZVEFOTqCNNv
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-> One of the nice things about the --ifconfig option is that it lets you set TUN
-> adapter endpoint addresses (i.e. the virtual IP addresses for each end of the
-> tunnel) in a platform independent manner -- OpenVPN then translates the
-> --ifconfig option to the appropriate ifconfig command for your platform.
+> > What I need right now in order to make the TAP version of --ifconfig wo=
+rk
+> > correctly, is the correct ifconfig command syntax for setting the IP ad=
+dress
+> > and netmask of a TAP device, on all the OSes which OpenVPN supports.  I=
+'ve
+> > already coded templates for Linux and Windows, but I still need to know=
+ the
+> > appropriate ifconfig syntax for FreeBSD, OpenBSD, NetBSD, Solaris, and =
+Mac OS
+> > X, with respect to setting the IP/netmask on a TAP device.
+>=20
+> ## FreeBSD 4.9-PRERELEASE:
+>=20
+> ifconfig tap0 inet 10.11.12.42 netmask 255.0.0.0 up
+>=20
+> (inet appears to be optional, so the Linux syntax, "ifconfig tap0
+> 10.11.12.42 netmask 255.0.0.0 up", should also work.
 
-> What I need right now in order to make the TAP version of --ifconfig work
-> correctly, is the correct ifconfig command syntax for setting the IP address
-> and netmask of a TAP device, on all the OSes which OpenVPN supports.  I've
-> already coded templates for Linux and Windows, but I still need to know the
-> appropriate ifconfig syntax for FreeBSD, OpenBSD, NetBSD, Solaris, and Mac OS
-> X, with respect to setting the IP/netmask on a TAP device.
+The above works for OpenBSD too, but do mind that openbsd usually dont come
+with tap drivers, I'm re-porting an older port from FreeBSD to current Open,
+and on my box the above works the same way as in Free.
 
-## FreeBSD 4.9-PRERELEASE:
 
-ifconfig tap0 inet 10.11.12.42 netmask 255.0.0.0 up
+--=-DBlLtVsKgZVEFOTqCNNv
+Content-Type: application/pgp-signature; name=signature.asc
+Content-Description: This is a digitally signed message part
 
-(inet appears to be optional, so the Linux syntax, "ifconfig tap0
-10.11.12.42 netmask 255.0.0.0 up", should also work. Untested on FreeBSD
-5.x.)
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.2 (GNU/Linux)
 
-## Solaris:
+iD8DBQA/Vz5ANJYxu+mj1OkRAh2oAJ4lITW2Olj9NyEdKEjOzJxV1pv0VQCgxjof
+DPPhEL9avfdYROHtY4pNyco=
+=lpFW
+-----END PGP SIGNATURE-----
 
-Does Solaris support "tap"-style ethernet frame tunneling devices at
-all? How? Anyone got that to work?
+--=-DBlLtVsKgZVEFOTqCNNv--
 
-The tun-1.1 driver only installs a "tun" driver and doesn't claim
-ethernet bridging on Solaris.
-
-./openvpn --secret /home/ma/openvpn-tap-discardme.key --dev tap0 \
-[remote info]
-
-4: Can't open /dev/tap: No such file or directory (errno=2)
-
-Trying  --dev-node /dev/tun and --dev-type tap results in:
-
-4: Can't set multiplexor id: No such device or address (errno=6)
-
-Did I miss anything?
-
--- 
-Matthias Andree
-
-Encrypt your mail: my GnuPG key ID is 0x052E7D95
 
