@@ -1,7 +1,7 @@
-From: Waldemar Brodkorb <wbx@...270...>
-Message-ID: <20050218200021.GA13369@...352...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] small issue
+Message-Id: <ICBORZ$D7385F4E922E35DA6840D3A7F8CCEC44@...354...>
+MIME-Version: 1.0
+From: "andi\.c\@libero\.it" <andi.c@...354...>
+Subject: [Openvpn-devel] Question about TAP win32 programming
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,36 +12,43 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Feb 18 12:01:16 2005
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+Date: Tue Feb 22 09:23:27 2005
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+Hi to all,
+i am disperately in need of some advices about a subject not=0D
+strictly about OpenVPN, but maybe there is someone here who
+can help me..
+I ve developed a tunnel-broker apps for Linux using TUN/TAP support,=0D
+based on TUN virtual interfce like OpenVPN. In Linux, create (and open) =0D
+a TUN device is easy, as i do:
 
-small patch for rc14. If you use a stripped down version of openssl
-and openvpn without support for MD4 and NTML you need this patch
-to successfully compile. Needed for some embedded hardware.
+#include <net/tun.h>
+#include <linux/if_tun.h>
 
---- openvpn-2.0_rc14/crypto.h 2005-01-10 01:46:08.000000000 +0100
-+++ openvpn-2.0_rc14.patched/crypto.h 2005-02-18 20:06:20.000000000
-+0100
-@@ -42,7 +42,9 @@
- #include <openssl/hmac.h>
- #include <openssl/des.h>
- #include <openssl/md5.h>
-+#if NTML
- #include <openssl/md4.h>
-+#endif
- #include <openssl/sha.h>
- #include <openssl/err.h>
+fp =3D fopen("/dev/net/tun",O_RDWR);
+ioctl(fd, TUNSETIFF, &ifr);
+
+and then i can read and write to and from TUN device with simple=0D
+read() and write() calls.
+
+Now, i'd like to port that software on win32. I have installed the TAP
+DRIVER on my machine, and now i have a TAP davide named "tap0801".
+Can someone explain me how i can do the same thing
+under win32 ?
+
+Thanks a lot
 
 
-bye
-    Waldemar
 
--- 
-blog your mind!
-http://openbsd-geek.de/
+
+
+
+____________________________________________________________
+Navighi a 2 MEGA e i primi 3 mesi sono GRATIS.=20
+Scegli Libero Adsl Flat senza limiti su http://www.libero.it
+
+
 
