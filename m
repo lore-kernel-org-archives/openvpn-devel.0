@@ -1,10 +1,7 @@
-Message-ID: <3F8A8541.9070901@...61...>
-From: julien Touche <julien.touche@...61...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Need 1.5 beta testers for *BSD, Linux 2.2, OS
- X
-References: <twig.1062309326.34391@...41...> <3F5B1FAE.1030801@...61...>, <3F5B1FAE.1030801@...61...> <twig.1066035744.55436@...41...>
-In-Reply-To: <twig.1066035744.55436@...41...>
+Subject: Re: [Openvpn-devel] CVS
+From: "James Yonan" <jim@...41...>
+Message-ID: <twig.1066095913.35405@...41...>
+In-Reply-To: <E1A80Yw-0000lA-Gb@...110...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -15,34 +12,33 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Oct 13 04:54:03 2003
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Date: Mon Oct 13 19:33:09 2003
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: peter@...115..., openvpn-devel@lists.sourceforge.net
 
-James Yonan wrote:
-> If you are asking if OpenVPN works with NAT, the answer is yes.
+Peter Sandström <peter@...115...> said:
 
-not really, would be more: does it work with one host having a remote 
-publiv vpn server and the server treating with anyone having pass/cert 
-without knowing its ip and not being able to join host ?
+> Hey,
+> 
+> What's the current status of the CVS tree? I can't login using anonymous
+> access.
+> 
+> I was planning on implementing multiple-connections-to-one-openvpn-instance
+> since I need it for a usecase.
+> Not beeing able to checkout the source complicates this though :)
 
+I just checked, and it looks like the OpenVPN anonymous CVS is back online,
+and the 24 hour delay seems to have vanished.
 
-setup like this
+So these commands should set you up for working on the 1.5 beta series
+(branch=EXP15):
 
-host1 <- private network -> gateway1 <- internet -> host2
+cvs -d:pserver:anonymous@...116...:/cvsroot/openvpn login
 
-want a vpn between host and host2.
+cvs -z3 -d:pserver:anonymous@...116...:/cvsroot/openvpn co -r EXP15
+openvpn
 
-host1 has no public ip so it is able to join any public internet server 
-like host2 but not the reverse if there is no established conn before.
-is it sufficient for openvpn or not ?
-in this setup, host2 cannot initiate conn to host1 (right ?), but host1 
-can.
-
-
-Regards
-
-		Julien
+James
 
 
