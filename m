@@ -1,8 +1,7 @@
-Subject: Re: [Openvpn-devel] beta1.5_12 CRL
-From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1066446029.2326@...41...>
-In-Reply-To: <1066407794.3060.2.camel@...121...>
-References: <002001c39485$2270b9c0$7781cf0a@...120...>, <002001c39485$2270b9c0$7781cf0a@...120...>
+From: "Noam Rathaus" <noamr@...117...>
+Message-ID: <021101c3963c$fb40adb0$3301a8c0@...118...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Visual C++ Compiling
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -13,28 +12,24 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Oct 17 20:48:08 2003
+Date: Sun Oct 19 08:52:02 2003
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Stefano Bracalenti <stefano.bracalenti@...114...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-Stefano Bracalenti <stefano.bracalenti@...114...> said:
+Hi,
 
-> If someone is interested, I wrote a little patch for check if a
-> certificate is revoked using a crl in PEM format generated from ca.
-> I added a --crl-verify "crl.pem" option to specify the crl filename.
-> It works for me ;)
-> 
-> Regards Stefano.
+I have been trying for a few hours now to get my Visual C++ to compile the =
+OpenVPN user mode client, but without any luck, I would be happy to hear fr=
+om someone who was able to, or has an idea how to do it.
 
-Stefano,
+I have MinGW, MSYS, GCC, etc installed, but I want to create an Open Source=
+ MFC GUI for the client, as opposed to the console one.
 
-Excellent work!
-
-This feature has been requested several times, so I'm sure it will be
-well-received.
-
-James
+Thanks
+Noam Rathaus
+CTO
+Beyond Security Ltd.
+http://www.securiteam.com=20
 
 
