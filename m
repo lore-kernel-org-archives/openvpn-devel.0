@@ -1,9 +1,8 @@
 From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] Changing server config without disconnecting
- users
-In-Reply-To: <Pine.LNX.4.61.0411032329070.26459@...210...>
-Message-ID: <Pine.LNX.4.58.0411041407240.3057@...41...>
-References: <Pine.LNX.4.61.0411032329070.26459@...210...>
+Subject: Re: [Openvpn-devel] Win32: Event signals
+In-Reply-To: <Pine.WNT.4.60.0411032312390.48052@...254...>
+Message-ID: <Pine.LNX.4.58.0411041746140.3946@...41...>
+References: <Pine.WNT.4.60.0411032312390.48052@...254...>
 MIME-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
@@ -15,7 +14,7 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Nov  4 13:29:13 2004
+Date: Thu Nov  4 17:03:36 2004
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
 To: Mathias Sundman <mathias@...209...>
@@ -23,56 +22,47 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 On Wed, 3 Nov 2004, Mathias Sundman wrote:
 
-> As OpenVPN gets deployed at larger and larger corporations as a 
-> roadwarrior VPN server, I think it becomes more and more important that 
-> it's possible to change as much of the server configuration as possible 
-> without having to restart the server and causing all users to be 
-> disconnected.
-
-I agree.
-
-> One thing that I've had to do a few times is adding routes that it beeing 
-> pushed to the clients. If I put the configuration in a ccd file, I can add 
-> routes without restarting the server. But if I want to add a route that 
-> should be pushed to all clients, I need to put it in the main config, and 
-> then I can't have it updated without restarting the server, right?
+> Okay, I've finished my event signals patch, which adds events for SIGUSR1, 
+> SIGUSR2 and SIGHUP.
 > 
-> How do the future look like for OpenVPN?
-
-I agree that it makes sense to allow more fine-grained control over the
-running process.
-
-> Is using a client-connect script to generate default options the way 
-> this should be handled in the future, or should we solve it some other 
-> way?
+> If --service is used, it still creates the exit_event just like before, 
+> but it also creates the new events with the same name as the exit_event 
+> but appends the signal name like, exit_event_SIGHUP.
 > 
-> Perhaps we could have a file in the ccd dir named default that could hold 
-> all the client options that we today put in the main config that will be 
-> re-read when a new client connects?
-
-That's one option.  Right now, you can handle this by just adding a
-"config ccd/default" to each of the ccd files, though having OpenVPN do it
-automatically on some file such as "default" would be a trivial 
-modification.
-
-> I also see the need for being able to "kill" a client instance without 
-> having to restart the server.
+> It always creates the new signals in non signaled state.
 > 
-> Say that you have a star site-to-site VPN build with openvpn in server 
-> mode at the headquarter and an openvpn router at each branch office.
+> Some things to consider that I havn't thought through fully.
 > 
-> If one of the branch officies get's compromised, you would like to add the 
-> branch office certificate to the CRL, and kick that instance from the 
-> openvpn server. You can't wait until the compromised office disconnects on 
-> his own, and you don't want to break connectivity with the other branch 
-> offices.
+> 1. To have the new events checked I added them in wait_signal() in 
+> event.h. Was this the correct place? Or do the diffent events need to be 
+> added to the "check event list" at a diffrent time?
+> 
+> 2. I modified the win32_service_interrupt() function to return the signal 
+> value instead of just true/false. This means that this function will now 
+> return "true" for all signals, not only sigterm. Will that cause any 
+> problems?
+> 
+> 3. Do we need to block the new events from beeing checked at some time?
+> 
+> 4. Do you have plans to give SIGINT a diffrent functionallity than SIGTERM 
+> in the future? If so, do you think we should add a event for SIGINT also 
+> now?
 
-Killing a client instance is fairly easy -- the question is how best to 
-get the signal to kill client instance x into the running OpenVPN process.
+No, I think SIGINT and SIGTERM should be handled identically.
 
-This comes back to the idea of having an administrative interface to the 
-running process via a TCP socket.
+> Apart from that I think it works well. I can now send all the signals from 
+> my GUI and it does not break compatibility with existing software.
+
+My only hesitancy with this patch is that it will become obsolete after we
+develop the management channel interface, i.e. have the openvpn daemon
+listen on a TCP socket for control commands.  I'm thinking of the 
+management interface as having a bunch of commands to allow real-time 
+control over a running daemon, such as:
+
+signal [signal_name] -- send SIGHUP, SIGTERM, SIGUSR1, SIGUSR2, etc.
+kill [common_name|source_IP_port] -- kill a client instance
+status [format_version] -- produce a status listing
+password [password] -- simple authentication to access management interface
 
 James
-
 
