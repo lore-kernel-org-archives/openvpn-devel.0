@@ -1,8 +1,8 @@
 From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] Show client IP address in status file
-In-Reply-To: <Pine.LNX.4.61.0410141450560.17318@...210...>
-Message-ID: <Pine.LNX.4.58.0410141055550.5469@...269...>
-References: <Pine.LNX.4.61.0410141450560.17318@...210...>
+Subject: Re: [Openvpn-devel] Compilation Problem of =?utf-8?b?b3BlbnZwbi0yLjBfYmV0YTEx?=
+In-Reply-To: <loom.20041014T173717-97@...171...>
+Message-ID: <Pine.LNX.4.58.0410141115340.5469@...269...>
+References: <loom.20041014T173717-97@...171...>
 MIME-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
@@ -14,64 +14,89 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Oct 14 10:13:24 2004
+Date: Thu Oct 14 10:17:59 2004
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-To: Mathias Sundman <mathias@...209...>
+To: zeeshaan <xeshaan@...293...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-
-On Thu, 14 Oct 2004, Mathias Sundman wrote:
-
-> I have a little feature request.
-> 
-> I use TAP and bridging in many roadwarrior configurations.
-> 
-> I would really like to see what IP address that has been assigned to which 
-> client in the --status file.
-> 
-> A while ago we discussed how to protect against the user using another IP 
-> address that the one he was assigned, and you, James, changed the code so 
-> when using TUN, only the assigned IP address is allowed.
-> 
-> However with TAP you said it was much harder as openvpn only keeps track 
-> of MAC addresses rather than IP addresses.
-> 
-> I can live with this security issue, but would it be possible to just save 
-> the IP address that was assigned to a client so it can be showed in the 
-> status file?
-
-There will be a way to do this in beta12.  I've added an
---ifconfig-pool-persist option which will periodically output a comma
-separated list of <common name>,<IP address> to a file.  This is
-ostensibly used to persist the ifconfig pool data across daemon
-instantiations but could be used for other purposes as well.
-
-> How does openvpn work when a client is not a single machine, but a whole 
-> bridged network? Does openvpn hand out multiple IP addresses from 
-> --ifconfig-pool then?
-
-No, --ifconfig-pool is only used to allocate IPs for the actual client
-machine which is connecting to the server.  If there is a subnet behind
-the client, that subnet can be numbered however you wish.
-
-When --dev tun is used, you can use the --iroute directive to tell the
-server which subnets exist behind a particular client.
-
-With --dev tap, this should all work without needing any --iroute
-directive because the server is routing based on MAC address and doesn't
-care what the IP addresses are.
-
-One difference between --dev tun and --dev tap handling is that in --dev 
-tun mode, where we are routing based on IP addresses, the server will not 
-"learn" a new IP address or subnet on the client (so that it can route 
-back to it) unless you explicitly configure it with --iroute.
-
-With --dev tap handling, where we are routing by MAC address, we try to 
-act more like an ethernet bridge, by dynamically learning any MAC address 
-that comes from a client, subject to filewall controls which can be set by 
-the --learn-address script.
+Make sure you have a tap-win32 subdirectory below your make directory with
+appropriate files in it.
 
 James
 
+On Thu, 14 Oct 2004, zeeshaan wrote:
+
+> Hi, 
+> 
+> I am trying to compile the OpenVpn in windows but no success, 
+> 
+> i have installed Mingw,Msys i have opensssl and lzo libraries source also but 
+> 
+> i have set path for openssl and lzo in makefile.w32 
+> as 
+> 
+> OPENSSL = /f/openssl-0.9.7d
+> LZO = /f/lzo-1.08
+> 
+> because both are at f:/openssl-0.9.7d and f:/lzo-1.08
+> 
+> 
+> when i try to compile the source through mingw by applying command 
+> 
+> Make -f makefile.w32 
+> 
+> i get errors as 
+> 
+> gcc -g -O2 -Wall -Wno-unused-function -Wno-unused-variable -mno-cygwin -
+> If:/openssl-0.9.7d/include -If:/lzo-1.08/include -c crypto.c -o crypto.o 
+> In file included from crypto.c:36: 
+> crypto.h:102: parse error before '*' token 
+> crypto.h: In function `EVP_CipherInit_ov': 
+> crypto.h:104: warning: implicit declaration of function `EVP_CipherInit' 
+> crypto.h:104: `ctx' undeclared (first use in this function) 
+> crypto.h:104: (Each undeclared identifier is reported only once 
+> crypto.h:104: for each function it appears in.) 
+> crypto.h:104: `type' undeclared (first use in this function) 
+> crypto.h:104: `key' undeclared (first use in this function) 
+> crypto.h:104: `iv' undeclared (first use in this function) 
+> crypto.h:104: `enc' undeclared (first use in this function) 
+> crypto.h: At top level: 
+> crypto.h:109: parse error before '*' token 
+> crypto.h: In function `EVP_CipherUpdate_ov': 
+> crypto.h:111: warning: implicit declaration of function `EVP_CipherUpdate' 
+> crypto.h:111: `ctx' undeclared (first use in this function) 
+> crypto.h:111: `out' undeclared (first use in this function) 
+> crypto.h:111: `outl' undeclared (first use in this function) 
+> crypto.h:111: `in' undeclared (first use in this function) 
+> crypto.h:111: `inl' undeclared (first use in this function) 
+> crypto.h: At top level: 
+> crypto.h:190: warning: type defaults to `int' in declaration of `EVP_CIPHER' 
+> crypto.h:190: warning: no semicolon at end of struct or union 
+> ........ 
+> .......... 
+> ....... 
+> 
+> 
+> 
+> 
+> do anybody know wat is the problem? 
+> 
+> looking for a quick response.. 
+> 
+> Regards, 
+> ZEE
+> 
+> 
+> 
+> -------------------------------------------------------
+> This SF.net email is sponsored by: IT Product Guide on ITManagersJournal
+> Use IT products in your business? Tell us what you think of them. Give us
+> Your Opinions, Get Free ThinkGeek Gift Certificates! Click to find out more
+> http://productguide.itmanagersjournal.com/guidepromo.tmpl
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> 
 
