@@ -1,7 +1,7 @@
-From: "Eric E. Bowles" <eric@...62...>
-Message-ID: <20030115063023.GK7242%bowles@...63...>
+From: Alberto Gonzalez Iniesta <agi@...64...>
+Message-ID: <20030205084559.GA3451@...30...>
 Mime-Version: 1.0
-Subject: [Openvpn-devel] Linux kernel crashes when incoming/outgoing paths differ
+Subject: [Openvpn-devel] Trimmed down permissions for generated keys
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -12,167 +12,54 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Jan 14 22:31:05 2003
+Date: Wed Feb  5 00:47:03 2003
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-[i'm resending this... sorry if it appears twice]
+Hi James et al!
 
-Hi there,
+Intro
+-----
+openvpn creates pre-shared secret files, for latter use in static key
+encryption mode (non-TLS), with the --genkey option
 
-I've been experiencing kernel crashes with OpenVPN on Linux under a 
-certain set of conditions, and wondered if anybody else (James?) can 
-reproduce this.
+The minor/anecdotal glitch
+--------------------------
 
-Here are the steps needed to cause the crash:
+The permissions for the created file may be/seem to be excessive (0700)
+Pointed out by Herbert Xu <herbert@...65...> [1]
 
-  1. Create an OpenVPN TUN link between two hosts, Host-A and Host-B.
+The patch
+---------
 
-  2. Add an iptables rule to Host-A to REJECT connections from unauthorized 
-     networks, generating an ICMP port unreachable.  Typically, this would
-     be the "default deny" rule in a firewall, for example:
+--- openvpn-1.3.2.orig/crypto.c
++++ openvpn-1.3.2/crypto.c
+@@ -968,7 +968,7 @@
+   struct buffer out = alloc_buf_gc (512);
 
-       iptables -A reject -j REJECT --reject-with icmp-port-unreachable
-
-  3. Make a TCP connection (e.g., ssh) from Host-B to Host-A's tunnel
-     interface, using a source address for which Host-A:
-       (a) doesn't have a route directed across the tunnel, and
-       (b) doesn't explicitly permit (so that the iptables rule above will 
-           apply)
-
-     [The connection doesn't have to be made to Host-A's tunnel interface; it 
-      could be to any interface on Host-A that causes the connection to 
-      traverse the tunnel from Host-B to Host-A.]
-
-What I think is happening is this: when an incoming connection arrives
-on Host-A's TUN interface, the REJECT rule is triggered, causing an 
-"ICMP unreachable" to be sent back.  However, since there is no return 
-route back across the tunnel, the default route is selected, which causes 
-the ICMP packet to be <<returned on an interface that is different from the
-incoming interface>> (i.e., the tunnel).  Since the incoming (tun) and 
-outgoing (eth) interfaces have different link layer header sizes, the 
-kernel is crashing in skb_push().
-
-Software:
-  openvpn 1.3.1.7, 1.3.2, 1.3.2.5
-  linux kernel 2.4.19, 2.4.20
-  iptables 1.2.7a
-  iptables patch-o-matic 20020930, 20021127
-
-I've attached the kernel oops output below.
-
-I hope I've provided sufficient information to reproduce the crash.
-Please let me know if you need more information, since I'm interested
-in helping solve this problem.
-
-Thanks,
-
---eric
-
-===========================================================================
-% kernel BUG at skbuff.c:109!
-invalid operand: 0000
-CPU:    0
-EIP:    0010:[<c01c5627>]    Not tainted
-Using defaults from ksymoops -t elf32-i386 -a i386
-EFLAGS: 00010282
-eax: 00000028   ebx: 00000000   ecx: cf7d8000   edx: cc52f11c
-esi: cc463f00   edi: 00000800   ebp: cf77f000   esp: ce531c68
-ds: 0018   es: 0018   ss: 0018
-Process openvpn (pid: 3954, stackpage=ce531000)
-Stack: c02374a0 c01d0215 00000036 0000000e cf77f000 c01d021e cc463f00
-0000000e
-       c01d0215 ce927d80 cc463f00 cb58c0c0 cf77f000 c01cca1a cc463f00
-cf77f000
-       00000800 cb58c0e4 00000000 00000028 cc463f00 00000000 cf77f000
-00000000
-Call Trace:    [<c01d0215>] [<c01d021e>] [<c01d0215>] [<c01cca1a>]
-[<c01ddb05>]
-  [<c01cf12e>] [<c01dd975>] [<c01dda78>] [<c01cf12e>] [<d00e3384>]
-[<c01dd936>]
-  [<d00e7906>] [<d00e3835>] [<d00402e2>] [<d0042660>] [<d0042660>]
-[<d0042660>]
-  [<c01da0c6>] [<d0044080>] [<d00445c0>] [<c01cee0d>] [<c01da0c6>]
-[<c01cf0ee>]
-  [<c01da0c6>] [<d0044600>] [<c01d9eb5>] [<c01da0c6>] [<c01da3a9>]
-[<c01cf12e>]
-  [<c01da03d>] [<c01da1fa>] [<c01c9780>] [<c01c9889>] [<c01c9983>]
-[<c011b6ad>]
-  [<d00e1b4c>] [<d00e12d6>] [<c0132c2f>] [<c0108933>]
-Code: 0f 0b 6d 00 8b 64 23 c0 83 c4 14 c3 90 a1 28 2c 2a c0 56 03
+   /* open key file */
+-  fd = open (filename, O_CREAT | O_TRUNC | O_WRONLY, S_IRWXU);
++  fd = open (filename, O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR);
+   if (fd == -1)
+     msg (M_ERR, "Cannot open shared secret file %s for write", filename);
 
 
->>EIP; c01c5627 <skb_under_panic+29/36>   <=====
+Let me know if you like it/agree, James. Thanks,
 
->>ecx; cf7d8000 <_end+f513308/fd48368>
->>edx; cc52f11c <_end+c26a424/fd48368>
->>esi; cc463f00 <_end+c19f208/fd48368>
->>ebp; cf77f000 <_end+f4ba308/fd48368>
->>esp; ce531c68 <_end+e26cf70/fd48368>
+Alberto
 
-Trace; c01d0215 <eth_header+15d/16e>
-Trace; c01d021e <eth_header+166/16e>
-Trace; c01d0215 <eth_header+15d/16e>
-Trace; c01cca1a <neigh_resolve_output+a6/198>
-Trace; c01ddb05 <ip_finish_output2+8d/c4>
-Trace; c01cf12e <nf_hook_slow+a0/144>
-Trace; c01dd975 <ip_finish_output+3f/44>
-Trace; c01dda78 <ip_finish_output2+0/c4>
-Trace; c01cf12e <nf_hook_slow+a0/144>
-Trace; d00e3384 <[ipt_REJECT]send_reset+308/37e>
-Trace; c01dd936 <ip_finish_output+0/44>
-Trace; d00e7906 <[ipt_LOG].text.end+ad/1ff>
-Trace; d00e3835 <[ipt_REJECT]reject+5f/62>
-Trace; d00402e2 <[ip_tables]ipt_do_table+262/2e4>
-Trace; d0042660 <[ip_tables]__kstrtab_ipt_register_table+0/0>
-Trace; d0042660 <[ip_tables]__kstrtab_ipt_register_table+0/0>
-Trace; d0042660 <[ip_tables]__kstrtab_ipt_register_table+0/0>
-Trace; c01da0c6 <ip_local_deliver_finish+0/134>
-Trace; d0044080 <[iptable_filter]ipt_hook+20/24>
-Trace; d00445c0 <[iptable_filter]packet_filter+0/40>
-Trace; c01cee0d <nf_iterate+51/86>
-Trace; c01da0c6 <ip_local_deliver_finish+0/134>
-Trace; c01cf0ee <nf_hook_slow+60/144>
-Trace; c01da0c6 <ip_local_deliver_finish+0/134>
-Trace; d0044600 <[iptable_filter]ipt_ops+0/48>
-Trace; c01d9eb5 <ip_local_deliver+35/54>
-Trace; c01da0c6 <ip_local_deliver_finish+0/134>
-Trace; c01da3a9 <ip_rcv_finish+1af/1fa>
-Trace; c01cf12e <nf_hook_slow+a0/144>
-Trace; c01da03d <ip_rcv+169/1f2>
-Trace; c01da1fa <ip_rcv_finish+0/1fa>
-Trace; c01c9780 <netif_receive_skb+100/1a0>
-Trace; c01c9889 <process_backlog+69/104>
-Trace; c01c9983 <net_rx_action+5f/ea>
-Trace; c011b6ad <do_softirq+89/8c>
-Trace; d00e1b4c <[tun]tun_get_user+d0/13f>
-Trace; d00e12d6 <[tun]tun_chr_write+28/2c>
-Trace; c0132c2f <sys_write+85/ea>
-Trace; c0108933 <system_call+33/40>
 
-Code;  c01c5627 <skb_under_panic+29/36>
-00000000 <_EIP>:
-Code;  c01c5627 <skb_under_panic+29/36>   <=====
-   0:   0f 0b                     ud2a      <=====
-Code;  c01c5629 <skb_under_panic+2b/36>
-   2:   6d                        insl   (%dx),%es:(%edi)
-Code;  c01c562a <skb_under_panic+2c/36>
-   3:   00 8b 64 23 c0 83         add    %cl,0x83c02364(%ebx)
-Code;  c01c5630 <skb_under_panic+32/36>
-   9:   c4 14 c3                  les    (%ebx,%eax,8),%edx
-Code;  c01c5633 <skb_under_panic+35/36>
-   c:   90                        nop    
-Code;  c01c5634 <alloc_skb+0/1a6>
-   d:   a1 28 2c 2a c0            mov    0xc02a2c28,%eax
-Code;  c01c5639 <alloc_skb+5/1a6>
-  12:   56                        push   %esi
-Code;  c01c563a <alloc_skb+6/1a6>
-  13:   03 00                     add    (%eax),%eax
 
- <0>Kernel panic: Aiee, killing interrupt handler!
+[1] http://bugs.debian.org/178849
 
-2 errors issued.  Results may not be reliable.
-===========================================================================
+(PS. I resent this mail, since I first sent it from the wrong address,
+sorry James)
+-- 
+Alberto Gonzalez Iniesta       | They that give up essential liberty
+agi@(agi.as|debian.org)        | to obtain a little temporary safety
+Encrypted mail preferred       | deserve neither liberty nor safety.
+
+Key fingerprint = 9782 04E7 2B75 405C F5E9  0C81 C514 AF8E 4BA4 01C3
 
