@@ -1,7 +1,7 @@
 From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1090917867.31515@...41...>
-In-Reply-To: <16645.48660.718636.245182@...253...>
-Subject: [Openvpn-devel] Re: [PATCH - 3 of 4]  separate "net-type" from "interface-type"
+Message-ID: <twig.1090918723.37830@...41...>
+In-Reply-To: <16645.49196.829476.656946@...253...>
+Subject: [Openvpn-devel] Re: [PATCH - 4 of 4]  support new option "net-type"
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,461 +12,270 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Jul 27 01:45:01 2004
+Date: Tue Jul 27 01:59:35 2004
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: Neil Brown <neilb@...253...>, James Yonan <jim@...41...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I agree with you that tunnel device type and subnet vs. point-to-point mode
-are mutually exclusive properties.
+Neil,
 
-My main concern is preventing an explosion in the size of the parameter
-permutation space, where the code has to handle 4 cases of dev/net
-permutations instead of only two.
-
-$ grep DEV_TYPE *.[ch] | wc
-     59     328    2855
-
-There are a lot of places where DEV_TYPE_x is referenced, and many of these
-places will now need to handle 4 cases instead of only 2.
-
-James
+Comments Inline below...
 
 Neil Brown <neilb@...253...> said:
 
 > 
 > 
-> This is the third for 4 patches.  Possible it is a little more
-> controversial.
-> This patch doesn't actually make any functional change to openvpn.
-> However it prepares the way for a functional change to be implemented
-> in the next patch.
+> As was hinted at with the previous patch, this patch introduces a new
+> config option "net-type".  It can be either "ptp" or "subnet".
 > 
-> (Ignoring null,) openvpn has two types for devices, tun and tap.
-> It also has two ways of configuring the local interface: pointopoint
-> or subnet.
-> This is most obvious in the usage of "ifconfig": in "pointopoint" mode
-> the second argument is the remote IP address, in subnet mode the
-> second argument is a subnet.
+> If net-type is not explicitly given then:
+>   if "dev" is "tun", "net-type" will be "ptp"
+>   if "dev" is "tap", "net-type" will be "subnet"
 > 
-> Currently openvpn has a built in assumption that if it is using a tun
-> device it should work in pointopoint mode, and if it is use a tap
-> device it should work in subnet mode.
+> If it is given, then it overrides that default.
 > 
-> I don't think this assumption is necessarily correct.  In particular,
-> I think it can be useful to run with a tun device and subnet mode.
+> Probably the most useful usage is to set "net-type subnet" when
+> using  "dev tap".
+
+I'm not sure I understand this.  Doesn't current OpenVPN usage associate dev
+tap interfaces with subnet-based networks?
+
+> This allows you to have a simple subnet of all openvpn clients talking
+> to a given server, and provides some guarantees that only the client
+> allocated a particular IP address will be able to use it.
+
+Can you post any config file examples showing how you would use this?
+
+> I'm am not sure how this will work with OPENBSD, NETBSD, or DARWIN as
+> tun.c doesn't seem to be able to ifconfig these with subnets.  It
+> definitely works for Linux and should work for WIN32 and FREEBSD.
+
+For portability with tun interfaces across various OSes, OpenVPN tries to
+treat them all as being point-to-point interfaces, rather than allowing (as
+some OSes do) a subnet mask to be assigned to a tun endpoint.
+
+James
+
+> This patch doesn't include any updates to documentation.  If you are
+> happy to accept it, I will update the relevant documentation and send
+> you that patch.
+
 > 
-> This would be only really useful when using the new server mode, but
-> it is (for me at least) particularly useful in that situation.
-> 
-> I want to use tun devices (as I am only interested in IP traffic, and
-> I want some checking of source IP address to be done) but I want to
-> treat the collection of openvpn instances (the server and several
-> clients) as a single subnet.
-> A particular advantage of this is that ifconfig-pool can hand out
-> individual IP addresses to clients instead of 2-bit subnets.
-> 
-> This patch introduces a concept of a "NET_TYPE" which can be
-> NET_TYPE_PTP or NET_TYPE_SUBNET.  In this patch, the NET_TYPE is
-> determines directly from the TUNNEL_TYPE.  
-> 
-> All the times where TUNNEL_TYPE are currently used where the important
-> issues is "subnet or pointopoint" have been change to use NET_TYPE
-> instead.
-> 
-> Thus this change does (as mentioned) not actually affect functionality
-> (yet), only appearance of the code.
-> 
-> If you aren't convinced that this is a good idea, I am happy to
-> discuss it further.
-> 
-> Thanks,
-> NeilBrown
-> 
-> ========================================
+> ==========================================
 > ### Diffstat output
->  ./init.c  |    4 +--
->  ./multi.c |   12 +++++-----
->  ./tun.c   |   72 +++++++++++++++++++++++++++++++-------------------------------
->  ./tun.h   |   14 ++++++++++++
->  4 files changed, 58 insertions(+), 44 deletions(-)
+>  ./init.c    |    3 ++-
+>  ./multi.c   |    2 +-
+>  ./options.c |   25 ++++++++++++++++++++++++-
+>  ./options.h |    2 +-
+>  ./tun.c     |   12 ++++++++++++
+>  ./tun.h     |   12 +++---------
+>  6 files changed, 43 insertions(+), 13 deletions(-)
 > 
 > diff ./init.c~current~ ./init.c
 > --- ./init.c~current~	2004-07-27 11:44:22.000000000 +1000
-> +++ ./init.c	2004-07-27 11:44:22.000000000 +1000
-> @@ -492,9 +492,9 @@ do_init_route_list (const struct options
+> +++ ./init.c	2004-07-27 11:44:45.000000000 +1000
+> @@ -492,7 +492,7 @@ do_init_route_list (const struct options
 >  		    bool fatal)
 >  {
 >    const char *gw = NULL;
-> -  int dev = dev_type_enum (options->dev, options->dev_type);
-> +  int net = dev_to_net (dev_type_enum (options->dev, options->dev_type));
+> -  int net = dev_to_net (dev_type_enum (options->dev, options->dev_type));
+> +  int net = net_type_enum (options->net_type);
 >  
-> -  if (dev == DEV_TYPE_TUN)
-> +  if (net == NET_TYPE_PTP)
+>    if (net == NET_TYPE_PTP)
 >      gw = options->ifconfig_remote_netmask;
->    if (options->route_default_gateway)
->      gw = options->route_default_gateway;
+> @@ -539,6 +539,7 @@ do_init_tun (struct context *c)
+>  			   c->options.dev_type,
+>  			   c->options.ifconfig_local,
+>  			   c->options.ifconfig_remote_netmask,
+> +			   c->options.net_type,
+>  			   addr_host (&c->c1.link_socket_addr.local),
+>  			   addr_host (&c->c1.link_socket_addr.remote));
+>  
 > 
 > diff ./multi.c~current~ ./multi.c
-> --- ./multi.c~current~	2004-07-26 14:36:35.000000000 +1000
-> +++ ./multi.c	2004-07-27 11:44:22.000000000 +1000
-> @@ -195,7 +195,7 @@ reap_buckets_per_pass (int n_buckets)
->  static void
->  multi_init (struct multi_context *m, struct context *t)
->  {
-> -  int dev = DEV_TYPE_UNDEF;
-> +  int net = NET_TYPE_UNDEF;
->  
->    msg (D_MULTI_LOW, "MULTI: multi_init called, r=%d v=%d",
->         t->options.real_hash_size,
+> --- ./multi.c~current~	2004-07-27 11:44:22.000000000 +1000
+> +++ ./multi.c	2004-07-27 11:44:45.000000000 +1000
 > @@ -204,7 +204,7 @@ multi_init (struct multi_context *m, str
 >    /*
 >     * Get tun/tap/null device type
 >     */
-> -  dev = dev_type_enum (t->options.dev, t->options.dev_type);
-> +  net = dev_to_net (dev_type_enum (t->options.dev, t->options.dev_type));
+> -  net = dev_to_net (dev_type_enum (t->options.dev, t->options.dev_type));
+> +  net = net_type_enum (t->options.net_type);
 >  
 >    /*
 >     * Init our multi_context object.
-> @@ -263,13 +263,13 @@ multi_init (struct multi_context *m, str
+> 
+> diff ./options.c~current~ ./options.c
+> --- ./options.c~current~	2004-07-27 11:44:45.000000000 +1000
+> +++ ./options.c	2004-07-27 11:44:45.000000000 +1000
+> @@ -114,6 +114,7 @@ static const char usage_message[] =
+>    "                  does not begin with \"tun\" or \"tap\".\n"
+>    "--dev-node node : Explicitly set the device node rather than using\n"
+>    "                  /dev/net/tun, /dev/tun, /dev/tap, etc.\n"
+> +  "--net-type ptp|subnet : Override default network type\n"
+>    "--tun-ipv6      : Build tun link capable of forwarding IPv6 traffic.\n"
+>    "--ifconfig l rn : TUN: configure device to use IP address l as a local\n"
+>    "                  endpoint and rn as a remote endpoint.  l & rn should be\n"
+> @@ -727,6 +728,7 @@ show_settings (const struct options *o)
+>    SHOW_STR (dev);
+>    SHOW_STR (dev_type);
+>    SHOW_STR (dev_node);
+> +  SHOW_STR (net_type);
+>    SHOW_BOOL (tun_ipv6);
+>    SHOW_STR (ifconfig_local);
+>    SHOW_STR (ifconfig_remote_netmask);
+> @@ -901,6 +903,16 @@ options_postprocess (struct options *opt
 >     */
->    if (t->options.ifconfig_pool_defined)
+>    dev = dev_type_enum (options->dev, options->dev_type);
+>  
+> +  if (options->net_type == NULL)
+> +    switch(dev) 
+> +      {
+> +        case DEV_TYPE_TUN: options->net_type = "ptp"; break;
+> +        case DEV_TYPE_TAP: options->net_type = "subnet"; break;
+> +        default: options->net_type = "ptp"; break;
+> +      }
+> +  if (strcmp(options->net_type, "ptp") &&
+> +      strcmp(options->net_type, "subnet")) 
+> +        msg (M_USAGE, "Options error: --net-type must be 'ptp' or 'subnet'");
+>    /*
+>     * Fill in default port number for --remote list
+>     */
+> @@ -1304,6 +1316,7 @@ options_string (const struct options *o,
+>  {
+>    struct buffer out = alloc_buf (256);
+>    bool tt_local = false;
+> +  const char *s;
+>  
+>    buf_printf (&out, "V4");
+>  
+> @@ -1311,7 +1324,10 @@ options_string (const struct options *o,
+>     * Tunnel Options
+>     */
+>  
+> -  buf_printf (&out, ",dev-type %s", dev_type_string (o->dev, o->dev_type));
+> +  buf_printf (&out, ",dev-type %s", (s = dev_type_string (o->dev,
+o->dev_type)));
+> +  if ((strcmp(s,"tun")==0 && strcmp(o->net_type, "ptp") != 0) ||
+> +      (strcmp(s,"tap")==0 && strcmp(o->net_type, "subnet") != 0))
+> +	  buf_printf (&out, ",net-type %s", o->net_type);
+>    buf_printf (&out, ",link-mtu %d", EXPANDED_SIZE (frame));
+>    buf_printf (&out, ",tun-mtu %d", PAYLOAD_SIZE (frame));
+>    buf_printf (&out, ",proto %s", proto2ascii (proto_remote (o->proto,
+remote), true));
+> @@ -1328,6 +1344,7 @@ options_string (const struct options *o,
+>  		     o->dev_type,
+>  		     o->ifconfig_local,
+>  		     o->ifconfig_remote_netmask,
+> +		     o->net_type,
+>  		     (in_addr_t)0,
+>  		     (in_addr_t)0);
+>        if (tt)
+> @@ -1945,6 +1962,12 @@ add_option (struct options *options,
+>        VERIFY_PERMISSION (OPT_P_GENERAL);
+>        options->dev_node = p[1];
+>      }
+> +  else if (streq (p[0], "net-type") && p[1])
+> +    {
+> +      ++i;
+> +      VERIFY_PERMISSION (OPT_P_GENERAL);
+> +      options->net_type = p[1];
+> +    }
+>    else if (streq (p[0], "tun-ipv6"))
 >      {
-> -      if (dev == DEV_TYPE_TUN)
-> +      if (net == NET_TYPE_PTP)
->  	{
->  	  m->ifconfig_pool = ifconfig_pool_init (IFCONFIG_POOL_30NET,
->  						 t->options.ifconfig_pool_start,
->  						 t->options.ifconfig_pool_end);
->  	}
-> -      else if (dev == DEV_TYPE_TAP)
-> +      else if (net == NET_TYPE_SUBNET)
->  	{
->  	  m->ifconfig_pool = ifconfig_pool_init (IFCONFIG_POOL_INDIV,
->  						 t->options.ifconfig_pool_start,
-> @@ -1066,12 +1066,12 @@ multi_connection_established (struct mul
->  	{
->  	  /* use pool ifconfig address(es) */
->  	  mi->context.c2.push_ifconfig_local = remote;
-> -	  if (TUNNEL_TYPE (mi->context.c1.tuntap) == DEV_TYPE_TUN)
-> +	  if (NET_TYPE (mi->context.c1.tuntap) == NET_TYPE_PTP)
->  	    {
->  	      mi->context.c2.push_ifconfig_remote_netmask = local;
->  	      mi->context.c2.push_ifconfig_defined = true;
->  	    }
-> -	  else if (TUNNEL_TYPE (mi->context.c1.tuntap) == DEV_TYPE_TAP)
-> +	  else if (NET_TYPE (mi->context.c1.tuntap) == NET_TYPE_SUBNET)
->  	    {
->  	      mi->context.c2.push_ifconfig_remote_netmask =
-mi->context.c1.tuntap->remote_netmask;
->  	      mi->context.c2.push_ifconfig_defined = true;
+>        VERIFY_PERMISSION (OPT_P_UP);
+> 
+> diff ./options.h~current~ ./options.h
+> --- ./options.h~current~	2004-07-27 11:44:12.000000000 +1000
+> +++ ./options.h	2004-07-27 11:44:45.000000000 +1000
+> @@ -109,6 +109,7 @@ struct options
+>    const char *dev;
+>    const char *dev_type;
+>    const char *dev_node;
+> +  const char *net_type;
+>    const char *ifconfig_local;
+>    const char *ifconfig_remote_netmask;
+>    bool ifconfig_noexec;
+> @@ -311,7 +312,6 @@ struct options
+>    bool exit_event_initial_state;
+>  #endif
+>  };
+> -
+>  #define streq(x, y) (!strcmp((x), (y)))
+>  
+>  /*
 > 
 > diff ./tun.c~current~ ./tun.c
 > --- ./tun.c~current~	2004-07-27 11:44:22.000000000 +1000
-> +++ ./tun.c	2004-07-27 11:44:22.000000000 +1000
-> @@ -157,23 +157,23 @@ ipv6_support (bool ipv6, bool ipv6_expli
+> +++ ./tun.c	2004-07-27 11:44:45.000000000 +1000
+> @@ -88,6 +88,16 @@ dev_type_string (const char *dev, const 
+>      }
 >  }
 >  
->  /*
-> - * If !tun, make sure ifconfig_remote_netmask looks
-> + * If !ptp, make sure ifconfig_remote_netmask looks
->   *  like a netmask.
->   *
-> - * If tun, make sure ifconfig_remote_netmask looks
-> + * If ptp, make sure ifconfig_remote_netmask looks
->   *  like an IPv4 address.
->   */
->  static void
-> -ifconfig_sanity_check (bool tun, in_addr_t addr)
-> +ifconfig_sanity_check (bool ptp, in_addr_t addr)
+> +int
+> +net_type_enum (const char *net)
+> +{
+> +   if (strcmp(net, "ptp") == 0)
+> +     return NET_TYPE_PTP;
+> +   else if (strcmp(net, "subnet") == 0)
+> +     return NET_TYPE_SUBNET;
+> +   return NET_TYPE_UNDEF;
+> +}
+> +
+>  const char *
+>  dev_component_in_dev_node (const char *dev_node)
 >  {
->    struct gc_arena gc = gc_new ();
->    const bool looks_like_netmask = ((addr & 0xFF000000) == 0xFF000000);
-> -  if (tun)
-> +  if (ptp)
->      {
->        if (looks_like_netmask)
->  	msg (M_WARN, "WARNING: Since you are using --dev tun, the second argument
-to --ifconfig must be an IP address.  You are using something (%s) that looks
-more like a netmask.", print_in_addr_t (addr, false, &gc));
->      }
-> -  else /* tap */
-> +  else /* subnet */
->      {
->        if (!looks_like_netmask)
->  	msg (M_WARN, "WARNING: Since you are using --dev tap, the second argument
-to --ifconfig must be a netmask, for example something like 255.255.255.0.");
-> @@ -213,7 +213,7 @@ check_addr_clash (const char *name,
+> @@ -345,6 +355,7 @@ init_tun (const char *dev,       /* --de
+>  	  const char *dev_type,  /* --dev-type option */
+>  	  const char *ifconfig_local_parm,          /* --ifconfig parm 1 */
+>  	  const char *ifconfig_remote_netmask_parm, /* --ifconfig parm 2 */
+> +	  const char *net_type,  /* --net-type option */
+>  	  in_addr_t local_public,
+>  	  in_addr_t remote_public)
+>  {
+> @@ -355,6 +366,7 @@ init_tun (const char *dev,       /* --de
+>    clear_tuntap (tt);
 >  
->    if (public)
->      {
-> -      if (type == DEV_TYPE_TUN)
-> +      if (type == NET_TYPE_PTP)
->  	{
->  	  const in_addr_t test_netmask = 0xFFFFFF00;
->  	  const in_addr_t public_net = public & test_netmask;
-> @@ -236,7 +236,7 @@ check_addr_clash (const char *name,
->  		 print_in_addr_t (local, false, &gc),
->  		 print_in_addr_t (remote_netmask, false, &gc));
->  	}
-> -      else if (type == DEV_TYPE_TAP)
-> +      else if (type == NET_TYPE_SUBNET)
->  	{
->  	  const in_addr_t public_network = public & remote_netmask;
->  	  const in_addr_t virtual_network = local & remote_netmask;
-> @@ -272,7 +272,7 @@ ifconfig_options_string (const struct tu
->    struct buffer out = alloc_buf_gc (256, gc);
->    if (tt->did_ifconfig_setup && !disable)
->      {
-> -      if (tt->type == DEV_TYPE_TUN)
-> +      if (NET_TYPE(tt) == NET_TYPE_PTP)
->  	{
->  	  const char *l, *r;
->  	  if (remote)
-> @@ -287,7 +287,7 @@ ifconfig_options_string (const struct tu
->  	    }
->  	  buf_printf (&out, "%s %s", r, l);
->  	}
-> -      else if (tt->type == DEV_TYPE_TAP)
-> +      else if (NET_TYPE(tt) == NET_TYPE_SUBNET)
->  	{
->  	  buf_printf (&out, "%s %s",
->  		      print_in_addr_t (tt->local & tt->remote_netmask, false, gc),
-> @@ -358,7 +358,7 @@ init_tun (const char *dev,       /* --de
+>    tt->type = dev_type_enum (dev, dev_type);
+> +  tt->nettype = net_type_enum (net_type);
 >  
 >    if (ifconfig_local_parm && ifconfig_remote_netmask_parm)
 >      {
-> -      bool tun = false;
-> +      bool ptp = false;
->        const char *ifconfig_local = NULL;
->        const char *ifconfig_remote_netmask = NULL;
->        const char *ifconfig_broadcast = NULL;
-> @@ -366,10 +366,10 @@ init_tun (const char *dev,       /* --de
->        /*
->         * We only handle TUN/TAP devices here, not --dev null devices.
->         */
-> -      if (tt->type == DEV_TYPE_TUN)
-> -	tun = true;
-> -      else if (tt->type == DEV_TYPE_TAP)
-> -	tun = false;
-> +      if (NET_TYPE(tt) == NET_TYPE_PTP)
-> +	ptp = true;
-> +      else if (NET_TYPE(tt) == NET_TYPE_SUBNET)
-> +	ptp = false;
->        else
->  	msg (M_FATAL, "'%s' is not a TUN/TAP device.  The --ifconfig option works
-only for TUN/TAP devices.", dev);
->  
-> @@ -388,7 +388,7 @@ init_tun (const char *dev,       /* --de
->  			   NULL);
->  
->        tt->remote_netmask = getaddr (
-> -				    (tun ? GETADDR_RESOLVE : 0)
-> +				    (ptp ? GETADDR_RESOLVE : 0)
->  				    | GETADDR_FATAL
->  				    | GETADDR_HOST_ORDER
->  				    | GETADDR_FATAL_ON_SIGNAL,
-> @@ -397,7 +397,7 @@ init_tun (const char *dev,       /* --de
->  				    NULL,
->  				    NULL);
->  
-> -      ifconfig_sanity_check (tun, tt->remote_netmask);
-> +      ifconfig_sanity_check (ptp, tt->remote_netmask);
->  
->        /*
->         * If local_public or remote_public addresses are defined,
-> @@ -405,13 +405,13 @@ init_tun (const char *dev,       /* --de
->         */
->  
->        check_addr_clash ("local",
-> -			tt->type,
-> +			NET_TYPE(tt),
->  			local_public,
->  			tt->local,
->  			tt->remote_netmask);
->  
->        check_addr_clash ("remote",
-> -			tt->type,
-> +			NET_TYPE(tt),
->  			remote_public,
->  			tt->local,
->  			tt->remote_netmask);
-> @@ -425,7 +425,7 @@ init_tun (const char *dev,       /* --de
->        /*
->         * If TAP-style interface, generate broadcast address.
->         */
-> -      if (!tun)
-> +      if (!ptp)
->  	{
->  	  tt->broadcast = generate_ifconfig_broadcast_addr (tt->local,
-tt->remote_netmask);
->  	  ifconfig_broadcast = print_in_addr_t (tt->broadcast, false, &gc);
-> @@ -435,7 +435,7 @@ init_tun (const char *dev,       /* --de
->         * Set environmental variables with ifconfig parameters.
->         */
->        setenv_str ("ifconfig_local", ifconfig_local);
-> -      if (tun)
-> +      if (ptp)
->  	{
->  	  setenv_str ("ifconfig_remote", ifconfig_remote_netmask);
->  	}
-> @@ -478,7 +478,7 @@ do_ifconfig (struct tuntap *tt,
->  
->    if (tt->did_ifconfig_setup)
->      {
-> -      bool tun = false;
-> +      bool ptp = false;
->        const char *ifconfig_local = NULL;
->        const char *ifconfig_remote_netmask = NULL;
->        const char *ifconfig_broadcast = NULL;
-> @@ -487,10 +487,10 @@ do_ifconfig (struct tuntap *tt,
->        /*
->         * We only handle TUN/TAP devices here, not --dev null devices.
->         */
-> -      if (tt->type == DEV_TYPE_TUN)
-> -	tun = true;
-> -      else if (tt->type == DEV_TYPE_TAP)
-> -	tun = false;
-> +      if (NET_TYPE(tt) == NET_TYPE_PTP)
-> +	ptp = true;
-> +      else if (NET_TYPE(tt) == NET_TYPE_SUBNET)
-> +	ptp = false;
->        else
->  	ASSERT (0); /* should have been caught in init_tun */
->  
-> @@ -503,7 +503,7 @@ do_ifconfig (struct tuntap *tt,
->        /*
->         * If TAP-style device, generate broadcast address.
->         */
-> -      if (!tun)
-> +      if (!ptp)
->  	ifconfig_broadcast = print_in_addr_t (tt->broadcast, false, &gc);
->  
->  #if defined(TARGET_LINUX)
-> @@ -520,7 +520,7 @@ do_ifconfig (struct tuntap *tt,
->  	  system_check (command_line, "Linux ip link set failed", true);
->  
->  
-> -	if (tun) {
-> +	if (ptp) {
->  
->  		/*
->  		 * Set the address for the device
-> @@ -547,7 +547,7 @@ do_ifconfig (struct tuntap *tt,
->  	}
->  	tt->did_ifconfig = true;
->  #else
-> -      if (tun)
-> +      if (ptp)
->  	openvpn_snprintf (command_line, sizeof (command_line),
->  			  IFCONFIG_PATH " %s %s pointopoint %s mtu %d",
->  			  actual,
-> @@ -572,7 +572,7 @@ do_ifconfig (struct tuntap *tt,
->  #elif defined(TARGET_SOLARIS)
->  
->        /* example: ifconfig tun2 10.2.0.2 10.2.0.1 mtu 1450 netmask
-255.255.255.255 up */
-> -      if (tun)
-> +      if (ptp)
->  	openvpn_snprintf (command_line, sizeof (command_line),
->  			  IFCONFIG_PATH " %s %s %s mtu %d netmask 255.255.255.255 up",
->  			  actual,
-> @@ -611,7 +611,7 @@ do_ifconfig (struct tuntap *tt,
->        msg (M_INFO, "NOTE: Tried to delete pre-existing tun/tap instance --
-No Problem if failure");
->  
->        /* example: ifconfig tun2 10.2.0.2 10.2.0.1 mtu 1450 netmask
-255.255.255.255 up */
-> -      if (tun)
-> +      if (ptp)
->  	openvpn_snprintf (command_line, sizeof (command_line),
->  			  IFCONFIG_PATH " %s %s %s mtu %d netmask 255.255.255.255 up",
->  			  actual,
-> @@ -627,7 +627,7 @@ do_ifconfig (struct tuntap *tt,
->  
->  #elif defined(TARGET_NETBSD)
->  
-> -      if (tun)
-> +      if (ptp)
->  	openvpn_snprintf (command_line, sizeof (command_line),
->  			  IFCONFIG_PATH " %s %s %s mtu %d netmask 255.255.255.255 up",
->  			  actual,
-> @@ -656,7 +656,7 @@ do_ifconfig (struct tuntap *tt,
->  
->  
->        /* example: ifconfig tun2 10.2.0.2 10.2.0.1 mtu 1450 netmask
-255.255.255.255 up */
-> -      if (tun)
-> +      if (ptp)
->  	openvpn_snprintf (command_line, sizeof (command_line),
->  			  IFCONFIG_PATH " %s %s %s mtu %d netmask 255.255.255.255 up",
->  			  actual,
-> @@ -673,7 +673,7 @@ do_ifconfig (struct tuntap *tt,
->  #elif defined(TARGET_FREEBSD)
->  
->        /* example: ifconfig tun2 10.2.0.2 10.2.0.1 mtu 1450 netmask
-255.255.255.255 up */
-> -      if (tun)
-> +      if (ptp)
->  	openvpn_snprintf (command_line, sizeof (command_line),
->  			  IFCONFIG_PATH " %s %s %s mtu %d netmask 255.255.255.255 up",
->  			  actual,
-> @@ -702,7 +702,7 @@ do_ifconfig (struct tuntap *tt,
->  	 * Make sure that both ifconfig addresses are part of the
->  	 * same .252 subnet.
->  	 */
-> -	if (tun)
-> +	if (ptp)
->  	  {
->  	    verify_255_255_255_252 (tt->local, tt->remote_netmask);
->  	    tt->adapter_netmask = ~3;
-> @@ -2481,7 +2481,7 @@ open_tun (const char *dev, const char *d
->        ep[1] = htonl (tt->adapter_netmask);
->  
->        /* At what IP address should the DHCP server masquerade at? */
-> -      if (tt->type == DEV_TYPE_TUN)
-> +      if (NET_TYPE(tt) == NET_TYPE_PTP)
->  	{
->  	  ep[2] = htonl (tt->remote_netmask);
->  	  if (tt->options.dhcp_masq_custom_offset)
-> @@ -2491,7 +2491,7 @@ open_tun (const char *dev, const char *d
->  	{
->  	  in_addr_t dsa; /* DHCP server addr */
->  
-> -	  ASSERT (tt->type == DEV_TYPE_TAP);
-> +	  ASSERT (NET_TYPE(tt) == NET_TYPE_SUBNET);
->  
->  	  if (tt->options.dhcp_masq_offset < 0)
->  	    dsa = (tt->local | (~tt->adapter_netmask)) + tt->options.dhcp_masq_offset;
 > 
 > diff ./tun.h~current~ ./tun.h
 > --- ./tun.h~current~	2004-07-27 11:44:22.000000000 +1000
-> +++ ./tun.h	2004-07-27 11:44:22.000000000 +1000
-> @@ -107,9 +107,23 @@ struct tuntap_options {
->   * Define a TUN/TAP dev.
->   */
+> +++ ./tun.h	2004-07-27 11:44:45.000000000 +1000
+> @@ -112,19 +112,12 @@ struct tuntap_options {
+>  #define	NET_TYPE_PTP	2	/* two IP addresses */
+>  #define	NET_TYPE_SUBNET 3	/* an IP address and a subnet mask */
 >  
-> +/* The device can be configured as pointopoint or subnet */
-> +#define	NET_TYPE_UNDEF	0
-> +#define	NET_TYPE_PTP	2	/* two IP addresses */
-> +#define	NET_TYPE_SUBNET 3	/* an IP address and a subnet mask */
-> +
-> +static inline dev_to_net(int dev)
-> +{
-> +	/* values for NET_TYPE cunning chosen to match
-> +	 * DEV_TYPE for which they match 
-> +	 */
-> +	return dev;
-> +}
-> +
+> -static inline dev_to_net(int dev)
+> -{
+> -	/* values for NET_TYPE cunning chosen to match
+> -	 * DEV_TYPE for which they match 
+> -	 */
+> -	return dev;
+> -}
+> -
 >  struct tuntap
 >  {
 >  # define TUNNEL_TYPE(tt) ((tt) ? ((tt)->type) : DEV_TYPE_UNDEF)
-> +# define NET_TYPE(tt) (dev_to_net(TUNNEL_TYPE(tt)))
+> -# define NET_TYPE(tt) (dev_to_net(TUNNEL_TYPE(tt)))
+> +# define NET_TYPE(tt) ((tt) ? (tt)->nettype :NET_TYPE_UNDEF)
 >    int type; /* DEV_TYPE_x as defined in proto.h */
+> +  int nettype; /* NET_TYPE_x */
 >  
 >    bool did_ifconfig_setup;
+>    bool did_ifconfig;
+> @@ -208,6 +201,7 @@ struct tuntap *init_tun (const char *dev
+>  			 const char *dev_type,  /* --dev-type option */
+>  			 const char *ifconfig_local_parm,          /* --ifconfig parm 1 */
+>  			 const char *ifconfig_remote_netmask_parm, /* --ifconfig parm 2 */
+> +			 const char *net_type,  /* --net-type option */
+>  			 in_addr_t local_public,
+>  			 in_addr_t remote_public);
+>  
 > 
 
 
