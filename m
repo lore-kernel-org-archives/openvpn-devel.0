@@ -1,9 +1,7 @@
 From: Mathias Sundman <mathias@...209...>
-Subject: Re: [Openvpn-devel] Win32: Event signals
-Message-ID: <Pine.WNT.4.60.0411032312390.48052@...254...>
+Message-ID: <Pine.LNX.4.61.0411032329070.26459@...210...>
 MIME-Version: 1.0
-Content-Type: MULTIPART/MIXED; boundary="59836-16129-1099520007=:48052"
-Content-ID: <Pine.LNX.4.61.0411032321120.26459@...210...>
+Subject: [Openvpn-devel] Changing server config without disconnecting users
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,171 +12,44 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Nov  3 14:34:43 2004
-To: openvpn-devel@lists.sourceforge.net
-Cc: James Yonan <jim@...41...>
-
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---59836-16129-1099520007=:48052
+Date: Wed Nov  3 15:11:53 2004
 Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Content-ID: <Pine.LNX.4.61.0411032308391.26459@...210...>
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Okay, I've finished my event signals patch, which adds events for SIGUSR1, 
-SIGUSR2 and SIGHUP.
+As OpenVPN gets deployed at larger and larger corporations as a 
+roadwarrior VPN server, I think it becomes more and more important that 
+it's possible to change as much of the server configuration as possible 
+without having to restart the server and causing all users to be 
+disconnected.
 
-If --service is used, it still creates the exit_event just like before, 
-but it also creates the new events with the same name as the exit_event 
-but appends the signal name like, exit_event_SIGHUP.
+One thing that I've had to do a few times is adding routes that it beeing 
+pushed to the clients. If I put the configuration in a ccd file, I can add 
+routes without restarting the server. But if I want to add a route that 
+should be pushed to all clients, I need to put it in the main config, and 
+then I can't have it updated without restarting the server, right?
 
-It always creates the new signals in non signaled state.
+How do the future look like for OpenVPN?
 
-Some things to consider that I havn't thought through fully.
+Is using a client-connect script to generate default options the way 
+this should be handled in the future, or should we solve it some other 
+way?
 
-1. To have the new events checked I added them in wait_signal() in 
-event.h. Was this the correct place? Or do the diffent events need to be 
-added to the "check event list" at a diffrent time?
+Perhaps we could have a file in the ccd dir named default that could hold 
+all the client options that we today put in the main config that will be 
+re-read when a new client connects?
 
-2. I modified the win32_service_interrupt() function to return the signal 
-value instead of just true/false. This means that this function will now 
-return "true" for all signals, not only sigterm. Will that cause any 
-problems?
+I also see the need for being able to "kill" a client instance without 
+having to restart the server.
 
-3. Do we need to block the new events from beeing checked at some time?
+Say that you have a star site-to-site VPN build with openvpn in server 
+mode at the headquarter and an openvpn router at each branch office.
 
-4. Do you have plans to give SIGINT a diffrent functionallity than SIGTERM 
-in the future? If so, do you think we should add a event for SIGINT also 
-now?
+If one of the branch officies get's compromised, you would like to add the 
+branch office certificate to the CRL, and kick that instance from the 
+openvpn server. You can't wait until the compromised office disconnects on 
+his own, and you don't want to break connectivity with the other branch 
+offices.
 
-Apart from that I think it works well. I can now send all the signals from 
-my GUI and it does not break compatibility with existing software.
-
---
-_____________________________________________________________
-Mathias Sundman                  (^)   ASCII Ribbon Campaign
-OpenVPN GUI for Windows           X    NO HTML/RTF in e-mail
-http://www.nilings.se/openvpn    / \   NO Word docs in e-mail
-
---59836-16129-1099520007=:48052
-Content-Type: APPLICATION/OCTET-STREAM; name="openvpn-2.0_beta15-events.diff"
-Content-Transfer-Encoding: BASE64
-Content-ID: <Pine.WNT.4.60.0411032313270.48052@...254...>
-Content-Description: 
-Content-Disposition: attachment; filename="openvpn-2.0_beta15-events.diff"
-
-ZGlmZiAtdXJOIG9wZW52cG4tMi4wX2JldGExNS9ldmVudC5oIG9wZW52cG4t
-Mi4wX2JldGExNS1uZXcvZXZlbnQuaAotLS0gb3BlbnZwbi0yLjBfYmV0YTE1
-L2V2ZW50LmgJU3VuIEF1ZyAxNSAwODoyODozNiAyMDA0CisrKyBvcGVudnBu
-LTIuMF9iZXRhMTUtbmV3L2V2ZW50LmgJTW9uIE5vdiAgMSAyMzozMTozOSAy
-MDA0CkBAIC0xNDUsNiArMTQ1LDEyIEBACiB7CiAgIGlmIChIQU5ETEVfREVG
-SU5FRCAod2luMzJfc2lnbmFsLmluLnJlYWQpKQogICAgIGV2ZW50X2N0bCAo
-ZXMsICZ3aW4zMl9zaWduYWwuaW4sIEVWRU5UX1JFQUQsIGFyZyk7CisgIGlm
-IChIQU5ETEVfREVGSU5FRCAod2luMzJfc2lnbmFsLmV2ZW50X1NJR1VTUjEu
-cmVhZCkpCisgICAgZXZlbnRfY3RsIChlcywgJndpbjMyX3NpZ25hbC5ldmVu
-dF9TSUdVU1IxLCBFVkVOVF9SRUFELCBhcmcpOworICBpZiAoSEFORExFX0RF
-RklORUQgKHdpbjMyX3NpZ25hbC5ldmVudF9TSUdVU1IyLnJlYWQpKQorICAg
-IGV2ZW50X2N0bCAoZXMsICZ3aW4zMl9zaWduYWwuZXZlbnRfU0lHVVNSMiwg
-RVZFTlRfUkVBRCwgYXJnKTsKKyAgaWYgKEhBTkRMRV9ERUZJTkVEICh3aW4z
-Ml9zaWduYWwuZXZlbnRfU0lHSFVQLnJlYWQpKQorICAgIGV2ZW50X2N0bCAo
-ZXMsICZ3aW4zMl9zaWduYWwuZXZlbnRfU0lHSFVQLCBFVkVOVF9SRUFELCBh
-cmcpOwogfQogCiAjZWxzZQpkaWZmIC11ck4gb3BlbnZwbi0yLjBfYmV0YTE1
-L3dpbjMyLmMgb3BlbnZwbi0yLjBfYmV0YTE1LW5ldy93aW4zMi5jCi0tLSBv
-cGVudnBuLTIuMF9iZXRhMTUvd2luMzIuYwlUdWUgT2N0IDI2IDIyOjM4OjMw
-IDIwMDQKKysrIG9wZW52cG4tMi4wX2JldGExNS1uZXcvd2luMzIuYwlXZWQg
-Tm92ICAzIDIzOjA0OjE0IDIwMDQKQEAgLTIyNiw2ICsyMjYsMzIgQEAKICAg
-Q0xFQVIgKCp3cyk7CiB9CiAKK0hBTkRMRQord2luMzJfY3JlYXRlX3NpZ25h
-bF9ldmVudChjb25zdCBjaGFyICpldmVudF9uYW1lLAorICAgICAgICAgICAg
-ICAgICAgICAgICAgICBib29sIGluaXRpYWxfc3RhdGUpCit7CisgIEhBTkRM
-RSBldmVudDsKKyAgc3RydWN0IHNlY3VyaXR5X2F0dHJpYnV0ZXMgc2E7CisK
-KyAgaWYgKCFpbml0X3NlY3VyaXR5X2F0dHJpYnV0ZXNfYWxsb3dfYWxsICgm
-c2EpKQorICAgIG1zZyAoTV9FUlIsICJFcnJvcjogd2luMzJfc2lnbmFsX29w
-ZW46IGluaXQgU0EgZmFpbGVkIik7CisKKyAgZXZlbnQgPSBDcmVhdGVFdmVu
-dCAoJnNhLnNhLAorICAJCSAgICAgICBUUlVFLAorCQkgICAgICAgaW5pdGlh
-bF9zdGF0ZSwKKwkJICAgICAgIGV2ZW50X25hbWUpOworICBpZiAoZXZlbnQg
-PT0gTlVMTCkKKyAgICB7CisgICAgICBtc2cgKE1fV0FSTnxNX0VSUk5PLCAi
-Tk9URTogQ3JlYXRlRXZlbnQgJyVzJyBmYWlsZWQiLCBldmVudF9uYW1lKTsK
-KyAgICB9CisgIGVsc2UKKyAgICB7CisgICAgICBpZiAoV2FpdEZvclNpbmds
-ZU9iamVjdCAoZXZlbnQsIDApICE9IFdBSVRfVElNRU9VVCkKKyAgICAgICAg
-bXNnIChNX0ZBVEFMLCAiRVJST1I6IEV2ZW50ICgnJXMnKSBpcyBzaWduYWxl
-ZCIsIGV2ZW50X25hbWUpOworICAgIH0KKyAgcmV0dXJuIGV2ZW50OworfQor
-IAogdm9pZAogd2luMzJfc2lnbmFsX29wZW4gKHN0cnVjdCB3aW4zMl9zaWdu
-YWwgKndzLAogCQkgICBpbnQgZm9yY2UsCkBAIC0yNzgsMjYgKzMwNCwyNiBA
-QAogICBpZiAoKGZvcmNlID09IFdTT19OT0ZPUkNFIHx8IGZvcmNlID09IFdT
-T19GT1JDRV9TRVJWSUNFKQogICAgICAgJiYgIUhBTkRMRV9ERUZJTkVEICh3
-cy0+aW4ucmVhZCkgJiYgZXhpdF9ldmVudF9uYW1lKQogICAgIHsKLSAgICAg
-IHN0cnVjdCBzZWN1cml0eV9hdHRyaWJ1dGVzIHNhOworICAgICAgY2hhciBl
-dmVudF9uYW1lWzEwMF07CiAKLSAgICAgIGlmICghaW5pdF9zZWN1cml0eV9h
-dHRyaWJ1dGVzX2FsbG93X2FsbCAoJnNhKSkKLQltc2cgKE1fRVJSLCAiRXJy
-b3I6IHdpbjMyX3NpZ25hbF9vcGVuOiBpbml0IFNBIGZhaWxlZCIpOwotCi0g
-ICAgICB3cy0+aW4ucmVhZCA9IENyZWF0ZUV2ZW50ICgmc2Euc2EsCi0JCQkJ
-IFRSVUUsCi0JCQkJIGV4aXRfZXZlbnRfaW5pdGlhbF9zdGF0ZSA/IFRSVUUg
-OiBGQUxTRSwKLQkJCQkgZXhpdF9ldmVudF9uYW1lKTsKLSAgICAgIGlmICh3
-cy0+aW4ucmVhZCA9PSBOVUxMKQotCXsKLQkgIG1zZyAoTV9XQVJOfE1fRVJS
-Tk8sICJOT1RFOiBDcmVhdGVFdmVudCAnJXMnIGZhaWxlZCIsIGV4aXRfZXZl
-bnRfbmFtZSk7Ci0JfQotICAgICAgZWxzZQotCXsKLQkgIGlmIChXYWl0Rm9y
-U2luZ2xlT2JqZWN0ICh3cy0+aW4ucmVhZCwgMCkgIT0gV0FJVF9USU1FT1VU
-KQotCSAgICBtc2cgKE1fRkFUQUwsICJFUlJPUjogRXhpdCBFdmVudCAoJyVz
-JykgaXMgc2lnbmFsZWQiLCBleGl0X2V2ZW50X25hbWUpOwotCSAgZWxzZQot
-CSAgICB3cy0+bW9kZSA9IFdTT19NT0RFX1NFUlZJQ0U7Ci0JfQorICAgICAg
-LyogQ3JlYXRlIFNJR1RFUk0gKGV4aXQpIGV2ZW50ICovCisgICAgICB3cy0+
-aW4ucmVhZCA9IHdpbjMyX2NyZWF0ZV9zaWduYWxfZXZlbnQoZXhpdF9ldmVu
-dF9uYW1lLAorCQkJCSAgICAgICAgICAgICAgZXhpdF9ldmVudF9pbml0aWFs
-X3N0YXRlID8gVFJVRSA6IEZBTFNFKTsKKyAgICAgIGlmICh3cy0+aW4ucmVh
-ZCAhPSBOVUxMKQorICAgICAgICB3cy0+bW9kZSA9IFdTT19NT0RFX1NFUlZJ
-Q0U7CisKKworICAgICAgLyogQ3JlYXRlIFNJR1VTUjEgZXZlbnQgKi8KKyAg
-ICAgIHNucHJpbnRmKGV2ZW50X25hbWUsIHNpemVvZihldmVudF9uYW1lKSwg
-IiVzX1NJR1VTUjEiLCBleGl0X2V2ZW50X25hbWUpOworICAgICAgd3MtPmV2
-ZW50X1NJR1VTUjEucmVhZCA9IHdpbjMyX2NyZWF0ZV9zaWduYWxfZXZlbnQo
-ZXZlbnRfbmFtZSwgRkFMU0UpOworCQkJCQkJICAgICAgIAorICAgICAgLyog
-Q3JlYXRlIFNJR1VTUjIgZXZlbnQgKi8KKyAgICAgIHNucHJpbnRmKGV2ZW50
-X25hbWUsIHNpemVvZihldmVudF9uYW1lKSwgIiVzX1NJR1VTUjIiLCBleGl0
-X2V2ZW50X25hbWUpOworICAgICAgd3MtPmV2ZW50X1NJR1VTUjIucmVhZCA9
-IHdpbjMyX2NyZWF0ZV9zaWduYWxfZXZlbnQoZXZlbnRfbmFtZSwgRkFMU0Up
-OworCQkJCQkJICAgICAgIAorICAgICAgLyogQ3JlYXRlIFNJR0hVUCBldmVu
-dCAqLworICAgICAgc25wcmludGYoZXZlbnRfbmFtZSwgc2l6ZW9mKGV2ZW50
-X25hbWUpLCAiJXNfU0lHSFVQIiwgZXhpdF9ldmVudF9uYW1lKTsKKyAgICAg
-IHdzLT5ldmVudF9TSUdIVVAucmVhZCA9IHdpbjMyX2NyZWF0ZV9zaWduYWxf
-ZXZlbnQoZXZlbnRfbmFtZSwgRkFMU0UpOwogICAgIH0KIH0KIApAQCAtMzYz
-LDE4ICszODksMzYgQEAKIH0KIAogLyoKLSAqIFJldHVybiB0cnVlIGlmIGlu
-dGVycnVwdCBvY2N1cnMgaW4gc2VydmljZSBtb2RlLgorICogUmV0dXJuIHNp
-Z25hbCBpZiBpbnRlcnJ1cHQgb2NjdXJzIGluIHNlcnZpY2UgbW9kZS4KICAq
-Lwotc3RhdGljIGJvb2wKK2ludAogd2luMzJfc2VydmljZV9pbnRlcnJ1cHQg
-KHN0cnVjdCB3aW4zMl9zaWduYWwgKndzKQogewogICBpZiAod3MtPm1vZGUg
-PT0gV1NPX01PREVfU0VSVklDRSkKICAgICB7CiAgICAgICBpZiAoSEFORExF
-X0RFRklORUQgKHdzLT5pbi5yZWFkKQogCSAgJiYgV2FpdEZvclNpbmdsZU9i
-amVjdCAod3MtPmluLnJlYWQsIDApID09IFdBSVRfT0JKRUNUXzApCi0JcmV0
-dXJuIHRydWU7CisJcmV0dXJuIFNJR1RFUk07CisgICAgICBpZiAoSEFORExF
-X0RFRklORUQgKHdzLT5ldmVudF9TSUdVU1IxLnJlYWQpCisJICAmJiBXYWl0
-Rm9yU2luZ2xlT2JqZWN0ICh3cy0+ZXZlbnRfU0lHVVNSMS5yZWFkLCAwKSA9
-PSBXQUlUX09CSkVDVF8wKQorICAgICAgICB7CisgICAgICAgICAgUmVzZXRF
-dmVudCh3cy0+ZXZlbnRfU0lHVVNSMS5yZWFkKTsKKwkgIHJldHVybiBTSUdV
-U1IxOworICAgICAgICB9CisgICAgICBpZiAoSEFORExFX0RFRklORUQgKHdz
-LT5ldmVudF9TSUdVU1IyLnJlYWQpCisJICAmJiBXYWl0Rm9yU2luZ2xlT2Jq
-ZWN0ICh3cy0+ZXZlbnRfU0lHVVNSMi5yZWFkLCAwKSA9PSBXQUlUX09CSkVD
-VF8wKQorICAgICAgICB7CisgICAgICAgICAgUmVzZXRFdmVudCh3cy0+ZXZl
-bnRfU0lHVVNSMi5yZWFkKTsKKwkgIHJldHVybiBTSUdVU1IyOworICAgICAg
-ICB9CisgICAgICBpZiAoSEFORExFX0RFRklORUQgKHdzLT5ldmVudF9TSUdI
-VVAucmVhZCkKKwkgICYmIFdhaXRGb3JTaW5nbGVPYmplY3QgKHdzLT5ldmVu
-dF9TSUdIVVAucmVhZCwgMCkgPT0gV0FJVF9PQkpFQ1RfMCkKKyAgICAgICAg
-eworICAgICAgICAgIFJlc2V0RXZlbnQod3MtPmV2ZW50X1NJR0hVUC5yZWFk
-KTsKKwkgIHJldHVybiBTSUdIVVA7CisgICAgICAgIH0KICAgICB9Ci0gIHJl
-dHVybiBmYWxzZTsKKyAgcmV0dXJuIDA7CiB9CiAKIGludApAQCAtMzgzLDgg
-KzQyNyw3IEBACiAgIGludCByZXQgPSAwOwogICBpZiAod3MtPm1vZGUgPT0g
-V1NPX01PREVfU0VSVklDRSkKICAgICB7Ci0gICAgICBpZiAod2luMzJfc2Vy
-dmljZV9pbnRlcnJ1cHQgKHdzKSkKLQlyZXQgPSBTSUdURVJNOworICAgICAg
-cmV0ID0gd2luMzJfc2VydmljZV9pbnRlcnJ1cHQgKHdzKTsKICAgICB9CiAg
-IGVsc2UgaWYgKHdzLT5tb2RlID09IFdTT19NT0RFX0NPTlNPTEUpCiAgICAg
-ewpkaWZmIC11ck4gb3BlbnZwbi0yLjBfYmV0YTE1L3dpbjMyLmggb3BlbnZw
-bi0yLjBfYmV0YTE1LW5ldy93aW4zMi5oCi0tLSBvcGVudnBuLTIuMF9iZXRh
-MTUvd2luMzIuaAlNb24gU2VwIDI3IDA0OjQzOjU4IDIwMDQKKysrIG9wZW52
-cG4tMi4wX2JldGExNS1uZXcvd2luMzIuaAlNb24gTm92ICAxIDIzOjIwOjQ3
-IDIwMDQKQEAgLTkyLDYgKzkyLDkgQEAKICMgZGVmaW5lIFdTT19NT0RFX0NP
-TlNPTEUgMgogICBpbnQgbW9kZTsKICAgc3RydWN0IHJ3X2hhbmRsZSBpbjsK
-KyAgc3RydWN0IHJ3X2hhbmRsZSBldmVudF9TSUdVU1IxOworICBzdHJ1Y3Qg
-cndfaGFuZGxlIGV2ZW50X1NJR1VTUjI7CisgIHN0cnVjdCByd19oYW5kbGUg
-ZXZlbnRfU0lHSFVQOwogICBEV09SRCBjb25zb2xlX21vZGVfc2F2ZTsKICAg
-Ym9vbCBjb25zb2xlX21vZGVfc2F2ZV9kZWZpbmVkOwogfTsK
-
---59836-16129-1099520007=:48052--
+/Mathias
 
