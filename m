@@ -1,7 +1,13 @@
-From: Matthias Andree <ma+ovpnd@...31...>
-Message-ID: <20040302102022.GA14062@...33...>
+From: Christian Lademann <cal@...76...>
+Subject: Re: [Openvpn-devel] OpenVPN multi instancing
+Message-Id: <20040302130218.4df83800.cal@...76...>
+In-Reply-To: <Pine.LNX.4.58.0403011745030.30913@...136...>
+References: <twig.1078170122.8125@...41...>
+	<twig.1078170122.8125@...41...>
+	<twig.1078182908.84967@...41...>
+	<Pine.LNX.4.58.0403011745030.30913@...136...>
+Reply-To: lademann@...76...
 Mime-Version: 1.0
-Subject: [Openvpn-devel] Files missing from BETA20 CVS
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,25 +18,30 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Mar  2 02:26:02 2004
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
+Date: Tue Mar  2 04:11:02 2004
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Hello, James hello, Christian,
 
-the files list.c, mroute.c and multi.c appear to be missing from the
-BETA20 branch in CVS:
+is it also going to be supported in 2.0 to have multiple tup/tap interfaces
+but only a single TCP-port on the server side waiting for incoming connecti=
+ons?
 
-ma@...174...:~/cvs-3rdparty/openvpn> LANG=C make -ks 2>&1 | grep ^make
-make[1]: *** No rule to make target `list.c', needed by `list.o'.
-make[1]: *** No rule to make target `mroute.c', needed by `mroute.o'.
-make[1]: *** No rule to make target `multi.c', needed by `multi.o'.
-make[1]: *** [openvpn.o] Error 1
-make[1]: Target `all-am' not remade because of errors.
-make: *** [all] Error 2
+Regards,
 
-Best wishes,
-Matthias
+Christian Lademann
+
+
+--=20
+*  Christian A. Lademann, ZLS Software GmbH          mailto:lademann@...175...=
+..
+*  ZLS Software GmbH
+*  Frankfurter Strasse 59       Postfach 1628             mailto:zls@...175...=
+..
+*  D-65779 Kelkheim             D-65766 Kelkheim          http://www.zls.de
+*  Telefon +49-6195-9902-0      Telefax +49-6195-900600
+*  Gesch=E4ftsf=FChrer John A. Shuter     -     Amtsgericht K=F6nigstein HR=
+B 3105
 
