@@ -1,10 +1,8 @@
-Message-ID: <1e6368e805020914263117032e@...278...>
-From: Leonard Isham <leonard.isham@...277...>
-Reply-To: Leonard Isham <leonard.isham@...277...>
-Subject: Re: [Openvpn-devel] Openvpn 2.0 TAP installation on WindowsXP
-In-Reply-To: <ee2671e605020907063b5d4138@...278...>
+From: Charles Duffy <cduffy@...294...>
+Message-ID: <pan.2005.02.10.00.42.38.435554@...294...>
+References: <ee2671e605020907063b5d4138@...278...> <1e6368e805020914263117032e@...278...>
 Mime-Version: 1.0
-References: <ee2671e605020907063b5d4138@...278...>
+Subject: [Openvpn-devel] Re: Openvpn 2.0 TAP installation on WindowsXP
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,37 +13,21 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Feb  9 14:27:30 2005
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-To: Prem Kumar J <premkumarjayaram@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Wed Feb  9 16:45:26 2005
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-On Wed, 9 Feb 2005 20:36:32 +0530, Prem Kumar J
-<premkumarjayaram@...277...> wrote:
-> Hello Group,
-> 
-> I recently downloaded the OpenVPN 2.0 from the openvpn site and I
-> wanted to setup a TAP device in multi-client fashion on a Windows XP
-> box with SP2. As mentioned in the openvpn site, I selected the tap
-> interface ( tap0 ) and the ethernet adaptor and bridged it. Also, I
-> assigned the IP address and subnet of the ethernet adaptor to the
-> bidge interface.
-> 
-> Now, if I connect more than one client to the server I get connection
-> reset problem in few seconds just after the connection is extablished.
-> I took the sample conf files from the sample-config-files folder.
-> 
+On Wed, 09 Feb 2005 17:26:14 -0500, Leonard Isham wrote:
 
-You need to allow duplicate certificates.
+> You need to allow duplicate certificates.
 
---duplicate-cn
-    Allow multiple clients with the same common name to concurrently
-connect. In the absence of this option, OpenVPN will disconnect a
-client instance upon connection of a new client having the same common
-name.
+...or to create unique client certificates. There's a lot to be said for
+knowing who the connected clients are (in the logs, status files, etc) and
+being able to individually revoke them; IMHO, such is a more appropriate
+practice to encourage than duplicate-cn use except in unusual cases.
 
--- 
-Leonard Isham, CISSP 
-Ostendo non ostento.
+In any event, this is a discussion more fit for openvpn-users than
+openvpn-devel.
+
 
