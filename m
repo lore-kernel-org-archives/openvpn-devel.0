@@ -1,9 +1,7 @@
-From: Matthias Andree <ma+ovpnd@...31...>
-Subject: Re: [Openvpn-devel] Re: [Openvpn-users] Windows tun driver
-Message-ID: <20030916225743.GB25900@...33...>
-References: <946499570EB7294690F512C1EF182F881EB893@...102...> <twig.1063664530.85975@...41...> <twig.1063741646.19515@...41...>
-Mime-Version: 1.0
-In-Reply-To: <twig.1063741646.19515@...41...>
+Subject: Re: [Openvpn-devel] Problem with regenerate ac/am stuff.
+From: "James Yonan" <jim@...41...>
+Message-ID: <twig.1063758974.56444@...41...>
+In-Reply-To: <8stemv0kdc7e2mlbfedacq1bepruuppevj@...105...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -14,34 +12,65 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Sep 16 15:58:05 2003
-Content-Type: text/plain; charset=us-ascii
+Date: Tue Sep 16 17:37:14 2003
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+To: Arkadiusz Patyk <areq@...104...>, openvpn-devel@lists.sourceforge.net
 
-On Tue, 16 Sep 2003, James Yonan wrote:
+Arkadiusz,
 
-> > I'd like to challenge the "better" claim:
+The missing malloc.c is a known bug in beta7 and will be fixed in beta8.
+
+Alternatively, you can download malloc.c from:
+
+http://openvpn.sourceforge.net/patch/malloc.c
+
+or you can remove the AC_FUNC_MALLOC line from configure.ac
+
+James
+
+Arkadiusz Patyk <areq@...104...> said:
+
+> Hi,
 > 
-> I mean "better" only in the sense of simpler configuration -- i.e. not needing
-> to set up a WINS server to make cross-subnet browsing work.  I agree that tun
-> is more scalable, secure, etc.
+> I have a problem with regenerate ac/am stuff.
+> 
+> + cd openvpn-1.5-beta7
+> + aclocal
+> + autoheader
+> + autoconf
+> + #touch malloc.c
+> + automake -a -c -f --foreign
+> Makefile.am:42: required file `./malloc.c' not found
+> 
+> Ugly hack:
+> touch malloc.c before automake.
+> 
+> autoconf-2.57-6
+> automake-1.7.7-1
+> 
+> Any ideas ?
+> 
+> Best regards,
+> 
+> -- 
+> Arkadiusz Patyk [areq(at)pld-linux.org] [http://rescuecd.pld-linux.org]
+> 
+> 
+> -------------------------------------------------------
+> This sf.net email is sponsored by:ThinkGeek
+> Welcome to geek heaven.
+> http://thinkgeek.com/sf
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> 
 
-After being through setting up a tap for a particular configuration
-(pure ethernet with fallback to OpenVPN-on-WLAN), tap isn't easier to
-configure than tun either. --ifconfig is one reason, although it's going
-to get competition, getting routing right if you "tap" one IP into an
-existing eth subnet is non-trivial and requires like 4 lines of --up
-scripting.
 
-My Linux distro also defaults to ethertap rather than tun, so if you're
-running SuSE, better make sure you load the "tun" module early. ethertap
-won't work with tun at the other end of the pipe -- different framing
-apparently.
 
 -- 
-Matthias Andree
 
-Encrypt your mail: my GnuPG key ID is 0x052E7D95
+
+
 
