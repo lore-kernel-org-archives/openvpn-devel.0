@@ -1,7 +1,7 @@
-From: Mathias Sundman <mathias@...209...>
-Message-ID: <Pine.LNX.4.60.0408081003350.17418@...210...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Patch: Output log message after routes is added
+Subject: Re: [Openvpn-devel] Patch: Output log message after routes is added
+From: "James Yonan" <jim@...41...>
+Message-ID: <twig.1091957700.34931@...41...>
+In-Reply-To: <Pine.LNX.4.60.0408081003350.17418@...210...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,32 +12,43 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Aug  8 01:11:02 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Date: Sun Aug  8 02:35:03 2004
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Mathias Sundman <mathias@...209...>, openvpn-devel@lists.sourceforge.net
 
---- forward-orig.c      Fri Jul 30 22:08:22 2004
-+++ forward.c   Sun Aug  8 09:48:21 2004
-@@ -243,6 +243,7 @@
-        update_time ();
-        event_timeout_clear (&c->c2.route_wakeup);
-        event_timeout_clear (&c->c2.route_wakeup_expire);
-+      msg (M_INFO, "Finished adding routes to system.");
-      }
-    else
-      {
+Mathias Sundman <mathias@...209...> said:
 
+> --- forward-orig.c      Fri Jul 30 22:08:22 2004
+> +++ forward.c   Sun Aug  8 09:48:21 2004
+> @@ -243,6 +243,7 @@
+>         update_time ();
+>         event_timeout_clear (&c->c2.route_wakeup);
+>         event_timeout_clear (&c->c2.route_wakeup_expire);
+> +      msg (M_INFO, "Finished adding routes to system.");
+>       }
+>     else
+>       {
+> 
+> 
+> James, could you include this in next beta?
 
-James, could you include this in next beta?
+Yes, this is fine.  Regarding the details:
 
-If not, do you have a better idea for a log-message we can write after 
-routes have been added to the system, so I can report "Connected" in the 
-GUI after routes have been added?
+* I take it that you are using the M_INFO message level so you can be sure the
+message will be in the log.  Normally I would want to use something like
+D_ROUTE for this.  And even if M_INFO is used, it can still be silenced with
+--verb 0.
 
--- 
-_____________________________________________________________
-Mathias Sundman                  (^)   ASCII Ribbon Campaign
-NILINGS AB                        X    NO HTML/RTF in e-mail
-Tel: +46-(0)8-666 32 28          / \   NO Word docs in e-mail
+* As is, the patch will cause the message to go to the log, even if there are
+no routes to add.  In such a case, the message will be output showing the
+point in time at which routes would have been added, had they been present in
+the config.  So maybe the message should read differently, such as "TUN/TAP
+interface up".
+
+* The message will only be output if c->options.route_delay_defined is true. 
+On Windows, this is always the case, so that's probably what you want.
+
+James
+
 
