@@ -1,9 +1,11 @@
 From: James Yonan <jim@...41...>
 Subject: Re: [Openvpn-devel] RPM build of 2.0-rc16 fails on MandrakeSoft
-In-Reply-To: <423077E2.9090301@...355...>
-Message-ID: <Pine.LNX.4.58.0503101154570.2608@...41...>
-References: <4220EC61.1000005@...355...> <422BC993.5040206@...355...>
- <Pine.LNX.4.58.0503070841070.1122@...41...> <423077E2.9090301@...355...>
+In-Reply-To: <423074F9.3010107@...355...>
+Message-ID: <Pine.LNX.4.58.0503101852000.2608@...41...>
+References: <4220EC61.1000005@...355...> <Pine.LNX.4.58.0502270152590.23437@...41...>
+ <42220B98.2010001@...355...> <42223300.1050402@...355...>
+ <Pine.LNX.4.58.0502271404010.23437@...41...> <42253BF4.1050000@...355...>
+ <Pine.LNX.4.58.0503071446420.1122@...41...> <423074F9.3010107@...355...>
 MIME-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
@@ -15,7 +17,7 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Mar 10 11:47:12 2005
+Date: Thu Mar 10 17:55:14 2005
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
 To: TomWalsh <tomw-junk01@...355...>
@@ -24,55 +26,58 @@ Cc: openvpn-devel@lists.sourceforge.net
 On Thu, 10 Mar 2005, TomWalsh wrote:
 
 > James Yonan wrote:
-> > On Sun, 6 Mar 2005, TomWalsh wrote:
+> > On Tue, 1 Mar 2005, TomWalsh wrote:
 > > 
 > > 
-> >>As long as we are on the subject of "Requires" in the openvpn.spec file, 
-> >>shouldn't there also be a:
+> >>James Yonan wrote:
 > >>
-> >>Requires:  bridge-utils >= 0.9.7
+> >>>>I will let the package maintainer of liblzo1 of the problem of it not 
+> >>>>saying it provides "liblzo" while the liblzo1-devel does say that.
+> >>>>
+> >>>>The correct statement which works around the Mandrake 10.1 problem would be:
+> >>>>
+> >>>>============================ fix ===============================
+> >>>>%if "%{_vendor}" == "MandrakeSoft"
+> >>>>%{!?without_lzo:BuildRequires: liblzo1-devel >= 1.07}
+> >>>>%{!?without_lzo:Requires:      liblzo1       >= 1.07}
+> >>>>%else
+> >>>>%{!?without_lzo:BuildRequires: lzo-devel >= 1.07}
+> >>>>%{!?without_lzo:Requires:      lzo       >= 1.07}
+> >>>>%endif
+> >>>>============================ snip ==============================
+> >>>>
+> >>>>Either way, there would still be an issue with Mandrake as I see that 
+> >>>>the lzo package of SuSE 9.1 provides "lzo" not "liblzo".
+> >>>
+> >>>
+> >>>The problem I have with this patch is that it assumes that Mandrake will
+> >>>continue to follow the broken behavior.  The ideal solution would be one
+> >>>which doesn't break when Mandrake gets around to using the same standard
+> >>>LZO RPM spec which everyone else is using.
+> >>>
+> >>
+> >>Yeah, probably the best solution. However, I see that they have been 
+> >>calling it liblzo1 since their 8.1 distro, and, technically, it is a 
+> >>library?
+> >>
+> >>The package maintainer has added the missing provide for "liblzo", this 
+> >>is now in liblzo1-devel-1.08-5mdk.i586.rpm and the 
+> >>liblzo1-1.08-5mdk.i586.rpm.  That would at least clear up some confusion 
+> >>between liblzo1 vs. liblzo
 > > 
 > > 
-> > Why is this required?  What if you are not bridging?
+> > Where are we on this?
 > > 
-> > James
+> > Should we work around this in the openvpn.spec file, or just leave as-is
+> > for 2.0, and wait for the lzo spec to be fixed?
 > > 
-> 
-> Ok, my view on an RPM is that the package is there to provide some level 
-> of convenience to the end-installer.  All aspects of the package are 
-> incorporated into the RPM: config, init.d scripts, binaries, additional 
-> packages, etc.  The bridge utils only comprise 60K of drivespace.
+> You're not going to see that, at least I doubt it.  I'll contact the 
+> maintainer for his views on the subject and perhaps some insight as to 
+> where Mandrake is going with naming (LSB and all).
 
-In my mind, it's not so much an issue of drivespace (though 60K matters in
-a tight embeddded environment).  Rather, it's the principle that an
-installer should not assert a mandatory dependency for optional
-components.  This component is optional -- it is only needed for ethernet
-bridging.  To require it would force people to track down an RPM that they
-might not need.
-
-You are also, to a certain extent, contaminating the dependency graph of
-the RPM database by adding "Requires" for optional components.  RPM will 
-think that openvpn cannot be installed unless bridge-utils is present.  If 
-bridge-utils has any "Requires" then they would now be required as well.  
-If you take this to the extreme, i.e. if every RPM spec file lists as 
-"Requires" all optional components, you break down the ability of the 
-global dependency graph to communicate useful information about the 
-minimal component tree required to install a given package.
-
-For example, until recently, the OpenVPN RPM install was requiring perl as
-a mandatory dependency.  This requirement was being auto-generated by
-rpmbuild because it noticed the inclusion of the auth-pam.pl script.  Of
-course this is silly because most people are not going to use this script
--- it is provided mostly as a code sample.  People running OpenVPN in a
-tight embedded environment were rightly annoyed by this gratuitous
-dependency (it has since been removed by disabling the auto-generation of
-dependencies).
-
-I think the important philosophical point here is that OpenVPN tries to be 
-lightweight.  While lightweight refers to code size, it also refers to the 
-complexity of the dependency tree.  I would rather address the need for 
-optional components in the docs, than making the dependency tree larger 
-than it needs to be.
+Okay, though I'll need your best try at a workaround patch for
+openvpn.spec very soon to have any chance of making it into 2.0 final.
 
 James
+
 
