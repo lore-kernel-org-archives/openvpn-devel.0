@@ -1,7 +1,7 @@
-Message-Id: <200209151916.g8FJGxG17026@...41...>
-Subject: Re: [Openvpn-devel] OpenVPN Project Update
-From: "James Yonan" <jim@...41...>
-In-Reply-To: <20020914221924.GA32072@...33...>
+From: R P Herrold <herrold@...43...>
+Message-ID: <Pine.LNX.4.44.0209161639420.29967-100000@...44...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] hub and spoke topology checklist.txt
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -11,59 +11,126 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
-List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Sep 15 12:18:25 2002
-Content-Type: text/plain; charset="utf-8"
+List-Archive: <http://sourceforge.net/mailarchives/forum.php?forum=openvpn-devel>
+Date: Mon Sep 16 14:06:02 2002
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-To: Matthias Andree <ma+ovpnd@...31...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net, R P Herrold <herrold@...43...>
 
-Matthias Andree <ma+ovpnd@...31...> said:
+I was working through the openvpn material, and had been 
+testing with the following design checklist (see bottom)
 
-> On Sat, 14 Sep 2002, James Yonan wrote:
-> 
-> > (1) Forking server support
-> > (2) Automatic Secure MTU discovery
-> > (3) IPv6 endpoints or IPv6 over tun device
-> > (4) Windows port
-> > 
-> > While none of these (with perhaps the exception of the last :) is
-> > rocket science, all require some work, and given that OpenVPN has
-> > reached a nice stability plateau, I'd like to hear your opinions on
-> > future directions in the development effort.
-> 
-> ad 1) what's this good for? Sharing one port? Won't really work with
->       UDP. Convenience? Go get daemontools, or let's figure if openvpn
->       can be run from xinetd. Not something that should be done unless
->       you're really bored or have some compelling reason (a malicious
->       person holding a gun against your head might be one). Don't waste
->       your time.
+The thought is to provide a hub and spoke design for isolated
+non-routable subnets at the end of the spokes, behind
+otherwise properly routed outbound-only NATting (which allow 
+return packets ...), where there is available a central
+routable IP hub available (to allow static custom routing 
+between those subnets).
 
-Well actually "Forking server support" is really a misnomer.  It would be better titled "Server support for arbitrary number of connecting clients without requiring a separate config file and a pre-instantiated daemon for every client, or just "scalability support".  xinetd is an interesting idea.  Anyone using xinetd with OpenVPN?
+I can ping, and indeed set up an SSH session, out to the hub,
+which indicates that encapsulation of TCP within the OpenVPN
+client is occurring -- I leave encryption off, as I am in
+process diagnosing where things are falling apart --
 
-> ad 2) I'd like to see that somewhen in the future, but I'd give IPv6 the
->       preference.
-> 
-> ad 3) IPv6 is certainly something that will have to be added.
-> 
-> ad 4) If they want secure networking, they shouldn't be running an
->       operating system of which the current version forces you to
->       register with the vendor, sending data you don't control.
->
->       It may be a moot point, but IMHO Windows which is made and sold by
->       a company that's always looking at its own profit, acting to its
->       own advantage, no matter how ruthless, and that aims to harm
->       OpenSource just to fortify its monopoly, to make more money, and
->       to control ever more markets to further maximize its huge
->       revenues, should not be supported by OpenSource developers.
+-- after a couple minutes, it locks up tight, and I have 
+to go kill the remote Hub routing, out of band.
 
-While I agree that Windows is marketed by an aggressive monopoly, I don't agree that just because a company is anti-open-source, we shouldn't port open source software to its platform or make *nix implementations of its protocols.  On the contrary, I would argue that the more ruthlessly Microsoft behaves, the more that Open Source can benefit by porting to Windows, because once we have a large body of cross-platform software, then suddenly the OS won't matter as much and people will be free to choose based on quality.  And the ultimate weapon against a ruthless monopoly is this: Give customers a choice.
+As such, I have not gotten the second subnet set up yet.
 
-Having said that, and having glimpsed the cries of agony on the cipe-win32 list from those who have faced the windows network driver model, I expect that a win port will not be a panacea.
+The tracing shows packets for a while, but then the consoles 
+lock (in which the tracing is occurring), and I cannot 
+ctrl-C to regain control.  Network connectivity remains active 
+-- I can work out of band on the Hub, the enar spoke terminus 
+is local ...
 
-James
+Any thoughts on a theoretical reason this should not work?
 
->       If your opinion differs from mine, that's called freedom. :-)
+-- Russ Herrold
 
-> Matthias Andree
+=============================================================
+
+Hub and Spoke Topology:
+
+HUB x.y.z.a is a static IP, in routable space -- all other
+devices are masqueraded, and not reachible from the outside,
+
+The VPN gateway will encapsulate VPN network destination traffic into the
+TUN interface, and pass the rest along to the next hop exterior NAT device
+
+Subnets:
+
+                         |
+           10.1.1.1      |
+client --- gateway ---- NAT ------ internet ----- HUB
+10.1.1.2      |       10.1.1.254    0.0.0.0     x.y.z.a
+              \          |
+               \--- 192.168.1.2 ----------- 192.168.1.1
+                         |         P-t-P
+     10.1.1.x segment    |
+                        /
+-----------------------/
+
+
+
+                         |
+          10.10.10.1     |
+client --- gateway ---- NAT ------ internet ----- HUB
+10.10.10.2    |      10.10.10.254   0.0.0.0     x.y.z.a
+              \          |
+               \--- 192.168.10.2 ----------- 192.168.10.1
+                         |          P-t-P
+     10.10.10.x segment  |
+                        /
+-----------------------/
+
+
+Routing:
+
+on VPN gateway-10.1.1.1
+
+( next hop: route add default gateway 10.1.1.254 )
+route add -host 192.168.1.1 gateway 192.168.1.2
+route add -net 10.0.0.0 gateway 192.168.1.1
+
+
+on VPN gateway-10.10.10.1
+
+( next hop: route add default gateway 10.10.10.254 )
+route add -host 192.168.10.1 gateway 192.168.10.2
+route add -net 10.0.0.0 gateway 192.168.10.1
+
+
+on HUB -- simple reciprocal routing for each VPN'd subnet
+
+route add -host 192.168.1.2 gateway 192.168.1.1
+route add -net 10.1.1.0 gateway 192.168.1.2
+route add -host 192.168.10.2 gateway 192.168.10.1
+route add -net 10.10.10.0 gateway 192.168.10.2
+
+
+Local gateway behind NAT
+
+	modprobe tun
+	echo 1 > /proc/sys/net/ipv4/ip_forward   
+	openvpn --remote x.y.z.a --dev tun --port 5001 \
+		--ifconfig 192.168.1.2 192.168.1.1 --verb 8
+
+Local gateway behind NAT
+
+	modprobe tun
+	echo 1 > /proc/sys/net/ipv4/ip_forward   
+	openvpn --remote x.y.z.a --dev tun --port 5010 \
+		--ifconfig 192.168.10.2 192.168.10.1 --verb 8
+
+Central HUB (== x.y.z.a )
+
+	modprobe tun
+	echo 1 > /proc/sys/net/ipv4/ip_forward
+	openvpn --dev tun --port 5001 \
+		--ifconfig 192.168.1.1 192.168.1.2 --verb 8
+	openvpn --dev tun --port 5010 \
+		--ifconfig 192.168.10.1 192.168.10.2 --verb 8
+
+===================================
 
 
