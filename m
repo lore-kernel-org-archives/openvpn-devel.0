@@ -1,6 +1,6 @@
-Subject: Re: [Openvpn-devel] Files missing from BETA20 CVS
 From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1078262508.49331@...41...>
+Message-ID: <twig.1078266159.60914@...41...>
+Subject: [Openvpn-devel] OpenVPN 1.6-rc1 released
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -11,37 +11,27 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Mar  2 13:31:01 2004
+Date: Tue Mar  2 14:28:30 2004
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Matthias Andree <ma+ovpnd@...31...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-Matthias Andree <ma+ovpnd@...31...> said:
+This is a release candidate for 1.6.0.
 
-> Hi,
-> 
-> the files list.c, mroute.c and multi.c appear to be missing from the
-> BETA20 branch in CVS:
-> 
-> ma@...174...:~/cvs-3rdparty/openvpn> LANG=C make -ks 2>&1 | grep ^make
-> make[1]: *** No rule to make target `list.c', needed by `list.o'.
-> make[1]: *** No rule to make target `mroute.c', needed by `mroute.o'.
-> make[1]: *** No rule to make target `multi.c', needed by `multi.o'.
-> make[1]: *** [openvpn.o] Error 1
-> make[1]: Target `all-am' not remade because of errors.
-> make: *** [all] Error 2
+The main change from 1.6-beta7 is that the Windows version now uses --ip-win32
+dynamic by default.
 
-Ooops, it looks like I forgot to do a cvs add on some new files.
+Change Log:
 
-It's fixed now, and the BETA20 branch has been updated to reflect my current
-development sources (I also updated the ChangeLog).
+2004.03.02 -- Version 1.6-rc1
 
-The current source should build and run a point-to-point tunnel correctly
-using all the refactored code.  Grep for JYFIXME to see a bunch of gotchas in
-the source -- mostly stuff that's there for debugging purposes.
+* For Windows, make "--ip-win32 dynamic" the default.
+* For Windows, make "--route-delay 10" the default
+  unless --ip-win32 dynamic is not used or --route-delay
+  is explicitly specified.
+* L_TLS mutex could have been left in a locked state
+  for certain kinds of TLS errors.
 
-The point-to-multipoint code is taking shape in multi.[ch] but is not finished
-yet.
 
 James
 
