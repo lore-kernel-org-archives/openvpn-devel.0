@@ -1,9 +1,8 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] OpenVPN samples and rpm requirements - subpackage?
-In-Reply-To: <200412141748.01332@...187...>
-Message-ID: <Pine.LNX.4.58.0412150511100.29338@...41...>
-References: <200412141748.01332@...187...>
-MIME-Version: 1.0
+From: Charles Duffy <cduffy@...294...>
+Message-ID: <pan.2004.12.15.20.16.02.285481@...294...>
+References: <41BFC392.2050509@...326...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Re: Perl version of OpenVPN client
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,20 +13,23 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Dec 15 04:17:00 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Date: Wed Dec 15 12:20:00 2004
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 8bit
-To: "Doncho N. Gunchev" <mr700@...184...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: openvpn-users@lists.sourceforge.net
 
->     Also, for Fedora/Red Hat the right group is not Networking/Tunnels
-> but maybe Applications/Internet (/usr/share/doc/rpm-*/GROUPS is refered
-> as source for groups in fedora), but this is not a big problem... Maybe
-> I'm too pedantic and there's another %if is not needed?
+On Wed, 15 Dec 2004 12:54:42 +0800, sam wun wrote:
 
-Applications/Internet looks like the best match on SuSE as well.  I'd 
-rather be consistent across distros if possible, and therefore not use 
-another %if.
+> Is there any perl version of OpenVPN client?
 
-James
+No.
+
+Why would you want something slower and more resource-intensive to use in
+a "stripped-down" environment?
+
+You can compile builds of the regular OpenVPN source tree with unnecessary
+features left out; the recent 2.0rc builds have quite a lot of new
+compile-time options for that purpose.
+
 
