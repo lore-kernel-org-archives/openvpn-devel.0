@@ -1,7 +1,11 @@
-Message-ID: <03d501c221f7$26727830$1000000a@...4...>
-From: "James Yonan" <jim@...3...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Protocol Change policy
+Subject: Re: [Openvpn-devel] Protocol Change policy
+From: Jan Johansson <jan.johansson@...1...>
+In-Reply-To: <03d501c221f7$26727830$1000000a@...4...>
+References: <03d501c221f7$26727830$1000000a@...4...>
+Content-Type: multipart/signed; micalg=pgp-sha1; protocol="application/pgp-signature";
+	boundary="=-6laI/ma7N2WXRdItdQwi"
+Message-Id: <1025687775.1385.63.camel@...2...>
+Mime-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -12,57 +16,56 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://www.geocrawler.com/redir-sf.php3?list=openvpn-devel>
-Date: Tue Jul  2 11:36:42 2002
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Date: Wed Jul  3 02:17:05 2002
+To: James Yonan <jim@...3...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-I'd like to hear your opinions on how the OpenVPN project should handle
-patches which break backward compatibility.
+--=-6laI/ma7N2WXRdItdQwi
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-There are a couple of (as yet unapplied) patches in the queue that change
-the OpenVPN protocol including parameter defaults that affect the protocol:
+On Tue, 2002-07-02 at 20:34, James Yonan wrote:=20
+> I'd like to hear your opinions on how the OpenVPN project should handle
+> patches which break backward compatibility.
+> Here are some answers that come to mind:
+>=20
+> (1) Accumulate such patches and merge them all at once in a future release
+> such as 1.3.0 or 2.0.0, while warning users that this release will not be
+> backward compatible.
 
-(1) Add device type (tun | tap | null) to TLS handshake string for
-compatibility check between peers.
+I'd prefer this one. Even though ssh seems to work nicely, you wind up=20
+(at least when you have versions 1.3, 1.5 and 2) with lots of weird code
+that you can't figure out if it runs or not.
 
-(2) Reduce default --udp-mtu to 1450 from 1500 when --ifconfig is used
-(Matthias Andree noticed a lot of fragmentation with the default setting of
-1500).
+I'd like the more clean model without too much #ifdefs. With several
+platforms and stuff, you'll have enough of those anyhow. =3D)
 
-The question is how should protocol changes be introduced so that they don't
-cause a lot of pain due to the loss of backward compatibility, but at the
-same time not introduce lots of complexifying cruft into the code?
+--=20
+Jan Johansson (jan.johansson@...1...)
+BioMat System AB
+Klarabergsgatan 37, III
+SE-111 21 Stockholm, Sweden
+Phone: +46-(0)8-233500, Fax: +46-(0)70-3873952
 
-Here are some answers that come to mind:
+THIS COMMUNICATION IS ONLY INTENDED FOR THE USE OF THE INDIVIDUAL, OR
+ENTITY, TO WHICH IT IS DIRECTED AND MAY CONTAIN INFORMATION THAT IS
+PRIVILEGED, CONFIDENTIAL AND EXEMPT FROM DISCLOSURE UNDER APPLICABLE
+LAW.  IF RECEIVED IN ERROR: PLEASE NOTIFY US IMMEDIATELY THROUGH
+INFO@...25...
 
-(1) Accumulate such patches and merge them all at once in a future release
-such as 1.3.0 or 2.0.0, while warning users that this release will not be
-backward compatible.
+--=-6laI/ma7N2WXRdItdQwi
+Content-Type: application/pgp-signature; name=signature.asc
+Content-Description: This is a digitally signed message part
 
-(2) Merge changes immediately but #ifdef them out by default until some
-future planned release.  The user would have to build with an explicit
-./configure option to enable, or wait for the future planned release when
-the protocol changes would be enabled by default.  This is similar to how
-python handles language changes with the "from future" tag --
-http://www.python.org/peps/pep-0236.html
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.0.6 (GNU/Linux)
+Comment: For info see http://www.gnupg.org
 
-(3) Merge changes immediately but provide a ./configure option to build for
-previous protocol version.
+iD8DBQA9IsDeNJYxu+mj1OkRAjy/AKDcJEwe6eRVKT7yYOaCuwpfn9ty7QCeLMvK
+tgZ2Ydvsn/KR8fQ+9HoF8Hs=
+=TtDy
+-----END PGP SIGNATURE-----
 
-(4) Use explicit protocol version numbers as SSH or NFS does.
-
-(5) Use a command line option such as "--peer-version 1.1.0" to allow a
-given OpenVPN version to downgrade its protocol to talk to an old version.
-
-1, 2, and 3 are the easiest to implement as they handle the version number
-choice at build time.  4 and 5 do it at run time which is more convenient
-for the user, but would add considerable cruft to the code.
-
-Comments?
-
-James
-
+--=-6laI/ma7N2WXRdItdQwi--
 
 
