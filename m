@@ -1,10 +1,7 @@
-From: Guus Sliepen <guus@...126...>
-Message-ID: <20031027161456.GN25238@...126...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="bFUYW7mPOLJ+Jd2A"
-Content-Disposition: inline
-Subject: [Openvpn-devel] Splitting functionality of VPN daemons
+Subject: Re: [Openvpn-devel] a replacement for --tls-remote and verify-cn
+From: "James Yonan" <jim@...41...>
+Message-ID: <twig.1067287739.82961@...41...>
+In-Reply-To: <1067263967.14300.265.camel@...125...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -15,46 +12,46 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Oct 27 08:16:20 2003
-To: tinc-devel@...127..., openvpn-devel@lists.sourceforge.net, vpn@...128...
+Date: Mon Oct 27 12:53:07 2003
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Teemu Kiviniemi <teemuki@...124...>, openvpn-devel@lists.sourceforge.net
 
---bFUYW7mPOLJ+Jd2A
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Teemu Kiviniemi <teemuki@...124...> said:
 
-Hello,
+> Hi,
+> 
+> I ran into problems in using --tls-verify to verify the remote host with
+> --chroot enabled. --tls-verify runs the verify script with system()
+> command, so it assumes that /bin/sh is available. Usually, in a chroot
+> environment, that's not true.
+> 
+> I implemented a new config option: --tls-remote x509name
+> 
+> With --tls-remote the remote host is verified by looking at the X509
+> name. If the remote X509 name doesn't match the given x509name, the
+> remote host is rejected.
+> 
+> With --tls-remote, it's possible to verify remote host even with a
+> completely empty chroot directory. --tls-remote also removes the need
+> for an external --tls-verify script in most cases.
+> 
+> Config example:
+> tls-remote /O=exampleorg/CN=name
+> 
+> I have tested the patch with a TLS tunnel on Debian Woody.
+> 
+> A patch against OpenVPN 1.5 beta12 is available at:
+> http://iki.fi/teemuki/openvpn/1.5_beta12-tlsremote.diff
 
-Today there are lots of VPN implementations, each having their strengths
-and weaknesses. In particular, OpenVPN has focussed on creating tunnels
-using standards such as SSL/TLS and ESP and provides better security
-than many other VPN implementations. Tinc on the other hand is probably
-the only VPN daemon that handles multiple tunnels on one tun/tap device,
-using built-in routing. In order to allow both projects (and maybe
-others) to combine their efforts in a manageable way, their should be a
-standardised API, so that code can be reused without having to change it.
-You can find a concept here:
+Thanks, that looks like a useful patch.
 
-http://sliepen.eu.org/~guus/vpnsplit.html
+One thing that would help me to merge it more easily, is if you could recode
+against the current CVS which has advanced since beta12 and includes the
+--crl-verify patch which touches the same parts of ssl.c as your patch.
 
-This is by no means finished, your input is greatly appreciated.
+The 1.5 beta series exists in the CVS under branch "EXP15".
 
---=20
-Met vriendelijke groet / with kind regards,
-    Guus Sliepen <guus@...126...>
+James
 
---bFUYW7mPOLJ+Jd2A
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.2.3 (GNU/Linux)
-
-iD8DBQE/nUSAAxLow12M2nsRAt22AKCsl/t7WE/ODPmbjkGcOH9r39qeWgCeKlfr
-RDuubF8GEZeQ9kp5S97mKHM=
-=papI
------END PGP SIGNATURE-----
-
---bFUYW7mPOLJ+Jd2A--
 
