@@ -1,9 +1,9 @@
-Message-ID: <408E6A50.6090209@...194...>
-From: Stephan Scholz <sscholz@...194...>
-MIME-Version: 1.0
+From: <lonnie@...203...>
 Subject: Re: [Openvpn-devel] Many to one TCP question
-References: <408C37BA.5080806@...203...>
-In-Reply-To: <408C37BA.5080806@...203...>
+Message-ID: <6BFB097224B04B5A80102597419003F3.MAI@...204...>
+Mime-version: 1.0
+Content-Type: multipart/mixed;
+	boundary="--=_NextPart_000_000B_CE5E84DC.A16A4754"
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,11 +14,36 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Apr 27 07:22:01 2004
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Lonnie Cumberland <lonnie@...203...>
+Date: Tue Apr 27 08:44:07 2004
+To: sscholz@...194...
 Cc: Openvpn-devel@lists.sourceforge.net
+
+This is a multi-part message in MIME format.
+
+----=_NextPart_000_000B_CE5E84DC.A16A4754
+Content-type: text/plain;
+
+Thanks for the reply to my email on this matter.
+
+In reading over the information on the site, I can see what you are talking about and also about
+the memory consumption because of the many instances, one for each user.
+
+In the early Beta 2.0 release notes, it talks about UDP in a "many-to-one" design which I assume
+means only one instance per user. 
+
+I was wondering if this would soon be available for the TCP side of the house as well as it seems
+to be more valuable for road warrior connections over the Internet and can easily tunnel through
+firewalls, although I could be wrong on this.
+
+Thanks again,
+Lonnie
+
+----- Original Message -----
+From: Stephan Scholz
+To:  Lonnie Cumberland <lonnie@...203...>
+Cc:   Openvpn-devel@lists.sourceforge.net
+Sent: Tue, 27 Apr 2004 16:12:32 +0200
+Subject: Re: [Openvpn-devel] Many to one TCP question
 
 Hi Lonnie,
 
@@ -60,5 +85,8 @@ Stephan
 > Openvpn-devel mailing list
 > Openvpn-devel@lists.sourceforge.net
 > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+
+----=_NextPart_000_000B_CE5E84DC.A16A4754--
 
 
