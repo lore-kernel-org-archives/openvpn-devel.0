@@ -1,9 +1,8 @@
-From: Mail Delivery Subsystem <MAILER-DAEMON@...97...>
-Message-Id: <200309120640.h8C6eSV23365@...97...>
-MIME-Version: 1.0
-Content-Type: multipart/report; report-type=delivery-status;
-	boundary="h8C6eSV23365.1063348828/boxelder.nsgdata.com"
-Subject: [Openvpn-devel] Returned mail: see transcript for details
+From: "James Yonan" <jim@...41...>
+Message-ID: <twig.1063664530.85975@...41...>
+In-Reply-To: <3F660E69.80305@...101...>
+References: <946499570EB7294690F512C1EF182F881EB893@...102...>, <946499570EB7294690F512C1EF182F881EB893@...102...>
+Subject: [Openvpn-devel] Re: [Openvpn-users] Windows tun driver
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -14,77 +13,36 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Sep 12 11:59:51 2003
-To: openvpn-devel@lists.sourceforge.net
+Date: Mon Sep 15 15:23:07 2003
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Inode <inode@...101...>
+Cc: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-This is a MIME-encapsulated message
+Inode <inode@...101...> said:
 
---h8C6eSV23365.1063348828/boxelder.nsgdata.com
-Content-Type: text/plain
+> Hi all,
+> I'm looking on the net for a tunnel driver for windows. Anyone found a 
+> good working driver? I have to user OpenVPN from an OpenBSD and a 
+> Windows, and OpenBSD (native) doesn't support TAP device...
 
-The original message was received at Fri, 12 Sep 2003 02:40:28 -0400
-from hickok.nsgdata.com [204.91.246.4]
+Yes, this is a problem.  For OpenBSD to talk to Windows over OpenVPN, we need
+either a tun driver for Windows or a tap driver for OpenBSD.
 
-   ----- The following addresses had permanent fatal errors -----
-<docs@...96...>
-    (reason: addressee unknown)
-    (expanded from: <docs@...96...>)
+My guess is that the easier and better solution would be to solve the tap on
+OpenBSD problem, rather than the tun on Windows problem.
 
-   ----- Transcript of session follows -----
-doc_comments: Mailbox does not exist 
-550 5.1.1 <docs@...96...>... User unknown
+My understanding is that a tap driver exists for OpenBSD that was ported from
+FreeBSD, but that it's still in an experimental, somewhat unfinished state and
+needs a good kernel hacker to bring it up to the standard of the rest of the
+OpenBSD networking subsystem.
 
---h8C6eSV23365.1063348828/boxelder.nsgdata.com
-Content-Type: message/delivery-status
+I think that Windows users are going to prefer a tap interface anyways,
+because it carries the kind of traffic and protocols which Windows
+applications generate, such as broadcast traffic and non-IP protocols.
 
-Reporting-MTA: dns; boxelder.nsgdata.com
-Received-From-MTA: DNS; hickok.nsgdata.com
-Arrival-Date: Fri, 12 Sep 2003 02:40:28 -0400
-
-Final-Recipient: RFC822; docs@...96...
-X-Actual-Recipient: RFC822; doc_comments@...97...
-Action: failed
-Status: 5.1.1
-Diagnostic-Code: X-Unix; 67
-Last-Attempt-Date: Fri, 12 Sep 2003 02:40:28 -0400
-
---h8C6eSV23365.1063348828/boxelder.nsgdata.com
-Content-Type: message/rfc822
-
-Return-Path: <openvpn-devel@lists.sourceforge.net>
-Received: from hickok.nsgdata.com (hickok.nsgdata.com [204.91.246.4])
-	by boxelder.nsgdata.com (8.11.4/8.11.0) with ESMTP id h8C6ePV23337
-	(using TLSv1/SSLv3 with cipher EDH-RSA-DES-CBC3-SHA (168 bits) verified OK)
-	for <docs@...96...>; Fri, 12 Sep 2003 02:40:28 -0400
-Received: from BHD-OFFICE ([210.22.48.2])
-	by hickok.nsgdata.com (8.11.4/8.11.0) with ESMTP id h8C6eLI05804
-	for <docs@...98...>; Fri, 12 Sep 2003 06:40:22 GMT
-Message-Id: <200309120640.h8C6eLI05804@...99...>
-From: <openvpn-devel@lists.sourceforge.net>
-To: <docs@...100...>
-Subject: Re: That movie
-Date: Fri, 12 Jul 2002 14:33:09 +0800
-X-MailScanner: Found to be clean
-Importance: Normal
-X-Mailer: Microsoft Outlook Express 6.00.2600.0000
-X-MSMail-Priority: Normal
-X-Priority: 3 (Normal)
-MIME-Version: 1.0
-Content-Type: multipart/mixed;
-	boundary="_NextPart_000_0109E797"
-
-This is a multipart message in MIME format
-
---_NextPart_000_0109E797
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-
-See the attached file for details
-
---_NextPart_000_0109E797--
+James
 
 
---h8C6eSV23365.1063348828/boxelder.nsgdata.com--
 
 
