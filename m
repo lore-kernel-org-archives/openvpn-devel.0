@@ -1,7 +1,7 @@
-From: "=?windows-1252?q?Fran=E7ois?= Revol" <revol@...260...>
-Message-Id: <4215141998-BeMail@...261...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 1.5.0 ported to BeOS (Zeta)
+From: Mathias Sundman <mathias@...209...>
+Message-ID: <Pine.LNX.4.60.0408081003350.17418@...210...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Patch: Output log message after routes is added
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,29 +12,32 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Aug  7 07:40:07 2004
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Date: Sun Aug  8 01:11:02 2004
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: =?windows-1252?q?Fran=E7ois?= Revol <revol@...260...>
 
-Hello,
-With the advent of Zeta, the next incarnation of BeOS, using a real BSD
--like network
-stack, we had the need for a VPN solution.
-Zeta will feature a tuntap driver, which implements the new Linux
-tuntap API,
-and which I wrote some time ago.
-I ported VTun, then OpenVPN 1.5.0.
-
-The patch is here:
-http://clapcrest.free.fr/revol/beos/patches/openvpn-1.5.0-beos.patch.002.txt
-Might need some more cleanups, but I think I'll have a look at 2.0
-soon.
+--- forward-orig.c      Fri Jul 30 22:08:22 2004
++++ forward.c   Sun Aug  8 09:48:21 2004
+@@ -243,6 +243,7 @@
+        update_time ();
+        event_timeout_clear (&c->c2.route_wakeup);
+        event_timeout_clear (&c->c2.route_wakeup_expire);
++      msg (M_INFO, "Finished adding routes to system.");
+      }
+    else
+      {
 
 
-Cheers,
-Fran=E7ois  Revol -- yellowTAB - http://yellowtab.com
+James, could you include this in next beta?
 
-PS. I'm not subscribded yet.
+If not, do you have a better idea for a log-message we can write after 
+routes have been added to the system, so I can report "Connected" in the 
+GUI after routes have been added?
+
+-- 
+_____________________________________________________________
+Mathias Sundman                  (^)   ASCII Ribbon Campaign
+NILINGS AB                        X    NO HTML/RTF in e-mail
+Tel: +46-(0)8-666 32 28          / \   NO Word docs in e-mail
 
