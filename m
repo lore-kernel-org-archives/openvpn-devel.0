@@ -1,7 +1,7 @@
-From: =?gb2312?B?v7Ug1bzTog==?= <force_eagle@...160...>
-Mime-Version: 1.0
-Message-ID: <Sea1-F33SJpguYsVj1a00028d4f@...160...>
-Subject: [Openvpn-devel] RE:Building GUI
+Message-ID: <20040408043145.35799.qmail@...197...>
+From: gary ng <garyng2000@...109...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] key management ?
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,17 +12,40 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Apr  5 19:34:04 2004
-Content-Type: text/plain; charset="gb2312"; format="flowed"
-Content-Transfer-Encoding: base64
+Date: Thu Apr  8 14:46:05 2004
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-SSBvY2N1cmVkIHRoZSBzYW1lIHByb2JsZW0gd2hlbiBzdGFydCBvcGVudnBuIGluIEdVSSBtb2Rl
-ISFCdXQgSSBoYXZlIApyZXNvbHZlIGl0ISEhSSBmb3VuZCB0aGF0IGl0IG9jY3VyIGEgZXJyb3Ig
-d2hlbiBJIHVzZSBtZXRob2QgIG9mICAKc2VydmVpY2Utd2luMzIgdG8gc3RhcnQgdnBuICFBdCBs
-YXN0IEkgZm9yY2UgdG8gc2V0IDMgZm9yIGhTdGRJbnB1dCAsIGl0IApydW4gd2VsbCEKbGlrZSB0
-aGlzISEKCnN0YXJ0X2luZm8uaFN0ZElucHV0ID0gKEhBTkRMRSkweDMgOyAvL0dldFN0ZEhhbmRs
-ZShTVERfSU5QVVRfSEFORExFKTsKCkFuZCBJIGRvbid0IGtub3cgd2h5IHRoaXMgaXM/PwoKX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX18K0+vBqrv6tcTF89PRvfjQ0L27wfejrMfryrnTwyBNU04gTWVzc2VuZ2VyOiAgaHR0cDov
-L21lc3Nlbmdlci5tc24uY29tL2NuICAKCgo=
+Hi,
+
+Openvpn is moving nicely in feature for large scale
+deployment.
+
+I am wondering if there is already plan to make the
+key management more suitable for this kind of
+deployment.
+
+AFAIK, currently the cert can only be signed by one
+root CA. However, this is usually not how these public
+key based authentication is used in corporations(based
+on my experienced with Lotus Notes). Usually, the root
+CA of an organisation is well guarded and is only used
+to sign intermediate CAs(can be multiple level) which
+are then delegated for actual end node cert signing.
+This has the advantage that if certain CAs are
+compromised, they can be moved to CRL making any
+future cert signed by then being rejected. This is
+also useful for inter-organisational situation when
+such confidential communication is necessary. 
+
+Another nice to have feature is to associate(or limit)
+the remote IPs based on certificates. 
+
+
+
+__________________________________
+Do you Yahoo!?
+Yahoo! Small Business $15K Web Design Giveaway 
+http://promotions.yahoo.com/design_giveaway/
+
