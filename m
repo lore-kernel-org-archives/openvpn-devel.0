@@ -1,9 +1,7 @@
-From: James Yonan <jim@...3...>
-Subject: Re: [Openvpn-devel] add a server feature to openvpn to share udp
- ports ?
-In-Reply-To: <1025250451.1388.37.camel@...2...>
-Message-ID: <Pine.LNX.4.44.0206281440380.28287-100000@...21...>
+Message-ID: <027801c22065$881812e0$1000000a@...4...>
+From: "James Yonan" <jim@...3...>
 MIME-Version: 1.0
+Subject: [Openvpn-devel] Pre-1.2.2 beta available, please test
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
@@ -14,61 +12,46 @@ List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://www.geocrawler.com/redir-sf.php3?list=openvpn-devel>
-Date: Fri Jun 28 14:01:04 2002
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: Jan Johansson <jan.johansson@...1...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Sun Jun 30 11:39:02 2002
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-On 28 Jun 2002, Jan Johansson wrote:
+I plan to release 1.2.2 in a few days if there are no problems with this
+beta.
 
-> 
-> > Is it a different problem than with an unknown ip address allowed to connect
-> > to a single port ?
-> > 
-> > Does somebody know about an udp server forking and using different ports, with
-> > code available, of course ;-).
-> > 
-> > I may be wrong, but I think that it is not common because in the classical 
-> > udp servers all the datagramms carry an identifier, or just need a response
-> > and no long term association. Thus there is no need of forking. In the
-> > openvpn case, there is a need of multi packet exchange during tls auth and
-> > afterwards a long term tunnel is established.
-> 
-> When I first read this, I thought as you did, no udp server forks like
-> that. Stuff like dns-servers respond as soon as they can and drop what
-> they can't handle. But then nfs-servers struck me. Whatever they do,
-> when they have literally hundreds of udp clients transferring files must
-> work for OpenVPN too.
-> 
-> I can't really see a difference between nfs handles and OpenVPN
-> tls-stuff, but that might be me. =)
-> I know NFS is stateless, but in this case I can't see what that might
-> make nfs differ from OpenVPN in regards of handling hundreds of clients
-> that all "call in" on the same udp port (2049 IIRC) and start long
-> conversations with the fileserver. nfs clients might talk less in
-> regards of authentications and have some u_int32 for id, but apart from
-> that, they do function somewhat alike. 
-> 
-> Just my 0.02 euros.
+Download:
 
-Hello Jan,
+http://openvpn.sourceforge.net/beta/openvpn-1.2.1.8.tar.gz
 
-The one problem with making a single thread, multi-client OpenVPN is the 
-SSL/TLS authentication that can take several seconds of processor time.  
-During this time, all tunnel traffic would be locked out.
+Changes since 1.2.1:
 
-This problem is currently solved in OpenVPN by threading out the SSL/TLS
-authentication code, but it must be true pre-emptive threading which is
-not supported on some platforms such as OpenBSD.
-
-To do an NFS-style implementation, we would also need to add a session-ID 
-to each packet which would change the protocol and increase the 
-protocol overhead.
-
-The other scalability issue would be the maximum number of tun or tap 
-devices that can be allocated.
+* Added --dev-node option to allow explicit selection of
+  tun/tap device node.
+* Removed mlockall call from child thread, as it doesn't
+  appear to be necessary (child thread inherits mlockall
+  state from parent).
+* Added --ping-timer-rem which causes timer for --ping-exit
+  and --ping-restart not to run unless we have a remote IP
+  address.
+* Added condrestart to openvpn.init and openvpn.spec
+  (Bishop Clark).
+* Added --ifconfig case for FreeBSD (Matthias Andree).
+* Call openlog with facility=LOG_DAEMON (Matthias Andree).
+* Changed LOG_INFO messages to LOG_NOTICE.
+* Added warning when key files are group/others accessible.
+* Added --single-session flag for TLS mode.
+* Fixed bug where --writepid would segfault if used with
+  an invalid filename.
+* Fixed bug where --ipchange status message was formatted
+  incorrectly.
+* Print more concise error message when system() call
+  fails.
+* All changes maintain protocol compatibility with OpenVPN
+  versions since 1.1.0.
 
 James
+
 
 
