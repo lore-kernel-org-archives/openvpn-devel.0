@@ -1,7 +1,7 @@
-Subject: Re: [Openvpn-devel] Building GUI
+Subject: Re: [Openvpn-devel] Status of IPv6 support in openVPN
 From: "James Yonan" <jim@...41...>
-Message-ID: <twig.1079554376.69524@...41...>
-In-Reply-To: <loom.20040317T113337-731@...171...>
+Message-ID: <twig.1079556181.40316@...41...>
+In-Reply-To: <200403171417.03939.jrh@...176...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,127 +12,77 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Mar 17 12:13:14 2004
+Date: Wed Mar 17 12:43:13 2004
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Andre Morisse <am@...188...>, openvpn-devel@lists.sourceforge.net
+To: Juan Rodriguez Hervella <jrh@...176...>, openvpn-devel@lists.sourceforge.net
 
-Andre,
+Juan,
 
-Take a look at service-win32/openvpnserv.c -- this code shows how to do a
-CreateProcess with redirected standard handles.
+I think it would be great if you wanted to work on this.  Until now, most of
+the interest has been in IPv6 over IPv4 tunneling, but I would encourage you
+to take the initiative and work on this.
+
+Here are some thoughts:
+
+* This work should happen in the BETA20 branch, as the 1.x branches are now
+very stable and shouldn't be touched at this point for more than bugfixes and
+localized changes.  While the BETA20 branch is mostly focused right now on
+point-to-multipoint mode (which is not yet finished), it will currently build
+off of the CVS and run in standard point-to-point mode.
+
+* It's important that this work be portable which of course means that we want
+to share as much code between the windows and non-windows versions as
+possible.  I'm not sure to what extent the IPv6 header files are standardized,
+but if they are not, it may be necessary to build a platform-general
+abstraction.  To the extent that portability is impossible, the code should
+ifdef itself out on platforms which don't support IPv6.
+
+* OpenVPN uses in_addr_t and sockaddr_in types to refer to IPv4 addresses.  We
+need to decide whether IPv6 should be a whole new mode, i.e. with it's own
+address structs/typedefs and socket6.[ch] files, or whether we should use an
+abstraction for address types which can be either IPv4 or IPv6.
+
+* There is code in route.c and tun.c which does things like network = (ip_addr
+& netmask).  This code obviously won't work if the protocol address size is
+too big to fit in an intrinsic C type, as it is with IPv6.
 
 James
 
-Andre Morisse <am@...188...> said:
+Juan Rodriguez Hervella <jrh@...176...> said:
 
-> Hello together
+> Hellooooo,
 > 
-> at the moment I just trying to build up a GUI Interface for Windows to OVPN
-> for easier use. The target is to build a GUI that handle a connect-up to a
-> OVPN Server without showing the user all the status information and really
-> confusing status outputs for "normal" user.
-> Short said: Only a button connect, a field to enter a passphrase for the
-> rsa key and a status indicator if connect or not.
+> It seems that openVPN supports only IPv4 for making 
+> connections between the client and the server.
 > 
-> I already programmed the GUI interface based in a system that loads the
-> OVPN and starts it with the appropiate config file and redirecting the
-> STDInput and STDOutput Handles to named pipes instead of a console.
-> With this, the GUI ist able to read from and write to the console
-> like a user, all to do is to interpret the status messages and send,
-> for example, the passphrase if requested as keyboard-input.
+> I'd like to be able to establish connections over IPv6,
+> what should be changed ? I feel quite depressed when
+> I look at the source code, because I think is gonna be a pain
+> to change the code to turn it to be AF-independent....sigh
 > 
-> At least, I should announce that, to get this work, I had to make minor
-> changes to the io.c file and commented out the check if it is a running
-> windows nt service, because redirecting the inputs&outputs is a thing
-> a windows nt service would do, too. With this changes, I recompiled the
-> ovpn (btw. version 1.5.0).
+> This should have been done from the scratch...but I don't
+> blame anybody, specially because IPv6 is not widely used yet,
+> (^--^)
 > 
-> Now the following problem:
-> When starting the rebuild version from console, everything works fine
-> like it should, asking for passphrase, connecting and so on. The VPN
-> connection is full usable (this was tested).
+> Is anybody willing to start doing this ?
+> Should we start changing everything to accomplish this task 
+> or is it enough to change "socket.c" ? and if we look at socket.c,
+> what's the best way of porting that stuff to IPv6 ? making new
+> functions like "gettaddr_ipv6",  "update_remote_ipv6".....or
+> changing the original functions to deal with both IPv4 and IPv6
+> at the same time ?...
 > 
-> When connecting with the changed STDInput und STDOutput Params, it
-> runs to, ask for the passphrase, which is send by the GUI programm and
-> accepted by OVPN, runs further and loads everything like it is in console
-> und stops at the message where it say "Local IP: ip:undefined" and
-> "Server IP: ip:port". (This can be seen at the screenshots, too).
+> Regards
+>  
 > 
-> My question is: someone a idea why ovpn stops working when running with
-> the redirected Input und Outputs (to a pipe for another programm instead
-> to the pipe of the console) at the point where it should connect ?
+> -- 
+> ******
+> JFRH
+> ******
 > 
-> Another idea is to start it in console, but pass the passphrase for the key
-> when calling up by a command-line parameter as entered by the user in a input
-> field in the gui interface and checking of a ovpn connection is established
-> if there is a Task of the openvpn.exe File running in the system (really bad,
-> i know - but this would work ;-)
-> Anyone already done a modification for passing the passphrase by commandline
-> instead of entering it at the console window and could give me some
-> information about what to modify ?
-> 
-> At least, I have two screenshots of the modified ovpn running at console:
-> http://www.a-fa.de/am/ovpn/console_screenshot.gif
-> 
-> and running at the gui with the redirected pipes:
-> http://www.a-fa.de/am/ovpn/gui_screenshot.gif
-> 
-> both times with the same config and the same key.
-> 
-> thanks for any help or information!
-> 
-> with greetings
-> Andre
-> 
-> 
-> The following is just informational:
-> 
-> The redirecting of the named pipes it done by the STARTUPINFO Structure of
-> Windows used by the CreateProcess API Command:
-> 
-> typedef struct _STARTUPINFO { // si  
->     DWORD   cb; 
->     LPTSTR  lpReserved; 
->     LPTSTR  lpDesktop; 
->     LPTSTR  lpTitle; 
->     DWORD   dwX; 
->     DWORD   dwY; 
->     DWORD   dwXSize; 
->     DWORD   dwYSize; 
->     DWORD   dwXCountChars; 
->     DWORD   dwYCountChars; 
->     DWORD   dwFillAttribute; 
->     DWORD   dwFlags; 
->     WORD    wShowWindow; 
->     WORD    cbReserved2; 
->     LPBYTE  lpReserved2; 
->     HANDLE  hStdInput;   <--- there you can give pipes at windows
->     HANDLE  hStdOutput;  <--- there you give the pipes at windows
->     HANDLE  hStdError;   <--- there you give the pipes at windows
-> 
-> } STARTUPINFO, *LPSTARTUPINFO; 
-> 
-> and with this it is called, where you can give an STARTUPINFO to Windows
-> 
-> BOOL CreateProcess(
-> 
->     LPCTSTR lpApplicationName, // pointer to name of executable module 
->     LPTSTR lpCommandLine, // pointer to command line string
->     LPSECURITY_ATTRIBUTES lpProcessAttributes,
->     	// pointer to process security attributes 
->     LPSECURITY_ATTRIBUTES lpThreadAttributes,
->     	// pointer to thread security attributes 
->     BOOL bInheritHandles, // handle inheritance flag 
->     DWORD dwCreationFlags, // creation flags 
->     LPVOID lpEnvironment, // pointer to new environment block 
->     LPCTSTR lpCurrentDirectory, // pointer to current directory name 
->     LPSTARTUPINFO lpStartupInfo, // pointer to STARTUPINFO 
->     LPPROCESS_INFORMATION lpProcessInformation
->       // pointer to PROCESS_INFORMATION
->    );
-> 
-> 
+> Passionate hatred can give meaning and purpose to an empty life.
+> 		-- Eric Hoffer
 > 
 > 
 > -------------------------------------------------------
