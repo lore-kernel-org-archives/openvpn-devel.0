@@ -1,9 +1,11 @@
-From: Mathias Sundman <mathias@...209...>
-Subject: Re: [Openvpn-devel] Re: Compilation Problem of =?utf-8?b?b3BlbnZwbi0yLjBfYmV0YTEx?=
-In-Reply-To: <loom.20041014T220521-64@...171...>
-Message-ID: <Pine.LNX.4.61.0410142221040.18018@...210...>
-References: <loom.20041014T173717-97@...171...>
- <Pine.LNX.4.58.0410141115340.5469@...269...> <loom.20041014T220521-64@...171...>
+From: James Yonan <jim@...41...>
+Subject: Re: [Openvpn-devel] PATCH[2/2]: Use certificates from MS Cert Store
+ with CryptoAPI
+In-Reply-To: <416E4D5E.3040909@...289...>
+Message-ID: <Pine.LNX.4.58.0410150046030.9339@...269...>
+References: <416D3018.4040704@...292...> <416D3C1D.6000403@...255...>
+ <Pine.LNX.4.58.0410131057240.20018@...269...> <416D8561.3070900@...292...>
+ <416E4D5E.3040909@...289...>
 MIME-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
@@ -15,33 +17,32 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Oct 14 13:28:17 2004
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Date: Thu Oct 14 23:52:14 2004
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-To: zeeshaan <xeshaan@...293...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Vlada Macek <tuttle@...288...>
+Cc: Peter 'Luna' Runestig <peter+openvpn@...292...>, openvpn-devel@lists.sourceforge.net
 
-On Thu, 14 Oct 2004, zeeshaan wrote:
+On Thu, 14 Oct 2004, Vlada Macek wrote:
 
-> thanx Mathew actually i was doing wrong that i was not running ms/mw.bat first
->
-> but now i am having problem with openssl as
->
-> as it says
->
->
-> f:/djgpp/bin/make.exe: unrecognized option `--win32'
->
-> wats up now i think its something wrong with make now.
+> Peter 'Luna' Runestig wrote:
+> 
+> >  I don't know. I spent a couple of hours, trying to work around
+> >  MinGW's limitations when it comes to CryptoAPI, but I just ended up
+> >  in dead ends.
+> 
+> Just a thought: Maybe this addon can be made as a dynamic plug-in. That 
+> way both could be compiled in two different compilers and there is no 
+> need to port the code for MinGW. The downside of such approach would be 
+> that James will not probably support it.
+> 
+> But if it wont change often, it can be shipped as a 3rd party DLL or 
+> .so... Maybe in the future there will be some more opportunities to do 
+> it this way...
 
-Well, djgpp isn't msys/mingw :-)
+I agree.  I think this patch is important enough that if we can't get it 
+building with MinGW, the DLL approach may be the best alternative.
 
-Try to remove djgpp from your system path, or just make sure msys and 
-mingw is listed BEFORE djgpp.
+James
 
--- 
-_________________________________________________________
-Mathias Sundman              (^)   ASCII Ribbon Campaign
-NILINGS AB                    X    NO HTML/RTF in e-mail
-Tel: +46-(0)8-666 32 28      / \   NO Word docs in e-mail
 
