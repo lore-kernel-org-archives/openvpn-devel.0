@@ -1,9 +1,6 @@
-From: Denis Vlasenko <vda@...216...>
-Subject: Re: [Openvpn-devel] IP adress assignment to tun devices using server mode
-References: <twig.1087235354.15668@...41...>
-In-Reply-To: <twig.1087235354.15668@...41...>
-MIME-Version: 1.0
-Message-Id: <200406142326.05872.vda@...216...>
+Message-Id: <200406170711.i5H7B0Kh040368@...242...>
+From: Pavlin Radoslavov <pavlin@...241...>
+Subject: [Openvpn-devel] Enabling multicast on OpenBSD tun interface
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,51 +11,59 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Jun 14 13:27:00 2004
-Content-Type: text/plain;
-  charset="windows-1251"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-To: James Yonan <jim@...41...>, Torge Szczepanek <openvpn-devel@...239...>, openvpn-devel@lists.sourceforge.net
-Cc: openvpn-users@lists.sourceforge.net
+Date: Thu Jun 17 08:03:04 2004
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: pavlin@...241...
 
-On Monday 14 June 2004 20:49, James Yonan wrote:
-> Torge Szczepanek <openvpn-devel@...239...> said:
-> > -----BEGIN PGP SIGNED MESSAGE-----
-> > Hash: SHA1
-> >
-> > Hi!
-> >
-> > I am currently trying out OpenVPN 2.0 beta 4 using server mode.
-> >
-> > My config on the server looks like this:
-> >
-> > dev tun
-> > mode server
-> > ifconfig 192.168.100.1 192.168.100.2
-> > ifconfig-pool 192.168.100.4 192.168.100.254
-> > push "route 192.168.100.1 255.255.255.255"
-> > route 192.168.100.0 255.255.255.0
-> > [...]
-> >
-> > Everything works fine as expected. (Which is really great. I appreciate
-> > the good work done here)
-> >
-> > I am wondering why there is a subnet of size /30 assigned to the client.
-> > I would expect a Point-to-Point device to receive only one ip adress and
-> > not a /30 subnet.
->
-> This is done for the benefit of OSes (such as Windows) which don't support
-> true point-to-point tun interfaces.
->
-> The Windows TAP-Win32 driver supports tun interface emulation only.  What
-> that means is that the driver can talk to tun interfaces on other OSes, but
-> from the perspective of Windows, it sees the tun interface as a virtual
-> ethernet interface having a subnet mask of 255.255.255.254, containing the
-> two point-to-point interfaces, a network address, and a broadcast address.
+Hi!
 
-255.255.255.252 (252 == 0xFC == 11111100 binary)
---
-vda
+[OS: OpenBSD-3.5]
+[openvpn: 2.0_beta5, 1.5]
 
+It appears that openvpn doesn't enable the multicast flag for the
+tun interface on OpenBSD (on FreeBSD for example, the flag is always
+set). E.g., if I use:
+
+openvpn --local <...> --remote <...> --ifconfig <...> <...> --dev tun0
+
+Then the interface doesn't have the MULTICAST flag set:
+
+tun0: flags=51<UP,POINTOPOINT,RUNNING> mtu 1500
+        inet ...
+
+I believe the following simple patch (against 2.0_beta5) fixes the
+problem.
+
+Thanks,
+Pavlin
+
+--- tun.c.org	Sun Jun 13 00:34:28 2004
++++ tun.c	Tue Jun 15 23:24:58 2004
+@@ -1274,6 +1274,24 @@
+ open_tun (const char *dev, const char *dev_type, const char *dev_node, bool ipv6, struct tuntap *tt)
+ {
+   open_tun_generic (dev, dev_type, dev_node, ipv6, true, true, tt);
++
++  /* Enable multicast on the interface */
++  if (tt->fd >= 0)
++    {
++      struct tuninfo info;
++
++      if (ioctl (tt->fd, TUNGIFINFO, &info) < 0) {
++	msg (M_WARN | M_ERRNO, "Can't get interface info: %s",
++	  strerror(errno));
++      }
++
++      info.flags |= IFF_MULTICAST;
++
++      if (ioctl (tt->fd, TUNSIFINFO, &info) < 0) {
++	msg (M_WARN | M_ERRNO, "Can't set interface info: %s",
++	  strerror(errno));
++      }
++    }
+ }
+ 
+ void
 
