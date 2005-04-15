@@ -1,9 +1,7 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] Plugins programming issue
-In-Reply-To: <loom.20050414T234219-298@...171...>
-Message-ID: <Pine.LNX.4.58.0504141931270.30252@...41...>
-References: <loom.20050414T234219-298@...171...>
+Message-ID: <1113553156.425f790404e31@...372...>
+From: cedric.hertault@...260...
 MIME-Version: 1.0
+Subject: [Openvpn-devel] forking TCP server (multiple clients) : SSL/TLS needed
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,54 +12,32 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Apr 14 18:59:58 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: RN <rn23@...160...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Fri Apr 15 01:23:01 2005
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-On Thu, 14 Apr 2005, RN wrote:
+Hello!
 
-> OpenVPN issue on rc21: I experience a very big oddity when a plugin is 
-> initialized with OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY flag on, but the VPN 
-> config is set to TLS: on ssl.c, we get into the "if" on line 2581, but this is 
-> IMO not correct. Then we go further to read_string on line 2589 and finally 
-> fail.
-> 
-> I also wonder if something of the sort happens then the VPN is set to work 
-> with U/P and the plugin is initialized with OPENVPN_PLUGIN_TLS_VERIFY.
-> 
-> The problem, is that the plugin may be initialized for informational purposes 
-> only to handle the event. The bigger problem, is that one configuration may 
-> have TLS and another one U/P, and both may use the same plugin. My plugin 
-> sends all the event to an ODBC source, therefore suffering a great deal from 
-> this IMO broken behaviour.
-> 
-> IMO, the condition on line 2581 should lead in this case directly to 
-> the "else" on line 2624 to behave correctly.
-> 
-> Unfortunately I am not legally allowed to contribute GPL'ed fixes, so I would 
-> appreciate a community fix.
+I have to build a bridge server with just 2 openvpn clients. The goal is to
+create one network with 3 sites with a layer 2 vpn. The 2 openvpn clients h=
+ave
+the same remote server, so i decided to use xinetd with the nowait option in
+order to create more than one instance of the server.
 
-If I understand you correctly, you are asking that a plugin which
-registers an OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY callback should not
-cause OpenVPN to trigger a key negotiation error condition if the client 
-doesn't specify a U/P?
+But the condition is, with openvpn, i have to use SSL/TLS! but the use of t=
+he
+static key is sufficient. So i modified the source and delete the SSL/TLS
+condition on the --inetd nowait option (option.c file). Now it is ok, xinetd
+create a new server instance on demand, with the static key.
 
-This seems like it would present a security vulnerability, because it
-would allow a client to bypass the OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY
-callback by simply not specifying a U/P.
+All i want to say with this example is i don't think that the SSL/TLS
+requirement for the nowait inetd option is not justified for a network arch
+like mine, and the use of the static key has to be possible.
 
-If you want the condition on line 2581 to lead directly 
-to the "else" on line 2624, just don't register the 
-OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY callback and don't specify an 
---auth-user-pass-verify script.
+Let the openvpn user decide what to do (ssl/tls or static key) with the now=
+ait
+option, what do you think of this?
 
-The point here is that if either an OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY 
-callback is registered or an --auth-user-pass-verify script is specified 
-in the server config, a client MUST provide U/P authentication 
-(possibly in addition to client certificate verification as well) or the 
-authentication will fail.
-
-James
+Cedric
 
