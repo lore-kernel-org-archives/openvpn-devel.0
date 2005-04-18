@@ -1,7 +1,8 @@
-From: James Yonan <jim@...41...>
-Message-ID: <Pine.LNX.4.58.0504172223570.14131@...41...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 2.0 released
+From: Marco Romeny <marco@...374...>
+Message-ID: <loom.20050418T160755-849@...171...>
+References: <Pine.LNX.4.58.0504172223570.14131@...41...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Re: OpenVPN 2.0 released
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,24 +13,24 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Apr 17 21:36:58 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: openvpn-users@lists.sourceforge.net
-Cc: openvpn-devel@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
+Date: Mon Apr 18 07:28:24 2005
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-I'm happy to announce that OpenVPN 2.0 has been released!
+James Yonan <jim <at> yonan.net> writes:
 
-http://openvpn.net/download.html
+> 
+> I'm happy to announce that OpenVPN 2.0 has been released!
+> 
 
-Thanks to all who have supported the project with donations, developing
-code, writing articles, and helping to support people on the mailing
-lists.
+Congratulations!
+This is probably one the most anticipated software releases this spring
+(for me anyway). Thank you all for your hard work!
 
-I'm going to sit back now, relax, maybe try to get my server slashdotted, 
-and I'll try not to think too much about OpenVPN 3.0 until the middle of 
-the week :)
+/Marco
 
-Enjoy,
-James
+
+
+
 
