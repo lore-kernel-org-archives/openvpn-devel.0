@@ -1,8 +1,7 @@
-From: Marco Romeny <marco@...374...>
-Message-ID: <loom.20050418T160755-849@...171...>
-References: <Pine.LNX.4.58.0504172223570.14131@...41...>
+From: Charles Appel <cng@...375...>
+Message-ID: <loom.20050418T200325-934@...171...>
 Mime-Version: 1.0
-Subject: [Openvpn-devel] Re: OpenVPN 2.0 released
+Subject: [Openvpn-devel] Looking for Media Status patch
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,24 +12,25 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Apr 18 07:28:24 2005
+Date: Mon Apr 18 11:28:01 2005
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-James Yonan <jim <at> yonan.net> writes:
+Hello:
 
-> 
-> I'm happy to announce that OpenVPN 2.0 has been released!
-> 
+Between 1-5-beta1 and 1-5-beta2 the changelog indicates
+Christof Meerwals's Media Status patch was implemented.
+I'm wondering if anyone has this patch they could post
+or send me.  I've done a diff between the two CVS tags
+but there seems to have been many changes to tapdrvr.c
+so it's difficult to determine what changes were made
+specifically for the Media Status patch.
 
-Congratulations!
-This is probably one the most anticipated software releases this spring
-(for me anyway). Thank you all for your hard work!
+Specifically, I'm looking to reverse this patch.
 
-/Marco
-
-
+Thanks in advance,
+Charles Appel
 
 
 
