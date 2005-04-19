@@ -1,7 +1,9 @@
-From: Charles Appel <cng@...375...>
-Message-ID: <loom.20050418T200325-934@...171...>
+From: Alberto Gonzalez Iniesta <agi@...64...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.0 released
+Message-ID: <20050419173728.GA2126@...30...>
+References: <Pine.LNX.4.58.0504172223570.14131@...41...>
 Mime-Version: 1.0
-Subject: [Openvpn-devel] Looking for Media Status patch
+In-Reply-To: <Pine.LNX.4.58.0504172223570.14131@...41...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,25 +14,49 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Apr 18 11:28:01 2005
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Date: Tue Apr 19 10:37:26 2005
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-Hello:
+On Sun, Apr 17, 2005 at 10:35:36PM -0600, James Yonan wrote:
+> I'm happy to announce that OpenVPN 2.0 has been released!
 
-Between 1-5-beta1 and 1-5-beta2 the changelog indicates
-Christof Meerwals's Media Status patch was implemented.
-I'm wondering if anyone has this patch they could post
-or send me.  I've done a diff between the two CVS tags
-but there seems to have been many changes to tapdrvr.c
-so it's difficult to determine what changes were made
-specifically for the Media Status patch.
+Congratulations James!  (and all those who helped)
 
-Specifically, I'm looking to reverse this patch.
+> I'm going to sit back now, relax, maybe try to get my server slashdotted,=
+=20
+> and I'll try not to think too much about OpenVPN 3.0 until the middle of=
+=20
+> the week :)
 
-Thanks in advance,
-Charles Appel
+Well, since we're close to the middle of the week, I'd like to ask you a
+couple of things... :)
 
+- There're some bugs reports I couldn't reproduce:
+http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D278933
+and
+http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D296834
 
+And the second issue I don't know how to handle is this:
+- Start openvpn multiple times for a certain configuration.
+- After the first one is started, the rest will 'claim' to fail
+  (due to port being in use), but they will leave a process running
+  (one each).
+- Even killing the first (successful) instance, the rest of the
+  processes will remain aroundi (doing nothing, I guess.
+
+Is that a desirable behavior?
+
+Thanks,
+
+Alberto
+
+--=20
+Alberto Gonzalez Iniesta    | Formaci=F3n, consultor=EDa y soporte t=E9cnico
+agi@(inittab.org|debian.org)| en GNU/Linux y software libre
+Encrypted mail preferred    | http://inittab.com
+
+Key fingerprint =3D 9782 04E7 2B75 405C F5E9  0C81 C514 AF8E 4BA4 01C3
 
