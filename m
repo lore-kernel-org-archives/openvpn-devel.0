@@ -1,7 +1,9 @@
-Message-ID: <1113995333.42663845ed602@...358...>
-From: Bram <openvpn@...357...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] username-as-common-name: documentation error?
+From: JuanJo Ciarlante <jjo@...283...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.0 released
+Message-ID: <20050420091539.C21450@...283...>
+References: <Pine.LNX.4.58.0504172223570.14131@...41...>
+Mime-Version: 1.0
+In-Reply-To: <Pine.LNX.4.58.0504172223570.14131@...41...>; from jim@...41... on Sun, Apr 17, 2005 at 10:35:36PM -0600
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,43 +14,37 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Apr 20 04:11:41 2005
-Content-Type: text/plain; charset=ISO-8859-1
+Date: Wed Apr 20 06:13:24 2005
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
+Cc: James Yonan <jim@...41...>
 
-Hello,
+On Sun, Apr 17, 2005 at 10:35:36PM -0600, James Yonan wrote:
+> I'm happy to announce that OpenVPN 2.0 has been released!
+> 
+> http://openvpn.net/download.html
+> 
+> Thanks to all who have supported the project with donations, developing
+> code, writing articles, and helping to support people on the mailing
+> lists.
+> 
+> I'm going to sit back now, relax, maybe try to get my server slashdotted, 
+> and I'll try not to think too much about OpenVPN 3.0 until the middle of 
+> the week :)
 
+Congratulations for the great work!, openvpn-2 rocks.
 
-What is the option --username-as-common-name supposed to do?
+BTW I've finished my UDPv6 "port" for openvpn-2.0-final, I'll announce the details
+ASAP.
 
-According to the manpage:
+Regards
 
-'For --auth-user-pass-verify authentication, use the authenticated username as
-the common name, rather than the common name from the client cert'
+-- 
+--Juanjo
 
-I read this as: when the auth-user-pass-verify script is run the common name is
-the same as the username, but when other scripts are run it has it's original
-value.
-
-Am I mis-interpreting this? or is it a documentation-error?
-
-The openvpn howto seems to say something different:
-
-'Such configurations should usually also set: username-as-common-name which will
-tell the server to use the username for indexing purposes as it would use the
-Common Name of a client which was authenticating via a client certificate.'
-
-But then the question is what is considered as an indexing purpose?
-
-
-It seems to me that after user/password authentication the username is used
-everywhere where the common name would have been used (scripts, ccd, ...). Is
-this assumption correct?
-
-
-
-Regards,
-
-Bram
+#  Juan Jose Ciarlante (JuanJo) jjo ;at; mendoza.gov.ar                     #
+#  GnuPG Public Key: gpg --keyserver wwwkeys.eu.pgp.net --recv-key 66727177 #
+#   Key fingerprint: 0D2F 3E5D 8B5C 729E 0560  F453 A3F7 E249 6672 7177     #
 
