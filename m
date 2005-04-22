@@ -1,11 +1,8 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.0 released
-In-Reply-To: <20050422071247.GA13077@...33...>
-Message-ID: <Pine.LNX.4.58.0504221205220.14131@...41...>
-References: <20050420091539.C21450@...283...> <Pine.LNX.4.58.0504201125560.14131@...41...>
- <20050420141742.B1503@...283...> <Pine.LNX.4.58.0504211811260.14131@...41...>
- <20050422071247.GA13077@...33...>
+Message-ID: <20050423041950.38779.qmail@...377...>
+From: Kunal Punjabi <kunalspunjabi@...109...>
+Reply-To: kunal@...378...
 MIME-Version: 1.0
+Subject: [Openvpn-devel] Newbie interested in Open VPN development
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -16,40 +13,23 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Apr 22 11:11:49 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Date: Fri Apr 22 21:20:05 2005
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Matthias Andree <ma+ovpnd@...31...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Fri, 22 Apr 2005, Matthias Andree wrote:
+Allow me to introduce myself. I am a graduate student
+from Georgia Tech and am interested in contributing to
+the Open VPN community, by developing code in C, C++
+or Java (those are the languages I am familiar with).
+C and C++ are my languages of choice.
+I have never contributed to open source before and
+want to get started. I am interested in ( but know
+little about) security. 
+If someone is willing to mentor me or guide me...and
+assign me a small project to get started on, I would
+be happy to put in some effort during my free time.
+Thanks and look forward to hearing from you folks!
+-Kunal
 
-> On Thu, 21 Apr 2005, James Yonan wrote:
-> 
-> > I would like to merge your IPv6 patch into the 2.1 branch, once it gets 
-> > started (I'd like to keep the 2.0.x branch as stable as possible, with 
-> > minimalistic changes that don't go beyond bug fixes and small patches).
-> 
-> Speaking of branches; I have updated the FreeBSD OpenVPN 1.6 port to
-> 2.0, overthrowing requests to keep the 1.6 port around and start a new
-> openvpn2 port instead, on the assumption that OpenVPN 2.0 is in the same
-> line as 1.6 was in my perception, and not a separate branch, and I've
-> assumed that we won't see further 1.6 branches. Was this correct?
-
-Yes, I think that 2.0 is close enough to being a drop-in replacement for 
-1.6 that it's hard to justify maintaining 1.6 as a separate branch.
-
-> Would you think it's important to keep an "openvpn16" port (at 1.6.0)
-> available or is 2.0 sufficient? I'd think 2.0 is sufficient as it's a
-> really smooth upgrade from 1.6 (the FreeBSD port hasn't dared use
-> pthreads since FreeBSD 4 has had three competing thread models for a
-> long time - so we're not losing this feature in the FreeBSD port).
-
-Optional pthread support should be back by 2.1.
-
-> Thank you for your great work on OpenVPN 2.0.
-
-Thanks!
-
-James
 
