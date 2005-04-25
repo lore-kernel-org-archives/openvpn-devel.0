@@ -1,8 +1,9 @@
-Message-ID: <20050423041950.38779.qmail@...377...>
-From: Kunal Punjabi <kunalspunjabi@...109...>
-Reply-To: kunal@...378...
+From: James Yonan <jim@...41...>
+Subject: Re: [Openvpn-devel] Looking for Media Status patch
+In-Reply-To: <loom.20050418T200325-934@...171...>
+Message-ID: <Pine.LNX.4.58.0504250157260.14285@...41...>
+References: <loom.20050418T200325-934@...171...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Newbie interested in Open VPN development
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,23 +14,26 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Apr 22 21:20:05 2005
-Content-Type: text/plain; charset=us-ascii
+Date: Mon Apr 25 01:01:55 2005
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Charles Appel <cng@...375...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Allow me to introduce myself. I am a graduate student
-from Georgia Tech and am interested in contributing to
-the Open VPN community, by developing code in C, C++
-or Java (those are the languages I am familiar with).
-C and C++ are my languages of choice.
-I have never contributed to open source before and
-want to get started. I am interested in ( but know
-little about) security. 
-If someone is willing to mentor me or guide me...and
-assign me a small project to get started on, I would
-be happy to put in some effort during my free time.
-Thanks and look forward to hearing from you folks!
--Kunal
+On Mon, 18 Apr 2005, Charles Appel wrote:
 
+> Hello:
+> 
+> Between 1-5-beta1 and 1-5-beta2 the changelog indicates
+> Christof Meerwals's Media Status patch was implemented.
+> I'm wondering if anyone has this patch they could post
+> or send me.  I've done a diff between the two CVS tags
+> but there seems to have been many changes to tapdrvr.c
+> so it's difficult to determine what changes were made
+> specifically for the Media Status patch.
+
+You can disable the media status functionality by going to the TAP-Win32 
+driver advanced properties and setting Media Status to Always Connected.
+
+James
 
