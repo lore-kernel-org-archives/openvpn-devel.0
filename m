@@ -1,9 +1,9 @@
-From: Denis Vlasenko <vda@...380...>
-Subject: Re: [Openvpn-devel] Help!
-References: <200504251354.08540.vladimir@...379...> <200504251319.57914.vda@...380...> <200504251430.43169.vladimir@...379...>
-In-Reply-To: <200504251430.43169.vladimir@...379...>
-MIME-Version: 1.0
-Message-Id: <200504251628.25454.vda@...380...>
+From: JuanJo Ciarlante <jjo-ipsec@...283...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.0 released
+Message-ID: <20050425104620.V15659@...283...>
+References: <Pine.LNX.4.58.0504172223570.14131@...41...><20050420091539.C21 <20050420091539.C21450@...283...> <Pine.LNX.4.58.0504201125560.14131@...41...><20050420141742.B1503@...381... <20050420141742.B1503@...283...> <Pine.LNX.4.58.0504211811260.14131@...41...>
+Mime-Version: 1.0
+In-Reply-To: <Pine.LNX.4.58.0504211811260.14131@...41...>; from jim@...41... on Thu, Apr 21, 2005 at 06:27:03PM -0600
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,47 +14,37 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Apr 25 06:31:45 2005
-Content-Type: text/plain;
-  charset="koi8-r"
-Content-Transfer-Encoding: 7bit
+Date: Mon Apr 25 07:45:09 2005
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-To: vladimir@...379..., openvpn-devel@lists.sourceforge.net
+To: James Yonan <jim@...41...>
+Cc: JuanJo Ciarlante <jjo-ipsec@...283...>, openvpn-devel@lists.sourceforge.net
 
-On Monday 25 April 2005 17:30, Vladimir S. Petukhov wrote:
-> On Monday 25 April 2005 10:19, you wrote:
-> > On Monday 25 April 2005 16:54, Vladimir S. Petukhov wrote:
-> > > Hi!
-> > >
-> > > Sorry for my English...
-> > >
-> > > I have next task:
-> > > 	We have client and provider with 2 channel (land & satellite) between
-> > > them: for in/outgoing traffic. Client and server have a soft, implemented
-> > > as local http-proxy. Server proxy made real http-request. Between client
-> > > and server all data must be compressed and encapsulated in udp packets.
-> > >
-> > >
-> > >                            <----compressed udp channel (satellite)--
-> > > Client  |  "proxy"    --- compressed udp channel (land) ->  "proxy" |
-> > > server
-> > >
-> > > The main goal - compression (HTTP - 70-90%).
-> > >
-> > > Can anybody advice usefull soft or any decisions?
-> >
-> > Well, openvpn will do this.
+On Thu, Apr 21, 2005 at 06:27:03PM -0600, James Yonan wrote:
+> I would like to merge your IPv6 patch into the 2.1 branch, once it gets 
+> started (I'd like to keep the 2.0.x branch as stable as possible, with 
+> minimalistic changes that don't go beyond bug fixes and small patches).
 > 
-> hardly...
-> OpenVPN - is a tunnel and not support two separated channels...
+> One potential speed bump will be in merging both IPv6 + the multihomed 
+> patch which will definitely be going into 2.1:
+> 
+> http://openvpn.net/patch/openvpn-2.0_rc16MH.patch
+> 
+> Because both patches touch much of the same code, there will likely be a
+> need for manual merging.
 
-Use policy routing + TWO openvpn tunnels.
+Ok ... indeed I tested "patch --dry ..." and shouted about 80% rejects.
+I could merge both in my own CVS, but because it's a rather daunting task, 
+I would like to be sure it's a productive one :-) ie. that it will have a
+high chance to be merged , of course, if resulting patch quality qualifies.
 
-> And compression may not be good (not a main goal of openVPN)...
+Regards...
 
-What do you mean 'may not'? I thought you already tested at least that
-before asking questions...
---
-vda
+-- 
+--Juanjo
 
+#  Juan Jose Ciarlante (JuanJo) jjo ;at; mendoza.gov.ar                     #
+#  GnuPG Public Key: gpg --keyserver wwwkeys.eu.pgp.net --recv-key 66727177 #
+#   Key fingerprint: 0D2F 3E5D 8B5C 729E 0560  F453 A3F7 E249 6672 7177     #
 
