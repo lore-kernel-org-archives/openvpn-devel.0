@@ -1,8 +1,9 @@
-From: "Vladimir S. Petukhov" <vladimir@...379...>
-Reply-To: vladimir@...379...
+From: Denis Vlasenko <vda@...380...>
+Subject: Re: [Openvpn-devel] Help!
+References: <200504251354.08540.vladimir@...379...>
+In-Reply-To: <200504251354.08540.vladimir@...379...>
 MIME-Version: 1.0
-Message-Id: <200504251354.08540.vladimir@...379...>
-Subject: [Openvpn-devel] Help!
+Message-Id: <200504251319.57914.vda@...380...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,28 +14,34 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Apr 25 03:03:24 2005
+Date: Mon Apr 25 03:24:22 2005
 Content-Type: text/plain;
-  charset="us-ascii"
+  charset="koi8-r"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+To: vladimir@...379..., openvpn-devel@lists.sourceforge.net
 
-Hi!
+On Monday 25 April 2005 16:54, Vladimir S. Petukhov wrote:
+> Hi!
+> 
+> Sorry for my English...
+> 
+> I have next task:
+> 	We have client and provider with 2 channel (land & satellite) between them: 
+> for in/outgoing traffic. Client and server have a soft, implemented as local 
+> http-proxy. Server proxy made real http-request. Between client and server 
+> all data must be compressed and encapsulated in udp packets.
+> 
+> 
+>                            <----compressed udp channel (satellite)--
+> Client  |  "proxy"    --- compressed udp channel (land) ->  "proxy" | server
+> 
+> The main goal - compression (HTTP - 70-90%).
+> 
+> Can anybody advice usefull soft or any decisions?
 
-Sorry for my English...
+Well, openvpn will do this.
+--
+vda
 
-I have next task:
-	We have client and provider with 2 channel (land & satellite) between them: 
-for in/outgoing traffic. Client and server have a soft, implemented as local 
-http-proxy. Server proxy made real http-request. Between client and server 
-all data must be compressed and encapsulated in udp packets.
-
-
-                           <----compressed udp channel (satellite)--
-Client  |  "proxy"    --- compressed udp channel (land) ->  "proxy" | server
-
-The main goal - compression (HTTP - 70-90%).
-
-Can anybody advice usefull soft or any decisions?
 
