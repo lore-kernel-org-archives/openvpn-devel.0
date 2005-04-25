@@ -1,9 +1,8 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] Newbie interested in Open VPN development
-In-Reply-To: <20050423041950.38779.qmail@...377...>
-Message-ID: <Pine.LNX.4.58.0504250208360.14285@...41...>
-References: <20050423041950.38779.qmail@...377...>
+From: "Vladimir S. Petukhov" <vladimir@...379...>
+Reply-To: vladimir@...379...
 MIME-Version: 1.0
+Message-Id: <200504251354.08540.vladimir@...379...>
+Subject: [Openvpn-devel] Help!
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,44 +13,28 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Apr 25 01:35:18 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: kunal@...378...
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Mon Apr 25 03:03:24 2005
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-On Fri, 22 Apr 2005, Kunal Punjabi wrote:
+Hi!
 
-> Allow me to introduce myself. I am a graduate student
-> from Georgia Tech and am interested in contributing to
-> the Open VPN community, by developing code in C, C++
-> or Java (those are the languages I am familiar with).
-> C and C++ are my languages of choice.
-> I have never contributed to open source before and
-> want to get started. I am interested in ( but know
-> little about) security. 
-> If someone is willing to mentor me or guide me...and
-> assign me a small project to get started on, I would
-> be happy to put in some effort during my free time.
-> Thanks and look forward to hearing from you folks!
-> -Kunal
+Sorry for my English...
 
-We don't really do formal mentoring here -- the process is more like try
-to figure out as much as you can by yourself from reading the docs, list
-archives, source code, etc., then post questions on the list if you get
-stuck.
+I have next task:
+	We have client and provider with 2 channel (land & satellite) between them: 
+for in/outgoing traffic. Client and server have a soft, implemented as local 
+http-proxy. Server proxy made real http-request. Between client and server 
+all data must be compressed and encapsulated in udp packets.
 
-Most people contribute code because they have a strong desire to see a
-particular feature implemented, as opposed to just having a general 
-interest in the project.
 
-Contributing code to the core is difficult, because you need to have a
-more global understanding of how the code works, so you don't break
-anything.  You also need to be well-versed in the art of portable
-programming -- OpenVPN runs on a large number of platforms.
+                           <----compressed udp channel (satellite)--
+Client  |  "proxy"    --- compressed udp channel (land) ->  "proxy" | server
 
-A simpler way of contributing would be to write a plugin or 
-management interface client (such as a GUI).
+The main goal - compression (HTTP - 70-90%).
 
-James
+Can anybody advice usefull soft or any decisions?
 
