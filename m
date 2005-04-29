@@ -1,10 +1,11 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] Suggestion - change of config file suffix .conf
- -> .ovpn
-In-Reply-To: <loom.20050427T234146-175@...171...>
-Message-ID: <Pine.LNX.4.58.0504271948430.31737@...41...>
-References: <loom.20050427T234146-175@...171...>
+From: Ralf =?iso-8859-1?q?L=FCbben?= <ralfluebben@...68...>
 MIME-Version: 1.0
+Content-Type: multipart/alternative;
+  boundary="Boundary-00=_8EfcCDXqz6KhJaU"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200504291033.00667.ralfluebben@...68...>
+Subject: [Openvpn-devel] Radius support (Authentification, Authorization and Accounting)
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,59 +16,113 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Apr 27 19:05:01 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: Plamen <cz-plamen@...384...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Fri Apr 29 01:37:10 2005
+To: openvpn-devel@lists.sourceforge.net
 
-On Wed, 27 Apr 2005, Plamen wrote:
+--Boundary-00=_8EfcCDXqz6KhJaU
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-> Hi all,
->   thank you for your openvpn 2.0, it is really good work. I am implementing it
-> in one company with about 30 users. I have to prepare some scripts to help
-> end-users with installation to theirs computers, generate their keys and pack
-> keys with proper configuration file into archive. Every user has its own config
-> pack with common configuration and its own key set. Users then just copy and
-> install openvpn from internet (or our local copy of installation package) and
-> then unpack corresponding file with configuration and keys.
->   I've found that I can prepare one config file for all users with one
-> exception: Windows end-users need file <config>.ovpn (replace "<config>" with
-> any usable name), but linux end users need file <config>.conf. This is not too
-> useful, because when I am generating user pack I do not want to know who use
-> linux and who use Windows. So - because linux users are more flexible, at first
-> I added note into our Installation Manual to change suffix.
->   At second I have to solve my own situation: My computer is 1) ovpn server for
-> one peer-to-peer VPN 2) client of this new VPN. What does it mean? I need tu run
-> oVPN(1) just during computer starts and keep this tunnel all the time. But then
-> I need run oVPN(2) on my request. Well, it needs some small changes in init
-> scripts.  But if I need change these scripts, I can change suffix of config
-> files to .ovpn and solve problem with different platforms. Second problem I've
-> solved by config file attributes - init script checks if file is "executable"
-> and run just these files when no config file is sent into script via
-> command-line. I do not know if this is the best solution, but at least for me it
-> works fine.
->   Sorry for my long mail, but I cannot explain it shorter. My _question_ is:
-> Don't you think about just one config file suffix? I think it can help to all
-> administrators with mixed linux/windows clients. I can share my solution -
-> changed init scripts with described two enhancements. Originals are from debian
-> woody (backports). You can think about it and merge the solution into mainstream
-> if you'll find it useful. Then I can share my (usually one-line) scripts to
-> generate SSL keys, CRL list etc. If you want such scripts into examples section.
+Hello,
 
-The major reason for having both .ovpn and .conf is that Windows and
-Linux/BSD/Unix both have fundamentally different notions about how
-config files should be named.  In the Windows world, the file extension
-denotes the application which handles the file.  In Linux/BSD/Unix, most
-daemon configuration files are named .conf, and multiple apps all use the
-.conf file extension.  I agree that it might be nice to use a single
-extension standard across all platforms, but I would be concerned that
-changing things at this late stage would generate too much confusion and
-breakage.
+I am interesting in build radius support for OpenVpn.
+At the moment I'am thinking about what is the best way.
 
-Of course, it's pretty trivial to fix this for yourself by editing the
-init script to use .ovpn intead of .conf.
+1. Authentification and Authroization:
+I think this already works with the plugin pam_radius_auth.so, is that righ=
+t?
 
-James
+But I am interested in more features,
+like to get the ip-address and the routes from the RADIUS-Server.
+Can this be done with a plugin? Maybe by creating the configurationfiles at=
+=20
+the start of the connection?=20
+Or could this be integrated in the Source Code? I think this would be the b=
+est=20
+solution.
+I hope the fea
+2. Accounting:
+I need to count the traffic  of a VPN-connection, one the side every traffi=
+c=20
+which goes from a client to the server (tun0-interface) and one the other=20
+side every traffic which goes through the VPN, maybe from one client to=20
+another client.
+So when I use the counter of the tun-interface, I lose the traffic which go=
+es=20
+from one client to another. If I count the traffic of the eth-interface I g=
+et=20
+other traffic, which has nothing to do with the vpn.=20
 
+Maybe someone has some experiences with this topic and give some hints whic=
+h=20
+is the best way? To do all things in a modul or to do all changes in the=20
+source code. and where I have to look in the source code to integrate this=
+=20
+feature.
+
+I hope there is a gerneal interest in this feature.
+
+For every help I am very grateful.
+
+Ralf L=FCbben
+
+
+
+
+--Boundary-00=_8EfcCDXqz6KhJaU
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<html><head><meta name=3D"qrichtext" content=3D"1" /></head><body style=3D"=
+font-size:10pt;font-family:Sans Serif">
+<p><span style=3D"font-size:12pt">Hello,</span></p>
+<p></p>
+<p><span style=3D"font-size:12pt">I am interesting in build radius support =
+for OpenVpn.</span></p>
+<p><span style=3D"font-size:12pt">At the moment I'am thinking about what is=
+ the best way.</span></p>
+<p></p>
+<p><span style=3D"font-size:12pt">1. Authentification and Authroization:</s=
+pan></p>
+<p><span style=3D"font-size:12pt">I think this already works with the plugi=
+n pam_radius_auth.so, is that right?</span></p>
+<p></p>
+<p><span style=3D"font-size:12pt">But I am interested in more features,</sp=
+an></p>
+<p><span style=3D"font-size:12pt">like to get the ip-address and the routes=
+ from the RADIUS-Server.</span></p>
+<p><span style=3D"font-size:12pt">Can this be done with a plugin? Maybe by =
+creating the configurationfiles at the start of the connection? </span></p>
+<p><span style=3D"font-size:12pt">Or could this be integrated in the Source=
+ Code? I think this would be the best solution.</span></p>
+<p><span style=3D"font-size:12pt">I hope the fea</span></p>
+<p><span style=3D"font-size:12pt">2. Accounting:</span></p>
+<p><span style=3D"font-size:12pt">I need to count the traffic  of a VPN-con=
+nection, one the side every traffic which goes from a client to the server =
+(tun0-interface) and one the other side every traffic which goes through th=
+e VPN, maybe from one client to another client.</span></p>
+<p><span style=3D"font-size:12pt">So when I use the counter of the tun-inte=
+rface, I lose the traffic which goes from one client to another. If I count=
+ the traffic of the eth-interface I get other traffic, which has nothing to=
+ do with the vpn. </span></p>
+<p></p>
+<p><span style=3D"font-size:12pt">Maybe someone has some experiences with t=
+his topic and give some hints which is the best way? To do all things in a =
+modul or to do all changes in the source code. and where I have to look in =
+the source code to integrate this feature.</span></p>
+<p></p>
+<p><span style=3D"font-size:12pt">I hope there is a gerneal interest in thi=
+s feature.</span></p>
+<p></p>
+<p><span style=3D"font-size:12pt">For every help I am very grateful.</span>=
+</p>
+<p></p>
+<p><span style=3D"font-size:12pt">Ralf L=FCbben</span></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+</body></html>=
+
+--Boundary-00=_8EfcCDXqz6KhJaU--
 
