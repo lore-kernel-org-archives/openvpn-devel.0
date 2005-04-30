@@ -1,13 +1,12 @@
-Subject: Re: [Openvpn-devel] Radius support (Authentification,
-	Authorization and Accounting)
-From: Daniel Lehmann <ov_devel@...300...>
-In-Reply-To: <Pine.LNX.4.58.0504300118280.24107@...41...>
-References: <200504291033.00667.ralfluebben@...68...>
-	 <Pine.LNX.4.58.0504291041510.24107@...41...>
-	 <200504300904.51200.ralfluebben@...68...>
-	 <Pine.LNX.4.58.0504300118280.24107@...41...>
-Message-Id: <1114864741.22186.28.camel@...344...>
-Mime-Version: 1.0
+From: James Yonan <jim@...41...>
+Subject: Re: [Openvpn-devel] Radius support (Authentification, Authorization
+ and Accounting)
+In-Reply-To: <1114863340.22186.13.camel@...344...>
+Message-ID: <Pine.LNX.4.58.0504301326180.25603@...41...>
+References: <200504291033.00667.ralfluebben@...68...> 
+ <Pine.LNX.4.58.0504291041510.24107@...41...>  <200504300904.51200.ralfluebben@...68...>
+  <Pine.LNX.4.58.0504300118280.24107@...41...> <1114863340.22186.13.camel@...344...>
+MIME-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -18,30 +17,48 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Apr 30 05:42:00 2005
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Date: Sat Apr 30 12:29:09 2005
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+To: Daniel Lehmann <ov_devel@...300...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am Samstag, den 30.04.2005, 01:42 -0600 schrieb James Yonan:
-[snip]
-> No, you have to write configuration file directives (containing the
-> appropriate ifconfig-push directive) to the temporary file provided by the
-> caller.  This is so that we can maintain an identical interface for both
-> script and plugin calls.
+On Sat, 30 Apr 2005, Daniel Lehmann wrote:
 
-Hi James,
-I've just read your mail again and wondered why script and plugin have
-to be equal in functionality.
-If there was the chance of avoiding file io, I would be much more happy.
+> Am Samstag, den 30.04.2005, 01:42 -0600 schrieb James Yonan:
+> > Right now, you can only get it by reading the --status file.  For 2.1 I'm 
+> > considering to add another script/callback for passing current accounting 
+> > data.
+> > 
+> > One of the goals of the plugin interface is to allow a fully-featured
+> > Radius plugin to be developed, as you are doing, so I would be happy to
+> > work with you on extending the plugin interface for 2.1 if you find that
+> > the current plugin API is insufficient.
+> > 
+> > > Another question about the IP address and OPENVPN_PLUGIN_CLIENT_CONNECT. 
+> > > Is there a possibility to give the IP address direct to the OpenVPN process or 
+> > > must I create the configuration files when a client connects?
+> > 
+> > No, you have to write configuration file directives (containing the
+> > appropriate ifconfig-push directive) to the temporary file provided by the
+> > caller.  This is so that we can maintain an identical interface for both
+> > script and plugin calls.
+> 
+> Hi James,
+> as I'm also working on Radius integration via a plugin, I wondered if
+> there is the possibility to provide options for the scripts/plugins in
+> the openvpn config.
+> 
+> For example, the openvpn config file could look like:
+> ...
+> dev tun
+> pull
+> option key1 value1
+> option key2 value2
 
-But maybe there is another alternative. Maybe the IP adress could be the
-return value of the client connect script/plugin or something like that.
+Take a look at the "setenv" directive.  The setenv list is passed to 
+plugins.
 
-I'm just unhappy with creating files only to provide this little
-information...
-
-greetings
-leh
+James
 
 
