@@ -1,9 +1,9 @@
-From: JuanJo Ciarlante <jjo-ipsec@...283...>
-Message-ID: <20050429163854.K12118@...283...>
-Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="bp/iNruPH9dso1Pn"
-Content-Disposition: inline
-Subject: [Openvpn-devel] IPv6 support for OpenVPN 2.0 release (UDPv6, --udp6)
+From: Ralf =?iso-8859-1?q?L=FCbben?= <ralfluebben@...68...>
+Subject: Re: [Openvpn-devel] Radius support (Authentification, Authorization and Accounting)
+References: <200504291033.00667.ralfluebben@...68...> <Pine.LNX.4.58.0504291041510.24107@...41...>
+In-Reply-To: <Pine.LNX.4.58.0504291041510.24107@...41...>
+MIME-Version: 1.0
+Message-Id: <200504300904.51200.ralfluebben@...68...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,185 +14,92 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Apr 29 13:42:06 2005
+Date: Sat Apr 30 00:07:08 2005
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
---bp/iNruPH9dso1Pn
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Hello,
 
-Hi....
+thank you. That solves a lot of my problems.
 
-I've finished polishing mi udp6 patch for openvpn-2.0
+I have still one problem with accouting.
+When a client connect, I get a ticket from the RADIUS-Server, there is give=
+n=20
+an interval, in which I must send Alive-tickets to the RADIUS-Server with t=
+he=20
+actual traffic and the time of the connection.
 
-You can get it from 
-   http://www.irrigacion.gov.ar/juanjo/openvpn/
-   
-There are two patch flavors: udp6 and udp6+MH (mutlihome , as required by
-James for merging). I've successfully tested udp6 on both (MH support
-compiles ok but it isn't tested).
+Can I get the data from OpenVPN during the connection?
 
-Feedback is welcome, enjOY!
+Another question about the IP address and OPENVPN_PLUGIN_CLIENT_CONNECT.=20
+Is there a possibility to give the IP address direct to the OpenVPN process=
+ or=20
+must I create the configuration files when a client connects?
 
-Regards
+Ralf L=FCbben
 
--- 
---Juanjo
 
-#  Juan Jose Ciarlante (JuanJo) jjo ;at; mendoza.gov.ar                     #
-#  GnuPG Public Key: gpg --keyserver wwwkeys.eu.pgp.net --recv-key 66727177 #
-#   Key fingerprint: 0D2F 3E5D 8B5C 729E 0560  F453 A3F7 E249 6672 7177     #
 
---bp/iNruPH9dso1Pn
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment; filename="README.IPv6"
 
-# $Id: README.IPv6,v 1.1.8.2.2.1 2005/04/29 20:23:41 jjo Exp $ #
 
-This README covers UDP/IPv6 v0.2.4 ( --udp6 ) support for openvpn-2.0
-Also, with address family "generalization" changes came local AF_UNIX socket
-support.
 
-Available under GPLv2 from 
-  http://www.irrigacion.gov.ar/juanjo/openvpn/
 
-See "Examples" section below for usage.
-
-* Working:
-  - upd6->upd6 (AF_INET6)
-    tested on GNU/Linux, FreeBSD-5.3 and OpenBSD-3.6.
-  - upd4->upd6 bound (show correctly mapped address) but requires
-    --float (to be fixed soon)
-  - unix-dgram->unix-dgram (AF_UNIX)
-    useful for implementing local proxies that can take full advantage
-    of POSIX filesystem permissions ( more powerfull access mechanisms
-    than inet, even for localhost)
-
-* Setup:
-  ./configure --disable-ipv6        (enabled by default)
-  ./configure --enable-unix-sockets (disabled by default)
-  :
-
-* Usage:
-  For IPv6 just specify "-p upd6" an proper IPv6 hostnames, taking the example
-  from man page ...
-
-  On may:
-    openvpn --proto udp6 --remote <june_IPv6_addr> --dev tun1 --ifconfig 10.4.0.1 10.4.0.2
-    --verb 5 --secret key
-
-  On june:
-    openvpn --proto udp6 --remote <may_IPv6_addr>  --dev tun1 --ifconfig 10.4.0.2 10.4.0.1
-    --verb 5 --secret key
-
-* Examples: some succesfully tested command lines 
-  [  BTW did you know that openvpn can succesfully negotiate to self
-     with --remote localhost ? (VERY useful for fast testing)         ]
-  
-  - IPv6 "normal" usage (+succesfully tested tunnel traffic) 
-    server# openvpn --proto udp6 ...
-      :
-      Thu Sep 23 22:15:48 2004 Peer Connection Initiated with [AF_INET6]fe80::205:5dff:fef1:1ceb%wlan0wds1:5000
-      :
-    client# openvpn --proto udp6 --remote fe80::240:5ff:feae:c851 ...
-      :
-      Thu Sep 23 22:13:19 2004 Peer Connection Initiated with [AF_INET6]fe80::240:5ff:feae:c851%wlan0wds0:5000
-      :
-
-  - IPv6 server, IPv4 client (more detailed)
-    server# openvpn --proto udp6 ...
-      :
-      Thu Sep 23 22:28:36 2004 UDPv6 link local (bound): [AF_INET6][undef]:5000
-      Thu Sep 23 22:28:36 2004 UDPv6 link remote: [AF_INET6][undef]
-      Thu Sep 23 22:28:50 2004 Peer Connection Initiated with [AF_INET6]::ffff:10.55.14.253:5000
-      Thu Sep 23 22:28:51 2004 Initialization Sequence Completed
-      Thu Sep 23 22:28:56 2004 WARNING: Actual Remote Options ('... proto UDPv4 ... ') \
-                               are inconsistent with Expected Remote Options ('... proto UDPv6 ...')
-
-    client# openvpn  --remote 10.55.14.254 ...  ### same default as now: --udp
-      :
-      Thu Sep 23 22:26:11 2004 UDPv4 link local (bound): [AF_INET][undef]:5000
-      Thu Sep 23 22:26:11 2004 UDPv4 link remote: [AF_INET]10.55.14.254:5000
-      Thu Sep 23 22:26:21 2004 Peer Connection Initiated with [AF_INET]10.55.14.254:5000
-      Thu Sep 23 22:26:21 2004 WARNING: Actual Remote Options ('... proto UDPv6 ...') \
-                               are inconsistent with Expected Remote Options ('... proto UDPv4 ...')
-      Thu Sep 23 22:26:22 2004 Initialization Sequence Completed
-
-  - IPv6 loopback
-    alone# openvpn --proto udp6 --remote ::1 ...
-      :
-      Wed Sep 22 13:03:07 2004 Peer Connection Initiated with [AF_INET6]::1:5000
-      :
-
-  - AF_UNIX toself
-    alone# openvpn --proto unix-dgram --local /tmp/o.s --remote /tmp/o.s --dev tun  ...
-      :
-      Thu Sep 23 16:37:27 2004 Peer Connection Initiated with [AF_UNIX]/tmp/o.s
-      :
-  
-  - AF_UNIX between to diff instances
-    peer1# openvpn --proto unix-dgram --local /tmp/o1.s --remote /tmp/o2.s
-    peer2# openvpn --proto unix-dgram --local /tmp/o2.s --remote /tmp/o1.s
-      :
-      Wed Sep 22 12:49:03 2004 Peer Connection Initiated with [AF_UNIX]/tmp/o1.s
-      :
-  
-
-* Main code changes summary:
-  - New sockaddr type (could have been sockaddr_storage but
-
-[[[ NOTE: this has changed change in MH (multihomed) merged tree ]]]
-
-    it lacks simple type overloading and maybe portability)
-    union sockaddr_ovpn {
-    	struct sockaddr addr;
-    	struct sockaddr_in in;
-    	struct sockaddr_in6 in6;
-#ifdef USE_PF_UNIX
-    	struct sockaddr_un un;
-#endif
-    };
-    
-    typedef union sockaddr_ovpn sockaddr_ovpn_t;
-    struct link_socket_addr
-    {
-    	sockaddr_ovpn_t local;
-    	sockaddr_ovpn_t remote;
-    	sockaddr_ovpn_t actual;
-    };
-    
-    allows simple type overloading: local.addr, local.in, local.in6 ... etc
-
-  - several function prototypes moved from
-    sockaddr_in to sockaddr args type
-  - several new sockaddr functions needed to "generalize" AF_xxxx operations:
-    addr_copy(), addr_zero(), ...etc
-    proto_is_udp(), proto_is_dgram(), proto_is_net()
-
-* TODO: (D: Done, !: fundamental, w: wanted, n: nah ... not critical, ?: need more thought)
- --
-  [D]-  ./configure [ --disable-ipv6 ] [ --enable-unix-sockets ] 
-        map to USE_PF_INET6 and USE_PF_UNIX
-  [D]-  merge MH patch
- --
-  [!]-  -p tcp6
-  [!]-  Implement comparison for mapped addesses: server in dual stack listening
-        IPv6 must permit incoming streams from allowed IPv4 peer (ie without --float).
-  [!]-  IPv6 with actual host resolution, currently only numerical (AI_NUMERICHOST)
-  [n]-  call socket() lately, after getaddrinfo() to decide IPv4 or IPv6 host 
-        (hence socket()) instead of needing -p {udp|udp6}
-        NOT ACTUALLY a big trouble, given that you _do_ setup both sides
-        (keys, certs, etc), using udp or udp6 is actually _another_ setup bit.
-  [?]-  integrate both IPv4 and IPv6 addr resolution with getaddrinfo instead of
-        venerable gethostbyname&friends, problem: horizontal portability (across
-        platforms) and vertical portab. (across versions)
- 
---
-JuanJo Ciarlante   jjo|at|mendoza.gov.ar
-:                                                                  :
-.                                         Linux IP Aliasing author .
-.   Modular algo (AES et all) support for FreeSWAN/OpenSWAN author .
-:...       plus  other scattered free software bits in the wild ...:
-
---bp/iNruPH9dso1Pn--
+Am Freitag, 29. April 2005 18:53 schrieb James Yonan:
+> On Fri, 29 Apr 2005, Ralf [iso-8859-1] L=FCbben wrote:
+> > Hello,
+> >
+> > I am interesting in build radius support for OpenVpn.
+> > At the moment I'am thinking about what is the best way.
+> >
+> > 1. Authentification and Authroization:
+> > I think this already works with the plugin pam_radius_auth.so, is that
+> > right?
+>
+> Yes.
+>
+> > But I am interested in more features,
+> > like to get the ip-address and the routes from the RADIUS-Server.
+> > Can this be done with a plugin? Maybe by creating the configurationfiles
+> > at the start of the connection?
+> > Or could this be integrated in the Source Code? I think this would be t=
+he
+> > best solution.
+>
+> You should be able to do this as a plugin.  OpenVPN plugins can register a
+> number of callbacks (see openvpn-plugin.h).
+>
+> You could use OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY to verify user/pass,
+> OPENVPN_PLUGIN_CLIENT_CONNECT to pass IP address and routes, and
+> OPENVPN_PLUGIN_CLIENT_DISCONNECT to process client disconnects.
+>
+> > I hope the fea
+> > 2. Accounting:
+> > I need to count the traffic  of a VPN-connection, one the side every
+> > traffic which goes from a client to the server (tun0-interface) and one
+> > the other side every traffic which goes through the VPN, maybe from one
+> > client to another client.
+> > So when I use the counter of the tun-interface, I lose the traffic which
+> > goes from one client to another. If I count the traffic of the
+> > eth-interface I get other traffic, which has nothing to do with the vpn.
+>
+> The OPENVPN_PLUGIN_CLIENT_DISCONNECT callback (or script) can access
+> client bandwidth info on the about-to-be-closed session by looking at the
+> bytes_received and bytes_sent environmental variables.  See the man page
+> for more info.
+>
+> James
+>
+>
+>
+> -------------------------------------------------------
+> This SF.Net email is sponsored by: NEC IT Guy Games.
+> Get your fingers limbered up and give it your best shot. 4 great events, 4
+> opportunities to win big! Highest score wins.NEC IT Guy Games. Play to
+> win an NEC 61 plasma display. Visit http://www.necitguy.com/?r
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
