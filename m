@@ -1,7 +1,8 @@
-From: James Yonan <jim@...41...>
-Message-ID: <Pine.LNX.4.58.0504301622050.25603@...41...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 2.0.1-rc1 released
+From: "Csillag =?ISO-8859-1?Q?Krist=F3f?=" <csillag@...385...>
+Message-Id: <1114964603.5478.46.camel@...387...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1; protocol="application/pgp-signature"; boundary="=_nervhq-7989-1114964560-0001-2"
+Subject: [Openvpn-devel] one-time pad encryption?
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,44 +13,59 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Apr 30 15:30:08 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: openvpn-users@lists.sourceforge.net
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Sun May  1 09:23:19 2005
+To: openvpn-devel@lists.sourceforge.net
 
-Here is a release candidate for 2.0.1, with a few minor patches.  Please 
-test, especially if you are using plugins or configurations which use 
-multiple --remote options.
+This is a MIME-formatted message.  If you see this text it means that your
+E-mail software does not support MIME-formatted messages.
 
-Download:
+--=_nervhq-7989-1114964560-0001-2
+Content-Type: text/plain; charset="ISO-8859-2"
+Content-Transfer-Encoding: quoted-printable
 
-http://openvpn.net/beta/
+Hi there!
 
-The current plan is to maintain 2.0.x as the stable branch, with bug fixes 
-and minor patches only.  Larger patches will go into the 2.1 beta series 
-which should begin shortly.
+I would like to ask if is anybody working on implementing OTP (One-Time
+Pad) encryption for OpenVPN?
 
-ChangeLog:
+I have heard the usual arguments against OTP (too big keys, need too
+much random input, must never reuse, etc.) many times, still, I think
+this could be useful in a number of situations.
 
-2005.04.30 -- Version 2.0.1-rc1
+(Imagine that you are running an organisation that operates at several
+different locations, and you need real-time, encrypted communication,
+and you can afford to periodically send over a deputy, with a few DVDs,
+full of white noise.)
 
-* Fixed bug where certain kinds of fatal errors after
-  initialization (such as port in use) would leave plugin
-  processes (such as openvpn-auth-pam) still running.
-* Added optional openvpn_plugin_abort_v1 plugin function for
-  closing initialized plugin objects in the event of a fatal
-  error by main OpenVPN process.
-* When the --remote list is > 1, and --resolv-retry is not
-  specified (meaning that it defaults to "infinite"), apply the
-  infinite timeout to the --remote list as a whole, but try each
-  list item only once before moving on to the next item.
-* Added new --syslog directive which redirects output
-  to syslog without requiring the use of the --daemon or --inetd
-  directives.
-* Added openvpn.spec option to allow RPM to be built with support
-  for passwords read from a file:
-  rpmbuild -tb [openvpn.x.tar.gz] --define 'with_password_save 1'
+Obviously, the handling of keys (like generating, importing, exporting,
+choosing, finding, erasing the right parts of the right keys at the
+right time) would need some extra care, maybe a separate daemon should
+do it.
 
-James
+Does something like this already exist? Or is somebody working on it?
+Or is somebody interested in this?
+
+	Kristof Csillag
+
+
+--=20
+Csillag Krist=F3f
+
+http://www.mit.bme.hu/~csillag
+csillag@...386...
+
+--=_nervhq-7989-1114964560-0001-2
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Transfer-Encoding: 7bit
+Content-Description: This is a digitally signed message part
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.0 (GNU/Linux)
+
+iD8DBQBCdQJ7UhjTfEopf5URArAHAJ0R7lZBKKVu/6ELd+UTu1x7Bq1+dACdFQ3m
+CR4e0RQK+5DYEUm6r9mmEfk=
+=Q2N/
+-----END PGP SIGNATURE-----
+
+--=_nervhq-7989-1114964560-0001-2--
 
