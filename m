@@ -1,8 +1,15 @@
-From: "Csillag =?ISO-8859-1?Q?Krist=F3f?=" <csillag@...385...>
-Message-Id: <1114964603.5478.46.camel@...387...>
+Subject: Re: [Openvpn-devel] Radius support (Authentification,
+	Authorization and Accounting)
+From: Daniel Lehmann <ov_devel@...300...>
+In-Reply-To: <Pine.LNX.4.58.0504301327500.25603@...41...>
+References: <200504291033.00667.ralfluebben@...68...>
+	 <Pine.LNX.4.58.0504291041510.24107@...41...>
+	 <200504300904.51200.ralfluebben@...68...>
+	 <Pine.LNX.4.58.0504300118280.24107@...41...>
+	 <1114864741.22186.28.camel@...344...>
+	 <Pine.LNX.4.58.0504301327500.25603@...41...>
+Message-Id: <1114978074.22186.63.camel@...344...>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1; protocol="application/pgp-signature"; boundary="=_nervhq-7989-1114964560-0001-2"
-Subject: [Openvpn-devel] one-time pad encryption?
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,59 +20,30 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun May  1 09:23:19 2005
+Date: Sun May  1 13:09:08 2005
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is a MIME-formatted message.  If you see this text it means that your
-E-mail software does not support MIME-formatted messages.
+Am Samstag, den 30.04.2005, 13:33 -0600 schrieb James Yonan:
+> I agree that this method is not perfect, but it has the two important 
+> properties that:
+> 
+> (1) it lets OpenVPN handle script or plugin calls the same
+> (2) it works on all OSes, including Windows
+> 
+> And remember that you can also optimize out the use of disk files with 
+> something like (on Linux):
+> 
+>   tmp-dir /dev/shm
 
---=_nervhq-7989-1114964560-0001-2
-Content-Type: text/plain; charset="ISO-8859-2"
-Content-Transfer-Encoding: quoted-printable
+Hi James,
 
-Hi there!
+I still would prefer a "cleaner" solution.
+But you see the whole scope of such an decision - for me the windows
+support of the mentioned method is irrelevant.
 
-I would like to ask if is anybody working on implementing OTP (One-Time
-Pad) encryption for OpenVPN?
+Thx, for the idea of using a ram-drive. I'll give that a try.
+leh
 
-I have heard the usual arguments against OTP (too big keys, need too
-much random input, must never reuse, etc.) many times, still, I think
-this could be useful in a number of situations.
-
-(Imagine that you are running an organisation that operates at several
-different locations, and you need real-time, encrypted communication,
-and you can afford to periodically send over a deputy, with a few DVDs,
-full of white noise.)
-
-Obviously, the handling of keys (like generating, importing, exporting,
-choosing, finding, erasing the right parts of the right keys at the
-right time) would need some extra care, maybe a separate daemon should
-do it.
-
-Does something like this already exist? Or is somebody working on it?
-Or is somebody interested in this?
-
-	Kristof Csillag
-
-
---=20
-Csillag Krist=F3f
-
-http://www.mit.bme.hu/~csillag
-csillag@...386...
-
---=_nervhq-7989-1114964560-0001-2
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Transfer-Encoding: 7bit
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.0 (GNU/Linux)
-
-iD8DBQBCdQJ7UhjTfEopf5URArAHAJ0R7lZBKKVu/6ELd+UTu1x7Bq1+dACdFQ3m
-CR4e0RQK+5DYEUm6r9mmEfk=
-=Q2N/
------END PGP SIGNATURE-----
-
---=_nervhq-7989-1114964560-0001-2--
 
