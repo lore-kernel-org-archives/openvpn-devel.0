@@ -1,11 +1,9 @@
-From: Claas Hilbrecht <claas+maillinglists.openvpn@...232...>
-Message-ID: <ABB58BFE38C9118DC240FBF0@[192.168.1.22]>
-In-Reply-To: <Pine.LNX.4.58.0505021249570.16548@...41...>
-References: <Pine.LNX.4.58.0504301622050.25603@...41...>
- <CFAB61A740D152638EA62E71@[192.168.1.22]>
- <Pine.LNX.4.58.0505021249570.16548@...41...>
+From: Ralf =?iso-8859-1?q?L=FCbben?= <ralfluebben@...68...>
+Subject: Re: [Openvpn-devel] Radius support (Authentification, Authorization and Accounting)
+References: <200504291033.00667.ralfluebben@...68...> <Pine.LNX.4.58.0504300118280.24107@...41...> <Pine.LNX.4.58.0504301334040.25603@...41...>
+In-Reply-To: <Pine.LNX.4.58.0504301334040.25603@...41...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Re: [Openvpn-users] OpenVPN 2.0.1-rc1 released
+Message-Id: <200505031348.25263.ralfluebben@...68...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -16,47 +14,122 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue May  3 04:48:12 2005
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Date: Tue May  3 05:19:14 2005
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-To: James Yonan <jim@...41...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
---Am Montag, 2. Mai 2005 13:20 -0600 James Yonan <jim@...41...> schrieb:
+Hello,
 
-> Interesting idea for when the client is local to the OpenVPN daemon.  I'm
-> thinking this would be a 2.1 thing.
+I tried to create a concept for the RADIUS-Plugin.
+Maybe someone have some additional ideas or can answer me some questions I 
+wrote down in the following text.
 
-I've done this because the webgui (with mini_httpd) runs on a very stripped 
-down busybox system. The whole system is based on fli4l and targeted for 
-novice users. Each question you asked to configure an item is a question to 
-ask for trouble :) So, running the console on a port the OS choose is a 
-good idea I thought.
+-------------------------------------------------------------------------------------------------------------
+Start of the connection:
 
-> * Does your code survive a SIGUSR1 when root has been dropped or chroot
+The plugin sends a "access-request-radius-ticket" with the username and a 
+hash(MD5-hash over the password and the shared-secret)  to the radius server.
+If the server sends a "access-reject-ticket" or "access-challenge-ticket" the 
+authorization fails.
 
-All my OpenVPN processes run chroot/nobody and a SIGUSR1 seems to not 
-change the management port. Indeed I've looked at the code and it seems to 
-me the management interface is initialized once at startup. The webgui 
-never sees an interrupted sessions if a user sends a "signal SIGUSR1" via 
-the management interface. But I've just tested it, there seems to be no 
-problem.
+If the server sends a "access-accept-ticket" the authorization is ok, in the 
+ticket can be some attributes:
 
-> root-drop/chroot.  I think you are probably okay here because the place
-> where you are writing the port number I believe is only called on
-> initialization.
+- Framed-IP-Address: The IP-address which is pushed to the client.
 
-It seems you're right.
+- Framed-Route: These routes have to pushed to the servers routing table. This 
+attribut can occur several times in the  "access-accept-ticket".
 
-> * Some stray text in the can't open error message: "Open error on pid
-> file".
+- Acct-Interim-Interval: The interval in which the accounting data is sent to 
+the radius server.
 
-Feel free to provide a better message. I'm glad that you're able to 
-understand me at least :)
+Maybe these attributes are not important :
+- Session-Timeout: The maximum time for a connection.
+- Idle-Timeout: The connection is disconnected, if there is no traffic 
 
--- 
- Claas Hilbrecht
- http://www.jucs-kramkiste.de
+Maybe it is possible to create a vendor specific attribut for routes which are 
+pushed to the client. There is no attribut for that in the radius protocol.
 
+After the authorization is done:
+The plugin has to start another process/thread for the accounting data  with 
+the parameter value of the attribut "Acct-Interim-Interval". 
+This process has to sent an "accounting-request-ticket" to the radius server 
+with the attribut "acct-status-type"=1 (start). (There must be included some 
+more attributes for the radius server (NAS-IP-address (=openvpn-ip-address) 
+or NAS-identifier, real ip address of the user as framed-ip-address-attribut, 
+NAS-Port or NAS-port-type) 
+The process has to wait for a "accounting-response-ticket" from the server, 
+if he gets no response he has to send the ticket again (interval=?).
+
+The plugin must return 0 if everything is ok, otherwise 1.
+
+Questions:
+
+Which is the best plugin to use? I need the username and the password before 
+the ip address and the routes are sent to the client? 
+
+Do the openvpn process waits until the plugin is finished? So I can write the 
+conf-files without getting a IO-error.
+
+------------------------------------------------------------------------------------------------------------
+During the connection:
+
+The separate process/thread which is started at the beginning of the 
+connection sends 
+with the interval time of the  attribut "Acct-Interim-Interval" accounting 
+data to the radius server. 
+The process reads the information out of the status file which is generated by 
+the openvpn process every second. The status file must be generated every 
+second because the attribut "Acct-Interim-Interval" is in seconds and so 
+nobody knows, when ths process reads the status file. 
+
+The attribut "acct-status-type" must be set to 3 (interim-Update).
+
+The process has to wait for a "accounting-response-ticket" from the server, 
+if he gets no response he has to send the ticket again (interval=?).
+
+Attributes in the accounting-request-ticket:
+- NAS ip address and NAS identifier 
+- Framed ip address (=real ip address of the client)
+- NAS-port or NAS-port-type
+- Acct-Input-Octets 
+- Acct-Output-Octets 
+- Acct-Input-Packets 
+- Acct-Output-Packets 
+- Acct-Session-Time 
+
+
+Questions:
+Is it possible to generate the status file every second?
+Is the accounting information in the status file separate for every user?
+Which information can I get from the status file?
+
+------------------------------------------------------------------------------------------------------
+End of the connection:
+At the end a "accounting-request-ticket" with the "acct-status-type"=2 (stop) 
+must be sent to the radius server. 
+With the following attributes:
+- NAS ip address and NAS identifier 
+- Framed ip address (=real ip address of the client)
+- NAS-port or NAS-port-type
+- Acct-Input-Octets 
+- Acct-Output-Octets 
+- Acct-Input-Packets 
+- Acct-Output-Packets 
+- Acct-Session-Time
+(- Acct-Terminate-Cause)
+
+Also the accouting process must be killed.
+
+I think the "PLUGIN_CLIENT_DISCONNECT"-type will be fit for this.
+
+Questions:
+Is the "PLUGIN_CLIENT_DISCONNECT"-type called at every disconnect? 
+
+
+Greetings
+Ralf
 
