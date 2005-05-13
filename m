@@ -1,9 +1,9 @@
-Message-ID: <428308EB.8080500@...349...>
-From: Thomas NOEL <thomas.noel@...349...>
+Message-ID: <4284AF8E.6030808@...177...>
+From: Farkas Levente <lfarkas@...177...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Security bug with crl-verify
-References: <4281BADE.2020402@...349...> <Pine.LNX.4.58.0505110329020.15651@...41...> <4281E350.8020609@...349...> <Pine.LNX.4.58.0505111505010.15651@...41...>
-In-Reply-To: <Pine.LNX.4.58.0505111505010.15651@...41...>
+Content-Type: multipart/mixed;
+ boundary="------------040400060402040007080902"
+Subject: [Openvpn-devel] updated multilevel-init.patch
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,51 +14,134 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu May 12 00:44:12 2005
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-To: James Yonan <jim@...41...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Fri May 13 06:47:28 2005
+To: openvpn-devel@lists.sourceforge.net
 
-Hello,
+This is a multi-part message in MIME format.
+--------------040400060402040007080902
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Le 11.05.2005 23:25, James Yonan a =E9crit :
-> True, but I think you're somewhat stretching the connotation of "security=
-=20
-> bug" here.
+hi,
+here is an updated multilevel-init.patch for openvpn 2.0.
+yours.
 
-Yes. Sorry if the "security bug" subject hurt you.
+-- 
+   Levente                               "Si vis pacem para bellum!"
 
-> No matter how much OpenVPN tries to
-> authenticate the CRL, an attacker with root privileges could easily
-> install a stealth backdoor on the server which would completely bypass the
-> VPN.
+--------------040400060402040007080902
+Content-Type: text/x-patch;
+ name="multilevel-init.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="multilevel-init.patch"
 
-Ok, another example :
-	- a root CA
-	- two intermediate CAs
-On the server we have 3 CA certificates and 3 CRL. The CRLs are updated=20
-by a cron job. If an attacker managed to modify the CRL of one=20
-intermediate CA, he can simulate a false CRL with the same DN as the=20
-root CA or the other intermediate CA... The cron job on the server will=20
-normally and automatically fetch the false CRL... It's not a very extrem=20
-situation : only one intermediate CA has been attacked.
+--- openvpn	2005-05-13 15:40:17.070865970 +0200
++++ openvpn.old	2005-04-04 11:24:24.000000000 +0200
+@@ -104,11 +104,6 @@
+   exit 0
+ fi
+ 
+-# get the running openvpn processes' pids
+-getpids() {
+-	find $piddir -name "*.pid" 2>/dev/null
+-}
+-
+ # See how we were called.
+ case "$1" in
+   start)
+@@ -123,24 +118,18 @@
+ 
+ 	#echo 1 > /proc/sys/net/ipv4/ip_forward
+ 
+-	cd $work
+ 	# Run startup script, if defined
+-	if [ -f ./openvpn-startup ]; then
+-	    ./openvpn-startup
++	if [ -f $work/openvpn-startup ]; then
++	    $work/openvpn-startup
+ 	fi
+ 
+ 	if [ ! -d  $piddir ]; then
+ 	    mkdir $piddir
+ 	fi
+-	for d in `find * -type d`; do
+-	    if [ ! -d  $piddir/$d ]; then
+-	      mkdir $piddir/$d
+-	    fi
+-	done
+ 
+ 	if [ -f $lock ]; then
+ 	    # we were not shut down correctly
+-	    for pidf in `getpids` ; do
++	    for pidf in `/bin/ls $piddir/*.pid 2>/dev/null`; do
+ 	      if [ -s $pidf ]; then
+ 		kill `cat $pidf` >/dev/null 2>&1
+ 	      fi
+@@ -150,12 +139,13 @@
+ 	    sleep 2
+ 	fi
+ 
+-	find $piddir -name "*.pid"|xargs rm -f
++	rm -f $piddir/*.pid
++	cd $work
+ 
+ 	# Start every .conf in $work and run .sh if exists
+ 	errors=0
+ 	successes=0
+-	for c in `find * -name "*.conf" 2>/dev/null`; do
++	for c in `/bin/ls *.conf 2>/dev/null`; do
+ 	    bn=${c%%.conf}
+ 	    if [ -f "$bn.sh" ]; then
+ 		. $bn.sh
+@@ -181,7 +171,7 @@
+ 	;;
+   stop)
+ 	echo -n $"Shutting down openvpn: "
+-	for pidf in `getpids`; do
++	for pidf in `/bin/ls $piddir/*.pid 2>/dev/null`; do
+ 	  if [ -s $pidf ]; then
+ 	    kill `cat $pidf` >/dev/null 2>&1
+ 	  fi
+@@ -189,8 +179,8 @@
+ 	done
+ 
+ 	# Run shutdown script, if defined
+-	if [ -f ./openvpn-shutdown ]; then
+-	    ./openvpn-shutdown
++	if [ -f $work/openvpn-shutdown ]; then
++	    $work/openvpn-shutdown
+ 	fi
+ 
+ 	success; echo
+@@ -203,7 +193,7 @@
+ 	;;
+   reload)
+ 	if [ -f $lock ]; then
+-	    for pidf in `getpids`; do
++	    for pidf in `/bin/ls $piddir/*.pid 2>/dev/null`; do
+ 		if [ -s $pidf ]; then
+ 		    kill -HUP `cat $pidf` >/dev/null 2>&1
+ 		fi
+@@ -215,7 +205,7 @@
+ 	;;
+   reopen)
+ 	if [ -f $lock ]; then
+-	    for pidf in `getpids`; do
++	    for pidf in `/bin/ls $piddir/*.pid 2>/dev/null`; do
+ 		if [ -s $pidf ]; then
+ 		    kill -USR1 `cat $pidf` >/dev/null 2>&1
+ 		fi
+@@ -235,7 +225,7 @@
+ 	;;
+   status)
+ 	if [ -f $lock ]; then
+-	    for pidf in `getpids`; do
++	    for pidf in `/bin/ls $piddir/*.pid 2>/dev/null`; do
+ 		if [ -s $pidf ]; then
+ 		    kill -USR2 `cat $pidf` >/dev/null 2>&1
+ 		fi
 
-Of course, as OpenVPN only handle one CRL with --crl-verify (and=20
-consequently only one CA), it's not a problem for now, I'm agree with=20
-you. But if openvpn has to manage several CA (like in a real PKI), the=20
-CRL management will have to be finer. Fortunately, OpenSSL 0.9.7=20
-integrate all the tools for that.
+--------------040400060402040007080902--
 
-Again, thanks for OpenVPN, and do not misundestood me : OpenVPN is a=20
-very very nice piece of code anyway :-)
-
---=20
-Thomas NOEL <thomas.noel@...349...> http://www.auf.org/
-Coordinateur des infrastructures techniques
-Agence universitaire de la Francophonie (AUF)
-Services centraux Paris - 4 place de la Sorbonne - 75005 Paris
-T=E9l: +33 (0)1 44 41 18 18, poste 1822 Tlc: +33(0)1 44 41 18 19
- > Merci d'=E9viter de m'envoyer des documents Word ou PowerPoint
- > cf http://www.gnu.org/philosophy/no-word-attachments.fr.html
 
