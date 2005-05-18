@@ -1,11 +1,7 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] Patch for a --capath option (was: Security bug
- with crl-verify)
-In-Reply-To: <42821866.9080008@...349...>
-Message-ID: <Pine.LNX.4.58.0505180533040.14237@...41...>
-References: <4281BADE.2020402@...349...> <Pine.LNX.4.58.0505110329020.15651@...41...>
- <4281E350.8020609@...349...> <42821866.9080008@...349...>
+From: Simon Perreault <nomis80@...401...>
 MIME-Version: 1.0
+Message-Id: <200505180940.09835.nomis80@...401...>
+Subject: [Openvpn-devel] PAM plugin doesn't daemonize correctly
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -16,49 +12,41 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed May 18 04:45:23 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: Thomas NOEL <thomas.noel@...349...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Wed May 18 08:36:25 2005
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
+Hi,
 
-On Wed, 11 May 2005, Thomas NOEL wrote:
+The close_fds_except() function in the auth-pam plugin contains a bug, but it 
+seems to be by design. It doesn't close standard fds (stdin, stdout, stderr). 
+This means that a program that starts openvpn and reads its stdout from a 
+pipe will never receive EOF and will idle forever.
 
-> Hello,
-> 
-> >>>  (...)
-> >>>  #if OPENSSL_VERSION_NUMBER >= 0x00907000L
-> >>>        X509_STORE_CTX_set_flags (csc, X509_V_FLAG_CRL_CHECK);
-> >>>        X509_STORE_CTX_set_flags (csc, X509_V_FLAG_CRL_CHECK_ALL);
-> >>>  #endif
-> >>>  (...)>>
-> >>>With this kind of X509_STORE_CTX, openssl automagically manage all CA 
-> >>>and all CRL included in a "CAPath".
-> >>Good idea -- it would be better for OpenSSL to handle all of the CRL stuff 
-> >>for 0.9.7 and above.
-> > I will try to produce a patch for a "--capath" option. See you in two or 
-> > three hours.
-> 
-> Attached, a patch (experimental, proof of concept...).
+To reproduce: with a configuration using the auth-pam plugin, this command 
+never returns:
 
-> I'm not very happy with this patch : all CA and CRL are checked, but if 
-> I update a CRL, openssl doesn't see any changes and continue to accept 
-> my revoked certificate.
+/etc/init.d/openvpn start | cat
 
-> I don't know if there is a "cache" system integrated in openssl... I 
-> don't know if I correctly use X509_STORE_add_lookup() and 
-> X509_LOOKUP_add_dir() ... I'm not a openssl guru, not at all ;-)
+ps alx shows:
 
-Thomas,
+1     0  4764     1  16   0  5984 1564 -      S+   pts/19     
+0:00 /usr/sbin/openvpn
+5    99  4770     1  15   0  5988 1964 -      Ss   ?          
+0:00 /usr/sbin/openvpn
 
-Thanks for the patch -- it would be nice to have OpenSSL deal with CRLs 
-internally via CAPath.
+The process with PID 4764 is the pam server because it has UID 0. Sending it a 
+kill -9 makes the command return. Sending the real openvpn process (PID 4770) 
+a kill -9 does not make the command return, as expected. This confirms that 
+it's the pam server process that is at fault.
 
-I think the "cache" you are seeing is the SSL_CTX object -- did you make 
-any progress in figuring out how to have OpenSSL re-read the CRL info from 
-the CAPath dir?
+Solution: either
+1) reopen stdin, stdout and stderr to /dev/null when --daemon option is 
+specified (need a way to access options structure in the plugin)
+2) start plugins after becoming a daemon in init_instance()
 
-James
-
+What do you think?
 
