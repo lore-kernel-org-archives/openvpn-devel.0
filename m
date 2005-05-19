@@ -1,9 +1,8 @@
-Message-ID: <428CD696.90701@...349...>
-From: Thomas NOEL <thomas.noel@...349...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Patch for a --capath option
-References: <4281BADE.2020402@...349...> <Pine.LNX.4.58.0505110329020.15651@...41...> <4281E350.8020609@...349...> <42821866.9080008@...349...> <Pine.LNX.4.58.0505180533040.14237@...41...> <428B59C7.3010008@...349...> <Pine.LNX.4.58.0505190455500.14237@...41...>
-In-Reply-To: <Pine.LNX.4.58.0505190455500.14237@...41...>
+From: Ralf =?UTF-8?B?TMO8YmJlbg==?= <ralfluebben@...68...>
+Message-ID: <d6j0lb$b8e$1@...165...>
+References: <200504291033.00667.ralfluebben@...68...> <Pine.LNX.4.58.0504300118280.24107@...41...> <Pine.LNX.4.58.0504301334040.25603@...41...> <200505031348.25263.ralfluebben@...68...> <Pine.LNX.4.58.0505031000150.1970@...41...> <d6ck1r$3b9$1@...165...> <1116334849.14388.43.camel@...23...> <Pine.LNX.4.58.0505170713570.2777@...41...> <1116337185.14388.71.camel@...23...> <Pine.LNX.4.58.0505171009060.2777@...41...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Re: Re: Radius support (Authentification, Authorization and Accounting)
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,68 +13,86 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu May 19 11:12:21 2005
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-To: James Yonan <jim@...41...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Thu May 19 14:39:43 2005
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Hello,
 
->>I think a nice solution would be to rebuild the X509_STORE of the=20
->>SSL_CTX when a SIGHUP ou SIGUSR1 arrived. But I do not understand yet=20
->>enough the code of OpenVPN :
->>- where can I add an action when a SIGUSR1 or SIGHUP is handled ?
->>- how can I get the (list of ?) SSL_CTX object ?
->>Do you think that it is a good idea, and do you think that it is feasible=
- ?
-> Because of OpenVPN's security architecture, it is very common for a
-> privilege downgrade or chroot to occur after initialization.  This means
-> that it may not be possible to re-read a file after initialization.
-> This is a major reason why OpenVPN handles CRLs the way it does now: so=20
-> that (a) the OpenVPN daemon need not be restarted after a CRL update, and=
-=20
-> (b) the CRL file itself can be located in the chroot jail without=20
-> requiring that the private key or any other files reside there as well.
+the authentication is already working. The Framed IP Address and the Framed
+Routes can be set by the radius server about the
+auth-user-pass-verif-plugin. And every user gets a unique NAS-Port.
+The easiest way to do the accounting process is to start it in the
+auth-user-pass-verif-plugin and to add the user for accounting in the 
+auth-user-pass-verif-plugin-function, maybe the better place is the
+client-connect-plugin.
+Is there a differnce if a add a user to the accounting process in the
+auth-user-pass-verif-plugin after the authentication was successful or if
+I add the user at the client-connect--plugin.
+Can there happen anything between the successful authentication and the
+client connect plugin is called? 
 
-Ok, I see the issue :
-CRL are in the "--capath" directory, so in the chroot jail. But CA=20
-certificates can be presents in this directory too. It can be a problem=20
-if an attacker managed to add a false CA & CRL in this directory : the=20
-CA will be directly accepted by openvpn, so the signed certificates will=20
-be accepted too, without any restart.
+For the time the user is authenticated the whole OpenVpn process waits
+on the authentication and no traffic can pass through the VPN? Is that
+right? Maybe the auhtentication needs some seconds. So it will be very
+important that authentication is timeout in a short time.
 
-In fact, I think that all openssl systems with a "--CAPath" option must=20
-have read access to the directory. So it's not a pure openvpn "bug"...
-
-(note: a very nice feature could be to be able to add CRLs via the new=20
-managment port...)
+Grettings
+Ralf 
 
 
-Can you explain me very quickly where and how I can add a=20
-"x509_stores_reset()" function in openvpn, that it will be executed when=20
-a sigusr1 is received?  I'm sorry but I do not clearly understand the=20
-signal managment in "sig.c".
+
+James Yonan wrote:
+
+> 
+> 
+> On Tue, 17 May 2005, Torge Szczepanek wrote:
+> 
+>> Am Dienstag, den 17.05.2005, 07:18 -0600 schrieb James Yonan:
+>> 
+>> > It's more like the opposite:  1.x supported a specific tunx interface
+>> > and
+>> > port for each client.  2.0 was rewritten to allow all clients to share
+>> > a
+>> > single tun/tap interface and TCP/UDP port.  The 2.0 approach tends to
+>> > be preferred because it scales better and is easier to manage.
+>> 
+>> I know this. I am using OpenVPN quite some time now. (And I am quite
+>> happy with it! ;-))
+>> 
+>> You are right. Using just one Port (and one OpenVPN process) for all
+>> clients has many advantages over the 1.x behaviour.
+>> 
+>> The only disadvantage is that one cannot disentangle different users by
+>> the device (only useful for tun (aka ptp devices)). The major advantage
+>> of this approach is that one can apply queuing disciplines for a user to
+>> a network device rather than to use tun0 and specify the users IP
+>> address. The queing discipline automatically gets removed, when the user
+>> disconnects and the device goes down.
+>> Another advantage would be that one can use the device number in Radius
+>> Authentication for having a unique NAS-Port.
+>> 
+>> Is there an easy way to have a single OpenVPN process, running on just
+>> one port for multiple clients and assign each client a seperate
+>> tun-Device? Or would that patch be very long?
+> 
+> I think the patch could be done, but it would have some disadvantages such
+> as (a) you would need to run OpenVPN as root (without dropping privileges)
+> because the daemon would need to dynamically open and close tun/tap
+> devices, (b) you have all the scalability problems of dealing with a large
+> number of network interfaces -- for example, on Windows, it's not even
+> practical to handle more than a relatively small number of TAP-Win32
+> adapters, and they can't easily be created and destroyed programmatically.
+> 
+> James
+> 
+> 
+> -------------------------------------------------------
+> This SF.Net email is sponsored by Oracle Space Sweepstakes
+> Want to be the first software developer in space?
+> Enter now for the Oracle Space Sweepstakes!
+> http://ads.osdn.com/?ad_id=7412&alloc_id=16344&op=click
 
 
-> Having said all that, I think --capath + X509_V_FLAG_CRL_CHECK is a good
-> idea, as a more full-featured alternative to --crl-verify, when people
-> don't mind needing to restart the daemon to re-read the CRL files.
-
-Restart OpenVPN is a problem for me : our tunnels are used for=20
-"real-time" apps (hundreds of Windows TSE clients), I cannot stop them=20
-and break all TSE clients in case of a simple revocation... :-(
-
-
-The ultimate solution will be OCSP, but... we are in 2005 ;-)
-
-Thank you for your attention about this issue.
---=20
-Thomas NOEL <thomas.noel@...349...> http://www.auf.org/
-Coordinateur des infrastructures techniques
-Agence universitaire de la Francophonie (AUF)
-Services centraux Paris - 4 place de la Sorbonne - 75005 Paris
-T=E9l: +33 (0)1 44 41 18 18, poste 1822 Tlc: +33(0)1 44 41 18 19
- > Merci d'=E9viter de m'envoyer des documents Word ou PowerPoint
- > cf http://www.gnu.org/philosophy/no-word-attachments.fr.html
 
