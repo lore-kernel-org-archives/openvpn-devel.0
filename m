@@ -1,5 +1,5 @@
 From: Ralf =?UTF-8?B?TMO8YmJlbg==?= <ralfluebben@...68...>
-Message-ID: <d6j0lb$b8e$1@...165...>
+Message-ID: <d6l1bt$uln$1@...165...>
 References: <200504291033.00667.ralfluebben@...68...> <Pine.LNX.4.58.0504300118280.24107@...41...> <Pine.LNX.4.58.0504301334040.25603@...41...> <200505031348.25263.ralfluebben@...68...> <Pine.LNX.4.58.0505031000150.1970@...41...> <d6ck1r$3b9$1@...165...> <1116334849.14388.43.camel@...23...> <Pine.LNX.4.58.0505170713570.2777@...41...> <1116337185.14388.71.camel@...23...> <Pine.LNX.4.58.0505171009060.2777@...41...>
 Mime-Version: 1.0
 Subject: [Openvpn-devel] Re: Re: Radius support (Authentification, Authorization and Accounting)
@@ -13,34 +13,35 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu May 19 14:39:43 2005
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Date: Fri May 20 09:07:21 2005
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
 Hello,
 
-the authentication is already working. The Framed IP Address and the Framed
-Routes can be set by the radius server about the
-auth-user-pass-verif-plugin. And every user gets a unique NAS-Port.
-The easiest way to do the accounting process is to start it in the
-auth-user-pass-verif-plugin and to add the user for accounting in the 
-auth-user-pass-verif-plugin-function, maybe the better place is the
-client-connect-plugin.
-Is there a differnce if a add a user to the accounting process in the
-auth-user-pass-verif-plugin after the authentication was successful or if
-I add the user at the client-connect--plugin.
-Can there happen anything between the successful authentication and the
-client connect plugin is called? 
+I have a big problem with my programm. 
+I developed it with a test main function with the
+openvpn_plugin_open_v1, openvpn_plugin_func_v1 and openvpn_plugin_close_v1
+function and everything works fine. 
+I used some c++-libraries and my whole radius stuff is in a c++-class. 
+When I compile my programm as a shared library with the g++ and use it with
+OpenVpn I get the following error:
+ 
+Fri May 20 17:34:32 2005 us=538779 PLUGIN: could not find symbol
+'openvpn_plugin_open_v1' in plugin shared
+object /root/test/auth-pam.so: /usr/sbin/openvpn: undefined symbol:
+openvpn_plugin_open_v1
 
-For the time the user is authenticated the whole OpenVpn process waits
-on the authentication and no traffic can pass through the VPN? Is that
-right? Maybe the auhtentication needs some seconds. So it will be very
-important that authentication is timeout in a short time.
+I think the problem is that I use c++, if I compile with the gcc the
+openvpn_plugin_open_v1 is found and the c++-objects are not fornd.
 
-Grettings
-Ralf 
+Is it possible to use the c++-classes and my radius classes with shared
+libraries in OpenVpn?
+At the moment I have no idea to solve this.
 
+Greetings
+Ralf Lübben
 
 
 James Yonan wrote:
