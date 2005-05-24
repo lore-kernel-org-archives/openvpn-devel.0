@@ -1,8 +1,8 @@
-Message-ID: <20050524103719.28597.qmail@...403...>
-From: Jesse Adelman <jesse@...402...>
+Message-ID: <20050524105922.85017.qmail@...404...>
+From: Jesse Adelman <someone@...402...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="0-1554598473-1116931039=:26002"
-Subject: [Openvpn-devel] client-up/client-down scripts
+Content-Type: multipart/mixed; boundary="0-1240927828-1116932362=:83700"
+Subject: [Openvpn-devel] client-up/client-down scripts (Linux)
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,10 +13,10 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue May 24 03:40:52 2005
+Date: Tue May 24 04:01:06 2005
 To: openvpn-devel@lists.sourceforge.net
 
---0-1554598473-1116931039=:26002
+--0-1240927828-1116932362=:83700
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
@@ -47,7 +47,7 @@ Jesse Adelman
 Jesse Adelman
 http://www.boldandbusted.com/ 
 -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
---0-1554598473-1116931039=:26002
+--0-1240927828-1116932362=:83700
 Content-Type: application/octet-stream; name="client.up"
 Content-Transfer-Encoding: base64
 Content-Description: 885563976-client.up
@@ -85,7 +85,7 @@ fSIgXTsgdGhlbgoJc2VkIC1pIC1lICIkaiwxIGkgc2VhcmNoICR7ZG9tYWlu
 fSIgL2V0Yy9yZXNvbHYuY29uZiB8fCBkaWUKZmkKCiMgYWxsIGRvbmUuLi4K
 ZXhpdCAwCg==
 
---0-1554598473-1116931039=:26002
+--0-1240927828-1116932362=:83700
 Content-Type: application/octet-stream; name="client.down"
 Content-Transfer-Encoding: base64
 Content-Description: 4149678061-client.down
@@ -123,5 +123,5 @@ XTsgdGhlbgoJc2VkIC1pIC1lICIvc2VhcmNoICR7ZG9tYWlufS9EIiAvZXRj
 L3Jlc29sdi5jb25mIHx8IGRpZQpmaQoKIyBhbGwgZG9uZS4uLgpleGl0IDAK
 
 
---0-1554598473-1116931039=:26002--
+--0-1240927828-1116932362=:83700--
 
