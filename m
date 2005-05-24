@@ -1,9 +1,8 @@
-From: James Yonan <jim@...41...>
+Message-ID: <20050525013216.91622.qmail@...405...>
+From: Jesse Adelman <someone@...402...>
 Subject: Re: [Openvpn-devel] client-up/client-down scripts (Linux)
-In-Reply-To: <20050524105922.85017.qmail@...404...>
-Message-ID: <Pine.LNX.4.58.0505241056390.3503@...41...>
-References: <20050524105922.85017.qmail@...404...>
 MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="0-1183297546-1116984736=:90925"
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,42 +13,118 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue May 24 10:21:20 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: Jesse Adelman <someone@...402...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Tue May 24 18:34:12 2005
+To: openvpn-devel@lists.sourceforge.net
 
-On Tue, 24 May 2005, Jesse Adelman wrote:
+--0-1183297546-1116984736=:90925
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> Hi, good OpenVPN devs. I don't really hope to have these simple scripts
-> integrated into the contrib/ directory in their current form, but I
-> thought I'd get the ball rolling for others who are more adept than me
-> to perhaps build on them. Should work for any GNU/Linux system with a
-> standard /etc/resolv.conf, and an OpenVPN server "push"ing down dhcp
-> DNS options.
-> 
-> They work very well for me so far, but, YMMV, of course. client.down
-> won't work unless OpenVPN is running as root, the user OpenVPN is
-> running under has rights to run the script and to write to
-> /etc/resolv.conf, or you use the down-root plugin in the plugin/
-> directory in the OpenVPN source tarball (haven't tried this yet).
-> 
-> Thanks to "UNIX Power Tools (O'Reilly)", "Learning the Bash Shell
-> (O'Reilly)" and #bash on Freenode for the assistance.
-> 
-> I assign the copyright over to OpenVPN, and releasing these under GPL
-> v2. I'm sure v3 is great, but I haven't read it yet ;). I'll be glad to
-> help with bugfixing, as time permits.
+Here's the comment changes James asked for (yeah, I'm verbose). Please
+let me know if anything doesn't work as expected.
 
-Jesse,
+-- Jesse
 
-Thanks for the scripts -- people have asked for these.
+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+Jesse Adelman
+http://www.boldandbusted.com/ 
+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+--0-1183297546-1116984736=:90925
+Content-Type: application/octet-stream; name="client.up"
+Content-Transfer-Encoding: base64
+Content-Description: 885563976-client.up
+Content-Disposition: attachment; filename="client.up"
 
-You might want to put some sort of "what this does" comment in -- e.g. 
-this script will allow a Linux/Unix OpenVPN client to pull DNS server info 
-from an OpenVPN server, automatically editing /etc/resolv.conf.
+IyEvYmluL2Jhc2gKCiMgQ29weXJpZ2h0IChjKSAyMDA1IGJ5IE9wZW5WUE4g
+U29sdXRpb25zIExMQwojIExpY2Vuc2VkIHVuZGVyIHRoZSBHUEwgdmVyc2lv
+biAyCgojIEZpcnN0IHZlcnNpb24gYnkgSmVzc2UgQWRlbG1hbgojIHNvbWVv
+bmUgYXQgYm9sZGFuZGJ1c3RlZCBkaW5rIGNvbQojIGh0dHA6Ly93d3cuYm9s
+ZGFuZGJ1c3RlZC5jb20vCgojIFBVUlBPU0U6IFRoaXMgc2NyaXB0IGF1dG9t
+YXRpY2FsbHkgc2V0cyB0aGUgcHJvcGVyIC9ldGMvcmVzb2x2LmNvbmYgZW50
+cmllcwojIGFzIHB1bGxlZCBkb3duIGZyb20gYW4gT3BlblZQTiBzZXJ2ZXIu
+CgojIElOU1RBTEwgTk9URVM6CiMgUGxhY2UgdGhpcyBpbiAvZXRjL29wZW52
+cG4vY2xpZW50LnVwCiMgVGhlbiwgYWRkIHRoZSBmb2xsb3dpbmcgdG8geW91
+ciAvZXRjL29wZW52cG4vPGNsaWVudGNvbmZpZz4uY29uZjoKIyAgIGNsaWVu
+dAojICAgcHVsbCBkaGNwLW9wdGlvbnMKIyAgIHVwIC9ldGMvb3BlbnZwbi9j
+bGllbnQudXAKIyBOZXh0LCAiY2htb2QgYSt4IC9ldGMvb3BlbnZwbi9jbGll
+bnQudXAiCgojIFVTQUdFIE5PVEVTOgojIE5vdGUgdGhhdCB0aGlzIHNjcmlw
+dCBpcyBiZXN0IHNlcnZlZCB3aXRoIHRoZSBjb21wYW5pb24gImNsaWVudC5k
+b3duIgojIHNjcmlwdC4KCiMgT25seSB0ZXN0ZWQgb24gR2VudG9vIExpbnV4
+IDIwMDUuMCB3aXRoIE9wZW5WUE4gMi4wCiMgSXQgc2hvdWxkIHdvcmsgd2l0
+aCBhbnkgR05VL0xpbnV4IHdpdGggL2V0Yy9yZXNvbHYuY29uZgoKIyBUaGlz
+IHJ1bnMgd2l0aCB0aGUgY29udGV4dCBvZiB0aGUgT3BlblZQTiBVSUQvR0lE
+IAojIGF0IHRoZSB0aW1lIG9mIGV4ZWN1dGlvbi4gVGhpcyBnZW5lcmFsbHkg
+bWVhbnMgdGhhdAojIHRoZSBjbGllbnQgInVwIiBzY3JpcHQgd2lsbCBydW4g
+ZmluZSwgYnV0IHRoZSAiZG93biIgc2NyaXB0CiMgd2lsbCByZXF1aXJlIHRo
+ZSB1c2Ugb2YgdGhlIE9wZW5WUE4gImRvd24tcm9vdCIgcGx1Z2luCiMgd2hp
+Y2ggaXMgaW4gdGhlIHBsdWdpbnMvIGRpcmVjdG9yeSBvZiB0aGUgT3BlblZQ
+TiBzb3VyY2UgdHJlZQoKIyBBIGhvcnJpZCB3b3JrIGFyb3VuZCwgZnJvbSBh
+IHNlY3VyaXR5IHBlcnNwZWN0aXZlLAojIGlzIHRvIHJ1biBPcGVuVlBOIGFz
+IHJvb3QuIFRISVMgSVMgTk9UIFJFQ09NTUVOREVELiBZb3UgaGF2ZQojIGJl
+ZW4gV0FSTkVELgoKIyBpbml0IHZhcmlhYmxlcwoKaT0xCmo9MQp1bnNldCBm
+b3B0CnVuc2V0IGRucwp1bnNldCBvcHQKCiMgQ29udmVydCBFTlZzIHRvIGFu
+IGFycmF5Cgp3aGlsZSBmb3B0PWZvcmVpZ25fb3B0aW9uXyRpOyBbIC1uICIk
+eyFmb3B0fSIgXTsgZG8KewoJb3B0W2ktMV09JHshZm9wdH0KCWNhc2UgJHtv
+cHRbaS0xXX0gaW4KCQkqRE9NQUlOKiApIGRvbWFpbj1gZWNobyAke29wdFtp
+LTFdfSB8IFwKCQkJCXNlZCAtZSAncy9kaGNwLW9wdGlvbiBET01BSU4gLy9n
+J2AgOzsKCQkqRE5TKiAgICApIGRuc1tqLTFdPWBlY2hvICR7b3B0W2ktMV19
+IHwgXAoJCQkJc2VkIC1lICdzL2RoY3Atb3B0aW9uIEROUyAvL2cnYAoJCQkg
+ICAgICAgbGV0IGorKyA7OwoJZXNhYwoJbGV0IGkrKwp9CmRvbmUKCiMgTm93
+LCBkbyB0aGUgd29yawoKaWYgWyAtbiAiJHtkbnNbKl19IiBdOyB0aGVuCglm
+b3IgaSBpbiAiJHtkbnNbQF19IjsgZG8KCQlzZWQgLWkgLWUgIjEsMSBpIG5h
+bWVzZXJ2ZXIgJHtpfSIgL2V0Yy9yZXNvbHYuY29uZiB8fCBkaWUKCWRvbmUK
+ZmkKCmlmIFsgLW4gIiR7ZG9tYWlufSIgXTsgdGhlbgoJc2VkIC1pIC1lICIk
+aiwxIGkgc2VhcmNoICR7ZG9tYWlufSIgL2V0Yy9yZXNvbHYuY29uZiB8fCBk
+aWUKZmkKCiMgYWxsIGRvbmUuLi4KZXhpdCAwCg==
 
-James
+--0-1183297546-1116984736=:90925
+Content-Type: application/octet-stream; name="client.down"
+Content-Transfer-Encoding: base64
+Content-Description: 4149678061-client.down
+Content-Disposition: attachment; filename="client.down"
 
+IyEvYmluL2Jhc2gKCiMgQ29weXJpZ2h0IChjKSAyMDA1IGJ5IE9wZW5WUE4g
+U29sdXRpb25zIExMQwojIExpY2Vuc2VkIHVuZGVyIHRoZSBHUEwgdmVyc2lv
+biAyCgojIEZpcnN0IHZlcnNpb24gYnkgSmVzc2UgQWRlbG1hbgojIHNvbWVv
+bmUgYXQgYm9sZGFuZGJ1c3RlZCBkaW5rIGNvbQojIGh0dHA6Ly93d3cuYm9s
+ZGFuZGJ1c3RlZC5jb20vCgojIFBVUlBPU0U6IFRoaXMgc2NyaXB0IGF1dG9t
+YXRpY2FsbHkgcmVtb3ZlcyB0aGUgL2V0Yy9yZXNvbHYuY29uZiBlbnRyaWVz
+IHByZXZpb3VzbHkKIyBzZXQgYnkgdGhlIGNvbXBhbmlvbiBzY3JpcHQgImNs
+aWVudC51cCIuCgojIElOU1RBTEwgTk9URVM6CiMgUGxhY2UgdGhpcyBpbiAv
+ZXRjL29wZW52cG4vY2xpZW50LmRvd24KIyBUaGVuLCBhZGQgdGhlIGZvbGxv
+d2luZyB0byB5b3VyIC9ldGMvb3BlbnZwbi88Y2xpZW50Y29uZmlnPi5jb25m
+OgojICAgY2xpZW50CiMgICBwdWxsIGRoY3Atb3B0aW9ucwojICAgdXAgL2V0
+Yy9vcGVudnBuL2NsaWVudC51cAojICAgZG93biAvZXRjL29wZW52cG4vY2xp
+ZW50LmRvd24KIyBOZXh0LCAiY2htb2QgYSt4IC9ldGMvb3BlbnZwbi9jbGll
+bnQuZG93biIKCiMgVVNBR0UgTk9URVM6CiMgTm90ZSB0aGF0IHRoaXMgc2Ny
+aXB0IGlzIGJlc3Qgc2VydmVkIHdpdGggdGhlIGNvbXBhbmlvbiAiY2xpZW50
+LnVwIgojIHNjcmlwdC4KCiMgT25seSB0ZXN0ZWQgb24gR2VudG9vIExpbnV4
+IDIwMDUuMCB3aXRoIE9wZW5WUE4gMi4wCiMgSXQgc2hvdWxkIHdvcmsgd2l0
+aCBhbnkgR05VL0xpbnV4IHdpdGggL2V0Yy9yZXNvbHYuY29uZgoKIyBUaGlz
+IHJ1bnMgd2l0aCB0aGUgY29udGV4dCBvZiB0aGUgT3BlblZQTiBVSUQvR0lE
+IAojIGF0IHRoZSB0aW1lIG9mIGV4ZWN1dGlvbi4gVGhpcyBnZW5lcmFsbHkg
+bWVhbnMgdGhhdAojIHRoZSBjbGllbnQgInVwIiBzY3JpcHQgd2lsbCBydW4g
+ZmluZSwgYnV0IHRoZSAiZG93biIgc2NyaXB0CiMgd2lsbCByZXF1aXJlIHRo
+ZSB1c2Ugb2YgdGhlIE9wZW5WUE4gImRvd24tcm9vdCIgcGx1Z2luCiMgd2hp
+Y2ggaXMgaW4gdGhlIHBsdWdpbnMvIGRpcmVjdG9yeSBvZiB0aGUgT3BlblZQ
+TiBzb3VyY2UgdHJlZQoKIyBBIGhvcnJpZCB3b3JrIGFyb3VuZCwgZnJvbSBh
+IHNlY3VyaXR5IHBlcnNwZWN0aXZlLAojIGlzIHRvIHJ1biBPcGVuVlBOIGFz
+IHJvb3QuIFRISVMgSVMgTk9UIFJFQ09NTUVOREVELiBZb3UgaGF2ZQojIGJl
+ZW4gV0FSTkVELgoKIyBpbml0IHZhcmlhYmxlcwoKaT0xCmo9MQp1bnNldCBm
+b3B0CnVuc2V0IGRucwp1bnNldCBvcHQKCiMgQ29udmVydCBFTlZzIHRvIGFu
+IGFycmF5Cgp3aGlsZSBmb3B0PWZvcmVpZ25fb3B0aW9uXyRpOyBbIC1uICIk
+eyFmb3B0fSIgXTsgZG8KewoJb3B0W2ktMV09JHshZm9wdH0KCWNhc2UgJHtv
+cHRbaS0xXX0gaW4KCQkqRE9NQUlOKiApIGRvbWFpbj1gZWNobyAke29wdFtp
+LTFdfSB8IFwKCQkJCXNlZCAtZSAncy9kaGNwLW9wdGlvbiBET01BSU4gLy9n
+J2AgOzsKCQkqRE5TKiAgICApIGRuc1tqLTFdPWBlY2hvICR7b3B0W2ktMV19
+IHwgXAoJCQkJc2VkIC1lICdzL2RoY3Atb3B0aW9uIEROUyAvL2cnYAoJCQkg
+ICAgICAgbGV0IGorKyA7OwoJZXNhYwoJbGV0IGkrKwp9CmRvbmUKCiMgTm93
+LCBkbyB0aGUgd29yawoKaWYgWyAtbiAiJHtkbnNbKl19IiBdOyB0aGVuCglm
+b3IgaSBpbiAiJHtkbnNbQF19IjsgZG8KCQlzZWQgLWkgLWUgIi9uYW1lc2Vy
+dmVyICR7aX0vRCIgL2V0Yy9yZXNvbHYuY29uZiB8fCBkaWUKCWRvbmUKZmkK
+CmlmIFsgLW4gIiR7ZG9tYWlufSIgXTsgdGhlbgoJc2VkIC1pIC1lICIvc2Vh
+cmNoICR7ZG9tYWlufS9EIiAvZXRjL3Jlc29sdi5jb25mIHx8IGRpZQpmaQoK
+IyBhbGwgZG9uZS4uLgpleGl0IDAK
+
+--0-1183297546-1116984736=:90925--
 
