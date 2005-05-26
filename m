@@ -1,8 +1,8 @@
-Message-ID: <20050525013216.91622.qmail@...405...>
-From: Jesse Adelman <someone@...402...>
-Subject: Re: [Openvpn-devel] client-up/client-down scripts (Linux)
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="0-1183297546-1116984736=:90925"
+Message-ID: <7f72b422050526073559dd63e3@...278...>
+From: Zhenxiao Liu <yingzxliu@...277...>
+Reply-To: Zhenxiao Liu <yingzxliu@...277...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Openvpn client on linux cannot get IP for tap
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,118 +13,32 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue May 24 18:34:12 2005
-To: openvpn-devel@lists.sourceforge.net
-
---0-1183297546-1116984736=:90925
-Content-Type: text/plain; charset=us-ascii
+Date: Thu May 26 07:37:04 2005
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
+To: Openvpn-devel@lists.sourceforge.net
 
-Here's the comment changes James asked for (yeah, I'm verbose). Please
-let me know if anything doesn't work as expected.
+Hi, all,
+    I have some problem of running Openvpn bridging.=20
+    Below is the senario.
+    I have three PCs running linux.
+    Linux A runs a dhcp server assigns IP address to pcs connected to
+interface eth1.
+    Linux B runs a VPN server. eth0 is connected to eth1 of Linux A
+and will get a IP assigned by Linux A. VPN server on Linux B uses
+tap1. I've set up bridging between tap1 and eth0. Linux B also runs a
+dhcp server on its eth1, to which eth0 of Linux C is connected.
+    Linux C runs a VPN client with its remote set to be the IP of eth1
+of Linux B.
+=20=20=20=20
+    VPN client on Linux C uses tap2. But tap2 cannot get a IP that
+Linux A assignes. But if I use a windows client instead of Linux C,
+the tap device will get a IP address.
 
--- Jesse
+   Am i doing something wrong?
 
--+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-Jesse Adelman
-http://www.boldandbusted.com/ 
--+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
---0-1183297546-1116984736=:90925
-Content-Type: application/octet-stream; name="client.up"
-Content-Transfer-Encoding: base64
-Content-Description: 885563976-client.up
-Content-Disposition: attachment; filename="client.up"
+  thanks a lot,
 
-IyEvYmluL2Jhc2gKCiMgQ29weXJpZ2h0IChjKSAyMDA1IGJ5IE9wZW5WUE4g
-U29sdXRpb25zIExMQwojIExpY2Vuc2VkIHVuZGVyIHRoZSBHUEwgdmVyc2lv
-biAyCgojIEZpcnN0IHZlcnNpb24gYnkgSmVzc2UgQWRlbG1hbgojIHNvbWVv
-bmUgYXQgYm9sZGFuZGJ1c3RlZCBkaW5rIGNvbQojIGh0dHA6Ly93d3cuYm9s
-ZGFuZGJ1c3RlZC5jb20vCgojIFBVUlBPU0U6IFRoaXMgc2NyaXB0IGF1dG9t
-YXRpY2FsbHkgc2V0cyB0aGUgcHJvcGVyIC9ldGMvcmVzb2x2LmNvbmYgZW50
-cmllcwojIGFzIHB1bGxlZCBkb3duIGZyb20gYW4gT3BlblZQTiBzZXJ2ZXIu
-CgojIElOU1RBTEwgTk9URVM6CiMgUGxhY2UgdGhpcyBpbiAvZXRjL29wZW52
-cG4vY2xpZW50LnVwCiMgVGhlbiwgYWRkIHRoZSBmb2xsb3dpbmcgdG8geW91
-ciAvZXRjL29wZW52cG4vPGNsaWVudGNvbmZpZz4uY29uZjoKIyAgIGNsaWVu
-dAojICAgcHVsbCBkaGNwLW9wdGlvbnMKIyAgIHVwIC9ldGMvb3BlbnZwbi9j
-bGllbnQudXAKIyBOZXh0LCAiY2htb2QgYSt4IC9ldGMvb3BlbnZwbi9jbGll
-bnQudXAiCgojIFVTQUdFIE5PVEVTOgojIE5vdGUgdGhhdCB0aGlzIHNjcmlw
-dCBpcyBiZXN0IHNlcnZlZCB3aXRoIHRoZSBjb21wYW5pb24gImNsaWVudC5k
-b3duIgojIHNjcmlwdC4KCiMgT25seSB0ZXN0ZWQgb24gR2VudG9vIExpbnV4
-IDIwMDUuMCB3aXRoIE9wZW5WUE4gMi4wCiMgSXQgc2hvdWxkIHdvcmsgd2l0
-aCBhbnkgR05VL0xpbnV4IHdpdGggL2V0Yy9yZXNvbHYuY29uZgoKIyBUaGlz
-IHJ1bnMgd2l0aCB0aGUgY29udGV4dCBvZiB0aGUgT3BlblZQTiBVSUQvR0lE
-IAojIGF0IHRoZSB0aW1lIG9mIGV4ZWN1dGlvbi4gVGhpcyBnZW5lcmFsbHkg
-bWVhbnMgdGhhdAojIHRoZSBjbGllbnQgInVwIiBzY3JpcHQgd2lsbCBydW4g
-ZmluZSwgYnV0IHRoZSAiZG93biIgc2NyaXB0CiMgd2lsbCByZXF1aXJlIHRo
-ZSB1c2Ugb2YgdGhlIE9wZW5WUE4gImRvd24tcm9vdCIgcGx1Z2luCiMgd2hp
-Y2ggaXMgaW4gdGhlIHBsdWdpbnMvIGRpcmVjdG9yeSBvZiB0aGUgT3BlblZQ
-TiBzb3VyY2UgdHJlZQoKIyBBIGhvcnJpZCB3b3JrIGFyb3VuZCwgZnJvbSBh
-IHNlY3VyaXR5IHBlcnNwZWN0aXZlLAojIGlzIHRvIHJ1biBPcGVuVlBOIGFz
-IHJvb3QuIFRISVMgSVMgTk9UIFJFQ09NTUVOREVELiBZb3UgaGF2ZQojIGJl
-ZW4gV0FSTkVELgoKIyBpbml0IHZhcmlhYmxlcwoKaT0xCmo9MQp1bnNldCBm
-b3B0CnVuc2V0IGRucwp1bnNldCBvcHQKCiMgQ29udmVydCBFTlZzIHRvIGFu
-IGFycmF5Cgp3aGlsZSBmb3B0PWZvcmVpZ25fb3B0aW9uXyRpOyBbIC1uICIk
-eyFmb3B0fSIgXTsgZG8KewoJb3B0W2ktMV09JHshZm9wdH0KCWNhc2UgJHtv
-cHRbaS0xXX0gaW4KCQkqRE9NQUlOKiApIGRvbWFpbj1gZWNobyAke29wdFtp
-LTFdfSB8IFwKCQkJCXNlZCAtZSAncy9kaGNwLW9wdGlvbiBET01BSU4gLy9n
-J2AgOzsKCQkqRE5TKiAgICApIGRuc1tqLTFdPWBlY2hvICR7b3B0W2ktMV19
-IHwgXAoJCQkJc2VkIC1lICdzL2RoY3Atb3B0aW9uIEROUyAvL2cnYAoJCQkg
-ICAgICAgbGV0IGorKyA7OwoJZXNhYwoJbGV0IGkrKwp9CmRvbmUKCiMgTm93
-LCBkbyB0aGUgd29yawoKaWYgWyAtbiAiJHtkbnNbKl19IiBdOyB0aGVuCglm
-b3IgaSBpbiAiJHtkbnNbQF19IjsgZG8KCQlzZWQgLWkgLWUgIjEsMSBpIG5h
-bWVzZXJ2ZXIgJHtpfSIgL2V0Yy9yZXNvbHYuY29uZiB8fCBkaWUKCWRvbmUK
-ZmkKCmlmIFsgLW4gIiR7ZG9tYWlufSIgXTsgdGhlbgoJc2VkIC1pIC1lICIk
-aiwxIGkgc2VhcmNoICR7ZG9tYWlufSIgL2V0Yy9yZXNvbHYuY29uZiB8fCBk
-aWUKZmkKCiMgYWxsIGRvbmUuLi4KZXhpdCAwCg==
-
---0-1183297546-1116984736=:90925
-Content-Type: application/octet-stream; name="client.down"
-Content-Transfer-Encoding: base64
-Content-Description: 4149678061-client.down
-Content-Disposition: attachment; filename="client.down"
-
-IyEvYmluL2Jhc2gKCiMgQ29weXJpZ2h0IChjKSAyMDA1IGJ5IE9wZW5WUE4g
-U29sdXRpb25zIExMQwojIExpY2Vuc2VkIHVuZGVyIHRoZSBHUEwgdmVyc2lv
-biAyCgojIEZpcnN0IHZlcnNpb24gYnkgSmVzc2UgQWRlbG1hbgojIHNvbWVv
-bmUgYXQgYm9sZGFuZGJ1c3RlZCBkaW5rIGNvbQojIGh0dHA6Ly93d3cuYm9s
-ZGFuZGJ1c3RlZC5jb20vCgojIFBVUlBPU0U6IFRoaXMgc2NyaXB0IGF1dG9t
-YXRpY2FsbHkgcmVtb3ZlcyB0aGUgL2V0Yy9yZXNvbHYuY29uZiBlbnRyaWVz
-IHByZXZpb3VzbHkKIyBzZXQgYnkgdGhlIGNvbXBhbmlvbiBzY3JpcHQgImNs
-aWVudC51cCIuCgojIElOU1RBTEwgTk9URVM6CiMgUGxhY2UgdGhpcyBpbiAv
-ZXRjL29wZW52cG4vY2xpZW50LmRvd24KIyBUaGVuLCBhZGQgdGhlIGZvbGxv
-d2luZyB0byB5b3VyIC9ldGMvb3BlbnZwbi88Y2xpZW50Y29uZmlnPi5jb25m
-OgojICAgY2xpZW50CiMgICBwdWxsIGRoY3Atb3B0aW9ucwojICAgdXAgL2V0
-Yy9vcGVudnBuL2NsaWVudC51cAojICAgZG93biAvZXRjL29wZW52cG4vY2xp
-ZW50LmRvd24KIyBOZXh0LCAiY2htb2QgYSt4IC9ldGMvb3BlbnZwbi9jbGll
-bnQuZG93biIKCiMgVVNBR0UgTk9URVM6CiMgTm90ZSB0aGF0IHRoaXMgc2Ny
-aXB0IGlzIGJlc3Qgc2VydmVkIHdpdGggdGhlIGNvbXBhbmlvbiAiY2xpZW50
-LnVwIgojIHNjcmlwdC4KCiMgT25seSB0ZXN0ZWQgb24gR2VudG9vIExpbnV4
-IDIwMDUuMCB3aXRoIE9wZW5WUE4gMi4wCiMgSXQgc2hvdWxkIHdvcmsgd2l0
-aCBhbnkgR05VL0xpbnV4IHdpdGggL2V0Yy9yZXNvbHYuY29uZgoKIyBUaGlz
-IHJ1bnMgd2l0aCB0aGUgY29udGV4dCBvZiB0aGUgT3BlblZQTiBVSUQvR0lE
-IAojIGF0IHRoZSB0aW1lIG9mIGV4ZWN1dGlvbi4gVGhpcyBnZW5lcmFsbHkg
-bWVhbnMgdGhhdAojIHRoZSBjbGllbnQgInVwIiBzY3JpcHQgd2lsbCBydW4g
-ZmluZSwgYnV0IHRoZSAiZG93biIgc2NyaXB0CiMgd2lsbCByZXF1aXJlIHRo
-ZSB1c2Ugb2YgdGhlIE9wZW5WUE4gImRvd24tcm9vdCIgcGx1Z2luCiMgd2hp
-Y2ggaXMgaW4gdGhlIHBsdWdpbnMvIGRpcmVjdG9yeSBvZiB0aGUgT3BlblZQ
-TiBzb3VyY2UgdHJlZQoKIyBBIGhvcnJpZCB3b3JrIGFyb3VuZCwgZnJvbSBh
-IHNlY3VyaXR5IHBlcnNwZWN0aXZlLAojIGlzIHRvIHJ1biBPcGVuVlBOIGFz
-IHJvb3QuIFRISVMgSVMgTk9UIFJFQ09NTUVOREVELiBZb3UgaGF2ZQojIGJl
-ZW4gV0FSTkVELgoKIyBpbml0IHZhcmlhYmxlcwoKaT0xCmo9MQp1bnNldCBm
-b3B0CnVuc2V0IGRucwp1bnNldCBvcHQKCiMgQ29udmVydCBFTlZzIHRvIGFu
-IGFycmF5Cgp3aGlsZSBmb3B0PWZvcmVpZ25fb3B0aW9uXyRpOyBbIC1uICIk
-eyFmb3B0fSIgXTsgZG8KewoJb3B0W2ktMV09JHshZm9wdH0KCWNhc2UgJHtv
-cHRbaS0xXX0gaW4KCQkqRE9NQUlOKiApIGRvbWFpbj1gZWNobyAke29wdFtp
-LTFdfSB8IFwKCQkJCXNlZCAtZSAncy9kaGNwLW9wdGlvbiBET01BSU4gLy9n
-J2AgOzsKCQkqRE5TKiAgICApIGRuc1tqLTFdPWBlY2hvICR7b3B0W2ktMV19
-IHwgXAoJCQkJc2VkIC1lICdzL2RoY3Atb3B0aW9uIEROUyAvL2cnYAoJCQkg
-ICAgICAgbGV0IGorKyA7OwoJZXNhYwoJbGV0IGkrKwp9CmRvbmUKCiMgTm93
-LCBkbyB0aGUgd29yawoKaWYgWyAtbiAiJHtkbnNbKl19IiBdOyB0aGVuCglm
-b3IgaSBpbiAiJHtkbnNbQF19IjsgZG8KCQlzZWQgLWkgLWUgIi9uYW1lc2Vy
-dmVyICR7aX0vRCIgL2V0Yy9yZXNvbHYuY29uZiB8fCBkaWUKCWRvbmUKZmkK
-CmlmIFsgLW4gIiR7ZG9tYWlufSIgXTsgdGhlbgoJc2VkIC1pIC1lICIvc2Vh
-cmNoICR7ZG9tYWlufS9EIiAvZXRjL3Jlc29sdi5jb25mIHx8IGRpZQpmaQoK
-IyBhbGwgZG9uZS4uLgpleGl0IDAK
-
---0-1183297546-1116984736=:90925--
+Liu
 
