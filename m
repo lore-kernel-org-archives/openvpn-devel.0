@@ -1,8 +1,8 @@
-From: Charles Duffy <cduffy@...294...>
-Message-ID: <pan.2005.05.27.16.18.40.602789@...294...>
-References: <7f72b422050526073559dd63e3@...278...>
+From: Ralf =?UTF-8?B?TMO8YmJlbg==?= <ralfluebben@...68...>
+Message-ID: <d7fjlh$hrc$1@...165...>
+References: <200504291033.00667.ralfluebben@...68...> <Pine.LNX.4.58.0504300118280.24107@...41...> <Pine.LNX.4.58.0504301334040.25603@...41...> <200505031348.25263.ralfluebben@...68...> <Pine.LNX.4.58.0505031000150.1970@...41...> <d6ck1r$3b9$1@...165...> <1116334849.14388.43.camel@...23...>
 Mime-Version: 1.0
-Subject: [Openvpn-devel] Re: Openvpn client on linux cannot get IP for tap
+Subject: [Openvpn-devel] Re: Re: Radius support (Authentification, Authorization and Accounting)
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,17 +13,31 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri May 27 09:25:23 2005
-Content-Type: text/plain; charset=UTF-8
+Date: Mon May 30 10:56:08 2005
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-On Thu, 26 May 2005 10:35:03 -0400, Zhenxiao Liu wrote:
+Hello,
 
->     VPN client on Linux C uses tap2. But tap2 cannot get a IP that
-> Linux A assignes. But if I use a windows client instead of Linux C, the
-> tap device will get a IP address.
+at the momemt the radius plugin is working. 
+The plugin model is very good. It was possible to implement the plugin
+without any problems.
 
-This belongs on openvpn-users, not openvpn-devel.
+I have still one question about the NAS-Port attribute. At the moment the
+port number is increment for every user, but never decremt.
+Will this be a problem with freeradius? Must the number be in a special
+range, maybe for assignment?
+
+I have still another programming question. In the plugin example for pam,
+all functions are static functions. Which advantages has the static
+function opposite to a "normal" function?
+
+Thank you. 
+
+Ralf Lübben
+
+
+
 
 
