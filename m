@@ -1,8 +1,7 @@
-From: Ralf =?UTF-8?B?TMO8YmJlbg==?= <ralfluebben@...68...>
-Message-ID: <d7fjlh$hrc$1@...165...>
-References: <200504291033.00667.ralfluebben@...68...> <Pine.LNX.4.58.0504300118280.24107@...41...> <Pine.LNX.4.58.0504301334040.25603@...41...> <200505031348.25263.ralfluebben@...68...> <Pine.LNX.4.58.0505031000150.1970@...41...> <d6ck1r$3b9$1@...165...> <1116334849.14388.43.camel@...23...>
+From: "dehua zang" <dehua999@...406...>
 Mime-Version: 1.0
-Subject: [Openvpn-devel] Re: Re: Radius support (Authentification, Authorization and Accounting)
+Message-Id: <20050531022537.6E0B3F546@...407...>
+Subject: [Openvpn-devel] Building failed with lzo on Windows XP
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,31 +12,62 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon May 30 10:56:08 2005
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Date: Mon May 30 19:53:43 2005
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hello,
-
-at the momemt the radius plugin is working. 
-The plugin model is very good. It was possible to implement the plugin
-without any problems.
-
-I have still one question about the NAS-Port attribute. At the moment the
-port number is increment for every user, but never decremt.
-Will this be a problem with freeradius? Must the number be in a special
-range, maybe for assignment?
-
-I have still another programming question. In the plugin example for pam,
-all functions are static functions. Which advantages has the static
-function opposite to a "normal" function?
-
-Thank you. 
-
-Ralf Lübben
-
-
-
-
-
+SGkNCglJIGRvbid0IGtvbncgdGhlIGUtbWFpbCBvZiBtYWlsaWluZyBsaXN0cywgc28gSSBzZW5k
+IHRoZSBmb2xsb3dpbmcgdG8geW91LiBJZiBpdCBpcyBub3QgcmlnaHQgcGxhY2UsIHBsZWFzZSB0
+ZWxsIG1lIG9yIHNlbmQgdGhlIGZvbGxvd2luZyB0byB0aGUgcmlnaHQgcGxhY2UuIFRoYW5rcyBh
+IGxvdCENCg0KCUkgYnVpbGQgdGhlIHNvdXJjZSBjb2RlcyBvZiBPcGVuVlBOIG9uIFdpbmRvdyBY
+UCwgdGhlIGx6byBpcyBpbiBIOlx2cG4tYnVpbGRcbHpvLTEuMDguIFRoZSBpbmNsdWRlIGRpcmVj
+dG9yeSB1bmRlciBsem8tMS4wOCBjb250YWlucyBsem8uaCxsem9jb25mLmgsbHpvdXRpbC5oIGx6
+bzEuaCwgLi4uIFRoZSBsaWIgZGlyZWN0b3J5IHVuZGVyIGx6by0xLjA4IGNvbnRhaW5zIGxpYmx6
+by5hIGFuZCBsaWJsaXoubGEuIA0KCVNvIEkgc2V0ICJMWk8gPSAvaC92cG4tYnVpbGQvbHpvLTEu
+MDgiLCJMSUJfRElSUyA9IC1MJHtPUEVOU1NMfS9saWIvTWluR1cgLUwke0xaT30vbGliIiwiSU5D
+TFVERV9ESVJTID0gLUkke09QRU5TU0x9L2luY2x1ZGUgLUkke0xaT30vaW5jbHVkZSIgaW4gdGhl
+IG1ha2VmaWxlLnczMi4gTm90ZSB0aGUgb3BlbnNzbCBpcyBvayB3aGVuIGJ1aWxkaW5nLg0KCXdo
+ZW4gSSBidWlsZCB0aGUgY29kZXMgd2l0aCAnbWFrZSAtZiBtYWtlZmlsZS53MzInLCBJIGZhY2Ug
+dGhlIGZvbGxvd2luZyBlcnJvcnM6DQoNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgSDpcdnBuXHNv
+dXJjZWNvZGVcd2luZG93c1xvcGVudnBuLTIuMD5tYWtlIC1mIG1ha2VmaWxlLnczMiAgICAgICAg
+ICAgICAgICAgICAgICANCmdjYyAtZyAtTzIgLVdhbGwgLVduby11bnVzZWQtZnVuY3Rpb24gLVdu
+by11bnVzZWQtdmFyaWFibGUgLW1uby1jeWd3aW4gLW8gb3BlbnZwbi5leGUgYmFzZTY0Lm8gYnVm
+ZmVyLm8gY3J5cHRvLm8gY3J5cHRvYXBpLm8gZXJyb3IubyBldmVudC5vIGZkbWlzYy5vIGZvcndh
+cmQubyBmcmFnbWVudC5vIGdyZW1saW4ubyBoZWxwZXIubyBpbml0Lm8gaW50ZXJ2YWwubyBsaXN0
+Lm8gbHpvLm8gbWFuYWdlLm8gbWJ1Zi5vIG1pc2MubyBtcm91dGUubyBtc3MubyBtdGNwLm8gbXR1
+Lm8gbXVkcC5vIG11bHRpLm8gbnRsbS5vIG9jYy5vIG9wZW52cG4ubyBvcHRpb25zLm8gb3RpbWUu
+byBwYWNrZXRfaWQubyBwZXJmLm8gcGluZy5vIHBsdWdpbi5vIHBvb2wubyBwcm90by5vIHByb3h5
+Lm8gcHVzaC5vIHJlbGlhYmxlLm8gcm91dGUubyBzY2hlZHVsZS5vIHNlc3Npb25faWQubyBzaGFw
+ZXIubyBzaWcubyBzb2NrZXQubyBzb2Nrcy5vIHNzbC5vIHN0YXR1cy5vIHRocmVhZC5vIHR1bi5v
+IHdpbjMyLm8gLUwvaC92cG4tYnVpbGQvT3BlblNTTC9saWIvTWluR1cgLUwvaC92cG4tYnVpbGQv
+bHpvLTEuMDgvbGliIC1sc3NsMzIgLWxlYXkzMiAtbGx6byAtbGNyeXB0MzIgLWx3czJfMzIgLWxn
+ZGkzMiAtbGlwaGxwYXBpIC1sd2lubW0gICAgICANCmx6by5vKC50ZXh0KzB4YmQpOiBJbiBmdW5j
+dGlvbiBgbHpvX2NvbXByZXNzX2luaXQnOiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgSDov
+dnBuL3NvdXJjZWNvZGUvd2luZG93cy9vcGVudnBuLTIuMC9sem8uYzoxMTI6IHVuZGVmaW5lZCBy
+ZWZlcmVuY2UgdG8gYF9fbHpvX2luaXQyJyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGx6by5vKC50ZXh0KzB4
+Y2MpOkg6L3Zwbi9zb3VyY2Vjb2RlL3dpbmRvd3Mvb3BlbnZwbi0yLjAvbHpvLmM6MTE0OiB1bmRl
+ZmluZWQgcmVmZXJlbmNlIHRvIGBsem9fbWFsbG9jJw0KbHpvLm8oLnRleHQrMHgxNjQpOiBJbiBm
+dW5jdGlvbiBgbHpvX2NvbXByZXNzX3VuaW5pdCc6ICAgICAgICAgICAgICAgICAgICAgICAgICBI
+Oi92cG4vc291cmNlY29kZS93aW5kb3dzL29wZW52cG4tMi4wL2x6by5jOjEyNDogdW5kZWZpbmVk
+IHJlZmVyZW5jZSB0byBgbHpvX2ZyZWUnICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbHpvLm8oLnRleHQr
+MHgyYmMpOiBJbiBmdW5jdGlvbiBgbHpvX2NvbXByZXNzJzogICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICBIOi92cG4vc291cmNlY29kZS93aW5kb3dzL29wZW52cG4tMi4wL2x6by5jOjE1
+NTogdW5kZWZpbmVkIHJlZmVyZW5jZSB0byBgbHpvMXhfMV8xNV9jb21wcmVzcycgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+bHpvLm8oLnRleHQrMHg2OWEpOiBJbiBmdW5jdGlvbiBgbHpvX2RlY29tcHJlc3MnOiAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICBIOi92cG4vc291cmNlY29kZS93aW5kb3dzL29wZW52cG4t
+Mi4wL2x6by5jOjIwOTogdW5kZWZpbmVkIHJlZmVyZW5jZSB0byBgbHpvMXhfZGVjb21wcmVzc19z
+YWZlJyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgDQpjb2xsZWN0MjogbGQgcmV0dXJu
+ZWQgMSBleGl0IHN0YXR1cw0KbWFrZTogKioqIFtkeW5hbWljXSBFcnJvciAxICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICANCnRoZXNlIGZ1bmN0aW9ucyBvZiBsem9faW5pdC5oLGx6b19tYWxsb2MuaCBhbmQgc28g
+b24gYXJlIGluY2x1ZGVkLCBidXQgd2h5IGRvIHRoZXNlIGVycm9ycyBvY2N1cj8gSSBhbSBsb29r
+aW5nIGZvd2FyZCB0byB5b3VyIGFuc3dlciEgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgDQqhoaGhoaGhoaGhoaGhoaGhDQqhoaGhoaGhoaGhoaGhoaGh
+ZGVodWEgemFuZw0KoaGhoaGhoaGhoaGhoaGhoWRlaHVhOTk5QC4uLjQwNi4uLg0KoaGhoaGhoaGh
+oaGhoaGhoaGhoaEyMDA1LTA1LTMxDQo=
