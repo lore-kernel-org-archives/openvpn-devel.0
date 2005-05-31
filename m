@@ -1,8 +1,12 @@
-From: larsbj@...408... (=?iso-8859-1?q?Lars_Gullik_Bj=F8nnes?=)
-Message-ID: <m3ll5v20sr.fsf@...409...>
-References: <311fedcf05053020126cdb6e06@...278...> <m3y89v285z.fsf@...409...>
+Subject: Re: [Openvpn-devel] Re: Re: Radius support (Authentification,
+	Authorization and Accounting)
+From: Torge Szczepanek <openvpn-devel@...239...>
+In-Reply-To: <200505311009.03402.ralfluebben@...68...>
+References: <200504291033.00667.ralfluebben@...68...>
+	 <d7fjlh$hrc$1@...165...> <1117524566.11540.16.camel@...23...>
+	 <200505311009.03402.ralfluebben@...68...>
+Message-Id: <1117542280.11895.14.camel@...23...>
 Mime-Version: 1.0
-Subject: [Openvpn-devel] Re: LZO 2.00 released--compatibility patch attached
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,26 +17,33 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue May 31 02:41:54 2005
-Content-Type: text/plain; charset="iso-8859-1"
+Date: Tue May 31 05:27:36 2005
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-larsbj@...408... (Lars Gullik Bj=F8nnes) writes:
+Am Dienstag, den 31.05.2005, 10:09 +0000 schrieb Ralf L=FCbben:
 
-| Kelledin <kelledin@...277...> writes:
->
-| | Hi all, LZO 2.00 was just released, and it has a few API changes.=20
-| | Specifically the worst-case expansion formula prescribed by LZO.FAQ=20
-| | has changed, and headers now get their own lzo/ directory.
->
-| I also thought that the license changed. Isn't this the case?
+> If a client connects the nas port number is locked , if a client disconne=
+ct=20
+> the port number is freed.=20
+> A new client will always get the least number of the array.
+>=20
+> Would this behaviour ok?
 
-This isn't the case.
+Yes. That would be OK.
 
-Still GPL.
+> How many nas port numbers will I need?
+> I think 1000 will be enough or can there be more than 1000 clients at=20
+> the same time?
 
---=20
-	Lgb
+Hmm. Must there be a limit? I am asking since I had some troubles with a
+PPTP VPN pushing this to more than 100 or 256 users. So software
+hardlimits aren't really a good choice. If this isn't to much work I
+would suggest to put in a dynamic variable. Since you are using C++ you
+might just use a STL type? I don't know whether STLs are portable across
+platforms...
+
+
 
 
