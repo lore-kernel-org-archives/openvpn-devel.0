@@ -1,9 +1,10 @@
-From: Daniel Lehmann <ov_devel@...300...>
-Subject: Re: [Openvpn-devel] Google summer of code
-References: <42A1824B.8010106@...277...>
-In-Reply-To: <42A1824B.8010106@...277...>
+From: Neil Brown <neilb@...253...>
 MIME-Version: 1.0
-Message-Id: <200506041313.28415.ov_devel@...300...>
+Message-ID: <17057.37958.521555.388927@...253...>
+Subject: Re: [Openvpn-devel] Google summer of code
+In-Reply-To: message from Daniel Lehmann on Saturday June 4
+References: <42A1824B.8010106@...277...>
+	<200506041313.28415.ov_devel@...300...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,38 +15,54 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Jun  4 04:10:05 2005
-Content-Type: text/plain;
-  charset="iso-8859-2"
+Date: Sat Jun  4 04:46:09 2005
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+To: Daniel Lehmann <ov_devel@...300...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am Saturday 04 June 2005 12:28 schrieb Pawel Pokrywka:
-> Hello,
-> Google organizes contest, see:
->
-> http://code.google.com/summerofcode.html
+On Saturday June 4, ov_devel@...300... wrote:
+> 
+> I think, a real tun driver for Windows is a killer feature. This would make 
+> large heterogenous VPN setups much easier, because you could provide your 
+> clients a layer-3 VPN without "losing" 2 addresses per client.
+> 
 
-> In particular, there is one missing feature - and no one is intereseted
-> in doing it - Windows 9x/ME support in TAP-win32. Programming for old
-> Windows is not so nice, but maybe $4500 stipend would make it nicer? :-)
-> I wonder why this feature is not included in wishlists - there are many
-> requests for it in mailing list archives. It's not true, that this OS
-> died. Sadly, it lives, especially in enviroments, when XP couldn't be
-> installed because hardware is so low-end.
+A "real" tun driver (by which I assume you mean one that support
+point-to-point addressing) isn't needed to avoid "losing" 2 addresses
+per client.
+What is needed is for openvpn to understand that a multi-client
+configuration is much more like a subnet than like a bunch of
+point-to-point links.
 
-Hi,
-if I didn't have to write my thesis this summer, I'd love to participate.
+I had a patch about 12 months ago that did that using a command
+   devtype subnet
+which James didn't like (or maybe, he felt cautious about it and I
+didn't have the time to push it then).
 
-IMHO, TAP Support for Win95/98/Me isn't one of the features openvpn needs the 
-most. These OS aren't supported by MS any more. For me this means, that they 
-are insecure. And why should I permit insecure clients to connect a VPN?
+The idea is that instead of treating every interface as a
+point-to-point interface, with 2 addresses (one of which is wasted),
+you assign a subnet to the VPN and each interface has an address on
+that subnet.
 
-I think, a real tun driver for Windows is a killer feature. This would make 
-large heterogenous VPN setups much easier, because you could provide your 
-clients a layer-3 VPN without "losing" 2 addresses per client.
+The main change to the OpenVPN protocol is that when "ifconfig" is
+"pushed" to the client, it pushes an address and a subnetmask, instead
+of two addresses.  (It already does this for dev==tap, so it isn't a
+big deal).
 
-just my 2 euro-cents
-leh
+"tun" devices on Linux (or other unixes) are point-to-point and don't
+have a subnet mask, but that isn't a big deal at all.  To make it
+work, set the remote address to anything in the subnet (it really
+doesn't matter what) and create a route to the subnet, with an
+appropriate subnet mask, which has the remote end of the pointopoint
+as the destination.  It then all simply works.
+
+I can resurrect that patch if anyone is interested.
+
+
+See http://openvpn.net/archive/openvpn-devel/2004-07/msg00056.html and
+related messages.
+
+NeilBrown
+
 
