@@ -1,9 +1,12 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] Google summer of code
-In-Reply-To: <42A1824B.8010106@...277...>
-Message-ID: <Pine.LNX.4.58.0506041341370.16160@...41...>
-References: <42A1824B.8010106@...277...>
+From: Neil Brown <neilb@...253...>
 MIME-Version: 1.0
+Message-ID: <17058.12751.717811.713051@...253...>
+Subject: Re: [Openvpn-devel] Google summer of code
+In-Reply-To: message from James Yonan on Saturday June 4
+References: <42A1824B.8010106@...277...>
+	<200506041313.28415.ov_devel@...300...>
+	<17057.37958.521555.388927@...253...>
+	<Pine.LNX.4.58.0506041241180.16160@...41...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,73 +17,106 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Jun  4 13:31:05 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: Pawel Pokrywka <publicpp@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Sat Jun  4 15:58:26 2005
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+To: James Yonan <jim@...41...>
+Cc: Daniel Lehmann <ov_devel@...300...>, openvpn-devel@lists.sourceforge.net
 
-On Sat, 4 Jun 2005, Pawel Pokrywka wrote:
-
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
+On Saturday June 4, jim@...41... wrote:
 > 
-> Hello,
-> Google organizes contest, see:
+> On Sat, 4 Jun 2005, Neil Brown wrote:
+> > A "real" tun driver (by which I assume you mean one that support
+> > point-to-point addressing) isn't needed to avoid "losing" 2 addresses
+> > per client.
+> > What is needed is for openvpn to understand that a multi-client
+> > configuration is much more like a subnet than like a bunch of
+> > point-to-point links.
 > 
-> http://code.google.com/summerofcode.html
+> Right, but isn't that the point of supporting either tun or tap -- so that
+> people can choose which model (point-to-point or network/netmask) they 
+> prefer?
 
-Unfortunately, I think we are late :(
+That wasn't the impression I got.
+I thought the point of supporting either tun or tap was so that people
+could choose between layer-3 (only IP) or layer-2 (any ethernet based
+protocol).
+I choose layer-3 (tun) because I only want IP, and because OpenVPN will
+verify the source IP address for packets arriving from clients.  I
+value that.
 
-  From: Chris DiBona <cdibona@...410...>
-  To: jim@...41...
-  Subject: Re: [M#27498536] [Openvpn-devel] Google summer of code (fwd)
+To me, the difference between choosing point-to-point or
+network/netmask is related to how may instances you have
+communicating.
 
-  Hi jim,
+If you have just two (traditional "--mode p2p" at both ends) then
+point-to-point makes perfect sense whether using tun or tap.
+If you have more, then it seems that network/netmask makes much more
+sense.  (I wouldn't say that no-one in their right mind would use ptp,
+only that n/n would be the dominant usage).
 
-  You have a terrific project, but I'm sorry to say that we've already
-  gone well past our limit for projects.
-
-  Chris
-
-> In short: It is about conntributions to known open source projects. 200
-> students could get $4500 each, $500 goes to mentor organization.
 > 
-> I think OpenVPN is mature enough to particate in Summer of Code as
-> mentor organization.
-> There are wishlists already on the wiki and there are many things that
-> could be done as projects sponsored by google.
+> > I had a patch about 12 months ago that did that using a command
+> >    devtype subnet
+> > which James didn't like (or maybe, he felt cautious about it and I
+> > didn't have the time to push it then).
 > 
-> In particular, there is one missing feature - and no one is intereseted
-> in doing it - Windows 9x/ME support in TAP-win32. Programming for old
-> Windows is not so nice, but maybe $4500 stipend would make it nicer? :-)
-> I wonder why this feature is not included in wishlists - there are many
-> requests for it in mailing list archives. It's not true, that this OS
-> died. Sadly, it lives, especially in enviroments, when XP couldn't be
-> installed because hardware is so low-end.
-> Windows 9x support will give significiant adventage: ability to run on
-> every PC. It could increase OpenVPN position on "VPN-market", because
-> now many people choose other VPN solutions which are in many places no
-> so good, but runs on 9x (for example PPTP, criticized for its security,
-> or IPSEC with comercial 9x clients).
-> And, though IMHO 9x/ME will live for about 3-5 years, porting TAP-win32
-> is worth its effort. It will greatly increase OpenVPN user base, which
-> as you all know, increases number of developers and all blesses of open
-> source.
+> I did comment on that patch at the time -- I'm assuming that you're 
+> referring to the patch which would set a tun interface with 
+> network/netmask rather than point-to-point parameters?
 
-I'm a bit worried that this project might never happen because:
+The patch did a little more than that, but yes.  Your comment was that
+it would add yet another set of cases that would need testing.   As I
+wasn't doing the testing, it was hard to argue with this.
 
-(a) Open source developers who are motivated by working on cool, 
-intellectually stimulating projects may not want to jump into a difficult 
-project involving an obsolete, unsupported OS.
+> 
+> It seems to me that setting a tun interface with a network/netmask is 
+> functionally equivalent to setting point-to-point semantics then adding a 
+> route -- which is exactly what the current code does.
+> 
+> The advantage of the current approach is that it works on all platforms
+> because it doesn't require that the tun driver support a netmask
+> parameter.
 
-(b) While I'm sure that someone would step up to the plate if the money 
-was there, the user base who needs this done is, by definition, 
-cash-strapped (otherwise they would have upgraded).
+No disagreement here.
 
-If you really must continue to use Win98, why not pay $50 to put an 
-OpenWRT box between it and the internet?
+> 
+> We also now have the --ifconfig-pool-linear option which comes close to
+> constructing a tun-based VPN with network/netmask semantics, for the most
+> part hiding the point-to-point semantics of the component tun
+> interfaces.
 
-James
+Yep.... only:
+              NOTE:  This option is incompatible with Windows clients.
+which makes it somewhat irrelevant in an heterogeneous network.
 
+> 
+> > The idea is that instead of treating every interface as a
+> > point-to-point interface, with 2 addresses (one of which is wasted),
+> > you assign a subnet to the VPN and each interface has an address on
+> > that subnet.
+> 
+> --ifconfig-pool-linear doesn't waste any addresses.
+but isn't currently relevant. :-(
+> 
+> > The main change to the OpenVPN protocol is that when "ifconfig" is
+> > "pushed" to the client, it pushes an address and a subnetmask, instead
+> > of two addresses.  (It already does this for dev==tap, so it isn't a
+> > big deal).
+
+This is my key point.  The client needs to be told the subnet mask.
+As you suggest, this can be done by pushing a route. 
+So how about this:
+   In WIN32, instead of requiring that the two ifconfig addresses
+   be part of a .252 subnet (verify_255_255_255_252), you also allow
+   them if they are both in the network/netmask of some route which
+   has been requested (or pulled) and has the second address as the
+   'gateway'.    The netmask of this route then becomes the netmask of
+   the interface.
+
+You could then come up with a modification of the --server directive
+which used --ifconfig-pool-linear and pushed the appropriate route.
+This would, I think, provide exactly what is desired.
+
+NeilBrown
 
