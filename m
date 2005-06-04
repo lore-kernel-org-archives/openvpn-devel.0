@@ -1,9 +1,10 @@
-Message-ID: <42A1BF46.10409@...277...>
-From: Pawel Pokrywka <publicpp@...277...>
-MIME-Version: 1.0
+From: James Yonan <jim@...41...>
 Subject: Re: [Openvpn-devel] Google summer of code
+In-Reply-To: <17057.37958.521555.388927@...253...>
+Message-ID: <Pine.LNX.4.58.0506041241180.16160@...41...>
 References: <42A1824B.8010106@...277...> <200506041313.28415.ov_devel@...300...>
-In-Reply-To: <200506041313.28415.ov_devel@...300...>
+ <17057.37958.521555.388927@...253...>
+MIME-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,58 +15,76 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Jun  4 07:50:12 2005
-Content-Type: text/plain; charset=ISO-8859-2
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Date: Sat Jun  4 12:28:09 2005
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+To: Neil Brown <neilb@...253...>
+Cc: Daniel Lehmann <ov_devel@...300...>, openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+On Sat, 4 Jun 2005, Neil Brown wrote:
 
->>Google organizes contest, see:
->>
->>http://code.google.com/summerofcode.html
+> On Saturday June 4, ov_devel@...300... wrote:
+> > 
+> > I think, a real tun driver for Windows is a killer feature. This would make 
+> > large heterogenous VPN setups much easier, because you could provide your 
+> > clients a layer-3 VPN without "losing" 2 addresses per client.
+> > 
+> 
+> A "real" tun driver (by which I assume you mean one that support
+> point-to-point addressing) isn't needed to avoid "losing" 2 addresses
+> per client.
+> What is needed is for openvpn to understand that a multi-client
+> configuration is much more like a subnet than like a bunch of
+> point-to-point links.
 
-> Hi,
-> if I didn't have to write my thesis this summer, I'd love to participate.
+Right, but isn't that the point of supporting either tun or tap -- so that
+people can choose which model (point-to-point or network/netmask) they 
+prefer?
 
-Hi, I'm in the process of writing thesis too :)
+> I had a patch about 12 months ago that did that using a command
+>    devtype subnet
+> which James didn't like (or maybe, he felt cautious about it and I
+> didn't have the time to push it then).
 
-> IMHO, TAP Support for Win95/98/Me isn't one of the features openvpn needs the 
-> most. These OS aren't supported by MS any more. For me this means, that they 
-> are insecure. And why should I permit insecure clients to connect a VPN?
+I did comment on that patch at the time -- I'm assuming that you're 
+referring to the patch which would set a tun interface with 
+network/netmask rather than point-to-point parameters?
 
-You are right that unsuported means insecure, but it also means - no one
-like to break those systems as well. There exists vulnerabilities, but
-they are hidden and even if discovered by some masochist security guy,
-almost no one will exploit them, because now everyone uses XP.
-I don't want to say that security thru obscurity is good thing, but when
-calculating risk you should take into account all aspects.
-Incorrectly administrated XP can be more insecure than 98 with personal
-firewall, antivirus and antispyware with current db (well IE and OE
-should be also replaced).
+It seems to me that setting a tun interface with a network/netmask is 
+functionally equivalent to setting point-to-point semantics then adding a 
+route -- which is exactly what the current code does.
 
-> I think, a real tun driver for Windows is a killer feature. This would make 
-> large heterogenous VPN setups much easier, because you could provide your 
-> clients a layer-3 VPN without "losing" 2 addresses per client.
+The advantage of the current approach is that it works on all platforms
+because it doesn't require that the tun driver support a netmask
+parameter.
 
-That would be good feature too. Regardless of our points of view on 98,
-I think we agree that OpenVPN Solutions LLC participation in Summer of
-Code as a mentor organization would be good thing :)
+We also now have the --ifconfig-pool-linear option which comes close to
+constructing a tun-based VPN with network/netmask semantics, for the most
+part hiding the point-to-point semantics of the component tun interfaces.
 
-- --
-Pawel Pokrywka
-https://secure.cryptonix.org/
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.2.5 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+> The idea is that instead of treating every interface as a
+> point-to-point interface, with 2 addresses (one of which is wasted),
+> you assign a subnet to the VPN and each interface has an address on
+> that subnet.
 
-iQD1AwUBQqG/RAYJ6m8RUpKnAQIvbgb9EkkyBOnh6Cobprgz8eVxkf4E0KRcwMPr
-tbef0UeJwKrlYOzhWqQHEhRbHixh99ODLewKpC+7T3ITXvPc3CW0wABk3j7nZV3z
-RKg+yIuXYJbylJbbxIjg5ss4lFtyGF/1nr3Vs6ez+4mqeFgnZ9s8QZa1js/BDN58
-mRu4eoG5Di+YuX/NDTVr685/bwdtfNOt9+YZhQmBFvHR4zNhO9Z62U1WKBFz0TLF
-25yxVMUWasgcAmhVCbU1UuvNngTfJrCy/HG8vVWkt1Dya6ZQHWFJsmZ9iJnnRq8t
-8VdBsmHDjoI=
-=Nlmd
------END PGP SIGNATURE-----
+--ifconfig-pool-linear doesn't waste any addresses.
+
+> The main change to the OpenVPN protocol is that when "ifconfig" is
+> "pushed" to the client, it pushes an address and a subnetmask, instead
+> of two addresses.  (It already does this for dev==tap, so it isn't a
+> big deal).
+> 
+> "tun" devices on Linux (or other unixes) are point-to-point and don't
+> have a subnet mask, but that isn't a big deal at all.  To make it
+> work, set the remote address to anything in the subnet (it really
+> doesn't matter what) and create a route to the subnet, with an
+> appropriate subnet mask, which has the remote end of the pointopoint
+> as the destination.  It then all simply works.
+
+If you want to run a VPN with network/netmask semantics, you can already
+do this two ways: use a tap-based interface, or use a tun interface with
+--ifconfig-pool-linear and push a route for the subnet.
+
+James
+
 
