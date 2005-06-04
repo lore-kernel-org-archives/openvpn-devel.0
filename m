@@ -1,9 +1,8 @@
 From: James Yonan <jim@...41...>
 Subject: Re: [Openvpn-devel] Google summer of code
-In-Reply-To: <17057.37958.521555.388927@...253...>
-Message-ID: <Pine.LNX.4.58.0506041241180.16160@...41...>
-References: <42A1824B.8010106@...277...> <200506041313.28415.ov_devel@...300...>
- <17057.37958.521555.388927@...253...>
+In-Reply-To: <42A1824B.8010106@...277...>
+Message-ID: <Pine.LNX.4.58.0506041341370.16160@...41...>
+References: <42A1824B.8010106@...277...>
 MIME-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
@@ -15,75 +14,72 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Jun  4 12:28:09 2005
+Date: Sat Jun  4 13:31:05 2005
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-To: Neil Brown <neilb@...253...>
-Cc: Daniel Lehmann <ov_devel@...300...>, openvpn-devel@lists.sourceforge.net
+To: Pawel Pokrywka <publicpp@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Sat, 4 Jun 2005, Neil Brown wrote:
+On Sat, 4 Jun 2005, Pawel Pokrywka wrote:
 
-> On Saturday June 4, ov_devel@...300... wrote:
-> > 
-> > I think, a real tun driver for Windows is a killer feature. This would make 
-> > large heterogenous VPN setups much easier, because you could provide your 
-> > clients a layer-3 VPN without "losing" 2 addresses per client.
-> > 
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
 > 
-> A "real" tun driver (by which I assume you mean one that support
-> point-to-point addressing) isn't needed to avoid "losing" 2 addresses
-> per client.
-> What is needed is for openvpn to understand that a multi-client
-> configuration is much more like a subnet than like a bunch of
-> point-to-point links.
-
-Right, but isn't that the point of supporting either tun or tap -- so that
-people can choose which model (point-to-point or network/netmask) they 
-prefer?
-
-> I had a patch about 12 months ago that did that using a command
->    devtype subnet
-> which James didn't like (or maybe, he felt cautious about it and I
-> didn't have the time to push it then).
-
-I did comment on that patch at the time -- I'm assuming that you're 
-referring to the patch which would set a tun interface with 
-network/netmask rather than point-to-point parameters?
-
-It seems to me that setting a tun interface with a network/netmask is 
-functionally equivalent to setting point-to-point semantics then adding a 
-route -- which is exactly what the current code does.
-
-The advantage of the current approach is that it works on all platforms
-because it doesn't require that the tun driver support a netmask
-parameter.
-
-We also now have the --ifconfig-pool-linear option which comes close to
-constructing a tun-based VPN with network/netmask semantics, for the most
-part hiding the point-to-point semantics of the component tun interfaces.
-
-> The idea is that instead of treating every interface as a
-> point-to-point interface, with 2 addresses (one of which is wasted),
-> you assign a subnet to the VPN and each interface has an address on
-> that subnet.
-
---ifconfig-pool-linear doesn't waste any addresses.
-
-> The main change to the OpenVPN protocol is that when "ifconfig" is
-> "pushed" to the client, it pushes an address and a subnetmask, instead
-> of two addresses.  (It already does this for dev==tap, so it isn't a
-> big deal).
+> Hello,
+> Google organizes contest, see:
 > 
-> "tun" devices on Linux (or other unixes) are point-to-point and don't
-> have a subnet mask, but that isn't a big deal at all.  To make it
-> work, set the remote address to anything in the subnet (it really
-> doesn't matter what) and create a route to the subnet, with an
-> appropriate subnet mask, which has the remote end of the pointopoint
-> as the destination.  It then all simply works.
+> http://code.google.com/summerofcode.html
 
-If you want to run a VPN with network/netmask semantics, you can already
-do this two ways: use a tap-based interface, or use a tun interface with
---ifconfig-pool-linear and push a route for the subnet.
+Unfortunately, I think we are late :(
+
+  From: Chris DiBona <cdibona@...410...>
+  To: jim@...41...
+  Subject: Re: [M#27498536] [Openvpn-devel] Google summer of code (fwd)
+
+  Hi jim,
+
+  You have a terrific project, but I'm sorry to say that we've already
+  gone well past our limit for projects.
+
+  Chris
+
+> In short: It is about conntributions to known open source projects. 200
+> students could get $4500 each, $500 goes to mentor organization.
+> 
+> I think OpenVPN is mature enough to particate in Summer of Code as
+> mentor organization.
+> There are wishlists already on the wiki and there are many things that
+> could be done as projects sponsored by google.
+> 
+> In particular, there is one missing feature - and no one is intereseted
+> in doing it - Windows 9x/ME support in TAP-win32. Programming for old
+> Windows is not so nice, but maybe $4500 stipend would make it nicer? :-)
+> I wonder why this feature is not included in wishlists - there are many
+> requests for it in mailing list archives. It's not true, that this OS
+> died. Sadly, it lives, especially in enviroments, when XP couldn't be
+> installed because hardware is so low-end.
+> Windows 9x support will give significiant adventage: ability to run on
+> every PC. It could increase OpenVPN position on "VPN-market", because
+> now many people choose other VPN solutions which are in many places no
+> so good, but runs on 9x (for example PPTP, criticized for its security,
+> or IPSEC with comercial 9x clients).
+> And, though IMHO 9x/ME will live for about 3-5 years, porting TAP-win32
+> is worth its effort. It will greatly increase OpenVPN user base, which
+> as you all know, increases number of developers and all blesses of open
+> source.
+
+I'm a bit worried that this project might never happen because:
+
+(a) Open source developers who are motivated by working on cool, 
+intellectually stimulating projects may not want to jump into a difficult 
+project involving an obsolete, unsupported OS.
+
+(b) While I'm sure that someone would step up to the plate if the money 
+was there, the user base who needs this done is, by definition, 
+cash-strapped (otherwise they would have upgraded).
+
+If you really must continue to use Win98, why not pay $50 to put an 
+OpenWRT box between it and the internet?
 
 James
 
