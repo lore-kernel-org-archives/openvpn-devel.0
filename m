@@ -1,8 +1,6 @@
-From: Charles Duffy <cduffy@...294...>
-Message-ID: <pan.2005.06.07.23.25.05.884303@...294...>
-References: <1708CC68-CD66-4E56-A729-5E96D2A3F555@...412...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] Re: Pushing network settings to Mac OS X clients
+From: Jason Lunz <lunz@...413...>
+Message-ID: <d87dej$ujh$1@...165...>
+Subject: [Openvpn-devel] ip/mac spoofing prevention
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,22 +11,29 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Jun  7 16:29:03 2005
-Content-Type: text/plain; charset=UTF-8
+Date: Wed Jun  8 12:09:38 2005
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-On Wed, 08 Jun 2005 00:53:33 +0200, Ralf Ebert wrote:
+If many clients are connected to a server-mode openvpn instance running
+in bridge mode, any client can inject arbitrary ethernet frames onto the
+VPN. By arbitrary, I mean that clients can change source mac and source
+IP at will. This is a good thing; it's flexible.
 
-> OpenVPN offers the possibility to push "Windows-specific network settings"
-> from the server to the client. Pushing a DNS server to the client doesn't
-> seem to be Windows specific and would be quite a nice feature for other
-> operating systems as well. I'd like to ask if it's intended that this is
-> Windows only? I ask because I'd like to work on adding support for this
-> under Mac OS X if you give me a starting point for implementing this kind
-> of platform specific behavior.
+However, this makes it useless to attempt user-based firewalling on the
+vpn server on the packets arriving on the tap device. By the time a
+given packet arrives at firewall rules on the tap device, there's no
+non-spoofable way to determine which user sent the packet.
 
-This already can be (and is, on some sites) done. See the foreign_option_*
-variables.
+How difficult would it be to add an option to enforce that packets
+arriving from a particular user be discarded by openvpn if they do not
+match a given mac address (and/or IP)?  That way, firewall rules could
+be written on the tap device with per-user granularity, and openvpn
+would prevent any possibility of spoofing.
+
+thanks for a great program,
+
+Jason
 
 
