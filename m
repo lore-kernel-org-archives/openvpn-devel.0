@@ -1,9 +1,9 @@
 From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] LZO 2.0
-In-Reply-To: <20050615150556.GA11479@...33...>
-Message-ID: <Pine.LNX.4.58.0506151033530.4004@...41...>
-References: <loom.20050615T113921-759@...171...>
- <20050615150556.GA11479@...33...>
+Subject: Re: [Openvpn-devel] Why must PAM library be dlopened?
+In-Reply-To: <200506150712.01979.nomis80@...401...>
+Message-ID: <Pine.LNX.4.58.0506161121140.907@...41...>
+References: <200506141234.50171.nomis80@...401...> <200506141314.54183.nomis80@...401...>
+ <Pine.LNX.4.58.0506142114190.4004@...41...> <200506150712.01979.nomis80@...401...>
 MIME-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
@@ -15,34 +15,69 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Jun 15 09:55:51 2005
+Date: Thu Jun 16 10:34:54 2005
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-To: Matthias Andree <ma+ovpnd@...31...>
+To: Simon Perreault <nomis80@...401...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Wed, 15 Jun 2005, Matthias Andree wrote:
+On Wed, 15 Jun 2005, Simon Perreault wrote:
 
-> On Wed, 15 Jun 2005, Hampus wrote:
+> On Tuesday 14 June 2005 23:24, James Yonan wrote:
+> > When I was writing the auth-pam plugin, I had problems dynamically linking
+> > the plugin to PAM unless OpenVPN itself was also dynamically linked to PAM
+> > (which I didn't want to do).
 > 
-> > I was just wondering if anyone has been able to build openvpn 2.0 when using 
-> > LZO 2.0 ? I myself get some strange errors.
+> What kind of problem did you encounter? It seems to work perfectly for me.
 
-> A patch with additional build instructions was posted a few days ago.
-> Check the archives of this list.
+> > Remember that PAM itself is going to dlopen, 
+> > in turn, the actual PAM module.  Combining dlopen with dynamic linking has
+> > got to be problematic when you are dealing with crosslinked dependencies.
+> 
+> I'm not sure what you mean by "crosslinked dependencies". The way I see it is:
+> 
+> openvpn --(dlopen)--> auth-pam --(?)--> libpam.so --(dlopen)--> pam_unix.so
+> 
+> I don't see why (?) should be (dlopen). Can you elaborate?
 
-I just made a new RC with LZO 2.0 support.  The configure script will
-autodetect LZO 1.x or 2.0 and set appropriate #defines so that the OpenVPN
-C code will know where to find the LZO .h files (this is necessary because
-LZO 2.0 moves the .h files to a new directory).  I also raised the worst
-case expansion function per the new guidelines.  As far as I'm aware,
-there should be no interoperability issues with OpenVPN linked with LZO
-1.08 talking with OpenVPN linked with LZO 2.0.
+> dlopen(3) says:
+> 
+>    If  the  library has dependencies on other shared libraries, then these are
+>    also automatically loaded by the  dynamic  linker  using  the  same  rules.
+>    (This process may occur recursively, if those libraries in turn have depen-
+>    dencies, and so on.)
+> 
+> Those rules are the same as used by ld.so, so there should be no "not found" 
+> problems.
 
-Download:
+Despite what the dlopen man page says, I had problems with shared library
+linkage from libpam.so --(dlopen)--> pam_unix.so when ?=dlopen (the pam
+lib couldn't find the plugin).  It only seemed to work if I built OpenVPN
+itself with -lpam.  I didn't figure out what what causing the problem, so
+it's possible that I wasn't doing something right.  I didn't want OpenVPN 
+itself to have the pam dependency, only the auth-pam plugin.
 
-http://openvpn.net/beta/openvpn-2.0.1_rc4.tar.gz
+> > dlopening PAM from the plugin seemed to solve all the problems, and
+> > followed the approach that others took when accessing PAM from dynamic
+> > modules.
+> 
+> Can you name examples?
+> 
+> The basic problem I am trying to solve (no, I'm not rummaging through this 
+> only because I have nothing better to do) is that auth-pam depends on 
+> "libpam.so" instead of "libpam.so.0.77". This means that I would need to add 
+> a dependency on pam-devel to my openvpn RPM instead of pam. This seems wrong.
+
+Why is this?  We already have an RPM spec file for OpenVPN and it builds 
+binary RPMs which include the auth-pam plugin and doesn't have a pam-devel 
+dependency.  (There's a pam-devel dependency only for building the binary 
+RPM itself) 
+
+> I've always believed that dlopen should only be used to open libraries shipped 
+> along with the calling binary, such as plugins. I'm trying to verify that 
+> with you.
+
+If you can figure out how to do it without dlopen, feel free to submit a patch.
 
 James
-
 
