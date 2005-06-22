@@ -1,10 +1,9 @@
-From: James Yonan <jim@...41...>
+From: Matthias Andree <ma+ovpnd@...31...>
 Subject: Re: [Openvpn-devel] Why must PAM library be dlopened?
-In-Reply-To: <200506220838.36929.nomis80@...401...>
-Message-ID: <Pine.LNX.4.58.0506221122430.10675@...41...>
-References: <200506141234.50171.nomis80@...401...> <Pine.LNX.4.58.0506212216440.10675@...41...>
- <20050622084405.GA16345@...33...> <200506220838.36929.nomis80@...401...>
-MIME-Version: 1.0
+Message-ID: <20050622173745.GA7948@...33...>
+References: <200506141234.50171.nomis80@...401...> <200506191243.23137.nomis80@...422...> <20050619224221.GC19819@...33...> <200506200817.05804.nomis80@...401...>
+Mime-Version: 1.0
+In-Reply-To: <200506200817.05804.nomis80@...401...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,29 +14,23 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Jun 22 10:36:11 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Date: Wed Jun 22 10:38:35 2005
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Simon Perreault <nomis80@...401...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-On Wed, 22 Jun 2005, Simon Perreault wrote:
+On Mon, 20 Jun 2005, Simon Perreault wrote:
 
-> On Wednesday 22 June 2005 04:44, Matthias Andree wrote:
-> > This could be run and determined automatically by the autoconf/automake
-> > couple, automake supports conditional compilation (i. e. depending on
-> > autoconf findings, link another module into a program, or something like
-> > that).
-> 
-> Yes, that would be nice. However, I personally don't have enough time to do 
-> this cleanly. The edit-the-makefile-if-you-have-a-broken-PAM solution 
-> satisfies me.
+> You haven't explained why my statement ".so's are only included in
+> -devel packages because their only use is when linking" is false. I
+> have agreed with everything you have written, and I seem to be missing
+> that critical part. You have even provided an example where libfoo.so
+> is in the -devel rpm, just as I said.
 
-I would hate to lose the simplicity of the Makefile approach for the 
-plugin tree.  I think one of the important reasons for the plugin tree in 
-the first place is to provide a venue for extensions that doesn't inherit 
-all of the build complexity of the main tree.
+Sorry. I totally misread the problem that was discussed, and your
+assertions.
 
-James
-
+-- 
+Matthias Andree
 
