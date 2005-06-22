@@ -1,11 +1,10 @@
-From: Simon Perreault <nomis80@...401...>
+From: James Yonan <jim@...41...>
 Subject: Re: [Openvpn-devel] Why must PAM library be dlopened?
-References: <200506141234.50171.nomis80@...401...> <200506221459.16684.nomis80@...401...> <200506221515.36785.nomis80@...401...>
-In-Reply-To: <200506221515.36785.nomis80@...401...>
+In-Reply-To: <200506220836.53588.nomis80@...401...>
+Message-ID: <Pine.LNX.4.58.0506222324120.10675@...41...>
+References: <200506141234.50171.nomis80@...401...> <200506211059.31506.nomis80@...401...>
+ <Pine.LNX.4.58.0506212216440.10675@...41...> <200506220836.53588.nomis80@...401...>
 MIME-Version: 1.0
-Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_erbuC8QDetAyDCO"
-Message-Id: <200506221524.14029.nomis80@...401...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -16,43 +15,47 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Jun 22 12:25:12 2005
-To: openvpn-devel@lists.sourceforge.net
+Date: Wed Jun 22 22:56:40 2005
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+To: Simon Perreault <nomis80@...401...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---Boundary-00=_erbuC8QDetAyDCO
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+On Wed, 22 Jun 2005, Simon Perreault wrote:
 
-On Wednesday 22 June 2005 15:15, Simon Perreault wrote:
-> That's a bug that should be reported
-> to SUSE.
+> On Wednesday 22 June 2005 00:22, James Yonan wrote:
+> > Thanks for the analysis.  Because of the PAM bug, I think that
+> > openvpn-auth-pam will need to support the dlopen workaround for some time
+> > to come.
+> 
+> Yes, I have been thinking the same.
+> 
+> > Maybe the solution would be to set up an alternative Makefile 
+> > target that builds according to your patch, but leave the default for now
+> > as is.
+> 
+> Great idea. You'll find a new patch attached that does just this. A variable 
+> in the Makefile, DLOPEN_PAM, controls whether libpam.so is dlopened or linked 
+> in directly. I've set it to zero by default, and I suggest that you leave it 
+> that way. This makes the default Makefile work with newer, not broken PAM. 
+> The rationale is that you should have more work to do when you want to use a 
+> broken PAM than when you use a fixed one. And because broken PAM will be less 
+> often encountered as they are obsoleted by newer distro releases, this is the 
+> natural thing to do.
 
-...and here is the patch that should be submitted to them. I won't do so, I 
-don't want to help a distro which has given me so much trouble. (Much more 
-than only openvpn-related trouble.)
+Simon,
 
---Boundary-00=_erbuC8QDetAyDCO
-Content-Type: text/x-diff;
-  charset="iso-8859-1";
-  name="pam-modules-9.3-link-with-pam.diff"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename="pam-modules-9.3-link-with-pam.diff"
+Thanks for the patch.  I'm inclined to merge it in the 2.0.x series,
+however I would want to set DLOPEN_PAM=1 at least initially since I would
+be concerned about breaking existing behavior in a stable series.  (I
+agree in theory that you should have more work to do when you want to use
+a broken tool, however I tend to believe more strongly that workarounds
+which are needed by a significant percentage of users need to be the
+default.)
 
---- pam-modules-9.3/pam_unix2-1.26/src/Makefile.am.orig	2005-06-22 15:21:18.000000000 -0400
-+++ pam-modules-9.3/pam_unix2-1.26/src/Makefile.am	2005-06-22 15:19:02.000000000 -0400
-@@ -24,7 +24,8 @@
- pam_PROGRAMS = pam_unix2.so
- 
- pam_unix2_so_LDFLAGS = -Wl,-soname,pam_unix2.so \
--	-Wl,--version-script=$(srcdir)/pam_unix2.map
-+	-Wl,--version-script=$(srcdir)/pam_unix2.map \
-+	$(LIBPAM)
- 
- pam_unix2_so_SOURCES = passwd_nss.c unix_acct.c get_options.c \
- 	unix_passwd.c yppasswd_xdr.c passwd_nisplus.c support.c \
+This will add a GNU Make requirement for the plugin which might be bad,
+but seems reasonable for now -- at least until someone gets a serious itch
+to set up an autoconf/automake build system.
 
---Boundary-00=_erbuC8QDetAyDCO--
+James
 
