@@ -1,10 +1,7 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] Why must PAM library be dlopened?
-In-Reply-To: <200506231324.52051.nomis80@...401...>
-Message-ID: <Pine.LNX.4.58.0506231750330.10675@...41...>
-References: <200506141234.50171.nomis80@...401...> <20050623083639.GA14170@...33...>
- <Pine.LNX.4.58.0506230942080.10675@...41...> <200506231324.52051.nomis80@...401...>
+Message-ID: <20050624033333.67000.qmail@...424...>
+From: ov <ov2k@...109...>
 MIME-Version: 1.0
+Subject: [Openvpn-devel] ARM port
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,25 +12,36 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Jun 23 16:56:06 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Date: Thu Jun 23 20:35:41 2005
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
-To: Simon Perreault <nomis80@...401...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Thu, 23 Jun 2005, Simon Perreault wrote:
+Hi all, 
 
-> On Thursday 23 June 2005 12:05, James Yonan wrote:
-> > One concern I would have is whether the PAM version test at build time is
-> > always predictive of what the PAM version will be at run time.
-> 
-> No, but then that would be going into the realm of cross-compiling.
+I'm new to this list, so I hope I'm posting to the right place.  I've been
+working on getting openvpn to work on an ARM system, and I've run into a
+little trouble.
 
-I was thinking more about someone who builds a binary RPM on a machine
-that has a correctly linked pam-modules set causing autoconf to sense this
--- now that RPM can't be used on a machine with an earlier broken version
-of pam-modules.
+A straight ./configure; make works fine, but the resulting binary fails
+the loopback self tests with an assertion failure in integer.h: 
+TESTING ENCRYPT/DECRYPT of packet length=97
+Assertion failed at integer.h:94
 
-James
+Oddly enough, with this code before the assert, it passes the test: 
+if(0 > x || x >= mod || -mod > y || y > mod)
+  fprintf(stderr, "x %d y %d mod %dn", x, y, mod);
+
+Any ideas on what's going on?  Has anybody seen this before?  Should I be
+worried about this?
+
+Oliver
+
+
+		
+__________________________________ 
+Yahoo! Mail 
+Stay connected, organized, and protected. Take the tour: 
+http://tour.mail.yahoo.com/mailtour.html 
 
 
