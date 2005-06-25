@@ -1,9 +1,9 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] ARM port
-In-Reply-To: <20050624201824.19628.qmail@...426...>
-Message-ID: <Pine.LNX.4.58.0506250000270.10675@...41...>
-References: <20050624201824.19628.qmail@...426...>
+From: Simon Perreault <nomis80@...422...>
+Subject: Re: [Openvpn-devel] Why must PAM library be dlopened?
+References: <200506141234.50171.nomis80@...401...> <200506231324.52051.nomis80@...401...> <Pine.LNX.4.58.0506231750330.10675@...41...>
+In-Reply-To: <Pine.LNX.4.58.0506231750330.10675@...41...>
 MIME-Version: 1.0
+Message-Id: <200506250929.27797.nomis80@...422...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,45 +14,25 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Jun 24 23:22:13 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: ov <ov2k@...109...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Sat Jun 25 06:31:28 2005
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-On Fri, 24 Jun 2005, ov wrote:
+On Thursday 23 June 2005 19:54, James Yonan wrote:
+> I was thinking more about someone who builds a binary RPM on a machine
+> that has a correctly linked pam-modules set causing autoconf to sense this
+> -- now that RPM can't be used on a machine with an earlier broken version
+> of pam-modules.
 
-> * What are the values of x, y, and mod when the assertion is hit?
-> 32, -1, 64
+That's why RPMs are built on a per-distro basis. You usually can't assume that 
+an RPM compiled on FC3 will work on FC4. I tried to explain that point to my 
+boss at my previous job but we ended up cross-compiling on Gentoo for Suse 
+9.2 and FC2 anyway. I bet they've run into a lot of trouble and now have 
+dedicated build machines running the target distros.
 
-This is quite strange because these values are nominal -- they shouldn't 
-have triggered the assertion.
-
-The assertion statement says:
-
-  ASSERT (0 <= x && x < mod && -mod <= y && y <= mod);
-
-substitution gives:
-
-  0 <= 32 && 32 < 64 && -64 <= -1 && -1 <= 64
-
-which is a true statement when x, y, and mod are integers, as they are
-declared to be.
-
-For example, when I do the same test on x86 
-with modulo_add instrumentation added, I see the same 32/-1/64 parameter 
-set.
-
-Fri Jun 24 23:58:21 2005 TESTING ENCRYPT/DECRYPT of packet length=97
-Fri Jun 24 23:58:21 2005 modulo_add(int x=92, int y=1, int mod=100)
-Fri Jun 24 23:58:21 2005 modulo_add(int x=32, int y=-1, int mod=64)
-Fri Jun 24 23:58:21 2005 modulo_add(int x=93, int y=1, int mod=100)
-Fri Jun 24 23:58:21 2005 modulo_add(int x=31, int y=0, int mod=64)
-Fri Jun 24 23:58:21 2005 modulo_add(int x=94, int y=1, int mod=100)
-
-Combine this with your observation that making the function inline or 
-turning off -O2 optimization fixes the problem, and it's starting to smell 
-like a compiler bug.
-
-James
+Anyway, your initial concern is not a problem because RPMs are not supposed to 
+be compatible across distro versions.
 
