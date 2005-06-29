@@ -1,10 +1,7 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] Re: Radius support (Authentification, Authorization
- and Accounting)
-In-Reply-To: <d9gch6$408$1@...165...>
-Message-ID: <Pine.LNX.4.58.0506280831370.27900@...41...>
-References: <200504291033.00667.ralfluebben@...68...> <d9gch6$408$1@...165...>
+Message-ID: <42C29B31.4010202@...428...>
+From: Hartmut Goebel <h.goebel@...428...>
 MIME-Version: 1.0
+Subject: [Openvpn-devel] Status and Roadmap for IPv6 Support
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,127 +12,48 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Jun 28 07:48:44 2005
-Content-Type: TEXT/PLAIN; charset="utf-8"
+Date: Wed Jun 29 05:58:29 2005
+Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
-To: Ralf =?UTF-8?B?TMO8YmJlbg==?= <ralfluebben@...68...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Fri, 24 Jun 2005, Ralf [UTF-8] L=C3=BCbben wrote:
+Hello,
 
-> Hello,
->=20
-> the radius plugin in is working.
-> I have still some questions about the OpenVpn behaviour.
->=20
-> After one hour there is a rekeying/reauthentication of the user? Is that
-> right.
+I plan writing an article about using OpenVPN for tunneling IPv6.
+Thatfor some more information about the current status would help
+descriping the benefits of OpenVPN more precisely.
 
-Yes, this depends on the value of the --reneg-sec parameter which is=20
-usually set to 3600.
+1) Current status
 
-> The problem is that before an user can be authenticated from the
-> plugin the user needs a disconnect from OpenVpn for this user. At the
-> moment the reauthentenication fails and the OpenVpn disconnects the user
-> after the keepalive interval. Ather this the user can connect again.
->=20
-> Have I the possibility to get the information if the authentication is a =
-new
-> or a reauthentication from the enviroment variable?
->=20
-> Maybe if I already have the user in my internal list and the user comes in
-> with the same username, password and remote_ip he is authenticated without
-> asking the radius server.
-> The other possibility is too delete the user from the list and add the us=
-er
-> again to the list.
+1a) As far as I've found out, OpenVPN 2.0 supports forwarding IPv6 when
+using tun+tun-ipv6 or tap. But neither of the build-in commands (like
+route, ifconfig, server, push/pull) supprot IPv6-addresses or IPv6
+Name-lookup.
 
-One thing that I'm thinking about adding to the plugin interface is an=20
-explicit constructor and destructor callback for client instance objects,=20
-and a related client handle which would be passed to all the plugin=20
-functions.
+Is this correct, or have I overlooked something?
 
-Right now, the best way to do this is to track client-connect and=20
-client-disconnect calls.
+1b) Since one has to set up IPv6 manually (due to 1a): What is the
+benefit of using tun+tun-ipv6 instead of tap? I assume the first alows
+for using current IPv4 support, while the later requires me to set up
+IPv4 manually (in addition of setting up IPv6 manually).
 
-> What are about the counters in the status file? Are they set to 0 at the
-> rekeying/reauthentication? So I have to send the stop ticket to the radius
-> server and I have to send again a start ticket.
+2) "merge JuanJo Ciarlante's IPv6 patch"
 
-The rekeying is "under the hood" and should mostly be invisible from the=20
-perspective of a plugin.  There shouldn't be any=20
-client-disconnect/client-connect cycling when this occurs.
+Thw wiki-wishlist states this as a topic. I've not found this path yet.
+What does it enhance/fix/enable?
 
-> What are the maximum length of strings in the enviroment that I can get f=
-rom
-> the OpenVpn process? Maybe 128 characters for the username and password.
+3) Roadmap, further plans for IPv6
 
-Right now the max username and password length is defined as
+What is the roadmap to improofing IPv6-support? What topics, which
+release, which timeline?
 
-#define USER_PASS_LEN 128
 
-in misc.c (each separately can be up to this length).
+Thanks for your answers in advance!
 
-However, for environmental variables in general, there is no length=20
-restriction.
+--=20
+Sch=F6nen Gru=DF - Regards
+Hartmut Goebel
 
-James
-
-> Ralf L=C3=BCbben
->=20
->=20
-> Ralf L=C3=BCbben wrote:
->=20
-> > Hello,
-> >=20
-> > I am interesting in build radius support for OpenVpn.
-> > At the moment I'am thinking about what is the best way.
-> >=20
-> > 1. Authentification and Authroization:
-> > I think this already works with the plugin pam_radius_auth.so, is that
-> > right?
-> >=20
-> > But I am interested in more features,
-> > like to get the ip-address and the routes from the RADIUS-Server.
-> > Can this be done with a plugin? Maybe by creating the configurationfiles
-> > at the start of the connection?
-> > Or could this be integrated in the Source Code? I think this would be t=
-he
-> > best solution.
-> > I hope the fea
-> > 2. Accounting:
-> > I need to count the traffic  of a VPN-connection, one the side every
-> > traffic which goes from a client to the server (tun0-interface) and one
-> > the other side every traffic which goes through the VPN, maybe from one
-> > client to another client.
-> > So when I use the counter of the tun-interface, I lose the traffic which
-> > goes from one client to another. If I count the traffic of the
-> > eth-interface I get other traffic, which has nothing to do with the vpn.
-> >=20
-> > Maybe someone has some experiences with this topic and give some hints
-> > which is the best way? To do all things in a modul or to do all changes=
- in
-> > the source code. and where I have to look in the source code to integra=
-te
-> > this feature.
-> >=20
-> > I hope there is a gerneal interest in this feature.
-> >=20
-> > For every help I am very grateful.
-> >=20
-> > Ralf L=C3=BCbben
->=20
->=20
->=20
->=20
-> -------------------------------------------------------
-> SF.Net email is sponsored by: Discover Easy Linux Migration Strategies
-> from IBM. Find simple to follow Roadmaps, straightforward articles,
-> informative Webcasts and more! Get everything you need to get up to
-> speed, fast. http://ads.osdn.com/?ad_id=3D7477&alloc_id=3D16492&op=3Dclick
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->=20
+| Hartmut Goebel             | IT-Security -- effizient |
+| h.goebel@...428... | www.goebel-consult.de    |
 
