@@ -1,9 +1,9 @@
-Message-ID: <42C3AD6E.1080907@...428...>
-From: Hartmut Goebel <h.goebel@...428...>
+Message-ID: <20050701025538.15507.qmail@...429...>
+From: wj h <hwj_sky@...362...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Status and Roadmap for IPv6 Support
-References: <42C29B31.4010202@...428...> <Pine.LNX.4.58.0506291113130.27900@...41...>
-In-Reply-To: <Pine.LNX.4.58.0506291113130.27900@...41...>
+Content-Type: multipart/alternative; boundary="0-1106948376-1120186538=:15145"
+Content-Transfer-Encoding: 8bit
+Subject: [Openvpn-devel] Rebuild openvpn2.0 with VC.NET(VC7) IDE
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,48 +14,44 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Jun 30 01:28:09 2005
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
+Date: Thu Jun 30 19:57:07 2005
 To: openvpn-devel@lists.sourceforge.net
 
-Hello,
+--0-1106948376-1120186538=:15145
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 
-Thanks for your answer.
+aGkgIQogCiAgIEkgbmVlZCB5b3VyIGhlbHAhIEkgY2FuIHJlYnVpbGQgb3BlbnZwbjIuMCBpbiBW
+QzcgQ01EIHdpdGggY29tbWFuZCAibm1ha2UgbWFrZWZpbGUudzMyLXZjIiBzdWNlc3NmdWxseSwg
+YnV0IHdoZW4gaSBidWlsZCBhIHByb2plY3QgaW4gVkM3IElERSB0byByZWNvbXBpbGUgb3BlbnZw
+biwgYW5kIGkgZmFpbGVkLCBjYW4gc29tZW9uZSBoZWxwIG1lICxhbmQgaG93IHRvIGJ1aWxkIGFu
+IG9wZW52cG4gcHJvamVjdCBpbiBWQzcgSURFLCBpIGhvcGUgeW91IGNhbiBnaXZlIHNvbWUgYWR2
+aWNlcywgdGhhbmtzIQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgTmljaG9sYXMKCgkJCi0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpETyBZT1UgWUFIT08hPwogINHFu6LD4rfRR9PKz+SjrU5v
+LjG1xLfAtr63wMCsu/izrLTz08rP5CAg
 
->>1a) As far as I've found out, OpenVPN 2.0 supports forwarding IPv6 when
->>using tun+tun-ipv6 or tap. But neither of the build-in commands (like
->>route, ifconfig, server, push/pull) supprot IPv6-addresses or IPv6
->>Name-lookup.
->>
->>Is this correct, or have I overlooked something?
->=20
->=20
-> That is correct for OpenVPN 1.6 and 2.0...  But JuanJo Ciarlante's IPv6=20
-> patch against 2.0 adds IPv6 support in a much more substantial way.
+--0-1106948376-1120186538=:15145
+Content-Type: text/html; charset="gb2312"
+Content-Transfer-Encoding: base64
 
-I tested this patch but it seams to only target issues about forwarding
-IPv6 packets. OpenVPn options/commands like 'route' are anchanged and
-still not able to handle IPvp addresses. This is since
-openvpn_inet_aton() does only suppport dotted quads.
+PERJVj5oaSAhPC9ESVY+CjxESVY+Jm5ic3A7PC9ESVY+CjxESVY+Jm5ic3A7Jm5ic3A7IEkgbmVl
+ZCB5b3VyIGhlbHAhIEkgY2FuIHJlYnVpbGQgb3BlbnZwbjIuMCBpbiZuYnNwO1ZDNyBDTUQmbmJz
+cDt3aXRoIGNvbW1hbmQgIm5tYWtlIG1ha2VmaWxlLnczMi12YyIgc3VjZXNzZnVsbHksIGJ1dCB3
+aGVuIGkgYnVpbGQgYSBwcm9qZWN0IGluIFZDNyBJREUgdG8gcmVjb21waWxlIG9wZW52cG4sIGFu
+ZCBpIGZhaWxlZCwgY2FuIHNvbWVvbmUgaGVscCBtZSAsYW5kIGhvdyB0byBidWlsZCBhbiBvcGVu
+dnBuIHByb2plY3QgaW4gVkM3IElERSwgaSBob3BlIHlvdSBjYW4gZ2l2ZSBzb21lIGFkdmljZXMs
+IHRoYW5rcyE8L0RJVj4KPERJVj4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsm
+bmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJz
+cDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsm
+bmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJz
+cDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsm
+bmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJz
+cDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsm
+bmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJz
+cDsmbmJzcDsmbmJzcDsgTmljaG9sYXM8L0RJVj48cD4KCQk8aHIgc2l6ZT0xPkRPIFlPVSBZQUhP
+TyE/PGJyPiAKPGEgaHJlZj0iaHR0cDovL2NuLm1haWwueWFob28uY29tLz9pZD03NzA3MiIgdGFy
+Z2V0PWJsYW5rPiAK0cW7osPit9FH08rP5KOtTm8uMbXEt8C2vrfAwKy7+LOstPPTys/kIDwvYT4g
 
-Or have I overlooked something?
-
-> I am mirroring a recent snapshot of the patch:
-
-Thanks.
-
-> The patch is planned for inclusion in OpenVPN 2.1, though people are usin=
-g=20
-> it today with 2.0.
-
-Any plan about when should 2.1 be released?
-
---=20
-Sch=F6nen Gru=DF - Regards
-Hartmut Goebel
-
-| Hartmut Goebel             | IT-Security -- effizient |
-| h.goebel@...428... | www.goebel-consult.de    |
-
+--0-1106948376-1120186538=:15145--
 
