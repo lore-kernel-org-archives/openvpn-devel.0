@@ -1,10 +1,9 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] Status and Roadmap for IPv6 Support
-In-Reply-To: <42C29B31.4010202@...428...>
-Message-ID: <Pine.LNX.4.58.0506291113130.27900@...41...>
-References: <42C29B31.4010202@...428...>
+Message-ID: <42C3AD6E.1080907@...428...>
+From: Hartmut Goebel <h.goebel@...428...>
 MIME-Version: 1.0
-Content-Type: MULTIPART/MIXED; BOUNDARY="8323328-233788034-1120066169=:27900"
+Subject: Re: [Openvpn-devel] Status and Roadmap for IPv6 Support
+References: <42C29B31.4010202@...428...> <Pine.LNX.4.58.0506291113130.27900@...41...>
+In-Reply-To: <Pine.LNX.4.58.0506291113130.27900@...41...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,219 +14,48 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Jun 29 10:30:56 2005
-To: Hartmut Goebel <h.goebel@...428...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Thu Jun 30 01:28:09 2005
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-  Send mail to mime@...24... for more info.
+Hello,
 
---8323328-233788034-1120066169=:27900
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Thanks for your answer.
 
-On Wed, 29 Jun 2005, Hartmut Goebel wrote:
+>>1a) As far as I've found out, OpenVPN 2.0 supports forwarding IPv6 when
+>>using tun+tun-ipv6 or tap. But neither of the build-in commands (like
+>>route, ifconfig, server, push/pull) supprot IPv6-addresses or IPv6
+>>Name-lookup.
+>>
+>>Is this correct, or have I overlooked something?
+>=20
+>=20
+> That is correct for OpenVPN 1.6 and 2.0...  But JuanJo Ciarlante's IPv6=20
+> patch against 2.0 adds IPv6 support in a much more substantial way.
 
-> Hello,
-> 
-> I plan writing an article about using OpenVPN for tunneling IPv6.
-> Thatfor some more information about the current status would help
-> descriping the benefits of OpenVPN more precisely.
-> 
-> 1) Current status
-> 
-> 1a) As far as I've found out, OpenVPN 2.0 supports forwarding IPv6 when
-> using tun+tun-ipv6 or tap. But neither of the build-in commands (like
-> route, ifconfig, server, push/pull) supprot IPv6-addresses or IPv6
-> Name-lookup.
-> 
-> Is this correct, or have I overlooked something?
+I tested this patch but it seams to only target issues about forwarding
+IPv6 packets. OpenVPn options/commands like 'route' are anchanged and
+still not able to handle IPvp addresses. This is since
+openvpn_inet_aton() does only suppport dotted quads.
 
-That is correct for OpenVPN 1.6 and 2.0...  But JuanJo Ciarlante's IPv6 
-patch against 2.0 adds IPv6 support in a much more substantial way.
+Or have I overlooked something?
 
-> 1b) Since one has to set up IPv6 manually (due to 1a): What is the
-> benefit of using tun+tun-ipv6 instead of tap? I assume the first alows
-> for using current IPv4 support, while the later requires me to set up
-> IPv4 manually (in addition of setting up IPv6 manually).
->
-> 2) "merge JuanJo Ciarlante's IPv6 patch"
-> 
-> Thw wiki-wishlist states this as a topic. I've not found this path yet.
-> What does it enhance/fix/enable?
+> I am mirroring a recent snapshot of the patch:
 
-I am mirroring a recent snapshot of the patch:
+Thanks.
 
-http://openvpn.net/patch/openvpn-2.0-udp6-jjo-v0.3.12-MH.patch
+> The patch is planned for inclusion in OpenVPN 2.1, though people are usin=
+g=20
+> it today with 2.0.
 
-I've also attached JuanJo's README for the patch.
- 
-> 3) Roadmap, further plans for IPv6
-> 
-> What is the roadmap to improofing IPv6-support? What topics, which
-> release, which timeline?
+Any plan about when should 2.1 be released?
 
-The patch is planned for inclusion in OpenVPN 2.1, though people are using 
-it today with 2.0.
+--=20
+Sch=F6nen Gru=DF - Regards
+Hartmut Goebel
 
-James
---8323328-233788034-1120066169=:27900
-Content-Type: TEXT/plain; charset=US-ASCII; name="README.txt"
-Content-Transfer-Encoding: BASE64
-Content-ID: <Pine.LNX.4.58.0506291129290.27900@...41...>
-Content-Description: 
-Content-Disposition: attachment; filename="README.txt"
+| Hartmut Goebel             | IT-Security -- effizient |
+| h.goebel@...428... | www.goebel-consult.de    |
 
-IyAkSWQ6IFJFQURNRS5JUHY2LHYgMS4xLjEwLjUgMjAwNS8wNi8yMiAxNTo1
-Nzo1MSBqam8gRXhwICQgIw0KDQpUaGlzIFJFQURNRSBjb3ZlcnMgVURQL0lQ
-djYgdjAuMy54ICggLS11ZHA2IGFuZCAtLXRjcDYteHh4eHh4ICApIHN1cHBv
-cnQgZm9yIG9wZW52cG4tMi4wLg0KDQpBbHNvLCB3aXRoIGFkZHJlc3MgZmFt
-aWx5ICJnZW5lcmFsaXphdGlvbiIgY2hhbmdlcyBjYW1lIGxvY2FsIEFGX1VO
-SVggc29ja2V0DQpzdXBwb3J0Lg0KDQpBdmFpbGFibGUgdW5kZXIgR1BMdjIg
-ZnJvbSANCiAgaHR0cDovL3d3dy5pcnJpZ2FjaW9uLmdvdi5hci9qdWFuam8v
-b3BlbnZwbi8NCg0KU2VlICJFeGFtcGxlcyIgc2VjdGlvbiBiZWxvdyBmb3Ig
-dXNhZ2UuDQoNCiogV29ya2luZzoNCiAgLSB0Y3A2LT50Y3A2OyB0ZXN0ZWQg
-b24gR05VL0xpbnV4DQogIC0gdXBkNi0+dXBkNjsgdGVzdGVkIG9uIEdOVS9M
-aW51eCwgRnJlZUJTRC01LjMgYW5kIE9wZW5CU0QtMy42Lg0KICAtIHVwZDQt
-PnVwZDYgKGlwdjYgYm91bmQpOyBzaG93cyBjb3JyZWN0bHkgbWFwcGVkIGFk
-ZHJlc3MgKHJlcXVpcmVzIC0tZmxvYXQgZm9yIG5vdykNCiAgLSB1bml4LWRn
-cmFtLT51bml4LWRncmFtIFtBRl9VTklYXQ0KICAgIHVzZWZ1bCBmb3IgaW1w
-bGVtZW50aW5nIGxvY2FsIHByb3hpZXMgdGhhdCBjYW4gdGFrZSBmdWxsIGFk
-dmFudGFnZQ0KICAgIG9mIFBPU0lYIGZpbGVzeXN0ZW0gcGVybWlzc2lvbnMg
-KCBtb3JlIHBvd2VyZnVsbCBhY2Nlc3MgbWVjaGFuaXNtcw0KICAgIHRoYW4g
-aW5ldCwgZXZlbiBmb3IgbG9jYWxob3N0KQ0KICAtIG11bHRpaG9tZSBbTUhd
-IGZvciBJUHY0IGFuZCBJUHY2OyBjb21waWxlcyBhbmQgd29ya3MgT0sgR05V
-L0xpbnV4DQogICAgaXB2NCBNSCBzdXBwb3J0IHRha2VuIGFuZCBhZGFwdGVk
-IGZyb20gSmFtZXMnIG9yaWdpbmFsIE1IIHBhdGNoIA0KDQoqIEV4cGVyaW1l
-bnRhbCBjb2RlIChjb3JyZWN0bHkgI2lmZGVmJ2Qgb3V0KToNCiAgLSBwYXls
-b2FkIGNvbm50cmFjazogaW50ZW5kZWQgZm9yIGZpbHRlcmluZyBUQ1AgcmV0
-cmFuc21pc3Npb25zIG92ZXIgcmVsaWFibGUgbGlua3MNCiAgICAxc3QgdGVz
-dHMgaW5kaWNhdGUgYXByb3ggfjIwJSBzcGVlZHVwcyAodmVyeSBjb2Fyc2x5
-IHRlc3RlZCkNCg0KKiBTZXR1cDoNCiAgLi9jb25maWd1cmUgLS1kaXNhYmxl
-LWlwdjYgICAgICAgIChlbmFibGVkIGJ5IGRlZmF1bHQpDQogIC4vY29uZmln
-dXJlIC0tZW5hYmxlLXVuaXgtc29ja2V0cyAoZGlzYWJsZWQgYnkgZGVmYXVs
-dCkNCiAgLi9jb25maWd1cmUgLS1lbmFibGUtcGF5bG9hZC1jb25udHJhY2sg
-KGV4cGVyaW1lbnRhbCBjb2RlLCBub3QgZm9yIHByb2R1Y3Rpb24gdXNhZ2Up
-DQogIDoNCg0KKiBVc2FnZToNCiAgRm9yIElQdjYganVzdCBzcGVjaWZ5ICIt
-cCB1cGQ2IiBhbiBwcm9wZXIgSVB2NiBob3N0bmFtZXMsIGFkYXB0aW5nIHRo
-ZSBleGFtcGxlDQogIGZyb20gbWFuIHBhZ2UgLi4uDQoNCiAgT24gbWF5Og0K
-ICAgIG9wZW52cG4gLS1wcm90byB1ZHA2IC0tcmVtb3RlIDxqdW5lX0lQdjZf
-YWRkcj4gLS1kZXYgdHVuMSAtLWlmY29uZmlnIDEwLjQuMC4xIDEwLjQuMC4y
-DQogICAgLS12ZXJiIDUgLS1zZWNyZXQga2V5DQoNCiAgT24ganVuZToNCiAg
-ICBvcGVudnBuIC0tcHJvdG8gdWRwNiAtLXJlbW90ZSA8bWF5X0lQdjZfYWRk
-cj4gIC0tZGV2IHR1bjEgLS1pZmNvbmZpZyAxMC40LjAuMiAxMC40LjAuMQ0K
-ICAgIC0tdmVyYiA1IC0tc2VjcmV0IGtleQ0KICANCiAgU2FtZSBmb3IgLS1w
-cm90byB0Y3A2LWNsaWVudCwgdGNwNi1zZXJ2ZXIuDQoNCiogRXhhbXBsZXM6
-IHNvbWUgc3VjY2VzZnVsbHkgdGVzdGVkIGNvbW1hbmQgbGluZXMgDQogIEJU
-VyBkaWQgeW91IGtub3cgdGhhdCBvcGVudnBuIGNhbiBzdWNjZXNmdWxseSBu
-ZWdvdGlhdGUgdG8gc2VsZg0KICB3aXRoIC0tcmVtb3RlIGxvY2FsaG9zdCA/
-IFZFUlkgdXNlZnVsIGZvciBmYXN0IHRlc3RpbmcuDQogIA0KICAtIElQdjYg
-Im5vcm1hbCIgdXNhZ2UgKCtzdWNjZXNmdWxseSB0ZXN0ZWQgdHVubmVsIHRy
-YWZmaWMpIA0KICAgIHNlcnZlciMgb3BlbnZwbiAtLXByb3RvIHVkcDYgLi4u
-DQogICAgICA6DQogICAgICBUaHUgU2VwIDIzIDIyOjE1OjQ4IDIwMDQgUGVl
-ciBDb25uZWN0aW9uIEluaXRpYXRlZCB3aXRoIFtBRl9JTkVUNl1mZTgwOjoy
-MDU6NWRmZjpmZWYxOjFjZWIld2xhbjB3ZHMxOjUwMDANCiAgICAgIDoNCiAg
-ICBjbGllbnQjIG9wZW52cG4gLS1wcm90byB1ZHA2IC0tcmVtb3RlIGZlODA6
-OjI0MDo1ZmY6ZmVhZTpjODUxIC4uLg0KICAgICAgOg0KICAgICAgVGh1IFNl
-cCAyMyAyMjoxMzoxOSAyMDA0IFBlZXIgQ29ubmVjdGlvbiBJbml0aWF0ZWQg
-d2l0aCBbQUZfSU5FVDZdZmU4MDo6MjQwOjVmZjpmZWFlOmM4NTEld2xhbjB3
-ZHMwOjUwMDANCiAgICAgIDoNCg0KICAtIElQdjYgc2VydmVyLCBJUHY0IGNs
-aWVudCAobW9yZSBkZXRhaWxlZCkNCiAgICBzZXJ2ZXIjIG9wZW52cG4gLS1w
-cm90byB1ZHA2IC4uLg0KICAgICAgOg0KICAgICAgVGh1IFNlcCAyMyAyMjoy
-ODozNiAyMDA0IFVEUHY2IGxpbmsgbG9jYWwgKGJvdW5kKTogW0FGX0lORVQ2
-XVt1bmRlZl06NTAwMA0KICAgICAgVGh1IFNlcCAyMyAyMjoyODozNiAyMDA0
-IFVEUHY2IGxpbmsgcmVtb3RlOiBbQUZfSU5FVDZdW3VuZGVmXQ0KICAgICAg
-VGh1IFNlcCAyMyAyMjoyODo1MCAyMDA0IFBlZXIgQ29ubmVjdGlvbiBJbml0
-aWF0ZWQgd2l0aCBbQUZfSU5FVDZdOjpmZmZmOjEwLjU1LjE0LjI1Mzo1MDAw
-DQogICAgICBUaHUgU2VwIDIzIDIyOjI4OjUxIDIwMDQgSW5pdGlhbGl6YXRp
-b24gU2VxdWVuY2UgQ29tcGxldGVkDQogICAgICBUaHUgU2VwIDIzIDIyOjI4
-OjU2IDIwMDQgV0FSTklORzogQWN0dWFsIFJlbW90ZSBPcHRpb25zICgnLi4u
-IHByb3RvIFVEUHY0IC4uLiAnKSBcDQogICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgYXJlIGluY29uc2lzdGVudCB3aXRoIEV4cGVjdGVkIFJlbW90
-ZSBPcHRpb25zICgnLi4uIHByb3RvIFVEUHY2IC4uLicpDQoNCiAgICBjbGll
-bnQjIG9wZW52cG4gIC0tcmVtb3RlIDEwLjU1LjE0LjI1NCAuLi4gICMjIyBz
-YW1lIGRlZmF1bHQgYXMgbm93OiAtLXVkcA0KICAgICAgOg0KICAgICAgVGh1
-IFNlcCAyMyAyMjoyNjoxMSAyMDA0IFVEUHY0IGxpbmsgbG9jYWwgKGJvdW5k
-KTogW0FGX0lORVRdW3VuZGVmXTo1MDAwDQogICAgICBUaHUgU2VwIDIzIDIy
-OjI2OjExIDIwMDQgVURQdjQgbGluayByZW1vdGU6IFtBRl9JTkVUXTEwLjU1
-LjE0LjI1NDo1MDAwDQogICAgICBUaHUgU2VwIDIzIDIyOjI2OjIxIDIwMDQg
-UGVlciBDb25uZWN0aW9uIEluaXRpYXRlZCB3aXRoIFtBRl9JTkVUXTEwLjU1
-LjE0LjI1NDo1MDAwDQogICAgICBUaHUgU2VwIDIzIDIyOjI2OjIxIDIwMDQg
-V0FSTklORzogQWN0dWFsIFJlbW90ZSBPcHRpb25zICgnLi4uIHByb3RvIFVE
-UHY2IC4uLicpIFwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBh
-cmUgaW5jb25zaXN0ZW50IHdpdGggRXhwZWN0ZWQgUmVtb3RlIE9wdGlvbnMg
-KCcuLi4gcHJvdG8gVURQdjQgLi4uJykNCiAgICAgIFRodSBTZXAgMjMgMjI6
-MjY6MjIgMjAwNCBJbml0aWFsaXphdGlvbiBTZXF1ZW5jZSBDb21wbGV0ZWQN
-Cg0KICAtIElQdjYgbG9vcGJhY2sNCiAgICBhbG9uZSMgb3BlbnZwbiAtLXBy
-b3RvIHVkcDYgLS1yZW1vdGUgOjoxIC4uLg0KICAgICAgOg0KICAgICAgV2Vk
-IFNlcCAyMiAxMzowMzowNyAyMDA0IFBlZXIgQ29ubmVjdGlvbiBJbml0aWF0
-ZWQgd2l0aCBbQUZfSU5FVDZdOjoxOjUwMDANCiAgICAgIDoNCg0KICAtIEFG
-X1VOSVggdG9zZWxmDQogICAgYWxvbmUjIG9wZW52cG4gLS1wcm90byB1bml4
-LWRncmFtIC0tbG9jYWwgL3RtcC9vLnMgLS1yZW1vdGUgL3RtcC9vLnMgLS1k
-ZXYgdHVuICAuLi4NCiAgICAgIDoNCiAgICAgIFRodSBTZXAgMjMgMTY6Mzc6
-MjcgMjAwNCBQZWVyIENvbm5lY3Rpb24gSW5pdGlhdGVkIHdpdGggW0FGX1VO
-SVhdL3RtcC9vLnMNCiAgICAgIDoNCiAgDQogIC0gQUZfVU5JWCBiZXR3ZWVu
-IHRvIGRpZmYgaW5zdGFuY2VzDQogICAgcGVlcjEjIG9wZW52cG4gLS1wcm90
-byB1bml4LWRncmFtIC0tbG9jYWwgL3RtcC9vMS5zIC0tcmVtb3RlIC90bXAv
-bzIucw0KICAgIHBlZXIyIyBvcGVudnBuIC0tcHJvdG8gdW5peC1kZ3JhbSAt
-LWxvY2FsIC90bXAvbzIucyAtLXJlbW90ZSAvdG1wL28xLnMNCiAgICAgIDoN
-CiAgICAgIFdlZCBTZXAgMjIgMTI6NDk6MDMgMjAwNCBQZWVyIENvbm5lY3Rp
-b24gSW5pdGlhdGVkIHdpdGggW0FGX1VOSVhdL3RtcC9vMS5zDQogICAgICA6
-DQogIA0KDQoqIE1haW4gY29kZSBjaGFuZ2VzIHN1bW1hcnk6DQogIC0gc29j
-a2V0Lmg6IE5ldyBzdHJ1Y3Qgb3BlbnZwbl9zb2NrYWRkciB0eXBlIHRoYXQg
-aG9sZHMgc29ja2FkZHJzIGFuZCBwa3RpbmZvLCANCiAgICAoaGVyZSBJIG9t
-aXR0ZWQgI2lmZGVmIFVTRV9QRl94eHh4LCBzZWUgc29ja2V0LmggKQ0KDQog
-ICAgc3RydWN0IG9wZW52cG5fc29ja2FkZHIgew0KICAgIAl1bmlvbiB7DQog
-ICAgCQlzdHJ1Y3Qgc29ja2FkZHIgc2E7DQogICAgCQlzdHJ1Y3Qgc29ja2Fk
-ZHJfaW4gaW47DQogICAgCQlzdHJ1Y3Qgc29ja2FkZHJfaW42IGluNjsNCiAg
-ICAJCXN0cnVjdCBzb2NrYWRkcl91biB1bjsNCiAgICAJfSBhZGRyOw0KICAg
-IAl1bmlvbiB7DQogICAgCQlzdHJ1Y3QgaW5fcGt0aW5mbyBpbjsNCiAgICAJ
-CXN0cnVjdCBpbjZfcGt0aW5mbyBpbjY7DQogICAgCX0gcGk7CS8qIE11bHRp
-aG9tZSBzdXBwb3J0IGZvciBVRFAgKi8NCiAgICB9Ow0KICAgIA0KICAgIHN0
-cnVjdCBsaW5rX3NvY2tldF9hZGRyDQogICAgew0KICAgICAgICAgICAgc3Ry
-dWN0IG9wZW52cG5fc29ja2FkZHIgbG9jYWw7DQogICAgICAgICAgICBzdHJ1
-Y3Qgb3BlbnZwbl9zb2NrYWRkciByZW1vdGU7DQogICAgICAgICAgICBzdHJ1
-Y3Qgb3BlbnZwbl9zb2NrYWRkciBhY3R1YWw7DQogICAgfTsNCiAgICANCiAg
-ICBQUk86IGFsbG93cyBzaW1wbGUgdHlwZSBvdmVybG9hZGluZzogbG9jYWwu
-YWRkci5zYSwgbG9jYWwuYWRkci5pbiwgbG9jYWwuYWRkci5pbjYgLi4uIGV0
-Yw0KICAgIChhbHNvIGxvY2FsLnBpLmluIGFuZCBsb2NhbC5waS5pbjYpDQoN
-CiAgLSBzZXZlcmFsIGZ1bmN0aW9uIHByb3RvdHlwZXMgbW92ZWQgZnJvbSBz
-b2NrYWRkcl9pbiB0byBvcGVudnBuX3NvY2thZGRyIA0KICAtIHNldmVyYWwg
-bmV3IHNvY2thZGRyIGZ1bmN0aW9ucyBuZWVkZWQgdG8gImdlbmVyYWxpemUi
-IEFGX3h4eHggb3BlcmF0aW9uczoNCiAgICBhZGRyX2NvcHkoKSwgYWRkcl96
-ZXJvKCksIC4uLmV0Yw0KICAgIHByb3RvX2lzX3VkcCgpLCBwcm90b19pc19k
-Z3JhbSgpLCBwcm90b19pc19uZXQoKQ0KDQoqIFRPRE86ICghOiBmdW5kYW1l
-bnRhbCwgdzogd2FudGVkLCBuOiBuYWggLi4uIG5vdCBjcml0aWNhbCwgPzog
-bmVlZCBtb3JlIHRob3VnaHQpDQogIFshXS0gIEltcGxlbWVudCBjb21wYXJp
-c29uIGZvciBtYXBwZWQgYWRkZXNzZXM6IHNlcnZlciBpbiBkdWFsIHN0YWNr
-IGxpc3RlbmluZw0KICAgICAgICBJUHY2IG11c3QgcGVybWl0IGluY29taW5n
-IHN0cmVhbXMgZnJvbSBhbGxvd2VkIElQdjQgcGVlciAoaWUgd2l0aG91dCAt
-LWZsb2F0KS4NCiAgWyFdLSAgSVB2NiB3aXRoIGFjdHVhbCBob3N0IHJlc29s
-dXRpb24sIGN1cnJlbnRseSBvbmx5IG51bWVyaWNhbCAoQUlfTlVNRVJJQ0hP
-U1QpDQogIFtuXS0gIGNhbGwgc29ja2V0KCkgbGF0ZWx5LCBhZnRlciBnZXRh
-ZGRyaW5mbygpIHRvIGRlY2lkZSBJUHY0IG9yIElQdjYgaG9zdCANCiAgICAg
-ICAgKGhlbmNlIHNvY2tldCgpKSBpbnN0ZWFkIG9mIG5lZWRpbmcgLXAge3Vk
-cHx1ZHA2fQ0KICAgICAgICBOT1QgQUNUVUFMTFkgYSBiaWcgdHJvdWJsZSwg
-Z2l2ZW4gdGhhdCB5b3UgX2RvXyBzZXR1cCBib3RoIHNpZGVzDQogICAgICAg
-IChrZXlzLCBjZXJ0cywgZXRjKSwgdXNpbmcgdWRwIG9yIHVkcDYgaXMgYWN0
-dWFsbHkgX2Fub3RoZXJfIHNldHVwIGJpdC4NCiAgWz9dLSAgaW50ZWdyYXRl
-IGJvdGggSVB2NCBhbmQgSVB2NiBhZGRyIHJlc29sdXRpb24gd2l0aCBnZXRh
-ZGRyaW5mbyBpbnN0ZWFkIG9mDQogICAgICAgIHZlbmVyYWJsZSBnZXRob3N0
-YnluYW1lJmZyaWVuZHMsIHByb2JsZW06IGhvcml6b250YWwgcG9ydGFiaWxp
-dHkgKGFjcm9zcw0KICAgICAgICBwbGF0Zm9ybXMpIGFuZCB2ZXJ0aWNhbCBw
-b3J0YWIuIChhY3Jvc3MgdmVyc2lvbnMpDQoNCiAgRE9ORToNCiAgICAgLSAg
-Li9jb25maWd1cmUgWyAtLWRpc2FibGUtaXB2NiBdIFsgLS1lbmFibGUtdW5p
-eC1zb2NrZXRzIF0gDQogICAgICAgIG1hcCB0byBVU0VfUEZfSU5FVDYgYW5k
-IFVTRV9QRl9VTklYDQogICAgIC0gIG1lcmdlIE1IIHBhdGNoDQogICAgIC0g
-IC1wIHRjcDYtY2xpZW50LCAtcCB0Y3A2LXNlcnZlcg0KICAgICAtICBNSCBJ
-UHY2IHN1cHBvcnQgDQogDQotLQ0KSnVhbkpvIENpYXJsYW50ZSAgIGpqb3xh
-dHxtZW5kb3phLmdvdi5hcg0KOiAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDoNCi4g
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIExpbnV4
-IElQIEFsaWFzaW5nIGF1dGhvciAuDQouICAgTW9kdWxhciBhbGdvIChBRVMg
-ZXQgYWxsKSBzdXBwb3J0IGZvciBGcmVlU1dBTi9PcGVuU1dBTiBhdXRob3Ig
-Lg0KOi4uLiAgICAgICBwbHVzICBvdGhlciBzY2F0dGVyZWQgZnJlZSBzb2Z0
-d2FyZSBiaXRzIGluIHRoZSB3aWxkIC4uLjoNCg==
-
---8323328-233788034-1120066169=:27900--
 
