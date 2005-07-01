@@ -1,9 +1,9 @@
-Message-ID: <20050701025538.15507.qmail@...429...>
-From: wj h <hwj_sky@...362...>
-MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-1106948376-1120186538=:15145"
-Content-Transfer-Encoding: 8bit
-Subject: [Openvpn-devel] Rebuild openvpn2.0 with VC.NET(VC7) IDE
+From: JuanJo Ciarlante <jjo-ipsec@...283...>
+Subject: Re: [Openvpn-devel] Status and Roadmap for IPv6 Support
+Message-ID: <20050701174909.G11246@...283...>
+References: <42C29B31.4010202@...428...> <Pine.LNX.4.58.0506291113130.27900@...41...> <42C3AD6E.1080907@...428...>
+Mime-Version: 1.0
+In-Reply-To: <42C3AD6E.1080907@...428...>; from h.goebel@...428... on Thu, Jun 30, 2005 at 10:29:34AM +0200
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,44 +14,44 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Jun 30 19:57:07 2005
+Date: Fri Jul  1 13:55:34 2005
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
---0-1106948376-1120186538=:15145
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+On Thu, Jun 30, 2005 at 10:29:34AM +0200, Hartmut Goebel wrote:
+> Hello,
+> 
+> Thanks for your answer.
+> 
+> >>1a) As far as I've found out, OpenVPN 2.0 supports forwarding IPv6 when
+> >>using tun+tun-ipv6 or tap. But neither of the build-in commands (like
+> >>route, ifconfig, server, push/pull) supprot IPv6-addresses or IPv6
+> >>Name-lookup.
+> >>
+> >>Is this correct, or have I overlooked something?
+> > 
+> > 
+> > That is correct for OpenVPN 1.6 and 2.0...  But JuanJo Ciarlante's IPv6 
+> > patch against 2.0 adds IPv6 support in a much more substantial way.
+> 
+> I tested this patch but it seams to only target issues about forwarding
+> IPv6 packets. OpenVPn options/commands like 'route' are anchanged and
+> still not able to handle IPvp addresses. This is since
+> openvpn_inet_aton() does only suppport dotted quads.
+> 
+> Or have I overlooked something?
 
-aGkgIQogCiAgIEkgbmVlZCB5b3VyIGhlbHAhIEkgY2FuIHJlYnVpbGQgb3BlbnZwbjIuMCBpbiBW
-QzcgQ01EIHdpdGggY29tbWFuZCAibm1ha2UgbWFrZWZpbGUudzMyLXZjIiBzdWNlc3NmdWxseSwg
-YnV0IHdoZW4gaSBidWlsZCBhIHByb2plY3QgaW4gVkM3IElERSB0byByZWNvbXBpbGUgb3BlbnZw
-biwgYW5kIGkgZmFpbGVkLCBjYW4gc29tZW9uZSBoZWxwIG1lICxhbmQgaG93IHRvIGJ1aWxkIGFu
-IG9wZW52cG4gcHJvamVjdCBpbiBWQzcgSURFLCBpIGhvcGUgeW91IGNhbiBnaXZlIHNvbWUgYWR2
-aWNlcywgdGhhbmtzIQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgTmljaG9sYXMKCgkJCi0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpETyBZT1UgWUFIT08hPwogINHFu6LD4rfRR9PKz+SjrU5v
-LjG1xLfAtr63wMCsu/izrLTz08rP5CAg
+Indeed my patch adds OpenVPN/IPv6 streams (udp6,tcp6) support , and nothing about
+IPv6/OpenPVN links (albeit some ipv6-related infrastructure that could be used in
+this respect in the future).
 
---0-1106948376-1120186538=:15145
-Content-Type: text/html; charset="gb2312"
-Content-Transfer-Encoding: base64
+Regards..
+-- 
+--Juanjo
 
-PERJVj5oaSAhPC9ESVY+CjxESVY+Jm5ic3A7PC9ESVY+CjxESVY+Jm5ic3A7Jm5ic3A7IEkgbmVl
-ZCB5b3VyIGhlbHAhIEkgY2FuIHJlYnVpbGQgb3BlbnZwbjIuMCBpbiZuYnNwO1ZDNyBDTUQmbmJz
-cDt3aXRoIGNvbW1hbmQgIm5tYWtlIG1ha2VmaWxlLnczMi12YyIgc3VjZXNzZnVsbHksIGJ1dCB3
-aGVuIGkgYnVpbGQgYSBwcm9qZWN0IGluIFZDNyBJREUgdG8gcmVjb21waWxlIG9wZW52cG4sIGFu
-ZCBpIGZhaWxlZCwgY2FuIHNvbWVvbmUgaGVscCBtZSAsYW5kIGhvdyB0byBidWlsZCBhbiBvcGVu
-dnBuIHByb2plY3QgaW4gVkM3IElERSwgaSBob3BlIHlvdSBjYW4gZ2l2ZSBzb21lIGFkdmljZXMs
-IHRoYW5rcyE8L0RJVj4KPERJVj4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsm
-bmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJz
-cDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsm
-bmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJz
-cDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsm
-bmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJz
-cDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsm
-bmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJz
-cDsmbmJzcDsmbmJzcDsgTmljaG9sYXM8L0RJVj48cD4KCQk8aHIgc2l6ZT0xPkRPIFlPVSBZQUhP
-TyE/PGJyPiAKPGEgaHJlZj0iaHR0cDovL2NuLm1haWwueWFob28uY29tLz9pZD03NzA3MiIgdGFy
-Z2V0PWJsYW5rPiAK0cW7osPit9FH08rP5KOtTm8uMbXEt8C2vrfAwKy7+LOstPPTys/kIDwvYT4g
-
---0-1106948376-1120186538=:15145--
+#  Juan Jose Ciarlante (JuanJo) jjo ;at; mendoza.gov.ar                     #
+#  GnuPG Public Key: gpg --keyserver wwwkeys.eu.pgp.net --recv-key 66727177 #
+#   Key fingerprint: 0D2F 3E5D 8B5C 729E 0560  F453 A3F7 E249 6672 7177     #
 
