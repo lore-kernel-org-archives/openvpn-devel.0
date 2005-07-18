@@ -1,9 +1,10 @@
-Message-ID: <42DAE938.9060309@...361...>
-From: Rolf Fokkens <r.fokkens@...361...>
+Message-ID: <1818.195.50.232.129.1121674615.squirrel@...435...>
+Subject: Re: [Openvpn-devel] Unix-Compatibility
+From: "Martin Rutishauser" <martin.rutishauser@...434...>
+Reply-To: martin.rutishauser@...434...
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] PATCH: syslog while not running as a daemon
-References: <20050405173227.0AEC512120@...436...> <425328AB.7050307@...437...> <Pine.LNX.4.58.0504051824120.19198@...41...> <4253A8DC.1040808@...361...> <42DAA4C6.3070301@...361...> <Pine.LNX.4.58.0507171406500.14076@...41...>
-In-Reply-To: <Pine.LNX.4.58.0507171406500.14076@...41...>
+References: 
+In-Reply-To: 
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,18 +15,38 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Jul 17 16:28:52 2005
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
-To: James Yonan <jim@...41...>
-Cc: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
+Date: Mon Jul 18 01:19:04 2005
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-James Yonan wrote:
+Hi again List
 
->Rolf,
->
->A patch very similar to this one was already added in 2.0.1-rc1:
->  
->
-Thanks, then I'll wait for 2.0.1 to become final.
+Thanks for the input about unix-compatibility.
+
+<quote> The biggest stumbling block to porting OpenVPN is getting a
+tun/tap driver working on the target platform.  Once this is done, porting
+the OpenVPN dameon itself is usually quite straightforward. </quote>
+
+Yes, we would like to do it - but we need more information like how long
+it will take and how expensive it is.
+
+As we can't provide a HP-UX machine (11.x) we would like to know, if
+anybody with such equipment has time and motivation to do it? Are there
+any ready-to-go developers on this list? Or has anybody familar with
+tun-tap or openvpn feedback on this topic, like estimations about time or
+approximations about cost?
+
+Thanks in advance.
+Kind regards,
+
+Martin
+
+
+
+
+
+
+
+
 
