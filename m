@@ -1,9 +1,7 @@
-Message-ID: <2CE3100C50DF6A43ADF9CDD0DFC1403C50D64B@...433...>
-From: Ewan Bhamrah Harley <ewan@...432...>
+From: James Yonan <jim@...41...>
+Message-ID: <Pine.LNX.4.58.0508161354420.10152@...41...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
-	boundary="----_=_NextPart_000_01C59CCF.A2EDC1AA"
-Subject: [Openvpn-devel] PATCH: tcp port binding and others
+Subject: [Openvpn-devel] OpenVPN 2.0.1 released -- note security fixes
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,327 +12,162 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Aug  9 17:16:46 2005
-To: openvpn-devel@lists.sourceforge.net
+Date: Tue Aug 16 13:22:52 2005
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+To: openvpn-users@lists.sourceforge.net
+Cc: openvpn-devel@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
 
-This message is in MIME format. Since your mail reader does not understand
-this format, some or all of this message may not be legible.
+This release fixes a number of bugs in OpenVPN 2.0, including several bugs 
+in the server which might be used to mount a DoS attack.
 
-------_=_NextPart_000_01C59CCF.A2EDC1AA
-Content-Type: text/plain;
-	charset="iso-8859-1"
+Download:
 
-James, as requested the attached patch is merged with 2.1alpha3.
+http://openvpn.net/download.html
 
-The patch:
+Change Log since 2.0:
 
-* Adds a new --bind option to compliment the existing --nobind options.
-Implicit bind/nobind defaults are left unchanged.
+2005.08.16 -- Version 2.0.1
 
-* enables --local and --lport on tcp-client connections
+* Security Fix -- DoS attack against server when run with "verb 0" and
+  without "tls-auth".  If a client connection to the server fails
+  certificate verification, the OpenSSL error queue is not properly
+  flushed, which can result in another unrelated client instance on the
+  server seeing the error and responding to it, resulting in disconnection
+  of the unrelated client (CAN-2005-2531).
+* Security Fix -- DoS attack against server by authenticated client.
+  This bug presents a potential DoS attack vector against the server
+  which can only be initiated by a connected and authenticated client.
+  If the client sends a packet which fails to decrypt on the server,
+  the OpenSSL error queue is not properly flushed, which can result in
+  another unrelated client instance on the server seeing the error and
+  responding to it, resulting in disconnection of the unrelated client
+  (CAN-2005-2532).
+* Security Fix -- DoS attack against server by authenticated client.
+  A malicious client in "dev tap" ethernet bridging mode could
+  theoretically flood the server with packets appearing to come from
+  hundreds of thousands of different MAC addresses, causing the OpenVPN
+  process to deplete system virtual memory as it expands its internal
+  routing table.  A --max-routes-per-client directive has been added
+  (default=256) to limit the maximum number of routes in OpenVPN's
+  internal routing table which can be associated with a given client
+  (CAN-2005-2533).
+* Security Fix -- DoS attack against server by authenticated client.
+  If two or more client machines try to connect to the server at the
+  same time via TCP, using the same client certificate, and when
+  --duplicate-cn is not enabled on the server, a race condition can
+  crash the server with "Assertion failed at mtcp.c:411"
+  (CAN-2005-2534).
+* Fixed server bug where under certain circumstances, the client instance
+  object deletion function would try to delete iroutes which had never been
+  added in the first place, triggering "Assertion failed at mroute.c:349".
+* Added --auth-retry option to prevent auth errors from being fatal
+  on the client side, and to permit username/password requeries in case
+  of error.  Also controllable via new "auth-retry" management interface
+  command.  See man page for more info.
+* Added easy-rsa 2.0 scripts to the tarball in easy-rsa/2.0
+* Fixed bug in openvpn.spec where rpmbuild --define 'without_pam 1'
+  would fail to build.
+* Implement "make check" to perform loopback tests (Matthias Andree).
 
-* fixes a bug with the local_port value passed to scripts/plugins -
-previously this was incorrectly set to the default port if nobind was used -
-the patch sets it to '0' in this case.
+2005.07.21 -- Version 2.0.1-rc7
 
-* Also, the patch adds passing of http/socks proxy address and port
-information to scripts/plugins.
+* Support LZO 2.01 which renamed its library to lzo2 (Matthias Andree).
+* Include linux/types.h before checking for linux/errqueue.h (Matthias
+  Andree).
 
-* Updates to manpage and help to reflect the changes in the patch.
+2005.07.15 -- Version 2.0.1-rc6
 
-Rgds
-Ewan 
+* Commented out "user nobody" and "group nobody" in sample
+  client/server config files.
+* Allow '@' character to be used in --client-config-dir
+  file names.
 
+2005.07.04 -- Version 2.0.1-rc5
 
-------_=_NextPart_000_01C59CCF.A2EDC1AA
-Content-Type: application/octet-stream;
-	name="tcp_bind.diff"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
-	filename="tcp_bind.diff"
+* Windows version will log a for-further-info URL when
+  initialization sequence is completed with errors.
+* Added DLOPEN_PAM parameter to plugin/auth-pam/Makefile
+  to control whether auth-pam plugin links to PAM via
+  dlopen or -lpam.  By default, DLOPEN_PAM=1 so pre-existing
+  behavior should be preserved.  DLOPEN_PAM=0 is the preferred
+  setting to link via -lpam, but DLOPEN_PAM=1 works around
+  a bug in SuSE 9.1 (and possibly other distros as well)
+  where the PAM modules are not linked with -lpam.  See
+  thread on openvpn-devel for more discussion about this
+  patch (Simon Perreault).
 
-diff -Naur openvpn-2.1_alpha3/openvpn.8 =
-openvpn-2.1_alpha3_patched/openvpn.8=0A=
---- openvpn-2.1_alpha3/openvpn.8	2005-06-12 19:25:48.000000000 +0100=0A=
-+++ openvpn-2.1_alpha3_patched/openvpn.8	2005-08-09 10:14:11.771028000 =
-+0100=0A=
-@@ -187,6 +187,7 @@=0A=
- [\ \fB\-\-nice\fR\ \fIn\fR\ ]=0A=
- [\ \fB\-\-no\-iv\fR\ ]=0A=
- [\ \fB\-\-no\-replay\fR\ ]=0A=
-+[\ \fB\-\-bind\fR\ ]=0A=
- [\ \fB\-\-nobind\fR\ ]=0A=
- [\ \fB\-\-ns\-cert\-type\fR\ \fIclient|server\fR\ ]=0A=
- [\ \fB\-\-passtos\fR\ ]=0A=
-@@ -430,7 +431,7 @@=0A=
- .\"*********************************************************=0A=
- .TP=0A=
- .B --local host=0A=
--Local host name or IP address.=0A=
-+Local host name or IP address for bind.=0A=
- If specified, OpenVPN will bind to this address only.=0A=
- If unspecified, OpenVPN will bind to all interfaces.=0A=
- .\"*********************************************************=0A=
-@@ -701,13 +702,23 @@=0A=
- .\"*********************************************************=0A=
- .TP=0A=
- .B --lport port=0A=
--TCP/UDP port number for local.=0A=
-+TCP/UDP port number for bind.=0A=
- .\"*********************************************************=0A=
- .TP=0A=
- .B --rport port=0A=
- TCP/UDP port number for remote.=0A=
- .\"*********************************************************=0A=
- .TP=0A=
-+.B --bind=0A=
-+Bind to local address and port. This is the default unless any of =0A=
-+.B --proto tcp-client=0A=
-+,=0A=
-+.B --http-proxy=0A=
-+or=0A=
-+.B --socks-proxy=0A=
-+are used.=0A=
-+.\"*********************************************************=0A=
-+.TP=0A=
- .B --nobind=0A=
- Do not bind to local address and port.  The IP stack will allocate=0A=
- a dynamic port for returning packets.  Since the value of the dynamic =
-port=0A=
-diff -Naur openvpn-2.1_alpha3/options.c =
-openvpn-2.1_alpha3_patched/options.c=0A=
---- openvpn-2.1_alpha3/options.c	2005-07-27 21:17:24.000000000 +0100=0A=
-+++ openvpn-2.1_alpha3_patched/options.c	2005-08-09 10:14:11.807030000 =
-+0100=0A=
-@@ -99,7 +99,7 @@=0A=
-   "--version       : Show copyright and version information.\n"=0A=
-   "\n"=0A=
-   "Tunnel Options:\n"=0A=
--  "--local host    : Local host name or ip address.\n"=0A=
-+  "--local host    : Local host name or ip address. Implies =
---bind.\n"=0A=
-   "--remote host [port] : Remote host name or ip address.\n"=0A=
-   "--remote-random : If multiple --remote options specified, choose =
-one randomly.\n"=0A=
-   "--mode m        : Major mode, m =3D 'p2p' (default, point-to-point) =
-or 'server'.\n"=0A=
-@@ -139,8 +139,17 @@=0A=
-   "--ipchange cmd  : Execute shell command cmd on remote ip address =
-initial\n"=0A=
-   "                  setting or change -- execute as: cmd ip-address =
-port#\n"=0A=
-   "--port port     : TCP/UDP port # for both local and remote.\n"=0A=
--  "--lport port    : TCP/UDP port # for local (default=3D%d).\n"=0A=
-+  "--lport port    : TCP/UDP port # for local (default=3D%d). Implies =
---bind.\n"=0A=
-   "--rport port    : TCP/UDP port # for remote (default=3D%d).\n"=0A=
-+  "--bind          : Bind to local address and port. (This is the =
-default unless\n"=0A=
-+  "                  --proto tcp-client"=0A=
-+#ifdef ENABLE_HTTP_PROXY=0A=
-+                   " or --http-proxy"=0A=
-+#endif=0A=
-+#ifdef ENABLE_SOCKS=0A=
-+                   " or --socks-proxy"=0A=
-+#endif=0A=
-+                   " is used).\n"=0A=
-   "--nobind        : Do not bind to local address and port.\n"=0A=
-   "--dev tunX|tapX : tun/tap device (X can be omitted for dynamic =
-device.\n"=0A=
-   "--dev-type dt   : Which device type are we using? (dt =3D tun or =
-tap) Use\n"=0A=
-@@ -673,6 +682,20 @@=0A=
- 	  setenv_int (es, remote_port_string, =
-o->remote_list->array[i].port);=0A=
- 	}=0A=
-     }=0A=
-+#ifdef ENABLE_HTTP_PROXY=0A=
-+    if (o->http_proxy_options)=0A=
-+      {=0A=
-+        setenv_str (es, "http_proxy_server", =
-o->http_proxy_options->server);=0A=
-+        setenv_int (es, "http_proxy_port", =
-o->http_proxy_options->port);=0A=
-+      }=0A=
-+#endif=0A=
-+#ifdef ENABLE_SOCKS=0A=
-+    if(o->socks_proxy_server)=0A=
-+      {=0A=
-+        setenv_str (es, "socks_proxy_server", =
-o->socks_proxy_server);=0A=
-+        setenv_int (es, "socks_proxy_port", o->socks_proxy_port);=0A=
-+      }=0A=
-+#endif=0A=
- }=0A=
- =0A=
- static in_addr_t=0A=
-@@ -998,6 +1021,7 @@=0A=
-   SHOW_INT (remote_port);=0A=
-   SHOW_BOOL (remote_float);=0A=
-   SHOW_STR (ipchange);=0A=
-+  SHOW_BOOL (bind_defined);=0A=
-   SHOW_BOOL (bind_local);=0A=
-   SHOW_STR (dev);=0A=
-   SHOW_STR (dev_type);=0A=
-@@ -1414,12 +1438,29 @@=0A=
-   if (string_defined_equal (options->ifconfig_local, =
-options->ifconfig_remote_netmask))=0A=
-     msg (M_USAGE, "local and remote/netmask --ifconfig addresses must =
-be different");=0A=
- =0A=
-+  if (options->bind_defined && !options->bind_local)=0A=
-+    msg (M_USAGE, "--bind and --nobind can't be used together");=0A=
-+=0A=
-+  if (options->local && !options->bind_local)=0A=
-+    msg (M_USAGE, "--local and --nobind don't make sense when used =
-together");=0A=
-+=0A=
-   if (options->local_port_defined && !options->bind_local)=0A=
-     msg (M_USAGE, "--lport and --nobind don't make sense when used =
-together");=0A=
- =0A=
-   if (!options->remote_list && !options->bind_local)=0A=
-     msg (M_USAGE, "--nobind doesn't make sense unless used with =
---remote");=0A=
- =0A=
-+  if (options->proto =3D=3D PROTO_TCPv4_CLIENT && !options->local && =
-!options->local_port_defined && !options->bind_defined)=0A=
-+    options->bind_local =3D false;=0A=
-+=0A=
-+#ifdef ENABLE_SOCKS=0A=
-+  if (options->proto =3D=3D PROTO_UDPv4 && options->socks_proxy_server =
-&& !options->local && !options->local_port_defined && =
-!options->bind_defined)=0A=
-+    options->bind_local =3D false;=0A=
-+#endif=0A=
-+=0A=
-+  if (!options->bind_local)=0A=
-+    options->local_port =3D 0;=0A=
-+=0A=
-   /*=0A=
-    * Check for consistency of management options=0A=
-    */=0A=
-@@ -3323,6 +3364,11 @@=0A=
-       options->port_option_used =3D true;=0A=
-       options->remote_port =3D port;=0A=
-     }=0A=
-+  else if (streq (p[0], "bind"))=0A=
-+    {=0A=
-+      VERIFY_PERMISSION (OPT_P_GENERAL);=0A=
-+      options->bind_defined =3D true;=0A=
-+    }=0A=
-   else if (streq (p[0], "nobind"))=0A=
-     {=0A=
-       VERIFY_PERMISSION (OPT_P_GENERAL);=0A=
-diff -Naur openvpn-2.1_alpha3/options.h =
-openvpn-2.1_alpha3_patched/options.h=0A=
---- openvpn-2.1_alpha3/options.h	2005-07-26 16:10:52.000000000 +0100=0A=
-+++ openvpn-2.1_alpha3_patched/options.h	2005-08-09 10:14:11.822034000 =
-+0100=0A=
-@@ -120,6 +120,7 @@=0A=
-   struct remote_list *remote_list;=0A=
-   bool remote_random;=0A=
-   const char *ipchange;=0A=
-+  bool bind_defined;=0A=
-   bool bind_local;=0A=
-   const char *dev;=0A=
-   const char *dev_type;=0A=
-diff -Naur openvpn-2.1_alpha3/socket.c =
-openvpn-2.1_alpha3_patched/socket.c=0A=
---- openvpn-2.1_alpha3/socket.c	2005-07-25 03:38:38.000000000 +0100=0A=
-+++ openvpn-2.1_alpha3_patched/socket.c	2005-08-09 10:35:49.048864000 =
-+0100=0A=
-@@ -704,7 +704,26 @@=0A=
- }=0A=
- =0A=
- static void=0A=
-+socket_bind (socket_descriptor_t sd,=0A=
-+             struct openvpn_sockaddr *local)=0A=
-+{=0A=
-+  struct gc_arena gc =3D gc_new ();=0A=
-+=0A=
-+  if (bind (sd, (struct sockaddr *) local,=0A=
-+                sizeof (struct openvpn_sockaddr)))=0A=
-+    {=0A=
-+      const int errnum =3D openvpn_errno_socket ();=0A=
-+      msg (M_FATAL, "TCP/UDP: Socket bind failed on local address %s: =
-%s",=0A=
-+           print_sockaddr (local, &gc),=0A=
-+           strerror_ts (errnum, &gc));=0A=
-+    }=0A=
-+  gc_free (&gc);=0A=
-+}=0A=
-+=0A=
-+static void=0A=
- socket_connect (socket_descriptor_t *sd,=0A=
-+                struct openvpn_sockaddr *local,=0A=
-+                bool bind_local,=0A=
- 		struct openvpn_sockaddr *remote,=0A=
- 		struct remote_list *remote_list,=0A=
- 		const char *remote_dynamic,=0A=
-@@ -747,6 +766,8 @@=0A=
- 	}=0A=
- =0A=
-       *sd =3D create_socket_tcp ();=0A=
-+      if (bind_local)=0A=
-+        socket_bind (*sd, local);=0A=
-       update_remote (remote_dynamic, remote, remote_changed);=0A=
-       break;=0A=
- default:=0A=
-@@ -858,13 +879,13 @@=0A=
-   /* bind to local address/port */=0A=
-   if (sock->bind_local)=0A=
-     {=0A=
--      if (bind (sock->sd,  &sock->info.lsa->local.addr.sa, =
-addrlen))=0A=
--	{=0A=
--	  const int errnum =3D openvpn_errno_socket ();=0A=
--	  msg (M_FATAL, "TCP/UDP: Socket bind failed on local address %s: =
-%s",=0A=
--	       print_sockaddr (&sock->info.lsa->local, &gc),=0A=
--	       strerror_ts (errnum, &gc));=0A=
--	}=0A=
-+#ifdef ENABLE_SOCKS=0A=
-+      if (sock->socks_proxy && sock->info.proto =3D=3D PROTO_UDPv4)=0A=
-+          socket_bind (sock->ctrl_sd, &sock->info.lsa->local);=0A=
-+      else=0A=
-+#endif=0A=
-+          socket_bind (sock->sd, &sock->info.lsa->local);=0A=
-+=0A=
-     }=0A=
-   gc_free (&gc);=0A=
- }=0A=
-@@ -1163,10 +1184,6 @@=0A=
-       else=0A=
- 	sock->bind_local =3D true;=0A=
-     }=0A=
--  else if (sock->info.proto =3D=3D PROTO_TCPv4_CLIENT)=0A=
--    {=0A=
--      sock->bind_local =3D false;=0A=
--    }=0A=
- =0A=
-   /* were we started by inetd or xinetd? */=0A=
-   if (sock->inetd)=0A=
-@@ -1269,6 +1286,8 @@=0A=
-       else if (sock->info.proto =3D=3D PROTO_TCPv4_CLIENT || =
-sock->info.proto =3D=3D PROTO_TCPv6_CLIENT)=0A=
- 	{=0A=
- 	  socket_connect (&sock->sd,=0A=
-+                          &sock->info.lsa->local,=0A=
-+                          sock->bind_local,=0A=
- 			  &sock->info.lsa->actual,=0A=
- 			  sock->remote_list,=0A=
- 			  remote_dynamic,=0A=
-@@ -1307,6 +1326,8 @@=0A=
-       else if (sock->info.proto =3D=3D PROTO_UDPv4 && =
-sock->socks_proxy)=0A=
- 	{=0A=
- 	  socket_connect (&sock->ctrl_sd,=0A=
-+                          &sock->info.lsa->local,=0A=
-+                          sock->bind_local,=0A=
- 			  &sock->info.lsa->actual,=0A=
- 			  NULL,=0A=
- 			  remote_dynamic,=0A=
+2005.06.15 -- Version 2.0.1-rc4
 
-------_=_NextPart_000_01C59CCF.A2EDC1AA--
+* Support LZO 2.00, including changes to configure script to
+  autodetect LZO version.
+
+2005.06.12 -- Version 2.0.1-rc3
+
+* Fixed a bug which caused standard file handles to not be closed
+  after daemonization when --plugin and --daemon are used together,
+  and if the plugin initialization function forks (as does auth-pam
+  and down-root) (Simon Perreault).
+* Added client-side up/down scripts in contrib/pull-resolv-conf
+  for accepting server-pushed "dhcp-option DOMAIN" and "dhcp-option DNS"
+  on Linux/Unix systems (Jesse Adelman).
+* Fixed bug where if client-connect scripts/plugins were cascaded,
+  and one (but not all) of them returned an error status, there might
+  be cases where for an individual script/plugin, client-connect was
+  called but not client-disconnect.  The goal of this fix is to
+  ensure that if client-connect is called on a given client instance,
+  then client-disconnect will definitely be called.  A potential
+  complication of this fix is that when client-connect functions are
+  cascaded, it's possible that the client-disconnect function would
+  be called in cases where the related client-connect function returned
+  an error status.  This fix should not alter OpenVPN behavior when
+  scripts/plugins are not cascaded.
+* Changed the hard-to-reproduce "Assertion failed at fragment.c:312"
+  fatal error to a warning: "FRAG: outgoing buffer is not empty".
+  Need more info on how to reproduce this one.
+* When --duplicate-cn is used, the --ifconfig-pool allocation
+  algorithm will now allocate the first available IP address.
+* When --daemon and --management-hold are used together,
+  OpenVPN will daemonize before it enters the management hold state.
+
+2005.05.16 -- Version 2.0.1-rc2
+
+* Modified vendor test in openvpn.spec file to match against
+  "Mandrakesoft" in addition to "MandrakeSoft".
+* Using --iroute in a --client-config-dir file while in --dev tap
+  mode is not currently supported and will produce a warning
+  message. Fixed bug where in certain cases, in addition to
+  generating a warning message, this combination of options
+  would also produce a fatal assertion in mroute.c.
+* Pass --auth-user-pass username to server-side plugin without
+  performing any string remapping (plugins, unlike scripts,
+  don't get any security benefit from string remapping).
+  This is intended to fix an issue with openvpn-auth-pam/pam_winbind
+  where backslash characters in a username ('\') were being remapped
+  to underscore ('_').
+* Updated OpenSSL DLLs in Windows build to 0.9.7g.
+* Documented --explicit-exit-notify in man page.
+* --explicit-exit-notify seconds parameter defaults to 1 if
+  unspecified.
+
+2005.04.30 -- Version 2.0.1-rc1
+
+* Fixed bug where certain kinds of fatal errors after
+  initialization (such as port in use) would leave plugin
+  processes (such as openvpn-auth-pam) still running.
+* Added optional openvpn_plugin_abort_v1 plugin function for
+  closing initialized plugin objects in the event of a fatal
+  error by main OpenVPN process.
+* When the --remote list is > 1, and --resolv-retry is not
+  specified (meaning that it defaults to "infinite"), apply the
+  infinite timeout to the --remote list as a whole, but try each
+  list item only once before moving on to the next item.
+* Added new --syslog directive which redirects output
+  to syslog without requiring the use of the --daemon or --inetd
+  directives.
+* Added openvpn.spec option to allow RPM to be built with support
+  for passwords read from a file:
+  rpmbuild -tb [openvpn.x.tar.gz] --define 'with_password_save 1'
+
+James
 
