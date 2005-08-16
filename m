@@ -1,10 +1,9 @@
-From: James Yonan <jim@...41...>
-In-Reply-To: <1e6368e805081614142c7aa5f3@...278...>
-Message-ID: <Pine.LNX.4.58.0508161525390.10152@...41...>
+From: Johnny Lam <jlam@...438...>
+Message-ID: <ddtt8m$41j$1@...165...>
 References: <Pine.LNX.4.58.0508161354420.10152@...41...>
- <1e6368e805081614142c7aa5f3@...278...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Re: [Openvpn-users] OpenVPN 2.0.1 released -- note security fixes
+Mime-Version: 1.0
+In-Reply-To: <Pine.LNX.4.58.0508161354420.10152@...41...>
+Subject: [Openvpn-devel] Re: OpenVPN 2.0.1 released -- note security fixes
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,33 +14,23 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Aug 16 14:30:26 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: Leonard Isham <leonard.isham@...277...>
-Cc: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
+Date: Tue Aug 16 16:52:39 2005
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-On Tue, 16 Aug 2005, Leonard Isham wrote:
+James Yonan wrote:
+>
+> * Added easy-rsa 2.0 scripts to the tarball in easy-rsa/2.0
 
-> On 8/16/05, James Yonan <jim@...41...> wrote:
-> > This release fixes a number of bugs in OpenVPN 2.0, including several bugs
-> > in the server which might be used to mount a DoS attack.
-> > 
-> > Download:
-> > 
-> > http://openvpn.net/download.html
-> > 
-> > Change Log since 2.0:
-> > 
-> > 2005.08.16 -- Version 2.0.1
-> > 
-> 
-> What is the recommended order of upgrade?
-> 
-> Server then clients or is this, what gets upgraded frst, a non-issue?
+I am maintaining OpenVPN in the NetBSD Packages Collection and was in 
+the process of updating our package to 2.0.1 when I noticed that the 
+pkitool script uses bash.  If I provide them, will patches be accepted 
+into the OpenVPN sources to use Bourne shell syntax instead so as to 
+relax the requirement on bash?
 
-The DoS security fixes only affect the server, so it's less important to 
-upgrade the clients.
+	Thanks,
 
-James
+	-- Johnny Lam <jlam@...438...>
+
 
