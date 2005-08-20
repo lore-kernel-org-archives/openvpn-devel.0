@@ -1,9 +1,9 @@
-From: Johnny Lam <jlam@...438...>
-Message-ID: <4303918B.2000205@...438...>
-References: <Pine.LNX.4.58.0508161354420.10152@...41...> <ddtt8m$41j$1@...165...> <Pine.LNX.4.58.0508170649000.15439@...41...> <20050817171707.GA39058@...440...> <20050817175118.GA30248@...33...>
+From: Matthias Andree <ma+ovpnd@...31...>
+Message-ID: <20050820132104.GA18492@...33...>
 Mime-Version: 1.0
-In-Reply-To: <20050817175118.GA30248@...33...>
-Subject: [Openvpn-devel] Re: portable pkitool shell script
+Content-Type: multipart/mixed; boundary="d6Gm4EdcadzBjdND"
+Content-Disposition: inline
+Subject: [Openvpn-devel] [PATCH] plug fd leak (patch by Jaroslav Klaus)
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,36 +14,88 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Aug 18 12:36:44 2005
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Date: Sat Aug 20 06:22:02 2005
 To: openvpn-devel@lists.sourceforge.net
 
-Matthias Andree wrote:
-> On Wed, 17 Aug 2005, Johnny C. Lam wrote:
-> 
->>    (3) Solaris /bin/sh fix: don't set and export in one command;
->>	rather, export all the variables after setting them.
->>
->>    (4) Solaris /bin/sh fix: "if ! cmd ; then ... fi" isn't understood,
->>	so change it to "if cmd; then :; else ... fi".
-> 
-> These are no "fixes", but workarounds for a truly rotten and unusable
-> /bin/sh on Solaris. Sun should have replaced /bin/sh by something POSIX
-> compliant by now...
+--d6Gm4EdcadzBjdND
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Working as I do on pkgsrc which supports NetBSD and Solaris (as well as 
-several other operating systems), I don't disagree with this sentiment. 
-  For larger scripting jobs within pkgsrc, I tend to use a more 
-appropriate shell than Solaris' /bin/sh.  However, if you look at the 
-patch, you can see that the changes are extremely minor to get pkitool 
-to work with the stock /bin/sh on Solaris, which is still a popular Unix 
-platform, and I think that the benefit is quite worthwhile of not 
-needing some configure script magic to detect the operating system and 
-select an appropriate shell.
+Greetings,
 
-	Cheers,
+the attached patch was submitted to me in my role as FreeBSD
+port maintainer by Jaroslav Klaus a while ago, and it hasn't
+made openvpn 2.0.1. My fault for not sending this on earlier,
+I simply forgot and figured, when doing the 2.0.1 port, that
+Jaroslav's patch still applied to the code.
 
-	-- Johnny Lam <jlam@...438...>
+Jaroslav writes:
 
+  "The current version of OpenVPN in ports tree - 2.0 - has a bug
+  in route.c in FreeBSD, Darwin, OpenBSD and NetBSD version of
+  get_default_gateway.  Allocated socket for route manipulation is
+  never freed so number of mbufs continuously growing and exhaust
+  system resources after a while..  Patch is attached."
+
+Please consider Jaroslav's patch for inclusion.
+
+-- 
+Matthias Andree
+
+--d6Gm4EdcadzBjdND
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename="patch-route.c"
+
+--- route.c.orig	Mon Apr 11 05:43:56 2005
++++ route.c	Mon May 16 21:13:41 2005
+@@ -1380,6 +1380,7 @@
+     {
+       warn("writing to routing socket");
+       gc_free (&gc);
++      close(s);
+       return false;
+     }
+ 
+@@ -1387,6 +1388,7 @@
+     l = read(s, (char *)&m_rtmsg, sizeof(m_rtmsg));
+   } while (l > 0 && (rtm.rtm_seq != seq || rtm.rtm_pid != pid));
+                         
++  close(s);
+ 
+   rtm_aux = &rtm;
+ 
+@@ -1535,6 +1537,7 @@
+     {
+       msg (M_WARN, "ROUTE: problem writing to routing socket");
+       gc_free (&gc);
++      close(s);
+       return false;
+     }
+ 
+@@ -1542,6 +1545,7 @@
+     l = read(s, (char *)&m_rtmsg, sizeof(m_rtmsg));
+   } while (l > 0 && (rtm.rtm_seq != seq || rtm.rtm_pid != pid));
+                         
++  close(s);
+ 
+   rtm_aux = &rtm;
+ 
+@@ -1690,6 +1694,7 @@
+     {
+       warn("writing to routing socket");
+       gc_free (&gc);
++      close(s);
+       return false;
+     }
+ 
+@@ -1697,6 +1702,7 @@
+     l = read(s, (char *)&m_rtmsg, sizeof(m_rtmsg));
+   } while (l > 0 && (rtm.rtm_seq != seq || rtm.rtm_pid != pid));
+                         
++  close(s);
+ 
+   rtm_aux = &rtm;
+ 
+
+--d6Gm4EdcadzBjdND--
 
