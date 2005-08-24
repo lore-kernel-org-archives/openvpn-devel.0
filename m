@@ -1,11 +1,7 @@
-From: James Yonan <jim@...41...>
-In-Reply-To: <20050817171707.GA39058@...440...>
-Message-ID: <Pine.LNX.4.58.0508240336520.28422@...41...>
-References: <Pine.LNX.4.58.0508161354420.10152@...41...> <ddtt8m$41j$1@...165...>
- <Pine.LNX.4.58.0508170649000.15439@...41...> <20050817171707.GA39058@...440...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Re: portable pkitool shell script [was OpenVPN 2.0.1 released --
- note security fixes]
+From: "dehua zang" <dehua999@...406...>
+Mime-Version: 1.0
+Message-Id: <20050824115929.B44153BB41@...407...>
+Subject: [Openvpn-devel] Building failed with lzo on MinGW/MSYS in WinXP
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -16,57 +12,60 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Aug 24 02:41:03 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: "Johnny C. Lam" <jlam@...438...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Wed Aug 24 05:01:37 2005
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-
-On Wed, 17 Aug 2005, Johnny C. Lam wrote:
-
-> On Wed, Aug 17, 2005 at 06:52:50AM -0600, James Yonan wrote:
-> > On Tue, 16 Aug 2005, Johnny Lam wrote:
-> > 
-> > > James Yonan wrote:
-> > > >
-> > > > * Added easy-rsa 2.0 scripts to the tarball in easy-rsa/2.0
-> > > 
-> > > I am maintaining OpenVPN in the NetBSD Packages Collection and was in 
-> > > the process of updating our package to 2.0.1 when I noticed that the 
-> > > pkitool script uses bash.  If I provide them, will patches be accepted 
-> > > into the OpenVPN sources to use Bourne shell syntax instead so as to 
-> > > relax the requirement on bash?
-> > 
-> > Yes, that's probably okay.  Hopefully we can get bash/sh portability 
-> > without complexifying the code too much.
-> 
-> I've attached a patch that does the following things:
-> 
->     (1) Bourne shell fix: function foo {...}  ->  foo() {...}
-> 
->     (2) Bourne shell fix: avoid use of bash's substring selection
-> 	${foo:M:N} by replacing with an equivalent options-processing
-> 	loop.
-> 
->     (3) Solaris /bin/sh fix: don't set and export in one command;
-> 	rather, export all the variables after setting them.
-> 
->     (4) Solaris /bin/sh fix: "if ! cmd ; then ... fi" isn't understood,
-> 	so change it to "if cmd; then :; else ... fi".
-> 
->     (5) Don't require GNU grep -- -E isn't needed since we're matching
-> 	a basic RE, and -q can be avoided by attaching stdout to
-> 	/dev/null.
-> 
->     (6) Use GREP and OPENSSL variables instead of "grep" and "openssl"
-> 	so that it's easier to hard-code the full paths to the two
-> 	utilities in the pkitool script by setting them at the top of
-> 	the script.
-> 
-> I've tested this script on both NetBSD 2.0.2 and Solaris 8.
-
-Thanks, I've merged your patch with 2.0.2-rc1.
-
-James
-
+SGkNCg0KCUkgYnVpbGQgdGhlIHNvdXJjZSBjb2RlcyBvZiBPcGVuVlBOIG9uIFdpbmRvdyBYUCwg
+dGhlIGx6byBpcyBpbiBIOlx2cG4tYnVpbGRcbHpvLTEuMDguIFRoZSBpbmNsdWRlIGRpcmVjdG9y
+eSB1bmRlciBsem8tMS4wOCBjb250YWlucyBsem8uaCxsem9jb25mLmgsbHpvdXRpbC5oIGx6bzEu
+aCwgLi4uIFRoZSBsaWIgZGlyZWN0b3J5IHVuZGVyIGx6by0xLjA4IGNvbnRhaW5zIGxpYmx6by5h
+IGFuZCBsaWJsaXoubGEuIChwbGVhc2Ugc2VlIHRoZSBhdHRhY2htZW50KQ0KDQoJU28gSSBzZXQg
+IkxaTyA9IC9oL3Zwbi1idWlsZC9sem8tMS4wOCIsIkxJQl9ESVJTID0gLUwke09QRU5TU0x9L2xp
+Yi9NaW5HVyAgLUwke0xaT30vbGliIiwiSU5DTFVERV9ESVJTID0gLUkke09QRU5TU0x9L2luY2x1
+ZGUgLUkke0xaT30vaW5jbHVkZSIgaW4gdGhlIG1ha2VmaWxlLnczMi4gTm90ZSB0aGUgb3BlbnNz
+bCBpcyBvayB3aGVuIGJ1aWxkaW5nLg0KCXdoZW4gSSBidWlsZCB0aGUgY29kZXMgd2l0aCAnbWFr
+ZSAtZiBtYWtlZmlsZS53MzInLCBJIGZhY2UgdGhlIGZvbGxvd2luZyBlcnJvcnM6DQoNCg0KLyot
+LS0tLS0tLS0tLS0tLS0tLS0tIHRoZSBtYWtpbmcgcHJvY2Vzc2VzIGFuZCB0aGUgZXJyb3MtLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSovDQpIOlx2cG5cc291cmNlY29kZVx3aW5kb3dzXG9w
+ZW52cG4tMi4wPm1ha2UgLWYgbWFrZWZpbGUudzMyICAgICAgICAgICAgICAgICAgICAgIA0KZ2Nj
+IC1nIC1PMiAtV2FsbCAtV25vLXVudXNlZC1mdW5jdGlvbiAtV25vLXVudXNlZC12YXJpYWJsZSAt
+bW5vLWN5Z3dpbiAtbyBvcGVudnBuLmV4ZSBiYXNlNjQubyAgYnVmZmVyLm8gY3J5cHRvLm8gY3J5
+cHRvYXBpLm8gZXJyb3IubyBldmVudC5vIGZkbWlzYy5vIGZvcndhcmQubyBmcmFnbWVudC5vIGdy
+ZW1saW4ubyBoZWxwZXIubyBpbml0Lm8gaW50ZXJ2YWwubyBsaXN0Lm8gbHpvLm8gbWFuYWdlLm8g
+bWJ1Zi5vIG1pc2MubyBtcm91dGUubyBtc3MubyBtdGNwLm8gbXR1Lm8gbXVkcC5vIG11bHRpLm8g
+bnRsbS5vIG9jYy5vIG9wZW52cG4ubyBvcHRpb25zLm8gb3RpbWUubyBwYWNrZXRfaWQubyBwZXJm
+Lm8gcGluZy5vIHBsdWdpbi5vIHBvb2wubyBwcm90by5vIHByb3h5Lm8gcHVzaC5vIHJlbGlhYmxl
+Lm8gcm91dGUubyBzY2hlZHVsZS5vIHNlc3Npb25faWQubyBzaGFwZXIubyBzaWcubyBzb2NrZXQu
+byBzb2Nrcy5vIHNzbC5vIHN0YXR1cy5vIHRocmVhZC5vIHR1bi5vIHdpbjMyLm8gLUwvaC92cG4t
+YnVpbGQvT3BlblNTTC9saWIvTWluR1cgLUwvaC92cG4tYnVpbGQvbHpvLTEuMDgvbGliIC1sc3Ns
+MzIgLWxlYXkzMiAtbGx6byAtbGNyeXB0MzIgLWx3czJfMzIgLWxnZGkzMiAtbGlwaGxwYXBpIC1s
+d2lubW0gICAgICANCmx6by5vKC50ZXh0KzB4YmQpOiBJbiBmdW5jdGlvbiBgbHpvX2NvbXByZXNz
+X2luaXQnOiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgSDovdnBuL3NvdXJjZWNvZGUvd2lu
+ZG93cy9vcGVudnBuLTIuMC9sem8uYzoxMTI6IHVuZGVmaW5lZCByZWZlcmVuY2UgdG8gYF9fbHpv
+X2luaXQyJyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgIGx6by5vKC50ZXh0KzB4Y2MpOkg6L3Zwbi9zb3VyY2Vj
+b2RlL3dpbmRvd3Mvb3BlbnZwbi0yLjAvbHpvLmM6MTE0OiB1bmRlZmluZWQgcmVmZXJlbmNlIHRv
+IGBsem9fbWFsbG9jJw0KbHpvLm8oLnRleHQrMHgxNjQpOiBJbiBmdW5jdGlvbiBgbHpvX2NvbXBy
+ZXNzX3VuaW5pdCc6ICAgICAgICAgICAgICAgICAgICAgICAgICAgSDovdnBuL3NvdXJjZWNvZGUv
+d2luZG93cy9vcGVudnBuLTIuMC9sem8uYzoxMjQ6IHVuZGVmaW5lZCByZWZlcmVuY2UgdG8gYGx6
+b19mcmVlJyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIGx6by5vKC50ZXh0KzB4MmJjKTogSW4gZnVuY3Rp
+b24gYGx6b19jb21wcmVzcyc6ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgSDovdnBu
+L3NvdXJjZWNvZGUvd2luZG93cy9vcGVudnBuLTIuMC9sem8uYzoxNTU6IHVuZGVmaW5lZCByZWZl
+cmVuY2UgdG8gYGx6bzF4XzFfMTVfY29tcHJlc3MnICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGx6by5vKC50ZXh0KzB4Njlh
+KTogSW4gZnVuY3Rpb24gYGx6b19kZWNvbXByZXNzJzogICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgSDovdnBuL3NvdXJjZWNvZGUvd2luZG93cy9vcGVudnBuLTIuMC9sem8uYzoyMDk6IHVu
+ZGVmaW5lZCByZWZlcmVuY2UgdG8gYGx6bzF4X2RlY29tcHJlc3Nfc2FmZScgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgIA0KY29sbGVjdDI6IGxkIHJldHVybmVkIDEgZXhpdCBzdGF0dXMN
+Cm1ha2U6ICoqKiBbZHluYW1pY10gRXJyb3IgMSAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICANCi8qLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tIHRoZSBtYWtp
+bmcgcHJvY2Vzc2VzIGVuZC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSovDQoNCg0K
+SGFzIEFueW9uZSAgZmFjZWQgdGhlc2UgcHJvYmxlbXMgd2l0aCBNaW5HVy9NU1lTIGluIHdpbmRv
+d3MgcGxhdGZvcm0sIG9yIElmIGFueW9uZSBoYXMgdGhlIGx6byBsaWIgdGhhdCBjYW4gbWFrZSBz
+dWNjZXNzZnVsbHkgaW4gd2luZG93cyBwbGF0Zm9ybSwgcGxlYXNlIHNlbmQgaXQgdG8gbWUoZGVo
+dWE5OTlALi4uNDA2Li4uKSwgdGhhbmtzIGEgbG90IQ0KoaGhoaGhoaGhoaGhoaGhoQ0KoaGhoaGh
+oaGhoaGhoaGhoSAgICAgICAgICAgICAgICAgICBkZXdhcmQNCg0KDQo=
