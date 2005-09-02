@@ -1,9 +1,8 @@
-From: JuanJo Ciarlante <jjo-ipsec@...283...>
-Subject: Re: [Openvpn-devel] OpenVPN Protocol
-Message-ID: <20050902165506.C10507@...283...>
-References: <loom.20050902T143928-990@...171...>
-Mime-Version: 1.0
-In-Reply-To: <loom.20050902T143928-990@...171...>; from gervasiobernal@...447... on Fri, Sep 02, 2005 at 12:50:30PM +0000
+From: =?ISO-8859-15?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>
+Reply-To: =?ISO-8859-15?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>
+Message-ID: <1021309934.20050903005922@...449...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Bug: OpenVPN-Service didn't respond on WinXP SP2
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,40 +13,38 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Sep  2 12:59:01 2005
-Content-Type: text/plain; charset=us-ascii
+Date: Fri Sep  2 16:00:07 2005
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-On Fri, Sep 02, 2005 at 12:50:30PM +0000, Gervasio Bernal wrote:
-> First of all, I will explain what we are trying to develop. Basically, our idea 
-> is to make OpenVPN works at kernel level, not at user level, and use the linux 
-> cryptoapi instead of openssl. We will not use de /dev/net/tun (that is user 
-> level space) and will create some new interfaces (something like openvpn0, 
-> openvpn1, etc.).
+Hello,
 
-Obviously you mean to implement the actual traffic protection,
-encapsulation, etc ... keeping the session mgmt and key exchange
-at user level ('ala IPSec).
+I've a problem with OpenVPN 2 (2.00, 2.01, 2.02) on Windows XP SP2
+(actual patchlevel).
+If the server-service runs for a while a tray icon appear with the message
+"ip adresse beziehen" in english "getting ip adress" (I think).
+If this happens it is not possible anymore to connect from a client.
+I can solve the problem only with restarting the openvpn-service.
 
-FYI: they are working on this project for their college thesis under my
-     direction
-     
-> ...
->
-> Gervasio Bernal, from Mendoza - Argentina
-> Pedro Deis, from Mendoza - Argentina
-> 
+my config:
+proto tcp-server
+port 62222
+dev tap
+ifconfig 10.3.0.1 255.255.255.0
+secret key.txt
+keepalive 10 120
+verb 4
+mute 10
+auth SHA1
+cipher AES-128-CBC
 
-Regards ...
+Can this happen due to malformed packets on the tcp-port (random
+traffic)?
 
--- 
---Juanjo       OpenVPN udp6/tcp6 support (including MH for ipv4/ipv6)
-	       http://www.irrigacion.gov.ar/juanjo/openvpn/
+I use hibernate, maybe this is a problem for the tap-device?
 
-#  Juan Jose Ciarlante (JuanJo PGP) jjo ;at; mendoza.gov.ar              #
-#  Key fingerprint = 76 60 A5 76 FD D2 53 E3  50 C7 90 20 22 8C F1 2D    #
-
+greetings
+Carsten
 
 
