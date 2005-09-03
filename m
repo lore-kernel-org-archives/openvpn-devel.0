@@ -1,8 +1,8 @@
-From: =?ISO-8859-15?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>
-Reply-To: =?ISO-8859-15?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>
-Message-ID: <1021309934.20050903005922@...449...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Bug: OpenVPN-Service didn't respond on WinXP SP2
+From: larsbj@...408... (=?iso-8859-1?q?Lars_Gullik_Bj=F8nnes?=)
+Message-ID: <m364tijlep.fsf@...409...>
+References: <loom.20050902T143928-990@...171...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Re: OpenVPN Protocol
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,38 +13,25 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Sep  2 16:00:07 2005
-Content-Type: text/plain; charset=ISO-8859-15
+Date: Sat Sep  3 07:07:05 2005
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hello,
+Gervasio Bernal <gervasiobernal@...447...> writes:
 
-I've a problem with OpenVPN 2 (2.00, 2.01, 2.02) on Windows XP SP2
-(actual patchlevel).
-If the server-service runs for a while a tray icon appear with the message
-"ip adresse beziehen" in english "getting ip adress" (I think).
-If this happens it is not possible anymore to connect from a client.
-I can solve the problem only with restarting the openvpn-service.
+| First of all, I will explain what we are trying to develop. Basically, our idea 
+| is to make OpenVPN works at kernel level, not at user level, and use the linux 
+| cryptoapi instead of openssl.
 
-my config:
-proto tcp-server
-port 62222
-dev tap
-ifconfig 10.3.0.1 255.255.255.0
-secret key.txt
-keepalive 10 120
-verb 4
-mute 10
-auth SHA1
-cipher AES-128-CBC
+Just a question.
 
-Can this happen due to malformed packets on the tcp-port (random
-traffic)?
+Why do you want to do this? Performance or something else?
 
-I use hibernate, maybe this is a problem for the tap-device?
+To me running in userspace is one of the really good things about
+OpenVPN.
 
-greetings
-Carsten
+-- 
+	Lgb
 
 
