@@ -1,8 +1,8 @@
-From: Gervasio Bernal <gervasiobernal@...447...>
-Message-ID: <loom.20050903T161843-258@...171...>
-References: <loom.20050902T143928-990@...171...> <m364tijlep.fsf@...409...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] Re: OpenVPN Protocol
+From: mts.spb.suxx@...450...
+Reply-To: mts.spb.suxx@...450...
+Message-ID: <423638938.20050903211124@...450...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] The use of lzo if OpenSSL has zlib
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,38 +13,28 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Sep  3 07:31:02 2005
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Date: Sat Sep  3 10:15:05 2005
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Lars Gullik Bjønnes <larsbj <at> gullik.net> writes:
+Hello openvpn-devel,
 
-> 
-> Gervasio Bernal <gervasiobernal <at> speedy.com.ar> writes:
-> 
-> | First of all, I will explain what we are trying to develop. Basically, our 
-idea 
-> | is to make OpenVPN works at kernel level, not at user level, and use the 
-linux 
-> | cryptoapi instead of openssl.
-> 
-> Just a question.
-> 
-> Why do you want to do this? Performance or something else?
-> 
-> To me running in userspace is one of the really good things about
-> OpenVPN.
-> 
+  I did not have lzo's lib and headers before I attempted OpenVPN
+  port, so I had to "./configure --disable-lzo".
 
-You are right!, running in userspace is a great thing because it facilitates the 
-portability, but you lose performance. Obviously, if we run it at kernel level 
-we will lose that portability, but we will win performance.
+  When I ported OpenSSL (long ago) - I ./configure'd it to use zlib.
 
-Gervasio Bernal from Mendoza - Argentina
-Pedro Deis from Mendoza - Argentina
+  Now, when I use the resulting ssl.lib for OpenVPN (or any other
+  SSL-dependent package) - I have to link with zlib as well (otherwise
+  I get unresolved symbols errors).
 
+  What if I port lzo too and use it for OpenVPN configuration?
+  I will still have to link with the zlib, but which compression the
+  OpenVPN daemon will use if lzo is enabled in it's configuration?
 
-
+-- 
+Best regards,
+ Tony               mailto:mts.spb.suxx@...450...
 
 
