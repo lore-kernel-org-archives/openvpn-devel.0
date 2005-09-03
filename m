@@ -1,10 +1,8 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] Re: OpenVPN Protocol
-In-Reply-To: <loom.20050903T161843-258@...171...>
-Message-ID: <Pine.LNX.4.58.0509031058010.16613@...41...>
-References: <loom.20050902T143928-990@...171...> <m364tijlep.fsf@...409...>
- <loom.20050903T161843-258@...171...>
-MIME-Version: 1.0
+From: Charles Duffy <cduffy@...294...>
+Message-ID: <pan.2005.09.03.19.12.11.130425@...294...>
+References: <loom.20050902T143928-990@...171...> <m364tijlep.fsf@...409...> <loom.20050903T161843-258@...171...> <Pine.LNX.4.58.0509031058010.16613@...41...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Re: Re: OpenVPN Protocol
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,66 +13,21 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Sep  3 10:22:10 2005
-Content-Type: TEXT/PLAIN; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: Gervasio Bernal <gervasiobernal@...447...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Sat Sep  3 12:18:02 2005
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-On Sat, 3 Sep 2005, Gervasio Bernal wrote:
+On Sat, 03 Sep 2005 11:21:27 -0600, James Yonan wrote:
 
-> Lars Gullik Bj=C3=B8nnes <larsbj <at> gullik.net> writes:
->=20
-> >=20
-> > Gervasio Bernal <gervasiobernal <at> speedy.com.ar> writes:
-> >=20
-> > | First of all, I will explain what we are trying to develop. Basically=
-, our=20
-> idea=20
-> > | is to make OpenVPN works at kernel level, not at user level, and use =
-the=20
-> linux=20
-> > | cryptoapi instead of openssl.
-> >=20
-> > Just a question.
-> >=20
-> > Why do you want to do this? Performance or something else?
-> >=20
-> > To me running in userspace is one of the really good things about
-> > OpenVPN.
-> >=20
->=20
-> You are right!, running in userspace is a great thing because it facilita=
-tes the=20
-> portability, but you lose performance. Obviously, if we run it at kernel =
-level=20
-> we will lose that portability, but we will win performance.
+> The big question in my mind is whether this possibly small increase in 
+> performance will justify the loss of portability, and some level 
+> of stability and security.
 
-You also lose the security of running the OpenVPN process outside the=20
-kernel as user/group nobody and chrooted to a sandbox.
+Further, I'd think one who wanted to engage in such a tradeoff could use
+something such as Kernel Mode Linux (which allows one to execute typically
+user-level programs in kernelspace).
 
-If someone finds a remote code injection vulnerability, you are much worse=
-=20
-off than you would be if you were running as an unprivileged process,=20
-chrooted to a sandbox, because now every remote compromise is a full root=20
-compromise.
-
-There are also stability issues -- what if there is a crash or assertion=20
-failure?  Running in kernel space, you will bring down the entire machine.
-When alpha & beta testing new features, it's important to be able to=20
-convince users to test the new code, to help stabilize it.  People are=20
-going to be less likely to test code that might crash their whole machine=20
-as opposed to code which will only bring down a single process.
-
-As far as performance is concerned, you will gain the time it normally=20
-takes to switch between user and kernel space.  But this time may be small=
-=20
-in relation to the much higher cost of crypto operations.
-
-The big question in my mind is whether this possibly small increase in=20
-performance will justify the loss of portability, and some level=20
-of stability and security.
-
-James
+http://web.yl.is.s.u-tokyo.ac.jp/~tosh/kml/
 
 
