@@ -1,9 +1,8 @@
-From: James Yonan <jim@...41...>
-In-Reply-To: <9e0cf0bf05090602072faa2824@...278...>
-Message-ID: <Pine.LNX.4.58.0509061147300.27370@...41...>
-References: <9e0cf0bf05090602072faa2824@...278...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Re: [Openvpn-users] openvpn, smartcards and PKCS#11
+Subject: Re: [Openvpn-devel] Re: OpenVPN Protocol
+From: Mark Beyer <mbeyer@...452...>
+Message-ID: <BF434242.4F02%mbeyer@...452...>
+In-Reply-To: <Pine.LNX.4.58.0509031058010.16613@...41...>
+Mime-version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,118 +13,29 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Sep  6 11:09:25 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
+Date: Tue Sep  6 12:56:14 2005
+Content-type: text/plain;
+	charset="US-ASCII"
+Content-transfer-encoding: 7bit
+To: James Yonan <jim@...41...>, Gervasio Bernal <gervasiobernal@...447...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Tue, 6 Sep 2005, Alon Bar-Lev wrote:
+> The big question in my mind is whether this possibly small increase in
+> performance will justify the loss of portability, and some level
+> of stability and security.
+> 
+> James
+>
 
-> Hello,
-> 
-> I've seen some corresponding regarding this issue... But could
-> not understand the formal position of the development team.
-> 
-> It seems that currently openvpn does not support smartcards.
-> 
-> I've noticed that a patch is available from Fritz Elfert that
-> enables the use of openvpn and opensc smartcards.
-> http://openvpn.net/archive/openvpn-devel/2005-02/msg00000.html
-> 
-> I could not find any roadmap or document that describes future
-> intension of adding smartcard support for openvpn.
-> 
-> The usage of smartcard is very important since the inability
-> to duplicate them and the fact that they are locked after X
-> failed attempt to access them, makes them idle for identification.
-> 
-> Although the in the past opensc (www.opensc.com <http://www.opensc.com/>) 
-> tried to
-> suggest a standard API to access smartcards, the most commonly
-> adopted and supported is PKCS#11.
-> 
-> PKCS#11 is a high-level API specification that allows a
-> software to access objects on cryptographic token and perform
-> cryptographic operation using none extractable keys located
-> on that token.
-> Usually, an application may extract X.509 certificates from
-> the tokens and perform RSA operation using the private key on
-> the token.
-> Most vendors provides a PKCS#11 library to be used by
-> application to access their devices.
-> More information may be found at
-> www.rsasecurity.com/rsalabs/pkcs/pkcs-11/index.html<http://www.rsasecurity.com/rsalabs/pkcs/pkcs-11/index.html>
-> 
-> Many applications are using PKCS#11, including Mozilla
-> Firefox, Mozilla Thunderbird, Opera, Java and more...
-> 
-> PKCS#11 is also cross platform, so the same implementation can
-> be run on Unix and Windows platform.
-> 
-> Currently, openvpn supports openssl engine for cipher operations.
-> 
-> There is an opensc PKCS#11 engine for openssl, that can be
-> loaded dynamically, for example:
-> $ openssl
-> OpenSSL> engine dynamic
-> -pre SO_PATH:/usr/lib/opensc/engine _pkcs11.so
-> -pre ID:pkcs11
-> -pre LIST_ADD:1
-> -pre LOAD
-> -pre MODULE_PATH:/usr/local/lib/XXX.so
-> (dynamic) Dynamic engine loading support
-> [Success]: SO_PATH:/usr/lib/opensc/engine_pkcs11.so
-> [Success]: ID:pkcs11
-> [Success]: LIST_ADD:1
-> [Success]: LOAD
-> [Success]: MODULE_PATH:/usr/local/lib/XXX.so
-> Loaded: (pkcs11) pkcs11 engine
-> OpenSSL>
-> 
-> The above adds a new engine for the openssl to use, the new
-> engine is called pkcs11 and is using the /usr/local/lib/XXX.so
-> PKCS#11 library that is provided by the cryptographic token
-> provider, then a key can be accessed using fake file name in
-> the form of slot_[#]-id_[#]
-> 
-> The engine approach can be used as a first simple stage of
-> supporting keys that available on smartcards. the problem is
-> that this engine cannot fetch X.509 certificate from the
-> token, and cannot enum keys, as expected from PKI application.
-> 
-> For this steep, I guess a new configuration options should be
-> added:
-> 1. load-engine - load new engines getting all the arguments
-> required.
-> 2. tls-engine - a separate engine to be used during tls
-> negotiations.
-> 
-> For the long term, directly supporting PKCS#11 API
-> specification is the right way to go.
+Agreed. 
 
-Alon,
+Is performance such a big issue anyway ?  At least for clients, Open VPN's
+current user-level design is not a throughput bottleneck. And I'm not sure
+it's all that bad for a gateway either.
 
-Thanks for the interesting information on PKCS#11, OpenSSL, and 
-smartcards.
+What are you going to do with this new design that you can't do today ?
 
-Any rough idea on what percentage of the cheaply available smartcards out 
-there can talk to OpenSSL via PKCS#11?
+$.02
+Mark Beyer
 
-Is this part of the OpenSC effort and/or does it obsolete it?
-
-Is this capability of using OpenSSL + PKCS#11 something which is intended 
-to provide access to smartcards on *nix systems only, or does it work on 
-Windows as well?
-
-So from what you are saying, I take it that PKCS#11 smartcard support is 
-easily accessible from OpenVPN, if only the new directives load-engine and 
-tls-engine are coded?
-
-If this is the case, I would be happy to accept a patch which adds these
-directives.  If you don't feel like coding it, it would be helpful if
-you could point us at some sample code which shows the appropriate OpenSSL
-calls.
-
-James
 
