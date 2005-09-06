@@ -1,8 +1,10 @@
-From: "Alon Bar-Lev" <alon.barlev@...277...>
-Message-ID: <!~!UENERkVCMDkAAQACAAAAAAAAAAAAAAAAAC4AAAAAAAAAFDDtaetKC0eU/wAT9I94wAEABRNVsENpT0ClhBpBhWPpJAAAAAPN/gAAEAAAAIfetpPaXdtPnq8y9C/hPN8BAAAAAA==@gmail.com>
+Message-ID: <431E20F8.1080101@...453...>
+From: Erich Titl <erich.titl@...453...>
 MIME-Version: 1.0
-In-Reply-To: <Pine.LNX.4.58.0509061147300.27370@...41...>
-Subject: [Openvpn-devel] RE: [Openvpn-users] openvpn, smartcards and PKCS#11
+Subject: Re: [Openvpn-devel] RE: [Openvpn-users] openvpn, smartcards and PKCS#11
+References: <!~!UENERkVCMDkAAQACAAAAAAAAAAAAAAAAAC4AAAAAAAAAFDDtaetKC0eU/wAT9I94wAEABRNVsENpT0ClhBpBhWPpJAAAAAPN/gAAEAAAAIfetpPaXdtPnq8y9C/hPN8BAAAAAA==@gmail.com>
+In-Reply-To: <!~!UENERkVCMDkAAQACAAAAAAAAAAAAAAAAAC4AAAAAAAAAFDDtaetKC0eU/wAT9I94wAEABRNVsENpT0ClhBpBhWPpJAAAAAPN/gAAEAAAAIfetpPaXdtPnq8y9C/hPN8BAAAAAA==@gmail.com>
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg=sha1; boundary="------------ms010908000704080104090609"
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,47 +15,97 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Sep  6 13:03:16 2005
-Content-Type: text/plain;
-	charset="us-ascii"
+Date: Tue Sep  6 16:08:03 2005
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: 'James Yonan' <jim@...41...>, openvpn-devel@lists.sourceforge.net
+
+This is a cryptographically signed message in MIME format.
+
+--------------ms010908000704080104090609
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: 'James Yonan' <jim@...41...>
-Cc: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-James Yonan wrote:
+Alon
 
-> Thanks for the interesting information on PKCS#11, OpenSSL, and
-smartcards.
+maybe I am completely off topic but I am using an ikey 1000 on a Windoze 
+box with standard openvpn. AFAIK the ikey 1000 provides a PKCS#11 
+interface which (at least on windoze) is handled by the proprietary driver.
 
-You are welcome... I now doing a phase on all open-source projects that uses
-cryptographic but do not use smartcards... In a standard way... :)
+This token only handles storage of the keys. I believe the engine is 
+only required when you want to run crypto operations on the card.
 
-> Any rough idea on what percentage of the cheaply available smartcards out
-there can talk to OpenSSL via PKCS#11?
+Erich
 
-It depends on what cheap is for you... It can be rage from $12 in large
-numbers to $40 in ones...
-Aladdin USB token (www.ealaddin.com) is about $40 for one, but it does not
-need a reader.
-Athana smartcards (www.athena-scs.com) is about $17 for ones but it requires
-a reader that is about $20.
 
-Both works well...
-Aladdin uses opensc and there is opensc-pkcs#11 provider.
-Athena provides PKCS#11 library.
+--------------ms010908000704080104090609
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
-> Is this part of the OpenSC effort and/or does it obsolete it?
+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
+--------------ms010908000704080104090609--
 
-Opensc is an effort to produce open smartcard interface... But it failed.
-Currently there are two interfaces to access smartcards:
-1. PKCS#11 of RSA Security (www.rsasecurity.com/rsalabs/node.asp?id=2133) -
-cross-platform free API.
-2. Microsoft Cryptographic Service Provider (CSP) - Microsoft specific
-interface.
 
-There is a PKCS#11 provider for opensc, so that if you have opensc card you
-can use it with applications that uses PKCS#11.
-
-> Is this capability of using OpenSSL + PKCS#11 something which is intended
-to provide access to smartcards on *nix systems only, or does
-> it work on Windows as well?
