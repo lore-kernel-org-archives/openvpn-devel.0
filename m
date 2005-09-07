@@ -1,9 +1,8 @@
-Message-ID: <431E9327.2080503@...453...>
-From: Erich Titl <erich.titl@...453...>
+From: "Alon Bar-Lev" <alon.barlev@...277...>
+Subject: RE: [Openvpn-devel] RE: [Openvpn-users] openvpn, smartcards and PKCS#11
+Message-ID: <!~!UENERkVCMDkAAQACAAAAAAAAAAAAAAAAAC4AAAAAAAAAFDDtaetKC0eU/wAT9I94wAEABRNVsENpT0ClhBpBhWPpJAAAAAPN/gAAEAAAAD8QK3YJ+zFLuGljWpM1bLgBAAAAAA==@gmail.com>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] RE: [Openvpn-users] openvpn, smartcards and PKCS#11
-References: <!~!UENERkVCMDkAAQACAAAAAAAAAAAAAAAAAC4AAAAAAAAAFDDtaetKC0eU/wAT9I94wAEABRNVsENpT0ClhBpBhWPpJAAAAAPN/gAAEAAAAOa2iGA6cTVIgGHNk90HOXEBAAAAAA==@gmail.com>
-In-Reply-To: <!~!UENERkVCMDkAAQACAAAAAAAAAAAAAAAAAC4AAAAAAAAAFDDtaetKC0eU/wAT9I94wAEABRNVsENpT0ClhBpBhWPpJAAAAAPN/gAAEAAAAOa2iGA6cTVIgGHNk90HOXEBAAAAAA==@gmail.com>
+In-Reply-To: <431E9327.2080503@...453...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,47 +13,38 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Sep  7 00:14:05 2005
-Content-Type: text/plain; charset=ISO-8859-1
+Date: Wed Sep  7 03:43:09 2005
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Alon Bar-Lev <alon.barlev@...277...>
+To: 'Erich Titl' <erich.titl@...453...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Alon
+Erich Titl wrote:
 
-Alon Bar-Lev wrote:
->  
-...
-> 
-> In terms of security, there is no point of using a device that store keys
-> only to be extracted by applications.
-> In order to secure your identity you must use a device that cannot be
-> duplicated.
-> This can be implemented only if the device does not allow the private key to
-> be extracted from it.
+> Which implies that you send cleartext to the device and get cyphertext
+back. So the easiest way to tamper the message is to intercept it at
+> the  smartcard driver level :-) and modify it on the fly. If someone is
+smart enough to fetch the key contents from memory while it is being used by
+> the crypto software, he is smart enough to intercept the cleartext
+message.
 
-This is the case for the ikey 1000. The device _should_ not allow
-duplication.
+The issue is not whether someone can see your messages, the issue is whether
+I can steal your private key!
 
-> In order to make use of this none extractable key, the device must perform
-> the cryptographic operations and not the software.
+> This device at least protects its contents against tampering, and does not
+yield the key without authentication. And this authentication is done
+> on the device itself.
 
-Which implies that you send cleartext to the device and get cyphertext
-back. So the easiest way to tamper the message is to intercept it at the
- smartcard driver level :-) and modify it on the fly. If someone is
-smart enough to fetch the key contents from memory while it is being
-used by the crypto software, he is smart enough to intercept the
-cleartext message.
+Most USB devices now require password before allow to access...
+And if you put your private key encrypted on such device, it is more or less
+the same security level.
 
-> 
-> What you describe is somewhat like putting the private key on USB Storage
-> device... This is very low security level.
+If you like to upgrade your security, you should buy a device that
+implements smartcard... And replace your memory card.
 
-This device at least protects its contents against tampering, and does
-not yield the key without authentication. And this authentication is
-done on the device itself.
+Best Regards,
+Alon Bar-Lev.
 
-cheers
 
-Erich
 
