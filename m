@@ -1,8 +1,8 @@
-Content-class: urn:content-classes:message
-MIME-Version: 1.0
+From: "Alon Bar-Lev" <alon.barlev@...277...>
 Subject: RE: [Openvpn-devel] openvpn - support PKCS#11 smartcards
-Message-ID: <618FF4C21278E44BB35BD24B86C2779607F49471@...456...>
-From: "C. Ruiz, Ivan" <ICASADO@...455...>
+Message-ID: <!~!UENERkVCMDkAAQACAAAAAAAAAAAAAAAAAC4AAAAAAAAAFDDtaetKC0eU/wAT9I94wAEABRNVsENpT0ClhBpBhWPpJAAAAAPN/gAAEAAAACFkkGuklWNOurOZ+tJ84QIBAAAAAA==@gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <618FF4C21278E44BB35BD24B86C2779607F49471@...456...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,53 +13,38 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Sep 13 01:23:16 2005
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Date: Tue Sep 13 04:49:02 2005
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Alon Bar-Lev <alon.barlev@...277...>
 
-SGVsbG8sDQoNCml0IHdvcmtzIGZpbmUgd2hlbiB5b3Ugc3BlY2lmeSB0aGUgInNpZ24iIG1ldGhv
-ZC4gSWYgeW91IGxlYXZlIGl0IHdpdGggdGhlIGRlZmF1bHQgKGF1dG8pIE9wZW5TQyB0cmlja3Mg
-eW91ciBjb2RlIHRvIHRoaW5rIHRoYXQgaXQgc3VwcG9ydHMgU2lnblJlY292ZXIgYW5kIGl0IGZh
-aWxzLg0KDQpPcGVuU0Mgc2F5cyB0aGF0IHRoZSBwcml2YXRlIGtleSBzdXBwb3J0cyBTaWduUmVj
-b3ZlciAoQ0tBX1NJR05fUkVDT1ZFUikgd2hlbiB5b3UgYXNrIGl0IChzZWUgZnVuY3Rpb24gcGtj
-czE1X3Bya2V5X2dldF9hdHRyaWJ1dGUgaW4gaHR0cDovL3d3dy5vcGVuc2Mub3JnL29wZW5zYy9m
-aWxlL3JlbGVhc2VzL29wZW5zYy0wLjkuNi9zcmMvcGtjczExL2ZyYW1ld29yay1wa2NzMTUuYyks
-IGJ1dCB0aGUgcHJvYmxlbSBpcyB0aGF0IE9wZW5TQyBpdHNlbGYgZG9lc24ndCBpbXBsZW1lbnQg
-dGhlIGZ1bmN0aW9uIENfU2lnblJlY292ZXIgYW5kIENfU2lnblJlY292ZXJJbml0Lg0KDQpUaGUg
-cHJvYmxlbSBpcyBjbGVhcmx5IG9uIE9wZW5TQyBwa2NzIzExIGltcGxlbWVudGF0aW9uLCBidXQg
-d2l0aCB0aGUgb3B0aW9uIC0tcGtjczExLXNpZ24tbW9kZSB5b3UgaGF2ZSBpbmNsdWRlZCB3ZSBj
-YW4gd29ya2Fycm91bmQgaXQhDQoNCkkgYWdyZWUgdG8gZHJvcCBzdXBwb3J0IGZvciBPcGVuU0Mu
-IFRoZSBQS0NTIzExIGFwcHJvYWNoIHdvcmtzIHdlbGwgd2l0aCBPcGVuU0MgYW5kIGl0IHdpbGwg
-YnJvYWQgdGhlIHN1cHBvcnQgZm9yIG90aGVyIFBLQ1MjMTEtYXdhcmUgc21hcnRjYXJkcy9saWJy
-YXJpZXMuDQoNCk9uZSBzdWdnZXN0aW9uLiBJIGhhdmUgbm90aWNlZCB0aGF0IGlmIHlvdSBkb24n
-dCBnaXZlIHRoZSBhcmd1bWVudCAtLWFza3Bhc3MgdG8gT3BlblZQTiBpdCB3aWxsIG5vdCBzdGFy
-dCAoZG9lc24ndCBoYXZlIHRoZSBQSU4gdG8gdGhlIHNtYXJ0Y2FyZCksIGdpdmluZyBhIGJpdCBj
-b25mdXNpbmcgbWVzc2FnZToNCiJDYW5ub3Qgc2V0IFBLQ1MjMTEgcGFyYW1ldGVycyA3LUNLUl9B
-UkdVTUVOVFNfQkFEIi4NCg0KQ2FuIHRoZSBjb2RlIGNoZWNrIHdldGhlciB0aGVyZSdzIGEgUElO
-IHNwZWNpZmllZCBieSB0aGUgdXNlciBiZWZvcmUgY2FsbGluZyBwa2NzMTFfb3BlblNlc3Npb24g
-YW5kIGdpdmUgYSBtZXNzYWdlIGxpa2UgIllvdSBuZWVkIHRvIHNwZWNpZnkgYSBQSU4gdG8gYWNj
-ZXNzIHRoZSBzbWFydGNhcmQuIj8NCg0KSXbDoW4gQ2FzYWRvIFJ1aXoNClNBRElFTCwgUy5BLg0K
-DQoNCg0KLS0tLS1NZW5zYWplIG9yaWdpbmFsLS0tLS0NCkRlOiBvcGVudnBuLWRldmVsLWFkbWlu
-QGxpc3RzLnNvdXJjZWZvcmdlLm5ldA0KW21haWx0bzpvcGVudnBuLWRldmVsLWFkbWluQGxpc3Rz
-LnNvdXJjZWZvcmdlLm5ldF1FbiBub21icmUgZGUgQWxvbg0KQmFyLUxldg0KRW52aWFkbyBlbDog
-bHVuZXMsIDEyIGRlIHNlcHRpZW1icmUgZGUgMjAwNSAyMjo0MA0KUGFyYTogb3BlbnZwbi1kZXZl
-bEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQNCkFzdW50bzogW09wZW52cG4tZGV2ZWxdIG9wZW52cG4g
-LSBzdXBwb3J0IFBLQ1MjMTEgc21hcnRjYXJkcw0KDQoNCg0KSGVsbG8sDQoNCkMuIFJ1aXosIEl2
-YW4gd3JvdGU6DQo+ICANCj4gIEkgb25seSBjaGFuZ2VkIENfU2lnblJlY292ZXIgdG8gQ19TaWdu
-IGFuZCBDX1NpZ25SZWNvdmVySW5pdCB0byBDX1NpZ25Jbml0IChwa2NzMTEuYykgYW5kDQo+IGl0
-IHdvcmtlZCBmb3IgbWUgd2l0aCBPcGVuU0MuIENhbiB5b3UgdGVzdCBpZiBpdCdzIE9LIGZvciB5
-b3Ugd2l0aCB0aGlzIG1pbm9yIGNoYW5nZT8NCg0KSG1tbS4uLiBJdCBzaG91bGQgYmUgU2lnblJl
-Y292ZXIuLi4gc3RyYW5nZSB0aGV5IGRvbid0IHN1cHBvcnQgDQppdC4uLiBBbnl3YXksIHBsZWFz
-ZSBjaGVjayB0aGUgbmV3IHBhdGNoLi4uIEkndmUgYWRkZWQgYSBuZXcgDQphcmd1bWVudDoNCg0K
-LS1wa2NzMTEtc2lnbi1tb2RlIG1vZGUNCglhdXRvIChkZWZhdWx0KSAtIHRyeSB0byBmaW5kIG91
-dCB3aGljaCB0byB1c2UuDQoJcmVjb3ZlciAtIHVzZSBzaWduIHJlY292ZXIuDQoJc2lnbiAtIHVz
-ZSBzaWduLg0KDQpQbGVhc2UgdGVsbCBtZSBpZiB0aGUgZGVmYXVsdCB3b3Jrcy4NCg0KPiAgDQo+
-ICBBcGFydCBmcm9tIHRoaXMgaSd2ZSB0ZXN0ZWQgdGhhdCBJIGNhbiBzcGVjaWZ5IGNlcnRzIGJv
-dGggYnkgbGFiZWwgYW5kIGJ5IGlkIDwtIE9LIQ0KDQpJIGFtIHZlcnkgZ2xhZCEhIQ0KDQo+ICAN
-Cj4gIE5vdCBiZWVuIGFibGUgdG8gdGVzdCB1bmRlciBXaW5kb3dzIGFzIEkgZG9uJ3QgaGF2ZSB0
-aGUgY29tcGlsZXIgZm9yIHRoaXMgcGxhdGZvcm0uDQo+ICANCg0KSSBob3BlIHNvbWVvbmUgd2ls
-bCBjaGVjayBpdCBvdXQuLi4NCg0KU28uLi4gQ2FuIHdlIGRyb3AgdGhlIHJlcXVlc3QgZm9yIE9w
-ZW5TQyBzdXBwb3J0IGFuZCBmb2N1cyBvbiANClBLQ1MjMTE/DQoNCkJlc3QgUmVnYXJkcywNCkFs
-b24gQmFyLUxldi4NCg0K
+C. Ruiz, Ivan wrote:
+
+>The problem is clearly on OpenSC pkcs#11 implementation, but with the
+option --pkcs11-sign-mode
+> you have included we can workarround it!
+
+OK... So we can close this issue.
+
+> I agree to drop support for OpenSC. The PKCS#11 approach works well with
+OpenSC and it will
+> broad the support for other PKCS#11-aware smartcards/libraries.
+
+Great... So we continue with request to merge the PKCS#11 code into openvpn.
+
+> Can the code check wether there's a PIN specified by the user before
+calling pkcs11_openSession and
+> give a message like "You need to specify a PIN to access the smartcard."?
+
+OK... I've already added --pkcs11-protected-authentication in the last
+patch... So if it is not given and there is no --askpass  - I will add a
+failure.
+
+One more task for me is to support more than one PKCS#11 provider... I will
+do this in the next weekend.
+
+Best Regards,
+Alon Bar-Lev.
+
+
