@@ -1,7 +1,8 @@
-Message-ID: <433012C0.9070505@...459...>
-From: Jothi <jothikumar@...459...>
+From: James Yonan <jim@...41...>
+Message-ID: <Pine.LNX.4.58.0509240210210.25922@...41...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] ifconfig for tun interface
+Subject: [Openvpn-devel] OpenVPN 2.0.2-TO4 released -- major progress on allowing non-admin
+ access
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,121 +13,90 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Sep 20 06:46:25 2005
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Date: Sat Sep 24 03:31:41 2005
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+To: openvpn-users@lists.sourceforge.net
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+This release is the latest in the topology branch which was first 
+discussed here:
 
-I downloaded & installed the tun kernel extension in
-my Mac 10.4 Build 8A428.
+http://openvpn.net/archive/openvpn-users/2005-09/msg00079.html
 
-Before I assign IP to tun interface ifconfig tun0 as
-follows
+Included in the Windows version of this release is a long-sought-after 
+feature:  The ability for OpenVPN to open the TAP-Win32 adapter from 
+accounts other than administrator.
 
-tun0:
-flags=8850<POINTOPOINT,RUNNING,SIMPLEX,MULTICAST> mtu
-1500
-        closed
+Two methods of setting non-admin access are provided.  The first method is 
+implemented in the TAP-Win32 driver itself.  By default, non-admin access 
+is now allowed, however this can be turned off in the adapter advanced
+properties dialog, or in the OemWin2k.inf file.
 
-I ran my application(To open driver handle) & 
-I tried to assign an IP to tun0 interface using 
-ifconfig tun0 172.16.100.28 1.2.3.9
+The second method configures non-admin access from userspace, using the 
+new --allow-nonadmin standalone flag to the openvpn command.  This method
+was more of a proof-of-concept, before I ported the code to the TAP-Win32
+driver.
 
-After I assign IP to tun interface ifconfig tun0 
-tun0:
-flags=8851<UP,POINTOPOINT,RUNNING,SIMPLEX,MULTICAST>
-mtu 1500
-        inet 172.16.100.28 --> 1.2.3.9 netmask
-0xffff0000 
-        open (pid 253)
+I need people to test this new TAP-Win32 driver on as many Windows
+versions as possible (it is included in the pre-built Windows installer
+for this release).  Of course, you should treat it as an early beta
+release, and not use it in production yet.  I've tested the driver on XP
+SP2 only, and more testing is needed on Win2K and Server 2003.
 
-I expected the assigned IP will allow me to ping. But
-not allowing me to ping.
+One of the interesting ramifications of this feature, is that it sets the 
+stage for non-admin accounts to be able to run OpenVPN directly, without 
+using the service wrapper.
 
-Is there anything I need enable in the driver to come
-out of this problem.
-Is there anything I missed out please advice me.
-Also attached netstat -rn & ifconfig dump of Mac 10.4
-PC.
+With OpenVPN 2.0, this couldn't happen for two reasons: (a) opening the 
+TAP-Win32 device object required administrative privileges, and (b) if the 
+server pushed routes, the client couldn't add them because adding routes 
+on Windows requires privilege.
 
-Regards,
-Jothi
+This new release addresses (a).  (b) is still an issue if the server is 
+pushing routes.  However (b) is less of an issue now since the "topology 
+subnet" feature was added, because it allows a tun-based tunnel to operate 
+without requiring any mandatory route pushes in order to function.  Of 
+course, if you are pushing custom routes, or are pushing 
+"redirect-gateway" to clients, then those routes cannot be added if the 
+user lacks administrative privileges (is there a finer-grained 
+privilege that allows route modification without full admin privileges?).
 
+Testing is quite easy.  Simply add this line to your "dev tun" based 
+server config:
 
-netstat -rn is as follows
+  topology subnet
 
-iMac:~ root# netstat -rn
-Routing tables
+Download:
 
-Internet:
-Destination        Gateway            Flags    Refs     Use  Netif Expire
-default            172.16.2.1         UGSc        6      10    en0
-1.2.3.9            172.16.100.28      UH          0       0   tun0
-127                127.0.0.1          UCS         0       0    lo0
-127.0.0.1          127.0.0.1          UH         11    1322    lo0
-169.254            link#4             UCS         0       0    en0
-172.16             link#4             UCS         4       0    en0
-172.16.2.1         0:9:f:30:61:8a     UHLW        3       0    en0   1180
-172.16.2.104       0:8:a1:45:d6:22    UHLW        0       1    en0    913
-172.16.100.20      0:d0:b7:9c:8d:fb   UHLW        1      30    en0    982
-172.16.100.61      127.0.0.1          UHS         0       0    lo0
-172.16.255.255     link#4             UHLWb       4      49    en0
+http://openvpn.net/beta/to/
 
-ifconfig is as follows
-iMac:~ root# ifconfig 
-lo0: flags=8049<UP,LOOPBACK,RUNNING,MULTICAST> mtu
-16384
-        inet 127.0.0.1 netmask 0xff000000 
-        inet6 ::1 prefixlen 128 
-        inet6 fe80::1%lo0 prefixlen 64 scopeid 0x1 
-gif0: flags=8010<POINTOPOINT,MULTICAST> mtu 1280
-stf0: flags=0<> mtu 1280
-en0:
-flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST>
-mtu 1500
-        inet6 fe80::211:24ff:fecd:4f3c%en0 prefixlen
-64 scopeid 0x4 
-        inet 172.16.100.61 netmask 0xffff0000
-broadcast 172.16.255.255
-        ether 00:11:24:cd:4f:3c 
-        media: autoselect (100baseTX <full-duplex>)
-status: active
-        supported media: none autoselect 10baseT/UTP
-<half-duplex> 10baseT/UTP <full-duplex> 10baseT/UTP
-<full-duplex,hw-loopback> 100baseTX <half-duplex>
-100baseTX <full-duplex> 100baseTX
-<full-duplex,hw-loopback> 1000baseT <full-duplex>
-1000baseT <full-duplex,hw-loopback> 1000baseT
-<full-duplex,flow-control> 1000baseT
-<full-duplex,flow-control,hw-loopback>
-en1:
-flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST>
-mtu 1500
-        ether 00:11:24:c0:4d:04 
-        media: autoselect (<unknown type>) status:
-inactive
-        supported media: autoselect
-fw0:
-flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST>
-mtu 4078
-        lladdr 00:11:24:ff:fe:cd:4f:3c 
-        media: autoselect <full-duplex> status:
-inactive
-        supported media: autoselect <full-duplex>
-tun0:
-flags=8851<UP,POINTOPOINT,RUNNING,SIMPLEX,MULTICAST>
-mtu 1500
-        inet 172.16.100.28 --> 1.2.3.9 netmask
-0xffff0000 
-        open (pid 253)
-tun1:
-flags=8850<POINTOPOINT,RUNNING,SIMPLEX,MULTICAST> mtu
-1500
-        closed
+Change Log:
 
+2005.09.23 -- Version 2.0.2-TO4
 
+* Added feature to TAP-Win32 adapter to allow it to be
+  opened from non-administrator mode.  This feature
+  is enabled by default, and can be enabled/disabled
+  in the adapter advanced properties dialog.
+* Added --allow-nonadmin standalone option for Windows to
+  set TAP adapter to allow non-admin access.  This
+  is a user-mode version of the code, and duplicates
+  the same feature as the above entry.
+* Added fix that attempts to solve corner case of tunnel not
+  forwarding packets when system clock is reset to an earlier time.
+* Added --redirect-gateway bypass-dns option.  (Developers:
+  To add bypass-dhcp or bypass-dns support to other OSes,
+  add a get_bypass_addresses function to route.c for
+  your OS.)
+* Added OPENVPN_PLUGIN_CLIENT_CONNECT_V2 plugin callback, which
+  allows a client-connect plugin to return configuration text
+  in memory, rather than via a file.
+* Fixed a bug where --mode server --proto tcp-server --cipher none
+  operation could cause tunnel packet truncation.
+* openvpn --version will show [LZO1] or [LZO2], depending on
+  version that was linked.
 
+James
 
 
