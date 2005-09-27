@@ -1,10 +1,11 @@
-Message-ID: <1e6368e80509271858682178b5@...278...>
-From: Leonard Isham <leonard.isham@...277...>
-Reply-To: Leonard Isham <leonard.isham@...277...>
-Subject: Re: [Openvpn-devel] 400 vpn clients 20% of them loosing the route frequently
-In-Reply-To: <1127848987.6861.117.camel@...399...>
+From: James Yonan <jim@...41...>
+Subject: Re: [Openvpn-devel] Re: OpenVPN source repository migrated to svn
+ (subversion)
+In-Reply-To: <20050927230203.GA30828@...33...>
+Message-ID: <Pine.LNX.4.58.0509272203290.25922@...41...>
+References: <Pine.LNX.4.58.0509262203120.25922@...41...> <dhbevm$sk9$1@...165...>
+ <20050927230203.GA30828@...33...>
 MIME-Version: 1.0
-References: <1127848987.6861.117.camel@...399...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,55 +16,27 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Sep 27 19:01:06 2005
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Marcelo Toledo <marcelo@...461...>
+Date: Tue Sep 27 21:16:45 2005
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+To: Matthias Andree <ma+ovpnd@...31...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On 9/27/05, Marcelo Toledo <marcelo@...461...> wrote:
-> I have one OpenVPN server version 2.0.2 using TCP port 1194 with TLS
-> with about 400 clients connected to it. From time to time it's
-> impossible to ping the client from the server, but if you log into the
-> client and ping the server, the server now became able to ping the
-> client. I made a lot of tests removing the bridge and trying a older
-> versions of openvpn and the problem still hapenning with about 20% of
-> the clients connected to the vpn.
->
-> here is the config of the client and server:
->
-> # SERVER CONFIG
-> mode server
-> port 1194
-> proto tcp-server
-> dev tap
-[snip]
+On Wed, 28 Sep 2005, Matthias Andree wrote:
 
-Observations:
-1. 400 clients... 1 server only?
-2. TAP means additional overhead full ethernet packet encapsulated in
-TCP/IP packet.  Broadcasts, fragmented ethernet datagrams  and for 400
-clients....
-3. TCP over TCP is not recommended. The internal congestion control
-can conflict with the external congestion control.
-4. What is your full bandwidth and usable bandwidth at the server?
+> I have worked quite a bit with Berkeley DB (which SVN set off with as
+> its database backend) in bogofilter, and while lots of things are to be
+> said about BDB robustness and corruptions, the most important point of
+> criticism is that one needs to take BDB by the hand and guide it, and it
+> doesn't tolerate application bugs that cause BDB to be used improperly.
+> If used properly, it's fast and solid - but then you've entered the
+> realm of transactions, and they're as awful to hack as GTK+ or assembly
+> language - it's all raw and low-level.
 
-Troubleshooting:
-Do packet captures on the real interfaces that the VPN tunnel is using
-(there the TCP 1194 traffic is), the TAP interfaces.  Look for TCP
-issues.
+True, but SVN supports different repository formats, and BDB is just one
+option (and rather deprecated at this point).  I'm using an FSFS
+repository, which gets away from nearly all of the disadvantages of BDB.
 
-Recommendations:
-1. switch to UDP
-2. switch to TUN even if this requires additional configuration.  to
-rely on broadcasts over a VPN is problematic.
-3. Bandwidth may be a major bottleneck.  suggestions 1 & 2 will help,
-but it may not be enough.
-4. Server look for bottlenecks,  may require upgrade(s).  Removing one
-bottleneck may reveal the next bottleneck...
+James
 
---
-Leonard Isham, CISSP
-Ostendo non ostento.
 
