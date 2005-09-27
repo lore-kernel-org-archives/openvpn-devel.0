@@ -1,7 +1,9 @@
-From: James Yonan <jim@...41...>
-Message-ID: <Pine.LNX.4.58.0509262203120.25922@...41...>
+From: Matthias Andree <ma+ovpnd@...31...>
+Subject: Re: [Openvpn-devel] OpenVPN source repository migrated to svn (subversion)
+Message-ID: <20050927093348.GA4144@...33...>
+References: <Pine.LNX.4.58.0509262203120.25922@...41...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN source repository migrated to svn (subversion)
+In-Reply-To: <Pine.LNX.4.58.0509262203120.25922@...41...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,31 +14,35 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Sep 26 21:22:03 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Date: Tue Sep 27 02:36:03 2005
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-I've migrated the OpenVPN source repository from CVS to subversion.
+On Mon, 26 Sep 2005, James Yonan wrote:
 
-Read-only access is available at svn://openvpn.net/openvpn
+> I've migrated the OpenVPN source repository from CVS to subversion.
+> 
+> Read-only access is available at svn://openvpn.net/openvpn
+> 
+> Examples:
+> 
+> Check out the stable branch:
+>   svn checkout svn://openvpn.net/openvpn/trunk openvpn
 
-Examples:
+Hum, it has trunk/CVSROOT
+            trunk/openvpn
 
-Check out the stable branch:
-  svn checkout svn://openvpn.net/openvpn/trunk openvpn
+Probably the CVSROOT is not too useful to other people, so to checkout:
 
-Check out the BETA21 branch (has the new topology subnet and non-admin 
-TAP-Win32 features):
+svn checkout svn://openvpn.net/openvpn/trunk/openvpn openvpn
+                                            --------
 
-  checkout svn://openvpn.net/openvpn/branches/BETA21 openvpn
+Should give more of what is expected to start work.
 
-Check out the BETA25 branch (very experimental):
+Best viewed with a nonproportional font :)
 
-  checkout svn://openvpn.net/openvpn/branches/BETA25 openvpn
-
-I used the cvs2svn tool to convert the repository, so all the previous cvs 
-metadata such as branch tags are still there.
-
-James
+-- 
+Matthias Andree
 
