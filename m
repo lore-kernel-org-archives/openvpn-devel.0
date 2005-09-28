@@ -1,7 +1,10 @@
-Message-ID: <433A7B68.9010500@...462...>
-From: Sir Arthur <sir-arthur@...462...>
+Message-ID: <a6589cd60509281119215a4d85@...278...>
+From: Hans Fugal <fugalh@...277...>
+Reply-To: Hans Fugal <fugalh@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Compiling troubles: undefined reference to lzo_init_v2
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_435_31677485.1127931590943"
+Subject: [Openvpn-devel] XP DHCP problems?
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,34 +15,64 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Sep 28 04:16:48 2005
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+Date: Wed Sep 28 11:23:06 2005
 To: openvpn-devel@lists.sourceforge.net
 
-Hi all,
+------=_Part_435_31677485.1127931590943
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
 
-I've been trying to compile openvpn 2.0.2 with lzo-1.08, and 
-openssl-0.9.7d installed (corresponding dev-packages also).
-While compiling I get the following error:
+SSBzZXQgdXAgYSBWUE4gZm9yIGEgY2xpZW50IHdpdGggYSBzbWFsbCBvZmZpY2UgYmV0d2VlbiBh
+IGNvbXB1dGVyIGluIHRoZWlyCm9mZmljZSBhbmQgYSByb2FtaW5nIGxhcHRvcCwgYm90aCBydW5u
+aW5nIFhQLiBJbiB0aGUgcHJvY2VzcyBJIHdhcyB0cnlpbmcgdG8KcG9ydC1mb3J3YXJkIGEgaG9s
+ZSB0aHJvdWdoIHRoZWlyIGxpbmtzeXMgcm91dGVyIGZpcmV3YWxsLCBhbmQga2VwdCBnZXR0aW5n
+CjQwNCBlcnJvcnMuIFNvIEkgdXBncmFkZWQgdGhlIGxpbmtzeXMgdG8gdGhlIGxhdGVzdCBmaXJt
+d2FyZS4gKEkgd2lzaCBJCmNvdWxkIHNheSBwcmVjaXNlbHkgd2hhdCBtb2RlbCBpdCB3YXMsIGJ1
+dCBJIGRvbid0IHJlY2FsbC4gSSB0aGluayBpdCB3YXMKbm90IGEgd3J0NTRnIGFsdGhvdWdoIHRo
+ZSBtZW51cyBsb29rIHRoZSBzYW1lIGFzIGEgd3J0NTRnKQogVGhlIDQwNCBlcnJvcnMgd2VudCBh
+d2F5LCBidXQgdGhlIG5leHQgZGF5IHRoZSBYUCBib3ggaW4gdGhlIG9mZmljZSBkaWRuJ3QKZ2V0
+IGEgREhDUCBhZGRyZXNzLiBUaGVuIHRoZSBsYXB0b3Agd2FzIGJyb3VnaHQgaW4gYSBmZXcgZGF5
+cyBsYXRlciBhbmQgYWxzbwp3b3VsZCBub3QgZ2V0IGEgREhDUCBhZGRyZXNzLiBPdGhlciBYUCBi
+b3hlcyBpbiB0aGUgb2ZmaWNlIHN0aWxsIGdldCBESENQCmZyb20gdGhlIGxpbmtzeXMganVzdCBm
+aW5lLiBTdGF0aWMgYWRkcmVzc2VzIHdvcmsgZmluZSwgc28gY29ubmVjdGl2aXR5Cmlzbid0IGFu
+IGlzc3VlIC0gdGhleSBqdXN0IHdvbid0IGdldCBhIGRoY3AgYWRkcmVzcyBmcm9tIHRoZSBsaW5r
+c3lzLiBUaGlzCmlzIHJlZ3VsYXIgd2lyZWQgZXRoZXJuZXQsIHRoZSB3b3Jrc3RhdGlvbi9zZXJ2
+ZXIgaXMgYSBEZWxsIGFuZCBJIHRoaW5rIHRoZQpsYXB0b3AgaXMgYW4gSFAuCiBJcyB0aGVyZSBh
+bnkgcmVhc29uIHdoeSB0aGlzIG1pZ2h0IGJlIGhhcHBlbmluZyB0aGF0IGNvdWxkIGJlIHJlbGF0
+ZWQgdG8KT3BlblZQTj8gVGhhdCBpcyB0aGUgb25seSB0aGluZyBfSV8gY2FuIHRoaW5rIG9mIChh
+c2lkZSBmcm9tIGhhcHB5CmNvaW5jaWRlbmNlKSB0aGF0IHRob3NlIHR3byBjb21wdXRlcnMgaGF2
+ZSBpbiBjb21tb24gdGhhdCB0aGUgb3RoZXIgWFAKY29tcHV0ZXJzIGluIHRoZSBvZmZpY2UgZG9u
+J3QuCgotLQpIYW5zIEZ1Z2FsCkZ1Z2FsIENvbXB1dGluZwo=
 
-gcc  -O2 -g -march=i586 -mcpu=i686 -fmessage-length=0   -o openvpn  
-base64.o buffer.o crypto.o error.o event.o fdmisc.o forward.o fragment.o 
-gremlin.o helper.o init.o interval.o list.o lzo.o manage.o mbuf.o misc.o 
-mroute.o mss.o mtcp.o mtu.o mudp.o multi.o ntlm.o occ.o openvpn.o 
-options.o otime.o packet_id.o perf.o ping.o plugin.o pool.o proto.o 
-proxy.o push.o reliable.o route.o schedule.o session_id.o shaper.o sig.o 
-socket.o socks.o ssl.o status.o thread.o tun.o   -lssl -lcrypto -llzo -ldl
-lzo.o(.text+0x7cd): In function `lzo_compress_init':
-/usr/src/packages/BUILD/openvpn-2.0.2/lzo.c:112: undefined reference to 
-`__lzo_init_v2'
-collect2: ld returned 1 exit status
-make[1]: *** [openvpn] Fehler 1
-make[1]: Leaving directory `/usr/src/packages/BUILD/openvpn-2.0.2'
-make: *** [all] Fehler 2
-error: Bad exit status from /var/tmp/rpm-tmp.10360 (%build)
+------=_Part_435_31677485.1127931590943
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
 
-Any hints
-THX in advance
+PGRpdj5JIHNldCB1cCBhIFZQTiBmb3IgYSBjbGllbnQgd2l0aCBhIHNtYWxsIG9mZmljZSBiZXR3
+ZWVuIGEgY29tcHV0ZXIgaW4gdGhlaXIgb2ZmaWNlIGFuZCBhIHJvYW1pbmcgbGFwdG9wLCBib3Ro
+IHJ1bm5pbmcgWFAuIEluIHRoZSBwcm9jZXNzIEkgd2FzIHRyeWluZyB0byBwb3J0LWZvcndhcmQg
+YSBob2xlIHRocm91Z2ggdGhlaXIgbGlua3N5cyByb3V0ZXIgZmlyZXdhbGwsIGFuZCBrZXB0IGdl
+dHRpbmcgNDA0IGVycm9ycy4gU28gSSB1cGdyYWRlZCB0aGUgbGlua3N5cyB0byB0aGUgbGF0ZXN0
+IGZpcm13YXJlLiAoSSB3aXNoIEkgY291bGQgc2F5IHByZWNpc2VseSB3aGF0IG1vZGVsIGl0IHdh
+cywgYnV0IEkgZG9uJ3QgcmVjYWxsLiZuYnNwO0kgdGhpbmsgaXQgd2FzIG5vdCBhIHdydDU0ZyBh
+bHRob3VnaCB0aGUgbWVudXMgbG9vayB0aGUgc2FtZSBhcyBhIHdydDU0ZykKPC9kaXY+CjxkaXY+
+Jm5ic3A7PC9kaXY+CjxkaXY+VGhlIDQwNCBlcnJvcnMgd2VudCBhd2F5LCBidXQgdGhlIG5leHQg
+ZGF5IHRoZSBYUCBib3ggaW4gdGhlIG9mZmljZSBkaWRuJ3QgZ2V0IGEgREhDUCBhZGRyZXNzLiBU
+aGVuIHRoZSBsYXB0b3Agd2FzIGJyb3VnaHQgaW4gYSBmZXcgZGF5cyBsYXRlciBhbmQgYWxzbyB3
+b3VsZCBub3QgZ2V0IGEgREhDUCBhZGRyZXNzLiBPdGhlciBYUCBib3hlcyBpbiB0aGUgb2ZmaWNl
+IHN0aWxsIGdldCBESENQIGZyb20gdGhlIGxpbmtzeXMganVzdCBmaW5lLiBTdGF0aWMgYWRkcmVz
+c2VzIHdvcmsgZmluZSwgc28gY29ubmVjdGl2aXR5IGlzbid0IGFuIGlzc3VlIC0gdGhleSBqdXN0
+IHdvbid0IGdldCBhIGRoY3AgYWRkcmVzcyBmcm9tIHRoZSBsaW5rc3lzLiBUaGlzIGlzIHJlZ3Vs
+YXIgd2lyZWQgZXRoZXJuZXQsIHRoZSB3b3Jrc3RhdGlvbi9zZXJ2ZXIgaXMgYSBEZWxsIGFuZCBJ
+IHRoaW5rIHRoZSBsYXB0b3AgaXMgYW4gSFAuCjwvZGl2Pgo8ZGl2PiZuYnNwOzwvZGl2Pgo8ZGl2
+PklzIHRoZXJlIGFueSByZWFzb24gd2h5IHRoaXMgbWlnaHQgYmUgaGFwcGVuaW5nIHRoYXQgY291
+bGQgYmUgcmVsYXRlZCB0byBPcGVuVlBOPyBUaGF0IGlzIHRoZSBvbmx5IHRoaW5nIF9JXyBjYW4g
+dGhpbmsgb2YgKGFzaWRlIGZyb20gaGFwcHkgY29pbmNpZGVuY2UpIHRoYXQgdGhvc2UgdHdvIGNv
+bXB1dGVycyBoYXZlIGluIGNvbW1vbiB0aGF0IHRoZSBvdGhlciBYUCBjb21wdXRlcnMgaW4gdGhl
+IG9mZmljZSBkb24ndC4KPGJyIGNsZWFyPSJhbGwiPjxicj4tLSA8YnI+SGFucyBGdWdhbDxicj5G
+dWdhbCBDb21wdXRpbmcgPC9kaXY+Cg==
 
+------=_Part_435_31677485.1127931590943--
 
