@@ -1,9 +1,7 @@
-From: Charles Duffy <cduffy@...294...>
-Message-ID: <433AEE87.2060601@...294...>
-References: <a6589cd60509281119215a4d85@...278...>
-Mime-Version: 1.0
-In-Reply-To: <a6589cd60509281119215a4d85@...278...>
-Subject: [Openvpn-devel] Re: XP DHCP problems?
+Message-ID: <433D0E8B.6060306@...277...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] PKCS#11
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,16 +12,39 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Sep 28 12:33:11 2005
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Date: Fri Sep 30 00:09:07 2005
+Content-Type: text/plain; charset=ISO-8859-8-I; format=flowed
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-OpenVPN-devel is intended for those who are actively involved in working 
-on OpenVPN's source code. Your issue is more appropriate for 
-OpenVPN-users, as it discusses usage rather than development of OpenVPN.
+Hello James,
 
-That said -- try disabling the tap-win32 adapter. If you still see the 
-issue, you'll have ruled out OpenVPN as its cause.
+Is there anything missing from the PKCS#11 integration 
+implementation that I should complete?
+
+Best Regards,
+Alon Bar-Lev.
+
+--------------------------------
+
+From: Alon Bar-Lev <alon@...463...>
+RE: openvpn-2.0.2-pkcs11-20050916.patch
+2005-09-19 11:05
+
+  James Yonan wrote:
+  > Something that would integrate as a section in the 
+current 2.0 HOWTO, such
+  as "How to add dual-factor authentication to an OpenVPN
+  > configuration  using client-side smartcards".
+
+  Updated.
+ 
+http://sourceforge.net/tracker/index.php?func=detail&aid=1293066&group_id=48
+  978&atid=454721
+
+  I hope you see the new version is on the right direction...
+
+  Best Regards,
+  Alon Bar-Lev.
 
 
