@@ -1,7 +1,11 @@
-Message-ID: <433D0E8B.6060306@...277...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] PKCS#11
+Subject: Re: [Openvpn-devel] 400 vpn clients 20% of them loosing the route
+	frequently
+From: Marcelo Toledo <marcelo@...461...>
+In-Reply-To: <1e6368e80509271858682178b5@...278...>
+References: <1127848987.6861.117.camel@...399...>
+	 <1e6368e80509271858682178b5@...278...>
+Message-Id: <1128082114.7399.113.camel@...399...>
+Mime-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,39 +16,56 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Sep 30 00:09:07 2005
-Content-Type: text/plain; charset=ISO-8859-8-I; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Date: Fri Sep 30 05:09:43 2005
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Leonard Isham <leonard.isham@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hello James,
+Em Ter, 2005-09-27 às 21:58 -0400, Leonard Isham escreveu:
+> On 9/27/05, Marcelo Toledo <marcelo@...461...> wrote:
+> > I have one OpenVPN server version 2.0.2 using TCP port 1194 with TLS
+> > with about 400 clients connected to it. From time to time it's
+> > impossible to ping the client from the server, but if you log into the
+> > client and ping the server, the server now became able to ping the
+> > client. I made a lot of tests removing the bridge and trying a older
+> > versions of openvpn and the problem still hapenning with about 20% of
+> > the clients connected to the vpn.
+> >
+> > here is the config of the client and server:
+> >
+> > # SERVER CONFIG
+> > mode server
+> > port 1194
+> > proto tcp-server
+> > dev tap
+> [snip]
+> 
+> Observations:
+> 1. 400 clients... 1 server only?
 
-Is there anything missing from the PKCS#11 integration 
-implementation that I should complete?
+Yes, 400 clients and only 1 server.
 
-Best Regards,
-Alon Bar-Lev.
+> 2. TAP means additional overhead full ethernet packet encapsulated in
+> TCP/IP packet.  Broadcasts, fragmented ethernet datagrams  and for 400
+> clients....
 
---------------------------------
+We don't use TUN because from what I know it opens one connection per
+port and also one configuration per client, which is insane for a 400
+clients and growing (we're going to reach 600 by the end of this year).
 
-From: Alon Bar-Lev <alon@...463...>
-RE: openvpn-2.0.2-pkcs11-20050916.patch
-2005-09-19 11:05
+> 3. TCP over TCP is not recommended. The internal congestion control
+> can conflict with the external congestion control.
 
-  James Yonan wrote:
-  > Something that would integrate as a section in the 
-current 2.0 HOWTO, such
-  as "How to add dual-factor authentication to an OpenVPN
-  > configuration  using client-side smartcards".
+We already used OpenVPN with UDP, but the oscillations were much higher
+then today, that's why we migrated to TCP.
 
-  Updated.
- 
-http://sourceforge.net/tracker/index.php?func=detail&aid=1293066&group_id=48
-  978&atid=454721
+> 4. What is your full bandwidth and usable bandwidth at the server?
 
-  I hope you see the new version is on the right direction...
+We have 3MB and we're using half of it (1.5).
 
-  Best Regards,
-  Alon Bar-Lev.
+what do you think?
+-- 
+Marcelo Toledo <marcelo@...461...>
 
 
