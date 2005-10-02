@@ -1,11 +1,10 @@
-Message-ID: <43405139.1000700@...361...>
-From: Rolf Fokkens <r.fokkens@...361...>
-MIME-Version: 1.0
-References: <43404D99.8080309@...361...>
+From: James Yonan <jim@...41...>
+Subject: Re: [Openvpn-devel] Patch: Admin interface shows server IP when
+ connected
 In-Reply-To: <43404D99.8080309@...361...>
-Content-Type: multipart/mixed;
- boundary="------------020809000000080004060801"
-Subject: [Openvpn-devel] Re: Patch: TAP non ARP dependent
+Message-ID: <Pine.LNX.4.58.0510021718300.8243@...41...>
+References: <43404D99.8080309@...361...>
+MIME-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -16,74 +15,42 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Oct  2 15:02:47 2005
-To: openvpn-devel@lists.sourceforge.net
+Date: Sun Oct  2 19:39:04 2005
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+To: Rolf Fokkens <r.fokkens@...361...>
+Cc: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------020809000000080004060801
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Transfer-Encoding: 7bit
+On Sun, 2 Oct 2005, Rolf Fokkens wrote:
 
-Hi,
+> Hi,
+> 
+> I created an OpenVPN admin interface, which I want to show the actual 
+> connected server of a client. The normal "state" command in the admin 
+> interface does not provide the information. The attached patch adds an 
+> extra argument to the "state" result which shows the server's IP. Like this:
+> 
+>     [root@...464... ~]# echo state | nc 0.0.0.0 5000
+>      >INFO:OpenVPN Management Interface Version 1 -- type 'help' for
+>     more info
+>     1128286300,CONNECTED,SUCCESS,,145.66.1.1
+>     END
+>     [root@...464... ~]#
+> 
+> James Yonan once told me that this actualy changes the admin API, so it 
+> may break some admin interfaces. For those however who can use it I 
+> attached the patch.
+> 
+> Rolf
 
-Using OpenVPN to build a WAN, I noticed a disturbing thing: After 
-failing over to secondary OpenVPN server it takes a long time until a 
-ping to a client side IP works again. I think I know what's happening:
+Rolf,
 
-An OpenVPN server learns client-side MAC addresses based on the source 
-MAC addresses of received packets, just like an ethernet switch. When an 
-ethernet packet has to be sent to a client, the OpenVPN server selects 
-the client based on previously learnt MAC addresses. When a packet has 
-an unknown destination MAC address it's dropped - this is very unlike a 
-switch which broadcasts a packet to all interfaces. There's only one 
-exception for OpenVPN: when the destination MAC address is a broadcast / 
-multicast address the packet is sent to all clients.
+Thanks for the patch -- I see this as being a 2.1 thing, mostly so as not 
+to change the the management API mid-stream in 2.0.x.
 
-The above makes clear why ICMP (or other IP) packets normaly arrive. 
-It's because they're preceeded by an ARP request..... which is a 
-broadcast. The ARP request is delivered to all clients, including the 
-right one. The ARP reply that's sent back to the server contains a 
-source MAC address which is learnt by the server, after which the ICMP 
-packets are delivered properly.
+What I would like to do is collect all of the managment interface changes 
+which affect the API and release them simultaneously as "Management 
+Interface Version 2".
 
-The attached patch makes OpenVPN do the switch-like thing: broadcast a 
-packet with an unknow destination to all clients instead of dropping it.
-
-It helps me a lot, so it may help others as well.
-
-Cheers,
-
-Rolf
-
---------------020809000000080004060801
-Content-Type: text/x-patch;
- name="openvpn-2.0.2-fks2.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="openvpn-2.0.2-fks2.patch"
-
---- openvpn-2.0.2/multi.c.orig	2005-10-02 14:58:58.000000000 +0200
-+++ openvpn-2.0.2/multi.c	2005-10-02 15:04:20.000000000 +0200
-@@ -1756,9 +1756,17 @@
- 	    }
- 	  else
- 	    {
--	      multi_set_pending (m, multi_get_instance_by_virtual_addr (m, &dest, dev_type == DEV_TYPE_TUN));
-+              struct multi_instance *mi;
- 
--	      if (m->pending)
-+	      mi = multi_get_instance_by_virtual_addr (m, &dest, dev_type == DEV_TYPE_TUN);
-+	      multi_set_pending (m, mi);
-+
-+	      if (!mi)
-+                {
-+	          /* No known instance? Do like a switch: broadcast */
-+	          if (dev_type == DEV_TYPE_TAP) multi_bcast (m, &m->top.c2.buf, NULL);
-+                }
-+              else
- 		{
- 		  /* get instance context */
- 		  c = &m->pending->context;
-
---------------020809000000080004060801--
+James
 
