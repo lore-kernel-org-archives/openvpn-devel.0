@@ -1,12 +1,9 @@
-Message-ID: <1e6368e80509300544h3d4f5541gc8b01ba40b5adaa5@...278...>
-From: Leonard Isham <leonard.isham@...277...>
-Reply-To: Leonard Isham <leonard.isham@...277...>
-Subject: Re: [Openvpn-devel] 400 vpn clients 20% of them loosing the route frequently
-In-Reply-To: <1128082114.7399.113.camel@...399...>
+Message-ID: <43404D99.8080309@...361...>
+From: Rolf Fokkens <r.fokkens@...361...>
 MIME-Version: 1.0
-References: <1127848987.6861.117.camel@...399...>
-	 <1e6368e80509271858682178b5@...278...>
-	 <1128082114.7399.113.camel@...399...>
+Content-Type: multipart/mixed;
+ boundary="------------080008070704060807000803"
+Subject: [Openvpn-devel] Patch: Admin interface shows server IP when connected
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -17,97 +14,260 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Sep 30 05:47:10 2005
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Marcelo Toledo <marcelo@...461...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Sun Oct  2 14:19:06 2005
+To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-On 9/30/05, Marcelo Toledo <marcelo@...461...> wrote:
-> Em Ter, 2005-09-27 =E0s 21:58 -0400, Leonard Isham escreveu:
-> > On 9/27/05, Marcelo Toledo <marcelo@...461...> wrote:
-> > > I have one OpenVPN server version 2.0.2 using TCP port 1194 with TLS
-> > > with about 400 clients connected to it. From time to time it's
-> > > impossible to ping the client from the server, but if you log into the
-> > > client and ping the server, the server now became able to ping the
-> > > client. I made a lot of tests removing the bridge and trying a older
-> > > versions of openvpn and the problem still hapenning with about 20% of
-> > > the clients connected to the vpn.
-> > >
-> > > here is the config of the client and server:
-> > >
-> > > # SERVER CONFIG
-> > > mode server
-> > > port 1194
-> > > proto tcp-server
-> > > dev tap
-> > [snip]
-> >
-> > Observations:
-> > 1. 400 clients... 1 server only?
->
-> Yes, 400 clients and only 1 server.
+This is a multi-part message in MIME format.
+--------------080008070704060807000803
+Content-Type: multipart/alternative;
+ boundary="------------090805090703020006060609"
 
-What are the stats on the server?  Are there any resource issues?=20
-CPU, TCP. etc.
+--------------090805090703020006060609
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
 
-> > 2. TAP means additional overhead full ethernet packet encapsulated in
-> > TCP/IP packet.  Broadcasts, fragmented ethernet datagrams  and for 400
-> > clients....
->
-> We don't use TUN because from what I know it opens one connection per
-> port and also one configuration per client, which is insane for a 400
-> clients and growing (we're going to reach 600 by the end of this year).
+Hi,
 
-OpenVPN 1.X was one port per connection TUN or TAP.  OpenVPN 2.x
-supports the old setup, but was designed with a server mode for _both_
-TUN and TAP.  You can either dynamically hand out IP addresses or
-statically with either method.
+I created an OpenVPN admin interface, which I want to show the actual 
+connected server of a client. The normal "state" command in the admin 
+interface does not provide the information. The attached patch adds an 
+extra argument to the "state" result which shows the server's IP. Like this:
 
-> > 3. TCP over TCP is not recommended. The internal congestion control
-> > can conflict with the external congestion control.
->
-> We already used OpenVPN with UDP, but the oscillations were much higher
-> then today, that's why we migrated to TCP.
+    [root@...464... ~]# echo state | nc 0.0.0.0 5000
+     >INFO:OpenVPN Management Interface Version 1 -- type 'help' for
+    more info
+    1128286300,CONNECTED,SUCCESS,,145.66.1.1
+    END
+    [root@...464... ~]#
 
-This indicates that you are experiencing connectivity issues, outside
-of the tunnel.  UDP is connection less, and OpenVPN will not
-retransmit.  Broadcasts or connectionless and usually have no
-retransmission capacity.  TCP is is connection oriented and will
-resend packets, even the broadcast packets as they are just payload to
-TCP.  Connectivity problems can still cause TCP failures.  To many
-failures and reconnection attempts will use up TCP sockets, an
-unintentional self inflicted DOS.
+James Yonan once told me that this actualy changes the admin API, so it 
+may break some admin interfaces. For those however who can use it I 
+attached the patch.
 
-> > 4. What is your full bandwidth and usable bandwidth at the server?
->
-> We have 3MB and we're using half of it (1.5).
+Rolf
 
-What is the bandwidth at the client sites?
+--------------090805090703020006060609
+Content-Type: text/html; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 
-> what do you think?
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
+  <title></title>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+Hi,<br>
+<br>
+I created an OpenVPN admin interface, which I want to show the actual
+connected server of a client. The normal "state" command in the admin
+interface does not provide the information. The attached patch adds an
+extra argument to the "state" result which shows the server's IP. Like
+this:<br>
+<blockquote><tt>[root@...464... ~]# echo state | nc 0.0.0.0 5000</tt><br>
+  <tt>&gt;INFO:OpenVPN Management Interface Version 1 -- type 'help'
+for more info</tt><br>
+  <tt>1128286300,CONNECTED,SUCCESS,,145.66.1.1</tt><br>
+  <tt>END</tt><br>
+  <tt>[root@...464... ~]#</tt><br>
+</blockquote>
+James Yonan once told me that this actualy changes the admin API, so it
+may break some admin interfaces. For those however who can use it I
+attached the patch.<br>
+<br>
+Rolf<br>
+</body>
+</html>
 
-Are these site-to-site or road warriors?  Are the 20% always the same
-or random?  Do the 20% have anything in common.  Ant NAT devices or
-firewalls in between that may be having periodic resource issues?
+--------------090805090703020006060609--
 
-Have you considered setting up cacti or other system to monitor
-resources and provide graphs?
+--------------080008070704060807000803
+Content-Type: text/x-patch;
+ name="openvpn-2.0.1-fks1.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="openvpn-2.0.1-fks1.patch"
 
-Consider setting up a second server or OpenVPN instance and use TUN
-with UDP and migrate.
+diff -ruN openvpn-2.0.1.orig/forward.c openvpn-2.0.1/forward.c
+--- openvpn-2.0.1.orig/forward.c	2005-08-04 05:22:16.000000000 +0200
++++ openvpn-2.0.1/forward.c	2005-08-20 00:37:29.000000000 +0200
+@@ -194,6 +194,7 @@
+ 		  management_set_state (management,
+ 					OPENVPN_STATE_GET_CONFIG,
+ 					NULL,
++					0,
+ 					0);
+ 		}
+ #endif
+diff -ruN openvpn-2.0.1.orig/init.c openvpn-2.0.1/init.c
+--- openvpn-2.0.1.orig/init.c	2005-08-04 20:44:23.000000000 +0200
++++ openvpn-2.0.1/init.c	2005-08-20 00:49:39.000000000 +0200
+@@ -594,15 +594,18 @@
+   if (management)
+     {
+       in_addr_t tun_local = 0;
++      in_addr_t tun_remote = 0; /* FKS */
+       const char *detail = "SUCCESS";
+       if (c->c1.tuntap)
+ 	tun_local = c->c1.tuntap->local;
++      tun_remote = htonl (c->c1.link_socket_addr.actual.sin_addr.s_addr);
+       if (flags & ISC_ERRORS)
+ 	detail = "ERROR";
+       management_set_state (management,
+ 			    OPENVPN_STATE_CONNECTED,
+ 			    detail,
+-			    tun_local);
++			    tun_local,
++			    tun_remote);
+       if (tun_local)
+ 	management_post_tunnel_open (management, tun_local);
+     }
+@@ -2190,6 +2193,7 @@
+ 	      management_set_state (management,
+ 				    OPENVPN_STATE_CONNECTING,
+ 				    NULL,
++				    (in_addr_t)0,
+ 				    (in_addr_t)0);
+ 	    }
+ 
+diff -ruN openvpn-2.0.1.orig/manage.c openvpn-2.0.1/manage.c
+--- openvpn-2.0.1.orig/manage.c	2005-08-04 21:30:42.000000000 +0200
++++ openvpn-2.0.1/manage.c	2005-08-20 00:44:31.000000000 +0200
+@@ -440,7 +440,8 @@
+ 	       "state",
+ 	       man->persist.state,
+ 	       &man->connection.state_realtime,
+-	       LOG_PRINT_INT_DATE|LOG_PRINT_STATE|LOG_PRINT_LOCAL_IP);
++	       LOG_PRINT_INT_DATE|LOG_PRINT_STATE|
++	       LOG_PRINT_LOCAL_IP|LOG_PRINT_REMOTE_IP);
+ }
+ 
+ static void
+@@ -1329,7 +1330,8 @@
+ management_set_state (struct management *man,
+ 		      const int state,
+ 		      const char *detail,
+-		      const in_addr_t tun_local_ip)
++		      const in_addr_t tun_local_ip,
++		      const in_addr_t tun_remote_ip)
+ {
+   if (man->persist.state && (!man->settings.server || state < OPENVPN_STATE_CLIENT_BASE))
+     {
+@@ -1343,6 +1345,7 @@
+       e.u.state = state;
+       e.string = detail;
+       e.local_ip = tun_local_ip;
++      e.remote_ip = tun_remote_ip;
+       
+       log_history_add (man->persist.state, &e);
+ 
+@@ -1351,6 +1354,7 @@
+ 			       |   LOG_PRINT_INT_DATE
+                                |   LOG_PRINT_STATE
+ 			       |   LOG_PRINT_LOCAL_IP
++			       |   LOG_PRINT_REMOTE_IP
+                                |   LOG_PRINT_CRLF, &gc);
+ 
+       if (out)
+@@ -2032,6 +2036,8 @@
+     buf_printf (&out, "%s", e->string);
+   if (flags & LOG_PRINT_LOCAL_IP)
+     buf_printf (&out, ",%s", print_in_addr_t (e->local_ip, IA_EMPTY_IF_UNDEF, gc));
++  if (flags & LOG_PRINT_REMOTE_IP)
++    buf_printf (&out, ",%s", print_in_addr_t (e->remote_ip, IA_EMPTY_IF_UNDEF, gc));
+   if (flags & LOG_PRINT_CRLF)
+     buf_printf (&out, "\r\n");
+   return BSTR (&out);
+diff -ruN openvpn-2.0.1.orig/manage.h openvpn-2.0.1/manage.h
+--- openvpn-2.0.1.orig/manage.h	2005-06-12 08:33:20.000000000 +0200
++++ openvpn-2.0.1/manage.h	2005-08-20 00:37:29.000000000 +0200
+@@ -96,6 +96,7 @@
+   time_t timestamp;
+   const char *string;
+   in_addr_t local_ip;
++  in_addr_t remote_ip;
+   union log_entry_union u;
+ };
+ 
+@@ -111,6 +112,8 @@
+ #define LOG_PRINT_CRLF         (1<<7)
+ #define LOG_FATAL_NOTIFY       (1<<8)
+ 
++#define LOG_PRINT_REMOTE_IP    (1<<9)
++
+ const char *log_entry_print (const struct log_entry *e, unsigned int flags, struct gc_arena *gc);
+ 
+ struct log_history
+@@ -321,7 +324,8 @@
+ void management_set_state (struct management *man,
+ 			   const int state,
+ 			   const char *detail,
+-			   const in_addr_t tun_local_ip);
++			   const in_addr_t tun_local_ip,
++			   const in_addr_t tun_remote_ip);
+ 
+ /*
+  * The management object keeps track of OpenVPN --echo
+Binary files openvpn-2.0.1.orig/openvpn and openvpn-2.0.1/openvpn differ
+diff -ruN openvpn-2.0.1.orig/route.c openvpn-2.0.1/route.c
+--- openvpn-2.0.1.orig/route.c	2005-04-11 05:43:56.000000000 +0200
++++ openvpn-2.0.1/route.c	2005-08-20 00:37:29.000000000 +0200
+@@ -527,6 +527,7 @@
+ 	  management_set_state (management,
+ 				OPENVPN_STATE_ADD_ROUTES,
+ 				NULL,
++				0,
+ 				0);
+ 	}
+ #endif
+diff -ruN openvpn-2.0.1.orig/sig.c openvpn-2.0.1/sig.c
+--- openvpn-2.0.1.orig/sig.c	2005-04-11 05:43:55.000000000 +0200
++++ openvpn-2.0.1/sig.c	2005-08-20 00:37:29.000000000 +0200
+@@ -167,6 +167,7 @@
+ 	management_set_state (management,
+ 			      state,
+ 			      si->signal_text ? si->signal_text : signal_name (si->signal_received, true),
++			      (in_addr_t)0,
+ 			      (in_addr_t)0);
+     }
+ #endif
+diff -ruN openvpn-2.0.1.orig/ssl.c openvpn-2.0.1/ssl.c
+--- openvpn-2.0.1.orig/ssl.c	2005-08-04 20:50:08.000000000 +0200
++++ openvpn-2.0.1/ssl.c	2005-08-20 00:37:29.000000000 +0200
+@@ -2841,6 +2841,7 @@
+ 		      management_set_state (management,
+ 					    OPENVPN_STATE_WAIT,
+ 					    NULL,
++					    0,
+ 					    0);
+ 		    }
+ #endif
+@@ -3512,6 +3513,7 @@
+ 		      management_set_state (management,
+ 					    OPENVPN_STATE_AUTH,
+ 					    NULL,
++					    0,
+ 					    0);
+ 		    }
+ #endif
+diff -ruN openvpn-2.0.1.orig/stamp-h1 openvpn-2.0.1/stamp-h1
+--- openvpn-2.0.1.orig/stamp-h1	1970-01-01 01:00:00.000000000 +0100
++++ openvpn-2.0.1/stamp-h1	2005-08-17 21:39:46.000000000 +0200
+@@ -0,0 +1 @@
++timestamp for config.h
+diff -ruN openvpn-2.0.1.orig/tun.c openvpn-2.0.1/tun.c
+--- openvpn-2.0.1.orig/tun.c	2005-08-04 06:46:17.000000000 +0200
++++ openvpn-2.0.1/tun.c	2005-08-20 00:37:29.000000000 +0200
+@@ -536,7 +536,8 @@
+       management_set_state (management,
+ 			    OPENVPN_STATE_ASSIGN_IP,
+ 			    NULL,
+-			    tt->local);
++			    tt->local,
++			    0);
+     }
+ #endif
+ 
 
-Do you have any packet captures of the traffic out the TAP interface
-on the server and client that experiences the failures?
-
-I don't know your workload or any other details, but what about
-another person to take some of your workload so you can concentrate on
-this issue.  Or a second set of eyes to work on this issue with you (I
-would look for someone with at least as much networking experience as
-you have).
-
---
-Leonard Isham, CISSP
-Ostendo non ostento.
+--------------080008070704060807000803--
 
