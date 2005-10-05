@@ -1,12 +1,7 @@
-Subject: Re: [Openvpn-devel] Patch: TAP usage made non ARP dependent
-From: Marcelo Toledo <marcelo@...461...>
-In-Reply-To: <4342D092.4050502@...361...>
-References: <43404D99.8080309@...361...>  <434189C7.5090304@...361...>
-	 <1128369731.6952.59.camel@...399...> <4342703F.90607@...361...>
-	 <1128428582.7061.18.camel@...399...>
-	 <4342D092.4050502@...361...>
-Message-Id: <1128454326.7061.57.camel@...399...>
-Mime-Version: 1.0
+From: =?iso-8859-2?q?Sz=FCts=20P=E9ter=20?= <pelo@...468...>
+Message-ID: <DPG.WIN.400.0509181859229314825870@...469...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Client's private key
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -17,26 +12,23 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Oct  4 12:34:14 2005
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Rolf Fokkens <r.fokkens@...361...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-Em Ter, 2005-10-04 às 20:57 +0200, Rolf Fokkens escreveu:
-> Marcelo Toledo wrote: 
-> > Em Ter, 2005-10-04 às 14:06 +0200, Rolf Fokkens escreveu:
-> >   
-> > > So another thing that should be implemented probably is aging.
-> > >     
-> > 
-> > Alright, I am aware. Are you planning working on this?
-> >   
-> Attached you'll find find a new patch which includes aging. Could you
-> try?
-
-that's great! I will try it, thanks.
--- 
-Marcelo Toledo <marcelo@...461...>
+Date: Wed Oct  5 12:20:58 2005
+Content-type: text/plain; charset="ISO-8859-2"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
 
+Hello !
+
+I've read somewhere in the OpenVPN documentation that the client uses the s=
+erver's public key to encode the temporary secret and the server uses its p=
+rivate key to decode it. After that the secure channel could be encrypted w=
+ith the temporary secret. But where do we use the client's private key ? Wh=
+y do we need it anyway ? I tried to establish a connection without the clie=
+nt's private key, but ended up with an error. Sorry for my English and than=
+ks in advance. :)
+
+Peter
+
+--=20
+P=E9L=F3
