@@ -1,12 +1,11 @@
-Subject: Re: [Openvpn-devel] 400 vpn clients 20% of them loosing the route
-	frequently
+Subject: Re: [Openvpn-devel] Patch: TAP usage made non ARP dependent
 From: Marcelo Toledo <marcelo@...461...>
-In-Reply-To: <1e6368e80509300544h3d4f5541gc8b01ba40b5adaa5@...278...>
-References: <1127848987.6861.117.camel@...399...>
-	 <1e6368e80509271858682178b5@...278...>
-	 <1128082114.7399.113.camel@...399...>
-	 <1e6368e80509300544h3d4f5541gc8b01ba40b5adaa5@...278...>
-Message-Id: <1128618189.7000.52.camel@...399...>
+In-Reply-To: <4342D092.4050502@...361...>
+References: <43404D99.8080309@...361...>  <434189C7.5090304@...361...>
+	 <1128369731.6952.59.camel@...399...> <4342703F.90607@...361...>
+	 <1128428582.7061.18.camel@...399...>
+	 <4342D092.4050502@...361...>
+Message-Id: <1128619301.7000.58.camel@...399...>
 Mime-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
@@ -18,60 +17,33 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Oct  6 10:04:51 2005
+Date: Thu Oct  6 10:23:15 2005
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-To: Leonard Isham <leonard.isham@...277...>
+Content-Transfer-Encoding: 8bit
+To: Rolf Fokkens <r.fokkens@...361...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-> What are the stats on the server?  Are there any resource issues? 
-> CPU, TCP. etc.
+Em Ter, 2005-10-04 às 20:57 +0200, Rolf Fokkens escreveu:
+> Marcelo Toledo wrote: 
+> > Em Ter, 2005-10-04 às 14:06 +0200, Rolf Fokkens escreveu:
+> >   
+> > > So another thing that should be implemented probably is aging.
+> > >     
+> > 
+> > Alright, I am aware. Are you planning working on this?
+> >   
+> Attached you'll find find a new patch which includes aging. Could you
+> try?
 
-Nope, everything ok.
+We have tested it in two ways:
 
-> OpenVPN 1.X was one port per connection TUN or TAP.  OpenVPN 2.x
-> supports the old setup, but was designed with a server mode for _both_
-> TUN and TAP.  You can either dynamically hand out IP addresses or
-> statically with either method.
+1. Applied only in the server, worked perfectly with 3 clients. Right
+now we're going to try few hundreds.
 
-Good to hear it, we already performed tests with one server and 3
-clients, looked ok. Now we're going to install the major server and
-installing upgrading the clients slowly to see how it goes.
+2. Applied the patch only in the client, worked well but they couldn't
+see each other.
 
-> Are these site-to-site or road warriors?  Are the 20% always the same
-> or random?  Do the 20% have anything in common.  Ant NAT devices or
-> firewalls in between that may be having periodic resource issues?
-
-it is site-to-site. And the 20% are not always the same, they vary a
-lot. We have firewall but it's not causing the issue.
-
-> Have you considered setting up cacti or other system to monitor
-> resources and provide graphs?
-
-Not yet... suggestions?
-
-> Consider setting up a second server or OpenVPN instance and use TUN
-> with UDP and migrate.
-
-Did it.
-
-> Do you have any packet captures of the traffic out the TAP interface
-> on the server and client that experiences the failures?
-
-Nope.
-
-> I don't know your workload or any other details, but what about
-> another person to take some of your workload so you can concentrate on
-> this issue.  Or a second set of eyes to work on this issue with you (I
-> would look for someone with at least as much networking experience as
-> you have).
-
-That would be great, actualy I am not looking too much into this, I am
-just interacting with someone who is actualy doing this, but looks like
-what you told me will work fine, I will let you know after we have more
-clients connected.
-
-once again, thanks a lot for your time,
+Should I apply in both or only in the server is enough?
 -- 
 Marcelo Toledo <marcelo@...461...>
 
