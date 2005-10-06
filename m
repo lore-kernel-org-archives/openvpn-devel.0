@@ -1,12 +1,7 @@
-Subject: Re: [Openvpn-devel] Patch: TAP usage made non ARP dependent
-From: Marcelo Toledo <marcelo@...461...>
-In-Reply-To: <4342D092.4050502@...361...>
-References: <43404D99.8080309@...361...>  <434189C7.5090304@...361...>
-	 <1128369731.6952.59.camel@...399...> <4342703F.90607@...361...>
-	 <1128428582.7061.18.camel@...399...>
-	 <4342D092.4050502@...361...>
-Message-Id: <1128619301.7000.58.camel@...399...>
-Mime-Version: 1.0
+From: =?iso-8859-2?q?Sz=FCts=20P=E9ter=20?= <pelo@...468...>
+Message-ID: <DPG.WIN.400.0509182229354737875638@...469...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Client key exchange (fwd)
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -17,34 +12,33 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Oct  6 10:23:15 2005
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Rolf Fokkens <r.fokkens@...361...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Thu Oct  6 13:28:25 2005
+Content-type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-Em Ter, 2005-10-04 às 20:57 +0200, Rolf Fokkens escreveu:
-> Marcelo Toledo wrote: 
-> > Em Ter, 2005-10-04 às 14:06 +0200, Rolf Fokkens escreveu:
-> >   
-> > > So another thing that should be implemented probably is aging.
-> > >     
-> > 
-> > Alright, I am aware. Are you planning working on this?
-> >   
-> Attached you'll find find a new patch which includes aging. Could you
-> try?
 
-We have tested it in two ways:
+Hello !
 
-1. Applied only in the server, worked perfectly with 3 clients. Right
-now we're going to try few hundreds.
+I see I have to be more specific, otherwise you underestimate me. :)) So he=
+re's the big deal:
+I've found OpenVPN client key exchange in http://www.sans.org/rr/whitepaper=
+s/vpns/1459.php It says in message 3: "The client also generates and sends =
+what is called a pre-master secret. The pre-master secret is the last param=
+eter in the key derivation/exchange function and is encrypted with the serv=
+er's public key."=20
+In the end we have the same pre-master secret on both sides and the client =
+and server could generate the same master secret with a well-known mechanis=
+m. It's all clear, but the OpenVPN howto says I have to declare in the clie=
+nt configuration file where to find the client's private key. If OpenVPN us=
+es the key derivation method mentioned above, why do we need the client's p=
+rivate key in the config file ? Where are we using it ? By accident, don't =
+you have a flow chart or message exchange figure about this ? :)
+Otherwise I'm a student from Budapest Technical and Economical University, =
+faculty of electrical engineering, dealing with electrical services and sec=
+urity. We're working on a project, that's why we need this information. Tha=
+nks in advance:
 
-2. Applied the patch only in the client, worked well but they couldn't
-see each other.
-
-Should I apply in both or only in the server is enough?
--- 
-Marcelo Toledo <marcelo@...461...>
+Peter
 
 
