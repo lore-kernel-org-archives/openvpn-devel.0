@@ -1,18 +1,11 @@
+Message-ID: <434AB530.4010202@...361...>
+From: Rolf Fokkens <r.fokkens@...361...>
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] Patch: TAP usage made non ARP dependent
-From: Marcelo Toledo <marcelo@...461...>
-In-Reply-To: <4348FD69.6010807@...361...>
-References: <43404D99.8080309@...361...>  <434189C7.5090304@...361...>
-	 <1128369731.6952.59.camel@...399...> <4342703F.90607@...361...>
-	 <1128428582.7061.18.camel@...399...>
-	 <4342D092.4050502@...361...>
-	 <1128619301.7000.58.camel@...399...>
-	 <4346A01F.4030106@...361...>
-	 <1128702738.7000.97.camel@...399...>
-	 <4346ED46.4040204@...361...> <43478832.9050200@...361...>
-	 <Pine.LNX.4.58.0510081447170.32321@...41...> <4348E1EF.8020906@...361...>
-	 <4348FD69.6010807@...361...>
-Message-Id: <1128947877.32068.39.camel@...399...>
-Mime-Version: 1.0
+References: <43404D99.8080309@...361...>  <434189C7.5090304@...361...>	 <1128369731.6952.59.camel@...399...> <4342703F.90607@...361...>	 <1128428582.7061.18.camel@...399...>	 <4342D092.4050502@...361...>	 <1128619301.7000.58.camel@...399...>	 <4346A01F.4030106@...361...>	 <1128702738.7000.97.camel@...399...>	 <4346ED46.4040204@...361...> <43478832.9050200@...361...>	 <Pine.LNX.4.58.0510081447170.32321@...41...> <4348E1EF.8020906@...361...>	 <4348FD69.6010807@...361...> <1128947877.32068.39.camel@...399...>
+In-Reply-To: <1128947877.32068.39.camel@...399...>
+Content-Type: multipart/alternative;
+ boundary="------------020906060102080804070604"
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -23,56 +16,65 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Oct 10 05:40:11 2005
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Rolf Fokkens <r.fokkens@...361...>
+Date: Mon Oct 10 11:39:49 2005
+To: Marcelo Toledo <marcelo@...461...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Em Dom, 2005-10-09 às 13:22 +0200, Rolf Fokkens escreveu:
-> Attached the patch with #ifdefs. I added a #define MACTAB in
-> config.h.in, though that may not be the proper way to do it.
-> 
-> I tested it with and without the #define MACTAB, both ways it compiles
-> and runs OK with a TAP interface. I didn't test TUN.
+This is a multi-part message in MIME format.
+--------------020906060102080804070604
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Rolf,
+Marcelo Toledo wrote:
 
-I've tested your old patch and here is the result.
+>Sat Oct  8 14:28:25 2005 Data Channel MTU parms [ L:1576 D:1450 EF:44
+>EB:135 ET:32 EL:0 AF:3/1 ]
+>Sat Oct  8 14:28:25 2005 Listening for incoming TCP connection on
+>[undef]:1194
+>Sat Oct  8 14:28:25 2005 TCPv4_SERVER link local (bound): [undef]:1194
+>Sat Oct  8 14:28:25 2005 TCPv4_SERVER link remote: [undef]
+>Sat Oct  8 14:28:25 2005 Initialization Sequence Completed
+>Sat Oct  8 14:30:16 2005 Assertion failed at multi.c:1815
+>Sat Oct  8 14:30:16 2005 Exiting
+>  
+>
+I tried to reproduce, but no problems at all:
 
-Compiling we had a few warnings:
+Mon Oct 10 20:31:05 2005 Listening for incoming TCP connection on 
+[undef]:5000
+Mon Oct 10 20:31:05 2005 TCPv4_SERVER link local (bound): [undef]:5000
+Mon Oct 10 20:31:05 2005 TCPv4_SERVER link remote: [undef]
+Mon Oct 10 20:31:05 2005 Initialization Sequence Completed
+Mon Oct 10 20:32:18 2005 Re-using SSL/TLS context
+Mon Oct 10 20:32:18 2005 Control Channel MTU parms [ L:1591 D:140 EF:40 
+EB:0 ET:0 EL:0 ]
+Mon Oct 10 20:32:18 2005 Data Channel MTU parms [ L:1591 D:1450 EF:59 
+EB:4 ET:32 EL:0 ]
 
-In file included from multi.h:40,
-                 from mtcp.c:35:
-         mac_table.h:6: warning: redefinition of `uint32_t'
-         /usr/include/stdint.h:52: warning: `uint32_t' previously
-declared here
-         mac_table.h:7: warning: redefinition of `uint8_t'
-         /usr/include/stdint.h:49: warning: `uint8_t' previously
-declared here
+I need more info,:
 
-
-
-
-mac_table.c: In function `mactab_init':
-mac_table.c:72: warning: assignment makes pointer from integer without a
-cast
-mac_table.c: In function `mactab_remove_mi':
-mac_table.c:275: warning: assignment makes integer from pointer without
-a cast
-gcc  -g -O2   -o openvpn  base64.o buffer.o crypto.o error.o event.o
-fdmisc.o forward.o fragment.o gremlin.o helper.o init.o interval.o
-list.o lzo.o manage.o mbuf.o misc.o mroute.o mss.o mtcp.o mtu.o mudp.o
-multi.o ntlm.o occ.o openvpn.o options.o otime.o packet_id.o perf.o
-ping.o plugin.o pool.o proto.o proxy.o push.o reliable.o route.o
-schedule.o session_id.o shaper.o sig.o socket.o socks.o ssl.o status.o
-thread.o tun.o mac_table.o   -lssl -lcrypto -llzo -ldl
-
-And this error appeared in the server when trying to stabilish a
-connection.
+    * What server params do you use?
+      Apparently you use TCP , and the default 1194 port. I need more
+      I'm afraid.
+    * What OS are you using?
+      I'm running Fedora Core 3 and Fedora Core 4.
 
 
-Sat Oct  8 14:28:25 2005 Data Channel MTU parms [ L:1576 D:1450 EF:44
+--------------020906060102080804070604
+Content-Type: text/html; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
+  <title></title>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+Marcelo Toledo wrote:
+<blockquote cite="mid1128947877.32068.39.camel@...399..."
+ type="cite">
+  <pre wrap="">Sat Oct  8 14:28:25 2005 Data Channel MTU parms [ L:1576 D:1450 EF:44
 EB:135 ET:32 EL:0 AF:3/1 ]
 Sat Oct  8 14:28:25 2005 Listening for incoming TCP connection on
 [undef]:1194
@@ -81,7 +83,33 @@ Sat Oct  8 14:28:25 2005 TCPv4_SERVER link remote: [undef]
 Sat Oct  8 14:28:25 2005 Initialization Sequence Completed
 Sat Oct  8 14:30:16 2005 Assertion failed at multi.c:1815
 Sat Oct  8 14:30:16 2005 Exiting
--- 
-Marcelo Toledo <marcelo@...461...>
+  </pre>
+</blockquote>
+I tried to reproduce, but no problems at all:<br>
+<br>
+<tt>Mon Oct 10 20:31:05 2005 Listening for incoming TCP connection on
+[undef]:5000<br>
+Mon Oct 10 20:31:05 2005 TCPv4_SERVER link local (bound): [undef]:5000<br>
+Mon Oct 10 20:31:05 2005 TCPv4_SERVER link remote: [undef]<br>
+Mon Oct 10 20:31:05 2005 Initialization Sequence Completed<br>
+Mon Oct 10 20:32:18 2005 Re-using SSL/TLS context<br>
+Mon Oct 10 20:32:18 2005 Control Channel MTU parms [ L:1591 D:140 EF:40
+EB:0 ET:0 EL:0 ]<br>
+Mon Oct 10 20:32:18 2005 Data Channel MTU parms [ L:1591 D:1450 EF:59
+EB:4 ET:32 EL:0 ]</tt><br>
+<br>
+I need more info,:<br>
+<ul>
+  <li>What server params do you use?<br>
+Apparently you use TCP , and the default 1194 port. I need more I'm
+afraid.<br>
+  </li>
+  <li>What OS are you using?<br>
+I'm running Fedora Core 3 and Fedora Core 4.<br>
+  </li>
+</ul>
+</body>
+</html>
 
+--------------020906060102080804070604--
 
