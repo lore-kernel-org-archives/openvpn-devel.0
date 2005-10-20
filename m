@@ -1,11 +1,9 @@
-Message-ID: <a10961760510200344k502c9249m@...278...>
-From: Janne Johansson <icepic.dz@...277...>
-Subject: Fwd: [Openvpn-devel] Bug report (long) - OpenVPN dropping small frames
-In-Reply-To: <a10961760510200342x1cca4b9do@...278...>
-MIME-Version: 1.0
-References: <dj6pnr$gs4$1@...165...>
-	 <Pine.LNX.4.61.0510200952100.9328@...210...>
-	 <a10961760510200342x1cca4b9do@...278...>
+From: Mike Ireton <mike-openvpn@...479...>
+Message-ID: <dj8pnu$1ea$1@...165...>
+References: <dj6pnr$gs4$1@...165...> <Pine.LNX.4.58.0510192103130.32723@...41...>
+Mime-Version: 1.0
+In-Reply-To: <Pine.LNX.4.58.0510192103130.32723@...41...>
+Subject: [Openvpn-devel] Re: Bug report (long) - OpenVPN dropping small frames
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -16,71 +14,89 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Oct 20 03:47:05 2005
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Openvpn-devel@lists.sourceforge.net
+Date: Thu Oct 20 12:08:59 2005
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-Sent only to Mathias first time. Oops.
+James Yonan wrote:
 
----------- Forwarded message ----------
-From: Janne Johansson <icepic.dz@...277...>
-Date: 2005-okt-20 12:42
-Subject: Re: [Openvpn-devel] Bug report (long) - OpenVPN dropping small fra=
-mes
-To: Mathias Sundman <mathias@...454...>
+> 
+> When you do your 1393 byte ping from A to B, the packet is going to travel
+> 1 -> 2 -> 3 -> 4 -> ICMP echo reply on B -> 4 -> 3 -> 2 -> 1.
+> 
+> I need to know exactly where the packet is being dropped in this chain.
 
 
-2005/10/20, Mathias Sundman <mathias@...454...>:
-> On Wed, 19 Oct 2005, Mike Ireton wrote:
->
-> > Suspeciously, I also have been observing an excessive number of ICMP "F=
-rag
-> > reassembly time exceeded" messages coming from this openvpn client
---8<--
-> > I have a good test case right now. If I ping with 1393 bytes or more of
-> > data, it doesn't work reliably. Whereas if I ping with 1392 bytes, it d=
-oes
-> > work reliably and without loss. Here is an example:
---8<--
-> If that solves your problem, it would still be nice to understand if the
-> cause were due to a broken router, or if there really is a bug
-> somewhere...
+The problem with this test is that there are many hundreds of OpenVPN 
+packets per second flying between machine a and machine b - coupla 
+megabits per second in fact. There is no way to capture just the crypted 
+udp packets carrying the tunneled data involved in the test seperate 
+from normal data traffic.
 
-Actually, this is exactly what I saw in the early days of openvpn,
-when putting the traffic through an openbsd-PF gateway while using
-linux clients in one or both ends
-of openvpn. Since Linux hosts sends fragments with the "dont-fragment" bit =
-set*,
-(supposedly to investigate MTU) the firewall will detect a fragmented
-packet that
-has requested not to be fragmented (DF) and drops it. In my case, the openb=
-sd
-gw was under my control, so I could figure out that it was the "scrub"
-option in PF
-that followed this kind of rule, and remove it at first. Later I
-decided that this would
-only work until someone was behind another PF-scrubbing host and instead lo=
-wered
-the MTU of the openvpn traffic instead (or the tun-device, cant
-remember what options
-I used then), and always got the large packets through.
-
-Give it a try to lower the MTU and see if it helps.
-
-*) As a sidenote, I think PF does the right thing, regardless of how
-useful PMTU seems
-to be, a packet that requests not to be fragmented and indeed arrives
-as a fragment
-should be removed by my firewall, since one of its purposes is to make
-sure weird
-stuff dont get into my network.
-
---
-Some mornings, it's just not worth gnawing through the straps...
+> 
+> If the packet disappears between 1 and 2 or between 3 and 4 then either
+> OpenVPN or a firewall/packet-filter operating on the tap interface is
+> dropping it.
+> 
+> If the packet disappears between 2 and 3, it's a network connectivity 
+> issue, or a firewall/router/NAT issue on OpenVPN's communication port 
+> (usually 1194).
 
 
---
-Some mornings, it's just not worth gnawing through the straps...
+The evidence is that the link 2 -- 3 is good. These are passing a _lot_ 
+of traffic, both openvpn tunneled pppoe and regularly routed subnets and 
+I have excellent low latency no packet loss connectivity to hosts 
+reached over this link. My test case with the 1393 byte packets not 
+working 'well' is actually directly connected to the same switch that 
+'Machine B' connects to.
+
+
+> 
+> BTW, I tried a 1393 byte ping through an OpenVPN tap tunnel with default
+> settings and it worked fine.
+> 
+> If you think that 1393 is an important number with respect to reproducing
+> the problem, try to isolate and differentiate the cases where 1393 byte
+> pings fail and where they succeed.
+> 
+> James
+
+	I do think 1393 is an important number, at least on this newtwork, and 
+I think it's the point at which the resulting crypted frames exceed the 
+link mtu (1500) and generate fragments.
+
+	I should have stated that my test case actually has two ip addresses. 
+One IP is routed only thru the openvpn tunnel, and the other is a normal 
+statically assigned routed public ip address. Both IP's are on the same 
+interface, and this interface is connected to a switch that also 
+interconnects the OpenVPN client and the router that serves this subnet.
+
+	The 1393 byte pings to the OpenVPN address (and larger), are the ones 
+that do not work reliably. I can see up to %95 loss with pinging that 
+address, while at the exact same time I can see %0 loss pinging the 
+other (routed) address, which travels over the same exact path. When 
+running tcpdump, if the ping is currently working for the openvpn 
+tunneled address, I will see the icmp messages as I should. When the 
+pings aren't working, I don't see anything. But this doesn't tell me if 
+they're being dropped on the Openvpn client or server. However, running 
+this ping to the statically routed address does continue to work 
+thruout, so I think I can rule out a transport problem between the 
+client and server.
+
+	For what it's worth, at the time when the pings to the tunneled address 
+are not working, this is when I see a high instance of icmp errors from 
+the client directed at the server:
+
+x.x.x.x ICMP ip reassembly time exceeded, length 556
+
+
+	For the others who suggested reducing mss values and such - I'm already 
+doing it. In fact I have mss clamped down to 1312 right now for testing. 
+But, mss clamping doesn't have anything to do with the loss of the 
+lcp-echo frames I was complaining about.
+
+Mike-
+
+
 
