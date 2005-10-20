@@ -1,13 +1,9 @@
-Message-ID: <1e6368e80510201438l719e0fdatdae0d77af89a6140@...278...>
-From: Leonard Isham <leonard.isham@...277...>
-Subject: Re: [Openvpn-devel] Re: Bug report (long) - OpenVPN dropping small frames
-In-Reply-To: <dj8ta7$d92$1@...165...>
-MIME-Version: 1.0
-References: <dj6pnr$gs4$1@...165...>
-	 <Pine.LNX.4.58.0510192103130.32723@...41...>
-	 <dj8pnu$1ea$1@...165...>
-	 <1e6368e80510201225r42c4181cl670f1e9ae227b709@...278...>
-	 <dj8ta7$d92$1@...165...>
+From: Mike Ireton <mike-openvpn@...479...>
+Message-ID: <dj9drd$rn2$1@...165...>
+References: <dj6pnr$gs4$1@...165...>	 <Pine.LNX.4.58.0510192103130.32723@...41...>	 <dj8pnu$1ea$1@...165...>	 <1e6368e80510201225r42c4181cl670f1e9ae227b709@...278...>	 <dj8ta7$d92$1@...165...> <1e6368e80510201438l719e0fdatdae0d77af89a6140@...278...>
+Mime-Version: 1.0
+In-Reply-To: <1e6368e80510201438l719e0fdatdae0d77af89a6140@...278...>
+Subject: [Openvpn-devel] Re: Bug report (long) - OpenVPN dropping small frames
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -18,118 +14,77 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Oct 20 14:39:03 2005
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Mike Ireton <mike-openvpn@...479...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Thu Oct 20 17:51:31 2005
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-On 10/20/05, Mike Ireton <mike-openvpn@...479...> wrote:
-> Leonard Isham wrote:
->  >
->  >>
->  >>The problem with this test is that there are many hundreds of OpenVPN
->  >>packets per second flying between machine a and machine b - coupla
->  >>megabits per second in fact. There is no way to capture just the crypt=
-ed
->  >>udp packets carrying the tunneled data involved in the test seperate
->  >>from normal data traffic.
->  >
->  >
->  >Actually it is quite trivial using tcpdump/windump, ethereal. snoop,
->  >sniffer, etc.
->  >
->  >If you traffic volume is too high then I'd say you may want to check
->  >the performance of the equipment for bottlenecks.
->  >
->
-> Leonard, I think you missed the point. There is no way to capture just
-> the tunneled data involved in the test case because one encrypted udp
-> frame will look the same as any other encrypted udp frame. That's the
-> whole point of the vpn in the first place! Compounding the problem of
-> the cryptography - which makes the use of packet capture tools useless
-> for examining problems _inside_ the tunnel - is the fact that with it
-> actively being used, there's no way to peform any kind of realistic
-> traffic analysis either.  How do you propose to trivialy seperate out
-> the 1 or 2 encrypted udp packets per scond which are the ones are
-> carrying the ping packets for the test case, from the other hundreds of
-> encrypted udp packets per second which are carrying pppoe session data
-> for other applications and users??
->
-> You can't.
+Leonard Isham wrote:
 
-Frames have time/date stamps on them when they are captured into a
-binary file. Each VPN tunnel is between two (2) unique IP addresses.
+> 
+>  Merge the encrypted and unencrypted traffic for each side.  Look for
+> missing unencrypted packets and then compare encrypted packets that
+> follow and look for a correlation of one or more missing or out of
+> order encrypted packets.  Also non-trivial.
+> 
 
-Check the TAP (unencrypted) traffic from both sides looking for packet
-loss.  TCP traffic works best with this.
 
-Check the UDP packets on both sides and look for anomolies between the
-capture. This is  non-trivial as you will have to manually find the
-matching first UPD packet in both directions.  Ngrep may help here.=20
-Look for out of order packets and lost packets.
+	I think you don't understand what encryption is or does.
 
-Merge the encrypted and unencrypted traffic for each side.  Look for
-missing unencrypted packets and then compare encrypted packets that
-follow and look for a correlation of one or more missing or out of
-order encrypted packets.  Also non-trivial.
+	1) Yes, packets can be captured entering the server from outside.
+	2) Yes, packets can be captured being forwarded into the tap device on 
+server.
 
-Again I am not a developer...
+	3) NO, packets being forwarded out in crypted udp form CAN NOT BE 
+CORRELATED to any particular input to the tap device. So there's no way 
+to know if any particular input frame, is actually making it out as a 
+crypted udp packet, nor can we see the results of any fragmentation 
+decisions or anything else OpenVPN decides to do with the data. If the 
+link was completely quiet except for test data, then we could surmise 
+that all packets leaving in crypted form are the packets for the test 
+case (This is called traffic analysis in crypto circles), but since the 
+link is in moderate use, there's no way to do this. So, at the present 
+time, we CAN'T know or independently verify that it's doing anything at 
+all with the frames in questio nor what exactly is happening to them (by 
+looking at the crypted udp output). And if you claim to be able to do 
+this, then congratulations! you have set us up the bomb, you've broken 
+openvpn and the entire ssl security model, and all our base are now 
+belong to you!
 
-You are reporting a bug that. apparently, no one else has found.  Your
-bug report is based on what I would call circumstantial evidence at
-this time.  If there is a better way to prove the bug not based on
-circumstantial evidence I'm sure the, IMHO, extremely talented
-developers, which includes James, would be able to develop a fix for
-it.
+	4) YES, crypted udp packets can be captured on the input ethernet 
+entering the client. They cannot be further examined to determine any 
+correlation to inputs at the server. And we know that we have 0 packet 
+loss end to end between client and server.
 
->  >
->  >You _have_ to do a packet capture to determine where the packets are
->  >getting lost.
->  >
->
-> My point is that according to the packet captures that can be done, it
-> appears they're getting dropped in secret, in a way that I currently
-> don't have any way to examine or test for without divine intervention.
-> Once the packets hit openvpn (by way of being forwarded into the tap
-> device), I have no way of examining the data until it comes out the
-> other side.  The OpenVPN client could be dropping the frames due to a
-> number of reasons such as failed hmac authenticiaton, failed decryption,
-> failed some other sanity check. Or, the server could be creating invalid
-> frames which pass all the checks, but is not what was actually passed to
-> it in the first place. Or, the kernel in the OpenVPN client machine
-> could be running low on some resource which is contributing to the proble=
-m.
->
-> By the way, here's the packet fragment statistics for various machines
-> along the path:
->
-> OpenVPN server: (talking to 8 clients):
-> InDiscards:97972
-> ReasmTimeout: 1206 ReasmReqds:329076 ReasmOKs:163935 ReasmFails:1206
-> FragsOKs:0 FragFails:1 FragCreates:1500526
->
-> OpenVPN client:
-> InDiscards:0
-> ReasmTimeout: 133045 ReasmReqds:640581 ReasmOKs:253756 ReasmFails:133045
-> FragsOK s:0 FragFails:0 FragCreates:29208
->
-> Router A between Server to Client:
-> InDiscards:0
-> ReasmTimeout: 0 ReasmReqds:0 ReasmOKs:0 ReasmFails:0 FragsOKs:0
-> FragFails:0 FragCreates:0
->
-> Router B between Client to Server:
-> InDiscards:0
-> ReasmTimeout: 0 ReasmReqds:96 ReasmOKs:48 ReasmFails:0 FragsOKs:0
-> FragFails:0 FragCreates:0
->
-> According to the ip stack of all machines involved, the only
-> fragmentation activity is happening inside the client and server.
->
+	5) NO, packets being decrypted CAN NOT BE examined independently of 
+OpenVPN, nor can we trace the write path of the packets, nor can we 
+examine any packets that the kernel itself decides to hold on to for 
+fragmentation purposes. We can only see the packets once they are 
+decrypted and presented to the network layer were pcap can get to them.
 
---
-Leonard Isham, CISSP
-Ostendo non ostento.
+	We've proven that the server to client link is good by passing 
+non-tunneled data (my pings to static public ips) while at the same time 
+passing pings to tunneled ips which fail. We can look at steps 1, 2, and 
+4 and all we learn is that some particular tunneld data is not making it 
+thru. But steps 3 and 5 can't be examined with packet captures, and it 
+is at exactly these two points that silent packet corruption or dropping 
+can take place, and with validity, and we won't know about it or any of 
+the possible causes of it.
+
+
+> Again I am not a developer...
+> 
+
+	You keep saying that.
+
+	If anyone has any other ideas, I'm all ears. Espically if anyone knows 
+how I might tune in to the linux kernel and get copies of any packets it 
+decides to drop because it can't find the rest of its fragments. Doesn't 
+icmp return a copy when it says reassembly failed? Maybe I could look at 
+these - they should be in decrypted form. Hmmm...
+
+
+
+Mike Ireton
+
 
