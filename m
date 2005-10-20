@@ -1,9 +1,11 @@
-From: Mathias Sundman <mathias@...454...>
-Subject: Re: [Openvpn-devel] Bug report (long) - OpenVPN dropping small frames
-In-Reply-To: <dj6pnr$gs4$1@...165...>
-Message-ID: <Pine.LNX.4.61.0510200952100.9328@...210...>
-References: <dj6pnr$gs4$1@...165...>
+Message-ID: <a10961760510200344k502c9249m@...278...>
+From: Janne Johansson <icepic.dz@...277...>
+Subject: Fwd: [Openvpn-devel] Bug report (long) - OpenVPN dropping small frames
+In-Reply-To: <a10961760510200342x1cca4b9do@...278...>
 MIME-Version: 1.0
+References: <dj6pnr$gs4$1@...165...>
+	 <Pine.LNX.4.61.0510200952100.9328@...210...>
+	 <a10961760510200342x1cca4b9do@...278...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,51 +16,71 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Oct 20 01:20:56 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Content-Transfer-Encoding: 8bit
-To: Mike Ireton <mike-openvpn@...479...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Thu Oct 20 03:47:05 2005
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: Openvpn-devel@lists.sourceforge.net
 
-On Wed, 19 Oct 2005, Mike Ireton wrote:
+Sent only to Mathias first time. Oops.
 
-> Suspeciously, I also have been observing an excessive number of ICMP "Frag 
-> reassembly time exceeded" messages coming from this openvpn client directed 
-> at the server. Putting 2 and 2 together, these excess icmp messages appear to 
-> be being generated because the client is not receiving all fragments. And I 
-> think it's the encrypted payload that's not being received properly.
+---------- Forwarded message ----------
+From: Janne Johansson <icepic.dz@...277...>
+Date: 2005-okt-20 12:42
+Subject: Re: [Openvpn-devel] Bug report (long) - OpenVPN dropping small fra=
+mes
+To: Mathias Sundman <mathias@...454...>
+
+
+2005/10/20, Mathias Sundman <mathias@...454...>:
+> On Wed, 19 Oct 2005, Mike Ireton wrote:
 >
-> I have a good test case right now. If I ping with 1393 bytes or more of
-> data, it doesn't work reliably. Whereas if I ping with 1392 bytes, it does 
-> work reliably and without loss. Here is an example:
+> > Suspeciously, I also have been observing an excessive number of ICMP "F=
+rag
+> > reassembly time exceeded" messages coming from this openvpn client
+--8<--
+> > I have a good test case right now. If I ping with 1393 bytes or more of
+> > data, it doesn't work reliably. Whereas if I ping with 1392 bytes, it d=
+oes
+> > work reliably and without loss. Here is an example:
+--8<--
+> If that solves your problem, it would still be nice to understand if the
+> cause were due to a broken router, or if there really is a bug
+> somewhere...
 
-At first glance that seems like a classic MTU/packet fragmentation issue.
+Actually, this is exactly what I saw in the early days of openvpn,
+when putting the traffic through an openbsd-PF gateway while using
+linux clients in one or both ends
+of openvpn. Since Linux hosts sends fragments with the "dont-fragment" bit =
+set*,
+(supposedly to investigate MTU) the firewall will detect a fragmented
+packet that
+has requested not to be fragmented (DF) and drops it. In my case, the openb=
+sd
+gw was under my control, so I could figure out that it was the "scrub"
+option in PF
+that followed this kind of rule, and remove it at first. Later I
+decided that this would
+only work until someone was behind another PF-scrubbing host and instead lo=
+wered
+the MTU of the openvpn traffic instead (or the tun-device, cant
+remember what options
+I used then), and always got the large packets through.
 
-I've seen many odd problems due to packet fragmentation. Packet 
-fragementation should in teory work just as reliable as with no 
-fragmentation, just a little performance lose, but in reality there are 
-many problems associated with this. For example I've seen routers routing 
-frags perfect for a couple of seconds and then all of suddence only 
-forward the first frag of each packet. Very hard to debug as all packets 
-not large enough to be fragmented, like smaller pings still pass 
-perfectly.
+Give it a try to lower the MTU and see if it helps.
 
-So, the bottom line is to always try avoiding packet fragmentation, or if 
-you have the time, get to the bottom with why frags are not getting though 
-properly.
+*) As a sidenote, I think PF does the right thing, regardless of how
+useful PMTU seems
+to be, a packet that requests not to be fragmented and indeed arrives
+as a fragment
+should be removed by my firewall, since one of its purposes is to make
+sure weird
+stuff dont get into my network.
 
---mssfix helps keeping frags away for tcp sessions, but that won't help 
-you with pppoe or pings. First use tcpdump to watch the network for the 
-openvpn traffic and see if you have any frags occationally while sending 
-large pings.
+--
+Some mornings, it's just not worth gnawing through the straps...
 
-Then try using the --fragment option with a rather low value which will 
-cause OpenVPN todo internal fragrentation to avoid IP fragmentation and 
-see if the frags goes away, and hopefully the problem as well!
 
-If that solves your problem, it would still be nice to understand if the 
-cause were due to a broken router, or if there really is a bug 
-somewhere...
-
-Cheers - Mathias
+--
+Some mornings, it's just not worth gnawing through the straps...
 
