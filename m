@@ -1,12 +1,9 @@
-Message-ID: <a10961760510210212j5e1bf8cp@...278...>
-From: Janne Johansson <icepic.dz@...277...>
-Subject: Re: [Openvpn-devel] Re: Bug report (long) - OpenVPN dropping small frames
-In-Reply-To: <Pine.LNX.4.61.0510210841210.29827@...210...>
+Message-ID: <435BDF68.6000800@...480...>
+From: Andreas Gaufer <Andreas.Gaufer@...480...>
 MIME-Version: 1.0
-References: <dj6pnr$gs4$1@...165...>
-	 <Pine.LNX.4.58.0510192103130.32723@...41...>
-	 <dj8pnu$1ea$1@...165...>
-	 <Pine.LNX.4.61.0510210841210.29827@...210...>
+Content-Type: multipart/mixed;
+ boundary="------------000604060709000607000808"
+Subject: [Openvpn-devel] man page --client-config-dir hint
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -17,33 +14,61 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Oct 21 02:14:05 2005
-Content-Type: text/plain; charset="ISO-8859-1"
+Date: Sun Oct 23 12:09:52 2005
+To: openvpn-devel@lists.sourceforge.net
+
+This is a multi-part message in MIME format.
+--------------000604060709000607000808
+Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Mathias Sundman <mathias@...454...>
-Cc: Mike Ireton <mike-openvpn@...479...>, openvpn-devel@lists.sourceforge.net
 
-> >       For the others who suggested reducing mss values and such - I'm
-> > already doing it. In fact I have mss clamped down to 1312 right now for
-> > testing. But, mss clamping doesn't have anything to do with the loss of=
- the
-> > lcp-echo frames I was complaining about.
-> >
-> Janne also suggested that you could play with the MTU settings. I don't
-> think you will get away with only changing the MTU when you're doing
-> bridging though as you would then have to change the MTU on ALL hosts
-> connected to both sides of the bridge as it's the transmitting hosts MTU
-> that decides what frame size to use, not the recieving end (the openvpn
-> machine).
+Hi,
 
-According to this wepbage: http://www.netheaven.com/pmtu.html
-you can use:
-echo  1  >/proc/sys/net/ipv4/ip_no_pmtu_disc
-to make linux hosts stop doing the DF-trick. Might be helpful if that seems=
- to
-be the case for you.
+my deep respect for this beautiful peace of software. It helps a lot=20
+every day.
 
---
-Some mornings, it's just not worth gnawing through the straps...
+I was a little astonished because client-configuration-directory files=20
+seemed to be not re-read on
+client connect.
+
+I learned from the source that the responsible function only runs on=20
+session-init and not on
+session-move. I did=B4t expect this from reading the man page.  The patch=20
+attached introduces a hint
+which could save other users a little time. I would be honored if you=20
+consider including it.
+
+Greetings
+
+Andreas Gaufer
+
+
+
+
+--------------000604060709000607000808
+Content-Type: text/plain;
+ name="openvpn.8.patch.txt"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="openvpn.8.patch.txt"
+
+Index: openvpn.8
+===================================================================
+RCS file: /cvsroot/openvpn/openvpn/openvpn.8,v
+retrieving revision 1.68
+diff -u -r1.68 openvpn.8
+--- openvpn.8	16 Aug 2005 20:14:25 -0000	1.68
++++ openvpn.8	23 Oct 2005 18:45:47 -0000
+@@ -2540,7 +2540,8 @@
+ One of the useful properties of this option is that it
+ allows client configuration files to be conveniently
+ created, edited, or removed while the server is live,
+-without needing to restart the server.
++without needing to restart the server. Notice that a custom
++client config file is not re-read during session-move.
+ 
+ The following
+ options are legal in a client-specific context:
+
+--------------000604060709000607000808--
 
