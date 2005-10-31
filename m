@@ -1,10 +1,10 @@
-Message-ID: <43665747.5000502@...277...>
+Message-ID: <43665886.6040901@...277...>
 From: Alon Bar-Lev <alon.barlev@...277...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] pkcs11-protected-authentication not working in
- 2.1beta4 ?
-References: <43662220.3000807@...486...>
-In-Reply-To: <43662220.3000807@...486...>
+Subject: Re: [Openvpn-devel] substring subject matching suggestion for new
+ pkcs11 support
+References: <4366228B.8060007@...486...>
+In-Reply-To: <4366228B.8060007@...486...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,37 +15,29 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Oct 31 09:46:40 2005
+Date: Mon Oct 31 09:52:16 2005
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 To: Albert Siersema <appie@...486...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Albert Siersema wrote:
-> Hello,
-> 
-> The --show-pkcs11-* commands cause the SafeSign PIN code popup to show
-> before openvpn.exe can access the smartcard.
+> In pkcs11.c instead of
+> if (!strcmp (szId, szSubject))
+> could strstr() to match on substring in the subject ?
+> (akin cryptoapicert "SUBJ:...")
+> This would be easier in distributing config files to clients.
 
-This is violation of PKCS#11 standard.
+Hello,
 
-> Using (--)askpass works fine too when connecting with openvpn but
+I don't like fuzzy matching, this is why I provide the 
+subject name in the show-pkcs11-objects.
 
-Does it also popup PIN dialog?
-
-> pkcs11-protected-authentication doesn't seem to work:
-> Mon Oct 31 14:35:04 2005 PKCS#11: Adding PKCS#11 provider 'aetpkss1.dll'
-> Mon Oct 31 14:35:06 2005 PKCS#11: Cannot set parameters -'CKR_ARGUMENTS_BAD'
-> Mon Oct 31 14:35:06 2005 Cannot load certificate "........"
-
-PKCS#11 protected authentication is not implemented by most 
-of PKCS#11 providers, it is used in biometric environment or 
-when external keypad is available. Are you sure your 
-provider support protected authentication?
-
-The askpass should be the preferred method.
-Beta5 will remove askpass and will ask password unless 
-protected authentication is requested.
+Fuzzy matching causes many problems... What happens if more 
+than one certificate matches? Should I select the first? the 
+last? the best?
+What if the wrong certificate matches? And the user 
+accidentally perform private key operation with the wrong key?
 
 Best Regards,
 Alon Bar-Lev.
