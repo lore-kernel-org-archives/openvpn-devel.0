@@ -1,7 +1,10 @@
 From: James Yonan <jim@...41...>
-Message-ID: <Pine.LNX.4.58.0511012109090.13189@...41...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.0.4 Released -- Note security fixes
+In-Reply-To: <20051101222421.GA15094@...33...>
+Message-ID: <Pine.LNX.4.58.0511012351170.13189@...41...>
+References: <Pine.LNX.4.58.0511011238570.16655@...41...>
+ <20051101222421.GA15094@...33...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 2.1-beta6 released
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,46 +15,38 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Nov  1 20:15:34 2005
+Date: Tue Nov  1 22:59:03 2005
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
+To: Matthias Andree <matthias.andree@...68...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Download:
+On Tue, 1 Nov 2005, Matthias Andree wrote:
 
-http://openvpn.net/beta/
+> On Tue, 01 Nov 2005, James Yonan wrote:
+> 
+> > This release contains fixes for two security issues that just came to my
+> > attention over the past 24 hours, which affect OpenVPN 2.0, 2.0.1, 2.0.2,
+> > and the 2.1 beta series.  OpenVPN 1.x is not affected.
+> 
+> Thanks for the quick fixes.
+> 
+> I understand that the release focus has been anything but helper
+> scripts, however I found that the easy-rsa/2.0/ directory disappeared,
+> it was present in 2.0.2 and gone in 2.0.4. What's the story about
+> easy-rsa/* and easy-rsa/2.0/* in the distribution tarballs, and what has
+> become of easy-rsa/2.0 in release 2.0.4?
 
-Change Log:
+That's an oversight...  It looks like it was accidently dropped from the 
+tarball during the CVS -> SVN migration.
 
-2005.11.01 -- Version 2.1-beta6
+It is, however, present (and the default) in the 2.1-beta releases in
+easy-rsa/
 
-* Security fixes (merged from 2.0.4).
-* Fix attempt of assertion at multi.c:1586 (note that
-  this precise line number will vary across different
-  versions of OpenVPN).
-* Windows reliability changes:
-  (a) Added code to make sure that the local PATH environmental
-      variable points to the Windows system32 directory.
-  (b) Added new --ip-win32 adaptive mode which tries 'dynamic'
-      and then fails over to 'netsh' if the DHCP negotiation fails.
-  (c) Made --ip-win32 adaptive the default.
-* More PKCS#11 additions/changes (Alon Bar-Lev).
-* Added ".PHONY: plugin" to Makefile.am to work around
-  "make dist" issue.
-* Fixed double fork issue that occurs when --management-hold
-  is used.
-* Moved TUN/TAP read/write log messages from --verb 8 to 6.
-* Warn when multiple clients having the same common name or
-  username usurp each other when --duplicate-cn is not used.
-* Modified Windows and Linux versions of get_default_gateway
-  to return the route with the smallest metric
-  if multiple 0.0.0.0/0.0.0.0 entries are present.
-* Added ">NEED-OK" alert and "needok" command to management
-  interface to provide a general interface for sending
-  alerts to the end-user.  Used by the PKCS#11 code
-  to send Token Insertion Requests to the user.
-* Added actual remote address used to the ">STATE" alert
-  in the management interface (Rolf Fokkens).
+You can also get it directly from the svn repository:
+
+http://svn.openvpn.net/projects/openvpn/branches/BETA21/openvpn/easy-rsa/
 
 James
+
 
