@@ -1,10 +1,7 @@
-Message-ID: <4367A449.8000105@...277...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+From: James Yonan <jim@...41...>
+Message-ID: <Pine.LNX.4.58.0511011238570.16655@...41...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] pkcs11-protected-authentication not working in
- 2.1beta4 ?
-References: <43662220.3000807@...486...> <43665747.5000502@...277...> <436739A2.7020702@...486...>
-In-Reply-To: <436739A2.7020702@...486...>
+Subject: [Openvpn-devel] OpenVPN 2.0.4 Released -- Note security fixes
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,50 +12,56 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Nov  1 09:27:53 2005
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Albert Siersema <appie@...486...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Tue Nov  1 12:18:11 2005
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+To: openvpn-users@lists.sourceforge.net
+Cc: openvpn-devel@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
 
-Hi!
+This release contains fixes for two security issues that just came to my
+attention over the past 24 hours, which affect OpenVPN 2.0, 2.0.1, 2.0.2,
+and the 2.1 beta series.  OpenVPN 1.x is not affected.
 
-Albert Siersema wrote:
-> Hello Alon,
->>>Using (--)askpass works fine too when connecting with openvpn but
->>
->>Does it also popup PIN dialog?
-> 
-> No, it reads from stdin which makes it impossible to run openvpn as a
-> MSWindows service.
+Individual patches are available here:
 
-Strange... I don't understand what is the difference between 
-the --show-pkcs11-* and the --askpass...
-Just to make sure... --show-pkcs11-slots prompt for PIN???
+http://openvpn.net/patch/2.0.4-security-patches
 
-> I was hoping the pkcs11 code would be helpful in that department as using
-> the cryptoapi and running as a service won't work. Probably because the
-> service runs as System and tries to retrieve it from the wrong cert store.
-> Running the service as another user won't help either ?! :-(
+Change Log:
 
-But it does!
-Use the management interface.
-Put the following in your configuration file:
+* Security fix -- Affects non-Windows OpenVPN clients of
+  version 2.0 or higher which connect to a malicious or
+  compromised server.  A format string vulnerability
+  in the foreign_option function in options.c could
+  potentially allow a malicious or compromised server
+  to execute arbitrary code on the client.  Only
+  non-Windows clients are affected.  The vulnerability
+  only exists if (a) the client's TLS negotiation with
+  the server succeeds, (b) the server is malicious or
+  has been compromised such that it is configured to
+  push a maliciously crafted options string to the client,
+  and (c) the client indicates its willingness to accept
+  pushed options from the server by having "pull" or
+  "client" in its configuration file (Credit: Vade79).
+  CVE-2005-3393
+* Security fix -- Potential DoS vulnerability on the
+  server in TCP mode.  If the TCP server accept() call
+  returns an error status, the resulting exception handler
+  may attempt to indirect through a NULL pointer, causing
+  a segfault.  Affects all OpenVPN 2.0 versions.
+  CVE-2005-3409
+* Fix attempt of assertion at multi.c:1586 (note that
+  this precise line number will vary across different
+  versions of OpenVPN).
+* Added ".PHONY: plugin" to Makefile.am to work around
+  "make dist" issue.
+* Fixed double fork issue that occurs when --management-hold
+  is used.
+* Moved TUN/TAP read/write log messages from --verb 8 to 6.
+* Warn when multiple clients having the same common name or
+  username usurp each other when --duplicate-cn is not used.
+* Modified Windows and Linux versions of get_default_gateway
+  to return the route with the smallest metric
+  if multiple 0.0.0.0/0.0.0.0 entries are present.
 
-management hold
-management 127.0.0.1 8887
-management-query-passwords
-
-Now start your service.
-Insert your smartcard.
-Run "telnet localhost 8887"
-
-Enter the following commands:
-hold release
-password "XXXX token" pin
-
-I will write a simple perl script that does it for you soon...
-
-Best Regards,
-Alon Bar-Lev.
+James
 
