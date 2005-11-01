@@ -1,10 +1,10 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] [bug report] DOS: openvpn 2.0.2 segfaults on
- Solaris 9.
-In-Reply-To: <99F24BE0-4A32-11DA-9F53-000A959A666C@...487...>
-Message-ID: <Pine.LNX.4.58.0510311030360.16099@...41...>
-References: <99F24BE0-4A32-11DA-9F53-000A959A666C@...487...>
+Message-ID: <436739A2.7020702@...486...>
+From: Albert Siersema <appie@...486...>
 MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] pkcs11-protected-authentication not working in
+ 2.1beta4 ?
+References: <43662220.3000807@...486...> <43665747.5000502@...277...>
+In-Reply-To: <43665747.5000502@...277...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,145 +15,47 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Oct 31 13:07:34 2005
-Content-Type: TEXT/PLAIN; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: =?ISO-8859-1?Q?Marc_Br=FCnink?= <mbruen@...487...>
+Date: Tue Nov  1 01:47:58 2005
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Mon, 31 Oct 2005, [ISO-8859-1] Marc Br=EF=BF=BDnink wrote:
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: RIPEMD160
 
->=20
-> On Montag, Okt 31, 2005, at 17:26 Europe/Berlin, Giancarlo Razzolini=20
-> wrote:
->=20
-> > Marc Br=EF=BF=BDnink wrote:
-> >> Hi list,
-> >>
-> >> I'm posting this there in case someone already fixed it or is disposed
-> >> to fix it :-)
-> >> First of all: OpenVPN is great! Thanks for your work!.
-> >> Second of all: I've encounterd a reproducible bug :-(
-> >> I'm running
-> >> OpenVPN 2.0.2 sparc-sun-solaris2.9 [SSL] [LZO] built on Oct 17 2005
-> >> on a
-> >> SunOS sun 5.9 Generic_112233-12 sun4u sparc SUNW,Sun-Fire-V240
-> >> machine. OpenVPN is running in tcp server mode. Everything works=20
-> >> perfect
-> >> unless I do a portscan on this machine. Then OpenVPN simply segfaults.
-> >> I'm using
-> >> nmap -T Aggressive <ipaddress> -p 1194
-> >>
-> >>
-> >> Mon Oct 31 17:08:03 2005 us=3D485855 PO_WAIT[0,0] fd=3D3 rev=3D0x00000=
-001
-> >> rwflags=3D0x0001 arg=3D0x00000001 [scalable]
-> >> Mon Oct 31 17:08:03 2005 us=3D485945 MULTI: REAP range 16 -> 32
-> >> Mon Oct 31 17:08:03 2005 us=3D485973 MULTI: multi_create_instance call=
-ed
-> >> Mon Oct 31 17:08:03 2005 us=3D486033 PO_INIT maxevents=3D4=20
-> >> flags=3D0x00000002
-> >> Mon Oct 31 17:08:03 2005 us=3D486059 Re-using SSL/TLS context
-> >> Mon Oct 31 17:08:03 2005 us=3D486091 MTU DYNAMIC mtu=3D0, flags=3D1, 0=
- ->=20
-> >> 140
-> >> Mon Oct 31 17:08:03 2005 us=3D486108 TLS: tls_session_init: entry
-> >> Mon Oct 31 17:08:03 2005 us=3D486221 PID packet_id_init seq_backtrack=
-=3D0
-> >> time_backtrack=3D0
-> >> Mon Oct 31 17:08:03 2005 us=3D486364 PID packet_id_init seq_backtrack=
-=3D0
-> >> time_backtrack=3D0
-> >> Mon Oct 31 17:08:03 2005 us=3D486398 TLS: tls_session_init: new session
-> >> object, sid=3Dd9b0a377 97bb2ba0
-> >> Mon Oct 31 17:08:03 2005 us=3D486415 TLS: tls_session_init: entry
-> >> Mon Oct 31 17:08:03 2005 us=3D486437 PID packet_id_init seq_backtrack=
-=3D0
-> >> time_backtrack=3D0
-> >> Mon Oct 31 17:08:03 2005 us=3D486503 PID packet_id_init seq_backtrack=
-=3D0
-> >> time_backtrack=3D0
-> >> Mon Oct 31 17:08:03 2005 us=3D486530 TLS: tls_session_init: new session
-> >> object, sid=3De7b0b371 1f6a5f51
-> >> Mon Oct 31 17:08:03 2005 us=3D486558 Control Channel MTU parms [ L:1543
-> >> D:140 EF:40 EB:0 ET:0 EL:0 ]
-> >> Mon Oct 31 17:08:03 2005 us=3D486583 MTU DYNAMIC mtu=3D1450, flags=3D2=
-, 1543
-> >> -> 1450
-> >> Mon Oct 31 17:08:03 2005 us=3D486609 Data Channel MTU parms [ L:1543
-> >> D:1450 EF:43 EB:4 ET:0 EL:0 ]
-> >> Mon Oct 31 17:08:03 2005 us=3D486688 Local Options String: 'V4,dev-type
-> >> tun,link-mtu 1543,tun-mtu 1500,proto TCPv4_SERVER,cipher BF-CBC,auth
-> >> SHA1,keysize 128,key-method 2,tls-server'
-> >> Mon Oct 31 17:08:03 2005 us=3D486712 Expected Remote Options String:
-> >> 'V4,dev-type tun,link-mtu 1543,tun-mtu 1500,proto TCPv4_CLIENT,cipher
-> >> BF-CBC,auth SHA1,keysize 128,key-method 2,tls-client'
-> >> Mon Oct 31 17:08:03 2005 us=3D486775 Local Options hash (VER=3DV4):=20
-> >> '7e068940'
-> >> Mon Oct 31 17:08:03 2005 us=3D486809 Expected Remote Options hash
-> >> (VER=3DV4): 'db02a8f8'
-> >> Mon Oct 31 17:08:03 2005 us=3D486832 STREAM: RESET
-> >> Mon Oct 31 17:08:03 2005 us=3D486848 STREAM: INIT maxlen=3D1543
-> >> Mon Oct 31 17:08:03 2005 us=3D486932 TCP: accept(3) failed: Software
-> >> caused connection abort (errno=3D130)
-> >> Mon Oct 31 17:08:03 2005 us=3D486962 PID packet_id_free
-> >> Mon Oct 31 17:08:03 2005 us=3D487030 PID packet_id_free
-> >> Mon Oct 31 17:08:03 2005 us=3D487048 PID packet_id_free
-> >> Mon Oct 31 17:08:03 2005 us=3D487063 PID packet_id_free
-> >> Mon Oct 31 17:08:03 2005 us=3D487115 PID packet_id_free
-> >> Mon Oct 31 17:08:03 2005 us=3D487130 PID packet_id_free
-> >> Mon Oct 31 17:08:03 2005 us=3D487146 PID packet_id_free
-> >> Mon Oct 31 17:08:03 2005 us=3D487159 PID packet_id_free
-> >> Mon Oct 31 17:08:03 2005 us=3D487179 PID packet_id_free
-> >> Mon Oct 31 17:08:03 2005 us=3D487206 MULTI: multi_close_instance called
-> >>
-> >>
-> >> If you need further information or need someone to test code -> Drop=20
-> >> me
-> >> a line. I would love to see this bug fixed, because it's actually a
-> >> pretty easy DOS and prohibits the use of OpenVPN on a production=20
-> >> machine.
-> >>
-> >>
-> >> Many thanks
-> >> Marc
-> >>
-> >>
-> >>
-> >>
-> >>
-> >> -------------------------------------------------------
-> >> This SF.Net email is sponsored by the JBoss Inc.
-> >> Get Certified Today * Register for a JBoss Training Course
-> >> Free Certification Exam for All Training Attendees Through End of 2005
-> >> Visit http://www.jboss.com/services/certification for more information
-> >> _______________________________________________
-> >> Openvpn-devel mailing list
-> >> Openvpn-devel@lists.sourceforge.net
-> >> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> >>
-> > One question:
-> >
-> > This happens if you are using the tls-auth directive?
-> >
-> > As far as i know, if you use the tls auth, the packet that the nmap=20
-> > tool
-> > generate, will be dropped, as it doesn't have the right hmac code. I
-> > think that using tls-auth can be a temporary workaround until that bug
-> > is fixed.
->=20
->=20
-> This didn't help a bit.
-> Anyway thanks for your fast reply.
-> Any other ideas?
+Hello Alon,
 
-I've tested this on Linux (2.6.5), and it appears that the linux
-network stack doesn't allow the nmap packets through to OpenVPN, at least=20
-using your particular nmap command line.
+>> Using (--)askpass works fine too when connecting with openvpn but
+> Does it also popup PIN dialog?
+No, it reads from stdin which makes it impossible to run openvpn as a
+MSWindows service.
+I was hoping the pkcs11 code would be helpful in that department as using
+the cryptoapi and running as a service won't work. Probably because the
+service runs as System and tries to retrieve it from the wrong cert store.
+Running the service as another user won't help either ?! :-(
 
-However I then ran a test where I forced the TCP accept call to fail, and=20
-I was able to reproduce the segfault.  I'm working on a fix now, and=20
-should have a patch within a few hours.
+Anyone who has an idea how to tackle this ?
+Basically I want to store the certificate on a smartcard and be able to
+run openvpn as a service (e.g. start/stopping it through net start/stop
+openvpnservice).
 
-James
+> PKCS#11 protected authentication is not implemented by most of PKCS#11
+> providers, it is used in biometric environment or when external keypad
+> is available. Are you sure your provider support protected authentication?
+I haven't got a clue as of yet. I'm not really a Windows user myself so it
+took me quite a while to figure out what to supply as a provider. In the end
+I looked in the firefox preferences :) but there's probably a win32 CLI tool
+somewhere that can list the various pkcs11 resources and info.
+
+Cheers,
+Albert
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+
+iD8DBQFDZzmiKltZixSsH2QRAz6IAJ41gKLFO0K7YQTK3VyZLWBXxleHfgCeP/eS
+BPzRYQr2muYQnZQjE7FwBTo=
+=B992
+-----END PGP SIGNATURE-----
 
