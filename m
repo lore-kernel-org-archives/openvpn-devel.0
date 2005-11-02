@@ -1,9 +1,10 @@
-From: Matthias Andree <ma+ovpnd@...31...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.0.4 Released -- Note security fixes
-Message-ID: <20051102082433.GA3710@...33...>
-References: <Pine.LNX.4.58.0511011238570.16655@...41...> <20051101222421.GA15094@...33...> <Pine.LNX.4.58.0511012351170.13189@...41...>
+Message-ID: <4368D5B8.9040204@...486...>
+From: Albert Siersema <appie@...486...>
 MIME-Version: 1.0
-In-Reply-To: <Pine.LNX.4.58.0511012351170.13189@...41...>
+Subject: Re: [Openvpn-devel] pkcs11-protected-authentication not working in
+ 2.1beta4 ?
+References: <43662220.3000807@...486...> <43665747.5000502@...277...> <436739A2.7020702@...486...> <4367A449.8000105@...277...>
+In-Reply-To: <4367A449.8000105@...277...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,43 +15,65 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Nov  2 00:25:23 2005
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Date: Wed Nov  2 07:07:06 2005
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Tue, 01 Nov 2005, James Yonan wrote:
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: RIPEMD160
 
-> On Tue, 1 Nov 2005, Matthias Andree wrote:
+> Strange... I don't understand what is the difference between the
+> --show-pkcs11-* and the --askpass...
+> Just to make sure... --show-pkcs11-slots prompt for PIN???
+Yes it pops up the PIN dialog window (GUI) from the safesign middleware so
+to speak.
+askpass shows a prompt on stdout and reads from stdin.
+
+> But it does!
+> Use the management interface.
+> Put the following in your configuration file:
 > 
-> > ...      however I found that the easy-rsa/2.0/ directory disappeared,
-> > it was present in 2.0.2 and gone in 2.0.4. What's the story about
-> > easy-rsa/* and easy-rsa/2.0/* in the distribution tarballs, and what has
-> > become of easy-rsa/2.0 in release 2.0.4?
+> management hold
+> management 127.0.0.1 8887
+> management-query-passwords
+
+Yes, just what I thought :) After browsing through the beta4 source and
+manual pages 'n all I saw this one as well. It has potential but for it to
+be useful to a mere user (i.e. less computer literate people) a kind of GUI
+wrapper has to be written. I was thinking about this along the lines of
+combining it with something like:
+inactive 1800
+ping 10
+ping-exit 60
+explicit-exit-notify
+tls-exit
+Then writing a script or such that starts the openvpn service, connects to
+the management interface, pops up a GUI dialog to ask the user for the PIN,
+then sending it through the management interface.
+Should be feasable. Thing is, i'm not a Windows programming-person but maybe
+I can think up something simpler.
+
+> Now start your service.
+> Insert your smartcard.
+> Run "telnet localhost 8887"
 > 
-> That's an oversight...  It looks like it was accidently dropped from the 
-> tarball during the CVS -> SVN migration.
-> 
-> It is, however, present (and the default) in the 2.1-beta releases in
-> easy-rsa/
+> Enter the following commands:
+> hold release
+> password "XXXX token" pin
 
-Could you perhaps provide a tarball that unpacks into
-openvpn-2.0.4/easy-rsa/2.0/ at the same place as the
-openvpn-2.0.4.tar.gz?
+> I will write a simple perl script that does it for you soon...
+If I come up with a non-perl but GUI-y like solution i'll post it to the
+list as well.
 
-The FreeBSD port is now at version 2.0.4, I'd however like to restore
-the 2.0.2 file layout with easy-rsa/2.0 in place in a revision of the
-port (2.0.4_1 perhaps).
+Albert
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
 
-An officially shipped easy-rsa-2.0[_rc1] tarball would help us
-distributors quite a bit. FreeBSD prefers readable patches or files in
-the ports system over binary (i. e. a "shar" archive or perhaps
-uuencoded .tar.gz), and while I could theoretically ship a uuencoded
-.tar.gz, I'd prefer not to bloat the FreeBSD ports (which are actually
-only build instructions, file lists, MD5 sums) with another 50 or
-perhaps 14 kB.
-
--- 
-Matthias Andree
+iD8DBQFDaNW4KltZixSsH2QRA+8PAKCN1F7QLHXThxvbpBe4f5MNZlYTawCgi8/y
+vvbSeYvC7AbnwofDnDtNNqQ=
+=6Lvn
+-----END PGP SIGNATURE-----
 
