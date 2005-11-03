@@ -1,12 +1,8 @@
-Message-ID: <436A53B1.8040306@...277...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+From: mts.spb.suxx@...450...
+Reply-To: mts.spb.suxx@...450...
+Message-ID: <1961154894.20051104014507@...450...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] pkcs11-protected-authentication not working in
- 2.1beta4 ?
-References: <43662220.3000807@...486...> <43665747.5000502@...277...> <436739A2.7020702@...486...> <4367A449.8000105@...277...> <4368D5B8.9040204@...486...>
-In-Reply-To: <4368D5B8.9040204@...486...>
-Content-Type: multipart/mixed;
- boundary="------------050000050201090403090106"
+Subject: [Openvpn-devel] OpenVPN v2.0.5 and my "weird networking"
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -17,177 +13,55 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Nov  3 10:19:52 2005
-To: Albert Siersema <appie@...486...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-This is a multi-part message in MIME format.
---------------050000050201090403090106
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Date: Thu Nov  3 14:52:42 2005
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-Albert Siersema wrote:
->>I will write a simple perl script that does it for you soon...
-> 
-> If I come up with a non-perl but GUI-y like solution i'll post it to the
-> list as well.
+Hello List,
 
-Well... I don't work with Windows...
-So attached is a simple perl script that helps me interact 
-with OpenVPN.
+  OpenVPN v2.0.5 works much better that v2.0.2 in my totally non-IP
+  environment.
 
-I hope some will find it useful!
+  I have a LAN (all-winXP-SP2) where all the file-sharing is done with
+  NetBEUI. IP family is used only to access the external hosts through
+  POP3, SMTP and HTTP[S]. "NetBIOS over TCP/IP" is disabled on all
+  instances of TCP/IP on all adapters, all 135~139 and 445 ports are
+  closed. There is no domain, no WINS, only a good old workgroup.
 
------------------------------------------------------------
+  When I bridge TAP-win32 with NIC and unbind the file-sharing off the
+  TCP/IP (on the sever) - the remote connection works with some
+  anomalities.
 
-This script provides a simple interface for OpenVPN management.
-It allows a KDE user to handle the following commands:
-- hold
-- need-ok
-- password
+  Namely those anomalities are (please compare to my 8 Sep 2005
+  02:32:11 post) now:
+  - the road warrior (winXP-SP2) machine now can access the sharings of the
+    OpenVPN server and other's on the LAN;
 
-In order to use this script specify the following options at
-OpenVPN configuration file:
-     management-hold
-     management 127.0.0.1 2222
-     management-query-passwords
+  - any attempt made on all other LAN machines to browse (via the
+    short-cut to the workgroup) the neibourhood ends with the "You have
+    no access rights..." failure, but if they search the neibourhood
+    manually - they can discover and access the workgroup (including the
+    road warrior now) on one-by-one basis (i.e. it takes to search for
+    the particular machine to discover it, all others stay invisible
+    still, the neibourhood remains unpopulated);
 
-The best place to run this script is at .kde/Autostart, put
-the following script at this location:
-     #!/bin/sh
-     exec openvpn-kde-dialogs.pl 2222
+  - the OpenVPN server does not loose all the file-sharing ability when the
+    road warrior connects, it's neibourhood gets populated as it
+    should;
 
-The script will signal openvpn into hold state when the
-user logoffs.
+  - the road warrior now can see and access the whole workgroup's
+    sharings, the neibourhood stays unpopulated, it takes the manual
+    searching to discover any machine there;
 
-Best Regards,
-Alon Bar-Lev.
+  OpenVPN v2.0.5, runs as the service in the bridged mode.
 
---------------050000050201090403090106
-Content-Type: text/plain; name="openvpn-kde-dialogs.pl.txt"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="openvpn-kde-dialogs.pl.txt"
-
-#!/usr/bin/perl
-#
-# This script provides a simple interface for OpenVPN management.
-# It allows a KDE user to handle the following commands:
-# - hold
-# - need-ok
-# - password
-#
-# In order to use this script specify the following options at
-# OpenVPN configuration file:
-#     management-hold
-#     management 127.0.0.1 2222
-#     management-query-passwords
-#
-# The best place to run this script is at .kde/Autostart, put
-# the following script at this location:
-#     #!/bin/sh
-#     exec openvpn-kde-dialogs.pl 2222
-#
-# The script will signal openvpn into hold state when the
-# user logoffs.
-#
-# History:
-# 2005-11-03, Alon Bar-Lev (alon.barlev@...277...)
-#     Written.
-#
-
-use strict;
-use Net::Telnet;
-
-my $FALSE = 0;
-my $TRUE = (!$FALSE);
-
-my $t = new Net::Telnet;
-
-$SIG{'INT'} = $SIG{'STOP'} = $SIG{'TERM'} = $SIG{'QUIT'} = $SIG{'HUP'} = sub {
-	$t->print ("signal SIGUSR1");
-	exit (1);
-};
-
-main (@ARGV);
-
-sub main {
-	my (
-		$port
-	) = @_;
-
-	my $fShouldConnect = $TRUE;
-
-	if ($port eq undef) {
-		printf STDERR ("usage: $0 port\n");
-		exit (1);
-	}
-
-	while ($TRUE) {
-		while ($fShouldConnect) {
-			my $r = $t->open (
-				host => "localhost",
-				port => $port,
-				errmode => "return"
-			);
-
-			if ($r == undef) {
-				sleep (5);
-			}
-			else {
-				$fShouldConnect = $FALSE;
-			}
-		}
-
-		my ($pre, $match) = $t->waitfor (
-			string => ">HOLD:",
-			string => ">PASSWORD:",
-			string => ">NEED-OK:",
-			errmode => "return",
-			timeout => 2
-		);
-		if ($match eq undef) {
-			my $msg = $t->errmsg;
-			if ($msg =~ /eof/) {
-				$fShouldConnect = $TRUE;
-			}
-		}
-		elsif ($match eq ">HOLD:") {
-			do {
-				`kdialog --title \"OpenVPN\" --yesno \"Release hold\"`;
-			} while ($? != 0);
-			$t->print ("hold release");
-		}
-		elsif ($match eq ">NEED-OK:") {
-			my $line = $t->getline ();
-			$line =~ /.*'(.*)'.* MSG:(.*)/;
-			my $req = $1;
-			my $msg = $2;
-
-			`kdialog --title \"OpenVPN\" --yesno \"$msg\"`;
-			if ($? == 0) {
-				$t->print ("needok \"$req\" ok");
-			}
-			else {
-				$t->print ("needok \"$req\" cancel");
-			}
-		}
-		elsif ($match eq ">PASSWORD:") {
-			my $line = $t->getline ();
-			$line =~ /.*'(.*)'.*/;
-			my $req = $1;
-			my $pass = `kdialog --title \"OpenVPN\" --password \"$req password:\"`;
-			if ($? == 0) {
-				$pass =~ s/[\r\n]//g;
-			}
-			else {
-				$pass = "";
-			}
-			$t->print ("password \"$req\" \"$pass\"");
-		}
-	}
-}
+  Please comment.
+  I'm not subscribed to the list, so, please CC to me.
+  
+-- 
+Best regards,
+ Anthony
 
 
---------------050000050201090403090106--
 
