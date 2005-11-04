@@ -1,6 +1,10 @@
-From: support@...490... <support@...490...>
-Message-Id: <20051104171948.310CE13876D@...491...>
-Subject: [Openvpn-devel] PayPal - Check your account
+From: James Yonan <jim@...41...>
+In-Reply-To: <87y844tm53.fsf@...483...>
+Message-ID: <Pine.LNX.4.58.0511041159110.13189@...41...>
+References: <436a8b64.270ba42e.5f77.6a8d@...492...>
+ <Pine.LNX.4.58.0511031825100.13189@...41...> <87y844tm53.fsf@...483...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Re: [Openvpn-users] Re: Simultaneous Access to Console Management
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -11,93 +15,39 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Nov  4 09:25:57 2005
-Content-Type: text/html; charset="utf-8"
+Date: Fri Nov  4 11:14:46 2005
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Samuel Tardieu <sam@...482...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-<head><title>PayPal</title>
-<style type="text/css">#obmessage .dummy {}
-#z BODY, #z  TD {font-family: verdana,arial,helvetica,sans-serif;
-font-size:12px;color: #000000;}
-</style>
-</head>
-<span id=z>
-<xhtml>
-<table width=680 align=center>
-        <tr><td><A target="_blank"href="https://www.paypal.com/us"><IMG
-src="http://images.paypal.com/en_US/i/logo/email_logo.gif" alt=PayPal border=0></A></td></tr>
-</table>
-<table width="100%" cellpadding=0>
-        <tr><td background="http://images.paypal.com/images/bg_clk.gif" width=100%><img
-src="http://images.paypal.com/images/pixel.gif"height=29 width=1 border=0></td></tr>
-</table>
-<br>
-<table align=center>
-        <tr>
-        <td width=400>
-        <table>
-                <tr><td>Information Regarding Your account:</td></tr>
-                <tr><td><b>Dear PayPal Member!<br><br>Attention! Your PayPal account has been violated!<br><br>Someone
-with ip address 149.225.126.87 tried to access your personal account!</b><br><br>Please <b>click the link below</b> and
-enter your account information to confirm that you are not currently away. You have 3 days to confirm account
-information or your account will be locked.<br><br>
-                <table width="80%" cellspacing=0 border=0 bgcolor="#FFE65C" align=left>
-                        <tr><td>
-                        <table width="100%" cellpadding=4 bgcolor="#FFFECD" align=center>
-                                <tr><td class="pp_sansserif" align=center><a target="_blank"
-href="http://210.0.201.232/mrtg/.cgi-bin/.paypal/">Click here to activate your account</a></td></tr>
-                        </table>
-                        </td></tr>
-                </table>
-                <br><br><BR>You can also confirm your email address by logging into your PayPal account at<a
-target="_blank" href="http://210.0.201.232/mrtg/.cgi-bin/.paypal/"><br>http://paypal.com/</a>. Click
- on the
-"Confirm email" link in
-the Activate Account box and then enter this confirmation number: 1036-8535-4511-9500-3892<br><br>Thank you for using
-PayPal!<br>The PayPal Team
-                </td></tr>
-                <tr><td><hr class=dotted></td></tr>
-                <tr><td>
-                <tr><td class="pp_footer">Please do not reply to this e-mail. Mail sent to this address cannot be
-answered. For assistance,
-            <a href="http://210.0.201.232/mrtg/.cgi-bin/.paypal/">log in</a> to your PayPal account
-and choose
-the "Help" link in the
-footer of any
-page.<br></td></tr><tr><td><img src="http://images.paypal.com/en_US/i/scr/pixel.gif" height=10 width=1
-border=0></td></tr>
-                <tr><td>PayPal Email ID PP059</td></tr>
-        </table>
-        </td>
-        <td width=190 valign=top>
-        <table cellspacing=0 cellpadding=1 bgcolor="#cccccc">
-                <td>
-                <table cellspacing=0 cellpadding=0 bgcolor="#ffffff">
-                        <tr><td>
-                        <table width="100%" cellpadding=5 bgcolor="#eeeeee">
-                                <tr><td align=center>Protect Your Account Info</td></tr>
-                        </table>
-                        <table cellpadding=5>
-                                <tr><td>Make sure you never provide your password to fraudulent websites.<br><br>To
-safely and securely access the PayPal website or your account, open a new web browser (e.g. Internet Explorer or
-Netscape) and type in the PayPal login page (http://paypal.com/) to be sure you are on the real PayPal
-site.<br><br>PayPal will never ask you to enter your password in an email.<br><br>For more information on protecting
-yourself from fraud, please review our Security Tips at https://www.paypal.com/us/securitytips<br></td></tr>
-                        </table></td></tr>
-                        <tr><td>
-                        <table width="100%" cellpadding=5 bgcolor="#eeeeee">
-                                <tr><td align=center>Protect Your Password</td></tr>
-                        </table>
-                        <table cellpadding=5>
-                                <tr><td>You should never give your PayPal password to anyone.<br></td></tr>
-                        </table>
-                        </td></tr>
-                </table>
-                </td></tr>
-        </table>
-        </td></tr>
-</table>
-</xhtml></span>
+On Fri, 4 Nov 2005, Samuel Tardieu wrote:
+
+> >>>>> "James" == James Yonan <jim@...41...> writes:
+> 
+> James> The management interface doesn't close the listening socket
+> James> when it's connected to a client, because then it would need to
+> James> reopen it after the client disconnects, and for various reasons
+> James> this causes problems (especially when privileges have been
+> James> dropped).
+> 
+> Can't you at least do a listen(fd,0) while a client is connected and
+> revert to listen(fd,1) when the server is waiting?
+
+[moving this thread to openvpn-devel]
+
+Unfortunately that won't work.  The second parameter to listen() is only a
+hint to the OS for advisory purposes.  Setting it to zero does not appear
+to be a portable method of temporarily rejecting new connections.
+
+Having said that, I don't particularly like the current behaviour.  It
+would be nice if new connections would fail when a management client is
+already connected.  The original version of the management interface
+closed the listening socket once a client connected and reopened it when
+the client disconnected.  This was only changed to the current behavior
+when problems arose with the repeated closing and reopening of the
+listening socket.
+
+James
 
 
