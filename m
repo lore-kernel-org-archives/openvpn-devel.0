@@ -1,10 +1,10 @@
 From: James Yonan <jim@...41...>
-In-Reply-To: <87y844tm53.fsf@...483...>
-Message-ID: <Pine.LNX.4.58.0511041159110.13189@...41...>
-References: <436a8b64.270ba42e.5f77.6a8d@...492...>
- <Pine.LNX.4.58.0511031825100.13189@...41...> <87y844tm53.fsf@...483...>
+Subject: Re: [Openvpn-devel] [PATCH] self-test updates, fix unterminated loop
+ in BSD jails
+In-Reply-To: <20051104124852.GA19426@...33...>
+Message-ID: <Pine.LNX.4.58.0511041241030.13189@...41...>
+References: <20051104124852.GA19426@...33...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Re: [Openvpn-users] Re: Simultaneous Access to Console Management
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,39 +15,46 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Nov  4 11:14:46 2005
+Date: Fri Nov  4 11:42:47 2005
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-To: Samuel Tardieu <sam@...482...>
+To: Matthias Andree <ma+ovpnd@...31...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Fri, 4 Nov 2005, Samuel Tardieu wrote:
+On Fri, 4 Nov 2005, Matthias Andree wrote:
 
-> >>>>> "James" == James Yonan <jim@...41...> writes:
+> Greetings,
 > 
-> James> The management interface doesn't close the listening socket
-> James> when it's connected to a client, because then it would need to
-> James> reopen it after the client disconnects, and for various reasons
-> James> this causes problems (especially when privileges have been
-> James> dropped).
+> Dirk 'dinoex' Meyer reported issues when the self-test is run inside a
+> FreeBSD "jail" (see below), in that t_cltsrv.sh never completes and he
+> also provided logs:
 > 
-> Can't you at least do a listen(fd,0) while a client is connected and
-> revert to listen(fd,1) when the server is waiting?
+> | ...
+> | Fri Nov  4 11:12:55 2005 UDPv4 link local (bound): 127.0.0.1:16001
+> | Fri Nov  4 11:12:55 2005 UDPv4 link remote: 127.0.0.1:16000
+> | Fri Nov  4 11:12:55 2005 TCP/UDP: Incoming packet rejected from A.B.C.D:16001[2], expected peer address: 127.0.0.1:16001 (allow this incoming source address/port by removing --remote or adding --float)
+> 
+> This is consistent with the jail(2) documentation on FreeBSD 5-STABLE.
+> 
+> A BSD "jail" is mainly a locked-down chroot where network communication
+> is tied to a particular IP address. This IP address is configured at
+> jail setup time and even "loopback" communication is remapped to the
+> jail's IP. This creates the problem above.
+> 
+> The sample-config-files/loopback-* scripts however do not terminate
+> openvpn if the connection cannot be established.
+> 
+> To fix this by adding --float if running in a FreeBSD, and to address
+> and some minor issues (t_lpback leaves log.$$ behind if successful;
+> tests should perhaps print "SKIP" rather than "FAIL" if aborted), I
+> suggest the attached updates to the t_* scripts, against SVN trunk
+> (version 2.0.5).  Tested on FreeBSD 5.4 i586, SUSE Linux 9.3 i686,
+> Solaris 8 sun4u sparc.
+> 
+> Please apply to 2.0 and 2.1.
 
-[moving this thread to openvpn-devel]
-
-Unfortunately that won't work.  The second parameter to listen() is only a
-hint to the OS for advisory purposes.  Setting it to zero does not appear
-to be a portable method of temporarily rejecting new connections.
-
-Having said that, I don't particularly like the current behaviour.  It
-would be nice if new connections would fail when a management client is
-already connected.  The original version of the management interface
-closed the listening socket once a client connected and reopened it when
-the client disconnected.  This was only changed to the current behavior
-when problems arose with the repeated closing and reopening of the
-listening socket.
+I've applied this to the 2.0 trunk in the SVN, will apply to 2.1 as well 
+when I do the next 2.0 -> 2.1 merge.
 
 James
-
 
