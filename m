@@ -1,9 +1,7 @@
-From: Nate Nielsen <nielsen-list@...505...>
-Reply-To: nielsen@...505...
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] new tap device for each connection
-References: <437E7AE1.4030204@...503...> <437E91BE.3060301@...504...>
-Message-Id: <20051119050613.5D34F70DC87@...506...>
+From: David Stipp <dstipp@...507...>
+Message-ID: <20051122162842.GK32660@...507...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] OpenVPN AutoConf macro bug
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,48 +12,47 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Nov 18 20:54:01 2005
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Ian Berry <iberry@...504...>
-Cc: Manolis Stamatogiannakis <mstamat@...503...>, openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
+Date: Tue Nov 22 08:30:02 2005
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
+Cc: dstipp@...507...
 
-Ian Berry wrote:
-> I ran into this exact situation. Based on my knowledge of how OpenVPN
-> operates in "server mode", I figured that it would require a significant
-> change to allow this. As a workaround, I run OpenVPN in "inetd mode",
-> which forces a new openvpn process for each client and therefore a
-> separate tap interface. Works great for me.
+Hi all,
 
-Note that this doesn't work with UDP, only with TCP. Tunneling via TCP
-comes with it's own set of (very real) problems:
+There's a bug in the autoconf macros that cause the compile to fail on
+Sun Studio 9.  One of the tests (empty array support) is not escaped
+properly, so the macro int bar[0] expands to int bar0, which won't
+exactly test what it needs to be testing...
 
-http://sites.inka.de/sites/bigred/devel/tcp-tcp.html
+Patch below.  (basically put the bar[0] brackets within brackets.)
 
-It also spawns a new process for every (and any) TCP connection coming
-to port 1194 (or whatever you have configured) allowing an attacker to
-launch thousands of processes on your machine. Configuring inetd
-correctly can mitigate this, but in this case the attacker could DDOS
-your VPN service without even breaking a sweat.
+********************************************************************************
+--- acinclude.m4.orig   2005-11-21 17:13:48.214828000 -0600
++++ acinclude.m4        2005-11-21 17:12:51.172087000 -0600
+@@ -19,7 +19,7 @@
+   AC_MSG_RESULT([checking for C compiler empty array support])
+   AC_COMPILE_IFELSE(
+     [
+-        struct { int foo; int bar[0]; } mystruct;
++        struct { int foo; int bar[[0]]; } mystruct;
+     ], [
+         AC_DEFINE_UNQUOTED(EMPTY_ARRAY_SIZE, 0, [Dimension to use for
+empty array declaration])
+     ], [
+********************************************************************************
 
-> Manolis Stamatogiannakis wrote:
->> If this is not possible, how much work would it be to implement it as
->> a patch? Would it fit with the OpenVPN internals, or it would need
->> major changes to fit?
+I checked trunk in svn last night and noticed the same problem.  It's be
+nice if this change could be included.
 
-I've tried, but gave up after my patch started growing way too big. I've
-had reasonably experience patching all sorts of networking software,
-kernels etc... The whole concept of one tun fd/socket is pretty deeply
-intertwined into the OpenVPN logic. And the OpenVPN code is pretty
-hairy, each of those (many many) options you see in the manual page is
-intertwined with each other in interesting ways. But I'd say an OpenVPN
-developer, someone who's very familiar with the internals, could
-probably pull it off.
+Please CC me on any additional correspondence as I am not on the mailing
+list.
 
-That said, I can send you may half done patches and tell you where I
-left off if you're interested.
+Thanks!
 
-Cheers,
-Nate
+David
 
+-- 
+David Stipp <dstipp@...507...>
 
