@@ -1,9 +1,9 @@
-Message-ID: <4384EDF1.7050102@...277...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+From: James Yonan <jim@...41...>
+Subject: Re: [Openvpn-devel] [patch] Typo in manage.c causes compile failure
+In-Reply-To: <20051122193420.GQ32660@...507...>
+Message-ID: <Pine.LNX.4.58.0511232246020.7087@...41...>
+References: <20051122193420.GQ32660@...507...>
 MIME-Version: 1.0
-References: <4384BF64.3040406@...68...> <4384D1C4.8090808@...277...> <4384E58F.10701@...68...> <4384E899.9080009@...277...> <4384EDE4.304@...68...>
-In-Reply-To: <4384EDE4.304@...68...>
-Subject: [Openvpn-devel] Re: pkcs11 patch for openssh
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,25 +14,42 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Nov 23 14:36:06 2005
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Cornelius Koelbel <cornelius.koelbel@...68...>, openvpn-devel@lists.sourceforge.net
+Date: Wed Nov 23 21:48:01 2005
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+To: David Stipp <dstipp@...507...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Cornelius Koelbel wrote:
-> Hello again,
-> 
-> it absolutely great. It works.
-> I realized that the cat'ing to the authorized_keys didn't contain a
-> neccessary line break, so two public keys where concatenated togeather.
-> 
-> Thats cool.
-> 
-> When do you think this patch will be merged into the openssh tree?
+On Tue, 22 Nov 2005, David Stipp wrote:
 
-This is a good question. I cannot answer that. I don't 
-control OpenSSH.
+> Hi all,
+> 
+> In OpenVPN 2.0.5, the following patch is necessary to compile manage.c
+> with Sun Studio 9. Without it, the resulting symbol will be undefined.
+> 
+> ********************************************************************************
+> --- manage.c.orig       2005-11-01 05:06:11.000000000 -0600
+> +++ manage.c    2005-11-22 13:14:00.420287000 -0600
+> @@ -1564,7 +1564,7 @@
+> 
+>  #endif
+> 
+> -inline bool
+> +static inline bool
+>  man_standalone_ok (const struct management *man)
+>  {
+>    return !man->settings.management_over_tunnel && man->connection.state != MS_INITIAL;
+> ********************************************************************************
+> 
+> There are 'static inline bool's all over the code, but only this one
+> particular 'inline bool'.  Perhaps it was just a mistype.
+> 
+> Please CC me on any additional correspondence as I am not on the mailing
+> list.
 
-Best Regards,
-Alon Bar-Lev.
+Indeed, this appears to be a typo.  I will fix for 2.0.6 and the 2.1 beta 
+series.
+
+James
+
 
