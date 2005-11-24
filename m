@@ -1,9 +1,9 @@
-From: James Yonan <jim@...41...>
-Subject: Re: [Openvpn-devel] OpenVPN AutoConf macro bug
-In-Reply-To: <20051122162842.GK32660@...507...>
-Message-ID: <Pine.LNX.4.58.0511232247000.7087@...41...>
-References: <20051122162842.GK32660@...507...>
+From: Nielsen <nielsen@...505...>
 MIME-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="------------030600020107080405070506"
+Message-Id: <20051125055507.4638B70DD66@...506...>
+Subject: [Openvpn-devel] [PATCH] Openvpn --pass-tos on FreeBSD
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,44 +14,48 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Nov 24 00:03:01 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: David Stipp <dstipp@...507...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Thu Nov 24 21:42:00 2005
+To: openvpn-devel@lists.sourceforge.net
 
-On Tue, 22 Nov 2005, David Stipp wrote:
+This is a multi-part message in MIME format.
+--------------030600020107080405070506
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-> Hi all,
-> 
-> There's a bug in the autoconf macros that cause the compile to fail on
-> Sun Studio 9.  One of the tests (empty array support) is not escaped
-> properly, so the macro int bar[0] expands to int bar0, which won't
-> exactly test what it needs to be testing...
-> 
-> Patch below.  (basically put the bar[0] brackets within brackets.)
-> 
-> ********************************************************************************
-> --- acinclude.m4.orig   2005-11-21 17:13:48.214828000 -0600
-> +++ acinclude.m4        2005-11-21 17:12:51.172087000 -0600
-> @@ -19,7 +19,7 @@
->    AC_MSG_RESULT([checking for C compiler empty array support])
->    AC_COMPILE_IFELSE(
->      [
-> -        struct { int foo; int bar[0]; } mystruct;
-> +        struct { int foo; int bar[[0]]; } mystruct;
->      ], [
->          AC_DEFINE_UNQUOTED(EMPTY_ARRAY_SIZE, 0, [Dimension to use for
-> empty array declaration])
->      ], [
-> ********************************************************************************
-> 
-> I checked trunk in svn last night and noticed the same problem.  It's be
-> nice if this change could be included.
+The attached patch makes the --pass-tos option work on FreeBSD. If
+included in OpenVPN a configure test would probably be necessary.
 
-Thanks -- nice catch.  I will merge this as well in the next 2.0.x and 2.1 
-releases.
+This is one of several things we modified in OpenVPN while evaluating it
+for deployment. Thought I'd share the fixes.
 
-James
+Cheers,
+Nate Nielsen
+
+--------------030600020107080405070506
+Content-Type: text/x-patch;
+ name="openvpn-tos-freebsd.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="openvpn-tos-freebsd.patch"
+
+diff -U3 ../openvpn-2.0.orig/socket.h ./socket.h
+--- ../openvpn-2.0.orig/socket.h	Sun Apr 10 21:43:58 2005
++++ ./socket.h	Tue Aug  9 16:47:40 2005
+@@ -748,7 +755,11 @@
+ link_socket_set_tos (struct link_socket *ls)
+ {
+   if (ls && ls->ptos_defined)
+-    setsockopt (ls->sd, IPPROTO_IP, IP_TOS, &ls->ptos, sizeof (ls->ptos));
++    {
++      int tos = ls->ptos;
++      setsockopt (ls->sd, IPPROTO_IP, IP_TOS, &tos, sizeof (tos));
++    }
++
+ }
+ 
+ #endif
+
+
+--------------030600020107080405070506--
 
 
