@@ -1,9 +1,9 @@
 From: Nielsen <nielsen@...505...>
 MIME-Version: 1.0
 Content-Type: multipart/mixed;
- boundary="------------030006080901040303090002"
-Message-Id: <20051125055759.373AE70DD18@...506...>
-Subject: [Openvpn-devel] [PATCH] Allow dynamic choice of source port
+ boundary="------------030306090901090905090401"
+Message-Id: <20051125060059.3AA4570DD18@...506...>
+Subject: [Openvpn-devel] [HACK/PATCH] Prioritize TCP ACKs
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,83 +14,62 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Nov 24 21:45:00 2005
+Date: Thu Nov 24 21:48:00 2005
 To: openvpn-devel@lists.sourceforge.net
 
 This is a multi-part message in MIME format.
---------------030006080901040303090002
+--------------030306090901090905090401
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-As it is openvpn has no way to allow the kernel to dynamically choose
-a source port for it's connections. If you have two openvpn client
-processes on the same machine both you have to configure lport to
-different ports manually. This patch allows you to specify '--lport 0'
-and get the behaviour of normal programs, where the source port is
-dynamically chosen.
+Here's a hack of a patch which puts nice TOS bits on TCP ACK packets.
+This allows you to use pf or another firewall to prioritize the
+resulting openvpn traffic in the way you normally do over asynchronous
+connections.
 
-Not sure if this is an issue for others, but here's the patch in
-case anyone has run into the same issue.
+Certaintly no need to put this in openvpn. Just figured someone else out
+there might have run into the same problems.
 
 Cheers,
 Nate Nielsen
-
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.1 (GNU/Linux)
 Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
 
-iD8DBQFDhqR2e/sRCNknZa8RAkxcAKCLOrVEiVp0NZ3cBr0XQuemmGMkZQCdFbWl
-hgFOINIEwoZnYcs2noCM8ik=
-=2H3u
+iD8DBQFDhqUue/sRCNknZa8RAoDpAKCI/Fk1EdV49UGY2act8kLnWb0zpACgoLYG
+drRf/4s1cX8QrlxcYyfqv+k=
+=5Xea
 -----END PGP SIGNATURE-----
 
---------------030006080901040303090002
+--------------030306090901090905090401
 Content-Type: text/x-patch;
- name="openvpn-local-port.patch"
+ name="openvpn-tcp-tos.patch"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline;
- filename="openvpn-local-port.patch"
+ filename="openvpn-tcp-tos.patch"
 
-diff -rU 3 ../openvpn-2.0/options.c ./options.c
---- ../openvpn-2.0/options.c	2005-04-16 16:03:15.000000000 -0600
-+++ ./options.c	2005-07-22 12:54:12.722483296 -0600
-@@ -3189,7 +3189,7 @@
-       ++i;
-       VERIFY_PERMISSION (OPT_P_GENERAL);
-       port = atoi (p[1]);
--      if (!legal_ipv4_port (port))
-+      if (port != 0 && !legal_ipv4_port (port))
- 	{
- 	  msg (msglevel, "Bad local port number: %s", p[1]);
- 	  goto err;
-diff -rU 3 ../openvpn-2.0/socket.c ./socket.c
---- ../openvpn-2.0/socket.c	2005-04-10 21:43:58.000000000 -0600
-+++ ./socket.c	2005-07-22 12:53:42.908015784 -0600
-@@ -737,7 +737,20 @@
- 	       print_sockaddr (&sock->info.lsa->local, &gc),
- 	       strerror_ts (errnum, &gc));
- 	}
+diff -rU3 ../openvpn-2.0.orig/socket.h ./socket.h
+--- ../openvpn-2.0.orig/socket.h	2005-04-10 21:43:58.000000000 -0600
++++ ./socket.h	2005-08-09 13:23:12.874844376 -0600
+@@ -737,6 +737,14 @@
+       struct openvpn_iphdr *iph = (struct openvpn_iphdr *) BPTR (ipbuf);
+       ls->ptos = iph->tos;
+       ls->ptos_defined = true;
 +
-+      /* If the local port was '0' look it up again */
-+      if (sock->local_port == 0)
-+	{
-+	  socklen_t l = sizeof(sock->info.lsa->local);
-+	  if (getsockname (sock->sd, (struct sockaddr *)&sock->info.lsa->local, &l) < 0)
-+	    {
-+	      const int errnum = openvpn_errno_socket ();
-+	      msg (M_FATAL, "TCP/UDP: Socket lookup failed: %s",
-+		   strerror_ts (errnum, &gc));
-+	    }
++      if (iph->protocol == OPENVPN_IPPROTO_TCP)
++        {
++          struct openvpn_tcphdr *tcp = (struct openvpn_tcphdr *) (BPTR(ipbuf) + OPENVPN_IPH_GET_LEN (iph->version_len));
++	  if ((tcp->flags & (OPENVPN_TCPH_SYN_MASK | OPENVPN_TCPH_ACK_MASK)) == OPENVPN_TCPH_ACK_MASK && 
++	      iph->tot_len <= 80)
++		ls->ptos |= 0x10;
 +	}
      }
-+
-   gc_free (&gc);
  }
  
 
---------------030006080901040303090002--
+--------------030306090901090905090401--
 
 
