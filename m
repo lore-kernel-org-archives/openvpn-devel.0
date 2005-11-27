@@ -1,10 +1,8 @@
-From: Florian Weimer <fw@...315...>
-Subject: Re: [Openvpn-devel] [HACK/PATCH] Prioritize TCP ACKs
-References: <20051125060059.3AA4570DD18@...506...>
-In-Reply-To: <20051125060059.3AA4570DD18@...506...>
-	(nielsen@...505...'s message of "Fri, 25 Nov 2005 06:01:00 +0000
-	(GMT)")
-Message-ID: <87br07brws.fsf@...508...>
+From: James Yonan <jim@...41...>
+Subject: Re: [Openvpn-devel] [PATCH] Allow dynamic choice of source port
+In-Reply-To: <20051125055759.373AE70DD18@...506...>
+Message-ID: <Pine.LNX.4.58.0511272225250.24626@...41...>
+References: <20051125055759.373AE70DD18@...506...>
 MIME-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
@@ -16,18 +14,30 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Nov 26 02:59:03 2005
-Content-Type: text/plain; charset=us-ascii
+Date: Sun Nov 27 21:28:02 2005
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
 To: Nielsen <nielsen@...505...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-> Here's a hack of a patch which puts nice TOS bits on TCP ACK packets.
-> This allows you to use pf or another firewall to prioritize the
-> resulting openvpn traffic in the way you normally do over asynchronous
-> connections.
+On Fri, 25 Nov 2005, Nielsen wrote:
 
-I think you have to make those TOS values configurable because their
-meaning is no longer standardized (or, more precisely, there are
-several standards to choose from).
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+> 
+> As it is openvpn has no way to allow the kernel to dynamically choose
+> a source port for it's connections. If you have two openvpn client
+> processes on the same machine both you have to configure lport to
+> different ports manually. This patch allows you to specify '--lport 0'
+> and get the behaviour of normal programs, where the source port is
+> dynamically chosen.
+> 
+> Not sure if this is an issue for others, but here's the patch in
+> case anyone has run into the same issue.
+
+How is this different from simply using --nobind to allocate a dynamic 
+port #?
+
+James
+
 
