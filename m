@@ -1,8 +1,7 @@
-Message-ID: <21563508.1133274764012.JavaMail.www@...511...>
-From: "nicolas.prochazka" <nicolas.prochazka@...509...>
-Reply-To: nicolas.prochazka@...509...
+Message-ID: <BAY18-F20056B1620A7EAF32C5375A94A0@...512...>
+From: "Ganesh Sathya Narayanan M" <tidelganesh@...160...>
 Mime-Version: 1.0
-Subject: [Openvpn-devel] Openvpn 2.1beta7 - Freebsd - Topology subnet
+Subject: [Openvpn-devel] A query on the windows based opn vpn adaptor
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,17 +12,17 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Nov 29 06:33:06 2005
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Date: Tue Nov 29 21:15:01 2005
+Content-Type: text/html; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi, 
-I want to use option topology subnet with freebsd 6.0.
-Unhappy, it seems that's ifconfig on freebsd does not accept subnet for tun interface.
-How can I resolv it ( using an other ifconfig implementation ? , hack ifconfig ? , hack openvpn ? )
-
-Regards,
-Nicolas Prochazka.
+<html><div style='background-color:'><DIV class=RTE>
+<P>I have a problem when I run the open vpn adapter over the <BR>&nbsp;aceman pro pppoe adapter if I have one more ndis miniport <BR>&nbsp;adaptor installed in my machine.<BR>&nbsp;<BR>&nbsp;I am using your open vpn tap adapter over a pppoe connection <BR>&nbsp;to connect to my ssl vpn server.&nbsp; I have another NDIS <BR>&nbsp;Miniport driver installed in my machine.&nbsp; This is the normal <BR>&nbsp;NDIS miniport driver.&nbsp; When I try to install my open vpn tap <BR>&nbsp;adapter I see a disconnect and connect of my pppoe <BR>&nbsp;connection.&nbsp; My PPPOE adapter is the ACEMAN pro PPPOE adapter.<BR>&nbsp;<BR>&nbsp;Problem description<BR>&nbsp;==============<BR>&nbsp;When I try to install a second NDIS mini port driver the OS <BR>&nbsp;tries to stop the first NDIS miniport driver and then start <BR>&nbsp;both the first and the second drivers.&nbsp; AceMan pro adaptor 
+<BR>&nbsp;gets the notification of this stopping of a particular driver <BR>&nbsp;and disconnects and reconnects.&nbsp; This disconnect and <BR>&nbsp;reconnect should not happen<BR>&nbsp;<BR>&nbsp;Is there any work around for this problem?&nbsp;<BR>&nbsp;<BR><BR><BR></P></DIV><BR><BR><BR>Digitally Yours
+<DIV></DIV>Ganesh Sathya Narayanan
+<DIV></DIV>@
+<DIV></DIV>Balajie
+<DIV></DIV></div></html>
 
 
