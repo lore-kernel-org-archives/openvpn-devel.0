@@ -1,8 +1,7 @@
-From: mts.spb.suxx@...450...
-Reply-To: mts.spb.suxx@...450...
-Message-ID: <722546201.20051206222018@...450...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN documentation correction suggestion
+From: Tim Niemueller <gmane@...513...>
+Message-ID: <dn52v4$51h$1@...165...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Disable --redirect-gateway
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,52 +12,36 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Dec  6 11:22:32 2005
-Content-Type: text/plain; charset=us-ascii
+Date: Tue Dec  6 14:42:02 2005
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hello Developers,
+Hi OpenVPN developers.
 
- Please look into re-wording the server.ovpn hints for bridging mode:
+I wrote a small plug-in that integrates OpenVPN into NetworkManager (see
+http://www.niemueller.de/software/patches/networkmanager.php or
+NetworkManager CVS at http://www.gnome.org/projects/NetworkManager/).
 
-# Configure server mode for ethernet bridging.
-# You must first use your OS's bridging capability
-# to bridge the TAP interface with the ethernet
-# NIC interface.  Then you must manually set the
-# IP/netmask on the bridge interface,
-> You must use the free IP from your existing
-> LAN subnet range.
-# Here we assume 10.8.0.4/255.255.255.0. Finally we
-# must set aside an IP range in this subnet
-# (start=10.8.0.50 end=10.8.0.100) to allocate
-# to connecting clients.
-> Make sure this range will not overlap with
-> your LAN's DHCP-server scope.
-# Leave this line commented out unless you are
-# ethernet bridging.
-;server-bridge 10.8.0.4 255.255.255.0 10.8.0.50 10.8.0.100
+Someone pointed out that OpenVPN 2.1 will use the --redirect-gateway by
+default. Since this is something that NM does by itself we would like to
+have an option to completely disable this feature.
 
-Please comment.
-(Please CC me, for I'm not on the list.)
+Is there a chance to get a "disable" flag to the --redirect-gateway
+flags or a --no-redirect-gateway flag that can be used to get the old
+behaviour? Working with your changes would either mean changing a lot of
+code in NM, which is unlikely, or a manual workaround that we delete the
+routes that OpenVPN created, which is pretty useless if there is
+something as simple as a "disable" flag that could solve this right away.
 
-PS. I'm on winXP thoughout.
-I was able to let my LAN's DHCP server to allocate the IP for the
-bridged interface on the OpenVPN server. It would be nice to be able
-to control everything from one point - the LAN's DHCP server: the
-default gateway IP pushed to the OpenVPN clients, the DNS server IP
-and so on. Is it possible to make the OpenVPN daemon to learn all
-those settings automagically (by querying the bridge properties)?
+What do you think, is there a chance to get that flag? Would you accept
+an appropriate patch?
 
-This is my layout:
-internet-NAT-(192.168.0.0/24)-OpenVPNserver(192.168.0.3)-etc.
-Announced gateway is 192.168.0.1
-Announced DNS is 192.168.0.1
-LAN DHCP scope is 192.168.0.3~192.168.0.127
-OpenVPN scope is 192.168.0.128~192.168.0.132
+	Tim
 
 -- 
-Best regards,
- Anthony                  mailto:mts.spb.suxx@...450...
+    Tim Niemueller <tim@...513...>      www.niemueller.de
+=================================================================
+ Imagination is more important than knowledge. (Albert Einstein)
 
 
