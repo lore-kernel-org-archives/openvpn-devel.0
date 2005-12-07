@@ -1,9 +1,9 @@
-From: Mathias Sundman <mathias@...209...>
-Subject: Re: [Openvpn-devel] Disable --redirect-gateway
-In-Reply-To: <dn52v4$51h$1@...165...>
-Message-ID: <Pine.LNX.4.64.0512070752400.27495@...210...>
-References: <dn52v4$51h$1@...165...>
-MIME-Version: 1.0
+From: Tim Niemueller <gmane@...513...>
+Message-ID: <4396AC31.7000002@...513...>
+References: <dn52v4$51h$1@...165...> <Pine.LNX.4.64.0512070752400.27495@...210...>
+Mime-Version: 1.0
+In-Reply-To: <Pine.LNX.4.64.0512070752400.27495@...210...>
+Subject: [Openvpn-devel] Re: Disable --redirect-gateway
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,33 +14,38 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Dec  6 23:11:02 2005
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Content-Transfer-Encoding: 8bit
-To: Tim Niemueller <gmane@...513...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Wed Dec  7 01:39:02 2005
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-On Tue, 6 Dec 2005, Tim Niemueller wrote:
+Mathias Sundman wrote:
+> On Tue, 6 Dec 2005, Tim Niemueller wrote:
+> 
+> 
+> I can't see anywhere in the change-log that this would now be the
+> default, and I can't see why it should be either. Have you verifyed that
+> it really is the default in 2.1?
+> 
 
-> Hi OpenVPN developers.
->
-> I wrote a small plug-in that integrates OpenVPN into NetworkManager (see
-> http://www.niemueller.de/software/patches/networkmanager.php or
-> NetworkManager CVS at http://www.gnome.org/projects/NetworkManager/).
->
-> Someone pointed out that OpenVPN 2.1 will use the --redirect-gateway by
-> default. Since this is something that NM does by itself we would like to
-> have an option to completely disable this feature.
+In the man page of the OpenVPN 2.1 beta 7 package it says (in the
+description of the --redirect-gateway argument):
 
-I can't see anywhere in the change-log that this would now be the 
-default, and I can't see why it should be either. Have you verifyed that 
-it really is the default in 2.1?
+Using the def1 flag is highly recommended, and is currently planned to
+become the default by OpenVPN 2.1.
+
+A user has reported this for the behaviour that the packaged version in
+Fedora Extras Devel shows; see
+https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=175047
+
+This makes me think that is is not only planned but already the default
+in the beta. I didn't look at the source, yet.
+
+	Tim
 
 -- 
-A. Because people read from top to bottom.
-Q. Why should I not top-post?
-_________________________________________________________
-Mathias Sundman              (^)   ASCII Ribbon Campaign
-NILINGS AB                    X    NO HTML/RTF in e-mail
-Tel: +46-(0)8-666 32 28      / \   NO Word docs in e-mail
+    Tim Niemueller <tim@...513...>      www.niemueller.de
+=================================================================
+ Imagination is more important than knowledge. (Albert Einstein)
+
 
