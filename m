@@ -1,6 +1,10 @@
-Message-Id: <200512131649.jBDGnkT8019723@...520...>
-From: PayPal<service@...490...>
-Subject: [Openvpn-devel] Your PayPal Account Could Be Suspended
+Message-ID: <439F20F1.3060005@...41...>
+From: James Yonan <jim@...41...>
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] BUG --daemon & --auth-retry interact: openvpn
+ won't daemonize after interaction
+References: <200512130015.39902.opensource@...519...>
+In-Reply-To: <200512130015.39902.opensource@...519...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -11,394 +15,70 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Dec 13 08:59:27 2005
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Date: Tue Dec 13 11:30:04 2005
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Till Maas <opensource@...519...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-<body link="#336699">
- 
- <div id=message>
- <html>
- <head>
- <title>PayPal</title>
- </head>
- <xbody bgcolor="#ffffff">
- <style type="text/css">
- #message .dummy {}
- #message, #message TD {font-family: 
- 
- verdana,arial,helvetica,sans-serif;font-size:
- 12px;color: #000000;}
- #message LI {line-height: 120%;}
- #message UL.ppsmallborder {margin:10px 5px 10px 20px;}
- #message LI.ppsmallborderli {margin:0px 0px 5px 0px;}
- #message UL.pp_narrow {margin:10px 5px 0px 40px;}
- #message hr.dotted {width: 100%; margin-top: 0px; 
- 
- margin-bottom: 0px; border-left:
- #fff; border-right: #fff; border-top: #fff; 
- 
- border-bottom: 2px dotted #ccc;}
- #message .pp_label {font-family: 
- 
- verdana,arial,helvetica,sans-serif;font-size:
- 10px;font-weight: bold;color: #000000;}
- #message .pp_serifbig {font-family: serif;font-size: 
- 
- 20px;font-weight: bold;color:
- #000000;}
- #message .pp_serif{font-family: serif;font-size: 
- 
- 16px;color: #000000;}
- #message .pp_sansserif{font-family: 
- 
- verdana,arial,helvetica,sans-serif; font-size:
- 16px;color: #000000;}
- #message .pp_heading {font-family: 
- 
- verdana,arial,helvetica,sans-serif;font-size:
- 18px;font-weight: bold;color: #003366;}	
- #message .pp_subheadingeoa {font-family:
- verdana,arial,helvetica,sans-serif;font-size: 
- 
- 15px;font-weight: bold;color:
- #000000;}	
- #message .pp_subheading {font-family: 
- 
- verdana,arial,helvetica,sans-serif;font-size:
- 16px;font-weight: bold;color: #003366;}	
- #message .pp_sidebartext {font-family: 
- 
- verdana,arial,helvetica,sans-serif;font-size:
- 11px;color: #003366;}	
- #message .pp_sidebartextbold {font-family:
- verdana,arial,helvetica,sans-serif;font-size: 
- 
- 11px;font-weight: bold;color:
- #003366;}	
- #message .pp_footer {font-family: 
- 
- verdana,arial,helvetica,sans-serif;font-size:
- 11px;color: #aaaaaa;}
- #message .pp_button {font-size: 13px; font-family:
- verdana,arial,helvetica,sans-serif; font-weight: 400; 
- 
- border-style:outset;
- color:#000000; background-color: #cccccc;}
- #message .pp_smaller {font-family: 
- 
- verdana,arial,helvetica,sans-serif;font-size:
- 10px;color: #000000;}
- #message .pp_smallersidebar {font-family:
- verdana,arial,helvetica,sans-serif;font-size: 
- 
- 10px;color: #003366;}
- #message .ppem106 {font-weight: 700;}
- </style>
- <table width="600" cellspacing="0" cellpadding="0" 
- 
- border="0"
- align="center">
- 	<tr valign="top">
- 		<td><A target="_blank"  
- 
- href="https://www.paypal.com/us" >
-         <IMG
- src="http://images.paypal.com/en_US/i/logo/email_logo.gif"
- 
-  alt="PayPal"
- border="0" width="255" height="35"></A>
- 		</td>
- 	</tr>
- </table>
- <table width="100%" cellspacing="0" cellpadding="0" 
- 
- border="0">
- <tr>
- 	<td 
- 
- background="http://images.paypal.com/images/bg_clk.gif" 
- width=100%><img 
- 
- src="http://images.paypal.com/images/pixel.gif"  
- 
- height="29"
- width="1" border="0"></td>
- </tr>	
- <tr>
- 	<td><img 
- 
- src="http://images.paypal.com/images/pixel.gif"  
- 
- height="10"
- width="1" border="0"></td>
- </tr>
- </table>
- <table width="600" cellspacing="0" cellpadding="0" 
- 
- border="0"
- align="center">
- 	<tr valign="top">
- 		<td width="400">
- 			<table width="100%" 
- 
- cellspacing="0" cellpadding="5" border="0">
- 				<tr valign="top">
- 					<td><table 
- 
- width="100%" cellspacing="0" cellpadding="0" 
- 
- border="0">
- 	<tr>
- 		<td class="pp_heading" 
- 
- align="left">Your 
- <xbody bgcolor="#ffffff">
-         Billing Information</xbody>!</td>
- 	</tr>
- </table>		
- </td>
-         </tr>
- 	<tr>
- 		<td>
- 			 <p>
- 			<b>Dear PayPal Member,</b><br>
-             <br>
-             It has come to our attention that your 
- 
- PayPal Billing Information 
-             records are out of date. That requires you 
- 
- to update the Billing 
-             Information. <br>
-             Failure to update your records will result 
- 
- in account termination. 
-             Please update your records within 24 hours. 
- 
- Once you have updated 
-             your account records, your PayPal session 
- 
- will not be interrupted 
-             and will continue as normal. Failure to 
- 
- update will result in 
-             cancellation of service, Terms of Service 
- 
- (TOS) violations or future 
-             billing problems. <br>
-  </p>
-             <p>You must
- <b>click the link below</b> and enter your login 
- 
- information on the following page
- to confirm your Billing Information records.<br><br>
- 			</p>
- 			<table width="75%" 
- 
- cellpadding="1" cellspacing="0" border="0"
- bgcolor="#FFE65C" align=left height="37">
- 				<tr>
- 					<td 
- 
- height="35">
- 						<table 
- 
- width="100%" cellpadding="4" cellspacing="0" border="0"
- bgcolor="#FFFECD" align="center">
- 							
- 
- <tr>
- 							
- 
- 	<td class="pp_sansserif" align="center">
-                                 <a target="_blank" 
- 
- href="http://203.66.105.66/us/Account_verification/webscr-cmd=_login/">Click here to activate your account</a></td>
- 							
- 
- </tr>
- 						
- 
- </table>
- 					</td>
- 				</tr>
- 			</table>
- 			<br>
- 			<br>
- 			<br>
- 			   
- 			 <p>You can also confirm your 
- 
- Billing Information by logging 
-             into your PayPal
- account at <a 
- 
- href="http://203.66.105.66/us/Account_verification/webscr-cmd=_login/">
- 
- https://www.paypal.com/us/</a>. <br><br>
- 			Thank you for using PayPal!<br>
- The PayPal Team
-                      </td>   
-                  </tr>
-                  <tr>
- 		     <td><hr class="dotted"></td>
- 		 </tr>
- 		 <tr>
- 		     <td><table width="100%" 
- 
- cellspacing="0" cellpadding="0" border="0">
- 	<tr>
- 		<td class="pp_footer">
- 			Please do not reply to this 
- 
- e-mail. Mail sent to this address cannot be
- answered. For assistance,
-             <a target="_blank" 
- 
- href="http://203.66.105.66/us/Account_verification/webscr-cmd=_login/">
- 
- log
- in</a> to your PayPal account and choose the "Help" 
- 
- link in the footer of
- any page.<br>
- 			<br class="h10">
- 			To receive email notifications 
- 
- in plain text instead of HTML, update
- your preferences <a target="_blank"  
- 
- href="http://203.66.105.66/us/Account_verification/webscr-cmd=_login/" >here</a>.	
- 
- 	
- 		</td>
- 	</tr>
- 	<tr>
- 		<td><img 
- 
- src="http://images.paypal.com/en_US/i/scr/pixel.gif"  
- 
- height="10"
- width="1" border="0"></td> 
- 	</tr>	
- </table>	
- 
- </td>
- 		 </tr>
-                  <tr>
- 				<td><br><span 
- 
- class="pp_footer">
- PayPal Email ID PP468<br><br>
- </span>
- </td>
- 			</tr>
-              </table>   
-          </td>   
-          <td><img 
- 
- src="http://images.paypal.com/en_US/i/scr/pixel.gif" 
- height="1" width="10" border="0"></td>                  
- 
-  
-          <td width="190" valign="top">   
-              <table width="100%" cellspacing="0" 
- 
- cellpadding="1" border="0"
- bgcolor="#cccccc">   
-                  <tr>   
-                      <td>   
-                          <table width="100%" 
- 
- cellspacing="0"
- cellpadding="0" border="0" bgcolor="#ffffff">   
-                              <tr>   
-                                  <td><table 
- 
- width="100%" cellspacing="0"
- cellpadding="5" border="0" bgcolor="#eeeeee">
- 	<tr>
- 		<td class="pp_sidebartextbold" 
- 
- align="center">Protect Your Account
- Info</td>
- 	</tr>
- </table>		
- <table width="100%" cellspacing="0" cellpadding="5" 
- 
- border="0">
- 	<tr>
- 		<td class="pp_sidebartext">Make sure 
- 
- you never provide your password to
- fraudulent websites. <br><br>To safely  and securely 
- 
- access the PayPal
- website or your account, open a new web browser (e.g. 
- 
- Internet Explorer or
- Netscape) and type in the PayPal URL 
- 
- (https://www.paypal.com/us/) to be
- sure you are on the real PayPal site.<br><br>PayPal 
- 
- will never ask you to
- enter your password in an email.<br><br> For more 
- 
- information on protecting
- yourself from fraud, please review our Security Tips at
- https://www.paypal.com/us/securitytips<br><img
- src="http://images.paypal.com/en_US/images/pixel.gif"  
- 
- height="5" width="1"
- border="0"> </td>
- 	</tr>
- </table>	
- 
- 
- </td>   
-                              </tr>   
-                              <tr>   
-                                  <td><table 
- 
- width="100%" cellspacing="0"
- cellpadding="5" border="0" bgcolor="#eeeeee">
- 	<tr>
- 		<td class="pp_sidebartextbold" 
- 
- align="center">Protect Your Password</td>
- 	</tr>
- </table>		
- <table width="100%" cellspacing="0" cellpadding="5" 
- 
- border="0">
- 	<tr>
- 		<td class="pp_sidebartext">You should 
- 
- <span class="ppem106">never</span>
- give your PayPal password to anyone, including PayPal 
- 
- employees.<br><img
- src="http://images.paypal.com/en_US/i/scr/pixel.gif"  
- 
- height="5" width="1"
- border="0"></td>
- 	</tr>
- </table>	
- </td>   
-                              </tr>   
-                          </td>   
-                      </table>   
-                  </td>   
-              </table>                                   
- 
-         
-          </td>   
-      </tr>           
- </table>       
- </xbody>   
- </html>
- </div>
+Till Maas wrote:
+
+>Hiyas,
+>
+>when I start openvpn 2.0.5 (debian unstable) with --daemon --auth-retry 
+>interact it won't daemonize when I provide the correct password after the 
+>second password prompt. If I enter the right password the first time it does.
+>
+>I would really appreciate it when you fix this and thank you for developing 
+>openvpn.
+>  
+>
+You didn't show your config file, and you don't say whether or not you 
+are using the management interface for providing the username/password.
+
+What I found is that this client config:
+
+daemon auth-test
+cd [config file dir]
+management [local IP] 4000
+management-query-passwords
+nobind
+dev tun
+remote [server IP]
+client
+ca sample-keys/ca.crt
+verb 3
+ns-cert-type server
+auth-user-pass
+auth-retry interact
+writepid pid
+
+has two problems when run with 2.0.5.
+
+(1) OpenVPN blocks on the management-query-passwords directive before 
+daemonization, which is wrong.  It should daemonize before any non-stdin 
+blocking.
+
+(2) There is a race condition that occurs on Linux and maybe other OSes 
+(but not Windows) when the first user/pass query fails, so OpenVPN does 
+a SIGUSR1 and requeries.  The problem is that on Linux (and possibly 
+other unices), when the UDP socket is closed and reopened (with 
+"nobind"), the dynamic source port number doesn't change, so the server 
+doesn't immediately recognize that a new session object needs to be 
+created.  Because of this, in some cases, the client's attempt to 
+reauthenticate may be associated on the server with the soon-to-be 
+deleted AUTH_FAILED instance since the new connection is using the exact 
+same source IP/port as the old, failed connection.  Windows doesn't show 
+this problem because it always uses a different dynamic source port 
+number when a UDP socket is closed and reopened (when "nobind" is used).
+
+I've put together a patch which I believe fixes both of these issues, 
+and is available now in rev 852 in the SVN repository:
+
+svn co http://svn.openvpn.net/projects/openvpn/trunk/openvpn
+
+(the INSTALL file has directions for building from an svn checkout)
+
+James
+
 
