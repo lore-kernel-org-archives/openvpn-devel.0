@@ -1,5 +1,5 @@
 From: "John A. Sullivan III" <jsullivan@...525...>
-Message-Id: <1136059226.2595.11.camel@...23...>
+Message-Id: <1136067619.2595.13.camel@...23...>
 Mime-Version: 1.0
 Subject: [Openvpn-devel] Connect scripts failing with variables (glibc detected double free
  or corruption)
@@ -13,10 +13,14 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Dec 31 12:01:12 2005
+Date: Sat Dec 31 14:21:08 2005
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
+
+Never mind.  Someone has placed conflicting versions of iptables on the
+server.  These were causing the seg fault.  My apologies - John
+
 
 Hello, all, and thank you for a wonderful project.  I am having some
 grief with the client connect scripts.  I've included my original post
@@ -126,6 +130,14 @@ Senior Consultant
 Atlas Group
 +1 207-985-7880
 jsullivan@...524...
+-- 
+John A. Sullivan III
+Open Source Development Corporation
++1 207-985-7880
+jsullivan@...525...
+
+Financially sustainable open source development
+http://www.opensourcedevel.com
 -- 
 John A. Sullivan III
 Open Source Development Corporation
