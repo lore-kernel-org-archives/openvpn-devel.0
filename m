@@ -1,7 +1,9 @@
-Message-ID: <6be76a4c79dcd0c0359583a8b0d1f44c@...527...>
-From: "=?iso-8859-15?B?R/Z0eiBCYWJpbi1FYmVsbA==?=" <goetz.babin-ebell@...526...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] =?iso-8859-15?B?QVc6IFJlOiBbT3BlbnZwbi1kZXZlbF0gUEtDUyMxMSBhbmQgZWFzeS1yc2E=?=
+From: Ondra Medek <ondrejm@...522...>
+Subject: Re: [Openvpn-devel] AW: Re: [Openvpn-devel] PKCS#11 and easy-rsa
+Message-ID: <20060103121741.GA18916@...522...>
+References: <6be76a4c79dcd0c0359583a8b0d1f44c@...527...>
+Mime-Version: 1.0
+In-Reply-To: <6be76a4c79dcd0c0359583a8b0d1f44c@...527...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,23 +14,44 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Jan  3 02:34:17 2006
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: base64
-To: openvpn-devel@lists.sourceforge.net
+Date: Tue Jan  3 04:18:14 2006
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Cc: openvpn-devel@lists.sourceforge.net
 
-PiBPbmRyYSBNZWRlayB3cm90ZToNCj4+IEhpLA0KPj4gDQo+PiBJJ3ZlIG1hZGUgZWFzeS1yc2Eg
-Mi4wIHN1cHBvcnQgZm9yIFBLQ1MjMTEgKGl0IG1ha2VzIGEgY2VydGlmaWNhdGUgZnJvbSBhDQo+
-PiB0b2tlbikuIElmIHlvdSBhcmUgaW50ZXJlc3RlZCwgdGhlbiBpdCBpcyBhdA0KPj4gDQo+IA0K
-PiBIZWxsbywNCj4gDQo+IFRoYW5rIHlvdSBmb3IgeW91ciBwYXRjaC4NCj4gDQo+IEluIG15IHZp
-ZXcgaXQgbGFja3MgdGhlIGZvbGxvd2luZyBmZWF0dXJlczoNCj4gMS4gQWxsb3cgdGhlIHVzZXIg
-dG8gc3BlY2lmeSBoaXMgb3duIFBLQ1MjMTEgbGlicmFyeS4NCj4gMi4gR2VuZXJhdGUgYSBuZXcg
-a2V5Lg0KDQpUaGlzIGlzIHdpZGUgb3V0c2lkZSBvZiB0aGUgT3BlblZQTiB1c2FnZS4NCklzIGlz
-IHRvIGJlIGltcGxlbWVudGVkIGluIGFuIFBLQ1MjMTEgKGtleSkgbWFuYWdlbWVtZW50IHRvb2wN
-CmJ1dCBOT1QgaW4gYW4gVlBOIGRhZW1vbi4NCg0KPiAzLiBMb2FkIHRoZSBYLjUwOSBjZXJ0aWZp
-Y2F0ZSBpbnRvIHRoZSB0b2tlbi4NCg0KQW5kIHRoaXMgdG9vIGhhcyBub250aGluZyB0byBkbyB3
-aXRoIHRoZSBmdW5jdGlvbmFsaXR5IG9mIGFuDQpWUE4gZGFlbW9uLg0KDQpQbGVhc2U6DQpLSVNT
-LiANCktlZXAgSXQgU2ltcGxlIGFuZCBTYXZlLg0KDQpPcGVuVlBOIGlzIGEgc21hbGwgdG9vbCB0
-byBkbyBWUE4gdHVubmVsaW5nLg0KU3R1ZmZpbmcgbm90IHJlbGF0ZWQgZnVuY3Rpb25hbGl0eSB0
-aGF0IHNlZW1zIGZhbmN5IGludG8gaXQNCmxlYWRzIHRvIGJsb2F0d2FyZS4NCg0KQnllDQoNCkdv
-ZXR6
+Hi,
+
+> >> I've made easy-rsa 2.0 support for PKCS#11 (it makes a certificate from a
+> >> token). If you are interested, then it is at
+> >> 
+> > In my view it lacks the following features:
+> > 1. Allow the user to specify his own PKCS#11 library.
+> > 2. Generate a new key.
+> 
+> This is wide outside of the OpenVPN usage.
+> Is is to be implemented in an PKCS#11 (key) managemement tool
+> but NOT in an VPN daemon.
+> 
+> > 3. Load the X.509 certificate into the token.
+> 
+> And this too has nonthing to do with the functionality of an
+> VPN daemon.
+> 
+> Please:
+> KISS. 
+> Keep It Simple and Save.
+> 
+> OpenVPN is a small tool to do VPN tunneling.
+> Stuffing not related functionality that seems fancy into it
+> leads to bloatware.
+
+Honestly to say, I have the same opinion, but Alon Bar-Lev proposed 2. and
+3.3. I am not involved in OpenVPN project, but I'd like to help. So I you
+decide what you need I can try to do it.
+
+
+Cheers
+       Ondra
+
+
