@@ -1,9 +1,9 @@
-Message-ID: <43BEDC3B.3070605@...41...>
-From: James Yonan <jim@...41...>
+Message-ID: <43C00B0B.1040904@...529...>
+From: Emmanuel Kasper <kdev@...529...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] feature request: "tcp-nodelay" option
-References: <20060104171034.2187.UMEZAWA@...528...>
-In-Reply-To: <20060104171034.2187.UMEZAWA@...528...>
+Content-Type: multipart/mixed;
+ boundary="------------040708090207080508010007"
+Subject: [Openvpn-devel] Ethernet Bridging support for NetBSD
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,27 +14,60 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Jan  6 13:09:11 2006
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Date: Sat Jan  7 09:56:49 2006
+To: openvpn-devel@lists.sourceforge.net
+
+This is a multi-part message in MIME format.
+--------------040708090207080508010007
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Transfer-Encoding: 7bit
-To: UMEZAWA Takeshi <umezawa@...528...>
-Cc: openvpn-devel@lists.sourceforge.net
 
-UMEZAWA Takeshi wrote:
+Hello
+By looking at tun.c, I saw it was possible to enable quite easily 
+Ethernet Bridging for NetBSD. ( only tunneling was enabled up to now in 
+the source code )
 
->Hello, all.
->
->It would be nice if we can set TCP_NODELAY socket option for tunnel
->connection when OpenVPN uses TCP transport, in order to achieve smaller
->latency rather than higher throughput.
->
->I think that it is not a good way to set this option in
->create_socket_tcp() (in socket.c), because it also set the option for
->management connection...
->  
->
-TCP_NODELAY is supported in 2.1 -- see man page.
+After applying the patch, you have to create the device before starting 
+the vpn with 'ifconfig tap0 create'.
+I tested this with a NetBSD client connected to a Linux server in 
+bridging mode and it just works.
 
-James
+Attached is the patch to tun.c for openvpn 2.0.5
 
+Manu
+
+
+
+--------------040708090207080508010007
+Content-Type: text/plain;
+ name="patch.diff"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="patch.diff"
+
+--- tun.c.orig	2006-01-07 17:56:51.000000000 +0000
++++ tun.c	2006-01-07 18:08:22.000000000 +0000
+@@ -690,7 +690,19 @@ do_ifconfig (struct tuntap *tt,
+ 			  tun_mtu
+ 			  );
+       else
+-	no_tap_ifconfig ();
++      /*
++       * NetBSD has distinct tun and tap devices
++       * so we don't need the "link0" extra parameter to specify we want to do 
++       * tunneling at the ethernet level
++       */
++		openvpn_snprintf (command_line, sizeof (command_line),
++			  IFCONFIG_PATH " %s %s netmask %s mtu %d broadcast %s",
++			  actual,
++			  ifconfig_local,
++			  ifconfig_remote_netmask,
++			  tun_mtu,
++			  ifconfig_broadcast
++			  );
+       msg (M_INFO, "%s", command_line);
+       system_check (command_line, es, S_FATAL, "NetBSD ifconfig failed");
+       tt->did_ifconfig = true;
+
+--------------040708090207080508010007--
 
