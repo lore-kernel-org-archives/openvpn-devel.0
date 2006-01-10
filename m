@@ -1,9 +1,7 @@
-Message-ID: <43C40194.807@...277...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+Message-ID: <7ff527498dc3b87c76b82a9b8f0ccf91@...527...>
+From: "=?iso-8859-15?B?R/Z0eiBCYWJpbi1FYmVsbA==?=" <goetz.babin-ebell@...526...>
 MIME-Version: 1.0
-References: <605203017.20060102170037@...450...> <43B9409E.4090903@...277...> <181840658.20060110042715@...450...> <43C37B3E.1090204@...277...> <758887784.20060110165806@...450...> <43C3C0FE.40009@...277...> <1056907489.20060110185322@...450...>
-In-Reply-To: <1056907489.20060110185322@...450...>
-Subject: [Openvpn-devel] Re: OpenVPN and eToken (on windows).
+Subject: [Openvpn-devel] =?iso-8859-15?B?QVc6IFtPcGVudnBuLWRldmVsXSBSZTogT3BlblZQTiBhbmQgZVRva2VuIChvbiB3aW5kb3dzKS4=?=
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,39 +12,22 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Jan 10 10:51:00 2006
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: mts.spb.suxx@...450..., openvpn-devel@lists.sourceforge.net
+Date: Tue Jan 10 12:53:07 2006
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: base64
+To: openvpn-devel@lists.sourceforge.net
 
-mts.spb.suxx@...450... wrote:
-> Hello Alon,
-> 
-> ABL> Sure! I recommend of doing so.
-> OK.
-> 
-> ABL> So as long as private keys cannot be extracted... and as long as
-> ABL> the attacker does not have access to the CA private key, you are
-> ABL> in a good security level.
-> The CA certificate I included on the token *DOES NOT* contain it's
-> private key.
-> Do you mean the brute-force against CA's public key?
-
-They can simply replace it with a different CA certificate, 
-so that you authenticate to a server that claims to be your 
-server but actually is a different server that have the same 
-certificate name as your server but was issued by the CA 
-that replaced your CA on the token.
-
-> 
-> ABL> ... if the user can select any openvpn configuration he can alter
-> ABL> your network trust and bridge it to unauthorized foreign
-> ABL> networks...
-> Oh! Yes, now I see!
-> 
-
-I am glad!
-
-Best Regards,
-Alon Bar-Lev.
-
+SGVsbG8gQWxvbiwNCg0KPiBtdHMuc3BiLnN1eHhALi4uNDUwLi4uIHdyb3RlOg0KPiA+IEhlbGxv
+IEFsb24sDQo+ID4gDQo+ID4gQUJMPiBTbyBhcyBsb25nIGFzIHByaXZhdGUga2V5cyBjYW5ub3Qg
+YmUgZXh0cmFjdGVkLi4uIGFuZCBhcyBsb25nIGFzDQo+ID4gQUJMPiB0aGUgYXR0YWNrZXIgZG9l
+cyBub3QgaGF2ZSBhY2Nlc3MgdG8gdGhlIENBIHByaXZhdGUga2V5LCB5b3UgYXJlDQo+ID4gQUJM
+PiBpbiBhIGdvb2Qgc2VjdXJpdHkgbGV2ZWwuDQo+ID4gVGhlIENBIGNlcnRpZmljYXRlIEkgaW5j
+bHVkZWQgb24gdGhlIHRva2VuICpET0VTIE5PVCogY29udGFpbiBpdCdzDQo+ID4gcHJpdmF0ZSBr
+ZXkuDQo+IA0KPiBUaGV5IGNhbiBzaW1wbHkgcmVwbGFjZSBpdCB3aXRoIGEgZGlmZmVyZW50IENB
+IGNlcnRpZmljYXRlLCANCj4gc28gdGhhdCB5b3UgYXV0aGVudGljYXRlIHRvIGEgc2VydmVyIHRo
+YXQgY2xhaW1zIHRvIGJlIHlvdXIgDQo+IHNlcnZlciBidXQgYWN0dWFsbHkgaXMgYSBkaWZmZXJl
+bnQgc2VydmVyIHRoYXQgaGF2ZSB0aGUgc2FtZSANCj4gY2VydGlmaWNhdGUgbmFtZSBhcyB5b3Vy
+IHNlcnZlciBidXQgd2FzIGlzc3VlZCBieSB0aGUgQ0EgDQo+IHRoYXQgcmVwbGFjZWQgeW91ciBD
+QSBvbiB0aGUgdG9rZW4uDQoNCkJ1dCB5b3UgZm9yZ290IG9uZSBwb2ludDoNCg0KSWYgdGhlIGF0
+dGFja2VyIGhhcyB3cml0ZSBhY2Nlc3MgdG8geW91ciB0b2tlbiwNCnlvdSBoYXZlIGxvc3QgYW55
+d2F5Li4uDQoNCkJ5ZQ0KDQpHb2V0eg==
