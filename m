@@ -1,9 +1,9 @@
-Message-ID: <43CBB8F4.8060800@...486...>
-From: Albert Siersema <appie@...486...>
+Message-ID: <13855c990601170726qc90511cr6a1fb0e96cacdc74@...278...>
+From: Shashi Dahal <shashi0@...277...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Re: OpenVPN and eToken (on windows).
-References: <605203017.20060102170037@...450...> <43B9409E.4090903@...277...>	 <181840658.20060110042715@...450...> <43C37B3E.1090204@...277...>	 <758887784.20060110165806@...450...> <43C3C0FE.40009@...277...>	 <1056907489.20060110185322@...450...> <43C40194.807@...277...>	 <43C5211A.8010709@...486...> <9e0cf0bf0601110723l2ea296bv2a92580894ab5de5@...278...>
-In-Reply-To: <9e0cf0bf0601110723l2ea296bv2a92580894ab5de5@...278...>
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_36024_17816419.1137511602154"
+Subject: [Openvpn-devel] change 0801
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,57 +14,32 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Jan 16 07:18:12 2006
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: mts.spb.suxx@...450..., openvpn-devel@lists.sourceforge.net
+Date: Tue Jan 17 07:27:11 2006
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: RIPEMD160
+------=_Part_36024_17816419.1137511602154
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
->>>They can simply replace it with a different CA certificate, so that you
->>>authenticate to a server that claims to be your server but actually is a
->>>different server that have the same certificate name as your server but
->>>was issued by the CA that replaced your CA on the token.
->>
->>But doesn't storing the CA cert on the local hard drive expose you the
->>very same problem ? And the hard drive is always accessable, there's no
->>authentication to access it once you're running from it.
->>(or am i missing the point here ?)
-> 
-> 
-> Let's say that you don't run as root or Administrator, openvpn daemon
-> or service is using configuration file you cannot modify, this
-> configuration file refers to a CA certificate that you cannot modify
-> either. The result is that you can access only servers that suits
-> system administrator policy, you cannot bridge your network to foreign
-> site.
-> 
-> Modify this configuration requires something you don't have
-> (Administrative permission), altering the token requires something you
-> have (PIN).
-> 
-> Moreover, modifying the token exposes you where-ever you go, breaking
-> into a specific machine exposes you only in this machine.
+Hi,
 
-Correct, not to nitpick, but rather to be complete about the requirements:
-that does mean you'd need openvpn 2.1 (especially for MSWindows) and it's
-management interface. Otherwise running openvpn as a service under lower
-privileges won't work. And moreover: setting the correct ACLs in the filesystem.
-Which is not something a lot of MSWindows users (or admins for that matter)
-seem to be doing.
+I am new to this list.
+I want to change the default 0801 to something else.
 
-This issue might be a good one for in the FAQ under the heading of
-tightening security. If the 2.1 codebase goes stable/mainstream that is.
+Do I need MinGW in linux or MinGW in Windows?
+A basic howto will help.
 
-Albert
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+Thanks all,
 
-iD8DBQFDy7j0KltZixSsH2QRA4XQAJ9Gy0Ni/vcK1bpdbW0ZydF9J60RxwCfb+Nh
-JpD6PjXoeZaddNLYHncv1kI=
-=1kAt
------END PGP SIGNATURE-----
+------=_Part_36024_17816419.1137511602154
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+Hi,<br><br>I am new to this list.<br>I want to change the default 0801 to s=
+omething else.<br><br>Do I need MinGW in linux or MinGW in Windows? <br>A b=
+asic howto will help.<br><br>Thanks all,<br><br>
+
+------=_Part_36024_17816419.1137511602154--
 
