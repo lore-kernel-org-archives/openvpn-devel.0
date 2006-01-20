@@ -1,9 +1,7 @@
-Message-ID: <13855c990601181439t471e7d87u6d0ef7b8588a4142@...278...>
-From: Shashi Dahal <shashi0@...277...>
+Message-ID: <57503.147.13.200.14.1137789189.squirrel@...531...>
+From: "Roland Valtersson" <rolandva@...530...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_65923_3912431.1137623964985"
-Subject: [Openvpn-devel] compile time errors
+Subject: [Openvpn-devel] What after WriteFile?
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,49 +12,29 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Jan 18 14:40:04 2006
+Date: Fri Jan 20 12:34:03 2006
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-------=_Part_65923_3912431.1137623964985
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hi everyone,
+I am playing around with the TAP driver for a course project. Right now I
+can read from the tap, encapsulate, send over link, decapsulate and write
+to TAP on other side.
 
-Hi,
+On the sender side, all packets are redirected to the TAP device beause of
+the route table (if destined to another host on that network). But what I
+don't understand is how to make applications on the receiver side aware of
+the write to the TAP interface? I mean, how do a server bound to the real
+network card on the receiver side catch the info on the TAP? My program
+ends with calling WriteFile. Like this:
 
-I am getting the following error when running
+Client program   ->  TAP  ------------->  TAP     ->  Server
+192.168.0.2        10.8.0.2             10.8.0.1    192.168.0.3
+^
+|-- (send packet to 10.8.0.1 (but destined for 192.168.03)
 
-./configure
-
-on via MSYS/MinGW
-
-checking for socklen_t... no
-checking for socklen_t equivalent... configure: error: Cannot find a type to
-use in place of socklen_t
-
-A full time google search of the error took me nowhere near to a solution.
-
-All help appretiated.
+Am I thinking totally wrong here?
 
 
-I am trying to change 0801 to something else.
-
-
-Thanks,
-Shashi
-
-------=_Part_65923_3912431.1137623964985
-Content-Type: text/html; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-Hi,<br><br>I am getting the following error when running <br><br>./configur=
-e<br><br>on via MSYS/MinGW<br><br>checking for socklen_t... no<br>checking =
-for socklen_t equivalent... configure: error: Cannot find a type to use in =
-place of socklen_t
-<br><br>A full time google search of the error took me nowhere near to a so=
-lution.<br><br>All help appretiated.<br><br><br>I am trying to change 0801 =
-to something else.<br><br><br>Thanks,<br>Shashi<br>
-
-------=_Part_65923_3912431.1137623964985--
 
