@@ -1,10 +1,12 @@
-Message-ID: <015101c631eb$394beab0$0501a8c0@...547...>
-Reply-To: "Michael Fung" <mike@...546...>
-From: "Michael Fung" <mike@...546...>
+From: Eugen Leitl <eugen@...548...>
+Subject: Re: [Openvpn-devel] prevent being blocked
+Message-ID: <20060215075151.GP3873@...548...>
+References: <015101c631eb$394beab0$0501a8c0@...547...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_014D_01C6322E.47553A10"
-Subject: [Openvpn-devel] prevent being blocked
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="6l5M6k90JZH9RJfY"
+Content-Disposition: inline
+In-Reply-To: <015101c631eb$394beab0$0501a8c0@...547...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,62 +17,54 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Feb 14 20:50:02 2006
+Date: Tue Feb 14 23:52:03 2006
 To: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
-
-------=_NextPart_000_014D_01C6322E.47553A10
-Content-Type: text/plain;
-	charset="big5"
-Content-Transfer-Encoding: 7bit
-
-Dear Developers,
-
-
-OpenVPN is very helpful for people accessing internet in China. However, the 
-Chinese government is going to invest 1 billon dollars to built a filter to 
-censor all traffic and block unwanted content/protocol. And OpenVPN may also 
-be blocked. Is it possible to make the protocol header difficult for this 
-filter to detect? By making the protocol header customized by the config 
-files?
-
-
-Rgds,
-Michael
-
-
-------=_NextPart_000_014D_01C6322E.47553A10
-Content-Type: text/html; charset="big5"
+--6l5M6k90JZH9RJfY
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML><HEAD>
-<META http-equiv=3DContent-Type content=3D"text/html; charset=3Dbig5">
-<META content=3D"MSHTML 6.00.2900.2802" name=3DGENERATOR>
-<STYLE></STYLE>
-</HEAD>
-<BODY bgColor=3D#fffbf0>
-<DIV><FONT face=3D"Courier New">Dear Developers,</FONT></DIV>
-<DIV><FONT face=3D"Courier New"></FONT>&nbsp;</DIV>
-<DIV><FONT face=3D"Courier New"></FONT>&nbsp;</DIV>
-<DIV><FONT face=3D"Courier New">OpenVPN is very helpful for people&nbsp;acc=
-essing=20
-internet in China. However, the Chinese government is going to invest 1 bil=
-lon=20
-dollars to built a filter to censor all traffic and block unwanted=20
-content/protocol. And OpenVPN may also be blocked.&nbsp;Is it possible to m=
-ake=20
-the protocol header difficult for this filter to detect? By making the prot=
-ocol=20
-header customized by the config files?</FONT></DIV>
-<DIV><FONT face=3D"Courier New"></FONT>&nbsp;</DIV>
-<DIV><FONT face=3D"Courier New"></FONT>&nbsp;</DIV>
-<DIV><FONT face=3D"Courier New">Rgds,</FONT></DIV>
-<DIV><FONT face=3D"Courier New">Michael</FONT></DIV>
-<DIV><FONT face=3D"Courier New"></FONT>&nbsp;</DIV>
-<DIV><FONT face=3D"Courier New"></FONT>&nbsp;</DIV></BODY></HTML>
+On Wed, Feb 15, 2006 at 12:49:37PM +0800, Michael Fung wrote:
 
-------=_NextPart_000_014D_01C6322E.47553A10--
+> OpenVPN is very helpful for people accessing internet in China. However, =
+the=20
+> Chinese government is going to invest 1 billon dollars to built a filter =
+to=20
+> censor all traffic and block unwanted content/protocol. And OpenVPN may a=
+lso=20
 
+If you're worried about filtering and tracking, you might want to look into
+http://tor.eff.org
+
+A considerable infrastructure is in place: http://serifos.eecs.harvard.edu/=
+cgi-bin/exit.pl?sortbw=3D1
+and you can easily run your own private Tor networks within China.
+
+> be blocked. Is it possible to make the protocol header difficult for this=
+=20
+> filter to detect? By making the protocol header customized by the config=
+=20
+> files?
+
+--=20
+Eugen* Leitl <a href=3D"http://leitl.org">leitl</a> http://leitl.org
+______________________________________________________________
+ICBM: 48.07100, 11.36820            http://www.ativel.com
+8B29F6BE: 099D 78BA 2FD3 B014 B08A  7779 75B0 2443 8B29 F6BE
+
+--6l5M6k90JZH9RJfY
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+
+iD8DBQFD8t2XdbAkQ4sp9r4RAhWWAJ9DO5N4nKS676+LA/8CwRXYFjPWHACaApyq
+fbXNsJa4bVzGe4HL36y7mVw=
+=Z7i/
+-----END PGP SIGNATURE-----
+
+--6l5M6k90JZH9RJfY--
 
