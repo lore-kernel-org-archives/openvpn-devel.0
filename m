@@ -1,7 +1,6 @@
-From: "ttt" <jir@...554...>
-Reply-To: hhjj
-Message-ID: <E1FD6Qa-0001Hf-UI@...556...>
-Subject: [Openvpn-devel] =?GB2312?B?xvPStb661fnH6bGozOXPtbm5vaj037661fm21MrWx+mxqLfWzvY=?=
+From: Mail Delivery System <Mailer-Daemon@...63...>
+Message-Id: <E1FDu7u-0007Jw-00@...561...>
+Subject: [Openvpn-devel] Mail delivery failed: returning message to sender
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,97 +11,92 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Feb 25 12:55:00 2006
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+Date: Mon Feb 27 17:59:01 2006
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-IKG+tecgICAgu7ChvyAwNzU1LzgyMTI5MTM1IDgyMTI4NjAwIDgyMTI4NjUwICAgICAgICAgCqml
-qaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWp
-pamlqaWppamlqaWppamlqaWppQoKICAgICAgICAgICAgxvPStb661fnH6bGozOXPtbm5vaj03766
-1fm21MrWx+mxqLvxyKGhorfWzvahosD708Oy2df3yrXO8QogICAgICAgICAgICAgICAgICAgICAg
-ICAgICAg0+u+rdHpvbvB96Ooye7b2qOpxeDRtbvhCgogICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgoe8g1tAgufqhpMnu29ogoe8gICAgICAgICAgCgogICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgIKHvMjAwNsTqM9TCMTgtMTnI1aHvCiAgIAogICAgIKHvs9Cw7KO61trIy9DQudzA7dfJ
-0a8gIMnu29rK0NK7tv7I/bncwO3XydGv09DP3rmry76h7woKCgqppamlqaWppamlqaWppamlqaWp
-pamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppaml
-qaUKofEJsbO+sAoKICAgxvPStdKq1Nqx5LvDxKqy4rXEytCzodbQyKG1w7vysaOz1r661fnTxcrG
-o6y+zbHY0OvW2MrTttS+utX5ttTK1rrNvrrV+bu3vrO1yArH6bGo0MXPorXEt9bO9rSmwO2jrLHY
-0Ou5ub2o09DW+tPazOHJ/dW9wtS+9rLfy67GvbXEvrrV+cfpsajM5c+1oaPU2rn6xNqjrL661fkK
-x+mxqL6twPrBy8j9xOq1xLjfy9m3otW5uvOjrNTatefX06GizajQxaGixvuztaGiu/rQtaGi0r3S
-qaGi0rG98KGixNzUtKGiu6+5pKGiCtHMvsa1yNDQ0rWjrNLR09AxMDAwtuC80tPF0OPG89K1s8m5
-prXYubm9qMHLvrrV+cfpsajM5c+1o6zM5c+1tcTUy9f3sru99s6qxvPStQq0+MC0wcvQ0NK10+u+
-utX5ttTK1rXEvLzK9aGisvrGt6GiytCzoaGiv827p6GivKjQp9PrxNzBpta4seq1yMnM0rXH6bGo
-o6y4/LPJzqoKxvPStaGwv8u10NbGyqShsbXE09DBps7kxveho9Xi0KnG89K1u7mw0bvxyKGhorfW
-zva6zcD708O+utX5ttTK1sfpsai1xMTcwaa2qM67Cs6qyc/Wwb72st/V36Osz8LWwdHQt6Khosn6
-svqhotOqz/qhotW9wtS1yLK/w8W53MDtyMvUsbHY0Ou+37G4tcS7+bG+y9jWyqGjCgogICAgxvPS
-tc2ouf221L661fm7t76ztcS84LLio6y3os/W1f6y36GiytCzobv60/a6zbfnz9WjrNXGztW+utX5
-ttTK1rXEtq/P8rrNst8KwtSjrNL9tbzG89K1zai5/bbUx+mxqLXEytW8r6Git9bO9qOswLS78cih
-1b3C1L72st/SwL7do6zX7r/soaLX7te8tdjX9rP2ytCzobe0CtOmo6yyornmsdy+9rLft+fP1aOs
-yrXP1sbz0rW8qNCnus3Qp9LmtcSz1tD4uMTJxqOs1trIy9DQudzA7dfJ0a/U2snu29q+2bDsMjAw
-NgrE6qGwxvPStb661fnH6bGozOXPtbm5vaj037661fm21MrWx+mxqLvxyKGhorfWzvahosD708Oy
-2df3yrXO8dPrvq3R6b27wfe087vhobGhowq087vhvfS/28bz0rXTptPDo6y+utX5x+mxqMq11b3X
-qLzSo6y94brPufrE2s3itcSzybmmvq3R6dPryqew3L3M0bW21L661fnH6bGost8KwtTT67LZ1/e3
-vbeovfjQ0MnuyOu1xL3izva6zbXjxsChowoKofEJv86zzMzYyaujugoKICAg1ti147LJ08OhsLe9
-t6jT67LZ1/e94brPobGhoqGwsLjA/dPryrW8+c2ssr2hsbXE16jM4r2yveK3vcq9o6yyorio0tTM
-4c7KoaIKtPDSyaGizNbC26Giz9azodfJ0a+1yLultq+1xL27wfe3vcq9vfjQ0KGjCgogICCyzrzT
-uf2+utX5x+mxqMXg0bW1xLncwO3Iy9SxxtWx6cjPzqqjrLjDv86zzNb3zOLQwqGixNrI3cq1o6zE
-3NGn0tTWwtPDoaMKCgqppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWp
-pamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaUKofEJv86zzLTzuNkKyrG85Doz1MIx
-N8jVIMirzOyxqLW9CjPUwjE4yNU5OjAwLTEyOjAwCjGhor661fnH6bGozOXPtbm5vai52Lz8t+fP
-1b3izva8sLnmsdwgICAgICAgCjKhotOwz+y+utX5x+mxqLK/w8XUy9f30KfCyrXE0vLL2Lywu6+9
-4rDst6gKM6GivrrV+bbUyta1xMq2sfC6zcv4tqggICAgICAgICAgICAgICAgICAgICAKNKGivrrV
-+bbUytbH6bGotcTL0byvCjWhor661fm21MrW0MXPorXEu/mxvsTayN0gICAgICAgICAgICAgICAg
-ICAgCjahor661fm21MrWtcS84LLi0+u4+tfZCjehor661fm21MrWx+mxqLfWzvbR0L6/ICAgICAg
-ICAgICAgICAgICAgICAgCjihor661fnH6bGotcTA+9PDoaqwuMD9venJ3AoKMTKjujAwLTEyOjIw
-IMirzOW0+rHtoaLXqLzSus/TsAoKMTQ6MDAtMTY6MzAgCjmhor661fnH6bGo0+vG89K1zqO7+tSk
-vq8ot723qKGiuaS+36GisLjA/SkKMTChosjnus63wNa50MXPosrVvK/W0LXExquy7qGiyOe6zsHL
-veK+utX5ttTK1rXEt8fA7dDU0NDOqqGiyOe6zter0LS+utX5x+mxqLGouOYKCjE2OjMwLTE3OjAw
-ICAgu6W2r727wfejur661fnH6bGou/HIoaGit9bO9rrNwPvTw7XEvLzHyQogCjPUwjE5yNUKOTow
-MC0xMTozMAoxoaIgyOe6zsDtveK+utX5x+mxqNPrxvPStbXEvq3TqiAgICAgICAgICAgCjKhoiC+
-utX5x+mxqNTaufrE2s3ixvPStb+q1bnH6b/2vLDH98rGCjOhoiDG89K1x+mxqNPrt7TH6bGo1b3K
-9SAgICAgICAgICAgICAgICAgIAo0oaIgvrrV+bbUytbH6bGo1LS6zbv5sb7K1byvvLzE3Ao1oaIg
-vrrV+cfpsai1xLfWzva6zdHQvr8gICAgICAgICAgICAgICAKNqGiIMjnus65ub2o09DW+tPazOHJ
-/cbz0rW+9rLfy67GvbXEvrrV+cfpsajPtc2zCjehoiDH6bGoyMvUscv506a+37G4tcTL2NbK0+u8
-vMTcCgoxMTozMC0xMjowMCAgzOHOyrTw0smjur3ovPi+rdHpo6y94r72vrrV+cfpsajKtbz5tcTS
-ycTRzsrM4goKMTQ6MDAtMTY6MzAKMaGiILv509rGvbrivMa31r+ov/K83LXEyKvD5r661fm21MrW
-t9bO9szlz7UKMqGiIMbz0rW+utX5x+mxqM+1zbO96cnco6jH19fU1vez1rXEtuC49rC4wP2jqQoz
-oaIgxvPStcjnus69qMGi19S8urXEvrrV+cfpsajPtc2zICAgICAgICAgIAo0oaIgxvPStcjnus7R
-obDOus3F4NH4x+mxqNeo0rXIy7LFCjWhosjnus7KtrHwxvPStcv50OjSqrXEx+mxqMTayN0gICAg
-ICAgICAgICAgCjahosnM0rXH6bGo0LnCqbXE1vfSqs2+vra8sLe0x+mxqLy8yvXK1rbOveLO9go3
-oaK+utX5x+mxqMq1vPm8sLPJuaa+rdHpvenJ3CAgICAgICAgICAgICAgIAo4oaLG89K1v6rVub66
-1fnH6bGouaTX99Pr0MXPoruvtcS52M+1CgoxNjozMC0xNzowMCC+rdHpvbvB96O6ss674bT6se24
-98rjvLq8+6Osz+C7pb3ovPjM4bjfCgqppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppaml
-qaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaUKCqHxIMqm18q88r3p
-CgrU+NbSwrujurDEw8XA7bmk0afUur3MytqjrPTfxM+089GnxvPStbncwO2yqcq/yfq1vMqmo6y5
-+sTaxvPStb661fnH6bGo0dC+v9Pr06YK08PB7NPyz8jH/aOsz8i689Taw8C5+tOhtdqwssTH1t24
-6snq0afUuqGizqzSssTJvq28w7ncwO2089GnoaK3qLn6ufq80r/G0afR0L6/Csv5tNPKwr661fnH
-6bGo0dC+v9PryrW8+aOsvau+utX5x+mxqLe9t6i1vMjrtb3W0LSoufq8ys22serT68v3xeKhotbQ
-ufotxbfDy8bz0rUKus/X96GisMTDxbKpssrStaGiyNWxvtbQ0KHG89K1t6LVudW9wtS1yM/uxL+6
-zcrCzvHW0KGj1vjT0KG2x+mxqNbGyqShqsjnus7L0byvoaIKt9bO9rrNwPvTw8bz0rW+utX5x+mx
-qKG3oaKhtsbz0rW+utX5x+mxqLncwO2hqtW9yqS+utX5ttTK1rXEw9jD3M7kxveht7XI16jW+CjG
-1QrNqLuwytq/zikKCtXFysDGvaO61tC5+r661fnH6bGowezT8sq11b3QzbLZ1/fXqLzSo6y727TP
-0dC+v9S6x+mxqNbQ0MTX3Lzgu9u0z7n6vMq8r83Fsr/DxQrX3L6twO2ho7661fnH6bGouN+8tr2y
-yqajrL661fnH6bGo16i80qGj09C24MTqtcS+/MrCx+mxqLmk1/e+rcD6o6zW+NPQ16jStcfpsagK
-yum8rqG2vq28w8fpsai+9raoxvPStcP81Muht6GjycOzpLDRvvzKwsfpsajK1rbOus3LvM6st723
-qKOsyNq749PaxvPStb661fnH6bGoCtOm08PB7NPyo6zT0Lbgy/m+/MrC1ri709S60KPS1LywsbHK
-prTzx+mxqNGn0dC+v8n6sOC6zbGxvqm089GnRU1CQdGnz7C+rcD6oaPW9wqz1tfJ0a+yorPJuabK
-tcqptuC80rn6xNq5+rzK1qrD+7Tz0M3G89K1tcS+utX5x+mxqM+1zbOjrL7f09C++LbUt+G4u7XE
-yrXVvb6t0emjrAq21NbQufq089DNxvPStb661fnH6bGo06bTw9PQ18W+q8nutsC1vbXEvPu94qGj
-CgqppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWp
-pamlqaWppamlqaWppamlqaWppamlqaWppQqh8QmxuNeio7oKCsXg0bXKsbzko7oyMDA2xOoz1MIx
-OMjVLTE5yNUKCsXg0bW12LXjo7rJ7tvatdjM+rncwO3W0NDECgrF4NG1t9HTw6O6w7/Iy727xMm7
-4c7xt9EgMjIwMNSqKLqs18rBz7fRoaLF4NG1t9Ghos7nss3S+8HPKaOs16HL3s2z0ruwssXFo6i3
-0dPD19TA7aOpoaMKCsrav8621M/zo7oKCjGhosbz0rW2rcrCs6Shotfcvq3A7aGi06rP+tfcvOCh
-osfpsai+rcDtvLDK0LOhoaLP+srboaLVvcLUoaLG87uuoaLR0LeioaLQxc+itcgKsr/Dxbi61PDI
-y9PrytCzobX30dChosrQs6Gy37uuoaLH6bGoudzA7aGi0MXPorncwO2horL6xre/qreitci009K1
-yMvUsaO7CgoyoaLH6bGo0dC+v6Git/7O8bv6ubm8sLjf0KO1xMHstbzT69eo0rXIy8q/oaMKCgqp
-pamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppaml
-qaWppamlqaWppamlqaWppamlqaWppQoKCqG+xeDRtbXYteOhvyDJ7tvatdjM+rncwO3W0NDECgqh
-vsnPv87Ksbzkob8goe8yMDA2xOoz1MIxOC0xOcjVoe8KCqG+xeDRtbfR08OhvyAyMjAw1KovyMso
-sPy6rMXg0bW30aGivbLS5aGizueyzaGisui146Gius/TsKGizajRtsK8KQoKob7W97DstaXOu6G/
-INbayMvQ0LncwO3XydGvCiAKob615yAgICC7sKG/IDA3NTUvODIxMjkxMzUgODIxMjg2MDAgODIx
-Mjg2NTAgCgqhvrSrICAgINXmob8gMDc1NS82MTM1MTM5NiA4MjEyOTIwOSAg08rP5KO6eGlhb3l1
-OTk2NjMzM0AuLi41NTUuLi4KCqG+waogz7UgyMuhvyDB6NChveMg1PjQob3jCgqppamlqaWppaml
-qaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWppamlqaWp
-pamlqaWppamlqaWppQoK
+This message was created automatically by mail delivery software (VarioMail).
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  matt@...63...
+
+The following text was generated during the delivery attempt:
+
+------ matt@...63... ------
+
+Error: User Unknown [matt@...63...]
+
+------ This is a copy of the message, including all the headers. ------
+
+Return-path: <openvpn-devel@lists.sourceforge.net>
+Received: from pop by home.ambisys.com with scan (Ambisys 4.10)
+	id 1FDu7u-0007Jq-00
+	for matt@...63...; Tue, 28 Feb 2006 10:58:10 +0900
+Received: from [210.174.171.71] (helo=mx.ambisys.net)	by home.ambisys.com
+	with esmtp (TLSv1:AES256-SHA:256)	(Ambisys 4.10)	id 1FDu7u-0007JO-00
+	for matt@...63...; Tue, 28 Feb 2006 10:58:10 +0900
+Received: from [202.169.224.68] (helo=lists.sourceforge.net)
+	by mx.ambisys.net with esmtp (Ambisys 4.10)	id 1FDu3m-0004CL-00
+	for matt@...63...; Tue, 28 Feb 2006 10:53:55 +0900
+From: openvpn-devel@lists.sourceforge.net
+To: matt@...63...
+Subject: [VSN-Virus-Alert: Virus Detected] Status
+Date: Mon, 28 Feb 2005 08:56:57 +0700
+X-Priority: 3
+X-MSMail-Priority: Normal
+Message-Id: <E1FDu3m-0004CL-00@...557...>
+X-VSN-Virus-Alert: W32/Mytob.BH@...558...
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+	boundary="----=_NextPart_000_0002_F3A28CE0.C85DEFEC"
+X-Ambisys-VC: 28122@...559...
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_0002_F3A28CE0.C85DEFEC
+Content-Type: text/plain;	charset="Windows-1252"
+
+The message contains Unicode characters and has been sent as a binary attachment.
+
+
+------=_NextPart_000_0002_F3A28CE0.C85DEFEC
+Content-Type: multipart/mixed; boundary=VSN6DDA3D1B58BA46E87CCD238E1F29VSN
+
+--VSN6DDA3D1B58BA46E87CCD238E1F29VSN
+Content-Type: text/plain; charset=iso-2022-jp
+Content-Md5: s4BuLRHKIHzMasrNlKGKWQ==
+
+$B$3$NE:IU%U%!%$%k$K!V(BW32/Mytob.BH@...558...$B!W%&%$%k%9$,8!=P$5$l$^$7$?!'(B
+
+$BE:IU%U%!%$%kL>!'!!(Bmessage.zip
+
+$B%&%$%k%9$K46@...560...$5$l$?E:IU%U%!%$%k$O<+F0E*$K:o=|$5$l$^$7$?!#(B
+
+VSNP 2.0-54
+
+--VSN6DDA3D1B58BA46E87CCD238E1F29VSN
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Content-Md5: 9xK2Ygv0bABo31JL7ysNfQ==
+
+This portion of the original message contained a virus:
+
+	W32/Mytob.BH@...558...
+
+It has been removed for your protection. Please contact the sender to inqui=
+re
+about the originally intended content.
+
+VSNP 2.0-54
+
+
+--VSN6DDA3D1B58BA46E87CCD238E1F29VSN--
+
+------=_NextPart_000_0002_F3A28CE0.C85DEFEC--
+
+
+
+
