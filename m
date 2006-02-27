@@ -1,5 +1,5 @@
 From: Mail Delivery System <Mailer-Daemon@...63...>
-Message-Id: <E1FDu7u-0007Jw-00@...561...>
+Message-Id: <E1FDu8T-0007Kx-00@...561...>
 Subject: [Openvpn-devel] Mail delivery failed: returning message to sender
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
@@ -11,7 +11,7 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon Feb 27 17:59:01 2006
+Date: Mon Feb 27 17:59:04 2006
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
@@ -33,26 +33,26 @@ Error: User Unknown [matt@...63...]
 
 Return-path: <openvpn-devel@lists.sourceforge.net>
 Received: from pop by home.ambisys.com with scan (Ambisys 4.10)
-	id 1FDu7u-0007Jq-00
-	for matt@...63...; Tue, 28 Feb 2006 10:58:10 +0900
+	id 1FDu8T-0007Kr-00
+	for matt@...63...; Tue, 28 Feb 2006 10:58:45 +0900
 Received: from [210.174.171.71] (helo=mx.ambisys.net)	by home.ambisys.com
-	with esmtp (TLSv1:AES256-SHA:256)	(Ambisys 4.10)	id 1FDu7u-0007JO-00
-	for matt@...63...; Tue, 28 Feb 2006 10:58:10 +0900
+	with esmtp (TLSv1:AES256-SHA:256)	(Ambisys 4.10)	id 1FDu8S-0007Ke-00
+	for matt@...63...; Tue, 28 Feb 2006 10:58:44 +0900
 Received: from [202.169.224.68] (helo=lists.sourceforge.net)
-	by mx.ambisys.net with esmtp (Ambisys 4.10)	id 1FDu3m-0004CL-00
-	for matt@...63...; Tue, 28 Feb 2006 10:53:55 +0900
+	by mx.ambisys.net with esmtp (Ambisys 4.10)	id 1FDu6j-0004ci-00
+	for matt@...63...; Tue, 28 Feb 2006 10:56:59 +0900
 From: openvpn-devel@lists.sourceforge.net
 To: matt@...63...
 Subject: [VSN-Virus-Alert: Virus Detected] Status
 Date: Mon, 28 Feb 2005 08:56:57 +0700
 X-Priority: 3
 X-MSMail-Priority: Normal
-Message-Id: <E1FDu3m-0004CL-00@...557...>
+Message-Id: <E1FDu6j-0004ci-00@...557...>
 X-VSN-Virus-Alert: W32/Mytob.BH@...558...
 MIME-Version: 1.0
 Content-Type: multipart/mixed;
 	boundary="----=_NextPart_000_0002_F3A28CE0.C85DEFEC"
-X-Ambisys-VC: 28122@...559...
+X-Ambisys-VC: 28191@...562...
 
 This is a multi-part message in MIME format.
 
@@ -63,9 +63,9 @@ The message contains Unicode characters and has been sent as a binary attachment
 
 
 ------=_NextPart_000_0002_F3A28CE0.C85DEFEC
-Content-Type: multipart/mixed; boundary=VSN6DDA3D1B58BA46E87CCD238E1F29VSN
+Content-Type: multipart/mixed; boundary=VSN6E1F3D1B58BA46E87CCD238E1F29VSN
 
---VSN6DDA3D1B58BA46E87CCD238E1F29VSN
+--VSN6E1F3D1B58BA46E87CCD238E1F29VSN
 Content-Type: text/plain; charset=iso-2022-jp
 Content-Md5: s4BuLRHKIHzMasrNlKGKWQ==
 
@@ -77,7 +77,7 @@ Content-Md5: s4BuLRHKIHzMasrNlKGKWQ==
 
 VSNP 2.0-54
 
---VSN6DDA3D1B58BA46E87CCD238E1F29VSN
+--VSN6E1F3D1B58BA46E87CCD238E1F29VSN
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: quoted-printable
 Content-Md5: 9xK2Ygv0bABo31JL7ysNfQ==
@@ -93,7 +93,7 @@ about the originally intended content.
 VSNP 2.0-54
 
 
---VSN6DDA3D1B58BA46E87CCD238E1F29VSN--
+--VSN6E1F3D1B58BA46E87CCD238E1F29VSN--
 
 ------=_NextPart_000_0002_F3A28CE0.C85DEFEC--
 
