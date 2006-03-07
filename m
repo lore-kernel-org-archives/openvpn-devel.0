@@ -1,9 +1,6 @@
-Message-ID: <440E316F.5080200@...41...>
-From: James Yonan <jim@...41...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] float is broken when source port changes
-References: <440D05E9.7030203@...564...> <1e6368e80603070813y6d2d144ex3cef3a8a26a02d9@...278...> <440DBD44.5060302@...564...> <440DD137.3060604@...41...> <440E24BE.3040904@...564...>
-In-Reply-To: <440E24BE.3040904@...564...>
+From: Mail Delivery System <Mailer-Daemon@...63...>
+Message-Id: <E1FGpXZ-00042F-00@...561...>
+Subject: [Openvpn-devel] Mail delivery failed: returning message to sender
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,55 +11,92 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Mar  7 17:21:07 2006
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Kosta Welke <kosta@...564...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Tue Mar  7 19:41:02 2006
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Kosta Welke wrote:
-> James Yonan wrote:
->
->> No, --float only applies to the IP address, not the port.  
->
-> Sadly, yes.
->
->> You can't really float on the port efficiently because a UDP socket 
->> needs to bind to some port number (either static or dynamic).  To do 
->> port floating, you would need to bind to every possible port that a 
->> packet might come in on -- fairly impractical.
->
-> No. Using the same logic the openvpn server would need to listen on 
-> all 4,294,967,296 IP addresses.
-> It is the *client* port that changes, which can be detect just as 
-> easily as a change in the client IP address. The only problem is that 
-> it is not checked.
-> Please re-visit my original post to see under what circumstances the 
-> IP address can stay the same while the client port number changes 
-> *from the servers point of view*.
->
-> I think I found the potions of the code that would need modification:
->
-> - In mroute.h, struct mroute_addr would need an unsigned short port to 
-> store the port number. Also, mroute_addr_equal() would need to return 
-> false if the port numbers dont match
->
-> - In mroute.c, mroute_extract_addr_from_packet() would need to get the 
-> port number from the packet. This is the part where I'm not too sure. 
-> Is it safe to assume that the UDP header starts just after the IP 
-> header? To be honest, I never understood the concept of IP header 
-> options... :)
->
-> HTH,
-> Kosta
+This message was created automatically by mail delivery software (VarioMail).
 
-Okay, I understand what you are asking for -- If you were using static 
-key mode (which is stateless), you would get the behavior you are 
-looking for.  In TLS mode, however, OpenVPN doesn't allow a port or IP 
-change within a given TLS session (for security/DoS reasons).  The 
-behavior you should be seeing is that the new port and IP address is 
-only accepted by the server after a fresh TLS renegotiation.
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
 
-James
+  robert@...63...
+
+The following text was generated during the delivery attempt:
+
+------ robert@...63... ------
+
+Error: User Unknown [robert@...63...]
+
+------ This is a copy of the message, including all the headers. ------
+
+Return-path: <openvpn-devel@lists.sourceforge.net>
+Received: from pop by home.ambisys.com with scan (Ambisys 4.10)
+	id 1FGpXZ-000429-00
+	for robert@...63...; Wed, 08 Mar 2006 12:40:45 +0900
+Received: from [210.174.171.71] (helo=mx.ambisys.net)	by home.ambisys.com
+	with esmtp (TLSv1:AES256-SHA:256)	(Ambisys 4.10)	id 1FGpXY-00041w-00
+	for robert@...63...; Wed, 08 Mar 2006 12:40:44 +0900
+Received: from [202.169.224.68] (helo=lists.sourceforge.net)
+	by mx.ambisys.net with esmtp (Ambisys 4.10)	id 1FGpVy-00011e-00
+	for robert@...63...; Wed, 08 Mar 2006 12:39:08 +0900
+From: openvpn-devel@lists.sourceforge.net
+To: robert@...63...
+Subject: [VSN-Virus-Alert: Virus Detected] Server Report
+Date: Tue, 8 Mar 2005 10:40:30 +0700
+X-Priority: 3
+X-MSMail-Priority: Normal
+Message-Id: <E1FGpVy-00011e-00@...557...>
+X-VSN-Virus-Alert: W32/Mytob.BH@...558...
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+	boundary="----=_NextPart_000_0002_3B420AEE.1F961CCC"
+X-Ambisys-VC: 15499@...565...
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_0002_3B420AEE.1F961CCC
+Content-Type: text/plain;	charset="Windows-1252"
+
+Here are your banks documents.
+
+
+------=_NextPart_000_0002_3B420AEE.1F961CCC
+Content-Type: multipart/mixed; boundary=VSN3C8B3D1B58BA46E87CCD238E1F29VSN
+
+--VSN3C8B3D1B58BA46E87CCD238E1F29VSN
+Content-Type: text/plain; charset=iso-2022-jp
+Content-Md5: 32z4bwFGlnanNeHFAgVLCg==
+
+$B$3$NE:IU%U%!%$%k$K!V(BW32/Mytob.BH@...558...$B!W%&%$%k%9$,8!=P$5$l$^$7$?!'(B
+
+$BE:IU%U%!%$%kL>!'!!(Bdocument.pif
+
+$B%&%$%k%9$K46@...560...$5$l$?E:IU%U%!%$%k$O<+F0E*$K:o=|$5$l$^$7$?!#(B
+
+VSNP 2.0-54
+
+--VSN3C8B3D1B58BA46E87CCD238E1F29VSN
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Content-Md5: 9xK2Ygv0bABo31JL7ysNfQ==
+
+This portion of the original message contained a virus:
+
+	W32/Mytob.BH@...558...
+
+It has been removed for your protection. Please contact the sender to inqui=
+re
+about the originally intended content.
+
+VSNP 2.0-54
+
+
+--VSN3C8B3D1B58BA46E87CCD238E1F29VSN--
+
+------=_NextPart_000_0002_3B420AEE.1F961CCC--
+
+
 
 
