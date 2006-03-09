@@ -1,7 +1,7 @@
-Message-ID: <BAY17-F12E6DD05A31FCD69038A2EF9EC0@...512...>
+Message-ID: <BAY17-F14480E6E6C8D20ACF02F80F9EC0@...512...>
 From: "Anne Mindika Silva" <anne_mindika@...160...>
 Mime-Version: 1.0
-Subject: [Openvpn-devel] customizing openvpn to use other compression algorithms  - PLS HELP
+Subject: [Openvpn-devel] using other compression algorithms with OPENVPN --  HELP
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,14 +12,14 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Mar  9 01:55:05 2006
+Date: Thu Mar  9 02:08:05 2006
 Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
 hi,
 
-We are trying to build a network compression tool which will compress the 
+We are trying to biuld a network compression tool which will compress the 
 data that is transfered between two machines.  While lzo, performs very well 
 for text-based data, we thought it would be nice to use different 
 compression algorithms for different types of data.
@@ -39,7 +39,7 @@ Thanking in advance,
 Mindika
 
 _________________________________________________________________
-On the road to retirement? Check out MSN Life Events for advice on how to 
-get there! http://lifeevents.msn.com/category.aspx?cid=Retirement
+Don't just search. Find. Check out the new MSN Search! 
+http://search.msn.com/
 
 
