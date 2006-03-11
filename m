@@ -1,9 +1,8 @@
-Message-ID: <441195DA.3090700@...564...>
-From: Kosta Welke <kosta@...564...>
+From: "Lavern Cardenas" <cashcards.cpt@...571...>
+Reply-To: "Lavern Cardenas" <cashcards.cpt@...571...>
+Message-ID: <208822620.20060312031525@...571...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] float is broken when source port changes
-References: <440D05E9.7030203@...564...> <1e6368e80603070813y6d2d144ex3cef3a8a26a02d9@...278...> <440DBD44.5060302@...564...> <440DD137.3060604@...41...> <440E24BE.3040904@...564...> <440E316F.5080200@...41...>
-In-Reply-To: <440E316F.5080200@...41...>
+Subject: [Openvpn-devel] [fwd] Investment News
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,25 +13,37 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Mar 10 07:06:04 2006
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Date: Sat Mar 11 19:16:00 2006
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-To: James Yonan <jim@...41...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-James Yonan wrote:
+Nanoforce Inc. (NNFC), Price Set To Jump Monday
 
-> Okay, I understand what you are asking for -- If you were using static 
-> key mode (which is stateless), you would get the behavior you are 
-> looking for.  In TLS mode, however, OpenVPN doesn't allow a port or IP 
-> change within a given TLS session (for security/DoS reasons).  The 
-> behavior you should be seeing is that the new port and IP address is 
-> only accepted by the server after a fresh TLS renegotiation.
+SYMBOL: N N F C
+NANOFORCE INC. (NNFC)  - Current Price: 1.00
+Up over .40 cents last week alone
 
-Okai, I found out the the --float option allows for IP changes only 
-after a timeout, so the port changes are handled like IP changes and 
-everythings foine.
+Before we start with the profile of NNFC we would like to mention something very important: There is a Big PR Campaign started  today. We are already seeing movement it will go all week so it would be best to get in NOW
 
-Sorry for the static :)
+Nanoforce Inc. (NNFC) appears to be on an upward trend. Is not the time to buy ?
+With current marketing campaign we expect NNFC to climb thru mid March
+Get In Now!
 
-Kosta
+ 
+NANOFORCE INC. (NNFC)  COMAPNY INFORMATION
+ 
+Nanoforce, Inc. is a company founded to support the development, and acquisition of exciting new products that integrate fundamental developments in Nanotechnology. The Nanotechnology industry is in its infancy and provides a wealth of opportunity for companies that position themselves well now to profit from the burgeoning opportunities that will be provided by nanotech produced products in the near future.
+ 
+
+NANOFORCE INC. (NNFC)  RECENT NEWS
+(For Complete News Detail, check your current stock site.)
+ 
+March 7, 2006: Nanoforce Inc. Hires Local Management Team to Head Refinery Science Corp.'s El Paso Office
+February 13, 2006:  Nanoforce Acquires Unique package of Nanotech. Ips
+December 16, 2005: Nanoforce Acquires Refinery Science Corp.
+December 16, 2005: Nanoforce approves 10 for 1 split of Refinery Science.
+ 
+CHECK OUT NANOFORCE (NNFC) TODAY!
+
 
