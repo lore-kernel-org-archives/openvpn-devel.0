@@ -1,6 +1,7 @@
-From: Mail Delivery System <Mailer-Daemon@...63...>
-Message-Id: <E1FJiuB-0007I6-00@...561...>
-Subject: [Openvpn-devel] Mail delivery failed: returning message to sender
+From: Boris <borisl@...573...>
+Message-ID: <loom.20060316T181952-312@...171...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] route in client-config-dir file
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -11,91 +12,19 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Mar 15 19:13:01 2006
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Date: Thu Mar 16 09:31:07 2006
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-This message was created automatically by mail delivery software (VarioMail).
+Hi there!
 
-A message that you sent could not be delivered to one or more of its
-recipients. This is a permanent error. The following address(es) failed:
+Why route command is not supported in client-specific files?
+I want to create dynamic-routed client structure, e.g.
+3 clients with some network behind them to share with other openvpn-clients.
 
-  stan@...63...
-
-The following text was generated during the delivery attempt:
-
------- stan@...63... ------
-
-Error: User Unknown [stan@...63...]
-
------- This is a copy of the message, including all the headers. ------
-
-Return-path: <openvpn-devel@lists.sourceforge.net>
-Received: from pop by home.ambisys.com with scan (Ambisys 4.10)
-	id 1FJiuB-0007I0-00
-	for stan@...63...; Thu, 16 Mar 2006 12:12:03 +0900
-Received: from [210.174.171.71] (helo=mx.ambisys.net)	by home.ambisys.com
-	with esmtp (TLSv1:AES256-SHA:256)	(Ambisys 4.10)	id 1FJiuB-0007Hl-00
-	for stan@...63...; Thu, 16 Mar 2006 12:12:03 +0900
-Received: from [202.169.224.68] (helo=lists.sourceforge.net)
-	by mx.ambisys.net with esmtp (Ambisys 4.10)	id 1FJitX-0004gj-00
-	for stan@...63...; Thu, 16 Mar 2006 12:11:24 +0900
-From: openvpn-devel@lists.sourceforge.net
-To: stan@...63...
-Subject: [VSN-Virus-Alert: Virus Detected] Good day
-Date: Wed, 16 Mar 2005 10:13:52 +0700
-X-Priority: 3
-X-MSMail-Priority: Normal
-Message-Id: <E1FJitX-0004gj-00@...557...>
-X-VSN-Virus-Alert: W32/Mytob.BH@...558...
-MIME-Version: 1.0
-Content-Type: multipart/mixed;
-	boundary="----=_NextPart_000_0014_45A3DD74.11D80BBA"
-X-Ambisys-VC: 28014@...572...
-
-This is a multi-part message in MIME format.
-
-------=_NextPart_000_0014_45A3DD74.11D80BBA
-Content-Type: text/plain;	charset="Windows-1252"
-
-Mail transaction failed. Partial message is available.
-
-
-------=_NextPart_000_0014_45A3DD74.11D80BBA
-Content-Type: multipart/mixed; boundary=VSN6D6E3D1B58BA46E87CCD238E1F29VSN
-
---VSN6D6E3D1B58BA46E87CCD238E1F29VSN
-Content-Type: text/plain; charset=iso-2022-jp
-Content-Md5: nUeIfhAMoVB0nVbaKzeWyg==
-
-$B$3$NE:IU%U%!%$%k$K!V(BW32/Mytob.BH@...558...$B!W%&%$%k%9$,8!=P$5$l$^$7$?!'(B
-
-$BE:IU%U%!%$%kL>!'!!(Bfile.zip
-
-$B%&%$%k%9$K46@...560...$5$l$?E:IU%U%!%$%k$O<+F0E*$K:o=|$5$l$^$7$?!#(B
-
-VSNP 2.0-54
-
---VSN6D6E3D1B58BA46E87CCD238E1F29VSN
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Content-Md5: 9xK2Ygv0bABo31JL7ysNfQ==
-
-This portion of the original message contained a virus:
-
-	W32/Mytob.BH@...558...
-
-It has been removed for your protection. Please contact the sender to inqui=
-re
-about the originally intended content.
-
-VSNP 2.0-54
-
-
---VSN6D6E3D1B58BA46E87CCD238E1F29VSN--
-
-------=_NextPart_000_0014_45A3DD74.11D80BBA--
+When some of them connects/disconnects to openvpn server, server's routing 
+table must be updated by adding/deleting item.
 
 
 
