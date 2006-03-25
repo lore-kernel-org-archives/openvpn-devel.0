@@ -1,10 +1,10 @@
-Content-class: urn:content-classes:message
+From: "Dave" <dev@...575...>
+Subject: RE: [Openvpn-devel] PocketPC - Compile Error
+Message-ID: <000001c6501c$ad0acb70$1601a8c0@...576...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
-	boundary="----_=_NextPart_001_01C64FAA.E32678FE"
-Message-ID: <260656ABDEA7D848864F0C845A366BE8B43CD9@...591...>
-From: "Barton, Christopher" <cpbarton@...590...>
-Subject: [Openvpn-devel] Patch for Solaris & OpenSSL+Prngd/EGD
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0001_01C64FEA.62705B70"
+In-Reply-To: <20060324204215.11097.qmail@...589...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,62 +15,90 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Mar 24 17:25:15 2006
-To: openvpn-devel@lists.sourceforge.net
-Cc: "Vandenplas, Mark" <vandnpls@...590...>
+Date: Sat Mar 25 07:02:02 2006
+To: 'Iftikhar Qureshi' <iftikharqureshi@...109...>, openvpn-devel@lists.sourceforge.net
 
 This is a multi-part message in MIME format.
 
-------_=_NextPart_001_01C64FAA.E32678FE
+------=_NextPart_000_0001_01C64FEA.62705B70
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-I'm using OpenVPN 2.0.5 with OpenSSL built against PRNGD on Solaris 8
-(sparc).  On startup, I always got "ERROR: Random number generator
-cannot obtain entro <<openvpn-2.0.5-initprng.patch>> py for PRNG".  I
-fixed it with the attached patch.
+-----Original Message-----
+From: openvpn-devel-admin@lists.sourceforge.net
+[mailto:openvpn-devel-admin@lists.sourceforge.net] On Behalf Of Iftikhar
+Qureshi
+Sent: Friday, March 24, 2006 2:42 PM
+To: openvpn-devel@lists.sourceforge.net
+Subject: [Openvpn-devel] PocketPC - Compile Error
+ ...=20
+c:\program files\windows ce tools\wce420\pocket pc
+2003\include\armv4\ntcompat.h(1236) : fatal error C1083: Cannot open include
+file: 'lss.h': No such file or directory
+ ...=20
 =20
+Iftikhar,
+=20
+I took a peek and that file lss.h is part of the 'Platform Builder'.
+Actually, I don't know what hoisted it into that project.  Parts of the
+platform builder are needed for the TAP driver, but it shouldn't be needed
+at all for any of the user-mode parts.  I'll try and see if I can find where
+the dependency came in, and how to remove it.
+=20
+-Dave
 
-------_=_NextPart_001_01C64FAA.E32678FE
-Content-Type: application/octet-stream;
-	name="openvpn-2.0.5-initprng.patch"
-Content-Transfer-Encoding: base64
-Content-Description: openvpn-2.0.5-initprng.patch
-Content-Disposition: attachment;
-	filename="openvpn-2.0.5-initprng.patch"
+------=_NextPart_000_0001_01C64FEA.62705B70
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-LS0tIG9wZW52cG4tMi4wLjUvY3J5cHRvLmMub3JpZwlGcmkgTWFyIDI0IDE4OjI1OjExIDIwMDYK
-KysrIG9wZW52cG4tMi4wLjUvY3J5cHRvLmMJRnJpIE1hciAyNCAxODoyNjozMyAyMDA2CkBAIC0z
-OSw2ICszOSw4IEBACiAKICNpbmNsdWRlICJtZW1kYmcuaCIKIAorI2luY2x1ZGUgPG9wZW5zc2wv
-cmFuZC5oPgorCiAvKgogICogQ2hlY2sgZm9yIGtleSBzaXplIGNyZWVwYWdlLgogICovCkBAIC0x
-NjIyLDkgKzE2MjQsNDggQEAKIAogc3RhdGljIHVpbnQ4X3Qgbm9uY2VfZGF0YSBbU0hBX0RJR0VT
-VF9MRU5HVEggKyBOT05DRV9TRUNSRVRfTEVOXTsgLyogR0xPQkFMICovCiAKK3ZvaWQgU1NMSW5p
-dFBSTkcoKQoreworI2lmIFNTTEVBWV9WRVJTSU9OX05VTUJFUiA+PSAweDAwOTA1MTAwCisgICAg
-aWYgKFJBTkRfc3RhdHVzKCkgPT0gMCkgeworICAgICAgICBjaGFyIHJhbmRfZmlsZVsyNTZdOwor
-ICAgICAgICB0aW1lX3QgdDsKKyAgICAgICAgcGlkX3QgcGlkOworICAgICAgICBsb25nIGwsc2Vl
-ZDsKKworICAgICAgICB0ID0gdGltZShOVUxMKTsKKyAgICAgICAgcGlkID0gZ2V0cGlkKCk7Cisg
-ICAgICAgIFJBTkRfZmlsZV9uYW1lKHJhbmRfZmlsZSwgMjU2KTsKKyAgICAgICAgaWYocmFuZF9m
-aWxlICE9IE5VTEwpIHsKKyAgICAgICAgICAgIC8qIFNlZWQgYXMgbXVjaCBhcyAxMDI0IGJ5dGVz
-IGZyb20gUkFORF9maWxlX25hbWUgKi8KKyAgICAgICAgICAgIFJBTkRfbG9hZF9maWxlKHJhbmRf
-ZmlsZSwgMTAyNCk7CisgICAgICAgIH0KKyAgICAgICAgLyogU2VlZCBpbiB0aW1lIChtb2Rfc3Ns
-IGRvZXMgdGhpcykgKi8KKyAgICAgICAgUkFORF9zZWVkKCh1bnNpZ25lZCBjaGFyICopJnQsIHNp
-emVvZih0aW1lX3QpKTsKKyAgICAgICAgLyogU2VlZCBpbiBwaWQgKG1vZF9zc2wgZG9lcyB0aGlz
-KSAqLworICAgICAgICBSQU5EX3NlZWQoKHVuc2lnbmVkIGNoYXIgKikmcGlkLCBzaXplb2YocGlk
-X3QpKTsKKyAgICAgICAgLyogSW5pdGlhbGl6ZSBzeXN0ZW0ncyByYW5kb20gbnVtYmVyIGdlbmVy
-YXRvciAqLworICAgICAgICBSQU5EX2J5dGVzKCh1bnNpZ25lZCBjaGFyICopJnNlZWQsIHNpemVv
-Zihsb25nKSk7CisgICAgICAgIHNyYW5kNDgoc2VlZCk7CisgICAgICAgIHdoaWxlIChSQU5EX3N0
-YXR1cygpID09IDApIHsKKyAgICAgICAgICAgIC8qIFJlcGVhdGVkbHkgc2VlZCB0aGUgUFJORyB1
-c2luZyB0aGUgc3lzdGVtJ3MgcmFuZG9tIG51bWJlciBnZW5lcmF0b3IgdW50aWwgaXQgaGFzIGJl
-ZW4gc2VlZGVkIHdpdGggZW5vdWdoIGRhdGEgKi8KKyAgICAgICAgICAgIGwgPSBscmFuZDQ4KCk7
-CisgICAgICAgICAgICBSQU5EX3NlZWQoKHVuc2lnbmVkIGNoYXIgKikmbCwgc2l6ZW9mKGxvbmcp
-KTsKKyAgICAgICAgfQorICAgICAgICBpZiAocmFuZF9maWxlICE9IE5VTEwpIHsKKyAgICAgICAg
-ICAgIC8qIFdyaXRlIGEgcmFuZF9maWxlICovCisgICAgICAgICAgICBSQU5EX3dyaXRlX2ZpbGUo
-cmFuZF9maWxlKTsKKyAgICAgICAgfQorICAgIH0KKyNlbmRpZiAvKiBTU0xFQVlfVkVSU0lPTl9O
-VU1CRVIgPj0gMHgwMDkwNTEwMCAqLworICAgIHJldHVybjsKK30KKworCiB2b2lkCiBwcm5nX2lu
-aXQgKHZvaWQpCiB7CisgIFNTTEluaXRQUk5HKCk7CiAgIGlmICghUkFORF9ieXRlcyAobm9uY2Vf
-ZGF0YSwgc2l6ZW9mKG5vbmNlX2RhdGEpKSkKICAgICBtc2cgKE1fRkFUQUwsICJFUlJPUjogUmFu
-ZG9tIG51bWJlciBnZW5lcmF0b3IgY2Fubm90IG9idGFpbiBlbnRyb3B5IGZvciBQUk5HIik7CiB9
-Cg==
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; charset=3Dus-ascii">
+<TITLE>Message</TITLE>
 
-------_=_NextPart_001_01C64FAA.E32678FE--
+<META content=3D"MSHTML 6.00.2900.2802" name=3DGENERATOR></HEAD>
+<BODY>
+<DIV><FONT size=3D2><FONT face=3DTahoma>-----Original Message-----<BR><B>Fr=
+om:</B>=20
+openvpn-devel-admin@lists.sourceforge.net=20
+[mailto:openvpn-devel-admin@lists.sourceforge.net] <B>On Behalf Of </B>Ifti=
+khar=20
+Qureshi<BR><B>Sent:</B> Friday, March 24, 2006 2:42 PM<BR><B>To:</B>=20
+openvpn-devel@lists.sourceforge.net<BR><B>Subject:</B> [Openvpn-devel] Pock=
+etPC=20
+- Compile Error<BR></FONT><SPAN class=3D114065414-25032006><FONT=20
+face=3D"Courier New"=20
+color=3D#0000ff>&nbsp;...&nbsp;</FONT></SPAN></FONT><BR>c:\program files\wi=
+ndows=20
+ce tools\wce420\pocket pc 2003\include\armv4\ntcompat.h(1236) : fatal error=
+=20
+C1083: Cannot open include file: 'lss.h': No such file or directory<BR><SPA=
+N=20
+class=3D114065414-25032006><FONT face=3D"Courier New" color=3D#0000ff=20
+size=3D2>&nbsp;...&nbsp;</FONT></SPAN><BR><SPAN class=3D114065414-25032006>=
+<FONT=20
+face=3D"Courier New" color=3D#0000ff size=3D2>&nbsp;</FONT></SPAN></DIV>
+<DIV><SPAN class=3D114065414-25032006><FONT face=3D"Courier New" color=3D#0=
+000ff=20
+size=3D2>Iftikhar,</FONT></SPAN></DIV>
+<DIV><SPAN class=3D114065414-25032006></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D114065414-25032006><FONT face=3D"Courier New" color=3D#0=
+000ff=20
+size=3D2>I took a peek and that file&nbsp;lss.h is part of the 'Platform=20
+Builder'.&nbsp; Actually, I don't know what hoisted it into that project.&n=
+bsp;=20
+Parts of the platform builder are needed for the TAP driver, but it=20
+<EM>shouldn't</EM> be needed at all for any of the user-mode parts.&nbsp; I=
+'ll=20
+try and see if I can find where the dependency came in, and how to remove=20
+it.</FONT></SPAN></DIV>
+<DIV><SPAN class=3D114065414-25032006><FONT face=3D"Courier New" color=3D#0=
+000ff=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D114065414-25032006><FONT face=3D"Courier New" color=3D#0=
+000ff=20
+size=3D2>-Dave</FONT></SPAN></DIV></BODY></HTML>
+
+------=_NextPart_000_0001_01C64FEA.62705B70--
+
 
