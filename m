@@ -1,10 +1,9 @@
-From: "Dave" <dev@...575...>
-Subject: RE: [Openvpn-devel] PocketPC - Compile Error
-Message-ID: <000001c65023$94484700$1601a8c0@...576...>
+Message-ID: <44270158.8050206@...41...>
+From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_0001_01C64FF1.49ADD700"
-In-Reply-To: <20060324204215.11097.qmail@...589...>
+Subject: Re: [Openvpn-devel] OpenVPN for PocketPC
+References: <000001c64ebf$5b8fd230$1601a8c0@...576...>
+In-Reply-To: <000001c64ebf$5b8fd230$1601a8c0@...576...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,83 +14,44 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat Mar 25 07:51:00 2006
-To: 'Iftikhar Qureshi' <iftikharqureshi@...109...>, openvpn-devel@lists.sourceforge.net
+Date: Sun Mar 26 13:03:05 2006
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Dave <dev@...575...>
+Cc: 'Iftikhar Qureshi' <iftikharqureshi@...109...>, openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
+>
+> *  I discovered yesterday that in the particular case of winsock, that
+> overlapped io support is required, and (supposedly) has been implemented in
+> CE and is available via the WSA versions of those methods (e.g.
+> WSAGetOverlappedResult).  This is really good news because it possibly means
+> that all the socket.c work will not have to be reworked at all.  Hopefully!
+>
+> So I think that only the five various tun_* and *_tun methods need to be
+> implemented to declare this 'feature complete' and then the exciting phase
+> of testing/fixing begins.
+>
+>   
+The Windows version of OpenVPN currently wants overlapped I/O to be 
+supported by the OS.  The reason why overlapped I/O was originally used 
+(rather than unix-style select or poll) is so that the event loop could 
+treat TAP device events the same as network socket events, and handle 
+network and TAP events within a single event loop.
 
-------=_NextPart_000_0001_01C64FF1.49ADD700
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+The root of the problem is that Windows supports two incompatible (as 
+far as I know)  I/O wait event spaces:  there is the SOCKET type which 
+can be used as an argument to select() and then there's the HANDLE 
+(returned by CreateEvent) which is used as an argument to 
+WaitForSingleObject/WaitForMultipleObjects.  Currently the Windows 
+version of OpenVPN uses the HANDLE space which unfortunately makes the 
+I/O code more complex than would be the case under unix.
 
------Original Message-----
-From: openvpn-devel-admin@lists.sourceforge.net
-[mailto:openvpn-devel-admin@lists.sourceforge.net] On Behalf Of Iftikhar
-Qureshi
-Sent: Friday, March 24, 2006 2:42 PM
-To: openvpn-devel@lists.sourceforge.net
-Subject: [Openvpn-devel] PocketPC - Compile Error
-Dave:
+However if we could figure out a way to allow select() to poll on the 
+TAP device handle as well as network sockets, then we could do away with 
+Windows overlapped I/O -- that would move us into the SOCKET event space 
+which is much more reasonable to deal with, and compatible with unix 
+event I/O semantics (such as select()).
 
-I tried to Rebuild and getting an error.
- ...
-=20
-OK, I found the dependency and eliminated it.  It was just a couple ioctl()
-code definitions for loading and unloading the NDIS driver that were needed.
-That project should build fine now without the Platform Builder installed.
-Also, I checked that the same was true of the main openvpn project, and it
-is.  The driver currently still required some headers from the Platform
-Builder.  I included pre-built binaries of the driver in all configurations.
-=20
--Dave
-
-------=_NextPart_000_0001_01C64FF1.49ADD700
-Content-Type: text/html; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML><HEAD>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; charset=3Dus-ascii">
-<TITLE>Message</TITLE>
-
-<META content=3D"MSHTML 6.00.2900.2802" name=3DGENERATOR></HEAD>
-<BODY>
-<DIV><FONT face=3DTahoma size=3D2>-----Original Message-----<BR><B>From:</B=
->=20
-openvpn-devel-admin@lists.sourceforge.net=20
-[mailto:openvpn-devel-admin@lists.sourceforge.net] <B>On Behalf Of </B>Ifti=
-khar=20
-Qureshi<BR><B>Sent:</B> Friday, March 24, 2006 2:42 PM<BR><B>To:</B>=20
-openvpn-devel@lists.sourceforge.net<BR><B>Subject:</B> [Openvpn-devel] Pock=
-etPC=20
-- Compile Error<BR></FONT>Dave:<BR><BR>I tried to Rebuild and getting an=20
-error.<BR><SPAN class=3D473344315-25032006><FONT face=3D"Courier New" color=
-=3D#0000ff=20
-size=3D2>&nbsp;...</FONT></SPAN></DIV>
-<DIV><SPAN class=3D473344315-25032006></SPAN>&nbsp;</DIV>
-<DIV><SPAN class=3D473344315-25032006><FONT face=3D"Courier New" color=3D#0=
-000ff=20
-size=3D2>OK, I found the dependency and eliminated it.&nbsp; It was just a =
-couple=20
-ioctl() code definitions for loading and unloading the NDIS driver that wer=
-e=20
-needed.&nbsp; </FONT></SPAN><SPAN class=3D473344315-25032006><FONT=20
-face=3D"Courier New" color=3D#0000ff size=3D2>That project should build fin=
-e now=20
-without the Platform Builder installed.&nbsp; Also, I checked that the same=
- was=20
-true of&nbsp;the main openvpn project, and it is.&nbsp; The driver currentl=
-y=20
-still required some headers from the Platform Builder.&nbsp; I=20
-included&nbsp;pre-built binaries of the driver in all=20
-configurations.</FONT></SPAN></DIV>
-<DIV><SPAN class=3D473344315-25032006><FONT face=3D"Courier New" color=3D#0=
-000ff=20
-size=3D2></FONT></SPAN>&nbsp;</DIV>
-<DIV><SPAN class=3D473344315-25032006><FONT face=3D"Courier New" color=3D#0=
-000ff=20
-size=3D2>-Dave</FONT></SPAN></DIV></BODY></HTML>
-
-------=_NextPart_000_0001_01C64FF1.49ADD700--
+James
 
 
