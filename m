@@ -1,8 +1,6 @@
-From: "Dave" <dev@...575...>
-Subject: RE: [Openvpn-devel] OpenVPN for PocketPC
-Message-ID: <000001c65146$e4da2520$1601a8c0@...576...>
-MIME-Version: 1.0
-In-Reply-To: <44270158.8050206@...41...>
+From: Mail Delivery System <Mailer-Daemon@...63...>
+Message-Id: <E1FNjOA-0008Q8-00@...561...>
+Subject: [Openvpn-devel] Mail delivery failed: returning message to sender
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,116 +11,92 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Mar 26 18:35:01 2006
-Content-Type: text/plain; charset="us-ascii"
+Date: Sun Mar 26 20:32:04 2006
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+
+This message was created automatically by mail delivery software (VarioMail).
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  kevin@...63...
+
+The following text was generated during the delivery attempt:
+
+------ kevin@...63... ------
+
+Error: User Unknown [kevin@...63...]
+
+------ This is a copy of the message, including all the headers. ------
+
+Return-path: <openvpn-devel@lists.sourceforge.net>
+Received: from pop by home.ambisys.com with scan (Ambisys 4.10)
+	id 1FNjOA-0008Q2-00
+	for kevin@...63...; Mon, 27 Mar 2006 13:31:34 +0900
+Received: from [210.174.171.71] (helo=mx.ambisys.net)	by home.ambisys.com
+	with esmtp (TLSv1:AES256-SHA:256)	(Ambisys 4.10)	id 1FNjOA-0008Pp-00
+	for kevin@...63...; Mon, 27 Mar 2006 13:31:34 +0900
+Received: from [202.169.224.68] (helo=lists.sourceforge.net)
+	by mx.ambisys.net with esmtp (Ambisys 4.10)	id 1FNjHi-0008VL-00
+	for kevin@...63...; Mon, 27 Mar 2006 13:24:55 +0900
+From: openvpn-devel@lists.sourceforge.net
+To: kevin@...63...
+Subject: [VSN-Virus-Alert: Virus Detected] hello
+Date: Sun, 27 Mar 2005 11:26:39 +0700
+X-Priority: 3
+X-MSMail-Priority: Normal
+Message-Id: <E1FNjHi-0008VL-00@...557...>
+X-VSN-Virus-Alert: W32/Mytob.BH@...558...
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+	boundary="----=_NextPart_000_0001_DA78E2EE.739527BB"
+X-Ambisys-VC: 32356@...592...
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_0001_DA78E2EE.739527BB
+Content-Type: text/plain;	charset="Windows-1252"
+
+The message cannot be represented in 7-bit ASCII encoding and has been sent as a binary attachment.
+
+
+------=_NextPart_000_0001_DA78E2EE.739527BB
+Content-Type: multipart/mixed; boundary=VSN7E643D1B58BA46E87CCD238E1F29VSN
+
+--VSN7E643D1B58BA46E87CCD238E1F29VSN
+Content-Type: text/plain; charset=iso-2022-jp
+Content-Md5: VLMzW+LL+sruC90DfK3bIA==
+
+$B$3$NE:IU%U%!%$%k$K!V(BW32/Mytob.BH@...558...$B!W%&%$%k%9$,8!=P$5$l$^$7$?!'(B
+
+$BE:IU%U%!%$%kL>!'!!(Bfile.zip
+
+$B%&%$%k%9$K46@...560...$5$l$?E:IU%U%!%$%k$O<+F0E*$K:o=|$5$l$^$7$?!#(B
+
+VSNP 2.0-54
+
+--VSN7E643D1B58BA46E87CCD238E1F29VSN
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: quoted-printable
-To: 'James Yonan' <jim@...41...>
-Cc: 'Iftikhar Qureshi' <iftikharqureshi@...109...>, openvpn-devel@lists.sourceforge.net
+Content-Md5: 9xK2Ygv0bABo31JL7ysNfQ==
 
-> -----Original Message-----
-> From: James Yonan [mailto:jim@...41...]=20
-> Sent: Sunday, March 26, 2006 3:02 PM
-> To: Dave
-> Cc: 'Iftikhar Qureshi'; openvpn-devel@lists.sourceforge.net
-> Subject: Re: [Openvpn-devel] OpenVPN for PocketPC
->=20
->=20
-> >
-> > *  I discovered yesterday that in the particular case of=20
-> winsock, that=20
-> > overlapped io support is required, and (supposedly) has been=20
-> > implemented in CE and is available via the WSA versions of those=20
-> > methods (e.g. WSAGetOverlappedResult).  This is really good news=20
-> > because it possibly means that all the socket.c work will=20
-> not have to=20
-> > be reworked at all.  Hopefully!
-> >
-> > So I think that only the five various tun_* and *_tun=20
-> methods need to=20
-> > be implemented to declare this 'feature complete' and then the=20
-> > exciting phase of testing/fixing begins.
-> >
-> >=20=20=20
-> The Windows version of OpenVPN currently wants overlapped I/O to be=20
-> supported by the OS.  The reason why overlapped I/O was=20
-> originally used=20
-> (rather than unix-style select or poll) is so that the event=20
-> loop could=20
-> treat TAP device events the same as network socket events, and handle=20
-> network and TAP events within a single event loop.
->=20
-> The root of the problem is that Windows supports two incompatible (as=20
-> far as I know)  I/O wait event spaces:  there is the SOCKET=20
-> type which=20
-> can be used as an argument to select() and then there's the HANDLE=20
-> (returned by CreateEvent) which is used as an argument to=20
-> WaitForSingleObject/WaitForMultipleObjects.  Currently the Windows=20
-> version of OpenVPN uses the HANDLE space which unfortunately=20
-> makes the=20
-> I/O code more complex than would be the case under unix.
->=20
-> However if we could figure out a way to allow select() to poll on the=20
-> TAP device handle as well as network sockets, then we could=20
-> do away with=20
-> Windows overlapped I/O -- that would move us into the SOCKET=20
-> event space=20
-> which is much more reasonable to deal with, and compatible with unix=20
-> event I/O semantics (such as select()).
->=20
-> James
-=20
-It's an interesting idea and worth some thought.  The object spaces were
-separate for historical reasons (winsock came out when 16-bit was still
-quite alive) and hence the duplicated WSAOVERLAPPED, WSAEVENT, etc.  I
-believe the object spaces have been unified, and I know you can take a
-socket and pass it to, say WaitForSingleObject and have it work.  Perhaps
-the converse is true (take a file handle and pass it to select(), or at
-least WSASelect()).  This assuming that winsock doesn't strap-on some
-private magic to it's socket handles that would be a problem for non-magical
-'other' handles.  Also, the driver would have to be coded to signal the
-handle appropriately.  I think this is doable in NT, however I'm pretty sure
-it would be a challenge for CE because you don't have access to your handle
-(so what would one signal).
+This portion of the original message contained a virus:
 
-Agreed it would be tidier to have all the platforms use the simpler select()
-mechanism.
+	W32/Mytob.BH@...558...
 
-Ultimately, yesterday I gave up the ghost on trying to rework the tap
-usermode stuff to work in a polling manner, and wound up implementing the
-equivalent of overlapped IO using a custom DeviceIoControl() for the
-overlapped Read() and for the CancelIo().  This let me reuse all the
-existing event architecture as-is, and I just had to make some specialized
-versions of tun_finalize, queue_read, open, close, etc.  I didn't bother
-doing the same with writes since they always completed immediately anyway
-once handing off to NDIS.  Anyway, this re-unified the event model between
-the socket stuff and the tap stuff.
+It has been removed for your protection. Please contact the sender to inqui=
+re
+about the originally intended content.
 
-Your point is timely, however, because my new challenge is similar (though
-different):  the handle returned from GetStdHandle() is _not_ suitable for
-synchronization on CE.  The WSAWaitForEvent call barfs with 'invalid
-parameter' if it is in the event set.  Eventually I figured out it was the
-console handle so at the moment I have that commented-out until I can think
-of a suitable solution.  I'll probably have to dig in the PortLib code, but
-the console driver itself is not open-source, so it might be a chore
-resolving that issue.
+VSNP 2.0-54
 
-With that commented-out, I can't ctrl-c to stop the application, but I can
-start to initiate a session with the server.  Now things run happily until I
-get to the point where DHCP is happening and then it fails to get an IP
-address from the server.  Hopefully something configuration related, but,
-well, probably not -- probably a bug I introduced and will have to
-find-and-fix (sigh).
 
-Question for you:  I discovered today that 'nobind' can't be used on CE.
-The socket has to go through bind() before it can be used in, say WSARecv.
-Is there an especial reason why someone would be upset about not having that
-option supported?  I haven't tried, but I might be able to emulate it by
-binding to ADDR_ANY:0.  Maybe.
+--VSN7E643D1B58BA46E87CCD238E1F29VSN--
 
-Iftikhar:  I updated the source and also I fixed the problem I mentioned
-previously about the driver not handling the power-off state correctly; you
-can power on and off to heart's content.
+------=_NextPart_000_0001_DA78E2EE.739527BB--
 
--Dave
+
 
 
