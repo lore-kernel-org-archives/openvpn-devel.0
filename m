@@ -1,7 +1,8 @@
-Message-ID: <44294D0A.208@...101...>
-From: inode <inode@...101...>
+From: "Dave" <dev@...575...>
+Subject: RE: [Openvpn-devel] OpenVPN for PocketPC
+Message-ID: <000001c6528a$f79501e0$1601a8c0@...576...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] NTLM proxy problem.
+In-Reply-To: <20060327165648.99695.qmail@...593...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,37 +13,36 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Mar 28 06:50:54 2006
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Date: Tue Mar 28 09:14:05 2006
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-Hi all,
+>-----Original Message-----
+>From: openvpn-devel-admin@lists.sourceforge.net
+[mailto:openvpn-devel-admin@lists.sourceforge.net] On Behalf Of Iftikhar
+Qureshi
+>Sent: Monday, March 27, 2006 10:57 AM
+>To: Dave
+>Cc: openvpn-devel@lists.sourceforge.net
+>Subject: RE: [Openvpn-devel] OpenVPN for PocketPC
+>
+>
 
-I'm doing some test with openvpn, and I saw some problem using NTLM auth 
-proxy.
+Iftikhar;
 
-I tested the software on a ISA server and all work fine, the problem is 
-using a squid proxy with NTLM.
+If interested, I just updated the source to correct a bug (previously you
+had to specify the dev-node option) and to emulate supporting the nobind
+option.  You still have to use the ip-win32 ipapi option.
 
-I recognized 2 different problem:
+Also, I have some initial good news.  I have successfully ping'ed the
+server-side end of the tunnel.  This means data is flowing through the
+driver and protocol stack correctly, from server to openvpn.exe.
 
-- The proxy authorization phase (one, two and three) are done all on the 
-same connection, but the "Connection: keep-alive" or "Proxy-connection: 
-keep-alive" are not set on the request. Some kind of proxy (like squid) 
-after the first request drop the connection, and openvpn doesn't do 
-another connect.
+I used a very minimal server configuration.  Now I need to figure out how to
+set up more options so I probably won't be coding anything for a couple
+days.
 
-- NTLM domain, actualy on openvpn config file the user can't set the 
-domain of the credentials sent to the proxy. An Microsoft ISA server 
-will have a "default domain" to try the authentication, but that doesn't 
-mean that "default domain" will be the right one... Also on squid the 
-domain is required and a null domain will be refused.
+-Dave
 
-I hope these info will help you to fix the authentication and made 
-openvpn more reliable.
-
-Cheers
-
-inode
 
