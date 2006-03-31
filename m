@@ -1,10 +1,9 @@
-Message-ID: <20060330154210.67343.qmail@...574...>
-From: Iftikhar Qureshi <iftikharqureshi@...109...>
-Subject: RE: [Openvpn-devel] OpenVPN for PocketPC
-In-Reply-To: <000001c6528a$f79501e0$1601a8c0@...576...>
+From: Roy Marples <uberlord@...594...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-82710337-1143733329=:66374"
-Content-Transfer-Encoding: 8bit
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_P/PLEZB6rWfHT91"
+Message-Id: <200603311109.19551.uberlord@...594...>
+Subject: [Openvpn-devel] PATCH: Remove route with metrics
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,44 +14,54 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Mar 30 07:43:04 2006
+Date: Fri Mar 31 02:10:06 2006
 To: openvpn-devel@lists.sourceforge.net
 
---0-82710337-1143733329=:66374
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+--Boundary-00=_P/PLEZB6rWfHT91
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Dave,
- 
- I've got the latest code. TAPTester compiles without any error.
- 
- I'm using Win 2003 as my OpenVPN server. Could you send me the server configuration file that you used for testing. Did you use emulator for ping test?
- 
- Salamz,
- -IQ
- 
+Hi list!
 
-Dave <dev@...575...> wrote:Iftikhar;
+I set my openvpn server to dish out default routes with a high metric. This 
+allows me to prefer hard wired LAN over the vpn, whilst allowing the same 
+openvpn server to provide default routes for my wireless. Config is like so
 
-If interested, I just updated the source to correct a bug (previously you
-had to specify the dev-node option) and to emulate supporting the nobind
-option.  You still have to use the ip-win32 ipapi option.
+push "route 0.0.0.0 0.0.0.0 10.73.1.1 500"
 
-Also, I have some initial good news.  I have successfully ping'ed the
-server-side end of the tunnel.  This means data is flowing through the
-driver and protocol stack correctly, from server to openvpn.exe.
+This works great! However, when the openvpn client stops it tears down all 
+default routes - which is not desirable.
 
-I used a very minimal server configuration.  Now I need to figure out how to
-set up more options so I probably won't be coding anything for a couple
-days.
+Attached is a patch that only tears down routes on the metric given, so if a 
+route was created with a metric, tear down the route with that metric. Only 
+patched for Linux systems as I'm unsure of the command for others - although 
+its probably very similar.
 
--Dave
+Thanks
+-- 
+Roy Marples <uberlord@...594...>
+Gentoo Linux Developer
 
---0-82710337-1143733329=:66374
-Content-Type: text/html; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+--Boundary-00=_P/PLEZB6rWfHT91
+Content-Type: text/x-diff;
+  charset="us-ascii";
+  name="openvpn-2.0.5-route-del-metric.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="openvpn-2.0.5-route-del-metric.patch"
 
-Dave,<br> <br> I've got the latest code. TAPTester compiles without any error.<br> <br> I'm using Win 2003 as my OpenVPN server. Could you send me the server configuration file that you used for testing. Did you use emulator for ping test?<br> <br> Salamz,<br> -IQ<br> <br><br><b><i>Dave &lt;dev@...575...&gt;</i></b> wrote:<blockquote class="replbq" style="border-left: 2px solid rgb(16, 16, 255); margin-left: 5px; padding-left: 5px;">Iftikhar;<br><br>If interested, I just updated the source to correct a bug (previously you<br>had to specify the dev-node option) and to emulate supporting the nobind<br>option.  You still have to use the ip-win32 ipapi option.<br><br>Also, I have some initial good news.  I have successfully ping'ed the<br>server-side end of the tunnel.  This means data is flowing through the<br>driver and protocol stack correctly, from server to openvpn.exe.<br><br>I used a very minimal server configuration.  Now I need to figure out how to<br>set up more options so
- I probably won't be coding anything for a couple<br>days.<br><br>-Dave</blockquote><br>
---0-82710337-1143733329=:66374--
+--- route.c
++++ route.c
+@@ -832,6 +832,8 @@
+ 	      network,
+ 	      netmask);
+ #endif /*CONFIG_FEATURE_IPROUTE*/
++  if (r->metric_defined)
++    buf_printf (&buf, " metric %d", r->metric);
+   msg (D_ROUTE, "%s", BSTR (&buf));
+   system_check (BSTR (&buf), es, 0, "ERROR: Linux route delete command failed");
+
+--Boundary-00=_P/PLEZB6rWfHT91--
 
