@@ -1,9 +1,9 @@
-From: Roy Marples <uberlord@...594...>
+From: William Preston <openvpn@...275...>
+Subject: Re: [Openvpn-devel] NTLM proxy problem.
+References: <44294D0A.208@...101...>
+In-Reply-To: <44294D0A.208@...101...>
 MIME-Version: 1.0
-Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_P/PLEZB6rWfHT91"
-Message-Id: <200603311109.19551.uberlord@...594...>
-Subject: [Openvpn-devel] PATCH: Remove route with metrics
+Message-Id: <200604011802.56973.openvpn@...275...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,54 +14,38 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Mar 31 02:10:06 2006
-To: openvpn-devel@lists.sourceforge.net
-
---Boundary-00=_P/PLEZB6rWfHT91
+Date: Sat Apr  1 08:05:04 2006
 Content-Type: text/plain;
-  charset="us-ascii"
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Hi list!
+On Tuesday 28 March 2006 16:49, inode wrote:
+> I'm doing some test with openvpn, and I saw some problem using NTLM auth
+> proxy.
+>
+> I tested the software on a ISA server and all work fine, the problem is
+> using a squid proxy with NTLM.
+>
 
-I set my openvpn server to dish out default routes with a high metric. This 
-allows me to prefer hard wired LAN over the vpn, whilst allowing the same 
-openvpn server to provide default routes for my wireless. Config is like so
+I only tested NTLM against Microsoft ISA Server.
 
-push "route 0.0.0.0 0.0.0.0 10.73.1.1 500"
+> - NTLM domain, actualy on openvpn config file the user can't set the
+> domain of the credentials sent to the proxy. An Microsoft ISA server
+> will have a "default domain" to try the authentication, but that doesn't
+> mean that "default domain" will be the right one... Also on squid the
+> domain is required and a null domain will be refused.
 
-This works great! However, when the openvpn client stops it tears down all 
-default routes - which is not desirable.
+OK, fair enough :-)
 
-Attached is a patch that only tears down routes on the metric given, so if a 
-route was created with a metric, tear down the route with that metric. Only 
-patched for Linux systems as I'm unsure of the command for others - although 
-its probably very similar.
+can you let me know exactly how you compiled the NTLM support into
+Squid so that I can reproduce this.  Are you linking against SaMBa - and if
+so then which version?
 
-Thanks
--- 
-Roy Marples <uberlord@...594...>
-Gentoo Linux Developer
+thanks,
 
---Boundary-00=_P/PLEZB6rWfHT91
-Content-Type: text/x-diff;
-  charset="us-ascii";
-  name="openvpn-2.0.5-route-del-metric.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename="openvpn-2.0.5-route-del-metric.patch"
 
---- route.c
-+++ route.c
-@@ -832,6 +832,8 @@
- 	      network,
- 	      netmask);
- #endif /*CONFIG_FEATURE_IPROUTE*/
-+  if (r->metric_defined)
-+    buf_printf (&buf, " metric %d", r->metric);
-   msg (D_ROUTE, "%s", BSTR (&buf));
-   system_check (BSTR (&buf), es, 0, "ERROR: Linux route delete command failed");
+William
 
---Boundary-00=_P/PLEZB6rWfHT91--
 
