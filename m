@@ -1,9 +1,9 @@
-From: Matthias Andree <matthias.andree@...68...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.0.6 released
-Message-ID: <20060405102256.GA22769@...33...>
-References: <44338363.8050008@...41...>
+From: Roy Marples <uberlord@...594...>
 MIME-Version: 1.0
-In-Reply-To: <44338363.8050008@...41...>
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_ow5MEGt4S2ZE7Do"
+Message-Id: <200604051130.00196.uberlord@...594...>
+Subject: [Openvpn-devel] [PATCH] Enable compliation under Darwin
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,31 +14,62 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Apr  5 03:24:10 2006
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
+Date: Wed Apr  5 03:31:02 2006
+To: OpenVPN devel <openvpn-devel@lists.sourceforge.net>
+
+--Boundary-00=_ow5MEGt4S2ZE7Do
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-To: James Yonan <jim@...41...>
-Cc: OpenVPN devel <openvpn-devel@lists.sourceforge.net>
 
-On Wed, 05 Apr 2006, James Yonan wrote:
+Hi List!
 
-> 2006.04.05 -- Version 2.0.6
-> 
-> * Security Vulnerability affecting OpenVPN 2.0 through 2.0.5.
->  An OpenVPN client connecting to a
->  malicious or compromised server could potentially receive
->  "setenv" configuration directives from the server which could
->  cause arbitrary code execution on the client via a LD_PRELOAD
->  attack.  A successful attack appears to require that (a) the
-...
+Attached is a patch we use in Gentoo (well, the only patch) that allows 
+compilation on on ppc-macos (Darwin). I don't have this platform myself, but 
+our ppc-macos users seem to need it, so I'm submitting it for upstream 
+inclusion.
 
-James:
-
-What is the MITRE CVE name for this vulnerability?
-
-Thanks,
+Thanks!
 
 -- 
-Matthias Andree
+Roy Marples <uberlord@...594...>
+Gentoo Linux Developer
+
+--Boundary-00=_ow5MEGt4S2ZE7Do
+Content-Type: text/x-diff;
+  charset="us-ascii";
+  name="openvpn-2.0.4-darwin.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="openvpn-2.0.4-darwin.patch"
+
+--- openvpn-2.0.4/plugin/down-root/Makefile.orig	2005-11-02 20:25:40.000000000 +0100
++++ openvpn-2.0.4/plugin/down-root/Makefile	2005-11-02 20:31:53.000000000 +0100
+@@ -7,11 +7,22 @@
+ 
+ CC_FLAGS=-O2 -Wall
+ 
++ifeq ($(USERLAND),Darwin)
++	LIBNAME=dylib
++else
++	LIBNAME=so
++endif
++
++lib : down-root.$(LIBNAME)
++
+ down-root.so : down-root.o
+ 	gcc ${CC_FLAGS} -fPIC -shared -Wl,-soname,openvpn-down-root.so -o openvpn-down-root.so down-root.o -lc
+ 
++down-root.dylib : down-root.o
++	gcc ${CC_FLAGS} -dynamiclib -install_name openvpn-down-root.dylib -o openvpn-down-root.dylib down-root.o -lc
++
+ down-root.o : down-root.c
+ 	gcc ${CC_FLAGS} -fPIC -c ${INCLUDE} down-root.c
+ 
+ clean :
+-	rm -f *.o *.so
++	rm -f *.o *.so *.dylib
+
+--Boundary-00=_ow5MEGt4S2ZE7Do--
 
