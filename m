@@ -1,10 +1,7 @@
-Message-ID: <4433CAD4.50807@...601...>
-From: Johnny Lam <jlam@...601...>
-Reply-To: openvpn-devel@lists.sourceforge.net
+Message-ID: <4433E342.3060103@...602...>
+From: Michael Kaufmann <michael@...602...>
 MIME-Version: 1.0
-References: <200604051130.00196.uberlord@...594...>
-In-Reply-To: <200604051130.00196.uberlord@...594...>
-Subject: [Openvpn-devel] Re: [PATCH] Enable compliation under Darwin
+Subject: [Openvpn-devel] Maybe a bug using password protected private keys
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -15,48 +12,57 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Apr  5 06:48:20 2006
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Roy Marples <uberlord@...594...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Wed Apr  5 08:18:04 2006
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-Roy Marples wrote:
-> --- openvpn-2.0.4/plugin/down-root/Makefile.orig	2005-11-02 20:25:40.000000000 +0100
-> +++ openvpn-2.0.4/plugin/down-root/Makefile	2005-11-02 20:31:53.000000000 +0100
-> @@ -7,11 +7,22 @@
->  
->  CC_FLAGS=-O2 -Wall
->  
-> +ifeq ($(USERLAND),Darwin)
-> +	LIBNAME=dylib
-> +else
-> +	LIBNAME=so
-> +endif
-> +
-> +lib : down-root.$(LIBNAME)
-> +
->  down-root.so : down-root.o
->  	gcc ${CC_FLAGS} -fPIC -shared -Wl,-soname,openvpn-down-root.so -o openvpn-down-root.so down-root.o -lc
->  
-> +down-root.dylib : down-root.o
-> +	gcc ${CC_FLAGS} -dynamiclib -install_name openvpn-down-root.dylib -o openvpn-down-root.dylib down-root.o -lc
-> +
->  down-root.o : down-root.c
->  	gcc ${CC_FLAGS} -fPIC -c ${INCLUDE} down-root.c
->  
->  clean :
-> -	rm -f *.o *.so
-> +	rm -f *.o *.so *.dylib
+Hi,
 
-According to the Fink porting documents[1], this is not the right way to 
-link loadable modules on Mac OS X.  The module should properly end with 
-".so", and the compiler flags should include "-bundle" and not 
-"-dynamiclib", which should only be used when linking a shared library.
+I'm currently testing some cases for password input and how passwords
+could look like. I use the management interface to do so.
 
-[1] http://fink.sf.net/doc/porting/shared.php?phpLang=en#lib-and-mod
+Two cases went wrong:
+1. Input a password with german umlaute, e.g.
+password "Private Key" "=E4=F6=FC=DF"
+2. Input empty password
+password "Private Key" ""
+3. Input "normal" password works as expected.
 
-	Cheers,
+In both cases OpenVPN is in the "Connecting" state, but nothing else
+happens. Management Interface is otherwise still working as expected.
 
-	-- Johnny Lam <jlam@...601...>
+>INFO:OpenVPN Management Interface Version 1 -- type 'help' for more info
+>HOLD:Waiting for hold release
+hold release
+SUCCESS: hold release succeeded
+>PASSWORD:Need 'Private Key' password
+password "Private Key" ""
+SUCCESS: 'Private Key' password entered, but not yet verified
+
+This appears in the syslog:
+
+Apr  5 17:21:13 [openvpn] PO_WAIT[0,0] fd=3D4 rev=3D0x00000001
+rwflags=3D0x0001 arg=3D0x00000000
+Apr  5 17:21:13 [openvpn] MANAGEMENT: Client connected from 127.0.0.1:11195
+Apr  5 17:21:13 [openvpn] PO_CTL rwflags=3D0x0001 ev=3D5 arg=3D0x00000000
+                - Last output repeated 8 times -
+Apr  5 17:21:21 [openvpn] PO_WAIT[0,0] fd=3D5 rev=3D0x00000001
+rwflags=3D0x0001 arg=3D0x00000000
+Apr  5 17:21:21 [openvpn] MANAGEMENT: CMD 'password [...]'
+Apr  5 17:21:21 [openvpn] PO_CTL rwflags=3D0x0001 ev=3D5 arg=3D0x00000000
+                - Last output repeated 39 times -
+Apr  5 17:22:01 [cron] (root) CMD (/usr/local/sbin/copytorrent.sh)
+Apr  5 17:22:01 [openvpn] PO_CTL rwflags=3D0x0001 ev=3D5 arg=3D0x00000000
+                - Last output repeated 59 times -
+Apr  5 17:23:01 [cron] (root) CMD (/usr/local/sbin/copytorrent.sh)
+Apr  5 17:23:02 [openvpn] PO_CTL rwflags=3D0x0001 ev=3D5 arg=3D0x00000000
+
+
+I don't know if I do something wrong - may be. How can I work around
+this problem? Is it a bug? I use openvpn-2.0.5/2.0.6 compiled with
+gcc-4.1.0.
+
+Bye,
+    Michael
 
