@@ -1,9 +1,7 @@
-Message-ID: <4433668D.3020807@...41...>
+Message-ID: <44338363.8050008@...41...>
 From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Patch for Solaris & OpenSSL+Prngd/EGD
-References: <260656ABDEA7D848864F0C845A366BE8B43CD9@...591...>
-In-Reply-To: <260656ABDEA7D848864F0C845A366BE8B43CD9@...591...>
+Subject: [Openvpn-devel] OpenVPN 2.0.6 released
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,28 +12,50 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Apr  4 23:42:02 2006
+Date: Wed Apr  5 01:45:04 2006
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: "Barton, Christopher" <cpbarton@...590...>
-Cc: openvpn-devel@lists.sourceforge.net, "Vandenplas, Mark" <vandnpls@...590...>
+To: 'openvpn-users' <openvpn-users@lists.sourceforge.net>, OpenVPN devel <openvpn-devel@lists.sourceforge.net>
 
-Barton, Christopher wrote:
-> I'm using OpenVPN 2.0.5 with OpenSSL built against PRNGD on Solaris 8
-> (sparc).  On startup, I always got "ERROR: Random number generator
-> cannot obtain entro <<openvpn-2.0.5-initprng.patch>> py for PRNG".  I
-> fixed it with the attached patch.
->  
->   
-Christopher,
+2006.04.05 -- Version 2.0.6
 
-This patch doesn't appear to be portable (for example win32 lacks 
-srand48 and lrand48).
+* Security Vulnerability affecting OpenVPN 2.0 through 2.0.5.
+  An OpenVPN client connecting to a
+  malicious or compromised server could potentially receive
+  "setenv" configuration directives from the server which could
+  cause arbitrary code execution on the client via a LD_PRELOAD
+  attack.  A successful attack appears to require that (a) the
+  client has agreed to allow the server to push configuration
+  directives to it by including "pull" or the macro "client" in
+  its configuration file, (b) the client configuration file uses
+  a scripting directive such as "up" or "down", (c) the client
+  successfully authenticates the server, (d) the server is
+  malicious or has been compromised and is under the control of
+  the attacker, and (e) the attacker has at least some level of
+  pre-existing control over files on the client (this might be
+  accomplished by having the server respond to a client web
+  request with a specially crafted file). Credit: Hendrik Weimer.
+  The fix is to disallow "setenv" to be pushed to clients from
+  the server.  For those who need this capability, OpenVPN
+  2.1 supports a new "setenv-safe" directive which is free
+  of this vulnerability.
 
-I can accept it if either you make the patch portable across all of the 
-platforms which OpenVPN supports, or ifdef it out to the versions of 
-Solaris which need it.
+  A patch is available to fix the vulnerability for all
+  affected OpenVPN versions (2.0 -> 2.0.5):
 
-Thanks,
+  http://openvpn.net/patch/2.0.6-security-patches/setenv.patch
+
+* When deleting routes under Linux, use the route metric
+  as a differentiator to ensure that the route teardown
+  process only deletes the identical route which was originally
+  added via the "route" directive (Roy Marples).
+
+* Fix the t_cltsrv.sh file in FreeBSD 4 jails
+  (Matthias Andree, Dirk Meyer, Vasil Dimov).
+
+* Extended tun device configure code to support ethernet
+  bridging on NetBSD (Emmanuel Kasper).
+
 James
+
 
