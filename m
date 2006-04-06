@@ -1,7 +1,8 @@
-Message-ID: <op.s7kva3di285pr5@...606...>
-From: Hofi <hofi@...605...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] How to use TAP_IOCTL_GET_LOG_LINE
+From: Tony <kb2wjw@...277...>
+Message-ID: <op.s7k8a1niioehzu@...603...>
+References: <op.s7jnsprvioehzu@...603...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Re: Who develops TAP-Win32?
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,26 +13,22 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Apr  6 01:32:03 2006
-Content-Type: text/plain; charset="utf-8"; delsp=yes; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Date: Thu Apr  6 06:13:07 2006
+Content-Type: text/plain; format=flowed; delsp=yes; charset=koi8-r
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi All!
-	I'm trying to use the openvpn tap device on win32 (latest beta11,
-selfbuilt) I'm opening with CreateFile and reading from the device with
-ReadFile. Everything works fine in tap mode, but in tun mode i have
-problems, therefore i wish to see the debug info from the tap-driver. I
-found that there is an ioctl TAP_IOCTL_GET_LOG_LINE in the driver. I'm
-using DeviceIoControl calls with the TAP_IOCTL_GET_LOG_LINE param and able
-to read the debug info, but after a while the normal ReadFile of the tap
-device fails with the error: A device attached to the system is not
-functioning. (31)
-If not using the TAP_IOCTL_GET_LOG_LINE calls the program works fine.
-Is there any special rule of using TAP_IOCTL_GET_LOG_LINE ioctl calls?
-What is the best method to read the debug info from the device?
-Any hints would be greatly welcome!
-TIA
-	bests
-		Hofi
+Under "some problems" I mean that the neighborhood is un-browsable if  
+NetBEUI is the only protocol used for workgrouping in windows.
+
+It takes to specify the exact share's name, like "\\server\printer", to  
+find it. No discovery work at all.
+
+James, please comment if it is possible to fix TAP-Win32 to handle that  
+sort of a problem.
+
+Thank you in advance.
+
+Tony.
+
 
