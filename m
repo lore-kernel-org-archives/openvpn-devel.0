@@ -1,7 +1,8 @@
-From: Tony <kb2wjw@...277...>
-Message-ID: <op.s7k8a1niioehzu@...603...>
-References: <op.s7jnsprvioehzu@...603...>
+From: Charles Duffy <cduffy@...294...>
+Message-ID: <44351935.9090508@...294...>
+References: <op.s7jnsprvioehzu@...603...> <op.s7k8a1niioehzu@...603...>
 Mime-Version: 1.0
+In-Reply-To: <op.s7k8a1niioehzu@...603...>
 Subject: [Openvpn-devel] Re: Who develops TAP-Win32?
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
@@ -13,22 +14,20 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Apr  6 06:13:07 2006
-Content-Type: text/plain; format=flowed; delsp=yes; charset=koi8-r
-Content-Transfer-Encoding: 8bit
+Date: Thu Apr  6 06:38:02 2006
+Content-Type: text/plain; charset=KOI8-R; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Under "some problems" I mean that the neighborhood is un-browsable if  
-NetBEUI is the only protocol used for workgrouping in windows.
+Tony wrote:
+> Under "some problems" I mean that the neighborhood is un-browsable if 
+> NetBEUI is the only protocol used for workgrouping in windows.
+> 
+> It takes to specify the exact share's name, like "\\server\printer", to 
+> find it. No discovery work at all.
 
-It takes to specify the exact share's name, like "\\server\printer", to  
-find it. No discovery work at all.
-
-James, please comment if it is possible to fix TAP-Win32 to handle that  
-sort of a problem.
-
-Thank you in advance.
-
-Tony.
+That's not a tap-win32 bug; it's normal behavior with a routed VPN 
+unless you enable unicast-based discovery with WINS. This is discussed 
+in the HOWTO and the mailing list archives.
 
 
