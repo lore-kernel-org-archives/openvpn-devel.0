@@ -1,7 +1,9 @@
-Message-ID: <4436B9CF.3080202@...75...>
-From: Bernd Bartmann <Bernd.Bartmann@...75...>
+From: Roy Marples <uberlord@...594...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Bug in spec-file: init script is overwritten
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_s3rNEEFLDjxDD+U"
+Message-Id: <200604072030.52833.uberlord@...594...>
+Subject: [Openvpn-devel] [PATCH] Stick routes to interfaces for Linux
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,18 +14,93 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Apr  7 12:14:02 2006
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Date: Fri Apr  7 12:31:08 2006
+To: OpenVPN devel <openvpn-devel@lists.sourceforge.net>
+
+--Boundary-00=_s3rNEEFLDjxDD+U
+Content-Type: text/plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
 
-The openvpn .spec-file supplied in the source code archive does not 
-specify "%config(noreplace)" for the init file, i.e. if you run "rpm 
--Uvh openvpn.rpm" and you have a modified init script it is simply 
-overwritten without notice. I would expect that the rpm update operation 
-either creates a openvpn.rpmsave or openvpn.rpmnew file.
+Hi List!
 
-Best regards,
-Bernd.
+In some instances, Linux requires routes being stuck to interfaces instead of 
+floating. Mainly in virtual environments like Xen and Qemu.
 
+Attached is a patch that addresses this issue.
+
+Thanks
+
+-- 
+Roy Marples <uberlord@...594...>
+Gentoo Linux Developer
+
+--Boundary-00=_s3rNEEFLDjxDD+U
+Content-Type: text/x-diff;
+  charset="utf-8";
+  name="openvpn-2.0.6-route-dev.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="openvpn-2.0.6-route-dev.patch"
+
+--- openvpn-2.0.6/route.c	2006-04-07 14:59:40.311648814 +0100
++++ openvpn-2.0.6/route.c	2006-04-07 14:57:28.860077986 +0100
+@@ -685,18 +685,20 @@ add_route (struct route *r, const struct
+ 
+ #if defined(TARGET_LINUX)
+ #ifdef CONFIG_FEATURE_IPROUTE
+-  buf_printf (&buf, IPROUTE_PATH " route add %s/%d via %s",
++  buf_printf (&buf, IPROUTE_PATH " route add %s/%d via %s dev %s",
+ 	      network,
+ 	      count_netmask_bits(netmask),
+-	      gateway);
++	      gateway,
++	      tt->actual_name);
+   if (r->metric_defined)
+     buf_printf (&buf, " metric %d", r->metric);
+ 
+ #else
+-  buf_printf (&buf, ROUTE_PATH " add -net %s netmask %s gw %s",
++  buf_printf (&buf, ROUTE_PATH " add -net %s netmask %s gw %s dev %s",
+ 	      network,
+ 	      netmask,
+-	      gateway);
++	      gateway,
++	      tt->actual_name);
+   if (r->metric_defined)
+     buf_printf (&buf, " metric %d", r->metric);
+ #endif  /*CONFIG_FEATURE_IPROUTE*/
+@@ -792,7 +794,7 @@ add_route (struct route *r, const struct
+     buf_printf (&buf, " -rtt %d", r->metric);
+ #endif
+ 
+-  buf_printf (&buf, " -net %s %s -netmask %s",
++  buf_printf (&buf, " -net %s %s -netmask %s dev",
+ 	      network,
+ 	      gateway,
+ 	      netmask);
+@@ -830,14 +832,16 @@ delete_route (const struct route *r, con
+ 
+ #if defined(TARGET_LINUX)
+ #ifdef CONFIG_FEATURE_IPROUTE
+-  buf_printf (&buf, IPROUTE_PATH " route del %s/%d",
++  buf_printf (&buf, IPROUTE_PATH " route del %s/%d dev %s",
+ 	      network,
+-	      count_netmask_bits(netmask));
++	      count_netmask_bits(netmask),
++	      tt->actual_name);
+ #else
+ 
+-  buf_printf (&buf, ROUTE_PATH " del -net %s netmask %s",
++  buf_printf (&buf, ROUTE_PATH " del -net %s netmask %s dev %s",
+ 	      network,
+-	      netmask);
++	      netmask,
++	      tt->actual_name);
+ #endif /*CONFIG_FEATURE_IPROUTE*/
+   if (r->metric_defined)
+     buf_printf (&buf, " metric %d", r->metric);
+
+--Boundary-00=_s3rNEEFLDjxDD+U--
 
