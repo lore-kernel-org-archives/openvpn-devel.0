@@ -1,9 +1,9 @@
-From: Roy Marples <uberlord@...594...>
-Subject: Re: [Openvpn-devel] Re: [PATCH] Enable compliation under Darwin
-References: <200604051130.00196.uberlord@...594...> <4433CAD4.50807@...601...>
-In-Reply-To: <4433CAD4.50807@...601...>
-MIME-Version: 1.0
-Message-Id: <200604072046.49104.uberlord@...594...>
+From: Steven Pritchard <steve@...609...>
+Subject: Re: [Openvpn-devel] Bug in spec-file: init script is overwritten
+Message-ID: <20060408223504.GA24390@...611...>
+References: <4436B9CF.3080202@...75...>
+Mime-Version: 1.0
+In-Reply-To: <4436B9CF.3080202@...75...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,31 +14,27 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Apr  7 12:47:05 2006
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+Date: Sat Apr  8 15:36:02 2006
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+To: Bernd Bartmann <Bernd.Bartmann@...75...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Wednesday 05 April 2006 14:49, Johnny Lam wrote:
-> According to the Fink porting documents[1], this is not the right way to
-> link loadable modules on Mac OS X.  The module should properly end with
-> ".so", and the compiler flags should include "-bundle" and not
-> "-dynamiclib", which should only be used when linking a shared library.
->
-> [1] http://fink.sf.net/doc/porting/shared.php?phpLang=en#lib-and-mod
->
-> 	Cheers,
->
-> 	-- Johnny Lam <jlam@...601...>
+On Fri, Apr 07, 2006 at 09:13:19PM +0200, Bernd Bartmann wrote:
+> The openvpn .spec-file supplied in the source code archive does not 
+> specify "%config(noreplace)" for the init file, i.e. if you run "rpm 
+> -Uvh openvpn.rpm" and you have a modified init script it is simply 
+> overwritten without notice. I would expect that the rpm update operation 
+> either creates a openvpn.rpmsave or openvpn.rpmnew file.
 
-I've forward this to our ppc-macos team. Their initial response was that the 
-document is out of date, but they'll get back with a definite answer.
+A quick grep through the Fedora Core and Extras spec files shows that
+most don't even mark their init scripts as %config, much less
+%config(noreplace).
 
-Thanks
-
+Steve
 -- 
-Roy Marples <uberlord@...594...>
-Gentoo Linux Developer
+Steven Pritchard - K&S Pritchard Enterprises, Inc.
+Email: steve@...610...             http://www.kspei.com/
+Phone: (618)398-3000               Mobile: (618)567-7320
 
