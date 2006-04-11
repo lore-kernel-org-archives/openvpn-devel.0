@@ -1,9 +1,7 @@
-Message-ID: <4438D109.4090906@...75...>
-From: Bernd Bartmann <Bernd.Bartmann@...75...>
+Message-ID: <2d1888f90604110524g346237a5j@...278...>
+From: "Yasen Balev" <fraxinus.excelsior@...277...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Bug in spec-file: init script is overwritten
-References: <4436B9CF.3080202@...75...> <20060408223504.GA24390@...611...>
-In-Reply-To: <20060408223504.GA24390@...611...>
+Subject: [Openvpn-devel] UDP, something like float option for local address?
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,36 +12,31 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sun Apr  9 02:18:01 2006
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Steven Pritchard <steve@...609...>
-Cc: openvpn-devel@lists.sourceforge.net
+Date: Tue Apr 11 05:26:25 2006
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Steven Pritchard wrote:
-> On Fri, Apr 07, 2006 at 09:13:19PM +0200, Bernd Bartmann wrote:
-> 
->>The openvpn .spec-file supplied in the source code archive does not 
->>specify "%config(noreplace)" for the init file, i.e. if you run "rpm 
->>-Uvh openvpn.rpm" and you have a modified init script it is simply 
->>overwritten without notice. I would expect that the rpm update operation 
->>either creates a openvpn.rpmsave or openvpn.rpmnew file.
-> 
-> 
-> A quick grep through the Fedora Core and Extras spec files shows that
-> most don't even mark their init scripts as %config, much less
-> %config(noreplace).
+Hi.
 
-I just took a look at the spec-files for daemons that are in the FC5 
-core-updates released so far. ALL of them have %config set for the init 
-script:
+Imagine an openvpn peer-to-peer link. One of the peers ("server") is
+connected to 2 ISPs for failover purposes. Assume it has 2 IPs and
+smart enough routing, to route "from" and "to" each address
+accordingly (it's easy, if the "client" is also connected to these 2
+ISPs - not-so-uncommon situation, I think).
 
-%config is set for named, smb, sendmail, spamassassin
-%config(noreplace) is set for squid
+Now, if the "client" decides to send packets to the other "server" IP,
+these packets are accepted OK, but the "server" still returns it's
+packets from it's original IP. This behaviour breaks statefull things
+(firewalls, NATs) and complicates routing.
 
-Anyway it does not hurt to protect the init script against being 
-overwritten.
+So, what about "localfloat" option? Is it hard to implement?
 
-Best regards,
-Bernd.
+Yes, I know that using TCP solves the problem, but it also brings a
+few other ones.
+
+Sorry for my rough English, and thanks for your attention
+
+Yasen
 
