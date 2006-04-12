@@ -1,7 +1,7 @@
-Message-ID: <2d1888f90604110524g346237a5j@...278...>
-From: "Yasen Balev" <fraxinus.excelsior@...277...>
+Message-ID: <443CD0CA.9070206@...41...>
+From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] UDP, something like float option for local address?
+Subject: [Openvpn-devel] OpenVPN 2.0.7 and 2.1-beta13 released
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,31 +12,15 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Apr 11 05:26:25 2006
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+Date: Wed Apr 12 03:06:02 2006
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: 'openvpn-users' <openvpn-users@lists.sourceforge.net>, OpenVPN devel <openvpn-devel@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
 
-Hi.
+* Code added in 2.1-beta7 and 2.0.6-rc1 to extend byte counters
+  to 64 bits caused a bug in the Windows version which has now
+  been fixed.  The bug could cause intermittent crashes.
 
-Imagine an openvpn peer-to-peer link. One of the peers ("server") is
-connected to 2 ISPs for failover purposes. Assume it has 2 IPs and
-smart enough routing, to route "from" and "to" each address
-accordingly (it's easy, if the "client" is also connected to these 2
-ISPs - not-so-uncommon situation, I think).
+James
 
-Now, if the "client" decides to send packets to the other "server" IP,
-these packets are accepted OK, but the "server" still returns it's
-packets from it's original IP. This behaviour breaks statefull things
-(firewalls, NATs) and complicates routing.
-
-So, what about "localfloat" option? Is it hard to implement?
-
-Yes, I know that using TCP solves the problem, but it also brings a
-few other ones.
-
-Sorry for my rough English, and thanks for your attention
-
-Yasen
 
