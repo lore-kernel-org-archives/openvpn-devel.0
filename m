@@ -1,7 +1,8 @@
-Message-ID: <443EC7D0.9020408@...41...>
-From: James Yonan <jim@...41...>
+Message-ID: <1144982144.443f0a80f0025@...614...>
+From: astrek2002@...612...
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 2.1-beta14 released
+Content-Type: multipart/alternative; boundary="-MOQ1144982144a013658e30387f7a60cdaf0acf26850d"
+Subject: [Openvpn-devel] i want to unscribe it,,,, how do i can do that
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,29 +13,28 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Apr 13 14:52:05 2006
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Date: Thu Apr 13 19:37:00 2006
+To: OpenVPNdevel <openvpn-devel@lists.sourceforge.net>
+
+This message is in MIME format.
+
+---MOQ1144982144a013658e30387f7a60cdaf0acf26850d
+Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
-To: 'openvpn-users' <openvpn-users@lists.sourceforge.net>, OpenVPN devel <openvpn-devel@lists.sourceforge.net>
 
-2006.04.13 -- Version 2.1-beta14
+unsubscribe
+---MOQ1144982144a013658e30387f7a60cdaf0acf26850d
+Content-Type: text/html
+Content-Transfer-Encoding: 8bit
 
-* Fixed Windows server bug in time backtrack handling code which
-  could cause TLS negotiation failures on legitimate clients.
-	
-* Rewrote gettimeofday function for Windows to be
-  simpler and more efficient.
-	
-* Merged PKCS#11 extensions to easy-rsa/2.0  (Alon Bar-Lev).
+<pre>unsubscribe</pre>
 
-* Added --route-metric option to set a default route metric
-  for --route (Roy Marples).
+<br><A HREF="http://ads.sify.com/RealMedia/ads/click_nx.ads/mail.sify.com/sentmail@...613..." target=_new>
+<IMG SRC="http://ads.sify.com/RealMedia/ads/adstream_nx.ads/mail.sify.com/sentmail@...613..."  width=300 height=40 border=0></a>
+<br><br><a href =" http://www.sifymax.com" class=mainFont>Watch India vs. England LIVE, Hot videos and more only on Sify Max! Click  Here </a>
+<br>
+<br>
+<a href= "http://www.bangalorelive.in" class=mainFont>Get to see what's happening in your favourite City on Bangalore Live! </a>
 
-* Added --lladdr option to specify the link layer (MAC) address
-  for the tap interface on non-Windows platforms (Roy Marples).
-
-James
-
-
-
+---MOQ1144982144a013658e30387f7a60cdaf0acf26850d--
 
