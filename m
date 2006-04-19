@@ -1,9 +1,9 @@
-From: Philipp =?iso-8859-1?q?G=FChring?= <pg@...621...>
+Message-ID: <9e0cf0bf0604190855g30676be1y787c1f22ca42b092@...278...>
+From: "Alon Bar-Lev" <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] PKCS#12+additional CAs
+In-Reply-To: <200604191751.47736.pg@...621...>
 MIME-Version: 1.0
-Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_TylREUwHqdHTtRI"
-Message-Id: <200604191751.47736.pg@...621...>
-Subject: [Openvpn-devel] PKCS#12+additional CAs
+References: <200604191751.47736.pg@...621...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,76 +14,20 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Wed Apr 19 08:53:04 2006
-To: openvpn-devel@lists.sourceforge.net
-
---Boundary-00=_TylREUwHqdHTtRI
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Date: Wed Apr 19 09:04:01 2006
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Content-Disposition: inline
+To: =?UTF-8?Q?Philipp_G=C3=BChring?= <pg@...621...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
-
-At the moment, openVPN is unnecessarily blocking the usage of both PKCS#12=
-=20
-certificate and additional CA=B4s provided in PEM files.
-This is a patch for openVPN, to make it possible to use both PKCS#12 and=20
-additonal CA=B4s for verification.
-
-PS: Please CC me on any answers.=20
-
-Best regards,
-Philipp G=FChring
-
---Boundary-00=_TylREUwHqdHTtRI
-Content-Type: text/x-diff;
-  charset="us-ascii";
-  name="pkcs12ca.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename="pkcs12ca.patch"
-
---- options.c.orig	2006-01-10 16:46:50.000000000 +0100
-+++ options.c	2006-01-10 16:47:11.000000000 +0100
-@@ -1582,8 +1582,8 @@
- #endif
-       if (options->pkcs12_file)
-         {
--          if (options->ca_file)
--	    msg(M_USAGE, "Parameter --ca cannot be used when --pkcs12 is also specified.");
-+//          if (options->ca_file)
-+//	    msg(M_USAGE, "Parameter --ca cannot be used when --pkcs12 is also specified.");
-           if (options->cert_file)
- 	    msg(M_USAGE, "Parameter --cert cannot be used when --pkcs12 is also specified.");
-           if (options->priv_key_file)
---- ssl.c.orig	2005-11-01 12:06:10.000000000 +0100
-+++ ssl.c	2006-01-10 16:48:45.000000000 +0100
-@@ -842,6 +842,24 @@
-                 msg (M_SSLERR, "Cannot add certificate to client CA list (SSL_CTX_add_client_CA)");
-             }
-         }
-+
-+      /* Load CA file for verifying peer supplied certificate */
-+      if(options->ca_file)
-+      {
-+        if (!SSL_CTX_load_verify_locations (ctx, options->ca_file, NULL))
-+          msg (M_SSLERR, "Cannot load CA certificate file %s (SSL_CTX_load_verify_locations)", options->ca_file);
-+
-+        /* Load names of CAs from file and use it as a client CA list */
-+        {
-+          STACK_OF(X509_NAME) *cert_names;
-+          cert_names = SSL_load_client_CA_file (options->ca_file);
-+          if (!cert_names)
-+            msg (M_SSLERR, "Cannot load CA certificate file %s (SSL_load_client_CA_file)", options->ca_file);
-+          SSL_CTX_set_client_CA_list (ctx, cert_names);
-+        }
-+      }
-+
-+
-     }
-   else
-     {
-
---Boundary-00=_TylREUwHqdHTtRI--
-
-
+Rm9yIHdoaWNoIHZlcnNpb24gaXMgaXQ/CgpJIGtub3cgdGhhdCB2ZXJzaW9uIDIuMSBzZXJpZXMg
+YWxyZWFkeSBzdXBwb3J0IHNwZWNpZnlpbmcgdHJ1c3Qgb3V0IG9mCnRoZSBQS0NTIzEyIGZpbGUu
+CgpCZXN0IFJlZ2FyZHMsCkFsb24gQmFyLUxldi4KCk9uIDQvMTkvMDYsIFBoaWxpcHAgR8O8aHJp
+bmcgPHBnQC4uLjYyMS4uLj4gd3JvdGU6Cj4gSGksCj4KPiBBdCB0aGUgbW9tZW50LCBvcGVuVlBO
+IGlzIHVubmVjZXNzYXJpbHkgYmxvY2tpbmcgdGhlIHVzYWdlIG9mIGJvdGggUEtDUyMxMgo+IGNl
+cnRpZmljYXRlIGFuZCBhZGRpdGlvbmFsIENBwrRzIHByb3ZpZGVkIGluIFBFTSBmaWxlcy4KPiBU
+aGlzIGlzIGEgcGF0Y2ggZm9yIG9wZW5WUE4sIHRvIG1ha2UgaXQgcG9zc2libGUgdG8gdXNlIGJv
+dGggUEtDUyMxMiBhbmQKPiBhZGRpdG9uYWwgQ0HCtHMgZm9yIHZlcmlmaWNhdGlvbi4KPgo+IFBT
+OiBQbGVhc2UgQ0MgbWUgb24gYW55IGFuc3dlcnMuCj4KPiBCZXN0IHJlZ2FyZHMsCj4gUGhpbGlw
+cCBHw7xocmluZwo+Cj4KPgo=
