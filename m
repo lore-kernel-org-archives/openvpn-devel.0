@@ -1,8 +1,10 @@
-From: "Dave" <dev@...575...>
-Subject: RE: [Openvpn-devel] Any news about WinCE porting?
-Message-ID: <000d01c668e0$7dcae610$0100a8c0@...576...>
-MIME-Version: 1.0
-In-Reply-To: <444E4917.8070800@...626...>
+From: Eric Limpens <eric@...624...>
+Subject: Re: [Openvpn-devel] Changing routes on the client
+Message-ID: <20060426102143.71f89ea8@...625...>
+In-Reply-To: <20060425171727.6abb2a1b@...625...>
+References: <20060425100020.18086c30@...625...>
+	<20060425171727.6abb2a1b@...625...>
+Mime-Version: 1.0
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,36 +15,36 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Tue Apr 25 20:22:06 2006
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: quoted-printable
-To: 'Florent Thiery' <Florent.Thiery@...626...>, openvpn-devel@lists.sourceforge.net
+Date: Wed Apr 26 01:24:02 2006
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Cc: openvpn-devel@lists.sourceforge.net
 
-> -----Original Message-----
-(...)
-> Hi, i wanted to know if the WinCE TAP rewriting had any=20
-> news... Thanx a lot
-(...)
+On Tue, 25 Apr 2006 17:17:27 +0200
+Eric Limpens <eric@...624...> wrote:
 
-I release the first alpha a couple weeks ago (well 1.5 weeks ago):
+> Digging thru the sources, I've found a more convenient way by adding a
+> new flag to the redirect-gateway option.
+> When set, it uses 'add_route3' to re-route all (local) traffic to the 
+> remote endpoint: 
+> 
+> add_route3(0xc08a0500, 0xffffff00, rl->spec.rmote_endpoint, tt,
+> flags, es)
+> 
+> However the 2 first parameters should be determined by the os.. For
+> testing purposes I've hardcoded them, things work as expected.
+> 
+> My question: does anyone have pointers how to obtain the local-net
+> and netmask?
 
-Here's the main page I set up; links therein to binaries, source, and a
-forum kindly set up by Krzysztof Sobolewski:
 
-http://www.ziggurat29.com/OVPNPPCAlpha/OVPNPPCAlpha.htm
+Anyone to enlighten me?
 
-Short story:
+It appears the rl->spec.net_gateway is the original gateway and 
+rl->spec.remote_endpoint is the address I'ld like to route all
+traffic to.
 
-TAP driver largely works fine but there has been a report that it doesn't
-load on an Axim x51v, which I don't have on-hand to test.
-The GUI, aka 'Connection Manager', provides a serviceable interface for
-starting/stopping VPN interfaces, though it is a bit bare-bone.  I should be
-doing another build in the next day or so which will have a lot more of the
-stuff in the management interface exposed for useability.
-
-If you'd like to give it a whirl that would be great, especially for the
-feedback on problems/suggestions.
-
--Dave
+I'm still missing the netmask for the original network. Is there
+an easy way to retrieve this?
 
 
