@@ -1,7 +1,9 @@
-From: "Schlaffer Viktor" <schviktor@...277...>
+From: Roy Marples <uberlord@...594...>
+Subject: Re: [Openvpn-devel] [PATCH] Stick routes to interfaces for Linux
+References: <200604072030.52833.uberlord@...594...> <200604132240.07989.uberlord@...594...> <20060417172228.GB25449@...619...>
+In-Reply-To: <20060417172228.GB25449@...619...>
 MIME-Version: 1.0
-Message-ID: <4451e733.3ac908e6.47ad.ffff9f05@...492...>
-Subject: [Openvpn-devel] Overhead question
+Message-Id: <200604281128.46146.uberlord@...594...>
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,49 +14,33 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri Apr 28 02:59:02 2006
+Date: Fri Apr 28 03:29:20 2006
 Content-Type: text/plain;
-	charset="us-ascii"
+  charset="iso-8859-15"
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-Hi!
+On Monday 17 April 2006 18:22, Petre Rodan wrote:
+> I have the following on the server's setup:
+>
+> push "route 10.0.0.0 255.255.255.0"
+> push "route 0.0.0.0 0.0.0.0"
+> push "redirect-gateway local"
 
-I have a question about the overall overhead of OpenVPN. 
-I'm using AES-128-CBC with lzo compression.
-OpenVPN says these numbers during the init phase:
+.. snip ..
 
-EF:58 - i think this is the actual overhead, without the tunnel. Is it
-right?
-EB:23 - this is an extra buffer for lzo?(can i reduce this somehow, without
-turning lzo off???)
-ET:0
-EL:0
+>
+> but with a patched beta14 version, I end up having 2 default gateways:
+>
+> it basically fails to remove my old default gateway.
 
-I found a picture about this on the internet, which is something like this:
-----------------------------------------------------------------------------
---------------------------------------------------------------------
-|eth 14b|IP 20b|UDP 8b||OpenVPN hdr ?b|Encrypted data(IP 20b,UDP8b,payload
-xx b)|OpenVPN tlr|
-----------------------------------------------------------------------------
---------------------------------------------------------------------
+I don't see that as an error as you're pusing a new gateway "route 0.0.0.0 
+0.0.0.0" and you're saying redirect local.
 
-This shows nothing about HMAC, i think, that the actual packet looks like
-this:
-----------------------------------------------------------------------------
-----------------------------------------------------------------------------
--
-|IP 20b|UDP 8b| original packet IP+TCP 52 bytes | HMAC 20 b | IV ? B | seq
-number 8b |encrypred DATA |
-----------------------------------------------------------------------------
-----------------------------------------------------------------------------
--
+So you would want to do either one or the other.
 
-Here the actual overhead is 20+8+20+?+8 bytes. (IV 2 bytes?)
-Is this correct? If not, can you explain me these 58 bytes reported by
-OpenVPN?
-
-Thanks in advance:
-Viktor Schlaffer
-
+-- 
+Roy Marples <uberlord@...594...>
+Gentoo/Linux Developer (baselayout, networking)
 
