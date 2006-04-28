@@ -1,7 +1,7 @@
-From: William Preston <openvpn@...275...>
+From: "Schlaffer Viktor" <schviktor@...277...>
 MIME-Version: 1.0
-Message-Id: <200604271856.16445.openvpn@...275...>
-Subject: [Openvpn-devel] UTF-8 support for passwords
+Message-ID: <4451e733.3ac908e6.47ad.ffff9f05@...492...>
+Subject: [Openvpn-devel] Overhead question
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,32 +12,49 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu Apr 27 09:57:02 2006
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Date: Fri Apr 28 02:59:02 2006
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
+Hi!
 
-Hi list,
+I have a question about the overall overhead of OpenVPN. 
+I'm using AES-128-CBC with lzo compression.
+OpenVPN says these numbers during the init phase:
 
-I've had a couple of users who weren't able to authenticate against a proxy
-because they had a non-ascii password (=FC u-umlaut in both cases).
+EF:58 - i think this is the actual overhead, without the tunnel. Is it
+right?
+EB:23 - this is an extra buffer for lzo?(can i reduce this somehow, without
+turning lzo off???)
+ET:0
+EL:0
 
-I suggested they change it - but I could envision circumstances where this
-isn't possible :-)
+I found a picture about this on the internet, which is something like this:
+----------------------------------------------------------------------------
+--------------------------------------------------------------------
+|eth 14b|IP 20b|UDP 8b||OpenVPN hdr ?b|Encrypted data(IP 20b,UDP8b,payload
+xx b)|OpenVPN tlr|
+----------------------------------------------------------------------------
+--------------------------------------------------------------------
 
+This shows nothing about HMAC, i think, that the actual packet looks like
+this:
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+-
+|IP 20b|UDP 8b| original packet IP+TCP 52 bytes | HMAC 20 b | IV ? B | seq
+number 8b |encrypred DATA |
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+-
 
--so I'd like to do the following;
+Here the actual overhead is 20+8+20+?+8 bytes. (IV 2 bytes?)
+Is this correct? If not, can you explain me these 58 bytes reported by
+OpenVPN?
 
-# document the default character set as UTF-8 for passwords
-# remove the sanity checking in get_user_pass()
-# fix the unicodize() function
+Thanks in advance:
+Viktor Schlaffer
 
-I'm willing to bet this will break something however...
-
-Does anyone see problems with this, or have suggestions?
-
-
-William
 
