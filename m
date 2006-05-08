@@ -1,8 +1,9 @@
-Message-ID: <mhdctxvvnlu3jcq@...629...>
-From: "wmdly" <1hnbyut2@...629...>
-Content-return: allowed
+From: "Jonathan Merriweather" <Jono@...630...>
+Message-ID: <000e01c67183$d03693d0$696b0505@...631...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] watch this stck trade WEEK STARTING MONDAY it isday [STCK REPORT]  closers experts
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_000F_01C671D7.A1EC19B0"
+Subject: [Openvpn-devel] Config Selection
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,70 +14,126 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Mon May  8 10:22:26 2006
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
+Date: Mon May  8 16:33:10 2006
+To: openvpn-devel@lists.sourceforge.net
 
-<html>
-<body>
-<p align="center"><u><b><font color="#33CC33" face="Garamond"
-size="4">GAPJ- GOLDEN APPLE OIL/GAS</font></b></u></p>
-<p align="left"><b><font face="Garamond" size="4" color="#33CC33">This
-weeks Pick,
-Company already has solid potential</font></b></p>
-<p align="left"><font face="Garamond" size="3">Current Price: $
-0.50<br> 5 Day Projected : $ 1.50</font></p>
-<p align="left"><font face="Garamond"><b>Golden Apple Oil and Gas, Inc.
-and
-Franklin Ross Securities Complete Private Placement<br>
-<br>
-Golden Apple Oil and Gas, Inc. (<b>GAPJ</b> - News) is pleased to 
-announce it
-has completed the initial private placement with Franklin Ross 
-Securities of New
-Jersey.<br>
-<br>
-The terms of the deal provide for Franklin Ross to purchase 181,818 
-shares of
-Golden Apple Oil and Gas, Inc. restricted stock priced at .10 per 
-share.<br>
-<br>
-The company is currently negotiating with several investor groups for 
-the next
-phase of financing.<br>
-<br>
-Headquartered in Phoenix, Arizona, Golden Apple is an independent oil 
-and gas
-producer with a focus on North and South American properties. The 
-Company
-applies advanced technologies to systematically explore and develop its 
-oil and
-natural gas opportunities. Golden Apple focuses its activities where 
-technology
-can be used effectively to maximize returns on invested capital by 
-reducing
-drilling risk and enhancing its ability to cost-effectively grow 
-reserves and
-production volumes.<br>
-<br>
-Golden Apple Oil and Gas, Inc has opened a Canadian office in Toronto, 
-Ontario
-to facilitate the management of its Canadian operations. All 
-correspondence and
-communication will continue to be serviced by the company's head office 
-staff in
-Phoenix Arizona.<br><br>
-This looks very lucrative in coming weeks,
-</font></p></b>
-<p align="left"><font color="#33CC33" face="Garamond" size="4"><b>Get
-GAPJ
-First Thing Monday</b></font></p>
-<p align="left"><font face="Garamond" 
-size="2"><b>cachalot droop gluey comparator minnow's crossway gnat's bridgeheads fanned germ ghoul Pollux constructed butter colonials airfield drug fits Chaplin hoariness intestines minnow's Williamson archiving dipped Riga Valparaiso conferee bellwethers Calvary betrayer Wilmington advantageous minnow's</b></font></p>
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_000F_01C671D7.A1EC19B0
+Content-Type: text/plain; charset="windows-1250"
+Content-Transfer-Encoding: quoted-printable
+
+Hey guys,
+
+=20
+
+I=92m just wondering how OpenVPN selects a config when none is specified. Is
+it just the first one it comes across that has a .conf?
+
+=20
+
+Cheers,
+
+=20
+
+Jonathan Merriweather
+
+
+--=20
+No virus found in this outgoing message.
+Checked by AVG Free Edition.
+Version: 7.1.392 / Virus Database: 268.5.5/333 - Release Date: 5/05/2006
+=20
+
+------=_NextPart_000_000F_01C671D7.A1EC19B0
+Content-Type: text/html; charset="windows-1250"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" xmlns:w=3D"urn:sc=
+hemas-microsoft-com:office:word" xmlns=3D"http://www.w3.org/TR/REC-html40">
+
+<head>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; charset=3Dwindows-1=
+250">
+
+
+<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
+<style>
+<!--
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:Arial;
+	color:windowtext;}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:72.0pt 90.0pt 72.0pt 90.0pt;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+
+</head>
+
+<body lang=3DEN-AU link=3Dblue vlink=3Dpurple>
+
+<div class=3DSection1>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
+0.0pt;
+font-family:Arial'>Hey guys,<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
+0.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
+0.0pt;
+font-family:Arial'>I&#8217;m just wondering how OpenVPN selects a config wh=
+en
+none is specified. Is it just the first one it comes across that has a .con=
+f?<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
+0.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
+0.0pt;
+font-family:Arial'>Cheers,<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
+0.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span style=3D'font-size:1=
+0.0pt;
+font-family:Arial'>Jonathan Merriweather<o:p></o:p></span></font></p>
+
+</div>
 
 </body>
 
 </html>
+<BR>
+
+<P><FONT SIZE=3D2>--<BR>
+No virus found in this outgoing message.<BR>
+Checked by AVG Free Edition.<BR>
+Version: 7.1.392 / Virus Database: 268.5.5/333 - Release Date: 5/05/2006<BR>
+</FONT> </P>
+
+------=_NextPart_000_000F_01C671D7.A1EC19B0--
 
 
