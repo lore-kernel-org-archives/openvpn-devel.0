@@ -1,8 +1,7 @@
-Message-ID: <dewoevnzkmhrio824749062@...639...>
-From: "gfunoht uezphzbg" <ibvdevr508@...639...>
-Content-return: allowed
+Message-ID: <446A021A.4090601@...640...>
+From: Stephen Borrill <netbsd@...640...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] keep an eye on this [BREAKING NEWS]  initials humus
+Subject: [Openvpn-devel] port-share and portability
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -13,51 +12,25 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu May 11 19:03:12 2006
-Content-Type: text/plain; charset="utf-8"
+Date: Tue May 16 09:47:12 2006
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Infinex Ventures Inc. (INFX)
-Current Price: 0.79
+Hi,
 
-The Rally has begun
-Watch this one like a hawk, this report is sent because the potential is incredible
+I've been looking at the 2.1 betas and getting excited about the port-share 
+option. There's numerous caveats about lack of portability in the source and 
+man page, but I don't know why. sendmsg and recvfrom have been in BSD since, 
+well, ever, really. NetBSD and FreeBSD have both had MSG_NOSIGNAL support 
+added (NetBSD very recently in response to my feedback about OpenVPN), so 
+the only outstanding issue is the union fdmsg declarationon row 80 of ps.c. 
+On NetBSD (at least) CMSG_SPACE() isn't static and so can't used in a 
+compile-time context (it calls a function for CMSG_ALIGN()). Can this be 
+worked around in OpenVPN to improve portability? Perhaps a static and malloc 
+in the relevant places in port_share_sendmsg() and 
+control_message_from_parent()? I guess they don't need to be re-rentrant.
 
-H U G E  N E W S read below
-S T R O N G  B U Y 
-
-COMPANY OVERVIEW
-
-Aggressive and energetic, Infinex boasts a dynamic and diversified portfolio of operations across North America, with an eye on international 
-expansion. 
-
-Grounded in natural resource exploration, Inifinex also offers investors access to exciting new developments in the high-tech sector and the booming 
-international real estate market. Our market based experience, tenacious research techniques, and razor sharp analytical skills allow us to leverage 
-opportunities in emerging markets and developing technologies. 
-
-Identifying these opportunities in the earliest stages allows us to accelerate business development and fully realize the company.s true potential. 
-Maximizing overall profitability and in turn enhancing shareholder value. 
-
-Current Press Release
-
-Infinex Announces Extension to Its Agreement in Chile
-LAS VEGAS, NV, May 9 /PRNewswire-FirstCall/ - Infinex Ventures Inc. (INFX:OB - News; "the Company") and its Board of Directors are pleased to 
-announce that the Company has received an extension (90 days) to its Agreement for the due diligence period, in an effort to fully verify the offered 
-title and all additional documentation, including but not limited to, Trial C-1912- 2001 at the 14th Civil Court of Santiago and Criminal Trial 
-1160-2002 at the 19th Court of Crime of Santiago of Chile, Ministry of Mines of Chile over its sole and exclusive right to acquire a 50% interest in 
-the Tesoro 1-12 Mining Claims.
-
-Infinex Announces Joint Venture and Option Agreement Extension
-LAS VEGAS, May 5 /PRNewswire-FirstCall/ - Infinex Ventures Inc. (INFX:OB - "the Company") and its Board of Directors are please to announce that the 
-Company has been granted an extension of 120 days to fulfill its contractual obligations under the Joint Venture and Option Agreement dated June 14, 
-2004 on the Texada Island "Yew Gr0up" Mining Claims:
-
-
-This is as sure as it gets, GET IN NOW
-
-
-
-hooligan bewhiskered acknowledgments inquisitive contrive empiricists Bernet courtroom's minnow's marines dusting Riga deferred discuss drift applicable activity brunch baring Ahmedabad encyclopedia's burlesques feathertop discuss desk's legislates constructed
-
+-- 
+Stephen
 
