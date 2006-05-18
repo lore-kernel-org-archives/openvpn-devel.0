@@ -1,7 +1,7 @@
-From: Stephen Borrill <netbsd@...640...>
-Message-ID: <Pine.NEB.4.61.0605181115400.18653@...641...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] port-share and portability
+From: Tony <kb2wjw@...277...>
+Message-ID: <op.s9rf5qftioehzu@...596...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Configuration flexibility enhancement suggestion.
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -12,28 +12,68 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Thu May 18 03:18:15 2006
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Date: Thu May 18 11:59:24 2006
+Content-Type: text/plain; format=flowed; delsp=yes; charset=koi8-r
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Resent as didn't arrive first time.
+Hello, James!
 
-Hi,
+First and foremost - THANK YOU! for the great product OpenVPN is.
 
-I've been looking at the 2.1 betas and getting excited about the port-share 
-option. There's numerous caveats about lack of portability in the source and 
-man page, but I don't know why. sendmsg and recvfrom have been in BSD since, 
-well, ever, really. NetBSD and FreeBSD have both had MSG_NOSIGNAL support added 
-(NetBSD very recently in response to my feedback about OpenVPN), so the only 
-outstanding issue is the union fdmsg declarationon row 80 of ps.c. On NetBSD 
-(at least) CMSG_SPACE() isn't static and so can't used in a compile-time 
-context (it calls a function for CMSG_ALIGN()). Can this be worked around in 
-OpenVPN to improve portability? Perhaps a static and malloc in the relevant 
-places in port_share_sendmsg() and control_message_from_parent()? I guess they 
-don't need to be re-rentrant.
+Some background. Often I have to connect from the LANs where the only  
+outbound traffic allowed is HTTPS through their proxy. But if I'm on a  
+more user-friendly environment, I use plain UDP. On my server I have the  
+separate instances of OpenVPN running and waiting for it's own type of  
+connection each.
 
--- 
-Stephen
+So, on my laptop (winXP-SP2) as a roadwarrior, often I need to tune the  
+service mode on the run. This happens when I must switch to TCP from the  
+default UDP mode. In TCP mode I must remove "fragment XXXX" for example.  
+Also, when in TCP, I must uncomment the proxy-related section.
+
+This is rather inconvinient and insecure - I run OpenVPN as non-admin with  
+"client.ovpn" being protected from mortals by file permissions.
+
+The way to radically improve the configuration flexibility and convinience  
+might be as follows:
+
+rather than naming the "remote" side list where each entry is just an  
+IP:port and is tryed in turn with all the rest of configuration file  
+common - introduce the list of "contexts" - the logical name of the whole  
+settings needed to connect to the particular remote service. If the first  
+entry fails - try the next.
+
+The possible layout of the configuration file might look like this:
+
+[contexts]
+context_name_1
+context_name_2
+....
+context_name_N
+
+[context_name_1]
+...here go all the relevant settings to use with this particular  
+connection...
+
+[context_name_2]
+...again the whole set of what must be used for that one...
+
+[context_name_N]
+...and so on...
+
+
+The "context_name_N" is just a label. With this scheme it would be  
+possible to have even the conflicting settings (relevant for different  
+connections) in one file without a need to edit it in the field.
+
+Further improvement could be a "context_policy" parameter that would  
+switch between the round-robin and "try again from the top of the list"  
+behaviour (or even have a "try context_name_K next" command). I place my  
+connections in the order of preference.
+
+Please comment on the idea.
+
+Tony.
 
 
