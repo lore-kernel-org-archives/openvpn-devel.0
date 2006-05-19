@@ -1,9 +1,7 @@
-From: Charles Duffy <cduffy@...294...>
-Message-ID: <e4kl7n$6fg$1@...165...>
-References: <op.s9rf5qftioehzu@...596...> <e4ij3s$rlq$1@...165...> <op.s9sekxenioehzu@...603...>
-Mime-Version: 1.0
-In-Reply-To: <op.s9sekxenioehzu@...603...>
-Subject: [Openvpn-devel] Re: Configuration flexibility enhancement suggestion.
+Message-ID: <446DDBE4.5030002@...642...>
+From: Barry Michels <bmichels@...642...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] auth-retry question
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,37 +12,21 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Fri May 19 07:39:01 2006
-Content-Type: text/plain; charset=KOI8-R; format=flowed
+Date: Fri May 19 07:56:01 2006
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Tony wrote:
-> On Thu, 18 May 2006 23:49:16 +0400, Charles Duffy <cduffy@...294...> 
-> wrote:
-> 
->> Why not just have separate config files for each possible 
->> configuration, rather than stuffing several configurations in one file?
-> I did not know if it is possible on the client.
+I set my auth-retry to nointeract so the service wouldn't stop when the 
+client-connect script refused a connection.  However, it seems to be 
+hard-coded to a 10 second retry.  Is there an undocumented option 
+somewhere that will allow that to be changed?  I'd like to set it to 5 
+minutes.
 
-Well, there's nothing about OpenVPN itself that makes it possible, and 
-plenty about what folks can do with shell scripts or small, 
-easy-to-write snippets of 3rd-party wrapper code that makes it possible.
+Or, is there a service watcher program that I could install alongside 
+OpenVPN that would restart the service when it senses a change in the 
+network? (different IP, different wireless SSID, disconnect/reconnect, etc)
 
-Since OpenVPN tends to rely quite a bit on shelling out to hooks to add 
-new functionality, having OpenVPN itself be started by a wrapper that 
-rotates configurations isn't a very big leap.
-
-
-Now, if your clients are on Windows and don't have something like Cygwin 
-installed (and if the Windows Scripting Host isn't flexible enough for 
-this kind of thing, which it may or may not be), writing that wrapper 
-may be a little bit trickier than it would be otherwise... but it still 
-should be a fairly straightforward exercise.
-
-
-Another option -- if clients are using the OpenVPN GUI -- is just to 
-have the different .conf files be named after the different locations 
-they may be at, and let them manually select the one to start from the menu.
-
+Thanks,
+Barry
 
