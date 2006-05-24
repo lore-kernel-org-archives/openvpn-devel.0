@@ -1,9 +1,8 @@
-Message-ID: <446F6BDC.1040704@...640...>
-From: Stephen Borrill <netbsd@...640...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] port-share and portability
-References: <446A021A.4090601@...640...> <446F4063.9090303@...41...>
-In-Reply-To: <446F4063.9090303@...41...>
+Message-ID: <la6ksxcd9cue1gqs690v@...643...>
+From: "spiap lbjxpdcy" <qfilra@...643...>
+Content-return: allowed
+Mime-Version: 1.0
+Subject: [Openvpn-devel] wednesday (Re) here's a winer
 Sender: openvpn-devel-admin@lists.sourceforge.net
 Errors-To: openvpn-devel-admin@lists.sourceforge.net
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
@@ -14,47 +13,46 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-Date: Sat May 20 12:20:02 2006
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Date: Wed May 24 02:23:04 2006
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-To: James Yonan <jim@...41...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net, openvms@...644...
 
-James Yonan wrote:
-> Stephen Borrill wrote:
-> 
->> Hi,
->>
->> I've been looking at the 2.1 betas and getting excited about the 
->> port-share option. There's numerous caveats about lack of portability 
->> in the source and man page, but I don't know why. sendmsg and recvfrom 
->> have been in BSD since, well, ever, really. NetBSD and FreeBSD have 
->> both had MSG_NOSIGNAL support added (NetBSD very recently in response 
->> to my feedback about OpenVPN), so the only outstanding issue is the 
->> union fdmsg declarationon row 80 of ps.c. On NetBSD (at least) 
->> CMSG_SPACE() isn't static and so can't used in a compile-time context 
->> (it calls a function for CMSG_ALIGN()). Can this be worked around in 
->> OpenVPN to improve portability? Perhaps a static and malloc in the 
->> relevant places in port_share_sendmsg() and 
->> control_message_from_parent()? I guess they don't need to be re-rentrant.
->>
-> Feel free to port this to BSD.  Basically the only aspect of the 
-> port-share implementation which is problematic from a portability 
-> perspective is that it needs the ability to pass an open file descriptor 
-> to another process.
+Get CTXE First Thing Today, This Is Going To Explode Wednesday!
 
-That doesn't seem to be a problem at all. The code just works once compiled, 
-but required me to manually expand the CMSG_SPACE macro based on the Linux 
-version. This is not particular portable as it's dependent upon the unit of 
-alignment being the same as long; I suspect this isn't necessary the case 
-for all processor architectures. It's just the allocation of the union fdmsg 
-that's the problem. I guess you have a preferred memory allocation method 
-which could be used to allocate a buffer held in a static in the above 
-functions. I could bodge something up, but you'd probably have a 
-preferential way to do it.
+Huge PR campaign is underway for Wednesday
 
--- 
-Stephen
+GET in NOW
+Check out for HOT NEWS!!!
 
+CTXE - CANTEX ENERGY CORP 
+
+CURRENT_PRICE: .50 GET IT N0W!
+
+GET in now for over 300 percent potential Gain
+
+Before we start with the profile of CTXE we would like to mention something very important: There is a Big PR Campaign starting this weeek . And it will go all week so it would be best to get in NOW.
+
+Company Profile
+
+Cantex Energy Corporation is an independent, managed risk, oil and gas exploration, development, and production company headquartered in San Antonio, Texas. 
+
+Recent News
+
+President of Cantex commented, "We encourage our valued shareholders to be patient as we approach the commencement date of this very unique opportunity in one of the last under-explored, world-class potential gas plays with no geopolitical risks."
+
+Cantex Energy Corp. Receiving Interest From the Industry as It Enters Next Phase of Development
+Cantex Energy Corp. (CTXE - News) is pleased to report the following on its Big Canyon Prospect in West Texas. Recent company announcements related to the acquisition of over 48,000 acres of a world-class prospect has captured the attention of many oil & gas industry experts and corporations, who have recently inquired into various participation opportunities ranging from sharing science technology to support findings or expertise to drill, operate and manage wells.
+
+Trace Maurin, President of Cantex, commented, "Although we are a small independent oil & gas company, we have a very unique 0pp0rtunity in one of the last under-explored world-class potential gas plays with no geopolitical risks and the industry is starting to take notice. As we prepare to prove up the various structures within our prospect later this month, we are increasing our efforts to communicate on our progress to our shareholders and investors. Our intention is to provide investors with a better understanding of the full potential of this prospect as we embark on the next phase of operations."
+
+Starting immediately the company will undertake CEO interviews, radio spots (which will be recorded and published on the company website), publication placements, introductions to small cap institutional investors and funds all in an effort to optimize market awareness and keep our shareholder well informed.
+
+
+Till the cows come home.  
+To live from hand to mouth.
+You reap what you sow.
+When it rains it pours.  
+Sick as a dog.  
 
 
