@@ -1,9 +1,10 @@
-Date: Mon, 5 Jun 2006 08:41:00 +0200
-From: Alberto Gonzalez Iniesta <agi@...64...>
-Message-ID: <20060605064059.GA3005@...30...>
+From: Charles Duffy <cduffy@...294...>
+Date: Mon, 05 Jun 2006 11:05:49 -0500
+Message-ID: <e61kp1$g4u$1@...165...>
 References: <e60hk5$oj5$1@...165...>
-MIME-Version: 1.0
+Mime-Version: 1.0
 In-Reply-To: <e60hk5$oj5$1@...165...>
+Sender: news <news@...165...>
 Subject: Re: [Openvpn-devel] improve of documentation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,32 +14,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-On Mon, Jun 05, 2006 at 02:07:52AM -0400, Denis dos Santos Silva wrote:
-> Hi all!
->=20
+Denis dos Santos Silva wrote:
 > some aspects keys of openvpn, are undocumented.
->=20
 > scripts, per example.
->=20
-> some times, are soo hard to create a configuration file without ''tech''=
-=20
-> info, struct, ...
 
-Denis, you forgot to attach your documentation/patches to solve this.
+No. Scripts are well-documented under the "SCRIPTING AND ENVIRONMENTAL 
+VARIABLES" section of the man page.
 
-Thanks,
+A specific format or language for writing scripts is not provided, 
+because OpenVPN does not specify or include one: whichever scripting 
+language is appropriate to your platform, skillset and other needs may 
+be used.
 
-Alberto
 
---=20
-Alberto Gonzalez Iniesta    | Formaci=F3n, consultor=EDa y soporte t=E9cnico
-agi@(inittab.org|debian.org)| en GNU/Linux y software libre
-Encrypted mail preferred    | http://inittab.com
+OpenVPN's documentation describes in detail how to use OpenVPN. It does 
+not cover generic routing and firewalling (or writing shell scripts, 
+other than the interface between those scripts and OpenVPN proper) any 
+more than the documentation for a tractor describes how to grow corn.
 
-Key fingerprint =3D 9782 04E7 2B75 405C F5E9  0C81 C514 AF8E 4BA4 01C3
 
