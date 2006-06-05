@@ -1,11 +1,9 @@
 From: Denis dos Santos Silva <denis@...655...>
-Date: Fri, 02 Jun 2006 06:37:45 -0400
-Message-ID: <e5p4ab$cd6$1@...165...>
-References: <Pine.NEB.4.61.0606011124370.29663@...641...>
+Date: Mon, 05 Jun 2006 02:07:52 -0400
+Message-ID: <e60hk5$oj5$1@...165...>
 Mime-Version: 1.0
-In-Reply-To: <Pine.NEB.4.61.0606011124370.29663@...641...>
 Sender: news <news@...165...>
-Subject: Re: [Openvpn-devel] Inline certs/keys?
+Subject: [Openvpn-devel] improve of documentation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,6 +16,18 @@ Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-this feature, is very nice! :)
+Hi all!
+
+some aspects keys of openvpn, are undocumented.
+
+scripts, per example.
+
+some times, are soo hard to create a configuration file without ''tech'' 
+info, struct, ...
+
+Thanks.
+
+Regards,
+Denis
 
 
