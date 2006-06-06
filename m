@@ -1,8 +1,8 @@
-Message-ID: <44853D9F.40001@...177...>
-Date: Tue, 06 Jun 2006 10:32:31 +0200
-From: Farkas Levente <lfarkas@...177...>
+Message-ID: <000501c68972$574207be$25c0e63d@...657...>
+From: "Ike Giles" <quavrmjuap@...656...>
+Date: Tue, 6 Jun 2006 22:02:53 +0800
 MIME-Version: 1.0
-Subject: [Openvpn-devel] a few problem/comment/bug with version 2.1.x
+Subject: [Openvpn-devel] nun
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,84 +11,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; format=flowed; charset="Windows-1252";
+	reply-type=original
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-hi,
-we now try to migrate from openvpn 1.x to 2.1 topology and we's a few
-problems and comments about the new versions and a few questions.
-we would like to give each client a fixed ip addresses and some of them
-have an own subnet behind it. the server use the
-server 192.168.254.0 255.255.255.0
-topology subnet
-client-to-client
+Trade Date: Tuesday, June 6th, 2006
+Company: BioElectronics Corporation
+Symbol: BIEL
+Price: $0.025
 
-my questions:
-- why not accept among the server.conf's push the following options:
-  - persist-remote-ip
-  - keepalive
-  this has a good reason or just forget to include. imho it'd useful.
-  "Options error: option 'persist-remote-ip' cannot be used in this context
-   Options error: option 'keepalive' cannot be used in this context"
+IS MOMENTUM BUILDING FOR THIS STOCK? CAN YOU MAKE SOME FAST MONEY ON IT?
+RADAR BIEL FOR TUESDAY'S OPEN RIGHT NOW!!
 
-- even if i set among the server's push option
-  - push "comp-lzo"
-  i've got the warning:
-  "WARNING: 'comp-lzo' is present in remote config but missing in local
-config, remote='comp-lzo'"
-  and don't see among the "OPTIONS IMPORT". is this normal or a bug?
-  at the same time i've got a lots of such messages on the server:
-  Bad LZO decompression header byte: 69
+THE ALERT IS ON!!!
 
-- neither on the server nor in the client we set any mtu. but we got
-  this warning:
-  WARNING: 'link-mtu' is used inconsistently, local='link-mtu 1541',
-remote='link-mtu 1542'
-  is it normal, a bug, or just a warning? should i have to fix it?
-  ie. define link-mtu on both end?
+RECENT NEWS HEADLINE: (GO READ ALL THE NEWS ON BIEL RIGHT NOW!)
 
-- if i set the above server network then i've got in the log file:
-  "IFCONFIG POOL: base=192.168.254.2 size=252
-   IFCONFIG POOL LIST"
-  in this case i still can use in the ccd/* files eg. the following:
-  ifconfig-push 192.168.254.2 255.255.255.0
-  or i should have to use different network for the fixed ip? or?
-
-- if there is a network behind the client eg. 192.168.253.0/24 then i
-  have to set in the ccd/client file:
-  iroute 192.168.253.0 255.255.255.0
-  but if i also would like to allow client-to-client i've to set in the
-  server.conf:
-  route 192.168.253.0 255.255.255.0 192.168.254.2
-  is it true? and in the example server.conf it's stated also a
-  push "route 192.168.253.0 255.255.255.0 192.168.254.2"
-  required. but in this case this route be pushed to the given clients
-  itself and gives a duplicate route error when try to add.
-  on the other hand the example conf files do not contains the third
-  parameters, but without it the route command has no gateway! does this
-  example files are wrong or i misunderstood something?
-  anyway why i have to add these two lines?
-  wouldn't it be much better, cleaner and easier if the client-to-client
-  defined and an iroute in the ccd/* files also 'generate' the above
-  route command and push command for all clients except the ones who
-  owns the network?
-
-- if i choose "topology subnet" and in the ccd/client file a:
-  ifconfig-push 192.168.254.2 255.255.255.0
-  then why i see on the client:
-tun0      Link encap:UNSPEC  HWaddr
-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
-          inet addr:192.168.254.2  P-t-P:192.168.254.2  Mask:255.255.255.0
-          UP POINTOPOINT RUNNING NOARP MULTICAST  MTU:1500  Metric:1
-          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:100
-          RX bytes:0 (0.0 b)  TX bytes:0 (0.0 b)
-
-shouldn't the P-t-P:192.168.254.1 is the right settings?
+BioElectronics Corporation Announces New 510(k) Market Clearance Application 
+Filed With FDA!!
 
 
--- 
-  Levente                               "Si vis pacem para bellum!"
+About BioElectronics Corporation (Source: News 5/18/2006)
+
+BioElectronics currently manufactures and sells ActiPatch(TM), a drug-free 
+anti-inflammatory patch with an embedded battery operated microchip that 
+delivers weeks of continuous pulsed therapy for less than a dollar a day. 
+The unique ActiPatch delivery system, using patented technology, provides 
+a cost-effective, patient friendly method to reduce soft tissue pain and 
+swelling.
+
+
+GO READ ALL THE NEWS ON THIS ONE!! DO YOUR DUE DILIGENCE!!
+RADAR IT FOR TUESDAY'S OPEN NOW! 
+
+
+______________
+
+
+
+Information within this report contains forward looking statements within 
+the meaning of Section 27A of the Securities Act of 1933 and Section 21B 
+of the SEC Act of 1934. Statements that involve discussions with respect 
+to projections of future events are not statements of historical fact and 
+may be  forward looking statements. Don't rely on them to make a decision. 
+Past performance is never indicative of future results. We received four 
+hundred thousand free trading shares in the past for our services. 
+All those shares have been sold. We have received an additional one million 
+free trading shares now. We intend to sell all one million shares now, 
+which could cause the stock to go down, resulting in losses for you. 
+The four hundred thousand shares and one million shares were received from 
+two different third parties, not officers, directors or affiliate 
+shareholders. This company has: an accumulated deficit, a negative net 
+worth, a reliance on loans from officers directors and affiliates to pay 
+expenses, and a nominal cash position. These factors raise substantial 
+doubt about its ability to continue as a going concern. The company and 
+its president are a defendant in a lawsuit. The publicly available float 
+of stock is currently increasing. URGENT: Read the company's SEC filing 
+before you invest. This report shall not be construed as any kind of 
+investment advice or solicitation. WARNING: You can lose all your money 
+by investing in this stock.
+
 
