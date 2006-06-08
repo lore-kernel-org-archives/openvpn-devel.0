@@ -1,10 +1,8 @@
-Message-ID: <001301c68a0d$4fc66d90$774dff55@...661...>
-From: "known maximum" <zfuysvfksg@...660...>
-Date: Wed, 7 Jun 2006 11:35:20 -0000
+From: "Gale Mccord" <artemiy_slapoguz@...662...>
+Date: Thu, 8 Jun 2006 18:14:08 -0100
 MIME-Version: 1.0
-Content-Type: multipart/related; type="multipart/alternative";
-	boundary="----=_NextPart_000_000F_01C68A26.7513A590"
-Subject: [Openvpn-devel] ANDevices
+Message-ID: <E1FoN8t-0008BM-RK@...556...>
+Subject: [Openvpn-devel] Good news for traders
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,259 +11,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain;
+        charset="Windows-1252"
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-------=_NextPart_000_000F_01C68A26.7513A590
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_001_0010_01C68A26.7513A590"
+For Immediate Release
+ALERT ISSUED - Watch F-C-Y-I.PK Tr@...659... Today!
 
-------=_NextPart_001_0010_01C68A26.7513A590
-Content-Type: text/plain; charset="windows-1250"
-Content-Transfer-Encoding: quoted-printable
+F a l c o n  E n e r g y, Inc.
+F-C-Y-I
+Last $ 1.25
+Market Plus Top Four P1ck
+Yesterday change of price was 105% !
 
-awaiting
-RTS
-box Spyware
-enlarge Solgel market=
 
-------=_NextPart_001_0010_01C68A26.7513A590
-Content-Type: text/html; charset="windows-1250"
-Content-Transfer-Encoding: quoted-printable
+VANCOUVER, British Columbia, June 05, 2006 (PRIME ZONE) --
+As part of the commitment of Falcon Energy, Inc., a Nevada Corporation, to keep
+investors informed of its status and activities, the company is providing this
+investor update.
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML><HEAD>
-<META http-equiv=3DContent-Type content=3D"text/html; charset=3Dwindows-125=
-0">
-<META content=3D"MSHTML 6.00.2900.2873" name=3DGENERATOR>
-<STYLE></STYLE>
-</HEAD>
-<BODY bgColor=3D#ffffff>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>
-<IMG alt=3D""=20
-hspace=3D0 src=3D"cid:000e01c68a0d$4fc66d90$774dff55@...661..." align=3Dbas=
-eline=20
-border=3D0></FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>awaiting</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>RTS</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>box Spyware</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>enlarge Solgel market</FONT=
-></DIV>
-</BODY></HTML>
+Gas production continues steadily from Falcon Energy's Richmount
+Westlock property
+in Alberta, Canada. This opportunity has proven itself out as the property and
+investment have benefited from the surge in natural gas prices since
+the well was
+first tied in May of 2005. The market price (NYMEX) for natural gas at that time
+was approximately $6.50 per MMBTU but in the last year prices stayed
+over 10.00 per
+MMBTU for a 5 month period with several spikes above the $14.00 range.
+The company
+is pleased that the investment continues to provide consistent revenue
+for the company
+and its shareholders.
 
-------=_NextPart_001_0010_01C68A26.7513A590--
+F a l c o n   E n e r g y  Inc. has also announced that due to the confirmed
+addition of its mining
+exploration properties in Mongolia, that it will shortly be expanding
+the executive team
+to assist in managing this new opportunity. Details will be forthcoming.
 
-------=_NextPart_000_000F_01C68A26.7513A590
-Content-Type: image/gif;
-	name="cpio.gif"
-Content-Transfer-Encoding: base64
-Content-ID: <000e01c68a0d$4fc66d90$774dff55@...661...>
+VANCOUVER, British Columbia, May 17, 2006 (PRIME ZONE) -- F a l c o n   E n e r g y , Inc.
+is pleased to announce that the granting of exploration licenses for
+five mining properties
+in Mongolia has been finalized. These licenses will be held for a
+minimum of three years and
+grant F a l c o n  E n e r g y, Inc. access to the mineral rights for the
+licensed properties.
 
-R0lGODdh6AFaAocAAAAAAIAAAACAAICAAAAAgIAAgACAgMDAwMDcwKbK8EAgAGAgAIAgAKAg
-AMAgAOAgAABAACBAAEBAAGBAAIBAAKBAAMBAAOBAAABgACBgAEBgAGBgAIBgAKBgAMBgAOBg
-AACAACCAAECAAGCAAICAAKCAAMCAAOCAAACgACCgAECgAGCgAICgAKCgAMCgAOCgAADAACDA
-AEDAAGDAAIDAAKDAAMDAAODAAADgACDgAEDgAGDgAIDgAKDgAMDgAODgAAAAQCAAQEAAQGAA
-QIAAQKAAQMAAQOAAQAAgQCAgQEAgQGAgQIAgQKAgQMAgQOAgQABAQCBAQEBAQGBAQIBAQKBA
-QMBAQOBAQABgQCBgQEBgQGBgQIBgQKBgQMBgQOBgQACAQCCAQECAQGCAQICAQKCAQMCAQOCA
-QACgQCCgQECgQGCgQICgQKCgQMCgQOCgQADAQCDAQEDAQGDAQIDAQKDAQMDAQODAQADgQCDg
-QEDgQGDgQIDgQKDgQMDgQODgQAAAgCAAgEAAgGAAgIAAgKAAgMAAgOAAgAAggCAggEAggGAg
-gIAggKAggMAggOAggABAgCBAgEBAgGBAgIBAgKBAgMBAgOBAgABggCBggEBggGBggIBggKBg
-gMBggOBggACAgCCAgECAgGCAgICAgKCAgMCAgOCAgACggCCggECggGCggICggKCggMCggOCg
-gADAgCDAgEDAgGDAgIDAgKDAgMDAgODAgADggCDggEDggGDggIDggKDggMDggODggAAAwCAA
-wEAAwGAAwIAAwKAAwMAAwOAAwAAgwCAgwEAgwGAgwIAgwKAgwMAgwOAgwABAwCBAwEBAwGBA
-wIBAwKBAwMBAwOBAwABgwCBgwEBgwGBgwIBgwKBgwMBgwOBgwACAwCCAwECAwGCAwICAwKCA
-wMCAwOCAwACgwCCgwECgwGCgwICgwKCgwMCgwOCgwADAwCDAwEDAwGDAwIDAwKDAwP/78KCg
-pICAgP8AAAD/AP//AAAA//8A/wD//////ywAAAAA6AFaAgcI/gABCBxIsKDBgwgTKlzIsKHD
-hxAjSpxIsaLFixgzatzIsaPHi/9CihxJsqTJkyhTqlzJsqXLlzBjypxJs6bNmzhz6tzJs6fP
-n0CDCh1KtKjRo0iTKl3KtKnTp1CjSp1KtarVq1izat3KtavXr2DDih1LtmxIbGbTql3Ltq3b
-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
-8iwCDwgAOw==
+F a l c o n   E n e r g y , Inc. had recently sought the mineral rights to these
+significant properties
+in the mineral rich region of Mongolia. F a l c o n   E n e r g y's interest in
+the region is driven in
+part by the anticipation of deploying modern prospecting methods to an
+area that abounds in
+both base and precious metals.
 
-------=_NextPart_000_000F_01C68A26.7513A590--
+The five licensed areas are:
+
+
+8825E - The Duhum Hujirt License Area
+8454X - Tsagaan Tolgoi Copper/Gold Project
+9997X - The Huld License Area
+9996X - The Har Tolgoi License Area
+9668X - Hutagt License Area
+
+Exploitable mineral resources found in the area in which the licenses
+are held include:
+Gold, base metals such as Copper, Molybdenum, Lead and Zinc as well as
+Fluorite and Uranium.
+
+
+
+
+
+---------------------
+decor betrothal builtin bracken anteroom bourn 
+bluet carrageen bowdoin conakry 
+bruno circuitry contrition adept charismatic bayonne basophilic 
+childbear carrie brandish bimonthly autotransformer 
 
 
