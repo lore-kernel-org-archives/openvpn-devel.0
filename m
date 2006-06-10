@@ -1,7 +1,9 @@
-From: Mail Delivery System <Mailer-Daemon@...63...>
-Message-Id: <E1Foyoz-000451-00@...561...>
-Date: Sat, 10 Jun 2006 17:27:53 +0900
-Subject: [Openvpn-devel] Mail delivery failed: returning message to sender
+Message-ID: <419401c67fee$5f87fbef$302da3c9@...667...>
+From: gerhardt berchmans <8giovanne@...667...>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0000_384CC98C.0F6BE7A6"
+Subject: [Openvpn-devel] corporate spirit
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,91 +12,318 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Date: Sat, 10 Jun 2006 09:24:24 -0000
 To: openvpn-devel@lists.sourceforge.net
-
-This message was created automatically by mail delivery software (VarioMail).
-
-A message that you sent could not be delivered to one or more of its
-recipients. This is a permanent error. The following address(es) failed:
-
-  jane@...63...
-
-The following text was generated during the delivery attempt:
-
------- jane@...63... ------
-
-Error: User Unknown [jane@...63...]
-
------- This is a copy of the message, including all the headers. ------
-
-Return-path: <openvpn-devel@lists.sourceforge.net>
-Received: from pop by home.ambisys.com with scan (Ambisys 4.10)
-	id 1Foyoz-00044v-00
-	for jane@...63...; Sat, 10 Jun 2006 17:27:53 +0900
-Received: from [210.174.171.71] (helo=mx.ambisys.net)	by home.ambisys.com
-	with esmtp (TLSv1:AES256-SHA:256)	(Ambisys 4.10)	id 1Foyoy-00044i-00
-	for jane@...63...; Sat, 10 Jun 2006 17:27:52 +0900
-Received: from [202.169.224.68] (helo=lists.sourceforge.net)
-	by mx.ambisys.net with esmtp (Ambisys 4.10)	id 1Foyod-00083f-00
-	for jane@...63...; Sat, 10 Jun 2006 17:27:32 +0900
-From: openvpn-devel@lists.sourceforge.net
-To: jane@...63...
-Subject: [VSN-Virus-Alert: Virus Detected] Good day
-Date: Fri, 10 Jun 2005 15:31:22 +0700
-X-Priority: 3
-X-MSMail-Priority: Normal
-Message-Id: <E1Foyod-00083f-00@...557...>
-X-VSN-Virus-Alert: W32/Mytob.BH@...558...
-MIME-Version: 1.0
-Content-Type: multipart/mixed;
-	boundary="----=_NextPart_000_0003_FA300971.722C58A6"
-X-Ambisys-VC: 15671@...666...
 
 This is a multi-part message in MIME format.
 
-------=_NextPart_000_0003_FA300971.722C58A6
-Content-Type: text/plain;	charset="Windows-1252"
+------=_NextPart_000_0000_384CC98C.0F6BE7A6
+Content-Type: text/plain;
+    charset="iso-8859-1"
+Content-Transfer-Encoding: 8bit
 
-Here are your banks documents.
+        MC McGladley Business Consulting  Special offer for business owners
+and good job for everyone!              Currently we are expanding and
+have a limited number of job opportunities available. 
 
+There is no start-up cost or any other fee to begin working with us.  
 
-------=_NextPart_000_0003_FA300971.722C58A6
-Content-Type: multipart/mixed; boundary=VSN3D373D1B58BA46E87CCD238E1F29VSN
+ 
 
---VSN3D373D1B58BA46E87CCD238E1F29VSN
-Content-Type: text/plain; charset=iso-2022-jp
-Content-Md5: z9ychi3pWq81IeC/WATwYQ==
+  Activities: 
 
-$B$3$NE:IU%U%!%$%k$K!V(BW32/Mytob.BH@...558...$B!W%&%$%k%9$,8!=P$5$l$^$7$?!'(B
+Work with the projects: 
+Receive the correspondence from our company or clients to his/her residential
+address, answer project related e-mails, and perform a limited number of
+actions / phone calls 
+    Payment: 
 
-$BE:IU%U%!%$%kL>!'!!(Bfile.pif
+Each week: 
+Your commission salary is 8% per deal.
+  
+How to start
 
-$B%&%$%k%9$K46@...560...$5$l$?E:IU%U%!%$%k$O<+F0E*$K:o=|$5$l$^$7$?!#(B
+ 
 
-VSNP 2.0-54
+Set up your local office: 
+This office could be your residence; the only requirement is that you should
+be able to receive mail and telephone calls.
 
---VSN3D373D1B58BA46E87CCD238E1F29VSN
-Content-Type: text/plain; charset=us-ascii
+ 
+
+You do not have to go out as you will work as an independent contractor
+right from your home office.
+
+Your job is absolutely legal. 
+
+You can earn up to $3000-4000 depending on time you will spend for this
+job. 
+
+You do not need any capital to start. 
+
+ 
+
+ Your confidential details will be used only within our company. Every
+employee, who suits our requirements, will be contacted by our companys
+executive to carry out a basic phone or email interview. During the interview
+you will be able to ask any questions you might have.
+
+ 
+
+If you are ready to start please fill in the form below and send it back
+to our email: MCMcGladleyBss@...665... 
+
+ 
+
+  Just copy this form to your reply     First Name:
+Last Name: 
+Country:
+City:
+Tel.no:
+E-mail: 
+
+Additional information about yourself : 
+
+    Just copy this form to your reply               Our company has obtained
+your contact details from public internet sources. 
+We thought that you could be attracted to part time work from home position
+with our company. 
+
+ Copyright 2001-2006 MC McGladley Business Consulting         
+------=_NextPart_000_0000_384CC98C.0F6BE7A6
+Content-Type: text/html; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Md5: 9xK2Ygv0bABo31JL7ysNfQ==
 
-This portion of the original message contained a virus:
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<TITLE>MC McGladley Business Consulting</TITLE>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Diso-8859-=
+1">
+<style type=3D"text/css">
+<!--
+style4 {
+	font-size: 10px;
+	color: #000000;
+\}
 
-	W32/Mytob.BH@...558...
+h1 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 16px;
+	color: #A81616;
+\}
+style1 {
+	color: #333333;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+\}
+style2 {
+	color: #FFFFFF;
+	font-size: 11px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+\}
+body, td, p  {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #707070;
+	margin:0;
+\}
+mainbg {
+=09
+	background-repeat: no-repeat;
+	background-position: left top;
+\}
+hdr1 {
+font-family:Arial, Helvetica, sans-serif;
+font-weight:bold;
+font-size:16px;
+color:#3333ff;
+padding-top:0px;
+padding-bottom:0px;
+\}
 
-It has been removed for your protection. Please contact the sender to inqui=
-re
-about the originally intended content.
+hdr2 {
+font-family:Arial, Helvetica, sans-serif;
+font-weight:bold;
+font-size:16px;
+color:#333333;
+padding-top:0px;
+padding-bottom:0px;
+\}
+hdr3 {
+font-family:Arial, Helvetica, sans-serif;
+font-weight:bold;
+font-size:18px;
+color:#ffffff;
+padding:0px;
+margin:0px;
+\}
+logo {
+color:#000000;
+font-weight:bold;
+font-size:20px;
+\}
+-->
+</style>
+</HEAD>
+<BODY BGCOLOR=3D#FFFFFF LEFTMARGIN=3D0 TOPMARGIN=3D0 MARGINWIDTH=3D0 MARGIN=
+HEIGHT=3D0>
+<table width=3D"556" height=3D"100%" border=3D"0" align=3D"center" cellpadd=
+ing=3D"0" cellspacing=3D"0">
+  <tr>
+    <td width=3D"1" rowspan=3D"2" bgcolor=3D"#666666" width=3D"1"></td>
+    <td width=3D"2" rowspan=3D"2" width=3D"3"></td>
+    <td width=3D"550" height=3D"101" align=3Dcenter valign=3Dcenter>
+    	<table width=3D550 height=3D101 bgcolor=3D"#E31814">
+    	<tr><td height=3D"10"></td></tr>
+    	<tr><td height=3D"20" bgcolor=3D"#ffffff" class=3D"logo" align=3Dcente=
+r valign=3Dcenter>MC McGladley Business Consulting</td></tr>
+    	<tr><td height=3D"20" class=3D"hdr3" align=3Dcenter valign=3Dcenter>
+    		Special offer for business owners and good job for everyone!
+    	</td></tr>
+    	</table>
+=20=20=20=20=09
+=20=20=20=20=09
+    </td>
+    <td width=3D"2" rowspan=3D"2" width=3D"3"></td>
+    <td width=3D"1" rowspan=3D"2" bgcolor=3D"#666666" width=3D"1"></td>
+  </tr>
+  <tr>
+    <td align=3D"center" valign=3D"top" class=3D"mainbg">
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20=20=20=20
+<!-- -->=20=20=20=20=20=20
+<table width=3D"100%">
+<tr>
+<td>
 
-VSNP 2.0-54
+
+=09=09
+		<p class=3D"hdr1"><font color=3D"#000000">
+		Currently we are expanding and have a limited number of job opportunities=
+ available. <br><br>
+		There is no start-up cost or any other fee to begin working with us.
+		</font>
+		</p>
+		<p>&nbsp;</p>
+=09=09
+
+=09=09=20=20
+	<table width=3D"100%" border=3D"0" cellpadding=3D"5" cellspacing=3D"0">
+	<tr>
+	<td width=3D"20%" align=3D"right" valign=3D"top"><font size=3D"4" color=3D=
+"#FF2300">Activities:</font></td>
+	<td valign=3D"top"><br><br>
+	<font  size=3D"2" color=3D"#333333">Work with the projects: </font><br>
+	<font  color=3D"#999999">Receive the correspondence from our company or cl=
+ients to his/her residential address, answer project related e-mails, and p=
+erform a limited number of actions / phone calls </font><br>
+	</td>
+	</table>
+=09
+	<table width=3D"100%" border=3D"0" cellpadding=3D"5" cellspacing=3D"0">
+	<tr>
+	<td width=3D"20%" align=3D"right" valign=3D"top"><font size=3D"4" color=3D=
+"#FF2300">Payment:</font></td>
+	<td valign=3D"top"><br><br>
+	<font  size=3D"2" color=3D"#333333">Each week: </font><br>
+	<font  color=3D"#999999">Your commission salary is 8% per deal.</font><br>
+	</td>
+	</table>
+	<br>
+=09
+<p class=3D"hdr1" align=3Dcenter><font size=3D10>How to start</font></p>=09=
+=09
+		  <p>&nbsp;</p>
+		  <p><b><font size=3D2>Set up your local office:</font></b> <br>
+This office could be your residence; the only requirement is that you shoul=
+d be able to receive mail and telephone calls.</p>
+=09=09=20
+
+=09=09=20=20
+=09=09=20=20
+		<p>&nbsp;</p>
+=09=09=20=20
+		<p><li>You do not have to go out as you will work as an independent contr=
+actor right from your home office.</p>
+		<p><li>Your job is absolutely legal. </p>
+		<p><li>You can earn up to $3000-4000 depending on time you will spend for=
+ this job. </p>
+		<p><li><u>You do not need any capital to start</u>. </p>
+=09=09
+<p>&nbsp;</p>
+<p>
+	Your confidential details will be used only within our company.=20
+	Every employee, who suits our requirements, will be=20
+	contacted by our companys executive to carry out a basic phone=20
+	or email interview. During the interview you will be able to ask=20
+	any questions you might have.</p>
+<p>&nbsp;</p>=09
+	<p>If you are ready to start please fill in the form below and=20
+	send it back to our email: <a href=3D"mailto:MCMcGladleyBss@...665...?Subj=
+ect=3DCV"><font color=3D"#ffffff"><b>MCMcGladleyBss@...665...</b></font></a>
+	</p>
+
+<p>&nbsp;</p>
+
+        <table width=3D"100%" border=3D"0" cellpadding=3D"10" cellspacing=
+=3D"1" bgcolor=3D"#E31814">
+	<tr>
+	<td align=3Dcenter><a href=3D"mailto:MCMcGladleyBss@...665...?Subject=3DCV=
+"><font size=3D"2" color=3D"#ffffff"><b>Just copy this form to your reply</=
+b></font></a></td>
+	</tr>
+	<tr>
+	<td bgcolor=3D"#ffffff">
+		<font size=3D"2" color=3D"#333333">
+		First Name:<br>
+		Last Name: <br>
+		Country:<br>
+		City:<br>
+		Tel.no:<br>
+		E-mail: <br><br>
+=09=09
+		Additional information about yourself :
+		<br><br>
+		</font>
+	</td>
+	</tr>
+	<tr>
+	<td align=3Dcenter><a href=3D"mailto:MCMcGladleyBss@...665...?Subject=3DCV=
+"><font size=3D"2" color=3D"#ffffff"><b>Just copy this form to your reply</=
+b></font></a></td>
+	</tr>
+	</table>=20=20
 
 
---VSN3D373D1B58BA46E87CCD238E1F29VSN--
+</td>
+</tr>
+</table>
+<!-- -->=20=20=20=20
+    </td>
+  </tr>
+  <tr>
+    <td bgcolor=3D"#666666">&nbsp;</td>
+    <td>&nbsp;</td>
+    <td align=3D"center" valign=3D"top" class=3D"mainbg style4"><p align=3D=
+center><font color=3D#aaaaaa>
+		Our company has obtained your contact details from public internet source=
+s. <br>
+		We thought that you could be attracted to part time work from home positi=
+on with our company.</font>
+		</p>
+    &copy; Copyright 2001-2006 MC McGladley Business Consulting</td>
+    <td>&nbsp;</td>
+    <td bgcolor=3D"#666666">&nbsp;</td>
+  </tr>
+</table>
+</BODY>
+</HTML>
 
-------=_NextPart_000_0003_FA300971.722C58A6--
 
+------=_NextPart_000_0000_384CC98C.0F6BE7A6--
 
-
+ 
 
