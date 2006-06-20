@@ -1,11 +1,8 @@
-Date: Sun, 18 Jun 2006 04:26:02 +0900
-FROM: postmaster@...604...
-Content-Transfer-Encoding: 8bit
-Mime-Version: 1.0
-Content-Type: multipart/report; report-type=delivery-status;
-	boundary="1150572362.25507.nexg.q0"
-Message-ID: <E1FrgQm-0005UI-RR@...556...>
-Subject: [Openvpn-devel] [Err] Re: ovpn server on udp with multiple gateways
+Date: Tue, 20 Jun 2006 13:38:34 +0800
+From: "ljfkw wycneovt" <hrkvgeew@...674...>
+Message-Id: <3556896586.260509-75447871-3808@...674...> 
+MIME-Version: 1.0 
+Subject: [Openvpn-devel] Your PR man H-Y-W-I june 19 TUESDAY
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,109 +11,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
-This is a multipart MIME message.
-
---1150572362.25507.nexg.q0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net, openvms@...644...
 
-Transmit Report:
+Hollywood Intermediate Inc.
+(SYM : H Y W I) 
 
-iryna7@...604...���� ���� ������ 3�� ���������� ��������������.
-(���� ���� : 550 <iryna7@...604...>: Recipient address rejected: User unknown in local recipient table(211.232.190.7))
+Current Sh Price : $ 0.75
+This price will be history coming next week
+ 
+Follow the performance of this company, it is a real gold mine
+oh ya, thats the one 
 
-<����> ���� ������ ���� ����
-User unknown       :������ ������ �������� �������� ����
-Socket connect fail:���� ���� ������ ���� ����
-DATA write fail    :���� ���� ������ ������ ���� ����
-DATA reponse fail  :���� ���� ���������� ������ ���� ����
+HYWI has performed like clockwork every time 
 
---1150572362.25507.nexg.q0
-Content-type: message/delivery-status
-
-Reporting-MTA: dns; nexg.net
-
-Final-Recipient: rfc822;iryna7@...604...
-Diagnostic-Code: smtp;
-	550 error - <iryna7@...604...>: Recipient address rejected:
-	User unknown in local recipient table(211.232.190.7)
-Action: failed
-Status: 5.0.0
-
---1150572362.25507.nexg.q0
-Content-Type: message/rfc822
-Content-Transfer-Encoding: 8bit
-
-X-MF: BNDR=NULL,Date=0,IPR=3.0,HIP=1,DIP=MATCH-SPF,SPF=2,RcvdCnt=4
-X-HELO: ehlo lists-outbound.sourceforge.net
-X-RECEIVED-IP: 66.35.250.225
-X-MAIL-FROM: openvpn-devel-bounces@lists.sourceforge.net
-Date: Sat, 17 Jun 2006 21:25:54 +0200
-From: richard lucassen <mailinglists@...673...>
-To: openvpn-devel@lists.sourceforge.net
-Message-Id: <20060617212554.03e36c3e.mailinglists@...673...>
-In-Reply-To: <e710p7$8ic$1@...165...>
-References: <20060617152151.6ce2f63f.mailinglists@...673...>
-	<e710p7$8ic$1@...165...>
-Organization: XAQ Systems
-X-Mailer: Sylpheed version 1.0.4 (GTK+ 1.2.10; i386-pc-linux-gnu)
-Mime-Version: 1.0
-X-Spam-Score: 1.0 (+)
-X-Spam-Report: Spam Filtering performed by sourceforge.net.
-	See http://spamassassin.org/tag/ for more details.
-	Report problems to
-	http://sf.net/tracker/?func=add&group_id=1&atid=200001
-	1.0 FORGED_RCVD_HELO       Received: contains a forged HELO
-Subject: Re: [Openvpn-devel] ovpn server on udp with multiple gateways
-X-BeenThere: openvpn-devel@lists.sourceforge.net
-X-Mailman-Version: 2.1.8
-Precedence: list
-Reply-To: openvpn-devel@lists.sourceforge.net
-List-Id: <openvpn-devel.lists.sourceforge.net>
-List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
-	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
-List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
-List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
-List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
-List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
-	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Sender: openvpn-devel-bounces@lists.sourceforge.net
-Errors-To: openvpn-devel-bounces@lists.sourceforge.net
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-
-On Sat, 17 Jun 2006 08:40:50 -0500
-Charles Duffy <cduffy@...294...> wrote:
-
-> OpenVPN 2.1-beta3 merged a patch adding multihoming support.
-
-Just a question: I have an openvpn-2.0.7 server (compiled from source)
-in a production environment. Is 2.1beta4 stable enough to replace 2.0.7?
-
-R.
-
--- 
-___________________________________________________________________
-It is better to remain silent and be thought a fool, than to speak
-aloud and remove all doubt.
-
-+------------------------------------------------------------------+
-| Richard Lucassen, Utrecht                                        |
-| Public key and email address:                                    |
-| http://www.lucassen.org/mail-pubkey.html                         |
-+------------------------------------------------------------------+
+CO OverView
+H o l l y w o o d  I n t e r m e d i a t e provides a proprietary technology of Digital Intermediate services to feature filmmakers for post-production for film mastering and restoration. This technology gives the filmmakers total creative control over the look of their productions. Whether shooting on film or acquiring in HD or SD video, H o l l y w o o d  I n t e r m e d i a t e puts a powerful cluster of digital tools at the director's disposal to achieve stunning results on the big screen. Matchframe Digital Intermediate, a division of H o l l y w o o d  I n t e r m e d i a t e, Inc., packages a full array of post-production services with negative handling expertise and cost-effective 2K digital intermediate and 35mm film out systems. The Digital Intermediate process eliminates current post-production redundancies by creating a single high-resolution master file from which all versions can be made, including all theatrical and High Definition formats. By creating a single maste
+r file with resolution higher than the current High Definition broadcast standards, the DI master file enables cinema and television distributors to extract and archive all current and future cinema and television formats including Digital Cinema, Television and High Definition.
 
 
-_______________________________________________
-Openvpn-devel mailing list
-Openvpn-devel@lists.sourceforge.net
-https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+Red H0t News:
 
---1150572362.25507.nexg.q0
-Content-Type: text/plain
+H o l l y w o o d  I n t e r m e d i a t e a provider of digital intermediate film mastering services, announced today that that its Matchframe Digital Intermediate (MDI) division is completing a digital intermediate for Chad Lowe's directorial debut, "Beautiful Ohio," starring William Hurt and Rita Wilson. READ MORE THIS IS HUGE
 
+H o l l y w o o d  I n t e r m e d i a t e Expands the Creative Palette for Independent Filmmakers GLENDALE, CA--(MARKET WIRE)--May 31, 2006 -- H o l l y w o o d  I n t e r m e d i a t e, Inc. A provider of digital intermediate film mastering services, announced today that its Matchframe Digital Intermediate division is currently providing full digital intermediate services for Super 16MM productions.
 
+H o l l y w o o d  I n t e r m e d i a t e, Inc. (H_Y_W_I.PK - News), a provider of digital intermediate film mastering services, announced that High Definition preview masters as part of its normal digital intermediate service offerings and workflow.
 
---1150572362.25507.nexg.q0--
+"Typically, in current post-production workflow, HD dailies masters are edited into high quality preview masters including color timing, dirt removal, opticals and visual effects," said David Waters, H o l l y w o o d  I n t e r m e d i a t e president. "Unfortunately, none of these processes translate to the theatrical release of the film as they must all be duplicated or repeated in either a higher resolution digital format, or photo chemical process."
+
+H o l l y w o o d  I n t e r m e d i a t e gives Motion Picture producers the ability to scan their selected original camera negative at 2k or 4k film resolution, conform a high resolution digital master for theatrical and broadcast release including dirt removal, opticals and visual effects, and output a High Definition preview master to be used for preview screenings and focus groups that can be deployed in any worldwide theater location.
+
+"The challenge for completing the final editorial decisions on a motion picture are balanced between the ability to display the highest resolution picture for a test audience, and the costs and time in having to re-master your film based on a test audience response," said Jim Delany, H o l l y w o o d  I n t e r m e d i a t e COO.
+
+DO your Due Diligence and you'll see what we are talking about when it comes to H_Y_W_I
+
+-----------------------
+When it rains it pours.   A rose by any other name would smell as sweet. Your ass is grass. Two peas in a pod.  Treat him like dirt. Slow as a snail.   Throw pearls before swine. Tastes like chicken.   Save it for a rainy day.   The shoes on the other foot now.   A rolling stone gathers no moss. Sour as a green apple.   The shoes on the other foot now.   Raking in the dough. Up one side and down the other.   You never miss the water till the well runs dry. Survival of the fittest.   A stick in the mud.   Spaceship earth.   A snail's pace. Through the grapevine.   The silly season.   The way to a man's heart is through his stomach. 
+
+Sly as a fox.   Some like carrots others like cabbage. Timing is everything.  The sun will shine into our yard to.   That's a whole new can of worms.   A rose by any other name would smell as sweet. Shiver me timber. Stir up an ant's nest.   A place in the sun.   You never miss the water till the well runs dry. Strong as an ox.  Turn over a new leaf. Wet behind the ears. Scraping the bottom of the barrel.  A rolling stone gathers no moss. Raking in the dough. The squeaky wheel gets the grease.   Worked night and day. Worked night and day. What's done is done. 
+
