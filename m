@@ -1,8 +1,10 @@
-Message-ID: <4499A402.2040800@...678...>
-Date: Wed, 21 Jun 2006 15:54:42 -0400
-From: Bill Tabor <btabor@...677...>
+Message-ID: <184379570606220445o51075eddt25d051dcb3f8ed28@...278...>
+Date: Thu, 22 Jun 2006 14:45:40 +0300
+From: "Sameh Attia" <sattia@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] IA64
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_6518_27860969.1150976740460"
+Subject: [Openvpn-devel] i-mate SP5 & OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,11 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-any one know what fixes need to be made to ovenvpn to make in work on 
-SLSE 9 on an IA64
+------=_Part_6518_27860969.1150976740460
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
+Hi,
+   I bought this phone http://www.imate.com/t-DETAILS_SP5.aspx after
+checking your site to make sure it is supported. Unfortunately, when I
+attempted to install the client I got the error message of something like
+'unsuccessfull installation ....unsupported device'.
+
+I checked the forum to see if there are any workarounds but no avail. Is the
+Windows Mobile 5.0 Smart Phone Edition different from the Windows Mobile 5.0
+?
+Please help.
+Regards
+
+------=_Part_6518_27860969.1150976740460
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Hi,<br>&nbsp;&nbsp; I bought this phone <a href="http://www.imate.com/t-DETAILS_SP5.aspx">http://www.imate.com/t-DETAILS_SP5.aspx</a> after checking your site to make sure it is supported. Unfortunately, when I attempted to install the client I got the error message of something like 'unsuccessfull installation ....unsupported device'.
+<br><br>I checked the forum to see if there are any workarounds but no avail. Is the Windows Mobile 5.0 Smart Phone Edition different from the Windows Mobile 5.0?<br>Please help.<br>Regards<br>
+
+------=_Part_6518_27860969.1150976740460--
 
