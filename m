@@ -1,7 +1,8 @@
-From: Mail Delivery System <Mailer-Daemon@...63...>
-Message-Id: <E1FtciF-00056y-00@...561...>
-Date: Fri, 23 Jun 2006 12:52:07 +0900
-Subject: [Openvpn-devel] Mail delivery failed: returning message to sender
+Date: Fri, 23 Jun 2006 17:41:55 +0800
+From: "hhhugjzm euinipbnc" <zockaadall@...680...>
+Message-Id: <0723731591.183888-72126708-4192@...680...> 
+MIME-Version: 1.0 
+Subject: [Openvpn-devel] pay attention to  New and just in
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,89 +13,42 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net, openvms@...644...
 
-This message was created automatically by mail delivery software (VarioMail).
+F A L C O N  E N E R G Y  I N C 
+(SYMB : F C Y I)
 
-A message that you sent could not be delivered to one or more of its
-recipients. This is a permanent error. The following address(es) failed:
+Current Sh Price : $ 0.95
+Flacon energy has been a gold mine for us in past campaigns,
+We are Glad to have it back and you will be too
+S T R O N G  B U Y 
+ 
+Follow the performance of this company, it is a real gold mine
+forward specs for    
 
-  leo@...63...
+F C Y I has performed like clockwork every time 
 
-The following text was generated during the delivery attempt:
-
------- leo@...63... ------
-
-Error: User Unknown [leo@...63...]
-
------- This is a copy of the message, including all the headers. ------
-
-Return-path: <openvpn-devel@lists.sourceforge.net>
-Received: from pop by home.ambisys.com with scan (Ambisys 4.10)
-	id 1FtciF-00056s-00
-	for leo@...63...; Fri, 23 Jun 2006 12:52:07 +0900
-Received: from [210.174.171.71] (helo=mx.ambisys.net)	by home.ambisys.com
-	with esmtp (TLSv1:AES256-SHA:256)	(Ambisys 4.10)	id 1FtciF-00056d-00
-	for leo@...63...; Fri, 23 Jun 2006 12:52:07 +0900
-Received: from [202.169.224.68] (helo=lists.sourceforge.net)
-	by mx.ambisys.net with esmtp (Ambisys 4.10)	id 1FtceM-0001Yj-00
-	for leo@...63...; Fri, 23 Jun 2006 12:48:08 +0900
-From: openvpn-devel@lists.sourceforge.net
-To: leo@...63...
-Subject: [VSN-Virus-Alert: Virus Detected] Hello
-Date: Thu, 23 Jun 2005 10:52:26 +0700
-X-Priority: 3
-X-MSMail-Priority: Normal
-Message-Id: <E1FtceM-0001Yj-00@...557...>
-X-VSN-Virus-Alert: W32/Mytob.BH@...558...
-MIME-Version: 1.0
-Content-Type: multipart/mixed;
-	boundary="----=_NextPart_000_0009_6EE57C14.84347312"
-X-Ambisys-VC: 19636@...679...
-
-This is a multi-part message in MIME format.
-
-------=_NextPart_000_0009_6EE57C14.84347312
-Content-Type: text/plain;	charset="Windows-1252"
-
-The original message was included as an attachment.
+F A L C O N  E N E R G Y  I N C (FCYI)
 
 
-------=_NextPart_000_0009_6EE57C14.84347312
-Content-Type: multipart/mixed; boundary=VSN4CB43D1B58BA46E87CCD238E1F29VSN
+An independent resource exploration and production company whose current projects range from the production of natural gas and oil in Alberta to the exploration for minerals such as copper and gold in Mongolia.
 
---VSN4CB43D1B58BA46E87CCD238E1F29VSN
-Content-Type: text/plain; charset=iso-2022-jp
-Content-Md5: Gx6lH6JEZzt/gNUtJKKDdw==
+Is FCYI Ready To Go? If You Think So, Pleasee review exactly what the company does. You Know what to Do...Watch This One Trade.
 
-$B$3$NE:IU%U%!%$%k$K!V(BW32/Mytob.BH@...558...$B!W%&%$%k%9$,8!=P$5$l$^$7$?!'(B
+Current news for the company
 
-$BE:IU%U%!%$%kL>!'!!(Bdata.scr
+Falcon Energy, Inc. (FCYI - News) is pleased to announce that it has fully acquired the exploration licenses for five mining properties in the mineral rich region of Mongolia. Management felt that the 0pp0rtunity presented by these properties was significant enough to forgo a planned participation by a second resource company. These licenses will be held for a minimum of three years and grant F A L C O N  E N E R G Y  I N C. access to the mineral rights for the licensed properties.
 
-$B%&%$%k%9$K46@...560...$5$l$?E:IU%U%!%$%k$O<+F0E*$K:o=|$5$l$^$7$?!#(B
+Mongolia has a wide variety of mineral resources. As of 1998, about 88% of the country had been geologically mapped but only 20% of the country's landmass had been licensed for exploration and exploitation.
 
-VSNP 2.0-54
+Falcon Energy's interest in the region is driven in part by the anticipation of deploying modern prospecting methods to an area that abounds in both base and precious metals. Exploitable mineral resources found in the area in which the licenses are held include: Gold, base metals such as Copper, Molybdenum, Lead and Zinc as well as Fluorite and Uranium. 
 
---VSN4CB43D1B58BA46E87CCD238E1F29VSN
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Content-Md5: 9xK2Ygv0bABo31JL7ysNfQ==
+So GET IN NOW - WILL EXPLODE in next 2 weeks!!
 
-This portion of the original message contained a virus:
+If you miss F C Y I now you WILL regret it.
 
-	W32/Mytob.BH@...558...
+-----------------------
+Tossed around like a hot potato.   There is always next year.   Spill the beans.   What goes up must come down. We hung them out to dry.  Two peas in a pod.  Too little too late.   A place in the sun.   Spill the beans.   A thing of beauty is a joy forever.   Water it down.  The silly season.   The scythe ran into a stone. Weed it out.  Tall as a tree.   Rain, rain go away; come again some other day. A tree does not move unless there is wind.   When you get lemons, make lemonade.(When life gives you scraps make quilts.) Sitting on the fence. The squeaky wheel gets the grease.   Timing is everything.  To gild refined gold, to paint the lily. Shit happens.   Timing is everything. 
 
-It has been removed for your protection. Please contact the sender to inqui=
-re
-about the originally intended content.
-
-VSNP 2.0-54
-
-
---VSN4CB43D1B58BA46E87CCD238E1F29VSN--
-
-------=_NextPart_000_0009_6EE57C14.84347312--
-
-
-
+A rolling stone gathers no moss. Walking on thin ice. We hung them out to dry.  Sow much, reap much; sow little, reap little. Stubborn as a mule.   The stronger the breeze the stronger the trees. Stone cold sober.   Speak softly and carry a big stick.   Still water runs dirty and deep.   Ugly as a mud fence. This is for the birds.   A thorn in my side.   Put to bed with a shovel. A tree does not move unless there is wind.   There is always next year.   Your in hot water.
 
