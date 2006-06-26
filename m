@@ -1,10 +1,10 @@
-From: =?UTF-8?B?IkRlbmlzIGRvcyBTYW50b3MgU2lsdmEgfMyFzLI8zIXMss6YzIXMsj7MhQ==?=
-	=?UTF-8?B?zLJ8ICI=?= <denis@...655...>
-Date: Sun, 25 Jun 2006 22:27:29 -0400
-Message-ID: <e7nghq$497$1@...165...>
+From: =?windows-1252?Q?=22Denis_dos_Santos_Silva_=7C=3F=3F=3C=3F=3F?=
+	=?windows-1252?Q?=3F=3F=3F=3E=3F=3F=7C_=22?= <denis@...655...>
+Date: Sun, 25 Jun 2006 22:50:08 -0400
+Message-ID: <e7nhs9$6vd$1@...165...>
 Mime-Version: 1.0
 Sender: news <news@...165...>
-Subject: [Openvpn-devel] feature request
+Subject: [Openvpn-devel] features request
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,7 +13,7 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
