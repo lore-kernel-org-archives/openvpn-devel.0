@@ -1,9 +1,10 @@
-From: Charles Duffy <cduffy@...294...>
-Date: Mon, 26 Jun 2006 07:32:44 -0500
-Message-ID: <e7ok5c$7tk$1@...165...>
-References: <e7nghq$497$1@...165...>
+From: =?UTF-8?B?IkRlbmlzIGRvcyBTYW50b3MgU2lsdmEgfMyFzLI8zIXMss6YzIXMsj7MhQ==?=
+	=?UTF-8?B?zLJ8ICI=?= <denis@...655...>
+Date: Mon, 26 Jun 2006 08:56:54 -0400
+Message-ID: <e7oldv$df4$1@...165...>
+References: <e7nghq$497$1@...165...> <e7ok5c$7tk$1@...165...>
 Mime-Version: 1.0
-In-Reply-To: <e7nghq$497$1@...165...>
+In-Reply-To: <e7ok5c$7tk$1@...165...>
 Sender: news <news@...165...>
 Subject: Re: [Openvpn-devel] pushing messages to the client [was: feature
 	request]
@@ -19,16 +20,30 @@ Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Denis dos Santos Silva |̲̅<̲̅Θ̲̅>̲̅| wrote:
-> * motd
-> --- like message of day, perfomed by client (in case, openvpn gui)
+Charles Duffy wrote:
+> Denis dos Santos Silva |Ì…Ì²<Ì…Ì²Î˜Ì…Ì²>Ì…Ì²| wrote:
+>> * motd
+>> --- like message of day, perfomed by client (in case, openvpn gui)
+>>
+>> * message based on common name
+>> --- a custom message, like ''last connected'' or a custom message
+>>
+>> ccd or push-based
 > 
-> * message based on common name
-> --- a custom message, like ''last connected'' or a custom message
+> Both of these can already be done pushing the "echo" directive, with 
+> appropriate client support.
 > 
-> ccd or push-based
+> 
+> Using Tomcat but need to do more? Need to support web services, security?
+> Get stuff done quickly with pre-integrated technology to make your job easier
+> Download IBM WebSphere Application Server v.1.0.1 based on Apache Geronimo
+> http://sel.as-us.falkag.net/sel?cmd=lnk&kid=120709&bid=263057&dat=121642
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+cool!
 
-Both of these can already be done pushing the "echo" directive, with 
-appropriate client support.
+thx
 
 
