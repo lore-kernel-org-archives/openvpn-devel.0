@@ -1,10 +1,9 @@
-Message-ID: <001101c69c66$91f1d4a0$9f3af152@...683...>
-From: "There" <gucltenafa@...682...>
-Date: Fri, 30 Jun 2006 18:59:37 -0200
+Message-ID: <44A6B3EF.2060305@...684...>
+Date: Sat, 01 Jul 2006 19:42:07 +0200
+From: Christian Holler <decoder@...684...>
 MIME-Version: 1.0
-Content-Type: multipart/related; type="multipart/alternative";
-	boundary="----=_NextPart_000_000D_01C69C77.557AA4A0"
-Subject: [Openvpn-devel] basis
+Subject: [Openvpn-devel] Bugreport: get_default_gateway function fails under
+	specific circumstances
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,309 +12,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-------=_NextPart_000_000D_01C69C77.557AA4A0
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_001_000E_01C69C77.557AA4A0"
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-------=_NextPart_001_000E_01C69C77.557AA4A0
-Content-Type: text/plain; charset="windows-1250"
-Content-Transfer-Encoding: quoted-printable
+Hello,
 
-impunity Do
-EVENTS CALENDAR
-made. Instead could Utility.
-copy.
-NEXT gtgt
-fail Utility
-There
-progress CANCEL YOUR
-error
-touch nobel prize laureate.
-Masters
-admins Read more. Minor updates item
-Taiwan United Kingdom
-pretend
-UK Tel: Fax: pages viewed through
-TN UK Tel: Fax:
-leave
-checked. If fail
-Dice images have become
-romantic Includes:
-English Books
-Mac OS
-Broadbent Labor Love
-Without
-such based
-HFS Case Sensitive
-Keychain sorta defeats
-part show. list includes industrys leaders well highly regarded
-Youth ENTRY CLOSED
-CODE:
-have become tool
-Dont prompted
+today I discovered a bug that is not easy to trigger but causes the
+"get_default_gateway" function to fail in some cases. This function
+is, as you surely know, used for example when "net_gateway" is pushed
+by the server as an option to the route command and should return the
+default gateway so a route can be set via that default gateway.
+
+(Version: 2.0.7)
+
+Both in the linux and windows code, you assume that this gateway is
+non-zero (see lines 1055 and 1295 in route.c). This is normally the
+case, but has not necessarily to be always like that. For example,
+when you want to use openvpn in an environment, where already other
+programs use tun devices to reroute the traffic, then default routes
+may appear which look like this:
+
+(route -n output on linux)
+
+Destination     Gateway         Genmask         Flags Metric Ref   
+Use Iface
+0.0.0.0         0.0.0.0         0.0.0.0         U     0      0       
+0 tun0
 
 
-------=_NextPart_001_000E_01C69C77.557AA4A0
-Content-Type: text/html; charset="windows-1250"
-Content-Transfer-Encoding: quoted-printable
+This is fully valid with tun devices, but because the gateway is
+0.0.0.0, the get_default_gateway function fails to find this correct
+route and fails.
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML><HEAD>
-<META http-equiv=3DContent-Type content=3D"text/html; charset=3Dwindows-125=
-0">
-<META content=3D"MSHTML 6.00.2900.2873" name=3DGENERATOR>
-<STYLE></STYLE>
-</HEAD>
-<BODY bgColor=3D#ffffff>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>
-<IMG alt=3D""=20
-hspace=3D0 src=3D"cid:000c01c69c66$91f1d4a0$9f3af152@...683..." align=3Dbas=
-eline=20
-border=3D0></FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>impunity Do</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>EVENTS CALENDAR</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>made. Instead could Utility=
-.</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>copy.</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>NEXT gtgt</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>fail Utility</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>There</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>progress CANCEL YOUR</FONT>=
-</DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>error</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>touch nobel prize laureate.=
-</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>Masters</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>admins Read more. Minor upd=
-ates item</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>Taiwan United Kingdom</FONT=
-></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>pretend</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>UK Tel: Fax: pages viewed t=
-hrough</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>TN UK Tel: Fax:</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>leave</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>checked. If fail</FONT></DI=
-V>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>Dice images have become</FO=
-NT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>romantic Includes:</FONT></=
-DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>English Books</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>Mac OS</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>Broadbent Labor Love</FONT>=
-</DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>Without</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>such based</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>HFS Case Sensitive</FONT></=
-DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>Keychain sorta defeats</FON=
-T></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>part show. list includes in=
-dustrys leaders well highly regarded</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>Youth ENTRY CLOSED</FONT></=
-DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>CODE:</FONT></DIV>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>have become tool</FONT></DI=
-V>
-<DIV align=3Dcenter><FONT face=3DArial size=3D2>Dont prompted</FONT></DIV>
-</BODY></HTML>
 
-------=_NextPart_001_000E_01C69C77.557AA4A0--
+Solution: Do not rely on gateway to be nonzero, and honor Iface when
+setting the default route. This can be fixed easily with small
+modifications to the windows and linux version of this function and
+how it is used. (Make get_default_gateway return a whole route
+structure in side effect instead of only the gateway address. This
+route structure should also include the Iface then).
 
-------=_NextPart_000_000D_01C69C77.557AA4A0
-Content-Type: image/gif;
-	name="reference.gif"
-Content-Transfer-Encoding: base64
-Content-ID: <000c01c69c66$91f1d4a0$9f3af152@...683...>
 
-R0lGODdhzQGpAYcAAAAAAIAAAACAAICAAAAAgIAAgACAgMDAwMDcwKbK8EAgAGAgAIAgAKAg
-AMAgAOAgAABAACBAAEBAAGBAAIBAAKBAAMBAAOBAAABgACBgAEBgAGBgAIBgAKBgAMBgAOBg
-AACAACCAAECAAGCAAICAAKCAAMCAAOCAAACgACCgAECgAGCgAICgAKCgAMCgAOCgAADAACDA
-AEDAAGDAAIDAAKDAAMDAAODAAADgACDgAEDgAGDgAIDgAKDgAMDgAODgAAAAQCAAQEAAQGAA
-QIAAQKAAQMAAQOAAQAAgQCAgQEAgQGAgQIAgQKAgQMAgQOAgQABAQCBAQEBAQGBAQIBAQKBA
-QMBAQOBAQABgQCBgQEBgQGBgQIBgQKBgQMBgQOBgQACAQCCAQECAQGCAQICAQKCAQMCAQOCA
-QACgQCCgQECgQGCgQICgQKCgQMCgQOCgQADAQCDAQEDAQGDAQIDAQKDAQMDAQODAQADgQCDg
-QEDgQGDgQIDgQKDgQMDgQODgQAAAgCAAgEAAgGAAgIAAgKAAgMAAgOAAgAAggCAggEAggGAg
-gIAggKAggMAggOAggABAgCBAgEBAgGBAgIBAgKBAgMBAgOBAgABggCBggEBggGBggIBggKBg
-gMBggOBggACAgCCAgECAgGCAgICAgKCAgMCAgOCAgACggCCggECggGCggICggKCggMCggOCg
-gADAgCDAgEDAgGDAgIDAgKDAgMDAgODAgADggCDggEDggGDggIDggKDggMDggODggAAAwCAA
-wEAAwGAAwIAAwKAAwMAAwOAAwAAgwCAgwEAgwGAgwIAgwKAgwMAgwOAgwABAwCBAwEBAwGBA
-wIBAwKBAwMBAwOBAwABgwCBgwEBgwGBgwIBgwKBgwMBgwOBgwACAwCCAwECAwGCAwICAwKCA
-wMCAwOCAwACgwCCgwECgwGCgwICgwKCgwMCgwOCgwADAwCDAwEDAwGDAwIDAwKDAwP/78KCg
-pICAgP8AAAD/AP//AAAA//8A/wD//////ywAAAAAzQGpAQcI/gABCBxIsKDBgwgTKlzIsKHD
-hxAjSpxIsaLFixgzatzIsaPGfyBDihxJsqTJkyhTqlzJsqXLlzBjypxJs6bNmzhz6tzJs6fP
-n0CDCh1KtKjRo0iTKl3KtKnTp1CjSp1KtarVq1izat3KtavXr2DDih3r0hDZs2jTql3Ltq3b
-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
-ymvVV4251rziMo3iuazfPeHiuSXb8Tu8NHHffC3VcK25OEHjei3XPhHXMI44Q/7jZa3VOu7V
-N77j8zvW9a3kQB7jai1ccrzQBt3XhE3FfR3S9NzQF03Ff63kYG7isJ3WhWzYj03GYg3mHR3C
-jHzFJr3Q7k3fWo66h73Sdv7Yev5bui3Jlz3aGezNfg7H/789yM17z7dc2jUNzbSM2GAM5359
-5tut6LSc2b183XOs0I9+52dcxPDN54Oe3eityLV9x4dszoBM3bG84lycx3Ud3h081dCNyotc
-wn1uyPbM3bVcyabN6+McXK5s6lAMzrMu6qqN3ohO6qye5/AszuPM2M3+57bu6L393Mjc6bIc
-3E+OW9ic6b9OyND925uezsxt2sa+6Nrd7PJM7vmc3Ks+0pdO67ke3dce7sQ92+jO7RU9vQMd
-2zts3lf+0lze2ALP0uW91SAt5+Mt32qsxwrfwxD/0OSdyAKv8B9N0iPd745t8HRu5RMN8Fud
-XEWOFTjeyko38lZR8iavbmQu1P8y7uEwH/MyP/M0X/Pg9fKtvhQJvewCjdre69AqTu88IdoS
-X8xS3eKDffQoT+RNHuQqcQnJfOSlTNfCndfe/b94rdxZf9dNX/VMvvSHw/NOH+KODuVWT/b1
-neP57uTO/NpeH+Vo//ZcP1xarsOGrvF1fsNmnNV4ntgDz+WATdLQK+mnvuq4ruYuzdZJXPXx
-jOZbvueKDdAEL/iIX/ThDfm0FdqW/e2UTeh+Du5XP8/C3tnjHsl5v9ybDsipD+/QnPXdPtuW
-TvHzjvrffujZ3vkzzu+vjOnIveusPeldjfDy3vZ7T+xx/PuZ7etJLPx57PPn7N4SbdyQrd10
-jOyo3cz/uU/8787L5c7oie7H/Dz8wUz6pl/s3Qzuy2/2ou38Nrzmc33n3U3u6DzCw65b7b/5
-0m/c647O3P38SMz9AAHg3z+BAgkONDjwIEKGCw0+bFhQocOIFCEqTLiw4cSMGDl6hBiSYcKM
-IitS1CjxpMqOF1FOhBlT5kyaNW3WjHRT506ePX3GBBA0KEGSRBEOFQqTJNKCTY86HcoxalKM
-U5k+bCo0q1GiWbVW3cr06FOtV8d2NRqV60e0bbe+BAv269muaqm6tSo2KdW9c+Pi7fhT8GDC
-hQ0fPhzYpmLEjR0/ZquxMOOdlCFfxpxZ82bOnTfqtOxZtOaiiEPTPD1a9WrW/q1d17wLO/Vr
-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
-evG9gWmEc9JP9XxnVRHiFaE0ZhVTSd7A8r18h4s+OYfPHEF5sdnFM8dcxscKcxGTsZsBtHHS
-0yxtoIdt1GmUW4P1++sx2cjChAX2vZ2capc3vZTtZbbXxZ7s9ZJ97Ge3DXTRvna2g7IKbYd7
-3OU+d7rX3e53x3ve9b53vvfd738HfOAFP3jCF97wh0d84hW/eMY33vGPh3zkJT95ylfe8pfH
-fOY1v3mFBAAmAQB96DsfetDHhPSlP/1ARD+R1av+9J53fen+Py/71ZN+9LAXfepn7/ncy/4f
-sL+97WP/+9/THvW+Lz7ue697198++M5fPvFZf3ze+x74sRd+8olfe+QvP/vJtz3zO7/71r/e
-9OUHfuvBT33rsx/5qt/98KFv/OrP//val7/0d3J9+I+////3P+lLPwAMwP7DPQDkP/0TQNYr
-wAEkQP1zQAI8wAVsPgWMQP8bwAnkv+u7wAh0wAT0QAYUQQ0cPQQ0PQM0QQq8QAVMQQj8PBG0
-wBNEwf/rwBe0wQeswRbMwe3DQJ7gvRucwQJkQRccwiKMQSCcQRDUQSEkQhdMwCPswQBUQiN8
-wuKLwhGUQhzMQvh7Qg60QS9Ewir/lMAGZMENfEAttEI0hMEQXMMhnMAbBMM0bEKa+MEgvIk6
-FMI3HMMm1EMmbEEmxMMpjMMVJEIv7EIYBEJCJEQqVEEZ/EBAvEIelMEzhMI8rAkzNEFMjEJN
-7ME+pEA+tEQuPMEq3ME6fESZeENPpMM//EQJRD/rQ8WZiENIVEQdVD8G/EEwnEJKND81lENe
-FEU3HL9c9ENi1MVJpELx20NZJL8vREQBvEVBDMbpa7/uC8VWlMRJHMRpvL8KPEWd+D5M5MRP
-3MVnJEMkZMVW/MYXJMbnS0Rm3EJznEUs9MQMzMZDbEfsQ0ZSlEd0fMY+DD1++Ec7FMYFlEY7
-XMH0u0Uj/5zDR1xHdozES2xDLBxIdDzEWITEfXTEiSRF5UNEThTHiexHP4TAeizBX+xCjzzH
-lURIZGTIMvzDhARGZ6zAkdxGilxGbRRJWLSJQKREjVzCjJzGBsTDMDTHnCxFktxBmNxJkZTE
-pfxIlpzDVYxJo6TBkSTJZUzKeKxEqCxIUOTKceRGp/TKe+wJ7qu+7OtFaoy+4Ds+WXy/bsw/
-fWRL56vJeERLu9TLvDQ/76PG8+vAhSxLPqQ/vcy/vNzL90tMheRL5ltLd8S/Muy+anQ/xjxM
-xYzLV8RA8VNLnuQ8sXu90BTN0STN0jTN00TN1FTN1WTN1nTN14TN2JTN2aTN2v+0zdvEzYX8
-zN3kzd70zd8EzuAUzuEkzuL8j+PitnybCX4QSOYUSIVwTuYcDueETun0jFeDmzpSTtegzuW0
-TpuIzue8ie+Uie5MGqnzNsiwzu8Uz4Foz98gT/KkmzaqG90JN8eQT5jIz/Jszvekif10z+ac
-GvQcN81Yz/IUjvj0T9LINfu4z84A0ADtiQid0AVdrX6KmCfKmaebkvD8B/ZczxD90OrsTw/9
-UOlE0eg8UersTg8N0f5cURJ9ThVl0fZs0RdNUUThksbC0MqKI1czsxyl0RKFUQUVTxUN0Bmt
-0SIdUhy10RS9USgtrVHbnABjOGoSNyFlUgk90RHt0hj/zdEuFdEaFVMlLVMJ3VIt/VIUnQg2
-DVM1fRkM86Z/siYPO53bYQwhPdM0bVMY3VMB/VMxRdMi/dI+HdRDpdAAgSMAs1I4u6/x3NIk
-5VI3PdIRfVM/HVMiNdNL9VIwTdNNNdRDDdQ41S9zapIEa1SFA09C1VM9ldFNLdHqDFRYLdT8
-zFREtVDQqlM7adQRi7VVPVNLNVNBHdNg5VRJLVRclVX3nFU/TdZaxdRI5a9SfSfuQdUq6q6d
-CNNg5VYuldUXFdVthdP9vNVR3ZkqRZ9e7a9r9c5mnVQBhVJaNdYZ1U96NddbVVMQRdR57dZp
-whErtVMMxVYimxlxdVZOPdA9mF3TaIVWfmVYh3VWcwG1KJIScPq0INVSTQ1PJE3YFX3SjdVU
-ZCVT8zzSJo3XSl1YEpVUKW0axuKYnfq0jrksNTNUfbXZYY1SjwXXkVVSMtXZMnXRjY1RZ1vQ
-iIVUJJ1Qw8hV47wOkHXap4XaqJXaqaXaqrVaqrWOq9XareXarjXRYTNRpNUJsR3bpYVUpkXb
-tFXbtWVbwQgIADs=
+I discovered this bug while I was trying to use openvpn with a server
+that uses net_gateway in push instruction from within an environment
+that uses vpnc (another VPN client) to connect to a VPN which is
+required to get online at all. This other VPN client already reroutes
+all traffic through a tun device as described above, and this is fully
+valid, but openvpn fails then to find this route, so
+get_default_gateway fails.
 
-------=_NextPart_000_000D_01C69C77.557AA4A0--
+If this is being fixed, the function should probably be renamed to
+"get_default_route", because it does not need to be a gateway
+necessarily. Default routes don't need to have any gateway as shown in
+the above example.
+
+
+It would be very helpful for me if this would be fixed as this is what
+causes openvpn not work in our environment, and if you wish, then I
+can write a patch for it as well.
+
+
+Thank you very much
+
+
+Christian Holler
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.4 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEprPnJQIKXnJyDxURAohgAJ9RcN4MrhLwRUmJKy/hWtAkLDu5pgCeLHIm
+NdEtf0tg342/VhD1z26H7cc=
+=lsBP
+-----END PGP SIGNATURE-----
 
 
