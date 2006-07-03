@@ -1,8 +1,11 @@
-Date: Sun, 02 Jul 2006 11:49:16 +0200
-From: "pskowv glpwnlydt" <jqjfrtasfbg@...685...>
-Message-Id: <4243145893.iThHfv-62791471-7620@...685...> 
-MIME-Version: 1.0 
-Subject: [Openvpn-devel] great wave on pay attention to the letter   fcyi
+Date: Mon, 3 Jul 2006 11:37:02 -0600 (MDT)
+From: James Yonan <jim@...41...>
+In-Reply-To: <44A6B3EF.2060305@...684...>
+Message-ID: <Pine.LNX.4.64.0607031136030.30626@...687...>
+References: <44A6B3EF.2060305@...684...>
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] Bugreport: get_default_gateway function fails
+ under specific circumstances
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,44 +14,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net, openwide@...686...
+To: Christian Holler <decoder@...684...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-FALCON ENERGY INC (FCYI . pk)
-Current Price: $ 0.77
+On Sat, 1 Jul 2006, Christian Holler wrote:
 
-OverView
-An independent resource exploration and production company whose 
-current projects range from the production of natural gas and oil in Alberta 
-to the exploration for minerals such as copper and gold in Mongolia.
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+>
+> Hello,
+>
+> today I discovered a bug that is not easy to trigger but causes the
+> "get_default_gateway" function to fail in some cases. This function
+> is, as you surely know, used for example when "net_gateway" is pushed
+> by the server as an option to the route command and should return the
+> default gateway so a route can be set via that default gateway.
+>
+> (Version: 2.0.7)
+>
+> Both in the linux and windows code, you assume that this gateway is
+> non-zero (see lines 1055 and 1295 in route.c). This is normally the
+> case, but has not necessarily to be always like that. For example,
+> when you want to use openvpn in an environment, where already other
+> programs use tun devices to reroute the traffic, then default routes
+> may appear which look like this:
+>
+> (route -n output on linux)
+>
+> Destination     Gateway         Genmask         Flags Metric Ref
+> Use Iface
+> 0.0.0.0         0.0.0.0         0.0.0.0         U     0      0
+> 0 tun0
+>
+>
+> This is fully valid with tun devices, but because the gateway is
+> 0.0.0.0, the get_default_gateway function fails to find this correct
+> route and fails.
+>
+>
+> Solution: Do not rely on gateway to be nonzero, and honor Iface when
+> setting the default route. This can be fixed easily with small
+> modifications to the windows and linux version of this function and
+> how it is used. (Make get_default_gateway return a whole route
+> structure in side effect instead of only the gateway address. This
+> route structure should also include the Iface then).
+>
+>
+> I discovered this bug while I was trying to use openvpn with a server
+> that uses net_gateway in push instruction from within an environment
+> that uses vpnc (another VPN client) to connect to a VPN which is
+> required to get online at all. This other VPN client already reroutes
+> all traffic through a tun device as described above, and this is fully
+> valid, but openvpn fails then to find this route, so
+> get_default_gateway fails.
+>
+> If this is being fixed, the function should probably be renamed to
+> "get_default_route", because it does not need to be a gateway
+> necessarily. Default routes don't need to have any gateway as shown in
+> the above example.
+>
+>
+> It would be very helpful for me if this would be fixed as this is what
+> causes openvpn not work in our environment, and if you wish, then I
+> can write a patch for it as well.
 
-Is FCYI Ready To Go? If You Think So, You know what to do, happy earnings :)
-Current news for the company
+Yes, if you could write a patch, that would great.
 
-Falcon Energy, Inc. (FCYI . pk - News) is pleased to announce that it has 
-fully acquired the exploration licenses for five mining properties in the 
-mineral rich region of Mongolia. Management felt that the Opportunity 
-presented by these properties was significant enough to forgo a planned 
-participation by a second resource company. These licenses will be held 
-for a minimum of three years and grant Falcon Energy Inc. access to the 
-mineral rights for the licensed properties.
+Thanks,
+James
 
-Mongolia has a wide variety of mineral resources. As of 1998, about 88% 
-of the country had been geologically mapped but only 20% of the 
-country's landmass had been licensed for exploration and exploitation.
-
-Falcon Energy's interest in the region is driven in part by the 
-anticipation of deploying modern prospecting methods to an area that abounds 
-in both base and precious metals. Exploitable mineral resources found in 
-the area in which the licenses are held include: Gold, base metals such 
-as Copper, Molybdenum, Lead and Zinc as well as Fluorite and Uranium. 
-
-
-So GET IN NOW - WILL EXPLODE in next 2 weeks!!
-
------------------------
-Schools out for summer.   Stir up an ant's nest.   You have to separate the chaff from the wheat. Seed money. Rain, rain go away; come again some other day. Waking up with the chickens. Weed it out.  That's a whole new can of worms.   Water doesn't run uphill.   We'll cross that bridge when we come to it.  Till the cows come home.   They're like two peas in a pod.  The sharper is the berry, the sweeter is the wine. What's done is done.  Timber! Your ass is grass. Still water runs dirty and deep.   What goes down usually comes up.  The squeaky wheel gets the grease.   Stand your ground. Spring forward fall back. Sweet as honey.   You never miss the water till the well runs dry.
-
-Tastes like chicken.   They're like two peas in a pod.  Salt of the Earth. The stronger the breeze the stronger the trees. To live from hand to mouth. There's no time like the present.   A rose by any other name would smell as sweet. Weed it out.  Spill the beans.   A stepping stone to. Weed out. The shoes on the other foot now.   Two peas in a pod.  Rare as walking on water.  Shiver me timber. You can't squeeze blood out of a turnip. Worry often gives a small thing a big shadow. The silly season.   Putting it in a nutshell.   Spring rain, Fall gold. Wet behind the ears. Still water runs dirty and deep.  
 
