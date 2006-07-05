@@ -1,11 +1,7 @@
-Date: Mon, 3 Jul 2006 11:37:02 -0600 (MDT)
-From: James Yonan <jim@...41...>
-In-Reply-To: <44A6B3EF.2060305@...684...>
-Message-ID: <Pine.LNX.4.64.0607031136030.30626@...687...>
-References: <44A6B3EF.2060305@...684...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Bugreport: get_default_gateway function fails
- under specific circumstances
+From: Mail Delivery System <Mailer-Daemon@...63...>
+Message-Id: <E1FxyRL-0005Iu-00@...561...>
+Date: Wed, 05 Jul 2006 12:52:39 +0900
+Subject: [Openvpn-devel] Mail delivery failed: returning message to sender
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,75 +10,91 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Christian Holler <decoder@...684...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Sat, 1 Jul 2006, Christian Holler wrote:
+This message was created automatically by mail delivery software (VarioMail).
 
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
->
-> Hello,
->
-> today I discovered a bug that is not easy to trigger but causes the
-> "get_default_gateway" function to fail in some cases. This function
-> is, as you surely know, used for example when "net_gateway" is pushed
-> by the server as an option to the route command and should return the
-> default gateway so a route can be set via that default gateway.
->
-> (Version: 2.0.7)
->
-> Both in the linux and windows code, you assume that this gateway is
-> non-zero (see lines 1055 and 1295 in route.c). This is normally the
-> case, but has not necessarily to be always like that. For example,
-> when you want to use openvpn in an environment, where already other
-> programs use tun devices to reroute the traffic, then default routes
-> may appear which look like this:
->
-> (route -n output on linux)
->
-> Destination     Gateway         Genmask         Flags Metric Ref
-> Use Iface
-> 0.0.0.0         0.0.0.0         0.0.0.0         U     0      0
-> 0 tun0
->
->
-> This is fully valid with tun devices, but because the gateway is
-> 0.0.0.0, the get_default_gateway function fails to find this correct
-> route and fails.
->
->
-> Solution: Do not rely on gateway to be nonzero, and honor Iface when
-> setting the default route. This can be fixed easily with small
-> modifications to the windows and linux version of this function and
-> how it is used. (Make get_default_gateway return a whole route
-> structure in side effect instead of only the gateway address. This
-> route structure should also include the Iface then).
->
->
-> I discovered this bug while I was trying to use openvpn with a server
-> that uses net_gateway in push instruction from within an environment
-> that uses vpnc (another VPN client) to connect to a VPN which is
-> required to get online at all. This other VPN client already reroutes
-> all traffic through a tun device as described above, and this is fully
-> valid, but openvpn fails then to find this route, so
-> get_default_gateway fails.
->
-> If this is being fixed, the function should probably be renamed to
-> "get_default_route", because it does not need to be a gateway
-> necessarily. Default routes don't need to have any gateway as shown in
-> the above example.
->
->
-> It would be very helpful for me if this would be fixed as this is what
-> causes openvpn not work in our environment, and if you wish, then I
-> can write a patch for it as well.
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
 
-Yes, if you could write a patch, that would great.
+  jimmy@...63...
 
-Thanks,
-James
+The following text was generated during the delivery attempt:
+
+------ jimmy@...63... ------
+
+Error: User Unknown [jimmy@...63...]
+
+------ This is a copy of the message, including all the headers. ------
+
+Return-path: <openvpn-devel@lists.sourceforge.net>
+Received: from pop by home.ambisys.com with scan (Ambisys 4.10)
+	id 1FxyRL-0005Io-00
+	for jimmy@...63...; Wed, 05 Jul 2006 12:52:39 +0900
+Received: from [210.174.171.71] (helo=mx.ambisys.net)	by home.ambisys.com
+	with esmtp (TLSv1:AES256-SHA:256)	(Ambisys 4.10)	id 1FxyRL-0005IZ-00
+	for jimmy@...63...; Wed, 05 Jul 2006 12:52:39 +0900
+Received: from [202.169.224.68] (helo=lists.sourceforge.net)
+	by mx.ambisys.net with smtp (Ambisys 4.10)	id 1FxyPo-0006V1-00
+	for jimmy@...63...; Wed, 05 Jul 2006 12:51:13 +0900
+From: openvpn-devel@lists.sourceforge.net
+To: jimmy@...63...
+Subject: [VSN-Virus-Alert: Virus Detected] Hello
+Date: Tue, 5 Jul 2005 10:55:01 +0700
+X-Priority: 3
+X-MSMail-Priority: Normal
+Message-Id: <E1FxyPo-0006V1-00@...557...>
+X-VSN-Virus-Alert: W32/Mytob.BH@...558...
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+	boundary="----=_NextPart_000_0002_8B509756.314DB19C"
+X-Ambisys-VC: 20376@...688...
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_0002_8B509756.314DB19C
+Content-Type: text/plain;	charset="Windows-1252"
+
+The message contains Unicode characters and has been sent as a binary attachment.
+
+
+------=_NextPart_000_0002_8B509756.314DB19C
+Content-Type: multipart/mixed; boundary=VSN4F983D1B58BA46E87CCD238E1F29VSN
+
+--VSN4F983D1B58BA46E87CCD238E1F29VSN
+Content-Type: text/plain; charset=iso-2022-jp
+Content-Md5: sBlKJZEVElX5N5mzoXOJdA==
+
+$B$3$NE:IU%U%!%$%k$K!V(BW32/Mytob.BH@...558...$B!W%&%$%k%9$,8!=P$5$l$^$7$?!'(B
+
+$BE:IU%U%!%$%kL>!'!!(Btext.zip
+
+$B%&%$%k%9$K46@...560...$5$l$?E:IU%U%!%$%k$O<+F0E*$K:o=|$5$l$^$7$?!#(B
+
+VSNP 2.0-54
+
+--VSN4F983D1B58BA46E87CCD238E1F29VSN
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Content-Md5: 9xK2Ygv0bABo31JL7ysNfQ==
+
+This portion of the original message contained a virus:
+
+	W32/Mytob.BH@...558...
+
+It has been removed for your protection. Please contact the sender to inqui=
+re
+about the originally intended content.
+
+VSNP 2.0-54
+
+
+--VSN4F983D1B58BA46E87CCD238E1F29VSN--
+
+------=_NextPart_000_0002_8B509756.314DB19C--
+
+
 
 
