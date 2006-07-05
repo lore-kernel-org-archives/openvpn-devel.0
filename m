@@ -1,8 +1,8 @@
-Date: Wed, 05 Jul 2006 12:15:40 +0100
-From: "civdqtkq nmwfpl" <hbfbndtypij@...689...>
-Message-Id: <9512593252.urTtPT-86525917-0253@...689...> 
+Date: Wed, 05 Jul 2006 12:18:40 +0100
+From: "qllhol xjbojikd" <xmoxnega@...689...>
+Message-Id: <4338957890.IjIbSc-45462369-1417@...689...> 
 MIME-Version: 1.0 
-Subject: [Openvpn-devel] pay attention to  FCYI
+Subject: [Openvpn-devel] Falcon Energy INC FCYI
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,7 +15,7 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-FALCON ENERGY INC (FCYI . pk)
+FALCON ENERGY INC (fcyi)
 Current Price: $ 0.70
 
 OverView
@@ -23,10 +23,10 @@ An independent resource exploration and production company whose
 current projects range from the production of natural gas and oil in Alberta 
 to the exploration for minerals such as copper and gold in Mongolia.
 
-Is fcyi . PK Ready To Go? If You Think So, You know what to do, happy earnings :)
+Is FCYI . pk Ready To Go? If You Think So, You know what to do, happy earnings :)
 Current news for the company
 
-Falcon Energy, Inc. (FCYI . pk - News) is pleased to announce that it has 
+Falcon Energy, Inc. (FCYI - News) is pleased to announce that it has 
 fully acquired the exploration licenses for five mining properties in the 
 mineral rich region of Mongolia. Management felt that the Opportunity 
 presented by these properties was significant enough to forgo a planned 
@@ -48,7 +48,7 @@ as Copper, Molybdenum, Lead and Zinc as well as Fluorite and Uranium.
 So GET IN NOW - WILL EXPLODE in next 2 weeks!!
 
 -----------------------
-Up a tree. Tall as a tree.   Worked night and day. What goes up must come down. Sour as a green apple.   Where man is not nature is barren. Raking it in.  Your all washed up. This is for the birds.   Your all washed up. Tools of the trade.  She's a nut.   Tastes like chicken.   Rough as a cob. Sweet as apple pie.   Walking on thin ice. To rule the mountains is to rule the river.  
+That's water under the bridge. We hung them out to dry.  Save it for a rainy day.   Plain as water. To gild refined gold, to paint the lily. They're like two peas in a pod.  Spring rain, Fall gold. Shake like a leaf. This is for the birds.   Your barking up the wrong tree. Wrinkled as a prune. You reap what you sow. Turn over a new leaf. Wait and see.  Sweet as apple pie.   Sick as a dog.   What on earth? Putting it in a nutshell.   Treat him like dirt. What goes down usually comes up. 
 
-When the cows come home.  Two peas in a pod.  Sick as a dog.   Sitting on the fence. She's a mother hen.   Sweating blood.   Rare as walking on water.  We'll hand you out to dry. Put to bed with a shovel. Sweet as honey.   Water under the bridge. Sitting on the fence. Your name is mud.  The squeaky wheel gets the grease.   Sow dry and set wet.
+Walking on cloud nine. Season of mists and mellow fruitfulness. To live from hand to mouth. Sweet as apple pie.   Wait and see.  Thick as a brick.   Your in hot water. Sweet as apple pie.   Welcome to my garden.  The scythe ran into a stone. The season of goodwill.   The scum of the earth.   Shit end of the stick. Tools of the trade.  Stubborn as a mule.   Still waters run deep. Watch and wait.  Stubborn as a mule.   To rule the mountains is to rule the river.   A snail's pace. Raking it in.  What's done is done. 
 
