@@ -1,10 +1,10 @@
-Message-ID: <20060711140718.77718.qmail@...696...>
-Date: Tue, 11 Jul 2006 07:07:18 -0700 (PDT)
+Message-ID: <20060711142754.71699.qmail@...697...>
+Date: Tue, 11 Jul 2006 07:27:54 -0700 (PDT)
 From: feramus coban <feramuslinux@...109...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-1781816434-1152626838=:77033"
+Content-Type: multipart/alternative; boundary="0-122587314-1152628074=:65617"
 Content-Transfer-Encoding: 8bit
-Subject: [Openvpn-devel] openvpn as a firewall
+Subject: [Openvpn-devel] Openvpn acces limit for user
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,7 +15,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
---0-1781816434-1152626838=:77033
+--0-122587314-1152628074=:65617
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
@@ -93,21 +93,18 @@ key VPNCLIENT3.key =20
 tls-auth ta.key 1
 verb 3
 comp-lzo
-  =20
-  =20
 
  	=09
 ---------------------------------
-Do you Yahoo!?
- Get on board. You're invited to try the new Yahoo! Mail Beta.
---0-1781816434-1152626838=:77033
+Want to be your own boss? Learn how on  Yahoo! Small Business.=20
+--0-122587314-1152628074=:65617
 Content-Type: text/html; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-<div>Hi All</div>  <div>&nbsp;</div>  <div>this is the problem,</div>  <div=
->&nbsp;</div>  <div>i have winxp pro server. i use it for openvpn as a serv=
-er.</div>  <div>i have a lot of client in alot of networks.&nbsp;</div>  <d=
-iv>&nbsp;</div>  <div>example of my network</div>  <div>&nbsp;</div>  <div>=
+<DIV>Hi All</DIV>  <DIV>&nbsp;</DIV>  <DIV>this is the problem,</DIV>  <DIV=
+>&nbsp;</DIV>  <DIV>i have winxp pro server. i use it for openvpn as a serv=
+er.</DIV>  <DIV>i have a lot of client in alot of networks.&nbsp;</DIV>  <D=
+IV>&nbsp;</DIV>  <DIV>example of my network</DIV>  <DIV>&nbsp;</DIV>  <DIV>=
   <TABLE style=3D"WIDTH: 270pt; BORDER-COLLAPSE: collapse" cellSpacing=3D0 =
 cellPadding=3D0 width=3D359 border=3D0 x:str>  <COLGROUP>  <COL style=3D"WI=
 DTH: 100pt; mso-width-source: userset; mso-width-alt: 5674" width=3D133>  <=
@@ -287,31 +284,31 @@ OLOR: transparent" x:fmla=3D'=3D"www."&amp;A18&amp;".com"'><FONT face=3D"Ar=
 ial Narrow" size=3D2>www.net4client4.com</FONT></TD>  <TD style=3D"BORDER-R=
 IGHT: #d4d0c8; BORDER-TOP: #d4d0c8; BORDER-LEFT:
  #d4d0c8; BORDER-BOTTOM: #d4d0c8; BACKGROUND-COLOR: transparent"><FONT face=
-=3D"Arial Narrow" size=3D2>10.0.0.34</FONT></TD></TR></TBODY></TABLE></div>=
-  <div>&nbsp;</div>  <div>i use client-to-client parameter in all .ovpn fil=
-e.</div>  <div>&nbsp;</div>  <div>i use an accounting software on terminal =
-services. </div>  <div>all user can acces server. But at now i want only so=
+=3D"Arial Narrow" size=3D2>10.0.0.34</FONT></TD></TR></TBODY></TABLE></DIV>=
+  <DIV>&nbsp;</DIV>  <DIV>i use client-to-client parameter in all .ovpn fil=
+e.</DIV>  <DIV>&nbsp;</DIV>  <DIV>i use an accounting software on terminal =
+services. </DIV>  <DIV>all user can acces server. But at now i want only so=
 me client can access server. for example only serverclient* user. and serve=
 rclient* clients can acces to all other clients. and net4client4 can acces =
-all other clients to. </div>  <div>&nbsp;</div>  <div>i do not want to use =
-3 th part firewall for dropping package (iptables etc..)</div>  <div>is it =
-possible with openvpn</div>  <div>&nbsp;</div>  <div>this is my server conf=
- file </div>  <div>****************************************</div>  <div>por=
+all other clients to. </DIV>  <DIV>&nbsp;</DIV>  <DIV>i do not want to use =
+3 th part firewall for dropping package (iptables etc..)</DIV>  <DIV>is it =
+possible with openvpn</DIV>  <DIV>&nbsp;</DIV>  <DIV>this is my server conf=
+ file </DIV>  <DIV>****************************************</DIV>  <DIV>por=
 t 84<BR>proto udp<BR>dev tun<BR>ca ca.crt<BR>certvpnserver1.crt<BR>key vpns=
-erver1.key </div>  <div>dh dh1024.pem<BR>server 10.0.0.
+erver1.key </DIV>  <DIV>dh dh1024.pem<BR>server 10.0.0.
  255.255.255.0&nbsp;<BR>ifconfig-pool-persist ipp.txt<BR>push "route 10.0.0=
-.0 255.255.255.0"&nbsp;<BR>route 10.0.0.0 255.255.255.0 </div>  <div>client=
--to-client</div>  <div>keepalive 10 120<BR>max-clients 100<BR>persist-key<B=
+.0 255.255.255.0"&nbsp;<BR>route 10.0.0.0 255.255.255.0 </DIV>  <DIV>client=
+-to-client</DIV>  <DIV>keepalive 10 120<BR>max-clients 100<BR>persist-key<B=
 R>persist-tun<BR>status openvpn-status.log<BR>verb 4<BR>tls-auth ta.key 0<B=
-R>comp-lzo<BR></div>  <div>&nbsp;</div>  <div>client .ovpn file</div>  <div=
->****************************</div>  <div>client<BR>dev tun<BR>proto udp<BR=
->remote <A href=3D"http://www.server.com">www.server.com</A> 84<BR>resolv-r=
-etry infinite<BR>nobind<BR>persist-key<BR>persist-tun<BR>ca ca.crt<BR>cert =
-VPNCLIENT3.crt<BR>key VPNCLIENT3.key&nbsp;&nbsp;<BR>tls-auth ta.key 1<BR>ve=
-rb 3<BR>comp-lzo</div>  <div>&nbsp;</div>  <div>&nbsp;</div><p>&#32;
-		<hr size=3D1>Do you Yahoo!?<br>=20
-Get on board. <a href=3D"http://us.rd.yahoo.com/evt=3D40791/*http://advisio=
-n.webevents.yahoo.com/handraisers">You're invited</a> to try the new Yahoo!=
- Mail Beta.
---0-1781816434-1152626838=:77033--
+R>comp-lzo<BR></DIV>  <DIV>&nbsp;</DIV>  <DIV>client .ovpn file</DIV>  <DIV=
+>****************************</DIV>  <DIV>client<BR>dev tun<BR>proto udp<BR=
+>remote <A href=3D"http://www.server.com/" target=3D_blank><FONT color=3D#0=
+03399>www.server.com</FONT></A> 84<BR>resolv-retry infinite<BR>nobind<BR>pe=
+rsist-key<BR>persist-tun<BR>ca ca.crt<BR>cert VPNCLIENT3.crt<BR>key VPNCLIE=
+NT3.key&nbsp;&nbsp;<BR>tls-auth ta.key 1<BR>verb 3<BR>comp-lzo</DIV><p>&#32;
+		<hr size=3D1>Want to be your own boss? Learn how on <a href=3D"http://us.=
+rd.yahoo.com/evt=3D41244/*http://smallbusiness.yahoo.com/r-index"> Yahoo! S=
+mall Business.</a>=20
+
+--0-122587314-1152628074=:65617--
 
