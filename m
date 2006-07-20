@@ -1,8 +1,10 @@
-Message-ID: <013DF1E4.3526065@...703...>
-Date: Tue, 18 Jul 2006 10:37:44 -0400
-From: "Neil" <vamhuvuawj@...703...>
+From: "openwings@...705..." <openwings@...705...>
+Date: Thu, 20 Jul 2006 07:32:46 -0300
+Message-ID: EEuwRnIe7AGM1.4hywHriaWbRcY@...705...
 MIME-Version: 1.0
-Subject: [Openvpn-devel] how are you today?
+Subject: [Openvpn-devel] Obtain the career you have always wanted with the
+	University Degree you deserve.
+Reply-To: "openwings@...705..." <openwings@...705...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,18 +13,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 8bit
-To: pfaedit-users@lists.sourceforge.net, firebirds@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net, docpp-users@lists.sourceforge.net, queue-support@lists.sourceforge.net, cilk-users@lists.sourceforge.net, announce@lists.sourceforge.net
+Content-Type: text/html; charset="windows-1251"
+Content-Transfer-Encoding: base64
+To: openvpn-devel@lists.sourceforge.net
 
-Hello my dear friend
-I was looking through the web fewa weeks ago and fobund 
-your profile. Now I decidedb to email you to get to know
-you better. I am coming to your country in fewa weeks
-and thought maya be we can meet each other. I am pretty
-looking girl. I am 25. bDo not raeply to this address 
-directly. Email me back at tf@...704...
-
-
-
+PGRpdiBhbGlnbj0ibGVmdCI+PGI+PGZvbnQgc2l6ZT0iNSI+IFdhbnQgdGhlIGRlZ3JlZSBidXQg
+Y2FuknQgZmluZCB0aGUgdGltZT88L2ZvbnQ+PC9iPjxCUj4KICA8QlI+CiAgV0hBVCBBIEdSRUFU
+IElERUEhPEJSPgogIFdlIHByb3ZpZGUgYSBjb25jZXB0IHRoYXQgd2lsbCBhbGxvdyBhbnlvbmUg
+d2l0aCBzdWZmaWNpZW50IHdvcmsgZXhwZXJpZW5jZSAKICB0byBvYnRhaW4gYSBmdWxseSB2ZXJp
+ZmlhYmxlIFVuaXZlcnNpdHkgRGVncmVlLjxCUj4KICBCYWNoZWxvcnMsIE1hc3RlcnMgb3IgZXZl
+biBhIERvY3RvcmF0ZS48QlI+CiAgVGhpbmsgb2YgaXQsIHdpdGhpbiBmb3VyIHRvIHNpeCB3ZWVr
+cywgeW91IHRvbyBjb3VsZCBiZSBhIGNvbGxlZ2UgZ3JhZHVhdGUuPEJSPgogIE1hbnkgcGVvcGxl
+IHNoYXJlIHRoZSBzYW1lIGZydXN0cmF0aW9uLCB0aGV5IGFyZSBhbGwgZG9pbmcgdGhlIHdvcmsg
+b2YgdGhlIHBlcnNvbiAKICB0aGF0IGhhcyB0aGUgZGVncmVlIGFuZCB0aGUgcGVyc29uIHRoYXQg
+aGFzIHRoZSBkZWdyZWUgaXMgZ2V0dGluZyBhbGwgdGhlIG1vbmV5LjxCUj4KICBEb26SdCB5b3Ug
+dGhpbmsgdGhhdCBpdCBpcyB0aW1lIHlvdSB3ZXJlIHBhaWQgZmFpciBjb21wZW5zYXRpb24gZm9y
+IHRoZSBsZXZlbCAKICBvZiB3b3JrIHlvdSBhcmUgYWxyZWFkeSBkb2luZz88QlI+CiAgVGhpcyBp
+cyB5b3VyIGNoYW5jZSB0byBmaW5hbGx5IG1ha2UgdGhlIHJpZ2h0IG1vdmUgYW5kIHJlY2VpdmUg
+eW91ciBkdWUgYmVuZWZpdHMuPEJSPgogIElmIHlvdSBhcmUgbGlrZSBtb3N0IHBlb3BsZSwgeW91
+IGFyZSBtb3JlIHRoYW4gcXVhbGlmaWVkIHdpdGggeW91ciBleHBlcmllbmNlLCAKICBidXQgYXJl
+IGxhY2tpbmcgdGhhdCBwcmVzdGlnaW91cyBwaWVjZSBvZiBwYXBlciBrbm93biBhcyBhIGRpcGxv
+bWEgdGhhdCBpcyBvZnRlbgogCiAgdGhlIHBhc3Nwb3J0IHRvIHN1Y2Nlc3MuPEJSPgogIDxiPkNB
+TEwgVVMgVE9EQVkgQU5EIEdJVkUgWU9VUiBXT1JLPEJSPgogIEVYUEVSSUVOQ0UgVEhFIENIQU5D
+RSBUTyBFQVJOIFlPVTxCUj4KICBUSEUgSElHSEVSIENPTVBFTlNBVElPTiBZT1UgREVTRVJWRSE8
+L2I+PEJSPgogIDxmb250IGNvbG9yPSIjRkYwMDMzIiBzaXplPSI1Ij5DQUxMIE5PVzo8L2ZvbnQ+
+PGZvbnQgY29sb3I9IiNGRjAwMzMiIHNpemU9IjciPjxCUj4KICA8Yj4xLTgxNS04MjgtMjIyMjwv
+Yj48L2ZvbnQ+PEJSPgogIDxCUj4KICA8QlI+CiAgPEJSPgogIDxCUj4KICA8QlI+CiAgPEJSPgog
+IDxCUj4KICA8QlI+CiAgPEJSPgogIDxCUj4KICA8QlI+CiAgPEJSPgogIDxCUj4KICA8QlI+CiAg
+PEJSPgogIDxCUj4KICA8QlI+CiAgPEJSPgogIDxCUj4KICA8QlI+CiAgPEJSPgogIDxCUj4KICA8
+QlI+CiAgPEJSPgogIDxCUj4KICA8QlI+CiAgPEJSPgogIDxCUj4KICA8QlI+CiAgPEJSPgogIDxC
+Uj4KICA8QlI+CiAgPEJSPgogIDxCUj4KICA8QlI+CiAgPEJSPgogIDxCUj4KICA8QlI+CiAgPEJS
+PgogIDxCUj4KICA8QlI+CiAgPEJSPgogIDxCUj4KICA8QlI+CiAgPEJSPgogIDxCUj4KICA8QlI+
+CiAgPEJSPgogIDxCUj4KICA8QlI+CiAgPEJSPgogIDxCUj4KICA8QlI+CiAgPEJSPgogIDxCUj4K
+ICA8QlI+CiAgPEJSPgogIDxCUj4KICA8QlI+CiAgPEJSPgogIDxCUj4KICA8QlI+CiAgPEJSPgog
+IDxCUj4KICA8QlI+CiAgPEJSPgogIDxCUj4KICA8QlI+CiAgPEJSPgogIDxCUj4KICA8QlI+CiAg
+PEJSPgogIDxCUj4KICA8QlI+CiAgPEJSPgogIDxCUj4KICA8QlI+CiAgPEJSPgogIDxCUj4KICA8
+QlI+CiAgPEJSPgogIDxCUj4KICA8QlI+CiAgPEJSPgogIDxCUj4KICA8QlI+CiAgPEJSPgogIDxC
+Uj4KICA8QlI+CiAgPEJSPgogIEZpbmUsIHNhaWQgSAphcnJ5IGR1bGx5LCBsb29raW5nIGJhY2sg
+YXQgdGhlIGNlaWxpbmcuPC9kaXY+CgoK
