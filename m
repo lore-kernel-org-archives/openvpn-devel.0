@@ -1,10 +1,9 @@
-Message-ID: <44C80C25.5020905@...714...>
-Date: Wed, 26 Jul 2006 17:43:17 -0700
-From: Jason Whitlark <jwhitlark@...714...>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------070408060909060305040708"
-Subject: [Openvpn-devel] patch for revoke-full to deal with missing *.crt
-	file
+From: Tony <kb2wjw@...277...>
+Date: Thu, 27 Jul 2006 18:01:04 +0400
+Message-ID: <op.tdco72dcioehzu@...603...>
+Mime-Version: 1.0
+Sender: news <news@...165...>
+Subject: [Openvpn-devel] A special IP address range for exclusive VPN usage?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,85 +12,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; format=flowed; delsp=yes; charset=koi8-r
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------070408060909060305040708
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Is it my missunderstanding or is it a real improvement - to ask IANA to  
+allocate the range for exclusive allocation to VPN clients?
 
-Hi all,
+As far as I can see - the main obstacle of building the robust and  
+allaround VPN is to guess the IP-range so that it *NEVER*  
+collides|overlaps with *ANY* of the IPs used on real networks where a  
+server and a client may happen to be.
+(The most frequent gotcha is a client physically connected to, say,  
+192.168.*.* on a LAN and tryes to use VPN which allocates him with  
+192.168.*.* on his virtual adapter)
 
-I ran into this problem and decided to do something about it.  This
-patch checks to ensure that $user.crt exists in the keys directory, and
-if it does not, checks the *.pem files, asks the user if  they want to
-copy the pem file into the crt file before revoking the certificate.
+How to guess a range nobody uses on their LANs?!
 
-The patch is against /openvpn/easy-rsa/revoke-full 1.1.2.1 out of cvs.
+I saw a VPN system, namely Hamachi (www.hamaci.cc), which cleverly uses  
+the 5.*.*.* range.
 
-Please let me know if you think it needs any reworking.
+Who's responsibility to ask IANA about that matters?
+Is it already implemented? If so - which IP-range is safe to be used in  
+VPN between a server and a client?
 
-Thanks,
+Please comment.
 
-~jwhitlark
+Tony.
 
---------------070408060909060305040708
-Content-Type: text/plain;
- name="revoke-full-patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="revoke-full-patch"
-
---- ../revoke-full	2006-07-25 10:43:47.000000000 -0700
-+++ my-revoke-full	2006-07-26 17:26:59.000000000 -0700
-@@ -3,6 +3,7 @@
- # revoke a certificate, regenerate CRL,
- # and verify revocation
- 
-+
- CRL=crl.pem
- RT=revoke-test.pem
- 
-@@ -14,6 +15,39 @@
- if test $KEY_DIR; then
-        cd $KEY_DIR
-        rm -f $RT
-+       
-+       # if $.crt does not exist, see if a *.pem file seems to match
-+       # if a match is found, ask the user if they want to use the match
-+       # if they want to use the *.pem file, cp it to username.crt
-+       # else exit with error
-+
-+       if ! [ -f $1.crt ]
-+           then
-+           if userpem=`grep -l $1 *.pem`
-+               then 
-+               while : ; do
-+                   echo "$1.crt does not exist, but $userpem seems to be an archive copy.  Do you want to use $userpem (y or n)"
-+                   read ANSWER JUNK
-+    
-+                   case "$ANSWER" in
-+                       [yY]*)
-+                       cpPemToCrt=0
-+                       break
-+                       ;;
-+                       [nN]*)
-+                       cpPemToCrt=1
-+                       break
-+                       ;;
-+                       *)
-+                   esac
-+               done
-+               
-+               if [ $cpPemToCrt = 0 ];
-+                   then
-+                   cp $userpem $1.crt
-+               fi
-+           fi
-+       fi
- 
-        # revoke key and generate a new CRL
-        openssl ca -revoke $1.crt -config $KEY_CONFIG
-
---------------070408060909060305040708--
 
