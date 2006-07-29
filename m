@@ -1,12 +1,12 @@
-From: Tony <kb2wjw@...277...>
-Date: Sat, 29 Jul 2006 02:28:00 +0400
-Message-ID: <op.tde7cyccioehzu@...596...>
+Date: Sat, 29 Jul 2006 13:49:28 -0500
+From: Steven Pritchard <steve@...609...>
+Message-ID: <20060729184928.GA8482@...611...>
 References: <op.tdco72dcioehzu@...603...>
 	<eaalgv$i96$1@...165...>
 Mime-Version: 1.0
-Sender: news <news@...165...>
-Subject: Re: [Openvpn-devel] A special IP address range for exclusive VPN
-	usage?
+In-Reply-To: <eaalgv$i96$1@...165...>
+Subject: [Openvpn-devel] IPv6 support (was Re: A special IP address range
+	for exclusive VPN usage?)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,22 +15,24 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; format=flowed; delsp=yes; charset=koi8-r
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: Charles Duffy <cduffy@...294...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Thu, 27 Jul 2006 19:18:55 +0400, Charles Duffy <cduffy@...294...>  
-wrote:
+On Thu, Jul 27, 2006 at 10:18:55AM -0500, Charles Duffy wrote:
+> Personally, I think that adding IPv6 support (with its massive space for 
+> private networks) is a better long-term fix for this issue.
 
-> Getting yet another private allocation ...(snip)... (2) doesn't do any  
-> good for folks who (for instance) need to be attached to more than one  
-> VPN at a time
+On that note, does anyone have any idea what the status of IPv6
+support is?  (I know about the old patches for 2.0, but they haven't
+been updated in over a year, and I can't find where anyone has
+forward-ported them to 2.1.)
 
-Well, yes, it will not "be all, end all" solution, and case (2) is tough.
-But for vast majority of roadwarriors (like me) - it will do the trick -  
-with 100% probability. Whereas now - I may only hope that the LAN where I  
-land now will not collide with my OpenVPN settings...
-
-Tony.
-
+Steve
+-- 
+Steven Pritchard - K&S Pritchard Enterprises, Inc.
+Email: steve@...610...             http://www.kspei.com/
+Phone: (618)398-3000               Mobile: (618)567-7320
 
