@@ -1,8 +1,7 @@
 From: opensuse+help@...724...
-Message-ID: <1155594993-6d7e75fb-mlmmj-61d40d0a@...725...>
-Date: Mon, 14 Aug 2006 22:36:33 +0000
-Subject: [Openvpn-devel] Confirm subscription to opensuse@...724...
-Reply-To: opensuse+confsub-552d92e772bd3676-openvpn-devel=lists.sourceforge.net@...724...
+Message-ID: <1155595275-5a142456-mlmmj-1d311da5@...726...>
+Date: Mon, 14 Aug 2006 22:41:15 +0000
+Subject: [Openvpn-devel] Welcome to opensuse@...724...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +14,19 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi, this is the mlmmj program managing the mailinglist
+Welcome! You have been subscribed to the
 
 opensuse@...724...
 
-To confirm you want the address
+mailinglist.
 
-openvpn-devel@lists.sourceforge.net
+To unsubscribe send a message to:
 
-added to this list, please send a reply to
+opensuse+unsubscribe@...724...
 
-opensuse+confsub-552d92e772bd3676-openvpn-devel=lists.sourceforge.net@...724...
+And for help send a message to:
 
-This confirmation serves two purposes. It tests that mail can be sent to
-your address. Secondly it makes sure someone else did not try and
-subscribe your emailaddress without your permission.
-
-Your mailer may automatically reply to the confirmation address when you hit
-the reply button.
-
-The subject and the body of the mail can be anything.
+opensuse+help@...724...
 
 
 
