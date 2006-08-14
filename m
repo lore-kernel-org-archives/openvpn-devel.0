@@ -1,7 +1,8 @@
-Message-Id: <E1A4nm6-6611Yt-00@...723...>
-Date: Thu, 10 Aug 2006 06:42:40 -0600
-From: "Toni Overton" <plsxwrmuujmho@...722...>
-Subject: [Openvpn-devel] Congratulations!
+From: opensuse+help@...724...
+Message-ID: <1155594993-6d7e75fb-mlmmj-61d40d0a@...725...>
+Date: Mon, 14 Aug 2006 22:36:33 +0000
+Subject: [Openvpn-devel] Confirm subscription to opensuse@...724...
+Reply-To: opensuse+confsub-552d92e772bd3676-openvpn-devel=lists.sourceforge.net@...724...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,18 +15,26 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Icrease Your S''exual Desire and S''perm volume by 500%
-L'onger o''rgasms - The longest most intense o''rgasms of your life
-Multiple o''rgasms - Cum again and again
-S'PUR-M is The Newest and The Safest Way
-100% N''atural and No Side Effects - in contrast to well-known brands.
-Experience three times longer o''rgasms
-World Wide shipping within 24 hours
- 
- Clisk here http://www.docmet.info
+Hi, this is the mlmmj program managing the mailinglist
+
+opensuse@...724...
+
+To confirm you want the address
+
+openvpn-devel@lists.sourceforge.net
+
+added to this list, please send a reply to
+
+opensuse+confsub-552d92e772bd3676-openvpn-devel=lists.sourceforge.net@...724...
+
+This confirmation serves two purposes. It tests that mail can be sent to
+your address. Secondly it makes sure someone else did not try and
+subscribe your emailaddress without your permission.
+
+Your mailer may automatically reply to the confirmation address when you hit
+the reply button.
+
+The subject and the body of the mail can be anything.
 
 
-
-ralston orpheus manama conceit hypocycloid calgary check philosophic
-malaysia bolshevism antenna country crossway allusive ransack burglary
 
