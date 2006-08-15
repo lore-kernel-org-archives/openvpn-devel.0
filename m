@@ -1,7 +1,8 @@
 From: opensuse+help@...724...
-Message-ID: <1155595275-5a142456-mlmmj-1d311da5@...726...>
-Date: Mon, 14 Aug 2006 22:41:15 +0000
-Subject: [Openvpn-devel] Welcome to opensuse@...724...
+Message-ID: <1155601074-3388062-mlmmj-6924ee12@...727...>
+Date: Tue, 15 Aug 2006 00:17:54 +0000
+Subject: [Openvpn-devel] Confirm unsubscribe from opensuse@...724...
+Reply-To: opensuse+confunsub-37a088a7593e37a8-openvpn-devel=lists.sourceforge.net@...724...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,19 +15,25 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Welcome! You have been subscribed to the
+Hi, this is the mlmmj program managing the mailinglist
 
 opensuse@...724...
 
-mailinglist.
+To confirm you want the address
 
-To unsubscribe send a message to:
+openvpn-devel@lists.sourceforge.net
 
-opensuse+unsubscribe@...724...
+removed from this list, please send a reply to
 
-And for help send a message to:
+opensuse+confunsub-37a088a7593e37a8-openvpn-devel=lists.sourceforge.net@...724...
 
-opensuse+help@...724...
+Your mailer may automatically reply to this address when you hit
+the reply button.
+
+If you're not subscribed with this list, you will receive no reply.
+
+You can see in the envelope "Return-Path" header of a message to the
+mailinglist which address you're subscribed with.
 
 
 
