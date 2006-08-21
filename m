@@ -1,11 +1,11 @@
-Message-ID: <000001c6c3b4$06384b40$3578a8c0@...736...>
-From: "Katherina Mclellan" <pelaezemunro@...735...>
-Date: Sat, 19 Aug 2006 10:22:19 -0700
+Message-ID: <000001c6c50e$47aafcc0$9e3aa8c0@...738...>
+From: "Erminia Stites" <henriques@...737...>
+Date: Mon, 21 Aug 2006 03:40:54 -0700
 MIME-Version: 1.0
 Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_0001_01C6C379.59DBE440"
-Subject: Re: [Openvpn-devel] yyteda test
-Reply-To: Katherina Mclellan <pelaezemunro@...735...>
+	boundary="----=_NextPart_000_0001_01C6C4D3.9B4C24C0"
+Subject: Re: [Openvpn-devel] news puqoqi
+Reply-To: Erminia Stites <henriques@...737...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,14 +18,13 @@ To: openvpn-devel@lists.sourceforge.net
 
 This is a multi-part message in MIME format.
 
-------=_NextPart_000_0001_01C6C379.59DBE440
+------=_NextPart_000_0001_01C6C4D3.9B4C24C0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
 Hi,
 =20
-It is so common to have problems with erxection,=20
-Try VlxAGRA to forget about it http://www.edhuakinmertunhe.com
+Economize up to 50 % on your R X with us http://www.mihinmeasunberin.com
 
 =20
 
@@ -33,13 +32,13 @@ Try VlxAGRA to forget about it http://www.edhuakinmertunhe.com
 
 =20
 
-Then why was I so depressed?
-CHAPTER 5
-I was depressed because it was really a pretty madcap plan. The idea
+on the other side.
+Very gradually the wall became higher as we walked beside it. In
+addition to the symbols we came to LJUDI then MTUWA, HERRER, SIGNORI.
 
 
 
-------=_NextPart_000_0001_01C6C379.59DBE440
+------=_NextPart_000_0001_01C6C4D3.9B4C24C0
 Content-Type: text/html; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
@@ -52,15 +51,14 @@ Content-Transfer-Encoding: quoted-printable
 <BODY bgColor=3D#ffffff>
 <DIV>Hi,</DIV>
 <DIV>&nbsp;</DIV>
-<DIV>It is so common to have problems with erxection, <BR> Try VlxAGRA to f=
-orget about it <A href=3D"http://www.edhuakinmertunhe.com">http://www.edhua=
-kinmertunhe.com</A></DIV><P>&nbsp;</P><P>&nbsp;</P><P>&nbsp;</P><P> Then wh=
-y was I so depressed?<BR>
- CHAPTER 5<BR>
- I  was depressed because it was really a pretty madcap plan. The idea<BR><=
-/P></BODY></HTML>=
+<DIV>Economize up to 50 % on your R X with us <A href=3D"http://www.mihinme=
+asunberin.com">http://www.mihinmeasunberin.com</A></DIV><P>&nbsp;</P><P>&nb=
+sp;</P><P>&nbsp;</P><P>on the other side.<BR>
+ Very  gradually  the wall became higher as we walked  beside  it.  In<BR>
+addition to the symbols we came to LJUDI then MTUWA, HERRER, SIGNORI.<BR></=
+P></BODY></HTML>=
 
-------=_NextPart_000_0001_01C6C379.59DBE440--
+------=_NextPart_000_0001_01C6C4D3.9B4C24C0--
 
 
 
