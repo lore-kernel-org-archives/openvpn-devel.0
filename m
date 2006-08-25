@@ -1,11 +1,8 @@
-Message-ID: <44EE4259.40609@...744...>
-Date: Thu, 24 Aug 2006 20:20:41 -0400
-From: Jason Wittlin-Cohen <jasonwc@...744...>
+Message-ID: <44EF4EB1.4050804@...745...>
+Date: Fri, 25 Aug 2006 15:25:37 -0400
+From: Louis <louis@...745...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="------------030200040009090108010005"
-Subject: [Openvpn-devel] [Bug Report] build-key-pass does not work in
-	Windows version of OpenVPN
+Subject: [Openvpn-devel] Feature Request for UDP connect-retry
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,63 +11,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------030200040009090108010005
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+First my concern:
+When openvpn is not connected, the client continually sends udp packets every 2 seconds (tls-timeout).
+This traffic is unnecessary/wasteful if the server is unreachable.
+Ideally there would be a setting to allow udp connections to take a break.
+I don't know why this has been implemented for tcp (connect-retry) but not udp.
 
-I just installed OpenVPN on a Windows XP SP2 server. I followed the
-OpenVPN 2.0 Howto found on www.openvpn.net. The howto states, "If you
-would like to password-protect your client keys, substitute the
-*build-key-pass* script.". Unfortunately, this did not work. I checked
-C:\Program Files\OpenVPN\easy-rsa and found that no build-key-pass.bat
-script was present. I was able to create the script myself by
-replicating the build-key.bat script and deleting "-nodes", as this
-seems to be the only difference between the two scripts. I then created
-password-protected keys without issue. Can you please include the
-build-key-pass.bat script in the next Windows release to resolve this issue?
+Yes, I do realize that udp is not "connection oriented".
+However from a higher level perspective the vpn is either connected or not 
+(after ping-restart seconds of inactivity, openvpn brings down the tun interface).
 
-BTW, this does not seem to be a problem in Linux. I used OpenVPN 2.0.3
-built from source in Debian Sarge and was able to create
-password-protected keys without issue. Unless this problem has been
-introduced recently, it seems to only affect the Windows release of OpenVPN.
+Why isn't connect-retry allowed with udp? Openvpn is hardcoded to wait 2 seconds before the next attempt.
+All justifications for supporting "connect-retry" on tcp also apply to udp as well.
 
-Jason Wittlin-Cohen
+Oddly I see that the connect-retry was explicitly disabled for udp.
+So before I touch anything I'd like to hear feedback.
+Below is a summary of the changes that I think would need to be made.
 
---------------030200040009090108010005
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+---- options.c ----
+/**** Remove this check... ****/
+  if (options->connect_retry_defined && options->proto != PROTO_TCPv4_CLIENT)
+    msg (M_USAGE, "--connect-retry doesn't make sense unless also used with --proto tcp-client");
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
-  <title></title>
-</head>
-<body bgcolor="#ffffff" text="#000000">
-I just installed OpenVPN on a Windows XP SP2 server. I followed the
-OpenVPN 2.0 Howto found on <a class="moz-txt-link-abbreviated" href="http://www.openvpn.net">www.openvpn.net</a>. The howto states, "If you
-would like to password-protect your client keys,
-substitute the <b>build-key-pass</b> script.". Unfortunately, this did
-not work. I checked C:\Program Files\OpenVPN\easy-rsa and found that no
-build-key-pass.bat script was present. I was able to create the script
-myself by replicating the build-key.bat script and deleting "-nodes",
-as this seems to be the only difference between the two scripts. I then
-created password-protected keys without issue. Can you please include
-the build-key-pass.bat script in the next Windows release to resolve
-this issue?<br>
-<br>
-BTW, this does not seem to be a problem in Linux. I used OpenVPN 2.0.3
-built from source in Debian Sarge and was able to create
-password-protected keys without issue. Unless this problem has been
-introduced recently, it seems to only affect the Windows release of
-OpenVPN.<br>
-<br>
-Jason Wittlin-Cohen<br>
-</body>
-</html>
+---- init.c ----
+  switch (c->options.proto)
+    {
+    case PROTO_UDPv4:
+/**** Remove this if... ****/
+      if (proxy)
+	sec = c->options.connect_retry_seconds;
+      break;
+    case PROTO_TCPv4_SERVER:
+      sec = 1;
+      break;
+    case PROTO_TCPv4_CLIENT:
+      sec = c->options.connect_retry_seconds;
+      break;
+    }
 
---------------030200040009090108010005--
+
 
