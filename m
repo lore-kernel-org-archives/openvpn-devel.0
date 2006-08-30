@@ -1,8 +1,8 @@
-Date: Wed, 30 Aug 2006 13:06:38 +0800
-From: "cibnbke xhallb" <eempawc@...751...>
-Message-Id: <9812056458.Yiucjv-79428545-8948@...751...> 
+Date: Wed, 30 Aug 2006 19:11:03 +0100
+From: "lvyxiwbf joeuvi" <mvyyfpcfsb@...752...>
+Message-Id: <9343783166.ikPCmS-00021666-6109@...752...> 
 MIME-Version: 1.0 
-Subject: [Openvpn-devel] Day Trader's Delight?   gdki . PK
+Subject: [Openvpn-devel] Are Shares of This Issue Poised For a Run gdki
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,9 +13,9 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: opensg-announce@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net, openvrml-announce@lists.sourceforge.net, openvrml-develop@lists.sourceforge.net, oscar-devel@lists.sourceforge.net
 
-YOU cannot miss this one Are you tired of seeing red on the charts
+With the market as rough as it is, everyone could use a Winner See what it feels to pick the right Stock for a change
 
 Company Profile
 
@@ -42,7 +42,7 @@ Frost is a more than welcome addition to Goldmark's Board of Executives.
 This is one decision that is easy as it is profitable
 
 -----------------------
-A tree does not move unless there is wind.   Weed it out.  Survival of the fittest.   Stubborn as a mule.   Root it out. Sly as a fox.   Some like carrots others like cabbage. Rough as a cob. The scythe ran into a stone. Slow as molasses in January. Spring to mind.   A snail's pace. Waking up with the chickens. Ugly as a mud fence. You can lead a horse to water but you can't make him drink.  A rolling stone gathers no moss. Throw pearls before swine. Salt of the Earth. The way to a man's heart is through his stomach.  Salt of the Earth. Stop, look and listen. Tools of the trade. 
+What on earth? Sweet as honey.   Ugly as a mud fence. Play a harp before a cow. So hungry I could eat a horse. Pull it up by the roots. Stubborn as a mule.   What goes down usually comes up.  Walking on water. Sick as a dog.   Worry often gives a small thing a big shadow. Thick as a brick.   Till the cows come home.   Sturdy as an oak.   To live from hand to mouth. She has a green thumb. Sour as a green apple.   Stir up an ant's nest.  
 
-Top of the morning.    You can lead a horse to water but you can't make him drink.  Put that in your pipe and smoke it.   A stick in the mud.   The shoes on the other foot now.   Where man is not nature is barren. The season of goodwill.   Timber! A stepping stone to. A stepping stone to. Say it with flowers.   The sharper is the berry, the sweeter is the wine. What goes down usually comes up.  She's a nut.   Water doesn't run uphill.   Tastes like chicken.   Run to seed.  Spring to mind.   A rose by any other name would smell as sweet. Tall as a tree.   Spring forward fall back. That's a whole new can of worms.   The squeaky wheel gets the grease.   Worry often gives a small thing a big shadow.
+Too little too late.   Up a tree. Wrinkled as a prune. A rose by any other name would smell as sweet. Walking on cloud nine. Rain, rain go away; come again some other day. Water it down.  Raking it in.  Treat him like dirt. You feel like a fish out of water. Rare as walking on water.  Pull it up by the roots. Spring forward fall back. Worry often gives a small thing a big shadow. Useless as tits on bull.   Spring to mind.   Spring forward fall back. Weed 'um and reap. You throw filth on the living and flowers on the dead.Pin a rose on your nose. You never miss the water till the well runs dry. Scraping the bottom of the barrel.  Seed money. When you get lemons, make lemonade.(When life gives you scraps make quilts.) When we love - we grow. 
 
