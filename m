@@ -1,8 +1,11 @@
-Date: Wed, 30 Aug 2006 19:11:03 +0100
-From: "lvyxiwbf joeuvi" <mvyyfpcfsb@...752...>
-Message-Id: <9343783166.ikPCmS-00021666-6109@...752...> 
-MIME-Version: 1.0 
-Subject: [Openvpn-devel] Are Shares of This Issue Poised For a Run gdki
+Content-class: urn:content-classes:message
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C6CCBF.7B7F047B"
+Date: Thu, 31 Aug 2006 13:37:00 +0800
+Message-ID: <E42673822206994F8293A048721B91A51346C8@...754...>
+From: "Wang, Daming" <daming.wang@...753...>
+Subject: [Openvpn-devel] a question about how to program tap_win32 driver
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,38 +14,162 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net, openvrml-announce@lists.sourceforge.net, openvrml-develop@lists.sourceforge.net, oscar-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-With the market as rough as it is, everyone could use a Winner See what it feels to pick the right Stock for a change
+This is a multi-part message in MIME format.
 
-Company Profile
+------_=_NextPart_001_01C6CCBF.7B7F047B
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-Goldmark Industries, specializes in the production and distribution of Music, Feature Fillms and Television entertainment for North America's most rapidly growing demographic, with a total consumer-based purchasing power of over 1 Trillion dollars: the Hip-Hop community.
+=20
 
-GOLDMARK INDUSTRIES (GDKI)
-CURRENT_PRICE: $ 4.60 GET IT NoW!
-5 DAY expected : $ 7.90
+hello:
+=20
+I am trying to write a simple program which functions like this:
+first create a socket and bind the socket to the virtual tap_win32
+driver provided
+by openVPN, the tap ip was setted as "10.0.3.1". So if I use the socket
+to send
+out packet, the packet will be transmitted to the user space,right?=20
+And then, I use a program which get a handle associated with the tap
+driver
+through "createfile" in tun.c and use "readfile" (in tun.c) trying to
+get the
+packet ,but the readfile always return failure(err=3D31).=20
+=20
+My question is: did I understand the usage procedure correctly? If so,
+is the
+method used in my program correctly? If not,can you give me some advice?
+thank
+you very much!
+=20
+best wishes!
+michael,wang
 
-Current News
+=20
 
-Goldmark Industries, Inc. (GDKI - News), a rising Urban Entertainment force, is pleased to announce that the Company has enhanced its Executive Leadership with the addition of accomplished artist, Frost, as Vice President of the Music Division. Frost is very well respected by already established act and is looked at as a role model by up and coming talent. He was the pioneer of Latin Hip Hop, which has exploded, with the extremely popular, Regaetton over the past 4 years. Frost will serve as an ideal Vice President of Music Operations within Goldmark, due to his extensive musical knowledge, skills, history and experience. His presence on the Board of Executives will only serve to be advantageous to Goldmark's overall growth.
+=20
 
-Frost -- originally known as Kid Frost -- was a pioneer in the field of Latin hip-hop, cutting some of its very first records and helping to bring exposure to other bilingual MCs. Pioneering Latino rapper Frost only gets better with age. The veteran East Los Angeles rapper, who became a hip-hop icon in 1990 with his groundbreaking single "La Raza" has stepped up his game in the last decade, sharpening his lyrical skills and becoming an authority figure in the rap world. His success allowed such Latino rappers as Cypress Hill, Fat Joe, Big Pun to make substantial hip-hop inroads.
 
-His music features a hard-hitting mix of hard-core hip-hop, smoothed out cuts for the ladies and laid-back songs for cruising. This versatility is one of Frost's strengths, something that keeps him fresh. "The thing keeps my name in people's mouths is that I keep reinventing myself," Frost explains. "I don't just keep on making the same music I want to take bilingual hip-hop a trend I was the forefront of one step further while still kicking vivid rhymes about the code of the streets with authenticity."
+------_=_NextPart_001_01C6CCBF.7B7F047B
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-Frost is an original and knows about originality. Rapping since 1980 Frost scored his first record deal with Electrobeat Records thanks to the help of his long time mentor and frieend Ice-T. When deciding on his name, Frost decided to model his moniker after that of the man who helped start his career, choosing Frost since Frost comes before ice. Then known as Kid Frost, Frost became a regular on the car show circuit in the mid 1980's. When he released "La Raza" and his debut album, "Hispanic Causing Panic" a few years later, his visibility exploded and helped the Lowrider culture thrive in Southern California and eventually Worldwide.
+<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" xmlns:w=3D"urn:sc=
+hemas-microsoft-com:office:word" xmlns=3D"http://www.w3.org/TR/REC-html40">
 
-Frost says, "As I see the KRS-Ones and the LL Cool J's still in it, I won't budge. A lot of people might say that I'm too old. But I don't think it's your age or how you rap. It's your rap skills that keep you in the game. As long as we make that knocking Chevy music, we're going to stay in this rap game."
+<head>
+<meta http-equiv=3DContent-Type content=3D"text/html; charset=3Dus-ascii">
+<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:SimSun;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:SimSun;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	text-align:justify;
+	text-justify:inter-ideograph;
+	font-size:10.5pt;
+	font-family:"Times New Roman";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+pre
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:SimSun;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:Arial;
+	color:windowtext;}
+ /* Page Definitions */
+ @page Section1
+	{size:595.3pt 841.9pt;
+	margin:72.0pt 90.0pt 72.0pt 90.0pt;
+	layout-grid:15.6pt;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
 
-Frost is a more than welcome addition to Goldmark's Board of Executives.
+</head>
 
-This is one decision that is easy as it is profitable
+<body lang=3DZH-CN link=3Dblue vlink=3Dpurple style=3D'text-justify-trim:pu=
+nctuation'>
 
------------------------
-What on earth? Sweet as honey.   Ugly as a mud fence. Play a harp before a cow. So hungry I could eat a horse. Pull it up by the roots. Stubborn as a mule.   What goes down usually comes up.  Walking on water. Sick as a dog.   Worry often gives a small thing a big shadow. Thick as a brick.   Till the cows come home.   Sturdy as an oak.   To live from hand to mouth. She has a green thumb. Sour as a green apple.   Stir up an ant's nest.  
+<div class=3DSection1 style=3D'layout-grid:15.6pt'>
 
-Too little too late.   Up a tree. Wrinkled as a prune. A rose by any other name would smell as sweet. Walking on cloud nine. Rain, rain go away; come again some other day. Water it down.  Raking it in.  Treat him like dirt. You feel like a fish out of water. Rare as walking on water.  Pull it up by the roots. Spring forward fall back. Worry often gives a small thing a big shadow. Useless as tits on bull.   Spring to mind.   Spring forward fall back. Weed 'um and reap. You throw filth on the living and flowers on the dead.Pin a rose on your nose. You never miss the water till the well runs dry. Scraping the bottom of the barrel.  Seed money. When you get lemons, make lemonade.(When life gives you scraps make quilts.) When we love - we grow. 
+<p class=3DMsoNormal><font size=3D1 face=3DArial><span lang=3DEN-US style=
+=3D'font-size:
+9.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<pre><font size=3D3 face=3D&#23435;&#20307;><span lang=3DEN-US style=3D'fon=
+t-size:12.0pt'>hello:<o:p></o:p></span></font></pre><pre><font
+size=3D3 face=3D&#23435;&#20307;><span lang=3DEN-US style=3D'font-size:12.0=
+pt'><o:p>&nbsp;</o:p></span></font></pre><pre><font
+size=3D3 face=3D&#23435;&#20307;><span lang=3DEN-US style=3D'font-size:12.0=
+pt'>I am trying to write a simple program which functions like this:<o:p></=
+o:p></span></font></pre><pre><font
+size=3D3 face=3D&#23435;&#20307;><span lang=3DEN-US style=3D'font-size:12.0=
+pt'>first create a socket and bind the socket to the virtual tap_win32 driv=
+er provided<o:p></o:p></span></font></pre><pre><font
+size=3D3 face=3D&#23435;&#20307;><span lang=3DEN-US style=3D'font-size:12.0=
+pt'>by openVPN, the tap ip was setted as &quot;10.0.3.1&quot;. So if I use =
+the socket to send<o:p></o:p></span></font></pre><pre><font
+size=3D3 face=3D&#23435;&#20307;><span lang=3DEN-US style=3D'font-size:12.0=
+pt'>out packet, the packet will be transmitted to the user space,right? <o:=
+p></o:p></span></font></pre><pre><font
+size=3D3 face=3D&#23435;&#20307;><span lang=3DEN-US style=3D'font-size:12.0=
+pt'>And then, I use a program which get a handle associated with the tap dr=
+iver<o:p></o:p></span></font></pre><pre><font
+size=3D3 face=3D&#23435;&#20307;><span lang=3DEN-US style=3D'font-size:12.0=
+pt'>through &quot;createfile&quot; in tun.c and use &quot;readfile&quot; (i=
+n tun.c) trying to get the<o:p></o:p></span></font></pre><pre><font
+size=3D3 face=3D&#23435;&#20307;><span lang=3DEN-US style=3D'font-size:12.0=
+pt'>packet ,but the readfile always return failure(err=3D31). <o:p></o:p></=
+span></font></pre><pre><font
+size=3D3 face=3D&#23435;&#20307;><span lang=3DEN-US style=3D'font-size:12.0=
+pt'><o:p>&nbsp;</o:p></span></font></pre><pre><font
+size=3D3 face=3D&#23435;&#20307;><span lang=3DEN-US style=3D'font-size:12.0=
+pt'>My question is: did I understand the usage procedure correctly? If so, =
+is the<o:p></o:p></span></font></pre><pre><font
+size=3D3 face=3D&#23435;&#20307;><span lang=3DEN-US style=3D'font-size:12.0=
+pt'>method used in my program correctly? If not,can you give me some advice=
+? thank<o:p></o:p></span></font></pre><pre><font
+size=3D3 face=3D&#23435;&#20307;><span lang=3DEN-US style=3D'font-size:12.0=
+pt'>you very much!<o:p></o:p></span></font></pre><pre><font
+size=3D3 face=3D&#23435;&#20307;><span lang=3DEN-US style=3D'font-size:12.0=
+pt'><o:p>&nbsp;</o:p></span></font></pre><pre><font
+size=3D3 face=3D&#23435;&#20307;><span lang=3DEN-US style=3D'font-size:12.0=
+pt'>best wishes!<o:p></o:p></span></font></pre><pre><font
+size=3D3 face=3D&#23435;&#20307;><span lang=3DEN-US style=3D'font-size:12.0=
+pt'>michael,wang<o:p></o:p></span></font></pre>
+
+<p class=3DMsoNormal><font size=3D2 face=3D"Times New Roman"><span lang=3DE=
+N-US
+style=3D'font-size:10.5pt'>&nbsp;</span><span lang=3DEN-US><o:p></o:p></spa=
+n></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3D"Times New Roman"><span lang=3DE=
+N-US><o:p>&nbsp;</o:p></span></font></p>
+
+</div>
+
+</body>
+
+</html>
+
+------_=_NextPart_001_01C6CCBF.7B7F047B--
 
