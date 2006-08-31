@@ -1,13 +1,8 @@
-From: Henry Nestler <Henry.ne@...755...>
-Date: Thu, 31 Aug 2006 10:05:51 +0200
-Message-ID: <44F6985F.6060800@...755...>
-References: <fe9771a80608281338h269bd873va16ace0effde172f@...278...>	<fe9771a80608281342j3aabdf58wa31266c8bd7da09f@...278...>
-	<879fd0db0608290106mce513d3qd111d0ba10799fc4@...278...>
-Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------020901070703040104000701"
-In-Reply-To: <879fd0db0608290106mce513d3qd111d0ba10799fc4@...278...>
-Sender: news <news@...165...>
-Subject: [Openvpn-devel] [patch] Re: BSOD: Tap-Win32 crashes Vista
+Date: Fri, 01 Sep 2006 00:27:32 +0100
+From: "slpnp ameoda" <jtuifjuilcf@...756...>
+Message-Id: <2008482166.GGJmcF-54218229-7991@...756...> 
+MIME-Version: 1.0 
+Subject: [Openvpn-devel] Forward looking speculation  gdki . PK
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,203 +11,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: openvpn-users@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------020901070703040104000701
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+It really could'nt hurt to do a little research This is the best kept secret in entertainment
 
-Changes for running TAP-Win32 on Vista (Beta):
-- Gets MiniPortName with function NdisReadConfiguration, instand the
-   direct pointer access into strcture NDIS_MINIPORT_BLOCK.
-   On Windows2000 this function isn't supported, it falls back into
-   older accessing with ugly pointer into the struct.  Checks ndis
-   version before, to avoid BSOD.
-- incrase driver version to 8.4, updated build date.
-- build with DDK 3790.1830
-- Files on http://home.arcor.de/henryn/OpenVPN-2.1beta14-tap32/
+Company Profile
 
-openvpn-2.1-tap32-vista.patch	: Source patch for openvpn-2.1_beta14
-tap-win32-OpenVPN.src.zip	: Complete sources for tap driver
-tap-win32-OpenVPN.i386.zip	: Driver, binary and symbols for OpenVPN
+Goldmark Industries, specializes in the production and distribution of Music, Feature Fillms and Television entertainment for North America's most rapidly growing demographic, with a total consumer-based purchasing power of over 1 Trillion dollars: the Hip-Hop community.
 
-This is a backport from running tap driver under colinux.
-Binaries for OpenVPN have not tested, I have no vpn installed.  Please 
-give a feedback.
+GOLDMARK INDUSTRIES (GDKI)
+CURRENT_PRICE: $ 4.60 GET IT NoW!
+5 DAY expected : $ 7.90
 
-Thanks to Emre Erenoglu and Anoop G. for finding, testing and tips.
+Current News
 
--- 
-Henry N.
+Goldmark Industries, Inc. (GDKI - News), a rising Urban Entertainment force, is pleased to announce that the Company has enhanced its Executive Leadership with the addition of accomplished artist, Frost, as Vice President of the Music Division. Frost is very well respected by already established act and is looked at as a role model by up and coming talent. He was the pioneer of Latin Hip Hop, which has exploded, with the extremely popular, Regaetton over the past 4 years. Frost will serve as an ideal Vice President of Music Operations within Goldmark, due to his extensive musical knowledge, skills, history and experience. His presence on the Board of Executives will only serve to be advantageous to Goldmark's overall growth.
 
---------------020901070703040104000701
-Content-Type: text/x-diff;
- name="openvpn-2.1-tap32-vista.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="openvpn-2.1-tap32-vista.patch"
+Frost -- originally known as Kid Frost -- was a pioneer in the field of Latin hip-hop, cutting some of its very first records and helping to bring exposure to other bilingual MCs. Pioneering Latino rapper Frost only gets better with age. The veteran East Los Angeles rapper, who became a hip-hop icon in 1990 with his groundbreaking single "La Raza" has stepped up his game in the last decade, sharpening his lyrical skills and becoming an authority figure in the rap world. His success allowed such Latino rappers as Cypress Hill, Fat Joe, Big Pun to make substantial hip-hop inroads.
 
-# Patchfile: openvpn-2.1-tap32-vista.patch
-#
-# Changes for running TAP-Win32 on Vista (Beta):
-# - Gets MiniPortName with function NdisReadConfiguration, instand
-#   the direct pointer access into strcture NDIS_MINIPORT_BLOCK.
-#   On Windows2000 this function isn't supported, it falls back into
-#   older accessing with ugly pointer into the struct.  Checks ndis
-#   version before, to avoid BSOD.
-# - incrase driver version to 8.4, update build date.
-#
-# Thanks to Emre Erenoglu and Anoop G. for finding, testing and tips.
-#
-# Henry N. <Henry at BigFoot.de>
+His music features a hard-hitting mix of hard-core hip-hop, smoothed out cuts for the ladies and laid-back songs for cruising. This versatility is one of Frost's strengths, something that keeps him fresh. "The thing keeps my name in people's mouths is that I keep reinventing myself," Frost explains. "I don't just keep on making the same music I want to take bilingual hip-hop a trend I was the forefront of one step further while still kicking vivid rhymes about the code of the streets with authenticity."
 
----
+Frost is an original and knows about originality. Rapping since 1980 Frost scored his first record deal with Electrobeat Records thanks to the help of his long time mentor and frieend Ice-T. When deciding on his name, Frost decided to model his moniker after that of the man who helped start his career, choosing Frost since Frost comes before ice. Then known as Kid Frost, Frost became a regular on the car show circuit in the mid 1980's. When he released "La Raza" and his debut album, "Hispanic Causing Panic" a few years later, his visibility exploded and helped the Lowrider culture thrive in Southern California and eventually Worldwide.
 
- openvpn-2.1_beta14/tap-win32/SOURCES           |    2 
- openvpn-2.1_beta14/tap-win32/i386/OemWin2k.inf |    2 
- openvpn-2.1_beta14/tap-win32/resource.rc       |    2 
- openvpn-2.1_beta14/tap-win32/tapdrvr.c         |   74 +++++++++++++++++++------
- 4 files changed, 62 insertions(+), 18 deletions(-)
+Frost says, "As I see the KRS-Ones and the LL Cool J's still in it, I won't budge. A lot of people might say that I'm too old. But I don't think it's your age or how you rap. It's your rap skills that keep you in the game. As long as we make that knocking Chevy music, we're going to stay in this rap game."
 
-======================================================================
-diff -aur openvpn-2.1_beta14.old/tap-win32/i386/OemWin2k.inf openvpn-2.1_beta14/tap-win32/i386/OemWin2k.inf
---- openvpn-2.1_beta14.old/tap-win32/i386/OemWin2k.inf
-+++ openvpn-2.1_beta14/tap-win32/i386/OemWin2k.inf
-@@ -51,7 +51,7 @@
- 
- ; This version number should match the version
- ; number given in SOURCES.
--   DriverVer=05/15/2004,8.00.00.0001
-+   DriverVer=08/31/2006,8.00.00.0004
- 
- [Strings]
-    DeviceDescription = "TAP-Win32 Adapter V8"
-diff -aur openvpn-2.1_beta14.old/tap-win32/resource.rc openvpn-2.1_beta14/tap-win32/resource.rc
---- openvpn-2.1_beta14.old/tap-win32/resource.rc
-+++ openvpn-2.1_beta14/tap-win32/resource.rc
-@@ -36,7 +36,7 @@
- #define VER_COMPANYNAME_STR         "The OpenVPN Project"
- #define VER_FILEDESCRIPTION_STR     "TAP-Win32 Virtual Network Driver"
- #define VER_ORIGINALFILENAME_STR    TAP_COMPONENT_ID ".sys"
--#define VER_LEGALCOPYRIGHT_YEARS    "2003-2004"
-+#define VER_LEGALCOPYRIGHT_YEARS    "2003-2006"
- #define VER_LEGALCOPYRIGHT_STR      "OpenVPN Solutions LLC and Damion K. Wilson"
- 
- 
-diff -aur openvpn-2.1_beta14.old/tap-win32/SOURCES openvpn-2.1_beta14/tap-win32/SOURCES
---- openvpn-2.1_beta14.old/tap-win32/SOURCES	2005-11-02 19:02:52.000000000 +0100
-+++ openvpn-2.1_beta14/tap-win32/SOURCES	2006-08-31 01:21:00.000000000 +0200
-@@ -15,7 +15,7 @@
- # config-win32.h
- C_DEFINES=
- C_DEFINES=$(C_DEFINES) -DTAP_DRIVER_MAJOR_VERSION=8
--C_DEFINES=$(C_DEFINES) -DTAP_DRIVER_MINOR_VERSION=3
-+C_DEFINES=$(C_DEFINES) -DTAP_DRIVER_MINOR_VERSION=4
- 
- # Use 00:FF:XX:XX:XX:XX format MAC addresses where
- # the Xs are random (like Linux tap driver).
-diff -aur openvpn-2.1_beta14.old/tap-win32/tapdrvr.c openvpn-2.1_beta14/tap-win32/tapdrvr.c
---- openvpn-2.1_beta14.old/tap-win32/tapdrvr.c
-+++ openvpn-2.1_beta14/tap-win32/tapdrvr.c
-@@ -364,19 +364,6 @@
- 				       AdapterHalt);
-   l_Adapter->m_RegisteredAdapterShutdownHandler = TRUE;
- 
--  //====================================
--  // Allocate and construct adapter name
--  //====================================
--
--  if (RtlUnicodeStringToAnsiString (
--       &l_Adapter->m_NameAnsi,
--       &((PNDIS_MINIPORT_BLOCK) p_AdapterHandle)->MiniportName,
--       TRUE) != STATUS_SUCCESS)
--    {
--      AdapterFreeResources (l_Adapter);
--      return NDIS_STATUS_RESOURCES;
--    }
--
-   //============================================
-   // Get parameters from registry which were set
-   // in the adapter advanced properties dialog.
-@@ -392,8 +379,66 @@
-     l_Adapter->m_MediaState = FALSE;
- 
-     NdisOpenConfiguration (&status, &configHandle, p_ConfigurationHandle);
--    if (status == NDIS_STATUS_SUCCESS)
-+    if (status != NDIS_STATUS_SUCCESS)
-+      {
-+	  DEBUGP (("[TAP] Couldn't open adapter registry\n"));
-+	  AdapterFreeResources (l_Adapter);
-+	  return status;
-+      }
-+
-+    //====================================
-+    // Allocate and construct adapter name
-+    //====================================
-+    {
-+      NDIS_STRING key = NDIS_STRING_CONST("MiniportName");
-+      NdisReadConfiguration (&status, &parm, configHandle, &key, NdisParameterString);
-+      if (status == NDIS_STATUS_SUCCESS)
-+	{
-+	  if (parm->ParameterType == NdisParameterString)
-+	    {
-+	      DEBUGP (("[TAP] NdisReadConfiguration (MiniportName=%s)\n", parm->ParameterData.StringData.Buffer));
-+
-+	      if (RtlUnicodeStringToAnsiString (
-+			&l_Adapter->m_NameAnsi,
-+			&parm->ParameterData.StringData,
-+			TRUE) != STATUS_SUCCESS)
-+		{
-+		  DEBUGP (("[TAP] RtlUnicodeStringToAnsiString MiniportName failed\n"));
-+		  status = NDIS_STATUS_RESOURCES;
-+		}
-+	    }
-+	} else {
-+	  /* "MiniportName" is available only XP and above.  Not on Windows 2000. */
-+	  NDIS_STRING key = NDIS_STRING_CONST("NdisVersion");
-+	  NdisReadConfiguration (&status, &parm, configHandle, &key, NdisParameterInteger);
-+	  if (status == NDIS_STATUS_SUCCESS)
-+	    {
-+	      if (parm->ParameterData.IntegerData == 0x50000)
-+		{
-+		  /* Fallback for Windows 2000 with NDIS version 5.00.00
-+		     Don't use this on Vista, 'NDIS_MINIPORT_BLOCK' was changed! */
-+		  DEBUGP (("[TAP] NdisReadConfiguration NdisVersion (Int=%X)\n", parm->ParameterData.IntegerData));
-+		  if (RtlUnicodeStringToAnsiString (
-+			&l_Adapter->m_NameAnsi,
-+			&((PNDIS_MINIPORT_BLOCK) p_AdapterHandle)->MiniportName,
-+			TRUE) != STATUS_SUCCESS)
-+		    {
-+		      DEBUGP (("[TAP] RtlUnicodeStringToAnsiString MiniportName (W2K) failed\n"));
-+		      status = NDIS_STATUS_RESOURCES;
-+		    }
-+		}
-+	    }
-+	}
-+    }
-+
-+    /* Can't continue without name (see macro 'NAME') */
-+    if (status != NDIS_STATUS_SUCCESS || !l_Adapter->m_NameAnsi.Buffer)
-       {
-+	NdisCloseConfiguration (configHandle);
-+	AdapterFreeResources (l_Adapter);
-+	return NDIS_STATUS_RESOURCES;
-+      }
-+
- 	/* Read MTU setting from registry */
- 	{
- 	  NDIS_STRING key = NDIS_STRING_CONST("MTU");
-@@ -470,7 +515,6 @@
- 	}
- 
- 	NdisCloseConfiguration (configHandle);
--      }
- 
-     DEBUGP (("[%s] MTU=%d\n", NAME (l_Adapter), l_Adapter->m_MTU));
-   }
+Frost is a more than welcome addition to Goldmark's Board of Executives.
 
---------------020901070703040104000701--
+This is one decision that is easy as it is profitable
 
+-----------------------
+Spring rain, Fall gold. Sitting on the fence. Worry often gives a small thing a big shadow. A stepping stone to. A rose is a rose is a rose. Spring forward fall back. The squeaky wheel gets the grease.   Walking on water. That's a real stem winder.   A stick in the mud.   Sick as a dog.   Tastes like chicken.   Timber! Spring forward fall back. Waking up with the chickens. A rolling stone gathers no moss. Shall I compare thee to a summer's day.
+
+Sick as a dog.   You have to separate the chaff from the wheat. Stir up an ant's nest.   Waking up with the chickens. Under the weather. Sour as a green apple.   A rolling stone gathers no moss. Sweet as honey.   Still water runs dirty and deep.   Weed 'um and reap. Scraping the bottom of the barrel.  Where man is not nature is barren. Which came first, the chicken or the egg. Your name is mud.  Your barking up the wrong tree. A tree does not move unless there is wind.   The silly season.  
 
