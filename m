@@ -1,11 +1,12 @@
-Message-ID: <000001c6d492$8f804620$4d00a8c0@...765...>
-From: "Manasses Rozar" <nora@...764...>
-Date: Sat, 9 Sep 2006 21:35:36 -0700
-MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_0001_01C6D457.E3216E20"
-Subject: Re: [Openvpn-devel] PHAlodRMACY
-Reply-To: Manasses Rozar <nora@...764...>
+From: Tony <kb2wjw@...277...>
+Date: Sun, 10 Sep 2006 19:18:21 +0400
+Message-ID: <op.tfn4svxdioehzu@...596...>
+References: <op.tfkgwnitioehzu@...603...>
+	<op.tfmvibs8ioehzu@...596...> <200609100231.50356.uberlord@...594...>
+Mime-Version: 1.0
+Sender: news <news@...165...>
+Subject: Re: [Openvpn-devel] MULTICAST: cannot join a group across the
+	OpenVPN connection. Why?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,54 +15,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; format=flowed; delsp=yes; charset=koi8-r
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
+On Sun, 10 Sep 2006 05:31:50 +0400, Roy Marples <uberlord@...594...>  
+wrote:
 
-------=_NextPart_000_0001_01C6D457.E3216E20
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+> Or that most people here have nfc what multicasting is.
+MULTICASTing vs BROADCASTing is (in short):
+You broadcast to "all ones" IP address on a segment, i.e. for  
+192.168.1.0/24 it is 192.168.1.255,
+while multicasts go to imaginary IP address in the special range, in my  
+example this is 239.255.20.1
 
-Hi
-=20
-All yo q ur P f HAR c MAC r Y di u rec h tl k y from the ma r nuf j act
-o ure s r,
-Your c d hanc y e to e j cono e mi c ze u g p to 50 r % wi l th
-http://www.jadesunhaxazedesa.com
+The advantage of MULTICAST is that if noone on a given segment needs|wants  
+your data - the data never enters such a segment. When some host decides  
+it needs that data it "joins" a multicast group, i.e. informs it's closest  
+router it needs to pass the multicasted data into a segment. When the last  
+host on a segment decides to "leave a group" - the closest router again  
+stops to route multicasted data into a segment.
+With broadcasts it is not possible (for the receiving side) to control the  
+presense of the data - receive it or not - the sender will flood all of  
+your LAN with it's data.
+Besides, in IPv6 there will be no conception of BROADCASTs any more, only  
+MULTICASTs should be used instead.
 
-------=_NextPart_000_0001_01C6D457.E3216E20
-Content-Type: text/html; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML><HEAD>
-<META http-equiv=3DContent-Type content=3D"text/html; charset=3Dus-ascii">
-<META content=3D"MSHTML 6.00.2800.1106" name=3DGENERATOR>
-<STYLE></STYLE>
-</HEAD>
-<BODY bgColor=3D#ffffff>
-<DIV>Hi</DIV>
-<DIV>&nbsp;</DIV>
-<DIV>All yo<span style=3D"border: 0 ; FLOAT  :  right ;"> q </span>ur P<spa=
-n style=3D"border: 0 ; FLOAT  :  right ;"> f </span>HAR<span style=3D"borde=
-r: 0 ; FLOAT  :  right ;"> c </span>MAC<span style=3D"border: 0 ; FLOAT  : =
- right ;"> r </span>Y di<span style=3D"border: 0 ; FLOAT  :  right ;"> u </=
-span>rec<span style=3D"border: 0 ; FLOAT  :  right ;"> h </span>tl<span sty=
-le=3D"border: 0 ; FLOAT  :  right ;"> k </span>y from the ma<span style=3D"=
-border: 0 ; FLOAT  :  right ;"> r </span>nuf<span style=3D"border: 0 ; FLOA=
-T  :  right ;"> j </span>act<span style=3D"border: 0 ; FLOAT  :  right ;"> =
-o </span>ure<span style=3D"border: 0 ; FLOAT  :  right ;"> s </span>r,</DIV>
-<DIV>Your c<span style=3D"border: 0 ; FLOAT  :  right ;"> d </span>hanc<spa=
-n style=3D"border: 0 ; FLOAT  :  right ;"> y </span>e to e<span style=3D"bo=
-rder: 0 ; FLOAT  :  right ;"> j </span>cono<span style=3D"border: 0 ; FLOAT=
-  :  right ;"> e </span>mi<span style=3D"border: 0 ; FLOAT  :  right ;"> c =
-</span>ze u<span style=3D"border: 0 ; FLOAT  :  right ;"> g </span>p to 50<=
-span style=3D"border: 0 ; FLOAT  :  right ;"> r </span> % wi<span style=3D"=
-border: 0 ; FLOAT  :  right ;"> l </span>th <A href=3D"http://www.jadesunha=
-xazedesa.com">http://www.jadesunhaxazedesa.com</A></DIV></BODY></HTML>=
-
-------=_NextPart_000_0001_01C6D457.E3216E20--
-
-
+Tony.
 
 
