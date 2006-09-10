@@ -1,12 +1,12 @@
-From: Tony <kb2wjw@...277...>
-Date: Sun, 10 Sep 2006 19:18:21 +0400
-Message-ID: <op.tfn4svxdioehzu@...596...>
+Date: Sun, 10 Sep 2006 21:05:18 +0200
+From: Matthias Andree <ma+ovpnd@...31...>
+Message-ID: <20060910190518.GA21803@...33...>
 References: <op.tfkgwnitioehzu@...603...>
-	<op.tfmvibs8ioehzu@...596...> <200609100231.50356.uberlord@...594...>
-Mime-Version: 1.0
-Sender: news <news@...165...>
-Subject: Re: [Openvpn-devel] MULTICAST: cannot join a group across the
-	OpenVPN connection. Why?
+	<op.tfmvibs8ioehzu@...596...>
+MIME-Version: 1.0
+In-Reply-To: <op.tfmvibs8ioehzu@...596...>
+Subject: Re: [Openvpn-devel] MULTICAST: cannot join a group across
+	the	OpenVPN connection. Why?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,32 +15,20 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; format=flowed; delsp=yes; charset=koi8-r
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-On Sun, 10 Sep 2006 05:31:50 +0400, Roy Marples <uberlord@...594...>  
-wrote:
+On Sun, 10 Sep 2006, Tony wrote:
 
-> Or that most people here have nfc what multicasting is.
-MULTICASTing vs BROADCASTing is (in short):
-You broadcast to "all ones" IP address on a segment, i.e. for  
-192.168.1.0/24 it is 192.168.1.255,
-while multicasts go to imaginary IP address in the special range, in my  
-example this is 239.255.20.1
+> Does this silence (no replyes or comments) mean that it is my own mistake  
+> in configuring the OpenVPN and that MULTICASTing across the OpenVPN link  
+> works for everybody?
 
-The advantage of MULTICAST is that if noone on a given segment needs|wants  
-your data - the data never enters such a segment. When some host decides  
-it needs that data it "joins" a multicast group, i.e. informs it's closest  
-router it needs to pass the multicasted data into a segment. When the last  
-host on a segment decides to "leave a group" - the closest router again  
-stops to route multicasted data into a segment.
-With broadcasts it is not possible (for the receiving side) to control the  
-presense of the data - receive it or not - the sender will flood all of  
-your LAN with it's data.
-Besides, in IPv6 there will be no conception of BROADCASTs any more, only  
-MULTICASTs should be used instead.
+Never bothered to try -- and your question doesn't belong on the -devel
+list either, perhaps that's why nobody cares.
 
-Tony.
-
+-- 
+Matthias Andree
 
