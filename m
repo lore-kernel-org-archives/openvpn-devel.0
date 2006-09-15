@@ -1,8 +1,9 @@
-Message-ID: <4508AC53.2070607@...41...>
-Date: Wed, 13 Sep 2006 19:11:47 -0600
+Message-ID: <450A3488.2080607@...41...>
+Date: Thu, 14 Sep 2006 23:05:12 -0600
 From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Patches for 64bit version of TAP-Win32?
+Subject: [Openvpn-devel] TAP driver updates -- please test on 64-bit XP and
+	Vista
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,14 +16,20 @@ Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 To: OpenVPN devel <openvpn-devel@lists.sourceforge.net>
 
-I'm putting together a new Windows build that has some TAP driver 
-changes, including a Vista fix and support for x86_64 (amd64).
+I'm trying to resolve the issues the current TAP-Win32 driver has with 
+Windows Vista, and I've also updated the installer to autodetect 32 vs. 
+64 bit windows, and install the correct driver, as the OpenVPN GUI 
+installer does.
 
-Can someone who has built 64 bit versions of tap0801.sys and 
-tapinstall.exe indicate whether any patches were required against the 
-standard TAP-Win32 sources + OemWin2k.inf in order to build.
+If you are using Windows 2000, Windows Vista, or any 64 bit version of 
+Windows, I would appreciate it if you could test this installer and let 
+me know if it works correctly:
+
+http://openvpn.net/beta/openvpn-2.1_beta15a-install.exe
 
 Thanks,
 James
+
+
 
 
