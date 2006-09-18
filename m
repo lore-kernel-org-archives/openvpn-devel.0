@@ -1,7 +1,7 @@
-Date: Mon, 18 Sep 2006 16:16:32 -0400
+Date: Mon, 18 Sep 2006 16:32:36 -0400
 From: Mike Martin <Mike.Martin@...777...>
 In-reply-to: <eemsu7$os3$1@...165...>
-Message-id: <450EFEA0.4000807@...777...>
+Message-id: <450F0264.4090400@...777...>
 MIME-version: 1.0
 References: <450C6060.6060605@...777...>
 	<9e0cf0bf0609161341n286986d8i4a39a8cab4d59a5c@...278...>
@@ -18,97 +18,125 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: 7bit
+To: Charles Duffy <cduffy@...294...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Thanks for the response, Charles,
+Hi Charles,
 
-I have added comments in-line:
+You raise good points below. The web services client wouldn't be 
+controlling the connection in the way that you envision. It would be 
+more of a message passing service (explaining why a connection failed, 
+rather than just showing up in the grid as some unexplained connection 
+failure, as happens now) allowing the remote client to react to server 
+messages. The remote client would also be able to examine state of 
+various VPN servers in order to automatically choose which one to use, 
+and set the correct parameters for its client. Because the Grid uses 
+automatic service discovery and connection, it would have to be able to 
+modify its connection parameters to be in sync with the needs of 
+whichever server it is choosing to connect to. The VPN servers would 
+already have to be running, and able to take connection requests from 
+the client. They would not be relinquishing control. They would simply 
+be working in tandem with web service management software at their 
+location. This type of connection management communication would be 
+taking place over the Grid's Web services, which should be secure using 
+the GSI. If necessary, and this may indeed be the route to go if the 
+former option proves not secure, the interface could reside at the 
+client end, and, as you say, the VPN control channel could be used. But 
+I think the former example would be more useful. For example, a 
+requesting web service could toggle the hold function, and resume a 
+sleeping connection when it is required.
+
+Mike
 
 Charles Duffy wrote:
-> I'm not an OpenVPN developer per se -- other than a few trivial 
-> patches -- but I should be able to comment.
+> Mike Martin wrote:
+>   
+>> It would need to last indefinitely, and be managed by a remote client, 
+>> using Web Services, with minimal human intervention
+>>     
 >
-> First -- the requirements for what you want a VPN to do in a grid 
-> environment are something which need to be specified. Since OpenVPN is 
-> limited to either a 2-endpoint peer-to-peer model or a hub-and-spoke 
-> model, it isn't necessarily well-suited to cases where a arbitrary 
-> communications will need to be encrypted within a cloud.
+> A tool such as runit, with some wrappers, can provide the most immediate 
+> layer of management -- at least with regard to ensuring that the VPN 
+> stays up when it's expected to, triggering restarts when intended, etc.
+>
 >   
-One of the arguments in my paper takes issue with that belief, which has 
-been put forth in a seminal document be Ian Foster, who is an important 
-figure in Grid research. I like to pick a good fight. ;-) However, I am 
-not dogmatic about it, and accept that I may be off base. I believe that 
-there are times when Grid applications will make persistent connections, 
-with variable degrees of activity, between peers within the cloud. There 
-may be prolonged times of little, or no traffic, and there may be 
-prolonged times of extreme traffic, depending on need and availability. 
-It is all about using the best resources available, when they are 
-needed. But I also believe the grid, if it is to work as envisioned, 
-must be very adaptable to the needs of its participants. Suppose we have 
-a company willing to share their resources on the Grid, but who have a 
-policy of only allowing access to their network via VPN, using X.509 
-certificates. Maybe they have a massive internal network which is not 
-busy on evenings and week-ends, and they are willing to let research 
-facilities make use of idle CPUs for a reasonable price. Perhaps it 
-would be wise to build the ability into the Globus Toolkit to 
-automatically open and manage VPN connections when they are required. 
-The service could be advertised on a Service Discovery Service, the 
-parameters could be outlined in a WSDL, and the certificate management 
-could occur using the parameters of the Grid Security Infrastructure 
-(GSI), which uses X.509. It seems feasible to me. It may never happen, 
-but it's worth looking at.
-> Second, OpenVPN already provides a number of methods to interact with 
-> it which are readily programmatically accessible. This includes the 
-> manual page; OS-level signals; command-line and configuration file 
-> parameters; etc. My experience is that these are more than adequate 
-> for controlling the behavior which is presently available -- and that 
-> in cases where these tools and in of themselves don't provide the 
-> desired level of functionality, that building additional layers on top 
-> of the preexisting interfaces (rather than building entirely new 
-> interfaces) is appropriate.
+>> If parameters change over time, messages outlining changes must be 
+>> passed to the remote client in specific Web Services format. e.g. I f a 
+>> certificate expires, or is not found because if a change in directory 
+>> structure,  the remote client must be made aware of the cause of the 
+>> failure, so steps can be taken to correct it without having to dig down 
+>> for the information. We may be talking about a large number of 
+>> connections spread over a huge distributed computing environment, so 
+>> human intervention may not be an option.
+>>     
+>
+> The best solution to that isn't necessarily going to be very specific to 
+> OpenVPN. My company has a tool we designed and built in-house (actually 
+> very simple in terms of LOC count) which maintains configuration files 
+> on servers on customer sites, based off of templates and a tree of data 
+> representing the server's current and intended state. Writing a 
+> web-services frontend to the engine as a whole would be child's play, 
+> and further would provide far more power than trying to build a separate 
+> API for each individual component being managed. (However, I would be 
+> very hesitant to write such a frontend which accepted commands or 
+> updates not passing through the VPN proper, as this would reduce my 
+> security model's strength to the weaker of the VPN and the control 
+> channel -- which given the depth of countermeasures protecting the VPN 
+> [such as a tls-auth key, client and server keys, unprivileged users and 
+> groups, and the use of a chroot jail] would quite certainly be the latter).
+>
 >   
-The goal is, in the long term, to come up with a universal API which 
-would allow developers of Grid service software to write programs which 
-would be able to allow remote Grid clients to manage VPN connections via 
-a Web service interface. A generic API can prove very useful for VPN 
-developers. They could provide implementations of the generic API with 
-their products, which would allow any software using that API to make 
-use of it. A good example of this is the GSSAPI: 
-http://www.faqs.org/faqs/kerberos-faq/general/section-84.html Perhaps, 
-some day, a generic VPN API would be published as an RFC. I am simply 
-using OpenVPN as a test case through which to explore these issues, and 
-make some modest recommendations for future work.
-> Could you document the exact functionality you wish to add, and the 
-> business case for exposing that functionality as a native API?
->   
-Actually, one of the main goals of my paper is to determine exactly 
-which functionality should be added. If I could answer that question, I 
-wouldn't be looking for input here. I do believe that if the Grid were 
-ever to live up to its much-hyped promise, much benefit could be accrued 
-to any software which works well with it. After having looked at 
-OpenVPN, as compared to other SSL based VPNs and IPSec based VPNs, I 
-have come to think that OpenVPN would be a perfect fit as a default VPN 
-for the Globus Toolkit (if only I had any degree of clout. My paper will 
-undoubtedly languish in the digital equivalent of a dark and moldy 
-warehouse). It relies on well-known, commonly used protocols, which 
-incidentally are also used in the GSI. It is flexible, not too complex, 
-and secure. Whatever the case, I'm just writing an academic paper, 
-hoping to add a bit to our vast body of knowledge. Maybe someone will 
-read it and do something cool with OpenVPN. It is a nice piece of software.
+>> There may be long periods without traffic. The hold command would likely 
+>> be used here.
+>>     
+>
+> Hmm. Let me try to get a bigger picture.
+>
+> You have a web service which is used to control a VPN connection. This 
+> control presumably may include not only starting, stopping and otherwise 
+> modifying the immediate state of the service but also making 
+> configuration changes -- which presumably may include modifying keys, 
+> remote addresses, etc.
+>
+> Because this control includes being able to remotely start the VPN from 
+> a halted state, you need to have a control channel which is separate 
+> from the VPN proper. Because this control channel may need to pass 
+> sensitive data or commands when the VPN is down, it needs to have 
+> security characteristics at least as strong as those of the VPN itself.
+> Because it needs to be able to write to the areas of the drive where 
+> OpenVPN's configuration data and keys are stored, the process also has 
+> permissions which allow it to be substantially dangerous if subverted -- 
+> more such permissions than OpenVPN itself, which is unable to change its 
+> own configuration.
+>
+> I'm not entirely sold on the purpose of running both the control channel 
+> and the VPN as externally accessible services. Certainly, the VPN 
+> provides more functionality -- but if it's only being used for specific, 
+> well-defined data streams (which seems to be the case if you can turn it 
+> on only when you expect data to be passed), why not secure that content 
+> via the same mechanism you use for the control channel? That way you 
+> only expose a single route of attack -- rather than two -- and generally 
+> suffer quite a bit less complexity. If the control channel is 
+> established via a mechanism such as SSH rather than a web service, quite 
+> a bit of flexibility is provided there as well (as SSH's ability to run 
+> arbitrary tunnels, act as a SOCKS proxy, etc. can be leveraged).
+>
+>
+>
+> If my concerns reflect some misunderstanding of your proposal, 
+> clarification would be appreciated.
+>
 >
 > -------------------------------------------------------------------------
-> Using Tomcat but need to do more? Need to support web services, security?
-> Get stuff done quickly with pre-integrated technology to make your job 
-> easier
-> Download IBM WebSphere Application Server v.1.0.1 based on Apache 
-> Geronimo
-> http://sel.as-us.falkag.net/sel?cmd=lnk&kid=120709&bid=263057&dat=121642
+> Take Surveys. Earn Cash. Influence the Future of IT
+> Join SourceForge.net's Techsay panel and you'll get the chance to share your
+> opinions on IT & business topics through brief surveys -- and earn cash
+> http://www.techsay.com/default.php?page=join.php&p=sourceforge&CID=DEVDEV
 > _______________________________________________
 > Openvpn-devel mailing list
 > Openvpn-devel@lists.sourceforge.net
 > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 >
 >   
-
 
 
