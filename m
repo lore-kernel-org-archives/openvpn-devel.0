@@ -1,13 +1,11 @@
-Date: Mon, 18 Sep 2006 16:32:36 -0400
-From: Mike Martin <Mike.Martin@...777...>
-In-reply-to: <eemsu7$os3$1@...165...>
-Message-id: <450F0264.4090400@...777...>
-MIME-version: 1.0
-References: <450C6060.6060605@...777...>
-	<9e0cf0bf0609161341n286986d8i4a39a8cab4d59a5c@...278...>
-	<450C6B2E.9040107@...777...> <450E9BD1.9030703@...277...>
-	<450EE9E8.6020000@...777...> <eemsu7$os3$1@...165...>
-Subject: Re: [Openvpn-devel] request for input re: OpenVPN API
+Message-ID: <6bd5d4070609191723g1f77773fna919ab1a22d31b00@...278...>
+Date: Tue, 19 Sep 2006 19:23:36 -0500
+From: "Sammy Yu" <sammyyu2@...770...>
+Sender: temijun@...277...
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_86906_29240243.1158711816881"
+Subject: [Openvpn-devel] OpenVPN routing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,127 +14,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-type: text/plain; charset="ISO-8859-1"; format=flowed
+To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+
+------=_Part_86906_29240243.1158711816881
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Charles Duffy <cduffy@...294...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
 
-Hi Charles,
+Hi,
+   I have two OpenVPN questions:
+1) Does OpenVPN rely on Windows routing to forward traffic onto TAP
+adapter?
+2) Slightly off topic, can one route to network interface based on source
+rather than than destination in Windows?
+3) If a machine had multiple network interface, how does the OpenVPN select
+which network interface to route traffic through?
 
-You raise good points below. The web services client wouldn't be 
-controlling the connection in the way that you envision. It would be 
-more of a message passing service (explaining why a connection failed, 
-rather than just showing up in the grid as some unexplained connection 
-failure, as happens now) allowing the remote client to react to server 
-messages. The remote client would also be able to examine state of 
-various VPN servers in order to automatically choose which one to use, 
-and set the correct parameters for its client. Because the Grid uses 
-automatic service discovery and connection, it would have to be able to 
-modify its connection parameters to be in sync with the needs of 
-whichever server it is choosing to connect to. The VPN servers would 
-already have to be running, and able to take connection requests from 
-the client. They would not be relinquishing control. They would simply 
-be working in tandem with web service management software at their 
-location. This type of connection management communication would be 
-taking place over the Grid's Web services, which should be secure using 
-the GSI. If necessary, and this may indeed be the route to go if the 
-former option proves not secure, the interface could reside at the 
-client end, and, as you say, the VPN control channel could be used. But 
-I think the former example would be more useful. For example, a 
-requesting web service could toggle the hold function, and resume a 
-sleeping connection when it is required.
+Thanks in advance for your help.
 
-Mike
+Regards,
+Sammy
 
-Charles Duffy wrote:
-> Mike Martin wrote:
->   
->> It would need to last indefinitely, and be managed by a remote client, 
->> using Web Services, with minimal human intervention
->>     
->
-> A tool such as runit, with some wrappers, can provide the most immediate 
-> layer of management -- at least with regard to ensuring that the VPN 
-> stays up when it's expected to, triggering restarts when intended, etc.
->
->   
->> If parameters change over time, messages outlining changes must be 
->> passed to the remote client in specific Web Services format. e.g. I f a 
->> certificate expires, or is not found because if a change in directory 
->> structure,  the remote client must be made aware of the cause of the 
->> failure, so steps can be taken to correct it without having to dig down 
->> for the information. We may be talking about a large number of 
->> connections spread over a huge distributed computing environment, so 
->> human intervention may not be an option.
->>     
->
-> The best solution to that isn't necessarily going to be very specific to 
-> OpenVPN. My company has a tool we designed and built in-house (actually 
-> very simple in terms of LOC count) which maintains configuration files 
-> on servers on customer sites, based off of templates and a tree of data 
-> representing the server's current and intended state. Writing a 
-> web-services frontend to the engine as a whole would be child's play, 
-> and further would provide far more power than trying to build a separate 
-> API for each individual component being managed. (However, I would be 
-> very hesitant to write such a frontend which accepted commands or 
-> updates not passing through the VPN proper, as this would reduce my 
-> security model's strength to the weaker of the VPN and the control 
-> channel -- which given the depth of countermeasures protecting the VPN 
-> [such as a tls-auth key, client and server keys, unprivileged users and 
-> groups, and the use of a chroot jail] would quite certainly be the latter).
->
->   
->> There may be long periods without traffic. The hold command would likely 
->> be used here.
->>     
->
-> Hmm. Let me try to get a bigger picture.
->
-> You have a web service which is used to control a VPN connection. This 
-> control presumably may include not only starting, stopping and otherwise 
-> modifying the immediate state of the service but also making 
-> configuration changes -- which presumably may include modifying keys, 
-> remote addresses, etc.
->
-> Because this control includes being able to remotely start the VPN from 
-> a halted state, you need to have a control channel which is separate 
-> from the VPN proper. Because this control channel may need to pass 
-> sensitive data or commands when the VPN is down, it needs to have 
-> security characteristics at least as strong as those of the VPN itself.
-> Because it needs to be able to write to the areas of the drive where 
-> OpenVPN's configuration data and keys are stored, the process also has 
-> permissions which allow it to be substantially dangerous if subverted -- 
-> more such permissions than OpenVPN itself, which is unable to change its 
-> own configuration.
->
-> I'm not entirely sold on the purpose of running both the control channel 
-> and the VPN as externally accessible services. Certainly, the VPN 
-> provides more functionality -- but if it's only being used for specific, 
-> well-defined data streams (which seems to be the case if you can turn it 
-> on only when you expect data to be passed), why not secure that content 
-> via the same mechanism you use for the control channel? That way you 
-> only expose a single route of attack -- rather than two -- and generally 
-> suffer quite a bit less complexity. If the control channel is 
-> established via a mechanism such as SSH rather than a web service, quite 
-> a bit of flexibility is provided there as well (as SSH's ability to run 
-> arbitrary tunnels, act as a SOCKS proxy, etc. can be leveraged).
->
->
->
-> If my concerns reflect some misunderstanding of your proposal, 
-> clarification would be appreciated.
->
->
-> -------------------------------------------------------------------------
-> Take Surveys. Earn Cash. Influence the Future of IT
-> Join SourceForge.net's Techsay panel and you'll get the chance to share your
-> opinions on IT & business topics through brief surveys -- and earn cash
-> http://www.techsay.com/default.php?page=join.php&p=sourceforge&CID=DEVDEV
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
->   
+------=_Part_86906_29240243.1158711816881
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
+Hi,<br>&nbsp;&nbsp; I have two OpenVPN questions:<br>1) Does OpenVPN rely on Windows routing to forward traffic onto TAP adapter?&nbsp; <br>2) Slightly off topic, can one route to network interface based on source rather than than destination in Windows?
+<br>3) If a machine had multiple network interface, how does the OpenVPN select which network interface to route traffic through?<br><br>Thanks in advance for your help.<br><br>Regards,<br>Sammy<br><br>
+
+<br>
+
+------=_Part_86906_29240243.1158711816881--
 
