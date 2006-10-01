@@ -1,9 +1,8 @@
-From: "Randolph A. Krenz" <randy.krenz@...793...>
-Content-Type: multipart/mixed; boundary="=-rK9JmG0uSnkc0GAXjThL"
-Date: Fri, 29 Sep 2006 11:48:39 -0400
-Message-Id: <1159544919.5203.6.camel@...23...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] RFC-1929 Socks-5 Authentication for OpenVPN 2.0.7
+Message-ID: <451FBC52.70900@...41...>
+Date: Sun, 01 Oct 2006 07:02:10 -0600
+From: James Yonan <jim@...41...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] OpenVPN 2.0.9 and 2.1-beta16 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,94 +11,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
---=-rK9JmG0uSnkc0GAXjThL
-Content-Type: text/plain
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+To: 'openvpn-users' <openvpn-users@lists.sourceforge.net>, OpenVPN devel <openvpn-devel@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
 
-Hello OpenVPN developers,
+2006.10.01 -- Version 2.0.9
 
-I'm not particularly active on this list, but I do use OpenVPN, and
-recently had occasion to add RFC-1929 style Socks-5 authentication to
-OpenVPN 2.0.7.
+* Windows installer updated with OpenSSL 0.9.7l DLLs to fix
+  published vulnerabilities.
 
-I have only tested this change with TCP-based tunnels on Linux, but it
-should work anywhere the previous non-authenticating Socks-5
-functionality worked.
+* Fixed TAP-Win32 bug that caused BSOD on Windows Vista
+  (Henry Nestler).  The TAP-Win32 driver has now been
+  upgraded to version 8.4.
 
-I hope you find the attached patch useful and can integrate it into an
-upcoming OpenVPN release.
+2006.10.01 -- Version 2.1-beta16
 
-Keep up the great work!,
-Randy
+* Windows installer updated with OpenSSL 0.9.7l DLLs to fix
+  published vulnerabilities.
 
---=-rK9JmG0uSnkc0GAXjThL
-Content-Disposition: attachment; filename=openvpn-2.0.7-SocksRFC1929.diff.gz
-Content-Type: application/x-gzip; name=openvpn-2.0.7-SocksRFC1929.diff.gz
-Content-Transfer-Encoding: base64
+* Fixed TAP-Win32 bug that caused BSOD on Windows Vista
+  (Henry Nestler).
 
-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
-/wDi6pvhFi4AAA==
+* Autodetect 32/64 bit Windows in installer and install
+  appropriate TAP driver (Mathias Sundman, Hypherion).
 
+* Fixed bug in loopback self-test introduced
+  in 2.1-beta15 where self test as invoked by
+  "make check" would not properly exit after
+  2 minutes (Paul Howarth).
 
---=-rK9JmG0uSnkc0GAXjThL--
+James
+
 
 
