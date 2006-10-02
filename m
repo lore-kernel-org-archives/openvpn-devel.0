@@ -1,8 +1,11 @@
-Message-ID: <45211F3B.3050403@...797...>
-Date: Mon, 02 Oct 2006 18:16:27 +0400
-From: kent <kent@...797...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] NON_CBC_CIPHER bug
+From: Charles Duffy <cduffy@...294...>
+Date: Mon, 02 Oct 2006 11:40:14 -0500
+Message-ID: <efrfdj$va5$1@...165...>
+References: <20060926025847.43950.qmail@...790...>
+Mime-Version: 1.0
+In-Reply-To: <20060926025847.43950.qmail@...790...>
+Sender: news <news@...165...>
+Subject: Re: [Openvpn-devel] Find OpenVPN source code document
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,43 +14,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=KOI8-R; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi!
+Dong Thao Le Dinh wrote:
+> Hi all,
+> I'm doing a research about OpenVPN activities through its source code. I 
+> do a lot of Googling but still can't find any document about OpenVPN 
+> source code. How it organizes, how it work? For example, what are the 
+> functions it use for creating a tunnel? Can you give me a suggestion?
 
-We (Ltd. LISSI, http://www.lissi.ru, info at lissi.ru),
-are trying to use OpenVPN with stream ciphers,
-including Russian cipher GOST
-28147-89(ALLOW_NON_CBC_CIPHERS flag is set).
+You shouldn't find it excessively difficult to figure most of this out 
+by reading the source yourself; it's generally well-written and 
+organized, and thus reasonably self-documenting to someone familiar with 
+C. I've certainly not had trouble in the past figuring out how any 
+individual component works in under 20 minutes of effort. Given that the 
+source is this clean and well-organized, writing additional 
+documentation for it would arguably be superfluous -- it would add a 
+point of failure (as if not maintained or if written incorrectly it 
+could lead readers to inaccurate conclusions) but not much value.
 
-And we found the bug:
-function EVP_CipherFinal() returns 0, when cipher has
-block_size == 1(stream cipher). So hear is the patch to
-fix the bug.
-
-P.S.: is it posible to make option in configure
-"--allow_non_cbc"?
-
-
---- openvpn-2.0.7/crypto.c 2005-11-01 14:06:11.000000000 +0300
-+++ openvpn-2.0.7-kent/crypto.c 2006-09-04 18:51:38.729055336 +0400
-@@ -165,7 +165,9 @@
-/* Flush the encryption buffer */
-ASSERT (EVP_CipherFinal (ctx->cipher, BPTR (&work)+ outlen, &outlen));
-work.len += outlen;
-- ASSERT (outlen == iv_size);
-+
-+ if (mode == EVP_CIPH_CBC_MODE)
-+ ASSERT (outlen == iv_size);
-
-/* prepend the IV to the ciphertext */
-if (opt->flags & CO_USE_IV)
+If, after making a serious attempt to do this research yourself, you 
+have specific questions which reflect such prior research -- feel free 
+to ask them. However, I strongly urge you to attempt to do this work 
+yourself.
 
 
--- 
-Vladimir I. Kobylyanskiy,
-Ltd. LISSI, http://www.lissi.ru
+If your problem is a lack of good methodology, let me guide you through 
+the process for finding the code related to tunnel creation.
+
+Since we know the "mktun" directive can be used to force tunnel creation 
+via the command line, that's a good place to start. We grep for "mktun" 
+through the source and find it referenced in init.c and options.c. In 
+init.c, we find some sanity checking followed by a call to tuncfg() -- 
+which provides or calls through to the meat of the method.
+
+Even this was a bit excessive, though. Since it's tunnel devices you 
+care about, tun.c is *on its face* the obvious place to start looking 
+based on nothing but naming conventions. Common sense and a bit of 
+effort should help you find what you need.
 
 
