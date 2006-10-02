@@ -1,10 +1,8 @@
-Date: Sun, 1 Oct 2006 20:37:22 -0300
-From: JuanJo Ciarlante <jjo-ipsec@...283...>
-Message-ID: <20061001233722.GD28089@...796...>
-References: <451FBC52.70900@...41...>
-Mime-Version: 1.0
-In-Reply-To: <451FBC52.70900@...41...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.0.9 and 2.1-beta16 released
+Message-ID: <45211F3B.3050403@...797...>
+Date: Mon, 02 Oct 2006 18:16:27 +0400
+From: kent <kent@...797...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] NON_CBC_CIPHER bug
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,25 +11,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: OpenVPN devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=KOI8-R; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-On Sun, Oct 01, 2006 at 07:02:10AM -0600, James Yonan wrote:
-> 2006.10.01 -- Version 2.1-beta16
+Hi!
 
-James ... I've migrated IPv6 support to latests betas (about 1mo ago),
-I can rebase it if you are still interested; compared to previous
-instance (@beta2.5) I've simplified it a lot, killed AF_UNIX &other
-minorbits by now so as to minimize diff.
+We (Ltd. LISSI, http://www.lissi.ru, info at lissi.ru),
+are trying to use OpenVPN with stream ciphers,
+including Russian cipher GOST
+28147-89(ALLOW_NON_CBC_CIPHERS flag is set).
 
-Regards
+And we found the bug:
+function EVP_CipherFinal() returns 0, when cipher has
+block_size == 1(stream cipher). So hear is the patch to
+fix the bug.
+
+P.S.: is it posible to make option in configure
+"--allow_non_cbc"?
+
+
+--- openvpn-2.0.7/crypto.c 2005-11-01 14:06:11.000000000 +0300
++++ openvpn-2.0.7-kent/crypto.c 2006-09-04 18:51:38.729055336 +0400
+@@ -165,7 +165,9 @@
+/* Flush the encryption buffer */
+ASSERT (EVP_CipherFinal (ctx->cipher, BPTR (&work)+ outlen, &outlen));
+work.len += outlen;
+- ASSERT (outlen == iv_size);
++
++ if (mode == EVP_CIPH_CBC_MODE)
++ ASSERT (outlen == iv_size);
+
+/* prepend the IV to the ciphertext */
+if (opt->flags & CO_USE_IV)
+
 
 -- 
---Juanjo
+Vladimir I. Kobylyanskiy,
+Ltd. LISSI, http://www.lissi.ru
 
-#  Juan Jose Ciarlante (JuanJo) jjo ;at; mendoza.gov.ar                     #
-#  GnuPG Public Key: gpg --keyserver wwwkeys.eu.pgp.net --recv-key 66727177 #
-#   Key fingerprint: 0D2F 3E5D 8B5C 729E 0560  F453 A3F7 E249 6672 7177     #
 
