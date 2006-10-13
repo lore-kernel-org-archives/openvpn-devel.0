@@ -1,9 +1,10 @@
-Date: Fri, 13 Oct 2006 08:03:29 +0200
-From: Matthias Andree <ma+ovpnd@...31...>
-Message-ID: <20061013060329.GA20080@...33...>
+From: Roy Marples <uberlord@...594...>
+Date: Fri, 13 Oct 2006 10:47:00 +0100
 References: <200610111319.43536.uberlord@...594...>
+	<20061013060329.GA20080@...33...>
+In-Reply-To: <20061013060329.GA20080@...33...>
 MIME-Version: 1.0
-In-Reply-To: <200610111319.43536.uberlord@...594...>
+Message-Id: <200610131047.00733.uberlord@...594...>
 Subject: Re: [Openvpn-devel] [PATCH] Use PAM correctly
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,30 +14,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-On Wed, 11 Oct 2006, Roy Marples wrote:
+On Friday 13 October 2006 07:03, Matthias Andree wrote:
+> We've needed to do the equivalent for the FreeBSD port, Michael Helmeste
+> was so kind as to make me aware of the issue and this possible solution.
+>
+> IOW, if you're installing on FreeBSD, use the official port in version
+> 2.0.6_4 and all this is automatic - no 2.0.9 port needed since all fixes
+> since then were relevant for Windoze and we don't need to toss hundreds
+> of MBytes around for no good.
 
-> openvpn pam plugin does not use PAM correctly. Namely it requires a private 
-> LinuxPAM header and links using -ldl which is Linux only.
+I made that patch using Gentoo/FreeBSD on Sparc64 :P (currently cursing BSD 
+devs for using __sparc64__ define in their code)
 
-To top this off, someone would have to rewrite the Makefile so that it
-works with POSIX makes, too, and not just GNU make as it is now.
+Gentoo enforces gmake being present on the system as it's predominately Linux, 
+so the makefile wasn't an issue for us.
 
-> This enables openvpn pam plugin to compile correctly on default LinuxPAM and 
-> OpenPAM installs.
-
-We've needed to do the equivalent for the FreeBSD port, Michael Helmeste
-was so kind as to make me aware of the issue and this possible solution.
-
-IOW, if you're installing on FreeBSD, use the official port in version
-2.0.6_4 and all this is automatic - no 2.0.9 port needed since all fixes
-since then were relevant for Windoze and we don't need to toss hundreds
-of MBytes around for no good.
+Thanks
 
 -- 
-Matthias Andree
+Roy Marples <uberlord@...594...>
+Gentoo/Linux/FreeBSD Developer (baselayout, networking)
 
