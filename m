@@ -1,10 +1,11 @@
 From: "Dave" <dev@...575...>
-Date: Wed, 18 Oct 2006 09:36:56 -0500
+Date: Wed, 18 Oct 2006 11:24:19 -0500
 MIME-Version: 1.0
-Message-ID: <000401c6f2c2$de6fe490$16ada8c0@...576...>
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
-	micalg=SHA1; boundary="----=_NextPart_000_0000_01C6F298.F34A9560"
-In-Reply-To: <000401c6f25f$4a2ebdf0$16ada8c0@...576...>
+Message-ID: <002a01c6f2d1$de0c1be0$16ada8c0@...576...>
+Content-Type: multipart/signed;
+	boundary="----=_NextPart_000_0026_01C6F2A7.F417F9B0";
+	protocol="application/x-pkcs7-signature"; micalg=SHA1
+In-Reply-To: <000401c6f2c2$de6fe490$16ada8c0@...576...>
 Subject: Re: [Openvpn-devel] [Openvpn-users] Inline option in 2.1 beta;
 	how to do it?
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,57 +20,23 @@ To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
 This is a multi-part message in MIME format.
 
-------=_NextPart_000_0000_01C6F298.F34A9560
+------=_NextPart_000_0026_01C6F2A7.F417F9B0
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 
-> I don't see in the 2.1 how to use this feature.  Looking at
-> the source I'm guessing that it works by specifying the
+...
+> The bug, however, is that if an option takes parameters
+> beyond the file name, as secret and tls-auth do, there is not
+> a mechanism (at least not that one I can find in the code) to
 
-....
+...
 
-OK, figured most of it out, and also believe I found a bug.
+OK, just in case anyone's curious about this stuff, for those two options
+you can effectively do the same thing by adding the explicit key-direction
+option on a separate line.
 
-If anyone is curious Here are the options that the inlining feature
-supports:
-
-ca
-cert
-dh
-key
-secret
-tls-auth
-
-What you do is _replace-_ the existing line with an xml-esque syntax like
-this:
-
-Used to be:
-  ca "somecafile.crt"
-
-Now is:
-  <ca>
-  the contents you
-  cut and pasted
-  out of the original
-  file; e.g.
-  "somecafile.crt",
-  above
-  </ca>
-
-And the same for the other options listed.
-
-The bug, however, is that if an option takes parameters beyond the file
-name, as secret and tls-auth do, there is not a mechanism (at least not
-that one I can find in the code) to convey that parameter.  In my previous
-test I have a direction parameter on the tls-auth and it doesn't come
-through.  So at present 'secret' and 'tls-auth' only work if you did not
-originally have a direction parameter.  The other options I have all
-tested and they do work.
-
--Dave
-
-------=_NextPart_000_0000_01C6F298.F34A9560
+------=_NextPart_000_0026_01C6F2A7.F417F9B0
 Content-Type: application/x-pkcs7-signature;
 	name="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -144,18 +111,18 @@ ONTjqY5I/jSGgTwKxTM5bmuwmhu6MF7X0bc/7hGoh46PjGzQKqMg7jIO0p27ilrFfCuvkXSVhYHw
 nDGCAwQwggMAAgEBMHowZTELMAkGA1UEBhMCU0UxFDASBgNVBAoTC0FkZFRydXN0IEFCMR0wGwYD
 VQQLExRBZGRUcnVzdCBUVFAgTmV0d29yazEhMB8GA1UEAxMYQWRkVHJ1c3QgQ2xhc3MgMSBDQSBS
 b290AhEAwbxETdL10n+iDvm4LLBXtTAJBgUrDgMCGgUAoIIB4DAYBgkqhkiG9w0BCQMxCwYJKoZI
-hvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0wNjEwMTgxNDM2NTVaMCMGCSqGSIb3DQEJBDEWBBTWKWyl
-m4SLGdosQRhDUcF4Srx7YzBnBgkqhkiG9w0BCQ8xWjBYMAoGCCqGSIb3DQMHMAcGBSsOAwIaMA4G
+hvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0wNjEwMTgxNjI0MTlaMCMGCSqGSIb3DQEJBDEWBBQln9BL
+wThKx+Ep4ydDeEl7CIwCRzBnBgkqhkiG9w0BCQ8xWjBYMAoGCCqGSIb3DQMHMAcGBSsOAwIaMA4G
 CCqGSIb3DQMCAgIAgDANBggqhkiG9w0DAgIBQDAHBgUrDgMCBzANBggqhkiG9w0DAgIBKDAKBggq
 hkiG9w0CBTCBiQYJKwYBBAGCNxAEMXwwejBlMQswCQYDVQQGEwJTRTEUMBIGA1UEChMLQWRkVHJ1
 c3QgQUIxHTAbBgNVBAsTFEFkZFRydXN0IFRUUCBOZXR3b3JrMSEwHwYDVQQDExhBZGRUcnVzdCBD
 bGFzcyAxIENBIFJvb3QCEQDBvERN0vXSf6IO+bgssFe1MIGLBgsqhkiG9w0BCRACCzF8oHowZTEL
 MAkGA1UEBhMCU0UxFDASBgNVBAoTC0FkZFRydXN0IEFCMR0wGwYDVQQLExRBZGRUcnVzdCBUVFAg
 TmV0d29yazEhMB8GA1UEAxMYQWRkVHJ1c3QgQ2xhc3MgMSBDQSBSb290AhEAwbxETdL10n+iDvm4
-LLBXtTANBgkqhkiG9w0BAQEFAASBgJVdWjE/KqA5KVhtWHMnFHYSm0qO/CsahVx/242+Im+7bRrG
-2raabt2WWAIvFeRk/KmsiGGX4Rl7vlTMdtBGsDI8OEDZsdi70XyBQ4g2KE+w9VtUZsCxHnEz+Brx
-ZLUtASFqAMcfww1TybseINGJrjoB0jYjI4A4cHDRjjup7qS7AAAAAAAA
+LLBXtTANBgkqhkiG9w0BAQEFAASBgFxiEwr5Jns56W+hmpgd5NcSf74Zdo1jH26S8I8gNY9QBXUA
+dqzUCPDGhEtjAq5l3Xm5z9x8BAjJyz2iemba4jA0M8efNPifAylEgedVvSr3ZYShHjAnHLYFhUDj
+0SIsp+u26K9kjXVRTBpl0BUxguhyU65jOzVu5Gx7TwF6xoDFAAAAAAAA
 
-------=_NextPart_000_0000_01C6F298.F34A9560--
+------=_NextPart_000_0026_01C6F2A7.F417F9B0--
 
 
