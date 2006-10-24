@@ -1,8 +1,8 @@
-From: "Leigh Manuel" <tmhdbmb@...839...>
-Date: Tue, 24 Oct 2006 20:52:27 +0480
-Message-ID: <01c6f7ae$50b4bc70$6c822ecf@...840...>
+From: "Irene Pritchard" <fccpfdd@...841...>
+Date: Tue, 24 Oct 2006 20:55:53 +0360
+Message-ID: <01c6f7ae$cb4bcaf0$6c822ecf@...842...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Essential letter. You should to read.
+Subject: [Openvpn-devel] Weighty letter. You have to read.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,7 +12,7 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain;
-	charset="iso-8859-2"
+	charset="windows-1250"
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
