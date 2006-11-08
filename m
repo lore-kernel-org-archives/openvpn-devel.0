@@ -1,9 +1,10 @@
-Message-ID: <20061104032452.82087.qmail@...875...>
-Date: Fri, 3 Nov 2006 19:24:52 -0800 (PST)
-From: Dong Thao Le Dinh <dongthaoledinh@...109...>
-In-Reply-To: <9e0cf0bf0611022324l4c7f6339jd21033a8aeb28f7c@...278...>
+From: Roy Marples <uberlord@...594...>
+Date: Wed, 8 Nov 2006 13:43:07 +0000
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Why does OpenVPN now use only CBC cipher mode?
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_r7dUFzpM7gDh3hM"
+Message-Id: <200611081343.07350.uberlord@...594...>
+Subject: [Openvpn-devel] [PATCH] txqueuelen for persistent interfaces
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,13 +13,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-To: James Yonan <jim@...41...>
-Cc: OpenVPN devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-From version 1.5-beta10, OpenVPN uses only CBC cipher mode, doesn't support CFB or OFB anymore. Is the result about performance?
+--Boundary-00=_r7dUFzpM7gDh3hM
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
- 
----------------------------------
-Want to start your own business? Learn how on  Yahoo! Small Business. 
+Hi.
+
+openvpn does not apply the --txqueuelen option to persistent interfaces made 
+with --mktun [1]
+
+Attached are patches to 2.0.7 and 2.1_rc1 that fix the issue.
+
+Thanks!
+
+[1] http://bugs.gentoo.org/show_bug.cgi?id=150791
+
+-- 
+Roy Marples <uberlord@...594...>
+Gentoo Developer (baselayout, networking)
+
+--Boundary-00=_r7dUFzpM7gDh3hM--
+
