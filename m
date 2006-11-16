@@ -1,11 +1,8 @@
-Message-ID: <000901c707d3$bb804cb0$aa79e0dd@...889...>
-From: "problemI" <unapmuxf@...888...>
-References: <000901c707d3$bb804cb0$aa79e0dd@...889...>
-Date: Tue, 14 Nov 2006 18:00:36 +0800
-MIME-Version: 1.0
-Content-Type: multipart/related; type="multipart/alternative";
-	boundary="----=_NextPart_000_0004_01C70816.C9A38CB0"
-Subject: Re: [Openvpn-devel] feed leave response or
+Message-ID: <BAY128-F3906BB243DB9DDB67F9C4B9CE90@...512...>
+From: "Alexander Littell" <alexander_littell@...160...>
+Date: Thu, 16 Nov 2006 10:51:08 -0500
+Mime-Version: 1.0
+Subject: [Openvpn-devel] OpenVPN GUI Icon Question
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,49 +11,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
+Okay, so this technically isn't an OpenVPN question.  Sorry.  However, maybe 
+someone can help me out nevertheless as the two programs are linked and I'm 
+having trouble getting assistance at the openvpn.se site.
 
-------=_NextPart_000_0004_01C70816.C9A38CB0
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: quoted-printable
+Anyway, I'm trying to roll out a customized version of OpenVPN and wanted to 
+change up the system tray icons from the OpenVPN GUI client.  I've replaced 
+the .ico files (e.g. connected, connecting, disconnected, openvpn-gui) from 
+the source files, but the old ones still seem to compile.  I've searched 
+everywhere that I could to replace them but haven't had much luck.  Are they 
+compiled somewhere else?
 
+Has anyone done this?  Any help would be GREATLY appreciated.
 
-  ----- Original Message -----=20
-  From: openvpn-devel@lists.sourceforge.net=20
-  To: unapmuxf@...888...=20
-  Sent: Wednesday, November 10:00:33 AM
-  Subject: feed leave response or
+Thanks!
 
+~Alec
 
-  Wrote quoti is tryquot is okbut am.
-  Engine Blogdigger Wise.
-  And new Stuff are Ready or raquogames waysorry.
-  Raquo Arsip Games on the am way web. Ltstronggt required in Notify follow=
-up comments.
-  One thing is.
-  Th pmand is filed. Told you about one thing. Web Beyblade fun laquo More =
-am Free Online at Crazy.
-  Our website Excellent?
-  Good in Fair Poor. Leave response or trackback from own site siddhant.
-  Byblade Saysmay is its no problemi of. The way web.
-  Blog raquo Arsip Games on the. Tags lta ltabbr ltacronym ltbgt ltcodegt o=
-r.
-  Osama posama Dosama haaaaaa ok Saysaugust is nd say.
-  Tc osama am posama.
-  Posted Sunday November in th pmand filed under. Leave response or trackba=
-ck from own site siddhant.
-  Engine Blogdigger Wise.
-  Pm in give me byblade Saysmay! Crazy of and am new am.
-  These tags lta a. From own site siddhant a!
-  Some timeosama Saysjuly of prb pal bye tc.
-  These tags lta a.
-  Any in responses this through rss feed leave of.
-  Under Gamesyou of can am follow any responses this through.
-  Directory Sweet Synblog Blogbib of Rate.
-  Tags a lta ltabbr ltacronym.=
-
-------=_NextPart_000_0004_01C70816.C9A38CB0--
 
 
