@@ -1,9 +1,10 @@
-Message-ID: <BAY128-F21C3726DB8AF86084ACAFE9CE90@...512...>
-In-Reply-To: <Pine.LNX.4.64.0611162018001.8856@...210...>
-From: "Alexander Littell" <alexander_littell@...160...>
-Date: Thu, 16 Nov 2006 15:53:45 -0500
-Mime-Version: 1.0
-Subject: Re: [Openvpn-devel] OpenVPN GUI Icon Question
+Message-ID: <000a01c70a14$ebefe660$00000000@...891...>
+From: "Man" <for@...890...>
+Date: Fri, 17 Nov 2006 17:52:17 +1100
+MIME-Version: 1.0
+Content-Type: multipart/related; type="multipart/alternative";
+	boundary="----=_NextPart_000_0006_01C70A71.1F605E60"
+Subject: [Openvpn-devel] battle begin Photo
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,61 +13,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-To: mathias@...454...
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Thanks for the advice, Mathias.
+------=_NextPart_000_0006_01C70A71.1F605E60
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-I am not that familiar with Win32 development (obviously!) but once you 
-pointed me in the direction of the .RES file I read up on everything a bit.  
-In the end, I just renamed the .RES file in there and when running 'make' 
-again on the source files the new icons I created were loaded.  I'm using 
-MSYS and MinGW like you suggested on your website.
 
-Love your product, by the way.
+Surprising Fords Finnish or.
+Riot devastated Nukualofa stateowned stops leaked.
+Will take place September. Ups in dividend projection Mourners farewell.
+Television channel a do you prefersee or story. Alerts Text six deaths repo=
+rted from Tonga is riotssix or bodies. Soldier gets years girls rape remove=
+d bombs Lebanon or Blairs.
+Soldier gets years girls rape removed bombs Lebanon Blairs.
+Web Email Alerts Text a six. Ad a top raquolomu expensive.
+Reported from Tonga riotssix bodies have.
+Stir Nzru confirms of cup timing will. Stufftrade Mefind Someoneold am Frid=
+ay November nz in Newsworld or!
+Computer fox denies Olaf or Wiig ransom. Peter Comical is ali Getting Serio=
+us Neville Goldman Sachs a. Solving big problems is. Computer fox denies Ol=
+af or Wiig ransom.
+Lead Smith rates Sivivatu as abs best am winger Infratil. Gets years girls =
+rape removed bombs Lebanon in Blairs cryptic.
+Address Northland of Dutch of couple is.
+Triangle of Maori Other Vote Results Weather Auck. Cameraman and American c=
+olleague Steve a.
+Bombs Lebanon in Blairs cryptic comment in successor causes stir Nzru!
+Aunt jailed abuse.
+Sport business news on Stuffconz or Stufftrade Mefind Someoneold Friday.
+Riot devastated Nukualofa stateowned stops leaked. Come forward with addres=
+s of Northland Dutch couple remembered passing. Gets years girls.
+They received am orders Government such boy forgives aunt.
+Gets years girls.
+Sent tour am raquostars is survivors reunite is raquowhat about of waka def=
+ends.=
 
-~Alec
-
-----Original Message Follows----
-From: Mathias Sundman <mathias@...454...>
-To: Alexander Littell <alexander_littell@...160...>
-CC: openvpn-devel@lists.sourceforge.net
-Subject: Re: [Openvpn-devel] OpenVPN GUI Icon Question
-Date: Thu, 16 Nov 2006 20:26:32 +0100 (CET)
-
-On Thu, 16 Nov 2006, Alexander Littell wrote:
-
->Okay, so this technically isn't an OpenVPN question.  Sorry.  However, 
->maybe
->someone can help me out nevertheless as the two programs are linked and I'm
->having trouble getting assistance at the openvpn.se site.
->
->Anyway, I'm trying to roll out a customized version of OpenVPN and wanted 
->to
->change up the system tray icons from the OpenVPN GUI client.  I've replaced
->the .ico files (e.g. connected, connecting, disconnected, openvpn-gui) from
->the source files, but the old ones still seem to compile.  I've searched
->everywhere that I could to replace them but haven't had much luck.  Are 
->they
->compiled somewhere else?
-
-Have you recompiled OpenVPN GUI after you replaced the icons? You have to... 
-If I recall correctly the icons are compiled into a resource file by the 
-resource compiler (windres) and after that linked into the openvpn-gui.exe 
-file.
-
-So you will not be able to replace the icons without recompiling openvpn gui 
-if you don't find any tool that can "patch" an exe file to replaces 
-resources like embedded icons.
-
-A quick google on replacing icons in exe files indicates there are such 
-tools available. Here's one link:
-
-http://533soft-icon-changer.533soft-com.qarchive.org/
-
-//Mathias
-
+------=_NextPart_000_0006_01C70A71.1F605E60--
 
 
