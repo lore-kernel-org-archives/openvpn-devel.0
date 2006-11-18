@@ -1,10 +1,10 @@
-Message-ID: <71826878533554.D9155DA424@...893...>
-From: "acts" <carboybootstrapping@...892...>
-Date: Sat, 18 Nov 2006 14:28:12 +0900
+Message-ID: <001101c70ad1$37038a50$00000000@...895...>
+From: "Desktop" <than@...894...>
+Date: Sat, 18 Nov 2006 06:20:09 +0100
 MIME-Version: 1.0
-Content-type: multipart/related;
-	boundary="----=_NextPart_000_003E_5588EA01.710E13B4"
-Subject: [Openvpn-devel] important SFAR
+Content-Type: multipart/mixed;
+	boundary="----=_NextPart_000_000D_01C70AD9.98C7F250"
+Subject: [Openvpn-devel] MeltWeb slims down host
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,11 +15,12 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
-------=_NextPart_000_003E_5588EA01.710E13B4
-MIME-Version: 1.0
-Content-Type: text/plain; charset="Windows-1252"
+------=_NextPart_000_000D_01C70AD9.98C7F250
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
 
-------=_NextPart_000_003E_5588EA01.710E13B4--
+------=_NextPart_000_000D_01C70AD9.98C7F250--
 
 
