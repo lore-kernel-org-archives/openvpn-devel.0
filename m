@@ -1,8 +1,8 @@
-From: "Rose Schneider" <jfshnqlye@...910...>
-Date: Mon, 20 Nov 2006 18:29:51 -0060
-Message-ID: <01c70cd1$ddc28740$6c822ecf@...911...>
+From: "Lamar Poole" <fqpg@...913...>
+Date: Mon, 20 Nov 2006 21:09:25 -0060
+Message-ID: <01c70ce8$289751e0$6c822ecf@...914...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] it me Rose
+Subject: [Openvpn-devel] it me Lamar
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,7 +12,7 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain;
-	charset="us-ascii"
+	charset="iso-8859-2"
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
