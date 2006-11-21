@@ -1,8 +1,12 @@
-From: "Lamar Poole" <fqpg@...913...>
-Date: Mon, 20 Nov 2006 21:09:25 -0060
-Message-ID: <01c70ce8$289751e0$6c822ecf@...914...>
+Message-ID: <4562BA62.20607@...41...>
+Date: Tue, 21 Nov 2006 02:35:46 -0600
+From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] it me Lamar
+References: <C0170D0AF1277849A4B4518034F855DD01691E82@...916...>
+	<455D8004.9020502@...915...>
+In-Reply-To: <455D8004.9020502@...915...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] Fix for verify_callback memory
+	leak
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,30 +15,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain;
-	charset="iso-8859-2"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: John Kuiper <jkuiper@...915...>
+Cc: OpenVPN devel <openvpn-devel@lists.sourceforge.net>, 'openvpn-users' <openvpn-users@lists.sourceforge.net>
 
-Our picks bring our readers BIG gains!  Why?  Because we present 
-well-researched, quality companies backed by promotions which have 
-the ears of investors around the globe.  When you have GREAT product 
-and unrivaled PR you get super gains!  This one is just what your 
-portfolio needs:
+John Kuiper wrote:
+> Hi Jeff,
+>
+> Files will not send to the mailinglist.
+> Where can I download the patch?
+>
+> Regards,
+> John Kuiper
+>
+>   
 
-The Great American Food Chain, Inc.
-Symbol:  GAMN
-Current Price: $0.96
-Projected Price: $3.20 (330% gain)
+Sorry about the problem with attachments getting dropped.
 
-GAMN is has an incredible business model in a booming sector.  Look 
-around you.  Everything is being standardized and franchised.  GAMN 
-is a company specializing in the development and expansion of proven 
-independent restaurant concepts into multi-unit locations.  Business has 
-been booming!
+I've loosened up the mailman attachment filters on openvpn-devel, and 
+openvpn-users.
 
-A huge publicity campaign is beginning and will be supported by some 
-astounding press releases.  It is imperative to get in before the first big 
-announcement.  Readers, this is a big one.  Don't miss this chance!
+Originally the thought was that the filters might reduce spam to the 
+lists, however this appears not to be the case.
+
+James
 
 
