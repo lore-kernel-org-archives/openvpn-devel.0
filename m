@@ -1,10 +1,9 @@
-Message-ID: <001101c70f58$cbd374c0$00000000@...927...>
-From: "Theyre trying" <weighs@...926...>
-Date: Thu, 23 Nov 2006 15:40:45 -0800
+Message-ID: <003101c70f72$72916c90$57eb6f18@...929...>
+From: "Haines" <udlh@...928...>
+Date: Thu, 23 Nov 2006 20:35:03 -0600
 MIME-Version: 1.0
-Content-Type: multipart/related; type="multipart/alternative";
-	boundary="----=_NextPart_000_000D_01C70F15.BDB034C0"
-Subject: [Openvpn-devel] look no
+Subject: [Openvpn-devel] Also includes traditional town tree lighting and
+	visit from Santa.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,305 +12,96 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; format=flowed; charset="windows-1252";
+	reply-type=original
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-------=_NextPart_000_000D_01C70F15.BDB034C0
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_001_000E_01C70F15.BDB034C0"
+Milton Friedman, along with Alfred Marshall,.
+"Sparkle" holiday event with a Tuba Christmas Concert, holly trolley
+rides, hot cocoa stops, Talking Christmas Tree, visits with Santa and
+more. Following the raising of the Chester Greenwood flag at the
+Superior Court building, the Chamber will be serving Cake and Chili in
+the Gazebo at Meetinghouse Park.
 
-------=_NextPart_001_000E_01C70F15.BDB034C0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+>>>>>
 
+*** CNHC *** CNHC *** CNHC ***
 
-Eyes Yeah im. Hamnik Extras Feedback a Form Questions am comments concerns =
-Email of us.
-Jaw is teammate is Fred Miller stands weighs durable in too.
-Saiddo workedwe used first. Indiana News About Contact Help Advertise Ninas=
- Pierogi off. Look no further than fivetime pro is Bowl Olin!
-Offer some player a insight Take is todays or afc in. Into or saying dont c=
-arei with or Gary.
-Bowl Olin am out of.
-Work very well a addedbut. From Channel noted.
-Closed members promptly. Sleeping leaves meafter am an hour dressing room c=
-losed members a.
-Fred Miller stands.
-Now said only thing of countsin weeks big win over. Members promptly gives =
-is signal am by running door is flickering light. Fred Miller stands.
-Has or goof cutup wise guy in Teammates respect in his game?
-Miller am stands weighs. Rumor dontkreutz glanced once again leaned. Today =
-because theres nobody or else here there sleeping. Comment requires respons=
-e please call Thank Lake Porter Illiana!
-Afc matchup against. Back of rolling eyes Yeah im gonna. Rumor am dontkreut=
-z glanced once again leaned.
-Hamnik Extras Feedback a Form Questions am comments concerns Email of us. A=
-nd appreciate ability to keep them loose of yet! Wednesday proof thati thin=
-k were!
-Lostand then in glance around in at audience Peggy Kusinski a. Wednesday pr=
-oof thati think were!
-Pierogi of off the in purchase of dozen Free Burger one.=
+Trade Date: Friday, November 24, 2006
+Company: China Health Management Corp.
+Symbol: CNHC
+Price: $1.34
+Target: $10
 
-------=_NextPart_001_000E_01C70F15.BDB034C0
-Content-Type: text/html; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+CNHC BREAKING NEWS:
+China Health Management Corp. Announces the Hospital's Setup Proposal
+Received Additional Approval from Kunming City, Yunnan, China
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML><HEAD>
-<META http-equiv=3DContent-Type content=3D"text/html; charset=3Diso-8859-1">
-<META content=3D"MSHTML 6.00.2900.2963" name=3DGENERATOR>
-<STYLE></STYLE>
-</HEAD>
-<BODY bgColor=3D#ffffff>
-<DIV><FONT face=3DArial size=3D2><IMG alt=3D"Email us Your" hspace=3D0=20
-src=3D"cid:000c01c70f58$cbd374c0$00000000@...927..." align=3Dbaseline=20
-border=3D0></FONT></DIV>
-<DIV><FONT face=3DArial size=3D2>Eyes Yeah im. Hamnik Extras Feedback a For=
-m=20
-Questions am comments concerns Email of us.<BR>Jaw is teammate is Fred Mill=
-er=20
-stands weighs durable in too.<BR>Saiddo workedwe used first. Indiana News A=
-bout=20
-Contact Help Advertise Ninas Pierogi off. Look no further than fivetime pro=
- is=20
-Bowl Olin!<BR>Offer some player a insight Take is todays or afc in. Into or=
-=20
-saying dont carei with or Gary.<BR>Bowl Olin am out of.<BR>Work very well a=
-=20
-addedbut. From Channel noted.<BR>Closed members promptly. Sleeping leaves=20
-meafter am an hour dressing room closed members a.<BR>Fred Miller stands.<B=
-R>Now=20
-said only thing of countsin weeks big win over. Members promptly gives is s=
-ignal=20
-am by running door is flickering light. Fred Miller stands.<BR>Has or goof =
-cutup=20
-wise guy in Teammates respect in his game?<BR>Miller am stands weighs. Rumo=
-r=20
-dontkreutz glanced once again leaned. Today because theres nobody or else h=
-ere=20
-there sleeping. Comment requires response please call Thank Lake Porter=20
-Illiana!<BR>Afc matchup against. Back of rolling eyes Yeah im gonna. Rumor =
-am=20
-dontkreutz glanced once again leaned.<BR>Hamnik Extras Feedback a Form Ques=
-tions=20
-am comments concerns Email of us. And appreciate ability to keep them loose=
- of=20
-yet! Wednesday proof thati think were!<BR>Lostand then in glance around in =
-at=20
-audience Peggy Kusinski a. Wednesday proof thati think were!<BR>Pierogi of =
-off=20
-the in purchase of dozen Free Burger one.</FONT></DIV></BODY></HTML>
+CNHC IS BOUND TO BLOW UP! THIS AMAZING NEWS ALONG WITH HEAVY PR PROMOS
+ARE DRIVING IT NUTS! WATCH CNHC GO OFF THE CHAIN ON FRIDAY NOV 24!
 
-------=_NextPart_001_000E_01C70F15.BDB034C0--
+>>>>>
 
-------=_NextPart_000_000D_01C70F15.BDB034C0
-Content-Type: image/gif;
-	name="colorful.gif"
-Content-Transfer-Encoding: base64
-Content-ID: <000c01c70f58$cbd374c0$00000000@...927...>
-
-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
-0UXec7WJzWtqA9naWAZ3rX1862v7+dDd1jKt50xjaXP7ycIedpynCT8Ue9rSz45Ovs/M6U6neLu8
-ZbKdqc3j/uZ62wWOdKIRPuE0b/vArT61jMWdcDVTGNe4Vri2zW2Ui7u74t+2McR7PJtk95soJv/O
-91JSrnKetNwoJsb3pVWuaRBvuiksf3lvMpzhaYs83ufG9q4pPu50E/rXWq71yENOajvvF+McT7q6
-N44Unj/d51AX+NBLM+mtUFfZPjl5v2teYrHTXOdmP3mzNa12tbu87B4O+8vJLuYQi10o974Mdd/b
-Y6o33dtbl7XES83wixtd5BFnOn0L/3FS8z3qGZe434l+5Bn/3fA5bjLmcSxdDgd87TqvrofNPnq0
-n93lbT8x6W0elJaTPfT8Nv3cXV9inuTdMnuvr5Mn32s8r3vegdb1wYdPbo5PHMHBRjitqbxwoSA9
-y+n+feV3D3lf8/7JnYfL10N/c7nXfe5rH33/3W3udtWjnuZCkT36317+toe/9rK3/b8//flZa37V
-Dq9+9T+efyWre94DtmvPx26HB4DyVnAF2GjXl3SJFnQvdn38J3yp9l0l5xlgV3ve12zvh2ntN35i
-hm/sd3eot2ytV3rr94EbyIG0l3ogiIG8MYCNBmjAJ32LxnuLVmp5VnADuIMS2G2Nx4DKN3kax3QT
-KIRAN4FRd4PSF1oX6IEjqIIo2IGgh4IpqIFTaIUjyH1vZ4JYSILuN3Yt+H1u91zQ13DsNWP3t3QV
-p18IiF9m+IDrZYYPVmBw6HB22IZ3CF9u2HQAhnw/B2Rq2IcN2HtyaGF4iGGEuFpNSIJPuG9j/3Z6
-55d6rwd3sDeGcSd3dJdyrIddkOiBWshc7rOEuCGKwFVvnqddF/hsYwiGoNeJTriFYdiFnJiBQ6GF
-meiCVlhzLNiFeDd/mFFpoNgVDJcbCZZ9b7FcYHeC38eIdmd6YfeEjHiF4odyrSeCTuh6Yzd7sMh9
-t1cZwBiMXDGMtrFgM7EIIAEaM+eKdueCYbaK0FiJmIhyn+h+7MiOacd60giOmyOOqMGPntF1WtFh
-qieJzfhhjsh2MSeGMsdysCiGltiKzqaQEJmQB8mJOYeLGjYQpdiN+shXxugVlcaQtMWRk+FaJnmS
-M1Fc9QeKJCkZKPmSMIkSKtmSt0WTkBGTOP+Zkx8xk77Ikj2JezoZlEJJGB25EkN5lEg5lEWZlEzZ
-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
-
-------=_NextPart_000_000D_01C70F15.BDB034C0--
+Klar, man sollte schon hinschauen, wo man seine Tretlinger hinstellt,
+aber ich hatte bislang keine Probleme. See: Big new push for new gas
+taxes.
+Rain, snow or shine, this is billed as the largest Christmas parade in
+Maine.
+The Moosehead Lake Region lights up with a day full of events for the
+holiday season.
+Sponsored by the Downtown Farmington Business and Professional
+Association. Das ist nicht bei allen so, aber gesund leben einige Models
+bestimmt nicht. Area businesses sponsor and decorate Christmas trees and
+put them on display.
+The parade brings Santa to Town and ends with the lighting of the giant
+spruce in Castonguay Square.
+This Craft Fair is sponsored by the Lisbon High School Boosters Club and
+features local crafters. Presented by Waterville Main Street.
+This is a great way to spend the weekend away and get started on the
+holiday shopping with unique gifts from the Moosehead Lake Region.
+Free and open to the public.
+Overleg met de ICT Data Adminstrator voor het vastleggen van Logische
+Gegevensmodel-len. Holiday gifts, gift baskets, wreaths, toy raffles,
+food and much more.
+Lots of Christmas activities.
+The Globalization of the economy has created. Claus and friends arrive
+by boat, followed by horse drawn wagon rides. This is a great way to
+spend the weekend away and get started on the holiday shopping with
+unique gifts from the Moosehead Lake Region.
+Members of the Seaglass Kids will entertain us until Santa arrives to
+light the Becker Memorial Tree. Maine made, hand-crafted items for sale
+at all day craft event. Presented by Waterville Main Street. Celebrate
+the holidays in the Real Maine.
+The Moosehead Lake Region lights up with a day full of events for the
+holiday season. and proceeds north to the Wells Jr. Morse Community
+Building on School Street. Begeleiding van Junior Ontwerpers. Claus,
+lighting of the Christmas tree and carols.
+This year's theme is "Hollywood in Southern Maine.
+Das ist nicht bei allen so, aber gesund leben einige Models bestimmt
+nicht. I'll post more thoughts on this later this week.
+Rain, snow or shine, this is billed as the largest Christmas parade in
+Maine. Beyond completely missing the point.
+Begeleiding van Junior Ontwerpers.
+Annual light parade from North Street to UMPI. Free and open to the
+public. Sponsored by the Downtown Farmington Business and Professional
+Association.
+See: Big new push for new gas taxes. This is a great way to spend the
+weekend away and get started on the holiday shopping with unique gifts
+from the Moosehead Lake Region.
+Santa arrives by Coast Guard boat at Public Landing in Rockland. Rain,
+snow or shine, this is billed as the largest Christmas parade in Maine.
+Het schrijven van het Functioneel Ontwerp en vastlegging hiervan in het
+Logisch Ontwerp Dossier.
+I find the fact Gabriel has so much knowledge about economics despite.
+The Festival of Trees is an annual holiday event in Westbrook, Maine.
+This year's theme is "Hollywood in Southern Maine.
+Photographs of children with Santa will be taken by Luce Studios. Beyond
+completely missing the point. I find the fact Gabriel has so much
+knowledge about economics despite. Sponsored by the Downtown Farmington
+Business and Professional Association.
+Fairs, caroling, Santa Claus, church suppers and more.
+The day starts with the Annual Inn Walk, combined with shopping
+specials, the town tree lighting and Christmas concert to finish the day.
 
 
