@@ -1,12 +1,14 @@
-Message-ID: <457256E8.8050900@...41...>
-Date: Sat, 02 Dec 2006 21:47:36 -0700
-From: James Yonan <jim@...41...>
+Message-ID: <4572DFAE.7080509@...453...>
+Date: Sun, 03 Dec 2006 15:31:10 +0100
+From: Erich Titl <erich.titl@...453...>
 MIME-Version: 1.0
 References: <B3BCAF4246A8A84983A80DAB50FE72427DE3B4@...992...>	<Pine.LNX.4.64.0611292110010.18096@...993...>
 	<45724165.7000601@...41...>
 In-Reply-To: <45724165.7000601@...41...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] List Assistance please:
-	FW:	confirm
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
+	micalg=sha1; boundary="------------ms050307000400050107040505"
+Subject: Re: [Openvpn-devel] [Openvpn-users] List Assistance please: FW:
+	confirm
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,53 +17,100 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
 To: James Yonan <jim@...41...>
-Cc: Michael Scheidell <scheidell@...994...>, Nathaniel Powning <nat@...991...>, OpenVPN devel <openvpn-devel@lists.sourceforge.net>, openvpn-users@lists.sourceforge.net, Kevin Keane <kKeane@...995...>
+Cc: OpenVPN devel <openvpn-devel@lists.sourceforge.net>, openvpn-users@lists.sourceforge.net
+
+This is a cryptographically signed message in MIME format.
+
+--------------ms050307000400050107040505
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+
+James
 
 James Yonan wrote:
-> Nathaniel Powning wrote:
->   
->> On Wed, 29 Nov 2006, Michael Scheidell wrote:
->> ...
->>   
->>     
->>> All openvpn needs to do is enable the 'only allow list users' to post.
->>>
->>>     
->>>       
->> I second Michael's suggestion.
->>
->> Just joined this list a few days ago and, as I do with most other lists, 
->> added the address to my whitelist bypassing the spam filter.  I've had 
->> to delete more spam due to this list in the past few days than I normally 
->> do in a few weeks and I also subscribe to many SF lists.
->>   
->>     
->
-> Yes -- I totally agree that the spam on this list has reached 
-> unacceptable levels.
->
-> Unfortunately the web interface provided by Sourceforge to manage 
-> project mailing lists is almost useless for configuring spam filtering 
-> settings.   I looked through the various options, and unless I'm missing 
-> something, I did not notice any 'only allow list users to post' 
-> settings.  It certainly was there a while back, but it seems to be 
-> missing now.
->
+..
+> 
 > At this point, I'm strongly considering moving openvpn-users, 
 > openvpn-devel, and openvpn-announce off of sourceforge and onto one of 
 > the openvpn.net servers.  This would give myself and the OpenVPN project 
 > full control of the mailing lists, and a much better ability to keep the 
 > lists spam-free.
->   
 
-Aha -- now I understand why they removed the 'only allow list users' to 
-post checkbox.  They upgraded mailman to 2.1.8, which has a different 
-way of configuring this.  It's done now.  openvpn-users and 
-openvpn-devel shouldn't allow posting by non-members any longer.
+A short term solution would be to allow members only on the list
 
-James
+Erich
 
+
+
+--------------ms050307000400050107040505
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+--------------ms050307000400050107040505--
 
