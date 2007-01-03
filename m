@@ -1,8 +1,8 @@
-Date: Sun, 24 Dec 2006 23:29:18 +0200
+Date: Wed, 3 Jan 2007 09:37:06 +0200
 From: Faidon Liambotis <paravoid@...334...>
-Message-ID: <20061224212918.GA6271@...997...>
+Message-ID: <20070103073706.GA11588@...997...>
 Mime-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Use CryptoAPI CA store
+Subject: [Openvpn-devel] [PATCH v2] Use CryptoAPI to verify certificates
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,64 +16,91 @@ Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-Hello,
+Ok, here's another try, even though I didn't get any comments on the
+first one :-)
 
-Below you will find a patch that creates a new configuration option
---cryptoapicastore (the naming sucks, I know...) which enables certificate
-verification using Windows Certificate Stores (CA and ROOT).
-It can be used in addition to --cafile and --capath or standalone.
-I have compile and briefly runtime tested it and it works as intended.
-It should be used with care -and this should probably be noted
-somewhere- and preferrably in conjuction with tls-verify or tls-remote
-and/or password authentication.
-I have a couple of improvements in mind (e.g. optionally filtering by
-certificate subject) and the documentation for the manpage is missing,
-but I'm posting this early since I will be on vacation for the next
-week.
+This is a totally different approach; the previous one was flawed in at
+least two aspects:
+- A certificate signed by an CA stored in the "Intermediate CA store"
+but not trusted would be considered acceptable by OpenVPN.
+- There wasn't any CRL checking.
 
-Happy holidays :-)
+This time, instead of importing CryptoAPI stores into OpenSSL, I'm using
+CryptoAPI functions to actually check for the trust status of the
+certificate in OpenSSL's verify callback. This way, we are submitting
+the server's certificate to the same criteria as any other native
+Windows (i.e. non-OpenSSL) application would.
+
+As always, the patch has been compile and runtime tested. No manpage
+documentation yet -even though it's fairly obvious-, I'm still waiting for
+comments.
 
 Best regards,
-Faidon 
+Faidon
 
-diff -Nur openvpn-2.1_rc1/cryptoapi.c openvpn-2.1_rc1-void/cryptoapi.c
---- openvpn-2.1_rc1/cryptoapi.c	2006-10-16 01:30:21.000000000 +0300
-+++ openvpn-2.1_rc1-void/cryptoapi.c	2006-12-22 19:20:34.000000000 +0200
+diff -Nurp openvpn-2.1_rc1/cryptoapi.c openvpn-2.1_rc1-void/cryptoapi.c
+--- openvpn-2.1_rc1/cryptoapi.c	Mon Oct 16 01:30:21 2006
++++ openvpn-2.1_rc1-void/cryptoapi.c	Wed Jan  3 09:09:52 2007
 @@ -48,6 +48,8 @@
  static HINSTANCE crypt32dll = NULL;
  static BOOL WINAPI (*CryptAcquireCertificatePrivateKey) (PCCERT_CONTEXT pCert, DWORD dwFlags,
      void *pvReserved, HCRYPTPROV *phCryptProv, DWORD *pdwKeySpec, BOOL *pfCallerFreeProv) = NULL;
-+static PCCERT_CONTEXT WINAPI (*CertEnumCertificatesInStore) (HCERTSTORE hCertStore,
-+     PCCERT_CONTEXT pPrevCertContext) = NULL;
++static PCCERT_CONTEXT WINAPI (*CertCreateCertificateContext) (DWORD dwCertEncodingType,
++     const BYTE *pbCertEncoded, DWORD cbCertEncoded) = NULL;
  #endif
  
  /* Size of an SSL signature: MD5+SHA1 */
-@@ -364,7 +366,8 @@
+@@ -65,6 +67,8 @@ static BOOL WINAPI (*CryptAcquireCertifi
+ #define CRYPTOAPI_F_CRYPT_SIGN_HASH			    106
+ #define CRYPTOAPI_F_LOAD_LIBRARY			    107
+ #define CRYPTOAPI_F_GET_PROC_ADDRESS			    108
++#define CRYPTOAPI_F_CERT_CREATE_CERT_CONTEXT		    109
++#define CRYPTOAPI_F_CERT_GET_CERT_CHAIN			    110
+ 
+ static ERR_STRING_DATA CRYPTOAPI_str_functs[] =	{
+     { ERR_PACK(ERR_LIB_CRYPTOAPI, 0, 0),				    "microsoft cryptoapi"},
+@@ -77,6 +81,8 @@ static ERR_STRING_DATA CRYPTOAPI_str_fun
+     { ERR_PACK(0, CRYPTOAPI_F_CRYPT_SIGN_HASH, 0),			    "CryptSignHash" },
+     { ERR_PACK(0, CRYPTOAPI_F_LOAD_LIBRARY, 0),			    	    "LoadLibrary" },
+     { ERR_PACK(0, CRYPTOAPI_F_GET_PROC_ADDRESS, 0),			    "GetProcAddress" },
++    { ERR_PACK(0, CRYPTOAPI_F_CERT_CREATE_CERT_CONTEXT, 0),		    "CertCreateCertificateContext" },
++    { ERR_PACK(0, CRYPTOAPI_F_CERT_GET_CERT_CHAIN, 0),			    "CertGetCertificateChain" },
+     { 0, NULL }
+ };
+ 
+@@ -364,7 +370,7 @@ int SSL_CTX_use_CryptoAPI_certificate(SS
      }
  
      /* cert_context->pbCertEncoded is the cert X509 DER encoded. */
 -    cert = d2i_X509(NULL, (unsigned char **) &cd->cert_context->pbCertEncoded,
-+    cert = d2i_X509(NULL,
-+    		    (const unsigned char **) &cd->cert_context->pbCertEncoded,
++    cert = d2i_X509(NULL, (const unsigned char **) &cd->cert_context->pbCertEncoded,
  		    cd->cert_context->cbCertEncoded);
      if (cert == NULL) {
  	SSLerr(SSL_F_SSL_CTX_USE_CERTIFICATE_FILE, ERR_R_ASN1_LIB);
-@@ -461,3 +464,57 @@
+@@ -460,4 +466,82 @@ int SSL_CTX_use_CryptoAPI_certificate(SS
+ 	}
      }
      return 0;
- }
++}
 +
-+int SSL_CTX_add_CryptoAPI_certificate_store(SSL_CTX *ssl_ctx, const char *store)
++int CryptoAPI_verify_certificate(X509 *x509)
 +{
-+    HCERTSTORE cs;
-+    PCCERT_CONTEXT ctx = NULL;
-+    X509 *cert = NULL;
++  int ret = -1;
++  int len;
++  unsigned char *buf = NULL;
 +
-+    cs = CertOpenSystemStore(0, store);
-+    if (cs == NULL) {
-+	CRYPTOAPIerr(CRYPTOAPI_F_CERT_OPEN_SYSTEM_STORE);
++  PCCERT_CONTEXT pCertContext = NULL;
++  PCCERT_CHAIN_CONTEXT pChainContext = NULL;
++  CERT_ENHKEY_USAGE EnhkeyUsage;
++  CERT_USAGE_MATCH CertUsage;  
++  CERT_CHAIN_PARA ChainPara;
++
++  /* Convert from internal X509 format to DER */
++  len = i2d_X509(x509, &buf);
++  if (len < 0) {
++	SSLerr(SSL_F_SSL_CTX_USE_CERTIFICATE_FILE, ERR_R_ASN1_LIB);
 +	goto err;
-+    }
++  }
 +
 +#ifdef __MINGW32_VERSION
 +    /* MinGW w32api is incomplete when it comes to CryptoAPI, as per version 3.1
@@ -85,134 +112,178 @@ diff -Nur openvpn-2.1_rc1/cryptoapi.c openvpn-2.1_rc1-void/cryptoapi.c
 +	    goto err;
 +	}
 +    }
-+    if (CertEnumCertificatesInStore == NULL) {
-+	CertEnumCertificatesInStore = GetProcAddress(crypt32dll,
-+		"CertEnumCertificatesInStore");
-+	if (CertEnumCertificatesInStore == NULL) {
++    if (CertCreateCertificateContext == NULL) {
++	CertCreateCertificateContext = GetProcAddress(crypt32dll,
++		"CertCreateCertificateContext");
++	if (CertCreateCertificateContext == NULL) {
 +	    CRYPTOAPIerr(CRYPTOAPI_F_GET_PROC_ADDRESS);
 +	    goto err;
 +	}
 +    }
 +#endif
 +
-+    while ((ctx = CertEnumCertificatesInStore(cs, ctx))) {
-+	cert = d2i_X509(NULL, (const unsigned char **) &ctx->pbCertEncoded,
-+			ctx->cbCertEncoded);
-+	if (cert == NULL) {
-+	    SSLerr(SSL_F_SSL_CTX_USE_CERTIFICATE_FILE, ERR_R_ASN1_LIB);
-+	    goto err;
-+	}
++  /* Create a certificate context based on the above certificate */
++  pCertContext = CertCreateCertificateContext(X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
++  	buf, len);
++  if (pCertContext == NULL) {
++	CRYPTOAPIerr(CRYPTOAPI_F_CERT_CREATE_CERT_CONTEXT);
++	goto err;
++  }
 +
-+	if (!X509_STORE_add_cert(ssl_ctx->cert_store, cert)) {
-+	  goto err;
-+	}
-+	X509_free(cert);
-+    }
-+    CertCloseStore(cs, 0);
-+    return 1;
++  /* Create an empty issuer list */
++  EnhkeyUsage.cUsageIdentifier = 0;
++  EnhkeyUsage.rgpszUsageIdentifier = NULL;
++  CertUsage.dwType = USAGE_MATCH_TYPE_AND;
++  CertUsage.Usage  = EnhkeyUsage;
++
++  /* Searching and matching criteria to be used when building the chain */
++  ChainPara.cbSize = sizeof(CERT_CHAIN_PARA);
++  ChainPara.RequestedUsage = CertUsage;
++
++  /* Get the certificate chain of our certificate */
++  if (!CertGetCertificateChain(NULL, pCertContext, NULL, NULL, &ChainPara,
++	0, NULL, &pChainContext)) {
++	CRYPTOAPIerr(CRYPTOAPI_F_CERT_GET_CERT_CHAIN);
++	goto err;
++  }
++
++  /* return 1 when the certificate is trusted, 0 when it's not; -1 on error */
++  ret = (pChainContext->TrustStatus.dwErrorStatus == CERT_TRUST_NO_ERROR);
 +
 +  err:
-+    if (cert)
-+	X509_free(cert);
-+    return 0;
-+}
-diff -Nur openvpn-2.1_rc1/cryptoapi.h openvpn-2.1_rc1-void/cryptoapi.h
---- openvpn-2.1_rc1/cryptoapi.h	2006-10-16 01:30:21.000000000 +0300
-+++ openvpn-2.1_rc1-void/cryptoapi.h	2006-12-22 05:24:19.000000000 +0200
++    if (buf)
++	OPENSSL_free(buf);
++    if (pChainContext)
++	CertFreeCertificateChain(pChainContext);
++    if (pCertContext)
++	CertFreeCertificateContext(pCertContext);
++
++  return ret;
+ }
+diff -Nurp openvpn-2.1_rc1/cryptoapi.h openvpn-2.1_rc1-void/cryptoapi.h
+--- openvpn-2.1_rc1/cryptoapi.h	Mon Oct 16 01:30:21 2006
++++ openvpn-2.1_rc1-void/cryptoapi.h	Wed Jan  3 09:01:13 2007
 @@ -2,6 +2,7 @@
  #define _CRYPTOAPI_H_
  
  int SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop);
-+int SSL_CTX_add_CryptoAPI_certificate_store(SSL_CTX *ssl_ctx, const char *store);
++int CryptoAPI_verify_certificate(X509 *x509);
  
  
  #endif /* !_CRYPTOAPI_H_ */
-diff -Nur openvpn-2.1_rc1/options.c openvpn-2.1_rc1-void/options.c
---- openvpn-2.1_rc1/options.c	2006-10-16 01:30:21.000000000 +0300
-+++ openvpn-2.1_rc1-void/options.c	2006-12-22 06:51:37.000000000 +0200
-@@ -447,6 +447,7 @@
+diff -Nurp openvpn-2.1_rc1/options.c openvpn-2.1_rc1-void/options.c
+--- openvpn-2.1_rc1/options.c	Mon Oct 16 01:30:21 2006
++++ openvpn-2.1_rc1-void/options.c	Wed Jan  3 09:01:13 2007
+@@ -447,6 +447,7 @@ static const char usage_message[] =
  #ifdef WIN32
    "--cryptoapicert select-string : Load the certificate and private key from the\n"
    "                  Windows Certificate System Store.\n"
-+  "--cryptoapicastore : Add Windows Certificate Store Certificate Authorities.\n"
++  "--cryptoapica : Add Windows Certificate Store Certificate Authorities.\n"
  #endif
    "--tls-cipher l  : A list l of allowable TLS ciphers separated by : (optional).\n"
    "                : Use --show-tls to see a list of supported TLS ciphers.\n"
-@@ -1233,6 +1234,7 @@
+@@ -1233,6 +1234,7 @@ show_settings (const struct options *o)
    SHOW_STR (pkcs12_file);
  #ifdef WIN32
    SHOW_STR (cryptoapi_cert);
-+  SHOW_BOOL (cryptoapi_castore);
++  SHOW_BOOL (cryptoapi_ca);
  #endif
    SHOW_STR (cipher_list);
    SHOW_STR (tls_verify);
-@@ -1806,8 +1808,8 @@
+@@ -1806,8 +1808,8 @@ options_postprocess (struct options *opt
  #ifdef WIN32
        if (options->cryptoapi_cert)
  	{
 -	  if ((!(options->ca_file)) && (!(options->ca_path)))
 -	    msg(M_USAGE, "You must define CA file (--ca) or CA path (--capath)");
-+	  if ((!(options->ca_file)) && (!(options->ca_path)) && (!(options->cryptoapi_castore)))
-+	    msg(M_USAGE, "You must define CA file (--ca) or CA path (--capath) or CryptoAPI CAs (--cryptoapicastore");
++	  if ((!(options->ca_file)) && (!(options->ca_path)) && (!(options->cryptoapi_ca)))
++	    msg(M_USAGE, "You must define CA file (--ca) or CA path (--capath) or CryptoAPI CAs (--cryptoapica");
            if (options->cert_file)
  	    msg(M_USAGE, "Parameter --cert cannot be used when --cryptoapicert is also specified.");
            if (options->priv_key_file)
-@@ -1828,8 +1830,12 @@
+@@ -1828,8 +1830,12 @@ options_postprocess (struct options *opt
          }
        else
          {
 -	  if ((!(options->ca_file)) && (!(options->ca_path)))
-+	  if ((!(options->ca_file)) && (!(options->ca_path)) && (!(options->cryptoapi_castore)))
++	  if ((!(options->ca_file)) && (!(options->ca_path)) && (!(options->cryptoapi_ca)))
 +#ifdef WIN32
-+	    msg(M_USAGE, "You must define CA file (--ca) or CA path (--capath) or CryptoAPI CAs (--cryptoapicastore");
++	    msg(M_USAGE, "You must define CA file (--ca) or CA path (--capath) or CryptoAPI CAs (--cryptoapica");
 +#else
  	    msg(M_USAGE, "You must define CA file (--ca) or CA path (--capath)");
 +#endif
  	  if (pull)
  	    {
  	      const int sum = (options->cert_file != NULL) + (options->priv_key_file != NULL);
-@@ -4886,6 +4892,11 @@
+@@ -4885,6 +4891,11 @@ add_option (struct options *options,
+     {
        VERIFY_PERMISSION (OPT_P_GENERAL);
        options->cryptoapi_cert = p[1];
-     }
-+  else if (streq (p[0], "cryptoapicastore"))
++    }
++  else if (streq (p[0], "cryptoapica"))
 +    {
 +      VERIFY_PERMISSION (OPT_P_GENERAL);
-+      options->cryptoapi_castore = true;
-+    }
++      options->cryptoapi_ca = true;
+     }
  #endif
    else if (streq (p[0], "key") && p[1])
-     {
-diff -Nur openvpn-2.1_rc1/options.h openvpn-2.1_rc1-void/options.h
---- openvpn-2.1_rc1/options.h	2006-10-16 01:30:21.000000000 +0300
-+++ openvpn-2.1_rc1-void/options.h	2006-12-22 06:51:05.000000000 +0200
-@@ -424,6 +424,7 @@
+diff -Nurp openvpn-2.1_rc1/options.h openvpn-2.1_rc1-void/options.h
+--- openvpn-2.1_rc1/options.h	Mon Oct 16 01:30:21 2006
++++ openvpn-2.1_rc1-void/options.h	Wed Jan  3 09:01:13 2007
+@@ -424,6 +424,7 @@ struct options
  
  #ifdef WIN32
    const char *cryptoapi_cert;
-+  bool cryptoapi_castore;
++  bool cryptoapi_ca;
  #endif
  
    /* data channel key exchange method */
-diff -Nur openvpn-2.1_rc1/ssl.c openvpn-2.1_rc1-void/ssl.c
---- openvpn-2.1_rc1/ssl.c	2006-10-16 01:30:21.000000000 +0300
-+++ openvpn-2.1_rc1-void/ssl.c	2006-12-22 06:55:45.000000000 +0200
-@@ -1276,6 +1276,17 @@
-       }
+diff -Nurp openvpn-2.1_rc1/ssl.c openvpn-2.1_rc1-void/ssl.c
+--- openvpn-2.1_rc1/ssl.c	Mon Oct 16 01:30:21 2006
++++ openvpn-2.1_rc1-void/ssl.c	Wed Jan  3 09:01:13 2007
+@@ -56,6 +56,7 @@
+ 
+ #ifdef WIN32
+ #include "cryptoapi.h"
++static bool cryptoapi_ca; /* GLOBAL */
+ #endif
+ 
+ #include "memdbg.h"
+@@ -537,13 +538,18 @@ verify_callback (int preverify_ok, X509_
+   msg (D_LOW, "X509: %s", subject);
+ #endif
+ 
+-  /* did peer present cert which was signed our root cert? */
++  /* did peer present cert which was signed by our root cert? */
+   if (!preverify_ok)
+     {
+-      /* Remote site specified a certificate, but it's not correct */
+-      msg (D_TLS_ERRORS, "VERIFY ERROR: depth=%d, error=%s: %s",
+-	   ctx->error_depth, X509_verify_cert_error_string (ctx->error), subject);
+-      goto err;			/* Reject connection */
++#ifdef WIN32
++     if (!(cryptoapi_ca && CryptoAPI_verify_certificate(ctx->current_cert)))
++#endif
++      {
++        /* Remote site specified a certificate, but it's not correct */
++        msg (D_TLS_ERRORS, "VERIFY ERROR: depth=%d, error=%s: %s",
++	     ctx->error_depth, X509_verify_cert_error_string (ctx->error), subject);
++        goto err;			/* Reject connection */
++      }
      }
  
-+#ifdef WIN32
-+      if (options->cryptoapi_castore)
-+	{
-+	  /* Add CAs from Windows' certification stores to our store */
-+	  if (!SSL_CTX_add_CryptoAPI_certificate_store(ctx, "CA"))
-+	    msg (M_SSLERR, "Cannot load CA certificates from Microsoft Certificate Store");
-+	  if (!SSL_CTX_add_CryptoAPI_certificate_store(ctx, "ROOT"))
-+	    msg (M_SSLERR, "Cannot load Root certificates from Microsoft Certificate Store");
-+	}
-+#endif
+   /* warn if cert chain is too deep */
+@@ -1275,6 +1281,12 @@ init_ssl (const struct options *options)
+         SSL_CTX_set_client_CA_list (ctx, cert_names);
+       }
+     }
 +
++#ifdef WIN32
++  /* Set a global variable so verify_callback can check it */
++  if (options->cryptoapi_ca)
++    cryptoapi_ca = true;
++#endif
+ 
    /* Enable the use of certificate chains */
    if (using_cert_file)
-     {
 
