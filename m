@@ -1,12 +1,11 @@
-Message-ID: <9e0cf0bf0701041007x675e4d5cobbe2e8e5fae143c9@...278...>
-Date: Thu, 4 Jan 2007 20:07:57 +0200
-From: "Alon Bar-Lev" <alon.barlev@...277...>
-In-Reply-To: <459CD3BD.4010506@...334...>
-MIME-Version: 1.0
-References: <20070103073706.GA11588@...997...>
-	<9e0cf0bf0701031135ye497473tf9b18cc2037fbca5@...278...>
-	<459CD3BD.4010506@...334...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Use CryptoAPI to verify certificates
+From: Charles Duffy <cduffy@...294...>
+Date: Thu, 04 Jan 2007 13:29:48 -0600
+Message-ID: <enjkjg$1jt$1@...165...>
+References: <BAY128-F45C517531BF7DF7C034029CB90@...512...>
+Mime-Version: 1.0
+In-Reply-To: <BAY128-F45C517531BF7DF7C034029CB90@...512...>
+Sender: news <news@...165...>
+Subject: Re: [Openvpn-devel] OpenVPN Status Log
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,37 +14,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-To: Faidon Liambotis <paravoid@...334...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: openvpn-users@lists.sourceforge.net
 
-On 1/4/07, Faidon Liambotis <paravoid@...334...> wrote:
-> Hi,
-> Thank you for your comments.
->
-> Alon Bar-Lev wrote:
-> > On 1/3/07, Faidon Liambotis <paravoid@...334...> wrote:
-> >> Ok, here's another try, even though I didn't get any comments on the
-> >> first one :-)
-> >>
-> >> This is a totally different approach; the previous one was flawed in at
-> >> least two aspects:
-> >
-> > This is better.
-> > But you should use CertVerifyCertificateChainPolicy in order to verify
-> > chain, you should have two policies, one for server and one for
-> > client...
-> I've thought about it but didn't implement it because the only policy I
-> could think of was the nsCertType checking which is already being done
-> by OpenSSL if the user requested it.
+Alexander Littell wrote:
+> How difficult would it be to program the openvpn-status.log to show 
+> usernames instead of common names?  Or maybe both.  Any thoughts on how to 
+> do this?
+> 
+> I could be wrong, but I would guess that most OpenVPN administrators are 
+> using username/password pairs instead of certificates to authenticate their 
+> clients.  Well, I do anyway. :)
 
-If you integrate into Microsoft trust providers, you should also
-support CTL and such. So that the Domain/Computer policy will be
-applied to OpenVPN.
-But this is just my opinion... :)
+I'm assuming "openvpn-status.log" is the file created by the status 
+directive (different folks can call it different things -- and it has 
+two different formats available). I believe that already *will* show 
+usernames if you have username-as-common-name specified; is this 
+understanding incorrect?
 
-Best Regards,
-Alon Bar-Lev.
+In any event, while I request both usernames and certificates, the 
+certificates are more useful in logs (as our certificates specify an 
+individual machine as well as the user who owns that machine, whereas 
+the usernames specify only the individual who owns the machine but not 
+the specific host).
+
+Are you using username-as-common-name? How about duplicate-cn? (It's 
+much better to have unique certificates -- but if you're authenticating 
+by username and aren't using certificates properly, using 
+username-and-common-name and not duplicate-cn should give you more 
+management control than using duplicate-cn and leaving off 
+username-as-common-name, as in this latter case you can't identify 
+individual clients for disconnect commands or such).
+
+
+I think that this subthread belongs in openvpn-users rather than 
+openvpn-devel. I'm sending it to both; please reply only in openvpn-users.
+
 
