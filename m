@@ -1,10 +1,10 @@
-Message-ID: <9e0cf0bf0701031135ye497473tf9b18cc2037fbca5@...278...>
-Date: Wed, 3 Jan 2007 21:35:51 +0200
-From: "Alon Bar-Lev" <alon.barlev@...277...>
-In-Reply-To: <20070103073706.GA11588@...997...>
-MIME-Version: 1.0
-References: <20070103073706.GA11588@...997...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Use CryptoAPI to verify certificates
+From: Tony <kb2wjw@...277...>
+Date: Thu, 04 Jan 2007 12:40:35 +0300
+Message-ID: <op.tlmihxbgioehzu@...596...>
+References: <BAY128-F45C517531BF7DF7C034029CB90@...512...>
+Mime-Version: 1.0
+Sender: news <news@...165...>
+Subject: Re: [Openvpn-devel] OpenVPN Status Log
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +13,20 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; format=flowed; delsp=yes; charset=koi8-r
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-To: Faidon Liambotis <paravoid@...334...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On 1/3/07, Faidon Liambotis <paravoid@...334...> wrote:
-> Ok, here's another try, even though I didn't get any comments on the
-> first one :-)
->
-> This is a totally different approach; the previous one was flawed in at
-> least two aspects:
+On Wed, 03 Jan 2007 16:29:20 +0300, Alexander Littell  
+<alexander_littell@...160...> wrote:
 
-This is better.
-But you should use CertVerifyCertificateChainPolicy in order to verify
-chain, you should have two policies, one for server and one for
-client...
+> I would guess that most OpenVPN administrators are using  
+> username/password pairs instead of certificates to authenticate their  
+> clients.  Well, I do anyway.
+Not me!
+I use hardware-tokens-based (PKCS#11) authentication.
 
-I think you can remove the global variable you added to ssl.c and put
-it in the session.
+Tony.
 
-Another thing... I think the MinGW specific code should be dropped, I
-know it was in the previous source... But there should be no problem
-in creating one code which runs on both.
 
-Best Regards,
-Alon Bar-Lev.
 
