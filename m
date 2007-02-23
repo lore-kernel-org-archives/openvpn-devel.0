@@ -1,10 +1,8 @@
+From: Michael Setzer <michael.setzer@...1004...>
+Date: Fri, 23 Feb 2007 09:27:46 +0100
 MIME-Version: 1.0
-From: Deon George <dgeorge@...1003...>
-Message-ID: <OF25FB7300.F6EEDD7F-ONCA25728A.0017516A-CA25728A.0023B6DE@...1003...>
-Date: Thu, 22 Feb 2007 17:30:06 +1100
-Content-Type: multipart/alternative;
-	boundary="=_alternative 0023B699CA25728A_="
-Subject: [Openvpn-devel] RHEL5 openvpn performance issues.
+Message-Id: <200702230927.46648.michael.setzer@...1004...>
+Subject: [Openvpn-devel] net_gateway on kernel 2.6 machines
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,80 +11,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-This is a multipart message in MIME format.
---=_alternative 0023B699CA25728A_=
-Content-Type: text/plain; charset="US-ASCII"
+Hi there,
 
-Hey Gang,
+I've sent this already to the OpenVPN-User list but it might be possible that 
+is better fits here:
 
-I've just installed a RHEL5 based desktop (based on beta2) and got hold of 
-openvpn and lzo2 from dag wieers.
+---- 8< ----- snip ----- 8< -----
 
-My initial install of openvpn (2.0.9), shows connectivity without any 
-problems (as I have been previously using with a RHEL4 based desktop), 
-however very bad network performance.
+now something tricky: :)
 
-So I recompiled everything (using the src.rpms on dag wieers site) and 
-still the same problem.
+I connect to an openvpn server which provides some routes to the clients via
 
-I've confirmed its not my laptop, but using my compiled RPMs on a 
-completely differnet laptop (still using the RHEL5 based desktop).
+push "route <subnet> <mask>"
 
-If I go back to my RHEL4 based laptop, everything performs quite well.
+Works fine with all clients. Now I try to re-route some hosts on one of my
+clients (roadwarrior) to the machine's default gateway and use something like
 
-My quick analysis of the performance using ping shows that an idle OpenVPN 
-link having a ping response time of a few milliseconds, however, when I 
-connect to a webserver on the other side of the link, the ping response 
-time increases to over 3000 ms - and making everything from the remote 
-network painfully slow.
+route <address> 255.255.255.255 net_gateway
 
-Anybody got any ideas why it might be this way? (Its unusable).
+in the client's config-file.
 
-...deon
----
-Deon George, Tivoli Storage Technical Pre-Sales Specialist, IBM Australia
-Office: +61 3 9626 6058, Fax: +61 3 9626 6622, Mobile: +61 412 366 816
-VOIP: +61 2 8852 3469
-mailto:dgeorge@...1003..., http://ibm.com/tivoli
---=_alternative 0023B699CA25728A_=
-Content-Type: text/html; charset="US-ASCII"
+But it only tells me
 
+Feb  6 11:13:06 mordor ovpn-telefonica[18309]: OpenVPN ROUTE: net_gateway
+undefined -- unable to get default gateway from system
+Feb  6 11:13:06 mordor ovpn-telefonica[18309]: OpenVPN ROUTE: failed to
+parse/resolve route for host/network: <address>
 
-<br><font size=2 face="sans-serif">Hey Gang,</font>
-<br>
-<br><font size=2 face="sans-serif">I've just installed a RHEL5 based desktop
-(based on beta2) and got hold of openvpn and lzo2 from dag wieers.</font>
-<br>
-<br><font size=2 face="sans-serif">My initial install of openvpn (2.0.9),
-shows connectivity without any problems (as I have been previously using
-with a RHEL4 based desktop), however very bad network performance.</font>
-<br>
-<br><font size=2 face="sans-serif">So I recompiled everything (using the
-src.rpms on dag wieers site) and still the same problem.</font>
-<br>
-<br><font size=2 face="sans-serif">I've confirmed its not my laptop, but
-using my compiled RPMs on a completely differnet laptop (still using the
-RHEL5 based desktop).</font>
-<br>
-<br><font size=2 face="sans-serif">If I go back to my RHEL4 based laptop,
-everything performs quite well.</font>
-<br>
-<br><font size=2 face="sans-serif">My quick analysis of the performance
-using ping shows that an idle OpenVPN link having a ping response time
-of a few milliseconds, however, when I connect to a webserver on the other
-side of the link, the ping response time increases to over 3000 ms - and
-making everything from the remote network painfully slow.</font>
-<br>
-<br><font size=2 face="sans-serif">Anybody got any ideas why it might be
-this way? (Its unusable).</font>
-<br>
-<br><font size=2 face="sans-serif">...deon<br>
----<br>
-Deon George, Tivoli Storage Technical Pre-Sales Specialist, IBM Australia<br>
-Office: +61 3 9626 6058, Fax: +61 3 9626 6622, Mobile: +61 412 366 816<br>
-VOIP: +61 2 8852 3469<br>
-mailto:dgeorge@...1003..., http://ibm.com/tivoli</font>
---=_alternative 0023B699CA25728A_=--
+The client uses a ADSL DialIn and the routing tables look like this (only the
+necessary part):
+
+<IPADDRESS>   0.0.0.0         255.255.255.255 UH        0 0          0 ppp0
+0.0.0.0         0.0.0.0         0.0.0.0         U         0 0          0 ppp0
+
+An a machine with a 2.4 kernel it looks like
+
+<IPADDRESS>      0.0.0.0        255.255.255.255 UH        0 0          0 ppp0
+0.0.0.0        <IPADDRESS>      0.0.0.0        UG        0 0          0 ppp0
+
+and here it works fine.
+
+Is there any solution how I can use the net_gateway option?
+
+I'll appreciate any help!
+
+Regards,
+
+Michael
 
