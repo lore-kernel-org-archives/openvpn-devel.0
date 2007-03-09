@@ -1,8 +1,10 @@
-Message-ID: <BAY104-F118F59D71EEB33F365A67EF7780@...512...>
-From: "Girish KS" <girish.ks@...160...>
-Date: Fri, 09 Mar 2007 09:42:02 +0530
-Mime-Version: 1.0
-Subject: [Openvpn-devel] Does anybody test tftp over OpenVPN?
+Message-ID: <45F0F390.5060904@...1009...>
+Date: Fri, 09 Mar 2007 06:41:36 +0100
+From: Thomas Reifferscheid <thomas@...1009...>
+MIME-Version: 1.0
+References: <BAY104-F118F59D71EEB33F365A67EF7780@...512...>
+In-Reply-To: <BAY104-F118F59D71EEB33F365A67EF7780@...512...>
+Subject: Re: [Openvpn-devel] Does anybody test tftp over OpenVPN?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,20 +13,23 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Girish KS <girish.ks@...160...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-HI all,
+I suffer from http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=338023
+which seems to be related to the bridge setup I use. It may or may not 
+be related
+to your problem.
 
-     Does OpenVPN support tftp? I'm not able to connect to tftp server in 
-the private network. I'm using UDP proto between OpenVPN client and server.
+Kind regards
+Thomas Reifferscheid
 
-Thanks,
-GIrish KS
-
-_________________________________________________________________
-Sign in and get updated on all the action from Formula One 
-http://content.msn.co.in/Sports/FormulaOne/Default
-
+Girish KS wrote:
+> HI all,
+>
+>      Does OpenVPN support tftp? I'm not able to connect to tftp server in 
+> the private network. I'm using UDP proto between OpenVPN client and server.
+>   
 
