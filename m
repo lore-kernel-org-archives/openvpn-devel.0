@@ -1,11 +1,8 @@
-Date: Wed, 11 Apr 2007 21:59:40 +0200
-From: Michele Baldessari <michele-lists@...1016...>
-Message-ID: <20070411195940.GB12854@...1017...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="8P1HSweYDcXXzwPJ"
-Content-Disposition: inline
-Subject: [Openvpn-devel] OpenVPN Smartcard HOWTO
+Mime-Version: 1.0 (Apple Message framework v752.3)
+Message-Id: <A06302D8-1633-4FCB-A8EE-8EC6A58FF3F3@...1018...>
+From: Dave Cramer <davec@...1018...>
+Date: Thu, 19 Apr 2007 08:51:39 -0400
+Subject: [Openvpn-devel] learn address problems with chroot, or userid
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,33 +11,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=US-ASCII; delsp=yes; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
---8P1HSweYDcXXzwPJ
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+The only way I can get learn-address script to work is by running  
+openvpn as root
 
-Hi *,
+Ideally I'd like to create an openvpn user, and chroot to / 
+openvpnprivate/
 
-for those who might care, I wrote a few notes about OpenVPN and Smartcards
-(via PKCS#12):
-http://michele.pupazzo.org/docs/smart-cards-openvpn.html
+then run
 
-Feedback is welcome.
-Michele
+learn-address /script
 
---8P1HSweYDcXXzwPJ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-Content-Disposition: inline
+However when I tried this I get "cannot execute cmd"  error
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (GNU/Linux)
+So is this driver error , or a bug ?
 
-iD8DBQFGHT4sofbulCQLTD0RAhw3AKCe5k+vjdroIQ0vK3grxQZ2TgLM5gCdFOfV
-tUYGt78YvEoVVSaKkRhfh+s=
-=V2p5
------END PGP SIGNATURE-----
+Dave
 
---8P1HSweYDcXXzwPJ--
+
 
