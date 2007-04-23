@@ -1,13 +1,10 @@
-Date: Mon, 23 Apr 2007 12:39:16 +0200
-From: =?iso-8859-15?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>
-Message-ID: <99692811.20070423123916@...449...>
-In-Reply-To: <462C802F.6090007@...41...>
-References: <462C562F.1050107@...41...>
-	<002501c78574$e1322950$0201a8c0@...1010...>
-	<462C802F.6090007@...41...>
+Message-ID: <9e0cf0bf0704230618m46a77319p45caf6a309a4342d@...278...>
+Date: Mon, 23 Apr 2007 16:18:11 +0300
+From: "Alon Bar-Lev" <alon.barlev@...277...>
+In-Reply-To: <462C562F.1050107@...41...>
 MIME-Version: 1.0
+References: <462C562F.1050107@...41...>
 Subject: Re: [Openvpn-devel] OpenVPN 2.1_rc3 released
-Reply-To: =?iso-8859-15?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,33 +13,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: Openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+To: James Yonan <jim@...41...>
+Cc: Openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
-Hello James,
+On 4/23/07, James Yonan <jim@...41...> wrote:
+> This release should fix all known Vista issues, on both x86 and x64,
+> however the TAP driver will not install on Vista x64 unless driver
+> signing enforcement is disabled.
+>
+> I've also added the excellent OpenVPN GUI (Mathias Sundman version) as a
+> Windows install option.
 
-> On Vista x64, my understanding is that the TAP driver
-> would need to be signed by Microsoft themselves.
+Activity!!!
+I don't think the GUI is so excellent... It is long unmaintained and
+since it does not support the management interface, it cannot be used
+in none administrative mode correctly and cannot be used with PKCS#11
+tokens.
 
-wrong
-
-Digital Signatures for Kernel Modules on x64-based Systems Running Windows =
-Vista
-http://www.microsoft.com/whdc/system/platform/64bit/kmsigning.mspx
-
-How to Obtain a Software Publishing Certificate (64bitDriverSigning.doc)
-
-Use the following steps to obtain an SPC for signing your kernel-mode
-software that meets the mandatory kernel-mode code-signing policy:
-1.      Obtain an SPC from a commercial CA that issues digital
-        certificates for signing kernel-mode code. The list of CAs who
-        provide SPCs (or code-signing certificates) that can be used
-        for kernel-mode code signing is available at the =93Microsoft
-        Cross-certificates for Windows Vista Kernel Mode Code Signing=94
-        Web page listed in =93Resource=94 at the end of this paper.
-
-greetings
-Carsten
-
+Best Regards,
+Alon Bar-Lev.
 
