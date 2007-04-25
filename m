@@ -1,8 +1,11 @@
-Date: Wed, 25 Apr 2007 19:53:32 +0200 (CEST)
-From: Andrzej Chmielowiec <ac181080@...1019...>
-Message-ID: <Pine.LNX.4.64N.0704251951080.2737@...1019...>
+Message-ID: <462F9873.5090605@...41...>
+Date: Wed, 25 Apr 2007 12:05:39 -0600
+From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN and ECC support
+References: <462C562F.1050107@...41...>	<002501c78574$e1322950$0201a8c0@...1010...>	<462C802F.6090007@...41...>
+	<99692811.20070423123916@...449...>
+In-Reply-To: <99692811.20070423123916@...449...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.1_rc3 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,28 +14,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?B?Q2Fyc3RlbiBLcsO8Z2Vy?= <C.Krueger@...448...>
+Cc: Openvpn-devel@lists.sourceforge.net
 
-Hi,
+Carsten Krüger wrote:
+> Hello James,
+>
+>   
+>> On Vista x64, my understanding is that the TAP driver
+>> would need to be signed by Microsoft themselves.
+>>     
+>
+> wrong
+>
+> Digital Signatures for Kernel Modules on x64-based Systems Running Windows Vista
+> http://www.microsoft.com/whdc/system/platform/64bit/kmsigning.mspx
+>
+> How to Obtain a Software Publishing Certificate (64bitDriverSigning.doc)
+>
+> Use the following steps to obtain an SPC for signing your kernel-mode
+> software that meets the mandatory kernel-mode code-signing policy:
+> 1.      Obtain an SPC from a commercial CA that issues digital
+>         certificates for signing kernel-mode code. The list of CAs who
+>         provide SPCs (or code-signing certificates) that can be used
+>         for kernel-mode code signing is available at the �Microsoft
+>         Cross-certificates for Windows Vista Kernel Mode Code Signing�
+>         Web page listed in �Resource� at the end of this paper.
+>
+>   
 
-I am finishing my USB hardware token with ECC support. It is integrated
-with OpenSSL by the engine interface. I have also integrated it with OpenVPN
-software. My version works with two new options:
-(1) --ecdh file - file with ECDH domain parameters to support Elliptic Curve
-     Diffie-Hellman algorithm,
-(2) --engkey - bool option to indicate that private key is on hardware  device
-     and can be read only by engine interface.
+You know, you are absolutely right. The process for signing is rather 
+convoluted, and after taking a second look at the procedure, I realized 
+that I needed to manually add a specific intermediate certificate to 
+complete the chain. Now everything works. The TAP driver loads and runs 
+on Vista x64. Cool!
 
-What do you think about adding this options to standard distribution of  OpenVPN
-source code. Today ECC Cipher Suite is official standard described in RFC 4492
-and its algorithms are implemented in OpenSSL (turn off by default in version
-0.9.8, but will be on in version 0.9.9).
-
-Best Regards,
-
-Andrzej Chmielowiec,
-CMM Sigma (www.cmmsigma.eu)
+James
 
 
