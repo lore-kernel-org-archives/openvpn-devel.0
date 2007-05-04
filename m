@@ -1,113 +1,63 @@
-Content-class: urn:content-classes:message
+Date: Fri, 4 May 2007 01:09:46 -0700 (PDT)
+From: tiger king <tigerking156@...109...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C78CCA.218310C2"
-Date: Wed, 2 May 2007 16:56:22 +0200
-Message-ID: <B216E7A91F67B6429E3ACF162402A02D570ACE@...1006...>
-References: <200705021354.11456.noamr@...117...>
-From: "David Balazic" <David.Balazic@...1005...>
-Subject: Re: [Openvpn-devel] OpenVPN server in a mixed (windows unix)
-	enviroment
+Content-Type: multipart/alternative; boundary="0-2008508996-1178266186=:40118"
+Message-ID: <866753.40118.qm@...1021...>
+Subject: [Openvpn-devel] Error opening registry key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
-List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=openvpn-devel>
+List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=openvpn-devel>
 List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Noam Rathaus <noamr@...117...>, openvpn-devel@lists.sourceforge.net
-
-This is a multi-part message in MIME format.
-
-------_=_NextPart_001_01C78CCA.218310C2
-Content-Type: text/plain; charset="iso-8859-2"
-Content-Transfer-Encoding: quoted-printable
-
-What difficulties ?
-(slashes work just fine on Windows)
-=20
-Regards,
-David
-
-________________________________
-
-From: openvpn-devel-bounces@lists.sourceforge.net on behalf of Noam Rathaus
-Sent: sre 02-maj-07 12:54
 To: openvpn-devel@lists.sourceforge.net
-Subject: [Openvpn-devel] OpenVPN server in a mixed (windows unix) enviroment
+
+--0-2008508996-1178266186=:40118
+Content-Type: text/plain; charset=ascii
+
+Hello,
+
+I want to do some test with OPENVPN 
+
+I used only the command openvpn --dev tap but it didn't work with some mistakes
+like :
+
+Thu May 03 17:34:23 2007 OpenVPN 2.0.9 Win32-MSVC++ [SSL] [LZO] built on May  3
+2007
+Thu May 03 17:34:23 2007 IMPORTANT: OpenVPN's default port number is now 1194, b
+ased on an official port number assignment by IANA.  OpenVPN 2.0-beta16 and earl
+ier used 5000 as the default port.
+Thu May 03 17:34:23 2007 ******* WARNING *******: all encryption and authenticat
+ion features disabled -- all data will be tunnelled as cleartext
+Thu May 03 17:34:23 2007 Error opening registry key : SYSTEM\CurrentControlSet\
+Control\Class\{4D36E972-E325-11CE-BFC1-08002BE10318}
+Thu May 03 17:34:23 2007 Exiting
 
 
+I recompiled the code source and use the file exe , may be i forgot to install
+some  environement variables? 
 
-Hi,
+Some one help me please?
 
-I am having difficulties getting both my UNIX VPN clients and my Windows VPN
-clients to use the same server.conf file, is this even possible or do I need
-two separate VPN servers one using TAP while the other uses TUN?
-
---
-  Noam Rathaus
-  CTO
-  1616 Anderson Rd.
-  McLean, VA 22102
-  Tel: 703.286.7725 extension 105
-  Fax: 888.667.7740
-  noamr@...117...
-  http://www.beyondsecurity.com <http://www.beyondsecurity.com/>=20
-
--------------------------------------------------------------------------
-This SF.net email is sponsored by DB2 Express
-Download DB2 Express C - the FREE version of DB2 express and take
-control of your XML. No limits. Just data. Click to get it now.
-http://sourceforge.net/powerbar/db2/
-_______________________________________________
-Openvpn-devel mailing list
-Openvpn-devel@lists.sourceforge.net
-https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+Thank you very much
 
 
+__________________________________________________
+Do You Yahoo!?
+Tired of spam?  Yahoo! Mail has the best spam protection around 
+http://mail.yahoo.com 
+--0-2008508996-1178266186=:40118
+Content-Type: text/html; charset=ascii
 
-------_=_NextPart_001_01C78CCA.218310C2
-Content-Type: text/html; charset="iso-8859-2"
-Content-Transfer-Encoding: quoted-printable
+<html><head><style type="text/css"><!-- DIV {margin:0px;} --></style></head><body><div style="font-family:times new roman, new york, times, serif;font-size:12pt"><div>Hello,<br><br>I want to do some test with OPENVPN <br><br>I used only the command openvpn --dev tap but it didn't work with some mistakes<br>like :<br><br>Thu May 03 17:34:23 2007 OpenVPN 2.0.9 Win32-MSVC++ [SSL] [LZO] built on May&nbsp;&nbsp;3<br>2007<br>Thu May 03 17:34:23 2007 IMPORTANT: OpenVPN's default port number is now 1194, b<br>ased on an official port number assignment by IANA.&nbsp;&nbsp;OpenVPN 2.0-beta16 and earl<br>ier used 5000 as the default port.<br>Thu May 03 17:34:23 2007 ******* WARNING *******: all encryption and authenticat<br>ion features disabled -- all data will be tunnelled as cleartext<br>Thu May 03 17:34:23 2007 Error opening registry key : SYSTEM\CurrentControlSet\<br>Control\Class\{4D36E972-E325-11CE-BFC1-08002BE10318}<br>Thu May 03 17:34:23 2007 Exiting<br><br><br>I recompiled
+ the code source and use the file exe , may be i forgot to install<br>some&nbsp;&nbsp;environement variables? <br><br>Some one help me please?<br><br>Thank you very much</div></div><br>
+	
 
-<HTML dir=3Dltr><HEAD><TITLE>[Openvpn-devel] OpenVPN server in a mixed (win=
-dows unix) enviroment</TITLE>
-<META http-equiv=3DContent-Type content=3D"text/html; charset=3Dunicode">
-<META content=3D"MSHTML 6.00.6000.16414" name=3DGENERATOR></HEAD>
-<BODY>
-<DIV id=3DidOWAReplyText39618 dir=3Dltr>
-<DIV dir=3Dltr><FONT face=3DArial color=3D#000000 size=3D2>What difficultie=
-s ?</FONT></DIV>
-<DIV dir=3Dltr><FONT face=3DArial size=3D2>(slashes work just fine on Windo=
-ws)</FONT></DIV>
-<DIV dir=3Dltr><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
-<DIV dir=3Dltr><FONT face=3DArial size=3D2>Regards,</FONT></DIV>
-<DIV dir=3Dltr><FONT face=3DArial size=3D2>David</FONT></DIV></DIV>
-<DIV dir=3Dltr><BR>
-<HR tabIndex=3D-1>
-<FONT face=3DTahoma size=3D2><B>From:</B> openvpn-devel-bounces@...1011...=
-eforge.net on behalf of Noam Rathaus<BR><B>Sent:</B> sre 02-maj-07 12:54<BR=
-><B>To:</B> openvpn-devel@lists.sourceforge.net<BR><B>Subject:</B> [Openvpn=
--devel] OpenVPN server in a mixed (windows unix) enviroment<BR></FONT><BR><=
-/DIV>
-<DIV>
-<P><FONT size=3D2>Hi,<BR><BR>I am having difficulties getting both my UNIX =
-VPN clients and my Windows VPN<BR>clients to use the same server.conf file,=
- is this even possible or do I need<BR>two separate VPN servers one using T=
-AP while the other uses TUN?<BR><BR>--<BR>&nbsp; Noam Rathaus<BR>&nbsp; CTO=
-<BR>&nbsp; 1616 Anderson Rd.<BR>&nbsp; McLean, VA 22102<BR>&nbsp; Tel: 703.=
-286.7725 extension 105<BR>&nbsp; Fax: 888.667.7740<BR>&nbsp; noamr@...1020...=
-.<BR>&nbsp; <A href=3D"http://www.beyondsecurity.com/">http://www.beyondsec=
-urity.com</A><BR><BR>------------------------------------------------------=
--------------------<BR>This SF.net email is sponsored by DB2 Express<BR>Dow=
-nload DB2 Express C - the FREE version of DB2 express and take<BR>control o=
-f your XML. No limits. Just data. Click to get it now.<BR><A href=3D"http:/=
-/sourceforge.net/powerbar/db2/">http://sourceforge.net/powerbar/db2/</A><BR=
->_______________________________________________<BR>Openvpn-devel mailing l=
-ist<BR>Openvpn-devel@lists.sourceforge.net<BR><A href=3D"https://lists.sour=
-ceforge.net/lists/listinfo/openvpn-devel">https://lists.sourceforge.net/lis=
-ts/listinfo/openvpn-devel</A><BR></FONT></P></DIV></BODY></HTML>=
 
-------_=_NextPart_001_01C78CCA.218310C2--
+      <hr size=1>Ahhh...imagining that irresistible "new car" smell?<br> Check out
+<a href="http://us.rd.yahoo.com/evt=48245/*http://autos.yahoo.com/new_cars.html;_ylc=X3oDMTE1YW1jcXJ2BF9TAzk3MTA3MDc2BHNlYwNtYWlsdGFncwRzbGsDbmV3LWNhcnM-">new cars at Yahoo! Autos.</a>
+</body></html>
+--0-2008508996-1178266186=:40118--
 
