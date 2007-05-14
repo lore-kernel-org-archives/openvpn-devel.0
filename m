@@ -1,12 +1,8 @@
-Message-ID: <9e0cf0bf0705140331h756f5ec9nf07453ae1d07da54@...278...>
-Date: Mon, 14 May 2007 13:31:58 +0300
-From: "Alon Bar-Lev" <alon.barlev@...277...>
-In-Reply-To: <818531781.20070514124936@...1022...>
+Message-ID: <464872CA.3080109@...260...>
+Date: Mon, 14 May 2007 16:31:38 +0200
+From: =?ISO-8859-1?Q?Emmanuel_Qu=E9mener?= <emmanuel.quemener@...260...>
 MIME-Version: 1.0
-References: <379342281.20070514102438@...1022...>
-	<9e0cf0bf0705140038y582fd12fxfb59dd39f1d3a405@...278...>
-	<818531781.20070514124936@...1022...>
-Subject: Re: [Openvpn-devel] OpenVPN over ICMP
+Subject: [Openvpn-devel] Compilation under AIX OS : problem...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,42 +11,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-To: Alex Vdovin <admin@...1022...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On 5/14/07, Alex Vdovin <admin@...1022...> wrote:
-> Hello Alon,
->
-> File is about 100K, to not flood I've just put reference to it.
-> Changes based on 2.0.9 http://tvgw.dzer.ru/pub/ovpn_icmp.tar.gz
->
-> Should I merge this changes to latest development version of OpenVPN ?
+Hello all,
 
-Yes...
-Use the head from:
-http://svn.openvpn.net/projects/openvpn/branches/BETA22
 
-So people may review this with latest features.
+I've only manipulate OpenVPN under Linux, MacOSX and Windows OSes.
 
->
-> Best Regards,
-> Alex
->
-> -----Original Message-----
-> From: Alon Bar-Lev <alon.barlev@...277...>
->
-> Interesting!!!!
-> Just attach it and send it to this list.
->
-> On 5/14/07, Alex Vdovin <admin@...1022...> wrote:
-> > Hi All,
-> >
-> > I've done ICMP transport for OpenVPN.
-> > How I can public my changes ?
-> >
->
->
+
+A new project needs a VPN infrastructure but most of machines are under
+AIX OS.
+
+
+I've tried to compile OpenVPN and it hangs after few files due to
+compilation error :
+
+
+make  all-am
+make[1]: Entering directory `/home/equemene/sources/openvpn-2.0.9'
+source='base64.c' object='base64.o' libtool=no \
+depfile='.deps/base64.Po' tmpdepfile='.deps/base64.TPo' \
+depmode=aix /bin/sh ./depcomp \
+cc_r -DHAVE_CONFIG_H -I. -I. -I.   -I/opt/freeware/include/
+-I/home/equemene/root/include/ -I.  -g -D_THREAD_SAFE  -c base64.c
+source='buffer.c' object='buffer.o' libtool=no \
+depfile='.deps/buffer.Po' tmpdepfile='.deps/buffer.TPo' \
+depmode=aix /bin/sh ./depcomp \
+cc_r -DHAVE_CONFIG_H -I. -I. -I.   -I/opt/freeware/include/
+-I/home/equemene/root/include/ -I.  -g -D_THREAD_SAFE  -c buffer.c
+source='crypto.c' object='crypto.o' libtool=no \
+depfile='.deps/crypto.Po' tmpdepfile='.deps/crypto.TPo' \
+depmode=aix /bin/sh ./depcomp \
+cc_r -DHAVE_CONFIG_H -I. -I. -I.   -I/opt/freeware/include/
+-I/home/equemene/root/include/ -I.  -g -D_THREAD_SAFE  -c crypto.c
+source='error.c' object='error.o' libtool=no \
+depfile='.deps/error.Po' tmpdepfile='.deps/error.TPo' \
+depmode=aix /bin/sh ./depcomp \
+cc_r -DHAVE_CONFIG_H -I. -I. -I.   -I/opt/freeware/include/
+-I/home/equemene/root/include/ -I.  -g -D_THREAD_SAFE  -c error.c
+source='event.c' object='event.o' libtool=no \
+depfile='.deps/event.Po' tmpdepfile='.deps/event.TPo' \
+depmode=aix /bin/sh ./depcomp \
+cc_r -DHAVE_CONFIG_H -I. -I. -I.   -I/opt/freeware/include/
+-I/home/equemene/root/include/ -I.  -g -D_THREAD_SAFE  -c event.c
+source='fdmisc.c' object='fdmisc.o' libtool=no \
+depfile='.deps/fdmisc.Po' tmpdepfile='.deps/fdmisc.TPo' \
+depmode=aix /bin/sh ./depcomp \
+cc_r -DHAVE_CONFIG_H -I. -I. -I.   -I/opt/freeware/include/
+-I/home/equemene/root/include/ -I.  -g -D_THREAD_SAFE  -c fdmisc.c
+source='forward.c' object='forward.o' libtool=no \
+depfile='.deps/forward.Po' tmpdepfile='.deps/forward.TPo' \
+depmode=aix /bin/sh ./depcomp \
+cc_r -DHAVE_CONFIG_H -I. -I. -I.   -I/opt/freeware/include/
+-I/home/equemene/root/include/ -I.  -g -D_THREAD_SAFE  -c forward.c
+"options.h", line 77.10: 1506-007 (S) "struct route_option_list" is
+undefined.
+make[1]: *** [forward.o] Error 1
+make[1]: Leaving directory `/home/equemene/sources/openvpn-2.0.9'
+make: *** [all] Error 2
+
+
+Mysteriously, the compiler says that route_option_list is not defined
+but it's already define in route.h. The previous file route.h is also
+defined in config.h
+
+
+What's wrong ?
+
+
+Best regards
+
 
