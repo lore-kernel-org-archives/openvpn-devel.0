@@ -1,10 +1,14 @@
-From: Denis  Medvedev <a_mdl@...450...>
-Mime-Version: 1.0
-Date: Mon, 14 May 2007 19:29:44 +0400
-Message-Id: <E1HncUa-0005ib-00.a_mdl-mail-ru@...1023...>
-Subject: [Openvpn-devel] =?koi8-r?b?SUdNUCBtdWx0aWNhc3QgcGF0Y2gsIGFueW9u?=
-	=?koi8-r?b?ZT8=?=
-Reply-To: Denis Medvedev <a_mdl@...450...>
+Date: Tue, 15 May 2007 11:34:08 +0400
+From: Alex Vdovin <admin@...1022...>
+Message-ID: <982523069.20070515113408@...1022...>
+In-Reply-To: <9e0cf0bf0705140331h756f5ec9nf07453ae1d07da54@...278...>
+References: <379342281.20070514102438@...1022...>
+	<9e0cf0bf0705140038y582fd12fxfb59dd39f1d3a405@...278...>
+	<818531781.20070514124936@...1022...>
+	<9e0cf0bf0705140331h756f5ec9nf07453ae1d07da54@...278...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel]  OpenVPN over ICMP
+Reply-To: Alex Vdovin <admin@...1022...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,19 +17,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=koi8-r
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Dear friends!
-Last autumn, some kind programmer ulrik.mikaelsson
-posted a patch that allows IGMP in client/client configs.
-Since archives doesn't store any patches, if any subscriber still have that patch please send it to me.
-The patch was attached to message:
-http://openvpn.net/archive/openvpn-devel/2006-11/msg00018.html
-    Denis Medvedev
-    t_mdl@...109...
+Hello Alon,
 
+Upmerged with 2.1_RC4
+http://tvgw.dzer.ru/pub/ovpn_icmp-2.1_rc4.tar.gz
 
+Best Regards,
+Alex
+
+-----Original Message-----
+From: Alon Bar-Lev <alon.barlev@...277...>
+Sent: 5/14/2007, 14:31
+To: Alex Vdovin <admin@...1022...>
+Subject: [Openvpn-devel] OpenVPN over ICMP
+
+On 5/14/07, Alex Vdovin <admin@...1022...> wrote:
+> Hello Alon,
+>
+> File is about 100K, to not flood I've just put reference to it.
+> Changes based on 2.0.9 http://tvgw.dzer.ru/pub/ovpn_icmp.tar.gz
+>
+> Should I merge this changes to latest development version of OpenVPN ?
+
+Yes...
+Use the head from:
+http://svn.openvpn.net/projects/openvpn/branches/BETA22
+
+So people may review this with latest features.
+
+>
+> Best Regards,
+> Alex
+>
+> -----Original Message-----
+> From: Alon Bar-Lev <alon.barlev@...277...>
+>
+> Interesting!!!!
+> Just attach it and send it to this list.
+>
+> On 5/14/07, Alex Vdovin <admin@...1022...> wrote:
+> > Hi All,
+> >
+> > I've done ICMP transport for OpenVPN.
+> > How I can public my changes ?
+> >
+>
+>
 
 
