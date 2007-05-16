@@ -1,9 +1,9 @@
-From: Jochen Kaiser <Jochen.Kaiser@...1025...>
-Date: Wed, 16 May 2007 16:59:17 +0200
-Message-Id: <20070516145917.GC36293@...1026...>
-References: <20070516135709.GE26428@...172...>
-Mime-Version: 1.0
+Message-ID: <9e0cf0bf0705161234r5c95c908k69fd43fd18711035@...278...>
+Date: Wed, 16 May 2007 22:34:14 +0300
+From: "Alon Bar-Lev" <alon.barlev@...277...>
 In-Reply-To: <20070516135709.GE26428@...172...>
+MIME-Version: 1.0
+References: <20070516135709.GE26428@...172...>
 Subject: Re: [Openvpn-devel] Smartcard Authentication
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,36 +13,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 To: openvpn devel <openvpn-devel@lists.sourceforge.net>
 
-Hi Thomas,
+You can mix software and hardware based in one installation.
+If you are going to use Linux, I recommend you use one of the OpenSC
+supported cards.
 
-two weeks ago, I purchased 10 Aladdin eToken Pro32K 10 Unit Starter
-pack for a total of 760 Euro. Afaik they should work for linux. 
-
-(I've 10 of them but I don't need all of them at the moment. Just visit 
-me in my office on friday morning and I can handover you one or two 
-for a test. :-) )
-
-nice regards,
-JK
---
-Dipl. Inf. Jochen Kaiser, GPG 0x3C93A870, phone +49 9131 85-36205
-IT-Sicherheitsbeauftragter (CISO) des Universitaetsklinikums Erlangen
-
-On Wed, May 16, 2007 at 03:57:09PM +0200, Thomas Glanzmann wrote:
+On 5/16/07, sithglan@...162... <sithglan@...162...> wrote:
 > Hello,
 > I am incredible interested in the smartcard authentication for OpenVPN.
 > Can anyone suggest a USB Token to me that isn't that expansive. I need
 > around 10 of them which are available in Europe. Is it possible to have
 > some private keys on a smartcard and others on disk in a multi instance
 > OpenVPN server? I guess so, but want to get sure.
-> 
+>
 >         Thomas
-> 
+>
 > -------------------------------------------------------------------------
 > This SF.net email is sponsored by DB2 Express
 > Download DB2 Express C - the FREE version of DB2 express and take
@@ -52,5 +41,5 @@ On Wed, May 16, 2007 at 03:57:09PM +0200, Thomas Glanzmann wrote:
 > Openvpn-devel mailing list
 > Openvpn-devel@lists.sourceforge.net
 > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
+>
 
