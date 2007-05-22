@@ -1,13 +1,15 @@
-Message-ID: <9e0cf0bf0705211145r79d4c226g3eb24db31a55f3de@...278...>
-Date: Mon, 21 May 2007 21:45:46 +0300
+Message-ID: <9e0cf0bf0705220059k67174b6arc0d35a3cdad1dcca@...278...>
+Date: Tue, 22 May 2007 10:59:16 +0300
 From: "Alon Bar-Lev" <alon.barlev@...277...>
-In-Reply-To: <20070521050705.GC19461@...172...>
+In-Reply-To: <20070522074947.GE1539@...172...>
 MIME-Version: 1.0
 References: <20070516135709.GE26428@...172...>
 	<20070516145917.GC36293@...1026...>
 	<20070520231131.GB19461@...172...>
 	<9e0cf0bf0705202145r2ea770cbh99e656ce630de45f@...278...>
 	<20070521050705.GC19461@...172...>
+	<9e0cf0bf0705211145r79d4c226g3eb24db31a55f3de@...278...>
+	<20070522074947.GE1539@...172...>
 Subject: Re: [Openvpn-devel] Smartcard Authentication
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -22,54 +24,32 @@ Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 To: Alon Bar-Lev <alon.barlev@...277...>, Jochen Kaiser <Jochen.Kaiser@...1025...>, openvpn devel <openvpn-devel@lists.sourceforge.net>, Michael Gernoth <simigern@...172...>, Markus Friedl <Markus.Friedl@...1027...>
 
-On 5/21/07, sithglan@...162... <sithglan@...162...> wrote:
-> Note: It isn't enough to have a private/public key on the card. You also
-> need a certificate. The certificate can be self signed. It doesn't
-> matter. If there is _no_ certificate ssh-agent refuses to add it. Don't
-> ask me why. Markus, can you answer that for me?
+On 5/22/07, Thomas Glanzmann <thomas@...1029...> wrote:
+> Actually I don't consider PKCS#11 a standard interface. It's more like
+> everyone puts its binary blob anywhere. Actually I think it's horrible by
+> design. It's more like a "standard" interface to a binary blob that does
+> something that isn't standard with the actual smartcard. From what I
+> heard and read about PKCS#11 it is a mess.
 
-Because you need to have a public object.
-The same is for PKCS#11 patch.
+This say it all.
+It seems you don't understand what standard is.
+And because of people with the same attitude we don't have a valid
+cryptography in open source.
+I had this discussion over and over...
+Everybody think he can do better, and we end up with unusable solutions.
 
-> Actually from my point of view opensc is cleaner because it doesn't
-> include using binary modules from aladdin. Also for ssh for example I
-> need to use a third party patch. opensc support is in openssh for ages
-> (since 2001).
+A standard is a compromise between the best way to achieve a goal and
+the interest of several parties.
 
-But what happens if you remove and insert your card? You should be
-prompted to enter your PIN again, and you don't - security flaw.
-What happen if you ssh and the card is missing? You should be prompted
-to insert your card... and it just fails.
-Why can't you load all your identities into the agent without having
-your card in?
-Why use none standard interface anyway?
+I guess you are aware that you use PKCS#1, PKCS#8, PKCS#7 PKCS#12,
+PKCS#10, all are not the best way to encode any format, but it makes
+application communicate correctly with each-other. PKCS#11 falls on
+the same category.
 
-But it is your choice... :)
-I just make application standard. If they were you get a lot easier environment.
-
-> Btw have to talked to Markus Friedel if your code does it make upstream?
-
-I've talked with Damien Miller, but one day he just disappeared.
-
-> > I don't use OpenSC, but I heard that there is some  kind of option
-> > that causes PKCS#11 to release the session. Something related to PIN
-> > caching?
->
-> Might be possible. Do you have an specifics or patch that I could try?
-
-This should be already built in... Just don't know where... I heard
-people solved this issue. This is incompatibility of OpenSC PKCS#11
-provider, the PKCS#11 states that multiple application should be able
-to work at the same time.
-
-> Btw. I had a quick glance at the OpenVPN pkcs#11 Code Base and it is
-> quite impressive at least in the lines of code. How long did it take you
-> to develop them?
-
-Well... it is generic and used by different projects, so I moved this
-to OpenSC project.
-You can find some more utilities at:
-http://alon.barlev.googlepages.com/open-source
+Because everybody think we knows better, we got to a state where the
+user must execute about 5 agents on his computer to use his smartcard
+(ssh-agent, gpg-agent, seahorse, gnutls and more). This is
+unacceptable, and proves that there is nothing close to standard.
 
 Best Regards,
 Alon Bar-Lev.
