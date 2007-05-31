@@ -1,8 +1,10 @@
-Message-ID: <6c18a4f0705301137q3c63230en25dbd69f9b2f4061@...278...>
-Date: Wed, 30 May 2007 20:37:00 +0200
-From: "Bernd Bartmann" <bernd.bartmann@...277...>
+Message-ID: <2658da010705310740s3a13b7a0kbfd4936bfea2a8a3@...278...>
+Date: Thu, 31 May 2007 16:40:21 +0200
+From: "Jeremy Garrouste" <jeremy.garrouste@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Possible bug in OpenVPN-2.0.9
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_25230_29100236.1180622421411"
+Subject: [Openvpn-devel] connect-retry and UDP
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,182 +13,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: openvpn-devel@lists.sourceforge.net
+
+------=_Part_25230_29100236.1180622421411
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-To: Openvpn-devel@lists.sourceforge.net
 
-Hi,
+Hello,
 
-I'm running Centos 5 32bit and installed openvpn-2.0.9-1.el5.rf from
-Dag Wieers Repo. When OpenVPN is started during boot-up it just shows
-an SElinux related error message and does not start. When I start
-OpenVPN manually after
-the system has come up completely it works fine. Please have a look at
-the log extract at the end of this email for all SElinux related
-messages.
+I have a problem with my client configuration of OpenVPN. I use it in UDP
+mode and i can't set the variable "connect-retry" because as upd is a non
+connected protocol. Aniway I'd like to change time between each connection
+retry.
 
-I already reported this problem to the Centos and SElinux mailing
-lists. Daniel Walsh (SElinux guru) had the following suggestions:
+option.c :
+/*
+ * Sanity check on TCP mode options
+ */
+  if (options->connect_retry_defined && options->proto !=
+PROTO_TCPv4_CLIENT)
+    msg (M_USAGE, "--connect-retry doesn't make sense unless also used with
+--proto tcp-client");
 
-> Easiest thing to do is update policy with these two rules.
->
-> # grep openvpn /var/log/audit/audit.log | audit2allow -M myopenvpn
-> # semodule -i myopenvpn.pp
->
-> This will add the following rules:
-> allow openvpn_t pppd_t:fd use;
-> allow openvpn_t self:process execstack;
->
-> The pppd_t:fd is probably a leaked file descriptor and could probably be
-> dontaudited.
-> The execstack is potentially a problem in openvpn_t.  This is probably a
-> coding problem and should be reported as a bug/
->
-> SELinux Memory Protection Tests
-> <http://people.redhat.com/%7Edrepper/selinux-mem.html>
+-- 
+Jeremy GARROUSTE
 
-So he suggests that the execstack errors come from a bug in OpenVPN.
+------=_Part_25230_29100236.1180622421411
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Here are all the messages from /var/log/messages that are SElinux related:
+Hello,<br><br>I have a problem with my client configuration of OpenVPN.
+I use it in UDP mode and i can&#39;t set the variable &quot;connect-retry&quot; because
+as upd is a non connected protocol. Aniway I&#39;d like to change time
+between each connection retry.
+<span class="q"><br><br>option.c :<br><span style="font-style: italic;"> /*</span><br style="font-style: italic;"><span style="font-style: italic;">&nbsp;* Sanity check on TCP mode options</span><br style="font-style: italic;">
+<span style="font-style: italic;">
 
- May 28 21:39:15 srsblnfw01 kernel: audit(1180381151.395:10): avc:
-denied  { use } for  pid=3012 comm="openvpn" name="null" dev=tmpfs
-ino=1396 scontext=system_u:system_r:openvpn_t:s0
-tcontext=system_u:system_r:pppd_t:s0 tclass=fd
-May 28 21:39:15 srsblnfw01 kernel: audit(1180381151.395:11): avc:
-denied  { use } for  pid=3012 comm="openvpn" name="null" dev=tmpfs
-ino=1396 scontext=system_u:system_r:openvpn_t:s0
-tcontext=system_u:system_r:pppd_t:s0 tclass=fd
-May 28 21:39:15 srsblnfw01 kernel: audit(1180381151.395:12): avc:
-denied  { use } for  pid=3012 comm="openvpn" name="null" dev=tmpfs
-ino=1396 scontext=system_u:system_r:openvpn_t:s0
-tcontext=system_u:system_r:pppd_t:s0 tclass=fd
-May 28 21:39:15 srsblnfw01 kernel: audit(1180381151.458:13): avc:
-denied  { execstack } for  pid=3012 comm="openvpn"
-scontext=system_u:system_r:openvpn_t:s0
-tcontext=system_u:system_r:openvpn_t:s0 tclass=process
-May 28 21:39:15 srsblnfw01 kernel: audit(1180381151.465:14): avc:
-denied  { use } for  pid=3014 comm="openvpn" name="null" dev=tmpfs
-ino=1396 scontext=system_u:system_r:openvpn_t:s0
-tcontext=system_u:system_r:pppd_t:s0 tclass=fd
-May 28 21:39:15 srsblnfw01 kernel: audit(1180381151.465:15): avc:
-denied  { use } for  pid=3014 comm="openvpn" name="null" dev=tmpfs
-ino=1396 scontext=system_u:system_r:openvpn_t:s0
-tcontext=system_u:system_r:pppd_t:s0 tclass=fd
-May 28 21:39:15 srsblnfw01 kernel: audit(1180381151.465:16): avc:
-denied  { use } for  pid=3014 comm="openvpn" name="null" dev=tmpfs
-ino=1396 scontext=system_u:system_r:openvpn_t:s0
-tcontext=system_u:system_r:pppd_t:s0 tclass=fd
-May 28 21:39:15 srsblnfw01 kernel: audit(1180381151.466:17): avc:
-denied  { execstack } for  pid=3014 comm="openvpn"
-scontext=system_u:system_r:openvpn_t:s0
-tcontext=system_u:system_r:openvpn_t:s0 tclass=process
-May 28 21:40:06 srsblnfw01 setroubleshoot:      SELinux is preventing
-/usr/sbin/openvpn (openvpn_t) "execstack" access to <Unknown>
-(openvpn_t).      For complete SELinux messages. run sealert -l
-0b738097-f92a-44c4-952b-7247d88a40e0
-May 28 21:40:06 srsblnfw01 setroubleshoot:      SELinux is preventing
-/usr/sbin/openvpn (openvpn_t) "execstack" access to <Unknown>
-(openvpn_t).      For complete SELinux messages. run sealert -l
-0b738097-f92a-44c4-952b-7247d88a40e0
-May 28 21:44:26 srsblnfw01 kernel: audit(1180381461.319:10): avc:
-denied  { use } for  pid=3010 comm="openvpn" name="null" dev=tmpfs
-ino=1396 scontext=system_u:system_r:openvpn_t:s0
-tcontext=system_u:system_r:pppd_t:s0 tclass=fd
-May 28 21:44:26 srsblnfw01 kernel: audit(1180381461.319:11): avc:
-denied  { use } for  pid=3010 comm="openvpn" name="null" dev=tmpfs
-ino=1396 scontext=system_u:system_r:openvpn_t:s0
-tcontext=system_u:system_r:pppd_t:s0 tclass=fd
-May 28 21:44:26 srsblnfw01 kernel: audit(1180381461.319:12): avc:
-denied  { use } for  pid=3010 comm="openvpn" name="null" dev=tmpfs
-ino=1396 scontext=system_u:system_r:openvpn_t:s0
-tcontext=system_u:system_r:pppd_t:s0 tclass=fd
-May 28 21:44:26 srsblnfw01 kernel: audit(1180381461.382:13): avc:
-denied  { execstack } for  pid=3010 comm="openvpn"
-scontext=system_u:system_r:openvpn_t:s0
-tcontext=system_u:system_r:openvpn_t:s0 tclass=process
-May 28 21:44:26 srsblnfw01 kernel: audit(1180381461.390:14): avc:
-denied  { use } for  pid=3012 comm="openvpn" name="null" dev=tmpfs
-ino=1396 scontext=system_u:system_r:openvpn_t:s0
-tcontext=system_u:system_r:pppd_t:s0 tclass=fd
-May 28 21:44:26 srsblnfw01 kernel: audit(1180381461.390:15): avc:
-denied  { use } for  pid=3012 comm="openvpn" name="null" dev=tmpfs
-ino=1396 scontext=system_u:system_r:openvpn_t:s0
-tcontext=system_u:system_r:pppd_t:s0 tclass=fd
-May 28 21:44:26 srsblnfw01 kernel: audit(1180381461.390:16): avc:
-denied  { use } for  pid=3012 comm="openvpn" name="null" dev=tmpfs
-ino=1396 scontext=system_u:system_r:openvpn_t:s0
-tcontext=system_u:system_r:pppd_t:s0 tclass=fd
-May 28 21:44:26 srsblnfw01 kernel: audit(1180381461.390:17): avc:
-denied  { execstack } for  pid=3012 comm="openvpn"
-scontext=system_u:system_r:openvpn_t:s0
-tcontext=system_u:system_r:openvpn_t:s0 tclass=process
-May 28 22:18:52 srsblnfw01 setroubleshoot:      SELinux is preventing
-/usr/sbin/openvpn (openvpn_t) "use" access to /dev/null (pppd_t).
-For complete SELinux messages. run sealert -l
-5701a4da-1d96-4c86-9747-e31b3d5d2219
-May 28 22:18:52 srsblnfw01 setroubleshoot:      SELinux is preventing
-/usr/sbin/openvpn (openvpn_t) "execstack" access to <Unknown>
-(openvpn_t).      For complete SELinux messages. run sealert -l
-0b738097-f92a-44c4-952b-7247d88a40e0
-May 28 22:18:52 srsblnfw01 setroubleshoot:      SELinux is preventing
-/usr/sbin/openvpn (openvpn_t) "use" access to /dev/null (pppd_t).
-For complete SELinux messages. run sealert -l
-5701a4da-1d96-4c86-9747-e31b3d5d2219
-May 28 22:18:52 srsblnfw01 setroubleshoot:      SELinux is preventing
-/usr/sbin/openvpn (openvpn_t) "execstack" access to <Unknown>
-(openvpn_t).      For complete SELinux messages. run sealert -l
-0b738097-f92a-44c4-952b-7247d88a40e0
-May 28 22:26:00 srsblnfw01 setroubleshoot:      SELinux is preventing
-/usr/sbin/openvpn (openvpn_t) "use" access to /dev/null (pppd_t).
-For complete SELinux messages. run sealert -l
-5701a4da-1d96-4c86-9747-e31b3d5d2219
-May 28 22:26:00 srsblnfw01 setroubleshoot:      SELinux is preventing
-/usr/sbin/openvpn (openvpn_t) "execstack" access to <Unknown>
-(openvpn_t).      For complete SELinux messages. run sealert -l
-0b738097-f92a-44c4-952b-7247d88a40e0
-May 28 22:26:00 srsblnfw01 setroubleshoot:      SELinux is preventing
-/usr/sbin/openvpn (openvpn_t) "use" access to /dev/null (pppd_t).
-For complete SELinux messages. run sealert -l
-5701a4da-1d96-4c86-9747-e31b3d5d2219
-May 28 22:26:00 srsblnfw01 setroubleshoot:      SELinux is preventing
-/usr/sbin/openvpn (openvpn_t) "execstack" access to <Unknown>
-(openvpn_t).      For complete SELinux messages. run sealert -l
-0b738097-f92a-44c4-952b-7247d88a40e0
-May 28 22:42:03 srsblnfw01 setroubleshoot:      SELinux is preventing
-/usr/sbin/openvpn (openvpn_t) "use" access to /dev/null (pppd_t).
-For complete SELinux messages. run sealert -l
-5701a4da-1d96-4c86-9747-e31b3d5d2219
-May 28 22:42:03 srsblnfw01 setroubleshoot:      SELinux is preventing
-/usr/sbin/openvpn (openvpn_t) "execstack" access to <Unknown>
-(openvpn_t).      For complete SELinux messages. run sealert -l
-0b738097-f92a-44c4-952b-7247d88a40e0
-May 28 22:42:03 srsblnfw01 setroubleshoot:      SELinux is preventing
-/usr/sbin/openvpn (openvpn_t) "use" access to /dev/null (pppd_t).
-For complete SELinux messages. run sealert -l
-5701a4da-1d96-4c86-9747-e31b3d5d2219
-May 28 22:42:03 srsblnfw01 setroubleshoot:      SELinux is preventing
-/usr/sbin/openvpn (openvpn_t) "execstack" access to <Unknown>
-(openvpn_t).      For complete SELinux messages. run sealert -l
-0b738097-f92a-44c4-952b-7247d88a40e0
-May 28 22:42:05 srsblnfw01 setroubleshoot:      SELinux is preventing
-/usr/sbin/openvpn (openvpn_t) "execstack" access to <Unknown>
-(openvpn_t).      For complete SELinux messages. run sealert -l
-0b738097-f92a-44c4-952b-7247d88a40e0
-May 28 22:42:05 srsblnfw01 setroubleshoot:      SELinux is preventing
-/usr/sbin/openvpn (openvpn_t) "execstack" access to <Unknown>
-(openvpn_t).      For complete SELinux messages. run sealert -l
-0b738097-f92a-44c4-952b-7247d88a40e0
-May 28 22:56:42 srsblnfw01 setroubleshoot:      SELinux is preventing
-/usr/sbin/openvpn (openvpn_t) "execstack" access to <Unknown>
-(openvpn_t).      For complete SELinux messages. run sealert -l
-0b738097-f92a-44c4-952b-7247d88a40e0
-May 28 22:56:42 srsblnfw01 setroubleshoot:      SELinux is preventing
-/usr/sbin/openvpn (openvpn_t) "execstack" access to <Unknown>
-(openvpn_t).      For complete SELinux messages. run sealert -l
-0b738097-f92a-44c4-952b-7247d88a40e0
+&nbsp;*/</span><br style="font-style: italic;"><span style="font-style: italic;">&nbsp; if (options-&gt;connect_retry_defined &amp;&amp; options-&gt;proto != PROTO_TCPv4_CLIENT)</span><br style="font-style: italic;"><span style="font-style: italic;">
 
-Best regards,
-Bernd
+
+&nbsp;&nbsp;&nbsp; msg (M_USAGE, &quot;--connect-retry doesn&#39;t make sense unless also used with --proto tcp-client&quot;);</span></span><br clear="all"><br>-- <br>Jeremy GARROUSTE
+
+------=_Part_25230_29100236.1180622421411--
 
