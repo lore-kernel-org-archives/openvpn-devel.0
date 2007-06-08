@@ -1,11 +1,9 @@
-Message-ID: <4665B1DB.50300@...1000...>
-Date: Tue, 05 Jun 2007 20:56:27 +0200
-From: Peter Warasin <peter@...1000...>
+Message-ID: <3bca39c60706080647y13802064m35827220ba1b2ab6@...278...>
+Date: Fri, 8 Jun 2007 15:47:51 +0200
+From: "Richard Hartmann" <richih.nospam@...1030...>
 MIME-Version: 1.0
-References: <d5494cd50706050222k4bc500bfy1bf7f1c53fd0869d@...278...>
-In-Reply-To: <d5494cd50706050222k4bc500bfy1bf7f1c53fd0869d@...278...>
-Subject: Re: [Openvpn-devel] openvpn server in client-to-client mode -
-	filtering
+Subject: [Openvpn-devel] feature request: ability to pass pkcs#11 PIN via
+	command line/config
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,49 +12,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-hi
-
-Oleg Motienko wrote:
-> > Is it possible to filter some ports between clients while server is in
-> > client-to-clientmode?
-
-you need to direct the traffic out to the servers tun/tap device in
-order to filter centralized on the server.
-
-i have the same problem like you. i solved it manually but don't know
-exactly how to push the rules correctly.
+Hi all,
 
 
-i toggled of client-to-client mode and set up on each client a host
-route for the servers ip address which is bound to the tap device.
-then i created on each client routes for each subnet assigned to the
-several clients with gateway pointing to the servers tap ip address.
+I am setting up a test case where the user is supposed to plug in his
+USB token before booting. Once he boots up and prior to him logging in
+to Windows, I need to establish an OpenVPN connection to our
+aggregator.
 
-the server certainly routes each client-network back into the tap device
-
-this way each traffic coming from a client going to a client must pass
-the servers tap device twice,. so you can filter using netfilter.
-
-
-only thing which i did not manage to do is to push this routing
-configuration to the clients.
-maybe we need something like redirect-gateway, but only for a list of
-subnets?
-or did i understood something wrong?
+To do this, I am using a 'solution' where I abuse a netcat connection
+to cat the PIN to the token into OpenVPN. My request would be to do
+one or more of the following:
 
 
-regards,
-peter
+1) Make OpenVPN aware that it could use the passphrase received via
+--askpass not only as private key _passphrase_, but as private key
+_PIN_. (One could argue that this is a bug)
+
+2) Offer --askpin [file], same as --askpass
+
+3) Offer not only pkcs11-pin-cache, but also pkcs11-pin-value or similar
 
 
--- 
-:: e n d i a n
-:: open source - open minds
+I am fully aware that this is a potential security risk and thus I
+would suggest using the same approach as with using --askpass via
+file: Make it a compile time option. In 99% of the cases, you do _not_
+want the user to be able to do it this way. But when someone really
+knows what he does, why he does and is aware of the implications,
+there should be a way to make this work without pain.
 
-:: peter warasin
-:: http://www.endian.com   :: peter@...1028...
+FYI, I am using 2.1 RC 4. If this issue has been addressed in head,
+please let me know. Also, if this is the wrong place for this, please
+tell me where to direct feature requests, I could not find any other
+place.
+
+
+Best regards,
+Richard
 
