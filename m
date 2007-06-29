@@ -1,12 +1,8 @@
-Date: Thu, 28 Jun 2007 04:27:23 +0100
+Date: Fri, 29 Jun 2007 10:13:45 +0100
 From: Roy Marples <uberlord@...594...>
-Message-ID: <20070628042723.7789f217@...1035...>
-In-Reply-To: <53803.192.168.168.147.1182987289.squirrel@...1034...>
-References: <53803.192.168.168.147.1182987289.squirrel@...1034...>
+Message-ID: <20070629101345.0f8beeba@...1035...>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary=MP_NH4nK4ornHUix+lYqcNSDuf
-Subject: Re: [Openvpn-devel] modification to pull-resolv-conf/client.up and
- client.down scipt
+Subject: [Openvpn-devel] [PATCH] IPv6 support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,104 +11,23 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
---MP_NH4nK4ornHUix+lYqcNSDuf
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Hi List
 
-On Wed, 27 Jun 2007 16:34:49 -0700 (MST)
-"Scott Ruckh" <sruckh@...1034...> wrote:
+The UDPv6-Patch from JuanJo Ciarlante no longer applies to the OpenVPN
+code. Marcel Pennewi=C3=9F has tidied it up and has created patches for 2.0
+and 2.1 [1]
 
-> Attached are modifications to the pull-resolv-conf/client.up and
-> pull-resolv-conf/client.down scripts.  The changes and modifications
-> are documented in the script.
-> 
-> This change produces a more friendly /etc/resolv.conf that is more
-> GNU/Linux compliant.
-> 
-> Please review and add to SVN if it is found to be useful.
-
-At this point I'll step in and attach the up/down scripts used in
-Gentoo which work without bash an have been tested on FreeBSD sh, dash,
-busybox and bash.
-
-They also support resolvconf, a resolv.conf manager. Note the FIXME
-section when using >1 domain.
+The mailing list blocks emails over 40k - the patch bigger. So incase
+it doesn't get through moderator approval, you can get it from the
+Gentoo bug report referenced below.
 
 Thanks
 
-Roy
---MP_NH4nK4ornHUix+lYqcNSDuf
-Content-Type: application/x-shellscript; name=down.sh
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename=down.sh
+Roy Marples
 
-IyEvYmluL3NoCiMgQ29weXJpZ2h0IChjKSAyMDA2LTIwMDcgR2VudG9vIEZvdW5kYXRpb24KIyBE
-aXN0cmlidXRlZCB1bmRlciB0aGUgdGVybXMgb2YgdGhlIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNl
-bnNlIHYyCiMgQ29udHJpYnV0ZWQgYnkgUm95IE1hcnBsZXMgKHViZXJsb3JkQGdlbnRvby5vcmcp
-CgojIElmIHdlIGhhdmUgYSBzZXJ2aWNlIHNwZWNpZmljIHNjcmlwdCwgcnVuIHRoaXMgbm93Cmlm
-IFsgLXggL2V0Yy9vcGVudnBuLyIke1NWQ05BTUV9Ii1kb3duLnNoIF0gOyB0aGVuCgkvZXRjL29w
-ZW52cG4vIiR7U1ZDTkFNRX0iLWRvd24uc2gKZmkKCiMgUmVzdG9yZSByZXNvbHYuY29uZiB0byBo
-b3cgaXQgd2FzCmlmIFsgLXggL3NiaW4vcmVzb2x2Y29uZiBdIDsgdGhlbgoJL3NiaW4vcmVzb2x2
-Y29uZiAtZCAiJHtkZXZ9IgplbGlmIFsgLWUgL2V0Yy9yZXNvbHYuY29uZi0iJHtkZXZ9Ii5zdiBd
-IDsgdGhlbgoJIyBJbXBvcnRhbnQgdGhhdCB3ZSBjb3B5IGluc3RlYWQgb2YgbW92ZSBpbmNhc2Ug
-cmVzb2x2LmNvbmYgaXMKCSMgYSBzeW1saW5rIGFuZCBub3QgYW4gYWN0dWFsIGZpbGUKCWNwIC9l
-dGMvcmVzb2x2LmNvbmYtIiR7ZGV2fSIuc3YgL2V0Yy9yZXNvbHYuY29uZgoJcm0gLWYgL2V0Yy9y
-ZXNvbHYuY29uZi0iJHtkZXZ9Ii5zdgpmaQoKIyBSZS1lbnRlciB0aGUgaW5pdCBzY3JpcHQgdG8g
-c3RhcnQgYW55IGRlcGVuZGFudCBzZXJ2aWNlcwppZiAvZXRjL2luaXQuZC8iJHtTVkNOQU1FfSIg
-LS1xdWlldCBzdGF0dXMgOyB0aGVuCglleHBvcnQgSU5fQkFDS0dST1VORD10cnVlCgkvZXRjL2lu
-aXQuZC8iJHtTVkNOQU1FfSIgLS1xdWlldCBzdG9wCmZpCgpleGl0IDAKCiMgdmltOiB0cz00IDoK
-
---MP_NH4nK4ornHUix+lYqcNSDuf
-Content-Type: application/x-shellscript; name=up.sh
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename=up.sh
-
-IyEvYmluL3NoCiMgQ29weXJpZ2h0IChjKSAyMDA2LTIwMDcgR2VudG9vIEZvdW5kYXRpb24KIyBE
-aXN0cmlidXRlZCB1bmRlciB0aGUgdGVybXMgb2YgdGhlIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNl
-bnNlIHYyCiMgQ29udHJpYnV0ZWQgYnkgUm95IE1hcnBsZXMgKHViZXJsb3JkQGdlbnRvby5vcmcp
-CgojIFNldHVwIG91ciByZXNvbHYuY29uZgojIFZpdGFsbHkgaW1wb3J0YW50IHRoYXQgd2UgdXNl
-IHRoZSBkb21haW4gZW50cnkgaW4gcmVzb2x2LmNvbmYgc28gd2UKIyBjYW4gc2V0dXAgdGhlIG5h
-bWVzZXJ2ZXJzIGFyZSBmb3IgdGhlIGRvbWFpbiBPTkxZIGluIHJlc29sdmNvbmYgaWYKIyB3ZSdy
-ZSB1c2luZyBhIGRlY2VudCBkbnMgY2FjaGUvZm9yd2FyZGVyIGxpa2UgZG5zbWFzcSBhbmQgTk9U
-IG5zY2QvbGliYy4KIyBuc2NkL2xpYmMgdXNlcnMgd2lsbCBnZXQgdGhlIFZQTiBuYW1lc2VydmVy
-cyBiZWZvcmUgdGhlaXIgb3RoZXIgb25lcwojIGFuZCB3aWxsIHVzZSB0aGUgZmlyc3Qgb25lIHRo
-YXQgcmVzcG9uZHMgLSBtYXliZSB0aGUgTEFOIG9uZXM/CiMgbm9uIHJlc29sdmNvbmYgdXNlcnMg
-anVzdCB0aGUgdGhlIFZQTiByZXNvbHYuY29uZgoKIyBGSVhNRTotIGlmIHdlIGhhdmUgPjEgZG9t
-YWluLCB0aGVuIHdlIGhhdmUgdG8gdXNlIHNlYXJjaCA6LwojIFdlIG5lZWQgdG8gYWRkIGEgZmxh
-ZyB0byByZXNvbHZjb25mIHRvIHNheQojICJ0aGVzZSBuYW1lc2VydmVycyBzaG91bGQgb25seSBi
-ZSB1c2VkIGZvciB0aGUgbGlzdGVkIHNlYXJjaCBkb21haW5zCiMgIGlmIG90aGVyIGdsb2JhbCBu
-YW1lc2VydmVycyBhcmUgcHJlc2VudCBvbiBvdGhlciBpbnRlcmZhY2VzIgojIFRoaXMgaG93ZXZl
-ciwgd2lsbCBicmVhayBjb21wYXRpYmlsaXR5IHdpdGggRGViaWFucyByZXNvbHZjb25mCiMgQSBw
-b3NzaWJsZSB3b3JrYXJvdW5kIHdvdWxkIGJlIHRvIGp1c3QgbGlzdCBtdWx0aXBsZSBkb21haW4g
-bGluZXMKIyBhbmQgdHJ5IGFuZCBsZXQgcmVzb2x2Y29uZiBoYW5kbGUgaXQKCk5TPQpET01BSU49
-ClNFQVJDSD0KaT0xCndoaWxlIHRydWUgOyBkbwoJZXZhbCBvcHQ9XCRmb3JlaWduX29wdGlvbl8k
-e2l9CglbIC16ICIke29wdH0iIF0gJiYgYnJlYWsKCWlmIFsgIiR7b3B0fSIgIT0gIiR7b3B0I2Ro
-Y3Atb3B0aW9uIERPTUFJTiAqfSIgXSA7IHRoZW4KCQlpZiBbIC16ICIke0RPTUFJTn0iIF0gOyB0
-aGVuCgkJCURPTUFJTj0iJHtvcHQjZGhjcC1vcHRpb24gRE9NQUlOICp9IgoJCWVsc2UKCQkJU0VB
-UkNIPSIke1NFQVJDSDorIH0ke29wdCNkaGNwLW9wdGlvbiBET01BSU4gKn0iCgkJZmkKCWVsaWYg
-WyAiJHtvcHR9IiAhPSAiJHtvcHQjZGhjcC1vcHRpb24gRE5TICp9IiBdIDsgdGhlbgoJCU5TPSIk
-e05TfW5hbWVzZXJ2ZXIgJHtvcHQjZGhjcC1vcHRpb24gRE5TICp9XG4iCglmaQoJaT0kKCgke2l9
-ICsgMSkpCmRvbmUKCmlmIFsgLW4gIiR7TlN9IiBdIDsgdGhlbgoJRE5TPSIjIEdlbmVyYXRlZCBi
-eSBvcGVudnBuIGZvciBpbnRlcmZhY2UgJHtkZXZ9XG4iCglpZiBbIC1uICIke1NFQVJDSH0iIF0g
-OyB0aGVuCgkJRE5TPSIke0ROU31zZWFyY2ggJHtET01BSU59ICR7U0VBUkNIfVxuIgoJZWxzZQoJ
-CUROUz0iJHtETlN9ZG9tYWluICR7RE9NQUlOfVxuIgoJZmkKCUROUz0iJHtETlN9JHtOU30iCglp
-ZiBbIC14IC9zYmluL3Jlc29sdmNvbmYgXSA7IHRoZW4KCQlwcmludGYgIiR7RE5TfSIgfCAvc2Jp
-bi9yZXNvbHZjb25mIC1hICIke2Rldn0iCgllbHNlCgkJIyBQcmVzZXJ2ZSB0aGUgZXhpc3Rpbmcg
-cmVzb2x2LmNvbmYKCQlpZiBbIC1lIC9ldGMvcmVzb2x2LmNvbmYgXSA7IHRoZW4KCQkJY3AgL2V0
-Yy9yZXNvbHYuY29uZiAvZXRjL3Jlc29sdi5jb25mLSIke2Rldn0iLnN2CgkJZmkKCQlwcmludGYg
-IiR7RE5TfSIgPiAvZXRjL3Jlc29sdi5jb25mCgkJY2htb2QgNjQ0IC9ldGMvcmVzb2x2LmNvbmYK
-CWZpCmZpCgojIEJlbG93IHNlY3Rpb24gaXMgR2VudG9vIHNwZWNpZmljCiMgUXVpY2sgc3VtbWFy
-eSAtIG91ciBpbml0IHNjcmlwdHMgYXJlIHJlLWVudHJhbnQgYW5kIHNldCB0aGUgU1ZDTkFNRSBl
-bnYgdmFyCiMgYXMgd2UgY291bGQgaGF2ZSA+MSBvcGVudnBuIHNlcnZpY2UKCiMgSWYgd2UgaGF2
-ZSBhIHNlcnZpY2Ugc3BlY2lmaWMgc2NyaXB0LCBydW4gdGhpcyBub3cKaWYgWyAteCAvZXRjL29w
-ZW52cG4vIiR7U1ZDTkFNRX0iLXVwLnNoIF0gOyB0aGVuCgkvZXRjL29wZW52cG4vIiR7U1ZDTkFN
-RX0iLXVwLnNoCmZpCgojIFJlLWVudGVyIHRoZSBpbml0IHNjcmlwdCB0byBzdGFydCBhbnkgZGVw
-ZW5kYW50IHNlcnZpY2VzCmlmICEgL2V0Yy9pbml0LmQvIiR7U1ZDTkFNRX0iIC0tcXVpZXQgc3Rh
-dHVzIDsgdGhlbgoJZXhwb3J0IElOX0JBQ0tHUk9VTkQ9dHJ1ZQoJL2V0Yy9pbml0LmQvJHtTVkNO
-QU1FfSAtLXF1aWV0IHN0YXJ0CmZpCgpleGl0IDAKCiMgdmltOiB0cz00IDoK
-
---MP_NH4nK4ornHUix+lYqcNSDuf--
+[1] http://bugs.gentoo.org/show_bug.cgi?id=3D183457
 
