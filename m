@@ -1,8 +1,9 @@
-Date: Fri, 29 Jun 2007 10:13:45 +0100
-From: Roy Marples <uberlord@...594...>
-Message-ID: <20070629101345.0f8beeba@...1035...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] IPv6 support
+Content-class: urn:content-classes:message
+MIME-Version: 1.0
+Date: Tue, 3 Jul 2007 12:59:27 -0400
+Message-ID: <C0170D0AF1277849A4B4518034F855DD0328177D@...916...>
+From: "Harris, Jeff" <JeffH@...925...>
+Subject: [Openvpn-devel] Multi Cache TTL Usage
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,23 +12,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-Hi List
+Does anyone know the effect of lowering the MULTI_CACHE_ROUTE_TTL
+constant in multi.h from 60 seconds to say 10?  Will it cause extra
+network traffic or anything if the routes are purged more often?
 
-The UDPv6-Patch from JuanJo Ciarlante no longer applies to the OpenVPN
-code. Marcel Pennewi=C3=9F has tidied it up and has created patches for 2.0
-and 2.1 [1]
+I am trying to work around an issue I'm seeing with spikes in the number
+of multi_instance objects.  I have 125 connected clients and after a
+number of restarts of all the clients, the number of multi_instance
+objects on my server spikes to over 600 leading to an eventual
+exhaustion of memory.  I am using keep-alive settings of 5 second pings
+and 30 seconds of inactivity.
 
-The mailing list blocks emails over 40k - the patch bigger. So incase
-it doesn't get through moderator approval, you can get it from the
-Gentoo bug report referenced below.
+Lowering the value to 30 seems to hold off the spikes for a bit.  With a
+value of 10 I have not seen the spikes.
 
-Thanks
+Any help would be appreciated.
 
-Roy Marples
-
-[1] http://bugs.gentoo.org/show_bug.cgi?id=3D183457
+Thanks,
+Jeff
 
