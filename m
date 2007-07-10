@@ -1,9 +1,10 @@
-Date: Tue, 10 Jul 2007 08:10:28 -0700 (PDT)
-From: tiger king <tigerking156@...109...>
+Message-ID: <70f41ba20707101219v306db6edk8762ec86996e743@...278...>
+Date: Tue, 10 Jul 2007 12:19:22 -0700
+From: snowcrash+openvpn <schneecrash+openvpn@...277...>
+Sender: schneecrash@...277...
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-214291100-1184080228=:40120"
-Message-ID: <826043.40120.qm@...1036...>
-Subject: [Openvpn-devel] functions remote in VPN
+Subject: [Openvpn-devel] socklen_t type error resulting from uint8_t
+	duplicate typedef on osx. help?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,30 +13,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
---0-214291100-1184080228=:40120
-Content-Type: text/plain; charset=ascii
+hi,
 
-I want to search one function in the source code of VPN which really do the command "--remote " but I just can't find.
+i'm building openvpn-2.1_rc4 on osx 10.4.10.
 
-Would you please help me a bit?
+currently,
 
-Thanks a lot :)
+ ./configure \
+ --prefix=/usr/local/openvpn \
+ --enable-pthread \
+ --disable-password-save \
+ --with-ssl-headers=/usr/local/ssl/include/openssl/ \
+ --with-ssl-lib=/usr/local/ssl/lib/ \
+ --with-lzo-headers=/usr/local/include/lzo \
+ --with-lzo-lib=/usr/local/lib \
+ --with-ifconfig-path=/sbin/ifconfig \
+ --with-route-path=/sbin/route
+
+fails at,
+
+...
+checking for socklen_t equivalent... configure: error: Cannot find a
+type to use in place of socklen_t
 
 
+poking around in
 
+	config.log
 
+socklen-related errors 1st appear,
 
- 
-____________________________________________________________________________________
-Don't pick lemons.
-See all the new 2007 cars at Yahoo! Autos.
-http://autos.yahoo.com/new_cars.html 
---0-214291100-1184080228=:40120
-Content-Type: text/html; charset=ascii
+ ...
+ configure:7574: result: 0
+ configure:7660: checking for socklen_t
+ configure:7692: gcc -c -g -O2  -I/usr/local/ssl/include/openssl/
+-I/usr/local/include/lzo -I. -no-cpp-precomp conftest.c >&5
+ In file included from /usr/include/sys/_endian.h:88,
+				  from /usr/include/ppc/endian.h:107,
+				  from /usr/include/machine/endian.h:30,
+				  from /usr/include/sys/types.h:75,
+				  from conftest.c:69:
+ /usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stdint.h:34: error:
+duplicate 'unsigned'
+ /usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stdint.h:34: error:
+two or more data types in declaration specifiers
+ /usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stdint.h:39: error:
+duplicate 'unsigned'
+ /usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stdint.h:39: error:
+both 'short' and 'char' in declaration specifiers
+ /usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stdint.h:44: error:
+duplicate 'unsigned'
+ In file included from conftest.c:69:
+ /usr/include/sys/types.h:120: error: two or more data types in
+declaration specifiers
+ /usr/include/sys/types.h:120: error: two or more data types in
+declaration specifiers
+ configure:7698: $? = 1
+ configure: failed program was:
+ | /* confdefs.h.  */
+ | #define PACKAGE_NAME "OpenVPN"
+ | #define PACKAGE_TARNAME "openvpn"
+ ...
 
-<html><head><style type="text/css"><!-- DIV {margin:0px;} --></style></head><body><div style="font-family:times new roman, new york, times, serif;font-size:12pt"><div>I want to search one function in the source code of VPN which really do the command "--remote " but I just can't find.<br><br>Would you please help me a bit?<br><br>Thanks a lot :)<br><br></div></div><br>
-      <hr size=1>Looking for a deal? <a href="http://us.rd.yahoo.com/evt=47094/*http://farechase.yahoo.com/;_ylc=X3oDMTFicDJoNDllBF9TAzk3NDA3NTg5BHBvcwMxMwRzZWMDZ3JvdXBzBHNsawNlbWFpbC1uY20-">Find great prices on flights and hotels</a> with Yahoo! FareChase.</body></html>
---0-214291100-1184080228=:40120--
+ which , looking @:
+
+  /usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stdint.h:34
+
+	...
+	#ifndef _UINT8_T
+	#define _UINT8_T
+34:	typedef unsigned char         uint8_t;
+	#endif /*_UINT8_T */
+	...
+
+doesn't, in fact, look like a prob with socklen_t ...
+
+any suggestions here?
+
+thanks!
 
