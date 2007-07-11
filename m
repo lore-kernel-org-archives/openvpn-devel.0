@@ -1,10 +1,10 @@
-Message-ID: <70f41ba20707101219v306db6edk8762ec86996e743@...278...>
-Date: Tue, 10 Jul 2007 12:19:22 -0700
-From: snowcrash+openvpn <schneecrash+openvpn@...277...>
-Sender: schneecrash@...277...
+From: Noam Rathaus <noamr@...117...>
+Date: Wed, 11 Jul 2007 12:31:33 +0300
+References: <826043.40120.qm@...1036...>
+In-Reply-To: <826043.40120.qm@...1036...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] socklen_t type error resulting from uint8_t
-	duplicate typedef on osx. help?
+Message-Id: <200707111231.33598.noamr@...117...>
+Subject: Re: [Openvpn-devel] functions remote in VPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,87 +13,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-hi,
+Hi,
 
-i'm building openvpn-2.1_rc4 on osx 10.4.10.
+(I am referring to --remote used to specify more than one remote host/port)
 
-currently,
+You need to look up references to remote_list, it is filled by code found i=
+n=20
+options.c and is handled by code found in socket.c
 
- ./configure \
- --prefix=/usr/local/openvpn \
- --enable-pthread \
- --disable-password-save \
- --with-ssl-headers=/usr/local/ssl/include/openssl/ \
- --with-ssl-lib=/usr/local/ssl/lib/ \
- --with-lzo-headers=/usr/local/include/lzo \
- --with-lzo-lib=/usr/local/lib \
- --with-ifconfig-path=/sbin/ifconfig \
- --with-route-path=/sbin/route
+Hope this helps.
 
-fails at,
+On Tuesday 10 July 2007 18:10:28 tiger king wrote:
+> I want to search one function in the source code of VPN which really do t=
+he
+> command "--remote " but I just can't find.
+>
+> Would you please help me a bit?
+>
+> Thanks a lot :)
+>
+>
+>
+>
+>
+>
+> _________________________________________________________________________=
+__
+>_________ Don't pick lemons.
+> See all the new 2007 cars at Yahoo! Autos.
+> http://autos.yahoo.com/new_cars.html
 
-...
-checking for socklen_t equivalent... configure: error: Cannot find a
-type to use in place of socklen_t
 
 
-poking around in
-
-	config.log
-
-socklen-related errors 1st appear,
-
- ...
- configure:7574: result: 0
- configure:7660: checking for socklen_t
- configure:7692: gcc -c -g -O2  -I/usr/local/ssl/include/openssl/
--I/usr/local/include/lzo -I. -no-cpp-precomp conftest.c >&5
- In file included from /usr/include/sys/_endian.h:88,
-				  from /usr/include/ppc/endian.h:107,
-				  from /usr/include/machine/endian.h:30,
-				  from /usr/include/sys/types.h:75,
-				  from conftest.c:69:
- /usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stdint.h:34: error:
-duplicate 'unsigned'
- /usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stdint.h:34: error:
-two or more data types in declaration specifiers
- /usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stdint.h:39: error:
-duplicate 'unsigned'
- /usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stdint.h:39: error:
-both 'short' and 'char' in declaration specifiers
- /usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stdint.h:44: error:
-duplicate 'unsigned'
- In file included from conftest.c:69:
- /usr/include/sys/types.h:120: error: two or more data types in
-declaration specifiers
- /usr/include/sys/types.h:120: error: two or more data types in
-declaration specifiers
- configure:7698: $? = 1
- configure: failed program was:
- | /* confdefs.h.  */
- | #define PACKAGE_NAME "OpenVPN"
- | #define PACKAGE_TARNAME "openvpn"
- ...
-
- which , looking @:
-
-  /usr/lib/gcc/powerpc-apple-darwin8/4.0.1/include/stdint.h:34
-
-	...
-	#ifndef _UINT8_T
-	#define _UINT8_T
-34:	typedef unsigned char         uint8_t;
-	#endif /*_UINT8_T */
-	...
-
-doesn't, in fact, look like a prob with socklen_t ...
-
-any suggestions here?
-
-thanks!
+--=20
+=C2=A0 Noam Rathaus
+=C2=A0 CTO
+=C2=A0 1616 Anderson Rd.
+=C2=A0 McLean, VA 22102
+=C2=A0 Tel: 703.286.7725 extension 105
+=C2=A0 Fax: 888.667.7740
+=C2=A0 noamr@...117...
+=C2=A0 http://www.beyondsecurity.com
 
