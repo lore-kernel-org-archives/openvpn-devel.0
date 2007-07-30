@@ -1,10 +1,10 @@
-Message-ID: <46A8C3D5.70307@...1000...>
-Date: Thu, 26 Jul 2007 17:55:01 +0200
-From: Peter Warasin <peter@...1000...>
+Date: Mon, 30 Jul 2007 11:10:48 +0100 (BST)
+From: altaf ahmed <altafahmed2k7@...293...>
 MIME-Version: 1.0
-References: <46A4E272.9030002@...1000...>
-In-Reply-To: <46A4E272.9030002@...1000...>
-Subject: Re: [Openvpn-devel] centralized filtering
+Content-Type: multipart/alternative; boundary="0-1807369872-1185790248=:21374"
+Content-Transfer-Encoding: 8bit
+Message-ID: <748934.21374.qm@...1041...>
+Subject: [Openvpn-devel] BSOD in windows vista
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,49 +13,23 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Peter Warasin <peter@...1000...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+
+--0-1807369872-1185790248=:21374
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+
+Hi can any one tell me why the problem of BSOD in vista after tap driver installation is due to.
+       
+---------------------------------
+ Get the freedom to save as many mails as you wish. Click here to know how.
+--0-1807369872-1185790248=:21374
+Content-Type: text/html; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+
+Hi can any one tell me why the problem of BSOD in vista after tap driver installation is due to.<p>&#32;
 
 
-hola
-
-Peter Warasin wrote:
-> > Is there a possibility to configure openvpn server in order to push to
-> > it's clients a routing constellation in a manner that every traffic from
-> > a vpn endpoint to another vpn endpoint must pass the tap device on the
-> > openvpn server?
-
-For whom it may concern: I have found a workaround for this problem.
-(maybe there is someone with the same problem)
-
-Use a bigger server-bridge subnet for server-bridge than the address
-pool you use for openvpn clients, like:
-
-server-bridge 10.0.0.1 255.255.255.0 10.0.0.129 10.0.0.254
-
-push a lesser subnet which fits the openvpn-pool to the clients:
-
-push "route 10.0.0.128/25"
-
-remove client-to-client
-
-
-What happens?
-The roadwarriors get the whole subnet for setting up their interface but
-then get a routing entry which direct traffic to the vpn_gateway for
-ip-addresses of the smaller subnet. each vpn endpoint is in the smaller
-subnet, so each connection will pass the vpn_gateway and thus also the
-servers tap device.
-
-peter
-
-
--- 
-:: e n d i a n
-:: open source - open minds
-
-:: peter warasin
-:: http://www.endian.com   :: peter@...1028...
+      <!--5--><hr size=1></hr> Get the freedom to save as many mails as you wish. <a href="http://in.rd.yahoo.com/tagline_mail_5/*http://help.yahoo.com/l/in/yahoo/mail/yahoomail/tools/tools-08.html/">Click here to know how.</a>
+--0-1807369872-1185790248=:21374--
 
