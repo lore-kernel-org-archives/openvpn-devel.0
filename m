@@ -1,10 +1,11 @@
-Date: Mon, 30 Jul 2007 11:10:48 +0100 (BST)
-From: altaf ahmed <altafahmed2k7@...293...>
+Message-ID: <46B72032.7050906@...453...>
+Date: Mon, 06 Aug 2007 13:20:50 +0000
+From: Erich Titl <erich.titl@...453...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-1807369872-1185790248=:21374"
-Content-Transfer-Encoding: 8bit
-Message-ID: <748934.21374.qm@...1041...>
-Subject: [Openvpn-devel] BSOD in windows vista
+References: <1128676652.31184.194.camel@...399...>
+	<Pine.LNX.4.58.0510070324570.32321@...41...>
+In-Reply-To: <Pine.LNX.4.58.0510070324570.32321@...41...>
+Subject: [Openvpn-devel] OpenVPN GUI
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,23 +14,21 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Cc: openvpn-devel@lists.sourceforge.net
 
---0-1807369872-1185790248=:21374
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Hi everybody
 
-Hi can any one tell me why the problem of BSOD in vista after tap driver installation is due to.
-       
----------------------------------
- Get the freedom to save as many mails as you wish. Click here to know how.
---0-1807369872-1185790248=:21374
-Content-Type: text/html; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+I used to tailor the 2.0.x OpenVPN GUI for Windows distribution for my
+installations. Mathias Sundman's distribution appears not to be up to
+date anymore, but the GUI showed up in the 2.1rc4.
 
-Hi can any one tell me why the problem of BSOD in vista after tap driver installation is due to.<p>&#32;
+Is this now the _official_ GUI distribution and will the installer
+source be kept on this base? I would like to be able to base my work on
+a stable thread.
 
+Thanks
 
-      <!--5--><hr size=1></hr> Get the freedom to save as many mails as you wish. <a href="http://in.rd.yahoo.com/tagline_mail_5/*http://help.yahoo.com/l/in/yahoo/mail/yahoomail/tools/tools-08.html/">Click here to know how.</a>
---0-1807369872-1185790248=:21374--
+Erich
 
