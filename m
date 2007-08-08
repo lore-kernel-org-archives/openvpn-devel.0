@@ -1,11 +1,8 @@
-Message-ID: <46B72032.7050906@...453...>
-Date: Mon, 06 Aug 2007 13:20:50 +0000
-From: Erich Titl <erich.titl@...453...>
+Message-ID: <2d460de70708081006h73d26086j585c97eca2bd0605@...278...>
+Date: Wed, 8 Aug 2007 19:06:53 +0200
+From: "Richard Hartmann" <richih.mailinglist@...277...>
 MIME-Version: 1.0
-References: <1128676652.31184.194.camel@...399...>
-	<Pine.LNX.4.58.0510070324570.32321@...41...>
-In-Reply-To: <Pine.LNX.4.58.0510070324570.32321@...41...>
-Subject: [Openvpn-devel] OpenVPN GUI
+Subject: [Openvpn-devel] Release of 2.1?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,19 +13,14 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Hi everybody
+Hi all,
 
-I used to tailor the 2.0.x OpenVPN GUI for Windows distribution for my
-installations. Mathias Sundman's distribution appears not to be up to
-date anymore, but the GUI showed up in the 2.1rc4.
+do you know if there is any ETA for the release of 2.1?
+Also, will there be another RC or will RC4 be the last?
 
-Is this now the _official_ GUI distribution and will the installer
-source be kept on this base? I would like to be able to base my work on
-a stable thread.
 
-Thanks
-
-Erich
+Richard
 
