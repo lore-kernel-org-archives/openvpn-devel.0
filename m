@@ -1,10 +1,9 @@
-From: Markus Feilner <lists@...646...>
-Date: Wed, 8 Aug 2007 20:41:15 +0200
-References: <2d460de70708081006h73d26086j585c97eca2bd0605@...278...>
-In-Reply-To: <2d460de70708081006h73d26086j585c97eca2bd0605@...278...>
+Sender: marko@...1042...
+Date: 09 Aug 2007 17:01:11 +0300
+Message-ID: <m3k5s4remw.fsf@...1043...>
 MIME-Version: 1.0
-Message-Id: <200708082041.16393.lists@...646...>
-Subject: Re: [Openvpn-devel] Release of 2.1?
+From: Marko Rauhamaa <marko@...1042...>
+Subject: [Openvpn-devel] Memory accumulation problem
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,50 +12,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Am Mittwoch 08 August 2007 19:06:53 schrieb Richard Hartmann:
-> Hi all,
->
-> do you know if there is any ETA for the release of 2.1?
-> Also, will there be another RC or will RC4 be the last?
->
->
-> Richard
->
-> -------------------------------------------------------------------------
-> This SF.net email is sponsored by: Splunk Inc.
-> Still grepping through log files to find problems?  Stop.
-> Now Search log events and configuration files using AJAX and a browser.
-> Download your FREE copy of Splunk now >>  http://get.splunk.com/
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
-Hello Richard,
-I have recently posted this question on the users list, but I have not 
-received an reply. Also, a PM sent to James last week is waiting for an 
-answer...
-Has some gov organization deported James? 
-:-)
+In openvpn-2.0.9 socket_connect() (socket.c), print_sockaddr()
+consumes memory without bounds if the server is permanently down or
+unreachable becauses gc_free() is not called from within the loop.
+
+Memory is consumed at 72 bytes every 5 seconds or 1.2 megabytes for each
+24 hours (plus malloc overhead). That's enough to bring my openwrt box
+to its knees within a week or so.
+
+Proposed solution (untested):
+
+       msg (D_LINK_ERRORS | M_ERRNO_SOCK,
+ 	   "TCP: connect to %s failed, will try again in %d seconds",
+ 	   print_sockaddr (remote, &gc),
+ 	   connect_retry_seconds);
++      gc_free (&gc);
++      gc = gc_new ();
+
+
+Marko
+
 -- 
-
-Best Regards - Mit freundlichen Gruessen
-Markus Feilner
-
--------------------------
-Feilner IT Linux & GIS
-Linux Solutions, Training, Seminare und Workshops - auch Inhouse
-Koetztingerstr 6c                93057 Regensburg
-fon regensburg                  +49 941 8107989
-mobil                           +49 170 3027092=20
-www: www.feilner-it.net mail: mfeilner@...646...
---------------------------------------
-My new book - Out now: http://www.packtpub.com/openvpn/book
-OPENVPN : Building and Integrating Virtual Private Networks
+Marko Rauhamaa      mailto:marko@...1042...     http://pacujo.net/marko/
 
