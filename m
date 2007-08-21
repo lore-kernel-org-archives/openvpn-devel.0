@@ -1,11 +1,10 @@
-Message-ID: <46CB124E.9050400@...41...>
-Date: Tue, 21 Aug 2007 10:26:54 -0600
+Message-ID: <46CB1563.2080706@...41...>
+Date: Tue, 21 Aug 2007 10:40:03 -0600
 From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-References: <f6l4sm$vdk$1@...165...>
-In-Reply-To: <f6l4sm$vdk$1@...165...>
-Subject: Re: [Openvpn-devel] build Openvpn 2.1RC4 on Windows failure (Repost,
- no answer in openvpn.user group.
+References: <C0170D0AF1277849A4B4518034F855DD0328177D@...916...>
+In-Reply-To: <C0170D0AF1277849A4B4518034F855DD0328177D@...916...>
+Subject: Re: [Openvpn-devel] Multi Cache TTL Usage
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,49 +15,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: John <jknappers-argentia@...160...>
+To: "Harris, Jeff" <JeffH@...925...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-John wrote:
-> Hi,
+Harris, Jeff wrote:
+> Does anyone know the effect of lowering the MULTI_CACHE_ROUTE_TTL
+> constant in multi.h from 60 seconds to say 10?  Will it cause extra
+> network traffic or anything if the routes are purged more often?
 >
-> I'm reposting this question in openvpn.devel because no one responded in 
-> openvpn.user to my question.
-> If the build procedure has changed between RC1 and RC4, can anybody explain 
-> how to build OpenVPN 2.1RC4 on Windows?
-> make -f makefile.w32 was the the way that worked until RC1...
+> I am trying to work around an issue I'm seeing with spikes in the number
+> of multi_instance objects.  I have 125 connected clients and after a
+> number of restarts of all the clients, the number of multi_instance
+> objects on my server spikes to over 600 leading to an eventual
+> exhaustion of memory.  I am using keep-alive settings of 5 second pings
+> and 30 seconds of inactivity.
 >
-> Thanx in advance,
-> John
+> Lowering the value to 30 seems to hold off the spikes for a bit.  With a
+> value of 10 I have not seen the spikes.
 >
-> I'm trying to build Openvpn-2.1RC4 on Windows and it failed.
->
-> C:\msys\1.0\src\openvpn-2.1_rc4>make -f makefile.w32
-> gcc -g -O2 -Wall -Wno-unused-function -Wno-unused-variable -mno-cygwin -I/c/msys
-> /1.0/src/openssl-0.9.7l/include -I/c/msys/1.0/src/lzo-2.02/include -c
-> base64.c -
-> o base64.o
-> In file included from base64.c:35:
-> config-win32.h:38:27: autodefs/defs.h: No such file or directory
-> make: *** [base64.o] Error 1
+> Any help would be appreciated.
 >
 >   
 
-[ more stuff deleted ]
-
-John,
-
-Yes, there have been some changes in the Windows build procedure for the 
-2.1 beta series. 
-
-The ./domake-win script is now used to build OpenVPN on Windows (in the 
-MinGW/MSYS environment).   This approach has a number of advantages, 
-including the ability to build a signed Windows installer from source in 
-a single step, and the consolidation of build-level configuration 
-parameters in a single file: install-win32/settings.in
-
-Changes such as these that are of interest to developers are always 
-documented first in the subversion commit logs (use "svn log" to see them).
+OpenVPN caches routes in a hash table for efficiency, so that it doesn't 
+need to iterate through the whole routing table in order to find a 
+match.  The problem appears to be that cache entries may prolong the 
+life of a marked-for-delete multi-instance object by holding references 
+to it until the cache entry expires.  So timing out the cached routes 
+earlier appears to be a good solution, and will not increase network 
+traffic.
 
 James
 
