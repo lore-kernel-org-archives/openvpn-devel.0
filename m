@@ -1,10 +1,10 @@
-Message-ID: <46CB16E4.30801@...41...>
-Date: Tue, 21 Aug 2007 10:46:28 -0600
+Message-ID: <46CB1C67.2080002@...41...>
+Date: Tue, 21 Aug 2007 11:09:59 -0600
 From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-References: <001501c7bf18$fb69e550$16ada8c0@...576...>
-In-Reply-To: <001501c7bf18$fb69e550$16ada8c0@...576...>
-Subject: Re: [Openvpn-devel] Building new TAP driver (tap0901) on windows
+References: <6c18a4f0705301137q3c63230en25dbd69f9b2f4061@...278...>
+In-Reply-To: <6c18a4f0705301137q3c63230en25dbd69f9b2f4061@...278...>
+Subject: Re: [Openvpn-devel] Possible bug in OpenVPN-2.0.9
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,34 +15,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Dave <dev@...575...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Bernd Bartmann <bernd.bartmann@...277...>
+Cc: Openvpn-devel@lists.sourceforge.net
 
-Dave wrote:
->> Hi,
->>
->>    Can anybody tell me the procedure of building tap driver 
->> on windows? I'm 
->> able to build tap0801 using WINDDK 3790, but tap0901 build is 
->> failing. It 
->> says autodefs/defs.h file is missing? The folder autodefs is 
->> not in the 
->> current directory. What should i do to get the defs.h header file?
->>     
-> ...
+Bernd Bartmann wrote:
+> Hi,
 >
-> That's not a DDK problem, but rather that file is generated when initially
-> configuring the code for make.  I can't remember just where, but I think
-> when you run the configure.ac.  The autodefs directory will be created, and
-> the defs.h will be in it (along with some other stuff).
+> I'm running Centos 5 32bit and installed openvpn-2.0.9-1.el5.rf from
+> Dag Wieers Repo. When OpenVPN is started during boot-up it just shows
+> an SElinux related error message and does not start. When I start
+> OpenVPN manually after
+> the system has come up completely it works fine. Please have a look at
+> the log extract at the end of this email for all SElinux related
+> messages.
+>
+> I already reported this problem to the Centos and SElinux mailing
+> lists. Daniel Walsh (SElinux guru) had the following suggestions:
 >
 >   
 
-See the ./domake-win script.  This script will autogenerate autodefs/defs.h.
+I am wondering why the SElinux warnings only occur when OpenVPN is 
+started at boot-up.  OpenVPN's behavior with respect to touching things 
+that might trigger SELinux errors shouldn't significantly change whether 
+or not it is started on boot-up or later.
 
-I'm currently using the Vista RC1 DDK (I think it's build 5600) to build 
-the TAP driver.  3790 had trouble building a TAP driver + tapinstall 
-that would work on Vista.
+It would be nice if SELinux would produce more useful debug information 
+such as stack trace (that could be gleaned by looking at the userspace 
+stack and debug info from gcc -g) or at least indicate if the problem is 
+in a shared object that's dynamically linked with OpenVPN at run time.  
+As it is, I'm not aware of any reason why OpenVPN would need stack 
+execution permission.
 
 James
 
