@@ -1,10 +1,7 @@
-From: Patrick Cervicek <patrick.openvpn@...1046...>
-Date: Sun, 02 Sep 2007 17:22:52 +0200
-Message-ID: <fbeke8$h83$1@...165...>
-Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------050308000009000704040909"
-Sender: news <news@...165...>
-Subject: [Openvpn-devel] [patch] Log serial number of a client certificate
+From: Maximilian Wilhelm <max@...1047...>
+Date: Mon,  3 Sep 2007 01:13:55 +0200
+Message-Id: <11887748431930-git-send-email-max@...1047...>
+Subject: [Openvpn-devel] WTMP support for OpenVPN 2.1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,51 +10,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------050308000009000704040909
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
 
-On July, I asked on the user-list how to obtain the certificate serial 
-number of an active client:
+Hi!
 
-http://thread.gmane.org/gmane.network.openvpn.user/19913
+This is an initial attempt to let OpenVPN 2.1 write a wtmp log of all
+connections including the username, it's VPN IP and the real remote IP
+the user connected from.
 
-just in case sombody needs it, you'll find a two-line-patch underneath. 
-I get now in my log:
-VERIFY OK: depth=0, serial=79, 
-emailAddress=pace/C=DE/ST=BW/L=Esslingen/O=Esslingen/OU=RZ/CN=OpenVPN2
+This provides an OpenVPN admin with a simple database of all connections
+of his VPN servers and the possibility to easily see if anyone is using
+the VPN server currently.
 
-It looks to work with openssl-issued-certificates, but shows always "-1" 
-  with MS-certificateservices-issued-certificates (at least at me). The 
-reason could be the strange serialnumber (e.g. 
-"25:87:30:51:00:03:00:00:1e:e5") given out by MS.
+It is possible to let multiple instances of OpenVPN on the same host use the
+same wtmp file by specifying different "server ids" which are a two digit 
+integer which will be used in the wtmp line string to distinguish between 
+vpn sessions.
 
-Patrick
+This implementation does work, but has some things which have to be done
+better:
 
---------------050308000009000704040909
-Content-Type: text/plain;
- name="openvpn_serial-log.diff"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="openvpn_serial-log.diff"
+  * There has to be used a unique session id per VPN session which does not
+    change between reconnecteds (currently the ssl session_id is used as
+    identifier)
 
---- ssl.c.orig  2007-09-02 16:42:32.000000000 +0200
-+++ ssl.c       2007-09-02 16:32:58.000000000 +0200
-@@ -753,8 +753,8 @@
-       if (!retval)
-        goto err;
-     }
--
--  msg (D_HANDSHAKE, "VERIFY OK: depth=%d, %s", ctx->error_depth, subject);
-+  long serial = ASN1_INTEGER_get (X509_get_serialNumber (ctx->current_cert));
-+  msg (D_HANDSHAKE, "VERIFY OK: depth=%d, serial=%ld, %s", ctx->error_depth, serial, subject);
+  * At the moment the uid/gid for the username/groupname config options
+    are looked up by hand in wtmp_init() as the context->c0 struct is not
+    yet available.
+    Maybe wtmp_init() could be called a bit later at a usefull place to
+    avoid this doulbe lookup.
 
-   session->verified = true;
-   return 1;                    /* Accept connection */
+These are the "known bugs" my implementation has, but which are still on my
+todo list (the second one is kind of WORKS_FOR_ME) :)
 
---------------050308000009000704040909--
+So if anyone has comments or ideas how to do things better, don't hasitate
+and let me know.
+
+I would very much like to get thos included in OpenVPN as it will help people
+to have an overview about the usage of the VPNs and was requested earlier.
+
+Ciao
+Max
 
 
