@@ -1,9 +1,10 @@
-Date: Tue, 28 Aug 2007 07:08:05 -0700 (PDT)
-From: tiger king <tigerking156@...109...>
-MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-1990800825-1188310085=:74853"
-Message-ID: <553675.74853.qm@...1039...>
-Subject: [Openvpn-devel] functions forwards between 2 cards  network
+From: Patrick Cervicek <patrick.openvpn@...1046...>
+Date: Sun, 02 Sep 2007 18:32:30 +0200
+Message-ID: <fbeogr$t62$1@...165...>
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="------------010800080800050104070807"
+Sender: news <news@...165...>
+Subject: [Openvpn-devel] [patch] Log serial number of a client certificate
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,49 +15,51 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
---0-1990800825-1188310085=:74853
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------010800080800050104070807
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hello,
+On July, I asked on the user-list how to obtain the certificate serial
+number of an active client:
+
+http://thread.gmane.org/gmane.network.openvpn.user/19913
+
+just in case sombody needs it, you'll find a two-line-patch underneath.
+I get now in my log:
+VERIFY OK: depth=0, serial=79,
+emailAddress=pace/C=DE/ST=BW/L=Esslingen/O=Esslingen/OU=RZ/CN=OpenVPN2
+
+It looks to work with openssl-issued-certificates, but shows always "-1"
+   with MS-certificateservices-issued-certificates (at least at me). The
+reason could be the strange serialnumber (e.g.
+"25:87:30:51:00:03:00:00:1e:e5") given out by MS.
+
+Patrick
 
 
+--------------010800080800050104070807
+Content-Type: text/plain;
+ name="openvpn_serial-log.diff"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="openvpn_serial-log.diff"
 
-Does anyone know which function do the forwarding packets between the card
-Tun/Tap and the card internet physic ?
+--- ssl.c.orig  2007-09-02 16:42:32.000000000 +0200
++++ ssl.c       2007-09-02 16:32:58.000000000 +0200
+@@ -753,8 +753,8 @@
+       if (!retval)
+        goto err;
+     }
+-
+-  msg (D_HANDSHAKE, "VERIFY OK: depth=%d, %s", ctx->error_depth, subject);
++  long serial = ASN1_INTEGER_get (X509_get_serialNumber (ctx->current_cert));
++  msg (D_HANDSHAKE, "VERIFY OK: depth=%d, serial=%ld, %s", ctx->error_depth, serial, subject);
+
+   session->verified = true;
+   return 1;                    /* Accept connection */
 
 
+--------------010800080800050104070807--
 
-Thank you very much
-
-
-
-=20=20=20=20=20=20=20
-___________________________________________________________________________=
-_________
-Yahoo! oneSearch: Finally, mobile search=20
-that gives answers, not web links.=20
-http://mobile.yahoo.com/mobileweb/onesearch?refer=3D1ONXIC=
-
---0-1990800825-1188310085=:74853
-Content-Type: text/html; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<html><head><style type=3D"text/css"><!-- DIV {margin:0px;} --></style></he=
-ad><body><div style=3D"font-family:times new roman, new york, times, serif;=
-font-size:12pt"><div><span style=3D"" lang=3D"EN-GB">Hello,<br>
-<br>
-Does anyone know which function do the forwarding packets between the card
-Tun/Tap and the card internet physic ?<br>
-<br>
-Thank you very much</span></div></div><br>
-      <hr size=3D1>Be a better Globetrotter. <a href=3D"http://us.rd.yahoo.=
-com/evt=3D48254/*http://answers.yahoo.com/dir/_ylc=3DX3oDMTI5MGx2aThyBF9TAz=
-IxMTU1MDAzNTIEX3MDMzk2NTQ1MTAzBHNlYwNCQUJwaWxsYXJfTklfMzYwBHNsawNQcm9kdWN0X=
-3F1ZXN0aW9uX3BhZ2U-?link=3Dlist&sid=3D396545469">Get better travel answers =
-</a>from someone who knows.<br>Yahoo! Answers - Check it out.
-
-</body></html>=
-
---0-1990800825-1188310085=:74853--
 
