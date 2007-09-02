@@ -1,8 +1,8 @@
 From: Patrick Cervicek <patrick.openvpn@...1046...>
-Date: Sun, 02 Sep 2007 18:32:30 +0200
-Message-ID: <fbeogr$t62$1@...165...>
+Date: Sun, 02 Sep 2007 17:22:52 +0200
+Message-ID: <fbeke8$h83$1@...165...>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------010800080800050104070807"
+Content-Type: multipart/mixed; boundary="------------050308000009000704040909"
 Sender: news <news@...165...>
 Subject: [Openvpn-devel] [patch] Log serial number of a client certificate
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,29 +16,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is a multi-part message in MIME format.
---------------010800080800050104070807
+--------------050308000009000704040909
 Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On July, I asked on the user-list how to obtain the certificate serial
+On July, I asked on the user-list how to obtain the certificate serial 
 number of an active client:
 
 http://thread.gmane.org/gmane.network.openvpn.user/19913
 
-just in case sombody needs it, you'll find a two-line-patch underneath.
+just in case sombody needs it, you'll find a two-line-patch underneath. 
 I get now in my log:
-VERIFY OK: depth=0, serial=79,
+VERIFY OK: depth=0, serial=79, 
 emailAddress=pace/C=DE/ST=BW/L=Esslingen/O=Esslingen/OU=RZ/CN=OpenVPN2
 
-It looks to work with openssl-issued-certificates, but shows always "-1"
-   with MS-certificateservices-issued-certificates (at least at me). The
-reason could be the strange serialnumber (e.g.
+It looks to work with openssl-issued-certificates, but shows always "-1" 
+  with MS-certificateservices-issued-certificates (at least at me). The 
+reason could be the strange serialnumber (e.g. 
 "25:87:30:51:00:03:00:00:1e:e5") given out by MS.
 
 Patrick
 
-
---------------010800080800050104070807
+--------------050308000009000704040909
 Content-Type: text/plain;
  name="openvpn_serial-log.diff"
 Content-Transfer-Encoding: 7bit
@@ -59,7 +58,6 @@ Content-Disposition: inline;
    session->verified = true;
    return 1;                    /* Accept connection */
 
-
---------------010800080800050104070807--
+--------------050308000009000704040909--
 
 
