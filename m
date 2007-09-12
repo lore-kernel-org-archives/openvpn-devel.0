@@ -1,10 +1,11 @@
-Message-ID: <2d460de70709111447s22da553bm5bedf43ff92a3609@...278...>
-Date: Tue, 11 Sep 2007 23:47:09 +0200
-From: "Richard Hartmann" <richih.mailinglist@...277...>
-In-Reply-To: <9e0cf0bf0709101323l568ec5e9ge28dcd0bec1ff437@...278...>
+Message-ID: <9e0cf0bf0709112048qec07ee9pf8c8d3af897349e8@...278...>
+Date: Wed, 12 Sep 2007 06:48:26 +0300
+From: "Alon Bar-Lev" <alon.barlev@...277...>
+In-Reply-To: <2d460de70709111447s22da553bm5bedf43ff92a3609@...278...>
 MIME-Version: 1.0
 References: <2d460de70709100322m6cdd770bh566d825af7a33c7c@...278...>
 	<9e0cf0bf0709101323l568ec5e9ge28dcd0bec1ff437@...278...>
+	<2d460de70709111447s22da553bm5bedf43ff92a3609@...278...>
 Subject: Re: [Openvpn-devel] Revisit of a possible compile-time enabled
 	pkcs11-pin option
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,29 +19,18 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-To: Alon Bar-Lev <alon.barlev@...277...>
+To: Richard Hartmann <richih.mailinglist@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On 10/09/2007, Alon Bar-Lev <alon.barlev@...277...> wrote:
+On 9/12/07, Richard Hartmann <richih.mailinglist@...277...> wrote:
+> would I want to do so even if I could. Still, I would want to ask you
+> _why_ you think this is a bad idea, especially in light of exactly the
+> same thing being available for the established certificate storage
+> system.
 
-> You can always provide your own management interface program that
-> supply static PIN. No need to change anything in OpenVPN.
+The compile time option was released before the management interface
+was introduced... I guess that if the management interface would have
+been available this feature would have never implemented as well.
 
-Yes, that is what I am doing at the moment. Still, I feel that it would be
-more reliable, less error prone and, yes, more secure to do it via config
-file.
-
-The argument that you could use the management interface holds true
-for the passphrase for normal certificates as well, still, after some
-discussion, the OpenVPN team decided to offer the option with the
-safety guard of it being a compile time option. I can, of course, not
-force anyone's hand and make them code or agree to anything, nor
-would I want to do so even if I could. Still, I would want to ask you
-_why_ you think this is a bad idea, especially in light of exactly the
-same thing being available for the established certificate storage
-system.
-
-
-Best regards,
-Richard
+Alon.
 
