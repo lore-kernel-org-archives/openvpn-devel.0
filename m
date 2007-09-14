@@ -1,10 +1,8 @@
-Message-ID: <35f70db10709130128x55c0f13agf43a6a17215cadcf@...278...>
-Date: Thu, 13 Sep 2007 10:28:38 +0200
-From: "Ross Cameron" <ross.cameron@...1049...>
-Sender: abalour@...277...
+Message-ID: <46E9F75C.1020409@...1050...>
+Date: Thu, 13 Sep 2007 19:52:12 -0700
+From: Jeff Wiegley <jeffw@...1050...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Additional feature
-Reply-To: ross.cameron@...1049...
+Subject: [Openvpn-devel] How does one use Tun/tap for raw frames???
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,50 +11,146 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Sorry for cross posting across the users and devel lists.
+I know this is off-topic, sorry. The email address for
+Max K. the creator of the tun/tap driver, simply bounces
+and I'm beating my head against the wall. Since OpenVPN
+uses tap devices in a raw state I hoped that maybe
+somebody here would be able to help.
 
-I'm thinking of adding a port knocking (and in time SPA - Single
-Packet Authentication) module to OpenVPN.
-      And before anyone asks,.... we're using port knocking as a thin
-layer to obscure the devices from automated script kiddy scans.
-      I am aware that it should not (and indeed is not) relied on as a
-security measure,... but it serves the purpose of making life a little
-harder for those without inside information to find the device/system
-service.
+I want a very simply program that opens a tap device
+and then displays all the Ethernet frames that come
+through it. Basically I want something that delivers
+Ethernet frames up to a userspace program.
 
-So far I have a VERY cludgy implementation that does what I need it to
-do in the lab,... but I'd like to build a proper module for this.
+Basically...
 
-What I need the module to do is as follows...
-================================
-Whenever the OpenVPN service wants to connect to a remote OpenVPN
-server installation it need to take the address or hostname of the
-device it wants to connect to,...
+# tunctl -u jeffw
+# ifconfig tap0 10.10.0.1 netmask 255.255.255.0
+$ ./tapwatcher tap0
 
-Parse that against a config file,... or config section of the current
-OpenVPN config file,... and collect the port knock sequence.
+Then from another window I want to be able to do
+"ping 10.10.0.1" and tapwatcher should spew the
+raw Ethernet frames that would be generated on
+tap0.
 
-Run the port knock sequence against the target host,... wait one (1)
-second to allow for the remote port opening,... and then run the
-standard OpenVPN protocol from there on.
-      The opened port is opened ONLY to the host/IP from which the
-knock came and also only for 15seconds (reconfigurable).
-      Thereafter the successfully initialized VPN traffic will be
-allowed through the ESTABLISHED rules of the firewall.
+To that end I have written the program appended
+here but it doesn't do anything. It starts up, it
+reports it opened the tap and I get a decent
+file descriptor value but the select hangs.
+there is never anything present to read.
+The weird thing that does happen is the pings are
+responded to! Shouldn't the kernel be simply passing
+the frames on to my tapwatcher program and not
+processing them itself??? I can even SSH to the
+stupid tap0 and I get logged into localhost.
+Why is the kernel attached to tap0 and not my
+tapwatcher program?
 
-This should work for multiple upstream servers and each port knock
-should be uniquely configurable per upstream server.
+Am I missing something fundamental? I would be happy
+to contribute my result back to the kernel sources
+to replace/augment the tuntap.txt Documentation that
+is weak and doesn't really give a new tun/tap user
+what he needs to get something working. (the examples
+in vtun are also both broken and don't compile/run
+on my 64-bit machine.)
 
-And the port knock should be run regardless of the reason for the
-tunnel being brought down,... and it must be run whenever OpenVPN
-tries to recover from a stale or locked up tunnel as well.
+Thanks, here's the program I wrote.
 
-Any advice??? Anyone want to work on a project like this???
+- Jeff
+-------------------------------------------------------
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
-Any and all assistance more than gratefully accepted.
+#include <string.h>
+
+#include <sys/ioctl.h>
+#include <net/if.h>
+#include <netinet/if_ether.h>
+#include <linux/if_tun.h>
+
+#include <errno.h>
+#include <signal.h>
+
+#include <sys/select.h>
+
+int tun_alloc(char *dev)
+{
+  struct ifreq ifr;
+  int result = -1;
+  int err;
+
+  if( (result = open("/dev/net/tun", O_RDWR)) >= 0 )
+    return result;
+
+  memset(&ifr, 0, sizeof(ifr));
+
+  ifr.ifr_flags = IFF_TAP;
+  if( *dev )
+    strncpy(ifr.ifr_name, dev, IFNAMSIZ);
+
+  if( (err = ioctl(fd, TUNSETIFF, (void *) &ifr)) < 0 )
+    {
+      close(result);
+      return err;
+    }
+
+  strcpy(dev, ifr.ifr_name);
+
+  return result;
+}
+
+int continue_running;
+
+void handler(int num, siginfo_t *info, void *context)
+{
+  continue_running = 0;
+}
+
+int main(int argc, char *argv[])
+{
+  continue_running = 0;
+
+  struct sigaction action;
+
+  action.sa_sigaction = handler;
+  sigemptyset (&action.sa_mask);
+  action.sa_flags = SA_SIGINFO;
+
+  sigaction(SIGINT, &action, NULL);
+
+  char name[128];
+  strcpy(name,argv[1]);
+  int tap = tun_alloc(name);
+
+  if (tap < 0)
+    perror("TAP failed: ");
+  else
+    {
+      continue_running = 1;
+      fprintf(stderr,"tap = %d, name = \"%s\"\n",tap,name);
+      while (continue_running)
+	{
+	  fd_set watch;
+	  FD_ZERO(&watch);
+	  FD_SET(tap,&watch);
+	  errno = 0;
+	  select(tap+1,&watch, NULL, NULL, NULL);
+	  fprintf(stderr,"ready\n");
+	  if (errno && (errno != EINTR))
+	    break;
+	}
+      close(tap);
+    }
+}
+-------------------------------------------------------------
+
+-- 
+Jeff Wiegley, PhD
+Cyte.Com, LLC
 
