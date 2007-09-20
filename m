@@ -1,9 +1,11 @@
-From: Arash Yadegarnia <arash@...1051...>
-In-Reply-To: <46E9F75C.1020409@...1050...>
+Resent-To: openvpn-devel@lists.sourceforge.net
+Resent-Message-ID: <200709212112.46788.news@...165...>
+From: Timothy Baldwin <T.E.Baldwin99@...1053...>
+Date: Thu, 20 Sep 2007 22:13:15 +0100
+Message-ID: <fcunpb$alf$1@...165...>
 References: <46E9F75C.1020409@...1050...>
-Date: Fri, 14 Sep 2007 16:21:50 +0330
-Message-Id: <1189774310.5970.14.camel@...1052...>
 Mime-Version: 1.0
+Sender: news <news@...165...>
 Subject: Re: [Openvpn-devel] How does one use Tun/tap for raw frames???
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,40 +15,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi Jeff,
+<posted & mailed>
 
-Last year, I had exactly the same situation. (every single bit of it!).
-I'd almost tried everywhere, TUN/TAP Author (Maxim K.), VTun mailing
-list and also here, OpenVPN-devel list, But no chance. :(
-
-In my case, this problem wasn't vital and I could carry on without
-having it solved, But I still have no idea why in the earth those ping
-requests should be replied to, while my select() even doesn't know about
-it!
-This time, I hope we can find a proper answer here and sorry for a
-useless reply. :)
-
-Regards,
-Arash
+In message <46E9F75C.1020409@...1050...>, Jeff Wiegley <jeffw@...1050...> wrote:
 
 
-On Thu, 2007-09-13 at 19:52 -0700, Jeff Wiegley wrote:
-> I know this is off-topic, sorry. The email address for
-> Max K. the creator of the tun/tap driver, simply bounces
-> and I'm beating my head against the wall. Since OpenVPN
-> uses tap devices in a raw state I hoped that maybe
-> somebody here would be able to help.
-Yeah, That address is abandoned for years!
-> 
-> I want a very simply program that opens a tap device
-> and then displays all the Ethernet frames that come
-> through it. Basically I want something that delivers
-> Ethernet frames up to a userspace program.
-> 
 > Basically...
 > 
 > # tunctl -u jeffw
@@ -57,119 +34,24 @@ Yeah, That address is abandoned for years!
 > "ping 10.10.0.1" and tapwatcher should spew the
 > raw Ethernet frames that would be generated on
 > tap0.
-> 
-> To that end I have written the program appended
-> here but it doesn't do anything. It starts up, it
-> reports it opened the tap and I get a decent
-> file descriptor value but the select hangs.
-> there is never anything present to read.
-> The weird thing that does happen is the pings are
-> responded to! Shouldn't the kernel be simply passing
-> the frames on to my tapwatcher program and not
-> processing them itself??? I can even SSH to the
-> stupid tap0 and I get logged into localhost.
-> Why is the kernel attached to tap0 and not my
-> tapwatcher program?
-> 
-> Am I missing something fundamental? I would be happy
-> to contribute my result back to the kernel sources
-> to replace/augment the tuntap.txt Documentation that
-> is weak and doesn't really give a new tun/tap user
-> what he needs to get something working. (the examples
-> in vtun are also both broken and don't compile/run
-> on my 64-bit machine.)
-> 
-> Thanks, here's the program I wrote.
-> 
-> - Jeff
-> -------------------------------------------------------
-> #include <stdio.h>
-> #include <sys/types.h>
-> #include <sys/stat.h>
-> #include <fcntl.h>
-> 
-> #include <string.h>
-> 
-> #include <sys/ioctl.h>
-> #include <net/if.h>
-> #include <netinet/if_ether.h>
-> #include <linux/if_tun.h>
-> 
-> #include <errno.h>
-> #include <signal.h>
-> 
-> #include <sys/select.h>
-> 
-> int tun_alloc(char *dev)
-> {
->   struct ifreq ifr;
->   int result = -1;
->   int err;
-> 
->   if( (result = open("/dev/net/tun", O_RDWR)) >= 0 )
->     return result;
-> 
->   memset(&ifr, 0, sizeof(ifr));
-> 
->   ifr.ifr_flags = IFF_TAP;
->   if( *dev )
->     strncpy(ifr.ifr_name, dev, IFNAMSIZ);
-> 
->   if( (err = ioctl(fd, TUNSETIFF, (void *) &ifr)) < 0 )
->     {
->       close(result);
->       return err;
->     }
-> 
->   strcpy(dev, ifr.ifr_name);
-> 
->   return result;
-> }
-> 
-> int continue_running;
-> 
-> void handler(int num, siginfo_t *info, void *context)
-> {
->   continue_running = 0;
-> }
-> 
-> int main(int argc, char *argv[])
-> {
->   continue_running = 0;
-> 
->   struct sigaction action;
-> 
->   action.sa_sigaction = handler;
->   sigemptyset (&action.sa_mask);
->   action.sa_flags = SA_SIGINFO;
-> 
->   sigaction(SIGINT, &action, NULL);
-> 
->   char name[128];
->   strcpy(name,argv[1]);
->   int tap = tun_alloc(name);
-> 
->   if (tap < 0)
->     perror("TAP failed: ");
->   else
->     {
->       continue_running = 1;
->       fprintf(stderr,"tap = %d, name = \"%s\"\n",tap,name);
->       while (continue_running)
-> 	{
-> 	  fd_set watch;
-> 	  FD_ZERO(&watch);
-> 	  FD_SET(tap,&watch);
-> 	  errno = 0;
-> 	  select(tap+1,&watch, NULL, NULL, NULL);
-> 	  fprintf(stderr,"ready\n");
-> 	  if (errno && (errno != EINTR))
-> 	    break;
-> 	}
->       close(tap);
->     }
-> }
-> -------------------------------------------------------------
-> 
+
+No, that won't work as 10.10.0.1 is a local IP address. Try pinging
+10.10.0.2, your program should then receive some ARP packets.
+ 
+> Am I missing something fundamental?
+
+LOL
+
+The address of an interface is an address of the host which the interface
+belongs to, and hosts process traffic addressed to them.
+
+Jeff Wiegley, I suggest you forward this message to jeffw@...1050... so that
+he can read it.
+
+
+-- 
+OpenPGP key fingerprint: D0A6 F403 9745 CED4 6B3B  94CC 8D74 8FC9 9F7F CFE4
+
+
 
 
