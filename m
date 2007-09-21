@@ -1,11 +1,7 @@
-Resent-To: openvpn-devel@lists.sourceforge.net
-Resent-Message-ID: <200709212112.46788.news@...165...>
+MIME-Version: 1.0
+Date: Fri, 21 Sep 2007 21:21:16 +0100
+Message-Id: <200709212121.16296.T.E.Baldwin99@...1053...>
 From: Timothy Baldwin <T.E.Baldwin99@...1053...>
-Date: Thu, 20 Sep 2007 22:13:15 +0100
-Message-ID: <fcunpb$alf$1@...165...>
-References: <46E9F75C.1020409@...1050...>
-Mime-Version: 1.0
-Sender: news <news@...165...>
 Subject: Re: [Openvpn-devel] How does one use Tun/tap for raw frames???
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,8 +11,10 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
 <posted & mailed>
@@ -47,11 +45,6 @@ belongs to, and hosts process traffic addressed to them.
 
 Jeff Wiegley, I suggest you forward this message to jeffw@...1050... so that
 he can read it.
-
-
--- 
-OpenPGP key fingerprint: D0A6 F403 9745 CED4 6B3B  94CC 8D74 8FC9 9F7F CFE4
-
 
 
 
