@@ -1,10 +1,12 @@
-Content-class: urn:content-classes:message
+Message-ID: <46FBA4F1.4040809@...334...>
+Date: Thu, 27 Sep 2007 15:41:21 +0300
+From: Faidon Liambotis <paravoid@...334...>
 MIME-Version: 1.0
-Date: Wed, 26 Sep 2007 14:59:03 -0400
-Message-ID: <DADDB5EF81658E429476B192618805675B45@...1055...>
-From: "Jacob Wilkins" <jwilkins@...1054...>
-Subject: [Openvpn-devel] Feature Request: OpenVPN support for fips 140-2
-	validated OpenSSL.
+References: <20070922172545.GA6614@...997...>	<9e0cf0bf0709221104s79c10d18x426d8b29351b7720@...278...>	<46F5630E.3000208@...334...>	<9e0cf0bf0709221206s41b73819mc864b81217d822b8@...278...>	<46F56B70.30009@...334...>	<9e0cf0bf0709221226t671805a5kc29e4e04a49e6be@...278...>
+	<20070923081720.GA14627@...997...>
+In-Reply-To: <20070923081720.GA14627@...997...>
+Subject: Re: [Openvpn-devel] [PATCH v4] Use CryptoAPI CA store (was Re:
+ [PATCH v3] Use CryptoAPI CA store)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,30 +15,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Howdy,
+Faidon Liambotis wrote:
+> Alon Bar-Lev wrote:
+>> You need to use both, one for create the chain and the other to verify
+>> that it meets with system CTL for SSL.
+> Seems that you are right. Below you will find -v4 of the patch that does
+> that.
+> 
+> Also, my previous version didn't actually check for revocations,
+> contrary to what I documented.
+> I added CERT_CHAIN_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT to the dwFlags of
+> CertGetCertificateChain.
+> 
+> Let me know what you think.
+Alon, ping?
 
-OpenSSL has been FIPS 140-2 validated for a few months now.
+I'd really like to have this patch merged this time.
 
-The "fips mode" within OpenSSL is not automatic, and requires some
-invocation from within the calling app.
+If you have any more comments or objections, just say so so I can fix them.
 
-See here for details:
-
-http://www.openssl.org/docs/fips/UserGuide-1.1.1.pdf
-
-Running in this mode disables all ciphers besides AES and 3DES.
-
-Are these features feasible for OpenVPN? If so, our company would like
-to see support added, and could be willing to fund the development. If
-anyone is interested in a contract for this project, please contact me
-directly.
+If you don't, just say so, so it can get merged.
 
 Thanks,
-
-Jacob Wilkins, CISSP
-Appriss, Inc
+Faidon
 
