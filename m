@@ -1,8 +1,8 @@
-Message-ID: <3518.69.149.153.97.1191639089.squirrel@...1056...>
-Date: Fri, 5 Oct 2007 21:51:29 -0500 (CDT)
-From: "Steve Rector" <srector@...1056...>
+Message-ID: <470E550C.5090407@...1057...>
+Date: Thu, 11 Oct 2007 09:53:32 -0700
+From: matthew zeier <mrz@...1057...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN and OpenSSL FIPS
+Subject: [Openvpn-devel] openvpn & OSX 10.5 /dev/tun support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,18 +11,24 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi:
 
-I managed to compile openvpn with openssl-0.9.7m using the fips 140-2
-validated module. Right now it works, but I'm working on cleaning things
-up a bit and doing additional testing. Once I get the changes I'm working
-on finished I'll post more info.
+Anyone have openvpn working on OSX 10.5 yet?  I can't seem to find a 
+/dev/tun driver that won't seg fault on 10.5.
 
-Steve
+I'm feeling a little desperate and don't want to have to look at 
+delaying 10.5 upgrades (who can control endusers?) or deploying 
+something as wacked as PPTP.
+
+I'm also soliciting help to get it working and can offer resources to 
+that end.
+
+- mz
+
 -- 
+matthew zeier | Network Engineer | Mozilla Corp. | (650)903-0800 x219
 
 
