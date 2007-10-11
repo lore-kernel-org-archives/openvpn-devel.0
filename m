@@ -1,8 +1,11 @@
-Message-ID: <470E550C.5090407@...1057...>
-Date: Thu, 11 Oct 2007 09:53:32 -0700
-From: matthew zeier <mrz@...1057...>
+Date: Fri, 12 Oct 2007 01:31:58 +0200
+From: Maximilian Wilhelm <max@...1047...>
+Message-ID: <20071011233158.GC1416@...1048...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] openvpn & OSX 10.5 /dev/tun support
+Content-Type: multipart/mixed; boundary="FCuugMFkClbJLl1L"
+Content-Disposition: inline
+Subject: [Openvpn-devel] [Patch] Fix Null-Pointer bug in init_ssl() when no
+	'--ca' is set but '--capath'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,24 +14,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
+--FCuugMFkClbJLl1L
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 
-Anyone have openvpn working on OSX 10.5 yet?  I can't seem to find a 
-/dev/tun driver that won't seg fault on 10.5.
+Hi!
 
-I'm feeling a little desperate and don't want to have to look at 
-delaying 10.5 upgrades (who can control endusers?) or deploying 
-something as wacked as PPTP.
+This little patch fixes a silly bug in init_ssl() in ssl.c where
+options->ca_file is accessed without prior check if it's not NULL.
 
-I'm also soliciting help to get it working and can offer resources to 
-that end.
+The bug was introduced in revision 784.
 
-- mz
-
+Ciao
+Max
 -- 
-matthew zeier | Network Engineer | Mozilla Corp. | (650)903-0800 x219
+	Follow the white penguin.
 
+--FCuugMFkClbJLl1L
+Content-Type: text/x-diff; charset=utf-8
+Content-Disposition: attachment;
+	filename="0001-Fixed-NULL-pointer-bug-in-init_ssl.patch"
+
+diff --git a/ssl.c b/ssl.c
+index 85e9c6f..868edc2 100644
+--- a/ssl.c
++++ b/ssl.c
+@@ -1228,7 +1228,7 @@ init_ssl (const struct options *options)
+       int status;
+ 
+ #if ENABLE_INLINE_FILES
+-      if (!strcmp (options->ca_file, INLINE_FILE_TAG) && options->ca_file_inline)
++      if (options->ca_file && !strcmp (options->ca_file, INLINE_FILE_TAG) && options->ca_file_inline)
+ 	{
+ 	  status = use_inline_load_verify_locations (ctx, options->ca_file_inline);
+ 	}
+
+--FCuugMFkClbJLl1L--
 
