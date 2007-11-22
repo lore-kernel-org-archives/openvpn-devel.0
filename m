@@ -1,14 +1,10 @@
-Message-ID: <93661e2e0711040332x31c8add2g6ed8d6ce285b470b@...278...>
-Date: Sun, 4 Nov 2007 16:32:55 +0500
-From: "Kate Kretz" <kate.kretz@...277...>
-In-Reply-To: <20071101104459.GA4699@...1017...>
+Date: Thu, 22 Nov 2007 15:21:12 +0300
+From: Pavel Shramov <shramov@...1064...>
+Message-ID: <20071122122112.GA32315@...1063...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_19279_33119346.1194175975794"
-References: <20071101101408.GA3572@...1017...>
-	<469588034.20071101133206@...1022...>
-	<20071101104459.GA4699@...1017...>
-Subject: Re: [Openvpn-devel] DHCP Renew failing on Windows
+Content-Type: multipart/mixed; boundary="pf9I7BMVVzbSWLtt"
+Content-Disposition: inline
+Subject: [Openvpn-devel] incorrect common name extraction
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,73 +15,125 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
-------=_Part_19279_33119346.1194175975794
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+--pf9I7BMVVzbSWLtt
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-probably You'll want to disable auto configuring NIC with 169.254.X.X
+Openvpn extracts only part of CN before '/'. For example from
+"/O=MSU/O=Grid/OU=IMEC/OU=ca.grid.pp.ru/CN=host/vpn.grid.pp.ru"
+openvpn extracts "host" (correct is "host/vpn.grid.pp.ru"). 
+So all hosts get one CN "host" and client-connect script get incorrect
+info.
 
-read about IPAutoconfigurationEnabled at
-http://support.microsoft.com/kb/220874
+DN's of such kind are used in Globus.
 
+Fix (rewriting extract_x509_field to use openssl library functions) is
+attached.
+Second patch adds '/' to the list of allowed chars in CN so it won't be
+remapped.
 
-On 11/1/07, Michele Baldessari <michele-lists@...1016...> wrote:
->
-> Hi Alexey,
->
-> * Alexey Vdovin (admin@...1022...) wrote:
-> > Most probably it happens when DHCP lase is expires and client trys
-> > renew DHCP address.
-> >
-> > Check DHCP lease lifetime, try decrease it to reproduce the issue.
->
-> I've sniffed the network (although not in a problematic case) and I
-> sometimes I'm able to see the DHCP NACK message, but then the client
-> correctly asks for the new lease and receives the subsequent ACK.
->
-> I'll toy with the lease time option (the default lease time is a year
-> per default). I'll see if that helps.
->
-> thanks,
-> Michele
->
-> -----BEGIN PGP SIGNATURE-----
-> Version: GnuPG v1.4.6 (GNU/Linux)
->
-> iD8DBQFHKa4rofbulCQLTD0RAjudAJ0XrIVBzwcJjABts8XiesspHZDU2QCbBQTP
-> u1+cNAf3p2Gffhlkbk6L8OU=
-> =Nhfr
-> -----END PGP SIGNATURE-----
->
-> -------------------------------------------------------------------------
-> This SF.net email is sponsored by: Splunk Inc.
-> Still grepping through log files to find problems?  Stop.
-> Now Search log events and configuration files using AJAX and a browser.
-> Download your FREE copy of Splunk now >> http://get.splunk.com/
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
->
+                                        Pavel
 
-------=_Part_19279_33119346.1194175975794
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+--pf9I7BMVVzbSWLtt
+Content-Type: text/x-diff; charset=us-ascii
+Content-Disposition: attachment; filename="allow-slash.patch"
 
-<div>probably You&#39;ll want to disable auto configuring NIC with 169.254.X.X</div>
-<div>&nbsp;</div>
-<div>read about IPAutoconfigurationEnabled at <a href="http://support.microsoft.com/kb/220874">http://support.microsoft.com/kb/220874</a><br><br>&nbsp;</div>
-<div><span class="gmail_quote">On 11/1/07, <b class="gmail_sendername">Michele Baldessari</b> &lt;<a href="mailto:michele-lists@...1016...">michele-lists@...1016...</a>&gt; wrote:</span>
-<blockquote class="gmail_quote" style="PADDING-LEFT: 1ex; MARGIN: 0px 0px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">Hi Alexey,<br><br>* Alexey Vdovin (<a href="mailto:admin@...1022...">admin@...1022...</a>) wrote:<br>&gt; Most probably it happens when DHCP lase is expires and client trys
-<br>&gt; renew DHCP address.<br>&gt;<br>&gt; Check DHCP lease lifetime, try decrease it to reproduce the issue.<br><br>I&#39;ve sniffed the network (although not in a problematic case) and I<br>sometimes I&#39;m able to see the DHCP NACK message, but then the client
-<br>correctly asks for the new lease and receives the subsequent ACK.<br><br>I&#39;ll toy with the lease time option (the default lease time is a year<br>per default). I&#39;ll see if that helps.<br><br>thanks,<br>Michele
-<br><br>-----BEGIN PGP SIGNATURE-----<br>Version: GnuPG v1.4.6 (GNU/Linux)<br><br>iD8DBQFHKa4rofbulCQLTD0RAjudAJ0XrIVBzwcJjABts8XiesspHZDU2QCbBQTP<br>u1+cNAf3p2Gffhlkbk6L8OU=<br>=Nhfr<br>-----END PGP SIGNATURE-----<br><br>
--------------------------------------------------------------------------<br>This SF.net email is sponsored by: Splunk Inc.<br>Still grepping through log files to find problems?&nbsp;&nbsp;Stop.<br>Now Search log events and configuration files using AJAX and a browser.
-<br>Download your FREE copy of Splunk now &gt;&gt; <a href="http://get.splunk.com/">http://get.splunk.com/</a><br>_______________________________________________<br>Openvpn-devel mailing list<br><a href="mailto:Openvpn-devel@lists.sourceforge.net">
-Openvpn-devel@lists.sourceforge.net</a><br><a href="https://lists.sourceforge.net/lists/listinfo/openvpn-devel">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a><br><br></blockquote></div><br>
+commit c96f2538fb506f6c531628ca4f48c3eb33a34765
+Author: Pavel Shramov <psha@...1063...>
+Date:   Wed Nov 21 17:40:32 2007 +0300
 
-------=_Part_19279_33119346.1194175975794--
+    allow / in CN
+
+diff --git a/ssl.h b/ssl.h
+index e07f19a..4319a81 100644
+--- a/ssl.h
++++ b/ssl.h
+@@ -282,7 +282,7 @@
+ 
+ /* Legal characters in an X509 or common name */
+ #define X509_NAME_CHAR_CLASS   (CC_ALNUM|CC_UNDERBAR|CC_DASH|CC_DOT|CC_AT|CC_COLON|CC_SLASH|CC_EQUAL)
+-#define COMMON_NAME_CHAR_CLASS (CC_ALNUM|CC_UNDERBAR|CC_DASH|CC_DOT|CC_AT)
++#define COMMON_NAME_CHAR_CLASS (CC_ALNUM|CC_UNDERBAR|CC_DASH|CC_DOT|CC_AT|CC_SLASH)
+ 
+ /* Maximum length of OCC options string passed as part of auth handshake */
+ #define TLS_OPTIONS_LEN 512
+
+--pf9I7BMVVzbSWLtt
+Content-Type: text/x-diff; charset=us-ascii
+Content-Disposition: attachment; filename="fix-cn.patch"
+
+commit c332964d29fb428c01dc691ececc7d80cce07dbd
+Author: Pavel Shramov <psha@...1063...>
+Date:   Wed Nov 21 17:40:21 2007 +0300
+
+    fix x509 name fields extraction function
+
+diff --git a/ssl.c b/ssl.c
+index 9cde47d..cc5d8d3 100644
+--- a/ssl.c
++++ b/ssl.c
+@@ -370,6 +370,51 @@ extract_x509_field (const char *x509, const char *field_name, char *out, int siz
+     }
+ }
+ 
++/*
++ * Extract a field from an X509 subject name.
++ *
++ * Example:
++ *
++ * /C=US/ST=CO/L=Denver/O=ORG/CN=First-CN/CN=Test-CA/Email=jim@...41...
++ *
++ * The common name is 'Test-CA'
++ */
++static void
++extract_x509_field_ssl (X509_NAME *x509, const char *field_name, char *out, int size)
++{
++  int lastpos = -1;
++  int tmp = -1;
++  X509_NAME_ENTRY *x509ne = 0;
++  ASN1_STRING *asn1 = 0;
++  unsigned char *buf = 0;
++  int nid = OBJ_txt2nid(field_name);
++
++  ASSERT (size > 0);
++  *out = '\0';
++  do {
++    lastpos = tmp;
++    tmp = X509_NAME_get_index_by_NID(x509, nid, lastpos);
++  } while (tmp > 0);
++
++  /* Nothing found */
++  if (lastpos == -1)
++    return;
++
++  x509ne = X509_NAME_get_entry(x509, lastpos);
++  if (!x509ne)
++    return;
++
++  asn1 = X509_NAME_ENTRY_get_data(x509ne);
++  if (!asn1)
++    return;
++  tmp = ASN1_STRING_to_UTF8(&buf, asn1);
++  if (tmp <= 0)
++    return;
++
++  strncpynt(out, buf, size);
++  OPENSSL_free(buf);
++}
++
+ static void
+ setenv_untrusted (struct tls_session *session)
+ {
+@@ -445,7 +490,8 @@ verify_callback (int preverify_ok, X509_STORE_CTX * ctx)
+   string_mod (subject, X509_NAME_CHAR_CLASS, 0, '_');
+ 
+   /* extract the common name */
+-  extract_x509_field (subject, "CN", common_name, TLS_CN_LEN);
++  extract_x509_field_ssl (X509_get_subject_name (ctx->current_cert), "CN", common_name, TLS_CN_LEN);
++  //extract_x509_field (subject, "CN", common_name, TLS_CN_LEN);
+   string_mod (common_name, COMMON_NAME_CHAR_CLASS, 0, '_');
+ 
+ #if 0 /* print some debugging info */
+
+--pf9I7BMVVzbSWLtt--
 
