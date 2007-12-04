@@ -1,10 +1,12 @@
-Date: Thu, 22 Nov 2007 15:21:12 +0300
-From: Pavel Shramov <shramov@...1064...>
-Message-ID: <20071122122112.GA32315@...1063...>
+Date: Tue, 4 Dec 2007 09:13:49 +0100
+From: Volker Sauer <volker@...1065...>
+Message-ID: <20071204081349.GA9568@...1065...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="pf9I7BMVVzbSWLtt"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="J/dobhs11T7y2rNN"
 Content-Disposition: inline
-Subject: [Openvpn-devel] incorrect common name extraction
+Subject: [Openvpn-devel] openvpn-auth-pam.so together with pam_access.so
+	broken if openvpn	is daemonized
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,127 +15,107 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
---pf9I7BMVVzbSWLtt
-Content-Type: text/plain; charset=us-ascii
+--J/dobhs11T7y2rNN
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-Openvpn extracts only part of CN before '/'. For example from
-"/O=MSU/O=Grid/OU=IMEC/OU=ca.grid.pp.ru/CN=host/vpn.grid.pp.ru"
-openvpn extracts "host" (correct is "host/vpn.grid.pp.ru"). 
-So all hosts get one CN "host" and client-connect script get incorrect
-info.
+Hi,
 
-DN's of such kind are used in Globus.
+here's a strange behaviour of openvpn-auth-pam.so in openvpn-2.0.9-4:
 
-Fix (rewriting extract_x509_field to use openssl library functions) is
-attached.
-Second patch adds '/' to the list of allowed chars in CN so it won't be
-remapped.
+If I run openvpn from the shell without daemonizing it, openvpn-auth-pam.so
+works well even with pam_access.so enabled.
 
-                                        Pavel
+My openvpn config contains:
+plugin /usr/lib/openvpn/openvpn-auth-pam.so openvpn
 
---pf9I7BMVVzbSWLtt
-Content-Type: text/x-diff; charset=us-ascii
-Content-Disposition: attachment; filename="allow-slash.patch"
+/etc/pam.d/openvpn is like this:
+# Standard Un*x authentication.
+@include common-auth
+account  required       pam_access.so
+# Standard Un*x account and session
+@include common-account
+@include common-session
+@include common-password
 
-commit c96f2538fb506f6c531628ca4f48c3eb33a34765
-Author: Pavel Shramov <psha@...1063...>
-Date:   Wed Nov 21 17:40:32 2007 +0300
+which enabled me to grant or deny access by /etc/security/access.conf:
++:root vsauer:ALL
+-:ALL:ALL
 
-    allow / in CN
+As I already said, this perfectly works when openvpn is not daemonized.
 
-diff --git a/ssl.h b/ssl.h
-index e07f19a..4319a81 100644
---- a/ssl.h
-+++ b/ssl.h
-@@ -282,7 +282,7 @@
- 
- /* Legal characters in an X509 or common name */
- #define X509_NAME_CHAR_CLASS   (CC_ALNUM|CC_UNDERBAR|CC_DASH|CC_DOT|CC_AT|CC_COLON|CC_SLASH|CC_EQUAL)
--#define COMMON_NAME_CHAR_CLASS (CC_ALNUM|CC_UNDERBAR|CC_DASH|CC_DOT|CC_AT)
-+#define COMMON_NAME_CHAR_CLASS (CC_ALNUM|CC_UNDERBAR|CC_DASH|CC_DOT|CC_AT|CC_SLASH)
- 
- /* Maximum length of OCC options string passed as part of auth handshake */
- #define TLS_OPTIONS_LEN 512
 
---pf9I7BMVVzbSWLtt
-Content-Type: text/x-diff; charset=us-ascii
-Content-Disposition: attachment; filename="fix-cn.patch"
+*If* openvpn *is* daemonized, I get:
 
-commit c332964d29fb428c01dc691ececc7d80cce07dbd
-Author: Pavel Shramov <psha@...1063...>
-Date:   Wed Nov 21 17:40:21 2007 +0300
+Dec  3 23:58:22 suez ovpn-01-default-dvs1_bridging-port_53[1421]:
+130.83.208.238:32771 PLUGIN_CALL: PRE type=3DPLUGIN_AUTH_USER_PASS_VERIFY
 
-    fix x509 name fields extraction function
+Dec  3 23:58:22 suez ovpn-01-default-dvs1_bridging-port_53[1421]:
+130.83.208.238:32771 ARGV[0] =3D '/usr/lib/openvpn/openvpn-auth-pam.so'
 
-diff --git a/ssl.c b/ssl.c
-index 9cde47d..cc5d8d3 100644
---- a/ssl.c
-+++ b/ssl.c
-@@ -370,6 +370,51 @@ extract_x509_field (const char *x509, const char *field_name, char *out, int siz
-     }
- }
- 
-+/*
-+ * Extract a field from an X509 subject name.
-+ *
-+ * Example:
-+ *
-+ * /C=US/ST=CO/L=Denver/O=ORG/CN=First-CN/CN=Test-CA/Email=jim@...41...
-+ *
-+ * The common name is 'Test-CA'
-+ */
-+static void
-+extract_x509_field_ssl (X509_NAME *x509, const char *field_name, char *out, int size)
-+{
-+  int lastpos = -1;
-+  int tmp = -1;
-+  X509_NAME_ENTRY *x509ne = 0;
-+  ASN1_STRING *asn1 = 0;
-+  unsigned char *buf = 0;
-+  int nid = OBJ_txt2nid(field_name);
-+
-+  ASSERT (size > 0);
-+  *out = '\0';
-+  do {
-+    lastpos = tmp;
-+    tmp = X509_NAME_get_index_by_NID(x509, nid, lastpos);
-+  } while (tmp > 0);
-+
-+  /* Nothing found */
-+  if (lastpos == -1)
-+    return;
-+
-+  x509ne = X509_NAME_get_entry(x509, lastpos);
-+  if (!x509ne)
-+    return;
-+
-+  asn1 = X509_NAME_ENTRY_get_data(x509ne);
-+  if (!asn1)
-+    return;
-+  tmp = ASN1_STRING_to_UTF8(&buf, asn1);
-+  if (tmp <= 0)
-+    return;
-+
-+  strncpynt(out, buf, size);
-+  OPENSSL_free(buf);
-+}
-+
- static void
- setenv_untrusted (struct tls_session *session)
- {
-@@ -445,7 +490,8 @@ verify_callback (int preverify_ok, X509_STORE_CTX * ctx)
-   string_mod (subject, X509_NAME_CHAR_CLASS, 0, '_');
- 
-   /* extract the common name */
--  extract_x509_field (subject, "CN", common_name, TLS_CN_LEN);
-+  extract_x509_field_ssl (X509_get_subject_name (ctx->current_cert), "CN", common_name, TLS_CN_LEN);
-+  //extract_x509_field (subject, "CN", common_name, TLS_CN_LEN);
-   string_mod (common_name, COMMON_NAME_CHAR_CLASS, 0, '_');
- 
- #if 0 /* print some debugging info */
+Dec  3 23:58:22 suez ovpn-01-default-dvs1_bridging-port_53[1421]:
+130.83.208.238:32771 ENVP[0] =3D 'untrusted_port=3D32771'
 
---pf9I7BMVVzbSWLtt--
+Dec  3 23:58:22 suez ovpn-01-default-dvs1_bridging-port_53[1421]:
+130.83.208.238:32771 ENVP[1] =3D 'untrusted_ip=3D130.83.208.238'
+
+Dec  3 23:58:22 suez ovpn-01-default-dvs1_bridging-port_53[1421]:
+130.83.208.238:32771 ENVP[2] =3D 'password=3DXXXXXXXXXXX'
+
+Dec  3 23:58:22 suez ovpn-01-default-dvs1_bridging-port_53[1421]:
+130.83.208.238:32771 NOTE: --mute triggered...
+
+Dec  3 23:58:23 suez ovpn-01-default-dvs1_bridging-port_53[1421]:
+130.83.208.238:32771 11 variation(s) on previous 5 message(s) suppressed
+by --mute
+
+Dec  3 23:58:23 suez ovpn-01-default-dvs1_bridging-port_53[1421]:
+130.83.208.238:32771 PLUGIN_CALL: POST
+/usr/lib/openvpn/openvpn-auth-pam.so/PLUGIN_AUTH_USER_PASS_VERIFY
+status=3D1
+
+Dec  3 23:58:23 suez ovpn-01-default-dvs1_bridging-port_53[1421]:
+130.83.208.238:32771 PLUGIN_CALL: plugin function
+PLUGIN_AUTH_USER_PASS_VERIFY failed with status 1:
+/usr/lib/openvpn/openvpn-auth-pam.so
+
+Dec  3 23:58:23 suez ovpn-01-default-dvs1_bridging-port_53[1421]:
+130.83.208.238:32771 TLS Auth Error: Auth Username/Password verification
+failed for peer
+
+
+Removing "account  required       pam_access.so" from /etc/pam.d/openvpn
+solves the problem, but disables me to limit access to certain
+nis-groups, which is not good.=20
+
+I looked into the source code of openvpn-auth-pam.so and I see, that
+there's a method=20
+
+static void daemonize (const char *envp[])
+
+which seems to be called when openvpn is daemonized. But I don't
+understand it.
+
+Maybe someone could give me a hint what's going on here?
+
+Regards
+Volker
+
+--J/dobhs11T7y2rNN
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+
+iD8DBQFHVQw9fjVOTV3V0OARAgRkAKCg6EVQn3ejGDzjBfl9DVIlp7oJjgCePoLr
+IL0zYDtqk6UFLoYlo0CRI9g=
+=4WLi
+-----END PGP SIGNATURE-----
+
+--J/dobhs11T7y2rNN--
 
