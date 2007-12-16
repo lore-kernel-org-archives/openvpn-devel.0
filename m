@@ -1,8 +1,12 @@
-Date: Mon, 10 Dec 2007 16:18:17 +0300
-From: Victor Wagner <vitus@...1066...>
-Message-ID: <20071210131817.GA7561@...1066...>
+Message-ID: <183b0eb60712161553m869c18bn4cddb22c89756b3a@...278...>
+Date: Mon, 17 Dec 2007 07:53:39 +0800
+From: "dingchengyin 45702" <dingchengyin@...1067...>
+Sender: chandlerding@...277...
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Using OpenVPN with non-default cryptoalgorithms
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_6392_5382129.1197849219225"
+Subject: [Openvpn-devel] Openvpn having problems while pass-through NetApp
+	NetCache.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,40 +15,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=koi8-r
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-I'm trying to use OpenVPN with GOST cryptoalgorithms, which are now
-available in the OpenSSL 0.9.9 (development version).
+------=_Part_6392_5382129.1197849219225
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-I've found some things which looks strange to me, and want to know 
-why some design decisions are made :
+Hey,
+    I think you all have noticed that the TLS handshake procedure of openvpn
+client with server is different with the standard OpenSSL TLSv1 handshake
+procedure that with normal SSL/TLS browser with server.
+    Since I'm using open in a HTTP Proxy + NetApp NetCache network. The
+NetCache act as a transparent proxy, If I set my Openvpn server's listen
+port to TCP 443 or port 80, then the client cannot connect to the server ,
+after the first packet sent to server, the NetCache disconnect the  TCP
+connection. This problem will not appear when I set the server listen on
+other ports like 1194.
+    This shouldn't be a big problem while I can connect to Internet, but
+when I work in a Private network that only can go out though a HTTP Proxy,
+then there are problems: the 80/443 port are the only two ports that allowed
+to pass the filter of the proxy, while the NetCache will interrupt me from
+connect to the server.
+   Can we make the TLSv1 connection initialization process the same as the
+OpenSSL library do, I mean there should be a Client Hello first ,then the
+server reply with its certificate until it's encrypted on both direction.
+Then we can send what ever data we want, right?
 
-1. CBC mode. Why CBC mode is so prefered over CFB or OFB?
-   GOST 28147  doesn't define CBC mode at all, although CBC mode for GOST is
-   defined in RFC 4357, it is considered "substandard" and current
-   ccgost engine in OpenSSL doesn't implement it. I've always thought
-   that CBC is least secure mode of cipher.  But openvpn require rebuild
-   with special define to use non-CBC ciphers. And error message
-   mistakenly tells that CFB ciphers would be supported only in TLS
-   mode, while they do work in shared-secret mode. 
+------=_Part_6392_5382129.1197849219225
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-2. Assertion that EVP_CipherFinal would return buffer with size equal to
-   cipher's iv length. 
-   Such assertion is found in file crypto.c line 168. (both 2.0.9 and
-   2.1_rc4 versions)
-   But it is not always true. For CFB cipher with blocksize of 1
-   EVP_CipherFinal would always return 0 bytes.
+Hey,<br>&nbsp;&nbsp;&nbsp; I think you all have noticed that the TLS handshake procedure of openvpn client with server is different with the standard OpenSSL TLSv1 handshake procedure that with normal SSL/TLS browser with server. <br>&nbsp;&nbsp;&nbsp; Since I&#39;m using open in a HTTP Proxy + NetApp NetCache network. The NetCache act as a transparent proxy, If I set my Openvpn server&#39;s listen port to TCP 443 or port 80, then the client cannot connect to the server , after the first packet sent to server, the NetCache disconnect the&nbsp; TCP connection. This problem will not appear when I set the server listen on other ports like 1194.
+<br>&nbsp;&nbsp;&nbsp; This shouldn&#39;t be a big problem while I can connect to Internet, but when I work in a Private network that only can go out though a HTTP Proxy, then there are problems: the 80/443 port are the only two ports that allowed to pass the filter of the proxy, while the NetCache will interrupt me from connect to the server.
+<br>&nbsp;&nbsp; Can we make the TLSv1 connection initialization process the same as the OpenSSL library do, I mean there should be a Client Hello first ,then the server reply with its certificate until it&#39;s encrypted on both direction. Then we can send what ever data we want, right?
+<br>
 
-3. --dh argument is required in TLS server mode. It is really needed
-  only if  ciphersuites with ephemeral DH key exchange are enabled.
-  But there are lot of other ciphersuites which do not require  DH
-  parameters at all (or require some other parameters such as EECDH
-  ciphersuites).
-
-Can somebody enlighten me - why these decisions were made?
-
-				Regards, Victor Wagner.
+------=_Part_6392_5382129.1197849219225--
 
