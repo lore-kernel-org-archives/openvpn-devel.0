@@ -1,10 +1,8 @@
-Message-ID: <35f70db10801090327u2c0be9c1nfda1c969f3400a32@...278...>
-Date: Wed, 9 Jan 2008 13:27:20 +0200
-From: "Ross Cameron" <ross.cameron@...1049...>
-Sender: abalour@...277...
+Message-ID: <4784C023.50106@...1068...>
+Date: Wed, 09 Jan 2008 13:37:55 +0100
+From: Mirek Zajic <zajic@...1068...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] zlib compression
-Reply-To: ross.cameron@...1049...
+Subject: [Openvpn-devel] NTLMv2 support - how to submit it?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,20 +11,18 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-2; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-To: OpenVPN Users <openvpn-users@lists.sourceforge.net>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Sorry for cross posting but I think this email is relevant to the
-users and devel lists.
+I made NTLMv2 proxy authorization support for OpenVPN and I also fixed 
+many issues with NTLM version 1. I would like to give it to the 
+opensource community, but I am a newbie to opensource. Can anybody give 
+me some information on how to submit the source files so it would become 
+a part of OpenVPN distribution?
 
-Does anyone know what happened to Ming-Ching Tiew's patches to enable
-zlib compression in OpenVPN?
-The patches are circa 2004 if I remember correctly.
+Thanks
 
-Failing that does anyone know what Mr. Ming-Ching's email address is?
-
-Many thanks
-Ross Cameron
+Miroslav Zajic
+Nextsoft s.r.o.
 
