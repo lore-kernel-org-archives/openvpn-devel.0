@@ -1,11 +1,13 @@
-Message-ID: <d483625f0801220923l68bc8f02nb4124acfc6ada8ea@...278...>
-Date: Tue, 22 Jan 2008 11:23:59 -0600
-From: "Glenn Powers" <glenn@...1074...>
-Sender: glennpowers@...277...
+Message-ID: <66d0f4170801221007x7cf4d423pe0c2dd90d4d138d0@...278...>
+Date: Tue, 22 Jan 2008 19:07:27 +0100
+From: triton <silentmove@...277...>
+In-Reply-To: <47951B0A.2020806@...41...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_7240_21142594.1201022639618"
-Subject: [Openvpn-devel] RFQ: OpenVPN Constant Bit Rate (CBR)
+References: <93661e2e0710270421s36c345b4o8b3b94a95b4ed0e6@...278...>
+	<479474C2.5090308@...1028...>
+	<66d0f4170801211029h1a94f0bbgfd494e94354906cb@...278...>
+	<47951B0A.2020806@...41...>
+Subject: Re: [Openvpn-devel] multi-homed udp-based OpenVPN Server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,34 +16,17 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
-------=_Part_7240_21142594.1201022639618
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
+To: Openvpn-devel@lists.sourceforge.net
 
-I am interested in sponsoring the development Constant Bit Rate (CBR)
-support in OpenVPN, similar to Cisco's 1711 Security Router. CBR routers
-always send data at a constant rate, padding any unused bandwidth with
-random data.
+On 1/21/08, James Yonan <jim@...41...> wrote:
 
-A correct implementation of CBR show absolutely no changes in WAN traffic
-between sites, despite changes in real message traffic.
+> Are you aware of the ./configure --multihome option in the 2.1 beta series?
 
-Please contact me privately if you are interested in working on this.
+No, I wasn't. Thank you very much for pointing that out.
 
-thanks,
-glenn
-
-------=_Part_7240_21142594.1201022639618
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-<br>I am interested in sponsoring the development Constant Bit Rate (CBR) support in OpenVPN, similar to Cisco&#39;s 1711 Security Router. CBR routers always send data at a constant rate, padding any unused bandwidth with random data.
-<br><br>A correct implementation of CBR show absolutely no changes in WAN traffic between sites, despite changes in real message traffic.<br><br>Please contact me privately if you are interested in working on this.<br><br>
-thanks,<br>glenn<br><br>
-
-------=_Part_7240_21142594.1201022639618--
+Best regards,
+Robert
 
