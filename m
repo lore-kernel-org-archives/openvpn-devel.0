@@ -1,8 +1,8 @@
-Message-ID: <47970DD4.6010701@...41...>
-Date: Wed, 23 Jan 2008 02:50:12 -0700
+Message-ID: <4797B53E.4020007@...41...>
+Date: Wed, 23 Jan 2008 14:44:30 -0700
 From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Win2K TAP issue in 2.1-beta series has been fixed
+Subject: [Openvpn-devel] OpenVPN 2.1-rc5 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,11 +13,98 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Openvpn-devel@lists.sourceforge.net
+To: Openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
-I just fixed the Win2K TAP issue that was reported in 2.1-rc4.  It's 
-already checked into the svn, and will be included in rc5.
+OpenVPN 2.1-rc5 is available, please test.  I would especially like 
+feedback on the Windows TAP driver.  We've made some portability changes 
+recently to the driver to allow it to run on Win2K through Vista in x86 
+or x64 modes.
+
+Download:
+
+http://openvpn.net/beta/
+
+File Signatures:
+
+http://openvpn.net/signatures/
+
+Here is the change log:
+
+2008.01.23 -- Version 2.1_rc5
+
+* Fixed Win2K TAP driver bug that was introduced by Vista fixes,
+  incremented driver version to 9.4.
+
+* Windows build system changes:
+
+  Incremented included OpenSSL version to openssl-0.9.7m.
+
+  Updated openssl.patch for openssl-0.9.7m and added some
+  brief usage comments to the head of the patch.
+
+  Added build-pkcs11-helper.sh for building the pkcs11-helper
+  library.
+
+  Integrated inclusion of pkcs11-helper into Windows build
+  system.
+
+  Upgraded TAP build scripts to use WDK 6001.17121
+  (Windows 2008 Server pre-RTM).
+
+* Windows installer changes:
+
+  Clean up the start menu folder.
+
+  Allow for a site-specific sample configuration file and keys
+  to be included in a custom installer (see SAMPCONF macros
+  in settings.in).
+
+  New icon (temporary).
+
+* Added "forget-passwords" command to the management interface
+  (Alon Bar-Lev).
+
+* Added --management-signal option to signal SIGUSR1 when the
+  management interface disconnects (Alon Bar-Lev).
+
+* Modified command line and config file parser to allow
+  quoted strings using single quotes ('') (Alon Bar-Lev).
+
+* Use pkcs11-helper as external library, can be downloaded from
+  https://www.opensc-project.org/pkcs11-helper (Alon Bar-Lev).
+
+* Fixed interim memory growth issue in TCP connect loop where
+  "TCP: connect to %s failed, will try again in %d seconds: %s"
+  is output.
+
+* Fixed bug in epoll driver in event.c, where the lack of a
+  handler for EPOLLHUP could cause 99% CPU usage.
+
+* Defined ALLOW_NON_CBC_CIPHERS for people who don't
+  want to use a CBC cipher for OpenVPN's data channel.
+
+* Added PLUGIN_LIBDIR preprocessor string to prepend a default
+  plugin directory to the dlopen search list when the user
+  specifies the basename of the plugin only (Marius Tomaschewski).
+
+* Rewrote extract_x509_field and modified COMMON_NAME_CHAR_CLASS
+  to allow forward slash characters ("/") in the X509 common name
+  (Pavel Shramov).
+
+* Allow OpenVPN to run completely unprivileged under Linux
+  by allowing openvpn --mktun to be used with --user and --group
+  to set the UID/GID of the tun device node.  Also added --iproute
+  option to allow an alternative command to be executed in place
+  of the default iproute2 command (Alon Bar-Lev).
+
+* Fixed --disable-iproute2 in ./configure to actually disable
+  iproute2 usage (Alon Bar-Lev).
+
+* Added --management-forget-disconnect option -- forget
+  passwords when management session disconnects (Alon Bar-Lev).
 
 James
+
+
 
 
