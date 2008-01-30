@@ -1,8 +1,11 @@
-Message-ID: <479FDA80.8050107@...41...>
-Date: Tue, 29 Jan 2008 19:01:36 -0700
-From: James Yonan <jim@...41...>
+Date: Wed, 30 Jan 2008 05:33:36 +0100
+From: Maximilian Wilhelm <max@...1047...>
+Message-ID: <20080130043336.GH31211@...1048...>
+References: <20071011233158.GC1416@...1048...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 2.1_rc7 released
+In-Reply-To: <20071011233158.GC1416@...1048...>
+Subject: Re: [Openvpn-devel] [Patch] Fix Null-Pointer bug in init_ssl() when
+	no '--ca' is set but '--capath'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,21 +14,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-users@lists.sourceforge.net, Openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Download:
+Am Friday, den 12 October hub Maximilian Wilhelm folgendes in die Tasten:
 
-http://openvpn.net/download.html
+Hi!
 
-Change Log:
+What about this patch?
+I think it should be included in the next -rc as it fixes a crash.
 
-2008.01.29 -- Version 2.1_rc7
 
-* Added a few extra files that exist in the svn repo but were
-  not being copied into the tarball by make dist.
+> This little patch fixes a silly bug in init_ssl() in ssl.c where
+> options->ca_file is accessed without prior check if it's not NULL.
 
-* Fixup null interface on close, don't use ip addr flush (Alon Bar-Lev).
+> The bug was introduced in revision 784.
 
+
+> diff --git a/ssl.c b/ssl.c
+> index 85e9c6f..868edc2 100644
+> --- a/ssl.c
+> +++ b/ssl.c
+> @@ -1228,7 +1228,7 @@ init_ssl (const struct options *options)
+>        int status;
+>  
+>  #if ENABLE_INLINE_FILES
+> -      if (!strcmp (options->ca_file, INLINE_FILE_TAG) && options->ca_file_inline)
+> +      if (options->ca_file && !strcmp (options->ca_file, INLINE_FILE_TAG) && options->ca_file_inline)
+>  	{
+>  	  status = use_inline_load_verify_locations (ctx, options->ca_file_inline);
+>  	}
+
+Ciao
+Max
+-- 
+	Follow the white penguin.
 
