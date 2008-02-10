@@ -1,10 +1,8 @@
-Message-ID: <9e0cf0bf0802022250r4c2e0e2fh32ddf447160bee24@...278...>
-Date: Sun, 3 Feb 2008 08:50:50 +0200
-From: "Alon Bar-Lev" <alon.barlev@...277...>
-In-Reply-To: <1201174563.10474.86.camel@...1076...>
+Date: Sun, 10 Feb 2008 00:09:06 -0800 (PST)
+From: Matti Linnanvuori <mattilinnanvuori@...109...>
 MIME-Version: 1.0
-References: <1201174563.10474.86.camel@...1076...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.1rc6 +scb0.10
+Message-ID: <280428.48359.qm@...1079...>
+Subject: [Openvpn-devel] [patch] manual page tcp-queue-limit
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,20 +11,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-To: "Fernando A." <fernando.arconada@...1069...>
-Cc: Andreas Jellinghaus <aj@...1078...>, Openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-On 1/24/08, Fernando A. <fernando.arconada@...1069...> wrote:
-> Has anybody tried OpenVPN 2.1X with scb-0.10 (pkcs11) in Windows. It
-> doesnt work
+--- openvpn.8.orig 2008-02-10 09:56:33.741203500 +0200
++++ openvpn.8 2008-02-10 10:02:45.313124500 +0200
+@@ -2595,13 +2595,13 @@
+ .\"*********************************************************
+ .TP
+ .B --tcp-queue-limit n
+-Maximum number of queued TCP output packets (default=64).
++Maximum number of output packets queued before TCP (default=64).
+ 
+ When OpenVPN is tunneling data from a TUN/TAP device to a
+ remote client over a TCP connection, it is possible that the TUN/TAP device
+ might produce data at a faster rate than the TCP connection
+-can support.  When the number of queued TCP output packets reaches
+-this limit for a given client connection,
++can support.  When the number of output packets queued before sending to
++the TCP socket reaches this limit for a given client connection,
+ OpenVPN will start to drop outgoing packets directed
+ at this client.
+ .\"*********************************************************
 
-I've compiled the OpenSC with compatible OpenVPN OpenSSL.
-Please try it out.
 
-http://alon.barlev.googlepages.com/opensc-mingw-openssl-0.9.7.tar.bz2
-
-Alon.
+      ____________________________________________________________________________________
+Never miss a thing.  Make Yahoo your home page. 
+http://www.yahoo.com/r/hs
 
