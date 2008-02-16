@@ -1,10 +1,8 @@
-Message-ID: <47B183E1.4050809@...277...>
-Date: Tue, 12 Feb 2008 12:32:49 +0100
-From: "Angelo P. Castellani" <angelo.castellani@...277...>
+Message-ID: <4aff28800802160916r506572a0r44a9e619e31ce5ee@...278...>
+Date: Sat, 16 Feb 2008 19:16:29 +0200
+From: "Diaa Sami" <diaasami@...277...>
 MIME-Version: 1.0
-References: <47B175AE.6080903@...277...> <47B1824A.4040709@...1068...>
-In-Reply-To: <47B1824A.4040709@...1068...>
-Subject: Re: [Openvpn-devel] Openvpn windows binaries with NTLMv2 support
+Subject: [Openvpn-devel] Compiling OpenVPN 2.1rc7
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,60 +11,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: Mirek Zajic <zajic@...1068...>
-Cc: Openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-I'm using it on Windows XP SP2.
+Hi,
+I was compiling OpenVPN 2.1rc7 on Windows(MinGW) and I did it
+successfully after 2 days of trying.
+This is a list of the issues I met, I thought I should tell you so
+that you can fix or mention them at least to make building easier:
+* The current latest version of PKCS11-helper(which is 1.05) doesn't
+produce a DLL when compiled using MinGW, although the DLL is needed
+for building OpenVPN successfully, (I just used the DLL from the
+binary distribution so that the build will succeed without having to
+modify the installer)
+* In the compilation command, although PKCS-helper depends on OpenSSL,
+it comes after it in the libraries(I had to fix this by modifying the
+makefile)
+* After compiling OpenSSL 0.9.7m, it's necessary to copy all files
+matching incout\openssl\* to include\openssl\*
+* The source tree must reside under the same drive as WINDDK(which is
+hardcoded as C:\)
 
-On Linux I can compile it, on Windows using MinGW isn't so simple...
-
-Thanks!
-
-Angelo
-
-Mirek Zajic ha scritto:
-> Hello,
-> which OS do you use? I have some binaries so I can send them to you. 
-> However, I've made some modifications to it and now it seems not to 
-> work correctly. I can give you some older version whih should be OK. 
-> The older version needs testing as well, becouse it should behave 
-> exactlly the same way as the new (buggy) version. Those modifications 
-> were made only to support some big endian processors etc.
-> Now I don't have much time for OpenVPN developement and testing, so 
-> any help is welcome.
->
-> Thanks
-> Miroslav Zajic
-> NextSoft s.r.o.
->
-> Angelo P. Castellani napsal(a):
->> Hello,
->> I would like to test the NTLMv2 support by Mirek Zajic.
->>
->> Is there anyone who has a binary package to test this patch ?
->>
->> I've looked around for any howto to build it by myself, but seems 
->> that is a quite difficult task and maybe somebody already has 
->> compiled this.
->>
->> Thanks in advance
->>
->> Regards,
->> Angelo
->>
->> ------------------------------------------------------------------------- 
->>
->> This SF.net email is sponsored by: Microsoft
->> Defy all challenges. Microsoft(R) Visual Studio 2008.
->> http://clk.atdmt.com/MRT/go/vse0120000070mrt/direct/01/
->> _______________________________________________
->> Openvpn-devel mailing list
->> Openvpn-devel@lists.sourceforge.net
->> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->>
->>   
->
-
+Regards,
+Diaa Sami
 
