@@ -1,11 +1,11 @@
-Message-ID: <47B9B978.20604@...1030...>
-Date: Mon, 18 Feb 2008 17:59:36 +0100
-From: Marcus <adesperateuser@...1030...>
+Message-ID: <47B9CC75.2030308@...41...>
+Date: Mon, 18 Feb 2008 11:20:37 -0700
+From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-References: <47B9AB97.5040407@...1030...> <47B9B157.5040505@...1012...>
-In-Reply-To: <47B9B157.5040505@...1012...>
-Subject: Re: [Openvpn-devel] Needing help with writing an easy-to-use
- Radius-Plugin for authentication
+References: <4aff28800802160916r506572a0r44a9e619e31ce5ee@...278...>
+	<9e0cf0bf0802160925w2dd86c02mb6f8dd5cfd4ab9e5@...278...>
+In-Reply-To: <9e0cf0bf0802160925w2dd86c02mb6f8dd5cfd4ab9e5@...278...>
+Subject: Re: [Openvpn-devel] Compiling OpenVPN 2.1rc7
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,80 +14,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Alon Bar-Lev <alon.barlev@...277...>, Diaa Sami <diaasami@...277...>
 
-Brane F. Gračnar schrieb:
- > ... you can also check openvpn_auth:
- > http://frost.ath.cx/software/openvpn_auth/
+The latest Windows build system for OpenVPN is actually quite powerful, 
+and can autodetect when certain dependencies are missing, such as the 
+Windows DDK, and substitute in a pre-built binary of the driver, instead 
+of requiring that every component be built from source.
 
+This means, for example, that if you just want to make a simple change 
+to the NSIS script, you don't need to have the DDK installed or build 
+OpenSSL, lzo, or PKCS11-Helper.
 
-Greetings to thee, Brane,
-you are the author of that software if I am not mistaken.
-I tried it already - alas with no success, although I "at least read the 
-whole goddamn configuration file" to the end" ;-)
+To build OpenVPN for Windows, use the ./domake-win script.  This script 
+has extensive comments, and describes how to use the pre-built binaries 
+feature, where pre-built binaries are substituted at every build step 
+where a lack of dependencies precludes a build from source.
 
-I can start the deamon successfully. (Mind that "semaphores" doesn't 
-work, so I use "flock".)
+You can also view the ./domake-win script here:
 
-I defined a "radius"-Service in the config-File:
+http://svn.openvpn.net/projects/openvpn/branches/BETA21/openvpn/domake-win
 
-$auth_backends = {
-         radius => {
-             driver => 'Radius',
-             sufficient => 1,
-             required => 1,
-             host => '134.2.239.234',
-             service => 'openvpn',
-             secret => 'mysecret',
-             use_nas_ipaddr => 1,
-             timeout => 2
-         }
-};
+For example, suppose you want to build a windows installer for OpenVPN 
+that includes a custom configuration file and keys.  Here is a 
+quick-start guide:
 
-And I installed the perl-plugins:
+(1) Install the minimum tool chain:
 
-./bin/openvpn_authd.pl --list
-Allow, AuthStruct, DBI, Deny, File, IMAP, Krb5, LDAP, PAM, POP3, Radius, 
-SASL
-
-My auth_order looks like this:
-$auth_order = ["radius"];
-
-I also did steps 8 to 10 from the Readme.
-
-But when I try step 11, something goes wrong.
-
-11. Check if everything works...
-         export common_name="someuser.example.org"
-         export untrusted_ip="1.2.3.4"
-         export untrusted_port="3456"
-         export script_type="auth-user-pass-verify"
-
-Here, the documentation is not clear to me. What are the exports for? 
-The client gives me an error, when i use the above values. (Maybe it's 
-stupid to use the above values?)
-
-When I run
-./bin/openvpn_authc -v /tmp/sample_auth.txt I get
-
-Feb 17 17:56:17 ovpn openvpn_authd.pl: WARN: AuthDaemon.pm, line 262, 
-PRINT(): Catched output to STDOUT/STDERR: Use of uninitialized value in 
-concatenation (.) or string at 
-/usr/local/src/openvpn_auth-0.10/lib/Net/OpenVPN/Auth/Radius.pm line 
-124, <GEN1> line 6.
-Feb 17 17:56:17 ovpn openvpn_authd.pl: WARN: AuthDaemon.pm, line 263, 
-PRINT(): This should not happen! Possible couses: Missing perl modules 
-(running in chroot? Define $extra_modules); OR BUG in your validation 
-functions, if you're using AuthStruct module; OR BUG in 
-openvpn_authd.pl/it's libraries.
-Feb 17 17:56:22 ovpn openvpn_authd.pl: WARN: AuthDaemon.pm, line 140, 
-__ANON__(): Authentication timed out.
+# MinGW     -- for GNU C compiler
+# MSYS      -- for bash
+# msysDTK   -- for perl
+# NSIS      -- for building installer
 
 
-I probably got the settings for the radius wrong, what do you think?
+(2)  Download and expand the prebuilt binaries distribution, for 
+example: https://secure.openvpn.net/devel/openvpn-2.1_rc7a-prebuilt.tbz
 
-Greetz, Marcus
+(3) In the top-level directory of the prebuilt-binary distribution, 
+download and expand a source .tar.gz file, for example:
+ https://secure.openvpn.net/devel/openvpn-2.1_rc7a.tar.gz
+
+Edit install-win32/settings.in, uncommenting out these lines, and 
+setting them to the appropriate file names:
+
+# include a sample configuration file and key
+;!define SAMPCONF_DIR   "test-key"
+;!define SAMPCONF_CONF  "test.ovpn"
+;!define SAMPCONF_P12   "test.p12"
+;!define SAMPCONF_TA    "ta.key"
+
+In the commented-out example above, the test-key directory should be 
+present in the prebuilt-binaries  top-level directory (the parent 
+directory of the source distribution), and should contain the files 
+test.ovpn, test.p12, ta.key.
+
+Now you should be able to build an installer with ./domake-win that 
+includes these custom configuration files, such that when the installer 
+is run by an end-user, these files are placed into \program 
+files\openvpn\config
+
+James
 
 
