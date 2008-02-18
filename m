@@ -1,10 +1,19 @@
-Message-ID: <ff6c44960802180120p124397afh55e64dd28fe17ee8@...278...>
-Date: Mon, 18 Feb 2008 10:20:59 +0100
-From: "Kenneth Ellefsen" <kenneth.ellefsen@...277...>
+Message-ID: <4aff28800802180341w13683e6m6c4636c0e4890fdc@...278...>
+Date: Mon, 18 Feb 2008 13:41:46 +0200
+From: "Diaa Sami" <diaasami@...277...>
+In-Reply-To: <9e0cf0bf0802172159v149280aax38ae1f39e33882e2@...278...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_5350_13137970.1203326459164"
-Subject: [Openvpn-devel] Tap-Win32 windows drivers.
+References: <4aff28800802160916r506572a0r44a9e619e31ce5ee@...278...>
+	<9e0cf0bf0802160925w2dd86c02mb6f8dd5cfd4ab9e5@...278...>
+	<4aff28800802160957i114f38f4o2fdd483a780ff203@...278...>
+	<9e0cf0bf0802161014j6de5ddd2l37f42bbd835d4a90@...278...>
+	<4aff28800802161507r3c5ccf91vb2bfc0d56951906a@...278...>
+	<9e0cf0bf0802162232n40953c6bjac66494ac1cf7e64@...278...>
+	<4aff28800802171046v2b37359elcba3cdf4d14223de@...278...>
+	<9e0cf0bf0802171248ra12c019g4bbbef1ceee9647c@...278...>
+	<4aff28800802171619k135c1965m52ad9ab11394ad6b@...278...>
+	<9e0cf0bf0802172159v149280aax38ae1f39e33882e2@...278...>
+Subject: Re: [Openvpn-devel] Compiling OpenVPN 2.1rc7
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,63 +22,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
-------=_Part_5350_13137970.1203326459164
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi.
+On Feb 18, 2008 7:59 AM, Alon Bar-Lev <alon.barlev@...277...> wrote:
+> I wish to reproduce this.
+> Can you please provide some instruction of how to do this?
+> 1. Which EXACT version and platform of Windows are you using?
 
-I was hoping someone could help me get Tap-Win32 compiled under Windows.
+Windows XP SP2 Home edition
 
-I am a little confused so far, as it seems to use the structures of the old
-NTDDK, but at the same time use some include files from the new WinDDK.
+> 2. Which mingw version you are using, how did you installed it.
 
-Reason I am asking is that the current MTU constraints are to narrow for me.
-There is a hard coded min MTU setting of:
-#define MINIMUM_MTU 576 // USE TCP Minimum MTU
+The current latest, there's no single version for the whole package
+but gcc -v gives
+----
+Reading specs from c:/MinGW/bin/../lib/gcc/mingw32/3.4.5/specs
 
-in TAP-Win32/constants.h
+Configured with: ../gcc-3.4.5/configure --with-gcc --with-gnu-ld
+--with-gnu-as --host=mingw32 --target=mingw32 --prefix=/mingw
+--enable-threads --disable-nls
+--enable-languages=c,c++,f77,ada,objc,java --disable-win32-registry
+--disable-shared --enable-sjlj-exceptions --enable-libgcj
+--disable-java-awt --without-x --enable-java-gc=boehm
+--disable-libgcj-debug --enable-interpreter
+--enable-hash-synchronization --enable-libstdcxx-debug
 
-The links I'm operating on are to slow for this "high" MTU setting. A
-minimum of 185 is more suited for my usage.
+Thread model: win32
 
-I have been trying to make a VS project, but so far unsuccessful. I have
-MinGW and msys installed if that's the way to proceed.
+gcc version 3.4.5 (mingw special)
+----
 
-Any pointers/help much appreciated.
+I installed MinGW manually  by unpacking .tar.gz packages in c:/MinGW
 
---
-Kind regards,
-Kenneth Ellefsen
+> 3. Which msys version are you using, how did you installed it.
 
-------=_Part_5350_13137970.1203326459164
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+1.0.10, installed using the installer provided at mingw.org
 
-Hi.<br><br>I was hoping someone could help me get Tap-Win32 compiled under Windows.<br><br><span>
-I am a little confused so far, as it seems to use the structures of the
-old NTDDK, but at the same time use some include files from the new
-WinDDK.
-<br>
+> 4. How did you EXACTLY compile OpenSSL?
 
-<br>Reason I am asking is that the current MTU constraints are to narrow for me. There is a hard coded min MTU setting of:
-<br>
-#define MINIMUM_MTU 576        // USE TCP Minimum MTU
-<br>
+Patched it using the patch provided with openvpn, then ran ms\mw.bat
 
-<br>
-in TAP-Win32/constants.h
-<br>
-
-<br>
-The links I&#39;m operating on are to slow for this &quot;high&quot; MTU setting. A minimum of 185 is more suited for my usage.<br>
-
-<br>I have been trying to make a VS project, but so far unsuccessful. I have MinGW and msys installed if that&#39;s the way to proceed.<br><br>
-Any pointers/help much appreciated.<br><br>--<br>Kind regards,<br>Kenneth Ellefsen</span>
-
-------=_Part_5350_13137970.1203326459164--
+Thanks
 
