@@ -1,10 +1,9 @@
-Message-ID: <47BA5841.7030903@...334...>
-Date: Tue, 19 Feb 2008 06:17:05 +0200
-From: Faidon Liambotis <paravoid@...334...>
+Message-ID: <47B9B157.5040505@...1012...>
+Date: Mon, 18 Feb 2008 17:24:55 +0100
+From: =?UTF-8?B?IkJyYW5lIEYuIEdyYcSNbmFyIg==?= <bfg@...1012...>
 MIME-Version: 1.0
 References: <47B9AB97.5040407@...1030...>
 In-Reply-To: <47B9AB97.5040407@...1030...>
-Content-Type: multipart/mixed; boundary="------------050405020706080606080202"
 Subject: Re: [Openvpn-devel] Needing help with writing an
  easy-to-use	Radius-Plugin for authentication
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,106 +14,14 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 To: Marcus <adesperateuser@...1030...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------050405020706080606080202
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+... you can also check openvpn_auth:
+http://frost.ath.cx/software/openvpn_auth/
 
-Marcus wrote:
-> An authentication-script could look something like this:
-> 
-> #!/usr/bin/python
-Not really able to help you with your python script, but this is a 
-really simple perl script I've written in the past (2005) for the same 
-purpose.
+Best regards, Brane
 
-It uses a simple configuration file format:
-	radius_host=radius.example.com
-	radius_port=1812
-	radius_secret=foobar
-
-It only does the AA part of RADIUS plus it supports Framed-IP-Address, 
-in case you need it. Be warned that the latter is implemented in a 
-rather hackish way.
-
-IIRC, there are other solutions to RADIUS authentication that are more 
-featureful. Haven't evaluated them though, the above works pretty well 
-for me.
-
-Regards,
-Faidon
-
---------------050405020706080606080202
-Content-Type: text/plain; charset="utf-8"; name=auth_radius.pl
-Content-Transfer-Encoding: base64
-Content-Disposition: inline;
- filename="auth_radius.pl"
-
-IyEvdXNyL2Jpbi9wZXJsCgojIE9wZW5WUE4gYXV0aC11c2VyLXBhc3MtdmVyaWZ5IHNjcmlwdCBm
-b3IgUkFESVVTIEF1dGhlbnRpY2F0aW9uCiMKIyBDb3B5cmlnaHQgKGMpIDIwMDUgR3JlZWsgUmVz
-ZWFyY2ggYW5kIFRlY2hub2xvZ3kgTmV0d29yayBTLkEuCiMKIyBBdXRob3I6IEZhaWRvbiBMaWFt
-Ym90aXMgPHBhcmF2b2lkQC4uLjMzNC4uLj4KIyAKIyBUaGlzIHByb2dyYW0gaXMgZnJlZSBzb2Z0
-d2FyZTsgeW91IGNhbiByZWRpc3RyaWJ1dGUgaXQgYW5kL29yIG1vZGlmeQojIGl0IHVuZGVyIHRo
-ZSB0ZXJtcyBvZiB0aGUgR05VIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgYXMgcHVibGlzaGVkIGJ5
-CiMgdGhlIEZyZWUgU29mdHdhcmUgRm91bmRhdGlvbjsgdmVyc2lvbiAyIGRhdGVkIEp1bmUsIDE5
-OTEuCiMKIyBUaGlzIHByb2dyYW0gaXMgZGlzdHJpYnV0ZWQgaW4gdGhlIGhvcGUgdGhhdCBpdCB3
-aWxsIGJlIHVzZWZ1bCwKIyBidXQgV0lUSE9VVCBBTlkgV0FSUkFOVFk7IHdpdGhvdXQgZXZlbiB0
-aGUgaW1wbGllZCB3YXJyYW50eSBvZgojIE1FUkNIQU5UQUJJTElUWSBvciBGSVRORVNTIEZPUiBB
-IFBBUlRJQ1VMQVIgUFVSUE9TRS4gIFNlZSB0aGUKIyBHTlUgR2VuZXJhbCBQdWJsaWMgTGljZW5z
-ZSBmb3IgbW9yZSBkZXRhaWxzLgojCiMgWW91IHNob3VsZCBoYXZlIHJlY2VpdmVkIGEgY29weSBv
-ZiB0aGUgR05VIEdlbmVyYWwgUHVibGljIExpY2Vuc2UKIyBhbG9uZyB3aXRoIHRoaXMgcHJvZ3Jh
-bTsgaWYgbm90LCB3cml0ZSB0byB0aGUgRnJlZSBTb2Z0d2FyZQojIEZvdW5kYXRpb24sIEluYy4s
-IDUxIEZyYW5rbGluIFN0LCBGaWZ0aCBGbG9vciwgQm9zdG9uLCBNQSAgMDIxMTAtMTMwMSAgVVNB
-Cgp1c2Ugc3RyaWN0Owp1c2Ugd2FybmluZ3M7CnVzZSBQT1NJWDsKdXNlIEF1dGhlbjo6UmFkaXVz
-OwoKIyMjIENvbmZpZ3VyYXRpb24gIyMjCgpteSAkY29uZmZuID0gJy9ldGMvb3BlbnZwbi9yYWRp
-dXNjbmYnOwoKIyMjIERPIE5PVCBFRElUIEFOWVRISU5HIEJFTE9XIFRISVMgTElORSAjIyMKCnN5
-c29wZW4oQ09ORkZJTEUsICRjb25mZm4sIE9fUkRPTkxZKSBvcgoJZGllICJDb3VsZCBub3Qgb3Bl
-biBjb25maWd1cmF0aW9uIGZpbGU6ICRjb25mZm5cbiI7Cm15ICVvcHQ7CndoaWxlICg8Q09ORkZJ
-TEU+KSB7CgljaG9tcDsKCSMgUmVtb3ZlIGNvbW1lbnRzLi4uCglzLyhcc3xeKSsjLiovLzsKCSMg
-Li4ubGVhZGluZyB3aGl0ZXNwYWNlLi4uCglzL15ccysvLzsKCSMgLi4uYW5kIHRyYWlsaW5nIHdo
-aXRlc3BhY2UKCXMvXHMrJC8vOwoJbmV4dCB1bmxlc3MgbGVuZ3RoOwoKCSMgZm9vID0gYmFyIGJl
-Y29tZXMgJG9wdHtmb299ID0gYmFyCglteSAoJHZhciwgJHZhbHVlKSA9IHNwbGl0KC9ccyo9XHMq
-LywgJF8sIDIpOwoJJG9wdHskdmFyfSA9ICR2YWx1ZTsKfQpjbG9zZSAoQ09ORkZJTEUpOwoKbXkg
-JGNsaWVudF9jb25maWdfZGlyID0gJG9wdHtjbGllbnRkaXJ9IHx8ICcvZXRjL29wZW52cG4vY2xp
-ZW50cy8nOwpteSAkcmFkaXVzX2RpY3Rpb25hcnkgPSAkb3B0e2RpY3Rpb25hcnl9IHx8ICcvdXNy
-L3NoYXJlL2ZyZWVyYWRpdXMvZGljdGlvbmFyeSc7Cm15ICRyYWRpdXNfaG9zdCA9ICRvcHR7cmFk
-aXVzX2hvc3R9IHx8IGRpZSAiWW91IG11c3Qgc3BlY2lmeSBhIFJBRElVUyBzZXJ2ZXIhXG4iOwpt
-eSAkcmFkaXVzX3BvcnQgPSAkb3B0e3JhZGl1c19wb3J0fSB8fCAnMTgxMic7Cm15ICRyYWRpdXNf
-c2VjcmV0ID0gJG9wdHtyYWRpdXNfc2VjcmV0fSB8fCBkaWUgIllvdSBtdXN0IHNwZWNpZnkgYSBS
-QURJVVMgc2VjcmV0IVxuIjsKbXkgJHJhZGl1c190aW1lb3V0ID0gJG9wdHtyYWRpdXNfdGltZW91
-dH0gfHwgJzMnOwoKIwojIEdldCB1c2VybmFtZS9wYXNzd29yZCBmcm9tIGZpbGUKIyAKbXkgJHVw
-ZmlsZW5hbWUgPSBzaGlmdCBAQVJHVjsKZGllICJObyB1c2VybmFtZS9wYXNzd29yZCBmaWxlIHNw
-ZWNpZmllZCBvbiBjb21tYW5kIGxpbmVcbiIgdW5sZXNzICR1cGZpbGVuYW1lOwoKc3lzb3BlbihV
-UEZJTEUsICR1cGZpbGVuYW1lLCBPX1JET05MWSkgb3IKCWRpZSAiQ291bGQgbm90IG9wZW4gdXNl
-cm5hbWUvcGFzc3dvcmQgZmlsZTogJHVwZmlsZW5hbWVcbiI7Cm15ICR1c2VybmFtZSA9IDxVUEZJ
-TEU+OwpteSAkcGFzc3dvcmQgPSA8VVBGSUxFPjsKCmRpZSAiVXNlcm5hbWUvcGFzc3dvcmQgbm90
-IGZvdW5kIGluIGZpbGU6ICR1cGZpbGVuYW1lXG4iIAoJdW5sZXNzIGRlZmluZWQgJHVzZXJuYW1l
-ICYmIGRlZmluZWQgJHBhc3N3b3JkOwoKY2hvbXAgJHVzZXJuYW1lOwpjaG9tcCAkcGFzc3dvcmQ7
-CgpjbG9zZSAoVVBGSUxFKTsKCiMKIyBJbml0aWFsaXplIFJBRElVUyBBdXRoZW50aWNhdGlvbiBt
-b2R1bGUKIwpteSAoJGlwLCAkbmV0bWFzayk7Cm15ICRyID0gbmV3IEF1dGhlbjo6UmFkaXVzKAlI
-b3N0ID0+ICRyYWRpdXNfaG9zdC4iOiIuJHJhZGl1c19wb3J0LAoJCQkJU2VjcmV0ID0+ICRyYWRp
-dXNfc2VjcmV0LAoJCQkJVGltZU91dCA9PiAkcmFkaXVzX3RpbWVvdXQsCgkJCQlEZWJ1ZyA9PiAw
-CgkJCSAgKTsKJHItPmxvYWRfZGljdGlvbmFyeSgkcmFkaXVzX2RpY3Rpb25hcnkpOwokci0+YWRk
-X2F0dHJpYnV0ZXMgKAoJCSMgVXNlci1OYW1lCiAgICAgICAgICAgICAgICB7IE5hbWUgPT4gMSwg
-VmFsdWUgPT4gJHVzZXJuYW1lLCBUeXBlID0+ICdzdHJpbmcnIH0sCgkJIyBVc2VyLVBhc3N3b3Jk
-CgkJeyBOYW1lID0+IDIsIFZhbHVlID0+ICRwYXNzd29yZCwgVHlwZSA9PiAnc3RyaW5nJyB9LAoJ
-CXsgTmFtZSA9PiAnTkFTLVBvcnQtVHlwZScsIFZhbHVlID0+ICdWaXJ0dWFsJyB9CgkpOwoKJHIt
-PnNlbmRfcGFja2V0KEFDQ0VTU19SRVFVRVNUKTsKbXkgJHJjdiA9ICRyLT5yZWN2X3BhY2tldCgp
-OwppZiAoZGVmaW5lZCgkcmN2KSBhbmQgJHJjdiA9PSBBQ0NFU1NfQUNDRVBUKSB7Cglmb3IgbXkg
-JGF0dHIgKCRyLT5nZXRfYXR0cmlidXRlcygpKSB7CgkJaWYgKCRhdHRyLT57J05hbWUnfSBlcSAn
-RnJhbWVkLUlQLUFkZHJlc3MnKSB7CgkJCSRpcCA9ICRhdHRyLT57J1ZhbHVlJ307CgkJfQoJfQoJ
-aWYgKGRlZmluZWQgJGlwKSB7CgkJIyB3cml0ZSBGcmFtZWQtSVAtQWRkcmVzcyB0byB0aGUgY2xp
-ZW50IGNvbmZpZ3VyYXRpb24KCQkjIFdBUk5JTkc6IHRoaXMgYXNzdW1lcyBubyBvdGhlciBjb25m
-aWd1cmF0aW9uIGJlc2lkZXMgdGhlIElQCgkJIyAJICAgZXhpc3RzIGluIHRoYXQgZmlsZSEKCQlt
-eSAkZmlsZW5hbWUgPSAkY2xpZW50X2NvbmZpZ19kaXIuJHVzZXJuYW1lOwoJCXVubGluayAkZmls
-ZW5hbWU7CgkJc3lzb3BlbihDTElFTlQsICRmaWxlbmFtZSwgT19XUk9OTFl8T19DUkVBVHxPX1RS
-VU5DKSBvcgoJCQlkaWUgIkNvdWxkIG5vdCBvcGVuIGNsaWVudCdzIGNvbmZpZyAnJGZpbGVuYW1l
-J1xuIjsKCQkJcHJpbnQgQ0xJRU5UICJpZmNvbmZpZy1wdXNoICRpcFxuIjsKCQljbG9zZSAoQ0xJ
-RU5UKTsKCX0KfSBlbHNlIHsKCWRpZSAiQXV0aCAnJHVzZXJuYW1lJyBmYWlsZWQsIFJBRElVUyBz
-YWlkOiAiLiRyLT5zdHJlcnJvcigpLicgQ29kZTogJy4kci0+Z2V0X2Vycm9yLiJcbiI7Cn0K
-
---------------050405020706080606080202--
 
