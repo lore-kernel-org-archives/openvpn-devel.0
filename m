@@ -1,8 +1,8 @@
-Message-ID: <47D3DDBB.805@...1080...>
-Date: Sun, 09 Mar 2008 20:53:15 +0800
+Message-ID: <47D493C4.1050809@...1080...>
+Date: Mon, 10 Mar 2008 09:49:56 +0800
 From: Wenzhuo Zhang <wenzhuo@...1080...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] too small font size in status window
+Subject: [Openvpn-devel] three minor issues with 2.1_rc7
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,6 +14,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset=GB2312
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: openvpn-users@lists.sourceforge.net
 
 Hi,
 
@@ -32,4 +33,5 @@ OpenVPN GUI can still connect and break routing unexpectedly. IMHO,
 OpenVPN should allow only one instance for one particular connection.
 
 Wenzhuo
+
 
