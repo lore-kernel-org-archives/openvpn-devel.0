@@ -1,9 +1,10 @@
-Message-ID: <47DD4B14.5060009@...1081...>
-Date: Sun, 16 Mar 2008 17:30:12 +0100
-From: Christophe Vandeplas <christophe@...1081...>
+Message-ID: <9e0cf0bf0803161105u71b7afc0tc90fed05da57f0dc@...278...>
+Date: Sun, 16 Mar 2008 20:05:10 +0200
+From: "Alon Bar-Lev" <alon.barlev@...277...>
+In-Reply-To: <47DD4B14.5060009@...1081...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------040409030303020303090608"
-Subject: [Openvpn-devel] patch pkcs11 dynamic key id detection
+References: <47DD4B14.5060009@...1081...>
+Subject: Re: [Openvpn-devel] patch pkcs11 dynamic key id detection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,207 +13,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
-This is a multi-part message in MIME format.
---------------040409030303020303090608
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+To: Christophe Vandeplas <christophe@...1081...>
+Cc: Peter Koch <pk@...1082...>, openvpn-devel@lists.sourceforge.net, James Yonan <jim@...41...>
 
-Hi all,
+Hello,
 
+I did not realize how many people depend on the low-level PKCS#11 properties.
 
- From the mailinglist I'm not the first one that wanted dynamic key-id 
-detection for pkcs11 authentication.
+I thought I prospone this to next OpenVPN version, but I see more an
+more people need "single configuration file" option.
 
-I first started to write a script, but it had to be platform independent. 
-Working on two scripts (bash and vbs) was stupid as they really became to 
-big and created extra security risks.
+I first thought to create a filter similar to what you suggest... But
+users would like to choose certificate based on certificate authority,
+EKU, UPN or any other field, and OpenVPN is already complex enough.
 
-That's why I started to work on this patch.
-(see attach)
+Then I thought I would execute some external hook, but OpenVPN does
+not have the ability to send large amount of data to hooks, and
+receive data from hooks.
 
-In short this is what I do:
-- New pkcs11-match variable in the openvpn.conf. This is the substring of 
-the key-id you want to match. It works with a 'first match wins' principle.
+So back to my original idea... Use the management interface to prompt
+the user to select a certificate.
 
-- options.c => I add the variable and the checks, as it's either 
-pkcs11-id or pkcs11-match
+You may find it at [1].
 
-- ssl.c => if pkcs11_match is set, do the checks and give error if 
-necessary. Store the key-id in options->pkcs11_id.
-I had to do some black magic here. options->pkcs11_id is defined as 
-const. So I had to un-const this variable to be able to change its value. 
-This is just a compiler-bypass but a long-term solution should be sought 
-by changing some parts of the design of the const-ness of some variables. 
-I think this is something _you_ should decide.
+It introduces pkcs11-id-management configuration option and NEED-STR
+real-time management message, that is responded with the PKCS#11
+identity.
 
-- pkcs11.c => I copy-pasted some code of the find-pkcs11-ids(), 
-refactored it and added a check for the substring.
-First I wanted to add a regex-check, but then I had to depend on new libs 
-and that's probably something you do not want. The behavior is the same 
-as the cryptoapicert variable for windows. (where also a substring is 
-needed).
+It also introduced two management commands: pkcs11-id-count, pkcs11-id-get.
 
+The sequence is as follows:
+>NEED-STR:Need 'pkcs11-id-request' string MSG:Please specify PKCS#11 id to use
+pkcs11-id-count
+>PKCS11ID-COUNT:5
+pkcs11-id-get 0
+>PKCS11ID-ENTRY:'0', ID:'<snip>', BLOB:'<snip>'
+pkcs11-id-get 1
+>PKCS11ID-ENTRY:'1', ID:'<snip>', BLOB:'<snip>'
+needstr 'pkcs11-id-request' '<snip>'
 
-I did my best to try to prevent memory leaks, but please double check 
-that. Worst case only a few bytes should be lost, but hey better check :-)
+This allows a management application to inspect available
+certificates, and prompt the user to choose the correct one.
 
+James, some notes:
+1. Please acknowledge the NEED-STR addition. it is in the first revision.
+2. I had to increase the USER_PASS_LEN constant, as it is also used
+for strings now.
+3. I had to increase the ERR_BUF_SIZE constant, as I need to output a
+complete base64 certificate.
 
-Thanks for considering including this patch. I (and probably other 
-people) _need_ this functionality to make openVPN more userfriendly.
-The computer/config will not be locked to the smartcard. This enables 
-people to:
-- deploy the same configuration on different computers
-- log-in to the tunnel with different cards on the same machine. 
-(different users that share the same computer)
-- With eID's (what I use) the key-id contains similar characteristics.
-(like mine where  'BELPIC\x20\x28Basic\x20PIN\x29/02' is the end of the 
-Authentication key.
-Axalto/Belgium\x20eID/6CFF2491AB111E14/BELPIC\x20\x28Basic\x20PIN\x29/02  )
+I hope this helps,
+Alon Bar-Lev.
 
+[1] svn diff -r 2844:2849
+http://svn.openvpn.net/projects/openvpn/contrib/alon/BETA21/openvpn
 
-All input on the patch is welcome.
-
-
-
-Thanks
-
-Christophe
-
-PS: It's for my OpenVPN-plans with the eID...
-<http://christophe.vandeplas.com/2008/02/03/openvpn-belgian-eid>
-<http://christophe.vandeplas.com/2008/02/08/database-authorization-openvpn-eid>
-
-
--- 
-mailto:christophe@...1081...
-http://christophe.vandeplas.com
-
---------------040409030303020303090608
-Content-Type: text/plain; charset="utf-8"; name=pkcs11-id.patch;
- x-mac-creator=0; x-mac-type=0
-Content-Transfer-Encoding: base64
-Content-Disposition: inline;
- filename="pkcs11-id.patch"
-
-ZGlmZiAtTmF1ciBvcGVudnBuLTIuMV9yYzcvb3B0aW9ucy5jIG9wZW52cG4vb3B0aW9ucy5jCi0t
-LSBvcGVudnBuLTIuMV9yYzcvb3B0aW9ucy5jCTIwMDgtMDEtMjQgMDE6NTU6MTguMDAwMDAwMDAw
-ICswMTAwCisrKyBvcGVudnBuL29wdGlvbnMuYwkyMDA4LTAzLTE2IDE2OjIyOjExLjAwMDAwMDAw
-MCArMDEwMApAQCAtNTIwLDYgKzUyMCw3IEBACiAgICItLXBrY3MxMS1waW4tY2FjaGUgc2Vjb25k
-cyAgOiBOdW1iZXIgb2Ygc2Vjb25kcyB0byBjYWNoZSBQSU4uIFRoZSBkZWZhdWx0IGlzIC0xXG4i
-CiAgICIgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjYWNoZSB1bnRpbCB0b2tlbiBpcyBy
-ZW1vdmVkLlxuIgogICAiLS1wa2NzMTEtaWQgc2VyaWFsaXplZC1pZCAgIDogSWRlbnRpdHkgdG8g
-dXNlLCBnZXQgdXNpbmcgc3RhbmRhbG9uZSAtLXNob3ctcGtjczExLWlkc1xuIgorICAiLS1wa2Nz
-MTEtbWF0Y2ggc3RyaW5nICAgICAgIDogU3RyaW5nIHRvIG1hdGNoIHRoZSBJZGVudGl0eSB0byB1
-c2UsIHNlZSBwa2NzMTEtaWRcbiIKICNlbmRpZgkJCS8qIEVOQUJMRV9QS0NTMTEgKi8KICAiXG4i
-CiAgICJTU0wgTGlicmFyeSBpbmZvcm1hdGlvbjpcbiIKQEAgLTE3NjYsOCArMTc2NywxMSBAQAog
-ICAgICAgaWYgKG9wdGlvbnMtPnBrY3MxMV9wcm92aWRlcnNbMF0pCiAgICAgICAgewogICAgICAg
-ICBub3RudWxsIChvcHRpb25zLT5jYV9maWxlLCAiQ0EgZmlsZSAoLS1jYSkiKTsKLQlub3RudWxs
-IChvcHRpb25zLT5wa2NzMTFfaWQsICJQS0NTIzExIGlkICgtLXBrY3MxMS1pZCkiKTsKLQorLy8J
-bm90bnVsbCAob3B0aW9ucy0+cGtjczExX2lkLCAiUEtDUyMxMSBpZCAoLS1wa2NzMTEtaWQpIik7
-CisJaWYgKCFvcHRpb25zLT5wa2NzMTFfaWQgJiYgIW9wdGlvbnMtPnBrY3MxMV9tYXRjaCkKKwkg
-IG1zZyhNX1VTQUdFLCAiWW91IG11c3QgZGVmaW5lIFBLQ1MjMTEgaWQgKC0tcGtjczExLWlkKSBv
-ciBzdHJpbmcgdG8gbWF0Y2ggKC0tcGtjczExLW1hdGNoKS4iKTsKKwlpZiAob3B0aW9ucy0+cGtj
-czExX2lkICYmIG9wdGlvbnMtPnBrY3MxMV9tYXRjaCkKKwkgIG1zZyhNX1VTQUdFLCAiUGFyYW1l
-dGVyIC0tcGtjczExLW1hdGNoIGNhbm5vdCBub3QgYmUgdXNlZCB3aGVuIC0tcGtjczExLWlkIGlz
-IGFsc28gc3BlY2lmaWVkLiIpOwogCWlmIChvcHRpb25zLT5jZXJ0X2ZpbGUpCiAJICBtc2coTV9V
-U0FHRSwgIlBhcmFtZXRlciAtLWNlcnQgY2Fubm90IGJlIHVzZWQgd2hlbiAtLXBrY3MxMS1wcm92
-aWRlciBpcyBhbHNvIHNwZWNpZmllZC4iKTsKIAlpZiAob3B0aW9ucy0+cHJpdl9rZXlfZmlsZSkK
-QEAgLTUxMzcsNiArNTE0MSwxMSBAQAogICAgICAgVkVSSUZZX1BFUk1JU1NJT04gKE9QVF9QX0dF
-TkVSQUwpOwogICAgICAgb3B0aW9ucy0+cGtjczExX2lkID0gcFsxXTsKICAgICB9CisgIGVsc2Ug
-aWYgKHN0cmVxIChwWzBdLCAicGtjczExLW1hdGNoIikgJiYgcFsxXSkKKyAgeworICAgICAgVkVS
-SUZZX1BFUk1JU1NJT04gKE9QVF9QX0dFTkVSQUwpOworICAgICAgb3B0aW9ucy0+cGtjczExX21h
-dGNoID0gcFsxXTsKKyAgfQogI2VuZGlmCiAjaWZkZWYgVFVOU0VUUEVSU0lTVAogICBlbHNlIGlm
-IChzdHJlcSAocFswXSwgInJtdHVuIikpCmRpZmYgLU5hdXIgb3BlbnZwbi0yLjFfcmM3L29wdGlv
-bnMuaCBvcGVudnBuL29wdGlvbnMuaAotLS0gb3BlbnZwbi0yLjFfcmM3L29wdGlvbnMuaAkyMDA4
-LTAxLTIzIDIyOjA4OjQxLjAwMDAwMDAwMCArMDEwMAorKysgb3BlbnZwbi9vcHRpb25zLmgJMjAw
-OC0wMy0xNiAxMTo1OTo0NS4wMDAwMDAwMDAgKzAxMDAKQEAgLTQxOSw2ICs0MTksNyBAQAogICBi
-b29sIHBrY3MxMV9jZXJ0X3ByaXZhdGVbTUFYX1BBUk1TXTsKICAgaW50IHBrY3MxMV9waW5fY2Fj
-aGVfcGVyaW9kOwogICBjb25zdCBjaGFyICpwa2NzMTFfaWQ7CisgIGNvbnN0IGNoYXIgKnBrY3Mx
-MV9tYXRjaDsKICNlbmRpZgogCiAjaWZkZWYgV0lOMzIKZGlmZiAtTmF1ciBvcGVudnBuLTIuMV9y
-YzcvcGtjczExLmMgb3BlbnZwbi9wa2NzMTEuYwotLS0gb3BlbnZwbi0yLjFfcmM3L3BrY3MxMS5j
-CTIwMDgtMDEtMjMgMjI6MDg6NDEuMDAwMDAwMDAwICswMTAwCisrKyBvcGVudnBuL3BrY3MxMS5j
-CTIwMDgtMDMtMTYgMTY6MjU6MzcuMDAwMDAwMDAwICswMTAwCkBAIC01NDMsNiArNTQzLDEzNSBA
-QAogCX0KIH0KIAorY2hhciAqIAorZmluZF9wa2NzMTFfaWQgKAorCWNvbnN0IGNoYXIgKiBjb25z
-dCBwa2NzMTFfbWF0Y2gKKykgewkKKwlBU1NFUlQgKHBrY3MxMV9tYXRjaCE9TlVMTCk7CisKKwlj
-aGFyICpyZXQgPSBOVUxMOworCQorCXBrY3MxMWhfY2VydGlmaWNhdGVfaWRfbGlzdF90IHVzZXJf
-Y2VydGlmaWNhdGVzID0gTlVMTDsKKwlwa2NzMTFoX2NlcnRpZmljYXRlX2lkX2xpc3RfdCBjdXJy
-ZW50ID0gTlVMTDsKKwlDS19SViBydiA9IENLUl9GVU5DVElPTl9GQUlMRUQ7CisJCisJaWYgKAor
-CQkocnYgPSBwa2NzMTFoX2NlcnRpZmljYXRlX2VudW1DZXJ0aWZpY2F0ZUlkcyAoCisJCQlQS0NT
-MTFIX0VOVU1fTUVUSE9EX0NBQ0hFX0VYSVNULAorCQkJTlVMTCwKKwkJCVBLQ1MxMUhfUFJPTVBU
-X01BU0tfQUxMT1dfQUxMLAorCQkJTlVMTCwKKwkJCSZ1c2VyX2NlcnRpZmljYXRlcworCQkpKSAh
-PSBDS1JfT0sKKwkgICApIHsKKwkJbXNnIChNX0ZBVEFMLCAiUEtDUyMxMTogQ2Fubm90IGVudW1l
-cmF0ZSBjZXJ0aWZpY2F0ZXMgJWxkLSclcyciLCBydiwgcGtjczExaF9nZXRNZXNzYWdlIChydikp
-OworCQlnb3RvIGNsZWFudXA7CisJfQorCQorCS8vIGxvb3Agb3ZlciB0aGUgY2VydHMgdGlsbCBh
-KSB0aGUgbGFzdCBvbmUgYikgd2UgaGF2ZSBhIGhpdAorCWZvciAoY3VycmVudCA9IHVzZXJfY2Vy
-dGlmaWNhdGVzO2N1cnJlbnQgIT0gTlVMTCAmJiByZXQgPT0gTlVMTDsgY3VycmVudCA9IGN1cnJl
-bnQtPm5leHQpIHsKKwkJcGtjczExaF9jZXJ0aWZpY2F0ZV90IGNlcnRpZmljYXRlID0gTlVMTDsK
-KwkJWDUwOSAqeDUwOSA9IE5VTEw7CisJCWNoYXIgZG5bMTAyNF0gPSB7MH07CisJCWNoYXIgKnNl
-ciA9IE5VTEw7CisJCXNpemVfdCBzZXJfbGVuID0gMDsKKwkJaW50IG47CisKKwkJaWYgKAorCQkJ
-KHJ2ID0gcGtjczExaF9jZXJ0aWZpY2F0ZV9zZXJpYWxpemVDZXJ0aWZpY2F0ZUlkICgKKwkJCQlO
-VUxMLAorCQkJCSZzZXJfbGVuLAorCQkJCWN1cnJlbnQtPmNlcnRpZmljYXRlX2lkCisJCQkpKSAh
-PSBDS1JfT0sKKwkJKSB7CisJCQltc2cgKE1fRkFUQUwsICJQS0NTIzExOiBDYW5ub3Qgc2VyaWFs
-aXplIGNlcnRpZmljYXRlICVsZC0nJXMnIiwgcnYsIHBrY3MxMWhfZ2V0TWVzc2FnZSAocnYpKTsK
-KwkJCWdvdG8gY2xlYW51cDE7CisJCX0KKworCQlpZiAoCisJCQlydiA9PSBDS1JfT0sgJiYKKwkJ
-CShzZXIgPSAoY2hhciAqKW1hbGxvYyAoc2VyX2xlbikpID09IE5VTEwKKwkJKSB7CisJCQltc2cg
-KE1fRkFUQUwsICJQS0NTIzExOiBDYW5ub3QgYWxsb2NhdGUgbWVtb3J5Iik7CisJCQlnb3RvIGNs
-ZWFudXAxOworCQl9CisJCQorCQlpZiAoCisJCQkocnYgPSBwa2NzMTFoX2NlcnRpZmljYXRlX3Nl
-cmlhbGl6ZUNlcnRpZmljYXRlSWQgKAorCQkJCXNlciwKKwkJCQkmc2VyX2xlbiwKKwkJCQljdXJy
-ZW50LT5jZXJ0aWZpY2F0ZV9pZAorCQkJKSkgIT0gQ0tSX09LCisJCSkgeworCQkJbXNnIChNX0ZB
-VEFMLCAiUEtDUyMxMTogQ2Fubm90IHNlcmlhbGl6ZSBjZXJ0aWZpY2F0ZSAlbGQtJyVzJyIsIHJ2
-LCBwa2NzMTFoX2dldE1lc3NhZ2UgKHJ2KSk7CisJCQlnb3RvIGNsZWFudXAxOworCQl9CisKKwkJ
-aWYgKAorCQkJKHJ2ID0gcGtjczExaF9jZXJ0aWZpY2F0ZV9jcmVhdGUgKAorCQkJCWN1cnJlbnQt
-PmNlcnRpZmljYXRlX2lkLAorCQkJCU5VTEwsCisJCQkJUEtDUzExSF9QUk9NUFRfTUFTS19BTExP
-V19BTEwsCisJCQkJUEtDUzExSF9QSU5fQ0FDSEVfSU5GSU5JVEUsCisJCQkJJmNlcnRpZmljYXRl
-CisJCQkpKQorCQkpIHsKKwkJCW1zZyAoTV9GQVRBTCwgIlBLQ1MjMTE6IENhbm5vdCBjcmVhdGUg
-Y2VydGlmaWNhdGUgJWxkLSclcyciLCBydiwgcGtjczExaF9nZXRNZXNzYWdlIChydikpOworCQkJ
-Z290byBjbGVhbnVwMTsKKwkJfQorCisJCWlmICgoeDUwOSA9IHBrY3MxMWhfb3BlbnNzbF9nZXRY
-NTA5IChjZXJ0aWZpY2F0ZSkpID09IE5VTEwpIHsKKwkJCW1zZyAoTV9GQVRBTCwgIlBLQ1MjMTE6
-IENhbm5vdCBnZXQgWDUwOSIpOworCQkJZ290byBjbGVhbnVwMTsKKwkJfQorCisJCVg1MDlfTkFN
-RV9vbmVsaW5lICgKKwkJCVg1MDlfZ2V0X3N1YmplY3RfbmFtZSAoeDUwOSksCisJCQlkbiwKKwkJ
-CXNpemVvZiAoZG4pCisJCSk7CisKKwkJLyptc2cgKAorCQkJTV9JTkZPfE1fTk9QUkVGSVh8TV9O
-T0xGLAorCQkJKAorCQkJCSJDZXJ0aWZpY2F0ZVxuIgorCQkJCSIgICAgICAgRE46ICAgICAgICAg
-ICAgICVzXG4iCisJCQkJIiAgICAgICBTZXJpYWxpemVkIGlkOiAgJXNcbiIKKwkJCSksCisJCQlk
-biwKKwkJCXNlcgorCQkpOyovCisJCQorCQkvLyBpZiB3ZSBoYXZlIGEgbWF0Y2gsIHNhdmUgaXQg
-dG8gdGhlIHJldCB2YWx1ZS4KKwkJaWYgKE5VTEwhPXN0cnN0cihzZXIsIHBrY3MxMV9tYXRjaCkp
-IHsKKwkJCXJldCA9IG1hbGxvYyAoc2VyX2xlbik7CisJCQlzdHJjcHkocmV0LCBzZXIpOyAKKwkJ
-fQorCQkKKwljbGVhbnVwMToKKwkJaWYgKHg1MDkgIT0gTlVMTCkgeworCQkJWDUwOV9mcmVlICh4
-NTA5KTsKKwkJCXg1MDkgPSBOVUxMOworCQl9CisKKwkJaWYgKGNlcnRpZmljYXRlICE9IE5VTEwp
-IHsKKwkJCXBrY3MxMWhfY2VydGlmaWNhdGVfZnJlZUNlcnRpZmljYXRlIChjZXJ0aWZpY2F0ZSk7
-CisJCQljZXJ0aWZpY2F0ZSA9IE5VTEw7CisJCX0KKworCQlpZiAoc2VyICE9IE5VTEwpIHsKKwkJ
-CWZyZWUgKHNlcik7CisJCQlzZXIgPSBOVUxMOworCQl9CisJfQorCWNsZWFudXA6CisJaWYgKHVz
-ZXJfY2VydGlmaWNhdGVzICE9IE5VTEwpIHsKKwkJcGtjczExaF9jZXJ0aWZpY2F0ZV9mcmVlQ2Vy
-dGlmaWNhdGVJZExpc3QgKHVzZXJfY2VydGlmaWNhdGVzKTsKKwkJdXNlcl9jZXJ0aWZpY2F0ZXMg
-PSBOVUxMOworCX0KKwlyZXR1cm4gcmV0OworfQorCiB2b2lkCiBzaG93X3BrY3MxMV9pZHMgKAog
-CWNvbnN0IGNoYXIgKiBjb25zdCBwcm92aWRlciwKZGlmZiAtTmF1ciBvcGVudnBuLTIuMV9yYzcv
-cGtjczExLmggb3BlbnZwbi9wa2NzMTEuaAotLS0gb3BlbnZwbi0yLjFfcmM3L3BrY3MxMS5oCTIw
-MDgtMDEtMjMgMjI6MDg6NDEuMDAwMDAwMDAwICswMTAwCisrKyBvcGVudnBuL3BrY3MxMS5oCTIw
-MDgtMDMtMTYgMTY6MTA6MjEuMDAwMDAwMDAwICswMTAwCkBAIC01OCw2ICs1OCwxMiBAQAogCWNv
-bnN0IGNoYXIgKiBjb25zdCBwa2NzMTFfaWQKICk7CiAKK2NoYXIgKgorZmluZF9wa2NzMTFfaWQg
-KAorCWNvbnN0IGNoYXIgKiBjb25zdCBwa2NzMTFfbWF0Y2gKKyk7CisKKwogdm9pZAogc2hvd19w
-a2NzMTFfaWRzICgKIAljb25zdCBjaGFyICogY29uc3QgcHJvdmlkZXIsCmRpZmYgLU5hdXIgb3Bl
-bnZwbi0yLjFfcmM3L3NzbC5jIG9wZW52cG4vc3NsLmMKLS0tIG9wZW52cG4tMi4xX3JjNy9zc2wu
-YwkyMDA4LTAxLTIzIDIyOjA4OjQxLjAwMDAwMDAwMCArMDEwMAorKysgb3BlbnZwbi9zc2wuYwky
-MDA4LTAzLTE2IDE2OjUzOjAyLjAwMDAwMDAwMCArMDEwMApAQCAtMzAsNiArMzAsOCBAQAogICog
-b3ZlciB0aGUgc2FtZSBUQ1AvVURQIHBvcnQuCiAgKi8KIAorIyBkZWZpbmUgX19VTkNPTlNUKGEp
-ICgodm9pZCAqKSh1bnNpZ25lZCBsb25nKShjb25zdCB2b2lkICopKGEpKQorCiAjaWZkZWYgV0lO
-MzIKICNpbmNsdWRlICJjb25maWctd2luMzIuaCIKICNlbHNlCkBAIC0xMDc1LDcgKzEwNzcsNyBA
-QAogICogQWxsIGZpbGVzIGFyZSBpbiBQRU0gZm9ybWF0LgogICovCiBTU0xfQ1RYICoKLWluaXRf
-c3NsIChjb25zdCBzdHJ1Y3Qgb3B0aW9ucyAqb3B0aW9ucykKK2luaXRfc3NsIChjb25zdCBzdHJ1
-Y3Qgb3B0aW9ucyAqb3B0aW9ucykgCiB7CiAgIFNTTF9DVFggKmN0eCA9IE5VTEw7CiAgIERIICpk
-aDsKQEAgLTExOTUsMTAgKzExOTcsMjAgQEAKICAgZWxzZQogICAgIHsKICAgICAgIC8qIFVzZSBz
-ZXBlcmF0ZSBQRU0gZmlsZXMgZm9yIGtleSwgY2VydCBhbmQgQ0EgY2VydHMgKi8KLQorCSAgCiAj
-aWZkZWYgRU5BQkxFX1BLQ1MxMQogICAgICAgaWYgKG9wdGlvbnMtPnBrY3MxMV9wcm92aWRlcnNb
-MF0pCiAgICAgICAgIHsKKwkgaWYgKG9wdGlvbnMtPnBrY3MxMV9tYXRjaCkKKwkgICB7CisJCSBf
-X1VOQ09OU1QoIG9wdGlvbnMtPnBrY3MxMV9pZCkgPSBmaW5kX3BrY3MxMV9pZChvcHRpb25zLT5w
-a2NzMTFfbWF0Y2gpOworCQkgbXNnIChNX1dBUk4sICJQS0NTIzExLWlkIGhhcyBiZWVuIGZvdW5k
-OiAlcyIsIG9wdGlvbnMtPnBrY3MxMV9pZCk7CisJCSAKKwkJIGlmIChvcHRpb25zLT5wa2NzMTFf
-aWQ9PU5VTEwpIHsKKwkJCSBtc2cgKE1fV0FSTiwgIkNhbm5vdCBmaW5kIHZhbGlkIGNlcnRpZmlj
-YXRlIElEIHVzaW5nIFBLQ1MjMTEgaW50ZXJmYWNlIGFuZCBzdHJpbmcgdG8gbWF0Y2giKTsKKwkJ
-CSBnb3RvIGVycjsKKwkJIH0KKwkgICB9CiAgICAgICAgICAvKiBMb2FkIENlcnRpZmljYXRlIGFu
-ZCBQcml2YXRlIEtleSAqLwogCSBpZiAoIVNTTF9DVFhfdXNlX3BrY3MxMSAoY3R4LCBvcHRpb25z
-LT5wa2NzMTFfaWQpKQogCSAgIHsK
-
---------------040409030303020303090608--
+On 3/16/08, Christophe Vandeplas <christophe@...1081...> wrote:
+> Hi all,
+>
+>
+>   From the mailinglist I'm not the first one that wanted dynamic key-id
+>  detection for pkcs11 authentication.
 
