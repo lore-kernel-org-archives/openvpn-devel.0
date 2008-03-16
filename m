@@ -1,18 +1,9 @@
-Message-ID: <47D93FE9.4030600@...1068...>
-Date: Thu, 13 Mar 2008 15:53:29 +0100
-From: Mirek Zajic <zajic@...1068...>
+Message-ID: <47DD4B14.5060009@...1081...>
+Date: Sun, 16 Mar 2008 17:30:12 +0100
+From: Christophe Vandeplas <christophe@...1081...>
 MIME-Version: 1.0
-References: <478C94C4.1050409@...1068...>	
-	<9e0cf0bf0801150345i749f5ca6na1f8343b6da390fc@...278...>	
-	<9e0cf0bf0801150345p4639a831ub8f85fd56bda48db@...278...>	
-	<478CAD6A.3010808@...1068...>	
-	<9e0cf0bf0801150522x72621b20pc36373986f2ad8a1@...278...>	
-	<47D7CBC2.6020606@...1068...>	
-	<9e0cf0bf0803120802x53ed773ev38f25064069909e9@...278...>	
-	<47D7F911.50307@...1068...>
-	<9e0cf0bf0803130645i1f84a228r2b983a00e7159faa@...278...>
-In-Reply-To: <9e0cf0bf0803130645i1f84a228r2b983a00e7159faa@...278...>
-Subject: Re: [Openvpn-devel] NTLMv2 patch corrected
+Content-Type: multipart/mixed; boundary="------------040409030303020303090608"
+Subject: [Openvpn-devel] patch pkcs11 dynamic key id detection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,455 +12,207 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: openvpn-devel@lists.sourceforge.net
+
+This is a multi-part message in MIME format.
+--------------040409030303020303090608
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
 
-I'm sending NTLMv2 patch again. I hope that everything is correct now 
-:-) Again thanks to Alon for his feedback.
+Hi all,
 
 
-Miroslav Zajic
-NextSoft s.r.o.
+ From the mailinglist I'm not the first one that wanted dynamic key-id 
+detection for pkcs11 authentication.
 
-P.S. I moved int64 macros to ntlm.c. I left them unchanged, becouse they 
-could be useful in future.
+I first started to write a script, but it had to be platform independent. 
+Working on two scripts (bash and vbs) was stupid as they really became to 
+big and created extra security risks.
+
+That's why I started to work on this patch.
+(see attach)
+
+In short this is what I do:
+- New pkcs11-match variable in the openvpn.conf. This is the substring of 
+the key-id you want to match. It works with a 'first match wins' principle.
+
+- options.c => I add the variable and the checks, as it's either 
+pkcs11-id or pkcs11-match
+
+- ssl.c => if pkcs11_match is set, do the checks and give error if 
+necessary. Store the key-id in options->pkcs11_id.
+I had to do some black magic here. options->pkcs11_id is defined as 
+const. So I had to un-const this variable to be able to change its value. 
+This is just a compiler-bypass but a long-term solution should be sought 
+by changing some parts of the design of the const-ness of some variables. 
+I think this is something _you_ should decide.
+
+- pkcs11.c => I copy-pasted some code of the find-pkcs11-ids(), 
+refactored it and added a check for the substring.
+First I wanted to add a regex-check, but then I had to depend on new libs 
+and that's probably something you do not want. The behavior is the same 
+as the cryptoapicert variable for windows. (where also a substring is 
+needed).
 
 
-diff -Naur openvpn-2.1/ntlm.c openvpn-NTLMv2-predelane-2.1/ntlm.c
---- openvpn-2.1/ntlm.c    2008-01-13 21:25:52.915264000 +0100
-+++ openvpn-NTLMv2-predelane-2.1/ntlm.c    2008-03-13 15:29:31.109375000 
-+0100
-@@ -3,6 +3,8 @@
-  *
-  *  Copyright (C) 2004 William Preston
-  *
-+ *  *NTLMv2 support and domain name parsing by Miroslav Zajic, NextSoft 
-s.r.o.*
-+ *
-  *  This program is free software; you can redistribute it and/or modify
-  *  it under the terms of the GNU General Public License as published by
-  *  the Free Software Foundation; either version 2 of the License, or
-@@ -41,6 +43,21 @@
- 
- #include "memdbg.h"
- 
-+
-+/* 64bit datatype macros */
-+#ifdef _MSC_VER
-+    /* MS compilers */
-+#    define UINTEGER64 __int64
-+#    define UINT64(c) c ## Ui64
-+#else
-+    /* Non MS compilers */
-+#    define UINTEGER64 unsigned long long
-+#    define UINT64(c) c ## LL
-+#endif
-+
-+
-+
-+
- static void
- create_des_keys(const unsigned char *hash, unsigned char *key)
- {
-@@ -70,6 +87,61 @@
-   memcpy (result, md, 16);
- }
- 
-+static void
-+gen_hmac_md5 (const char* data, int data_len, const char* key, int 
-key_len,char *result)
-+{
-+    unsigned int len;
-+
-+    HMAC_CTX c;
-+    HMAC_Init (&c, key, key_len, EVP_md5());
-+    HMAC_Update (&c, data, data_len);
-+    HMAC_Final (&c, result, &len);
-+    HMAC_CTX_cleanup(&c);
-+}
-+
-+static void
-+gen_timestamp (unsigned char *timestamp)
-+{
-+    /* Copies 8 bytes long timestamp into "timestamp" buffer.
-+     * Timestamp is Little-endian, 64-bit signed value representing the 
-number of tenths of a microsecond since January 1, 1601.
-+     */
-+
-+    UINTEGER64 timestamp_ull;
-+
-+    timestamp_ull = openvpn_time(NULL);
-+    timestamp_ull = (timestamp_ull + UINT64(11644473600)) * 
-UINT64(10000000);
-+
-+    /* store little endian value */
-+    timestamp[0]= timestamp_ull & UINT64(0xFF);
-+    timestamp[1]= (timestamp_ull  >> 8)  & UINT64(0xFF);
-+    timestamp[2]= (timestamp_ull  >> 16) & UINT64(0xFF);
-+    timestamp[3]= (timestamp_ull  >> 24) & UINT64(0xFF);
-+    timestamp[4]= (timestamp_ull  >> 32) & UINT64(0xFF);
-+    timestamp[5]= (timestamp_ull  >> 40) & UINT64(0xFF);
-+    timestamp[6]= (timestamp_ull  >> 48) & UINT64(0xFF);
-+    timestamp[7]= (timestamp_ull  >> 56) & UINT64(0xFF);
-+}
-+
-+static void
-+gen_nonce (unsigned char *nonce)
-+{
-+    /* Generates 8 random bytes to be used as client nonce */
-+    int i;
-+
-+    for(i=0;i<8;i++){
-+        nonce[i] = (unsigned char)get_random();
-+    }
-+}
-+
-+unsigned char *my_strupr(unsigned char *str)
-+{
-+    /* converts string to uppercase in place */
-+    unsigned char *tmp = str;;
-+
-+    do *str = toupper(*str); while (*(++str));
-+    return tmp;
-+}
-+
- static int
- unicodize (char *dst, const char *src)
- {
-@@ -85,6 +157,18 @@
-   return i;
- }
- 
-+static void
-+add_security_buffer(int sb_offset, void *data, int length, unsigned 
-char *msg_buf, int *msg_bufpos)
-+{
-+    /* Adds security buffer data to a message and sets security 
-buffer's offset and length */
-+    msg_buf[sb_offset] = (unsigned char)length;
-+    msg_buf[sb_offset + 2] = msg_buf[sb_offset];
-+    msg_buf[sb_offset + 4] = (unsigned char)(*msg_bufpos & 0xff);
-+    msg_buf[sb_offset + 5] = (unsigned char)((*msg_bufpos >> 8) & 0xff);
-+    memcpy(&msg_buf[*msg_bufpos], data, msg_buf[sb_offset]);
-+    *msg_bufpos += length;
-+}
-+
- const char *
- ntlm_phase_1 (const struct http_proxy_info *p, struct gc_arena *gc)
- {
-@@ -105,23 +189,56 @@
- const char *
- ntlm_phase_3 (const struct http_proxy_info *p, const char *phase_2, 
-struct gc_arena *gc)
- {
-+    /* NTLM handshake
-+     *
-+     * http://davenport.sourceforge.net/ntlm.html
-+     *
-+     */
-+   
-   char pwbuf[sizeof (p->up.password) * 2]; /* for unicode password */
-   char buf2[128]; /* decoded reply from proxy */
--  char phase3[146];
-+  unsigned char phase3[464];
- 
-   char md4_hash[21];
--  char challenge[8], response[24];
--  int i, ret_val, buflen;
-+  char challenge[8], ntlm_response[24];
-+  int i, ret_val;
-   des_cblock key1, key2, key3;
-   des_key_schedule sched1, sched2, sched3;
- 
--  /* try a minimal NTLM handshake
--   *
--   * http://davenport.sourceforge.net/ntlm.html
--   *
--   */
-+    char ntlmv2_response[144];
-+    char userdomain_u[256]; /* for uppercase unicode username and domain */
-+    char userdomain[128];   /* the same as previous but ascii */
-+    char ntlmv2_hash[16];
-+    char ntlmv2_hmacmd5[16];
-+    char *ntlmv2_blob = ntlmv2_response + 16; /* inside 
-ntlmv2_response, length: 128 */
-+    int ntlmv2_blob_size=0;
-+    int phase3_bufpos = 0x40; /* offset to next security buffer data to 
-be added */
-+    int len;
-+
-+    char domain[128];
-+    char username[128];
-+    char *separator;
-+
-+    bool ntlmv2_enabled = (p->auth_method == HTTP_AUTH_NTLM2);
-+
-   ASSERT (strlen (p->up.username) > 0);
-   ASSERT (strlen (p->up.password) > 0);
-+   
-+    /* username parsing */
-+    separator = strchr(p->up.username, '\\');
-+    if (separator == NULL) {
-+        strncpy(username, p->up.username, sizeof(username)-1);
-+        username[sizeof(username)-1]=0;
-+        domain[0]=0;
-+    } else {
-+        strncpy(username, separator+1, sizeof(username)-1);
-+        username[sizeof(username)-1]=0;
-+        len = separator - p->up.username;
-+        if (len > sizeof(domain) - 1) len = sizeof(domain) - 1;
-+        strncpy(domain, p->up.username,  len);
-+        domain[len]=0;
-+    }
-+
- 
-   /* fill 1st 16 bytes with md4 hash, disregard terminating null */
-   gen_md4_hash (pwbuf, unicodize (pwbuf, p->up.password) - 2, md4_hash);
-@@ -139,48 +256,95 @@
-     challenge[i] = buf2[i+24];
-   }
- 
--  create_des_keys ((unsigned char *)md4_hash, key1);
--  des_set_key_unchecked ((des_cblock *)key1, sched1);
--  des_ecb_encrypt ((des_cblock *)challenge, (des_cblock *)response, 
-sched1, DES_ENCRYPT);
--
--  create_des_keys ((unsigned char *)&(md4_hash[7]), key2);
--  des_set_key_unchecked ((des_cblock *)key2, sched2);
--  des_ecb_encrypt ((des_cblock *)challenge, (des_cblock 
-*)&(response[8]), sched2, DES_ENCRYPT);
--
--  create_des_keys ((unsigned char *)&(md4_hash[14]), key3);
--  des_set_key_unchecked ((des_cblock *)key3, sched3);
--  des_ecb_encrypt ((des_cblock *)challenge, (des_cblock 
-*)&(response[16]), sched3, DES_ENCRYPT);
--
--  /* clear reply */
--  memset (phase3, 0, sizeof (phase3));
--
--  strcpy (phase3, "NTLMSSP\0");
--  phase3[8] = 3; /* type 3 */
--
--  buflen = 0x58 + strlen (p->up.username);
--  if (buflen > (int) sizeof (phase3))
--    buflen = sizeof (phase3);
--
--  phase3[0x10] = buflen; /* lm not used */
--  phase3[0x20] = buflen; /* default domain (i.e. proxy's domain) */
--  phase3[0x30] = buflen; /* no workstation name supplied */
--  phase3[0x38] = buflen; /* no session key */
--
--  phase3[0x14] = 24; /* ntlm response is 24 bytes long */
--  phase3[0x16] = phase3[0x14];
--  phase3[0x18] = 0x40; /* ntlm offset */
--  memcpy (&(phase3[0x40]), response, 24);
--
--
--  phase3[0x24] = strlen (p->up.username); /* username in ascii */
--  phase3[0x26] = phase3[0x24];
--  phase3[0x28] = 0x58;
--  strncpy (&(phase3[0x58]), p->up.username, sizeof (phase3) - 0x58);
--
-+    if (ntlmv2_enabled){ /* Generate NTLMv2 response */
-+       
-+        /* NTLMv2 hash */
-+        my_strupr(strcpy(userdomain, username));
-+        if (strlen(username) + strlen(domain) < sizeof(userdomain))
-+            strcat(userdomain, domain);
-+        else
-+            msg (M_INFO, "Warning: Username or domain too long");
-+        unicodize (userdomain_u, userdomain);
-+        gen_hmac_md5(userdomain_u, 2 * strlen(userdomain), md4_hash, 
-16, ntlmv2_hash);
-+
-+        /* NTLMv2 Blob */
-+        memset(ntlmv2_blob, 0, 128);                /* Clear blob 
-buffer */
-+        ntlmv2_blob[0x00]=1;                        /* Signature */
-+        ntlmv2_blob[0x01]=1;                        /* Signature */
-+        ntlmv2_blob[0x04]=0;                        /* Reserved */
-+        gen_timestamp(&ntlmv2_blob[0x08]);          /* 64-bit Timestamp */
-+        gen_nonce(&ntlmv2_blob[0x10]);              /* 64-bit Client 
-Nonce */
-+        ntlmv2_blob[0x18]=0;                        /* Unknown, zero 
-should work */
-+
-+        /* Add target information block to the blob */
-+        int tib_len;
-+        if (( *((long *)&buf2[0x14]) & 0x00800000) == 0x00800000){ /* 
-Check for Target Information block */
-+            tib_len = buf2[0x28];/* Get Target Information block size */
-+            if (tib_len > 96) tib_len = 96;
-+            char *tib_ptr = buf2 + buf2[0x2c]; /* Get Target 
-Information block pointer */
-+            memcpy(&ntlmv2_blob[0x1c], tib_ptr, tib_len); /* Copy 
-Target Information block into the blob */
-+        } else {
-+            tib_len = 0;
-+        }
-+
-+        ntlmv2_blob[0x1c + tib_len] = 0;            /* Unknown, zero 
-works */
-+
-+        /* Get blob length */
-+        ntlmv2_blob_size = 0x20 + tib_len;
-+
-+        /* Add challenge from message 2 */
-+        memcpy(&ntlmv2_response[8], challenge, 8);
-+
-+        /* hmac-md5 */
-+        gen_hmac_md5(&ntlmv2_response[8], ntlmv2_blob_size + 8, 
-ntlmv2_hash, 16, ntlmv2_hmacmd5);
-+       
-+        /* Add hmac-md5 result to the blob */
-+        memcpy(ntlmv2_response, ntlmv2_hmacmd5, 16); /* Note: This 
-overwrites challenge previously written at ntlmv2_response[8..15] */
-+   
-+    } else { /* Generate NTLM response */
-+
-+        create_des_keys ((unsigned char *)md4_hash, key1);
-+        des_set_key_unchecked ((des_cblock *)key1, sched1);
-+        des_ecb_encrypt ((des_cblock *)challenge, (des_cblock 
-*)ntlm_response, sched1, DES_ENCRYPT);
-+
-+        create_des_keys ((unsigned char *)&(md4_hash[7]), key2);
-+        des_set_key_unchecked ((des_cblock *)key2, sched2);
-+        des_ecb_encrypt ((des_cblock *)challenge, (des_cblock 
-*)&(ntlm_response[8]), sched2, DES_ENCRYPT);
-+
-+        create_des_keys ((unsigned char *)&(md4_hash[14]), key3);
-+        des_set_key_unchecked ((des_cblock *)key3, sched3);
-+        des_ecb_encrypt ((des_cblock *)challenge, (des_cblock 
-*)&(ntlm_response[16]), sched3, DES_ENCRYPT);
-+    }
-+   
-+   
-+    memset (phase3, 0, sizeof (phase3)); /* clear reply */
-+
-+    strcpy (phase3, "NTLMSSP\0"); /* signature */
-+    phase3[8] = 3; /* type 3 */
-+
-+    if (ntlmv2_enabled){ /* NTLMv2 response */
-+        add_security_buffer(0x14, ntlmv2_response, ntlmv2_blob_size + 
-16, phase3, &phase3_bufpos);
-+    }else{ /* NTLM response */
-+        add_security_buffer(0x14, ntlm_response, 24, phase3, 
-&phase3_bufpos);
-+    }
-+   
-+    /* username in ascii */
-+    add_security_buffer(0x24, username, strlen (username), phase3, 
-&phase3_bufpos);
-+
-+    /* Set domain. If <domain> is empty, default domain will be used 
-(i.e. proxy's domain) */
-+    add_security_buffer(0x1c, domain, strlen (domain), phase3, 
-&phase3_bufpos);
-+   
-+
-+    /* other security buffers will be empty */
-+    phase3[0x10] = phase3_bufpos; /* lm not used */
-+    phase3[0x30] = phase3_bufpos; /* no workstation name supplied */
-+    phase3[0x38] = phase3_bufpos; /* no session key */
-+   
-+    /* flags */
-   phase3[0x3c] = 0x02; /* negotiate oem */
-   phase3[0x3d] = 0x02; /* negotiate ntlm */
- 
--  return ((const char *)make_base64_string2 ((unsigned char *)phase3, 
-buflen, gc));
-+  return ((const char *)make_base64_string2 ((unsigned char *)phase3, 
-phase3_bufpos, gc));
- }
- 
- #else
-diff -Naur openvpn-2.1/proxy.c openvpn-NTLMv2-predelane-2.1/proxy.c
---- openvpn-2.1/proxy.c    2008-01-13 21:25:52.945307200 +0100
-+++ openvpn-NTLMv2-predelane-2.1/proxy.c    2008-01-15 
-11:46:12.737156800 +0100
-@@ -294,19 +294,21 @@
-     p->auth_method = HTTP_AUTH_BASIC;
-       else if (!strcmp (o->auth_method_string, "ntlm"))
-     p->auth_method = HTTP_AUTH_NTLM;
-+      else if (!strcmp (o->auth_method_string, "ntlm2"))
-+    p->auth_method = HTTP_AUTH_NTLM2;
-       else
--    msg (M_FATAL, "ERROR: unknown HTTP authentication method: '%s' -- 
-only the 'none', 'basic', or 'ntlm' methods are currently supported",
-+    msg (M_FATAL, "ERROR: unknown HTTP authentication method: '%s' -- 
-only the 'none', 'basic', 'ntlm', or 'ntlm2' methods are currently 
-supported",
-          o->auth_method_string);
-     }
- 
--  /* only basic and NTLM authentication supported so far */
--  if (p->auth_method == HTTP_AUTH_BASIC || p->auth_method == 
-HTTP_AUTH_NTLM)
-+  /* only basic and NTLM/NTLMv2 authentication supported so far */
-+  if (p->auth_method == HTTP_AUTH_BASIC || p->auth_method == 
-HTTP_AUTH_NTLM || p->auth_method == HTTP_AUTH_NTLM2)
-     {
-       get_user_pass_http (p, true);
-     }
- 
- #if !NTLM
--  if (p->auth_method == HTTP_AUTH_NTLM)
-+  if (p->auth_method == HTTP_AUTH_NTLM || p->auth_method == 
-HTTP_AUTH_NTLM2)
-     msg (M_FATAL, "Sorry, this version of " PACKAGE_NAME " was built 
-without NTLM Proxy support.");
- #endif
- 
-@@ -374,6 +376,12 @@
- 
- #if NTLM
-     case HTTP_AUTH_NTLM:
-+    case HTTP_AUTH_NTLM2:
-+      /* keep-alive connection */
-+      openvpn_snprintf (buf, sizeof(buf), "Proxy-Connection: Keep-Alive");
-+      if (!send_line_crlf (sd, buf))
-+    goto error;
-+
-       openvpn_snprintf (buf, sizeof(buf), "Proxy-Authorization: NTLM %s",
-             ntlm_phase_1 (p, &gc));
-       msg (D_PROXY, "Attempting NTLM Proxy-Authorization phase 1");
-@@ -411,7 +419,7 @@
-       msg (D_PROXY, "Proxy requires authentication");
- 
-       /* check for NTLM */
--      if (p->auth_method == HTTP_AUTH_NTLM)
-+      if (p->auth_method == HTTP_AUTH_NTLM || p->auth_method == 
-HTTP_AUTH_NTLM2)
-         {
- #if NTLM
-           /* look for the phase 2 response */
-@@ -456,6 +464,12 @@
-           if (!send_line_crlf (sd, buf))
-             goto error;
- 
-+          /* keep-alive connection */
-+          openvpn_snprintf (buf, sizeof(buf), "Proxy-Connection: 
-Keep-Alive");
-+          if (!send_line_crlf (sd, buf))
-+            goto error;
-+
-+         
-           /* send HOST etc, */
-           openvpn_sleep (1);
-           openvpn_snprintf (buf, sizeof(buf), "Host: %s", host);
-diff -Naur openvpn-2.1/proxy.h openvpn-NTLMv2-predelane-2.1/proxy.h
---- openvpn-2.1/proxy.h    2008-01-13 21:25:52.975350400 +0100
-+++ openvpn-NTLMv2-predelane-2.1/proxy.h    2008-01-15 
-11:25:00.097190400 +0100
-@@ -59,6 +59,7 @@
- #define HTTP_AUTH_BASIC 1
- #define HTTP_AUTH_NTLM  2
- #define HTTP_AUTH_N     3
-+#define HTTP_AUTH_NTLM2 4
- 
- struct http_proxy_options {
-   const char *server;
+I did my best to try to prevent memory leaks, but please double check 
+that. Worst case only a few bytes should be lost, but hey better check :-)
 
+
+Thanks for considering including this patch. I (and probably other 
+people) _need_ this functionality to make openVPN more userfriendly.
+The computer/config will not be locked to the smartcard. This enables 
+people to:
+- deploy the same configuration on different computers
+- log-in to the tunnel with different cards on the same machine. 
+(different users that share the same computer)
+- With eID's (what I use) the key-id contains similar characteristics.
+(like mine where  'BELPIC\x20\x28Basic\x20PIN\x29/02' is the end of the 
+Authentication key.
+Axalto/Belgium\x20eID/6CFF2491AB111E14/BELPIC\x20\x28Basic\x20PIN\x29/02  )
+
+
+All input on the patch is welcome.
+
+
+
+Thanks
+
+Christophe
+
+PS: It's for my OpenVPN-plans with the eID...
+<http://christophe.vandeplas.com/2008/02/03/openvpn-belgian-eid>
+<http://christophe.vandeplas.com/2008/02/08/database-authorization-openvpn-eid>
+
+
+-- 
+mailto:christophe@...1081...
+http://christophe.vandeplas.com
+
+--------------040409030303020303090608
+Content-Type: text/plain; charset="utf-8"; name=pkcs11-id.patch;
+ x-mac-creator=0; x-mac-type=0
+Content-Transfer-Encoding: base64
+Content-Disposition: inline;
+ filename="pkcs11-id.patch"
+
+ZGlmZiAtTmF1ciBvcGVudnBuLTIuMV9yYzcvb3B0aW9ucy5jIG9wZW52cG4vb3B0aW9ucy5jCi0t
+LSBvcGVudnBuLTIuMV9yYzcvb3B0aW9ucy5jCTIwMDgtMDEtMjQgMDE6NTU6MTguMDAwMDAwMDAw
+ICswMTAwCisrKyBvcGVudnBuL29wdGlvbnMuYwkyMDA4LTAzLTE2IDE2OjIyOjExLjAwMDAwMDAw
+MCArMDEwMApAQCAtNTIwLDYgKzUyMCw3IEBACiAgICItLXBrY3MxMS1waW4tY2FjaGUgc2Vjb25k
+cyAgOiBOdW1iZXIgb2Ygc2Vjb25kcyB0byBjYWNoZSBQSU4uIFRoZSBkZWZhdWx0IGlzIC0xXG4i
+CiAgICIgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjYWNoZSB1bnRpbCB0b2tlbiBpcyBy
+ZW1vdmVkLlxuIgogICAiLS1wa2NzMTEtaWQgc2VyaWFsaXplZC1pZCAgIDogSWRlbnRpdHkgdG8g
+dXNlLCBnZXQgdXNpbmcgc3RhbmRhbG9uZSAtLXNob3ctcGtjczExLWlkc1xuIgorICAiLS1wa2Nz
+MTEtbWF0Y2ggc3RyaW5nICAgICAgIDogU3RyaW5nIHRvIG1hdGNoIHRoZSBJZGVudGl0eSB0byB1
+c2UsIHNlZSBwa2NzMTEtaWRcbiIKICNlbmRpZgkJCS8qIEVOQUJMRV9QS0NTMTEgKi8KICAiXG4i
+CiAgICJTU0wgTGlicmFyeSBpbmZvcm1hdGlvbjpcbiIKQEAgLTE3NjYsOCArMTc2NywxMSBAQAog
+ICAgICAgaWYgKG9wdGlvbnMtPnBrY3MxMV9wcm92aWRlcnNbMF0pCiAgICAgICAgewogICAgICAg
+ICBub3RudWxsIChvcHRpb25zLT5jYV9maWxlLCAiQ0EgZmlsZSAoLS1jYSkiKTsKLQlub3RudWxs
+IChvcHRpb25zLT5wa2NzMTFfaWQsICJQS0NTIzExIGlkICgtLXBrY3MxMS1pZCkiKTsKLQorLy8J
+bm90bnVsbCAob3B0aW9ucy0+cGtjczExX2lkLCAiUEtDUyMxMSBpZCAoLS1wa2NzMTEtaWQpIik7
+CisJaWYgKCFvcHRpb25zLT5wa2NzMTFfaWQgJiYgIW9wdGlvbnMtPnBrY3MxMV9tYXRjaCkKKwkg
+IG1zZyhNX1VTQUdFLCAiWW91IG11c3QgZGVmaW5lIFBLQ1MjMTEgaWQgKC0tcGtjczExLWlkKSBv
+ciBzdHJpbmcgdG8gbWF0Y2ggKC0tcGtjczExLW1hdGNoKS4iKTsKKwlpZiAob3B0aW9ucy0+cGtj
+czExX2lkICYmIG9wdGlvbnMtPnBrY3MxMV9tYXRjaCkKKwkgIG1zZyhNX1VTQUdFLCAiUGFyYW1l
+dGVyIC0tcGtjczExLW1hdGNoIGNhbm5vdCBub3QgYmUgdXNlZCB3aGVuIC0tcGtjczExLWlkIGlz
+IGFsc28gc3BlY2lmaWVkLiIpOwogCWlmIChvcHRpb25zLT5jZXJ0X2ZpbGUpCiAJICBtc2coTV9V
+U0FHRSwgIlBhcmFtZXRlciAtLWNlcnQgY2Fubm90IGJlIHVzZWQgd2hlbiAtLXBrY3MxMS1wcm92
+aWRlciBpcyBhbHNvIHNwZWNpZmllZC4iKTsKIAlpZiAob3B0aW9ucy0+cHJpdl9rZXlfZmlsZSkK
+QEAgLTUxMzcsNiArNTE0MSwxMSBAQAogICAgICAgVkVSSUZZX1BFUk1JU1NJT04gKE9QVF9QX0dF
+TkVSQUwpOwogICAgICAgb3B0aW9ucy0+cGtjczExX2lkID0gcFsxXTsKICAgICB9CisgIGVsc2Ug
+aWYgKHN0cmVxIChwWzBdLCAicGtjczExLW1hdGNoIikgJiYgcFsxXSkKKyAgeworICAgICAgVkVS
+SUZZX1BFUk1JU1NJT04gKE9QVF9QX0dFTkVSQUwpOworICAgICAgb3B0aW9ucy0+cGtjczExX21h
+dGNoID0gcFsxXTsKKyAgfQogI2VuZGlmCiAjaWZkZWYgVFVOU0VUUEVSU0lTVAogICBlbHNlIGlm
+IChzdHJlcSAocFswXSwgInJtdHVuIikpCmRpZmYgLU5hdXIgb3BlbnZwbi0yLjFfcmM3L29wdGlv
+bnMuaCBvcGVudnBuL29wdGlvbnMuaAotLS0gb3BlbnZwbi0yLjFfcmM3L29wdGlvbnMuaAkyMDA4
+LTAxLTIzIDIyOjA4OjQxLjAwMDAwMDAwMCArMDEwMAorKysgb3BlbnZwbi9vcHRpb25zLmgJMjAw
+OC0wMy0xNiAxMTo1OTo0NS4wMDAwMDAwMDAgKzAxMDAKQEAgLTQxOSw2ICs0MTksNyBAQAogICBi
+b29sIHBrY3MxMV9jZXJ0X3ByaXZhdGVbTUFYX1BBUk1TXTsKICAgaW50IHBrY3MxMV9waW5fY2Fj
+aGVfcGVyaW9kOwogICBjb25zdCBjaGFyICpwa2NzMTFfaWQ7CisgIGNvbnN0IGNoYXIgKnBrY3Mx
+MV9tYXRjaDsKICNlbmRpZgogCiAjaWZkZWYgV0lOMzIKZGlmZiAtTmF1ciBvcGVudnBuLTIuMV9y
+YzcvcGtjczExLmMgb3BlbnZwbi9wa2NzMTEuYwotLS0gb3BlbnZwbi0yLjFfcmM3L3BrY3MxMS5j
+CTIwMDgtMDEtMjMgMjI6MDg6NDEuMDAwMDAwMDAwICswMTAwCisrKyBvcGVudnBuL3BrY3MxMS5j
+CTIwMDgtMDMtMTYgMTY6MjU6MzcuMDAwMDAwMDAwICswMTAwCkBAIC01NDMsNiArNTQzLDEzNSBA
+QAogCX0KIH0KIAorY2hhciAqIAorZmluZF9wa2NzMTFfaWQgKAorCWNvbnN0IGNoYXIgKiBjb25z
+dCBwa2NzMTFfbWF0Y2gKKykgewkKKwlBU1NFUlQgKHBrY3MxMV9tYXRjaCE9TlVMTCk7CisKKwlj
+aGFyICpyZXQgPSBOVUxMOworCQorCXBrY3MxMWhfY2VydGlmaWNhdGVfaWRfbGlzdF90IHVzZXJf
+Y2VydGlmaWNhdGVzID0gTlVMTDsKKwlwa2NzMTFoX2NlcnRpZmljYXRlX2lkX2xpc3RfdCBjdXJy
+ZW50ID0gTlVMTDsKKwlDS19SViBydiA9IENLUl9GVU5DVElPTl9GQUlMRUQ7CisJCisJaWYgKAor
+CQkocnYgPSBwa2NzMTFoX2NlcnRpZmljYXRlX2VudW1DZXJ0aWZpY2F0ZUlkcyAoCisJCQlQS0NT
+MTFIX0VOVU1fTUVUSE9EX0NBQ0hFX0VYSVNULAorCQkJTlVMTCwKKwkJCVBLQ1MxMUhfUFJPTVBU
+X01BU0tfQUxMT1dfQUxMLAorCQkJTlVMTCwKKwkJCSZ1c2VyX2NlcnRpZmljYXRlcworCQkpKSAh
+PSBDS1JfT0sKKwkgICApIHsKKwkJbXNnIChNX0ZBVEFMLCAiUEtDUyMxMTogQ2Fubm90IGVudW1l
+cmF0ZSBjZXJ0aWZpY2F0ZXMgJWxkLSclcyciLCBydiwgcGtjczExaF9nZXRNZXNzYWdlIChydikp
+OworCQlnb3RvIGNsZWFudXA7CisJfQorCQorCS8vIGxvb3Agb3ZlciB0aGUgY2VydHMgdGlsbCBh
+KSB0aGUgbGFzdCBvbmUgYikgd2UgaGF2ZSBhIGhpdAorCWZvciAoY3VycmVudCA9IHVzZXJfY2Vy
+dGlmaWNhdGVzO2N1cnJlbnQgIT0gTlVMTCAmJiByZXQgPT0gTlVMTDsgY3VycmVudCA9IGN1cnJl
+bnQtPm5leHQpIHsKKwkJcGtjczExaF9jZXJ0aWZpY2F0ZV90IGNlcnRpZmljYXRlID0gTlVMTDsK
+KwkJWDUwOSAqeDUwOSA9IE5VTEw7CisJCWNoYXIgZG5bMTAyNF0gPSB7MH07CisJCWNoYXIgKnNl
+ciA9IE5VTEw7CisJCXNpemVfdCBzZXJfbGVuID0gMDsKKwkJaW50IG47CisKKwkJaWYgKAorCQkJ
+KHJ2ID0gcGtjczExaF9jZXJ0aWZpY2F0ZV9zZXJpYWxpemVDZXJ0aWZpY2F0ZUlkICgKKwkJCQlO
+VUxMLAorCQkJCSZzZXJfbGVuLAorCQkJCWN1cnJlbnQtPmNlcnRpZmljYXRlX2lkCisJCQkpKSAh
+PSBDS1JfT0sKKwkJKSB7CisJCQltc2cgKE1fRkFUQUwsICJQS0NTIzExOiBDYW5ub3Qgc2VyaWFs
+aXplIGNlcnRpZmljYXRlICVsZC0nJXMnIiwgcnYsIHBrY3MxMWhfZ2V0TWVzc2FnZSAocnYpKTsK
+KwkJCWdvdG8gY2xlYW51cDE7CisJCX0KKworCQlpZiAoCisJCQlydiA9PSBDS1JfT0sgJiYKKwkJ
+CShzZXIgPSAoY2hhciAqKW1hbGxvYyAoc2VyX2xlbikpID09IE5VTEwKKwkJKSB7CisJCQltc2cg
+KE1fRkFUQUwsICJQS0NTIzExOiBDYW5ub3QgYWxsb2NhdGUgbWVtb3J5Iik7CisJCQlnb3RvIGNs
+ZWFudXAxOworCQl9CisJCQorCQlpZiAoCisJCQkocnYgPSBwa2NzMTFoX2NlcnRpZmljYXRlX3Nl
+cmlhbGl6ZUNlcnRpZmljYXRlSWQgKAorCQkJCXNlciwKKwkJCQkmc2VyX2xlbiwKKwkJCQljdXJy
+ZW50LT5jZXJ0aWZpY2F0ZV9pZAorCQkJKSkgIT0gQ0tSX09LCisJCSkgeworCQkJbXNnIChNX0ZB
+VEFMLCAiUEtDUyMxMTogQ2Fubm90IHNlcmlhbGl6ZSBjZXJ0aWZpY2F0ZSAlbGQtJyVzJyIsIHJ2
+LCBwa2NzMTFoX2dldE1lc3NhZ2UgKHJ2KSk7CisJCQlnb3RvIGNsZWFudXAxOworCQl9CisKKwkJ
+aWYgKAorCQkJKHJ2ID0gcGtjczExaF9jZXJ0aWZpY2F0ZV9jcmVhdGUgKAorCQkJCWN1cnJlbnQt
+PmNlcnRpZmljYXRlX2lkLAorCQkJCU5VTEwsCisJCQkJUEtDUzExSF9QUk9NUFRfTUFTS19BTExP
+V19BTEwsCisJCQkJUEtDUzExSF9QSU5fQ0FDSEVfSU5GSU5JVEUsCisJCQkJJmNlcnRpZmljYXRl
+CisJCQkpKQorCQkpIHsKKwkJCW1zZyAoTV9GQVRBTCwgIlBLQ1MjMTE6IENhbm5vdCBjcmVhdGUg
+Y2VydGlmaWNhdGUgJWxkLSclcyciLCBydiwgcGtjczExaF9nZXRNZXNzYWdlIChydikpOworCQkJ
+Z290byBjbGVhbnVwMTsKKwkJfQorCisJCWlmICgoeDUwOSA9IHBrY3MxMWhfb3BlbnNzbF9nZXRY
+NTA5IChjZXJ0aWZpY2F0ZSkpID09IE5VTEwpIHsKKwkJCW1zZyAoTV9GQVRBTCwgIlBLQ1MjMTE6
+IENhbm5vdCBnZXQgWDUwOSIpOworCQkJZ290byBjbGVhbnVwMTsKKwkJfQorCisJCVg1MDlfTkFN
+RV9vbmVsaW5lICgKKwkJCVg1MDlfZ2V0X3N1YmplY3RfbmFtZSAoeDUwOSksCisJCQlkbiwKKwkJ
+CXNpemVvZiAoZG4pCisJCSk7CisKKwkJLyptc2cgKAorCQkJTV9JTkZPfE1fTk9QUkVGSVh8TV9O
+T0xGLAorCQkJKAorCQkJCSJDZXJ0aWZpY2F0ZVxuIgorCQkJCSIgICAgICAgRE46ICAgICAgICAg
+ICAgICVzXG4iCisJCQkJIiAgICAgICBTZXJpYWxpemVkIGlkOiAgJXNcbiIKKwkJCSksCisJCQlk
+biwKKwkJCXNlcgorCQkpOyovCisJCQorCQkvLyBpZiB3ZSBoYXZlIGEgbWF0Y2gsIHNhdmUgaXQg
+dG8gdGhlIHJldCB2YWx1ZS4KKwkJaWYgKE5VTEwhPXN0cnN0cihzZXIsIHBrY3MxMV9tYXRjaCkp
+IHsKKwkJCXJldCA9IG1hbGxvYyAoc2VyX2xlbik7CisJCQlzdHJjcHkocmV0LCBzZXIpOyAKKwkJ
+fQorCQkKKwljbGVhbnVwMToKKwkJaWYgKHg1MDkgIT0gTlVMTCkgeworCQkJWDUwOV9mcmVlICh4
+NTA5KTsKKwkJCXg1MDkgPSBOVUxMOworCQl9CisKKwkJaWYgKGNlcnRpZmljYXRlICE9IE5VTEwp
+IHsKKwkJCXBrY3MxMWhfY2VydGlmaWNhdGVfZnJlZUNlcnRpZmljYXRlIChjZXJ0aWZpY2F0ZSk7
+CisJCQljZXJ0aWZpY2F0ZSA9IE5VTEw7CisJCX0KKworCQlpZiAoc2VyICE9IE5VTEwpIHsKKwkJ
+CWZyZWUgKHNlcik7CisJCQlzZXIgPSBOVUxMOworCQl9CisJfQorCWNsZWFudXA6CisJaWYgKHVz
+ZXJfY2VydGlmaWNhdGVzICE9IE5VTEwpIHsKKwkJcGtjczExaF9jZXJ0aWZpY2F0ZV9mcmVlQ2Vy
+dGlmaWNhdGVJZExpc3QgKHVzZXJfY2VydGlmaWNhdGVzKTsKKwkJdXNlcl9jZXJ0aWZpY2F0ZXMg
+PSBOVUxMOworCX0KKwlyZXR1cm4gcmV0OworfQorCiB2b2lkCiBzaG93X3BrY3MxMV9pZHMgKAog
+CWNvbnN0IGNoYXIgKiBjb25zdCBwcm92aWRlciwKZGlmZiAtTmF1ciBvcGVudnBuLTIuMV9yYzcv
+cGtjczExLmggb3BlbnZwbi9wa2NzMTEuaAotLS0gb3BlbnZwbi0yLjFfcmM3L3BrY3MxMS5oCTIw
+MDgtMDEtMjMgMjI6MDg6NDEuMDAwMDAwMDAwICswMTAwCisrKyBvcGVudnBuL3BrY3MxMS5oCTIw
+MDgtMDMtMTYgMTY6MTA6MjEuMDAwMDAwMDAwICswMTAwCkBAIC01OCw2ICs1OCwxMiBAQAogCWNv
+bnN0IGNoYXIgKiBjb25zdCBwa2NzMTFfaWQKICk7CiAKK2NoYXIgKgorZmluZF9wa2NzMTFfaWQg
+KAorCWNvbnN0IGNoYXIgKiBjb25zdCBwa2NzMTFfbWF0Y2gKKyk7CisKKwogdm9pZAogc2hvd19w
+a2NzMTFfaWRzICgKIAljb25zdCBjaGFyICogY29uc3QgcHJvdmlkZXIsCmRpZmYgLU5hdXIgb3Bl
+bnZwbi0yLjFfcmM3L3NzbC5jIG9wZW52cG4vc3NsLmMKLS0tIG9wZW52cG4tMi4xX3JjNy9zc2wu
+YwkyMDA4LTAxLTIzIDIyOjA4OjQxLjAwMDAwMDAwMCArMDEwMAorKysgb3BlbnZwbi9zc2wuYwky
+MDA4LTAzLTE2IDE2OjUzOjAyLjAwMDAwMDAwMCArMDEwMApAQCAtMzAsNiArMzAsOCBAQAogICog
+b3ZlciB0aGUgc2FtZSBUQ1AvVURQIHBvcnQuCiAgKi8KIAorIyBkZWZpbmUgX19VTkNPTlNUKGEp
+ICgodm9pZCAqKSh1bnNpZ25lZCBsb25nKShjb25zdCB2b2lkICopKGEpKQorCiAjaWZkZWYgV0lO
+MzIKICNpbmNsdWRlICJjb25maWctd2luMzIuaCIKICNlbHNlCkBAIC0xMDc1LDcgKzEwNzcsNyBA
+QAogICogQWxsIGZpbGVzIGFyZSBpbiBQRU0gZm9ybWF0LgogICovCiBTU0xfQ1RYICoKLWluaXRf
+c3NsIChjb25zdCBzdHJ1Y3Qgb3B0aW9ucyAqb3B0aW9ucykKK2luaXRfc3NsIChjb25zdCBzdHJ1
+Y3Qgb3B0aW9ucyAqb3B0aW9ucykgCiB7CiAgIFNTTF9DVFggKmN0eCA9IE5VTEw7CiAgIERIICpk
+aDsKQEAgLTExOTUsMTAgKzExOTcsMjAgQEAKICAgZWxzZQogICAgIHsKICAgICAgIC8qIFVzZSBz
+ZXBlcmF0ZSBQRU0gZmlsZXMgZm9yIGtleSwgY2VydCBhbmQgQ0EgY2VydHMgKi8KLQorCSAgCiAj
+aWZkZWYgRU5BQkxFX1BLQ1MxMQogICAgICAgaWYgKG9wdGlvbnMtPnBrY3MxMV9wcm92aWRlcnNb
+MF0pCiAgICAgICAgIHsKKwkgaWYgKG9wdGlvbnMtPnBrY3MxMV9tYXRjaCkKKwkgICB7CisJCSBf
+X1VOQ09OU1QoIG9wdGlvbnMtPnBrY3MxMV9pZCkgPSBmaW5kX3BrY3MxMV9pZChvcHRpb25zLT5w
+a2NzMTFfbWF0Y2gpOworCQkgbXNnIChNX1dBUk4sICJQS0NTIzExLWlkIGhhcyBiZWVuIGZvdW5k
+OiAlcyIsIG9wdGlvbnMtPnBrY3MxMV9pZCk7CisJCSAKKwkJIGlmIChvcHRpb25zLT5wa2NzMTFf
+aWQ9PU5VTEwpIHsKKwkJCSBtc2cgKE1fV0FSTiwgIkNhbm5vdCBmaW5kIHZhbGlkIGNlcnRpZmlj
+YXRlIElEIHVzaW5nIFBLQ1MjMTEgaW50ZXJmYWNlIGFuZCBzdHJpbmcgdG8gbWF0Y2giKTsKKwkJ
+CSBnb3RvIGVycjsKKwkJIH0KKwkgICB9CiAgICAgICAgICAvKiBMb2FkIENlcnRpZmljYXRlIGFu
+ZCBQcml2YXRlIEtleSAqLwogCSBpZiAoIVNTTF9DVFhfdXNlX3BrY3MxMSAoY3R4LCBvcHRpb25z
+LT5wa2NzMTFfaWQpKQogCSAgIHsK
+
+--------------040409030303020303090608--
 
