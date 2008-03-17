@@ -1,9 +1,10 @@
-Message-ID: <9e0cf0bf0803161105u71b7afc0tc90fed05da57f0dc@...278...>
-Date: Sun, 16 Mar 2008 20:05:10 +0200
-From: "Alon Bar-Lev" <alon.barlev@...277...>
-In-Reply-To: <47DD4B14.5060009@...1081...>
+Message-ID: <2e08ab000803170102k5b4070baw43fb555e75e79bff@...278...>
+Date: Mon, 17 Mar 2008 09:02:34 +0100
+From: "Christophe Vandeplas" <christophe@...1081...>
+In-Reply-To: <9e0cf0bf0803161105u71b7afc0tc90fed05da57f0dc@...278...>
 MIME-Version: 1.0
 References: <47DD4B14.5060009@...1081...>
+	<9e0cf0bf0803161105u71b7afc0tc90fed05da57f0dc@...278...>
 Subject: Re: [Openvpn-devel] patch pkcs11 dynamic key id detection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,65 +17,55 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-To: Christophe Vandeplas <christophe@...1081...>
+To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: Peter Koch <pk@...1082...>, openvpn-devel@lists.sourceforge.net, James Yonan <jim@...41...>
 
-Hello,
+>  So back to my original idea... Use the management interface to prompt
+>  the user to select a certificate.
 
-I did not realize how many people depend on the low-level PKCS#11 properties.
+What does that mean for the end-user? If I understand it correctly the
+user will need to do the following:
+- start tunnel/openvpn
+- open webbrowser and select certificate
+- enter key (where? webinterface?, cli?)
 
-I thought I prospone this to next OpenVPN version, but I see more an
-more people need "single configuration file" option.
+The thing is that some implementations of middleware (the Belgian eID
+middleware, based on opensc) prompts the user with a GUI windows for
+entering the password. (at least on MS Windows, not on my mac).
+This window is started from the opensc layer and thus independent of
+the layer above (openvpn). (please correct me if I'm wrong)
 
-I first thought to create a filter similar to what you suggest... But
-users would like to choose certificate based on certificate authority,
-EKU, UPN or any other field, and OpenVPN is already complex enough.
+With this situation it really becomes to complex for the end-user:
+- start tunnel (place 1)
+- open browser select certificate (place2)
+- enter passwd in separate window (place 3)
+The user has 3 different locations where input is needed.
 
-Then I thought I would execute some external hook, but OpenVPN does
-not have the ability to send large amount of data to hooks, and
-receive data from hooks.
+With my proposed patch, the user has only two different things to do.
+- start tunnel
+- enter key in cli or GUI window
+There are no complex certificate selections, as most of the users
+don't even understand what they are. Isn't it the sys/net-admin that
+should configure that pkcs11-id or pkcs11-match string?
 
-So back to my original idea... Use the management interface to prompt
-the user to select a certificate.
+I liked the principle of the cryptoapicert hook in windows where the
+admin enters a part of the string to match. (Unfortunately I can't get
+it working on that Windows machine.. weird SSL issue.. but that's
+something for another mail )
 
-You may find it at [1].
+I plan to work on v2 of my patch to enable the 'match' on either the
+DN or the serialised-id. This way it becomes even more flexible and
+powerful.
+But well, except if there is no hope of seeing this patch in the main
+trunk in the future ...
 
-It introduces pkcs11-id-management configuration option and NEED-STR
-real-time management message, that is responded with the PKCS#11
-identity.
+What do you think?
 
-It also introduced two management commands: pkcs11-id-count, pkcs11-id-get.
+Isn't it also a possibility to include both ways? If yes I think we
+should rewrite it a little to prevent duplicate code as much as
+possible...
 
-The sequence is as follows:
->NEED-STR:Need 'pkcs11-id-request' string MSG:Please specify PKCS#11 id to use
-pkcs11-id-count
->PKCS11ID-COUNT:5
-pkcs11-id-get 0
->PKCS11ID-ENTRY:'0', ID:'<snip>', BLOB:'<snip>'
-pkcs11-id-get 1
->PKCS11ID-ENTRY:'1', ID:'<snip>', BLOB:'<snip>'
-needstr 'pkcs11-id-request' '<snip>'
+Cheers
 
-This allows a management application to inspect available
-certificates, and prompt the user to choose the correct one.
-
-James, some notes:
-1. Please acknowledge the NEED-STR addition. it is in the first revision.
-2. I had to increase the USER_PASS_LEN constant, as it is also used
-for strings now.
-3. I had to increase the ERR_BUF_SIZE constant, as I need to output a
-complete base64 certificate.
-
-I hope this helps,
-Alon Bar-Lev.
-
-[1] svn diff -r 2844:2849
-http://svn.openvpn.net/projects/openvpn/contrib/alon/BETA21/openvpn
-
-On 3/16/08, Christophe Vandeplas <christophe@...1081...> wrote:
-> Hi all,
->
->
->   From the mailinglist I'm not the first one that wanted dynamic key-id
->  detection for pkcs11 authentication.
+Christophe
 
