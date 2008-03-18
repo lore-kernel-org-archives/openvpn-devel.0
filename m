@@ -1,13 +1,9 @@
-Message-ID: <9e0cf0bf0803170622l69560ba5y64b11a909cf3a9cf@...278...>
-Date: Mon, 17 Mar 2008 15:22:30 +0200
+Message-ID: <9e0cf0bf0803172313n37722d1ye8e9be624a5df58b@...278...>
+Date: Tue, 18 Mar 2008 08:13:41 +0200
 From: "Alon Bar-Lev" <alon.barlev@...277...>
-In-Reply-To: <2e08ab000803170615v5939a6cfy59719674aea7698f@...278...>
+In-Reply-To: <12406217@...83...>
 MIME-Version: 1.0
-References: <47DD4B14.5060009@...1081...>
-	<9e0cf0bf0803161105u71b7afc0tc90fed05da57f0dc@...278...>
-	<2e08ab000803170102k5b4070baw43fb555e75e79bff@...278...>
-	<9e0cf0bf0803170553y4ca5608v41a26130568ce8bb@...278...>
-	<2e08ab000803170615v5939a6cfy59719674aea7698f@...278...>
+References: <12406217@...83...>
 Subject: Re: [Openvpn-devel] patch pkcs11 dynamic key id detection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,32 +13,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Content-Disposition: inline
-To: Christophe Vandeplas <christophe@...1081...>
-Cc: Peter Koch <pk@...1082...>, openvpn-devel@lists.sourceforge.net, James Yonan <jim@...41...>
+To: Peter Koch <pk@...1082...>
+Cc: openvpn-devel@lists.sourceforge.net, James Yonan <jim@...41...>
 
-On 3/17/08, Christophe Vandeplas <christophe@...1081...> wrote:
->  I'll have a deeper look at your management patch, maybe I can find a
->  way to add the pkcs11-match principle in your code with almost no
->  extra complexity and redundant code.
->  Do you think it's worth the effort? Or better wait for the results and
->  feedback from the management part?
-
-I think that what is missing for Windows user is a good OpenVPN GUI.
-A simple tray icon with context menu that enable the user to
-connect/disconnect/authenticate/select certificate/prompt for ok
-
-Many Windows users expects this for a long time... And I know that implementing
-such using .NET framework is easy... Some forms, socket and state machine.
-
-This OpenVPN GUI can be extensible so it may call a plugin before user
-interaction
-so sysadmins can configure some of its behavior.
-
-I think that if you wish to invest some efforts for Windows, I think
-this is the place :)
-
-Alon.
-
+SGVsbG8sCgpJbiB5b3VyIGNhc2UgSSB0aG91Z2h0IHVzaW5nIGEgc2ltcGxlIHBlcmwgc2NyaXB0
+IGluc3RhbGxlZCB1c2luZwpzZXJ2YW55LCB0aGlzIHNjcmlwdCBjYW4gcHJvdmlkZSB0aGUgY2Vy
+dGlmaWNhdGUgYW5kIHBhc3NwaHJhc2UKYXV0b21hdGlvbiBkdXJpbmcgY29tcHV0ZXIgc3RhcnR1
+cC4KCkEgc2FtcGxlIHBlcmwgc2NyaXB0cyBhcmUgYXZhaWxhYmxlIGF0IFsxXS4KCkFueXdheS4u
+LiBUaGUgcHJvcGVyIHNvbHV0aW9uIGZvciBXaW5kb3dzIGxvZ2luIGlzIHRvIHdyaXRlIGEgUkFT
+IHByb3ZpZGVyCnRoYXQgaW50ZXJhY3Qgd2l0aCB3aW5sb2dvbiwganVzdCBsaWtlIE1pY3Jvc29m
+dCBWUE4uIFRoaXMgd2lsbCBlbmFibGUKdXNlciB0byBjb25uZWN0IHRvIHRoZSBWUE4gd2l0aCB1
+c2VyIGludGVyYWN0aW9uIGJlZm9yZSBsb2dpbi4gVGhpcyBSQVMKcHJvdmlkZXIgd2lsbCBiZSBh
+YmxlIHRvIGludGVyYWN0IHdpdGggT3BlblZQTiB2aWV3IHRoZSBtYW5hZ2VtZW50IGludGVyZmFj
+ZS4KCkFsb24uCgpbMV0gaHR0cDovL2Fsb24uYmFybGV2Lmdvb2dsZXBhZ2VzLmNvbS9vcGVudnBu
+LXBrY3MxMQoKT24gMy8xOC8wOCwgUGV0ZXIgS29jaCA8cGtALi4uMTA4Mi4uLj4gd3JvdGU6Cj4g
+SGkgYWxsLAo+Cj4gIElmIGZ1dHVyZSB2ZXJzaW9uIG9mIE9wZW5WUE4gd2lsbCBub3QgYmUgYWJs
+ZSB0bwo+ICBhdXRvbWF0aWNhbGx5IHNlbGVjdCBhIGNlcnRpZmljYXRlIHdpdGhvdXQKPiAgdXNl
+ciBpbnRlcmFjdGlvbiB3ZSB3aWxsIGhhdmUgbWFqb3IgcHJvYmxlbXMKPiAgd2l0aCBvdXQgaG9t
+ZS1vZmZpY2VzLgo+Cj4gIFRoZSByZWFzb24gaXMgdGhhdCBvdXIgdXNlciB1c2VzIGFuIE9wZW5W
+UE4KPiAgdHVubmVsIHRvIGxvZyBpbnRvIG91ciBzYW1iYSBkb21haW4uIEhlbmNlCj4gIHdlIE1V
+U1QgcnVuIE9wZW5WUE4gYXMgYSBzZXJ2aWNlIGFuZCBNVVNUCj4gIGNyZWF0ZSBhIGNvbm5lY3Rp
+b24gZHVyaW5nIHdpbmRvd3Mgc3RhcnR1cC4KPgo+ICBJIGNhbm5vdCBpbWFnZSBob3cgT3BlblZQ
+TiBjb3VsZCBhc2sgdGhlCj4gIHVzZXIgd2hpY2ggY2VydGlmaWNhdGUgdG8gdXNlIGlmIHRoZSB1
+c2VyCj4gIGhhcyBub3QgbG9nZ2VkIG9uLiBEdXJpbmcgc3RhcnR1cCBXaW5kb3dzCj4gIHdpbGwg
+bm90IHNob3cgdGhlIHJlZ3VsYXIgZGVza3RvcCBidXQgdGhlCj4gIGxvZ29uIGRlc2t0b3AuIEFu
+ZCBubyBwcm9jZXNzIGJlc2lkZXMgdGhlCj4gIHdpbmRvd3MgbG9nb24gaXRzZWxmIGlzIGFsbG93
+ZWQgdG8gZGlzcGxheQo+ICBhbnl0aGluZyBvbiB0aGUgbG9nb24gZGVza3RvcC4KPgo+ICBTbyBw
+bGVhc2UgaW5jbHVkZSBhIGNvbmZpZ3VyYXRpb24gb3B0aW9uCj4gIHRoYXQgd2lsbCB0ZWxsIE9w
+ZW5WUE4gdG8gdXNlIHRoZSBmaXJzdAo+ICBjZXJ0aWZpY2F0ZSBpdCBmaW5kcyB3aXRoIG5vIHVz
+ZXIgaW50ZXJhY3Rpb24uCj4gIFRoaXMgd291bGQgaGVscCB1cyBhIGxvdC4gQW5kIHNpbmNlIG91
+cgo+ICBzbWFydGNhcmRzIGhhdmUgb25lIGNlcnRpZmljYXRlIG9ubHkgaXQgZG9lcwo+ICBub3Qg
+bWFrZSBtdWNoIHNlbnNlIHRvIGFzayB3aGljaCBvbmUgdG8KPiAgdXNlIGFueXdheSA6LSkKPgo+
+ICBQZXRlcgo+ICBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fXwo+ICBKZXR6dCBuZXUhIFNjaMO8dHplbiBTaWUgSWhy
+ZW4gUEMgbWl0IE1jQWZlZSB1bmQgV0VCLkRFLiAzMCBUYWdlCj4gIGtvc3RlbmxvcyB0ZXN0ZW4u
+IGh0dHA6Ly93d3cucGMtc2ljaGVyaGVpdC53ZWIuZGUvc3RhcnRzZWl0ZS8/bWM9MDIyMjIwCj4K
+Pgo=
