@@ -1,10 +1,9 @@
-Message-ID: <9e0cf0bf0803180803m367422act4d992ac7dc1bc519@...278...>
-Date: Tue, 18 Mar 2008 17:03:22 +0200
+Message-ID: <9e0cf0bf0803182336t70bbbf1oabbfdd6b66e0ff4e@...278...>
+Date: Wed, 19 Mar 2008 08:36:42 +0200
 From: "Alon Bar-Lev" <alon.barlev@...277...>
-In-Reply-To: <9e0cf0bf0803172313n37722d1ye8e9be624a5df58b@...278...>
+In-Reply-To: <14528614@...83...>
 MIME-Version: 1.0
-References: <12406217@...83...>
-	<9e0cf0bf0803172313n37722d1ye8e9be624a5df58b@...278...>
+References: <14528614@...83...>
 Subject: Re: [Openvpn-devel] patch pkcs11 dynamic key id detection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,56 +13,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 To: Peter Koch <pk@...1082...>
 Cc: openvpn-devel@lists.sourceforge.net, James Yonan <jim@...41...>
 
-SGVsbG8sCgpJIHVwZGF0ZSB0aGUga2RlIHNjcmlwdCBbMV0gdG8gaGFuZGxlIHRoZXNlIG5ldyBj
-b21tYW5kcy4KSXQgcHJlc2VudHMgdGhlIHVzZXIgd2l0aCBmcmllbmRseSBhIGxpc3Qgb2YgY2Vy
-dGlmaWNhdGVzLgpXaXRoIHNvbWUgY3VzdG9taXphdGlvbiB0aGlzIGNhbiBhbHNvIGJlIG1vZGlm
-aWVkIHRvIGV4ZWN1dGUKY3VzdG9taXplZCBub24gaW50ZXJhY3RpdmUgYXV0aGVudGljYXRpb24u
-CgpQZXRlciwgSSBkb24ndCB1bmRlcnN0YW5kIGhvdyB5b3UgY3VycmVudGx5IHNwZWNpZnkgdGhl
-IHBhc3NwaHJhc2UgZm9yCnRoZSB0b2tlbiwgYW5kIGhvdyB5b3UgaGFuZGxlIHRva2VuIHJlbW92
-ZSBhbmQgaW5zZXJ0LiBEbyB5b3UgcmVxdWlyZQp0aGUgdXNlciB0byBpbnNlcnQgdGhlIHRva2Vu
-IGJlZm9yZSBib290IGFuZCBuZXZlciByZW1vdmUgaXQ/IFdoYXQKaGFwcGVucyBpZiB1c2VyIHJl
-bW92ZSBoaXMgdG9rZW4sIHNob3VsZCBoZSByZWJvb3Q/IEkgYmVsaWV2ZSB0aGF0CnVzaW5nIHRo
-ZSBtYW5hZ2VtZW50IGludGVyZmFjZSBmb3IgYXV0b21hdGlvbiBpcyBlYXN5LgoKQWxvbi4KClsx
-XSBodHRwOi8vYWxvbi5iYXJsZXYuZ29vZ2xlcGFnZXMuY29tL29wZW52cG4ta2RlLWRpYWxvZ3Mu
-cGwuYnoyCgpPbiAzLzE4LzA4LCBBbG9uIEJhci1MZXYgPGFsb24uYmFybGV2QC4uLjI3Ny4uLj4g
-d3JvdGU6Cj4gSGVsbG8sCj4KPiAgSW4geW91ciBjYXNlIEkgdGhvdWdodCB1c2luZyBhIHNpbXBs
-ZSBwZXJsIHNjcmlwdCBpbnN0YWxsZWQgdXNpbmcKPiAgc2VydmFueSwgdGhpcyBzY3JpcHQgY2Fu
-IHByb3ZpZGUgdGhlIGNlcnRpZmljYXRlIGFuZCBwYXNzcGhyYXNlCj4gIGF1dG9tYXRpb24gZHVy
-aW5nIGNvbXB1dGVyIHN0YXJ0dXAuCj4KPiAgQSBzYW1wbGUgcGVybCBzY3JpcHRzIGFyZSBhdmFp
-bGFibGUgYXQgWzFdLgo+Cj4gIEFueXdheS4uLiBUaGUgcHJvcGVyIHNvbHV0aW9uIGZvciBXaW5k
-b3dzIGxvZ2luIGlzIHRvIHdyaXRlIGEgUkFTIHByb3ZpZGVyCj4gIHRoYXQgaW50ZXJhY3Qgd2l0
-aCB3aW5sb2dvbiwganVzdCBsaWtlIE1pY3Jvc29mdCBWUE4uIFRoaXMgd2lsbCBlbmFibGUKPiAg
-dXNlciB0byBjb25uZWN0IHRvIHRoZSBWUE4gd2l0aCB1c2VyIGludGVyYWN0aW9uIGJlZm9yZSBs
-b2dpbi4gVGhpcyBSQVMKPiAgcHJvdmlkZXIgd2lsbCBiZSBhYmxlIHRvIGludGVyYWN0IHdpdGgg
-T3BlblZQTiB2aWV3IHRoZSBtYW5hZ2VtZW50IGludGVyZmFjZS4KPgo+ICBBbG9uLgo+Cj4gIFsx
-XSBodHRwOi8vYWxvbi5iYXJsZXYuZ29vZ2xlcGFnZXMuY29tL29wZW52cG4tcGtjczExCj4KPgo+
-ICBPbiAzLzE4LzA4LCBQZXRlciBLb2NoIDxwa0AuLi4xMDgyLi4uPiB3cm90ZToKPiAgPiBIaSBh
-bGwsCj4gID4KPiAgPiAgSWYgZnV0dXJlIHZlcnNpb24gb2YgT3BlblZQTiB3aWxsIG5vdCBiZSBh
-YmxlIHRvCj4gID4gIGF1dG9tYXRpY2FsbHkgc2VsZWN0IGEgY2VydGlmaWNhdGUgd2l0aG91dAo+
-ICA+ICB1c2VyIGludGVyYWN0aW9uIHdlIHdpbGwgaGF2ZSBtYWpvciBwcm9ibGVtcwo+ICA+ICB3
-aXRoIG91dCBob21lLW9mZmljZXMuCj4gID4KPiAgPiAgVGhlIHJlYXNvbiBpcyB0aGF0IG91ciB1
-c2VyIHVzZXMgYW4gT3BlblZQTgo+ICA+ICB0dW5uZWwgdG8gbG9nIGludG8gb3VyIHNhbWJhIGRv
-bWFpbi4gSGVuY2UKPiAgPiAgd2UgTVVTVCBydW4gT3BlblZQTiBhcyBhIHNlcnZpY2UgYW5kIE1V
-U1QKPiAgPiAgY3JlYXRlIGEgY29ubmVjdGlvbiBkdXJpbmcgd2luZG93cyBzdGFydHVwLgo+ICA+
-Cj4gID4gIEkgY2Fubm90IGltYWdlIGhvdyBPcGVuVlBOIGNvdWxkIGFzayB0aGUKPiAgPiAgdXNl
-ciB3aGljaCBjZXJ0aWZpY2F0ZSB0byB1c2UgaWYgdGhlIHVzZXIKPiAgPiAgaGFzIG5vdCBsb2dn
-ZWQgb24uIER1cmluZyBzdGFydHVwIFdpbmRvd3MKPiAgPiAgd2lsbCBub3Qgc2hvdyB0aGUgcmVn
-dWxhciBkZXNrdG9wIGJ1dCB0aGUKPiAgPiAgbG9nb24gZGVza3RvcC4gQW5kIG5vIHByb2Nlc3Mg
-YmVzaWRlcyB0aGUKPiAgPiAgd2luZG93cyBsb2dvbiBpdHNlbGYgaXMgYWxsb3dlZCB0byBkaXNw
-bGF5Cj4gID4gIGFueXRoaW5nIG9uIHRoZSBsb2dvbiBkZXNrdG9wLgo+ICA+Cj4gID4gIFNvIHBs
-ZWFzZSBpbmNsdWRlIGEgY29uZmlndXJhdGlvbiBvcHRpb24KPiAgPiAgdGhhdCB3aWxsIHRlbGwg
-T3BlblZQTiB0byB1c2UgdGhlIGZpcnN0Cj4gID4gIGNlcnRpZmljYXRlIGl0IGZpbmRzIHdpdGgg
-bm8gdXNlciBpbnRlcmFjdGlvbi4KPiAgPiAgVGhpcyB3b3VsZCBoZWxwIHVzIGEgbG90LiBBbmQg
-c2luY2Ugb3VyCj4gID4gIHNtYXJ0Y2FyZHMgaGF2ZSBvbmUgY2VydGlmaWNhdGUgb25seSBpdCBk
-b2VzCj4gID4gIG5vdCBtYWtlIG11Y2ggc2Vuc2UgdG8gYXNrIHdoaWNoIG9uZSB0bwo+ICA+ICB1
-c2UgYW55d2F5IDotKQo+ICA+Cj4gID4gIFBldGVyCj4gID4gIF9fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCj4gID4g
-IEpldHp0IG5ldSEgU2Now7x0emVuIFNpZSBJaHJlbiBQQyBtaXQgTWNBZmVlIHVuZCBXRUIuREUu
-IDMwIFRhZ2UKPiAgPiAga29zdGVubG9zIHRlc3Rlbi4gaHR0cDovL3d3dy5wYy1zaWNoZXJoZWl0
-LndlYi5kZS9zdGFydHNlaXRlLz9tYz0wMjIyMjAKPiAgPgo+ICA+Cj4K
+Hi!
+
+On 3/19/08, Peter Koch <pk@...1082...> wrote:
+> We only use smartcard readers with secure pin entry.
+
+Nice! You are the first one to confirm that protected authentication
+actually works!
+I never had the hardware to test it out.
+
+>  Where can I find more information about the management interface?
+>  I agree - it shoud be very easy to let OpenVPN automatically know
+>  which certificate to use.
+
+You can review the protocol at [1].
+A simple sample I wrote in perl at [2].
+
+I believe it should be very simple to convert [2] into none
+interactive script for Windows.
+This script can be installed as service using servany utility [3] from
+the resource kit, or use [4].
+
+You can also use Windows Task Scheduler to do the work.
+
+Alon.
+
+[1] http://svn.openvpn.net/projects/openvpn/contrib/alon/BETA21/openvpn/management/management-notes.txt
+[2] http://alon.barlev.googlepages.com/openvpn-kde-dialogs.pl.bz2
+[3] http://www.perlguy.com/articles/nt_service.html
+[4] http://search.cpan.org/~daveroth/Win32-Scheduler_v20000702/lib/Win32/Scheduler.PM
+
