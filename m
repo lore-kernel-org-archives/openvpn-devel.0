@@ -1,11 +1,8 @@
-Date: Sun, 13 Apr 2008 18:55:53 +0200
-From: Francis GUDIN <fgudin@...1087...>
-Message-ID: <20080413165552.GE898@...1088...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="lEGEL1/lMxI0MVQ2"
-Content-Disposition: inline
-Subject: [Openvpn-devel] [patch] DragonFlyBSD support
+Date: Wed, 16 Apr 2008 11:16:07 -0700 (PDT)
+From: Louis Luo <lluo_2wire@...109...>
+MIME-Version: 1.0
+Message-ID: <613570.80925.qm@...1089...>
+Subject: [Openvpn-devel] deflate vs lzo
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,43 +11,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
---lEGEL1/lMxI0MVQ2
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hi OpenVPN developers,
 
-Hello,
 
-I submitted a patch through sf.net's interface adding DragonFlyBSD
-support:
-  http://sdf-eu.org/links/1208105125
+I am new to OpenVPN and have some questions regarding the compression algorithm and overall performance. Why was LZO here instead of other algorithms like deflate? Any particular performance consideration? 
 
-Please let me know, in case something's wrong with it and I should fix
-it.
 
-Thanks in advance,
+I am lazy so didn't do any research regarding the difference and performance comparison between LZO and Deflate. Just hope to get a quick answer. If the question doesn't make sense, please forgive :-)
 
-BR,
---=20
-Francis GUDIN <fgudin@...1087...>
-Fingerprint   305E 15CF A53E 14E0 6ACE 8CED C5D5 5A78 15E3 6AB2
 
-GCU-Squad.org:
- http://web.gcu.info/redirs/sale.html
+Another question is how much throughput OpenVPN can support, say, on a Gbits networks? I tested it in a 100Mbps LAN environment. Without LZO compression, I got around 50Mbps. With LZO enabled, the number is about 70Mbps, which is close to the rate I got without VPN. I am wondering, when LZO is not enabled, which part limits the throughput. The encryption/decryption? Or the TUN virtual device? I guess it's the encryption procedure so I hope to know the rate OpenVPN can get in a Gbits network. If anybody has some confirmed figure in mind, please kindly inform me. Thanks so much!
 
---lEGEL1/lMxI0MVQ2
-Content-Type: application/pgp-signature
-Content-Disposition: inline
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (DragonFly)
+Best regards,
 
-iD8DBQFIAjsYxdVaeBXjarIRAq/MAJ0WlrFFj0awpuggRyfiDzYrrBfl/QCgs+uF
-ygjtX95qQyxPKZCfhp4qqdI=
-=j+lq
------END PGP SIGNATURE-----
 
---lEGEL1/lMxI0MVQ2--
+L.
+
+
+
+
+      ____________________________________________________________________________________
+Be a better friend, newshound, and 
+know-it-all with Yahoo! Mobile.  Try it now.  http://mobile.yahoo.com/;_ylt=Ahu06i62sR8HDtDypao8Wcj9tAcJ
 
