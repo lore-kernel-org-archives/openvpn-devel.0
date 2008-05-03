@@ -1,12 +1,9 @@
-Sender: marko@...1042...
-References: <4811E5AA.8060900@...1090...> <4818EF70.6060900@...41...>
-	<m38wyuew7i.fsf@...1043...> <481A3F37.5010509@...41...>
-Date: 02 May 2008 02:02:22 +0300
-In-Reply-To: <481A3F37.5010509@...41...>
-Message-ID: <m34p9heigx.fsf@...1043...>
+Date: Sat, 03 May 2008 16:19:56 -0600
 MIME-Version: 1.0
-From: Marko Rauhamaa <marko@...1042...>
-Subject: Re: [Openvpn-devel] [patch] OpenVPN 2.1_rc7, multihome and 64 bit
+Message-ID: <1209853267.11766.TMDA@...1092...>
+From: Stephen Warren <s-t-openvpn@...1091...>
+Subject: [Openvpn-devel] /etc/resolv.conf caching fix,
+	for long-running clients that move	between networks
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +12,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-To: James Yonan <jim@...41...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-James Yonan <jim@...41...>:
+I run OpenVPN on my laptop, and move between different physical
+locations/networks without rebooting my laptop or restarting OpenVPN.
+All I do is hibernate/unhibernate.
 
-> Marko Rauhamaa wrote:
-> > Yes, although gcc is allergic to #pragma's. [...]
-> 
-> gcc does support #pragma pack:
+After unhibernate, OpenVPN correctly detects that its "connection" has
+dropped, and attempts to re-initiate the connection. My config file uses
+a DNS name for the "remote" option (since the server uses DHCP for its
+IP, and the hostname is a dyndns hostname).
 
-Yes, but:
+However, the DNS lookup never works if I've moved network locations,
+since glibc caches the content of /etc/resolv.conf forever, and hence
+OpenVPN (via glibc) continues to attempt to query the DNS servers from
+the old physical location/network, which refuse to answer clients at the
+new location/network, and connectivity may not even be available to such
+an IP.
 
-   GCC supports several types of pragmas, primarily in order to compile
-   code originally written for other compilers. Note that in general we
-   do not recommend the use of pragmas; *Note Function Attributes::, for
-   further explanation.
+I believe the fix for this is for OpenVPN to call the "res_init()"
+function whenever it attempts to restart a broken connection (or at
+least periodically when doing this) or when DNS lookups fail. This
+should flush the /etc/resolv.conf cache, pick up the new entries that
+are relevant to the laptops' new location/network, and everything will
+be happy.
 
-   ("info gcc" 5.48 Pragmas Accepted by GCC)
+For more (brief) details, see the following bug report:
 
-
-Marko
+http://sourceware.org/bugzilla/show_bug.cgi?id=3675
 
