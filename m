@@ -1,9 +1,11 @@
-Date: Sat, 03 May 2008 16:19:56 -0600
+Message-ID: <48239A31.7030907@...41...>
+Date: Thu, 08 May 2008 18:26:25 -0600
+From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-Message-ID: <1209853267.11766.TMDA@...1092...>
-From: Stephen Warren <s-t-openvpn@...1091...>
-Subject: [Openvpn-devel] /etc/resolv.conf caching fix,
-	for long-running clients that move	between networks
+References: <478C94C4.1050409@...1068...>		<9e0cf0bf0801150345i749f5ca6na1f8343b6da390fc@...278...>		<9e0cf0bf0801150345p4639a831ub8f85fd56bda48db@...278...>		<478CAD6A.3010808@...1068...>		<9e0cf0bf0801150522x72621b20pc36373986f2ad8a1@...278...>		<47D7CBC2.6020606@...1068...>		<9e0cf0bf0803120802x53ed773ev38f25064069909e9@...278...>		<47D7F911.50307@...1068...>	<9e0cf0bf0803130645i1f84a228r2b983a00e7159faa@...278...>
+	<47D93FE9.4030600@...1068...>
+In-Reply-To: <47D93FE9.4030600@...1068...>
+Subject: Re: [Openvpn-devel] NTLMv2 patch corrected
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,34 +14,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Mirek Zajic <zajic@...1068...>
+Cc: Alon Bar-Lev <alon.barlev@...277...>, openvpn-devel@lists.sourceforge.net
 
-I run OpenVPN on my laptop, and move between different physical
-locations/networks without rebooting my laptop or restarting OpenVPN.
-All I do is hibernate/unhibernate.
+Mirek Zajic wrote:
+> I'm sending NTLMv2 patch again. I hope that everything is correct now 
+> :-) Again thanks to Alon for his feedback.
+>
+>
+> Miroslav Zajic
+> NextSoft s.r.o.
+>
+> P.S. I moved int64 macros to ntlm.c. I left them unchanged, becouse they 
+> could be useful in future.
+>
+>
+>   
 
-After unhibernate, OpenVPN correctly detects that its "connection" has
-dropped, and attempts to re-initiate the connection. My config file uses
-a DNS name for the "remote" option (since the server uses DHCP for its
-IP, and the hostname is a dyndns hostname).
+Mirek, can you send this patch as an attachment please?  It's broken up 
+with line-breaks.
 
-However, the DNS lookup never works if I've moved network locations,
-since glibc caches the content of /etc/resolv.conf forever, and hence
-OpenVPN (via glibc) continues to attempt to query the DNS servers from
-the old physical location/network, which refuse to answer clients at the
-new location/network, and connectivity may not even be available to such
-an IP.
+Thanks,
+James
 
-I believe the fix for this is for OpenVPN to call the "res_init()"
-function whenever it attempts to restart a broken connection (or at
-least periodically when doing this) or when DNS lookups fail. This
-should flush the /etc/resolv.conf cache, pick up the new entries that
-are relevant to the laptops' new location/network, and everything will
-be happy.
-
-For more (brief) details, see the following bug report:
-
-http://sourceware.org/bugzilla/show_bug.cgi?id=3675
 
