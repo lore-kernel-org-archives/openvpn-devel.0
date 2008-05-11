@@ -1,12 +1,11 @@
-Message-ID: <9e0cf0bf0805101429y588943ecj15432578d73391c7@...278...>
-Date: Sun, 11 May 2008 00:29:45 +0300
-From: "Alon Bar-Lev" <alon.barlev@...277...>
-In-Reply-To: <109201c8b2e4$a08816a0$0202fea9@...1094...>
+From: Noam Rathaus <noamr@...117...>
+Date: Sun, 11 May 2008 18:06:06 +0300
+References: <479FDA80.8050107@...41...>
+	<20080130043539.GI31211@...1048...>
+In-Reply-To: <20080130043539.GI31211@...1048...>
 MIME-Version: 1.0
-References: <0f4501c8b271$3b877200$0202fea9@...1094...>
-	<9e0cf0bf0805100051md5fcd4au6f032a85c6a87cbe@...278...>
-	<109201c8b2e4$a08816a0$0202fea9@...1094...>
-Subject: Re: [Openvpn-devel] SIGHUP SIGUSR1 new logfile
+Message-Id: <200805111806.06411.noamr@...117...>
+Subject: Re: [Openvpn-devel] OpenVPN binaries for MAC?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,147 +14,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain;
+  charset="ansi_x3.4-1968"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-To: Bonno Bloksma <b.bloksma@...1093...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-This is what SIGUSR1 is for.
+Hi,
 
-On 5/11/08, Bonno Bloksma <b.bloksma@...1093...> wrote:
+Don't get discouraged, one thing that I learned over the year, as there is no 
+MAC binary now, little if any use OpenVPN on MAC causing lack of interest on 
+both ends - developers and consumers for OpenVPN support for MAC.
+
+If you are willing to compile it - i.e. you have MAC and some skill in 
+compiling OpenVPN for MAC - I am sure people here can help you generate 
+binaries - from there the road for others doing the same is easier - and from 
+there I m sure someone here will pickup the MAC binaries building project.
+
+To summarize the problem at the moment is that probably no one here has MAC to 
+try and compile it.
+
+On Wednesday 30 January 2008 06:35:39 Maximilian Wilhelm wrote:
+> Hi!
 >
+> While watching the preparations for release 2.1 I'm wondering if there
+> will be prepared binaries or installable packages for Mac users when
+> the release is there?
 >
-> Hello,
+> Thanks,
 >
-> I might look into the syslog way to seperate the openvpn log messages.
-> That leaves the unwanted effect of killing the connection when doing a
-> reload. Is that a know bug or something specific to my situation?
->
->
->
->
-> Met vriendelijke groet,
-> Bonno Bloksma
-> hoofd systeembeheer
->
->
-> tio hogeschool hospitality en toerisme
-> begijnenhof 8-12 / 5611 el eindhoven
-> t 040 296 28 28 / f 040 237 35 20
-> b.bloksma@...1093...  / www.tio.nl
->
->
-> ----- Original Message -----
-> From: Alon Bar-Lev
-> To: Bonno Bloksma
-> Cc: openvpn-devel@lists.sourceforge.net
->
-> Sent: Saturday, May 10, 2008 9:51 AM
-> Subject: Re: [Openvpn-devel] SIGHUP SIGUSR1 new logfile
->
-> SIGUSR1 is used for other stuff in openvpn.
->
-> Why don't you use syslog, catch the openvpn related messages and place
-> them in separate file? It is much simpler and can be managed in
-> greater flexibility.
->
-> Alon.
->
-> On 5/10/08, Bonno Bloksma <b.bloksma@...1093...> wrote:
-> >
-> >
-> > Hi,
-> >
-> >
-> >
-> > I wanted to implement a weekly logfile rotation for the openvpn logfile
-> and
-> > noticed that it did not work, openvpn kept writing to the old logfile.
-> >
-> > If I did a manual mv openvpn.log openvpn.1 openvpn would still write to
-> the
-> > same file, now called openvpn.1, and not start a new openvpn.log. Only
-> after
-> > restarting openvpn dit it start a new openvpn.log file.
-> > What is the correct way to keep openvpn up and running but have it start
-> > using the new logfile?
-> >
-> > The logrotate program has a workaround by using the copytruncate option
-> but
-> > that is more of a stopgap sollution for dumb programs, of which I'm sure
-> > openvpn is not one.
-> > The logrotate program can send a SIGHUP, SIGUSR1, etc after the rotation
-> to
-> > tell the program the logfile has been rotated.
-> >
-> > The openvpn script in the init.d/ folder has options like reload and
-> reopen
-> > which correspondent to SIGHUP, SIGUSR1 and might do what I want but.... so
-> > far it seems not. After both reload and reopen the old logfile is still
-> > being used.
-> > Besides that....
-> >
-> > Testing with 2.0.9-1 on a Redhat 9 machine I found out that trying to do a
-> > reload would produce several errors, one about opening the key file, and I
-> > would loose the vpn connection.
-> > Sat May 10 08:58:44 2008 us=750706 TCP/UDP: Closing socket
-> > Sat May 10 08:58:44 2008 us=750822 /sbin/ip route del 172.16.1.64/26
-> > RTNETLINK answers: Operation not permitted
-> > Sat May 10 08:58:44 2008 us=755306 ERROR: Linux route delete command
-> failed:
-> > shell command exited with error status: 2
-> > [.....]
-> > Sat May 10 08:58:44 2008 us=865438 OpenVPN 2.0.9 i386-redhat-linux-gnu
-> [SSL]
-> > [LZO] [EPOLL] built on Feb  2 2007
-> > Sat May 10 08:58:44 2008 us=865545 Restart pause, 2 second(s)
-> > Sat May 10 08:58:46 2008 us=866570 IMPORTANT: OpenVPN's default port
-> number
-> > is now 1194, based on an official port number assignment by IANA.  OpenVPN
-> > 2.0-beta16 and earlier used 5000 as the default port.
-> > Sat May 10 08:58:46 2008 us=867202 Cannot load private key file
-> > bonnothuis.key: error:0200100D:system library:fopen:Permission denied:
-> > error:20074002:BIO routines:FILE_CTRL:system lib: error:140B0002:S
-> > SL routines:SSL_CTX_use_PrivateKey_file:system lib
-> > Sat May 10 08:58:46 2008 us=867316 Error: private key password
-> verification
-> > failed
-> > Sat May 10 08:58:46 2008 us=867342 Exiting
-> > Is this a known error, maybe connected to the nobody options, or should I
-> do
-> > some testing with the new 2.1 version?
-> >
-> >
-> > Is the issue with the logfile rotation dealt with in the 2.1 release? If
-> > not, will it be in a next rc? Do I need to help testing some things?
-> > I am NOT a C programmer, at least not anymore. My programming skills are
-> old
-> > and were in several other languages like Pascal, Forth, etc. :-)
-> >
-> > p.s. In my production environment I will be using Openvpn mainly on Debian
-> > etch, so for that I would still be using the 2.0.9 release for a while.
-> But
-> > at home I'd like to use the newer version to see if openvpn 2.1 does work
-> as
-> > it should.
-> >
-> > Groetjes,
-> > Bonno Bloksma
-> >
-> >
-> -------------------------------------------------------------------------
-> >  This SF.net email is sponsored by the 2008 JavaOne(SM) Conference
-> >  Don't miss this year's exciting event. There's still time to save $100.
-> >  Use priority code J8TL2D2.
-> >
-> http://ad.doubleclick.net/clk;198757673;13503038;p?http://java.sun.com/javaone
-> > _______________________________________________
-> >  Openvpn-devel mailing list
-> >  Openvpn-devel@lists.sourceforge.net
-> >
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> >
-> >
->
+> Ciao
+> Max
+
+
+
+-- 
+Noam Rathaus
+CTO
+noamr@...117...
+http://www.beyondsecurity.com
+
+"Know that you are safe."
+
+Beyond Security Finalist for the "Red Herring 100 Global" Awards 2007
 
