@@ -1,11 +1,13 @@
-Message-ID: <483DC794.3090302@...1104...>
-Date: Wed, 28 May 2008 16:59:00 -0400
-From: Martin Gadbois <martin.gadbois@...1104...>
+Sender: marko@...1042...
+References: <483DA4E4.1030308@...1104...>
+	<m3skw240d8.fsf@...1043...> <483DC794.3090302@...1104...>
+Date: 29 May 2008 00:57:30 +0300
+In-Reply-To: <483DC794.3090302@...1104...>
+Message-ID: <m3od6q3xdh.fsf@...1043...>
 MIME-Version: 1.0
-References: <483DA4E4.1030308@...1104...> <m3skw240d8.fsf@...1043...>
-In-Reply-To: <m3skw240d8.fsf@...1043...>
-Subject: Re: [Openvpn-devel] Memory of server keeps increasing with
-	key	negotiations
+From: Marko Rauhamaa <marko@...1042...>
+Subject: Re: [Openvpn-devel] Memory of server keeps increasing
+	with	key	negotiations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,44 +17,24 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-To: Marko Rauhamaa <marko@...1042...>
+Content-Transfer-Encoding: 8bit
+To: Martin Gadbois <martin.gadbois@...1104...>
 Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Martin Gadbois <martin.gadbois@...1104...>:
 
-Marko Rauhamaa wrote:
-> You might be suffering from the problem I sent a patch for some months
-> back. Basically, socket.c, socket_connect() accumulated unlimited
-> amounts of memory if the server wasn't available. I added a pair of
-> gc_free()/gc_new() in the middle of the loop.
+> I've looked at the code (Yeah! Open Source) and could not see any
+> lists, or code that accumulates data, apart from gc_*().
 
-I saw your patch, but I do not think your situation fits mine, as my
-server is connected with exactly one client. It must be something like
-this though...
+There's this weird scheme by which you prepare a memory pool with
+gc_new(). Memory keeps on accumulating in the pool with alloc_buf_gc()
+(in print_sockaddr_ex(), for example). The memory is not freed until the
+whole pool is destroyed with gc_free().
 
-I've looked at the code (Yeah! Open Source) and could not see any lists,
-or code that accumulates data, apart from gc_*().
+See if there are repeated messages in your log file. It was those log
+messages that caused my router to run out of memory over a couple of
+weeks, although there must be other similar problem sources.
 
-Maybe I should look into gc_*() closer...
 
-(Or I could add debug code that logs when a gc() gets bigger than a
-particular threshold... mmmm...)
-
-Thanks Marko.
-
-- --
-==============         +---------------------------------------------+
-Martin Gadbois         |    You are            -- J. Steakley,       |
-Sr. SW Designer        |    What you do             Armor, 1984      |
-Colubris Networks Inc. |    When it counts.                          |
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFIPceUMPkSU9icdA0RAqJMAKCcrXVCYepo2whovuCRZ1puK1se0QCfXfbN
-QIPPcBRXHxa/SAbzl/oA6fM=
-=yCR3
------END PGP SIGNATURE-----
+Marko
 
