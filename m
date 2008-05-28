@@ -1,12 +1,9 @@
-Date: Tue, 27 May 2008 13:22:15 +0200
-From: Uwe Hermann <uwe@...1102...>
-Sender: Uwe Hermann <uwe@...1102...>
-Message-ID: <20080527112215.GB18901@...1103...>
+Message-ID: <483DA4E4.1030308@...1104...>
+Date: Wed, 28 May 2008 14:31:00 -0400
+From: Martin Gadbois <martin.gadbois@...1104...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="5p8PegU4iirBW1oA"
-Content-Disposition: inline
-Subject: [Openvpn-devel] [PATCH] easy-rsa: Make revoke-full work when
-	engine_pkcs11 not	installed
+Subject: [Openvpn-devel] Memory of server keeps increasing with key
+	negotiations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,97 +12,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
---5p8PegU4iirBW1oA
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Hi,
+Hi!
 
-I've been playing a bit with openvpn lately and noticed that the
-'revoke-full' script in easy-rsa/2.0 (openvpn 2.1~rc7-2 from Debian,
-but current svn BETA21 branch seems to have the same problem) is
-not working correctly in the default settings when the user doesn't
-have engine_pkcs11 stuff installed.
+Using OpenVPN 2.0.5 and 2.0.9, I notice that an somewhat idle connection
+increases the RSS of the server process linearly with time.
 
-$ . vars
-$ ./revoke-full foo
-Using configuration from /etc/openvpn/easy-rsa/openssl.cnf
-error on line 282 of config file '/etc/openvpn/easy-rsa/openssl.cnf'
-17264:error:0E065068:configuration file routines:STR_COPY:variable has no value:conf_def.c:629:line 282
-Using configuration from /etc/openvpn/easy-rsa/openssl.cnf
-error on line 282 of config file '/etc/openvpn/easy-rsa/openssl.cnf'
-17265:error:0E065068:configuration file routines:STR_COPY:variable has no value:conf_def.c:629:line 282
-foo.crt: XXXXXXXX
-error 3 at 0 depth lookup:unable to get certificate CRL
+valgrind says that there are no memory leaks. So where is this memory kept?
 
+The way to reproduce this problem fast is to set reneg-sec to 15 using
+RSA certificates.
 
-After patching openssl.cnf (see below):
+Here's the server config, the one that increases:
+=========
+port 1194
+proto udp
+dev tun
+ca ca/ca.crt
+cert ca/server.crt
+key ca/server.key  # This file should be kept secret
+dh etc/dhparam1024.pem
+server 169.254.0.0 255.255.255.0
+ifconfig-pool-persist /tmp/ipp.txt 45
+ifconfig-pool-linear
+tun-mtu 1431
+mtu-disc no
+ping 5
+ping-exit 60
+cipher BF-CBC        # Blowfish (default)
+max-clients 200
+tls-auth etc/ta.key 0
+user nobody
+group nobody
+persist-key
+persist-tun
+verb 4
+reneg-sec 15
+=============
 
-$ ./revoke-full foo
-Using configuration from /etc/openvpn/easy-rsa/openssl.cnf
-Revoking Certificate 02.
-Data Base Updated
-Using configuration from /etc/openvpn/easy-rsa/openssl.cnf
-foo.crt: XXXXXXXX
-error 23 at 0 depth lookup:certificate revoked
+Any hints on where to look for this memory would be great, as I would
+like to clear this up.
 
-
-What I did to work around this problem was to locally comment the following
-lines in openssl.cnf (lines 279-284 in svn as of r2835).
-
-# [ pkcs11_section ]
-# engine_id = pkcs11
-# dynamic_path = /usr/lib/engines/engine_pkcs11.so
-# MODULE_PATH = $ENV::PKCS11_MODULE_PATH
-# PIN = $ENV::PKCS11_PIN
-# init = 0
-
-See also attached patch.
+Thanks!
 
 
-Another issue is the
-  error 3 at 0 depth lookup:unable to get certificate CRL
-and
-  error 23 at 0 depth lookup:certificate revoked
-messages. Are those problematic? Looks like the second line
-tells me that the key was successfully revoked. If so,
-starting the line with "error 23" is really confusing.
+- --
+==============         +---------------------------------------------+
+Martin Gadbois         |    You are            -- J. Steakley,       |
+Sr. SW Designer        |    What you do             Armor, 1984      |
+Colubris Networks Inc. |    When it counts.                          |
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-
-Thanks, Uwe.
--- 
-http://www.hermann-uwe.de  | http://www.holsham-traders.de
-http://www.crazy-hacks.org | http://www.unmaintained-free-software.org
-
---5p8PegU4iirBW1oA
-Content-Type: text/x-diff; charset=us-ascii
-Content-Disposition: attachment; filename="easyrsa_revoke_full.patch"
-
-Index: easy-rsa/2.0/openssl.cnf
-===================================================================
---- easy-rsa/2.0/openssl.cnf	(revision 2975)
-+++ easy-rsa/2.0/openssl.cnf	(working copy)
-@@ -275,11 +275,11 @@
- # verify that dynamic_path points to the correct location
- #
- #pkcs11 = pkcs11_section
-+#
-+# [ pkcs11_section ]
-+# engine_id = pkcs11
-+# dynamic_path = /usr/lib/engines/engine_pkcs11.so
-+# MODULE_PATH = $ENV::PKCS11_MODULE_PATH
-+# PIN = $ENV::PKCS11_PIN
-+# init = 0
- 
--[ pkcs11_section ]
--engine_id = pkcs11
--dynamic_path = /usr/lib/engines/engine_pkcs11.so
--MODULE_PATH = $ENV::PKCS11_MODULE_PATH
--PIN = $ENV::PKCS11_PIN
--init = 0
--
-
---5p8PegU4iirBW1oA--
+iD8DBQFIPaTkMPkSU9icdA0RAk/QAJ94r3tJhqToMtkoRf/lj38FuefnyQCgrLgD
+koTQZIWLrX6G+QU+1Gl2daA=
+=uJ7l
+-----END PGP SIGNATURE-----
 
