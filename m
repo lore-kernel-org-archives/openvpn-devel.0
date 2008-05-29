@@ -1,12 +1,12 @@
-Message-ID: <483EC431.7040305@...1104...>
-Date: Thu, 29 May 2008 10:56:49 -0400
+Message-ID: <483ED0A6.5030708@...1104...>
+Date: Thu, 29 May 2008 11:49:58 -0400
 From: Martin Gadbois <martin.gadbois@...1104...>
 MIME-Version: 1.0
-References: <483DA4E4.1030308@...1104...>	<m3skw240d8.fsf@...1043...>
-	<483DC794.3090302@...1104...> <m3od6q3xdh.fsf@...1043...>
-In-Reply-To: <m3od6q3xdh.fsf@...1043...>
-Subject: Re: [Openvpn-devel] Memory of server keeps increasing
-	with	key	negotiations
+References: <483DA4E4.1030308@...1104...>
+In-Reply-To: <483DA4E4.1030308@...1104...>
+Content-Type: multipart/mixed; boundary="------------080804030702000801010309"
+Subject: Re: [Openvpn-devel] Memory of server keeps increasing with
+	key	negotiations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,32 +15,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: openvpn-devel@lists.sourceforge.net
+
+This is a multi-part message in MIME format.
+--------------080804030702000801010309
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-To: Marko Rauhamaa <marko@...1042...>
-Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-Marko Rauhamaa wrote:
-> Martin Gadbois <martin.gadbois@...1104...>:
+Martin Gadbois wrote:
+
+> Using OpenVPN 2.0.5 and 2.0.9, I notice that an somewhat idle connection
+> increases the RSS of the server process linearly with time.
 > 
->> I've looked at the code (Yeah! Open Source) and could not see any
->> lists, or code that accumulates data, apart from gc_*().
-> 
-> There's this weird scheme by which you prepare a memory pool with
-> gc_new(). Memory keeps on accumulating in the pool with alloc_buf_gc()
-> (in print_sockaddr_ex(), for example). The memory is not freed until the
-> whole pool is destroyed with gc_free().
 
-Yep. It seems that whenever env_set_add() is called, context->c2.gc is
-used to allocate stuff using gc*() functions at every key renegotiation.
+Here is my patch to fix this issue. It does create (according to
+valgrind) a memory leak, but it does not increase with time. Feel free
+to fix it better...
 
-The environement list is kept up-to-date, but all elements from this
-list is allocated using context->c2.gc, and never freed.
+I short, environments values were allocated using gc*(), and every key
+change the environement list changes, but the allocated values stayed in
+the context's gc.
 
-Now, I need to fix that without breaking anything...
+I modified the environement values to always allocate using malloc() and
+always free() values when the env list changes.
 
 
 - --
@@ -52,8 +52,45 @@ Colubris Networks Inc. |    When it counts.                          |
 Version: GnuPG v1.4.5 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFIPsQxMPkSU9icdA0RAmHYAJ4yA+7Vw3SVY7X/Q+pH5icLkwlu/ACcDubu
-Y6+Q9emSaFl2kbwkOmInPCc=
-=ZRWI
+iD8DBQFIPtCmMPkSU9icdA0RAiXTAJ4g3qzaubnyRTOCsCEF9Iz3BU+2AQCeMzzE
+/7mbJluQBOfzjy4jph4T4RI=
+=fksj
 -----END PGP SIGNATURE-----
+
+--------------080804030702000801010309
+Content-Type: text/plain;
+ name="no-env-gc.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="no-env-gc.patch"
+
+diff -ur openvpn-2.0.5-org/misc.c openvpn-2.0.5/misc.c
+--- openvpn-2.0.5-org/misc.c	2005-11-01 06:06:11.000000000 -0500
++++ openvpn-2.0.5/misc.c	2008-05-29 11:37:05.000000000 -0400
+@@ -651,7 +652,7 @@
+ 	    prev->next = current->next;
+ 	  else
+ 	    *list = current->next;
+-	  if (do_free)
++//	  if (do_free)
+ 	    {
+ 	      memset (current->string, 0, strlen (current->string));
+ 	      free (current->string);
+@@ -671,9 +672,10 @@
+ 
+   ASSERT (str);
+   ASSERT (list);
+-
+-  ALLOC_OBJ_GC (item, struct env_item, gc);
+-  item->string = do_alloc ? string_alloc (str, gc): str;
++	dmsg(M_WARN,"ENV: Adding %s %s",str,do_alloc?"Alloc":"");
++  ALLOC_OBJ (item, struct env_item);
++//  item->string = do_alloc ? string_alloc (str, gc): str;
++  item->string = strdup(str);
+   item->next = *list;
+   *list = item;
+ }
+
+
+--------------080804030702000801010309--
 
