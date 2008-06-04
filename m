@@ -1,10 +1,11 @@
-Message-ID: <9e0cf0bf0806031025p3046c448red8738da42eb41ff@...278...>
-Date: Tue, 3 Jun 2008 20:25:24 +0300
-From: "Alon Bar-Lev" <alon.barlev@...277...>
-In-Reply-To: <efa3ba32a841d2c48f85641659c8e925@...1105...>
+Message-ID: <48464467.8050108@...41...>
+Date: Wed, 04 Jun 2008 01:29:43 -0600
+From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-References: <efa3ba32a841d2c48f85641659c8e925@...1105...>
-Subject: Re: [Openvpn-devel] Missing file in easy-rsa for Windows
+References: <483DA4E4.1030308@...1104...> <483ED0A6.5030708@...1104...>
+In-Reply-To: <483ED0A6.5030708@...1104...>
+Subject: Re: [Openvpn-devel] Memory of server keeps increasing
+	with	key	negotiations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,36 +14,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-To: Didier Conchaudron <didier@...255...>
+To: Martin Gadbois <martin.gadbois@...1104...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Next version will contain all files.
-But as far as I see the windows version is not well maintained.
+Martin Gadbois wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+>
+> Martin Gadbois wrote:
+>
+>   
+>> Using OpenVPN 2.0.5 and 2.0.9, I notice that an somewhat idle connection
+>> increases the RSS of the server process linearly with time.
+>>
+>>     
+>
+> Here is my patch to fix this issue. It does create (according to
+> valgrind) a memory leak, but it does not increase with time. Feel free
+> to fix it better...
+>
+> I short, environments values were allocated using gc*(), and every key
+> change the environement list changes, but the allocated values stayed in
+> the context's gc.
+>
+> I modified the environement values to always allocate using malloc() and
+> always free() values when the env list changes.
+>
+>
+>   
 
-Alon.
+I've committed a fix for this issue:
 
-On 6/3/08, Didier Conchaudron <didier@...255...> wrote:
-> Hi,
->
->  In the latest 2.1_rc7 zip/tar.gz/installer, the openssl.cnf.sample file is
->  missing in the easy-rsa/Windows directory. Copying the openssl.cnf file
->  from the 1.0 or 2.0 directories didn't work for me.
->  Are there any special parameters to set up in the file?
->
->  Thanks
->  /Didier
->
->
->  -------------------------------------------------------------------------
->  This SF.net email is sponsored by: Microsoft
->  Defy all challenges. Microsoft(R) Visual Studio 2008.
->  http://clk.atdmt.com/MRT/go/vse0120000070mrt/direct/01/
->  _______________________________________________
->  Openvpn-devel mailing list
->  Openvpn-devel@lists.sourceforge.net
->  https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+------------------------------------------------------------------------
+r2981 | james | 2008-06-04 01:23:20 -0600 (Wed, 04 Jun 2008) | 6 lines
+Changed paths:
+   M /branches/BETA21/openvpn/debug/valgrind-suppress
+   M /branches/BETA21/openvpn/doval
+   M /branches/BETA21/openvpn/openvpn.c
+
+Fixed unbounded memory growth bug in
+environmental variable code that could
+have caused long-running OpenVPN sessions
+with many TLS renegotiations to incrementally
+increase memory usage over time.
+
+------------------------------------------------------------------------
+
+James
+
 
