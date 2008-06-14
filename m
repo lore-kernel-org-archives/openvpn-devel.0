@@ -1,9 +1,9 @@
-Date: Sat, 14 Jun 2008 11:43:17 -0400 (EDT)
-From: Aaron Sethman <androsyn@...45...>
-In-Reply-To: <alpine.LNX.1.00.0806100842340.5779@...1019...>
-Message-ID: <alpine.LNX.1.10.0806141142140.7437@...48...>
-References: <alpine.LNX.1.00.0806100842340.5779@...1019...>
+Message-ID: <48541C67.1020809@...41...>
+Date: Sat, 14 Jun 2008 12:30:47 -0700
+From: James Yonan <jim@...41...>
 MIME-Version: 1.0
+References: <alpine.LNX.1.00.0806100842340.5779@...1019...>
+In-Reply-To: <alpine.LNX.1.00.0806100842340.5779@...1019...>
 Subject: Re: [Openvpn-devel] OpenVPN and ECC support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,22 +13,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Content-Transfer-Encoding: 8bit
-To: Andrzej Chmielowiec <ac181080@...1019...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-
-
-On Tue, 10 Jun 2008, Andrzej Chmielowiec wrote:
-
+Andrzej Chmielowiec wrote:
 > Hi All,
->
+> 
 > I send two patches to OpenVPN which gives Elliptic Curve support.
 
-These patches work fairly well for me in the bit of use I gave them.  I 
-was actually in the process of coding up a patch for this myself, but you 
-beat me to the punch.  :)
+Thanks for the patch.  It would be great if you could resubmit the patch
+against the OpenVPN 2.1 head in the subversion repository, since that is
+where we will need to merge it.
 
--Aaron
+http://svn.openvpn.net/
+
+Also, make sure that "./configure --enable-strict && make" compiles your
+code without warnings.
+
+Thanks,
+James
+
 
