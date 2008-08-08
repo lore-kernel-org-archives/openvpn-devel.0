@@ -1,11 +1,11 @@
-Date: Fri, 8 Aug 2008 16:38:40 +0200
-From: Jos Vos <jos@...1120...>
-Message-ID: <20080808143840.GB32056@...1119...>
-References: <200808081133.m78BXp4S030182@...1119...>
-	<35f70db10808080726s42b672eja344ef7557bf0e24@...278...>
-Mime-Version: 1.0
-In-Reply-To: <35f70db10808080726s42b672eja344ef7557bf0e24@...278...>
-Subject: Re: [Openvpn-devel] OpenVPN and OpenSSL compatibility
+Message-ID: <489C8DFB.2000603@...41...>
+Date: Fri, 08 Aug 2008 12:18:35 -0600
+From: James Yonan <jim@...41...>
+MIME-Version: 1.0
+References: <4892B01F.10208@...41...>
+	<20080808074543.GA8673@...33...>
+In-Reply-To: <20080808074543.GA8673@...33...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.1_rc9 released -- note security fix
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,26 +14,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Ross Cameron <ross.cameron@...1049...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Matthias Andree <matthias.andree@...68...>
+Cc: Openvpn-devel@lists.sourceforge.net
 
-On Fri, Aug 08, 2008 at 04:26:47PM +0200, Ross Cameron wrote:
+> 1 - --script-security is documented in openvpn --help,
+>     but not in the manual page.
 
-> What Linux kernel and Glibc version's are you running on this box?
+Really?  I see the documentation clearly added in ./openvpn.8:
 
-Kernel 2.4.20, glibc 2.2.5.
+.\"*********************************************************
+.TP
+.B --script-security level
+This directive offers policy-level control over OpenVPN's usage of 
+external programs
+and scripts.  Lower values are more restrictive, higher values are more 
+permissive.  Settings for
+.B level:
 
-But I just finished building a newer version of OpenSSL (0.9.7a,
-still old, I know), then I compiled OpenVPN 2.1_rc9 against that,
-and that does not give the errors anymore.
+.B 0 --
+Strictly no calling of external programs.
+.br
+.B 1 --
+(Default) Only call built-in executables such as ifconfig, ip, route, or 
+netsh.
+.br
+.B 2 --
+Allow calling of built-in executables and user-defined scripts.
+.br
+.B 3 --
+Allow passwords to be passed to scripts via environmental variables 
+(potentially unsafe).
+.\"*********************************************************
+.
 
-So it really seems that OpenSSL 0.9.6b is just one bridge too far...
-
--- 
---    Jos Vos <jos@...1120...>
---    X/OS Experts in Open Systems BV   |   Phone: +31 20 6938364
---    Amsterdam, The Netherlands        |     Fax: +31 20 6948204
+James
 
