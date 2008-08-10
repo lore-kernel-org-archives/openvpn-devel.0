@@ -1,10 +1,11 @@
-Message-ID: <489C8DFB.2000603@...41...>
-Date: Fri, 08 Aug 2008 12:18:35 -0600
-From: James Yonan <jim@...41...>
-MIME-Version: 1.0
+Date: Sun, 10 Aug 2008 14:44:53 +0200
+From: Matthias Andree <ma+ovpnd@...31...>
+Message-ID: <20080810124453.GA9361@...33...>
 References: <4892B01F.10208@...41...>
 	<20080808074543.GA8673@...33...>
-In-Reply-To: <20080808074543.GA8673@...33...>
+	<489C8DFB.2000603@...41...>
+MIME-Version: 1.0
+In-Reply-To: <489C8DFB.2000603@...41...>
 Subject: Re: [Openvpn-devel] OpenVPN 2.1_rc9 released -- note security fix
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,40 +15,22 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Matthias Andree <matthias.andree@...68...>
-Cc: Openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-> 1 - --script-security is documented in openvpn --help,
->     but not in the manual page.
+On Fri, 08 Aug 2008, James Yonan wrote:
 
-Really?  I see the documentation clearly added in ./openvpn.8:
+>> 1 - --script-security is documented in openvpn --help,
+>>     but not in the manual page.
+>
+> Really?  I see the documentation clearly added in ./openvpn.8:
 
-.\"*********************************************************
-.TP
-.B --script-security level
-This directive offers policy-level control over OpenVPN's usage of 
-external programs
-and scripts.  Lower values are more restrictive, higher values are more 
-permissive.  Settings for
-.B level:
+Hum, indeed it is, I stand corrected. Must have been my confusion or not
+using nroff or man properly. Sorry for this part of the noise.
 
-.B 0 --
-Strictly no calling of external programs.
-.br
-.B 1 --
-(Default) Only call built-in executables such as ifconfig, ip, route, or 
-netsh.
-.br
-.B 2 --
-Allow calling of built-in executables and user-defined scripts.
-.br
-.B 3 --
-Allow passwords to be passed to scripts via environmental variables 
-(potentially unsafe).
-.\"*********************************************************
-.
+-- 
+Matthias Andree
 
-James
 
