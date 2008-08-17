@@ -1,9 +1,8 @@
-Date: Thu, 14 Aug 2008 14:34:12 -0400
-From: Mike Kasick <mkasick-od@...1121...>
-Message-ID: <20080814183412.GA22499@...1121...>
+From: Noam Rathaus <noamr@...117...>
+Date: Sun, 17 Aug 2008 10:00:09 +0300
 MIME-Version: 1.0
-Subject: [Openvpn-devel] 2.1_rc9/r3122 breaks verify-cn script and
-	tls-verify multiple argument behavior
+Message-Id: <200808171000.09879.noamr@...117...>
+Subject: [Openvpn-devel] OpenVPN bandwidth restrictions (wishlist)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,35 +11,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-The change from using system() to execve() introduced as part of the
-defensive programming changes in r3122 breaks the supplied verify-cn script
-and recommended usage of multiple arguments with the --tls-verify option.
+Hi,
 
-From openvpn(8):
+Is there a plan or someone that knows how to make OpenVPN limit the mount of 
+traffic it sends per user?
 
-"Note that cmd can be a shell command with multiple arguments, in which
-case all OpenVPN-generated arguments will be appended to cmd to build a
-command line which will be passed to the script."
+I know of 'shaper' functionality but I can't use it, as apparently I cannot do 
+this on the server only on the clients?
+  Options error: --shaper cannot be used with --mode server
 
-Of course, by using execve() instead of system() this is no longer true.
-Multiple arguments are interpreted as part of the script file name itself.
+I don't want my clients to have the ability to control how much outgoing 
+traffic my server sends, rather I want to control it in the server.
 
-I use a script with tls-verify that's similar to the supplied verify-cn, in
-that it checks the Organizational Unit of the certificate against the one
-supplied via command line (and thus, specified in the config file).  I'd
-rather not hardcode the comparison name, and it would be my preference not
-to pass it as an environment variable either.
+-- 
+Noam Rathaus
+CTO
+noamr@...117...
+http://www.beyondsecurity.com
 
-Is there another workaround that would let me specify aditional parameters
-to the tls-verify script from the config file?
+"Know that you are safe."
 
-At the very least, the man page and the header of the verify-cn script
-should be updated to reflect that this behavior is no longer supported.
-
-Thanks!
+Beyond Security Finalist for the "Red Herring 100 Global" Awards 2007
 
