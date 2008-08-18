@@ -1,10 +1,10 @@
-Message-ID: <48A92CE6.4000506@...1030...>
-Date: Mon, 18 Aug 2008 10:03:50 +0200
-From: Marcus <adesperateuser@...1030...>
+Message-ID: <48A9A106.1020205@...1122...>
+Date: Mon, 18 Aug 2008 09:19:18 -0700
+From: Bart Kus <me@...1122...>
 MIME-Version: 1.0
-References: <200808171000.09879.noamr@...117...>
-In-Reply-To: <200808171000.09879.noamr@...117...>
-Subject: Re: [Openvpn-devel] OpenVPN bandwidth restrictions (wishlist)
+References: <48A5F8A2.4090400@...1122...>
+In-Reply-To: <48A5F8A2.4090400@...1122...>
+Subject: [Openvpn-devel] Problem with OpenVPN 2.1_rc9 on Vista 32-bit
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,42 +13,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Noam Rathaus <noamr@...117...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Sent this to openvpn-users a while back with no response.  Perhaps it is 
+a question better targeted @ the developers?
 
-Noam Rathaus schrieb:
-> Hi,
-> 
-> Is there a plan or someone that knows how to make OpenVPN limit the mount of 
-> traffic it sends per user?
-> 
-> I know of 'shaper' functionality but I can't use it, as apparently I cannot do 
-> this on the server only on the clients?
->   Options error: --shaper cannot be used with --mode server
-> 
-> I don't want my clients to have the ability to control how much outgoing 
-> traffic my server sends, rather I want to control it in the server.
-> 
+--Bart
 
 
-Maybe you can achieve your goal by using iptables, token bucket, etc.
+Bart Kus wrote:
+> Thu Aug 07 19:24:06 2008 OpenVPN 2.1_rc9 i686-pc-mingw32 [SSL] [LZO2] 
+> [PKCS11] built on Jul 31 2008
+>
+> [...] snip! [...]
+>
+> Thu Aug 07 19:24:53 2008 write to TUN/TAP  [State=AT?c 
+> Err=[c:\src\21\tap-win32\tapdrvr.c/2268] #O=10 Tx=[49,0] Rx=[6,88] 
+> IrpQ=[1,1,16] PktQ=[0,1,64]]: The data area passed to a system call is 
+> too small.   (code=122)
+> Thu Aug 07 19:25:03 2008 write to TUN/TAP  [State=AT?c 
+> Err=[c:\src\21\tap-win32\tapdrvr.c/2268] #O=10 Tx=[49,0] Rx=[6,89] 
+> IrpQ=[1,1,16] PktQ=[0,1,64]]: The data area passed to a system call is 
+> too small.   (code=122)
+> Thu Aug 07 19:25:12 2008 write to TUN/TAP  [State=AT?c 
+> Err=[c:\src\21\tap-win32\tapdrvr.c/2268] #O=10 Tx=[50,0] Rx=[6,90] 
+> IrpQ=[1,1,16] PktQ=[0,1,64]]: The data area passed to a system call is 
+> too small.   (code=122)
+>
+> ...etc...
+>
+> Anyone know what might be going wrong here?  Would more data help?
+>
+> Thanks for any help,
+>
+> --Bart
+>
+>
 
-Have a look here:
-http://seclists.org/firewall-wizards/2003/Mar/0030.html
-
-Greetz,
- Marcus
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFIqSzm+qVaNRZYOakRAsN3AKCnOA9Bco8ej82afTfurprGPh/dFACfWD+x
-pTsvcrZjJEc/BhbTPa9rKwM=
-=I4RI
------END PGP SIGNATURE-----
 
