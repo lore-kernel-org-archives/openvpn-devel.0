@@ -1,8 +1,10 @@
-Date: Thu, 21 Aug 2008 20:18:37 +0200
-From: Alberto Gonzalez Iniesta <agi@...64...>
-Message-ID: <20080821181836.GE2516@...30...>
+Date: Fri, 22 Aug 2008 00:27:20 +0200
+From: Matthias Andree <ma+ovpnd@...31...>
+Message-ID: <20080821222720.GA25720@...33...>
+References: <20080821181836.GE2516@...30...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] rc9 and external commands
+In-Reply-To: <20080821181836.GE2516@...30...>
+Subject: Re: [Openvpn-devel] rc9 and external commands
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,54 +13,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-To: OpenVPN devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi James,
+On Thu, 21 Aug 2008, Alberto Gonzalez Iniesta wrote:
 
-It seems that tightening the security on OpenVPN brought some surprises
-[1] to users and broke some features [2].
+> It seems that tightening the security on OpenVPN brought some surprises
+> [1] to users and broke some features [2].
+> 
+> As for [1], I included a note in the Debian NEWS file on the new
+> --script-security option. But those updating a VPN using the very same
+> VPN (and without previous knowledge of this option) may find themselves
+> without access to the remote system (if the VPN/system is restarted, and
+> a script is to be executed). Also, those using NetworkManager [3] aren't
+> able to specify the '--script-security' option, and since NetworkManager
+> may/will call external scripts, this new security feature will break
+> their VPNs. The option is really useful, but 2 would be a more sensible
+> default IMHO.
 
-As for [1], I included a note in the Debian NEWS file on the new
---script-security option. But those updating a VPN using the very same
-VPN (and without previous knowledge of this option) may find themselves
-without access to the remote system (if the VPN/system is restarted, and
-a script is to be executed). Also, those using NetworkManager [3] aren't
-able to specify the '--script-security' option, and since NetworkManager
-may/will call external scripts, this new security feature will break
-their VPNs. The option is really useful, but 2 would be a more sensible
-default IMHO.
+One might argue that NetworkManager doesn't support all *RC versions of
+OpenVPN's. At the end of the day, it will be a NetworkManager issue.
+Interfaces change...
 
-Regarding [2] an strace shows that calls to external commands with
-arguments include the arguments as part of the command filename:
-For:=20
---up "/tmp/foo up"
+> Regarding [2] an strace shows that calls to external commands with
+> arguments include the arguments as part of the command filename:
+> For: 
+> --up "/tmp/foo up"
+> 
+> The call is:
+> [pid  3519] execve("/tmp/foo up", ["/tmp/foo up", "tun0", "1500", "1542",
+> "10.XXX.XXX.X", "10.XXX.XXX.X", "init"], [/* 30 vars */]) = -1 ENOENT
+> (No such file or directory)
 
-The call is:
-[pid  3519] execve("/tmp/foo up", ["/tmp/foo up", "tun0", "1500", "1542",
-"10.XXX.XXX.X", "10.XXX.XXX.X", "init"], [/* 30 vars */]) =3D -1 ENOENT
-(No such file or directory)
+Apparently argument splitting - as documented in the --up section of the
+manpage - no longer works; it was probably formerly done by the implicit
+/bin/sh -c that is now gone with the switch to exec*().
 
-Where in previous versions the call was:
-[pid  4074] execve("/tmp/kk", ["/tmp/kk", "up", "tun0", "1500", "1542",
-"10.XXX.XXX.X", "10.XXX.XXX.X", "init"], [/* 51 vars */]) =3D 0
+(I didn't check, and didn't check the two Debian BTS reports either.)
 
-Please let me know what's your opinion regarding [1].
+So either the code needs argument splitting or you need a two-line shell
+wrapper similar to:
 
-Thanks a lot,
+#! /bin/sh -e
+exec /tmp/foo up "$@"
 
-Alberto
+Not my call to make.
 
-[1] http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D494998
-[2] http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D495964
-[3] http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D494998#10
-
---=20
-Alberto Gonzalez Iniesta    | Formaci=F3n, consultor=EDa y soporte t=E9cnico
-agi@(inittab.org|debian.org)| en GNU/Linux y software libre
-Encrypted mail preferred    | http://inittab.com
-
-Key fingerprint =3D 9782 04E7 2B75 405C F5E9  0C81 C514 AF8E 4BA4 01C3
+-- 
+Matthias Andree
 
