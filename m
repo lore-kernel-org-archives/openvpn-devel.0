@@ -1,10 +1,8 @@
-Message-ID: <48ADA8AA.4040704@...1123...>
-Date: Thu, 21 Aug 2008 19:40:58 +0200
-From: Peter Rabbitson <rabbit+list@...1123...>
+Date: Thu, 21 Aug 2008 20:18:37 +0200
+From: Alberto Gonzalez Iniesta <agi@...64...>
+Message-ID: <20080821181836.GE2516@...30...>
 MIME-Version: 1.0
-References: <48AC1C11.60107@...1123...> <48ADA320.9090708@...41...>
-In-Reply-To: <48ADA320.9090708@...41...>
-Subject: Re: [Openvpn-devel] Followup to CVE-2008-3459 fix
+Subject: [Openvpn-devel] rc9 and external commands
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,35 +11,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: James Yonan <jim@...41...>
-Cc: Openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: OpenVPN devel <openvpn-devel@lists.sourceforge.net>
 
-James Yonan wrote:
-> Peter Rabbitson wrote:
+Hi James,
 
->>
->> Eventually the best way to deal with this is to test for
->> ip_addr_dotted_quad_safe and is_special_addr, and then attempt a dns
->> lookup on the string supplied for route. If anything comes back - use
->> the result as the routed IPs. Otherwise warn and carry on. This would
->> also fix this long-outstanding (not mine) wishlist:
->> http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=237251
-> 
-> I agree that this should be fixed, probably via a --route-fqdn-pull
-> option (as suggested) on the client to permit DNS lookups on option
-> parameters that previously allowed them.
-> 
+It seems that tightening the security on OpenVPN brought some surprises
+[1] to users and broke some features [2].
 
-I think if you go with my second suggestion (above) the option becomes
-redundant. You can attempt a DNS lookup with pretty much anything (as
-far as string goes), and if nothing comes back - well nothing comes back.
+As for [1], I included a note in the Debian NEWS file on the new
+--script-security option. But those updating a VPN using the very same
+VPN (and without previous knowledge of this option) may find themselves
+without access to the remote system (if the VPN/system is restarted, and
+a script is to be executed). Also, those using NetworkManager [3] aren't
+able to specify the '--script-security' option, and since NetworkManager
+may/will call external scripts, this new security feature will break
+their VPNs. The option is really useful, but 2 would be a more sensible
+default IMHO.
 
-In any case, I'm glad this didn't fall off the radar.
+Regarding [2] an strace shows that calls to external commands with
+arguments include the arguments as part of the command filename:
+For:=20
+--up "/tmp/foo up"
 
-Thank you for the excellent software!
+The call is:
+[pid  3519] execve("/tmp/foo up", ["/tmp/foo up", "tun0", "1500", "1542",
+"10.XXX.XXX.X", "10.XXX.XXX.X", "init"], [/* 30 vars */]) =3D -1 ENOENT
+(No such file or directory)
 
-Peter
+Where in previous versions the call was:
+[pid  4074] execve("/tmp/kk", ["/tmp/kk", "up", "tun0", "1500", "1542",
+"10.XXX.XXX.X", "10.XXX.XXX.X", "init"], [/* 51 vars */]) =3D 0
 
+Please let me know what's your opinion regarding [1].
+
+Thanks a lot,
+
+Alberto
+
+[1] http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D494998
+[2] http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D495964
+[3] http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D494998#10
+
+--=20
+Alberto Gonzalez Iniesta    | Formaci=F3n, consultor=EDa y soporte t=E9cnico
+agi@(inittab.org|debian.org)| en GNU/Linux y software libre
+Encrypted mail preferred    | http://inittab.com
+
+Key fingerprint =3D 9782 04E7 2B75 405C F5E9  0C81 C514 AF8E 4BA4 01C3
 
