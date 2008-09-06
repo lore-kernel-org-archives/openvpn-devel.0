@@ -1,11 +1,11 @@
-Message-ID: <48C25F1A.7080302@...41...>
-Date: Sat, 06 Sep 2008 04:44:42 -0600
+Message-ID: <48C25FDD.40605@...41...>
+Date: Sat, 06 Sep 2008 04:47:57 -0600
 From: James Yonan <jim@...41...>
 MIME-Version: 1.0
 References: <48AC1C11.60107@...1123...> <48ADA320.9090708@...41...>
 	<48ADA8AA.4040704@...1123...> <48C04733.4080108@...41...>
-	<48C2056D.2090600@...1123...>
-In-Reply-To: <48C2056D.2090600@...1123...>
+	<48C20B56.3020002@...1123...>
+In-Reply-To: <48C20B56.3020002@...1123...>
 Subject: Re: [Openvpn-devel] Followup to CVE-2008-3459 fix
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -67,38 +67,14 @@ Peter Rabbitson wrote:
 >>
 >> James
 > 
-> Excellent!
-> 
-> May I be a total pain in the ass and point out the following:
-> * you validate the passed string with CC_NAME|CC_DASH|CC_DOT
-> * which after aliasing comes back as (perl re) /[A-Za-z0-9\_\-\.]/
-> * while http://tools.ietf.org/html/rfc3696#section-2 insists on LHR
-> (i.e. no underscore)
-> 
-> Also it doesn't seem that you are checking the length of the string
-> passed in, whereas FQDNs are generally limited to 255 bytes.
-> 
-> Other than that - excellent patch, exactly what the doctor ordered.
-> Thank you!
+> Also while we are at it, do you have any considerations of retrofitting
+> getaddr() (socket.c) to support
+> http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=237251 ? It would be
+> very beneficial, and would take you closer to IPv6 too (as you'd use the
+> new getaddrinfo() instead).
 
-
-Fixed:
-
-------------------------------------------------------------------------
-r3312 | james | 2008-09-06 04:43:31 -0600 (Sat, 06 Sep 2008) | 8 lines
-Changed paths:
-    M /branches/BETA21/openvpn/socket.c
-    M /branches/BETA21/openvpn/socket.h
-
-Modified ip_or_dns_addr_safe, which validates pulled DNS names,
-to more closely conform to RFC 3696:
-
-* DNS name length must not exceed 255 characters
-
-* DNS name characters must be limited to alphanumeric,
-   dash ('-'), and dot ('.')
-
-------------------------------------------------------------------------
+It's an interesting idea -- I'd certainly consider it if someone 
+submitted a patch.
 
 James
 
