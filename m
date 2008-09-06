@@ -1,5 +1,5 @@
-Message-ID: <48C2056D.2090600@...1123...>
-Date: Sat, 06 Sep 2008 06:22:05 +0200
+Message-ID: <48C20B56.3020002@...1123...>
+Date: Sat, 06 Sep 2008 06:47:18 +0200
 From: Peter Rabbitson <rabbit+list@...1123...>
 MIME-Version: 1.0
 References: <48AC1C11.60107@...1123...> <48ADA320.9090708@...41...>
@@ -67,17 +67,12 @@ James Yonan wrote:
 > 
 > James
 
-Excellent!
+Also while we are at it, do you have any considerations of retrofitting
+getaddr() (socket.c) to support
+http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=237251 ? It would be
+very beneficial, and would take you closer to IPv6 too (as you'd use the
+new getaddrinfo() instead).
 
-May I be a total pain in the ass and point out the following:
-* you validate the passed string with CC_NAME|CC_DASH|CC_DOT
-* which after aliasing comes back as (perl re) /[A-Za-z0-9\_\-\.]/
-* while http://tools.ietf.org/html/rfc3696#section-2 insists on LHR
-(i.e. no underscore)
-
-Also it doesn't seem that you are checking the length of the string
-passed in, whereas FQDNs are generally limited to 255 bytes.
-
-Other than that - excellent patch, exactly what the doctor ordered.
-Thank you!
+Thanks
+Peter
 
