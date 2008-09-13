@@ -1,8 +1,8 @@
-Message-ID: <48C78CA1.9020305@...41...>
-Date: Wed, 10 Sep 2008 03:00:17 -0600
-From: James Yonan <jim@...41...>
+Message-ID: <48CBE0A1.4060805@...1124...>
+Date: Sat, 13 Sep 2008 17:47:45 +0200
+From: Tobias Gruber <tobias.gruber@...1124...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 2.1_rc10 released
+Subject: [Openvpn-devel] OpenVPN Failure in Manual
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,100 +11,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-To: openvpn-users@lists.sourceforge.net, Openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-2008.09.10 -- Version 2.1_rc10
+Hello,
 
-* Added "--server-bridge" (without parameters) to enable
-   DHCP proxy mode:  Configure server mode for ethernet
-   bridging using a DHCP-proxy, where clients talk to the
-   OpenVPN server-side DHCP server to receive their IP address
-   allocation and DNS server addresses.
+I think there is a failure in the manuals on openvpn.org.
+They write there, that the pings are send over the control channel:
 
-* Added "--route-gateway dhcp", to enable the extraction
-   of the gateway address from a DHCP negotiation with the
-   OpenVPN server-side LAN.
+*--ping n*
+   Ping remote over the TCP/UDP control channel if no packets have been
+   sent for at least *n* seconds (
 
-* Fixed minor issue with --redirect-gateway bypass-dhcp or bypass-dns
-   on Windows.  If the bypass IP address is 0.0.0.0 or 255.255.255.255,
-   ignore it.
 
-* Warn when ethernet bridging that the IP address of the bridge adapter
-   is probably not the same address that the LAN adapter was set to
-   previously.
+but there are some reasons why the pings are send over the data channel:
+-p2p mode dont has a control channel:
 
-* When running as a server, warn if the LAN network address is
-   the all-popular 192.168.[0|1].x, since this condition commonly
-   leads to subnet conflicts down the road.
+Packet opcode/key_id (8 bits) -- TLS only, not used in
+*       pre-shared secret mode.
 
-* Primarily on the client, check for subnet conflicts between
-   the local LAN and the VPN subnet.
+-both sites must send the ping. if it would be send over control 
+channel, the sender would get an ACK and so the other peer dont have to 
+send the ping too.
+- in the logs the pings come in P_DATA_V1, there is no P_CONTROL_ACK or 
+something. There is no op code for a ping. I think it comes on the data 
+channel with a speciale bit sequence.
 
-* Added a 'netmask' parameter to get_default_gateway, to return
-   the netmask of the adapter containing the default gateway.
-   Only implemented on Windows so far.  Other platforms will
-   return 255.255.255.0.  Currently the netmask information is
-   only used to warn about subnet conflicts.
+What do you say ?
 
-* Minor fix to cryptoapi.c to not compile itself unless USE_CRYPTO
-   and USE_SSL flags are enabled (Alon Bar-Lev).
+A second question:
+I have Clients which get from time to time new ip adresses. I have 
+server mode with tls client and tls server.
+I thougt with the directive --float the tunnel will overcome the ip 
+change. But it breaks, because the Server says:
+No TLS State for client... opcode=6
+In p2p mode it works fine.
+Doesnt it work with tls mode?
 
-* Updated openvpn/t_cltsrv.sh (used by "make check") to conform to new
-   --script-security rules.  Also adds retrying if the addresses are in
-   use (Matthias Andree).
+Regards
+Tobias
 
-* Fixed build issue with ./configure --disable-socks --disable-http.
-
-* Fixed separate compile errors in options.c and ntlm.c that occur
-   on strict C compilers (such as old versions of gcc) that require
-   that C variable declarations occur at the start of a {} block,
-   not in the middle.
-
-* Workaround bug in OpenSSL 0.9.6b ASN1_STRING_to_UTF8, which
-   the new implementation of extract_x509_field_ssl depends on.
-
-* LZO compression buffer overflow errors will now invalidate
-   the packet rather than trigger a fatal assertion.
-
-* Fixed minor compile issue in ntlm.c (mid-block declaration).
-
-* Added --allow-pull-fqdn option which allows client to pull DNS names
-   from server (rather than only IP address) for --ifconfig, --route, and
-   --route-gateway.  OpenVPN versions 2.1_rc7 and earlier allowed DNS names
-   for these options to be pulled and translated to IP addresses by default.
-   Now --allow-pull-fqdn will be explicitly required on the client to enable
-   DNS-name-to-IP-address translation of pulled options.
-
-* 2.1_rc8 and earlier did implicit shell expansion on script
-   arguments since all scripts were called by system().
-   The security hardening changes made to 2.1_rc9 no longer
-   use system(), but rather use the safer execve or CreateProcess
-   system calls.  The security hardening also introduced a
-   backward incompatibility with 2.1_rc8 and earlier in that
-   script parameters were no longer shell-expanded, so
-   for example:
-
-     client-connect "docc CLIENT-CONNECT"
-
-   would fail to work because execve would try to execute
-   a script called "docc CLIENT-CONNECT" instead of "docc"
-   with "CLIENT-CONNECT" as the first argument.
-
-   This patch fixes the issue, bringing the script argument
-   semantics back to pre 2.1_rc9 behavior in order to preserve
-   backward compatibility while still using execve or CreateProcess
-   to execute the script/executable.
-
-* Modified ip_or_dns_addr_safe, which validates pulled DNS names,
-   to more closely conform to RFC 3696:
-
-   (1) DNS name length must not exceed 255 characters
-
-   (2) DNS name characters must be limited to alphanumeric,
-       dash ('-'), and dot ('.')
-
-* Fixed bug in intra-session TLS key rollover that was introduced with
-   deferred authentication features in 2.1_rc8.
 
