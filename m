@@ -1,12 +1,9 @@
-Date: Mon, 15 Sep 2008 11:48:12 +0200
-From: Matthias Andree <ma+ovpnd@...31...>
-Message-ID: <20080915094812.GB7136@...33...>
-References: <48CDC8F9.5080609@...41...>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="fUYQa+Pmc3FrFX/N"
-Content-Disposition: inline
-In-Reply-To: <48CDC8F9.5080609@...41...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.1_rc11 released
+From: Jose Sanchez <jose.informatica@...1125...>
+Date: Fri, 19 Sep 2008 12:34:40 +0200
+Message-Id: <1221820480.14052.2.camel@...1126...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] About making plugins for openvpn
+Reply-To: jose.informatica@...1125...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,59 +12,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: James Yonan <jim@...41...>
-Cc: Openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---fUYQa+Pmc3FrFX/N
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Hello, I am new at openvpn, I am trying to do a very simple plugin to
+see connections/disconnections and to be able to notify to another
+system in "real" time.
 
-On Sun, 14 Sep 2008, James Yonan wrote:
+The problem is that I haven't found any documentation about the code or
+about how to make plugins except on the code (I have been reading the
+comments and I have some code of my plugin).
 
-> This release fixes a serious (though not security-related) bug in the 
-> SSL/TLS negotiation over UDP that can cause SSL/TLS handshake failures. 
->   The bug was introduced in 2.1_rc9.
-> 
-> All users of OpenVPN 2.1_rc9 and rc10 are urged to upgrade.
-> 
-> Change log:
-> 
-> 2008.09.14 -- Version 2.1_rc11
-> 
-> * Fixed a bug that can cause SSL/TLS negotiations in UDP mode
->    to fail if UDP packets are dropped.
-> 
-> James
+The main problem is that there are two functions: OPENVPN_PLUGIN_DEF int
+OPENVPN_PLUGIN_FUNC(openvpn_plugin_func_v1)
+     (openvpn_plugin_handle_t handle, const int type, const char
+*argv[], const char *envp[]);
+and
+OPENVPN_PLUGIN_DEF int OPENVPN_PLUGIN_FUNC(openvpn_plugin_func_v2)
+     (openvpn_plugin_handle_t handle,
+      const int type,
+      const char *argv[],
+      const char *envp[],
+      void *per_client_context,
+      struct openvpn_plugin_string_list **return_list);
 
-Hi James,
+What I need is to obtain the public (inet IP) and the private (vpn ip)
+when a client connects/disconnect to notify it to another program (I
+know I can make a ping or similar things but it seems to be too slow
+when there are a lot of clients connected (> 100)).
 
-we missed patching the Makefile.am part in _rc9 when updating the tests;
-the new t_cltsrv-down.sh script doesn't become part of the tarball. The
-Makefile.am patch below fixes it. Please apply.
+What I need is to know in which variable is that data and which function
+I need to implement (v1 or v2) and how these functions works (Is any
+documentation on any site?).
 
-Thanks & best regards
+In openvpn_plugin_open_v1 I have registered the events: *type_mask =
+OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_CLIENT_CONNECT) |
+OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_CLIENT_DISCONNECT); and even on
+openvpn_plugin_func_v1  I can know if there is if (type ==
+OPENVPN_PLUGIN_CLIENT_CONNECT) or OPENVPN_PLUGIN_CLIENT_DISCONNECT but I
+don't know how to recover IP information.
+
+If somebody could help me or saying me where the documentation is would
+be great.
+
+Thanks in advance and excuse my english (I have written this too
+quickly) and excuse me if what i am asking is answered on another place
+that I haven't found.
 
 -- 
-Matthias Andree
+Jose Sánchez <jose dot informatica at centrolamilagrosa dot org>
 
---fUYQa+Pmc3FrFX/N
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline; filename="patch-Makefile.am"
 
-Index: Makefile.am
-===================================================================
---- Makefile.am	(Revision 3331)
-+++ Makefile.am	(Arbeitskopie)
-@@ -64,7 +64,8 @@
- dist_noinst_SCRIPTS = \
- 	$(TESTS) \
- 	doclean \
--	domake-win
-+	domake-win \
-+	t_cltsrv-down.sh
- 
- dist_noinst_DATA = \
- 	openvpn.spec \
-
---fUYQa+Pmc3FrFX/N--
 
