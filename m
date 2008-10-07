@@ -1,9 +1,14 @@
-Message-Id: <48E3FF17.7D5B.00BC.0@...1133...>
-Date: Wed, 01 Oct 2008 22:55:00 +0200
-From: "Svein Hansen" <Svein.Hansen@...1133...>
-Mime-Version: 1.0
-Content-Type: multipart/alternative; boundary="=__Part94BD32B4.0__="
-Subject: [Openvpn-devel] Req: UAC in Vista and updated prebuilds
+Message-ID: <9e0cf0bf0810071208i32b10997l72d25fe1490c6f@...278...>
+Date: Tue, 7 Oct 2008 22:08:26 +0300
+From: "Alon Bar-Lev" <alon.barlev@...277...>
+In-Reply-To: <9e0cf0bf0809271144i170c0805uadac7b428223fa7b@...278...>
+MIME-Version: 1.0
+References: <750B64C66078B34D918257A1AC004DB205441F@...1132...>
+	<9e0cf0bf0809242210x74696837w126ea5caddede127@...278...>
+	<750B64C66078B34D918257A1AC004DB2054440@...1132...>
+	<9e0cf0bf0809271144i170c0805uadac7b428223fa7b@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v4] Use CryptoAPI CA store (was Re:
+	[PATCH v3] Use CryptoAPI CA store)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,343 +17,118 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
-This is a MIME message. If you are reading this text, you may want to 
-consider changing to a mail reader or gateway that understands how to 
-properly handle MIME multipart messages.
-
---=__Part94BD32B4.0__=
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+To: "Jason R. Coombs" <jaraco@...1130...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi 
+Any news?
 
-  
-
-Two requests: 
-
-  
-
-1:  Prebuilt openvpn for RC12 (and upcoming releases) 
-
-I want to include my own configuration files in the installer. 
-
-Can someone upload to: https://secure.openvpn.net/devel/ when a new
-release/bugfix is released? 
-
-Please... 
-
-  
-
-2: Add support for UAC(if:enabled) in Vista: Set "RUNASADMIN" for the
-GUI in the installer. 
-
-(When connecting to OpenVPN in Vista I need admin-rights to set routes.)
-
-
-I have included some code in the openvpn.nsi, but i don't know if this
-is the best way to solve the problem.  
-
-  
-
-; tap-64bit: 
-
-  
-
-  DetailPrint "We are running on a 64-bit system."
-  SetRegView 64
-  WriteRegStr HKLM "Software\Microsoft\Windows
-NT\CurrentVersion\AppCompatFlags\Layers"
-"$INSTDIR\bin\openvpn-gui-1.0.3.exe" "RUNASADMIN"
-  SetRegView 32 
-
-  
-
-  SetOutPath "$INSTDIR\bin" 
-
-  
-
-  File "${GEN}\tapinstall\amd64\tapinstall.exe" 
-
-  
-
-  SetOutPath "$INSTDIR\driver" 
-
-  
-
-  File "${GEN}\driver\amd64\OemWin2k.inf"
-  File "${GEN}\driver\amd64\${PRODUCT_TAP_ID}.cat"
-  File "${GEN}\driver\amd64\${TAPDRV}" 
-
-  
-
-goto tapend 
-
-  
-
-tap-32bit: 
-
-  
-
-  DetailPrint "We are running on a 32-bit system."
-  WriteRegStr HKLM "Software\Microsoft\Windows
-NT\CurrentVersion\AppCompatFlags\Layers"
-"$INSTDIR\bin\openvpn-gui-1.0.3.exe" "RUNASADMIN" 
-
-  
-
-  SetOutPath "$INSTDIR\bin"
-  File "${GEN}\tapinstall\i386\tapinstall.exe" 
-
-  
-
-  SetOutPath "$INSTDIR\driver"
-  File "${GEN}\driver\i386\OemWin2k.inf"
-  File "${GEN}\driver\i386\${PRODUCT_TAP_ID}.cat"
-  File "${GEN}\driver\i386\${TAPDRV}" 
-
-  
-
-  tapend: 
-
-  
-
-This works on both 32- and 64-bit Vista 
-
-(I can't see that this would cause problems for XP) 
-
-So my question is: 
-
-Can this be included in the source? 
-
-  
-
-Svein Hansen 
-
-
---=__Part94BD32B4.0__=
-Content-Type: text/html; charset="US-ASCII"
-Content-Transfer-Encoding: quoted-printable
-Content-Description: HTML
-
-<html>
-  <head>
-    <style type=3D"text/css">
-      <!--
-        body { margin-bottom: 1px; margin-top: 4px; margin-right: 4px; marg=
-in-left: 4px; line-height: normal; font-variant: normal }
-        p { margin-top: 0; margin-bottom: 0 }
-      -->
-    </style>
-=20=20=20=20
-  </head>
-  <body style=3D"margin-top: 4px; margin-bottom: 1px; font-size: 10pt; marg=
-in-right: 4px; font-style: normal; margin-left: 4px; line-height: normal; f=
-ont-weight: normal; font-family: Segoe UI; font-variant: normal">
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        Hi      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        Two requests:      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        1:&#160;&nbsp;Prebuilt openvpn for RC12 &#40;and upcoming releases&=
-#41;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        I want to include my own configuration files in the installer.     =
- </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        Can someone upload to: <a href=3D"https://secure.openvpn.net/devel/=
-">https://secure.openvpn.net/devel/</a>&#160;when a new release/bugfix is r=
-eleased&#63;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        Please...      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        2: Add support for UAC&#40;if:enabled&#41;&#160;in Vista: Set &quot=
-;RUNASADMIN&quot; for the&#160;GUI in the installer.      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#40;When connecting to OpenVPN in Vista I need admin-rights to set=
- routes.&#41;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        I have&#160;included some code in the openvpn.nsi&#44; but i don&#3=
-9;t know if this is&#160;the best way to&#160;solve the problem.&#160;     =
- </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#59; tap-64bit:      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;&nbsp;DetailPrint &quot;We are running on a 64-bit system.&qu=
-ot;<br>&#160;&nbsp;SetRegView 64<br>&#160;&nbsp;WriteRegStr HKLM &quot;Soft=
-ware&#92;Microsoft&#92;Windows NT&#92;CurrentVersion&#92;AppCompatFlags&#92=
-;Layers&quot; &quot;&#36;INSTDIR&#92;bin&#92;openvpn-gui-1.0.3.exe&quot; &q=
-uot;RUNASADMIN&quot;<br>&#160;&nbsp;SetRegView 32      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;&nbsp;SetOutPath &quot;&#36;INSTDIR&#92;bin&quot;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;&nbsp;File &quot;&#36;&#123;GEN&#125;&#92;tapinstall&#92;amd6=
-4&#92;tapinstall.exe&quot;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;&nbsp;SetOutPath &quot;&#36;INSTDIR&#92;driver&quot;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;&nbsp;File &quot;&#36;&#123;GEN&#125;&#92;driver&#92;amd64&#9=
-2;OemWin2k.inf&quot;<br>&#160;&nbsp;File &quot;&#36;&#123;GEN&#125;&#92;dri=
-ver&#92;amd64&#92;&#36;&#123;PRODUCT_TAP_ID&#125;.cat&quot;<br>&#160;&nbsp;=
-File &quot;&#36;&#123;GEN&#125;&#92;driver&#92;amd64&#92;&#36;&#123;TAPDRV&=
-#125;&quot;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        goto tapend      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        tap-32bit:      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;&nbsp;DetailPrint &quot;We are running on a 32-bit system.&qu=
-ot;<br>&#160;&nbsp;WriteRegStr HKLM &quot;Software&#92;Microsoft&#92;Window=
-s NT&#92;CurrentVersion&#92;AppCompatFlags&#92;Layers&quot; &quot;&#36;INST=
-DIR&#92;bin&#92;openvpn-gui-1.0.3.exe&quot; &quot;RUNASADMIN&quot;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;&nbsp;SetOutPath &quot;&#36;INSTDIR&#92;bin&quot;<br>&#160;&n=
-bsp;File &quot;&#36;&#123;GEN&#125;&#92;tapinstall&#92;i386&#92;tapinstall.=
-exe&quot;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;&nbsp;SetOutPath &quot;&#36;INSTDIR&#92;driver&quot;<br>&#160=
-;&nbsp;File &quot;&#36;&#123;GEN&#125;&#92;driver&#92;i386&#92;OemWin2k.inf=
-&quot;<br>&#160;&nbsp;File &quot;&#36;&#123;GEN&#125;&#92;driver&#92;i386&#=
-92;&#36;&#123;PRODUCT_TAP_ID&#125;.cat&quot;<br>&#160;&nbsp;File &quot;&#36=
-;&#123;GEN&#125;&#92;driver&#92;i386&#92;&#36;&#123;TAPDRV&#125;&quot;     =
- </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;&nbsp;tapend:      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        This works on both 32- and 64-bit Vista      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#40;I can&#39;t see that this would&#160;cause problems for XP&#41=
-;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        So my question is:      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        Can this be included in the source&#63;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        &#160;      </p>
-    </div>
-    <div>
-      <p style=3D"margin-bottom: 0; margin-top: 0">
-        Svein Hansen
-      </p>
-    </div>
-  </body>
-</html>
-
---=__Part94BD32B4.0__=--
+On 9/27/08, Alon Bar-Lev <alon.barlev@...277...> wrote:
+> Hi!
+>
+>  I prefer to receive patches...
+>  Anyway, this is not exactly what I meant.
+>  Please review latest head.
+>  I did not test this, but it should be correct now as far as the
+>  changes are concerned.
+>  It may not work as the validation process was never tested.
+>
+>
+>  Alon.
+>
+>
+>  On 9/27/08, Jason R. Coombs <jaraco@...1130...> wrote:
+>  > Alon,
+>  >         I've started working on (1) and (2).  Attached is the updated cryptoapi.c.  Would you prefer a patch when changes involve a single file?  Can you tell me what you think (is this moving in the right direction)?  Initially, I've only moved the LoadLibrary code into its own function, but it's still called from the same place.  Should I go further and move this initialization code somewhere else?  If so, can you suggest where I should look to hook in the initialization?
+>  >
+>  >         As for (2), I've created a function that unloads the library and clears out the variables... but it's not called from anywhere.  I guess if I know where the initialization will go, then I can find a good place from which to call the cleanup code.
+>  >
+>  >         As for (3), where is the SSL role defined?  Or, alternatively, what is the procedure when cryptoapi isn't used to verify the certificate is in the correct role?
+>  >
+>  >         I hope to contribute further.  This is my first time looking at the openvpn source, so please bear with me (or let me know it's not worth your time).
+>  >
+>  >  Regards,
+>  >
+>  > Jason
+>  >
+>  >
+>  >  -----Original Message-----
+>  >  From: Alon Bar-Lev [mailto:alon.barlev@...277...]
+>  >  Sent: Thursday, 25 September, 2008 01:10
+>  >  To: Jason R. Coombs
+>  >  Cc: openvpn-devel@lists.sourceforge.net
+>  >  Subject: Re: [Openvpn-devel] [PATCH v4] Use CryptoAPI CA store (was Re: [PATCH v3] Use CryptoAPI CA store)
+>  >
+>  >  Hello,
+>  >
+>  >  I cleaned it up a little but still things should be done:
+>  >
+>  >  1. Add initialize code and load all entry points for this module at
+>  >  one place, single LoadLibrary etc...
+>  >  2. Add cleanup code to unload all static module resources.
+>  >  3. Check SSL role by OpenSSL configuration (client or server), see
+>  >  TODO signature.
+>  >  4. Cleanup warnings.
+>  >
+>  >  Available at [1], I did not check it as I don't have active Windows
+>  >  configuration now.
+>  >  Can you please complete it?
+>  >
+>  >  Alon.
+>  >
+>  >  [1] http://svn.openvpn.net/projects/openvpn/contrib/alon/BETA21-ms-chk-2/openvpn
+>  >
+>  >  On 9/24/08, Jason R. Coombs <jaraco@...1130...> wrote:
+>  >  > I'd really like to see this feature in a future build.
+>  >  >
+>  >  >  Is there anything more that needs to be done to integrate this into 2.1?
+>  >  >  I can help with code cleanup/refactoring.  I don't have a development
+>  >  >  environment set up, though, so I'd be working blind.
+>  >  >
+>  >  >  Cheers,
+>  >  >  Jason
+>  >  >
+>  >  >  On 9/23/07, Faidon Liambotis Wrote:
+>  >  >  Alon Bar-Lev wrote:
+>  >  >  > On 9/22/07, Faidon Liambotis <paravoid@...1131...> wrote:
+>  >  >  >> Alon Bar-Lev wrote:
+>  >  >  >>> So you need to use CertVerifyCertificateChainPolicy() with
+>  >  >  CERT_CHAIN_POLICY_SSL
+>  >  >  >> I'm no Microsoft developer (adn I don't want to be to be honest) but
+>  >  >  if
+>  >  >  >> I understand it right, it's better to call CertGetCertificateChain()
+>  >  >  as
+>  >  >  >> I am doing.
+>  >  >  >
+>  >  >  > You need to use both, one for create the chain and the other to verify
+>  >  >  > that it meets with system CTL for SSL.
+>  >  >  Seems that you are right. Below you will find -v4 of the patch that does
+>  >  >  that.
+>  >  >
+>  >  >  Also, my previous version didn't actually check for revocations,
+>  >  >  contrary to what I documented.
+>  >  >  I added CERT_CHAIN_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT to the dwFlags of
+>  >  >  CertGetCertificateChain.
+>  >  >
+>  >  >  Let me know what you think.
+>  >  >
+>  >  >  Thanks,
+>  >  >  Faidon
+>  >  >
+>  >  >
+>  >  >  -------------------------------------------------------------------------
+>  >  >  This SF.Net email is sponsored by the Moblin Your Move Developer's challenge
+>  >  >  Build the coolest Linux based applications with Moblin SDK & win great prizes
+>  >  >  Grand prize is a trip for two to an Open Source event anywhere in the world
+>  >  >  http://moblin-contest.org/redirect.php?banner_id=100&url=/
+>  >  >  _______________________________________________
+>  >  >  Openvpn-devel mailing list
+>  >  >  Openvpn-devel@lists.sourceforge.net
+>  >  >  https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>  >  >
+>  >
+>  >
+>
 
