@@ -1,16 +1,17 @@
-Content-class: urn:content-classes:message
+Message-ID: <9e0cf0bf0810071356j22282035j707e1d78770b6ee6@...278...>
+Date: Tue, 7 Oct 2008 23:56:04 +0300
+From: "Alon Bar-Lev" <alon.barlev@...277...>
+In-Reply-To: <750B64C66078B34D918257A1AC004DB20544A2@...1132...>
 MIME-Version: 1.0
-Date: Tue, 7 Oct 2008 14:34:50 -0600
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
-	micalg=SHA1; boundary="----=_NextPart_000_013F_01C9289A.9E3248E0"
-Message-ID: <750B64C66078B34D918257A1AC004DB20544A2@...1132...>
-In-Reply-To: <48EBBE38.2030700@...334...>
-References: <750B64C66078B34D918257A1AC004DB205441F@...1132...>	<9e0cf0bf0809242210x74696837w126ea5caddede127@...278...>	<750B64C66078B34D918257A1AC004DB2054440@...1132...>	<9e0cf0bf0809271144i170c0805uadac7b428223fa7b@...278...>
+References: <750B64C66078B34D918257A1AC004DB205441F@...1132...>
+	<9e0cf0bf0809242210x74696837w126ea5caddede127@...278...>
+	<750B64C66078B34D918257A1AC004DB2054440@...1132...>
+	<9e0cf0bf0809271144i170c0805uadac7b428223fa7b@...278...>
 	<9e0cf0bf0810071208i32b10997l72d25fe1490c6f@...278...>
 	<48EBBE38.2030700@...334...>
-From: "Jason R. Coombs" <jaraco@...1130...>
-Subject: Re: [Openvpn-devel] [PATCH v4] Use CryptoAPI CA store (was
-	Re:	[PATCH v3] Use CryptoAPI CA store)
+	<750B64C66078B34D918257A1AC004DB20544A2@...1132...>
+Subject: Re: [Openvpn-devel] [PATCH v4] Use CryptoAPI CA store (was Re:
+	[PATCH v3] Use CryptoAPI CA store)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,184 +20,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Faidon Liambotis <paravoid@...334...>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+To: "Jason R. Coombs" <jaraco@...1130...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-This is a multipart message in MIME format.
+Binaries are at [1].
 
-------=_NextPart_000_013F_01C9289A.9E3248E0
-Content-Type: text/plain;
-	charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+It is not enough to test it on client, we need to verify that the
+validation works correctly on both ends, as capi has different policy
+for servers and clients.
 
-Faidon,
+Alon.
 
-If you send me a binary build for Windows 32-bit, I'll test it against expired 
-and revoked certs.  I presume I don't need a server configured for this test; 
-it should fail client side before attempting to connect?
+[1] http://alon.barlev.googlepages.com/openvpn-mscapi-test-1.tar.bz2
 
-Jason
-
------Original Message-----
-From: Faidon Liambotis [mailto:paravoid@...334...]
-Sent: Tuesday, 07 October, 2008 15:53
-To: Alon Bar-Lev
-Cc: Jason R. Coombs; openvpn-devel@lists.sourceforge.net
-Subject: Re: [Openvpn-devel] [PATCH v4] Use CryptoAPI CA store (was Re: [PATCH 
-v3] Use CryptoAPI CA store)
-
-Hi,
-
-Alon Bar-Lev wrote:
-> On 9/27/08, Alon Bar-Lev <alon.barlev@...277...> wrote:
->>  I prefer to receive patches...
->>  Anyway, this is not exactly what I meant.
->>  Please review latest head.
->>  I did not test this, but it should be correct now as far as the
->>  changes are concerned.
->>  It may not work as the validation process was never tested.
+On 10/7/08, Jason R. Coombs <jaraco@...1130...> wrote:
+> Faidon,
 >
-> Any news?
-Thanks for reviving this. I built it and tried it and seems to work.
-I didn't test with revoked or expired certificates, however.
-
-As for warnings there's just a trivial one:
-	cryptoapi.c:429: warning: passing arg 2 of `d2i_X509' from
-			 incompatible pointer type
-
-Regards,
-Faidon
-
-------=_NextPart_000_013F_01C9289A.9E3248E0
-Content-Type: application/x-pkcs7-signature;
-	name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
-	filename="smime.p7s"
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIW+DCCB0Ew
-ggYpoAMCAQICAR0wDQYJKoZIhvcNAQEFBQAwgYwxCzAJBgNVBAYTAklMMRYwFAYDVQQKEw1TdGFy
-dENvbSBMdGQuMSswKQYDVQQLEyJTZWN1cmUgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMTgw
-NgYDVQQDEy9TdGFydENvbSBDbGFzcyAzIFByaW1hcnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQTAe
-Fw0wNzEyMDcxNzM4MzhaFw0wODEyMDYxNzM4MzhaMIHFMQswCQYDVQQGEwJVUzEdMBsGA1UECBMU
-RGlzdHJpY3Qgb2YgQ29sdW1iaWExEzARBgNVBAcTCldhc2hpbmd0b24xGDAWBgNVBAoTD0phc29u
-IFIuIENvb21iczEsMCoGA1UECxMjU3RhcnRDb20gVHJ1c3RlZCBDZXJ0aWZpY2F0ZSBNZW1iZXIx
-GDAWBgNVBAMTD0phc29uIFIuIENvb21iczEgMB4GCSqGSIb3DQEJARYRamFyYWNvQGphcmFjby5j
-b20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDqVOCEUYdhoLaXe3GxyAon++VJGqcn
-xZbAjBjkCd8QyK/hK/KC534yJ5oJZ/he0Fsb9H2FjQNFpW0pwADLTsBlIn47/xCpROiNdhsmuO60
-YYkcsbxRZhcWw5ugaQQFjq7csUklJGSY5ol+URM5PuLxj6X6GhiPtDzOs9zP6N5JzinFC2q5WS/J
-EAoZlEsk1IekP5fzQeEhjhJfdMR6EtdulUKDITcXptB6zdCIm3w4ACdVD6GR4ZYloQqnghyWbv4E
-JQNK2cemdndsQSADXkjkvexFhSlm9ksjBMU5c3VvTJs07EiakQyNapHaIt86L5c6Lj/Jii9xVTVE
-X83RE5ejAgMBAAGjggNxMIIDbTAMBgNVHRMEBTADAgEAMAsGA1UdDwQEAwIEsDAdBgNVHSUEFjAU
-BggrBgEFBQcDAgYIKwYBBQUHAwQwHQYDVR0OBBYEFOI1kYi3Q0sIINHsg3XwkR+MIY5QMIGoBgNV
-HSMEgaAwgZ2AFHuJnJKXJKGERwLLdPwu9KzcMuXzoYGBpH8wfTELMAkGA1UEBhMCSUwxFjAUBgNV
-BAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNp
-Z25pbmcxKTAnBgNVBAMTIFN0YXJ0Q29tIENlcnRpZmljYXRpb24gQXV0aG9yaXR5ggEPMIIBSgYD
-VR0gBIIBQTCCAT0wggE5BgsrBgEEAYG1NwEBBDCCASgwNQYIKwYBBQUHAgEWKWh0dHA6Ly9jZXJ0
-LnN0YXJ0Y29tLm9yZy9pbnRlcm1lZGlhdGUucGRmMC8GCCsGAQUFBwIBFiNodHRwOi8vY2VydC5z
-dGFydGNvbS5vcmcvcG9saWN5LnBkZjCBvQYIKwYBBQUHAgIwgbAwFBYNU3RhcnRDb20gTHRkLjAD
-AgEBGoGXTGltaXRlZCBMaWFiaWxpdHksIHJlYWQgdGhlIHNlY3Rpb24gKkxlZ2FsIExpbWl0YXRp
-b25zKiBvZiB0aGUgU3RhcnRDb20gQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkgUG9saWN5IGF2YWls
-YWJsZSBhdCBodHRwOi8vY2VydC5zdGFydGNvbS5vcmcvcG9saWN5LnBkZjBjBgNVHR8EXDBaMCug
-KaAnhiVodHRwOi8vd3d3LnN0YXJ0c3NsLmNvbS9jcnR1My1jcmwuY3JsMCugKaAnhiVodHRwOi8v
-Y3JsLnN0YXJ0c3NsLmNvbS9jcnR1My1jcmwuY3JsMIGOBggrBgEFBQcBAQSBgTB/MDkGCCsGAQUF
-BzABhi1odHRwOi8vb2NzcC5zdGFydHNzbC5jb20vc3ViL2NsYXNzMy9jbGllbnQvY2EwQgYIKwYB
-BQUHMAKGNmh0dHA6Ly93d3cuc3RhcnRzc2wuY29tL2NlcnRzL3N1Yi5jbGFzczMuY2xpZW50LmNh
-LmNydDAjBgNVHRIEHDAahhhodHRwOi8vd3d3LnN0YXJ0c3NsLmNvbS8wDQYJKoZIhvcNAQEFBQAD
-ggEBAKTguF54SVP4Vy2X6GEJ596M3BtB/n6C9xoOVAh1TtDMlqoNiCmqVXhE3685AEmH6JRrjNV9
-0bgoYwWVKcuaELv1H4zoHdr+odwvBZxPNGFjJvgerBSB4dXmD4hC4A2FG5OEhPDjsOuOtL5Z26nL
-3qHr1suyCNP6Aschr93m+fwQbXEz70hPiPdQNr60J3F77F61lRocZaCQsu3DZ3sNClor/R9FpWf1
-KSUvNV+A6eZ3eCJvj7Zp0MUe78rjhYDSnPyf9+B15sxVVPa8tq4EG1KiHpJn5Mr0RAZbeZnidh5i
-1l9KfAO36O+xTJrD3EquXrrKlnvPX7oIIcxf3FHfWFwwggfJMIIFsaADAgECAgEBMA0GCSqGSIb3
-DQEBBQUAMH0xCzAJBgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSswKQYDVQQLEyJT
-ZWN1cmUgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMSkwJwYDVQQDEyBTdGFydENvbSBDZXJ0
-aWZpY2F0aW9uIEF1dGhvcml0eTAeFw0wNjA5MTcxOTQ2MzZaFw0zNjA5MTcxOTQ2MzZaMH0xCzAJ
-BgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSswKQYDVQQLEyJTZWN1cmUgRGlnaXRh
-bCBDZXJ0aWZpY2F0ZSBTaWduaW5nMSkwJwYDVQQDEyBTdGFydENvbSBDZXJ0aWZpY2F0aW9uIEF1
-dGhvcml0eTCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBAMGI2wm8bEZ8eJ+Ve7UzkPJy
-YtbBNiAiJF7O6XfyQwqiBmSkzI42+DjmI/BubbE83XKjhRyh0z20MyvTL6/+6rBBWWe2xAZ9Cp50
-hdZ5TIA3et85BVJZ9/QbRkOk0oWF0sNx83ViNLosin8ej+7tNNARx5bNUj26M9bdTd4LO0pLn8Im
-L/q1FhxyNXfKPF3myuEmixo2dlwB23QUJf7ttaCID914yi0fB5cwAS1yefpG1hMqqLmmq4NJHeXy
-793kAY4YCo9jUxaFYqkOGTrMtWamwmt0B+Qr4XY+tG3Y9kThc2IfO8S+oFNWJWxRCfeqq8q/dv1t
-m/Od2789ZrwMVqqvmEiVOkvfp1hQ2Th1qVvqQwwC/5nr6GxNcFspZZzdql3MrwEx7Azr0o3o6px7
-5m73J2YMGkjXbkLjP94hPnvhDXD7Y6qobBpUtFwlesmiyYsWprssfhdeBU1YbhIdAe4SEA3GMn8Y
-//z0+s1ukeg2Sb4aSGmLwpZNGhKyaRfBCpDW+nkiSL+6e2n4cMf6ejfY2A3Sdk9X/5C345HS3e/C
-YLdnOt3+qpzw1It/ciLOxp+XtviviqAQqNn7GMa2tVxSPIm2GSpzAQoPA7MSYPJ6L4Hbo27/JjCX
-9YvdiVe2rT2zryvFt3YC8KXWK5qGFCpy9uMzjF0JSxPfu4x0E1JLAgMBAAGjggJSMIICTjAMBgNV
-HRMEBTADAQH/MAsGA1UdDwQEAwIBrjAdBgNVHQ4EFgQUTgvvGqRAW6UXaYcwyjRoQ9BBrvIwZAYD
-VR0fBF0wWzAsoCqgKIYmaHR0cDovL2NlcnQuc3RhcnRjb20ub3JnL3Nmc2NhLWNybC5jcmwwK6Ap
-oCeGJWh0dHA6Ly9jcmwuc3RhcnRjb20ub3JnL3Nmc2NhLWNybC5jcmwwggFdBgNVHSAEggFUMIIB
-UDCCAUwGCysGAQQBgbU3AQEBMIIBOzAvBggrBgEFBQcCARYjaHR0cDovL2NlcnQuc3RhcnRjb20u
-b3JnL3BvbGljeS5wZGYwNQYIKwYBBQUHAgEWKWh0dHA6Ly9jZXJ0LnN0YXJ0Y29tLm9yZy9pbnRl
-cm1lZGlhdGUucGRmMIHQBggrBgEFBQcCAjCBwzAnFiBTdGFydCBDb21tZXJjaWFsIChTdGFydENv
-bSkgTHRkLjADAgEBGoGXTGltaXRlZCBMaWFiaWxpdHksIHJlYWQgdGhlIHNlY3Rpb24gKkxlZ2Fs
-IExpbWl0YXRpb25zKiBvZiB0aGUgU3RhcnRDb20gQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkgUG9s
-aWN5IGF2YWlsYWJsZSBhdCBodHRwOi8vY2VydC5zdGFydGNvbS5vcmcvcG9saWN5LnBkZjARBglg
-hkgBhvhCAQEEBAMCAAcwOAYJYIZIAYb4QgENBCsWKVN0YXJ0Q29tIEZyZWUgU1NMIENlcnRpZmlj
-YXRpb24gQXV0aG9yaXR5MA0GCSqGSIb3DQEBBQUAA4ICAQAWbJn0Zgw09dCFXn0K7NoQTjgcXt+m
-JQVLkTLB6DvxPd1ECVsHSYopy2YCt7Ga9yWYCTyOG+HdNocrS7to0zlmPaAmx/I5kR1Rq4J7ftXO
-WuTiA1dwaZcI+V5YpgrfjAaaRRYWOApeV/Zix3oCBea8HrXynvSpKYP4shTjbiiHRMOQGt44qTys
-Q01kRc7dKKlc8nN7BPgX6Kux8y5cZG5zMToSuLyzEeR9j4FRmjuNifRNk2Z7PAPt05odmvNlUPWg
-0HWfL6/w6oJDmPhpnIl5xEOORnLjZDYSr/clHjiJkHd+w2tqucPLREuseJCL58csHksRRMg0UifN
-Cl2fhcGJ1Rp48pUQUzLdgIRmddm1aCj7YS6+hKg4wJkShqUeZ2StBi4vqXCFx5YPfIll9Y5DVA6r
-3aWAOZRgwDTJlnAsoxL1H0h7vRx+a7edkPQiO674/CrK+oJSoO+vS1WT68G18CKLrDROJiIEoYcs
-dUq35X0T17gMZMA20skvhhKMIwnBG4I7c0mjaleHlOXWeMWZQ2PjTeB3LeFlmXJpBBpHCeYPAVYk
-+x+/DnmpWC65xAkBfpW6bQAGPrLqShA52NAr9b/sdb+XAsUJGwjcVTfigfs3hENiIMrnVktl6v5s
-wSSTJKE06wX/miKum30/8WVRCqYwarP0iByADfxyiuiDXjCCB+IwggXKoAMCAQICAQ8wDQYJKoZI
-hvcNAQEFBQAwfTELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsT
-IlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxKTAnBgNVBAMTIFN0YXJ0Q29tIENl
-cnRpZmljYXRpb24gQXV0aG9yaXR5MB4XDTA3MTAyNDIxMDMzMloXDTEyMTAyMjIxMDMzMlowgYwx
-CzAJBgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSswKQYDVQQLEyJTZWN1cmUgRGln
-aXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMTgwNgYDVQQDEy9TdGFydENvbSBDbGFzcyAzIFByaW1h
-cnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB
-ALmjSW4SPiDKlAinvVeLZOVfItiuP1aRHL530E7QUc9icCwL33+PH+Js1HAh8CgWFl34sOxx1FJy
-S/C4VLPRsqDfP72jtzCVUAL0DAxZ7wgzQvFz7x61jGxfhYhqYb1+PPOLkYBbkRIrPMg3dLEdKmXI
-YJYXDH+mB/V/jLo73/Kb7h/rNoNg/oHHSv5Jolyvp5IY2btfcTBfW/telEFj5rDTX2juTvZ3Qhf3
-XQX5ca3Q7A10zrUV/cWJOJ7F5RltbEIaboZmX5JBUb3FhUiAdBotehAX6DbDOuYoJtVxmGof6GuV
-GcPo98K4TJf8FHo+UA9EOVDp/W7fCqKT4sXk/XkCAwEAAaOCA1swggNXMAwGA1UdEwQFMAMBAf8w
-CwYDVR0PBAQDAgGmMB0GA1UdDgQWBBR7iZySlyShhEcCy3T8LvSs3DLl8zCBqAYDVR0jBIGgMIGd
-gBROC+8apEBbpRdphzDKNGhD0EGu8qGBgaR/MH0xCzAJBgNVBAYTAklMMRYwFAYDVQQKEw1TdGFy
-dENvbSBMdGQuMSswKQYDVQQLEyJTZWN1cmUgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMSkw
-JwYDVQQDEyBTdGFydENvbSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eYIBATAJBgNVHRIEAjAAMD0G
-CCsGAQUFBwEBBDEwLzAtBggrBgEFBQcwAoYhaHR0cDovL3d3dy5zdGFydHNzbC5jb20vc2ZzY2Eu
-Y3J0MGAGA1UdHwRZMFcwLKAqoCiGJmh0dHA6Ly9jZXJ0LnN0YXJ0Y29tLm9yZy9zZnNjYS1jcmwu
-Y3JsMCegJaAjhiFodHRwOi8vY3JsLnN0YXJ0c3NsLmNvbS9zZnNjYS5jcmwwggFdBgNVHSAEggFU
-MIIBUDCCAUwGCysGAQQBgbU3AQEEMIIBOzAvBggrBgEFBQcCARYjaHR0cDovL2NlcnQuc3RhcnRj
-b20ub3JnL3BvbGljeS5wZGYwNQYIKwYBBQUHAgEWKWh0dHA6Ly9jZXJ0LnN0YXJ0Y29tLm9yZy9p
-bnRlcm1lZGlhdGUucGRmMIHQBggrBgEFBQcCAjCBwzAnFiBTdGFydCBDb21tZXJjaWFsIChTdGFy
-dENvbSkgTHRkLjADAgEBGoGXTGltaXRlZCBMaWFiaWxpdHksIHJlYWQgdGhlIHNlY3Rpb24gKkxl
-Z2FsIExpbWl0YXRpb25zKiBvZiB0aGUgU3RhcnRDb20gQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkg
-UG9saWN5IGF2YWlsYWJsZSBhdCBodHRwOi8vY2VydC5zdGFydGNvbS5vcmcvcG9saWN5LnBkZjAR
-BglghkgBhvhCAQEEBAMCAAcwUAYJYIZIAYb4QgENBEMWQVN0YXJ0Q29tIENsYXNzIDMgUHJpbWFy
-eSBJbnRlcm1lZGlhdGUgRnJlZSBTU0wgRW1haWwgQ2VydGlmaWNhdGVzMA0GCSqGSIb3DQEBBQUA
-A4ICAQBSlwQN2woVELEUHFxKb7ygxNN+lLt9tmTFYfHl8cOO8CBoFD6hjS2TjG1sPpXF4diPEjrf
-6GPyMgKep5Vc97fgG75fN6QifZOWuc8JChsp1AXannZCBS8jFJRF53SNwFoIFXbYNIppSoM7MP9P
-HpVDLvzOluVeNEfs4AsT/4ePMlWayl2cFRS1A4tiA+j3bjGTFHblUN2C0QTm8Bdr+DagJ5mHLRkQ
-7g1uAhrIBgIlwlEPPSF0PYCF5zrkrDosHc3tVcSOJFHn9agrAf9C15HM8lsUNzWyiasCmObZzKD7
-mdubVEd4UjP4bFeW5Gs/O2+E1xvLQ+0COrBjW3GLixbRHpkk+5nYNnX93NySgWHJmAXI5fdISQ1d
-UuV2NPOd4UkWdVLMNtzvbS+rXziNHuligj35/lAn3prSIvEQAbxInlq4HBcj/DYWYqbCZ0y8nz/X
-v4HiwwIhGtesNCXbHOlVeH9ByaTmd/7DwcWaoBMbLU5QBBteBrsDJIBRpiG+8WTnS7Rs7kOJQbDO
-sk7dOvC9oLYSLgQVoGYhWAbtN9TlNppj0hwlIJDsAZRgTdEVJGmws6gDcOzE/jZgRGBL83HDb35i
-pm0+g7ZA9s2kjvGcdUJ80FpvHegMh/jfycV+/yynDkFCoFJsQXWLMkDnt4TrgLMee3uUHbQ4UPXV
-q9iinDGCBCMwggQfAgEBMIGSMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
-LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
-U3RhcnRDb20gQ2xhc3MgMyBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAR0wCQYFKw4D
-AhoFAKCCAmUwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMDgxMDA3
-MjAzNDUwWjAjBgkqhkiG9w0BCQQxFgQUrqQfelPQAHRlziJKVxzt9rEmti0wgaMGCSsGAQQBgjcQ
-BDGBlTCBkjCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsT
-IlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0YXJ0Q29tIENs
-YXNzIDMgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgEdMIGlBgsqhkiG9w0BCRACCzGB
-laCBkjCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNl
-Y3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNz
-IDMgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgEdMIG3BgkqhkiG9w0BCQ8xgakwgaYw
-CwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQBFjAKBggqhkiG9w0DBzALBglghkgBZQMEAQIwDgYIKoZI
-hvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIHMA0GCCqGSIb3DQMCAgEoMAcGBSsOAwIa
-MAsGCWCGSAFlAwQCAzALBglghkgBZQMEAgIwCwYJYIZIAWUDBAIBMAoGCCqGSIb3DQIFMA0GCSqG
-SIb3DQEBAQUABIIBAJ+74MvlqNLTy/L1cSye49WuYwoH6aBzLtyAaMg/R3B19bPoWkJK1r2Gyk/G
-OGaVj07sqGvq7hKVyNTwzw614GvysRgPx30yV8/9v5qKtcFDg5E20QvU7UpQfN10QojyMIypnJ2i
-0+9KMOAWVJIKvfp2OXcx7yK6OuacMIe6XTcCh1DR2Ry9N5+7wleiTTlQsBPdGbHftXl1OOVecDvN
-YgL/2VhcpFYKKr6B0rGzm3HzGWTme5accjwwFYYrtPGTXLkF54RXBBhR6sFwcKXxY+CILL0di3DI
-7Y87yTYBFY2uSmQncDZTG7J83/Fcx/8QtyW0CsgxFwZlApXVnIwhFKwAAAAAAAA=
-
-------=_NextPart_000_013F_01C9289A.9E3248E0--
+>  If you send me a binary build for Windows 32-bit, I'll test it against expired
+>  and revoked certs.  I presume I don't need a server configured for this test;
+>  it should fail client side before attempting to connect?
+>
+>
+>  Jason
+>
+>
+>  -----Original Message-----
+>  From: Faidon Liambotis [mailto:paravoid@...334...]
+>  Sent: Tuesday, 07 October, 2008 15:53
+>  To: Alon Bar-Lev
+>  Cc: Jason R. Coombs; openvpn-devel@lists.sourceforge.net
+>  Subject: Re: [Openvpn-devel] [PATCH v4] Use CryptoAPI CA store (was Re: [PATCH
+>  v3] Use CryptoAPI CA store)
+>
+>
+> Hi,
+>
+>  Alon Bar-Lev wrote:
+>  > On 9/27/08, Alon Bar-Lev <alon.barlev@...277...> wrote:
+>  >>  I prefer to receive patches...
+>  >>  Anyway, this is not exactly what I meant.
+>  >>  Please review latest head.
+>  >>  I did not test this, but it should be correct now as far as the
+>  >>  changes are concerned.
+>  >>  It may not work as the validation process was never tested.
+>  >
+>  > Any news?
+>  Thanks for reviving this. I built it and tried it and seems to work.
+>  I didn't test with revoked or expired certificates, however.
+>
+>  As for warnings there's just a trivial one:
+>         cryptoapi.c:429: warning: passing arg 2 of `d2i_X509' from
+>                          incompatible pointer type
+>
+>  Regards,
+>  Faidon
+>
+> -------------------------------------------------------------------------
+>  This SF.Net email is sponsored by the Moblin Your Move Developer's challenge
+>  Build the coolest Linux based applications with Moblin SDK & win great prizes
+>  Grand prize is a trip for two to an Open Source event anywhere in the world
+>  http://moblin-contest.org/redirect.php?banner_id=100&url=/
+> _______________________________________________
+>  Openvpn-devel mailing list
+>  Openvpn-devel@lists.sourceforge.net
+>  https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
+>
+>
 
