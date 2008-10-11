@@ -1,9 +1,8 @@
-Message-ID: <48EF3258.6020604@...1123...>
-Date: Fri, 10 Oct 2008 12:45:44 +0200
-From: Peter Rabbitson <rabbit+list@...1123...>
+Message-ID: <9e0cf0bf0810111357t46f00621r1325070a584feb69@...278...>
+Date: Sat, 11 Oct 2008 22:57:28 +0200
+From: "Alon Bar-Lev" <alon.barlev@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Bind on secondary windows address - bug or general
-	limitation?
+Subject: [Openvpn-devel] [MSCAPI] Need testers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,40 +13,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn devel <openvpn-devel@lists.sourceforge.net>
+Cc: Dave <dev@...575...>, Peter 'Luna' Runestig <peter@...292...>
 
-Hi,
+Hello,
 
-I have a windows 2003 server, running as an openvpn _client_  with the
-following setup:
+As part of modification of the mscapi (cryptoapi.c) file, I try to
+cleanup the openssl usage.
+I don't have Windows environment to test.
 
-Ethernet adapter Local Area Connection 7:
+I will be glad if users of this feature help me testing this.
 
-   Connection-specific DNS Suffix  . :
-   IP Address. . . . . . . . . . . . : 208.xx.xx.224
-   Subnet Mask . . . . . . . . . . . : 255.255.255.128
-   IP Address. . . . . . . . . . . . : 208.xx.xx.223
-   Subnet Mask . . . . . . . . . . . : 255.255.255.128
-   Default Gateway . . . . . . . . . : 208.xx.xx.129
+Sources are located at [1], binaries at [2].
 
-I want to let the vpn server to talk to this client over the tunnel, so
-I am trying to get the client to connect to the server via the .224
-address (so I can set a tunneled route for the .223 one). I however can
-not get it to work.
+No change in functionality should be visible, but I guess first few
+versions will not work correctly.
 
-I specified 'local 208.xx.xx.224' and the connection logs properly say:
-Fri Oct 10 05:34:23 2008 us=324594 UDPv4 link local: 208.xx.xx.224
-Fri Oct 10 05:34:23 2008 us=324613 UDPv4 link remote: ss.ss.ss.ss:1194
+Thanks,
+Alon Bar-Lev.
 
-Yet the server receives packets from .223. Wireshark also shows packets
-being directly sent with a .223 source address. Same happens if I try to
-use the windows utility:
-
-pingpath -i 208.xx.xx.224 <remote host>. Both wireshark and the remote
-hos see icmp packets labeled from .223
-
-Is this a known issue with windows, and are there any know workarounds?
-Or the second IP is useless to me on this platform?
-
-Thank you
+[1] http://svn.openvpn.net/projects/openvpn/contrib/alon/BETA21-ms-chk-3/openvpn
+[2] http://alon.barlev.googlepages.com/openvpn-mscapi-test-3.tar.bz2
 
