@@ -1,8 +1,8 @@
-Message-ID: <9e0cf0bf0810111357t46f00621r1325070a584feb69@...278...>
-Date: Sat, 11 Oct 2008 22:57:28 +0200
-From: "Alon Bar-Lev" <alon.barlev@...277...>
+Message-ID: <48F11865.5080903@...1135...>
+Date: Sat, 11 Oct 2008 23:19:33 +0200
+From: Jochen Wierum <jochen@...1135...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [MSCAPI] Need testers
+Subject: [Openvpn-devel] Alternative GUI for OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,28 +11,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-To: openvpn devel <openvpn-devel@lists.sourceforge.net>
-Cc: Dave <dev@...575...>, Peter 'Luna' Runestig <peter@...292...>
+To: openvpn-devel@lists.sourceforge.net
 
-Hello,
+Hi,
 
-As part of modification of the mscapi (cryptoapi.c) file, I try to
-cleanup the openssl usage.
-I don't have Windows environment to test.
+My name is Jochen Wierum and I'm a student at a university of applied
+science in Germany. We work with OpenVPN there. Since a few weeks, we
+also have the option to use SmartCards instead of pkcs12 files.
 
-I will be glad if users of this feature help me testing this.
+One problem was, that we have laptops which are used by many people with
+different SmartCards. But the OpenVPN GUI doesn't give the you
+opportunity to select which SmartCard to use. So I wrote an own small
+GUI for Windows in C#. It uses the Management Interface to control
+OpenVPN. It is very simple and not perfect. One Problem is that it
+requires administrator rights in Vista.
 
-Sources are located at [1], binaries at [2].
+It is written in C# 2008 and requires the .NET Framework 2.0. I released
+it under the GNU GPL v2.
 
-No change in functionality should be visible, but I guess first few
-versions will not work correctly.
+Perhaps someone thinks it is useful too.
 
-Thanks,
-Alon Bar-Lev.
+The source can be downloaded at:
+http://www.jowisoftware.de/openvpnmanager_src.zip
 
-[1] http://svn.openvpn.net/projects/openvpn/contrib/alon/BETA21-ms-chk-3/openvpn
-[2] http://alon.barlev.googlepages.com/openvpn-mscapi-test-3.tar.bz2
+The binarys are located at:
+http://www.jowisoftware.de/openvpnmanager.zip
+
+Jochen
 
