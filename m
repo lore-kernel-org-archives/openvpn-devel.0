@@ -1,11 +1,11 @@
-Message-ID: <9e0cf0bf0810112307p73010087r512098cb3d7092b8@...278...>
-Date: Sun, 12 Oct 2008 08:07:17 +0200
-From: "Alon Bar-Lev" <alon.barlev@...277...>
-In-Reply-To: <4120B11CA86A4398B70DBF8257A0FD40@...576...>
+Message-ID: <48F1AE4F.3040305@...1135...>
+Date: Sun, 12 Oct 2008 09:59:11 +0200
+From: Jochen Wierum <jochen@...1135...>
 MIME-Version: 1.0
-References: <DE8C3B9CA5274760B7825A15F01AC51F@...576...>
-	<4120B11CA86A4398B70DBF8257A0FD40@...576...>
-Subject: Re: [Openvpn-devel] [MSCAPI] Need testers
+References: <48F11865.5080903@...1135...>
+	<9e0cf0bf0810111522nc8062afl7e727f9d871875ec@...278...>
+In-Reply-To: <9e0cf0bf0810111522nc8062afl7e727f9d871875ec@...278...>
+Subject: Re: [Openvpn-devel] Alternative GUI for OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,90 +14,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-To: Dave <dev@...575...>
-Cc: Peter 'Luna' Runestig <peter@...292...>, openvpn devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Thank you dave!
+The Problem is that I read STDIN and STDOUT of OpenVPN. To do this, I
+have to run my Application at least with the same rights as OpenVPN.
+OpenVPN has to run as admin to control the routes and the Tap-Device. So
+my application has a problem.
 
-Let's divide this into two threads.
+If somebody knows a solution how to run a program as administrator and
+read STDIN and STDOUT without having administrator rights he is welcome :-)
 
-1. I've cleanup the OpenSSL integration, this should not change
-existing behavior... All you need to verify that OpenVPN continue to
-work while using private key from CAPI store.
+Jochen
 
-2. Add the CAPI certificate validation.
+Alon Bar-Lev wrote:
+> Great!
+> I was expected PKCS#11 enabled GUI for a long time!
+> But why does it need administrative rights?
+> 
+> Alon.
+> 
+> On 10/11/08, Jochen Wierum <jochen@...1135...> wrote:
+>> Hi,
+>>
+>>  My name is Jochen Wierum and I'm a student at a university of applied
+>>  science in Germany. We work with OpenVPN there. Since a few weeks, we
+>>  also have the option to use SmartCards instead of pkcs12 files.
+>>
+>>  One problem was, that we have laptops which are used by many people with
+>>  different SmartCards. But the OpenVPN GUI doesn't give the you
+>>  opportunity to select which SmartCard to use. So I wrote an own small
+>>  GUI for Windows in C#. It uses the Management Interface to control
+>>  OpenVPN. It is very simple and not perfect. One Problem is that it
+>>  requires administrator rights in Vista.
+>>
+>>  It is written in C# 2008 and requires the .NET Framework 2.0. I released
+>>  it under the GNU GPL v2.
+>>
+>>  Perhaps someone thinks it is useful too.
+>>
+>>  The source can be downloaded at:
+>>  http://www.jowisoftware.de/openvpnmanager_src.zip
+>>
+>>  The binarys are located at:
+>>  http://www.jowisoftware.de/openvpnmanager.zip
+>>
+>>  Jochen
 
-From what I understand, (1) works at your side?
-
-For the VERIFY ERROR, can you please paste some more log lines? Should
-be something like "Failed to verify certificate..."
-
-Thanks!
-Alon.
-
-On 10/12/08, Dave <dev@...575...> wrote:
-> ...
->
-> > ...
->  > > As part of modification of the mscapi (cryptoapi.c) file, I
->  > > try to cleanup the openssl usage. I don't have Windows
->  > > environment to test.
->  > >
->  > > I will be glad if users of this feature help me testing this.
->
-> ...
->
-> > ...
->  > Sure, I could do it now but what are the test cases we are
->  > going to run? This is for the cryptoapicert feature? -Dave
->  >
->
->
-> OK, I'm not getting it.  Educate me.  I am using an existing and functional
->  server, and removed all the ca cert and key options in my config and
->  replaced them with:
->
->   cryptoapica
->   cryptoapicert "SUBJ:plexus"
->
->  Nevermind the second one -- I verified it works fine in isolation (i.e.
->  meaning having ca or <ca> makes it work finding the cert and key via capi).
->  That was mostly a 'using capi to do something at all' sanity check.
->
->  I imported my CA cert.  I used the 'pick a sensible place' option.  I
->  verified that it is located (according to the MMC snapin) at:
->
->  Certificates - Current User
->   Trusted Root Certification Authorities
->     Certificates
->
->  which does seem a sensible place.
->
->  Upon connect, I am getting the error:
->
->  Sat Oct 11 22:25:16 2008 VERIFY ERROR: depth=1, error=self signed
->  certificate in certificate chain:
->  /C=US/ST=TX/L=Cedar_Park/O=ziggurat29/CN=ziggurat29_CA/emailAddress=dev@...1136...
->  urat29.com
->
->  Not sure what to say about that -- root CA certs are always self-signed, no?
->
->  For fun I also imported the server cert.  It wound up at:
->
->  Certificates - Current User
->   Other People
->     Certificates
->
->  Didn't do any good there -- no surprise -- but I moved it over to the
->  trusted root CA and it did no good there either.
->
->  I'll be happy to give configs, logs, certs if it's useful.
->
->
->  -Dave
->
->
 
