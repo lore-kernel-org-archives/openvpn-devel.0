@@ -1,8 +1,11 @@
-Message-ID: <48F24CA1.9030701@...1114...>
-Date: Sun, 12 Oct 2008 21:14:41 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+From: Till Maas <opensource@...519...>
+Date: Sun, 12 Oct 2008 23:48:44 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [announcement] OpenVPN authentication plug-in
+Content-Type: multipart/signed; boundary="nextPart305968290.YIbVueOfQV";
+	protocol="application/pgp-signature"; micalg=pgp-sha1
+Content-Transfer-Encoding: 7bit
+Message-Id: <200810122349.00935.opensource@...519...>
+Subject: [Openvpn-devel] [PATCH] wrong error message for failing TUNSETGROUP
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,30 +14,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+To: openvpn devel <openvpn-devel@lists.sourceforge.net>
+
+--nextPart305968290.YIbVueOfQV
+Content-Type: multipart/mixed;
+  boundary="Boundary-01=_9Cn8IESwy0Y+S5t"
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+Content-Disposition: inline
 
+--Boundary-01=_9Cn8IESwy0Y+S5t
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Hello all!
+Hiyas,
 
-I hope you all will forgive me for this little announcement.  This is the only time I will do this,
-I promise!
+currently openvpn prints that TUNSETOWNER failed if TUNSETGROUP failed.=20
+Attached patch fixes this.
 
-Today, I released a public beta of a plug-in called eurephia.  This is a flexible plug-in for
-OpenVPN to handle user name and password authentication.  In addition this module also supports
-Linux iptables updates per VPN session to allow fine grained network access control per user
-account.  Automatic blacklisting/blocking of IP addresses, user accounts and certificates are also
-done when too many failed attempts are registered.
+Btw. it seems that the kernel shipped with CentOS does not support --group=
+=20
+with --mktun, in case someone wants to document it somewhere.
 
-For more information, please have a look at:  http://www.eurephia.net/
+Regards,
+Till
 
-eurephia is an Open Source project, hosted by sourceforge.net
+--Boundary-01=_9Cn8IESwy0Y+S5t
+Content-Type: text/x-diff; charset="us-ascii";
+	name="openvpn-2.1_rc13-tunsetgroup_errormessage.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="openvpn-2.1_rc13-tunsetgroup_errormessage.patch"
 
+diff -up openvpn-2.1_rc13/tun.c.tunsetgroup_errormessage openvpn-2.1_rc13/tun.c
+--- openvpn-2.1_rc13/tun.c.tunsetgroup_errormessage	2008-10-12 23:40:24.548623210 +0200
++++ openvpn-2.1_rc13/tun.c	2008-10-12 23:40:31.964621830 +0200
+@@ -1279,7 +1279,7 @@ tuncfg (const char *dev, const char *dev
+         msg (M_ERR, "Cannot get group entry for %s", groupname);
+       else
+         if (ioctl (tt->fd, TUNSETGROUP, group_state.gr->gr_gid) < 0)
+-          msg (M_ERR, "Cannot ioctl TUNSETOWNER(%s) %s", groupname, dev);
++          msg (M_ERR, "Cannot ioctl TUNSETGROUP(%s) %s", groupname, dev);
+     }
+   close_tun (tt);
+   msg (M_INFO, "Persist state set to: %s", (persist_mode ? "ON" : "OFF"));
 
+--Boundary-01=_9Cn8IESwy0Y+S5t--
 
-kind regards,
+--nextPart305968290.YIbVueOfQV
+Content-Type: application/pgp-signature; name=signature.asc 
+Content-Description: This is a digitally signed message part.
 
-David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (GNU/Linux)
 
+iQIVAwUASPJwvWo6ELMcEJUXAQIs/RAAq42setdpZiNa99XLxDB5EUGndcIV3xdh
+/AznOT7EHo3eSYu4d/6vW/CyCGAwx5Sq2UmSrSfTN4IQzSvqyrbIKtcKNYa3Hn1e
+xKQkbNmkFZpswcpHWhD4i01z7HREkW85jjcEjjobPdvjVFugUCAQJiu2Xf+setmG
+QRN042FYRGUGTtK4VD/R+ynrMGL9M07UG+J9dSMbCLIhxz967uXiaY/RstR0k6AU
+oPE5s21SBcg6+mzjSSQzA77LMt3AiGltuXJaNthHy621ibvr/pLWVIgviqVmZbZV
+Kwx9+vNpLeugOvnyrezFJ6nhMIDVUNCT93vSrIy9xaWKxsZP3cXvXoUU6NkEr291
+lPXNbaP1eDb9RVupjnns9zi5ZmI/b7o4s7BQV6p57uKHxjQsZmZ9VVPgWv85xZHc
+jKDrwo6jNMY2QjHVYyg4UrbgVem8IEJ/+l2gk0pNitQANIjQLBr93Cv4jAOfHU2B
+GPvjSvim/diD6HPCYd534K7SZPLH/Rym8dym/qOsZC8YO3TT/6CQ5nhOfkdFJBP5
+a3WnzrY1oP/NO9QtZ32+KVyJVQm4UTUahm1hoHrjRWzr9vNJMU12M12ily7DE1j2
+wvM9uw58iW8EER3w8RliavviShf5+epi1OWgv2sTyly67aDXStqUOi6euHJj49M5
+6ozwsd5qBTs=
+=W3qb
+-----END PGP SIGNATURE-----
+
+--nextPart305968290.YIbVueOfQV--
 
