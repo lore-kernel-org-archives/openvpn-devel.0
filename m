@@ -1,13 +1,10 @@
-Date: Tue, 28 Oct 2008 18:48:23 +0100
-From: Felix Kronlage <fkr@...1138...>
-Message-ID: <20081028174823.GA31160@...1143...>
-References: <48EDBFC7.9040301@...41...>
-	<20081017165431.GA20687@...1139...>
-	<20081024063656.GA3920@...33...>
-	<20081027202236.GA8154@...1143...>
-	<20081028131939.GA8489@...33...>
+Message-ID: <49109373.5010309@...41...>
+Date: Tue, 04 Nov 2008 11:24:51 -0700
+From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-In-Reply-To: <20081028131939.GA8489@...33...>
+References: <48EDBFC7.9040301@...41...>
+	<20081017114951.GA24872@...1139...>
+In-Reply-To: <20081017114951.GA24872@...1139...>
 Subject: Re: [Openvpn-devel] OpenVPN 2.1_rc13 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,51 +14,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Felix Kronlage <kronlage@...1144...>, Openvpn-devel@lists.sourceforge.net
 
-On Tue, Oct 28, 2008 at 02:19:39PM +0100, Matthias Andree wrote:
+Felix Kronlage wrote:
+> On Thu, Oct 09, 2008 at 02:24:39AM -0600, James Yonan wrote:
+> 
+> Hi Yonan,
+> 
+>> Changelog:
+>> 2008.10.07 -- Version 2.1_rc13
+>> * Bundled OpenSSL 0.9.8i with Windows installer.
+>> * Management interface can now listen on a unix
+>>    domain socket, for example:
+>>
+>>      management /tmp/openvpn unix
+>>
+>>    Also added management-client-user and management-client-group
+>>    directives to control which processes are allowed to connect
+>>    to the socket.
+> 
+> what I dont quite understand is, why you add stuff like this to
+> the release candidate instead of finally getting 2.1 out of the
+> door and then make small subsequent releases. OpenVPN has been
+> stuck (imho) for way too long in the RC phase now entering the
+> infamous game of not just adding new stuff to RC's but instead
+> introducing bugs in the RCs instead of just closing them...
 
-> The objection for me would be because it makes no difference if you
-> change a RC or a release. Features in point releases are usually frowned
-> upon as well...
+It's a good question that deserves a full answer.
 
-so this is a null arguement. What does the word "release candidate"
-mean to you?
+I'll agree with anyone that it's taken longer than expected to get 2.1 
+final out the door.  But I would encourage you to take a look at the 
+commit log for 2008, and you will see that the changes predominantly 
+address fixes.
 
-> Who gets to determine what is needed for the final release, if not the
-> maintainer?
+With regard to the unix domain socket fix above, I would argue that 
+supporting unix domain sockets in the management interface is an 
+important security feature.  This is because passwords and other 
+sensitive data may be passed across the management interface connection, 
+and only unix domain sockets give each side of the connection the 
+ability to see which UID and GID is connected to the other side.
 
-Of course the maintainer, however, I've simply stated my opinion on the
-never-ending release candidates coming along and wondering about it
-(and seeing bugs come *and* go)
+There are other reasons as well for a long 2.1 beta cycle.  One of them 
+is that quite a large number of people are using OpenVPN now, and it 
+increases the frequency of obscure bug reports, some of which are 
+difficult or impossible to reproduce by the development team.  When we 
+fix one of these bugs, sometimes it takes days or weeks to know for sure 
+whether the bug was really fixed (for example see r3330 from 
+mid-September, "fixed a bug that can cause SSL/TLS negotiations in UDP 
+mode to fail if UDP packets are dropped").
 
-> > It is a bullshit-argumentation, I'm aware for that, but regarding
-> > liability, it is a matter :/
-> ...there were any warranties attached to the release that the RC has
-> not. Neither has any kind of warranty, so these are just non-arguments,
-[..]
-> Sorry, but this is the usual whining striving to compromise product
-> quality in the end. Either it's "it's finished when it's finished", or
-> it's "release at certain point in time no matter what quality".
+Another reason for the delay is our goal to stabilize the Management 
+Interface API before 2.1 final.  The management interface is a major 
+connection point between OpenVPN and other software packages (such as 
+client or server GUIs) and as such we need to ensure its completeness 
+before we mark the 2.1 milestone, so that we can avoid the 
+community-wide support headaches associated with a moving-target API.
 
-Is it about finished when finished or maybe "get stable releases
-that are as bug free as possible". Mind you, we're still speaking about
-VPN software here, so it would be nice to have some 'stable' ground
-position every now and then.
-And yes, there is of course no warranty, but it is a difference wether
-you deploy software that is officially branded "a release candidate"
-or a "stable software" and if its just 30 minutes less you need to 
-explain yourself.
+I think there's a precedent as well for long-term beta cycles.  In the 
+old days of pre-open-source computing, beta cycles were short, internal 
+testing affairs that might only last a few months.  Companies needed to 
+get stuff out the door, even if it wasn't ready, because they had to get 
+to the revenue.  Then open source came onto the scene and I think it's 
+redefined, to a certain extent, the beta cycle.  Now the beta cycle is 
+ended only at that point where widespread testing and usage by the 
+community proves the stability of the product and the readiness to end 
+the beta cycle.  Today, even commercial companies such as Google have 
+embraced that standard.
 
-> If you're not happy with the development process, you're free to fork.
-> That's what open source software is all about.
+So yes, getting 2.1 final out the door is a top priority for us.  But it 
+won't happen until it's ready.
 
-no, open source software is not about creating as many forks as
-possible. It is also about being able to publically state your opinion
-without having to yell for a fork immediatly.
-
-felix
+James
 
