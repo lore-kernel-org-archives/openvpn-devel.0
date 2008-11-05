@@ -1,12 +1,19 @@
-From: Jacob Wilkins <jwilkins@...1054...>
-Date: Wed, 5 Nov 2008 15:41:25 -0500
-Message-ID: <C5376F25.86E3%jwilkins@...1054...>
-Content-Language: en
-Content-Type: multipart/alternative;
-	boundary="_000_C5376F2586E3jwilkinsapprisscom_"
+Message-ID: <9e0cf0bf0811051252y79402fd5qa1ceb0c59f43759c@...278...>
+Date: Wed, 5 Nov 2008 22:52:52 +0200
+From: "Alon Bar-Lev" <alon.barlev@...277...>
+In-Reply-To: <750B64C66078B34D918257A1AC004DB20545C2@...1132...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Building against the FIPS 140-2 validated version
-	of OpenSSL.
+References: <9e0cf0bf0810200840p7e5b3743p940be6e27bea9ca9@...278...>
+	<750B64C66078B34D918257A1AC004DB2054510@...1132...>
+	<9e0cf0bf0810200851o2a8c2df5t652424be88649457@...278...>
+	<750B64C66078B34D918257A1AC004DB2054511@...1132...>
+	<9e0cf0bf0810200926m5ec4de48l1677893b50178cdc@...278...>
+	<9e0cf0bf0810261339i1abdd932q6e02b0dddc9293bb@...278...>
+	<750B64C66078B34D918257A1AC004DB205454E@...1132...>
+	<9e0cf0bf0810270001k71201cd3vd675ee971f23d276@...278...>
+	<9e0cf0bf0811051216u4f67b481x56bdd28d339b371c@...278...>
+	<750B64C66078B34D918257A1AC004DB20545C2@...1132...>
+Subject: Re: [Openvpn-devel] [WINDOWS] Request for test win64
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,61 +22,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+To: "Jason R. Coombs" <jaraco@...1130...>
+Cc: openvpn devel <openvpn-devel@lists.sourceforge.net>
 
---_000_C5376F2586E3jwilkinsapprisscom_
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Yes.
+I think that there are people here who do this for fun... :)
+The question is if there is someone with amd64 machine that can
+compare previous tests to tests with this version.
 
-Howdy,
+Thanks!
 
-If OpenVPN were to cleanly build against openssl-fips, and properly set fip=
-s mode when running, it would open up lots of use opportunity within law en=
-forcement.
-
-It probably wouldn't meet DoD standards, but it would defiantly meet the re=
-quirements of the FBI CJIS's division's security policy. That doc is used a=
-s a standard by most state and local law enforcement agencies, even for sys=
-tems that aren't exchanging data with the NCIC.
-
-Thanks,
-
-Jacob Wilkins CISSP, CISA
-Appriss, Inc
-
-
-
---_000_C5376F2586E3jwilkinsapprisscom_
-Content-Type: text/html; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-
-<HTML>
-<HEAD>
-<TITLE>Building against the FIPS 140-2 validated version of OpenSSL.</TITLE>
-</HEAD>
-<BODY>
-<FONT FACE=3D"Calibri, Verdana, Helvetica, Arial"><SPAN STYLE=3D'font-size:=
-11pt'>Howdy,<BR>
-<BR>
-If OpenVPN were to cleanly build against openssl-fips, and properly set fip=
-s mode when running, it would open up lots of use opportunity within law en=
-forcement. <BR>
-<BR>
-It probably wouldn&#8217;t meet DoD standards, but it would defiantly meet =
-the requirements of the FBI CJIS&#8217;s division&#8217;s security policy. =
-That doc is used as a standard by most state and local law enforcement agen=
-cies, even for systems that aren&#8217;t exchanging data with the NCIC.<BR>
-<BR>
-Thanks,<BR>
-<BR>
-Jacob Wilkins CISSP, CISA<BR>
-Appriss, Inc<BR>
-<BR>
-<BR>
-</SPAN></FONT>
-</BODY>
-</HTML>
-
-
---_000_C5376F2586E3jwilkinsapprisscom_--
+On 11/5/08, Jason R. Coombs <jaraco@...1130...> wrote:
+> How does one check performance?  Run throughput tests through the VPN
+>  connection in a controlled environment?
+>
+>
+>  > -----Original Message-----
+>  > From: Alon Bar-Lev [mailto:alon.barlev@...277...]
+>
+> > Sent: Wednesday, 05 November, 2008 15:17
+>  > To: Jason R. Coombs
+>  > Cc: openvpn devel
+>  > Subject: Re: [Openvpn-devel] [WINDOWS] Request for test win64
+>  >
+>
+> > Hello All,
+>  >
+>  > Can anyone check the performance of this [1] win64 openvpn build?
+>  >
+>  > It contains less assembly code, but C optimization may be better on
+>  > 64bit.
+>  >
+>  > So you may gain some performance... But it needs to be checked.
+>  >
+>  > Alon
+>  >
+>  > [1] http://alon.barlev.googlepages.com/openvpn-win64.tar.bz2
+>
+>
 
