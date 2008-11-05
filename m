@@ -1,12 +1,17 @@
-Message-ID: <4911D76D.7020202@...1140...>
-Date: Wed, 05 Nov 2008 18:27:09 +0100
-From: Frank Behrens <frank@...1140...>
+Message-ID: <9e0cf0bf0811051216u4f67b481x56bdd28d339b371c@...278...>
+Date: Wed, 5 Nov 2008 22:16:48 +0200
+From: "Alon Bar-Lev" <alon.barlev@...277...>
+In-Reply-To: <9e0cf0bf0810270001k71201cd3vd675ee971f23d276@...278...>
 MIME-Version: 1.0
-References: <200810271301.m9RD1BKT006709@...1141...>
-	<49109F75.8000804@...41...>
-In-Reply-To: <49109F75.8000804@...41...>
-Subject: Re: [Openvpn-devel] [patch] enhance compatibility with HTTP/1.1
-	proxies
+References: <9e0cf0bf0810200840p7e5b3743p940be6e27bea9ca9@...278...>
+	<750B64C66078B34D918257A1AC004DB2054510@...1132...>
+	<9e0cf0bf0810200851o2a8c2df5t652424be88649457@...278...>
+	<750B64C66078B34D918257A1AC004DB2054511@...1132...>
+	<9e0cf0bf0810200926m5ec4de48l1677893b50178cdc@...278...>
+	<9e0cf0bf0810261339i1abdd932q6e02b0dddc9293bb@...278...>
+	<750B64C66078B34D918257A1AC004DB205454E@...1132...>
+	<9e0cf0bf0810270001k71201cd3vd675ee971f23d276@...278...>
+Subject: Re: [Openvpn-devel] [WINDOWS] Request for test win64
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,51 +20,21 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: James Yonan <jim@...41...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: "Jason R. Coombs" <jaraco@...1130...>
+Cc: openvpn devel <openvpn-devel@lists.sourceforge.net>
 
-James Yonan schrieb:
-> Frank Behrens wrote:
->> May I propose the following patch to enhance openvpn's compatibility 
->> with HTTP/1.1 proxies?
->> See
->> http://tools.ietf.org/html/rfc2616#section-14.23
->> and
->> http://tools.ietf.org/html/rfc2817#section-5.2
->>
->> --- proxy.c.orig    2008-10-06 09:22:20.000000000 +0200
->> +++ proxy.c    2008-10-27 13:30:48.000000000 +0100
->> @@ -348,6 +348,12 @@
->>    if (!send_line_crlf (sd, buf))
->>      goto error;
->>  
->> +  /* send Host: header */
->> +  openvpn_snprintf (buf, sizeof(buf), "Host: %s:%d",
->> +            host, port);
->> +  if (!send_line_crlf (sd, buf))
->> +    goto error;
->> +
->>    /* send User-Agent string if provided */
->>    if (p->options.user_agent)
->>      {
->
-> Shouldn't you check p->options.http_version and make sure it's >= 1.1 
-> before sending the Host header?
->
-> James
+Hello All,
 
-Cuurently I can not imagine a server/proxy, that does not understand the 
-Host header?
-see also http://www.w3.org/Protocols/rfc2616/rfc2616-sec19.html#sec19.6.1.1
+Can anyone check the performance of this [1] win64 openvpn build?
 
-But to be on the safe side we can make this check. I would check for 
-http_version != "1.0". Currently I'm not able to send a revised patch, 
-if desired I can make this until weekend.
+It contains less assembly code, but C optimization may be better on 64bit.
 
-Thanks for your attention!
-   Frank
+So you may gain some performance... But it needs to be checked.
 
+Alon
 
+[1] http://alon.barlev.googlepages.com/openvpn-win64.tar.bz2
 
