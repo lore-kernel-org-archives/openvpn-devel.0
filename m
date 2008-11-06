@@ -1,19 +1,15 @@
-Message-ID: <9e0cf0bf0811051252y79402fd5qa1ceb0c59f43759c@...278...>
-Date: Wed, 5 Nov 2008 22:52:52 +0200
-From: "Alon Bar-Lev" <alon.barlev@...277...>
-In-Reply-To: <750B64C66078B34D918257A1AC004DB20545C2@...1132...>
+Date: Thu, 6 Nov 2008 09:10:23 +0100
+From: Felix Kronlage <fkr@...1138...>
+Message-ID: <20081106081021.GA15861@...1143...>
+References: <48EDBFC7.9040301@...41...>
+	<20081017114951.GA24872@...1139...>
+	<49109373.5010309@...41...>
 MIME-Version: 1.0
-References: <9e0cf0bf0810200840p7e5b3743p940be6e27bea9ca9@...278...>
-	<750B64C66078B34D918257A1AC004DB2054510@...1132...>
-	<9e0cf0bf0810200851o2a8c2df5t652424be88649457@...278...>
-	<750B64C66078B34D918257A1AC004DB2054511@...1132...>
-	<9e0cf0bf0810200926m5ec4de48l1677893b50178cdc@...278...>
-	<9e0cf0bf0810261339i1abdd932q6e02b0dddc9293bb@...278...>
-	<750B64C66078B34D918257A1AC004DB205454E@...1132...>
-	<9e0cf0bf0810270001k71201cd3vd675ee971f23d276@...278...>
-	<9e0cf0bf0811051216u4f67b481x56bdd28d339b371c@...278...>
-	<750B64C66078B34D918257A1AC004DB20545C2@...1132...>
-Subject: Re: [Openvpn-devel] [WINDOWS] Request for test win64
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="3V7upXqbjpZ4EhLz"
+Content-Disposition: inline
+In-Reply-To: <49109373.5010309@...41...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.1_rc13 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,45 +18,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To: James Yonan <jim@...41...>
+Cc: Openvpn-devel@lists.sourceforge.net
+
+--3V7upXqbjpZ4EhLz
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-To: "Jason R. Coombs" <jaraco@...1130...>
-Cc: openvpn devel <openvpn-devel@lists.sourceforge.net>
 
-Yes.
-I think that there are people here who do this for fun... :)
-The question is if there is someone with amd64 machine that can
-compare previous tests to tests with this version.
+On Tue, Nov 04, 2008 at 11:24:51AM -0700, James Yonan wrote:
 
-Thanks!
+Hi Yonan,
 
-On 11/5/08, Jason R. Coombs <jaraco@...1130...> wrote:
-> How does one check performance?  Run throughput tests through the VPN
->  connection in a controlled environment?
->
->
->  > -----Original Message-----
->  > From: Alon Bar-Lev [mailto:alon.barlev@...277...]
->
-> > Sent: Wednesday, 05 November, 2008 15:17
->  > To: Jason R. Coombs
->  > Cc: openvpn devel
->  > Subject: Re: [Openvpn-devel] [WINDOWS] Request for test win64
->  >
->
-> > Hello All,
->  >
->  > Can anyone check the performance of this [1] win64 openvpn build?
->  >
->  > It contains less assembly code, but C optimization may be better on
->  > 64bit.
->  >
->  > So you may gain some performance... But it needs to be checked.
->  >
->  > Alon
->  >
->  > [1] http://alon.barlev.googlepages.com/openvpn-win64.tar.bz2
->
->
+> It's a good question that deserves a full answer.
+[...]
+
+thanks Yonan for taking the time to answer and clarify!
+Much appreciated!
+
+felix
+
+--3V7upXqbjpZ4EhLz
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (OpenBSD)
+
+iD8DBQFJEqZtDTGb09msdNARAinAAJ4swwrBR07JdVpGs7EFIWQFkck8SQCeK9Oy
+R5adeGYLqtVlH4vpUjgpjco=
+=bMB4
+-----END PGP SIGNATURE-----
+
+--3V7upXqbjpZ4EhLz--
 
