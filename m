@@ -1,12 +1,9 @@
-Date: Wed, 12 Nov 2008 14:36:57 +0100
-From: Matthias Andree <ma+ovpnd@...31...>
-Message-ID: <20081112133657.GA15988@...33...>
-References: <200810271301.m9RD1BKT006709@...1141...>
-	<200811121224.mACCOmfd077621@...1141...>
+Message-ID: <491B5ECF.20805@...1114...>
+Date: Wed, 12 Nov 2008 23:55:11 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-In-Reply-To: <200811121224.mACCOmfd077621@...1141...>
-Subject: Re: [Openvpn-devel] [patch] enhance compatibility with
-	HTTP/1.1	proxies
+Subject: [Openvpn-devel] [Fwd: Re: [patch] enhance compatibility with
+ HTTP/1.1 proxies]
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,72 +12,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-On Wed, 12 Nov 2008, Frank Behrens wrote:
 
-> James Yonan <jim@...41...> wrote on 4 Nov 2008 12:16:
-> > Shouldn't you check p->options.http_version and make sure it's >= 1.1 
-> > before sending the Host header?
+sorry ... my reply went directly to Matthias Andree instead of mailing list ... fwd. his answer to
+mailing list as well
 
-> Here is a revised patch, that works for me and implements your 
-> suggestion:
-
-Sorry Frank,
-
-I have to object. It does not implement James's suggestion as you claim,
-but random guesswork - inadequate for security software and prone to
-breaking at later updates.
-
-> --- proxy.c.orig	2008-10-06 09:22:20.000000000 +0200
-> +++ proxy.c	2008-11-06 20:49:55.000000000 +0100
-> @@ -348,6 +348,14 @@ establish_http_proxy_passthru (struct ht
->    if (!send_line_crlf (sd, buf))
->      goto error;
->  
-> +  /* send Host: header for HTTP version above 1.0 */
-> +  if (strcmp(p->options.http_version, "1.0") != 0) {
-
-This doesn't check for ">= 1.1", but "!= 1.0".
-What if I use 0.9, or garbage, or nothing?
-Oops, you lose -- in either case.
-
-Even if it's a user option and it's their own fault for misconfiguring.
-
-At the very very least, it'll go along these lines (untested and without
-reading how http_version is obtained and if additional checks are
-sensible!). Note this may fail with HTTP/2.X or newer, since new major
-versions are free to interpret existing headers in a different way, but
-since that's neither existent nor implement, let's not care today, but
-let's not throw obstacles for later use...
+David S.
 
 
-    int rc,
-    unsigned int major, minor;
+-------- Original Message --------
+Subject: Re: [Openvpn-devel] [patch] enhance compatibility with HTTP/1.1	proxies
+Date: Wed, 12 Nov 2008 23:41:18 +0100
+From: Matthias Andree <matthias.andree@...68...>
+To: David Sommerseth <openvpn.list@...1114...>
+References: <200810271301.m9RD1BKT006709@...1141...>
+<200811121224.mACCOmfd077621@...1141...> <20081112133657.GA15988@...33...>
+<491B56D4.9030203@...1114...>
 
-    rc = sscanf(p->options.http_version, "%u.%u", &major, &minor);
-    if (rc == 2) {
-      switch (major) {
-        case 1:
-          if (minor >= 1) {
-              /* HTTP/1.1 or newer, use Host: header */
-          } else {
-              /* HTTP/1.0 or HTTP/0.9 */
-          }
-          break;
-        default:
-          /* unsupported, complain and terminate */
-      }
-    }
+On Wed, 12 Nov 2008, David Sommerseth wrote:
 
-You may want to accept only 1.0 and 1.1 rather than 1.0 and 1.n for n >= 1
-- but there should only ever be A SINGLE PLACE to enforce that.
+> Completely agree ... this seems to be a more sensible way to approach this issue.  Seems to be
+> pretty fail-safe too.  In this approach it really only depends on the contents of
+> p->options.http_version and how sscanf(...) parses it.  And it should be fair to believe that
+> sscanf(...) will do a pretty good job.
+> 
+> Should maybe do some testing how this snippet will work with both sensible http versions (0.8, 0.9,
+> 1.0, 1.1, 1.2, 1.00, 1.10, 1.01, 2.0), but also with real garbage (1.1a, GARBAGE, 1.)
 
-Else you'll have a hell of work once you start implementing HTTP/1.2
-later on...
+Expected output: 1.1a will be parsed as 1.1, GARBAGE and 1. will be
+rejected because rc is 0 or 1, respectively.
+
+Otherwise, 0.8, 0.9, and 2.0 should be rejected; 1.0 and 1.00 should use
+the 1.0 code branch; 1.1, 1.2, 1.10, 1.01 should use the >= 1.1 branch
+on the assumption that >= 1.1 aren't changing Host: semantics.
+
+Let me know if there are differences.
 
 -- 
 Matthias Andree
