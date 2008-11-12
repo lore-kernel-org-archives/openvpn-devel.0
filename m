@@ -1,19 +1,11 @@
-Message-ID: <9e0cf0bf0811080058t786a4b10wdf8ef310fb35c551@...278...>
-Date: Sat, 8 Nov 2008 10:58:26 +0200
-From: "Alon Bar-Lev" <alon.barlev@...277...>
-In-Reply-To: <750B64C66078B34D918257A1AC004DB20545D1@...1132...>
+Message-Id: <200811121224.mACCOmfd077621@...1141...>
+From: "Frank Behrens" <frank@...1140...>
+Date: Wed, 12 Nov 2008 13:24:48 +0100
 MIME-Version: 1.0
-References: <9e0cf0bf0810200840p7e5b3743p940be6e27bea9ca9@...278...>
-	<750B64C66078B34D918257A1AC004DB2054511@...1132...>
-	<9e0cf0bf0810200926m5ec4de48l1677893b50178cdc@...278...>
-	<9e0cf0bf0810261339i1abdd932q6e02b0dddc9293bb@...278...>
-	<750B64C66078B34D918257A1AC004DB205454E@...1132...>
-	<9e0cf0bf0810270001k71201cd3vd675ee971f23d276@...278...>
-	<9e0cf0bf0811051216u4f67b481x56bdd28d339b371c@...278...>
-	<750B64C66078B34D918257A1AC004DB20545C2@...1132...>
-	<9e0cf0bf0811051252y79402fd5qa1ceb0c59f43759c@...278...>
-	<750B64C66078B34D918257A1AC004DB20545D1@...1132...>
-Subject: Re: [Openvpn-devel] [WINDOWS] Request for test win64
+In-reply-to: <49109F75.8000804@...41...>
+References: <200810271301.m9RD1BKT006709@...1141...>
+Subject: Re: [Openvpn-devel] [patch] enhance compatibility with HTTP/1.1
+	proxies
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,30 +14,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-To: "Jason R. Coombs" <jaraco@...1130...>
-Cc: openvpn devel <openvpn-devel@lists.sourceforge.net>
+Content-description: Mail message body
+To: James Yonan <jim@...41...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 11/8/08, Jason R. Coombs <jaraco@...1130...> wrote:
-<snip>
->
->  It appears as if the 64-bit build does have a 5-10% performance increase over
->  the 32-bit build in this environment.
->
->  I hope these results are helpful.  Unfortunately, I don't have a testbed where
->  I can configure two isolated, clean systems, which would probably result in
->  more deterministic results.  Let me know if I can arrange the tests
->  differently to highlight a particular aspect of the performance.
->
->  Regards,
->
-> Jason
+James Yonan <jim@...41...> wrote on 4 Nov 2008 12:16:
+> Shouldn't you check p->options.http_version and make sure it's >= 1.1 
+> before sending the Host header?
 
-Great work!
-Maybe someone else can also perform these tests so users will know if
-they wish to use 64bit build?
+Here is a revised patch, that works for me and implements your 
+suggestion:
 
-Alon.
+--- proxy.c.orig	2008-10-06 09:22:20.000000000 +0200
++++ proxy.c	2008-11-06 20:49:55.000000000 +0100
+@@ -348,6 +348,14 @@ establish_http_proxy_passthru (struct ht
+   if (!send_line_crlf (sd, buf))
+     goto error;
+ 
++  /* send Host: header for HTTP version above 1.0 */
++  if (strcmp(p->options.http_version, "1.0") != 0) {
++    openvpn_snprintf (buf, sizeof(buf), "Host: %s:%d",
++		      host, port);
++    if (!send_line_crlf (sd, buf))
++      goto error;
++  }
++
+   /* send User-Agent string if provided */
+   if (p->options.user_agent)
+     {
+
+
 
