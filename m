@@ -1,8 +1,19 @@
-From: Marcel =?utf-8?q?Pennewi=C3=9F?= <mailinglists@...1145...>
-Date: Thu, 13 Nov 2008 01:23:46 +0100
+Message-ID: <9e0cf0bf0811131201k5b5564dbgd4a489b9810b83bf@...278...>
+Date: Thu, 13 Nov 2008 22:01:27 +0200
+From: "Alon Bar-Lev" <alon.barlev@...277...>
+In-Reply-To: <9e0cf0bf0811080058t786a4b10wdf8ef310fb35c551@...278...>
 MIME-Version: 1.0
-Message-Id: <200811130123.46417.mailinglists@...1145...>
-Subject: [Openvpn-devel] IPv6 Support
+References: <9e0cf0bf0810200840p7e5b3743p940be6e27bea9ca9@...278...>
+	<9e0cf0bf0810200926m5ec4de48l1677893b50178cdc@...278...>
+	<9e0cf0bf0810261339i1abdd932q6e02b0dddc9293bb@...278...>
+	<750B64C66078B34D918257A1AC004DB205454E@...1132...>
+	<9e0cf0bf0810270001k71201cd3vd675ee971f23d276@...278...>
+	<9e0cf0bf0811051216u4f67b481x56bdd28d339b371c@...278...>
+	<750B64C66078B34D918257A1AC004DB20545C2@...1132...>
+	<9e0cf0bf0811051252y79402fd5qa1ceb0c59f43759c@...278...>
+	<750B64C66078B34D918257A1AC004DB20545D1@...1132...>
+	<9e0cf0bf0811080058t786a4b10wdf8ef310fb35c551@...278...>
+Subject: Re: [Openvpn-devel] [WINDOWS] Request for test win64
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,34 +22,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain;
-  charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+To: "Jason R. Coombs" <jaraco@...1130...>
+Cc: openvpn devel <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+A new one [1].
+This time with amd64 assembly.
+Maybe it would be even faster!
 
-a long time ago Juanjo Ciarlante wrote a patch for openvpn to create a tunnel 
-via ipv6 [1]. Later i fixed the patch to work with openvpn-2.0 and 2.1 which 
-i use on OpenWRT and Gentoo. Roy (from Gentoo) wrote about this also to the 
-devel-list [1]. But since that no one answered :( 
+[1] http://alon.barlev.googlepages.com/openvpn-win64.tar.bz2
 
-What about IPv6-support to create a tunnel over IPv6? Since my first patch i 
-try to adapt the patch to newer versions. This patches are not properly 
-tested but works fine for me (on gentoo).[2][3]
-
-I'm not able to adapt the patch detailed 'cause of not enough knowledge about 
-the source and missing programming skills. JuanJo want some integration to 
-the official openvpn source code, but knowone did this until now. 
-
-[1] 
-http://sourceforge.net/mailarchive/message.php?msg_id=20070629101345.0f8beeba%40uberlaptop.marples.name
-[2] http://source.pennewiss.de/openvpn/udp6/
-[3] http://bugs.gentoo.org/show_bug.cgi?id=183457
-
-Are there plans to integrate it to the future?
-
-Regards,
-Marcel
+On 11/8/08, Alon Bar-Lev <alon.barlev@...277...> wrote:
+> On 11/8/08, Jason R. Coombs <jaraco@...1130...> wrote:
+>  <snip>
+>
+> >
+>  >  It appears as if the 64-bit build does have a 5-10% performance increase over
+>  >  the 32-bit build in this environment.
+>  >
+>  >  I hope these results are helpful.  Unfortunately, I don't have a testbed where
+>  >  I can configure two isolated, clean systems, which would probably result in
+>  >  more deterministic results.  Let me know if I can arrange the tests
+>  >  differently to highlight a particular aspect of the performance.
+>  >
+>  >  Regards,
+>  >
+>  > Jason
+>
+>
+> Great work!
+>  Maybe someone else can also perform these tests so users will know if
+>  they wish to use 64bit build?
+>
+>
+>  Alon.
+>
 
