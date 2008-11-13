@@ -1,9 +1,8 @@
-Message-ID: <491B5ECF.20805@...1114...>
-Date: Wed, 12 Nov 2008 23:55:11 +0100
-From: David Sommerseth <openvpn.list@...1114...>
+From: Marcel =?utf-8?q?Pennewi=C3=9F?= <mailinglists@...1145...>
+Date: Thu, 13 Nov 2008 01:23:46 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [Fwd: Re: [patch] enhance compatibility with
- HTTP/1.1 proxies]
+Message-Id: <200811130123.46417.mailinglists@...1145...>
+Subject: [Openvpn-devel] IPv6 Support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,45 +11,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
+Hi,
 
-sorry ... my reply went directly to Matthias Andree instead of mailing list ... fwd. his answer to
-mailing list as well
+a long time ago Juanjo Ciarlante wrote a patch for openvpn to create a tunnel 
+via ipv6 [1]. Later i fixed the patch to work with openvpn-2.0 and 2.1 which 
+i use on OpenWRT and Gentoo. Roy (from Gentoo) wrote about this also to the 
+devel-list [1]. But since that no one answered :( 
 
-David S.
+What about IPv6-support to create a tunnel over IPv6? Since my first patch i 
+try to adapt the patch to newer versions. This patches are not properly 
+tested but works fine for me (on gentoo).[2][3]
 
+I'm not able to adapt the patch detailed 'cause of not enough knowledge about 
+the source and missing programming skills. JuanJo want some integration to 
+the official openvpn source code, but knowone did this until now. 
 
--------- Original Message --------
-Subject: Re: [Openvpn-devel] [patch] enhance compatibility with HTTP/1.1	proxies
-Date: Wed, 12 Nov 2008 23:41:18 +0100
-From: Matthias Andree <matthias.andree@...68...>
-To: David Sommerseth <openvpn.list@...1114...>
-References: <200810271301.m9RD1BKT006709@...1141...>
-<200811121224.mACCOmfd077621@...1141...> <20081112133657.GA15988@...33...>
-<491B56D4.9030203@...1114...>
+[1] 
+http://sourceforge.net/mailarchive/message.php?msg_id=20070629101345.0f8beeba%40uberlaptop.marples.name
+[2] http://source.pennewiss.de/openvpn/udp6/
+[3] http://bugs.gentoo.org/show_bug.cgi?id=183457
 
-On Wed, 12 Nov 2008, David Sommerseth wrote:
+Are there plans to integrate it to the future?
 
-> Completely agree ... this seems to be a more sensible way to approach this issue.  Seems to be
-> pretty fail-safe too.  In this approach it really only depends on the contents of
-> p->options.http_version and how sscanf(...) parses it.  And it should be fair to believe that
-> sscanf(...) will do a pretty good job.
-> 
-> Should maybe do some testing how this snippet will work with both sensible http versions (0.8, 0.9,
-> 1.0, 1.1, 1.2, 1.00, 1.10, 1.01, 2.0), but also with real garbage (1.1a, GARBAGE, 1.)
-
-Expected output: 1.1a will be parsed as 1.1, GARBAGE and 1. will be
-rejected because rc is 0 or 1, respectively.
-
-Otherwise, 0.8, 0.9, and 2.0 should be rejected; 1.0 and 1.00 should use
-the 1.0 code branch; 1.1, 1.2, 1.10, 1.01 should use the >= 1.1 branch
-on the assumption that >= 1.1 aren't changing Host: semantics.
-
-Let me know if there are differences.
-
--- 
-Matthias Andree
+Regards,
+Marcel
 
