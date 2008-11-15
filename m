@@ -1,14 +1,10 @@
-Message-ID: <491CA5BD.1010809@...41...>
-Date: Thu, 13 Nov 2008 15:10:05 -0700
-From: James Yonan <jim@...41...>
+Message-ID: <491F4441.7080109@...1148...>
+Date: Sat, 15 Nov 2008 22:50:57 +0100
+From: Morten Christensen <mc-openvpn@...1148...>
 MIME-Version: 1.0
-References: <4900B783.5090102@...1146...>
-	<49018F8E.9080201@...1147...>	<49074664.9010307@...1146...>
-	<49083955.80903@...1147...>	<49083C3C.3040401@...1146...>
-	<49084017.7060306@...1147...> <49106CAE.2060902@...1146...>
-In-Reply-To: <49106CAE.2060902@...1146...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] --auth-user-pass-verify and
-	--script-security
+References: <48F11865.5080903@...1135...>
+In-Reply-To: <48F11865.5080903@...1135...>
+Subject: Re: [Openvpn-devel] Alternative GUI for OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,52 +13,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: ivars.strazdins@...1146...
-Cc: Jan Just Keijser <janjust@...1147...>, Openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+To: Jochen Wierum <jochen@...1135...>
+Cc: openvpn-devel@lists.sourceforge.net
 
->> this is a major gripe for me as well: the behaviour on how to start 
->> external programs changed quite drastically somewhere between rc7 and 
->> rc13 (I believe rc10 was the first version), especially on the Windows 
->> platform. Yet this is (as of today) poorly documented and nobody has 
->> written any info on how to convert old style scripts (e.g. 
->> "Auth4OpenVPN.vbs") to a new style ("cscript.exe ...." ) etc.
->> So, in short, your guess is as good as mine ... Personally I'd go for 
->> the second one.
+Jochen Wierum skrev den 11-10-2008 23:19:
+> Hi,
+>
+> My name is Jochen Wierum and I'm a student at a university of applied
+> science in Germany. We work with OpenVPN there. Since a few weeks, we
+> also have the option to use SmartCards instead of pkcs12 files.
+>
+> One problem was, that we have laptops which are used by many people with
+> different SmartCards. But the OpenVPN GUI doesn't give the you
+> opportunity to select which SmartCard to use. So I wrote an own small
+> GUI for Windows in C#. It uses the Management Interface to control
+> OpenVPN. It is very simple and not perfect. One Problem is that it
+> requires administrator rights in Vista.
+>
+> It is written in C# 2008 and requires the .NET Framework 2.0. I released
+> it under the GNU GPL v2.
+>
+> Perhaps someone thinks it is useful too.
+>
+> The source can be downloaded at:
+> http://www.jowisoftware.de/openvpnmanager_src.zip
+>
+> The binarys are located at:
+> http://www.jowisoftware.de/openvpnmanager.zip
+>
+>   
+I have tried your GUI interface, but I use auth-user-pass in my config 
+for authentification and your program only asks for the password and not 
+the username.
+( I have tried it, because I only want to enter the password, and tries 
+to find a GUI, that can take the username from CN of the certificate, 
+but completely omitting the username is not the solution in setup's like 
+mine).
 
-> For those who still remembers what this threat was about - I managed to 
-> get v2.1rc13 working with
-> auth-user-pass-verify "c:/windows/system32/cscript.exe //H:cscript 
-> c:/Progra~1/OpenVPN/config/Auth4OpenVPN.vbs" via-env
-> fantastic!
+PS. The old/original gui changes color when it connects. That is a nice 
+feature.
+
+--
+Morten Christensen
 
 
-I totally agree with you that we should not be breaking the semantics
-for calling external programs, and it wasn't our intention to do so.
-Our original hope was that the security benefits of migrating from
-system() to execve() on unix and CreateProcess() on Windows could be
-done transparently.  But seeing that that's not the case, I would
-suggest that we offer the previous system() semantics as a deprecated
-option, using the syntax
 
-   script-security <level> <mode>
 
-where mode is "execve" by default, (which means to use execve() on unix
-family platforms or CreateProcess on Windows) or "system" which means to
-use system().
 
-This means that any OpenVPN config prior to 2.1_rc9 could continue to
-use system() by adding:
 
-   script-security 2 system
 
-OpenVPN would issue a warning about system() usage being deprecated, but
-would continue to use pre-2.1_rc9 external program calling semantics.
 
-Comments?
-
-James
-
+> Jochen
+>
+> -------------------------------------------------------------------------
+> This SF.Net email is sponsored by the Moblin Your Move Developer's challenge
+> Build the coolest Linux based applications with Moblin SDK & win great prizes
+> Grand prize is a trip for two to an Open Source event anywhere in the world
+> http://moblin-contest.org/redirect.php?banner_id=100&url=/
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>   
 
 
