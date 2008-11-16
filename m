@@ -1,9 +1,13 @@
-Message-ID: <49204154.6040000@...1135...>
-Date: Sun, 16 Nov 2008 16:50:44 +0100
-From: Jochen Wierum <jochen@...1135...>
+Message-ID: <9e0cf0bf0811160800s27626f3cmfb358fee54a34ab8@...278...>
+Date: Sun, 16 Nov 2008 18:00:28 +0200
+From: "Alon Bar-Lev" <alon.barlev@...277...>
+In-Reply-To: <49204019.9080002@...1135...>
 MIME-Version: 1.0
-References: <48F11865.5080903@...1135...> <491F4441.7080109@...1148...>
-In-Reply-To: <491F4441.7080109@...1148...>
+References: <48F11865.5080903@...1135...>
+	<9e0cf0bf0810111522nc8062afl7e727f9d871875ec@...278...>
+	<48F1AE4F.3040305@...1135...>
+	<9e0cf0bf0810120211u2c8ec01ejde17ee36e5483872@...278...>
+	<49204019.9080002@...1135...>
 Subject: Re: [Openvpn-devel] Alternative GUI for OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,71 +17,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: Morten Christensen <mc-openvpn@...1148...>
+Content-Disposition: inline
+To: Jochen Wierum <jochen@...1135...>
 Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA512
+On 11/16/08, Jochen Wierum <jochen@...1135...> wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+>  Hash: SHA512
+>
+>  Hi Alon,
+>
+>
+>  > You should not do this.
+>  > You should only use the management interface for all tasks.
+>
+> I know... but this brings new problems: if the configuration is invalid,
+>  OpenVPN prints a warning to stderr, but not to the management interface.
+>  That makes it hard do debug errors.
+>
 
-Morten Christensen wrote:
-> Jochen Wierum skrev den 11-10-2008 23:19:
->> Hi,
->>
->> My name is Jochen Wierum and I'm a student at a university of applied
->> science in Germany. We work with OpenVPN there. Since a few weeks, we
->> also have the option to use SmartCards instead of pkcs12 files.
->>
->> One problem was, that we have laptops which are used by many people with
->> different SmartCards. But the OpenVPN GUI doesn't give the you
->> opportunity to select which SmartCard to use. So I wrote an own small
->> GUI for Windows in C#. It uses the Management Interface to control
->> OpenVPN. It is very simple and not perfect. One Problem is that it
->> requires administrator rights in Vista.
->>
->> It is written in C# 2008 and requires the .NET Framework 2.0. I released
->> it under the GNU GPL v2.
->>
->> Perhaps someone thinks it is useful too.
->>
->> The source can be downloaded at:
->> http://www.jowisoftware.de/openvpnmanager_src.zip
->>
->> The binarys are located at:
->> http://www.jowisoftware.de/openvpnmanager.zip
->>
->>   
-> I have tried your GUI interface, but I use auth-user-pass in my config
-> for authentification and your program only asks for the password and not
-> the username.
-> ( I have tried it, because I only want to enter the password, and tries
-> to find a GUI, that can take the username from CN of the certificate,
-> but completely omitting the username is not the solution in setup's like
-> mine).
-> 
-> PS. The old/original gui changes color when it connects. That is a nice
-> feature.
-> 
-> -- 
-> Morten Christensen
+Please separate between debug and normal operation.
+This will allow you to run the daemon as a service while the user will
+not require special privilege.
 
-Hi,
+Also, you can let the user to write his own configuration while you
+just manage the connect/disconnect/authentication phases.
+I think this would be best for advance users.
 
-I will implement the auth-user-pass feature the next weeks. So stay
-tuned. I'm not sure if there's a way to get the CN in the management
-interface so I can't promise you that this is possible.
-Keep an eye on [1] and wait for version 0.0.3.0.
-
-Jochen
-
-[1] https://sourceforge.net/projects/openvpnmngr/
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFJIEFU6mq7RFXnOeERCtu5AJ9vksmiLlfaUn2lOhExvpfhgh0KqQCg9JKJ
-iBavy1+f955pP7wWGhfrOBg=
-=sX5p
------END PGP SIGNATURE-----
+Alon.
 
