@@ -1,11 +1,11 @@
-From: "John" <jknappers-argentia@...160...>
-Date: Thu, 20 Nov 2008 09:54:19 +0100
-Message-ID: <gg38jt$hsc$1@...1062...>
-References: <4900B783.5090102@...1146...><49018F8E.9080201@...1147...>	<49074664.9010307@...1146...><49083955.80903@...1147...>	<49083C3C.3040401@...1146...><49084017.7060306@...1147...>
-	<49106CAE.2060902@...1146...> <491CA5BD.1010809@...41...>
-Sender: news <news@...1062...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] --auth-user-pass-verify
-	and--script-security
+Message-Id: <200811201644.mAKGiouf045674@...1141...>
+From: "Frank Behrens" <frank@...1140...>
+Date: Thu, 20 Nov 2008 17:44:50 +0100
+MIME-Version: 1.0
+In-reply-to: <20081112133657.GA15988@...33...>
+References: <200811121224.mACCOmfd077621@...1141...>
+Subject: Re: [Openvpn-devel] [patch] enhance compatibility with HTTP/1.1
+	proxies
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,79 +14,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: openvpn-users@lists.sourceforge.net
+Content-type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+Content-description: Mail message body
+To: Matthias Andree <ma+ovpnd@...31...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+Hi Matthias!
+
+Matthias Andree <ma+ovpnd@...31...> wrote on 12 Nov 2008 14:36:
+> On Wed, 12 Nov 2008, Frank Behrens wrote:
+> 
+> > James Yonan <jim@...41...> wrote on 4 Nov 2008 12:16:
+> > > Shouldn't you check p->options.http_version and make sure it's >= 1.1 
+> > > before sending the Host header?
+> 
+> > Here is a revised patch, that works for me and implements your 
+> > suggestion:
+> 
+> Sorry Frank,
+> 
+> I have to object. It does not implement James's suggestion as you claim,
+
+Ok, this was a mistake. I implemented the solution I proposed on this list in my mail from 05 
+Nov 2008 
+(<4911D76D.7020202@...1140...>).
+
+> but random guesswork - inadequate for security software and prone to
+> breaking at later updates.
+
+I would not say "random guesswork".
+
+> > --- proxy.c.orig	2008-10-06 09:22:20.000000000 +0200
+> > +++ proxy.c	2008-11-06 20:49:55.000000000 +0100
+> > @@ -348,6 +348,14 @@ establish_http_proxy_passthru (struct ht
+> >    if (!send_line_crlf (sd, buf))
+> >      goto error;
+> >  
+> > +  /* send Host: header for HTTP version above 1.0 */
+> > +  if (strcmp(p->options.http_version, "1.0") != 0) {
+> 
+> This doesn't check for ">= 1.1", but "!= 1.0".
+> What if I use 0.9, or garbage, or nothing?
+> Oops, you lose -- in either case.
+
+What have we currently? Only HTTP/1.0 and HTTP/1.1. 
+0.9 does not matter, it defines GET only, has not headers is not able to proxy HTTPS 
+connections. So my solution handles backward compatibility without problems. The 
+remaining question is how to handle future upward compatibility. You never know, what you 
+will get. So we can either:
+- disable all future protocol version the user may configure or
+- hope that the protocol is upwards compatible.
+
+I decided to implement the 2nd solution, because the other parts are already implemented 
+this way. The user may already use arbitrary protocol versions.
+
+> You may want to accept only 1.0 and 1.1 rather than 1.0 and 1.n for n >= 1
+> - but there should only ever be A SINGLE PLACE to enforce that.
+> 
+> Else you'll have a hell of work once you start implementing HTTP/1.2
+> later on...
+
+But then this check must no be done for the Host: header, but for the complete proxy 
+support. I see your objections, but "my" additional header does not introduce an additional 
+security problem, all other proxy setup code is already version independent.
+May be "CONNECT HTTP/2.0" will directly connect to the NSA/BND/(insert your favorite 
+agency here)? ;-)
+
+Frank
 
 
-"James Yonan" <jim@...41...> schreef in bericht 
-news:491CA5BD.1010809@...1151...
->
-
-> I totally agree with you that we should not be breaking the semantics
-> for calling external programs, and it wasn't our intention to do so.
-> Our original hope was that the security benefits of migrating from
-> system() to execve() on unix and CreateProcess() on Windows could be
-> done transparently.  But seeing that that's not the case, I would
-> suggest that we offer the previous system() semantics as a deprecated
-> option, using the syntax
->
->   script-security <level> <mode>
->
-> where mode is "execve" by default, (which means to use execve() on unix
-> family platforms or CreateProcess on Windows) or "system" which means to
-> use system().
->
-> This means that any OpenVPN config prior to 2.1_rc9 could continue to
-> use system() by adding:
->
->   script-security 2 system
->
-> OpenVPN would issue a warning about system() usage being deprecated, but
-> would continue to use pre-2.1_rc9 external program calling semantics.
->
-> Comments?
->
-> James
->
->
-Hello,
-
-Now it's possible again the use external programs with the "depreciated" 
-option 'script-security 3 system'. I can finally upgrade form 2.1rc7 to 
-2.1rc15. But it's still not clear and I couldn't find what the correct new 
-syntax would be.
-
-So in my (Windows) clients I want to add a registry setting on connecting to 
-remove that setting a disconnection
-Until 2.1rc7 I used:
-up regedit -s addsettings.reg
-down regedit -s removesettings.reg
-
-How would be the syntax to used with the default option 'script-security 3 
-execve' be?
-
-regards,
-
-John
-
-
-
-
-
-
-
-
->
-> -------------------------------------------------------------------------
-> This SF.Net email is sponsored by the Moblin Your Move Developer's 
-> challenge
-> Build the coolest Linux based applications with Moblin SDK & win great 
-> prizes
-> Grand prize is a trip for two to an Open Source event anywhere in the 
-> world
-> http://moblin-contest.org/redirect.php?banner_id=100&url=/ 
+-- 
+Frank Behrens, Osterwieck, Germany
+PGP-key 0x5B7C47ED on public servers available.
 
 
 
