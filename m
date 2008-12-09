@@ -1,8 +1,11 @@
-From: Ralf =?utf-8?q?L=C3=BCbben?= <ralfluebben@...68...>
-Date: Mon, 8 Dec 2008 21:49:33 +0100
+Date: Tue, 9 Dec 2008 20:06:38 +0530 (IST)
+From: Keyur Pujara <keyurpujara@...293...>
+In-Reply-To: <722622.75064.qm@...1154...>
 MIME-Version: 1.0
-Message-Id: <200812082149.33596.ralfluebben@...68...>
-Subject: [Openvpn-devel] Async Authentication
+Message-ID: <22886.54984.qm@...1158...>
+Subject: [Openvpn-devel] Running Single OpenVPN Daemon on multiple
+	(selective) interfaces
+Reply-To: keyurpujara@...293...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,34 +14,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-Hi,
+Greetings!
 
-I got to know about the new return value OPENVPN_PLUGIN_FUNC_DEFERRED for 
-asynchronous authentication and I want to update my radius plugin soon.
+I have a linux box connected to two ISPs and having two LAN facing interfaces. 
 
-But I have still some questions how AUTH_USER_PASS_VERIFY, CLIENT_CONNECT and 
-CLIENT_DISCONNECT events handled inside OpenVPN:
+I would like to bind OpenVPN (in TCP mode) on two WAN facing interfaces only (not all). 
 
-1) Is the data of the user forwarded during the key renegoiation phase when 
-OPENVPN_PLUGIN_FUNC_DEFERRED is used?
+I have tried following in server.conf but no success. 
 
-2) Does OpenVPN forward the data during the plugin calls CLIENT_CONNECT and 
-CLIENT_DISCONNECT?
+(1) local WAN-1-IP
+    local WAN-2-IP
+(2) local WAN-1-IP  WAN-2-IP
+ 
+"netstat" just shows binding on one IP. 
 
-3) If not, are there also plans to implement asynchronous calls for 
-CLIENT_CONNECT and CLIENT_DISCONNECT?
+I know running two instances (one per interface) may help. 
 
-Thanks a lot.
+Would help if someone could comment if there is way to do this by running single instance of daemon. 
 
-Regards
-Ralf
+Also - if there is no way - would help to know if this support is planned in near future. 
+
+--
+Thanks,
+Keyur
 
 
+
+      
 
 
