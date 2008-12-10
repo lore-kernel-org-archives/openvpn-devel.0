@@ -1,14 +1,11 @@
-Message-ID: <493E9854.8010508@...453...>
-Date: Tue, 09 Dec 2008 16:09:56 +0000
-From: Erich Titl <erich.titl@...453...>
+Date: Wed, 10 Dec 2008 12:33:38 +0530 (IST)
+From: Keyur Pujara <keyurpujara@...293...>
+In-Reply-To: <493E9854.8010508@...453...>
 MIME-Version: 1.0
-References: <22886.54984.qm@...1158...>
-	<493E8D5C.7040907@...1147...>
-In-Reply-To: <493E8D5C.7040907@...1147...>
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
-	micalg=sha1; boundary="------------ms060608050700020604080806"
+Message-ID: <536670.53582.qm@...1160...>
 Subject: Re: [Openvpn-devel] [Openvpn-users] Running Single OpenVPN Daemon
- on multiple	(selective) interfaces
+	on multiple (selective) interfaces
+Reply-To: keyurpujara@...293...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,105 +14,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jan Just Keijser <janjust@...1147...>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+To: Jan Just Keijser <janjust@...1147...>, Erich Titl <erich.titl@...453...>
 Cc: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
-This is a cryptographically signed message in MIME format.
+Thanks all for your inputs. 
 
---------------ms060608050700020604080806
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+The iptables suggestion is good. But unfortunately it won't work in my scenario. What I want to achieve is to bind OpenVPN on TCP 443 over two WAN interfaces and Apache on TCP 443 over two LAN interfaces (for management traffic). 
 
-Hi
+Thanks,
+Keyur
 
-Jan Just Keijser wrote:
-> Keyur Pujara wrote:
->> Greetings!
->>
-...
 
->>
->>   
-> openvpn can bind to either a single interface or to all interfaces 
-> (0.0.0.0); so to solve your issue you need two instances. AFAIK there 
-> are no plans to change this in the near future. Openvpn 2.1 has 
-> something called connection profiles, but this applies to the *client* 
-> side only.
+> >>   
+> > openvpn can bind to either a single interface or to
+> all interfaces 
+> > (0.0.0.0); so to solve your issue you need two
+> instances. AFAIK there 
+> > are no plans to change this in the near future.
+> Openvpn 2.1 has 
+> > something called connection profiles, but this applies
+> to the *client* 
+> > side only.
+> > 
 > 
+> Just bind to all interfaces and use iptables to select on
+> which ones to
+> accept the openvpn packets.
+> 
+> Erich
 
-Just bind to all interfaces and use iptables to select on which ones to
-accept the openvpn packets.
 
-Erich
+      
 
---------------ms060608050700020604080806
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIJljCC
-BMcwggOvoAMCAQICARUwDQYJKoZIhvcNAQEEBQAwdTELMAkGA1UEBhMCQ0gxEjAQBgNVBAcT
-CVN0YWxsaWtvbjEOMAwGA1UEChMFVEhJTksxEzARBgNVBAsTCkNBIFNlY3Rpb24xETAPBgNV
-BAMTCFRoaW5rIENBMRowGAYJKoZIhvcNAQkBFgtjYUB0aGluay5jaDAeFw0wNjA1MDgxMjE2
-MzlaFw0xMTA0MTIxMjE2MzlaMH8xCzAJBgNVBAYTAkNIMRIwEAYDVQQHEwlTdGFsbGlrb24x
-DjAMBgNVBAoTBVRISU5LMRMwEQYDVQQLEwpDQSBTZWN0aW9uMRMwEQYDVQQDEwpFcmljaCBU
-aXRsMSIwIAYJKoZIhvcNAQkBFhNlcmljaC50aXRsQHRoaW5rLmNoMIIBIjANBgkqhkiG9w0B
-AQEFAAOCAQ8AMIIBCgKCAQEAzIkWAOGsN6MJyoPDiquf88muXKonJwQUE7wcf8SZ7tBZKHCy
-RMt+zdv28XI3Lvofgp3er67FvlSmJsTEUr2f/WX9hihspdsvVIoAkYiY57lHIGKBwxb2qRt5
-ve191qP4lo1MLCkDZeKIxTbNIcebwzuK7qsU3LH+als/JVnPViZs7pk3oXOOP8vAC9tU0o+t
-8WOMREMAQ0hlePxzc5RUjrv+UNuBGAt95r/ui9c8hvLaGzNMhKNQSaqJ71eOR4Urwt+IvYWH
-q6Lt3iqnvT3oN5kAOrFYzAaPiVa9VyYiky8tQkeBrzyP/OIlPQXLUMMlfhQtfZnIWCqlj4+s
-wBz1VwIDAQABo4IBVjCCAVIwCQYDVR0TBAIwADARBglghkgBhvhCAQEEBAMCBLAwLAYJYIZI
-AYb4QgENBB8WHVdpZGVsYW4gR2VuZXJhdGVkIENlcnRpZmljYXRlMB0GA1UdDgQWBBSXAPdg
-XHuJgDNDK042ySXWTMz6qTCBnwYDVR0jBIGXMIGUgBQKxqRc2b8UHnZJneW+v9Z5vwAP3KF5
-pHcwdTELMAkGA1UEBhMCQ0gxEjAQBgNVBAcTCVN0YWxsaWtvbjEOMAwGA1UEChMFVEhJTksx
-EzARBgNVBAsTCkNBIFNlY3Rpb24xETAPBgNVBAMTCFRoaW5rIENBMRowGAYJKoZIhvcNAQkB
-FgtjYUB0aGluay5jaIIBADAWBgNVHRIEDzANgQtjYUB0aGluay5jaDAeBgNVHREEFzAVgRNl
-cmljaC50aXRsQHRoaW5rLmNoMAsGA1UdDwQEAwIFoDANBgkqhkiG9w0BAQQFAAOCAQEAaXlu
-+Ya3jUz0l63PL5wwwMiM6yG/HQoAZvyuxQEKRXoY8EH0aKPfEUaGToCJBbTTbaVrCPfumpYw
-LHwn5l0y91Sf60LAr+LMbr0CWbhfKFeN0cZzj7KVKDpIwqr5rmpIUasB2LPbAR3KLRDgwvoK
-VNq8ZdASNOFSulF/VCGX59tyq6ApX1+RP+PTKfDkGtETXM1p5cTvn2V0xRhQvS9Ty99QIk/Z
-PfjlF6hWFptRrc3WcKoLWQQKBxl1brKJKwAzjmogNHDpfroZD1AmuX/esz+nUBrInxAsBTdI
-V0GGHk7d8fIBQHF8CjxqplVY8A0TS89EsFC/RAXFKakxjCtMeDCCBMcwggOvoAMCAQICARUw
-DQYJKoZIhvcNAQEEBQAwdTELMAkGA1UEBhMCQ0gxEjAQBgNVBAcTCVN0YWxsaWtvbjEOMAwG
-A1UEChMFVEhJTksxEzARBgNVBAsTCkNBIFNlY3Rpb24xETAPBgNVBAMTCFRoaW5rIENBMRow
-GAYJKoZIhvcNAQkBFgtjYUB0aGluay5jaDAeFw0wNjA1MDgxMjE2MzlaFw0xMTA0MTIxMjE2
-MzlaMH8xCzAJBgNVBAYTAkNIMRIwEAYDVQQHEwlTdGFsbGlrb24xDjAMBgNVBAoTBVRISU5L
-MRMwEQYDVQQLEwpDQSBTZWN0aW9uMRMwEQYDVQQDEwpFcmljaCBUaXRsMSIwIAYJKoZIhvcN
-AQkBFhNlcmljaC50aXRsQHRoaW5rLmNoMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAzIkWAOGsN6MJyoPDiquf88muXKonJwQUE7wcf8SZ7tBZKHCyRMt+zdv28XI3Lvofgp3e
-r67FvlSmJsTEUr2f/WX9hihspdsvVIoAkYiY57lHIGKBwxb2qRt5ve191qP4lo1MLCkDZeKI
-xTbNIcebwzuK7qsU3LH+als/JVnPViZs7pk3oXOOP8vAC9tU0o+t8WOMREMAQ0hlePxzc5RU
-jrv+UNuBGAt95r/ui9c8hvLaGzNMhKNQSaqJ71eOR4Urwt+IvYWHq6Lt3iqnvT3oN5kAOrFY
-zAaPiVa9VyYiky8tQkeBrzyP/OIlPQXLUMMlfhQtfZnIWCqlj4+swBz1VwIDAQABo4IBVjCC
-AVIwCQYDVR0TBAIwADARBglghkgBhvhCAQEEBAMCBLAwLAYJYIZIAYb4QgENBB8WHVdpZGVs
-YW4gR2VuZXJhdGVkIENlcnRpZmljYXRlMB0GA1UdDgQWBBSXAPdgXHuJgDNDK042ySXWTMz6
-qTCBnwYDVR0jBIGXMIGUgBQKxqRc2b8UHnZJneW+v9Z5vwAP3KF5pHcwdTELMAkGA1UEBhMC
-Q0gxEjAQBgNVBAcTCVN0YWxsaWtvbjEOMAwGA1UEChMFVEhJTksxEzARBgNVBAsTCkNBIFNl
-Y3Rpb24xETAPBgNVBAMTCFRoaW5rIENBMRowGAYJKoZIhvcNAQkBFgtjYUB0aGluay5jaIIB
-ADAWBgNVHRIEDzANgQtjYUB0aGluay5jaDAeBgNVHREEFzAVgRNlcmljaC50aXRsQHRoaW5r
-LmNoMAsGA1UdDwQEAwIFoDANBgkqhkiG9w0BAQQFAAOCAQEAaXlu+Ya3jUz0l63PL5wwwMiM
-6yG/HQoAZvyuxQEKRXoY8EH0aKPfEUaGToCJBbTTbaVrCPfumpYwLHwn5l0y91Sf60LAr+LM
-br0CWbhfKFeN0cZzj7KVKDpIwqr5rmpIUasB2LPbAR3KLRDgwvoKVNq8ZdASNOFSulF/VCGX
-59tyq6ApX1+RP+PTKfDkGtETXM1p5cTvn2V0xRhQvS9Ty99QIk/ZPfjlF6hWFptRrc3WcKoL
-WQQKBxl1brKJKwAzjmogNHDpfroZD1AmuX/esz+nUBrInxAsBTdIV0GGHk7d8fIBQHF8Cjxq
-plVY8A0TS89EsFC/RAXFKakxjCtMeDGCA3AwggNsAgEBMHowdTELMAkGA1UEBhMCQ0gxEjAQ
-BgNVBAcTCVN0YWxsaWtvbjEOMAwGA1UEChMFVEhJTksxEzARBgNVBAsTCkNBIFNlY3Rpb24x
-ETAPBgNVBAMTCFRoaW5rIENBMRowGAYJKoZIhvcNAQkBFgtjYUB0aGluay5jaAIBFTAJBgUr
-DgMCGgUAoIIByzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0w
-ODEyMDkxNjA5NTZaMCMGCSqGSIb3DQEJBDEWBBTzU6ZWxktAucU3XTA8j/uoxgXVrjBSBgkq
-hkiG9w0BCQ8xRTBDMAoGCCqGSIb3DQMHMA4GCCqGSIb3DQMCAgIAgDANBggqhkiG9w0DAgIB
-QDAHBgUrDgMCBzANBggqhkiG9w0DAgIBKDCBiQYJKwYBBAGCNxAEMXwwejB1MQswCQYDVQQG
-EwJDSDESMBAGA1UEBxMJU3RhbGxpa29uMQ4wDAYDVQQKEwVUSElOSzETMBEGA1UECxMKQ0Eg
-U2VjdGlvbjERMA8GA1UEAxMIVGhpbmsgQ0ExGjAYBgkqhkiG9w0BCQEWC2NhQHRoaW5rLmNo
-AgEVMIGLBgsqhkiG9w0BCRACCzF8oHowdTELMAkGA1UEBhMCQ0gxEjAQBgNVBAcTCVN0YWxs
-aWtvbjEOMAwGA1UEChMFVEhJTksxEzARBgNVBAsTCkNBIFNlY3Rpb24xETAPBgNVBAMTCFRo
-aW5rIENBMRowGAYJKoZIhvcNAQkBFgtjYUB0aGluay5jaAIBFTANBgkqhkiG9w0BAQEFAASC
-AQCiKb8+OuDBbIccpwxqgEJ/CLrUz2c+eG2JEewLq9eZlrlrrZn65NbxFueEUCkJ00oUV3x9
-JIJC8/N+IKTDFvD9mbb73j+zMvB3RY9lpYZO8PFUdPRr1ByvE5/9FjdghR3UhGCbKHBwbUA7
-vPRhMpO8ltporC47THV/F+fq3plrT0YJPNw07Ay6Tg7JxfWWB8/rTQR4H2p/ile78JHGeBCx
-wL6fz2t/EnKqj17Rc6nL0gQkhRYbbHyaAseu6F3RuZ7DkJlmGDUS8bEzlDhjNPh+29ly6Ktd
-xv3ByDH2ZtoJ6qosvKTIjzi2D5g6cablvgLDQkihyOPWzNwTvJfJv556AAAAAAAA
---------------ms060608050700020604080806--
 
