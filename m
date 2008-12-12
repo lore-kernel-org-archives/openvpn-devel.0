@@ -1,8 +1,8 @@
-Message-ID: <18396.65.118.50.246.1229115049.squirrel@...1166...>
-Date: Fri, 12 Dec 2008 14:50:49 -0600 (CST)
+Message-ID: <20246.65.118.50.246.1229116877.squirrel@...1166...>
+Date: Fri, 12 Dec 2008 15:21:17 -0600 (CST)
 From: "Daniel Johnson" <Progman2000@...1085...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] 2.1_rc13 & rc15 Segfault when client connects
+Subject: [Openvpn-devel] Patch for plugin/auth-pam.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,67 +18,95 @@ To: openvpn-devel@lists.sourceforge.net
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-Pardon the lack of debug information, but the issue stopped and I
-have not been able to make it repeat.  I hope to have packet
-captures and better debugging the next time it happens.
+When I began testing OpenVPN v2.1_rc9 I was having trouble authenticating
+to the MS Active Directory through auth-pam and Samba.  I used the
+following line in my configs (without the linebreak of course):
 
-We operate two main OpenVPN servers, Mercury and Gemini.  Both are
-Slackware 12.1, kernel 2.6.25.3.  When this began yesterday
-afternoon both were running v2.1_rc13.  Our systems randomly pick
-the server to connect to.
+plugin /opt/openvpn/openvpn-auth-pam.so
+                   "openvpn login OURDOMAIN+USERNAME password PASSWORD"
 
-Due to a configuration mistake, Mercury had not started OpenVPN
-after a recent reboot.  I was testing a laptop and could not
-connect at all.  This led me to discover Mercury's problem and
-correct it.  Gemini's processes had segfaulted a few minutes
-before, and my OpenVPN-checking cron job was about to fix it.
+Finally I turned on more verbose logging and found that the plugin did
+not recognize "USERNAME" as something to replace, because it expected
+the string to be surrounded by whitespace.  I wrote the following patch
+to correct this.  I hope you find it useful,
 
-I still couldn't connect.  Found that the UDP process had segfaulted
-on Mercury just after I walked away, and Gemini had died seconds
-after the cronjob kicked it.  I observed this several times on both
-servers.  An example syslog message:
-
-  Mercury kernel: openvpn[3247]: segfault at 0 ip b7e211a3 sp
-                   bfbc1a5c error 4 in libc-2.7.so[b7daf000+146000]
-
-The 'ip' is consistently in the form b7???1a3, 'sp' is bf?????c.  The
-hex string in brackets is consistent right of the '+'.
-
-Upgraded Gemini to v2.1_rc15, no effect.  Set one of the servers to
-"verb 4" instead of the usual "verb 3", but didn't see anything
-interesting.  Eventually it occurred to me to see if a particular
-PC was triggering this, and found that "S1550" was shown connecting
-immediately before each segfault.  I removed S1550 from the list of
-allowed certificates on Mercury and the crashes stopped.  Before I
-could test re-allowing it, the user turned his computer off for the
-night.
-
-This morning I confirmed he was running v2.1_rc9.  I had it connect
-and everything was normal.  I upgraded him to v2.1_rc13 and went on
-with the day.  A few minutes later I noticed that a /different/
-machine had just caused both servers to segfault (but only one time).
-I don't know if the user gave up or what, but he later connected OK.
-He is also running v2.1_rc9.
-
-I've been slowly installing the client on computers, and have a half
-dozen or so volunteer guinea pigs.  Until last night my greatest
-problem was an occasional processes hang, which my cron script fixes.
-Having both servers go down (nearly) simultaneously is distressing
-when I'm basically ready for full deployment.
-
-One (possibly) odd thing about my configuration is using the
-auth-pam plugin and Samba to authenticate against our MS Active
-Directory domain.  I can post complete config information if you'd
-like.
+http://thor.chguernsey.com/temp/auth-pam.patch  (2kb)
+http://thor.chguernsey.com/temp/auth-pam.patch.sig
+MD5: 6560cbdfe24b3469dcb551d8963efdfa *auth-pam.patch
 
 Daniel Johnson
 Progman2000@...1085...
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.7 (GNU/Linux)
 
-iD8DBQFJQs6N6vGcUBY+ge8RApPmAJ9ETfs1lOPBmZdv4+ejiQxkVKlYngCg0dSH
-bucRds/dfwPjO7N5tsXZ/3E=
-=Im34
+iD8DBQFJQtUw6vGcUBY+ge8RAneeAKD4WGMULgEqCUM3foF1QiTNByhCYgCg2/nS
+h77baQ+tTtzj15yQXK7dXEI=
+=ZtGp
 -----END PGP SIGNATURE-----
+
+
+diff -Naur openvpn-2.1_rc9/plugin/auth-pam/auth-pam.c
+openvpn-2.1_rc9_dj/plugin/auth-pam/auth-pam.c
+--- openvpn-2.1_rc9/plugin/auth-pam/auth-pam.c	2008-07-14
+18:49:16.000000000 +0000
++++ openvpn-2.1_rc9_dj/plugin/auth-pam/auth-pam.c	2008-10-07
+21:15:43.000000000 +0000
+@@ -111,6 +111,33 @@
+ /* Background process function */
+ static void pam_server (int fd, const char *service, int verb, const
+struct name_value_list *name_value_list);
+
++static char * searchandreplace(const char *tosearch, const char
+*searchfor, const char *replacewith) {
++  /*  Read 'tosearch', replace all occurences of 'searchfor' with
+'replacewith' and return
++   *  a pointer to the NEW string.  Does not modify the input strings. 
+Will not enter an
++   *  infinite loop with clever 'searchfor' and 'replacewith' strings.
++   *  Daniel Johnson - Progman2000@...1085... / djohnson@...1167...
++   */
++  if (!tosearch || !searchfor || !replacewith) return 0;
++  if (!strlen(tosearch) || !strlen(searchfor) || !strlen(replacewith))
+return 0;
++
++  const char *searching=tosearch;
++  char *scratch;
++  char temp[strlen(tosearch)*10];
++  temp[0]=0;
++
++  scratch = strstr(searching,searchfor);
++  if (!scratch) return strdup(tosearch);
++
++  while (scratch) {
++    strncat(temp,searching,scratch-searching);
++    strcat(temp,replacewith);
++
++    searching=scratch+strlen(searchfor);
++    scratch = strstr(searching,searchfor);
++  }
++  return strdup(temp);
++}
++
+ /*
+  * Given an environmental variable name, search
+  * the envp array for its value, returning it
+@@ -557,10 +584,10 @@
+ 			     match_name,
+ 			     match_value);
+
+-		  if (!strcmp (match_value, "USERNAME"))
+-		    return_value = up->username;
+-		  else if (!strcmp (match_value, "PASSWORD"))
+-		    return_value = up->password;
++		  if (strstr(match_value, "USERNAME"))
++		    return_value = searchandreplace(match_value, "USERNAME",
+up->username);
++		  else if (strstr(match_value, "PASSWORD"))
++		    return_value = searchandreplace(match_value, "PASSWORD",
+up->password);
+ 		  else
+ 		    return_value = match_value;
+
+
 
 
