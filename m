@@ -1,10 +1,12 @@
-Date: Fri, 12 Dec 2008 12:11:45 +0100
-From: Emrah <eka@...1164...>
-Message-ID: <20081212111145.GA1768@...1165...>
+MIME-version: 1.0
+From: Till Maas <opensource@...519...>
+Date: Fri, 12 Dec 2008 16:15:19 +0100
 References: <20081212084127.GA31936@...1165...>
-	<9e0cf0bf0812120203t5a543336r461bf4f557dfba3c@...278...>
-MIME-Version: 1.0
-In-Reply-To: <9e0cf0bf0812120203t5a543336r461bf4f557dfba3c@...278...>
+In-reply-to: <20081212084127.GA31936@...1165...>
+Content-type: multipart/signed; boundary=nextPart7593284.ErRfClJU74;
+	protocol="application/pgp-signature"; micalg=pgp-sha1
+Content-transfer-encoding: 7bit
+Message-id: <200812121615.19957.opensource@...519...>
 Subject: Re: [Openvpn-devel] Porting OpenVPN to Symbian
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,47 +16,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+
+--nextPart7593284.ErRfClJU74
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
 
-Thanks a lot for your constructive reply.
-Tomorrow I'll convince every single owner of Symbian Smartphones to buy a Open Linux phone because it's open.
-FYI I'm using Symbian because it's one of the only user interface clean enough to support assistive technologies. I'm blind 
-and I use a screenreader to use my phone.
+On Fri December 12 2008, Emrah wrote:
 
-Cheers!
-On Fri, Dec 12, 2008 at 12:03:04PM +0200, Alon Bar-Lev <alon.barlev@...277...> wrote:
-> Isn't symbian dead?
-> In desperate move Nokia opened source it...
-> Moving to [opened] Linux based phones is the way to go :)
-> 
-> On 12/12/08, Emrah <eka@...1164...> wrote:
-> > Hi guys,
-> >
-> >         What's up with the possibility to port OpenVPN to Symbian?
-> >  If anybody is interested to face this challenge, I'd be ready to fully sponsor a bounty. In this case, how much $$$ would
-> >  you expect?
-> >
-> >  Cheers!
-> >  --
-> >  Emrah KAVUN
-> >  <eka@...1164...>
-> >
-> >  ------------------------------------------------------------------------------
-> >  SF.Net email is Sponsored by MIX09, March 18-20, 2009 in Las Vegas, Nevada.
-> >  The future of the web can't happen without you.  Join us at MIX09 to help
-> >  pave the way to the Next Web now. Learn more and register at
-> >  http://ad.doubleclick.net/clk;208669438;13503038;i?http://2009.visitmix.com/
-> >  _______________________________________________
-> >  Openvpn-devel mailing list
-> >  Openvpn-devel@lists.sourceforge.net
-> >  https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> >
+> 	What's up with the possibility to port OpenVPN to Symbian?
+> If anybody is interested to face this challenge, I'd be ready to fully
+> sponsor a bounty. In this case, how much $$$ would you expect?
 
--- 
-Emrah KAVUN
-<eka@...1164...>
+I would like to have this done, too. But this seems not that easy. Once I=20
+googled around a little and did not find any hint on how to create e.g. a t=
+ap=20
+device on symbian or even any other floss vpn client or some other software=
+=20
+that can e.g. manipulate the routing table of symbian devices. But I=20
+appreciate any pointers for such software or other obstacles that may make=
+=20
+this difficult.
+
+Regards,
+Till
+
+--nextPart7593284.ErRfClJU74
+Content-Type: application/pgp-signature; name=signature.asc 
+Content-Description: This is a digitally signed message part.
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.9 (GNU/Linux)
+
+iQIcBAABCgAGBQJJQoAHAAoJEGo6ELMcEJUXi6MP/3fhYiI6I47rrJpHrj196o+t
+WloliGz+Z+V8v16um56xRME5DM7I0sml/7tlHhXnMenu4ixfGp1cLaSQjRma54VV
+t/dbk8DZZ9Pyfy95pfehWRHiuPFifORJtuIFiXgVYSs24h5kkxWoSgcm3kPXhpzJ
+chaRsPxWqLy+GLlMOOYoE3NU76G9Y1EiC1+UIVC9mkD7vGk/bgJNKzEznf76ewbD
+kOEIIvPHsgLC9ETRDqspomEb/SUtGCzFjxUUtaMtIjXOoyEhXcsAPz4Zk8gpKtPQ
+awtgFZBdWKK2q0DnDO3UYbZr/5mWeR00qdsrgXmJAMuvUC3TBVZ+2TOMpPM3R5qN
+D5SSMaX09iXnXQ/E4cMDcfGU9/7+se3TEXLoAMiLRfVblnkuYoC+y7K17fkxDHPO
+SMP38VlRhjkQe9bMwpskBM52zMBkXPL71A3umE3YVtXSChptgABDEADgZK+L8l4b
+LX8Z1ZswGHqn8NRyE47safWfI1anNvemztohX9gD44yr2YxjGulGuXbHTajYhiiN
+CcqYMaotmXPPviYcnXc+/5N4H1ku6OEYeRrWHx9QJ4S9MAPX6JUe22DQ686zheo/
+Lx0yOlXG1+2a1LeAgx13ha3OFtkdtQSbhRw6EHDQRrwsCVqfitILKgjNCTZXZqaB
+dFwOl+mbHU1Ci1fj7LOk
+=vz8c
+-----END PGP SIGNATURE-----
+
+--nextPart7593284.ErRfClJU74--
+
 
