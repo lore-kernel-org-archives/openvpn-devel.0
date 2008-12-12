@@ -1,8 +1,14 @@
-Message-ID: <20246.65.118.50.246.1229116877.squirrel@...1166...>
-Date: Fri, 12 Dec 2008 15:21:17 -0600 (CST)
-From: "Daniel Johnson" <Progman2000@...1085...>
+From: Till Maas <opensource@...519...>
+Date: Fri, 12 Dec 2008 22:38:34 +0100
+References: <20081212084127.GA31936@...1165...>
+	<200812122039.47800.noamr@...117...>
+In-Reply-To: <200812122039.47800.noamr@...117...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Patch for plugin/auth-pam.c
+Content-Type: multipart/signed; boundary="nextPart1907149.VvZsCHRFWs";
+	protocol="application/pgp-signature"; micalg=pgp-sha1
+Content-Transfer-Encoding: 7bit
+Message-Id: <200812122238.49588.opensource@...519...>
+Subject: Re: [Openvpn-devel] Porting OpenVPN to Symbian
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,102 +17,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--nextPart1907149.VvZsCHRFWs
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-When I began testing OpenVPN v2.1_rc9 I was having trouble authenticating
-to the MS Active Directory through auth-pam and Samba.  I used the
-following line in my configs (without the linebreak of course):
+On Friday 12 December 2008 19:39:47 Noam Rathaus wrote:
 
-plugin /opt/openvpn/openvpn-auth-pam.so
-                   "openvpn login OURDOMAIN+USERNAME password PASSWORD"
+> I would like to also find out how to run OpenVPN on Symbian, or RIM OS,
+> apparently both don't support any non-proprietary VPN
 
-Finally I turned on more verbose logging and found that the plugin did
-not recognize "USERNAME" as something to replace, because it expected
-the string to be surrounded by whitespace.  I wrote the following patch
-to correct this.  I hope you find it useful,
+I read that the E series from Nokia supports ipsec out of the box, but afai=
+k=20
+it is a PITA to setup an ipsec server. Here is an example howto:
 
-http://thor.chguernsey.com/temp/auth-pam.patch  (2kb)
-http://thor.chguernsey.com/temp/auth-pam.patch.sig
-MD5: 6560cbdfe24b3469dcb551d8963efdfa *auth-pam.patch
+http://www.linuxjournal.com/article/9646
 
-Daniel Johnson
-Progman2000@...1085...
+Regards,
+Till
+
+--nextPart1907149.VvZsCHRFWs
+Content-Type: application/pgp-signature; name=signature.asc 
+Content-Description: This is a digitally signed message part.
+
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.7 (GNU/Linux)
 
-iD8DBQFJQtUw6vGcUBY+ge8RAneeAKD4WGMULgEqCUM3foF1QiTNByhCYgCg2/nS
-h77baQ+tTtzj15yQXK7dXEI=
-=ZtGp
+iQIVAwUASULZ3Go6ELMcEJUXAQJTaxAAk9z4xgGTXCa5cTJ+kj5JBFWOtKXm3Qe3
+FCZPLR0VDSqIyA6SiAbh5u+W7Dv/wNbCR/Ggg4iXszNDFzxA96ZSEL1vBnv9ll2y
+n5oMwgO4MgR4lgpsY3v1nS58XB7CbVfxFFLVzSoil+vn3OW/q6EX3wxBcjVap8F1
+VjJ/G7HUeBqCN5gtmRU1iA5opLfDEF1VchyU30SzdCz38wjQK7JUyrZYg6gy7E16
+J5gvFTYrdfhYVS0hZ/0SdLdo7gZe6WHPtD++rWVhIAfzQBwpdAw+zpOWj79DKHtC
+7Kdt8aIzwygZpG+5WpbJ2cF0CuMKbxN1yTZOKPM/JdnpZkoQucFutq+/t0U2kNXo
+hGF0Oi2Hb+2cQPlvb4YZ638eqr/ZuUyAzhLkUmOHeYcpAm3CGmRuk/CXCBTaIpGF
+27hLVQnm96GPPMCTlZi8uXiTzNPEvXjYQ7m4TB7X5Lf/P19NZfFosLGOOPfEI7js
+ajWST6tFMQgA2jSj+IDeifCtof+Sg3P7kVt5nUAW7KiLheZbCEVn0M7thTASw1f2
+5ppo/j12pf37PlOKcnBlm0j7A3RF/En8zZELLuPS7bEj+0Bqs7TBCozFaB+Z7MBB
+1GnUU8TrT7z02D/CpVziXC0KjHEvoI6gZFO8XrTA8/z0TDOf1H+zInDGU5KCDMD9
+bxS8hwU83Dg=
+=iToz
 -----END PGP SIGNATURE-----
 
-
-diff -Naur openvpn-2.1_rc9/plugin/auth-pam/auth-pam.c
-openvpn-2.1_rc9_dj/plugin/auth-pam/auth-pam.c
---- openvpn-2.1_rc9/plugin/auth-pam/auth-pam.c	2008-07-14
-18:49:16.000000000 +0000
-+++ openvpn-2.1_rc9_dj/plugin/auth-pam/auth-pam.c	2008-10-07
-21:15:43.000000000 +0000
-@@ -111,6 +111,33 @@
- /* Background process function */
- static void pam_server (int fd, const char *service, int verb, const
-struct name_value_list *name_value_list);
-
-+static char * searchandreplace(const char *tosearch, const char
-*searchfor, const char *replacewith) {
-+  /*  Read 'tosearch', replace all occurences of 'searchfor' with
-'replacewith' and return
-+   *  a pointer to the NEW string.  Does not modify the input strings. 
-Will not enter an
-+   *  infinite loop with clever 'searchfor' and 'replacewith' strings.
-+   *  Daniel Johnson - Progman2000@...1085... / djohnson@...1167...
-+   */
-+  if (!tosearch || !searchfor || !replacewith) return 0;
-+  if (!strlen(tosearch) || !strlen(searchfor) || !strlen(replacewith))
-return 0;
-+
-+  const char *searching=tosearch;
-+  char *scratch;
-+  char temp[strlen(tosearch)*10];
-+  temp[0]=0;
-+
-+  scratch = strstr(searching,searchfor);
-+  if (!scratch) return strdup(tosearch);
-+
-+  while (scratch) {
-+    strncat(temp,searching,scratch-searching);
-+    strcat(temp,replacewith);
-+
-+    searching=scratch+strlen(searchfor);
-+    scratch = strstr(searching,searchfor);
-+  }
-+  return strdup(temp);
-+}
-+
- /*
-  * Given an environmental variable name, search
-  * the envp array for its value, returning it
-@@ -557,10 +584,10 @@
- 			     match_name,
- 			     match_value);
-
--		  if (!strcmp (match_value, "USERNAME"))
--		    return_value = up->username;
--		  else if (!strcmp (match_value, "PASSWORD"))
--		    return_value = up->password;
-+		  if (strstr(match_value, "USERNAME"))
-+		    return_value = searchandreplace(match_value, "USERNAME",
-up->username);
-+		  else if (strstr(match_value, "PASSWORD"))
-+		    return_value = searchandreplace(match_value, "PASSWORD",
-up->password);
- 		  else
- 		    return_value = match_value;
-
-
-
+--nextPart1907149.VvZsCHRFWs--
 
