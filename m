@@ -1,14 +1,11 @@
-From: Till Maas <opensource@...519...>
-Date: Fri, 12 Dec 2008 22:38:34 +0100
-References: <20081212084127.GA31936@...1165...>
-	<200812122039.47800.noamr@...117...>
-In-Reply-To: <200812122039.47800.noamr@...117...>
+From: Bernhard Fischer <bf@...1168...>
+Date: Sun, 14 Dec 2008 21:41:11 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart1907149.VvZsCHRFWs";
+Content-Type: multipart/signed; boundary="nextPart1837827.q4624PlBbr";
 	protocol="application/pgp-signature"; micalg=pgp-sha1
 Content-Transfer-Encoding: 7bit
-Message-Id: <200812122238.49588.opensource@...519...>
-Subject: Re: [Openvpn-devel] Porting OpenVPN to Symbian
+Message-Id: <200812142141.17156.bf@...1168...>
+Subject: [Openvpn-devel] TUN/TAP Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,46 +16,41 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
---nextPart1907149.VvZsCHRFWs
-Content-Type: text/plain; charset="iso-8859-1"
+--nextPart1837827.q4624PlBbr
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-On Friday 12 December 2008 19:39:47 Noam Rathaus wrote:
+I'm working on a project (www.abenteuerland.at/onioncat) that needs a TUN=20
+device. I'm now trying to port the software to Windows (Cygwin). There's=20
+no /dev/tun but I know that Openvpn has a Windows-TAP driver.
 
-> I would like to also find out how to run OpenVPN on Symbian, or RIM OS,
-> apparently both don't support any non-proprietary VPN
+Since hours am I trying to build openvpn on Cygwin to get this tap-driver=20
+working but I don't get it.
+I found out that it seems to be necessary to install the Windows XP DDK and=
+ I=20
+installed it but I still don't know how to build this TAP driver.
 
-I read that the E series from Nokia supports ipsec out of the box, but afai=
-k=20
-it is a PITA to setup an ipsec server. Here is an example howto:
+How do I compile and install the TUN/TAP driver?
 
-http://www.linuxjournal.com/article/9646
+Thanks in advance,
+Bernhard
 
-Regards,
-Till
-
---nextPart1907149.VvZsCHRFWs
+--nextPart1837827.q4624PlBbr
 Content-Type: application/pgp-signature; name=signature.asc 
 Content-Description: This is a digitally signed message part.
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (GNU/Linux)
+Version: GnuPG v1.4.9 (GNU/Linux)
 
-iQIVAwUASULZ3Go6ELMcEJUXAQJTaxAAk9z4xgGTXCa5cTJ+kj5JBFWOtKXm3Qe3
-FCZPLR0VDSqIyA6SiAbh5u+W7Dv/wNbCR/Ggg4iXszNDFzxA96ZSEL1vBnv9ll2y
-n5oMwgO4MgR4lgpsY3v1nS58XB7CbVfxFFLVzSoil+vn3OW/q6EX3wxBcjVap8F1
-VjJ/G7HUeBqCN5gtmRU1iA5opLfDEF1VchyU30SzdCz38wjQK7JUyrZYg6gy7E16
-J5gvFTYrdfhYVS0hZ/0SdLdo7gZe6WHPtD++rWVhIAfzQBwpdAw+zpOWj79DKHtC
-7Kdt8aIzwygZpG+5WpbJ2cF0CuMKbxN1yTZOKPM/JdnpZkoQucFutq+/t0U2kNXo
-hGF0Oi2Hb+2cQPlvb4YZ638eqr/ZuUyAzhLkUmOHeYcpAm3CGmRuk/CXCBTaIpGF
-27hLVQnm96GPPMCTlZi8uXiTzNPEvXjYQ7m4TB7X5Lf/P19NZfFosLGOOPfEI7js
-ajWST6tFMQgA2jSj+IDeifCtof+Sg3P7kVt5nUAW7KiLheZbCEVn0M7thTASw1f2
-5ppo/j12pf37PlOKcnBlm0j7A3RF/En8zZELLuPS7bEj+0Bqs7TBCozFaB+Z7MBB
-1GnUU8TrT7z02D/CpVziXC0KjHEvoI6gZFO8XrTA8/z0TDOf1H+zInDGU5KCDMD9
-bxS8hwU83Dg=
-=iToz
+iQEcBAABAgAGBQJJRW9oAAoJEB2of8NcX/1HvbMH/iuwGGonPGcNXZ8p1Y51PnPU
+V0ifvwA++hc8MvI3QiC9A9ynVxGG+8w7mDsI4QKteba5oknxeIhBt0kZmMFXsD7r
+8ikq3Ni+iw5ypoYZpH7sfLpoJ2Rq6gzbyXF7PF7V0kyHzU1J403G9znXwGjAQzOk
+/0eyQ3+sg/tkbzuOtYJpylXib4S7/BiKyE7xC56hyuOi4unHjDFx45Io3veRyzNu
+Yas6YChcy9nqjfaPpJnythNWmApmUgs4O2QYKj3iqw0CQBU2pYsMP9kembdKCz6Y
+3HpGa0D7WiFSwssm2K4Wur6goNU7zZV3BeX318A0s6C7wHlGabI1VTGi1Lr4Aqw=
+=aOyu
 -----END PGP SIGNATURE-----
 
---nextPart1907149.VvZsCHRFWs--
+--nextPart1837827.q4624PlBbr--
 
