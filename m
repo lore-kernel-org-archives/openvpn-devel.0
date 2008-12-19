@@ -1,15 +1,9 @@
-Content-class: urn:content-classes:message
-MIME-Version: 1.0
-Date: Fri, 19 Dec 2008 15:31:50 +0100
-Message-ID: <499929A843E2C541A8AD31A881A2B6A202AC7666@...1006...>
-In-Reply-To: <494AA65E.8080002@...1171...>
-References: <49481A94.5080502@...277...>	<49482A15.3030004@...453...><4948EFA4.4070409@...1171...>	<4948F28A.8030203@...453...><4948FE4F.4090408@...1171...>	<494901B1.7080702@...453...><4949F39E.30502@...1171...><499929A843E2C541A8AD31A881A2B6A202A7118C@...1006...><494A0706.6090306@...453...>
-	<494A34FE.2080708@...277...> <494A3638.8090809@...1171...>
-	<499929A843E2C541A8AD31A881A2B6A202A7155A@...1006...>
-	<494AA65E.8080002@...1171...>
-From: "David Balazic" <David.Balazic@...1005...>
-Subject: [Openvpn-devel] Fix for "Cannot read current default gateway"
-	problem on Linux
+Message-Id: <494BCA08020000BC00074BD7@...1170...>
+Date: Fri, 19 Dec 2008 16:21:28 +0100
+From: "Svein Hansen" <Svein.Hansen@...1133...>
+Mime-Version: 1.0
+Content-Type: multipart/alternative; boundary="=__Part391136E8.0__="
+Subject: Re: [Openvpn-devel] Building a Windows installer.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,162 +12,217 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+To: openvpn-devel@lists.sourceforge.net
+
+This is a MIME message. If you are reading this text, you may want to 
+consider changing to a mail reader or gateway that understands how to 
+properly handle MIME multipart messages.
+
+--=__Part391136E8.0__=
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+
+
+>>> Den 19. desember 2008 kl. 15:27, i meldingen
+<494BAF50.5000306@...1172...>,
+skrev "Dennis P. Nikolaenko" <dennis@...1172...>:
+> Svein Hansen wrote:
+>>   
+>>>>> Den 19. desember 2008 kl. 14:36, i meldingen
+>>>>>         
+>> <494BA351.8060303@...1172...>,
+>> skrev "Dennis P. Nikolaenko" <dennis@...1172...>:
+>>   
+>>> Svein Hansen wrote:
+>>>     
+>>>>    DetailPrint "We are running on a 64-bit system."
+>>>> +
+>>>> +  SetRegView 64
+>>>> +  WriteRegStr HKLM "Software\Microsoft\Windows 
+>>>> NT\CurrentVersion\AppCompatFlags\Layers" 
+>>>> "$INSTDIR\bin\openvpn-gui-1.0.3.exe" "RUNASADMIN"
+>>>> +  SetRegView 32
+>>>>
+>>>>    SetOutPath "$INSTDIR\bin"
+>>>>
+>>>> @@ -442,6 +446,8 @@
+>>>> tap-32bit:
+>>>>
+>>>>    DetailPrint "We are running on a 32-bit system."
+>>>> +  WriteRegStr HKLM "Software\Microsoft\Windows 
+>>>> NT\CurrentVersion\AppCompatFlags\Layers" 
+>>>> "$INSTDIR\bin\openvpn-gui-1.0.3.exe" "RUNASADMIN"
+>>>> +
+>>>>
+>>>>    SetOutPath "$INSTDIR\bin"
+>>>>    File "${GEN}\tapinstall\i386\tapinstall.exe"
+>>>>
+>>>> This is maybe not the best way to do it...but it works..
+>>>>       
+>>> IMO a better option would be to include a manifest instead of
+>>>     
+>> polluting 
+>>   
+>>> application compatibility database in registry.
+>>> --
+>>> Dennis
+>>>     
+>>
+>> I have tried to add a manifest, but that creates a new issue about
+>> signing.
+>> (I'm clearly not an expert on manifests...)
+>>
+>> * openvpn-gui-1.0.3.exe.manifest:
+>> Executable: openvpn-gui-1.0.3.exe 
+>> Manifest:openvpn-gui-1.0.3.exe.manifest
+>> openvpn-gui manifest file:
+>> <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+>> <assembly xmlns="urn:schemas-microsoft-com:asm.v1"
+>> manifestVersion="1.0"> 
+>>   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
+>>     <security>
+>>       <requestedPrivileges>
+>>         <requestedExecutionLevel
+>>           level="requireAdministrator"
+>>           uiAccess="false"/>
+>>         </requestedPrivileges>
+>>        </security>
+>>   </trustInfo>
+>> </assembly>
+>>
+>> Then: 
+>> C:\manifest>mt.exe -manifest openvpn-gui-1.0.3.exe.manifest
+>> -outputresource:openvpn-gui-1.0.3.exe
+>> Microsoft (R) Manifest Tool version 5.2.3790.2075
+>> Copyright (c) Microsoft Corporation 2005.
+>>
+>> Now openvpn-gui-1.0.3.exe is elevated to "requireAdministrator".
+>>
+>> But, when starting the GUI I get:
+>> An unidentified program wants access to your computer 
+>> Unidentified Publisher
+>> -> Cancel
+>> -> Allow
+> You should get the same (orange color) error, when building the
+binary 
+> yourself, unless you take it from the official distribution and you
+seem 
+> to have taken it from there...
+> If you sign the binary with a code signing certificate which is is in
+
+> turn signed by a trusted root CA, you would get a "good" UAC prompt
+for 
+> a signed application. You have to buy a code signing certificate from
+a 
+> preinstalled CA or install self-generated CA on all you client
+machines.
+>  From a signing point view, yes app compat solution is better as it
+does 
+> not require any additional "acrobatics". Just ensure that app compat
+
+> entry is removed when OpenVPN GUI is uninstalled.
+> --
+> Dennis
+
+Thanks for the enlightenment :-)
+
+Maybe this is something for the OpenVPN developers to dive into?
+There must be several sysadmins that would like to see this included in
+the 
+official distribution. Or?
+
+One vote from me..
+
+Svein Hansen
+
+
+--=__Part391136E8.0__=
+Content-Type: text/html; charset="US-ASCII"
 Content-Transfer-Encoding: quoted-printable
-To: Antonis Tsolomitis <atsol@...1171...>
-Cc: Openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+Content-Description: HTML
 
-Hi!
+<HTML><HEAD>
+<META http-equiv=3DContent-Type content=3D"text/html; charset=3Dutf-8">
+<META content=3D"MSHTML 6.00.6000.16735" name=3DGENERATOR></HEAD>
+<BODY style=3D"MARGIN: 4px 4px 1px; FONT: 10pt Tahoma"><SPAN style=3D"FONT:=
+ 10pt Segoe UI; COLOR: #000000"><BR>&gt;&gt;&gt; Den 19. desember 2008 kl. =
+15:27, i meldingen &lt;</SPAN><SPAN style=3D"FONT: 10pt Segoe UI; COLOR: #f=
+f0000; TEXT-DECORATION: underline"><A href=3D"mailto:494BAF50.5000306@...1173...=
+72...">494BAF50.5000306@...1172...</A></SPAN><SPAN style=3D"FONT: 10pt Sego=
+e UI; COLOR: #000000">&gt;,<BR>skrev "Dennis P. Nikolaenko" &lt;</SPAN><SPA=
+N style=3D"FONT: 10pt Segoe UI; COLOR: #ff0000; TEXT-DECORATION: underline"=
+><A href=3D"mailto:dennis@...1172...">dennis@...1172...</A></SPAN><SPAN sty=
+le=3D"FONT: 10pt Segoe UI; COLOR: #000000">&gt;:<BR>&gt; Svein Hansen wrote=
+:<BR>&gt;&gt;&nbsp;&nbsp; <BR>&gt;&gt;&gt;&gt;&gt; Den 19. desember 2008 kl=
+. 14:36, i meldingen<BR>&gt;&gt;&gt;&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp; <BR>&gt;&gt; &lt;</SPAN><SPAN style=3D"FONT: 10pt Segoe U=
+I; COLOR: #ff0000; TEXT-DECORATION: underline"><A href=3D"mailto:494BA351.8=
+060303@...1172...">494BA351.8060303@...1172...</A></SPAN><SPAN style=3D"FON=
+T: 10pt Segoe UI; COLOR: #000000">&gt;,<BR>&gt;&gt; skrev "Dennis P. Nikola=
+enko" &lt;</SPAN><SPAN style=3D"FONT: 10pt Segoe UI; COLOR: #ff0000; TEXT-D=
+ECORATION: underline"><A href=3D"mailto:dennis@...1172...">dennis@...1174...=
+.</A></SPAN><SPAN style=3D"FONT: 10pt Segoe UI; COLOR: #000000">&gt;:<BR>&g=
+t;&gt;&nbsp;&nbsp; <BR>&gt;&gt;&gt; Svein Hansen wrote:<BR>&gt;&gt;&gt;&nbs=
+p;&nbsp;&nbsp;&nbsp; <BR>&gt;&gt;&gt;&gt;&nbsp;&nbsp;&nbsp; DetailPrint "We=
+ are running on a 64-bit system."<BR>&gt;&gt;&gt;&gt; +<BR>&gt;&gt;&gt;&gt;=
+ +&nbsp; SetRegView 64<BR>&gt;&gt;&gt;&gt; +&nbsp; WriteRegStr HKLM "Softwa=
+re\Microsoft\Windows <BR>&gt;&gt;&gt;&gt; NT\CurrentVersion\AppCompatFlags\=
+Layers" <BR>&gt;&gt;&gt;&gt; "$INSTDIR\bin\openvpn-gui-1.0.3.exe" "RUNASADM=
+IN"<BR>&gt;&gt;&gt;&gt; +&nbsp; SetRegView 32<BR>&gt;&gt;&gt;&gt;<BR>&gt;&g=
+t;&gt;&gt;&nbsp;&nbsp;&nbsp; SetOutPath "$INSTDIR\bin"<BR>&gt;&gt;&gt;&gt;<=
+BR>&gt;&gt;&gt;&gt; @@ -442,6 +446,8 @@<BR>&gt;&gt;&gt;&gt; tap-32bit:<BR>&=
+gt;&gt;&gt;&gt;<BR>&gt;&gt;&gt;&gt;&nbsp;&nbsp;&nbsp; DetailPrint "We are r=
+unning on a 32-bit system."<BR>&gt;&gt;&gt;&gt; +&nbsp; WriteRegStr HKLM "S=
+oftware\Microsoft\Windows <BR>&gt;&gt;&gt;&gt; NT\CurrentVersion\AppCompatF=
+lags\Layers" <BR>&gt;&gt;&gt;&gt; "$INSTDIR\bin\openvpn-gui-1.0.3.exe" "RUN=
+ASADMIN"<BR>&gt;&gt;&gt;&gt; +<BR>&gt;&gt;&gt;&gt;<BR>&gt;&gt;&gt;&gt;&nbsp=
+;&nbsp;&nbsp; SetOutPath "$INSTDIR\bin"<BR>&gt;&gt;&gt;&gt;&nbsp;&nbsp;&nbs=
+p; File "${GEN}\tapinstall\i386\tapinstall.exe"<BR>&gt;&gt;&gt;&gt;<BR>&gt;=
+&gt;&gt;&gt; This is maybe not the best way to do it...but it works..<BR>&g=
+t;&gt;&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <BR>&gt;&gt;&gt; IMO a b=
+etter option would be to include a manifest instead of<BR>&gt;&gt;&gt;&nbsp=
+;&nbsp;&nbsp;&nbsp; <BR>&gt;&gt; polluting <BR>&gt;&gt;&nbsp;&nbsp; <BR>&gt=
+;&gt;&gt; application compatibility database in registry.<BR>&gt;&gt;&gt; -=
+-<BR>&gt;&gt;&gt; Dennis<BR>&gt;&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp; <BR>&gt;&g=
+t;<BR>&gt;&gt; I have tried to add a manifest, but that creates a new issue=
+ about<BR>&gt;&gt; signing.<BR>&gt;&gt; (I'm clearly not an expert on manif=
+ests...)<BR>&gt;&gt;<BR>&gt;&gt; * openvpn-gui-1.0.3.exe.manifest:<BR>&gt;&=
+gt; Executable: openvpn-gui-1.0.3.exe <BR>&gt;&gt; Manifest:openvpn-gui-1.0=
+.3.exe.manifest<BR>&gt;&gt; openvpn-gui manifest file:<BR>&gt;&gt; &lt;?xml=
+ version=3D"1.0" encoding=3D"UTF-8" standalone=3D"yes"?&gt;<BR>&gt;&gt; &lt=
+;assembly xmlns=3D"urn:schemas-microsoft-com:asm.v1"<BR>&gt;&gt; manifestVe=
+rsion=3D"1.0"&gt; <BR>&gt;&gt;&nbsp;&nbsp; &lt;trustInfo xmlns=3D"urn:schem=
+as-microsoft-com:asm.v2"&gt;<BR>&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp; &lt;securi=
+ty&gt;<BR>&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;requestedPrivile=
+ges&gt;<BR>&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;req=
+uestedExecutionLevel<BR>&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp; level=3D"requireAdministrator"<BR>&gt;&gt;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; uiAccess=3D"false"/&gt;<BR>&g=
+t;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/requestedPrivil=
+eges&gt;<BR>&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/securit=
+y&gt;<BR>&gt;&gt;&nbsp;&nbsp; &lt;/trustInfo&gt;<BR>&gt;&gt; &lt;/assembly&=
+gt;<BR>&gt;&gt;<BR>&gt;&gt; Then: <BR>&gt;&gt; C:\manifest&gt;mt.exe -manif=
+est openvpn-gui-1.0.3.exe.manifest<BR>&gt;&gt; -outputresource:openvpn-gui-=
+1.0.3.exe<BR>&gt;&gt; Microsoft (R) Manifest Tool version 5.2.3790.2075<BR>=
+&gt;&gt; Copyright (c) Microsoft Corporation 2005.<BR>&gt;&gt;<BR>&gt;&gt; =
+Now openvpn-gui-1.0.3.exe is elevated to "requireAdministrator".<BR>&gt;&gt=
+;<BR>&gt;&gt; But, when starting the GUI I get:<BR>&gt;&gt; An unidentified=
+ program wants access to your computer <BR>&gt;&gt; Unidentified Publisher<=
+BR>&gt;&gt; -&gt; Cancel<BR>&gt;&gt; -&gt; Allow<BR>&gt; You should get the=
+ same (orange color) error, when building the binary <BR>&gt; yourself, unl=
+ess you take it from the official distribution and you seem <BR>&gt; to hav=
+e taken it from there...<BR>&gt; If you sign the binary with a code signing=
+ certificate which is is in <BR>&gt; turn signed by a trusted root CA, you =
+would get a "good" UAC prompt for <BR>&gt; a signed application. You have t=
+o buy a code signing certificate from a <BR>&gt; preinstalled CA or install=
+ self-generated CA on all you client machines.<BR>&gt;&nbsp; From a signing=
+ point view, yes app compat solution is better as it does <BR>&gt; not requ=
+ire any additional "acrobatics". Just ensure that app compat <BR>&gt; entry=
+ is removed when OpenVPN GUI is uninstalled.<BR>&gt; --<BR>&gt; Dennis<BR><=
+BR>Thanks for the enlightenment :-)<BR><BR>Maybe this is something for the =
+OpenVPN developers to dive into?<BR>There must be several sysadmins that wo=
+uld like to see this included in the <BR>official distribution. Or?<BR><BR>=
+One vote from me..<BR><BR>Svein Hansen<BR><BR></SPAN></BODY></HTML>
 
-In the diff (agains 2.1_rc15) is the solution for the old*
-problem of (not) detecting default gateway on linux systems
-if it is a device route.
-
-The patch is attached as a gzipped diff output to this mail message :
-http://thread.gmane.org/gmane.network.openvpn.user/25117/focus=3D25127
-
-(direct link to patch :
-http://cache.gmane.org//gmane/network/openvpn/user/25127-001.bin
-rename to patch.gz after download)
-
-It was tested by one affected user (Antonis Tsolomitis, see the
-thread "openvpn and ppp" on the openvpn-users list)
-
-If I forgor anything, ask.
-
-Regards,
-David
-
-*See mail list threads:
-"Redirect-gateway on dialup"
- <http://thread.gmane.org/gmane.network.openvpn.user/20407>
-"redirect-gateway + http-proxy + ppp problem"
- <http://thread.gmane.org/gmane.network.openvpn.user/20994>
-"Cannot redirect gateway after pppd connection"
- <http://thread.gmane.org/gmane.network.openvpn.user/23972>
-"openvpn and ppp"
- <http://thread.gmane.org/gmane.network.openvpn.user/25117>
-
-
-> -----Original Message-----
-> From: Antonis Tsolomitis [mailto:atsol@...1171...]=20
-> Sent: Thursday, December 18, 2008 8:37 PM
-> To: David Balazic
-> Cc: Antonis Tsolomitis; openvpn-users@lists.sourceforge.net
-> Subject: Re: [Openvpn-users] openvpn and ppp
->=20
->=20
-> Dear David, this binary works!! Here is the link to the full log.
->=20
-> http://myria.math.aegean.gr/~atsol/tmp/openvpnxs.log.gz
->=20
-> I will also try it in a few more configurations. I will try=20
-> to use your=20
-> patch to see if I can make an rpm.
->=20
-> Thank you for the help both you and Erich.
->=20
-> I will post again when I test in other machines with different=20
-> configurations.
->=20
-> thanks again,
->=20
-> Antonis.
->=20
->=20
-> David Balazic wrote:
-> > Hi!
-> >
-> > For the devs here is a patch.
-> >
-> > For you, here is  http://home.amis.net/dbalaic/openvpnxs.gz
-> >
-> > Try it instead of the old openvpn:
-> >
-> > wget http://home.amis.net/dbalaic/openvpnxs.gz
-> > gzip -d openvpnxs.gz
-> > ./openvpnxs --conf add the usual parameters here=20
-> > # do not put --conf twice ;-)
-> >
-> > Set full logging and send the logs in case id does not work.
-> > Send them even if it works ;-)
-> >
-> > Regards,
-> > David
-> >
-> >
-> >=20=20=20
-> >> -----Original Message-----
-> >> From: Antonis Tsolomitis [mailto:atsol@...1171...]=20
-> >> Sent: Thursday, December 18, 2008 12:39 PM
-> >> Cc: openvpn-users@lists.sourceforge.net
-> >> Subject: Re: [Openvpn-users] openvpn and ppp
-> >>
-> >> Antonis Tsolomitis wrote:
-> >>=20=20=20=20=20
-> >>>>> --route-gateway has nothing to do with your problem.
-> >>>>>
-> >>>>> It can not help. (see the manual)
-> >>>>>=20=20=20=20=20
-> >>>>>=20=20=20=20=20=20=20=20=20=20=20
-> >>>> You appear to have deeper insight in the route-gateway=20
-> >>>>=20=20=20=20=20=20=20=20=20
-> >> directive than I
-> >>=20=20=20=20=20
-> >>>> do. The manual is pretty terse on this aspect. Could you=20
-> elaborate?
-> >>>>=20=20=20=20=20=20=20=20=20
-> >> I verify that --route-gateway does not work. It produces the=20
-> >> same error=20
-> >> and does not manage to change the gateway (traceroute shows=20
-> >> the original=20
-> >> gateway)
-> >>
-> >> So it seems that we reached a dead end with respect to=20
-> >> "redirect-gateway=20
-> >> def1".
-> >>
-> >> Erich, I do not think that my situation is special in any=20
-> >> sense. I use=20
-> >> one of the well known distributions (Mandriva) (I promise to=20
-> >> try it on=20
-> >> Fedora too and report back) and I just want to connect to the=20
-> >> Internet=20
-> >> with ppp (simple dialup). I do not see why this setup is special.
-> >>
-> >> I am not a programmer (I am a Mathematician), so I can not=20
-> >> make a patch.=20
-> >> If I knew how to program I would do it of course.
-> >>
-> >> Are the developers members of this list? Do I have to make a=20
-> >> bug report?
-> >>
-> >> Finally, I would like to ask if it is possible to make a=20
-> >> script to fix=20
-> >> routing manually. How can this be done?
-> >> I know how to find the Gateway. What are the proper=20
-> ip/route commands?
-> >>
-> >> thank you for your help,
-> >>
-> >> Antonis.
-> >>
-> >>
-> >> --------------------------------------------------------------
-> >> ----------------
-> >> SF.Net email is Sponsored by MIX09, March 18-20, 2009 in Las=20
-> >> Vegas, Nevada.
-> >> The future of the web can't happen without you.  Join us at=20
-> >> MIX09 to help
-> >> pave the way to the Next Web now. Learn more and register at
-> >> http://ad.doubleclick.net/clk;208669438;13503038;i?http://2009
-> >> .visitmix.com/
-> >> _______________________________________________
-> >> Openvpn-users mailing list
-> >> Openvpn-users@lists.sourceforge.net
-> >> https://lists.sourceforge.net/lists/listinfo/openvpn-users
-> >>
-> >>=20=20=20=20=20
->=20
->=20
+--=__Part391136E8.0__=--
 
