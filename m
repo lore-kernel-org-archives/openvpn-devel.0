@@ -1,9 +1,10 @@
-From: Benny Amorsen <benny+usenet@...1175...>
-Date: Mon, 29 Dec 2008 13:07:43 +0100
-Message-ID: <m3iqp39oc0.fsf@...1176...>
-Mime-Version: 1.0
-Sender: news <news@...1062...>
-Subject: [Openvpn-devel] Raw RSA authentication
+Message-ID: <9e0cf0bf0901060411l511465fck9919e6c501a3af4b@...278...>
+Date: Tue, 6 Jan 2009 14:11:39 +0200
+From: "Alon Bar-Lev" <alon.barlev@...277...>
+In-Reply-To: <1813881449236213954@...1178...>
+MIME-Version: 1.0
+References: <1813881449236213954@...1178...>
+Subject: Re: [Openvpn-devel] Link to openvpn-win64
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,38 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+To: Philipp Kafka <philipp.kafka@...1177...>, openvpn devel <openvpn-devel@lists.sourceforge.net>
 
-Would it be possible to add raw RSA authentication to OpenVPN, like
-Openswan has for IPSEC?
+Try this one [1].
+Please note that this is experimental build!
+I will be happy if you can provide some benchmark between the 32bit
+and 64bit versions on the same machine.
 
-Openswan automatically generates a private key in the format:
+In future, please post to the mailing list.
 
-#pubkey=0sAQOdODm...Yog5rTj3V2AsI/
-Modulus: 0x9d38399...9ad38f757602c23f
-PublicExponent: 0x03
-# everything after this point is secret
-PrivateExponent: ...
-Prime1: ...
-Prime2: ...
-Exponent1: ...
-Exponent2: ...
-Coefficient: ...
+[1] http://alon.barlev.googlepages.com/openvpn-2.1_rc14-win64.tar.bz2
 
-All you need to do to get RSA authentication is to add this at the
-other end of the connection:
-
-rightrsasigkey=0sAQOdODm...Yog5rTj3V2AsI/
-
-This is much easier than managing a certificate server. The drawback
-is that each client needs to exist in the configuration file of the
-OpenVPN server, but that also means that if a client key is
-compromised, it is simple to generate a new one or remove the client.
-No more fiddling with CRL's...
-
-
-/Benny
-
+On 1/6/09, Philipp Kafka <philipp.kafka@...1177...> wrote:
+> Hello,
+>
+>  As happy as I was finding out that someone made a win64 build of the whole
+>  OpenVPN, as frustrated I was realising that the link
+>  (http://alon.barlev.googlepages.com/openvpn-win64.tar.bz2) is now dead.
+>  Could you please reupload it or is there a deeper reason why you don't offer
+>  the build on your web space anymore? :(
+>
+>  Best regards
+>
+> Philipp Kafka
+>
+>
 
