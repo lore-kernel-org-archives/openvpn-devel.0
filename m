@@ -1,8 +1,11 @@
-Date: Tue, 13 Jan 2009 10:43:52 -0700
-From: Ryan <openvpn-devel@...1183...>
-Message-ID: <20090113174352.GA12597@...1184...>
+Message-ID: <496E1D39.9090606@...41...>
+Date: Wed, 14 Jan 2009 10:13:29 -0700
+From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] topology subnet and route/iroute
+References: <496DA8AB.3070301@...1185...>
+In-Reply-To: <496DA8AB.3070301@...1185...>
+Subject: Re: [Openvpn-devel] OpenVPN affected? - Incorrect checks for
+ malformed signatures in OpenSSL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,29 +14,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-15"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: =?ISO-8859-15?Q?=22Michael_A=2E_G=FCtlbauer=22?= <mail@...1185...>
+Cc: Openvpn-devel@lists.sourceforge.net, OpenVpn-Users <openvpn-users@lists.sourceforge.net>
 
-Hello,
+I don't believe this issue significantly affects OpenVPN.  OpenVPN does=20
+not use the EVP_VerifyFinal function.  The issue is that some internal=20
+OpenSSL functions do not properly check the return value of this=20
+function.  The issue is primarily of concern if you are using DSA or=20
+ECDSA certificates, however these are not generally used with OpenVPN=20
+(OpenVPN uses RSA certificates and does not currently support DSA or=20
+ECDSA certificates).
 
-I looked in the changelogs, bugs, and lists and I did not find anything
-about this particular issue. I am using openvpn 2.1 rc11 and topology
-subnet. I have a route line for 10.0.0.0/8 and a iroute line for the
-same subnet. This works perfectly with net30 and p2p topologies but with
-the subnet topology I get this error on the server:
+James
 
-OpenVPN ROUTE: failed to parse/resolve route for host/network: 10.0.0.0
-work/xxx.228.234.5:42077 MULTI: internal route 10.0.0.0/8 ->
-work/xxx.228.234.5:42077
-
-And the route does not show up on the server. This may be a known issue
-and I have not tried it on the latest release candidate.
-
-By the way, I did not see any formal bug reporting policy so hopefully
-this was the correct list.
-
-Thanks!
-Ryan
+Michael A. G=FCtlbauer wrote:
+> Hallo!
+>=20
+> I'm sure, you know the "OpenSSL Security Advisory [07-Jan-2009]"=20
+> (http://www.openssl.org/news/secadv_20090107.txt)
+>=20
+> Because there's absolutely no information on your website, whether=20
+> OpenVPN is affected and/or a bug-fix will be available, I'd like to ask=20
+> you to do so.
+>=20
+> Many thanks!
+>=20
+> Michael
 
