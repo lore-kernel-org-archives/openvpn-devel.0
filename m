@@ -1,11 +1,9 @@
-Message-ID: <496E1D39.9090606@...41...>
-Date: Wed, 14 Jan 2009 10:13:29 -0700
-From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-References: <496DA8AB.3070301@...1185...>
-In-Reply-To: <496DA8AB.3070301@...1185...>
-Subject: Re: [Openvpn-devel] OpenVPN affected? - Incorrect checks for
- malformed signatures in OpenSSL
+Date: Sat, 17 Jan 2009 06:43:13 +0000
+Message-ID: <b8592ed80901162243i4b32d0cbk5af6a3466fd5d419@...278...>
+From: =?ISO-8859-1?Q?Istv=E1n_Szuk=E1cs?= <leccine@...277...>
+Content-Type: multipart/alternative; boundary=000e0cd24804eb92700460a80061
+Subject: [Openvpn-devel] windows 7 and openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,32 +12,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"; format=flowed
+To: openvpn-devel@lists.sourceforge.net
+
+--000e0cd24804eb92700460a80061
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+
+Hi folks!
+
+
+I am wondering if you have ever had success to run openvpn on windows 7. The
+problem is the latest installer(
+http://openvpn.net/release/openvpn-2.1_rc15-install.exe) says this version
+is not supporting windows.... I try to install
+http://openvpn.se/files/install_packages/openvpn-2.0.9-gui-1.0.3-install.exe,
+works fine except the fact that the tap driver is not signed and because of
+this it remains disabled and you cannot use openvpn(but runs well up to the
+point when initialize the driver).
+
+If you could point me a doc how to make it run on win7 it would be much
+appreciated. If I could help with anything the win7 build let me know....
+
+
+Regards,
+Istvan
+
+
+-- 
+the sun shines for all
+
+--000e0cd24804eb92700460a80061
+Content-Type: text/html; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: =?ISO-8859-15?Q?=22Michael_A=2E_G=FCtlbauer=22?= <mail@...1185...>
-Cc: Openvpn-devel@lists.sourceforge.net, OpenVpn-Users <openvpn-users@lists.sourceforge.net>
 
-I don't believe this issue significantly affects OpenVPN.  OpenVPN does=20
-not use the EVP_VerifyFinal function.  The issue is that some internal=20
-OpenSSL functions do not properly check the return value of this=20
-function.  The issue is primarily of concern if you are using DSA or=20
-ECDSA certificates, however these are not generally used with OpenVPN=20
-(OpenVPN uses RSA certificates and does not currently support DSA or=20
-ECDSA certificates).
+Hi folks!<br><br><br>I am wondering if you have ever had success to run ope=
+nvpn on windows 7. The problem is the latest installer(<a href=3D"http://op=
+envpn.net/release/openvpn-2.1_rc15-install.exe">http://openvpn.net/release/=
+openvpn-2.1_rc15-install.exe</a>) says this version is not supporting windo=
+ws.... I try to install <a href=3D"http://openvpn.se/files/install_packages=
+/openvpn-2.0.9-gui-1.0.3-install.exe">http://openvpn.se/files/install_packa=
+ges/openvpn-2.0.9-gui-1.0.3-install.exe</a>, works fine except the fact tha=
+t the tap driver is not signed and because of this it remains disabled and =
+you cannot use openvpn(but runs well up to the point when initialize the dr=
+iver).<br>
+<br>If you could point me a doc how to make it run on win7 it would be much=
+ appreciated. If I could help with anything the win7 build let me know....<=
+br><br><br>Regards,<br>Istvan<br><br clear=3D"all"><br>-- <br>the sun shine=
+s for all<br>
 
-James
 
-Michael A. G=FCtlbauer wrote:
-> Hallo!
->=20
-> I'm sure, you know the "OpenSSL Security Advisory [07-Jan-2009]"=20
-> (http://www.openssl.org/news/secadv_20090107.txt)
->=20
-> Because there's absolutely no information on your website, whether=20
-> OpenVPN is affected and/or a bug-fix will be available, I'd like to ask=20
-> you to do so.
->=20
-> Many thanks!
->=20
-> Michael
+--000e0cd24804eb92700460a80061--
 
