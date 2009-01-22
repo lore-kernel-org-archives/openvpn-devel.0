@@ -2,10 +2,10 @@ MIME-Version: 1.0
 In-Reply-To: <49775688.9020600@...41...>
 References: <b8592ed80901162243i4b32d0cbk5af6a3466fd5d419@...278...>
 	<49775688.9020600@...41...>
-Date: Wed, 21 Jan 2009 18:25:39 +0000
-Message-ID: <b8592ed80901211025p118cae50y8a9504b86e801589@...278...>
+Date: Thu, 22 Jan 2009 13:10:23 +0000
+Message-ID: <b8592ed80901220510u36f0586cw1753dcfb67f11a23@...278...>
 From: =?ISO-8859-1?Q?Istv=E1n_Szuk=E1cs?= <leccine@...277...>
-Content-Type: multipart/alternative; boundary=000e0cd286846fd2f1046102484e
+Content-Type: multipart/alternative; boundary=000e0cd25578c2fe07046111fefd
 Subject: Re: [Openvpn-devel] windows 7 and openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,14 +18,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: James Yonan <jim@...41...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---000e0cd286846fd2f1046102484e
+--000e0cd25578c2fe07046111fefd
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-Thanks a million I am going to check it soon.
+The installation is working properly and the TAP driver is just fine.
 
-Regards,
+You have to run it as Admin because the route(or I have to check the UAC...)
+but there is no issue to install and use!
+
+OpenVPN is Win7 ready.
+
+Let me know if you need to run any kind of test or I could help.
+
+
+Best regards,
+
 Istvan
+
+
 
 On Wed, Jan 21, 2009 at 5:08 PM, James Yonan <jim@...41...> wrote:
 
@@ -90,14 +101,18 @@ the
 --=20
 the sun shines for all
 
---000e0cd286846fd2f1046102484e
+--000e0cd25578c2fe07046111fefd
 Content-Type: text/html; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-Thanks a million I am going to check it soon.<br><br>Regards,<br>Istvan<br>=
-<br><div class=3D"gmail_quote">On Wed, Jan 21, 2009 at 5:08 PM, James Yonan=
- <span dir=3D"ltr">&lt;<a href=3D"mailto:jim@...41...">jim@...41...</a>&gt;=
-</span> wrote:<br>
+The installation is working properly and the TAP driver is just fine. <br><=
+br>You have to run it as Admin because the route(or I have to check the UAC=
+...) but there is no issue to install and use! <br><br>OpenVPN is Win7 read=
+y.<br>
+<br>Let me know if you need to run any kind of test or I could help.<br><br=
+><br>Best regards,<br><br>Istvan<br><br><br><br><div class=3D"gmail_quote">=
+On Wed, Jan 21, 2009 at 5:08 PM, James Yonan <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:jim@...41...">jim@...41...</a>&gt;</span> wrote:<br>
 <blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, =
 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">I&#39;ve patched =
 the NSIS installer to omit the Windows version check.<br>
@@ -164,5 +179,5 @@ et=3D"_blank">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a=
 </blockquote></div><br><br clear=3D"all"><br>-- <br>the sun shines for all<=
 br>
 
---000e0cd286846fd2f1046102484e--
+--000e0cd25578c2fe07046111fefd--
 
