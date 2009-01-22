@@ -1,12 +1,9 @@
 MIME-Version: 1.0
-In-Reply-To: <49775688.9020600@...41...>
-References: <b8592ed80901162243i4b32d0cbk5af6a3466fd5d419@...278...>
-	<49775688.9020600@...41...>
-Date: Thu, 22 Jan 2009 13:10:23 +0000
-Message-ID: <b8592ed80901220510u36f0586cw1753dcfb67f11a23@...278...>
-From: =?ISO-8859-1?Q?Istv=E1n_Szuk=E1cs?= <leccine@...277...>
-Content-Type: multipart/alternative; boundary=000e0cd25578c2fe07046111fefd
-Subject: Re: [Openvpn-devel] windows 7 and openvpn
+Date: Thu, 22 Jan 2009 17:32:42 +0100
+Message-ID: <3688f1300901220832n505fd0fdk70cd9ee0712a865c@...278...>
+From: Pete G <laboitedepete@...277...>
+Content-Type: multipart/alternative; boundary=0015175cd5f84fd224046114d29a
+Subject: [Openvpn-devel] VPLS
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,169 +12,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: James Yonan <jim@...41...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
---000e0cd25578c2fe07046111fefd
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+--0015175cd5f84fd224046114d29a
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-The installation is working properly and the TAP driver is just fine.
+Hi,
+I have to setup and configure a VPLS (Virtual Private LAN Service) network.
+I am a real beginner in openvpn and I'd like to know if i can do that with
+openvpn? if openvpn supports VPLS or if there esist any plug-in
+for this one?
 
-You have to run it as Admin because the route(or I have to check the UAC...)
-but there is no issue to install and use!
+Many thanks,
+Pete
 
-OpenVPN is Win7 ready.
+--0015175cd5f84fd224046114d29a
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-Let me know if you need to run any kind of test or I could help.
-
-
-Best regards,
-
-Istvan
-
-
-
-On Wed, Jan 21, 2009 at 5:08 PM, James Yonan <jim@...41...> wrote:
-
-> I've patched the NSIS installer to omit the Windows version check.
->
-> Try this installer:
->
-> http://openvpn.net/beta/openvpn-2.1_rc15e-install.exe
->
-> James
->
-> Istv=E1n Szuk=E1cs wrote:
->
->> Hi folks!
->>
->>
->> I am wondering if you have ever had success to run openvpn on windows 7.
->> The problem is the latest installer(
->> http://openvpn.net/release/openvpn-2.1_rc15-install.exe) says this
->> version is not supporting windows.... I try to install
->> http://openvpn.se/files/install_packages/openvpn-2.0.9-gui-1.0.3-install=
-.exe,
->> works fine except the fact that the tap driver is not signed and because=
- of
->> this it remains disabled and you cannot use openvpn(but runs well up to =
-the
->> point when initialize the driver).
->>
->> If you could point me a doc how to make it run on win7 it would be much
->> appreciated. If I could help with anything the win7 build let me know....
->>
->>
->> Regards,
->> Istvan
->>
->>
->> --
->> the sun shines for all
->>
->>
->> ------------------------------------------------------------------------
->>
->>
->> ------------------------------------------------------------------------=
-------
->> This SF.net email is sponsored by:
->> SourcForge Community
->> SourceForge wants to tell your story.
->> http://p.sf.net/sfu/sf-spreadtheword
->>
->>
->> ------------------------------------------------------------------------
->>
->> _______________________________________________
->> Openvpn-devel mailing list
->> Openvpn-devel@lists.sourceforge.net
->> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->>
->
-
-
---=20
-the sun shines for all
-
---000e0cd25578c2fe07046111fefd
-Content-Type: text/html; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-
-The installation is working properly and the TAP driver is just fine. <br><=
-br>You have to run it as Admin because the route(or I have to check the UAC=
-...) but there is no issue to install and use! <br><br>OpenVPN is Win7 read=
-y.<br>
-<br>Let me know if you need to run any kind of test or I could help.<br><br=
-><br>Best regards,<br><br>Istvan<br><br><br><br><div class=3D"gmail_quote">=
-On Wed, Jan 21, 2009 at 5:08 PM, James Yonan <span dir=3D"ltr">&lt;<a href=
-=3D"mailto:jim@...41...">jim@...41...</a>&gt;</span> wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, =
-204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">I&#39;ve patched =
-the NSIS installer to omit the Windows version check.<br>
+Hi,<br>
+I have to setup and configure a VPLS (Virtual Private LAN Service) network.<br>
+I am a real beginner in openvpn and I&#39;d like to know if i can do that with openvpn? if openvpn supports VPLS or if there esist any plug-in<br>
+for this one?<br>
 <br>
-Try this installer:<br>
-<br>
-<a href=3D"http://openvpn.net/beta/openvpn-2.1_rc15e-install.exe" target=3D=
-"_blank">http://openvpn.net/beta/openvpn-2.1_rc15e-install.exe</a><br>
-<br>
-James<br>
-<br>
-Istv=E1n Szuk=E1cs wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, =
-204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><div><div></div><=
-div class=3D"Wj3C7c">
-Hi folks!<br>
-<br>
-<br>
-I am wondering if you have ever had success to run openvpn on windows 7. Th=
-e problem is the latest installer(<a href=3D"http://openvpn.net/release/ope=
-nvpn-2.1_rc15-install.exe" target=3D"_blank">http://openvpn.net/release/ope=
-nvpn-2.1_rc15-install.exe</a>) says this version is not supporting windows.=
-... I try to install <a href=3D"http://openvpn.se/files/install_packages/op=
-envpn-2.0.9-gui-1.0.3-install.exe" target=3D"_blank">http://openvpn.se/file=
-s/install_packages/openvpn-2.0.9-gui-1.0.3-install.exe</a>, works fine exce=
-pt the fact that the tap driver is not signed and because of this it remain=
-s disabled and you cannot use openvpn(but runs well up to the point when in=
-itialize the driver).<br>
+Many thanks,<br>
+Pete<br>
 
-<br>
-If you could point me a doc how to make it run on win7 it would be much app=
-reciated. If I could help with anything the win7 build let me know....<br>
-<br>
-<br>
-Regards,<br>
-Istvan<br>
-<br>
-<br>
--- <br>
-the sun shines for all<br>
-<br>
-<br></div></div>
-------------------------------------------------------------------------<br>
-<br>
----------------------------------------------------------------------------=
----<br>
-This SF.net email is sponsored by:<br>
-SourcForge Community<br>
-SourceForge wants to tell your story.<br>
-<a href=3D"http://p.sf.net/sfu/sf-spreadtheword" target=3D"_blank">http://p=
-.sf.net/sfu/sf-spreadtheword</a><br>
-<br>
-<br>
-------------------------------------------------------------------------<br>
-<br>
-_______________________________________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
-envpn-devel@lists.sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" targ=
-et=3D"_blank">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a=
-><br>
-</blockquote>
-</blockquote></div><br><br clear=3D"all"><br>-- <br>the sun shines for all<=
-br>
-
---000e0cd25578c2fe07046111fefd--
+--0015175cd5f84fd224046114d29a--
 
