@@ -1,9 +1,9 @@
+Message-ID: <02c901c97d0d$cb519ca0$06c8a8c0@...1189...>
+From: "Stuart Nicholson" <stuart@...1188...>
+Date: Thu, 22 Jan 2009 22:50:48 -0500
 MIME-Version: 1.0
-Date: Thu, 22 Jan 2009 17:32:42 +0100
-Message-ID: <3688f1300901220832n505fd0fdk70cd9ee0712a865c@...278...>
-From: Pete G <laboitedepete@...277...>
-Content-Type: multipart/alternative; boundary=0015175cd5f84fd224046114d29a
-Subject: [Openvpn-devel] VPLS
+Subject: [Openvpn-devel] Why TUN_MTU_MIN of 100 bytes?
+Reply-To: Stuart Nicholson <stuart@...1188...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,32 +12,13 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; format=flowed; charset="utf-8"; reply-type=response
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
---0015175cd5f84fd224046114d29a
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+I am using openvpn to test IP fragmentation with small MTU values.  I would 
+like to set the tun/tap interface to have an MTU of 68 bytes, the minimum 
+allowed by RFC 791.  But openvpn defines a constant TUN_MTU_MIN with a value 
+of 100.  Can someone explain why the MTU must be this large?
 
-Hi,
-I have to setup and configure a VPLS (Virtual Private LAN Service) network.
-I am a real beginner in openvpn and I'd like to know if i can do that with
-openvpn? if openvpn supports VPLS or if there esist any plug-in
-for this one?
-
-Many thanks,
-Pete
-
---0015175cd5f84fd224046114d29a
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-
-Hi,<br>
-I have to setup and configure a VPLS (Virtual Private LAN Service) network.<br>
-I am a real beginner in openvpn and I&#39;d like to know if i can do that with openvpn? if openvpn supports VPLS or if there esist any plug-in<br>
-for this one?<br>
-<br>
-Many thanks,<br>
-Pete<br>
-
---0015175cd5f84fd224046114d29a--
 
