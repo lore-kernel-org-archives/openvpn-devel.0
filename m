@@ -1,10 +1,9 @@
-Date: Tue, 27 Jan 2009 17:34:01 +0100
-From: Jos Vos <jos@...1120...>
-Message-ID: <20090127163401.GA29730@...1119...>
+MIME-Version: 1.0
+In-Reply-To: <20090127135710.GA28793@...1119...>
 References: <20090127135710.GA28793@...1119...>
-	<20090127154519.GA14543@...33...>
-Mime-Version: 1.0
-In-Reply-To: <20090127154519.GA14543@...33...>
+Date: Tue, 27 Jan 2009 19:07:37 +0200
+Message-ID: <9e0cf0bf0901270907v160855a1p65b01643bda7059@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
 Subject: Re: [Openvpn-devel] OpenVPN 2.1_rc15 GCC 2.96 incompatibility
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,39 +13,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: Jos Vos <jos@...1120...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Tue, Jan 27, 2009 at 04:45:19PM +0100, Matthias Andree wrote:
+Added to:
+http://svn.openvpn.net/projects/openvpn/contrib/alon/BETA21-oldgcc
 
-> Come on, nobody needs support for outdated operating systems and rogue
-> releases of GCC. There has never been a GCC 2.96, and Redhat 7.3 has
-> been out of security support for more than half a decade now, and if
-> OpenVPN 2.1 breaks on such systems, that's perhaps some more incentive
-> for their users to upgrade. See:
-> 
-> * <http://gcc.gnu.org/gcc-2.96.html>
-> * <http://www.redhat.com/security/updates/eol/>
+Up to james to merge.
 
-The rc10 ChangeLog says
-
-* Fixed separate compile errors in options.c and ntlm.c that occur
-  on strict C compilers (such as old versions of gcc) that require
-  that C variable declarations occur at the start of a {} block,
-  not in the middle.
-
-so I thought this might fall into the same category (although I don't
-know if this way of using the C preprocessor is formally allowed or
-not).  But I don't mind *not* sharing this kind of patches anymore in
-the future, if that bothers people too much.
-
-And yes, I do know the status of old RH and GCC releases and I do
-know that this patch is not necessary for "normal" use.
-
--- 
---    Jos Vos <jos@...1120...>
---    X/OS Experts in Open Systems BV   |   Phone: +31 20 6938364
---    Amsterdam, The Netherlands        |     Fax: +31 20 6948204
+On 1/27/09, Jos Vos <jos@...1120...> wrote:
+> Hi,
+>
+>  While there were some incompatibilities with older GCC releases
+>  resolved from RC9 to RC15 (I didn't try the releases RC10-RC14),
+>  a new incompatibility was introduced concerning the C preprocessor
+>  in ssl.c: #ifdef's in macro calls do not seem to be allowed with
+>  GCC 2.96.
+>
+>  Attached a brute-force patch to fix that.  This patch was tested
+>  on Red Hat Linux 7.3 with GCC 2.96.
+>
+>  Regards,
+>
+>
+>  --
+>  --    Jos Vos <jos@...1120...>
+>  --    X/OS Experts in Open Systems BV   |   Phone: +31 20 6938364
+>  --    Amsterdam, The Netherlands        |     Fax: +31 20 6948204
+>
+> ------------------------------------------------------------------------------
+>  This SF.net email is sponsored by:
+>  SourcForge Community
+>  SourceForge wants to tell your story.
+>  http://p.sf.net/sfu/sf-spreadtheword
+> _______________________________________________
+>  Openvpn-devel mailing list
+>  Openvpn-devel@lists.sourceforge.net
+>  https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
+>
+>
 
