@@ -1,12 +1,11 @@
-Date: Tue, 27 Jan 2009 18:27:01 +0100
+Date: Tue, 27 Jan 2009 18:29:57 +0100
 From: Matthias Andree <ma+ovpnd@...31...>
-Message-ID: <20090127172701.GA89589@...33...>
-References: <20090127135710.GA28793@...1119...>
-	<20090127154519.GA14543@...33...>
-	<20090127163401.GA29730@...1119...>
+Message-ID: <20090127172957.GA90386@...33...>
+References: <20090127154806.GA38604@...33...>
+	<9e0cf0bf0901270831l72b16993p1037df311fb50c74@...278...>
 MIME-Version: 1.0
-In-Reply-To: <20090127163401.GA29730@...1119...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.1_rc15 GCC 2.96 incompatibility
+In-Reply-To: <9e0cf0bf0901270831l72b16993p1037df311fb50c74@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix non-C89 comments
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,50 +19,17 @@ Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-On Tue, 27 Jan 2009, Jos Vos wrote:
+On Tue, 27 Jan 2009, Alon Bar-Lev wrote:
 
-> On Tue, Jan 27, 2009 at 04:45:19PM +0100, Matthias Andree wrote:
+> Sent this to James.
+> Did not apply.
 > 
-> > Come on, nobody needs support for outdated operating systems and rogue
-> > releases of GCC. There has never been a GCC 2.96, and Redhat 7.3 has
-> > been out of security support for more than half a decade now, and if
-> > OpenVPN 2.1 breaks on such systems, that's perhaps some more incentive
-> > for their users to upgrade. See:
-> > 
-> > * <http://gcc.gnu.org/gcc-2.96.html>
-> > * <http://www.redhat.com/security/updates/eol/>
-> 
-> The rc10 ChangeLog says
-> 
-> * Fixed separate compile errors in options.c and ntlm.c that occur
->   on strict C compilers (such as old versions of gcc) that require
->   that C variable declarations occur at the start of a {} block,
->   not in the middle.
-> 
-> so I thought this might fall into the same category (although I don't
-> know if this way of using the C preprocessor is formally allowed or
-> not).  But I don't mind *not* sharing this kind of patches anymore in
-> the future, if that bothers people too much.
+> My queue is at:
+> http://svn.openvpn.net/projects/openvpn/contrib/alon
 
-Sorry, I didn't mean to offend you, <lang='nl'>en dank je wel voor jouw
-patch</lang>; I was merely stumbling across "gcc-2.96/RH 7.3" which made
-me misinterpret the real motivation. The official gcc 2.95.3 doesn't
-compile ssl.c either, and apparently it's rightfully refusing to (I
-checked the opencsw.org compiler on Solaris 8 SPARC).
-
-I checked around a bit, and for not having a current C standard handy,
-I'll relay this Apple developer document instead, without checking it:
-
-http://developer.apple.com/documentation/DeveloperTools/gcc-4.0.1/cpp/Directives-Within-Macro-Arguments.html#Directives-Within-Macro-Arguments
-
-where Apple effectively state that the behaviour OpenVPN requests is
-undefined. If they're right, the behaviour used in ssl.c that you fixed
-was a GCC 3.2+ extension, so your patch fixes a real bug rather than
-compability with ancient compilers.  I stand corrected.
-
-Sorry for the harsh tone.
-
-Take care,
+Perhaps the choice of version control system used for OpenVPN could
+deserve a second thought -- Mercurial or better Git might support such
+models or merge queues much better than Subversion does.
 
 -- 
 Matthias Andree
