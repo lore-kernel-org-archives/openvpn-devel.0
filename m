@@ -1,12 +1,10 @@
-Message-ID: <49875059.4040700@...41...>
-Date: Mon, 02 Feb 2009 12:58:17 -0700
-From: James Yonan <jim@...41...>
+From: Marcel =?iso-8859-1?q?Pennewi=DF?= <mailinglists@...1145...>
+Date: Tue, 3 Feb 2009 00:08:20 +0100
+References: <200811130123.46417.mailinglists@...1145...>
+In-Reply-To: <200811130123.46417.mailinglists@...1145...>
 MIME-Version: 1.0
-References: <20090127154806.GA38604@...33...>	<9e0cf0bf0901270831l72b16993p1037df311fb50c74@...278...>
-	<499929A843E2C541A8AD31A881A2B6A202DAB494@...1006...>
-In-Reply-To: <499929A843E2C541A8AD31A881A2B6A202DAB494@...1006...>
-Subject: Re: [Openvpn-devel] OVPN patching process RE: [PATCH] Fix non-C89
- comments
+Message-Id: <200902030008.20652.mailinglists@...1145...>
+Subject: Re: [Openvpn-devel] IPv6 Support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,101 +13,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: David Balazic <David.Balazic@...1005...>
-Cc: Alon Bar-Lev <alon.barlev@...277...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-David,
+On Thursday 13 November 2008 01:23:46 Marcel Pennewi=DF wrote:
+> Hi,
 
-A couple issues with the patch:
+Hi again,
 
-* sscanf usage doesn't check for buffer overflow.
+> a long time ago Juanjo Ciarlante wrote a patch for openvpn to create a
+> tunnel via ipv6 [1]. Later i fixed the patch to work with openvpn-2.0 and
+> 2.1 which i use on OpenWRT and Gentoo. Roy (from Gentoo) wrote about this
+> also to the devel-list [1]. But since that no one answered :(
+>
+> What about IPv6-support to create a tunnel over IPv6? Since my first patch
+> i try to adapt the patch to newer versions. This patches are not properly
+> tested but works fine for me (on gentoo).[2][3]
 
-* You use gw_if_name in some places and gw_ifname in other places.  To 
-eliminate confusion it would be best to use a consistent form.
+What about full IPv6-support - is this scheduled in the future or on any=20
+roadmap? No answer is not a good practice :(
 
-Also, to reiterate, try submitting the patch as an attachment to deal 
-with email client munging issues.
-
-Thanks,
-James
-
-David Balazic wrote:
-> Hi!
-> 
-> I sent a patch recently to the openvpn-devel list and got
-> no reply whatsoever. Did I miss something ? Is there a procedure
-> that I did not follow ?
-> 
-> That patch is to fix a longstanding bug that users encountered.
-> 
-> Regards,
-> David
-> 
-> PS: the mail message in question is :
-> Fix for "Cannot read current default gateway" problem on Linux
-> http://article.gmane.org/gmane.network.openvpn.devel/2472
-> 
->> -----Original Message-----
->> From: Alon Bar-Lev [mailto:alon.barlev@...277...] 
->> Sent: Tuesday, January 27, 2009 5:32 PM
->> To: openvpn-devel@lists.sourceforge.net
->> Subject: Re: [Openvpn-devel] [PATCH] Fix non-C89 comments
->>
->> Sent this to James.
->> Did not apply.
->>
->> My queue is at:
->> http://svn.openvpn.net/projects/openvpn/contrib/alon
->>
->> On 1/27/09, Matthias Andree 
->> <ma+ovpnd@...31...> wrote:
->>> Hi,
->>>
->>>  openvpn uses non-C89 //-style comments in two places. 
->> Patch to convert
->>>  these to /* ... */ style comments attached.
->>>
->>>  Best
->>>
->>>  --
->>>
->>> Matthias Andree
->>>
->>>
->> --------------------------------------------------------------
->> ----------------
->>>  This SF.net email is sponsored by:
->>>  SourcForge Community
->>>  SourceForge wants to tell your story.
->>>  http://p.sf.net/sfu/sf-spreadtheword
->>> _______________________________________________
->>>  Openvpn-devel mailing list
->>>  Openvpn-devel@lists.sourceforge.net
->>>  https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->>>
->>>
->>>
->> --------------------------------------------------------------
->> ----------------
->> This SF.net email is sponsored by:
->> SourcForge Community
->> SourceForge wants to tell your story.
->> http://p.sf.net/sfu/sf-spreadtheword
->> _______________________________________________
->> Openvpn-devel mailing list
->> Openvpn-devel@lists.sourceforge.net
->> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->>
-> 
-> ------------------------------------------------------------------------------
-> This SF.net email is sponsored by:
-> SourcForge Community
-> SourceForge wants to tell your story.
-> http://p.sf.net/sfu/sf-spreadtheword
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+Best regards,
+Marcel
 
