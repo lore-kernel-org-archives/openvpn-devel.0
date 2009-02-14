@@ -1,17 +1,10 @@
-Content-class: urn:content-classes:message
+Date: Sat, 14 Feb 2009 11:23:03 +0530 (IST)
+From: mk rao <keshava_2103@...293...>
 MIME-Version: 1.0
-Date: Thu, 12 Feb 2009 13:04:14 +0100
-Message-ID: <499929A843E2C541A8AD31A881A2B6A202F16E79@...1006...>
-In-Reply-To: <4993AA88.2030907@...41...>
-References: <20090127154806.GA38604@...33...>
-	<9e0cf0bf0902031016x3734b539h6b13eebd1d37aefc@...278...>
-	<499929A843E2C541A8AD31A881A2B6A202EAE379@...1006...>
-	<200902102124.52217.alon.barlev@...277...>
-	<4993AA88.2030907@...41...>
-From: "David Balazic" <David.Balazic@...1005...>
-Subject: Re: [Openvpn-devel] Patch Queue,
-	was: Re: [PATCH] Fix for "Cannot read current defaultgateway"
-	problem on Linux
+Content-Type: multipart/alternative; boundary="0-308462627-1234590783=:88057"
+Message-ID: <765905.88057.qm@...1197...>
+Subject: [Openvpn-devel] OpenVPN with pre-shared secret keys
+Reply-To: keshava_2103@...293...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,55 +13,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+To: openvpn-devel@lists.sourceforge.net
+
+--0-308462627-1234590783=:88057
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-To: James Yonan <jim@...41...>, Alon Bar-Lev <alon.barlev@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
 
-James Yonan wrote:
+Hi,
+I=C2=A0would like run openvpn=C2=A0with mulit-client and server set-up usin=
+g pre-shared keys which is presently not supported by openvpn.=20
+I have gone=C2=A0through the source code. I could able to locate certain fu=
+nction which encrypt/decrypt's packets. i.e openvpn_encrypt(), openvpn_decr=
+ypt() functions in crypto.c.
+But above function also uses tls function, which is driven by public-key's =
+and certificate's.=20
+I would like to know that,=C2=A0what are functions i should use or fine tun=
+e or add so that i can=C2=A0add another features to OpenVPN which=C2=A0 all=
+ows=C2=A0to=C2=A0set-up mulit-client and server=C2=A0by=C2=A0 using=C2=A0si=
+mple=C2=A0pre-shared keys only.
+=C2=A0
+It will be helpfull if any body helps or gives some pointers for=C2=A0above=
+ mentioned problem.
+=C2=A0
+Thanks
+M.K.R
 
-> Alon Bar-Lev wrote:
-> > On Tuesday 10 February 2009 13:35:35 David Balazic wrote:
-> >> Ping ?
-> >>
-> >> Should I resend the patch without the end-of-line-spaces change ?
-> >=20
-> > James has his own response times.
-> > I suggest you have much patience.... :)
-> >=20
-> > Alon.
->=20
-> I apologize for not having the bandwidth to focus as much on=20
-> the patch=20
-> queue as I would like, but please understand that we're on=20
-> the verge of=20
-> releasing 2.1 and we have to be very conservative about accepting=20
-> patches at this point.
->=20
-> I think it's fair to ask that we try to limit ourselves at this late=20
-> stage to patches that address issues that affect a large number of=20
-> users, or bug fixes that are sufficiently trivial that there=20
-> is little=20
-> or no chance of causing unforeseen breakage.  I think there=20
-> needs to be=20
-> an argument for why the patch is important right now, as opposed to=20
-> waiting a while for the 2.2 beta series.
 
-Of course.
 
- - the bug has been reported in several instances (see my first mail)
- - the patch affects only one architecture (besides the unused parameter
-on others;
-I could have made different function declarations for different archs,
-but that
-would be less readable/maintainable IMO)
- - the patch affects only one code path, that is taken only when the bug
-is triggered
- - it is simple:
-   - a few lines to record the gateway interface name
-   - a few lines to use it in case the gw addresss is 0.0.0.0
- - it is field tested (in a scenario which triggers the bug)
+      Add more friends to your messenger and enjoy! Go to http://messenger.=
+yahoo.com/invite/=
 
-Regards,
-David
+--0-308462627-1234590783=:88057
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+<table cellspacing=3D"0" cellpadding=3D"0" border=3D"0" ><tr><td valign=3D"=
+top" style=3D"font: inherit;"><DIV>Hi,<BR>I&nbsp;would like run openvpn&nbs=
+p;with mulit-client and server set-up using pre-shared keys which is presen=
+tly not supported by openvpn. </DIV>
+<DIV>I have gone&nbsp;through the source code. I could able to locate certa=
+in function which encrypt/decrypt's packets. i.e openvpn_encrypt(), openvpn=
+_decrypt() functions in crypto.c.</DIV>
+<DIV>But above function also uses tls function, which is driven by public-k=
+ey's and certificate's. </DIV>
+<DIV>I would like to know that,&nbsp;what are functions i should use or fin=
+e tune or add so that i can&nbsp;add another features to OpenVPN which&nbsp=
+; allows&nbsp;to&nbsp;set-up mulit-client and server&nbsp;by&nbsp; using&nb=
+sp;simple&nbsp;pre-shared keys only.</DIV>
+<DIV>&nbsp;</DIV>
+<DIV>It will be helpfull if any body helps or gives some pointers for&nbsp;=
+above mentioned problem.</DIV>
+<DIV>&nbsp;</DIV>
+<DIV>Thanks<BR>M.K.R<BR></DIV></td></tr></table><br>
+      <!--6--><hr size=3D1></hr> Add more friends to your messenger and enj=
+oy! <a href=3D"http://in.rd.yahoo.com/tagline_messenger_6/*http://messenger=
+.yahoo.com/invite/"> Invite them now.</a>=
+
+--0-308462627-1234590783=:88057--
 
