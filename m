@@ -1,10 +1,9 @@
-Date: Sat, 14 Feb 2009 11:23:03 +0530 (IST)
-From: mk rao <keshava_2103@...293...>
-MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-308462627-1234590783=:88057"
-Message-ID: <765905.88057.qm@...1197...>
-Subject: [Openvpn-devel] OpenVPN with pre-shared secret keys
-Reply-To: keshava_2103@...293...
+Message-Id: <F2EA8431-350C-475E-8BAC-D36811AEDEE9@...1198...>
+From: Andy Sykes <a.sykes@...1198...>
+Mime-Version: 1.0 (Apple Message framework v930.3)
+Date: Mon, 23 Feb 2009 18:33:44 +0000
+Subject: [Openvpn-devel] Possible bug in Mac OS X openvpn port with
+	redirect-gateway
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,61 +12,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
---0-308462627-1234590783=:88057
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Hi list,
 
-Hi,
-I=C2=A0would like run openvpn=C2=A0with mulit-client and server set-up usin=
-g pre-shared keys which is presently not supported by openvpn.=20
-I have gone=C2=A0through the source code. I could able to locate certain fu=
-nction which encrypt/decrypt's packets. i.e openvpn_encrypt(), openvpn_decr=
-ypt() functions in crypto.c.
-But above function also uses tls function, which is driven by public-key's =
-and certificate's.=20
-I would like to know that,=C2=A0what are functions i should use or fine tun=
-e or add so that i can=C2=A0add another features to OpenVPN which=C2=A0 all=
-ows=C2=A0to=C2=A0set-up mulit-client and server=C2=A0by=C2=A0 using=C2=A0si=
-mple=C2=A0pre-shared keys only.
-=C2=A0
-It will be helpfull if any body helps or gives some pointers for=C2=A0above=
- mentioned problem.
-=C2=A0
-Thanks
-M.K.R
+I'm using OpenVPN 2.1_rc15 on Mac OS X 10.5.6.
 
+Server is at a.b.c.218, subnet mask is a.b.c.192/255.255.255.224.  
+Router for subnet is at a.b.c.222. This is a public IP range,  
+firewalled from the 'net (not that it should make any difference).
 
+Server is pushing:
+route-gateway a.b.c.222
+redirect-gateway def1
 
-      Add more friends to your messenger and enjoy! Go to http://messenger.=
-yahoo.com/invite/=
+On the client, a route gets set up correctly through the client's  
+normal gateway to the server at a.b.c.218.
 
---0-308462627-1234590783=:88057
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+The default route does not get set up correctly - it points a.b.c.218  
+rather than 128.40.186.222, and it sets it up on the local interface  
+(en1 - wireless adapter in this case) rather than tap0. Attempting to  
+ping any network apart from the one directly connected to tap0 (a.b.c. 
+192/27) gives "Network unreachable".
 
-<table cellspacing=3D"0" cellpadding=3D"0" border=3D"0" ><tr><td valign=3D"=
-top" style=3D"font: inherit;"><DIV>Hi,<BR>I&nbsp;would like run openvpn&nbs=
-p;with mulit-client and server set-up using pre-shared keys which is presen=
-tly not supported by openvpn. </DIV>
-<DIV>I have gone&nbsp;through the source code. I could able to locate certa=
-in function which encrypt/decrypt's packets. i.e openvpn_encrypt(), openvpn=
-_decrypt() functions in crypto.c.</DIV>
-<DIV>But above function also uses tls function, which is driven by public-k=
-ey's and certificate's. </DIV>
-<DIV>I would like to know that,&nbsp;what are functions i should use or fin=
-e tune or add so that i can&nbsp;add another features to OpenVPN which&nbsp=
-; allows&nbsp;to&nbsp;set-up mulit-client and server&nbsp;by&nbsp; using&nb=
-sp;simple&nbsp;pre-shared keys only.</DIV>
-<DIV>&nbsp;</DIV>
-<DIV>It will be helpfull if any body helps or gives some pointers for&nbsp;=
-above mentioned problem.</DIV>
-<DIV>&nbsp;</DIV>
-<DIV>Thanks<BR>M.K.R<BR></DIV></td></tr></table><br>
-      <!--6--><hr size=3D1></hr> Add more friends to your messenger and enj=
-oy! <a href=3D"http://in.rd.yahoo.com/tagline_messenger_6/*http://messenger=
-.yahoo.com/invite/"> Invite them now.</a>=
+Manually deleting the broken route, and adding one to a.b.c.222  
+through tap0 makes everything work (all traffic traverses the VPN  
+succesfully), but I can't set this up using an OpenVPN configuration  
+file.
 
---0-308462627-1234590783=:88057--
+With identical configuration files, and the same server, but a Windows  
+client, everything works fine - the route to the OpenVPN server is set  
+up correctly, and the default route is specified as a.b.c.218 through  
+tap0. Pings reach any network, and all traffic traverses the VPN.  
+[Aside - bit confused here - shouldn't route-gateway push the default  
+route to a.b.c.222?]
+
+Am I looking at a bug here, or a PEBCAK error?
+
+Cheers,
+Andy.
 
