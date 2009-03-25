@@ -1,10 +1,10 @@
-Message-ID: <1AC345EACB034D778AC18983907FB492@...1205...>
-From: "M. G." <mg1984@...1204...>
-Date: Mon, 23 Mar 2009 01:14:09 +0100
+Message-ID: <49C9FCE3.2010009@...1114...>
+Date: Wed, 25 Mar 2009 10:44:03 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_0013_01C9AB54.AB31A5D0"
-Subject: [Openvpn-devel] Get server to listen for TCP and UDP connections
+References: <1AC345EACB034D778AC18983907FB492@...1205...>
+In-Reply-To: <1AC345EACB034D778AC18983907FB492@...1205...>
+Subject: Re: [Openvpn-devel] Get server to listen for TCP and UDP connections
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,91 +13,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: "M. G." <mg1984@...1204...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Dies ist eine mehrteilige Nachricht im MIME-Format.
 
-------=_NextPart_000_0013_01C9AB54.AB31A5D0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+M. G. wrote:
+> Hello,
+>  
+> I recently changed my VPN-tunnel from TCP to UDP for the sake of better 
+> performance. It generally works very well but I noticed that I can't 
+> connect to my server from some networks when using UDP, e.g. at work. 
+> This may be an issue with the NAT/firewall configuration which I have no 
+> influence on.
+> Since I am connecting from random locations where I don't know 
+> beforehand if a UDP connection will succeed, I'm now kind of worried 
+> that it'll get a game of luck if a connection succeeds from a specific 
+> location.
+>  
+> So far my story, now to the question:
+> What is the reason that OpenVPN doesn't have an option to listen for TCP 
+> AND UDP connections simultaneously? Is it a technical problem that I 
+> cannot see, or am I simply the only one who thinks this would be a nice 
+> feature?
 
-Hello,
+In theory, you are very right, this should not be a big issue.  But I 
+believe this is connected to that openvpn is neither forked nor threaded 
+when working with connections.  It's all in the same process scope, which 
+does its own scheduling regarding the connections, if I've understood the 
+code right.  And to make the current implementation work concurrently with 
+both TCP and UDP will be somewhat more difficult.  And due to this, openvpn 
+do not really use the power of multi-core hosts as one single process can 
+only be run on one core at the time.
 
-I recently changed my VPN-tunnel from TCP to UDP for the sake of better per=
-formance. It generally works very well but I noticed that I can't connect t=
-o my server from some networks when using UDP, e.g. at work. This may be an=
- issue with the NAT/firewall configuration which I have no influence on.
-Since I am connecting from random locations where I don't know beforehand i=
-f a UDP connection will succeed, I'm now kind of worried that it'll get a g=
-ame of luck if a connection succeeds from a specific location.=20
+I've been looking at the whole connection handling, and I've been 
+considering to try to rewrite it and to use proper Posix threading.  The 
+challenge with doing that is that it might not work so well on non-posix 
+compatible platforms.  And I'm not sure how that would work for the Windows 
+world.  But by moving over to a proper threading model, I'd expect both 
+performance and scalability to improve, and also concurrent TCP and UDP 
+setups to work out more easily.  And with several threads, openvpn can also 
+make better use of all available CPU cores on the host.
 
-So far my story, now to the question:=20
-What is the reason that OpenVPN doesn't have an option to listen for TCP AN=
-D UDP connections simultaneously? Is it a technical problem that I cannot s=
-ee, or am I simply the only one who thinks this would be a nice feature?
+> I know I could run two server instances on different tun devices but I 
+> think it'd be much nicer (and resource-friendly) if I could just put 
+> "proto udp tcp-server" (or whatever) into the config file and be 
+> flexible with my connections to the server.
 
-I know I could run two server instances on different tun devices but I thin=
-k it'd be much nicer (and resource-friendly) if I could just put "proto udp=
- tcp-server" (or whatever) into the config file and be flexible with my con=
-nections to the server.
+It would sure be nicer to use the same tun device, also from a
+configuration perspective (less instances to take care of).  But I'm not 
+sure it is that much more resource-friendly, except less memory usage 
+perhaps.  The kernel usually won't spend much extra CPU time on sleeping 
+processes or devices.
 
-Thanks,
-Mario=
+But on the other side, if your openvpn processes are configured to run on 
+separate CPU cores, you might have a better performance if you have 
+multiple clients connecting at the same time, given the status of the 
+current scheduling implementation.
 
-------=_NextPart_000_0013_01C9AB54.AB31A5D0
-Content-Type: text/html; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML><HEAD>
-<META http-equiv=3DContent-Type content=3Dtext/html;charset=3Diso-8859-1>
-<META content=3D"MSHTML 6.00.6000.16809" name=3DGENERATOR></HEAD>
-<BODY id=3DMailContainerBody=20
-style=3D"PADDING-RIGHT: 10px; PADDING-LEFT: 10px; PADDING-TOP: 15px" leftMa=
-rgin=3D0=20
-topMargin=3D0 CanvasTabStop=3D"true" name=3D"Compose message area">
-<DIV><FONT face=3DArial size=3D2>
-<DIV><FONT face=3DArial size=3D2>Hello,</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2>I recently changed my VPN-tunnel from TCP =
-to UDP=20
-for the sake of better performance. It generally works very well but I noti=
-ced=20
-that I can't connect to my server from some networks when using UDP, e.g. a=
-t=20
-work. This may be an issue with the NAT/firewall configuration which I have=
- no=20
-influence on.</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2>Since I am connecting from random location=
-s where I=20
-don't know beforehand if a UDP connection will succeed, I'm now kind of wor=
-ried=20
-that it'll get a game of luck if a connection succeeds from a specific loca=
-tion.=20
-</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2>So far my story, now to the question: </FO=
-NT></DIV>
-<DIV><FONT face=3DArial size=3D2>What is the reason that OpenVPN doesn't ha=
-ve an=20
-option to listen for TCP AND UDP connections simultaneously? Is it a techni=
-cal=20
-problem that I cannot see, or&nbsp;am I simply the only one who thinks this=
-=20
-would be a nice feature?</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2>I know I could run two server instances on=
-=20
-different tun devices but I think it'd be much nicer (and resource-friendly=
-) if=20
-I could just put "proto udp tcp-server" (or whatever) into the config file =
-and=20
-be flexible with my connections to the server.</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2>Thanks,</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2>Mario</FONT></DIV></FONT></DIV></BODY></HT=
-ML>
 
-------=_NextPart_000_0013_01C9AB54.AB31A5D0--
+kind regards,
 
+David Sommerseth
 
