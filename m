@@ -1,10 +1,9 @@
-Date: Tue, 07 Apr 2009 22:50:22 -0500
+Date: Wed, 08 Apr 2009 00:03:15 -0500
 From: "Karl O. Pinc" <kop@...1206...>
 References: <1239152310l.18482l.7l@...1207...>
-	<56AB1F7945F84C2688EC35B942109195@...576...>
-In-Reply-To: <56AB1F7945F84C2688EC35B942109195@...576...> (from
-	dev@...575... on Tue Apr  7 22:21:36 2009)
-Message-Id: <1239162622l.18482l.8l@...1207...>
+In-Reply-To: <1239152310l.18482l.7l@...1207...> (from kop@...1206... on Tue Apr  7
+	19:58:30 2009)
+Message-Id: <1239166995l.18482l.9l@...1207...>
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] Unpackged Windows binaries? -- Problems
  building 2.1 rc15 on Windows XP
@@ -19,41 +18,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; DelSp=Yes; Format=Flowed; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-To: dave <dev@...575...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
 
-On 04/07/2009 10:21:36 PM, dave wrote:
-> > -----Original Message-----
-> > From: Karl O. Pinc [mailto:kop@...1206...]
-> ...
-> > What I really want is a Windows binary and whatever
-> > else gets built, _not_ packaged in an installer, so I can build
-> > my own installer.
-
-
-> OK, low-tech, but...
+On 04/07/2009 07:58:30 PM, Karl O. Pinc wrote:
+> Hello,
 >=20
-> When I used to package OpenVPN for Portable Apps, I used to just
-> install
-> openvpn, and pluck what I wanted out of the Program Files\OpenVPN
-> directory.
+> What I really want is a Windows binary and whatever
+> else gets built, _not_ packaged in an installer, so I can build
+> my own installer.  It would be nice if OpenVPN would
+> release such a binary.
 
-I probably should have gone that route.  Alas, I now have
-a working build environment.  ;-)  The good part about this is that
-the binaries and whatnot are all in the right place
-so that the supplied nsis config works to build the
-installer.  I've got something to start from.
+I suspect that what I want is exactly what OpenVPN already has at
+http://openvpn.net/prebuilt/.  The problem is that it's not
+labeled as such and does not seem to have the same "supported"
+status as the rest of the downloads.  It's something of
+an afterthought to ease those who really need their own
+build.
 
-The bad part is that no matter the approach I'm
-stuck having to use a Windows box.  I don't trust 'em.
-They most likely know it too and that's why
-I have a hard time every time I touch one,
-no matter how simple the task.
+So I guess what I'm asking is for this build to be documented
+and placed on the download page with the rest of the
+official downloads.  (Assuming I can just run
+install-win32/buildinstaller and have an installer
+produced.)
 
-Good suggestion though.  The same idea crossed my mind before
-I started, but I thought "hey, how hard can it be?"
-I guess now I know.
+Regards,
 
 Karl <kop@...1206...>
 Free Software:  "You don't pay back, you pay forward."
