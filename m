@@ -1,10 +1,9 @@
-Message-ID: <49C9FCE3.2010009@...1114...>
-Date: Wed, 25 Mar 2009 10:44:03 +0100
-From: David Sommerseth <openvpn.list@...1114...>
+Date: Tue, 07 Apr 2009 19:58:30 -0500
+From: "Karl O. Pinc" <kop@...1206...>
+Message-Id: <1239152310l.18482l.7l@...1207...>
 MIME-Version: 1.0
-References: <1AC345EACB034D778AC18983907FB492@...1205...>
-In-Reply-To: <1AC345EACB034D778AC18983907FB492@...1205...>
-Subject: Re: [Openvpn-devel] Get server to listen for TCP and UDP connections
+Subject: [Openvpn-devel] Unpackged Windows binaries? -- Problems building
+ 2.1 rc15 on Windows XP
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,68 +12,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: "M. G." <mg1984@...1204...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; DelSp=Yes; Format=Flowed; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
+Hello,
 
-M. G. wrote:
-> Hello,
->  
-> I recently changed my VPN-tunnel from TCP to UDP for the sake of better 
-> performance. It generally works very well but I noticed that I can't 
-> connect to my server from some networks when using UDP, e.g. at work. 
-> This may be an issue with the NAT/firewall configuration which I have no 
-> influence on.
-> Since I am connecting from random locations where I don't know 
-> beforehand if a UDP connection will succeed, I'm now kind of worried 
-> that it'll get a game of luck if a connection succeeds from a specific 
-> location.
->  
-> So far my story, now to the question:
-> What is the reason that OpenVPN doesn't have an option to listen for TCP 
-> AND UDP connections simultaneously? Is it a technical problem that I 
-> cannot see, or am I simply the only one who thinks this would be a nice 
-> feature?
+What I really want is a Windows binary and whatever
+else gets built, _not_ packaged in an installer, so I can build
+my own installer.  It would be nice if OpenVPN would
+release such a binary.  Absent that I'm forced to
+drag out a Windows machine, torture myself
+for hours with it, and pester you. :-)
 
-In theory, you are very right, this should not be a big issue.  But I 
-believe this is connected to that openvpn is neither forked nor threaded 
-when working with connections.  It's all in the same process scope, which 
-does its own scheduling regarding the connections, if I've understood the 
-code right.  And to make the current implementation work concurrently with 
-both TCP and UDP will be somewhat more difficult.  And due to this, openvpn 
-do not really use the power of multi-core hosts as one single process can 
-only be run on one core at the time.
+(I want to make my own installer so I can, e.g., install
+real keys and config files that use them.  It seems
+straightforward enough to script the keymaking
+process and have that script also create an
+installer.  Obtaining the raw materials, a Windows
+binary, turns out to involve helpings of the
+pain that comes with MS Windows.)
 
-I've been looking at the whole connection handling, and I've been 
-considering to try to rewrite it and to use proper Posix threading.  The 
-challenge with doing that is that it might not work so well on non-posix 
-compatible platforms.  And I'm not sure how that would work for the Windows 
-world.  But by moving over to a proper threading model, I'd expect both 
-performance and scalability to improve, and also concurrent TCP and UDP 
-setups to work out more easily.  And with several threads, openvpn can also 
-make better use of all available CPU cores on the host.
+I've followed the instructions in domake-win and am having serious=20=20
+problems building OpenVPN on XP.
 
-> I know I could run two server instances on different tun devices but I 
-> think it'd be much nicer (and resource-friendly) if I could just put 
-> "proto udp tcp-server" (or whatever) into the config file and be 
-> flexible with my connections to the server.
+One issue is that cryptoapi.c works around a
+problem where CryptAcquireCertificatePrivateKey
+is missing from MinGW.  However, I've installed
+the latest stable MinGW, 5.1.4, and the function
+is now in MinGW.  So, I tried commenting out the
+#ifdef __MINGW32_VERSION hacks in cryptoapi.c.
+This seems to have worked.  (So far)
 
-It would sure be nicer to use the same tun device, also from a
-configuration perspective (less instances to take care of).  But I'm not 
-sure it is that much more resource-friendly, except less memory usage 
-perhaps.  The kernel usually won't spend much extra CPU time on sleeping 
-processes or devices.
+But then I got bit by some strange windows problem:
+http://forums.logitech.com/logitech/board/message?board.id=3Dquickcam_softw=
+are&message.id=3D897&nobounce
+(MinGW is a cygwin fork.)
+I get this even though I long ago uninstalled the
+logitech quickcam software.
 
-But on the other side, if your openvpn processes are configured to run on 
-separate CPU cores, you might have a better performance if you have 
-multiple clients connecting at the same time, given the status of the 
-current scheduling implementation.
+Now I get seemingly random segfaults and
+very strange behavior, like running domake-win
+and having it tell me there's no autoconf directory,
+or that at least version 1.4 of m4 is required
+even though it's installed, or getting random segfaults
+while running the autoconf stuff at the top
+of install-win32/makeopenvpn.
 
+In other words XP seems totally borked.
 
+I find that LVPrSrv program has risen from
+the dead to haunt me.  I may have finally gotten
+rid of it....  For the moment the compile is working....
 
-kind regards,
+Now I get:
+!define "SF_SELECTED" already defined!
+Error in script "gen/nsi/openvpn.nsi" on line 264 -- aborting creation=20=20
+process
 
-David Sommerseth
+This I imagine I can figure out.
+
+If there happen to be recommended versions of all the
+tools that are known to work together and avoid
+all these problems, or anything else that makes
+it "just work", please let me know.
+
+Thank you for your time.
+
+Regards,
+
+Karl <kop@...1206...>
+Free Software:  "You don't pay back, you pay forward."
+                  -- Robert A. Heinlein
+
+P.S.  If I can't have unpackaged Windows binaries
+I would oh-so-love to have a cross-compiler
+so I could compile for Windows on Linux.  There
+seems to be one for OpenSC that compiles OpenVPN.
+http://www.opensc-project.org/build/browser/trunk/build
+Perhaps OpenVPN could coordinate with them and
+support cross-compiling?  (Please, please, please.)
+
+P.P.S.  It is not clear from the domake-win instructions
+that the process is supposed to be undertaken on a
+MS Windows machine.  A note in the instructions would
+be helpful.
 
