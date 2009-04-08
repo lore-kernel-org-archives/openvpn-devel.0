@@ -1,15 +1,8 @@
-Date: Wed, 08 Apr 2009 12:48:46 -0500
-From: "Karl O. Pinc" <kop@...1206...>
-References: <1239166995l.18482l.9l@...1207...>
-	<F9B005F620B74BD29BB0A36AF509BCED@...576...> <1239203062l.18482l.11l@...1207...>
-	<49DCC18D.6040509@...273...>
-	<1239210120l.18482l.13l@...1207...>
-In-Reply-To: <1239210120l.18482l.13l@...1207...> (from kop@...1206... on Wed Apr  8
-	12:02:00 2009)
-Message-Id: <1239212926l.18482l.14l@...1207...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Unpackged Windows binaries? -- Problems
- building 2.1 rc15 on Windows XP
+From: Marco Schuster <marco@...1208...>
+Date: Thu, 9 Apr 2009 00:09:22 +0200
+Message-ID: <b542c8b90904081509r7da610a2oc137e4039a5a43b0@...278...>
+Subject: [Openvpn-devel] Bug in OpenVPN docs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,44 +11,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; DelSp=Yes; Format=Flowed; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: "Karl O. Pinc" <kop@...1206...>
-Cc: Matt Wilks <matt@...273...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-I apologize for not starting a separate thread for this.
+Hi all,
 
-On 04/08/2009 12:02:00 PM, Karl O. Pinc wrote:
->=20
-> On an unrelated note I notice that building the 2.1 rc15
-> nsis installer on Linux for Windows gives me 3 warnings:
->=20
-> 3 warnings:
->    install function "GetWindowsVersion" not referenced - zeroing code
->=20
-> (125-174) out
->=20
->    label "fileass" not used
->    label "tryaddtap" not used
->=20
-> I don't get the first when I build an installer on Windows.
-> (I do get the second 2 warnings.)
+today I experimented with OpenVPN in bridged mode using a Debian NSLU2
+w/ one ethernet interface, behind a NAT router.
+I followed the HowTo and the bridge part at
+<http://openvpn.net/index.php/documentation/miscellaneous/ethernet-bridging=
+.html>.
+So far, so good: As soon as the bridge was initialized, the box was
+unreachable from WAN, for all services. After hours of swearing, I
+found out the script and the howto miss an important point for people
+with devices with only one ethernet connection which also provides
+Internet access: Creating a bridge interface apparently kills off the
+routing information, so in order to reach anything which is NOT in
+your subnet (or be reachable from anything OUTSIDE your subnet), one
+has to run "route add default gw 172.16.1.1" before anything will
+work. Can someone with doc write access please add this?
+I for my part will publish my network setup and my steps on my blog,
+so it will at least be indexed by google ;)
 
-If I tar up the windows build tree and use that on Linux
-to build the installer I don't get the first message.
+Regards,
+Marco
 
-So it seems I was doing something wrong.
-
-As far as the last message goes, that's likely
-because I've not downloaded the tap code
-from Microsoft.  (I found the instructions
-in domake-win unclear on whether this is necessary
-when using a pre-built environment.)  In any
-case I don't need the tap device so I'm not
-going to worry about it.
-
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                  -- Robert A. Heinlein
+PS: The push "redirect-gateway def1 bypass-dhcp" stuff, as specified
+in the sample server.conf, also doesn't work with windows clients
+(which are then multi-homed): A traceroute still showed the open
+hotspot AP as first hop, not the OpenVPN bridge or the NSLUs
+gateway... is this a windows bug?
+--=20
+VMSoft GbR
+Nabburger Str. 15
+81737 M=C3=BCnchen
+Gesch=C3=A4ftsf=C3=BChrer: Marco Schuster, Volker Hemmert
+http://vmsoft-gbr.de
 
