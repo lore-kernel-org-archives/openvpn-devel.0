@@ -1,10 +1,10 @@
-Date: Wed, 08 Apr 2009 10:10:09 -0500
-From: "Karl O. Pinc" <kop@...1206...>
-References: <1239152310l.18482l.7l@...1207...>
-In-Reply-To: <1239152310l.18482l.7l@...1207...> (from kop@...1206... on Tue Apr  7
-	19:58:30 2009)
-Message-Id: <1239203409l.18482l.12l@...1207...>
+Message-ID: <49DCC18D.6040509@...273...>
+Date: Wed, 08 Apr 2009 11:23:57 -0400
+From: Matt Wilks <matt@...273...>
 MIME-Version: 1.0
+References: <1239166995l.18482l.9l@...1207...>	<F9B005F620B74BD29BB0A36AF509BCED@...576...>
+	<1239203062l.18482l.11l@...1207...>
+In-Reply-To: <1239203062l.18482l.11l@...1207...>
 Subject: Re: [Openvpn-devel] Unpackged Windows binaries? -- Problems
  building 2.1 rc15 on Windows XP
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,37 +15,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; DelSp=Yes; Format=Flowed; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
+Karl O. Pinc wrote:
+> On 04/08/2009 07:58:12 AM, dave wrote:
+>
+> Yeah.  On Debian it just installs and seems to work.  But there must
+> be more involved, somewhere, to have it go from source to nsis
+> installer.
 
-On 04/07/2009 07:58:30 PM, Karl O. Pinc wrote:
->=20
-> One issue is that cryptoapi.c works around a
-> problem where CryptAcquireCertificatePrivateKey
-> is missing from MinGW.  However, I've installed
-> the latest stable MinGW, 5.1.4, and the function
-> is now in MinGW.  So, I tried commenting out the
-> #ifdef __MINGW32_VERSION hacks in cryptoapi.c.
-> This seems to have worked.  (So far)
+Is there a specific reason you are attempting to build the OpenVPN .exe
+(are you trying to make a custom executable)?  You could just use a
+compiled version (install in Windows, grab all the files), set up the
+proper directory hierarchy and use NSIS to create a custom installer
+package.  The NSIS stuff works under Linux.
 
-FYI, it does work.
-
-FWIW, I'm thinking myself through the problem and
-it occurs to me that the right way to do this
-is somewhere in the autoconf related tools.
-That way you can test and set a different
-variable than __MINGW32_VERSION for the
-#ifdefs to use, based on the value of __MINGW32_VERSION
-and when the needed components were added.
-
-I'm not competent enough in autoconf to make a patch.
-
-Regards,
-
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                  -- Robert A. Heinlein
+-- 
+Matt Wilks                   Colossians 2:6-7
+University of Toronto        Computing and Networking Services
+(416) 978-3328               matt@...273...
+4 Bancroft Ave., Rm. 102     Toronto, ON  M5S 1C1
 
