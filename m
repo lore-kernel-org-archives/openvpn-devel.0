@@ -1,8 +1,13 @@
 MIME-Version: 1.0
-From: Marco Schuster <marco@...1208...>
-Date: Thu, 9 Apr 2009 00:09:22 +0200
-Message-ID: <b542c8b90904081509r7da610a2oc137e4039a5a43b0@...278...>
-Subject: [Openvpn-devel] Bug in OpenVPN docs
+In-Reply-To: <1239203062l.18482l.11l@...1207...>
+References: <1239166995l.18482l.9l@...1207...>
+	<F9B005F620B74BD29BB0A36AF509BCED@...576...>
+	<1239203062l.18482l.11l@...1207...>
+Date: Thu, 9 Apr 2009 01:46:46 +0300
+Message-ID: <9e0cf0bf0904081546y3daea253u62c234e63a6e5b08@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] Unpackged Windows binaries? -- Problems
+	building 2.1 rc15 on Windows XP
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,39 +18,65 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: "Karl O. Pinc" <kop@...1206...>
+Cc: openvpn-devel@lists.sourceforge.net, dave <dev@...575...>
 
-Hi all,
+Available as part of OpenSC build [1].
 
-today I experimented with OpenVPN in bridged mode using a Debian NSLU2
-w/ one ethernet interface, behind a NAT router.
-I followed the HowTo and the bridge part at
-<http://openvpn.net/index.php/documentation/miscellaneous/ethernet-bridging=
-.html>.
-So far, so good: As soon as the bridge was initialized, the box was
-unreachable from WAN, for all services. After hours of swearing, I
-found out the script and the howto miss an important point for people
-with devices with only one ethernet connection which also provides
-Internet access: Creating a bridge interface apparently kills off the
-routing information, so in order to reach anything which is NOT in
-your subnet (or be reachable from anything OUTSIDE your subnet), one
-has to run "route add default gw 172.16.1.1" before anything will
-work. Can someone with doc write access please add this?
-I for my part will publish my network setup and my steps on my blog,
-so it will at least be indexed by google ;)
+[1] http://www.opensc-project.org/build
 
-Regards,
-Marco
-
-PS: The push "redirect-gateway def1 bypass-dhcp" stuff, as specified
-in the sample server.conf, also doesn't work with windows clients
-(which are then multi-homed): A traceroute still showed the open
-hotspot AP as first hop, not the OpenVPN bridge or the NSLUs
-gateway... is this a windows bug?
---=20
-VMSoft GbR
-Nabburger Str. 15
-81737 M=C3=BCnchen
-Gesch=C3=A4ftsf=C3=BChrer: Marco Schuster, Volker Hemmert
-http://vmsoft-gbr.de
+On Wed, Apr 8, 2009 at 6:04 PM, Karl O. Pinc <kop@...1206...> wrote:
+>
+> On 04/08/2009 07:58:12 AM, dave wrote:
+>> > -----Original Message-----
+>> > From: Karl O. Pinc [mailto:kop@...1206...]
+>> ...
+>> > I suspect that what I want is exactly what OpenVPN already has at
+>> > http://openvpn.net/prebuilt/. =C2=A0The problem is that it's not
+>> > labeled as such and does not seem to have the same "supported"
+>> ...
+>> > So I guess what I'm asking is for this build to be documented
+>> > and placed on the download page with the rest of the
+>> > official downloads. =C2=A0(Assuming I can just run
+>> > install-win32/buildinstaller and have an installer
+>> > produced.)
+>> ...
+>>
+>> I'm pretty sure you can setup MinGW to build on Linux, though I
+>> haven't.
+>
+> Yeah. =C2=A0On Debian it just installs and seems to work. =C2=A0But there=
+ must
+> be more involved, somewhere, to have it go from source to nsis
+> installer. =C2=A0I say this because I thought the instructions would
+> enable me to cross compile, and so I installed the prerequisites
+> on Linux and gave it a go. =C2=A0The ./configure failed it's tests
+> for libraries, because of course the Windows libraries would
+> not run on Linux.
+>
+>>
+>> Agreed on the binary tarball, but brace yourself: =C2=A0the source tarba=
+ll
+>> is
+>> not always up-to-date to the current version either.
+>
+> Well, if the developers grant my wish then it _would_ be current. :)
+>
+>
+> Karl <kop@...1206...>
+> Free Software: =C2=A0"You don't pay back, you pay forward."
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0-- Robert A=
+. Heinlein
+>
+> -------------------------------------------------------------------------=
+-----
+> This SF.net email is sponsored by:
+> High Quality Requirements in a Collaborative Environment.
+> Download a free trial of Rational Requirements Composer Now!
+> http://p.sf.net/sfu/www-ibm-com
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
 
