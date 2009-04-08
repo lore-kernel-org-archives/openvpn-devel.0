@@ -1,10 +1,9 @@
-Date: Wed, 08 Apr 2009 10:04:22 -0500
+Date: Wed, 08 Apr 2009 10:10:09 -0500
 From: "Karl O. Pinc" <kop@...1206...>
-References: <1239166995l.18482l.9l@...1207...>
-	<F9B005F620B74BD29BB0A36AF509BCED@...576...>
-In-Reply-To: <F9B005F620B74BD29BB0A36AF509BCED@...576...> (from
-	dev@...575... on Wed Apr  8 07:58:12 2009)
-Message-Id: <1239203062l.18482l.11l@...1207...>
+References: <1239152310l.18482l.7l@...1207...>
+In-Reply-To: <1239152310l.18482l.7l@...1207...> (from kop@...1206... on Tue Apr  7
+	19:58:30 2009)
+Message-Id: <1239203409l.18482l.12l@...1207...>
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] Unpackged Windows binaries? -- Problems
  building 2.1 rc15 on Windows XP
@@ -19,43 +18,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; DelSp=Yes; Format=Flowed; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-To: dave <dev@...575...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
 
-On 04/08/2009 07:58:12 AM, dave wrote:
-> > -----Original Message-----
-> > From: Karl O. Pinc [mailto:kop@...1206...]
-> ...
-> > I suspect that what I want is exactly what OpenVPN already has at
-> > http://openvpn.net/prebuilt/.  The problem is that it's not
-> > labeled as such and does not seem to have the same "supported"
-> ...
-> > So I guess what I'm asking is for this build to be documented
-> > and placed on the download page with the rest of the
-> > official downloads.  (Assuming I can just run
-> > install-win32/buildinstaller and have an installer
-> > produced.)
-> ...
+On 04/07/2009 07:58:30 PM, Karl O. Pinc wrote:
 >=20
-> I'm pretty sure you can setup MinGW to build on Linux, though I
-> haven't.
+> One issue is that cryptoapi.c works around a
+> problem where CryptAcquireCertificatePrivateKey
+> is missing from MinGW.  However, I've installed
+> the latest stable MinGW, 5.1.4, and the function
+> is now in MinGW.  So, I tried commenting out the
+> #ifdef __MINGW32_VERSION hacks in cryptoapi.c.
+> This seems to have worked.  (So far)
 
-Yeah.  On Debian it just installs and seems to work.  But there must
-be more involved, somewhere, to have it go from source to nsis
-installer.  I say this because I thought the instructions would
-enable me to cross compile, and so I installed the prerequisites
-on Linux and gave it a go.  The ./configure failed it's tests
-for libraries, because of course the Windows libraries would
-not run on Linux.
+FYI, it does work.
 
->=20
-> Agreed on the binary tarball, but brace yourself:  the source tarball
-> is
-> not always up-to-date to the current version either.
+FWIW, I'm thinking myself through the problem and
+it occurs to me that the right way to do this
+is somewhere in the autoconf related tools.
+That way you can test and set a different
+variable than __MINGW32_VERSION for the
+#ifdefs to use, based on the value of __MINGW32_VERSION
+and when the needed components were added.
 
-Well, if the developers grant my wish then it _would_ be current. :)
+I'm not competent enough in autoconf to make a patch.
 
+Regards,
 
 Karl <kop@...1206...>
 Free Software:  "You don't pay back, you pay forward."
