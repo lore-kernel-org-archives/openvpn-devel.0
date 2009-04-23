@@ -1,8 +1,9 @@
-Message-ID: <49F06579.9040202@...1211...>
-Date: Thu, 23 Apr 2009 08:56:25 -0400
-From: Valery Vachaev <valery@...1211...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Vista-64 cannot load Tap-Win32 driver
+From: Aleksandar Ivanisevic <aleksandar@...1212...>
+Date: Thu, 23 Apr 2009 16:37:16 +0200
+Message-ID: <m3prf3sag3.fsf@...1213...>
+Mime-Version: 1.0
+Sender: news <news@...1062...>
+Subject: [Openvpn-devel] rc15 rpm spec glitches
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,24 +12,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hello
+Hi,
 
-I rebuilt Tap-Win32 driver from source and signed it with a VeriSign 
-class 3 certificate. On Windows-32 bit  it works as expected, on 
-Vista-64 I was able to install  driver but Device Manager shows the next 
-message: "Windows cannot load the device driver for this hardware. The 
-driver my be corrupted or missing.(Code 39) ". Need to say, I used WDK 
-6001.18002 instead of  6001.17121 for the last openvpn releases.
+I've been compiling a rpm of rc15 on rhel5 and noticed a couple of
+glitches:
 
-Any pointers-help would be very much appreciated!
+%doc lists management/ dir, but its no longer there, so
 
-Thanks in advance,
-Valery
+%doc contrib/ easy-rsa/ management/ sample-*/ plugin/README.*
 
+should be
+ 
+%doc contrib/ easy-rsa/ sample-*/ plugin/README.*
+ 
+with_pkcs11 tries to pull in pkcs11-helper, but no such package exists
+in RHEL, so it must be distro specific, but don't know which distro
 
+%{!?with_pkcs11:BuildRequires: pkcs11-helper-devel}
+%{!?with_pkcs11:Requires:      pkcs11-helper}
+
+it builds fine with --nodeps though.
+
+regards,
 
 
