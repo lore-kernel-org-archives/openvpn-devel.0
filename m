@@ -1,8 +1,8 @@
-Message-ID: <49EDBEAA.5000207@...1187...>
-Date: Tue, 21 Apr 2009 14:40:10 +0200
-From: Robert Fischer <rf@...1187...>
+Message-ID: <49F06579.9040202@...1211...>
+Date: Thu, 23 Apr 2009 08:56:25 -0400
+From: Valery Vachaev <valery@...1211...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Record source ip address
+Subject: [Openvpn-devel] Vista-64 cannot load Tap-Win32 driver
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +15,20 @@ Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hello,
+Hello
 
-We're using the "multihome" option for running one openvpn instance on 
-multiple IP addresses.
+I rebuilt Tap-Win32 driver from source and signed it with a VeriSign 
+class 3 certificate. On Windows-32 bit  it works as expected, on 
+Vista-64 I was able to install  driver but Device Manager shows the next 
+message: "Windows cannot load the device driver for this hardware. The 
+driver my be corrupted or missing.(Code 39) ". Need to say, I used WDK 
+6001.18002 instead of  6001.17121 for the last openvpn releases.
 
-In order to find out on which server IP address the client got 
-connected, currently we check the logfile for the pattern:
+Any pointers-help would be very much appreciated!
 
-Peer Connection Initiated with clientip:port (via serverip)
+Thanks in advance,
+Valery
 
-where serverip is the needed information.
 
-It would be great if this information could be gathered from the openvpn 
-status logfile or via management interface.
-
-However, I suppose, adding that information would break some 
-scripts/programs which rely on the current status logfile, respectively 
-management interface field structure.
-
-Are there any comments on this?
-
-best regards,
-Robert Fischer
 
 
