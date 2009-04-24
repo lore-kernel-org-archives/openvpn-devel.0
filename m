@@ -1,8 +1,8 @@
-Message-ID: <49F1B322.6030705@...1032...>
-Date: Fri, 24 Apr 2009 15:40:02 +0300
-From: =?ISO-8859-1?Q?Siim_P=F5der?= <siim@...1032...>
+Date: Fri, 24 Apr 2009 17:13:23 +0400
+From: Victor Wagner <vitus@...1066...>
+Message-ID: <20090424131323.GB21576@...1066...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] linux openvpn development job
+Subject: [Openvpn-devel] Solaris questions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,25 +11,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=koi8-r
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-Hi
+Hi, all
 
-We are running a couple of openvpn servers with relatively high load
-(Opterons 2xDC, e1000, recent kerneles) and it seems as if most of the
-CPU time is not used on cryptography, but in softirq (send/recv for udp
-and read/write on tun?). This has lead us to suspect that most of the
-time is spent pumping data between userspace and kernelspace.
+I've tried to build Solaris OpenVPN packages for various versions of
+solaris and encountered some problems, probably related more with TUN
+driver, than with openvpn itself
 
-Now, we are still investigating this, but I thought I'd ask around too:.
-Does anyone have a take on this, could a considerable (upwards of 10%)
-increase in openvpn capacity be accomplished by optimizing udp/tun
-interfaces of the kernel (a mechanism like ring buffers?) or are we on a
-wrong track? Furthermore (if it is possible) would anyone care to
-develop such a solution? You'd get compensated for your trouble, naturally.
+I'm using openvpn 2.1rc15 and tun driver 1.1 as recommended on
+openvpn.net site.
 
-Thanks for your attention,
-Siim
+1. Openvpn is unable to close tun interface, if daemon is not running
+with root priveleges. with increased debug level it reports "not owner".
+
+2. I was unable to run two openvpn daemons at once. First one starts,
+and second is unable to open another tun interface.
+
+These problems was experienced on Solaris 10 intel both with 32-bit and
+64-bit (amd64) kernel, and Solaris 10 sparc, 64-bit kernel.
+
+Is this known issue and is there any workarounds/patches
 
