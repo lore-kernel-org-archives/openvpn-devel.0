@@ -1,11 +1,13 @@
-Date: Fri, 24 Apr 2009 22:39:21 -0500
-From: "Karl O. Pinc" <kop@...1206...>
-References: <49F1B322.6030705@...1032...>
-In-Reply-To: <49F1B322.6030705@...1032...> (from siim@...1032...
-	on Fri Apr 24 07:40:02 2009)
-Message-Id: <1240630761l.7894l.0l@...1207...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] linux openvpn development job
+Sender: ichiga2@...277...
+In-Reply-To: <20090424202940.GA30397@...1066...>
+References: <20090424131323.GB21576@...1066...>
+	<fa2e1350904240747m2b9a110w471bceb2c335e765@...278...>
+	<20090424202940.GA30397@...1066...>
+Date: Sat, 25 Apr 2009 16:31:14 +0900
+Message-ID: <251896ce0904250031l5aa2d985r234602e3fbc4d358@...278...>
+From: Kazuyoshi Aizawa <admin2@...628...>
+Subject: Re: [Openvpn-devel] Solaris questions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,80 +16,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; DelSp=Yes; Format=Flowed; charset="iso-8859-1"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: =?iso-8859-1?q?Siim_P=F5der?= <siim@...1032...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
+Hi Victor,
 
-On 04/24/2009 07:40:02 AM, Siim P=F5der wrote:
-> Hi
->=20
-> We are running a couple of openvpn servers with relatively high load
-> (Opterons 2xDC, e1000, recent kerneles) and it seems as if most of the
-> CPU time is not used on cryptography, but in softirq (send/recv for
-> udp
-> and read/write on tun?). This has lead us to suspect that most of the
-> time is spent pumping data between userspace and kernelspace.
->=20
-> Now, we are still investigating this, but I thought I'd ask around
-> too:.
-> Does anyone have a take on this, could a considerable (upwards of 10%)
-> increase in openvpn capacity be accomplished by optimizing udp/tun
-> interfaces of the kernel (a mechanism like ring buffers?) or are we on
-> a
-> wrong track?
+Could you please post the script once you have built drivers for your packa=
+ge?
+So that I can update my script as well.
+I've wanted to make script to be capable to build drivers on various
+platforms. But I don't have enough systems which can use for test.
+So if you would share your information, it would be appreciated.
 
-Please pardon me for thinking out loud here...
+Thanks,
 
-The problem is that moving data between userspace and kernelspace
-is expensive.  (IIRC you can't just use the CPU to filter the bus
-between nics, you need to deliver data to/receive data
-from RAM because that's where the userland app works
-with it.)  OpenVPN runs in userspace so all the VPN data
-has to pass out of the kernel into userspace and back again.
-To attack the problem directly you need to move all functionality
-into the kernel, which raises a number of problems.
-Such an OpenVPN would not port between OS platforms
-very well.  Someone would have to convince both
-the kernel and OpenVPN developers to maintain the
-code.  And so forth.
+Kazuyoshi
 
-The question then becomes how much optimization can
-be made between kernel and userspace beyond what's
-already been done, again bearing in mind the both
-the kernel and OpenVPN developers must be on-board
-with the result.  Of course you could maintain the
-resulting code, but you'd need to recognize
-that, typically, at least 70% of software labor costs
-are in maintenance.
-
-Everybody wants faster userspace/kernelspace transfers
-but everybody also wants a standard OS API.  The
-Linux kernel developers provide feedback on ideas.
-I don't know about the OpenVPN developers but
-I've not seem much traffic here in the weeks
-I've been subscribed.
-
-I've seen embedded devices use upwards of 50% of
-the CPU on the kernel/userspace transition.
-Using hardware acceleration reduces performance
-because it passes more data across the kernel/user
-boundary.
-
-IMO your money is better spent getting redundant hardware
-and load balancing.  (E.g. you could run OpenVPN
-on OpenBSD/carp and have a loadbalanced hot-failover
-cluster.   Or use some other clustering solution.)
-At least that's how I'd go without a good plan, and
-buy-in from the OpenVPN developers.
-After the initial investment the cluster solution will
-scale linearly with dollars spent, and you get
-increased reliability and fault-tolerance for free.
-
-
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                  -- Robert A. Heinlein
+2009/4/25 Victor Wagner <vitus@...1066...>:
+> On 2009.04.24 at 07:47:54 -0700, Jonathan Petersson wrote:
+>
+>> Hi Victor,
+>>
+>> I haven't tried this myself and this guide is mainly for OpenSolaris, bu=
+t:
+>> http://blogs.reucon.com/srt/2008/12/17/installing_openvpn_on_opensolaris=
+_2008_11.html
+>
+> There is nothing particulary =A0interesting here, except than linker
+> switches for GNU ld (and I use Solaris LD anyway)
+>
+>> The issue you're seeing with the driver can be remediated by using this =
+patch:
+>> http://www.whiteboard.ne.jp/~admin2/tuntap/
+>
+> I know of this updated driver. Unfortunately I haven't figured out way
+> how to build 32-bit version of this driver on 64-bit machine. (I almost
+> forgot autoconf language and would have to dig into docs for few hours
+> to remember enough of it to add something like --disable-64bit).
+>
+> And my task is to build a package which can be installed on any machine.
+> So, I have to build both versions of driver on systems which
+> support 64 bit.
+>
+>
+>
+> -------------------------------------------------------------------------=
+-----
+> Crystal Reports &#45; New Free Runtime and 30 Day Trial
+> Check out the new simplified licensign option that enables unlimited
+> royalty&#45;free distribution of the report engine for externally facing
+> server and web deployment.
+> http://p.sf.net/sfu/businessobjects
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
+>
 
