@@ -1,16 +1,12 @@
+References: <49F1B322.6030705@...1032...> <1240630761l.7894l.0l@...1207...>
+	<49F34D62.4000302@...1114...>
+From: Benny Amorsen <benny+usenet@...1175...>
+Date: Mon, 27 Apr 2009 10:45:58 +0200
+In-Reply-To: <49F34D62.4000302@...1114...> (David Sommerseth's message
+	of "Sat\, 25 Apr 2009 19\:50\:26 +0200")
+Message-ID: <m3zle2cwmx.fsf@...1176...>
 MIME-Version: 1.0
-Sender: ichiga2@...277...
-In-Reply-To: <20090426160734.GA19542@...1066...>
-References: <20090424131323.GB21576@...1066...>
-	<fa2e1350904240747m2b9a110w471bceb2c335e765@...278...>
-	<20090424202940.GA30397@...1066...>
-	<251896ce0904250031l5aa2d985r234602e3fbc4d358@...278...>
-	<20090426143946.GA17612@...1066...>
-	<20090426160734.GA19542@...1066...>
-Date: Mon, 27 Apr 2009 01:39:22 +0900
-Message-ID: <251896ce0904260939w188a31der8e93269f2aac39f3@...278...>
-From: Kazuyoshi Aizawa <admin2@...628...>
-Subject: Re: [Openvpn-devel] Solaris questions
+Subject: Re: [Openvpn-devel] linux openvpn development job
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,58 +15,24 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi Victor,
+David Sommerseth <openvpn.list@...1114...> writes:
 
-Thank you very much for the patch and info.
-It is really helpful.
-I intend to apply it to my script.
-And I'll consider to provide tun.c as a patch.
+> What if OpenVPN on selected platforms also provided it's own kernel driver
+> which would do practically the same as the upstream tun.ko modules -
+> except it provides a direct API which OpenVPN can utilize, to avoid the
+> kernel-userspace-kernel ping-pong.
 
-Thanks,
+It seems that OpenVPN is quite far away from the theoretical performance
+where kernel-userspace-kernel copying becomes an issue. Right now
+encryption is quite expensive, except on a few platforms with dedicated
+AES instructions.
 
-Kazuyoshi
 
-2009/4/27 Victor Wagner <vitus@...1066...>:
-> On 2009.04.26 at 18:39:46 +0400, Victor Wagner wrote:
->
->> Of course. See attached patch (configure.patch).
->
-> Unfortunately, I've send untested patch. I've checked configure
-> invocation, but was too haste to check whether produced Makefile would
-> work.
->
-> Now there is tested patch.
->
-> Only thing is that to do make install without root rights (which is
-> common thing when building package and installing into temporary
-> directory) you need /usr/ucb/install from SUNscpu package.
->
-> Either included install-sh or GNU install from sunfreeware fails for
-> unability to chown files.
->
-> With this patch I've been able to build package for
-> Solaris 8,9,10 both i386 and sparc. And all Sparc packages and 10/intel
-> contain both 64-bit and 32-bit drivers.
->
-> I do not attach packaging Makefile yet, becouse it depends on my
-> solaris packaging scripts, which are not published anywhere.
->
->
->
-> ------------------------------------------------------------------------------
-> Crystal Reports &#45; New Free Runtime and 30 Day Trial
-> Check out the new simplified licensign option that enables unlimited
-> royalty&#45;free distribution of the report engine for externally facing
-> server and web deployment.
-> http://p.sf.net/sfu/businessobjects
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
->
+/Benny
+
 
