@@ -1,12 +1,12 @@
-Date: Mon, 27 Apr 2009 10:42:27 -0500
-From: "Karl O. Pinc" <kop@...1206...>
-References: <49F1B322.6030705@...1032...> <1240630761l.7894l.0l@...1207...>
-	<49F34D62.4000302@...1114...> <m3zle2cwmx.fsf@...1176...>
-In-Reply-To: <m3zle2cwmx.fsf@...1176...> (from benny+usenet@...1175...
-	on Mon Apr 27 03:45:58 2009)
-Message-Id: <1240846947l.13043l.1l@...1207...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] linux openvpn development job
+In-Reply-To: <49F6BDDB.1020200@...1212...>
+References: <m3prf3sag3.fsf@...1213...>
+	<9e0cf0bf0904231043x61f0776dm4b463b113fa5ff33@...278...>
+	<49F6BDDB.1020200@...1212...>
+Date: Tue, 28 Apr 2009 11:29:51 +0300
+Message-ID: <9e0cf0bf0904280129i6810505by2545ef210709466e@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] rc15 rpm spec glitches
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,49 +15,113 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; DelSp=Yes; Format=Flowed; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Benny Amorsen <benny+usenet@...1175...>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: aleksandar@...1212...
 Cc: openvpn-devel@lists.sourceforge.net
 
+Yes, I don't think it is maintained.
 
-On 04/27/2009 03:45:58 AM, Benny Amorsen wrote:
+Please send uniform diff.
 
->=20
-> It seems that OpenVPN is quite far away from the theoretical
-> performance
-> where kernel-userspace-kernel copying becomes an issue. Right now
-> encryption is quite expensive, except on a few platforms with
-> dedicated
-> AES instructions.
+Use: "diff -urNp"
 
-Dedicated encryption hardware is cheap. (<$100) And it seems
-that using it can also involve a kernel/userspace
-transition.
-
-I've a box with an AMD Geode LX.  This chip supports
-AES-128 bit encryption.  The same box also has a Hi/fn 7955
-chip on a separate PCI card, which supports AES-256
-as well as other algorithms.
-
-When I switch from AES-128 to AES-256, or other, cheaper,
-choices supported by the Hifn but not the Geode,
-I see a large performance hit.  Assuming my tests
-are right; I've not put a lot of effort into it.
-
-I suspect the problem is again kernel/userspace.
-The CPU is available to userspace, but the Hifn
-is not.  (There are other possibilities.  Perhaps
-OpenSSL does not play well with multiple hardware
-accelerators, or maybe my tests are just plain bad.)
-
-So, I believe it's easy and cheap to add hardware
-to a OpenVPN box and create a situation where
-the kernel/userspace transition cost does matter.
-
-
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                  -- Robert A. Heinlein
+On 4/28/09, Aleksandar Ivanisevic <aleksandar@...1212...> wrote:
+>
+>  Hm,
+>
+>  I'm talking about the .spec file within the official source tarball. Is
+> this whats not maintained any more?
+>
+>  Maybe you can accept a patch anyway? I've found out that pkcs11-helper is
+> an opensuse or Mandriva package, so the patch would look like this:
+>
+>
+>  *** openvpn.spec.in.orig        2009-04-28 10:14:48.000000000 +0200
+>  --- openvpn.spec.in     2009-04-28 10:17:59.000000000 +0200
+>  ***************
+>  *** 52,59 ****
+>  --- 52,61 ----
+>   %{!?without_pam:BuildRequires: pam-devel}
+>   %{!?without_pam:Requires:      pam}
+>
+>  + %if "%{_vendor}" == "MandrakeSoft" || "%{_vendor}" == "suse" ||
+> "%{_vendor}" == "pc"
+>   %{!?with_pkcs11:BuildRequires: pkcs11-helper-devel}
+>   %{!?with_pkcs11:Requires:      pkcs11-helper}
+>  + %endif
+>
+>   #
+>   # Description
+>  ***************
+>  *** 223,229 ****
+>   %endif
+>
+>   # Install extra %doc stuff
+>  ! %doc contrib/ easy-rsa/ management/ sample-*/ plugin/README.*
+>
+>   %changelog
+>   * Thu Dec 14 2006 Alon Bar-Lev
+>  --- 225,231 ----
+>   %endif
+>
+>   # Install extra %doc stuff
+>  ! %doc contrib/ easy-rsa/ sample-*/ plugin/README.*
+>
+>   %changelog
+>   * Thu Dec 14 2006 Alon Bar-Lev
+>
+>
+>
+>
+>  Alon Bar-Lev wrote:
+>
+> > I don't think this rpm is maintained, the rpm based distributions has
+> > a different versions.
+> >
+> > Alon.
+> >
+> > On 4/23/09, Aleksandar Ivanisevic <aleksandar@...1212...> wrote:
+> >
+> > > Hi,
+> > >
+> > >  I've been compiling a rpm of rc15 on rhel5 and noticed a couple of
+> > >  glitches:
+> > >
+> > >  %doc lists management/ dir, but its no longer there, so
+> > >
+> > >  %doc contrib/ easy-rsa/ management/ sample-*/ plugin/README.*
+> > >
+> > >  should be
+> > >
+> > >  %doc contrib/ easy-rsa/ sample-*/ plugin/README.*
+> > >
+> > >  with_pkcs11 tries to pull in pkcs11-helper, but no such package exists
+> > >  in RHEL, so it must be distro specific, but don't know which distro
+> > >
+> > >  %{!?with_pkcs11:BuildRequires: pkcs11-helper-devel}
+> > >  %{!?with_pkcs11:Requires:      pkcs11-helper}
+> > >
+> > >  it builds fine with --nodeps though.
+> > >
+> > >  regards,
+> > >
+> > >
+> > >
+> ------------------------------------------------------------------------------
+> > >  Stay on top of everything new and different, both inside and
+> > >  around Java (TM) technology - register by April 22, and save
+> > >  $200 on the JavaOne (SM) conference, June 2-5, 2009, San Francisco.
+> > >  300 plus technical and hands-on sessions. Register today.
+> > >  Use priority code J9JMT32. http://p.sf.net/sfu/p
+> > >  _______________________________________________
+> > >  Openvpn-devel mailing list
+> > >  Openvpn-devel@lists.sourceforge.net
+> > >
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> > >
+> > >
+> >
+> >
+>
 
