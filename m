@@ -1,15 +1,12 @@
-Message-ID: <49F6C33B.8000903@...1212...>
-Date: Tue, 28 Apr 2009 10:50:03 +0200
-From: Aleksandar Ivanisevic <aleksandar@...1212...>
+Message-ID: <49F6FA03.6070608@...1032...>
+Date: Tue, 28 Apr 2009 15:43:47 +0300
+From: =?ISO-8859-1?Q?Siim_P=F5der?= <siim@...1032...>
 MIME-Version: 1.0
-References: <m3prf3sag3.fsf@...1213...>	
-	<9e0cf0bf0904231043x61f0776dm4b463b113fa5ff33@...278...>	
-	<49F6BDDB.1020200@...1212...>
-	<9e0cf0bf0904280129i6810505by2545ef210709466e@...278...>
-In-Reply-To: <9e0cf0bf0904280129i6810505by2545ef210709466e@...278...>
-Content-Type: multipart/mixed; boundary="------------010409050503080509020800"
-Subject: Re: [Openvpn-devel] rc15 rpm spec glitches
-Reply-To: aleksandar@...1212...
+References: <49F1B322.6030705@...1032...>
+	<1240630761l.7894l.0l@...1207...>	<49F34D62.4000302@...1114...>
+	<m3zle2cwmx.fsf@...1176...> <1240846947l.13043l.1l@...1207...>
+In-Reply-To: <1240846947l.13043l.1l@...1207...>
+Subject: Re: [Openvpn-devel] linux openvpn development job
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,60 +15,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-This is a multi-part message in MIME format.
---------------010409050503080509020800
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+To: "Karl O. Pinc" <kop@...1206...>
+Cc: openvpn-devel@lists.sourceforge.net, Benny Amorsen <benny+usenet@...1175...>
+
+Hi
+
+Karl O. Pinc wrote:
+> So, I believe it's easy and cheap to add hardware
+> to a OpenVPN box and create a situation where
+> the kernel/userspace transition cost does matter.
+
+It's easy and cheap if you add a second box or third. But if you are
+approaching tens of openvpn boxes (at various locations) and you want to
+maintain rendundancy, it is not especially cheap nor is it especially
+easy. Maintaining the system gets a bit trickier and simply relying on
+ssh and grep doesn't cut it any more.
+
+Regarding the idea of moving openvpn to kernel, I think there are MUCH
+easier ways to improve the situation. As a large part of time is spent
+in moving data between kernel/user, that interface could be improved.
+
+There are two interfaces, udp sockets and tun devices. For both of them,
+experimental proposed rx/tx ring implementations exist:
+
+http://lwn.net/Articles/276856/ vringfd() is a genering buffer ring
+interface, developed for lguest and seems to be implemented for tun
+device. Not sure how much it would improve the situation, but I'm
+guessing quite a bit.
+
+http://wiki.ipxwarzone.com/index.php5?title=Linux_packet_mmap
+packet_ring_tx (and rx, IIRC) interface written by Johann Baudy. Quoting
+that wiki "I've reached 107Mo/S using a small embedded target
+(PPC405-300Mhz) where I've never exceeded 20Mo/s with normal raw socket."
 
 
-ok, attached
+Also our own test show that using standard (ie, not neccessarily
+optimized for routing) Opteron servers and intel e1000, we can saturate
+1G easilly (with up to 300Kpps in one direction), with about 10% of a
+single core working in softirq (50% if conntrack is in the picture).
+However, with openvpn, we can go up to ~80 Kpps without encryption and
+in that case, rougly half of the load goes into softirq and the other
+half goes into userland. Most of the drop from 300 to 80 should be
+wasted work.
 
-Alon Bar-Lev wrote:
-> Yes, I don't think it is maintained.
-> 
-> Please send uniform diff.
-> 
-> Use: "diff -urNp"
-> 
+With encryption, something along the lines of 50Kpps could be maintained
+(this is an estimation from another earlier test). Furthermore, roughly
+half of the CPU time goes into user and the other half into kernelland.
 
+Thinking out loud - if the machine can route much higher packet rates
+without breaking a sweat and encryption takes about half of the load,
+then optimizing the user/kernel interaction could improve performance up
+to 50%. Even if the ring buffers turn out to be less effective than I
+optimistically presume, 10% performance increase wouldn't be too shabby
+either.
 
---------------010409050503080509020800
-Content-Type: text/x-patch;
- name="openvpn.spec.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="openvpn.spec.patch"
+It doesn't seem too hard to implement at the first glance and if someone
+wants to try it a compensation could be arranged for that effort.
 
---- openvpn.spec.in.orig	2009-04-28 10:14:48.000000000 +0200
-+++ openvpn.spec.in	2009-04-28 10:47:30.000000000 +0200
-@@ -52,8 +52,10 @@ Requires:      openssl       >= 0.9.6
- %{!?without_pam:BuildRequires: pam-devel}
- %{!?without_pam:Requires:      pam}
- 
-+%if "%{_vendor}" == "MandrakeSoft" || "%{_vendor}" == "suse" || "%{_vendor}" == "pc"
- %{!?with_pkcs11:BuildRequires: pkcs11-helper-devel}
- %{!?with_pkcs11:Requires:      pkcs11-helper}
-+%endif 
- 
- #
- # Description
-@@ -223,9 +225,12 @@ fi
- %endif
- 
- # Install extra %doc stuff
--%doc contrib/ easy-rsa/ management/ sample-*/ plugin/README.*
-+%doc contrib/ easy-rsa/ sample-*/ plugin/README.*
- 
- %changelog
-+* Tue Apr 28 2009 Aleksandar Ivanisevic <aleksandar@...1212...>
-+- %doc cleanup and RHEL compatibility fixes
-+
- * Thu Dec 14 2006 Alon Bar-Lev
- - Added with_pkcs11
- 
-
---------------010409050503080509020800--
+Siim
 
