@@ -1,13 +1,14 @@
+Date: Wed, 29 Apr 2009 11:16:50 -0500
+From: "Karl O. Pinc" <kop@...1206...>
 References: <49F1B322.6030705@...1032...> <1240630761l.7894l.0l@...1207...>
 	<49F34D62.4000302@...1114...> <m3zle2cwmx.fsf@...1176...>
 	<1240846947l.13043l.1l@...1207...> <49F6FA03.6070608@...1032...>
 	<1240944303l.12737l.0l@...1207...> <49F75BBB.6000601@...1032...>
 	<49F78D72.3030104@...1114...> <49F7F1B0.9080600@...1032...>
-From: Benny Amorsen <benny+usenet@...1175...>
-Date: Wed, 29 Apr 2009 16:09:31 +0200
-In-Reply-To: <49F7F1B0.9080600@...1032...> ("Siim =?utf-8?Q?P=C3=B5de?=
-	=?utf-8?Q?r=22's?= message of "Wed\, 29 Apr 2009 09\:20\:32 +0300")
-Message-ID: <m3eivb361w.fsf@...1176...>
+	<m3eivb361w.fsf@...1176...>
+In-Reply-To: <m3eivb361w.fsf@...1176...> (from benny+usenet@...1175...
+	on Wed Apr 29 09:09:31 2009)
+Message-Id: <1241021810l.25454l.3l@...1207...>
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] linux openvpn development job
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,23 +19,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; DelSp=Yes; Format=Flowed; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: Siim =?utf-8?Q?P=C3=B5der?= <siim@...1032...>
+Content-Disposition: inline
+To: Benny Amorsen <benny+usenet@...1175...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Siim P=C3=B5der <siim@...1032...> writes:
 
-> Are you sure crypto accelerators allow DMA from user memory? I don't
-> know for sure either, but I would suspect that they would work like any
-> other device: copy to kernel, DMA to device, DMA back to kernel, copy to
-> user.
+On 04/29/2009 09:09:31 AM, Benny Amorsen wrote:
+> Siim P=F5der <siim@...1032...> writes:
+>=20
+> > Are you sure crypto accelerators allow DMA from user memory? I don't
+> > know for sure either, but I would suspect that they would work like
+> any
+> > other device: copy to kernel, DMA to device, DMA back to kernel,
+> copy to
+> > user.
+>=20
+> Devices don't care if memory belongs to user or kernel. Unless the
+> kernel restricts the device with an IOMMU; but that is still unusual
+> when it comes to PC's.
 
-Devices don't care if memory belongs to user or kernel. Unless the
-kernel restricts the device with an IOMMU; but that is still unusual
-when it comes to PC's.
+Doesn't the kernel care whether userspace has direct access to
+hardware?  Seems to me that the kernel does more than abstract
+hardware, it also protects hardware by managing concurrency and
+so forth and protects the entire system by keeping users from
+doing things with hardware that interfere with other processes.
+(E.g. bypassing the VM and doing DMA direct into somebody else's
+address space.)  Direct userspace access to hardware violates these
+principals.  Why would HW crypto accelerators be different
+and not require kernel mediation?
 
 
-/Benny
-
+Karl <kop@...1206...>
+Free Software:  "You don't pay back, you pay forward."
+                  -- Robert A. Heinlein
 
