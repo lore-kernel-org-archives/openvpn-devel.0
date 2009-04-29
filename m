@@ -1,12 +1,14 @@
-Message-ID: <49F7F1B0.9080600@...1032...>
-Date: Wed, 29 Apr 2009 09:20:32 +0300
-From: =?ISO-8859-1?Q?Siim_P=F5der?= <siim@...1032...>
 MIME-Version: 1.0
-References: <49F1B322.6030705@...1032...>	<1240630761l.7894l.0l@...1207...>	<49F34D62.4000302@...1114...>	<m3zle2cwmx.fsf@...1176...>	<1240846947l.13043l.1l@...1207...>	<49F6FA03.6070608@...1032...>
-	<1240944303l.12737l.0l@...1207...> <49F75BBB.6000601@...1032...>
-	<49F78D72.3030104@...1114...>
-In-Reply-To: <49F78D72.3030104@...1114...>
-Subject: Re: [Openvpn-devel] linux openvpn development job
+In-Reply-To: <49F6C33B.8000903@...1212...>
+References: <m3prf3sag3.fsf@...1213...>
+	<9e0cf0bf0904231043x61f0776dm4b463b113fa5ff33@...278...>
+	<49F6BDDB.1020200@...1212...>
+	<9e0cf0bf0904280129i6810505by2545ef210709466e@...278...>
+	<49F6C33B.8000903@...1212...>
+Date: Wed, 29 Apr 2009 11:40:02 +0300
+Message-ID: <9e0cf0bf0904290140v7ff8bedeyb026817ceed3dc64@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] rc15 rpm spec glitches
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +17,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: openvpn-devel@lists.sourceforge.net, Benny Amorsen <benny+usenet@...1175...>
+To: aleksandar@...1212...
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi
+Why did you remove the management from doc?
 
-David Sommerseth wrote:
-> The HW accelerator will not have that extreme processing power as an HSM,
-> but as they are working on the same internal bus as the rest of the
-> hardware and closer to the encryption/decryption needing software, it can
-> transfer smaller packages much more quickly and process smaller packages
-> quicker than an HSM.  I believe many of the accelerators also supports
-> DMA, which practically gives it instant access to the user memory region
-> where the payload is stored, without giving the CPU too much extra work.
-
-Are you sure crypto accelerators allow DMA from user memory? I don't
-know for sure either, but I would suspect that they would work like any
-other device: copy to kernel, DMA to device, DMA back to kernel, copy to
-user.
-
-Siim
+On 4/28/09, Aleksandar Ivanisevic <aleksandar@...1212...> wrote:
+>
+>  ok, attached
+>
+>
+>  Alon Bar-Lev wrote:
+>
+> > Yes, I don't think it is maintained.
+> >
+> > Please send uniform diff.
+> >
+> > Use: "diff -urNp"
+> >
+> >
+>
+>
+>
 
