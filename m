@@ -1,10 +1,11 @@
+From: "dave" <dev@...575...>
+Date: Wed, 27 May 2009 07:41:21 -0500
+Message-ID: <6577A8C6073C4955870B08F7CB09B9FD@...576...>
 MIME-Version: 1.0
-Sender: fyellin@...277...
-Date: Wed, 27 May 2009 10:48:30 -0700
-Message-ID: <f9615cc80905271048v646f546fod19ecec32c2a172a@...278...>
-From: Frank Yellin <fy@...1222...>
-Content-Type: multipart/alternative; boundary=0016362836a096c611046ae8737e
-Subject: [Openvpn-devel] Unable to use -OFB or -CFB ciphers in OpenVPN
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0022_01C9DE9E.87DDD130"
+In-Reply-To: <2ece24860905270336r54fb6cb9hfa1578e611d97fb3@...278...>
+Subject: Re: [Openvpn-devel] CE port needed DLLs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,78 +14,247 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: 'jonathan openvpn' <jonathan.openvpn@...277...>, openvpn-devel@lists.sourceforge.net
 
---0016362836a096c611046ae8737e
-Content-Type: text/plain; charset=ISO-8859-1
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_0022_01C9DE9E.87DDD130
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 
-I posted the following onto the OpenVPN forum, but it was suggested that I
-would be better off mailing directly to this list.
+That message usually means the binary is hosed, and I believe missing
+dlls give a different message.
+Are you sure Thumb is correct for your platform?  Are you using a
+consumer device like a pocket pc phone, etc, or is it a custom board?
+ 
+I ask that because the existing code does use some functionality
+peculiar to the pocket pc (phone) that is not generally available on
+other platforms, yet the SDKs ofen include the headers and import libs,
+allowing you to successfully compile, but then you can't run it on the
+target device.
+ 
+When you say 'client application' are you meaning just the gui, or the
+whole entire set of programs (i.e., the TAP driver, the openvpn
+executable, and the gui).
+ 
+You can use DUMPBIN to find the dlls from the exe, and also inspect the
+header to see the cpu configuration.  Here is a short list, if it helps:
+ 
+openvpn:
+*  coredll.dll
+*  w2s.dll
+*  iphlpapi.dll
+*  wininet.dll
+*  ole32.dll
+*  cellcore.dll
+ 
+tap-ce:
+*  ndis.dll
+*  coredll.dll
+ 
+ovpncmgr:
+*  iphlpapi.dll
+*  toolhelp.dll
+*  cellcore.dll
+*  ole32.dll
+*  mfcce300.dll
+*  coredll.dll
+*  winsock.dll
+ 
+Your build may (will) differ depending on your platform, because your
+platform builder may have put some of these features in different dlls.
+That list was for PocketPC.
+ 
+Now, the cellcore.dll, you may not have on other platforms.  It is
+needed for supporting Windows Connectin Manager, and you can surgically
+cut out that functionality if your platform doesn't have it.  Most of
+the rest is fairly standard.
+ 
+Before doing surgery, you may wish to re-check your assumptions.  Also,
+if you wish to zip up your problem binaries and send them to me
+directly, I will do a quick inspection for you.
+ 
+-dave
 
-=========================
+-----Original Message-----
+From: jonathan openvpn [mailto:jonathan.openvpn@...277...] 
+Sent: Wednesday, May 27, 2009 5:36 AM
+To: openvpn-devel@lists.sourceforge.net
+Subject: [Openvpn-devel] CE port needed DLLs
 
-I seem to have found a bug in 2.1_rc16 that is also apparent in earlier
-versions. Although OpenVPN claims to support -CFB and -OFB cipher modes,
-using them seems to cause OpenVPN to crash consistently.
 
-For example, when I run the simple TLS example on the 2.1 documentation
-page, it works fine.  But if I add "--cipher bf-cfb" to both the client and
-server command lines, one or the other will crash. The error message is
-always "Assertion failed at crypto.c:162". The crasher is always the first
-one to try and send an encrypted message.
+Hello.
 
-Looking at that line of code, we have
-.... outlen gets number of bytes written from previous EVP_CipherFinal ....
-ASSERT(outlen == iv_size)
+I'm triying to execute a Windows CE 5.0 porting of openvpn client
+application. I've been successful on compiling it but when i try to
+execute i receive the message: "openvpn is not a valid WindowsCE
+application".
 
-While for a block cipher such as the default BF-CBC, it makes sense that
-EVP_CipherFinal always writes out a final block, this is not the case for a
-stream ciphers.  For stream ciphers, EVP_CipherFinal may write out no bytes
-whatsover! I don't quite understand the rest of the code, so I'm not quite
-sure whether this is necessary for the rest of the code to run successfuly,
-or if this is just an incorrect sanity check.
-.
- When I comment out this line, the program runs just fine, and I can
-successfully use BF-CFB and BF-OFB.
+I am compiling to ARM-Thumb architecture. I suspect there is a problem
+with needed DLLs.
 
-Thanks.
+Could anyone tell me wich DLLs are needed and where could i get them?
 
--- Frank Yellin
+Thank you very much.
 
---0016362836a096c611046ae8737e
-Content-Type: text/html; charset="ISO-8859-1"
+
+
+------=_NextPart_000_0022_01C9DE9E.87DDD130
+Content-Type: text/html; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-I posted the following onto the OpenVPN forum, but it was suggested that I =
-would be better off mailing directly to this list.<br><br>=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D<br><br> I seem=
- to have found a bug in 2.1_rc16 that is also apparent in earlier
-versions. Although OpenVPN claims to support -CFB and -OFB cipher modes,
-using them seems to cause OpenVPN to crash consistently.=A0<br>
-=A0<br>
-For example, when I run the simple TLS example on the 2.1 documentation
-page, it works fine.=A0 But if I add &quot;--cipher bf-cfb&quot; to both th=
-e client
-and server command lines, one or the other will crash. The error message is
-always &quot;Assertion failed at crypto.c:162&quot;. The crasher is always =
-the first one to try and send an encrypted message.<br>
-=A0<br>
-Looking at that line of code, we have<br>
-      <div style=3D"margin-left: 40px;"><span style=3D"font-family: courier=
- new,monospace;">.... outlen gets number of bytes written from previous EVP=
-_CipherFinal ....=A0</span><br style=3D"font-family: courier new,monospace;=
-"><span style=3D"font-family: courier new,monospace;">
-      ASSERT(outlen =3D=3D iv_size)=A0</span><br></div>
-<br>While for a block cipher such as the default BF-CBC, it makes sense tha=
-t EVP_CipherFinal always writes out a final block, this is not the case for=
- a stream ciphers.=A0 For stream ciphers, EVP_CipherFinal may write out no =
-bytes whatsover! I don&#39;t quite understand the rest of the code, so I&#3=
-9;m not quite sure whether this is necessary for the rest of the code to ru=
-n successfuly, or if this is just an incorrect sanity check.<br>
-. =A0<br>=A0When I comment out this line, the program runs just fine, and I=
- can successfully use BF-CFB and BF-OFB.<br><br>Thanks.<br><br>-- Frank Yel=
-lin<br>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; charset=3Dus-ascii">
+<TITLE>Message</TITLE>
 
---0016362836a096c611046ae8737e--
+<META content=3D"MSHTML 6.00.6000.16825" name=3DGENERATOR></HEAD>
+<BODY>
+<DIV>
+<DIV><SPAN class=3D947451512-27052009><FONT face=3DArial color=3D#0000ff si=
+ze=3D2>That=20
+message usually means the binary is hosed, and I believe missing dlls give =
+a=20
+different message.</FONT></SPAN></DIV>
+<DIV><SPAN class=3D947451512-27052009><FONT face=3DArial color=3D#0000ff si=
+ze=3D2>Are=20
+you sure Thumb is correct for your platform?&nbsp; Are you using a consumer=
+=20
+device like a pocket pc phone, etc, or is it a custom board?</FONT></SPAN><=
+/DIV>
+<DIV><SPAN class=3D947451512-27052009><FONT face=3DArial color=3D#0000ff=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D947451512-27052009><FONT face=3DArial color=3D#0000ff si=
+ze=3D2>I ask=20
+that because the existing code does use some functionality peculiar to the=
+=20
+pocket pc (phone) that is not generally available on other platforms, yet t=
+he=20
+SDKs ofen include the headers and import libs, allowing you to successfully=
+=20
+compile, but then you can't run it on the target device.</FONT></SPAN></DIV>
+<DIV><SPAN class=3D947451512-27052009><FONT face=3DArial color=3D#0000ff=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D947451512-27052009><FONT face=3DArial color=3D#0000ff si=
+ze=3D2>When=20
+you say 'client application' are you meaning just the gui, or the whole ent=
+ire=20
+set of programs (i.e., the TAP driver, the openvpn executable, and the=20
+gui).</FONT></SPAN></DIV>
+<DIV><SPAN class=3D947451512-27052009><FONT face=3DArial color=3D#0000ff=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D947451512-27052009><FONT face=3DArial color=3D#0000ff si=
+ze=3D2>You=20
+can use DUMPBIN to find the dlls from the exe, and also inspect the header =
+to=20
+see the cpu configuration.&nbsp; Here is a short list, if it=20
+helps:</FONT></SPAN></DIV>
+<DIV><SPAN class=3D947451512-27052009><FONT face=3DArial color=3D#0000ff=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D947451512-27052009><FONT face=3DArial color=3D#0000ff=20
+size=3D2>openvpn:</FONT></SPAN></DIV>
+<DIV><SPAN class=3D947451512-27052009><FONT face=3DArial color=3D#0000ff=20
+size=3D2>*&nbsp; coredll.dll</FONT></SPAN></DIV>
+<DIV><SPAN class=3D947451512-27052009><FONT face=3DArial color=3D#0000ff=20
+size=3D2>*&nbsp; w2s.dll</FONT></SPAN></DIV>
+<DIV><SPAN class=3D947451512-27052009><FONT face=3DArial color=3D#0000ff=20
+size=3D2>*&nbsp; iphlpapi.dll</FONT></SPAN></DIV>
+<DIV><SPAN class=3D947451512-27052009><FONT face=3DArial color=3D#0000ff=20
+size=3D2>*&nbsp; wininet.dll</FONT></SPAN></DIV>
+<DIV><SPAN class=3D947451512-27052009><FONT face=3DArial color=3D#0000ff=20
+size=3D2>*&nbsp; ole32.dll</FONT></SPAN></DIV>
+<DIV><SPAN class=3D947451512-27052009><FONT face=3DArial color=3D#0000ff=20
+size=3D2>*&nbsp; cellcore.dll</FONT></SPAN></DIV>
+<DIV><FONT face=3DTahoma><FONT size=3D2><SPAN class=3D947451512-27052009><F=
+ONT=20
+face=3DArial color=3D#0000ff></FONT></SPAN></FONT></FONT>&nbsp;</DIV>
+<DIV><FONT size=3D+0><FONT face=3DArial color=3D#0000ff size=3D2><SPAN=20
+class=3D947451512-27052009>tap-ce:</SPAN></FONT></FONT></DIV>
+<DIV><FONT size=3D+0><FONT face=3DArial color=3D#0000ff size=3D2><SPAN=20
+class=3D947451512-27052009>*&nbsp; ndis.dll</SPAN></FONT></FONT></DIV>
+<DIV><FONT size=3D+0><FONT face=3DArial color=3D#0000ff size=3D2><SPAN=20
+class=3D947451512-27052009>*&nbsp; coredll.dll</SPAN></FONT></FONT></DIV>
+<DIV><FONT size=3D+0><FONT face=3DArial color=3D#0000ff size=3D2><SPAN=20
+class=3D947451512-27052009></SPAN></FONT></FONT>&nbsp;</DIV>
+<DIV><FONT size=3D+0><FONT face=3DArial color=3D#0000ff size=3D2><SPAN=20
+class=3D947451512-27052009>ovpncmgr:</SPAN></FONT></FONT></DIV>
+<DIV><FONT size=3D+0><FONT face=3DArial color=3D#0000ff size=3D2><SPAN=20
+class=3D947451512-27052009>*&nbsp; iphlpapi.dll</SPAN></FONT></FONT></DIV>
+<DIV><FONT size=3D+0><FONT face=3DArial color=3D#0000ff size=3D2><SPAN=20
+class=3D947451512-27052009>*&nbsp; toolhelp.dll</SPAN></FONT></FONT></DIV>
+<DIV><FONT size=3D+0><FONT face=3DArial color=3D#0000ff size=3D2><SPAN=20
+class=3D947451512-27052009>*&nbsp; cellcore.dll</SPAN></FONT></FONT></DIV>
+<DIV><FONT size=3D+0><FONT face=3DArial color=3D#0000ff size=3D2><SPAN=20
+class=3D947451512-27052009>*&nbsp; ole32.dll</SPAN></FONT></FONT></DIV>
+<DIV><FONT size=3D+0><FONT face=3DArial color=3D#0000ff size=3D2><SPAN=20
+class=3D947451512-27052009>*&nbsp; mfcce300.dll</SPAN></FONT></FONT></DIV>
+<DIV><FONT size=3D+0><FONT face=3DArial color=3D#0000ff size=3D2><SPAN=20
+class=3D947451512-27052009>*&nbsp; coredll.dll</SPAN></FONT></FONT></DIV>
+<DIV><FONT size=3D+0><FONT face=3DArial color=3D#0000ff size=3D2><SPAN=20
+class=3D947451512-27052009>*&nbsp; winsock.dll</SPAN></FONT></FONT></DIV>
+<DIV><FONT face=3DTahoma><FONT face=3DArial color=3D#0000ff size=3D2><SPAN=
+=20
+class=3D947451512-27052009></SPAN></FONT></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DTahoma><FONT face=3DArial color=3D#0000ff size=3D2><SPAN=
+=20
+class=3D947451512-27052009>Your build may (will) differ depending on your=20
+platform, because your platform builder may have put some of these features=
+ in=20
+different dlls.&nbsp; That list was for PocketPC.</SPAN></FONT></FONT></DIV>
+<DIV><FONT face=3DTahoma><FONT face=3DArial color=3D#0000ff size=3D2><SPAN=
+=20
+class=3D947451512-27052009></SPAN></FONT></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DTahoma><FONT face=3DArial color=3D#0000ff size=3D2><SPAN=
+=20
+class=3D947451512-27052009>Now, the cellcore.dll, you may not have on other=
+=20
+platforms.&nbsp; It is needed for supporting Windows Connectin Manager, and=
+ you=20
+can surgically cut out that functionality if your platform doesn't have=20
+it.&nbsp; Most of the rest is fairly standard.</SPAN></FONT></FONT></DIV>
+<DIV><FONT face=3DTahoma><FONT face=3DArial color=3D#0000ff size=3D2><SPAN=
+=20
+class=3D947451512-27052009></SPAN></FONT></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DTahoma><FONT face=3DArial color=3D#0000ff size=3D2><SPAN=
+=20
+class=3D947451512-27052009>Before doing surgery, you may wish to re-check y=
+our=20
+assumptions.&nbsp; Also, if you wish to zip up your problem binaries and se=
+nd=20
+them to me directly, I will do a quick inspection for=20
+you.</SPAN></FONT></FONT></DIV>
+<DIV><FONT face=3DTahoma><FONT face=3DArial color=3D#0000ff size=3D2><SPAN=
+=20
+class=3D947451512-27052009></SPAN></FONT></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DTahoma><FONT face=3DArial color=3D#0000ff size=3D2><SPAN=
+=20
+class=3D947451512-27052009>-dave</SPAN></FONT></FONT></DIV></DIV>
+<BLOCKQUOTE=20
+style=3D"PADDING-LEFT: 5px; MARGIN-LEFT: 5px; BORDER-LEFT: #0000ff 2px soli=
+d; MARGIN-RIGHT: 0px">
+  <DIV></DIV>
+  <DIV class=3DOutlookMessageHeader lang=3Den-us dir=3Dltr align=3Dleft><FO=
+NT=20
+  face=3DTahoma size=3D2>-----Original Message-----<BR><B>From:</B> jonatha=
+n openvpn=20
+  [mailto:jonathan.openvpn@...277...] <BR><B>Sent:</B> Wednesday, May 27, 2=
+009=20
+  5:36 AM<BR><B>To:</B> openvpn-devel@lists.sourceforge.net<BR><B>Subject:<=
+/B>=20
+  [Openvpn-devel] CE port needed DLLs<BR><BR></FONT></DIV>Hello.<BR><BR>I'm=
+=20
+  triying to execute a Windows CE 5.0 porting of openvpn client application=
+.=20
+  I've been successful on compiling it but when i try to execute i receive =
+the=20
+  message: "openvpn is not a valid WindowsCE application".<BR><BR>I am comp=
+iling=20
+  to ARM-Thumb architecture. I suspect there is a problem with needed=20
+  DLLs.<BR><BR>Could anyone tell me wich DLLs are needed and where could i =
+get=20
+  them?<BR><BR>Thank you very much.<BR></BLOCKQUOTE></BODY></HTML>
+
+------=_NextPart_000_0022_01C9DE9E.87DDD130--
+
 
