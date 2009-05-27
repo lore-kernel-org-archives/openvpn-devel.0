@@ -1,14 +1,9 @@
-Date: Thu, 21 May 2009 10:02:10 -0500
-From: "Karl O. Pinc" <kop@...1206...>
-References: <4A13BBB4.8020101@...41...>
-	<20090520093956.GA18980@...33...>
-	<20090521063658.GB28090@...1221...>
-	<9e0cf0bf0905202351u56559c42pbc5db3c1b6de51b@...278...>
-In-Reply-To: <9e0cf0bf0905202351u56559c42pbc5db3c1b6de51b@...278...>
-	(from alon.barlev@...277... on Thu May 21 01:51:36 2009)
-Message-Id: <1242918130l.28725l.5l@...1207...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] OpenVPN 2.1_rc16 released
+Date: Wed, 27 May 2009 12:36:01 +0200
+Message-ID: <2ece24860905270336r54fb6cb9hfa1578e611d97fb3@...278...>
+From: jonathan openvpn <jonathan.openvpn@...277...>
+Content-Type: multipart/alternative; boundary=00504502ccdaebd2f3046ae26814
+Subject: [Openvpn-devel] CE port needed DLLs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,52 +12,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; DelSp=Yes; Format=Flowed; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
+--00504502ccdaebd2f3046ae26814
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-On 05/21/2009 01:51:36 AM, Alon Bar-Lev wrote:
-> On 5/21/09, Felix Kronlage <fkr@...1138...> wrote:
-> > On Wed, May 20, 2009 at 11:39:57AM +0200, Matthias Andree wrote:
-> >
-> >  > + release openvpn 2.1 without Windows GUI as soon as you believe
-> it's done
-> >  >    * your changelog below suggests that RC16 needs more than just
-> >  >      a week of testing
-> >  > + stabilize (through beta and RC) the Windows GUI as a separate
-> add-on
-> >  >   package (if you want, these test releases can then comprise
-> 2.1_rc,
-> >  >   2.1.0, 2.1.1, ... whichever is current, for user convenience)
-> >
-> >
-> > ack.
-> >  Small and fast release cycles. At least 'fast' compared to now
-> would
-> >  be nice.
->=20
-> Yes...
-> OpenVPN has several separate components, each can be released
-> separately:
+Hello.
 
->=20
-> It would be much easier if every component has its own version and
-> dependency.
+I'm triying to execute a Windows CE 5.0 porting of openvpn client
+application. I've been successful on compiling it but when i try to execute
+i receive the message: "openvpn is not a valid WindowsCE application".
 
-This makes sense to me.
+I am compiling to ARM-Thumb architecture. I suspect there is a problem with
+needed DLLs.
 
-I'm putting in a vote for releasing as-is (ish) and not making
-any major changes until the next release.  I've put a lot of time
-into working with rc15 in the expectation that there won't be much
-in the way of changes for the final 2.1 release.  It seems
-reasonable to expect major changes on release boundaries.
-Violating that expectation would, at minimum, keep me away
-from rc releases.
+Could anyone tell me wich DLLs are needed and where could i get them?
 
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                  -- Robert A. Heinlein
+Thank you very much.
+
+--00504502ccdaebd2f3046ae26814
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+
+Hello.<br><br>I&#39;m triying to execute a Windows CE 5.0 porting of openvpn client application. I&#39;ve been successful on compiling it but when i try to execute i receive the message: &quot;openvpn is not a valid WindowsCE application&quot;.<br>
+<br>I am compiling to ARM-Thumb architecture. I suspect there is a problem with needed DLLs.<br><br>Could anyone tell me wich DLLs are needed and where could i get them?<br><br>Thank you very much.<br>
+
+--00504502ccdaebd2f3046ae26814--
 
