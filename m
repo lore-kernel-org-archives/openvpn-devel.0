@@ -1,15 +1,12 @@
+Message-ID: <4A210AB1.2050901@...41...>
+Date: Sat, 30 May 2009 04:30:09 -0600
+From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-Sender: fyellin@...277...
-In-Reply-To: <20090528092618.GA31165@...1066...>
-References: <f9615cc80905271048v646f546fod19ecec32c2a172a@...278...>
-	<20090528055401.GB24851@...1066...>
-	<f9615cc80905272317pa53b833vbe66477de31537b9@...278...>
-	<20090528092618.GA31165@...1066...>
-Date: Fri, 29 May 2009 11:19:10 -0700
-Message-ID: <f9615cc80905291119h4e8c5cb1s6632f49aaa693b1b@...278...>
-From: Frank Yellin <fy@...1222...>
-Content-Type: multipart/alternative; boundary=00163628360aebc631046b111c75
-Subject: Re: [Openvpn-devel] Unable to use -OFB or -CFB ciphers in OpenVPN
+References: <20090529110957.111780@...95...>
+	<9e0cf0bf0905290425x396bb7f4o1c68c00a2f12ba0c@...278...>
+In-Reply-To: <9e0cf0bf0905290425x396bb7f4o1c68c00a2f12ba0c@...278...>
+Subject: Re: [Openvpn-devel] Reporting issue with v2.1 rc16
+	and	--cryptoapicert
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,51 +15,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
---00163628360aebc631046b111c75
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-A simpler way to see the crypto bug. . . .
+I would rather not have touched cryptoapi.c for rc16, but it wouldn't
+build with MinGW 5.1.4 (the .h files in this version of MinGW define the
+symbol CryptAcquireCertificatePrivateKey which conflicts with the symbol
+of the same definition in cryptoapi.c).  So I did try to work around the
+issue, but perhaps I broke something in the process.
 
-$ openvpn --secret static.key --test-crypto
-     ....
-Fri May 29 10:56:58 2009 OpenVPN crypto self-test mode SUCCEEDED.
+It would be great if one of the developers that uses the crypto API
+feature could take a look at it.  We will certainly accept a patch that
+fixes any introduced breakage.
 
-$ openvpn --secret static.key --test-crypto --cipher bf-ofb
-Fri May 29 11:12:07 2009 OpenVPN 2.1_rc15 mipsel-unknown-linux-gnu [SSL]
-[LZO2] built on May  2 2009
-Fri May 29 11:12:07 2009 OpenVPN 2.1_rc15 mipsel-unknown-linux-gnu [SSL]
-[LZO2] built on May  2 2009
-Fri May 29 11:12:07 2009 Entering OpenVPN crypto self-test mode.
-Fri May 29 11:12:07 2009 TESTING ENCRYPT/DECRYPT of packet length=1
-Fri May 29 11:12:07 2009 Assertion failed at crypto.c:162
-Fri May 29 11:12:07 2009 Exiting
+James
 
-I'd like someone who understands this code to confirm that the ASSERT is
-incorrect.
+Alon Bar-Lev wrote:
+> True.
+> I already reported this to James.
+> There were too many change-replace at the cryptoapi.c in this version.
+> 
+> On Fri, May 29, 2009 at 2:09 PM, Markus Bickel <ZeroCool.2001@...68...> wrote:
+>> Dear developers,
+>>
+>> I'm currently installing and testing OpenVPN 2.1 on windows environment and have seen that there's a newer version rc16.
+>>
+>> Since this version I cannot use the parameter:
+>>
+>> --cryptoapicert "Thumb:xx xx xx xx xx"
+>>
+>> Error message:
+>>
+>> cannot load certificate "Thumb:xx xx xx xx .... " from Microsoft Certificate Store:
+>> error:C506C064:microsoft cryptoapi:GetProcAddress:The specified procedure could not be found.
+>>
+>>
+>> This behaviour is the same on server or client sides.
+>> With rc15 this worked well.
+>>
+>> Maybe this is a small bug.
+>> So I want to report this issue to you.
+>>
+>> Would it be fixed in rc17?
+>>
+>> Thanks in Adanvce,
+>>
+>> Markus
+>>
+>> --
+>> Nur bis 31.05.: GMX FreeDSL Komplettanschluss mit DSL 6.000 Flatrate und
+>> Telefonanschluss nur 17,95 Euro/mtl.!* http://portal.gmx.net/de/go/dsl02
+>>
+>> ------------------------------------------------------------------------------
+>> Register Now for Creativity and Technology (CaT), June 3rd, NYC. CaT
+>> is a gathering of tech-side developers & brand creativity professionals. Meet
+>> the minds behind Google Creative Lab, Visual Complexity, Processing, &
+>> iPhoneDevCamp as they present alongside digital heavyweights like Barbarian
+>> Group, R/GA, & Big Spaceship. http://p.sf.net/sfu/creativitycat-com
+>> _______________________________________________
+>> Openvpn-devel mailing list
+>> Openvpn-devel@lists.sourceforge.net
+>> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>>
+> 
+> ------------------------------------------------------------------------------
+> Register Now for Creativity and Technology (CaT), June 3rd, NYC. CaT 
+> is a gathering of tech-side developers & brand creativity professionals. Meet
+> the minds behind Google Creative Lab, Visual Complexity, Processing, & 
+> iPhoneDevCamp as they present alongside digital heavyweights like Barbarian 
+> Group, R/GA, & Big Spaceship. http://p.sf.net/sfu/creativitycat-com 
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
-(I'll also point out the minor bug of the header being printed out twice!)
-
---00163628360aebc631046b111c75
-Content-Type: text/html; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-
-A simpler way to see the crypto bug. . . .<br><br><div style=3D"margin-left=
-: 40px;">$ openvpn --secret static.key --test-crypto<br>=A0 =A0=A0 .... <br=
->Fri May 29 10:56:58 2009 OpenVPN crypto self-test mode SUCCEEDED.<br><br>$=
- openvpn --secret static.key --test-crypto --cipher bf-ofb<br>
-Fri May 29 11:12:07 2009 OpenVPN 2.1_rc15 mipsel-unknown-linux-gnu [SSL] [L=
-ZO2] built on May=A0 2 2009<br>Fri May 29 11:12:07 2009 OpenVPN 2.1_rc15 mi=
-psel-unknown-linux-gnu [SSL] [LZO2] built on May=A0 2 2009<br>Fri May 29 11=
-:12:07 2009 Entering OpenVPN crypto self-test mode.<br>
-Fri May 29 11:12:07 2009 TESTING ENCRYPT/DECRYPT of packet length=3D1<br>Fr=
-i May 29 11:12:07 2009 Assertion failed at crypto.c:162<br>Fri May 29 11:12=
-:07 2009 Exiting<br><br></div>I&#39;d like someone who understands this cod=
-e to confirm that the ASSERT is incorrect.=A0 <br>
-<br>(I&#39;ll also point out the minor bug of the header being printed out =
-twice!)<br><br><br><br>
-
---00163628360aebc631046b111c75--
 
