@@ -1,11 +1,8 @@
-Message-ID: <4A219D3A.9080902@...41...>
-Date: Sat, 30 May 2009 14:55:22 -0600
+Message-ID: <4A21B085.6090603@...41...>
+Date: Sat, 30 May 2009 16:17:41 -0600
 From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-References: <1AC345EACB034D778AC18983907FB492@...1205...>
-	<49C9FCE3.2010009@...1114...>
-In-Reply-To: <49C9FCE3.2010009@...1114...>
-Subject: Re: [Openvpn-devel] Get server to listen for TCP and UDP connections
+Subject: [Openvpn-devel] OpenVPN 2.1_rc17 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,82 +13,54 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: "M. G." <mg1984@...1204...>, openvpn-devel@lists.sourceforge.net
+To: OpenVpn-Users <openvpn-users@lists.sourceforge.net>, Openvpn-devel@lists.sourceforge.net
 
-David Sommerseth wrote:
-> M. G. wrote:
->> Hello,
->>  
->> I recently changed my VPN-tunnel from TCP to UDP for the sake of better 
->> performance. It generally works very well but I noticed that I can't 
->> connect to my server from some networks when using UDP, e.g. at work. 
->> This may be an issue with the NAT/firewall configuration which I have no 
->> influence on.
->> Since I am connecting from random locations where I don't know 
->> beforehand if a UDP connection will succeed, I'm now kind of worried 
->> that it'll get a game of luck if a connection succeeds from a specific 
->> location.
->>  
->> So far my story, now to the question:
->> What is the reason that OpenVPN doesn't have an option to listen for TCP 
->> AND UDP connections simultaneously? Is it a technical problem that I 
->> cannot see, or am I simply the only one who thinks this would be a nice 
->> feature?
-> 
-> In theory, you are very right, this should not be a big issue.  But I 
-> believe this is connected to that openvpn is neither forked nor threaded 
-> when working with connections.  It's all in the same process scope, which 
-> does its own scheduling regarding the connections, if I've understood the 
-> code right.  And to make the current implementation work concurrently with 
-> both TCP and UDP will be somewhat more difficult.  And due to this, openvpn 
-> do not really use the power of multi-core hosts as one single process can 
-> only be run on one core at the time.
-> 
-> I've been looking at the whole connection handling, and I've been 
-> considering to try to rewrite it and to use proper Posix threading.  The 
-> challenge with doing that is that it might not work so well on non-posix 
-> compatible platforms.  And I'm not sure how that would work for the Windows 
-> world.  But by moving over to a proper threading model, I'd expect both 
-> performance and scalability to improve, and also concurrent TCP and UDP 
-> setups to work out more easily.  And with several threads, openvpn can also 
-> make better use of all available CPU cores on the host.
-> 
->> I know I could run two server instances on different tun devices but I 
->> think it'd be much nicer (and resource-friendly) if I could just put 
->> "proto udp tcp-server" (or whatever) into the config file and be 
->> flexible with my connections to the server.
-> 
-> It would sure be nicer to use the same tun device, also from a
-> configuration perspective (less instances to take care of).  But I'm not 
-> sure it is that much more resource-friendly, except less memory usage 
-> perhaps.  The kernel usually won't spend much extra CPU time on sleeping 
-> processes or devices.
-> 
-> But on the other side, if your openvpn processes are configured to run on 
-> separate CPU cores, you might have a better performance if you have 
-> multiple clients connecting at the same time, given the status of the 
-> current scheduling implementation.
+Change Log:
 
-I worry about trying to debug multi-threaded code -- it could fail in 
-non-deterministic ways.  How can we maintain product quality when the 
-code could have subtle race conditions that only show up in heavy 
-production usage and leave no useful info to enable its reproduction? 
-Personally, multithreading scares me, as does any design pattern that 
-has the potential to introduce non-deterministic bugs.
+2009.05.30 -- Version 2.1_rc17
 
-I would also argue that multithreading is not a performance panacea, 
-because of the necessity of using locking primitives such as mutexes, 
-etc. that lock the global bus, and the often overlooked costs of 
-maintaining cache coherency among multiple processors and cores, when 
-multiple threads are writing to the same data structures.
+* Reduce the debug level (--verb) at which received management interface
+   commands are echoed from 7 to 3.  Passwords will be filtered.
 
-I believe a better alternative to multithreading, in OpenVPN's case, is 
-to use multiple processes where each process has it's own asynchronous 
-event reactor (e.g. Python/Twisted, libevent, Boost::Asio), and the 
-processes communicate via messaging, such as over a local unix domain 
-socket or Windows named pipe.  This also has a performance advantage, 
-because separate processes aren't going to be fighting over the same memory.
+* Fixed race condition in management interface recv code on
+   Windows, where sending a set of several commands to the
+   management interface in quick succession might cause the
+   latter commands in the set to be ignored.
+
+* Increased management interface input command buffer size
+   from 256 to 1024 bytes.
+
+* Minor tweaks to Windows build system.
+
+* Added "redirect-private" option which allows private subnets
+   to be pushed to the client in such a way that they don't accidently
+   obscure critical local addresses such as the DHCP server address and
+   DNS server addresses.
+
+* Added 'autolocal' redirect-gateway flag.  When enabled, the OpenVPN
+   client will examine the routing table and determine whether (a) the
+   OpenVPN server is reachable via a locally connected interface, or (b)
+   traffic to the server must be forwarded through the default router.
+   Only add a special bypass route for the OpenVPN server if (b) is true.
+   If (a) is true, behave as if the 'local' flag is specified, and do not
+   add a bypass route.
+
+   The new 'autolocal' flag depends on the non-portable test_local_addr()
+   function in route.c, which is currently only implemented for Windows.
+   The 'autolocal' flag will act as a no-op on platforms that have not
+   yet defined a test_local_addr() function.
+
+* Increased TLS_CHANNEL_BUF_SIZE to 2048 from 1024 (this will allow for
+   more option content to be pushed from server to client).
+
+* Raised D_MULTI_DROPPED debug level to 4 from 3 to filter out (at debug
+   levels <=3) a common and usually innocuous warning.
+
+* Fixed issue of symbol conflicts interfering with Windows CryptoAPI
+   functionality (Alon Bar-Lev).
+
+* Fixed bug where the remote_X environmental variables were not being
+   set correctly when the 'local' option is specifed.
 
 James
 
