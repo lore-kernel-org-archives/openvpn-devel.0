@@ -1,9 +1,8 @@
-From: "dave" <dev@...575...>
-Date: Sun, 31 May 2009 12:18:38 -0500
-Message-ID: <151FBE27E5544C288E18E5C0B1A415D4@...576...>
+Date: Sun, 31 May 2009 21:10:46 +0200
+From: Felix Kronlage <fkr@...1138...>
+Message-ID: <20090531191044.GA29992@...1143...>
 MIME-Version: 1.0
-In-Reply-To: <9e0cf0bf0905310933k5ed8f1j5389c6f301db110@...278...>
-Subject: Re: [Openvpn-devel] Reporting issue with v2.1 rc16and--cryptoapicert
+Subject: [Openvpn-devel] source changes mailing list
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,26 +11,18 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: 'Alon Bar-Lev' <alon.barlev@...277...>
-Cc: openvpn-devel@lists.sourceforge.net, 'James Yonan' <jim@...41...>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Gotcha.  Also minor bug:  the buld number shows as rc16b instead of rc17
+hi,
 
-> -----Original Message-----
-> From: Alon Bar-Lev [mailto:alon.barlev@...277...] 
-...
-> 
-> True.
-> 
-> Well, this is the original patch I sent [1]
-> 
-> [1] 
-> http://www.opensc-project.org/build/browser/trunk/patches/open
-> vpn-002-mingw.patch?rev=30
+I've been wondering for a while now, wether there is any chance a mailing 
+list where the commits that go into the openvpn repository are mailed to 
+could be established?
+I really like that way of being able to track the further development.
 
-...
+felix
 
 
