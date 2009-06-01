@@ -1,9 +1,9 @@
 From: "dave" <dev@...575...>
-Date: Mon, 1 Jun 2009 10:02:33 -0500
-Message-ID: <71E07DE543304779823588CC51F53E5C@...576...>
+Date: Mon, 1 Jun 2009 07:45:13 -0500
+Message-ID: <066077553B6D451A8727FFA24F09AC1C@...576...>
 MIME-Version: 1.0
-In-Reply-To: <20090601125130.GA26473@...1066...>
-Subject: Re: [Openvpn-devel] Unable to use -OFB or -CFB ciphers in	OpenVPN
+In-Reply-To: <20090601051543.GA15965@...1066...>
+Subject: Re: [Openvpn-devel] Unable to use -OFB or -CFB ciphers in OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,37 +18,37 @@ Content-Transfer-Encoding: 7bit
 To: 'Victor Wagner' <vitus@...1066...>, openvpn-devel@lists.sourceforge.net
 
 > -----Original Message-----
-> From: 'Victor Wagner' [mailto:vitus@...1066...] 
+> From: Victor Wagner [mailto:vitus@...1066...] 
 ...
-> As far as I can see, openvpn can be thoroughly tested in automated
-> fashion. I have some test farm with half a hundred various 
-> OSes (Linux,
-> Windows, Solaris, FreeBSD on several architectures), and planning to 
-> do some openvpn testing for this platform anyway. 
+> > 
+> > The OFB and CFB cipher modes in OpenVPN have not been 
+> well-tested and 
+> > should be considered experimental at this point.
+>   
 > 
-> If people would suggest me which things to test, I'll try to implement
-> it in the automated test environment.
+> > They are not compiled by default mostly to prevent someone from 
+> > accidentally using them.
 > 
+> Okay, you see there is some demand for this cipher.
 > 
-> > I'm curious as to why you want this support specifically, 
-> since these
-> > modes aren't really faster than CBC.  Are you concerned about the
-> > padding?
+> Can anybody explain why such strange design decision is taken.
 > 
-> I've stated it clearly. There is no CBC in the Russian 
-> National Standard
-> for symmetric ciphers. CFB is standartized, CNT is 
-> standartized, CBC is
-> not. So, if I want my VPNs to be considered secure by goverment
-> certification authorites, I have to use CFB or CNT.
+> As far as I know cryptography theory, there is absolutely no reason to
+> prefer CBC to CFB or CNT.
+...
 
-Gotcha; sorry for asking a redundant question.  I'm not familiar with
-the automated test system, but possibly if you ran that then the devs
-would accept the results and enable those ciphers.
+I would suspect that the exclusion is due to:
 
-Barring admission of the enablement into the official code base, would
-it be a bad idea for you to build your version with the support of the
-stream versions and use that?  Provided that  you  tests ran fine?
+A)  in CFB/OFB/CNT, the encrypted stream is byte-bounded, as opposed to
+block-bounded.  There may be some assumptions in the code that assume
+the cipher text is a multiple of block lengths.  As such, it is...
+
+B)  not thoroughly tested, and the choice was made to not release it
+without such testing.
+
+I'm curious as to why you want this support specifically, since these
+modes aren't really faster than CBC.  Are you concerned about the
+padding?
 
 -dave
 
