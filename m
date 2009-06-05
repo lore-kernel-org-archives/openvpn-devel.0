@@ -1,10 +1,10 @@
-Date: Thu, 04 Jun 2009 22:59:53 -0500
-From: "Karl O. Pinc" <kop@...1206...>
+Message-ID: <31530.65.118.50.246.1244212489.squirrel@...1166...>
+In-Reply-To: <1244174393l.6685l.3l@...1207...>
 References: <16130.65.118.50.246.1232730850.squirrel@...1166...>
 	<24624.65.118.50.246.1244149998.squirrel@...1166...>
-In-Reply-To: <24624.65.118.50.246.1244149998.squirrel@...1166...> (from
-	Progman2000@...1085... on Thu Jun  4 16:13:18 2009)
-Message-Id: <1244174393l.6685l.3l@...1207...>
+	<1244174393l.6685l.3l@...1207...>
+Date: Fri, 5 Jun 2009 09:34:49 -0500 (CDT)
+From: "Daniel Johnson" <Progman2000@...1085...>
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] Loss of routes causes routing loop
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,28 +15,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; DelSp=Yes; Format=Flowed; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Daniel Johnson <Progman2000@...1085...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-On 06/04/2009 04:13:18 PM, Daniel Johnson wrote:
+Karl O. Pinc wrote:
+> Openvpn does not do DNS at all.  You can use it to push DNS related
+> DHCP options to the "clients" so that they are directed to a DNS
+> server that does the right thing.  (There may be a way to do
+> something similar in a "client-side" config, I don't recall.) That's
+> about it.
 
-> On a related note, I'm looking at adding a second interface on the two
-> main (and now only) VPN servers, so that they'll be 'local' on the
-> guest/wireless network.  Does OpenVPN do anything special with DNS
-> results to prefer local addresses?  If not, can that be added easily?
+Sorry, I wasn't specific.  My clients look up
+"openvpn1[2,3,4].chguernsey.com" to connect, and I'm interested in how
+it handles the results.  I expect it uses the Windows resolver, and
+that it will receive all of the numeric results.  So if I change my
+DNS entries to report
+  PTR mercury.chguernsey.com.
+  A   65.120.131.235
+  A   172.21.166.249
+can I get the client to "notice" that it is directly connected to the
+172.21.166 subnet and use that IP?
 
-Openvpn does not do DNS at all.  You can use it to push DNS related
-DHCP options to the "clients" so that they are directed to a DNS
-server that does the right thing.  (There may be a way to
-do something similar in a "client-side" config, I don't recall.)
-That's about it.
+For the moment I'm pursuing a split-view DNS to report only the
+internal address on that subnet.  It should hide the effects of the
+routing-loop problem until it can be properly resolved.
 
+Daniel Johnson
+Progman2000@...1085...
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (GNU/Linux)
 
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                  -- Robert A. Heinlein
+iD8DBQFKKSw66vGcUBY+ge8RAprpAKDkxJU0eZiJkpJsRw38Bloj2mLR/gCgxoQL
+nMxPTd3/B0y87DOYd/tRhMQ=
+=ZNPj
+-----END PGP SIGNATURE-----
+
 
