@@ -1,8 +1,10 @@
-Message-ID: <24624.65.118.50.246.1244149998.squirrel@...1166...>
-In-Reply-To: <16130.65.118.50.246.1232730850.squirrel@...1166...>
+Date: Thu, 04 Jun 2009 22:59:53 -0500
+From: "Karl O. Pinc" <kop@...1206...>
 References: <16130.65.118.50.246.1232730850.squirrel@...1166...>
-Date: Thu, 4 Jun 2009 16:13:18 -0500 (CDT)
-From: "Daniel Johnson" <Progman2000@...1085...>
+	<24624.65.118.50.246.1244149998.squirrel@...1166...>
+In-Reply-To: <24624.65.118.50.246.1244149998.squirrel@...1166...> (from
+	Progman2000@...1085... on Thu Jun  4 16:13:18 2009)
+Message-Id: <1244174393l.6685l.3l@...1207...>
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] Loss of routes causes routing loop
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -13,33 +15,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; DelSp=Yes; Format=Flowed; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: Daniel Johnson <Progman2000@...1085...>
+Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
 
-I've seen no replies to this yet, and I'm concerned that v2.1 will
-be released without any resolution.  If one of the experienced
-developers could point me in the direction of the code files that
-handle route detection/creation/deletion, and that handle reconnection
-I think I can figure it out.  My attempts to understand the overall
-structure have not made much progress.
+On 06/04/2009 04:13:18 PM, Daniel Johnson wrote:
 
-On a related note, I'm looking at adding a second interface on the two
-main (and now only) VPN servers, so that they'll be 'local' on the
-guest/wireless network.  Does OpenVPN do anything special with DNS
-results to prefer local addresses?  If not, can that be added easily?
+> On a related note, I'm looking at adding a second interface on the two
+> main (and now only) VPN servers, so that they'll be 'local' on the
+> guest/wireless network.  Does OpenVPN do anything special with DNS
+> results to prefer local addresses?  If not, can that be added easily?
 
-Daniel Johnson
-Progman2000@...1085...
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (GNU/Linux)
+Openvpn does not do DNS at all.  You can use it to push DNS related
+DHCP options to the "clients" so that they are directed to a DNS
+server that does the right thing.  (There may be a way to
+do something similar in a "client-side" config, I don't recall.)
+That's about it.
 
-iD8DBQFKKDfZ6vGcUBY+ge8RAjmUAJ9LyVDhyNyFyEtVJlNMcmsJmoP/KACfbkIQ
-2uMaMWScKbUfBB0ATC+HRHI=
-=Vmnt
------END PGP SIGNATURE-----
 
+Karl <kop@...1206...>
+Free Software:  "You don't pay back, you pay forward."
+                  -- Robert A. Heinlein
 
