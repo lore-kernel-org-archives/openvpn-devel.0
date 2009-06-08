@@ -1,10 +1,9 @@
-Message-ID: <4A2B6AB6.9060801@...41...>
-Date: Sun, 07 Jun 2009 01:22:30 -0600
-From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-References: <4A21B085.6090603@...41...> <4A23CE15.9080400@...1114...>
-In-Reply-To: <4A23CE15.9080400@...1114...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.1_rc17 released
+Date: Mon, 8 Jun 2009 18:38:23 +0200
+Message-ID: <2ece24860906080938l79bf67av8aa5d6591d334c0a@...278...>
+From: jonathan openvpn <jonathan.openvpn@...277...>
+Content-Type: multipart/alternative; boundary=001636e91010ecaee6046bd8def4
+Subject: [Openvpn-devel] Cannot find TAP adapter
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,98 +12,106 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: openvpn-devel@lists.sourceforge.net
+
+--001636e91010ecaee6046bd8def4
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: Openvpn-devel@lists.sourceforge.net, OpenVpn-Users <openvpn-users@lists.sourceforge.net>
 
-David Sommerseth wrote:
-> 
-> James Yonan wrote:
->> Change Log:
->>
->> 2009.05.30 -- Version 2.1_rc17
->>
->> * Reduce the debug level (--verb) at which received management interface
->>    commands are echoed from 7 to 3.  Passwords will be filtered.
->>
->> * Fixed race condition in management interface recv code on
->>    Windows, where sending a set of several commands to the
->>    management interface in quick succession might cause the
->>    latter commands in the set to be ignored.
->>
->> * Increased management interface input command buffer size
->>    from 256 to 1024 bytes.
->>
->> * Minor tweaks to Windows build system.
->>
->> * Added "redirect-private" option which allows private subnets
->>    to be pushed to the client in such a way that they don't accidently
->>    obscure critical local addresses such as the DHCP server address and
->>    DNS server addresses.
->>
->> * Added 'autolocal' redirect-gateway flag.  When enabled, the OpenVPN
->>    client will examine the routing table and determine whether (a) the
->>    OpenVPN server is reachable via a locally connected interface, or (b)
->>    traffic to the server must be forwarded through the default router.
->>    Only add a special bypass route for the OpenVPN server if (b) is true.
->>    If (a) is true, behave as if the 'local' flag is specified, and do not
->>    add a bypass route.
->>
->>    The new 'autolocal' flag depends on the non-portable test_local_addr()
->>    function in route.c, which is currently only implemented for Windows.
->>    The 'autolocal' flag will act as a no-op on platforms that have not
->>    yet defined a test_local_addr() function.
->>
->> * Increased TLS_CHANNEL_BUF_SIZE to 2048 from 1024 (this will allow for
->>    more option content to be pushed from server to client).
->>
->> * Raised D_MULTI_DROPPED debug level to 4 from 3 to filter out (at debug
->>    levels <=3) a common and usually innocuous warning.
->>
->> * Fixed issue of symbol conflicts interfering with Windows CryptoAPI
->>    functionality (Alon Bar-Lev).
->>
->> * Fixed bug where the remote_X environmental variables were not being
->>    set correctly when the 'local' option is specifed.
->>
->> James
-> 
-> I just compared the 2.1_rc16 and 2.1_rc17 trees ... I see these files in 
-> the tar ball in addition:
-> 
->         contrib/pull-resolv-conf/client.down.bak
->         contrib/pull-resolv-conf/client.up.bak
->         easy-rsa/2.0/pkitool.bak
->         plugin/auth-pam/auth-pam.c.bak
->         plugin/defer/simple.c.bak
->         plugin/down-root/down-root.c.bak
->         plugin/examples/log.c.bak
->         plugin/examples/simple.c.bak
->         tap-win32/common.h.bak
->         tap-win32/constants.h.bak
->         tap-win32/dhcp.c.bak
->         tap-win32/dhcp.h.bak
->         tap-win32/endian.h.bak
->         tap-win32/error.c.bak
->         tap-win32/error.h.bak
->         tap-win32/hexdump.c.bak
->         tap-win32/hexdump.h.bak
->         tap-win32/i386/OemWin2k.inf.in.bak
->         tap-win32/instance.c.bak
->         tap-win32/lock.h.bak
->         tap-win32/macinfo.c.bak
->         tap-win32/macinfo.h.bak
->         tap-win32/mem.c.bak
->         tap-win32/proto.h.bak
->         tap-win32/prototypes.h.bak
->         tap-win32/tapdrvr.c.bak
->         tap-win32/types.h.bak
-> 
-> Just a missing clean-up?  or something we should be worried about?
+Hello.
 
-This is fixed in rc18.  The .bak files were just left over from an 
-automated script that updates the copyright year in the source files.
+I'm triying to execute a Windows CE port of OpenVPN in a custom hardware.
 
-James
+First of all, let me say that I cannot use the connection manager due to the
+plattform i am using.
+
+I've been succesfull on open the socket and retrieve initial information
+from the OpenVPN server. I also have added a TAP interface to the Windows CE
+registry via the "AddTAPAdapterRegistration" function in "taputil.cpp".
+
+My problem comes when it's time to open the just registered TUN adapter.
+When it searches for the adapters on the device by the "GetAdaptersInfo"
+function, the TUN adapter is not present. Only the physical ethernet
+interface is present.
+I've compared the resgistry entries with a pocket PC running an OpenVPN
+client and they are identical! I've searched in internet looking for someone
+with a similar problem but i have found nothing. Have you any idea?
+What are the requirements for an adapter to be found by the
+"GetAdaptersInfo" function?
+
+Here are my registry entries:
+
+[HKEY_LOCAL_MACHINE\Comm\TAP Device]
+"ImagePath"="tap-ce.dll"
+"Group"="NDIS"
+"DisplayName"="TAP Virtual Ethernet Device"
+
+[HKEY_LOCAL_MACHINE\Comm\TAP Device\Linkage]
+"Route"=hex(7):\
+
+54,41,50,20,44,65,76,69,63,65,20,31,00,54,41,50,20,44,65,76,69,63,65,20,32,\
+      00,00
+
+[HKEY_LOCAL_MACHINE\Comm\TAP Device 1]
+"ImagePath"="tap-ce.dll"
+"Group"="NDIS"
+"DisplayName"="TAP1: Virtual Ethernet Device"
+
+[HKEY_LOCAL_MACHINE\Comm\TAP Device 1\Parms]
+"StreamIndex"=dword:00000001
+"StreamName"="TAP"
+"BusType"=dword:00000000
+"BusNumber"=dword:00000000
+
+
+
+Another doubt.
+In the tun.c file, in function "do_ifconfig", there is no entry for WIN32 or
+WIN_CE, instead of this it is an "elif 0" entry. Because of this, in WIN_CE
+systems no ifconfig is done. Isn't it necessary?
+
+Thank you very much.
+
+Jonathan.
+
+--001636e91010ecaee6046bd8def4
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Hello.<br><br>I&#39;m triying to execute a Windows CE port of OpenVPN in a =
+custom hardware.<br><br>First of all, let me say that I cannot use the conn=
+ection manager due to the plattform i am using.<br><br>I&#39;ve been succes=
+full on open the socket and retrieve initial information from the OpenVPN s=
+erver. I also have added a TAP interface to the Windows CE registry via the=
+ &quot;AddTAPAdapterRegistration&quot; function in &quot;taputil.cpp&quot;.=
+<br>
+<br>My problem comes when it&#39;s time to open the just registered TUN ada=
+pter. When it searches for the adapters on the device by the &quot;GetAdapt=
+ersInfo&quot; function, the TUN adapter is not present. Only the physical e=
+thernet interface is present.<br>
+I&#39;ve compared the resgistry entries with a pocket PC running an OpenVPN=
+ client and they are identical! I&#39;ve searched in internet looking for s=
+omeone with a similar problem but i have found nothing. Have you any idea?<=
+br>
+What are the requirements for an adapter to be found by the &quot;GetAdapte=
+rsInfo&quot; function?<br><br>Here are my registry entries:<br><br>[HKEY_LO=
+CAL_MACHINE\Comm\TAP Device]<br>&quot;ImagePath&quot;=3D&quot;tap-ce.dll&qu=
+ot;<br>
+&quot;Group&quot;=3D&quot;NDIS&quot;<br>&quot;DisplayName&quot;=3D&quot;TAP=
+ Virtual Ethernet Device&quot;<br><br>[HKEY_LOCAL_MACHINE\Comm\TAP Device\L=
+inkage]<br>&quot;Route&quot;=3Dhex(7):\<br>=A0=A0=A0=A0=A0 54,41,50,20,44,6=
+5,76,69,63,65,20,31,00,54,41,50,20,44,65,76,69,63,65,20,32,\<br>
+=A0=A0=A0=A0=A0 00,00<br><br>[HKEY_LOCAL_MACHINE\Comm\TAP Device 1]<br>&quo=
+t;ImagePath&quot;=3D&quot;tap-ce.dll&quot;<br>&quot;Group&quot;=3D&quot;NDI=
+S&quot;<br>&quot;DisplayName&quot;=3D&quot;TAP1: Virtual Ethernet Device&qu=
+ot;<br><br>[HKEY_LOCAL_MACHINE\Comm\TAP Device 1\Parms]<br>
+&quot;StreamIndex&quot;=3Ddword:00000001<br>&quot;StreamName&quot;=3D&quot;=
+TAP&quot;<br>&quot;BusType&quot;=3Ddword:00000000<br>&quot;BusNumber&quot;=
+=3Ddword:00000000<br><br><br><br>Another doubt. <br>In the tun.c file, in f=
+unction &quot;do_ifconfig&quot;, there is no entry for WIN32 or WIN_CE, ins=
+tead of this it is an &quot;elif 0&quot; entry. Because of this, in WIN_CE =
+systems no ifconfig is done. Isn&#39;t it necessary?<br>
+<br>Thank you very much.<br><br>Jonathan.<br>
+
+--001636e91010ecaee6046bd8def4--
 
