@@ -1,8 +1,9 @@
 MIME-Version: 1.0
-Date: Mon, 22 Jun 2009 13:45:26 +0200
-Message-ID: <ea8e5e7f0906220445w56921256pa5f27aa1068691fc@...278...>
-From: =?UTF-8?Q?Artur_Fija=C5=82kowski?= <wiki.warx@...277...>
-Subject: [Openvpn-devel] question about route directive
+Date: Tue, 23 Jun 2009 13:27:58 +0300
+Message-ID: <eec247fc0906230327g48a4c57fu119b1e4519a11264@...278...>
+From: Cosmin Marin <cosmmin.m@...277...>
+Content-Type: multipart/alternative; boundary=001636457c72cdb7f6046d0171fa
+Subject: [Openvpn-devel] Decrypting openvpn packets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,57 +12,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi everyone!
+--001636457c72cdb7f6046d0171fa
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-I have question about route directive.
+Hello.
 
-When I have something like below in my openvpn.conf:
+I've been trying to write a small packet tracer that monitors all that comes
+in and goes out on an interface. The big problem is that i want to be able
+to look inside the encrypted openvpn packet so that i can get the real
+destination and source and protocol etc...
 
-...
-#persist-tun
-route 10.10.0.0 255.255.0.0 10.137.137.2 1
-keepalive 1 30
+Can i do this for an openvpn packet? Where can i find the keys used for
+encryption/decryption?
+I saw that openvpn uses blowfish or aes(des) for this purpose.
 
-when tunnel crashes openvpn demon tries to destroy this route before
-destroying tun device[1] (which is unnecessary, because kernel
-destroys automatically all routes using device when it's destroyed).
+Thank you.
 
-But when I uncomment persist-tun, openvpn doesn't try to remove
-routes[2], tun device is not destroyed so I get hang tunnel with dead
-routes thru it.
+--001636457c72cdb7f6046d0171fa
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-Is this bug or feature?
+Hello.<br><br>I&#39;ve been trying to write a small packet tracer that moni=
+tors all that comes in and goes out on an interface. The big problem is tha=
+t i want to be able to look inside the encrypted openvpn packet so that i c=
+an get the real destination and source and protocol etc...<br>
+<br>Can i do this for an openvpn packet? Where can i find the keys used for=
+ encryption/decryption? <br>I saw that openvpn uses blowfish or aes(des) fo=
+r this purpose.<br><br>Thank you.<br>
 
-I use gentoo on linux 2.6.28-gentoo-r3.
-
-Thanks in advance for help.
-
-AJF/WarX
-
-[1]
-Jun 22 13:37:45 aux openvpn[27051]: Inactivity timeout
-(--ping-restart), restarting
-Jun 22 13:37:45 aux openvpn[27051]: TCP/UDP: Closing socket
-Jun 22 13:37:45 aux openvpn[27051]: /sbin/ip route del 10.10.0.0/16 metric 1
-Jun 22 13:37:45 aux openvpn[27051]: ERROR: Linux route delete command
-failed: external program exited with error status: 2
-Jun 22 13:37:45 aux openvpn[27051]: Closing TUN/TAP interface
-Jun 22 13:37:45 aux openvpn[27051]: /sbin/ip addr del dev tun0 local
-10.137.137.1 peer 10.137.137.2
-Jun 22 13:37:45 aux openvpn[27051]: Linux ip addr del failed: external
-program exited with error status: 2
-Jun 22 13:37:45 aux openvpn[27051]: SIGUSR1[soft,ping-restart]
-received, process restarting
-
-[2]
-Jun 22 13:42:36 aux openvpn[27147]: Inactivity timeout
-(--ping-restart), restarting
-Jun 22 13:42:36 aux openvpn[27147]: TCP/UDP: Closing socket
-Jun 22 13:42:36 aux openvpn[27147]: SIGUSR1[soft,ping-restart]
-received, process restarting
-Jun 22 13:42:36 aux openvpn[27147]: Restart pause, 2 second(s)
+--001636457c72cdb7f6046d0171fa--
 
