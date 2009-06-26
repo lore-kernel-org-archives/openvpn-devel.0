@@ -1,12 +1,10 @@
-From: =?iso-8859-2?Q?Kosztyu_Andr=E1s?= <kosztyua@...1229...>
-Date: Tue, 23 Jun 2009 15:43:19 +0200
-Message-ID: <009a01c9f408$9259bc80$b70d3580$@hu>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_009B_01C9F419.55E28C80"
-Content-Language: hu
-Subject: [Openvpn-devel] bug? wrong CN in client-disconnect with
-	username-as-common-name
+Date: Fri, 26 Jun 2009 17:00:35 +0200
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <54cde1cd4bdc1e82da3cb67831cc45c0@...1228...>
+Content-Type: multipart/mixed;
+	boundary="=_05904e9f2410e5687ff03b4b27f87169"
+Subject: [Openvpn-devel] OpenVPN Pf plugin/small status patch
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,191 +15,206 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
-
-------=_NextPart_000_009B_01C9F419.55E28C80
-Content-Type: text/plain;
-	charset="iso-8859-2"
-Content-Transfer-Encoding: 7bit
+--=_05904e9f2410e5687ff03b4b27f87169
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
 Hi,
 
-A few days ago I've set up an openvpn server on my server with mysql backend
-based on auth-user-pass-verify, client-connect, client-disconnect. Both
-client-connect and client-disconnect works has a main purpuse of setting
-iptables rules for forwarding each connection to a public ip, taken from an
-ip_pool table. Also, each connection is registered in a table called active.
-When the client disconnects, it deletes from active, deletes the iptables
-rule and logs everything... 
+I have written a simple plugin for packet filtering that looks up fw rules
+in the order
 
-The authentication and every record is indexed by the common name (which is
-the username, not the cert name, so username-as-common-name on ).. so if i
-add a row in the "active" table with client-connect and then look for it
-with client-disconnect, it is based on the common name.
+Commonname.pf
+IP_Port.pf
+IP.pf
+default.pf
 
-So, now about the problem: some of the time (about 1 every 5 disconnect) the
-$common_name variable shows the cert name and not the username, thus making
-it impossible to find in active table, leaving many false iptables rules and
-funny logs like:
+If one of this files is found the file is used as PF configuration. Maybe
+this plugin is useful for someone else.
 
-username           1245682814        80.99.12.202      79.172.201.189
-10.0.0.2                CONNECT
+Add I would like to ask to include the patch for multi.c.
 
-certname            1245685700        80.99.12.202
-10.0.0.2                DISCONNECT
-
- 
-
-Is this a bug or did i make a mistake? 
-
- 
-
-[asrael@...1230... openvpn]$ openvpn --version
-
-OpenVPN 2.1_rc18 x86_64-unknown-linux-gnu [SSL] [LZO2] [EPOLL] built on Jun
-21 2009
-
-[asrael@...1230... openvpn]$ uname -a
-
-Linux vpn1.xxx.hu 2.6.29.4-167.fc11.x86_64 #1 SMP Wed May 27 17:27:08 EDT
-2009 x86_64 x86_64 x86_64 GNU/Linux 
-
- 
-
-Thank you,
-
-Andras Kosztyu
+There are commands in the management interface which require the cid. The
+only way at the moment to get the cid of connected clients is to have
+always a management connection established. The patch adds the CID to the
+status output.
 
 
-------=_NextPart_000_009B_01C9F419.55E28C80
-Content-Type: text/html; charset="iso-8859-2"
-Content-Transfer-Encoding: quoted-printable
+For my scenario is beneficial to have some standard pf rules in places and
+change the pf rules on a need basis for a certain, which I can only do If I
+have the CID.
 
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
-osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
-//www.w3.org/TR/REC-html40">
+Arne
+--=_05904e9f2410e5687ff03b4b27f87169
+Content-Transfer-Encoding: base64
+Content-Type: application/octet-stream; charset="UTF-8";
+	name="enablepf.patch"; 
+Content-Disposition: attachment;
+ filename="enablepf.patch"; 
 
-<head>
-<meta http-equiv=3DContent-Type content=3D"text/html; charset=3Diso-8859-2">
-<meta name=3DGenerator content=3D"Microsoft Word 12 (filtered medium)">
-<style>
-<!--
- /* Font Definitions */
- @font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0cm;
-	margin-bottom:.0001pt;
-	font-size:11.0pt;
-	font-family:"Calibri","sans-serif";}
-a:link, span.MsoHyperlink
-	{mso-style-priority:99;
-	color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{mso-style-priority:99;
-	color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:"Calibri","sans-serif";
-	color:windowtext;}
-.MsoChpDefault
-	{mso-style-type:export-only;}
-@page Section1
-	{size:612.0pt 792.0pt;
-	margin:70.85pt 70.85pt 70.85pt 70.85pt;}
-div.Section1
-	{page:Section1;}
--->
-</style>
-<!--[if gte mso 9]><xml>
- <o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
- <o:shapelayout v:ext=3D"edit">
-  <o:idmap v:ext=3D"edit" data=3D"1" />
- </o:shapelayout></xml><![endif]-->
-</head>
+SW5kZXg6IHBsdWdpbi9lbmFibGVwZi93aW5idWlsZA0KPT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQ0KLS0tIHBsdWdpbi9l
+bmFibGVwZi93aW5idWlsZAkocmV2aXNpb24gMCkNCisrKyBwbHVnaW4vZW5hYmxlcGYvd2luYnVp
+bGQJKHJldmlzaW9uIDApDQpAQCAtMCwwICsxLDE5IEBADQorIw0KKyMgQnVpbGQgYW4gT3BlblZQ
+TiBwbHVnaW4gbW9kdWxlIG9uIFdpbmRvd3MvTWluR1cuDQorIyBUaGUgYXJndW1lbnQgc2hvdWxk
+IGJlIHRoZSBiYXNlIG5hbWUgb2YgdGhlIEMgc291cmNlIGZpbGUNCisjICh3aXRob3V0IHRoZSAu
+YykuDQorIw0KKw0KKyMgVGhpcyBkaXJlY3RvcnkgaXMgd2hlcmUgd2Ugd2lsbCBsb29rIGZvciBv
+cGVudnBuLXBsdWdpbi5oDQorSU5DTFVERT0iLUkuLi8uLiINCisNCitDQ19GTEFHUz0iLU8yIC1X
+YWxsIg0KKw0KK2djYyAtREJVSUxEX0RMTCAkQ0NfRkxBR1MgJElOQ0xVREUgLWMgJDEuYw0KK2dj
+YyAtLWRpc2FibGUtc3RkY2FsbC1maXh1cCAtbWRsbCAtREJVSUxEX0RMTCAtbyBqdW5rLnRtcCAt
+V2wsLS1iYXNlLWZpbGUsYmFzZS50bXAgJDEubw0KK3JtIGp1bmsudG1wDQorZGxsdG9vbCAtLWRs
+bG5hbWUgJDEuZGxsIC0tYmFzZS1maWxlIGJhc2UudG1wIC0tb3V0cHV0LWV4cCB0ZW1wLmV4cCAt
+LWlucHV0LWRlZiAkMS5kZWYNCitybSBiYXNlLnRtcA0KK2djYyAtLWVuYWJsZS1zdGRjYWxsLWZp
+eHVwIC1tZGxsIC1EQlVJTERfRExMIC1vICQxLmRsbCAkMS5vIC1XbCx0ZW1wLmV4cA0KK3JtIHRl
+bXAuZXhwDQorDQpJbmRleDogcGx1Z2luL2VuYWJsZXBmL2J1aWxkDQo9PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQotLS0g
+cGx1Z2luL2VuYWJsZXBmL2J1aWxkCShyZXZpc2lvbiAwKQ0KKysrIHBsdWdpbi9lbmFibGVwZi9i
+dWlsZAkocmV2aXNpb24gMCkNCkBAIC0wLDAgKzEsMTQgQEANCisjIS9iaW4vc2gNCisNCisjDQor
+IyBCdWlsZCBhbiBPcGVuVlBOIHBsdWdpbiBtb2R1bGUgb24gKm5peC4gIFRoZSBhcmd1bWVudCBz
+aG91bGQNCisjIGJlIHRoZSBiYXNlIG5hbWUgb2YgdGhlIEMgc291cmNlIGZpbGUgKHdpdGhvdXQg
+dGhlIC5jKS4NCisjDQorDQorIyBUaGlzIGRpcmVjdG9yeSBpcyB3aGVyZSB3ZSB3aWxsIGxvb2sg
+Zm9yIG9wZW52cG4tcGx1Z2luLmgNCitJTkNMVURFPSItSS4uLy4uIg0KKw0KK0NDX0ZMQUdTPSIt
+TzIgLVdhbGwgLWciDQorDQorZ2NjICRDQ19GTEFHUyAtZlBJQyAtYyAkSU5DTFVERSAkMS5jICYm
+IFwNCitnY2MgJENDX0ZMQUdTIC1mUElDIC1zaGFyZWQgLVdsLC1zb25hbWUsJDEuc28gLW8gJDEu
+c28gJDEubyAtbGMNCkluZGV4OiBwbHVnaW4vZW5hYmxlcGYvZW5hYmxlcGYuZGVmDQo9PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09DQotLS0gcGx1Z2luL2VuYWJsZXBmL2VuYWJsZXBmLmRlZgkocmV2aXNpb24gMCkNCisrKyBw
+bHVnaW4vZW5hYmxlcGYvZW5hYmxlcGYuZGVmCShyZXZpc2lvbiAwKQ0KQEAgLTAsMCArMSw2IEBA
+DQorTElCUkFSWSAgIE9wZW5WUE5fUExVR0lOX0VOQUJMRVBGDQorREVTQ1JJUFRJT04gIkVuYWJs
+ZSBPcGVuVlBOIEZpcmV3YWxsIHBvbGljeXMuIg0KK0VYUE9SVFMNCisgICBvcGVudnBuX3BsdWdp
+bl9vcGVuX3YxICAgQDENCisgICBvcGVudnBuX3BsdWdpbl9mdW5jX3YxICAgQDINCisgICBvcGVu
+dnBuX3BsdWdpbl9jbG9zZV92MSAgQDMNCkluZGV4OiBwbHVnaW4vZW5hYmxlcGYvZW5hYmxlcGYu
+Yw0KPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PQ0KLS0tIHBsdWdpbi9lbmFibGVwZi9lbmFibGVwZi5jCShyZXZpc2lvbiAw
+KQ0KKysrIHBsdWdpbi9lbmFibGVwZi9lbmFibGVwZi5jCShyZXZpc2lvbiAwKQ0KQEAgLTAsMCAr
+MSwxOTkgQEANCisvKgorICogIE9wZW5WUE4gLS0gQW4gYXBwbGljYXRpb24gdG8gc2VjdXJlbHkg
+dHVubmVsIElQIG5ldHdvcmtzCisgKiAgICAgICAgICAgICBvdmVyIGEgc2luZ2xlIFRDUC9VRFAg
+cG9ydCwgd2l0aCBzdXBwb3J0IGZvciBTU0wvVExTLWJhc2VkCisgKiAgICAgICAgICAgICBzZXNz
+aW9uIGF1dGhlbnRpY2F0aW9uIGFuZCBrZXkgZXhjaGFuZ2UsCisgKiAgICAgICAgICAgICBwYWNr
+ZXQgZW5jcnlwdGlvbiwgcGFja2V0IGF1dGhlbnRpY2F0aW9uLCBhbmQKKyAqICAgICAgICAgICAg
+IHBhY2tldCBjb21wcmVzc2lvbi4KKyAqCisgKiAgQ29weXJpZ2h0IChDKSAyMDAyLTIwMDkgT3Bl
+blZQTiBUZWNobm9sb2dpZXMsIEluYy4gPHNhbGVzQG9wZW52cG4ubmV0PgorICoKKyAqICBUaGlz
+IHByb2dyYW0gaXMgZnJlZSBzb2Z0d2FyZTsgeW91IGNhbiByZWRpc3RyaWJ1dGUgaXQgYW5kL29y
+IG1vZGlmeQorICogIGl0IHVuZGVyIHRoZSB0ZXJtcyBvZiB0aGUgR05VIEdlbmVyYWwgUHVibGlj
+IExpY2Vuc2UgdmVyc2lvbiAyCisgKiAgYXMgcHVibGlzaGVkIGJ5IHRoZSBGcmVlIFNvZnR3YXJl
+IEZvdW5kYXRpb24uCisgKgorICogIFRoaXMgcHJvZ3JhbSBpcyBkaXN0cmlidXRlZCBpbiB0aGUg
+aG9wZSB0aGF0IGl0IHdpbGwgYmUgdXNlZnVsLAorICogIGJ1dCBXSVRIT1VUIEFOWSBXQVJSQU5U
+WTsgd2l0aG91dCBldmVuIHRoZSBpbXBsaWVkIHdhcnJhbnR5IG9mCisgKiAgTUVSQ0hBTlRBQklM
+SVRZIG9yIEZJVE5FU1MgRk9SIEEgUEFSVElDVUxBUiBQVVJQT1NFLiAgU2VlIHRoZQorICogIEdO
+VSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIGZvciBtb3JlIGRldGFpbHMuCisgKgorICogIFlvdSBz
+aG91bGQgaGF2ZSByZWNlaXZlZCBhIGNvcHkgb2YgdGhlIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNl
+bnNlCisgKiAgYWxvbmcgd2l0aCB0aGlzIHByb2dyYW0gKHNlZSB0aGUgZmlsZSBDT1BZSU5HIGlu
+Y2x1ZGVkIHdpdGggdGhpcworICogIGRpc3RyaWJ1dGlvbik7IGlmIG5vdCwgd3JpdGUgdG8gdGhl
+IEZyZWUgU29mdHdhcmUgRm91bmRhdGlvbiwgSW5jLiwKKyAqICA1OSBUZW1wbGUgUGxhY2UsIFN1
+aXRlIDMzMCwgQm9zdG9uLCBNQSAgMDIxMTEtMTMwNyAgVVNBCisgKgorICogIFNhbXBsZSBwYWNr
+ZXQgZmlsdGVyIGNvbmZpZ3VyYXRpb246CisgKgorICogW0NMSUVOVFMgRFJPUF0KKyAqICtvdGhl
+cmNsaWVudAorICogW1NVQk5FVFMgRFJPUF0KKyAqICsxMC4wLjAuMC84CisgKiAtMTAuMTAuMC44
+CisgKiBbRU5EXQorICovCisKKy8qCisgKiBHaXZlbiBhbiBlbnZpcm9ubWVudGFsIHZhcmlhYmxl
+IG5hbWUsIHNlYXJjaAorICogdGhlIGVudnAgYXJyYXkgZm9yIGl0cyB2YWx1ZSwgcmV0dXJuaW5n
+IGl0CisgKiBpZiBmb3VuZCBvciBOVUxMIG90aGVyd2lzZS4KKyAqLworI2luY2x1ZGUgPHN0ZGlv
+Lmg+CisjaW5jbHVkZSA8ZmNudGwuaD4KKyNpbmNsdWRlIDxzdHJpbmcuaD4KKyNpbmNsdWRlIDxz
+dGRsaWIuaD4KKworI2luY2x1ZGUgIm9wZW52cG4tcGx1Z2luLmgiCisKKy8qCisgKiBDb3BpZXMg
+YSBmaWxlIHNwZWNpZmllZCBieSBmZCAgdG8gdGhlIHBhdGggb2YgcGZmLgorICovCitzdGF0aWMg
+dm9pZCBjb3B5ZmlsZShpbnQgZmQsIGNvbnN0IGNoYXIqIHBmZikKK3sKKwlpbnQgb2ZkID0gb3Bl
+bihwZmYsT19UUlVOQyB8IE9fQ1JFQVQgfCBPX1dST05MWSk7CisJaWYgKG9mZCA8IDApIHsKKwkJ
+cHJpbnRmKCJGYWlsZWQgdG8gUEYgb3V0cHV0ZmlsZSAlcywgZXJybm86ICVzXG4iLHBmZixzdHJl
+cnJvcihlcnJubykpOworCQlyZXR1cm47CisJfQorCisJc3NpemVfdCBuOworCWNoYXIgYnVmWzEw
+MjRdOworCXdoaWxlKCAobj0gcmVhZChmZCxidWYsMTAyNCkpKSB7CisJCWludCBub3V0PSB3cml0
+ZShvZmQsIGJ1Ziwgbik7CisJCWlmIChub3V0ICE9IG4pCisJCQlwcmludGYoIldyaXRlIHNob3J0
+IG9uIHdyaXRpbmcgcGYgZmlsZSBcbiIpOworCX0KKwljbG9zZShmZCk7CisJY2xvc2Uob2ZkKTsK
+KworCit9CisKK3N0YXRpYyBjb25zdCBjaGFyICoKK2dldF9lbnYgKGNvbnN0IGNoYXIgKm5hbWUs
+IGNvbnN0IGNoYXIgKmVudnBbXSkKK3sKKwlpZiAoZW52cCkKKwl7CisJCWludCBpOworCQljb25z
+dCBpbnQgbmFtZWxlbiA9IHN0cmxlbiAobmFtZSk7CisJCWZvciAoaSA9IDA7IGVudnBbaV07ICsr
+aSkKKwkJeworCQkJaWYgKCFzdHJuY21wIChlbnZwW2ldLCBuYW1lLCBuYW1lbGVuKSkKKwkJCXsK
+KwkJCQljb25zdCBjaGFyICpjcCA9IGVudnBbaV0gKyBuYW1lbGVuOworCQkJCWlmICgqY3AgPT0g
+Jz0nKQorCQkJCQlyZXR1cm4gY3AgKyAxOworCQkJfQorCQl9CisJfQorCXJldHVybiBOVUxMOwor
+fQorCisjaW5jbHVkZSA8c3RkaW8uaD4KKyNpbmNsdWRlIDxzdHJpbmcuaD4KKyNpbmNsdWRlIDxz
+dGRsaWIuaD4KKworI2luY2x1ZGUgIm9wZW52cG4tcGx1Z2luLmgiCisKKy8qIGJvb2wgZGVmaW5p
+dGlvbnMgKi8KKyNkZWZpbmUgYm9vbCBpbnQKKyNkZWZpbmUgdHJ1ZSAxCisjZGVmaW5lIGZhbHNl
+IDAKKworCitzdGF0aWMgdm9pZCBjb3B5cGZmaWxlKGNvbnN0IGNoYXIgKmVudnBbXSkKK3sKKwlj
+b25zdCBjaGFyICpwZmYgPSBnZXRfZW52ICgicGZfZmlsZSIsIGVudnApOworCWNvbnN0IGNoYXIg
+KmRldiA9IGdldF9lbnYgKCJkZXYiLCBlbnZwKTsKKwljb25zdCBjaGFyICp0aXAgPSBnZXRfZW52
+ICgidHJ1c3RlZF9pcCIsZW52cCk7CisJY29uc3QgY2hhciAqY24gPSBnZXRfZW52ICgiY29tbW9u
+X25hbWUiLGVudnApOworCWNvbnN0IGNoYXIgKnBvcnQgPSBnZXRfZW52KCJ0cnVzdGVkX3BvcnQi
+LGVudnApOworCWludCBpOworCisJLy8gQ29uc3RydWN0IGZpbGUgbmFtZXMgYW5kIHRyeSB0byBv
+cGVuIHRoZW0KKwkvLyBiZWdpbiB3aXRoIGRldgorCWNoYXIgZmlsZXNbNV1bMjU2XTsKKwlzbnBy
+aW50ZiAoZmlsZXNbMF0sIHNpemVvZihmaWxlc1swXSksIiVzLnBmIiwgY24pOworCXNucHJpbnRm
+IChmaWxlc1sxXSwgc2l6ZW9mKGZpbGVzWzFdKSwiJXNfJXMucGYiLCB0aXAscG9ydCk7CisJc25w
+cmludGYgKGZpbGVzWzJdLCBzaXplb2YoZmlsZXNbMl0pLCIlcy5wZiIsIHRpcCk7CisJc25wcmlu
+dGYgKGZpbGVzWzNdLCBzaXplb2YoZmlsZXNbM10pLCIlcy5wZiIsIGRldik7CisJc25wcmludGYg
+KGZpbGVzWzRdLCBzaXplb2YoZmlsZXNbNF0pLCIlcy5wZiIsICJkZWZhdWx0Iik7CisKKworCisK
+KwlpbnQgZmQ7CisKKwlmb3IoaT0wOyBpPCBzaXplb2YoZmlsZXMpL3NpemVvZihmaWxlc1swXSk7
+aSsrKSB7CisJCWZkID0gb3BlbihmaWxlc1tpXSwgT19SRE9OTFkJKTsKKwkJaWYgKGZkIDwgMCl7
+CisJCQkvLyBGYWlsZWQgdG8gb3BlbgorCQkJcHJpbnRmKCJGYWlsZWQgdG8gb3BlbiAlcywgJXNc
+biIsZmlsZXNbaV0sc3RyZXJyb3IoZXJybm8pKTsKKwkJfWVsc2UgeworCQkJcHJpbnRmKCJVc2lu
+ZyAlcyBhcyBQRiBmaWxlXG4iLCBmaWxlc1tpXSk7CisJCQljb3B5ZmlsZShmZCxwZmYpOworCQkJ
+cmV0dXJuOworCQl9CisJfQorCXByaW50ZigiRVJST1IgQ291bGQgbm90IGxvYWQgUEYgQ29uZmln
+LCB1c2luZyBubyBDb25maWchIik7CisKK30KKworCisKKworCitPUEVOVlBOX0VYUE9SVCBvcGVu
+dnBuX3BsdWdpbl9oYW5kbGVfdAorb3BlbnZwbl9wbHVnaW5fb3Blbl92MSAodW5zaWduZWQgaW50
+ICp0eXBlX21hc2ssIGNvbnN0IGNoYXIgKmFyZ3ZbXSwgY29uc3QgY2hhciAqZW52cFtdKQorewor
+CXByaW50ZiAoIkZVTkM6IG9wZW52cG5fcGx1Z2luX29wZW5fdjFcbiIpOworCW9wZW52cG5fcGx1
+Z2luX2hhbmRsZV90KiB0PSBtYWxsb2Moc2l6ZW9mKG9wZW52cG5fcGx1Z2luX2hhbmRsZV90KSk7
+CisKKwkvKgorCSAqIFdoaWNoIGNhbGxiYWNrcyB0byBpbnRlcmNlcHQuCisJICovCisJKnR5cGVf
+bWFzayA9IE9QRU5WUE5fUExVR0lOX01BU0sgKE9QRU5WUE5fUExVR0lOX0VOQUJMRV9QRil8CisJ
+CQlPUEVOVlBOX1BMVUdJTl9NQVNLKCBPUEVOVlBOX1BMVUdJTl9DTElFTlRfQ09OTkVDVF9WMik7
+CisJcmV0dXJuIHQ7Cit9CisKK09QRU5WUE5fRVhQT1JUIGludAorb3BlbnZwbl9wbHVnaW5fZnVu
+Y192MSAob3BlbnZwbl9wbHVnaW5faGFuZGxlX3QgaGFuZGxlLCBjb25zdCBpbnQgdHlwZSwgY29u
+c3QgY2hhciAqYXJndltdLCBjb25zdCBjaGFyICplbnZwW10pCisKK3sKKworCXN3aXRjaCAodHlw
+ZSkKKwl7CisJY2FzZSBPUEVOVlBOX1BMVUdJTl9FTkFCTEVfUEY6CisJCXByaW50ZiAoIk9QRU5W
+UE5fUExVR0lOX0VOQUJMRV9QRlxuIik7CisJCXJldHVybiBPUEVOVlBOX1BMVUdJTl9GVU5DX1NV
+Q0NFU1M7CisJY2FzZSBPUEVOVlBOX1BMVUdJTl9DTElFTlRfQ09OTkVDVF9WMjoKKwkJcHJpbnRm
+ICgiT1BFTlZQTl9QTFVHSU5fQ09OTkVDVFxuIik7CisJCWNvcHlwZmZpbGUoZW52cCk7CisJCXJl
+dHVybiBPUEVOVlBOX1BMVUdJTl9GVU5DX1NVQ0NFU1M7CisKKwlkZWZhdWx0OgorCQlwcmludGYg
+KCJPUEVOVlBOX1BMVUdJTl8/XG4iKTsKKwkJcmV0dXJuIE9QRU5WUE5fUExVR0lOX0ZVTkNfRVJS
+T1I7CisJfQorfQorCitPUEVOVlBOX0VYUE9SVCB2b2lkICoKK29wZW52cG5fcGx1Z2luX2NsaWVu
+dF9jb25zdHJ1Y3Rvcl92MSAob3BlbnZwbl9wbHVnaW5faGFuZGxlX3QgaGFuZGxlKQoreworCXBy
+aW50ZiAoIkZVTkM6IG9wZW52cG5fcGx1Z2luX2NsaWVudF9jb25zdHJ1Y3Rvcl92MVxuIik7CisJ
+cmV0dXJuIE9QRU5WUE5fUExVR0lOX0ZVTkNfU1VDQ0VTUzsKK30KKworT1BFTlZQTl9FWFBPUlQg
+dm9pZAorb3BlbnZwbl9wbHVnaW5fY2xpZW50X2Rlc3RydWN0b3JfdjEgKG9wZW52cG5fcGx1Z2lu
+X2hhbmRsZV90IGhhbmRsZSwgdm9pZCAqcGVyX2NsaWVudF9jb250ZXh0KQoreworCXByaW50ZiAo
+IkZVTkM6IG9wZW52cG5fcGx1Z2luX2NsaWVudF9kZXN0cnVjdG9yX3YxXG4iKTsKKworfQorCitP
+UEVOVlBOX0VYUE9SVCB2b2lkCitvcGVudnBuX3BsdWdpbl9jbG9zZV92MSAob3BlbnZwbl9wbHVn
+aW5faGFuZGxlX3QgaGFuZGxlKQoreworCisJcHJpbnRmICgiRlVOQzogb3BlbnZwbl9wbHVnaW5f
+Y2xvc2VfdjFcbiIpOworCit9Cg==
+--=_05904e9f2410e5687ff03b4b27f87169
+Content-Transfer-Encoding: base64
+Content-Type: application/octet-stream; charset="UTF-8"; name="patch_multi.c"; 
+Content-Disposition: attachment;
+ filename="patch_multi.c"; 
 
-<body lang=3DHU link=3Dblue vlink=3Dpurple>
-
-<div class=3DSection1>
-
-<p class=3DMsoNormal>Hi,<o:p></o:p></p>
-
-<p class=3DMsoNormal>A few days ago I&#8217;ve set up an openvpn server on =
-my
-server with mysql backend based on auth-user-pass-verify, client-connect,
-client-disconnect. Both client-connect and client-disconnect works has a ma=
-in
-purpuse of setting iptables rules for forwarding each connection to a public
-ip, taken from an ip_pool table. Also, each connection is registered in a t=
-able
-called active. When the client disconnects, it deletes from active, deletes=
- the
-iptables rule and logs everything... <o:p></o:p></p>
-
-<p class=3DMsoNormal>The authentication and every record is indexed by the =
-common
-name (which is the username, not the cert name, so <span style=3D'color:bla=
-ck'>username-as-common-name
-on</span> ).. so if i add a row in the &#8222;active&#8221; table with
-client-connect and then look for it with client-disconnect, it is based on =
-the
-common name.<o:p></o:p></p>
-
-<p class=3DMsoNormal>So, now about the problem: some of the time (about 1 e=
-very 5
-disconnect) the $common_name variable shows the cert name and not the usern=
-ame,
-thus making it impossible to find in active table, leaving many false iptab=
-les
-rules and funny logs like:<o:p></o:p></p>
-
-<p class=3DMsoNormal>username=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 1245682814=A0=
-=A0=A0=A0=A0=A0=A0 80.99.12.202=A0=A0=A0=A0=A0 79.172.201.189=A0 =A0=A0=A0=
-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 10.0.0.2=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0=A0=A0 CONNECT<o:p></o:p></p>
-
-<p class=3DMsoNormal>certname=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 1245685700=
-=A0=A0=A0=A0=A0=A0=A0 80.99.12.202=A0=A0=A0=A0=A0  =A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0=A0=A0=A0 =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 10.0.0.2=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0=A0=A0 DISCONNECT<o:p></o:p></p>
-
-<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
-
-<p class=3DMsoNormal>Is this a bug or did i make a mistake? <o:p></o:p></p>
-
-<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
-
-<p class=3DMsoNormal>[asrael@...1230... openvpn]$ openvpn --version<o:p></o=
-:p></p>
-
-<p class=3DMsoNormal>OpenVPN 2.1_rc18 x86_64-unknown-linux-gnu [SSL] [LZO2]
-[EPOLL] built on Jun 21 2009<o:p></o:p></p>
-
-<p class=3DMsoNormal>[asrael@...1230... openvpn]$ uname -a<o:p></o:p></p>
-
-<p class=3DMsoNormal>Linux vpn1.xxx.hu 2.6.29.4-167.fc11.x86_64 #1 SMP Wed =
-May 27
-17:27:08 EDT 2009 x86_64 x86_64 x86_64 GNU/Linux <o:p></o:p></p>
-
-<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
-
-<p class=3DMsoNormal>Thank you,<o:p></o:p></p>
-
-<p class=3DMsoNormal>Andras Kosztyu<o:p></o:p></p>
-
-</div>
-
-</body>
-
-</html>
-
-------=_NextPart_000_009B_01C9F419.55E28C80--
+SW5kZXg6IG11bHRpLmMNCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT0NCi0tLSBtdWx0aS5jCShyZXZpc2lvbiA0NjM5KQ0K
+KysrIG11bHRpLmMJKHdvcmtpbmcgY29weSkNCkBAIC03NzcsNyArNzc3LDcgQEANCiANCiAJICBz
+dGF0dXNfcHJpbnRmIChzbywgIkVORCIpOw0KIAl9DQotICAgICAgZWxzZSBpZiAodmVyc2lvbiA9
+PSAyIHx8IHZlcnNpb24gPT0gMykNCisgICAgICBlbHNlIGlmICh2ZXJzaW9uID09IDIgfHwgdmVy
+c2lvbiA9PSAzICkNCiAJew0KIAkgIGNvbnN0IGNoYXIgc2VwID0gKHZlcnNpb24gPT0gMykgPyAn
+XHQnIDogJywnOw0KIA0KQEAgLTc4Niw4ICs3ODYsOCBAQA0KIAkgICAqLw0KIAkgIHN0YXR1c19w
+cmludGYgKHNvLCAiVElUTEUlYyVzIiwgc2VwLCB0aXRsZV9zdHJpbmcpOw0KIAkgIHN0YXR1c19w
+cmludGYgKHNvLCAiVElNRSVjJXMlYyV1Iiwgc2VwLCB0aW1lX3N0cmluZyAobm93LCAwLCBmYWxz
+ZSwgJmdjX3RvcCksIHNlcCwgKHVuc2lnbmVkIGludClub3cpOw0KLQkgIHN0YXR1c19wcmludGYg
+KHNvLCAiSEVBREVSJWNDTElFTlRfTElTVCVjQ29tbW9uIE5hbWUlY1JlYWwgQWRkcmVzcyVjVmly
+dHVhbCBBZGRyZXNzJWNCeXRlcyBSZWNlaXZlZCVjQnl0ZXMgU2VudCVjQ29ubmVjdGVkIFNpbmNl
+JWNDb25uZWN0ZWQgU2luY2UgKHRpbWVfdCkiLA0KLQkJCSBzZXAsIHNlcCwgc2VwLCBzZXAsIHNl
+cCwgc2VwLCBzZXAsIHNlcCk7DQorCSAgc3RhdHVzX3ByaW50ZiAoc28sICJIRUFERVIlY0NMSUVO
+VF9MSVNUJWNDb21tb24gTmFtZSVjUmVhbCBBZGRyZXNzJWNWaXJ0dWFsIEFkZHJlc3MlY0J5dGVz
+IFJlY2VpdmVkJWNCeXRlcyBTZW50JWNDb25uZWN0ZWQgU2luY2UlY0Nvbm5lY3RlZCBTaW5jZSAo
+dGltZV90KSVjQ0lEIiwNCisJCQkgc2VwLCBzZXAsIHNlcCwgc2VwLCBzZXAsIHNlcCwgc2VwLCBz
+ZXAsIHNlcCk7DQogCSAgaGFzaF9pdGVyYXRvcl9pbml0IChtLT5oYXNoLCAmaGksIHRydWUpOw0K
+IAkgIHdoaWxlICgoaGUgPSBoYXNoX2l0ZXJhdG9yX25leHQgKCZoaSkpKQ0KIAkgICAgew0KQEAg
+LTc5NiwxNCArNzk2LDE1IEBADQogDQogCSAgICAgIGlmICghbWktPmhhbHQpDQogCQl7DQotCQkg
+IHN0YXR1c19wcmludGYgKHNvLCAiQ0xJRU5UX0xJU1QlYyVzJWMlcyVjJXMlYyIgY291bnRlcl9m
+b3JtYXQgIiVjIiBjb3VudGVyX2Zvcm1hdCAiJWMlcyVjJXUiLA0KKwkJICBzdGF0dXNfcHJpbnRm
+IChzbywgIkNMSUVOVF9MSVNUJWMlcyVjJXMlYyVzJWMiIGNvdW50ZXJfZm9ybWF0ICIlYyIgY291
+bnRlcl9mb3JtYXQgIiVjJXMlYyV1JWMldSIsDQogCQkJCSBzZXAsIHRsc19jb21tb25fbmFtZSAo
+bWktPmNvbnRleHQuYzIudGxzX211bHRpLCBmYWxzZSksDQogCQkJCSBzZXAsIG1yb3V0ZV9hZGRy
+X3ByaW50ICgmbWktPnJlYWwsICZnYyksDQogCQkJCSBzZXAsIHByaW50X2luX2FkZHJfdCAobWkt
+PnJlcG9ydGluZ19hZGRyLCBJQV9FTVBUWV9JRl9VTkRFRiwgJmdjKSwNCiAJCQkJIHNlcCwgbWkt
+PmNvbnRleHQuYzIubGlua19yZWFkX2J5dGVzLA0KIAkJCQkgc2VwLCBtaS0+Y29udGV4dC5jMi5s
+aW5rX3dyaXRlX2J5dGVzLA0KIAkJCQkgc2VwLCB0aW1lX3N0cmluZyAobWktPmNyZWF0ZWQsIDAs
+IGZhbHNlLCAmZ2MpLA0KLQkJCQkgc2VwLCAodW5zaWduZWQgaW50KW1pLT5jcmVhdGVkKTsNCisJ
+CQkJIHNlcCwgKHVuc2lnbmVkIGludCltaS0+Y3JlYXRlZCwNCisJCQkJIHNlcCwgbWktPmNvbnRl
+eHQuYzIubWRhX2NvbnRleHQuY2lkKTsNCiAJCX0NCiAJICAgICAgZ2NfZnJlZSAoJmdjKTsNCiAJ
+ICAgIH0NCg==
+--=_05904e9f2410e5687ff03b4b27f87169--
 
 
