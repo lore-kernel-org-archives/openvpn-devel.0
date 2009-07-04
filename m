@@ -1,9 +1,12 @@
+Resent-Message-ID: <20090704191407.GA14701@...1233...>
+Resent-To: openvpn-devel@lists.sourceforge.net
+Date: Sat, 4 Jul 2009 21:08:53 +0200
+From: Christof Meerwald <cmeerw@...1232...>
+Message-ID: <20090704190853.GA17320@...1233...>
+References: <eec247fc0906301008s527c6809ka944e7cb3cd85aab@...278...>
 MIME-Version: 1.0
-Date: Tue, 30 Jun 2009 20:08:34 +0300
-Message-ID: <eec247fc0906301008s527c6809ka944e7cb3cd85aab@...278...>
-From: Cosmin Marin <cosmmin.m@...277...>
-Content-Type: multipart/alternative; boundary=0016e6d648655ef992046d93db4a
-Subject: [Openvpn-devel] OpenVPN packet structure
+In-Reply-To: <eec247fc0906301008s527c6809ka944e7cb3cd85aab@...278...>
+Subject: Re: [Openvpn-devel] OpenVPN packet structure
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,35 +15,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
---0016e6d648655ef992046d93db4a
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+On Tue, 30 Jun 2009 20:08:34 +0300, Cosmin Marin wrote:
+> I was wondering if the payload of an OpenVPN packet has the same structure
+> as a normal IP packet(ethernet header/ip header/tcp or udp header).
 
-Hello.
+Depending on whether you are using tun or tap mode you either get the raw IP
+packet or the raw ethernet frame in the OpenVPN packet.
 
-I was wondering if the payload of an OpenVPN packet has the same structure
-as a normal IP packet(ethernet header/ip header/tcp or udp header).
-I know that OpenVPN adds fields like the packet header and data payload
-header after encryption and another IP header and TCP/UDP header, but
-i have been trying to get the old ip source and destionation addresses after
-i have decrypted the packet and i am out of luck.
 
-Thanks.
+> I know that OpenVPN adds fields like the packet header and data payload
+> header after encryption and another IP header and TCP/UDP header, but
+> i have been trying to get the old ip source and destionation addresses after
+> i have decrypted the packet and i am out of luck.
 
---0016e6d648655ef992046d93db4a
-Content-Type: text/html; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+The easiest thing might be to start with "cipher none" to disable encryption
+and have a look at the packets.
 
-Hello.<br><br>I was wondering if the payload of an OpenVPN packet has the s=
-ame structure as a normal IP packet(ethernet header/ip header/tcp or udp he=
-ader).<br>I know that OpenVPN adds fields like the packet header and data p=
-ayload header after encryption and another IP header and TCP/UDP header, bu=
-t<br>
-i have been trying to get the old ip source and destionation addresses afte=
-r i have decrypted the packet and i am out of luck.<br><br>Thanks.<br><br>=
-=A0<br><br>
 
---0016e6d648655ef992046d93db4a--
+Christof
+
+-- 
+
+http://cmeerw.org                              sip:cmeerw at cmeerw.org
+mailto:cmeerw at cmeerw.org                   xmpp:cmeerw at cmeerw.org
 
