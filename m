@@ -1,12 +1,10 @@
-Resent-Message-ID: <20090704191407.GA14701@...1233...>
-Resent-To: openvpn-devel@lists.sourceforge.net
-Date: Sat, 4 Jul 2009 21:08:53 +0200
-From: Christof Meerwald <cmeerw@...1232...>
-Message-ID: <20090704190853.GA17320@...1233...>
-References: <eec247fc0906301008s527c6809ka944e7cb3cd85aab@...278...>
+Date: Tue, 7 Jul 2009 09:06:35 +0200
+From: "Jan Wedel" <Jan.Wedel@...1234...>
+Message-ID: <H00000770000d5f4.1246950395.server1.ettex.de@...1235...>
 MIME-Version: 1.0
-In-Reply-To: <eec247fc0906301008s527c6809ka944e7cb3cd85aab@...278...>
-Subject: Re: [Openvpn-devel] OpenVPN packet structure
+Content-Type: multipart/alternative;
+	boundary="2_0_b7_26eccMHTML_=_01"
+Subject: [Openvpn-devel] Porting OpenVPN to Java ME ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,32 +13,157 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
+To: Openvpn-devel <Openvpn-devel@lists.sourceforge.net>
+
+--2_0_b7_26eccMHTML_=_01
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
 
-On Tue, 30 Jun 2009 20:08:34 +0300, Cosmin Marin wrote:
-> I was wondering if the payload of an OpenVPN packet has the same structure
-> as a normal IP packet(ethernet header/ip header/tcp or udp header).
+Hi,
 
-Depending on whether you are using tun or tap mode you either get the raw IP
-packet or the raw ethernet frame in the OpenVPN packet.
+=20
+
+I need a solution to tunnel a network via GPRS to a client using Java ME
+to address clients as network components. Do you think it is possible
+port OpenVPN to Java ME? I don=E2=80=99t need encryption but I =E2=80=98m s=
+till
+wondering if a mobile device is powerful enough and provides sufficient
+resources. What would you think is the most problematic issue when
+trying to port it?
+
+=20
+
+Does anybody know, if there are already ports in Java available? Or
+maybe solutions in Java other than OpenVPN that can help me?
+
+=20
+
+Thanks! Any helpful comment is appreciated!
+
+=20
+
+Jan
 
 
-> I know that OpenVPN adds fields like the packet header and data payload
-> header after encryption and another IP header and TCP/UDP header, but
-> i have been trying to get the old ip source and destionation addresses after
-> i have decrypted the packet and i am out of luck.
 
-The easiest thing might be to start with "cipher none" to disable encryption
-and have a look at the packets.
+--2_0_b7_26eccMHTML_=_01
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40">
 
-Christof
+<head>
 
--- 
+<meta name=3DGenerator content=3D"Microsoft Word 12 (filtered medium)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+span.E-MailFormatvorlage17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri","sans-serif";
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;}
+@page Section1
+	{size:612.0pt 792.0pt;
+	margin:70.85pt 70.85pt 2.0cm 70.85pt;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+<!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext=3D"edit">
+  <o:idmap v:ext=3D"edit" data=3D"1" />
+ </o:shapelayout></xml><![endif]-->
+</head>
 
-http://cmeerw.org                              sip:cmeerw at cmeerw.org
-mailto:cmeerw at cmeerw.org                   xmpp:cmeerw at cmeerw.org
+<body lang=3DDE link=3Dblue vlink=3Dpurple>
+
+<div class=3DSection1>
+
+<p class=3DMsoNormal>Hi,<o:p></o:p>
+
+</p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p>
+
+</p>
+
+<p class=3DMsoNormal><span lang=3DEN-US>I need a solution to tunnel a netwo=
+rk via
+GPRS to a client using Java ME to address clients as network components. Do=
+ you
+think it is possible port OpenVPN to Java ME? I don&#8217;t need encryption=
+ but
+I &#8216;m still wondering if a mobile device is powerful enough and provid=
+es sufficient
+resources. What would you think is the most problematic issue when trying t=
+o port
+it?<o:p></o:p></span>
+
+</p>
+
+<p class=3DMsoNormal><span lang=3DEN-US><o:p>&nbsp;</o:p></span>
+
+</p>
+
+<p class=3DMsoNormal><span lang=3DEN-US>Does anybody know, if there are alr=
+eady
+ports in Java available? Or maybe solutions in Java other than OpenVPN that=
+ can
+help me?<o:p></o:p></span>
+
+</p>
+
+<p class=3DMsoNormal><span lang=3DEN-US><o:p>&nbsp;</o:p></span>
+
+</p>
+
+<p class=3DMsoNormal><span lang=3DEN-US>Thanks! Any helpful comment is appr=
+eciated!<o:p></o:p></span>
+
+</p>
+
+<p class=3DMsoNormal><span lang=3DEN-US><o:p>&nbsp;</o:p></span>
+
+</p>
+
+<p class=3DMsoNormal><span lang=3DEN-US>Jan<o:p></o:p></span>
+
+</p>
+
+</div>
+
+</body>
+
+</html>=
+
+--2_0_b7_26eccMHTML_=_01--
 
