@@ -1,11 +1,8 @@
-Message-Id: <26151F83-CD19-4608-9F19-B3D0D2590B46@...1198...>
-From: Andy Sykes <a.sykes@...1198...>
-In-Reply-To: <4A5C362C.5020703@...1164...>
-Mime-Version: 1.0 (Apple Message framework v935.3)
-Date: Tue, 14 Jul 2009 10:09:14 +0100
-References: <4A5C362C.5020703@...1164...>
-Subject: Re: [Openvpn-devel] [Fwd: [Openvpn-users] Bridging OpenVPN on an
-	interface that has multiple virtual aliases]
+Date: Wed, 15 Jul 2009 12:42:30 +0200
+From: Alberto Gonzalez Iniesta <agi@...64...>
+Message-ID: <20090715104230.GJ3056@...30...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Fwd: openvpn 2.1~rc11-1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,82 +11,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
-Content-Transfer-Encoding: 7bit
-To: Emrah <eka@...1164...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-I use aliases of the bridge device instead.
+The following bug report was sent to me by Oliver Seufer.
+Might be importante to take a look at it.
+Regards,
 
-So instead of eth0:0, eth0:1, I have br0:0, br0:1, etc. Works fine for  
-me. I have a startup script that sets up the interfaces and starts  
-OpenVPN.
+Alberto
 
-It starts the bridge between eth0 and tap0, then adds aliases to the  
-new br0 interface.
 
-Works fine for me on a bunch of boxes.
+----- Forwarded message from Oliver Seufer <Oliver@...1236...> -----
 
-Andy.
+Date: Mon, 29 Jun 2009 10:57:56 +0200
+From: Oliver Seufer <Oliver@...1236...>
+To: Alberto Gonzalez Iniesta <agi@...64...>
+Subject: openvpn 2.1~rc11-1
 
-On 14 Jul 2009, at 08:39, Emrah wrote:
+Hi Alberto,
 
-> Hello Dev guys,
->
-> Any idea here about my issue?
->
-> Best regards,
-> Emrah
->
->
-> I am trying to use OpenVPN in bridge mode on a box that has multiple  
-> IP
-> aliases. eth0, eth0:0, eth0:1 and so on.
-> My questions are:
-> * What are the interfaces I am supposed to bridge? Only eth0 or
-> additional stuff?
-> * Once eth0 and tap0 become br0, how do I listen to my IP addresses  
-> like
-> I used to do with eth0:x?
->
-> For instance, when I bridge eth0 and I boot a virtual server that is
-> supposed to listen on eth0:0, my ifconfig shows br0 with the main IP  
-> and
-> eth0 with the alias IP address. Both are reachable but users are not
-> bridged anymore.
->
->
-> Your help will be greately appreciated. I'm stuck!
->
-> Cheers,
-> Emrah
->
-> ------------------------------------------------------------------------------
-> Enter the BlackBerry Developer Challenge
-> This is your chance to win up to $100,000 in prizes! For a limited  
-> time,
-> vendors submitting new applications to BlackBerry App World(TM) will  
-> have
-> the opportunity to enter the BlackBerry Developer Challenge. See  
-> full prize
-> details at: http://p.sf.net/sfu/Challenge
-> _______________________________________________
-> Openvpn-users mailing list
-> Openvpn-users@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-users
->
->
-> ------------------------------------------------------------------------------
-> Enter the BlackBerry Developer Challenge
-> This is your chance to win up to $100,000 in prizes! For a limited  
-> time,
-> vendors submitting new applications to BlackBerry App World(TM) will  
-> have
-> the opportunity to enter the BlackBerry Developer Challenge. See  
-> full prize
-> details at: http://p.sf.net/sfu/Challenge_______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+after upgradeing from openvpn 2.0.9 to openvpn 2.1 rc18 the shaper option i=
+s=20
+not working correctly anymore. Ping times are extremly high even there
+is less traffic then specified in the shapper option.=20
 
+Kernel-version: 2.6.26-2-686
+Debian-version: 5.0.1
+OpenVPN-version: 2.1 rc18
+
+side1.conf
+dev tun
+shaper 100000
+local 192.168.2.37
+ifconfig 192.168.123.1 192.168.123.2
+secret /tmp/openvpn-test/openvpn.key
+log-append /tmp/openvpn-test/side1.log
+
+side2.conf
+dev tun
+##shaper 100000
+remote 192.168.2.37
+ifconfig 192.168.123.2 192.168.123.1
+secret /tmp/openvpn-test/openvpn.key
+log-append /tmp/openvpn-test/side2.log
+
+side1 $ ping -s 1200 -i 0.5 192.168.123.2
+PING 192.168.123.2 (192.168.123.2) 1200(1228) bytes of data.
+1208 bytes from 192.168.123.2: icmp_seq=3D1 ttl=3D64 time=3D1.36 ms
+1208 bytes from 192.168.123.2: icmp_seq=3D2 ttl=3D64 time=3D379 ms
+1208 bytes from 192.168.123.2: icmp_seq=3D3 ttl=3D64 time=3D882 ms
+1208 bytes from 192.168.123.2: icmp_seq=3D4 ttl=3D64 time=3D1380 ms
+1208 bytes from 192.168.123.2: icmp_seq=3D5 ttl=3D64 time=3D1876 ms
+1208 bytes from 192.168.123.2: icmp_seq=3D6 ttl=3D64 time=3D2360 ms
+1208 bytes from 192.168.123.2: icmp_seq=3D7 ttl=3D64 time=3D2856 ms
+1208 bytes from 192.168.123.2: icmp_seq=3D8 ttl=3D64 time=3D3356 ms
+1208 bytes from 192.168.123.2: icmp_seq=3D9 ttl=3D64 time=3D3856 ms
+1208 bytes from 192.168.123.2: icmp_seq=3D10 ttl=3D64 time=3D4339 ms
+1208 bytes from 192.168.123.2: icmp_seq=3D11 ttl=3D64 time=3D4837 ms
+1208 bytes from 192.168.123.2: icmp_seq=3D12 ttl=3D64 time=3D5325 ms
+1208 bytes from 192.168.123.2: icmp_seq=3D13 ttl=3D64 time=3D5825 ms
+1208 bytes from 192.168.123.2: icmp_seq=3D14 ttl=3D64 time=3D6309 ms
+1208 bytes from 192.168.123.2: icmp_seq=3D15 ttl=3D64 time=3D6805 ms
+1208 bytes from 192.168.123.2: icmp_seq=3D16 ttl=3D64 time=3D6800 ms
+1208 bytes from 192.168.123.2: icmp_seq=3D17 ttl=3D64 time=3D6798 ms
+
+The ping times will stay between 6 and 7 seconds.
+
+The ping creates a bandwith utilisation of 10 kbits per second. This is
+less then 2 kbytes per second, but shaping is set to ~100 kbytes per
+seconds.
+
+With version 2.0.9 everything works as expected.
+
+Kind regards
+
+Oliver Seufer
+
+----- End forwarded message -----
+
+--=20
+Alberto Gonzalez Iniesta    | Formaci=F3n, consultor=EDa y soporte t=E9cnico
+agi@(inittab.org|debian.org)| en GNU/Linux y software libre
+Encrypted mail preferred    | http://inittab.com
+
+Key fingerprint =3D 9782 04E7 2B75 405C F5E9  0C81 C514 AF8E 4BA4 01C3
 
