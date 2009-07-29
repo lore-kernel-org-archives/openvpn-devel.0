@@ -1,9 +1,18 @@
-Date: Tue, 28 Jul 2009 20:49:59 -0500
-From: "Karl O. Pinc" <kop@...1206...>
-In-Reply-To: <3453b4110907281422u4284faen6cd632e62f11cdf7@...278...>
-	(from sebastien.raveau@...1231... on Tue Jul 28 16:22:09 2009)
-Message-Id: <1248832199.19514.1@...1207...>
 MIME-Version: 1.0
+In-Reply-To: <3453b4110907281422u4284faen6cd632e62f11cdf7@...278...>
+References: <4A5EFE61.3020100@...41...>
+	<3453b4110907280133n32070ed3rd93598fd1b64740e@...278...>
+	<9e0cf0bf0907280218p25c081f7v203b4780309cb6b9@...278...>
+	<4A6EFCFF.2090400@...1114...>
+	<9e0cf0bf0907280650i3dabf036gc9e2f8c745823e15@...278...>
+	<4A6F05B0.4020602@...1114...>
+	<9e0cf0bf0907280720y45b629d5sd7fe3d2525811280@...278...>
+	<3453b4110907281129x509c2bb1rbbfe4a817765e503@...278...>
+	<4A6F634E.7020202@...1114...>
+	<3453b4110907281422u4284faen6cd632e62f11cdf7@...278...>
+Date: Wed, 29 Jul 2009 07:47:57 +0300
+Message-ID: <9e0cf0bf0907282147n3dcdb7f6ue91065cc2d606f72@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
 Subject: Re: [Openvpn-devel] OpenVPN 2.1_rc19 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,42 +22,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 To: Sebastien Raveau <sebastien.raveau@...1231...>
-Cc: Alon Bar-Lev <alon.barlev@...277...>, openvpn-devel@lists.sourceforge.net
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 07/28/2009 04:22:09 PM, Sebastien Raveau wrote:
+Well,
+I do not understand you guys.
 
+If you think SELinux is so great, why do you need chroot?
+It is like you put some money in safe, and then put the safe into
+another safe, it never ends... Why only two safe, let's put another
+safe...
+I know that this is the approach many of security advisors use, but I
+never could have found the logic.
+If you want to keep your money safe use a single safe and select the
+strongest one.
 
-> If I understand you correctly, that is, if you are suggesting that
-> OpenVPN should automatically apply a SELinux context if setcon() is
-> available... I'll have to disagree with you. Not that I reject the
-> idea of enforcing security measures by default, but because when you
-> google for "selinux howto", half of the first-page results are on how
-> to *disable* SELinux. Apparently not everybody likes it, and they=20
-> have
-> a right to, so I believe we should not force it upon them :-)
+And final note regarding the iproute wrapper.
+It is a *WRAPPER*, if I needed top secured implementation I would have
+created a daemon listening to network change requests using unix
+domain sockets, wrap this up in SELinux profile, and implementing a
+logic that allows only changes to tap/tun interface with specific
+attributes, and allowing routing table update with specific details.
+Then add a wrapper that uses the unix domain socket in order to access
+the daemon. OpenVPN will use the wrapper so it needs no special
+privilege. The daemon validates what SELinux or any other security
+product cannot validate: Network configuration changes. All done
+within a valid and separate context.
 
-SELinux is a great idea, in theory.  In practice I find the
-cost/benefit such that I wind up turning it off.  I'd love
-to have it available and working in "stock" situations,
-and have the (easy to do) option of turning it off if
-desired.   If nothing else it gets in the way of development/
-deployment.  After something's working then it's possible to go back
-and figure out which permissions need enabling.
+As I wrote earlier, most of OpenVPN configurations need to execute
+iproute also during session. For example, if you like to connect two
+sites, your super SELinux secured solution will work only at one site.
 
-Because of the complication it would also be highly
-desirable, except for a possible "off/monitor mode/on"
-switch, if it would integrate with the rest of SELinux
-so there's not yet more configuration.  I assume that
-this is the natural approach to take, but figured I'd
-mention it anyway.
+No need to discuss this further. I get your point.
 
-
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                 -- Robert A. Heinlein
-
+Alon.
 
