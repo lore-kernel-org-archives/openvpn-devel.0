@@ -1,15 +1,11 @@
-Message-Id: <9075ED2D-8ABB-4462-B0F3-48CCE5AF129E@...1247...>
-From: Stefan Bethke <stb@...1247...>
-In-Reply-To: <op.uxvfpabu1e62zd@...33...>
-Mime-Version: 1.0 (Apple Message framework v935.3)
-Date: Thu, 30 Jul 2009 10:47:40 +0200
-References: <B4AA014B-2444-40AA-A3A3-417E4B89DF90@...1247...>
-	<4A709126.5050102@...1248...>
-	<3A1518B9-2C8C-4F05-9195-82C6017E4902@...1247...>
-	<op.uxusbswp1e62zd@...33...>
-	<BEE762CA-4282-4BA8-B92B-AFC7AAE3CA9A@...1247...>
-	<op.uxvfpabu1e62zd@...33...>
-Subject: Re: [Openvpn-devel] recent change to ifconfig breaks OpenVPN?
+Message-ID: <4A71C8AE.2070402@...1114...>
+Date: Thu, 30 Jul 2009 18:22:06 +0200
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <1248969135.4162.35.camel@...1251...>
+In-Reply-To: <1248969135.4162.35.camel@...1251...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] Compiling 2.1RC19 rpms for
+	CentOS
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,112 +14,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Matthias Andree <matthias.andree@...68...>
-Cc: OpenVPN Developer Mailing List <Openvpn-devel@lists.sourceforge.net>, James Yonan <jim@...41...>
+To: Nico De Ranter <nico@...1250...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Openvpn Users <openvpn-users@lists.sourceforge.net>
 
-I'm leaving off freebsd-current, since I believe the problem is in  
-OpenVPN's tun.c, as pointed out by Matthias below.
+Nico De Ranter wrote:
+> Hi,
+> 
+> I'm trying to create rpms of 2.1RC19 for CentOS 5.3.  When I run
+> 'rpmbuild -tb openvpn-2.1_rc19.tar.gz' I get an error in the end saying 
+> 
+> ...
+> cp: cannot stat `management/': No such file or directory
+> ...
+> 
+> There is indeed no management/ directory in the tar file.  Am I missing
+> some files or is this an error in the rpm spec file?
 
-Some background on my issue: FreeBSD 8.0-beta2 has apparently  
-introduced a change where the previously working ifconfig invocation  
-is now failing.  I'm leaving out the discussion on what exactly that  
-change is and if this effect is desired or not, but concentrate on  
-what OpenVPN is trying to do. We're strictly talking --topology subnet  
-here. tap's are not affected.  I haven't tested any other topology.
+That seems to be either a .spec file error, or a missing directory in the 
+source tree.   There are 2 solutions ... Both builds on Fedora.
 
-As can be seen in the commit below, ifconfig is invoked with both the  
-local and the remote IP address set to the server-assigned local  
-address.  If this code could be changed to call ifconfig with the  
-local address and the server's VPN address (I believe generally .1)  
-things should be fine. (Also on earlier versions of FreeBSD.)  It  
-might be necessary to install an explicit route for the subnet, since  
-FreeBSD will only install a host route for the remote end of the point- 
-to-point link.  Please note that FreeBSD's tun interface is always in  
-point-to-point mode, and cannot be configured as a broadcast interface.
+---- SUGGESTION 1: ----------------------------------------------
 
-A cursory read of tun.c and tun.h shows that struct tuntap doesn't  
-have the server's VPN address, and it appears the server does not push  
-it.  Is this available somewhere, or would it be OK to calculate it?   
-(First address in the cidr block the local address is in modulo the  
-netmask.)
+diff --git a/configure.ac b/configure.ac
+index c6d19f9..5fbf7fd 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -871,6 +871,7 @@ AC_OUTPUT([
+         openvpn.spec
+         config-win32.h
+         images/Makefile
++        management/Makefile
+         service-win32/Makefile
+         install-win32/Makefile
+         install-win32/settings
+diff --git a/management/Makefile.in b/management/Makefile.in
+new file mode 100644
+index 0000000..e69de29
+-----------------------------------------------------------------
+Caveats: The rpm file will add a Makefile to 
+/usr/share/doc/openvpn-2.1_rc19/management/
+
+** OR **
+
+---- SUGGESTION 2: ----------------------------------------------
+diff --git a/openvpn.spec b/openvpn.spec
+index 5a52037..c15b48a 100644
+--- a/openvpn.spec
++++ b/openvpn.spec
+@@ -223,9 +223,12 @@ fi
+  %endif
+
+  # Install extra %doc stuff
+-%doc contrib/ easy-rsa/ management/ sample-*/ plugin/README.*
++%doc contrib/ easy-rsa/ sample-*/ plugin/README.*
+
+  %changelog
++* Thu Jul 30 2009 David Sommerseth <dazo@...384...>
++- Removed management/ directory from %doc
++
+  * Thu Dec 14 2006 Alon Bar-Lev
+  - Added with_pkcs11
+-----------------------------------------------------------------
+
+Not sure which patch the upstream developers prefer most.  But as long as 
+the management/ directory is not present in the source tree, I believe 
+SUGGESTION 2 is more the way to go.
 
 
-Thanks,
-Stefan
+kind regards,
 
-Am 30.07.2009 um 10:11 schrieb Matthias Andree:
-
-> And it appears that exactly this patch may be the culprit. This is  
-> from the OpenVPN 2.1 source repository:
->
-> ------------------------------------------------------------------------
-> r986 | james | 2006-04-05 08:28:19 +0200 (Wed, 05 Apr 2006) | 2 lines
-> Changed paths:
->   M /branches/BETA21/openvpn/tun.c
->
-> "topology subnet" fix for FreeBSD (Benoit Bourdin).
->
-> ------------------------------------------------------------------------
->
-> Index: tun.c
-> ===================================================================
-> --- tun.c	(Revision 985)
-> +++ tun.c	(Revision 986)
-> @@ -795,19 +795,42 @@
-> 			  ifconfig_remote_netmask,
-> 			  tun_mtu
-> 			  );
-> -      else
-> -	openvpn_snprintf (command_line, sizeof (command_line),
-> +      else {
-> +	if (tt->topology == TOP_SUBNET)
-> +            openvpn_snprintf (command_line, sizeof (command_line),
-> +                              IFCONFIG_PATH " %s %s %s netmask %s  
-> mtu %d up",
-> +                              actual,
-> +                              ifconfig_local,
-> +                              ifconfig_local,
-> +                              ifconfig_remote_netmask,
-> +                              tun_mtu
-> +                              );
-> +	else
-> +  	    openvpn_snprintf (command_line, sizeof (command_line),
-> 			  IFCONFIG_PATH " %s %s netmask %s mtu %d up",
-> 			  actual,
-> 			  ifconfig_local,
-> 			  ifconfig_remote_netmask,
-> 			  tun_mtu
-> 			  );
-> +      }
-> 	
->       msg (M_INFO, "%s", command_line);
->       system_check (command_line, es, S_FATAL, "FreeBSD ifconfig  
-> failed");
->       tt->did_ifconfig = true;
->
-> +	/* Add a network route for the local tun interface */
-> +      if (!tun && tt->topology == TOP_SUBNET)
-> +        {
-> +          struct route r;
-> +          CLEAR (r);
-> +          r.defined = true;
-> +          r.network = tt->local & tt->remote_netmask;
-> +          r.netmask = tt->remote_netmask;
-> +          r.gateway = tt->local;
-> +          add_route (&r, tt, 0, es);
-> +        }
-> +
-> #elif defined (WIN32)
->       {
-> 	/*
->
->
-> -- 
-> Matthias Andree
-
--- 
-Stefan Bethke <stb@...1247...>   Fon +49 151 14070811
-
+David Sommerseth
 
