@@ -1,11 +1,18 @@
-Message-ID: <4A71C8AE.2070402@...1114...>
-Date: Thu, 30 Jul 2009 18:22:06 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Date: Fri, 31 Jul 2009 00:57:59 +0200
+From: "Matthias Andree" <matthias.andree@...68...>
 MIME-Version: 1.0
-References: <1248969135.4162.35.camel@...1251...>
-In-Reply-To: <1248969135.4162.35.camel@...1251...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] Compiling 2.1RC19 rpms for
-	CentOS
+References: <B4AA014B-2444-40AA-A3A3-417E4B89DF90@...1247...>
+	<4A709126.5050102@...1248...>
+	<3A1518B9-2C8C-4F05-9195-82C6017E4902@...1247...>
+	<op.uxusbswp1e62zd@...33...>
+	<BEE762CA-4282-4BA8-B92B-AFC7AAE3CA9A@...1247...>
+	<ABCF4747-24D4-4435-952B-EA85A2AE999F@...1247...>
+	<B583FBF374231F4A89607B4D08578A4304E22D95@...1253...>
+	<4A721160.5080902@...1248...>
+	<20090730220658.M245@...1254...>
+Message-ID: <op.uxwkqxxd1e62zd@...33...>
+In-Reply-To: <20090730220658.M245@...1254...>
+Subject: Re: [Openvpn-devel] recent change to ifconfig breaks OpenVPN?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,76 +21,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; format=flowed; delsp=yes; charset=utf-8
 Content-Transfer-Encoding: 7bit
-To: Nico De Ranter <nico@...1250...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Openvpn Users <openvpn-users@lists.sourceforge.net>
+To: "Bjoern A. Zeeb" <bzeeb-lists@...1252...>, Julian Elischer <julian@...1248...>
+Cc: Qing Li <qingli@...1249...>, "Li, Qing" <qing.li@...1255...>, FreeBSD Current <freebsd-current@...1249...>, "Openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>, Stefan Bethke <stb@...1247...>
 
-Nico De Ranter wrote:
-> Hi,
-> 
-> I'm trying to create rpms of 2.1RC19 for CentOS 5.3.  When I run
-> 'rpmbuild -tb openvpn-2.1_rc19.tar.gz' I get an error in the end saying 
-> 
-> ...
-> cp: cannot stat `management/': No such file or directory
-> ...
-> 
-> There is indeed no management/ directory in the tar file.  Am I missing
-> some files or is this an error in the rpm spec file?
+Am 31.07.2009, 00:36 Uhr, schrieb Bjoern A. Zeeb  
+<bzeeb-lists@...1252...>:
 
-That seems to be either a .spec file error, or a missing directory in the 
-source tree.   There are 2 solutions ... Both builds on Fedora.
+> Yeah that is as great as we are or rather were.
+>
+> So really, fix the openvpn scripts that assign the address to
+> interfaces to do something that would make sense from the ``man ip''
+> (not the literal command) point of view.  Just that it's "working"
+> somewhere or used to work elswhere neither means that it was correct
+> nor made sense at any time before.
 
----- SUGGESTION 1: ----------------------------------------------
+It's actually in the C code where it was advertised as FreeBSD fix.
+OpenVPN runs in 'topology subnet' mode here, which is documented as  
+follows:
 
-diff --git a/configure.ac b/configure.ac
-index c6d19f9..5fbf7fd 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -871,6 +871,7 @@ AC_OUTPUT([
-         openvpn.spec
-         config-win32.h
-         images/Makefile
-+        management/Makefile
-         service-win32/Makefile
-         install-win32/Makefile
-         install-win32/settings
-diff --git a/management/Makefile.in b/management/Makefile.in
-new file mode 100644
-index 0000000..e69de29
------------------------------------------------------------------
-Caveats: The rpm file will add a Makefile to 
-/usr/share/doc/openvpn-2.1_rc19/management/
+	Use a subnet rather than a point-to-point topology by
+         configuring the tun interface with a local IP address and subnet
+         mask,  similar  to  the  topology used in --dev tap and ethernet
+         bridging mode.  This mode allocates a single IP address per con-
+         necting  client [... MS-Windows stuff here ...]
+            When used on *nix, requires that the
+         tun driver supports an ifconfig(8) command which sets  a  subnet
+         instead of a remote endpoint IP address.
 
-** OR **
+I wonder if TUNSIFMODE (see tun(4)) is somehow needed and if so, already  
+done, and how the proper ifconfig call would look like in this case.  
+Stefan already uttered some ideas in that direction.
 
----- SUGGESTION 2: ----------------------------------------------
-diff --git a/openvpn.spec b/openvpn.spec
-index 5a52037..c15b48a 100644
---- a/openvpn.spec
-+++ b/openvpn.spec
-@@ -223,9 +223,12 @@ fi
-  %endif
+I haven't had much time to investigate yet.
 
-  # Install extra %doc stuff
--%doc contrib/ easy-rsa/ management/ sample-*/ plugin/README.*
-+%doc contrib/ easy-rsa/ sample-*/ plugin/README.*
-
-  %changelog
-+* Thu Jul 30 2009 David Sommerseth <dazo@...384...>
-+- Removed management/ directory from %doc
-+
-  * Thu Dec 14 2006 Alon Bar-Lev
-  - Added with_pkcs11
------------------------------------------------------------------
-
-Not sure which patch the upstream developers prefer most.  But as long as 
-the management/ directory is not present in the source tree, I believe 
-SUGGESTION 2 is more the way to go.
-
-
-kind regards,
-
-David Sommerseth
+-- 
+Matthias Andree
 
