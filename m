@@ -1,12 +1,14 @@
-Content-class: urn:content-classes:message
+Date: Thu, 30 Jul 2009 10:11:24 +0200
+From: "Matthias Andree" <matthias.andree@...68...>
 MIME-Version: 1.0
-Date: Wed, 29 Jul 2009 18:39:28 +0200
-Message-ID: <499929A843E2C541A8AD31A881A2B6A204141CBB@...1006...>
-In-Reply-To: <1248884229.31541.6@...1207...>
-References: <4A5EFE61.3020100@...41...><3453b4110907280133n32070ed3rd93598fd1b64740e@...278...><9e0cf0bf0907280218p25c081f7v203b4780309cb6b9@...278...><4A6EFCFF.2090400@...1114...><9e0cf0bf0907280650i3dabf036gc9e2f8c745823e15@...278...><4A6F05B0.4020602@...1114...><9e0cf0bf0907280720y45b629d5sd7fe3d2525811280@...278...><3453b4110907281129x509c2bb1rbbfe4a817765e503@...278...><4A6F634E.7020202@...1114...><3453b4110907281422u4284faen6cd632e62f11cdf7@...278...><9e0cf0bf0907282147n3dcdb7f6ue91065cc2d606f72@...278...>
-	<1248884229.31541.6@...1207...>
-From: "David Balazic" <David.Balazic@...1005...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.1_rc19 released
+References: <B4AA014B-2444-40AA-A3A3-417E4B89DF90@...1247...>
+	<4A709126.5050102@...1248...>
+	<3A1518B9-2C8C-4F05-9195-82C6017E4902@...1247...>
+	<op.uxusbswp1e62zd@...33...>
+	<BEE762CA-4282-4BA8-B92B-AFC7AAE3CA9A@...1247...>
+Message-ID: <op.uxvfpabu1e62zd@...33...>
+In-Reply-To: <BEE762CA-4282-4BA8-B92B-AFC7AAE3CA9A@...1247...>
+Subject: Re: [Openvpn-devel] recent change to ifconfig breaks OpenVPN?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,68 +17,138 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: "Karl O. Pinc" <kop@...1206...>, Alon Bar-Lev <alon.barlev@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; format=flowed; delsp=yes; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Stefan Bethke <stb@...1247...>
+Cc: FreeBSD Current <freebsd-current@...1249...>, OpenVPN Developer Mailing List <Openvpn-devel@lists.sourceforge.net>, James Yonan <jim@...41...>
 
-Hi!
+Dear Jim and other OpenVPN hackers,
+
+there is an OpenVPN regression, apparently affecting 2.1 on FreeBSD-8, and  
+caused by OpenVPN configuring the local address on a P2P interface for the  
+local AND ALSO the remote address.
+
+See  
+http://lists.freebsd.org/pipermail/freebsd-current/2009-July/010032.html  
+and followups for details.
 
 
-As this discussion has not much to do with the rc19 release, would
-you please change the subject ?
-Like "OpenVPN and SELinux" or "Securing the OpenVPN process" ...
+Am 30.07.2009, 08:40 Uhr, schrieb Stefan Bethke <stb@...1247...>:
 
-Thanks,
-David
+> I'm not sure if that is a more general problem with OpenVPN (at least in  
+> --topology subnet mode), or a specific problem in the FreeBSD-specific  
+> code.  I just looked at a Linux box connected to the same OpenVPN  
+> server, and their ifconfig invocation looks different from ours, so the  
+> FreeBSD-specific code at least plays some role.
+>
+> I'd still like to know whether the change to the routing code is  
+> intentional or a regression.
+
+Stefan,
+
+Which version of OpenVPN are you using?
+
+It might seem that this is a FreeBSD regression, as OpenVPN assumes this  
+about --topology subnet, so that the using of the local address as remote  
+is intentional.
+
+(This is from the current OpenVPN 2.1-RC manpage):
+
+               subnet  -- Use a subnet rather than a point-to-point  
+topology by
+               configuring the tun interface with a local IP address and  
+subnet
+               mask,  similar  to  the  topology used in --dev tap and  
+ethernet
+               bridging mode.  This mode allocates a single IP address per  
+con-
+               necting  client  and  works  on Windows as well.  Only  
+available
+               when server and clients are OpenVPN 2.1 or  higher,  or   
+OpenVPN
+               2.0.x which has been manually patched with the --topology  
+direc-
+               tive code.  When used on Windows, requires version 8.2 or  
+higher
+               of  the  TAP-Win32 driver.  When used on *nix, requires that  
+the
+               tun driver supports an ifconfig(8) command which sets  a   
+subnet
+               instead of a remote endpoint IP address.
 
 
-> -----Original Message-----
-> From: Karl O. Pinc [mailto:kop@...1206...]=20
-> Sent: Wednesday, July 29, 2009 6:17 PM
-> To: Alon Bar-Lev
-> Cc: openvpn-devel@lists.sourceforge.net
-> Subject: Re: [Openvpn-devel] OpenVPN 2.1_rc19 released
->=20
-> On 07/28/2009 11:47:57 PM, Alon Bar-Lev wrote:
-> > Well,
-> > I do not understand you guys.
-> >=20
-> > If you think SELinux is so great, why do you need chroot?
-> > It is like you put some money in safe, and then put the safe into
-> > another safe, it never ends... Why only two safe, let's put another
-> > safe...
-> > I know that this is the approach many of security advisors=20
-> use, but I
-> > never could have found the logic.
-> > If you want to keep your money safe use a single safe and select the
-> > strongest one.
->=20
-> The idea is more like selecting the strongest safe, then putting
-> it behind a moat inside a ring of fire.  That way the thief not
-> only has to be a good safe cracker, he must also be
-> a fire walker and a swimmer, with experience wrestling
-> alligators a decided advantage.  Multiple layers of _different_
-> security raises the bar considerably.
->=20
->=20
->=20
-> Karl <kop@...1206...>
-> Free Software:  "You don't pay back, you pay forward."
->                  -- Robert A. Heinlein
->=20
->=20
-> --------------------------------------------------------------
-> ----------------
-> Let Crystal Reports handle the reporting - Free Crystal=20
-> Reports 2008 30-Day=20
-> trial. Simplify your report design, integration and=20
-> deployment - and focus on=20
-> what you do best, core application coding. Discover what's new with=20
-> Crystal Reports now.  http://p.sf.net/sfu/bobj-july
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->=20
+I see this in the ChangeLog:
+
+2006.04.05 -- Version 2.1-beta12
+...
+* "topology subnet" fix for FreeBSD (Benoit Bourdin).
+...
+
+
+And it appears that exactly this patch may be the culprit. This is from  
+the OpenVPN 2.1 source repository:
+
+------------------------------------------------------------------------
+r986 | james | 2006-04-05 08:28:19 +0200 (Wed, 05 Apr 2006) | 2 lines
+Changed paths:
+    M /branches/BETA21/openvpn/tun.c
+
+"topology subnet" fix for FreeBSD (Benoit Bourdin).
+
+------------------------------------------------------------------------
+
+Index: tun.c
+===================================================================
+--- tun.c	(Revision 985)
++++ tun.c	(Revision 986)
+@@ -795,19 +795,42 @@
+  			  ifconfig_remote_netmask,
+  			  tun_mtu
+  			  );
+-      else
+-	openvpn_snprintf (command_line, sizeof (command_line),
++      else {
++	if (tt->topology == TOP_SUBNET)
++            openvpn_snprintf (command_line, sizeof (command_line),
++                              IFCONFIG_PATH " %s %s %s netmask %s mtu %d  
+up",
++                              actual,
++                              ifconfig_local,
++                              ifconfig_local,
++                              ifconfig_remote_netmask,
++                              tun_mtu
++                              );
++	else
++  	    openvpn_snprintf (command_line, sizeof (command_line),
+  			  IFCONFIG_PATH " %s %s netmask %s mtu %d up",
+  			  actual,
+  			  ifconfig_local,
+  			  ifconfig_remote_netmask,
+  			  tun_mtu
+  			  );
++      }
+  	
+        msg (M_INFO, "%s", command_line);
+        system_check (command_line, es, S_FATAL, "FreeBSD ifconfig failed");
+        tt->did_ifconfig = true;
+
++	/* Add a network route for the local tun interface */
++      if (!tun && tt->topology == TOP_SUBNET)
++        {
++          struct route r;
++          CLEAR (r);
++          r.defined = true;
++          r.network = tt->local & tt->remote_netmask;
++          r.netmask = tt->remote_netmask;
++          r.gateway = tt->local;
++          add_route (&r, tt, 0, es);
++        }
++
+  #elif defined (WIN32)
+        {
+  	/*
+
+
+-- 
+Matthias Andree
 
