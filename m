@@ -1,17 +1,11 @@
-Date: Sun, 02 Aug 2009 10:36:20 +0200
-From: "Matthias Andree" <matthias.andree@...68...>
+Date: Fri, 7 Aug 2009 11:44:01 +0200
+From: Matthias Andree <ma+ovpnd@...31...>
+Message-ID: <20090807094401.GA11504@...33...>
 MIME-Version: 1.0
-References: <B4AA014B-2444-40AA-A3A3-417E4B89DF90@...1247...>
-	<4A709126.5050102@...1248...>
-	<3A1518B9-2C8C-4F05-9195-82C6017E4902@...1247...>
-	<op.uxusbswp1e62zd@...33...>
-	<BEE762CA-4282-4BA8-B92B-AFC7AAE3CA9A@...1247...>
-	<op.uxvfpabu1e62zd@...33...>
-	<9075ED2D-8ABB-4462-B0F3-48CCE5AF129E@...1247...>
-	<274D1D88-EB61-4754-AA47-042B33411140@...1247...>
-Message-ID: <op.ux00uuz61e62zd@...33...>
-In-Reply-To: <274D1D88-EB61-4754-AA47-042B33411140@...1247...>
-Subject: Re: [Openvpn-devel] recent change to ifconfig breaks OpenVPN?
+Content-Type: multipart/mixed; boundary="Nq2Wo0NMKNjxTN9z"
+Content-Disposition: inline
+Subject: [Openvpn-devel] PATCH 2.1-RC*: critical fix for FreeBSD 8 in
+	topology subnet mode.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,45 +14,122 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; format=flowed; delsp=yes; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Stefan Bethke <stb@...1247...>, OpenVPN Developer Mailing List <Openvpn-devel@lists.sourceforge.net>
-Cc: James Yonan <jim@...41...>
+To: openvpn-devel@lists.sourceforge.net, Stefan Bethke <stb@...1247...>, James Yonan <jim@...41...>
 
-Am 01.08.2009, 13:37 Uhr, schrieb Stefan Bethke <stb@...1247...>:
+--Nq2Wo0NMKNjxTN9z
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> Am 30.07.2009 um 10:47 schrieb Stefan Bethke:
->
->> I'm leaving off freebsd-current, since I believe the problem is in
->> OpenVPN's tun.c, as pointed out by Matthias below.
->>
->> Some background on my issue: FreeBSD 8.0-beta2 has apparently
->> introduced a change where the previously working ifconfig invocation
->> is now failing.  I'm leaving out the discussion on what exactly that
->> change is and if this effect is desired or not, but concentrate on
->> what OpenVPN is trying to do. We're strictly talking --topology subnet
->> here. tap's are not affected.  I haven't tested any other topology.
->>
->> As can be seen in the commit below, ifconfig is invoked with both the
->> local and the remote IP address set to the server-assigned local
->> address.  If this code could be changed to call ifconfig with the
->> local address and the server's VPN address (I believe generally .1)
->> things should be fine. (Also on earlier versions of FreeBSD.)  It
->> might be necessary to install an explicit route for the subnet, since
->> FreeBSD will only install a host route for the remote end of the
->> point-
->> to-point link.  Please note that FreeBSD's tun interface is always in
->> point-to-point mode, and cannot be configured as a broadcast
->> interface.
->
-> Luckily, FreeBSD's tun can be switched from point-to-point mode to
-> broadcast.  The attached patch does this.  I've tested this
-> successfully on FreeBSD 7-stable and 8-beta2, with server and client
-> in --topology subnet and net30 modes.
+Hi Jim,
 
-I hope to try this on FreeBSD 6.X tomorrow, as that's also a supported  
-release.
+there has been a recent change in FreeBSD 8 BETA that will break OpenVPN
+2.1's "topology subnet" mode by (rightfully!) rejecting the ifconfig
+command we're currently using (which incorrectly sets the local and
+remote P2P IPv4 addresses to be the same, the FreeBSD 8 kernel will
+reject that.)
 
--- 
-Matthias Andree
+FreeBSD's TUN interface can be switched from P2P to broadcast mode
+however, which we will need to leverage in order to support subnet
+topology.
+
+Stefan Bethke (in CC) has written, revised and tested an OpenVPN patch
+that works on all currently supported FreeBSD 6.X and 7.X versions and
+also the upcoming FreeBSD 8.0. The patch makes sure that the tun
+interface is switched to broadcast mode and configured appropriately.
+
+Find it inlined below for easier review and also attached.
+
+Please apply!
+
+Thank you.
+
+Best regards
+Matthias
+OpenVPN packager for FreeBSD ports
+
+--- /home/stb/tun.c.orig	2009-08-05 14:25:55.204943408 +0200
++++ tun.c	2009-08-05 17:57:51.886753309 +0200
+@@ -863,11 +863,10 @@
+       else {
+ 	if (tt->topology == TOP_SUBNET)
+             argv_printf (&argv,
+-                              "%s %s %s %s netmask %s mtu %d up",
++                              "%s %s %s netmask %s mtu %d up",
+                               IFCONFIG_PATH,
+                               actual,
+                               ifconfig_local,
+-                              ifconfig_local,
+                               ifconfig_remote_netmask,
+                               tun_mtu
+                               );
+@@ -1745,14 +1744,19 @@
+ {
+   open_tun_generic (dev, dev_type, dev_node, ipv6, true, true, tt);
+ 
+-  if (tt->fd >= 0)
++  if (tt->fd >= 0 && tt->type == DEV_TYPE_TUN)
+     {
+       int i = 0;
+ 
+-      /* Disable extended modes */
+-      ioctl (tt->fd, TUNSLMODE, &i);
++      i = tt->topology == TOP_SUBNET ? IFF_BROADCAST : IFF_POINTOPOINT;
++      i |= IFF_MULTICAST;
++      if (ioctl (tt->fd, TUNSIFMODE, &i) < 0) {
++	msg (M_WARN | M_ERRNO, "ioctl(TUNSIFMODE): %s", strerror(errno));
++      }
+       i = 1;
+-      ioctl (tt->fd, TUNSIFHEAD, &i);
++      if (ioctl (tt->fd, TUNSIFHEAD, &i) < 0) {
++	msg (M_WARN | M_ERRNO, "ioctl(TUNSIFHEAD): %s", strerror(errno));
++      }
+     }
+ }
+ 
+
+--Nq2Wo0NMKNjxTN9z
+Content-Type: text/x-patch; charset=us-ascii
+Content-Disposition: attachment; filename="tun.c.diff"
+
+--- /home/stb/tun.c.orig	2009-08-05 14:25:55.204943408 +0200
++++ tun.c	2009-08-05 17:57:51.886753309 +0200
+@@ -863,11 +863,10 @@
+       else {
+ 	if (tt->topology == TOP_SUBNET)
+             argv_printf (&argv,
+-                              "%s %s %s %s netmask %s mtu %d up",
++                              "%s %s %s netmask %s mtu %d up",
+                               IFCONFIG_PATH,
+                               actual,
+                               ifconfig_local,
+-                              ifconfig_local,
+                               ifconfig_remote_netmask,
+                               tun_mtu
+                               );
+@@ -1745,14 +1744,19 @@
+ {
+   open_tun_generic (dev, dev_type, dev_node, ipv6, true, true, tt);
+ 
+-  if (tt->fd >= 0)
++  if (tt->fd >= 0 && tt->type == DEV_TYPE_TUN)
+     {
+       int i = 0;
+ 
+-      /* Disable extended modes */
+-      ioctl (tt->fd, TUNSLMODE, &i);
++      i = tt->topology == TOP_SUBNET ? IFF_BROADCAST : IFF_POINTOPOINT;
++      i |= IFF_MULTICAST;
++      if (ioctl (tt->fd, TUNSIFMODE, &i) < 0) {
++	msg (M_WARN | M_ERRNO, "ioctl(TUNSIFMODE): %s", strerror(errno));
++      }
+       i = 1;
+-      ioctl (tt->fd, TUNSIFHEAD, &i);
++      if (ioctl (tt->fd, TUNSIFHEAD, &i) < 0) {
++	msg (M_WARN | M_ERRNO, "ioctl(TUNSIFHEAD): %s", strerror(errno));
++      }
+     }
+ }
+ 
+
+--Nq2Wo0NMKNjxTN9z--
 
