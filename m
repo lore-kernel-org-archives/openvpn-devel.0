@@ -1,14 +1,11 @@
-Content-class: urn:content-classes:message
-MIME-Version: 1.0
-Date: Thu, 3 Sep 2009 12:08:57 -0700
-Message-ID: <1C795E2FCD154E46979DDDD5374B5ABE024D9766@...1261...>
-In-Reply-To: <1251990413.20315.4@...1207...>
-References: <1C795E2FCD154E46979DDDD5374B5ABE024D96FF@...1261...>(from
-	jcullison@...1260... on Wed Sep 2 21:39:52 2009)
-	<1251990413.20315.4@...1207...>
-From: "John Cullison" <jcullison@...1260...>
-Subject: Re: [Openvpn-devel] Losing connectivity when OpenVPN cannot
-	establish tunnel under Windows
+From: Vadim Zotov <z0termann@...450...>
+Mime-Version: 1.0
+Date: Thu, 10 Sep 2009 10:41:00 +0400
+Content-Type: multipart/mixed;
+	boundary="----oId77Wk2-KNBCa1n8qprnQpCM:1252564860"
+Message-Id: <E1MldL3-0006sg-00.z0termann-mail-ru@...1262...>
+Subject: [Openvpn-devel] openvpn tos patch
+Reply-To: Vadim Zotov <z0termann@...450...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,108 +14,121 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: "Karl O. Pinc" <kop@...1206...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Correct -- a second attempt to communicate with a router whose OpenVPN
-server instance is not running results in this failure.
+------oId77Wk2-KNBCa1n8qprnQpCM:1252564860
+Content-Type: text/plain; charset=koi8-r
+Content-Transfer-Encoding: 8bit
 
-By second attempt, I mean a second instance of the openvpn.exe run with
-the command line arguments I gave in the original mail from our
-specialized service.  I haven't done a huge amount of testing beyond
-proving a reliable repro scenario.  I have not, for example, attempted
-to interleave successful attempts within the failures to see if that
-somehow clears up the problem.
+Hello list,
 
-Regards,
-John Cullison
-Software Engineer
-Industrial Defender - Cyber Risk Protection=20
-jcullison@...1260...
-425-951-3567
-FAX: 425-487-2288
-Industrial Defender, Inc.
-21312 30th Drive SE, Suite 102=20
-Bothell, Washington USA 98021 21312=20
-(c)Copyright 2009 Industrial Defender Inc. owns copyright content of
-this document and all attachments unless otherwise indicated. All rights
-reserved. Users of Industrial Defender Inc. software and tools
-associated with the software such as sales & marketing collateral,
-presentations, user manuals, training documentation etc. may not
-republish nor reproduce in whole or in part the information, in any form
-or by any means, in any manner whatsoever without the prior written
-permission of Industrial Defender Inc., and any such unauthorized use
-constitutes copyright infringement. An acknowledgment of the source must
-be included whenever Industrial Defender Inc. material is copied or
-published. If you require further information on a permitted use or
-license to reproduce or republish any material, address your inquiry to
-Industrial Defender Inc. 16 Chestnut Street, Suite 300, Foxborough,
-Massachusetts, 02035. Any infringement of Industrial Defender Inc.
-rights will result in appropriate legal action. Industrial Defender Inc.
-disclaims any and all liability for any consequences which may result
-from any unauthorized reproduction or use of this Work whatsoever.
-www.industrialdefender.com=20
+we actively use openvpn between our offices and it work fine,
+except for the following situation:
+- one of our providers .. a service that requires to mark 
+  packets in tos/dscp field, for example BE, CS1,CS3,CS5
+- each class of traffic has its guarantied packet loss, speed, 
+  jitter etc.
+- we marks packet at tun interfaces and use openvpn passtos 
+  option to save tos/dscp field
+- but when BE class reaches it upper limit providers equipment 
+  starts to drop packets. unfortunatelly openvpn ping and tls 
+  packets has tos field 0x0 (BE).
+  in this situation this packets are also dropped from time to 
+  time by providers equipment. this leads to openvpn ping 
+  timeout and as a result to connection loss.
+it is almost impossible to classify openvpn ping and tls packets by its signature as far as they are encrypted.
+
+the proposed patch solves the problem by specifying tos value
+for ping & tls packets and works together with passtos feature.
+
+best regards,
+Vadim
 
 
+------oId77Wk2-KNBCa1n8qprnQpCM:1252564860
+Content-Type: application/x-patch; name="tos.patch"
+Content-Disposition: attachment; filename="tos.patch"
+Content-Transfer-Encoding: base64
 
------Original Message-----
-From: Karl O. Pinc [mailto:kop@...1206...]=20
-Sent: Thursday, September 03, 2009 8:07 AM
-To: John Cullison
-Cc: openvpn-devel@lists.sourceforge.net
-Subject: Re: [Openvpn-devel] Losing connectivity when OpenVPN cannot
-establish tunnel under Windows
+T25seSBpbiBvcGVudnBuLTIuMC45LnRvczogRG94eWZpbGUKZGlmZiAtdXIgb3BlbnZwbi0yLjAu
+OS9mb3J3YXJkLmMgb3BlbnZwbi0yLjAuOS50b3MvZm9yd2FyZC5jCi0tLSBvcGVudnBuLTIuMC45
+L2ZvcndhcmQuYwkyMDA1LTEyLTEzIDIwOjA5OjEzLjAwMDAwMDAwMCArMDMwMAorKysgb3BlbnZw
+bi0yLjAuOS50b3MvZm9yd2FyZC5jCTIwMDktMDgtMjcgMTU6NTk6MzcuNzkwODY5MzQ3ICswNDAw
+CkBAIC05NzgsNyArOTc4LDcgQEAKIAogI2lmIFBBU1NUT1NfQ0FQQUJJTElUWQogCSAgLyogU2V0
+IFRPUyAqLwotCSAgbGlua19zb2NrZXRfc2V0X3RvcyAoYy0+YzIubGlua19zb2NrZXQpOworCSAg
+bGlua19zb2NrZXRfc2V0X3RvcyAoYy0+YzIubGlua19zb2NrZXQsIGMtPm9wdGlvbnMudG9zICk7
+CiAjZW5kaWYKIAogCSAgLyogTG9nIHBhY2tldCBzZW5kICovCmRpZmYgLXVyIG9wZW52cG4tMi4w
+Ljkvb3BlbnZwbi44IG9wZW52cG4tMi4wLjkudG9zL29wZW52cG4uOAotLS0gb3BlbnZwbi0yLjAu
+OS9vcGVudnBuLjgJMjAwNS0xMS0wMyAwNDoxNjo0My4wMDAwMDAwMDAgKzAzMDAKKysrIG9wZW52
+cG4tMi4wLjkudG9zL29wZW52cG4uOAkyMDA5LTA4LTI3IDE2OjIwOjM0LjcwMjg3NTUzNCArMDQw
+MApAQCAtMTkyLDYgKzE5Miw3IEBACiBbXCBcZkJcLVwtbm9iaW5kXGZSXCBdCiBbXCBcZkJcLVwt
+bnNcLWNlcnRcLXR5cGVcZlJcIFxmSWNsaWVudHxzZXJ2ZXJcZlJcIF0KIFtcIFxmQlwtXC1wYXNz
+dG9zXGZSXCBdCitbXCBcZkJcLVwtdG9zXGZSXCBuXGZSXCBdCiBbXCBcZkJcLVwtcGF1c2VcLWV4
+aXRcZlJcIF0KIFtcIFxmQlwtXC1wZXJzaXN0XC1rZXlcZlJcIF0KIFtcIFxmQlwtXC1wZXJzaXN0
+XC1sb2NhbFwtaXBcZlJcIF0KQEAgLTE4MTAsNiArMTgxMSwxMiBAQAogU2V0IHRoZSBUT1MgZmll
+bGQgb2YgdGhlIHR1bm5lbCBwYWNrZXQgdG8gd2hhdCB0aGUgcGF5bG9hZCdzIFRPUyBpcy4KIC5c
+IioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KgogLlRQCisuQiAtLXRvcyBuCitTZXQgdGhlIFRPUyBmaWVsZCBvZiBvdXRnb2luZyBwYWNrZXRz
+IHN1Y2ggYXMgb3BlbnZwbiBwaW5nIGFuZCB0bHMgdG8gdGhlCitzcGVjaWZpZWQgdmFsdWUuCisu
+QiBuCittdXN0IGJlIGEgaGV4YWRlY2ltYWwgdmFsdWUgYmV0d2VlbiAweDAgYW5kIDB4ZmMuCisu
+VFAKIC5CIC0taW5ldGQgW3dhaXR8bm93YWl0XSBbcHJvZ25hbWVdCiBVc2UgdGhpcyBvcHRpb24g
+d2hlbiBPcGVuVlBOIGlzIGJlaW5nIHJ1biBmcm9tIHRoZSBpbmV0ZCBvcgogLkJSIHhpbmV0ZCg4
+KQpPbmx5IGluIG9wZW52cG4tMi4wLjk6IG9wZW52cG4ua2RldmVsb3AKT25seSBpbiBvcGVudnBu
+LTIuMC45OiBvcGVudnBuLmtkZXZlbG9wLnBjcwpPbmx5IGluIG9wZW52cG4tMi4wLjk6IG9wZW52
+cG4ua2RldnNlcwpkaWZmIC11ciBvcGVudnBuLTIuMC45L29wdGlvbnMuYyBvcGVudnBuLTIuMC45
+LnRvcy9vcHRpb25zLmMKLS0tIG9wZW52cG4tMi4wLjkvb3B0aW9ucy5jCTIwMDUtMTItMTMgMDI6
+NTA6NDMuMDAwMDAwMDAwICswMzAwCisrKyBvcGVudnBuLTIuMC45LnRvcy9vcHRpb25zLmMJMjAw
+OS0wOC0yNyAxNjo0Mjo1Mi41Njc4NjIzOTYgKzA0MDAKQEAgLTE3OSw2ICsxNzksNyBAQAogICAi
+LS1wZXJzaXN0LWtleSAgIDogRG9uJ3QgcmUtcmVhZCBrZXkgZmlsZXMgYWNyb3NzIFNJR1VTUjEg
+b3IgLS1waW5nLXJlc3RhcnQuXG4iCiAjaWYgUEFTU1RPU19DQVBBQklMSVRZCiAgICItLXBhc3N0
+b3MgICAgICAgOiBUT1MgcGFzc3Rocm91Z2ggKGFwcGxpZXMgdG8gSVB2NCBvbmx5KS5cbiIKKyAg
+Ii0tdG9zIG4gICAgICAgICA6IGRlZmF1bHQgVE9TIGZvciBvdXRnb2luZyBwYWNrZXRzIChtdXN0
+IGJlIHNwZWNpZmllZCBpbiBoZXgpXG4iCiAjZW5kaWYKICAgIi0tdHVuLW10dSBuICAgICA6IFRh
+a2UgdGhlIHR1bi90YXAgZGV2aWNlIE1UVSB0byBiZSBuIGFuZCBkZXJpdmUgdGhlXG4iCiAgICIg
+ICAgICAgICAgICAgICAgICBUQ1AvVURQIE1UVSBmcm9tIGl0IChkZWZhdWx0PSVkKS5cbiIKQEAg
+LTU4MSw2ICs1ODIsOSBAQAogI2lmIFAyTVAKICAgby0+c2NoZWR1bGVkX2V4aXRfaW50ZXJ2YWwg
+PSA1OwogI2VuZGlmCisjaWYgUEFTU1RPU19DQVBBQklMSVRZCisgIG8tPnRvcyA9IDB4YTA7Cisj
+ZW5kaWYKICNpZmRlZiBVU0VfQ1JZUFRPCiAgIG8tPmNpcGhlcm5hbWUgPSAiQkYtQ0JDIjsKICAg
+by0+Y2lwaGVybmFtZV9kZWZpbmVkID0gdHJ1ZTsKQEAgLTYxMiw2ICs2MTYsNyBAQAogI2RlZmlu
+ZSBTSE9XX1BBUk0obmFtZSwgdmFsdWUsIGZvcm1hdCkgbXNnKERfU0hPV19QQVJNUywgIiAgIiAj
+bmFtZSAiID0gIiBmb3JtYXQsICh2YWx1ZSkpCiAjZGVmaW5lIFNIT1dfU1RSKHZhcikgICAgICAg
+U0hPV19QQVJNKHZhciwgKG8tPnZhciA/IG8tPnZhciA6ICJbVU5ERUZdIiksICInJXMnIikKICNk
+ZWZpbmUgU0hPV19JTlQodmFyKSAgICAgICBTSE9XX1BBUk0odmFyLCBvLT52YXIsICIlZCIpCisj
+ZGVmaW5lIFNIT1dfSU5USCh2YXIpICAgICAgU0hPV19QQVJNKHZhciwgby0+dmFyLCAiMHgleCIp
+CiAjZGVmaW5lIFNIT1dfVUlOVCh2YXIpICAgICAgU0hPV19QQVJNKHZhciwgby0+dmFyLCAiJXUi
+KQogI2RlZmluZSBTSE9XX1VOU0lHTkVEKHZhcikgIFNIT1dfUEFSTSh2YXIsIG8tPnZhciwgIjB4
+JTA4eCIpCiAjZGVmaW5lIFNIT1dfQk9PTCh2YXIpICAgICAgU0hPV19QQVJNKHZhciwgKG8tPnZh
+ciA/ICJFTkFCTEVEIiA6ICJESVNBQkxFRCIpLCAiJXMiKTsKQEAgLTEwMDcsNiArMTAxMiw3IEBA
+CiAgIAogI2lmIFBBU1NUT1NfQ0FQQUJJTElUWQogICBTSE9XX0JPT0wgKHBhc3N0b3MpOworICBT
+SE9XX0lOVEggKHRvcyk7CiAjZW5kaWYKIAogICBTSE9XX0lOVCAocmVzb2x2ZV9yZXRyeV9zZWNv
+bmRzKTsKQEAgLTQxNTMsNiArNDE1OSwxOSBAQAogICAgICAgVkVSSUZZX1BFUk1JU1NJT04gKE9Q
+VF9QX0dFTkVSQUwpOwogICAgICAgb3B0aW9ucy0+cGFzc3RvcyA9IHRydWU7CiAgICAgfQorICBl
+bHNlIGlmIChzdHJlcSAocFswXSwgInRvcyIpICYmIHBbMV0pCisgICAgeworICAgICAgaW50IHM7
+CisgICAgICArK2k7CisgICAgICBzID0gc3RydG9sKHBbMV0sIChjaGFyICoqKU5VTEwsIDE2KTsK
+KyAgICAgIFZFUklGWV9QRVJNSVNTSU9OIChPUFRfUF9HRU5FUkFMKTsKKyAgICAgIGlmIChzIDwg
+MCB8fCBzID4gMHhmYykKKwkgIHsKKwkgICAgbXNnIChtc2dsZXZlbCwgIi0tdG9zIHBhcmFtZXRl
+ciBtdXN0IGJlIGJldHdlZW4gMHgwMCBhbmQgMHhmYyIpOworCSAgICBnb3RvIGVycjsKKwkgIH0K
+KyAgICAgIG9wdGlvbnMtPnRvcyA9IHM7CisgICAgfQogI2VuZGlmCiAjaWZkZWYgVVNFX0xaTwog
+ICBlbHNlIGlmIChzdHJlcSAocFswXSwgImNvbXAtbHpvIikpCmRpZmYgLXVyIG9wZW52cG4tMi4w
+Ljkvb3B0aW9ucy5oIG9wZW52cG4tMi4wLjkudG9zL29wdGlvbnMuaAotLS0gb3BlbnZwbi0yLjAu
+OS9vcHRpb25zLmgJMjAwNS0xMS0wMSAxNDowNjoxMS4wMDAwMDAwMDAgKzAzMDAKKysrIG9wZW52
+cG4tMi4wLjkudG9zL29wdGlvbnMuaAkyMDA5LTA4LTI3IDE1OjUyOjAwLjMzOTg2NDIwNyArMDQw
+MApAQCAtMTgxLDYgKzE4MSw3IEBACiAKICNpZiBQQVNTVE9TX0NBUEFCSUxJVFkKICAgYm9vbCBw
+YXNzdG9zOyAgICAgICAgICAgICAgICAgIAorICB1aW50OF90IHRvczsKICNlbmRpZgogCiAgIGlu
+dCByZXNvbHZlX3JldHJ5X3NlY29uZHM7ICAgIC8qIElmIGhvc3RuYW1lIHJlc29sdmUgZmFpbHMs
+IHJldHJ5IGZvciBuIHNlY29uZHMgKi8KZGlmZiAtdXIgb3BlbnZwbi0yLjAuOS9zb2NrZXQuaCBv
+cGVudnBuLTIuMC45LnRvcy9zb2NrZXQuaAotLS0gb3BlbnZwbi0yLjAuOS9zb2NrZXQuaAkyMDA1
+LTExLTAxIDE0OjA2OjExLjAwMDAwMDAwMCArMDMwMAorKysgb3BlbnZwbi0yLjAuOS50b3Mvc29j
+a2V0LmgJMjAwOS0wOC0yNyAxNTo1OToyMS40MTk4NjE4NDAgKzA0MDAKQEAgLTc0NiwxMCArNzQ2
+LDE3IEBACiAgKiBmcm9tIHR1bm5lbCBwYWNrZXQuCiAgKi8KIHN0YXRpYyBpbmxpbmUgdm9pZAot
+bGlua19zb2NrZXRfc2V0X3RvcyAoc3RydWN0IGxpbmtfc29ja2V0ICpscykKK2xpbmtfc29ja2V0
+X3NldF90b3MgKHN0cnVjdCBsaW5rX3NvY2tldCAqbHMsY29uc3QgdWludDhfdCB0b3MgKQogewog
+ICBpZiAobHMgJiYgbHMtPnB0b3NfZGVmaW5lZCkKLSAgICBzZXRzb2Nrb3B0IChscy0+c2QsIElQ
+UFJPVE9fSVAsIElQX1RPUywgJmxzLT5wdG9zLCBzaXplb2YgKGxzLT5wdG9zKSk7CisgICAgewor
+ICAgICAgc2V0c29ja29wdCAobHMtPnNkLCBJUFBST1RPX0lQLCBJUF9UT1MsICZscy0+cHRvcywg
+c2l6ZW9mIChscy0+cHRvcykpOworICAgICAgbHMtPnB0b3NfZGVmaW5lZCA9IGZhbHNlOworICAg
+IH0KKyAgZWxzZQorICAgeworICAgICAgc2V0c29ja29wdCAobHMtPnNkLCBJUFBST1RPX0lQLCBJ
+UF9UT1MsICZ0b3MsIHNpemVvZiAodG9zKSk7CisgICB9CiB9CiAKICNlbmRpZgo=
 
-On 09/02/2009 09:39:52 PM, John Cullison wrote:
-
-FWIW, I'm not a developer and may or may not have
-useful info.  I'm just asking the questions I would
-look into.  At some point I'll likely run out of
-questions.
-
-  Ping is not a valid test for
-> us,
-> as at least one of our firewalls blocks ICMP.
-
-You could use a udp ping or something like telnet to port 80
-just to keep the complication minimal, but you know your network best.
-
->=20
-> I just ran ipconfig (it's like ifconfig, only for Windows) on my test
-> XP
-> box before and after the problem occurs, and the Default Gateway has
-> indeed gone missing:
-
-The next question is: Is the default gateway being configured
-via DHCP options that are coming from OpenVPN or is there some
-other reason why the default gateway is altered?  Is it the
-local openvpn that's supposed to alter the gateway, the remote
-end, or neither?  Your local and remote configs would help here.
-
->=20
-> So I guess I can stop giving my guess as to what's going on and
-> declare
-> explicitly that something about OpenVPN is clobbering my default
-> gateway
-> setting when it cannot open a tunnel a second time.
-
-Was there no OpenVPN on the other end both tests?  Does
-it take 2 failed connection attempts to exhibit the
-problem or just failure when there's no answer?
-
-
-
-
-
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                 -- Robert A. Heinlein
-
-
-______________________________________________________________________
-This email has been scanned by the MessageLabs Email Security System.
-For more information please visit http://www.messagelabs.com/email=20
-______________________________________________________________________
+------oId77Wk2-KNBCa1n8qprnQpCM:1252564860--
 
