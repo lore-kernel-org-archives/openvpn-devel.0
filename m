@@ -1,11 +1,8 @@
-From: Vadim Zotov <z0termann@...450...>
-Mime-Version: 1.0
-Date: Thu, 10 Sep 2009 10:41:00 +0400
-Content-Type: multipart/mixed;
-	boundary="----oId77Wk2-KNBCa1n8qprnQpCM:1252564860"
-Message-Id: <E1MldL3-0006sg-00.z0termann-mail-ru@...1262...>
-Subject: [Openvpn-devel] openvpn tos patch
-Reply-To: Vadim Zotov <z0termann@...450...>
+MIME-Version: 1.0
+From: JuanJo Ciarlante <jjo+ml@...410...>
+Date: Fri, 25 Sep 2009 23:36:19 +0200
+Message-ID: <7bb795fd0909251436v2369d6d5q674e63e0621fcd56@...278...>
+Subject: [Openvpn-devel] [PATCH] openvpn over ipv6 support -v0.4.6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,121 +11,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-------oId77Wk2-KNBCa1n8qprnQpCM:1252564860
-Content-Type: text/plain; charset=koi8-r
-Content-Transfer-Encoding: 8bit
+Hi,
 
-Hello list,
+I'm(back) working on openvpn/ipv6 endpoint support, aka udp6/tcp6,
+please refer to README.ipv6[1] and TODO.ipv6[2] for more details.
 
-we actively use openvpn between our offices and it work fine,
-except for the following situation:
-- one of our providers .. a service that requires to mark 
-  packets in tos/dscp field, for example BE, CS1,CS3,CS5
-- each class of traffic has its guarantied packet loss, speed, 
-  jitter etc.
-- we marks packet at tun interfaces and use openvpn passtos 
-  option to save tos/dscp field
-- but when BE class reaches it upper limit providers equipment 
-  starts to drop packets. unfortunatelly openvpn ping and tls 
-  packets has tos field 0x0 (BE).
-  in this situation this packets are also dropped from time to 
-  time by providers equipment. this leads to openvpn ping 
-  timeout and as a result to connection loss.
-it is almost impossible to classify openvpn ping and tls packets by its signature as far as they are encrypted.
+All snapshots are unittested for correct {udp,tcp}v{4,6} operation
+under GNU/Linux and win32 (the latter x-compiled under the former ;).
 
-the proposed patch solves the problem by specifying tos value
-for ping & tls packets and works together with passtos feature.
+You can find my current git repo[3], available under GPLv2, plus
+patches and complete tarballs in downloads/ area.
 
-best regards,
-Vadim
+Enjoy! ... and please send feedback :)
 
+[1] http://github.com/jjo/openvpn-ipv6/blob/master/README.ipv6
+[2]=A0http://github.com/jjo/openvpn-ipv6/blob/master/TODO.ipv6
+[3] http://github.com/jjo/openvpn-ipv6
 
-------oId77Wk2-KNBCa1n8qprnQpCM:1252564860
-Content-Type: application/x-patch; name="tos.patch"
-Content-Disposition: attachment; filename="tos.patch"
-Content-Transfer-Encoding: base64
-
-T25seSBpbiBvcGVudnBuLTIuMC45LnRvczogRG94eWZpbGUKZGlmZiAtdXIgb3BlbnZwbi0yLjAu
-OS9mb3J3YXJkLmMgb3BlbnZwbi0yLjAuOS50b3MvZm9yd2FyZC5jCi0tLSBvcGVudnBuLTIuMC45
-L2ZvcndhcmQuYwkyMDA1LTEyLTEzIDIwOjA5OjEzLjAwMDAwMDAwMCArMDMwMAorKysgb3BlbnZw
-bi0yLjAuOS50b3MvZm9yd2FyZC5jCTIwMDktMDgtMjcgMTU6NTk6MzcuNzkwODY5MzQ3ICswNDAw
-CkBAIC05NzgsNyArOTc4LDcgQEAKIAogI2lmIFBBU1NUT1NfQ0FQQUJJTElUWQogCSAgLyogU2V0
-IFRPUyAqLwotCSAgbGlua19zb2NrZXRfc2V0X3RvcyAoYy0+YzIubGlua19zb2NrZXQpOworCSAg
-bGlua19zb2NrZXRfc2V0X3RvcyAoYy0+YzIubGlua19zb2NrZXQsIGMtPm9wdGlvbnMudG9zICk7
-CiAjZW5kaWYKIAogCSAgLyogTG9nIHBhY2tldCBzZW5kICovCmRpZmYgLXVyIG9wZW52cG4tMi4w
-Ljkvb3BlbnZwbi44IG9wZW52cG4tMi4wLjkudG9zL29wZW52cG4uOAotLS0gb3BlbnZwbi0yLjAu
-OS9vcGVudnBuLjgJMjAwNS0xMS0wMyAwNDoxNjo0My4wMDAwMDAwMDAgKzAzMDAKKysrIG9wZW52
-cG4tMi4wLjkudG9zL29wZW52cG4uOAkyMDA5LTA4LTI3IDE2OjIwOjM0LjcwMjg3NTUzNCArMDQw
-MApAQCAtMTkyLDYgKzE5Miw3IEBACiBbXCBcZkJcLVwtbm9iaW5kXGZSXCBdCiBbXCBcZkJcLVwt
-bnNcLWNlcnRcLXR5cGVcZlJcIFxmSWNsaWVudHxzZXJ2ZXJcZlJcIF0KIFtcIFxmQlwtXC1wYXNz
-dG9zXGZSXCBdCitbXCBcZkJcLVwtdG9zXGZSXCBuXGZSXCBdCiBbXCBcZkJcLVwtcGF1c2VcLWV4
-aXRcZlJcIF0KIFtcIFxmQlwtXC1wZXJzaXN0XC1rZXlcZlJcIF0KIFtcIFxmQlwtXC1wZXJzaXN0
-XC1sb2NhbFwtaXBcZlJcIF0KQEAgLTE4MTAsNiArMTgxMSwxMiBAQAogU2V0IHRoZSBUT1MgZmll
-bGQgb2YgdGhlIHR1bm5lbCBwYWNrZXQgdG8gd2hhdCB0aGUgcGF5bG9hZCdzIFRPUyBpcy4KIC5c
-IioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KgogLlRQCisuQiAtLXRvcyBuCitTZXQgdGhlIFRPUyBmaWVsZCBvZiBvdXRnb2luZyBwYWNrZXRz
-IHN1Y2ggYXMgb3BlbnZwbiBwaW5nIGFuZCB0bHMgdG8gdGhlCitzcGVjaWZpZWQgdmFsdWUuCisu
-QiBuCittdXN0IGJlIGEgaGV4YWRlY2ltYWwgdmFsdWUgYmV0d2VlbiAweDAgYW5kIDB4ZmMuCisu
-VFAKIC5CIC0taW5ldGQgW3dhaXR8bm93YWl0XSBbcHJvZ25hbWVdCiBVc2UgdGhpcyBvcHRpb24g
-d2hlbiBPcGVuVlBOIGlzIGJlaW5nIHJ1biBmcm9tIHRoZSBpbmV0ZCBvcgogLkJSIHhpbmV0ZCg4
-KQpPbmx5IGluIG9wZW52cG4tMi4wLjk6IG9wZW52cG4ua2RldmVsb3AKT25seSBpbiBvcGVudnBu
-LTIuMC45OiBvcGVudnBuLmtkZXZlbG9wLnBjcwpPbmx5IGluIG9wZW52cG4tMi4wLjk6IG9wZW52
-cG4ua2RldnNlcwpkaWZmIC11ciBvcGVudnBuLTIuMC45L29wdGlvbnMuYyBvcGVudnBuLTIuMC45
-LnRvcy9vcHRpb25zLmMKLS0tIG9wZW52cG4tMi4wLjkvb3B0aW9ucy5jCTIwMDUtMTItMTMgMDI6
-NTA6NDMuMDAwMDAwMDAwICswMzAwCisrKyBvcGVudnBuLTIuMC45LnRvcy9vcHRpb25zLmMJMjAw
-OS0wOC0yNyAxNjo0Mjo1Mi41Njc4NjIzOTYgKzA0MDAKQEAgLTE3OSw2ICsxNzksNyBAQAogICAi
-LS1wZXJzaXN0LWtleSAgIDogRG9uJ3QgcmUtcmVhZCBrZXkgZmlsZXMgYWNyb3NzIFNJR1VTUjEg
-b3IgLS1waW5nLXJlc3RhcnQuXG4iCiAjaWYgUEFTU1RPU19DQVBBQklMSVRZCiAgICItLXBhc3N0
-b3MgICAgICAgOiBUT1MgcGFzc3Rocm91Z2ggKGFwcGxpZXMgdG8gSVB2NCBvbmx5KS5cbiIKKyAg
-Ii0tdG9zIG4gICAgICAgICA6IGRlZmF1bHQgVE9TIGZvciBvdXRnb2luZyBwYWNrZXRzIChtdXN0
-IGJlIHNwZWNpZmllZCBpbiBoZXgpXG4iCiAjZW5kaWYKICAgIi0tdHVuLW10dSBuICAgICA6IFRh
-a2UgdGhlIHR1bi90YXAgZGV2aWNlIE1UVSB0byBiZSBuIGFuZCBkZXJpdmUgdGhlXG4iCiAgICIg
-ICAgICAgICAgICAgICAgICBUQ1AvVURQIE1UVSBmcm9tIGl0IChkZWZhdWx0PSVkKS5cbiIKQEAg
-LTU4MSw2ICs1ODIsOSBAQAogI2lmIFAyTVAKICAgby0+c2NoZWR1bGVkX2V4aXRfaW50ZXJ2YWwg
-PSA1OwogI2VuZGlmCisjaWYgUEFTU1RPU19DQVBBQklMSVRZCisgIG8tPnRvcyA9IDB4YTA7Cisj
-ZW5kaWYKICNpZmRlZiBVU0VfQ1JZUFRPCiAgIG8tPmNpcGhlcm5hbWUgPSAiQkYtQ0JDIjsKICAg
-by0+Y2lwaGVybmFtZV9kZWZpbmVkID0gdHJ1ZTsKQEAgLTYxMiw2ICs2MTYsNyBAQAogI2RlZmlu
-ZSBTSE9XX1BBUk0obmFtZSwgdmFsdWUsIGZvcm1hdCkgbXNnKERfU0hPV19QQVJNUywgIiAgIiAj
-bmFtZSAiID0gIiBmb3JtYXQsICh2YWx1ZSkpCiAjZGVmaW5lIFNIT1dfU1RSKHZhcikgICAgICAg
-U0hPV19QQVJNKHZhciwgKG8tPnZhciA/IG8tPnZhciA6ICJbVU5ERUZdIiksICInJXMnIikKICNk
-ZWZpbmUgU0hPV19JTlQodmFyKSAgICAgICBTSE9XX1BBUk0odmFyLCBvLT52YXIsICIlZCIpCisj
-ZGVmaW5lIFNIT1dfSU5USCh2YXIpICAgICAgU0hPV19QQVJNKHZhciwgby0+dmFyLCAiMHgleCIp
-CiAjZGVmaW5lIFNIT1dfVUlOVCh2YXIpICAgICAgU0hPV19QQVJNKHZhciwgby0+dmFyLCAiJXUi
-KQogI2RlZmluZSBTSE9XX1VOU0lHTkVEKHZhcikgIFNIT1dfUEFSTSh2YXIsIG8tPnZhciwgIjB4
-JTA4eCIpCiAjZGVmaW5lIFNIT1dfQk9PTCh2YXIpICAgICAgU0hPV19QQVJNKHZhciwgKG8tPnZh
-ciA/ICJFTkFCTEVEIiA6ICJESVNBQkxFRCIpLCAiJXMiKTsKQEAgLTEwMDcsNiArMTAxMiw3IEBA
-CiAgIAogI2lmIFBBU1NUT1NfQ0FQQUJJTElUWQogICBTSE9XX0JPT0wgKHBhc3N0b3MpOworICBT
-SE9XX0lOVEggKHRvcyk7CiAjZW5kaWYKIAogICBTSE9XX0lOVCAocmVzb2x2ZV9yZXRyeV9zZWNv
-bmRzKTsKQEAgLTQxNTMsNiArNDE1OSwxOSBAQAogICAgICAgVkVSSUZZX1BFUk1JU1NJT04gKE9Q
-VF9QX0dFTkVSQUwpOwogICAgICAgb3B0aW9ucy0+cGFzc3RvcyA9IHRydWU7CiAgICAgfQorICBl
-bHNlIGlmIChzdHJlcSAocFswXSwgInRvcyIpICYmIHBbMV0pCisgICAgeworICAgICAgaW50IHM7
-CisgICAgICArK2k7CisgICAgICBzID0gc3RydG9sKHBbMV0sIChjaGFyICoqKU5VTEwsIDE2KTsK
-KyAgICAgIFZFUklGWV9QRVJNSVNTSU9OIChPUFRfUF9HRU5FUkFMKTsKKyAgICAgIGlmIChzIDwg
-MCB8fCBzID4gMHhmYykKKwkgIHsKKwkgICAgbXNnIChtc2dsZXZlbCwgIi0tdG9zIHBhcmFtZXRl
-ciBtdXN0IGJlIGJldHdlZW4gMHgwMCBhbmQgMHhmYyIpOworCSAgICBnb3RvIGVycjsKKwkgIH0K
-KyAgICAgIG9wdGlvbnMtPnRvcyA9IHM7CisgICAgfQogI2VuZGlmCiAjaWZkZWYgVVNFX0xaTwog
-ICBlbHNlIGlmIChzdHJlcSAocFswXSwgImNvbXAtbHpvIikpCmRpZmYgLXVyIG9wZW52cG4tMi4w
-Ljkvb3B0aW9ucy5oIG9wZW52cG4tMi4wLjkudG9zL29wdGlvbnMuaAotLS0gb3BlbnZwbi0yLjAu
-OS9vcHRpb25zLmgJMjAwNS0xMS0wMSAxNDowNjoxMS4wMDAwMDAwMDAgKzAzMDAKKysrIG9wZW52
-cG4tMi4wLjkudG9zL29wdGlvbnMuaAkyMDA5LTA4LTI3IDE1OjUyOjAwLjMzOTg2NDIwNyArMDQw
-MApAQCAtMTgxLDYgKzE4MSw3IEBACiAKICNpZiBQQVNTVE9TX0NBUEFCSUxJVFkKICAgYm9vbCBw
-YXNzdG9zOyAgICAgICAgICAgICAgICAgIAorICB1aW50OF90IHRvczsKICNlbmRpZgogCiAgIGlu
-dCByZXNvbHZlX3JldHJ5X3NlY29uZHM7ICAgIC8qIElmIGhvc3RuYW1lIHJlc29sdmUgZmFpbHMs
-IHJldHJ5IGZvciBuIHNlY29uZHMgKi8KZGlmZiAtdXIgb3BlbnZwbi0yLjAuOS9zb2NrZXQuaCBv
-cGVudnBuLTIuMC45LnRvcy9zb2NrZXQuaAotLS0gb3BlbnZwbi0yLjAuOS9zb2NrZXQuaAkyMDA1
-LTExLTAxIDE0OjA2OjExLjAwMDAwMDAwMCArMDMwMAorKysgb3BlbnZwbi0yLjAuOS50b3Mvc29j
-a2V0LmgJMjAwOS0wOC0yNyAxNTo1OToyMS40MTk4NjE4NDAgKzA0MDAKQEAgLTc0NiwxMCArNzQ2
-LDE3IEBACiAgKiBmcm9tIHR1bm5lbCBwYWNrZXQuCiAgKi8KIHN0YXRpYyBpbmxpbmUgdm9pZAot
-bGlua19zb2NrZXRfc2V0X3RvcyAoc3RydWN0IGxpbmtfc29ja2V0ICpscykKK2xpbmtfc29ja2V0
-X3NldF90b3MgKHN0cnVjdCBsaW5rX3NvY2tldCAqbHMsY29uc3QgdWludDhfdCB0b3MgKQogewog
-ICBpZiAobHMgJiYgbHMtPnB0b3NfZGVmaW5lZCkKLSAgICBzZXRzb2Nrb3B0IChscy0+c2QsIElQ
-UFJPVE9fSVAsIElQX1RPUywgJmxzLT5wdG9zLCBzaXplb2YgKGxzLT5wdG9zKSk7CisgICAgewor
-ICAgICAgc2V0c29ja29wdCAobHMtPnNkLCBJUFBST1RPX0lQLCBJUF9UT1MsICZscy0+cHRvcywg
-c2l6ZW9mIChscy0+cHRvcykpOworICAgICAgbHMtPnB0b3NfZGVmaW5lZCA9IGZhbHNlOworICAg
-IH0KKyAgZWxzZQorICAgeworICAgICAgc2V0c29ja29wdCAobHMtPnNkLCBJUFBST1RPX0lQLCBJ
-UF9UT1MsICZ0b3MsIHNpemVvZiAodG9zKSk7CisgICB9CiB9CiAKICNlbmRpZgo=
-
-------oId77Wk2-KNBCa1n8qprnQpCM:1252564860--
+Cheers,
+--
+--JuanJo ; echo jAjo@...1263... | sed 's/[SPAM]//g'
 
