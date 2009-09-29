@@ -1,8 +1,10 @@
-From: Kayvan Javid <kayvan.javid@...1264...>
-Date: Mon, 28 Sep 2009 11:12:55 +0100
-Message-Id: <1254132775.6170.2.camel@...1265...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] New openvpn prebuilt binaries
+From: Marcel =?iso-8859-1?q?Pennewi=DF?= <mailinglists@...1145...>
+Date: Tue, 29 Sep 2009 18:23:34 +0200
+References: <7bb795fd0909251436v2369d6d5q674e63e0621fcd56@...278...>
+In-Reply-To: <7bb795fd0909251436v2369d6d5q674e63e0621fcd56@...278...>
+MIME-Version: 1.0
+Message-Id: <200909291823.34165.mailinglists@...1145...>
+Subject: Re: [Openvpn-devel] [PATCH] openvpn over ipv6 support -v0.4.6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,21 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+On Friday 25 September 2009 23:36:19 JuanJo Ciarlante wrote:
+> Hi,
 
-I build openvpn from source in pre-built mode.  I am tracking the latest
-RC of openvpn, currently rc19, which is fine, but have noticied the
-prebuilt binaries, specifically the TAP driver is lagging behind by
-quite someway 1year+ now.  
+Hi JuanJo,
 
-Considering the latest improvements have specifically been for the TAP
-driver, would it be possible for the latest prebuilt version to be
-posted on openvpn.net ?
+> I'm(back) working on openvpn/ipv6 endpoint support, aka udp6/tcp6,
+> please refer to README.ipv6[1] and TODO.ipv6[2] for more details.
 
-Thanks,
-Kave
+Great news! Thank you very much for your work. 
+So i needn't adapt your patch in future ;)
+
+> All snapshots are unittested for correct {udp,tcp}v{4,6} operation
+> under GNU/Linux and win32 (the latter x-compiled under the former ;).
+
+I will update my gentoo ebuilds with the current patch in the next days.
+After this i will publish the URL for the ebuilds.
+
+Regards,
+Marcel
+
+
+
 
