@@ -1,9 +1,10 @@
-From: Marcel =?iso-8859-1?q?Pennewi=DF?= <mailinglists@...1145...>
-Date: Wed, 30 Sep 2009 19:41:01 +0200
-References: <7bb795fd0909251436v2369d6d5q674e63e0621fcd56@...278...>
-In-Reply-To: <7bb795fd0909251436v2369d6d5q674e63e0621fcd56@...278...>
 MIME-Version: 1.0
-Message-Id: <200909301941.01923.mailinglists@...1145...>
+In-Reply-To: <200909301941.01923.mailinglists@...1145...>
+References: <7bb795fd0909251436v2369d6d5q674e63e0621fcd56@...278...> 
+	<200909301941.01923.mailinglists@...1145...>
+From: JuanJo Ciarlante <jjo+ml@...410...>
+Date: Wed, 30 Sep 2009 20:20:40 +0200
+Message-ID: <7bb795fd0909301120veaf5f48gb65b081cd2cb09a3@...278...>
 Subject: Re: [Openvpn-devel] [PATCH] openvpn over ipv6 support -v0.4.6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,44 +14,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: =?ISO-8859-1?Q?Marcel_Pennewi=DF?= <mailinglists@...1145...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Friday 25 September 2009 23:36:19 JuanJo Ciarlante wrote:
-> Hi,
+Hi Marcel,
+
+On Wed, Sep 30, 2009 at 7:41 PM, Marcel Pennewi=DF
+<mailinglists@...1145...> wrote:
+> On Friday 25 September 2009 23:36:19 JuanJo Ciarlante wrote:
+>> Hi,
+>>
+>> I'm(back) working on openvpn/ipv6 endpoint support, aka udp6/tcp6,
+>> please refer to README.ipv6[1] and TODO.ipv6[2] for more details.
 >
-> I'm(back) working on openvpn/ipv6 endpoint support, aka udp6/tcp6,
-> please refer to README.ipv6[1] and TODO.ipv6[2] for more details.
+> OpenVPN 2.1-rc19 crashs on Gentoo (Xen DomU, AMD64( using tcp6-server with
+>
+> Sep 30 19:42:00 larissa openvpn[25441]: Assertion failed at socket.c:1620
+> Sep 30 19:42:00 larissa openvpn[25441]: Exiting
+>
+> and segfaulted using "tcp-server"
+>
+> Sep 30 19:39:09 larissa openvpn[25238]: segfault at 0000000000000002 rip
+> 00002b3486469fd0 rsp 00007fff254e9c98 error 4
+>
+> {...snip...}
 
-OpenVPN 2.1-rc19 crashs on Gentoo (Xen DomU, AMD64( using tcp6-server with
+Could you please copy me the the exact cmdline and context (inetd?)
+you are using in both cases?, also if there's any extra patch applied, etc.
 
-Sep 30 19:42:00 larissa openvpn[25441]: Assertion failed at socket.c:1620
-Sep 30 19:42:00 larissa openvpn[25441]: Exiting
+Thanks a lot,
 
-and segfaulted using "tcp-server"
+>
+> Any ideas?
+>
+> Marcel
+>
+> -------------------------------------------------------------------------=
+-----
+> Come build with us! The BlackBerry&reg; Developer Conference in SF, CA
+> is the only developer event you need to attend this year. Jumpstart your
+> developing skills, take BlackBerry mobile applications to market and stay
+> ahead of the curve. Join us from November 9&#45;12, 2009. Register now&#3=
+3;
+> http://p.sf.net/sfu/devconf
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
 
-Sep 30 19:39:09 larissa openvpn[25238]: segfault at 0000000000000002 rip 
-00002b3486469fd0 rsp 00007fff254e9c98 error 4
-Sep 30 19:39:09 larissa openvpn[25238]: MULTI: multi_create_instance called
-Sep 30 19:39:09 larissa openvpn[25238]: Re-using SSL/TLS context
-Sep 30 19:39:09 larissa openvpn[25238]: LZO compression initialized
-Sep 30 19:39:09 larissa openvpn[25238]: Control Channel MTU parms [ L:1576 
-D:140 EF:40 EB:0 ET:0 EL:0 ]
-Sep 30 19:39:09 larissa openvpn[25238]: Data Channel MTU parms [ L:1576 D:1450 
-EF:44 EB:135 ET:32 EL:0 AF:3/1 ]
-Sep 30 19:39:09 larissa openvpn[25238]: Local Options hash 
-(VER=V4): '3e6d1056'
-Sep 30 19:39:09 larissa openvpn[25238]: Expected Remote Options hash 
-(VER=V4): '31fdf004'
-Sep 30 19:39:09 larissa openvpn[25238]: TCP connection established with 
-[AF_INET]141.24.41.188:60913
-Sep 30 19:39:09 larissa openvpn[25238]: Socket Buffers: R=[131072->131072] 
-S=[131072->131072]
 
-Any ideas?
-
-Marcel
+--=20
+--JuanJo ; echo jAjo@...1263... | sed 's/[SPAM]//g'
 
