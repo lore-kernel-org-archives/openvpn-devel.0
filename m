@@ -1,14 +1,11 @@
-MIME-Version: 1.0
-In-Reply-To: <20090930221942.GA28717@...1266...>
-References: <7bb795fd0909251436v2369d6d5q674e63e0621fcd56@...278...> 
-	<200909301941.01923.mailinglists@...1145...>
-	<7bb795fd0909301120veaf5f48gb65b081cd2cb09a3@...278...> 
-	<200909302047.07444.mailinglists@...1145...>
-	<7bb795fd0909301421i5fd974b5xbe8d352b7b7f3c9a@...278...> 
+From: Marcel =?iso-8859-1?q?Pennewi=DF?= <mailinglists@...1145...>
+Date: Thu, 1 Oct 2009 08:14:38 +0200
+References: <7bb795fd0909251436v2369d6d5q674e63e0621fcd56@...278...>
 	<20090930221942.GA28717@...1266...>
-From: JuanJo Ciarlante <jjo+ml@...410...>
-Date: Thu, 1 Oct 2009 00:26:15 +0200
-Message-ID: <7bb795fd0909301526s535c0e9aidfad95b0228adb4e@...278...>
+	<7bb795fd0909301526s535c0e9aidfad95b0228adb4e@...278...>
+In-Reply-To: <7bb795fd0909301526s535c0e9aidfad95b0228adb4e@...278...>
+MIME-Version: 1.0
+Message-Id: <200910010814.38064.mailinglists@...1145...>
 Subject: Re: [Openvpn-devel] [PATCH] openvpn over ipv6 support -v0.4.6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,136 +15,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: =?ISO-8859-1?Q?Marcel_Pennewi=DF?= <mailinglists@...1145...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Marcel,
-
-On Thu, Oct 1, 2009 at 12:19 AM, JuanJo Ciarlante <jjo+ml@...410...> wrote:
+On Thursday 01 October 2009 00:26:15 JuanJo Ciarlante wrote:
+> Marcel,
+> > Please apply this patch:
 >
-> On Wed, Sep 30, 2009 at 11:21:41PM +0200, JuanJo Ciarlante wrote:
-> > On Wed, Sep 30, 2009 at 8:47 PM, Marcel Pennewi=DF
-> > <mailinglists@...1145...>wrote:
-> >
-> > > On Wednesday 30 September 2009 20:20:40 JuanJo Ciarlante wrote:
-> > > > Could you please copy me the the exact cmdline and context (inetd?)
-> > > > you are using in both cases?, also if there's any extra patch appli=
-ed,
-> > > etc.
-> > >
-> > > /usr/sbin/openvpn --config /etc/openvpn/tcp.conf --writepid
-> > > /var/run/openvpn.tcp.pid --daemon --setenv
-> > > SVCNAME openvpn.tcp --cd /etc/openvpn
-> > >
-> > > /etc/openvpn/tcp.conf:
-> > > port 897
-> > > proto tcp6-server
-> > > dev tap1
-> > > server-bridge 192.168.42.253 255.255.255.0 192.168.42.1 192.168.42.200
-> > >
-> > > tls-server
-> > > dh /etc/openvpn/files/dh2048.pem
-> > > ca /etc/openvpn/files/ca.pem
-> > > cert /etc/openvpn/files/cert.pem
-> > > key /etc/openvpn/files/key.pem
-> > > comp-lzo
-> > > client-to-client
-> > > client-config-dir /etc/openvpn/clients
-> > > persist-tun
-> > > persist-key
-> > > keepalive 10 120
-> > > script-security 2
-> > > user nobody
-> > > group nogroup
-> > > verb 3
-> > >
-> > > patch applied from gentoo ebuild:
-> > > --- socket.c~ =A0 2008-11-02 01:39:00.406009999 +0100
-> > > +++ socket.c =A0 =A02008-11-02 01:39:00.406009999 +0100
-> > > @@ -22,6 +22,7 @@
-> > > =A0* =A059 Temple Place, Suite 330, Boston, MA =A002111-1307 =A0USA
-> > > =A0*/
-> > >
-> > > +#define _GNU_SOURCE
-> > > =A0#include "syshead.h"
-> > >
-> > > =A0#include "socket.h"
-> > >
-> > > thx,
-> > >
-> >
-> > Cool ... it's crashing for me also (yaY!) , it's something in the
-> > multi-client path
-> > that I hadn't handled, will work on it tomorrow.
->
-> Please apply this patch:
+> also available as full patch at
+> =A0=A0http://cloud.github.com/downloads/jjo/openvpn-ipv6/openvpn-2.1_rc19=
+-2.1_r
+>c19c-ipv6-0.4.7.patch.gz
 
-also available as full patch at
-=A0=A0http://cloud.github.com/downloads/jjo/openvpn-ipv6/openvpn-2.1_rc19-2=
-.1_rc19c-ipv6-0.4.7.patch.gz
+compiling failed with:
+
+x86_64-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I.   -I.    -march=3Dathlon64 -O2 =
+-pipe -msse3 -D_REENTRANT -pthread -MT=20
+cryptoapi.o -MD -MP -MF .deps/cryptoapi.Tpo -c -o cryptoapi.o cryptoapi.c
+mv -f .deps/cryptoapi.Tpo .deps/cryptoapi.Po
+
+x86_64-pc-linux-gnu-gcc  -march=3Dathlon64 -O2 -pipe -msse3 -D_REENTRANT -p=
+thread  -Wl,-O1 -o=20
+openvpn base64.o buffer.o crypto.o dhcp.o error.o event.o fdmisc.o forward.=
+o=20
+fragment.o gremlin.o helper.o lladdr.o init.o interval.o list.o lzo.o=20
+manage.o mbuf.o misc.o mroute.o mss.o mtcp.o mtu.o mudp.o multi.o ntlm.o=20
+occ.o pkcs11.o openvpn.o options.o otime.o packet_id.o perf.o pf.o ping.o=20
+plugin.o pool.o proto.o proxy.o ieproxy.o ps.o push.o reliable.o route.o=20
+schedule.o session_id.o shaper.o sig.o socket.o socks.o ssl.o status.o=20
+thread.o tun.o win32.o cryptoapi.o  -lssl -lcrypto -llzo2 -ldl
+
+multi.o: In function `management_client_auth':
+multi.c:(.text+0x22ee): undefined reference to `tls_authenticate_key'
+collect2: ld returned 1 exit status
+
+make[1]: *** [openvpn] Error 1
+make[1]: Leaving directory=20
+`/var/tmp/portage/net-misc/openvpn-2.1_rc19/work/openvpn-2.1_rc19'
+make: *** [install-recursive] Error 1
 
 
->
-> >From 3afb64b8255fa28e488e793259b2f3de94840b01 Mon Sep 17 00:00:00 2001
-> From: JuanJo Ciarlante <jjo@...410...>
-> Date: Thu, 1 Oct 2009 00:15:12 +0200
-> Subject: [PATCH] * fix multi-tcp crash (corrected assertion)
->
-> ---
-> =A0mtcp.c =A0 | =A0 =A06 +++++-
-> =A0socket.c | =A0 =A06 +++++-
-> =A02 files changed, 10 insertions(+), 2 deletions(-)
->
-> diff --git a/mtcp.c b/mtcp.c
-> index f578429..7e2b07d 100644
-> --- a/mtcp.c
-> +++ b/mtcp.c
-> @@ -153,7 +153,11 @@ multi_tcp_instance_specific_init (struct multi_conte=
-xt *m, struct multi_instance
-> =A0 ASSERT (mi->context.c2.link_socket);
-> =A0 ASSERT (mi->context.c2.link_socket->info.lsa);
-> =A0 ASSERT (mi->context.c2.link_socket->mode =3D=3D LS_MODE_TCP_ACCEPT_FR=
-OM);
-> - =A0ASSERT (mi->context.c2.link_socket->info.lsa->actual.dest.addr.sa.sa=
-_family =3D=3D AF_INET);
-> + =A0ASSERT (mi->context.c2.link_socket->info.lsa->actual.dest.addr.sa.sa=
-_family =3D=3D AF_INET
-> +#ifdef USE_PF_INET6
-> + =A0 =A0 =A0 =A0 || mi->context.c2.link_socket->info.lsa->actual.dest.ad=
-dr.sa.sa_family =3D=3D AF_INET6
-> +#endif
-> + =A0 =A0 =A0 =A0 );
-> =A0 if (!mroute_extract_openvpn_sockaddr (&mi->real, &mi->context.c2.link=
-_socket->info.lsa->actual.dest, true))
-> =A0 =A0 {
-> =A0 =A0 =A0 msg (D_MULTI_ERRORS, "MULTI TCP: TCP client address is undefi=
-ned");
-> diff --git a/socket.c b/socket.c
-> index 00d841e..97e6234 100644
-> --- a/socket.c
-> +++ b/socket.c
-> @@ -1616,7 +1616,11 @@ link_socket_init_phase1 (struct link_socket *sock,
-> =A0 if (mode =3D=3D LS_MODE_TCP_ACCEPT_FROM)
-> =A0 =A0 {
-> =A0 =A0 =A0 ASSERT (accept_from);
-> - =A0 =A0 =A0ASSERT (sock->info.proto =3D=3D PROTO_TCPv4_SERVER);
-> + =A0 =A0 =A0ASSERT (sock->info.proto =3D=3D PROTO_TCPv4_SERVER
-> +#ifdef USE_PF_INET6
-> + =A0 =A0 =A0 =A0 =A0 =A0 || sock->info.proto =3D=3D PROTO_TCPv6_SERVER
-> +#endif
-> + =A0 =A0 =A0 =A0 =A0 =A0);
-> =A0 =A0 =A0 ASSERT (!sock->inetd);
-> =A0 =A0 =A0 sock->sd =3D accept_from->sd;
-> =A0 =A0 }
-> --
-> 1.5.4.3
->
-> I tested your config upto full connection, and seems to work.
->
-> Cheers,
+using:
+./configure --prefix=3D/usr --build=3Dx86_64-pc-linux-gnu --host=3Dx86_64-p=
+c-linux-gnu --mandir=3D/usr/share/man --infodir=3D/usr/share/info --datadir=
+=3D/usr/share --sysconfdir=3D/etc --localstatedir=3D/var/lib --libdir=3D/us=
+r/lib64 --disable-pkcs11 --disable-password-save --enable-ssl --enable-cryp=
+to --enable-pthread --disable-iproute2
+and gcc version 4.3.2 (Gentoo 4.3.2-r3 p1.6, pie-10.1.5)
 
---
---JuanJo ; echo jAjo@...1263... | sed 's/[SPAM]//g'
+Regards,
+
+Marcel
 
