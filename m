@@ -1,10 +1,12 @@
+From: Marcel =?iso-8859-1?q?Pennewi=DF?= <mailinglists@...1145...>
+Date: Fri, 2 Oct 2009 21:29:41 +0200
+References: <7bb795fd0909251436v2369d6d5q674e63e0621fcd56@...278...>
+	<7bb795fd0909301526s535c0e9aidfad95b0228adb4e@...278...>
+	<200910010814.38064.mailinglists@...1145...>
+In-Reply-To: <200910010814.38064.mailinglists@...1145...>
 MIME-Version: 1.0
-In-Reply-To: <4AC5C604.3010908@...41...>
-References: <4AC5C604.3010908@...41...>
-From: Jonathan Petersson <jpetersson@...1214...>
-Date: Fri, 2 Oct 2009 07:14:51 -0700
-Message-ID: <fa2e1350910020714h9b293ccj76cd2ddc2d68e536@...278...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.1_rc20 released
+Message-Id: <200910022129.41205.mailinglists@...1145...>
+Subject: Re: [Openvpn-devel] [PATCH] openvpn over ipv6 support -v0.4.6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,77 +15,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: James Yonan <jim@...41...>
-Cc: Openvpn-devel@lists.sourceforge.net, OpenVpn-Users <openvpn-users@lists.sourceforge.net>
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Great work guys, keep up the good work!
+On Thursday 01 October 2009 08:14:38 Marcel Pennewi=DF wrote:
+> > > Please apply this patch:
+> > also available as full patch at
+> > =A0=A0http://cloud.github.com/downloads/jjo/openvpn-ipv6/openvpn-2.1_rc=
+19-2.1
+> >_r c19c-ipv6-0.4.7.patch.gz
+>
+> compiling failed with:
+>
+> multi.o: In function `management_client_auth':
+> multi.c:(.text+0x22ee): undefined reference to `tls_authenticate_key'
+> collect2: ld returned 1 exit status
+>
+> make[1]: *** [openvpn] Error 1
+> make[1]: Leaving directory
+> `/var/tmp/portage/net-misc/openvpn-2.1_rc19/work/openvpn-2.1_rc19'
+> make: *** [install-recursive] Error 1
 
-/Jonathan
+Problem seams to be "make -j3" on singlecore-system. "make -j2" works=20
+perfectly.
 
-On Fri, Oct 2, 2009 at 2:21 AM, James Yonan <jim@...41...> wrote:
-> 2009.10.01 -- Version 2.1_rc20
->
-> * Fixed a bug introduced in 2.1_rc17 (svn r4436) where using the
-> =A0 redirect-gateway option by itself, without any extra parameters,
-> =A0 would cause the option to be ignored.
->
-> * Fixed build problem when ./configure --disable-server is used.
->
-> * Fixed ifconfig command for "topology subnet" on FreeBSD (Stefan Bethke).
->
-> * Added --remote-random-hostname option.
->
-> * Added "load-stats" management interface command to get global server
-> =A0 load statistics.
->
-> * Added new ./configure flags:
->
-> =A0 --disable-def-auth =A0 =A0 =A0Disable deferred authentication
-> =A0 --disable-pf =A0 =A0 =A0 =A0 =A0 =A0Disable internal packet filter
->
-> * Added "setcon" directive for interoperability with SELinux (Sebastien
-> =A0 Raveau).
->
-> * Optimized PUSH_REQUEST handshake sequence to shave several seconds
-> =A0 off of a typical client connection initiation.
->
-> * The maximum number of "route" directives (specified in the config
-> =A0 file or pulled from a server) can now be configured via the new
-> =A0 "max-routes" directive.
->
-> * Eliminated the limitation on the number of options that can be pushed
-> =A0 to clients, including routes. =A0Previously, all pushed options needed
-> =A0 to fit within a 1024 byte options string.
->
-> * Added --server-poll-timeout option : when polling possible remote
-> =A0 servers to connect to in a round-robin fashion, spend no more than
-> =A0 n seconds waiting for a response before trying the next server.
->
-> * Added the ability for the server to provide a custom reason string
-> =A0 when an AUTH_FAILED message is returned to the client. =A0This
-> =A0 string can be set by the server-side managment interface and read
-> =A0 by the client-side management interface.
->
-> * client-kill management interface command, when issued on server, will
-> =A0 now send a RESTART message to client.
-> =A0 This feature is intended to make UDP clients respond the same as TCP
-> =A0 clients in the case where the server issues a RESTART message in
-> =A0 order to force the client to reconnect and pull a new options/route
-> =A0 list.
->
-> -------------------------------------------------------------------------=
------
-> Come build with us! The BlackBerry&reg; Developer Conference in SF, CA
-> is the only developer event you need to attend this year. Jumpstart your
-> developing skills, take BlackBerry mobile applications to market and stay
-> ahead of the curve. Join us from November 9&#45;12, 2009. Register now&#3=
-3;
-> http://p.sf.net/sfu/devconf
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+regards,
+
+Marcel
 
