@@ -1,9 +1,11 @@
+From: =?iso-8859-2?Q?Kosztyu_Andr=E1s?= <kosztyua@...1229...>
+Date: Mon, 5 Oct 2009 21:37:49 +0200
+Message-ID: <002101ca45f3$536cf720$fa46e560$@hu>
 MIME-Version: 1.0
-From: JuanJo Ciarlante <jjo+ml@...410...>
-Date: Mon, 5 Oct 2009 16:45:24 +0200
-Message-ID: <7bb795fd0910050745i6ea96b75t6e9e0fcd5da385e5@...278...>
-Subject: [Openvpn-devel] [PATCH] openvpn over ipv6 support v0.4.9,
-	rebased on 2.1_rc20 [was: 	v0.4.6]
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0022_01CA4604.16F5C720"
+Content-Language: hu
+Subject: [Openvpn-devel] openvpn + utf8 ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,58 +14,133 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+To: openvpn-devel@lists.sourceforge.net
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_0022_01CA4604.16F5C720
+Content-Type: text/plain;
+	charset="iso-8859-2"
+Content-Transfer-Encoding: 7bit
+
+Hi,
+
+Does openvpn support utf8 encoding (unicode?) for usernames and passwords?
+
+I could not find anything about it, only a very old mail
+(http://openvpn.net/archive/openvpn-devel/2006-04/msg00044.html)
+
+ 
+
+I've been using 2.1 rc18 as server for months now without any trouble, but
+now i got a report that special character passwords are not working. 
+
+The authentication is done by a simple bash script. Added a line to this
+script to check if it gets the passwords with wrong charset or gets it at
+all (echo $username:$password:TEST >> /var/log/openvpn/test) but it shows
+nothing for the password. 
+
+ 
+
+Thanks,
+
+Andras
+
+
+------=_NextPart_000_0022_01CA4604.16F5C720
+Content-Type: text/html; charset="iso-8859-2"
 Content-Transfer-Encoding: quoted-printable
-To: =?ISO-8859-1?Q?Marcel_Pennewi=DF?= <mailinglists@...1145...>
-Cc: openvpn-devel@lists.sourceforge.net
 
-Hi
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40">
 
-On Mon, Oct 5, 2009 at 4:11 PM, Marcel Pennewi=DF
-<mailinglists@...1145...> wrote:
-> On Wednesday 30 September 2009 19:41:01 Marcel Pennewi=DF wrote:
->> On Friday 25 September 2009 23:36:19 JuanJo Ciarlante wrote:
->> > Hi,
->> >
->> > I'm(back) working on openvpn/ipv6 endpoint support, aka udp6/tcp6,
->> > please refer to README.ipv6[1] and TODO.ipv6[2] for more details.
->>
->> OpenVPN 2.1-rc19 crashs on Gentoo (Xen DomU, AMD64( using tcp6-server wi=
-th
->> and segfaulted using "tcp-server"
->
-> Both problems fixed in 0.4.8-patch. big thx to JuanJo.
+<head>
+<meta http-equiv=3DContent-Type content=3D"text/html; charset=3Diso-8859-2">
+<meta name=3DGenerator content=3D"Microsoft Word 12 (filtered medium)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri","sans-serif";
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;}
+@page Section1
+	{size:612.0pt 792.0pt;
+	margin:70.85pt 70.85pt 70.85pt 70.85pt;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+<!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext=3D"edit">
+  <o:idmap v:ext=3D"edit" data=3D"1" />
+ </o:shapelayout></xml><![endif]-->
+</head>
 
-Thank you Marcel for the invaluable debugging and re-patching.
+<body lang=3DHU link=3Dblue vlink=3Dpurple>
 
-FYI I rebased my current tree onto 2.1_rc20, git-push'd[1]
-and uploaded rc20 diffs [2].
+<div class=3DSection1>
 
-Cheers,
+<p class=3DMsoNormal>Hi,<o:p></o:p></p>
 
-[1] http://github.com/jjo/openvpn-ipv6
-[2] http://github.com/jjo/openvpn-ipv6/downloads
+<p class=3DMsoNormal>Does openvpn support utf8 encoding (unicode?) for user=
+names
+and passwords?<o:p></o:p></p>
 
+<p class=3DMsoNormal>I could not find anything about it, only a very old ma=
+il (<a
+href=3D"http://openvpn.net/archive/openvpn-devel/2006-04/msg00044.html">htt=
+p://openvpn.net/archive/openvpn-devel/2006-04/msg00044.html</a>)<o:p></o:p>=
+</p>
 
->
-> Marcel
->
-> -------------------------------------------------------------------------=
------
-> Come build with us! The BlackBerry&reg; Developer Conference in SF, CA
-> is the only developer event you need to attend this year. Jumpstart your
-> developing skills, take BlackBerry mobile applications to market and stay
-> ahead of the curve. Join us from November 9&#45;12, 2009. Register now&#3=
-3;
-> http://p.sf.net/sfu/devconf
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
 
+<p class=3DMsoNormal>I&#8217;ve been using 2.1 rc18 as server for months now
+without any trouble, but now i got a report that special character passwords
+are not working. <o:p></o:p></p>
 
+<p class=3DMsoNormal>The authentication is done by a simple bash script. Ad=
+ded a
+line to this script to check if it gets the passwords with wrong charset or
+gets it at all (echo $username:$password:TEST &gt;&gt; /var/log/openvpn/tes=
+t)
+but it shows nothing for the password. <o:p></o:p></p>
 
---=20
---JuanJo ; echo jAjo@...1263... | sed 's/[SPAM]//g'
+<p class=3DMsoNormal>=A0<o:p></o:p></p>
+
+<p class=3DMsoNormal>Thanks,<o:p></o:p></p>
+
+<p class=3DMsoNormal>Andras<o:p></o:p></p>
+
+</div>
+
+</body>
+
+</html>
+
+------=_NextPart_000_0022_01CA4604.16F5C720--
+
 
