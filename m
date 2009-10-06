@@ -1,12 +1,11 @@
-From: =?iso-8859-2?Q?Kosztyu_Andr=E1s?= <kosztyua@...1229...>
-References: <002101ca45f3$536cf720$fa46e560$@hu>
-	<20091006094101.GA5064@...30...>
-In-Reply-To: <20091006094101.GA5064@...30...>
-Date: Tue, 6 Oct 2009 12:01:23 +0200
-Message-ID: <00cb01ca466b$f6ce7150$e46b53f0$@hu>
+Date: Tue, 6 Oct 2009 13:33:48 +0200
+From: Alberto Gonzalez Iniesta <agi@...64...>
+Message-ID: <20091006113348.GF3183@...30...>
+References: <7bb795fd0910050745i6ea96b75t6e9e0fcd5da385e5@...278...>
 MIME-Version: 1.0
-Content-Language: hu
-Subject: Re: [Openvpn-devel] openvpn + utf8 ?
+In-Reply-To: <7bb795fd0910050745i6ea96b75t6e9e0fcd5da385e5@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] openvpn over ipv6 support v0.4.9,
+ rebased on 2.1_rc20 [was: 	v0.4.6]
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,49 +14,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-2"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-Thank you for the reply,
-I have script-security 3 in my configs. All have been working just fine, and
-still working - except when using special characters in the password.=20
-An example: password1 is "pass", and its accepted and everything is working
-fine. Password2 is "passw=F6rd=E9", but the auth script will only see "pass=
-wrd"
-from this, skipping the special character.=20
-So, it simply skips the "not printable" characters.=20
-
-Andras
-
------Original Message-----
-From: Alberto Gonzalez Iniesta [mailto:agi@...64...]=20
-Sent: Tuesday, October 06, 2009 11:41 AM
-To: openvpn-devel@lists.sourceforge.net
-Subject: Re: [Openvpn-devel] openvpn + utf8 ?
-
-On Mon, Oct 05, 2009 at 09:37:49PM +0200, Kosztyu Andr=E1s wrote:
-> Hi,
+On Mon, Oct 05, 2009 at 04:45:24PM +0200, JuanJo Ciarlante wrote:
+> Hi
 >=20
-> Does openvpn support utf8 encoding (unicode?) for usernames and passwords?
+> On Mon, Oct 5, 2009 at 4:11 PM, Marcel Pennewi=DF
+> <mailinglists@...1145...> wrote:
+> > On Wednesday 30 September 2009 19:41:01 Marcel Pennewi=DF wrote:
+> >> On Friday 25 September 2009 23:36:19 JuanJo Ciarlante wrote:
+> >> > Hi,
+> >> >
+> >> > I'm(back) working on openvpn/ipv6 endpoint support, aka udp6/tcp6,
+> >> > please refer to README.ipv6[1] and TODO.ipv6[2] for more details.
+> >>
+> >> OpenVPN 2.1-rc19 crashs on Gentoo (Xen DomU, AMD64( using tcp6-server =
+with
+> >> and segfaulted using "tcp-server"
+> >
+> > Both problems fixed in 0.4.8-patch. big thx to JuanJo.
 >=20
-> I could not find anything about it, only a very old mail
-> (http://openvpn.net/archive/openvpn-devel/2006-04/msg00044.html)
+> Thank you Marcel for the invaluable debugging and re-patching.
 >=20
->=20=20
->=20
-> I've been using 2.1 rc18 as server for months now without any trouble, but
-> now i got a report that special character passwords are not working.=20
->=20
-> The authentication is done by a simple bash script. Added a line to this
-> script to check if it gets the passwords with wrong charset or gets it at
-> all (echo $username:$password:TEST >> /var/log/openvpn/test) but it shows
-> nothing for the password.=20
+> FYI I rebased my current tree onto 2.1_rc20, git-push'd[1]
+> and uploaded rc20 diffs [2].
 
-Hi,
+Hi All!
 
-You need --script-security 3 in order to get passwords passed to
-scripts.
+I just included the patch on the official Debian package. It will enter
+the Sid repository today, hopefully a bunch of new people will test it
+now. :)
 
 Regards,
 
@@ -69,17 +58,4 @@ agi@(inittab.org|debian.org)| en GNU/Linux y software libre
 Encrypted mail preferred    | http://inittab.com
 
 Key fingerprint =3D 9782 04E7 2B75 405C F5E9  0C81 C514 AF8E 4BA4 01C3
-
-----------------------------------------------------------------------------
---
-Come build with us! The BlackBerry&reg; Developer Conference in SF, CA
-is the only developer event you need to attend this year. Jumpstart your
-developing skills, take BlackBerry mobile applications to market and stay=20
-ahead of the curve. Join us from November 9&#45;12, 2009. Register now&#33;
-http://p.sf.net/sfu/devconf
-_______________________________________________
-Openvpn-devel mailing list
-Openvpn-devel@lists.sourceforge.net
-https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
 
