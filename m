@@ -1,9 +1,11 @@
-Date: Wed, 7 Oct 2009 02:20:21 -0700
-Message-ID: <COL0-MC3-F10306E5DC6D30FC260B35888CD0@...512...>
-In-Reply-To: <20091007111742.0742a7c5.mailinglists@...673...>
-From: <sabersultan616@...160...>
+From: Marcel =?iso-8859-1?q?Pennewi=DF?= <mailinglists@...1145...>
+Date: Sun, 11 Oct 2009 13:13:50 +0200
+References: <7bb795fd0910050745i6ea96b75t6e9e0fcd5da385e5@...278...>
+In-Reply-To: <7bb795fd0910050745i6ea96b75t6e9e0fcd5da385e5@...278...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Vacation reply
+Message-Id: <200910111313.50458.mailinglists@...1145...>
+Subject: Re: [Openvpn-devel] [PATCH] openvpn over ipv6 support v0.4.9,
+	rebased on 2.1_rc20 [was:  v0.4.6]
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,20 +14,21 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-SGV577yMPGJyPmhvdyBhcmUgeW91IGRvaW5nIHJlY2VudGx5PyA8YnI+SSB3b3VsZCBsaWtlIHRv
-IGludHJvZHVjZSB5b3UgYSB2ZXJ5IGdvb2QgY29tcGFueSBhbmQgaXRzIHdlYnNpdGUgaXMgPGEg
-aHJlZj0iaHR0cDovL3d3dy5zaHVlbndveWkuY29tIiB0YXJnZXQ9Il9ibGFuayI+d3d3LnNodWVu
-d295aS5jb208L2E+IEl0IGNhbiBvZmZlciB5b3UgYWxsIGtpbmRzIG9mIGVsZWN0cm9uaWMgcHJv
-ZHVjdHMgdGhhdCB5b3UgbWF5IGJlIGluIG5lZWQsc3VjaCBhcyBsYXB0b3BzICxncHMgLFRWIExD
-RCxjZWxswqAgcGhvbmVzLHBzMyxNUDMvNCxtb3RvcmN5Y2xlcyBhbmQgZXRjLi4uLi4uLi4gPGJy
-PllvdSBjYW4gdGFrZSBzb21lIHRpbWUgdG8gaGF2ZSBhIGNoZWNrICx0aGVyZSBtdXN0IGJlIHNv
-bWV0aGluZyBpbnRlcmVzdGluZyB5b3UgJ2QgbGlrZSB0b8KgIHB1cmNoYXNlIC48YnI+VGhlIGNv
-bnRhY3QgRW1haWw6wqAgPGEgaHJlZj0ibWFpbHRvOnNodWVud295aUAuLi4xMjY3Li4uIj5zaHVl
-bndveWlALi4uMTI2Ny4uLjwvYT48YnI+TVNOOsKgwqAgPGEgaHJlZj0ibWFpbHRvOnNodWVud295
-aTAyQC4uLjE2MC4uLiI+c2h1ZW53b3lpMDJALi4uMTYwLi4uPC9hPiA8YnI+DQpIb3BlIHlvdSBj
-YW4gZW5qb3kgeW91cnNlbGYgaW4gc2hvcHBpbmcgZnJvbSB0aGF0IGNvbXBhbnkgITxicj4NClJl
-Z2FyZHMgPGJyPg==
+On Monday 05 October 2009 16:45:24 JuanJo Ciarlante wrote:
+> Thank you Marcel for the invaluable debugging and re-patching.
+>
+> FYI I rebased my current tree onto 2.1_rc20, git-push'd[1]
+> and uploaded rc20 diffs [2].
+
+Your patch will now be (re-)included in the official gentoo portage-tree. [1] 
+
+[1] https://bugs.gentoo.org/show_bug.cgi?id=287896
+
+Marcel
+
