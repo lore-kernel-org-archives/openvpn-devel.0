@@ -1,12 +1,11 @@
+Message-ID: <4AD494F3.30805@...41...>
+Date: Tue, 13 Oct 2009 08:55:47 -0600
+From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-In-Reply-To: <200910111313.50458.mailinglists@...1145...>
-References: <7bb795fd0910050745i6ea96b75t6e9e0fcd5da385e5@...278...> 
-	<200910111313.50458.mailinglists@...1145...>
-From: JuanJo Ciarlante <jjo+ml@...410...>
-Date: Sun, 11 Oct 2009 23:52:30 +0200
-Message-ID: <7bb795fd0910111452l7d0d304em8b5b6d995cac1f4@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] openvpn over ipv6 support v0.4.9,
-	rebased 	on 2.1_rc20 [was: v0.4.6]
+References: <BLU0-SMTP4766D046DAC27387E8F14BBC90@...512...>
+In-Reply-To: <BLU0-SMTP4766D046DAC27387E8F14BBC90@...512...>
+Subject: Re: [Openvpn-devel] Feature request: Client-side username/password
+ retrieval using environment variables
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,48 +14,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: =?ISO-8859-1?Q?Marcel_Pennewi=DF?= <mailinglists@...1145...>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: The Zep Man <the_zep_man@...160...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Hey Marcel,
+The Zep Man wrote:
+> Dear openvpn-devel list,
+> 
+> OpenVPN supports verification of a username/password combination on the 
+> server-side by parsing these to a 'script' using auth-user-pass-verify'. 
+> With this, it is possible to use a file ('via-file') or environment 
+> variables ('via-env') to parse the given username and password for 
+> verification. The 'script' returns exit code 0 if the username and 
+> password are correct or non-0 if they are incorrect.
+> 
+> On the client-side, the only way to specify a username and a password 
+> (using the option 'auth-user-pass') is by directly using the OpenVPN 
+> prompt or (by default not possible because it isn't copmiled in) by 
+> using a file with on the first line the username and on the second line 
+> the password.
+> 
+> While it is easy to extend the username/password verification on the 
+> server, it isn't easy to extend the username/password input on the 
+> client. Even if OpenVPN is recompiled with the required option enabled 
+> for the client to accept a username/password from an earlier process, it 
+> is far from secure (because under some OS, like Windows, the 
+> username/password combination must be written plain-text to the disk for 
+> this to work).
+> 
+> Would it be a good idea to let OpenVPN on the client-side accept a 
+> username and a password as input from two separate environment variables 
+> using an extra option in the configuration file (when 'auth-user-pass' 
+> is also used)? This would make it easier to write an enduser-friendly 
+> front-end for OpenVPN which asks for an username and password.
+> 
+> My suggestion is to extend 'auth-user-pass [up]' to 'auth-user-pass 
+> via-file [up]' and 'auth-user-pass via-env'. By using 'via-env', the 
+> username and password should be taken from pre-specified environment 
+> variables. Perhaps the environment variables should be 'username' and 
+> 'password', the same names 'auth-user-pass-verify' on the server uses.
+> 
+> Because this option would be more secure for Windows, would it also be 
+> possible to enable 'auth-user-pass via-env' by default during compilation?
 
-On Sun, Oct 11, 2009 at 1:13 PM, Marcel Pennewi=DF
-<mailinglists@...1145...> wrote:
-> On Monday 05 October 2009 16:45:24 JuanJo Ciarlante wrote:
->> Thank you Marcel for the invaluable debugging and re-patching.
->>
->> FYI I rebased my current tree onto 2.1_rc20, git-push'd[1]
->> and uploaded rc20 diffs [2].
->
-> Your patch will now be (re-)included in the official gentoo portage-tree.=
- [1]
->
-> [1] https://bugs.gentoo.org/show_bug.cgi?id=3D287896
+The best way to programmatically supply the username/password on the 
+client side is to use the OpenVPN management interface.
 
-Cool \o/, tnx a lot for the support !:)
-
-Cheers,
-
->
-> Marcel
->
-> -------------------------------------------------------------------------=
------
-> Come build with us! The BlackBerry(R) Developer Conference in SF, CA
-> is the only developer event you need to attend this year. Jumpstart your
-> developing skills, take BlackBerry mobile applications to market and stay
-> ahead of the curve. Join us from November 9 - 12, 2009. Register now!
-> http://p.sf.net/sfu/devconference
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
-
-
-
---=20
---JuanJo ; echo jAjo@...1263... | sed 's/[SPAM]//g'
+James
 
