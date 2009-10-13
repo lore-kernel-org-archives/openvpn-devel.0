@@ -1,9 +1,10 @@
-Message-ID: <4AD494F3.30805@...41...>
-Date: Tue, 13 Oct 2009 08:55:47 -0600
-From: James Yonan <jim@...41...>
+Message-ID: <BLU0-SMTP94F951A9B55CEC1F31E476BBC70@...512...>
+Date: Tue, 13 Oct 2009 19:28:07 +0200
+From: The Zep Man <the_zep_man@...160...>
 MIME-Version: 1.0
 References: <BLU0-SMTP4766D046DAC27387E8F14BBC90@...512...>
-In-Reply-To: <BLU0-SMTP4766D046DAC27387E8F14BBC90@...512...>
+	<4AD494F3.30805@...41...>
+In-Reply-To: <4AD494F3.30805@...41...>
 Subject: Re: [Openvpn-devel] Feature request: Client-side username/password
  retrieval using environment variables
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,50 +17,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: The Zep Man <the_zep_man@...160...>
+To: James Yonan <jim@...41...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-The Zep Man wrote:
-> Dear openvpn-devel list,
+James Yonan wrote:
+> The best way to programmatically supply the username/password on the 
+> client side is to use the OpenVPN management interface.
 > 
-> OpenVPN supports verification of a username/password combination on the 
-> server-side by parsing these to a 'script' using auth-user-pass-verify'. 
-> With this, it is possible to use a file ('via-file') or environment 
-> variables ('via-env') to parse the given username and password for 
-> verification. The 'script' returns exit code 0 if the username and 
-> password are correct or non-0 if they are incorrect.
-> 
-> On the client-side, the only way to specify a username and a password 
-> (using the option 'auth-user-pass') is by directly using the OpenVPN 
-> prompt or (by default not possible because it isn't copmiled in) by 
-> using a file with on the first line the username and on the second line 
-> the password.
-> 
-> While it is easy to extend the username/password verification on the 
-> server, it isn't easy to extend the username/password input on the 
-> client. Even if OpenVPN is recompiled with the required option enabled 
-> for the client to accept a username/password from an earlier process, it 
-> is far from secure (because under some OS, like Windows, the 
-> username/password combination must be written plain-text to the disk for 
-> this to work).
-> 
-> Would it be a good idea to let OpenVPN on the client-side accept a 
-> username and a password as input from two separate environment variables 
-> using an extra option in the configuration file (when 'auth-user-pass' 
-> is also used)? This would make it easier to write an enduser-friendly 
-> front-end for OpenVPN which asks for an username and password.
-> 
-> My suggestion is to extend 'auth-user-pass [up]' to 'auth-user-pass 
-> via-file [up]' and 'auth-user-pass via-env'. By using 'via-env', the 
-> username and password should be taken from pre-specified environment 
-> variables. Perhaps the environment variables should be 'username' and 
-> 'password', the same names 'auth-user-pass-verify' on the server uses.
-> 
-> Because this option would be more secure for Windows, would it also be 
-> possible to enable 'auth-user-pass via-env' by default during compilation?
+> James
 
-The best way to programmatically supply the username/password on the 
-client side is to use the OpenVPN management interface.
+And the worst way is by using a file on a disk (which is why it is 
+disabled by default on compilation time). How about something in 
+between? Something that is perhaps also easier to use from scripts, 
+while still being secure in certain environments (like Windows)? The 
+management interface requires a TCP port, which requires extra 
+programming to use. It could also conflict with some firewalls (even 
+when used on the loopback interface). Why bother with the entire 
+management interface if the only thing you want is to simply insert a 
+username and password with reasonable security?
 
-James
+I'm not saying that the management interface is bad. However, a somewhat 
+trivial function like username/password insertion should be easier. It's 
+accepted that OpenVPN as a server uses the environment to parse incoming 
+usernames/passwords to other programs. Why can't OpenVPN also accept a 
+username and password from the environment?
+
+Zep
 
