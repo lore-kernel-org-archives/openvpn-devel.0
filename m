@@ -1,10 +1,10 @@
-From: Stefan Monnier <monnier@...1268...>
-Date: Sat, 24 Oct 2009 15:06:16 -0400
-Message-ID: <jwviqe41ujo.fsf-monnier+gmane.network.openvpn.devel@...1269...>
-References: <jwvvdie3l5z.fsf-monnier+gmane.network.openvpn.devel@...1269...>
-Mime-Version: 1.0
-Sender: news <news@...1062...>
-Subject: Re: [Openvpn-devel] FQDN for routes should expand to all IPs
+Message-ID: <4AE3580C.7080604@...41...>
+Date: Sat, 24 Oct 2009 13:39:56 -0600
+From: James Yonan <jim@...41...>
+MIME-Version: 1.0
+References: <20091023142219.GA30874@...1066...>
+In-Reply-To: <20091023142219.GA30874@...1066...>
+Subject: Re: [Openvpn-devel] Character classes in the tls-verify script
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,35 +13,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Ping?
+Victor Wagner wrote:
+> I've found out that string_mod family of function do very bad job
+> with certificates with cyrillic characters in the subject.
+> 
+> As of OpenVPN 2.1_rc19 class CC_PRINT is determined by function
+> isprint from ctype.h, which does wrong job if there was no setlocale
+> call (and there is no setlocale call in the OpenVPN).
+> 
+> Moreover, all printable data except ones produced by X509_NAME_oneline 
+> function is produced by ASN1_STRING_to_UTF8 functions and no one
+> guaranties that current locale of openvpn process has UTF-8 codeset.
+> 
+> I've fixed this problem by defining new character class CC_MSB, which
+> all bytes from UTF-8 multibyte sequence belong to, allow this
+> character class everywhere where CC_PRINT is allowed  and include it
+> into macro definition of  X509_NAME_CHAR_CLASS and
+> COMMON_NAME_CHAR_CLASS
+> 
+> I think that it is enough for security purposes, because no shell would
+> ever treat unicode codepoints above 128 as word or command separators.
+> 
+> And it gives me valid utf-8 string in the script variables and logs.
+> 
+> But may be there exist better solution.
 
+Can you submit a patch (as an email attachment) with this fix?
 
-        Stefan
+My only concern would be if there are ways an attacker could use chars 
+that are >= 128 to attack a shell or server-side auth script.
 
+I think it would be better to have this turned off by default, but have
+an option to enable it, like the no-name-remapping option in 2.1.
 
->>>>> "Stefan" == Stefan Monnier <monnier@...1268...> writes:
-
-> I've posted a bug report at:
-> http://sourceforge.net/tracker/index.php?func=detail&aid=2872760&group_id=48978&atid=454719
-
-> since since I haven't heard any reaction for almost 2 weeks now
-> (although the report includes a patch which works well, at least for
-> me), I'm wondering whether it was the right place.  Should I send my
-> patches here instead?
-
-
->         Stefan
-
-
-> ------------------------------------------------------------------------------
-> Come build with us! The BlackBerry(R) Developer Conference in SF, CA
-> is the only developer event you need to attend this year. Jumpstart your
-> developing skills, take BlackBerry mobile applications to market and stay 
-> ahead of the curve. Join us from November 9 - 12, 2009. Register now!
-> http://p.sf.net/sfu/devconference
+James
 
 
