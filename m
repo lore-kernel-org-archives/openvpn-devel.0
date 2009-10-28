@@ -1,10 +1,9 @@
-Date: Mon, 26 Oct 2009 09:58:41 -0500
-From: "Karl O. Pinc" <kop@...1206...>
-In-Reply-To: <4AE35940.9060604@...41...> (from jim@...41... on Sat Oct 24
-	14:45:04 2009)
-Message-Id: <1256569121.5662.4@...1207...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] FQDN for routes should expand to all IPs
+From: Lucas Mocellin <lucasmocellin@...277...>
+Date: Wed, 28 Oct 2009 17:24:12 -0200
+Message-ID: <edfc67860910281224x55ec531ala646a288c40641cf@...278...>
+Content-Type: multipart/alternative; boundary=0016e6d63ffb8a0c98047703be5f
+Subject: [Openvpn-devel] How to check is OpenVPN port is open
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +12,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--0016e6d63ffb8a0c98047703be5f
+Content-Type: text/plain; charset=ISO-8859-1
+
+Hi all,
+
+briefly: I'm helping in the development of an educational software to apply
+online tests. The client will connect to the server through OpenVPN to
+perform the test. I would like to check if the OpenVPN port is alive and
+accepting connections (check if there is port filtering, and so on.. ).
+
+I'm programming in python.
+
+Does someone know to achieve that? I'm trying to create a socket and send
+any message to the server, but no response, is there any kind of "hello" or
+something like this?
+
+I'm a begginer programmer, maybe this is really easy, but I didn't figure it
+out and neither found at google.
+
+Thanks in advance.
+
+Lucas.
+
+--0016e6d63ffb8a0c98047703be5f
+Content-Type: text/html; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: James Yonan <jim@...41...>
-Cc: openvpn-devel@lists.sourceforge.net
 
-On 10/24/2009 02:45:04 PM, James Yonan wrote:
+Hi all,<br><br>briefly: I&#39;m helping in the development of an educationa=
+l software to apply online tests. The client will connect to the server thr=
+ough OpenVPN to perform the test. I would like to check if the OpenVPN port=
+ is alive and accepting connections (check if there is port filtering, and =
+so on.. ).<br>
 
-> Having said that, your bug report seems more like a feature request=20
-> since routing commands/APIs generally do not support DNS A-record=20
-> expansion as a standard feature.
+<br>I&#39;m programming in python.<br><br>Does someone know to achieve that=
+? I&#39;m trying to create a socket and send any message to the server, but=
+ no response, is there any kind of &quot;hello&quot; or something like this=
+?<br>
 
-My favorite firewall/packet redirector, pf, does.  (It runs on the
-BSDS.)  I find that using DNS names makes configuration files
-very, very, much more readable.
+<br>I&#39;m a begginer programmer, maybe this is really easy, but I didn&#3=
+9;t figure it out and neither found at google.<br><br>Thanks in advance.<br=
+><br>Lucas.<br>
 
-Of course care is required to ensure that the names
-will resolve whenever required.  The basic trick is to run
-a slave nameserver for those zones you care about on the
-firewall/router, be sure that the slave server expiration=20
-is "long enough", and never use dns names that are not
-resolvable by the local namserver.   So long as your
-nameserver is working you have config files that are
-human readable -- a trade off I find well worth it.
-
-
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                 -- Robert A. Heinlein
-
+--0016e6d63ffb8a0c98047703be5f--
 
