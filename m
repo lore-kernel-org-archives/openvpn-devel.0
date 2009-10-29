@@ -1,8 +1,8 @@
-Date: Thu, 29 Oct 2009 17:43:19 +0300
-From: Victor Wagner <vitus@...1066...>
-Message-ID: <20091029144319.GA23394@...1066...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN and modern cryptography
+From: Olaf Fraczyk <olaf@...1271...>
+Date: Thu, 29 Oct 2009 20:25:44 +0100
+Message-Id: <1256844344.7529.43.camel@...1272...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] 2.1 rc20 and multiple interfaces problem
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,45 +11,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=koi8-r
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-Now openvpn in tls-server mode requires specification of Diffie-Hellman
-parameters for ephemeral key. This is probably good thing for SSLv3 when
-only RSA and DSA ciphersuites are supported. 
+Hello,
 
-DSA ciphersuites always require DH parameters, and RSA ciphersuites
-without DHE key exchange do not provide perfect forward secrecy.
+I have several interfaces, the problem is that if:
 
-But with release of OpenSSL 1.0.0 lot of new ciphersuites based on
-elliptic curve algorithms (ECDSA, ECDH, GOST2001) become available.
+I open connection from client to server IP=3DY on interface ppp1 then I
+get packets back from IP=3DX on interface ppp0
 
-These ciphersuites do not need dh paramters, but ECDSA ciphersuites
-need ECDH parameters (typically, just curve name). GOST2001 do not need
-parameters - its parameter sets are hardcoded into RFC 4357 and draft
-for GOST tls specifes that same parameter set as used for server
-certificate should be used for ephemeral keys.
+For connection to IP=3DX on interface ppp0 I get correctly packets from
+IP=3DX on ppp0.
 
-So, for people which use these ciphersuites only, dh parameters are not
-nessessary (but curve name might be nesseccary, and there is no option
-for it in the OpenVPN 2.1 rc19).
+I have read that in 2.1 it should work, but it doesn't.
 
-I've developed patch which changed handling of dh configuration
-directive.
+The OS is CentOS 5.4.
 
-Check for notnull(dh_file) is removed, but
-check for list of available ciphersuites is added.
-If after applying tls-cipher argument any of ciphersuites with key
-exchange algorithm DH is left in the context's list of ciphersuites,
-openvpn complains about missing dh parameters.
+Best regards,
 
-This patch can be easily extended for checking for ECDH ciphersuites
-and paramters as well.
-
-Is anybody interested in this functionality?
-
-
+Olaf
+--=20
+Olaf Fr=C4=85czyk <olaf@...1271...>
+NAVI
+http://www.navi.pl
+http://www.ntp.navi.pl
 
 
