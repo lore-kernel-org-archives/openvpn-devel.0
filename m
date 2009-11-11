@@ -1,11 +1,12 @@
-Message-ID: <4AFA789B.4070607@...1114...>
-Date: Wed, 11 Nov 2009 09:40:59 +0100
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
+Date: Wed, 11 Nov 2009 13:25:15 +0300
+From: Victor Wagner <vitus@...1066...>
+Message-ID: <20091111102515.GA19782@...1066...>
 References: <20091110161632.GA31301@...1276...>
-In-Reply-To: <20091110161632.GA31301@...1276...>
-Subject: Re: [Openvpn-devel] Script interface to trigger events depending on
- the	validity of a	certificate
+	<4AFA789B.4070607@...1114...>
+MIME-Version: 1.0
+In-Reply-To: <4AFA789B.4070607@...1114...>
+Subject: Re: [Openvpn-devel] Script interface to trigger events depending	on
+	the validity of a certificate
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,42 +15,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Till Maas <opensource@...519...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=koi8-r
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+On 2009.11.11 at 09:40:59 +0100, David Sommerseth wrote:
 
-On 10/11/09 17:16, Till Maas wrote:
-> I would like to get a notification in case a client certificate is used
-> for a connection to an OpenVPN server, that is about to expire soon. Is
-> there currently a way to do this? I looked into the tls-verify hook, but
-> according to the documentation, only the Subject line of a certificate
-> is available and not the validity. Is there maybe a way to log the
-> expiration dates?
+> On 10/11/09 17:16, Till Maas wrote:
+> > I would like to get a notification in case a client certificate is used
+> > for a connection to an OpenVPN server, that is about to expire soon. Is
+> > there currently a way to do this? I looked into the tls-verify hook, but
+> > according to the documentation, only the Subject line of a certificate
+> > is available and not the validity. Is there maybe a way to log the
+> > expiration dates?
+> 
+> I don't think this is possible without patching openvpn to put these
+> values into some environment variables for the --tls-verify hook.  I've
+> done something similar in regards to the SHA1 fingerprint for my own
+> project (I have had an OpenVPN patch pending since RC7).  But I'd be
+> willing to carry such a feature in my eurephia patch for OpenVPN, as
+> that sounds very useful.
 
-I don't think this is possible without patching openvpn to put these
-values into some environment variables for the --tls-verify hook.  I've
-done something similar in regards to the SHA1 fingerprint for my own
-project (I have had an OpenVPN patch pending since RC7).  But I'd be
-willing to carry such a feature in my eurephia patch for OpenVPN, as
-that sounds very useful.
+Apache/mod_ssl does export entire certificate in the PEM format as
+environment variable. So, may be openvpn sould do the same?
 
+Now various people patching openvpn to add some values:
+you've added sha1 fingerprint, I've added certificate extension
+subjectAltName, et cetera, et cetera.
 
-kind regards,
+But if entire certificate would be available, it would be possible to
+extract any information from it (or hash it with any algorithm) from the
+script using openssl command line utility or some binding or OpenSSL
+libraries to the choosen script language.
 
-David Sommerseth
-
-
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.9 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEUEARECAAYFAkr6eJgACgkQDC186MBRfrq6NACVESQtnCHS/SljNEAMXdR4xNmY
-5gCfbRyDvGgJDguKhCIm3kiLaID6V1g=
-=wjKX
------END PGP SIGNATURE-----
 
