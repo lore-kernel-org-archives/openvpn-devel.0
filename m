@@ -1,13 +1,12 @@
+Message-ID: <4AFAA745.4030806@...1114...>
+Date: Wed, 11 Nov 2009 13:00:05 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-In-Reply-To: <4AFA9AA7.4030600@...260...>
-References: <20091110161632.GA31301@...1276...> 
-	<4AFA789B.4070607@...1114...>
-	<20091111102515.GA19782@...1066...> <4AFA9AA7.4030600@...260...>
-From: Jonathan Petersson <jpetersson@...1214...>
-Date: Wed, 11 Nov 2009 12:20:31 +0100
-Message-ID: <fa2e1350911110320g2f1b0a97ke366d1d55a29f906@...278...>
+References: <20091110161632.GA31301@...1276...>	<4AFA789B.4070607@...1114...>
+	<20091111102515.GA19782@...1066...>
+In-Reply-To: <20091111102515.GA19782@...1066...>
 Subject: Re: [Openvpn-devel] Script interface to trigger events depending on
-	the validity of a certificate
+ the validity of a certificate
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,81 +15,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: Mathieu GIANNECCHINI <mat.giann@...260...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-This may not be a preferable approach but it should do the trick for you.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Upon connection the OpenVPN client reports it's common_name through
-environmental variables: "The X509 common name of an authenticated
-client. Set prior to execution of --client-connect,
---client-disconnect, and --auth-user-pass-verify scripts."
+On 11/11/09 11:25, Victor Wagner wrote:
+> On 2009.11.11 at 09:40:59 +0100, David Sommerseth wrote:
+> 
+>> On 10/11/09 17:16, Till Maas wrote:
+>>> I would like to get a notification in case a client certificate is used
+>>> for a connection to an OpenVPN server, that is about to expire soon. Is
+>>> there currently a way to do this? I looked into the tls-verify hook, but
+>>> according to the documentation, only the Subject line of a certificate
+>>> is available and not the validity. Is there maybe a way to log the
+>>> expiration dates?
+>>
+>> I don't think this is possible without patching openvpn to put these
+>> values into some environment variables for the --tls-verify hook.  I've
+>> done something similar in regards to the SHA1 fingerprint for my own
+>> project (I have had an OpenVPN patch pending since RC7).  But I'd be
+>> willing to carry such a feature in my eurephia patch for OpenVPN, as
+>> that sounds very useful.
+> 
+> Apache/mod_ssl does export entire certificate in the PEM format as
+> environment variable. So, may be openvpn sould do the same?
+> 
+> Now various people patching openvpn to add some values:
+> you've added sha1 fingerprint, I've added certificate extension
+> subjectAltName, et cetera, et cetera.
+> 
+> But if entire certificate would be available, it would be possible to
+> extract any information from it (or hash it with any algorithm) from the
+> script using openssl command line utility or some binding or OpenSSL
+> libraries to the choosen script language.
 
-As it's doing this you can trigger a client-connect script to retrieve
-the "Validity Not After" data from the client-cert (if you have a
-local copy on the server) if the time-frame is out of realms trigger
-sendmail or preferable mail-daemon to send an email to you or the user
-notifying about renewing the certificate.
+Good point!  I was not aware of the Apache/mod_ssl way of doing it.  My
+only concern about that is if it would be possible to exhaust the memory
+pool for environment variables?  Imagine a a buffer overflow bug if an
+attacker sends a specially crafted certificate request with 1000
+certificates in a chain.
 
-Good luck!
+The reason for this concern is that OpenVPN provides now all certificate
+info available at once in many of the the different hooks, all with _0,
+_1, _2, etc as a suffix at the end of the environment variable name.
+With roughly 2KB per certificate, on a cruel attack with 1000 chained
+certificates, that could mean 2MB would be needed for the environment
+table and you would have 1000 environment variables to go through.
 
-/Jonathan
+Maybe I'm concerned about a non-existing issue ... but I'd like to know
+how things would behave in this scenario.
 
-On Wed, Nov 11, 2009 at 12:06 PM, Mathieu GIANNECCHINI
-<mat.giann@...260...> wrote:
-> Victor Wagner a =E9crit :
->> On 2009.11.11 at 09:40:59 +0100, David Sommerseth wrote:
->>
->>
->>> On 10/11/09 17:16, Till Maas wrote:
->>>
->>>> I would like to get a notification in case a client certificate is used
->>>> for a connection to an OpenVPN server, that is about to expire soon. Is
->>>> there currently a way to do this? I looked into the tls-verify hook, b=
-ut
->>>> according to the documentation, only the Subject line of a certificate
->>>> is available and not the validity. Is there maybe a way to log the
->>>> expiration dates?
->>>>
->>> I don't think this is possible without patching openvpn to put these
->>> values into some environment variables for the --tls-verify hook. =A0I'=
-ve
->>> done something similar in regards to the SHA1 fingerprint for my own
->>> project (I have had an OpenVPN patch pending since RC7). =A0But I'd be
->>> willing to carry such a feature in my eurephia patch for OpenVPN, as
->>> that sounds very useful.
->>>
->>
->> Apache/mod_ssl does export entire certificate in the PEM format as
->> environment variable. So, may be openvpn sould do the same?
->>
->> Now various people patching openvpn to add some values:
->> you've added sha1 fingerprint, I've added certificate extension
->> subjectAltName, et cetera, et cetera.
->>
->> But if entire certificate would be available, it would be possible to
->> extract any information from it (or hash it with any algorithm) from the
->> script using openssl command line utility or some binding or OpenSSL
->> libraries to the choosen script language.
->>
->
-> Ok, i try once again. Maybe the solution is here :
-> http://article.gmane.org/gmane.network.openvpn.devel/2492
->
->
-> -------------------------------------------------------------------------=
------
-> Let Crystal Reports handle the reporting - Free Crystal Reports 2008 30-D=
-ay
-> trial. Simplify your report design, integration and deployment - and focu=
-s on
-> what you do best, core application coding. Discover what's new with
-> Crystal Reports now. =A0http://p.sf.net/sfu/bobj-july
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+One way how to control this situation would be to also implement a
+"--max-chained-certs" argument, which would default at something
+reasonable, f.ex 5.
+
+But initially, your suggestion is really not a bad idea as it would
+solve future needs indeed.
+
+
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAkr6pz8ACgkQDC186MBRfrqH2wCgqZfprWTvXeuNPe8iHdGfAZEr
+BOUAniJOF9U+af+dwpFBpRDEIozPEbok
+=KIVm
+-----END PGP SIGNATURE-----
 
