@@ -1,15 +1,11 @@
-Date: Wed, 11 Nov 2009 15:15:34 -0600
-From: "Karl O. Pinc" <kop@...1206...>
-References: <20091110161632.GA31301@...1276...>
-	<4AFA789B.4070607@...1114...>
-	<20091111102515.GA19782@...1066...>
-	<4AFA9AA7.4030600@...260...> <4AFAAD5C.4070303@...1114...>
-In-Reply-To: <4AFAAD5C.4070303@...1114...> (from
-	openvpn.list@...1114... on Wed Nov 11 06:26:04 2009)
-Message-Id: <1257974134.24141.3@...1207...>
+Message-ID: <4AFBBE40.8040106@...41...>
+Date: Thu, 12 Nov 2009 00:50:24 -0700
+From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Script interface to trigger events depending on
- the validity of a certificate
+References: <4AFAD781.900@...1277...>
+In-Reply-To: <4AFAD781.900@...1277...>
+Subject: Re: [Openvpn-devel] Questions related to the SSL
+	renegotiation	vulnerability
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,40 +14,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: openvpn-devel@lists.sourceforge.net, Mathieu GIANNECCHINI <mat.giann@...260...>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Dunc <dunc@...1277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 11/11/2009 06:26:04 AM, David Sommerseth wrote:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
->=20
-> On 11/11/09 12:06, Mathieu GIANNECCHINI wrote:
-> > Victor Wagner a =E9crit :
+OpenVPN uses a fresh SSL/TLS session for each of its mid-session 
+renegotiations.  This means that when you see:
 
-> >> But if entire certificate would be available, it would be possible
-> to
-> >> extract any information from it (or hash it with any algorithm)
-> from the
-> >> script using openssl command line utility or some binding or
-> OpenSSL
-> >> libraries to the choosen script language.
+   TLS: soft reset sec=0 bytes=314/0 pkts=6/0
 
-> Indeed!  And you're about to get my vote for this implementation ...
-> but
-> I have two concerns.
+OpenVPN is actually creating a brand new SSL/TLS session.  So the 
+important point here is that OpenVPN does not rely on the session 
+renegotiation capability that is built into SSL/TLS, and therefore if 
+OpenVPN is linked against an OpenSSL library that disables SSL/TLS 
+renegotiation, there should be no loss of functionality.
 
-> 2) If an attacker sends a certificate with his certificate and 999 CA
-> certificates in a chain, what will happen?  What happens if the disk
-> goes full or the certificate cannot be written?
+James
 
-You're a lot less likely to fill the disk than you are to run out
-of RAM.
-
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                 -- Robert A. Heinlein
-
+Dunc wrote:
+> Hi all,
+> 
+> Apologies in advance if I'm just not understanding something here.
+> 
+> Following on from the recent SSL renegotiation problem, we're assessing
+> what we should do with all our SSL services, and as we use OpenVPN in
+> several places, this is on the list.
+> 
+> I thought that OpenVPN does renegotiations when re-keying, so at first I
+> thought I'd try and turn it off at the server end. From reading the docs
+> and testing I now know that it's not good enough as by default clients
+> will want to re-key after 1 hour unless it is turned off in the client
+> config too.
+> 
+> It might be hard to ensure that all our customers adjust their config
+> properly, so I'd rather deal with this at the server end only, so my
+> next thought was to install openssl-0.9.8l which bans renegotiation. I
+> figured this would make the VPN drop once an hour, but figured that's
+> not so bad in the grand scheme of things, and if it's really a problem
+> for anyone we can fix it by having them adjust the client config. This
+> was round seems more favourable as I can be sure renegotiations are
+> disabled, and work around the fallout.
+> 
+> So, I installed the latest openssl on a test box, and compiled openvpn.
+> I set the reneg-sec option to 40s on my client and fired up the VPN,
+> fully expecting it to bounce after 40s. Instead, what I see is this
+> message in the logs:-
+> 
+> Nov 11 14:13:51 2009 us=763149 TLS: soft reset sec=0 bytes=314/0 pkts=6/0
+> 
+> and then both ends seem to agree on some new crypto, and everything
+> carries on.
+> 
+> 
+> At first I thought maybe what OpenVPN does isn't the same as SSL
+> renegotiation and I had no need to worry anyway, but then I found this
+> thread...
+> 
+> http://article.gmane.org/gmane.network.openvpn.user/28105
+> 
+> where there is discussion about adding an option to openvpn to disable
+> it, so I now think I should indeed be concerned, but I must be missing
+> something obvious, and wondered if anybody here can help me.
+> 
+> I've checked with openssl s_server and s_client that my new openssl does
+> indeed ban renegotiation, so I wonder exactly what OpenVPN is doing
+> during rekeying.
+> 
+> Thanks in advance if anyone can shed light on this for me, and once
+> again sorry if I'm just misunderstanding, which is quite possible :-)
+> 
+> Cheers,
+> 
+> Dunc
+> 
+> ------------------------------------------------------------------------------
+> Let Crystal Reports handle the reporting - Free Crystal Reports 2008 30-Day 
+> trial. Simplify your report design, integration and deployment - and focus on 
+> what you do best, core application coding. Discover what's new with
+> Crystal Reports now.  http://p.sf.net/sfu/bobj-july
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
