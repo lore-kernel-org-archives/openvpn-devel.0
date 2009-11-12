@@ -1,13 +1,9 @@
-Message-ID: <4AFBFED6.7080905@...1114...>
-Date: Thu, 12 Nov 2009 13:25:58 +0100
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <20091110161632.GA31301@...1276...>	<4AFA789B.4070607@...1114...>	<20091111102515.GA19782@...1066...>	<4AFA9AA7.4030600@...260...>
-	<4AFAAD5C.4070303@...1114...>
-	<20091112115108.GA5230@...1276...>
-In-Reply-To: <20091112115108.GA5230@...1276...>
-Subject: Re: [Openvpn-devel] Script interface to trigger events depending on
- the validity of a certificate
+From: JuanJo Ciarlante <jjo+ml@...410...>
+Date: Thu, 12 Nov 2009 13:46:56 +0100
+Message-ID: <7bb795fd0911120446ya4c49ddp3c15f37ee13c3775@...278...>
+Subject: [Openvpn-devel] [PATCH] openvpn over ipv6 support v0.4.10,
+	rebased to 2.1_rc21
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,55 +12,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Till Maas <opensource@...519...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi,
+I rebased the latest incarnation of the ipv6 patch (0.4.10)
+to openvpn 2.1_rc21 release.
 
-On 12/11/09 12:51, Till Maas wrote:
-> On Wed, Nov 11, 2009 at 01:26:04PM +0100, David Sommerseth wrote:
-> 
->> 1) The certificate is first dumped to file.  Would it be possible to
->> pass it only via environment table, to avoid the file stage?  The reason
->> for this is primarily security (not to write more to disk than what you
->> really need on disk), and secondarily - SELinux - avoiding writing data
->> to disk you are more sure that SELinux or other MACs will not interfere
->> and deny the write requests.  This is especially crucial if OpenVPN is
->> run in as a contained user (which most daemons really do)
-> 
-> As far as I understand the tls-verify option, the script will be run
-> once for every certificate in the chain. Therefore just passing the
-> cert to stdin of the script should be a feasible solution.
+Changes from v0.4.9..v0.4.10:
+* All platforms:
+ - implemented redirect-gateway support for ipv4 on ipv6 endpoints
+ - several src cleanups (no actual code changes)
+ - doc updates
+* win32:
+ - expanded usage of proto_is_udp(), proto_is_tcp()
+ - replaced some memset(&obj, 0, sizeof obj) by openvpn's CLEAR(obj)
+* openbsd:
+ - there's no IFF_MULTICAST, #ifdef'd around it (not specific to ipv6-patch)
 
-But this will not work for --plugin.  A plug-in written in C will not
-have access to stdin/stdout for such exchanges.  That's my concern.
+Available from my git repo[1], also as patch over 2.1_rc21 [2].
+There's also a win32 x-compiled binary (YMMV), built
+w/openssl-0.9.8l from source [3].
 
->> 2) If an attacker sends a certificate with his certificate and 999 CA
->> certificates in a chain, what will happen?  What happens if the disk
->> goes full or the certificate cannot be written?
-> 
-> According to the manpage, the tls-verify script won't be executed,
-> because the attacker already need to have passed all other verifications
-> steps except the check against the CRL list.
+[1] http://github.com/jjo/openvpn-ipv6/
+[2] http://cloud.github.com/downloads/jjo/openvpn-ipv6/openvpn-2.1_rc21-ipv6-0.4.10.uncached.patch.gz
+     mehh... there is some staleness in github that keeps serving a
+failed 1st upload,
+     I temp added the ".uncached"; will let it "drain" and try to
+serve the orig filename
+     in a few hours.
+[3] http://cloud.github.com/downloads/jjo/openvpn-ipv6/openvpn.exe-2.1_rc21-ipv6-0.4.10.zip
 
-True!  I didn't think about that when I thought about this scenario, but
-this really covers it.
-
-
-kind regards,
-
-David Sommerseth
-
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.9 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkr7/tMACgkQDC186MBRfrrUJwCgrSVYrvlu3v9ZQlQOcg/oAwwk
-OxsAnjN+a0OeSIH0Um/3ICbQBRGNLOEh
-=ZEbM
------END PGP SIGNATURE-----
+-- 
+--JuanJo ; echo jAjo@...1263... | sed 's/[SPAM]//g'
 
