@@ -1,13 +1,14 @@
-Date: Fri, 13 Nov 2009 09:54:42 -0600
+Date: Fri, 13 Nov 2009 10:00:51 -0600
 From: "Karl O. Pinc" <kop@...1206...>
 References: <20091023142219.GA30874@...1066...>
 	<4AE3580C.7080604@...41...> <20091026081943.GA29659@...1066...>
 	<4AFC3F83.4090900@...41...> <20091112175924.GA10462@...1066...>
 	<4AFC530C.9080303@...1114...>
 	<20091113122836.GA6902@...1066...>
-In-Reply-To: <20091113122836.GA6902@...1066...> (from vitus@...1066...
-	on Fri Nov 13 06:28:36 2009)
-Message-Id: <1258127682.5588.3@...1207...>
+	<4AFD59A1.2090507@...1114...>
+In-Reply-To: <4AFD59A1.2090507@...1114...> (from
+	openvpn.list@...1114... on Fri Nov 13 07:05:37 2009)
+Message-Id: <1258128051.5588.4@...1207...>
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] Character classes in the tls-verify script
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,32 +22,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-To: Victor Wagner <vitus@...1066...>
+To: David Sommerseth <openvpn.list@...1114...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On 11/13/2009 06:28:36 AM, Victor Wagner wrote:
+On 11/13/2009 07:05:37 AM, David Sommerseth wrote:
 
-> It is possible to add ADDITIONAL configuration directive such as
-> --allow-unicode-in-names, which doesn't  have such side-effect as
-> no-name-remapping
-> does now.
->=20
-> But I think that this should be enabled by default. If someone cannot
-> handle normal letters, he can disable them.
+> When a broad part of the users have tested this over time, used it in
+> production environment and bugs connected to this is fixed ... then=20
+> we
+> can consider to change the default behaviour, which normally would be
+> done in connection to a new major release.=20=20
 
-This makes sense.
+I agree that changes that break backwards compatibility should be
+what triggers a change in the major release number.  But,
+and I may be wrong here, I don't believe that OpenVPN has
+adopted the practice -- in which case it makes little sense
+to have a change in a major release number be the deciding
+factor.
 
-But...
+Your argument that the patch is not well enough tested
+is enough to make me agree that the default should not
+be changed now.=20
 
-I am not very familiar with localization but there surely
-must be commonly accepted idioms with respect to defaults
-such as this and the locale settings.  Without knowing
-anything about it my suggestion would be to enable
-multi-byte characters by default _unless_ the locale
-is C.  (Perhaps this is exactly what the locale settings
-are supposed to be about?)
-
-Regards,
 
 Karl <kop@...1206...>
 Free Software:  "You don't pay back, you pay forward."
