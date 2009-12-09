@@ -1,12 +1,10 @@
-Message-ID: <4B1F6611.10503@...515...>
-Date: Wed, 09 Dec 2009 10:55:45 +0200
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <4B1F6CEA.2000708@...1114...>
+Date: Wed, 09 Dec 2009 10:24:58 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4B1CD805.80508@...515...>
-	<415a28910912070924v2dea4b38he267c4da9eaabe84@...278...>
-In-Reply-To: <415a28910912070924v2dea4b38he267c4da9eaabe84@...278...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] Introducing OpenVPN Community
-	Manager
+Content-Type: multipart/mixed; boundary="------------020509070002030303030202"
+Subject: [Openvpn-devel] [PATCH] openvpn-down-root.so causes a segfault on
+	premature exits
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,75 +13,100 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Nick Owen ha scritto:
-> 2009/12/7 Samuli Sepp=E4nen <samuli@...515...>:
->=20=20=20
->> Hello everybody,
->>
->> I'm the newly appointed community manager for OpenVPN Technologies. I
->> will be acting as a liaison between OpenVPN community and OpenVPN
->> Technologies. I will help us (the company) make our development more
->> community-oriented, e.g. by providing the tools and making development
->> more transparent, so that both the community and the company benefit. To
->> accomplish these goals I need to work with you. I'll keep my own work as
->> transparent as possible so that you can constantly provide feedback
->> (positive or negative). Also, if you have any suggestions let me know -
->> preferably using the OpenVPN mailinglists. You can also talk to me
->> ("mattock") in the OpenVPN IRC channel during daytime (in EET/EEST
->> timezone).
->>
->> Now onto more concrete topics... I'm currently looking into community
->> projects around OpenVPN. I've so far found 14 different OpenVPN GUI
->> projects and two forum/wiki projects. I've listed them here:
->>
->>  http://users.utu.fi/sjsepp/openvpn_community_projects.html
->>
->> Do you know of other OpenVPN-related projects?
->>=20=20=20=20=20
->
-> Samuli:
->
-> I see you have WiKID Systems listed.  Thanks!
->
-> Here's a link for a WiKID/OpenVPN  tutorial:
-> http://www.wikidsystems.net/support/wikid-support-center/how-to/using-wik=
-id-strong-authentication-with-openvpn/
->
-> We also have a how-to for ssl-explorer back from before the
-> Adito/OpenVPN-ALS fork.
-> http://www.wikidsystems.net/support/wikid-support-center/how-to/how-to-se=
-cure-an-ssl-vpn-with-one-time-passcodes-and-mutual-authentication/.
-> I haven't had time to update that, though it is on the to-do.  This
-> setup takes advantage of WiKID's mutual https authentication to
-> validate the SSL cert for the user, providing protection against
-> network-based MITM attacks.
->
-> In the long run, I'd be interested in a direct WiKID/OpenVPN-ALS
-> plugin and to perhaps a combined WiKID token/openvpn client.
->
-> Great work!
->
-> Nick
->=20=20=20
-Hi Nick,
+This is a multi-part message in MIME format.
+--------------020509070002030303030202
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-Just drop a mail to openvpn-als-devel if you want to start developing an
-OpenVPN ALS WikID plugin:
-
-https://lists.sourceforge.net/mailman/listinfo/openvpn-als-devel
-
-You can also visit our IRC channel (#adito) at freenode.net. As ALS has
-RADIUS support (like SSL-E), binding WikiD and ALS should be no problem.
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
 
+If openvpn is interrupted before openvpn_plugin_open_v1() is called,
+there is no context allocated which openvpn_plugin_abort_v1() can use.
 
+Signed-off-by: David Sommerseth <dazo@...384...>
+
+- ---
+ plugin/down-root/down-root.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/plugin/down-root/down-root.c b/plugin/down-root/down-root.c
+index 5e0c002..77497ad 100644
+- --- a/plugin/down-root/down-root.c
++++ b/plugin/down-root/down-root.c
+@@ -434,7 +434,7 @@ openvpn_plugin_abort_v1 (openvpn_plugin_handle_t handle)
+ {
+   struct down_root_context *context = (struct down_root_context *) handle;
+
+- -  if (context->foreground_fd >= 0)
++  if (context && context->foreground_fd >= 0)
+     {
+       /* tell background process to exit */
+       send_control (context->foreground_fd, COMMAND_EXIT);
+- -- 
+1.6.2.5
+
+(patch attached in addition for convenience)
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAksfbOUACgkQDC186MBRfrqSgwCeOZPg+70ryTCCyoW8D9QtLmeF
+pwwAn2pWo9529hvBzlMgj8izabtG9Ioc
+=o0Ym
+-----END PGP SIGNATURE-----
+
+--------------020509070002030303030202
+Content-Type: text/plain;
+	name="0001-openvpn-down-root.so-causes-a-segfault-on-premature.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename*0="0001-openvpn-down-root.so-causes-a-segfault-on-premature.pat";
+	filename*1="ch"
+
+From e7e12e33025e7b83a8a97121433b46045144ded9 Mon Sep 17 00:00:00 2001
+From: David Sommerseth <dazo@...384...>
+Date: Wed, 9 Dec 2009 10:18:55 +0100
+Subject: [PATCH] openvpn-down-root.so causes a segfault on premature exits
+
+If openvpn is interrupted before openvpn_plugin_open_v1() is called,
+there is no context allocated which openvpn_plugin_abort_v1() can use.
+
+Signed-off-by: David Sommerseth <dazo@...384...>
+
+---
+ plugin/down-root/down-root.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/plugin/down-root/down-root.c b/plugin/down-root/down-root.c
+index 5e0c002..77497ad 100644
+--- a/plugin/down-root/down-root.c
++++ b/plugin/down-root/down-root.c
+@@ -434,7 +434,7 @@ openvpn_plugin_abort_v1 (openvpn_plugin_handle_t handle)
+ {
+   struct down_root_context *context = (struct down_root_context *) handle;
+ 
+-  if (context->foreground_fd >= 0)
++  if (context && context->foreground_fd >= 0)
+     {
+       /* tell background process to exit */
+       send_control (context->foreground_fd, COMMAND_EXIT);
+-- 
+1.6.2.5
+
+
+--------------020509070002030303030202
+Content-Type: application/pgp-signature;
+	name="0001-openvpn-down-root.so-causes-a-segfault-on-premature.patch.sig"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+	filename*0="0001-openvpn-down-root.so-causes-a-segfault-on-premature.pat";
+	filename*1="ch.sig"
+
+iEYEABECAAYFAksfbOgACgkQDC186MBRfro59wCfVbK9JyDobtMQ1WNL0TldlwNBFAgAniIC
+2fJxrerRMNU4Ewk7dSk21iKz
+--------------020509070002030303030202--
 
