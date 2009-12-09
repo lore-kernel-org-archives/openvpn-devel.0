@@ -1,13 +1,12 @@
-Message-ID: <4B1E312B.10104@...515...>
-Date: Tue, 08 Dec 2009 12:57:47 +0200
-From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
+Message-ID: <4B1F6611.10503@...515...>
+Date: Wed, 09 Dec 2009 10:55:45 +0200
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
 References: <4B1CD805.80508@...515...>
-	<1260189400.1965.1250.camel@...23...>	<4B1CFDAD.2040901@...1114...>
-	<4B1D0049.905@...515...>
-In-Reply-To: <4B1D0049.905@...515...>
+	<415a28910912070924v2dea4b38he267c4da9eaabe84@...278...>
+In-Reply-To: <415a28910912070924v2dea4b38he267c4da9eaabe84@...278...>
 Subject: Re: [Openvpn-devel] [Openvpn-users] Introducing OpenVPN Community
- Manager
+	Manager
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,73 +15,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
 
-Hi all,
+Nick Owen ha scritto:
+> 2009/12/7 Samuli Sepp=E4nen <samuli@...515...>:
+>=20=20=20
+>> Hello everybody,
+>>
+>> I'm the newly appointed community manager for OpenVPN Technologies. I
+>> will be acting as a liaison between OpenVPN community and OpenVPN
+>> Technologies. I will help us (the company) make our development more
+>> community-oriented, e.g. by providing the tools and making development
+>> more transparent, so that both the community and the company benefit. To
+>> accomplish these goals I need to work with you. I'll keep my own work as
+>> transparent as possible so that you can constantly provide feedback
+>> (positive or negative). Also, if you have any suggestions let me know -
+>> preferably using the OpenVPN mailinglists. You can also talk to me
+>> ("mattock") in the OpenVPN IRC channel during daytime (in EET/EEST
+>> timezone).
+>>
+>> Now onto more concrete topics... I'm currently looking into community
+>> projects around OpenVPN. I've so far found 14 different OpenVPN GUI
+>> projects and two forum/wiki projects. I've listed them here:
+>>
+>>  http://users.utu.fi/sjsepp/openvpn_community_projects.html
+>>
+>> Do you know of other OpenVPN-related projects?
+>>=20=20=20=20=20
+>
+> Samuli:
+>
+> I see you have WiKID Systems listed.  Thanks!
+>
+> Here's a link for a WiKID/OpenVPN  tutorial:
+> http://www.wikidsystems.net/support/wikid-support-center/how-to/using-wik=
+id-strong-authentication-with-openvpn/
+>
+> We also have a how-to for ssl-explorer back from before the
+> Adito/OpenVPN-ALS fork.
+> http://www.wikidsystems.net/support/wikid-support-center/how-to/how-to-se=
+cure-an-ssl-vpn-with-one-time-passcodes-and-mutual-authentication/.
+> I haven't had time to update that, though it is on the to-do.  This
+> setup takes advantage of WiKID's mutual https authentication to
+> validate the SSL cert for the user, providing protection against
+> network-based MITM attacks.
+>
+> In the long run, I'd be interested in a direct WiKID/OpenVPN-ALS
+> plugin and to perhaps a combined WiKID token/openvpn client.
+>
+> Great work!
+>
+> Nick
+>=20=20=20
+Hi Nick,
 
-Many thanks to all of you for providing links to OpenVPN-related
-projects, keep 'em coming. Some are still missing, but here's the most
-recent list:
+Just drop a mail to openvpn-als-devel if you want to start developing an
+OpenVPN ALS WikID plugin:
 
-http://users.utu.fi/sjsepp/openvpn_community_projects.html
+https://lists.sourceforge.net/mailman/listinfo/openvpn-als-devel
 
-All the best,
+You can also visit our IRC channel (#adito) at freenode.net. As ALS has
+RADIUS support (like SSL-E), binding WikiD and ALS should be no problem.
 
-Samuli Sepp=C3=A4nen
+--=20
+Samuli Sepp=E4nen
 Community Manager
 OpenVPN Technologies, Inc
 
 
 
-
-
-Samuli Sepp=C3=A4nen ha scritto:
-> David Sommerseth ha scritto:
->=20=20=20
->> On 07/12/09 13:36, Laurent GUERBY wrote:
->>=20=20=20=20=20
->>> GNOME NetworkManager has a dialog box to manage openvpn connections,
->>> I don't know if that counts :).
->>>=20=20=20=20=20=20=20
->> That's most probably the "NetworkManager OpenVPN plugin".  GNOME NM do
->> not have a "native" OpenVPN implementation, but relies on VPN plug-ins.
->>  There's even a plug-in for vpnc as well.
->>
->>
->> kind regards,
->>
->> David Sommerseth
->>
->>=20=20=20=20=20
->
-> That's correct. I updated my list of OpenVPN projects and it's starting
-> to become quite exhausting... see for yourself. I'm probably only
-> halfway through:
->
-> http://users.utu.fi/sjsepp/openvpn_community_projects.html
->
-> Lot of the work is redundant, but on the positive side there is a lot of
-> activity around OpenVPN.
->
-> Samuli Sepp=C3=A4nen
-> Community Manager
-> OpenVPN Technologies, Inc
->
->
->
->
->
-> -------------------------------------------------------------------------=
------
-> Join us December 9, 2009 for the Red Hat Virtual Experience,
-> a free event focused on virtualization and cloud computing.=20
-> Attend in-depth sessions from your desk. Your couch. Anywhere.
-> http://p.sf.net/sfu/redhat-sfdev2dev
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->=20=20=20
 
