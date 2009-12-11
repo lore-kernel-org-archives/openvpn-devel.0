@@ -1,9 +1,10 @@
-Message-ID: <4B221B9C.6090902@...1114...>
-Date: Fri, 11 Dec 2009 11:14:52 +0100
+Message-ID: <4B2250E4.8090908@...1114...>
+Date: Fri, 11 Dec 2009 15:02:12 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] A spammer is member of this mailing list? ... [Fwd:
-	Vacation reply]
+References: <4B220E0D.2090908@...41...>
+In-Reply-To: <4B220E0D.2090908@...41...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.1.0 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,51 +13,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
+On 11/12/09 10:17, James Yonan wrote:
+> I'm happy to announce the release of OpenVPN 2.1.0.  This release is 
+> basically 2.1_rc22 + some last-minute trivial fixes to documentation and 
+> plugin sample code.  Enjoy!
+> 
+> James
 
-Could someone with list admin please remove this e-mail address from the
-mailing-list?  Every time I mail to the -devel list, I get this spam in
-reply.  Might be something similar to the -users list as well
+I have updated the patch for providing certificate SHA1
+digest/fingerprint via the environment table for plug-ins.  This is
+needed for the eurephia project I'm working on.
+
+The patch is basically identical to the 2.1_rc22 patch.
+
+The patch is available for download here:
+<http://sourceforge.net/projects/eurephia/files/OpenVPN/OpenVPN%20eurephia%20patches/openvpn-2.1.0_eurephia.patch/download>
+
+A pre-patched OpenVPN 2.1.0 release can be downloaded here:
+<https://sourceforge.net/projects/eurephia/files/OpenVPN/Pre-patched%20OpenVPN/openvpn-2.1.0_eurephia.tar.bz2/download>
+
+The openvpn source tree with and without this patch can be fetched here:
+<git://eurephia.git.sourceforge.net/gitroot/eurephia/openvpn-eurephia.git>
+
+The git tree can be browsed via:
+<http://eurephia.git.sourceforge.net/git/gitweb.cgi?p=eurephia/openvpn-eurephia.git;a=summary>
 
 
 kind regards,
 
 David Sommerseth
 
-
-
-- -------- Original Message --------
-Subject: 	Vacation reply
-Date: 	Fri, 11 Dec 2009 02:00:55 -0800
-From: 	<sabersultan616@...160...>
-To: 	openvpn.list@...1114...
-
-
-
-Hey，
-how are you doing recently?
-I would like to introduce you a very good company and its website is
-www.shuenwoyi.com <http://www.shuenwoyi.com> It can offer you all kinds
-of electronic products that you may be in need,such as laptops ,gps ,TV
-LCD,cell  phones,ps3,MP3/4,motorcycles and etc........
-You can take some time to have a check ,there must be something
-interesting you 'd like to  purchase .
-The contact Email:  shuenwoyi@...1267... <mailto:shuenwoyi@...1267...>
-MSN:   shuenwoyi02@...160... <mailto:shuenwoyi02@...160...>
-Hope you can enjoy yourself in shopping from that company !
-Regards
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.9 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAksiG5kACgkQDC186MBRfrprkACdGk7cqgbD74qO2XaJ4jdUKwTR
-IgsAn28VTXI2GCv0Xc0IAuDE5KN4BckU
-=YdVj
+iEYEARECAAYFAksiUOEACgkQDC186MBRfro8FQCgrF0besE8cipvATt8lNQp7NST
+tF8AoJ4x1uwqFq+OqqQgvf6EDlMzi6c3
+=cuX9
 -----END PGP SIGNATURE-----
 
