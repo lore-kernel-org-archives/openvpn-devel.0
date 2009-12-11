@@ -1,11 +1,8 @@
-Content-class: urn:content-classes:message
+Message-ID: <4B226083.2040601@...1270...>
+Date: Fri, 11 Dec 2009 17:08:51 +0200
+From: Yevgeny Kosarzhevsky <yevg@...1270...>
 MIME-Version: 1.0
-Date: Fri, 11 Dec 2009 15:27:08 +0100
-Message-ID: <499929A843E2C541A8AD31A881A2B6A204E74E88@...1006...>
-In-Reply-To: <4B220E0D.2090908@...41...>
-References: <4B220E0D.2090908@...41...>
-From: "David Balazic" <David.Balazic@...1005...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.1.0 released
+Subject: [Openvpn-devel] Client <connection> blocks
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,20 +11,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: James Yonan <jim@...41...>, OpenVpn-Users <openvpn-users@lists.sourceforge.net>, openvpn-devel@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-James Yonan wrote:
->=20
-> I'm happy to announce the release of OpenVPN 2.1.0.  This release is=20
-> basically 2.1_rc22 + some last-minute trivial fixes to=20
-> documentation and plugin sample code.  Enjoy!
+Greetings,
 
-Does this mean patches are now accepted?
+I've setup the client to use two connection blocks, but wasn't able to
+provide certain options in it.
 
-In other words: What is next? What is the plan?
+I have one <connection> block in udp mode and the other one in tcp. I'd
+like to customize udp-specific options, like fragment, mssfix,
+replay-window, tun-mtu. If I put it in udp connection block, then I get 
+error:
 
-Regards,
-David
+Options error: option 'fragment' cannot be used in this context
+
+Otherwise, if I put them globally, I get:
+
+Options error: --fragment can only be used with --proto udp
+
+I think some other options which I haven't tested should be moved to
+<connection> blocks, like comp-lzo, no-replay, no-iv, cipher, auth and
+may be some more, so one configuration file may be able to connect to
+different server configurations.
+
+Am I missing something and workaround exists already?
+
+
 
