@@ -1,10 +1,10 @@
-Message-ID: <4B229244.60308@...1114...>
-Date: Fri, 11 Dec 2009 19:41:08 +0100
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <4B229FC2.70907@...41...>
+Date: Fri, 11 Dec 2009 12:38:42 -0700
+From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-References: <19316.65.118.50.246.1260553900.squirrel@...1166...>
-In-Reply-To: <19316.65.118.50.246.1260553900.squirrel@...1166...>
-Subject: Re: [Openvpn-devel] Patch for plugin/auth-pam.c
+References: <4B220E0D.2090908@...41...> <4B2217BD.6070004@...1114...>
+In-Reply-To: <4B2217BD.6070004@...1114...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.1.0 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,70 +13,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Daniel Johnson <Progman2000@...1085...>
+To: David Sommerseth <openvpn.list@...1114...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On 11/12/09 18:51, Daniel Johnson wrote:
-> Daniel Johnson wrote on 2008-12-12:
->> When I began testing OpenVPN v2.1_rc9 I was having trouble
->> authenticating to the MS Active Directory through auth-pam and Samba.
->> I used the following line in my configs (without the linebreak of
->> course):
+Yes -- the changes to the tap-win32 source code is only in the comments 
+and clarifies that the source is licensed under GPL 2.
+
+James
+
+David Sommerseth wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
 > 
->> plugin /opt/openvpn/openvpn-auth-pam.so
->>                 "openvpn login OURDOMAIN+USERNAME password PASSWORD"
+> On 11/12/09 10:17, James Yonan wrote:
+>> I'm happy to announce the release of OpenVPN 2.1.0.  This release is 
+>> basically 2.1_rc22 + some last-minute trivial fixes to documentation and 
+>> plugin sample code.  Enjoy!
 > 
->> Finally I turned on more verbose logging and found that the plugin
->> did not recognize "USERNAME" as something to replace, because it
->> expected the string to be surrounded by whitespace.  I wrote the
->> following patch to correct this.  I hope you find it useful,
+> This is indeed good news!  Thank you very much for your hard work!
+> Today, it's only pure joy! :)
 > 
->> http://thor.chguernsey.com/temp/auth-pam.patch  (2kb)
->> http://thor.chguernsey.com/temp/auth-pam.patch.sig
->> MD5: 6560cbdfe24b3469dcb551d8963efdfa *auth-pam.patch
+> However, I just checked the differences between 2.1_rc22 and the final
+> 2.1.0.  And I do see that there are some unexpected files here ...
 > 
->> Daniel Johnson
->> Progman2000@...1085...
+> 	tap-win32/filt.py
+> 	tap-win32/tmp/
+> 	tap-win32/tmp/hexdump.h
+> 	tap-win32/tmp/types.h
+> 	tap-win32/tmp/error.c
+> 	tap-win32/tmp/error.h
+> 	tap-win32/tmp/instance.c
+> 	tap-win32/tmp/tapdrvr.c
+> 	tap-win32/tmp/macinfo.c
+> 	tap-win32/tmp/constants.h
+> 	tap-win32/tmp/endian.h
+> 	tap-win32/tmp/prototypes.h
+> 	tap-win32/tmp/dhcp.h
+> 	tap-win32/tmp/dhcp.c
+> 	tap-win32/tmp/lock.h
+> 	tap-win32/tmp/proto.h
+> 	tap-win32/tmp/hexdump.c
+> 	tap-win32/tmp/macinfo.h
+> 	tap-win32/tmp/common.h
+> 	tap-win32/tmp/mem.c
 > 
-> I've seen no replies to this, and the patch did not make it into
-> v2.1.0.  The patch cleanly applies to v2.1.0, is there any interest
-> in merging this functionality?
+> I believe these files are just leftovers after making the license a pure
+> GPLv2 license.  Is this a correct assumption?
 > 
-
-I just decided to do a quick review, I don't believe this has made it
-into openvpn-2.1.0.  But from what I see, I have one concern in regards
-to a potential memory leak.
-
-The pam_server() function receives a "message" which puts the
-information into a "static" memory area which is using struct user_pass.
- This is fine.  Then it calls pam_auth() with a pointer to this memory
-region.
-
-The pam_auth() function calls my_conv(), and if this function gets a
-match on USERNAME or PASSWORD value in the block around line 562, it
-calls searchandreplace() which does a strdup().  This is dynamically
-allocated with strdup() and saved into return_value.  But!  In line 569,
-you have this line:
-
-		  aresp[i].resp = strdup (return_value);
-
-I presume that the aresp[] struct is freed somehow, I have not dug into
-that now.  But you have here a double strdup() situation if you get a
-match on USERNAME or PASSWORD.  It's almost like saying:
-
-		char *ptr = strdup (strdup ("string"));
-		free(ptr);
-
-This code will give you a memory leak.
-	
-Please confirm if my assumptions are correct.  I would probably suggest
-to move the strdup() on line 569 and skip using the return_value at all.
- Just use aresp[i].resp directly.
-
-
-kind regards,
-
-David Sommerseth
+> Btw!  Good move on the license!
+> 
+> 
+> kind regards,
+> 
+> David Sommerseth
+> -----BEGIN PGP SIGNATURE-----
+> Version: GnuPG v1.4.9 (GNU/Linux)
+> Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+> 
+> iEYEARECAAYFAksiF70ACgkQDC186MBRfrqEjACeLYEA2zw+tIC8biANywvDtgcj
+> A6oAn2u+LveoFX9+FihPuwBTkj1kbIyG
+> =F0iV
+> -----END PGP SIGNATURE-----
 
