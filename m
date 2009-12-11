@@ -1,10 +1,11 @@
-Message-ID: <4B2250E4.8090908@...1114...>
-Date: Fri, 11 Dec 2009 15:02:12 +0100
-From: David Sommerseth <openvpn.list@...1114...>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <4B220E0D.2090908@...41...>
+Date: Fri, 11 Dec 2009 15:27:08 +0100
+Message-ID: <499929A843E2C541A8AD31A881A2B6A204E74E88@...1006...>
 In-Reply-To: <4B220E0D.2090908@...41...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.1.0 released
+References: <4B220E0D.2090908@...41...>
+From: "David Balazic" <David.Balazic@...1005...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.1.0 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,49 +14,20 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+To: James Yonan <jim@...41...>, OpenVpn-Users <openvpn-users@lists.sourceforge.net>, openvpn-devel@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+James Yonan wrote:
+>=20
+> I'm happy to announce the release of OpenVPN 2.1.0.  This release is=20
+> basically 2.1_rc22 + some last-minute trivial fixes to=20
+> documentation and plugin sample code.  Enjoy!
 
-On 11/12/09 10:17, James Yonan wrote:
-> I'm happy to announce the release of OpenVPN 2.1.0.  This release is 
-> basically 2.1_rc22 + some last-minute trivial fixes to documentation and 
-> plugin sample code.  Enjoy!
-> 
-> James
+Does this mean patches are now accepted?
 
-I have updated the patch for providing certificate SHA1
-digest/fingerprint via the environment table for plug-ins.  This is
-needed for the eurephia project I'm working on.
+In other words: What is next? What is the plan?
 
-The patch is basically identical to the 2.1_rc22 patch.
-
-The patch is available for download here:
-<http://sourceforge.net/projects/eurephia/files/OpenVPN/OpenVPN%20eurephia%20patches/openvpn-2.1.0_eurephia.patch/download>
-
-A pre-patched OpenVPN 2.1.0 release can be downloaded here:
-<https://sourceforge.net/projects/eurephia/files/OpenVPN/Pre-patched%20OpenVPN/openvpn-2.1.0_eurephia.tar.bz2/download>
-
-The openvpn source tree with and without this patch can be fetched here:
-<git://eurephia.git.sourceforge.net/gitroot/eurephia/openvpn-eurephia.git>
-
-The git tree can be browsed via:
-<http://eurephia.git.sourceforge.net/git/gitweb.cgi?p=eurephia/openvpn-eurephia.git;a=summary>
-
-
-kind regards,
-
-David Sommerseth
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.9 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAksiUOEACgkQDC186MBRfro8FQCgrF0besE8cipvATt8lNQp7NST
-tF8AoJ4x1uwqFq+OqqQgvf6EDlMzi6c3
-=cuX9
------END PGP SIGNATURE-----
+Regards,
+David
 
