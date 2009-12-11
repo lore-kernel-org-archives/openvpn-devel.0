@@ -1,9 +1,11 @@
-Date: Thu, 10 Dec 2009 14:15:01 +0200
-From: Pasi =?iso-8859-1?Q?K=E4rkk=E4inen?= <pasik@...124...>
-Message-ID: <20091210121501.GN16033@...1281...>
+Message-ID: <4B21A937.2070301@...41...>
+Date: Thu, 10 Dec 2009 19:06:47 -0700
+From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN default gateway problems on Windows after
-	resume from hibernation
+References: <4B1F6CEA.2000708@...1114...>
+In-Reply-To: <4B1F6CEA.2000708@...1114...>
+Subject: Re: [Openvpn-devel] [PATCH] openvpn-down-root.so causes a segfault
+ on	premature exits
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,88 +14,98 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hello,
+David,
 
-I'm having some problems with OpenVPN (2.1rc20) on Windows Vista. 
-Yeah I know, vista is crap, but I had to play with it a bit.
+I've committed a fix for this:
 
-I've seen a couple of different problems:
+------------------------------------------------------------------------
+r5261 | james | 2009-12-10 16:50:03 -0700 (Thu, 10 Dec 2009) | 10 lines
+Changed paths:
+    M /branches/BETA21/openvpn/plugin/auth-pam/auth-pam.c
+    M /branches/BETA21/openvpn/plugin/down-root/down-root.c
 
-1) I start the openvpn connection, and it works OK. Default gateway is
-through the openvpn connection. Then I suspend (hibernate) the laptop,
-and after a while when I resume from hibernation, openvpn re-connects the vpn
-successfully (openvpn gui icon goes green), but sometimes the default gateway 
-is wrong, making the connection non-functional.
+Fixed a couple issues in sample plugins auth-pam.c and down-root.c:
 
-OpenVPN related parts of "route print" when the openvpn connection works properly:
+1. Fail gracefully rather than segfault if calloc returns NULL.
 
-IPv4 Route Table
-===========================================================================
-Active Routes:
-Network Destination        Netmask          Gateway       Interface  Metric
-          0.0.0.0          0.0.0.0        10.0.0.5        10.0.0.6      5
-          10.0.0.1  255.255.255.255       10.0.0.5	  10.0.0.6      5
+2. The openvpn_plugin_abort_v1 function can potentially be called
+    with handle == NULL.  Add code to detect this case, and if
+    so, avoid dereferencing pointers derived from handle.
 
-Default route points to the OpenVPN interface correctly and the connections works OK.
+(Thanks to David Sommerseth for finding this bug).
 
-Now, after hibernate+resume, _sometimes_ (not always) the routing table
-looks like this, and the connection doesn't work:
+------------------------------------------------------------------------
 
-IPv4 Route Table
-===========================================================================
-Active Routes:
-Network Destination        Netmask          Gateway       Interface  Metric
-          0.0.0.0          0.0.0.0        10.0.0.5               18      5
-          10.0.0.1  255.255.255.255       10.0.0.5               18      5
+Note that there's an implicit semantics in the plugin system that 
+plugins will be called with openvpn_plugin_handle_t handle != NULL, with 
+the exception of openvpn_plugin_abort_v1.  Abort is treated differently 
+since there could conceivably be cases where the plugin has allocated 
+resources before openvpn_plugin_open_v(1|2) has established the context. 
+  But it's not necessary to check for context == NULL except in the 2 
+places addressed by the above commit.
 
-Which is a bit weird.. Interface is just a number? anyway, the next variation 
-happens more often:
-
-IPv4 Route Table
-===========================================================================
-Active Routes:
-Network Destination        Netmask          Gateway       Interface  Metric
-          0.0.0.0          0.0.0.0        10.0.0.5  169.254.108.226      5
-          10.0.0.1  255.255.255.255       10.0.0.5  169.254.108.226      5
+James
 
 
-So that looks like it fails to get an IP with DHCP. 
-"ipconfig /all" show this:
-
-Ethernet adapter Local Area Connection 3:
-
-   Connection-specific DNS Suffix  . :
-   Description . . . . . . . . . . . : TAP-Win32 Adapter V9
-   Physical Address. . . . . . . . . : 00-FF-82-51-06-E2
-   DHCP Enabled. . . . . . . . . . . : Yes
-   Autoconfiguration Enabled . . . . : Yes
-   Autoconfiguration IPv4 Address. . : 169.254.108.226(Preferred)
-   Subnet Mask . . . . . . . . . . . : 255.255.0.0
-   Default Gateway . . . . . . . . . : 10.0.0.5
-   NetBIOS over Tcpip. . . . . . . . : Enabled
-
-So yeah.. it failed to obtain an IP with DHCP. 
-I saw some DHCP related fixes in the latest rc versions.. related possibly?
-
-Weird that the OpenVPN gui icon is still green, when obviously the openvpn 
-connection is broken.
-
-
-2) OpenVPN and other nics/connections. I had to change the OpenVPN Windows
-TAP network adapter interface metric to 5 manually, to make it be the
-preferred connection always. Otherwise for example the WLAN took over
-the default gateway sometimes.
-
-Is there some way to specify the interface metric in openvpn
-configuration? 
-
-Thanks!
-
--- Pasi
-
+David Sommerseth wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+> 
+> 
+> If openvpn is interrupted before openvpn_plugin_open_v1() is called,
+> there is no context allocated which openvpn_plugin_abort_v1() can use.
+> 
+> Signed-off-by: David Sommerseth <dazo@...384...>
+> 
+> - ---
+>  plugin/down-root/down-root.c |    2 +-
+>  1 files changed, 1 insertions(+), 1 deletions(-)
+> 
+> diff --git a/plugin/down-root/down-root.c b/plugin/down-root/down-root.c
+> index 5e0c002..77497ad 100644
+> - --- a/plugin/down-root/down-root.c
+> +++ b/plugin/down-root/down-root.c
+> @@ -434,7 +434,7 @@ openvpn_plugin_abort_v1 (openvpn_plugin_handle_t handle)
+>  {
+>    struct down_root_context *context = (struct down_root_context *) handle;
+> 
+> - -  if (context->foreground_fd >= 0)
+> +  if (context && context->foreground_fd >= 0)
+>      {
+>        /* tell background process to exit */
+>        send_control (context->foreground_fd, COMMAND_EXIT);
+> - -- 
+> 1.6.2.5
+> 
+> (patch attached in addition for convenience)
+> -----BEGIN PGP SIGNATURE-----
+> Version: GnuPG v1.4.9 (GNU/Linux)
+> Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+> 
+> iEYEARECAAYFAksfbOUACgkQDC186MBRfrqSgwCeOZPg+70ryTCCyoW8D9QtLmeF
+> pwwAn2pWo9529hvBzlMgj8izabtG9Ioc
+> =o0Ym
+> -----END PGP SIGNATURE-----
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> ------------------------------------------------------------------------------
+> Return on Information:
+> Google Enterprise Search pays you back
+> Get the facts.
+> http://p.sf.net/sfu/google-dev2dev
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
