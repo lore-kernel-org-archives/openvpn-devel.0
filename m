@@ -1,10 +1,10 @@
-Message-ID: <4B229FC2.70907@...41...>
-Date: Fri, 11 Dec 2009 12:38:42 -0700
-From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-References: <4B220E0D.2090908@...41...> <4B2217BD.6070004@...1114...>
-In-Reply-To: <4B2217BD.6070004@...1114...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.1.0 released
+From: Jon Onstott <jononstott@...277...>
+Date: Fri, 11 Dec 2009 15:09:25 -0800
+Message-ID: <411d6d370912111509s7dafa468p80e1e41537a5a976@...278...>
+Content-Type: multipart/alternative; boundary=000e0cd13810ff00a7047a7c04d7
+Subject: [Openvpn-devel] Building the TAP drivers from source and then
+	signing them (possible?)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,67 +13,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Yes -- the changes to the tap-win32 source code is only in the comments 
-and clarifies that the source is licensed under GPL 2.
+--000e0cd13810ff00a7047a7c04d7
+Content-Type: text/plain; charset=ISO-8859-1
 
-James
+Hello,
 
-David Sommerseth wrote:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
-> 
-> On 11/12/09 10:17, James Yonan wrote:
->> I'm happy to announce the release of OpenVPN 2.1.0.  This release is 
->> basically 2.1_rc22 + some last-minute trivial fixes to documentation and 
->> plugin sample code.  Enjoy!
-> 
-> This is indeed good news!  Thank you very much for your hard work!
-> Today, it's only pure joy! :)
-> 
-> However, I just checked the differences between 2.1_rc22 and the final
-> 2.1.0.  And I do see that there are some unexpected files here ...
-> 
-> 	tap-win32/filt.py
-> 	tap-win32/tmp/
-> 	tap-win32/tmp/hexdump.h
-> 	tap-win32/tmp/types.h
-> 	tap-win32/tmp/error.c
-> 	tap-win32/tmp/error.h
-> 	tap-win32/tmp/instance.c
-> 	tap-win32/tmp/tapdrvr.c
-> 	tap-win32/tmp/macinfo.c
-> 	tap-win32/tmp/constants.h
-> 	tap-win32/tmp/endian.h
-> 	tap-win32/tmp/prototypes.h
-> 	tap-win32/tmp/dhcp.h
-> 	tap-win32/tmp/dhcp.c
-> 	tap-win32/tmp/lock.h
-> 	tap-win32/tmp/proto.h
-> 	tap-win32/tmp/hexdump.c
-> 	tap-win32/tmp/macinfo.h
-> 	tap-win32/tmp/common.h
-> 	tap-win32/tmp/mem.c
-> 
-> I believe these files are just leftovers after making the license a pure
-> GPLv2 license.  Is this a correct assumption?
-> 
-> Btw!  Good move on the license!
-> 
-> 
-> kind regards,
-> 
-> David Sommerseth
-> -----BEGIN PGP SIGNATURE-----
-> Version: GnuPG v1.4.9 (GNU/Linux)
-> Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-> 
-> iEYEARECAAYFAksiF70ACgkQDC186MBRfrqEjACeLYEA2zw+tIC8biANywvDtgcj
-> A6oAn2u+LveoFX9+FihPuwBTkj1kbIyG
-> =F0iV
-> -----END PGP SIGNATURE-----
+I am compiling OpenVPN and the TAP driver from source and would like the TAP
+driver to be signed so that it installs correctly on Vista (and doesn't
+pop-up warning dialog boxes).  I noticed that the configure scripts attempt
+to do that if "signtool" is defined.  Is there any way that I could sign the
+TAP driver?
+
+I have thought about using the prebuilt TAP driver (from
+openvpn.net/prebuilt/) but the prebuilt binaries lag behind the current
+version and I need the TAP driver to be the most recent one possible.
+
+Thanks!
+-Jon
+
+-- 
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+Jon Onstott
+Software / Web / Database Engineer
+Email: jononstott@...277...
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+--000e0cd13810ff00a7047a7c04d7
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Hello,<br>
+<br>
+I am compiling OpenVPN and the TAP driver from source and would like the TA=
+P driver
+to be signed so that it installs correctly on Vista (and doesn&#39;t pop-up=
+ warning
+dialog boxes).=A0 I noticed that the configure scripts attempt to do that if
+&quot;signtool&quot; is defined.=A0 Is there any way that I could sign the
+TAP driver?<br>
+<br>
+I have thought about using the prebuilt TAP driver (from <a href=3D"http://=
+openvpn.net/prebuilt/" target=3D"_blank">openvpn.net/prebuilt/</a>) but the=
+ prebuilt
+binaries lag behind the current version and I need the TAP driver to be the=
+ most recent one
+possible.<br>
+<br>
+Thanks!<br>
+-Jon<br clear=3D"all"><br>-- <br>-=3D-=3D-=3D-=3D-=3D-=3D-=3D-=3D-=3D-=3D-=
+=3D-=3D-=3D-=3D-=3D-=3D-=3D-=3D-=3D-=3D-=3D-=3D-<br>Jon Onstott<br>Software=
+ / Web / Database Engineer<br>Email: <a href=3D"mailto:jononstott@...277...=
+">jononstott@...277...</a><br>-=3D-=3D-=3D-=3D-=3D-=3D-=3D-=3D-=3D-=3D-=3D-=
+=3D-=3D-=3D-=3D-=3D-=3D-=3D-=3D-=3D-=3D-=3D-<br>
+
+
+
+--000e0cd13810ff00a7047a7c04d7--
 
