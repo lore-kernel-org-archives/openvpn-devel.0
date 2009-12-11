@@ -1,10 +1,9 @@
-Message-ID: <4B2217BD.6070004@...1114...>
-Date: Fri, 11 Dec 2009 10:58:21 +0100
+Message-ID: <4B221B9C.6090902@...1114...>
+Date: Fri, 11 Dec 2009 11:14:52 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4B220E0D.2090908@...41...>
-In-Reply-To: <4B220E0D.2090908@...41...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.1.0 released
+Subject: [Openvpn-devel] A spammer is member of this mailing list? ... [Fwd:
+	Vacation reply]
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,61 +12,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: James Yonan <jim@...41...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 11/12/09 10:17, James Yonan wrote:
-> I'm happy to announce the release of OpenVPN 2.1.0.  This release is 
-> basically 2.1_rc22 + some last-minute trivial fixes to documentation and 
-> plugin sample code.  Enjoy!
 
-This is indeed good news!  Thank you very much for your hard work!
-Today, it's only pure joy! :)
-
-However, I just checked the differences between 2.1_rc22 and the final
-2.1.0.  And I do see that there are some unexpected files here ...
-
-	tap-win32/filt.py
-	tap-win32/tmp/
-	tap-win32/tmp/hexdump.h
-	tap-win32/tmp/types.h
-	tap-win32/tmp/error.c
-	tap-win32/tmp/error.h
-	tap-win32/tmp/instance.c
-	tap-win32/tmp/tapdrvr.c
-	tap-win32/tmp/macinfo.c
-	tap-win32/tmp/constants.h
-	tap-win32/tmp/endian.h
-	tap-win32/tmp/prototypes.h
-	tap-win32/tmp/dhcp.h
-	tap-win32/tmp/dhcp.c
-	tap-win32/tmp/lock.h
-	tap-win32/tmp/proto.h
-	tap-win32/tmp/hexdump.c
-	tap-win32/tmp/macinfo.h
-	tap-win32/tmp/common.h
-	tap-win32/tmp/mem.c
-
-I believe these files are just leftovers after making the license a pure
-GPLv2 license.  Is this a correct assumption?
-
-Btw!  Good move on the license!
+Could someone with list admin please remove this e-mail address from the
+mailing-list?  Every time I mail to the -devel list, I get this spam in
+reply.  Might be something similar to the -users list as well
 
 
 kind regards,
 
 David Sommerseth
+
+
+
+- -------- Original Message --------
+Subject: 	Vacation reply
+Date: 	Fri, 11 Dec 2009 02:00:55 -0800
+From: 	<sabersultan616@...160...>
+To: 	openvpn.list@...1114...
+
+
+
+Hey，
+how are you doing recently?
+I would like to introduce you a very good company and its website is
+www.shuenwoyi.com <http://www.shuenwoyi.com> It can offer you all kinds
+of electronic products that you may be in need,such as laptops ,gps ,TV
+LCD,cell  phones,ps3,MP3/4,motorcycles and etc........
+You can take some time to have a check ,there must be something
+interesting you 'd like to  purchase .
+The contact Email:  shuenwoyi@...1267... <mailto:shuenwoyi@...1267...>
+MSN:   shuenwoyi02@...160... <mailto:shuenwoyi02@...160...>
+Hope you can enjoy yourself in shopping from that company !
+Regards
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.9 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAksiF70ACgkQDC186MBRfrqEjACeLYEA2zw+tIC8biANywvDtgcj
-A6oAn2u+LveoFX9+FihPuwBTkj1kbIyG
-=F0iV
+iEYEARECAAYFAksiG5kACgkQDC186MBRfrprkACdGk7cqgbD74qO2XaJ4jdUKwTR
+IgsAn28VTXI2GCv0Xc0IAuDE5KN4BckU
+=YdVj
 -----END PGP SIGNATURE-----
 
