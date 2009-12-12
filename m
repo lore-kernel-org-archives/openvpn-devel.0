@@ -1,11 +1,11 @@
-Message-ID: <4B23DCE2.20607@...1114...>
-Date: Sat, 12 Dec 2009 19:11:46 +0100
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <4B23ECC3.8090904@...41...>
+Date: Sat, 12 Dec 2009 12:19:31 -0700
+From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-References: <1260552743.31755.0@...1207...> <4B237608.6030109@...515...>
-In-Reply-To: <4B237608.6030109@...515...>
-Subject: Re: [Openvpn-devel] OpenVPN project organization [WAS: Introducing
- OpenVPN Community Manager]
+References: <1256844344.7529.43.camel@...1272...>	<200911122028.07536.dave_br@...1278...>
+	<4B21CC61.2020401@...41...> <200912121131.20556.dave_br@...1278...>
+In-Reply-To: <200912121131.20556.dave_br@...1278...>
+Subject: Re: [Openvpn-devel] 2.1 rc20 and multiple interfaces problem
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,106 +14,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Davide Brini <dave_br@...1278...>
+Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Davide Brini wrote:
+> On Friday 11 December 2009, James Yonan wrote:
+> 
+>> Try adding the "nobind" directive to your client config file.  I think
+>> this will solve the problem.
+> 
+> That seems indeed to do it. Thank you very much!
+> 
+> However, never in my life could I have imagined that this was due to a setting 
+> *on the client*. For single-homed clients, my (possibly wrong) understanding 
+> was that using or not using "nobind" would essentially be the same. 
+> Since now I'm curious, could you please kindly provide a bit more insight as 
+> to *why* using "nobind" on the client fixes it, and how that affects the 
+> server?
 
-On 12/12/09 11:52, Samuli Sepp=E4nen wrote:
->> FWIW using a good (rather than merely adequate) revision control
->> system makes it much easier to keep the very latest code
->> on-line and still perform regression tests, keep separate
->> code branches for feature development, and so forth.
->>  =20
-> Any suggestion which VCS would do the best job?
->=20
+Using nobind on the client for UDP client connections generates a socket 
+with a dynamic source port number.  This is key because it means that 
+when the client reconnects, it does so with a new source port number, 
+and this allows OpenVPN to detect that the initial UDP packet represents 
+a new connection, and is not part of the old connection.
 
-Then I'll throw in my burning piece of wood to fire ;-) ... Well,
-discussing VCS'es is a really tricky thing, and sometimes can become
-more a religious war than a technical war.  Especially VCS discussions
-seems often to hit the nerve of emotions.  Just to make that clear, I do
-not want to contribute to a "religious" war, but purely look at the
-technical point of view.  But it is based on my experiences, and I
-admit, I have not tried all solutions.  I have strong opinions, but I
-don't mean to attack anyone with them.
+The problem is that when nobind is not used, the source port on the new 
+connection is recycled -- it's the same as the old connection.  So when 
+OpenVPN sees the connection-initiating packet, after the client switches 
+over to the secondary server address, it gets confused because it 
+doesn't expect sessions from a given source address to change its 
+destination address mid-session.
 
-My experiences is mostly based on CVS, SVN and git.  Even though, I have
-barely touched Mercurial/hg.  And I'm not going to discuss CVS, as
-that's not a good solution at all, IMHO.  In addition, it's centralised,
-not distributed.
+James
 
-I've been following the Apache Qpid project somewhat for sometime
-earlier.  At that time it was based on SVN, and to be honest, it was a
-nightmare to work with.  To get the commit log, it took over 10-15
-seconds or so.  To pull down the complete tree took over 30 minutes,
-with a very decent connection (8Mbit++).  I believe the reason is that
-it was over 65.000 commits in the tree.  Branching is also somewhat
-cumbersome, even though it do work.
-
-Then I've been working with the Linux kernel.  A git repository which is
-getting close to 7-800MB (haven't checked in a while), it contains
-several years of commit history (it goes back to the 2.6.13 kernel or
-so, iirc).  And it takes milliseconds to look into the commit log.
-Cloning the kernel is done in 10-15 minutes tops, on the same connection
-as Qpid via SVN.  Everyone can create their own branches (in
-milliseconds), and can easily provide patches suitable for mailing.  In
-fact, you can send the patches via mail directly if you configure things
-correctly.  You can use multiple remote repositories which you can
-track, and you merge in the remote branches how you like yourself.
-
-What that means:  Everyone will pull at least one public git tree, which
-James "ownes".  Then James will have his "inner circle" with, f.ex.
-three persons.  Each of these three persons have their own public git
-trees, at least public to James.  These persons retrieve patches for
-review either via mail, patch files or other remote trees.  They will
-merge in changes into their own trees and publish their tree.  James
-will then only need to pull these three trees and merge them, whichever
-way James likes.  And when James is happy, he pushes his tree out.  Now,
-the good thing - if this is done right, people who committed changes to
-their own local trees, and git their trees pulled somehow by someone
-else closer to James, they can pull James' tree and merge it, without
-have no conflicts.  In fact, they might even find their commit ID's
-staying the same (depending on how patch was merged in on the way to
-James' tree).
-
-
-And git *is* pretty *easy* to get started with /nowadays/ (it's many
-years since it was difficult to use and more "kernel oriented").  Coming
-from the world of CVS and SVN, it took me 2-3 hours to de-learn CVS/SVN
-and 30 minutes to learn the basic git stuff.  And now, I can hardly
-imagine anything else.  I even use it for non-source code stuff too now,
-whenever I need to track some changes, and it takes me less than 10
-seconds to get it ready for it (really!).
-
-A very good resource for learning git, is a book called "Pro Git" ...
-<http://progit.org/book/>.  A video of Linus explaining his thoughts
-behind git, can be viewed here: <http://www.youtube.com/watch?v=3D4XpnKHJAo=
-k8>
-
-
-But if SVN is preferred by OpenVPN, I'll most probably make use of
-git-svn, which is a SVN client for git.  It at least speeds up things
-for me, even though there are some awkward things with this, trying to
-make git stuff out of SVN, as that's not always easy due to the very
-different way of VCS designs ... but it do work somehow, and when the
-cloning is done - it is very fast again.
-
-So for me, git is among the greatest VCS' and, IMO, superior to SVN ...
-and I would therefore recommend git.  But it's not the only solution.
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.9 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAksj3OAACgkQDC186MBRfrqZxQCePKq0pY08mFPO3P06iTBsNGiM
-AT8An02285FHVtdgy8+hB/ey/yRk4/KL
-=3DT/mx
------END PGP SIGNATURE-----
 
