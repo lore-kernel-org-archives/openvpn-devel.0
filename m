@@ -1,11 +1,11 @@
-Message-ID: <4B240A82.6030502@...1114...>
-Date: Sat, 12 Dec 2009 22:26:26 +0100
-From: David Sommerseth <openvpn.list@...1114...>
+From: Davide Brini <dave_br@...1278...>
+Date: Sat, 12 Dec 2009 23:09:45 +0000
+References: <1256844344.7529.43.camel@...1272...>
+	<200912121131.20556.dave_br@...1278...> <4B23ECC3.8090904@...41...>
+In-Reply-To: <4B23ECC3.8090904@...41...>
 MIME-Version: 1.0
-References: <1260552743.31755.0@...1207...> <4B22D2C8.5020703@...41...>
-In-Reply-To: <4B22D2C8.5020703@...41...>
-Subject: Re: [Openvpn-devel] OpenVPN project organization [WAS: Introducing
- OpenVPN Community Manager]
+Message-Id: <200912122309.45512.dave_br@...1278...>
+Subject: Re: [Openvpn-devel] 2.1 rc20 and multiple interfaces problem
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,43 +14,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-To: James Yonan <jim@...41...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+On Saturday 12 December 2009, James Yonan wrote:
 
-On 12/12/09 00:16, James Yonan wrote:
->> 
->> However, it _could_ be a requirement that all patches be submitted
->> with documentation.  If not, I can't see how you'd want to
->> include any functional changes without also having documentation
->> so somebody else would have to be gotten to document the patch.
->> This is obviously up to whomever reviews the patches.
->> 
+> Using nobind on the client for UDP client connections generates a socket
+> with a dynamic source port number.  This is key because it means that
+> when the client reconnects, it does so with a new source port number,
+> and this allows OpenVPN to detect that the initial UDP packet represents
+> a new connection, and is not part of the old connection.
+> 
+> The problem is that when nobind is not used, the source port on the new
+> connection is recycled -- it's the same as the old connection.  So when
+> OpenVPN sees the connection-initiating packet, after the client switches
+> over to the secondary server address, it gets confused because it
+> doesn't expect sessions from a given source address to change its
+> destination address mid-session.
 
-I would strongly recommend good commit comments from the persons
-providing patches.  This should contain a description of what is changed
-and why.  If the change is complex, it should also describe how the
-patch fixes the issue.  On smaller or simpler patcher, this might
-usually be enough.  But on bigger changes, especially with more code
-being added to OpenVPN, the code itself should also have good and
-descriptive comments as well.  What is obvious for the developer writing
-the patch in that moment, might not be so obvious for a different
-developer a few years later on.
+Quite subtle, but makes sense indeed. 
+If I can make a suggestion, I'd add a note in the documentation about this 
+particular interaction between the use of "multihome" on the server and not 
+using "nobind" on the client (though it should be rare to see clients without 
+"nobind", agreed), so other people won't be puzzled as I was when trying to 
+debug it.
 
+Thanks again!
 
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.9 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkskCncACgkQDC186MBRfrr13wCghI5YuFCy3ihi7akjxm/1k4wi
-QzgAoJgRMSizsfvhw76TKBCI6PI6/M/q
-=DOcZ
------END PGP SIGNATURE-----
+-- 
+D.
 
