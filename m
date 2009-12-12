@@ -1,11 +1,12 @@
-Message-ID: <4B23ECC3.8090904@...41...>
-Date: Sat, 12 Dec 2009 12:19:31 -0700
-From: James Yonan <jim@...41...>
+Message-ID: <4B2407CE.6070301@...1114...>
+Date: Sat, 12 Dec 2009 22:14:54 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1256844344.7529.43.camel@...1272...>	<200911122028.07536.dave_br@...1278...>
-	<4B21CC61.2020401@...41...> <200912121131.20556.dave_br@...1278...>
-In-Reply-To: <200912121131.20556.dave_br@...1278...>
-Subject: Re: [Openvpn-devel] 2.1 rc20 and multiple interfaces problem
+References: <1260552743.31755.0@...1207...>
+	<4B22D2C8.5020703@...41...>	<jwv8wd8g722.fsf-monnier+inbox@...1269...>
+	<4B23808D.40907@...515...>
+In-Reply-To: <4B23808D.40907@...515...>
+Subject: Re: [Openvpn-devel] OpenVPN project organization
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,39 +15,135 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Davide Brini <dave_br@...1278...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Davide Brini wrote:
-> On Friday 11 December 2009, James Yonan wrote:
-> 
->> Try adding the "nobind" directive to your client config file.  I think
->> this will solve the problem.
-> 
-> That seems indeed to do it. Thank you very much!
-> 
-> However, never in my life could I have imagined that this was due to a setting 
-> *on the client*. For single-homed clients, my (possibly wrong) understanding 
-> was that using or not using "nobind" would essentially be the same. 
-> Since now I'm curious, could you please kindly provide a bit more insight as 
-> to *why* using "nobind" on the client fixes it, and how that affects the 
-> server?
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Using nobind on the client for UDP client connections generates a socket 
-with a dynamic source port number.  This is key because it means that 
-when the client reconnects, it does so with a new source port number, 
-and this allows OpenVPN to detect that the initial UDP packet represents 
-a new connection, and is not part of the old connection.
+On 12/12/09 12:37, Samuli Sepp=E4nen wrote:
+> Now, if we want to maintain stability, we need some way to test the
+> patches. Automated tests could be used in many cases but building the
+> test cases takes time. In addition I don't think automated tests catch
+> nearly all problems, so manual testing is required. I'm not a specialist
+> in VCS systems but I guess a distributed VCS could help in this. What
+> are your thoughts on the testing procedures/tools? Fedora's Beaker suite
+> was mentioned earlier and it sounds interesting.
 
-The problem is that when nobind is not used, the source port on the new 
-connection is recycled -- it's the same as the old connection.  So when 
-OpenVPN sees the connection-initiating packet, after the client switches 
-over to the secondary server address, it gets confused because it 
-doesn't expect sessions from a given source address to change its 
-destination address mid-session.
+Let's first give a little introduction of Beaker, so that nobody
+believes it is something exceptionally which solves all the problems.
 
-James
+First of all Beaker is being built up now, it is quite a big project
+consisting of a lot of modules which will communicate together.  I'm not
+sure how far things are in the overall project, but I'll give a little
+intro here about the concept.  Otherwise, beware that crucial modules of
+Beaker might not be ready yet.
 
+A Beaker installation is a big installation.  It is aimed at
+automatically testing software on a broad variety of distributions and
+provide a report of how that test ran.  And you will most probably need
+quite some hardware to get this up and running.
+
+First, Beaker have an inventory module.  Here hosts are registered into
+a database with information about hardware and supported OS and
+distributions.  Then there is a scheduler, which receives requests for
+running particular tests (aka jobs).  The job scheduler then uses the
+inventory to pick out the best suited boxes which are available to run
+the test(s) on.  The inventory is then instructed by the job scheduler
+to do a scratch installation of an assigned OS/distribution.  As a part
+of this OS installation, it will install the defined test scripts on the
+box, run all the tests, collect the results and release the box back to
+the inventory again.
+
+I know the inventory part is pretty much up'n'running, and I believe the
+job scheduler is getting more and more ready.  (It's a while since I
+checked that status) ... so this needs to be checked out.  But as you
+see, some hardware is needed, even though I believe Beaker do (or at
+least will in the future) support virtual hosts as well.  Then the test
+script given to the job scheduler will define who each of the virtual
+hosts will be installed as well.
+
+The good thing about the Beaker framework is that you usually just need
+to install a few packages on your own local box to develop and run the
+test scripts locally.  When the script is ready, it's packaged and sent
+to the tests repository in Beaker.  So it is also possible to run Beaker
+in a very small scale for test development.
+
+You can also browse the test repository via web, and ask for certain
+tests to be run.  The test script defines which packages is needed to
+run the test, and the software being tested needs to be put into a
+special repository, where the script will download and install the
+package, as a part of the test run.
+
+There's also features like multi-host tests, where more hosts are
+involved to run one single test, to test communication between hosts,
+etc.  So this is the direction Beaker is headed.
+
+
+So, back to the topic ... some of these things might already have been
+thought of by the QA team and might even be implemented.  But as I don't
+know how the OpenVPN team does the QA work, I'll share my thoughts here
+... how I see the "perfect" world :)
+
+Anyhow, you can use such an infrastructure as Beaker to test patches, as
+you vaguely indicated, Samuli.  But Beaker is usually much more suitable
+for testing an already compiled and packaged piece of software before
+shipment.  But of course, it's all scripts, and it can also download
+source code and compile it too.  But I'm not sure how well it will
+perform under these conditions, it might be better with another approach.
+
+However, I would recommend a setup which only a few of the developers
+James will cooperate closely with, including James, will have access to.
+ This setup will do a build of the source code at a given commit, and
+run a standard test suite, aimed at the first stage of the development
+cycle.  This should test for compilation issues (including warnings) and
+report them to the developers.  It should run openvpn in a few different
+modes, with different options to test generic functionality.  It might
+support different test modes, so that the test script will take between
+5 minutes and 30 minutes, it might even be a few different tests with
+different run times.  This is only aimed at giving a quick indication on
+how well the code is running.
+
+Then when much more commits have been collected, a preliminary package
+can be compiled and sent to a Beaker setup.  The tests here can be much
+more comprehensive, and ideally should test all options and
+configuration modes of OpenVPN.  One test should also be a performance
+tests, which reports the results to a database for tracking the
+performance.  That way, you'll be able to pin-point regressions over
+time.  These Beaker tests may take many hours to run.  But with the
+tracking, you'll get a good overview over what fails and what works, and
+how well it works.
+
+Even though it should be a restricted access to the job scheduler for
+the tests, the reports from it should be available to the community.
+This way developers in the community can follow how the testing is done
+and give feedback if something is wrong with the tests or OpenVPN.  In
+addition, if the test scripts are available for the community, it can
+help out improving and providing new test scripts.  With such an open
+approach, the community will also be involved in the QA work.
+
+
+But I do realise, such a setup is not too easy to acquire.  It requires
+hardware, and a lot of work to come this far.  But I do believe this is
+one (of many) reasonable ways to automate tests and to make sure OpenVPN
+will continue to stay as a stable product.  And in the long run, it
+might help reducing the workload key-persons in the OpenVPN team may have.
+
+
+That's probably enough thoughts for today :)
+
+
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAkskB8sACgkQDC186MBRfrq7QgCfaTLJ8gyT2f4AY0CibA3Ddhyx
+9oAAnRPrqXWEMTpNQeHAd9jwrPXgm1By
+=3DIZ3w
+-----END PGP SIGNATURE-----
 
