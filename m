@@ -1,12 +1,12 @@
-Message-ID: <4B2634F2.6020405@...515...>
-Date: Mon, 14 Dec 2009 14:52:02 +0200
+Message-ID: <4B263634.3050000@...515...>
+Date: Mon, 14 Dec 2009 14:57:24 +0200
 From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <1260552743.31755.0@...1207...>
-	<4B22D2C8.5020703@...41...>	<jwv8wd8g722.fsf-monnier+inbox@...1269...>
-	<4B23808D.40907@...515...> <4B2407CE.6070301@...1114...>
-In-Reply-To: <4B2407CE.6070301@...1114...>
-Subject: Re: [Openvpn-devel] OpenVPN project organization
+References: <1260552743.31755.0@...1207...> <4B237608.6030109@...515...>
+	<4B23DCE2.20607@...1114...>
+In-Reply-To: <4B23DCE2.20607@...1114...>
+Subject: Re: [Openvpn-devel] OpenVPN project organization [WAS: Introducing
+ OpenVPN Community Manager]
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,129 +20,96 @@ Content-Transfer-Encoding: quoted-printable
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 David Sommerseth ha scritto:
-> On 12/12/09 12:37, Samuli Sepp=E4nen wrote:
-> > Now, if we want to maintain stability, we need some way to test the
-> > patches. Automated tests could be used in many cases but building the
-> > test cases takes time. In addition I don't think automated tests catch
-> > nearly all problems, so manual testing is required. I'm not a specialist
-> > in VCS systems but I guess a distributed VCS could help in this. What
-> > are your thoughts on the testing procedures/tools? Fedora's Beaker suite
-> > was mentioned earlier and it sounds interesting.
->
-> Let's first give a little introduction of Beaker, so that nobody
-> believes it is something exceptionally which solves all the problems.
->
-> First of all Beaker is being built up now, it is quite a big project
-> consisting of a lot of modules which will communicate together.  I'm not
-> sure how far things are in the overall project, but I'll give a little
-> intro here about the concept.  Otherwise, beware that crucial modules of
-> Beaker might not be ready yet.
->
-> A Beaker installation is a big installation.  It is aimed at
-> automatically testing software on a broad variety of distributions and
-> provide a report of how that test ran.  And you will most probably need
-> quite some hardware to get this up and running.
->
-> First, Beaker have an inventory module.  Here hosts are registered into
-> a database with information about hardware and supported OS and
-> distributions.  Then there is a scheduler, which receives requests for
-> running particular tests (aka jobs).  The job scheduler then uses the
-> inventory to pick out the best suited boxes which are available to run
-> the test(s) on.  The inventory is then instructed by the job scheduler
-> to do a scratch installation of an assigned OS/distribution.  As a part
-> of this OS installation, it will install the defined test scripts on the
-> box, run all the tests, collect the results and release the box back to
-> the inventory again.
->
-> I know the inventory part is pretty much up'n'running, and I believe the
-> job scheduler is getting more and more ready.  (It's a while since I
-> checked that status) ... so this needs to be checked out.  But as you
-> see, some hardware is needed, even though I believe Beaker do (or at
-> least will in the future) support virtual hosts as well.  Then the test
-> script given to the job scheduler will define who each of the virtual
-> hosts will be installed as well.
->
-> The good thing about the Beaker framework is that you usually just need
-> to install a few packages on your own local box to develop and run the
-> test scripts locally.  When the script is ready, it's packaged and sent
-> to the tests repository in Beaker.  So it is also possible to run Beaker
-> in a very small scale for test development.
->
-> You can also browse the test repository via web, and ask for certain
-> tests to be run.  The test script defines which packages is needed to
-> run the test, and the software being tested needs to be put into a
-> special repository, where the script will download and install the
-> package, as a part of the test run.
->
-> There's also features like multi-host tests, where more hosts are
-> involved to run one single test, to test communication between hosts,
-> etc.  So this is the direction Beaker is headed.
+> On 12/12/09 11:52, Samuli Sepp=E4nen wrote:
+> >> FWIW using a good (rather than merely adequate) revision control
+> >> system makes it much easier to keep the very latest code
+> >> on-line and still perform regression tests, keep separate
+> >> code branches for feature development, and so forth.
+> >>=20=20=20
+> > Any suggestion which VCS would do the best job?
 >
 >
-> So, back to the topic ... some of these things might already have been
-> thought of by the QA team and might even be implemented.  But as I don't
-> know how the OpenVPN team does the QA work, I'll share my thoughts here
-> ... how I see the "perfect" world :)
+> Then I'll throw in my burning piece of wood to fire ;-) ... Well,
+> discussing VCS'es is a really tricky thing, and sometimes can become
+> more a religious war than a technical war.  Especially VCS discussions
+> seems often to hit the nerve of emotions.  Just to make that clear, I do
+> not want to contribute to a "religious" war, but purely look at the
+> technical point of view.  But it is based on my experiences, and I
+> admit, I have not tried all solutions.  I have strong opinions, but I
+> don't mean to attack anyone with them.
 >
-> Anyhow, you can use such an infrastructure as Beaker to test patches, as
-> you vaguely indicated, Samuli.  But Beaker is usually much more suitable
-> for testing an already compiled and packaged piece of software before
-> shipment.  But of course, it's all scripts, and it can also download
-> source code and compile it too.  But I'm not sure how well it will
-> perform under these conditions, it might be better with another approach.
+> My experiences is mostly based on CVS, SVN and git.  Even though, I have
+> barely touched Mercurial/hg.  And I'm not going to discuss CVS, as
+> that's not a good solution at all, IMHO.  In addition, it's centralised,
+> not distributed.
 >
-> However, I would recommend a setup which only a few of the developers
-> James will cooperate closely with, including James, will have access to.
->  This setup will do a build of the source code at a given commit, and
-> run a standard test suite, aimed at the first stage of the development
-> cycle.  This should test for compilation issues (including warnings) and
-> report them to the developers.  It should run openvpn in a few different
-> modes, with different options to test generic functionality.  It might
-> support different test modes, so that the test script will take between
-> 5 minutes and 30 minutes, it might even be a few different tests with
-> different run times.  This is only aimed at giving a quick indication on
-> how well the code is running.
+> I've been following the Apache Qpid project somewhat for sometime
+> earlier.  At that time it was based on SVN, and to be honest, it was a
+> nightmare to work with.  To get the commit log, it took over 10-15
+> seconds or so.  To pull down the complete tree took over 30 minutes,
+> with a very decent connection (8Mbit++).  I believe the reason is that
+> it was over 65.000 commits in the tree.  Branching is also somewhat
+> cumbersome, even though it do work.
 >
-> Then when much more commits have been collected, a preliminary package
-> can be compiled and sent to a Beaker setup.  The tests here can be much
-> more comprehensive, and ideally should test all options and
-> configuration modes of OpenVPN.  One test should also be a performance
-> tests, which reports the results to a database for tracking the
-> performance.  That way, you'll be able to pin-point regressions over
-> time.  These Beaker tests may take many hours to run.  But with the
-> tracking, you'll get a good overview over what fails and what works, and
-> how well it works.
+> Then I've been working with the Linux kernel.  A git repository which is
+> getting close to 7-800MB (haven't checked in a while), it contains
+> several years of commit history (it goes back to the 2.6.13 kernel or
+> so, iirc).  And it takes milliseconds to look into the commit log.
+> Cloning the kernel is done in 10-15 minutes tops, on the same connection
+> as Qpid via SVN.  Everyone can create their own branches (in
+> milliseconds), and can easily provide patches suitable for mailing.  In
+> fact, you can send the patches via mail directly if you configure things
+> correctly.  You can use multiple remote repositories which you can
+> track, and you merge in the remote branches how you like yourself.
 >
-> Even though it should be a restricted access to the job scheduler for
-> the tests, the reports from it should be available to the community.
-> This way developers in the community can follow how the testing is done
-> and give feedback if something is wrong with the tests or OpenVPN.  In
-> addition, if the test scripts are available for the community, it can
-> help out improving and providing new test scripts.  With such an open
-> approach, the community will also be involved in the QA work.
->
->
-> But I do realise, such a setup is not too easy to acquire.  It requires
-> hardware, and a lot of work to come this far.  But I do believe this is
-> one (of many) reasonable ways to automate tests and to make sure OpenVPN
-> will continue to stay as a stable product.  And in the long run, it
-> might help reducing the workload key-persons in the OpenVPN team may have.
+> What that means:  Everyone will pull at least one public git tree, which
+> James "ownes".  Then James will have his "inner circle" with, f.ex.
+> three persons.  Each of these three persons have their own public git
+> trees, at least public to James.  These persons retrieve patches for
+> review either via mail, patch files or other remote trees.  They will
+> merge in changes into their own trees and publish their tree.  James
+> will then only need to pull these three trees and merge them, whichever
+> way James likes.  And when James is happy, he pushes his tree out.  Now,
+> the good thing - if this is done right, people who committed changes to
+> their own local trees, and git their trees pulled somehow by someone
+> else closer to James, they can pull James' tree and merge it, without
+> have no conflicts.  In fact, they might even find their commit ID's
+> staying the same (depending on how patch was merged in on the way to
+> James' tree).
 >
 >
-> That's probably enough thoughts for today :)
+> And git *is* pretty *easy* to get started with /nowadays/ (it's many
+> years since it was difficult to use and more "kernel oriented").  Coming
+> from the world of CVS and SVN, it took me 2-3 hours to de-learn CVS/SVN
+> and 30 minutes to learn the basic git stuff.  And now, I can hardly
+> imagine anything else.  I even use it for non-source code stuff too now,
+> whenever I need to track some changes, and it takes me less than 10
+> seconds to get it ready for it (really!).
+>
+> A very good resource for learning git, is a book called "Pro Git" ...
+> <http://progit.org/book/>.  A video of Linus explaining his thoughts
+> behind git, can be viewed here:
+> <http://www.youtube.com/watch?v=3D4XpnKHJAok8>
+>
+>
+> But if SVN is preferred by OpenVPN, I'll most probably make use of
+> git-svn, which is a SVN client for git.  It at least speeds up things
+> for me, even though there are some awkward things with this, trying to
+> make git stuff out of SVN, as that's not always easy due to the very
+> different way of VCS designs ... but it do work somehow, and when the
+> cloning is done - it is very fast again.
+>
+> So for me, git is among the greatest VCS' and, IMO, superior to SVN ...
+> and I would therefore recommend git.  But it's not the only solution.
 >
 >
 > kind regards,
 >
 > David Sommerseth
-I can't see any reason why the test scripts should be secret. So better
-have them in the open. Do you think it'd be possible to have a
-distributed network of hosts in the inventory? I'm sure there are tons
-of people with extra server resources who could contribute by providing
-test hosts. Or is the technology dependent on hosts being in the same
-physical LAN? If not, we could use, say, IPSec to connect the boxes
-safely together (just kidding :)... OpenVPN makes more sense in our
-context).
+Any objections to GIT? If not, we should consider using that as our
+primary future VCS. That is, when we can agree upon a new development
+model that benefits from using it. I definitely need to delearn my SVN
+skills, too, and start digging into GIT.
 
 --=20
 Samuli Sepp=E4nen
