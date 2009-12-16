@@ -1,11 +1,11 @@
-Message-ID: <4B2637E7.2020307@...1114...>
-Date: Mon, 14 Dec 2009 14:04:39 +0100
-From: David Sommerseth <openvpn.list@...1114...>
+Date: Wed, 16 Dec 2009 10:48:30 +0200
+From: Pasi =?iso-8859-1?Q?K=E4rkk=E4inen?= <pasik@...124...>
+Message-ID: <20091216084830.GY16033@...1281...>
+References: <20091210121501.GN16033@...1281...>
 MIME-Version: 1.0
-References: <1260552743.31755.0@...1207...>	<4B22D2C8.5020703@...41...>	<jwv8wd8g722.fsf-monnier+inbox@...1269...>	<4B23808D.40907@...515...>
-	<4B2407CE.6070301@...1114...> <4B2634F2.6020405@...515...>
-In-Reply-To: <4B2634F2.6020405@...515...>
-Subject: Re: [Openvpn-devel] OpenVPN project organization
+In-Reply-To: <20091210121501.GN16033@...1281...>
+Subject: Re: [Openvpn-devel] OpenVPN default gateway problems on Windows
+	after resume from hibernation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,51 +14,119 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+On Thu, Dec 10, 2009 at 02:15:01PM +0200, Pasi K=E4rkk=E4inen wrote:
+> Hello,
+>=20
+> I'm having some problems with OpenVPN (2.1rc20) on Windows Vista.=20
+> Yeah I know, vista is crap, but I had to play with it a bit.
+>=20
 
-On 14/12/09 13:52, Samuli Seppänen wrote:
-> I can't see any reason why the test scripts should be secret. So better
-> have them in the open. 
-
-I completely agree!  That's the very best approach!
-
-> Do you think it'd be possible to have a
-> distributed network of hosts in the inventory? I'm sure there are tons
-> of people with extra server resources who could contribute by providing
-> test hosts. Or is the technology dependent on hosts being in the same
-> physical LAN? If not, we could use, say, IPSec to connect the boxes
-> safely together (just kidding :)... OpenVPN makes more sense in our
-> context).
-
-That's a very good question, actually :)  I don't believe it's needed
-for these boxes to be on the same network at all.  But it will be some
-communication between the scheduler, inventory and the test boxes.
-Each local site might need to have a local inventory, I'm not sure how
-that really works.
-
-Anyway it must exist some kind of serial port console which is
-accessible over the network somehow as well.  But I believe the IPMI SOL
-access can be used in most cases, for the hardware which supports that
-... Remember that the box is scratch installed on each test run, to
-provide a predictable testing environment.
+I upgraded to OpenVPN 2.1.1 and the problem still happens..
 
 
-kind regards,
+> I've seen a couple of different problems:
+>=20
+> 1) I start the openvpn connection, and it works OK. Default gateway is
+> through the openvpn connection. Then I suspend (hibernate) the laptop,
+> and after a while when I resume from hibernation, openvpn re-connects the=
+ vpn
+> successfully (openvpn gui icon goes green), but sometimes the default gat=
+eway=20
+> is wrong, making the connection non-functional.
+>=20
+> OpenVPN related parts of "route print" when the openvpn connection works =
+properly:
+>=20
+> IPv4 Route Table
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D
+> Active Routes:
+> Network Destination        Netmask          Gateway       Interface  Metr=
+ic
+>           0.0.0.0          0.0.0.0        10.0.0.5        10.0.0.6      5
+>           10.0.0.1  255.255.255.255       10.0.0.5	  10.0.0.6      5
+>=20
+> Default route points to the OpenVPN interface correctly and the connectio=
+ns works OK.
+>=20
+> Now, after hibernate+resume, _sometimes_ (not always) the routing table
+> looks like this, and the connection doesn't work:
+>=20
+> IPv4 Route Table
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D
+> Active Routes:
+> Network Destination        Netmask          Gateway       Interface  Metr=
+ic
+>           0.0.0.0          0.0.0.0        10.0.0.5               18      5
+>           10.0.0.1  255.255.255.255       10.0.0.5               18      5
+>=20
+> Which is a bit weird.. Interface is just a number? anyway, the next varia=
+tion=20
+> happens more often:
+>=20
+> IPv4 Route Table
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D
+> Active Routes:
+> Network Destination        Netmask          Gateway       Interface  Metr=
+ic
+>           0.0.0.0          0.0.0.0        10.0.0.5  169.254.108.226      5
+>           10.0.0.1  255.255.255.255       10.0.0.5  169.254.108.226      5
+>=20
+>=20
+> So that looks like it fails to get an IP with DHCP.=20
+> "ipconfig /all" show this:
+>=20
+> Ethernet adapter Local Area Connection 3:
+>=20
+>    Connection-specific DNS Suffix  . :
+>    Description . . . . . . . . . . . : TAP-Win32 Adapter V9
+>    Physical Address. . . . . . . . . : 00-FF-82-51-06-E2
+>    DHCP Enabled. . . . . . . . . . . : Yes
+>    Autoconfiguration Enabled . . . . : Yes
+>    Autoconfiguration IPv4 Address. . : 169.254.108.226(Preferred)
+>    Subnet Mask . . . . . . . . . . . : 255.255.0.0
+>    Default Gateway . . . . . . . . . : 10.0.0.5
+>    NetBIOS over Tcpip. . . . . . . . : Enabled
+>=20
+> So yeah.. it failed to obtain an IP with DHCP.=20
+> I saw some DHCP related fixes in the latest rc versions.. related possibl=
+y?
+>
 
-David Sommerseth
+So it was not this, since I have the same problems with version 2.1.1.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.9 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+-- Pasi
 
-iEYEARECAAYFAksmN+QACgkQDC186MBRfrqbuQCgrS0L2vRxvjW/sEASuB7d1ak4
-Pw4AoJAghuewPSgI5UIUzsTmANzUnonT
-=/EGN
------END PGP SIGNATURE-----
+> Weird that the OpenVPN gui icon is still green, when obviously the openvp=
+n=20
+> connection is broken.
+>=20
+>=20
+> 2) OpenVPN and other nics/connections. I had to change the OpenVPN Windows
+> TAP network adapter interface metric to 5 manually, to make it be the
+> preferred connection always. Otherwise for example the WLAN took over
+> the default gateway sometimes.
+>=20
+> Is there some way to specify the interface metric in openvpn
+> configuration?=20
+>=20
+> Thanks!
+>=20
+> -- Pasi
+>=20
+>=20
+
 
