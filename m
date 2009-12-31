@@ -1,12 +1,8 @@
-Content-class: urn:content-classes:message
+Message-ID: <4B3CACF4.9010602@...515...>
+Date: Thu, 31 Dec 2009 15:53:56 +0200
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Date: Sat, 26 Dec 2009 19:25:20 -0600
-Message-ID: <846C5B546E47494CBBD796CA8CA1617EA3BD3D@...1285...>
-In-Reply-To: <846C5B546E47494CBBD796CA8CA1617EA3BD3B@...1285...>
-References: <846C5B546E47494CBBD796CA8CA1617EA3BD3B@...1285...>
-From: "Neulinger, Nathan" <nneul@...1284...>
-Subject: Re: [Openvpn-devel] Inability of openvpn to detect partial failure
-	ofUDP link
+Subject: [Openvpn-devel] Community site requirements
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,93 +11,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@...350...
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
 
-I suppose I could rig up something that looks at the status of A, and
-remotely kills B if I hasn't seen any packets recently - and vice-versa,
-but it sure would be better for openvpn to be able to detect that
-internally.
+Hi all,
 
-Unfortunately, since my situation is using tap devices (it's a bridge to
-a remote data center), it doesn't appear to let me set IPs on the tap
-devices, or at least I haven't had any luck communicating with those IPs
-if I configure them. That rules out implementing keepalives externally
-since I can't seem to force traffic to go over the tap devices. I could
-probably write raw ethernet frames, but receiving them on the other end
-would likely be problematic...=20
+We're soon going start setting up our new community site. However, we
+need your help in gathering the requirements for the site, e.g. what
+services to provide. There are a few general requirements on our
+(=3Dcompany's) part.
 
--- Nathan
+1) Consistent look and feel
+2) Integratibility with external sites/services (e.g. other
+OpenVPN-related sites)
+3) Convenient to use (e.g. same passwords for each service)
+4) Provides easy to use communication channels (e.g. forums)
+5) Provides ways to contribute for non-coders (e.g. forums, wiki, bug
+tracker)
+6) Provides the means to work on OpenVPN-related projects (subproject
+hosting)
+7) Supports other languages besides English (see below)
+8) Extendability (to avoid dead-ends in the future)
+9) Supports our new development model (I'm currently discussing this
+with James)
+10) Supports team building (e.g. separate communication channels for
+testers, packagers, translators etc.)
 
-------------------------------------------------------------
-Nathan Neulinger                       nneul@...1284...
-Missouri S&T Information Technology    (573) 612-1412
-System Administrator - Principal       KD0DMH
+These requirements are still work in progress, as is the scope of the
+site. In any case we'd like to avoid unnecessary overlap with existing
+community projects (e.g. OpenVPN e.V.) while still providing a
+comprehensive set of services for the community. One possibility is that
+we provide English-language services only and work with existing
+projects to provide support for other languages. I'd also like to be
+able to integrate our services with external community sites, e.g. by
+using same authentication services.
+
+I doubt I've managed to get all requirements right, so I'd like to hear
+what you think... Are we on a right track? Have I missed something
+essential here?
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
 
-> -----Original Message-----
-> From: Neulinger, Nathan [mailto:nneul@...1284...]
-> Sent: Saturday, December 26, 2009 5:56 PM
-> To: openvpn-devel@...350...
-> Subject: [Openvpn-devel] Inability of openvpn to detect partial
-failure
-> ofUDP link
->=20
-> As currently written, openvpn appears to be unable to detect the
-> partial
-> failure (unidirectional) of a UDP based tunnel.
->=20
-> Attached is a note I sent to info@...515... about this yesterday,
-> figured I'd mention progress on the devel list as well.
->=20
-> Basic summary, assume bridged link from A <-> B, and a unidirectional
-> failure, openvpn configured with keepalives:
->=20
-> A ------> B
->    A: sends pings, never gets any traffic or ping packets, constantly
-> restarts/exits
->    B: sends pings (they never actually make it to A), but sees pings
-> from A, thinks everything is fine.
->=20
-> I've written some code to implement a ping request/reply facility -
-> however, here's where I'm hitting up against a secondary snag. It
-looks
-> like in the code right now, there isn't really any way to cleanly
-> request a packet be sent. encrypt_sign() sortof appears to do this,
-> but,
-> with how it (and the other code is implemented), it appears to only
-> permit a SINGLE packet to be generated by ANY of the various tasks
-> spawned off in the event loop.
->=20
-> If a second packet is generated in the same pass through the event
-> loop,
-> the packet waiting to be sent by process_io just gets stomped
-> on/overwritten silently.
->=20
-> I fully believe that this stomping has the potential to occur during
-> other regular activity as well, but it may just be that it is
-> ordered/timed in a way that it doesn't usually cause any issue. For
-> example, if an OCC reply was sent in the same interval as a ping, the
-> ping is always going to be overwritten, but in that case w/ default
-> code, the ping isn't important since sending the OCC packet will have
-> the same effect.
->=20
-> It seems like some sort of combination of:
->   * short circuit the event loop as soon as a single packet is queued
->   * reduce minimum (while no other I/O) event_wait time
->=20
-> or - much more invasively, implement ability to queue multiple packets
-> to be sent.
->=20
-> Any thoughts on this issue?
->=20
-> -- Nathan
->=20
-> ------------------------------------------------------------
-> Nathan Neulinger                       nneul@...1284...
-> Missouri S&T Information Technology    (573) 612-1412
-> System Administrator - Principal       KD0DMH
->=20
 
 
