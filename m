@@ -1,10 +1,8 @@
-Message-ID: <4B3CB244.2080305@...515...>
-Date: Thu, 31 Dec 2009 16:16:36 +0200
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <4B3CACF4.9010602@...515...>
-In-Reply-To: <4B3CACF4.9010602@...515...>
-Subject: Re: [Openvpn-devel] Community site requirements
+Date: Fri, 1 Jan 2010 13:35:06 +0100
+Message-ID: <2b41c201001010435h6ce78fb7s92de2733c559c080@...278...>
+From: richard -rw- weinberger <richard.weinberger@...277...>
+Subject: [Openvpn-devel] reporting bugs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,61 +11,17 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Samuli Sepp=E4nen wrote:
-> Hi all,
->
-> We're soon going start setting up our new community site. However, we
-> need your help in gathering the requirements for the site, e.g. what
-> services to provide. There are a few general requirements on our
-> (=3Dcompany's) part.
->
-> 1) Consistent look and feel
-> 2) Integratibility with external sites/services (e.g. other
-> OpenVPN-related sites)
-> 3) Convenient to use (e.g. same passwords for each service)
-> 4) Provides easy to use communication channels (e.g. forums)
-> 5) Provides ways to contribute for non-coders (e.g. forums, wiki, bug
-> tracker)
-> 6) Provides the means to work on OpenVPN-related projects (subproject
-> hosting)
-> 7) Supports other languages besides English (see below)
-> 8) Extendability (to avoid dead-ends in the future)
-> 9) Supports our new development model (I'm currently discussing this
-> with James)
-> 10) Supports team building (e.g. separate communication channels for
-> testers, packagers, translators etc.)
->
-> These requirements are still work in progress, as is the scope of the
-> site. In any case we'd like to avoid unnecessary overlap with existing
-> community projects (e.g. OpenVPN e.V.) while still providing a
-> comprehensive set of services for the community. One possibility is that
-> we provide English-language services only and work with existing
-> projects to provide support for other languages. I'd also like to be
-> able to integrate our services with external community sites, e.g. by
-> using same authentication services.
->
-> I doubt I've managed to get all requirements right, so I'd like to hear
-> what you think... Are we on a right track? Have I missed something
-> essential here?
->
->=20=20=20
-One more clarification... I think it's best if we try to gather a set of
-requirements all (or most) of us can agree upon first. Then we can start
-looking into actual technical solutions (applications) that meet those
-requirements. In a way try to identify the real issues (e.g. "getting
-support is difficult") rather than concentrate on technical solutions
-(e.g. "create forums"). I think this makes it easier to reach consensus
-on the services we should provide.
+hi list,
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+what is the preferred place to file openvpn bugs?
+http://sourceforge.net/tracker/?func=browse&group_id=48978&atid=454719
+contains recent bugs. but no one seems to care (to comments, not
+status update, no assignment)
 
-
-
+cheers,
+//richard
 
