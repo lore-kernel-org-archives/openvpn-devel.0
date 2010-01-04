@@ -1,11 +1,10 @@
-Message-ID: <4B40CC5E.10709@...1123...>
-Date: Sun, 03 Jan 2010 17:57:02 +0100
-From: Peter Rabbitson <rabbit+list@...1123...>
+Message-ID: <4B419BAF.1020109@...515...>
+Date: Mon, 04 Jan 2010 09:41:35 +0200
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <4B31E198.1040907@...1123...>
-	<7643e6fe0912280807x7ddea7a3l88feaf9d90111b07@...278...>
-In-Reply-To: <7643e6fe0912280807x7ddea7a3l88feaf9d90111b07@...278...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] --multihome broken in 2.1
+References: <2b41c201001010435h6ce78fb7s92de2733c559c080@...278...>
+In-Reply-To: <2b41c201001010435h6ce78fb7s92de2733c559c080@...278...>
+Subject: Re: [Openvpn-devel] reporting bugs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,37 +13,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
-Cc: Shaun <djpandemonium@...277...>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Shaun wrote:
-> On Wed, Dec 23, 2009 at 1:23 AM, Peter Rabbitson <rabbit+list@...1123...> wrote:
->> Hi,
->>
->> I was advised to post a reference to Debian bug #562099 here. An
->> upgrade from 2.1~rc11 to 2.1.0 effectively rendered --multihome
->> useless, as the packets still fly out from the interface closest to
->> the default gateway.
->>
->> The VPN is not mission critical, so I can provide any debug information
->> upon request.
->>
->>
-> Hi Peter,
-> 
-> I bet your bug report would be met with a lot more interest if you
-> post it to the OpenVPN-devel list.  That's where the developers hang
-> out.
-> 
-> 
-> 
-> - shaun
-> 
+Hi Richard,
 
-As advised by Shaun I am posting this on the openvpn-devel mailing list
-as well. I am subscribed to both lists so no need to CC. The debian bug
-in question can be found here:
-http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=562099
+Sorry for the late response. It seems the SF.net bug tracker at
+
+http://sourceforge.net/tracker/?group_id=3D48978&atid=3D454719
+
+is not being actively monitored and I'm not aware of any other bug
+tracker (besides distro-specific trackers). Regardless I think it's best
+to post bug reports to SF.net for now - at least the reports are then
+easier to locate than old reports sent to devel mailinglist. This is one
+of the problems I'm working on currently.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+
+
+
+> hi list,
+>
+> what is the preferred place to file openvpn bugs?
+> http://sourceforge.net/tracker/?func=3Dbrowse&group_id=3D48978&atid=3D454=
+719
+> contains recent bugs. but no one seems to care (to comments, not
+> status update, no assignment)
+>
+> cheers,
+> //richard
+>
+> -------------------------------------------------------------------------=
+-----
+> This SF.Net email is sponsored by the Verizon Developer Community
+> Take advantage of Verizon's best-in-class app development support
+> A streamlined, 14 day to market process makes app distribution fast and e=
+asy
+> Join now and get one step closer to millions of Verizon customers
+> http://p.sf.net/sfu/verizon-dev2dev=20
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>=20=20=20
+
+
 
