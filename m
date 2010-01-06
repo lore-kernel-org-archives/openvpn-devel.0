@@ -1,8 +1,8 @@
-Message-ID: <4B445B37.4020307@...515...>
-Date: Wed, 06 Jan 2010 11:43:19 +0200
+Message-ID: <4B448BF4.8010706@...515...>
+Date: Wed, 06 Jan 2010 15:11:16 +0200
 From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] IRC meeting on community site design
+Subject: [Openvpn-devel] IRC meeting regarding OpenVPN development model
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,46 +13,59 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+Hi all,
 
-I'd like to organize an IRC session where we'd discuss the design of the
-forthcoming community site. I'd love if as many of you could participate
-and share your ideas and viewpoints. Otherwise well probably mess
-something up real bad :). I suggest next Monday at 19:00 UTC
-(21:00-22:00 EEST, 11AM PST, 2PM EST). I think one hour should suffice.
-Let me know privately if you wish to attend. Or if you'd like to, but can't.
+I discussed our current development with James and he agreed we need to cha=
+nge it. Therefore I'm organizing an open IRC meeting where we'll discuss wh=
+at changes to make and how. James will of course be attending:
 
-I'm thinking of a loose agenda like this:
+Place: #openvpn at irc.freenode.net
+Time: Tuesday 12th Jan 19:00 UTC (20:00 MET, 21:00 EEST, 11AM PST, 2PM EST)
+Duration: 1 hour (or more)
 
-- Gather as many requirements as possible (what the site
-must/should/could do)
-- Select a potential list of applications to use (e.g. wiki, forums) for
-further analysis
+Here's an outline of current plans - thanks to all who've provided ideas an=
+d feedback so far. It's been very valuable!
 
-I've already gathered some requirements here:
+- Clearly separate the goals of the OSS project and our product ("Access se=
+rver") to avoid unnecessary conflicts. The goal is to be able to develop Op=
+enVPN as openly as possible without hurting our product. The goals of OpenV=
+PN project should be discussed openly later on.
+- (We) Allocate enough time to the OSS project to keep it moving along.
+- In general follow the Linux kernel development model
+- Emphasize openness and communication:
+  - Delegate responsibility to trusted community members
+  - If a patch is suitable for inclusion, it can be commited to the reposit=
+ory and the author informed via devel-mailinglist
+  - If a patch needs modifications, the author will be told what problems t=
+here were so he can fix it
+  - If a patch is unsuitable for inclusion under any conditions, the author=
+ needs to know why
+  - If the patch author has not signed a contributor agreement he needs to =
+be pointed to it
+- Emphasize code quality:
+  - Separate testing trees allow timely and safe merging of patches and new=
+ features. Hopefully these will be managed by trusted community members.
+  - Let trusted community members preview the patches before they reach Jam=
+es
+  - Write common guidelines for all developers (e.g. usage of #ifdef's, sec=
+urity practices, etc.)
+  - Organize testing of changed code (both automated and manual)
 
- http://sourceforge.net/mailarchive/forum.php?thread_name=3D4B3CB244.208030=
-5%40openvpn.net&forum_name=3Dopenvpn-devel
+I probably forgot something, but I hope you get the general idea. These dev=
+elopment issues have been discussed earlier in this mailinglist:
 
-I think a simple Wiki-based site with other integrated components
-_might_ be the least bad solution. Something along these lines:
+ http://sourceforge.net/mailarchive/message.php?msg_id=3D4B263634.3050000%4=
+0openvpn.net
 
- http://en.opensuse.org/Welcome_to_openSUSE.org
+I'll write down a loose agenda for the meeting and send it to the list. I h=
+ope this way we can concentrate on finding solutions to the actual problems=
+ rather than have a nice, heated discussion of the relative merits of Git, =
+Mercurial and Subversion :). I hope many of you can attend!
 
-Initially we wanted to have hosting for OpenVPN-related projects. For
-this reason I looked at s.c. "Forge" applications
-(http://en.wikipedia.org/wiki/Forge_%28software%29), but they seem too
-focused on hosting separate projects, rather than building a common
-(cross-project) collaborative environment. So they're not a good overall
-solutions. At first it may be best to just "publish" OpenVPN-related
-projects along these lines:
+See you all,
 
- http://exchange.nagios.org/
-
-In any case the site will end up being a complex jigsaw puzzle. What do
-you think?
 
 --=20
 Samuli Sepp=E4nen
