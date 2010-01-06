@@ -1,8 +1,8 @@
-Message-ID: <4B41BBE3.7080308@...515...>
-Date: Mon, 04 Jan 2010 11:58:59 +0200
+Message-ID: <4B445B37.4020307@...515...>
+Date: Wed, 06 Jan 2010 11:43:19 +0200
 From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Community manager in the IRC and Twitter
+Subject: [Openvpn-devel] IRC meeting on community site design
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,30 +17,49 @@ To: "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>,
 
 Hi,
 
-I created a new IRC channel (#openvpncommunity) to irc.freenode.net. I'm
-using the nickname "mattock". I will be available as follows...
+I'd like to organize an IRC session where we'd discuss the design of the
+forthcoming community site. I'd love if as many of you could participate
+and share your ideas and viewpoints. Otherwise well probably mess
+something up real bad :). I suggest next Monday at 19:00 UTC
+(21:00-22:00 EEST, 11AM PST, 2PM EST). I think one hour should suffice.
+Let me know privately if you wish to attend. Or if you'd like to, but can't.
 
-On Mondays and Wednesdays:
+I'm thinking of a loose agenda like this:
 
- 09:00 - 16:00 EET (07:00-14:00 UTC / 2AM-9AM EST / 11PM-6AM PST)
+- Gather as many requirements as possible (what the site
+must/should/could do)
+- Select a potential list of applications to use (e.g. wiki, forums) for
+further analysis
 
-On Fridays:
+I've already gathered some requirements here:
 
- 13:00 - 16:00 EET (11:00-14:00 UTC / 6AM-9AM EST / 3AM-6AM PST)
+ http://sourceforge.net/mailarchive/forum.php?thread_name=3D4B3CB244.208030=
+5%40openvpn.net&forum_name=3Dopenvpn-devel
 
-I'm also available on the main OpenVPN channel (#openvpn at
-irc.freenode.net). If you can't reach me by IRC, please send me an
-email. If you're interested in what I'm doing (right now), follow me
-("samuli_openvpn") on Twitter. Please don't hesitate to contact me for
-whatever reason, be it feedback, suggestions, concerns or something
-else. If I'm not able to help, I can still forward you (or the message)
-to the correct person in our company.
+I think a simple Wiki-based site with other integrated components
+_might_ be the least bad solution. Something along these lines:
+
+ http://en.opensuse.org/Welcome_to_openSUSE.org
+
+Initially we wanted to have hosting for OpenVPN-related projects. For
+this reason I looked at s.c. "Forge" applications
+(http://en.wikipedia.org/wiki/Forge_%28software%29), but they seem too
+focused on hosting separate projects, rather than building a common
+(cross-project) collaborative environment. So they're not a good overall
+solutions. At first it may be best to just "publish" OpenVPN-related
+projects along these lines:
+
+ http://exchange.nagios.org/
+
+In any case the site will end up being a complex jigsaw puzzle. What do
+you think?
 
 --=20
 Samuli Sepp=E4nen
 Community Manager
 OpenVPN Technologies, Inc
 
-
+irc freenode net: mattock
+twitter com: samuli_openvpn
 
 
