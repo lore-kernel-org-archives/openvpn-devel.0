@@ -1,11 +1,12 @@
-Message-ID: <41251547-1262953754-cardhu_decombobulator_blackberry.rim.net-637769244-@...1289...>
-References: <4B448BF4.8010706@...515...>	<57F9152B-5972-4FEB-968D-1F020BB7017B@...1286...>	<2b41c201001061008k66d9d27emf1c91f27ce7e6be2@...278...>	<4B451EA1.2060408@...1009...><4B46EF6A.6050705@...515...><4B471147.70704@...1114...>
-In-Reply-To: <4B471147.70704@...1114...>
-From: "Eric Crist" <ecrist@...1286...>
-Date: Fri, 8 Jan 2010 12:29:46 +0000
+Message-ID: <4B474F26.5060801@...1114...>
+Date: Fri, 08 Jan 2010 16:28:38 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] IRC meeting regarding OpenVPN development model
-Reply-To: ecrist@...1286...
+References: <lypr5lvsu7.fsf@...1290...>
+In-Reply-To: <lypr5lvsu7.fsf@...1290...>
+Subject: [Openvpn-devel] RFE: allow 'lport 0' setup for random port binding
+	(arrived in [Openvpn-users])
+Reply-To: Enrico Scholz <enrico.scholz@...1291...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,49 +15,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: David Sommerseth <openvpn.list@...1114...>, =?Windows-1252?B?U2FtdWxpIFNlcHDkbmVu?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: Enrico Scholz <enrico.scholz@...1291...>
 
-SSBhZ3JlZSB3aXRoIERhdmlkLg0KDQpTZW50IHZpYSBCbGFja0JlcnJ5IGZyb20gVC1Nb2JpbGUN
-Cg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IERhdmlkIFNvbW1lcnNldGggPG9w
-ZW52cG4ubGlzdEAuLi4xMTE0Li4uPg0KRGF0ZTogRnJpLCAwOCBKYW4gMjAxMCAxMjowNDozOSAN
-ClRvOiBTYW11bGkgU2VwcMOkbmVuPHNhbXVsaUAuLi41MTUuLi4+DQpDYzogb3BlbnZwbi1kZXZl
-bEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQ8b3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5u
-ZXQ+DQpTdWJqZWN0OiBSZTogW09wZW52cG4tZGV2ZWxdIElSQyBtZWV0aW5nIHJlZ2FyZGluZyBP
-cGVuVlBOIGRldmVsb3BtZW50IG1vZGVsDQoNCi0tLS0tQkVHSU4gUEdQIFNJR05FRCBNRVNTQUdF
-LS0tLS0KSGFzaDogU0hBMQoKT24gMDgvMDEvMTAgMDk6NDAsIFNhbXVsaSBTZXBww6RuZW4gd3Jv
-dGU6Cj4gVGhlc2UgYXJlIHZlcnkgdmFsaWQgY29uY2VybnMuLi4gZXZlbiBpZiBhbGwgZWxzZSBn
-b2VzIHNtb290aGx5LCB0aGVyZSdzCj4gcHJvYmFibHkgbG90cyBvZiAibm9pc2UiIG9uIHRoZSAj
-b3BlbnZwbiBjaGFubmVsLiBBbnkgb2JqZWN0aW9ucyBhZ2FpbnN0Cj4gbW92aW5nIHRoZSBtZWV0
-aW5nKHMpIHRvICNvcGVudnBuLWRpc2N1c3Npb24/CgpSaWdodCBub3csIEknbSBub3Qgc3VyZSB3
-aGF0J3MgdGhlIGJlc3QuICBJIHJlYWxseSB0aGluayB3ZSdyZSBiZWluZyBhCmJpdCB1bnN0cnVj
-dHVyZWQsIHVuY2xlYXIgYW5kIG1heWJlIGEgYml0IHRvbyBmbGV4aWJsZSAtIGNoYW5naW5nIHRo
-aW5ncwpjb25zdGFudGx5IGp1c3QgYSBmZXcgZGF5cyBiZWZvcmUgdGhlIG1lZXRpbmcsIG1heSBj
-YXVzZSBzb21lIGNvbmZ1c2lvbgp0byB3aGF0J3MgcmVhbGx5IGdvaW5nIHRvIGhhcHBlbi4gIFRo
-YXQgd2lsbCBub3QgYmVuZWZpdCBhbnl0aGluZy4KClNhbXVsaSwgSSB3b3VsZCBzYXkgeW91IHNo
-b3VsZCB0YWtlIHRoaXMgZGVjaXNpb24sIGJ1dCByYXRoZXIgYXNhcC4gIElmCm5vdGhpbmcgaXMg
-Y2hhbmdlZCwgd2UgY2FuIG1vdmUgdGhlIG1lZXRpbmcgZnJvbSAjb3BlbnZwbiB0byBhbm90aGVy
-CmNoYW5uZWwgYWZ0ZXIgdGhlIG1lZXRpbmcgaGFzIHJlYWxseSBzdGFydGVkLiAgQnV0IGlmIHJl
-YWxseSBjaGFuZ2VzLCBpdApzaG91bGQgYmUgZGVjaWRlZCAqbm93KiBhbmQgYmUgY29tbXVuaWNh
-dGVkIGltbWVkaWF0ZWx5LgoKVGhlcmUgYXJlIHBybyBhbmQgY29udHJhIHBvaW50cyB0byBib3Ro
-IHN0YXlpbmcgaW4gI29wZW52cG4gYW5kIHRvIG1vdmUKdG8gI29wZW52cG4tZGlzY3Vzc2lvbi4g
-IEZvciBtZSB3aGF0IGlzIGNob3NlbiwgaXMgbGVzcyBpbXBvcnRhbnQuIEl0IGlzCm11Y2ggbW9y
-ZSBpbXBvcnRhbnQgdG8gbWUgdGhhdCB3ZSBhY3R1YWxseSBkbyBoYXZlIHRoZXNlIGRpc2N1c3Np
-b25zLgoKCmtpbmQgcmVnYXJkcywKCkRhdmlkIFNvbW1lcnNldGgKLS0tLS1CRUdJTiBQR1AgU0lH
-TkFUVVJFLS0tLS0KVmVyc2lvbjogR251UEcgdjEuNC45IChHTlUvTGludXgpCkNvbW1lbnQ6IFVz
-aW5nIEdudVBHIHdpdGggRmVkb3JhIC0gaHR0cDovL2VuaWdtYWlsLm1vemRldi5vcmcvCgppRVlF
-QVJFQ0FBWUZBa3RIRVVFQUNna1FEQzE4Nk1CUmZycFR2Z0NlTkxQU201N1UrY1ViZlFEbUNwY2xZ
-dXMwCmhMUUFvS25HTzI3ZnRVRGEzMmZzSXVydy8zYmxDWHdsCj15cVJWCi0tLS0tRU5EIFBHUCBT
-SUdOQVRVUkUtLS0tLQoKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tClRoaXMgU0YuTmV0IGVtYWlsIGlz
-IHNwb25zb3JlZCBieSB0aGUgVmVyaXpvbiBEZXZlbG9wZXIgQ29tbXVuaXR5ClRha2UgYWR2YW50
-YWdlIG9mIFZlcml6b24ncyBiZXN0LWluLWNsYXNzIGFwcCBkZXZlbG9wbWVudCBzdXBwb3J0CkEg
-c3RyZWFtbGluZWQsIDE0IGRheSB0byBtYXJrZXQgcHJvY2VzcyBtYWtlcyBhcHAgZGlzdHJpYnV0
-aW9uIGZhc3QgYW5kIGVhc3kKSm9pbiBub3cgYW5kIGdldCBvbmUgc3RlcCBjbG9zZXIgdG8gbWls
-bGlvbnMgb2YgVmVyaXpvbiBjdXN0b21lcnMKaHR0cDovL3Auc2YubmV0L3NmdS92ZXJpem9uLWRl
-djJkZXYgCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCk9w
-ZW52cG4tZGV2ZWwgbWFpbGluZyBsaXN0Ck9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2Uu
-bmV0Cmh0dHBzOi8vbGlzdHMuc291cmNlZm9yZ2UubmV0L2xpc3RzL2xpc3RpbmZvL29wZW52cG4t
-ZGV2ZWwK
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+
+Resending it to openvpn-devel list, to hit the right audience.
+
+kind regards,
+
+David Sommerseth
+
+
+On 08/01/10 10:39, Enrico Scholz wrote:
+> Hi,
+> 
+> I am running a multihomed host where 'local <extip>' must be specified
+> for proper operation.  Unfortunately, this implies 'lport 1194' or
+> another static port. 
+> 
+> This causes problems with stateful firewalls which register the host/port
+> pairs in the internal connection tracking table. On ungraceful reconnects,
+> the new TCP connection will have same the host/port pairs but unexpected
+> sequence numbers. The new connection will be assumed as invalid hence and
+> be dropped.
+> 
+> It would be nice when local port can be configured to be bound to a
+> random port number.  After reading code,
+> 
+> |    else if (streq (p[0], "lport") && p[1])
+> |  ...
+> |        port = atoi (p[1]);
+> |-       if (!legal_ipv4_port (port))
+> |+       if (port != 0 && !legal_ipv4_port (port))
+> |          {
+> 
+> in options.c seems to be the only required change.
+> 
+> 
+> 
+> Enrico
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAktHTyMACgkQDC186MBRfrrceACfT7IdVvNZU5VxIVQG1A19pmue
+4dEAn1FEYwDky5BekueF/rELX7jVOfUK
+=zjPt
+-----END PGP SIGNATURE-----
+
