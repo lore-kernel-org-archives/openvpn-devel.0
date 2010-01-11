@@ -1,12 +1,8 @@
-From: Enrico Scholz <enrico.scholz@...1291...>
-Date: Mon, 11 Jan 2010 11:16:43 +0100
-Message-ID: <lyr5pxhrp0.fsf@...1290...>
-References: <lypr5lvsu7.fsf@...1290...>
-	<20100109180748.26114.qmail@...1287...>
-Mime-Version: 1.0
-Sender: news <news@...1062...>
-Subject: Re: [Openvpn-devel] RFE: allow 'lport 0' setup for random
-	port	binding
+Message-ID: <4B4B2AC4.70507@...515...>
+Date: Mon, 11 Jan 2010 15:42:28 +0200
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Updated "Community site" requirements available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,47 +11,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Peter Stuge <peter@...1287...> writes:
+Hi,
 
->> I am running a multihomed host where 'local <extip>' must be
->> specified for proper operation.
->
-> Could you add a route and use nobind? Unless you have one openvpn on
-> each IP that should work.
+I just updated the requirements specification for the "community site".
+It's available here:
 
-I would really like to avoid the NAT hackery.
+http://users.utu.fi/sjsepp/openvpn/Community_site_requirements.mm.html
 
+The specification was moulded to fit the Volere requirements
+specification which I'm pretty familiar with. In this rush I could not
+find any good (English) overview of the Volere process/specification, so
+I added brief explanations in italics.
 
->> On ungraceful reconnects, the new TCP connection will have same the
->> host/port pairs but unexpected sequence numbers. The new connection
->> will be assumed as invalid hence and be dropped.
->
-> I would actually expect the firewall to notice that there is a new
-> connection. Since it doesn't, maybe you can explicitly allow this
-> traffic?
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-I do not have access to this firewall.
-
-
-> OpenVPN can certainly be made to do what you describe, but it seems
-> that there are more ways to solve the problem, and one of those might
-> suit you better.
-
-I think, supporting common TCP/UDP client functionality (which choses
-random source ports) suits my needs best.  I do not see reasons why
-'local' must be tied to 'lport'.
-
-
-> I know I would prefer fixing the firewall rules.
-
-I would prefer to fix openvpn ;)
-
-
-
-Enrico
+irc freenode net: mattock
 
 
