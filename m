@@ -1,11 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <06FB28F4D07247528CEF41CA4B665DE5@...1292...>
-References: <mailman.291693.1263182482.5856.openvpn-devel@lists.sourceforge.net>
-	<06FB28F4D07247528CEF41CA4B665DE5@...1292...>
-Date: Mon, 11 Jan 2010 20:05:34 +0200
-Message-ID: <9e0cf0bf1001111005l602999d2n929d632d70ea12ac@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] Help: build openvpn from source on windows
+In-Reply-To: <edfc67860910290441x73b13cc4g74be925b24a32d48@...278...>
+References: <edfc67860910281224x55ec531ala646a288c40641cf@...278...> 
+	<4AE8A8A4.1040102@...1270...>
+	<edfc67860910290441x73b13cc4g74be925b24a32d48@...278...>
+From: Lucas Mocellin <lucasmocellin@...277...>
+Date: Mon, 11 Jan 2010 17:43:04 -0200
+Message-ID: <edfc67861001111143x438faf23r181370807c8e544c@...278...>
+Content-Type: multipart/alternative; boundary=001636c5bd341b2398047ce8c071
+Subject: Re: [Openvpn-devel] How to check is OpenVPN port is open
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,72 +16,212 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Juping Jin <juping.jin@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-I use my own build to build this [1].
+--001636c5bd341b2398047ce8c071
+Content-Type: text/plain; charset=ISO-8859-1
 
-The OpenVPN project should have long ago separate between a some
-components for ease of use:
+Hello,
 
-1. OpenVPN
-2. OpenVPN Windows Service Wrapper
-3. OpenVPN TAP driver
-4. OpenVPN Windows Installer
-5. Easy-RSA
+again I fell in this problem, I must solve this now, so if someone has a
+better idea than trying to reproduce the OpenVPN protocol begin and see if
+there is any answer, I will have to figure out how to send the OpenVPN
+protocol by UDP manually.
 
-This would have enable users to build specific component without the
-other, or changing the installer without releasing a new version of
-core product.
+I would like to see if there is a simpler manner to check if OpenVPN is
+listenning and accepting connections.
 
-[1] http://www.opensc-project.org/build
+any help is welcome.
 
-On Mon, Jan 11, 2010 at 6:17 PM, Juping Jin <juping.jin@...277...> wrote:
+Thanks in advance,
+
+Lucas.
+
+On Thu, Oct 29, 2009 at 9:41 AM, Lucas Mocellin <lucasmocellin@...277...>wrote:
+
+> Hi again,
 >
-> I tried to build openvpn on Windows from its source code and encountered a
-> few problems:
+> I forgot to say that I'm working with UDP, and all the problem is around
+> this protocol connectionless.
 >
-> 1. Incorrect defines at autodefs/defs.h, line 51-52:
-> #define PRODUCT_TAP_DEVICE_DESCRIPTION TAP-Win32 Adapter V9
-> #define PRODUCT_TAP_PROVIDER TAP-Win32 Provider V9
+> I tried to sniff and redo the "connection start", but always the packages
+> are different but actually, I didn't figured it out completely, and probably
+> I won't studi the OpenVPN protocol deeply right now for that.
 >
-> They are supposed to be:
+> ngrep:
+> #
+> U 2009/10/29 09:33:07.954515 192.168.9.129:57691 -> 192.168.9.127:1194
+>   8..Rao.T..........
+> #
+> U 2009/10/29 09:33:07.955865 192.168.9.127:1194 -> 192.168.9.129:57691
 >
-> #define PRODUCT_TAP_DEVICE_DESCRIPTION "TAP-Win32 Adapter V9"
-> #define PRODUCT_TAP_PROVIDER "TAP-Win32 Provider V9"
+> @6..............Rao.T.....
 >
-> How is defs.h created at the first place?
+> #
+> U 2009/10/29 09:33:07.956913 192.168.9.129:57691 -> 192.168.9.127:1194
 >
-> 2. I could not find tapinstall source code in the source achieve. Where can
-> I download it?
->
-> 3. install-win32/maketap: line 42 doesn't work. The line is:
->
-> cmd //c "C:\\WINDDK\\$DDKVER\\bin\\setenv.bat C:\\WINDDK\\$DDKVER $mode &&
-> cd `perl install-win32/dosname.pl $t` && build -cef"
->
-> it's supposed to issue "build -cef" command in tap-win32 folder after
-> setting environment. However, the cd command doesn't work (I could not get
-> it work even with hard-coded value). As a result, build -cef will compile
-> all source code under DDK/src folder, not the tap driver. Manually build the
-> driver works (ie. Run setenv and then do build -cef).
->
-> Thanks for your help!
->
-> Juping
+> (..Rao.T......6.......
 >
 >
-> ------------------------------------------------------------------------------
-> This SF.Net email is sponsored by the Verizon Developer Community
-> Take advantage of Verizon's best-in-class app development support
-> A streamlined, 14 day to market process makes app distribution fast and easy
-> Join now and get one step closer to millions of Verizon customers
-> http://p.sf.net/sfu/verizon-dev2dev
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> the first packet always start with an "8" and has a fixed lenght of 18
+> characters:
+> 8.....7U..........
+> 8..XyR............
+> 8......h..........
 >
+> but I don't know if I just can send this "info" like a string creating a
+> UDP socket, I tried and it didn't work, maybe some mistake, I can try again.
+>
+> I can't just start an OpenVPN because I don't have the key yet, this
+> verification is done before the OpenVPN connection.
+>
+> I got this from another FORUM:
+> "The trouble with verifying UDP ports as open is that if a UDP port is
+> open, you get no response from it.  That's also the case when it's
+> filtered of course. "
+>
+> I understand but not at all, if there is no response, there is no
+> communication.. hehe
+>
+> another manner of how to check if an OpenVPN UDP port is open?
+>
+> Thanks for the answers folks!
+>
+> Lucas.
+>
+>
+> On Wed, Oct 28, 2009 at 6:25 PM, Yevgeny Kosarzhevsky <yevg@...1270...>wrote:
+>
+>> Hi,
+>>
+>>
+>> Lucas Mocellin wrote:
+>>
+>>> Hi all,
+>>>
+>>> briefly: I'm helping in the development of an educational software to
+>>> apply online tests. The client will connect to the server through OpenVPN to
+>>> perform the test. I would like to check if the OpenVPN port is alive and
+>>> accepting connections (check if there is port filtering, and so on.. ).
+>>>
+>>> I'm programming in python.
+>>>
+>>> Does someone know to achieve that? I'm trying to create a socket and send
+>>> any message to the server, but no response, is there any kind of "hello" or
+>>> something like this?
+>>>
+>>
+>> You can test it with netcat utility which is run on the server in listen
+>> mode and on client in client mode.
+>>
+>
+>
+
+--001636c5bd341b2398047ce8c071
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Hello,<br><br>again I fell in this problem, I must solve this now, so if so=
+meone has a better idea than trying to reproduce the OpenVPN protocol begin=
+ and see if there is any answer, I will have to figure out how to send the =
+OpenVPN protocol by UDP manually.<br>
+
+<br>I would like to see if there is a simpler manner to check if OpenVPN is=
+ listenning and accepting connections.<br><br>any help is welcome.<br><br>T=
+hanks in advance,<br><br>Lucas.<br><br><div class=3D"gmail_quote">On Thu, O=
+ct 29, 2009 at 9:41 AM, Lucas Mocellin <span dir=3D"ltr">&lt;<a href=3D"mai=
+lto:lucasmocellin@...277...">lucasmocellin@...277...</a>&gt;</span> wrote:<=
+br>
+
+<blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, =
+204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Hi again,<br><br>=
+I forgot to say that I&#39;m working with UDP, and all the problem is aroun=
+d this protocol connectionless.<br>
+
+<br>I tried to sniff and redo the &quot;connection start&quot;, but always =
+the packages are different but actually, I didn&#39;t figured it out comple=
+tely, and probably I won&#39;t studi the OpenVPN protocol deeply right now =
+for that.<br>
+
+
+<br>ngrep:<br>#<br>U 2009/10/29 09:33:07.954515 <a href=3D"http://192.168.9=
+.129:57691" target=3D"_blank">192.168.9.129:57691</a> -&gt; <a href=3D"http=
+://192.168.9.127:1194" target=3D"_blank">192.168.9.127:1194</a><br>=A0 8..R=
+ao.T.......... <br>
+
+#<br>U 2009/10/29 09:33:07.955865 <a href=3D"http://192.168.9.127:1194" tar=
+get=3D"_blank">192.168.9.127:1194</a> -&gt; <a href=3D"http://192.168.9.129=
+:57691" target=3D"_blank">192.168.9.129:57691</a><br>
+=A0 @6..............Rao.T.....=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0 <br>#<br>U 2009/10/29 09:33:07.956913 <a href=
+=3D"http://192.168.9.129:57691" target=3D"_blank">192.168.9.129:57691</a> -=
+&gt; <a href=3D"http://192.168.9.127:1194" target=3D"_blank">192.168.9.127:=
+1194</a><br>
+
+
+=A0 (..Rao.T......6.......=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 <br><br>the first packet always =
+start with an &quot;8&quot; and has a fixed lenght of 18 characters:<br>8..=
+...7U..........<br>
+
+
+8..XyR............<br>8......h..........<br><br>but I don&#39;t know if I j=
+ust can send this &quot;info&quot; like a string creating a UDP socket, I t=
+ried and it didn&#39;t work, maybe some mistake, I can try again.<br><br>
+
+
+I can&#39;t just start an OpenVPN because I don&#39;t have the key yet, thi=
+s verification is done before the OpenVPN connection.<br><br>I got this fro=
+m another FORUM:<br>&quot;The trouble with verifying UDP ports as open is t=
+hat if a UDP port is <br>
+
+
+ open, you get no response from it. =A0That&#39;s also the case when it&#39=
+;s <br> filtered of course. &quot;<br><br>I understand but not at all, if t=
+here is no response, there is no communication.. hehe<br><br>another manner=
+ of how to check if an OpenVPN UDP port is open?<br>
+
+
+<br>Thanks for the answers folks!<br><font color=3D"#888888"><br>Lucas.</fo=
+nt><div><div></div><div class=3D"h5"><br><br><div class=3D"gmail_quote">On =
+Wed, Oct 28, 2009 at 6:25 PM, Yevgeny Kosarzhevsky <span dir=3D"ltr">&lt;<a=
+ href=3D"mailto:yevg@...1270..." target=3D"_blank">yevg@...1270...</a>&gt;<=
+/span> wrote:<br>
+
+
+<blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, =
+204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Hi,<div><br>
+<br>
+Lucas Mocellin wrote:<br>
+<blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, =
+204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+Hi all,<br>
+<br>
+briefly: I&#39;m helping in the development of an educational software to a=
+pply online tests. The client will connect to the server through OpenVPN to=
+ perform the test. I would like to check if the OpenVPN port is alive and a=
+ccepting connections (check if there is port filtering, and so on.. ).<br>
+
+
+
+<br>
+I&#39;m programming in python.<br>
+<br>
+Does someone know to achieve that? I&#39;m trying to create a socket and se=
+nd any message to the server, but no response, is there any kind of &quot;h=
+ello&quot; or something like this?<br>
+</blockquote>
+<br></div>
+You can test it with netcat utility which is run on the server in listen mo=
+de and on client in client mode.<br>
+</blockquote></div><br>
+</div></div></blockquote></div><br>
+
+--001636c5bd341b2398047ce8c071--
 
