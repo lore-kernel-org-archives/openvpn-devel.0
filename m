@@ -1,14 +1,10 @@
-From: Enrico Scholz <enrico.scholz@...1291...>
-Date: Mon, 11 Jan 2010 15:31:01 +0100
-Message-ID: <lyfx6ciuhm.fsf@...1290...>
-References: <lypr5lvsu7.fsf@...1290...>
-	<20100109180748.26114.qmail@...1287...>
-	<lyr5pxhrp0.fsf@...1290...>
-	<20100111133111.2974.qmail@...1287...>
-Mime-Version: 1.0
-Sender: news <news@...1062...>
-Subject: Re: [Openvpn-devel] RFE: allow 'lport 0' setup for random
-	port	binding
+From: "Juping Jin" <juping.jin@...277...>
+References: <mailman.291693.1263182482.5856.openvpn-devel@lists.sourceforge.net>
+Date: Mon, 11 Jan 2010 11:17:53 -0500
+Message-ID: <06FB28F4D07247528CEF41CA4B665DE5@...1292...>
+MIME-Version: 1.0
+In-Reply-To: 
+Subject: [Openvpn-devel] Help: build openvpn from source on windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,57 +13,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Peter Stuge <peter@...1287...> writes:
 
->> >> I am running a multihomed host where 'local <extip>' must be
->> >> specified for proper operation.
->> >
->> > Could you add a route and use nobind? Unless you have one openvpn
->> > on each IP that should work.
->> 
->> I would really like to avoid the NAT hackery.
->
-> I didn't mean to suggest any NAT. 
+I tried to build openvpn on Windows from its source code and encountered a
+few problems:
 
-NAT would be required on a multihomed host with a routable external and
-an unroutable internal IP where the internal one is the primary address
-of the outgoing interface.
+1. Incorrect defines at autodefs/defs.h, line 51-52: 
+#define PRODUCT_TAP_DEVICE_DESCRIPTION TAP-Win32 Adapter V9
+#define PRODUCT_TAP_PROVIDER TAP-Win32 Provider V9
 
+They are supposed to be:
 
->> > I would actually expect the firewall to notice that there is a new
->> > connection. Since it doesn't, maybe you can explicitly allow this
->> > traffic?
->> 
->> I do not have access to this firewall.
->
-> Can you reach someone who does? I guess the VPN working right is in
-> their interest too, and..
+#define PRODUCT_TAP_DEVICE_DESCRIPTION "TAP-Win32 Adapter V9"
+#define PRODUCT_TAP_PROVIDER "TAP-Win32 Provider V9"
 
-The firewall is completely ok.  A TCP connection is identified by a
-src<ip:port> + dst<ip:port> pair.  When the firewall has recorded an
-active TCP connection and a TCP packet arrives with a corresponding pair
-but unexpected flags (e.g. SYN) or sequence numbers, this packet is
-detected as invalid and be dropped.
+How is defs.h created at the first place?
 
+2. I could not find tapinstall source code in the source achieve. Where can
+I download it? 
 
->> > I know I would prefer fixing the firewall rules.
->> 
->> I would prefer to fix openvpn ;)
->
-> ..I maintain that the problem is actually with the firewall that
-> doesn't notice the new connection. (I guess because of too simplistic
-> packet inspection?)
+3. install-win32/maketap: line 42 doesn't work. The line is: 
 
-no; it is because the OpenVPN client creates the same src + dst pair
-for every connection.  I suggest to read some papers about stateful
-firewalls before continuing this discussion.
+cmd //c "C:\\WINDDK\\$DDKVER\\bin\\setenv.bat C:\\WINDDK\\$DDKVER $mode &&
+cd `perl install-win32/dosname.pl $t` && build -cef"
 
+it's supposed to issue "build -cef" command in tap-win32 folder after
+setting environment. However, the cd command doesn't work (I could not get
+it work even with hard-coded value). As a result, build -cef will compile
+all source code under DDK/src folder, not the tap driver. Manually build the
+driver works (ie. Run setenv and then do build -cef).
 
+Thanks for your help!
 
-Enrico
+Juping
 
 
