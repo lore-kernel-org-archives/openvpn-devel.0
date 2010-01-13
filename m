@@ -1,15 +1,9 @@
+Message-ID: <4B4DBCE6.2010500@...515...>
+Date: Wed, 13 Jan 2010 14:30:30 +0200
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <4B4B9148.2070805@...1009...>
-References: <edfc67860910281224x55ec531ala646a288c40641cf@...278...> 
-	<4AE8A8A4.1040102@...1270...>
-	<edfc67860910290441x73b13cc4g74be925b24a32d48@...278...> 
-	<edfc67861001111143x438faf23r181370807c8e544c@...278...> 
-	<4B4B9148.2070805@...1009...>
-From: Lucas Mocellin <lucasmocellin@...277...>
-Date: Tue, 12 Jan 2010 11:25:57 -0200
-Message-ID: <edfc67861001120525j6352ec63s93d466e3ec315234@...278...>
-Content-Type: multipart/alternative; boundary=0016e6d5669348a829047cf799e2
-Subject: Re: [Openvpn-devel] How to check is OpenVPN port is open
+Content-Type: multipart/mixed; boundary="------------020609050809040103060100"
+Subject: [Openvpn-devel] Summary of the "OpenVPN development model" meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,111 +12,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---0016e6d5669348a829047cf799e2
-Content-Type: text/plain; charset=ISO-8859-1
-
-I have everything filtered. and the problem is that I should this from the
-server, and that's not what I need, I need to check from the client if the
-server is running. But probably this server works as NMAP or NC, look at
-this part of man nmap:
-
-UDP scan works by sending an empty (no data) UDP header to every targeted
-port. If an ICMP port unreachable error (type 3, code 3) is
-              returned, the port is closed. Other ICMP unreachable errors
-(type 3, codes 1, 2, 9, 10, or 13) mark the port as filtered. Occasionally,
-a
-              service will respond with a UDP packet, proving that it is
-open. If no response is received after retransmissions, the port is
-classified
-              as open|filtered. This means that the port could be open, or
-perhaps packet filters are blocking the communication. Versions scan (-sV)
-can
-              be used to help differentiate the truly open ports from the
-filtered ones.
-
-On Mon, Jan 11, 2010 at 6:59 PM, Thomas Reifferscheid <
-thomas@...1009...> wrote:
-
-> Point your browser to http://www.utorrent.com/testport?port=1194
-> to get an idea if there is a [openvpn] daemon listening on udp/1194
->
-> HTH
-> T
->
-> Lucas Mocellin schrieb:
->
->  Hello,
->>
->> again I fell in this problem, I must solve this now, so if someone has a
->> better idea than trying to reproduce the OpenVPN protocol begin and see if
->> there is any answer, I will have to figure out how to send the OpenVPN
->> protocol by UDP manually.
->>
->> I would like to see if there is a simpler manner to check if OpenVPN is
->> listenning and accepting connections.
->>
-> ...
->
->
-
---0016e6d5669348a829047cf799e2
-Content-Type: text/html; charset="ISO-8859-1"
+This is a multi-part message in MIME format.
+--------------020609050809040103060100
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-I have everything filtered. and the problem is that I should this from the =
-server, and that&#39;s not what I need, I need to check from the client if =
-the server is running. But probably this server works as NMAP or NC, look a=
-t this part of man nmap:<br>
+Hi all,
 
-<br>UDP scan works by sending an empty (no data) UDP header to every target=
-ed port. If an ICMP port unreachable error (type 3, code 3) is<br>=A0=A0=A0=
-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 returned, the port is closed. Other ICMP unr=
-eachable errors (type 3, codes 1, 2, 9, 10, or 13) mark the port as filtere=
-d. Occasionally, a<br>
+Here's a summary of the development model meeting we had yesterday. Let
+me know if you have any comments.
 
-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 service will respond with a UDP pac=
-ket, proving that it is open. If no response is received after retransmissi=
-ons, the port is classified<br>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 as o=
-pen|filtered. This means that the port could be open, or perhaps packet fil=
-ters are blocking the communication. Versions scan (-sV) can<br>
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 be used to help differentiate the t=
-ruly open ports from the filtered ones.<br><br><div class=3D"gmail_quote">O=
-n Mon, Jan 11, 2010 at 6:59 PM, Thomas Reifferscheid <span dir=3D"ltr">&lt;=
-<a href=3D"mailto:thomas@...1009...">thomas@...1009...</a>&gt;</span> wrote=
-:<br>
-
-<blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, =
-204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Point your browse=
-r to <a href=3D"http://www.utorrent.com/testport?port=3D1194" target=3D"_bl=
-ank">http://www.utorrent.com/testport?port=3D1194</a><br>
+irc freenode net: mattock
 
 
-to get an idea if there is a [openvpn] daemon listening on udp/1194<br>
-<br>
-HTH<br>
-T<br>
-<br>
-Lucas Mocellin schrieb:<div class=3D"im"><br>
-<blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, =
-204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-Hello,<br>
-<br>
-again I fell in this problem, I must solve this now, so if someone has a be=
-tter idea than trying to reproduce the OpenVPN protocol begin and see if th=
-ere is any answer, I will have to figure out how to send the OpenVPN protoc=
-ol by UDP manually.<br>
+--------------020609050809040103060100
+Content-Type: text/plain;
+ name="openvpn_irc_meeting_2010-01-12.txt"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="openvpn_irc_meeting_2010-01-12.txt"
+
+"OPENVPN DEVELOPMENT MODEL" MEETING
+
+Place: #openvpn-discussion on irc.freenode.net
+Date: Tuesday, 12th January 2010
+Time: 19:00 UTC
+
+Full log available here:
+
+http://secure-computing.net/logs/%23%23openvpn-discussion.log
 
 
-<br>
-I would like to see if there is a simpler manner to check if OpenVPN is lis=
-tenning and accepting connections.<br>
-</blockquote></div>
-...<br>
-<br>
-</blockquote></div><br>
+SUMMARY
 
---0016e6d5669348a829047cf799e2--
+
+Discussed the possibility of having several per-feature tree (Linux kernel style). Alternatively have separate "unstable" (or "experimental") trees. No decisions here one way or another. Also discussed the relative merits of Subversion and Git in painstaking detail.
+
+Agreed that involving the community more in OpenVPN development makes sense for everybody.
+
+Agreed that more transparency, openness and communication is necessary. For example have a public roadmap, bug tracker, feature plans etc. Also there needs to ways for the community to provide input to the project. Discussed the possibility of having community members handle some of the tracker maintenance.
+
+Agreed that keeping the code quality high is extremely important. Agreed that automated regression testing (unit testing, test frameworks) would help in achieving this goal. Discussed the possibility to do some of the automated testing in co-operation with Linux distributors. Also agreed that having more community involvement in patch review/preview process would help, e.g. by enabling us to spot and communicate problems more easily.
+
+Agreed that releases need to made more often. Identified one major problem causing slow release cycles: the long latency between introduction of a bug and the first bug report. Agreed that getting new code to the users as soon as possible helps reduce this latency. Discussed possible means to do this, such as frequent releases, per-feature/unstable/experimental source trees and daily snapshots. Discussed automated packaging and existing/custom software repositories (e.g. Debian, Fedora) as one way to have most up-to-date code always installed on as many computers as possible.
+
+Agreed that having milestones for changing the development model is important. Decided to document the basic processes and create a rough outline of current plans a.s.a.p. (1-7 days). Most other tasks are dependent on the setup of the community site. A somewhat realistic estimate for finishing them is 1-2 months.
+
+Decided to take a look at how other security-related projects handle developers, contributors and patches.
+
+Decided that we need to agree upon how to handle the basic processes. These processes need to be documented properly and most importantly followed. A high priority was given for the "Contributing to OpenVPN" and "Reporting bugs" processes.
+
+Decided that development issues should be discussed primarily in the openvpn-devel mailinglist. IRC can be used, but not as the main communication channel due to timezone differences.
+
+Decided to have a weekly development meeting in the IRC. Weekday or time was not chosen yet.
+
+--------------020609050809040103060100--
 
