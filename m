@@ -1,11 +1,16 @@
-Message-ID: <20100113174945.12137.qmail@...1287...>
-Date: Wed, 13 Jan 2010 18:49:45 +0100
-From: Peter Stuge <peter@...1287...>
-References: <4B4DBCE6.2010500@...515...>
+Date: Thu, 14 Jan 2010 15:49:51 -0600
+From: "Karl O. Pinc" <kop@...1206...>
+References: <lypr5lvsu7.fsf@...1290...>
+	<20100109180748.26114.qmail@...1287...>
+	<lyr5pxhrp0.fsf@...1290...>
+	<20100111133111.2974.qmail@...1287...>
+	<lyfx6ciuhm.fsf@...1290...>
+In-Reply-To: <lyfx6ciuhm.fsf@...1290...> (from
+	enrico.scholz@...1291... on Mon Jan 11 08:31:01 2010)
+Message-Id: <1263505791.23987.5@...1207...>
 MIME-Version: 1.0
-In-Reply-To: <4B4DBCE6.2010500@...515...>
-Subject: Re: [Openvpn-devel] Summary of the "OpenVPN development
-	model"	meeting
+Subject: Re: [Openvpn-devel] RFE: allow 'lport 0' setup for random port
+ binding
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,33 +19,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+To: Enrico Scholz <enrico.scholz@...1291...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Samuli Seppänen wrote:
-> Most other tasks are dependent on the setup of the community site.
-> A somewhat realistic estimate for finishing them is 1-2 months.
+On 01/11/2010 08:31:01 AM, Enrico Scholz wrote:
 
-Let me know (maybe off-list) if you want some hints on setting up
-Trac with git support.
+>=20
+> no; it is because the OpenVPN client creates the same src + dst pair
+> for every connection.  I suggest to read some papers about stateful
+> firewalls before continuing this discussion.
 
-Trac is nice because it offers both tickets and a wiki. Some projects
-do a really nice job using Trac for everything by changing the
-styling; e.g. http://madwifi-project.org/ have it looking so nice
-that no second site (MediaWiki) is neccessary.
+Enrico is right.  It's in the IP RFC, the 2MSL (twice the maximum
+segment lifetime) rule.  (STD 5 is the right rfc?)
 
-Trac currently does not yet have stellar coverage for multiple
-related projects. Components can be used, but it may not be enough.
-A single 0.12 Trac can supposedly run with several repostiories, but
-I don't have experience from this (yet). Some links:
-
-http://trac.edgewall.org/ticket/130
-http://trac.edgewall.org/wiki/TracMultipleProjects
-http://trac.edgewall.org/wiki/TracMultipleProjects/SingleEnvironment
-http://trac.edgewall.org/wiki/VcRefactoring#SupportforMultipleRepositories
+I haven't otherwise been following the discussion, but if there's
+no other way to do what he wants to do with OpenVPN then
+OpenVPN is violating the RFC.
 
 
-//Peter
+Karl <kop@...1206...>
+Free Software:  "You don't pay back, you pay forward."
+                 -- Robert A. Heinlein
+
 
