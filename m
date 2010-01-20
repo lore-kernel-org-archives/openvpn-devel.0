@@ -1,8 +1,9 @@
-Message-ID: <4B56BD49.6080002@...515...>
-Date: Wed, 20 Jan 2010 10:22:33 +0200
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <4B56CBFD.7080900@...1294...>
+Date: Wed, 20 Jan 2010 10:25:17 +0100
+From: Eike Lohmann <e.lohmann@...1294...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Developer IRC meetings
+Subject: [Openvpn-devel] Crosscompile OpenVPN 2.1.1
+Reply-To: e.lohmann@...1294...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,28 +12,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi all,
 
-In our first developer IRC discussion (on 12th Jan) we decided that we
-should arrange weekly IRC meetings. The previous meeting started at
-19:00 UTC which allowed people from the U.S. and Europe to participate
-easily without staying up all night. Is this time ok for everybody?
-Also, which weekday would be best? I assume most prefer Monday - Friday.
+Hello,
 
-It was also agreed that (important) decisions should not be made in the
-IRC meetings, because some may not be able to participate. So what do
-you think we should discuss there? Should we, say, use them in Scrum
-style to keep others informed about one's doings?
+I am searching for the best way to compile OpenVPN 2.1.1 for Windows, I
+have tried it on Windows with mingw+msys and on cygwin with the native
+win32 option. Right now I am on Linux using the mingw crosscompiler and
+could compile lzo2-03, openssl-0.9.8l, pkcs11-helper-1.07.
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+When I try to configure openvpn-2.1.1(./configure
+--host=i586-mingw32msvc
+--with-lzo-headers=../lzo-2.03/usr/local/include/lzo
+--with-lzo-lib=../lzo-2.03/usr/local/lib) it stops everytime at:
 
-irc freenode net: mattock
+configure: checking for LZO Library and Header files...
+checking lzo/lzo1x.h usability... no
+checking lzo/lzo1x.h presence... no
+checking for lzo/lzo1x.h... no
+checking lzo1x.h usability... yes
+checking lzo1x.h presence... yes
+checking for lzo1x.h... yes
+checking for lzo1x_1_15_compress in -llzo... no
+configure: error: LZO headers were found but LZO library was not found
 
+lza installdir:
+openvpn-2.1.1$ ls -la ../lzo-2.03/usr/local/lib
+insgesamt 820
+drwxr-xr-x 2  4096 2010-01-19 16:55 .
+drwxr-xr-x 4  4096 2010-01-19 16:29 ..
+-rw-r--r-- 1 826766 2010-01-19 16:55 liblzo2.a
+-rwxr-xr-x 1 740 2010-01-19 16:55 liblzo2.la
+
+What exactly is missing and how to build it?
+
+Thanks and best Regards
+
+Eike
 
