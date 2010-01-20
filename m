@@ -1,14 +1,10 @@
-Message-ID: <4B571019.7040506@...515...>
-Date: Wed, 20 Jan 2010 16:15:53 +0200
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-References: <4B4DBCE6.2010500@...515...>
-	<20100113174945.12137.qmail@...1287...>
-	<4B56DD56.6000804@...515...>
-	<C9D1AE76-F7C2-4913-8F8D-0C0718922538@...1286...>
-In-Reply-To: <C9D1AE76-F7C2-4913-8F8D-0C0718922538@...1286...>
-Subject: Re: [Openvpn-devel] Summary of the "OpenVPN development model"
-	meeting
+Date: Wed, 20 Jan 2010 20:32:47 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20100120193247.GL857@...1296...>
+References: <4B570C63.1050808@...515...>
+Mime-Version: 1.0
+In-Reply-To: <4B570C63.1050808@...515...>
+Subject: Re: [Openvpn-devel] OpenVPN core development processes?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,70 +13,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
+Hi,
 
-> On Jan 20, 2010, at 04:39:18, Samuli Sepp=E4nen wrote:
->
->=20=20=20
->> Hi all,
->>
->> I dug a little deeper into Trac and to Redmine, which was another
->> candidate for the (developer) site. I took a look at Git support which
->> we need (if we need to start using Git later on). Trac has had some
->> _serious_ performance problems when using the GitPlugin to browse Git
->> repositories. These problems are apparently due to the architecture of
->> the GitPlugin. It seems they have not yet been fixed. However, one "fix"
->> may be to integrate GitWeb with Trac using the GitWebPlugin. Redmine, on
->> the other hand, seems to support Git better, but has it's share of minor
->> Git problems, too. Also, Redmine does not yet seem to support multiple
->> Git branches without dirty hacks. Trac has a very wide array of actively
->> developed plugins available. Redmine has quite a few, but not as many as
->> Trac. Trac was also the clear favorite among everyone in the community
->> site meeting. We also have in-house expertise with Trac and Python,
->> which makes it easier for us to deploy and maintain.
->>
->> I've used both Trac and Redmine, and I think the main advantage of
->> Redmine is better support for multiple projects. As the links Peter
->> provided show there are several ways to host multiple projects using
->> Trac. None of these are 100% solutions, but I'd put them in the "good
->> enough" category. Also, better support for multiple projects should be
->> coming in next release (0.12). It's not clear, however, when that
->> release will be made (see http://trac.edgewall.org/roadmap).
->>
->> I suggest we choose Trac for our developer site. I think we should still
->> have a simpler, less development-oriented site for casual users and for
->> general, non-developer content (wiki, forums, etc.). I think both Trac
->> and Redmine sites feel too developer-oriented, no matter how much the
->> themes are customized. What do you think?
->>=20=20=20=20=20
->
-> As I suggested during the IRC meetings, there is not yet a need for git a=
-nd the features of git, or another VCS, as SVN is meeting the current needs=
-.  I think the developer community would not be 'upset' by a change later i=
-f it was deemed appropriate, and so a lot of time is unnecessarily being wa=
-sted on researching this.
->
-> Until SVN is failing the organization, just keep using it.=20=20
-> ---
-> Eric Crist
->=20=20=20
-We agreed in the meeting that having _support_ for Git was important
-because we _may_ need it. Therefore it would be unwise to blindly select
-an application (say, Trac) without checking if Git is supported - at
-least on some level. I don't think the ~1 hour I spent verifying this
-was wasted time. Also, nobody is moving to Git, but we need to be able
-to do it, if necessary.
+On Wed, Jan 20, 2010 at 04:00:03PM +0200, Samuli Sepp=E4nen wrote:
+> So something like this at first:
+>=20
+> http://users.utu.fi/sjsepp/openvpn/process_contributing_to_openvpn.png
+>=20
+> ... and later this:
+>=20
+> http://users.utu.fi/sjsepp/openvpn/process_contributing_to_openvpn_2.png
 
-Agreed?
+This makes sense to me.  Especially since there is well-defined feedback
+to the patch author what will happen with his work.
 
+> The second process avoids unnecessary bottlenecks. Perhaps we could also
+> have separate "experimental", "unstable" or "feature-testing" trees
+> maintained by other people. The code from these would then flow into the
+> main development tree. I believe these trees could we managed with Git
+> even if the main development branch is in SVN.
+
+The nice thing about git is that people can very easily do "experimental=20
+branches" in their own repository, giving access to testers, without=20
+having to have write access to SVN.
+
+OTOH, the VCS used is just a tool to help the process, and not the
+primary goal :-) - so I'm definitely not going to be religious about
+git or svn or cvs or...
+
+gert
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
