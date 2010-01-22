@@ -1,10 +1,11 @@
+Message-ID: <4B5963D5.30305@...515...>
+Date: Fri, 22 Jan 2010 10:37:41 +0200
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <4B5900F3.7050206@...1298...>
-References: <4B5900F3.7050206@...1298...>
-Date: Fri, 22 Jan 2010 07:08:27 +0200
-Message-ID: <9e0cf0bf1001212108h751589bdx5ab37b792c4799ec@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] pkcs11 support in openvpn
+References: <4B570C63.1050808@...515...>
+	<20100120193247.GL857@...1296...>
+In-Reply-To: <20100120193247.GL857@...1296...>
+Subject: Re: [Openvpn-devel] OpenVPN core development processes?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +14,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: John R Pierce <pierce@...1298...>
-Cc: Openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-It uses pkcs11-helper [1].
 
-http://opensc-project.org/pkcs11-helper
+> Hi,
+>
+> On Wed, Jan 20, 2010 at 04:00:03PM +0200, Samuli Sepp=E4nen wrote:
+>=20=20=20
+>> So something like this at first:
+>>
+>> http://users.utu.fi/sjsepp/openvpn/process_contributing_to_openvpn.png
+>>
+>> ... and later this:
+>>
+>> http://users.utu.fi/sjsepp/openvpn/process_contributing_to_openvpn_2.png
+>>=20=20=20=20=20
+>
+> This makes sense to me.  Especially since there is well-defined feedback
+> to the patch author what will happen with his work.
+>
+>=20=20=20
+>> The second process avoids unnecessary bottlenecks. Perhaps we could also
+>> have separate "experimental", "unstable" or "feature-testing" trees
+>> maintained by other people. The code from these would then flow into the
+>> main development tree. I believe these trees could we managed with Git
+>> even if the main development branch is in SVN.
+>>=20=20=20=20=20
+>
+> The nice thing about git is that people can very easily do "experimental=
+=20
+> branches" in their own repository, giving access to testers, without=20
+> having to have write access to SVN.
+>
+> OTOH, the VCS used is just a tool to help the process, and not the
+> primary goal :-) - so I'm definitely not going to be religious about
+> git or svn or cvs or...
+>
+> gert
+>=20=20=20
+Ok, we can test the processes and adjust as necessary. James needs to
+take the initiative here.
 
-On Fri, Jan 22, 2010 at 3:35 AM, John R Pierce <pierce@...1298...> wrote:
-> I'm looking at the pkcs11 support in openvpn 2.1...
-> does that use the openssl engine_pkcs11 developed by the opensc group, or
-> does it directly implement the interface to a pkcs11 driver without going
-> through the openssl engine interface ?
->
->
-> upon my initial examination of the source, it appears to be the latter ?
->
->
->
-> I ask because I've been searching in vain for a sample C program that
-> utilizes the engine_pkcs11 so I can better understand how to utilize it.
->
->
->
->
->
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
 
