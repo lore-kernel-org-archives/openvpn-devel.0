@@ -1,5 +1,5 @@
-Message-ID: <4B598828.2080409@...1294...>
-Date: Fri, 22 Jan 2010 12:12:40 +0100
+Message-ID: <4B59A05D.1070707@...1294...>
+Date: Fri, 22 Jan 2010 13:55:57 +0100
 From: Eike Lohmann <e.lohmann@...1294...>
 MIME-Version: 1.0
 References: <4B56CBFD.7080900@...1294...>	
@@ -20,23 +20,19 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: Openvpn-devel@lists.sourceforge.net
+To: Openvpn-devel@lists.sourceforge.net
+Cc: Alon Bar-Lev <alon.barlev@...277...>
 
 
+After compile I copy the openvpn.exe for testing in my existing OpenVPN
+installation on my windowsbox, if i try to start it via the openvpngui
+it reports: "SSLEAY32.dll is missing"
+I tried to compile openssl no-shared but that didn't chaged anything,
+what do I have to change ?
 
-Hi Alon,
+Best regards
 
-thanks, this is the only working way for me.
-I am compiling with i586-mingw32msvc, where do i get the i686
-crosscompiler for Debian or Ubuntu? My gentoo box is ~3 years old, I
-better don't touch it. :)
-
-If I want to set some different options to the buildprocess, do I edit
-the ./build script or is there another smart way?
-
-Thanks, Eike
-
+Eike
 
 Alon Bar-Lev schrieb:
 > You should run the build script it will build all including openvpn.
