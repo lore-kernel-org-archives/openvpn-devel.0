@@ -1,11 +1,10 @@
-Message-ID: <20100121181958.14600.qmail@...1287...>
-Date: Thu, 21 Jan 2010 19:19:58 +0100
-From: Peter Stuge <peter@...1287...>
-References: <4B570C63.1050808@...515...>
-	<20100120193247.GL857@...1296...>
 MIME-Version: 1.0
-In-Reply-To: <20100120193247.GL857@...1296...>
-Subject: Re: [Openvpn-devel] OpenVPN core development processes?
+In-Reply-To: <4B5900F3.7050206@...1298...>
+References: <4B5900F3.7050206@...1298...>
+Date: Fri, 22 Jan 2010 07:08:27 +0200
+Message-ID: <9e0cf0bf1001212108h751589bdx5ab37b792c4799ec@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] pkcs11 support in openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,23 +13,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+To: John R Pierce <pierce@...1298...>
+Cc: Openvpn-devel@lists.sourceforge.net
 
-Gert Doering wrote:
-> The nice thing about git is that people can very easily do
-> "experimental branches" in their own repository, giving access to
-> testers, without having to have write access to SVN.
+It uses pkcs11-helper [1].
 
-Agree, but the hosting issue aside this is possible also from an SVN
-repo thanks to the git svn support. Try:
+http://opensc-project.org/pkcs11-helper
 
-git svn clone http://svn.openvpn.net/projects/openvpn/trunk/openvpn
-
-(You may want to create and use a gitauthors file for best results.)
-
-
-//Peter
+On Fri, Jan 22, 2010 at 3:35 AM, John R Pierce <pierce@...1298...> wrote:
+> I'm looking at the pkcs11 support in openvpn 2.1...
+> does that use the openssl engine_pkcs11 developed by the opensc group, or
+> does it directly implement the interface to a pkcs11 driver without going
+> through the openssl engine interface ?
+>
+>
+> upon my initial examination of the source, it appears to be the latter ?
+>
+>
+>
+> I ask because I've been searching in vain for a sample C program that
+> utilizes the engine_pkcs11 so I can better understand how to utilize it.
+>
+>
+>
+>
+>
 
