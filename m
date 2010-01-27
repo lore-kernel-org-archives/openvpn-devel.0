@@ -1,10 +1,10 @@
-Message-ID: <4B5FB064.3070308@...1299...>
-Date: Wed, 27 Jan 2010 16:17:56 +1300
-From: Jason Haar <Jason.Haar@...1299...>
-MIME-Version: 1.0
+Date: Wed, 27 Jan 2010 09:17:23 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20100127081723.GJ857@...1296...>
 References: <4B5E2895.4030906@...1299...> <1264523745.26411.1@...1207...>
-	<4B5F33E4.5080508@...1299...>
-In-Reply-To: <4B5F33E4.5080508@...1299...>
+	<4B5F33E4.5080508@...1299...> <4B5FB064.3070308@...1299...>
+Mime-Version: 1.0
+In-Reply-To: <4B5FB064.3070308@...1299...>
 Subject: Re: [Openvpn-devel] win32 openvpn-2.1.1 has bug with "nobind"?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,32 +14,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: Jason Haar <Jason.Haar@...1299...>
+Cc: openvpn-devel@lists.sourceforge.net
 
+Hi,
 
-I have been googling around and others reported this back in 2005!
-Looking at the code (I'm no programmer), there seems to be a hint that
-the "nobind" option only works for TCP - not UDP?
+On Wed, Jan 27, 2010 at 04:17:56PM +1300, Jason Haar wrote:
+> Confirmed. I have a server running on 1194 tcp and udp and 
 
-Is this true? There's no reason for it that I can think of, but it would
-explain what I'm seeing: in UDP mode, openvpn ignores "nobind". Even on
-my Linux box, I have "nobind" set and yet it's using 1194 for lport...
+Is this a single server listening on both ports, or is this two independent
+servers?
 
-Confirmed. I have a server running on 1194 tcp and udp and if I toggle
-between tcp and udp on the client (ie nobind remains the same), I see
-lport=1194 for udp and lport=>1023 for tcp
+(For a customer installation, I need a single server to listen on UDP/1194 
+and TCP/443, and as far as I understood so far, this was not possible)
 
+If this is indeed not possible yet, is anybody working on this?  I might
+be tempted to tackle it, but would prefer to avoid duplicate work.
 
-Jason
-
+gert
 -- 
-Cheers
-
-Jason Haar
-Information Security Manager, Trimble Navigation Ltd.
-Phone: +64 3 9635 377 Fax: +64 3 9635 417
-PGP Fingerprint: 7A2E 0407 C9A6 CAF6 2B9F 8422 C063 5EBB FE1D 66D1
-
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~gert/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
