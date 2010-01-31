@@ -1,10 +1,8 @@
-From: "Juping Jin" <juping.jin@...277...>
-Date: Wed, 27 Jan 2010 20:34:26 -0500
-Message-ID: <E3D244EFBED9453C909A48A027FBD873@...1292...>
+Message-ID: <4B6564E1.1000506@...515...>
+Date: Sun, 31 Jan 2010 13:09:21 +0200
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_0136_01CA9F90.1F21DB60"
-Subject: [Openvpn-devel] Tap Driver Windows Logo testing
+Subject: [Openvpn-devel] New development process ready
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,122 +11,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
-This is a multi-part message in MIME format.
-
-------=_NextPart_000_0136_01CA9F90.1F21DB60
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-
-This issue had been brought up before, apparently not resolved as Windows
-Logo testing warning still shows up when the driver is installed.
-
- 
-
-Is there a plan to have the driver pass Windows Logo testing? I can
-volunteer for DTM testing, if needed.
-
- 
-
-Thanks.
-
-Juping
-
-
-------=_NextPart_000_0136_01CA9F90.1F21DB60
-Content-Type: text/html; charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" xmlns:w=3D"urn:sc=
-hemas-microsoft-com:office:word" xmlns=3D"http://www.w3.org/TR/REC-html40">
+Hi all,
 
-<head>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
-<style>
-<!--
- /* Font Definitions */
- @font-face
-	{font-family:SimSun;
-	panose-1:2 1 6 0 3 1 1 1 1 1;}
-@font-face
-	{font-family:Verdana;
-	panose-1:2 11 6 4 3 5 4 4 2 4;}
-@font-face
-	{font-family:"\@SimSun";
-	panose-1:2 1 6 0 3 1 1 1 1 1;}
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman";}
-a:link, span.MsoHyperlink
-	{color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:Verdana;
-	color:navy;
-	font-weight:normal;
-	font-style:normal;
-	text-decoration:none none;}
-@page Section1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.25in 1.0in 1.25in;}
-div.Section1
-	{page:Section1;}
--->
-</style>
+I discussed the main development process of OpenVPN with James and a few
+community developers in the IRC. This is what I ended up with:
 
-</head>
+http://users.utu.fi/sjsepp/openvpn/getting_code_to_openvpn.png
 
-<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
+Let me know what you think - especially if there are problems that need
+to be fixed. The diagram itself should be pretty self-explanatory. I'll
+summarize the main points here:
 
-<div class=3DSection1>
+- James maintains the "stable" OpenVPN tree and take care of stable releases
+- All code goes to "stable" through a "testing" tree
+- Merges from testing to stable are discussed on Thursday's meetings
+(19:00 UTC, #openvpn-discussion at irc.freenode.net)
+- James merges stable patches from "testing" to "stable" on Thu-Fri
+- If necessary, invasive new features are tested in separate
+feature-testing trees which are kept in sync with testing
 
-<p class=3DMsoNormal><font size=3D2 color=3Dnavy face=3DVerdana><span style=
-=3D'font-size:
-10.0pt;font-family:Verdana;color:navy'>This issue had been brought up befor=
-e,
-apparently not resolved as Windows Logo testing warning still shows up when=
- the
-driver is installed.<o:p></o:p></span></font></p>
+Use of automated package building and software repositories should help
+reduce the latency between introduction and detection of a bug. I'll
+start working on this soon.
 
-<p class=3DMsoNormal><font size=3D2 color=3Dnavy face=3DVerdana><span style=
-=3D'font-size:
-10.0pt;font-family:Verdana;color:navy'><o:p>&nbsp;</o:p></span></font></p>
+Now all we need are people willing and capable of maintaining the
+"testing" tree. Any volunteers or suggestions :)?
 
-<p class=3DMsoNormal><font size=3D2 color=3Dnavy face=3DVerdana><span style=
-=3D'font-size:
-10.0pt;font-family:Verdana;color:navy'>Is there a plan to have the driver p=
-ass
-Windows Logo testing? I can volunteer for DTM testing, if needed.<o:p></o:p=
-></span></font></p>
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-<p class=3DMsoNormal><font size=3D2 color=3Dnavy face=3DVerdana><span style=
-=3D'font-size:
-10.0pt;font-family:Verdana;color:navy'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 color=3Dnavy face=3DVerdana><span style=
-=3D'font-size:
-10.0pt;font-family:Verdana;color:navy'>Thanks.<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 color=3Dnavy face=3DVerdana><span style=
-=3D'font-size:
-10.0pt;font-family:Verdana;color:navy'>Juping<o:p></o:p></span></font></p>
-
-</div>
-
-</body>
-
-</html>
-
-------=_NextPart_000_0136_01CA9F90.1F21DB60--
+irc freenode net: mattock
 
 
