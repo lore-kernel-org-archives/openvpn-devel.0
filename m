@@ -1,15 +1,8 @@
-Message-ID: <20100201154109.29272.qmail@...1287...>
-Date: Mon, 1 Feb 2010 16:41:09 +0100
-From: Peter Stuge <peter@...1287...>
-References: <4B65724F.6080201@...515...>
-	<9e0cf0bf1001310414i6462b9a9p6909b70978348a49@...278...>
-	<4B657BC7.5030004@...515...>
-	<9e0cf0bf1001310459v345ede35mfa4b8233c65bc666@...278...>
-	<4B65724F.6080201@...515...> <20100201002633.4356.qmail@...1287...>
-	<4B66C9C4.7090808@...515...>
+Message-ID: <4B672F5E.9040106@...1299...>
+Date: Tue, 02 Feb 2010 08:45:34 +1300
+From: Jason Haar <Jason.Haar@...1299...>
 MIME-Version: 1.0
-In-Reply-To: <4B66C9C4.7090808@...515...>
-Subject: Re: [Openvpn-devel] Summary of the IRC meeting (28th Jan 2010)
+Subject: [Openvpn-devel] is there an official bug reporting mechanism?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,24 +11,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: OpenVPN <openvpn-users@lists.sourceforge.net>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Samuli Seppänen wrote:
-> > OpenID
-> 
-> I'm somewhat familiar with OpenID but I need to take another look
-> at it. SF.net supports it, so the same OpenID could be used for the
-> SF.net "openvpn" project (should we make use of it) as well as the
-> community site Trac instance.
+Hi there
 
-SF can be an OpenID provider when that is enabled (I belive each user
-needs to do so), but I'm not sure if SF accepts external OpenID
-providers. The Trac auth plugin would have no problem accepting
-logins with SF OpenIDs.
+I think I've found bugs in openvpn (nobind doesn't work with UDP) and
+the openvpnserv.exe for Windows (sometimes doesn't fully close down -
+meaning you can't restart openvpn.exe), is there an official channel for
+reporting bugs?
 
+Thanks
 
-//Peter
+-- 
+Cheers
+
+Jason Haar
+Information Security Manager, Trimble Navigation Ltd.
+Phone: +64 3 9635 377 Fax: +64 3 9635 417
+PGP Fingerprint: 7A2E 0407 C9A6 CAF6 2B9F 8422 C063 5EBB FE1D 66D1
+
 
