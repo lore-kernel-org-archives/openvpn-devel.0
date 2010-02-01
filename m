@@ -1,14 +1,10 @@
-Message-ID: <20100201002633.4356.qmail@...1287...>
-Date: Mon, 1 Feb 2010 01:26:33 +0100
+Message-ID: <20100201034459.1253.qmail@...1287...>
+Date: Mon, 1 Feb 2010 04:44:59 +0100
 From: Peter Stuge <peter@...1287...>
-References: <4B65724F.6080201@...515...>
-	<9e0cf0bf1001310414i6462b9a9p6909b70978348a49@...278...>
-	<4B657BC7.5030004@...515...>
-	<9e0cf0bf1001310459v345ede35mfa4b8233c65bc666@...278...>
-	<4B65724F.6080201@...515...>
+References: <8356AED8-27DF-4813-A0DB-667E437ECF4F@...1286...>
+	<1264995301.10486.3@...1207...>
 MIME-Version: 1.0
-In-Reply-To: <9e0cf0bf1001310459v345ede35mfa4b8233c65bc666@...278...>
-	<4B65724F.6080201@...515...>
+In-Reply-To: <1264995301.10486.3@...1207...>
 Subject: Re: [Openvpn-devel] Summary of the IRC meeting (28th Jan 2010)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,83 +14,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Samuli Seppänen wrote:
-> Decided to start with a single Trac-based site for the whole
-> community rather than have separate user/developer sites.
-
-I think this is a good way to get some content going, even if it
-turns out that the solution is inadequate sometime in the future.
-
-
-> Discussed community site spam prevention in some length:
+Karl O. Pinc wrote:
+> > I do not feel the forums and mailing list need to be synchronized.
+> > They are two different mediums, and should be treated as such.
 > 
-> * There is an anti-spam plugin for Trac (see below)
-> * A proper user registration process needs to be chosen - not too
->   bureaucratical but not too automated, either
+> I disagree.
 
-In this context I'd like to suggest accepting OpenID login in Trac.
+I would also like to unify forums and mailing lists, for purely
+egotistical reasons - I really dislike the web.
 
-When I first learned about OpenID I was very sceptical, but now that
-I have implemented it for one Trac I actually really like it.
+My idea for this since many years is to have an IMAP interface to
+forum databases, so that an email program can be used to access the
+forum contents. It never progressed far beyond the idea stage though,
+except maybe for small involvement with the BincIMAP project.
+BincIMAP has backend abstraction so a SQL backend should be kindof
+straightforward.
 
-For those not yet familiar with OpenID, the idea is to let a web site
-(really any web site) provide authentication service for your users.
-OpenID specifies the API used between service (Trac) and
-authenticator (other web site) and this way, users only need to log
-in at one place.
-
-This sounds like a gaping hole, but in combination with email address
-verification before allowing write access in Trac it is pretty
-efficient - and convenient.
-
-Many different web sites are OpenID providers, and there are various
-packages available for setting up your own OpenID provider on a URL
-that you control.
-
-To log in, you give the URL to that OpenID provider (which can be any
-web page, OpenID provider info can be added in meta tags) and then
-you log in over there, and finally Trac checks with $overthere that
-you are logged in.
-
-I think the email address verification part is important.
-
-
-http://bitbucket.org/Dalius/authopenid-plugin/
-
-(I have an ebuild in my overlay at http://stuge.se/overlay.txt)
-
-
-Alon Bar-Lev wrote:
-> Trac is promises to provide all but provides none, I really don't
-> know which project you managed with Trac, but without ticket
-> dependencies
-
-There's a plugin for it:
-
-http://trac-hacks.org/wiki/MasterTicketsPlugin
-
-
-> and without proper CC lists
-
-Another plugin:
-
-http://trac-hacks.org/wiki/TracNotification
-
-
-> and workflow it is difficult to manage a real project.
-
-Hm - please expand on what you mean by workflow?
-
-
-> 2. ViewVC/ViewGIT/Whatever - Browse code.
-
-I agree that e.g. git-web is much nicer than Trac's source viewer but
-again it's nice to have something integrated.
+I believe this would help usability tremendously - I think a lot more
+users would be able to interface with forums if they had a decent
+interface without so much clutter.
 
 
 //Peter
