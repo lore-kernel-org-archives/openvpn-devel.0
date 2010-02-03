@@ -1,9 +1,9 @@
-Message-ID: <4B693D43.7060107@...515...>
-Date: Wed, 03 Feb 2010 11:09:23 +0200
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <4B69487C.9010907@...1299...>
+Date: Wed, 03 Feb 2010 22:57:16 +1300
+From: Jason Haar <Jason.Haar@...1299...>
 MIME-Version: 1.0
-References: <4B672F5E.9040106@...1299...>
-In-Reply-To: <4B672F5E.9040106@...1299...>
+References: <4B672F5E.9040106@...1299...> <4B693D43.7060107@...515...>
+In-Reply-To: <4B693D43.7060107@...515...>
 Subject: Re: [Openvpn-devel] is there an official bug reporting mechanism?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,38 +13,24 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, OpenVPN <openvpn-users@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-
-> I think I've found bugs in openvpn (nobind doesn't work with UDP) and
-> the openvpnserv.exe for Windows (sometimes doesn't fully close down -
-> meaning you can't restart openvpn.exe), is there an official channel for
-> reporting bugs?
+On 02/03/2010 10:09 PM, Samuli Sepp=E4nen wrote:
+> Hi Jason,
 >
-> Thanks
->
->=20=20=20
+> You can file bugs to our SF.net bug tracker:
+>  =20
 
-
-Hi Jason,
-
-You can file bugs to our SF.net bug tracker:
-
-http://sourceforge.net/tracker/?group_id=3D48978&atid=3D454719
-
-Although it has not been in active use lately, it's the best we got
-right now. Our new community site should be up shortly - it'll will have
-a new (and better maintained) bug tracker. The bug reports from SF.net
-tracker will be migrated to this new tracker when it's up, so your bug
-report won't get lost.
+Thanks! Done it: 2945154 and 2945147
 
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-new
-irc freenode net: mattock
+Cheers
+
+Jason Haar
+Information Security Manager, Trimble Navigation Ltd.
+Phone: +64 3 9635 377 Fax: +64 3 9635 417
+PGP Fingerprint: 7A2E 0407 C9A6 CAF6 2B9F 8422 C063 5EBB FE1D 66D1
 
 
