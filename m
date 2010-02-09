@@ -1,10 +1,12 @@
-Message-ID: <4B7177C4.5020909@...1114...>
-Date: Tue, 09 Feb 2010 15:57:08 +0100
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <20100209132645.GX9430@...1302...>
-In-Reply-To: <20100209132645.GX9430@...1302...>
-Subject: Re: [Openvpn-devel] Openvpn on Symbian?
+From: Maciej Piechotka <uzytkownik2@...277...>
+Date: Tue, 09 Feb 2010 23:13:53 +0000
+Message-ID: <1265757233.5700.48.camel@...1303...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg="pgp-sha1";
+	protocol="application/pgp-signature";
+	boundary="=-dU5ogrZ4Un5J0EFYreUM"
+Sender: news <news@...1062...>
+Subject: [Openvpn-devel] Tap-Win32 - licence and how to use
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,46 +15,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Ruben Puettmann <ruben@...1302...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--=-dU5ogrZ4Un5J0EFYreUM
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 09/02/10 14:26, Ruben Puettmann wrote:
-> 
->             hy,
-> 
-> I will ask you if there is any work in progress porting openvpn to
-> symbian os. Since 4.Feb 2010 the source code from is free available see
-> http://www.symbian.org. It would be very nice to see openvpn on my E71
-> running.
-> 
+Hello,
 
-Hi Ruben,
+I'm writing a wrapper around the TUN/TAP (for Haskell) on various
+systems. I'd like to port it on Windows however:
 
-There are no Symbian effort afaik, at least at the moment.  One of the
-main problems have been to figure out how to actually create the virtual
-tunnelling device (tun/tap driver).  But as you nicely pointed out, the
-Symbian source code is getting open which might provide the needed
-information for someone to write or port a tun/tap driver to Symbian.
-With that in place, the rest should be rather simple.
+1. There is very little documentation I found in google. There are some
+example but with little comments. Is there any documentation how such I
+initialize TUN and TAP device?
+
+2. AFAIK I can use GPL driver in BSD application. However am I allowed
+to base on GPL program how to use this driver? (Un)fortunately most
+users of TAP-Win32 is on GPL (and library I want to contribute to is on
+BSD).
+
+Regards
 
 
-kind regards,
 
-David Sommerseth
-
-
+--=-dU5ogrZ4Un5J0EFYreUM
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+Version: GnuPG v2.0.14 (GNU/Linux)
 
-iEYEARECAAYFAktxd8AACgkQDC186MBRfrpcMgCfc63wloGwigvu1Uu5fuMn0JDQ
-HBwAn2Hu0mcriCGVPB7mJGooMTAcQcF7
-=1ZBi
+iEYEABECAAYFAktx7DEACgkQNtHxai7FolyvDwCglcqc88I62VIB7xMm6mNeETyp
+N+oAnAmWnI5tEPFTcHQ9P0B6MQczSo2Q
+=+/B8
 -----END PGP SIGNATURE-----
+
+--=-dU5ogrZ4Un5J0EFYreUM--
+
+
 
