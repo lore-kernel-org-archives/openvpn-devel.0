@@ -1,10 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <4B7AE8D6.3020304@...1114...>
-References: <4B7AE8D6.3020304@...1114...>
+In-Reply-To: <4B7BF370.8070807@...1114...>
+References: <4B7BF370.8070807@...1114...>
 From: JuanJo Ciarlante <jjo+ml@...410...>
-Date: Wed, 17 Feb 2010 18:46:47 +0100
-Message-ID: <7bb795fd1002170946u40bb0ea7rea4bbf710eaa0daa@...278...>
-Subject: Re: [Openvpn-devel] openvpn-testing tree available
+Date: Wed, 17 Feb 2010 18:55:00 +0100
+Message-ID: <7bb795fd1002170955u7b241a1euff7f313480dabf09@...278...>
+Subject: Re: [Openvpn-devel] [IPv6 support] - usage of gethostbyname() in
+	getaddr()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,105 +17,67 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 To: David Sommerseth <openvpn.list@...1114...>
-Cc: Openvpn-devel@lists.sourceforge.net, James Yonan <jim@...41...>
+Cc: Openvpn-devel@lists.sourceforge.net
 
-Hi David,
-
-On Tue, Feb 16, 2010 at 7:49 PM, David Sommerseth
+On Wed, Feb 17, 2010 at 2:47 PM, David Sommerseth
 <openvpn.list@...1114...> wrote:
 > -----BEGIN PGP SIGNED MESSAGE-----
 > Hash: SHA1
 >
+> Hi all!
 >
-> Greetings all!
+> When reviewing the patch "FQDN for routes should expand to all IPs"
+> today, I spotted that there is a function called getaddr() (renamed to
+> getaddr_all() in the mentioned patch). =A0This function again makes use of
+> the old gethostbyname() function. =A0This is not compatible with IPv6
+> addresses.
 >
-> I am now announcing the openvpn-testing.git tree as open. =A0Gert has
-> already been announcing the availability as a response to some merge
-> conflicts. =A0Anyhow, those issues are solved.
+> I would strongly recommend a move to getaddrinfo() instead. =A0This is
+> based on an article [1] written by Ulrich Drepper, who is a glibc
+> maintainer. =A0Any thoughts about that? =A0It might even be more functions
+> needing to be ported as well. =A0The mentioned article lists most
+> important functions which should be ported to newer APIs.
+>
+> Any comments on this issue would be appreciated. =A0Another issue is of
+> course how this will influence other platforms than Linux.
 
-\o/ !
+Plenty adhere to this.
 
->
-> The tree is also tagged with all 2.1 releases and RC releases. =A0I have
-> not bothered with tagging the 2.1 beta or any 2.0 releases at all. =A0If
-> somebody finds it useful and wants it, please generate a list of tag
-> names and commit ID's and I'll update the tree.
->
->
-> What's next:
->
-> - - JuanJo Ciarliante's IPv6 patches for the transport layer.
-> =A0There are some merge conflicts here as well, which we need to solve.
-> =A0It's most probably due to different merge roots between our copies of
-> =A0the SVN tree. =A0I hope JJO and I can solve this soon, then it will go
-> =A0into the allmerged branch immediately.
+In my ipv6 transport patch I only use getaddrinfo()/getnameinfo(), not
+only for the 'nixes, but also for the win32 build (x-compiled under Linux
+with mingw32xxx and tested under wine by me and by other fellow
+in the field [1] ).
 
-Cool, thanks a lot for the heads-up.
+[1]  http://github.com/jjo/openvpn-ipv6/downloads
+       naked openvpn.exe built w/ipv6 transport support
 
-I'll try to solve this before by next week, it's
-sooo great to see all the community contributed bits
-being taken good care   :)))
-
->
-> - - Go through the mailing list to pick up branches which has not been
-> =A0included into the the OpenVPN SVN tree. =A0I will probably not go much
-> =A0further than the last 9-12 months. =A0If you have a patch you want to
-> =A0be sure gets into the tree, please raise the attention by sending an
-> =A0e-mail to this mailing list. =A0I don't intend to deliberately ignore
-> =A0patches.
->
-> =A0James: Do you have an overview over patches you have included already?
-> =A0And patches you've received which has not been processed yet?
->
-> - - The eurephia patch got a review, with one comment I'd like to
-> =A0investigate a little bit more (If ctx->current_cert->sha1_hash is
-> =A0always valid). =A0When this is done, the feat_eurephia branch will be
-> =A0merged into the allmerged branch.
->
-> - - Update the developers documentation on the wiki, with some
-> =A0"requirements" to get patches included. =A0For already submitted patch=
-es
-> =A0I will be a little bit nicer. =A0Patches after this mail should strive
-> =A0to follow the guidelines found in the mail discussion here [1]. =A0All
-> =A0patches are *expected* to apply cleanly against the latest SVN
-> =A0BETA21/openvpn branch or the git master branch.
->
-> The next big test for this is when James does some more commits, and to
-> see how smoothly it will merge in those changes.
->
->
-> For those wanting to contact me, I'm available on e-mail:
-> <dazo@...384...> or on IRC (freenode, #openvpn-devel)
->
-> The git tree is available here:
-> <git://openvpn.git.sourceforge.net/gitroot/openvpn/openvpn-testing.git>
->
-> Web view of the git tree can be found here:
-> <http://openvpn.git.sourceforge.net/git/gitweb.cgi?p=3Dopenvpn/openvpn-te=
-sting.git>
->
 >
 >
 > kind regards,
-
-Cheers,
-
 >
 > David Sommerseth
 >
 >
-> [1]
-> <http://sourceforge.net/mailarchive/message.php?msg_name=3D4B6A9823.80108=
-00%40topphemmelig.net>
 >
+> [1] <http://people.redhat.com/drepper/userapi-ipv6.html>
 > -----BEGIN PGP SIGNATURE-----
 > Version: GnuPG v1.4.10 (GNU/Linux)
 > Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 >
-> iEYEARECAAYFAkt66NMACgkQDC186MBRfrp4KACfQpqkUvcbB2GLxiBUx/ETX1Xw
-> 0ZwAoIbajA0Q5/Rm7cP+AUGgNPezlEwg
-> =3DMvpN
+> iEYEARECAAYFAkt783AACgkQDC186MBRfrrIxgCgnpCvbJMWzxutz4You8Qj8Qki
+> DFcAoJp5eGTHkee7Lz6AU+gKl5BOXiNv
+> =3D5ITZ
 > -----END PGP SIGNATURE-----
+>
+> -------------------------------------------------------------------------=
+-----
+> SOLARIS 10 is the OS for Data Centers - provides features such as DTrace,
+> Predictive Self Healing and Award Winning ZFS. Get Solaris 10 NOW
+> http://p.sf.net/sfu/solaris-dev2dev
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 >
 
 
