@@ -1,9 +1,11 @@
-Message-ID: <4B7BF370.8070807@...1114...>
-Date: Wed, 17 Feb 2010 14:47:28 +0100
+Message-ID: <4B7BF17F.4080109@...1114...>
+Date: Wed, 17 Feb 2010 14:39:11 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [IPv6 support] - usage of gethostbyname() in
-	getaddr()
+References: <4B7AE8D6.3020304@...1114...>
+	<jwvr5okih0h.fsf-monnier+gmane.network.openvpn.devel@...1269...>
+In-Reply-To: <jwvr5okih0h.fsf-monnier+gmane.network.openvpn.devel@...1269...>
+Subject: Re: [Openvpn-devel] [PATCH] FQDN for routes should expand to all IPs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,42 +16,45 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: Openvpn-devel@lists.sourceforge.net
+To: Stefan Monnier <monnier@...1268...>
+Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-Hi all!
+On 17/02/10 06:17, Stefan Monnier wrote:
+> [ I've sent this in the past already, but just trying to make sure it
+>   doesn't get lost somewhere. ]
+> 
+> When specifiying an FQDN for the network part of a route, OpenVPN should
+> setup a route for each IP associated with that FQDN.  Currently, it just
+> chooses one of the IPs at random instead, which leads to inconsistent
+> and unpredictable behavior since subsequent connections to that FQDN will
+> sometimes go through the VPN and sometimes not.
+> 
+> The patch below works for me, and I'd welcome any help in bringing it to
+> a state where it can be included in the mainline code.  It was made
+> against the openvpn-testing/master code.
+> 
 
-When reviewing the patch "FQDN for routes should expand to all IPs"
-today, I spotted that there is a function called getaddr() (renamed to
-getaddr_all() in the mentioned patch).  This function again makes use of
-the old gethostbyname() function.  This is not compatible with IPv6
-addresses.
+Thanks a lot for you patch!  In general, it very looks good.  Can you
+elaborate a little bit on how you have tested this patch?  Have you
+checked it for memory leaks?  (e.g. using valgrind)  What happens if no
+FQDNs are found?
 
-I would strongly recommend a move to getaddrinfo() instead.  This is
-based on an article [1] written by Ulrich Drepper, who is a glibc
-maintainer.  Any thoughts about that?  It might even be more functions
-needing to be ported as well.  The mentioned article lists most
-important functions which should be ported to newer APIs.
-
-Any comments on this issue would be appreciated.  Another issue is of
-course how this will influence other platforms than Linux.
+With some good answers and if this gets acceptance from more people in
+regards to usability, I'm giving it an ACK.
 
 
 kind regards,
 
 David Sommerseth
-
-
-
-[1] <http://people.redhat.com/drepper/userapi-ipv6.html>
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkt783AACgkQDC186MBRfrrIxgCgnpCvbJMWzxutz4You8Qj8Qki
-DFcAoJp5eGTHkee7Lz6AU+gKl5BOXiNv
-=5ITZ
+iEYEARECAAYFAkt78XoACgkQDC186MBRfroAnQCeJpU1wsEvAF5EvoFGhmlpU6DC
+7VIAmgNo0hHLgcr4T+Y6x4HR9COGLQMV
+=bAG6
 -----END PGP SIGNATURE-----
 
