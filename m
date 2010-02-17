@@ -1,11 +1,11 @@
-Message-ID: <4B7BF17F.4080109@...1114...>
-Date: Wed, 17 Feb 2010 14:39:11 +0100
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <4B7AE8D6.3020304@...1114...>
-	<jwvr5okih0h.fsf-monnier+gmane.network.openvpn.devel@...1269...>
-In-Reply-To: <jwvr5okih0h.fsf-monnier+gmane.network.openvpn.devel@...1269...>
-Subject: Re: [Openvpn-devel] [PATCH] FQDN for routes should expand to all IPs
+Date: Wed, 17 Feb 2010 17:20:35 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20100217162035.GS9556@...1296...>
+References: <4B7BF370.8070807@...1114...>
+Mime-Version: 1.0
+In-Reply-To: <4B7BF370.8070807@...1114...>
+Subject: Re: [Openvpn-devel] [IPv6 support] - usage of gethostbyname() in
+	getaddr()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,47 +14,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Stefan Monnier <monnier@...1268...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: Openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi,
 
-On 17/02/10 06:17, Stefan Monnier wrote:
-> [ I've sent this in the past already, but just trying to make sure it
->   doesn't get lost somewhere. ]
+On Wed, Feb 17, 2010 at 02:47:28PM +0100, David Sommerseth wrote:
+> When reviewing the patch "FQDN for routes should expand to all IPs"
+> today, I spotted that there is a function called getaddr() (renamed to
+> getaddr_all() in the mentioned patch).  This function again makes use of
+> the old gethostbyname() function.  This is not compatible with IPv6
+> addresses.
+
+This is actually "existing code", and not something changed by the patch
+(just to point that out to readers that have not reviewed the patch).
+
+
+> I would strongly recommend a move to getaddrinfo() instead.  This is
+> based on an article [1] written by Ulrich Drepper, who is a glibc
+> maintainer.  Any thoughts about that?  It might even be more functions
+> needing to be ported as well.  The mentioned article lists most
+> important functions which should be ported to newer APIs.
 > 
-> When specifiying an FQDN for the network part of a route, OpenVPN should
-> setup a route for each IP associated with that FQDN.  Currently, it just
-> chooses one of the IPs at random instead, which leads to inconsistent
-> and unpredictable behavior since subsequent connections to that FQDN will
-> sometimes go through the VPN and sometimes not.
-> 
-> The patch below works for me, and I'd welcome any help in bringing it to
-> a state where it can be included in the mainline code.  It was made
-> against the openvpn-testing/master code.
-> 
+> Any comments on this issue would be appreciated.  Another issue is of
+> course how this will influence other platforms than Linux.
 
-Thanks a lot for you patch!  In general, it very looks good.  Can you
-elaborate a little bit on how you have tested this patch?  Have you
-checked it for memory leaks?  (e.g. using valgrind)  What happens if no
-FQDNs are found?
+Well, let me answer the second thing first (because I've spent a while
+thinking about this and whether I want to make the IPv6 payload stuff
+#ifdef'ed from the start).
 
-With some good answers and if this gets acceptance from more people in
-regards to usability, I'm giving it an ACK.
+On the Unix side of things, I'm fairly sure that any platform recent enough
+to have tun/tap support (which isn't all of them, just *BSD, Solaris,
+Linux and MacOS) also has getaddrinfo() and IPv6.
+
+I don't know a thing about Windows programming, though.
+
+OpenSSH tackles this by providing their own getaddrinfo() function (from
+OpenBSD) if the system has no such function, or if it is broken, and
+"configure" seems to do a good job in deciding what to do.
 
 
-kind regards,
+Now, on the question of whether we want / should use it.  Right now, the
+"upstream" code only uses gethostbyname() because it wouldn't know what to 
+do with an IPv6 record anyway, if any such record were to be returned - the 
+code is used for connection handling (IPv4 only) and for setting routes 
+to FQDN (again, IPv4 only).
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+In the long term, this whole area of the code will see some changes :-)
+- when merging jjo's tree, we should already see use of getaddrinfo() for 
+connection handling, and if people see the need for it, I might need to 
+implement setting of IPv6 routes to FQDN targets.
 
-iEYEARECAAYFAkt78XoACgkQDC186MBRfroAnQCeJpU1wsEvAF5EvoFGhmlpU6DC
-7VIAmgNo0hHLgcr4T+Y6x4HR9COGLQMV
-=bAG6
------END PGP SIGNATURE-----
+
+So... if you'd ask me what I would to today, the answer would be "leave
+the code as it is, merge jjo's code, and then revisit what he already
+had to change for IPv6 connection handling".  If gethostbyname() is still
+there, come back and make this lookup function v4- and v6-capable, and
+implement FQDN routes for IPv6 :-)
+
+gert
+-- 
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~gert/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
