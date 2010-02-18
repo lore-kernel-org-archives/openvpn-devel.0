@@ -1,8 +1,10 @@
-Message-ID: <4B7D8D25.40302@...515...>
-Date: Thu, 18 Feb 2010 20:55:33 +0200
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Testers for OpenVPN testing tree
+Date: Thu, 18 Feb 2010 20:25:30 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20100218192530.GC9556@...1296...>
+References: <1266515908-24807-1-git-send-email-kop@...1304...>
+Mime-Version: 1.0
+In-Reply-To: <1266515908-24807-1-git-send-email-kop@...1304...>
+Subject: Re: [Openvpn-devel] Make sample-scripts/verify-cn dynamic
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,29 +13,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: "Karl O. Pinc" <kop@...1206...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi guys,
+Hi,
 
-If we have time in today's meeting, we could discuss how to organize
-testing for OpenVPN. For example, how to be (reasonably) sure that a new
-piece of code has been tested by enough people before it ends up in
-"stable". A couple of things come to mind... first, I think it would be
-beneficial if we had a dedicated group of testers who are willing to run
-the latest "testing" version and report any regressions a.s.a.p. Also,
-as has been suggested earlier, the testers should be encouraged to send
-positive ("works for me") reports, too. Otherwise we don't know if lack
-of problem reports is caused by lack of use or by lack of problems.
+On Thu, Feb 18, 2010 at 11:58:27AM -0600, Karl O. Pinc wrote:
+> Re: [PATCH] Change verify-cn so cn is no longer hardcoded in openvpn's config file
 
-Btw. I think we got our first volunteer tester today (thanks Wayne!).
+ACK from my end.  The code looks sane and I can see the usefulness.
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+(Backwards compatibility would be very easy to add - "if the argument does
+not start with a "/", treat as CN - but as you said, this is just a 
+sample script anyway).
 
-irc freenode net: mattock
-
+gert
+-- 
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~gert/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
