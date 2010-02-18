@@ -1,8 +1,11 @@
-From: David Sommerseth <openvpn.list@...1114...>
-Date: Thu, 18 Feb 2010 21:23:48 +0100
-Message-Id: <1266524628-9222-1-git-send-email-openvpn.list@...1114...>
-Subject: [Openvpn-devel] [PATCH] Do not randomize resolving of IP addresses
-	in getaddr()
+Date: Thu, 18 Feb 2010 21:35:10 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20100218203510.GH9556@...1296...>
+References: <1266524628-9222-1-git-send-email-openvpn.list@...1114...>
+Mime-Version: 1.0
+In-Reply-To: <1266524628-9222-1-git-send-email-openvpn.list@...1114...>
+Subject: Re: [Openvpn-devel] [PATCH] Do not randomize resolving of IP
+	addresses in getaddr()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,44 +14,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: David Sommerseth <dazo@...384...>
+Content-Disposition: inline
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: David Sommerseth <dazo@...384...>, openvpn-devel@lists.sourceforge.net
 
-From: David Sommerseth <dazo@...384...>
+Hi,
 
-Based on a discussion on the mailing list and in the IRC meeting Feb 18,
-it was decided to remove get_random() from the getaddr() function as that
-can conflict with round-robin/randomization done by DNS servers.
+ACK for the idea, but this...
 
-This change must be documented in the release notes.
+On Thu, Feb 18, 2010 at 09:23:48PM +0100, David Sommerseth wrote:
+> -	      /* choose address randomly, for basic load-balancing capability */
+> -	      ia.s_addr = *(in_addr_t *) (h->h_addr_list[get_random () % n]);
+> +	      ia.s_addr = *(in_addr_t *) (h->h_addr_list[0]);
+>  	    }
 
-Signed-off-by: David Sommerseth <dazo@...384...>
----
- socket.c |    5 ++---
- 1 files changed, 2 insertions(+), 3 deletions(-)
+... is sort of redundant, because the code further up already sets
 
-diff --git a/socket.c b/socket.c
-index fecc398..e42ccb9 100644
---- a/socket.c
-+++ b/socket.c
-@@ -212,12 +212,11 @@ getaddr (unsigned int flags,
- 		++n;
- 	      ASSERT (n >= 2);
- 
--	      msg (D_RESOLVE_ERRORS, "RESOLVE: NOTE: %s resolves to %d addresses, choosing one by random",
-+	      msg (D_RESOLVE_ERRORS, "RESOLVE: NOTE: %s resolves to %d addresses, choosing the first resolved IP address",
- 		   hostname,
- 		   n);
- 
--	      /* choose address randomly, for basic load-balancing capability */
--	      ia.s_addr = *(in_addr_t *) (h->h_addr_list[get_random () % n]);
-+	      ia.s_addr = *(in_addr_t *) (h->h_addr_list[0]);
- 	    }
- 	}
- 
+      ia.s_addr = *(in_addr_t *) (h->h_addr_list[0]);
+
+- in about line 202 in my copy of socket.c:
+
+---------------- snip -------------
+      ia.s_addr = *(in_addr_t *) (h->h_addr_list[0]);
+
+      if (ia.s_addr)
+        { 
+          if (h->h_addr_list[1]) /* more than one address returned */
+
+---------------- snip -------------
+
+so the if() could be reduced even further, to just print the message.
+
+gert
+
+
 -- 
-1.6.6
-
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~gert/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
