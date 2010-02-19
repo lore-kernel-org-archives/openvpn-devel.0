@@ -1,11 +1,10 @@
-Date: Fri, 19 Feb 2010 17:49:40 +0100
+Date: Fri, 19 Feb 2010 18:39:40 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20100219164940.GW9556@...1296...>
-References: <4B7EBE5C.60702@...1114...>
+Message-ID: <20100219173940.GX9556@...1296...>
+References: <1266595502.31441.7@...1207...> <4B7EB9D5.7090104@...1114...>
 Mime-Version: 1.0
-In-Reply-To: <4B7EBE5C.60702@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH] verb 5 logging wrongly reports received
-	bytes
+In-Reply-To: <4B7EB9D5.7090104@...1114...>
+Subject: Re: [Openvpn-devel] [PATCH] FQDN for routes should expand to all IPs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,18 +17,16 @@ Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
 To: David Sommerseth <openvpn.list@...1114...>
-Cc: Openvpn-devel@lists.sourceforge.net
+Cc: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Fri, Feb 19, 2010 at 05:37:48PM +0100, David Sommerseth wrote:
-> ACK
-> 
-> Patch looks sensible, and applies cleanly to the master branch.
+On Fri, Feb 19, 2010 at 05:18:29PM +0100, David Sommerseth wrote:
+> I initially meant a more dynamic approach, changing it via the config
+> file at runtime - by modifying a global C variable.  But I agree, doing
+> it via the ./configure script should really be sufficient. 
 
-ACK.   I can see the reason for doing so (as I'll have a device "soon"
-that will return 0 from tun device reads under certain circumstances)
-and it doesn't break current usage.
+ACK.
 
 gert
 
