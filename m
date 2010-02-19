@@ -1,17 +1,8 @@
-Date: Fri, 19 Feb 2010 16:53:31 -0600
-From: "Karl O. Pinc" <kop@...1206...>
-References: <4B7E71A5.3020806@...1114...>
-	<20100219134650.GR9556@...1296...>
-	<4B7EA05C.5000802@...1114...>
-	<20100219145623.GU9556@...1296...>
-	<jwvk4u9ce0t.fsf-monnier+inbox@...1269...>
-	<20100219193304.GZ9556@...1296...>
-	<20100219224249.GE9556@...1296...>
-In-Reply-To: <20100219224249.GE9556@...1296...> (from
-	gert@...1296... on Fri Feb 19 16:42:49 2010)
-Message-Id: <1266620011.31441.15@...1207...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [IPv6] Merge conflicts in mroute.c
+From: David Sommerseth <openvpn.list@...1114...>
+Date: Fri, 19 Feb 2010 23:57:30 +0100
+Message-Id: <1266620250-10045-1-git-send-email-openvpn.list@...1114...>
+Subject: [Openvpn-devel] [PATCH v2] Do not randomize resolving of IP
+	addresses in getaddr()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,33 +11,95 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Gert Doering <gert@...1296...>
-Cc: Openvpn-devel@lists.sourceforge.net, Stefan Monnier <monnier@...1282...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: David Sommerseth <dazo@...384...>
 
-On 02/19/2010 04:42:49 PM, Gert Doering wrote:
+From: David Sommerseth <dazo@...384...>
 
->  - the external globals in6addr_any and in6addr_loopback will not
->    be compiled in (in6_addr.c).
->=20
->    ** I expect this to cause linking problems for my code **
+(I'm withdrawing the first version, and suggesting this patch to be used instead,
+as this one follows the new feature deprecation process.)
 
+Based on a discussion on the mailing list and in the IRC meeting Feb 18,
+it was decided to remove get_random() from the getaddr() function as that
+can conflict with round-robin/randomization done by DNS servers.
 
-> As said: I would welcome contact to someone who is using
-> uClibc+OpenVPN
-> and could help me test this and adapt the code if needed.
+For now this feature is enabled by default, but can be disabled by running
+./configure with --disable-depr-random-resolv.  In the future this will be
+changed to being disabled by default before getting removed.
 
-To run the risk of harping on a theme....
+Signed-off-by: David Sommerseth <dazo@...384...>
 
-If the problem is that someone is './configure --no-ipv6'-ing
-ipv6 away then maybe openvpn needs to have a similar ./configure
-option?  Or could ./configure just test against UCLIBC_HAS_IPV6?
+---
+ configure.ac |   17 +++++++++++++++++
+ socket.c     |   14 +++++++++++---
+ 2 files changed, 28 insertions(+), 3 deletions(-)
 
-
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                 -- Robert A. Heinlein
+diff --git a/configure.ac b/configure.ac
+index 116ff7c..7ffa903 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -911,6 +911,23 @@ if test -z "${htmldir}"; then
+ fi
+ # end workaround
+ 
++#
++# Deprecated features
++#
++# See http://www.secure-computing.net/wiki/index.php/OpenVPN/Developer_documentation
++# for more info about the feature deprecation process.
++#
++
++AC_ARG_ENABLE(depr-random-resolv,
++   [  --disable-depr-random-resolv   Deprecated feature: Randomization of hostname resolving when more than one IP address],
++   [DEPRECATE_RANDRESOLV="$enableval"],
++   [DEPRECATE_RANDRESOLV="yes"]
++)
++if test "$DEPRECATE_RANDRESOLV" = "yes"; then
++        AC_DEFINE(DEPRECATED_RANDOM_RESOLV, 1, [Deprecated feature: Randomization of hostname resolving when more than one IP address])
++fi
++
++
+ AC_OUTPUT([
+ 	Makefile
+ 	openvpn.spec
+diff --git a/socket.c b/socket.c
+index fecc398..c963a21 100644
+--- a/socket.c
++++ b/socket.c
+@@ -205,6 +205,10 @@ getaddr (unsigned int flags,
+ 	{
+ 	  if (h->h_addr_list[1]) /* more than one address returned */
+ 	    {
++#ifdef DEPRECATED_RANDOM_RESOLV
++#warning
++#warning **** DEPRECATED FEATURE ****   DEPRECATED_RANDOM_RESOLV is enabled
++#warning
+ 	      int n = 0;
+ 
+ 	      /* count address list */
+@@ -212,12 +216,16 @@ getaddr (unsigned int flags,
+ 		++n;
+ 	      ASSERT (n >= 2);
+ 
+-	      msg (D_RESOLVE_ERRORS, "RESOLVE: NOTE: %s resolves to %d addresses, choosing one by random",
+-		   hostname,
+-		   n);
++	      msg (D_RESOLVE_ERRORS, "RESOLVE: NOTE: %s resolves to %d addresses, choosing one by random."
++                   " [DEPRECATED FEATURE]", hostname, n);
+ 
+ 	      /* choose address randomly, for basic load-balancing capability */
+ 	      ia.s_addr = *(in_addr_t *) (h->h_addr_list[get_random () % n]);
++
++#else /* preferred solution */
++	      msg (D_RESOLVE_ERRORS, "RESOLVE: NOTE: %s resolves to more than one IP address, will "
++                   "use the first resolved address", hostname);
++#endif /* ENABLE_RANDOM_RESOLV */
+ 	    }
+ 	}
+ 
+-- 
+1.6.6
 
 
