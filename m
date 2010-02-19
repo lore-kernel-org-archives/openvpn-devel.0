@@ -1,10 +1,14 @@
-Date: Fri, 19 Feb 2010 18:39:40 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20100219173940.GX9556@...1296...>
-References: <1266595502.31441.7@...1207...> <4B7EB9D5.7090104@...1114...>
-Mime-Version: 1.0
-In-Reply-To: <4B7EB9D5.7090104@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH] FQDN for routes should expand to all IPs
+From: Stefan Monnier <monnier@...1282...>
+Message-ID: <jwvk4u9ce0t.fsf-monnier+inbox@...1269...>
+References: <4B7E71A5.3020806@...1114...>
+	<20100219134650.GR9556@...1296...>
+	<4B7EA05C.5000802@...1114...>
+	<20100219145623.GU9556@...1296...>
+Date: Fri, 19 Feb 2010 12:50:10 -0500
+In-Reply-To: <20100219145623.GU9556@...1296...> (Gert Doering's message of
+	"Fri, 19 Feb 2010 15:56:23 +0100")
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] [IPv6] Merge conflicts in mroute.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,24 +19,17 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: Openvpn-devel@lists.sourceforge.net
 
-Hi,
+>> I'm fine with whichever path you choose.  But just bear in mind, some
+>> systems might not have IPv6 support - which breaks portability ...
+> On the unixish side, there is no system which has tun/tap today but
+> does not have IPv6.
 
-On Fri, Feb 19, 2010 at 05:18:29PM +0100, David Sommerseth wrote:
-> I initially meant a more dynamic approach, changing it via the config
-> file at runtime - by modifying a global C variable.  But I agree, doing
-> it via the ./configure script should really be sufficient. 
+What about embedded systems using uclibc compiled "without ipv6 support"?
+Or is that some different kind of "support" that wouldn't affect your code?
 
-ACK.
 
-gert
-
--- 
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~gert/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+        Stefan
 
