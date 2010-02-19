@@ -1,10 +1,10 @@
-Message-ID: <4B7EB9D5.7090104@...1114...>
-Date: Fri, 19 Feb 2010 17:18:29 +0100
+Message-ID: <4B7EBE5C.60702@...1114...>
+Date: Fri, 19 Feb 2010 17:37:48 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1266595502.31441.7@...1207...>
-In-Reply-To: <1266595502.31441.7@...1207...>
-Subject: Re: [Openvpn-devel] [PATCH] FQDN for routes should expand to all IPs
+Content-Type: multipart/mixed; boundary="------------040305090407070908080705"
+Subject: [Openvpn-devel] [PATCH] verb 5 logging wrongly reports received
+	bytes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,54 +13,107 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Openvpn-devel@lists.sourceforge.net
+
+This is a multi-part message in MIME format.
+--------------040305090407070908080705
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: "Karl O. Pinc" <kop@...1206...>
-Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 19/02/10 17:05, Karl O. Pinc wrote:
-> On 02/19/2010 03:02:40 AM, David Sommerseth wrote:
->> On 19/02/10 04:18, Stefan Monnier wrote:
-> 
->>>
->>> If it's a config var, it could indeed just be a global var, so I
->> don't
->>> think it would be very complex.  But that's really not something 
->> the
->>> user should have to configure.
->>
->> That depends on the solution we end up with.
-> 
-> What do you mean "configure"?
-> 
-> This is exactly the sort of thing that a 
-> 
-> ./configure --connection-limit=20
-> 
-> sort of configuration setting is good for.  Someone
-> might want to frob it, but does it need to be dynamically
-> configurable in the openvpn config file?  If you make
-> the default large enough for anybody then the embedded systems
-> people can reconfigure their binary to shrink it need be.
+With --verb 5, openvpn logs a single letter (rwRW) for each package
+received or sent. I recently ran into a problem with the tun device on
+Linux where the read from that device returned 0. Unfortunately this was
+also logged as "r", which made me assume that openvpn had received
+something, while it actually hadn't.
 
-I initially meant a more dynamic approach, changing it via the config
-file at runtime - by modifying a global C variable.  But I agree, doing
-it via the ./configure script should really be sufficient.  This makes
-more sense for me now.
+(See https://dev.openwrt.org/ticket/6650 for the bug that made me find out
+about this problem with openvpn.)
 
+I'm attaching a patch which prevents openvpn from logging "r" or "R"
+when it didn't actually read anything. This is against openvpn 2.1-rc20,
+but probably still applies to the most recent version.
 
-kind regards,
+This patch was received anonymously via the sf.net bug tracker:
+<http://sourceforge.net/tracker/?func=detail&atid=454719&aid=2951003&group_id=48978>
 
-David Sommerseth
+Signed-off-by: David Sommerseth <dazo@...384...>
+- ----------------------------------------------------------------------
+
+ACK
+
+Patch looks sensible, and applies cleanly to the master branch.
+
+David S.
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkt+udMACgkQDC186MBRfroXRwCfX/qmYT1iuB8A8h/Nano7ZaNe
-CrYAnjo/zrx+dmXuqo2hdEocTRLSl6dh
-=qOkR
+iEYEARECAAYFAkt+vlgACgkQDC186MBRfrpB7gCfTmXPEVEGBD/Yn2UxVqocauNs
+GgoAn1NKXihdqr6HnZRfH0DEd4iDBRdG
+=nKYU
 -----END PGP SIGNATURE-----
+
+--------------040305090407070908080705
+Content-Type: text/x-patch;
+	name="0001-verb-5-logging-wrongly-reports-received-bytes.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="0001-verb-5-logging-wrongly-reports-received-bytes.patch"
+
+From 0827641faed01bb53ec94c996f7a2f5133549b1d Mon Sep 17 00:00:00 2001
+From: David Sommerseth <dazo@...384...>
+Date: Fri, 19 Feb 2010 17:32:56 +0100
+Subject: [PATCH] verb 5 logging wrongly reports received bytes
+
+With --verb 5, openvpn logs a single letter (rwRW) for each package
+received or sent. I recently ran into a problem with the tun device on
+Linux where the read from that device returned 0. Unfortunately this was
+also logged as "r", which made me assume that openvpn had received
+something, while it actually hadn't.
+
+(See https://dev.openwrt.org/ticket/6650 for the bug that made me find out
+about this problem with openvpn.)
+
+I'm attaching a patch which prevents openvpn from logging "r" or "R" when
+it didn't actually read anything. This is against openvpn 2.1-rc20, but
+probably still applies to the most recent version.
+
+This patch was received anonymously via the sf.net bug tracker:
+<http://sourceforge.net/tracker/?func=detail&atid=454719&aid=2951003&group_id=48978>
+
+Signed-off-by: David Sommerseth <dazo@...384...>
+---
+ forward.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/forward.c b/forward.c
+index 207b876..d563e11 100644
+--- a/forward.c
++++ b/forward.c
+@@ -755,7 +755,7 @@ process_incoming_link (struct context *c)
+ 
+   /* log incoming packet */
+ #ifdef LOG_RW
+-  if (c->c2.log_rw)
++  if (c->c2.log_rw && c->c2.buf.len > 0)
+     fprintf (stderr, "R");
+ #endif
+   msg (D_LINK_RW, "%s READ [%d] from %s: %s",
+@@ -965,7 +965,7 @@ process_incoming_tun (struct context *c)
+     c->c2.tun_read_bytes += c->c2.buf.len;
+ 
+ #ifdef LOG_RW
+-  if (c->c2.log_rw)
++  if (c->c2.log_rw && c->c2.buf.len > 0)
+     fprintf (stderr, "r");
+ #endif
+ 
+-- 
+1.6.6
+
+
+--------------040305090407070908080705--
 
