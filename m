@@ -1,10 +1,12 @@
-Message-ID: <4B7E71A5.3020806@...1114...>
-Date: Fri, 19 Feb 2010 12:10:29 +0100
+Message-ID: <4B7E72B0.3070701@...1114...>
+Date: Fri, 19 Feb 2010 12:14:56 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------040809090209050400080802"
-Subject: [Openvpn-devel] [IPv6] Merge conflicts in mroute.c (was: Re:
- openvpn-testing tree available)
+References: <4B7AE8D6.3020304@...1114...>
+	<7bb795fd1002170946u40bb0ea7rea4bbf710eaa0daa@...278...>
+	<7bb795fd1002181345t20918e0fqbecb14fe92835094@...278...>
+In-Reply-To: <7bb795fd1002181345t20918e0fqbecb14fe92835094@...278...>
+Subject: Re: [Openvpn-devel] openvpn-testing tree available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,46 +15,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: JuanJo Ciarlante <jjo+ml@...410...>, Gert Doering <gert@...1296...>
-Cc: Openvpn-devel@lists.sourceforge.net
-
-This is a multi-part message in MIME format.
---------------040809090209050400080802
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+To: JuanJo Ciarlante <jjo+ml@...410...>
+Cc: Openvpn-devel@lists.sourceforge.net, James Yonan <jim@...41...>
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-Hi guys!
 On 18/02/10 22:45, JuanJo Ciarlante wrote:
-> On Wed, Feb 17, 2010 at 6:46 PM, JuanJo Ciarlante <jjo+ml@...410...>
-wrote:
->
+> On Wed, Feb 17, 2010 at 6:46 PM, JuanJo Ciarlante <jjo+ml@...410...> wrote:
+>> > Hi David,
+>> >
+>> > On Tue, Feb 16, 2010 at 7:49 PM, David Sommerseth
+>> > <openvpn.list@...1114...> wrote:
+> 
+> Greetings all!
+> 
+> I am now announcing the openvpn-testing.git tree as open.  Gert has
+> already been announcing the availability as a response to some merge
+> conflicts.  Anyhow, those issues are solved.
+>>> >
+>>> > \o/ !
+>>> >
+> 
+> The tree is also tagged with all 2.1 releases and RC releases.  I have
+> not bothered with tagging the 2.1 beta or any 2.0 releases at all.  If
+> somebody finds it useful and wants it, please generate a list of tag
+> names and commit ID's and I'll update the tree.
+> 
+> 
+> What's next:
+> 
+> - JuanJo Ciarliante's IPv6 patches for the transport layer.
+>  There are some merge conflicts here as well, which we need to solve.
+>  It's most probably due to different merge roots between our copies of
+>  the SVN tree.  I hope JJO and I can solve this soon, then it will go
+>  into the allmerged branch immediately.
+>>> >
+>>> > Cool, thanks a lot for the heads-up.
+>>> >
+>>> > I'll try to solve this before by next week,
+>> I've just did a cut+merge, fyi I had to use:
+>>   git-format-patch -k --stdout stock..master |git-am -3 -k
+>>     (stock: my svn-import'd tree, master: my local head)
+>> , worked fine (b/c of the different svn-import history(?),
+>> git could not find a common ancestor, then the need
+>> to fallback to "diff | patch").
+>> It also successful passes my tests as stated in README.ipv6.
+> 
+>> I've pushed this to my github repo, so something in the
+>> lines of:
+>>   git-remote add -f -t openvpn-testing-master+jjo-ipv6 \
+>>      jjo-ipv6 git://github.com/jjo/openvpn-ipv6
+> 
+>> +merge should be able to fast-forward your master
+>> head.
+> 
 >> I still need to do some touches for allmerged, as
 >> we conflict w/ Gert's IPv6 patch on a mroute.c chunk
 >> IIRC.
->
+> 
 
-Even though I know you both have told me that there would be a merge
-conflict in mroute.c, I decided to put it on the mailing list -
-hopefully to get an open discussion about it!
+Great!  Thank you for your work here!
 
-I've attached the merge conflict.  It would be great if you could sort
-this out soon.  Then I'll get both of your trees into the allmerged
-branch ASAP.  Right now only Gert's code is in the allmerged branch.
+I've created an feat_ipv6_transport branch where I'll track your
+patches.  Gert's IPv6 patches are in feat_ipv6_payload (which are also
+merged into the allmerged branch).  I've started the discussion about
+the merge conflict in another mail thread.
 
-What I do see might be a challenge (without knowing the code in
-details), is that JJO's code is using #ifdef, while Gert's code is not.
- With a conflict in mroute_addr_print_ex(), which includes an #ifdef I
-see a potential disaster here.
-
-Personally, I would like to evaluate Gert's patches to see if they could
-be #ifdef'ed.  Then both IPv6 branches can both use USE_PF_INET6 to
-enable or disable the IPv6 support.  I have not studied these patches,
-so I don't know how doable that is.  And this is my personal opinion, I
-don't mean to instruct anyone into a direction.  I will let you guys
-find the proper direction.
+It's all pushed out to the openvpn-testing.git, so please feel free to
+update me when you have solved these issues or have other updates!
 
 
 kind regards,
@@ -62,54 +95,8 @@ David Sommerseth
 Version: GnuPG v1.4.10 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkt+caIACgkQDC186MBRfrr5ZACgqLxiXN70pCOGY0zyvQGSCpo6
-n2EAn1le6hzZe4aThLfAKvYwK7d3CPSG
-=e7yX
+iEYEARECAAYFAkt+crAACgkQDC186MBRfroDNgCgsZwPBeAFzR44FB34Xv0HInAr
+46EAoKZtDgoSvqQIzpQu5XNEygaA7ccs
+=rqXo
 -----END PGP SIGNATURE-----
-
---------------040809090209050400080802
-Content-Type: text/plain;
- name="ipv6-merge-conflict.txt"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="ipv6-merge-conflict.txt"
-
-ZGlmZiAtLWNjIG1yb3V0ZS5jCmluZGV4IGI3ZTNlOWMsYmJhODg5ZC4uMDAwMDAwMAotLS0g
-YS9tcm91dGUuYworKysgYi9tcm91dGUuYwpAQEAgLTM5OSwyNCAtMzU5LDQ3ICs0MjEsNjgg
-QEBAIG1yb3V0ZV9hZGRyX3ByaW50X2V4IChjb25zdCBzdHJ1Y3QgbXJvdQogIAkgIH0KICAJ
-ICBicmVhazsKICAJY2FzZSBNUl9BRERSX0lQVjY6CisrPDw8PDw8PCBIRUFECiArCSAgewog
-KwkgICAgYnVmX3ByaW50ZiAoJm91dCwgIiVzIiwKICsJCSAgcHJpbnRfaW42X2FkZHIoICoo
-c3RydWN0IGluNl9hZGRyKikmbWFkZHIuYWRkciwgMCwgZ2MpKTsgCiArCSAgICBpZiAobWFk
-ZHIudHlwZSAmIE1SX1dJVEhfTkVUQklUUykKICsJICAgICAgewogKwkJYnVmX3ByaW50ZiAo
-Jm91dCwgIi8lZCIsIG1hZGRyLm5ldGJpdHMpOwogKwkgICAgICB9CiArCSAgICB9CiArCSAg
-ICBicmVhazsKICsJICBkZWZhdWx0OgogKwkgICAgYnVmX3ByaW50ZiAoJm91dCwgIlVOS05P
-V04iKTsgCiArCSAgICBicmVhazsKICsJICB9CiArCXJldHVybiBCU1RSICgmb3V0KTsKICsg
-ICAgICB9CiArICAgIGVsc2UKICsgICAgICByZXR1cm4gIltOVUxMXSI7CiArICB9CisrPT09
-PT09PQorICNpZmRlZiBVU0VfUEZfSU5FVDYKKyAgICAgICAgICAgeworIAkgICAgc3RydWN0
-IGJ1ZmZlciBidWY7CisgCSAgICBzdHJ1Y3Qgc29ja2FkZHJfaW42IHNpbjY7CisgCSAgICBp
-bnQgcG9ydDsKKyAJICAgIGNoYXIgYnVmNltJTkVUNl9BRERSU1RSTEVOXSA9ICIiOworIAkg
-ICAgQ0xFQVIoc2luNik7CisgCSAgICBzaW42LnNpbjZfZmFtaWx5ID0gQUZfSU5FVDY7Cisg
-CSAgICBidWZfc2V0X3JlYWQgKCZidWYsIG1hZGRyLmFkZHIsIG1hZGRyLmxlbik7CisgICAg
-ICAgICAgICAgaWYgKGJ1Zl9yZWFkKCZidWYsICZzaW42LnNpbjZfYWRkciwgc2l6ZW9mIChz
-aW42LnNpbjZfYWRkcikpKQorICAgICAgICAgICAgIHsKKyAgICAgICAgICAgICAgIGlmIChn
-ZXRuYW1laW5mbygoc3RydWN0IHNvY2thZGRyICopJnNpbjYsIHNpemVvZiAoc3RydWN0IHNv
-Y2thZGRyX2luNiksCisgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBi
-dWY2LCBzaXplb2YgKGJ1ZjYpLCBOVUxMLCAwLCBOSV9OVU1FUklDSE9TVCkgIT0gMCkKKyAg
-ICAgICAgICAgICAgICAgeworICAgICAgICAgICAgICAgICAgIGJ1Zl9wcmludGYgKCZvdXQs
-ICJNUl9BRERSX0lQVjYgZ2V0bmFtZWluZm8oKSBlcnIiKTsKKyAgICAgICAgICAgICAgICAg
-ICBicmVhazsKKyAJCX0KKyAgICAgICAgICAgICAgIGJ1Zl9wdXRzICgmb3V0LCBidWY2KTsK
-KyAJICAgICAgaWYgKG1hZGRyLnR5cGUgJiBNUl9XSVRIX05FVEJJVFMpCisgCSAgICAgICAg
-YnVmX3ByaW50ZiAoJm91dCwgIi8lZCIsIG1hZGRyLm5ldGJpdHMpOworICAgICAgICAgICAg
-ICAgaWYgKG1hZGRyLnR5cGUgJiBNUl9XSVRIX1BPUlQpCisgICAgICAgICAgICAgICAgIHsK
-KyAgICAgICAgICAgICAgICAgICBwb3J0ID0gYnVmX3JlYWRfdTE2ICgmYnVmKTsKKyAgICAg
-ICAgICAgICAgICAgICBpZiAocG9ydCA+PSAwKQorICAgICAgICAgICAgICAgICAgICAgYnVm
-X3ByaW50ZiAoJm91dCwgIjolZCIsIHBvcnQpOworICAgICAgICAgICAgICAgICB9CisgCSAg
-ICB9CisgICAgICAgICAgIH0KKyAjZWxzZSAvKiBvbGQsIHByZSBVU0VfUEZfSU5FVDYgY29k
-ZSAqLworIAkgIGJ1Zl9wcmludGYgKCZvdXQsICJJUFY2Iik7IAorICNlbmRpZgorIAkgIGJy
-ZWFrOworIAlkZWZhdWx0OgorIAkgIGJ1Zl9wcmludGYgKCZvdXQsICJVTktOT1dOIik7IAor
-IAkgIGJyZWFrOworIAl9CisgICAgICAgcmV0dXJuIEJTVFIgKCZvdXQpOworICAgICB9Cisg
-ICBlbHNlCisgICAgIHJldHVybiAiW05VTExdIjsKKyB9CisrPj4+Pj4+PiBmZWF0X2lwdjZf
-dHJhbnNwb3J0CiAgCiAgLyoKICAgKiBtcm91dGVfaGVscGVyJ3MgbWFpbiBqb2IgaXMga2Vl
-cGluZyB0cmFjayBvZgo=
---------------040809090209050400080802--
 
