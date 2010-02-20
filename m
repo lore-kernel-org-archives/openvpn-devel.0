@@ -1,16 +1,11 @@
-Date: Sat, 20 Feb 2010 11:25:27 +0100
+Date: Sat, 20 Feb 2010 11:35:09 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20100220102527.GG9556@...1296...>
-References: <4B7E71A5.3020806@...1114...>
-	<20100219134650.GR9556@...1296...>
-	<4B7EA05C.5000802@...1114...>
-	<20100219145623.GU9556@...1296...>
-	<jwvk4u9ce0t.fsf-monnier+inbox@...1269...>
-	<20100219193304.GZ9556@...1296...>
-	<20100219224249.GE9556@...1296...> <1266620011.31441.15@...1207...>
+Message-ID: <20100220103509.GH9556@...1296...>
+References: <1266620250-10045-1-git-send-email-openvpn.list@...1114...>
 Mime-Version: 1.0
-In-Reply-To: <1266620011.31441.15@...1207...>
-Subject: Re: [Openvpn-devel] [IPv6] Merge conflicts in mroute.c
+In-Reply-To: <1266620250-10045-1-git-send-email-openvpn.list@...1114...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Do not randomize resolving of IP
+	addresses in getaddr()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,37 +17,18 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-To: "Karl O. Pinc" <kop@...1206...>
-Cc: Openvpn-devel@lists.sourceforge.net, Stefan Monnier <monnier@...1282...>
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: David Sommerseth <dazo@...384...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Fri, Feb 19, 2010 at 04:53:31PM -0600, Karl O. Pinc wrote:
-> > As said: I would welcome contact to someone who is using
-> > uClibc+OpenVPN
-> > and could help me test this and adapt the code if needed.
-> 
-> To run the risk of harping on a theme....
-> 
-> If the problem is that someone is './configure --no-ipv6'-ing
-> ipv6 away then maybe openvpn needs to have a similar ./configure
-> option?  Or could ./configure just test against UCLIBC_HAS_IPV6?
+On Fri, Feb 19, 2010 at 11:57:30PM +0100, David Sommerseth wrote:
+> (I'm withdrawing the first version, and suggesting this patch to be used instead,
+> as this one follows the new feature deprecation process.)
 
-This is where this discussion started: do we really need to #ifdef
-the IPv6 related code in OpenVPN, or can we assume that any recent OS
-that has tun/tap will provide the necessary functions anyway.
-
-Adding lots of #ifdefs doesn't improve code readability and feature 
-testing, and makes future maintenance harder (because it's not always
-obvious if something you change might break a different combination of
-optional compile-time features that what you use).
-
-For uClibc, the answer could be "it should be sufficient to just define 
-'in6_addr_any' locally in OpenVPN code, if uClibc is detected" - that's 
-just 16 bytes of static data.
+ACK!
 
 gert
-
 -- 
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~gert/
