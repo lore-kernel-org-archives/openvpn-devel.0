@@ -1,12 +1,9 @@
 MIME-Version: 1.0
-In-Reply-To: <20100219143841.GS9556@...1296...>
+In-Reply-To: <4B7E71A5.3020806@...1114...>
 References: <4B7E71A5.3020806@...1114...>
-	<20100219134650.GR9556@...1296...> 
-	<7bb795fd1002190621oefc5e4dx9ccb19d55f0e7534@...278...> 
-	<20100219143841.GS9556@...1296...>
 From: JuanJo Ciarlante <jjo+ml@...410...>
-Date: Sun, 21 Feb 2010 12:31:58 +0100
-Message-ID: <7bb795fd1002210331g77687f7em91181bb599fd013f@...278...>
+Date: Sun, 21 Feb 2010 12:49:19 +0100
+Message-ID: <7bb795fd1002210349j4d5186c1v6fd554addb29fc85@...278...>
 Subject: Re: [Openvpn-devel] [IPv6] Merge conflicts in mroute.c (was: Re:
 	openvpn-testing tree available)
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,80 +16,68 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
+To: David Sommerseth <openvpn.list@...1114...>
 Cc: Openvpn-devel@lists.sourceforge.net
 
-On Fri, Feb 19, 2010 at 3:38 PM, Gert Doering <gert@...1296...> wrote:
-> Hi,
+On Fri, Feb 19, 2010 at 12:10 PM, David Sommerseth
+<openvpn.list@...1114...> wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
 >
-> On Fri, Feb 19, 2010 at 03:21:34PM +0100, JuanJo Ciarlante wrote:
->> > JJO's patch does more than that, he does DNS lookups to print the
->> > DNS name for the IPv6 address in question.
+> Hi guys!
+> On 18/02/10 22:45, JuanJo Ciarlante wrote:
+>> On Wed, Feb 17, 2010 at 6:46 PM, JuanJo Ciarlante <jjo+ml@...410...>
+> wrote:
 >>
->> Wrong.
->> From getaddrinfo(3):
->> =A0 =A0"""
->> =A0 =A0 =A0 If hints.ai_flags contains the AI_NUMERICHOST flag then the =
-node
->> =A0 =A0 =A0 parameter must be a numerical network address.
->> =A0 =A0 =A0 The AI_NUMERICHOST flag suppresses any potentially =A0lengthy
->> =A0 =A0 =A0 network host address lookups.
->> =A0 =A0"""
->
-> Ah! =A0Learned something new today. =A0So what's the specific advantage of
-> using getnameinfo() instead of inet_ntop() instead?
->
-> (I've only ever used getnameinfo() if I really wanted to do DNS lookups).
->
->> >=A0Now we enter religious
->> > territory - *I* think that this is not a good thing.
+>>> I still need to do some touches for allmerged, as
+>>> we conflict w/ Gert's IPv6 patch on a mroute.c chunk
+>>> IIRC.
 >>
->> I can't more eagerly _agree_ on tossing out any reverse
->> DNS lookups at this level.
 >
-> OK, good. =A0Glad that this was just a misreading of the code.
+> Even though I know you both have told me that there would be a merge
+> conflict in mroute.c, I decided to put it on the mailing list -
+> hopefully to get an open discussion about it!
 >
+> I've attached the merge conflict. =A0It would be great if you could sort
+> this out soon. =A0Then I'll get both of your trees into the allmerged
+> branch ASAP. =A0Right now only Gert's code is in the allmerged branch.
 >
->> > The existing
->> > code doesn't do reverse DNS lookups for IPv4 mroute printing, and so
->> > the IPv6 code should behave similar to the IPv4 code, and not do DNS
->> > either (also, depending on DNS lookup in this place might lead to
->> > weird delays in unexpected situations). =A0But this is partly religiou=
-s,
->> > partly "follow the coding style of the existing code" stuff.
->>
->> IMO we should void using inet_ntop() and friends, personally
->> I don't like locking around their lack of multi-threading.
+> What I do see might be a challenge (without knowing the code in
+> details), is that JJO's code is using #ifdef, while Gert's code is not.
+> =A0With a conflict in mroute_addr_print_ex(), which includes an #ifdef I
+> see a potential disaster here.
 >
-> Mmmh, ok. =A0I wasn't aware that inet_ntop() is not thread-safe. =A0(Look=
-ing
-> at the FreeBSD implementation, at least that one *is* thread-safe - no
-> static buffers, etc.).
+> Personally, I would like to evaluate Gert's patches to see if they could
+> be #ifdef'ed. =A0Then both IPv6 branches can both use USE_PF_INET6 to
+> enable or disable the IPv6 support.
 
-And now I learned something new, by *actually* closely looking
-inet_ntop() manpage, heh (had a totally wrong braino on it using
-static buffers).
-Please just ignore this non MT-safe state from me.
+IMHO they should have different #ifdef'ing, coming from eg:
+  ../configure --enable-ipv6-transport --enable-ipv6-payload
+, mainly to ease future debugging, and to motivate wider audience
+thinking of:
+* different OSes (ipv6-transport builds and (probably)runs in windowze)
+* distros like Gentoo, already carrying ipv6-transport, may want to add a
+   build option for the payload patch.
+* size constraints (embeeded like eg. freetz.org)
+* USE_PF_INET6 clearly speaks "transport" in its very name :)
 
+> =A0I have not studied these patches,
+> so I don't know how doable that is. =A0And this is my personal opinion, I
+> don't mean to instruct anyone into a direction. =A0I will let you guys
+> find the proper direction.
 >
-> If it is not thread-safe, it won't break anything in my code, though
-> (lucky me :-) ) - my use of it in print_in6_addr() is mutex-locked anyway,
-> due to the use of a static buffer there.
 >
-> Is getnameinfo() *guaranteed* to be thread-safe?
+> kind regards,
 >
-> Do you have a reference that documents that inet_ntop() and inet_pton()
-> are unsave to be used in a threaded context?
+> David Sommerseth
+> -----BEGIN PGP SIGNATURE-----
+> Version: GnuPG v1.4.10 (GNU/Linux)
+> Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 >
-> gert
-> --
-> USENET is *not* the non-clickable part of WWW!
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 //www.muc.de/~gert/
-> Gert Doering - Munich, Germany =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 gert@...1296...
-> fax: +49-89-35655025 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0gert@=
-...1297...
+> iEYEARECAAYFAkt+caIACgkQDC186MBRfrr5ZACgqLxiXN70pCOGY0zyvQGSCpo6
+> n2EAn1le6hzZe4aThLfAKvYwK7d3CPSG
+> =3De7yX
+> -----END PGP SIGNATURE-----
 >
 
 
