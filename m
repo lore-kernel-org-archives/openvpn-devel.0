@@ -1,10 +1,11 @@
-Message-ID: <4B8247D0.6040602@...1114...>
-Date: Mon, 22 Feb 2010 10:01:04 +0100
+Message-ID: <4B828F96.1080605@...1114...>
+Date: Mon, 22 Feb 2010 15:07:18 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1266515908-24807-1-git-send-email-kop@...1304...>
-In-Reply-To: <1266515908-24807-1-git-send-email-kop@...1304...>
-Subject: Re: [Openvpn-devel] Make sample-scripts/verify-cn dynamic
+References: <4B7EBE5C.60702@...1114...>
+In-Reply-To: <4B7EBE5C.60702@...1114...>
+Subject: Re: [Openvpn-devel] [PATCH] verb 5 logging wrongly reports received
+	bytes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,58 +16,42 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: "Karl O. Pinc" <kop@...1206...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 18/02/10 18:58, Karl O. Pinc wrote:
+On 19/02/10 17:37, David Sommerseth wrote:
+> With --verb 5, openvpn logs a single letter (rwRW) for each package
+> received or sent. I recently ran into a problem with the tun device on
+> Linux where the read from that device returned 0. Unfortunately this was
+> also logged as "r", which made me assume that openvpn had received
+> something, while it actually hadn't.
 > 
-> Hi,
+> (See https://dev.openwrt.org/ticket/6650 for the bug that made me find out
+> about this problem with openvpn.)
 > 
-> Re: [PATCH] Change verify-cn so cn is no longer hardcoded in openvpn's config file
+> I'm attaching a patch which prevents openvpn from logging "r" or "R"
+> when it didn't actually read anything. This is against openvpn 2.1-rc20,
+> but probably still applies to the most recent version.
 > 
-> This patch should be easy to process.
-> A resubmission of the patch sent to this list on 04/23/2009.
+> This patch was received anonymously via the sf.net bug tracker:
+> <http://sourceforge.net/tracker/?func=detail&atid=454719&aid=2951003&group_id=48978>
 > 
-> The patch changes the verify-cn script sample
-> to be used with --tls-verify so that instead of having
-> to hardcode a cn to verify in the OpenVPN configuration file
-> the allowed cns may be written into a separate file.
+> Signed-off-by: David Sommerseth <dazo@...384...>
+> ----------------------------------------------------------------------
 > 
-> This makes the process of verifying cns a whole
-> lot more dynamic, to the point where it is useful
-> in the real world.
+> ACK
 > 
-> One problem with this patch is that it is backwards
-> incompatible.  I did not bother keeping the original
-> calling interface as A) it's a sample script, and B) the
-> original's functionality seems useless
-> and equalivant functionality is easily available
-> with the new script.
+> Patch looks sensible, and applies cleanly to the master branch.
 > 
-> The problem with the original is that there seems
-> little point in verifying a client's cn when all
-> the clients share one cn, as would have to be
-> the case when the cn is hardcoded into the openvpn
-> config file.
-> 
-> This patch applies against the testing allmiscs branch,
-> and should apply against any of the other testing
-> branches as well.
-> 
-> It works for me.  I've tested it throughly but not
-> used it extensively in production.
-> 
-> Regards,
-> 
-> Karl <kop@...1206...>
+> David S.
 
-I forgot to mention this is pulled in.  This is applied to the bugfix2.1
-branch and merged into the allmerged branch.
+Applied to bugfix2.1 branch, merged into allmerged.
 
-commit 22b055eb0888cefa86e0a6d4a34da6066873be45
+commit 228c8b0f1e843e799251adb744f7066d983b2385
+Acked-by: David Sommerseth <dazo@...384...>
+Acked-by: Gert Doering <gert@...1296...>
 
 
 kind regards,
@@ -77,8 +62,8 @@ David Sommerseth
 Version: GnuPG v1.4.10 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkuCR88ACgkQDC186MBRfrqwhQCfUP3Encehmnmu5y+37H/4K7XR
-HT0AnRUXdGT0XlQ35iQrekxdhat9wk9O
-=bhPs
+iEYEARECAAYFAkuCj5IACgkQDC186MBRfrranwCaAjRQiSB/Jq53EIFH7nuvq1nq
+CgQAoILKL8eG9garRXj/vqp4617kHQnc
+=AKOc
 -----END PGP SIGNATURE-----
 
