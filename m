@@ -1,8 +1,8 @@
-Date: Mon, 22 Feb 2010 10:24:19 -0600
+Date: Mon, 22 Feb 2010 10:37:13 -0600
 From: "Karl O. Pinc" <kop@...1206...>
-In-Reply-To: <4B82366D.4080405@...1114...> (from
-	openvpn.list@...1114... on Mon Feb 22 01:46:53 2010)
-Message-Id: <1266855859.19847.0@...1207...>
+In-Reply-To: <4B7F1AAA.5090103@...1114...> (from
+	openvpn.list@...1114... on Fri Feb 19 17:11:38 2010)
+Message-Id: <1266856633.19847.2@...1207...>
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] [PATCH v2] Do not randomize resolving of IP
  addresses in getaddr()
@@ -20,55 +20,39 @@ Content-Disposition: inline
 To: David Sommerseth <openvpn.list@...1114...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On 02/22/2010 01:46:53 AM, David Sommerseth wrote:
+On 02/19/2010 05:11:38 PM, David Sommerseth wrote:
+> On 20/02/10 00:06, Karl O. Pinc wrote:
+> > On 02/19/2010 04:57:30 PM, David Sommerseth wrote:
+> >
+> > Am I wrong or does using --disable-depr-random-resolv
+> > not remove the random choice?
+>=20
+> That is correct.  According to the newly agreed feature removal
+> process,
+> deprecated features should in the beginning be enabled but give
+> warnings
+> when they are triggered.  At some point, this behaviour will be
+> switched
+> to be disabled, and you need to do use --enable-depr-random-resolv.
 
-  The commit log=20
-> will
-> state that this begins the feature deprecation process, with a=20
-> warning
-> when this feature is used and the feature can be removed at compile
-> time
-> with --disable-depr-random-resolv.
+Irrespective of the actual change being made here, does it
+make sense to have a "next release" branch?
 
-I've thought a bit more about this.  It seems to me that the
-warning message happens at the wrong time.  In your patch
-(IIRC) it happens at dns resolve time, only when there are multiple
-A records returned.  It should happen at OpenVPN startup
-time for the following reasons:
+If changes to defaults/depreciation of features is to happen
+at major release number boundaries, or whatever defined point,
+it is important not to "miss" making such a planned change
+happen in the first version of the new major release.
+Likewise, having to go back and re-visit the code to=20
+make the actual change could be error prone.  And we
+would not want these changes to conflict with any other
+changes either.
 
-Someone may be relying on the behavior but, at the moment
-or depending on present dns circumstances, does not have
-multiple A records returned.  In this case no warning will
-be generated.
+Having another branch to track changes that will happen
+in the next major release solves all of these problems.
+This branch would have the code that by default changes
+the existing behavior, enables the new feature, etc.
 
-Generating a message every time dns lookup is done
-could result in "too many" messages, increasing the
-log files and filling somebody's disk.  (Unlikely, but...)
-In any case it adds additional noise in which
-legitimate messages could be lost.
-
-Arguably, a message sent at startup time is more
-likely to be noticed than one buried amid others
-that occur over time.
-
-Generating one message at startup time is "least
-invasive" to the code.  Everybody will
-execute the code path and so (in the unlikely
-event) any bugs will be found and fixed early.
-Likewise, any introduced problem will occur during
-initialization rather than "runtime" and so will
-happen at a predictable point.
-The code that actually "does something" will be
-untouched, removing any possibility of race
-conditions or anything else that might interfere
-with actual operation.
-
-In the general case I would think you'd want
-warnings regarding features chosen/not chosen/
-depreciated/etc. to be generated at config
-parse time.
-
-/brain dump
+Just a thought.
 
 Regards,
 
