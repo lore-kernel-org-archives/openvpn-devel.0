@@ -1,8 +1,11 @@
+Message-ID: <4B82FB39.1090703@...1114...>
+Date: Mon, 22 Feb 2010 22:46:33 +0100
 From: David Sommerseth <openvpn.list@...1114...>
-Date: Mon, 22 Feb 2010 22:41:49 +0100
-Message-Id: <1266874909-7144-1-git-send-email-openvpn.list@...1114...>
-Subject: [Openvpn-devel] [PATCH] FRP: Present a warning on deprecated
-	features during start-up
+MIME-Version: 1.0
+References: <1266858979.5921.0@...1207...>
+In-Reply-To: <1266858979.5921.0@...1207...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Do not randomize resolving of IP
+ addresses in getaddr()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,146 +14,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: David Sommerseth <dazo@...384...>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: "Karl O. Pinc" <kop@...1206...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: David Sommerseth <dazo@...384...>
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Added a new function, warn_deprecated_features(), which is located in
-deprecated.[ch].  All deprecated features should present a warning here.
-This function will be called during start-up and will show all warnings
-after the OpenVPN title string.
+On 22/02/10 18:16, Karl O. Pinc wrote:
+> On 02/22/2010 10:52:17 AM, Peter Stuge wrote:
+>> Karl O. Pinc wrote:
+>>> Someone may be relying on the behavior but, at the moment
+>>> or depending on present dns circumstances, does not have
+>>> multiple A records returned.  In this case no warning will
+>>> be generated.
+>>
+>> The flip side of that coin is also valid I think.
+>>
+>> Consider independent configuration of VPN and DNS. Early errors would
+>> restrict VPN setup and possibly shipment until after DNS has been set
+>> up, while lazy evaluation allows DNS changes to happen later.
+> 
+> Right, but there's nothing to "restrict" because in this case we're
+> talking about a warning not an error; generating a warning that default
+> behavior will change in a future release.  OpenVPN _should_ 
+> continue happily along its way no matter where
+> the warning is generated.
+> 
+> It's a pretty trivial point really, but may provide a template
+> for future changes.
 
-Included a deprecated feature warning for the resolv-random feature.
+Agreed! ... and I've sent out a patch giving such a simple "template",
+for the source code.
 
-Signed-off-by: David Sommerseth <dazo@...384...>
----
- Makefile.am  |    3 ++-
- deprecated.c |   36 ++++++++++++++++++++++++++++++++++++
- deprecated.h |   30 ++++++++++++++++++++++++++++++
- openvpn.c    |    5 +++++
- 4 files changed, 73 insertions(+), 1 deletions(-)
- create mode 100644 deprecated.c
- create mode 100644 deprecated.h
+Now the code will present a very early warning about deprecated features
+which is enabled, and it will give yet another warning when the feature
+is triggered.  That way, we should get the attention if it happens.
 
-diff --git a/Makefile.am b/Makefile.am
-index 7bccc11..e199b17 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -138,7 +138,8 @@ openvpn_SOURCES = \
- 	thread.c thread.h \
- 	tun.c tun.h \
- 	win32.h win32.c \
--	cryptoapi.h cryptoapi.c
-+	cryptoapi.h cryptoapi.c \
-+	deprecated.h deprecated.c
- 
- 
- dist-hook:
-diff --git a/deprecated.c b/deprecated.c
-new file mode 100644
-index 0000000..832413a
---- /dev/null
-+++ b/deprecated.c
-@@ -0,0 +1,36 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2010  David Sommerseth <dazo@...384...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program (see the file COPYING included with this
-+ *  distribution); if not, write to the Free Software Foundation, Inc.,
-+ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-+ */
-+
-+#include "syshead.h"
-+#include "error.h"
-+
-+
-+inline void
-+warn_deprecated_features (void)
-+{
-+#ifdef DEPRECATED_RANDOM_RESOLV
-+  msg (M_INFO, "[DEPRECATED FEATURE ENABLED: random-resolv] Resolving hostnames will use randomisation if more than one IP address is found");
-+#endif
-+}
-+
-diff --git a/deprecated.h b/deprecated.h
-new file mode 100644
-index 0000000..cbe74ee
---- /dev/null
-+++ b/deprecated.h
-@@ -0,0 +1,30 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2010  David Sommerseth <dazo@...384...>
-+*
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program (see the file COPYING included with this
-+ *  distribution); if not, write to the Free Software Foundation, Inc.,
-+ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-+ */
-+
-+#ifndef DEPRECATED_H
-+#define DEPRECATED_H
-+
-+inline void warn_deprecated_features (void);
-+
-+#endif
-diff --git a/openvpn.c b/openvpn.c
-index 451fbe4..6e12873 100644
---- a/openvpn.c
-+++ b/openvpn.c
-@@ -28,6 +28,7 @@
- #include "forward.h"
- #include "multi.h"
- #include "win32.h"
-+#include "deprecated.h"
- 
- #include "memdbg.h"
- 
-@@ -181,6 +182,10 @@ main (int argc, char *argv[])
- 	  /* print version number */
- 	  msg (M_INFO, "%s", title_string);
- 
-+          /* All deprecated features should present a warning
-+             in this function, found in deprecated.c */
-+	  warn_deprecated_features ();
-+
- 	  /* misc stuff */
- 	  pre_setup (&c.options);
- 
--- 
-1.6.6
+Having that said, it's probably wise to consider which features removals
+which will print a warning each it is called.  In this case, I feel it
+is safe, as it's probably not too often you will trigger this.
 
+On the other hand, we want to bother the users and really make them see
+these messages.  If they dislike it, they then have a reason to discuss
+the planned feature removal.
+
+Does that cover your concerns?
+
+
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAkuC+zkACgkQDC186MBRfrpWYgCdEU6ime0X9b0kqdA2Nu0k0IvJ
+lwoAoJ8Pkc0wNyYNGP0DuxfbosdVeqjj
+=1PLD
+-----END PGP SIGNATURE-----
 
