@@ -1,15 +1,10 @@
-Message-ID: <4B82472C.9010606@...1114...>
-Date: Mon, 22 Feb 2010 09:58:20 +0100
+Message-ID: <4B8247D0.6040602@...1114...>
+Date: Mon, 22 Feb 2010 10:01:04 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4B7AE8D6.3020304@...1114...>
-	<7bb795fd1002170946u40bb0ea7rea4bbf710eaa0daa@...278...>
-	<7bb795fd1002181345t20918e0fqbecb14fe92835094@...278...>
-	<4B7E72B0.3070701@...1114...>
-	<7bb795fd1002190329r7fba94fcnfba4453b9e22b2c1@...278...>
-	<7bb795fd1002210356q14fba98i4ac26561d4f7489@...278...>
-In-Reply-To: <7bb795fd1002210356q14fba98i4ac26561d4f7489@...278...>
-Subject: Re: [Openvpn-devel] openvpn-testing tree available
+References: <1266515908-24807-1-git-send-email-kop@...1304...>
+In-Reply-To: <1266515908-24807-1-git-send-email-kop@...1304...>
+Subject: Re: [Openvpn-devel] Make sample-scripts/verify-cn dynamic
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,37 +15,61 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: JuanJo Ciarlante <jjo+ml@...410...>
-Cc: Openvpn-devel@lists.sourceforge.net, James Yonan <jim@...41...>
+To: "Karl O. Pinc" <kop@...1206...>
+Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 21/02/10 12:56, JuanJo Ciarlante wrote:
-> Hey David,
+On 18/02/10 18:58, Karl O. Pinc wrote:
 > 
-> On Fri, Feb 19, 2010 at 12:29 PM, JuanJo Ciarlante <jjo+ml@...410...> wrote:
-> I've created an feat_ipv6_transport branch where I'll track your
-> patches.  Gert's IPv6 patches are in feat_ipv6_payload (which are also
-> merged into the allmerged branch).  I've started the discussion about
-> the merge conflict in another mail thread.
->>>
->>> Coooool ! , tnx a lot.
->>>
+> Hi,
 > 
-> It's all pushed out to the openvpn-testing.git, so please feel free to
-> update me when you have solved these issues or have other updates!
+> Re: [PATCH] Change verify-cn so cn is no longer hardcoded in openvpn's config file
 > 
->> I've added a new openvpn-testing-allmerged+jjo-ipv6 branch with the
->> conflict resolved at git://github.com/jjo/openvpn-ipv6, it should cleanly
->> fast-forward allmerged's head.
+> This patch should be easy to process.
+> A resubmission of the patch sent to this list on 04/23/2009.
 > 
->> Thanks again for all your work on this!
+> The patch changes the verify-cn script sample
+> to be used with --tls-verify so that instead of having
+> to hardcode a cn to verify in the OpenVPN configuration file
+> the allowed cns may be written into a separate file.
+> 
+> This makes the process of verifying cns a whole
+> lot more dynamic, to the point where it is useful
+> in the real world.
+> 
+> One problem with this patch is that it is backwards
+> incompatible.  I did not bother keeping the original
+> calling interface as A) it's a sample script, and B) the
+> original's functionality seems useless
+> and equalivant functionality is easily available
+> with the new script.
+> 
+> The problem with the original is that there seems
+> little point in verifying a client's cn when all
+> the clients share one cn, as would have to be
+> the case when the cn is hardcoded into the openvpn
+> config file.
+> 
+> This patch applies against the testing allmiscs branch,
+> and should apply against any of the other testing
+> branches as well.
+> 
+> It works for me.  I've tested it throughly but not
+> used it extensively in production.
+> 
+> Regards,
+> 
+> Karl <kop@...1206...>
 
-Pulled and merged into allmerged :)
+I forgot to mention this is pulled in.  This is applied to the bugfix2.1
+branch and merged into the allmerged branch.
+
+commit 22b055eb0888cefa86e0a6d4a34da6066873be45
 
 
-Kind regards,
+kind regards,
 
 David Sommerseth
 
@@ -58,8 +77,8 @@ David Sommerseth
 Version: GnuPG v1.4.10 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkuCRywACgkQDC186MBRfrokcQCdH7YDG738UpkskOTZzYp7uS+g
-qKQAn0NIBt0HvcY/DPidiNGbGzA1/jhQ
-=odV8
+iEYEARECAAYFAkuCR88ACgkQDC186MBRfrqwhQCfUP3Encehmnmu5y+37H/4K7XR
+HT0AnRUXdGT0XlQ35iQrekxdhat9wk9O
+=bhPs
 -----END PGP SIGNATURE-----
 
