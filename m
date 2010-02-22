@@ -1,11 +1,12 @@
-Message-ID: <4B8246B2.40808@...1114...>
-Date: Mon, 22 Feb 2010 09:56:18 +0100
+Message-ID: <4B8246EA.3030503@...1114...>
+Date: Mon, 22 Feb 2010 09:57:14 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1266620250-10045-1-git-send-email-openvpn.list@...1114...>
-In-Reply-To: <1266620250-10045-1-git-send-email-openvpn.list@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Do not randomize resolving of
- IP	addresses in getaddr()
+References: <7bb795fd1002211100l760645cfl1a3cfc07ebd91e4@...278...>
+	<20100221212707.GA2349@...1293...>
+In-Reply-To: <20100221212707.GA2349@...1293...>
+Subject: Re: [Openvpn-devel] [PATCH] make ipv6_payload compile under
+ windowze ( feat_ipv6_payload branch )
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,47 +15,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Bernhard Schmidt <berni@...376...>
+Cc: =?UTF-8?B?SnVhbkpvIENpYXJsYW50ZeKYgA==?= <jjo@...410...>, openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 19/02/10 23:57, David Sommerseth wrote:
-> From: David Sommerseth <dazo@...384...>
+On 21/02/10 22:27, Bernhard Schmidt wrote:
+> On Sun, Feb 21, 2010 at 08:00:27PM +0100, JuanJo Ciarlante☀  wrote:
 > 
-> (I'm withdrawing the first version, and suggesting this patch to be used instead,
-> as this one follows the new feature deprecation process.)
+>> This patch makes ipv6_payload successfully cross *compile*
+>> (and just that :) under my mingw32msvc setup on Linux.
+>>
+>> Because same syshead.h changes are already included in
+>> feat_ipv6_transport, it may merge-conflict applying it over
+>> allmerged once the latter includes ipv6_transport.
+>>
+>> Patch follows
+>> (also at http://github.com/jjo/openvpn-ipv6/commit/b7e46bd5ebfd4b55146299129e8b9813fab91b5e
+>> ):
 > 
-> Based on a discussion on the mailing list and in the IRC meeting Feb 18,
-> it was decided to remove get_random() from the getaddr() function as that
-> can conflict with round-robin/randomization done by DNS servers.
+> Thank you very much, applied to my gert-ipv6 branch (at least I hope
+> so).
 > 
-> For now this feature is enabled by default, but can be disabled by running
-> ./configure with --disable-depr-random-resolv.  In the future this will be
-> changed to being disabled by default before getting removed.
+> David, please pull gert-ipv6 from git://git.birkenwald.de/openvpn.git to
+> receive that change.
 > 
-> Signed-off-by: David Sommerseth <dazo@...384...>
 
-Applied to the feature_removal branch and merged into allmerged.
-
-commit 684790552dde0475745015a76762ecc5a11eedab
-
-Commit log changed to say:
-FRP: Prepare to remove randomisation of resolved IP addresses in getaddr()
+Pulled and merged into allmerged
 
 
 kind regards,
 
 David Sommerseth
-
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkuCRq8ACgkQDC186MBRfrqyBQCfQPW8L78mbIDU9WI6ri5gUvax
-W/AAoJDNuqeriduNAMqZUxVwxKewoQl6
-=Gpks
+iEYEARECAAYFAkuCRuoACgkQDC186MBRfrpKlACeIz+74E4sESJbB13DqjVSZg7X
+WBIAoK2JYgnThZsoHNgG5VG56y89paDf
+=2290
 -----END PGP SIGNATURE-----
 
