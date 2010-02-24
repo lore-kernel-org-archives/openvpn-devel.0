@@ -1,10 +1,8 @@
-Date: Wed, 24 Feb 2010 16:17:09 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20100224151709.GJ9556@...1296...>
-References: <201002241424.39312.mailinglists@...1145...>
-Mime-Version: 1.0
-In-Reply-To: <201002241424.39312.mailinglists@...1145...>
-Subject: Re: [Openvpn-devel] Gentoo Git-Live-Ebuild
+From: Eric F Crist <ecrist@...1286...>
+Message-Id: <CC93335F-8642-4592-AC23-7B1C46606021@...1286...>
+Date: Wed, 24 Feb 2010 09:47:11 -0600
+Mime-Version: 1.0 (Apple Message framework v1077)
+Subject: [Openvpn-devel] FreeBSD -devel port
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,36 +11,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Marcel =?iso-8859-1?Q?Pennewi=DF?= <mailinglists@...1145...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+With some help from the former port maintainer, I've undeleted security/ope=
+nvpn-devel in the FreeBSD ports tree and have updated it with a git pull fr=
+om last week.  My goal is to keep a recent snapshot within the FreeBSD port=
+s tree, on a weekly or biweekly basis.
 
-On Wed, Feb 24, 2010 at 02:24:39PM +0100, Marcel Pennewi=DF wrote:
-> following the discussions and new patches i adapted the current Gentoo Eb=
-uild=20
-> to use the allmerged-testing-tree (openvpn-9999.ebuild).=20
+Ideally, the version that makes it to the tree will be stable, but experime=
+ntal, so care should be taken in use.  Historically, the -devel port has be=
+en the latest RC from 2.1, and has been nearly production-ready; with this =
+release, that method changes.
 
-This is really cool, thanks.
+If you have questions or issues with the port, please let me know.
+---
+Eric Crist
 
-> In march i'll try to setup a full ipv6-setup using Gert's payload-patch. =
-This=20
-> setup could be tested by our members during daily use.=20
 
-If you need any help with that, you know where to find me :-)
 
-> Maybe some livebuilds for ubuntu/debian will be available then?
 
-Chances are pretty good, from the rumors I've heard on IRC...
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
 
