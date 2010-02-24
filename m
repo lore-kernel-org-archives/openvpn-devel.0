@@ -1,8 +1,10 @@
-From: Marcel =?iso-8859-1?q?Pennewi=DF?= <mailinglists@...1145...>
-Date: Wed, 24 Feb 2010 14:24:39 +0100
-MIME-Version: 1.0
-Message-Id: <201002241424.39312.mailinglists@...1145...>
-Subject: [Openvpn-devel] Gentoo Git-Live-Ebuild
+Date: Wed, 24 Feb 2010 16:17:09 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20100224151709.GJ9556@...1296...>
+References: <201002241424.39312.mailinglists@...1145...>
+Mime-Version: 1.0
+In-Reply-To: <201002241424.39312.mailinglists@...1145...>
+Subject: Re: [Openvpn-devel] Gentoo Git-Live-Ebuild
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,44 +13,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: Marcel =?iso-8859-1?Q?Pennewi=DF?= <mailinglists@...1145...>
+Cc: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-following the discussions and new patches i adapted the current Gentoo Ebuild 
-to use the allmerged-testing-tree (openvpn-9999.ebuild). 
+On Wed, Feb 24, 2010 at 02:24:39PM +0100, Marcel Pennewi=DF wrote:
+> following the discussions and new patches i adapted the current Gentoo Eb=
+uild=20
+> to use the allmerged-testing-tree (openvpn-9999.ebuild).=20
 
-I'll try to keep it working and also i'll try to support the ebuilds on the 
-openvpn-devel mailinglist ;) The Ebuilds and all associated files can be found
-in our Gentoo-FeM-Overlay which can be accessed
+This is really cool, thanks.
 
-via HTTP / Subversion:
-http://subversion.fem.tu-ilmenau.de/repository/fem-overlay/trunk/net-
-misc/openvpn/
+> In march i'll try to setup a full ipv6-setup using Gert's payload-patch. =
+This=20
+> setup could be tested by our members during daily use.=20
 
-via WebSVN:
-http://subversion.fem.tu-ilmenau.de/websvn/wsvn/fem-overlay/trunk/net-
-misc/openvpn/
+If you need any help with that, you know where to find me :-)
 
-or included via layman:
-layman --overlays=http://subversion.fem.tu-ilmenau.de/overlay.xml \
--L -a fem-overlay"
+> Maybe some livebuilds for ubuntu/debian will be available then?
 
-This is a slotted Ebuild so that a normal openvpn version can be installed 
-parallel to the dev-ebuild where the bin, init-script and manpage are renamed 
-to openvpn-dev. with the init script you can reuse the existing configs which 
-will be nice for testing on productive systems. For a better bugreporting the 
-ebuild append the commit ID  (e.g. "OpenVPN 2.1.1b-
-git-6f53b4bf5f9b40dd96aecfcf325b0095f9ef3285").
+Chances are pretty good, from the rumors I've heard on IRC...
 
-In march i'll try to setup a full ipv6-setup using Gert's payload-patch. This 
-setup could be tested by our members during daily use. Maybe some livebuilds 
-for ubuntu/debian will be available then?
-
-best regards and big thx for spending your valuable time 
-
-Marcel
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
