@@ -1,8 +1,7 @@
-Date: Sun, 28 Feb 2010 21:18:11 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20100228201811.GR9556@...1296...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] Win XP problem with framedyn.dll and PATH settings
+From: David Sommerseth <openvpn.list@...1114...>
+Date: Sun, 28 Feb 2010 22:12:03 +0100
+Message-Id: <1267391523-1123-1-git-send-email-openvpn.list@...1114...>
+Subject: [Openvpn-devel] [PATCH] bash->bourne script cleanup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,103 +10,215 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
+Cc: Dan Nelson <dnelson@...384...>, David Sommerseth <dazo@...384...>
 
-Hi,
+From: Dan Nelson <dnelson@...384...>
 
-I've been working on IPv6-Payload support on Windows over the last few
-days, and made some progress.  Cross-compile succeeds, the resulting binary
-works fine for IPv6 and does some of the movements needed for IPv6.
+Many of the scripts in the openvpn source have their shell set to
+/bin/bash, but only two use bash features. The attached patch (against
+openvpn-2.1_rc9) sets the shell on the rest of the scripts to /bin/sh for
+better portability. The only scripts that actually require bash are
+contrib/pull-resolv-conf/client.{up,down} ; they use the ${!var} variable
+indirection feature.
 
-I have decided to use "netsh" commands to setup IPv6, as this seems to be
-"the canonical way" to do things.
+sf.net tracker:
+<https://sourceforge.net/tracker/?func=detail&aid=2040296&group_id=48978&atid=454721>
 
-There is one problem here: for every "netsh interface ipv6 add route" 
-command that I call (via openvpn_execve_check()), I get an error popup
-about "framedyn.dll" not being found.
+Signed-off-by: David Sommerseth <dazo@...384...>
+---
+ easy-rsa/2.0/build-ca           |    2 +-
+ easy-rsa/2.0/build-dh           |    2 +-
+ easy-rsa/2.0/build-inter        |    2 +-
+ easy-rsa/2.0/build-key          |    2 +-
+ easy-rsa/2.0/build-key-pass     |    2 +-
+ easy-rsa/2.0/build-key-pkcs12   |    2 +-
+ easy-rsa/2.0/build-key-server   |    2 +-
+ easy-rsa/2.0/build-req          |    2 +-
+ easy-rsa/2.0/build-req-pass     |    2 +-
+ easy-rsa/2.0/clean-all          |    2 +-
+ easy-rsa/2.0/inherit-inter      |    2 +-
+ easy-rsa/2.0/list-crl           |    2 +-
+ easy-rsa/2.0/revoke-full        |    2 +-
+ easy-rsa/2.0/sign-req           |    2 +-
+ sample-config-files/firewall.sh |    2 +-
+ sample-scripts/bridge-start     |    2 +-
+ sample-scripts/bridge-stop      |    2 +-
+ 17 files changed, 17 insertions(+), 17 deletions(-)
 
-If I run the very same command from "cmd.exe", it succeeds.
-
-Googling suggests that this might be a %PATH% setting issue:
-
-  http://www.dll-error-fixes.com/guide-fix-missing-framedyndll-error/
-
-but checking the path on my system, everything seems to be fine (and the
-DLL is there, in c:\windows\system32\Wbem\framedyn.dll, just fine).
-
-If I change the config file and add "script-security 1 system" (instead of
-the default, "... execve"), the commands work and yield no errors.
-
-
-So.  Looking at the code, it seems that %PATH% is never set for the execve
-method - there's a set_win_sys_path() routine, but that sets %SystemRoot%,
-not %PATH%.
-
-I'm not exactly sure what the best way to fix this, which is why I bring
-this up here, for discussion and feedback.
-
-My current workaround is to have win32/env_block always add a static 
-PATH if no PATH is found in "es" - this is ugly, and not the right way
-to go forward, but it helps me to work on the IPv6 bits for the time
-being.  (See below).  An alternative way would be to copy %PATH% to "es"
-upn startup (on Windows), or add another config variable "win-path" or
-whatever.
-
-Feedback requested!
-
-gert
-
-diff --git a/win32.c b/win32.c
-index eb94eb8..7c57f1e 100644
---- a/win32.c
-+++ b/win32.c
-@@ -874,16 +874,21 @@ win_safe_filename (const char *fn)
- static char *
- env_block (const struct env_set *es)
- {
-+  char * force_path = "PATH=C:\\Windows\\System32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem";
-+
-   if (es)
-     {
-       struct env_item *e;
-       char *ret;
-       char *p;
-       size_t nchars = 1;
-+      bool path_seen = false;
-       
-       for (e = es->list; e != NULL; e = e->next)
- 	nchars += strlen (e->string) + 1;
+diff --git a/easy-rsa/2.0/build-ca b/easy-rsa/2.0/build-ca
+index fb1e2ca..bce29a6 100755
+--- a/easy-rsa/2.0/build-ca
++++ b/easy-rsa/2.0/build-ca
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
  
-+      nchars += strlen(force_path)+1;
-+
-       ret = (char *) malloc (nchars);
-       check_malloc_return (ret);
+ #
+ # Build a root certificate
+diff --git a/easy-rsa/2.0/build-dh b/easy-rsa/2.0/build-dh
+index f019222..4beb127 100755
+--- a/easy-rsa/2.0/build-dh
++++ b/easy-rsa/2.0/build-dh
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
  
-@@ -895,7 +900,18 @@ env_block (const struct env_set *es)
- 	      strcpy (p, e->string);
- 	      p += strlen (e->string) + 1;
- 	    }
-+	  if ( strncmp(e->string, "PATH=", 5 ) == 0 )
-+	    path_seen = true;
-+	}
-+
-+      /* make sure PATH is set */
-+      if ( !path_seen )
-+	{
-+	  msg( M_INFO, "env_block: add %s", force_path );
-+	  strcpy( p, force_path );
-+	  p += strlen(force_path) + 1;
- 	}
-+
-       *p = '\0';
-       return ret;
-     }
+ # Build Diffie-Hellman parameters for the server side
+ # of an SSL/TLS connection.
+diff --git a/easy-rsa/2.0/build-inter b/easy-rsa/2.0/build-inter
+index f831d6f..87bf98d 100755
+--- a/easy-rsa/2.0/build-inter
++++ b/easy-rsa/2.0/build-inter
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ # Make an intermediate CA certificate/private key pair using a locally generated
+ # root certificate.
+diff --git a/easy-rsa/2.0/build-key b/easy-rsa/2.0/build-key
+index 6196308..6c0fed8 100755
+--- a/easy-rsa/2.0/build-key
++++ b/easy-rsa/2.0/build-key
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ # Make a certificate/private key pair using a locally generated
+ # root certificate.
+diff --git a/easy-rsa/2.0/build-key-pass b/easy-rsa/2.0/build-key-pass
+index 35543e0..8ef8307 100755
+--- a/easy-rsa/2.0/build-key-pass
++++ b/easy-rsa/2.0/build-key-pass
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ # Similar to build-key, but protect the private key
+ # with a password.
+diff --git a/easy-rsa/2.0/build-key-pkcs12 b/easy-rsa/2.0/build-key-pkcs12
+index 5ef064f..ba90e6a 100755
+--- a/easy-rsa/2.0/build-key-pkcs12
++++ b/easy-rsa/2.0/build-key-pkcs12
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ # Make a certificate/private key pair using a locally generated
+ # root certificate and convert it to a PKCS #12 file including the
+diff --git a/easy-rsa/2.0/build-key-server b/easy-rsa/2.0/build-key-server
+index 5502675..fee0194 100755
+--- a/easy-rsa/2.0/build-key-server
++++ b/easy-rsa/2.0/build-key-server
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ # Make a certificate/private key pair using a locally generated
+ # root certificate.
+diff --git a/easy-rsa/2.0/build-req b/easy-rsa/2.0/build-req
+index 26587d1..559d512 100755
+--- a/easy-rsa/2.0/build-req
++++ b/easy-rsa/2.0/build-req
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ # Build a certificate signing request and private key.  Use this
+ # when your root certificate and key is not available locally.
+diff --git a/easy-rsa/2.0/build-req-pass b/easy-rsa/2.0/build-req-pass
+index 6e6c863..b73ee1b 100755
+--- a/easy-rsa/2.0/build-req-pass
++++ b/easy-rsa/2.0/build-req-pass
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ # Like build-req, but protect your private key
+ # with a password.
+diff --git a/easy-rsa/2.0/clean-all b/easy-rsa/2.0/clean-all
+index 0576db5..cc6e3b2 100755
+--- a/easy-rsa/2.0/clean-all
++++ b/easy-rsa/2.0/clean-all
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ # Initialize the $KEY_DIR directory.
+ # Note that this script does a
+diff --git a/easy-rsa/2.0/inherit-inter b/easy-rsa/2.0/inherit-inter
+index 2101951..aaa5168 100755
+--- a/easy-rsa/2.0/inherit-inter
++++ b/easy-rsa/2.0/inherit-inter
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ # Build a new PKI which is rooted on an intermediate certificate generated
+ # by ./build-inter or ./pkitool --inter from a parent PKI.  The new PKI should
+diff --git a/easy-rsa/2.0/list-crl b/easy-rsa/2.0/list-crl
+index afc0cd6..d1d8a69 100755
+--- a/easy-rsa/2.0/list-crl
++++ b/easy-rsa/2.0/list-crl
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ # list revoked certificates
+ 
+diff --git a/easy-rsa/2.0/revoke-full b/easy-rsa/2.0/revoke-full
+index efc94e8..4169c4c 100755
+--- a/easy-rsa/2.0/revoke-full
++++ b/easy-rsa/2.0/revoke-full
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ # revoke a certificate, regenerate CRL,
+ # and verify revocation
+diff --git a/easy-rsa/2.0/sign-req b/easy-rsa/2.0/sign-req
+index 38655d3..6cae7b4 100755
+--- a/easy-rsa/2.0/sign-req
++++ b/easy-rsa/2.0/sign-req
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ # Sign a certificate signing request (a .csr file)
+ # with a local root certificate and key.
+diff --git a/sample-config-files/firewall.sh b/sample-config-files/firewall.sh
+index f0db806..19d75ee 100755
+--- a/sample-config-files/firewall.sh
++++ b/sample-config-files/firewall.sh
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ # A Sample OpenVPN-aware firewall.
+ 
+diff --git a/sample-scripts/bridge-start b/sample-scripts/bridge-start
+index bfbbdc5..d20a260 100755
+--- a/sample-scripts/bridge-start
++++ b/sample-scripts/bridge-start
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ #################################
+ # Set up Ethernet bridge on Linux
+diff --git a/sample-scripts/bridge-stop b/sample-scripts/bridge-stop
+index d452893..8192779 100755
+--- a/sample-scripts/bridge-stop
++++ b/sample-scripts/bridge-stop
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ ####################################
+ # Tear Down Ethernet bridge on Linux
 -- 
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~gert/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+1.6.6.1
+
 
