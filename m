@@ -1,10 +1,7 @@
-Message-ID: <4B8A6E08.3090204@...1114...>
-Date: Sun, 28 Feb 2010 14:22:16 +0100
 From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <54cde1cd4bdc1e82da3cb67831cc45c0@...1228...>
-In-Reply-To: <54cde1cd4bdc1e82da3cb67831cc45c0@...1228...>
-Subject: Re: [Openvpn-devel] OpenVPN Pf plugin/small status patch
+Date: Sun, 28 Feb 2010 14:59:42 +0100
+Message-Id: <1267365582-13629-1-git-send-email-openvpn.list@...1114...>
+Subject: [Openvpn-devel] [PATCH] enhance tls-verify possibility
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,121 +10,226 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: David Sommerseth <dazo@...384...>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+From: Mathieu GIANNECCHINI <mat.giann at>
 
-On 26/06/09 17:00, Arne Schwabe wrote:
-> Hi,
-> 
-> I have written a simple plugin for packet filtering that looks up fw rules
-> in the order
-> 
-> Commonname.pf
-> IP_Port.pf
-> IP.pf
-> default.pf
-> 
-> If one of this files is found the file is used as PF configuration. Maybe
-> this plugin is useful for someone else.
+It should be nice to enhance tls-verify check possibilities against peer
+cert during a pending TLS connection like :
+- OCSP verification
+- check any X509 extensions of the peer certificate
+- delta CRL verification
+- ...
 
-Hi!
+This patch add a new "tls-export-cert" option which allow to get peer
+certificate in PEM format and to store it in an openvpn temporary file.
+Peer certificate is stored before tls-script execution and deleted after.
+The name of the related temporary file is available under tls-verify
+script by an environment variable "peer_cert".
 
-Thank you for your patches.  I've been looking at both patches, and I
-have some questions in regards to this plug-in.
+The patch was made from OpenVPN svn Beta21 branches.
 
-How does this packet filtering further work?  I do not completely
-understand how you imagine this should work.  I see that it tries to
-open a number of files with different filename criteria , and if it
-finds a file it copies it somewhere.
+Here is a very simple exemple of Tls-verify script which provide OCSP
+support to OpenVPN (with tls-export-cert option) without any OpenVPN
+"core" modification :
 
-But how does that itself really provide packet filtering?
+X509=$2
 
-The code itself is not bad, I'd like to have it cleaned up a little bit
-before inclusion.  Things I'm picking on are consequent spacing,
-removing unneeded blank lines, improved comments (explaining *what* is
-happening).
+openssl ocsp \
+      -issuer /etc/openvpn/ssl.crt/RootCA.pem \
+      -CAfile /etc/openvpn/ssl.capath/OpenVPNServeur-cafile.pem \
+      -cert $peer_cert \
+      -url http://your-ocsp-url
+      if [ $? -ne 0 ]
+      then
+          echo "error : OCSP check failed for ${X509}" | logger -t
+"tls-verify"
+          exit 1
+       fi
 
-In addition the copypffile() function can be written a bit more clever,
-avoiding using stack space for an array of file names.  As you already
-have a for() loop, it would be better, IMHO, to build up the filename
-string in this loop, using a simple select() for the filename template.
+This has been discussed here:
+<http://thread.gmane.org/gmane.network.openvpn.devel/2492>
 
-You also have a potential buffer overflow bug with your snprintf().  If
-common name (the most likely one to attack) is longer than 256 bytes,
-the filename will consist of those 256 bytes without a NULL terminator,
-as snprintf() expect the NULL terminator to be included in the
-size/length provided.
+Signed-off-by: David Sommerseth <dazo@...384...>
+---
+ init.c    |    1 +
+ options.c |   10 ++++++++++
+ options.h |    1 +
+ ssl.c     |   60 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ ssl.h     |    1 +
+ 5 files changed, 73 insertions(+), 0 deletions(-)
 
-I'd recommend something like:
+diff --git a/init.c b/init.c
+index 3748c2e..19ac032 100644
+--- a/init.c
++++ b/init.c
+@@ -1805,6 +1805,7 @@ do_init_crypto_tls (struct context *c, const unsigned int flags)
+ #endif
+ 
+   to.verify_command = options->tls_verify;
++  to.verify_export_cert = options->tls_export_cert;
+   to.verify_x509name = options->tls_remote;
+   to.crl_file = options->crl_file;
+   to.ns_cert_type = options->ns_cert_type;
+diff --git a/options.c b/options.c
+index 36b9913..e79f742 100644
+--- a/options.c
++++ b/options.c
+@@ -529,6 +529,9 @@ static const char usage_message[] =
+   "                  tests of certification.  cmd should return 0 to allow\n"
+   "                  TLS handshake to proceed, or 1 to fail.  (cmd is\n"
+   "                  executed as 'cmd certificate_depth X509_NAME_oneline')\n"
++  "--tls-export-cert [directory] : Get peer cert in PEM format and store it \n"
++  "                  in an openvpn temporary file in [directory]. Peer cert is \n"
++  "                  stored before tls-verify script execution and deleted after.\n"
+   "--tls-remote x509name: Accept connections only from a host with X509 name\n"
+   "                  x509name. The remote host must also pass all other tests\n"
+   "                  of verification.\n"
+@@ -1325,6 +1328,7 @@ show_settings (const struct options *o)
+ #endif
+   SHOW_STR (cipher_list);
+   SHOW_STR (tls_verify);
++  SHOW_STR (tls_export_cert);
+   SHOW_STR (tls_remote);
+   SHOW_STR (crl_file);
+   SHOW_INT (ns_cert_type);
+@@ -1914,6 +1918,7 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
+       MUST_BE_UNDEF (pkcs12_file);
+       MUST_BE_UNDEF (cipher_list);
+       MUST_BE_UNDEF (tls_verify);
++      MUST_BE_UNDEF (tls_export_cert);
+       MUST_BE_UNDEF (tls_remote);
+       MUST_BE_UNDEF (tls_timeout);
+       MUST_BE_UNDEF (renegotiate_bytes);
+@@ -5525,6 +5530,11 @@ add_option (struct options *options,
+ 	goto err;
+       options->tls_verify = string_substitute (p[1], ',', ' ', &options->gc);
+     }
++  else if (streq (p[0], "tls-export-cert") && p[1])
++    {
++      VERIFY_PERMISSION (OPT_P_GENERAL);
++      options->tls_export_cert = p[1];
++    }
+   else if (streq (p[0], "tls-remote") && p[1])
+     {
+       VERIFY_PERMISSION (OPT_P_GENERAL);
+diff --git a/options.h b/options.h
+index 740e18e..a3114e2 100644
+--- a/options.h
++++ b/options.h
+@@ -440,6 +440,7 @@ struct options
+   const char *pkcs12_file;
+   const char *cipher_list;
+   const char *tls_verify;
++  const char *tls_export_cert;
+   const char *tls_remote;
+   const char *crl_file;
+ 
+diff --git a/ssl.c b/ssl.c
+index 82e04a3..805e37d 100644
+--- a/ssl.c
++++ b/ssl.c
+@@ -687,6 +687,49 @@ string_mod_sslname (char *str, const unsigned int restrictive_flags, const unsig
+     string_mod (str, restrictive_flags, 0, '_');
+ }
+ 
++/* Get peer cert and store it in pem format in a temporary file
++ * in tmp_dir
++ */
++
++const char *
++get_peer_cert(X509_STORE_CTX *ctx, const char *tmp_dir, struct gc_arena *gc)
++{
++  X509 *peercert;
++  FILE *peercert_file;
++  const char *peercert_filename="";
++
++  if(!tmp_dir)
++      return NULL;
++
++  /* get peer cert */
++  peercert = X509_STORE_CTX_get_current_cert(ctx);
++  if(!peercert)
++    {
++      msg (M_ERR, "Unable to get peer certificate from current context");
++      return NULL;
++    }
++
++  /* create tmp file to store peer cert */
++  peercert_filename = create_temp_filename (tmp_dir, "pcf", gc);
++
++  /* write peer-cert in tmp-file */
++  peercert_file = fopen(peercert_filename, "w+");
++  if(!peercert_file)
++    {
++      msg (M_ERR, "Failed to open temporary file : %s", peercert_filename);
++      return NULL;
++    }
++  if(PEM_write_X509(peercert_file,peercert)<0)
++    {
++      msg (M_ERR, "Failed to write peer certificate in PEM format");
++      fclose(peercert_file);
++      return NULL;
++    }
++
++  fclose(peercert_file);
++  return peercert_filename;
++}
++
+ /*
+  * Our verify callback function -- check
+  * that an incoming peer certificate is good.
+@@ -885,10 +928,21 @@ verify_callback (int preverify_ok, X509_STORE_CTX * ctx)
+   /* run --tls-verify script */
+   if (opt->verify_command)
+     {
++      const char *tmp_file;
++      struct gc_arena gc;
+       int ret;
+ 
+       setenv_str (opt->es, "script_type", "tls-verify");
+ 
++      if (opt->verify_export_cert)
++        {
++          gc = gc_new();
++          if (tmp_file=get_peer_cert(ctx, opt->verify_export_cert,&gc))
++           {
++             setenv_str(opt->es, "peer_cert", tmp_file);
++           }
++        }
++
+       argv_printf (&argv, "%sc %d %s",
+ 		   opt->verify_command,
+ 		   ctx->error_depth,
+@@ -896,6 +950,12 @@ verify_callback (int preverify_ok, X509_STORE_CTX * ctx)
+       argv_msg_prefix (D_TLS_DEBUG, &argv, "TLS: executing verify command");
+       ret = openvpn_execve (&argv, opt->es, S_SCRIPT);
+ 
++      if (opt->verify_export_cert)
++        {
++           delete_file(tmp_file);
++           gc_free(&gc);
++        }
++
+       if (system_ok (ret))
+ 	{
+ 	  msg (D_HANDSHAKE, "VERIFY SCRIPT OK: depth=%d, %s",
+diff --git a/ssl.h b/ssl.h
+index 9737f26..a22c854 100644
+--- a/ssl.h
++++ b/ssl.h
+@@ -441,6 +441,7 @@ struct tls_options
+ 
+   /* cert verification parms */
+   const char *verify_command;
++  const char *verify_export_cert;
+   const char *verify_x509name;
+   const char *crl_file;
+   int ns_cert_type;
+-- 
+1.6.6.1
 
-   char str[258];  // 256 bytes + 2 bytes extra
-
-   memset(&str, 0, 258);  // Make sure it's NULL
-   snprintf(str, 256, "%.253s.pf%c", cn, '\0');
-
-or:
-
-   char *str = calloc(1, 258); // 256 + 2 extra
-   snprintf(str, 256, "%.253s.pf%c", cn, '\0');
-
-   free(str);
-
-This way str will never exceed 256 bytes, including the extension, and
-it will be NULL terminated for sure.  In addition you are safer against
-buffer overflows.  If using calloc(), the memory can be expected to be
-zeroed as well (one of the advantages of calloc() compared to malloc()).
-
-Using the str pointer above in a for loop, you can just call snprintf()
-several times to change the contents, and free it after the for() loop.
-
-I would also recommend to be stricter to the allowed string length when
-processing IP addresses, port numbers and device name.  F.ex. the
-filename template for port number could be: "%.5s.pf", as a port number
-cannot be bigger than 65535, which is 5 digits.
-
-And the last important thing, you have no error checking if copypffile()
-fails or not.  OpenVPN will believe that this function call will always
-work.  Granted, you if no files exist to be copied that might not be a
-failure at all.  But it could be a failure if it could not write to the
-destination file when it does the copy.
-
-You also have two functions which might not be needed as well,
-openvpn_plugin_client_contstructor_v1() and
-openvpn_plugin_client_destructor_v1().  They don't seem to do anything
-useful and OpenVPN don't require them, AFAIK.
-
-The printf() messages could also specify the plug-in name instead of
-just generic function names ... especially important for users who use
-several plug-ins in parallel.
-
-
-> Add I would like to ask to include the patch for multi.c.
-> 
-> There are commands in the management interface which require the cid. The
-> only way at the moment to get the cid of connected clients is to have
-> always a management connection established. The patch adds the CID to the
-> status output.
-
-This patch is sent for review by more developers.  It will need an
-official ACK before inclusion, so I hope that will come soon.
-
-Thank you once again for your contributions!
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkuKbggACgkQDC186MBRfrrG6ACfWIuNyCPpufx1DwRmv2RGCqug
-8TEAnjRy8EPYVfrlCXw6xdSNg0UPaJl2
-=oaxR
------END PGP SIGNATURE-----
 
