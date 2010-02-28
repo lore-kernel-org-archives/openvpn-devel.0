@@ -1,14 +1,8 @@
-From: Stefan Monnier <monnier@...1268...>
-Message-ID: <jwvk4txceyv.fsf-monnier+inbox@...1269...>
-References: <4B88110D.3020501@...1114...>
-	<jwvzl2vr3aw.fsf-monnier+inbox@...1269...>
-	<4B8A59A2.6050601@...1114...>
-Date: Sun, 28 Feb 2010 15:04:01 -0500
-In-Reply-To: <4B8A59A2.6050601@...1114...> (David Sommerseth's message
-	of "Sun, 28 Feb 2010 12:55:14 +0100")
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] FQDN for routes should expand to all
-	IPs (second round)
+Date: Sun, 28 Feb 2010 21:18:11 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20100228201811.GR9556@...1296...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Win XP problem with framedyn.dll and PATH settings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,57 +13,101 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: Openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-> I was doing some considerations back and forth here before starting this
-> second round.  The issue is that it changes the behaviour quite a lot
-> from what might be expected from earlier versions (if you're used to the
-> former behaviour).
+Hi,
 
-I'm at a loss when it comes to try and imagine someone who's used to the
-current behavior and bothered by the new behavior.  Really.  How can the
-current behavior ever be preferable?  Why would someone ever prefer that
-a route would be randomly chosen to either go through the VPN or not.
+I've been working on IPv6-Payload support on Windows over the last few
+days, and made some progress.  Cross-compile succeeds, the resulting binary
+works fine for IPv6 and does some of the movements needed for IPv6.
 
-I haven't heard any such someone raise her voice, and neither have
-I heard anyone come up with a scenario where such a someone could exist.
+I have decided to use "netsh" commands to setup IPv6, as this seems to be
+"the canonical way" to do things.
 
-If someone could give at least some vaguely plausible scenario,
-that'd help.
+There is one problem here: for every "netsh interface ipv6 add route" 
+command that I call (via openvpn_execve_check()), I get an error popup
+about "framedyn.dll" not being found.
 
-> And it introduces some new code paths, including a new function
-> (getaddr_all).  So I would prefer to consider this, at least for now,
-> as a feature change rather than a bug fix.
+If I run the very same command from "cmd.exe", it succeeds.
 
-OK, so it's a question of code, not of behavior.  That does make sense.
+Googling suggests that this might be a %PATH% setting issue:
 
->>> * MAX_IPS_PER_HOSTNAME should be set via ./configure.  I'd probably
->>> recommend that if this value is 0 the feature is not enabled (covers the
->>> first point automatically and simplifies ./configure)  If f.ex. only
->>> - --enable-resolve-all-ips (probably need a better targeted name) is given
->>> without a number, the default should be 20.
->> 
->> I'll do that.  I do wonder: IIUC setting this to 1 might result in
->> reproducing the current (buggy) behavior, so would #ifdef'ing still
->> be necessary?
+  http://www.dll-error-fixes.com/guide-fix-missing-framedyndll-error/
 
-> I prefer that having it set to 0 gives the old code path.  The value of
-> one can be used to have the same behaviour as 0, but with your new code
-> path.
+but checking the path on my system, everything seems to be fine (and the
+DLL is there, in c:\windows\system32\Wbem\framedyn.dll, just fine).
 
-That also makes sense then, yes.
-
->>> * Implement this patch on top of the frp branch,
->> I'm not sure what you mean by the "frp" branch.  Is tht a new branch in
->> the Git repository?
-> Yes, it's the feature removal branch.  The reason for this is that the
-> removal of the randomisation is found in this branch.  And here you'll
-> only find those changes, so a conflict with other fea
-
-I see, that's fine.  IIUC, this will cause a conflict when merging
-with some of the IPv6 code.  We'll cross this bridge when we get there.
+If I change the config file and add "script-security 1 system" (instead of
+the default, "... execve"), the commands work and yield no errors.
 
 
-        Stefan
+So.  Looking at the code, it seems that %PATH% is never set for the execve
+method - there's a set_win_sys_path() routine, but that sets %SystemRoot%,
+not %PATH%.
+
+I'm not exactly sure what the best way to fix this, which is why I bring
+this up here, for discussion and feedback.
+
+My current workaround is to have win32/env_block always add a static 
+PATH if no PATH is found in "es" - this is ugly, and not the right way
+to go forward, but it helps me to work on the IPv6 bits for the time
+being.  (See below).  An alternative way would be to copy %PATH% to "es"
+upn startup (on Windows), or add another config variable "win-path" or
+whatever.
+
+Feedback requested!
+
+gert
+
+diff --git a/win32.c b/win32.c
+index eb94eb8..7c57f1e 100644
+--- a/win32.c
++++ b/win32.c
+@@ -874,16 +874,21 @@ win_safe_filename (const char *fn)
+ static char *
+ env_block (const struct env_set *es)
+ {
++  char * force_path = "PATH=C:\\Windows\\System32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem";
++
+   if (es)
+     {
+       struct env_item *e;
+       char *ret;
+       char *p;
+       size_t nchars = 1;
++      bool path_seen = false;
+       
+       for (e = es->list; e != NULL; e = e->next)
+ 	nchars += strlen (e->string) + 1;
+ 
++      nchars += strlen(force_path)+1;
++
+       ret = (char *) malloc (nchars);
+       check_malloc_return (ret);
+ 
+@@ -895,7 +900,18 @@ env_block (const struct env_set *es)
+ 	      strcpy (p, e->string);
+ 	      p += strlen (e->string) + 1;
+ 	    }
++	  if ( strncmp(e->string, "PATH=", 5 ) == 0 )
++	    path_seen = true;
++	}
++
++      /* make sure PATH is set */
++      if ( !path_seen )
++	{
++	  msg( M_INFO, "env_block: add %s", force_path );
++	  strcpy( p, force_path );
++	  p += strlen(force_path) + 1;
+ 	}
++
+       *p = '\0';
+       return ret;
+     }
+-- 
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~gert/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
