@@ -1,8 +1,11 @@
-From: David Sommerseth <openvpn.list@...1114...>
-Date: Sun, 28 Feb 2010 14:44:14 +0100
-Message-Id: <1267364654-12937-1-git-send-email-openvpn.list@...1114...>
-Subject: [Openvpn-devel] [PATCH] Allow 'lport 0' setup for random port
-	binding
+Date: Sun, 28 Feb 2010 15:28:56 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20100228142856.GL9556@...1296...>
+References: <1267361435-11982-1-git-send-email-openvpn.list@...1114...>
+Mime-Version: 1.0
+In-Reply-To: <1267361435-11982-1-git-send-email-openvpn.list@...1114...>
+Subject: Re: [Openvpn-devel] [PATCH] Add CID to the management status
+	overview
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,57 +14,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Enrico Scholz <enrico.scholz@...1291...>, David Sommerseth <dazo@...384...>
+Content-Disposition: inline
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: David Sommerseth <dazo@...384...>, openvpn-devel@lists.sourceforge.net
 
-From: Enrico Scholz <enrico.scholz@...1291...>
+Hi,
 
-I am running a multihomed host where 'local <extip>' must be specified
-for proper operation.  Unfortunately, this implies 'lport 1194' or
-another static port.
+On Sun, Feb 28, 2010 at 01:50:35PM +0100, David Sommerseth wrote:
+> There are commands in the management interface which require the cid. The
+> only way at the moment to get the cid of connected clients is to have
+> always a management connection established. The patch adds the CID to the
+> status output.
 
-This causes problems with stateful firewalls which register the host/port
-pairs in the internal connection tracking table. On ungraceful reconnects,
-the new TCP connection will have same the host/port pairs but unexpected
-sequence numbers. The new connection will be assumed as invalid hence and
-be dropped.
+What is "cid"?  Client-ID?
 
-It would be nice when local port can be configured to be bound to a
-random port number.  After reading code,
+I can't ACK this, as I don't understand the implications.  The code itself
+looks harmless, but without knowing who might read the output and whether
+an additional field will be silently ignored or whether consumer applications
+may fail, I really can't say.
 
-|    else if (streq (p[0], "lport") && p[1])
-|  ...
-|        port = atoi (p[1]);
-|-       if (!legal_ipv4_port (port))
-|+       if (port != 0 && !legal_ipv4_port (port))
-|          {
+Is there documentation available for this?
 
-in options.c seems to be the only required change.
 
-This has been discussed here:
-<http://thread.gmane.org/gmane.network.openvpn.user/28622>
+Something I do not like about this patch:
 
-Signed-off-by: David Sommerseth <dazo@...384...>
----
- options.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+> @@ -777,7 +777,7 @@ multi_print_status (struct multi_context *m, struct status_output *so, const int
+>  
+>  	  status_printf (so, "END");
+>  	}
+> -      else if (version == 2 || version == 3)
+> +      else if (version == 2 || version == 3 )
+>  	{
+>  	  const char sep = (version == 3) ? '\t' : ',';
+>  
 
-diff --git a/options.c b/options.c
-index c5ca8b6..36b9913 100644
---- a/options.c
-+++ b/options.c
-@@ -4072,7 +4072,7 @@ add_option (struct options *options,
- 
-       VERIFY_PERMISSION (OPT_P_GENERAL|OPT_P_CONNECTION);
-       port = atoi (p[1]);
--      if (!legal_ipv4_port (port))
-+      if ((port != 0) && !legal_ipv4_port (port))
- 	{
- 	  msg (msglevel, "Bad local port number: %s", p[1]);
- 	  goto err;
+In the grand scheme of things, small whitespace changes might later on 
+lead to a merge conflict with another patch in this line (like "introduce 
+version 4" or so), and so I'd avoid changes that are purely cosmetic in 
+a "feature" patch.
+
+gert
 -- 
-1.6.6.1
-
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~gert/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
