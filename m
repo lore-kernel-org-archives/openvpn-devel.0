@@ -1,8 +1,13 @@
-Date: Sun, 28 Feb 2010 17:35:24 +0100
+Date: Sun, 28 Feb 2010 17:46:34 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20100228163524.GP9556@...1296...>
+Message-ID: <20100228164634.GQ9556@...1296...>
+References: <1267361435-11982-1-git-send-email-openvpn.list@...1114...>
+	<20100228142856.GL9556@...1296...>
+	<4B8A8C69.7090801@...384...>
 Mime-Version: 1.0
-Subject: [Openvpn-devel] Macos X / Darwin funny in the code
+In-Reply-To: <4B8A8C69.7090801@...384...>
+Subject: Re: [Openvpn-devel] [PATCH] Add CID to the management status
+	overview
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,53 +19,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <dazo@...384...>
+Cc: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-today is the day... :-)
+On Sun, Feb 28, 2010 at 04:31:53PM +0100, David Sommerseth wrote:
+> > In the grand scheme of things, small whitespace changes might later on 
+> > lead to a merge conflict with another patch in this line (like "introduce 
+> > version 4" or so), and so I'd avoid changes that are purely cosmetic in 
+> > a "feature" patch.
+> 
+> Dang!  This one slipped through.  I spotted it, fixed it, but for some
+> reason I recreated the patch file and forgot I had fixed it.  Gert, I
+> completely agree with you!
 
-tun.c, do_ifconfig() contains this beauty...
+:)
 
---------------------------------------------------------
-#elif defined(TARGET_DARWIN) 
-    
-      /* 
-       * Darwin (i.e. Mac OS X) seems to exhibit similar behaviour to OpenBSD...
-       */
- 
-      argv_printf (&argv,
-                        "%s %s delete", 
-                        IFCONFIG_PATH,
-                        actual);
-      argv_msg (M_INFO, &argv);
-      openvpn_execve_check (&argv, es, 0, NULL);
-      msg (M_INFO, "NOTE: Tried to delete pre-existing tun/tap instance -- No Pr
-oblem if failure");     
---------------------------------------------------------
+> I'll promise to fix this one when merging it into the git tree, is that
+> good enough for you, Gert?
 
-... which doesn't work on 10.5 (at least), because there is no 
-"ifconfig ... delete" command - to get rid of an interface, you need
-to call "ifconfig ... destroy".  
-
-So all this would do is configure the tun interface to the IP address
-of a host named "delete", if such a host exists...
-
-Sun Feb 28 17:22:03 2010 us=91225 /sbin/ifconfig tun0 delete
-ifconfig: ioctl (SIOCDIFADDR): Can't assign requested address
-
-
-At least on 10.5, this code is not needed at all, because the tun0 interface
-is auto-destroyed after closing it, so it's just superfluous and broken
-code.
-
-What I cannot test is: is it required on 10.4, 10.3, ...?  If yes, which
-versions of MacOS X need it, and should we add a "configure" test for it?
-
-(I'm afraid this needs going back in the svn logs who did the MacOS X port
-and check with him...)
+Yes, I'm fine with that.
 
 gert
+
 -- 
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~gert/
