@@ -1,12 +1,14 @@
-Message-ID: <4B8A59A2.6050601@...1114...>
-Date: Sun, 28 Feb 2010 12:55:14 +0100
+Message-ID: <4B8A614A.4020406@...1114...>
+Date: Sun, 28 Feb 2010 13:27:54 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4B88110D.3020501@...1114...>
-	<jwvzl2vr3aw.fsf-monnier+inbox@...1269...>
-In-Reply-To: <jwvzl2vr3aw.fsf-monnier+inbox@...1269...>
-Subject: Re: [Openvpn-devel] [PATCH] FQDN for routes should expand to all
-	IPs (second round)
+References: <1239166995l.18482l.9l@...1207...>	<F9B005F620B74BD29BB0A36AF509BCED@...576...>
+	<1239203062l.18482l.11l@...1207...>	<9e0cf0bf0904081546y3daea253u62c234e63a6e5b08@...278...>
+	<1239246215l.5600l.0l@...1207...>
+In-Reply-To: <1239246215l.5600l.0l@...1207...>
+Content-Type: multipart/mixed; boundary="------------000601050201000300060704"
+Subject: Re: [Openvpn-devel] Unpackged Windows binaries? -- Problems
+ building 2.1 rc15 on Windows XP
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,89 +17,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: "Karl O. Pinc" <kop@...1206...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+This is a multi-part message in MIME format.
+--------------000601050201000300060704
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-To: Stefan Monnier <monnier@...1268...>
-Cc: Openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 27/02/10 00:27, Stefan Monnier wrote:
->> - From the following review discussion, a few other things needs to be
->> changed and I hope you are willing to look into adopting your patch to
->> those guidelines.  This is also to follow the standards [1] we try to
->> introduce as well.
+On 09/04/09 05:03, Karl O. Pinc wrote:
+> It occurs to me that if I want to do more than
+> beg I should submit a patch, so one is attached.
 > 
-> Sure, I'd like to get this in the main OpenVPN code, so I'll do what
-> it takes.
-
-Cool, thanks a lot!
-
->> So, to give a summary to what needs to be done:
->> * This feature should be #ifdef'ed, so that it can be disabled for those
->> not wanting this feature.
+> On 04/08/2009 05:46:46 PM, Alon Bar-Lev wrote:
+>> Available as part of OpenSC build [1].
+>>
+>> [1] http://www.opensc-project.org/build
 > 
-> AFAIK this is a bug-fix rather than a feature (the current behavior for
-> FQDNs mapping to multiple IPs is pretty difficult to justify), so
-> I wonder why it requires such #ifdef'ing.
-
-I was doing some considerations back and forth here before starting this
-second round.  The issue is that it changes the behaviour quite a lot
-from what might be expected from earlier versions (if you're used to the
-former behaviour).  And it introduces some new code paths, including a
-new function (getaddr_all).  So I would prefer to consider this, at
-least for now, as a feature change rather than a bug fix.
-
-By all means, I do see that in your perspective the current default
-behaviour is considered as a bug.  But others might have a different
-opinion about that.  Those doing the testing will anyway be requested to
-enable all these new features, so this feature will be tested and
-considered for default enablement later on in the process.  But it will
-be easier to track down where a bug was introduced later on, by being
-able to disable such bigger functional changes.
-
->> * MAX_IPS_PER_HOSTNAME should be set via ./configure.  I'd probably
->> recommend that if this value is 0 the feature is not enabled (covers the
->> first point automatically and simplifies ./configure)  If f.ex. only
->> - --enable-resolve-all-ips (probably need a better targeted name) is given
->> without a number, the default should be 20.
+> I noticed that.  Does that build all of what
+> OpenVPN 2.1 packages for Windows, i.e. includes
+> OpenVPN GUI?  The project does not seem to release
+> binaries for OpenVPN GUI, which is a requirement
+> for me.
 > 
-> I'll do that.  I do wonder: IIUC setting this to 1 might result in
-> reproducing the current (buggy) behavior, so would #ifdef'ing still
-> be necessary?
-
-I prefer that having it set to 0 gives the old code path.  The value of
-one can be used to have the same behaviour as 0, but with your new code
-path.
-
->> * Implement this patch on top of the frp branch,
+> I was also a little put off by:
+> "The OpenVPN overlay is provided in order to solve OpenSSL version
+> incompatibility between OpenSC and OpenVPN projects."
+> How can I make sure that I've got what OpenVPN is releasing
+> so that I can go to OpenVPN for support?
 > 
-> I'm not sure what you mean by the "frp" branch.  Is tht a new branch in
-> the Git repository?  
-
-Yes, it's the feature removal branch.  The reason for this is that the
-removal of the randomisation is found in this branch.  And here you'll
-only find those changes, so a conflict with other fea
-
->> and make sure you add the possibility to disable the randomisation
->> of resolving.
+> The OpenVPN devs have a "built" source tree in which they run
+> install-win32/buildinstaller.  My point being that
+> if they would package it up
+> and release it alongside the resultant installer
+> none of these sorts of issues would ever come up.
 > 
-> Of course, as before I'll just try and keep the "old" code and/or behavior.
-
-Thanks!
-
->> Would you be willing to do this job?  When these things are covered, I
->> believe the patch has reached a state where it is suitable for inclusion.
+> Attached is a patch that produces a un-nsis-installer
+> windows binary release as part of the build process.
 > 
-> OK, I'll let you know when it's ready for review,
+> Apply it with:
+> 
+> cd openvpn
+> patch -p1 < buildbinaryrelease.patch
+> 
+> The result is a file named something like:
+> openvpn-2.1_rc15-winbinaries.tar.gz
+> 
+> I deliberately produce a tar.gz file
+> rather than a zip file to keep
+> Windows people from downloading it accidentally
+> instead of the Windows installer exe.
+> 
+> There is more work to be done.  The file needs to
+> be signed and put on the website every time there's
+> a release.  I don't see anything in svn to patch
+> that would aid this process.
 
-Thanks again, Stefan!  I appreciate your effort into getting this code
-ready for inclusion!  (Even though, my requirements might be a big PITA
-:))  Anyhow, I only try to follow the guidelines the community have
-agreed on, in discussions with James.  Following those guidelines should
-hopefully give a higher probability to get the code more easily accepted
-into the stable releases.
+Hi!
+
+I'm going through the mailing list, picking up patches which seems not
+to be included.  Is this patch still interesting to get included?  This
+one applies cleanly to the master branch.
+
+I see that this patch is also followed by this one:
+
+<http://article.gmane.org/gmane.network.openvpn.devel/2581>
+
+This patch do not apply at all, as the standard checked out tree do not
+have INSTALL-win32.html, only INSTALL-win32.txt.  Is this correct?  I
+can't find this HTML file in the 2.1_rc15 nor 2.1_rc16, which was
+current when this patch was sent to the mailing list.
 
 
 kind regards,
@@ -107,8 +99,52 @@ David Sommerseth
 Version: GnuPG v1.4.10 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkuKWaIACgkQDC186MBRfrqY6ACfSxy7smYDsqNVnVh7+cUvbGG9
-5/UAnREh8N/QTBKOSpD/EEVsEhuMefPq
-=XPby
+iEYEARECAAYFAkuKYUoACgkQDC186MBRfrpVrACfWBX1kNPygMHKHea8gdSLeP+8
+bVUAnj5G6Jo+WFW6ds74mi5h+S+fEnO4
+=r1ZL
 -----END PGP SIGNATURE-----
+
+--------------000601050201000300060704
+Content-Type: text/x-patch;
+ name="buildbinaryrelease.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="buildbinaryrelease.patch"
+
+diff -ruN openvpn-2.1_rc15/domake-win openvpn-2.1_rc15.patched/domake-win
+--- openvpn-2.1_rc15/domake-win	2008-10-24 00:59:13.000000000 -0500
++++ openvpn-2.1_rc15.patched/domake-win	2009-04-08 20:59:10.000000000 -0500
+@@ -133,6 +133,9 @@
+ # Produce the license text, install README, and sample config files
+ install-win32/maketext
+ 
++# Produce a binary release, not wrapped in an installer.
++install-win32/buildbinaryrelease
++
+ # This final step builds the OpenVPN installer using generated
+ # files from GENOUT
+ install-win32/buildinstaller
+diff -ruN openvpn-2.1_rc15/install-win32/buildbinaryrelease openvpn-2.1_rc15.patched/install-win32/buildbinaryrelease
+--- openvpn-2.1_rc15/install-win32/buildbinaryrelease	1969-12-31 18:00:00.000000000 -0600
++++ openvpn-2.1_rc15.patched/install-win32/buildbinaryrelease	2009-04-08 21:22:42.000000000 -0500
+@@ -0,0 +1,16 @@
++#!/bin/sh
++
++# load version.nsi definitions
++. autodefs/defs.sh
++
++# Make a name for the binary release dir.
++RELEASEDIR="${PRODUCT_UNIX_NAME}-${PRODUCT_VERSION}${OUTFILE_LABEL}-winbinaries"
++
++# Copy the gen directory so it's got a good name
++cp -rp ${GENOUT} "${RELEASEDIR}"
++
++# Make the tarfile.
++tar -cf - "${RELEASEDIR}" | gzip -c > "${RELEASEDIR}.tar.gz"
++
++# Cleanup
++rm -rf "${RELEASEDIR}"
+
+
+--------------000601050201000300060704--
 
