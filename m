@@ -1,11 +1,8 @@
-Message-ID: <4B8A8DC9.3020502@...1114...>
-Date: Sun, 28 Feb 2010 16:37:45 +0100
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <20100228150546.GO9556@...1296...>
-	<540A56F3-EBC5-4872-83C7-D49A1BBD28E0@...1286...>
-In-Reply-To: <540A56F3-EBC5-4872-83C7-D49A1BBD28E0@...1286...>
-Subject: Re: [Openvpn-devel] FreeBSD funny in the code
+Date: Sun, 28 Feb 2010 17:35:24 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20100228163524.GP9556@...1296...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Macos X / Darwin funny in the code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,71 +11,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi,
 
-On 28/02/10 16:10, Eric F Crist wrote:
-> ACK,
-> 
-> It's not you, that's duplicate code.
-> 
+today is the day... :-)
 
-ACK.  I this is indeed duplicated.
+tun.c, do_ifconfig() contains this beauty...
+
+--------------------------------------------------------
+#elif defined(TARGET_DARWIN) 
+    
+      /* 
+       * Darwin (i.e. Mac OS X) seems to exhibit similar behaviour to OpenBSD...
+       */
+ 
+      argv_printf (&argv,
+                        "%s %s delete", 
+                        IFCONFIG_PATH,
+                        actual);
+      argv_msg (M_INFO, &argv);
+      openvpn_execve_check (&argv, es, 0, NULL);
+      msg (M_INFO, "NOTE: Tried to delete pre-existing tun/tap instance -- No Pr
+oblem if failure");     
+--------------------------------------------------------
+
+... which doesn't work on 10.5 (at least), because there is no 
+"ifconfig ... delete" command - to get rid of an interface, you need
+to call "ifconfig ... destroy".  
+
+So all this would do is configure the tun interface to the IP address
+of a host named "delete", if such a host exists...
+
+Sun Feb 28 17:22:03 2010 us=91225 /sbin/ifconfig tun0 delete
+ifconfig: ioctl (SIOCDIFADDR): Can't assign requested address
 
 
-David S.
+At least on 10.5, this code is not needed at all, because the tun0 interface
+is auto-destroyed after closing it, so it's just superfluous and broken
+code.
 
-> On Feb 28, 2010, at 09:05:46, Gert Doering wrote:
-> 
->> Hi,
->>
->> tun.c contains this code, in the 
->>
->> #elif defined(TARGET_FREEBSD)||defined(TARGET_DRAGONFLY)
->>
->> part of do_ifconfig() (about line 983 in the IPv6 payload branch):
->>
->> ----------------- snip ----------------
->>      else { 
->>        if (tt->topology == TOP_SUBNET)
->>            argv_printf (&argv,
->>                              "%s %s %s netmask %s mtu %d up",
->>                              IFCONFIG_PATH,
->>                              actual, 
->>                              ifconfig_local,
->>                              ifconfig_remote_netmask,
->>                              tun_mtu
->>                              );
->>        else
->>            argv_printf (&argv,
->>                          "%s %s %s netmask %s mtu %d up",
->>                          IFCONFIG_PATH,
->>                          actual,
->>                          ifconfig_local,
->>                          ifconfig_remote_netmask,
->>                          tun_mtu
->>                          );
->>      }                   
->> ----------------- snip ----------------
->>
->> Is it just me needing new glasses, or is this twice the very same code,
->> with a little bit of different indentation?
->>
->> If other people see this too, I'll send in a patch that drops the 
->> duplicate bits.  The tun.c code is still hard enough to read...
->>
->> gert
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+What I cannot test is: is it required on 10.4, 10.3, ...?  If yes, which
+versions of MacOS X need it, and should we add a "configure" test for it?
 
-iEYEARECAAYFAkuKjckACgkQDC186MBRfrqFfQCfdlWA8m9F37wbqwY/mfd8I2VQ
-t08An2o6k1Gyp8+7i61d2iPc+OfM1SCj
-=u8Uw
------END PGP SIGNATURE-----
+(I'm afraid this needs going back in the svn logs who did the MacOS X port
+and check with him...)
+
+gert
+-- 
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~gert/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
