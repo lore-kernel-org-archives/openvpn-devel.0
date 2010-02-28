@@ -1,11 +1,8 @@
-Date: Sun, 28 Feb 2010 15:28:56 +0100
+Date: Sun, 28 Feb 2010 15:50:01 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20100228142856.GL9556@...1296...>
-References: <1267361435-11982-1-git-send-email-openvpn.list@...1114...>
+Message-ID: <20100228145001.GM9556@...1296...>
 Mime-Version: 1.0
-In-Reply-To: <1267361435-11982-1-git-send-email-openvpn.list@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH] Add CID to the management status
-	overview
+Subject: [Openvpn-devel] special-case code for OpenBSD - advice needed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,45 +14,114 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: David Sommerseth <dazo@...384...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Sun, Feb 28, 2010 at 01:50:35PM +0100, David Sommerseth wrote:
-> There are commands in the management interface which require the cid. The
-> only way at the moment to get the cid of connected clients is to have
-> always a management connection established. The patch adds the CID to the
-> status output.
+while working on "make IPv6 payload work on Win32", I found something
+quite peculiar for OpenBSD in the OpenVPN code.
 
-What is "cid"?  Client-ID?
+In "init.c", do_open_tun(), calls two other functions from tun.c for
+tunnel setup:
 
-I can't ACK this, as I don't understand the implications.  The code itself
-looks harmless, but without knowing who might read the output and whether
-an additional field will be silently ignored or whether consumer applications
-may fail, I really can't say.
+ open_tun() --> find free /dev/tun<n> device, open() it, thereby 
+                activating a "tun<n>" network interface, store the device 
+                name in "struct tuntap", etc.  
 
-Is there documentation available for this?
+and
+
+ do_ifconfig() --> run "ifconfig tun<n> 1.2.3.4" system commands
+                   (basically consists of a ton of 
+                   #if defined(TARGET_nnn) ... #else blocks, containing
+                   the system specific variations of "ifconfig" commands.
+                   
+
+Now, for all operatings systems *except* Win32 and OpenBSD, the sequence
+of execution is
+
+ open_tun()
+ do_ifconfig()
+
+and for the named two systems, it's 
+
+ do_ifconfig()
+ open_tun()
+
+This is controlled by the inline_function "ifconfig_order()" in tun.h,
+which returns IFCONFIG_BEFORE_TUN_OPEN or IFCONFIG_AFTER_TUN_OPEN:
+
+---------- quote ----------
+/*
+ * Should ifconfig be called before or after
+ * tun dev open?
+ */   
+      
+#define IFCONFIG_BEFORE_TUN_OPEN 0
+#define IFCONFIG_AFTER_TUN_OPEN  1
+        
+#define IFCONFIG_DEFAULT         IFCONFIG_AFTER_TUN_OPEN
+
+static inline int                               
+ifconfig_order(void)  
+{     
+#if defined(TARGET_LINUX)
+  return IFCONFIG_AFTER_TUN_OPEN;
+#elif defined(TARGET_SOLARIS)
+  return IFCONFIG_AFTER_TUN_OPEN;
+#elif defined(TARGET_OPENBSD)
+  return IFCONFIG_BEFORE_TUN_OPEN;
+#elif defined(TARGET_DARWIN)
+  return IFCONFIG_AFTER_TUN_OPEN;
+#elif defined(TARGET_NETBSD)
+  return IFCONFIG_AFTER_TUN_OPEN;
+#elif defined(WIN32)
+  return IFCONFIG_BEFORE_TUN_OPEN;
+#else 
+  return IFCONFIG_DEFAULT;
+#endif
+}       
+---------- quote ----------
+
+I am ready to accept that Windows is weird, and needs special-casing of
+stuff, but the OpenBSD case baffles me - it's a BSD after all, and all
+other BSDs do it the other way round.
 
 
-Something I do not like about this patch:
+Now, reading through the code, OpenBSD, NetBSD and Darwin (MacOS X)
+are actually very similar - that is, tun devices are persistent, and you
+need to do "ifconfig tun<n> destroy" before doing the target ifconfig,
+otherwise you can have "leftover" configuration garbage there.  Still,
+NetBSD and Darwin do "IFCONFIG_AFTER_TUN_OPEN".
 
-> @@ -777,7 +777,7 @@ multi_print_status (struct multi_context *m, struct status_output *so, const int
->  
->  	  status_printf (so, "END");
->  	}
-> -      else if (version == 2 || version == 3)
-> +      else if (version == 2 || version == 3 )
->  	{
->  	  const char sep = (version == 3) ? '\t' : ',';
->  
 
-In the grand scheme of things, small whitespace changes might later on 
-lead to a merge conflict with another patch in this line (like "introduce 
-version 4" or so), and so I'd avoid changes that are purely cosmetic in 
-a "feature" patch.
+So...
+
+Question #1: why is OpenBSD treated differently?  Does anyone on this list 
+know why this is so, and whether it needs to be kept that way?  (I have no 
+OpenBSD system to test on, right now).
+
+Question #2: (more a style question) - why is this function so convoluted,
+if all the operating systems default to the default anyway - so why not
+change it to:
+
+static inline int                               
+ifconfig_order(void)  
+{     
+#if defined(TARGET_OPENBSD)
+  return IFCONFIG_BEFORE_TUN_OPEN;
+#elif defined(WIN32)
+  return IFCONFIG_BEFORE_TUN_OPEN;
+#else 
+  return IFCONFIG_AFTER_TUN_OPEN;
+#endif
+}
+
+
+I'm purposely not sending a patch right now, because I don't understand
+the reason for the code being what it is.
 
 gert
+
 -- 
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~gert/
