@@ -1,14 +1,13 @@
-Date: Sun, 28 Feb 2010 23:23:26 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20100228222326.GU9556@...1296...>
-References: <7bb795fd1002211100l760645cfl1a3cfc07ebd91e4@...278...>
-	<20100221193132.GO9556@...1296...>
-	<20100221200311.11614.qmail@...1287...>
-	<20100221201416.GQ9556@...1296...>
-Mime-Version: 1.0
-In-Reply-To: <20100221201416.GQ9556@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] make ipv6_payload compile
-	under	windowze ( feat_ipv6_payload branch )
+Message-ID: <4B8AF4AD.8060402@...1114...>
+Date: Sun, 28 Feb 2010 23:56:45 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <20100228150546.GO9556@...1296...>
+	<540A56F3-EBC5-4872-83C7-D49A1BBD28E0@...1286...>
+	<4B8A8DC9.3020502@...1114...>
+	<20100228221425.GT9556@...1296...>
+In-Reply-To: <20100228221425.GT9556@...1296...>
+Subject: Re: [Openvpn-devel] FreeBSD funny in the code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,78 +16,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-to follow up on this...
-
-On Sun, Feb 21, 2010 at 09:14:16PM +0100, Gert Doering wrote:
-> On Sun, Feb 21, 2010 at 09:03:11PM +0100, Peter Stuge wrote:
-> > Gert Doering wrote:
-> > > I'll try to figure out how to setup a cross-compile environment 
-> > > during next week,
-> > 
-> > Some Linux distributions have premade mingw packages.
-> > 
-> > In Gentoo building a toolchain for mingw is as simple as:
-> > 
-> > emerge crossdev && crossdev -t i686-mingw32
-[..]
->
-> Thanks for that.  I was googling in parallel, and that's exactly
-> what is going on in the background here right now (crossdev building 
-> the mingw environment) :-)
+On 28/02/10 23:14, Gert Doering wrote:
+> Hi,
 > 
-> I saw a note here on the list a few weeks ago pointing to the opensc
-> "build" tool, and I'll try that, as soon as the cross-tools are done.
+> On Sun, Feb 28, 2010 at 04:37:45PM +0100, David Sommerseth wrote:
+>> On 28/02/10 16:10, Eric F Crist wrote:
+>>> ACK,
+>>>
+>>> It's not you, that's duplicate code.
+>>
+>> ACK.  I this is indeed duplicated.
+> 
+> Thanks.  I have committed this to my branch (because I'm too tired right 
+> now to get branching right) as dd66b12647852e3f1267be70b0fb3b11deedf377
+> 
+> David, could you please pull my branch from Berni, and move that patch
+> to wherever bugfixes/code cleanups go?  It should merge easily into 
+> all branches.
 
-I have been able to successfully build OpenVPN.exe from Linux, using
-the crossdev-provided "i586-mingw32msvc" environment.  The resulting
-binary is compatible with the openvpn-gui from the "official" installer,
-as long as I install my cross-compiled .DLLs as well as openvpn.exe - 
-the "shipped" DLLs don't work, but that's not really a problem right
-now.
+Pushed and pulled.  I've only put your extra commit into the bugfix2.1
+branch (as a cherry-pick), and merged it into allmerged.
+
+At some point, you might consider to pull in the bugfix2.1 branch into
+your feat_ipv6_payload branch, just to get in those bug fixes.
+
+> (As a side note: there is new IPv6 related code in my branch, of course,
+> so please pull that to feat_ipv6_payload as well :-) - mostly code cleanups,
+> and Win32 preparations)
+
+Done!
+
+A crash course for branching:
+
+  git checkout -b <my branch name> <branch point>
+
+Branch point can be a commit ID, a tag name or another branch name.
+It's that easy :)  This will also "move" you over to the new
+
+If you want to branch without "moving" over to the newly created branch,
+you can use:
+
+   git branch <branch name> [<branch point>]
+
+If you don't provide branch point, it will branch at your last commit in
+the branch you are at when doing this.
+
+To push a new branch ... git push <remote name> <branch name>.
 
 
-My largest problem right now is that the tun/tap driver does not support
-IPv6 if in "tun" mode - the code is quite explicit about it...
 
-tap-win32/tapdrvr.c, line 1568:
+kind regards,
 
-    //===============================================
-    // In Point-To-Point mode, check to see whether
-    // packet is ARP or IPv4 (if neither, then drop).
-    //===============================================
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-(there's good reasons for what it does)
-
-
-Now... is there someone who has worked on this before, and can help
-me a bit with it?  
-
-Initial questions:
-
- - can it be cross-compiled?  If yes, how?  If no, what needs to be
-   done on Windows to compile it?  (I have *no* experience with Windows,
-   but I can follow instructions and read documentation).
-
- - what needs to be done to install the driver / replace the existing
-   driver?
-
- - how does one debug Windows drivers?  Is there a printf() as in Linux
-   that goes to console / syslog?
-
-gert
-
-PS: ifconfig + route work fine, and receiving packets also works (verified
-with wireshark).  Just sending win->tun->openvpn doesn't
--- 
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~gert/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+iEYEARECAAYFAkuK9KwACgkQDC186MBRfroEnwCfdDZ2buGz50TAjUuZyp0hb0SG
+4KMAoJQX0eKkhXFF7sfjMrXUG1c+MTJ4
+=QWB7
+-----END PGP SIGNATURE-----
 
