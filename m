@@ -1,11 +1,8 @@
-Date: Sun, 28 Feb 2010 15:59:15 +0100
+Date: Sun, 28 Feb 2010 16:05:46 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20100228145915.GN9556@...1296...>
-References: <1267364654-12937-1-git-send-email-openvpn.list@...1114...>
+Message-ID: <20100228150546.GO9556@...1296...>
 Mime-Version: 1.0
-In-Reply-To: <1267364654-12937-1-git-send-email-openvpn.list@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH] Allow 'lport 0' setup for random port
-	binding
+Subject: [Openvpn-devel] FreeBSD funny in the code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,37 +14,46 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: Enrico Scholz <enrico.scholz@...1291...>, David Sommerseth <dazo@...384...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Sun, Feb 28, 2010 at 02:44:14PM +0100, David Sommerseth wrote:
-> I am running a multihomed host where 'local <extip>' must be specified
-> for proper operation.  Unfortunately, this implies 'lport 1194' or
-> another static port.
-> 
-> This causes problems with stateful firewalls which register the host/port
-> pairs in the internal connection tracking table. On ungraceful reconnects,
-> the new TCP connection will have same the host/port pairs but unexpected
-> sequence numbers. The new connection will be assumed as invalid hence and
-> be dropped.
-> 
-> It would be nice when local port can be configured to be bound to a
-> random port number.  After reading code,
+tun.c contains this code, in the 
 
-I have not found a reference anywhere that documents that bind() can
-be used with port=0 to tell the system "bind to the IP address, but 
-still use a random port".  It seems to work though, and the code elsewhere
-does not seem to make any assumptions about "port != 0" (it is effectively
-just passed to bind(), and if bind() doesn't like it, an error exit occurs).
+#elif defined(TARGET_FREEBSD)||defined(TARGET_DRAGONFLY)
 
-Since it fixes a real-world problem, there is obvious need for it.
+part of do_ifconfig() (about line 983 in the IPv6 payload branch):
 
--> ACK.
+----------------- snip ----------------
+      else { 
+        if (tt->topology == TOP_SUBNET)
+            argv_printf (&argv,
+                              "%s %s %s netmask %s mtu %d up",
+                              IFCONFIG_PATH,
+                              actual, 
+                              ifconfig_local,
+                              ifconfig_remote_netmask,
+                              tun_mtu
+                              );
+        else
+            argv_printf (&argv,
+                          "%s %s %s netmask %s mtu %d up",
+                          IFCONFIG_PATH,
+                          actual,
+                          ifconfig_local,
+                          ifconfig_remote_netmask,
+                          tun_mtu
+                          );
+      }                   
+----------------- snip ----------------
+
+Is it just me needing new glasses, or is this twice the very same code,
+with a little bit of different indentation?
+
+If other people see this too, I'll send in a patch that drops the 
+duplicate bits.  The tun.c code is still hard enough to read...
 
 gert
-
 -- 
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~gert/
