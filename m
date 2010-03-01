@@ -1,13 +1,11 @@
-Message-ID: <4B8C4401.1060506@...376...>
-Date: Mon, 01 Mar 2010 23:47:29 +0100
-From: Bernhard Schmidt <berni@...376...>
+Message-ID: <4B8C47FF.2000401@...1114...>
+Date: Tue, 02 Mar 2010 00:04:31 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <20100228150546.GO9556@...1296...>	<540A56F3-EBC5-4872-83C7-D49A1BBD28E0@...1286...>	<4B8A8DC9.3020502@...1114...>	<20100228221425.GT9556@...1296...>	<4B8AF4AD.8060402@...1114...>
-	<hmhae1$p5k$1@...1312...> <4B8C30A2.5020200@...1114...>
-	<4B8C3496.6000206@...376...>
-	<4B8C38AD.8030607@...1114...>
-In-Reply-To: <4B8C38AD.8030607@...1114...>
-Subject: Re: [Openvpn-devel] FreeBSD funny in the code
+References: <1267364654-12937-1-git-send-email-openvpn.list@...1114...>
+In-Reply-To: <1267364654-12937-1-git-send-email-openvpn.list@...1114...>
+Subject: Re: [Openvpn-devel] [PATCH] Allow 'lport 0' setup for random port
+ binding
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,54 +14,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: Openvpn-devel@lists.sourceforge.net
+To: Enrico Scholz <enrico.scholz@...1291...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 01.03.2010 22:59, David Sommerseth wrote:
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
->> Could you please have a look at git://git.birkenwald.de/openvpn.git
->> test-rebase branch? The history of gert-ipv6 was starting to look a bit
->> weird (duplicate commits with the same content), to I rebased it on your
->> bugfix2.1 branch (and dropped the duplicate commits in the process). No
->> difference in the content whatsoever and the history looks much better,
->> but I'm not exactly sure whether this is the right thing to do.
->>
->
-> I tried to both merge and rebase both your gert-ipv6 branch and the
-> test-rebase branch from the allmerged branch.  That was quite an
-> interesting experience.
->
-> The test-rebase branch gave most problems.  Both rebase and merge got
-> painful.  While with the gert-ipv6 gave only (expected, though) issues
-> with rebase.  Merging in gert-ipv6 was more or less painless.
+On 28/02/10 14:44, David Sommerseth wrote:
+> From: Enrico Scholz <enrico.scholz@...1291...>
+> 
+> I am running a multihomed host where 'local <extip>' must be specified
+> for proper operation.  Unfortunately, this implies 'lport 1194' or
+> another static port.
+> 
+> This causes problems with stateful firewalls which register the host/port
+> pairs in the internal connection tracking table. On ungraceful reconnects,
+> the new TCP connection will have same the host/port pairs but unexpected
+> sequence numbers. The new connection will be assumed as invalid hence and
+> be dropped.
+> 
+> It would be nice when local port can be configured to be bound to a
+> random port number.  After reading code,
+> 
+> |    else if (streq (p[0], "lport") && p[1])
+> |  ...
+> |        port = atoi (p[1]);
+> |-       if (!legal_ipv4_port (port))
+> |+       if (port != 0 && !legal_ipv4_port (port))
+> |          {
+> 
+> in options.c seems to be the only required change.
+> 
+> This has been discussed here:
+> <http://thread.gmane.org/gmane.network.openvpn.user/28622>
+> 
+> Signed-off-by: David Sommerseth <dazo@...384...>
+> ---
+>  options.c |    2 +-
+>  1 files changed, 1 insertions(+), 1 deletions(-)
+> 
 
-Yeah ... I'm still having a hard time to wrap my head around the gory 
-git details, but I think rebasing was a bad idea to begin with. 
-Especially in the other direction (you rebasing on gerts tree) :-)
+This patch has been applied to the bugfix2.1 branch
+commit 9bd1cd1b0014041ebff2c2bc9d5614d0bec5f6db
 
-As far as I understand it rebasing works by rolling back your local tree 
-to the point you branched from the upstream tree (recording all changes 
-in the progress), fast-forwarding to the HEAD of the upstream (at this 
-point local = upstream) and then reapplying all your local changes. This 
-fits perfectly in a model where you maintain a feature branch upstream 
-has not yet seen. By doing that you guarantee that your feature branch 
-is always a set of patches on top of the current upstream HEAD 
-(guaranteed to merge without conflicts when pulled into upstream), thus 
-making any conflicts that evolve during continued upstream development 
-entirely the feature branch's problem to solve.
+It will be merged into the allmerged branch when we get in a few more
+patches which are in the pipe now.
 
-When I rebased gert-ipv6 on bugfix2.1 I essentially dropped the old 
-changesets and recreated new ones (with different ids). So when you try 
-to merge that rebased tree your git sees new commits and tries to merge 
-them on the tree already containing the changes. Which is something git 
-can only detect (already applied and so on) if that part of the code has 
-not been touched with subsequent changesets.
 
-As far as I can see it, the only point where rebasing would be useful is 
-to rebase allmerged on bugfix2.1 and bugfix2.1 on master. But I don't 
-know how much this will break. :-)
+kind regards,
 
-Bernhard
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAkuMR/8ACgkQDC186MBRfrosfwCfbo0XMqE6qshPUyNXA1FnbeKr
+/BEAoJbPyBsGnfs8kDHrY4uIN5l9OHPj
+=Ojpb
+-----END PGP SIGNATURE-----
 
