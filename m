@@ -1,9 +1,13 @@
-From: Markus Feilner <lists@...646...>
-Date: Mon, 1 Mar 2010 15:31:03 +0100
+Message-ID: <20100301144745.23741.qmail@...1287...>
+Date: Mon, 1 Mar 2010 15:47:45 +0100
+From: Peter Stuge <peter@...1287...>
+References: <6c75f86b.6552e8f7.4b8bad61.2e7bd@...1309...>
+	<4B8BB647.2020804@...1114...>
+	<23627cf8.610acd4b.4b8bc540.d2023@...1309...>
 MIME-Version: 1.0
-Message-Id: <201003011531.03831.lists@...646...>
-Subject: [Openvpn-devel] Free copies of Packt's new OpenVPN book at Cebit,
-	Hannover, Germany
+In-Reply-To: <23627cf8.610acd4b.4b8bc540.d2023@...1309...>
+Subject: Re: [Openvpn-devel] Openvpn 2.1.1 bad tcp performance but
+	good	pingwhen -l 1472 (with packet size = MTU)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,44 +16,21 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Hello list,
+booyakasha wrote:
+> We are using Windows XP / Vista.
 
-Thanks a lot for the great software you are building here! 
+Could you try using the same configuration also on other systems?
 
-I have a little announcement: 
-"On wednesday, March 03, Packt author Markus Feilner will have a signing event at the 
-german Cebit IT conference (http://www.cebit.de). In hall 2, at the booth of his employer 
-Linux New Media (http://www.linux-magazin.de), the deputy editor-in-chief of the german 
-Linux Magazine and co-founder of the Openvpn.e.V. (http://www.openvpn.eu) will give 
-away15 free and signed copies of Packt's new book "Beginning Openvpn 2.0.9" 
-(http://www.packtpub.com/learning-openvpn-2-0-9/book) to the first 15 interested readers. "
+Linux, BSD, etc.
 
-I'd be happy to meet everybody of you at the booth! 
-'Thanks again for this great piece of open source!
+I would be interested in knowing if this problem is only seen on
+Windows.
 
--- 
 
-Best Regards - Mit freundlichen Gruessen
-Markus Feilner
-
--------------------------
-Feilner IT Linux & GIS
-Linux Solutions, Training, Seminare, Workshops and Authoring
-Koetztinger Strasse 6c          93057 Regensburg - Germany
-Phone:                          +49 941 8 10 79 89
-Mobile:                         +49 170 3 02 70 92
-Web: www.feilner-it.net         mail: mfeilner@...646...
-Xing: http://www.xing.com/profile/Markus_Feilner
-Linkedin: http://de.linkedin.com/in/markusfeilner
-Linux Magazine Germany:         mfeilner@...1310...
---------------------------------------
-My books at Packt: Open source - privacy and connectivity for everyone!
- New and revised:       http://www.packtpub.com/learning-openvpn-2-0-9/book
- Sold over 3000 times:  http://www.packtpub.com/openvpn/book
- My Groupware book:     http://www.packtpub.com/scalix/book
+//Peter
 
