@@ -1,11 +1,14 @@
-Date: Mon, 01 Mar 2010 10:01:52 -0600
-From: "Karl O. Pinc" <kop@...1206...>
-In-Reply-To: <jwvsk8kkuci.fsf-monnier+inbox@...1269...> (from
-	monnier@...1268... on Mon Mar  1 08:12:03 2010)
-Message-Id: <1267459312.30675.12@...1207...>
+From: Enrico Scholz <enrico.scholz@...1291...>
+References: <1267364654-12937-1-git-send-email-openvpn.list@...1114...>
+	<20100228145928.GA14572@...1276...>
+Date: Mon, 01 Mar 2010 17:15:01 +0100
+In-Reply-To: <20100228145928.GA14572@...1276...> (Till Maas's
+	message of "Sun, 28 Feb 2010 15:59:28 +0100")
+Message-ID: <ly1vg410je.fsf@...1290...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] FQDN for routes should expand to all
- IPs (second round)
+Sender: Enrico Scholz <enrico.scholz@...1291...>
+Subject: Re: [Openvpn-devel] [PATCH] Allow 'lport 0' setup for random port
+	binding
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,37 +17,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Stefan Monnier <monnier@...1268...>
-Cc: Openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+To: Till Maas <till.maas@...519...>
+Cc: David Sommerseth <dazo@...384...>, openvpn-devel@lists.sourceforge.net
 
-On 03/01/2010 08:12:03 AM, Stefan Monnier wrote:
-> >> If someone could give at least some vaguely plausible scenario,
-> >> that'd help.
-> > Maybe there's more than one tunnel and there's some stupid
-> > load balancing going on using a hosts file?  (Along with
-> > deleting all non-vpn routes.)
->=20
-> [ Setting aside the fact that using OpenVPN's broken handling of
->   multi-FQDN to implement this is far from the only option. ]
->=20
-> I'm not even sure *how* this could work: how would you ensure that=20
-> the
-> different tunnels happen to (together) route all IPs rather than all
-> chosing the same IP (for example)?
+Till Maas <till.maas@...519...> writes:
 
-I'm just waving my hands here; I'm not thinking closely about
-the details and don't want to.  It sounded plausible when
-it popped into my head so I sent a braindump.  I was thinking
-along the lines of "well if you might want to randomize
-remote endpoint choice using FQDNs resolved from a hosts file..."
+>> |-       if (!legal_ipv4_port (port))
+>> |+       if (port != 0 && !legal_ipv4_port (port))
+>
+> I am pretty sure that it is possible to listen on port 0, 
 
-Sorry if this has been more confusing than helpful.
+not on linux; e.g. see in net/ipv4/inet_connection_sock.c the implementation
+of
 
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                 -- Robert A. Heinlein
+| /* Obtain a reference to a local port for the given sock,
+|  * if snum is zero it means select any available local port.
+|  */
+| int inet_csk_get_port(struct sock *sk, unsigned short snum)
 
+and its caller.  Windoze seems to have a similar mechanism accordingly
+http://msdn.microsoft.com/en-us/library/ms737550%28VS.85%29.aspx
+
+| Binding to a specific port number other than port 0 is discouraged for
+| client applications since there is a danger of conflicting with
+| another socket already using that port number on the local computer.
+
+
+
+RFC 768 states
+
+| Source Port is an optional field ... If not used, a value of zero is
+| inserted.
+
+which implies that port 0 is something special which is not to be used
+for normal communication.
+
+
+
+
+Enrico
 
