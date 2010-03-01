@@ -1,14 +1,10 @@
-From: Enrico Scholz <enrico.scholz@...1291...>
-References: <1267364654-12937-1-git-send-email-openvpn.list@...1114...>
-	<20100228145928.GA14572@...1276...>
-Date: Mon, 01 Mar 2010 17:15:01 +0100
-In-Reply-To: <20100228145928.GA14572@...1276...> (Till Maas's
-	message of "Sun, 28 Feb 2010 15:59:28 +0100")
-Message-ID: <ly1vg410je.fsf@...1290...>
-MIME-Version: 1.0
-Sender: Enrico Scholz <enrico.scholz@...1291...>
-Subject: Re: [Openvpn-devel] [PATCH] Allow 'lport 0' setup for random port
-	binding
+Date: Mon, 1 Mar 2010 17:48:16 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20100301164816.GF9556@...1296...>
+References: <1267365582-13629-1-git-send-email-openvpn.list@...1114...>
+Mime-Version: 1.0
+In-Reply-To: <1267365582-13629-1-git-send-email-openvpn.list@...1114...>
+Subject: Re: [Openvpn-devel] [PATCH] enhance tls-verify possibility
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,43 +15,72 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Till Maas <till.maas@...519...>
+Content-Disposition: inline
+To: David Sommerseth <openvpn.list@...1114...>
 Cc: David Sommerseth <dazo@...384...>, openvpn-devel@lists.sourceforge.net
 
-Till Maas <till.maas@...519...> writes:
+Hi,
 
->> |-       if (!legal_ipv4_port (port))
->> |+       if (port != 0 && !legal_ipv4_port (port))
->
-> I am pretty sure that it is possible to listen on port 0, 
+On Sun, Feb 28, 2010 at 02:59:42PM +0100, David Sommerseth wrote:
+> It should be nice to enhance tls-verify check possibilities against peer
+> cert during a pending TLS connection like :
+> - OCSP verification
+> - check any X509 extensions of the peer certificate
+> - delta CRL verification
+> - ...
 
-not on linux; e.g. see in net/ipv4/inet_connection_sock.c the implementation
-of
+semi-ACK.
 
-| /* Obtain a reference to a local port for the given sock,
-|  * if snum is zero it means select any available local port.
-|  */
-| int inet_csk_get_port(struct sock *sk, unsigned short snum)
+In general, I think this is useful.  
 
-and its caller.  Windoze seems to have a similar mechanism accordingly
-http://msdn.microsoft.com/en-us/library/ms737550%28VS.85%29.aspx
+Most of the code is fine, but I spotted a potential issue:
 
-| Binding to a specific port number other than port 0 is discouraged for
-| client applications since there is a danger of conflicting with
-| another socket already using that port number on the local computer.
+> @@ -896,6 +950,12 @@ verify_callback (int preverify_ok, X509_STORE_CTX * ctx)
+>        argv_msg_prefix (D_TLS_DEBUG, &argv, "TLS: executing verify command");
+>        ret = openvpn_execve (&argv, opt->es, S_SCRIPT);
+>  
+> +      if (opt->verify_export_cert)
+> +        {
+> +           delete_file(tmp_file);
+> +           gc_free(&gc);
+> +        }
+> +
+>        if (system_ok (ret))
+>  	{
+>  	  msg (D_HANDSHAKE, "VERIFY SCRIPT OK: depth=%d, %s",
+
+tmp_file *could* be NULL here (unlikely, but possible).  
+
+So maybe this should read:
+
+> @@ -896,6 +950,12 @@ verify_callback (int preverify_ok, X509_STORE_CTX * ctx)
+>        argv_msg_prefix (D_TLS_DEBUG, &argv, "TLS: executing verify command");
+>        ret = openvpn_execve (&argv, opt->es, S_SCRIPT);
+>  
+> +      if (opt->verify_export_cert)
+> +        {
+> +           if (tmp_file != NULL) delete_file(tmp_file);
+> +           gc_free(&gc);
+> +        }
+> +
+>        if (system_ok (ret))
+>  	{
+>  	  msg (D_HANDSHAKE, "VERIFY SCRIPT OK: depth=%d, %s",
+
+... instead.  "delete_file()" is one of the few functions that do not
+check their argument for "is not NULL", so it's passed unchanged to
+unlink(), which might cause issues on some platforms.
+
+(Don't put the tmp_file condition into the surrounding if(), as it 
+would then skip the call to gc_free() as well).
 
 
+With that change, and a manpage documentation of the new option, ACK.
 
-RFC 768 states
-
-| Source Port is an optional field ... If not used, a value of zero is
-| inserted.
-
-which implies that port 0 is something special which is not to be used
-for normal communication.
-
-
-
-
-Enrico
+gert
+-- 
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~gert/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
