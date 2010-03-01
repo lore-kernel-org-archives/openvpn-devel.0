@@ -1,10 +1,8 @@
-Date: Mon, 1 Mar 2010 17:48:16 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20100301164816.GF9556@...1296...>
-References: <1267365582-13629-1-git-send-email-openvpn.list@...1114...>
-Mime-Version: 1.0
-In-Reply-To: <1267365582-13629-1-git-send-email-openvpn.list@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH] enhance tls-verify possibility
+Message-ID: <4B8BF25B.2040700@...515...>
+Date: Mon, 01 Mar 2010 18:59:07 +0200
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Sent "testers wanted" mail to -users list
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,74 +11,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: David Sommerseth <dazo@...384...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Sun, Feb 28, 2010 at 02:59:42PM +0100, David Sommerseth wrote:
-> It should be nice to enhance tls-verify check possibilities against peer
-> cert during a pending TLS connection like :
-> - OCSP verification
-> - check any X509 extensions of the peer certificate
-> - delta CRL verification
-> - ...
+I noted we've had some problems testing the new code against some OS'es
+(e.g. OpenBSD), so I just sent a "OpenVPN testers wanted" mail to the
+"openvpn-users" list:
 
-semi-ACK.
+http://sourceforge.net/mailarchive/forum.php?thread_name=3D4B8BF01A.20501%4=
+0openvpn.net&forum_name=3Dopenvpn-users
 
-In general, I think this is useful.  
+I suggest we use a new subject prefix, [TESTING NEEDED], to mark those
+patches which need testing. This would help our non-developer testers
+find the needles from the haystack. After all, most of the development
+discussion is more or less irrelevant for them. I think these [TESTING
+NEEDED] -messages should contain a description of what OS'es/features
+needs testing in human-readable (as opposed to C-developer -readable)
+format.
 
-Most of the code is fine, but I spotted a potential issue:
+What do you think?
 
-> @@ -896,6 +950,12 @@ verify_callback (int preverify_ok, X509_STORE_CTX * ctx)
->        argv_msg_prefix (D_TLS_DEBUG, &argv, "TLS: executing verify command");
->        ret = openvpn_execve (&argv, opt->es, S_SCRIPT);
->  
-> +      if (opt->verify_export_cert)
-> +        {
-> +           delete_file(tmp_file);
-> +           gc_free(&gc);
-> +        }
-> +
->        if (system_ok (ret))
->  	{
->  	  msg (D_HANDSHAKE, "VERIFY SCRIPT OK: depth=%d, %s",
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-tmp_file *could* be NULL here (unlikely, but possible).  
+irc freenode net: mattock
 
-So maybe this should read:
-
-> @@ -896,6 +950,12 @@ verify_callback (int preverify_ok, X509_STORE_CTX * ctx)
->        argv_msg_prefix (D_TLS_DEBUG, &argv, "TLS: executing verify command");
->        ret = openvpn_execve (&argv, opt->es, S_SCRIPT);
->  
-> +      if (opt->verify_export_cert)
-> +        {
-> +           if (tmp_file != NULL) delete_file(tmp_file);
-> +           gc_free(&gc);
-> +        }
-> +
->        if (system_ok (ret))
->  	{
->  	  msg (D_HANDSHAKE, "VERIFY SCRIPT OK: depth=%d, %s",
-
-... instead.  "delete_file()" is one of the few functions that do not
-check their argument for "is not NULL", so it's passed unchanged to
-unlink(), which might cause issues on some platforms.
-
-(Don't put the tmp_file condition into the surrounding if(), as it 
-would then skip the call to gc_free() as well).
-
-
-With that change, and a manpage documentation of the new option, ACK.
-
-gert
--- 
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~gert/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
 
