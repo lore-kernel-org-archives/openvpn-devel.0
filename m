@@ -1,12 +1,11 @@
-Date: Mon, 01 Mar 2010 06:49:04 -0600
+Date: Mon, 01 Mar 2010 07:10:49 -0600
 From: "Karl O. Pinc" <kop@...1206...>
-References: <20100228145001.GM9556@...1296...> <1267416790.30675.3@...1207...>
-	<20100301075446.GV9556@...1296...>
-In-Reply-To: <20100301075446.GV9556@...1296...> (from
-	gert@...1296... on Mon Mar  1 01:54:46 2010)
-Message-Id: <1267447744.30675.9@...1207...>
+References: <1267421566.30675.5@...1207...> <4B8B954C.6000600@...1114...>
+In-Reply-To: <4B8B954C.6000600@...1114...> (from
+	openvpn.list@...1114... on Mon Mar  1 04:22:04 2010)
+Message-Id: <1267449049.30675.11@...1207...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] special-case code for OpenBSD - advice needed
+Subject: Re: [Openvpn-devel] [PATCH] enhance tls-verify possibility
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,35 +17,57 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: openvpn-devel@lists.sourceforge.net, Peter Stuge <peter@...1287...>
 
-On 03/01/2010 01:54:46 AM, Gert Doering wrote:
-> Hi,
+On 03/01/2010 04:22:04 AM, David Sommerseth wrote:
+> On 01/03/10 06:32, Karl O. Pinc wrote:
+> > On 02/28/2010 10:24:36 PM, Peter Stuge wrote:
+> >> David Sommerseth wrote:
+> >>> +++ b/options.c
+> >>> @@ -529,6 +529,9 @@ static const char usage_message[] =3D
+> >>>    "                  tests of certification.  cmd should return=20
+> 0
+> >> to allow\n"
+> >>>    "                  TLS handshake to proceed, or 1 to fail.=20
+> (cmd
+> >> is\n"
+> >>>    "                  executed as 'cmd certificate_depth
+> >> X509_NAME_oneline')\n"
+> >>> +  "--tls-export-cert [directory] : Get peer cert in PEM format
+> and
+> >> store it \n"
+> >>> +  "                  in an openvpn temporary file in=20
+> [directory].
+> >> Peer cert is \n"
+> >>> +  "                  stored before tls-verify script execution
+> and
+> >> deleted after.\n"
+> >>
+> >> Please update the man page too
+> >
+> > There is no man page.  It's in sample-scripts/.
+> >
+> > However, the openvpn(8) --tls-verify section of the man page
+> > is poor.  I just sent another patch that clarifies it.
+> > Perhaps this is what you're looking for?  If not then
+> > just ignore my man page patch.
 >=20
-> On Sun, Feb 28, 2010 at 10:13:10PM -0600, Karl O. Pinc wrote:
-> > So, you should not need to do the ifconfig at all unless you're
-> > interested in tap functionality or there's other odd
-> > frobbing going on.
->=20
-> You need ifconfig to set an IP address :-) - which might be=20
-> considered
-> "odd frobbing", but people seem to value it somehow ;-)
+> I don't mean to be harsh ... but this patch updates options.c and
+> introduces a new argument to OpenVPN.  So I agree, Peter, a man page
+> update is needed!
 
-:)
+Whoops.  I was thinking of an entirely different patch
+and have been sending multiple responses that are entirely
+off-topic.  *facepalm*
 
-> *That* part is easily understood - the interesting question is why
-> OpenVPN
-> does do_ifconfig/open_tun for OpenBSD and open_tun/do_ifconfig for
-> NetBSD.
->=20
-> (As a side note: are you running an OpenBSD system and could test the
-> OpenVPN IPv6 payload stuff there?)
+I agree.  Man page update is needed.
 
-I am, but there's no IPV6 going on so unless there's a test suite
-to run (somehow) I couldn't test.  It would probably also take
-me a while to get to it because at the moment all my OpenBSD boxes
-are in production.
+
+Anyhow, having written a patch to the --tls-verify
+man page patch(s) someone might want to look at it
+and see if the wording is better.
+
 
 Karl <kop@...1206...>
 Free Software:  "You don't pay back, you pay forward."
