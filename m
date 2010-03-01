@@ -1,11 +1,11 @@
-Message-ID: <4B8A8401.3050500@...1227...>
-Date: Sun, 28 Feb 2010 15:56:01 +0100
-From: Arne Schwabe <arne@...1227...>
+Date: Sun, 28 Feb 2010 21:48:46 -0600
+From: "Karl O. Pinc" <kop@...1206...>
+In-Reply-To: <4B8A614A.4020406@...1114...> (from
+	openvpn.list@...1114... on Sun Feb 28 06:27:54 2010)
+Message-Id: <1267415326.30675.1@...1207...>
 MIME-Version: 1.0
-References: <54cde1cd4bdc1e82da3cb67831cc45c0@...1228...>
-	<4B8A6E08.3090204@...1114...>
-In-Reply-To: <4B8A6E08.3090204@...1114...>
-Subject: Re: [Openvpn-devel] OpenVPN Pf plugin/small status patch
+Subject: Re: [Openvpn-devel] Unpackged Windows binaries? -- Problems
+ building 2.1 rc15 on Windows XP
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,45 +14,100 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 To: David Sommerseth <openvpn.list@...1114...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-  On 28.02.2010 14:22, David Sommerseth wrote:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
->
-> On 26/06/09 17:00, Arne Schwabe wrote:
->> Hi,
->>
->> I have written a simple plugin for packet filtering that looks up fw rules
->> in the order
->>
->> Commonname.pf
->> IP_Port.pf
->> IP.pf
->> default.pf
->>
->> If one of this files is found the file is used as PF configuration. Maybe
->> this plugin is useful for someone else.
-> Hi!
->
-> Thank you for your patches.  I've been looking at both patches, and I
-> have some questions in regards to this plug-in.
->
-> How does this packet filtering further work?  I do not completely
-> understand how you imagine this should work.  I see that it tries to
-> open a number of files with different filename criteria , and if it
-> finds a file it copies it somewhere.
->
-The packet filtering itself is already part of openvpn. It only works in 
-tap mode iirc. See 
-http://svn.openvpn.net/projects/openvpn/branches/BETA21/openvpn/pf.c. A 
-description of the packet filter format is given in 
-http://svn.openvpn.net/projects/openvpn/branches/BETA21/openvpn/management/management-notes.txt
-COMMAND -- client-pf  (OpenVPN 2.1 or higher)
+On 02/28/2010 06:27:54 AM, David Sommerseth wrote:
+> On 09/04/09 05:03, Karl O. Pinc wrote:
 
-This plugin/patch only add the possibility to use the packet filter 
-functionality without use of the management interface.
+<snip>
+
+> > The OpenVPN devs have a "built" source tree in which they run
+> > install-win32/buildinstaller.  My point being that
+> > if they would package it up
+> > and release it alongside the resultant installer
+> > none of these sorts of issues would ever come up.
+> >
+> > Attached is a patch that produces a un-nsis-installer
+> > windows binary release as part of the build process.
+> >
+> > Apply it with:
+> >
+> > cd openvpn
+> > patch -p1 < buildbinaryrelease.patch
+> >
+> > The result is a file named something like:
+> > openvpn-2.1_rc15-winbinaries.tar.gz
+> >
+> > I deliberately produce a tar.gz file
+> > rather than a zip file to keep
+> > Windows people from downloading it accidentally
+> > instead of the Windows installer exe.
+> >
+> > There is more work to be done.  The file needs to
+> > be signed and put on the website every time there's
+> > a release.  I don't see anything in svn to patch
+> > that would aid this process.
+>=20
+> Hi!
+>=20
+> I'm going through the mailing list, picking up patches which seems=20
+> not
+> to be included.  Is this patch still interesting to get included?=20
+
+I would like to see it included.=20=20
+
+The goal is to allow people to create
+custom installers for MS Windows without having to rebuild
+the source or cross compile.  The point of the patch
+is to support an "unpackaged" release of the MS Windows
+binaries.  In other words raw binaries that are not
+part of an installer, which can then be packaged
+using the nsis installer to produce a custom install.
+
+As noted above this means that the official OpenVPN project
+would have to actually release such binaries.  If the
+project does not want to do this there is no point in
+having the patch.
+
+So, this requires upstream approval.  In some ways this
+is no different from other patches, except that it requires
+ongoing work as new releases come out -- or if not that
+then a change to whatever automated process (unavailable to
+us, at least at the time the patch was written) that puts=20
+releases out to the public.
+
+> This
+> one applies cleanly to the master branch.
+>=20
+> I see that this patch is also followed by this one:
+>=20
+> <http://article.gmane.org/gmane.network.openvpn.devel/2581>
+
+Yes.  The second patch is to the documentation so that people
+know what to do with unpackaged MS Windows binaries.  Not
+much point in releasing the binaries unless there's documentation.
+
+>=20
+> This patch do not apply at all, as the standard checked out tree do
+> not
+> have INSTALL-win32.html, only INSTALL-win32.txt.  Is this correct?  I
+> can't find this HTML file in the 2.1_rc15 nor 2.1_rc16, which was
+> current when this patch was sent to the mailing list.
+
+The OpenVPN site has restructured since this patch was written.
+
+I'd be happy to redo the documentation patch, but I don't see
+any point in doing so without some assurance that the effort
+will not be wasted.  How can I get some feedback on this?
+
+Regards,
+
+Karl <kop@...1206...>
+Free Software:  "You don't pay back, you pay forward."
+                 -- Robert A. Heinlein
+
 
