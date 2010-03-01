@@ -1,12 +1,9 @@
-Message-ID: <4B8BAD59.1060908@...1114...>
-Date: Mon, 01 Mar 2010 13:04:41 +0100
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <1267361435-11982-1-git-send-email-openvpn.list@...1114...>
-	<20100228142856.GL9556@...1296...>
-In-Reply-To: <20100228142856.GL9556@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Add CID to the management status
-	overview
+From: =?UTF-8?Q?booyakasha?= <booyakasha@...1309...>
+Mime-Version: 1.0
+Message-ID: <6c75f86b.6552e8f7.4b8bad61.2e7bd@...1309...>
+Date: Mon, 01 Mar 2010 13:04:49 +0100
+Subject: [Openvpn-devel] =?utf-8?q?Openvpn_2=2E1=2E1_bad_tcp_performance_b?=
+	=?utf-8?q?ut_good_ping_when_-l_1472_=28with_packet_size_=3D_MTU=29?=
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,52 +12,24 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hello,
+there are so many complains about openvpn performance in proto tcp mode
+that it is almost unbelievable that nobody took care of it. I am using two =
+20/20 MB connections and openvpn
+tunnel in tcp mode. without vpn my ping is about 10ms but with vpn it jumps=
+ to 520ms. What is most interesting when i use ping -l 1472 which is maximu=
+m packet size for MTU 1500 ping is OK and about 13ms. Any other size than 1=
+472 (which means 1500 =3D 1472 + 28 overhead) causes ping to take values ab=
+out 500-600ms.  And it is not acceptable to use UDP for me because of my co=
+mpany policy. I think that it is very common problem and not yet answered. =
+I am taking wild guess that everything works OK with proper packet size =3D=
+ MTU but when packet is smaller or larger (with fragmentation) it causes la=
+gs. Looking forward to your answers.
 
-On 28/02/10 15:28, Gert Doering wrote:
-> Hi,
-> 
-> On Sun, Feb 28, 2010 at 01:50:35PM +0100, David Sommerseth wrote:
->> There are commands in the management interface which require the cid. The
->> only way at the moment to get the cid of connected clients is to have
->> always a management connection established. The patch adds the CID to the
->> status output.
-> 
-> What is "cid"?  Client-ID?
-> 
-> I can't ACK this, as I don't understand the implications.  The code itself
-> looks harmless, but without knowing who might read the output and whether
-> an additional field will be silently ignored or whether consumer applications
-> may fail, I really can't say.
-> 
-> Is there documentation available for this?
-
-I've been looking at the management/management-notes.txt file.  And CID
-does indicate a Client-ID.  In fact, this ID is required by more of the
-commands issued.  But there is no "overview list" which reports it, as
-far as I can understand.  Thus putting this into the status command
-seems reasonable to me.
-
-The only way to track those CID values is by looking for client
-notifications as clients connect and authenticates themselves.
-
-
-kind regards,
-
-David Sommerseth
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkuLrVkACgkQDC186MBRfrrFzwCgiVbJKcJWpDi2ZJ7Ipewlan1m
-f6gAoJjQMfA8uzlcG+ckMO6f1Xyyb1S7
-=BnUR
------END PGP SIGNATURE-----
+Best Regards
+Ucho
 
