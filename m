@@ -1,11 +1,12 @@
-Date: Sun, 28 Feb 2010 21:48:46 -0600
+Date: Sun, 28 Feb 2010 21:52:32 -0600
 From: "Karl O. Pinc" <kop@...1206...>
-In-Reply-To: <4B8A614A.4020406@...1114...> (from
-	openvpn.list@...1114... on Sun Feb 28 06:27:54 2010)
-Message-Id: <1267415326.30675.1@...1207...>
+References: <54cde1cd4bdc1e82da3cb67831cc45c0@...1228...>
+	<4B8A6E08.3090204@...1114...>
+In-Reply-To: <4B8A6E08.3090204@...1114...> (from
+	openvpn.list@...1114... on Sun Feb 28 07:22:16 2010)
+Message-Id: <1267415552.30675.2@...1207...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Unpackged Windows binaries? -- Problems
- building 2.1 rc15 on Windows XP
+Subject: Re: [Openvpn-devel] OpenVPN Pf plugin/small status patch
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,91 +21,35 @@ Content-Disposition: inline
 To: David Sommerseth <openvpn.list@...1114...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On 02/28/2010 06:27:54 AM, David Sommerseth wrote:
-> On 09/04/09 05:03, Karl O. Pinc wrote:
-
-<snip>
-
-> > The OpenVPN devs have a "built" source tree in which they run
-> > install-win32/buildinstaller.  My point being that
-> > if they would package it up
-> > and release it alongside the resultant installer
-> > none of these sorts of issues would ever come up.
+On 02/28/2010 07:22:16 AM, David Sommerseth wrote:
+> On 26/06/09 17:00, Arne Schwabe wrote:
+> > Hi,
 > >
-> > Attached is a patch that produces a un-nsis-installer
-> > windows binary release as part of the build process.
+> > I have written a simple plugin for packet filtering that looks up=20
+> fw
+> rules
+> > in the order
 > >
-> > Apply it with:
+> > Commonname.pf
+> > IP_Port.pf
+> > IP.pf
+> > default.pf
 > >
-> > cd openvpn
-> > patch -p1 < buildbinaryrelease.patch
-> >
-> > The result is a file named something like:
-> > openvpn-2.1_rc15-winbinaries.tar.gz
-> >
-> > I deliberately produce a tar.gz file
-> > rather than a zip file to keep
-> > Windows people from downloading it accidentally
-> > instead of the Windows installer exe.
-> >
-> > There is more work to be done.  The file needs to
-> > be signed and put on the website every time there's
-> > a release.  I don't see anything in svn to patch
-> > that would aid this process.
+> > If one of this files is found the file is used as PF configuration.
+> Maybe
+> > this plugin is useful for someone else.
 >=20
 > Hi!
 >=20
-> I'm going through the mailing list, picking up patches which seems=20
-> not
-> to be included.  Is this patch still interesting to get included?=20
+> Thank you for your patches.  I've been looking at both patches, and I
+> have some questions in regards to this plug-in.
 
-I would like to see it included.=20=20
+I think that a vocabulary change could help avoid confusion, depending
+on exactly what the proposed vocabulary is here.  "pf" is the offical
+name for the OpenBSD packet filter.  IIRC it is also ported to FreeBSD
+and perhaps elsewhere.  Using the name "pf" for this plugin could
+be confusing.
 
-The goal is to allow people to create
-custom installers for MS Windows without having to rebuild
-the source or cross compile.  The point of the patch
-is to support an "unpackaged" release of the MS Windows
-binaries.  In other words raw binaries that are not
-part of an installer, which can then be packaged
-using the nsis installer to produce a custom install.
-
-As noted above this means that the official OpenVPN project
-would have to actually release such binaries.  If the
-project does not want to do this there is no point in
-having the patch.
-
-So, this requires upstream approval.  In some ways this
-is no different from other patches, except that it requires
-ongoing work as new releases come out -- or if not that
-then a change to whatever automated process (unavailable to
-us, at least at the time the patch was written) that puts=20
-releases out to the public.
-
-> This
-> one applies cleanly to the master branch.
->=20
-> I see that this patch is also followed by this one:
->=20
-> <http://article.gmane.org/gmane.network.openvpn.devel/2581>
-
-Yes.  The second patch is to the documentation so that people
-know what to do with unpackaged MS Windows binaries.  Not
-much point in releasing the binaries unless there's documentation.
-
->=20
-> This patch do not apply at all, as the standard checked out tree do
-> not
-> have INSTALL-win32.html, only INSTALL-win32.txt.  Is this correct?  I
-> can't find this HTML file in the 2.1_rc15 nor 2.1_rc16, which was
-> current when this patch was sent to the mailing list.
-
-The OpenVPN site has restructured since this patch was written.
-
-I'd be happy to redo the documentation patch, but I don't see
-any point in doing so without some assurance that the effort
-will not be wasted.  How can I get some feedback on this?
-
-Regards,
 
 Karl <kop@...1206...>
 Free Software:  "You don't pay back, you pay forward."
