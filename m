@@ -1,10 +1,11 @@
-Date: Mon, 1 Mar 2010 08:54:46 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20100301075446.GV9556@...1296...>
-References: <20100228145001.GM9556@...1296...> <1267416790.30675.3@...1207...>
-Mime-Version: 1.0
-In-Reply-To: <1267416790.30675.3@...1207...>
-Subject: Re: [Openvpn-devel] special-case code for OpenBSD - advice needed
+Message-ID: <4B8B8AC3.2050803@...1114...>
+Date: Mon, 01 Mar 2010 10:37:07 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <54cde1cd4bdc1e82da3cb67831cc45c0@...1228...>	<4B8A6E08.3090204@...1114...>
+	<1267415552.30675.2@...1207...>
+In-Reply-To: <1267415552.30675.2@...1207...>
+Subject: Re: [Openvpn-devel] OpenVPN Pf plugin/small status patch
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,38 +14,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 To: "Karl O. Pinc" <kop@...1206...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-On Sun, Feb 28, 2010 at 10:13:10PM -0600, Karl O. Pinc wrote:
-> So, you should not need to do the ifconfig at all unless you're
-> interested in tap functionality or there's other odd
-> frobbing going on.
+On 01/03/10 04:52, Karl O. Pinc wrote:
+>>> If one of this files is found the file is used as PF configuration.
+>> > Maybe
+>>> > > this plugin is useful for someone else.
+>> > 
+>> > Hi!
+>> > 
+>> > Thank you for your patches.  I've been looking at both patches, and I
+>> > have some questions in regards to this plug-in.
+>>
+> I think that a vocabulary change could help avoid confusion, depending
+> on exactly what the proposed vocabulary is here.  "pf" is the offical
+> name for the OpenBSD packet filter.  IIRC it is also ported to FreeBSD
+> and perhaps elsewhere.  Using the name "pf" for this plugin could
+> be confusing.
 
-You need ifconfig to set an IP address :-) - which might be considered
-"odd frobbing", but people seem to value it somehow ;-)
+Even though I do agree with you, Karl, that the vocabulary can be
+confusing, I'm not sure it is up to us to change that.  OpenVPN has
+implemented a packet filtering feature which placed in pf.[ch] and seems
+to use the abbreviation PF several places in the code.
 
-In addition to that, on OpenBSD and NetBSD, Tunnel interfaces stay around
-even after /dev/tun is closed, so if you want to be sure that no old
-configuration lingers around and messes with your tunnel, the "safe"
-approach is to do "ifconfig tun0 destroy ; ifconfig tun0 create" before
-IP/IPv6 configuration.
+We may dislike it or not, but we probably can't change that now.  That
+this plug-in uses pf in OpenVPN context is in my eyes correct, as it
+corresponds to the OpenVPN implementation.  Having that said, it could
+be better described in some comments that this plug-in is using
+OpenVPN's packet filter implementation.
 
-*That* part is easily understood - the interesting question is why OpenVPN
-does do_ifconfig/open_tun for OpenBSD and open_tun/do_ifconfig for NetBSD.
+Anyhow, this topic do deserve a little discussion on the
+#openvpn-discussion meeting on Thursdays@...1308...:00 UTC with James.
 
-(As a side note: are you running an OpenBSD system and could test the
-OpenVPN IPv6 payload stuff there?)
 
-gert
--- 
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~gert/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAkuLisAACgkQDC186MBRfrouHwCfaLLg9QCtlEEN8CYOJdtQVm+8
+qeUAoJUvSKh1XM61khqHFZ55V9kvFMFg
+=jtqZ
+-----END PGP SIGNATURE-----
 
