@@ -1,13 +1,11 @@
-Message-ID: <20100301144745.23741.qmail@...1287...>
-Date: Mon, 1 Mar 2010 15:47:45 +0100
-From: Peter Stuge <peter@...1287...>
-References: <6c75f86b.6552e8f7.4b8bad61.2e7bd@...1309...>
-	<4B8BB647.2020804@...1114...>
-	<23627cf8.610acd4b.4b8bc540.d2023@...1309...>
+Date: Mon, 01 Mar 2010 10:01:52 -0600
+From: "Karl O. Pinc" <kop@...1206...>
+In-Reply-To: <jwvsk8kkuci.fsf-monnier+inbox@...1269...> (from
+	monnier@...1268... on Mon Mar  1 08:12:03 2010)
+Message-Id: <1267459312.30675.12@...1207...>
 MIME-Version: 1.0
-In-Reply-To: <23627cf8.610acd4b.4b8bc540.d2023@...1309...>
-Subject: Re: [Openvpn-devel] Openvpn 2.1.1 bad tcp performance but
-	good	pingwhen -l 1472 (with packet size = MTU)
+Subject: Re: [Openvpn-devel] [PATCH] FQDN for routes should expand to all
+ IPs (second round)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,21 +14,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+To: Stefan Monnier <monnier@...1268...>
+Cc: Openvpn-devel@lists.sourceforge.net
 
-booyakasha wrote:
-> We are using Windows XP / Vista.
+On 03/01/2010 08:12:03 AM, Stefan Monnier wrote:
+> >> If someone could give at least some vaguely plausible scenario,
+> >> that'd help.
+> > Maybe there's more than one tunnel and there's some stupid
+> > load balancing going on using a hosts file?  (Along with
+> > deleting all non-vpn routes.)
+>=20
+> [ Setting aside the fact that using OpenVPN's broken handling of
+>   multi-FQDN to implement this is far from the only option. ]
+>=20
+> I'm not even sure *how* this could work: how would you ensure that=20
+> the
+> different tunnels happen to (together) route all IPs rather than all
+> chosing the same IP (for example)?
 
-Could you try using the same configuration also on other systems?
+I'm just waving my hands here; I'm not thinking closely about
+the details and don't want to.  It sounded plausible when
+it popped into my head so I sent a braindump.  I was thinking
+along the lines of "well if you might want to randomize
+remote endpoint choice using FQDNs resolved from a hosts file..."
 
-Linux, BSD, etc.
+Sorry if this has been more confusing than helpful.
 
-I would be interested in knowing if this problem is only seen on
-Windows.
+Karl <kop@...1206...>
+Free Software:  "You don't pay back, you pay forward."
+                 -- Robert A. Heinlein
 
-
-//Peter
 
