@@ -1,10 +1,7 @@
-Date: Sun, 28 Feb 2010 23:32:46 -0600
 From: "Karl O. Pinc" <kop@...1206...>
-In-Reply-To: <20100301042436.20377.qmail@...1287...> (from peter@...1287... on
-	Sun Feb 28 22:24:36 2010)
-Message-Id: <1267421566.30675.5@...1207...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] enhance tls-verify possibility
+Date: Sun, 28 Feb 2010 23:48:57 -0600
+Message-Id: <1267422537-10119-1-git-send-email-kop@...1206...>
+Subject: [Openvpn-devel] [PATCH] More improvments to openvpn(8) --tls-verify
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,40 +10,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Peter Stuge <peter@...1287...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Peter Stuge <peter@...1287...>
 
-On 02/28/2010 10:24:36 PM, Peter Stuge wrote:
-> David Sommerseth wrote:
-> > +++ b/options.c
-> > @@ -529,6 +529,9 @@ static const char usage_message[] =3D
-> >    "                  tests of certification.  cmd should return 0
-> to allow\n"
-> >    "                  TLS handshake to proceed, or 1 to fail.  (cmd
-> is\n"
-> >    "                  executed as 'cmd certificate_depth
-> X509_NAME_oneline')\n"
-> > +  "--tls-export-cert [directory] : Get peer cert in PEM format and
-> store it \n"
-> > +  "                  in an openvpn temporary file in [directory].
-> Peer cert is \n"
-> > +  "                  stored before tls-verify script execution and
-> deleted after.\n"
->=20
-> Please update the man page too
+From: Karl O. Pinc <kop@...1304...>
 
-There is no man page.  It's in sample-scripts/.
+---
+ openvpn.8 |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
 
-However, the openvpn(8) --tls-verify section of the man page
-is poor.  I just sent another patch that clarifies it.
-Perhaps this is what you're looking for?  If not then
-just ignore my man page patch.
-
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                 -- Robert A. Heinlein
+diff --git a/openvpn.8 b/openvpn.8
+index 0150ba7..9512fc3 100644
+--- a/openvpn.8
++++ b/openvpn.8
+@@ -4235,14 +4235,14 @@ should return 0 to allow the TLS handshake to proceed, or 1 to fail.
+ 
+ Note that
+ .B cmd
+-may contain whitespace (if enclosed in quotes), in which case the first
+-word of
++is a command line and as such may contain arguments separated by
++whitespace (if enclosed in quotes).  The first word of
+ .B cmd
+ is the shell command to execute and the remaining words are its
+ arguments.
+ When
+ .B cmd
+-is executed it is passed two (additional) arguments, as follows:
++is executed two arguments are appended, as follows:
+ 
+ .B cmd certificate_depth X509_NAME_oneline
+ 
+-- 
+1.5.6.5
 
 
