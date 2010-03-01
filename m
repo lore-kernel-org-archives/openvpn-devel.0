@@ -1,15 +1,8 @@
-Date: Sun, 28 Feb 2010 22:38:51 -0600
 From: "Karl O. Pinc" <kop@...1206...>
-References: <4B88110D.3020501@...1114...>
-	<jwvzl2vr3aw.fsf-monnier+inbox@...1269...>
-	<4B8A59A2.6050601@...1114...>
-	<jwvk4txceyv.fsf-monnier+inbox@...1269...>
-In-Reply-To: <jwvk4txceyv.fsf-monnier+inbox@...1269...> (from
-	monnier@...1268... on Sun Feb 28 14:04:01 2010)
-Message-Id: <1267418331.30675.4@...1207...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] FQDN for routes should expand to all
- IPs (second round)
+Date: Sun, 28 Feb 2010 23:31:06 -0600
+Message-Id: <1267421466-9788-1-git-send-email-kop@...1206...>
+Subject: [Openvpn-devel] [PATCH] Frob the openvpn(8) man page tls-verify
+	section to clarify
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,38 +11,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Stefan Monnier <monnier@...1268...>
-Cc: Openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Peter Stuge <peter@...1287...>
 
-On 02/28/2010 02:04:01 PM, Stefan Monnier wrote:
+From: Karl O. Pinc <kop@...1304...>
 
->=20
-> I'm at a loss when it comes to try and imagine someone who's used to
-> the
-> current behavior and bothered by the new behavior.  Really.  How can
-> the
-> current behavior ever be preferable?  Why would someone ever prefer
-> that
-> a route would be randomly chosen to either go through the VPN or not.
->=20
-> I haven't heard any such someone raise her voice, and neither have
-> I heard anyone come up with a scenario where such a someone could
-> exist.
->=20
-> If someone could give at least some vaguely plausible scenario,
-> that'd help.
+---
+ openvpn.8 |   22 +++++++++++++---------
+ 1 files changed, 13 insertions(+), 9 deletions(-)
 
-Maybe there's more than one tunnel and there's some stupid
-load balancing going on using a hosts file?  (Along with
-deleting all non-vpn routes.)
-
-??
-
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                 -- Robert A. Heinlein
+diff --git a/openvpn.8 b/openvpn.8
+index f1612a7..0150ba7 100644
+--- a/openvpn.8
++++ b/openvpn.8
+@@ -4232,11 +4232,23 @@ test).
+ 
+ .B cmd
+ should return 0 to allow the TLS handshake to proceed, or 1 to fail.
++
++Note that
++.B cmd
++may contain whitespace (if enclosed in quotes), in which case the first
++word of
++.B cmd
++is the shell command to execute and the remaining words are its
++arguments.
++When
+ .B cmd
+-is executed as
++is executed it is passed two (additional) arguments, as follows:
+ 
+ .B cmd certificate_depth X509_NAME_oneline
+ 
++These arguments are, respectively, the current certificate depth and
++the X509 common name (cn) of the peer.
++
+ This feature is useful if the peer you want to trust has a certificate
+ which was signed by a certificate authority who also signed many
+ other certificates, where you don't necessarily want to trust all of them,
+@@ -4250,14 +4262,6 @@ in the OpenVPN distribution.
+ 
+ See the "Environmental Variables" section below for
+ additional parameters passed as environmental variables.
+-
+-Note that
+-.B cmd
+-can be a shell command with multiple arguments, in which
+-case all OpenVPN-generated arguments will be appended
+-to
+-.B cmd
+-to build a command line which will be passed to the script.
+ .\"*********************************************************
+ .TP
+ .B --tls-remote name
+-- 
+1.5.6.5
 
 
