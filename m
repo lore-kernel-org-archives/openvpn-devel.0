@@ -1,15 +1,9 @@
-From: Stefan Monnier <monnier@...1268...>
-Message-ID: <jwvsk8kkuci.fsf-monnier+inbox@...1269...>
-References: <4B88110D.3020501@...1114...>
-	<jwvzl2vr3aw.fsf-monnier+inbox@...1269...>
-	<4B8A59A2.6050601@...1114...>
-	<jwvk4txceyv.fsf-monnier+inbox@...1269...> <1267418331.30675.4@...1207...>
-Date: Mon, 01 Mar 2010 09:12:03 -0500
-In-Reply-To: <1267418331.30675.4@...1207...> (Karl O. Pinc's message of "Sun, 28 Feb
-	2010 22:38:51 -0600")
+From: Markus Feilner <lists@...646...>
+Date: Mon, 1 Mar 2010 15:31:03 +0100
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] FQDN for routes should expand to all
-	IPs (second round)
+Message-Id: <201003011531.03831.lists@...646...>
+Subject: [Openvpn-devel] Free copies of Packt's new OpenVPN book at Cebit,
+	Hannover, Germany
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,24 +12,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-To: "Karl O. Pinc" <kop@...1206...>
-Cc: Openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
->> If someone could give at least some vaguely plausible scenario,
->> that'd help.
-> Maybe there's more than one tunnel and there's some stupid
-> load balancing going on using a hosts file?  (Along with
-> deleting all non-vpn routes.)
+Hello list,
 
-[ Setting aside the fact that using OpenVPN's broken handling of
-  multi-FQDN to implement this is far from the only option. ]
+Thanks a lot for the great software you are building here! 
 
-I'm not even sure *how* this could work: how would you ensure that the
-different tunnels happen to (together) route all IPs rather than all
-chosing the same IP (for example)?
+I have a little announcement: 
+"On wednesday, March 03, Packt author Markus Feilner will have a signing event at the 
+german Cebit IT conference (http://www.cebit.de). In hall 2, at the booth of his employer 
+Linux New Media (http://www.linux-magazin.de), the deputy editor-in-chief of the german 
+Linux Magazine and co-founder of the Openvpn.e.V. (http://www.openvpn.eu) will give 
+away15 free and signed copies of Packt's new book "Beginning Openvpn 2.0.9" 
+(http://www.packtpub.com/learning-openvpn-2-0-9/book) to the first 15 interested readers. "
 
+I'd be happy to meet everybody of you at the booth! 
+'Thanks again for this great piece of open source!
 
-        Stefan
+-- 
+
+Best Regards - Mit freundlichen Gruessen
+Markus Feilner
+
+-------------------------
+Feilner IT Linux & GIS
+Linux Solutions, Training, Seminare, Workshops and Authoring
+Koetztinger Strasse 6c          93057 Regensburg - Germany
+Phone:                          +49 941 8 10 79 89
+Mobile:                         +49 170 3 02 70 92
+Web: www.feilner-it.net         mail: mfeilner@...646...
+Xing: http://www.xing.com/profile/Markus_Feilner
+Linkedin: http://de.linkedin.com/in/markusfeilner
+Linux Magazine Germany:         mfeilner@...1310...
+--------------------------------------
+My books at Packt: Open source - privacy and connectivity for everyone!
+ New and revised:       http://www.packtpub.com/learning-openvpn-2-0-9/book
+ Sold over 3000 times:  http://www.packtpub.com/openvpn/book
+ My Groupware book:     http://www.packtpub.com/scalix/book
 
