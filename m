@@ -1,11 +1,8 @@
-Message-ID: <4B8D7922.9030205@...1114...>
-Date: Tue, 02 Mar 2010 21:46:26 +0100
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <4B8DD132.1050301@...1299...>
+Date: Wed, 03 Mar 2010 16:02:10 +1300
+From: Jason Haar <Jason.Haar@...1299...>
 MIME-Version: 1.0
-References: <1267421466-9788-1-git-send-email-kop@...1206...>
-In-Reply-To: <1267421466-9788-1-git-send-email-kop@...1206...>
-Subject: Re: [Openvpn-devel] [PATCH] Frob the openvpn(8) man page tls-verify
- section to clarify
+Subject: [Openvpn-devel] bug in cryptoapi when run as a service?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,81 +11,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: "Karl O. Pinc" <kop@...1206...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi there
 
-On 01/03/10 06:31, Karl O. Pinc wrote:
-> From: Karl O. Pinc <kop@...1304...>
-> 
-> ---
->  openvpn.8 |   22 +++++++++++++---------
->  1 files changed, 13 insertions(+), 9 deletions(-)
-> 
-> diff --git a/openvpn.8 b/openvpn.8
-> index f1612a7..0150ba7 100644
-> --- a/openvpn.8
-> +++ b/openvpn.8
-> @@ -4232,11 +4232,23 @@ test).
->  
->  .B cmd
->  should return 0 to allow the TLS handshake to proceed, or 1 to fail.
-> +
-> +Note that
-> +.B cmd
-> +may contain whitespace (if enclosed in quotes), in which case the first
-> +word of
-> +.B cmd
-> +is the shell command to execute and the remaining words are its
-> +arguments.
-> +When
->  .B cmd
-> -is executed as
-> +is executed it is passed two (additional) arguments, as follows:
->  
->  .B cmd certificate_depth X509_NAME_oneline
->  
-> +These arguments are, respectively, the current certificate depth and
-> +the X509 common name (cn) of the peer.
-> +
->  This feature is useful if the peer you want to trust has a certificate
->  which was signed by a certificate authority who also signed many
->  other certificates, where you don't necessarily want to trust all of them,
-> @@ -4250,14 +4262,6 @@ in the OpenVPN distribution.
->  
->  See the "Environmental Variables" section below for
->  additional parameters passed as environmental variables.
-> -
-> -Note that
-> -.B cmd
-> -can be a shell command with multiple arguments, in which
-> -case all OpenVPN-generated arguments will be appended
-> -to
-> -.B cmd
-> -to build a command line which will be passed to the script.
->  .\"*********************************************************
->  .TP
->  .B --tls-remote name
+I'm trying openvpn-2.1.1 under XP and Win7 and am finding issue after
+issue with Win7. Most are Win7's fault, but this one looks real.
+
+I've got openvpn running as a service (running as SYSTEM), where I've
+inserted the client cert via MMC (ie it's available to SYSTEM). After a
+reboot, or after "stop->start" of the service, openvpn successfully
+loads and connects - the VPN is up. However, if the network goes down
+(say, because the laptop decided to go to sleep and was later woken up),
+then openvpn exits instead of reconnecting (see below for logs). So I'm
+guessing openvpn.exe exits - but it doesn't tell openvpnserv.exe that -
+and it doesn't trigger a restart or anything - it's Game Over (the
+openvpn service still states the service is running).
+
+As it works after a reboot (ie before anyone logs in - so no
+cert-in-user-profile issues), this "cannot load certificate" is plain
+wrong. I'm guessing it's a bug with openvpn? Also, shouldn't openvpn.exe
+"tell" openvpnserv.exe when it exits - so that openvpnserv.exe can
+restart it? Isn't that the point of having it as a service? To
+reiterate: if, after the below error occurs, I restart the service or
+reboot, the tunnel comes up fine.
+
+Thanks
+
+Jason
 
 
-Applied to the feat_misc branch, to be merged into allmerged.
-Commit 87afefff8fe7b43b2c5cbba7a03a887fd9c02336
+-----------------------------------------------------------------------
 
+Wed Mar 03 15:39:25 2010 [server.name] Inactivity timeout
+(--ping-restart), restarting
+Wed Mar 03 15:39:25 2010 TCP/UDP: Closing socket
+...
+Wed Mar 03 15:39:28 2010 Route deletion via IPAPI succeeded [adaptive]
+Wed Mar 03 15:39:28 2010 Closing TUN/TAP interface
+Wed Mar 03 15:39:28 2010 SIGUSR1[soft,ping-restart] received, process
+restarting
+Wed Mar 03 15:39:28 2010 Restart pause, 2 second(s)
+Wed Mar 03 15:39:30 2010 NOTE: the current --script-security setting may
+allow this configuration to call user-defined scripts
+Wed Mar 03 15:39:30 2010 NOTE: --script-security method='system' is
+deprecated due to the fact that passed parameters will be subject to
+shell expansion
+Wed Mar 03 15:39:30 2010 Cannot load certificate "SUBJ:client" from
+Microsoft Certificate Store: error:C5066064:microsoft
+cryptoapi:CryptAcquireCertificatePrivateKey:Invalid Signature.
+Wed Mar 03 15:39:30 2010 Exiting
 
-kind regards,
+-- 
+Cheers
 
-David Sommerseth
+Jason Haar
+Information Security Manager, Trimble Navigation Ltd.
+Phone: +64 3 9635 377 Fax: +64 3 9635 417
+PGP Fingerprint: 7A2E 0407 C9A6 CAF6 2B9F 8422 C063 5EBB FE1D 66D1
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkuNeSIACgkQDC186MBRfrpQ8gCaAgcQzeBkUQ6gxEi0SqRy/rxT
-XboAn3QVnkJ94Q2TLBCNfuRLQL660Dm5
-=0x96
------END PGP SIGNATURE-----
 
