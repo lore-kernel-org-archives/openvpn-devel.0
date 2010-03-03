@@ -1,9 +1,11 @@
-Message-ID: <4B8E2964.5060402@...515...>
-Date: Wed, 03 Mar 2010 11:18:28 +0200
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Date: Wed, 03 Mar 2010 09:31:35 -0600
+From: "Karl O. Pinc" <kop@...1206...>
+References: <1267588345473303500@...1315...> <4B8E2070.6050208@...1299...>
+In-Reply-To: <4B8E2070.6050208@...1299...> (from Jason.Haar@...1299...
+	on Wed Mar  3 02:40:16 2010)
+Message-Id: <1267630295.5048.3@...1207...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] New Python-based client GUI for OpenVPN looking for
-	maintainer
+Subject: Re: [Openvpn-devel] Erratic TCP Throughput
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,31 +14,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+On 03/03/2010 02:40:16 AM, Jason Haar wrote:
+> On 03/03/2010 04:52 PM, openvpn@...1315... wrote:
+> >
+> > 1) Without OpenVPN - consistent performance, ~ 70 Mbps total
+> > throughput (on a 100 Mb LAN).
 
-I just received email from an OpenVPN user who had paid for the
-development of a Python-based client GUI for OpenVPN. The original
-developer was only hired to create the GUI, not maintain it. So this new
-GUI would need a new maintainer. The project will be hosted in Google Code:
+> > 2) With OpenVPN - very consistent performance, sometimes fine,=20
+> other
+> > times very poor. ~ 70 Mbps total throughput (on a 100 Mb LAN), but
+> > bounces around a lot.
 
-https://code.google.com/p/pyopenvpnman
+> So what you're saying is that on a ~70Mbs network you sometimes see
+> ~70Mbs via "openvpn-via-proxy-server" and sometimes you don't? As the
+> performance of openvpn varies - and I assume you know the client and
+> server aren't the bottleneck - then that leaves....?
+>=20
+> The proxy! :-)=20
 
-The code itself is still here, but will be moved to Google Code soon:
+Or problems with tunneling tcp inside tcp which you can trace
+back via this thread:
 
-http://github.com/ivanzoid/pyopenvpnman
+http://article.gmane.org/gmane.network.openvpn.user/29183
 
-Currently this GUI works only on Windows, but it should be easy to make
-it cross-platform.
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
 
-irc freenode net: mattock
+Karl <kop@...1206...>
+Free Software:  "You don't pay back, you pay forward."
+                 -- Robert A. Heinlein
 
 
