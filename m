@@ -1,12 +1,12 @@
 From: =?UTF-8?Q?booyakasha?= <booyakasha@...1309...>
-In-Reply-To: <eba800c91003011101v61fb1415l68146f00916b1c7@...278...>
+In-Reply-To: <20100304213523.GF25238@...1296...>
 References: <6c75f86b.6552e8f7.4b8bad61.2e7bd@...1309...>
-	<4B8BB647.2020804@...1114...>
-	<23627cf8.610acd4b.4b8bc540.d2023@...1309...>
 	<eba800c91003011101v61fb1415l68146f00916b1c7@...278...>
+	<7cd17813.52db77fa.4b901800.4e59d@...1309...>
+	<20100304213523.GF25238@...1296...>
 Mime-Version: 1.0
-Message-ID: <7cd17813.52db77fa.4b901800.4e59d@...1309...>
-Date: Thu, 04 Mar 2010 21:28:48 +0100
+Message-ID: <2123d059.17d4e8c4.4b90298a.5c789@...1309...>
+Date: Thu, 04 Mar 2010 22:43:38 +0100
 Subject: Re: [Openvpn-devel]
 	=?utf-8?q?Openvpn_2=2E1=2E1_bad_tcp_performance_b?=
 	=?utf-8?q?ut_good_pingwhen_-l_1472_=28with_packet_size_=3D_MTU=29?=
@@ -22,23 +22,39 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-Dear developers,
-because i really believe in open source software I've decided to check all =
-sorts of configurations to check problems with tcp tunneling. I used both L=
-inux and Windows (XP and Vista) to connect them over tcp tunnel in LAN netw=
-ork. I've monitored both sides of connection and I have some interesting re=
-sults. All 3 machines used fresh installed OS (Linux was Debian 4.1). Same =
-problem with all of them. When you ping them with packet size 1472 (1500 by=
-tes) you have excellent performance on both ends. But using any other size =
-of packet causes dramatic performance lose (about 50 times slower response)=
-. What is more interesting no retransmission on any of sides. Just slow res=
-ponse from server and client. But then I=E2=80=99ve tried higher packet siz=
-es just to make sure. And then I found a magic number 2952 (ping =E2=80=93l=
- 2952). It wasn=E2=80=99t only the 1472 ping packet which worked OK. All pa=
-ckets over 2952 are OK !!!  I am waiting for your opinions why packets from=
- 1 byte to 2952 bytes (without 1472 byes package) are going extremely slowl=
-y and others not.
-Best regards
+
+Hi,
+yes i tried this setting among many others and it didn't changed nothing at=
+ all. But really i would be more than pleased if it was just some switch in=
+ config file..
+
+Regards
 Ucho
 
+Dnia 4 marca 2010 22:35 Gert Doering <gert@...1296...> napisa=C5=82(a):
+
+> Hi,
+>=20
+> On Thu, Mar 04, 2010 at 09:28:48PM +0100, booyakasha wrote:
+> > magic number 2952 (ping ?l 2952). It wasn?t only the 1472 ping
+> > packet which worked OK. All packets over 2952 are OK !!!  I am
+> > waiting for your opinions why packets from 1 byte to 2952 bytes
+> > (without 1472 byes package) are going extremely slowly and others not.
+>=20
+> TCP_NODELAY
+>=20
+> David has already suggested that you should try setting
+>=20
+>   "socket-flags TCP_NODELAY"
+>=20
+> - did you?
+>=20
+> gert
+> --=20
+> USENET is *not* the non-clickable part of WWW!
+>                                                            //www.muc.de/~=
+gert/
+> Gert Doering - Munich, Germany                             gert@...1296...
+> fax: +49-89-35655025                        gert@...1297...
+>=20
 
