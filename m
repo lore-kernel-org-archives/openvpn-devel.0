@@ -1,10 +1,14 @@
-Date: Fri, 5 Mar 2010 19:07:08 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20100305180708.GP25238@...1296...>
-References: <20100305163926.GM25238@...1296...> <1267807973.14083.0@...1207...>
+From: Stefan Monnier <monnier@...1268...>
+Date: Fri, 05 Mar 2010 16:17:12 -0500
+Message-ID: <jwvwrxq1nk3.fsf-monnier+gmane.network.openvpn.devel@...1269...>
+References: <6c75f86b.6552e8f7.4b8bad61.2e7bd@...1309...>
+	<4B8BB647.2020804@...1114...>
+	<23627cf8.610acd4b.4b8bc540.d2023@...1309...>
+	<eba800c91003011101v61fb1415l68146f00916b1c7@...278...>
+	<7cd17813.52db77fa.4b901800.4e59d@...1309...>
 Mime-Version: 1.0
-In-Reply-To: <1267807973.14083.0@...1207...>
-Subject: Re: [Openvpn-devel] special-case code for OpenBSD - advice needed
+Subject: Re: [Openvpn-devel] Openvpn 2.1.1 bad tcp performance but good
+	pingwhen -l 1472 (with packet size = MTU)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,53 +19,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: "Karl O. Pinc" <kop@...1206...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+> because i really believe in open source software I've decided to check
+> all sorts of configurations to check problems with tcp tunneling.
 
-On Fri, Mar 05, 2010 at 10:52:53AM -0600, Karl O. Pinc wrote:
-> > open() first will exclusively lock it for you...
-> 
-> From OpenBSD's tun(4) man page:
-> 
->      Each device has the exclusive open property; it cannot be 
->      opened if it is
->      already open and in use by another process.
->      ...
->      On the last close of the device, all queued packets are
->      discarded.  If the device was created by opening /dev/tunN, 
->      it will be
->      automatically destroyed.  Devices created via ifconfig(8) are 
->      only marked
->      as not running and traffic will be dropped returning EHOSTDOWN.
-> 
-> Which means to me that you want to omit the ifconfig destroy and
-> create, thus:
-> 
->    TUN/TAP device /dev/tun1 opened with open(2)
->    /* iterate increasing tunN number until you get other than
->     * EBUSY (the device was already opened), or suchlike searching */
->    /sbin/ifconfig tun1 10.1.1.18 10.1.1.17 mtu 1500 netmask \
->       255.255.255.255 up
+This makes it sound like OpenVPN's performance is lower than some
+comparable non-Free software.
+Have you actually compared OpenVPN's performance to some other
+TCP-tunnel solution?  That would be instructive since it may point to
+ways to improve the TCP support.
 
-This is what other platforms do, e.g. FreeBSD and Linux (on close,
-auto-destroy - and if you want persistance, you need to do something
-special).
+I know in general OpenVPN discourages the use of TCP tunnels and for
+good reasons, but the support for TCP tunnels is also one of the
+strengths of OpenVPN, making it usable even with the most
+uncooperative firewalls.
 
-Maybe this was changed between older OpenBSD versions and the current
-versions?
 
-Given this information, I will prepare a patch that will handle OpenBSD
-the same way as FreeBSD is done - run open_tun() first, do_ifconfig()
-second, and do away with the "ifconfig destroy" logic.  I'll send the
-patch to the list for testing.
+        Stefan
 
-gert
--- 
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~gert/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
 
