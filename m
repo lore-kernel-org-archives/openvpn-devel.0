@@ -1,5 +1,5 @@
 From: "Michael H. Warfield" <mhw@...1243...>
-In-Reply-To: <20100305080138.GG25238@...1296...>
+In-Reply-To: <1267800137.8210.25.camel@...23...>
 References: <6c75f86b.6552e8f7.4b8bad61.2e7bd@...1309...>
 	<4B8BB647.2020804@...1114...>
 	<23627cf8.610acd4b.4b8bc540.d2023@...1309...>
@@ -8,11 +8,12 @@ References: <6c75f86b.6552e8f7.4b8bad61.2e7bd@...1309...>
 	<20100304213523.GF25238@...1296...>
 	<1267744903417725500@...1315...>
 	<20100305080138.GG25238@...1296...>
+	<1267800137.8210.25.camel@...23...>
 Content-Type: multipart/signed; micalg="pgp-sha1";
 	protocol="application/pgp-signature";
-	boundary="=-DIH4shPCbDlXTbJ+HIN7"
-Date: Fri, 05 Mar 2010 09:42:17 -0500
-Message-ID: <1267800137.8210.25.camel@...23...>
+	boundary="=-PYI2vG+odbPTSr7QjF2I"
+Date: Fri, 05 Mar 2010 10:04:19 -0500
+Message-ID: <1267801459.8210.29.camel@...23...>
 Mime-Version: 1.0
 Subject: Re: [Openvpn-devel] Openvpn 2.1.1 bad tcp performance but good
  pingwhen -l 1472 (with packet size = MTU)
@@ -28,59 +29,69 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Gert Doering <gert@...1296...>
 Cc: mhw@...1243..., openvpn-devel@lists.sourceforge.net
 
---=-DIH4shPCbDlXTbJ+HIN7
+--=-PYI2vG+odbPTSr7QjF2I
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 2010-03-05 at 09:01 +0100, Gert Doering wrote:=20
-> Hi,
+On Fri, 2010-03-05 at 09:42 -0500, Michael H. Warfield wrote:=20
+> On Fri, 2010-03-05 at 09:01 +0100, Gert Doering wrote:=20
+> > Hi,
+> >=20
+> > On Thu, Mar 04, 2010 at 05:21:43PM -0600, openvpn@...1315... wrote:
+> > > I did this in the client configuration file ... is this right?
+> > > I checked the OpenVPN web site, and it may be that I need this on
+> > > the server side instead. Please clarify and I'll try it again (if
+> > > I need to).
+> >=20
+> > "socket-flags TCP_NODELAY"
+
+> > that would need to go into both(!) config files - it changes the way the
+> > operating system handles write() calls into a socket, that is, whether
+> > the OS waits for "more data" to eventually generate a full sized packet,
+> > or whether it will send the data immediately (generating a small packet=
+).
+
+> > (This is a fundamental problem with TCP - the stacks are optimized for
+> > certain patterns, either "bulk data, make full size packets" or=20
+> > "interactive traffic, send single bytes of keystrokes, where a few ms
+> > delay don't hurt", but not for VPN-like traffic)
+
+> Oh WOW...  I hadn't even thought of that.  That's got to be the A #1
+> reason right there for avoiding the use of tcp like the plague for
+> things like these.
 >=20
-> On Thu, Mar 04, 2010 at 05:21:43PM -0600, openvpn@...1315... wrote:
-> > I did this in the client configuration file ... is this right?
-> > I checked the OpenVPN web site, and it may be that I need this on
-> > the server side instead. Please clarify and I'll try it again (if
-> > I need to).
+> That means that OpenVPN is (to use the older terminology - I'm old
+> school) not using the PUSH OOB method to push packets out and to get
+> them received immediately at the other end.  Looking that the
+> socket_write calls, that would seem to be the MSG_OOB option.  I use to
+> remember in days ancient using TCP_URGENT and TCP_PUSH flags for things
+> like that (TCP_URGENT was used by ftp clients to abort interrupted data
+> streams).  All I see in socket.h is "MSG_NOSIGNAL".  Yeah, that would
+> probably do it.  TCP_NODELAY is going to disable the naggle algorithm
+> and disable the send buffering but I don't think it's going to set the
+> TH_PUSH flag in the tcp header so what the received side does with it is
+> up to the received side, isn't it?  Yeah, I know, PUSH is an optional
+> feature in tcp implementations but it's been in every one I've worked
+> with and I see the comments about it having it's own problems.  But how
+> in the world would anyone expect a user space packet handler to work
+> efficiently over tcp STREAMS without it?  You've got to work around
+> tcp's design to treat everything as a continuous stream and to optimize
+> it as a stream and not a series of packets.
+
+Looking at the man page on tcp is appears that MSG_OOB applies the
+TCP_URGENT semantic to the stream, not the TCP_PUSH.  That would also
+entail a SIGURG signal on each packet on the receiver side.  Maybe not
+such a good thing on every packet after all, even if you set that to
+SIG_IGNORE. :-P
+
+> If nothing else, I would always expect tcp vpn's the suck royally
+> without at least having TCP_NODELAY.  Why isn't that the default.
 >=20
-> "socket-flags TCP_NODELAY"
+> http://www.unixguide.net/network/socketfaq/2.11.shtml
+>=20
+> > gert
 
-> that would need to go into both(!) config files - it changes the way the
-> operating system handles write() calls into a socket, that is, whether
-> the OS waits for "more data" to eventually generate a full sized packet,
-> or whether it will send the data immediately (generating a small packet).
-
-> (This is a fundamental problem with TCP - the stacks are optimized for
-> certain patterns, either "bulk data, make full size packets" or=20
-> "interactive traffic, send single bytes of keystrokes, where a few ms
-> delay don't hurt", but not for VPN-like traffic)
-
-Oh WOW...  I hadn't even thought of that.  That's got to be the A #1
-reason right there for avoiding the use of tcp like the plague for
-things like these.
-
-That means that OpenVPN is (to use the older terminology - I'm old
-school) not using the PUSH OOB method to push packets out and to get
-them received immediately at the other end.  Looking that the
-socket_write calls, that would seem to be the MSG_OOB option.  I use to
-remember in days ancient using TCP_URGENT and TCP_PUSH flags for things
-like that (TCP_URGENT was used by ftp clients to abort interrupted data
-streams).  All I see in socket.h is "MSG_NOSIGNAL".  Yeah, that would
-probably do it.  TCP_NODELAY is going to disable the naggle algorithm
-and disable the send buffering but I don't think it's going to set the
-TH_PUSH flag in the tcp header so what the received side does with it is
-up to the received side, isn't it?  Yeah, I know, PUSH is an optional
-feature in tcp implementations but it's been in every one I've worked
-with and I see the comments about it having it's own problems.  But how
-in the world would anyone expect a user space packet handler to work
-efficiently over tcp STREAMS without it?  You've got to work around
-tcp's design to treat everything as a continuous stream and to optimize
-it as a stream and not a series of packets.
-
-If nothing else, I would always expect tcp vpn's the suck royally
-without at least having TCP_NODELAY.  Why isn't that the default.
-
-http://www.unixguide.net/network/socketfaq/2.11.shtml
-
-> gert
+> Mike
 
 Mike
 --=20
@@ -91,22 +102,22 @@ Michael H. Warfield (AI4NB) | (770) 985-6132 |  mhw@...1243...
 ll
  PGP Key: 0x674627FF        | possible worlds.  A pessimist is sure of it!
 
---=-DIH4shPCbDlXTbJ+HIN7
+--=-PYI2vG+odbPTSr7QjF2I
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: This is a digitally signed message part
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
 
-iQEVAwUAS5EYSMDrlnVnRif/AQJgwgf7BgwiPjThE5rPwdP/pmGbPEktGpOBEOak
-k04Gl8AmOSAN3BhPbzhI6ornOktIkldUJCXH58jBNo2awIlbi4yvuP3Ao77ypn83
-TXi8zTb6iGR7N716K2HVnxIVJXtuN49jPXN4QsL0yAzAfMscOwhIqgRxcEWiwX32
-t7AifJpMNQ0tbaLyLsPCd56v1ZVlfS1iCmZNYIybSjevLkwGZ0a2gTaq3yw15psU
-gvNOCEKgoLT8QNiRMH9D/PqJyaZ50JOQudDxRspHm9dGsaEeY0pVdmBkCFanMgLD
-9tLOSwpq+MlDhw0UiDzatc+SOScWLwUOeRlou97zQ4ATG/1Whs2Z1A==
-=GbzY
+iQEVAwUAS5Edc8DrlnVnRif/AQLAhwf/XOTe/YFUF8yqlBLHlhCV0ZQ7lNiz5mS9
++vio0YnMpW3fx3Vm8Lv16BcUz87DzngrfJvlOz7QCiaY2Y2h/oFbdD3+hrIxpiSI
+eAsn8a5pfKf2bKJG0edoYQ1PA1UMB5nPOIdzwQ0JWQt1+VYJCxdsH8sVtV8eiPEp
+A5lZosJRMrhWdZxMBRYyhuCSwP+QV3dMQELa/ZqcNndXg8FTOO9qPKoXaFq4cqjG
+Ge45nF70Bsfa5nEQ9CKjryDqJKzDzq4X5UvxEjyOMjNWafJXqU6pnEwrXAWnxbxX
+5X0eFWgntya2AwmoNxQI6wvTMeBLqP613dnjIIDNpHeHzzdYHu9hcg==
+=eNUu
 -----END PGP SIGNATURE-----
 
---=-DIH4shPCbDlXTbJ+HIN7--
+--=-PYI2vG+odbPTSr7QjF2I--
 
 
