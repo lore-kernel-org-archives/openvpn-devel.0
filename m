@@ -1,19 +1,13 @@
-Date: Fri, 5 Mar 2010 16:13:49 +0100
+Date: Fri, 5 Mar 2010 17:39:26 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20100305151349.GK25238@...1296...>
-References: <6c75f86b.6552e8f7.4b8bad61.2e7bd@...1309...>
-	<4B8BB647.2020804@...1114...>
-	<23627cf8.610acd4b.4b8bc540.d2023@...1309...>
-	<eba800c91003011101v61fb1415l68146f00916b1c7@...278...>
-	<7cd17813.52db77fa.4b901800.4e59d@...1309...>
-	<20100304213523.GF25238@...1296...>
-	<1267744903417725500@...1315...>
-	<20100305080138.GG25238@...1296...>
-	<1267800137.8210.25.camel@...23...>
+Message-ID: <20100305163926.GM25238@...1296...>
+References: <20100228145001.GM9556@...1296...>
+	<201003050942.23706.hhund@...194...>
+	<20100305091151.GI25238@...1296...>
+	<201003051144.28236.hhund@...194...>
 Mime-Version: 1.0
-In-Reply-To: <1267800137.8210.25.camel@...23...>
-Subject: Re: [Openvpn-devel] Openvpn 2.1.1 bad tcp performance but good
-	pingwhen -l 1472 (with packet size = MTU)
+In-Reply-To: <201003051144.28236.hhund@...194...>
+Subject: Re: [Openvpn-devel] special-case code for OpenBSD - advice needed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -25,30 +19,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-To: "Michael H. Warfield" <mhw@...1243...>
+To: Heiko Hund <hhund@...194...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Fri, Mar 05, 2010 at 09:42:17AM -0500, Michael H. Warfield wrote:
-> Oh WOW...  I hadn't even thought of that.  That's got to be the A #1
-> reason right there for avoiding the use of tcp like the plague for
-> things like these.
+On Fri, Mar 05, 2010 at 11:44:28AM +0100, Heiko Hund wrote:
+> On Friday 05 March 2010 10:11:51 Gert Doering wrote:
+> > What happened exactly?  Could you ask your colleague for a log file?
 > 
-> That means that OpenVPN is (to use the older terminology - I'm old
-> school) not using the PUSH OOB method to push packets out and to get
-> them received immediately at the other end.  Looking that the
+> Well, he couldn't ping any remote host. Nothing special in the log, really. If 
+> it isn't misleading it's quite obvious that the ordering is wrong:
+> 
+>   TUN/TAP device /dev/tun1 opened
+>   /sbin/ifconfig tun1 destroy
+>   /sbin/ifconfig tun1 create
+>   NOTE: Tried to delete pre-existing tun/tap instance --No Problem if failure
+>   /sbin/ifconfig tun1 10.1.1.18 10.1.1.17 mtu 1500 netmask 255.255.255.255 up
 
-I'm not sure what OpenVPN *is* doing internally.  I was just assuming that
-the TCP_NODELAY (nagle) would affect performance for "half-full" packets
-(as observed).
+Well, this is exactly what the current code for NetBSD does... (and how
+this thread got started).  On NetBSD, it works.
 
-Since TCP_NODELAY is not having an effect here, it might be worth a look 
-into the sources to see that it's done correctly with TCP_PUSH.
+The problem is that if you do it the other way round, you have a big fat
+race condition here - between "I assume that my tun device will be tun1,
+so I do 'ifconfig tun1 destroy' now" and actually opening /dev/tun1, 
+some other process might grab this tun device.
 
-*I* am not going to do that any time soon, though - I'm not using 
-VPN-over-TCP, and digging through the socket code of OpenVPN is fairly
-far down on my "what to do with OpenVPN in my spare time" list.
+open() first will exclusively lock it for you...
 
 gert
 -- 
