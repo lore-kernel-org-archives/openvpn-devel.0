@@ -1,8 +1,8 @@
-Message-ID: <4B9515FF.6000704@...41...>
-Date: Mon, 08 Mar 2010 08:21:35 -0700
+Message-ID: <4B950E0B.1030908@...41...>
+Date: Mon, 08 Mar 2010 07:47:39 -0700
 From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Supporting "route-gateway dhcp" on non-Windows
+Subject: [Openvpn-devel] Linux tun/tap performance issues
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,38 +15,19 @@ Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-OpenVPN 2.1 has a relatively recent feature that allows a TAP-based 
-OpenVPN session to be established where the client gets its IP address 
-assignment and other attributes from the server-side DHCP server.
+I believe this has been discussed before, but I noticed recently that a 
+Linux-based OpenVPN client (Linux 2.6.24, OpenVPN 2.1.1) spends a lot 
+more CPU time in kernel space than in user space.  This is surprising, 
+given the fact that all of the CPU-intensive cryptographic operations 
+are being done in user space.
 
-The feature is enabled by the "route-gateway dhcp" directive on the client.
+Using the 'time' utility on the OpenVPN client, while a wget of a 50MB 
+file was done over the VPN, I found that 80% of the CPU time was taken 
+by the kernel, and 20% by user space (I should add that the Linux client 
+was running as a VM on VMWare Fusion).
 
-It's a pretty cool feature because it allows you to set up a TAP-based 
-VPN server without configuring IP addresses, routes, etc. because you 
-can simply leverage on the existing server-side DHCP server 
-configuration.  When a client connects to the VPN, it gets an IP address 
-assignment just as if it were physically "plugged into" the server-side LAN.
-
-The problem is that "route-gateway dhcp" only works on platforms where 
-the TAP driver negotiates a DHCP client handshake.  Currently, only 
-Windows support this out-of-the-box (Windows supports it not because of 
-any special code in the Windows TAP driver, but because the Windows DHCP 
-client automatically binds to TAP adapter instances when they transition 
-to the "up" state).
-
-I'm hoping that we can make "route-gateway dhcp" work on Unix platforms 
-as well.  I'm thinking there are two possible ways we could do this:
-
-(1) Simple method: Trigger a DHCP client bind on TAP interfaces when 
-they are instantiated.  (This is what Windows does automatically)
-
-(2) Complex method: Write code in OpenVPN to simulate a DHCP client, 
-then translate the settings received in the DHCP reply to OpenVPN 
-push-style directives (such as ifconfig, route, etc.) as if they had 
-been pushed by the OpenVPN server.
-
-It would be great if someone wanted to volunteer to work on this.  I'm 
-hoping that Mac and Linux could be supported via the Simple method.
+I'm wondering if anyone with kernel background has any insights on this. 
+  Are there performance bottlenecks in the tun/tap driver?
 
 James
 
