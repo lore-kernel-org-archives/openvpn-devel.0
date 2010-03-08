@@ -1,16 +1,10 @@
-Date: Mon, 8 Mar 2010 17:04:48 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20100308160448.GY25238@...1296...>
-References: <7bb795fd1002211100l760645cfl1a3cfc07ebd91e4@...278...>
-	<20100221193132.GO9556@...1296...>
-	<20100221200311.11614.qmail@...1287...>
-	<20100221201416.GQ9556@...1296...>
-	<20100228222326.GU9556@...1296...>
-	<20100307201731.GT25238@...1296...> <4B951F0E.20005@...41...>
-Mime-Version: 1.0
-In-Reply-To: <4B951F0E.20005@...41...>
-Subject: Re: [Openvpn-devel] [PATCH] IPv6 support for TUN/TAP driver
-	on	windows
+Date: Mon, 08 Mar 2010 10:14:48 -0600
+From: "Karl O. Pinc" <kop@...1206...>
+In-Reply-To: <4B9515FF.6000704@...41...> (from jim@...41... on Mon Mar  8
+	09:21:35 2010)
+Message-Id: <1268064888.17518.1@...1207...>
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] Supporting "route-gateway dhcp" on non-Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,53 +13,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-To: James Yonan <jim@...41...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: James Yonan <jim@...41...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+On 03/08/2010 09:21:35 AM, James Yonan wrote:
+> OpenVPN 2.1 has a relatively recent feature that allows a TAP-based=20
+> OpenVPN session to be established where the client gets its IP=20
+> address
+>=20
+> assignment and other attributes from the server-side DHCP server.
 
-On Mon, Mar 08, 2010 at 09:00:14AM -0700, James Yonan wrote:
-> >I have not yet figured out that part.  I did my debugging with Wireshark
-> >("see what packets move back and forth and stare at the packet details").
-> 
-> While Windows doesn't support "printf" in device drivers, the TAP driver 
-> defines the DEBUGP macro that tries to do the same thing.
+> I'm hoping that we can make "route-gateway dhcp" work on Unix
+> platforms=20
+> as well.  I'm thinking there are two possible ways we could do this:
+>=20
+> (1) Simple method: Trigger a DHCP client bind on TAP interfaces when=20
+> they are instantiated.  (This is what Windows does automatically)
 
-I've seen these, but was missing the next steps - "how do I get to read
-these messages".
+Offhand, there seem to be various ways to go.=20
 
-[..]
-> Next, there are two possible ways to view the debugging output:
-> 
-> Get the WinDBG tool from MS.  All of the DEBUGP calls will output log 
-> info in a form that can be received by WinDBG.
+A) OpenVPN restarts dhclient so that it autodetects the new interface.
 
-Will check that.  There are "some debuggers" as part of the WDK, but I
-have not yet looked into these in more detail.
+B) Configure dhclient.conf with an interface directive for the
+tap device.   It may be necessary to use hooks in dhclient-script.
 
-> Use a special feature of OpenVPN on Windows that allows it to get the 
-> DEBUGP messages directly from the TAP driver and output them along with 
-> the normal OpenVPN log output.  This feature is enabled at --verb level 
-> 6 and is internally referred to as D_TAP_WIN32_DEBUG in errlevel.h.
+C) A combination of A and B, where there's a separate dhclient
+process run just for openvpn.  This might avoid problems with
+B where the regular interfaces must also be configured because
+autodetection is turned off.  It might also be more portable
+across different dhcp client implimentations (or not.)
 
-Now THAT is seriously cool :-)
+D) Use the dhcptl or omapi APIs or, perhaps even better, the omshell
+command.  This would be tied to the ISC implementation,
+but probably nobody cares.
 
-I have seen that the code writes the debug messages "to a buffer", but
-couldn't find out (yet) how to access the debug messages.
 
-Thanks a lot for this.  I will use this information to improve the debug
-printing of IPv6 packets (which is non-existant yet) and also add a bit
-of debug printing to the code that does neighbor discovery / neighbor
-advertisement spoofing, so it's visible in the logs what happens and
-why.
+Karl <kop@...1206...>
+Free Software:  "You don't pay back, you pay forward."
+                 -- Robert A. Heinlein
 
-gert
--- 
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~gert/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
 
