@@ -1,7 +1,10 @@
+Message-ID: <4B96616C.1010806@...1114...>
+Date: Tue, 09 Mar 2010 15:55:40 +0100
 From: David Sommerseth <openvpn.list@...1114...>
-Date: Tue,  9 Mar 2010 15:34:42 +0100
-Message-Id: <1268145282-8727-1-git-send-email-openvpn.list@...1114...>
-Subject: [Openvpn-devel] [PATCH] Don't ASSERT() on stream cipher
+MIME-Version: 1.0
+References: <1268145282-8727-1-git-send-email-openvpn.list@...1114...>
+In-Reply-To: <1268145282-8727-1-git-send-email-openvpn.list@...1114...>
+Subject: Re: [Openvpn-devel] [PATCH] Don't ASSERT() on stream cipher
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,46 +13,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: "Vladimir I. Kobylyanskiy" <kentlinux@...384...>, David Sommerseth <dazo@...384...>
+Cc: "Vladimir I. Kobylyanskiy" <kentlinux@...384...>
 
-From: Vladimir I. Kobylyanskiy <kentlinux@...384...>
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-We (Ltd. LISSI, http://www.lissi.ru, info at lissi.ru),
-are trying to use OpenVPN with stream ciphers,
-including Russian cipher GOST
-28147-89(ALLOW_NON_CBC_CIPHERS flag is set).
+On 09/03/10 15:34, David Sommerseth wrote:
+> From: Vladimir I. Kobylyanskiy <kentlinux@...384...>
+> 
+> We (Ltd. LISSI, http://www.lissi.ru, info at lissi.ru),
+> are trying to use OpenVPN with stream ciphers,
+> including Russian cipher GOST
+> 28147-89(ALLOW_NON_CBC_CIPHERS flag is set).
+> 
+> And we found the bug:
+> function EVP_CipherFinal() returns 0, when cipher has
+> block_size == 1(stream cipher). So hear is the patch to
+> fix the bug.
+> 
+> sf.net tracker:
+> <https://sourceforge.net/tracker/?func=detail&aid=1552062&group_id=48978&atid=454721>
+> 
+[...snip...]
+> +	  if (mode == EVP_CIPH_CBC_MODE)
+> +            ASSERT (outlen == iv_size);
 
-And we found the bug:
-function EVP_CipherFinal() returns 0, when cipher has
-block_size == 1(stream cipher). So hear is the patch to
-fix the bug.
+Could someone please reassure that this is the right way how to solve
+this issue?  This new if statement seems to me to be too invasive.  The
+different cipher modes I found references to are:
 
-sf.net tracker:
-<https://sourceforge.net/tracker/?func=detail&aid=1552062&group_id=48978&atid=454721>
+#define         EVP_CIPH_STREAM_CIPHER          0x0
+#define         EVP_CIPH_ECB_MODE               0x1
+#define         EVP_CIPH_CBC_MODE               0x2
+#define         EVP_CIPH_CFB_MODE               0x3
+#define         EVP_CIPH_OFB_MODE               0x4
+#define         EVP_CIPH_MODE                   0x7
+(Extracts from /usr/include/openssl/evp.h)
 
-Signed-off-by: David Sommerseth <dazo@...384...>
----
- crypto.c |    3 ++-
- 1 files changed, 2 insertions(+), 1 deletions(-)
+I'm not a crypto expert, but for me this change seems to skip the
+ASSERT() check on too many EVP_CIPH_*_MODEs.  On cipher modes supporting
+streams, that probably need to be skipped.
 
-diff --git a/crypto.c b/crypto.c
-index 444f036..fd7d2ef 100644
---- a/crypto.c
-+++ b/crypto.c
-@@ -159,7 +159,8 @@ openvpn_encrypt (struct buffer *buf, struct buffer work,
- 	  /* Flush the encryption buffer */
- 	  ASSERT (EVP_CipherFinal (ctx->cipher, BPTR (&work) + outlen, &outlen));
- 	  work.len += outlen;
--	  ASSERT (outlen == iv_size);
-+	  if (mode == EVP_CIPH_CBC_MODE)
-+            ASSERT (outlen == iv_size);
- 
- 	  /* prepend the IV to the ciphertext */
- 	  if (opt->flags & CO_USE_IV)
--- 
-1.6.6.1
+Any objections or clarifications are highly appreciated.
 
+
+kind regards,
+
+David Sommerseth
+
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAkuWYWgACgkQDC186MBRfroc9QCbBhd+ZImYE8MO557HPXBdnWMM
+p/IAn1RlDN7WuKfYpmPkOIiTtH4zZ5Gv
+=KX7E
+-----END PGP SIGNATURE-----
 
