@@ -1,13 +1,7 @@
-MIME-Version: 1.0
-In-Reply-To: <cf1932021003090206l29e59969h9eb81fbc1bfa27b6@...278...>
-References: <cf1932021003082139l7110ac72pfe85114c75def2dc@...278...>
-	<4B961421.2030206@...1147...>
-	<cf1932021003090206l29e59969h9eb81fbc1bfa27b6@...278...>
-Date: Tue, 9 Mar 2010 22:23:18 +0800
-Message-ID: <cf1932021003090623w54b21d4dtacbeb346221f3953@...278...>
-From: froggu 21 <froggu21@...277...>
-Content-Type: multipart/alternative; boundary=00032555f90250777904815eec2c
-Subject: Re: [Openvpn-devel] [Openvpn-users] Incorrect HMAC generation
+From: David Sommerseth <openvpn.list@...1114...>
+Date: Tue,  9 Mar 2010 15:34:42 +0100
+Message-Id: <1268145282-8727-1-git-send-email-openvpn.list@...1114...>
+Subject: [Openvpn-devel] [PATCH] Don't ASSERT() on stream cipher
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,288 +10,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jan Just Keijser <janjust@...1147...>
-Cc: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: "Vladimir I. Kobylyanskiy" <kentlinux@...384...>, David Sommerseth <dazo@...384...>
 
---00032555f90250777904815eec2c
-Content-Type: text/plain; charset=ISO-8859-1
+From: Vladimir I. Kobylyanskiy <kentlinux@...384...>
 
-hi
+We (Ltd. LISSI, http://www.lissi.ru, info at lissi.ru),
+are trying to use OpenVPN with stream ciphers,
+including Russian cipher GOST
+28147-89(ALLOW_NON_CBC_CIPHERS flag is set).
 
-the debug test codes in OpenVPN are as follow, but the HMAC output is wrong.
-Did I missed out anything?
+And we found the bug:
+function EVP_CipherFinal() returns 0, when cipher has
+block_size == 1(stream cipher). So hear is the patch to
+fix the bug.
 
-regards
-Frances
+sf.net tracker:
+<https://sourceforge.net/tracker/?func=detail&aid=1552062&group_id=48978&atid=454721>
 
-static void init_hmac (HMAC_CTX *ctx, const EVP_MD *digest,
-       struct key *key, const struct key_type *kt, const char *prefix)
-{
-  struct gc_arena gc = gc_new ();
+Signed-off-by: David Sommerseth <dazo@...384...>
+---
+ crypto.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
-  HMAC_CTX_init (ctx);
-  HMAC_Init_ex (ctx, key->hmac, kt->hmac_length, digest, NULL);
-  msg (D_HANDSHAKE,
-       "%s: Using %d bit message hash '%s' for HMAC authentication --- HMAC
-KEY Size: %d ",
-       prefix, HMAC_size (ctx) * 8, OBJ_nid2sn (EVP_MD_type (digest)),
-kt->hmac_length);
+diff --git a/crypto.c b/crypto.c
+index 444f036..fd7d2ef 100644
+--- a/crypto.c
++++ b/crypto.c
+@@ -159,7 +159,8 @@ openvpn_encrypt (struct buffer *buf, struct buffer work,
+ 	  /* Flush the encryption buffer */
+ 	  ASSERT (EVP_CipherFinal (ctx->cipher, BPTR (&work) + outlen, &outlen));
+ 	  work.len += outlen;
+-	  ASSERT (outlen == iv_size);
++	  if (mode == EVP_CIPH_CBC_MODE)
++            ASSERT (outlen == iv_size);
+ 
+ 	  /* prepend the IV to the ciphertext */
+ 	  if (opt->flags & CO_USE_IV)
+-- 
+1.6.6.1
 
-  /* make sure we used a big enough key */
-  ASSERT (HMAC_size (ctx) <= kt->hmac_length);
-
-  dmsg (D_SHOW_KEYS, "%s: HMAC KEY: %s", prefix,
-       format_hex (key->hmac, kt->hmac_length, 0, &gc));
-  dmsg (D_CRYPTO_DEBUG, "%s: HMAC size=%d block_size=%d",
-       prefix,
-       EVP_MD_size (digest),
-       EVP_MD_block_size (digest));
-
-  gc_free (&gc);
-}
-
-void openvpn_encrypt (struct buffer *buf, struct buffer work,
-         const struct crypto_options *opt,
-         const struct frame* frame)
-{
-   .... (more codes)
-
-      /* HMAC the ciphertext (or plaintext if !cipher) */
-      if (ctx->hmac)
-    {
-      int hmac_len;
-      uint8_t *output;
-
-       dmsg (D_PACKET_CONTENT, "HMAC work (input): %s  -- BLEN (&work): %d",
-           format_hex (BPTR (&work), BLEN (&work), 0, &gc), BLEN (&work));
-      HMAC_Init_ex (ctx->hmac, NULL, 0, NULL, NULL);
-      HMAC_Update (ctx->hmac, BPTR (&work), BLEN (&work));
-      output = buf_prepend (&work, HMAC_size (ctx->hmac));
-      ASSERT (output);
-      HMAC_Final (ctx->hmac, output, (unsigned int *)&hmac_len);
-      ASSERT (hmac_len == HMAC_size (ctx->hmac));
-
-      dmsg (D_PACKET_CONTENT, "HMAC work (input): %s  -- BLEN (&work): %d",
-           format_hex (BPTR (&work), BLEN (&work), 0, &gc), BLEN (&work));
-      dmsg (D_PACKET_CONTENT, "HMAC output (generated hmac): %s -- hmac_len:
-%d",
-           format_hex (output, hmac_len, 0, &gc), hmac_len);
-    }
-
-
-On Tue, Mar 9, 2010 at 6:06 PM, froggu 21 <froggu21@...277...> wrote:
-
-> hi Jan
->
-> Thanks.
->
-> yes, the keys file was generated using the openvpn genkey function. The
-> display was generated during the OpenVPN keys establishment phase. The keys
-> are verified to be correct. Just that the HMAC generation output does not
-> tally.  In fact, I found that only the TLS PRF HMAC generation process is
-> correct. I wonder is it due to the reusing of context that cause the
-> inconsistencies?
->
-> regards
-> Frances
->
-> On Tue, Mar 9, 2010 at 5:25 PM, Jan Just Keijser <janjust@...1147...>wrote:
->
->> Hi Frances,
->>
->>
->> froggu 21 wrote:
->>
->>> hi all
->>>
->>> May I know whether you have successfully verified the HMAC generated by
->>> OpenVPN? I found that the HMAC value generated by the OpenVPN does not tally
->>> with the HMAC value generated from the OpenSSL directly. I wonder is there
->>> any incorrect implementation of HMAC by OpenVPN?
->>>
->>> please see results:
->>>  Captured Output:
->>> #Using 160 bit message hash 'SHA' for HMAC authentication --- HMAC KEY
->>> Size: 20
->>> #HMAC KEY: 4024a8e1 168ffb50 1b3c3fd7 e1fbe630 d2d26623
->>> #HMAC work (input): 86d320dd b8d20f0b 4f79a041 4cc1cd47 70775ee8 1e770fc8
->>> 85d2ee0c dcd9d670 fd58393a 50fc4094 a8372cb0 16cf30e9  -- BLEN (&work): 48
->>> #HMAC work (input): 9956b5bc 81286af6 a06b8d8e a5bdeca5 4a9324b9 86d320dd
->>> b8d20f0b 4f79a041 4cc1cd47 70775ee8 1e770fc8 85d2ee0c dcd9d670 fd58393a
->>> 50fc4094 a8372cb0 16cf30e9  -- BLEN (&work): 68
->>> #HMAC output (generated hmac): 9956b5bc 81286af6 a06b8d8e a5bdeca5
->>> 4a9324b9 -- hmac_len: 20
->>>
->>>
->>> Using the OpenSSL to verify the HMAC output:
->>> @@Testing HMAC digest SHA1
->>> Key Data
->>> 0000 40 24 a8 e1 16 8f fb 50 1b 3c 3f d7 e1 fb e6 30
->>> 0010 d2 d2 66 23
->>> Input Data
->>> 0000 86 d3 20 dd b8 d2 0f 0b 4f 79 a0 41 4c c1 cd 47
->>> 0010 70 77 5e e8 1e 77 0f c8 85 d2 ee 0c dc d9 d6 70
->>> 0020 fd 58 39 3a 50 fc 40 94 a8 37 2c b0 16 cf 30 e9
->>> Expected Hash
->>> 0000 99 56 b5 bc 81 28 6a f6 a0 6b 8d 8e a5 bd ec a5
->>> 0010 4a 93 24 b9
->>>
->>> HMAC Digest mismatch
->>> Got
->>> 0000 83 cb 72 19 f4 2a 33 f8 37 a6 62 59 8f 2e 05 cb
->>> 0010 0a 39 0f 37
->>> Expected
->>> 0000 99 56 b5 bc 81 28 6a f6 a0 6b 8d 8e a5 bd ec a5
->>> 0010 4a 93 24 b9
->>>
->>> I wonder did I missed out anything? Or is there something different in
->>> OpenVPN HMAC implementation? Could you advise?
->>>
->>>  how did you generate this output (on the openvpn side) ?
->> Note that there no "correct HMAC implementation" per se: to use HMAC you
->> generate a 2048 bit key using
->>  openvpn --genkey -secret ta.key
->> OpenVPN then uses parts of this key for HMAC ciphers, encryption etc.
->> For more details, read the HMAC section in the FAQ:
->> http://openvpn.net/index.php/open-source/faq.html
->>
->> HTH,
->>
->> JJK
->>
->>
->
-
---00032555f90250777904815eec2c
-Content-Type: text/html; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-
-hi <br><br>the debug test codes in OpenVPN are as follow, but the HMAC outp=
-ut is wrong. Did I missed out anything?<br><br>regards<br>Frances<br><br>st=
-atic void init_hmac (HMAC_CTX *ctx, const EVP_MD *digest,<br>=A0=A0=A0 =A0=
-=A0 struct key *key, const struct key_type *kt, const char *prefix)<br>
-{<br>=A0 struct gc_arena gc =3D gc_new ();<br><br>=A0 HMAC_CTX_init (ctx);<=
-br>=A0 HMAC_Init_ex (ctx, key-&gt;hmac, kt-&gt;hmac_length, digest, NULL);<=
-br>=A0 msg (D_HANDSHAKE,<br>=A0=A0=A0=A0=A0=A0 &quot;%s: Using %d bit messa=
-ge hash &#39;%s&#39; for HMAC authentication --- HMAC KEY Size: %d &quot;,<=
-br>
-=A0=A0=A0=A0=A0=A0 prefix, HMAC_size (ctx) * 8, OBJ_nid2sn (EVP_MD_type (di=
-gest)), kt-&gt;hmac_length);<br><br>=A0 /* make sure we used a big enough k=
-ey */<br>=A0 ASSERT (HMAC_size (ctx) &lt;=3D kt-&gt;hmac_length);<br><br>=
-=A0 dmsg (D_SHOW_KEYS, &quot;%s: HMAC KEY: %s&quot;, prefix, <br>
-=A0=A0=A0=A0=A0=A0 format_hex (key-&gt;hmac, kt-&gt;hmac_length, 0, &amp;gc=
-));<br>=A0 dmsg (D_CRYPTO_DEBUG, &quot;%s: HMAC size=3D%d block_size=3D%d&q=
-uot;,<br>=A0=A0=A0=A0=A0=A0 prefix,<br>=A0=A0=A0=A0=A0=A0 EVP_MD_size (dige=
-st),<br>=A0=A0=A0=A0=A0=A0 EVP_MD_block_size (digest));<br>
-<br>=A0 gc_free (&amp;gc);<br>}<br><br>void openvpn_encrypt (struct buffer =
-*buf, struct buffer work,<br>=A0=A0=A0 =A0=A0=A0 =A0const struct crypto_opt=
-ions *opt,<br>=A0=A0=A0 =A0=A0=A0 =A0const struct frame* frame)<br>{<br>=A0=
-=A0 .... (more codes)<br><br>=A0=A0=A0=A0=A0 /* HMAC the ciphertext (or pla=
-intext if !cipher) */<br>
-=A0=A0=A0=A0=A0 if (ctx-&gt;hmac)<br>=A0=A0=A0 {<br>=A0=A0=A0 =A0 int hmac_=
-len;<br>=A0=A0=A0 =A0 uint8_t *output;<br>=A0=A0=A0 =A0 <br>=A0=A0=A0 =A0=
-=A0 dmsg (D_PACKET_CONTENT, &quot;HMAC work (input): %s=A0 -- BLEN (&amp;wo=
-rk): %d&quot;,<br>=A0=A0=A0 =A0=A0=A0=A0=A0=A0 format_hex (BPTR (&amp;work)=
-, BLEN (&amp;work), 0, &amp;gc), BLEN (&amp;work));<br>
-=A0=A0=A0 =A0 HMAC_Init_ex (ctx-&gt;hmac, NULL, 0, NULL, NULL);<br>=A0=A0=
-=A0 =A0 HMAC_Update (ctx-&gt;hmac, BPTR (&amp;work), BLEN (&amp;work));<br>=
-=A0=A0=A0 =A0 output =3D buf_prepend (&amp;work, HMAC_size (ctx-&gt;hmac));=
-<br>=A0=A0=A0 =A0 ASSERT (output);<br>
-=A0=A0=A0 =A0 HMAC_Final (ctx-&gt;hmac, output, (unsigned int *)&amp;hmac_l=
-en);<br>=A0=A0=A0 =A0 ASSERT (hmac_len =3D=3D HMAC_size (ctx-&gt;hmac));<br=
-><br>=A0=A0=A0 =A0 dmsg (D_PACKET_CONTENT, &quot;HMAC work (input): %s=A0 -=
-- BLEN (&amp;work): %d&quot;,<br>
-=A0=A0=A0 =A0=A0=A0=A0=A0=A0 format_hex (BPTR (&amp;work), BLEN (&amp;work)=
-, 0, &amp;gc), BLEN (&amp;work));<br>=A0=A0=A0 =A0 dmsg (D_PACKET_CONTENT, =
-&quot;HMAC output (generated hmac): %s -- hmac_len: %d&quot;,<br>=A0=A0=A0 =
-=A0=A0=A0=A0=A0=A0 format_hex (output, hmac_len, 0, &amp;gc), hmac_len);<br>
-=A0=A0=A0 }<br><br><br><div class=3D"gmail_quote">On Tue, Mar 9, 2010 at 6:=
-06 PM, froggu 21 <span dir=3D"ltr">&lt;<a href=3D"mailto:froggu21@...277...=
-">froggu21@...277...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_qu=
-ote" style=3D"margin: 0pt 0pt 0pt 0.8ex; border-left: 1px solid rgb(204, 20=
-4, 204); padding-left: 1ex;">
-hi Jan<br><br>Thanks. <br><br>yes, the keys file was generated using the op=
-envpn genkey function. The display was generated during the OpenVPN keys es=
-tablishment phase. The keys are verified to be correct. Just that the HMAC =
-generation output does not tally.=A0 In fact, I found that only the TLS PRF=
- HMAC generation process is correct. I wonder is it due to the reusing of c=
-ontext that cause the inconsistencies?=A0 <br>
-
-<br>regards<br>Frances=A0 <br><div><div></div><div class=3D"h5"><br><div cl=
-ass=3D"gmail_quote">On Tue, Mar 9, 2010 at 5:25 PM, Jan Just Keijser <span =
-dir=3D"ltr">&lt;<a href=3D"mailto:janjust@...1147..." target=3D"_blank">jan=
-just@...1147...</a>&gt;</span> wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"margin: 0pt 0pt 0pt 0.8ex; borde=
-r-left: 1px solid rgb(204, 204, 204); padding-left: 1ex;">
-Hi Frances,<div><div></div><div><br>
-<br>
-froggu 21 wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"margin: 0pt 0pt 0pt 0.8ex; borde=
-r-left: 1px solid rgb(204, 204, 204); padding-left: 1ex;">
-hi all<br>
-<br>
-May I know whether you have successfully verified the HMAC generated by Ope=
-nVPN? I found that the HMAC value generated by the OpenVPN does not tally w=
-ith the HMAC value generated from the OpenSSL directly. I wonder is there a=
-ny incorrect implementation of HMAC by OpenVPN?<br>
-
-
-<br>
-please see results:<br>
-=A0Captured Output:<br>
-#Using 160 bit message hash &#39;SHA&#39; for HMAC authentication --- HMAC =
-KEY Size: 20<br>
-#HMAC KEY: 4024a8e1 168ffb50 1b3c3fd7 e1fbe630 d2d26623<br>
-#HMAC work (input): 86d320dd b8d20f0b 4f79a041 4cc1cd47 70775ee8 1e770fc8 8=
-5d2ee0c dcd9d670 fd58393a 50fc4094 a8372cb0 16cf30e9 =A0-- BLEN (&amp;work)=
-: 48<br>
-#HMAC work (input): 9956b5bc 81286af6 a06b8d8e a5bdeca5 4a9324b9 86d320dd b=
-8d20f0b 4f79a041 4cc1cd47 70775ee8 1e770fc8 85d2ee0c dcd9d670 fd58393a 50fc=
-4094 a8372cb0 16cf30e9 =A0-- BLEN (&amp;work): 68<br>
-#HMAC output (generated hmac): 9956b5bc 81286af6 a06b8d8e a5bdeca5 4a9324b9=
- -- hmac_len: 20<br>
-<br>
-<br>
-Using the OpenSSL to verify the HMAC output:<br>
-@@Testing HMAC digest SHA1<br>
-Key Data<br>
-0000 40 24 a8 e1 16 8f fb 50 1b 3c 3f d7 e1 fb e6 30<br>
-0010 d2 d2 66 23<br>
-Input Data<br>
-0000 86 d3 20 dd b8 d2 0f 0b 4f 79 a0 41 4c c1 cd 47<br>
-0010 70 77 5e e8 1e 77 0f c8 85 d2 ee 0c dc d9 d6 70<br>
-0020 fd 58 39 3a 50 fc 40 94 a8 37 2c b0 16 cf 30 e9<br>
-Expected Hash<br>
-0000 99 56 b5 bc 81 28 6a f6 a0 6b 8d 8e a5 bd ec a5<br>
-0010 4a 93 24 b9<br>
-<br>
-HMAC Digest mismatch<br>
-Got<br>
-0000 83 cb 72 19 f4 2a 33 f8 37 a6 62 59 8f 2e 05 cb<br>
-0010 0a 39 0f 37<br>
-Expected<br>
-0000 99 56 b5 bc 81 28 6a f6 a0 6b 8d 8e a5 bd ec a5<br>
-0010 4a 93 24 b9<br>
-<br>
-I wonder did I missed out anything? Or is there something different in Open=
-VPN HMAC implementation? Could you advise?<br>
-<br>
-</blockquote></div></div>
-how did you generate this output (on the openvpn side) ?<br>
-Note that there no &quot;correct HMAC implementation&quot; per se: to use H=
-MAC you generate a 2048 bit key using<br>
-=A0openvpn --genkey -secret ta.key<br>
-OpenVPN then uses parts of this key for HMAC ciphers, encryption etc.<br>
-For more details, read the HMAC section in the FAQ:<br>
-<a href=3D"http://openvpn.net/index.php/open-source/faq.html" target=3D"_bl=
-ank">http://openvpn.net/index.php/open-source/faq.html</a><br>
-<br>
-HTH,<br><font color=3D"#888888">
-<br>
-JJK<br>
-<br>
-</font></blockquote></div><br>
-</div></div></blockquote></div><br>
-
---00032555f90250777904815eec2c--
 
