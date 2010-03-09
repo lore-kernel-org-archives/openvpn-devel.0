@@ -1,9 +1,9 @@
-Date: Tue, 09 Mar 2010 10:16:10 -0600
-From: "Karl O. Pinc" <kop@...1206...>
-In-Reply-To: <jwvhbopioq5.fsf-monnier+inbox@...1269...> (from
-	monnier@...1268... on Tue Mar  9 08:01:32 2010)
-Message-Id: <1268151370.24740.3@...1207...>
+Message-ID: <4B967465.3070909@...1114...>
+Date: Tue, 09 Mar 2010 17:16:37 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
+References: <1268150303.24740.2@...1207...>
+In-Reply-To: <1268150303.24740.2@...1207...>
 Subject: Re: [Openvpn-devel] Supporting "route-gateway dhcp" on non-Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,54 +13,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Stefan Monnier <monnier@...1268...>
-Cc: openvpn-devel@lists.sourceforge.net, Peter Stuge <peter@...1287...>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: "Karl O. Pinc" <kop@...1206...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, James Yonan <jim@...41...>
 
-On 03/09/2010 08:01:32 AM, Stefan Monnier wrote:
-> > bring the interfaces up
-> > start dhcp client (if not triggered directly from the interfaces)
-> > start openvpn
->=20
-> That is a misconfiguration in my book.  The only correct=20
-> configuration
-> is when the dhcp client is triggered from the interface.  After all,
-> openvpn may take half an hour to get the connection and it may lose
-> the
-> connection at some point and reconnect to another openvpn server (via
-> round-robin DNS, for example) which might require a reconfiguration=20
-> on
-> the dhcp side.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-My understanding of dhcp is that the client is supposed to=20
-automatically reconfigure on lease expiration or whenever
-the link goes up and down.  There's no reason to
-restart a dhcp client just to connect to another dhcp
-server because dhcp should also do this automatically.
+On 09/03/10 16:58, Karl O. Pinc wrote:
+> On 03/09/2010 08:05:17 AM, David Sommerseth wrote:
+> 
+>>  On the other hand, ./configure
+>> could try to detect which DHCP client the system got and could use
+>> that
+>> as a default client to kick off.
+> 
+> I think this might cause more problems than it solves because
+> there's no guarantee that build hosts will have the same,
+> or any, dhcp client that is ultimately used.   
+[...snip...]
 
-I suppose it's possible that there are dhcp clients
-that exit when the link goes down and must be restarted
-but I don't know of any.  Then again I don't have
-experience with various client implementations.
-But it would seem kind of odd, having to restart
-the dhcp client just because somebody unplugged
-an ethernet cable.
+Agreed.  Not ideal situation, especially if you can not configure an
+override.
 
-The only reason why we're talking about restarting
-dhcp clients in the first place is so that they
-autodetect newly created tap devices.  If the
-dhcp client is configured with the tap device, or once
-it detects the tap device and the tap device stays
-existent, all the dhcp clients I know of should just
-be able to keep running and do what's needed as
-links go up and down and dhcp servers come and go.
+> Maybe what makes the most sense from a package
+> management standpoint is to have the package installation
+> process autodetect the existing dhcp client so that whatever
+> the user has installed will be used (once the feature
+> is turned on with --route-gateway.)  I'm not sure how
+> to best facilitate this with OpenVPN.  Perhaps OpenVPN
+> should default to using something like
+> /etc/openvpn/route-gateway-dhcp-client and then
+> package installation can softlink that to whatever
+> dhcp client is installed.  
+
+A symlink like this also then requires the current (and future) DHCP
+clients to use the same arguments.  People would then replace this with
+a script of course.  But then this script can be used to do more nasty
+things than what it is intended for, so then you have a possible
+security issue again.  Is this really an approach we want to use?
+
+Actually this issue will always be present, as long as third party
+applications are exec()ed from OpenVPN.  We already got plenty of script
+hooks available, do we really want or need one more?  And do we want one
+which will need to have root access on most platforms when the tap
+device is being teared down?
+
+> Over-automating things will cause people headaches.
+> You don't want to willy-nilly startup a dhcp client
+> and have all your interfaces configured with dhcp without
+> your consent.
+
+Exactly!  Which again moves it more in the direction of some built-in
+DHCP client in OpenVPN, but as stated earlier - that mostly solves the
+core DHCP issues - but not the resolv.conf issue.
+
+And by doing it this way (embedded DHCP client), we could maybe even
+make this work with tun devices as well, if the server then can act as a
+DHCP relay against a real DHCP server.
 
 
+kind regards,
 
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                 -- Robert A. Heinlein
+David Sommerseth
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAkuWdGMACgkQDC186MBRfrrI0gCgkPt63MTUc2yFimrkWRG9VKzQ
+8D8An1vidIoFp2SivjySNExpqvyvc928
+=CAOE
+-----END PGP SIGNATURE-----
 
