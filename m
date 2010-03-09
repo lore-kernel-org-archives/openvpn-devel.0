@@ -1,9 +1,10 @@
-Message-ID: <4B967465.3070909@...1114...>
-Date: Tue, 09 Mar 2010 17:16:37 +0100
+Message-ID: <4B9677A9.8040408@...1114...>
+Date: Tue, 09 Mar 2010 17:30:33 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1268150303.24740.2@...1207...>
-In-Reply-To: <1268150303.24740.2@...1207...>
+References: <4B9515FF.6000704@...41...>	<20100308174321.GA25238@...1296...>
+	<4B966A98.4000206@...41...>
+In-Reply-To: <4B966A98.4000206@...41...>
 Subject: Re: [Openvpn-devel] Supporting "route-gateway dhcp" on non-Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,75 +16,76 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: "Karl O. Pinc" <kop@...1206...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, James Yonan <jim@...41...>
+To: James Yonan <jim@...41...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 09/03/10 16:58, Karl O. Pinc wrote:
-> On 03/09/2010 08:05:17 AM, David Sommerseth wrote:
+On 09/03/10 16:34, James Yonan wrote:
+>> looking at the multitude of DHCP clients available for unix, the completely
+>> different handling of DHCP on MacOS, and the issues that most unix clients
+>> seem to have with "DHCP active on two different interfaces (ethX and tapY),
+>> and both trying to set a default gateway", ...
+>>
+>> On Mon, Mar 08, 2010 at 08:21:35AM -0700, James Yonan wrote:
+>>> (2) Complex method: Write code in OpenVPN to simulate a DHCP client, 
+>>> then translate the settings received in the DHCP reply to OpenVPN 
+>>> push-style directives (such as ifconfig, route, etc.) as if they had 
+>>> been pushed by the OpenVPN server.
+>>
+>> ... this seems to be the most portable way, as we already have the 
+>> ifconfig/route code for all the platforms.
+>>
+>> Well.  Let me rephrase.
+>>
+>> The "simple way" is simple as far as the packet flow inside OpenVPN
+>> goes (because OpenVPN only needs to transport packets, but not generate
+>> them or parse them), but is, at the same time, the "most complex way" 
+>> as far as getting it to work reliably across all supported operating 
+>> systems.  Lots of testing and "configure" magic would be necessary to
+>> reliably figure out how to do DHCP properly on each individual system.
+>>
+>> I'm not saying it can't be done :-) - but just that the "simple way"
+>> is not so simple, it's just complex in other places.
 > 
->>  On the other hand, ./configure
->> could try to detect which DHCP client the system got and could use
->> that
->> as a default client to kick off.
+> I would tend to agree.  All the discussion about the non-portable 
+> semantics of DHCP clients on different platforms makes me think that the 
+> "complex" method might really be the correct approach.
 > 
-> I think this might cause more problems than it solves because
-> there's no guarantee that build hosts will have the same,
-> or any, dhcp client that is ultimately used.   
-[...snip...]
+> OpenVPN is already in the business of abstracting platform-specific 
+> network configuration complexity to a portable interface, i.e. in the 
+> manner of pushable directives such as route, ifconfig, dhcp-option, 
+> etc., so I think it makes sense to leverage on this.  Implementing a 
+> DHCP client within OpenVPN tends to make this a more self-contained problem.
+> 
 
-Agreed.  Not ideal situation, especially if you can not configure an
-override.
+I agree.
 
-> Maybe what makes the most sense from a package
-> management standpoint is to have the package installation
-> process autodetect the existing dhcp client so that whatever
-> the user has installed will be used (once the feature
-> is turned on with --route-gateway.)  I'm not sure how
-> to best facilitate this with OpenVPN.  Perhaps OpenVPN
-> should default to using something like
-> /etc/openvpn/route-gateway-dhcp-client and then
-> package installation can softlink that to whatever
-> dhcp client is installed.  
+What I am wondering about what we should do with updates of
+/etc/resolv.conf.  It's not directly connected to DHCP, but it is
+tightly related to it.  As long as DHCP can push DNS servers as well,
+this will be the next challenge.  This has been solved in several
+distroes by calling its own script for updating the resolv.conf
+file. [1]
 
-A symlink like this also then requires the current (and future) DHCP
-clients to use the same arguments.  People would then replace this with
-a script of course.  But then this script can be used to do more nasty
-things than what it is intended for, so then you have a possible
-security issue again.  Is this really an approach we want to use?
-
-Actually this issue will always be present, as long as third party
-applications are exec()ed from OpenVPN.  We already got plenty of script
-hooks available, do we really want or need one more?  And do we want one
-which will need to have root access on most platforms when the tap
-device is being teared down?
-
-> Over-automating things will cause people headaches.
-> You don't want to willy-nilly startup a dhcp client
-> and have all your interfaces configured with dhcp without
-> your consent.
-
-Exactly!  Which again moves it more in the direction of some built-in
-DHCP client in OpenVPN, but as stated earlier - that mostly solves the
-core DHCP issues - but not the resolv.conf issue.
-
-And by doing it this way (embedded DHCP client), we could maybe even
-make this work with tun devices as well, if the server then can act as a
-DHCP relay against a real DHCP server.
+And it's needed to consider the consequences when using --user/--group
+and/or chrooting.
 
 
 kind regards,
 
 David Sommerseth
 
+
+[1]
+<http://www.phocean.net/2006/12/07/openvpn-and-dns-on-a-linux-client.html>
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkuWdGMACgkQDC186MBRfrrI0gCgkPt63MTUc2yFimrkWRG9VKzQ
-8D8An1vidIoFp2SivjySNExpqvyvc928
-=CAOE
+iEYEARECAAYFAkuWd6kACgkQDC186MBRfrqCRQCdE9XxyO9q+5MxNTm24lRfBJoT
+DEcAoKMwEiw6BJDh0kCWLYSWitkq88sA
+=b3AJ
 -----END PGP SIGNATURE-----
 
