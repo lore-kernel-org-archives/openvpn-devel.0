@@ -1,12 +1,10 @@
-Message-ID: <COL113-W24B5EEC2E28EC678EDB9FBBA340@...512...>
-Content-Type: multipart/alternative;
-	boundary="_22db20ac-baeb-4d68-b824-dfa6477c1031_"
-From: Jessica Tan <jesstan01@...160...>
-Date: Wed, 10 Mar 2010 00:32:37 +0800
-In-Reply-To: <mailman.73550.1267971744.5237.openvpn-devel@lists.sourceforge.net>
-References: <mailman.73550.1267971744.5237.openvpn-devel@lists.sourceforge.net>
+Date: Tue, 09 Mar 2010 10:41:00 -0600
+From: "Karl O. Pinc" <kop@...1206...>
+In-Reply-To: <4B967465.3070909@...1114...> (from
+	openvpn.list@...1114... on Tue Mar  9 10:16:37 2010)
+Message-Id: <1268152860.24740.8@...1207...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] FW: HMAC-SHA1
+Subject: Re: [Openvpn-devel] Supporting "route-gateway dhcp" on non-Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,49 +13,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, James Yonan <jim@...41...>
 
---_22db20ac-baeb-4d68-b824-dfa6477c1031_
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+On 03/09/2010 10:16:37 AM, David Sommerseth wrote:
 
-CkRlYXIgYWxsLAoKSSB3YXMgdHJ5aW5nIHRvIHJ1biBzb21lIHRlc3RzIG9uIE9wZW5WUE4KaW1w
-bGVtZW50YXRpb24uIFJlYWxpc2UgSE1BQyBjb21wdXRhdGlvbiBmb3IgRGF0YSBhbmQgQ29udHJv
-bCBjaGFubmVsCmRvZXMgbm90IG1hdGNoIG15IGNvbXB1dGF0aW9uLiBJIGhhdmUgdXNlIHRoZSBz
-YW1lIGNvbXB1dGF0aW9uIG9uClRMUy1QUkYncyBITUFDIGFuZCBpdCBtYXRjaGVzIHBlcmZlY3Rs
-eS4gQW55b25lIGhhcyBhbnkgaWRlYSB3aGF0IHRoaXMKcHJvYmxlbSBjb3VsZCBiZT8gSXMgaXQg
-YSBidWc/CgoKClRoZSBpbnB1dCBJIHVzZSB0byB0aGUgSE1BQyBpcyB0aGUgIklWIHx8IEVuY3J5
-cHRlZCAocGFja2V0SUQgYW5kCnBheWxvYWQpLiBUaGlzIGlzIHdoYXQgSSB1bmRlcnN0YW5kIGZy
-b20gT3BlblZQTiBTZWN1cml0eSBPdmVydmlldwpwYWdlLiBJcyB0aGlzIGNvcnJlY3Q/IE9yIHRo
-ZXJlIGlzIHNvbWUgcHJlLXByb2Nlc3NpbmcgdGhhdCBJIGFtIG5vdAphd2FyZT8KCgoKQXBwcmVj
-aWF0ZSBhbnkgaGVscCBhdmFpbGFibGUuIAoKVGhhbmtzLgoKUmVnYXJkcywKSmVzc2ljYSBUYW4K
-CgogCQkgCSAgIAkJICAKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX18KSG90bWFpbDogVHJ1c3RlZCBlbWFpbCB3aXRoIE1pY3Jv
-c29mdKGvcyBwb3dlcmZ1bCBTUEFNIHByb3RlY3Rpb24uCmh0dHBzOi8vc2lnbnVwLmxpdmUuY29t
-L3NpZ251cC5hc3B4P2lkPTYwOTY5
+> > Over-automating things will cause people headaches.
+> > You don't want to willy-nilly startup a dhcp client
+> > and have all your interfaces configured with dhcp without
+> > your consent.
+>=20
+> Exactly!  Which again moves it more in the direction of some built-in
+> DHCP client in OpenVPN, but as stated earlier - that mostly solves=20
+> the
+> core DHCP issues - but not the resolv.conf issue.
 
---_22db20ac-baeb-4d68-b824-dfa6477c1031_
-Content-Type: text/html; charset="gb2312"
-Content-Transfer-Encoding: base64
+I'm not at all sure it solves the core issues, which is that
+an already running dhcp client won't have auto-detected
+the tap interface that OpenVPN creates -- iff OpenVPN is=20
+started after the dhcp client.=20=20
 
-PGh0bWw+CjxoZWFkPgo8c3R5bGU+PCEtLQouaG1tZXNzYWdlIFAKewptYXJnaW46MHB4OwpwYWRk
-aW5nOjBweAp9CmJvZHkuaG1tZXNzYWdlCnsKZm9udC1zaXplOiAxMHB0Owpmb250LWZhbWlseTpW
-ZXJkYW5hCn0KLS0+PC9zdHlsZT4KPC9oZWFkPgo8Ym9keSBjbGFzcz0naG1tZXNzYWdlJz4KRGVh
-ciBhbGwsPGJyPjxicj5JIHdhcyB0cnlpbmcgdG8gcnVuIHNvbWUgdGVzdHMgb24gT3BlblZQTgpp
-bXBsZW1lbnRhdGlvbi4gUmVhbGlzZSBITUFDIGNvbXB1dGF0aW9uIGZvciBEYXRhIGFuZCBDb250
-cm9sIGNoYW5uZWwKZG9lcyBub3QgbWF0Y2ggbXkgY29tcHV0YXRpb24uIEkgaGF2ZSB1c2UgdGhl
-IHNhbWUgY29tcHV0YXRpb24gb24KVExTLVBSRidzIEhNQUMgYW5kIGl0IG1hdGNoZXMgcGVyZmVj
-dGx5LiBBbnlvbmUgaGFzIGFueSBpZGVhIHdoYXQgdGhpcwpwcm9ibGVtIGNvdWxkIGJlPyBJcyBp
-dCBhIGJ1Zz88YnI+Cjxicj4KVGhlIGlucHV0IEkgdXNlIHRvIHRoZSBITUFDIGlzIHRoZSAiSVYg
-fHwgRW5jcnlwdGVkIChwYWNrZXRJRCBhbmQKcGF5bG9hZCkuIFRoaXMgaXMgd2hhdCBJIHVuZGVy
-c3RhbmQgZnJvbSBPcGVuVlBOIFNlY3VyaXR5IE92ZXJ2aWV3CnBhZ2UuIElzIHRoaXMgY29ycmVj
-dD8gT3IgdGhlcmUgaXMgc29tZSBwcmUtcHJvY2Vzc2luZyB0aGF0IEkgYW0gbm90CmF3YXJlPzxi
-cj4KPGJyPgpBcHByZWNpYXRlIGFueSBoZWxwIGF2YWlsYWJsZS4gPGJyPjxicj5UaGFua3MuPGJy
-Pjxicj5SZWdhcmRzLDxicj5KZXNzaWNhIFRhbjxicj48YnI+PGJyPiAJCSAJICAgCQkgIDxiciAv
-PjxociAvPkhvdG1haWw6IFRydXN0ZWQgZW1haWwgd2l0aCBNaWNyb3NvZnShr3MgcG93ZXJmdWwg
-U1BBTSBwcm90ZWN0aW9uLiA8YSBocmVmPSdodHRwczovL3NpZ251cC5saXZlLmNvbS9zaWdudXAu
-YXNweD9pZD02MDk2OScgdGFyZ2V0PSdfbmV3Jz5TaWduIHVwIG5vdy48L2E+PC9ib2R5Pgo8L2h0
-bWw+
+This is the
+core issue, right?  Otherwise it would just work so long
+as dhcp is turned on.  I think we need to decide where
+the problem really is before we decide how to fix it.
 
---_22db20ac-baeb-4d68-b824-dfa6477c1031_--
+If you build a dhcp client into openvpn you push the problem in
+the other direction.  Now you've, potentially, got
+multiple dhcp clients running and you need to do
+something to keep them from interfering with each other.
+You can't rely on processes being started and stopped
+in boot-time order because the sysadmin might start
+and stop services as needed to maintain the system
+and you don't want surprising things to happen.
+(The principle of least surprise is a good one.)
+You may as well just statically configure your existing
+dhcp client so that it knows to go looking for the
+tap device.
+
+I think the only way to go is to integrate with
+anything that the local admin may decide to use
+for dhcp/resolv.conf/etc.
+
+Karl <kop@...1206...>
+Free Software:  "You don't pay back, you pay forward."
+                 -- Robert A. Heinlein
+
 
