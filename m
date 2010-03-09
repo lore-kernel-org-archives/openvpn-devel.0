@@ -1,11 +1,12 @@
-Message-ID: <4B9677A9.8040408@...1114...>
-Date: Tue, 09 Mar 2010 17:30:33 +0100
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <COL113-W24B5EEC2E28EC678EDB9FBBA340@...512...>
+Content-Type: multipart/alternative;
+	boundary="_22db20ac-baeb-4d68-b824-dfa6477c1031_"
+From: Jessica Tan <jesstan01@...160...>
+Date: Wed, 10 Mar 2010 00:32:37 +0800
+In-Reply-To: <mailman.73550.1267971744.5237.openvpn-devel@lists.sourceforge.net>
+References: <mailman.73550.1267971744.5237.openvpn-devel@lists.sourceforge.net>
 MIME-Version: 1.0
-References: <4B9515FF.6000704@...41...>	<20100308174321.GA25238@...1296...>
-	<4B966A98.4000206@...41...>
-In-Reply-To: <4B966A98.4000206@...41...>
-Subject: Re: [Openvpn-devel] Supporting "route-gateway dhcp" on non-Windows
+Subject: [Openvpn-devel] FW: HMAC-SHA1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,78 +15,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: James Yonan <jim@...41...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--_22db20ac-baeb-4d68-b824-dfa6477c1031_
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 
-On 09/03/10 16:34, James Yonan wrote:
->> looking at the multitude of DHCP clients available for unix, the completely
->> different handling of DHCP on MacOS, and the issues that most unix clients
->> seem to have with "DHCP active on two different interfaces (ethX and tapY),
->> and both trying to set a default gateway", ...
->>
->> On Mon, Mar 08, 2010 at 08:21:35AM -0700, James Yonan wrote:
->>> (2) Complex method: Write code in OpenVPN to simulate a DHCP client, 
->>> then translate the settings received in the DHCP reply to OpenVPN 
->>> push-style directives (such as ifconfig, route, etc.) as if they had 
->>> been pushed by the OpenVPN server.
->>
->> ... this seems to be the most portable way, as we already have the 
->> ifconfig/route code for all the platforms.
->>
->> Well.  Let me rephrase.
->>
->> The "simple way" is simple as far as the packet flow inside OpenVPN
->> goes (because OpenVPN only needs to transport packets, but not generate
->> them or parse them), but is, at the same time, the "most complex way" 
->> as far as getting it to work reliably across all supported operating 
->> systems.  Lots of testing and "configure" magic would be necessary to
->> reliably figure out how to do DHCP properly on each individual system.
->>
->> I'm not saying it can't be done :-) - but just that the "simple way"
->> is not so simple, it's just complex in other places.
-> 
-> I would tend to agree.  All the discussion about the non-portable 
-> semantics of DHCP clients on different platforms makes me think that the 
-> "complex" method might really be the correct approach.
-> 
-> OpenVPN is already in the business of abstracting platform-specific 
-> network configuration complexity to a portable interface, i.e. in the 
-> manner of pushable directives such as route, ifconfig, dhcp-option, 
-> etc., so I think it makes sense to leverage on this.  Implementing a 
-> DHCP client within OpenVPN tends to make this a more self-contained problem.
-> 
+CkRlYXIgYWxsLAoKSSB3YXMgdHJ5aW5nIHRvIHJ1biBzb21lIHRlc3RzIG9uIE9wZW5WUE4KaW1w
+bGVtZW50YXRpb24uIFJlYWxpc2UgSE1BQyBjb21wdXRhdGlvbiBmb3IgRGF0YSBhbmQgQ29udHJv
+bCBjaGFubmVsCmRvZXMgbm90IG1hdGNoIG15IGNvbXB1dGF0aW9uLiBJIGhhdmUgdXNlIHRoZSBz
+YW1lIGNvbXB1dGF0aW9uIG9uClRMUy1QUkYncyBITUFDIGFuZCBpdCBtYXRjaGVzIHBlcmZlY3Rs
+eS4gQW55b25lIGhhcyBhbnkgaWRlYSB3aGF0IHRoaXMKcHJvYmxlbSBjb3VsZCBiZT8gSXMgaXQg
+YSBidWc/CgoKClRoZSBpbnB1dCBJIHVzZSB0byB0aGUgSE1BQyBpcyB0aGUgIklWIHx8IEVuY3J5
+cHRlZCAocGFja2V0SUQgYW5kCnBheWxvYWQpLiBUaGlzIGlzIHdoYXQgSSB1bmRlcnN0YW5kIGZy
+b20gT3BlblZQTiBTZWN1cml0eSBPdmVydmlldwpwYWdlLiBJcyB0aGlzIGNvcnJlY3Q/IE9yIHRo
+ZXJlIGlzIHNvbWUgcHJlLXByb2Nlc3NpbmcgdGhhdCBJIGFtIG5vdAphd2FyZT8KCgoKQXBwcmVj
+aWF0ZSBhbnkgaGVscCBhdmFpbGFibGUuIAoKVGhhbmtzLgoKUmVnYXJkcywKSmVzc2ljYSBUYW4K
+CgogCQkgCSAgIAkJICAKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX18KSG90bWFpbDogVHJ1c3RlZCBlbWFpbCB3aXRoIE1pY3Jv
+c29mdKGvcyBwb3dlcmZ1bCBTUEFNIHByb3RlY3Rpb24uCmh0dHBzOi8vc2lnbnVwLmxpdmUuY29t
+L3NpZ251cC5hc3B4P2lkPTYwOTY5
 
-I agree.
+--_22db20ac-baeb-4d68-b824-dfa6477c1031_
+Content-Type: text/html; charset="gb2312"
+Content-Transfer-Encoding: base64
 
-What I am wondering about what we should do with updates of
-/etc/resolv.conf.  It's not directly connected to DHCP, but it is
-tightly related to it.  As long as DHCP can push DNS servers as well,
-this will be the next challenge.  This has been solved in several
-distroes by calling its own script for updating the resolv.conf
-file. [1]
+PGh0bWw+CjxoZWFkPgo8c3R5bGU+PCEtLQouaG1tZXNzYWdlIFAKewptYXJnaW46MHB4OwpwYWRk
+aW5nOjBweAp9CmJvZHkuaG1tZXNzYWdlCnsKZm9udC1zaXplOiAxMHB0Owpmb250LWZhbWlseTpW
+ZXJkYW5hCn0KLS0+PC9zdHlsZT4KPC9oZWFkPgo8Ym9keSBjbGFzcz0naG1tZXNzYWdlJz4KRGVh
+ciBhbGwsPGJyPjxicj5JIHdhcyB0cnlpbmcgdG8gcnVuIHNvbWUgdGVzdHMgb24gT3BlblZQTgpp
+bXBsZW1lbnRhdGlvbi4gUmVhbGlzZSBITUFDIGNvbXB1dGF0aW9uIGZvciBEYXRhIGFuZCBDb250
+cm9sIGNoYW5uZWwKZG9lcyBub3QgbWF0Y2ggbXkgY29tcHV0YXRpb24uIEkgaGF2ZSB1c2UgdGhl
+IHNhbWUgY29tcHV0YXRpb24gb24KVExTLVBSRidzIEhNQUMgYW5kIGl0IG1hdGNoZXMgcGVyZmVj
+dGx5LiBBbnlvbmUgaGFzIGFueSBpZGVhIHdoYXQgdGhpcwpwcm9ibGVtIGNvdWxkIGJlPyBJcyBp
+dCBhIGJ1Zz88YnI+Cjxicj4KVGhlIGlucHV0IEkgdXNlIHRvIHRoZSBITUFDIGlzIHRoZSAiSVYg
+fHwgRW5jcnlwdGVkIChwYWNrZXRJRCBhbmQKcGF5bG9hZCkuIFRoaXMgaXMgd2hhdCBJIHVuZGVy
+c3RhbmQgZnJvbSBPcGVuVlBOIFNlY3VyaXR5IE92ZXJ2aWV3CnBhZ2UuIElzIHRoaXMgY29ycmVj
+dD8gT3IgdGhlcmUgaXMgc29tZSBwcmUtcHJvY2Vzc2luZyB0aGF0IEkgYW0gbm90CmF3YXJlPzxi
+cj4KPGJyPgpBcHByZWNpYXRlIGFueSBoZWxwIGF2YWlsYWJsZS4gPGJyPjxicj5UaGFua3MuPGJy
+Pjxicj5SZWdhcmRzLDxicj5KZXNzaWNhIFRhbjxicj48YnI+PGJyPiAJCSAJICAgCQkgIDxiciAv
+PjxociAvPkhvdG1haWw6IFRydXN0ZWQgZW1haWwgd2l0aCBNaWNyb3NvZnShr3MgcG93ZXJmdWwg
+U1BBTSBwcm90ZWN0aW9uLiA8YSBocmVmPSdodHRwczovL3NpZ251cC5saXZlLmNvbS9zaWdudXAu
+YXNweD9pZD02MDk2OScgdGFyZ2V0PSdfbmV3Jz5TaWduIHVwIG5vdy48L2E+PC9ib2R5Pgo8L2h0
+bWw+
 
-And it's needed to consider the consequences when using --user/--group
-and/or chrooting.
-
-
-kind regards,
-
-David Sommerseth
-
-
-[1]
-<http://www.phocean.net/2006/12/07/openvpn-and-dns-on-a-linux-client.html>
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkuWd6kACgkQDC186MBRfrqCRQCdE9XxyO9q+5MxNTm24lRfBJoT
-DEcAoKMwEiw6BJDh0kCWLYSWitkq88sA
-=b3AJ
------END PGP SIGNATURE-----
+--_22db20ac-baeb-4d68-b824-dfa6477c1031_--
 
