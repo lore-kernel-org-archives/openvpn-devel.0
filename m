@@ -1,10 +1,11 @@
-Message-ID: <4B96616C.1010806@...1114...>
-Date: Tue, 09 Mar 2010 15:55:40 +0100
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <4B966A98.4000206@...41...>
+Date: Tue, 09 Mar 2010 08:34:48 -0700
+From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-References: <1268145282-8727-1-git-send-email-openvpn.list@...1114...>
-In-Reply-To: <1268145282-8727-1-git-send-email-openvpn.list@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH] Don't ASSERT() on stream cipher
+References: <4B9515FF.6000704@...41...>
+	<20100308174321.GA25238@...1296...>
+In-Reply-To: <20100308174321.GA25238@...1296...>
+Subject: Re: [Openvpn-devel] Supporting "route-gateway dhcp" on non-Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,64 +14,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: "Vladimir I. Kobylyanskiy" <kentlinux@...384...>
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
-
-On 09/03/10 15:34, David Sommerseth wrote:
-> From: Vladimir I. Kobylyanskiy <kentlinux@...384...>
+> looking at the multitude of DHCP clients available for unix, the completely
+> different handling of DHCP on MacOS, and the issues that most unix clients
+> seem to have with "DHCP active on two different interfaces (ethX and tapY),
+> and both trying to set a default gateway", ...
 > 
-> We (Ltd. LISSI, http://www.lissi.ru, info at lissi.ru),
-> are trying to use OpenVPN with stream ciphers,
-> including Russian cipher GOST
-> 28147-89(ALLOW_NON_CBC_CIPHERS flag is set).
+> On Mon, Mar 08, 2010 at 08:21:35AM -0700, James Yonan wrote:
+>> (2) Complex method: Write code in OpenVPN to simulate a DHCP client, 
+>> then translate the settings received in the DHCP reply to OpenVPN 
+>> push-style directives (such as ifconfig, route, etc.) as if they had 
+>> been pushed by the OpenVPN server.
 > 
-> And we found the bug:
-> function EVP_CipherFinal() returns 0, when cipher has
-> block_size == 1(stream cipher). So hear is the patch to
-> fix the bug.
+> ... this seems to be the most portable way, as we already have the 
+> ifconfig/route code for all the platforms.
 > 
-> sf.net tracker:
-> <https://sourceforge.net/tracker/?func=detail&aid=1552062&group_id=48978&atid=454721>
+> Well.  Let me rephrase.
 > 
-[...snip...]
-> +	  if (mode == EVP_CIPH_CBC_MODE)
-> +            ASSERT (outlen == iv_size);
+> The "simple way" is simple as far as the packet flow inside OpenVPN
+> goes (because OpenVPN only needs to transport packets, but not generate
+> them or parse them), but is, at the same time, the "most complex way" 
+> as far as getting it to work reliably across all supported operating 
+> systems.  Lots of testing and "configure" magic would be necessary to
+> reliably figure out how to do DHCP properly on each individual system.
+> 
+> I'm not saying it can't be done :-) - but just that the "simple way"
+> is not so simple, it's just complex in other places.
 
-Could someone please reassure that this is the right way how to solve
-this issue?  This new if statement seems to me to be too invasive.  The
-different cipher modes I found references to are:
+I would tend to agree.  All the discussion about the non-portable 
+semantics of DHCP clients on different platforms makes me think that the 
+"complex" method might really be the correct approach.
 
-#define         EVP_CIPH_STREAM_CIPHER          0x0
-#define         EVP_CIPH_ECB_MODE               0x1
-#define         EVP_CIPH_CBC_MODE               0x2
-#define         EVP_CIPH_CFB_MODE               0x3
-#define         EVP_CIPH_OFB_MODE               0x4
-#define         EVP_CIPH_MODE                   0x7
-(Extracts from /usr/include/openssl/evp.h)
+OpenVPN is already in the business of abstracting platform-specific 
+network configuration complexity to a portable interface, i.e. in the 
+manner of pushable directives such as route, ifconfig, dhcp-option, 
+etc., so I think it makes sense to leverage on this.  Implementing a 
+DHCP client within OpenVPN tends to make this a more self-contained problem.
 
-I'm not a crypto expert, but for me this change seems to skip the
-ASSERT() check on too many EVP_CIPH_*_MODEs.  On cipher modes supporting
-streams, that probably need to be skipped.
-
-Any objections or clarifications are highly appreciated.
-
-
-kind regards,
-
-David Sommerseth
-
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkuWYWgACgkQDC186MBRfroc9QCbBhd+ZImYE8MO557HPXBdnWMM
-p/IAn1RlDN7WuKfYpmPkOIiTtH4zZ5Gv
-=KX7E
------END PGP SIGNATURE-----
+James
 
