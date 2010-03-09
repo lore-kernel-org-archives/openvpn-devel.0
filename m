@@ -1,10 +1,9 @@
-Message-ID: <4B966A98.4000206@...41...>
-Date: Tue, 09 Mar 2010 08:34:48 -0700
-From: James Yonan <jim@...41...>
+Date: Tue, 09 Mar 2010 09:49:11 -0600
+From: "Karl O. Pinc" <kop@...1206...>
+In-Reply-To: <20100309064736.18556.qmail@...1287...> (from peter@...1287... on
+	Tue Mar  9 00:47:36 2010)
+Message-Id: <1268149751.24740.1@...1207...>
 MIME-Version: 1.0
-References: <4B9515FF.6000704@...41...>
-	<20100308174321.GA25238@...1296...>
-In-Reply-To: <20100308174321.GA25238@...1296...>
 Subject: Re: [Openvpn-devel] Supporting "route-gateway dhcp" on non-Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,46 +13,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: Peter Stuge <peter@...1287...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-> looking at the multitude of DHCP clients available for unix, the completely
-> different handling of DHCP on MacOS, and the issues that most unix clients
-> seem to have with "DHCP active on two different interfaces (ethX and tapY),
-> and both trying to set a default gateway", ...
-> 
-> On Mon, Mar 08, 2010 at 08:21:35AM -0700, James Yonan wrote:
->> (2) Complex method: Write code in OpenVPN to simulate a DHCP client, 
->> then translate the settings received in the DHCP reply to OpenVPN 
->> push-style directives (such as ifconfig, route, etc.) as if they had 
->> been pushed by the OpenVPN server.
-> 
-> ... this seems to be the most portable way, as we already have the 
-> ifconfig/route code for all the platforms.
-> 
-> Well.  Let me rephrase.
-> 
-> The "simple way" is simple as far as the packet flow inside OpenVPN
-> goes (because OpenVPN only needs to transport packets, but not generate
-> them or parse them), but is, at the same time, the "most complex way" 
-> as far as getting it to work reliably across all supported operating 
-> systems.  Lots of testing and "configure" magic would be necessary to
-> reliably figure out how to do DHCP properly on each individual system.
-> 
-> I'm not saying it can't be done :-) - but just that the "simple way"
-> is not so simple, it's just complex in other places.
+On 03/09/2010 12:47:36 AM, Peter Stuge wrote:
+> Karl O. Pinc wrote:
+> > The boot order that makes sense to me is:
+> >=20
+> > bring the interfaces up
+> > start dhcp client (if not triggered directly from the interfaces)
+> > start openvpn
+> >=20
+> > The problem is that if the dhcp client is started before openvpn
+> > and openvpn is creating the tap interface then it's too late
+>=20
+> At least some distributions work more like this:
+>=20
+> foreach interface:
+>   set link up
+>   possibly start openvpn
+>   address add
 
-I would tend to agree.  All the discussion about the non-portable 
-semantics of DHCP clients on different platforms makes me think that the 
-"complex" method might really be the correct approach.
+Ok.  So this then relies on openVPN retries to get the connection
+open, because when openvpn starts it's not got addresses
+in place to reach the other endpoint.  The only downside
+is that the startup is not really synchronous so that if
+later portions of the boot process are relying on having
+the VPN available they'd better be able to retry too.
 
-OpenVPN is already in the business of abstracting platform-specific 
-network configuration complexity to a portable interface, i.e. in the 
-manner of pushable directives such as route, ifconfig, dhcp-option, 
-etc., so I think it makes sense to leverage on this.  Implementing a 
-DHCP client within OpenVPN tends to make this a more self-contained problem.
+In this case it should "just work" on those distros, at least so
+long as the "address add" part is configured to use dhcp.  Yes?
 
-James
+Anyone know if it does work?
+
+Which distros work like that?  I'm most familiar with
+Debian and RedHat, although I've not looked at openvpn
+on RedHat in a while.  I seem to recall on these
+that the sysV init stuff starts openvpn last.
+
+
+
+
+Karl <kop@...1206...>
+Free Software:  "You don't pay back, you pay forward."
+                 -- Robert A. Heinlein
+
 
