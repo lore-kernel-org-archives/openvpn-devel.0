@@ -1,8 +1,8 @@
-Date: Tue, 09 Mar 2010 09:58:23 -0600
+Date: Tue, 09 Mar 2010 10:16:10 -0600
 From: "Karl O. Pinc" <kop@...1206...>
-In-Reply-To: <4B96559D.30305@...1114...> (from
-	openvpn.list@...1114... on Tue Mar  9 08:05:17 2010)
-Message-Id: <1268150303.24740.2@...1207...>
+In-Reply-To: <jwvhbopioq5.fsf-monnier+inbox@...1269...> (from
+	monnier@...1268... on Tue Mar  9 08:01:32 2010)
+Message-Id: <1268151370.24740.3@...1207...>
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] Supporting "route-gateway dhcp" on non-Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,38 +16,48 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, James Yonan <jim@...41...>
+To: Stefan Monnier <monnier@...1268...>
+Cc: openvpn-devel@lists.sourceforge.net, Peter Stuge <peter@...1287...>
 
-On 03/09/2010 08:05:17 AM, David Sommerseth wrote:
+On 03/09/2010 08:01:32 AM, Stefan Monnier wrote:
+> > bring the interfaces up
+> > start dhcp client (if not triggered directly from the interfaces)
+> > start openvpn
+>=20
+> That is a misconfiguration in my book.  The only correct=20
+> configuration
+> is when the dhcp client is triggered from the interface.  After all,
+> openvpn may take half an hour to get the connection and it may lose
+> the
+> connection at some point and reconnect to another openvpn server (via
+> round-robin DNS, for example) which might require a reconfiguration=20
+> on
+> the dhcp side.
 
->  On the other hand, ./configure
-> could try to detect which DHCP client the system got and could use
-> that
-> as a default client to kick off.
+My understanding of dhcp is that the client is supposed to=20
+automatically reconfigure on lease expiration or whenever
+the link goes up and down.  There's no reason to
+restart a dhcp client just to connect to another dhcp
+server because dhcp should also do this automatically.
 
-I think this might cause more problems than it solves because
-there's no guarantee that build hosts will have the same,
-or any, dhcp client that is ultimately used.   I'm with
-Peter Stuge regarding being able to support a choice
-of clients, and having the wrong default in place can
-just complicate things.
+I suppose it's possible that there are dhcp clients
+that exit when the link goes down and must be restarted
+but I don't know of any.  Then again I don't have
+experience with various client implementations.
+But it would seem kind of odd, having to restart
+the dhcp client just because somebody unplugged
+an ethernet cable.
 
-Maybe what makes the most sense from a package
-management standpoint is to have the package installation
-process autodetect the existing dhcp client so that whatever
-the user has installed will be used (once the feature
-is turned on with --route-gateway.)  I'm not sure how
-to best facilitate this with OpenVPN.  Perhaps OpenVPN
-should default to using something like
-/etc/openvpn/route-gateway-dhcp-client and then
-package installation can softlink that to whatever
-dhcp client is installed.=20=20
+The only reason why we're talking about restarting
+dhcp clients in the first place is so that they
+autodetect newly created tap devices.  If the
+dhcp client is configured with the tap device, or once
+it detects the tap device and the tap device stays
+existent, all the dhcp clients I know of should just
+be able to keep running and do what's needed as
+links go up and down and dhcp servers come and go.
 
-Over-automating things will cause people headaches.
-You don't want to willy-nilly startup a dhcp client
-and have all your interfaces configured with dhcp without
-your consent.
+
 
 Karl <kop@...1206...>
 Free Software:  "You don't pay back, you pay forward."
