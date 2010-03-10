@@ -1,12 +1,12 @@
-From: Davide Brini <dave_br@...1278...>
-Date: Wed, 10 Mar 2010 16:34:58 +0000
-References: <1267391523-1123-1-git-send-email-openvpn.list@...1114...>
-	<201002282326.32573.dave_br@...1278...>
-	<4B97BE9C.4010203@...1114...>
-In-Reply-To: <4B97BE9C.4010203@...1114...>
 MIME-Version: 1.0
-Message-Id: <201003101634.58839.dave_br@...1278...>
-Subject: Re: [Openvpn-devel] [PATCH] bash->bourne script cleanup
+In-Reply-To: <4B978D0E.9090606@...1114...>
+References: <1268218182-21015-1-git-send-email-openvpn.list@...1114...>
+	<4B978D0E.9090606@...1114...>
+Date: Wed, 10 Mar 2010 18:42:43 +0200
+Message-ID: <9e0cf0bf1003100842r408389c7occa7dcf0d27ad59a@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] On TARGET_LINUX define _GNU_SOURCE if
+	not defined
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,47 +15,83 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: Text/Plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Wednesday 10 Mar 2010 15:45:32 David Sommerseth wrote:
-> On 01/03/10 00:26, Davide Brini wrote:
-> > On Sunday 28 February 2010, David Sommerseth wrote:
-> >> From: Dan Nelson <dnelson@...384...>
-> >>
-> >> Many of the scripts in the openvpn source have their shell set to
-> >> /bin/bash, but only two use bash features. The attached patch (against
-> >> openvpn-2.1_rc9) sets the shell on the rest of the scripts to /bin/sh
-> >> for better portability. The only scripts that actually require bash are
-> >> contrib/pull-resolv-conf/client.{up,down} ; they use the ${!var}
-> >> variable indirection feature.
+This is not the way to do it.
+
+Use AC_USE_SYSTEM_EXTENSIONS in autoconf, which detects libc settings.
+
+The current autoconf shape is poor, long ago I offered James to
+rewrite it but he refused. I only made it partially work for cross
+compile.
+
+There are a lot of none standard/best practice stuff there.
+
+I did fix automake stuff... :)
+
+Alon.
+
+On Wed, Mar 10, 2010 at 2:14 PM, David Sommerseth
+<openvpn.list@...1114...> wrote:
+>
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+>
+> On 10/03/10 11:49, David Sommerseth wrote:
+> > From: David Sommerseth <dazo@...384...>
 > >
-> > Not only that, they also use arrays, which are not part of standard sh.
+> > This is to include peercred support on hosts where _GNU_SOURCE is not
+> > defined by default. =C2=A0This issue has been found on Gentoo with glib=
+c-2.8.
 > >
-> > For a POSIX-sh compliant solution thad does mostly the same thing (and
-> > handles multiple DOMAIN options as well, which client.{up,down} doesn't
-> > support), I suggest  you look into the Gentoo-provided {up,down}.sh
-> > scripts (though they contain some Gentoo-specific parts, but those are
-> > easily removed).
-> 
-> Agreed!  If you have time to look at a patch for it, I'd appreciate
-> that.  It will go in as a separate patch, to keep the patch flow as
-> simple as possible.
-
-Well, I was actually going to write a patch, but shortly after starting I 
-found out that it would end up being essentially the same as Gentoo's scripts.
-Would it be worth separately maintaining something that has already been 
-written somewhere else?
-
-Note I'm not being argumentative, I'm just trying to understand what pople 
-think, what the policy is, and what would be the best thing to do.
-It's true that these are just two short scripts, and maintaining them would be 
-no big deal anyway.
-
-Thanks!
-
--- 
-D.
+> > The solution was discussed on the IRC meeting March 4, 2010
+> > in #openvpn-discussions.
+> > <http://thread.gmane.org/gmane.network.openvpn.devel/3242>
+> >
+> > Signed-off-by: David Sommerseth <dazo@...384...>
+> > ---
+> > =C2=A0syshead.h | =C2=A0 =C2=A04 ++++
+> > =C2=A01 files changed, 4 insertions(+), 0 deletions(-)
+> >
+>
+> This is the "Gentoo patch", modified to be more generic. =C2=A0In the IRC
+> meeting I said I would try to make this change only in socket.c, but
+> that was not possible.
+>
+> TARGET_LINUX is defined in config.h, and not available before syshead.h
+> is included, as that is a wrapper which either includes config.h or
+> config-win32.h, depending on OS. =C2=A0Further defining _GNU_SOURCE after
+> including syshead.h would not make any difference at all, as it needs to
+> be defined before sys/socket.h is loaded.
+>
+> Therefore, I'd prefer a second review on this patch.
+>
+>
+> kind regards,
+>
+> David Sommerseth
+>
+> -----BEGIN PGP SIGNATURE-----
+> Version: GnuPG v1.4.10 (GNU/Linux)
+> Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+>
+> iEYEARECAAYFAkuXjQsACgkQDC186MBRfrorFQCePuxnsCBq3pIcPJ3mG1zZO2Y9
+> 4FAAniyfy82e0vJhep0TUvQeI+7nzZsr
+> =3DbTNV
+> -----END PGP SIGNATURE-----
+>
+> -------------------------------------------------------------------------=
+-----
+> Download Intel&#174; Parallel Studio Eval
+> Try the new software tools for yourself. Speed compiling, find bugs
+> proactively, and fine-tune applications for parallel performance.
+> See why Intel Parallel Studio got high marks during beta.
+> http://p.sf.net/sfu/intel-sw-dev
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
