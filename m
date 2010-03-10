@@ -1,9 +1,10 @@
-Message-ID: <4B97BE57.1030905@...1114...>
-Date: Wed, 10 Mar 2010 16:44:23 +0100
+Message-ID: <4B97BE9C.4010203@...1114...>
+Date: Wed, 10 Mar 2010 16:45:32 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
 References: <1267391523-1123-1-git-send-email-openvpn.list@...1114...>
-In-Reply-To: <1267391523-1123-1-git-send-email-openvpn.list@...1114...>
+	<201002282326.32573.dave_br@...1278...>
+In-Reply-To: <201002282326.32573.dave_br@...1278...>
 Subject: Re: [Openvpn-devel] [PATCH] bash->bourne script cleanup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,62 +16,46 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Dan Nelson <dnelson@...384...>
+To: Davide Brini <dave_br@...1278...>
+Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 28/02/10 22:12, David Sommerseth wrote:
-> From: Dan Nelson <dnelson@...384...>
+On 01/03/10 00:26, Davide Brini wrote:
+> On Sunday 28 February 2010, David Sommerseth wrote:
+>> From: Dan Nelson <dnelson@...384...>
+>>
+>> Many of the scripts in the openvpn source have their shell set to
+>> /bin/bash, but only two use bash features. The attached patch (against
+>> openvpn-2.1_rc9) sets the shell on the rest of the scripts to /bin/sh for
+>> better portability. The only scripts that actually require bash are
+>> contrib/pull-resolv-conf/client.{up,down} ; they use the ${!var} variable
+>> indirection feature.
 > 
-> Many of the scripts in the openvpn source have their shell set to
-> /bin/bash, but only two use bash features. The attached patch (against
-> openvpn-2.1_rc9) sets the shell on the rest of the scripts to /bin/sh for
-> better portability. The only scripts that actually require bash are
-> contrib/pull-resolv-conf/client.{up,down} ; they use the ${!var} variable
-> indirection feature.
+> Not only that, they also use arrays, which are not part of standard sh.
 > 
-> sf.net tracker:
-> <https://sourceforge.net/tracker/?func=detail&aid=2040296&group_id=48978&atid=454721>
-> 
-> Signed-off-by: David Sommerseth <dazo@...384...>
-> ---
->  easy-rsa/2.0/build-ca           |    2 +-
->  easy-rsa/2.0/build-dh           |    2 +-
->  easy-rsa/2.0/build-inter        |    2 +-
->  easy-rsa/2.0/build-key          |    2 +-
->  easy-rsa/2.0/build-key-pass     |    2 +-
->  easy-rsa/2.0/build-key-pkcs12   |    2 +-
->  easy-rsa/2.0/build-key-server   |    2 +-
->  easy-rsa/2.0/build-req          |    2 +-
->  easy-rsa/2.0/build-req-pass     |    2 +-
->  easy-rsa/2.0/clean-all          |    2 +-
->  easy-rsa/2.0/inherit-inter      |    2 +-
->  easy-rsa/2.0/list-crl           |    2 +-
->  easy-rsa/2.0/revoke-full        |    2 +-
->  easy-rsa/2.0/sign-req           |    2 +-
->  sample-config-files/firewall.sh |    2 +-
->  sample-scripts/bridge-start     |    2 +-
->  sample-scripts/bridge-stop      |    2 +-
->  17 files changed, 17 insertions(+), 17 deletions(-)
+> For a POSIX-sh compliant solution thad does mostly the same thing (and handles 
+> multiple DOMAIN options as well, which client.{up,down} doesn't support), I 
+> suggest  you look into the Gentoo-provided {up,down}.sh scripts (though they 
+> contain some Gentoo-specific parts, but those are easily removed).
 > 
 
-Patch applied to bugfix2.1 branch, merged into allmerged.
-Commit b75eb4c5a1cd31effcad9b6fa686dbd43527730a
+Agreed!  If you have time to look at a patch for it, I'd appreciate
+that.  It will go in as a separate patch, to keep the patch flow as
+simple as possible.
 
 
 kind regards,
 
 David Sommerseth
 
-
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkuXvlIACgkQDC186MBRfrq19wCggOAdo60oWyurnzc76hLwL53k
-yDIAn2rRw6vNPz++dLnyjjZ6UvNp+vIs
-=mGYY
+iEYEARECAAYFAkuXvpwACgkQDC186MBRfrrvAACdEkubTxrMsJUPLErrp2WVckDP
+vt8AoJx8VGtZ37YMiLI8AR+wXUnEHN8g
+=W9YB
 -----END PGP SIGNATURE-----
 
