@@ -1,11 +1,11 @@
-Date: Wed, 10 Mar 2010 12:22:04 -0600
-From: "Karl O. Pinc" <kop@...1206...>
-In-Reply-To: <4B97E076.7040201@...1114...> (from
-	openvpn.list@...1114... on Wed Mar 10 12:09:58 2010)
-Message-Id: <1268245324.8679.4@...1207...>
+Message-ID: <4B98179E.9020904@...1114...>
+Date: Wed, 10 Mar 2010 23:05:18 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] On TARGET_LINUX define _GNU_SOURCE if
- not defined
+References: <1267391523-1123-1-git-send-email-openvpn.list@...1114...>	<201002282326.32573.dave_br@...1278...>	<4B97BE9C.4010203@...1114...>
+	<201003101634.58839.dave_br@...1278...>
+In-Reply-To: <201003101634.58839.dave_br@...1278...>
+Subject: Re: [Openvpn-devel] [PATCH] bash->bourne script cleanup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,35 +14,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: Alon Bar-Lev <alon.barlev@...277...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Davide Brini <dave_br@...1278...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 03/10/2010 12:09:58 PM, David Sommerseth wrote:
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-> > But how is it then that Alon does not run ./configure
-> > on machine 2 above?
->=20
-> The fact is that I believe he does run ./configure on all machines.
-> Autotools just generates a set up files which is not depending on
-> anything else than basic *nix tools, like shell, grep, sed, etc, etc.
+On 10/03/10 17:34, Davide Brini wrote:
+>> > >>The only scripts that actually require bash are
+>> > >> contrib/pull-resolv-conf/client.{up,down} ; they use the ${!var}
+>> > >> variable indirection feature.
+>>>
+>>> > > Not only that, they also use arrays, which are not part of standard sh.
+>>> > >
+>>> > > For a POSIX-sh compliant solution thad does mostly the same thing (and
+>>> > > handles multiple DOMAIN options as well, which client.{up,down} doesn't
+>>> > > support), I suggest  you look into the Gentoo-provided {up,down}.sh
+>>> > > scripts (though they contain some Gentoo-specific parts, but those are
+>>> > > easily removed).
+>> > 
+>> > Agreed!  If you have time to look at a patch for it, I'd appreciate
+>> > that.  It will go in as a separate patch, to keep the patch flow as
+>> > simple as possible.
+>> >
+> Well, I was actually going to write a patch, but shortly after starting I 
+> found out that it would end up being essentially the same as Gentoo's scripts.
+> Would it be worth separately maintaining something that has already been 
+> written somewhere else?
 
-Right.  This I've always gotten.
+I would say that if there are things which are distro related, they
+should either be found only in that distribution or we can consider (if
+it is considered important by more people) to put distro specific stuff
+into a separate folder in the OpenVPN source tree.
 
->=20
-> But to be able to make the tarball via 'make dist', you need to run
-> ./configure first to have a Makefile which knows what the 'dist' rule
-> is.  Then the 'dist' rule wraps it all together into a autotools
-> independent tarball, including a prepared ./configure script.
+If it is possible to get some up/down scripts which are generic for the
+vast majority of POSIX sh based distributions, that would be the
+preferred approach.  If not, then we are back to where we started :)
 
-Ok.  Thanks.  This is what threw me off.  I was mistaking
-this for executing ./configure on the dist tarball.
+Did that answer your question?
 
 
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                 -- Robert A. Heinlein
+kind regards,
 
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAkuYF54ACgkQDC186MBRfrqHwACgpMmlJ9ZQU/CvppJ+3pq1s/ql
+IqwAoJEk28vBEMeJn44K8sLoJ33h/rqs
+=eOoy
+-----END PGP SIGNATURE-----
 
