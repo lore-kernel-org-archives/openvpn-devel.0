@@ -1,10 +1,10 @@
-From: David Sommerseth <dazo@...384...>
-Date: Thu, 11 Mar 2010 17:01:59 +0100
-Message-Id: <1268323319-7161-1-git-send-email-dazo@...384...>
-In-Reply-To: <4B8ADF36.3050201@...1114...>
-References: <4B8ADF36.3050201@...1114...>
+Message-ID: <4B991408.8030207@...1147...>
+Date: Thu, 11 Mar 2010 17:02:16 +0100
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix autotools cross-compiling support
+References: <4B950E0B.1030908@...41...> <4B964BEC.3040504@...1114...>
+In-Reply-To: <4B964BEC.3040504@...1114...>
+Subject: Re: [Openvpn-devel] Linux tun/tap performance issues
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,162 +13,109 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: David Sommerseth <dazo@...384...>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, James Yonan <jim@...41...>
 
-This is a modified version of a patch sent to the sf.net
-patch tracker:
-<http://sourceforge.net/tracker/?func=detail&aid=2491190&group_id=48978&atid=454721>
+Hi all,
 
-After having disucssed this patch on IRC (#openvpn-discussions)
-March 4, 2010, it was decided to accept this patch when not modifying
-TARGET_* defines through out the code.  Further, in a mail comment
-Alon Bar-Lev had some other comments of what would be needed to be done.
+just ran a very silly test, all with openvpn 2.1.1, on my laptop running 
+FC12 (2.6.31.12-174.2.22.fc12.x86_64) ,  Intel(R) Core(TM)2 Duo CPU 
+T9300 @ 2.50GHz, connected to a 100 Mbps LAN
 
-Mail reference:
-<http://thread.gmane.org/gmane.network.openvpn.devel/3176>
+server side:  
+  openvpn --ifconfig 10.222.0.1 10.222.0.2 --dev tun --secret secret.key 
+--cipher none
+client side:
+  time ./openvpn --ifconfig 10.222.0.2 10.222.0.1 --dev tun --secret 
+secret.key --remote kudde.nikhef.nl --cipher none
 
-This patch has been tested by bootstrapping the code on a RHEL4.6 box.
-with the following autotools packages installed:
-autoconf-2.59-5
-automake-1.9.2-3
-libtool-1.5.6-4.EL4.2
+and then use 'nc' to pipe a 100 MB file from server to client :
 
-It builds cleanly and 'make check' passes.
+nc'ing it once:
+user    0m2.150s
+sys     0m3.972s
 
-Signed-off-by: David Sommerseth <dazo@...384...>
----
- acinclude.m4 |   10 +++++-----
- configure.ac |   35 +++++++++++++++++------------------
- 2 files changed, 22 insertions(+), 23 deletions(-)
+nc'ing it twice:
+user    0m4.128s
+sys     0m8.012s
 
-diff --git a/acinclude.m4 b/acinclude.m4
-index f099de5..2d49020 100644
---- a/acinclude.m4
-+++ b/acinclude.m4
-@@ -224,8 +224,8 @@ acx_pthread_flags="pthreads none -Kthread -kthread lthread -pthread -pthreads -m
- # pthread: Linux, etcetera
- # --thread-safe: KAI C++
- 
--case "$target" in
--        *solaris*)
-+case "$host" in
-+        *-*-solaris*)
- 
-         # On Solaris (at least, for some versions), libc contains stubbed
-         # (non-functional) versions of the pthreads routines, so link-based
-@@ -321,9 +321,9 @@ if test "x$acx_pthread_ok" = xyes; then
- 
-         AC_MSG_CHECKING([if more special flags are required for pthreads])
-         flag=no
--        case "$target" in
--                *-aix* | *-freebsd*)               flag="-D_THREAD_SAFE";;
--                *solaris* | alpha*-osf* | *linux*) flag="-D_REENTRANT";;
-+        case "$host" in
-+                *-*-aix* | *-freebsd*)               flag="-D_THREAD_SAFE";;
-+                *-*-solaris* | alpha*-osf* | *linux*) flag="-D_REENTRANT";;
-         esac
-         AC_MSG_RESULT(${flag})
-         if test "x$flag" != xno; then
-diff --git a/configure.ac b/configure.ac
-index 116ff7c..a829a7d 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -32,7 +32,6 @@ AC_CONFIG_SRCDIR(syshead.h)
- 
- dnl Guess host type.
- AC_CANONICAL_HOST
--AC_CANONICAL_SYSTEM
- AM_INIT_AUTOMAKE(openvpn, [$PACKAGE_VERSION])
- 
- AC_ARG_WITH(cygwin-native,
-@@ -44,11 +43,11 @@ AC_ARG_WITH(cygwin-native,
- WIN32="no"
- CYGWIN="no"
- case "${host}" in
--	*-mingw*)
-+	*-*-mingw*)
- 		WIN32="yes"
- 		cross_compiling="yes"
- 	;;
--	*-cygwin*)
-+	*-*-cygwin*)
- 		AC_MSG_CHECKING([cygwin mode to use])
- 		if test "${CYGWIN_NATIVE}" = "yes"; then
- 			AC_MSG_RESULT([Using native win32])
-@@ -275,38 +274,38 @@ AC_ARG_WITH(mem-check,
- dnl fix search path, to allow compilers to find syshead.h
- CPPFLAGS="$CPPFLAGS -I${srcdir}"
- 
--dnl check target OS
--openvpn_target=$target
--if test $target_alias; then
--  openvpn_target=$target_alias
-+dnl check host OS
-+openvpn_host=$host
-+if test $host_alias; then
-+  openvpn_host=$host_alias
- fi
--AC_DEFINE_UNQUOTED(TARGET_ALIAS, "$openvpn_target", [A string representing our target])
--case "$target" in
--*linux*)
-+AC_DEFINE_UNQUOTED(TARGET_ALIAS, "$openvpn_host", [A string representing our host])
-+case "$host" in
-+*-*-linux*)
- 	AC_DEFINE(TARGET_LINUX, 1, [Are we running on Linux?])
- 	dnl RH9 SSL headers workaround
-         if test -z $CS_HDR_DIR && test "$CRYPTO" = "yes"; then
-            CPPFLAGS="$CPPFLAGS $(pkg-config --cflags openssl 2>/dev/null)"
-         fi
- 	;;
--*solaris*)
-+*-*-solaris*)
- 	AC_DEFINE(TARGET_SOLARIS, 1, [Are we running on Solaris?])
- 	;;
--*openbsd*)
-+*-*-openbsd*)
- 	AC_DEFINE(TARGET_OPENBSD, 1, [Are we running on OpenBSD?])
- 	;;
--*freebsd*)
-+*-*-freebsd*)
- 	AC_DEFINE(TARGET_FREEBSD, 1, [Are we running on FreeBSD?])
- 	;;
--*netbsd*)
-+*-*-netbsd*)
- 	AC_DEFINE(TARGET_NETBSD, 1, [Are we running NetBSD?])
- 	;;
--*darwin*)
-+*-*-darwin*)
- 	dnl some Mac OS X tendering (we use vararg macros...)
- 	AC_DEFINE(TARGET_DARWIN, 1, [Are we running on Mac OS X?])
- 	CPPFLAGS="$CPPFLAGS -no-cpp-precomp"
- 	;;
--*mingw*)
-+*-*-mingw*)
- 	AC_DEFINE(TARGET_WIN32, 1, [Are we running WIN32?])
- 	OPENVPN_ADD_LIBS(-lgdi32)
- 	OPENVPN_ADD_LIBS(-lws2_32)
-@@ -315,7 +314,7 @@ case "$target" in
- 	OPENVPN_ADD_LIBS(-liphlpapi)
- 	OPENVPN_ADD_LIBS(-lwinmm)
- 	;;
--*dragonfly*)
-+*-*-dragonfly*)
- 	AC_DEFINE(TARGET_DRAGONFLY, 1, [Are we running on DragonFlyBSD?])
- 	;;
- 	
-@@ -574,7 +573,7 @@ if test "$PTHREAD" = "yes"; then
-   AC_MSG_RESULT([********* WARNING: pthread support is experimental for OpenVPN 2.0])
-   ACX_PTHREAD(
-         [
--	    case "$target" in
-+	    case "$host" in
- 	    *openbsd*)
- 		AC_MSG_RESULT([WARNING: pthread support on OpenBSD is unstable!])
- 		CFLAGS="$CFLAGS -pthread"
--- 
-1.5.4.7
+Now with some encryption:
+
+server side:  
+  openvpn --ifconfig 10.222.0.1 10.222.0.2 --dev tun --secret secret.key
+client side:
+  time ./openvpn --ifconfig 10.222.0.2 10.222.0.1 --dev tun --secret 
+secret.key --remote kudde.nikhef.nl
+
+nc'ing it once:
+user    0m5.010s
+sys     0m4.385s
+
+nc'ing it twice:
+user    0m9.922s
+sys     0m8.536s
+
+Transfer speeds are about 10 Mb/s in all cases, i.e. the LAN is maxed out.
+
+So yes , quite some time is spent in 'sys' but I don't think it is too 
+much ... my guess is that with older CPUs the amount of time spent in 
+the kernel vs the time spent in user space was different, i.e. older 
+CPUs had more trouble with the encryption/decryption, hence you'd see a 
+larger difference between user vs sys.
+
+
+cheers,
+
+JJK / Jan Just Keijser
+
+
+
+David Sommerseth wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+>
+> On 08/03/10 15:47, James Yonan wrote:
+>   
+>> I believe this has been discussed before, but I noticed recently that a 
+>> Linux-based OpenVPN client (Linux 2.6.24, OpenVPN 2.1.1) spends a lot 
+>> more CPU time in kernel space than in user space.  This is surprising, 
+>> given the fact that all of the CPU-intensive cryptographic operations 
+>> are being done in user space.
+>>
+>> Using the 'time' utility on the OpenVPN client, while a wget of a 50MB 
+>> file was done over the VPN, I found that 80% of the CPU time was taken 
+>> by the kernel, and 20% by user space (I should add that the Linux client 
+>> was running as a VM on VMWare Fusion).
+>>
+>> I'm wondering if anyone with kernel background has any insights on this. 
+>>   Are there performance bottlenecks in the tun/tap driver?
+>>     
+>
+> I'm not a hardcore kernel developer, but I'm interested in the to
+>
+> James, would you mind trying to run a test on the 2.6.33 kernel?  That's
+> the newest stable kernel available, just to see if your observations are
+> visible there as well, and if they are better or worse.
+>
+> And when you say earlier kernels did not use so much time in kernel
+> space, which kernels did you compare against?  It would be interesting
+> to look through the changelog from the "good" kernel version to 2.6.24,
+> to see what was changed in tun.c.
+>
+> In this case, it would be easier to try to nail down where such a
+> behavioural change happened.  And after all, 2.6.24 was released about 2
+> years ago (Jan 24 14:58:37 2008) ... and the drivers/net/tun.c has been
+> changed 72 times, as far as I can see.  It's a big job going on getting
+> rid of the BKL (big kernel lock, blocking all apps while kernel is doing
+> something) ... so it's difficult to say now just what could have been
+> the reason for what you observe.
+>
+> James, if you have a "test script" with configuration files, I can setup
+> a test environment and run some tests and also enable ftrace [1], which
+> could also pin-point more where the kernel spends its time doing things.
+>
+>   
 
 
