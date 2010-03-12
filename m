@@ -1,11 +1,11 @@
-Date: Fri, 12 Mar 2010 21:11:50 +0300
+Date: Fri, 12 Mar 2010 21:18:44 +0300
 From: Pavel Shramov <shramov@...1064...>
-Message-ID: <20100312181150.GA3345@...1073...>
+Message-ID: <20100312181844.GA2078@...1324...>
 References: <4B9A432A.3080701@...515...>
 MIME-Version: 1.0
 In-Reply-To: <4B9A432A.3080701@...515...>
-Subject: Re: [Openvpn-devel] [TESTING NEEDED] Searching from a modified
- OpenVPN man-page using non-UTF8 locales
+Subject: Re: [Openvpn-devel] [TESTING NEEDED] Searching from a
+	modified	OpenVPN man-page using non-UTF8 locales
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -32,6 +32,8 @@ On Fri, Mar 12, 2010 at 03:35:38PM +0200, Samuli Sepp=E4nen wrote:
 > "less", you'd type
 >=20
 > /--dev-type
-Finds option description. Debian 4.0 etch (with small bit of backports).
+Ok on Debian 4.0 etch.
 			Pavel
+
+P.S. Possible message dups are caused by RBL blocking my mail relay.
 
