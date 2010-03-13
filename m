@@ -1,12 +1,11 @@
-References: <9e0cf0bf1003100919l307a653er7c619b5f2fc97dc@...278...>
-	<1268242750.8679.0@...1207...>
-	<9e0cf0bf1003100941y30780002qcd62ca2d9e9355f2@...278...>
-	<1268243841.8679.2@...1207...>
-Date: Sun, 14 Mar 2010 00:34:19 +0100
+References: <1268242750.8679.0@...1207...> <4B97DCEC.9020108@...1114...>
+	<1268244277.8679.3@...1207...>
+	<9e0cf0bf1003101009kb323a2csccc86d7c148766f4@...278...>
+Date: Sun, 14 Mar 2010 00:39:36 +0100
 MIME-Version: 1.0
 From: "Matthias Andree" <matthias.andree@...68...>
-Message-ID: <op.u9i43hqp1e62zd@...1326...>
-In-Reply-To: <1268243841.8679.2@...1207...>
+Message-ID: <op.u9i5cacs1e62zd@...1326...>
+In-Reply-To: <9e0cf0bf1003101009kb323a2csccc86d7c148766f4@...278...>
 Subject: Re: [Openvpn-devel] [PATCH] On TARGET_LINUX define _GNU_SOURCE if
  not defined
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,57 +18,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=iso-8859-15; format=flowed; delsp=yes
 Content-Transfer-Encoding: 8bit
-To: Alon Bar-Lev <alon.barlev@...277...>, "Karl O. Pinc" <kop@...1206...>
+To: "Karl O. Pinc" <kop@...1206...>, Alon Bar-Lev <alon.barlev@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Karl O. Pinc wrote on 2010-03-10:
+Alon Bar-Lev wrote on 2010-03-10:
 
-> On 03/10/2010 11:41:49 AM, Alon Bar-Lev wrote:
->> On Wed, Mar 10, 2010 at 7:39 PM, Karl O. Pinc <kop@...1206...> wrote:
->> > In other words ./configure is not expected to be run under normal
->> > circumstances.
->> >
->> > The whole point of autoconf is to produce something that can
->> > be made into a tarball that only requires "make; make install"
->> > to compile and install.
->>
->> You do not understand the tools. Nor the common use of them.
->>
->> You *MUST* run ./configure when compiling from sources.
->
-> You are right, on all of the above.  I don't use them every
-> day.
->
-> But, you _don't_ have to run ./configure every time.  You
+> If you patch autoconf/automake stuff, you *MUST* add autoconf/automake
+> dependency to your package, so you can regenerate the files. It is
+> much simpler to patch also the generated files and avoid this
+> dependency. But it is packager's call.
 
-You do. Either explicitly, or after updating the source ("git pull")  
-because the Makefiles figure that you need to and run config.status twice  
-(once with options to re-trigger configure, then to regenerate its  
-AC_OUTPUT files).
+For distributions and packaging, hacking the outputs is often simpler  
+unless the input had been expanded and/or copied around, because it waives  
+and additional build requisites.  It sometimes happens that there are  
+distribution-specific changes that aren't fit for upstream inclusion.  The  
+FreeBSD ports repository is full of such stuff, and I'd usually patch  
+outputs there -- and for the majority of packages, the patches for the  
+output files aren't any less stable than those for input files would be,  
+but they are so much easier on the end users.
 
-> yourself wrote that you do the ./configure on the _new_
-> machine, and then move the tarball to the old machine
-> and recompile.  This is often the situation, or at least
-> I found so, when making rpm spec files.
+> Please understand, in order to build a package you *DO NOT* need
+> autoconf/automake/libtool installed *AT ALL*.
 
-You need to run ./configure on the _new_ (distributor's) machine so that  
-there is a "Makefile" that you can run "make dist" (to generate a tarball)  
-or "make distdir" (to rsync the dist' directory), and for no other  
-purpose. None of the outputs so generated make it to the tarball. If they  
-did, that would be a bug in Makefile.am or in automake (the latter I've  
-never seen, or at least I don't recall having seen those).
+Careful with the wording here, as "build a package" is ambiguous:
+(1) build a tarball distribution package (openvpn-2.1.X.tar.gz)
+(2) build a openvpn.rpm or .deb from the tarball.
 
-> You are quite correct in pointing out that ./configure
-> should be able to be run on the old machine, which
-> means that it can be executed within the build portion
-> of the spec file.
-
-It's a requisite, but run in the RPM's "prep" section rather than "build".  
-Most distros today would have %configure macros to feed their distribution  
-default options in (directory layout, CFLAGS for hardening, and  
-thereabouts).
-
-HTH
+I'll reword: In order to build the binaries from a tarball generated with  
+"make dist" (what the release manager uploads and the end user usually  
+downloads from sourceforge or other distribution sites), no  
+autoconf/automake/libtool are required.
 
 -- 
 Matthias Andree
