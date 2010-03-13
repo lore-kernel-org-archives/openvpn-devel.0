@@ -1,13 +1,14 @@
-Message-ID: <4B9C1C16.8080107@...68...>
-Date: Sun, 14 Mar 2010 00:13:26 +0100
-From: Matthias Andree <matthias.andree@...68...>
+References: <9e0cf0bf1003100919l307a653er7c619b5f2fc97dc@...278...>
+	<1268242750.8679.0@...1207...>
+	<9e0cf0bf1003100941y30780002qcd62ca2d9e9355f2@...278...>
+	<1268243841.8679.2@...1207...>
+Date: Sun, 14 Mar 2010 00:34:19 +0100
 MIME-Version: 1.0
-References: <4B8ADF36.3050201@...1114...>
-	<20100301105856.GY9556@...1296...>
-In-Reply-To: <20100301105856.GY9556@...1296...>
-Subject: Re: [Openvpn-devel]
- =?iso-8859-1?q?=5BFeedback_needed=5D=A0Fix_cross_?=
- =?iso-8859-1?q?compile_support?=
+From: "Matthias Andree" <matthias.andree@...68...>
+Message-ID: <op.u9i43hqp1e62zd@...1326...>
+In-Reply-To: <1268243841.8679.2@...1207...>
+Subject: Re: [Openvpn-devel] [PATCH] On TARGET_LINUX define _GNU_SOURCE if
+ not defined
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,59 +17,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=iso-8859-15; format=flowed; delsp=yes
+Content-Transfer-Encoding: 8bit
+To: Alon Bar-Lev <alon.barlev@...277...>, "Karl O. Pinc" <kop@...1206...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 01.03.2010 11:58, schrieb Gert Doering:
-> Hi,
-> 
-> On Sun, Feb 28, 2010 at 10:25:10PM +0100, David Sommerseth wrote:
->> I'm reviewing this patch in the patch tracker, and cannot make up my
->> mind if this is correct or not.  Can someone please advise if this is
->> something we should include or not?
->> 
->> <https://sourceforge.net/tracker/?func=detail&aid=2491190&group_id=48978&atid=454721>
-> 
-> I don't really understand the subtleties of autoconf and friends, but
-> I can attest that the current source tree cross-compiles just fine
-> (e.g. "configure --prefix=/usr --host=armv5tel-unknown-linux-gnueabi").
-> 
-> Something to keep in mind: changing all TARGET_* #ifdef's in the actual
-> code (as opposed to just changing the configure magic) *will* generate
-> lots of merge problems with the new feature branches.  Especially the
-> IPv6 payload branch has lots of system dependent changes, so this part
-> of the change would have to be done in parallel on multiple branches,
-> causing the payload branch then to no longer apply to "base 2.1.1".
-> 
-> 
-> For this reason, I would NOT apply this patch right now - wait for the
-> development tree to stabilize, before applying a mostly-religious change
-> that affects 58 (!) places in the source.
+Karl O. Pinc wrote on 2010-03-10:
 
-Hi Gert,
+> On 03/10/2010 11:41:49 AM, Alon Bar-Lev wrote:
+>> On Wed, Mar 10, 2010 at 7:39 PM, Karl O. Pinc <kop@...1206...> wrote:
+>> > In other words ./configure is not expected to be run under normal
+>> > circumstances.
+>> >
+>> > The whole point of autoconf is to produce something that can
+>> > be made into a tarball that only requires "make; make install"
+>> > to compile and install.
+>>
+>> You do not understand the tools. Nor the common use of them.
+>>
+>> You *MUST* run ./configure when compiling from sources.
+>
+> You are right, on all of the above.  I don't use them every
+> day.
+>
+> But, you _don't_ have to run ./configure every time.  You
 
-No offense, but do you think it's within objective discussion to call the patch
-"mostly-religious change" (which is a non-objective comment in my book) if you
-"don't really understand the subtleties of autoconf and friends"?
+You do. Either explicitly, or after updating the source ("git pull")  
+because the Makefiles figure that you need to and run config.status twice  
+(once with options to re-trigger configure, then to regenerate its  
+AC_OUTPUT files).
 
-Diego's proposal was/is sound -- I checked it for another project of mine when
-he sent a similar patch there --, and chases a cleanup in auto*, where
-build/host/target relations were polished a bit.  As such, it's a desirable
-update and it is good to see elsewhere in this branch that it was accepted, so
-that Diego's effort wasn't wasted.
+> yourself wrote that you do the ./configure on the _new_
+> machine, and then move the tarball to the old machine
+> and recompile.  This is often the situation, or at least
+> I found so, when making rpm spec files.
 
-WRT practical merge concerns around TARGET_*, git knows the "rerere" sub-command
-to track merge conflict resolutions (see the manual); and since the required
-edits can be scripted, that could happen on the feature branches before
-attempting a merge. No big deal.
+You need to run ./configure on the _new_ (distributor's) machine so that  
+there is a "Makefile" that you can run "make dist" (to generate a tarball)  
+or "make distdir" (to rsync the dist' directory), and for no other  
+purpose. None of the outputs so generated make it to the tarball. If they  
+did, that would be a bug in Makefile.am or in automake (the latter I've  
+never seen, or at least I don't recall having seen those).
 
-Anyways, I have a bit of auto* expertise, feel free to Cc:/ping me on auto*
-related proposals to openvpn.  I've only cursorily been following the increased
-list traffic lately until the changed-procedure threads would have settled a
-bit, and the thread didn't catch my eye right away.
+> You are quite correct in pointing out that ./configure
+> should be able to be run on the old machine, which
+> means that it can be executed within the build portion
+> of the spec file.
 
-Best regards
+It's a requisite, but run in the RPM's "prep" section rather than "build".  
+Most distros today would have %configure macros to feed their distribution  
+default options in (directory layout, CFLAGS for hardening, and  
+thereabouts).
+
+HTH
 
 -- 
 Matthias Andree
