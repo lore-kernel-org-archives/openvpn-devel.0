@@ -1,10 +1,13 @@
-Date: Sun, 14 Mar 2010 11:50:02 +0100
+Date: Sun, 14 Mar 2010 12:19:49 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20100314105002.GB25238@...1296...>
-References: <20100314024732.58634.qmail@...1329...>
+Message-ID: <20100314111949.GC25238@...1296...>
+References: <4B8ADF36.3050201@...1114...>
+	<20100301105856.GY9556@...1296...> <4B9C1C16.8080107@...68...>
 Mime-Version: 1.0
-In-Reply-To: <20100314024732.58634.qmail@...1329...>
-Subject: Re: [Openvpn-devel] Compiling openvpn for windows using mingw32
+In-Reply-To: <4B9C1C16.8080107@...68...>
+Subject: Re: [Openvpn-devel]
+	=?iso-8859-1?q?=5BFeedback_needed=5D=A0Fix_cross_?=
+	=?iso-8859-1?q?compile_support?=
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,46 +19,49 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-To: Kill AllSnoopers <killallsnoopers@...1327...>
+To: Matthias Andree <matthias.andree@...68...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Sun, Mar 14, 2010 at 02:47:32AM -0000, Kill AllSnoopers wrote:
-> I am trying to compile openvpn for windows using mingw32 and have openssl lzo, etc compiled. I am trying to compile to create the openvpn.exe and then use the GUI. 
+On Sun, Mar 14, 2010 at 12:13:26AM +0100, Matthias Andree wrote:
+> No offense, but do you think it's within objective discussion to call the patch
+> "mostly-religious change" (which is a non-objective comment in my book) if you
+> "don't really understand the subtleties of autoconf and friends"?
 
-Are you trying to compile natively, or cross-compile?
+Well, there's two parts to the original patch.
 
-> I haven't figured how to compile the main openvpn to create openvpn.exe 
-> 
-> The instructions on openvpn are not that helpful for this part. 
-> 
-> Can anyone outline the steps or point to mails in the forum that discuss 
-> it. I did a search for them without any useful results.
+One is the functional patches in configure.ac - I can't say anything about
+that, so I'm not doing so.
 
-To cross-compile, use Alon's "Build" script, http://opensc-project.org/build
-on top of a Linux system of your choice.  To download the script itself,
-go to "http://www.opensc-project.org/build/browkser/trunk/build" and then
-click on "download in other formats: plain text" at the end.
+The other part is changing all TARGET_* defines to HOST_* defines.  This 
+is not changing functionality or portability, as the very defines are 
+explicitely set in configure.ac, and they could be MySystemIs_* as far as 
+functionality is concerned.  So the change is because people believe it 
+to be "the right way" - which makes it "mostly-religious" in my book: not 
+based on functional changes, but because "it's the right way".
 
+Whitespace changes to cleanup broken formatting fall into the same category
+for me - quite often, there are very good reasons to do so, but if the
+circumstances are such that it conflicts with other development work, it 
+might be prudent to postpone them until after other stuff has been merged.
 
-If you want to compile natively on windows, install mingw + msys, and
-then follow the instructions in "domake-win" in the OpenVPN source 
-tree (it's the script to run, and it has lots of documentation inside
-how to get the required components).
+... and this is exactly what I proposed: don't include the larger chunk
+of the changes right *now*.  Wait for the multiple branches to settle
+down, and then decide how to adjust the TARGET_* definitions.
 
-Building for Windows is not something for the faint of heart, or for
-unexperienced package builders.  Expect build failures, and expect to
-read other people's scripts and figure out what is failing and what you
-need to add to your build environment to make it work.
+[..]
+> WRT practical merge concerns around TARGET_*, git knows the "rerere" sub-command
+> to track merge conflict resolutions (see the manual); and since the required
+> edits can be scripted, that could happen on the feature branches before
+> attempting a merge. No big deal.
 
+Well, this is putting extra work on David Sommerseth's lap.  If he is willing
+to handle that, I won't object.
 
-If you ask this list, better include a full description of what you did,
-on which platform, and what error message resulted - otherwise we're not
-able to give useful advice.
-
-(Out of personal curiousity: why are you trying to build-your-own?  The
-precompiled packages work perfectly well...)
+As for now, I have been operating under the premises that different branches
+in the openvpn-devel tree should avoid to cause merge conflicts (unless 
+unavoidable for required functionality, see ipv6 payload vs. ipv6 transport).
 
 gert
 -- 
