@@ -1,15 +1,11 @@
-Date: Sat, 13 Mar 2010 18:16:24 -0600
-From: "Karl O. Pinc" <kop@...1206...>
-References: <9e0cf0bf1003100919l307a653er7c619b5f2fc97dc@...278...>
-	<1268242750.8679.0@...1207...>
-	<9e0cf0bf1003100941y30780002qcd62ca2d9e9355f2@...278...>
-	<1268243841.8679.2@...1207...> <op.u9i43hqp1e62zd@...1326...>
-In-Reply-To: <op.u9i43hqp1e62zd@...1326...> (from
-	matthias.andree@...68... on Sat Mar 13 17:34:19 2010)
-Message-Id: <1268525784.10249.0@...1207...>
+Date: 14 Mar 2010 02:47:32 -0000
+Message-ID: <20100314024732.58634.qmail@...1329...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] On TARGET_LINUX define _GNU_SOURCE if
- not defined
+From: "Kill AllSnoopers" <killallsnoopers@...1327...>
+Content-Type: multipart/alternative;
+	boundary="=_9beeeb3510ec6580d7760d23e2f64384"
+Subject: [Openvpn-devel] =?utf-8?q?Compiling_openvpn_for_windows_using_min?=
+	=?utf-8?q?gw32?=
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,24 +14,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+To: openvpn-devel@lists.sourceforge.net
+
+--=_9beeeb3510ec6580d7760d23e2f64384
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+Hi,
+
+
+
+I am trying to compile openvpn for windows using mingw32 and have openssl lzo, etc compiled. I am trying to compile to create the openvpn.exe and then use the GUI. 
+
+
+
+I haven't figured how to compile the main openvpn to create openvpn.exe 
+
+The instructions on openvpn are not that helpful for this part. 
+
+
+
+Can anyone outline the steps or point to mails in the forum that discuss it. I did a search for them without any useful results.
+
+
+
+Thanks,
+
+KS
+
+
+
+Kill ALL snoopers
+--=_9beeeb3510ec6580d7760d23e2f64384
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Matthias Andree <matthias.andree@...68...>
-Cc: Alon Bar-Lev <alon.barlev@...277...>, openvpn-devel@lists.sourceforge.net
 
-On 03/13/2010 05:34:19 PM, Matthias Andree wrote:
-> Karl O. Pinc wrote on 2010-03-10:
+Hi,<br />
+<br />
+I am trying to compile openvpn for windows using mingw32 and have openssl l=
+zo, etc compiled. I am trying to compile to create the openvpn.exe and then=
+ use the GUI. <br />
+<br />
+I haven't figured how to compile the main openvpn to create openvpn.exe <br=
+ />
+The instructions on openvpn are not that helpful for this part. <br />
+<br />
+Can anyone outline the steps or point to mails in the forum that discuss it=
+. I did a search for them without any useful results.<br />
+<br />
+Thanks,<br />
+KS<br />
+<br />
+Kill ALL snoopers<br><Table border=3D0 Width=3D644 Height=3D57 cellspacing=
+=3D0 cellpadding=3D0 style=3D"font-family:Verdana;font-size:11px;line-heigh=
+t:15px;"><TR><td><A HREF=3D"http://sigads.rediff.com/RealMedia/ads/click_nx=
+.ads/www.rediffmail.com/signatureline.htm@...1328...?" target=3D"_blank"><I=
+MG SRC=3D"http://sigads.rediff.com/RealMedia/ads/adstream_nx.ads/www.rediff=
+mail.com/signatureline.htm@...1328..."></A></td></TR></Table>=
 
-> > But, you _don't_ have to run ./configure every time.  You
->=20
-> You do.
-
-Yes.  Thanks.  I don't know what I was thinking.=20=20
-
-
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                 -- Robert A. Heinlein
-
+--=_9beeeb3510ec6580d7760d23e2f64384--
 
