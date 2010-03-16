@@ -1,12 +1,11 @@
-Message-ID: <4B9F9EA0.6060308@...1147...>
-Date: Tue, 16 Mar 2010 16:07:12 +0100
-From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <4B9FFCF7.6060209@...1114...>
+Date: Tue, 16 Mar 2010 22:49:43 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4B950E0B.1030908@...41...> <4B964BEC.3040504@...1114...>
-	<4B991408.8030207@...1147...> <4B9E5240.1080008@...1147...>
-	<4B9E5EEF.6030800@...1114...>
-In-Reply-To: <4B9E5EEF.6030800@...1114...>
-Subject: Re: [Openvpn-devel] Linux tun/tap performance issues
+References: <9e0cf0bf1003110808m50e523ecn3262918ba9904e10@...278...>
+	<1268324921-9307-1-git-send-email-dazo@...384...>
+In-Reply-To: <1268324921-9307-1-git-send-email-dazo@...384...>
+Subject: Re: [Openvpn-devel] [PATCHv2] Fix autotools cross-compiling support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,78 +14,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi David,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-David Sommerseth wrote:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
->
-> On 15/03/10 16:29, Jan Just Keijser wrote:
->   
->> More tests, this time with 'oprofile' : here's a recap:
->> - nothing changed on the server side:
->> openvpn --ifconfig 10.222.0.1 10.222.0.2 --dev tun --secret secret.key
->> --cipher none
->>
->> - upgraded to kernel 2.6.32.9-70.fc12.x86_64 on my laptop
->> - selinux is disabled
->> - installed the debuginfo rpms to get a 'vmlinux'
->> - configure the oprofile deamon using
->> opcontrol
->> --vmlinux=/usr/lib/debug/lib/modules/2.6.32.9-70.fc12.x86_64/vmlinux
->> - now start it, reset the statistics, start openvpn
->>  opcontrol --start
->>  opcontrol --reset
->>  ./openvpn --ifconfig 10.222.0.2 10.222.0.1 --dev tun --secret
->> secret.key --remote kudde.nikhef.nl --cipher none
->> - download a file using 'nc' (this maxes out my 100 Mbps LAN at roughly
->> 11 MB/s)
->> - get the statistics
->>  opcontrol --dump
->>  opreport -l > stats
->>     
->
-> Thanks a lot!  This is way cool!  It just strikes me that you probably
-> should play with ftrace instead of oprofile.  It's better and got a
-> lower overhead than oprofile, afaik.
->
-> <http://lwn.net/Articles/322666/>
->
-> (btw. with an ftrace enabled kernel, it's even available on embedded
-> devices. You only need 'mount', 'echo' and 'cat' to interact with ftrace
-> ... even though Steven Rostedt is working on a GUI for ftrace, called
-> kernelshark)
->
-> With such new kernel, there's also the perf tool.
->
-> <http://perf.wiki.kernel.org/index.php/Main_Page>
->
-> In both of these tools you have something called callgraph, iirc.  And
-> with that you see which function is calling which function and the
-> amount of time each step used.
->
-> I'll ask some people who's been involved in both ftrace and perf for
-> some better pointers!
->   
-your wish is my command ;-) :
+On 11/03/10 17:28, David Sommerseth wrote:
+> This is a modified version of a patch sent to the sf.net
+> patch tracker:
+> <http://sourceforge.net/tracker/?func=detail&aid=2491190&group_id=48978&atid=454721>
+> 
+> After having disucssed this patch on IRC (#openvpn-discussions)
+> March 4, 2010, it was decided to accept this patch when not modifying
+> TARGET_* defines through out the code.  Further, in a mail comment
+> Alon Bar-Lev had some other comments of what would be needed to be done.
+> 
+> Mail reference:
+> <http://thread.gmane.org/gmane.network.openvpn.devel/3176>
+> 
+> This patch has been tested by bootstrapping the code on a RHEL4.6 box.
+> with the following autotools packages installed:
+> autoconf-2.59-5
+> automake-1.9.2-3
+> libtool-1.5.6-4.EL4.2
+> 
+> It builds cleanly and 'make check' passes.
+> 
+> Signed-off-by: David Sommerseth <dazo@...384...>
+> ---
+>  acinclude.m4 |   10 +++++-----
+>  configure.ac |   33 ++++++++++++++++-----------------
+>  2 files changed, 21 insertions(+), 22 deletions(-)
+> 
 
-actually, 'perf' is a lot easier to use then opcontrol/opreport.  I ran
+Applied to the bugfix2.1 branch, to be merged into allmerged.
+Commit ec40407472ce2df50d9f3826d984738108563695
 
-  perf record -g -f -- ./openvpn ..................
-  perf report --call-graph > perf.data-20100316
 
-At
-  http://www.nikhef.nl/~janjust/openvpn/perf.callgraph-20100316.gz
-you will find the callgraph for a 512 MB file copy ; the rest is 
-identical to the previous tests.
+kind regards,
 
-share and enjoy,
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-JJK / Jan Just Keijser
-
+iEYEARECAAYFAkuf/PcACgkQDC186MBRfrp/oQCdEy3PzQbf2Qv717aHjrgJDJsi
+1LQAnRTncAfE3XbFE0+glgC/2/EuHOZG
+=80do
+-----END PGP SIGNATURE-----
 
