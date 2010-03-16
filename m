@@ -1,11 +1,8 @@
-Message-ID: <4B9FFDAD.6070103@...1114...>
-Date: Tue, 16 Mar 2010 22:52:45 +0100
 From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <4B8C11ED.6000605@...1114...>
-In-Reply-To: <4B8C11ED.6000605@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH] The man page needs dash escaping in
- UTF-8 environments
+Date: Tue, 16 Mar 2010 23:11:56 +0100
+Message-Id: <1268777516-3666-1-git-send-email-openvpn.list@...1114...>
+Subject: [Openvpn-devel] [PATCH] Debian patch: Sets FD_CLOEXEC in socket
+	initialization BEFORE running up-script
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,53 +11,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: openvpn-devel@lists.sourceforge.net, Jan Brinkmann <the-luckyduck@...384...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: David Sommerseth <dazo@...384...>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+From: Alberto Gonzalez Iniesta <agi@...64...>
 
-On 01/03/10 20:13, David Sommerseth wrote:
-> From: Jan Brinkmann <the-luckyduck@...384...>
-> 
-> There was a debian bugreport which was filed in 2005 . It was patched but
-> it seems that nobody forwarded the patch to the openvpn project itself.
-> 
-> The problem is quite simple:
-> The dashes for options (the double dashes) are not escaped. This causes
-> trouble in relationship with utf-8 .
-> 
-> Since the bugreport was closed it was patched within the debian/ubuntu
-> packages itself. I've attached the patch to get it atleast reviewed by the
-> openvpn project itself.
-> 
-> See <http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=296133> for details.
-> 
-> sf.net tracker:
-> <https://sourceforge.net/tracker/?func=detail&aid=2935611&group_id=48978&atid=454721>
-> 
-> Signed-off-by: David Sommerseth <dazo@...384...>
-> ---
->  openvpn.8 | 1612
-> ++++++++++++++++++++++++++++++------------------------------
->  1 files changed, 806 insertions(+), 806 deletions(-)
-> 
+This patch sets FD_CLOEXEC in socket initialization BEFORE
+running the 'up script' to avoid passing fds to the scripts, which broke
+things like quagga.
 
-Applied to the bugfix2.1 branch, merged into allmerged.
-Commit 54283b9c6acac245f96c611e82f6a9049d694294
+<http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=367716>
 
+Signed-off-by: David Sommerseth <dazo@...384...>
+---
+ socket.c |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
 
-kind regards,
+diff --git a/socket.c b/socket.c
+index 62bf881..50a72b9 100644
+--- a/socket.c
++++ b/socket.c
+@@ -1293,6 +1293,10 @@ link_socket_init_phase1 (struct link_socket *sock,
+       resolve_bind_local (sock);
+       resolve_remote (sock, 1, NULL, NULL);
+     }
++
++  /* set socket file descriptor to not pass across execs, so that
++     scripts don't have access to it */
++  set_cloexec (sock->sd);
+ }
+ 
+ /* finalize socket initialization */
+@@ -1501,10 +1505,6 @@ link_socket_init_phase2 (struct link_socket *sock,
+   /* set socket to non-blocking mode */
+   set_nonblock (sock->sd);
+ 
+-  /* set socket file descriptor to not pass across execs, so that
+-     scripts don't have access to it */
+-  set_cloexec (sock->sd);
+-
+ #ifdef ENABLE_SOCKS
+   if (socket_defined (sock->ctrl_sd))
+     set_cloexec (sock->ctrl_sd);
+-- 
+1.6.6.1
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkuf/a0ACgkQDC186MBRfroybACfRsQXqQvU6seA4OMTvlfs++VP
-ErQAn3Hd4VDW0LxSVwAB7E22LYjmZi0Y
-=TwdF
------END PGP SIGNATURE-----
 
