@@ -1,11 +1,13 @@
-Date: Wed, 17 Mar 2010 23:53:25 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20100317225325.GE25238@...1296...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="NZ00oluAJr3A0NMv"
-Content-Disposition: inline
-Subject: [Openvpn-devel] Windows, OpenVPN-GUI, disconnect
+From: <openvpn@...1315...>
+Date: Wed, 17 Mar 2010 17:54:44 -0500
+Message-id: <1268866484706506500@...1315...>
+In-reply-to: <201003172238.23604.dave_br@...1278...>
+References: <1268855205316802500@...1315...>
+	<201003172238.23604.dave_br@...1278...>
+MIME-version: 1.0
+Content-type: multipart/alternative;
+	boundary="===axigen=4750486675558971044774438364566234181202=axigen==="
+Subject: Re: [Openvpn-devel] Bytecount Reporting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,74 +16,127 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Davide Brini <dave_br@...1278...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---NZ00oluAJr3A0NMv
-Content-Type: text/plain; charset="us-ascii"
+This is a MIME message. You may need a MIME compliant mail user agent.
+--===axigen=4750486675558971044774438364566234181202=axigen===
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-Hi,
+Hi Davide,
 
-can one of you tell me what happens "under the hood" if I click the
-"disconnect" button of the openvpn-gui under Windows XP?
+=20
 
-Why am I asking?  I managed to get my windows build environment working
-well enough that I can now build a complete installer package with the
-IPv6 patches, and with the adapted tun/tap driver - but it breaks in
-funny ways.
+Yes, that makes sense - and I was going to do that originally, but I figure=
+d the real-time bytecount would result in less traffic (and text parsing). =
+One question though ... you say "status file". Do you really mean a file? I=
+ can execute the status command over the Management Interface, but it's rea=
+lly a telnet type response, not in a file.
 
- - Installation works fine
- - running the openvpn-gui (precompiled) works fine
- - (client) connection to a TUN server works fine
-   [initiated by pressing the "connect..." button of the GUI in the=20
-    windowsstatus bar]
- - IPv4 and IPv6 connectivity works
+=20
 
- - pressing the "disconnection" button of the GUI doesn't seem to do=20
-   anything.  Well, the status window says "disconnecting..." and the
-   button is greyed out - but no update in the log file or the status=20
-   window, no nothing.
+Thanks,
 
-I assume that "something is miscompiled" or "a newer version of mingw
-has some surprising side effects" - but to know where to start looking,
-it would be helpful to understand what signalling is used=20
+... Russell
 
-  openvpn-gui --> openvpn.exe
 
-to signal disconnect.
+On Wed, Mar 17, 2010 05:38 PM, Davide Brini <dave_br@...1278...> wrote:
 
-(Since I didn't touch any of the signal handling stuff, I'm fairly sure
-that it wasn't one of my changes, but I still want to have a working
-Windows bundle to get people to test it)
 
-thanks,
+>=20
+On Wednesday 17 March 2010, openvpn@...1315... wrote:
+>=20
+> > I am trying to write an application that monitors traffic over an OpenV=
+PN
+> > link - by using bytecount information from the management interface.
+> > However, after I telnet in, and enter "bytecount 1" (for 1 second
+> > updates), I find that the real-time bytecount updates are not really ev=
+ery
+> > second. They seem to be initially, but soon slow down (to an update eve=
+ry
+> > 5-10 seconds).
+>=20
+> Sorry for avoiding a direct answer to the question (David has already=20
+> addressed that quite well), but I just wanted to tell you that you can ge=
+t=20
+> byte counts from OpenVPN's status file, ie the one you specify with "--
+> status". I used that in the past to monitor clients and traffic (it was=20
+> actually a Munin plugin that read the file and collected the data).
+> That said, it might not suit your requirements, but I thought I mentioned=
+ that=20
+> just in case.
+>=20
+> --
+> D.
+>=20
+> -------------------------------------------------------------------------=
+-----
+> Download Intel=C2=AE Parallel Studio Eval
+> Try the new software tools for yourself. Speed compiling, find bugs
+> proactively, and fine-tune applications for parallel performance.
+> See why Intel Parallel Studio got high marks during beta.
+> http://p.sf.net/sfu/intel-sw-dev
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>=20=
 
-gert
-
-PS: the TAP driver changes have been successfully tested on 3 different
-WinXP systems now.  Win7 doesn't work "as is", as it requires a signed
-driver.
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---NZ00oluAJr3A0NMv
-Content-Type: application/pgp-signature
+--===axigen=4750486675558971044774438364566234181202=axigen===
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (NetBSD)
+<html><head><style id=3D"axi-htmleditor-style" type=3D"text/css">p { margin=
+: 0px; }</style></head><body style=3D"font-size: 10pt; font-family: Arial; =
+background-image: none; background-repeat: repeat; background-attachment: f=
+ixed;"><P>Hi Davide,</P>
+<P>&nbsp;</P>
+<P>Yes, that makes sense - and I was going to do that originally, but I fig=
+ured the real-time bytecount would result in less traffic (and text parsing=
+). One question though ... you say "status file". Do you really mean a file=
+? I can execute the status command over the Management Interface, but it's =
+really a telnet type response, not in a file.</P>
+<P>&nbsp;</P>
+<P>Thanks,</P>
+<P>... Russell</P>
+<P><BR><BR>On Wed, Mar 17, 2010 05:38 PM, Davide&nbsp;Brini&nbsp;&lt;dave_b=
+r@...1278...&gt; wrote:<BR></P>
+<BLOCKQUOTE style=3D"BORDER-LEFT: rgb(0,0,204) 2px solid; PADDING-LEFT: 4px=
+; MARGIN-LEFT: 16px">
+<DIV style=3D"FONT-FAMILY: monospace; FONT-SIZE: 10pt">On Wednesday 17 Marc=
+h 2010,<A href=3D"mailto:%20openvpn@...1315..." target=3D_blank> openvpn@...1186...=
+.1315...</A> wrote:<BR><BR>&gt; I am trying to write an application that mo=
+nitors traffic over an OpenVPN<BR>&gt; link - by using bytecount informatio=
+n from the management interface.<BR>&gt; However, after I telnet in, and en=
+ter "bytecount 1" (for 1 second<BR>&gt; updates), I find that the real-time=
+ bytecount updates are not really every<BR>&gt; second. They seem to be ini=
+tially, but soon slow down (to an update every<BR>&gt; 5-10 seconds).<BR><B=
+R>Sorry for avoiding a direct answer to the question (David has already <BR=
+>addressed that quite well), but I just wanted to tell you that you can get=
+ <BR>byte counts from OpenVPN's status file, ie the one you specify with "-=
+-<BR>status". I used that in the past to monitor clients and traffic (it wa=
+s <BR>actually a Munin plugin that read the file and collected the data).<B=
+R>That said, it might not suit your requirements, but I thought I mentioned=
+ that <BR>just in case.<BR><BR><FONT color=3D#999999>--<BR>D.<BR><BR>------=
+------------------------------------------------------------------------<BR=
+>Download Intel&amp;#174; Parallel Studio Eval<BR>Try the new software tool=
+s for yourself. Speed compiling, find bugs<BR>proactively, and fine-tune ap=
+plications for parallel performance.<BR>See why Intel Parallel Studio got h=
+igh marks during beta.<BR><A href=3D"http://server:8080/redir.hsp?url=3D%68=
+%74%74%70%3A%2F%2F%70%2E%73%66%2E%6E%65%74%2F%73%66%75%2F%69%6E%74%65%6C%2D=
+%73%77%2D%64%65%76" target=3D_blank>http://p.sf.net/sfu/intel-sw-dev</A><BR=
+>_______________________________________________<BR>Openvpn-devel mailing l=
+ist<BR><A href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D_bla=
+nk>Openvpn-devel@lists.sourceforge.net</A><BR><A href=3D"http://server:8080=
+/redir.hsp?url=3D%68%74%74%70%73%3A%2F%2F%6C%69%73%74%73%2E%73%6F%75%72%63%=
+65%66%6F%72%67%65%2E%6E%65%74%2F%6C%69%73%74%73%2F%6C%69%73%74%69%6E%66%6F%=
+2F%6F%70%65%6E%76%70%6E%2D%64%65%76%65%6C" target=3D_blank>https://lists.so=
+urceforge.net/lists/listinfo/openvpn-devel</A><BR></FONT></DIV></BLOCKQUOTE=
+></body></html>=
 
-iQCVAwUBS6FdZakuBuNlUUl1AQL8DQP/e4TOs+AgDOd7RwQzvQdn8SQUqk9v3D40
-UTH1MBVQC6yMV3hIAdOLb1dUazW6CnggB4bkcB9Mfi+gQkdHAB9/2fsj4RtfpjI8
-2Npy0B19dmkPUyn9u5Pfc6da8tgCITteGiZWPUh9/iF+mA9ykfD2grBQIZVcjqqn
-A6PbO+wJIOo=
-=37fN
------END PGP SIGNATURE-----
+--===axigen=4750486675558971044774438364566234181202=axigen===--
 
---NZ00oluAJr3A0NMv--
 
