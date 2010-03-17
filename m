@@ -1,10 +1,10 @@
-From: =?ISO-8859-1?Q?Fran=E7ois_P=E9rou?= <francois.perou@...260...>
-Date: Wed, 17 Mar 2010 12:04:26 +0100
-Message-ID: <1268823866.13305.9.camel@...1331...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] Donation of 3 Feitian PKI cards for OpenVPN free
- software development
-Reply-To: francois.perou@...260...
+From: <openvpn@...1315...>
+Date: Wed, 17 Mar 2010 14:46:45 -0500
+Message-id: <1268855205316802500@...1315...>
+MIME-version: 1.0
+Content-type: multipart/alternative;
+	boundary="===axigen=6738181085811876770400923038030343219136=axigen==="
+Subject: [Openvpn-devel] Bytecount Reporting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,43 +13,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-Dear Friends,
+This is a MIME message. You may need a MIME compliant mail user agent.
+--===axigen=6738181085811876770400923038030343219136=axigen===
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-FEITIAN and GOOZE are happy to donate 3 FEITIAN PKI smart cards to
-the OpenVPN project for Free Software development.
+Hi,
 
-To apply for a free card, visit:
-http://www.gooze.eu/feitian-pki-free-software-developer-card
+=20
 
-We offer the Feitian PKI smart card, which has unique features:
-* Compatible with GNU/Linux, Mac OS X and Windows.
-* Supported by OpenSC.
-* The card has a real crypto engine, it is not a Java card.
-* ISO 7816 features.
-* Support RSA keys up to 2048bit.
-* Support standard X.509 v3 certificates.
-* On-board RSA DES 3DES SHA1 algorithms.
-* Both PKCS#11 and MS-CAPI interfaces to existing security
-infrastructures.
-* High performance smart card chip built-in.
-* Hardware random number generator.
-* 64k data space.
+I am trying to write an application that monitors traffic over an OpenVPN l=
+ink - by using bytecount information from the management interface. However=
+, after I telnet in, and enter "bytecount 1" (for 1 second updates), I find=
+ that the real-time bytecount updates are not really every second. They see=
+m to be initially, but soon slow down (to an update every 5-10 seconds).
 
-More information:
-http://www.gooze.eu/feitian-pki-card
+=20
 
-This card is compatible with OpenSC and OpenVPN. By donating cards,
-we hope to enhance support for Smart cards in StrongSwan.
+Is this expected, or a known issue?
 
-Please note that for legal reasons, we only ship to European Union
-countries.=20
+=20
 
-Freely yours,
-Fran=C3=A7ois Perou
-http://www.gooze.eu
+Thanks!
+
+=20
+
+--===axigen=6738181085811876770400923038030343219136=axigen===
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+<html><head><style id=3D"axi-htmleditor-style" type=3D"text/css">p { margin=
+: 0px; }</style></head><body style=3D"font-size: 10pt; font-family: Arial; =
+background-image: none; background-repeat: repeat; background-attachment: f=
+ixed;"><P>Hi,</P>
+<P>&nbsp;</P>
+<P>I am trying to write an application that monitors traffic over an OpenVP=
+N link - by using bytecount information from the management interface. Howe=
+ver, after I telnet in, and enter "bytecount 1" (for 1 second updates), I f=
+ind that the real-time bytecount updates are not really every second. They =
+seem to be initially, but soon slow down (to an update every 5-10 seconds).=
+</P>
+<P>&nbsp;</P>
+<P>Is this expected, or a known issue?</P>
+<P>&nbsp;</P>
+<P>Thanks!</P>
+<P><BR>&nbsp;</P></body></html>=
+
+--===axigen=6738181085811876770400923038030343219136=axigen===--
 
 
