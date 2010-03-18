@@ -1,10 +1,11 @@
-Message-ID: <4BA2362B.1050604@...1294...>
-Date: Thu, 18 Mar 2010 15:18:19 +0100
-From: Eike Lohmann <e.lohmann@...1294...>
-MIME-Version: 1.0
-References: <20100317225325.GE25238@...1296...>	<4BA2191E.1080601@...1147...>
-	<20100318131716.GH25238@...1296...>
-In-Reply-To: <20100318131716.GH25238@...1296...>
+Date: Thu, 18 Mar 2010 17:34:40 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20100318163440.GI25238@...1296...>
+References: <20100317225325.GE25238@...1296...>
+	<4BA2191E.1080601@...1147...>
+	<20100318131716.GH25238@...1296...> <4BA2362B.1050604@...1294...>
+Mime-Version: 1.0
+In-Reply-To: <4BA2362B.1050604@...1294...>
 Subject: Re: [Openvpn-devel] Windows, OpenVPN-GUI, disconnect
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,60 +15,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: Eike Lohmann <e.lohmann@...1294...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+Hi,
+
+On Thu, Mar 18, 2010 at 03:18:19PM +0100, Eike Lohmann wrote:
+> On win7 with baloontips disabled you can connect but can't disconnect 
+> via the gui.
+> Maybe that's your problem?
+
+Now that's an interesting information.
+
+I'm on WinXP, so it's not the same issue - but to see someone else
+having problems with "disconnect" is interesting, so it might not be
+related to my build at all.
+
+Mmmh.  More testing.  All this on WXP with the latest updates installed.
+
+ a) remove all OpenVPN stuff, reboot, reinstall unmodified 2.1.1
+    -> connect/disconnect works fine
+
+ b) from there, deltapall / addtap the IPv6 capable tap driver, but
+    stil use all the unmodified .exe
+    -> connect/disconnect works fine
+
+ c) reboot, try again (unmodified .exe, IPv6-capable tap driver)
+    -> connect/disconnect works fine
+
+ d) replace openvpn.exe + SSL DLLs with compiled-on-mingw/linux 
+    IPv6-capable binaries, connect to IPv4-only tunnel server
+    -> connect fine/disconnect FAIL
+
+ e) copy unmodified binaries + DLL back
+    -> connect/disconnect works fine
+
+ f) replace openvpn.exe with compiled-on-mingw/windows IPv6-capable
+    binary, connect to IPv4-only tunnel server
+    -> connect fine/disconnect FAIL
+
+... so it's definitely something in the binaries that I have built that 
+makes disconnect fail, but it doesn't matter whether I compile the binary
+on Linux or on Windows.
+
+It's *not* related to TAP-driver changes (which is an important bit).
 
 
-On win7 with baloontips disabled you can connect but can't disconnect 
-via the gui.
-Maybe that's your problem?
+When running openvpn.exe from the "cmd.exe" command line, it does not matter
+which binary I am using - "ctrl-c" never does anything, and "F4" always
+causes a clean shutdown.
 
-Am 18.03.2010 14:17, schrieb Gert Doering:
-> Hi,
->
-> On Thu, Mar 18, 2010 at 01:14:22PM +0100, Jan Just Keijser wrote:
->    
->> took me a while to figure this one out:
->> the openvpn gui codes sets an 'exit event' (using a win32 API call
->> CreateEvent) before starting the actual openvpn process; when the user
->> chooses 'disconnect' this 'exit event' is triggered, which causes the
->> process to be terminated (using the appropriate win32 signal).
->>      
-> Huh, scary stuff.
->
-> How would that win32 signal be delivered to the openvpn.exe process?  Will
-> it just receive a unix-like signal "SIGTERM"?  Or does it have to poll
-> some sort of Windows event queue?
->
->
-> BTW: I just discovered that this is not limited to the openvpn.exe I
-> built *on* windows, but that my linux-mingw crosscompiled openvpn.exe
-> does this as well now, and so does the original OpenVPN-provided 2.1.1
-> binary(!).  "Something weird happened to this machine", and I don't
-> understand what it is.
->
->
->    
->> The question now becomes: what does openvpn do when it receives a
->> terminate signal? actually, is there a signal being sent to the server
->> to say "client X is disconnecting" ?
->>      
-> Nothing whatsoever visible in the logs.  The last entry in the log (verb 5)
-> is after successful startup:
->
-> "Initialization Sequence Complete"
->
-> ... and then when pressing<disconnect>, nothing whatsoever happens.
->
-> The OpenVPN connection stays alive and healthy(!), packets continue to
-> get forwarded, just the signal delivery fails.
->
-> (If I increase the log verbosity to "verb 9", lots of stuff is going
-> on, but nothing in there that gives any indication of signals being
-> received)
->
-> gert
->    
+Weird, this.
 
+gert
+-- 
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~gert/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
