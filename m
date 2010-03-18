@@ -1,12 +1,10 @@
+Message-ID: <4BA2191E.1080601@...1147...>
+Date: Thu, 18 Mar 2010 13:14:22 +0100
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-In-Reply-To: <4BA0AA5C.1090104@...515...>
-References: <4BA095F2.9060003@...515...>
-	<20100317094528.GB2325@...1330...> 
-	<4BA0AA5C.1090104@...515...>
-From: JuanJo Ciarlante <jjo+ml@...410...>
-Date: Thu, 18 Mar 2010 12:13:56 +0100
-Message-ID: <7bb795fd1003180413v156312b0g9ef570f3f5f963f@...278...>
-Subject: Re: [Openvpn-devel] Tomorrow's meeting (18th March)
+References: <20100317225325.GE25238@...1296...>
+In-Reply-To: <20100317225325.GE25238@...1296...>
+Subject: Re: [Openvpn-devel] Windows, OpenVPN-GUI, disconnect
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,73 +13,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Hi Gert,
 
-2010/3/17 Samuli Sepp=E4nen <samuli@...515...>:
+Gert Doering wrote:
+> Hi,
 >
->> On Wed, Mar 17, 2010 at 10:42:26AM +0200, Samuli Sepp=E4nen wrote:
->>
->>> Hi all,
->>>
->>> As usual, tomorrow's (18th March) meeting will be at #openvpn-discussion
->>> (irc.freenode.net) at 18:00 UTC. Preliminary meeting topics are
->>> available here:
->>>
->>> http://www.secure-computing.net/wiki/index.php/OpenVPN/IRC_meetings/Top=
-ics-2010-03-18
->>>
->>> David (dazo) won't be able to attend, unfortunately.
->>>
->>>
->>
->> Hi,
->>
->> I won't be able to attend either. I will next week, hopefully with news
->> on Debian packages build daily/weekly.
->>
-> Too bad you're not able attend, Alberto. However, Jan will be present,
-> so I think we're going to be focus on the two bugs/issues he has
-> noticed, see "Possible bugs/issues" on this page:
+> can one of you tell me what happens "under the hood" if I click the
+> "disconnect" button of the openvpn-gui under Windows XP?
 >
-> http://www.secure-computing.net/wiki/index.php/OpenVPN/IRC_meetings/Topic=
-s-2010-03-18
+> Why am I asking?  I managed to get my windows build environment working
+> well enough that I can now build a complete installer package with the
+> IPv6 patches, and with the adapted tun/tap driver - but it breaks in
+> funny ways.
+>
+>  - Installation works fine
+>  - running the openvpn-gui (precompiled) works fine
+>  - (client) connection to a TUN server works fine
+>    [initiated by pressing the "connect..." button of the GUI in the 
+>     windowsstatus bar]
+>  - IPv4 and IPv6 connectivity works
+>
+>  - pressing the "disconnection" button of the GUI doesn't seem to do 
+>    anything.  Well, the status window says "disconnecting..." and the
+>    button is greyed out - but no update in the log file or the status 
+>    window, no nothing.
+>
+> I assume that "something is miscompiled" or "a newer version of mingw
+> has some surprising side effects" - but to know where to start looking,
+> it would be helpful to understand what signalling is used 
+>
+>   openvpn-gui --> openvpn.exe
+>
+> to signal disconnect.
+>
+> (Since I didn't touch any of the signal handling stuff, I'm fairly sure
+> that it wasn't one of my changes, but I still want to have a working
+> Windows bundle to get people to test it)
+>   
+took me a while to figure this one out:
+the openvpn gui codes sets an 'exit event' (using a win32 API call 
+CreateEvent) before starting the actual openvpn process; when the user 
+chooses 'disconnect' this 'exit event' is triggered, which causes the 
+process to be terminated (using the appropriate win32 signal).
 
-Unfortunately I can't attend either (regular meetings clash).
-BTW  I've added this bug (forwarded by Alberto, tnx):
- +## [http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D574164
-Assertion fails in socket.c:429 in p2p mode due to Debian ipv6 patch]
+The question now becomes: what does openvpn do when it receives a 
+terminate signal? actually, is there a signal being sent to the server 
+to say "client X is disconnecting" ?
 
-Cheers,
+cheers,
 
->
-> --
-> Samuli Sepp=E4nen
-> Community Manager
-> OpenVPN Technologies, Inc
->
-> irc freenode net: mattock
->
->
-> -------------------------------------------------------------------------=
------
-> Download Intel&#174; Parallel Studio Eval
-> Try the new software tools for yourself. Speed compiling, find bugs
-> proactively, and fine-tune applications for parallel performance.
-> See why Intel Parallel Studio got high marks during beta.
-> http://p.sf.net/sfu/intel-sw-dev
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+JJK
 
-
-
---=20
---JuanJo ; echo jAjo@...1263... | sed 's/[SPAM]//g'
 
