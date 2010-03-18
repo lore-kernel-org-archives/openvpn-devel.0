@@ -1,11 +1,12 @@
-Message-ID: <4BA1FE79.1080209@...1294...>
-Date: Thu, 18 Mar 2010 11:20:41 +0100
-From: Eike Lohmann <e.lohmann@...1294...>
 MIME-Version: 1.0
-References: <1268855205316802500@...1315...>
-	<201003172238.23604.dave_br@...1278...>
-In-Reply-To: <201003172238.23604.dave_br@...1278...>
-Subject: Re: [Openvpn-devel] Bytecount Reporting
+In-Reply-To: <4BA0AA5C.1090104@...515...>
+References: <4BA095F2.9060003@...515...>
+	<20100317094528.GB2325@...1330...> 
+	<4BA0AA5C.1090104@...515...>
+From: JuanJo Ciarlante <jjo+ml@...410...>
+Date: Thu, 18 Mar 2010 12:13:56 +0100
+Message-ID: <7bb795fd1003180413v156312b0g9ef570f3f5f963f@...278...>
+Subject: Re: [Openvpn-devel] Tomorrow's meeting (18th March)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,38 +15,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
+Hi,
 
-Or you can user the radiusplugin from Ralf 
-(http://www.nongnu.org/radiusplugin/) use a radius server and set an 
-accounting interval.
-
-Regards, Eike
-
-
-
-Am 17.03.2010 23:38, schrieb Davide Brini:
-> On Wednesday 17 March 2010, openvpn@...1315... wrote:
+2010/3/17 Samuli Sepp=E4nen <samuli@...515...>:
 >
->    
->> I am trying to write an application that monitors traffic over an OpenVPN
->>   link - by using bytecount information from the management interface.
->>   However, after I telnet in, and enter "bytecount 1" (for 1 second
->>   updates), I find that the real-time bytecount updates are not really every
->>   second. They seem to be initially, but soon slow down (to an update every
->>   5-10 seconds).
->>      
-> Sorry for avoiding a direct answer to the question (David has already
-> addressed that quite well), but I just wanted to tell you that you can get
-> byte counts from OpenVPN's status file, ie the one you specify with "--
-> status". I used that in the past to monitor clients and traffic (it was
-> actually a Munin plugin that read the file and collected the data).
-> That said, it might not suit your requirements, but I thought I mentioned that
-> just in case.
+>> On Wed, Mar 17, 2010 at 10:42:26AM +0200, Samuli Sepp=E4nen wrote:
+>>
+>>> Hi all,
+>>>
+>>> As usual, tomorrow's (18th March) meeting will be at #openvpn-discussion
+>>> (irc.freenode.net) at 18:00 UTC. Preliminary meeting topics are
+>>> available here:
+>>>
+>>> http://www.secure-computing.net/wiki/index.php/OpenVPN/IRC_meetings/Top=
+ics-2010-03-18
+>>>
+>>> David (dazo) won't be able to attend, unfortunately.
+>>>
+>>>
+>>
+>> Hi,
+>>
+>> I won't be able to attend either. I will next week, hopefully with news
+>> on Debian packages build daily/weekly.
+>>
+> Too bad you're not able attend, Alberto. However, Jan will be present,
+> so I think we're going to be focus on the two bugs/issues he has
+> noticed, see "Possible bugs/issues" on this page:
 >
->    
+> http://www.secure-computing.net/wiki/index.php/OpenVPN/IRC_meetings/Topic=
+s-2010-03-18
 
+Unfortunately I can't attend either (regular meetings clash).
+BTW  I've added this bug (forwarded by Alberto, tnx):
+ +## [http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D574164
+Assertion fails in socket.c:429 in p2p mode due to Debian ipv6 patch]
+
+Cheers,
+
+>
+> --
+> Samuli Sepp=E4nen
+> Community Manager
+> OpenVPN Technologies, Inc
+>
+> irc freenode net: mattock
+>
+>
+> -------------------------------------------------------------------------=
+-----
+> Download Intel&#174; Parallel Studio Eval
+> Try the new software tools for yourself. Speed compiling, find bugs
+> proactively, and fine-tune applications for parallel performance.
+> See why Intel Parallel Studio got high marks during beta.
+> http://p.sf.net/sfu/intel-sw-dev
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
+
+
+
+--=20
+--JuanJo ; echo jAjo@...1263... | sed 's/[SPAM]//g'
 
