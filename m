@@ -1,11 +1,11 @@
-Message-ID: <4BA7950F.7080907@...1147...>
-Date: Mon, 22 Mar 2010 17:04:31 +0100
-From: Jan Just Keijser <janjust@...1147...>
-MIME-Version: 1.0
-References: <4BA77760.6050801@...515...> <4BA793E9.8080108@...1114...>
-In-Reply-To: <4BA793E9.8080108@...1114...>
+Date: Mon, 22 Mar 2010 22:39:47 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20100322213947.GA25238@...1296...>
+References: <4BA77760.6050801@...515...>
+Mime-Version: 1.0
+In-Reply-To: <4BA77760.6050801@...515...>
 Subject: Re: [Openvpn-devel] [Fwd: Re: Clarifications to "OpenVPN will not
- connect through certain HTTP proxies" bug report]
+	connect through certain HTTP proxies" bug report]
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,40 +14,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: David Sommerseth <openvpn.list@...1114...>
+Content-Disposition: inline
+To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-David Sommerseth wrote:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
->
-> On 22/03/10 14:57, Samuli Sepp=C3=A4nen wrote:
->=20=20=20
->> I somehow managed to miss the attached response earlier today. So the
->> proxy server error was encountered on T-mobile t-zones web proxy only.
->> Should we close the bug report or make further inquiries?
->>=20=20=20=20=20
->
-> This was reported November 2007.  I can't recall having seen too much
-> fuzz about this issue during the time I've been active on the mailing
-> lists.  I believe this is a really minor issue.  With only a confirmed
-> issue with T-Mobile t-zones proxy over 2 years ago, I feel we this issue
-> is rather limited.
->
-> I would suggest closing it.  It can be re-opened if this turns out to be
-> a needed requirement for OpenVPN.  After all, OpenVPN follows the RFC,
-> that is the most important thing.  We should avoid adding support for
-> non-standards unless the it is so widespread that it really is
-> exceptionally needed.
->
->
->=20=20=20
-ACK - let's make this a 'wontfix' .
+Hi,
 
-cheers,
+On Mon, Mar 22, 2010 at 03:57:52PM +0200, Samuli Sepp=E4nen wrote:
+> I encountered this with T-mobile's t-zones web proxy. I haven't
+> needed to use it lately, so I can't verify that the patch is still
+> necessary. I don't know of any proxy servers that won't accept the
+> http:// prefix, especially if the port number is 443.
 
-JJK
+As tested: this syntax neither works with Squid nor Apache.
 
+So I'd tend to agree with David: if a single user had a problem with
+a T-Home proxy in 2007, I'd tend to blaim the proxy.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
