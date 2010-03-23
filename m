@@ -1,11 +1,10 @@
-Date: Mon, 22 Mar 2010 22:39:47 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20100322213947.GA25238@...1296...>
-References: <4BA77760.6050801@...515...>
-Mime-Version: 1.0
-In-Reply-To: <4BA77760.6050801@...515...>
-Subject: Re: [Openvpn-devel] [Fwd: Re: Clarifications to "OpenVPN will not
-	connect through certain HTTP proxies" bug report]
+Message-ID: <4BA8B9FF.2010702@...1114...>
+Date: Tue, 23 Mar 2010 13:54:23 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <4BA780EF.9000702@...515...>
+In-Reply-To: <4BA780EF.9000702@...515...>
+Subject: Re: [Openvpn-devel] Old autotools support + UTF8 man-page patch
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,30 +13,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-On Mon, Mar 22, 2010 at 03:57:52PM +0200, Samuli Sepp=E4nen wrote:
-> I encountered this with T-mobile's t-zones web proxy. I haven't
-> needed to use it lately, so I can't verify that the patch is still
-> necessary. I don't know of any proxy servers that won't accept the
-> http:// prefix, especially if the port number is 443.
+On 22/03/10 15:38, Samuli Seppänen wrote:
+> Here are a couple things that needed testing/inquiries from our users
+> before we take any action. I suggest giving both of them an ACK.
+>
+[...snip...]
+> UTF-8 man-page patch
+> - http://thread.gmane.org/gmane.network.openvpn.devel/3351/
+> - works on all tested Linux distros, old (FC5, Debian Etch) and modern
+> (e.g. Debian Lenny, Ubuntu 9.10)
+> - I suggest an ACK
 
-As tested: this syntax neither works with Squid nor Apache.
+I might have been a bit too quick here, as it's merged into allmerged
+already.
 
-So I'd tend to agree with David: if a single user had a problem with
-a T-Home proxy in 2007, I'd tend to blaim the proxy.
+Commit 54283b9c6acac245f96c611e82f6a9049d694294
+Signed-off-by: David Sommerseth <dazo@...384...>
+Tested-by: Jan Just Keijser <janjust@...1147...>
+Tested-by: Pavel Shramov <shramov@...1064...>
+Tested-by: Samuli Seppänen <samuli@...515...>
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+It's no "official" ACK in this commit, but with three testers, it seemed
+reasonable enough for me to include it after this.
+
+
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAkuoufwACgkQDC186MBRfrrRZwCffSKizhn8ls4GdbVZzGte5bZh
+Q1MAn3Yu05iZvLyqXM1ZZXgty3MtgP5B
+=1UKo
+-----END PGP SIGNATURE-----
 
