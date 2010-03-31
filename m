@@ -1,10 +1,10 @@
 From: Fabian Knittel <fabian.knittel@...1338...>
-Date: Wed, 31 Mar 2010 23:58:20 +0200
-Message-Id: <af55818bf66513c1c21e025916a6b72e797474f9.1270060247.git.fabian.knittel@...1338...>
+Date: Wed, 31 Mar 2010 23:58:19 +0200
+Message-Id: <8e711dc8c01d8a2d70039cd5b2d2122d86afa01d.1270060247.git.fabian.knittel@...1338...>
 In-Reply-To: <cover.1270060247.git.fabian.knittel@...1338...>
 References: <cover.1270060247.git.fabian.knittel@...1338...>
-Subject: [Openvpn-devel] [PATCH 7/9] vlan: Slightly enhance PF's protocol
-	inspection of 802.1Q packets
+Subject: [Openvpn-devel] [PATCH 6/9] vlan: Restrict broadcasts to the
+	sender's VLAN.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,34 +17,77 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-To allow openvpn's PF code to inspect IP packets contained within 802.1Q
-packets, this patch enhances mroute_extract_addr_ether() to properly
-skip over the 802.1Q header.
----
- mroute.c |   10 +++++++++-
- 1 files changed, 9 insertions(+), 1 deletions(-)
+This patch enhances openvpn's internal packet routing to restrict broadcast
+packets to destinations with a matching VID.
 
-diff --git a/mroute.c b/mroute.c
-index 1040b8f..4aa7bb4 100644
---- a/mroute.c
-+++ b/mroute.c
-@@ -205,7 +205,15 @@ mroute_extract_addr_ether (struct mroute_addr *src,
- 	  struct buffer b = *buf;
- 	  if (buf_advance (&b, sizeof (struct openvpn_ethhdr)))
+I.e. broadcasts from client to client or from tap interface to clients are now
+filtered based on whether the client belongs to the correct VLAN id.
+---
+ multi.c |   15 +++++++++------
+ 1 files changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/multi.c b/multi.c
+index 96644e5..822ae29 100644
+--- a/multi.c
++++ b/multi.c
+@@ -1759,7 +1759,8 @@ static void
+ multi_bcast (struct multi_context *m,
+ 	     const struct buffer *buf,
+ 	     const struct multi_instance *sender_instance,
+-	     const struct mroute_addr *sender_addr)
++	     const struct mroute_addr *sender_addr,
++	     int16_t vid)
+ {
+   struct hash_iterator hi;
+   struct hash_element *he;
+@@ -1804,6 +1805,8 @@ multi_bcast (struct multi_context *m,
+ 		    }
+ 		}
+ #endif
++	      if (vid != 0 && vid != mi->context.options.vlan_tag)
++		continue;
+ 	      multi_add_mbuf (m, mi, mb);
+ 	    }
+ 	}
+@@ -1997,7 +2000,7 @@ multi_process_incoming_link (struct multi_context *m, struct multi_instance *ins
+ 		  if (mroute_flags & MROUTE_EXTRACT_MCAST)
+ 		    {
+ 		      /* for now, treat multicast as broadcast */
+-		      multi_bcast (m, &c->c2.to_tun, m->pending, NULL);
++		      multi_bcast (m, &c->c2.to_tun, m->pending, NULL, 0);
+ 		    }
+ 		  else /* possible client to client routing */
+ 		    {
+@@ -2063,7 +2066,7 @@ multi_process_incoming_link (struct multi_context *m, struct multi_instance *ins
+ 			{
+ 			  if (mroute_flags & (MROUTE_EXTRACT_BCAST|MROUTE_EXTRACT_MCAST))
+ 			    {
+-			      multi_bcast (m, &c->c2.to_tun, m->pending, NULL);
++			      multi_bcast (m, &c->c2.to_tun, m->pending, NULL, vid);
+ 			    }
+ 			  else /* try client-to-client routing */
+ 			    {
+@@ -2258,9 +2261,9 @@ multi_process_incoming_tun (struct multi_context *m, const unsigned int mpp_flag
  	    {
--	      switch (ntohs (eth->proto))
-+	      uint16_t proto = ntohs (eth->proto);
-+	      if (proto == OPENVPN_ETH_P_8021Q)
-+		{
-+		  const struct openvpn_8021qhdr *tag = (const struct openvpn_8021qhdr *) BPTR (buf);
-+		  proto = ntohs (tag->proto);
-+		  buf_advance (&b, SIZE_ETH_TO_8021Q_HDR);
-+		}
-+
-+	      switch (proto)
- 		{
- 		case OPENVPN_ETH_P_IPV4:
- 		  ret |= (mroute_extract_addr_ipv4 (esrc, edest, &b) << MROUTE_SEC_SHIFT);
+ 	      /* for now, treat multicast as broadcast */
+ #ifdef ENABLE_PF
+-	      multi_bcast (m, &m->top.c2.buf, NULL, e2);
++	      multi_bcast (m, &m->top.c2.buf, NULL, e2, vid);
+ #else
+-	      multi_bcast (m, &m->top.c2.buf, NULL, NULL);
++	      multi_bcast (m, &m->top.c2.buf, NULL, NULL, vid);
+ #endif
+ 	    }
+ 	  else
+@@ -2429,7 +2432,7 @@ gremlin_flood_clients (struct multi_context *m)
+ 	ASSERT (buf_write_u8 (&buf, get_random () & 0xFF));
+ 
+       for (i = 0; i < parm.n_packets; ++i)
+-	multi_bcast (m, &buf, NULL, NULL);
++	multi_bcast (m, &buf, NULL, NULL, 0);
+ 
+       gc_free (&gc);
+     }
 -- 
 1.7.0
 
