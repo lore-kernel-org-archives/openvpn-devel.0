@@ -1,15 +1,15 @@
-Message-ID: <4BB45A07.5060300@...1338...>
-Date: Thu, 01 Apr 2010 10:32:07 +0200
+Message-ID: <4BB45E25.2010700@...1338...>
+Date: Thu, 01 Apr 2010 10:49:41 +0200
 From: Fabian Knittel <fabian.knittel@...1338...>
 MIME-Version: 1.0
-References: <cover.1270060247.git.fabian.knittel@...1338...>
-	<4BB3D6A3.7020207@...1114...>
-In-Reply-To: <4BB3D6A3.7020207@...1114...>
+References: <cover.1270060247.git.fabian.knittel@...1338...>	<1ae7a5fdae1e6d71bb7708a4f75ff060e3237c1c.1270060247.git.fabian.knittel@...1338...>	<20100331231158.2782.qmail@...1287...>
+	<4BB45497.8040707@...1338...>
+In-Reply-To: <4BB45497.8040707@...1338...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigDD785DD2577168013DA33486"
-Subject: Re: [Openvpn-devel] [RFC][PATCH 0/9] VLAN tagging on TAP devices
- in	OpenVPN server mode
+	boundary="------------enigA497EE81104B5367BDBC69FA"
+Subject: Re: [Openvpn-devel] [PATCH 4/9] vlan: Prepend and
+ remove	VLAN	identifiers on outgoing and incoming frames
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,84 +21,55 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigDD785DD2577168013DA33486
+--------------enigA497EE81104B5367BDBC69FA
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-Hi David,
-
-David Sommerseth schrieb:
-> Thank you very much for your patches!  I'll look into them soon.
-
-Thanks!
-
-> The
-> patches seems to apply nicely against the feat_passtos branch.  I was
-> worried about a conflict here, until I noticed where you had your roots :)
-
-Actually, I was lucky to notice the openvpn-unstable.git repo before
-submission.  My original patch-set was based on the subversion repo
-branch beta21 and would have conflicted with feat_passtos.  I didn't
-notice the git repo and the Wiki on secure-computing.net until I
-happened to look at some openvpn-devel mails in the archive.  Does
-openvpn.net link to them from somewhere?
-
-
-> One thing, it would be good if you would do your commit with -s
-> (--signoff).  We've not been strict about this so far, but I would like
-> to see those sign-off messages.  (I'll make sure the developers
-> documentation is 'up-to-date' in this matter, as I don't think that's
-> mentioned now).
-
-Will do.
-
->> Another question would be whether I should turn the feature into a compi=
-le-time
->> selectable option.
+Fabian Knittel schrieb:
+> Peter Stuge schrieb:
+>> It would be nice to be able to use VID 0 to mean untagged packets.
 >=20
-> It's been several discussions about if such features should be #ifdef'ed
-> or not.  The general consensus of the discussions is that it will most
-> probably be accepted into a stable tree in the future quicker if it is a
-> compile-time enablement.
->=20
-> The main argument which I find acceptable, is that if a stability and/or
-> security issue is found, it would be possible to easily disable all
-> features and disable them one-by-one to find the offending feature.
+> Hm, nice idea.  I'll implement it in my next round of patches.
 
-I'll add the necessary #ifdefs and such.
+I've just noticed a detail that might warrant discussion.  To make sure
+we're talking about the same thing, this is how I intended --vlan-tag 0
+to be handled:
 
+Packets coming in from the tap device:
+ If the packet has no 802.1Q header or the 802.1Q header's VID field is
+ 0, the vid is assumed to be 0 and the packet will be forwarded to all
+ clients who's --vlan-tag is set to 0.
 
-> If you could do a bit more testing, also some stress/performance testing
-> with several VLAN's being tested in parallel, that would be beneficial.
+Packets outgoing via the tap device:
+ Packets originating from clients who's --vlan-tag is set to 0 are
+ passed on to the tap device without change, i.e. no 802.1Q header is
+ attached or removed.  A potential 802.1Q header already present within
+ the packet is left untouched.  This would allow the Priority Code Point
+ (PCP) field to be used.
 
-We'll definitely be doing that over here.  My main concern was whether
-we would have to patch OpenVPN indefinitely with local enhancements or
-whether there was a chance to include it upstream.  And now that things
-look quite positive, we can go forward with the chosen approach. :)
+Now, to the slight difficulty: What happens with outgoing frames from
+clients who's --vlan-tag is set to 0, where the frame contains a 802.1Q
+header with VID field !=3D 0?  Pushed onto a network which uses vlan tags,
+this would allow a client to inject packets into a different network.
+(For --vlan-tag !=3D 0 this is no problem, because we unconditionally wrap
+the packets in 802.1Q headers with a new VID.)
 
-> Having all this said, the feature itself seems reasonable for me to
-> include into OpenVPN, so the missing step is just to mature the code to
-> be sure we don't cause any regression.  And here some stress/performance
-> testing will be helpful.  You scare at least me when stating that this
-> code "was originally only intended as a proof of concept", which is why
-> I'm not signing off these patches immediately and giving you a feature
-> branch.  But I'm open for full inclusion!
+Possible solutions:
 
-Sounds great!  I'll definitely continue polishing the patch-set and
-continue hitting the vlan code with more tests.
+a) Inspect outgoing packets for --vlan-tag =3D=3D 0 clients.  Drop packets
+   that have a VID !=3D 0.
+b) Always wrap outgoing packets with 802.1Q headers and set the VID to
+   0. (This would make the code-patch uniform for all --vlan-tag
+   values.)
 
-
-> And keep us updated on the progress with your patches!
-
-Will do. :)
+I think I slightly prefer solution a), as it allows the PCP field to be
+used and doesn't add needless overhead to outgoing packets.
 
 Cheers
 Fabian
 
 
-
-
---------------enigDD785DD2577168013DA33486
+--------------enigA497EE81104B5367BDBC69FA
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -107,10 +78,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.10 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iEYEARECAAYFAku0WgcACgkQARH1aMTipzNgtgCeO33u7vYr3Da+KAb2+Zr+66Os
-Aw0AoKJiN9jMhvDHKhHCogMDLbqmWWrJ
-=yf8t
+iEUEARECAAYFAku0XjIACgkQARH1aMTipzOXjACdG20XNkwx1NP+D/mpDGwvmSR/
+1ycAliR/vMdAilfdd0gsV/vOnTPLxPs=
+=op/v
 -----END PGP SIGNATURE-----
 
---------------enigDD785DD2577168013DA33486--
+--------------enigA497EE81104B5367BDBC69FA--
 
