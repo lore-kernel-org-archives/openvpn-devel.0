@@ -1,8 +1,16 @@
-Message-ID: <4BB4CD07.8050900@...515...>
-Date: Thu, 01 Apr 2010 19:42:47 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <4BB4D8B0.1050101@...1338...>
+Date: Thu, 01 Apr 2010 19:32:32 +0200
+From: Fabian Knittel <fabian.knittel@...1338...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Today's IRC meeting topics
+References: <cover.1270060247.git.fabian.knittel@...1338...>	<4BB3D6A3.7020207@...1114...>	<4BB45A07.5060300@...1338...>	<4BB45E4B.1000106@...1114...>
+	<4BB48A89.3090608@...1338...>
+	<4BB48DD2.9070200@...384...>
+In-Reply-To: <4BB48DD2.9070200@...384...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigFB078BEC630D065A26AE1D71"
+Subject: Re: [Openvpn-devel] [RFC][PATCH 0/9] VLAN tagging on TAP devices
+ in	OpenVPN server mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,26 +19,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
+To: openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigFB078BEC630D065A26AE1D71
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-I created an agenda for today's meeting which begins in ~85 minutes.
-Notice that the meeting will be on #openvpn-devel rather than
-#openvpn-discussion (on irc.freenode.net). However, forwarding should be
-in place should somebody join the old channel.
+David Sommerseth schrieb:
+> If you have a public git tree available, I could pull that as well.  (I
+> tried the git URL the webUI gave me yesterday, without luck).
 
-http://www.secure-computing.net/wiki/index.php/OpenVPN/IRC_meetings/Topics-=
-2010-04-01
+Ah, thanks for noticing ... the non-ssh path apparently doesn't get used
+often. I forgot to fix the URLs since switching to gitosis. I've now
+verified that
 
-I think next week we should try to get the agenda out there on Wednesday
-evening or Thursday morning (UTC).
+  git://fsmi-dev.fsmi.uni-karlsruhe.de/openvpn.git
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+definitely works. Anyway, I'll mail again when there's something new to
+pull.
 
-irc freenode net: mattock
+Cheers
+Fabian
 
+
+--------------enigFB078BEC630D065A26AE1D71
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iEYEARECAAYFAku02LYACgkQARH1aMTipzMfaACfaEUjgOd9TRsT21rB/3W4nB5E
+hoUAnAmP3tkC8ZX994+4lN1B3QxSPGea
+=rh3v
+-----END PGP SIGNATURE-----
+
+--------------enigFB078BEC630D065A26AE1D71--
 
