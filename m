@@ -1,12 +1,12 @@
-Message-ID: <20100331233557.5889.qmail@...1287...>
-Date: Thu, 1 Apr 2010 01:35:57 +0200
-From: Peter Stuge <peter@...1287...>
-References: <cover.1270060247.git.fabian.knittel@...1338...>
-	<4BB3D6A3.7020207@...1114...>
+Message-ID: <4BB450FB.4010307@...1338...>
+Date: Thu, 01 Apr 2010 09:53:31 +0200
+From: Fabian Knittel <fabian.knittel@...1338...>
 MIME-Version: 1.0
-In-Reply-To: <4BB3D6A3.7020207@...1114...>
-Subject: Re: [Openvpn-devel] [RFC][PATCH 0/9] VLAN tagging on TAP devices	in
-	OpenVPN server mode
+References: <cover.1270060247.git.fabian.knittel@...1338...>	<70dd1e1441bb32df36f449920384f20a3683a2f0.1270060247.git.fabian.knittel@...1338...>
+	<20100331230347.1687.qmail@...1287...>
+In-Reply-To: <20100331230347.1687.qmail@...1287...>
+Subject: Re: [Openvpn-devel] [PATCH 3/9] vlan: Add
+	per-client	--vlan-tag	option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,49 +15,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-David Sommerseth wrote:
-> I'll admit I don't understand too much how the VLAN's really work in
-> core network code.
+Hi Peter,
 
-There's a prefix, and a wrapper to create virtual interfaces. And
-there's the vconfig tool to do configuration. NIC drivers need to
-support oversize frames.
-
-vconfig add eth0 4  # VLAN 4 will be tagged on eth0
-
-So to test this, one could do:
-
-vconfig add tap0 4  # Creates tap9.4 which is VLAN 4 on tap9
-
-Then run openvpn --mode server --vlan-tag 4 on that tap0, and client
-traffic should then come out of tap0.4 rather than tap0.
-
-
-> I'll try to find some time to read through the patches once more.
+Peter Stuge schrieb:
+> Fabian Knittel wrote:
+>> +#define OPENVPN_8021Q_MAX_VID 0xFFFE
 > 
-> [* Other reviewers are most welcome to have a look as well! *]
+> The max VID in 802.1q is 4095 = 0xfff.
 
-I think they looked okey, apart from the things I pointed out
-already.
+You are absolutely correct.  Thanks for catching that.  I intended it to
+say 0xFFE, because the standard talks about VID values being valid
+within the range 0 through 4094 [1].  But OPENVPN_8021Q_MASK_VID should
+definitely be defined as 0xFFF, as the bit field is 12 bits.
 
+VID == 0xFFF is "Reserved for implementation use." and "shall not be
+configured as PVID [...] or transmitted in a tag header." [2]  But I'm
+not sure whether it's used in reality and if you'd like that value to be
+accepted, I have no objections.
 
-> You scare at least me when stating that this code "was originally
-> only intended as a proof of concept", which is why I'm not signing
-> off these patches immediately and giving you a feature branch.
-> But I'm open for full inclusion!
+Thanks again for reviewing!
 
-I'm generally in favor too. Although originally PoC I think this
-looks like good quality now, and VLANs are actually really simple.
+Cheers
+Fabian
 
-I would like to request extra special thorough review of broadcast
-domain separation though, so that it's certain that nothing will jump
-VLANs.
-
-
-//Peter
+1: IEEE Std 8021.Q-2005, "9.6 VLAN Tag Control Information", p.76
+2: IEEE Std 8021.Q-2005, Table 9-2, p.76
 
