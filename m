@@ -1,16 +1,8 @@
-Message-ID: <4BB4D8B0.1050101@...1338...>
-Date: Thu, 01 Apr 2010 19:32:32 +0200
-From: Fabian Knittel <fabian.knittel@...1338...>
+Message-ID: <4BB590B8.6050806@...515...>
+Date: Fri, 02 Apr 2010 09:37:44 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <cover.1270060247.git.fabian.knittel@...1338...>	<4BB3D6A3.7020207@...1114...>	<4BB45A07.5060300@...1338...>	<4BB45E4B.1000106@...1114...>
-	<4BB48A89.3090608@...1338...>
-	<4BB48DD2.9070200@...384...>
-In-Reply-To: <4BB48DD2.9070200@...384...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigFB078BEC630D065A26AE1D71"
-Subject: Re: [Openvpn-devel] [RFC][PATCH 0/9] VLAN tagging on TAP devices
- in	OpenVPN server mode
+Subject: [Openvpn-devel] Community site opens as "beta" next week
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,43 +11,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigFB078BEC630D065A26AE1D71
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-David Sommerseth schrieb:
-> If you have a public git tree available, I could pull that as well.  (I
-> tried the git URL the webUI gave me yesterday, without luck).
+Hi all,
 
-Ah, thanks for noticing ... the non-ssh path apparently doesn't get used
-often. I forgot to fix the URLs since switching to gitosis. I've now
-verified that
+The community site (our new Trac) will open next week as "beta". In this
+context "beta" means that if you wish to create content you need to ask
+me to create an user account for you. The site will be readable by
+anyone, but will not be linked to from openvpn.net initially. This helps
+keep the Trac instance in one piece / responsive ;). The idea of the
+"beta" period is to allow installation of plugins and doing theming,
+tuning and customization in a controlled manner.
 
-  git://fsmi-dev.fsmi.uni-karlsruhe.de/openvpn.git
+Once opened, the Trac instance will live at
+https://community.openvpn.net/openvpn. I'll let you know when the site
+is open for traffic. Send me mail if you want an user account.
 
-definitely works. Anyway, I'll mail again when there's something new to
-pull.
-
-Cheers
-Fabian
+I'm currently working on the user self-service registration service
+(pwm). When that's finished, Trac can be opened up to anyone and work on
+community forum server can start.
 
 
---------------enigFB078BEC630D065A26AE1D71
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+All the best,
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-iEYEARECAAYFAku02LYACgkQARH1aMTipzMfaACfaEUjgOd9TRsT21rB/3W4nB5E
-hoUAnAmP3tkC8ZX994+4lN1B3QxSPGea
-=rh3v
------END PGP SIGNATURE-----
+irc freenode net: mattock
 
---------------enigFB078BEC630D065A26AE1D71--
 
