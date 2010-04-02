@@ -1,8 +1,10 @@
-Message-ID: <4BB590B8.6050806@...515...>
-Date: Fri, 02 Apr 2010 09:37:44 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Community site opens as "beta" next week
+From: <openvpn@...1315...>
+Date: Fri, 02 Apr 2010 10:30:44 -0500
+Message-id: <1270222244713125500@...1315...>
+MIME-version: 1.0
+Content-type: multipart/alternative;
+	boundary="===axigen=7868855258226632961181156563664546400748=axigen==="
+Subject: [Openvpn-devel] Auto-Proxy
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,36 +13,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
+To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
+
+This is a MIME message. You may need a MIME compliant mail user agent.
+--===axigen=7868855258226632961181156563664546400748=axigen===
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
-Hi all,
+Hi,
 
-The community site (our new Trac) will open next week as "beta". In this
-context "beta" means that if you wish to create content you need to ask
-me to create an user account for you. The site will be readable by
-anyone, but will not be linked to from openvpn.net initially. This helps
-keep the Trac instance in one piece / responsive ;). The idea of the
-"beta" period is to allow installation of plugins and doing theming,
-tuning and customization in a controlled manner.
+=20
 
-Once opened, the Trac instance will live at
-https://community.openvpn.net/openvpn. I'll let you know when the site
-is open for traffic. Send me mail if you want an user account.
+I have been using two different config files to connect to my OpenVPN serve=
+r - as I am sometimes behind a proxy server, and sometimes not. So to fix t=
+his I tried using auto-proxy ... but it didn't work (in the proxy case) ...=
+ :-(.
 
-I'm currently working on the user self-service registration service
-(pwm). When that's finished, Trac can be opened up to anyone and work on
-community forum server can start.
+=20
 
+I am running the client on Windows - so it should work, no?
 
-All the best,
+=20
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+FYI - the proxy server runs an automatic configuration script (.pac) ... co=
+uld this be part of the problem?
 
-irc freenode net: mattock
+=20
+
+Thanks!
+
+=20
+
+--===axigen=7868855258226632961181156563664546400748=axigen===
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+<html><head><style id=3D"axi-htmleditor-style" type=3D"text/css">p { margin=
+: 0px; }</style></head><body style=3D"font-size: 10pt; font-family: Arial; =
+background-image: none; background-repeat: repeat; background-attachment: f=
+ixed;"><P>Hi,</P>
+<P>&nbsp;</P>
+<P>I have been using two different config files to connect to my OpenVPN se=
+rver - as I am sometimes behind a proxy server, and sometimes not. So to fi=
+x this I tried using auto-proxy ... but it didn't work (in the proxy case) =
+... :-(.</P>
+<P>&nbsp;</P>
+<P>I am running the client on Windows - so it should work, no?</P>
+<P>&nbsp;</P>
+<P>FYI - the proxy server runs an automatic configuration script (.pac) ...=
+ could this be part of the problem?</P>
+<P>&nbsp;</P>
+<P>Thanks!</P>
+<P><BR>&nbsp;</P></body></html>=
+
+--===axigen=7868855258226632961181156563664546400748=axigen===--
 
 
