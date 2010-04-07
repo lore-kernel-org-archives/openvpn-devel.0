@@ -1,10 +1,11 @@
 From: Heiko Hund <hhund@...194...>
-Date: Wed, 7 Apr 2010 15:20:01 +0200
+Date: Wed, 7 Apr 2010 15:26:05 +0200
 References: <OF16C98C16.EEA12E96-ONC12576FD.006F673E-C12576FD.00713519@...1343...>
-	<201004070959.09215.hhund@...194...> <4BBC71F6.7040802@...1147...>
-In-Reply-To: <4BBC71F6.7040802@...1147...>
+	<201004070959.09215.hhund@...194...>
+	<OF83959B35.6804C8B1-ONC12576FE.0041E6AD-C12576FE.00424FE8@...1343...>
+In-Reply-To: <OF83959B35.6804C8B1-ONC12576FE.0041E6AD-C12576FE.00424FE8@...1343...>
 MIME-Version: 1.0
-Message-Id: <201004071520.01477.hhund@...194...>
+Message-Id: <201004071526.06006.hhund@...194...>
 Subject: Re: [Openvpn-devel] DNS problems with openvpn 2.1 on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,47 +17,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: Text/Plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: Jan Just Keijser <janjust@...1147...>
+To: Johan Ymerson <johan.ymerson@...1342...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Wednesday 07 April 2010 13:52:22 Jan Just Keijser wrote:
-> > We've contacted Microsoft tech support about this issue. If anything
-> > like a
-> > fix comes out of that I'll post an update here. If not we'll have to
-> > consider
-> > a workaround of some kind, but let's wait with that discussion until
-> > we're
-> > sure it's not fixable the right way.
+On Wednesday 07 April 2010 14:04:18 Johan Ymerson wrote:
+> "Heiko Hund" <hhund@...194...> wrote on 2010-04-07 09:59:08:
+> > We also tried 2.0.9 but were able to reproduce the bug with it as well,
+> > so it has nothing to do with the openvpn driver version involved. I came
+> > to the conclusion that it's rather some kind of race condition in the
+> > Windows XP DNS resolver. At least I haven't seen this problem on Vista
+> > or 7 personally.
 >=20
-> isn't
->   ipconfig /flushdns
+> Then I don't think we see the same problem. We have been using 2.0.9 on
+> ~100 machines for a couple of years now without these problems. We
+> upgraded 3 of them to 2.1.1, and they all instantly got this problem. We
+> downgraded them to 2.0.9, and all problems gone. Then started switching
+> between 2.0.9 and 2.1_rcX to determine when this problem started, but all
+> 2.1_rcX seems to suffer from it, but 2.0.9 does _not_! So something must
+> have changed between 2.0.9 and 2.1 that at least makes this a lot worse.
 
-No, that doesn't do it.
-
-> or
->   net stop dnscache
->   net start dnscache
-
-That works as well as `ipconfig /renew`. Even `ipconfig /registerdns` helps=
+Strange, we tested with 2.1_rc22 and the driver from 2.0.9 and ran into the=
 =20
-because it does an implicit /renew.
-
-> enough? This might be related to
->  http://support.microsoft.com/kb/311218
-
-Sadly it's not. Seems to have effect on MS RAS protocols only. PPTP and L2T=
-P=20
-get their DNS settings via PPP IPCP, so it's kind of clear that this fix do=
-es=20
-not apply to the ones from openvpn via DHCP.
-
-> I've recommended to people on the -users list to use an 'up' script with
->   net stop dnscache
->   net start dnscache
-> this has worked in 99% of the cases.
-
-True, but it's not the solution I'm looking for, but a rather high level=20
-workaround.
+problem within ten attempts. I can't image that the problem is related to=20
+userspace openvpn. Do you have the problem every time you connect and do yo=
+u=20
+see the DNS servers in the output of `ipconfig /all`?
 
 Heiko
 --=20
