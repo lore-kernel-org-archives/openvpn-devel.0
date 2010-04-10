@@ -1,13 +1,12 @@
-Message-ID: <4BBFA6F5.8090303@...1114...>
-Date: Sat, 10 Apr 2010 00:15:17 +0200
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4BBF0AE8.6090705@...515...>
-	<51530802.20100409143821@...449...>	<4BBF2E96.80408@...515...>
-	<685194187.20100409162718@...449...>
-	<alpine.LRH.2.00.1004091415590.23080@...1344...>
-In-Reply-To: <alpine.LRH.2.00.1004091415590.23080@...1344...>
-Subject: Re: [Openvpn-devel] Summary of the IRC meeting (8th Apr 2010)
+In-Reply-To: <4BBE3205.1040303@...1114...>
+References: <1269951178-30419-1-git-send-email-dazo@...384...>
+	<4BBE3205.1040303@...1114...>
+Date: Sat, 10 Apr 2010 10:05:47 +0300
+Message-ID: <p2w9e0cf0bf1004100005u819d4b3l97c269272e2604ab@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Add comile time settings from
+	./configure information to --version
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,45 +15,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: R P Herrold <herrold@...43...>
+To: David Sommerseth <openvpn.list@...1114...>
 Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Highly none standard autotools usage.
+Also requires awk which may not be available.
+Please REVERT.
 
-On 09/04/10 20:18, R P Herrold wrote:
-> On Fri, 9 Apr 2010, Carsten Kr=FCger wrote:
->=20
->> Where is the problem?
->> Signing could be easily integrated in build process.
->=20
-> umm -- Signing requires unlocking the GnuPG key to get a human=20
-> set of eyes, and confirmation that all seems to be well into=20
-> the process
->=20
-> -- an autosigning from a non-protected key cannot sensibly be=20
-> trusted, particularly with a process that has to run at some=20
-> point with root access rights
->=20
-
-Just to clarify here.  We are talking about one particular situation
-here.  This is for the openvpn-testing based drivers - meaning, the
-"unstable" development version, aimed for testing primarily and not
-production environments.  In addition, this driver signing will only be
-relevant for Windows environments for now.
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAku/pvUACgkQDC186MBRfrpblQCgpyY+10vnfJXXWJSWvBCmCc2l
-GJAAoJ9748YGWt9r2HEzzB+QjMf89dKY
-=3DdumJ
------END PGP SIGNATURE-----
+On Thu, Apr 8, 2010 at 10:44 PM, David Sommerseth
+<openvpn.list@...1114...> wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+>
+> On 30/03/10 14:12, David Sommerseth wrote:
+>> This patch will create ./configure.h which will contain two new #define
+>> strings. =C2=A0CONFIGURE_DEFINES will contain all USE, ENABLED, DISABLED=
+ and
+>> DEPRECATED defines from ./config.h. =C2=A0CONFIGURE_CALL will contain the
+>> complete ./configure line which was used when configuring the package
+>> for building.
+>>
+>> Signed-off-by: David Sommerseth <dazo@...384...>
+>> ---
+>> =C2=A0Makefile.am =C2=A0 =C2=A0 =C2=A0 | =C2=A0 =C2=A07 +++++++
+>> =C2=A0configure_h.awk =C2=A0 | =C2=A0 39 +++++++++++++++++++++++++++++++=
+++++++++
+>> =C2=A0configure_log.awk | =C2=A0 36 ++++++++++++++++++++++++++++++++++++
+>> =C2=A0options.c =C2=A0 =C2=A0 =C2=A0 =C2=A0 | =C2=A0 =C2=A03 +++
+>> =C2=A04 files changed, 85 insertions(+), 0 deletions(-)
+>> =C2=A0create mode 100644 configure_h.awk
+>> =C2=A0create mode 100644 configure_log.awk
+>
+> Applied to the openvpn-testing.git feat_misc branch. =C2=A0To be merged i=
+nto
+> allmerged soon.
+> Commit f27bf509315a48b0070294c3993a718df0c2626c
+>
+>
+> kind regards,
+>
+> David Sommerseth
+> -----BEGIN PGP SIGNATURE-----
+> Version: GnuPG v1.4.10 (GNU/Linux)
+> Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+>
+> iEYEARECAAYFAku+MgUACgkQDC186MBRfrrSTQCfZcZ1BbzdmGO7GwKhwMRyYfd3
+> f90AnieGGtEskxG+E5Ng/AxjwnL++6k6
+> =3DqKP1
+> -----END PGP SIGNATURE-----
+>
+> -------------------------------------------------------------------------=
+-----
+> Download Intel&#174; Parallel Studio Eval
+> Try the new software tools for yourself. Speed compiling, find bugs
+> proactively, and fine-tune applications for parallel performance.
+> See why Intel Parallel Studio got high marks during beta.
+> http://p.sf.net/sfu/intel-sw-dev
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
 
