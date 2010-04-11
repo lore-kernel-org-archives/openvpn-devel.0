@@ -1,12 +1,14 @@
-Date: Sun, 11 Apr 2010 20:18:05 +0200
+Date: Sun, 11 Apr 2010 20:30:17 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20100411181805.GZ12312@...1296...>
+Message-ID: <20100411183017.GA12312@...1296...>
 References: <cover.1270060247.git.fabian.knittel@...1338...>
 	<1ae7a5fdae1e6d71bb7708a4f75ff060e3237c1c.1270060247.git.fabian.knittel@...1338...>
 	<20100331231158.2782.qmail@...1287...>
 	<4BB45497.8040707@...1338...> <4BB46059.9080208@...1147...>
+	<20100401091414.24106.qmail@...1287...> <4BB48345.7020408@...1338...>
+	<4BB4882E.9020805@...1114...>
 Mime-Version: 1.0
-In-Reply-To: <4BB46059.9080208@...1147...>
+In-Reply-To: <4BB4882E.9020805@...1114...>
 Subject: Re: [Openvpn-devel] [PATCH 4/9] vlan: Prepend and
 	remove	VLAN	identifiers on outgoing and incoming frames
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,27 +22,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-To: Jan Just Keijser <janjust@...1147...>
+To: David Sommerseth <openvpn.list@...1114...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Thu, Apr 01, 2010 at 10:59:05AM +0200, Jan Just Keijser wrote:
-> > Hm, nice idea.  I'll implement it in my next round of patches.
-> >   
-> FYI: 802.1Q defines VLAN 1 as the 'native' LAN: all packets on VLAN 1 
-> are *by definition* not encapsulated (according to my CCNA guide ;-))
-> VID 0 means "priority frames"
-> Perhaps we need to make sure that VID 1 means untagged ...
+On Thu, Apr 01, 2010 at 01:49:02PM +0200, David Sommerseth wrote:
+> >From a security and not the least from a performance perspective, the
+> OpenVPN clients should only receive traffic which hits it's own VLAN
+> (ie. the server does the "filtering" before sending data to the client).
+>  I'm not sure if I saw this in code or not ... but if it is in place and
+> somebody could point me to the patch which does it, I would be happy.
 
-Different vendors handle this differently - on Cisco, for example,
-you can make vlan 1 tagged and have the "native" VLAN on a port
-(= untagged transmissions) on a different VID.
+The patch description (part 0) says so:
 
-So you can't rely on "VID 1 = untagged".
+----------------- snip -------------------
+Packets coming in from the TAP device are assumed to be tagged with
+IEEE 802.1Q headers.  OpenVPN removes the tag, remembers the VID and
+routes the packet to the destination client(s) on the other side of the
+secure tunnel which have a matching VID.
+----------------- snip -------------------
+
+I have not yet reviewed the source to check whether this really takes
+place.
+
+Something else I need to check: the "standard" mroute code hashes based
+on ethernet address (in tap mode).  What happens if the same MAC address
+shows up for two different VLAN IDs?  (Not very likely for virtual
+ethernet devices, though, but this can happen in real-world scenarios).
 
 gert
-
 
 -- 
 USENET is *not* the non-clickable part of WWW!
