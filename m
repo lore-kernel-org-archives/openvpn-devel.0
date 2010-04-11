@@ -1,8 +1,14 @@
-Message-ID: <4BC1C486.6090808@...515...>
-Date: Sun, 11 Apr 2010 15:45:58 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Community site Trac open for public
+Date: Sun, 11 Apr 2010 20:18:05 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20100411181805.GZ12312@...1296...>
+References: <cover.1270060247.git.fabian.knittel@...1338...>
+	<1ae7a5fdae1e6d71bb7708a4f75ff060e3237c1c.1270060247.git.fabian.knittel@...1338...>
+	<20100331231158.2782.qmail@...1287...>
+	<4BB45497.8040707@...1338...> <4BB46059.9080208@...1147...>
+Mime-Version: 1.0
+In-Reply-To: <4BB46059.9080208@...1147...>
+Subject: Re: [Openvpn-devel] [PATCH 4/9] vlan: Prepend and
+	remove	VLAN	identifiers on outgoing and incoming frames
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,38 +17,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: Jan Just Keijser <janjust@...1147...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi all,
+Hi,
 
-The community site Trac instance is now open for the public:
+On Thu, Apr 01, 2010 at 10:59:05AM +0200, Jan Just Keijser wrote:
+> > Hm, nice idea.  I'll implement it in my next round of patches.
+> >   
+> FYI: 802.1Q defines VLAN 1 as the 'native' LAN: all packets on VLAN 1 
+> are *by definition* not encapsulated (according to my CCNA guide ;-))
+> VID 0 means "priority frames"
+> Perhaps we need to make sure that VID 1 means untagged ...
 
-https://community.openvpn.net/openvpn
+Different vendors handle this differently - on Cisco, for example,
+you can make vlan 1 tagged and have the "native" VLAN on a port
+(= untagged transmissions) on a different VID.
 
-A few key developers already have accounts and I'll create new ones on
-request. There's not really any content there yet and it does not make
-sense to move any of the old content to Trac until the user self-service
-registration is available. The git integration (see "Browse source")
-seems painfully slow and it eats 40-50% of the CPU when it's loading a
-directory listing or a file. This is a known performance problem with
-the Trac git-plugin code, so we may have to replace it with something else.
+So you can't rely on "VID 1 = untagged".
 
-Let me know if you encounter any obvious problems with the site and I'll
-fix them. After that we can start installing Trac plugins one by one and
-see if the thing stays in one piece ;). Potentially useful Trac plugins
-were discussed earlier in a community meeting (28th  Jan 2010):
+gert
 
-http://www.secure-computing.net/wiki/index.php/OpenVPN/IRC_meetings
 
-All the best,
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
+-- 
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~gert/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
