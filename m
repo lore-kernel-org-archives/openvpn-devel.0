@@ -1,18 +1,16 @@
-Message-ID: <4BC21EB4.80102@...1338...>
-Date: Sun, 11 Apr 2010 21:10:44 +0200
+Message-ID: <4BC220F3.7090704@...1338...>
+Date: Sun, 11 Apr 2010 21:20:19 +0200
 From: Fabian Knittel <fabian.knittel@...1338...>
 MIME-Version: 1.0
 References: <cover.1270060247.git.fabian.knittel@...1338...>
 	<1ae7a5fdae1e6d71bb7708a4f75ff060e3237c1c.1270060247.git.fabian.knittel@...1338...>
 	<20100331231158.2782.qmail@...1287...>
 	<4BB45497.8040707@...1338...> <4BB46059.9080208@...1147...>
-	<20100401091414.24106.qmail@...1287...> <4BB48345.7020408@...1338...>
-	<4BB4882E.9020805@...1114...>
-	<20100411183017.GA12312@...1296...>
-In-Reply-To: <20100411183017.GA12312@...1296...>
+	<20100411181805.GZ12312@...1296...>
+In-Reply-To: <20100411181805.GZ12312@...1296...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigE8F969A871A6BD0011C6BDED"
+	boundary="------------enig94BD426C12BD519C58407640"
 Subject: Re: [Openvpn-devel] [PATCH 4/9] vlan: Prepend and
  remove	VLAN	identifiers on outgoing and incoming frames
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -26,27 +24,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE8F969A871A6BD0011C6BDED
-Content-Type: text/plain; charset="ISO-8859-1"
+--------------enig94BD426C12BD519C58407640
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Gert,
+Hi,
 
-Gert Doering wrote:
-> Something else I need to check: the "standard" mroute code hashes based
-> on ethernet address (in tap mode).  What happens if the same MAC address
-> shows up for two different VLAN IDs?  (Not very likely for virtual
-> ethernet devices, though, but this can happen in real-world scenarios).
+Gert Doering schrieb:
+> On Thu, Apr 01, 2010 at 10:59:05AM +0200, Jan Just Keijser wrote:
+>>> Hm, nice idea.  I'll implement it in my next round of patches.
+>>>=20=20=20
+>> FYI: 802.1Q defines VLAN 1 as the 'native' LAN: all packets on VLAN 1=20
+>> are *by definition* not encapsulated (according to my CCNA guide ;-))
+>> VID 0 means "priority frames"
+>> Perhaps we need to make sure that VID 1 means untagged ...
+>=20
+> Different vendors handle this differently - on Cisco, for example,
+> you can make vlan 1 tagged and have the "native" VLAN on a port
+> (=3D untagged transmissions) on a different VID.
+>=20
+> So you can't rely on "VID 1 =3D untagged".
 
-Have a look at "vlan: Add VLAN identifier to mroute_addr for ethernet
-addresses". The VID is appended to the MAC address and forms the new
-mroute_addr for ethernet frames (in tap mode).
+The current patch-set uses VID 1 =3D untagged as default (in "vlan-accept
+all" or "vlan-accept untagged" mode). Setting "vlan-pvid VID" in global
+context allows you to change this though.
 
 Cheers
 Fabian
 
 
---------------enigE8F969A871A6BD0011C6BDED
+--------------enig94BD426C12BD519C58407640
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -55,10 +62,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.10 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iEUEARECAAYFAkvCHrQACgkQARH1aMTipzN3RgCfTXj6uWKsjTmh86HFWv/SHZcV
-gbAAl3KOzRpsSahnuty3auvEa5XKxUs=
-=haCN
+iEYEARECAAYFAkvCIQ4ACgkQARH1aMTipzP+ZgCfWg0LmQnPeP1tqjhBNll/arST
+0aUAn1ultWUuOxBUJUKL9Yv+RlW8Um1V
+=1Sdu
 -----END PGP SIGNATURE-----
 
---------------enigE8F969A871A6BD0011C6BDED--
+--------------enig94BD426C12BD519C58407640--
 
