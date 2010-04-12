@@ -1,18 +1,10 @@
-Message-ID: <4BC220F3.7090704@...1338...>
-Date: Sun, 11 Apr 2010 21:20:19 +0200
-From: Fabian Knittel <fabian.knittel@...1338...>
+Message-ID: <4BC3119C.5060906@...1114...>
+Date: Mon, 12 Apr 2010 14:27:08 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <cover.1270060247.git.fabian.knittel@...1338...>
-	<1ae7a5fdae1e6d71bb7708a4f75ff060e3237c1c.1270060247.git.fabian.knittel@...1338...>
-	<20100331231158.2782.qmail@...1287...>
-	<4BB45497.8040707@...1338...> <4BB46059.9080208@...1147...>
-	<20100411181805.GZ12312@...1296...>
-In-Reply-To: <20100411181805.GZ12312@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig94BD426C12BD519C58407640"
-Subject: Re: [Openvpn-devel] [PATCH 4/9] vlan: Prepend and
- remove	VLAN	identifiers on outgoing and incoming frames
+References: <20100410154547.GJ2689@...1330...>
+In-Reply-To: <20100410154547.GJ2689@...1330...>
+Subject: Re: [Openvpn-devel] [PATCH] Fixed typo in manpage
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,51 +13,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: Alberto Gonzalez Iniesta <agi@...64...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig94BD426C12BD519C58407640
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-Hi,
-
-Gert Doering schrieb:
-> On Thu, Apr 01, 2010 at 10:59:05AM +0200, Jan Just Keijser wrote:
->>> Hm, nice idea.  I'll implement it in my next round of patches.
->>>=20=20=20
->> FYI: 802.1Q defines VLAN 1 as the 'native' LAN: all packets on VLAN 1=20
->> are *by definition* not encapsulated (according to my CCNA guide ;-))
->> VID 0 means "priority frames"
->> Perhaps we need to make sure that VID 1 means untagged ...
->=20
-> Different vendors handle this differently - on Cisco, for example,
-> you can make vlan 1 tagged and have the "native" VLAN on a port
-> (=3D untagged transmissions) on a different VID.
->=20
-> So you can't rely on "VID 1 =3D untagged".
-
-The current patch-set uses VID 1 =3D untagged as default (in "vlan-accept
-all" or "vlan-accept untagged" mode). Setting "vlan-pvid VID" in global
-context allows you to change this though.
-
-Cheers
-Fabian
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
 
---------------enig94BD426C12BD519C58407640
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+On 10/04/10 17:45, Alberto Gonzalez Iniesta wrote:
+> --- openvpn-2.1.0.orig/openvpn.8	2010-04-10 17:07:57.256694284 +0200
+> +++ openvpn-2.1.0/openvpn.8	2010-04-10 17:08:06.036696780 +0200
+> @@ -916,7 +916,7 @@
+>  otherwise 0.
+>  
+>  The default can be specified by leaving an option blank or setting
+> -it to "default".
+> +it to "nil".
 
+I've been reviewing this.  It's good to have docs in sync with the code.
+ But in this case, it seems that this is not the proper fix.
+
+I did some tests against v2.1.1 which I had handy ... I tested with:
+
+ route <network> <netmask> <VPN gw>
+ route <network> <netmask> <VPN gw> default
+ route <network> <netmask> <VPN gw> nil
+ route <network> <netmask> <VPN gw> garbage
+
+On the 'default' case, the following line was executed:
+ /sbin/ip route add <network>/<netmask> via <VPN gw>
+
+On the 'nil' and 'garbage' cases, this route was setup:
+ /sbin/ip route add <network>/<netmask> via <VPN gw> metric 0
+
+Which means to me, that 'default' is the proper value to use.  On the
+other hand, the verbose logging uses the 'nil' value in route.c:973 in
+show_opt(), and the options.c:190 uses 'nil' as help text to the usage
+screen.
+
+I suggesting not to modify the man page at all.  I suggest updating
+options.c to use 'default' instead of 'nil'.  A change in route.c need
+to be more "clever", as that might give more some unexpected log lines
+if <network>, <netmask> or <VPN gw> is not set.  The show_opt() function
+is used for all of these values in print_route_option().
+
+I'm suggesting throwing out the show_opt() function and replace it with
+a macro:
+
+   #define SHOW_OPT(val, nullval) (val ? val : nullval)
+
+This would also be more efficient code than calling a function, and does
+the same job.  The places where the show_opt() function is called,
+SHOW_OPT() can be used like this:
+
+    SHOW_OPT(ro->network, "nil")
+    SHOW_OPT(ro->metric, "default")
+
+This should fix the issue in a better way.
+
+
+kind regards,
+
+David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkvCIQ4ACgkQARH1aMTipzP+ZgCfWg0LmQnPeP1tqjhBNll/arST
-0aUAn1ultWUuOxBUJUKL9Yv+RlW8Um1V
-=1Sdu
+iEYEARECAAYFAkvDEZcACgkQDC186MBRfrraggCfTQHa7ZhaAwbY8DfNz1+Jgent
+4YoAnjX/DnQoPri0Q/Mu7ZBvNBxOnjx1
+=YgdK
 -----END PGP SIGNATURE-----
-
---------------enig94BD426C12BD519C58407640--
 
