@@ -1,13 +1,12 @@
-From: Heiko Hund <hhund@...194...>
-Date: Tue, 13 Apr 2010 16:56:45 +0200
-References: <1269951178-30419-1-git-send-email-dazo@...384...>
-	<t2o9e0cf0bf1004130659l5c4a8dc2o6eab22db336078be@...278...>
-	<4BC48199.4060600@...1114...>
-In-Reply-To: <4BC48199.4060600@...1114...>
+Message-ID: <4BC580D8.5040304@...515...>
+Date: Wed, 14 Apr 2010 11:46:16 +0300
+From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
 MIME-Version: 1.0
-Message-Id: <201004131656.45521.hhund@...194...>
-Subject: Re: [Openvpn-devel] [PATCH] Add comile time settings from
-	./configure information to --version
+References: <1269951178-30419-1-git-send-email-dazo@...384...>	<4BBE3205.1040303@...1114...>	<p2w9e0cf0bf1004100005u819d4b3l97c269272e2604ab@...278...>	<4BC47655.10101@...1114...>
+	<t2o9e0cf0bf1004130659l5c4a8dc2o6eab22db336078be@...278...>
+In-Reply-To: <t2o9e0cf0bf1004130659l5c4a8dc2o6eab22db336078be@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Add comile time settings
+ from	./configure information to --version
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,28 +15,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: Text/Plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
-Cc: Alon Bar-Lev <alon.barlev@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Tuesday 13 April 2010 16:37:13 David Sommerseth wrote:
-> The config.log is *only* used for getting the command line of how
-> ./configure was called, via configure_log.awk.  To my knowledge, this
-> information is not available anywhere else.  If I have overseen this
-> somewhere, then please enlighten me.
 
-Couldn't that be done in a much cleaner way by just using the $* shell=20
-variable?
+> First of all, let's bring in the history.  This feature was discussed in
+> the weekly meeting February 26, 2010.  See the chat log at [1], around
+> the time stamp 20:45:15.
+>
+> > David, IRC is not a development tool, it is sync tool that require all
+> > to be available at the same time, which is never the case. I don't
+> > understand why you took this approach, but its down-side is that
+> > people discover such commits later on.
+>
+There are several good reasons why we do use IRC as a development tool.
+First, it's the best/only available way to get James' input into
+"testing" development. Second, many patches have fail to receive an
+ACK/NACK or even any comments in the mailing list discussions. It's this
+kind of patches which are discussed in the meetings and more often than
+not we've managed to get an ACK/NACK for them.
 
-Heiko
+As you say, there are problems with using IRC as a development tool,
+timezones being one big problem. That's why after every meeting I send a
+summary to openvpn-devel which documents every single patch ACK/NACK. A
+full chatlog is also attached to this mail. To make sure the summaries &
+chatlogs don't get lost in mailing list archives, they are also linked
+to from here:
+
+http://www.secure-computing.net/wiki/index.php/OpenVPN/IRC_meetings
+
+The preliminary meeting agenda / topic list is also visible prior the
+meeting so that people can choose whether to attend or not (if they can).
+
+However, I think there's definitely room for improvement. IRC is
+addictive, because it allows making decisions fast and easily. The
+downside is that not all people can attend the meetings and are thus
+unable to affect their outcome or provide valuable feedback. What we
+need to avoid is creating two classes of developers: those who can
+attend the IRC (and make the decisions) and those who can't (and don't
+decide).
+
+As a concrete measure I suggest that patches ACK'd in IRC meetings
+should not be merged until, say, Monday. That way people can review the
+chatlog and if they don't like what they see, they can provide their
+comments. I think that we should from now on "propose" rather than
+"decide" to include patches based on IRC discussions. Otherwise people
+might get the wrong impression that we don't want/need further comments.
+I also suggest that we really focus on using IRC only when the mailing
+list discussions have led nowhere, not just for it's convenience.
+
+What do you think?
+
 --=20
-Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
-Astaro AG | An der RaumFabrik 33a | 76227 Karlsruhe | Germany
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-Executive Board: Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nelli=
-ssen
-Chairman of the Supervisory Board: Stanley J. Krasnow
-Headquarter Location: Karlsruhe
-Commercial Register: Mannheim HRB 108997
+irc freenode net: mattock
+
 
