@@ -1,10 +1,8 @@
-Message-ID: <20100415012851.24005.qmail@...1287...>
-Date: Thu, 15 Apr 2010 03:28:51 +0200
-From: Peter Stuge <peter@...1287...>
-References: <4BC5B0CF.4030607@...515...>
+From: Davide Brini <dave_br@...1278...>
+Date: Thu, 15 Apr 2010 19:52:02 +0100
 MIME-Version: 1.0
-In-Reply-To: <4BC5B0CF.4030607@...515...>
-Subject: Re: [Openvpn-devel] Finnish translation of OpenVPN-GUI for review
+Message-Id: <201004151952.02756.dave_br@...1278...>
+Subject: [Openvpn-devel] [PATCH] Mention mssfix default value in the man page
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,25 +11,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
+Content-Type: Text/Plain;
+  charset="utf-8"
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Samuli Seppänen wrote:
-> Btw. this translation file format is by far the most difficult one
-> I've ever worked with.
+The man page does not mention that the default value of "mssfix" is 1450.
 
-Probably because it isn't a translation file format at all. :)
+--- openvpn-2.1.1/openvpn.8     2010-02-28 22:17:45.000000000 +0000
++++ openvpn-2.1.1-a/openvpn.8   2010-04-15 19:43:53.000000000 +0100
+@@ -1223,7 +1223,8 @@ their send packet sizes such that after
+ the resulting UDP packet size that OpenVPN sends to its peer will not
+ exceed
+ .B max
+-bytes.
++bytes. The default value is
++.B 1450.
 
-This is the file format used by the Windows Resource Compiler to
-turn "resources" such as dialogs or files into object form that can
-be linked with an app and referenced easily from within the app.
+ The
+ .B max
 
-The resource compiler supports #include but I don't know if any other
-CPP features work. At least it would be possible to move all texts to
-a separate file.
-
-
-//Peter
+-- 
+D.
 
