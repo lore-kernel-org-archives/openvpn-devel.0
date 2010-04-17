@@ -1,8 +1,9 @@
 From: David Sommerseth <openvpn.list@...1114...>
-Date: Sat, 17 Apr 2010 21:06:08 +0200
-Message-Id: <1271531169-10293-1-git-send-email-openvpn.list@...1114...>
-Subject: [Openvpn-devel] [PATCH 1/2] Removed no longer needed delete_file()
-	call
+Date: Sat, 17 Apr 2010 21:06:09 +0200
+Message-Id: <1271531169-10293-2-git-send-email-openvpn.list@...1114...>
+In-Reply-To: <1271531169-10293-1-git-send-email-openvpn.list@...1114...>
+References: <1271531169-10293-1-git-send-email-openvpn.list@...1114...>
+Subject: [Openvpn-devel] [PATCH 2/2] Fixed potential NULL pointer issue
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,26 +19,27 @@ Cc: James Yonan <james@...515...>, David Sommerseth <dazo@...384...>
 
 From: David Sommerseth <dazo@...384...>
 
-Fabian Knittel noticed that this delete_file() calls should have been
-removed in commit b963a17efc10512db442443234731a70b1f56f84
+If create_temp_file() returns NULL, this strlen() check would cause
+a SEGV.
 
 Signed-off-by: David Sommerseth <dazo@...384...>
 ---
- multi.c |    1 -
- 1 files changed, 0 insertions(+), 1 deletions(-)
+ ssl.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/multi.c b/multi.c
-index 826a113..c4276f5 100644
---- a/multi.c
-+++ b/multi.c
-@@ -1538,7 +1538,6 @@ multi_connection_established (struct multi_context *m, struct multi_instance *mi
-           }
+diff --git a/ssl.c b/ssl.c
+index 552bcbe..171a1d7 100644
+--- a/ssl.c
++++ b/ssl.c
+@@ -3194,7 +3194,7 @@ verify_user_pass_script (struct tls_session *session, const struct user_pass *up
+     }
  
- 	  argv_printf (&argv, "%s", dc_file);
--	  delete_file (dc_file);
- 	  if (plugin_call (mi->context.plugins, OPENVPN_PLUGIN_CLIENT_CONNECT, &argv, NULL, mi->context.c2.es) != OPENVPN_PLUGIN_FUNC_SUCCESS)
- 	    {
- 	      msg (M_WARN, "WARNING: client-connect plugin call failed");
+  done:
+-  if (strlen (tmp_file) > 0)
++  if (tmp_file && strlen (tmp_file) > 0)
+     delete_file (tmp_file);
+ 
+   argv_reset (&argv);
 -- 
 1.6.6.1
 
