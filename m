@@ -1,8 +1,11 @@
+Message-ID: <4BCB8753.8010608@...1114...>
+Date: Mon, 19 Apr 2010 00:27:31 +0200
 From: David Sommerseth <openvpn.list@...1114...>
-Date: Sun, 18 Apr 2010 16:36:13 +0200
-Message-Id: <1271601373-22374-1-git-send-email-openvpn.list@...1114...>
-Subject: [Openvpn-devel] [PATCH] Use more appropriate error codes in
-	create_temp_file()
+MIME-Version: 1.0
+References: <201004151952.02756.dave_br@...1278...>
+In-Reply-To: <201004151952.02756.dave_br@...1278...>
+Subject: Re: [Openvpn-devel] [PATCH] Mention mssfix default value in the man
+ page
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,46 +14,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Openvpn-devel@lists.sourceforge.net
-Cc: James Yonan <james@...515...>, David Sommerseth <dazo@...384...>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Davide Brini <dave_br@...1278...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: David Sommerseth <dazo@...384...>
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Avoids using M_FATAL, which will terminate the OpenVPN process,
-except where it really is needed.  It's considered needed when
-the function fails after 5 attempts, as that most likely
-indicates problem with getting enough random data for the filename.
+On 15/04/10 20:52, Davide Brini wrote:
+> The man page does not mention that the default value of "mssfix" is 1450.
+> 
+> --- openvpn-2.1.1/openvpn.8     2010-02-28 22:17:45.000000000 +0000
+> +++ openvpn-2.1.1-a/openvpn.8   2010-04-15 19:43:53.000000000 +0100
+> @@ -1223,7 +1223,8 @@ their send packet sizes such that after
+>  the resulting UDP packet size that OpenVPN sends to its peer will not
+>  exceed
+>  .B max
+> -bytes.
+> +bytes. The default value is
+> +.B 1450.
+> 
+>  The
+>  .B max
 
-Signed-off-by: David Sommerseth <dazo@...384...>
----
- misc.c |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+ACK.
 
-diff --git a/misc.c b/misc.c
-index 643ffad..bd918ab 100644
---- a/misc.c
-+++ b/misc.c
-@@ -1190,7 +1190,7 @@ create_temp_file (const char *directory, const char *prefix, struct gc_arena *gc
-       retfname = gen_path (directory, BSTR (&fname), gc);
-       if (!retfname)
-         {
--          msg (M_FATAL, "Failed to create temporary filename and path");
-+          msg (M_WARN, "Failed to create temporary filename and path");
-           return NULL;
-         }
- 
-@@ -1206,7 +1206,7 @@ create_temp_file (const char *directory, const char *prefix, struct gc_arena *gc
-         {
-           /* Something else went wrong, no need to retry.  */
-           struct gc_arena gcerr = gc_new ();
--          msg (M_FATAL, "Could not create temporary file '%s': %s",
-+          msg (M_NONFATAL, "Could not create temporary file '%s': %s",
-                retfname, strerror_ts (errno, &gcerr));
-           gc_free (&gcerr);
-           return NULL;
--- 
-1.6.6.1
+Added as commit 38025abb47f74363c3ee87ca7265e99a4055459e to bugfix2.1
+and merged into allmerged.
 
+
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAkvLh1MACgkQDC186MBRfro4qwCfbNYIFyLe1b5jyxrKuo32Zgoh
+DAgAnRaxn8RUfls7G6gFE/E+t/VYJetS
+=bP2r
+-----END PGP SIGNATURE-----
 
