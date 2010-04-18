@@ -1,10 +1,8 @@
-Date: Sun, 18 Apr 2010 16:07:13 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20100418140713.GZ12312@...1296...>
-References: <1271449313-26315-1-git-send-email-openvpn.list@...1114...>
-Mime-Version: 1.0
-In-Reply-To: <1271449313-26315-1-git-send-email-openvpn.list@...1114...>
-Subject: Re: [Openvpn-devel] [PATCHv2 0/3] Harden create_temp_filename()
+From: David Sommerseth <openvpn.list@...1114...>
+Date: Sun, 18 Apr 2010 16:36:13 +0200
+Message-Id: <1271601373-22374-1-git-send-email-openvpn.list@...1114...>
+Subject: [Openvpn-devel] [PATCH] Use more appropriate error codes in
+	create_temp_file()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +11,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: James Yonan <james@...515...>, David Sommerseth <dazo@...384...>, Openvpn-devel@lists.sourceforge.net
+To: Openvpn-devel@lists.sourceforge.net
+Cc: James Yonan <james@...515...>, David Sommerseth <dazo@...384...>
 
-Hi,
+From: David Sommerseth <dazo@...384...>
 
-On Fri, Apr 16, 2010 at 10:21:50PM +0200, David Sommerseth wrote:
-> In a Debian bug report [1] there were worries that the --client-connect
-> script hook was prune to a "symlink" attack.  Even though this can
-> be recognised if --tmp-dir is set to a world writable directory, it is not
-> considered standard practice to do so.
-> 
-> This patch-set replaces the previous suggested patch, with an enhancement
-> suggested by Fabian Knittel.  In addition create_temp_filename() is renamed
-> to create_temp_file() to reflect the behvioural change in the function.
+Avoids using M_FATAL, which will terminate the OpenVPN process,
+except where it really is needed.  It's considered needed when
+the function fails after 5 attempts, as that most likely
+indicates problem with getting enough random data for the filename.
 
-Overall, this looks good to me (with the additional changes by Fabian
-and you).  So ACK.
+Signed-off-by: David Sommerseth <dazo@...384...>
+---
+ misc.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
-gert
+diff --git a/misc.c b/misc.c
+index 643ffad..bd918ab 100644
+--- a/misc.c
++++ b/misc.c
+@@ -1190,7 +1190,7 @@ create_temp_file (const char *directory, const char *prefix, struct gc_arena *gc
+       retfname = gen_path (directory, BSTR (&fname), gc);
+       if (!retfname)
+         {
+-          msg (M_FATAL, "Failed to create temporary filename and path");
++          msg (M_WARN, "Failed to create temporary filename and path");
+           return NULL;
+         }
+ 
+@@ -1206,7 +1206,7 @@ create_temp_file (const char *directory, const char *prefix, struct gc_arena *gc
+         {
+           /* Something else went wrong, no need to retry.  */
+           struct gc_arena gcerr = gc_new ();
+-          msg (M_FATAL, "Could not create temporary file '%s': %s",
++          msg (M_NONFATAL, "Could not create temporary file '%s': %s",
+                retfname, strerror_ts (errno, &gcerr));
+           gc_free (&gcerr);
+           return NULL;
 -- 
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~gert/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+1.6.6.1
+
 
