@@ -1,8 +1,13 @@
-From: Eric F Crist <ecrist@...1286...>
-Message-Id: <22EC0DBF-173D-4B8A-9161-CCF5DF0CF925@...1286...>
-Date: Wed, 21 Apr 2010 09:29:17 -0500
-Mime-Version: 1.0 (Apple Message framework v1078)
-Subject: [Openvpn-devel] Development Snapshots
+Date: Wed, 21 Apr 2010 09:49:33 -0500
+From: "Karl O. Pinc" <kop@...1206...>
+References: <4BCF0259.8070902@...1347...>
+	<CA8D46C6-BAA6-4BEA-901B-34E1B5B20D97@...1348...>
+In-Reply-To: <CA8D46C6-BAA6-4BEA-901B-34E1B5B20D97@...1348...>
+	(from toby@...1348... on Wed Apr 21 09:13:35 2010)
+Message-Id: <1271861373.1490.4@...1207...>
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] Slight modification to the contrib client.up
+ script: DNS in server order
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,28 +18,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: Toby Thain <toby@...1348...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Just an FYI - I am currently updating the FreeBSD ports tree every 2 to 3 w=
-eeks with a current development snapshot for the openvpn-devel port.  As pa=
-rt of this process, I create a new weekly snapshot for download at 00:00CDT=
- on Sundays.  Users are welcome to download these snapshots from ftp://ftp.=
-secure-computing.net/pub/FreeBSD/ports/openvpn-devel/ and ftp://ftp2.secure=
--computing.net/pub/FreeBSD/ports/openvpn-devel/ if using git is not desired.
+On 04/21/2010 09:13:35 AM, Toby Thain wrote:
+>=20
+> On 21-Apr-10, at 11:49 PM, Richard Monk wrote:
+>=20
+> > I had an issue come up where the clients were getting DNS entries=20
+> in
+>=20=20
+> > the
+> > reverse order the server sends them when using the client.up=20
+> contrib
+> > script.  Since the DNS servers on our system are in order from
+> > closest->farthest network wise from the VPN server, having them
+> > backwards caused some performance issues.
+>=20
+> Have you considered a local caching DNS with forwarding?
 
-These snapshots will be useful when referring to bugs for non-developers as=
- they can refer to a specific snapshot without having to dig in to git revi=
-sions, etc.
-
-In the near future, I'll be revamping my development setup and will be prov=
-iding PGP signatures for these snapshots.  I think it would ideal if other =
--devel packages were built from these as a common base.
-
-Thoughts?
----
-Eric Crist
+I don't see how this will solve the problem.
+What if the closest _is_ a local caching DNS with forwarding
+to the next farthest out?  You still want all the DNS servers
+available in case one is down for some reason.
 
 
-
+Karl <kop@...1206...>
+Free Software:  "You don't pay back, you pay forward."
+                 -- Robert A. Heinlein
 
 
