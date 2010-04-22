@@ -1,13 +1,13 @@
-Message-Id: <5BDB47C9-53C8-4B2A-ABDB-E3B8BF64CAEB@...1348...>
-From: Toby Thain <toby@...1348...>
-In-Reply-To: <1271861373.1490.4@...1207...>
-Mime-Version: 1.0 (Apple Message framework v936)
-Date: Thu, 22 Apr 2010 08:39:18 +1000
-References: <4BCF0259.8070902@...1347...>
-	<CA8D46C6-BAA6-4BEA-901B-34E1B5B20D97@...1348...>
-	<1271861373.1490.4@...1207...>
-Subject: Re: [Openvpn-devel] Slight modification to the contrib client.up
-	script: DNS in server order
+Message-ID: <4BD0028F.9040307@...1114...>
+Date: Thu, 22 Apr 2010 10:02:23 +0200
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <1267391523-1123-1-git-send-email-openvpn.list@...1114...>
+	<201003112141.01092.dave_br@...1278...>
+	<4BCCC1ED.2030500@...1114...>
+	<201004192237.51287.dave_br@...1278...>
+In-Reply-To: <201004192237.51287.dave_br@...1278...>
+Subject: Re: [Openvpn-devel] [PATCH] bash->bourne script cleanup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,50 +16,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: "Karl O. Pinc" <kop@...1206...>
+To: Davide Brini <dave_br@...1278...>
 Cc: openvpn-devel@lists.sourceforge.net
 
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-On 22-Apr-10, at 12:49 AM, Karl O. Pinc wrote:
-
-> On 04/21/2010 09:13:35 AM, Toby Thain wrote:
+On 19/04/10 23:37, Davide Brini wrote:
+> On Monday 19 April 2010, David Sommerseth wrote:
+> 
+>> I've done a quick test on one of my connections on Fedora 12 without any
+>> resolvconf package (meaning it invokes the simple cp approach), and it
+>> worked like a charm.
 >>
->> On 21-Apr-10, at 11:49 PM, Richard Monk wrote:
->>
->>> I had an issue come up where the clients were getting DNS entries
->> in
->>
->>> the
->>> reverse order the server sends them when using the client.up
->> contrib
->>> script.  Since the DNS servers on our system are in order from
->>> closest->farthest network wise from the VPN server, having them
->>> backwards caused some performance issues.
->>
->> Have you considered a local caching DNS with forwarding?
->
-> I don't see how this will solve the problem.
-> What if the closest _is_ a local caching DNS with forwarding
-> to the next farthest out?  You still want all the DNS servers
-> available in case one is down for some reason.
+>> Applied to bugfix2.1 and merged into allmerged.
+>> Commit a9c9a89e96dc1e4e843e05ecadc4349b81606b06
+> 
+> Sorry, I just realized that I didn't change the sha-bang line in client.down. 
+> Apologies. Fix attached.
 
-Multiple forwarders achieves that, afaics.
+No problem!  And thanks a lot for fixing it!  I should have caught that
+one during my review as well.  I looked at "everything", but managed to
+not notice this one as well.  Anyway, I gave it an ACK and it's now in
+the bugfix2.1 branch.  As this is a non-critical fix, I'll delay pushing
+it to allmerged until more patches comes in.  You'll find it as commit
+2d9c14b435ae4083aa3f6bce803ede27cce2b6cb
 
---Toby
+For future patches, would you mind adding a little bit more descriptive
+text which can be used as commit log messages.  I do write those commit
+logs when I find it is needed, but adding a little bit more descriptions
+of what the patch does is a nice and good habit - no matter how easy the
+patch looks like ... and it makes my maintenance job a lot easier and
+quicker.
 
->
->
-> Karl <kop@...1206...>
-> Free Software:  "You don't pay back, you pay forward."
->                 -- Robert A. Heinlein
->
->
-> ------------------------------------------------------------------------------
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+I won't reject good patches due to missing commit messages, but it I'm
+not picking these patches first for inclusion - as they require more
+work.  So the easier the patches are for me to work with, the quicker
+they go into the tree after the required review.
 
+
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAkvQAowACgkQDC186MBRfrrhCQCfdrZTU2ilBNQ+K8FC8iDguloq
+X04An0/BxnoqesB1CqCS+BzYdreb8rrh
+=q4xW
+-----END PGP SIGNATURE-----
 
