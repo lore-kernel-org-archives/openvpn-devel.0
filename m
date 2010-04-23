@@ -1,13 +1,12 @@
-Date: Fri, 23 Apr 2010 13:56:47 +0300
-From: Heikki Kallasjoki <heikki.kallasjoki@...124...>
-Message-ID: <20100423105647.GG9696@...1355...>
-References: <20100422111337.7ABB521DCF7@...1353...>
-	<201004222237.31646.dave_br@...1278...>
-	<4BD172C1.5090604@...1114...>
-	<201004231135.05402.dave_br@...1278...>
+Message-ID: <4BD1864F.5080803@...515...>
+Date: Fri, 23 Apr 2010 14:36:47 +0300
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <201004231135.05402.dave_br@...1278...>
-Subject: Re: [Openvpn-devel] [PATCH-fixed] revocation
+References: <s2w1757b0251004222336v1ff497bcsd7bfd0dbd9ec95fa@...278...>
+	<y2h1757b0251004222345q4ac6c0cdxe1fc2bf5f6c4344e@...278...>
+In-Reply-To: <y2h1757b0251004222345q4ac6c0cdxe1fc2bf5f6c4344e@...278...>
+Subject: Re: [Openvpn-devel] openvpn error messages on the administrative
+ interface?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,52 +15,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-A minor nitpick, but...
+What does the management interface "log" command do exactly? Does it
+output the same log lines which go to the system logger?
 
-On Fri, Apr 23, 2010 at 11:35:05AM +0100, Davide Brini wrote:
-> On Friday 23 Apr 2010 11:13:21 David Sommerseth wrote:
-> > On 22/04/10 23:37, Davide Brini wrote:
-> > > --- openvpn-2.1.1/ssl.c	2010-02-28 22:17:45.000000000 +0000
-> > > +++ openvpn-2.1.1-a/ssl.c	2010-04-22 22:33:40.000000000 +0100
-> > > @@ -788,9 +788,28 @@ verify_callback (int preverify_ok, X509_
-> > >
-> > >    /* export serial number as environmental variable */
-> > >    {
-> > > -    const int serial = (int) ASN1_INTEGER_get (X509_get_serialNumber
-> > > (ctx->current_cert)); +    BIO *bio = NULL;
-> > > +    char serial[1024] = {0};
-[...]
-> > The initialisation is also rather bogus, as it will only put \0 in the
-> > first byte, not the complete string.  It's better to instead use
-> > CLEAR (serial) afterwards (which is a wrapper for memset()).
-> 
-> Ok, will do that. But anyway, since it's meant to be a string, I thought that 
-> initializing it to '\0' would mean "empty string".
+http://openvpn.net/index.php/open-source/documentation/miscellaneous/79-man=
+agement-interface.html
 
-The initialization will, in fact, set all bytes of "serial" to zero.
-Quoting the C standard (well, C89 draft is the closest I have):
 
-"If there are fewer initializers in a list than there are members of
-an aggregate, the remainder of the aggregate shall be initialized
-implicitly the same as objects that have static storage duration."
+--=20
 
-Which means filling with zeroes:
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-"If an object that has static storage duration is not initialized
-explicitly, it is initialized implicitly as if every member that has
-arithmetic type were assigned 0 and [--]"
+irc freenode net: mattock
 
-I.e. you cannot "partially" initialize an object: the array elements not
-mentioned in the initializer are implicitly initialized to zero.  You
-only get indeterminate values by omitting the initializer completely.
-I guess it's concievable some compiler could get this wrong, though...
 
--- 
-Heikki Kallasjoki
-heikki.kallasjoki@...124...
+
+
+> I meant management interface rather :)
+>
+> On Fri, Apr 23, 2010 at 12:06 PM, Huzaifa Sidhpurwala
+> <sidhpurwala.huzaifa@...277... <mailto:sidhpurwala.huzaifa@...277...>>
+> wrote:
+>
+>     Hi All,
+>     I have been patching NetworkManager-openvpn for some time now,
+>     trying to enable some functionality, which a lot of
+>     people use.
+>     The main problem we have been facing for some time now, is that
+>     openvpn throws error messages only in the logs,
+>     due to which any form of graphical output for us, is only possible
+>     by screen scraping these logs, which is a real pain.
+>
+>     I am thinking if we can make openvpn show these messages on the
+>     administrative interface or something similar so that
+>     programatically it would become easier to parse them and show them
+>     graphical to the user.
+>
+>     Thanks in Advance.
+>
+>     Regards,
+>     Huzaifa.
+>
+>
+
+
 
