@@ -1,10 +1,7 @@
-Message-ID: <4BD2C31D.2090504@...1114...>
-Date: Sat, 24 Apr 2010 12:08:29 +0200
 From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <1272084868166011500@...1315...>
-In-Reply-To: <1272084868166011500@...1315...>
-Subject: Re: [Openvpn-devel] Status Message Missing IP Address
+Date: Sat, 24 Apr 2010 13:48:36 +0200
+Message-Id: <1272109716-3037-1-git-send-email-openvpn.list@...1114...>
+Subject: [Openvpn-devel] [PATCH] Revamped the script-security warning logging
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,54 +12,246 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn@...1315...
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
+To: Openvpn-devel@lists.sourceforge.net
+Cc: David Sommerseth <dazo@...384...>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+From: David Sommerseth <dazo@...384...>
 
-On 24/04/10 06:54, openvpn@...1315... wrote:
-> 
-> Hi,
-> 
-> I have found what seems to be an interesting feature (bug) of the
-> management interface – as I have been using it to write a connection
-> monitor application.
-> 
-> Up until recently I have been using the server-bridge command on the
-> server, and setting up a bridge (allowing OpenVPN to assign the IP
-> address). When I did this the management interface on the client
-> reported the IP address that it was assigned (both in real-time or
-> manual state commands). However, now I have changed the server
-> configuration file to allow the local DHCP server (router) to assign the
-> client IP address. While this works fine, and the client connection is
-> functional, the management interface no longer reports the client IP
-> address.
-> 
-> Is this a known (or for some reason planned) mode of operation?
+This is a first-cut of removing misleading warnings from the logs.
 
-Without having looked at the code, I would say this sounds reasonable.
-As OpenVPN would not care about which IP address is being used when it
-does not provide the IP address itself.  The only reason OpenVPN would
-do that is to avoid giving out the same IP address to several clients.
-The rest of OpenVPN's task is to pass the traffic coming from the
-UDP/TCP port on the Internet side, encrypt/decrypt the data and put it
-into the TAP interface (in your case).
+The main task of this patch is to avoid reporting the SCRIPT_SECURITY_WARNING
+over and over again, in addition to not show this warning when it should not
+be a problem.  This general warning should now only appear once, and only when
+--script-security is not set, 0 or 1.  In all other cases this warning should
+not appear.
 
-Having that said, it can be done some research on how the "learn
-address" state is implemented and how that state is used when OpenVPN is
-not assigning the VPN IP addresses.
+In addition, this warning will come close to the script-hook which most probably
+will fail.  It will also give a little bit more concrete hint on which script-hook
+which failed.  If --script-security is 2 or 3, only the execve failure itself will
+be shown.  This message will on the other hand be shown repeatedly.
 
+Signed-off-by: David Sommerseth <dazo@...384...>
+---
+ common.h |    2 +-
+ init.c   |    2 +-
+ misc.c   |   25 ++++++++++++++++++++++---
+ misc.h   |    3 +++
+ multi.c  |    6 +++---
+ socket.c |    2 +-
+ ssl.c    |    4 ++--
+ win32.c  |    5 ++++-
+ 8 files changed, 37 insertions(+), 12 deletions(-)
 
-kind regards,
+diff --git a/common.h b/common.h
+index 94da09e..3ee3fc8 100644
+--- a/common.h
++++ b/common.h
+@@ -90,6 +90,6 @@ typedef unsigned long ptr_type;
+ /*
+  * Script security warning
+  */
+-#define SCRIPT_SECURITY_WARNING "openvpn_execve: external program may not be called unless '--script-security 2' or higher is enabled.  Use '--script-security 3 system' for backward compatibility with 2.1_rc8 and earlier.  See --help text or man page for detailed info."
++#define SCRIPT_SECURITY_WARNING "WARNING: External program may not be called unless '--script-security 2' or higher is enabled.  Use '--script-security 3 system' for backward compatibility with 2.1_rc8 and earlier.  See --help text or man page for detailed info."
+ 
+ #endif
+diff --git a/init.c b/init.c
+index 19ac032..20a846a 100644
+--- a/init.c
++++ b/init.c
+@@ -975,7 +975,7 @@ do_route (const struct options *options,
+       struct argv argv = argv_new ();
+       setenv_str (es, "script_type", "route-up");
+       argv_printf (&argv, "%sc", options->route_script);
+-      openvpn_execve_check (&argv, es, S_SCRIPT, "Route script failed");
++      openvpn_run_script (&argv, es, S_SCRIPT, "--route-up");
+       argv_reset (&argv);
+     }
+ 
+diff --git a/misc.c b/misc.c
+index 33e6762..79a28b0 100644
+--- a/misc.c
++++ b/misc.c
+@@ -230,7 +230,7 @@ run_up_down (const char *command,
+ 		  ifconfig_local, ifconfig_remote,
+ 		  context);
+       argv_msg (M_INFO, &argv);
+-      openvpn_execve_check (&argv, es, S_SCRIPT|S_FATAL, "script failed");
++      openvpn_run_script (&argv, es, S_SCRIPT|S_FATAL, "--up/--down");
+       argv_reset (&argv);
+     }
+ 
+@@ -485,6 +485,22 @@ openvpn_execve_check (const struct argv *a, const struct env_set *es, const unsi
+ }
+ 
+ bool
++openvpn_run_script (const struct argv *a, const struct env_set *es, const unsigned int flags, const char *hook)
++{
++  static bool script_warning = false;
++  char msg[256];
++
++  if (!script_warning && (script_security < SSEC_SCRIPTS) )
++    {
++      msg (M_WARN, "[2] " SCRIPT_SECURITY_WARNING);
++      script_warning = true;
++    }
++
++  openvpn_snprintf(msg, 255, "WARNING: Failed running command (%s)", hook);
++  return openvpn_execve_check(a, es, flags | S_SCRIPT_NOWARN, msg);
++}
++
++bool
+ openvpn_execve_allowed (const unsigned int flags)
+ {
+   if (flags & S_SCRIPT)
+@@ -493,6 +509,7 @@ openvpn_execve_allowed (const unsigned int flags)
+     return script_security >= SSEC_BUILT_IN;
+ }
+ 
++
+ #ifndef WIN32
+ /*
+  * Run execve() inside a fork().  Designed to replicate the semantics of system() but
+@@ -504,6 +521,7 @@ openvpn_execve (const struct argv *a, const struct env_set *es, const unsigned i
+ {
+   struct gc_arena gc = gc_new ();
+   int ret = -1;
++  static bool exec_warn = false;
+ 
+   if (a && a->argv[0])
+     {
+@@ -540,9 +558,10 @@ openvpn_execve (const struct argv *a, const struct env_set *es, const unsigned i
+ 	      ASSERT (0);
+ 	    }
+ 	}
+-      else
++      else if (!(flags & S_SCRIPT_NOWARN) && !exec_warn && (script_security < SSEC_SCRIPTS))
+ 	{
+-	  msg (M_WARN, SCRIPT_SECURITY_WARNING);
++	  msg (M_WARN, "[1] " SCRIPT_SECURITY_WARNING);
++          exec_warn = true;
+ 	}
+ #else
+       msg (M_WARN, "openvpn_execve: execve function not available");
+diff --git a/misc.h b/misc.h
+index bf51e89..fec5e1e 100644
+--- a/misc.h
++++ b/misc.h
+@@ -124,6 +124,7 @@ void warn_if_group_others_accessible(const char* filename);
+ /* system flags */
+ #define S_SCRIPT (1<<0)
+ #define S_FATAL  (1<<1)
++#define S_SCRIPT_NOWARN (1<<2)
+ 
+ /* interpret the status code returned by system()/execve() */
+ bool system_ok(int);
+@@ -135,6 +136,7 @@ int openvpn_execve (const struct argv *a, const struct env_set *es, const unsign
+ bool openvpn_execve_check (const struct argv *a, const struct env_set *es, const unsigned int flags, const char *error_message);
+ bool openvpn_execve_allowed (const unsigned int flags);
+ int openvpn_system (const char *command, const struct env_set *es, unsigned int flags);
++bool openvpn_run_script (const struct argv *a, const struct env_set *es, const unsigned int flags, const char *hook);
+ 
+ #ifdef HAVE_STRERROR
+ /* a thread-safe version of strerror */
+@@ -303,6 +305,7 @@ void get_user_pass_auto_userid (struct user_pass *up, const char *tag);
+ extern const char *iproute_path;
+ #endif
+ 
++/* Script security */
+ #define SSEC_NONE      0 /* strictly no calling of external programs */
+ #define SSEC_BUILT_IN  1 /* only call built-in programs such as ifconfig, route, netsh, etc.*/
+ #define SSEC_SCRIPTS   2 /* allow calling of built-in programs and user-defined scripts */
+diff --git a/multi.c b/multi.c
+index 342871a..054a9f1 100644
+--- a/multi.c
++++ b/multi.c
+@@ -109,7 +109,7 @@ learn_address_script (const struct multi_context *m,
+ 		   mroute_addr_print (addr, &gc));
+       if (mi)
+ 	argv_printf_cat (&argv, "%s", tls_common_name (mi->context.c2.tls_multi, false));
+-      if (!openvpn_execve_check (&argv, es, S_SCRIPT, "WARNING: learn-address command failed"))
++      if (!openvpn_run_script (&argv, es, S_SCRIPT, "--learn-address"))
+ 	ret = false;
+       argv_reset (&argv);
+     }
+@@ -480,7 +480,7 @@ multi_client_disconnect_script (struct multi_context *m,
+ 	  struct argv argv = argv_new ();
+ 	  setenv_str (mi->context.c2.es, "script_type", "client-disconnect");
+ 	  argv_printf (&argv, "%sc", mi->context.options.client_disconnect_script);
+-	  openvpn_execve_check (&argv, mi->context.c2.es, S_SCRIPT, "client-disconnect command failed");
++	  openvpn_run_script (&argv, mi->context.c2.es, S_SCRIPT, "--client-disconnect");
+ 	  argv_reset (&argv);
+ 	}
+ #ifdef MANAGEMENT_DEF_AUTH
+@@ -1586,7 +1586,7 @@ multi_connection_established (struct multi_context *m, struct multi_instance *mi
+ 		       mi->context.options.client_connect_script,
+ 		       dc_file);
+ 
+-	  if (openvpn_execve_check (&argv, mi->context.c2.es, S_SCRIPT, "client-connect command failed"))
++	  if (openvpn_run_script (&argv, mi->context.c2.es, S_SCRIPT, "--client-connect"))
+ 	    {
+ 	      multi_client_connect_post (m, mi, dc_file, option_permissions_mask, &option_types_found);
+ 	      ++cc_succeeded_count;
+diff --git a/socket.c b/socket.c
+index e42ccb9..106df6f 100644
+--- a/socket.c
++++ b/socket.c
+@@ -1663,7 +1663,7 @@ link_socket_connection_initiated (const struct buffer *buf,
+       struct argv argv = argv_new ();
+       setenv_str (es, "script_type", "ipchange");
+       ipchange_fmt (true, &argv, info, &gc);
+-      openvpn_execve_check (&argv, es, S_SCRIPT, "ip-change command failed");
++      openvpn_run_script (&argv, es, S_SCRIPT, "--ipchange");
+       argv_reset (&argv);
+     }
+ 
+diff --git a/ssl.c b/ssl.c
+index d5230f7..5aa43e7 100644
+--- a/ssl.c
++++ b/ssl.c
+@@ -948,7 +948,7 @@ verify_callback (int preverify_ok, X509_STORE_CTX * ctx)
+ 		   ctx->error_depth,
+ 		   subject);
+       argv_msg_prefix (D_TLS_DEBUG, &argv, "TLS: executing verify command");
+-      ret = openvpn_execve (&argv, opt->es, S_SCRIPT);
++      ret = openvpn_run_script (&argv, opt->es, S_SCRIPT, "--tls-verify script");
+ 
+       if (opt->verify_export_cert)
+         {
+@@ -3232,7 +3232,7 @@ verify_user_pass_script (struct tls_session *session, const struct user_pass *up
+       argv_printf (&argv, "%sc %s", session->opt->auth_user_pass_verify_script, tmp_file);
+       
+       /* call command */
+-      retval = openvpn_execve (&argv, session->opt->es, S_SCRIPT);
++      retval = openvpn_run_script (&argv, session->opt->es, S_SCRIPT, "--auth-user-pass-verify");
+ 
+       /* test return status of command */
+       if (system_ok (retval))
+diff --git a/win32.c b/win32.c
+index eb94eb8..4de4139 100644
+--- a/win32.c
++++ b/win32.c
+@@ -952,6 +952,8 @@ int
+ openvpn_execve (const struct argv *a, const struct env_set *es, const unsigned int flags)
+ {
+   int ret = -1;
++  static bool exec_warn = false;
++
+   if (a && a->argv[0])
+     {
+       if (openvpn_execve_allowed (flags))
+@@ -1004,9 +1006,10 @@ openvpn_execve (const struct argv *a, const struct env_set *es, const unsigned i
+ 	      ASSERT (0);
+ 	    }
+ 	}
+-      else
++      else if (!exec_warn && (script_security < SSEC_SCRIPTS))
+ 	{
+ 	  msg (M_WARN, SCRIPT_SECURITY_WARNING);
++          exec_warn = true;
+ 	}
+     }
+   else
+-- 
+1.6.6.1
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkvSwx0ACgkQDC186MBRfrqT8QCfWhQGeVhp6Fm2CjF7jJ46Tdk8
-wqcAn09kxxP+efeuZOoUTenph02+zwOW
-=BWfu
------END PGP SIGNATURE-----
 
