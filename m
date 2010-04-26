@@ -1,12 +1,14 @@
-Date: Mon, 26 Apr 2010 09:47:55 -0500
+Date: Mon, 26 Apr 2010 09:50:56 -0500
 From: "Karl O. Pinc" <kop@...1206...>
-References: <6B68DFBC-517B-4031-8E84-A29922AE9C58@...1348...>
-	<y2p7f02a2eb1004260142r20f55dffqbbeda2588cc44401@...278...>
-In-Reply-To: <y2p7f02a2eb1004260142r20f55dffqbbeda2588cc44401@...278...>
-	(from a.vermeer@...1359... on Mon Apr 26 03:42:37 2010)
-Message-Id: <1272293275.28330.2@...1207...>
+References: <1272210565-9312-1-git-send-email-dave_br@...1278...>
+	<201004260956.16533.dave_br@...1278...>
+	<4BD56520.9070807@...1114...>
+	<201004261148.38378.dave_br@...1278...>
+In-Reply-To: <201004261148.38378.dave_br@...1278...> (from dave_br@...1278... on
+	Mon Apr 26 05:48:38 2010)
+Message-Id: <1272293456.28330.3@...1207...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [ANN] OS X packages - OpenVPN 2.1.1
+Subject: Re: [Openvpn-devel] [PATCH] Serial number export, fixed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,26 +20,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-To: Arnoud Vermeer <a.vermeer@...1359...>
-Cc: Toby Thain <toby@...1348...>, openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+To: Davide Brini <dave_br@...1278...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 04/26/2010 03:42:37 AM, Arnoud Vermeer wrote:
-> Hi Toby,
+On 04/26/2010 05:48:38 AM, Davide Brini wrote:
+> On Monday 26 Apr 2010 11:04:16 David Sommerseth wrote:
+> >=20
+> > Agreed, but from experience with many users ... it's a lot of users
+> who
+> > just take a script and try it out without even looking at the=20
+> script
+> > itself.  So if the script could fail gracefully giving a hint like
+> > "you've not done as I told you to", some support issues will be
+> avoided.
 >=20
-> I for one appreciate your effort and would love to see this in the
-> standard
-> release process.
+> Ok, that makes sense. I didn't look at it this way, but then I
+> perfectly know=20
+> what you mean, so I'll change it to exit if it detects that something
+> is not=20
+> set properly.
 
-Speaking of the standard release process there is still this thread:
+FWIW, and I don't know what the code does so I can't say
+whether this would be useful, but if you go to http://example.com
+or http://www.example.com (but not http://foo.example.com) you
+get a bare-bones web page explaining that you're using a
+reserved domain.
 
-Re: [Openvpn-devel] Unpackged Windows binaries? -- Problems building=20
-2.1 rc15 on Windows XP
-
-and its patch for releasing unpackaged MS Windows binaries;
-quite similar to what you're proposing for OS/X.  There has been
-no response from this list regarding this for quite some
-time despite repeated requests, unless I missed something
-somewhere along the line.
 
 
 Karl <kop@...1206...>
