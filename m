@@ -1,12 +1,8 @@
-Message-ID: <20100426165502.11782.qmail@...1287...>
-Date: Mon, 26 Apr 2010 18:55:02 +0200
-From: Peter Stuge <peter@...1287...>
-References: <1272210565-9312-1-git-send-email-dave_br@...1278...>
-	<4BD4CCA3.5030705@...1114...>
-	<201004260956.16533.dave_br@...1278...>
+Message-ID: <4BD5DB78.7020908@...515...>
+Date: Mon, 26 Apr 2010 21:29:12 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <201004260956.16533.dave_br@...1278...>
-Subject: Re: [Openvpn-devel] [PATCH] Serial number export, fixed
+Subject: [Openvpn-devel] Certificate problem with community site Trac fixed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,17 +11,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Davide Brini wrote:
-> The users are supposed to adapt it to their needs and make it more
-> robust.
+Hi all,
 
-Hah! Users will not.
+Patel ("openvpn2009" in IRC) just informed me that he fixed the Trac
+(Apache) certificate issue. The problem was caused by rekeying of the
+wildcard certificate, which was required for our internal servers. This
+caused the (old) certificate on community.openvpn.net to be revoked.
+Anyways, Trac is now back in business at
+<https://community.openvpn.net>. We'll do our best to avoid this kind of
+issues in the future :).
+
+Thanks for your patience,
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
 
-//Peter
+
+PS. I ironed out the remaining issues with the LDAP self-service
+registration service ("pwm") today, so it's now ready for use. This
+means we can open Trac for wider audience next Friday or next Monday -
+depending on how easy it is to install our SSL certificate on Tomcat.
 
