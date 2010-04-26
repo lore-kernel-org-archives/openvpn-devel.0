@@ -1,12 +1,12 @@
-Message-ID: <4BD5AFE9.1090707@...1114...>
-Date: Mon, 26 Apr 2010 17:23:21 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+From: Davide Brini <dave_br@...1278...>
+Date: Mon, 26 Apr 2010 16:55:29 +0100
+References: <1272210565-9312-1-git-send-email-dave_br@...1278...>
+	<201004261608.52121.dave_br@...1278...>
+	<4BD5AEF8.40603@...1114...>
+In-Reply-To: <4BD5AEF8.40603@...1114...>
 MIME-Version: 1.0
-References: <6B68DFBC-517B-4031-8E84-A29922AE9C58@...1348...>	<y2p7f02a2eb1004260142r20f55dffqbbeda2588cc44401@...278...>
-	<1272293275.28330.2@...1207...>
-In-Reply-To: <1272293275.28330.2@...1207...>
-Subject: [Openvpn-devel] Unpackaged Windows binaries (Was: Re:
- [Openvpn-users] [ANN] OS X packages - OpenVPN 2.1.1)
+Message-Id: <201004261655.29152.dave_br@...1278...>
+Subject: Re: [Openvpn-devel] [PATCH] Serial number export, fixed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,65 +15,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: Text/Plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
-To: "Karl O. Pinc" <kop@...1206...>
-Cc: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+On Monday 26 Apr 2010 16:19:20 David Sommerseth wrote:
 
-On 26/04/10 16:47, Karl O. Pinc wrote:
-> On 04/26/2010 03:42:37 AM, Arnoud Vermeer wrote:
->> Hi Toby,
->>
->> I for one appreciate your effort and would love to see this in the
->> standard
->> release process.
+> > (I still think it would be nice to have some sort of channel to send
+> > errors to OpenVPN's main log from the children scripts or programs, so
+> > users could inspect it.)
 > 
-> Speaking of the standard release process there is still this thread:
+> This begins to look very good!
 > 
-> Re: [Openvpn-devel] Unpackged Windows binaries? -- Problems building 
-> 2.1 rc15 on Windows XP
-> 
-> and its patch for releasing unpackaged MS Windows binaries;
-> quite similar to what you're proposing for OS/X.  There has been
-> no response from this list regarding this for quite some
-> time despite repeated requests, unless I missed something
-> somewhere along the line.
+> Just for the errors ... they are not captured if you write to stderr or
+> stdout from the script and put into the openvpn log files?  I haven't
+> tried it, but you might know this better from experience.
 
-Hi Karl,
+They are captured (which is of course better than nothing), but they're not 
+timestamped etc.
+To give you an idea, you get something like this (lines spaced for clarity):
 
-Thanks for pushing this.  I am honestly not quite sure were we stand
-with that patch.  And since I understand the Windows building least of
-all, I've refrained from going into details of this one so far.  It has
-not been my intention of ignoring this patch.  I'm primarily focusing on
-the platforms I happen to understand better, and hope others will chime
-in on the other issues.
+---------------------------------------------------------------------
+Mon Apr 26 16:27:44 2010 TLS: Initial packet from 10.0.0.1:1194, sid=473982ac 
+00c08d68
 
-But as responses are missing, I'll try to find some time in the near
-future (this week is crazily hectic for me) - to see if I can understand
-what your patch solves.  That is a little bit unclear to me, as the
-patch I'm looking at seems to just make a tarball with compiled binaries
-... Right now, I do not immediately see what problem that solves.  But
-I'm pretty sure I'm overlooking something!
+Error: OCSP server URL not defined!
+Did you forget to customize the variables in the script?
 
-Btw, you mentioned in some of the threads that you would look at some of
-the docs for this as well.  I remember vaguely something about another
-set of patches for HTML files - which I can't say I've seen in the
-source tree.  That would be good to get into the tree together with this
-patch when I've looked at it a bit better.
+Mon Apr 26 16:27:44 2010 VERIFY SCRIPT ERROR: depth=0, /C=GB/O=Test client/
+
+...
+---------------------------------------------------------------------
 
 
-kind regards,
+Note the "bare" messages output by the script to stderr (if you output to 
+stdout, they look the same in OpenVPN's log).
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+One would probably expect something like this instead:
 
-iEYEARECAAYFAkvVr+kACgkQDC186MBRfrrCZQCdF46SLpVlvXIIxZ/j+Jyl/JuS
-CegAni6GRYW/nSN6AuNmJK7Y0/CYqnBY
-=HOVE
------END PGP SIGNATURE-----
+---------------------------------------------------------------------
+Mon Apr 26 16:27:44 2010 TLS: Initial packet from 10.0.0.1:1194, sid=473982ac 
+00c08d68
+
+Mon Apr 26 16:27:44 2010 OCSP_check.sh: Error: OCSP server URL not defined!
+
+Mon Apr 26 16:27:44 2010 OCSP_check.sh: Did you forget to customize the 
+variables in the script?
+
+Mon Apr 26 16:27:44 2010 VERIFY SCRIPT ERROR: depth=0, /C=GB/O=Test client/
+
+...
+---------------------------------------------------------------------
+
+In this specific instance, it may probably be hacked somehow using logger(1) 
+with the right parameters in the script (or maybe not - I haven't tried), but 
+it would be nice if there was a general framework offered by the parent 
+OpenVPN so logs from the children would effectively be part of the parent 
+process's message flow, and treated as such (so if OpenVPN is using special or 
+customized log settings, the messages from the children would automatically be 
+processed in the same way).
+
+-- 
+D.
 
