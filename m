@@ -1,12 +1,13 @@
-Message-ID: <4BD58B6B.7040005@...1114...>
-Date: Mon, 26 Apr 2010 14:47:39 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Date: Mon, 26 Apr 2010 09:40:32 -0500
+From: "Karl O. Pinc" <kop@...1206...>
+References: <1272210565-9312-1-git-send-email-dave_br@...1278...>
+	<4BD4CCA3.5030705@...1114...>
+	<201004260956.16533.dave_br@...1278...>
+In-Reply-To: <201004260956.16533.dave_br@...1278...> (from dave_br@...1278... on
+	Mon Apr 26 03:56:16 2010)
+Message-Id: <1272292832.28330.1@...1207...>
 MIME-Version: 1.0
-References: <6B68DFBC-517B-4031-8E84-A29922AE9C58@...1348...>
-	<4BD57A54.3050608@...1114...>
-	<40C3833F-7CCF-4DC2-8D2E-4F92F92DFC9E@...1348...>
-In-Reply-To: <40C3833F-7CCF-4DC2-8D2E-4F92F92DFC9E@...1348...>
-Subject: Re: [Openvpn-devel] [ANN] OS X packages - OpenVPN 2.1.1
+Subject: Re: [Openvpn-devel] [PATCH] Serial number export, fixed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,73 +16,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Toby Thain <toby@...1348...>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: Davide Brini <dave_br@...1278...>
 Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+On 04/26/2010 03:56:16 AM, Davide Brini wrote:
+> On Monday 26 Apr 2010 00:13:39 David Sommerseth wrote:
 
-On 26/04/10 14:08, Toby Thain wrote:
-[...snip...]
->>> cc'd devel list in case there is any interest in adopting the
->>> packaging script(s), perhaps as contrib?
->>>
->>> http://telegraphics.com.au/svn/openvpn-package/trunk/
->>
->> Even though I don't have a OSX box (nor I do I have any plans acquiring
->> any), this looks pretty nice and cool!
->>
->> Would it be any possibilities that you would be willing to try to twist
->> this into the openvpn-testing.git tree?  It would sure fit well into the
->> contrib/ collection.
->>
->> Maybe even do some research if it would be possible, appropriate and
->> good to try to make autotools do a lot of this work automatically if
->> requested?  I'm not sure if this really is appropriate, but let's
->> consider it at least.
->>
->> Or that when running ./configure on an identified OSX box, that it would
->> update the contrib/ Makefile so a user can just go into the contrib/
->> directory and run make to get a proper OSX package.
-> 
-> This latter is pretty much what I had in mind, for adapting to contrib.
-> I think it will be easier than the autotools route (and my time for this
-> is limited - from experience futzing with autotools can soak up a *lot*
-> of time...) That said, I'd prefer to do it the *right* way, so I won't
-> dismiss that route.
+> > > +# OCSP responder URL (mandatory)
+> > > +ocsp_url=3D"http://some.ocsp.server/"
+> > > +#ocsp_url=3D"https://some.secure.ocsp.server/"
+> >=20
+> > Wouldn't it be better to use a more valid URL?
+>=20
+> And what could it be? I can put in the OCSP URL of some well-known=20
+> CA,
+> but=20
+> then if the user is using their own server, that would be meaningless
+> anyway.=20
+> But I'm open to suggestions.
 
-Sure, no stress!  Take the time you need, and you may start easier and
-modify it later on as well!
-
-> I am a git novice, so I don't think it will be ready for inclusion soon,
-> but thankyou for the encouraging feedback, David. When I find some time
-> I'll see if I can check out the testing branch and prepare a patch.
-
-Fair enough!  I've put together a very quick "git crash course", which
-might help you getting acquainted and started with git.
-
-<http://www.secure-computing.net/wiki/index.php/OpenVPN/git_crash_course>
-
-Also see the developers docs for more resources:
-
-<http://www.secure-computing.net/wiki/index.php/OpenVPN/Developer_documentation>
-
-I can especially recommend the ProGit Book (there is a link on the
-Developer docs page)  It's a good starting point when you want to learn
-and/or understand more about git and its features.
+I would suggest example.com, which would be compliant with
+RFC 2606 "Reserved Top Level DNS Names".
 
 
-kind regards,
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+Karl <kop@...1206...>
+Free Software:  "You don't pay back, you pay forward."
+                 -- Robert A. Heinlein
 
-iEYEARECAAYFAkvVi2gACgkQDC186MBRfrrB8gCfayAZB1a2Qx3Qb6EVvLDSWggI
-2DMAmwbYjPfYZvM+aVNTOUvW0fbs1HVN
-=ZsNw
------END PGP SIGNATURE-----
 
