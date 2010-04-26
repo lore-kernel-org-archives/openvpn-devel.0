@@ -1,8 +1,11 @@
-Message-Id: <6B68DFBC-517B-4031-8E84-A29922AE9C58@...1348...>
-From: Toby Thain <toby@...1348...>
-Mime-Version: 1.0 (Apple Message framework v936)
-Date: Mon, 26 Apr 2010 09:47:08 +1000
-Subject: [Openvpn-devel] [ANN] OS X packages - OpenVPN 2.1.1
+Message-ID: <4BD54411.4080603@...1114...>
+Date: Mon, 26 Apr 2010 09:43:13 +0200
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <1272235375-20327-1-git-send-email-openvpn.list@...1114...>
+In-Reply-To: <1272235375-20327-1-git-send-email-openvpn.list@...1114...>
+Subject: Re: [Openvpn-devel] [PATCH] Avoid repetition of "this config may
+ cache	passwords in memory"
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,36 +14,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-To: openvpn-users@lists.sourceforge.net
-Cc: openvpn-devel@lists.sourceforge.net
+To: Openvpn-devel@lists.sourceforge.net
 
-Hi,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-I have put together a generic packaging script for OS X (pkg/dmg), and  
-created basic binary Installer packages for PowerPC and Intel. It's  
-meant only for distributing the generic binary distribution, analogous  
-to any other UNIX binary package. A small addition is a script which  
-installs an OS X launchd service, net.openvpn.
+On 26/04/10 00:42, David Sommerseth wrote:
+> From: David Sommerseth <dazo@...384...>
+> 
+> For OpenVPN clients with long living connections, this message is repeated
+> everytime the connection is renegotiated.  This patch removes this behaviour
+> and will only show this warning once.
+> 
+> Signed-off-by: David Sommerseth <dazo@...384...>
+> ---
+>  misc.c |    4 +++-
+>  1 files changed, 3 insertions(+), 1 deletions(-)
+> 
+> diff --git a/misc.c b/misc.c
+> index 643ffad..7052584 100644
+> --- a/misc.c
+> +++ b/misc.c
+> @@ -1588,14 +1588,16 @@ void
+>  purge_user_pass (struct user_pass *up, const bool force)
+>  {
+>    const bool nocache = up->nocache;
+> +  static warn_shown = false;
 
-The binary package can be combined with a separate per-client key pkg  
-that installs configuration and keys and starts the launchd service  
-(scripts also available for this, in key-package directory).
+Well, this came as a surprise when I just quickly looked through it now
+in the morning.  I'll have recheck this one ... I'm pretty sure I wrote
+'static bool' as the variable declaration.  That's more proper anyway.
+I'll fix this today.
 
-This may help people with simple deployments that include OS X  
-clients. I have not linked to built packages, on the theory that  
-there's little reason you should trust my builds. (If you have the  
-Apple Developer Tools, and archives for openvpn and lzo, then creating  
-the binary packages and disk image yourself, for whatever architecture  
-you run, is as simple as 'make dmg'. Package build, install and run  
-have been tested on 32-bit PowerPC and Intel.)
+>    if (nocache || force)
+>      {
+>        CLEAR (*up);
+>        up->nocache = nocache;
+>      }
+> -  else
+> +  else if (!warn_shown)
+>      {
+>        msg (M_WARN, "WARNING: this configuration may cache passwords in memory -- use the auth-nocache option to prevent this");
+> +      warn_shown = true;
+>      }
+>  }
+>  
 
-cc'd devel list in case there is any interest in adopting the  
-packaging script(s), perhaps as contrib?
 
-http://telegraphics.com.au/svn/openvpn-package/trunk/
+kind regards,
 
---Toby
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
+iEYEARECAAYFAkvVRBEACgkQDC186MBRfrpJ6ACfVC1LzHDOvzUHtSN6QSKzELSh
+EP8An23EMCXf3cKVILvgjXq56NHSyC6m
+=e+I7
+-----END PGP SIGNATURE-----
 
