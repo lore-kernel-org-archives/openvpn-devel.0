@@ -1,11 +1,10 @@
-Date: Tue, 27 Apr 2010 10:26:27 -0500
-From: "Karl O. Pinc" <kop@...1206...>
-In-Reply-To: <20100427105843.9402.qmail@...1287...> (from peter@...1287... on
-	Tue Apr 27 05:58:43 2010)
-Message-Id: <1272381987.25907.0@...1207...>
+Message-ID: <4BD75D96.2050402@...1114...>
+Date: Tue, 27 Apr 2010 23:56:38 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Unpackaged Windows binaries (Was: Re:
- [Openvpn-users] [ANN] OS X packages - OpenVPN 2.1.1)
+References: <4BC330A0.5000209@...1338...>
+In-Reply-To: <4BC330A0.5000209@...1338...>
+Subject: Re: [Openvpn-devel] [PULL-REQUEST v3] VLAN-Tagging
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,65 +13,106 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Peter Stuge <peter@...1287...>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+To: Fabian Knittel <fabian.knittel@...1338...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On 04/27/2010 05:58:43 AM, Peter Stuge wrote:
-> Karl O. Pinc wrote:
-> > IMO OpenVPN is encouraging bad practices by supplying packages for
-> > distros that include OpenVPN.
->=20
-> Ideally the package for that distro as made by OpenVPN is always
-> equivalent to the one made by the distributor.
->=20
-> What do I mean? I mean that I'm happy with .spec files and the likes,
-> that make up the source code for a particular kind of binary package,
-> being committed upstream.
->=20
-> And if they are, then it's of course fairly easy for upstream to use
-> them, and to make packages which are at the very least compatible
-> with the distribution.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-I agree.
-It is useful for OpenVPN to distribute .spec files and
-equivalents for use by disto packagers.
+On 12/04/10 16:39, Fabian Knittel wrote:
+> Hi,
+> 
+> changes since the last round of patches:
+> 
+>  - Added Signed-Off-By to all patches.
+> 
+>  - Properly mentioned "--vlan-accept all" mode in options.c (it was
+>    missing in a few places).
+> 
+>  - Split out '--vlan-accept raw' to '--vlan-tagging' boolean switch.
+>    Quoting from the patch description:
+> 
+>>     As '--vlan-accept raw' is a global behavioural modifier, it makes more sense
+>>     to break it out into a global '--vlan-tagging' boolean switch. (Which
+>>     matches the approach chosen in the initial patch-set.)
+>>
+>>     '--vlan-accept tagged|untagged|all' now only specifies the behaviour of the
+>>     tap device, while '--vlan-tagging' specifies whether OpenVPN should take a
+>>     closer look at the tagging of packets.
+>>
+>>     The patch is only a configuration option change.  The behaviour should
+>>     remain the same.
+>>
+>>       New                                       Old
+>>       ------------------------------------------------------------------
+>>
+>>       not specifying anything is equivalent to not specifying anything
+>>
+>>       not specifying anything is equivalent to '--vlan-accept raw'
+>>
+>>       '--vlan-tagging' +
+>>       '--vlan-accept tagged'  is equivalent to '--vlan-accept tagged'
+>>
+>>       '--vlan-tagging' +
+>>       '--vlan-accept untagged' is equivalent to '--vlan-accept untagged'
+>>
+>>       '--vlan-tagging'        is equivalent to '--vlan-accept all'
+>>
+>>       '--vlan-tagging' +
+>>       '--vlan-accept all'     is equivalent to '--vlan-accept all'
+> 
+> All further work will be bug-fix only.
+> 
+> 
+> The rebased changes are available from my git repo [1] on branch
+> 'feat_vlan'. On branch 'feat_vlan_tagging' the same changes are
+> available as incremental patches to the 'feat_vlan_tagging' branch on
+> openvpn-testing.git. (Only the non-incremental patches provide all
+> missing Signed-Off-Bys).
+> 
+> For reviewers who haven't had a look at the other patches yet, I've
+> attached a diff containing all changes introduced by the current patch-set.
+> 
+> Cheers
+> Fabian
+> 
+> 1: git://fsmi-dev.fsmi.uni-karlsruhe.de/openvpn.git
 
->=20
-> And, I think that since it is downloaded from a site other than the
-> distributor's, users who actually do grab packages "manually" will be
-> able to tell the difference from a package delivered by the
-> distributor.
+Hi Fabian!
 
-The question is not whether users can tell the difference, it's
-whether users know enough to know the advantages of getting
-their packages from their distro.  I believe that most users
-are unaware of these advantages because they have experience=20
-only with OSs that force them to arrange for their own=20
-systems integration.  IMO the widespread failure to integrate disparate
-software and the consequent gradual degradation of so many systems,
-often ending in a disk wipe and OS re-install, demonstrates
-the extent of the problem.  While OpenVPN's users are clearly
-the cream of the crop, hip, techo-savvy, and sporting
-shiny white smiles, I don't believe they are immune
-and the OpenVPN project should encourage them to make
-good choices.  This would help toward a good long-term
-OpenVPN experience.  The current policy that makes
-pre-packaged downloads available without explanation
-does nothing to encourage good sysadmin practice and
-puts a bad choice one click away.
+I've finally found some time to dig into this again.  After some
+consideration, I decided to rebase your work on your feat_vlan_tagging
+branch against the openvpn-testing.git feat_vlan_tagging branch.
 
-Giant problem?  No.  They'll always be plenty of ways
-to make bad choices. I'd be ok with making distro specific packages=20
-available so long as you also tell the end-user they are=20
-probably better off without them.  :)
+This means that your earlier patches without signed-off-by tags are not
+merged in.  I am fine with that, as I've become stricter on those tags
+later on.
 
-Regards,
+The alternative is to scratch the feat_vlan_tagging branch now in
+openvpn-testing.git and re-establish it on your feat_vlan branch, which
+has those tags all from the beginning.
 
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                 -- Robert A. Heinlein
+So I will leave it up to you now how you want it.  But in the moment I
+this branch gets merged into allmerged, its too late to change your
+opinion.  I will wait for your reply on which approach you would like.
 
+When this is settled, the only missing thing is to get someone who can
+understand the code path being changed in your feature branch a bit
+better than me to give an official ACK.  When I get that ACK, it goes
+into allmerged.
+
+
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAkvXXZYACgkQDC186MBRfrqSDQCggVagtu6pM/1hp+QdvYyL8Pcv
+hfIAoJ7jIJWgN5Dt86EfQLjc6i1YhbQ1
+=X4FI
+-----END PGP SIGNATURE-----
 
