@@ -1,10 +1,11 @@
-Message-ID: <4BD75D96.2050402@...1114...>
-Date: Tue, 27 Apr 2010 23:56:38 +0200
+Message-ID: <4BD75E11.4040309@...1114...>
+Date: Tue, 27 Apr 2010 23:58:41 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4BC330A0.5000209@...1338...>
-In-Reply-To: <4BC330A0.5000209@...1338...>
-Subject: Re: [Openvpn-devel] [PULL-REQUEST v3] VLAN-Tagging
+References: <4BD56520.9070807@...1114...>
+	<1272367205-1912-1-git-send-email-dave_br@...1278...>
+In-Reply-To: <1272367205-1912-1-git-send-email-dave_br@...1278...>
+Subject: Re: [Openvpn-devel] [PATCH] Serial number export, better
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,95 +14,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-To: Fabian Knittel <fabian.knittel@...1338...>
+To: Davide Brini <dave_br@...1278...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 12/04/10 16:39, Fabian Knittel wrote:
-> Hi,
+On 27/04/10 13:20, Davide Brini wrote:
+>     contrib/OCSP_check/OCSP_check.sh:
+>              New barebone script to demonstrate how to use $tls_serial_{n}
+>              to perform simple OCSP queries using OpenSSL command line
+>              "openssl ocsp". Minimal sanity checks to fail if user tries to
+>              use it without customizing.
 > 
-> changes since the last round of patches:
+>     openvpn.8:
+>              Added some notes about $tls_serial_{n} format and usage to the
+>              existing description.
 > 
->  - Added Signed-Off-By to all patches.
+>     ssl.c:
+>              correctly manage and export serial numbers of any size (as
+>              parsed by OpenSSL) into the environment. Set to empty string
+>              in case of errors, as 0 and negative numbers are all possible
+>              (although illegal) certificate serial numbers. Use an OpenSSL
+>              BIO object to do the job. Conforms to coding style guidelines.
 > 
->  - Properly mentioned "--vlan-accept all" mode in options.c (it was
->    missing in a few places).
+>     See the discussion at
 > 
->  - Split out '--vlan-accept raw' to '--vlan-tagging' boolean switch.
->    Quoting from the patch description:
+>     http://article.gmane.org/gmane.network.openvpn.devel/3588
 > 
->>     As '--vlan-accept raw' is a global behavioural modifier, it makes more sense
->>     to break it out into a global '--vlan-tagging' boolean switch. (Which
->>     matches the approach chosen in the initial patch-set.)
->>
->>     '--vlan-accept tagged|untagged|all' now only specifies the behaviour of the
->>     tap device, while '--vlan-tagging' specifies whether OpenVPN should take a
->>     closer look at the tagging of packets.
->>
->>     The patch is only a configuration option change.  The behaviour should
->>     remain the same.
->>
->>       New                                       Old
->>       ------------------------------------------------------------------
->>
->>       not specifying anything is equivalent to not specifying anything
->>
->>       not specifying anything is equivalent to '--vlan-accept raw'
->>
->>       '--vlan-tagging' +
->>       '--vlan-accept tagged'  is equivalent to '--vlan-accept tagged'
->>
->>       '--vlan-tagging' +
->>       '--vlan-accept untagged' is equivalent to '--vlan-accept untagged'
->>
->>       '--vlan-tagging'        is equivalent to '--vlan-accept all'
->>
->>       '--vlan-tagging' +
->>       '--vlan-accept all'     is equivalent to '--vlan-accept all'
+>     for more details.
 > 
-> All further work will be bug-fix only.
+> Signed-off-by: Davide Brini <dave_br@...1278...>
+> ---
+>  contrib/OCSP_check/OCSP_check.sh |   89 ++++++++++++++++++++++++++++++++++++++
+>  openvpn.8                        |    7 +++-
+>  ssl.c                            |   27 ++++++++++-
+>  3 files changed, 119 insertions(+), 4 deletions(-)
+>  create mode 100644 contrib/OCSP_check/OCSP_check.sh
 > 
-> 
-> The rebased changes are available from my git repo [1] on branch
-> 'feat_vlan'. On branch 'feat_vlan_tagging' the same changes are
-> available as incremental patches to the 'feat_vlan_tagging' branch on
-> openvpn-testing.git. (Only the non-incremental patches provide all
-> missing Signed-Off-Bys).
-> 
-> For reviewers who haven't had a look at the other patches yet, I've
-> attached a diff containing all changes introduced by the current patch-set.
-> 
-> Cheers
-> Fabian
-> 
-> 1: git://fsmi-dev.fsmi.uni-karlsruhe.de/openvpn.git
 
-Hi Fabian!
-
-I've finally found some time to dig into this again.  After some
-consideration, I decided to rebase your work on your feat_vlan_tagging
-branch against the openvpn-testing.git feat_vlan_tagging branch.
-
-This means that your earlier patches without signed-off-by tags are not
-merged in.  I am fine with that, as I've become stricter on those tags
-later on.
-
-The alternative is to scratch the feat_vlan_tagging branch now in
-openvpn-testing.git and re-establish it on your feat_vlan branch, which
-has those tags all from the beginning.
-
-So I will leave it up to you now how you want it.  But in the moment I
-this branch gets merged into allmerged, its too late to change your
-opinion.  I will wait for your reply on which approach you would like.
-
-When this is settled, the only missing thing is to get someone who can
-understand the code path being changed in your feature branch a bit
-better than me to give an official ACK.  When I get that ACK, it goes
-into allmerged.
+This patch is now applied to the bugfix2.1 branch and merged into
+allmerged.  An updated tree is now available.
+Commit fa47f0a36c2aeda972a94c93f8f83246306812a0
 
 
 kind regards,
@@ -111,8 +67,8 @@ David Sommerseth
 Version: GnuPG v1.4.10 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkvXXZYACgkQDC186MBRfrqSDQCggVagtu6pM/1hp+QdvYyL8Pcv
-hfIAoJ7jIJWgN5Dt86EfQLjc6i1YhbQ1
-=X4FI
+iEYEARECAAYFAkvXXhEACgkQDC186MBRfrqp6QCfSroMqJRTJ3xdZIHab2YMBxhE
+TyoAoIgoym231GFcjDNhk9+Z5+WdMltx
+=OtJi
 -----END PGP SIGNATURE-----
 
