@@ -1,11 +1,11 @@
-Message-ID: <4BD6FCAF.9090303@...1114...>
-Date: Tue, 27 Apr 2010 17:03:11 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Date: Tue, 27 Apr 2010 10:26:27 -0500
+From: "Karl O. Pinc" <kop@...1206...>
+In-Reply-To: <20100427105843.9402.qmail@...1287...> (from peter@...1287... on
+	Tue Apr 27 05:58:43 2010)
+Message-Id: <1272381987.25907.0@...1207...>
 MIME-Version: 1.0
-References: <4BD56520.9070807@...1114...>
-	<1272367205-1912-1-git-send-email-dave_br@...1278...>
-In-Reply-To: <1272367205-1912-1-git-send-email-dave_br@...1278...>
-Subject: Re: [Openvpn-devel] [PATCH] Serial number export, better
+Subject: Re: [Openvpn-devel] Unpackaged Windows binaries (Was: Re:
+ [Openvpn-users] [ANN] OS X packages - OpenVPN 2.1.1)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,62 +14,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Davide Brini <dave_br@...1278...>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: Peter Stuge <peter@...1287...>
 Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+On 04/27/2010 05:58:43 AM, Peter Stuge wrote:
+> Karl O. Pinc wrote:
+> > IMO OpenVPN is encouraging bad practices by supplying packages for
+> > distros that include OpenVPN.
+>=20
+> Ideally the package for that distro as made by OpenVPN is always
+> equivalent to the one made by the distributor.
+>=20
+> What do I mean? I mean that I'm happy with .spec files and the likes,
+> that make up the source code for a particular kind of binary package,
+> being committed upstream.
+>=20
+> And if they are, then it's of course fairly easy for upstream to use
+> them, and to make packages which are at the very least compatible
+> with the distribution.
 
-On 27/04/10 13:20, Davide Brini wrote:
->     contrib/OCSP_check/OCSP_check.sh:
->              New barebone script to demonstrate how to use $tls_serial_{n}
->              to perform simple OCSP queries using OpenSSL command line
->              "openssl ocsp". Minimal sanity checks to fail if user tries to
->              use it without customizing.
-> 
->     openvpn.8:
->              Added some notes about $tls_serial_{n} format and usage to the
->              existing description.
-> 
->     ssl.c:
->              correctly manage and export serial numbers of any size (as
->              parsed by OpenSSL) into the environment. Set to empty string
->              in case of errors, as 0 and negative numbers are all possible
->              (although illegal) certificate serial numbers. Use an OpenSSL
->              BIO object to do the job. Conforms to coding style guidelines.
-> 
->     See the discussion at
-> 
->     http://article.gmane.org/gmane.network.openvpn.devel/3588
-> 
->     for more details.
-> 
-> Signed-off-by: Davide Brini <dave_br@...1278...>
-> ---
->  contrib/OCSP_check/OCSP_check.sh |   89 ++++++++++++++++++++++++++++++++++++++
->  openvpn.8                        |    7 +++-
->  ssl.c                            |   27 ++++++++++-
->  3 files changed, 119 insertions(+), 4 deletions(-)
->  create mode 100644 contrib/OCSP_check/OCSP_check.sh
-> 
+I agree.
+It is useful for OpenVPN to distribute .spec files and
+equivalents for use by disto packagers.
 
-ACK!  This is looking good!  I've put it into my work queue and will try
-to get time sometime this week to get it into the bugfix2.1 branch.
+>=20
+> And, I think that since it is downloaded from a site other than the
+> distributor's, users who actually do grab packages "manually" will be
+> able to tell the difference from a package delivered by the
+> distributor.
 
-Thanks a lot for your hard work on this one!
+The question is not whether users can tell the difference, it's
+whether users know enough to know the advantages of getting
+their packages from their distro.  I believe that most users
+are unaware of these advantages because they have experience=20
+only with OSs that force them to arrange for their own=20
+systems integration.  IMO the widespread failure to integrate disparate
+software and the consequent gradual degradation of so many systems,
+often ending in a disk wipe and OS re-install, demonstrates
+the extent of the problem.  While OpenVPN's users are clearly
+the cream of the crop, hip, techo-savvy, and sporting
+shiny white smiles, I don't believe they are immune
+and the OpenVPN project should encourage them to make
+good choices.  This would help toward a good long-term
+OpenVPN experience.  The current policy that makes
+pre-packaged downloads available without explanation
+does nothing to encourage good sysadmin practice and
+puts a bad choice one click away.
 
+Giant problem?  No.  They'll always be plenty of ways
+to make bad choices. I'd be ok with making distro specific packages=20
+available so long as you also tell the end-user they are=20
+probably better off without them.  :)
 
-kind regards,
+Regards,
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+Karl <kop@...1206...>
+Free Software:  "You don't pay back, you pay forward."
+                 -- Robert A. Heinlein
 
-iEYEARECAAYFAkvW/KwACgkQDC186MBRfrqUNACfRKjQww+GT1Pf3whbN5a8xr04
-2hEAn2p0z1jg9nWYfg7oadIEFWkk5tgD
-=juOA
------END PGP SIGNATURE-----
 
