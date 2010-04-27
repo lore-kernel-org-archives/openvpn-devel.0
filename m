@@ -1,8 +1,9 @@
-Date: Mon, 26 Apr 2010 21:19:33 -0500
+Date: Mon, 26 Apr 2010 21:25:49 -0500
 From: "Karl O. Pinc" <kop@...1206...>
-In-Reply-To: <DA715293-35F5-48ED-A5CF-372C8B67393A@...1348...>
-	(from toby@...1348... on Mon Apr 26 18:19:31 2010)
-Message-Id: <1272334773.8910.2@...1207...>
+References: <1272309086.19417.1@...1207...> <4BD61B96.3050005@...1114...>
+In-Reply-To: <4BD61B96.3050005@...1114...> (from
+	openvpn.list@...1114... on Mon Apr 26 18:02:46 2010)
+Message-Id: <1272335149.8910.3@...1207...>
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] Unpackaged Windows binaries (Was: Re:
  [Openvpn-users] [ANN] OS X packages - OpenVPN 2.1.1)
@@ -17,57 +18,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-To: Toby Thain <toby@...1348...>
-Cc: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: openvpn-devel@lists.sourceforge.net, Peter Stuge <peter@...1287...>
 
-On 04/26/2010 06:19:31 PM, Toby Thain wrote:
->=20
-> On 27-Apr-10, at 1:58 AM, Karl O. Pinc wrote:
+On 04/26/2010 06:02:46 PM, David Sommerseth wrote:
+> On 26/04/10 21:11, Karl O. Pinc wrote:
+> > On Debian all I had to do was "aptitude install nsis" and then
+> > run it to make MS Windows installers.  Plug and play, no
+> > compiling necessary.
 > >
-> > The problem addressed is that there only binaries available
-> > for MS Windows are pre-packaged in an installer executable.
-> > This means that anyone who wants stock binaries but a
-> > modified installer has to recompile from source.
 >=20
-> For the OS X package, I chose to simply make two packages - one the=20=20
-> generic binaries, and one for whatever configuration and keys are=20=20
-> needed for a particular deployment. Could you do the same on Windows?
+> Just a little nitpick, when you run makensis, that's actually
+> compilation of the installer - even when you're doing it on Linux.=20
+> You
+> get a Windows binary as the result.
 
-Sure, but this greatly increases the complexity for the
-end-user.  Just adding another installer at least doubles the
-complexity.  A custom install can be one-click.  The stock
-OpenVPN installer (last I looked) presented the user
-with many choices and is far more complex than a 1-click
-install.
+As long as we're nitpicking... ;-)
 
-Getting the users to do anything at all can be tricky
-(especially at the outlying ends of the pay scale).
-The less that can go wrong the better.
-
-> > But this only makes sense if OpenVPN _will_ release
-> > unpackaged MS Windows binaries.  It makes sense to me;
-> > the project is already releasing unpackaged Linux
-> > binaries and it now talking about doing the same
-> > for OS/X binaries.
->=20
-> I don't think unpackaged OS X binaries are very useful, which is why=20
-> I
->=20=20
-> created the pkg+dmg.=20
-
-I agree, because the Apple development kit is shipped,
-if not installed, on every Mac.  (Last I looked.)  And
-because ./configure ; make is painless.  MS Windows on
-the other hand requires additional software=20
-to compile anything.  And the FOSS choices, which
-are the the ones most universally available, are non-trivial
-to install and use.=20=20
-
-I'd bet cross compiling  Un*x-to-Mac is easier too, but=20
-I have no experience to back that up.
-Now that OpenVPN is accepting more patches cross compiling
-Un*x-to-MSWindows will probably get easier but it will
-never be easy.
+That's interesting.  I figured the nsis install scripts
+were interpreted and, if I thought about it at all,
+running makensis setup some data structures and did
+some linking.
 
 Karl <kop@...1206...>
 Free Software:  "You don't pay back, you pay forward."
