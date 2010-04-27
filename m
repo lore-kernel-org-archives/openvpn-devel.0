@@ -1,11 +1,11 @@
-Message-Id: <5A2CC3A7-DA09-4548-8534-AA4967413DA8@...1348...>
-From: Toby Thain <toby@...1348...>
-In-Reply-To: <1272309086.19417.1@...1207...>
-Mime-Version: 1.0 (Apple Message framework v936)
-Date: Tue, 27 Apr 2010 09:31:43 +1000
-References: <1272309086.19417.1@...1207...>
+Date: Mon, 26 Apr 2010 21:19:33 -0500
+From: "Karl O. Pinc" <kop@...1206...>
+In-Reply-To: <DA715293-35F5-48ED-A5CF-372C8B67393A@...1348...>
+	(from toby@...1348... on Mon Apr 26 18:19:31 2010)
+Message-Id: <1272334773.8910.2@...1207...>
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] Unpackaged Windows binaries (Was: Re:
-	[Openvpn-users] [ANN] OS X packages - OpenVPN 2.1.1)
+ [Openvpn-users] [ANN] OS X packages - OpenVPN 2.1.1)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,89 +14,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
-Content-Transfer-Encoding: 7bit
-To: "Karl O. Pinc" <kop@...1206...>
-Cc: openvpn-devel@lists.sourceforge.net, Peter Stuge <peter@...1287...>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: Toby Thain <toby@...1348...>
+Cc: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
+On 04/26/2010 06:19:31 PM, Toby Thain wrote:
+>=20
+> On 27-Apr-10, at 1:58 AM, Karl O. Pinc wrote:
+> >
+> > The problem addressed is that there only binaries available
+> > for MS Windows are pre-packaged in an installer executable.
+> > This means that anyone who wants stock binaries but a
+> > modified installer has to recompile from source.
+>=20
+> For the OS X package, I chose to simply make two packages - one the=20=20
+> generic binaries, and one for whatever configuration and keys are=20=20
+> needed for a particular deployment. Could you do the same on Windows?
 
-On 27-Apr-10, at 5:11 AM, Karl O. Pinc wrote:
+Sure, but this greatly increases the complexity for the
+end-user.  Just adding another installer at least doubles the
+complexity.  A custom install can be one-click.  The stock
+OpenVPN installer (last I looked) presented the user
+with many choices and is far more complex than a 1-click
+install.
 
-> On 04/26/2010 11:53:19 AM, Peter Stuge wrote:
->> Karl O. Pinc wrote:
->>> the project is already releasing unpackaged Linux
->>> binaries
->>
->> Really?
->
-> They seem to have stopped sometime after July 30 2008.
->
-> http://web.archive.org/web/20080730205524/openvpn.net/index.php/
-> downloads.html
->
-> It's hard to tell when because archive.org does not appear
-> to be allowed to archive the site any longer.  Or at least
-> there's nothing more recent.  (This seems silly.  I wonder why.)
->
-> (I clearly haven't been downloading binaries in a while.
-> Probably because I rely on my distro for binaries so
-> they can do the systems integration and security patches,
-> or I am getting development from CVS/git.
->
-> IMO people who don't rely on their distro for systems integration
-> and security patches are asking for trouble.  There are of course
-> always reasons to make specific exceptions, RH comes to mind. :)
->
-> Is OpenVPN in RHEL6?)
->
->>
->>> and it now talking about doing the same for OS/X binaries.
->>
->> Recently discussed work for contrib/ produces a .dmg, very much a
->> package in my view.
->
-> Ok.  I don't know much about .dmg.  I thought they were basically
-> tarballs by another name in that they just stick stuff somewhere.
-> My Mac usage is sporadic, sorry.
+Getting the users to do anything at all can be tricky
+(especially at the outlying ends of the pay scale).
+The less that can go wrong the better.
 
+> > But this only makes sense if OpenVPN _will_ release
+> > unpackaged MS Windows binaries.  It makes sense to me;
+> > the project is already releasing unpackaged Linux
+> > binaries and it now talking about doing the same
+> > for OS/X binaries.
+>=20
+> I don't think unpackaged OS X binaries are very useful, which is why=20
+> I
+>=20=20
+> created the pkg+dmg.=20
 
-The Makefile produces both 'pkg' and 'dmg'. Dmg is just an OS X  
-standard self-mounting single file archive which is a way of  
-distributing the pkg. Generating a dmg is useful because the pkg is  
-actually a file tree, not a single file, so inappropriate for  
-downloading, attaching, etc.
+I agree, because the Apple development kit is shipped,
+if not installed, on every Mac.  (Last I looked.)  And
+because ./configure ; make is painless.  MS Windows on
+the other hand requires additional software=20
+to compile anything.  And the FOSS choices, which
+are the the ones most universally available, are non-trivial
+to install and use.=20=20
 
-Pkg is the package itself, which like any binary UNIX package is  
-indeed a tarball by another name plus some metadata and scripts - but  
-of course infinitely easier for non-technical end users (let alone  
-compared to a source build).
+I'd bet cross compiling  Un*x-to-Mac is easier too, but=20
+I have no experience to back that up.
+Now that OpenVPN is accepting more patches cross compiling
+Un*x-to-MSWindows will probably get easier but it will
+never be easy.
 
---Toby
-
-
->
->>
->>
->>> There's clear utility.
->>
->> I guess it depends. I'm not sure that I agree that compilation is a
->> much bigger bother than (cross-)compiling the NSIS installer..
->
-> On Debian all I had to do was "aptitude install nsis" and then
-> run it to make MS Windows installers.  Plug and play, no
-> compiling necessary.
->
-> Regards,
->
-> Karl <kop@...1206...>
-> Free Software:  "You don't pay back, you pay forward."
->                 -- Robert A. Heinlein
->
->
-> ------------------------------------------------------------------------------
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+Karl <kop@...1206...>
+Free Software:  "You don't pay back, you pay forward."
+                 -- Robert A. Heinlein
 
 
