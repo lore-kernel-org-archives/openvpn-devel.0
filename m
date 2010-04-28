@@ -1,7 +1,10 @@
 From: Fabian Knittel <fabian.knittel@...1338...>
-Date: Wed, 28 Apr 2010 16:55:08 +0200
-Message-Id: <1272466514-18866-1-git-send-email-fabian.knittel@...1338...>
-Subject: [Openvpn-devel] [PATCH 0/6] Updates to VLAN patches
+Date: Wed, 28 Apr 2010 16:55:09 +0200
+Message-Id: <1272466514-18866-2-git-send-email-fabian.knittel@...1338...>
+In-Reply-To: <1272466514-18866-1-git-send-email-fabian.knittel@...1338...>
+References: <1272466514-18866-1-git-send-email-fabian.knittel@...1338...>
+Subject: [Openvpn-devel] [PATCH 1/6] vlan: Mention 802.1Q in configuration
+	descriptions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,34 +17,53 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+To clarify that the tagging/untagging is based on the 802.1Q standard, this
+patch adds "802.1Q-based" to a few descriptive strings.
 
-in response to Peter's recent review of my VLAN patch-set, I've prepared a
-batch of incremental updates.  There should be no functional changes, as the
-patches mainly work on stylistic code issues and documentation clarifications.
+The improvement was suggested by Peter Stuge.
 
-The patches are also available via the feat_vlan branch on
-git://fsmi-dev.fsmi.uni-karlsruhe.de/openvpn.git
+Signed-off-by: Fabian Knittel <fabian.knittel@...1338...>
+---
+ configure.ac |    4 ++--
+ options.c    |    2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-Cheers
-Fabian
-
-Fabian Knittel (6):
-  vlan: Mention 802.1Q in configuration descriptions
-  vlan: use uint16_t for storage of the VID where possible
-  vlan: slightly clean-up buf_filter_incoming_vlan_tags()
-  vlan: Improve documentation of remove_vlan_tag()
-  vlan: is_ipv4: fix position of variable definition
-  vlan: move htons / ntohs into vlanhdr_get/_set functions
-
- configure.ac |    4 +-
- mroute.c     |    6 ++--
- mroute.h     |    6 ++--
- multi.c      |   80 ++++++++++++++++++++++++++++++++++------------------------
- options.c    |    4 +-
- options.h    |    2 +-
- proto.c      |    2 +-
- proto.h      |   45 ++++++++++++++++++++++++--------
- 8 files changed, 92 insertions(+), 57 deletions(-)
+diff --git a/configure.ac b/configure.ac
+index b99bc11..89e3d30 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -213,7 +213,7 @@ AC_ARG_ENABLE(selinux,
+ )
+ 
+ AC_ARG_ENABLE(vlan-tagging,
+-   [  --disable-vlan-tagging  Disable support for VLAN tagging/untagging],
++   [  --disable-vlan-tagging  Disable support for 802.1Q-based VLAN tagging],
+    [VLAN_TAGGING="$enableval"],
+    [VLAN_TAGGING="yes"]
+ )
+@@ -894,7 +894,7 @@ fi
+ 
+ dnl enable --vlan-tagging
+ if test "$VLAN_TAGGING" = "yes"; then
+-   AC_DEFINE(ENABLE_VLAN_TAGGING, 1, [Enable VLAN tagging/untagging])
++   AC_DEFINE(ENABLE_VLAN_TAGGING, 1, [Enable 802.1Q-based VLAN tagging/untagging])
+ fi
+ 
+ 
+diff --git a/options.c b/options.c
+index bf8b3a1..2d47f20 100644
+--- a/options.c
++++ b/options.c
+@@ -422,7 +422,7 @@ static const char usage_message[] =
+   "                  to a web server at host:port.\n"
+ #endif
+ #ifdef ENABLE_VLAN_TAGGING
+-  "--vlan-tagging  : Enable VLAN tagging.\n"
++  "--vlan-tagging  : Enable 802.1Q-based VLAN tagging.\n"
+   "--vlan-accept tagged|untagged|all : Set VLAN tagging mode. Default is 'all'.\n"
+   "--vlan-pvid v   : Sets the Port VLAN Identifier. Defaults to 1.\n"
+ #endif
+-- 
+1.7.0
 
 
