@@ -1,12 +1,11 @@
-Message-ID: <4BD852E3.5040104@...1114...>
-Date: Wed, 28 Apr 2010 17:23:15 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Date: Wed, 28 Apr 2010 10:42:53 -0500
+From: "Karl O. Pinc" <kop@...1206...>
+In-Reply-To: <20100427105843.9402.qmail@...1287...> (from peter@...1287... on
+	Tue Apr 27 05:58:43 2010)
+Message-Id: <1272469373.25907.5@...1207...>
 MIME-Version: 1.0
-References: <1272466514-18866-1-git-send-email-fabian.knittel@...1338...>
-	<1272466514-18866-4-git-send-email-fabian.knittel@...1338...>
-In-Reply-To: <1272466514-18866-4-git-send-email-fabian.knittel@...1338...>
-Subject: Re: [Openvpn-devel] [PATCH 3/6] vlan: slightly clean-up
-	buf_filter_incoming_vlan_tags()
+Subject: Re: [Openvpn-devel] Unpackaged Windows binaries (Was: Re:
+ [Openvpn-users] [ANN] OS X packages - OpenVPN 2.1.1)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,101 +14,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Fabian Knittel <fabian.knittel@...1338...>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: Peter Stuge <peter@...1287...>
 Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+On 04/27/2010 05:58:43 AM, Peter Stuge wrote:
+> Karl O. Pinc wrote:
+> > IMO OpenVPN is encouraging bad practices by supplying packages for
+> > distros that include OpenVPN.
+>=20
+> Ideally the package for that distro as made by OpenVPN is always
+> equivalent to the one made by the distributor.
 
-On 28/04/10 16:55, Fabian Knittel wrote:
-> This patch changes buf_filter_incoming_vlan_tags() to use a less nested
-> code-style.  It also improves documentation of the function.
-> 
-> In addition, the function is made static, as it is only used locally.
-> 
-> Code based on a snippet by Peter Stuge.
-> 
-> Signed-off-by: Fabian Knittel <fabian.knittel@...1338...>
-> ---
->  multi.c |   39 ++++++++++++++++++++++++---------------
->  1 files changed, 24 insertions(+), 15 deletions(-)
+I'm writing again in case someone thinks this is a reason why it's
+fine for an end-user to get their OpenVPN from openvpn.net.
 
-I see absolutely no reasons why we shouldn't write easily readable code,
-thus I'm giving this patch an ACK.
+The problem is not the initial package installation.  It's
+keeping up with changes over time.  That's the big
+service that distro's provide.  Installing a single non-distro
+application is no big deal.  More than a few become a problem
+to keep up with to the point where eventually things stop
+working.  Packages makes it easier to keep track of what's
+what and keep things updated, in comparison to ./configure;
+make; make install, but the point of diminishing returns
+is soon reached regardless.
 
-Usage of nesting should not be considered a part of any coding style,
-it's more about writing readable code.  And code which is more difficult
-to read, is more easily prune to bugs.
+Karl <kop@...1206...>
+Free Software:  "You don't pay back, you pay forward."
+                 -- Robert A. Heinlein
 
-
-kind regards,
-
-David Sommerseth
-
-
-
-> diff --git a/multi.c b/multi.c
-> index 1a8bbbf..83c5aa3 100644
-> --- a/multi.c
-> +++ b/multi.c
-> @@ -1925,24 +1925,33 @@ multi_process_post (struct multi_context *m, struct multi_instance *mi, const un
->  }
->  
->  #ifdef ENABLE_VLAN_TAGGING
-> -bool
-> +/*
-> + * Decides whether or not to drop an ethernet frame.  VLAN-tagged frames are
-> + * dropped.  All other frames are accepted.
-> + *
-> + * @param buf The ethernet frame.
-> + * @return    Returns true if the frame should be dropped, false otherwise.
-> + */
-> +static bool
->  buf_filter_incoming_vlan_tags (const struct buffer *buf)
->  {
-> -  if (BLEN (buf) >= (int) sizeof (struct openvpn_8021qhdr))
-> -    {
-> -      const struct openvpn_8021qhdr *vlanhdr = (const struct openvpn_8021qhdr *) BPTR (buf);
-> +  const struct openvpn_8021qhdr *vlanhdr;
-> +  uint16_t vid;
->  
-> -      if (ntohs (vlanhdr->tpid) == OPENVPN_ETH_P_8021Q)
-> -        {
-> -	  const uint16_t vid = vlanhdr_get_vid(vlanhdr);
-> -	  if (vid != 0)
-> -	    {
-> -	      msg (D_VLAN_DEBUG, "dropping tagged incoming frame, vid: %u", vid);
-> -	      return true;
-> -	    }
-> -	}
-> -    }
-> -  return false;
-> +  if (BLEN (buf) < (int) sizeof (struct openvpn_8021qhdr))
-> +    return false; /* Frame too small.  */
-> +
-> +  vlanhdr = (const struct openvpn_8021qhdr *) BPTR (buf);
-> +
-> +  if (ntohs (vlanhdr->tpid) != OPENVPN_ETH_P_8021Q)
-> +    return false; /* Frame is untagged.  */
-> +
-> +  vid = vlanhdr_get_vid(vlanhdr);
-> +  if (vid == 0)
-> +    return false; /* Frame only priority-tagged.  */
-> +
-> +  msg (D_VLAN_DEBUG, "dropping VLAN-tagged incoming frame, vid: %u", vid);
-> +  return true;
->  }
->  #endif
->  
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkvYUt8ACgkQDC186MBRfro4PACgnle/89mrJEQrhEpcVT5iBWfB
-fq4AnibsHY2G5XBezR/lluwz1fM865Kn
-=09Oe
------END PGP SIGNATURE-----
 
