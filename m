@@ -1,10 +1,13 @@
-Message-ID: <4BD7DB78.2010704@...1114...>
-Date: Wed, 28 Apr 2010 08:53:44 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <4BD7F030.6090604@...1338...>
+Date: Wed, 28 Apr 2010 10:22:08 +0200
+From: Fabian Knittel <fabian.knittel@...1338...>
 MIME-Version: 1.0
-References: <B23F897A-5ADC-4A29-A34B-3BB16C18B4F3@...1360...>
-In-Reply-To: <B23F897A-5ADC-4A29-A34B-3BB16C18B4F3@...1360...>
-Subject: Re: [Openvpn-devel] [PATCH] Mac OSX Keychain certificate support
+References: <4BC330A0.5000209@...1338...> <4BD75D96.2050402@...1114...>
+In-Reply-To: <4BD75D96.2050402@...1114...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig31D4059D6EB48BA68FC7336A"
+Subject: Re: [Openvpn-devel] [PULL-REQUEST v3] VLAN-Tagging
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,103 +16,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Brian Raderman <brian@...1360...>
+To: David Sommerseth <openvpn.list@...1114...>
 Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig31D4059D6EB48BA68FC7336A
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
 
-On 28/04/10 07:17, Brian Raderman wrote:
-> Hello,
-> 
-> This patch adds support for using certificates stored in the Mac OSX Keychain
-> to authenticate with the OpenVPN server.  This works with certificates
-stored
-> on the computer as well as certificates on hardware tokens that
-support Apple's
-> tokend interface.  It has been tested with an Aladdin eToken on
-> Mac OSX Leopard and with software only certificates on
-> Mac OSX Leopard and Snow Leopard.  Aladdin has not yet released
-> drivers for Snow Leopard.  The patch is very similar to, and also
-> based on, the Windows Crypto API certificate functionality that
-> currently exists in OpenVPN.
+Hi David,
 
-> I did not know how to adjust the automake/autoconf configuration
-> files, so I have included the XCode project I used to build and test
-> openvpn in this patch.  All new files were added in an "osx" subdirectory.
-> 
-> Please let me know if you have any questions or if there are any changes
-> (I suspect there will be many) that I need to complete before this patch
-> can be accepted.
-> 
+David Sommerseth wrote:
+> I've finally found some time to dig into this again.  After some
+> consideration, I decided to rebase your work on your feat_vlan_tagging
+> branch against the openvpn-testing.git feat_vlan_tagging branch.
+>=20
+> This means that your earlier patches without signed-off-by tags are not
+                                       ^^^^^^^--- with?
+> merged in.  I am fine with that, as I've become stricter on those tags
+> later on.
+>=20
+> The alternative is to scratch the feat_vlan_tagging branch now in
+> openvpn-testing.git and re-establish it on your feat_vlan branch, which
+> has those tags all from the beginning.
+>=20
+> So I will leave it up to you now how you want it.  But in the moment I
+> this branch gets merged into allmerged, its too late to change your
+> opinion.  I will wait for your reply on which approach you would like.
 
-Hi Brian,
+If I may choose freely, I'd prefer the fresh patch-set that has the
+proper signed-of-by lines.  But I'm fine with both approaches.
 
-Thanks a lot for your patch!  This is indeed a neat feature we want to
-really consider for inclusion!  But there are of course a few things I
-spotted which I'd like to see being improved.
+I'll do all future changes incrementally so that this decision doesn't
+come up again. :)
 
-I am not familiar with OSX details at all, but I hope someone else with
-better OSX understanding can review those parts more thoroughly.  My
-comments will be of the more generic type.
+> When this is settled, the only missing thing is to get someone who can
+> understand the code path being changed in your feature branch a bit
+> better than me to give an official ACK.  When I get that ACK, it goes
+> into allmerged.
 
-* usage of printf()
-Please use the msg() function instead.  Don't print things to console
-directly via {f,}printf() directly.  There are plenty of places in the
-code where you can see msg() being used for a lot of logging.
+Sounds great!
 
-* malloc()
-You use malloc() several places.  If possible try to make use of the
-gc_arena API instead.  This API is also used a lot of places in the
-code, so you'll most likely find some good examples there as well.
-
-* static void dummy1() function
-In osx/keychain.c you define a rather silly function, which is not used
-anywhere.  Please take this one out.
-
-* xcode files and migration to autotools
-Even though Xcode is probably a very good tool on OSX, it's not what we
-can base OpenVPN on.  I would like to see this migrated over to
-autotools.  It's not as hard and difficult as you might think
-immediately, but there are several traps on the way.  Some traps more
-visible than others.
-
-First of all, it's a pretty good autotools tutorial [1] which is worth
-going through to understand the concept and how to get started.
-
-Then you'll need to modify configure.ac and Makefile.am.  And that's
-basically it.  Have a look for SOCKS in configure.ac to get an idea.
-Further, you'll also need to add the source files of our osx/ C and H
-files to openvpn_SOURCES.  But! These files should probably be depending
-on if this OSX feature is enabled or not.  There's probably several ways
-how to solve this, and I'm not sure what's the best solution right now.
- But digging into automake docs[2] might be the proper place to start.
-
-When you think you're done, ./configure works and it seems to compile
-flawlessly by running 'make', try runnning 'make distcheck' to be sure
-it will package itself properly, that the test compilation and test run
-works as expected as well.
+Cheers
+Fabian
 
 
-That's basically all I had to comment so far.  But thanks again for your
-patch!  Looking forward to hear from you again with further updates as well.
+--------------enig31D4059D6EB48BA68FC7336A
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-
-kind regards,
-
-David Sommerseth
-
-
-[1] <http://www.lrde.epita.fr/~adl/autotools.html>
-[2] <http://sources.redhat.com/automake/automake.html>
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iEYEARECAAYFAkvX23gACgkQDC186MBRfroWXgCfeZUA1pFrSsu55MMk3gg9TIcJ
-M0EAoKO/OYi2v5YMNDankep5vqMEX7hC
-=sXAB
+iEYEARECAAYFAkvX8DgACgkQARH1aMTipzNJJgCgpL2zyTmSjTvpqI+9rKaurisd
+MQQAoMfc7oZU3BKgy+4Pf9F8PzSdv6jK
+=2pAL
 -----END PGP SIGNATURE-----
+
+--------------enig31D4059D6EB48BA68FC7336A--
 
