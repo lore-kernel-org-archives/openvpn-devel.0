@@ -1,11 +1,13 @@
-From: Davide Brini <dave_br@...1278...>
-Date: Wed, 28 Apr 2010 21:35:10 +0100
-References: <1272484431-14512-1-git-send-email-dave_br@...1278...>
-	<4BD89863.1070309@...1114...>
-In-Reply-To: <4BD89863.1070309@...1114...>
+Message-ID: <4BD8E485.9060701@...1299...>
+Date: Thu, 29 Apr 2010 13:44:37 +1200
+From: Jason Haar <Jason.Haar@...1299...>
 MIME-Version: 1.0
-Message-Id: <201004282135.10485.dave_br@...1278...>
-Subject: Re: [Openvpn-devel] [PATCH] OCSP_check.sh: new check logic
+References: <4BD83FC0.5090607@...515...>
+	<1272463949884053500@...1315...>	<n2n9e0cf0bf1004280724s6c4280c6xb58950c706123e4c@...278...>
+	<201004281638.57498.hhund@...194...>
+In-Reply-To: <201004281638.57498.hhund@...194...>
+Subject: Re: [Openvpn-devel] Any volunteer Windows devs to change OpenVPN
+ proxying code to use "new" InternetQueryOption API?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,67 +16,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: David Sommerseth <openvpn.list@...1114...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Wednesday 28 April 2010, David Sommerseth wrote:
+On 04/29/2010 02:38 AM, Heiko Hund wrote:
+> If the service is started by the GUI it still makes sense to use user specific 
+> proxy settings, doesn't it? One could consider auto-proxy for auto-started 
+> VPNs a misconfiguration, as well. Or am I mislead?
+>   
+I think it's critical. Most enterprise networks have egress filtering
+(ie default to blocking outbound with business-exceptions) and web
+access via proxies. They will use WPAD (via HTTP or DHCP) or perhaps
+they are a Windows shop and use Active Directory policies to "tell" MSIE
+how to operate on a particular network. Don't forget enterprise networks
+tend to span continents and so static entries are not appropriate -
+different proxies for different sites within the same company are common.
 
-> > +    status=$(openssl ocsp -issuer "$issuer" \
-> > +                    "$nonce" \
-> > +                    -CAfile "$verify" \
-> > +                    -url "$ocsp_url" \
-> > +                    -serial "0x${serial}" 2>/dev/null)
-> > +
-> > +    if [ $? -eq 0 ]; then
-> > +      # check that it's good
-> > +      if echo "$status" | grep -Fq "0x${serial}: good"; then
-> > +        exit 0
-> > +      fi
-> > +    fi
-> >    fi
-> 
-> What if you just send the result from openssl to awk via a pipe, and
-> call 'exit {0,1}' from awk depending on if it's good or not ... that
-> way, you' don't have to do this grep trickery.
-> 
-> Something like this:
-> <untested>
->    openssl ... | awk 'BEGIN{ret=1} /0x(.*): good/{ ret=0; exit } END{
-> exit ret}'
->    exit $?
-> </untested>
+Anyway, all this means it's too hard for users to remember
+what-to-use-where and so things like WPAD were born. They also fail
+open, so when you take your laptop home, it does a WPAD lookup, doesn't
+get an answer and so assumes it's open Internet. i.e. automatic proxy
+detection is all good and no bad (I'm ignoring the fundamental issue
+that plugging into random networks and using the proxy "the network"
+told you to use is safe - but https and openvpn over untrusted networks
+should still be safe)
 
-Yes, the problem with this is that the pipeline's exit status is that of the 
-last command in the pipeline, and there's no standard way to know the exit 
-status of previous commands in the pipeline. 
-So in your example, if openssl failed for some reason but awk didn't, $? would 
-be 0, whereas we want the whole thing to fail in that case.
+If openvpn had good automagic proxy detection, and a single config could
+contain a mixture of udp and tcp and tcp-over-proxy [connection]
+profiles, then openvpn would work on every network in the world - with
+only some high-security exceptions. I think that's a goal worth reaching
+for :-)
 
-Bash (and some other shell probably) has some special variables to handle 
-these situations, which however are extensions and thus not standard.
+BTW, from what I've read, Microsoft's DirectAccess does exactly this
+(ipv6Direct-else-udpToredo-else-ipv6overTCP-else-ipv6overTCPoverProxy)...
 
-Now, one could argue that if openssl fails, surely the output will not contain 
-the magic line we're looking for, and thus awk/grep will fail too. While this 
-is probably true in this specific instance, I feel that testing the exit 
-status of openssl separately is safer and cleaner.
-
-This also makes it possible (although I didn't implement it) to provide more 
-detailed error messages, so one could exit with "openssl failed" (and, 
-depending on the actual exit status, even provide the exact error explanation) 
-or "openssl ran successfully, but the certificate status is not good".
-Instead, if one does just
-
-if openssl ocsp .... | grep; then
-  # good
-else
-  # error
-fi 
-
-all one can say in the "error" branch is the fairly generic "either openssl OR 
-grep failed", and the actual exit status of openssl would be inaccessible.
+Jason
 
 -- 
-D.
+Cheers
+
+Jason Haar
+Information Security Manager, Trimble Navigation Ltd.
+Phone: +64 3 9635 377 Fax: +64 3 9635 417
+PGP Fingerprint: 7A2E 0407 C9A6 CAF6 2B9F 8422 C063 5EBB FE1D 66D1
+
 
