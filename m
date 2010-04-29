@@ -1,6 +1,6 @@
-Date: Thu, 29 Apr 2010 09:03:22 +0200
+Date: Thu, 29 Apr 2010 09:07:56 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20100429070322.GW12312@...1296...>
+Message-ID: <20100429070756.GX12312@...1296...>
 References: <i2j251896ce1004282102v38fd0e79l2a222c4501dad9db@...278...>
 Mime-Version: 1.0
 In-Reply-To: <i2j251896ce1004282102v38fd0e79l2a222c4501dad9db@...278...>
@@ -20,28 +20,57 @@ Content-Disposition: inline
 To: Kazuyoshi Aizawa <admin2@...628...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+Hi again,
 
 On Thu, Apr 29, 2010 at 01:02:37PM +0900, Kazuyoshi Aizawa wrote:
 > I've attached a patch for tun.c which includes support for tap
 > interface for solaris/opensolaris.
-> The code is based on OpneVPN 2.1.1. And it has a routine to
-> plumb/unplumb tap interface like ifconfig command.
-> 
-> tap driver for solarsi/opensolaris is here:
->       http://www.whiteboard.ne.jp/~admin2/tuntap/
 
-Thanks for your work!.  I have already used bits from there when adding 
-IPv6 payload support to OpenVPN on Solaris :-)
+I've glanced through the patch, and there's also changes in the Win32
+part of the tun.c, for example this chunk:
 
-Question to the community: how do we want to integrate the tun.c changes
-for Solaris?  Its own branch, feat_misc branch, feat_ipv6_payload branch?
 
-If we include it in feat_ipv6_payload, it won't have merge conflicts - but
-then you only get the TAP-on-Solaris in combination with all the IPv6 stuff,
-which people might not want.
+----------------------- quote ----------------------
+@@ -3333,19 +3409,19 @@
+   bool ret = false;
+   const IP_ADAPTER_INDEX_MAP *inter = get_interface_info (adapter_index, &gc);
+ 
+-  if (inter)
+-    {
+-      DWORD status = IpRenewAddress ((IP_ADAPTER_INDEX_MAP *)inter);
+-      if (status == NO_ERROR)
++      if (inter)
+ 	{
+-	  msg (D_TUNTAP_INFO, "TAP: DHCP address renewal succeeded");
+-	  ret = true;
++	  DWORD status = IpRenewAddress ((IP_ADAPTER_INDEX_MAP *)inter);
++	  if (status == NO_ERROR)
++	    {
++	      msg (D_TUNTAP_INFO, "TAP: DHCP address renewal succeeded");
++	      ret = true;
++	    }
++	  else
++	    msg (M_WARN, "WARNING: Failed to renew DHCP IP address lease on TAP-Win32 adapter: %s (code=%u)",
++		 strerror_win32 (status, &gc),
++		 (unsigned int)status);
+ 	}
+-      else
+-	msg (M_WARN, "WARNING: Failed to renew DHCP IP address lease on TAP-Win32 adapter: %s (code=%u)",
+-	     strerror_win32 (status, &gc),
+-	     (unsigned int)status);
+-    }
+   gc_free (&gc);
+   return ret;
+ }
+----------------------- quote ----------------------
 
-David?
+
+From a first glance, this looks like "whitespace changes only".
+
+For easier review: would you be so kind and re-send your patch with
+"diff -uw" (-w = ignore white space changes)?
+
+thanks,
 
 gert
 -- 
