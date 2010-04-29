@@ -1,11 +1,14 @@
-Date: Thu, 29 Apr 2010 09:07:56 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20100429070756.GX12312@...1296...>
-References: <i2j251896ce1004282102v38fd0e79l2a222c4501dad9db@...278...>
-Mime-Version: 1.0
-In-Reply-To: <i2j251896ce1004282102v38fd0e79l2a222c4501dad9db@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] TAP interface support for
-	Solaris/OpenSolaris
+MIME-Version: 1.0
+In-Reply-To: <201004290807.04865.hhund@...194...>
+References: <4BD83FC0.5090607@...515...>
+	<201004281638.57498.hhund@...194...>
+	<r2n9e0cf0bf1004280745v8f0d3cc9t439f516b6d06cb4@...278...>
+	<201004290807.04865.hhund@...194...>
+Date: Thu, 29 Apr 2010 10:08:01 +0300
+Message-ID: <p2p9e0cf0bf1004290008z8dab3581yb1e32b3729bf21@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] Any volunteer Windows devs to change OpenVPN
+	proxying code to use "new" InternetQueryOption API?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,68 +17,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Kazuyoshi Aizawa <admin2@...628...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Heiko Hund <hhund@...194...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi again,
+On Thu, Apr 29, 2010 at 9:07 AM, Heiko Hund <hhund@...194...> wrote:
+>> > If the service is started by the GUI it still makes sense to use user
+>> > specific proxy settings, doesn't it? One could consider auto-proxy for
+>> > auto-started VPNs a misconfiguration, as well. Or am I mislead?
+>>
+>> If this is a service that is started, it cannot access your proxy
+>> without more tweaks.
+>
+> Currently not that's true, but the service interface needs to be extended=
+ to
+> pass data between the GUI and openvpn in the future anyways.
 
-On Thu, Apr 29, 2010 at 01:02:37PM +0900, Kazuyoshi Aizawa wrote:
-> I've attached a patch for tun.c which includes support for tap
-> interface for solaris/opensolaris.
-
-I've glanced through the patch, and there's also changes in the Win32
-part of the tun.c, for example this chunk:
-
-
------------------------ quote ----------------------
-@@ -3333,19 +3409,19 @@
-   bool ret = false;
-   const IP_ADAPTER_INDEX_MAP *inter = get_interface_info (adapter_index, &gc);
- 
--  if (inter)
--    {
--      DWORD status = IpRenewAddress ((IP_ADAPTER_INDEX_MAP *)inter);
--      if (status == NO_ERROR)
-+      if (inter)
- 	{
--	  msg (D_TUNTAP_INFO, "TAP: DHCP address renewal succeeded");
--	  ret = true;
-+	  DWORD status = IpRenewAddress ((IP_ADAPTER_INDEX_MAP *)inter);
-+	  if (status == NO_ERROR)
-+	    {
-+	      msg (D_TUNTAP_INFO, "TAP: DHCP address renewal succeeded");
-+	      ret = true;
-+	    }
-+	  else
-+	    msg (M_WARN, "WARNING: Failed to renew DHCP IP address lease on TAP-Win32 adapter: %s (code=%u)",
-+		 strerror_win32 (status, &gc),
-+		 (unsigned int)status);
- 	}
--      else
--	msg (M_WARN, "WARNING: Failed to renew DHCP IP address lease on TAP-Win32 adapter: %s (code=%u)",
--	     strerror_win32 (status, &gc),
--	     (unsigned int)status);
--    }
-   gc_free (&gc);
-   return ret;
- }
------------------------ quote ----------------------
-
-
-From a first glance, this looks like "whitespace changes only".
-
-For easier review: would you be so kind and re-send your patch with
-"diff -uw" (-w = ignore white space changes)?
-
-thanks,
-
-gert
--- 
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~gert/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+=E2=80=8ETrue.
+The proxy should be provided via the management interface.
+The OpenVPN GUI should be rewritten in order to use the management
+interface and only the management interface.
+This will solve a lot of issues especially in Windows environment.
+In Linux it is not that important, as OpenVPN can run in none privileged mo=
+de.
 
