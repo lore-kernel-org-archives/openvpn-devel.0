@@ -1,14 +1,13 @@
+From: Heiko Hund <hhund@...194...>
+Date: Thu, 29 Apr 2010 08:07:04 +0200
+References: <4BD83FC0.5090607@...515...>
+	<201004281638.57498.hhund@...194...>
+	<r2n9e0cf0bf1004280745v8f0d3cc9t439f516b6d06cb4@...278...>
+In-Reply-To: <r2n9e0cf0bf1004280745v8f0d3cc9t439f516b6d06cb4@...278...>
 MIME-Version: 1.0
-In-Reply-To: <20100428193815.18483.qmail@...1287...>
-References: <411d6d370912111509s7dafa468p80e1e41537a5a976@...278...>
-	<4B22D7B2.8070903@...41...>
-	<p2z411d6d371004280934h56cd4aa5yfcfc2d6ec94befcb@...278...>
-	<20100428193815.18483.qmail@...1287...>
-Date: Thu, 29 Apr 2010 07:38:30 +0300
-Message-ID: <w2w9e0cf0bf1004282138n27bc1172rf60092fde8d75d2e@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] Building the TAP drivers from source and then
-	signing them (possible?)
+Message-Id: <201004290807.04865.hhund@...194...>
+Subject: Re: [Openvpn-devel] Any volunteer Windows devs to change OpenVPN
+	proxying code to use "new" InternetQueryOption API?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,35 +16,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: Text/Plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-http://www.verisign.com/code-signing/content-signing-certificates/microsoft=
--authenticode/index.html
+On Wednesday 28 April 2010 16:45:47 Alon Bar-Lev wrote:
+> On Wed, Apr 28, 2010 at 5:38 PM, Heiko Hund <hhund@...194...> wrote:
+> > On Wednesday 28 April 2010 16:24:31 Alon Bar-Lev wrote:
+> >> The IE API is user specific.
+> >> As OpenVPN runs as a service using own user or system account, IE API
+> >> is not suitable.
+> >=20
+> > Sadly I haven't found the WinHttpGetProxyForUrl API in MinGW W32API. So,
+> > use of this might rather be a long-term goal as it takes a while to get
+> > it included.
+>=20
+> No problem to add simple prototypes and perform GetProcAddress().
 
-On Wed, Apr 28, 2010 at 10:38 PM, Peter Stuge <peter@...1287...> wrote:
-> Jon Onstott wrote:
->> I would like to go ahead and compile and sign the TAP drivers
->> myself. =C2=A0Does anyone know which certificate would be best to
->> purchase?
->
-> There was some discussion about this on the libusb mailinglist just
-> the other day. It seems there may be a good deal to be had with
-> VeriSign right now, but it's not absolutely clear if it's the right
-> kind of certificate. (See Tim's post about WinQual vs. signing.)
->
-> http://sourceforge.net/mailarchive/forum.php?thread_name=3Dl2wa276da40100=
-4271651uc1557d88r1106a473ade1b29%40mail.gmail.com&forum_name=3Dlibusb-devel
->
->
-> //Peter
->
-> -------------------------------------------------------------------------=
------
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+Not pretty, but yes.
+
+> > If the service is started by the GUI it still makes sense to use user
+> > specific proxy settings, doesn't it? One could consider auto-proxy for
+> > auto-started VPNs a misconfiguration, as well. Or am I mislead?
+>=20
+> If this is a service that is started, it cannot access your proxy
+> without more tweaks.
+
+Currently not that's true, but the service interface needs to be extended t=
+o=20
+pass data between the GUI and openvpn in the future anyways.
+
+Heiko
+--=20
+Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
+Astaro GmbH & Co. KG | An der RaumFabrik 33a | 76227 Karlsruhe | Germany
+
+Astaro GmbH & Co. KG
+Commercial Register: Mannheim HRA 702710
+Headquarter Location: Karlsruhe
+=20
+Represented by the General Partner Astaro Verwaltungs GmbH
+An der RaumFabrik 33a | 76227 Karlsruhe | Germany=20
+Commercial Register: Mannheim HRB 708248
+Executive Board: Gert Hansen, Markus Hennig, Jan Hichert, G=C3=BCnter Junk,=
+ Dr.=20
+Frank Nellissen
 
