@@ -1,12 +1,11 @@
-From: Davide Brini <dave_br@...1278...>
-Date: Fri, 30 Apr 2010 19:28:47 +0100
-References: <4BDAD39A.1030906@...515...> <201004301824.21244.dave_br@...1278...>
-	<20100430181202.GG12312@...1296...>
-In-Reply-To: <20100430181202.GG12312@...1296...>
+Message-ID: <4BDB4D67.4040001@...1114...>
+Date: Fri, 30 Apr 2010 23:36:39 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-Message-Id: <201004301928.47595.dave_br@...1278...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] [TESTING NEEDED] Using
-	--inactive and --ping seems to defeat each other
+References: <1272109716-3037-1-git-send-email-openvpn.list@...1114...>
+In-Reply-To: <1272109716-3037-1-git-send-email-openvpn.list@...1114...>
+Subject: Re: [Openvpn-devel] [PATCH] Revamped the script-security warning
+ logging
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,60 +14,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Friday 30 April 2010, Gert Doering wrote:
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-> On Fri, Apr 30, 2010 at 06:24:20PM +0100, Davide Brini wrote:
-> > Well, the obvious (and probably wrong, probably inefficient) way could be
-> > to just check if the packet at hand is a ping message, and if it is do
-> > not record it as "activity", eg
-> >
-> > if (! is_ping_msg (&c->c2.buf))
-> >    register_activity (c, size);
+On 24/04/10 13:48, David Sommerseth wrote:
+> From: David Sommerseth <dazo@...384...>
 > 
-> Looks good to me :-) (without having looked at the code in question at
->  all).
+> This is a first-cut of removing misleading warnings from the logs.
 > 
-> > This is in two places: in process_outgoing_tun() and
-> > process_outgoing_link().
+> The main task of this patch is to avoid reporting the SCRIPT_SECURITY_WARNING
+> over and over again, in addition to not show this warning when it should not
+> be a problem.  This general warning should now only appear once, and only when
+> --script-security is not set, 0 or 1.  In all other cases this warning should
+> not appear.
 > 
-> As you wrote in the next e-mail, this won't ever be "outgoing on tun",
-> so only one place needs changing...
+> In addition, this warning will come close to the script-hook which most probably
+> will fail.  It will also give a little bit more concrete hint on which script-hook
+> which failed.  If --script-security is 2 or 3, only the execve failure itself will
+> be shown.  This message will on the other hand be shown repeatedly.
+> 
+> Signed-off-by: David Sommerseth <dazo@...384...>
+> ---
+>  common.h |    2 +-
+>  init.c   |    2 +-
+>  misc.c   |   25 ++++++++++++++++++++++---
+>  misc.h   |    3 +++
+>  multi.c  |    6 +++---
+>  socket.c |    2 +-
+>  ssl.c    |    4 ++--
+>  win32.c  |    5 ++++-
+>  8 files changed, 37 insertions(+), 12 deletions(-)
 
-Yes of course, but I realized that too late :) It makes no sense at all to 
-send OpenVPN pings to the kernel.
- 
-> > However, I'm not sure about the overhead of performing that for each and
-> > every processed packet. is_ping_msg() calls buf_string_match(), which in
-> > turn calls memcmp().
-> > But, it should also be noted that process_incoming_link() DOES call
-> > is_ping_msg() for every incoming packet, so...
-> 
-> I'm a big fan of symmetry here - if the incoming packet path explictly
-> not-counts ping packets, it's a bit hard to explain to users why the
-> outgoing packet path *does* count them, and they have to fiddle with
-> byte counts to get "inactivity".
-> 
-> I'd go that route...
-> 
-> Efficiency is a valid concern, of course.  Since is_ping_msg() and
-> buf_string_match() are both (very short) inline functions, and memcmp()
-> on "normal" architectures is also inlined by gcc, this "should not" add
-> unduly overhead.  (Of course, down that road is hell and windows vista).
+This patch received an ACK on the developers meeting 2010-04-29
+<http://thread.gmane.org/gmane.network.openvpn.devel/3673>
 
-Ok, thanks for the remarks! 
+Applied to feat_misc and merged into allmerged.
+Commit 339f2a4d4b487afa53fa99d72c35b16f31e417d3
 
-I will try to implement it that way then, and see how it goes (perhaps 
-including some basic benchmarking - not entirely sure how to go about that 
-apart from generating loads of traffic and see, but I'll figure out). Then 
-I'll post back (possibly with a patch including changing the description in 
-the man etc.)
 
--- 
-D.
+kind regards,
+
+David Sommerseth
+
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAkvbTWcACgkQDC186MBRfrqOcACgqZpBjyXOiCIsguEsXtKE1uVJ
+dQoAnRG2IuNETVCG+d52saKWSTlRzwap
+=brqt
+-----END PGP SIGNATURE-----
 
