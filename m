@@ -1,13 +1,8 @@
-Message-ID: <4BDE8633.90809@...1294...>
-Date: Mon, 03 May 2010 10:15:47 +0200
-From: Eike Lohmann <e.lohmann@...1294...>
-MIME-Version: 1.0
-References: <4BDACA9A.8040806@...1294...>
-	<r2xa43edf1b1004300905nb192fd6dj423a222f6db2e5d4@...278...>
-In-Reply-To: <r2xa43edf1b1004300905nb192fd6dj423a222f6db2e5d4@...278...>
-Subject: Re: [Openvpn-devel] push routes openvpn on Motorola Milestone /
-	Droid
-Reply-To: e.lohmann@...1294...
+From: Fabian Knittel <fabian.knittel@...1338...>
+Date: Tue,  4 May 2010 16:21:47 +0200
+Message-Id: <1272982907-30917-1-git-send-email-fabian.knittel@...1338...>
+Subject: [Openvpn-devel] [PATCH] ssl.c: fix use of openvpn_run_script()'s
+	return value
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,63 +11,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Billy Crook <billycrook@...277...>
 
+This patch fixes two bugs introduced in
 
-You have a Droid with other carrier settings etc. so search for manuals
-regarding your phone in your country.
-Make a backup to your SD Card!
+    commit 339f2a4d4b487afa53fa99d72c35b16f31e417d3
+    Author: David Sommerseth <dazo@...384...>
+    Date:   Thu Apr 29 23:35:45 2010 +0200
 
-A good page with all tools/drivers but no manuals is:
-http://and-developers.com
+David's patch replaced openvpn_execve() with openvpn_run_script() in two places,
+but didn't adjust the return value handling.  openvpn_run_script() returns true
+or false, while openvpn_execve() returns the program's exit code.
 
-Short Overview:
+Without the fix, the --tls-verify script and the --auth-user-pass-verify
+script fail to run.  (I noticed the latter, but haven't actually tested the
+former.)
 
-- with Droid 2.1 you have to enable the recovery mode.
-  - flash SHOLS_U2_01.14.0_recovery_only.zip with RSDLite
+The return value handling is fine for the other places where
+openvpn_run_script() is used, because those places previously used
+openvpn_execve_check() (notice the "_check" suffix).
 
-after this step you can use the manuals regarding 2.01 or more early.
+Signed-off-by: Fabian Knittel <fabian.knittel@...1338...>
+---
+ ssl.c |   20 ++++++--------------
+ 1 files changed, 6 insertions(+), 14 deletions(-)
 
-- then you have to flash a update.zip wich enables the 'superuser whitelist'
-
-- Now download and install the Android SDK with tools from google
-  - with 'adb shell' you can now connect to your phone in USB debugmode.
-
-- install busybox (google for it or build it)
-- install tun.ko ( -||-)
-
-- From the market install OpenVPN Installer and OpenVPN Settings
+diff --git a/ssl.c b/ssl.c
+index a4af6a5..276322f 100644
+--- a/ssl.c
++++ b/ssl.c
+@@ -957,21 +957,19 @@ verify_callback (int preverify_ok, X509_STORE_CTX * ctx)
+            gc_free(&gc);
+         }
  
-- If you need a local shell on your phone, I like ConnectBot from the market
+-      if (system_ok (ret))
++      if (ret)
+ 	{
+ 	  msg (D_HANDSHAKE, "VERIFY SCRIPT OK: depth=%d, %s",
+ 	       ctx->error_depth, subject);
+ 	}
+       else
+ 	{
+-	  if (!system_executed (ret))
+-	    argv_msg_prefix (M_ERR, &argv, "Verify command failed to execute");
+ 	  msg (D_HANDSHAKE, "VERIFY SCRIPT ERROR: depth=%d, %s",
+ 	       ctx->error_depth, subject);
+ 	  goto err;		/* Reject connection */
+ 	}
+     }
+-  
++
+   /* check peer cert against CRL */
+   if (opt->crl_file)
+     {
+@@ -3192,7 +3190,6 @@ verify_user_pass_script (struct tls_session *session, const struct user_pass *up
+   struct gc_arena gc = gc_new ();
+   struct argv argv = argv_new ();
+   const char *tmp_file = "";
+-  int retval;
+   bool ret = false;
+ 
+   /* Is username defined? */
+@@ -3230,16 +3227,11 @@ verify_user_pass_script (struct tls_session *session, const struct user_pass *up
+ 
+       /* format command line */
+       argv_printf (&argv, "%sc %s", session->opt->auth_user_pass_verify_script, tmp_file);
+-      
++
+       /* call command */
+-      retval = openvpn_run_script (&argv, session->opt->es, 0, "--auth-user-pass-verify");
++      ret = openvpn_run_script (&argv, session->opt->es, 0,
++				"--auth-user-pass-verify");
+ 
+-      /* test return status of command */
+-      if (system_ok (retval))
+-	ret = true;
+-      else if (!system_executed (retval))
+-	argv_msg_prefix (D_TLS_ERRORS, &argv, "TLS Auth Error: user-pass-verify script failed to execute");
+-	  
+       if (!session->opt->auth_user_pass_verify_script_via_file)
+ 	setenv_del (session->opt->es, "password");
+     }
+-- 
+1.7.0
 
-
-You will need 2-3 hours for that, it's not very diffcult but bad
-documented. :)
-
-If you made something wrong and your moto wont boot anymore
-ADBrecovery.zip is your friend.
-
-
-Am 30.04.2010 18:05, schrieb Billy Crook:
-> On Fri, Apr 30, 2010 at 07:18, Eike Lohmann <e.lohmann@...1294...> wrote:
->   
->> D/OpenVPN-DaemonMonitor[/sdcard/openvpn/ic3s.ovpn]-daemon-stdout( 7158):
->> Fri Apr 30 14:00:08 2010 us=851287 Options error: Unrecognized option or
->> missing parameter(s) in [PUSH-OPTIONS]:4: route (2.1.1)
->> D/OpenVPN-DaemonMonitor[/sdcard/openvpn/ic3s.ovpn]-daemon-stdout( 7158):
->> Fri Apr 30 14:00:08 2010 us=851623 Options error: Unrecognized option or
->> missing parameter(s) in [PUSH-OPTIONS]:5: route (2.1.1)
->>
->> Hi, I try to push routes from the server to the client, if I connect
->> with windows or linux on a pc it works fine but not with openvpn on my
->> Motorola Milestone / Droid.
->>     
-> I would love to try the same thing on my Droid!  I'd been planning to
-> (and dragging my feet on) setting up an IPSEC vpnserver at home to
-> support my Droid.  If you let me know how you set up what you have so
-> far on your droid, I will reproduce it, and attempt to fix the error
->   
 
