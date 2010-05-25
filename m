@@ -1,12 +1,14 @@
+Message-ID: <4BFBD51A.2050708@...515...>
+Date: Tue, 25 May 2010 16:48:10 +0300
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <20100525130302.18618.qmail@...1287...>
-References: <AANLkTinWsHCrRh6n-ABKzbBY2XLiGqVTgrBCzfv9s3LW@...278...>
-	<20100525130302.18618.qmail@...1287...>
-Date: Tue, 25 May 2010 16:33:25 +0300
-Message-ID: <AANLkTinKBvHIpGax8pOTCwWb5MqXyu2ypOYTQ2afz5hc@...278...>
-From: "nivwiz@...277..." <nivwiz@...277...>
-Content-Type: multipart/alternative; boundary=001636c922dfb0e0c704876b3319
-Subject: Re: [Openvpn-devel] bug: can't get dhcp using --up option
+References: <4BF63BBE.4030603@...515...>
+	<4BFB8D77.4050501@...1114...>	<4BFBB58F.4050301@...1338...>
+	<4BFBBCF7.4080502@...515...>	<E8A6CAC3-DD52-47EA-A78C-5D93DC21CD9E@...1286...>	<4BF63BBE.4030603@...515...>
+	<4BFB8D77.4050501@...1114...>
+	<20100525124923.16039.qmail@...1287...>
+In-Reply-To: <20100525124923.16039.qmail@...1287...>
+Subject: Re: [Openvpn-devel] Summary of the IRC meeting (20th May 2010)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,87 +17,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
---001636c922dfb0e0c704876b3319
-Content-Type: text/plain; charset=ISO-8859-1
 
-Hi Peter,
-I am very glad to hear your response.
-here is the traffic I got when using the -up argument to start udhpc :
-https://bugs.maemo.org/attachment.cgi?id=2706
-
-as you can see the request is sent and replay is received, but somehow it
-doesnt work.
-I reported more info at https://bugs.maemo.org/show_bug.cgi?id=9679
-
-As the dhcp request is set over the vpn , according to the wireshark
-capture, do I still need to use -ping , as suggested in the offical
-documents?
-
-
-On Tue, May 25, 2010 at 4:03 PM, Peter Stuge <peter@...1287...> wrote:
-
-> nivwiz@...277... wrote:
-> > I want to report this bug:
 >
-> Can you help debug it? Add instrumentation to that script, or maybe
-> to a new script, and see what is different about the interface when
-> script is being run outside openvpn.
+> Eric F Crist wrote:
+>=20=20=20
+>> Restricting bounty development to the small handful of developers
+>> who've already done work on OpenVPN is a bad idea.  It doesn't
+>> entice new, talented, developers to participate.
+>>=20=20=20=20=20
 >
+> This is a really tough issue.
 >
-> //Peter
->
->
-> ------------------------------------------------------------------------------
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+> Having a new developer join the team to create some significant
+> amount of work as the very first interaction will create a lot of
+> problems when that person isn't already familiar with the exact modus
+> operandi of the project. Worst case it will simply lead to code that
+> bitrots. Imagine you not being able to review and give immediate
+> feedback on a wave of patches that are coming in, the author hears
+> nothing and continues working, and in the end there's a huge pile of
+> commits that just don't make sense, even though the final product
+> works kinda ok.. Nightmare.
+>=20=20=20
+Requiring bounty developers to use our "standard" development process
+and handing out the bounty in phases helps a lot in solving these
+issues. I agree with Eric that we should not intentionally exclude
+people from claiming the bounties. However, I think for the bounty
+system to be successful the people claiming the bounties have to be able to
 
---001636c922dfb0e0c704876b3319
-Content-Type: text/html; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+- get the job done (technically)
+- work with other developers to make sure they don't dig a hole for
+themselves an drop a crappy patch to the mailinglist in the end
 
-<div dir=3D"ltr">Hi Peter,<br>I am very glad to hear your response.<br>here=
- is the traffic I got when using the -up argument to start udhpc : <a href=
-=3D"https://bugs.maemo.org/attachment.cgi?id=3D2706">https://bugs.maemo.org=
-/attachment.cgi?id=3D2706</a><br>
-<br>as you can see the request is sent and replay is received, but somehow =
-it doesnt work.<br>I reported more info at <a href=3D"https://bugs.maemo.or=
-g/show_bug.cgi?id=3D9679">https://bugs.maemo.org/show_bug.cgi?id=3D9679</a>=
-<br>
-<br>As the dhcp request is set over the vpn , according to the wireshark ca=
-pture, do I still need to use -ping , as suggested in the offical documents=
-?<br><br><br><div class=3D"gmail_quote">On Tue, May 25, 2010 at 4:03 PM, Pe=
-ter Stuge <span dir=3D"ltr">&lt;<a href=3D"mailto:peter@...1287...">peter@...220...=
-..1287...</a>&gt;</span> wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"margin: 0pt 0pt 0pt 0.8ex; borde=
-r-left: 1px solid rgb(204, 204, 204); padding-left: 1ex;"><div class=3D"im"=
-><a href=3D"mailto:nivwiz@...277...">nivwiz@...277...</a> wrote:<br>
-&gt; I want to report this bug:<br>
-<br>
-</div>Can you help debug it? Add instrumentation to that script, or maybe<b=
-r>
-to a new script, and see what is different about the interface when<br>
-script is being run outside openvpn.<br>
-<br>
-<br>
-//Peter<br>
-<br>
----------------------------------------------------------------------------=
----<br>
-<br>
-_______________________________________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...1199...=
-sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" targ=
-et=3D"_blank">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a=
-><br>
-</blockquote></div><br></div>
+I don't think the developer has to be an OpenVPN developer to qualify.
+If he/she has worked on other projects (and can prove it), there's no
+reason to exclude him/her from claiming a bounty task.
 
---001636c922dfb0e0c704876b3319--
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
 
