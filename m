@@ -1,9 +1,10 @@
+Message-ID: <4BFB8D77.4050501@...1114...>
+Date: Tue, 25 May 2010 10:42:31 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-Date: Tue, 25 May 2010 10:30:54 +0300
-Message-ID: <AANLkTinWsHCrRh6n-ABKzbBY2XLiGqVTgrBCzfv9s3LW@...278...>
-From: "nivwiz@...277..." <nivwiz@...277...>
-Content-Type: multipart/alternative; boundary=001636c5bac944542c0487662302
-Subject: [Openvpn-devel] bug: can't get dhcp using --up option
+References: <4BF63BBE.4030603@...515...>
+In-Reply-To: <4BF63BBE.4030603@...515...>
+Subject: Re: [Openvpn-devel] Summary of the IRC meeting (20th May 2010)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,98 +13,114 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
---001636c5bac944542c0487662302
-Content-Type: text/plain; charset=ISO-8859-1
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Hi all,
-I want to report this bug:
+On 21/05/10 09:52, Samuli Seppänen wrote:
+> Hi,
+> 
+> Here's the summary of the previous community meeting.
+> 
+> ---
+> 
+> COMMUNITY MEETING
+> 
+> Place: #openvpn-devel on irc.freenode.net
+> Date: Thursday, 20th May 2010
+> Time: 18:00 UTC
+> 
+> Planned meeting topics for this meeting were on this page:
+> 
+> <https://community.openvpn.net/openvpn/wiki/Topics-2010-05-20>
+> 
+> Next meeting next week, same place, same time. Your local meeting time
+> is easy to check from services such as
+> 
+> <http://www.timeanddate.com/worldclock>
+> 
+> or with
+> 
+> $ date -u
+> 
+> 
+> SUMMARY
+> 
+> Discussed the possibility of users offering bounties for development
+> tasks (e.g. adding features or fixing bugs). Agreed that having a bounty
+> system would be a good idea. The ideas brought up in the IRC discussion
+> before and during the meeting are here:
+> 
+> <https://community.openvpn.net/openvpn/wiki/Topics-2010-05-20#Developerbounties>
 
-1. if I run:
- openvpn --cd /etc/openvpn/ --script-security 2  --up "/etc/init.d/udhcpc
-start" \
- --config $CONFIG_DIR/$NAME.conf
-udhcp doesnt set dhcp as it should even if you add -up-delay --down-pre
+I've been thinking about the license issues for a while ... and I'm
+wondering if this should be discussed with someone who knows law and
+Open Source licenses, as IANAL.
 
-here is the openvpn log:
-Tue Mar 23 10:03:11 2010 TUN/TAP device tap0 opened
-Tue Mar 23 10:03:11 2010 TUN/TAP TX queue length set to 100
-Tue Mar 23 10:03:11 2010 /etc/init.d/udhcpc start tap0 1500 1574   init
-Starting Openvpn dhcp client for tap0:  params: --now --no-zeroconf -i tap0 -s
-/etc/openvpn/udhcp.script --pidfile=/var/run/udhcpc..pid
-tap0      Link encap:Ethernet  HWaddr FE:3D:5B:EB:B1:7B
-          BROADCAST MULTICAST  MTU:1500  Metric:1
-          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:100
-          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+<disclaimer>
+   It is not easy to debate licenses, as they can quickly evolve into
+   religious wars.  I have no intention to either start or feed such
+   a disagreement or debate.  This is a reflection of how I see things
+   in OpenVPN's perspective, and that perspective only.
+</disclaimer>
 
- going to req dhcp for fe:3d:5b:eb:b1:7b
-udhcpc (v0.9.9-pre) started
-Sending discover...
-Sending discover...
-Sending discover...
-Sending discover...
-No lease, failing.
-sleepnow
-udhcpc (v0.9.9-pre) started
-Sending discover...
-Sending discover...
-Sending discover...
-Sending discover...
-No lease, failing.
-sleepnow
+Something which makes me wonder ...
+
+* Developer would have to use the BSD license for the bounty features
+  o This would allow the project to relicense the code under GPLv2
+    (while mentioning the original author)
+
+Does this mean that we can take the BSD contributed code and publish it
+as GPL in OpenVPN?  Just like that (while maintaining the original
+author)?  If so, what is the point of enforcing BSD on the contribution?
+ As OpenVPN is GPLv2 licensed, we need to provide the source code.
+
+  o This would allow both developer (payee) and payer to use the code
+    any way they wish
+
+Is it likely that someone who pays for a feature to be included into
+OpenVPN - and then would do something extra "magic" with it, throw out
+the original patch and replace it with their changes?  They can anyway
+not distribute this software unless providing the source code with these
+changes.
+
+You can argue that it's a company specific change and that the software
+is not distributed - but the employees in that company do get this
+software somehow - most often as verbatim copy, and these employees can
+then internally request the source code according to the GPL license.
+Since the GPL is so restrictive, this modified source code cannot be
+distributed (even though internally) with even an NDA.  In the moment
+you copy this change from one place to another place, it is technically
+speaking a form of distribution.
+
+In this context a BSD license does not make sense to me.  OpenVPN is
+GPLed, and any modifications done to OpenVPN needs to be shared and to
+be made available in source code format on request.
 
 
-2. If I run:
- openvpn --cd /etc/openvpn/ --config $CONFIG_DIR/$NAME.conf
-then run /etc/init.d/udhcpc start
-I get udhcp to setup dhcp.
+Personally, I would also not enforce BSD as the only license for
+bounties.  We need to provide at least a choice, at least between GPL
+and BSD.
 
-so this bug report means that one can't use the --up argument to launch udhcpc
-as described in the official docs of openvpn
+I would not consider to license my contributions to OpenVPN as BSD,
+because a) I want other people to be able to review my code at any
+point, no matter the circumstances the code is used, and b) If someone
+modifies/improves the code, I want these changes to be shared with the
+community.  GPL gives that possibility.
 
 
-I am using openvpn on maemo linux on the N900 in layer 2 connection , so
-after establishing connection I need to issue a dhcp request.
+kind regards,
 
-Regards,
-Niv
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
---001636c5bac944542c0487662302
-Content-Type: text/html; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hi all,<br>I want to report this bug:<br><pre id=3D"commen=
-t_text_10">1. if I run:<br> openvpn --cd /etc/openvpn/ --script-security 2 =
- --up &quot;/etc/init.d/udhcpc<br>start&quot; \<br> --config $CONFIG_DIR/$N=
-AME.conf<br>
-udhcp doesnt set dhcp as it should even if you add -up-delay --down-pre<br>=
-<br>here is the openvpn log:<br>Tue Mar 23 10:03:11 2010 TUN/TAP device tap=
-0 opened<br>Tue Mar 23 10:03:11 2010 TUN/TAP TX queue length set to 100<br>
-Tue Mar 23 10:03:11 2010 /etc/init.d/udhcpc start tap0 1500 1574   init<br>=
-Starting Openvpn dhcp client for tap0:  params: --now --no-zeroconf -i tap0=
- -s<br>/etc/openvpn/udhcp.script --pidfile=3D/var/run/udhcpc..pid <br>tap0 =
-     Link encap:Ethernet  HWaddr FE:3D:5B:EB:B1:7B  <br>
-          BROADCAST MULTICAST  MTU:1500  Metric:1<br>          RX packets:0=
- errors:0 dropped:0 overruns:0 frame:0<br>          TX packets:0 errors:0 d=
-ropped:0 overruns:0 carrier:0<br>          collisions:0 txqueuelen:100 <br>
-          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)<br><br> going to req dhcp =
-for fe:3d:5b:eb:b1:7b<br>udhcpc (v0.9.9-pre) started<br>Sending discover...=
-<br>Sending discover...<br>Sending discover...<br>Sending discover...<br>
-No lease, failing.<br>sleepnow<br>udhcpc (v0.9.9-pre) started<br>Sending di=
-scover...<br>Sending discover...<br>Sending discover...<br>Sending discover=
-...<br>No lease, failing.<br>sleepnow<br><br><br>2. If I run:<br> openvpn -=
--cd /etc/openvpn/ --config $CONFIG_DIR/$NAME.conf<br>
-then run /etc/init.d/udhcpc start<br>I get udhcp to setup dhcp.<br><br>so t=
-his bug report means that one can&#39;t use the --up argument to launch udh=
-cpc<br>as described in the official docs of openvpn<br></pre>
-=20=20=20=20
-
-<br>I am using openvpn on maemo linux on the N900 in layer 2 connection , s=
-o after establishing connection I need to issue a dhcp request.<br><br>Rega=
-rds,<br>Niv<br></div>
-
---001636c5bac944542c0487662302--
+iEYEARECAAYFAkv7jXUACgkQDC186MBRfrpCoQCeMgQnLAcFJnFDFTbpepKeUDkm
+qcAAn1ex3wxMyfihEFJEmJIEjfYaSd8K
+=9awe
+-----END PGP SIGNATURE-----
 
