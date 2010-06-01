@@ -1,9 +1,10 @@
-Message-ID: <4C050722.60602@...1114...>
-Date: Tue, 01 Jun 2010 15:12:02 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
+Message-ID: <846444.89317.qm@...1374...>
 References: <311164.26909.qm@...1373...>
-In-Reply-To: <311164.26909.qm@...1373...>
+	<4C050722.60602@...1114...>
+Date: Tue, 1 Jun 2010 07:42:32 -0700 (PDT)
+From: ja nein <reg9009@...360...>
+In-Reply-To: <4C050722.60602@...1114...>
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] first Alpha patch /dynamic iroutes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,27 +14,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: ja nein <reg9009@...360...>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: David Sommerseth <openvpn.list@...1114...>
 Cc: openvpn-devel@lists.sourceforge.net
+
+Hi David,
+
+ok, I will do. It may be screwed a bit as I copied patch inline, instead of=
+ attaching a file. Anyway, I'll try to correct the issues.
+
+But hey, last C programming was 10 years ago, please turn a blind eye... ;)=
+ The merits go to a colleague of mine, btw.
+
+Regards,
+Sebastian
+
+
+----- Urspr=FCngliche Mail ----
+Von: David Sommerseth <openvpn.list@...1114...>
+An: ja nein <reg9009@...360...>
+CC: openvpn-devel@lists.sourceforge.net
+Gesendet: Dienstag, den 1. Juni 2010, 15:12:02 Uhr
+Betreff: Re: [Openvpn-devel] first Alpha patch /dynamic iroutes
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
 On 01/06/10 14:35, ja nein wrote:
 > Hi all,
-> 
-> please find attached the first attempt to dynamically update iroute table. Diff is against OpenVPN 2.1.1 source.
-> 
+>=20
+> please find attached the first attempt to dynamically update iroute table=
+. Diff is against OpenVPN 2.1.1 source.
+>=20
 > There are some caveats, though:
-> 
+>=20
 > - Only tested (and probably only works) with linux based systems, yet.
-> 
-> - It only works with "topology subnet". The problem is that only "topology subnet" ensures the correct determination of the gateway behind the kernel route in iroute table.
-> 
-> - We filter for zebra routing messages. Therefore a running quagga daemon is needed. For testing purposes, one can manually add routes through zebra.
-> 
+>=20
+> - It only works with "topology subnet". The problem is that only "topolog=
+y subnet" ensures the correct determination of the gateway behind the kerne=
+l route in iroute table.
+>=20
+> - We filter for zebra routing messages. Therefore a running quagga daemon=
+ is needed. For testing purposes, one can manually add routes through zebra.
+>=20
 > Any comments and thoughts are welcome.
 
 Thank you very much!
@@ -58,7 +82,7 @@ hints.  You probably want to do something like the following lines in
 Makefile.am then:
 
     if ENABLE_DYNROUTE
-	openvpn_SOURCES += dynroute.c
+    openvpn_SOURCES +=3D dynroute.c
     endif
 
 That way, this file will only be compiled and included if dynroute is
@@ -112,6 +136,9 @@ Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
 iEYEARECAAYFAkwFBx8ACgkQDC186MBRfrpSWgCeMHnNRFHHaxnZD6ExiURLMwz1
 lTYAn1+julBGjHv6WIw5JJxYn1YzJtHJ
-=0cBh
+=3D0cBh
 -----END PGP SIGNATURE-----
+
+
+
 
