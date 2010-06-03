@@ -1,12 +1,13 @@
-Date: Thu, 3 Jun 2010 17:46:19 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20100603154619.GD26982@...1296...>
+From: chantra <chantra@...1258...>
+Date: Thu, 3 Jun 2010 17:38:19 +0000 (UTC)
+Message-ID: <loom.20100603T180754-260@...171...>
 References: <mailman.487721.1275403360.5170.openvpn-devel@lists.sourceforge.net>
 	<1275576515.23148.829.camel@...1259...>
+	<20100603154619.GD26982@...1296...>
 Mime-Version: 1.0
-In-Reply-To: <1275576515.23148.829.camel@...1259...>
-Subject: Re: [Openvpn-devel] [PATCH] Re: Handling of subnets grammar in
-	Packet filter file
+Subject: Re: [Openvpn-devel]
+	=?utf-8?q?=5BPATCH=5D_Re=3A_Handling_of_subnets_g?=
+	=?utf-8?q?rammar_in=09Packet_filter_file?=
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,42 +17,37 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: chantra <chantra@...1258...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Gert Doering <gert <at> greenie.muc.de> writes:
 
-On Thu, Jun 03, 2010 at 04:48:35PM +0200, chantra wrote:
-> Please find below a patch to correct the behaviour.
+
+> Both have merits, your fix is somewhat less code then adding an extra input
+> validation check 
 > 
-> I have also opened a trac ticket :
-> https://community.openvpn.net/openvpn/ticket/14
+>   if ((network.s_addr & netmask) != network.s_addr )  
+>     { complain; }
+> 
+> - so: ACK from me.
+> 
+> (Since OpenVPN likes to print warnings, we *could* add code to print a 
+> warning in this case - "warning: subnet address changed to match /%d,
+> new value is %s/%d").
+> 
+> gert
 
-The patch itself looks good.
+Gert,
 
-It's a bit of a philosophical issue what to do with network specifications
-given like this - one approach would be to *reject* as a config error
-("a /28 network cannot start at .8"), the other approach is what you have
-done, to silently mask out the host bits, changing the .8/28 to .0/28.
+As discussed on IRC, it make sense to "warn" the admin, 
+but it seems it is all that can be done as this is 
+being going on at runtime.
 
-Both have merits, your fix is somewhat less code then adding an extra input
-validation check 
+I upated the patch and it will now display something like:
+WARNING: PF: /dev/shm/openvpn_pf_ff18e7030fd03ce91bd0432563e4eb1a.tmp/5: 
+incorrect subnet 192.168.100.8/28 changed to 192.168.100.0/28
 
-  if ((network.s_addr & netmask) != network.s_addr )  
-    { complain; }
 
-- so: ACK from me.
 
-(Since OpenVPN likes to print warnings, we *could* add code to print a 
-warning in this case - "warning: subnet address changed to match /%d,
-new value is %s/%d").
 
-gert
--- 
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~gert/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
 
