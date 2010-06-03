@@ -1,8 +1,10 @@
-Message-ID: <4C079AAA.3090300@...515...>
-Date: Thu, 03 Jun 2010 15:06:02 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <4C079D6B.5050606@...360...>
+Date: Thu, 03 Jun 2010 14:17:47 +0200
+From: reg9009 <reg9009@...360...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Topics for today's meeting
+References: <4C079AAA.3090300@...515...>
+In-Reply-To: <4C079AAA.3090300@...515...>
+Subject: Re: [Openvpn-devel] Topics for today's meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,24 +13,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
+Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+  Am 03.06.2010 14:06, schrieb Samuli Sepp=E4nen:
+> Hi,
+>
+> Here are some topics for today's meeting (18:00 UTC,
+> #openvpn-devel@...1334...).
+>
+> <https://community.openvpn.net/openvpn/wiki/Topics-2010-06-03>
+>
+> If you have any other things you'd like to bring up, add them to the
+> list or send them to me.
+>
+Hi all,
 
-Here are some topics for today's meeting (18:00 UTC,
-#openvpn-devel@...1334...).
+I'd like to raise an additional topic, state/instance synchronization=20
+between OpenVPN instances (transparent failover option).
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2010-06-03>
-
-If you have any other things you'd like to bring up, add them to the
-list or send them to me.
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
+Regards,
+Sebastian
 
