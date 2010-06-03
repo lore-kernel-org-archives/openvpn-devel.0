@@ -1,12 +1,12 @@
-From: chantra <chantra@...1258...>
-In-Reply-To: <mailman.487721.1275403360.5170.openvpn-devel@lists.sourceforge.net>
+Date: Thu, 3 Jun 2010 17:46:19 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20100603154619.GD26982@...1296...>
 References: <mailman.487721.1275403360.5170.openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="=-hjxWs51601BZY9ieojxl"
-Date: Thu, 03 Jun 2010 16:48:35 +0200
-Message-ID: <1275576515.23148.829.camel@...1259...>
+	<1275576515.23148.829.camel@...1259...>
 Mime-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Re: Handling of subnets grammar in Packet
-	filter file
+In-Reply-To: <1275576515.23148.829.camel@...1259...>
+Subject: Re: [Openvpn-devel] [PATCH] Re: Handling of subnets grammar in
+	Packet filter file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,193 +15,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: chantra <chantra@...1258...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---=-hjxWs51601BZY9ieojxl
-Content-Type: multipart/alternative; boundary="=-KMFIWZ3posF4JR1G1e4A"
+Hi,
 
---=-KMFIWZ3posF4JR1G1e4A
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-
-Please find below a patch to correct the behaviour.
-
-I have also opened a trac ticket :
-https://community.openvpn.net/openvpn/ticket/14
-
-chantra
-
-----
-http://www.debuntu.org
-
-
+On Thu, Jun 03, 2010 at 04:48:35PM +0200, chantra wrote:
+> Please find below a patch to correct the behaviour.
 > 
-> Hi all,
-> 
-> It seems that openvpn is not handling properly non-standard subnets in
-> pf_file.
-> This issue happened on debian etch openvpn 2.1 rc11
-> 
-> Today, while I made a typo, the following rule did not work properly:
-> 
->         # cat /dev/shm/openvpn_pf_73f2c3256a50371f057d5c0db97ede2f.tmp
->         [CLIENTS DROP]
->         
->         [SUBNETS ACCEPT]
->         +192.168.100.0/29
->         -192.168.100.8/28
->         
->         [END]
->         
-> 
-> -192.168.100.8/28 was simply ignored which basically allowed the client
-> to ping the whole subnet
-> 
-> The following rule behaved properly though.
-> 
->         # cat /dev/shm/openvpn_pf_f2b43d3cb1acd5a2720c01559cb03dc3.tmp
->         [CLIENTS DROP]
->         
->         [SUBNETS ACCEPT]
->         +192.168.100.0/29
->         -192.168.100.0/28
->         [END]
->         
-> 
-> I agree it is not a really bug as it is a user error in the first place
-> and openvpn carried on happily discarding this rule.
-> But maybe openvpn could try to handle such subnets and translate it as
-> 192.168.100.0/8.
-> 
-> I could try to look into it if you guys believe it should be handled by
-> openvpn (or maybe this has already been fixed?)
-> 
-> Regards,
-> 
-> chantra
-> 
+> I have also opened a trac ticket :
+> https://community.openvpn.net/openvpn/ticket/14
 
+The patch itself looks good.
 
+It's a bit of a philosophical issue what to do with network specifications
+given like this - one approach would be to *reject* as a config error
+("a /28 network cannot start at .8"), the other approach is what you have
+done, to silently mask out the host bits, changing the .8/28 to .0/28.
 
+Both have merits, your fix is somewhat less code then adding an extra input
+validation check 
 
-!DSPAM:4c07c0c661671935912581!
+  if ((network.s_addr & netmask) != network.s_addr )  
+    { complain; }
 
---=-KMFIWZ3posF4JR1G1e4A
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+- so: ACK from me.
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 TRANSITIONAL//EN">
-<HTML>
-<HEAD>
-  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=UTF-8">
-  <META NAME="GENERATOR" CONTENT="GtkHTML/3.28.3">
-</HEAD>
-<BODY>
-Please find below a patch to correct the behaviour.<BR>
-<BR>
-I have also opened a trac ticket : <A HREF="https://community.openvpn.net/openvpn/ticket/14">https://community.openvpn.net/openvpn/ticket/14</A><BR>
-<BR>
-chantra<BR>
-<BR>
-----<BR>
-<A HREF="http://www.debuntu.org">http://www.debuntu.org</A><BR>
-<BR>
-<BLOCKQUOTE TYPE=CITE>
-<PRE>
+(Since OpenVPN likes to print warnings, we *could* add code to print a 
+warning in this case - "warning: subnet address changed to match /%d,
+new value is %s/%d").
 
-Hi all,
-
-It seems that openvpn is not handling properly non-standard subnets in
-pf_file.
-This issue happened on debian etch openvpn 2.1 rc11
-
-Today, while I made a typo, the following rule did not work properly:
-
-        # cat /dev/shm/openvpn_pf_73f2c3256a50371f057d5c0db97ede2f.tmp
-        [CLIENTS DROP]
-        
-        [SUBNETS ACCEPT]
-        +192.168.100.0/29
-        -192.168.100.8/28
-        
-        [END]
-        
-
--192.168.100.8/28 was simply ignored which basically allowed the client
-to ping the whole subnet
-
-The following rule behaved properly though.
-
-        # cat /dev/shm/openvpn_pf_f2b43d3cb1acd5a2720c01559cb03dc3.tmp
-        [CLIENTS DROP]
-        
-        [SUBNETS ACCEPT]
-        +192.168.100.0/29
-        -192.168.100.0/28
-        [END]
-        
-
-I agree it is not a really bug as it is a user error in the first place
-and openvpn carried on happily discarding this rule.
-But maybe openvpn could try to handle such subnets and translate it as
-192.168.100.0/8.
-
-I could try to look into it if you guys believe it should be handled by
-openvpn (or maybe this has already been fixed?)
-
-Regards,
-
-chantra
-
-</PRE>
-</BLOCKQUOTE>
-<BR>
-
-!DSPAM:4c07c0c661671935912581!
-
-</BODY>
-</HTML>
-
-
-
---=-KMFIWZ3posF4JR1G1e4A--
-
---=-hjxWs51601BZY9ieojxl
-Content-Disposition: attachment;
-	filename="0001-Handle-non-standard-subnets-in-PF-grammar.patch"
-Content-Type: text/x-patch;
-	name="0001-Handle-non-standard-subnets-in-PF-grammar.patch";
-	charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-
-From 09ddcf75171804503119912b45876d92c3476cbc Mon Sep 17 00:00:00 2001
-From: chantra <chantra@...1258...>
-Date: Wed, 2 Jun 2010 12:44:26 +0200
-Subject: [PATCH] Handle non standard subnets in PF grammar
-
-Allow subnets for like 192.168.100.8/28 to be understood
----
- pf.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-diff --git a/pf.c b/pf.c
-index 3ce2ef2..f16ec9c 100644
---- a/pf.c
-+++ b/pf.c
-@@ -121,7 +121,7 @@ add_subnet (const char *line, const char *prefix, const int line_num, struct pf_
-     struct pf_subnet *e;
-     ALLOC_OBJ_CLEAR (e, struct pf_subnet);
-     e->rule.exclude = exclude;
--    e->rule.network = ntohl (network.s_addr);
-+    e->rule.network = ntohl (network.s_addr) & netmask;
-     e->rule.netmask = netmask;
-     **next = e;
-     *next = &e->next;
+gert
 -- 
-1.5.6.5
-
-
---=-hjxWs51601BZY9ieojxl--
-
-
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~gert/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
