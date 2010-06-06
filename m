@@ -1,13 +1,9 @@
-Message-Id: <03F19102-8A51-4742-B7CE-BD499BA793C0@...1348...>
-From: Toby Thain <toby@...1348...>
-In-Reply-To: <201006060058.21798.dave_br@...1278...>
-Mime-Version: 1.0 (Apple Message framework v936)
-Date: Mon, 7 Jun 2010 07:02:39 +1000
-References: <20100604224938.GA19956@...1375...>
-	<201006052336.37559.dave_br@...1278...>
-	<915E9EDC-6AC1-4CAE-963C-0CBBFA3315F5@...1348...>
-	<201006060058.21798.dave_br@...1278...>
-Subject: Re: [Openvpn-devel] PATCH: remove bashisms from easy-rsa
+From: chantra <chantra@...1258...>
+Content-Type: multipart/alternative; boundary="=-t5/gGacDMvUI/wqz+rHt"
+Date: Mon, 07 Jun 2010 00:12:54 +0200
+Message-ID: <1275862374.2183.61.camel@...1259...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Enabling Accounting/Stats for plugins
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,60 +12,78 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--=-t5/gGacDMvUI/wqz+rHt
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-To: Davide Brini <dave_br@...1278...>
-Cc: openvpn-devel@lists.sourceforge.net
+
+Hi,
+
+I have made a patch that would allow plugins to handle accounting
+information
+for each connecting clients without reading the status file.
+
+Please see https://community.openvpn.net/openvpn/ticket/15
+
+But for the obvious benefit that one can check regurlarly how much
+bandwidth is used by a user,
+it should also help in building a better radius plugin for OpenVPN.
+
+Your comments are welcome :)
+
+chantra
+
+-- 
+http://www.debuntu.org
 
 
-On 6-Jun-10, at 9:58 AM, Davide Brini wrote:
+!DSPAM:4c0c1d6761671268788600!
 
-> On Sunday 06 June 2010, Toby Thain wrote:
->
->>>> Most of the common GNU utilities (including gcc) are in the  
->>>> standard
->>>> Solaris install, either via /usr/sfw/ or by using g prefix (e.g.
->>>> gawk,
->>>> gmake).
->>>
->>> Possibly, but it still means that either scripts using standard
->>> names and expecting standard functionality have to be changed, or  
->>> the
->>> system has to be changed to have the standard-named utilites point  
->>> to the
->>> GNU versions.
->>
->> Yes and no... Autotools will generally find the g-binaries (obviously
->> autotools has long supported Solaris). OpenSolaris does, I believe,
->> bring more GNU to standard userland (but this is not  
->> uncontroversial).
->
-> Well yes, but to paraphrase what you say later, "all the world's not  
-> GNU", so
-> probably not everyone uses autotools :-)
->
-> In my (admittedly limited) experience, solaris has always shipped  
-> non-standard
-> or inferior default tools, even long before GNU came about.
+--=-t5/gGacDMvUI/wqz+rHt
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 
-Yes - Buggy/poorly supported vendor tools (Sun was certainly not the  
-only or worst offender) was a major issue GNU was meant to fix. (In  
-the particular case of SunOS, missing vendor compiler.)
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 TRANSITIONAL//EN">
+<HTML>
+<HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=UTF-8">
+  <META NAME="GENERATOR" CONTENT="GtkHTML/3.28.3">
+</HEAD>
+<BODY>
+Hi,<BR>
+<BR>
+I have made a patch that would allow plugins to handle accounting information<BR>
+for each connecting clients without reading the status file.<BR>
+<BR>
+Please see <A HREF="https://community.openvpn.net/openvpn/ticket/15">https://community.openvpn.net/openvpn/ticket/15</A><BR>
+<BR>
+But for the obvious benefit that one can check regurlarly how much bandwidth is used by a user,<BR>
+it should also help in building a better radius plugin for OpenVPN.<BR>
+<BR>
+Your comments are welcome :)<BR>
+<BR>
+chantra<BR>
+<BR>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
+<TR>
+<TD>
+<PRE>
+-- 
+<A HREF="http://www.debuntu.org">http://www.debuntu.org</A>
+</PRE>
+</TD>
+</TR>
+</TABLE>
 
->
->> It is a bit tricky deriving a portable bang-path in your case. But
->> innovations like dash on Debian also serve to prove that 'all the
->> world's not a GNU/Linux'.
->
-> Agreed! (although dash isn't perfect yet, but nevermind). That's why  
-> I think
-> #!/bin/sh should be used.
->
+!DSPAM:4c0c1d6761671268788600!
 
---Toby
+</BODY>
+</HTML>
 
->
-> -- 
-> D.
+
+
+--=-t5/gGacDMvUI/wqz+rHt--
+
 
 
