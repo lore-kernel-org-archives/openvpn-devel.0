@@ -1,12 +1,8 @@
-Message-ID: <4C1248CB.8030005@...1114...>
-Date: Fri, 11 Jun 2010 16:31:39 +0200
 From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <mailman.487721.1275403360.5170.openvpn-devel@lists.sourceforge.net>
-	<1275576515.23148.829.camel@...1259...>
-In-Reply-To: <1275576515.23148.829.camel@...1259...>
-Subject: Re: [Openvpn-devel] [PATCH] Re: Handling of subnets grammar in
- Packet filter file
+Date: Sun, 13 Jun 2010 01:02:56 +0200
+Message-Id: <1276383776-15751-1-git-send-email-openvpn.list@...1114...>
+Subject: [Openvpn-devel] [PATCH] Fixed client hang when server don't PUSH
+	(aka the NO_SOUP_FOR_YOU patch)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,103 +11,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: chantra <chantra@...1258...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: David Sommerseth <dazo@...384...>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+From: David Sommerseth <dazo@...384...>
 
-On 03/06/10 16:48, chantra wrote:
-> Please find below a patch to correct the behaviour.
-> 
-> I have also opened a trac ticket :
-> https://community.openvpn.net/openvpn/ticket/14
-> 
-> chantra
+Solves bug ticket 13
+<https://community.openvpn.net/openvpn/ticket/13>
 
+When the client sends PUSH_REQUESTS, it waits until the server sends PUSH_REPLY.
+If the server do not have anything to push to the client nothing happens.  The
+client will then regularly send new PUSH_REQUESTS until it gets an answer, which
+results in not completing the connection negotiation.
 
-Thank you very much for your patch!  It's been accepted and merged into
-bugfix2.1 and allmerged.
+This patch makes the server send an empty PUSH_REPLY when it has nothing to more
+to push to the client.
 
-Commit a881843bf2101e77d15cb88105684288655055cb
+Signed-off-by: David Sommerseth <dazo@...384...>
+---
+ push.c |   17 +++++++++++++++++
+ 1 files changed, 17 insertions(+), 0 deletions(-)
 
+diff --git a/push.c b/push.c
+index 9ddc900..1320bec 100644
+--- a/push.c
++++ b/push.c
+@@ -177,6 +177,7 @@ send_push_reply (struct context *c)
+   static char cmd[] = "PUSH_REPLY";
+   const int extra = 64; /* extra space for possible trailing ifconfig and push-continuation */
+   const int safe_cap = BCAP (&buf) - extra;
++  bool push_sent = false;
+ 
+   buf_printf (&buf, cmd);
+ 
+@@ -192,6 +193,7 @@ send_push_reply (struct context *c)
+ 		const bool status = send_control_channel_string (c, BSTR (&buf), D_PUSH);
+ 		if (!status)
+ 		  goto fail;
++		push_sent = true;
+ 		multi_push = true;
+ 		buf_reset_len (&buf);
+ 		buf_printf (&buf, cmd);
+@@ -218,6 +220,21 @@ send_push_reply (struct context *c)
+     {
+       const bool status = send_control_channel_string (c, BSTR (&buf), D_PUSH);
+       if (!status)
++        goto fail;
++      push_sent = true;
++    }
++
++  /* If nothing have been pushed, send an empty push,
++   * as the client is expecting a response
++   */
++  if (!push_sent)
++    {
++      bool status = false;
++
++      buf_reset_len (&buf);
++      buf_printf (&buf, cmd);
++      status = send_control_channel_string (c, BSTR(&buf), D_PUSH);
++      if (!status)
+ 	goto fail;
+     }
+ 
+-- 
+1.6.6.1
 
-kind regards,
-
-David Sommerseth
-
-
->>
->> Hi all,
->>
->> It seems that openvpn is not handling properly non-standard subnets in
->> pf_file.
->> This issue happened on debian etch openvpn 2.1 rc11
->>
->> Today, while I made a typo, the following rule did not work properly:
->>
->>         # cat /dev/shm/openvpn_pf_73f2c3256a50371f057d5c0db97ede2f.tmp
->>         [CLIENTS DROP]
->>         
->>         [SUBNETS ACCEPT]
->>         +192.168.100.0/29
->>         -192.168.100.8/28
->>         
->>         [END]
->>         
->>
->> -192.168.100.8/28 was simply ignored which basically allowed the client
->> to ping the whole subnet
->>
->> The following rule behaved properly though.
->>
->>         # cat /dev/shm/openvpn_pf_f2b43d3cb1acd5a2720c01559cb03dc3.tmp
->>         [CLIENTS DROP]
->>         
->>         [SUBNETS ACCEPT]
->>         +192.168.100.0/29
->>         -192.168.100.0/28
->>         [END]
->>         
->>
->> I agree it is not a really bug as it is a user error in the first place
->> and openvpn carried on happily discarding this rule.
->> But maybe openvpn could try to handle such subnets and translate it as
->> 192.168.100.0/8.
->>
->> I could try to look into it if you guys believe it should be handled by
->> openvpn (or maybe this has already been fixed?)
->>
->> Regards,
->>
->> chantra
->>
-> 
-> !DSPAM:4c07c0c661671935912581!
-> 
-> 
-> 
-> ------------------------------------------------------------------------------
-> ThinkGeek and WIRED's GeekDad team up for the Ultimate 
-> GeekDad Father's Day Giveaway. ONE MASSIVE PRIZE to the 
-> lucky parental unit.  See the prize list and enter to win: 
-> http://p.sf.net/sfu/thinkgeek-promo
-> 
-> 
-> 
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkwSSMsACgkQDC186MBRfrpVKwCfTR1/SMT5AoWCtW77D0vlmaMI
-nEUAoKvVbt6KBglP0kVJbWqDUlUSMh6d
-=8Ocg
------END PGP SIGNATURE-----
 
