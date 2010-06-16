@@ -1,8 +1,9 @@
-From: David Sommerseth <openvpn.list@...1114...>
-Date: Sun, 13 Jun 2010 01:02:56 +0200
-Message-Id: <1276383776-15751-1-git-send-email-openvpn.list@...1114...>
-Subject: [Openvpn-devel] [PATCH] Fixed client hang when server don't PUSH
-	(aka the NO_SOUP_FOR_YOU patch)
+Content-Class: urn:content-classes:message
+From: =?iso-8859-2?Q?David=20Bala=BEic?= <david.balazic@...1379...>
+Date: Wed, 16 Jun 2010 14:03:39 +0200
+Message-ID: <499929A843E2C541A8AD31A881A2B6A206236F74@...1006...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] FW: Patch submission - git crash course ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,72 +12,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: David Sommerseth <dazo@...384...>
+Content-Type: text/plain; charset="iso-8859-2"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-From: David Sommerseth <dazo@...384...>
+Hi!
 
-Solves bug ticket 13
-<https://community.openvpn.net/openvpn/ticket/13>
+Is there some crash course for using git with openvpn sources?
 
-When the client sends PUSH_REQUESTS, it waits until the server sends PUSH_REPLY.
-If the server do not have anything to push to the client nothing happens.  The
-client will then regularly send new PUSH_REQUESTS until it gets an answer, which
-results in not completing the connection negotiation.
+I know svn and other tools, but not git.
 
-This patch makes the server send an empty PUSH_REPLY when it has nothing to more
-to push to the client.
+So i need steps list like:
 
-Signed-off-by: David Sommerseth <dazo@...384...>
----
- push.c |   17 +++++++++++++++++
- 1 files changed, 17 insertions(+), 0 deletions(-)
+apt-get install git
+svn co http://repo.openvpn.net/patchme # translated into git syntax
+#do your changes
+svn diff > my_patch  # again , git syntax
 
-diff --git a/push.c b/push.c
-index 9ddc900..1320bec 100644
---- a/push.c
-+++ b/push.c
-@@ -177,6 +177,7 @@ send_push_reply (struct context *c)
-   static char cmd[] = "PUSH_REPLY";
-   const int extra = 64; /* extra space for possible trailing ifconfig and push-continuation */
-   const int safe_cap = BCAP (&buf) - extra;
-+  bool push_sent = false;
- 
-   buf_printf (&buf, cmd);
- 
-@@ -192,6 +193,7 @@ send_push_reply (struct context *c)
- 		const bool status = send_control_channel_string (c, BSTR (&buf), D_PUSH);
- 		if (!status)
- 		  goto fail;
-+		push_sent = true;
- 		multi_push = true;
- 		buf_reset_len (&buf);
- 		buf_printf (&buf, cmd);
-@@ -218,6 +220,21 @@ send_push_reply (struct context *c)
-     {
-       const bool status = send_control_channel_string (c, BSTR (&buf), D_PUSH);
-       if (!status)
-+        goto fail;
-+      push_sent = true;
-+    }
-+
-+  /* If nothing have been pushed, send an empty push,
-+   * as the client is expecting a response
-+   */
-+  if (!push_sent)
-+    {
-+      bool status = false;
-+
-+      buf_reset_len (&buf);
-+      buf_printf (&buf, cmd);
-+      status = send_control_channel_string (c, BSTR(&buf), D_PUSH);
-+      if (!status)
- 	goto fail;
-     }
- 
--- 
-1.6.6.1
 
+Thanks!
+
+David Bala=BEic
 
