@@ -1,8 +1,12 @@
-Message-ID: <4C1A0D7B.6080803@...515...>
-Date: Thu, 17 Jun 2010 14:56:43 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Topics for today's meeting
+In-Reply-To: <4C1A0941.5000808@...515...>
+References: <4C19ED93.50202@...1380...>
+	<4C1A0941.5000808@...515...>
+Date: Thu, 17 Jun 2010 15:02:55 +0300
+Message-ID: <AANLkTinkGgRbX7tY0QZzoC-ru5jhKFdpiEgn-proJecI@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Choose a different field in X509 to be
+	username
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,29 +15,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+This is good idea.
 
-Here are some topics for today's meeting (18:00 UTC,
-#openvpn-devel@...1334...).
+In order to upper case toupper() should be used and not manual guessing.
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2010-06-17>
++  else if (streq (p[0], "x509-username-field") && p[1])
++    {
++      VERIFY_PERMISSION (OPT_P_GENERAL);
++      /* Uppercase if necessary */
++      {
++       char *s =3D p[1];
++       int c, flag =3D 0;
++
++       while ((c =3D *s) !=3D '\0')
++          {
++           if (c >=3D 'a' && c <=3D 'z')
++              {
++                c =3D c + 'A' - 'a';
++               flag++;
++              }
++            *s =3D (char) c;
++            s++;
++         }
++      }
++      options->x509_username_field =3D p[1];
++    }
 
-The topic list is still a little short, so please don't hesitate to
-suggest more topics. You can send the topics directly to me, to this
-list or add them yourself to the Trac wiki.
-
-Dazo won't make it today, as he's on a holiday.
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
-
+2010/6/17 Samuli Sepp=C3=A4nen <samuli@...515...>:
+>
+>> Hi,
+>>
+>> For my company, we use a PKI (linked to a LDAP) with OpenVPN. We can't
+>> use "CN" to be username (few people can have the same "CN"). In our
+>> case, we only use the UID.
+>>
+>> With my patch, you can choose another field to be username with a new
+>> option called "x509-username-field", the default value is "CN".
+>>
+>> Best regards
+>>
+>> --
+>> Emilien Mantel
+> Hi Emilien,
+>
+> Thanks for the patch! Could somebody with better C skills take a look
+> and see if it needs modifications?
+>
+> --
+> Samuli Sepp=C3=A4nen
+> Community Manager
+> OpenVPN Technologies, Inc
+>
+> irc freenode net: mattock
+>
+>
+> -------------------------------------------------------------------------=
+-----
+> ThinkGeek and WIRED's GeekDad team up for the Ultimate
+> GeekDad Father's Day Giveaway. ONE MASSIVE PRIZE to the
+> lucky parental unit. =C2=A0See the prize list and enter to win:
+> http://p.sf.net/sfu/thinkgeek-promo
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
 
