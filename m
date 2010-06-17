@@ -1,14 +1,11 @@
-Message-ID: <20100617101247.16432.qmail@...1287...>
-Date: Thu, 17 Jun 2010 12:12:47 +0200
-From: Peter Stuge <peter@...1287...>
-References: <499929A843E2C541A8AD31A881A2B6A206236F74@...1006...>
-	<1276690741.2615.259.camel@...1259...>
-	<499929A843E2C541A8AD31A881A2B6A206236F74@...1006...>
-	<4C18C0D3.2010805@...515...>
+Message-ID: <4C1A0941.5000808@...515...>
+Date: Thu, 17 Jun 2010 14:38:41 +0300
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <1276690741.2615.259.camel@...1259...> <4C18C0D3.2010805@...515...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] FW: Patch submission -
-	git	crash course ?
+References: <4C19ED93.50202@...1380...>
+In-Reply-To: <4C19ED93.50202@...1380...>
+Subject: Re: [Openvpn-devel] [PATCH] Choose a different field in X509 to be
+ username
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,24 +14,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Samuli Seppänen wrote:
-> git clone <repository_url>
-> # do your changes
-> # then git <something> to create and mail a patch to -devel
 
-chantra wrote:
-> # do changes
-> $ git diff > my_patch 
+> Hi,
+>
+> For my company, we use a PKI (linked to a LDAP) with OpenVPN. We can't
+> use "CN" to be username (few people can have the same "CN"). In our
+> case, we only use the UID.
+>
+> With my patch, you can choose another field to be username with a new
+> option called "x509-username-field", the default value is "CN".
+>
+> Best regards
+>
+> --=20
+> Emilien Mantel
+Hi Emilien,
 
-Please make sure to always create commits in your repo before sending
-a patch. Once you have made a commit it is easy to generate a patch
-using the git format-patch command.
+Thanks for the patch! Could somebody with better C skills take a look
+and see if it needs modifications?
 
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-//Peter
+irc freenode net: mattock
+
 
