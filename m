@@ -1,9 +1,8 @@
-Date: Fri, 18 Jun 2010 08:29:40 +0200
-From: ma+ovpnd@...31...
-Message-ID: <20100618062940.GA1130@...33...>
+Message-ID: <4C1B386E.9000705@...1380...>
+Date: Fri, 18 Jun 2010 11:12:14 +0200
+From: Emilien Mantel <emilien.mantel@...1380...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] Choose a different field in X509 to be
- username
+Subject: [Openvpn-devel] Renaming all vars/function "common_name".
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,49 +11,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii; format=flowed; delsp=yes
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Am 17.06.2010, 15:57 Uhr, schrieb Alon Bar-Lev:
+Hi,
 
-> Great.
->
-> Few more:
->
-> 1. To upper:
-> char *s = p[1];
-> while ((*s = toupper(*s)) != '\0') s++;
+Related to my previous patch, we talked about renaming all "common_name" 
+vars et functions.
 
-I haven't looked at the patch yet, so my silence about anything else DOES  
-NOT constitute approval or anything of the remainder of the code.
+My first suggestion was to rename it "username", but it's too vague. 
+Alon and David suggested to use "x509_" as prefix for this "new"  var name.
 
-Picking out a random bit: toupper called on (unqualified) char without  
-cast is A SECURITY RISK and NON-PORTABLE. It can cause BAD ARRAY SUBSCRIPT  
-compiler warnings AND CRASHES (depending on if the compiler treats the  
-char as signed or unsigned, which is implementation-dependent). Many libcs  
-implement toupper via table lookup similar to:
+But it seems to me, the server verification is done in the client side. 
+The client reads the server's cert too. So I not agree to call it 
+"x509_clientid" or "x509_clientref".
 
-static inline int isupper(int c) {
-	return !!(ctypes[c+1] & _CUPPER);
-}
+I thinked to call it "x509_rdn", but the OpenVPN code doesn't extract 
+the RDN (but it's done in most of cases).
 
-EVERYBODY MUST ALWAYS cast toupper/tolower/to...() and is...() arguments  
-to unsigned char:
+I suggest to call it "x509_primary_identifier", it's generic.
 
-char *s = ...
-while ((*s = toupper((unsigned char)*s) != '\0') ++s;
+If you agree, I can prepare a patch soon based in allmerged tree.
 
-Alternatively, declare unsigned char *s = ... - which will however cause  
-signedness mismatches in assignments and thereabouts unless you cast.
+Best regards,
 
-That's because all these ctype.h functions take "int" arguments that can  
-be EOF (-1) or any value representable as unsigned char. Check IEEE Std  
-1003.1.
-
-
-
--- 
-Matthias Andree
+--
+Emilien Mantel
 
