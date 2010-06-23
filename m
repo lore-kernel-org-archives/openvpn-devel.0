@@ -1,12 +1,13 @@
-Message-ID: <20100622230327.11872.qmail@...1287...>
-Date: Wed, 23 Jun 2010 01:03:27 +0200
-From: Peter Stuge <peter@...1287...>
+Message-ID: <4C21B352.1030203@...1147...>
+Date: Wed, 23 Jun 2010 09:10:10 +0200
+From: Jan Just Keijser <janjust@...1147...>
+MIME-Version: 1.0
 References: <AANLkTikEA95y8ojAyWAJoJmYbt_MZBT23dbi-IyAUa0Y@...278...>
 	<4C20D014.7050802@...1147...>
-MIME-Version: 1.0
-In-Reply-To: <4C20D014.7050802@...1147...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] Is it possible to
-	access	Windows XP shares over port 445?
+	<AANLkTim766amj5ebXyzKWKKqjk2ndJiqyu-Drw26Mt1e@...278...>
+In-Reply-To: <AANLkTim766amj5ebXyzKWKKqjk2ndJiqyu-Drw26Mt1e@...278...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] Is it possible to access
+ Windows XP shares over port 445?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,51 +16,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, openvpn-users@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: =?UTF-8?B?SGVubm8gVMOkaHQ=?= <henno.taht@...277...>, OpenVPN Users <openvpn-users@lists.sourceforge.net>, openvpn-devel@lists.sourceforge.net
 
-Jan Just Keijser wrote:
-> > So XP is refusing port 445 connections from OpenVPN adapter.
-> 
-> Maybe someone on the -devel list (CC'ed) knows more about the
-> interaction between the tap-win32 adapter and the rest of the
-> windows os?
+Hi Henno,
 
-This reminds me of my experience with pushing a DNS server address
-as part of the VPN connection.
+Henno T=C3=A4ht wrote:
+> Hi
+>
+> 2010/6/22 Jan Just Keijser <janjust@...1147... <mailto:janjust@...1147...=
+>>
+>
+>     Henno T=C3=A4ht wrote:
+>
+>         The only thing I can think of is that Windows XP explicitly
+>         forbids access to port 445 as a countersecurity measure unless
+>         it's coming from an "official" network card.
+>
+>
+> That crossed my mind also.
+>
+>=20=20
+>
+>     It seems like OpenVPN is working as it should, it's just that
+>     Windows XP (and Vista/7?) does not regard the tap-win32 adapter as
+>     an official network card and hence does not allow access.
+>
+>
+> I think it has something to do with the way OpenVPN configures the TAP=20
+> adapter while first connecting after boot. Because when I uncheck and=20
+> recheck OpenVPN adapter's "File and Printer Sharing service", port 445=20
+> starts operating normally also on this adapter. But unfortunately that=20
+> fortune only lasts until next computer restart.
+>
+>     Your best bet is to continue using netbios-over-tcpip for the time
+>     being (I always disable port 445 anyways) until a Windows kernel
+>     guru can tell us just what the heck is happening here (where would
+>     this be logged? my XP firewall is turned off
+>
+>
+> I cannot do that because my W2003 servers stubbornly refuse to use=20
+> netbios-over-tcpip. I have triple checked that Enable NetBIOS over=20
+> TCP/IP is checked and even restarted the servers but they still only=20
+> try to connect to port 445. :(
+I think I got it:
 
-I was using a configuration where traffic to the DNS server always
-needed to be routed. It was not directly reachable on any client
-interface.
+- change the media status on the tap-win32 adapter from 'Application=20
+Controller' to 'Always Connected'
+- add the lines
+    dhcp-pre-release
+    dhcp-renew
+    dhcp-release
+  to the openvpn client config file.
+- Restart windows, connect to the VPN and try the share.
 
-After the DHCP client for e.g. a LAN or wifi connection in Windows
-has been configured with a DNS server, the DNS resolver would bind
-to the underlying interface that was configured by DHCP.
+This worked for my WinXP SP3 installation.
 
-Even if the OpenVPN server pushes another DNS server setting which is
-applied to the system when bringing up the TAP adapter, the DNS
-resolver was still "bound" to the underlying interface and DNS
-lookups would now fail. (The new IP was firewalled to only be
-reachable via VPN.)
+The downside is that the system takes a bit longer to come up, as=20
+windows tries to get a DHCP lease for the tap-win32 adapter and finally=20
+assigns a 169.254 address. If this works for you as well then maybe the=20
+tap-win32 developers can dive deeper into this and find out why windows=20
+treats the 'always connected' adapter differently from an 'application=20
+controlled' adapter .
 
-(My solution was to make the DNS server always be on the same IP
-network as the underlying interface.)
+And now that I think of it: this *might* also affect the windows=20
+2003/2008 server problem that some people have reported here...
 
-This seems to have nothing to do with incoming port 445 traffic, but
-maybe something similar is going wrong?
+HTH,
 
-You could try to stop and then start the service responsible for
-listening on that port. I'm not quite sure which one it is though.
-
-Stopping and starting the DNS resolver helped in my situation, but
-wasn't an adequate fix.
-
-At least it might provide you with some more information.
-
-
-Kind regards
-
-//Peter
+JJK
 
