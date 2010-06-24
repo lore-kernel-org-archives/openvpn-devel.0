@@ -1,14 +1,8 @@
-Message-ID: <4C230CF9.10202@...1147...>
-Date: Thu, 24 Jun 2010 09:44:57 +0200
-From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <4C232D7F.2080303@...515...>
+Date: Thu, 24 Jun 2010 13:03:43 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <AANLkTikEA95y8ojAyWAJoJmYbt_MZBT23dbi-IyAUa0Y@...278...>
-	<4C20D014.7050802@...1147...>
-	<AANLkTim766amj5ebXyzKWKKqjk2ndJiqyu-Drw26Mt1e@...278...>
-	<4C21B352.1030203@...1147...> <20100623194825.GA361@...1296...>
-In-Reply-To: <20100623194825.GA361@...1296...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] Is it possible to access
- Windows XP shares over port 445?
+Subject: [Openvpn-devel] Topics for today's meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,36 +11,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net, OpenVPN Users <openvpn-users@lists.sourceforge.net>
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Gert Doering wrote:
-> Hi,
->
-> On Wed, Jun 23, 2010 at 09:10:10AM +0200, Jan Just Keijser wrote:
->   
->> assigns a 169.254 address. If this works for you as well then maybe the 
->> tap-win32 developers can dive deeper into this and find out why windows 
->> treats the 'always connected' adapter differently from an 'application 
->> controlled' adapter .
->>     
->
-> I'd assume that windows services are not "bound" to "dynamic" interfaces...
->
->   
-They're not , as far as I know. 
-However,
-- the SMBoverIP service binds to 0.0.0.0:445 yet it refuses access from 
-IPs other than the 'always connected' ones
-- as Henno found out,  disabling and then enabling the "windows file 
-sharing" protocol on the TAP-win32 adapter after the connection has been 
-established fixes the problem ; I don't know if it is possible to do 
-this using some 'netsh' magic, however
-- the same thing works on windows 2000, no modifications
-- on windows XP and higher it *does* work for PPTP/L2TP+IPsec VPNs
+Hi,
+
+Topic list for today's (18:00 UTC, #openvpn-devel@...1334...)
+meeting is a little short. David suggested discussing (and perhaps
+giving an ACK to) this patch:
+
+<http://article.gmane.org/gmane.network.openvpn.devel/3690>
+
+If you have any other topics you'd like to have discussed, please let me
+know beforehand. You can mail suggestion to this list or to me directly.
+Our Trac is currently experiencing certificate revocation -related
+technical difficulties, so I can't create a proper topic page just yet.
+This issue should be fixed around the time meeting starts (18:00 UTC).
+
+David said he'd probably make it to the meeting, too.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
 
-JJK
+
 
