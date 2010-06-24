@@ -1,8 +1,11 @@
-Message-ID: <4C232D7F.2080303@...515...>
-Date: Thu, 24 Jun 2010 13:03:43 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Topics for today's meeting
+From: chantra <chantra@...1258...>
+In-Reply-To: <AANLkTilYpS47A68hRLrkMYiyHBBZlBc14lz9HCoe9GYZ@...278...>
+References: <AANLkTilYpS47A68hRLrkMYiyHBBZlBc14lz9HCoe9GYZ@...278...>
+Content-Type: multipart/alternative; boundary="=-nt2g5dwyInb9xO7LBSgB"
+Date: Thu, 24 Jun 2010 13:58:29 +0200
+Message-ID: <1277380709.2567.73.camel@...1259...>
+Mime-Version: 1.0
+Subject: Re: [Openvpn-devel] ovpn daemon not seeing my plugin thread...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,33 +14,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Vineet Kumar <vineet.kumar@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+--=-nt2g5dwyInb9xO7LBSgB
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 
-Topic list for today's (18:00 UTC, #openvpn-devel@...1334...)
-meeting is a little short. David suggested discussing (and perhaps
-giving an ACK to) this patch:
+> The reason is obviously the fact that the thread-creation occurred
+> *before* the daemon() call (that forked off a child which has no way
+> of inheriting a copy of that thread).
+> So does this mean then that the ovpn daemon infrastructure will only
+> work with plugins that don't do threading of their own?
 
-<http://article.gmane.org/gmane.network.openvpn.devel/3690>
+You might want to look at 
+openvpn_plugin_select_initialization_point_v1  function
 
-If you have any other topics you'd like to have discussed, please let me
-know beforehand. You can mail suggestion to this list or to me directly.
-Our Trac is currently experiencing certificate revocation -related
-technical difficulties, so I can't create a proper topic page just yet.
-This issue should be fixed around the time meeting starts (18:00 UTC).
+as done here 
+http://redmine.debuntu.org/projects/openvpn-ldap-auth/repository/revisions/master/entry/src/ldap-auth.c#L430
 
-David said he'd probably make it to the meeting, too.
+-- 
+http://www.debuntu.org
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
 
-irc freenode net: mattock
+!DSPAM:4c23486761671948424632!
 
+--=-nt2g5dwyInb9xO7LBSgB
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 TRANSITIONAL//EN">
+<HTML>
+<HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=UTF-8">
+  <META NAME="GENERATOR" CONTENT="GtkHTML/3.28.3">
+</HEAD>
+<BODY>
+<BLOCKQUOTE TYPE=CITE>
+<PRE>
+The reason is obviously the fact that the thread-creation occurred
+*before* the daemon() call (that forked off a child which has no way
+of inheriting a copy of that thread).
+So does this mean then that the ovpn daemon infrastructure will only
+work with plugins that don't do threading of their own?
+</PRE>
+</BLOCKQUOTE>
+You might want to look at <BR>
+openvpn_plugin_select_initialization_point_v1&nbsp; function<BR>
+<BR>
+as done here <BR>
+<A HREF="http://redmine.debuntu.org/projects/openvpn-ldap-auth/repository/revisions/master/entry/src/ldap-auth.c#L430">http://redmine.debuntu.org/projects/openvpn-ldap-auth/repository/revisions/master/entry/src/ldap-auth.c#L430</A><BR>
+<BR>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
+<TR>
+<TD>
+<PRE>
+-- 
+<A HREF="http://www.debuntu.org">http://www.debuntu.org</A>
+</PRE>
+</TD>
+</TR>
+</TABLE>
+
+!DSPAM:4c23486761671948424632!
+
+</BODY>
+</HTML>
+
+
+
+--=-nt2g5dwyInb9xO7LBSgB--
 
 
 
