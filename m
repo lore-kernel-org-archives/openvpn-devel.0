@@ -1,15 +1,12 @@
-Date: Sat, 26 Jun 2010 13:41:57 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20100626114157.GV361@...1296...>
-References: <AANLkTikEA95y8ojAyWAJoJmYbt_MZBT23dbi-IyAUa0Y@...278...>
-	<4C20D014.7050802@...1147...>
-	<AANLkTim766amj5ebXyzKWKKqjk2ndJiqyu-Drw26Mt1e@...278...>
-	<4C21B352.1030203@...1147...> <20100623194825.GA361@...1296...>
-	<AANLkTikd4bxVpYdOHRO-JXnx-o1Dv4OC-AxuuT2J7044@...278...>
-Mime-Version: 1.0
-In-Reply-To: <AANLkTikd4bxVpYdOHRO-JXnx-o1Dv4OC-AxuuT2J7044@...278...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] Is it possible to access
-	Windows XP shares over port 445?
+Message-ID: <4C25EC6E.3080808@...1114...>
+Date: Sat, 26 Jun 2010 14:02:54 +0200
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <4C19ED93.50202@...1380...>	<4C1A0941.5000808@...515...>	<AANLkTinkGgRbX7tY0QZzoC-ru5jhKFdpiEgn-proJecI@...278...>	<4C1A1AE1.5090305@...1380...>	<AANLkTimpz7YASaTfmQ5DItwiMrplAx_G93ez2vHxAWW5@...278...>	<4C1A3658.6090501@...1380...>	<4C1A7E26.4010206@...1114...>	<20100618000120.28120.qmail@...1287...>
+	<4C2474EC.6000308@...1380...>
+In-Reply-To: <4C2474EC.6000308@...1380...>
+Subject: Re: [Openvpn-devel] [PATCH] Choose a different field in X509 to	be
+ username
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,43 +17,94 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Henno =?iso-8859-1?Q?T=E4ht?= <henno.taht@...277...>
-Cc: openvpn-devel@lists.sourceforge.net, OpenVPN Users <openvpn-users@lists.sourceforge.net>
+To: Emilien Mantel <emilien.mantel@...1380...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-On Wed, Jun 23, 2010 at 10:50:45PM +0300, Henno T=E4ht wrote:
-> On Wed, Jun 23, 2010 at 22:48, Gert Doering <gert@...1296...> wrote:
-> > On Wed, Jun 23, 2010 at 09:10:10AM +0200, Jan Just Keijser wrote:
-> > > assigns a 169.254 address. If this works for you as well then maybe t=
-he
-> > > tap-win32 developers can dive deeper into this and find out why windo=
-ws
-> > > treats the 'always connected' adapter differently from an 'application
-> > > controlled' adapter .
-> >
-> > I'd assume that windows services are not "bound" to "dynamic" interface=
-s...
+On 25/06/10 11:20, Emilien Mantel wrote:
+> Hi,
 >=20
-> By dynamic interface you mean an interface which has  "Obtain IP address
-> automatically" set?
+> See attached a very small patch (based on allmerged tree) to fix "sizeof".
 
-No, I was thinking about interfaces that sort of "are not always there".
+Thanks a lot!
 
-But that was a misconception, the TAP interface *is* always there - what's
-application controlled is whether it's "connected to an ethernet cable"=20
-(virtual, of course) all the time, or only if openvpn tells it so.
+commit 031d18fcb8a2a552aecabb41f1afdfe3f51bdd58
+Author: Emilien Mantel <emilien.mantel@...1380...>
+Date:   Sat Jun 26 13:56:48 2010 +0200
 
-But in that my idea doesn't really make sense - it's as if windows wouldn't
-start windows sharing if the ethernet cable is not plugged in at boot time.
+    Fixed static defined length check to use sizeof()
 
-gert
+    This comes in addition to commit 935c62be9c0c8a256112d after some
+    additional review comments.
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+    Signed-off-by: Emilien Mantel <emilien.mantel@...1380...>
+    Acked-by: Peter Stuge <peter@...1287...>
+    Signed-off-by: David Sommerseth <dazo@...384...>
+
+Applied to feat_misc and merged into allmerged.
+
+
+kind regards,
+
+David Sommerseth
+
+
+
+> Le 18/06/2010 02:01, Peter Stuge a =E9crit :
+>> David Sommerseth wrote:
+>>  =20
+>>>> 3) "sizeof(common_name)" is useless... Line 745: char
+>>>> common_name[TLS_USERNAME_LEN]; we can use directly TLS_USERNAME_LEN.
+>>>>       =20
+>>> Thanks a lot for the patch and all rework done.  (Also: thank you to all
+>>> reviewers!)
+>>>
+>>> The third and last patch looks very good!  I've applied it to the
+>>> feat_misc branch and merged it into allmerged.
+>>>     =20
+>> I strongly agree with Alon about sizeof() rather than a second
+>> reference to the same define. It is the defensive way.
+>>
+>>
+>> //Peter
+>>
+>> ------------------------------------------------------------------------=
+------
+>>
+>> ThinkGeek and WIRED's GeekDad team up for the Ultimate
+>> GeekDad Father's Day Giveaway. ONE MASSIVE PRIZE to the
+>> lucky parental unit.  See the prize list and enter to win:
+>> http://p.sf.net/sfu/thinkgeek-promo
+>> _______________________________________________
+>> Openvpn-devel mailing list
+>> Openvpn-devel@lists.sourceforge.net
+>> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>>   =20
+>=20
+>=20
+>=20
+> -------------------------------------------------------------------------=
+-----
+> ThinkGeek and WIRED's GeekDad team up for the Ultimate=20
+> GeekDad Father's Day Giveaway. ONE MASSIVE PRIZE to the=20
+> lucky parental unit.  See the prize list and enter to win:=20
+> http://p.sf.net/sfu/thinkgeek-promo
+>=20
+>=20
+>=20
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAkwl7G4ACgkQDC186MBRfroyaACfVDmQ4OI9lQ5JgcWGWyqeWbVu
+Ev4An3kjEVIkII14MtTIcFqAazY+2sFC
+=3Dpq/V
+-----END PGP SIGNATURE-----
 
