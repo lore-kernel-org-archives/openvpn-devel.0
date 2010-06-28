@@ -1,8 +1,10 @@
-Date: Sun, 27 Jun 2010 17:13:35 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20100627151335.GM361@...1296...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] How-To for OpenVPN on OpenWRT
+Message-ID: <4C284682.8010408@...515...>
+Date: Mon, 28 Jun 2010 09:51:46 +0300
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+MIME-Version: 1.0
+References: <i010m7$hjk$1@...1312...>
+In-Reply-To: <i010m7$hjk$1@...1312...>
+Subject: Re: [Openvpn-devel] Debian package of feat_allmerged
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,33 +13,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+Hi Bernhard,
 
-as promised a few weeks ago at the IRC meeting, I've sat down and built
-an OpenVPN-devel package (based on ecrist's weekly tar balls, which 
-in come from dazo's git tree).
+FYI, I added your packages to the "Related projects" list under "Misc"
+heading:
 
-I've written this all down in the secure-computing wiki, and would welcome
-feedback on the content, and some help in fixing the wiki-fu to make it
-look more nice :-)
+<https://community.openvpn.net/openvpn/wiki/RelatedProjects>
 
-http://secure-computing.net/wiki/index.php/OpenVPN/OpenWRT
+Thanks for sharing your packages with the community!
 
-- have fun.
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-(I still don't know how whether one can use the same tree to build
-multiple different architectures in parallel - but if one of you knows, 
-please add to the wiki)
+irc freenode net: mattock
 
-gert
--- 
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~gert/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+
+
+> Hi,
+>
+> I have just restarted building Debian/Ubuntu OpenVPN packages for the
+> feat_allmerged branch of openvpn-testing.git for my private use. If you
+> want to test them, feel free to have a look at
+> https://launchpad.net/~berni/+archive/ipv6 . There are up-to-date
+> versions for Ubuntu Karmic and Ubuntu Lucid available. The lucid package
+> works just fine on Debian Squeeze.=20
+>
+> I don't have binaries for older Ubuntu versions and for Debian Lenny at
+> the moment, because my package relies on new features of dh7. It should
+> be possible to create one with a bit of work if there is demand (I don't
+> run OpenVPN on Lenny anywhere).
+>
+> I will try to automate rebuilding packages on git updates if someone is
+> interested in them.
+>
+> Best Regards,
+> Bernhard
+>
+>
+> -------------------------------------------------------------------------=
+-----
+> ThinkGeek and WIRED's GeekDad team up for the Ultimate=20
+> GeekDad Father's Day Giveaway. ONE MASSIVE PRIZE to the=20
+> lucky parental unit.  See the prize list and enter to win:=20
+> http://p.sf.net/sfu/thinkgeek-promo
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>=20=20=20
+
+
 
