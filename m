@@ -1,11 +1,9 @@
-Message-ID: <4C286E36.6010503@...515...>
-Date: Mon, 28 Jun 2010 12:41:10 +0300
-From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
-MIME-Version: 1.0
-References: <1277717215.2567.515.camel@...1259...>
-In-Reply-To: <1277717215.2567.515.camel@...1259...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] [plugins] mysql/ldap
-	Authentication plugins
+From: chantra <chantra@...1258...>
+Content-Type: multipart/alternative; boundary="=-/8IIl5gsaB/krRLsY3qt"
+Date: Mon, 28 Jun 2010 11:26:55 +0200
+Message-ID: <1277717215.2567.515.camel@...1259...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] [plugins] mysql/ldap Authentication plugins
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,56 +12,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 To: "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi Chantra,
-
-I added your plugins to the "Related projects" page under
-"Authentication" heading so that people can more easily find them:
-
-<https://community.openvpn.net/openvpn/wiki/RelatedProjects>
-
-Keep up the great work!
-
---=20
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
+--=-/8IIl5gsaB/krRLsY3qt
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 
 
-PS. There is another LDAP authentication plugin available, but I'm not
-sure how well it works:
+All,
 
-<http://code.google.com/p/openvpn-auth-ldap>
+I like to "announce" 2 plugins I have made:
+- openvpn LDAP authentication plugin
+http://redmine.debuntu.org/projects/openvpn-ldap-auth/wiki 
+- openvpn MySQL authentication plugin
+http://redmine.debuntu.org/projects/openvpn-mysql-auth/wiki 
+
+Even though their implementation might not be perfect, both plugin work
+nicely and I have got them running in prod with no issue at all.
+
+Hope that helps a few people anyway :)
+
+chantra
+
+
+-- 
+http://www.debuntu.org
+
+
+!DSPAM:4c286ae161678054713307!
+
+--=-/8IIl5gsaB/krRLsY3qt
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 TRANSITIONAL//EN">
+<HTML>
+<HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=UTF-8">
+  <META NAME="GENERATOR" CONTENT="GtkHTML/3.28.3">
+</HEAD>
+<BODY>
+<BR>
+All,<BR>
+<BR>
+I like to &quot;announce&quot; 2 plugins I have made:<BR>
+- openvpn LDAP authentication plugin <A HREF="http://redmine.debuntu.org/projects/openvpn-ldap-auth/wiki">http://redmine.debuntu.org/projects/openvpn-ldap-auth/wiki</A> <BR>
+- openvpn MySQL authentication plugin <A HREF="http://redmine.debuntu.org/projects/openvpn-mysql-auth/wiki">http://redmine.debuntu.org/projects/openvpn-mysql-auth/wiki</A> <BR>
+<BR>
+Even though their implementation might not be perfect, both plugin work nicely and I have got them running in prod with no issue at all.<BR>
+<BR>
+Hope that helps a few people anyway :)<BR>
+<BR>
+chantra<BR>
+<BR>
+<BR>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
+<TR>
+<TD>
+<PRE>
+-- 
+<A HREF="http://www.debuntu.org">http://www.debuntu.org</A>
+</PRE>
+</TD>
+</TR>
+</TABLE>
+
+!DSPAM:4c286ae161678054713307!
+
+</BODY>
+</HTML>
 
 
 
->
-> All,
->
-> I like to "announce" 2 plugins I have made:
-> - openvpn LDAP authentication plugin
-> http://redmine.debuntu.org/projects/openvpn-ldap-auth/wiki
-> - openvpn MySQL authentication plugin
-> http://redmine.debuntu.org/projects/openvpn-mysql-auth/wiki
->
-> Even though their implementation might not be perfect, both plugin
-> work nicely and I have got them running in prod with no issue at all.
->
-> Hope that helps a few people anyway :)
->
-> chantra
->
->
-> --=20
-> http://www.debuntu.org
->=20=20=20=20=20=20=20=20=20
->
-> !DSPAM:4c286ae261673851442105!=20
+--=-/8IIl5gsaB/krRLsY3qt--
 
 
 
