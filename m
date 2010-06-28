@@ -1,12 +1,10 @@
-From: chantra <chantra@...1258...>
-In-Reply-To: <4C286E36.6010503@...515...>
-References: <1277717215.2567.515.camel@...1259...>  <4C286E36.6010503@...515...>
-Content-Type: multipart/alternative; boundary="=-yIt14ynwrSAs7blReNil"
-Date: Mon, 28 Jun 2010 12:02:36 +0200
-Message-ID: <1277719356.2567.527.camel@...1259...>
-Mime-Version: 1.0
-Subject: Re: [Openvpn-devel] [Openvpn-users] [plugins] mysql/ldap
-	Authentication plugins
+Message-ID: <4C288AFD.5070805@...1114...>
+Date: Mon, 28 Jun 2010 13:43:57 +0200
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <4C286BBB.7080206@...515...>
+In-Reply-To: <4C286BBB.7080206@...515...>
+Subject: Re: [Openvpn-devel] Summary of the IRC meeting (24th Jun 2010)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,95 +13,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Samuli =?ISO-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---=-yIt14ynwrSAs7blReNil
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
+On 28/06/10 11:30, Samuli Seppänen wrote:
 
-
-> I added your plugins to the "Related projects" page under
-> "Authentication" heading so that people can more easily find them:
 > 
-> <https://community.openvpn.net/openvpn/wiki/RelatedProjects>
+> Discussed an old patch, "Exclude ping and control packets from activity":
+> 
+> <http://article.gmane.org/gmane.network.openvpn.devel/3690>
+> 
+> This issue had been discussed in an earlier meeting:
+> 
+> <http://article.gmane.org/gmane.network.openvpn.devel/3673>
+> 
+> In this earlier meeting we decided to ask our users if they had managed
+> to configure proper byte limit for --inactivity so that the ping traffic
+> would be effectively ignored (without side-effects). Unfortunately
+> nobody replied:
+> 
+> <http://article.gmane.org/gmane.network.openvpn.devel/3676/>
+> 
+> Waldner will test the patch thoroughly to ensure that it never causes
+> ping packets to be dropped. After this the patch can be merged into
+> "testing" tree.
 
-Hi Samuli, tks for that.
+Just to clarify a little bit ... The testing will confirm that the patch
+do not count internal ping traffic between the OpenVPN server and client
+as tunnel traffic, and that other types of traffic (tunnelled traffic)
+is accounted for correctly - and that no tunnelled or other internal
+control traffic is dropped due to this patch.
 
-> PS. There is another LDAP authentication plugin available, but I'm not
-> sure how well it works:
->
-> <http://code.google.com/p/openvpn-auth-ldap>
-
-Yeah, I discovered that plugin some time after I started developing my
-own and already had something working :s
-Unfortunately, at the time, I thought the only alternative was through
-PAM or the the perl script.
-
-Tks,
-
-chantra
-
--- 
-http://www.debuntu.org
-
-
-!DSPAM:4c28733e61678799613236!
-
---=-yIt14ynwrSAs7blReNil
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 TRANSITIONAL//EN">
-<HTML>
-<HEAD>
-  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=UTF-8">
-  <META NAME="GENERATOR" CONTENT="GtkHTML/3.28.3">
-</HEAD>
-<BODY>
-<BR>
-<BLOCKQUOTE TYPE=CITE>
-<PRE>
-I added your plugins to the &quot;Related projects&quot; page under
-&quot;Authentication&quot; heading so that people can more easily find them:
-
-&lt;<A HREF="https://community.openvpn.net/openvpn/wiki/RelatedProjects">https://community.openvpn.net/openvpn/wiki/RelatedProjects</A>&gt;
-</PRE>
-</BLOCKQUOTE>
-Hi Samuli, tks for that.<BR>
-<BR>
-<TT>&gt; </TT><TT><FONT COLOR="#1a1a1a">PS. There is another LDAP authentication plugin available, but I'm not</FONT></TT><BR>
-<TT>&gt; </TT><TT><FONT COLOR="#1a1a1a">sure how well it works:</FONT></TT><BR>
-&gt;<BR>
-<TT>&gt; </TT><TT><FONT COLOR="#1a1a1a">&lt;<A HREF="http://code.google.com/p/openvpn-auth-ldap">http://code.google.com/p/openvpn-auth-ldap</A>&gt;</FONT></TT><BR>
-<BR>
-Yeah, I discovered that plugin some time after I started developing my own and already had something working :s<BR>
-Unfortunately, at the time, I thought the only alternative was through PAM or the the perl script.<BR>
-<BR>
-Tks,<BR>
-<BR>
-chantra<BR>
-<BR>
-<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
-<TR>
-<TD>
-<PRE>
--- 
-<A HREF="http://www.debuntu.org">http://www.debuntu.org</A>
-</PRE>
-</TD>
-</TR>
-</TABLE>
-
-!DSPAM:4c28733e61678799613236!
-
-</BODY>
-</HTML>
+The problem in current releases is that the --inactivity feature do not
+stop the client if there going a certain amount of ping traffic between
+server and client when using the --ping or --keepalive features.  The
+assumption is that the provided patch will fix this.
 
 
+kind regards,
 
---=-yIt14ynwrSAs7blReNil--
+David Sommerseth
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
+iEYEARECAAYFAkwoivgACgkQDC186MBRfronbQCfSY7ZWhjEs9bXB0RruqERHk6T
+r2UAn3oECN697qMB60NAeO6dhBBGCUTY
+=g5UX
+-----END PGP SIGNATURE-----
 
