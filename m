@@ -1,9 +1,12 @@
 From: chantra <chantra@...1258...>
-Content-Type: multipart/alternative; boundary="=-/8IIl5gsaB/krRLsY3qt"
-Date: Mon, 28 Jun 2010 11:26:55 +0200
-Message-ID: <1277717215.2567.515.camel@...1259...>
+In-Reply-To: <4C286E36.6010503@...515...>
+References: <1277717215.2567.515.camel@...1259...>  <4C286E36.6010503@...515...>
+Content-Type: multipart/alternative; boundary="=-yIt14ynwrSAs7blReNil"
+Date: Mon, 28 Jun 2010 12:02:36 +0200
+Message-ID: <1277719356.2567.527.camel@...1259...>
 Mime-Version: 1.0
-Subject: [Openvpn-devel] [plugins] mysql/ldap Authentication plugins
+Subject: Re: [Openvpn-devel] [Openvpn-users] [plugins] mysql/ldap
+	Authentication plugins
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,36 +15,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Samuli =?ISO-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
 
---=-/8IIl5gsaB/krRLsY3qt
+--=-yIt14ynwrSAs7blReNil
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 
 
-All,
 
-I like to "announce" 2 plugins I have made:
-- openvpn LDAP authentication plugin
-http://redmine.debuntu.org/projects/openvpn-ldap-auth/wiki 
-- openvpn MySQL authentication plugin
-http://redmine.debuntu.org/projects/openvpn-mysql-auth/wiki 
+> I added your plugins to the "Related projects" page under
+> "Authentication" heading so that people can more easily find them:
+> 
+> <https://community.openvpn.net/openvpn/wiki/RelatedProjects>
 
-Even though their implementation might not be perfect, both plugin work
-nicely and I have got them running in prod with no issue at all.
+Hi Samuli, tks for that.
 
-Hope that helps a few people anyway :)
+> PS. There is another LDAP authentication plugin available, but I'm not
+> sure how well it works:
+>
+> <http://code.google.com/p/openvpn-auth-ldap>
+
+Yeah, I discovered that plugin some time after I started developing my
+own and already had something working :s
+Unfortunately, at the time, I thought the only alternative was through
+PAM or the the perl script.
+
+Tks,
 
 chantra
-
 
 -- 
 http://www.debuntu.org
 
 
-!DSPAM:4c286ae161678054713307!
+!DSPAM:4c28733e61678799613236!
 
---=-/8IIl5gsaB/krRLsY3qt
+--=-yIt14ynwrSAs7blReNil
 Content-Type: text/html; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 
@@ -53,18 +63,27 @@ Content-Transfer-Encoding: 7bit
 </HEAD>
 <BODY>
 <BR>
-All,<BR>
+<BLOCKQUOTE TYPE=CITE>
+<PRE>
+I added your plugins to the &quot;Related projects&quot; page under
+&quot;Authentication&quot; heading so that people can more easily find them:
+
+&lt;<A HREF="https://community.openvpn.net/openvpn/wiki/RelatedProjects">https://community.openvpn.net/openvpn/wiki/RelatedProjects</A>&gt;
+</PRE>
+</BLOCKQUOTE>
+Hi Samuli, tks for that.<BR>
 <BR>
-I like to &quot;announce&quot; 2 plugins I have made:<BR>
-- openvpn LDAP authentication plugin <A HREF="http://redmine.debuntu.org/projects/openvpn-ldap-auth/wiki">http://redmine.debuntu.org/projects/openvpn-ldap-auth/wiki</A> <BR>
-- openvpn MySQL authentication plugin <A HREF="http://redmine.debuntu.org/projects/openvpn-mysql-auth/wiki">http://redmine.debuntu.org/projects/openvpn-mysql-auth/wiki</A> <BR>
+<TT>&gt; </TT><TT><FONT COLOR="#1a1a1a">PS. There is another LDAP authentication plugin available, but I'm not</FONT></TT><BR>
+<TT>&gt; </TT><TT><FONT COLOR="#1a1a1a">sure how well it works:</FONT></TT><BR>
+&gt;<BR>
+<TT>&gt; </TT><TT><FONT COLOR="#1a1a1a">&lt;<A HREF="http://code.google.com/p/openvpn-auth-ldap">http://code.google.com/p/openvpn-auth-ldap</A>&gt;</FONT></TT><BR>
 <BR>
-Even though their implementation might not be perfect, both plugin work nicely and I have got them running in prod with no issue at all.<BR>
+Yeah, I discovered that plugin some time after I started developing my own and already had something working :s<BR>
+Unfortunately, at the time, I thought the only alternative was through PAM or the the perl script.<BR>
 <BR>
-Hope that helps a few people anyway :)<BR>
+Tks,<BR>
 <BR>
 chantra<BR>
-<BR>
 <BR>
 <TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
 <TR>
@@ -77,14 +96,14 @@ chantra<BR>
 </TR>
 </TABLE>
 
-!DSPAM:4c286ae161678054713307!
+!DSPAM:4c28733e61678799613236!
 
 </BODY>
 </HTML>
 
 
 
---=-/8IIl5gsaB/krRLsY3qt--
+--=-yIt14ynwrSAs7blReNil--
 
 
 
