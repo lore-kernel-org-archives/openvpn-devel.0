@@ -1,10 +1,8 @@
-Message-ID: <4C288AFD.5070805@...1114...>
-Date: Mon, 28 Jun 2010 13:43:57 +0200
+Message-ID: <4C298338.2050003@...1114...>
+Date: Tue, 29 Jun 2010 07:23:04 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4C286BBB.7080206@...515...>
-In-Reply-To: <4C286BBB.7080206@...515...>
-Subject: Re: [Openvpn-devel] Summary of the IRC meeting (24th Jun 2010)
+Subject: [Openvpn-devel] Beta 2.2 branch pushed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,46 +11,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, James Yonan <james@...515...>
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 28/06/10 11:30, Samuli Seppänen wrote:
 
-> 
-> Discussed an old patch, "Exclude ping and control packets from activity":
-> 
-> <http://article.gmane.org/gmane.network.openvpn.devel/3690>
-> 
-> This issue had been discussed in an earlier meeting:
-> 
-> <http://article.gmane.org/gmane.network.openvpn.devel/3673>
-> 
-> In this earlier meeting we decided to ask our users if they had managed
-> to configure proper byte limit for --inactivity so that the ping traffic
-> would be effectively ignored (without side-effects). Unfortunately
-> nobody replied:
-> 
-> <http://article.gmane.org/gmane.network.openvpn.devel/3676/>
-> 
-> Waldner will test the patch thoroughly to ensure that it never causes
-> ping packets to be dropped. After this the patch can be merged into
-> "testing" tree.
+Hi all,
 
-Just to clarify a little bit ... The testing will confirm that the patch
-do not count internal ping traffic between the OpenVPN server and client
-as tunnel traffic, and that other types of traffic (tunnelled traffic)
-is accounted for correctly - and that no tunnelled or other internal
-control traffic is dropped due to this patch.
+I've been working on the beta 2.2 preparations.  And it's now pushed out
+on git and SVN.
 
-The problem in current releases is that the --inactivity feature do not
-stop the client if there going a certain amount of ping traffic between
-server and client when using the --ping or --keepalive features.  The
-assumption is that the provided patch will fix this.
+git://openvpn.git.sourceforge.net/gitroot/openvpn/openvpn-testing.git
+(branch: beta2.2)
+
+SVN: http://svn.openvpn.net/projects/openvpn/contrib/dazo
+
+
+I am not completely confident it is done properly, and I'm prepared to
+scratch it all and do it again if something is wrong with my SVN push.
+The reason is that when I did the SVN push a lot happened.
+
+The SVN branch I was given was completely empty, so when I pushed the
+stuff from git all commits was modified and made me the author of all
+commits, from the very beginning.  This does sound a bit odd to me, to
+be honest.  But if this is how SVN works, it's not too much to do with
+that.  The nasty thing about this is that the commit ID's in the git
+beta2.2 branch is different from their origin commits.
+
+It might be that we should reconsider to scrap the SVN complete, and
+that James prepares a new branch which is based on his last BETA21 SVN
+branch, and that I push on top of that branch.  This way at least his
+commits will have him as the owner of his own commits.  The the vast
+majority of the git commits anyway do have Signed-of statements, so we
+still can still track who is behind most of those commits.
+
+One notice:  No-one should use beta2.2 as the base for providing patch
+unless it is fixing issues which appears only in the beta2.2 branch.
+
+
+* What does the beta2.2 branch contain?
+As agreed to in the developers meeting June 10, OpenVPN 2.2 will contain:
+
+- - bugfix2.1 branch (lots of bugfixes)
+- - feat_misc branch (several minor feature additions)
+- - frp branch (https://community.openvpn.net/openvpn/wiki/FRP)
+- - feat_eurephia branch (http://www.eurephia.net)
+- - IPv6-enabled TAP driver for Windows
+
+I have created an own branch (feat_ipv6_wintap) which is based on the
+SVN-beta2.1 branch and contains Gert's IPv6 changes for the Windows TAP
+driver on top of that.  Further development of the IPv6 feature on this
+driver should go into this branch, and we might consider to make this
+branch generic for all Windows TAP modifications.  Gert will look into
+making this branch merge cleanly against his feat_ipv6_payload branch.
+
+
+The first step towards a OpenVPN 2.2 beta is taken.  But as I said
+earlier, I'm ready to go back this step and redo whatever is needed to
+clean up any potential mess.  And if someone got more experiences, ideas
+or hints how to do this better, please let me know! I know git a lot
+better than SVN, so I might have done some pretty lame mistakes :)
 
 
 kind regards,
@@ -63,8 +84,8 @@ David Sommerseth
 Version: GnuPG v1.4.10 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkwoivgACgkQDC186MBRfronbQCfSY7ZWhjEs9bXB0RruqERHk6T
-r2UAn3oECN697qMB60NAeO6dhBBGCUTY
-=g5UX
+iEYEARECAAYFAkwpgzgACgkQDC186MBRfrropwCgjyXmf0dnWrcinHGbxE8w9dBH
+o1IAnjStG1lGlq48yS/nSHSEJaADdctr
+=7IGJ
 -----END PGP SIGNATURE-----
 
