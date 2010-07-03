@@ -1,11 +1,14 @@
-Message-ID: <4C2E6D0B.8060407@...1147...>
-Date: Sat, 03 Jul 2010 00:49:47 +0200
-From: Jan Just Keijser <janjust@...1147...>
-MIME-Version: 1.0
+MIME-version: 1.0
+Date: Sat, 03 Jul 2010 10:17:11 +0200
+From: Till Maas <opensource@...519...>
+Message-id: <20100703081711.GA5858@...1276...>
 References: <AANLkTima8VCnIP08BwlXrwvbtZRcRM-ZLeOM6FPty5Jc@...278...>
 	<4C2E2652.8000607@...1114...>
 	<AANLkTintkNT0hY8cRHz-MEbfAFdd25mfMNOH-r3FTbE0@...278...>
-In-Reply-To: <AANLkTintkNT0hY8cRHz-MEbfAFdd25mfMNOH-r3FTbE0@...278...>
+Content-type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary=Q68bSM7Ycu6FN28Q
+Content-disposition: inline
+In-reply-to: <AANLkTintkNT0hY8cRHz-MEbfAFdd25mfMNOH-r3FTbE0@...278...>
 Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN server listening both
  on udp and tcp?
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,85 +19,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?B?SGVubm8gVMOkaHQ=?= <henno.taht@...277...>
+To: Henno =?iso-8859-1?Q?T=E4ht?= <henno.taht@...277...>
 Cc: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
-Hi Henno,
+--Q68bSM7Ycu6FN28Q
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Henno T=C3=A4ht wrote:
+Hi,
+
+On Fri, Jul 02, 2010 at 09:51:12PM +0300, Henno T=E4ht wrote:
 > Hello!
->
-> 2010/7/2 David Sommerseth <openvpn.list@...1114...=20
-> <mailto:openvpn.list@...1114...>>
->
->     On 02/07/10 19:38, Henno T=C3=A4ht wrote:
->     > Hello!
->     >
->     > Can anyone experienced and helpful scribble a little guide how
->     to have
->     > the same OpenVPN server listening both on 1194 UDP (reason: fast,
->     > preferable) and 443 TCP (reason: always works, fallback)?
->
->     That is not possible.  OpenVPN can only listen to TCP or UDP, not
->     both.
->      To do this, you will need two independent OpenVPN configurations and
->     run two separate OpenVPN daemons
->
->     Having that said, this is a common question and a feature which is
->     under
->     evaluation for the next generation OpenVPN.
->
->
-> Great news!
->
-> A client config file should also support this. Something like this:
-> remote 198.51.100.15:1194 <http://198.51.100.15:1194> proto udp wait 10
-> remote 203.0.113.234:443 <http://203.0.113.234:443> proto tcp  wait 1
-> remote 192.168.0.1:8080->203.0.113.234:443 <http://203.0.113.234:443>=20
-> proto tcp wait 1
->
-> Explanation:
-> First try direct connection to udp port 1194, wait 10 seconds (should=20
-> be enough to survive OpenVPN server restarts after config change).
-> If that fails (timeout of 10 seconds is past and no answer), try=20
-> another ip with tcp 443 and wait 1 second for reply (443 tcp is=20
-> usually left open for https).
-> If that too fails, assume that the user is again visiting NSA-like=20
-> institution but which luckily has a local proxy (which allows only for=20
-> tcp port 80 and 443 connections for that matter).
->
-> This is just some thoughts of me how OpenVPN should treat the --remote=20
-> option in the future.=20
-> I'm hoping that someone picks this up to start a discussion.
-the client side already supports this (with a drawback): if you read the=20
-openvpn 2.1 manual page , section 'connection profiles' you'll see
+>=20
+> 2010/7/2 David Sommerseth <openvpn.list@...1114...>
+>=20
+> > On 02/07/10 19:38, Henno T=E4ht wrote:
+> > > Hello!
+> > >
+> > > Can anyone experienced and helpful scribble a little guide how to have
+> > > the same OpenVPN server listening both on 1194 UDP (reason: fast,
+> > > preferable) and 443 TCP (reason: always works, fallback)?
+> >
+> > That is not possible.  OpenVPN can only listen to TCP or UDP, not both.
+> >  To do this, you will need two independent OpenVPN configurations and
+> > run two separate OpenVPN daemons
 
-<connection>
-  remote host:1194
-  proto udp
-</connection>
+there exists a PHP-script that is supposed to translate a TCP connection
+to UDP one. I did not test it:
 
-<connection>
-  remote host:443
-  proto tcp
-</connection>
+http://oss.tiggerswelt.net/openvpn_proxy.php
 
-<connection>
-  remote host:443
-  proto tcp
-  http-proxy host:port
-</connection>
+A German blog post about it is available here:
+http://wohnzimmerhostblogger.de/archives/1244-OpenVPN-via-TCP-und-UDP-benut=
+zen.html
 
-etc. The drawback is that  you can no longer tweak some settings , such=20
-as fragment/tcp timeouts etc. This is an open bug which hopefully will=20
-be addressed in openvpn 2.2 ; the redesign of openvpn to allow multiple=20
-listeners on the server side is further off.
+Regards
+Till
 
-HTH,
+--Q68bSM7Ycu6FN28Q
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-JJK
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
 
+iQIcBAEBCgAGBQJMLvICAAoJEGo6ELMcEJUXxZEP/iTzRbLEocmYoT15ysbJgyDt
+PrpnuyhXWNMX/43MRTLFBzVN9i1ed1YqSVM8rxjdNJpA8c0awVnQH5dA6uDRk31Q
+8yXt46alxjBDGcQxtgDnFUga7pe/1DDKS8qjIoCjd7GiFtbP7evi5xx2QzmDWr4z
+Udv1tll5e1RKaJsgt0e93rABMWgWmINzW6rOxfZUeoSDaVmyN9tsNFExXQGHNKA0
+kzyv8MZKo0laWlO6/M6xsamW5Sgg1JQxat4ijRsGmWvJijcFZavxSdh3Jnn12nMj
+u/gEaHkO58m7W/MuV+ARm1qbmVfrZf9F6I69ZMcUwH+tDKykolzhiYynrXoCnZ0l
+LiDdYPedMuC84JnFa+fmxEMo1a+v6fBzR458x82u5QQAom49mqx4365J3dZABFe/
+Gv5BLxGosgUaI9C0Q12EYZjoUrLAZjMGMEufVuj/y/dopjcNQIprk0XWMeXwarOS
+hMB8Z8x1WuNsvsXQs3d/Vc29BtD6OYRkrIKNs++SHYIjaoUAP8kul1ZRlTLFvO0/
+R3BtkkxscXM9MRa6u9XpUegb9IVnYyNKe6/9qsmy3fh3VXCX9Mm6Wf/wLH4xxHEA
+OP7j1MxuB20ea+ykoWN2+7kA2dHlPWpe5+iQeKXf2T3kak11X1Wy6B/Sd2PWR7vl
+aZNNWH7BNcqRD1im+7iX
+=Wisn
+-----END PGP SIGNATURE-----
+
+--Q68bSM7Ycu6FN28Q--
 
 
