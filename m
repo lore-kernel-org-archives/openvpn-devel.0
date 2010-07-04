@@ -1,11 +1,15 @@
-Message-ID: <4C2F6409.6000504@...1114...>
-Date: Sat, 03 Jul 2010 18:23:37 +0200
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4C298338.2050003@...1114...>	<4C2E25B1.7040302@...1114...>
-	<90465121.20100703001742@...449...>
-In-Reply-To: <90465121.20100703001742@...449...>
-Subject: Re: [Openvpn-devel] Beta 2.2 branch pushed
+In-Reply-To: <20100703081711.GA5858@...1276...>
+References: <AANLkTima8VCnIP08BwlXrwvbtZRcRM-ZLeOM6FPty5Jc@...278...> 
+	<4C2E2652.8000607@...1114...>
+	<AANLkTintkNT0hY8cRHz-MEbfAFdd25mfMNOH-r3FTbE0@...278...> 
+	<20100703081711.GA5858@...1276...>
+From: =?UTF-8?Q?Henno_T=C3=A4ht?= <henno.taht@...277...>
+Date: Sun, 4 Jul 2010 21:07:05 +0300
+Message-ID: <AANLkTin8JKrl9x6Z4CStHCAUyLDBcLgFlQVhCa_4-34b@...278...>
+Content-Type: multipart/alternative; boundary=0016e6d9a2ce3f253a048a93b1c4
+Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN server listening both
+	on udp and tcp?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,54 +18,103 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
+To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+
+--0016e6d9a2ce3f253a048a93b1c4
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: =?ISO-8859-1?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>
-Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+2010/7/3 Till Maas <opensource@...519...>
 
-On 03/07/10 00:17, Carsten Kr=FCger wrote:
-> Hello,
->=20
->> So it was considered better if a new SVN branch for the beta2.2 would be
->> created, branched out from r5701 (the latest SVN change).
->=20
-> Why didn't James switch to git, too?
-> Using svn & git in parallel isn't effective and causes such problems.
-> And as far as I know is git a complete superset of subversion.
->=20
+> Hi,
+>
+> On Fri, Jul 02, 2010 at 09:51:12PM +0300, Henno T=C3=A4ht wrote:
+> > Hello!
+> >
+> > 2010/7/2 David Sommerseth <openvpn.list@...1114...>
+> >
+> > > On 02/07/10 19:38, Henno T=C3=A4ht wrote:
+> > > > Hello!
+> > > >
+> > > > Can anyone experienced and helpful scribble a little guide how to
+> have
+> > > > the same OpenVPN server listening both on 1194 UDP (reason: fast,
+> > > > preferable) and 443 TCP (reason: always works, fallback)?
+> > >
+> > > That is not possible.  OpenVPN can only listen to TCP or UDP, not bot=
+h.
+> > >  To do this, you will need two independent OpenVPN configurations and
+> > > run two separate OpenVPN daemons
+>
+> there exists a PHP-script that is supposed to translate a TCP connection
+> to UDP one. I did not test it:
+>
+> http://oss.tiggerswelt.net/openvpn_proxy.php
+>
+> A German blog post about it is available here:
+>
+> http://wohnzimmerhostblogger.de/archives/1244-OpenVPN-via-TCP-und-UDP-ben=
+utzen.html
+>
+> Regards
+> Till
+>
 
-Just to bring in a little bit of history.  When I volunteered to
-maintain the -testing tree, I saw that git would be more efficient and
-easier to work with than SVN.  I have no intention of forcing James or
-OpenVPN Technologies, Inc. to move over to git.  But I personally do
-like git more than SVN, based on experiences with performance and work
-efficiency, and I do agree to your statement about git being a superset
-of SVN.  I have used both over time, but when I learned git, using
-git-svn became my preferred working method.
+Good to know. Unfortunately I need to use --port-share as I have OWA running
+on port 443 and I need to run OpenVPN also on port 443 (some hotels allow
+only 80 and 443). I could add another IP but I'm already tight on IP's.
 
-Having that said, I do know James is (over?)loaded with a lot of work.
-So if he wants to move over to git for beta2.2, that must come as a wish
-from his side.  Changing something as important as an SCM/VCS when you
-have your plate more than full enough with tasks, is no fun - then you
-just want as few changes as possible to things which do work for you.
-If James wants to move over to git, I will do my best to support James.
- And if not, we need to live with some of these challenges a SVN/git
-integration gives us.  We just need to figure out "which path to take"
-among the different possibilities we're given.
+--0016e6d9a2ce3f253a048a93b1c4
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+2010/7/3 Till Maas <span dir=3D"ltr">&lt;<a href=3D"mailto:opensource@...1387...=
+9...">opensource@...519...</a>&gt;</span><br><div class=3D"gmail_quote"><bl=
+ockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #=
+ccc solid;padding-left:1ex;">
+
+Hi,<br>
+<div class=3D"im"><br>
+On Fri, Jul 02, 2010 at 09:51:12PM +0300, Henno T=C3=A4ht wrote:<br>
+&gt; Hello!<br>
+&gt;<br>
+&gt; 2010/7/2 David Sommerseth &lt;<a href=3D"mailto:openvpn.list@...1332...=
+.">openvpn.list@...1114...</a>&gt;<br>
+&gt;<br>
+&gt; &gt; On 02/07/10 19:38, Henno T=C3=A4ht wrote:<br>
+&gt; &gt; &gt; Hello!<br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt; Can anyone experienced and helpful scribble a little guide h=
+ow to have<br>
+&gt; &gt; &gt; the same OpenVPN server listening both on 1194 UDP (reason: =
+fast,<br>
+&gt; &gt; &gt; preferable) and 443 TCP (reason: always works, fallback)?<br>
+&gt; &gt;<br>
+&gt; &gt; That is not possible. =C2=A0OpenVPN can only listen to TCP or UDP=
+, not both.<br>
+&gt; &gt; =C2=A0To do this, you will need two independent OpenVPN configura=
+tions and<br>
+&gt; &gt; run two separate OpenVPN daemons<br>
+<br>
+</div>there exists a PHP-script that is supposed to translate a TCP connect=
+ion<br>
+to UDP one. I did not test it:<br>
+<br>
+<a href=3D"http://oss.tiggerswelt.net/openvpn_proxy.php" target=3D"_blank">=
+http://oss.tiggerswelt.net/openvpn_proxy.php</a><br>
+<br>
+A German blog post about it is available here:<br>
+<a href=3D"http://wohnzimmerhostblogger.de/archives/1244-OpenVPN-via-TCP-un=
+d-UDP-benutzen.html" target=3D"_blank">http://wohnzimmerhostblogger.de/arch=
+ives/1244-OpenVPN-via-TCP-und-UDP-benutzen.html</a><br>
+<br>
+Regards<br>
+<font color=3D"#888888">Till<br>
+</font></blockquote></div><br><div>Good to know. Unfortunately I need to us=
+e --port-share as I have OWA running on port 443 and I need to run OpenVPN =
+also on port 443 (some hotels allow only 80 and 443). I could add another I=
+P but I&#39;m already tight on IP&#39;s.</div>
 
 
-Kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkwvZAkACgkQDC186MBRfrqc0wCeIP7jQRGPlB1yr5eZqzAndwbx
-EUUAoI3PbI6ZzBvvAtp6A3jYWYifxHg+
-=3DoRRq
------END PGP SIGNATURE-----
+--0016e6d9a2ce3f253a048a93b1c4--
 
