@@ -1,8 +1,9 @@
-Message-ID: <4C357A70.8030601@...515...>
-Date: Thu, 08 Jul 2010 10:12:48 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] More topics for today's meeting?
+Date: Fri, 9 Jul 2010 10:31:02 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20100709083102.GZ361@...1296...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Patch for compile-time problems on NetBSD and
+	OpenBSD (trac #17)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,27 +12,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-Topic list for today's meeting (18:00 UTC,
-#openvpn-devel@...1334...) is still a little short:
+the following patch fixes the IFF_MULTICAST compile-time problems on NetBSD,
+and it should also fix them on OpenBSD (trac entry #17).
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2010-07-08>
+** important: after applying the patch to configure.ac, you MUST run
+** "autoreconf" - otherwise the patch won't do anything
 
-Please don't hesitate to suggest other discussion topics. You can send
-them directly to me, to this list or add them yourself to the Trac wiki.
+If it still doesn't work for OpenBSD, I need to see the parts from your
+config.log relating to <net/if.h>
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+gert
 
-irc freenode net: mattock
+-------------- snip ----------------
 
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ configure.ac |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
 
+diff --git a/configure.ac b/configure.ac
+index 4626e46..b91a41c 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -371,6 +371,9 @@ if test "${WIN32}" != "yes"; then
+ 		 [#ifdef HAVE_SYS_SOCKET_H 
+ 		  # include <sys/socket.h>
+ 		  #endif
++	          #ifdef HAVE_SYS_TYPES_H
++		  # include <sys/types.h>
++		  #endif
+ 		 ])
+    AC_CHECK_HEADERS(netinet/ip.h,,,
+ 		 [#ifdef HAVE_SYS_TYPES_H
+-- 
+1.6.4.4
 
+-- 
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~gert/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
