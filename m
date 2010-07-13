@@ -1,11 +1,8 @@
-Message-ID: <4C3C390B.2020202@...1114...>
-Date: Tue, 13 Jul 2010 11:59:39 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <4C3C2CDA.60409@...1299...>
-In-Reply-To: <4C3C2CDA.60409@...1299...>
-Subject: Re: [Openvpn-devel] bug stopping the use of mssfix/fragment in
- udp+tcp configs?
+From: David Sommerseth <dazo@...384...>
+Date: Tue, 13 Jul 2010 15:32:09 +0200
+Message-Id: <1279027929-28958-1-git-send-email-dazo@...384...>
+Subject: [Openvpn-devel] [PATCH] Fix multiple configured scripts conflicts
+	issue
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,77 +11,129 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: David Sommerseth <dazo@...384...>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+This is a fix for trac ticket #20,
+<https://community.openvpn.net/openvpn/ticket/20>
+which was started in the sf.net bug tracker:
+<http://sourceforge.net/tracker/?func=detail&aid=2078470&group_id=48978&atid=454719>
 
-On 13/07/10 11:07, Jason Haar wrote:
-> Hi there
-> 
-> I have just looked at the current 2.2 git code and the bug blocking the
-> use of udp+tcp combination configs when you want to use mssfix/fragment 
-> is still present. See
-> https://community.openvpn.net/openvpn/wiki/Topics-2010-04-22 for
-> references.
-> 
-> By that I mean I cannot use fragment/mssfix even within a udp
-> "<connection>" profile - as the tcp profiles that follow trigger openvpn
-> to error.
-> 
-> Is that planned to be fixed? With it, an openvpn config can contain udp,
-> tcp and tcp-via-auto-proxy "<connection>" profiles - leading to the best
-> opportunity for openvpn "escaping" from almost any network imaginable -
-> without user intervention.
-> 
+The implemented solution is to give a warning for each of the different script hooks
+available.  The last configured script will override any earlier configured scripts,
+to ensure that the command line can override the configuration file.
 
-Hi Jason!
+Signed-off-by: David Sommerseth <dazo@...384...>
+---
+ options.c |   36 ++++++++++++++++++++++++++++++++++++
+ 1 files changed, 36 insertions(+), 0 deletions(-)
 
-Thank you for bringing this up again!  It most definitely have fallen
-out of our radar for a little while again.  I'll make sure to put this
-into a Trac ticket so that we won't forget it so easily again.
+diff --git a/options.c b/options.c
+index b78158e..9bbb51e 100644
+--- a/options.c
++++ b/options.c
+@@ -3877,6 +3877,10 @@ add_option (struct options *options,
+       VERIFY_PERMISSION (OPT_P_SCRIPT);
+       if (!no_more_than_n_args (msglevel, p, 2, NM_QUOTE_HINT))
+ 	goto err;
++      if (options->ipchange) {
++	msg (M_WARN, "Multiple --ipchange scripts defined.  "
++	     "The previously configured script is overridden.");
++      }
+       options->ipchange = string_substitute (p[1], ',', ' ', &options->gc);
+     }
+   else if (streq (p[0], "float"))
+@@ -3923,6 +3927,10 @@ add_option (struct options *options,
+       VERIFY_PERMISSION (OPT_P_SCRIPT);
+       if (!no_more_than_n_args (msglevel, p, 2, NM_QUOTE_HINT))
+ 	goto err;
++      if (options->up_script) {
++	msg (M_WARN, "Multiple --up scripts defined.  "
++	     "The previously configured script is overridden.");
++      }
+       options->up_script = p[1];
+     }
+   else if (streq (p[0], "down") && p[1])
+@@ -3930,6 +3938,10 @@ add_option (struct options *options,
+       VERIFY_PERMISSION (OPT_P_SCRIPT);
+       if (!no_more_than_n_args (msglevel, p, 2, NM_QUOTE_HINT))
+ 	goto err;
++      if (options->down_script) {
++	msg (M_WARN, "Multiple --down scripts defined.  "
++	     "The previously configured script is overridden.");
++      }
+       options->down_script = p[1];
+     }
+   else if (streq (p[0], "down-pre"))
+@@ -4598,6 +4610,10 @@ add_option (struct options *options,
+       VERIFY_PERMISSION (OPT_P_SCRIPT);
+       if (!no_more_than_n_args (msglevel, p, 2, NM_QUOTE_HINT))
+ 	goto err;
++      if (options->route_script) {
++	msg (M_WARN, "Multiple --route-up scripts defined.  "
++	     "The previously configured script is overridden.");
++      }
+       options->route_script = p[1];
+     }
+   else if (streq (p[0], "route-noexec"))
+@@ -4927,6 +4943,10 @@ add_option (struct options *options,
+ 	  msg (msglevel, "--auth-user-pass-verify requires a second parameter ('via-env' or 'via-file')");
+ 	  goto err;
+ 	}
++      if (options->auth_user_pass_verify_script) {
++	msg (M_WARN, "Multiple --auth-user-pass-verify scripts defined.  "
++	     "The previously configured script is overridden.");
++      }
+       options->auth_user_pass_verify_script = p[1];
+     }
+   else if (streq (p[0], "client-connect") && p[1])
+@@ -4934,6 +4954,10 @@ add_option (struct options *options,
+       VERIFY_PERMISSION (OPT_P_SCRIPT);
+       if (!no_more_than_n_args (msglevel, p, 2, NM_QUOTE_HINT))
+ 	goto err;
++      if (options->client_connect_script) {
++	msg (M_WARN, "Multiple --client-connect scripts defined.  "
++	     "The previously configured script is overridden.");
++      }
+       options->client_connect_script = p[1];
+     }
+   else if (streq (p[0], "client-disconnect") && p[1])
+@@ -4941,6 +4965,10 @@ add_option (struct options *options,
+       VERIFY_PERMISSION (OPT_P_SCRIPT);
+       if (!no_more_than_n_args (msglevel, p, 2, NM_QUOTE_HINT))
+ 	goto err;
++      if (options->client_disconnect_script) {
++	msg (M_WARN, "Multiple --client-disconnect scripts defined.  "
++	     "The previously configured script is overridden.");
++      }
+       options->client_disconnect_script = p[1];
+     }
+   else if (streq (p[0], "learn-address") && p[1])
+@@ -4948,6 +4976,10 @@ add_option (struct options *options,
+       VERIFY_PERMISSION (OPT_P_SCRIPT);
+       if (!no_more_than_n_args (msglevel, p, 2, NM_QUOTE_HINT))
+ 	goto err;
++      if (options->learn_address_script) {
++	msg (M_WARN, "Multiple --learn-address scripts defined.  "
++	     "The previously configured script is overridden.");
++      }
+       options->learn_address_script = p[1];
+     }
+   else if (streq (p[0], "tmp-dir") && p[1])
+@@ -5708,6 +5740,10 @@ add_option (struct options *options,
+       VERIFY_PERMISSION (OPT_P_SCRIPT);
+       if (!no_more_than_n_args (msglevel, p, 2, NM_QUOTE_HINT))
+ 	goto err;
++      if (options->tls_verify) {
++	msg (M_WARN, "Multiple --tls-verify scripts defined.  "
++	     "The previously configured script is overridden.");
++      }
+       options->tls_verify = string_substitute (p[1], ',', ' ', &options->gc);
+     }
+   else if (streq (p[0], "tls-remote") && p[1])
+-- 
+1.7.1.1
 
-Having that said, this feature change will most probably not hit the 2.2
-release *unless* somebody is able to bring in a patch to the mailing
-list soon enough to get it reviewed and accepted into the -testing tree.
- We've just recently put together the beta2.2 branch (and I will need to
-redo the branch once more, unfortunately) so _no doors are closed yet_.
- But I really hope we can reach an release candidate long before the end
-of this year, this is the point were we most probably will put a strict
-feature change policy.
-
-You might be worried that this fix might not come before 2.3, and be
-even more worried when that release will come.  I can assure you that I
-will work hard for getting the release process going quicker *without*
-jeopardising the stability OpenVPN does have.
-
-OpenVPN is one of those few remarkable pieces of software where not
-everything might work as expected - but despite that, OpenVPN is really
-rock solid and reliable.  This is not something we can or will
-sacrifice.  Stability is our primary goal.
-
-But after all ... *We can use your help* ... So whom ever have
-possibility to write some code, review code, test our -testing tree ...
-*Please* raise your hand on the mailinglist or join the #openvpn-devel
-meetings[1] and tell us how you would like help out!  With even more
-participation from even more people, we can get the release cycle going
-smoother - and hopefully much quicker.
-
-
-kind regards,
-
-David Sommerseth
-
-
-[1] <https://community.openvpn.net/openvpn/wiki/IrcMeetings>
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkw8OQYACgkQDC186MBRfrqrywCfSpXsMXyTQjuHBMNMdtiTxR6X
-jp4AnjSItLWj/7Y5Q4OPjEVX3eYBN8Kp
-=bS4a
------END PGP SIGNATURE-----
 
