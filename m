@@ -1,10 +1,10 @@
-Date: Sat, 24 Jul 2010 21:56:14 +0100
-From: Davide Brini <dave_br@...1278...>
-Message-ID: <20100724215614.4ebcfee9@...1391...>
-In-Reply-To: <4C4B3F41.6090302@...1390...>
-References: <4C4B3F41.6090302@...1390...>
-Mime-Version: 1.0
-Subject: Re: [Openvpn-devel] features
+Message-ID: <4C4EBDC5.6060505@...515...>
+Date: Tue, 27 Jul 2010 14:06:45 +0300
+From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
+MIME-Version: 1.0
+References: <AANLkTin9RYtC7mFo8bo5Fa5M897HoCk+2f0Vg-gK+uU4@...278...>
+In-Reply-To: <AANLkTin9RYtC7mFo8bo5Fa5M897HoCk+2f0Vg-gK+uU4@...278...>
+Subject: Re: [Openvpn-devel] Location of debian test builds?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,44 +13,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Praetorian <praetoriancode@...277...>
+Cc: "Openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-On Sat, 24 Jul 2010 12:30:09 -0700 Alex T <alex@...1390...> wrote:
 
-> I have 2 suggestions regarding openvpn (client mode):
-> - the use of SHA512 with the TLS ciphers
 
-OpenVPN does not implement any encryption; it relies on OpenSSL. So, if
-the OpenSSL library used by OpenVPN supports it, so does OpenVPN.
+> I know I saw a while ago on the list that there are testing builds for
+> debian being created now.  I could not find them on the trac site
+> (then again I don't have a login). I would like to test the latest
+> version to on a few servers that are being setup for some testing.
+>
+> Wayne
+>=20=20=20
+Hi Wayne,
 
-> - some kind of route / firewall manipulation for the Windows client.
-> If the client is set up to route all Internet traffic via the VPN,
-> sometimes when the internet (especially the wireless connection) is lost,
-> all the internet traffic is using the local link, not the VPN ... this
-> might become a security issue. I saw a different VPN client (paid
-> version, NCP secure IPSEC client is called) that , on startup, if the
-> current profile is set to route all traffic via the VPN, manipulates the
-> Windows routes , deleting the default gateway and routing only the VPN
-> server ip to the local gateway. If the VPN tunnel is not up, then the
-> Internet won't work.
+Yep, I managed to use Buildbot to automatically create Debian packages
+from latest "testing" sources. However,  I need to verify that the
+package metadata et al is sane - I simply copied it over from official
+Debian packages. For this reason I have not yet published the packages
+anywhere. However, I _should_ have Debian Lenny (amd64) and Ubuntu 9.10
+(i386) packages for "beta2.2" and "allmerged" branches ready by the end
+of this month. I'll let you know as soon as that happens.
 
-If I understand you correctly, you may try pushing
+--=20
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-redirect-gateway
+irc freenode net: mattock
 
-instead of
-
-redirect-gateway def1
-
-to the client. The former overwrites the default gateway rather than
-creating the two /1 routes.
-
-However, I'm not sure about what happens if the VPN goes down (ie, leave
-routing table as it is - which is what you want - or restore old default
-gateway?) You can find out quite easily by just trying.
-
--- 
-D.
 
