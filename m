@@ -1,10 +1,8 @@
-Message-ID: <4C4EBDC5.6060505@...515...>
-Date: Tue, 27 Jul 2010 14:06:45 +0300
-From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
+Message-ID: <4C5149AC.5030805@...515...>
+Date: Thu, 29 Jul 2010 12:28:12 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <AANLkTin9RYtC7mFo8bo5Fa5M897HoCk+2f0Vg-gK+uU4@...278...>
-In-Reply-To: <AANLkTin9RYtC7mFo8bo5Fa5M897HoCk+2f0Vg-gK+uU4@...278...>
-Subject: Re: [Openvpn-devel] Location of debian test builds?
+Subject: [Openvpn-devel] Topics for today's meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,35 +11,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
-To: Praetorian <praetoriancode@...277...>
-Cc: "Openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
+Hi,
 
+Here are some topics for today's meeting (18:00 UTC,
+#openvpn-devel@...1334...).
 
-> I know I saw a while ago on the list that there are testing builds for
-> debian being created now.  I could not find them on the trac site
-> (then again I don't have a login). I would like to test the latest
-> version to on a few servers that are being setup for some testing.
->
-> Wayne
->=20=20=20
-Hi Wayne,
+<https://community.openvpn.net/openvpn/wiki/Topics-2010-07-29>
 
-Yep, I managed to use Buildbot to automatically create Debian packages
-from latest "testing" sources. However,  I need to verify that the
-package metadata et al is sane - I simply copied it over from official
-Debian packages. For this reason I have not yet published the packages
-anywhere. However, I _should_ have Debian Lenny (amd64) and Ubuntu 9.10
-(i386) packages for "beta2.2" and "allmerged" branches ready by the end
-of this month. I'll let you know as soon as that happens.
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
 
 --=20
-Samuli Sepp=C3=A4nen
+Samuli Sepp=E4nen
 Community Manager
 OpenVPN Technologies, Inc
 
 irc freenode net: mattock
+
+
+
 
 
