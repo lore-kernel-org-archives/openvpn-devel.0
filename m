@@ -1,8 +1,11 @@
-Message-ID: <4C5F9F02.5050005@...515...>
-Date: Mon, 09 Aug 2010 09:24:02 +0300
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
+Date: Tue, 10 Aug 2010 12:57:33 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20100810105733.GY740@...1296...>
 References: <20100808194847.GN740@...1296...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="gJNQRAHI5jiYqw2y"
+Content-Disposition: inline
 In-Reply-To: <20100808194847.GN740@...1296...>
 Subject: Re: [Openvpn-devel] RFD: VPN client test framework
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -13,25 +16,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+To: openvpn-devel@lists.sourceforge.net
+
+--gJNQRAHI5jiYqw2y
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
+Hi,
 
->  - this is neither finished nor pretty, but it helps me a *lot* in
->    quickly testing whether I broke anything when fiddling system-dependent
->    code (tun.c, route.c) across multiple build hosts - so I hope this
->    is going to be fairly useful to Samuli and the buildbot :-)
->=20=20=20
-Excellent work, Gert! I hope that after all the mad releasing stuff
-(beta2.2, forums, trac) and Buildbot is behind me, I get to focus on
-Beaker. I'm sure we can use parts of your code in it's test scripts.
+On Sun, Aug 08, 2010 at 09:48:47PM +0200, Gert Doering wrote:
+> as discussed in one of the previous the IRC meetings, I've been working
+> on a test framework to enable full "fire up openvpn client, establish
+> VPN connection, run ping tests, clean up, verify cleanup" automated=20
+> tests.
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+I got some feedback from Waldner on IRC, and had to make it work on
+Solaris (broken /bin/sh) - so this is now built using "configure",
+knows how to find "ip", "ifconfig" and "netstat" (configure does the
+work :-) ), *and* has been tested on Solaris (works!).
 
-irc freenode net: mattock
+The patch goes on top of the previous one.  Pushed to my git repo.
 
+gert
 
+--gJNQRAHI5jiYqw2y--
