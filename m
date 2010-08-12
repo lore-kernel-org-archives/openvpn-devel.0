@@ -1,13 +1,8 @@
-Date: Tue, 10 Aug 2010 12:57:33 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20100810105733.GY740@...1296...>
-References: <20100808194847.GN740@...1296...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="gJNQRAHI5jiYqw2y"
-Content-Disposition: inline
-In-Reply-To: <20100808194847.GN740@...1296...>
-Subject: Re: [Openvpn-devel] RFD: VPN client test framework
+Message-ID: <4C63F382.2000100@...515...>
+Date: Thu, 12 Aug 2010 16:13:38 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Topics for today's meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,28 +11,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
---gJNQRAHI5jiYqw2y
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Sun, Aug 08, 2010 at 09:48:47PM +0200, Gert Doering wrote:
-> as discussed in one of the previous the IRC meetings, I've been working
-> on a test framework to enable full "fire up openvpn client, establish
-> VPN connection, run ping tests, clean up, verify cleanup" automated=20
-> tests.
+Here are some topics for today's meeting (18:00 UTC,
+#openvpn-devel@...1334...).
 
-I got some feedback from Waldner on IRC, and had to make it work on
-Solaris (broken /bin/sh) - so this is now built using "configure",
-knows how to find "ip", "ifconfig" and "netstat" (configure does the
-work :-) ), *and* has been tested on Solaris (works!).
+<https://community.openvpn.net/openvpn/wiki/Topics-2010-08-12>
 
-The patch goes on top of the previous one.  Pushed to my git repo.
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
 
-gert
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
---gJNQRAHI5jiYqw2y--
+irc freenode net: mattock
+
+
+
+
+
+
