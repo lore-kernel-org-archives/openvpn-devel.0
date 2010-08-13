@@ -1,8 +1,8 @@
-Message-ID: <4C63F382.2000100@...515...>
-Date: Thu, 12 Aug 2010 16:13:38 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+From: Heiko Hund <hhund@...194...>
+Date: Fri, 13 Aug 2010 21:45:24 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Topics for today's meeting
+Message-Id: <201008132145.25557.hhund@...194...>
+Subject: [Openvpn-devel] New openvpn-gui snapshot
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,29 +11,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-Here are some topics for today's meeting (18:00 UTC,
-#openvpn-devel@...1334...).
+I have uploaded a new snapshot binary to Sourceforge today [1]. The GUI now=
+=20
+uses the OpenVPN management interface as a first step towards connecting=20
+without elevated rights under Windows Vista and later.
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2010-08-12>
+That unfortunately means that nothing new can be seen really as all the=20
+changes happened in the non-GUI part. However, I would like to encourage yo=
+u=20
+to check it out with your current setup anyways, as I'm pretty sure that I'=
+ve=20
+introduced regressions. Comments and bug reports are very welcome.
 
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
+Regards
+Heiko
 
+[1] http://sourceforge.net/projects/openvpn-gui/files/=20
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
-
-
+Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
+Astaro GmbH & Co. KG | An der RaumFabrik 33a | 76227 Karlsruhe | Germany
+Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
+=20
+Represented by the General Partner Astaro Verwaltungs GmbH
+An der RaumFabrik 33a | 76227 Karlsruhe | Germany=20
+Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
+Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
 
 
 
