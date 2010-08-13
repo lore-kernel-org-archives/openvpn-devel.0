@@ -1,8 +1,8 @@
-From: Heiko Hund <hhund@...194...>
-Date: Fri, 13 Aug 2010 21:45:24 +0200
+Message-ID: <4C65C106.4030801@...515...>
+Date: Sat, 14 Aug 2010 01:02:46 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Message-Id: <201008132145.25557.hhund@...194...>
-Subject: [Openvpn-devel] New openvpn-gui snapshot
+Subject: [Openvpn-devel] OpenVPN forums launched
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,37 +11,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+Hi everyone,
 
-I have uploaded a new snapshot binary to Sourceforge today [1]. The GUI now=
-=20
-uses the OpenVPN management interface as a first step towards connecting=20
-without elevated rights under Windows Vista and later.
+OpenVPN Technologies and Ovpnforum.com team have just launched OpenVPN
+forums at https://forums.openvpn.net. The forums are a continuation of
+the earlier, entirely community supported forums (ovpnforum.com).
+OpenVPN forums will be maintained jointly by OpenVPN Technologies and
+ovpnforum.com team. Forums use the new OpenVPN authentication service
+which allows the use of same credentials on all OpenVPN services. A new
+user account can be created from https://community.openvpn.net/register
 
-That unfortunately means that nothing new can be seen really as all the=20
-changes happened in the non-GUI part. However, I would like to encourage yo=
-u=20
-to check it out with your current setup anyways, as I'm pretty sure that I'=
-ve=20
-introduced regressions. Comments and bug reports are very welcome.
+If you encounter any issues using the forums, please don't hesitate to
+send mail to Samuli (samuli [at] openvpn net) or Eric (ecrist [at]
+secure-computing net). Alternatively you can visit the ##openvpn channel
+on irc.freenode.net and ask for "mattock" or "ecrist".
 
-Regards
-Heiko
+Special thanks to the whole ovpnforum.com team - dougy, krzee and ecrist
+- for all their hard work.
 
-[1] http://sourceforge.net/projects/openvpn-gui/files/=20
 --=20
-Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
-Astaro GmbH & Co. KG | An der RaumFabrik 33a | 76227 Karlsruhe | Germany
-Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
-=20
-Represented by the General Partner Astaro Verwaltungs GmbH
-An der RaumFabrik 33a | 76227 Karlsruhe | Germany=20
-Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
-Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
+irc freenode net: mattock
 
 
