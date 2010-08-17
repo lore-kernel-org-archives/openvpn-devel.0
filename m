@@ -1,12 +1,11 @@
-Message-ID: <4C6AE952.6040905@...1114...>
-Date: Tue, 17 Aug 2010 21:56:02 +0200
+Message-ID: <4C6AE9F6.3090805@...1114...>
+Date: Tue, 17 Aug 2010 21:58:46 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4B7EB12E.5000405@...1114...>
-	<loom.20100716T203449-26@...171...>
-In-Reply-To: <loom.20100716T203449-26@...171...>
-Subject: Re: [Openvpn-devel] Compiler warnings when using openssl-1.0.0 -
- beta4
+References: <20100709083102.GZ361@...1296...>
+In-Reply-To: <20100709083102.GZ361@...1296...>
+Subject: Re: [Openvpn-devel] Patch for compile-time problems on NetBSD and
+ OpenBSD (trac #17)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,54 +16,56 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-To: chantra <chantra@...1258...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 16/07/10 20:36, chantra wrote:
+On 09/07/10 10:31, Gert Doering wrote:
+> Hi,
 > 
->>
->> If nobody responds, I'll try to find some time looking into this in the
->> near future.
->>
+> the following patch fixes the IFF_MULTICAST compile-time problems on NetBSD,
+> and it should also fix them on OpenBSD (trac entry #17).
 > 
-> I did in https://community.openvpn.net/openvpn/ticket/5#comment:3
+> ** important: after applying the patch to configure.ac, you MUST run
+> ** "autoreconf" - otherwise the patch won't do anything
 > 
-> chantra
+> If it still doesn't work for OpenBSD, I need to see the parts from your
+> config.log relating to <net/if.h>
+> 
+> gert
+> 
 
-ACK
+ACK recieved in Trac:
+<https://community.openvpn.net/openvpn/ticket/17>
 
-I've smoke tested this on two 32bit boxes using openssl-0.9.8* - both as
-OpenVPN server and client, to make sure this patch is backwards
-compatible.  Likewise, generic quick tests have been done on a 64bit box
-using openssl-1.0.0.  Testing seems to work very fine.
+commit eb973e055bc249948351cacf1aa045d878ed041d
+Author: Gert Doering <gert@...1296...>
+Date:   Fri Jul 9 10:24:46 2010 +0200
 
-commit db3fb3d489df234c78ddcb9fce66de4d8fbb28e6
-Author: chantra <chantra@...1258...>
-Date:   Fri Jul 16 20:09:07 2010 +0200
-    Fixes openssl-1.0.0 compilation warning
+    Fix compile problems on NetBSD and OpenBSD
 
-    When compiling against OpenSSL v1.0.0, the following compiler
-    warnings appears.
+    Configure will not find <net/if.h> due to missing <sys/types.h> in
+    the test program, and thus, tun.c will fail to compile with missing
+    symbol IFF_MULTICAST.
 
-    [...snip...comiler warning...]
-
-    Trac ticket #5
-    https://community.openvpn.net/openvpn/ticket/5
-
-    Signed-off-by: chantra <chantra@...1258...>
-    Acked-by: David Sommerseth <dazo@...384...>
+    Signed-off-by: Gert Doering <gert@...1296...>
+    Acked-by: krzee <jeff@...1394...>
     Signed-off-by: David Sommerseth <dazo@...384...>
 
 Applied to bugfix2.1, merged into allmerged and beta2.2.
+
+
+kind regards,
+
+David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkxq6VIACgkQDC186MBRfrp0BACfREpGZjOD0X4jC5oY+IM4Q7Bo
-8FcAn3PAUDfbxZ4XpvRkovH+bn9c95gb
-=JtjU
+iEYEARECAAYFAkxq6fYACgkQDC186MBRfroFygCff6kL1IMcEqlk3O1tMLwPfL+B
+hdEAn08b+W4GLcWxX24dq7XeLHFJJXzO
+=oY7H
 -----END PGP SIGNATURE-----
 
