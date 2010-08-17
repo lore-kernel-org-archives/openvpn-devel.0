@@ -1,9 +1,10 @@
-Message-ID: <4C6AE9F6.3090805@...1114...>
-Date: Tue, 17 Aug 2010 21:58:46 +0200
+Message-ID: <4C6AEA2A.9080901@...1114...>
+Date: Tue, 17 Aug 2010 21:59:38 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
 References: <20100709083102.GZ361@...1296...>
-In-Reply-To: <20100709083102.GZ361@...1296...>
+	<20100710094839.GY361@...1296...>
+In-Reply-To: <20100710094839.GY361@...1296...>
 Subject: Re: [Openvpn-devel] Patch for compile-time problems on NetBSD and
  OpenBSD (trac #17)
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,37 +23,52 @@ Cc: openvpn-devel@lists.sourceforge.net
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 09/07/10 10:31, Gert Doering wrote:
+On 10/07/10 11:48, Gert Doering wrote:
 > Hi,
 > 
-> the following patch fixes the IFF_MULTICAST compile-time problems on NetBSD,
-> and it should also fix them on OpenBSD (trac entry #17).
+> On Fri, Jul 09, 2010 at 10:31:02AM +0200, Gert Doering wrote:
+>> the following patch fixes the IFF_MULTICAST compile-time problems on NetBSD,
+>> and it should also fix them on OpenBSD (trac entry #17).
 > 
-> ** important: after applying the patch to configure.ac, you MUST run
-> ** "autoreconf" - otherwise the patch won't do anything
+> This would have been too easy...  on NetBSD, <sys/socket.h> can be 
+> include before <sys/types.h> (which the original patch does), on OpenBSD,
+> this fails.
 > 
-> If it still doesn't work for OpenBSD, I need to see the parts from your
-> config.log relating to <net/if.h>
+> So I have swapped around these two includes in the <net/if.h> test program
+> compiled by configure, and it now configure and compiles both on NetBSD
+> and on OpenBSD just fine.  (Last time I had no OpenBSD to test - in the
+> mean time, I've setup an OpenBSD 4.7 VM and tested it myself, so I'm *sure*
+> it works :-) ).
+> 
+> Due to the fact that I've commited this in two goes, it's "two patches"
+> now...  I've appended both.  Please apply to a clean configure.ac file,
+> and to be sure, run "autoreconf" to rebuild "configure" (to Matthias: 
+> well, the magic might do this automatically, but before I get another 
+> bug report "your patch did not help" which could then be due to 
+> "autoreconf not run", I'll just make *sure* it was rebuilt).
+> 
+> "David needs an independent ACK on this, so please test on NetBSD and
+> OpenBSD and give feedback".
 > 
 > gert
 > 
 
-ACK recieved in Trac:
+ACK received in Trac:
 <https://community.openvpn.net/openvpn/ticket/17>
 
-commit eb973e055bc249948351cacf1aa045d878ed041d
+commit 422e5e751e73de8a17760acf2f15f61ea4f0394e
 Author: Gert Doering <gert@...1296...>
-Date:   Fri Jul 9 10:24:46 2010 +0200
+Date:   Sat Jul 10 11:24:41 2010 +0200
 
-    Fix compile problems on NetBSD and OpenBSD
+    Fix <net/if.h> compile time problems on OpenBSD for good
 
-    Configure will not find <net/if.h> due to missing <sys/types.h> in
-    the test program, and thus, tun.c will fail to compile with missing
-    symbol IFF_MULTICAST.
+    Previous fix (commit eb973e055bc249948) fixed NetBSD but not OpenBSD
+    (include <sys/socket.h> *after* <sys/types.h>)
 
     Signed-off-by: Gert Doering <gert@...1296...>
     Acked-by: krzee <jeff@...1394...>
     Signed-off-by: David Sommerseth <dazo@...384...>
+
 
 Applied to bugfix2.1, merged into allmerged and beta2.2.
 
@@ -64,8 +80,8 @@ David Sommerseth
 Version: GnuPG v1.4.10 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkxq6fYACgkQDC186MBRfroFygCff6kL1IMcEqlk3O1tMLwPfL+B
-hdEAn08b+W4GLcWxX24dq7XeLHFJJXzO
-=oY7H
+iEYEARECAAYFAkxq6ioACgkQDC186MBRfrpX8ACfaGqn2ywOCYha0SKGRfdQBj+n
+MkYAmgJLR8trKICDgc+khYeMzrWzQVg3
+=zOS4
 -----END PGP SIGNATURE-----
 
