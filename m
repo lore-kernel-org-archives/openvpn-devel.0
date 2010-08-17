@@ -1,10 +1,12 @@
-Message-ID: <4C6AE7AC.2010605@...1114...>
-Date: Tue, 17 Aug 2010 21:49:00 +0200
+Message-ID: <4C6AE952.6040905@...1114...>
+Date: Tue, 17 Aug 2010 21:56:02 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <20100808194847.GN740@...1296...>
-In-Reply-To: <20100808194847.GN740@...1296...>
-Subject: Re: [Openvpn-devel] RFD: VPN client test framework
+References: <4B7EB12E.5000405@...1114...>
+	<loom.20100716T203449-26@...171...>
+In-Reply-To: <loom.20100716T203449-26@...171...>
+Subject: Re: [Openvpn-devel] Compiler warnings when using openssl-1.0.0 -
+ beta4
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,49 +17,54 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
+To: chantra <chantra@...1258...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 08/08/10 21:48, Gert Doering wrote:
-> Hi,
+On 16/07/10 20:36, chantra wrote:
 > 
-> as discussed in one of the previous the IRC meetings, I've been working
-> on a test framework to enable full "fire up openvpn client, establish
-> VPN connection, run ping tests, clean up, verify cleanup" automated 
-> tests.
+>>
+>> If nobody responds, I'll try to find some time looking into this in the
+>> near future.
+>>
 > 
-> The framework is appended below (as patch, should apply cleanly against
-> all branches in git) and has been checked & pushed into my feat_ipv6_payload
-> branch (dazo, feel free to pull & merge wherever you find this useful).
+> I did in https://community.openvpn.net/openvpn/ticket/5#comment:3
 > 
+> chantra
 
 ACK
 
-commit 97750e7d4571a0c28695aac1530a91fe98d25d06
-Author: Gert Doering <gert@...1296...>
-Date:   Sun Aug 8 21:24:30 2010 +0200
+I've smoke tested this on two 32bit boxes using openssl-0.9.8* - both as
+OpenVPN server and client, to make sure this patch is backwards
+compatible.  Likewise, generic quick tests have been done on a 64bit box
+using openssl-1.0.0.  Testing seems to work very fine.
 
-    [...snipped verbose explanation ...]
+commit db3fb3d489df234c78ddcb9fce66de4d8fbb28e6
+Author: chantra <chantra@...1258...>
+Date:   Fri Jul 16 20:09:07 2010 +0200
+    Fixes openssl-1.0.0 compilation warning
 
-    Signed-off-by: Gert Doering <gert@...1296...>
+    When compiling against OpenSSL v1.0.0, the following compiler
+    warnings appears.
+
+    [...snip...comiler warning...]
+
+    Trac ticket #5
+    https://community.openvpn.net/openvpn/ticket/5
+
+    Signed-off-by: chantra <chantra@...1258...>
     Acked-by: David Sommerseth <dazo@...384...>
     Signed-off-by: David Sommerseth <dazo@...384...>
 
 Applied to bugfix2.1, merged into allmerged and beta2.2.
-
-
-kind regards,
-
-David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkxq56wACgkQDC186MBRfrrZvACfQRML9cLvkmBjNW3ODoNcZxWi
-GlQAniyRw+4sYFpuNuUn0FeJrB79m9Xb
-=77TI
+iEYEARECAAYFAkxq6VIACgkQDC186MBRfrp0BACfREpGZjOD0X4jC5oY+IM4Q7Bo
+8FcAn3PAUDfbxZ4XpvRkovH+bn9c95gb
+=JtjU
 -----END PGP SIGNATURE-----
 
