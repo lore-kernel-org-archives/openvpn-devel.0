@@ -1,10 +1,9 @@
-Message-ID: <4C6AE7AD.9020804@...1114...>
-Date: Tue, 17 Aug 2010 21:49:01 +0200
+Message-ID: <4C6AE7AC.2010605@...1114...>
+Date: Tue, 17 Aug 2010 21:49:00 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
 References: <20100808194847.GN740@...1296...>
-	<20100810105733.GY740@...1296...>
-In-Reply-To: <20100810105733.GY740@...1296...>
+In-Reply-To: <20100808194847.GN740@...1296...>
 Subject: Re: [Openvpn-devel] RFD: VPN client test framework
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -22,43 +21,30 @@ Cc: openvpn-devel@lists.sourceforge.net
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 10/08/10 12:57, Gert Doering wrote:
+On 08/08/10 21:48, Gert Doering wrote:
 > Hi,
 > 
-> On Sun, Aug 08, 2010 at 09:48:47PM +0200, Gert Doering wrote:
->> as discussed in one of the previous the IRC meetings, I've been working
->> on a test framework to enable full "fire up openvpn client, establish
->> VPN connection, run ping tests, clean up, verify cleanup" automated 
->> tests.
+> as discussed in one of the previous the IRC meetings, I've been working
+> on a test framework to enable full "fire up openvpn client, establish
+> VPN connection, run ping tests, clean up, verify cleanup" automated 
+> tests.
 > 
-> I got some feedback from Waldner on IRC, and had to make it work on
-> Solaris (broken /bin/sh) - so this is now built using "configure",
-> knows how to find "ip", "ifconfig" and "netstat" (configure does the
-> work :-) ), *and* has been tested on Solaris (works!).
+> The framework is appended below (as patch, should apply cleanly against
+> all branches in git) and has been checked & pushed into my feat_ipv6_payload
+> branch (dazo, feel free to pull & merge wherever you find this useful).
 > 
-> The patch goes on top of the previous one.  Pushed to my git repo.
-> 
-> gert
 
 ACK
 
-commit 0df01a3eb7ef21de7a18a32457ddb39084baead7
+commit 97750e7d4571a0c28695aac1530a91fe98d25d06
 Author: Gert Doering <gert@...1296...>
-Date:   Tue Aug 10 12:39:28 2010 +0200
+Date:   Sun Aug 8 21:24:30 2010 +0200
 
-    Build t_client.sh by configure at run-time.
-
-    This is now built using "configure", knows how to find "ip",
-    "ifconfig" and "netstat" (configure does the work :-) ), *and* has
-    been tested on Solaris (works!).
-
-    extend configure.ac to find "netstat" binary and to chmod +x
-    "t_client.sh"
+    [...snipped verbose explanation ...]
 
     Signed-off-by: Gert Doering <gert@...1296...>
     Acked-by: David Sommerseth <dazo@...384...>
     Signed-off-by: David Sommerseth <dazo@...384...>
-
 
 Applied to bugfix2.1, merged into allmerged and beta2.2.
 
@@ -70,8 +56,8 @@ David Sommerseth
 Version: GnuPG v1.4.10 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkxq560ACgkQDC186MBRfroG0ACff1TvvG7YPltJc8ji/Bfkz0Cv
-z4QAn0zTgtVKkCpANdnLUl+mw00HyNTX
-=UjWX
+iEYEARECAAYFAkxq56wACgkQDC186MBRfrrZvACfQRML9cLvkmBjNW3ODoNcZxWi
+GlQAniyRw+4sYFpuNuUn0FeJrB79m9Xb
+=77TI
 -----END PGP SIGNATURE-----
 
