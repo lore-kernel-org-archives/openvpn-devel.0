@@ -1,12 +1,11 @@
-Message-ID: <4C6BDFD1.3030707@...68...>
-Date: Wed, 18 Aug 2010 15:27:45 +0200
-From: Matthias Andree <matthias.andree@...68...>
-MIME-Version: 1.0
-References: <4C6BD3CB.5050009@...68...>
-	<1282136643-22193-1-git-send-email-dazo@...384...>
-In-Reply-To: <1282136643-22193-1-git-send-email-dazo@...384...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Test framework improvment - Do not
- FAIL	if t_client.rc is missing
+Date: Wed, 18 Aug 2010 16:48:15 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20100818144815.GS9777@...1296...>
+References: <1282134451-21285-1-git-send-email-dazo@...384...>
+Mime-Version: 1.0
+In-Reply-To: <1282134451-21285-1-git-send-email-dazo@...384...>
+Subject: Re: [Openvpn-devel] [PATCH] Test framework improvment - Do not FAIL
+	if t_client.rc is missing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,65 +14,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: David Sommerseth <dazo@...384...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 18.08.2010 15:04, schrieb David Sommerseth:
+Hi,
+
+On Wed, Aug 18, 2010 at 02:27:31PM +0200, David Sommerseth wrote:
 > This is to avoid 'make check' fail if this extra test case is not
-> configured.
-> 
-> Signed-off-by: David Sommerseth <dazo@...384...>
-> ---
->  t_client.sh.in |   20 ++++++++++----------
->  1 files changed, 10 insertions(+), 10 deletions(-)
-> 
-> diff --git a/t_client.sh.in b/t_client.sh.in
-> index 664b2fd..d3a4295 100755
-> --- a/t_client.sh.in
-> +++ b/t_client.sh.in
-> @@ -12,6 +12,16 @@
->  # - for "ping6" checks: fping6 binary in $PATH
->  #
->  
-> +if [ -r ./t_client.rc ] ; then
-> +    . ./t_client.rc
-> +elif [ -r "${srcdir}"/t_client.rc ] ; then
-> +    . "${srcdir}"/t_client.rc
-> +else
-> +    echo "$0: cannot find 't_client.rc' in current directory or" >&2
-> +    echo "$0: source dir ('${srcdir}').  SKIPPING TEST." >&2
-> +    exit 77
-> +fi
-> +
+> configured.  The patch gives a PASS, but will notify the user that
+> this test was skipped.
 
-I have occasionally been bitten by such ambiguities between current working
-directory and $srcdir.  I'd propose to steer clear of such precedence rules.
+Ummm.  Dunno what I have been smoking :-) ("if you don't want to 
+test this, this must be a mistake!!!") - but since this is not 
+something everyone will be using, your patch makes more sense.
 
->  if [ ! -x ./openvpn ]
->  then
->      echo "no (executable) openvpn binary in current directory. FAIL." >&2
-> @@ -24,16 +34,6 @@ then
->      exit 1
->  fi
->  
-> -if [ -r ./t_client.rc ] ; then
-> -    . ./t_client.rc
-> -elif [ -r "${srcdir}"/t_client.rc ] ; then
-> -    . "${srcdir}"/t_client.rc
-> -else
-> -    echo "cannot find 't_client.rc' in current directory or" >&2
-> -    echo "source dir ('${srcdir}').  FAIL." >&2
-> -    exit 1
-> -fi
-> -
->  if [ -z "$CA_CERT" ] ; then
->      echo "CA_CERT not defined in 't_client.rc'. SKIP test." >&2
->      exit 0
+ACK, and thanks.
 
-I think you missed this "exit 0" - should also be 77 instead - and please check
-if there are more (I've not been looking at the source script for lack of time).
-
+gert
 -- 
-Matthias Andree
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~gert/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
