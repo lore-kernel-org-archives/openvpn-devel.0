@@ -1,5 +1,5 @@
-Message-ID: <4C6BD3CB.5050009@...68...>
-Date: Wed, 18 Aug 2010 14:36:27 +0200
+Message-ID: <4C6BD3E9.6060909@...68...>
+Date: Wed, 18 Aug 2010 14:36:57 +0200
 From: Matthias Andree <matthias.andree@...68...>
 MIME-Version: 1.0
 References: <1282134451-21285-1-git-send-email-dazo@...384...>
@@ -23,55 +23,7 @@ Am 18.08.2010 14:27, schrieb David Sommerseth:
 > configured.  The patch gives a PASS, but will notify the user that
 > this test was skipped.
 
-The right approach would be to "exit 77" instead of 0,
-so that "make check" can report the SKIP properly.  Assuming that t_client.sh is
-listed in TESTS in some Makefile.am, which I didn't check.
-
-> 
-> Signed-off-by: David Sommerseth <dazo@...384...>
-> ---
->  t_client.sh.in |   20 ++++++++++----------
->  1 files changed, 10 insertions(+), 10 deletions(-)
-> 
-> diff --git a/t_client.sh.in b/t_client.sh.in
-> index 664b2fd..c920a4f 100755
-> --- a/t_client.sh.in
-> +++ b/t_client.sh.in
-> @@ -12,6 +12,16 @@
->  # - for "ping6" checks: fping6 binary in $PATH
->  #
->  
-> +if [ -r ./t_client.rc ] ; then
-> +    . ./t_client.rc
-> +elif [ -r "${srcdir}"/t_client.rc ] ; then
-> +    . "${srcdir}"/t_client.rc
-> +else
-> +    echo "$0: cannot find 't_client.rc' in current directory or" >&2
-> +    echo "$0: source dir ('${srcdir}').  SKIPPING TEST." >&2
-> +    exit 0
-> +fi
-> +
->  if [ ! -x ./openvpn ]
->  then
->      echo "no (executable) openvpn binary in current directory. FAIL." >&2
-> @@ -24,16 +34,6 @@ then
->      exit 1
->  fi
->  
-> -if [ -r ./t_client.rc ] ; then
-> -    . ./t_client.rc
-> -elif [ -r "${srcdir}"/t_client.rc ] ; then
-> -    . "${srcdir}"/t_client.rc
-> -else
-> -    echo "cannot find 't_client.rc' in current directory or" >&2
-> -    echo "source dir ('${srcdir}').  FAIL." >&2
-> -    exit 1
-> -fi
-> -
->  if [ -z "$CA_CERT" ] ; then
->      echo "CA_CERT not defined in 't_client.rc'. SKIP test." >&2
->      exit 0
-
+The other question is how t_client.rc can go missing...
 
 -- 
 Matthias Andree
