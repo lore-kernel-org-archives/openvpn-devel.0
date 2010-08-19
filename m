@@ -1,12 +1,8 @@
-Message-ID: <4C6BFD7E.8060703@...68...>
-Date: Wed, 18 Aug 2010 17:34:22 +0200
-From: Matthias Andree <matthias.andree@...68...>
+Message-ID: <4C6CE2F3.7010808@...515...>
+Date: Thu, 19 Aug 2010 10:53:23 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <1282143987-24356-1-git-send-email-dazo@...384...>
-	<20100818151209.GZ9777@...1296...>
-In-Reply-To: <20100818151209.GZ9777@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] More t_client.sh updates - exit with
- SKIP when we want to skip
+Subject: [Openvpn-devel] Topics for today's meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,21 +11,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Am 18.08.2010 17:12, schrieb Gert Doering:
-> Hi,
-> 
-> On Wed, Aug 18, 2010 at 05:06:27PM +0200, David Sommerseth wrote:
->> Several places we exited with 0 instead of 77 when we want to indicate
->> that we should skip this test.
-> 
-> ACK.  Thanks to Matthias for pointing this out.
+Hi,
 
-My pleasure.
+Here are some topics for today's meeting (18:00 UTC,
+#openvpn-devel@...1334...).
 
--- 
-Matthias Andree
+<https://community.openvpn.net/openvpn/wiki/Topics-2010-08-19>
+
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+
+PS. It seems I forgot to write a summary of last week's meeting.
+Fortunately it was pretty much just an update on status of
+forums.openvpn.net, community.openvpn.net and 2.2-beta1 releases.
+
+
+
 
