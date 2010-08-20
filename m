@@ -1,12 +1,14 @@
-Date: Fri, 20 Aug 2010 18:20:47 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20100820162047.GA10703@...1296...>
-References: <20100820154817.GC23371@...1296...> <1282319811.19580.2@...1207...>
-Mime-Version: 1.0
+Message-ID: <20100820162406.21059.qmail@...1287...>
+Date: Fri, 20 Aug 2010 18:24:06 +0200
+From: Peter Stuge <peter@...1287...>
+References: <4C6E73E4.6060300@...515...>
+	<20100820153536.14097.qmail@...1287...>
+	<20100820154817.GC23371@...1296...>
+MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="cWoXeonUoKmBZSoM"
+	protocol="application/pgp-signature"; boundary="9zSXsLTf0vkW971A"
 Content-Disposition: inline
-In-Reply-To: <1282319811.19580.2@...1207...>
+In-Reply-To: <20100820154817.GC23371@...1296...>
 Subject: Re: [Openvpn-devel] Summary of the IRC meeting (19th Aug 2010)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,76 +18,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "Karl O. Pinc" <kop@...1206...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
---cWoXeonUoKmBZSoM
+--9zSXsLTf0vkW971A
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-Hi,
+Gert Doering wrote:
+> The app is cross-compileable today - but to make that work requires that=
+=20
+> all relevant Windows APIs are exported in mingw headers *and libraries*.
 
-On Fri, Aug 20, 2010 at 10:56:51AM -0500, Karl O. Pinc wrote:
-> On 08/20/2010 10:48:17 AM, Gert Doering wrote:
+Sure. You emphasize libraries, but MinGW is not so much a library as
+it is a wrapper for the standard runtime from MS.
+
+
+> Windows APIs have the nasty habit of changing over time,
+
+I know this. I also do win32 development. With MinGW.
+
+
+> so if mingw stops updating their libraries etc., OpenVPN would be
+> sort of stuck to the old APIs - which might turn into a problem.
+> Or might not.  We don't know...
+
+What could happen is that OpenVPN wants to use a brand new API which
+was introduced in e.g. Windows 7, and if MinGW doesn't yet support
+this, then it can't be used.
+
+First of all, I'm not sure that will happen, since we want OpenVPN to
+be backwards compatible for older Windows systems too.
+
+But if it really is neccessary, then maybe that API can be added to
+MinGW with very little effort, since MinGW is just a wrapper.
+
+
+> > libusb-win32 can already compile their driver using MinGW.
 >=20
-> > The app is cross-compileable today - but to make that work requires
-> > that=20
-> > all relevant Windows APIs are exported in mingw headers *and
-> > libraries*.
-> >=20
-> > Windows APIs have the nasty habit of changing over time, so if mingw
-> > stops updating their libraries etc., OpenVPN would be sort of stuck
-> > to the old APIs - which might turn into a problem.  Or might not.  We
-> > don't know...
->=20
-> You could also say that, for instance,
-> gcc might not keep up-to-date and it'd be better to use, say,
-> the Intel compiler which is faster anyway.=20=20
+> To be able to cross-compile the driver would certainly be nice.=20
+> Need to check how libusb-win32 does this...
 
-Which C compiler to use doesn't really matter, as long as the C compiler
-(and the system libraries) presents all necessary APIs for this platform.
+They've switched to depending on the WDK (supercedes the DDK) out of
+preference and stopped supporting MinGW builds. Rev 212 from May is
+the last that cross-compiles without problems.
 
-> What makes mingw different from gcc?  It is really in such danger?
+svn co -r 212 https://libusb-win32.svn.sourceforge.net/svnroot/libusb-win32=
+/trunk/libusb libusb-win32
+cd libusb-win32/
+make host_prefix=3Di686-mingw32 libusb0.sys
 
-mingw has the same problem as WINE: it's following a foreign API that's
-beeing extended and changed regularily.  It's not "the native platform
-environment", so they always have to play catch-up.
+(You may need another prefix.)
 
-Don't get me wrong, I'm a big fan of mingw - I'm just explaining why
-this could be a problem if, for example, Windows 8 needs a new way to
-configure IP addresses on a tap interface and the necessary API is just
-not there in the mingw environment.
 
-> I've had fewer problems with open source projects being
-> discontinued than I have had with proprietary products.
+//Peter
 
-Well, I've had my share of stale and unmaintained open source projects,
-and also of commercial pain.  OTOH, the assumption that microsoft will
-continue to provide compiler environments for their OSes is not fully
-unwarranted :-)
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---cWoXeonUoKmBZSoM
+--9zSXsLTf0vkW971A
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (NetBSD)
+Version: GnuPG v1.4.7 (GNU/Linux)
 
-iQCVAwUBTG6rX6kuBuNlUUl1AQKuhQP8D8aBQiLt39Tc5DCOlVcq0KcYGyVBT99h
-e7hxA1OAZuedw5Pp9LOcuObZMIYc4l82j3TwikNsg2G3mzcVkx/BvMCu+xI4S99X
-Ejy6Lh7vQtkS6qjXo5nTrqhwM1RMzOgrINrDZKFJRZSPMUHruyf+NXjlOh4ihojD
-CPkpK2vYyAs=
-=Sq0Y
+iD8DBQFMbqwmhR3Q0dhIfEgRAjg4AJ9neP61wzmQza50DUyuTaurZNYgZACfRzQl
+87dvM+tu/f6t2rzy6zmKsJQ=
+=P/HH
 -----END PGP SIGNATURE-----
 
---cWoXeonUoKmBZSoM--
+--9zSXsLTf0vkW971A--
 
