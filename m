@@ -1,11 +1,10 @@
-Message-ID: <4C6E8859.5000903@...1114...>
-Date: Fri, 20 Aug 2010 15:51:21 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <20100820153536.14097.qmail@...1287...>
+Date: Fri, 20 Aug 2010 17:35:36 +0200
+From: Peter Stuge <peter@...1287...>
+References: <4C6E73E4.6060300@...515...>
 MIME-Version: 1.0
-References: <1282143987-24356-1-git-send-email-dazo@...384...>
-In-Reply-To: <1282143987-24356-1-git-send-email-dazo@...384...>
-Subject: Re: [Openvpn-devel] [PATCH] More t_client.sh updates - exit with
- SKIP	when we want to skip
+In-Reply-To: <4C6E73E4.6060300@...515...>
+Subject: Re: [Openvpn-devel] Summary of the IRC meeting (19th Aug 2010)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,39 +13,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Samuli Seppänen wrote:
+> converting the OpenVPN build system (on Windows) to depend only on
+> python, Visual Studio Professional and DDK. The original build
+> system required bash and various other UNIX tools.
 
-On 18/08/10 17:06, David Sommerseth wrote:
-> Several places we exited with 0 instead of 77 when we want to indicate
-> that we should skip this test.
-> 
-> Signed-off-by: David Sommerseth <dazo@...384...>
+James' mentioned argument for prefering Visual Studio, namely that
+MinGW may not have all the most recent functions in .h files, is not
+so good IMO. Since James also seems to prefer working outside Windows
+I would rather try to make OpenVPN for Windows crosscompileable, both
+driver and app.
 
-Late response, but it got applied to bugfix2.1, merged into allmerged
-and beta2.2.
+libusb-win32 can already compile their driver using MinGW.
 
-commit 30e37820dcb8a0549cc68ed17f1684c4bac1530b
-Author: David Sommerseth <dazo@...384...>
-Date:   Wed Aug 18 17:05:09 2010 +0200
-
-    Signed-off-by: David Sommerseth <dazo@...384...>
-    Acked-by: Gert Doering <gert@...1296...>
+But maybe that can happen later, any streamlining of builds is a good
+thing.
 
 
-Kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkxuiFkACgkQDC186MBRfrp9agCgofQ3PB7JoA/f+Tsn/S1xyxoy
-ZRIAniFS0CNJFKl6JJByHKz5zV9+4kXf
-=exS9
------END PGP SIGNATURE-----
+//Peter
 
