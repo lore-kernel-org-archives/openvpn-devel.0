@@ -1,9 +1,9 @@
-Message-ID: <4C725A31.6000205@...1395...>
-Date: Mon, 23 Aug 2010 13:23:29 +0200
-From: Morten Christensen <mc-mail@...1395...>
+From: Heiko Hund <hhund@...194...>
+Date: Mon, 23 Aug 2010 14:25:30 +0200
+References: <201008132145.25557.hhund@...194...> <4C725A31.6000205@...1395...>
+In-Reply-To: <4C725A31.6000205@...1395...>
 MIME-Version: 1.0
-References: <201008132145.25557.hhund@...194...>
-In-Reply-To: <201008132145.25557.hhund@...194...>
+Message-Id: <201008231428.26078.hhund@...194...>
 Subject: Re: [Openvpn-devel] New openvpn-gui snapshot
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,31 +13,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: Text/Plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-  Den 13-08-2010 21:45, Heiko Hund skrev:
-> Hi,
->
-> I have uploaded a new snapshot binary to Sourceforge today [1]. The GUI now
-> uses the OpenVPN management interface as a first step towards connecting
-> without elevated rights under Windows Vista and later.
->
-> That unfortunately means that nothing new can be seen really as all the
-> changes happened in the non-GUI part. However, I would like to encourage you
-> to check it out with your current setup anyways, as I'm pretty sure that I've
-> introduced regressions. Comments and bug reports are very welcome.
->
-> Regards
-> Heiko
->
-> [1] http://sourceforge.net/projects/openvpn-gui/files/
+On Monday 23 August 2010 13:23:29 Morten Christensen wrote:
+> I want to work on a danish translation of the GUI. Is that possible /
+> how can I start ?
 
-I want to work on a danish translation of the GUI. Is that possible / 
-how can I start ?
+Such contributions are very welcome. Unfortunately translation is a bit=20
+cryptic as it's done with Windows resource files.
 
+It's best you start with the English resource file [1] rename it openvpn-gu=
+i-
+res-dk.rc and translate the strings into Danish. You should leave the strin=
+gs=20
+with a IDS_ERR_* identifier in English as those will be removed in the near=
+=20
+future anyways. That will save you a lot of work. You can also look at the=
+=20
+other .rc files to see how it was done for other languages. If you have any=
+=20
+questions don't be afraid to ask.
 
---
-Morten Christensen
+When you're done just send me the .rc file and I'll integrate it.
+
+Heiko
+
+[1] http://openvpn-gui.git.sourceforge.net/git/gitweb.cgi?p=3Dopenvpn-
+gui/openvpn-gui;a=3Dblob;f=3Dopenvpn-gui-res-en.rc;hb=3DHEAD
+--=20
+Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
+Astaro GmbH & Co. KG | An der RaumFabrik 33a | 76227 Karlsruhe | Germany
+Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
+=20
+Represented by the General Partner Astaro Verwaltungs GmbH
+An der RaumFabrik 33a | 76227 Karlsruhe | Germany=20
+Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
+Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
 
