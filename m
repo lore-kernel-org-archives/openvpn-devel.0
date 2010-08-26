@@ -1,7 +1,10 @@
 From: David Sommerseth <dazo@...384...>
-Date: Thu, 26 Aug 2010 23:43:57 +0200
-Message-Id: <1282859040-25837-1-git-send-email-dazo@...384...>
-Subject: [Openvpn-devel] [PATCH 0/3] New OpenVPN plug-in API
+Date: Thu, 26 Aug 2010 23:44:00 +0200
+Message-Id: <1282859040-25837-4-git-send-email-dazo@...384...>
+In-Reply-To: <1282859040-25837-1-git-send-email-dazo@...384...>
+References: <1282859040-25837-1-git-send-email-dazo@...384...>
+Subject: [Openvpn-devel] [PATCH 3/3] Added a simple plug-in demonstrating
+	the v3 plug-in API.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,46 +18,219 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: James Yonan <james@...515...>, David Sommerseth <dazo@...384...>
 
-In the IRC meeting August 26, the current plug-in API was discussed
-in relation to a Trac ticket [1] which requested access to the complete
-X509 certificate structures.
+This plug-in can be tested by running an OpenVPN server like this:
 
-Several approaches was discussed, but a consensus was met that the current
-plug-in API was not flexible enough to tackle this.  Instead of creating
-yet another API which just adds the X509 structures usable by OpenSSL, it
-was decided to try to design a new API which could be extended more easily
-in the future, without implementing new functions constantly.
+ # ./openvpn --plugin plugin/examples/log_v3.so --dev tun \
+             --server 192.168.240.0 255.255.255.0 --ca sample-keys/ca.crt \
+             --cert sample-keys/server.crt --key sample-keys/server.key \
+             --dh sample-keys/dh1024.pem
 
-This patch series is a first-stab at such an a design.  It is designed to
-support all the features of the v2 API, but the arguments to
-openvpn_plugin_open_v3() and openvpn_plugin_func_v3() is different.  Most
-of the input arguments, are now sent as a struct in stead.
+The client can be started like this:
 
-The X509 certificate data is not yet provided via the plug-in as the
-ticket [1] requests, but it prepares the ground to add this information
-later on when a new plug-in API has been accepted and implemented.
+ # ./openvpn --client --remote localhost --ca sample-keys/ca.crt \
+             --cert sample-keys/client.crt --key sample-keys/client.key \
+             --dev tun --nobind --auth-user-pass
 
-
-Kind regards,
-
-David Sommerseth
-
-
-[1] https://community.openvpn.net/openvpn/ticket/44
-
-
-David Sommerseth (3):
-  Define the new openvpn_plugin_{open,func}_v3() API
-  Implement the core v3 plug-in function calls.
-  Added a simple plug-in demonstrating the v3 plug-in API.
-
- openvpn-plugin.h         |  181 ++++++++++++++++++++++++++++++++++++++++++++-
- plugin.c                 |   23 +++++-
- plugin.h                 |    2 +
+Signed-off-by: David Sommerseth <dazo@...384...>
+---
  plugin/examples/log_v3.c |  188 ++++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 389 insertions(+), 5 deletions(-)
+ 1 files changed, 188 insertions(+), 0 deletions(-)
  create mode 100644 plugin/examples/log_v3.c
 
+diff --git a/plugin/examples/log_v3.c b/plugin/examples/log_v3.c
+new file mode 100644
+index 0000000..37cda5f
+--- /dev/null
++++ b/plugin/examples/log_v3.c
+@@ -0,0 +1,188 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2009 OpenVPN Technologies, Inc. <sales@...515...>
++ *  Copyright (C) 2010 David Sommerseth <dazo@...384...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program (see the file COPYING included with this
++ *  distribution); if not, write to the Free Software Foundation, Inc.,
++ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ */
++
++/*
++ * This plugin is similar to simple.c, except it also logs extra information
++ * to stdout for every plugin method called by OpenVPN.  The only difference
++ * between this (log_v3.c) and log.c is that this module uses the v3 plug-in
++ * API.
++ *
++ * See the README file for build instructions.
++ */
++
++#include <stdio.h>
++#include <string.h>
++#include <stdlib.h>
++
++#include "openvpn-plugin.h"
++
++/*
++ * Our context, where we keep our state.
++ */
++struct plugin_context {
++  const char *username;
++  const char *password;
++};
++
++/*
++ * Given an environmental variable name, search
++ * the envp array for its value, returning it
++ * if found or NULL otherwise.
++ */
++static const char *
++get_env (const char *name, const char *envp[])
++{
++  if (envp)
++    {
++      int i;
++      const int namelen = strlen (name);
++      for (i = 0; envp[i]; ++i)
++	{
++	  if (!strncmp (envp[i], name, namelen))
++	    {
++	      const char *cp = envp[i] + namelen;
++	      if (*cp == '=')
++		return cp + 1;
++	    }
++	}
++    }
++  return NULL;
++}
++
++OPENVPN_EXPORT openvpn_plugin_handle_t
++openvpn_plugin_open_v3 (struct openvpn_plugin_args_open const *args, struct openvpn_plugin_string_list **ret_list)
++{
++  struct plugin_context *context;
++
++  /*
++   * Allocate our context
++   */
++  context = (struct plugin_context *) calloc (1, sizeof (struct plugin_context));
++
++  /*
++   * Set the username/password we will require.
++   */
++  context->username = "foo";
++  context->password = "bar";
++
++  /*
++   * Which callbacks to intercept.
++   */
++  *args->type_mask =
++    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_UP) |
++    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_DOWN) |
++    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_ROUTE_UP) |
++    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_IPCHANGE) |
++    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_TLS_VERIFY) |
++    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY) |
++    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_CLIENT_CONNECT_V2) |
++    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_CLIENT_DISCONNECT) |
++    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_LEARN_ADDRESS) |
++    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_TLS_FINAL);
++
++  return (openvpn_plugin_handle_t) context;
++}
++
++void
++show (const int type, const char *argv[], const char *envp[])
++{
++  size_t i;
++  switch (type)
++    {
++    case OPENVPN_PLUGIN_UP:
++      printf ("OPENVPN_PLUGIN_UP\n");
++      break;
++    case OPENVPN_PLUGIN_DOWN:
++      printf ("OPENVPN_PLUGIN_DOWN\n");
++      break;
++    case OPENVPN_PLUGIN_ROUTE_UP:
++      printf ("OPENVPN_PLUGIN_ROUTE_UP\n");
++      break;
++    case OPENVPN_PLUGIN_IPCHANGE:
++      printf ("OPENVPN_PLUGIN_IPCHANGE\n");
++      break;
++    case OPENVPN_PLUGIN_TLS_VERIFY:
++      printf ("OPENVPN_PLUGIN_TLS_VERIFY\n");
++      break;
++    case OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY:
++      printf ("OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY\n");
++      break;
++    case OPENVPN_PLUGIN_CLIENT_CONNECT_V2:
++      printf ("OPENVPN_PLUGIN_CLIENT_CONNECT_V2\n");
++      break;
++    case OPENVPN_PLUGIN_CLIENT_DISCONNECT:
++      printf ("OPENVPN_PLUGIN_CLIENT_DISCONNECT\n");
++      break;
++    case OPENVPN_PLUGIN_LEARN_ADDRESS:
++      printf ("OPENVPN_PLUGIN_LEARN_ADDRESS\n");
++      break;
++    case OPENVPN_PLUGIN_TLS_FINAL:
++      printf ("OPENVPN_PLUGIN_TLS_FINAL\n");
++      break;
++    default:
++      printf ("OPENVPN_PLUGIN_?\n");
++      break;
++    }
++
++  printf ("ARGV\n");
++  for (i = 0; argv[i] != NULL; ++i)
++    printf ("%d '%s'\n", (int)i, argv[i]);
++
++  printf ("ENVP\n");
++  for (i = 0; envp[i] != NULL; ++i)
++    printf ("%d '%s'\n", (int)i, envp[i]);
++}
++
++OPENVPN_EXPORT int
++openvpn_plugin_func_v3 (struct openvpn_plugin_args_func const *args, openvpn_plugin_handle_t handle,
++                        struct openvpn_plugin_string_list **ret_list)
++{
++  struct plugin_context *context = (struct plugin_context *) handle;
++
++  show (args->type, args->argv, args->envp);
++
++  /* check entered username/password against what we require */
++  if (args->type == OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY)
++    {
++      /* get username/password from envp string array */
++      const char *username = get_env ("username", args->envp);
++      const char *password = get_env ("password", args->envp);
++
++      if (username && !strcmp (username, context->username)
++	  && password && !strcmp (password, context->password))
++	return OPENVPN_PLUGIN_FUNC_SUCCESS;
++      else
++	return OPENVPN_PLUGIN_FUNC_ERROR;
++    }
++  else
++    return OPENVPN_PLUGIN_FUNC_SUCCESS;
++}
++
++OPENVPN_EXPORT void
++openvpn_plugin_close_v1 (openvpn_plugin_handle_t handle)
++{
++  struct plugin_context *context = (struct plugin_context *) handle;
++  free (context);
++}
 -- 
 1.7.2.2
 
