@@ -1,10 +1,10 @@
 From: David Sommerseth <dazo@...384...>
-Date: Sat, 28 Aug 2010 22:31:59 +0200
-Message-Id: <1283027520-26460-3-git-send-email-dazo@...384...>
+Date: Sat, 28 Aug 2010 22:32:00 +0200
+Message-Id: <1283027520-26460-4-git-send-email-dazo@...384...>
 In-Reply-To: <1283027520-26460-1-git-send-email-dazo@...384...>
 References: <1283027520-26460-1-git-send-email-dazo@...384...>
-Subject: [Openvpn-devel] [PATCH 2/3] Clean-up: Remove more dead and inactive
-	code paths
+Subject: [Openvpn-devel] [PATCH 3/3] Clean-up: Removing useless code - hash
+	related functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,305 +18,312 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: David Sommerseth <dazo@...384...>
 
-These code paths was practically not needed with no locking mechanisms
-enabled and was just bloating the source code.
+Removed even more function which where practically empty and took away
+some function arguments which were not used.
 
 Signed-off-by: David Sommerseth <dazo@...384...>
 ---
- buffer.c  |    4 ----
- forward.c |   10 ----------
- mbuf.c    |    4 ++--
- mbuf.h    |    2 +-
- mroute.c  |    6 ------
- mroute.h  |   13 -------------
- mtcp.c    |    2 +-
- multi.c   |    6 +-----
- openvpn.h |    3 ---
- ssl.c     |    4 ----
- ssl.h     |    3 ---
- 11 files changed, 5 insertions(+), 52 deletions(-)
+ list.c  |   11 ++++-------
+ list.h  |   25 ++++---------------------
+ mtcp.c  |    3 ---
+ mudp.c  |    3 ---
+ multi.c |   25 +++++++++++--------------
+ pf.c    |    2 +-
+ 6 files changed, 20 insertions(+), 49 deletions(-)
 
-diff --git a/buffer.c b/buffer.c
-index 52ae1e1..a4e7a56 100644
---- a/buffer.c
-+++ b/buffer.c
-@@ -298,10 +298,8 @@ gc_malloc (size_t size, bool clear, struct gc_arena *a)
- #endif
-       check_malloc_return (e);
-       ret = (char *) e + sizeof (struct gc_entry);
--      /*mutex_lock_static (L_GC_MALLOC);*/
-       e->next = a->list;
-       a->list = e;
--      /*mutex_unlock_static (L_GC_MALLOC);*/
-     }
-   else
-     {
-@@ -323,10 +321,8 @@ void
- x_gc_free (struct gc_arena *a)
- {
-   struct gc_entry *e;
--  /*mutex_lock_static (L_GC_MALLOC);*/
-   e = a->list;
-   a->list = NULL;
--  /*mutex_unlock_static (L_GC_MALLOC);*/
-   
-   while (e != NULL)
-     {
-diff --git a/forward.c b/forward.c
-index 6e3c5f7..87d05cc 100644
---- a/forward.c
-+++ b/forward.c
-@@ -454,7 +454,6 @@ encrypt_sign (struct context *c, bool comp_frag)
-    */
-   if (c->c2.tls_multi)
-     {
--      /*tls_mutex_lock (c->c2.tls_multi);*/
-       tls_pre_encrypt (c->c2.tls_multi, &c->c2.buf, &c->c2.crypto_options);
-     }
- #endif
-@@ -482,7 +481,6 @@ encrypt_sign (struct context *c, bool comp_frag)
-   if (c->c2.tls_multi)
-     {
-       tls_post_encrypt (c->c2.tls_multi, &c->c2.buf);
--      /*tls_mutex_unlock (c->c2.tls_multi);*/
-     }
- #endif
- #endif
-@@ -801,7 +799,6 @@ process_incoming_link (struct context *c)
- 	   * will load crypto_options with the correct encryption key
- 	   * and return false.
- 	   */
--	  /*tls_mutex_lock (c->c2.tls_multi);*/
- 	  if (tls_pre_decrypt (c->c2.tls_multi, &c->c2.from, &c->c2.buf, &c->c2.crypto_options))
- 	    {
- 	      interval_action (&c->c2.tmp_int);
-@@ -824,13 +821,6 @@ process_incoming_link (struct context *c)
-       /* authenticate and decrypt the incoming packet */
-       decrypt_status = openvpn_decrypt (&c->c2.buf, c->c2.buffers->decrypt_buf, &c->c2.crypto_options, &c->c2.frame);
- 
--#ifdef USE_SSL
--      if (c->c2.tls_multi)
--	{
--	  /*tls_mutex_unlock (c->c2.tls_multi);*/
--	}
--#endif
--      
-       if (!decrypt_status && link_socket_connection_oriented (c->c2.link_socket))
- 	{
- 	  /* decryption errors are fatal in TCP mode */
-diff --git a/mbuf.c b/mbuf.c
-index 1d8f602..0f36d3c 100644
---- a/mbuf.c
-+++ b/mbuf.c
-@@ -90,7 +90,7 @@ mbuf_add_item (struct mbuf_set *ms, const struct mbuf_item *item)
-   if (ms->len == ms->capacity)
-     {
-       struct mbuf_item rm;
--      ASSERT (mbuf_extract_item (ms, &rm, false));
-+      ASSERT (mbuf_extract_item (ms, &rm));
-       mbuf_free_buf (rm.buffer);
-       msg (D_MULTI_DROPPED, "MBUF: mbuf packet dropped");
-     }
-@@ -104,7 +104,7 @@ mbuf_add_item (struct mbuf_set *ms, const struct mbuf_item *item)
- }
- 
- bool
--mbuf_extract_item (struct mbuf_set *ms, struct mbuf_item *item, const bool lock)
-+mbuf_extract_item (struct mbuf_set *ms, struct mbuf_item *item)
- {
-   bool ret = false;
-   if (ms)
-diff --git a/mbuf.h b/mbuf.h
-index bbcd69a..a0de679 100644
---- a/mbuf.h
-+++ b/mbuf.h
-@@ -73,7 +73,7 @@ void mbuf_free_buf (struct mbuf_buffer *mb);
- 
- void mbuf_add_item (struct mbuf_set *ms, const struct mbuf_item *item);
- 
--bool mbuf_extract_item (struct mbuf_set *ms, struct mbuf_item *item, const bool lock);
-+bool mbuf_extract_item (struct mbuf_set *ms, struct mbuf_item *item);
- 
- void mbuf_dereference_instance (struct mbuf_set *ms, struct multi_instance *mi);
- 
-diff --git a/mroute.c b/mroute.c
-index ad76977..3debd80 100644
---- a/mroute.c
-+++ b/mroute.c
-@@ -360,7 +360,6 @@ mroute_helper_init (int ageable_ttl_secs)
- {
-   struct mroute_helper *mh;
-   ALLOC_OBJ_CLEAR (mh, struct mroute_helper);
--  /*mutex_init (&mh->mutex);*/
-   mh->ageable_ttl_secs = ageable_ttl_secs;
-   return mh;
- }
-@@ -398,12 +397,10 @@ mroute_helper_add_iroute (struct mroute_helper *mh, const struct iroute *ir)
-   if (ir->netbits >= 0)
-     {
-       ASSERT (ir->netbits < MR_HELPER_NET_LEN);
--      mroute_helper_lock (mh);
-       ++mh->cache_generation;
-       ++mh->net_len_refcount[ir->netbits];
-       if (mh->net_len_refcount[ir->netbits] == 1)
- 	mroute_helper_regenerate (mh);
--      mroute_helper_unlock (mh);
-     }
- }
- 
-@@ -413,20 +410,17 @@ mroute_helper_del_iroute (struct mroute_helper *mh, const struct iroute *ir)
-   if (ir->netbits >= 0)
-     {
-       ASSERT (ir->netbits < MR_HELPER_NET_LEN);
--      mroute_helper_lock (mh);
-       ++mh->cache_generation;
-       --mh->net_len_refcount[ir->netbits];
-       ASSERT (mh->net_len_refcount[ir->netbits] >= 0);
-       if (!mh->net_len_refcount[ir->netbits])
- 	mroute_helper_regenerate (mh);
--      mroute_helper_unlock (mh);
-     }
+diff --git a/list.c b/list.c
+index 32c2adf..fb93d0a 100644
+--- a/list.c
++++ b/list.c
+@@ -165,12 +165,12 @@ hash_add (struct hash *hash, const void *key, void *value, bool replace)
  }
  
  void
- mroute_helper_free (struct mroute_helper *mh)
+-hash_remove_by_value (struct hash *hash, void *value, bool autolock)
++hash_remove_by_value (struct hash *hash, void *value)
  {
--  /*mutex_destroy (&mh->mutex);*/
-   free (mh);
+   struct hash_iterator hi;
+   struct hash_element *he;
+ 
+-  hash_iterator_init (hash, &hi, autolock);
++  hash_iterator_init (hash, &hi);
+   while ((he = hash_iterator_next (&hi)))
+     {
+       if (he->value == value)
+@@ -221,7 +221,6 @@ void_ptr_compare_function (const void *key1, const void *key2)
+ void
+ hash_iterator_init_range (struct hash *hash,
+ 		       struct hash_iterator *hi,
+-		       bool autolock,
+ 		       int start_bucket,
+ 		       int end_bucket)
+ {
+@@ -233,7 +232,6 @@ hash_iterator_init_range (struct hash *hash,
+   hi->hash = hash;
+   hi->elem = NULL;
+   hi->bucket = NULL;
+-  hi->autolock = autolock;
+   hi->last = NULL;
+   hi->bucket_marked = false;
+   hi->bucket_index_start = start_bucket;
+@@ -243,10 +241,9 @@ hash_iterator_init_range (struct hash *hash,
+ 
+ void
+ hash_iterator_init (struct hash *hash,
+-		    struct hash_iterator *hi,
+-		    bool autolock)
++		    struct hash_iterator *hi)
+ {
+-  hash_iterator_init_range (hash, hi, autolock, 0, hash->n_buckets);
++  hash_iterator_init_range (hash, hi, 0, hash->n_buckets);
  }
  
-diff --git a/mroute.h b/mroute.h
-index b3e3a1f..7265001 100644
---- a/mroute.h
-+++ b/mroute.h
-@@ -91,7 +91,6 @@ struct mroute_addr {
-  * Used to help maintain CIDR routing table.
-  */
- struct mroute_helper {
--  /*MUTEX_DEFINE (mutex);*/
-   unsigned int cache_generation; /* incremented when route added */
-   int ageable_ttl_secs;          /* host route cache entry time-to-live*/
-   int n_net_len;                 /* length of net_len array */
-@@ -159,18 +158,6 @@ mroute_extract_addr_from_packet (struct mroute_addr *src,
+ static inline void
+diff --git a/list.h b/list.h
+index 5cf9127..adde36b 100644
+--- a/list.h
++++ b/list.h
+@@ -88,7 +88,7 @@ bool hash_remove_fast (struct hash *hash,
+ 		       const void *key,
+ 		       uint32_t hv);
+ 
+-void hash_remove_by_value (struct hash *hash, void *value, bool autolock);
++void hash_remove_by_value (struct hash *hash, void *value);
+ 
+ struct hash_iterator
+ {
+@@ -98,18 +98,16 @@ struct hash_iterator
+   struct hash_element *elem;
+   struct hash_element *last;
+   bool bucket_marked;
+-  bool autolock;
+   int bucket_index_start;
+   int bucket_index_end;
+ };
+ 
+ void hash_iterator_init_range (struct hash *hash,
+ 			       struct hash_iterator *hi,
+-			       bool autolock,
+ 			       int start_bucket,
+ 			       int end_bucket);
+ 
+-void hash_iterator_init (struct hash *hash, struct hash_iterator *iter, bool autolock);
++void hash_iterator_init (struct hash *hash, struct hash_iterator *iter);
+ struct hash_element *hash_iterator_next (struct hash_iterator *hi);
+ void hash_iterator_delete_element (struct hash_iterator *hi);
+ void hash_iterator_free (struct hash_iterator *hi);
+@@ -147,21 +145,12 @@ hash_bucket (struct hash *hash, uint32_t hv)
+   return &hash->buckets[hv & hash->mask];
+ }
+ 
+-static inline void
+-hash_bucket_lock (struct hash_bucket *bucket)
+-{
+-}
+-
+-static inline void
+-hash_bucket_unlock (struct hash_bucket *bucket)
+-{
+-}
+-
+ static inline void *
+-hash_lookup_lock (struct hash *hash, const void *key, uint32_t hv)
++hash_lookup (struct hash *hash, const void *key)
+ {
+   void *ret = NULL;
+   struct hash_element *he;
++  uint32_t hv = hash_value (hash, key);
+   struct hash_bucket *bucket = &hash->buckets[hv & hash->mask];
+ 
+   he = hash_lookup_fast (hash, bucket, key, hv);
+@@ -171,12 +160,6 @@ hash_lookup_lock (struct hash *hash, const void *key, uint32_t hv)
    return ret;
  }
  
--static inline void
--mroute_helper_lock (struct mroute_helper *mh)
+-static inline void *
+-hash_lookup (struct hash *hash, const void *key)
 -{
--  /*mutex_lock (&mh->mutex);*/
+-  return hash_lookup_lock (hash, key, hash_value (hash, key));
 -}
 -
--static inline void
--mroute_helper_unlock (struct mroute_helper *mh)
--{
--  /*mutex_unlock (&mh->mutex);*/
--}
--
- static inline bool
- mroute_addr_equal (const struct mroute_addr *a1, const struct mroute_addr *a2)
- {
+ /* NOTE: assumes that key is not a duplicate */
+ static inline void
+ hash_add_fast (struct hash *hash,
 diff --git a/mtcp.c b/mtcp.c
-index 3eca81a..6edafbd 100644
+index 6edafbd..314aa44 100644
 --- a/mtcp.c
 +++ b/mtcp.c
-@@ -264,7 +264,7 @@ multi_tcp_process_outgoing_link_ready (struct multi_context *m, struct multi_ins
-   ASSERT (mi);
+@@ -112,7 +112,6 @@ multi_create_instance_tcp (struct multi_context *m)
+       const uint32_t hv = hash_value (hash, &mi->real);
+       struct hash_bucket *bucket = hash_bucket (hash, hv);
+   
+-      hash_bucket_lock (bucket);
+       he = hash_lookup_fast (hash, bucket, &mi->real, hv);
  
-   /* extract from queue */
--  if (mbuf_extract_item (mi->tcp_link_out_deferred, &item, true)) /* ciphertext IP packet */
-+  if (mbuf_extract_item (mi->tcp_link_out_deferred, &item)) /* ciphertext IP packet */
-     {
-       dmsg (D_MULTI_TCP, "MULTI TCP: transmitting previously deferred packet");
+       if (he)
+@@ -128,8 +127,6 @@ multi_create_instance_tcp (struct multi_context *m)
+ 	hash_add_fast (hash, bucket, &mi->real, hv, mi);
  
+       mi->did_real_hash = true;
+-
+-      hash_bucket_unlock (bucket);
+     }
+ 
+ #ifdef ENABLE_DEBUG
+diff --git a/mudp.c b/mudp.c
+index bf4ca3d..a478b29 100644
+--- a/mudp.c
++++ b/mudp.c
+@@ -51,7 +51,6 @@ multi_get_create_instance_udp (struct multi_context *m)
+       const uint32_t hv = hash_value (hash, &real);
+       struct hash_bucket *bucket = hash_bucket (hash, hv);
+   
+-      hash_bucket_lock (bucket);
+       he = hash_lookup_fast (hash, bucket, &real, hv);
+ 
+       if (he)
+@@ -81,8 +80,6 @@ multi_get_create_instance_udp (struct multi_context *m)
+ 	    }
+ 	}
+ 
+-      hash_bucket_unlock (bucket);
+-
+ #ifdef ENABLE_DEBUG
+       if (check_debug_level (D_MULTI_DEBUG))
+ 	{
 diff --git a/multi.c b/multi.c
-index 6b85eeb..13714f8 100644
+index 13714f8..f61c5fb 100644
 --- a/multi.c
 +++ b/multi.c
-@@ -1000,8 +1000,6 @@ multi_get_instance_by_virtual_addr (struct multi_context *m,
-       struct mroute_addr tryaddr;
-       int i;
+@@ -146,7 +146,7 @@ multi_reap_range (const struct multi_context *m,
+     }
  
--      mroute_helper_lock (rh);
+   dmsg (D_MULTI_DEBUG, "MULTI: REAP range %d -> %d", start_bucket, end_bucket);
+-  hash_iterator_init_range (m->vhash, &hi, true, start_bucket, end_bucket);
++  hash_iterator_init_range (m->vhash, &hi, start_bucket, end_bucket);
+   while ((he = hash_iterator_next (&hi)) != NULL)
+     {
+       struct multi_route *r = (struct multi_route *) he->value;
+@@ -587,7 +587,7 @@ multi_uninit (struct multi_context *m)
+ 	  struct hash_iterator hi;
+ 	  struct hash_element *he;
+ 
+-	  hash_iterator_init (m->iter, &hi, true);
++	  hash_iterator_init (m->iter, &hi);
+ 	  while ((he = hash_iterator_next (&hi)))
+ 	    {
+ 	      struct multi_instance *mi = (struct multi_instance *) he->value;
+@@ -723,7 +723,7 @@ multi_print_status (struct multi_context *m, struct status_output *so, const int
+ 	  status_printf (so, "OpenVPN CLIENT LIST");
+ 	  status_printf (so, "Updated,%s", time_string (0, 0, false, &gc_top));
+ 	  status_printf (so, "Common Name,Real Address,Bytes Received,Bytes Sent,Connected Since");
+-	  hash_iterator_init (m->hash, &hi, true);
++	  hash_iterator_init (m->hash, &hi);
+ 	  while ((he = hash_iterator_next (&hi)))
+ 	    {
+ 	      struct gc_arena gc = gc_new ();
+@@ -744,7 +744,7 @@ multi_print_status (struct multi_context *m, struct status_output *so, const int
+ 
+ 	  status_printf (so, "ROUTING TABLE");
+ 	  status_printf (so, "Virtual Address,Common Name,Real Address,Last Ref");
+-	  hash_iterator_init (m->vhash, &hi, true);
++	  hash_iterator_init (m->vhash, &hi);
+ 	  while ((he = hash_iterator_next (&hi)))
+ 	    {
+ 	      struct gc_arena gc = gc_new ();
+@@ -787,7 +787,7 @@ multi_print_status (struct multi_context *m, struct status_output *so, const int
+ 	  status_printf (so, "TIME%c%s%c%u", sep, time_string (now, 0, false, &gc_top), sep, (unsigned int)now);
+ 	  status_printf (so, "HEADER%cCLIENT_LIST%cCommon Name%cReal Address%cVirtual Address%cBytes Received%cBytes Sent%cConnected Since%cConnected Since (time_t)",
+ 			 sep, sep, sep, sep, sep, sep, sep, sep);
+-	  hash_iterator_init (m->hash, &hi, true);
++	  hash_iterator_init (m->hash, &hi);
+ 	  while ((he = hash_iterator_next (&hi)))
+ 	    {
+ 	      struct gc_arena gc = gc_new ();
+@@ -810,7 +810,7 @@ multi_print_status (struct multi_context *m, struct status_output *so, const int
+ 
+ 	  status_printf (so, "HEADER%cROUTING_TABLE%cVirtual Address%cCommon Name%cReal Address%cLast Ref%cLast Ref (time_t)",
+ 			 sep, sep, sep, sep, sep, sep);
+-	  hash_iterator_init (m->vhash, &hi, true);
++	  hash_iterator_init (m->vhash, &hi);
+ 	  while ((he = hash_iterator_next (&hi)))
+ 	    {
+ 	      struct gc_arena gc = gc_new ();
+@@ -849,7 +849,7 @@ multi_print_status (struct multi_context *m, struct status_output *so, const int
+ #ifdef PACKET_TRUNCATION_CHECK
+       {
+ 	status_printf (so, "HEADER,ERRORS,Common Name,TUN Read Trunc,TUN Write Trunc,Pre-encrypt Trunc,Post-decrypt Trunc");
+-	hash_iterator_init (m->hash, &hi, true);
++	hash_iterator_init (m->hash, &hi);
+ 	while ((he = hash_iterator_next (&hi)))
+ 	    {
+ 	      struct gc_arena gc = gc_new ();
+@@ -895,8 +895,6 @@ multi_learn_addr (struct multi_context *m,
+   struct multi_route *oldroute = NULL;
+   struct multi_instance *owner = NULL;
+ 
+-  hash_bucket_lock (bucket);
 -
-       /* cycle through each CIDR length */
-       for (i = 0; i < rh->n_net_len; ++i)
+   /* if route currently exists, get the instance which owns it */
+   he = hash_lookup_fast (m->vhash, bucket, addr, hv);
+   if (he)
+@@ -966,7 +964,6 @@ multi_learn_addr (struct multi_context *m,
+       gc_free (&gc);
+     }
+ 
+-  hash_bucket_unlock (bucket);
+   return owner;
+ }
+ 
+@@ -1130,7 +1127,7 @@ multi_delete_dup (struct multi_context *m, struct multi_instance *new_mi)
+ 	  struct hash_element *he;
+ 	  int count = 0;
+ 
+-	  hash_iterator_init (m->iter, &hi, true);
++	  hash_iterator_init (m->iter, &hi);
+ 	  while ((he = hash_iterator_next (&hi)))
+ 	    {
+ 	      struct multi_instance *mi = (struct multi_instance *) he->value;
+@@ -1776,7 +1773,7 @@ multi_bcast (struct multi_context *m,
+       printf ("BCAST len=%d\n", BLEN (buf));
+ #endif
+       mb = mbuf_alloc_buf (buf);
+-      hash_iterator_init (m->iter, &hi, true);
++      hash_iterator_init (m->iter, &hi);
+ 
+       while ((he = hash_iterator_next (&hi)))
  	{
-@@ -1022,8 +1020,6 @@ multi_get_instance_by_virtual_addr (struct multi_context *m,
- 	      break;
- 	    }
- 	}
--      
--      mroute_helper_unlock (rh);
-     }
-   
- #ifdef ENABLE_DEBUG
-@@ -2248,7 +2244,7 @@ multi_get_queue (struct mbuf_set *ms)
- {
-   struct mbuf_item item;
+@@ -2470,7 +2467,7 @@ management_callback_kill_by_cn (void *arg, const char *del_cn)
+   struct hash_element *he;
+   int count = 0;
  
--  if (mbuf_extract_item (ms, &item, true)) /* cleartext IP packet */
-+  if (mbuf_extract_item (ms, &item)) /* cleartext IP packet */
+-  hash_iterator_init (m->iter, &hi, true);
++  hash_iterator_init (m->iter, &hi);
+   while ((he = hash_iterator_next (&hi)))
      {
-       unsigned int pipv4_flags = PIPV4_PASSTOS;
- 
-diff --git a/openvpn.h b/openvpn.h
-index 0757eb1..641bf93 100644
---- a/openvpn.h
-+++ b/openvpn.h
-@@ -460,9 +460,6 @@ struct context
-   /* true on initial VPN iteration */
-   bool first_time;
- 
--  /* used by multi-client code to lock the context */
--  /*MUTEX_DEFINE (mutex);*/
--
-   /* context modes */
- # define CM_P2P            0 /* standalone point-to-point session or client */
- # define CM_TOP            1 /* top level of a multi-client or point-to-multipoint server */
-diff --git a/ssl.c b/ssl.c
-index 030fee9..7270081 100644
---- a/ssl.c
-+++ b/ssl.c
-@@ -3907,8 +3907,6 @@ tls_process (struct tls_multi *multi,
- 	msg (D_TLS_DEBUG_LOW, "TLS: tls_process: killed expiring key");
-   }
- 
--  /*mutex_cycle (multi->mutex);*/
--
-   do
+       struct multi_instance *mi = (struct multi_instance *) he->value;
+@@ -2504,7 +2501,7 @@ management_callback_kill_by_addr (void *arg, const in_addr_t addr, const int por
+   saddr.sa.sin_port = htons (port);
+   if (mroute_extract_openvpn_sockaddr (&maddr, &saddr, true))
      {
-       update_time ();
-@@ -4192,7 +4190,6 @@ tls_process (struct tls_multi *multi,
- 		}
- 	    }
- 	}
--      /*mutex_cycle (multi->mutex);*/
-     }
-   while (state_change);
+-      hash_iterator_init (m->iter, &hi, true);
++      hash_iterator_init (m->iter, &hi);
+       while ((he = hash_iterator_next (&hi)))
+ 	{
+ 	  struct multi_instance *mi = (struct multi_instance *) he->value;
+diff --git a/pf.c b/pf.c
+index aed836e..6b4cba4 100644
+--- a/pf.c
++++ b/pf.c
+@@ -644,7 +644,7 @@ pf_cn_set_print (const struct pf_cn_set *s, const int lev)
  
-@@ -4346,7 +4343,6 @@ tls_multi_process (struct tls_multi *multi,
- 		reset_session (multi, session);
- 	    }
- 	}
--      /*mutex_cycle (multi->mutex);*/
-     }
- 
-   update_time ();
-diff --git a/ssl.h b/ssl.h
-index 3890f0b..f729a60 100644
---- a/ssl.h
-+++ b/ssl.h
-@@ -572,9 +572,6 @@ struct tls_session
-  */
- struct tls_multi
- {
--  /* used to coordinate access between main thread and TLS thread */
--  /*MUTEX_PTR_DEFINE (mutex);*/
--
-   /* const options and config info */
-   struct tls_options opt;
- 
+       if (s->hash_table)
+ 	{
+-	  hash_iterator_init (s->hash_table, &hi, false);
++	  hash_iterator_init (s->hash_table, &hi);
+ 	  while ((he = hash_iterator_next (&hi)))
+ 	    {
+ 	      struct pf_cn *e = (struct pf_cn *)he->value;
 -- 
 1.7.2.2
 
