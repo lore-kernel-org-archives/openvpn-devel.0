@@ -1,17 +1,8 @@
-Date: Wed, 1 Sep 2010 10:48:28 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20100901084828.GU10703@...1296...>
-References: <AANLkTina=B8Z8v2euOJYjZxMQhJ9WB6UMdY0qtnc_qyT@...278...>
-	<4C7CD670.4030706@...1147...> <4C7CDAD7.9070500@...1294...>
-	<20100831113136.GJ10703@...1296...> <4C7CFD59.8080707@...1294...>
-	<20100831165110.GK10703@...1296...> <4C7E0A83.3060206@...1294...>
-	<20100901082202.GR10703@...1296...> <4C7E10E9.8000000@...1294...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="mgIE+9cwyCTt+85Z"
-Content-Disposition: inline
-In-Reply-To: <4C7E10E9.8000000@...1294...>
-Subject: Re: [Openvpn-devel] Netmask OpenVPN Server
+MIME-Version: 1.0
+Date: Wed, 1 Sep 2010 14:58:59 +0200
+Message-ID: <AANLkTinjxHX-3baqYZARRT3SpYae8a-44CXNPkTXBXtC@...278...>
+From: Allan Swanepoel <allanice001@...277...>
+Subject: [Openvpn-devel] Compiling OpenVPN for Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,81 +11,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Eike Lohmann <e.lohmann@...1294...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---mgIE+9cwyCTt+85Z
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Hi All, I'm fairly new to building openvpn for windows (have been
+building on Linux since 2.0),
+I have a small customization that I make to the openvpn sourcecode to
+call external software on initialization, and would like to build a
+Windows build with this in.
 
-On Wed, Sep 01, 2010 at 10:38:01AM +0200, Eike Lohmann wrote:
-> We are working with static assignments and if the 2 networks are side by
-> side I can recompile the code and define a larger mask.
->=20
-> We don't have client-2-client and didn't use the ifconfig-pool.
-
-In that case, all this doesn't really matter.  Just add as many "route"
-and "push route" statements as you have networks.  (There's no size limit=20
-for "route").
-
-The limitation in the "server" statement for the network is there
-because it implicitely defines the ifconfig-pool - "server" is a macro
-that translates "server <base-ip> <netmask>" to
-
-  mode server
-  tls-server=20
-  push "topology <xxx>"
-  ifconfig <base-ip +1> <base-ip +2>
-  ifconfig-pool <base-ip + 4> <last-ip-4>
-  push "route <base-ip> <netmask>"
+I have ZERO experience in building Windows software, and would really
+appreciate any pointers / assistance in this regard.
+I have access to Visual Studio 2008 Standard, or any open source
+software I need.
 
 
-So for your setup, you could do:
-
-  # first network, used for tun on server and for pool (if needed)
-  server 172.16.0.0 255.255.0.0
-  # second network: routed to openvpn process, available for ifconfig-push
-  route 10.1.0.0 255.255.0.0
-  push "route 10.1.0.0 255.255.0.0"
-  # third network
-  # ...
-
-(this is the lazy way, still using "server" with the first network, but
-you could indeed do it without any pool on the server side by explicitely
-spelling everything out that "server" configures for you)
-
-> Is this also working if I have 2 networks far away from each other (10.x
-> and 192.168.x), with defining a 'all your base belong to us' netmask in
-> the code e.g. 0.0.0.0 :)
-
-No, because then OpenVPN would signal the Linux side "the internet is
-behind OpenVPN, route everything to me!".
-
-gert
+Thanks in advance
 
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---mgIE+9cwyCTt+85Z
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (NetBSD)
-
-iQCVAwUBTH4TXKkuBuNlUUl1AQI5vwQAi5PQST1cXzv6xCri6j2cuSpCjfBzwXpO
-ZTJacz01r9LfHsEcky8Nef61lr3xFrqIihLTvpxqFO7g+l55nrXMR/DC8VVMOnuS
-4TupZlFncnB0O6Zhugaa+9bJwXZles78ghM7h6ZgIAwxWnMGywrmG40vQAGXme4X
-pw3npRcCzt0=
-=o0BR
------END PGP SIGNATURE-----
-
---mgIE+9cwyCTt+85Z--
+We live in an age when pizza gets to your home before the police.
+=A0 - Jeff Marder
+------------------------------------------
+Allan Swanepoel
+allanice001@...277...
+allanice.001@...1202...
+dragonmaster@...1203...
++27 71 850 5554
+Linux User #452990
+Linux Machine #360914
+-----------------------------------------------
+IMPORTANT: This email is intended for the use of=A0 the=A0 individual
+addressee(s)=A0 named=A0 above=A0 and=A0 may=A0 contain information that is
+confidential,=A0 privileged=A0 or=A0 unsuitable=A0 for=A0 overly=A0 sensiti=
+ve
+persons=A0 with=A0 low=A0 self-esteem, no sense of humour or irrational
+religious beliefs. If you are not=A0 the=A0 intended=A0 recipient,=A0 any
+dissemination,=A0 distribution=A0 or copying=A0 of=A0 this=A0 email is not
+authorised (either explicitly or implicitly) and=A0 constitutes=A0 an
+irritating=A0 social=A0 faux=A0 pas. Unless the word absquatulation has been
+used in its correct context somewhere=A0 other=A0 than=A0 in=A0 this warnin=
+g,
+it does not have any legal or grammatical use and may be ignored. No
+animals were=A0 harmed=A0 in=A0 the=A0 transmission=A0 of=A0 this email,=A0=
+ although
+ the=A0 yorkshire=A0 terrier=A0 next door is living on borrowed time, let me
+tell you. Those of you with an overwhelming fear=A0 of=A0 the unknown will
+be gratified to learn that there is no hidden message revealed by
+reading=A0 this=A0 warning=A0 backwards,=A0 so just ignore that Alert Notice
+from Microsoft: However, by pouring a complete circle of salt around
+yourself and your=A0 computer=A0 you can=A0 ensure=A0 that=A0 no harm befal=
+ls
+you and your pets.
 
