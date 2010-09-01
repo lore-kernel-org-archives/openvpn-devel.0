@@ -1,10 +1,14 @@
-MIME-Version: 1.0
-In-Reply-To: <20100901135851.GW10703@...1296...>
+Date: Wed, 1 Sep 2010 16:39:33 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20100901143932.GX10703@...1296...>
 References: <AANLkTinjxHX-3baqYZARRT3SpYae8a-44CXNPkTXBXtC@...278...>
 	<20100901135851.GW10703@...1296...>
-Date: Wed, 1 Sep 2010 16:21:53 +0200
-Message-ID: <AANLkTi=uKEMyK0eKZR8UKShAxm2Dy6oRJqtsPvBDqJ3W@...278...>
-From: Allan Swanepoel <allanice001@...277...>
+	<AANLkTi=uKEMyK0eKZR8UKShAxm2Dy6oRJqtsPvBDqJ3W@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="CSNFvL6ilyiKL/Hs"
+Content-Disposition: inline
+In-Reply-To: <AANLkTi=uKEMyK0eKZR8UKShAxm2Dy6oRJqtsPvBDqJ3W@...278...>
 Subject: Re: [Openvpn-devel] Compiling OpenVPN for Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,81 +18,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
+To: Allan Swanepoel <allanice001@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Wed, Sep 1, 2010 at 3:58 PM, Gert Doering <gert@...1296...> wrote:
-> Hi,
->
-> On Wed, Sep 01, 2010 at 02:58:59PM +0200, Allan Swanepoel wrote:
->> Hi All, I'm fairly new to building openvpn for windows (have been
->> building on Linux since 2.0),
->> I have a small customization that I make to the openvpn sourcecode to
->> call external software on initialization, and would like to build a
->> Windows build with this in.
->
-> You can do two things - cross-build with mingw under linux (producing
-> openvpn.exe binaries for windows), or build with mingw+msys under
-> windows.
->
-> If you want to do the latter, read the file "domake-win" in the OpenVPN
-> source tree - it's the script that does the windows building, and it
-> contains the instructions as well.
->
-> If you use the pre-compiled tun/tap driver from the 2.1.3 windows
-> bundle, you don't need the MS DDK/WDK, just msys+mingw and the NSIS
-> installer-builder.
+--CSNFvL6ilyiKL/Hs
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Won't msys & mingw then become dependencies for running openvpn?
+Hi,
 
->
-> gert
-> --
-> USENET is *not* the non-clickable part of WWW!
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 //www.muc.de/~gert/
-> Gert Doering - Munich, Germany =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 gert@...1296...
-> fax: +49-89-35655025 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0gert@=
-...1297...
->
+On Wed, Sep 01, 2010 at 04:21:53PM +0200, Allan Swanepoel wrote:
+> > If you use the pre-compiled tun/tap driver from the 2.1.3 windows
+> > bundle, you don't need the MS DDK/WDK, just msys+mingw and the NSIS
+> > installer-builder.
+>=20
+> Won't msys & mingw then become dependencies for running openvpn?
 
+no.  This is not cygwin :-) - msys is just the run-time for being able
+to run "bash" things on windows.  mingw builds native windows binaries
+using native windows libraries (as opposed to gcc inside cygwin, which
+creates binaries that need the cygwin dll).
 
-
+gert
 --=20
-We live in an age when pizza gets to your home before the police.
-=A0 - Jeff Marder
-------------------------------------------
-Allan Swanepoel
-allanice001@...277...
-allanice.001@...1202...
-dragonmaster@...1203...
-+27 71 850 5554
-Linux User #452990
-Linux Machine #360914
------------------------------------------------
-IMPORTANT: This email is intended for the use of=A0 the=A0 individual
-addressee(s)=A0 named=A0 above=A0 and=A0 may=A0 contain information that is
-confidential,=A0 privileged=A0 or=A0 unsuitable=A0 for=A0 overly=A0 sensiti=
-ve
-persons=A0 with=A0 low=A0 self-esteem, no sense of humour or irrational
-religious beliefs. If you are not=A0 the=A0 intended=A0 recipient,=A0 any
-dissemination,=A0 distribution=A0 or copying=A0 of=A0 this=A0 email is not
-authorised (either explicitly or implicitly) and=A0 constitutes=A0 an
-irritating=A0 social=A0 faux=A0 pas. Unless the word absquatulation has been
-used in its correct context somewhere=A0 other=A0 than=A0 in=A0 this warnin=
-g,
-it does not have any legal or grammatical use and may be ignored. No
-animals were=A0 harmed=A0 in=A0 the=A0 transmission=A0 of=A0 this email,=A0=
- although
- the=A0 yorkshire=A0 terrier=A0 next door is living on borrowed time, let me
-tell you. Those of you with an overwhelming fear=A0 of=A0 the unknown will
-be gratified to learn that there is no hidden message revealed by
-reading=A0 this=A0 warning=A0 backwards,=A0 so just ignore that Alert Notice
-from Microsoft: However, by pouring a complete circle of salt around
-yourself and your=A0 computer=A0 you can=A0 ensure=A0 that=A0 no harm befal=
-ls
-you and your pets.
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--CSNFvL6ilyiKL/Hs
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (NetBSD)
+
+iQCVAwUBTH5lpKkuBuNlUUl1AQLtvAQAi0Q6Kbdyu4Dh3I8KN5odcejYPq2zYjHA
+v+JjnG7vrwINMjM6RDN0kbnEqqWpNB+1O7xaf/I6xk55OUO2ZXrmNjGcyrvfcRQo
+x73H2YjnWGTqMbW1GOceieDsJ4ubLLz8FctyR0bwBqlD4HsK+gE4X67VIuwAKqSP
+29d/tPmX0KY=
+=JnuA
+-----END PGP SIGNATURE-----
+
+--CSNFvL6ilyiKL/Hs--
 
