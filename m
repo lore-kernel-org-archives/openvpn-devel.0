@@ -1,8 +1,11 @@
-Message-ID: <4C7F4F7F.80102@...515...>
-Date: Thu, 02 Sep 2010 10:17:19 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+From: Stefan Monnier <monnier@...1282...>
+Message-ID: <jwvmxs0a8vh.fsf-monnier+inbox@...1269...>
+References: <4C7EEF40.1050100@...1299...>
+Date: Thu, 02 Sep 2010 09:44:03 +0200
+In-Reply-To: <4C7EEF40.1050100@...1299...> (Jason Haar's message of "Thu,
+	02 Sep 2010 12:26:40 +1200")
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Topics for today's meeting
+Subject: Re: [Openvpn-devel] openvpn and dll hijacking?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,25 +14,17 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+To: Jason Haar <Jason.Haar@...1299...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+> Having apps that can't be tricked into downloading random DLLs from
+> strange websites would certainly be a good thing ;-)
 
-Here are some topics for today's meeting (18:00 UTC,
-#openvpn-devel@...1334...).
+Upgrade to a sane system, like GNU/Linux and all your apps will be fixed
+in one fell swoop,
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2010-09-02>
 
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
+        Stefan
 
