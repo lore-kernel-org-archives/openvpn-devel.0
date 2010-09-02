@@ -1,8 +1,10 @@
-Message-ID: <4C7EEF40.1050100@...1299...>
-Date: Thu, 02 Sep 2010 12:26:40 +1200
-From: Jason Haar <Jason.Haar@...1299...>
+Message-ID: <20100902025621.19053.qmail@...1287...>
+Date: Thu, 2 Sep 2010 04:56:21 +0200
+From: Peter Stuge <peter@...1287...>
+References: <AANLkTinjxHX-3baqYZARRT3SpYae8a-44CXNPkTXBXtC@...278...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] openvpn and dll hijacking?
+In-Reply-To: <AANLkTinjxHX-3baqYZARRT3SpYae8a-44CXNPkTXBXtC@...278...>
+Subject: Re: [Openvpn-devel] Compiling OpenVPN for Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,25 +13,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
- While we're on the topic of Windows compiles, has there being an audit
-of DLL-dependencies in openvpn?
+Allan Swanepoel wrote:
+> I have a small customization that I make to the openvpn sourcecode to
+> call external software on initialization, and would like to build a
+> Windows build with this in.
 
-I'm thinking about the nightmare that is DLL Hijacking
-(http://isc.sans.edu/diary.html?storyid=9445)
+Maybe your Linux distribution offers a simple way to install a
+cross-compiler. Find out which host tuple you should use and then
+do something like:
 
-Having apps that can't be tricked into downloading random DLLs from
-strange websites would certainly be a good thing ;-)
+./configure --host=i686-mingw32 --prefix=/tmp/openvpn && make install
 
--- 
-Cheers
+in order to cross-compile openvpn sources. As Gert pointed out,
+binaries built with MinGW use public domain headers for the Win32 API
+implemented by Microsoft's runtime, so no dependency that is not met
+by any Windows system.
 
-Jason Haar
-Information Security Manager, Trimble Navigation Ltd.
-Phone: +64 3 9635 377 Fax: +64 3 9635 417
-PGP Fingerprint: 7A2E 0407 C9A6 CAF6 2B9F 8422 C063 5EBB FE1D 66D1
 
+//Peter
 
