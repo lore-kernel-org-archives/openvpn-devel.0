@@ -1,10 +1,10 @@
 From: Heiko Hund <hhund@...194...>
-Date: Fri, 3 Sep 2010 08:51:03 +0200
-References: <AANLkTina=B8Z8v2euOJYjZxMQhJ9WB6UMdY0qtnc_qyT@...278...>
-In-Reply-To: <AANLkTina=B8Z8v2euOJYjZxMQhJ9WB6UMdY0qtnc_qyT@...278...>
+Date: Fri, 3 Sep 2010 13:15:23 +0200
+References: <4C7EEF40.1050100@...1299...>
+In-Reply-To: <4C7EEF40.1050100@...1299...>
 MIME-Version: 1.0
-Message-Id: <201009030851.28881.hhund@...194...>
-Subject: Re: [Openvpn-devel] My results of OpenVPN Benchmarking
+Message-Id: <201009031315.23680.hhund@...194...>
+Subject: Re: [Openvpn-devel] openvpn and dll hijacking?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,22 +13,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: Text/Plain; charset="iso-8859-15"
+Content-Type: Text/Plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-Hi Ansis,
+Hi,
 
-On Thursday 26 August 2010 19:56:56 Ansis Atteka wrote:
-> 4. During a OpenVPN 1200 client bomb test I observed that OpenVPN stalled
-> with 100% CPU. In the openvpn log I saw that there are too many opened
-> files (output of "ls /proc/PID/fd | wc -l" showed that there were 1027
-> opened files). The bad thing is that killing all those 1200 clients did
-> not help the OpenVPN server to recover and it remained in stall state. It
-> looks like a bug for me.
+On Thursday 02 September 2010 02:26:40 Jason Haar wrote:
+>  While we're on the topic of Windows compiles, has there being an audit
+> of DLL-dependencies in openvpn?
 
-If you used --proto tcp it probably just were the connected sockets.
+OpenVPN-GUI is not affected. I just checked with the instruction from=20
+http://msdn.microsoft.com/en-us/library/ff919712%28VS.85%29.aspx.
 
+It dynamically loads two libraries with the WIN32 API LoadLibrary function=
+=20
+during startup, shell32.dll and riched20.dll. shell32.dll is listed below t=
+he=20
+HKLM/System/CurrentControlSet/Control/Session Manager/KnownDLLs registry ke=
+y=20
+and therefore save. riched20.dll is part of any sane Windows installation a=
+nd=20
+located in the system32 folder. However, both are loaded without specifying=
+=20
+the complete path. I'll fix that soon, just for the sake of best practise.
+
+If you use Dependency Walker on the binary with an up to date Windows XP,=20
+you'll see that two .dlls can not be found, ieshims.dll and wer.dll. Both a=
+re=20
+a 5th level dependency coming from shell32.dll. Procmon didn't show any=20
+unsuccessful attempts to load them, though. They are part of Windows starti=
+ng=20
+from Vista.
+
+Regards
 Heiko
 --=20
 Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
