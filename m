@@ -1,10 +1,12 @@
-From: Heiko Hund <hhund@...194...>
-Date: Fri, 3 Sep 2010 13:15:23 +0200
-References: <4C7EEF40.1050100@...1299...>
-In-Reply-To: <4C7EEF40.1050100@...1299...>
 MIME-Version: 1.0
-Message-Id: <201009031315.23680.hhund@...194...>
-Subject: Re: [Openvpn-devel] openvpn and dll hijacking?
+In-Reply-To: <201009030851.28881.hhund@...194...>
+References: <AANLkTina=B8Z8v2euOJYjZxMQhJ9WB6UMdY0qtnc_qyT@...278...>
+	<201009030851.28881.hhund@...194...>
+Date: Fri, 3 Sep 2010 10:37:58 -0700
+Message-ID: <AANLkTintc4F9CBaR8itY6fPDPuQ7aC7OyxLsygTDO1Mp@...278...>
+From: Ansis Atteka <ansisatteka.dev@...277...>
+Content-Type: multipart/alternative; boundary=001636af020945437e048f5e648c
+Subject: Re: [Openvpn-devel] My results of OpenVPN Benchmarking
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,48 +15,99 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: Text/Plain; charset="iso-8859-1"
+To: Heiko Hund <hhund@...194...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--001636af020945437e048f5e648c
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Yes those files were TCP sockets, and I was using "--proto tcp" option. I
+did not observe this issue for UDP, because it is connectionless protocol.
 
-On Thursday 02 September 2010 02:26:40 Jason Haar wrote:
->  While we're on the topic of Windows compiles, has there being an audit
-> of DLL-dependencies in openvpn?
+But the bad thing is that OpenVPN did not recover even after I killed all
+those 1200 clients and OpenVPN server continued to consume CPU at 100%
+(because ep_poll() returned immediately and was infinitely looping), while
+network load was 0. It would be nice that OpenVPN would be able to recover
+after all VPN clients are killed in TCP mode.
 
-OpenVPN-GUI is not affected. I just checked with the instruction from=20
-http://msdn.microsoft.com/en-us/library/ff919712%28VS.85%29.aspx.
+Ansis Atteka
 
-It dynamically loads two libraries with the WIN32 API LoadLibrary function=
-=20
-during startup, shell32.dll and riched20.dll. shell32.dll is listed below t=
-he=20
-HKLM/System/CurrentControlSet/Control/Session Manager/KnownDLLs registry ke=
-y=20
-and therefore save. riched20.dll is part of any sane Windows installation a=
-nd=20
-located in the system32 folder. However, both are loaded without specifying=
-=20
-the complete path. I'll fix that soon, just for the sake of best practise.
+On Thu, Sep 2, 2010 at 11:51 PM, Heiko Hund <hhund@...194...> wrote:
 
-If you use Dependency Walker on the binary with an up to date Windows XP,=20
-you'll see that two .dlls can not be found, ieshims.dll and wer.dll. Both a=
-re=20
-a 5th level dependency coming from shell32.dll. Procmon didn't show any=20
-unsuccessful attempts to load them, though. They are part of Windows starti=
-ng=20
-from Vista.
+> Hi Ansis,
+>
+> On Thursday 26 August 2010 19:56:56 Ansis Atteka wrote:
+> > 4. During a OpenVPN 1200 client bomb test I observed that OpenVPN stall=
+ed
+> > with 100% CPU. In the openvpn log I saw that there are too many opened
+> > files (output of "ls /proc/PID/fd | wc -l" showed that there were 1027
+> > opened files). The bad thing is that killing all those 1200 clients did
+> > not help the OpenVPN server to recover and it remained in stall state. =
+It
+> > looks like a bug for me.
+>
+> If you used --proto tcp it probably just were the connected sockets.
+>
+> Heiko
+> --
+> Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
+> Astaro GmbH & Co. KG | An der RaumFabrik 33a | 76227 Karlsruhe | Germany
+> Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
+>
+> Represented by the General Partner Astaro Verwaltungs GmbH
+> An der RaumFabrik 33a | 76227 Karlsruhe | Germany
+> Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
+> Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
+>
 
-Regards
-Heiko
---=20
-Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
-Astaro GmbH & Co. KG | An der RaumFabrik 33a | 76227 Karlsruhe | Germany
-Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
-=20
-Represented by the General Partner Astaro Verwaltungs GmbH
-An der RaumFabrik 33a | 76227 Karlsruhe | Germany=20
-Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
-Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
+--001636af020945437e048f5e648c
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Yes those files were TCP sockets, and I was using &quot;--proto tcp&quot; o=
+ption. I did not observe this issue for UDP, because it is connectionless p=
+rotocol.<br><br>But the bad thing is that OpenVPN did not recover even afte=
+r I killed all those 1200 clients and OpenVPN server continued to consume C=
+PU at 100% (because ep_poll() returned immediately and was infinitely loopi=
+ng), while network load was 0. It would be nice that OpenVPN would be able =
+to recover after all VPN clients are killed in TCP mode.<br>
+<br>Ansis Atteka<br><br><div class=3D"gmail_quote">On Thu, Sep 2, 2010 at 1=
+1:51 PM, Heiko Hund <span dir=3D"ltr">&lt;<a href=3D"mailto:hhund@...194...=
+">hhund@...194...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote=
+" style=3D"margin: 0pt 0pt 0pt 0.8ex; border-left: 1px solid rgb(204, 204, =
+204); padding-left: 1ex;">
+Hi Ansis,<br>
+<div class=3D"im"><br>
+On Thursday 26 August 2010 19:56:56 Ansis Atteka wrote:<br>
+&gt; 4. During a OpenVPN 1200 client bomb test I observed that OpenVPN stal=
+led<br>
+&gt; with 100% CPU. In the openvpn log I saw that there are too many opened=
+<br>
+&gt; files (output of &quot;ls /proc/PID/fd | wc -l&quot; showed that there=
+ were 1027<br>
+&gt; opened files). The bad thing is that killing all those 1200 clients di=
+d<br>
+&gt; not help the OpenVPN server to recover and it remained in stall state.=
+ It<br>
+&gt; looks like a bug for me.<br>
+<br>
+</div>If you used --proto tcp it probably just were the connected sockets.<=
+br>
+<br>
+Heiko<br>
+--<br>
+Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200<br>
+Astaro GmbH &amp; Co. KG | An der RaumFabrik 33a | 76227 Karlsruhe | German=
+y<br>
+Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe<=
+br>
+<br>
+Represented by the General Partner Astaro Verwaltungs GmbH<br>
+An der RaumFabrik 33a | 76227 Karlsruhe | Germany<br>
+Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,<br>
+Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen<br>
+</blockquote></div><br>
+
+--001636af020945437e048f5e648c--
 
