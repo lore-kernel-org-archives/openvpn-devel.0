@@ -1,12 +1,10 @@
 MIME-Version: 1.0
-In-Reply-To: <201009030851.28881.hhund@...194...>
-References: <AANLkTina=B8Z8v2euOJYjZxMQhJ9WB6UMdY0qtnc_qyT@...278...>
-	<201009030851.28881.hhund@...194...>
-Date: Fri, 3 Sep 2010 10:37:58 -0700
-Message-ID: <AANLkTintc4F9CBaR8itY6fPDPuQ7aC7OyxLsygTDO1Mp@...278...>
-From: Ansis Atteka <ansisatteka.dev@...277...>
-Content-Type: multipart/alternative; boundary=001636af020945437e048f5e648c
-Subject: Re: [Openvpn-devel] My results of OpenVPN Benchmarking
+Sender: ichiga2@...277...
+From: Kazuyoshi Aizawa <admin2@...628...>
+Date: Mon, 6 Sep 2010 23:13:09 +0900
+Message-ID: <AANLkTiko6XdjTaNL_y5=+mAXUjHE4A22tPQcc14tqu-s@...278...>
+Content-Type: multipart/mixed; boundary=000e0cd4d40cd2b121048f97e3c0
+Subject: [Openvpn-devel] [PATCH] TAP driver for Solaris patch
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,99 +13,159 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Heiko Hund <hhund@...194...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---001636af020945437e048f5e648c
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+--000e0cd4d40cd2b121048f97e3c0
+Content-Type: multipart/alternative; boundary=000e0cd4d40cd2b11b048f97e3be
 
-Yes those files were TCP sockets, and I was using "--proto tcp" option. I
-did not observe this issue for UDP, because it is connectionless protocol.
+--000e0cd4d40cd2b11b048f97e3be
+Content-Type: text/plain; charset=ISO-8859-1
 
-But the bad thing is that OpenVPN did not recover even after I killed all
-those 1200 clients and OpenVPN server continued to consume CPU at 100%
-(because ep_poll() returned immediately and was infinitely looping), while
-network load was 0. It would be nice that OpenVPN would be able to recover
-after all VPN clients are killed in TCP mode.
+Hi all,
 
-Ansis Atteka
+I attached a patch for OpenVPN 2.1.3 to support TAP driver for Solaris.
+Also, you can find the patch as well as TAP driver here.
+     http://www.whiteboard.ne.jp/~admin2/tuntap/<http://www.whiteboard.ne.jp/%7Eadmin2/tuntap/>
 
-On Thu, Sep 2, 2010 at 11:51 PM, Heiko Hund <hhund@...194...> wrote:
+Regards,
 
-> Hi Ansis,
->
-> On Thursday 26 August 2010 19:56:56 Ansis Atteka wrote:
-> > 4. During a OpenVPN 1200 client bomb test I observed that OpenVPN stall=
-ed
-> > with 100% CPU. In the openvpn log I saw that there are too many opened
-> > files (output of "ls /proc/PID/fd | wc -l" showed that there were 1027
-> > opened files). The bad thing is that killing all those 1200 clients did
-> > not help the OpenVPN server to recover and it remained in stall state. =
-It
-> > looks like a bug for me.
->
-> If you used --proto tcp it probably just were the connected sockets.
->
-> Heiko
-> --
-> Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
-> Astaro GmbH & Co. KG | An der RaumFabrik 33a | 76227 Karlsruhe | Germany
-> Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
->
-> Represented by the General Partner Astaro Verwaltungs GmbH
-> An der RaumFabrik 33a | 76227 Karlsruhe | Germany
-> Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
-> Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
->
+Kazuyoshi
 
---001636af020945437e048f5e648c
+--000e0cd4d40cd2b11b048f97e3be
 Content-Type: text/html; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-Yes those files were TCP sockets, and I was using &quot;--proto tcp&quot; o=
-ption. I did not observe this issue for UDP, because it is connectionless p=
-rotocol.<br><br>But the bad thing is that OpenVPN did not recover even afte=
-r I killed all those 1200 clients and OpenVPN server continued to consume C=
-PU at 100% (because ep_poll() returned immediately and was infinitely loopi=
-ng), while network load was 0. It would be nice that OpenVPN would be able =
-to recover after all VPN clients are killed in TCP mode.<br>
-<br>Ansis Atteka<br><br><div class=3D"gmail_quote">On Thu, Sep 2, 2010 at 1=
-1:51 PM, Heiko Hund <span dir=3D"ltr">&lt;<a href=3D"mailto:hhund@...194...=
-">hhund@...194...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote=
-" style=3D"margin: 0pt 0pt 0pt 0.8ex; border-left: 1px solid rgb(204, 204, =
-204); padding-left: 1ex;">
-Hi Ansis,<br>
-<div class=3D"im"><br>
-On Thursday 26 August 2010 19:56:56 Ansis Atteka wrote:<br>
-&gt; 4. During a OpenVPN 1200 client bomb test I observed that OpenVPN stal=
-led<br>
-&gt; with 100% CPU. In the openvpn log I saw that there are too many opened=
+Hi all,<br>
 <br>
-&gt; files (output of &quot;ls /proc/PID/fd | wc -l&quot; showed that there=
- were 1027<br>
-&gt; opened files). The bad thing is that killing all those 1200 clients di=
-d<br>
-&gt; not help the OpenVPN server to recover and it remained in stall state.=
- It<br>
-&gt; looks like a bug for me.<br>
-<br>
-</div>If you used --proto tcp it probably just were the connected sockets.<=
-br>
-<br>
-Heiko<br>
---<br>
-Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200<br>
-Astaro GmbH &amp; Co. KG | An der RaumFabrik 33a | 76227 Karlsruhe | German=
-y<br>
-Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe<=
-br>
-<br>
-Represented by the General Partner Astaro Verwaltungs GmbH<br>
-An der RaumFabrik 33a | 76227 Karlsruhe | Germany<br>
-Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,<br>
-Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen<br>
-</blockquote></div><br>
+I attached a patch for OpenVPN 2.1.3 to support TAP driver for Solaris. <br>
+Also, you can find the patch as well as TAP driver here. <br>
+ =A0 =A0 =A0<a href=3D"http://www.whiteboard.ne.jp/%7Eadmin2/tuntap/" targe=
+t=3D"_blank">http://www.whiteboard.ne.jp/~admin2/tuntap/</a><br><br>Regards=
+,<br><br>Kazuyoshi <br>
 
---001636af020945437e048f5e648c--
+--000e0cd4d40cd2b11b048f97e3be--
+
+--000e0cd4d40cd2b121048f97e3c0
+Content-Type: application/octet-stream; name="patch.openvpn-2.1.3.tun.c"
+Content-Disposition: attachment; filename="patch.openvpn-2.1.3.tun.c"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_gdrerm340
+
+LS0tIHR1bi5jLjIuMS4zCTIwMTAtMDgtMzEgMDk6NDM6MjIuMDAwMDAwMDAwICswOTAwCisrKyB0
+dW4uYy4yLjEuMy5wYXRjaGVkCTIwMTAtMDgtMzEgMDk6NTI6NDEuMDAwMDAwMDAwICswOTAwCkBA
+IC02Myw2ICs2Myw3IEBACiAKICNpZmRlZiBUQVJHRVRfU09MQVJJUwogc3RhdGljIHZvaWQgc29s
+YXJpc19lcnJvcl9jbG9zZSAoc3RydWN0IHR1bnRhcCAqdHQsIGNvbnN0IHN0cnVjdCBlbnZfc2V0
+ICplcywgY29uc3QgY2hhciAqYWN0dWFsKTsKKyNpbmNsdWRlIDxzdHJvcHRzLmg+CiAjZW5kaWYK
+IAogYm9vbApAQCAtNzAxLDcgKzcwMiwxMyBAQAogCQkJICAgICk7CiAJfQogICAgICAgZWxzZQot
+CW5vX3RhcF9pZmNvbmZpZyAoKTsKKyAgICAgICAgICBhcmd2X3ByaW50ZiAoJmFyZ3YsCisgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgIiAlcyAlcyAlcyBuZXRtYXNrICVzIGJyb2FkY2FzdCAr
+IHVwIiwKKyAgICAgICAgICAgICAgICAgICAgICAgICAgICBJRkNPTkZJR19QQVRILAorICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgIGFjdHVhbCwKKyAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICBpZmNvbmZpZ19sb2NhbCwKKyAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZmNvbmZpZ19y
+ZW1vdGVfbmV0bWFzaworICAgICAgICAgICAgICAgICAgICAgICAgICAgICk7CiAKICAgICAgIGFy
+Z3ZfbXNnIChNX0lORk8sICZhcmd2KTsKICAgICAgIGlmICghb3BlbnZwbl9leGVjdmVfY2hlY2sg
+KCZhcmd2LCBlcywgMCwgIlNvbGFyaXMgaWZjb25maWcgcGhhc2UtMiBmYWlsZWQiKSkKQEAgLTEz
+ODMsMTUgKzEzOTAsMTcgQEAKIHZvaWQKIG9wZW5fdHVuIChjb25zdCBjaGFyICpkZXYsIGNvbnN0
+IGNoYXIgKmRldl90eXBlLCBjb25zdCBjaGFyICpkZXZfbm9kZSwgYm9vbCBpcHY2LCBzdHJ1Y3Qg
+dHVudGFwICp0dCkKIHsKLSAgaW50IGlmX2ZkLCBtdXhpZCwgcHBhID0gLTE7Ci0gIHN0cnVjdCBp
+ZnJlcSBpZnI7CisgIGludCBpZl9mZCwgaXBfbXV4aWQsIGFycF9tdXhpZCwgYXJwX2ZkLCBwcGEg
+PSAtMTsKKyAgc3RydWN0IGxpZnJlcSBpZnI7CiAgIGNvbnN0IGNoYXIgKnB0cjsKLSAgY29uc3Qg
+Y2hhciAqaXBfbm9kZTsKKyAgY29uc3QgY2hhciAqaXBfbm9kZSwgKmFycF9ub2RlOwogICBjb25z
+dCBjaGFyICpkZXZfdHVudGFwX3R5cGU7CiAgIGludCBsaW5rX3R5cGU7CiAgIGJvb2wgaXNfdHVu
+OworICBzdHJ1Y3Qgc3RyaW9jdGwgIHN0cmlvY19pZiwgc3RyaW9jX3BwYTsKIAotICBpcHY2X3N1
+cHBvcnQgKGlwdjYsIGZhbHNlLCB0dCk7CisgIGlwdjZfc3VwcG9ydCAoaXB2NiwgdHJ1ZSwgdHQp
+OworICBtZW1zZXQoJmlmciwgMHgwLCBzaXplb2YoaWZyKSk7CiAKICAgaWYgKHR0LT50eXBlID09
+IERFVl9UWVBFX05VTEwpCiAgICAgewpAQCAtMTQxMCw5ICsxNDE5LDEwIEBACiAgICAgfQogICBl
+bHNlIGlmICh0dC0+dHlwZSA9PSBERVZfVFlQRV9UQVApCiAgICAgewotICAgICAgaXBfbm9kZSA9
+ICIvZGV2L2lwIjsKKyAgICAgIGlwX25vZGUgPSAiL2Rldi91ZHAiOwogICAgICAgaWYgKCFkZXZf
+bm9kZSkKIAlkZXZfbm9kZSA9ICIvZGV2L3RhcCI7CisgICAgICBhcnBfbm9kZSA9IGRldl9ub2Rl
+OwogICAgICAgZGV2X3R1bnRhcF90eXBlID0gInRhcCI7CiAgICAgICBsaW5rX3R5cGUgPSBJX1BM
+SU5LOyAvKiB3YXM6IElfTElOSyAqLwogICAgICAgaXNfdHVuID0gZmFsc2U7CkBAIC0xNDM5LDcg
+KzE0NDksMTEgQEAKICAgICBtc2cgKE1fRVJSLCAiQ2FuJ3Qgb3BlbiAlcyIsIGRldl9ub2RlKTsK
+IAogICAvKiBBc3NpZ24gYSBuZXcgUFBBIGFuZCBnZXQgaXRzIHVuaXQgbnVtYmVyLiAqLwotICBp
+ZiAoKHBwYSA9IGlvY3RsICh0dC0+ZmQsIFRVTk5FV1BQQSwgcHBhKSkgPCAwKQorICBzdHJpb2Nf
+cHBhLmljX2NtZCA9IFRVTk5FV1BQQTsKKyAgc3RyaW9jX3BwYS5pY190aW1vdXQgPSAwOworICBz
+dHJpb2NfcHBhLmljX2xlbiA9IHNpemVvZihwcGEpOworICBzdHJpb2NfcHBhLmljX2RwID0gKGNo
+YXIgKikmcHBhOworICBpZiAoKHBwYSA9IGlvY3RsICh0dC0+ZmQsIElfU1RSLCAmc3RyaW9jX3Bw
+YSkpIDwgMCkKICAgICBtc2cgKE1fRVJSLCAiQ2FuJ3QgYXNzaWduIG5ldyBpbnRlcmZhY2UiKTsK
+IAogICBpZiAoKGlmX2ZkID0gb3BlbiAoZGV2X25vZGUsIE9fUkRXUiwgMCkpIDwgMCkKQEAgLTE0
+NDgsMjcgKzE0NjIsODMgQEAKICAgaWYgKGlvY3RsIChpZl9mZCwgSV9QVVNILCAiaXAiKSA8IDAp
+CiAgICAgbXNnIChNX0VSUiwgIkNhbid0IHB1c2ggSVAgbW9kdWxlIik7CiAKKyAgaWYgKHR0LT50
+eXBlID09IERFVl9UWVBFX1RVTikKKyAgICB7CiAgIC8qIEFzc2lnbiBwcGEgYWNjb3JkaW5nIHRv
+IHRoZSB1bml0IG51bWJlciByZXR1cm5lZCBieSB0dW4gZGV2aWNlICovCiAgIGlmIChpb2N0bCAo
+aWZfZmQsIElGX1VOSVRTRUwsIChjaGFyICopICZwcGEpIDwgMCkKICAgICBtc2cgKE1fRVJSLCAi
+Q2FuJ3Qgc2V0IFBQQSAlZCIsIHBwYSk7Ci0KLSAgaWYgKChtdXhpZCA9IGlvY3RsICh0dC0+aXBf
+ZmQsIGxpbmtfdHlwZSwgaWZfZmQpKSA8IDApCi0gICAgbXNnIChNX0VSUiwgIkNhbid0IGxpbmsg
+JXMgZGV2aWNlIHRvIElQIiwgZGV2X3R1bnRhcF90eXBlKTsKLQotICBjbG9zZSAoaWZfZmQpOwor
+ICAgIH0KIAogICB0dC0+YWN0dWFsX25hbWUgPSAoY2hhciAqKSBtYWxsb2MgKDMyKTsKICAgY2hl
+Y2tfbWFsbG9jX3JldHVybiAodHQtPmFjdHVhbF9uYW1lKTsKIAogICBvcGVudnBuX3NucHJpbnRm
+ICh0dC0+YWN0dWFsX25hbWUsIDMyLCAiJXMlZCIsIGRldl90dW50YXBfdHlwZSwgcHBhKTsKIAor
+ICBpZiAodHQtPnR5cGUgPT0gREVWX1RZUEVfVEFQKQorICAgIHsKKyAgICAgICAgICBpZiAoaW9j
+dGwoaWZfZmQsIFNJT0NHTElGRkxBR1MsICZpZnIpIDwgMCkKKyAgICAgICAgICAgIG1zZyAoTV9F
+UlIsICJDYW4ndCBnZXQgZmxhZ3NcbiIpOworICAgICAgICAgIHN0cm5jcHludCAoaWZyLmxpZnJf
+bmFtZSwgdHQtPmFjdHVhbF9uYW1lLCBzaXplb2YgKGlmci5saWZyX25hbWUpKTsKKyAgICAgICAg
+ICBpZnIubGlmcl9wcGEgPSBwcGE7CisgICAgICAgICAgLyogQXNzaWduIHBwYSBhY2NvcmRpbmcg
+dG8gdGhlIHVuaXQgbnVtYmVyIHJldHVybmVkIGJ5IHR1biBkZXZpY2UgKi8KKyAgICAgICAgICBp
+ZiAoaW9jdGwgKGlmX2ZkLCBTSU9DU0xJRk5BTUUsICZpZnIpIDwgMCkKKyAgICAgICAgICAgIG1z
+ZyAoTV9FUlIsICJDYW4ndCBzZXQgUFBBICVkIiwgcHBhKTsKKyAgICAgICAgICBpZiAoaW9jdGwo
+aWZfZmQsIFNJT0NHTElGRkxBR1MsICZpZnIpIDwwKQorICAgICAgICAgICAgbXNnIChNX0VSUiwg
+IkNhbid0IGdldCBmbGFnc1xuIik7CisgICAgICAgICAgLyogUHVzaCBhcnAgbW9kdWxlIHRvIGlm
+X2ZkICovCisgICAgICAgICAgaWYgKGlvY3RsIChpZl9mZCwgSV9QVVNILCAiYXJwIikgPCAwKQor
+ICAgICAgICAgICAgbXNnIChNX0VSUiwgIkNhbid0IHB1c2ggQVJQIG1vZHVsZSIpOworCisgICAg
+ICAgICAgLyogUG9wIGFueSBtb2R1bGVzIG9uIHRoZSBzdHJlYW0gKi8KKyAgICAgICAgICB3aGls
+ZSAodHJ1ZSkKKyAgICAgICAgICAgIHsKKyAgICAgICAgICAgICAgICAgaWYgKGlvY3RsICh0dC0+
+aXBfZmQsIElfUE9QLCBOVUxMKSA8IDApCisgICAgICAgICAgICAgICAgICAgICBicmVhazsKKyAg
+ICAgICAgICAgIH0KKyAgICAgICAgICAvKiBQdXNoIGFycCBtb2R1bGUgdG8gaXBfZmQgKi8KKyAg
+ICAgICAgICBpZiAoaW9jdGwgKHR0LT5pcF9mZCwgSV9QVVNILCAiYXJwIikgPCAwKQorICAgICAg
+ICAgICAgbXNnIChNX0VSUiwgIkNhbid0IHB1c2ggQVJQIG1vZHVsZVxuIik7CisKKyAgICAgICAg
+ICAvKiBPcGVuIGFycF9mZCAqLworICAgICAgICAgIGlmICgoYXJwX2ZkID0gb3BlbiAoYXJwX25v
+ZGUsIE9fUkRXUiwgMCkpIDwgMCkKKyAgICAgICAgICAgIG1zZyAoTV9FUlIsICJDYW4ndCBvcGVu
+ICVzXG4iLCBhcnBfbm9kZSk7CisgICAgICAgICAgLyogUHVzaCBhcnAgbW9kdWxlIHRvIGFycF9m
+ZCAqLworICAgICAgICAgIGlmIChpb2N0bCAoYXJwX2ZkLCBJX1BVU0gsICJhcnAiKSA8IDApCisg
+ICAgICAgICAgICBtc2cgKE1fRVJSLCAiQ2FuJ3QgcHVzaCBBUlAgbW9kdWxlXG4iKTsKKworICAg
+ICAgICAgIC8qIFNldCBpZm5hbWUgdG8gYXJwICovCisgICAgICAgICAgc3RyaW9jX2lmLmljX2Nt
+ZCA9IFNJT0NTTElGTkFNRTsKKyAgICAgICAgICBzdHJpb2NfaWYuaWNfdGltb3V0ID0gMDsKKyAg
+ICAgICAgICBzdHJpb2NfaWYuaWNfbGVuID0gc2l6ZW9mKGlmcik7CisgICAgICAgICAgc3RyaW9j
+X2lmLmljX2RwID0gKGNoYXIgKikmaWZyOworICAgICAgICAgIGlmIChpb2N0bChhcnBfZmQsIElf
+U1RSLCAmc3RyaW9jX2lmKSA8IDApeworICAgICAgICAgICAgICBtc2cgKE1fRVJSLCAiQ2FuJ3Qg
+c2V0IGlmbmFtZSB0byBhcnBcbiIpOworICAgICAgICAgIH0KKyAgIH0KKworICBpZiAoKGlwX211
+eGlkID0gaW9jdGwgKHR0LT5pcF9mZCwgbGlua190eXBlLCBpZl9mZCkpIDwgMCkKKyAgICBtc2cg
+KE1fRVJSLCAiQ2FuJ3QgbGluayAlcyBkZXZpY2UgdG8gSVAiLCBkZXZfdHVudGFwX3R5cGUpOwor
+CisgIGlmICh0dC0+dHlwZSA9PSBERVZfVFlQRV9UQVApIHsKKyAgICAgICAgICBpZiAoKGFycF9t
+dXhpZCA9IGlvY3RsICh0dC0+aXBfZmQsIGxpbmtfdHlwZSwgYXJwX2ZkKSkgPCAwKQorICAgICAg
+ICAgICAgbXNnIChNX0VSUiwgIkNhbid0IGxpbmsgJXMgZGV2aWNlIHRvIEFSUCIsIGRldl90dW50
+YXBfdHlwZSk7CisgICAgICAgICAgY2xvc2UgKGFycF9mZCk7CisgIH0KKwogICBDTEVBUiAoaWZy
+KTsKLSAgc3RybmNweW50IChpZnIuaWZyX25hbWUsIHR0LT5hY3R1YWxfbmFtZSwgc2l6ZW9mIChp
+ZnIuaWZyX25hbWUpKTsKLSAgaWZyLmlmcl9pcF9tdXhpZCA9IG11eGlkOworICBzdHJuY3B5bnQg
+KGlmci5saWZyX25hbWUsIHR0LT5hY3R1YWxfbmFtZSwgc2l6ZW9mIChpZnIubGlmcl9uYW1lKSk7
+CisgIGlmci5saWZyX2lwX211eGlkICA9IGlwX211eGlkOworICBpZiAodHQtPnR5cGUgPT0gREVW
+X1RZUEVfVEFQKSB7CisgICAgICAgICAgaWZyLmxpZnJfYXJwX211eGlkID0gYXJwX211eGlkOwor
+ICB9CiAKLSAgaWYgKGlvY3RsICh0dC0+aXBfZmQsIFNJT0NTSUZNVVhJRCwgJmlmcikgPCAwKQor
+ICBpZiAoaW9jdGwgKHR0LT5pcF9mZCwgU0lPQ1NMSUZNVVhJRCwgJmlmcikgPCAwKQogICAgIHsK
+LSAgICAgIGlvY3RsICh0dC0+aXBfZmQsIElfUFVOTElOSywgbXV4aWQpOworICAgICAgaWYgKHR0
+LT50eXBlID09IERFVl9UWVBFX1RBUCkKKyAgICAgICAgeworICAgICAgICAgICAgICBpb2N0bCAo
+dHQtPmlwX2ZkLCBJX1BVTkxJTksgLCBhcnBfbXV4aWQpOworICAgICAgICB9CisgICAgICBpb2N0
+bCAodHQtPmlwX2ZkLCBJX1BVTkxJTkssIGlwX211eGlkKTsKICAgICAgIG1zZyAoTV9FUlIsICJD
+YW4ndCBzZXQgbXVsdGlwbGV4b3IgaWQiKTsKICAgICB9CiAKQEAgLTE0ODYsMTggKzE1NTYsMjQg
+QEAKICAgICB7CiAgICAgICBpZiAodHQtPmlwX2ZkID49IDApCiAJewotCSAgc3RydWN0IGlmcmVx
+IGlmcjsKKyAgICAgICAgICBzdHJ1Y3QgbGlmcmVxIGlmcjsKIAkgIENMRUFSIChpZnIpOwotCSAg
+c3RybmNweW50IChpZnIuaWZyX25hbWUsIHR0LT5hY3R1YWxfbmFtZSwgc2l6ZW9mIChpZnIuaWZy
+X25hbWUpKTsKKyAgICAgICAgICBzdHJuY3B5bnQgKGlmci5saWZyX25hbWUsIHR0LT5hY3R1YWxf
+bmFtZSwgc2l6ZW9mIChpZnIubGlmcl9uYW1lKSk7CiAKLQkgIGlmIChpb2N0bCAodHQtPmlwX2Zk
+LCBTSU9DR0lGRkxBR1MsICZpZnIpIDwgMCkKKyAgICAgICAgICBpZiAoaW9jdGwgKHR0LT5pcF9m
+ZCwgU0lPQ0dMSUZGTEFHUywgJmlmcikgPCAwKQogCSAgICBtc2cgKE1fV0FSTiB8IE1fRVJSTk8s
+ICJDYW4ndCBnZXQgaWZhY2UgZmxhZ3MiKTsKIAotCSAgaWYgKGlvY3RsICh0dC0+aXBfZmQsIFNJ
+T0NHSUZNVVhJRCwgJmlmcikgPCAwKQorICAgICAgICAgIGlmIChpb2N0bCAodHQtPmlwX2ZkLCBT
+SU9DR0xJRk1VWElELCAmaWZyKSA8IDApCiAJICAgIG1zZyAoTV9XQVJOIHwgTV9FUlJOTywgIkNh
+bid0IGdldCBtdWx0aXBsZXhvciBpZCIpOwogCi0JICBpZiAoaW9jdGwgKHR0LT5pcF9mZCwgSV9Q
+VU5MSU5LLCBpZnIuaWZyX2lwX211eGlkKSA8IDApCi0JICAgIG1zZyAoTV9XQVJOIHwgTV9FUlJO
+TywgIkNhbid0IHVubGluayBpbnRlcmZhY2UiKTsKKyAgICAgICAgICBpZiAodHQtPnR5cGUgPT0g
+REVWX1RZUEVfVEFQKQorICAgICAgICAgICAgeworICAgICAgICAgICAgICAgICAgaWYgKGlvY3Rs
+ICh0dC0+aXBfZmQsIElfUFVOTElOSywgaWZyLmxpZnJfYXJwX211eGlkKSA8IDApCisgICAgICAg
+ICAgICAgICAgICAgIG1zZyAoTV9XQVJOIHwgTV9FUlJOTywgIkNhbid0IHVubGluayBpbnRlcmZh
+Y2UoYXJwKSIpOworICAgICAgICAgICAgfQorCisgICAgICAgICAgaWYgKGlvY3RsICh0dC0+aXBf
+ZmQsIElfUFVOTElOSywgaWZyLmxpZnJfaXBfbXV4aWQpIDwgMCkKKyAgICAgICAgICAgIG1zZyAo
+TV9XQVJOIHwgTV9FUlJOTywgIkNhbid0IHVubGluayBpbnRlcmZhY2UoaXApIik7CiAKIAkgIGNs
+b3NlICh0dC0+aXBfZmQpOwogCSAgdHQtPmlwX2ZkID0gLTE7Cg==
+--000e0cd4d40cd2b121048f97e3c0--
 
