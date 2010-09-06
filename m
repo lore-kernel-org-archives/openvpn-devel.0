@@ -1,10 +1,8 @@
+Message-ID: <58460.94.193.81.228.1283805868.squirrel@...1399...>
+Date: Mon, 6 Sep 2010 21:44:28 +0100 (BST)
+From: b.green@...1398...
 MIME-Version: 1.0
-Sender: ichiga2@...277...
-From: Kazuyoshi Aizawa <admin2@...628...>
-Date: Mon, 6 Sep 2010 23:13:09 +0900
-Message-ID: <AANLkTiko6XdjTaNL_y5=+mAXUjHE4A22tPQcc14tqu-s@...278...>
-Content-Type: multipart/mixed; boundary=000e0cd4d40cd2b121048f97e3c0
-Subject: [Openvpn-devel] [PATCH] TAP driver for Solaris patch
+Subject: [Openvpn-devel] DNS Leakage in Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,159 +11,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain;charset=iso-8859-15
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---000e0cd4d40cd2b121048f97e3c0
-Content-Type: multipart/alternative; boundary=000e0cd4d40cd2b11b048f97e3be
+Hello All,
 
---000e0cd4d40cd2b11b048f97e3be
-Content-Type: text/plain; charset=ISO-8859-1
+I have been using OpenVPN for a little while now on the Linux platform and
+suffice to say I think it is great. Recently I began rollout of a company
+VPN service for regular users to access the domain (a Windows Active
+Directory Domain) now this all works fine but the names for internal
+servers (as resolved by the Windows DNS server service) are sometimes not
+resolving. The reason for this is that both the local interface (Wireless
+Network Connection: 192.168.1.100) and the Win32 TAP interface
+(192.168.40.30) both have a DNS Server provided by DHCP. Sometimes windows
+uses one and sometimes it uses the other.
 
-Hi all,
+After some investigating and a few pokes at my machine I found in Windows
+7 and XP (assume Vista but not tested) the way to make windows query the
+correct (VPN assigned) DNS server and not bother with the locally assigned
+one is to change the value of:
 
-I attached a patch for OpenVPN 2.1.3 to support TAP driver for Solaris.
-Also, you can find the patch as well as TAP driver here.
-     http://www.whiteboard.ne.jp/~admin2/tuntap/<http://www.whiteboard.ne.jp/%7Eadmin2/tuntap/>
+HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\{Interface
+GUID}\NameServer
 
-Regards,
+to: 0.0.0.0, on a DHCP assigned interface it is normally an empty string.
+This setting overrides the DhcpNameServer setting and will then allow the
+other interface to handle DNS queries. FYI: Changing the value of
+DhcpNameServer does not work because it is refreshed by Windows.
 
-Kazuyoshi
+I have written a short C# programme that does this on the few test laptops
+we have but more work needs to be done and I would like to implement a
+feature inside OpenVPN.exe if it is perceived as worthwhile for OpenVPN on
+windows.
 
---000e0cd4d40cd2b11b048f97e3be
-Content-Type: text/html; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Another way to make this work is to use Interface Metrics but I have not
+looked at that yet.
 
-Hi all,<br>
-<br>
-I attached a patch for OpenVPN 2.1.3 to support TAP driver for Solaris. <br>
-Also, you can find the patch as well as TAP driver here. <br>
- =A0 =A0 =A0<a href=3D"http://www.whiteboard.ne.jp/%7Eadmin2/tuntap/" targe=
-t=3D"_blank">http://www.whiteboard.ne.jp/~admin2/tuntap/</a><br><br>Regards=
-,<br><br>Kazuyoshi <br>
+The feature would do the following when a successful connection has been
+established:
 
---000e0cd4d40cd2b11b048f97e3be--
+1, Find out what interface is being used for communication with the
+internet (in this case see what interface has the default route) and it's
+corresponding GUID.
+2, Save the current value of the NameServer value (in statically assigned
+interfaces it will not be blank) in a text file, or another value in the
+registry and replace the NameServer value with 0.0.0.0.
 
---000e0cd4d40cd2b121048f97e3c0
-Content-Type: application/octet-stream; name="patch.openvpn-2.1.3.tun.c"
-Content-Disposition: attachment; filename="patch.openvpn-2.1.3.tun.c"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_gdrerm340
+When a connection is dropped or a connection is being re-established the
+nameserver will be returned to the value it was before.
 
-LS0tIHR1bi5jLjIuMS4zCTIwMTAtMDgtMzEgMDk6NDM6MjIuMDAwMDAwMDAwICswOTAwCisrKyB0
-dW4uYy4yLjEuMy5wYXRjaGVkCTIwMTAtMDgtMzEgMDk6NTI6NDEuMDAwMDAwMDAwICswOTAwCkBA
-IC02Myw2ICs2Myw3IEBACiAKICNpZmRlZiBUQVJHRVRfU09MQVJJUwogc3RhdGljIHZvaWQgc29s
-YXJpc19lcnJvcl9jbG9zZSAoc3RydWN0IHR1bnRhcCAqdHQsIGNvbnN0IHN0cnVjdCBlbnZfc2V0
-ICplcywgY29uc3QgY2hhciAqYWN0dWFsKTsKKyNpbmNsdWRlIDxzdHJvcHRzLmg+CiAjZW5kaWYK
-IAogYm9vbApAQCAtNzAxLDcgKzcwMiwxMyBAQAogCQkJICAgICk7CiAJfQogICAgICAgZWxzZQot
-CW5vX3RhcF9pZmNvbmZpZyAoKTsKKyAgICAgICAgICBhcmd2X3ByaW50ZiAoJmFyZ3YsCisgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgIiAlcyAlcyAlcyBuZXRtYXNrICVzIGJyb2FkY2FzdCAr
-IHVwIiwKKyAgICAgICAgICAgICAgICAgICAgICAgICAgICBJRkNPTkZJR19QQVRILAorICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIGFjdHVhbCwKKyAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICBpZmNvbmZpZ19sb2NhbCwKKyAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZmNvbmZpZ19y
-ZW1vdGVfbmV0bWFzaworICAgICAgICAgICAgICAgICAgICAgICAgICAgICk7CiAKICAgICAgIGFy
-Z3ZfbXNnIChNX0lORk8sICZhcmd2KTsKICAgICAgIGlmICghb3BlbnZwbl9leGVjdmVfY2hlY2sg
-KCZhcmd2LCBlcywgMCwgIlNvbGFyaXMgaWZjb25maWcgcGhhc2UtMiBmYWlsZWQiKSkKQEAgLTEz
-ODMsMTUgKzEzOTAsMTcgQEAKIHZvaWQKIG9wZW5fdHVuIChjb25zdCBjaGFyICpkZXYsIGNvbnN0
-IGNoYXIgKmRldl90eXBlLCBjb25zdCBjaGFyICpkZXZfbm9kZSwgYm9vbCBpcHY2LCBzdHJ1Y3Qg
-dHVudGFwICp0dCkKIHsKLSAgaW50IGlmX2ZkLCBtdXhpZCwgcHBhID0gLTE7Ci0gIHN0cnVjdCBp
-ZnJlcSBpZnI7CisgIGludCBpZl9mZCwgaXBfbXV4aWQsIGFycF9tdXhpZCwgYXJwX2ZkLCBwcGEg
-PSAtMTsKKyAgc3RydWN0IGxpZnJlcSBpZnI7CiAgIGNvbnN0IGNoYXIgKnB0cjsKLSAgY29uc3Qg
-Y2hhciAqaXBfbm9kZTsKKyAgY29uc3QgY2hhciAqaXBfbm9kZSwgKmFycF9ub2RlOwogICBjb25z
-dCBjaGFyICpkZXZfdHVudGFwX3R5cGU7CiAgIGludCBsaW5rX3R5cGU7CiAgIGJvb2wgaXNfdHVu
-OworICBzdHJ1Y3Qgc3RyaW9jdGwgIHN0cmlvY19pZiwgc3RyaW9jX3BwYTsKIAotICBpcHY2X3N1
-cHBvcnQgKGlwdjYsIGZhbHNlLCB0dCk7CisgIGlwdjZfc3VwcG9ydCAoaXB2NiwgdHJ1ZSwgdHQp
-OworICBtZW1zZXQoJmlmciwgMHgwLCBzaXplb2YoaWZyKSk7CiAKICAgaWYgKHR0LT50eXBlID09
-IERFVl9UWVBFX05VTEwpCiAgICAgewpAQCAtMTQxMCw5ICsxNDE5LDEwIEBACiAgICAgfQogICBl
-bHNlIGlmICh0dC0+dHlwZSA9PSBERVZfVFlQRV9UQVApCiAgICAgewotICAgICAgaXBfbm9kZSA9
-ICIvZGV2L2lwIjsKKyAgICAgIGlwX25vZGUgPSAiL2Rldi91ZHAiOwogICAgICAgaWYgKCFkZXZf
-bm9kZSkKIAlkZXZfbm9kZSA9ICIvZGV2L3RhcCI7CisgICAgICBhcnBfbm9kZSA9IGRldl9ub2Rl
-OwogICAgICAgZGV2X3R1bnRhcF90eXBlID0gInRhcCI7CiAgICAgICBsaW5rX3R5cGUgPSBJX1BM
-SU5LOyAvKiB3YXM6IElfTElOSyAqLwogICAgICAgaXNfdHVuID0gZmFsc2U7CkBAIC0xNDM5LDcg
-KzE0NDksMTEgQEAKICAgICBtc2cgKE1fRVJSLCAiQ2FuJ3Qgb3BlbiAlcyIsIGRldl9ub2RlKTsK
-IAogICAvKiBBc3NpZ24gYSBuZXcgUFBBIGFuZCBnZXQgaXRzIHVuaXQgbnVtYmVyLiAqLwotICBp
-ZiAoKHBwYSA9IGlvY3RsICh0dC0+ZmQsIFRVTk5FV1BQQSwgcHBhKSkgPCAwKQorICBzdHJpb2Nf
-cHBhLmljX2NtZCA9IFRVTk5FV1BQQTsKKyAgc3RyaW9jX3BwYS5pY190aW1vdXQgPSAwOworICBz
-dHJpb2NfcHBhLmljX2xlbiA9IHNpemVvZihwcGEpOworICBzdHJpb2NfcHBhLmljX2RwID0gKGNo
-YXIgKikmcHBhOworICBpZiAoKHBwYSA9IGlvY3RsICh0dC0+ZmQsIElfU1RSLCAmc3RyaW9jX3Bw
-YSkpIDwgMCkKICAgICBtc2cgKE1fRVJSLCAiQ2FuJ3QgYXNzaWduIG5ldyBpbnRlcmZhY2UiKTsK
-IAogICBpZiAoKGlmX2ZkID0gb3BlbiAoZGV2X25vZGUsIE9fUkRXUiwgMCkpIDwgMCkKQEAgLTE0
-NDgsMjcgKzE0NjIsODMgQEAKICAgaWYgKGlvY3RsIChpZl9mZCwgSV9QVVNILCAiaXAiKSA8IDAp
-CiAgICAgbXNnIChNX0VSUiwgIkNhbid0IHB1c2ggSVAgbW9kdWxlIik7CiAKKyAgaWYgKHR0LT50
-eXBlID09IERFVl9UWVBFX1RVTikKKyAgICB7CiAgIC8qIEFzc2lnbiBwcGEgYWNjb3JkaW5nIHRv
-IHRoZSB1bml0IG51bWJlciByZXR1cm5lZCBieSB0dW4gZGV2aWNlICovCiAgIGlmIChpb2N0bCAo
-aWZfZmQsIElGX1VOSVRTRUwsIChjaGFyICopICZwcGEpIDwgMCkKICAgICBtc2cgKE1fRVJSLCAi
-Q2FuJ3Qgc2V0IFBQQSAlZCIsIHBwYSk7Ci0KLSAgaWYgKChtdXhpZCA9IGlvY3RsICh0dC0+aXBf
-ZmQsIGxpbmtfdHlwZSwgaWZfZmQpKSA8IDApCi0gICAgbXNnIChNX0VSUiwgIkNhbid0IGxpbmsg
-JXMgZGV2aWNlIHRvIElQIiwgZGV2X3R1bnRhcF90eXBlKTsKLQotICBjbG9zZSAoaWZfZmQpOwor
-ICAgIH0KIAogICB0dC0+YWN0dWFsX25hbWUgPSAoY2hhciAqKSBtYWxsb2MgKDMyKTsKICAgY2hl
-Y2tfbWFsbG9jX3JldHVybiAodHQtPmFjdHVhbF9uYW1lKTsKIAogICBvcGVudnBuX3NucHJpbnRm
-ICh0dC0+YWN0dWFsX25hbWUsIDMyLCAiJXMlZCIsIGRldl90dW50YXBfdHlwZSwgcHBhKTsKIAor
-ICBpZiAodHQtPnR5cGUgPT0gREVWX1RZUEVfVEFQKQorICAgIHsKKyAgICAgICAgICBpZiAoaW9j
-dGwoaWZfZmQsIFNJT0NHTElGRkxBR1MsICZpZnIpIDwgMCkKKyAgICAgICAgICAgIG1zZyAoTV9F
-UlIsICJDYW4ndCBnZXQgZmxhZ3NcbiIpOworICAgICAgICAgIHN0cm5jcHludCAoaWZyLmxpZnJf
-bmFtZSwgdHQtPmFjdHVhbF9uYW1lLCBzaXplb2YgKGlmci5saWZyX25hbWUpKTsKKyAgICAgICAg
-ICBpZnIubGlmcl9wcGEgPSBwcGE7CisgICAgICAgICAgLyogQXNzaWduIHBwYSBhY2NvcmRpbmcg
-dG8gdGhlIHVuaXQgbnVtYmVyIHJldHVybmVkIGJ5IHR1biBkZXZpY2UgKi8KKyAgICAgICAgICBp
-ZiAoaW9jdGwgKGlmX2ZkLCBTSU9DU0xJRk5BTUUsICZpZnIpIDwgMCkKKyAgICAgICAgICAgIG1z
-ZyAoTV9FUlIsICJDYW4ndCBzZXQgUFBBICVkIiwgcHBhKTsKKyAgICAgICAgICBpZiAoaW9jdGwo
-aWZfZmQsIFNJT0NHTElGRkxBR1MsICZpZnIpIDwwKQorICAgICAgICAgICAgbXNnIChNX0VSUiwg
-IkNhbid0IGdldCBmbGFnc1xuIik7CisgICAgICAgICAgLyogUHVzaCBhcnAgbW9kdWxlIHRvIGlm
-X2ZkICovCisgICAgICAgICAgaWYgKGlvY3RsIChpZl9mZCwgSV9QVVNILCAiYXJwIikgPCAwKQor
-ICAgICAgICAgICAgbXNnIChNX0VSUiwgIkNhbid0IHB1c2ggQVJQIG1vZHVsZSIpOworCisgICAg
-ICAgICAgLyogUG9wIGFueSBtb2R1bGVzIG9uIHRoZSBzdHJlYW0gKi8KKyAgICAgICAgICB3aGls
-ZSAodHJ1ZSkKKyAgICAgICAgICAgIHsKKyAgICAgICAgICAgICAgICAgaWYgKGlvY3RsICh0dC0+
-aXBfZmQsIElfUE9QLCBOVUxMKSA8IDApCisgICAgICAgICAgICAgICAgICAgICBicmVhazsKKyAg
-ICAgICAgICAgIH0KKyAgICAgICAgICAvKiBQdXNoIGFycCBtb2R1bGUgdG8gaXBfZmQgKi8KKyAg
-ICAgICAgICBpZiAoaW9jdGwgKHR0LT5pcF9mZCwgSV9QVVNILCAiYXJwIikgPCAwKQorICAgICAg
-ICAgICAgbXNnIChNX0VSUiwgIkNhbid0IHB1c2ggQVJQIG1vZHVsZVxuIik7CisKKyAgICAgICAg
-ICAvKiBPcGVuIGFycF9mZCAqLworICAgICAgICAgIGlmICgoYXJwX2ZkID0gb3BlbiAoYXJwX25v
-ZGUsIE9fUkRXUiwgMCkpIDwgMCkKKyAgICAgICAgICAgIG1zZyAoTV9FUlIsICJDYW4ndCBvcGVu
-ICVzXG4iLCBhcnBfbm9kZSk7CisgICAgICAgICAgLyogUHVzaCBhcnAgbW9kdWxlIHRvIGFycF9m
-ZCAqLworICAgICAgICAgIGlmIChpb2N0bCAoYXJwX2ZkLCBJX1BVU0gsICJhcnAiKSA8IDApCisg
-ICAgICAgICAgICBtc2cgKE1fRVJSLCAiQ2FuJ3QgcHVzaCBBUlAgbW9kdWxlXG4iKTsKKworICAg
-ICAgICAgIC8qIFNldCBpZm5hbWUgdG8gYXJwICovCisgICAgICAgICAgc3RyaW9jX2lmLmljX2Nt
-ZCA9IFNJT0NTTElGTkFNRTsKKyAgICAgICAgICBzdHJpb2NfaWYuaWNfdGltb3V0ID0gMDsKKyAg
-ICAgICAgICBzdHJpb2NfaWYuaWNfbGVuID0gc2l6ZW9mKGlmcik7CisgICAgICAgICAgc3RyaW9j
-X2lmLmljX2RwID0gKGNoYXIgKikmaWZyOworICAgICAgICAgIGlmIChpb2N0bChhcnBfZmQsIElf
-U1RSLCAmc3RyaW9jX2lmKSA8IDApeworICAgICAgICAgICAgICBtc2cgKE1fRVJSLCAiQ2FuJ3Qg
-c2V0IGlmbmFtZSB0byBhcnBcbiIpOworICAgICAgICAgIH0KKyAgIH0KKworICBpZiAoKGlwX211
-eGlkID0gaW9jdGwgKHR0LT5pcF9mZCwgbGlua190eXBlLCBpZl9mZCkpIDwgMCkKKyAgICBtc2cg
-KE1fRVJSLCAiQ2FuJ3QgbGluayAlcyBkZXZpY2UgdG8gSVAiLCBkZXZfdHVudGFwX3R5cGUpOwor
-CisgIGlmICh0dC0+dHlwZSA9PSBERVZfVFlQRV9UQVApIHsKKyAgICAgICAgICBpZiAoKGFycF9t
-dXhpZCA9IGlvY3RsICh0dC0+aXBfZmQsIGxpbmtfdHlwZSwgYXJwX2ZkKSkgPCAwKQorICAgICAg
-ICAgICAgbXNnIChNX0VSUiwgIkNhbid0IGxpbmsgJXMgZGV2aWNlIHRvIEFSUCIsIGRldl90dW50
-YXBfdHlwZSk7CisgICAgICAgICAgY2xvc2UgKGFycF9mZCk7CisgIH0KKwogICBDTEVBUiAoaWZy
-KTsKLSAgc3RybmNweW50IChpZnIuaWZyX25hbWUsIHR0LT5hY3R1YWxfbmFtZSwgc2l6ZW9mIChp
-ZnIuaWZyX25hbWUpKTsKLSAgaWZyLmlmcl9pcF9tdXhpZCA9IG11eGlkOworICBzdHJuY3B5bnQg
-KGlmci5saWZyX25hbWUsIHR0LT5hY3R1YWxfbmFtZSwgc2l6ZW9mIChpZnIubGlmcl9uYW1lKSk7
-CisgIGlmci5saWZyX2lwX211eGlkICA9IGlwX211eGlkOworICBpZiAodHQtPnR5cGUgPT0gREVW
-X1RZUEVfVEFQKSB7CisgICAgICAgICAgaWZyLmxpZnJfYXJwX211eGlkID0gYXJwX211eGlkOwor
-ICB9CiAKLSAgaWYgKGlvY3RsICh0dC0+aXBfZmQsIFNJT0NTSUZNVVhJRCwgJmlmcikgPCAwKQor
-ICBpZiAoaW9jdGwgKHR0LT5pcF9mZCwgU0lPQ1NMSUZNVVhJRCwgJmlmcikgPCAwKQogICAgIHsK
-LSAgICAgIGlvY3RsICh0dC0+aXBfZmQsIElfUFVOTElOSywgbXV4aWQpOworICAgICAgaWYgKHR0
-LT50eXBlID09IERFVl9UWVBFX1RBUCkKKyAgICAgICAgeworICAgICAgICAgICAgICBpb2N0bCAo
-dHQtPmlwX2ZkLCBJX1BVTkxJTksgLCBhcnBfbXV4aWQpOworICAgICAgICB9CisgICAgICBpb2N0
-bCAodHQtPmlwX2ZkLCBJX1BVTkxJTkssIGlwX211eGlkKTsKICAgICAgIG1zZyAoTV9FUlIsICJD
-YW4ndCBzZXQgbXVsdGlwbGV4b3IgaWQiKTsKICAgICB9CiAKQEAgLTE0ODYsMTggKzE1NTYsMjQg
-QEAKICAgICB7CiAgICAgICBpZiAodHQtPmlwX2ZkID49IDApCiAJewotCSAgc3RydWN0IGlmcmVx
-IGlmcjsKKyAgICAgICAgICBzdHJ1Y3QgbGlmcmVxIGlmcjsKIAkgIENMRUFSIChpZnIpOwotCSAg
-c3RybmNweW50IChpZnIuaWZyX25hbWUsIHR0LT5hY3R1YWxfbmFtZSwgc2l6ZW9mIChpZnIuaWZy
-X25hbWUpKTsKKyAgICAgICAgICBzdHJuY3B5bnQgKGlmci5saWZyX25hbWUsIHR0LT5hY3R1YWxf
-bmFtZSwgc2l6ZW9mIChpZnIubGlmcl9uYW1lKSk7CiAKLQkgIGlmIChpb2N0bCAodHQtPmlwX2Zk
-LCBTSU9DR0lGRkxBR1MsICZpZnIpIDwgMCkKKyAgICAgICAgICBpZiAoaW9jdGwgKHR0LT5pcF9m
-ZCwgU0lPQ0dMSUZGTEFHUywgJmlmcikgPCAwKQogCSAgICBtc2cgKE1fV0FSTiB8IE1fRVJSTk8s
-ICJDYW4ndCBnZXQgaWZhY2UgZmxhZ3MiKTsKIAotCSAgaWYgKGlvY3RsICh0dC0+aXBfZmQsIFNJ
-T0NHSUZNVVhJRCwgJmlmcikgPCAwKQorICAgICAgICAgIGlmIChpb2N0bCAodHQtPmlwX2ZkLCBT
-SU9DR0xJRk1VWElELCAmaWZyKSA8IDApCiAJICAgIG1zZyAoTV9XQVJOIHwgTV9FUlJOTywgIkNh
-bid0IGdldCBtdWx0aXBsZXhvciBpZCIpOwogCi0JICBpZiAoaW9jdGwgKHR0LT5pcF9mZCwgSV9Q
-VU5MSU5LLCBpZnIuaWZyX2lwX211eGlkKSA8IDApCi0JICAgIG1zZyAoTV9XQVJOIHwgTV9FUlJO
-TywgIkNhbid0IHVubGluayBpbnRlcmZhY2UiKTsKKyAgICAgICAgICBpZiAodHQtPnR5cGUgPT0g
-REVWX1RZUEVfVEFQKQorICAgICAgICAgICAgeworICAgICAgICAgICAgICAgICAgaWYgKGlvY3Rs
-ICh0dC0+aXBfZmQsIElfUFVOTElOSywgaWZyLmxpZnJfYXJwX211eGlkKSA8IDApCisgICAgICAg
-ICAgICAgICAgICAgIG1zZyAoTV9XQVJOIHwgTV9FUlJOTywgIkNhbid0IHVubGluayBpbnRlcmZh
-Y2UoYXJwKSIpOworICAgICAgICAgICAgfQorCisgICAgICAgICAgaWYgKGlvY3RsICh0dC0+aXBf
-ZmQsIElfUFVOTElOSywgaWZyLmxpZnJfaXBfbXV4aWQpIDwgMCkKKyAgICAgICAgICAgIG1zZyAo
-TV9XQVJOIHwgTV9FUlJOTywgIkNhbid0IHVubGluayBpbnRlcmZhY2UoaXApIik7CiAKIAkgIGNs
-b3NlICh0dC0+aXBfZmQpOwogCSAgdHQtPmlwX2ZkID0gLTE7Cg==
---000e0cd4d40cd2b121048f97e3c0--
+This may cause a problem with privileges, the OpenVPN user needs to have
+access to registry keys but in most setups (standard service install) this
+is not a problem and a note can be put next to the option notifying the
+user of this restriction.
+
+I have downloaded the latest sources from the Git repo and would like to
+contribute to the community if you feel this feature worthwhile.
+
+I look forward to your comments.
+
+(I can write C and I am familiar with the Windows API)
+
+Ben.
+
 
