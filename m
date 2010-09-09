@@ -1,9 +1,8 @@
-MIME-Version: 1.0
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Thu, 9 Sep 2010 14:42:56 -0400
-Message-ID: <AANLkTimJy1BCQYoQsW0YNAcmqWWEi98hJL_5kCQnhPNt@...278...>
-Content-Type: multipart/alternative; boundary=001636c92745d925c3048fd80089
-Subject: [Openvpn-devel] What changes were made from 2.1.2 to 2.1.3?
+From: <openvpn@...1315...>
+Date: Thu, 09 Sep 2010 18:32:14 -0500
+Message-id: <1284075134535506500@...1315...>
+MIME-version: 1.0
+Subject: [Openvpn-devel] TCP Window Size - Impact on Data Throughput
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,38 +11,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
---001636c92745d925c3048fd80089
-Content-Type: text/plain; charset=ISO-8859-1
+Hi,
 
-The downloads page, http://openvpn.net/index.php/open-source/downloads.html,
-has release 2.1.3 (2010.08.27).
+I can't explain the information below, but hopefully someone a whole bunch =
+smarter than me understands it - as it seems to help with TCP throughput in=
+ OpenVPN (the holy grail??? ... :-)).
 
-However, the release notes linked to on that page,
-http://openvpn.net/changelog-beta.html, only include changes up through
-2.1.2 (2010.08.09). (The Documentation page,
-http://openvpn.net/index.php/open-source/documentation.html, also links to
-the same release notes.)
+I have added some plots and details to an open OpenVPN ticket, located here=
+ ... https://community.openvpn.net/openvpn/ticket/2. And, here is the expla=
+nation to go with it,
 
-What changes were made from 2.1.2 to 2.1.3?
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 
---001636c92745d925c3048fd80089
-Content-Type: text/html; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Here are some results, between two machines in my network. The results note=
+d as "direct" are exactly that - a link between the two machines, without O=
+penVPN running. The "OpenVPN" results are then of course with OpenVPN runni=
+ng (between the same two machines, but traffic over OpenVPN).
+Note the significant impact that the TCP Window size has on OpenVPN perform=
+ance ... any thoughts?
 
-<div>The downloads page, <a href=3D"http://openvpn.net/index.php/open-sourc=
-e/downloads.html">http://openvpn.net/index.php/open-source/downloads.html</=
-a>, has release 2.1.3 (2010.08.27).</div><div><br></div><div>However, the r=
-elease notes linked to on that page, <a href=3D"http://openvpn.net/changelo=
-g-beta.html">http://openvpn.net/changelog-beta.html</a>, only include chang=
-es up through 2.1.2 (2010.08.09). (The Documentation page, <a href=3D"http:=
-//openvpn.net/index.php/open-source/documentation.html">http://openvpn.net/=
-index.php/open-source/documentation.html</a>, also links to the same releas=
-e notes.)</div>
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 
-<div><br></div><div>What changes were made from 2.1.2 to 2.1.3?</div><div><=
-br></div>
+As above, does anyone understand the huge (5-10x or more) impact TCP Window=
+ Size has on OpenVPN throughput? And perhaps more relevant - how do we use =
+this to improve TCP throughput in OpenVPN?
 
---001636c92745d925c3048fd80089--
+Thanks!
+
+... Russell
+
 
