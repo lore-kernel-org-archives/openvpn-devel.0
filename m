@@ -1,8 +1,13 @@
-Message-ID: <4C89DE5A.7090002@...515...>
-Date: Fri, 10 Sep 2010 10:29:30 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 2.2-beta3 released
+Date: Sun, 12 Sep 2010 19:47:19 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20100912174719.GP10703@...1296...>
+References: <1284075134535506500@...1315...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="cycRQitB/3DOnQyb"
+Content-Disposition: inline
+In-Reply-To: <1284075134535506500@...1315...>
+Subject: Re: [Openvpn-devel] TCP Window Size - Impact on Data Throughput
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,194 +16,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
+To: openvpn@...1315...
+Cc: openvpn-devel@lists.sourceforge.net
+
+--cycRQitB/3DOnQyb
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
+Content-Disposition: inline
 
-The OpenVPN community project team is proud to release OpenVPN
-2.2-beta3. It can be downloaded from here:
+Hi,
 
-<http://openvpn.net/index.php/open-source/downloads.html>
+On Thu, Sep 09, 2010 at 06:32:14PM -0500, openvpn@...1315... wrote:
+> I can't explain the information below, but hopefully someone a whole=20
+> bunch smarter than me understands it - as it seems to help with=20
+> TCP throughput in OpenVPN (the holy grail??? ... :-)).
 
-This release contains a number of important new features:
-=20
- - Added IPv6 support to Windows TAP driver
- - auth-pam plugin update: Support DOMAIN+USERNAME in config
- - Added support for passing over SSL certificate fingerprint/digest to
-plugins
- - Improved the logic which gives a filename to the script hooks for
-exchanging data between OpenVPN and the script. OpenVPN will now create
-the file and not just return a supposed to be unique filename.
- - Added an improved example script for doing OCSP checks
- - Enhanced client-up and client-down example scripts
- - Added support for --x509-username-field, defaults to CN but can be
-set to use other X509 certificate elments as username instead.
- - Allow --lport 0, to allow random port binding
- - Implemented http-proxy-override and http-proxy-fallback directives
- - Implemented multi-address DNS expansion on the network field of route
-commands.
- - Added --register-dns option for Windows.
- - Handle non standard subnets in PF grammar
-=20
-In addition there are a large number of new features and bugfixes (see
-below).
-=20
-If you find a bug in this release, please file a bug report to our Trac
-bug tracker (https://community.openvpn.net). In uncertain cases please
-contact our developers first, either using the openvpn-devel mailinglist
-(https://lists.sourceforge.net/mailman/listinfo/openvpn-devel) or the
-developer IRC channel (#openvpn-devel@...1334...).
-=20
----
-=20
-Full list of features and bug fixes included in this release:
-=20
--
-Alberto Gonzalez Iniesta (1):
-      Debian patch: Fix spelling in log message
+Did you change TCP window size on the client, or on the OpenVPN process?
 
-Chantra (3):
-      Fixes openssl-1.0.0 compilation warning
-      Handle non standard subnets in PF grammar
-      Fix errors in openvpn-plugin.h documentation
-=20
-Dan Nelson (1):
-      bash->bourne script cleanup
-=20
-Daniel Johnson (1):
-      auth-pam plugin update: Support DOMAIN+USERNAME in config=20=20
-=20
-David Sommerseth (24):
-      Test framework improvement - Do not FAIL if t_client.rc is missing
-      More t_client.sh updates - exit with SKIP when we want to skip
-      Reworked the eurephia patch for inclusion to the openvpn-testing tree
-      Added mapping files from SVN commit ID to more descriptive commit
-IDs.
-      verb 5 logging wrongly reports received bytes
-      On TARGET_LINUX define _GNU_SOURCE if not defined
-      Fix autotools cross-compiling support
-      Add comile time information/settings from ./configure to --version
-      Make use of counter_type instead of int when counting bytes and
-network packets
-      Updated the man page to reflect the behavioural change of
-create_temp_file()
-      Removed no longer needed delete_file() call
-      Fixed potential NULL pointer issue
-      Fix dependency checking for configure.h (v2)
-      Make use of automake CLEANFILES variable instead of clean-local rule
-      Don't add compile time information if --enable-small is used
-      Harden create_temp_filename() (version 2)
-      Renamed all calls to create_temp_filename()
-      Updated the man page to reflect the behavioural change of
-create_temp_file()
-      Removed no longer needed delete_file() call
-      Avoid repetition of "this config may cache passwords in memory" (v2)
-      Revamped the script-security warning logging (version 2)
-      Fixed client hang when server don't PUSH (aka the NO_SOUP_FOR_YOU
-patch)
-      Solved hidden merge conflict between changes in feat_misc and
-bugfix2.1
-      Fix multiple configured scripts conflicts issue (version 2)
-=20
-Davide Brini (6):
-      OCSP_check.sh: new check logic
-      The man page does not mention that the default value of "mssfix"
-is 1450.
-      Enhance contrib/pull-resolv-conf/client.{up,down} scripts
-      Fix missing /bin/bash -> /bin/sh
-      Fix certificate serial number export
-      Exclude ping and control packets from activity
-=20
-Emilien Mantel (2):
-      Choose a different field in X509 to be username
-      Fixed static defined length check to use sizeof()
-=20
-Enrico Scholz (1):
-      Allow 'lport 0' setup for random port binding
-=20
-Fabian Knittel (1):
-      ssl.c: fix use of openvpn_run_script()'s return value
-=20
-Gert Doering (7):
-      Fix compile problems on NetBSD and OpenBSD
-      Fix <net/if.h> compile time problems on OpenBSD for good
-      Full "VPN client connect" test framework for OpenVPN
-      Build t_client.sh by configure at run-time.
-      Remove duplicate code in FREEBSD+DRAGONFLY system-dependent ifconfig
-      Implement IPv6 in TUN mode for Windows TAP driver.
-      Fix date format mistake in PRODUCT_TAP_RELDATE (Peter Stuge)
-=20
-James Yonan (33):
-      Fixed potential local privilege escalation vulnerability in
-Windows service. Reported by Scott Laurie, MWR InfoSecurity.
-      Added Python-based based alternative build system for Windows
-using Visual Studio 2008 (in win directory).
-      Fixed compiler warning in ssl.c when compiling with --enable-strict
-      Attempt to fix issue where domake-win build system was not
-properly signing drivers and .exe files.
-      Added win/tap_span.py for building multiple versions of the TAP
-driver and tapinstall binaries using different DDK versions to span from
-Win2K to Win7 and beyond.
-      When aborting in a non-graceful way, try to execute do_close_tun
-in init.c prior to daemon exit
-      Fixed an issue where AUTH_FAILED was not being properly
-delivered     to the client when a bad password is given for mid-session
-reauth.
-      Don't advance the connection list on AUTH_FAILED errors.
-      Fixed an issue in the Management Interface that could cause a
-process hang=20
-      Fixed an issue where if reneg-sec was set to 0 on the client, so
-that the server-side value would take precedence,=20
-      Trivial fix to proxy.c -- #define proxy auth type as UP_TYPE_PROXY.
-      Added stub directive "remote-ip-hint".
-      Modified ">PASSWORD:Verification Failed" management interface
-notification
-      Set socket buffers (SO_SNDBUF and SO_RCVBUF) immediately after
-socket is created
-      Updated MSVC build scripts to Visual Studio 2008
-      Management interface performance optimizations:
-      Minor change to doclean script
-      Added Python-based build system for Windows in win directory.
-      Updated copyright date to 2010.
-      Fixed issue on Windows with MSVC compiler, where TCP_NODELAY
-support was not being compiled in.
-      Proxy improvements
-      Minor fixes to recent HTTP proxy changes
-      Implemented http-proxy-override and http-proxy-fallback directives
-      Implemented a key/value auth channel from client to server.
-      Fixed issue where bad creds provided by the management interface
-or HTTP Proxy Basic Authentication would go into an infinite retry-fail
-loop
-      Added support for MSVC debugging of openvpn.exe in settings.in
-      Fixed bug in proxy fallback capability
-      Implemented multi-address DNS expansion on the network field of
-route commands.
-      Added --register-dns option for Windows.
-      Added win/build_exe.py script
-      Fixed typo: missing comment close.
-      Fixed an issue with transmissions on the TLS control channel
-      Added "net stop dnscache" and "net start dnscache" in front of
-existing --register-dns commands.
-=20
-Jan Brinkmann (1):
-      The man page needs dash escaping in UTF-8 environments
-=20
-Karl O. Pinc (2):
-      Change verify-cn so cn is no longer hardcoded in openvpn's config
-file
-      Several updates to openvpn.8 (man page updates)
-=20
-Mathieu GIANNECCHINI (1):
-      enhance tls-verify possibility
-=20
-Wil Cooley (1):
-      pkitool lacks expected option "--help"
+If changing the TCP window size on the client helps, this is somewhat
+unsurprising - OpenVPN adds delay, and TCP with a too-small window size
+breaks down miserably if the delay goes up.
 
+What's the "default" TCP window size here?
+
+Given that you can even see an effect in the "direct" case, I suspect that
+your machines' TCP window sizes are *way* too small - and this has not much
+to do with TCP-over-TCP, but you would see the same effect for UDP-based
+OpenVPN as well.
+
+Simple example, to clarify the effect of round trip time (delay) on
+TCP throughput:
+
+TCP uses a sliding window, that is, the sender can send as many packets
+as the "window size" permits before the sender has to wait for an acknowled=
+ge
+from the receiver.  Now, if the link has a noticeable delay AND lots of
+bandwidth, the bandwidth * time product adds up to the minimum window size
+you need to use:
+
+ 1000 Mbit/s link
+ 1 ms delay (1/1000s)
+
+1000 Mbit/s * 1ms =3D 1 Mbit =3D 100 Kbyte "in flight" - that is, if the se=
+nder=20
+keeps sending packets back to back, with no pause in between, it needs to
+send out 100 kbyte before the first ACK packet comes back.
+
+If the sender only sends 10 kbyte because the TCP window size doesn't permit
+sending more, these 10 kbyte are sent in ~ 0.1 ms, and then it has to=20
+wait for 0.9 ms for the ACKs to come in - send again for 0.1 ms, wait 0.9 ms
+(roughly).  So it's only using 10% of the available sending capacity, and
+the performance sucks.
+
+
+So, in your examples, my guess is that the TCP window size is "barely large
+enough" for the "direct" case (but the link is not fully saturated unless
+you increase the window size) - and since OpenVPN adds some noticeable
+delay, the bandwidth * delay product goes up, and so needs the window size
+to be able to fully saturate the link...
+
+
+Try with UDP... :-)
+
+gert
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-irc freenode net: mattock
+--cycRQitB/3DOnQyb
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (NetBSD)
+
+iQCVAwUBTI0SJqkuBuNlUUl1AQLxGgQAjJr7Zc8UJj3YzugzfNwz2q24ADRk9YNg
+Cvv0W/KAeWd5JlW+nqEL1H0/LUE+qlHP2BwgN7P2biNN6rHGk4b8TeF8l7aMpV8M
+8x3jmawl2P6ZFnlGyuk5dq+egqlwT2zx6rgGkfPrTuNnJFrdTYgIvOfuqwjsriEX
+2COkx8t+Xbg=
+=4Myr
+-----END PGP SIGNATURE-----
+
+--cycRQitB/3DOnQyb--
 
