@@ -1,9 +1,10 @@
+Message-ID: <20100913182543.12172.qmail@...1287...>
+Date: Mon, 13 Sep 2010 20:25:43 +0200
+From: Peter Stuge <peter@...1287...>
+References: <AANLkTin2N8TOJ9H+kDFVojiTaaG+AxM+dNc9xFM9XpuF@...278...>
 MIME-Version: 1.0
-Date: Mon, 13 Sep 2010 18:21:08 +0200
-Message-ID: <AANLkTin2N8TOJ9H+kDFVojiTaaG+AxM+dNc9xFM9XpuF@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Content-Type: multipart/mixed; boundary=00c09f83a1c7e656df0490267b09
-Subject: [Openvpn-devel] Windows build was messed up!
+In-Reply-To: <AANLkTin2N8TOJ9H+kDFVojiTaaG+AxM+dNc9xFM9XpuF@...278...>
+Subject: Re: [Openvpn-devel] Windows build was messed up!
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,123 +13,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
---00c09f83a1c7e656df0490267b09
-Content-Type: text/plain; charset=UTF-8
+Alon Bar-Lev wrote:
+> The whole build environment of openvpn is malformed, using two
+> separate build systems for windows and posix,
 
-Hello,
+Only two? Oh that's nothing. We're having lots of fun with build
+systems in libusb-1.0, where each contributing Windows developer
+actually requires a separate build system. So we have stuff for VC6,
+VS2005, VS2008, DDK/WDK, MinGW and Cygwin. :) Fortunately at least
+the last two use autotools, and I do consider that the canonical
+build method since it covers all supported systems, and allows
+automated packaging on a POSIX host, which is what still dominates in
+the project. But the Windows support is important, as are the
+developers, and as long as someone agrees to maintain a particular
+build method then I think it's fine to offer it on some kind of
+best-effort basis.
 
-Does anyone know why the socklet_t detection was added this way?
+autotools is absolutely alien in Windows, and to be honest a bit of a
+hassle to set up if you're already a VS wizard.
 
-I mean the TYPE_SOCKLEN_T m4 macro.
 
-First, it should be sufficient to just try to see if socklen_t is defined.
-Next, on all platforms it would be int in all other platforms.
-And, there is no need to check for the type in monolitic environment
-like Windows, as it will be always the same.
+> and the mixture of different projects: openvpn, tap, windows
+> installer, easy-rsa.
 
-Currently it fails cross compile windows in mingw-w64 compiler, as
-winsock.h is as follows:
-"""
-/* define WINSOCK_API_LINKAGE and WSAAPI for less
- * diff output between winsock.h and winsock2.h, but
- * remember to undefine them at the end of file */
-"""
-And the macro uses these macros which are internal winsock macros and
-should not be used anyway.
+How can the installer situation be improved? I want to make an NSIS
+installer as well, and I would quite like to keep it *within* the
+project..? Is there a much better way?
 
-Also, when did the autodefs.h went mandatory? Why is it in
-tap-win32/common.h while no constant is actually used?
 
-The use of WSA_IO_INCOMPLETE without including winsock2.h is invalid!
-Look at [1].
-
-Attached is a patch to solve all these issues for now. Apply to both 2.1, 2.2.
-
-The whole build environment of openvpn is malformed, using two
-separate build systems for windows and posix, invalid use of autoconf,
-and the mixture of different projects: openvpn, tap, windows
-installer, easy-rsa.
-
-Alon.
-
-[1] http://msdn.microsoft.com/en-us/library/aa921087.aspx
-
---00c09f83a1c7e656df0490267b09
-Content-Type: text/plain; charset=US-ASCII; name="openvpn-win32.diff"
-Content-Disposition: attachment; filename="openvpn-win32.diff"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_ge1jitgo0
-
-ZGlmZiAtdXJOcCBvcGVudnBuLTIuMS4zL2FjaW5jbHVkZS5tNCBvcGVudnBuLTIuMS4zLm5ldy9h
-Y2luY2x1ZGUubTQKLS0tIG9wZW52cG4tMi4xLjMvYWNpbmNsdWRlLm00CTIwMTAtMDMtMzEgMDk6
-NDc6MDguMDAwMDAwMDAwICswMzAwCisrKyBvcGVudnBuLTIuMS4zLm5ldy9hY2luY2x1ZGUubTQJ
-MjAxMC0wOS0xMyAxNzo1MDowOC4wMDAwMDAwMDAgKzAyMDAKQEAgLTkwLDM0ICs5MCwzOSBAQCBB
-Q19ERUZVTihbVFlQRV9TT0NLTEVOX1RdLAogICAgICAgQUNfTVNHX0NIRUNLSU5HKFtmb3Igc29j
-a2xlbl90IGVxdWl2YWxlbnRdKQogICAgICAgQUNfQ0FDSEVfVkFMKFtjdXJsX2N2X3NvY2tsZW5f
-dF9lcXVpdl0sCiAgICAgICBbCi0gICAgICAgICAjIFN5c3RlbXMgaGF2ZSBlaXRoZXIgInN0cnVj
-dCBzb2NrYWRkciAqIiBvcgotICAgICAgICAgIyAidm9pZCAqIiBhcyB0aGUgc2Vjb25kIGFyZ3Vt
-ZW50IHRvIGdldHBlZXJuYW1lCi0gICAgICAgICBjdXJsX2N2X3NvY2tsZW5fdF9lcXVpdj0KLSAg
-ICAgICAgIGZvciBhcmcyIGluICJzdHJ1Y3Qgc29ja2FkZHIiIHZvaWQ7IGRvCi0gICAgICAgICAg
-ICBmb3IgdCBpbiBpbnQgc2l6ZV90IHVuc2lnbmVkIGxvbmcgInVuc2lnbmVkIGxvbmciOyBkbwot
-ICAgICAgICAgICAgICAgQUNfVFJZX0NPTVBJTEUoWwotICAgICAgICAgICAgICAgICAgI2lmZGVm
-IF9XSU4zMgotICAgICAgICAgICAgICAgICAgI2luY2x1ZGUgPHdpbmRvd3MuaD4KLSAgICAgICAg
-ICAgICAgICAgICNkZWZpbmUgUFJFRklYMSBXSU5TT0NLX0FQSV9MSU5LQUdFCi0gICAgICAgICAg
-ICAgICAgICAjZGVmaW5lIFBSRUZJWDIgUEFTQ0FMCi0gICAgICAgICAgICAgICAgICAjZWxzZQot
-ICAgICAgICAgICAgICAgICAgI2luY2x1ZGUgPHN5cy90eXBlcy5oPgotICAgICAgICAgICAgICAg
-ICAgI2luY2x1ZGUgPHN5cy9zb2NrZXQuaD4KLSAgICAgICAgICAgICAgICAgICNkZWZpbmUgUFJF
-RklYMQotICAgICAgICAgICAgICAgICAgI2RlZmluZSBQUkVGSVgyCi0gICAgICAgICAgICAgICAg
-ICAjZGVmaW5lIFNPQ0tFVCBpbnQKLSAgICAgICAgICAgICAgICAgICNlbmRpZgotCi0gICAgICAg
-ICAgICAgICAgICBQUkVGSVgxIGludCBQUkVGSVgyIGdldHBlZXJuYW1lIChTT0NLRVQsICRhcmcy
-ICosICR0ICopOwotICAgICAgICAgICAgICAgXSxbCi0gICAgICAgICAgICAgICAgICAkdCBsZW47
-Ci0gICAgICAgICAgICAgICAgICBnZXRwZWVybmFtZSgwLDAsJmxlbik7Ci0gICAgICAgICAgICAg
-ICBdLFsKLSAgICAgICAgICAgICAgICAgIGN1cmxfY3Zfc29ja2xlbl90X2VxdWl2PSIkdCIKLSAg
-ICAgICAgICAgICAgICAgIGJyZWFrCi0gICAgICAgICAgICAgICBdKQorICAgICAgICAgY2FzZSAi
-JHRhcmdldCIgaW4KKwkgKm1pbmd3KikgY3VybF9jdl9zb2NrbGVuX3RfZXF1aXY9aW50IDs7CisJ
-ICopCisgICAgICAgICAgICAjIFN5c3RlbXMgaGF2ZSBlaXRoZXIgInN0cnVjdCBzb2NrYWRkciAq
-IiBvcgorICAgICAgICAgICAgIyAidm9pZCAqIiBhcyB0aGUgc2Vjb25kIGFyZ3VtZW50IHRvIGdl
-dHBlZXJuYW1lCisgICAgICAgICAgICBjdXJsX2N2X3NvY2tsZW5fdF9lcXVpdj0KKyAgICAgICAg
-ICAgIGZvciBhcmcyIGluICJzdHJ1Y3Qgc29ja2FkZHIiIHZvaWQ7IGRvCisgICAgICAgICAgICAg
-ICBmb3IgdCBpbiBpbnQgc2l6ZV90IHVuc2lnbmVkIGxvbmcgInVuc2lnbmVkIGxvbmciOyBkbwor
-ICAgICAgICAgICAgICAgICAgQUNfVFJZX0NPTVBJTEUoWworICAgICAgICAgICAgICAgICAgICAg
-I2lmZGVmIF9XSU4zMgorICAgICAgICAgICAgICAgICAgICAgI2luY2x1ZGUgPHdpbmRvd3MuaD4K
-KyAgICAgICAgICAgICAgICAgICAgICNkZWZpbmUgUFJFRklYMSBXSU5TT0NLX0FQSV9MSU5LQUdF
-CisgICAgICAgICAgICAgICAgICAgICAjZGVmaW5lIFBSRUZJWDIgUEFTQ0FMCisgICAgICAgICAg
-ICAgICAgICAgICAjZWxzZQorICAgICAgICAgICAgICAgICAgICAgI2luY2x1ZGUgPHN5cy90eXBl
-cy5oPgorICAgICAgICAgICAgICAgICAgICAgI2luY2x1ZGUgPHN5cy9zb2NrZXQuaD4KKyAgICAg
-ICAgICAgICAgICAgICAgICNkZWZpbmUgUFJFRklYMQorICAgICAgICAgICAgICAgICAgICAgI2Rl
-ZmluZSBQUkVGSVgyCisgICAgICAgICAgICAgICAgICAgICAjZGVmaW5lIFNPQ0tFVCBpbnQKKyAg
-ICAgICAgICAgICAgICAgICAgICNlbmRpZgorCisgICAgICAgICAgICAgICAgICAgICBQUkVGSVgx
-IGludCBQUkVGSVgyIGdldHBlZXJuYW1lIChTT0NLRVQsICRhcmcyICosICR0ICopOworICAgICAg
-ICAgICAgICAgICAgXSxbCisgICAgICAgICAgICAgICAgICAgICAkdCBsZW47CisgICAgICAgICAg
-ICAgICAgICAgICBnZXRwZWVybmFtZSgwLDAsJmxlbik7CisgICAgICAgICAgICAgICAgICBdLFsK
-KyAgICAgICAgICAgICAgICAgICAgIGN1cmxfY3Zfc29ja2xlbl90X2VxdWl2PSIkdCIKKyAgICAg
-ICAgICAgICAgICAgICAgIGJyZWFrCisgICAgICAgICAgICAgICAgICBdKQorICAgICAgICAgICAg
-ICAgZG9uZQogICAgICAgICAgICAgZG9uZQotICAgICAgICAgZG9uZQorCSA7OworCSBlc2FjCiAK
-ICAgICAgICAgIGlmIHRlc3QgIngkY3VybF9jdl9zb2NrbGVuX3RfZXF1aXYiID0geDsgdGhlbgog
-ICAgICAgICAgICAgQUNfTVNHX0VSUk9SKFtDYW5ub3QgZmluZCBhIHR5cGUgdG8gdXNlIGluIHBs
-YWNlIG9mIHNvY2tsZW5fdF0pCmRpZmYgLXVyTnAgb3BlbnZwbi0yLjEuMy9jb25maWd1cmUuYWMg
-b3BlbnZwbi0yLjEuMy5uZXcvY29uZmlndXJlLmFjCi0tLSBvcGVudnBuLTIuMS4zL2NvbmZpZ3Vy
-ZS5hYwkyMDEwLTA0LTI4IDE5OjI1OjM4LjAwMDAwMDAwMCArMDMwMAorKysgb3BlbnZwbi0yLjEu
-My5uZXcvY29uZmlndXJlLmFjCTIwMTAtMDktMTMgMTc6NTA6MzUuMDAwMDAwMDAwICswMjAwCkBA
-IC0zMDgsNiArMzA4LDcgQEAgY2FzZSAiJHRhcmdldCIgaW4KIAk7OwogKm1pbmd3KikKIAlBQ19E
-RUZJTkUoVEFSR0VUX1dJTjMyLCAxLCBbQXJlIHdlIHJ1bm5pbmcgV0lOMzI/XSkKKwlDUFBGTEFH
-Uz0iJHtDUFBGTEFHU30gLURXSU4zMl9MRUFOX0FORF9NRUFOIgogCU9QRU5WUE5fQUREX0xJQlMo
-LWxnZGkzMikKIAlPUEVOVlBOX0FERF9MSUJTKC1sd3MyXzMyKQogCU9QRU5WUE5fQUREX0xJQlMo
-LWx3aW5pbmV0KQpkaWZmIC11ck5wIG9wZW52cG4tMi4xLjMvc3lzaGVhZC5oIG9wZW52cG4tMi4x
-LjMubmV3L3N5c2hlYWQuaAotLS0gb3BlbnZwbi0yLjEuMy9zeXNoZWFkLmgJMjAxMC0wNy0yNyAw
-MTowNjo1MS4wMDAwMDAwMDAgKzAzMDAKKysrIG9wZW52cG4tMi4xLjMubmV3L3N5c2hlYWQuaAky
-MDEwLTA5LTEzIDE3OjQ0OjE2LjAwMDAwMDAwMCArMDIwMApAQCAtNTEsNiArNTEsNyBAQAogCiAj
-aWZkZWYgV0lOMzIKICNpbmNsdWRlIDx3aW5kb3dzLmg+CisjaW5jbHVkZSA8d2luc29jazIuaD4K
-ICNkZWZpbmUgc2xlZXAoeCkgU2xlZXAoKHgpKjEwMDApCiAjZGVmaW5lIHJhbmRvbSByYW5kCiAj
-ZGVmaW5lIHNyYW5kb20gc3JhbmQKZGlmZiAtdXJOcCBvcGVudnBuLTIuMS4zL3RhcC13aW4zMi9j
-b21tb24uaCBvcGVudnBuLTIuMS4zLm5ldy90YXAtd2luMzIvY29tbW9uLmgKLS0tIG9wZW52cG4t
-Mi4xLjMvdGFwLXdpbjMyL2NvbW1vbi5oCTIwMTAtMDQtMjggMTk6MjU6MzkuMDAwMDAwMDAwICsw
-MzAwCisrKyBvcGVudnBuLTIuMS4zLm5ldy90YXAtd2luMzIvY29tbW9uLmgJMjAxMC0wOS0xMyAx
-Nzo1NDoyNi4wMDAwMDAwMDAgKzAyMDAKQEAgLTI4LDcgKzI4LDkgQEAKIC8vIGNvbW1vbiB0byBi
-b3RoLgogLy89PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQog
-CisjaWZuZGVmIEhBVkVfQ09ORklHX0gKICNpbmNsdWRlICJhdXRvZGVmcy5oIgorI2VuZGlmCiAK
-IC8vPT09PT09PT09PT09PQogLy8gVEFQIElPQ1RMcwo=
---00c09f83a1c7e656df0490267b09--
+//Peter
 
