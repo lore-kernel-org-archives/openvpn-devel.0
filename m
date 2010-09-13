@@ -1,11 +1,10 @@
-Message-ID: <20100913191405.18425.qmail@...1287...>
-Date: Mon, 13 Sep 2010 21:14:05 +0200
-From: Peter Stuge <peter@...1287...>
+MIME-Version: 1.0
+In-Reply-To: <20100913182543.12172.qmail@...1287...>
 References: <AANLkTin2N8TOJ9H+kDFVojiTaaG+AxM+dNc9xFM9XpuF@...278...>
 	<20100913182543.12172.qmail@...1287...>
-	<D361C0BE-FCDA-4DA0-BA44-E344D33242B0@...1348...>
-MIME-Version: 1.0
-In-Reply-To: <D361C0BE-FCDA-4DA0-BA44-E344D33242B0@...1348...>
+Date: Mon, 13 Sep 2010 21:15:48 +0200
+Message-ID: <AANLkTi=a+_88TDwR_8soAkY6EKqzn8u3Kd2rsq8Oc9S2@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
 Subject: Re: [Openvpn-devel] Windows build was messed up!
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,49 +14,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-Toby Thain wrote:
-> > So we have stuff for VC6, VS2005, VS2008, DDK/WDK, MinGW and Cygwin. :)
-> 
-> I consider diversity of working build environments a net benefit to
-> the project. It's another useful axis of portability and helps rub
-> off non-portable burrs.
+On Mon, Sep 13, 2010 at 8:25 PM, Peter Stuge <peter@...1287...> wrote:
+> autotools is absolutely alien in Windows, and to be honest a bit of a
+> hassle to set up if you're already a VS wizard.
 
-I see your point and I agree in part, but personally I would e.g.
-prefer to ignore VC6, since it requires a fair amount source code
-workarounds because it's *so* old.
+In OpenVPN upstream provides binaries using mingw anyway.
+So there is no need to support any other environment for Windows.
+This makes it easy.
+Also, please keep in mind that OpenVPN is not a library... so much
+easier to manage.
 
-Also, someone needs to maintain these build methods, and I wish
-people didn't have to spend time on that part so much.
+>> and the mixture of different projects: openvpn, tap, windows
+>> installer, easy-rsa.
+>
+> How can the installer situation be improved? I want to make an NSIS
+> installer as well, and I would quite like to keep it *within* the
 
+I just saying that most users do not interested in compiling the tap
+driver, also compiling the tap driver requires Microsoft DDK. So
+separating the tap into its own release management would be wise... a
+separate MSI for the TAP that can be embedded within other installers.
 
-> > autotools is absolutely alien in Windows, and to be honest a bit
-> > of a hassle to set up if you're already a VS wizard.
-> 
-> NMAKE is convenient for Windows builds as it will also happily run
-> under Linux/WINE, targeting both 32 and 64 bit Windows runtimes with
-> the 'freely downloadable' Express toolchain. It may even be possible
-> to combine autotools with the Microsoft compiler, though I haven't
-> tried it (CC="wine cl", etc).
+Easy-rsa has nothing to do with openvpn, it is great that it is
+provided, but as a separate process, fix in easy-rsa should not modify
+openvpn release
 
-Maybe it works for cross-compiling, but then MinGW(-w64) will be way
-better tested so why bother, when for people on Windows it's no real
-help, they want the GUI stuff. Also, being a library, there are some
-more build options like e.g. enable debugging or not. This is
-typically a separate target in VS but only a configure switch with
-autotools, and while this case is easy enough, I don't think those
-targets scale so well..
+The same for Windows installer, a fix in Windows installer should not
+modify openvpn version, as it has nothing to do with it.
 
-Personally I'm missing a way to do some build-time scripting also on
-Windows. The best idea I've come up with so far is a .cmd which does
-some of what autoconf does, e.g. "sed" version number from
-configure.ac into .rc files and create a config.h, but that doesn't
-mean it's a very good idea. :\
-
-
-//Peter
+Alon.
 
