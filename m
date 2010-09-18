@@ -1,11 +1,10 @@
-Message-ID: <4C9486CE.80608@...1114...>
-Date: Sat, 18 Sep 2010 11:30:54 +0200
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1284736735-25248-1-git-send-email-dazo@...384...>
-In-Reply-To: <1284736735-25248-1-git-send-email-dazo@...384...>
-Subject: Re: [Openvpn-devel] [PATCH] Fixed compiler warnings reported on
- Ubuntu 10.04
+In-Reply-To: <AANLkTin2N8TOJ9H+kDFVojiTaaG+AxM+dNc9xFM9XpuF@...278...>
+References: <AANLkTin2N8TOJ9H+kDFVojiTaaG+AxM+dNc9xFM9XpuF@...278...>
+Date: Sat, 18 Sep 2010 20:49:58 +0200
+Message-ID: <AANLkTi=38x2QcHWWZ4B3rcVjDHh36E=haRM=wWJPy-pw@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] Windows build was messed up!
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,53 +13,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Samuli,
+Please peek this up.
+Thanks.
 
-On 17/09/10 17:18, David Sommerseth wrote:
-> The warnings reported where:
-> --------------------------------------------------------
-> misc.c:158: warning: ignoring return value of ‘nice’, declared with attribute warn_unused_result
-> options.c:4033: warning: format not a string literal and no format arguments
-> options.c:4043: warning: format not a string literal and no format arguments
-> options.c:4053: warning: format not a string literal and no format arguments
-> push.c:182: warning: format not a string literal and no format arguments
-> push.c:199: warning: format not a string literal and no format arguments
-> push.c:235: warning: format not a string literal and no format arguments
-> status.c:171: warning: ignoring return value of ‘ftruncate’, declared with attribute warn_unused_result
-> --------------------------------------------------------
+On Mon, Sep 13, 2010 at 6:21 PM, Alon Bar-Lev <alon.barlev@...277...> wrote:
+> Hello,
 >
-> Signed-off-by: David Sommerseth <dazo@...384...>
-> ---
->  misc.c    |    5 ++---
->  options.c |    6 +++---
->  push.c    |    6 +++---
->  status.c  |    4 +++-
->  4 files changed, 11 insertions(+), 10 deletions(-)
+> Does anyone know why the socklet_t detection was added this way?
 >
-
-Applied to the bugfix2.1 branch.  Will be merged into the allmerged and
-beta2.2 branches in the near future.
-
-commit d3d6d1cbdaca58d7c785ef7898d1134007fbc323
-    Signed-off-by: David Sommerseth <dazo@...384...>
-    Acked-by: Gert Doering <gert@...1296...>
-    Acked-by: Peter Stuge <peter@...1287...>
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkyUhswACgkQDC186MBRfrpMyQCcC2CrTPbL0uNenoIF24IVDqnH
-RvMAn3j8hUmPxW6O8286NIGH32a6xRdY
-=S/eD
------END PGP SIGNATURE-----
+> I mean the TYPE_SOCKLEN_T m4 macro.
+>
+> First, it should be sufficient to just try to see if socklen_t is defined.
+> Next, on all platforms it would be int in all other platforms.
+> And, there is no need to check for the type in monolitic environment
+> like Windows, as it will be always the same.
+>
+> Currently it fails cross compile windows in mingw-w64 compiler, as
+> winsock.h is as follows:
+> """
+> /* define WINSOCK_API_LINKAGE and WSAAPI for less
+> =C2=A0* diff output between winsock.h and winsock2.h, but
+> =C2=A0* remember to undefine them at the end of file */
+> """
+> And the macro uses these macros which are internal winsock macros and
+> should not be used anyway.
+>
+> Also, when did the autodefs.h went mandatory? Why is it in
+> tap-win32/common.h while no constant is actually used?
+>
+> The use of WSA_IO_INCOMPLETE without including winsock2.h is invalid!
+> Look at [1].
+>
+> Attached is a patch to solve all these issues for now. Apply to both 2.1,=
+ 2.2.
+>
+> The whole build environment of openvpn is malformed, using two
+> separate build systems for windows and posix, invalid use of autoconf,
+> and the mixture of different projects: openvpn, tap, windows
+> installer, easy-rsa.
+>
+> Alon.
+>
+> [1] http://msdn.microsoft.com/en-us/library/aa921087.aspx
+>
 
