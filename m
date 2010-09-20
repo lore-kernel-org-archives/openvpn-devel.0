@@ -1,5 +1,5 @@
-Message-ID: <4C970FB8.8060304@...515...>
-Date: Mon, 20 Sep 2010 10:39:36 +0300
+Message-ID: <4C970FBE.80707@...515...>
+Date: Mon, 20 Sep 2010 10:39:42 +0300
 From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
 References: <AANLkTin2N8TOJ9H+kDFVojiTaaG+AxM+dNc9xFM9XpuF@...278...>	<20100913182543.12172.qmail@...1287...>	<AANLkTi=a+_88TDwR_8soAkY6EKqzn8u3Kd2rsq8Oc9S2@...278...>
