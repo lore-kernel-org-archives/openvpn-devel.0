@@ -1,11 +1,9 @@
-Message-ID: <4C970FBE.80707@...515...>
-Date: Mon, 20 Sep 2010 10:39:42 +0300
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <4C99F1A6.2060500@...515...>
+Date: Wed, 22 Sep 2010 15:08:06 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <AANLkTin2N8TOJ9H+kDFVojiTaaG+AxM+dNc9xFM9XpuF@...278...>	<20100913182543.12172.qmail@...1287...>	<AANLkTi=a+_88TDwR_8soAkY6EKqzn8u3Kd2rsq8Oc9S2@...278...>
-	<4C96158E.4010201@...1114...>
-In-Reply-To: <4C96158E.4010201@...1114...>
-Subject: Re: [Openvpn-devel] Windows build was messed up!
+Subject: [Openvpn-devel] Debian/Ubuntu snapshot packages for OpenVPN
+	available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,39 +12,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi David and Alon,
-> My suggestion is that we first move those parts related to the Windows
-> TAP driver, Windows installer and easy-rsa into separate git trees.
-> Next, the Windows building scripts needs to be split up, so that there's
-> a separate building process for Windows TAP driver and the OpenVPN
-> binary.  As those processes *are* different, it should actually simplify
-> the building process in the long run.  Then we need to come up with a
-> better Windows installer process, which f.ex. can require a pre-compiled
-> TAP and OpenVPN binary.
-Makes perfect sense to me. There's little advantage in keeping these in
-the same tree, and we've definitely seen the disadvantages.
-> The time frame I imagine for this is when OpenVPN 2.2 is released.
-> That's a reasonable time to think this through and we need to do some
-> other improvements to the git tree when we release OpenVPN 2.2.  As a
-> side-note, I hope we will be able to get 2.2 released within this year.
-Do you consider the build system / git tree organization a new feature?
-Or could the first non-beta/rc 2.2 release use the separated build systems?
-> Alon, when it comes to your patch, I've looked at it, and it looks sane
-> to me.  But as I'm neither a Windows developer nor an autotools expert,
-> I'll wait for an ACK from someone who can understand it better.  But
-> I'll try to remember to bring it up on Thursday's developments meeting,
-> unless someone ACKs it earlier.
-I added Alon's patch and this build system modularization to next
-meeting's topic list:
+Hi all,
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2010-09-23>
+As some of you may know, I've been working on integrating Debian
+packaging into our Buildbot CI server. Now I got the first _very rough_
+debs out there:
 
-James probably has some insights about the issues with our current build
-system. I'm also sure he can ACK Alon's patch if nobody else does it first.
+<http://build.openvpn.net/downloads>
+
+NOTE: I have not yet tested these packages _at all_, although
+superficially they seem ok. I'd be very interested to know if these
+packages work for you (or not) and where they could be improved.
+
+Packages are currently being built from two branches ("beta22" and
+"allmerged") and for 4 OS/platform combinations:
+
+Ubuntu 10.04 i386/amd64
+Debian 5 (Lenny) i386/amd64
+
+When Debian 6 (Squeeze) and Ubuntu 10.10 will be released, I will setup
+4 additional VMs to handle those, too. My intention is to automatically
+rebuild and publish these packages every time a commit is made to the
+Git repository. I also intend to setup an apt repository which people
+can use to  conveniently run the latest and greatest OpenVPN code. When
+I've got Debian-based distributions covered, I intend to move to the
+RPM-based ones.
+
+As you can see, having a wide architectural coverage consumes a
+surprisingly large amount of VMs. The best way to have snapshot packages
+(and build testing) for your OS/architecture of choice is to allocate a
+small VM or two for the project's use; 400MB memory and 2GB disk space
+should be enough. Root access makes things much easier, but is not an
+absolute requirement if you can setup the buildbot + openvpn build
+dependencies yourself.
+
+Besides offering dedicated 24/7 VMs you can help the project by running
+a buildslave on your personal workstation. It does not have to be
+accessible 24/7, as the Buildbot server (buildmaster) queues work
+targeted at offline buildslaves. This allows us to make sure latest
+OpenVPN code builds properly on the OS your workstation is using. There
+are some instructions for setting up an openvpn buildslave here:
+
+<https://community.openvpn.net/openvpn/wiki/SettingUpBuildslave>
+
+Please contact me for further details.
 
 --=20
 Samuli Sepp=E4nen
@@ -54,5 +67,6 @@ Community Manager
 OpenVPN Technologies, Inc
 
 irc freenode net: mattock
+
 
 
