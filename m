@@ -1,14 +1,12 @@
-From: Arthur Titeica <arthur@...1389...>
-Date: Thu, 23 Sep 2010 12:09:09 +0300
+MIME-Version: 1.0
+In-Reply-To: <201009231209.14406.arthur@...1389...>
 References: <4BC96D34.3000408@...515...>
 	<AANLkTi=qkVmLxLPN=RqOg_6FyorH4RYM=XSQRiX20oEK@...278...>
 	<e0bbd34674cc77f4ccb59c1d1d139805@...1389...>
-In-Reply-To: <e0bbd34674cc77f4ccb59c1d1d139805@...1389...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart1842414.2PLYMtJElN";
-	protocol="application/pgp-signature"; micalg=pgp-sha1
-Content-Transfer-Encoding: 7bit
-Message-Id: <201009231209.14406.arthur@...1389...>
+	<201009231209.14406.arthur@...1389...>
+From: JuanJo Ciarlante <jjo+ml@...410...>
+Date: Thu, 23 Sep 2010 12:03:49 +0200
+Message-ID: <AANLkTikZf=3J5OX71hj3CKxY1Q4Da5N58VpKV+=N=gTW@...278...>
 Subject: Re: [Openvpn-devel] [Openvpn-users] Does --multihome work in latest
 	OpenVPN release?
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,54 +17,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: JuanJo Ciarlante <jjo+ml@...410...>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: Arthur Titeica <arthur@...1389...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---nextPart1842414.2PLYMtJElN
-Content-Type: Text/Plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+On Thu, Sep 23, 2010 at 11:09 AM, Arthur Titeica <arthur@...1389...> wrote:
+> On Thursday 23 September 2010 07:48:46 Arthur Titeica wrote:
+>> =A0On Thu, 23 Sep 2010 01:33:24 +0200, JuanJo Ciarlante
+>>
+>> =A0<jjo+ml@...410...> wrote:
+>> > Hi Arthur,
+>> >
+>> > Sorry for the immense delay, fortunately David ping()ed me on this
+>> > issue a few days ago.
+>>
+>> =A0Hi. Better later than never.
+>>
+>> > I think I fixed it, is there a chance you could try recompiling
+>> > openvpn
+>> > with the attached patch ?
+>>
+>> =A0Will do that in the course of the day. Many thanks.
+>
+> Well, it looks OK so far after 3-4 hours of running.
 
-On Thursday 23 September 2010 07:48:46 Arthur Titeica wrote:
->  On Thu, 23 Sep 2010 01:33:24 +0200, JuanJo Ciarlante
->=20
->  <jjo+ml@...410...> wrote:
-> > Hi Arthur,
-> >=20
-> > Sorry for the immense delay, fortunately David ping()ed me on this
-> > issue a few days ago.
->=20
->  Hi. Better later than never.
->=20
-> > I think I fixed it, is there a chance you could try recompiling
-> > openvpn
-> > with the attached patch ?
->=20
->  Will do that in the course of the day. Many thanks.
+WooHoohoo ... sweET!, thanks for the prompt feedback :)
 
-Well, it looks OK so far after 3-4 hours of running.
+I'll do a bit of more testing, then ask for the upstream pull.
+
+Cheers,
+
+
+>
+> --
+> Arthur Titeica
+> PharmEc Software Constanta
+> Mobil: 0729 290 969
+> Tel: 0241 616 747
+> Fax: 0341 815 963
+>
+
+
 
 --=20
-Arthur Titeica
-PharmEc Software Constanta
-Mobil: 0729 290 969
-Tel: 0241 616 747
-Fax: 0341 815 963
-
---nextPart1842414.2PLYMtJElN
-Content-Type: application/pgp-signature; name=signature.asc 
-Content-Description: This is a digitally signed message part.
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-
-iQEcBAABAgAGBQJMmxk2AAoJEPQNH/fZRCfhjtcH/RZ7fu2lfJAoW4wjGTq7eZzi
-/lKC6ABg1MKTkYEoUG9QWLZozE0ew4m1dr7ay4mXDv6CncSfWogzKEZ91YcHwYlN
-rjzkFdD/yQVjI/euG4rCKwTogH29W5jomhHhaYgkqn1rBw/2R3n/D1bo8E4cDbP+
-57TNnADySbHtbu03ujEWLiF7KJslLzwzhOUIstiAZe7GkYR4lUXysIVrWoKOJFhy
-0kmq2Km1vmiaCP1yBY6q6R714qW+7Z3e6fJIaVTHLoGxV4JiGRZMhSfz3G24npV/
-sylpPrT5luM+ia7nJb3GTvlVUZd/jee9/s31X/n6OFQXLn4Y3XpHX4M4DO2Cats=
-=0eYU
------END PGP SIGNATURE-----
-
---nextPart1842414.2PLYMtJElN--
+--JuanJo ; echo jAjo@...1263... | sed 's/[SPAM]//g'
 
