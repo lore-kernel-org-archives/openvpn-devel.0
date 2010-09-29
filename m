@@ -1,14 +1,11 @@
-Message-ID: <4CA362CD.8030204@...1410...>
-Date: Wed, 29 Sep 2010 17:01:17 +0100
-From: Lars Hupel <hupel@...1410...>
 MIME-Version: 1.0
-References: <4CA0551F.70703@...1410...>	<4CA08840.3030107@...1147...>	<4CA088DD.5040607@...1410...>	<4CA08C68.1080701@...1147...>
-	<20100927124711.GS3275@...1355...>
-	<4CA09A9F.6040009@...1147...> <4CA0B3A3.5030506@...1410...>
-In-Reply-To: <4CA0B3A3.5030506@...1410...>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature";
-	micalg=sha1; boundary="------------ms030504080907050808080702"
-Subject: Re: [Openvpn-devel] HTTP/1.1 Host header
+In-Reply-To: <4CA19146.7040508@...1114...>
+References: <AANLkTinJNNoewiqB2BzM6F_iwK=xctA72B2bUJpvnvUp@...278...>
+	<4CA19146.7040508@...1114...>
+From: JuanJo Ciarlante <jjo+ml@...410...>
+Date: Wed, 29 Sep 2010 23:31:22 +0200
+Message-ID: <AANLkTi=xg52aYnHGSH2TFCDZqL55k7r+=N6y_SMgMERA@...278...>
+Subject: Re: [Openvpn-devel] Multihomed Openvpn server setup question.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,70 +14,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
-This is a cryptographically signed message in MIME format.
-
---------------ms030504080907050808080702
-Content-Type: multipart/mixed; boundary="------------040906040608080607080802"
-
-This is a multi-part message in MIME format.
---------------040906040608080607080802
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
+To: Praetorian <praetoriancode@...277...>
+Cc: Openvpn-devel@lists.sourceforge.net
 
-> After looking into the source code, there are (at least) two places
-> where this patch has to be applied.
->=20
-> 1) The place described earlier and mentioned in the original patch (I
-> would guess)
-> 2) There is duplicated code in the same function when the proxy answered
-> with "407 Proxy Authentication Required". Maybe it is possible to move
-> this into an extra function, maybe send_proxy_headers.
+On Tue, Sep 28, 2010 at 8:55 AM, David Sommerseth
+<openvpn.list@...1114...> wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+>
+> On 28/09/10 02:04, Praetorian wrote:
+>> I am settting up some servers to test the beta debian packages and
+>> wanted to try a multihomed server. =A0I have two isp's coming into the
+>> building and wish to make one the primarly connection side and then
+>> one be the backup (ie because it is the slower of the two). =A0I looked
+>> through the man page for 2.3 and did not see any settings in the
+>> <connection> area to do like preferences to a group of =A0connections
+>> (other than going in the order they are located in the file). =A0Also
+>> once connected to the backup is there a way for it to probe when the
+>> other route/connection comes back online to change back over from the
+>> fall back to the prefered connection?
+>>
+>
+> Hi,
+>
+> We have a report [1] that the multihome feature in OpenVPN 2.1.x on
+> Debian (and most probably Gentoo) and openvpn-testing.git is broken. =A0It
+> is most probably caused by a bug in the IPv6 transport patch which is
+> added on Debian.
+>
+> I'm working on applying a fix from the developer to the
+> openvpn-testing.git tree, so I hope I can manage to solve within this
+> week. =A0So if you're willing to test out the 'allmerged' branch, that
+> should soon fix this issue completely.
 
-Apparently I was mistaken at this point. With the very first place where
-an HTTP CONNECT is issued being the only exception, at all other places
-the Host header is sent.
+Thanks David :),
 
-However, I'm not sure whether these are correct. As far as I can see,
-there are two possible hosts which can be sent:
+In case you wanted to try it yourself, this is the patch that solves the
+multihome issue:
+  http://gitorious.org/jjo/openvpn-ipv6/commit/1b96baa8fc964bfba8bfba87f1e0=
+e1fbabf0b47b.patch
 
-* 'host' (denoting the 'remote' config option)
-* 'p->options.server' (denoting the 'http-proxy' config option)
+Cheers,
 
-I would guess that sending the latter would be correct, but the OpenVPN
-sources use the first one. For example, consider the following
-configuration:
+>
+>
+> kind regards,
+>
+> David Sommerseth
+>
+>
+> [1] <https://community.openvpn.net/openvpn/ticket/28>
+> -----BEGIN PGP SIGNATURE-----
+> Version: GnuPG v1.4.10 (GNU/Linux)
+> Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+>
+> iEYEARECAAYFAkyhkUYACgkQDC186MBRfroMFACeMh8jt1Y3PnQCHGviknEEyVxJ
+> 66oAoJSYY1cGLa9kxxLWjModbyVevqNE
+> =3DKRnF
+> -----END PGP SIGNATURE-----
+>
+> -------------------------------------------------------------------------=
+-----
+> Start uncovering the many advantages of virtual appliances
+> and start using them to simplify application deployment and
+> accelerate your shift to cloud computing.
+> http://p.sf.net/sfu/novell-sfdev2dev
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
 
-	http-proxy-option VERSION 1.1
-	http-proxy vpn.example.com 80
-	remote localhost 1194
 
-I would expect the OpenVPN client to send the request as following (over
-a connection with vpn.example.com:80):
 
-	CONNECT localhost:1194 HTTP/1.1
-	Host: vpn.example.com
+--=20
+--JuanJo ; echo jAjo@...1263... | sed 's/[SPAM]//g'
 
-At the moment (and with the patch proposed in 2008), the following
-request is sent:
-
-	CONNECT localhost:1194 HTTP/1.1
-	Host: localhost
-
-The problem is that the RFC isn't clear at that point. Consider the
-following snippet from the section about 'CONNECT':
-
->    This specification reserves the method name CONNECT for use with a
->    proxy that can dynamically switch to being a tunnel (e.g. SSL
->    tunneling [44]).
-
-The section about the host header isn't very helpful either:
-
->    The Host request-header field specifies the Internet host and port
->    number of the resource being requested, as obtained from the original
->    URI given by the user or referring resource (generally an HTTP URL
->    [...]
---------------040906040608080607080802--
-
---------------ms030504080907050808080702--
