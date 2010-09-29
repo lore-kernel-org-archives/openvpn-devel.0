@@ -1,10 +1,8 @@
-Message-ID: <4CA19146.7040508@...1114...>
-Date: Tue, 28 Sep 2010 08:55:02 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <4CA30654.2030109@...515...>
+Date: Wed, 29 Sep 2010 12:26:44 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <AANLkTinJNNoewiqB2BzM6F_iwK=xctA72B2bUJpvnvUp@...278...>
-In-Reply-To: <AANLkTinJNNoewiqB2BzM6F_iwK=xctA72B2bUJpvnvUp@...278...>
-Subject: Re: [Openvpn-devel] Multihomed Openvpn server setup question.
+Subject: [Openvpn-devel] Canceling tomorrow's meeting?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,52 +11,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Praetorian <praetoriancode@...277...>
-Cc: Openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi all,
 
-On 28/09/10 02:04, Praetorian wrote:
-> I am settting up some servers to test the beta debian packages and
-> wanted to try a multihomed server.  I have two isp's coming into the
-> building and wish to make one the primarly connection side and then
-> one be the backup (ie because it is the slower of the two).  I looked
-> through the man page for 2.3 and did not see any settings in the
-> <connection> area to do like preferences to a group of  connections
-> (other than going in the order they are located in the file).  Also
-> once connected to the backup is there a way for it to probe when the
-> other route/connection comes back online to change back over from the
-> fall back to the prefered connection?
-> 
+David and I discussed tomorrow's meeting earlier today... David has a
+crazy schedule and I probably don't make it to the meeting at all. Also
+we couldn't think of any really important topics that should be
+discussed, so we're considering canceling this week's meeting.
 
-Hi,
+If there are any important topics that need discussing, let me know a.s.a.p.
 
-We have a report [1] that the multihome feature in OpenVPN 2.1.x on
-Debian (and most probably Gentoo) and openvpn-testing.git is broken.  It
-is most probably caused by a bug in the IPv6 transport patch which is
-added on Debian.
+Best regards,
 
-I'm working on applying a fix from the developer to the
-openvpn-testing.git tree, so I hope I can manage to solve within this
-week.  So if you're willing to test out the 'allmerged' branch, that
-should soon fix this issue completely.
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-
-kind regards,
-
-David Sommerseth
-
-
-[1] <https://community.openvpn.net/openvpn/ticket/28>
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkyhkUYACgkQDC186MBRfroMFACeMh8jt1Y3PnQCHGviknEEyVxJ
-66oAoJSYY1cGLa9kxxLWjModbyVevqNE
-=KRnF
------END PGP SIGNATURE-----
+irc freenode net: mattock
 
