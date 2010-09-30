@@ -1,17 +1,17 @@
-Message-ID: <4CA3D978.8080700@...1410...>
-Date: Thu, 30 Sep 2010 01:27:36 +0100
-From: Lars Hupel <hupel@...1410...>
+Message-ID: <20100930003840.14209.qmail@...1287...>
+Date: Thu, 30 Sep 2010 02:38:40 +0200
+From: Peter Stuge <peter@...1287...>
+References: <4CA362CD.8030204@...1410...> <4CA0551F.70703@...1410...>
+	<4CA08840.3030107@...1147...> <4CA088DD.5040607@...1410...>
+	<4CA08C68.1080701@...1147...> <20100927124711.GS3275@...1355...>
+	<4CA09A9F.6040009@...1147...> <4CA0B3A3.5030506@...1410...>
+	<20100929220528.19467.qmail@...1287...> <4CA3D978.8080700@...1410...>
 MIME-Version: 1.0
-References: <4CA09A9F.6040009@...1147...>
-	<4CA0B3A3.5030506@...1410...>	<4CA362CD.8030204@...1410...>
-	<4CA0551F.70703@...1410...>	<4CA08840.3030107@...1147...>
-	<4CA088DD.5040607@...1410...>	<4CA08C68.1080701@...1147...>
-	<20100927124711.GS3275@...1355...>	<4CA09A9F.6040009@...1147...>
-	<4CA0B3A3.5030506@...1410...> <20100929220528.19467.qmail@...1287...>
-In-Reply-To: <20100929220528.19467.qmail@...1287...>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature";
-	micalg=sha1; boundary="------------ms010206070007090107020507"
-Subject: Re: [Openvpn-devel] HTTP/1.1 Host header
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="+QahgC5+KEYLbs62"
+Content-Disposition: inline
+In-Reply-To: <4CA3D978.8080700@...1410...>
+Subject: Re: [Openvpn-devel] HTTP Host header
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,177 +22,47 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
-This is a cryptographically signed message in MIME format.
-
---------------ms010206070007090107020507
-Content-Type: multipart/mixed; boundary="------------090503060303000505060907"
-
-This is a multi-part message in MIME format.
---------------090503060303000505060907
-Content-Type: text/plain; charset="ISO-8859-1"
+--+QahgC5+KEYLbs62
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-> Current behavior is correct. The first one is what should be sent.
-> [...]
-> Actually it is helpful. It says that *the resource being requested as
-> obtained from the original URI given by the user* is what should be
-> sent. This is the "remote" parameter and nothing else.
+Lars Hupel wrote:
+> > Current behavior is correct. The first one is what should be sent.
+> > [...]
+> > Actually it is helpful. It says that *the resource being requested as
+> > obtained from the original URI given by the user* is what should be
+> > sent. This is the "remote" parameter and nothing else.
+>=20
+> So what you're implying is that if a request is sent, the part after
+> 'CONNECT' must be always the same as the part after 'Host'.
 
-So what you're implying is that if a request is sent, the part after
-'CONNECT' must be always the same as the part after 'Host'.
+Yep. It's a bit redundant, but consider that CONNECT is already the
+odd kid among the HTTP verbs. Most other verbs only take an absolute
+path URI, without host component.
 
-> I'll ack your patch if it only adds a Host header where one is
-> missing, and sends the correct contents, ie. the "remote" hostname.
 
-Hopefully the attached patch is acceptable for you.
+> > I'll ack your patch if it only adds a Host header where one is
+> > missing, and sends the correct contents, ie. the "remote" hostname.
+>=20
+> Hopefully the attached patch is acceptable for you.
 
-Lars
+I'm just another community member, but I think the patch is correct.
+Thanks!
 
---------------090503060303000505060907
-Content-Type: text/x-patch;
- name="host.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
- filename="host.patch"
+Acked-by: Peter Stuge <peter@...1287...>
 
---- openvpn-2.1.3.orig/proxy.c	2010-09-26 23:05:46.000000000 +0100
-+++ openvpn-2.1.3/proxy.c	2010-09-29 15:50:55.000000000 +0100
-@@ -551,6 +551,10 @@
-       /* send HTTP CONNECT message to proxy */
-       if (!send_line_crlf (sd, buf))
- 	goto error;
-+     =20
-+      openvpn_snprintf(buf, sizeof(buf), "Host: %s", host);
-+      if (!send_line_crlf(sd, buf))
-+        goto error;
-=20
-       /* send User-Agent string if provided */
-       if (p->options.user_agent)
+--+QahgC5+KEYLbs62
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
---------------090503060303000505060907--
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (GNU/Linux)
 
---------------ms010206070007090107020507
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+iD8DBQFMo9wQhR3Q0dhIfEgRAjxQAJ9blXS/wP5TotY+YGAVlvGlNnfnLQCg2fLq
++MYdxL5IqJ/GVt+1Gl5C54g=
+=dHi9
+-----END PGP SIGNATURE-----
 
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIU9zCC
-BCEwggMJoAMCAQICAgDHMA0GCSqGSIb3DQEBBQUAMHExCzAJBgNVBAYTAkRFMRwwGgYDVQQK
-ExNEZXV0c2NoZSBUZWxla29tIEFHMR8wHQYDVQQLExZULVRlbGVTZWMgVHJ1c3QgQ2VudGVy
-MSMwIQYDVQQDExpEZXV0c2NoZSBUZWxla29tIFJvb3QgQ0EgMjAeFw0wNjEyMTkxMDI5MDBa
-Fw0xOTA2MzAyMzU5MDBaMFoxCzAJBgNVBAYTAkRFMRMwEQYDVQQKEwpERk4tVmVyZWluMRAw
-DgYDVQQLEwdERk4tUEtJMSQwIgYDVQQDExtERk4tVmVyZWluIFBDQSBHbG9iYWwgLSBHMDEw
-ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDpm8NnhfkNrvWNVMOWUDU9YuluTO2U
-1wBblSJ01CDrNI/W7MAxBAuZgeKmFNJSoCgjhIt0iQReW+DieMF4yxbLKDU5ey2QRdDtoAB6
-fL9KDhsAw4bpXCsxEXsM84IkQ4wcOItqaACa7txPeKvSxhObdq3u3ibo7wGvdA/BCaL2a869
-080UME/15eOkyGKbghoDJzANAmVgTe3RCSMqljVYJ9N2xnG2kB3E7f81hn1vM7PbD8URwoqD
-oZRdQWvY0hD1TP3KUazZve+Sg7va64sWVlZDz+HVEz2mHycwzUlU28kTNJpxdcVs6qcLmPkh
-nSevPqM5OUhqjK3JmfvDEvK9AgMBAAGjgdkwgdYwcAYDVR0fBGkwZzBloGOgYYZfaHR0cDov
-L3BraS50ZWxlc2VjLmRlL2NnaS1iaW4vc2VydmljZS9hZl9Eb3dubG9hZEFSTC5jcmw/LWNy
-bF9mb3JtYXQ9WF81MDkmLWlzc3Vlcj1EVF9ST09UX0NBXzIwHQYDVR0OBBYEFEm3xs/oPR9/
-6kR7Eyn38QpwPt5kMB8GA1UdIwQYMBaAFDHDeRu69VPXF+CJei0XbAqzK50zMA4GA1UdDwEB
-/wQEAwIBBjASBgNVHRMBAf8ECDAGAQH/AgECMA0GCSqGSIb3DQEBBQUAA4IBAQA74Vp3wEgX
-3KkY7IGvWonwvSiSpspZGBJw7Cjy565/lizn8l0ZMfYTK3S9vYCyufdnyTmieTvhERHua3iR
-M347XyYndVNljjNj7s9zw7CSI0khUHUjoR8Y4pSFPT8z6XcgjaK95qGFKUD2P3MyWA0Ja6ba
-hWzAP7uNZmRWJE6uDT8yNQFb6YyC2XJZT7GGhfF0hVblw/hc843uR7NTBXDn5U2KaYMo4RMJ
-hp5eyOpYHgwf+aTUWgRo/Sg+iwK2WLX2oSw3VwBnqyNojWOl75lrXP1LVvarQIc01BGSbOyH
-xQoLBzNytG8MHVQs2FHHzL8w00Ny8TK/jM5JY6gA9/IcMIIEzDCCA7SgAwIBAgIECfEKYzAN
-BgkqhkiG9w0BAQUFADBaMQswCQYDVQQGEwJERTETMBEGA1UEChMKREZOLVZlcmVpbjEQMA4G
-A1UECxMHREZOLVBLSTEkMCIGA1UEAxMbREZOLVZlcmVpbiBQQ0EgR2xvYmFsIC0gRzAxMB4X
-DTA3MDIxMzEwMDMwMVoXDTE5MDIxMjAwMDAwMFowYDELMAkGA1UEBhMCREUxKTAnBgNVBAoT
-IFRlY2huaXNjaGUgVW5pdmVyc2l0YWV0IE11ZW5jaGVuMSYwJAYDVQQDEx1aZXJ0aWZpemll
-cnVuZ3NzdGVsbGUgZGVyIFRVTTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKjv
-6NPYBFzJ+ZELc6JfE/5aga/7K7LWMVBHZvohdJZGd31pN9QEfzQeph0kiqsm1X5kHraPtTc9
-jMH8SLASBI45JppNSSYRfw6j6RjKA7PUStRfV0dq5cBPBl5FpxAY23lAzMzY+6EQEq3/hS8I
-a3zG5Q5saJsc+9B2So8+gvaVwZhrWhe7NhyvVqYMiBpTE9fbViah3Ur5VdDpcGbsb/BqRDxR
-rOCjQdNQ6TCQHfIUEDTQMW/czj1wbgLxrp8sB5XlwMPX7c2Do+yByWbcrkitdGEeagcWqC1g
-c8pD/f8PJIoVeW4cy60PjHRIfYC0NBVvg9P0viuwFEyWM17brI8CAwEAAaOCAZIwggGOMA8G
-A1UdEwEB/wQFMAMBAf8wCwYDVR0PBAQDAgEGMB0GA1UdDgQWBBSdnyPwGRt+xyNdJyrMpTY6
-pmnliTAfBgNVHSMEGDAWgBRJt8bP6D0ff+pEexMp9/EKcD7eZDCBiAYDVR0fBIGAMH4wPaA7
-oDmGN2h0dHA6Ly9jZHAxLnBjYS5kZm4uZGUvZ2xvYmFsLXJvb3QtY2EvcHViL2NybC9jYWNy
-bC5jcmwwPaA7oDmGN2h0dHA6Ly9jZHAyLnBjYS5kZm4uZGUvZ2xvYmFsLXJvb3QtY2EvcHVi
-L2NybC9jYWNybC5jcmwwgaIGCCsGAQUFBwEBBIGVMIGSMEcGCCsGAQUFBzAChjtodHRwOi8v
-Y2RwMS5wY2EuZGZuLmRlL2dsb2JhbC1yb290LWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDBH
-BggrBgEFBQcwAoY7aHR0cDovL2NkcDIucGNhLmRmbi5kZS9nbG9iYWwtcm9vdC1jYS9wdWIv
-Y2FjZXJ0L2NhY2VydC5jcnQwDQYJKoZIhvcNAQEFBQADggEBAINoNtnDCyUwcPDc68e/u5O/
-ffcs+r4x4OeRxKtYXd3dRCyuCoxJAhhepSk2oQc89QhWFOOBxeT7KosoCsn+htLtgnZLj4R/
-yNX8MemzYP170OZ/m4X9vmRhty+gh90kCSZlaQgT9MfV+7g1C6QgelUDV8N68Nd4Pl1IMBWk
-AkZZLcT9/Hgol59FGhFDF1uFx7Su+vYBlO3g+tHnI18XJBDOs2abHRXI5PmYcvtGirsVMfWc
-s0ooZOonYw5pvWI+N8dat9DNIvgRdoChTOKdvPURjtkY3kJkvdAfPKsf/ZCj3HhdEn0b6VZQ
-qDj7VJRCvFOL0tqSc2wUrHLRw/9Mu2gwggX9MIIE5aADAgECAgQP8mdDMA0GCSqGSIb3DQEB
-BQUAMGAxCzAJBgNVBAYTAkRFMSkwJwYDVQQKEyBUZWNobmlzY2hlIFVuaXZlcnNpdGFldCBN
-dWVuY2hlbjEmMCQGA1UEAxMdWmVydGlmaXppZXJ1bmdzc3RlbGxlIGRlciBUVU0wHhcNMTAw
-NDI0MTI1MzA3WhcNMTEwNjAxMDQwMDAwWjCByjELMAkGA1UEBhMCREUxDzANBgNVBAgTBkJh
-eWVybjERMA8GA1UEBxMITXVlbmNoZW4xKTAnBgNVBAoTIFRlY2huaXNjaGUgVW5pdmVyc2l0
-YWV0IE11ZW5jaGVuMSIwIAYDVQQLExlGYWt1bHRhZXQgZnVlciBJbmZvcm1hdGlrMRswGQYD
-VQQDExJMYXJzIFJpY2hhcmQgSHVwZWwxKzApBgkqhkiG9w0BCQEWHGxhcnMucmljaGFyZC5o
-dXBlbEBpbi50dW0uZGUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCAmittiPt2
-jU89bG4UWM+T4b3FfzU6oTpyPwy54rLFtqbq/u022mojDAvf6NBS+2iSP5A9Droska7uZ+QV
-57S+5R4C/FJzCwecCOU9OxKBMvUdKLiC77z9eDjc6rMmDN49OPheCkKcblzpNd76B1OUYYnU
-ELpNxpx2E0mPeO2YgMUNivzh3/DC0D9FcY7KtdxVdEjVIyzkbsOOUhheiV+adGzZktHnEldg
-bxSuS6nTMDaGxSOkH8n4Ucjqecd8d0KeJVF8UUzeCkDD76Bqumq7AeV4f65z/d8/NWRyRbln
-6yx74vmk5DOSBHu1E8i9B74eoE+3+yk7edmkSb3+53wlAgMBAAGjggJSMIICTjAJBgNVHRME
-AjAAMAsGA1UdDwQEAwIF4DApBgNVHSUEIjAgBggrBgEFBQcDAgYIKwYBBQUHAwQGCisGAQQB
-gjcUAgIwHQYDVR0OBBYEFMxaTBfMmf7EbzZM02qNR6lg4k2KMB8GA1UdIwQYMBaAFJ2fI/AZ
-G37HI10nKsylNjqmaeWJMIG6BgNVHREEgbIwga+BD2h1cGVsQGluLnR1bS5kZYEQaHVwZWxA
-Y3MudHVtLmVkdYEfaHVwZWxAaW5mb3JtYXRpay50dS1tdWVuY2hlbi5kZYEcbGFycy5yaWNo
-YXJkLmh1cGVsQGluLnR1bS5kZYEdbGFycy5yaWNoYXJkLmh1cGVsQGNzLnR1bS5lZHWBLGxh
-cnMucmljaGFyZC5odXBlbEBpbmZvcm1hdGlrLnR1LW11ZW5jaGVuLmRlMHcGA1UdHwRwMG4w
-NaAzoDGGL2h0dHA6Ly9jZHAxLnBjYS5kZm4uZGUvdHVtLWNhL3B1Yi9jcmwvY2FjcmwuY3Js
-MDWgM6Axhi9odHRwOi8vY2RwMi5wY2EuZGZuLmRlL3R1bS1jYS9wdWIvY3JsL2NhY3JsLmNy
-bDCBkgYIKwYBBQUHAQEEgYUwgYIwPwYIKwYBBQUHMAKGM2h0dHA6Ly9jZHAxLnBjYS5kZm4u
-ZGUvdHVtLWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDA/BggrBgEFBQcwAoYzaHR0cDovL2Nk
-cDIucGNhLmRmbi5kZS90dW0tY2EvcHViL2NhY2VydC9jYWNlcnQuY3J0MA0GCSqGSIb3DQEB
-BQUAA4IBAQBehyN3Vtca/AzH9IDUMrbC+hwSKg9uz96G2rf7eKUUEifm3GT9MhWBijxjZzUX
-wvmtKQV0god1ZzPdlKk+2f7J2XuVEPNsTgSlVin+U7Fr+kz0wF+chn54x2i2S7orZIQ9XUld
-stHBOpt0szciItTfAOfs4Gc42vF5Ghix2O3lD0YsghSPyvkJlpXpUCK6vVWENMNFhJhxchq1
-m1b2G7AxJF1pu4jmXaHjexsJhl6p55HoqRoLp/fy2n5jtIlcF9Z5IvVxIlwjwmWefLKHL5VX
-zPiC19ax7bmZbTviJGaYhPrHzE3QpEC1icdZLTpxilnIgVj1jT/q8DJ7hRNV2ZEJMIIF/TCC
-BOWgAwIBAgIED/JnQzANBgkqhkiG9w0BAQUFADBgMQswCQYDVQQGEwJERTEpMCcGA1UEChMg
-VGVjaG5pc2NoZSBVbml2ZXJzaXRhZXQgTXVlbmNoZW4xJjAkBgNVBAMTHVplcnRpZml6aWVy
-dW5nc3N0ZWxsZSBkZXIgVFVNMB4XDTEwMDQyNDEyNTMwN1oXDTExMDYwMTA0MDAwMFowgcox
-CzAJBgNVBAYTAkRFMQ8wDQYDVQQIEwZCYXllcm4xETAPBgNVBAcTCE11ZW5jaGVuMSkwJwYD
-VQQKEyBUZWNobmlzY2hlIFVuaXZlcnNpdGFldCBNdWVuY2hlbjEiMCAGA1UECxMZRmFrdWx0
-YWV0IGZ1ZXIgSW5mb3JtYXRpazEbMBkGA1UEAxMSTGFycyBSaWNoYXJkIEh1cGVsMSswKQYJ
-KoZIhvcNAQkBFhxsYXJzLnJpY2hhcmQuaHVwZWxAaW4udHVtLmRlMIIBIjANBgkqhkiG9w0B
-AQEFAAOCAQ8AMIIBCgKCAQEAgJorbYj7do1PPWxuFFjPk+G9xX81OqE6cj8MueKyxbam6v7t
-NtpqIwwL3+jQUvtokj+QPQ66LJGu7mfkFee0vuUeAvxScwsHnAjlPTsSgTL1HSi4gu+8/Xg4
-3OqzJgzePTj4XgpCnG5c6TXe+gdTlGGJ1BC6TcacdhNJj3jtmIDFDYr84d/wwtA/RXGOyrXc
-VXRI1SMs5G7DjlIYXolfmnRs2ZLR5xJXYG8Urkup0zA2hsUjpB/J+FHI6nnHfHdCniVRfFFM
-3gpAw++garpquwHleH+uc/3fPzVkckW5Z+sse+L5pOQzkgR7tRPIvQe+HqBPt/spO3nZpEm9
-/ud8JQIDAQABo4ICUjCCAk4wCQYDVR0TBAIwADALBgNVHQ8EBAMCBeAwKQYDVR0lBCIwIAYI
-KwYBBQUHAwIGCCsGAQUFBwMEBgorBgEEAYI3FAICMB0GA1UdDgQWBBTMWkwXzJn+xG82TNNq
-jUepYOJNijAfBgNVHSMEGDAWgBSdnyPwGRt+xyNdJyrMpTY6pmnliTCBugYDVR0RBIGyMIGv
-gQ9odXBlbEBpbi50dW0uZGWBEGh1cGVsQGNzLnR1bS5lZHWBH2h1cGVsQGluZm9ybWF0aWsu
-dHUtbXVlbmNoZW4uZGWBHGxhcnMucmljaGFyZC5odXBlbEBpbi50dW0uZGWBHWxhcnMucmlj
-aGFyZC5odXBlbEBjcy50dW0uZWR1gSxsYXJzLnJpY2hhcmQuaHVwZWxAaW5mb3JtYXRpay50
-dS1tdWVuY2hlbi5kZTB3BgNVHR8EcDBuMDWgM6Axhi9odHRwOi8vY2RwMS5wY2EuZGZuLmRl
-L3R1bS1jYS9wdWIvY3JsL2NhY3JsLmNybDA1oDOgMYYvaHR0cDovL2NkcDIucGNhLmRmbi5k
-ZS90dW0tY2EvcHViL2NybC9jYWNybC5jcmwwgZIGCCsGAQUFBwEBBIGFMIGCMD8GCCsGAQUF
-BzAChjNodHRwOi8vY2RwMS5wY2EuZGZuLmRlL3R1bS1jYS9wdWIvY2FjZXJ0L2NhY2VydC5j
-cnQwPwYIKwYBBQUHMAKGM2h0dHA6Ly9jZHAyLnBjYS5kZm4uZGUvdHVtLWNhL3B1Yi9jYWNl
-cnQvY2FjZXJ0LmNydDANBgkqhkiG9w0BAQUFAAOCAQEAXocjd1bXGvwMx/SA1DK2wvocEioP
-bs/ehtq3+3ilFBIn5txk/TIVgYo8Y2c1F8L5rSkFdIKHdWcz3ZSpPtn+ydl7lRDzbE4EpVYp
-/lOxa/pM9MBfnIZ+eMdotku6K2SEPV1JXbLRwTqbdLM3IiLU3wDn7OBnONrxeRoYsdjt5Q9G
-LIIUj8r5CZaV6VAiur1VhDTDRYSYcXIatZtW9huwMSRdabuI5l2h43sbCYZeqeeR6KkaC6f3
-8tp+Y7SJXBfWeSL1cSJcI8Jlnnyyhy+VV8z4gtfWse25mW074iRmmIT6x8xN0KRAtYnHWS06
-cYpZyIFY9Y0/6vAye4UTVdmRCTGCA0UwggNBAgEBMGgwYDELMAkGA1UEBhMCREUxKTAnBgNV
-BAoTIFRlY2huaXNjaGUgVW5pdmVyc2l0YWV0IE11ZW5jaGVuMSYwJAYDVQQDEx1aZXJ0aWZp
-emllcnVuZ3NzdGVsbGUgZGVyIFRVTQIED/JnQzAJBgUrDgMCGgUAoIIBsjAYBgkqhkiG9w0B
-CQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0xMDA5MzAwMDI3MzZaMCMGCSqGSIb3
-DQEJBDEWBBR/WObJ1EIlvDctytZyDkS0y/0JPDBfBgkqhkiG9w0BCQ8xUjBQMAsGCWCGSAFl
-AwQBAjAKBggqhkiG9w0DBzAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcNAwICAUAwBwYFKw4D
-AgcwDQYIKoZIhvcNAwICASgwdwYJKwYBBAGCNxAEMWowaDBgMQswCQYDVQQGEwJERTEpMCcG
-A1UEChMgVGVjaG5pc2NoZSBVbml2ZXJzaXRhZXQgTXVlbmNoZW4xJjAkBgNVBAMTHVplcnRp
-Zml6aWVydW5nc3N0ZWxsZSBkZXIgVFVNAgQP8mdDMHkGCyqGSIb3DQEJEAILMWqgaDBgMQsw
-CQYDVQQGEwJERTEpMCcGA1UEChMgVGVjaG5pc2NoZSBVbml2ZXJzaXRhZXQgTXVlbmNoZW4x
-JjAkBgNVBAMTHVplcnRpZml6aWVydW5nc3N0ZWxsZSBkZXIgVFVNAgQP8mdDMA0GCSqGSIb3
-DQEBAQUABIIBAEhljPnBRQgAWiF+RgN6T2HX+LRucGYmNIdRfloaKqgTHdehmY1i6G3nQTCo
-7IJf2P75j0TR7sNaG0pnnYAt2Wud5ZYyO2709q5fIyclclhTboBj4dLvql1CJ9g3SFuGWDXq
-nCv0nHWimBPRARmfSKczyh4E4sKmFfKol1sXlOVcnRFfBQS8B8HV5nTg3B5DnQjSeI8QFTJU
-WGCXqDxlQ3K+O7zY8KcYdW1/h4eCsE7VTHAJyx+6bPwJ9HkR6EK9irxbFSQpXx/Z6uHONKOa
-ehdYCjaPg3hJLIhUWX8YpQuVSz5ke8wuug8OCk6yZ8FkjgKjHDQMS3sN3VFRljqiIxMAAAAA
-AAA=
---------------ms010206070007090107020507--
+--+QahgC5+KEYLbs62--
 
