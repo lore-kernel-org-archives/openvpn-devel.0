@@ -1,14 +1,12 @@
-Date: Sun, 3 Oct 2010 21:34:55 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20101003193455.GN10703@...1296...>
-References: <000001cb632c$a2bb8420$e8328c60$@soto@...1413...>
+From: "=?gbk?B?QkJR?=" <32133610@...1414...>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="D90rafnCA5jqK2oI"
-Content-Disposition: inline
-In-Reply-To: <000001cb632c$a2bb8420$e8328c60$@soto@...1413...>
-Subject: Re: [Openvpn-devel] Variable common_name can be blank in
-	client-connect script
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_4CA99BE4_08813D80_794A12DB"
+Content-Transfer-Encoding: 8Bit
+Date: Mon, 4 Oct 2010 17:18:28 +0800
+Message-ID: <tencent_083C6D6652D2C40C5F152030@...1414...>
+Subject: [Openvpn-devel] I want to use tap driver in my application,
+	buf have a problem
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,58 +15,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Carlos Soto <carlos.soto@...1413...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: =?gbk?B?b3BlbnZwbi1kZXZlbA==?= <openvpn-devel@lists.sourceforge.net>
 
---D90rafnCA5jqK2oI
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+This is a multi-part message in MIME format.
 
-Hi,
+------=_NextPart_4CA99BE4_08813D80_794A12DB
+Content-Type: text/plain; charset="gbk"
+Content-Transfer-Encoding: base64
 
-On Sun, Oct 03, 2010 at 08:56:06PM +0200, Carlos Soto wrote:
-> If a server is configured with auth-user-pass-optional and
-> username-as-common-name it is possible that the auth-user-pass-verify scr=
-ipt
-> will validate a connection with no username as it is optional. It that ca=
-se
-> the common_name becames blank and client-connect script may fail because =
-it
-> does not have a value for the common name. I think that the common name
-> should never be blank so in cases where the username is blank and the
-> username-as-common-name option is enabled, the common_name should keep its
-> original value.
+SSBjYWxsIERldmljZUlvQ29udHJvbCBmdW5jdGlvbiB0byBnZXQgdGFwIHZlcnNpb24sYnV0IGl0
+IHJldHVybmVkIGVycm9yLCBhbmQgR2V0TGFzdEVycm9yIHJldHVybiAxLg0KICANCiB0aGlzIGlz
+IG15IGNvZGU6DQogIA0KIGludCBtYWluKGludCBhcmdjLCBjaGFyKiBhcmd2W10pDQp7DQogIEhB
+TkRMRSBoSUNEcml2ZXIgPSBDcmVhdGVGaWxlKCJcXFxcLlxce0UwMEQ5QTk5LTJBNTAtNDdGNi05
+QjZDLUZDRDE3NzM5Q0NFNX0iLCBHRU5FUklDX1JFQUR8R0VORVJJQ19XUklURSwwLE5VTEwsT1BF
+Tl9FWElTVElORywgICAgICBGSUxFX0FUVFJJQlVURV9TWVNURU0gfCBGSUxFX0ZMQUdfT1ZFUkxB
+UFBFRCwgTlVMTCk7DQogaWYgKGhJQ0RyaXZlcj09SU5WQUxJRF9IQU5ETEVfVkFMVUUpDQogew0K
+ICBwcmludGYoIrTyv6rJ6LG4yqew3CBFcnJvckNvZGU9JWRcbiIsIEdldExhc3RFcnJvcigpKTsN
+CiAgDQogIGdvdG8gZXJyOw0KIH0NCiBwcmludGYoIrPJuaa08r+qyeixuFxuIik7DQogIA0KIFVM
+T05HIGluZm9bM107DQogRFdPUkQgbGVuOw0KIG1lbXNldChpbmZvLCAwLCBzaXplb2YoVUxPTkcp
+KjMpOw0KICBpZiAoIURldmljZUlvQ29udHJvbCAoaElDRHJpdmVyLCBUQVBfSU9DVExfR0VUX1ZF
+UlNJT04sDQogICAgJmluZm8sIHNpemVvZiAoaW5mbyksDQogICAgJmluZm8sIHNpemVvZiAoaW5m
+byksICZsZW4sIE5VTEwpKQ0KIHsNCiAgcHJpbnRmKCJEZXZpY2VJb0NvbnRyb2wgRXJyb3JDb2Rl
+PSVkXG4iLCBHZXRMYXN0RXJyb3IoKSk7DQogIA0KICBnb3RvIGVycjsNCiB9DQogIA0KZXJyOg0K
+ICBTbGVlcCg1MDAwKTsNCiAgcmV0dXJuIDA7DQp9
 
-I'd NAK that.  This would be surprising behaviour - if the admin configures
-"username-as-common-name" he doesn't want "sometimes user name, sometimes
-common name".
+------=_NextPart_4CA99BE4_08813D80_794A12DB
+Content-Type: text/html; charset="gbk"
+Content-Transfer-Encoding: base64
 
-If the user name is blank, it's blank, and if that's copied to common_name,
-a blank "common_name" field is the behaviour I would expect to see.
+PERJVj5JIGNhbGwgRGV2aWNlSW9Db250cm9sIDxGT05UIHNpemU9Mj5mdW5jdGlvbiB0byBnZXQg
+dGFwIHZlcnNpb24sYnV0IGl0IHJldHVybmVkIGVycm9yLCBhbmQgR2V0TGFzdEVycm9yIHJldHVy
+biAxLjwvRk9OVD48L0RJVj4NCjxESVY+PEZPTlQgc2l6ZT0yPjwvRk9OVD4mbmJzcDs8L0RJVj4N
+CjxESVY+PEZPTlQgc2l6ZT0yPnRoaXMgaXMgbXkgY29kZTo8L0ZPTlQ+PC9ESVY+DQo8RElWPjxG
+T05UIHNpemU9Mj48L0ZPTlQ+Jm5ic3A7PC9ESVY+DQo8RElWPmludCBtYWluKGludCBhcmdjLCBj
+aGFyKiBhcmd2W10pPEJSPns8L0RJVj4NCjxESVY+Jm5ic3A7SEFORExFIGhJQ0RyaXZlciA9IENy
+ZWF0ZUZpbGUoIjxBPlxcXFwuXFx7RTAwRDlBOTktMkE1MC00N0Y2LTlCNkMtRkNEMTc3MzlDQ0U1
+PC9BPn0iLCBHRU5FUklDX1JFQUR8R0VORVJJQ19XUklURSwwLE5VTEwsT1BFTl9FWElTVElORywm
+bmJzcDsmbmJzcDsmbmJzcDsgJm5ic3A7IEZJTEVfQVRUUklCVVRFX1NZU1RFTSB8IEZJTEVfRkxB
+R19PVkVSTEFQUEVELCBOVUxMKTs8QlI+Jm5ic3A7aWYgKGhJQ0RyaXZlcj09SU5WQUxJRF9IQU5E
+TEVfVkFMVUUpPEJSPiZuYnNwO3s8QlI+Jm5ic3A7IHByaW50ZigitPK/qsnosbjKp7DcIEVycm9y
+Q29kZT0lZFxuIiwgR2V0TGFzdEVycm9yKCkpOzxCUj4mbmJzcDsgPEJSPiZuYnNwOyBnb3RvIGVy
+cjs8QlI+Jm5ic3A7fTxCUj4mbmJzcDtwcmludGYoIrPJuaa08r+qyeixuFxuIik7PC9ESVY+DQo8
+RElWPiZuYnNwOzxCUj4mbmJzcDtVTE9ORyBpbmZvWzNdOzwvRElWPg0KPERJVj5EV09SRCBsZW47
+PEJSPiZuYnNwO21lbXNldChpbmZvLCAwLCBzaXplb2YoVUxPTkcpKjMpOzwvRElWPg0KPERJVj4m
+bmJzcDtpZiAoIURldmljZUlvQ29udHJvbCAoaElDRHJpdmVyLCBUQVBfSU9DVExfR0VUX1ZFUlNJ
+T04sPEJSPiZuYnNwOyAmbmJzcDsgJmFtcDtpbmZvLCBzaXplb2YgKGluZm8pLDxCUj4mbmJzcDsg
+Jm5ic3A7ICZhbXA7aW5mbywgc2l6ZW9mIChpbmZvKSwgJmFtcDtsZW4sIE5VTEwpKTxCUj4mbmJz
+cDt7PEJSPiZuYnNwOyBwcmludGYoIkRldmljZUlvQ29udHJvbCBFcnJvckNvZGU9JWRcbiIsIEdl
+dExhc3RFcnJvcigpKTs8QlI+Jm5ic3A7IDxCUj4mbmJzcDsgZ290byBlcnI7PEJSPiZuYnNwO308
+L0RJVj4NCjxESVY+Jm5ic3A7PEJSPmVycjo8L0RJVj4NCjxESVY+Jm5ic3A7U2xlZXAoNTAwMCk7
+PC9ESVY+DQo8RElWPiZuYnNwO3JldHVybiAwOzxCUj59PC9ESVY+
 
-gert
+------=_NextPart_4CA99BE4_08813D80_794A12DB--
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---D90rafnCA5jqK2oI
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (NetBSD)
-
-iQCVAwUBTKja36kuBuNlUUl1AQJ2YAQAms0tawD5KuU37j9iRcSWQtyE0bgtxRD6
-7DGQIBRoODk5VC3JV1sXmXxoA89nMCe2HE7OhFn046vscBPKi1Gt5o3HqdU5DcpE
-fGEhTSZhnWIHJ4U2TDQ/ekIos9uSvAynjodkyuOmEvB1SvVncWKJhWPwfnI0TLW+
-ZdVFVyDcK0M=
-=XTkx
------END PGP SIGNATURE-----
-
---D90rafnCA5jqK2oI--
 
