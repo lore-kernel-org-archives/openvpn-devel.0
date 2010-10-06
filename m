@@ -1,8 +1,9 @@
-Message-ID: <4CA9B526.90504@...1114...>
-Date: Mon, 04 Oct 2010 13:06:14 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] openvpn-testing git tree and the allmerged branch
+From: Florian Harmuth <florian.harmuth@...68...>
+Date: Wed, 06 Oct 2010 23:06:37 +0200
+Message-ID: <1286399197.3091.14.camel@...1415...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Tips for implementing multithreading
+Reply-To: florian.harmuth@...68...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,46 +12,18 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hello all,
+i plan to implement the multi threading feature like it has exists in
+the 1.x version of openvpn. Where would be the best position for place
+this feature? 
+As explanation -> we use over the vpn a voip connection which breaks
+down for a few seconds during the tls negotiation (cpu freq < 600 mhz).
 
+Best Regards,
+flo
 
-Hi all,
-
-A little accident just happened, an invalid 'allmerged' branch got
-pushed out.  *Don't trust allmerged* to provide the latest and greatest
-right now.
-
-The issue is that one of the IPv6 branches I've been merging in was
-based on a wrong root.  And this exploded recently when James did some
-changes in svn-BETA21 which gave conflict against the branch
-feat_ipv6_transport.  The reason was that feat_ipv6_transport was not
-based upon the openvpn-testing.git tree, but another git-svn tree.
-
-To clean this up properly, I'm going to rebuild the complete allmerged
-tree once again.  Unfortunately, I managed to push out the branch way
-too early.  And what's worse, I don't have time this week to really
-complete that job.
-
-So, the fact is ... don't trust the allmerged branch right now.  All
-other branches are fine, just not allmerged.  I'll try to fix it ASAP!
-And I'm really sorry for this mess.
-
-
-kind regards,
-
-David Sommerseth
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkyptSQACgkQDC186MBRfrqsuQCgq1aCS7npStk/6SHHHmFOfFFu
-uK4AnixI3jp+HgFuxbZswHQzMYqSavfx
-=cY1c
------END PGP SIGNATURE-----
 
