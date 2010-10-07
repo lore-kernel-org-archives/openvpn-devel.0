@@ -1,9 +1,12 @@
-Message-ID: <4CADE70D.8070307@...1147...>
-Date: Thu, 07 Oct 2010 17:28:13 +0200
-From: Jan Just Keijser <janjust@...1147...>
-MIME-Version: 1.0
-References: <20101007142817.GU7437@...1152...>
-In-Reply-To: <20101007142817.GU7437@...1152...>
+Date: Thu, 7 Oct 2010 17:47:40 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20101007154740.GL10703@...1296...>
+References: <20101007142817.GU7437@...1152...> <4CADE70D.8070307@...1147...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="sEASj6BbPXAOAu+u"
+Content-Disposition: inline
+In-Reply-To: <4CADE70D.8070307@...1147...>
 Subject: Re: [Openvpn-devel] [Openvpn-users] TAP installation Problem
 	(2.1.3) on Windows 2000
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -14,41 +17,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Ralf Hildebrandt <Ralf.Hildebrandt@...1152...>
-Cc: Katja.Stange@...1152..., "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, openvpn-users@lists.sourceforge.net
+To: Jan Just Keijser <janjust@...1147...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Katja.Stange@...1152..., Ralf Hildebrandt <Ralf.Hildebrandt@...1152...>, openvpn-users@lists.sourceforge.net
 
-Ralf Hildebrandt wrote:
-> During installation, no TAP32 adapter is being installed and the 
-> addtap.bat returns an error:
->
-> d:\program files\openvpn\bin\tapinstall.exe is not a valid Win32 application.
->
-> WHy is that?
->
->   
-it's a (minor) mistake in how openvpn 2.1.3 is packaged:
+--sEASj6BbPXAOAu+u
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-openvpn 2.1.1 comes with tapinstall.exe v6.0.6001.18000, named 'Windows 
-Codename Longhorn DDK driver'
-openvpn 2.1.3 comes with tapinstall.exe v6.1.7600.16385, named 'Windows 
-Win 7 DDK provider'
+Hi,
 
-Apparently this later version of tapinstall.exe is not recognized as a 
-valid win32 application, most likely because Microsoft stopped 
-supporting Windows 2000 some time ago. Note that OpenVPN 2.2 will also 
-no longer include Windows 2000 support, as was discussed somewhere late 
-august.
+On Thu, Oct 07, 2010 at 05:28:13PM +0200, Jan Just Keijser wrote:
+> > WHy is that?
+> it's a (minor) mistake in how openvpn 2.1.3 is packaged:
 
-The nice fix would be to include the older version of tapinstall.exe in 
-an update of the windows installer package. A quick&dirty hack is to 
-copy over the tapinstall.exe from the 2.1.1 installer and then run 
-'tapinstall' again (from the OpenVPN menu option in the 'Start' menu)
+This is not a mistake (as in "oops, we didn't know"), but was unavoidable=20
+since the latest WDK is needed to properly support signed drivers for=20
+Win7, and that version does not support Win2k anymore.
 
+OTOH, there *should* be a Windows 2000 install.exe, but right now=20
+I cannot find it on the download page either - James did build it,
+with the old WDK/DDK, but somewhere in the release process it must=20
+have fallen through the cracks.
 
-HTH,
+Samuli: can you find it on the internal build servers?
 
-JJK
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
+--sEASj6BbPXAOAu+u
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (NetBSD)
+
+iQCVAwUBTK3rnKkuBuNlUUl1AQIr9wP/big+XF2JZIeHDECrC3pH8f0WhXBqxVdT
+doQzd5YAuEs30hhtgkKRCy+SCxOe3+zeAjUKuNqAPLGDl2Sci8CCdj22CCP0O3GG
+Cycl/Cltk280Ke6/BZNtyotA2VLfJsfs7EqJ6LGIiBfll29hqv3eb+W7ut+WuU77
+2OjgHnCppZs=
+=tUdt
+-----END PGP SIGNATURE-----
+
+--sEASj6BbPXAOAu+u--
 
