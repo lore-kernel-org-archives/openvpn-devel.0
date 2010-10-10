@@ -1,12 +1,17 @@
-Message-ID: <4CAED593.7040309@...515...>
-Date: Fri, 08 Oct 2010 11:25:55 +0300
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Date: Sun, 10 Oct 2010 11:12:00 +0200
+From: Felix Kronlage <fkr@...1138...>
+Message-ID: <20101010091159.GA3687@...1221...>
+References: <201008132145.25557.hhund@...194...>
+	<201009082232.56460.hhund@...194...>
+	<4C87F888.10907@...1400...>
+	<201009091113.09853.hhund@...194...>
+	<loom.20101008T012704-921@...171...>
 MIME-Version: 1.0
-References: <20101007142817.GU7437@...1152...> <4CADE70D.8070307@...1147...>
-	<20101007154740.GL10703@...1296...>
-In-Reply-To: <20101007154740.GL10703@...1296...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] TAP installation
- Problem	(2.1.3) on Windows 2000
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="x+6KMIRAuhnl3hBn"
+Content-Disposition: inline
+In-Reply-To: <loom.20101008T012704-921@...171...>
+Subject: Re: [Openvpn-devel] New openvpn-gui snapshot
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,44 +20,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+To: Jorge Peixoto <jorgepeixoto@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--x+6KMIRAuhnl3hBn
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: Ralf Hildebrandt <Ralf.Hildebrandt@...1152...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, "Katja.Stange@...1152..." <Katja.Stange@...1152...>
+Content-Disposition: inline
 
+On Thu, Oct 07, 2010 at 11:27:49PM +0000, Jorge Peixoto wrote:
 
-> Hi,
->
-> On Thu, Oct 07, 2010 at 05:28:13PM +0200, Jan Just Keijser wrote:
->=20=20=20
->>> WHy is that?
->>>=20=20=20=20=20=20=20
->> it's a (minor) mistake in how openvpn 2.1.3 is packaged:
->>=20=20=20=20=20
->
-> This is not a mistake (as in "oops, we didn't know"), but was unavoidable=
-=20
-> since the latest WDK is needed to properly support signed drivers for=20
-> Win7, and that version does not support Win2k anymore.
->
-> OTOH, there *should* be a Windows 2000 install.exe, but right now=20
-> I cannot find it on the download page either - James did build it,
-> with the old WDK/DDK, but somewhere in the release process it must=20
-> have fallen through the cracks.
->
-> Samuli: can you find it on the internal build servers?
->
-> gert
->=20=20=20
-It's here:
+Hi,
 
-<http://secure.openvpn.net/win>
+> Do you know any OpenVPN GUI implementation which takes this approach
+> of controlling openvpn.exe daemon through management interface?=20
+
+yes, the guys around Ralf Spenneberg developed such a client.
+
+Their site and docs are on german though:
+
+<url: http://www.os-t.de/ovpnmgmt.php>
+
+felix
 
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+GPG/PGP:   D9AC74D0 / 076E 1E87 3E05 1C7F B1A0  8A48 0D31 9BD3 D9AC 74D0
+http://hazardous.org/~fkr - fkr@...1220...|irc  -  @felixkronlage  -  FKR-R=
+IPE
+https://www.bytemine.net/ - bytemine - BSD based Hosting/Solutions/Ideas
 
-irc freenode net: mattock
 
+--x+6KMIRAuhnl3hBn
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+
+iEYEARECAAYFAkyxg18ACgkQDTGb09msdNAj2QCfby3EnLp2gG09/JtbJU42foN0
+tYsAn3U5GxIEM3TxoeHvq6LvDYD/YR+d
+=4Bfs
+-----END PGP SIGNATURE-----
+
+--x+6KMIRAuhnl3hBn--
 
