@@ -1,10 +1,10 @@
-Date: Thu, 14 Oct 2010 23:05:00 +0200
-Message-Id: <LAAT8C$AF2127EA27C5D0C15118FCEFC2FE06E1@...1417...>
+Message-ID: <4CB7FF56.8080107@...515...>
+Date: Fri, 15 Oct 2010 10:14:30 +0300
+From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="_=__=_XaM3_.1287090300.2A.459592.42.8408.52.42.007.1903485047"
-From: "openvpn" <openvpn@...1416...>
-Subject: [Openvpn-devel] openvpn, NTLM and McAfee Web Gateway
+References: <LAAT8C$AF2127EA27C5D0C15118FCEFC2FE06E1@...1417...>
+In-Reply-To: <LAAT8C$AF2127EA27C5D0C15118FCEFC2FE06E1@...1417...>
+Subject: Re: [Openvpn-devel] openvpn, NTLM and McAfee Web Gateway
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,49 +13,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
---_=__=_XaM3_.1287090300.2A.459592.42.8408.52.42.007.1903485047
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-
-dear all,a few days ago I deployed an ovpn solution in a medium=20
-sized company. One of the two ends of the vpn network is passing through
- a proxy with NTLM authentication. ovpn has problems to recognize the=20
-authentication because immediately after sending the message type 1, the
- proxy sends no response, so I had to modify the source code by=20
-replacing the current message with a similar but different one.in particula=
-r this one:TlRMTVNTUAABAAAAAgIAAA=3D=3Dbecome:TlRMTVNTUAABAAAAB4IIogAAAAAAA=
-AAAAAAAAAAAAAAFASgKAAAADw=3D=3DA detail of the work is available at:http://=
-www.morzello.com/?p=3D350 (in Italian).I was wondering if you could have a =
-function that supports this type of proxy (such as McAfee Web Gateway).than=
-k you very much.
-
---_=__=_XaM3_.1287090300.2A.459592.42.8408.52.42.007.1903485047
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 
-<div class=3D"xam_msg_class">
-<div style=3D"font: normal 13px Arial; color:rgb(0, 0, 0);">dear all,<br><b=
-r>a few days ago I deployed an ovpn solution in a medium=20
-sized company. One of the two ends of the vpn network is passing through
- a proxy with NTLM authentication. ovpn has problems to recognize the=20
-authentication because immediately after sending the message type 1, the
- proxy sends no response, so I had to modify the source code by=20
-replacing the current message with a similar but different one.<br><br>in p=
-articular this one:<br><br><div style=3D"font-weight: bold;" class=3D"codew=
-rapper"><div class=3D"codecontent">TlRMTVNTUAABAAAAAgIAAA=3D=3D</div></div>=
-<br><br>become:<br><br><div style=3D"font-weight: bold;" class=3D"codewrapp=
-er"><div class=3D"codecontent">TlRMTVNTUAABAAAAB4IIogAAAAAAAAAAAAAAAAAAAAAF=
-ASgKAAAADw=3D=3D</div></div><br><br>A detail of the work is available at:<b=
-r><br><a href=3D"http://www.morzello.com/?p=3D350" class=3D"postlink">http:=
-//www.morzello.com/?p=3D350</a> (in Italian).<br><br>I was wondering if you=
- could have a function that supports this type of proxy (such as McAfee Web=
- Gateway).<br><br>thank you very much.</div>
-</div>
+> dear all,
+>
+> a few days ago I deployed an ovpn solution in a medium sized company.
+> One of the two ends of the vpn network is passing through a proxy with
+> NTLM authentication. ovpn has problems to recognize the authentication
+> because immediately after sending the message type 1, the proxy sends
+> no response, so I had to modify the source code by replacing the
+> current message with a similar but different one.
+>
+> in particular this one:
+>
+> TlRMTVNTUAABAAAAAgIAAA=3D=3D
+>
+>
+> become:
+>
+> TlRMTVNTUAABAAAAB4IIogAAAAAAAAAAAAAAAAAAAAAFASgKAAAADw=3D=3D
+>
+>
+> A detail of the work is available at:
+>
+> http://www.morzello.com/?p=3D350 (in Italian).
+>
+> I was wondering if you could have a function that supports this type
+> of proxy (such as McAfee Web Gateway).
+>
+> thank you very much.
+Hi,
 
+I read your blog post, interesting stuff. The strings the client sends
+seem to be base64 encoded and the first part on both messages look like
+this (in nano/vi):
 
---_=__=_XaM3_.1287090300.2A.459592.42.8408.52.42.007.1903485047--
+NTLMSSP
+
+It's followed by this, which is apparently the message type hex string:
+
+^@^A^@^@^@
+
+After this they differ noticeably. I'd guess they are just sending
+different NTLM flags:
+
+<http://davenport.sourceforge.net/ntlm.html#theNtlmMessageHeaderLayout>
+
+Can somebody more fluent in NTLM protocol decipher these two messages?
+
+--=20
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
 
