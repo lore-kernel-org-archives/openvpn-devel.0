@@ -1,9 +1,9 @@
-Date: Fri, 15 Oct 2010 15:53:06 +0200
-Message-Id: <LAC3WI$592D614BC26C7E00D314E375A9E2267B@...1417...>
+Message-ID: <4CBC285B.4010800@...1147...>
+Date: Mon, 18 Oct 2010 12:58:35 +0200
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="_=__=_XaM3_.1287150786.2A.382330.42.5560.52.42.007.1596218869"
-From: "openvpn" <openvpn@...1416...>
+References: <LAAT8C$AF2127EA27C5D0C15118FCEFC2FE06E1@...1417...>
+In-Reply-To: <LAAT8C$AF2127EA27C5D0C15118FCEFC2FE06E1@...1417...>
 Subject: Re: [Openvpn-devel] openvpn, NTLM and McAfee Web Gateway
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,93 +13,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn <openvpn@...1416...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---_=__=_XaM3_.1287150786.2A.382330.42.5560.52.42.007.1596218869
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+openvpn wrote:
+> dear all,
+>
+> a few days ago I deployed an ovpn solution in a medium sized company. 
+> One of the two ends of the vpn network is passing through a proxy with 
+> NTLM authentication. ovpn has problems to recognize the authentication 
+> because immediately after sending the message type 1, the proxy sends 
+> no response, so I had to modify the source code by replacing the 
+> current message with a similar but different one.
+>
+> in particular this one:
+>
+> TlRMTVNTUAABAAAAAgIAAA==
+>
+>
+> become:
+>
+> TlRMTVNTUAABAAAAB4IIogAAAAAAAAAAAAAAAAAAAAAFASgKAAAADw==
+>
+>
+> A detail of the work is available at:
+>
+> http://www.morzello.com/?p=350 (in Italian).
+>
+> I was wondering if you could have a function that supports this type 
+> of proxy (such as McAfee Web Gateway).
+>
+I applied your "patch" and I still cannot get it to work for my 
+httpd+mod_ntlm (NTLMv1 only) installation. The NTLM handshake that 
+OpenVPN does is broken. Without the patch Wireshark tells me the first 
+NTLMSPP message is invalid
+  http://www.nikhef.nl/~janjust/openvpn/openvpn-ntlm-error1.png
+If I change the phase_1 NTLM message to the above I get one step further 
+but then it breaks at the next packet:
+  http://www.nikhef.nl/~janjust/openvpn/openvpn-ntlm-error2.png
+It seems the Windows domain and username are not stored properly inside 
+the request. The same httpd+mod_ntlm installation works flawlessly using 
+Internet Explorer 7: in that case the domain and user name are encoded 
+just fine.
 
-> Hi,
->=20
-> I read your blog post, interesting stuff. The strings the client sends
-> seem to be base64 encoded and the first part on both messages look like
-> this (in nano/vi):
->=20
-> NTLMSSP
->=20
-> It's followed by this, which is apparently the message type hex string:
->=20
-> ^@^A^@^@^@
->=20
-> After this they differ noticeably. I'd guess they are just sending
-> different NTLM flags:
->=20
->=20
->=20
-> Can somebody more fluent in NTLM protocol decipher these two messages?
->=20
-> --=20
-> Samuli Sepp?nen
-> Community Manager
-> OpenVPN Technologies, Inc
->=20
-> irc freenode net: mattock
->=20
-=C2=A0=C2=A0
-Firefox uses the following flags:
-=C2=A0
-#define NTLM_TYPE1_FLAGS      \
-(NTLM_NegotiateUnicode |    \
-NTLM_NegotiateOEM |        \
-NTLM_RequestTarget |       \
-NTLM_NegotiateNTLMKey |    \
-NTLM_NegotiateAlwaysSign | \
-NTLM_NegotiateNTLM2Key)
+What am I doing wrong?
 
-=C2=A0
-take a look here for more informations:=20
-=C2=A0
-http://hg.mozilla.org/releases/mozilla-1.9.2/file/d1c0b2c4ac7a/security/man=
-ager/ssl/src/nsNTLMAuthModule.cppI hope that's may helps.
-=C2=A0
-vittorio
+cheers,
 
---_=__=_XaM3_.1287150786.2A.382330.42.5560.52.42.007.1596218869
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-
-
-<div class=3D"xam_msg_class">
-<div style=3D"font: normal 13px Arial; color:rgb(0, 0, 0);"><div><div>&gt; =
-Hi,</div><div>&gt; </div><div>&gt; I read your blog post, interesting stuff=
-. The strings the client sends</div><div>&gt; seem to be base64 encoded and=
- the first part on both messages look like</div><div>&gt; this (in nano/vi)=
-:</div><div>&gt; </div><div>&gt; NTLMSSP</div><div>&gt; </div><div>&gt; It'=
-s followed by this, which is apparently the message type hex string:</div><=
-div>&gt; </div><div>&gt; ^@^A^@^@^@</div><div>&gt; </div><div>&gt; After th=
-is they differ noticeably. I'd guess they are just sending</div><div>&gt; d=
-ifferent NTLM flags:</div><div>&gt; </div><div>&gt; </div><div>&gt; </div><=
-div>&gt; Can somebody more fluent in NTLM protocol decipher these two messa=
-ges?</div><div>&gt; </div><div>&gt; -- </div><div>&gt; Samuli Sepp?nen</div=
-><div>&gt; Community Manager</div><div>&gt; OpenVPN Technologies, Inc</div>=
-<div>&gt; </div><div>&gt; irc freenode net: mattock</div><div>&gt; </div><d=
-iv>&nbsp;</div>&nbsp;</div><div>Firefox uses the following flags:</div><div=
->&nbsp;</div><div><div style=3D"font-family: monospace;" class=3D"parity0">=
-<pre>#define NTLM_TYPE1_FLAGS      \
-(NTLM_NegotiateUnicode |    \
-NTLM_NegotiateOEM |        \
-NTLM_RequestTarget |       \
-NTLM_NegotiateNTLMKey |    \
-NTLM_NegotiateAlwaysSign | \
-NTLM_NegotiateNTLM2Key)
-</pre></div></div><div>&nbsp;</div><div>take a look here for more informati=
-ons: </div><div>&nbsp;</div><div>http://hg.mozilla.org/releases/mozilla-1.9=
-.2/file/d1c0b2c4ac7a/security/manager/ssl/src/nsNTLMAuthModule.cpp<br><br>I=
- hope that's may helps.</div><div>&nbsp;</div><div>vittorio <br></div><br><=
-/div>
-</div>
-
-
---_=__=_XaM3_.1287150786.2A.382330.42.5560.52.42.007.1596218869--
+JJK
 
 
