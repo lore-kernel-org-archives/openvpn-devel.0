@@ -1,11 +1,8 @@
-Date: Mon, 18 Oct 2010 18:41:39 +0200
-From: Alberto Gonzalez Iniesta <agi@...64...>
-Message-ID: <20101018164138.GB16573@...1330...>
-References: <4CBC6CD4.7000103@...1418...>
+Message-ID: <7a2e6f85bccdf9dc5b9d2a1c05d7bd91.squirrel@...1166...>
+Date: Mon, 18 Oct 2010 13:19:53 -0500
+From: "Daniel Johnson" <Progman2000@...1085...>
 MIME-Version: 1.0
-In-Reply-To: <4CBC6CD4.7000103@...1418...>
-Subject: Re: [Openvpn-devel] Errors adding routes on Windows 7 with OpenVPN
- 2.1.3
+Subject: [Openvpn-devel] Intelligent OpenVPN service?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,42 +11,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-On Mon, Oct 18, 2010 at 05:50:44PM +0200, Christian Rank wrote:
-> Hello,
->=20
-> we noticed a strange problem with OpenVPN 2.1.3 on a Windows 7 client
-> here: The VPN tunnel to an OpenVPN server does no longer work since the
-> OpenVPN 2.1.3 software tries to insert many strange routes into the
-> Windows 7 routing tables. With OpenVPN 2.1.1, all goes well. Our OpenVPN
-> server is running on OpenVPN 2.1_rc15 i686-pc-linux-gnu.
->=20
-> I have attached the Windows OpenVPN log file (with verbosity 4).
->=20
-> Maybe this is a bug in the Windows implementation of OpenVPN 2.1.3?
->=20
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Hi Christian,
+I want to set up company laptops and remote desktops to use OpenVPN
+as a service, but it should *only* connect if the computer does not
+already have a connection (such as locally wired or internal
+wireless).  Is this possible with the current service?  If not, what
+can I/my company do to encourage development of this feature?
 
-It's not a bug in the Windows implementation but in OpenVPN 2.1.3
-itself. The bug is reported and it is being worked in.
-I think you're using 'remote_host' on your client configuration (or
-pushing it from the server). If that's the case, try changing that with
-the IP of the VPN server and see if that fixes it in the meantime.
+As a bonus, I'd like the service to fail over to TCP if it cannot
+establish a UDP connection.  However, multiple simultaneous VPN
+connections would very likely be bad so I can't just have the
+service try both.
 
-Cheers,
+If it matters: The goal is to make the VPN totally hands-free,
+and to facilitate software deployments via Group Policy Objects
+(GPO, which I understand only happens at the logon prompt before
+the user logs in).
 
-Alberto
+In our current setup people use the OpenVPN GUI to pick "normal"
+(UDP) or "alternate" (TCP), each of which points to a pair of
+servers.
 
+Any and all help appreciated!
 
---=20
-Alberto Gonzalez Iniesta    | Formaci=F3n, consultor=EDa y soporte t=E9cnico
-agi@(inittab.org|debian.org)| en GNU/Linux y software libre
-Encrypted mail preferred    | http://inittab.com
+Daniel Johnson
+Progman2000@...1085...
 
-Key fingerprint =3D 9782 04E7 2B75 405C F5E9  0C81 C514 AF8E 4BA4 01C3
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (GNU/Linux)
+
+iEYEARECAAYFAky8j64ACgkQ6vGcUBY+ge9v6wCgj64iwXxIRvEjWkdA5B88FD06
+2pIAoLBXDUIvsHsrLyQqEE9qZm9RmqNz
+=5fwH
+-----END PGP SIGNATURE-----
+
 
