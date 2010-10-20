@@ -1,15 +1,10 @@
-Date: Wed, 20 Oct 2010 21:31:35 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20101020193135.GE10703@...1296...>
-References: <4CBC6CD4.7000103@...1418...>
-	<20101018164138.GB16573@...1330...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="53amhw1LtfB3vlEx"
-Content-Disposition: inline
-In-Reply-To: <20101018164138.GB16573@...1330...>
-Subject: Re: [Openvpn-devel] Errors adding routes on Windows 7 with OpenVPN
-	2.1.3
+MIME-Version: 1.0
+Date: Wed, 20 Oct 2010 14:58:47 -0700
+Message-ID: <AANLkTik2EpA-JAS=q6bmHrvw1qHRQp5D2rLPpbvy+NTE@...278...>
+From: Ansis Atteka <ansisatteka.dev@...277...>
+Content-Type: multipart/alternative; boundary=90e6ba6e8b04888f05049313835d
+Subject: [Openvpn-devel] With route-noexec openvpn still adds routes
+	automatically
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,34 +15,57 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
---53amhw1LtfB3vlEx
-Content-Type: text/plain; charset="us-ascii"
+--90e6ba6e8b04888f05049313835d
+Content-Type: text/plain; charset=ISO-8859-1
+
+Hello,
+
+I have OpenVPN configuration where I want to add all routes from up.sh and
+down.sh scripts manually. My setup also has route-noexec option in config
+file, so according to man pages I would expect that OpenVPN should not add
+any routes on its own:
+
+*       --route-noexec
+              Don't add or remove routes automatically.  Instead  pass
+routes
+              to --route-up script using environmental variables.
+*
+But it turns out that with topology P2P it still adds a route when setting
+up TUN with ifconfig command for pointopoint mode.
+
+
+My questions are:
+1. Is it by design that OpenVPN still adds routes automatically with
+topology p2p and route-noexec set? I guess that openvpn has limited
+visibility over what ifconfig command does, so maybe this is the reason...
+2. Should one use topology Subnet instead of P2P in such cases, to get pure
+control over what routes are being added?
+
+
+Regards,
+Ansis Atteka
+
+--90e6ba6e8b04888f05049313835d
+Content-Type: text/html; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Hello,<br><br>I have OpenVPN configuration where I want to add all routes f=
+rom up.sh and down.sh scripts manually. My setup also has route-noexec opti=
+on in config file, so according to man pages I would expect that OpenVPN sh=
+ould not add any routes on its own:<br>
+<br><i>=A0=A0=A0=A0=A0=A0 --route-noexec<br>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0 Don&#39;t add or remove routes automatically.=A0 Instead=A0 pass=
+=A0 routes<br>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 to --route-up script =
+using environmental variables.<br></i><br>But it turns out that with topolo=
+gy P2P it still adds a route when setting up TUN with ifconfig command for =
+pointopoint mode.<br>
+<br><br>My questions are:<br>1. Is it by design that OpenVPN still adds rou=
+tes automatically with topology p2p and route-noexec set? I guess that open=
+vpn has limited visibility over what ifconfig command does, so maybe this i=
+s the reason...<br>
+2. Should one use topology Subnet instead of P2P in such cases, to get pure=
+ control over what routes are being added?<br><br><br>Regards,<br>Ansis Att=
+eka<br>
 
-On Mon, Oct 18, 2010 at 06:41:39PM +0200, Alberto Gonzalez Iniesta wrote:
-> It's not a bug in the Windows implementation but in OpenVPN 2.1.3
-> itself. The bug is reported and it is being worked in.
-> I think you're using 'remote_host' on your client configuration (or
-> pushing it from the server). If that's the case, try changing that with
-> the IP of the VPN server and see if that fixes it in the meantime.
+--90e6ba6e8b04888f05049313835d--
 
-Indeed.  *sigh*.  For "special case" routes, the change introduced in 2.1.3
-to handle routes to multiple targets wrecks things in interesting ways.
-
-If I read the code right, init_route() will leave &netlist untouched for
-get_special_addr() routes ("remote_host" one of them).  netlist is on stack,
-contains random garbage, and netlist.len will not be 0 - thus, random stack
-data is copied from netlist.data[] until the route_list is full.
-
-I think the patch below should fix this, but have not tested this at all
-(neither with nor without the patch).  Applies to tag v2.1.3
-
-I'd appreciate if someone could verify my analysis and ACK or NAK :-)
-
-gert
-
-----------------------------------------------------------
---53amhw1LtfB3vlEx--
