@@ -1,14 +1,16 @@
-Date: Thu, 21 Oct 2010 07:56:56 +0200
+Date: Thu, 21 Oct 2010 10:38:52 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20101021055656.GJ10703@...1296...>
-References: <AANLkTik2EpA-JAS=q6bmHrvw1qHRQp5D2rLPpbvy+NTE@...278...>
+Message-ID: <20101021083852.GK10703@...1296...>
+References: <4CBC6CD4.7000103@...1418...>
+	<20101018164138.GB16573@...1330...>
+	<20101020193135.GE10703@...1296...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="8bKSIdaynI1BetAx"
+	protocol="application/pgp-signature"; boundary="rQvkTxYCHmztyjwM"
 Content-Disposition: inline
-In-Reply-To: <AANLkTik2EpA-JAS=q6bmHrvw1qHRQp5D2rLPpbvy+NTE@...278...>
-Subject: Re: [Openvpn-devel] With route-noexec openvpn still adds routes
-	automatically
+In-Reply-To: <20101020193135.GE10703@...1296...>
+Subject: Re: [Openvpn-devel] Errors adding routes on Windows 7 with OpenVPN
+	2.1.3
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,58 +19,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Ansis Atteka <ansisatteka.dev@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
---8bKSIdaynI1BetAx
+--rQvkTxYCHmztyjwM
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Wed, Oct 20, 2010 at 02:58:47PM -0700, Ansis Atteka wrote:
-> 1. Is it by design that OpenVPN still adds routes automatically with
-> topology p2p and route-noexec set? I guess that openvpn has limited
-> visibility over what ifconfig command does, so maybe this is the reason...
+On Wed, Oct 20, 2010 at 09:31:35PM +0200, Gert Doering wrote:
+> I think the patch below should fix this, but have not tested this at all
+> (neither with nor without the patch).  Applies to tag v2.1.3
 
-This depends on platform used.  On a number of systems, "ifconfig" alone
-will not produce a working tun interface, you need to explicitely add
-the interface route to make it work.
+David suggested to use CLEAR() to make easier-understandable code and
+more thorough clearing.  Patch (goes on top of the last patch) below.
 
-This happens pretty far "under the hood", and doesn't go through the normal
-"setup a list of routes, then decide what to do with it" mechanics
-(which would honour route-noexec).
-
-> 2. Should one use topology Subnet instead of P2P in such cases, to get pu=
-re
-> control over what routes are being added?
-
-On some platforms, this will also need an explicit route command (MacOS,
-for example).  So you'll always have some routes directly executed.
+Agi, either patch should work, but if you haven't tested the other one
+yet, please test this one.
 
 gert
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---8bKSIdaynI1BetAx
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (NetBSD)
-
-iQCVAwUBTL/WJ6kuBuNlUUl1AQJARwQAv7dUt2JZaDGLFfoA6DZAUn+u6cnZO2lR
-gOfPwpYWOK+AsPLzZqlNVZdfzelDAobwyCAtDvmZLKsoizGl7DZlJOEkGfFvpv0L
-U6k++vC6fSR73mKouzfwnoKef8L/8GtEwsC7g+saXpb27iFJVwHouyTaSprCD0Br
-+nsU+04K77o=
-=2XUu
------END PGP SIGNATURE-----
-
---8bKSIdaynI1BetAx--
-
+--rQvkTxYCHmztyjwM--
