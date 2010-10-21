@@ -1,14 +1,11 @@
-Date: Thu, 21 Oct 2010 12:56:23 +0200
-From: Alberto Gonzalez Iniesta <agi@...64...>
-Message-ID: <20101021105623.GF2571@...1330...>
-References: <4CBC6CD4.7000103@...1418...>
-	<20101018164138.GB16573@...1330...>
-	<20101020193135.GE10703@...1296...>
-	<20101021083852.GK10703@...1296...>
+Message-ID: <4CC05427.3080701@...1147...>
+Date: Thu, 21 Oct 2010 16:54:31 +0200
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-In-Reply-To: <20101021083852.GK10703@...1296...>
-Subject: Re: [Openvpn-devel] Errors adding routes on Windows 7 with OpenVPN
- 2.1.3
+References: <AANLkTik2EpA-JAS=q6bmHrvw1qHRQp5D2rLPpbvy+NTE@...278...>
+In-Reply-To: <AANLkTik2EpA-JAS=q6bmHrvw1qHRQp5D2rLPpbvy+NTE@...278...>
+Subject: Re: [Openvpn-devel] With route-noexec openvpn still adds
+	routes	automatically
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,39 +14,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Ansis Atteka <ansisatteka.dev@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Thu, Oct 21, 2010 at 10:38:52AM +0200, Gert Doering wrote:
-> Hi,
->=20
-> On Wed, Oct 20, 2010 at 09:31:35PM +0200, Gert Doering wrote:
-> > I think the patch below should fix this, but have not tested this at all
-> > (neither with nor without the patch).  Applies to tag v2.1.3
->=20
-> David suggested to use CLEAR() to make easier-understandable code and
-> more thorough clearing.  Patch (goes on top of the last patch) below.
->=20
-> Agi, either patch should work, but if you haven't tested the other one
-> yet, please test this one.
->=20
+Ansis Atteka wrote:
+> Hello,
+>
+> I have OpenVPN configuration where I want to add all routes from up.sh 
+> and down.sh scripts manually. My setup also has route-noexec option in 
+> config file, so according to man pages I would expect that OpenVPN 
+> should not add any routes on its own:
+>
+> /       --route-noexec
+>               Don't add or remove routes automatically.  Instead  
+> pass  routes
+>               to --route-up script using environmental variables.
+> /
+> But it turns out that with topology P2P it still adds a route when 
+> setting up TUN with ifconfig command for pointopoint mode.
+>
+>
+> My questions are:
+> 1. Is it by design that OpenVPN still adds routes automatically with 
+> topology p2p and route-noexec set? I guess that openvpn has limited 
+> visibility over what ifconfig command does, so maybe this is the reason...
+> 2. Should one use topology Subnet instead of P2P in such cases, to get 
+> pure control over what routes are being added?
+>
+>
+alternatively you could use
+  ifconfig-noexec
+and write a script which brings up the tun interface for you - in that 
+case you're solely responsible for bringing up the interface in the 
+right manner and for adding or not adding any routes.
 
-Hi,
+HTH,
 
-I tested the patch successfully. It works for me(tm). OpenVPN stopped
-adding those random routes, while it added the right one for the
-"remote_host".
+JJK
 
-Thanks,
-
-Alberto
-
---=20
-Alberto Gonzalez Iniesta    | Formaci=F3n, consultor=EDa y soporte t=E9cnico
-agi@(inittab.org|debian.org)| en GNU/Linux y software libre
-Encrypted mail preferred    | http://inittab.com
-
-Key fingerprint =3D 9782 04E7 2B75 405C F5E9  0C81 C514 AF8E 4BA4 01C3
 
