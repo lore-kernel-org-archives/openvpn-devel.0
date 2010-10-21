@@ -1,9 +1,13 @@
-MIME-Version: 1.0
-Date: Wed, 20 Oct 2010 14:58:47 -0700
-Message-ID: <AANLkTik2EpA-JAS=q6bmHrvw1qHRQp5D2rLPpbvy+NTE@...278...>
-From: Ansis Atteka <ansisatteka.dev@...277...>
-Content-Type: multipart/alternative; boundary=90e6ba6e8b04888f05049313835d
-Subject: [Openvpn-devel] With route-noexec openvpn still adds routes
+Date: Thu, 21 Oct 2010 07:56:56 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20101021055656.GJ10703@...1296...>
+References: <AANLkTik2EpA-JAS=q6bmHrvw1qHRQp5D2rLPpbvy+NTE@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="8bKSIdaynI1BetAx"
+Content-Disposition: inline
+In-Reply-To: <AANLkTik2EpA-JAS=q6bmHrvw1qHRQp5D2rLPpbvy+NTE@...278...>
+Subject: Re: [Openvpn-devel] With route-noexec openvpn still adds routes
 	automatically
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,59 +17,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Ansis Atteka <ansisatteka.dev@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---90e6ba6e8b04888f05049313835d
-Content-Type: text/plain; charset=ISO-8859-1
-
-Hello,
-
-I have OpenVPN configuration where I want to add all routes from up.sh and
-down.sh scripts manually. My setup also has route-noexec option in config
-file, so according to man pages I would expect that OpenVPN should not add
-any routes on its own:
-
-*       --route-noexec
-              Don't add or remove routes automatically.  Instead  pass
-routes
-              to --route-up script using environmental variables.
-*
-But it turns out that with topology P2P it still adds a route when setting
-up TUN with ifconfig command for pointopoint mode.
-
-
-My questions are:
-1. Is it by design that OpenVPN still adds routes automatically with
-topology p2p and route-noexec set? I guess that openvpn has limited
-visibility over what ifconfig command does, so maybe this is the reason...
-2. Should one use topology Subnet instead of P2P in such cases, to get pure
-control over what routes are being added?
-
-
-Regards,
-Ansis Atteka
-
---90e6ba6e8b04888f05049313835d
-Content-Type: text/html; charset="ISO-8859-1"
+--8bKSIdaynI1BetAx
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Hello,<br><br>I have OpenVPN configuration where I want to add all routes f=
-rom up.sh and down.sh scripts manually. My setup also has route-noexec opti=
-on in config file, so according to man pages I would expect that OpenVPN sh=
-ould not add any routes on its own:<br>
-<br><i>=A0=A0=A0=A0=A0=A0 --route-noexec<br>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0 Don&#39;t add or remove routes automatically.=A0 Instead=A0 pass=
-=A0 routes<br>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 to --route-up script =
-using environmental variables.<br></i><br>But it turns out that with topolo=
-gy P2P it still adds a route when setting up TUN with ifconfig command for =
-pointopoint mode.<br>
-<br><br>My questions are:<br>1. Is it by design that OpenVPN still adds rou=
-tes automatically with topology p2p and route-noexec set? I guess that open=
-vpn has limited visibility over what ifconfig command does, so maybe this i=
-s the reason...<br>
-2. Should one use topology Subnet instead of P2P in such cases, to get pure=
- control over what routes are being added?<br><br><br>Regards,<br>Ansis Att=
-eka<br>
+Hi,
 
---90e6ba6e8b04888f05049313835d--
+On Wed, Oct 20, 2010 at 02:58:47PM -0700, Ansis Atteka wrote:
+> 1. Is it by design that OpenVPN still adds routes automatically with
+> topology p2p and route-noexec set? I guess that openvpn has limited
+> visibility over what ifconfig command does, so maybe this is the reason...
+
+This depends on platform used.  On a number of systems, "ifconfig" alone
+will not produce a working tun interface, you need to explicitely add
+the interface route to make it work.
+
+This happens pretty far "under the hood", and doesn't go through the normal
+"setup a list of routes, then decide what to do with it" mechanics
+(which would honour route-noexec).
+
+> 2. Should one use topology Subnet instead of P2P in such cases, to get pu=
+re
+> control over what routes are being added?
+
+On some platforms, this will also need an explicit route command (MacOS,
+for example).  So you'll always have some routes directly executed.
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--8bKSIdaynI1BetAx
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (NetBSD)
+
+iQCVAwUBTL/WJ6kuBuNlUUl1AQJARwQAv7dUt2JZaDGLFfoA6DZAUn+u6cnZO2lR
+gOfPwpYWOK+AsPLzZqlNVZdfzelDAobwyCAtDvmZLKsoizGl7DZlJOEkGfFvpv0L
+U6k++vC6fSR73mKouzfwnoKef8L/8GtEwsC7g+saXpb27iFJVwHouyTaSprCD0Br
++nsU+04K77o=
+=2XUu
+-----END PGP SIGNATURE-----
+
+--8bKSIdaynI1BetAx--
 
