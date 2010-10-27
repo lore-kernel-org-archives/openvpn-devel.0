@@ -1,10 +1,10 @@
+Message-ID: <4CC838AE.7080408@...1147...>
+Date: Wed, 27 Oct 2010 16:35:26 +0200
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-In-Reply-To: <AANLkTik4eydtMdKm7un1cbf6YvLUQi70OxjXaimqELR8@...278...>
-References: <AANLkTik4eydtMdKm7un1cbf6YvLUQi70OxjXaimqELR8@...278...>
-Date: Tue, 26 Oct 2010 21:00:01 -0700
-Message-ID: <AANLkTi=dkqULV7Yyh=bKunrKAVohXjkPSM0QsskQ_hLu@...278...>
-From: Blaise Gassend <blaise@...1426...>
-Subject: [Openvpn-devel] Fwd: PATCH: floating-tls
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
+	micalg=sha1; boundary="------------ms000004070800040301070005"
+Subject: [Openvpn-devel] openvpn 2.2 --x509-username-field
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,360 +13,164 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+This is a cryptographically signed message in MIME format.
 
-To allow seamless roaming of our robots at willowgarage
-(http://willowgarage.com), I have put together a patch that allows TLS
-connections to float. I would like to put this patch up for critique
-and possible inclusion into mainline openvpn. The general approach has
-been to prefix a few bytes at the start of each packet which contain
-an opcode and a unique identifier (random number) for the session.
-That identifier is used instead of the IP address for determining
-which connection the packet belongs to.
+--------------ms000004070800040301070005
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Regards,
-Blaise
+hi all,
 
---- a/configure.ac
-+++ b/configure.ac
-@@ -129,6 +129,12 @@
-=A0 =A0[FRAGMENT=3D"yes"]
-=A0)
+I was just playing with the new 2.2 option
+  --x509-username-field <field>
+why is the field "uppercased" ? There are quite a few X509 fields that 
+are case sensitive:
+  emailAddress
+  name
+  dnQualifier
+etc (all from /usr/include/openssl/objects.h)
 
-+AC_ARG_ENABLE(floating-tls,
-+ =A0 [ =A0--disable-floating-tls =A0Disable floating tls support (--floati=
-ng-tls)],
-+ =A0 [FLOATING_TLS=3D"$enableval"],
-+ =A0 [FLOATING_TLS=3D"yes"]
-+)
-+
-=A0AC_ARG_ENABLE(multihome,
-=A0 =A0[ =A0--disable-multihome =A0 =A0 Disable multi-homed UDP server supp=
-ort
-(--multihome)],
-=A0 =A0[MULTIHOME=3D"$enableval"],
-@@ -791,6 +797,11 @@
-=A0 =A0AC_DEFINE(ENABLE_HTTP_PROXY, 1, [Enable HTTP proxy support])
-=A0fi
+It should also be noted that only the objects listed in the objects.h 
+file can be added to the subject string  - simply doing something like
+  /NAME=blah
+will not be grokked by openssl.
 
-+dnl compile --floating-tls option
-+if test "$FLOATING_TLS" =3D "yes"; then
-+ =A0 AC_DEFINE(FLOATING_TLS, 1, [Enable floating-tls UDP server capability=
-])
-+fi
-+
-=A0dnl compile --multihome option
-=A0if test "$MULTIHOME" =3D "yes"; then
-=A0 =A0AC_DEFINE(ENABLE_MULTIHOME, 1, [Enable multi-homed UDP server capabi=
-lity])
---- a/forward.c
-+++ b/forward.c
-@@ -39,6 +39,10 @@
-=A0#include "occ-inline.h"
-=A0#include "ping-inline.h"
+cheers,
 
-+#ifdef FLOATING_TLS
-+#include "ssl.h"
-+#endif
-+
-=A0/* show event wait debugging info */
+JJK
 
-=A0#ifdef ENABLE_DEBUG
-@@ -834,7 +838,11 @@
-=A0 =A0 =A0 =A0*
-=A0 =A0 =A0 =A0* Also, update the persisted version of our packet-id.
-=A0 =A0 =A0 =A0*/
-- =A0 =A0 =A0if (!TLS_MODE (c))
-+ =A0 =A0 =A0if (!TLS_MODE (c)
-+#ifdef FLOATING_TLS
-+ =A0 =A0 =A0 =A0 =A0|| c->options.floating_tls
-+#endif
-+ =A0 =A0 =A0 =A0 =A0)
-=A0 =A0 =A0 =A0link_socket_set_outgoing_addr (&c->c2.buf, lsi, &c->c2.from,
-NULL, c->c2.es);
 
-=A0 =A0 =A0 /* reset packet received timer */
-@@ -1088,6 +1096,21 @@
-=A0 =A0 =A0 =A0 =A0 =A0/* If Socks5 over UDP, prepend header */
-=A0 =A0 =A0 =A0 =A0 =A0socks_preprocess_outgoing_link (c, &to_addr, &size_d=
-elta);
-=A0#endif
-+
-+#ifdef FLOATING_TLS
-+ =A0 =A0 =A0 =A0 =A0 =A0if (c->c2.link_socket->info.proto =3D=3D PROTO_UDP=
-v4 &&
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0c->options.floating_tls &&
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0c->options.tls_client)
-+ =A0 =A0 =A0 =A0 =A0 =A0{
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0if (c->floating_tls_prefix =3D=3D 0)
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0RAND_bytes((uint8_t *) &c->floating_tls_pr=
-efix,
-sizeof(c->floating_tls_prefix));
-+
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0struct buffer *buf =3D &c->c2.to_link;
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0uint8_t opcode =3D FLOATING_TLS_OPCODE |
-sizeof(c->floating_tls_prefix);
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0ASSERT (buf_write_prepend (buf,
-&c->floating_tls_prefix, sizeof (c->floating_tls_prefix)));
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0ASSERT (buf_write_prepend (buf, &opcode, sizeo=
-f (opcode)));
-+ =A0 =A0 =A0 =A0 =A0 =A0}
-+#endif
-=A0 =A0 =A0 =A0 =A0 =A0/* Send packet */
-=A0 =A0 =A0 =A0 =A0 =A0size =3D link_socket_write (c->c2.link_socket,
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
-&c->c2.to_link,
---- a/init.c
-+++ b/init.c
-@@ -1826,6 +1826,10 @@
-=A0 to.disable_occ =3D !options->occ;
-=A0#endif
 
-+#ifdef FLOATING_TLS
-+ =A0to.floating_tls =3D options->floating_tls;
-+#endif
-+
-=A0 to.verify_command =3D options->tls_verify;
-=A0 to.verify_x509name =3D options->tls_remote;
-=A0 to.crl_file =3D options->crl_file;
---- a/mudp.c
-+++ b/mudp.c
-@@ -31,6 +31,10 @@
 
-=A0#include "memdbg.h"
+--------------ms000004070800040301070005
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
-+#ifdef FLOATING_TLS
-+#include "ssl.h"
-+#endif
-+
-=A0/*
-=A0* Get a client instance based on real address. =A0If
-=A0* the instance doesn't exist, create it while
-@@ -44,8 +48,36 @@
-=A0 struct mroute_addr real;
-=A0 struct multi_instance *mi =3D NULL;
-=A0 struct hash *hash =3D m->hash;
-+ =A0bool ret =3D false;
-+
-+#ifdef FLOATING_TLS
-+ =A0// Check if this is a floating-tls packet
-+ =A0if (m->top.c2.buf.len > 0)
-+ =A0{
-+ =A0 =A0uint8_t c =3D *BPTR (&m->top.c2.buf);
-+ =A0 =A0if ((c & FLOATING_TLS_OPCODE_MASK) =3D=3D FLOATING_TLS_OPCODE)
-+ =A0 =A0{
-+ =A0 =A0 =A0int len =3D c & FLOATING_TLS_LENGTH_MASK;
-+ =A0 =A0 =A0uint8_t *id =3D BPTR (&m->top.c2.buf) + 1;
-+
-+ =A0 =A0 =A0if (buf_advance(&m->top.c2.buf, len + 1))
-+ =A0 =A0 =A0{
-+ =A0 =A0 =A0 =A0int i;
-+ =A0 =A0 =A0 =A0real.type =3D MR_ADDR_IPV4 | MR_WITH_PORT;
-+ =A0 =A0 =A0 =A0real.netbits =3D 0;
-+ =A0 =A0 =A0 =A0real.len =3D len;
-+ =A0 =A0 =A0 =A0memcpy (real.addr, id, real.len);
-+ =A0 =A0 =A0 =A0ret =3D true;
-+ =A0 =A0 =A0}
-+ =A0 =A0}
-+ =A0}
-+#endif
-+
-+ =A0// Not a floating-tls packet
-+ =A0if (!ret)
-+ =A0 =A0ret =3D mroute_extract_openvpn_sockaddr (&real, &m->top.c2.from.de=
-st, true);
-
-- =A0if (mroute_extract_openvpn_sockaddr (&real, &m->top.c2.from.dest, true=
-))
-+ =A0if (ret)
-=A0 =A0 {
-=A0 =A0 =A0 struct hash_element *he;
-=A0 =A0 =A0 const uint32_t hv =3D hash_value (hash, &real);
---- a/openvpn.h
-+++ b/openvpn.h
-@@ -484,6 +484,10 @@
-=A0 /* persistent across SIGHUP */
-=A0 struct context_persist persist;
-
-+#ifdef FLOATING_TLS
-+ =A0uint64_t floating_tls_prefix;
-+#endif
-+
-=A0 /* level 0 context contains data related to
-=A0 =A0 =A0once-per OpenVPN instantiation events
-=A0 =A0 =A0such as daemonization */
---- a/options.c
-+++ b/options.c
-@@ -126,6 +126,7 @@
-=A0 " =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Set n=3D\"infinite\" to retry inde=
-finitely.\n"
-=A0 "--float =A0 =A0 =A0 =A0 : Allow remote to change its IP address/port, =
-such
-as through\n"
-=A0 " =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0DHCP (this is the default if --rem=
-ote is not used).\n"
-+ =A0"--floating-tls =A0: Allows floating in multi-tls sessions.\n"
-=A0 "--ipchange cmd =A0: Execute shell command cmd on remote ip address ini=
-tial\n"
-=A0 " =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0setting or change -- execute as: c=
-md ip-address port#\n"
-=A0 "--port port =A0 =A0 : TCP/UDP port # for both local and remote.\n"
-@@ -1334,6 +1335,10 @@
-=A0 SHOW_BOOL (tls_exit);
-
-=A0 SHOW_STR (tls_auth_file);
-+
-+#ifdef FLOATING_TLS
-+ =A0SHOW_BOOL (floating_tls);
-+#endif
-=A0#endif
-=A0#endif
-
-@@ -1909,6 +1914,9 @@
-=A0 =A0 =A0 MUST_BE_UNDEF (transition_window);
-=A0 =A0 =A0 MUST_BE_UNDEF (tls_auth_file);
-=A0 =A0 =A0 MUST_BE_UNDEF (single_session);
-+#ifdef FLOATING_TLS
-+ =A0 =A0 =A0MUST_BE_UNDEF (floating_tls);
-+#endif
-=A0 =A0 =A0 MUST_BE_UNDEF (tls_exit);
-=A0 =A0 =A0 MUST_BE_UNDEF (crl_file);
-=A0 =A0 =A0 MUST_BE_UNDEF (key_method);
-@@ -2339,6 +2347,11 @@
-=A0 =A0 =A0 =A0 =A0buf_printf (&out, ",no-iv");
-=A0 =A0 =A0 }
-
-+#ifdef FLOATING_TLS
-+ =A0if (o->floating_tls)
-+ =A0 =A0buf_printf (&out, ",floating-tls");
-+#endif
-+
-=A0#ifdef USE_SSL
-=A0 /*
-=A0 =A0* SSL Options
-@@ -5413,6 +5426,13 @@
-=A0 =A0 =A0 VERIFY_PERMISSION (OPT_P_GENERAL);
-=A0 =A0 =A0 options->single_session =3D true;
-=A0 =A0 }
-+#ifdef FLOATING_TLS
-+ =A0else if (streq (p[0], "floating-tls"))
-+ =A0 =A0{
-+ =A0 =A0 =A0VERIFY_PERMISSION (OPT_P_GENERAL);
-+ =A0 =A0 =A0options->floating_tls =3D true;
-+ =A0 =A0}
-+#endif
-=A0 else if (streq (p[0], "tls-exit"))
-=A0 =A0 {
-=A0 =A0 =A0 VERIFY_PERMISSION (OPT_P_GENERAL);
---- a/options.h
-+++ b/options.h
-@@ -168,6 +168,10 @@
-=A0 bool genkey;
-=A0#endif
-
-+#ifdef FLOATING_TLS
-+ =A0bool floating_tls;
-+#endif
-+
-=A0 /* Networking parms */
-=A0 struct connection_entry ce;
-
---- a/ssl.c
-+++ b/ssl.c
-@@ -4160,7 +4160,12 @@
-=A0#ifdef ENABLE_DEF_AUTH
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0&& !ks->auth_deferred
-=A0#endif
-- =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 && link_socket_actual_match (from, &ks->r=
-emote_addr))
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 && (
-+#ifdef FLOATING_TLS
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0multi->opt.floating_tls ||
-+#endif
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0link_socket_actual_match (from, &k=
-s->remote_addr)
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0))
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0{
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0/* return appropriate data channel decry=
-pt key in opt */
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0opt->key_ctx_bi =3D &ks->key;
-@@ -4403,7 +4408,11 @@
-=A0 =A0 =A0 =A0 =A0 =A0 =A0/*
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 * Verify remote IP address
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 */
-- =A0 =A0 =A0 =A0 =A0 =A0 if (!new_link && !link_socket_actual_match
-(&ks->remote_addr, from))
-+ =A0 =A0 =A0 =A0 =A0 =A0 if (!new_link
-+#ifdef FLOATING_TLS
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0&& !multi->opt.floating_tls
-+#endif
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0&& !link_socket_actual_match (&ks->rem=
-ote_addr, from))
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0{
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0msg (D_TLS_ERRORS, "TLS Error: Received =
-control packet from
-unexpected IP addr: %s",
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0print_link_socket_actual (from, =
-&gc));
-@@ -4468,7 +4477,11 @@
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0ks->remote_addr =3D *from;
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0++multi->n_sessions;
-=A0 =A0 =A0 =A0 =A0 =A0 =A0}
-- =A0 =A0 =A0 =A0 =A0 else if (!link_socket_actual_match (&ks->remote_addr,=
- from))
-+ =A0 =A0 =A0 =A0 =A0 else if (
-+#ifdef FLOATING_TLS
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0!multi->opt.floating_tls &&
-+#endif
-+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0!link_socket_actual_match (&ks->remote_add=
-r, from))
-=A0 =A0 =A0 =A0 =A0 =A0 =A0{
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0msg (D_TLS_ERRORS,
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 "TLS Error: Existing session contro=
-l channel packet from
-unknown IP address: %s",
---- a/ssl.h
-+++ b/ssl.h
-@@ -221,6 +221,13 @@
-=A0#define P_FIRST_OPCODE =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 1
-=A0#define P_LAST_OPCODE =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A08
-
-+/* Extra opcodes for floating TLS */
-+#ifdef FLOATING_TLS
-+#define FLOATING_TLS_OPCODE_MASK 0xF0
-+#define FLOATING_TLS_OPCODE 0xF0
-+#define FLOATING_TLS_LENGTH_MASK 0x0F
-+#endif
-+
-=A0/* key negotiation states */
-=A0#define S_ERROR =A0 =A0 =A0 =A0 =A0-1
-=A0#define S_UNDEF =A0 =A0 =A0 =A0 =A0 0
-@@ -416,6 +423,10 @@
-=A0 int key_method;
-=A0 bool replay;
-=A0 bool single_session;
-+#ifdef FLOATING_TLS
-+ =A0bool floating_tls;
-+#endif
-+
-=A0#ifdef ENABLE_OCC
-=A0 bool disable_occ;
-=A0#endif
---- a/openvpn.8
-+++ b/openvpn.8
-@@ -573,6 +573,10 @@
-=A0option.
-=A0.\"*********************************************************
-=A0.TP
-+.B \-\-floating-tls
-+Allows tls connections to float.
-+.\"*********************************************************
-+.TP
-=A0.B \-\-ipchange cmd
-=A0Execute shell command
-=A0.B cmd
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIVSjCC
+BIowggNyoAMCAQICECf06hH0eobEbp27bqkXBwcwDQYJKoZIhvcNAQEFBQAwbzELMAkGA1UE
+BhMCU0UxFDASBgNVBAoTC0FkZFRydXN0IEFCMSYwJAYDVQQLEx1BZGRUcnVzdCBFeHRlcm5h
+bCBUVFAgTmV0d29yazEiMCAGA1UEAxMZQWRkVHJ1c3QgRXh0ZXJuYWwgQ0EgUm9vdDAeFw0w
+NTA2MDcwODA5MTBaFw0yMDA1MzAxMDQ4MzhaMIGuMQswCQYDVQQGEwJVUzELMAkGA1UECBMC
+VVQxFzAVBgNVBAcTDlNhbHQgTGFrZSBDaXR5MR4wHAYDVQQKExVUaGUgVVNFUlRSVVNUIE5l
+dHdvcmsxITAfBgNVBAsTGGh0dHA6Ly93d3cudXNlcnRydXN0LmNvbTE2MDQGA1UEAxMtVVRO
+LVVTRVJGaXJzdC1DbGllbnQgQXV0aGVudGljYXRpb24gYW5kIEVtYWlsMIIBIjANBgkqhkiG
+9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsjmFpPJ9q0E7YkY3rs3BYHW8OWX5ShpHornMSMxqmNVN
+NRm5pELlzkniii8efNIxB8dOtINknS4p1aJkxIW9hVE1eaROaJB7HHqkkqgX8pgV8pPMyaQy
+lbsMTzC9mKALi+VuG6JG+ni8om+rWV6lL8/K2m2qL+usobNqqrcuZzWLeeEeaYji5kbNoKXq
+vgvOdjp6Dpvq/NonWz1zHyLmSGHGTPNpsaguG7bUMSAsvIKKjqQOpdeJQ/wWWq8dcdcRWdq6
+hw2v+vPhwvCkxWeM1tZUOt4KpLoDd7NlyP0e03RiqhjKaJMeoYV+9Udly/hNVyh00jT/MLbu
+9mIwFIws6wIDAQABo4HhMIHeMB8GA1UdIwQYMBaAFK29mHo0tCb3+sQmVO8DveAky1QaMB0G
+A1UdDgQWBBSJgmd9xJ0mcABLtFBIfN49rgRufTAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/
+BAUwAwEB/zB7BgNVHR8EdDByMDigNqA0hjJodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9BZGRU
+cnVzdEV4dGVybmFsQ0FSb290LmNybDA2oDSgMoYwaHR0cDovL2NybC5jb21vZG8ubmV0L0Fk
+ZFRydXN0RXh0ZXJuYWxDQVJvb3QuY3JsMA0GCSqGSIb3DQEBBQUAA4IBAQAZ2IkRbyispgCi
+54fBm5AD236hEv0e8+LwAamUVEJrmgnEoG3XkJIEA2Z5Q3H8+G+v23ZF4jcaPd3kWQR4rBz0
+g0bzes9bhHIt5UbBuhgRKfPLSXmHPLptBZ2kbWhPrXIUNqi5sf2/z3/wpGqUNVCPz4FtVbHd
+WTBK322gnGQfSXzvNrv042n0+DmPWq1LhTq3Du3Tzw1EovsEv+QvcI4l+1pUBrPQxLxtjftz
+Mizpm4QkLdZ/kXpoAlAfDj9N6cz1u2fo3BwuO/xOzf4CjuOoEwqlJkRl6RDyTVKnrtw+ymsy
+XEFs/vVdoOr/0fqbhlhtPZZH5f4ulQTCAMyOofK7MIIE2jCCA8KgAwIBAgIQXf9Q6v4PU0aI
+n4BBj+dCyDANBgkqhkiG9w0BAQUFADCBrjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAlVUMRcw
+FQYDVQQHEw5TYWx0IExha2UgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBOZXR3b3Jr
+MSEwHwYDVQQLExhodHRwOi8vd3d3LnVzZXJ0cnVzdC5jb20xNjA0BgNVBAMTLVVUTi1VU0VS
+Rmlyc3QtQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBFbWFpbDAeFw0wOTA1MTgwMDAwMDBa
+Fw0yODEyMzEyMzU5NTlaMEQxCzAJBgNVBAYTAk5MMQ8wDQYDVQQKEwZURVJFTkExJDAiBgNV
+BAMTG1RFUkVOQSBlU2NpZW5jZSBQZXJzb25hbCBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEP
+ADCCAQoCggEBAMS8JX3N71kEq3QnKbZjiu/ENXChRgivblCbG3F4lwKFwDX/kBgRZvozORSe
+pBL3Pe4FLIHn9y0uNnhDDjm2f3p0w8tVPy+zy8M3auGVAyMbsyKYE4NYMF+sPJFF020LLsvR
+kWGyynH6wokMewnWkr+jgRcRVSDfN4GfHiYJHdIXGUPLi5kldEFb5jIq0KdT3NIhjc2Rz3ts
+9Mn+0OXSBmsaYUIbgJEH3BRJJzsKirLiO2kIhMuBmde6FB/YfpJjvfYtMfqVTs02DZnvEbqt
+SvuoxHi5fFo+yPUIMsCpBceMGiiPMLoXo/G54genuPtVv59iWtUUDwi0E5nSEnla8P0CAwEA
+AaOCAVswggFXMB8GA1UdIwQYMBaAFImCZ33EnSZwAEu0UEh83j2uBG59MB0GA1UdDgQWBBTI
+iXOZp11RFlNFVHyjwjl8y9eqgTAOBgNVHQ8BAf8EBAMCAQYwEgYDVR0TAQH/BAgwBgEB/wIB
+ADAmBgNVHSAEHzAdMA0GCysGAQQBsjEBAgIdMAwGCiqGSIb3TAUCAgUwWAYDVR0fBFEwTzBN
+oEugSYZHaHR0cDovL2NybC51c2VydHJ1c3QuY29tL1VUTi1VU0VSRmlyc3QtQ2xpZW50QXV0
+aGVudGljYXRpb25hbmRFbWFpbC5jcmwwbwYIKwYBBQUHAQEEYzBhMDgGCCsGAQUFBzAChixo
+dHRwOi8vY3J0LnVzZXJ0cnVzdC5jb20vVVROQUFBQ2xpZW50X0NBLmNydDAlBggrBgEFBQcw
+AYYZaHR0cDovL29jc3AudXNlcnRydXN0LmNvbTANBgkqhkiG9w0BAQUFAAOCAQEACBekHPkV
+a7AZYW+gSON6JO9BVZqgUHDYI9VThkpnjujaVhYYLBsYIYm6mCTuVjTjF4YmvSFa1BmTSuph
+dE22xISNR+7KLmVtNpOYseKSZojiTnt1x15EaSHcEmow/GGA/g/wndLcfq7lwlNNC3CDYVZF
++z3fcvYCQnXriIqYV2D1n6JySbF6PkFnNcNVKw0HNejGK9W6h3mAdOeSNr1GgXouKeJqvuEX
+EzV8FqQlMy9h7s7JUuBA29O+OVrPz0wU5X/FQ1eLTblajsIPBk3eyEmdgXO65D+YpZM8WU7b
+mzXf/k2/VaHpZMNFfKyPfEfROvFOddmQZ0DosS+eFy9cNTCCBeswggTToAMCAQICEQDqd027
+X/SkNzhCJGqZvKSVMA0GCSqGSIb3DQEBBQUAMEQxCzAJBgNVBAYTAk5MMQ8wDQYDVQQKEwZU
+RVJFTkExJDAiBgNVBAMTG1RFUkVOQSBlU2NpZW5jZSBQZXJzb25hbCBDQTAeFw0xMDA1MDMw
+MDAwMDBaFw0xMTA2MDIyMzU5NTlaMIGNMRMwEQYKCZImiZPyLGQBGRYDb3JnMRYwFAYKCZIm
+iZPyLGQBGRYGdGVyZW5hMRMwEQYKCZImiZPyLGQBGRYDdGNzMQswCQYDVQQGEwJOTDEPMA0G
+A1UEChMGTmlraGVmMSswKQYDVQQDFCJKYW4gSnVzdCBLZWlqc2VyIGphbmp1c3RAbmlraGVm
+Lm5sMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAwy8BUSJ6rNqx5yZDsjVNHvSw
+ksD7EcOzDBMrfKBIDv1jeqfMDGL86CFjgVzHxhMBtox2ajCpBylpzT/jDjclAIeaAd73wjPX
+OTHAdQWxV730+jAhhDT1ghUt/0T61p++F5acu7C9cd7HaceuPYYWj8fMN1AVU5TyToLG/O1l
+LN7cKc2MJn/SSEIMzTUAALwkx4KHN1f3m4Z3rVi+37ptWv6vVUXcgjMTnfJR/q1DJDnvIrvV
+rqKIKNIsxUeATP62o2TnVtaY874y8u4NwZrZR2qnskM0EfSHKpvmP3HIgbTsztrElHuU/OFc
+uLXMgsWEBBCIliFgFjQ2PtmWhyTmmgeJCw20fOAcvzzkKdVgi8j4RiUAMwFyTBIrqIRJdtxD
+iem2kMrqeUg3fI62Oo0fD4A1Zun5YdgQ0rWysczV+JpbyFkX8ZT6DMApAv3XkygwtUcb1TTx
+xLoR2s2e/Lq+qz195SPqChoZnYkyhMJgAA/4yHjzBNoI+iRT0lh4jhXyG+ClYiqknsY56kI/
+RzBMTBxnHWKV5V1W0l0MKKu9Lvbw+dwsV9GlUCV1J7qHr4/wCaT8VTFlt7q0kWekEAkBYRte
+5St/5O9p3K/hV55Lb3ESMPKZ0EUfKhYgKLFWp2wXSQ80Rp6ODeGLqU17iIE2FkcoQTK+cHJl
+TAdlN5uVv70CAwEAAaOCAYwwggGIMB8GA1UdIwQYMBaAFMiJc5mnXVEWU0VUfKPCOXzL16qB
+MB0GA1UdDgQWBBSBc9tCj21ppWOnq8KN9EpNjGaBPjAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0T
+AQH/BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDBAYIKwYBBQUHAwIwJgYDVR0gBB8wHTANBgsr
+BgEEAbIxAQICHTAMBgoqhkiG90wFAgIFMEcGA1UdHwRAMD4wPKA6oDiGNmh0dHA6Ly9jcmwu
+dGNzLnRlcmVuYS5vcmcvVEVSRU5BZVNjaWVuY2VQZXJzb25hbENBLmNybDB6BggrBgEFBQcB
+AQRuMGwwQgYIKwYBBQUHMAKGNmh0dHA6Ly9jcnQudGNzLnRlcmVuYS5vcmcvVEVSRU5BZVNj
+aWVuY2VQZXJzb25hbENBLmNydDAmBggrBgEFBQcwAYYaaHR0cDovL29jc3AudGNzLnRlcmVu
+YS5vcmcwHAYDVR0RBBUwE4ERamFuanVzdEBuaWtoZWYubmwwDQYJKoZIhvcNAQEFBQADggEB
+AJSWpXBQbPhSQE2S2VT07sEkiqcUQzecT8uHS486mekNCVIBUIV6DmvYzvPOif4oVSzcSxRy
+J3y/Ozl5TGQBhxnkSmuMyRzYHir/6uLzqc6CzOqCTldH1P+jpAvccjOWKaZsvwhhuBlc79DQ
+H/MaAcMxTS68Wzd57C5zeMPO053Rwvaf7MZ7BmPh+L7EcncFubf+o17JQmN0D5LbBo4UxfNe
+YmLJ8vNVzVZwjCARy5vnl5Dp2pF0ndcCK4FfYRTw7lsGJrxG/276PIiKrUs+nOxlc6Kdu3vR
+RiwPDsjKFdgd96DOJ9gQ+P9PDl8GV7pVx5z31QcUu08eiNiYHy8x7cQwggXrMIIE06ADAgEC
+AhEA6ndNu1/0pDc4QiRqmbyklTANBgkqhkiG9w0BAQUFADBEMQswCQYDVQQGEwJOTDEPMA0G
+A1UEChMGVEVSRU5BMSQwIgYDVQQDExtURVJFTkEgZVNjaWVuY2UgUGVyc29uYWwgQ0EwHhcN
+MTAwNTAzMDAwMDAwWhcNMTEwNjAyMjM1OTU5WjCBjTETMBEGCgmSJomT8ixkARkWA29yZzEW
+MBQGCgmSJomT8ixkARkWBnRlcmVuYTETMBEGCgmSJomT8ixkARkWA3RjczELMAkGA1UEBhMC
+TkwxDzANBgNVBAoTBk5pa2hlZjErMCkGA1UEAxQiSmFuIEp1c3QgS2VpanNlciBqYW5qdXN0
+QG5pa2hlZi5ubDCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBAMMvAVEieqzasecm
+Q7I1TR70sJLA+xHDswwTK3ygSA79Y3qnzAxi/OghY4Fcx8YTAbaMdmowqQcpac0/4w43JQCH
+mgHe98Iz1zkxwHUFsVe99PowIYQ09YIVLf9E+tafvheWnLuwvXHex2nHrj2GFo/HzDdQFVOU
+8k6CxvztZSze3CnNjCZ/0khCDM01AAC8JMeChzdX95uGd61Yvt+6bVr+r1VF3IIzE53yUf6t
+QyQ57yK71a6iiCjSLMVHgEz+tqNk51bWmPO+MvLuDcGa2Udqp7JDNBH0hyqb5j9xyIG07M7a
+xJR7lPzhXLi1zILFhAQQiJYhYBY0Nj7Zlock5poHiQsNtHzgHL885CnVYIvI+EYlADMBckwS
+K6iESXbcQ4nptpDK6nlIN3yOtjqNHw+ANWbp+WHYENK1srHM1fiaW8hZF/GU+gzAKQL915Mo
+MLVHG9U08cS6EdrNnvy6vqs9feUj6goaGZ2JMoTCYAAP+Mh48wTaCPokU9JYeI4V8hvgpWIq
+pJ7GOepCP0cwTEwcZx1ileVdVtJdDCirvS728PncLFfRpVAldSe6h6+P8Amk/FUxZbe6tJFn
+pBAJAWEbXuUrf+Tvadyv4VeeS29xEjDymdBFHyoWICixVqdsF0kPNEaejg3hi6lNe4iBNhZH
+KEEyvnByZUwHZTeblb+9AgMBAAGjggGMMIIBiDAfBgNVHSMEGDAWgBTIiXOZp11RFlNFVHyj
+wjl8y9eqgTAdBgNVHQ4EFgQUgXPbQo9taaVjp6vCjfRKTYxmgT4wDgYDVR0PAQH/BAQDAgWg
+MAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYBBQUHAwQGCCsGAQUFBwMCMCYGA1UdIAQf
+MB0wDQYLKwYBBAGyMQECAh0wDAYKKoZIhvdMBQICBTBHBgNVHR8EQDA+MDygOqA4hjZodHRw
+Oi8vY3JsLnRjcy50ZXJlbmEub3JnL1RFUkVOQWVTY2llbmNlUGVyc29uYWxDQS5jcmwwegYI
+KwYBBQUHAQEEbjBsMEIGCCsGAQUFBzAChjZodHRwOi8vY3J0LnRjcy50ZXJlbmEub3JnL1RF
+UkVOQWVTY2llbmNlUGVyc29uYWxDQS5jcnQwJgYIKwYBBQUHMAGGGmh0dHA6Ly9vY3NwLnRj
+cy50ZXJlbmEub3JnMBwGA1UdEQQVMBOBEWphbmp1c3RAbmlraGVmLm5sMA0GCSqGSIb3DQEB
+BQUAA4IBAQCUlqVwUGz4UkBNktlU9O7BJIqnFEM3nE/Lh0uPOpnpDQlSAVCFeg5r2M7zzon+
+KFUs3EsUcid8vzs5eUxkAYcZ5EprjMkc2B4q/+ri86nOgszqgk5XR9T/o6QL3HIzlimmbL8I
+YbgZXO/Q0B/zGgHDMU0uvFs3eewuc3jDztOd0cL2n+zGewZj4fi+xHJ3Bbm3/qNeyUJjdA+S
+2waOFMXzXmJiyfLzVc1WcIwgEcub55eQ6dqRdJ3XAiuBX2EU8O5bBia8Rv9u+jyIiq1LPpzs
+ZXOinbt70UYsDw7IyhXYHfegzifYEPj/Tw5fBle6Vcec99UHFLtPHojYmB8vMe3EMYIEGDCC
+BBQCAQEwWTBEMQswCQYDVQQGEwJOTDEPMA0GA1UEChMGVEVSRU5BMSQwIgYDVQQDExtURVJF
+TkEgZVNjaWVuY2UgUGVyc29uYWwgQ0ECEQDqd027X/SkNzhCJGqZvKSVMAkGBSsOAwIaBQCg
+ggGUMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTEwMTAyNzE0
+MzUyNlowIwYJKoZIhvcNAQkEMRYEFGdy3UFI0ApXmKkKB6j1l86xK6k+MF8GCSqGSIb3DQEJ
+DzFSMFAwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMA4GCCqGSIb3DQMCAgIAgDANBggqhkiG
+9w0DAgIBQDAHBgUrDgMCBzANBggqhkiG9w0DAgIBKDBoBgkrBgEEAYI3EAQxWzBZMEQxCzAJ
+BgNVBAYTAk5MMQ8wDQYDVQQKEwZURVJFTkExJDAiBgNVBAMTG1RFUkVOQSBlU2NpZW5jZSBQ
+ZXJzb25hbCBDQQIRAOp3Tbtf9KQ3OEIkapm8pJUwagYLKoZIhvcNAQkQAgsxW6BZMEQxCzAJ
+BgNVBAYTAk5MMQ8wDQYDVQQKEwZURVJFTkExJDAiBgNVBAMTG1RFUkVOQSBlU2NpZW5jZSBQ
+ZXJzb25hbCBDQQIRAOp3Tbtf9KQ3OEIkapm8pJUwDQYJKoZIhvcNAQEBBQAEggIAFhtySpv5
+9BD4/9wYlO9lsFYe9wfnCJ6vJsrUNYrDzBF5FgaYuIujEfQmFJJdBo11YAEG/BtPPWV47JdF
+4y8ySZjYgi2H0LN6X2mmPOKmTyUXcVRILdlJlqtCXfL23zXsJsDtCdsFrlt6HwtA75gu2yzZ
+dcwhVWZReeHlDqcmtHzGmRf91RaPYzj55dixDJWGO3DCVrEVdjcaJZJiboq1eS+pK8iWjvyE
+jlKc6kiE0SUszp7nobwWB2U61gdjjh5+xyseKMiYNMkZLp8gY87rgoLH/MIVSx2CsuSYkxsF
+WnY/a7RrA6hemTEf2XlTocA8F/K4AZlFwZo4R1V9DI4NrYkD7pjYZ6GkmS4UfrqqyIfVLb/X
+Mi0EmfGxd9HXvFUjMt5F83cI1htxaIk+W/mK5tywxlfjdsC3HDWghSq2xPH+SugSYX3Lb24I
+MWzQT8oR27zwy8X1vjOntzy5P9OqH8eUPNpLQ93OaZyDiywwmD2aA7MrrsjBQrOE6AzaQTxa
+ETjmB9SdJ1JrMp5oLQUkzgXc6wP6R9aCeff/3m37WU69DjY/88ZgL5B88YNcN+geBVy0oFY8
+t2jWbIttLbqY8Tc7I231Qf77ErTYvkfuLiBweoTyp4W8R6wJw8lGQnyIcL9ZjNOKUykdTGkA
+UjEkW4OzaJNfsbXbrCbcZGESLJkAAAAAAAA=
+--------------ms000004070800040301070005--
 
