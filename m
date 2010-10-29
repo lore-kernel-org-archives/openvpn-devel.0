@@ -1,10 +1,13 @@
-Message-ID: <4CC838AE.7080408@...1147...>
-Date: Wed, 27 Oct 2010 16:35:26 +0200
-From: Jan Just Keijser <janjust@...1147...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
-	micalg=sha1; boundary="------------ms000004070800040301070005"
-Subject: [Openvpn-devel] openvpn 2.2 --x509-username-field
+Date: Fri, 29 Oct 2010 14:25:54 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20101029122554.GQ10703@...1296...>
+References: <AANLkTiko6XdjTaNL_y5=+mAXUjHE4A22tPQcc14tqu-s@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Nd5ezxtHU51lQLUj"
+Content-Disposition: inline
+In-Reply-To: <AANLkTiko6XdjTaNL_y5=+mAXUjHE4A22tPQcc14tqu-s@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] TAP driver for Solaris patch
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,164 +16,91 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Kazuyoshi Aizawa <admin2@...628...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a cryptographically signed message in MIME format.
+--Nd5ezxtHU51lQLUj
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
---------------ms000004070800040301070005
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Kazuyoshi-San,
 
-hi all,
+On Mon, Sep 06, 2010 at 11:13:09PM +0900, Kazuyoshi Aizawa wrote:
+> I attached a patch for OpenVPN 2.1.3 to support TAP driver for Solaris.
+> Also, you can find the patch as well as TAP driver here.
+>      http://www.whiteboard.ne.jp/~admin2/tuntap/
 
-I was just playing with the new 2.2 option
-  --x509-username-field <field>
-why is the field "uppercased" ? There are quite a few X509 fields that 
-are case sensitive:
-  emailAddress
-  name
-  dnQualifier
-etc (all from /usr/include/openssl/objects.h)
+Thanks for your work.  I am working on integration of your patch into=20
+the 2.2 tree in git, so that it can go into OpenVPN 2.2-beta4 and be part
+of the regular OpenVPN distribution in future.
 
-It should also be noted that only the objects listed in the objects.h 
-file can be added to the subject string  - simply doing something like
-  /NAME=blah
-will not be grokked by openssl.
+I have tested it on OpenSolaris/i386, latest DVD release.
 
-cheers,
-
-JJK
+The patch applies without major problems (offset by 11 lines, but no other
+problems), "--mode tap" works fine, and "--mode tun" continues to work
+(which was important to test for me, as your patch changes bits of the
+"tun" code as well).
 
 
+One oddity remains: "--mode tun" + "--topology subnet" (not using=20
+point-to-point but "broadcast" tun interfaces) does not work.  I'm not=20
+sure whether this is a known limitation of the Solaris tun drivers, or=20
+of the way we currently access the interface - but it would be great=20
+if that could made to work - it's part of my set of regression tests...=20=
+=20
+(this is *not* a problem introduced by your patch, it does not work for=20
+stock 2.2-beta3 either).
 
 
---------------ms000004070800040301070005
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+The failure looks like this in the log:
 
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIVSjCC
-BIowggNyoAMCAQICECf06hH0eobEbp27bqkXBwcwDQYJKoZIhvcNAQEFBQAwbzELMAkGA1UE
-BhMCU0UxFDASBgNVBAoTC0FkZFRydXN0IEFCMSYwJAYDVQQLEx1BZGRUcnVzdCBFeHRlcm5h
-bCBUVFAgTmV0d29yazEiMCAGA1UEAxMZQWRkVHJ1c3QgRXh0ZXJuYWwgQ0EgUm9vdDAeFw0w
-NTA2MDcwODA5MTBaFw0yMDA1MzAxMDQ4MzhaMIGuMQswCQYDVQQGEwJVUzELMAkGA1UECBMC
-VVQxFzAVBgNVBAcTDlNhbHQgTGFrZSBDaXR5MR4wHAYDVQQKExVUaGUgVVNFUlRSVVNUIE5l
-dHdvcmsxITAfBgNVBAsTGGh0dHA6Ly93d3cudXNlcnRydXN0LmNvbTE2MDQGA1UEAxMtVVRO
-LVVTRVJGaXJzdC1DbGllbnQgQXV0aGVudGljYXRpb24gYW5kIEVtYWlsMIIBIjANBgkqhkiG
-9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsjmFpPJ9q0E7YkY3rs3BYHW8OWX5ShpHornMSMxqmNVN
-NRm5pELlzkniii8efNIxB8dOtINknS4p1aJkxIW9hVE1eaROaJB7HHqkkqgX8pgV8pPMyaQy
-lbsMTzC9mKALi+VuG6JG+ni8om+rWV6lL8/K2m2qL+usobNqqrcuZzWLeeEeaYji5kbNoKXq
-vgvOdjp6Dpvq/NonWz1zHyLmSGHGTPNpsaguG7bUMSAsvIKKjqQOpdeJQ/wWWq8dcdcRWdq6
-hw2v+vPhwvCkxWeM1tZUOt4KpLoDd7NlyP0e03RiqhjKaJMeoYV+9Udly/hNVyh00jT/MLbu
-9mIwFIws6wIDAQABo4HhMIHeMB8GA1UdIwQYMBaAFK29mHo0tCb3+sQmVO8DveAky1QaMB0G
-A1UdDgQWBBSJgmd9xJ0mcABLtFBIfN49rgRufTAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/
-BAUwAwEB/zB7BgNVHR8EdDByMDigNqA0hjJodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9BZGRU
-cnVzdEV4dGVybmFsQ0FSb290LmNybDA2oDSgMoYwaHR0cDovL2NybC5jb21vZG8ubmV0L0Fk
-ZFRydXN0RXh0ZXJuYWxDQVJvb3QuY3JsMA0GCSqGSIb3DQEBBQUAA4IBAQAZ2IkRbyispgCi
-54fBm5AD236hEv0e8+LwAamUVEJrmgnEoG3XkJIEA2Z5Q3H8+G+v23ZF4jcaPd3kWQR4rBz0
-g0bzes9bhHIt5UbBuhgRKfPLSXmHPLptBZ2kbWhPrXIUNqi5sf2/z3/wpGqUNVCPz4FtVbHd
-WTBK322gnGQfSXzvNrv042n0+DmPWq1LhTq3Du3Tzw1EovsEv+QvcI4l+1pUBrPQxLxtjftz
-Mizpm4QkLdZ/kXpoAlAfDj9N6cz1u2fo3BwuO/xOzf4CjuOoEwqlJkRl6RDyTVKnrtw+ymsy
-XEFs/vVdoOr/0fqbhlhtPZZH5f4ulQTCAMyOofK7MIIE2jCCA8KgAwIBAgIQXf9Q6v4PU0aI
-n4BBj+dCyDANBgkqhkiG9w0BAQUFADCBrjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAlVUMRcw
-FQYDVQQHEw5TYWx0IExha2UgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBOZXR3b3Jr
-MSEwHwYDVQQLExhodHRwOi8vd3d3LnVzZXJ0cnVzdC5jb20xNjA0BgNVBAMTLVVUTi1VU0VS
-Rmlyc3QtQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBFbWFpbDAeFw0wOTA1MTgwMDAwMDBa
-Fw0yODEyMzEyMzU5NTlaMEQxCzAJBgNVBAYTAk5MMQ8wDQYDVQQKEwZURVJFTkExJDAiBgNV
-BAMTG1RFUkVOQSBlU2NpZW5jZSBQZXJzb25hbCBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEP
-ADCCAQoCggEBAMS8JX3N71kEq3QnKbZjiu/ENXChRgivblCbG3F4lwKFwDX/kBgRZvozORSe
-pBL3Pe4FLIHn9y0uNnhDDjm2f3p0w8tVPy+zy8M3auGVAyMbsyKYE4NYMF+sPJFF020LLsvR
-kWGyynH6wokMewnWkr+jgRcRVSDfN4GfHiYJHdIXGUPLi5kldEFb5jIq0KdT3NIhjc2Rz3ts
-9Mn+0OXSBmsaYUIbgJEH3BRJJzsKirLiO2kIhMuBmde6FB/YfpJjvfYtMfqVTs02DZnvEbqt
-SvuoxHi5fFo+yPUIMsCpBceMGiiPMLoXo/G54genuPtVv59iWtUUDwi0E5nSEnla8P0CAwEA
-AaOCAVswggFXMB8GA1UdIwQYMBaAFImCZ33EnSZwAEu0UEh83j2uBG59MB0GA1UdDgQWBBTI
-iXOZp11RFlNFVHyjwjl8y9eqgTAOBgNVHQ8BAf8EBAMCAQYwEgYDVR0TAQH/BAgwBgEB/wIB
-ADAmBgNVHSAEHzAdMA0GCysGAQQBsjEBAgIdMAwGCiqGSIb3TAUCAgUwWAYDVR0fBFEwTzBN
-oEugSYZHaHR0cDovL2NybC51c2VydHJ1c3QuY29tL1VUTi1VU0VSRmlyc3QtQ2xpZW50QXV0
-aGVudGljYXRpb25hbmRFbWFpbC5jcmwwbwYIKwYBBQUHAQEEYzBhMDgGCCsGAQUFBzAChixo
-dHRwOi8vY3J0LnVzZXJ0cnVzdC5jb20vVVROQUFBQ2xpZW50X0NBLmNydDAlBggrBgEFBQcw
-AYYZaHR0cDovL29jc3AudXNlcnRydXN0LmNvbTANBgkqhkiG9w0BAQUFAAOCAQEACBekHPkV
-a7AZYW+gSON6JO9BVZqgUHDYI9VThkpnjujaVhYYLBsYIYm6mCTuVjTjF4YmvSFa1BmTSuph
-dE22xISNR+7KLmVtNpOYseKSZojiTnt1x15EaSHcEmow/GGA/g/wndLcfq7lwlNNC3CDYVZF
-+z3fcvYCQnXriIqYV2D1n6JySbF6PkFnNcNVKw0HNejGK9W6h3mAdOeSNr1GgXouKeJqvuEX
-EzV8FqQlMy9h7s7JUuBA29O+OVrPz0wU5X/FQ1eLTblajsIPBk3eyEmdgXO65D+YpZM8WU7b
-mzXf/k2/VaHpZMNFfKyPfEfROvFOddmQZ0DosS+eFy9cNTCCBeswggTToAMCAQICEQDqd027
-X/SkNzhCJGqZvKSVMA0GCSqGSIb3DQEBBQUAMEQxCzAJBgNVBAYTAk5MMQ8wDQYDVQQKEwZU
-RVJFTkExJDAiBgNVBAMTG1RFUkVOQSBlU2NpZW5jZSBQZXJzb25hbCBDQTAeFw0xMDA1MDMw
-MDAwMDBaFw0xMTA2MDIyMzU5NTlaMIGNMRMwEQYKCZImiZPyLGQBGRYDb3JnMRYwFAYKCZIm
-iZPyLGQBGRYGdGVyZW5hMRMwEQYKCZImiZPyLGQBGRYDdGNzMQswCQYDVQQGEwJOTDEPMA0G
-A1UEChMGTmlraGVmMSswKQYDVQQDFCJKYW4gSnVzdCBLZWlqc2VyIGphbmp1c3RAbmlraGVm
-Lm5sMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAwy8BUSJ6rNqx5yZDsjVNHvSw
-ksD7EcOzDBMrfKBIDv1jeqfMDGL86CFjgVzHxhMBtox2ajCpBylpzT/jDjclAIeaAd73wjPX
-OTHAdQWxV730+jAhhDT1ghUt/0T61p++F5acu7C9cd7HaceuPYYWj8fMN1AVU5TyToLG/O1l
-LN7cKc2MJn/SSEIMzTUAALwkx4KHN1f3m4Z3rVi+37ptWv6vVUXcgjMTnfJR/q1DJDnvIrvV
-rqKIKNIsxUeATP62o2TnVtaY874y8u4NwZrZR2qnskM0EfSHKpvmP3HIgbTsztrElHuU/OFc
-uLXMgsWEBBCIliFgFjQ2PtmWhyTmmgeJCw20fOAcvzzkKdVgi8j4RiUAMwFyTBIrqIRJdtxD
-iem2kMrqeUg3fI62Oo0fD4A1Zun5YdgQ0rWysczV+JpbyFkX8ZT6DMApAv3XkygwtUcb1TTx
-xLoR2s2e/Lq+qz195SPqChoZnYkyhMJgAA/4yHjzBNoI+iRT0lh4jhXyG+ClYiqknsY56kI/
-RzBMTBxnHWKV5V1W0l0MKKu9Lvbw+dwsV9GlUCV1J7qHr4/wCaT8VTFlt7q0kWekEAkBYRte
-5St/5O9p3K/hV55Lb3ESMPKZ0EUfKhYgKLFWp2wXSQ80Rp6ODeGLqU17iIE2FkcoQTK+cHJl
-TAdlN5uVv70CAwEAAaOCAYwwggGIMB8GA1UdIwQYMBaAFMiJc5mnXVEWU0VUfKPCOXzL16qB
-MB0GA1UdDgQWBBSBc9tCj21ppWOnq8KN9EpNjGaBPjAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0T
-AQH/BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDBAYIKwYBBQUHAwIwJgYDVR0gBB8wHTANBgsr
-BgEEAbIxAQICHTAMBgoqhkiG90wFAgIFMEcGA1UdHwRAMD4wPKA6oDiGNmh0dHA6Ly9jcmwu
-dGNzLnRlcmVuYS5vcmcvVEVSRU5BZVNjaWVuY2VQZXJzb25hbENBLmNybDB6BggrBgEFBQcB
-AQRuMGwwQgYIKwYBBQUHMAKGNmh0dHA6Ly9jcnQudGNzLnRlcmVuYS5vcmcvVEVSRU5BZVNj
-aWVuY2VQZXJzb25hbENBLmNydDAmBggrBgEFBQcwAYYaaHR0cDovL29jc3AudGNzLnRlcmVu
-YS5vcmcwHAYDVR0RBBUwE4ERamFuanVzdEBuaWtoZWYubmwwDQYJKoZIhvcNAQEFBQADggEB
-AJSWpXBQbPhSQE2S2VT07sEkiqcUQzecT8uHS486mekNCVIBUIV6DmvYzvPOif4oVSzcSxRy
-J3y/Ozl5TGQBhxnkSmuMyRzYHir/6uLzqc6CzOqCTldH1P+jpAvccjOWKaZsvwhhuBlc79DQ
-H/MaAcMxTS68Wzd57C5zeMPO053Rwvaf7MZ7BmPh+L7EcncFubf+o17JQmN0D5LbBo4UxfNe
-YmLJ8vNVzVZwjCARy5vnl5Dp2pF0ndcCK4FfYRTw7lsGJrxG/276PIiKrUs+nOxlc6Kdu3vR
-RiwPDsjKFdgd96DOJ9gQ+P9PDl8GV7pVx5z31QcUu08eiNiYHy8x7cQwggXrMIIE06ADAgEC
-AhEA6ndNu1/0pDc4QiRqmbyklTANBgkqhkiG9w0BAQUFADBEMQswCQYDVQQGEwJOTDEPMA0G
-A1UEChMGVEVSRU5BMSQwIgYDVQQDExtURVJFTkEgZVNjaWVuY2UgUGVyc29uYWwgQ0EwHhcN
-MTAwNTAzMDAwMDAwWhcNMTEwNjAyMjM1OTU5WjCBjTETMBEGCgmSJomT8ixkARkWA29yZzEW
-MBQGCgmSJomT8ixkARkWBnRlcmVuYTETMBEGCgmSJomT8ixkARkWA3RjczELMAkGA1UEBhMC
-TkwxDzANBgNVBAoTBk5pa2hlZjErMCkGA1UEAxQiSmFuIEp1c3QgS2VpanNlciBqYW5qdXN0
-QG5pa2hlZi5ubDCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBAMMvAVEieqzasecm
-Q7I1TR70sJLA+xHDswwTK3ygSA79Y3qnzAxi/OghY4Fcx8YTAbaMdmowqQcpac0/4w43JQCH
-mgHe98Iz1zkxwHUFsVe99PowIYQ09YIVLf9E+tafvheWnLuwvXHex2nHrj2GFo/HzDdQFVOU
-8k6CxvztZSze3CnNjCZ/0khCDM01AAC8JMeChzdX95uGd61Yvt+6bVr+r1VF3IIzE53yUf6t
-QyQ57yK71a6iiCjSLMVHgEz+tqNk51bWmPO+MvLuDcGa2Udqp7JDNBH0hyqb5j9xyIG07M7a
-xJR7lPzhXLi1zILFhAQQiJYhYBY0Nj7Zlock5poHiQsNtHzgHL885CnVYIvI+EYlADMBckwS
-K6iESXbcQ4nptpDK6nlIN3yOtjqNHw+ANWbp+WHYENK1srHM1fiaW8hZF/GU+gzAKQL915Mo
-MLVHG9U08cS6EdrNnvy6vqs9feUj6goaGZ2JMoTCYAAP+Mh48wTaCPokU9JYeI4V8hvgpWIq
-pJ7GOepCP0cwTEwcZx1ileVdVtJdDCirvS728PncLFfRpVAldSe6h6+P8Amk/FUxZbe6tJFn
-pBAJAWEbXuUrf+Tvadyv4VeeS29xEjDymdBFHyoWICixVqdsF0kPNEaejg3hi6lNe4iBNhZH
-KEEyvnByZUwHZTeblb+9AgMBAAGjggGMMIIBiDAfBgNVHSMEGDAWgBTIiXOZp11RFlNFVHyj
-wjl8y9eqgTAdBgNVHQ4EFgQUgXPbQo9taaVjp6vCjfRKTYxmgT4wDgYDVR0PAQH/BAQDAgWg
-MAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYBBQUHAwQGCCsGAQUFBwMCMCYGA1UdIAQf
-MB0wDQYLKwYBBAGyMQECAh0wDAYKKoZIhvdMBQICBTBHBgNVHR8EQDA+MDygOqA4hjZodHRw
-Oi8vY3JsLnRjcy50ZXJlbmEub3JnL1RFUkVOQWVTY2llbmNlUGVyc29uYWxDQS5jcmwwegYI
-KwYBBQUHAQEEbjBsMEIGCCsGAQUFBzAChjZodHRwOi8vY3J0LnRjcy50ZXJlbmEub3JnL1RF
-UkVOQWVTY2llbmNlUGVyc29uYWxDQS5jcnQwJgYIKwYBBQUHMAGGGmh0dHA6Ly9vY3NwLnRj
-cy50ZXJlbmEub3JnMBwGA1UdEQQVMBOBEWphbmp1c3RAbmlraGVmLm5sMA0GCSqGSIb3DQEB
-BQUAA4IBAQCUlqVwUGz4UkBNktlU9O7BJIqnFEM3nE/Lh0uPOpnpDQlSAVCFeg5r2M7zzon+
-KFUs3EsUcid8vzs5eUxkAYcZ5EprjMkc2B4q/+ri86nOgszqgk5XR9T/o6QL3HIzlimmbL8I
-YbgZXO/Q0B/zGgHDMU0uvFs3eewuc3jDztOd0cL2n+zGewZj4fi+xHJ3Bbm3/qNeyUJjdA+S
-2waOFMXzXmJiyfLzVc1WcIwgEcub55eQ6dqRdJ3XAiuBX2EU8O5bBia8Rv9u+jyIiq1LPpzs
-ZXOinbt70UYsDw7IyhXYHfegzifYEPj/Tw5fBle6Vcec99UHFLtPHojYmB8vMe3EMYIEGDCC
-BBQCAQEwWTBEMQswCQYDVQQGEwJOTDEPMA0GA1UEChMGVEVSRU5BMSQwIgYDVQQDExtURVJF
-TkEgZVNjaWVuY2UgUGVyc29uYWwgQ0ECEQDqd027X/SkNzhCJGqZvKSVMAkGBSsOAwIaBQCg
-ggGUMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTEwMTAyNzE0
-MzUyNlowIwYJKoZIhvcNAQkEMRYEFGdy3UFI0ApXmKkKB6j1l86xK6k+MF8GCSqGSIb3DQEJ
-DzFSMFAwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMA4GCCqGSIb3DQMCAgIAgDANBggqhkiG
-9w0DAgIBQDAHBgUrDgMCBzANBggqhkiG9w0DAgIBKDBoBgkrBgEEAYI3EAQxWzBZMEQxCzAJ
-BgNVBAYTAk5MMQ8wDQYDVQQKEwZURVJFTkExJDAiBgNVBAMTG1RFUkVOQSBlU2NpZW5jZSBQ
-ZXJzb25hbCBDQQIRAOp3Tbtf9KQ3OEIkapm8pJUwagYLKoZIhvcNAQkQAgsxW6BZMEQxCzAJ
-BgNVBAYTAk5MMQ8wDQYDVQQKEwZURVJFTkExJDAiBgNVBAMTG1RFUkVOQSBlU2NpZW5jZSBQ
-ZXJzb25hbCBDQQIRAOp3Tbtf9KQ3OEIkapm8pJUwDQYJKoZIhvcNAQEBBQAEggIAFhtySpv5
-9BD4/9wYlO9lsFYe9wfnCJ6vJsrUNYrDzBF5FgaYuIujEfQmFJJdBo11YAEG/BtPPWV47JdF
-4y8ySZjYgi2H0LN6X2mmPOKmTyUXcVRILdlJlqtCXfL23zXsJsDtCdsFrlt6HwtA75gu2yzZ
-dcwhVWZReeHlDqcmtHzGmRf91RaPYzj55dixDJWGO3DCVrEVdjcaJZJiboq1eS+pK8iWjvyE
-jlKc6kiE0SUszp7nobwWB2U61gdjjh5+xyseKMiYNMkZLp8gY87rgoLH/MIVSx2CsuSYkxsF
-WnY/a7RrA6hemTEf2XlTocA8F/K4AZlFwZo4R1V9DI4NrYkD7pjYZ6GkmS4UfrqqyIfVLb/X
-Mi0EmfGxd9HXvFUjMt5F83cI1htxaIk+W/mK5tywxlfjdsC3HDWghSq2xPH+SugSYX3Lb24I
-MWzQT8oR27zwy8X1vjOntzy5P9OqH8eUPNpLQ93OaZyDiywwmD2aA7MrrsjBQrOE6AzaQTxa
-ETjmB9SdJ1JrMp5oLQUkzgXc6wP6R9aCeff/3m37WU69DjY/88ZgL5B88YNcN+geBVy0oFY8
-t2jWbIttLbqY8Tc7I231Qf77ErTYvkfuLiBweoTyp4W8R6wJw8lGQnyIcL9ZjNOKUykdTGkA
-UjEkW4OzaJNfsbXbrCbcZGESLJkAAAAAAAA=
---------------ms000004070800040301070005--
+Fri Oct 29 14:00:02 2010 SENT CONTROL [server-test]: 'PUSH_REQUEST' (status=
+=3D1)
+Fri Oct 29 14:00:02 2010 PUSH: Received control message: 'PUSH_REPLY,ifconf=
+ig-ipv6 2001:608:4:a052::1:0 2001:608:4:a052::1,route 10.100.0.0 255.255.0.=
+0,route-ipv6 2001:608:4:a000::/56,tun-ipv6,route-gateway 10.100.52.1,topolo=
+gy subnet,ping 10,ping-restart 30,ifconfig 10.100.52.2 255.255.255.0'
+Fri Oct 29 14:00:02 2010 ROUTE: default_gateway=3DUNDEF
+Fri Oct 29 14:00:02 2010 TUN/TAP device tun0 opened
+Fri Oct 29 14:00:02 2010 /usr/sbin/ifconfig tun0 10.100.52.2 netmask 255.25=
+5.255.0 broadcast + up
+Fri Oct 29 14:00:02 2010 Solaris ifconfig phase-2 failed: external program =
+exited with error status: 1
+Fri Oct 29 14:00:02 2010 /usr/sbin/ifconfig tun0 unplumb
+Fri Oct 29 14:00:02 2010 Can't unlink interface(ip): Invalid argument (errn=
+o=3D22)
+Fri Oct 29 14:00:02 2010 Solaris ifconfig failed
+Fri Oct 29 14:00:02 2010 Exiting
+
+and to trigger it, you basically just add "topology subnet" to your=20
+existing server config.  The benefit of "topology subnet" is that you=20
+do not need a dedicated /30 per client anymore, but that even windows
+clients can share a large subnet, with a single address used per client.
+
+regards,
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--Nd5ezxtHU51lQLUj
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBTMq9UqkuBuNlUUl1AQKmzwQAsl1XVicdpFgXaOXPJ667JL31NUUsAeg4
+lEnpVee/c0UQljVNLr/HRn27LeJDNMtpwe/bos4HjHfz170rc8i1/HOdZSIOB0MW
+WGcP0pc/RuJ4CafY280AjTYgjS1DFujcHIFxHwRrJE1aQFbr476W+xnAsPvs8iGZ
+vY0mtslU4xk=
+=YCwd
+-----END PGP SIGNATURE-----
+
+--Nd5ezxtHU51lQLUj--
 
