@@ -1,9 +1,13 @@
+Date: Mon, 8 Nov 2010 14:09:08 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20101108130908.GX10703@...1296...>
 References: <4CD42604.9060104@...515...>
-In-Reply-To: <4CD42604.9060104@...515...>
-From: =?iso-8859-2?Q?David=20Bala=BEic?= <david.balazic@...1379...>
-Date: Mon, 8 Nov 2010 11:14:55 +0100
-Message-ID: <4BECF8F2CDD74E4A8127421DB201BA2B0C234B@...1429...>
+	<4BECF8F2CDD74E4A8127421DB201BA2B0C234B@...1429...>
 Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="7sazZNykp/fVZQka"
+Content-Disposition: inline
+In-Reply-To: <4BECF8F2CDD74E4A8127421DB201BA2B0C234B@...1429...>
 Subject: Re: [Openvpn-devel] Preview of OpenVPN 2.1.4 Debian and Ubuntu
 	packages
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -14,26 +18,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-2"
+To: David Bala?ic <david.balazic@...1379...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
+
+--7sazZNykp/fVZQka
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
-Samuli Sepp=E4nen wrote:
-=20
-> PS. Also note that our buildbot instance now builds Debian/Ubuntu
-> packages whenever a commit is made to "allmerged" or=20
-> "beta2.2" branches.
-> These automatically-generated packages are available here:
->=20
-> <http://build.openvpn.net/downloads/allmerged>
-> <http://build.openvpn.net/downloads/beta22>
+Hi,
 
-The source packages* are from august 21st. Are they not updated?
+On Mon, Nov 08, 2010 at 11:14:55AM +0100, David Bala?ic wrote:
+> PS: Who must I sleep with to accept a patch?
 
-Regards,
-David
+Which patch is that?
 
-PS: Who must I sleep with to accept a patch?
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-* - http://build.openvpn.net/downloads/allmerged/source/
+--7sazZNykp/fVZQka
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBTNf2dKkuBuNlUUl1AQIUgwP/fmr/maiRYA9tIdfdZRT6POOY0f1vaQeC
+zcN0SVN4xJ29cTW/6pSyjbCXFx/Gdd7vTgrQEtAIRTtNIUqLTKl4nbyzPMsRet0t
+OLUcxVdJ88yor9xrADXWhs9Yp5R70rBYV2V6QcegeRjNjw7LQQnMw3HdOwvHYD7D
+xnc4NcA5iDE=
+=vpYA
+-----END PGP SIGNATURE-----
+
+--7sazZNykp/fVZQka--
 
