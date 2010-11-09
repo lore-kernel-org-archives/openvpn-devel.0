@@ -1,10 +1,11 @@
-Message-ID: <4CD92573.5080804@...515...>
-Date: Tue, 09 Nov 2010 12:41:55 +0200
+Message-ID: <4CD92714.7030704@...515...>
+Date: Tue, 09 Nov 2010 12:48:52 +0200
 From: =?ISO-8859-2?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
 References: <4CD42604.9060104@...515...>
 	<4BECF8F2CDD74E4A8127421DB201BA2B0C234B@...1429...>
-In-Reply-To: <4BECF8F2CDD74E4A8127421DB201BA2B0C234B@...1429...>
+	<4CD7F9A2.5010804@...1114...>
+In-Reply-To: <4CD7F9A2.5010804@...1114...>
 Subject: Re: [Openvpn-devel] Preview of OpenVPN 2.1.4 Debian and
 	Ubuntu	packages
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,40 +18,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="ISO-8859-2"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 
-> Samuli Sepp=E4nen wrote:
->=20=20
->=20=20=20
->> PS. Also note that our buildbot instance now builds Debian/Ubuntu
->> packages whenever a commit is made to "allmerged" or=20
->> "beta2.2" branches.
->> These automatically-generated packages are available here:
->>
->> <http://build.openvpn.net/downloads/allmerged>
->> <http://build.openvpn.net/downloads/beta22>
->>=20=20=20=20=20
+> On 08/11/10 11:14, David Bala~ic wrote:
+> > Samuli Sepp=E4nen wrote:
 >
-> The source packages* are from august 21st. Are they not updated?
+> >> PS. Also note that our buildbot instance now builds Debian/Ubuntu
+> >> packages whenever a commit is made to "allmerged" or
+> >> "beta2.2" branches.
+> >> These automatically-generated packages are available here:
+> >>
+> >> <http://build.openvpn.net/downloads/allmerged>
+> >> <http://build.openvpn.net/downloads/beta22>
+> > The source packages* are from august 21st. Are they not updated?
 >
-> Regards,
-> David
->
->=20=20=20
-Hi David,
+> Humm ... I did update the allmerged branch at the end of October ... so
+> this is odd.  Samuli, can you check up if I or the buildsystem failed?
+That's normal. I had to disable the automatic package publishing after
+initial tests, because there was no sane way to detect if the source
+tree had changed after the previous daily packaging&publishing run. I
+tried a number of things, but either git or tar/zip caused the package
+checksums to not match, even if the sources themselves were 100% the
+same. Also, I did not want to clutter build.openvpn.net with packages
+that were 90% the same.
 
-Unlike I said in my earlier email, the actual automatic package
-_publishing_ (deb, tar.gz, zip) is disabled. The reason is that up until
-recently Buildbot could not trigger a build automatically when a commit
-was made to the Git repository. That's fixed now, but I'm still waiting
-for dazo to push real (=3Dnon-artificial) commits to "allmerged" and
-"beta2.2" branches to see if my GitMaildirSource buildbot class works as
-expected. After this I can automate the publishing part in this puzzle :).
-
-I'll let you know when the whole process (git commit -> build+packaging
--> publishing) is working as expected. Sorry for the previous, confusing
-email...
+Anyways, all of this is fixed now that Buildbot only builds and packages
+the sources when it receives a git commit mail.
 
 --=20
 Samuli Sepp=E4nen
