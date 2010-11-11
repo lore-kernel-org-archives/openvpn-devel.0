@@ -1,9 +1,11 @@
-Message-ID: <4CDB29CF.9010206@...1114...>
-Date: Thu, 11 Nov 2010 00:25:03 +0100
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
+Sender: Jesse Young <jesseyoung@...277...>
+Date: Wed, 10 Nov 2010 18:22:08 -0600
+From: Jesse Young <jesse.young@...277...>
+Message-ID: <20101111002208.GQ32214@...1430...>
 References: <1288629206-15593-1-git-send-email-jesse.young@...277...>
-In-Reply-To: <1288629206-15593-1-git-send-email-jesse.young@...277...>
+	<4CDB29CF.9010206@...1114...>
+MIME-Version: 1.0
+In-Reply-To: <4CDB29CF.9010206@...1114...>
 Subject: Re: [Openvpn-devel] [PATCH] Remove hardcoded path to resolvconf
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,87 +15,111 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Jesse Young <jesse.young@...277...>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: David Sommerseth <openvpn.list@...1114...>
 Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
-
-On 01/11/10 17:33, Jesse Young wrote:
-> Signed-off-by: Jesse Young <jesse.young@...277...>
-> ---
->  contrib/pull-resolv-conf/client.down |    5 +++--
->  contrib/pull-resolv-conf/client.up   |    5 +++--
->  2 files changed, 6 insertions(+), 4 deletions(-)
+On Thu, Nov 11, 2010 at 00:25:03 +0100, David Sommerseth wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
 > 
-> diff --git a/contrib/pull-resolv-conf/client.down b/contrib/pull-resolv-conf/client.down
-> index 38c585b..05f2d4d 100644
-> --- a/contrib/pull-resolv-conf/client.down
-> +++ b/contrib/pull-resolv-conf/client.down
-> @@ -34,9 +34,10 @@
->  # A horrid work around, from a security perspective,
->  # is to run OpenVPN as root. THIS IS NOT RECOMMENDED. You have
->  # been WARNED.
-> +PATH=/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
->  
-> -if [ -x /sbin/resolvconf ] ; then
-> -  /sbin/resolvconf -d "${1}"
-> +if type resolvconf >/dev/null 2>&1; then
+> On 01/11/10 17:33, Jesse Young wrote:
+> > Signed-off-by: Jesse Young <jesse.young@...277...>
+> > ---
+> >  contrib/pull-resolv-conf/client.down |    5 +++--
+> >  contrib/pull-resolv-conf/client.up   |    5 +++--
+> >  2 files changed, 6 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/contrib/pull-resolv-conf/client.down b/contrib/pull-resolv-conf/client.down
+> > index 38c585b..05f2d4d 100644
+> > --- a/contrib/pull-resolv-conf/client.down
+> > +++ b/contrib/pull-resolv-conf/client.down
+> > @@ -34,9 +34,10 @@
+> >  # A horrid work around, from a security perspective,
+> >  # is to run OpenVPN as root. THIS IS NOT RECOMMENDED. You have
+> >  # been WARNED.
+> > +PATH=/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
+> >  
+> > -if [ -x /sbin/resolvconf ] ; then
+> > -  /sbin/resolvconf -d "${1}"
+> > +if type resolvconf >/dev/null 2>&1; then
+> 
+> Hi and thank you for your patch!
 
-Hi and thank you for your patch!
+Hi David, Thanks for your comments. Hopefully, I will address them to
+your satisfaction.
 
-Even though I do see that this approach is much cleaner.  Hardcoded
-paths is not ideal.  But I am not sure I like this way of test.  It
-works probably fine on up-to-date systems, but will it run on all most
-bash versions?  We must consider that there are some old systems with
-older bash installations which we might break.
+> Even though I do see that this approach is much cleaner.  Hardcoded
+> paths is not ideal.  But I am not sure I like this way of test.  It
+> works probably fine on up-to-date systems, but will it run on all most
+> bash versions?  We must consider that there are some old systems with
+> older bash installations which we might break.
+> 
+> I'd rather see a similar patch which checks the exit code instead of
+> something more undefined like this approach.  Also for clarity in the
+> code of what we expect or not.
 
-I'd rather see a similar patch which checks the exit code instead of
-something more undefined like this approach.  Also for clarity in the
-code of what we expect or not.
+I quickly ran this if statement in dash, bash --posix, and busybox's
+implementation of sh, and all three worked as expected. In fact,
+this is POSIX behavior.
 
+See:
+http://www.opengroup.org/onlinepubs/009695399/utilities/xcu_chap02.html
+> The if command shall execute a compound-list and use its exit status
+> to determine whether to execute another compound-list.
 
-kind regards,
+Furthermore, I've explicitly changed the shell to /bin/dash and
+verified that it works.  Also, this is the way dhcpcd determines if
+resolvconf exists, from where I borrowed this code.
 
-David Sommerseth
+As for code clairity, I beleive this is a common sh idiom to branch
+on the exit status of a command wile directing output to /dev/null. I
+have personally seen it in many sh code.
 
+Thanks,
+Jesse
 
-> +  resolvconf -d "${1}" -f
->  elif [ -e /etc/resolv.conf.ovpnsave ] ; then
->    # cp + rm rather than mv in case it's a symlink
->    cp /etc/resolv.conf.ovpnsave /etc/resolv.conf
-> diff --git a/contrib/pull-resolv-conf/client.up b/contrib/pull-resolv-conf/client.up
-> index e81bd3a..b28d4d1 100644
-> --- a/contrib/pull-resolv-conf/client.up
-> +++ b/contrib/pull-resolv-conf/client.up
-> @@ -33,6 +33,7 @@
->  # A horrid work around, from a security perspective,
->  # is to run OpenVPN as root. THIS IS NOT RECOMMENDED. You have
->  # been WARNED.
-> +PATH=/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
->  
->  # init variables
->  
-> @@ -86,8 +87,8 @@ fi
->  out="# resolv.conf autogenerated by ${0} (${1})${nl}${dns}${nl}${ds}${domains}"
->  
->  # use resolvconf if it's available
-> -if [ -x /sbin/resolvconf ] ; then
-> -  printf "%s\n" "${out}" | /sbin/resolvconf -a "${1}"
-> +if type resolvconf >/dev/null 2>&1; then
-> +  printf "%s\n" "${out}" | resolvconf -p -a "${1}"
->  else
->    # Preserve the existing resolv.conf
->    if [ -e /etc/resolv.conf ] ; then
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkzbKc8ACgkQDC186MBRfroIxgCdG+GexMR06qTHB4HvDsNtK1eK
-10cAnikZC4ppKb62udCCR3Lx/5VeEzVi
-=6aYB
------END PGP SIGNATURE-----
+> kind regards,
+> 
+> David Sommerseth
+> 
+> 
+> > +  resolvconf -d "${1}" -f
+> >  elif [ -e /etc/resolv.conf.ovpnsave ] ; then
+> >    # cp + rm rather than mv in case it's a symlink
+> >    cp /etc/resolv.conf.ovpnsave /etc/resolv.conf
+> > diff --git a/contrib/pull-resolv-conf/client.up b/contrib/pull-resolv-conf/client.up
+> > index e81bd3a..b28d4d1 100644
+> > --- a/contrib/pull-resolv-conf/client.up
+> > +++ b/contrib/pull-resolv-conf/client.up
+> > @@ -33,6 +33,7 @@
+> >  # A horrid work around, from a security perspective,
+> >  # is to run OpenVPN as root. THIS IS NOT RECOMMENDED. You have
+> >  # been WARNED.
+> > +PATH=/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
+> >  
+> >  # init variables
+> >  
+> > @@ -86,8 +87,8 @@ fi
+> >  out="# resolv.conf autogenerated by ${0} (${1})${nl}${dns}${nl}${ds}${domains}"
+> >  
+> >  # use resolvconf if it's available
+> > -if [ -x /sbin/resolvconf ] ; then
+> > -  printf "%s\n" "${out}" | /sbin/resolvconf -a "${1}"
+> > +if type resolvconf >/dev/null 2>&1; then
+> > +  printf "%s\n" "${out}" | resolvconf -p -a "${1}"
+> >  else
+> >    # Preserve the existing resolv.conf
+> >    if [ -e /etc/resolv.conf ] ; then
+> 
+> -----BEGIN PGP SIGNATURE-----
+> Version: GnuPG v1.4.10 (GNU/Linux)
+> Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+> 
+> iEYEARECAAYFAkzbKc8ACgkQDC186MBRfroIxgCdG+GexMR06qTHB4HvDsNtK1eK
+> 10cAnikZC4ppKb62udCCR3Lx/5VeEzVi
+> =6aYB
+> -----END PGP SIGNATURE-----
 
