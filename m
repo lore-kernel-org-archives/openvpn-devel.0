@@ -1,15 +1,11 @@
-Date: Fri, 12 Nov 2010 21:18:03 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20101112201802.GZ258@...1296...>
-References: <4CDD641F.30408@...515...> <20101112163620.27677.qmail@...1287...>
-	<4CDD704B.7080505@...1114...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="dQ+ozEaLk2y6HH72"
-Content-Disposition: inline
-In-Reply-To: <4CDD704B.7080505@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH] Removed hardcoded signtool	dependency
-	from win/build_all.py
+Message-ID: <4CDDA847.9080302@...1114...>
+Date: Fri, 12 Nov 2010 21:49:11 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <4CB24484.4050605@...277...>
+In-Reply-To: <4CB24484.4050605@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Socks5 username/password authentication
+ support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,45 +14,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn.list@...1114...>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Pierre Bourdon <delroth@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---dQ+ozEaLk2y6HH72
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Hi,
+On 11/10/10 00:56, Pierre Bourdon wrote:
+> Hello,
+> 
+> This patch adds support for SOCKS plain text (username/password)
+> authentication as described in RFC 1929. It adds an optional third
+> parameter to the socks-proxy option, which is a file containing the
+> login credentials.
+> 
+> I submitted this patch on the Trac (#62) two days ago, but cron2 asked
+> me to send it here too. It is my first contribution to the OpenVPN
+> project so this patch will probably need to be reworked a bit :) .
+> 
+> I've been using this patch for two weeks now and it does not seem to
+> cause any problem. The only modifications are in the SOCKS handshake
+> handling and the options parser.
+> 
+> Signed-Off-By: Pierre Bourdon <delroth@...277...>
 
-On Fri, Nov 12, 2010 at 05:50:19PM +0100, David Sommerseth wrote:
-> If I've understood it correctly, this is related to signing the Windows
-> TUN/TAP driver.  So if you don't have a signing key/tool available, it
-> is still possible to build the rest of OpenVPN.  You might even manage
-> to install the unsigned TUN/TAP driver with some tweaking.
+Applied to feat_misc, to be merged into allmerged and beta2.2
 
-Isn't the openvpn.exe signed as well?
+commit fc1fa9ffc7e3356458ec38d43816e5ddeb0c580a
+Author: Pierre Bourdon <delroth@?>
+Date: Mon Oct 11 00:56:04 2010 +0200
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
 
---dQ+ozEaLk2y6HH72
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+kind regards,
+
+David Sommerseth
+
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iQCVAwUBTN2g+qkuBuNlUUl1AQKo+AQAjcNjvY/8MDZoDOGmtR1hh5IVRFMp3iy7
-qlVJh3XxRg0vokwZbIDGZ9eh9Wv5i4dSqfahARXmso/0AN52QRfHBLbu3Q9YJI+o
-DWkUdFKTksnE2mb8B2/80MNijB61i6JayYc6uU+TVDPlrjR9Uomqbv/yQQ+wYE3i
-YbzxlBw/8Ak=
-=Wm2d
+iEYEARECAAYFAkzdqEcACgkQDC186MBRfrrmRQCcCDgla4fbkxMbvOXFZzJ6dgLE
+nUgAn24xN/fbpRIQ54TrdLHB1UnaLB9m
+=IZqf
 -----END PGP SIGNATURE-----
-
---dQ+ozEaLk2y6HH72--
 
