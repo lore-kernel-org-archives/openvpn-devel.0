@@ -1,15 +1,15 @@
-Message-ID: <20101112175153.4861.qmail@...1287...>
-Date: Fri, 12 Nov 2010 18:51:53 +0100
-From: Peter Stuge <peter@...1287...>
+Date: Fri, 12 Nov 2010 21:18:03 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20101112201802.GZ258@...1296...>
 References: <4CDD641F.30408@...515...> <20101112163620.27677.qmail@...1287...>
 	<4CDD704B.7080505@...1114...>
-	<20101112165541.29963.qmail@...1287...>
-	<4CDD7309.3030808@...1114...> <4CDD7559.5000604@...515...>
-	<4CDD77B9.8050606@...1114...> <4CDD7D32.2050401@...515...>
-MIME-Version: 1.0
-In-Reply-To: <4CDD7D32.2050401@...515...>
-Subject: Re: [Openvpn-devel] [PATCH] Removed hardcoded signtool
-	dependency	from win/build_all.py
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="dQ+ozEaLk2y6HH72"
+Content-Disposition: inline
+In-Reply-To: <4CDD704B.7080505@...1114...>
+Subject: Re: [Openvpn-devel] [PATCH] Removed hardcoded signtool	dependency
+	from win/build_all.py
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,23 +18,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--dQ+ozEaLk2y6HH72
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
 
-Samuli Seppänen wrote:
-> Peter: settings.in is stored in git.
+Hi,
 
-Ok.
+On Fri, Nov 12, 2010 at 05:50:19PM +0100, David Sommerseth wrote:
+> If I've understood it correctly, this is related to signing the Windows
+> TUN/TAP driver.  So if you don't have a signing key/tool available, it
+> is still possible to build the rest of OpenVPN.  You might even manage
+> to install the unsigned TUN/TAP driver with some tweaking.
 
+Isn't the openvpn.exe signed as well?
 
-> I agree that there should be no way one could make an unsigned build by
-> mistake. I think dazo's suggestion about having a command-line switch
-> ("force unsigned build") is a good one. The SIGNTOOL variable could then
-> be used to just locate signtool.exe and nothing else. This would make it
-> behave the same way as most other variables in "settings.in" and allow
-> making signed and unsigned builds using the same configuration file.
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Acked-by: Peter Stuge <peter@...1287...>
+--dQ+ozEaLk2y6HH72
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBTN2g+qkuBuNlUUl1AQKo+AQAjcNjvY/8MDZoDOGmtR1hh5IVRFMp3iy7
+qlVJh3XxRg0vokwZbIDGZ9eh9Wv5i4dSqfahARXmso/0AN52QRfHBLbu3Q9YJI+o
+DWkUdFKTksnE2mb8B2/80MNijB61i6JayYc6uU+TVDPlrjR9Uomqbv/yQQ+wYE3i
+YbzxlBw/8Ak=
+=Wm2d
+-----END PGP SIGNATURE-----
+
+--dQ+ozEaLk2y6HH72--
 
