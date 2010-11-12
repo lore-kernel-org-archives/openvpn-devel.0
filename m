@@ -1,15 +1,12 @@
-Date: Fri, 12 Nov 2010 12:28:21 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20101112112821.GU258@...1296...>
-References: <AANLkTinA0-1sAsFh0oo-cmREc+qUBE-2X8d-E7vSVf+s@...278...>
-	<4CDD0662.8010605@...1147...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="SZSwH5G1FJ2Fz+jP"
-Content-Disposition: inline
-In-Reply-To: <4CDD0662.8010605@...1147...>
-Subject: Re: [Openvpn-devel] Architecture diagram & Theory of Operation
-	documents
+Message-ID: <4CDD2620.9020106@...1114...>
+Date: Fri, 12 Nov 2010 12:33:52 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <AANLkTinA0-1sAsFh0oo-cmREc+qUBE-2X8d-E7vSVf+s@...278...>	<4CDD0662.8010605@...1147...>
+	<20101112112821.GU258@...1296...>
+In-Reply-To: <20101112112821.GU258@...1296...>
+Subject: Re: [Openvpn-devel] Architecture diagram & Theory of
+	Operation	documents
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,43 +15,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 To: Jan Just Keijser <janjust@...1147...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---SZSwH5G1FJ2Fz+jP
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Hi,
+On 12/11/10 12:28, Gert Doering wrote:
+> Hi,
+> 
+> On Fri, Nov 12, 2010 at 10:18:26AM +0100, Jan Just Keijser wrote:
+>> PS I am not directly involved in the development of openvpn :)
+> 
+> Please do get involved more :-) - you seem to have a knack for finding
+> sore spots, we need that.
 
-On Fri, Nov 12, 2010 at 10:18:26AM +0100, Jan Just Keijser wrote:
-> PS I am not directly involved in the development of openvpn :)
+I second Gert's comment as well, JJK ;-)  We need people like you for sure!
 
-Please do get involved more :-) - you seem to have a knack for finding
-sore spots, we need that.
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+kind regards,
 
---SZSwH5G1FJ2Fz+jP
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
+David Sommerseth
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iQCVAwUBTN0k1akuBuNlUUl1AQJG8AQAxOXKo7+Ffjn4iTb0zIQhNLWzW0Sun0B4
-+UXvm2DCibpf+fClhOcwICydNl2HqgR3cx1MbVVxb3C3ItL9nwG4YYlEyYfVOG7f
-Pd0Gg6Sp4kVc6wS5k/ezlgdJSI+EoT1Tj5D//Ehilt1r+k5z2MpwVlp7FWZCk4or
-kbbyGu/S2UM=
-=Lwwz
+iEYEARECAAYFAkzdJh8ACgkQDC186MBRfrqWpwCcDb3Z7lzD8S6hqwLOxOPgcKQf
+gEAAnAwPR+1VeLsj6zUQ53q7tqJT7Re7
+=ROz1
 -----END PGP SIGNATURE-----
-
---SZSwH5G1FJ2Fz+jP--
 
