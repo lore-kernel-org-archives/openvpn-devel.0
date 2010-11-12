@@ -1,12 +1,12 @@
-Message-ID: <20101112144524.14214.qmail@...1287...>
-Date: Fri, 12 Nov 2010 15:45:24 +0100
-From: Peter Stuge <peter@...1287...>
-References: <AANLkTinA0-1sAsFh0oo-cmREc+qUBE-2X8d-E7vSVf+s@...278...>
-	<4CDD0662.8010605@...1147...>
+Message-ID: <4CDD6322.1060607@...515...>
+Date: Fri, 12 Nov 2010 17:54:10 +0200
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <4CDD0662.8010605@...1147...>
-Subject: Re: [Openvpn-devel] Architecture diagram & Theory of
-	Operation	documents
+References: <AANLkTinA0-1sAsFh0oo-cmREc+qUBE-2X8d-E7vSVf+s@...278...>	<4CDD0662.8010605@...1147...>
+	<20101112144524.14214.qmail@...1287...>
+In-Reply-To: <20101112144524.14214.qmail@...1287...>
+Subject: Re: [Openvpn-devel] Architecture diagram & Theory
+	of	Operation	documents
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,24 +15,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-Jan Just Keijser wrote:
-> PS I am not directly involved in the development of openvpn :)
 
-Actually I think you are! Because you have at the very least
-contributed information about bugs that you have encountered,
-which might not have been discovered otherwise.
+> Jan Just Keijser wrote:
+>=20=20=20
+>> PS I am not directly involved in the development of openvpn :)
+>>=20=20=20=20=20
+>
+> Actually I think you are! Because you have at the very least
+> contributed information about bugs that you have encountered,
+> which might not have been discovered otherwise.
+>
+> Writing code is not the only way to participate in development.
+>
+> Testing and bug reports are also very much critical if you ask me.
+>=20=20=20
+So true. Thanks to JJK + every single non-developer who's nevertheless
+involved directly in openvpn development :). Keep up the good work guys!
 
-Writing code is not the only way to participate in development.
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-Testing and bug reports are also very much critical if you ask me.
+irc freenode net: mattock
 
-
-Thanks for your help!
-
-//Peter
 
