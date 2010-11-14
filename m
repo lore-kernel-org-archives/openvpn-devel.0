@@ -1,12 +1,11 @@
-Message-ID: <4CE05DD5.6040804@...1114...>
-Date: Sun, 14 Nov 2010 23:08:21 +0100
+Message-ID: <4CE05EB5.6090809@...1114...>
+Date: Sun, 14 Nov 2010 23:12:05 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1288629206-15593-1-git-send-email-jesse.young@...277...>
-	<4CDB29CF.9010206@...1114...>
-	<20101111002208.GQ32214@...1430...>
-In-Reply-To: <20101111002208.GQ32214@...1430...>
-Subject: Re: [Openvpn-devel] [PATCH] Remove hardcoded path to resolvconf
+References: <1283027520-26460-1-git-send-email-dazo@...384...>
+In-Reply-To: <1283027520-26460-1-git-send-email-dazo@...384...>
+Subject: Re: [Openvpn-devel] [PATCH 0/3] Code clean-up - removing "dead"
+	code.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,80 +16,149 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-To: Jesse Young <jesse.young@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 11/11/10 01:22, Jesse Young wrote:
-> On Thu, Nov 11, 2010 at 00:25:03 +0100, David Sommerseth wrote:
-> On 01/11/10 17:33, Jesse Young wrote:
->>>> Signed-off-by: Jesse Young <jesse.young@...277...>
->>>> ---
->>>>  contrib/pull-resolv-conf/client.down |    5 +++--
->>>>  contrib/pull-resolv-conf/client.up   |    5 +++--
->>>>  2 files changed, 6 insertions(+), 4 deletions(-)
->>>>
->>>> diff --git a/contrib/pull-resolv-conf/client.down b/contrib/pull-resolv-conf/client.down
->>>> index 38c585b..05f2d4d 100644
->>>> --- a/contrib/pull-resolv-conf/client.down
->>>> +++ b/contrib/pull-resolv-conf/client.down
->>>> @@ -34,9 +34,10 @@
->>>>  # A horrid work around, from a security perspective,
->>>>  # is to run OpenVPN as root. THIS IS NOT RECOMMENDED. You have
->>>>  # been WARNED.
->>>> +PATH=/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
->>>>  
->>>> -if [ -x /sbin/resolvconf ] ; then
->>>> -  /sbin/resolvconf -d "${1}"
->>>> +if type resolvconf >/dev/null 2>&1; then
+On 28/08/10 22:31, David Sommerseth wrote:
+> This is a patch series which tries to do some source code clean-up.
+> After having noticed that ./configure --enable-pthread was simply doing
+> *nothing*, as it was forcefully being disabled in syshead.h, I went through
+> the code and began cleaning up this and some of the related code.
 > 
-> Hi and thank you for your patch!
+> As threading is not buildable in the current code base and OpenVPN 3.x most
+> likely will have a brand new design in regards to the threading, it seemed to
+> be better to clean up this code.  This is also to remove false presumptions
+> that OpenVPN supports threads.
 > 
->> Hi David, Thanks for your comments. Hopefully, I will address them to
->> your satisfaction.
 > 
-> Even though I do see that this approach is much cleaner.  Hardcoded
-> paths is not ideal.  But I am not sure I like this way of test.  It
-> works probably fine on up-to-date systems, but will it run on all most
-> bash versions?  We must consider that there are some old systems with
-> older bash installations which we might break.
+> kind regards,
 > 
-> I'd rather see a similar patch which checks the exit code instead of
-> something more undefined like this approach.  Also for clarity in the
-> code of what we expect or not.
+> David Sommerseth
 > 
->> I quickly ran this if statement in dash, bash --posix, and busybox's
->> implementation of sh, and all three worked as expected. In fact,
->> this is POSIX behavior.
+> *** BLURB HERE ***
+> 
+> David Sommerseth (3):
+>   Clean-up: Remove pthread and mutex locking code
+>   Clean-up: Remove more dead and inactive code paths
+>   Clean-up: Removing useless code - hash related functions
+> 
+>  Makefile.am    |    1 -
+>  acinclude.m4   |  224 -----------------------------------------------------
+>  buffer.c       |    5 -
+>  buffer.h       |    1 -
+>  config-win32.h |    5 -
+>  configure.ac   |   38 +---------
+>  crypto.c       |    3 -
+>  error.c        |   39 ---------
+>  error.h        |   17 ----
+>  forward.c      |   10 ---
+>  init.c         |   50 ------------
+>  list.c         |   24 +-----
+>  list.h         |   33 +-------
+>  mbuf.c         |   16 +----
+>  mbuf.h         |    3 +-
+>  misc.c         |   23 ------
+>  mroute.c       |    6 --
+>  mroute.h       |   13 ---
+>  mtcp.c         |    5 +-
+>  mudp.c         |    3 -
+>  multi.c        |   32 +++-----
+>  multi.h        |    2 -
+>  openvpn.h      |    3 -
+>  options.c      |   36 ---------
+>  options.h      |    5 -
+>  otime.c        |    2 -
+>  otime.h        |    1 -
+>  perf.c         |    4 -
+>  pf.c           |    2 +-
+>  plugin.c       |    4 -
+>  pool.h         |    1 -
+>  schedule.c     |    4 -
+>  schedule.h     |    8 --
+>  socket.c       |    7 --
+>  ssl.c          |    5 -
+>  ssl.h          |    4 -
+>  syshead.h      |   18 ----
+>  thread.c       |  156 -------------------------------------
+>  thread.h       |  235 --------------------------------------------------------
+>  39 files changed, 26 insertions(+), 1022 deletions(-)
+>  delete mode 100644 thread.c
+>  delete mode 100644 thread.h
 
-Perfect!  When it's a defined standard, I'll accept it more easily :)
 
-Applied to bugfix2.1, to be merged into allmerged and beta2.2.
+Seems like this patch set was never really added to the tree.  It
+received an ACK in the weekly IRC meeting Sept. 2, 2010.  Applied to
+feat_misc, to be merged into allmerged and beta2.2.
 
+commit 6af422162fbc1c505526157ecf630e37694dbc7b
+Author: David Sommerseth <dazo@...384...>
+Date:   Sat Aug 28 20:52:19 2010 +0200
 
-commit 3adf2f558e157ef5087ca44f13e097a394ef7c78
-Author: Jesse Young <jesse.young@...277...>
-Date:   Mon Nov 1 11:33:26 2010 -0500
+    Clean-up: Removing useless code - hash related functions
 
-    Remove hardcoded path to resolvconf
+    Removed even more function which where practically empty and took
+    away some function arguments which were not used.
 
-    Signed-off-by: Jesse Young <jesse.young@...277...>
-    Acked-by: David Sommerseth <dazo@...384...>
     Signed-off-by: David Sommerseth <dazo@...384...>
+    Acked-by: James Yonan <james@...515...>
+
+commit cc88a2695f4a54e27143efeae62de24fec8e26a1
+Author: David Sommerseth <dazo@...384...>
+Date:   Sat Aug 28 20:44:07 2010 +0200
+
+    Clean-up: Remove more dead and inactive code paths
+
+    These code paths was practically not needed with no locking
+    mechanisms enabled and was just bloating the source code.
+
+    Signed-off-by: David Sommerseth <dazo@...384...>
+    Acked-by: James Yonan <james@...515...>
+
+commit 7aa6c12a4424d00ea0add0a849f8a5b31a2de6a1
+Author: David Sommerseth <dazo@...384...>
+Date:   Sat Aug 28 20:14:36 2010 +0200
+
+    Clean-up: Remove pthread and mutex locking code
+
+    This code was not activated at all, and hard coded as disabled in
+    syshead.h with this code snippet:
+
+       /*
+        * Pthread support is currently experimental (and quite
+        * unfinished).
+        */
+       #if 1 /* JYFIXME -- if defined, disable pthread */
+       #undef USE_PTHREAD
+       #endif
+
+    So no matter if --enable-pthread when running ./configure or not,
+    this feature was never enabled in reality.  Further, by removing
+    the blocker code above made OpenVPN uncompilable in the current
+    state.
+
+    As the threading part needs to be completely rewritten and
+    pthreading will not be supported in OpenVPN 2.x, removing this code
+    seems most reasonable.
+
+    In addition, a lot of mutex locking code was also removed, as they
+    were practically NOP functions, due to pthreading being forcefully
+    disabled
+
+    Signed-off-by: David Sommerseth <dazo@...384...>
+    Acked-by: James Yonan <james@...515...>
 
 
 kind regards,
 
 David Sommerseth
-
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkzgXdUACgkQDC186MBRfrosWgCdEqCt+ik6013KlDRN5e67WnQ+
-MOsAnRvzVAlOEi7KVZbiITonVyLWGZ82
-=LI99
+iEYEARECAAYFAkzgXrUACgkQDC186MBRfrrPhwCeIEuhScmqsTjL2+bnyhTkbO3i
+8DcAn3THx0jIiYt7dDv/e4+HFopMae71
+=+VXi
 -----END PGP SIGNATURE-----
 
