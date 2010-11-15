@@ -1,10 +1,15 @@
-From: David Sommerseth <dazo@...384...>
-Date: Mon, 15 Nov 2010 09:05:47 +0100
-Message-Id: <1289808348-17463-7-git-send-email-dazo@...384...>
-In-Reply-To: <1289808348-17463-1-git-send-email-dazo@...384...>
+Date: Mon, 15 Nov 2010 10:02:36 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20101115090236.GK258@...1296...>
 References: <1289808348-17463-1-git-send-email-dazo@...384...>
-Subject: [Openvpn-devel] [PATCH 5/6] Removed functions not being used
-	anywhere
+	<1289808348-17463-3-git-send-email-dazo@...384...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="RacQGezy2Y99S6cT"
+Content-Disposition: inline
+In-Reply-To: <1289808348-17463-3-git-send-email-dazo@...384...>
+Subject: Re: [Openvpn-devel] [PATCH 1/6] Use stricter snprintf() formatting
+	in socks_username_password_auth()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,66 +18,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: David Sommerseth <dazo@...384...>
+To: David Sommerseth <dazo@...384...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-The GNU C compiler gave warnings about these functions in the patch
-not being used anywhere.  Doing a git grep on the code turned out
-there were no callers to these functions.  Taking these functions out,
-as there is not good reason why to carry dead code.
+--RacQGezy2Y99S6cT
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Signed-off-by: David Sommerseth <dazo@...384...>
----
- ps.c  |   12 ------------
- sig.c |    9 ---------
- 2 files changed, 0 insertions(+), 21 deletions(-)
+Hi,
 
-diff --git a/ps.c b/ps.c
-index 003fb45..0aaef62 100644
---- a/ps.c
-+++ b/ps.c
-@@ -234,18 +234,6 @@ port_share_sendmsg (const socket_descriptor_t sd,
-     }
- }
- 
--static int
--pc_list_len (struct proxy_connection *pc)
--{
--  int count = 0;
--  while (pc)
--    {
--      ++count;
--      pc = pc->next;
--    }
--  return count;
--}
--
- static void
- proxy_entry_close_sd (struct proxy_connection *pc, struct event_set *es)
- {
-diff --git a/sig.c b/sig.c
-index 4dd6b09..438f4e6 100644
---- a/sig.c
-+++ b/sig.c
-@@ -185,15 +185,6 @@ signal_handler (const int signum)
-   signal (signum, signal_handler);
- }
- 
--/* temporary signal handler, before we are fully initialized */
--static void
--signal_handler_exit (const int signum)
--{
--  msg (M_FATAL,
--       "Signal %d (%s) received during initialization, exiting",
--       signum, signal_description (signum, NULL));
--}
--
- #endif
- 
- /* set handlers for unix signals */
--- 
-1.7.2.3
+On Mon, Nov 15, 2010 at 09:05:43AM +0100, David Sommerseth wrote:
+> -  snprintf (to_send, sizeof (to_send), "\x01%c%s%c%s", strlen(creds.user=
+name),
+> -            creds.username, strlen(creds.password), creds.password);
+> +  snprintf (to_send, sizeof (to_send), "\x01%c%s%c%s", (int) strlen(cred=
+s.username) & 0xff,
+> +            creds.username, (int) strlen(creds.password) & 0xff, creds.p=
+assword);
 
+I tend to NAK this.
+
+I'm fine with the "(int)" thingie, but not with the "0xff" part - if
+the creds.username/creds.password string is indeed longer than 255 bytes,
+the whole message will be unparsable by the receiver, and silent truncation
+of the length field is not helping to make the code more readable, nor
+does it improve code quality.
+
+So if you want to make sure that the length is <=3D 255, add a check + error
+above the snprintf() block.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--RacQGezy2Y99S6cT
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBTOD3LKkuBuNlUUl1AQLihAQAsTWQiM1z+VDme5atEmhul62uZ5OgiZPU
+2aSPIPMSEPFXlAFJ3JxYfMyPZcZ7+nFOGKFJUzRrd1KbV4MqJg/2lSj2g8glFv7/
+pVc8nldM/Nl37gwbk4wtH8AAf1ag/UVGzgLGcq19BGbdZ2tim1BwJr+BB2Sg/29e
+EzsqMn4rreg=
+=5D8H
+-----END PGP SIGNATURE-----
+
+--RacQGezy2Y99S6cT--
 
