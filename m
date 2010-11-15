@@ -1,9 +1,14 @@
-From: David Sommerseth <dazo@...384...>
-Date: Mon, 15 Nov 2010 21:50:46 +0100
-Message-Id: <1289854246-16196-1-git-send-email-dazo@...384...>
-In-Reply-To: <4CE1949C.6010707@...1114...>
+Date: Mon, 15 Nov 2010 22:45:32 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20101115214531.GR258@...1296...>
 References: <4CE1949C.6010707@...1114...>
-Subject: [Openvpn-devel] [PATCH] Use stricter snprintf() formatting in
+	<1289854246-16196-1-git-send-email-dazo@...384...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="gLcqQrOcczDba7nC"
+Content-Disposition: inline
+In-Reply-To: <1289854246-16196-1-git-send-email-dazo@...384...>
+Subject: Re: [Openvpn-devel] [PATCH] Use stricter snprintf() formatting in
 	socks_username_password_auth() (v2)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,49 +18,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: David Sommerseth <dazo@...384...>
+To: David Sommerseth <dazo@...384...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-commit fc1fa9ffc7e3356458ec3 added a new function which needs to have a
-stricter string formatting.  This was detected due to a compiler warning.
+--gLcqQrOcczDba7nC
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-This patch makes sure that the length of username and password is not longer
-than 255 bytes.  It also adds extra checks to avoid NULL pointer issues with
-strlen() on these two parameters.
+Hi,
 
-Signed-off-by: David Sommerseth <dazo@...384...>
----
- socks.c |   13 ++++++++++---
- 1 files changed, 10 insertions(+), 3 deletions(-)
+On Mon, Nov 15, 2010 at 09:50:46PM +0100, David Sommerseth wrote:
+> +      || !creds.password || (strlen(creds.password) > 255) ) {
+> +          msg (M_NONFATAL,
+> +               "socks username and/or password exceeds 255 characters.  "
+> +               "Authentiaction not possible.");
 
-diff --git a/socks.c b/socks.c
-index 58b3648..b48701d 100644
---- a/socks.c
-+++ b/socks.c
-@@ -112,10 +112,17 @@ socks_username_password_auth (struct socks_proxy_info *p,
-   ssize_t size;
- 
-   creds.defined = 0;
--
-   get_user_pass (&creds, p->authfile, UP_TYPE_SOCKS, GET_USER_PASS_MANAGEMENT);
--  snprintf (to_send, sizeof (to_send), "\x01%c%s%c%s", strlen(creds.username),
--            creds.username, strlen(creds.password), creds.password);
-+
-+  if( !creds.username || (strlen(creds.username) > 255)
-+      || !creds.password || (strlen(creds.password) > 255) ) {
-+          msg (M_NONFATAL,
-+               "socks username and/or password exceeds 255 characters.  "
-+               "Authentiaction not possible.");
-+          return false;
-+  }
-+  snprintf (to_send, sizeof (to_send), "\x01%c%s%c%s", (int) strlen(creds.username),
-+            creds.username, (int) strlen(creds.password), creds.password);
-   size = send (sd, to_send, strlen(to_send), MSG_NOSIGNAL);
- 
-   if (size != strlen (to_send))
--- 
-1.7.2.3
+I'd ack this but for the spelling typo :-)
 
+(Sorry, but, well, these things tend to stick...)
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--gLcqQrOcczDba7nC
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBTOGp+6kuBuNlUUl1AQJF8wQAlD1ldygeS0CshBnK1ii5OKv59Y6kz42o
+8jlr3NMqGhMeyOTCE+v3hOBdCiXbQ0bx+3j2JI2F06RHwmNOt0ejaMq19YbFa9X+
+IYELgaHRm46ZhGqRa8tn+4JlR4dpF3VGO0hlM07r5DQu1UzwB2+ULcnx2smSx8gU
+SXBK40EipaQ=
+=ScXC
+-----END PGP SIGNATURE-----
+
+--gLcqQrOcczDba7nC--
 
