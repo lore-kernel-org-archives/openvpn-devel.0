@@ -1,10 +1,10 @@
 From: David Sommerseth <dazo@...384...>
-Date: Mon, 15 Nov 2010 09:05:46 +0100
-Message-Id: <1289808348-17463-6-git-send-email-dazo@...384...>
+Date: Mon, 15 Nov 2010 09:05:48 +0100
+Message-Id: <1289808348-17463-8-git-send-email-dazo@...384...>
 In-Reply-To: <1289808348-17463-1-git-send-email-dazo@...384...>
 References: <1289808348-17463-1-git-send-email-dazo@...384...>
-Subject: [Openvpn-devel] [PATCH 4/6] Only add some functions when really
-	needed
+Subject: [Openvpn-devel] [PATCH 6/6] Merged add_bypass_address() and
+	add_host_route_if_nonlocal()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,58 +18,67 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: David Sommerseth <dazo@...384...>
 
-The GNU C compiler gave warnings about some functions not being used.
-These functions where only used if certian #ifdef sections was enabled.
-
-This patch encapsulates these function declarations with matching #ifdef's
-to make it more clear when these functions are needed.
+The add_host_route_if_nonlocal() function is too simple to really
+benefit from calling add_bypass_address() when this function is the
+only caller to this function.
 
 Signed-off-by: David Sommerseth <dazo@...384...>
 ---
- options.c  |    2 ++
- reliable.c |    2 ++
- 2 files changed, 4 insertions(+), 0 deletions(-)
+ route.c |   34 ++++++++++++----------------------
+ 1 files changed, 12 insertions(+), 22 deletions(-)
 
-diff --git a/options.c b/options.c
-index f0b9310..d0cec7d 100644
---- a/options.c
-+++ b/options.c
-@@ -2785,6 +2785,7 @@ positive_atoi (const char *str)
-   return i < 0 ? 0 : i;
- }
+diff --git a/route.c b/route.c
+index 612bcbe..f78893e 100644
+--- a/route.c
++++ b/route.c
+@@ -59,26 +59,6 @@ print_bypass_addresses (const struct route_bypass *rb)
  
-+#ifdef WIN32  /* This function is only used when compiling on Windows */
- static unsigned int
- atou (const char *str)
+ #endif
+ 
+-static bool
+-add_bypass_address (struct route_bypass *rb, const in_addr_t a)
+-{
+-  int i;
+-  for (i = 0; i < rb->n_bypass; ++i)
+-    {
+-      if (a == rb->bypass[i]) /* avoid duplicates */
+-	return true;
+-    }
+-  if (rb->n_bypass < N_ROUTE_BYPASS)
+-    {
+-      rb->bypass[rb->n_bypass++] = a;
+-      return true;
+-    }
+-  else
+-    {
+-      return false;
+-    }
+-}
+-
+ struct route_option_list *
+ new_route_option_list (const int max_routes, struct gc_arena *a)
  {
-@@ -2792,6 +2793,7 @@ atou (const char *str)
-   sscanf (str, "%u", &val);
-   return val;
+@@ -2124,8 +2104,18 @@ netmask_to_netbits (const in_addr_t network, const in_addr_t netmask, int *netbi
+ static void
+ add_host_route_if_nonlocal (struct route_bypass *rb, const in_addr_t addr)
+ {
+-  if (test_local_addr(addr) == TLA_NONLOCAL && addr != 0 && addr != ~0)
+-    add_bypass_address (rb, addr);
++  if (test_local_addr(addr) == TLA_NONLOCAL && addr != 0 && addr != ~0) {
++    int i;
++    for (i = 0; i < rb->n_bypass; ++i)
++      {
++        if (addr == rb->bypass[i]) /* avoid duplicates */
++          return;
++      }
++    if (rb->n_bypass < N_ROUTE_BYPASS)
++      {
++        rb->bypass[rb->n_bypass++] = addr;
++      }
++  }
  }
-+#endif
  
- static inline bool
- space (unsigned char c)
-diff --git a/reliable.c b/reliable.c
-index a41f2bf..e68c236 100644
---- a/reliable.c
-+++ b/reliable.c
-@@ -516,6 +516,7 @@ reliable_can_send (const struct reliable *rel)
-   return n_current > 0 && !rel->hold;
- }
- 
-+#ifdef EXPONENTIAL_BACKOFF
- /* return a unique point-in-time to trigger retry */
- static time_t
- reliable_unique_retry (struct reliable *rel, time_t retry)
-@@ -535,6 +536,7 @@ reliable_unique_retry (struct reliable *rel, time_t retry)
-     }
-   return retry;
- }
-+#endif
- 
- /* return next buffer to send to remote */
- struct buffer *
+ static void
 -- 
 1.7.2.3
 
