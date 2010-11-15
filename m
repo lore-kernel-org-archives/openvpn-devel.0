@@ -1,10 +1,10 @@
 From: David Sommerseth <dazo@...384...>
-Date: Mon, 15 Nov 2010 09:05:48 +0100
-Message-Id: <1289808348-17463-8-git-send-email-dazo@...384...>
+Date: Mon, 15 Nov 2010 09:05:47 +0100
+Message-Id: <1289808348-17463-7-git-send-email-dazo@...384...>
 In-Reply-To: <1289808348-17463-1-git-send-email-dazo@...384...>
 References: <1289808348-17463-1-git-send-email-dazo@...384...>
-Subject: [Openvpn-devel] [PATCH 6/6] Merged add_bypass_address() and
-	add_host_route_if_nonlocal()
+Subject: [Openvpn-devel] [PATCH 5/6] Removed functions not being used
+	anywhere
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,67 +18,60 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: David Sommerseth <dazo@...384...>
 
-The add_host_route_if_nonlocal() function is too simple to really
-benefit from calling add_bypass_address() when this function is the
-only caller to this function.
+The GNU C compiler gave warnings about these functions in the patch
+not being used anywhere.  Doing a git grep on the code turned out
+there were no callers to these functions.  Taking these functions out,
+as there is not good reason why to carry dead code.
 
 Signed-off-by: David Sommerseth <dazo@...384...>
 ---
- route.c |   34 ++++++++++++----------------------
- 1 files changed, 12 insertions(+), 22 deletions(-)
+ ps.c  |   12 ------------
+ sig.c |    9 ---------
+ 2 files changed, 0 insertions(+), 21 deletions(-)
 
-diff --git a/route.c b/route.c
-index 612bcbe..f78893e 100644
---- a/route.c
-+++ b/route.c
-@@ -59,26 +59,6 @@ print_bypass_addresses (const struct route_bypass *rb)
- 
- #endif
- 
--static bool
--add_bypass_address (struct route_bypass *rb, const in_addr_t a)
--{
--  int i;
--  for (i = 0; i < rb->n_bypass; ++i)
--    {
--      if (a == rb->bypass[i]) /* avoid duplicates */
--	return true;
--    }
--  if (rb->n_bypass < N_ROUTE_BYPASS)
--    {
--      rb->bypass[rb->n_bypass++] = a;
--      return true;
--    }
--  else
--    {
--      return false;
--    }
--}
--
- struct route_option_list *
- new_route_option_list (const int max_routes, struct gc_arena *a)
- {
-@@ -2124,8 +2104,18 @@ netmask_to_netbits (const in_addr_t network, const in_addr_t netmask, int *netbi
- static void
- add_host_route_if_nonlocal (struct route_bypass *rb, const in_addr_t addr)
- {
--  if (test_local_addr(addr) == TLA_NONLOCAL && addr != 0 && addr != ~0)
--    add_bypass_address (rb, addr);
-+  if (test_local_addr(addr) == TLA_NONLOCAL && addr != 0 && addr != ~0) {
-+    int i;
-+    for (i = 0; i < rb->n_bypass; ++i)
-+      {
-+        if (addr == rb->bypass[i]) /* avoid duplicates */
-+          return;
-+      }
-+    if (rb->n_bypass < N_ROUTE_BYPASS)
-+      {
-+        rb->bypass[rb->n_bypass++] = addr;
-+      }
-+  }
+diff --git a/ps.c b/ps.c
+index 003fb45..0aaef62 100644
+--- a/ps.c
++++ b/ps.c
+@@ -234,18 +234,6 @@ port_share_sendmsg (const socket_descriptor_t sd,
+     }
  }
  
+-static int
+-pc_list_len (struct proxy_connection *pc)
+-{
+-  int count = 0;
+-  while (pc)
+-    {
+-      ++count;
+-      pc = pc->next;
+-    }
+-  return count;
+-}
+-
  static void
+ proxy_entry_close_sd (struct proxy_connection *pc, struct event_set *es)
+ {
+diff --git a/sig.c b/sig.c
+index 4dd6b09..438f4e6 100644
+--- a/sig.c
++++ b/sig.c
+@@ -185,15 +185,6 @@ signal_handler (const int signum)
+   signal (signum, signal_handler);
+ }
+ 
+-/* temporary signal handler, before we are fully initialized */
+-static void
+-signal_handler_exit (const int signum)
+-{
+-  msg (M_FATAL,
+-       "Signal %d (%s) received during initialization, exiting",
+-       signum, signal_description (signum, NULL));
+-}
+-
+ #endif
+ 
+ /* set handlers for unix signals */
 -- 
 1.7.2.3
 
