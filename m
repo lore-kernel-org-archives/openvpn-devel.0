@@ -1,8 +1,8 @@
-Message-ID: <4CE449EB.7060006@...1147...>
-Date: Wed, 17 Nov 2010 22:32:27 +0100
-From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <4CE52524.4090107@...515...>
+Date: Thu, 18 Nov 2010 15:07:48 +0200
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN (cook)book
+Subject: [Openvpn-devel] Topics for today's meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,21 +11,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: OpenVPN Users <openvpn-users@lists.sourceforge.net>, OpenVPN Devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-<insert ad>
-Hi all,
+Hi,
 
-I just wanted to let you know that the OpenVPN 2 Cookbook , which I've 
-been working on for the past 6 months or so, is due for publication in 
-early 2011. A pre-release (RAW) version of the book can already be found 
-here:
-  https://www.packtpub.com/openvpn-2-cookbook/book
+After a brief pause we're having an IRC meeting today, starting at 18:00
+UTC on #openvpn-devel@...1422... Note that due to winter time the
+local starting time may be one hour earlier than usually. Current topic
+list is here:
 
-cheers,
+<https://community.openvpn.net/openvpn/wiki/Topics-2010-11-18>
 
-JJK
-</insert ad>
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+
 
