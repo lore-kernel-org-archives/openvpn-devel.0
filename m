@@ -1,10 +1,10 @@
-From: Heiko Hund <hhund@...194...>
-Date: Fri, 26 Nov 2010 11:51:46 +0100
-References: <4CEF8D73.4050202@...515...>
-In-Reply-To: <4CEF8D73.4050202@...515...>
+Message-ID: <4CEFC866.6010005@...515...>
+Date: Fri, 26 Nov 2010 16:47:02 +0200
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Message-Id: <201011261151.46403.hhund@...194...>
-Subject: Re: [Openvpn-devel] Summary of the IRC meeting (25th Nov 2010)
+Content-Type: multipart/mixed; boundary="------------090105020509080505040403"
+Subject: [Openvpn-devel] [PATCH] Added fake configure.h generation to
+	Python-based build system
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,36 +13,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: Text/Plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Friday 26 November 2010 11:35:31 Samuli Sepp=E4nen wrote:
-> Discussed the "Windows route add command failed" issue:
->=20
-> <https://community.openvpn.net/openvpn/ticket/68>
->=20
-> This lead into more high-level discussion about whether failing to add
-> route(s) should be treated as a fatal OpenVPN error. Agreed that this is
-> the case if OpenVPN fails to add non-existing routes, but not if OpenVPN
-> fails when adding routes that already exist (e.g. local routes). Also
-> agreed that OpenVPN should print a meaningful error message to logs
-> (e.g. "Admin rights needed") if user lacks privileges to add routes.
-> This message should also be pushed to the Windows GUI using the
-> management API "echo" command.
+This is a multi-part message in MIME format.
+--------------090105020509080505040403
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 
-I think this should rather be reported in the "state" notification, at leas=
-t=20
-that would be the best place for the GUI to grab it.
 
-Heiko
---=20
-Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
-Astaro GmbH & Co. KG | An der RaumFabrik 33a | 76227 Karlsruhe | Germany
-Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
-=20
-Represented by the General Partner Astaro Verwaltungs GmbH
-An der RaumFabrik 33a | 76227 Karlsruhe | Germany=20
-Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
-Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
+
+--------------090105020509080505040403
+Content-Type: text/x-patch;
+	name="0001-Added-fake-configure.h-generation-to-Python-based-bu.patch"
+Content-Transfer-Encoding: base64
+Content-Disposition: inline;
+	filename*0="0001-Added-fake-configure.h-generation-to-Python-based-bu.pa";
+	filename*1="tch"
+
+RnJvbSAzODQ4OWU2MTc5YTM1NzYyNmQ5MjMzZjliMTIwNGJmNmJjOTMzNDFhIE1vbiBTZXAg
+MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiA9P3V0Zi04P3E/U2FtdWxpPTIwU2VwcD1DMz1BNG5l
+bj89IDxzYW11bGlAb3BlbnZwbi5uZXQ+CkRhdGU6IEZyaSwgMjYgTm92IDIwMTAgMTY6MzI6
+NDcgKzAyMDAKU3ViamVjdDogW1BBVENIXSBBZGRlZCBmYWtlIGNvbmZpZ3VyZS5oIGdlbmVy
+YXRpb24gdG8gUHl0aG9uLWJhc2VkIGJ1aWxkIHN5c3RlbQpNSU1FLVZlcnNpb246IDEuMApD
+b250ZW50LVR5cGU6IHRleHQvcGxhaW47IGNoYXJzZXQ9dXRmLTgKQ29udGVudC1UcmFuc2Zl
+ci1FbmNvZGluZzogOGJpdAoKQnVpbGRpbmcgT3BlblZQTiB1c2luZyB0aGUgUHl0aG9uLWJh
+c2VkIGJ1aWxkIHN5c3RlbSBmYWlscyBiZWNhdXNlIG9mIG1pc3NpbmcKY29uZmlndXJlLmgg
+ZmlsZS4gVGhpcyBwYXRjaCBhZGRzIGNvZGUgdG8gd2luL3diLnB5IGFuZCB3aW4vY29uZmln
+LnB5IHRvCmF1dG9tYXRpY2FsbHkgZ2VuZXJhdGUgYSBmYWtlIGNvbmZpZ3VyZS5oIGZpbGUg
+d2hpY2ggY29udGFpbnMgYnVpbGQgcGFyYW1ldGVycwpwYXJzZWQgZnJvbSB3aW4vc2V0dGlu
+Z3MuaW4gaW4gQ09ORklHVVJFX0RFRklORVMsIGFzIHdlbGwgYXMgYSBtb3JlIHByb3BlciB2
+YWx1ZQpmb3IgdGhlIENPTkZJR1VSRV9DQUxMIHZhcmlhYmxlLgoKU2lnbmVkLW9mZi1ieTog
+U2FtdWxpIFNlcHDDpG5lbiA8c2FtdWxpQG9wZW52cG4ubmV0PgotLS0KIHdpbi9jb25maWcu
+cHkgfCAgICAzICsrLQogd2luL3diLnB5ICAgICB8ICAgMjAgKysrKysrKysrKysrKysrKysr
+KysKIDIgZmlsZXMgY2hhbmdlZCwgMjIgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbnMoLSkK
+CmRpZmYgLS1naXQgYS93aW4vY29uZmlnLnB5IGIvd2luL2NvbmZpZy5weQppbmRleCBjZjM4
+Y2FjLi5jOTk1NmNjIDEwMDY0NAotLS0gYS93aW4vY29uZmlnLnB5CisrKyBiL3dpbi9jb25m
+aWcucHkKQEAgLTEsNiArMSw3IEBACi1mcm9tIHdiIGltcG9ydCBwcmVwcm9jZXNzLCBhdXRv
+Z2VuLCBtb2RfZm4sIGhvbWVfZm4sIGJ1aWxkX2F1dG9kZWZzLCBtYWtlX2hlYWRlcnNfb2Jq
+cywgZGljdF9kZWYNCitmcm9tIHdiIGltcG9ydCBwcmVwcm9jZXNzLCBhdXRvZ2VuLCBtb2Rf
+Zm4sIGhvbWVfZm4sIGJ1aWxkX2NvbmZpZ3VyZV9oLCBidWlsZF9hdXRvZGVmcywgbWFrZV9o
+ZWFkZXJzX29ianMsIGRpY3RfZGVmDQogDQogZGVmIG1haW4oY29uZmlnKToNCisgICAgYnVp
+bGRfY29uZmlndXJlX2goY29uZmlnLCBtb2RfZm4oaG9tZV9mbignY29uZmlndXJlLmgnKSks
+IGhlYWRfY29tbWVudD0nLyogJXMgKi9cblxuJyAlIGF1dG9nZW4pDQogICAgIGJ1aWxkX2F1
+dG9kZWZzKGNvbmZpZywgbW9kX2ZuKCdhdXRvZGVmcy5oLmluJyksIGhvbWVfZm4oJ2F1dG9k
+ZWZzLmgnKSkNCiAgICAgaG8gPSBtYWtlX2hlYWRlcnNfb2Jqcyhob21lX2ZuKCdNYWtlZmls
+ZS5hbScpKQ0KIA0KZGlmZiAtLWdpdCBhL3dpbi93Yi5weSBiL3dpbi93Yi5weQppbmRleCBm
+N2Y0ZjRhLi5hMzY4NzEyIDEwMDY0NAotLS0gYS93aW4vd2IucHkKKysrIGIvd2luL3diLnB5
+CkBAIC03MCw2ICs3MCwyNiBAQCBkZWYgYnVpbGRfYXV0b2RlZnMoa3YsIGF1dG9kZWZzX2lu
+LCBhdXRvZGVmc19vdXQpOgogICAgICAgICAgICAgICAgcXVvdGVfZW5kPSdAJywNCiAgICAg
+ICAgICAgICAgICBoZWFkX2NvbW1lbnQ9Jy8qICVzICovXG5cbicgJSBhdXRvZ2VuKQ0KIA0K
+KycnJ0dlbmVyYXRlIGEgZmFrZSBjb25maWd1cmUuaCBkeW5hbWljYWxseScnJw0KK2RlZiBi
+dWlsZF9jb25maWd1cmVfaChrdiwgY29uZmlndXJlX2hfb3V0LCBoZWFkX2NvbW1lbnQpOg0K
+KyAgICBmb3V0ID0gb3Blbihjb25maWd1cmVfaF9vdXQsICd3JykNCisgICAgY29uZmlndXJl
+X2RlZmluZXM9JyNkZWZpbmUgQ09ORklHVVJFX0RFRklORVMgXCInDQorICAgIGNvbmZpZ3Vy
+ZV9jYWxsPScjZGVmaW5lIENPTkZJR1VSRV9DQUxMIFwiIGNvbmZpZ19hbGwucHkgXCInDQor
+DQorICAgIGZvdXQud3JpdGUoaGVhZF9jb21tZW50KQ0KKw0KKyAgICBkaWN0ID0gZ2V0X2Nv
+bmZpZygpDQorDQorICAgIGZvciBrZXksIHZhbHVlIGluIGRpY3QuaXRlcml0ZW1zKCk6DQor
+ICAgICAgICBjb25maWd1cmVfZGVmaW5lcyA9IGNvbmZpZ3VyZV9kZWZpbmVzICsgIiAiICsg
+a2V5ICsgIj0iICsgdmFsdWUgKyAiLCINCisNCisgICAgY29uZmlndXJlX2RlZmluZXMgPSBj
+b25maWd1cmVfZGVmaW5lcyArICJcIiIgKyAiXG4iDQorDQorICAgIGZvdXQud3JpdGUoY29u
+ZmlndXJlX2RlZmluZXMpDQorICAgIGZvdXQud3JpdGUoY29uZmlndXJlX2NhbGwpDQorICAg
+IGZvdXQuY2xvc2UoKQ0KKw0KKw0KIGRlZiBwcmVwcm9jZXNzKGt2LCBpbl9mbiwgb3V0X2Zu
+LCBxdW90ZV9iZWdpbj1Ob25lLCBxdW90ZV9lbmQ9Tm9uZSwgaWZfcHJlZml4PU5vbmUsIGhl
+YWRfY29tbWVudD1Ob25lKToNCiAgICAgZGVmIHJlcGZuKG0pOg0KICAgICAgICAgdmFyLCA9
+IG0uZ3JvdXBzKCkNCi0tIAoxLjYuMy4zCgo=
+--------------090105020509080505040403--
 
