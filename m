@@ -1,12 +1,15 @@
-Message-ID: <4CF7869B.3030407@...193...>
-Date: Thu, 02 Dec 2010 12:44:27 +0100
-From: Farkas Levente <lfarkas@...193...>
-MIME-Version: 1.0
-References: <BF88BCF2F8AD5843B2250C5DB8DDE0AFBEE7137C@...1436...>	<4CF76B01.5020308@...193...>
-	<4CF77EA5.4000702@...68...>
-In-Reply-To: <4CF77EA5.4000702@...68...>
-Subject: Re: [Openvpn-devel] Documentation and alternative SSL
-	backend	patches
+Date: Thu, 2 Dec 2010 13:42:43 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20101202124243.GC12709@...1296...>
+References: <BF88BCF2F8AD5843B2250C5DB8DDE0AFBEE7137C@...1436...>
+	<4CF77A07.5050709@...1114...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="fXStkuK2IQBfcDe+"
+Content-Disposition: inline
+In-Reply-To: <4CF77A07.5050709@...1114...>
+Subject: Re: [Openvpn-devel] Documentation and alternative SSL backend
+	patches
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,40 +18,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Matthias Andree <matthias.andree@...68...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On 12/02/2010 12:10 PM, Matthias Andree wrote:
-> Am 02.12.2010 10:46, schrieb Farkas Levente:
->> On 12/02/2010 10:05 AM, Adriaan de Jong wrote:
->>> Hi List, 
->>>
->>> We've been working on OpenVPN in preparation for a security evaluation. This entailed documenting OpenVPN at a relatively high level, removing the dependencies on OpenSSL, and adding support for a simpler, easier to evaluate library (PolarSSL).
->>>
->>> This was done in a series of patches:
->>> - Patch 1: Adds documentation to OpenVPN through Doxygen.
->>> - Patch 2: Splits out OpenSSL-specific code, defining a clean "backend" interface for both the crypto and SSL modules. Splits the SSL module into channel setup and verification sub-modules.
->>> - Patch 3: Adds a backend for PolarSSL.
->>>
->>> We'd love to release these patches to the community. Unfortunately, the patches are now based on 2.1.4, and need to be rebased to a newer version. Before we spend time on updating the patches to the current revision of OpenVPN, we'd like to know whether there is an interest in these patches from the community.
->>
->> most distro switch from openssl to nss. is there any reason you switch
->> to polarssl in stead of nss?
->>
-> 
-> What do you base the "most distro" assessment on?
-> 
-> Are you aware of any website discussing the advantages of the "big" SSL
-> providers (OpenSSL, Mozilla NSS, GnuTLS, PolarSSL, CyaSSL, ...)?
+--fXStkuK2IQBfcDe+
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-http://fedoraproject.org/wiki/FedoraCryptoConsolidation
-http://rcritten.fedorapeople.org/nss_compat_ossl.html
-http://www.mail-archive.com/help-gnutls@...1269.../msg00676.html
-http://fedoraproject.org/wiki/Nss_compat_ossl
-http://lists.alioth.debian.org/pipermail/nut-upsdev/2010-December/005090.html
+Hi,
 
--- 
-  Levente                               "Si vis pacem para bellum!"
+On Thu, Dec 02, 2010 at 11:50:47AM +0100, David Sommerseth wrote:
+> Wow, I mean WOW!!  This is quite some work you've done!
+[..]
+
+What he said :-)
+
+I'm not so pessimistic regarding inclusion in 2.3, though - yes, 2.3 brings
+large changes, but not yet in the SSL arena.  So why not break that as
+well while we're at it?
+
+"We have a framework for automated building and testing now..."
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--fXStkuK2IQBfcDe+
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBTPeUQ6kuBuNlUUl1AQK7pwQAodvAFdhKWzOFXYOiVxf9Bd5nQ1nAEiW3
+MJ/38xE6UVkIMGNq1W2aiSqv07fV87W+lDjlxnoneVB22n9Gsib9gxLtb85iWArc
+TTButElzcJFkDY+0dNXselj+j7Kzyow5gQDm60AQgR00sp/8Ake3sl5VYPzzgkTo
+8sBlVnEl1ew=
+=ORF6
+-----END PGP SIGNATURE-----
+
+--fXStkuK2IQBfcDe+--
 
