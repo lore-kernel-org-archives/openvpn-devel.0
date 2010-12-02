@@ -1,14 +1,17 @@
-From: chantra <chantra@...1258...>
-In-Reply-To: <BF88BCF2F8AD5843B2250C5DB8DDE0AFBEE713B1@...1436...>
+From: Adriaan de Jong <dejong@...1435...>
+Date: Thu, 2 Dec 2010 11:26:02 +0100
+Message-ID: <BF88BCF2F8AD5843B2250C5DB8DDE0AFBEE713C5@...1436...>
 References: <BF88BCF2F8AD5843B2250C5DB8DDE0AFBEE7137C@...1436...>
 	<4CF76B01.5020308@...193...>
 	<BF88BCF2F8AD5843B2250C5DB8DDE0AFBEE713B1@...1436...>
-Content-Type: multipart/alternative; boundary="=-e7nO4OR+Z7rsqF0fQ3fp"
-Date: Thu, 02 Dec 2010 11:19:34 +0100
-Message-ID: <1291285174.2712.7.camel@...1259...>
-Mime-Version: 1.0
+	<1291285174.2712.7.camel@...1259...>
+In-Reply-To: <1291285174.2712.7.camel@...1259...>
+Content-Language: en-US
+Content-Type: multipart/alternative;
+	boundary="_000_BF88BCF2F8AD5843B2250C5DB8DDE0AFBEE713C5FOXDFT02FOXloca_"
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] Documentation and alternative SSL backend
-	patches
+ patches
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,170 +20,183 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Adriaan de Jong <dejong@...1435...>
+To: chantra <chantra@...1258...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---=-e7nO4OR+Z7rsqF0fQ3fp
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+--_000_BF88BCF2F8AD5843B2250C5DB8DDE0AFBEE713C5FOXDFT02FOXloca_
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 
+V2XigJlyZSBob3BpbmcgdGhhdCBpdCBpcyBhIGJpZyBzdGVwIHRvd2FyZHMgbW9kdWxhcml6YXRp
+b24gZm9yIGJvdGggdGhlIGRhdGEgY2hhbm5lbCBjcnlwdG8gYW5kIGNvbnRyb2wgY2hhbm5lbCBu
+ZWdvdGlhdGlvbi4gQXMgdGhlIGNvbnRyb2wgY2hhbm5lbCB2ZXJpZmljYXRpb24gY29kZSBoYXMg
+YmVlbiBzZXBhcmF0ZWQsIGl0IHNob3VsZCBhbHNvIGJlIGEgZmlyc3Qgc3RlcCB0b3dhcmRzIG1v
+ZHVsYXJpemF0aW9uIG9mIHRoYXQgY29kZS4NCg0KQWRyaWFhbg0KDQpGcm9tOiBjaGFudHJhIFtt
+YWlsdG86Y2hhbnRyYUAuLi4xMjU4Li4uXQ0KU2VudDogZG9uZGVyZGFnIDIgZGVjZW1iZXIgMjAx
+MCAxMToyMA0KVG86IEFkcmlhYW4gZGUgSm9uZw0KQ2M6IEZhcmthcyBMZXZlbnRlOyBvcGVudnBu
+LWRldmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldA0KU3ViamVjdDogUmU6IFtPcGVudnBuLWRldmVs
+XSBEb2N1bWVudGF0aW9uIGFuZCBhbHRlcm5hdGl2ZSBTU0wgYmFja2VuZCBwYXRjaGVzDQoNCg0K
+DQoNCg0KDQpQb2xhclNTTCB3YXMgYSBwZXJzb25hbCBjaG9pY2UgZm9yIHVzLCBtb3N0bHkgZHVl
+IHRvIGl0cyBzaW1wbGljaXR5IGFuZCBtdWx0aS1wbGF0Zm9ybSBzdXBwb3J0LiBUaGUgcGF0Y2gg
+aXMgd3JpdHRlbiBpbiBzdWNoIGEgd2F5IHRoYXQgZ2VuZXJpYyBvcGVyYXRpb25zIGZyb20gbW9z
+dCBsaWJyYXJpZXMgc2hvdWxkIHdvcmssIGFzIGxvbmcgYXMgYSBuZXcgYmFja2VuZCBpcyB3cml0
+dGVuIGZvciB0aGVtLg0KDQoNCg0KQWRyaWFhbg0KSGksDQoNClRoaXMgc2VlbXMgdG8gYmUgYSBz
+dGVwIGZvcndhcmQgdG8gaHR0cHM6Ly9jb21tdW5pdHkub3BlbnZwbi5uZXQvb3BlbnZwbi93aWtp
+L1JvYWRNYXAjT3BlblZQTjMuMDpEZXNpZ25hbmRpbXBsZW1lbnRhdGlvbiBhbmQgaW4gbXkgb3Bp
+bmlvbiBpcyBhbiBpbnRlcmVzdGluZyBhZGRpdGlvbiB0byBvcGVudnBuIGNvZGUuDQoNCkNoYW50
+cmENCg0KDQoNCg0KDQoNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KDQo+IEZyb206
+IEZhcmthcyBMZXZlbnRlIFttYWlsdG86bGZhcmthc0AuLi4xOTMuLi5dDQoNCj4gU2VudDogZG9u
+ZGVyZGFnIDIgZGVjZW1iZXIgMjAxMCAxMDo0Nw0KDQo+IFRvOiBBZHJpYWFuIGRlIEpvbmcNCg0K
+PiBDYzogb3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQ8bWFpbHRvOm9wZW52cG4t
+ZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0Pg0KDQo+IFN1YmplY3Q6IFJlOiBbT3BlbnZwbi1k
+ZXZlbF0gRG9jdW1lbnRhdGlvbiBhbmQgYWx0ZXJuYXRpdmUgU1NMIGJhY2tlbmQNCg0KPiBwYXRj
+aGVzDQoNCj4NCg0KPiBPbiAxMi8wMi8yMDEwIDEwOjA1IEFNLCBBZHJpYWFuIGRlIEpvbmcgd3Jv
+dGU6DQoNCj4gPiBIaSBMaXN0LA0KDQo+ID4NCg0KPiA+IFdlJ3ZlIGJlZW4gd29ya2luZyBvbiBP
+cGVuVlBOIGluIHByZXBhcmF0aW9uIGZvciBhIHNlY3VyaXR5DQoNCj4gZXZhbHVhdGlvbi4gVGhp
+cyBlbnRhaWxlZCBkb2N1bWVudGluZyBPcGVuVlBOIGF0IGEgcmVsYXRpdmVseSBoaWdoDQoNCj4g
+bGV2ZWwsIHJlbW92aW5nIHRoZSBkZXBlbmRlbmNpZXMgb24gT3BlblNTTCwgYW5kIGFkZGluZyBz
+dXBwb3J0IGZvciBhDQoNCj4gc2ltcGxlciwgZWFzaWVyIHRvIGV2YWx1YXRlIGxpYnJhcnkgKFBv
+bGFyU1NMKS4NCg0KPiA+DQoNCj4gPiBUaGlzIHdhcyBkb25lIGluIGEgc2VyaWVzIG9mIHBhdGNo
+ZXM6DQoNCj4gPiAtIFBhdGNoIDE6IEFkZHMgZG9jdW1lbnRhdGlvbiB0byBPcGVuVlBOIHRocm91
+Z2ggRG94eWdlbi4NCg0KPiA+IC0gUGF0Y2ggMjogU3BsaXRzIG91dCBPcGVuU1NMLXNwZWNpZmlj
+IGNvZGUsIGRlZmluaW5nIGEgY2xlYW4NCg0KPiAiYmFja2VuZCIgaW50ZXJmYWNlIGZvciBib3Ro
+IHRoZSBjcnlwdG8gYW5kIFNTTCBtb2R1bGVzLiBTcGxpdHMgdGhlIFNTTA0KDQo+IG1vZHVsZSBp
+bnRvIGNoYW5uZWwgc2V0dXAgYW5kIHZlcmlmaWNhdGlvbiBzdWItbW9kdWxlcy4NCg0KPiA+IC0g
+UGF0Y2ggMzogQWRkcyBhIGJhY2tlbmQgZm9yIFBvbGFyU1NMLg0KDQo+ID4NCg0KPiA+IFdlJ2Qg
+bG92ZSB0byByZWxlYXNlIHRoZXNlIHBhdGNoZXMgdG8gdGhlIGNvbW11bml0eS4gVW5mb3J0dW5h
+dGVseSwNCg0KPiB0aGUgcGF0Y2hlcyBhcmUgbm93IGJhc2VkIG9uIDIuMS40LCBhbmQgbmVlZCB0
+byBiZSByZWJhc2VkIHRvIGEgbmV3ZXINCg0KPiB2ZXJzaW9uLiBCZWZvcmUgd2Ugc3BlbmQgdGlt
+ZSBvbiB1cGRhdGluZyB0aGUgcGF0Y2hlcyB0byB0aGUgY3VycmVudA0KDQo+IHJldmlzaW9uIG9m
+IE9wZW5WUE4sIHdlJ2QgbGlrZSB0byBrbm93IHdoZXRoZXIgdGhlcmUgaXMgYW4gaW50ZXJlc3Qg
+aW4NCg0KPiB0aGVzZSBwYXRjaGVzIGZyb20gdGhlIGNvbW11bml0eS4NCg0KPg0KDQo+IG1vc3Qg
+ZGlzdHJvIHN3aXRjaCBmcm9tIG9wZW5zc2wgdG8gbnNzLiBpcyB0aGVyZSBhbnkgcmVhc29uIHlv
+dSBzd2l0Y2gNCg0KPiB0byBwb2xhcnNzbCBpbiBzdGVhZCBvZiBuc3M/DQoNCj4NCg0KPiAtLQ0K
+DQo+ICAgTGV2ZW50ZSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAiU2kgdmlzIHBhY2Vt
+IHBhcmEgYmVsbHVtISINCg==
 
-
-> PolarSSL was a personal choice for us, mostly due to its simplicity and multi-platform support. The patch is written in such a way that generic operations from most libraries should work, as long as a new backend is written for them.
-> 
-> Adriaan 
-
-Hi,
-
-This seems to be a step forward to
-https://community.openvpn.net/openvpn/wiki/RoadMap#OpenVPN3.0:Designandimplementation and in my opinion is an interesting addition to openvpn code.
-
-Chantra
-
-
-> 
-> > -----Original Message-----
-> > From: Farkas Levente [mailto:lfarkas@...193...]
-> > Sent: donderdag 2 december 2010 10:47
-> > To: Adriaan de Jong
-> > Cc: openvpn-devel@lists.sourceforge.net
-> > Subject: Re: [Openvpn-devel] Documentation and alternative SSL backend
-> > patches
-> > 
-> > On 12/02/2010 10:05 AM, Adriaan de Jong wrote:
-> > > Hi List,
-> > >
-> > > We've been working on OpenVPN in preparation for a security
-> > evaluation. This entailed documenting OpenVPN at a relatively high
-> > level, removing the dependencies on OpenSSL, and adding support for a
-> > simpler, easier to evaluate library (PolarSSL).
-> > >
-> > > This was done in a series of patches:
-> > > - Patch 1: Adds documentation to OpenVPN through Doxygen.
-> > > - Patch 2: Splits out OpenSSL-specific code, defining a clean
-> > "backend" interface for both the crypto and SSL modules. Splits the SSL
-> > module into channel setup and verification sub-modules.
-> > > - Patch 3: Adds a backend for PolarSSL.
-> > >
-> > > We'd love to release these patches to the community. Unfortunately,
-> > the patches are now based on 2.1.4, and need to be rebased to a newer
-> > version. Before we spend time on updating the patches to the current
-> > revision of OpenVPN, we'd like to know whether there is an interest in
-> > these patches from the community.
-> > 
-> > most distro switch from openssl to nss. is there any reason you switch
-> > to polarssl in stead of nss?
-> > 
-> > --
-> >   Levente                               "Si vis pacem para bellum!"
-> 
-> ------------------------------------------------------------------------------
-> Increase Visibility of Your 3D Game App & Earn a Chance To Win $500!
-> Tap into the largest installed PC base & get more eyes on your game by
-> optimizing for Intel(R) Graphics Technology. Get started today with the
-> Intel(R) Software Partner Program. Five $500 cash prizes are up for grabs.
-> http://p.sf.net/sfu/intelisp-dev2dev
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> 
-
-
--- 
-http://www.debuntu.org
-
---=-e7nO4OR+Z7rsqF0fQ3fp
+--_000_BF88BCF2F8AD5843B2250C5DB8DDE0AFBEE713C5FOXDFT02FOXloca_
 Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 TRANSITIONAL//EN">
-<HTML>
-<HEAD>
-  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=UTF-8">
-  <META NAME="GENERATOR" CONTENT="GtkHTML/3.30.3">
-</HEAD>
-<BODY>
-<BR>
-<BLOCKQUOTE TYPE=CITE>
-<PRE>
-PolarSSL was a personal choice for us, mostly due to its simplicity and multi-platform support. The patch is written in such a way that generic operations from most libraries should work, as long as a new backend is written for them.
+PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVy
+bjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVt
+YXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6bT0iaHR0cDovL3NjaGVtYXMubWlj
+cm9zb2Z0LmNvbS9vZmZpY2UvMjAwNC8xMi9vbW1sIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv
+VFIvUkVDLWh0bWw0MCI+PGhlYWQ+PG1ldGEgaHR0cC1lcXVpdj1Db250ZW50LVR5cGUgY29udGVu
+dD0idGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij48bWV0YSBuYW1lPUdlbmVyYXRvciBjb250ZW50
+PSJNaWNyb3NvZnQgV29yZCAxMiAoZmlsdGVyZWQgbWVkaXVtKSI+PHN0eWxlPjwhLS0NCi8qIEZv
+bnQgRGVmaW5pdGlvbnMgKi8NCkBmb250LWZhY2UNCgl7Zm9udC1mYW1pbHk6IkNhbWJyaWEgTWF0
+aCI7DQoJcGFub3NlLTE6MiA0IDUgMyA1IDQgNiAzIDIgNDt9DQpAZm9udC1mYWNlDQoJe2ZvbnQt
+ZmFtaWx5OkNhbGlicmk7DQoJcGFub3NlLTE6MiAxNSA1IDIgMiAyIDQgMyAyIDQ7fQ0KQGZvbnQt
+ZmFjZQ0KCXtmb250LWZhbWlseTpUYWhvbWE7DQoJcGFub3NlLTE6MiAxMSA2IDQgMyA1IDQgNCAy
+IDQ7fQ0KQGZvbnQtZmFjZQ0KCXtmb250LWZhbWlseTpDb25zb2xhczsNCglwYW5vc2UtMToyIDEx
+IDYgOSAyIDIgNCAzIDIgNDt9DQovKiBTdHlsZSBEZWZpbml0aW9ucyAqLw0KcC5Nc29Ob3JtYWws
+IGxpLk1zb05vcm1hbCwgZGl2Lk1zb05vcm1hbA0KCXttYXJnaW46MGNtOw0KCW1hcmdpbi1ib3R0
+b206LjAwMDFwdDsNCglmb250LXNpemU6MTIuMHB0Ow0KCWZvbnQtZmFtaWx5OiJUaW1lcyBOZXcg
+Um9tYW4iLCJzZXJpZiI7fQ0KYTpsaW5rLCBzcGFuLk1zb0h5cGVybGluaw0KCXttc28tc3R5bGUt
+cHJpb3JpdHk6OTk7DQoJY29sb3I6Ymx1ZTsNCgl0ZXh0LWRlY29yYXRpb246dW5kZXJsaW5lO30N
+CmE6dmlzaXRlZCwgc3Bhbi5Nc29IeXBlcmxpbmtGb2xsb3dlZA0KCXttc28tc3R5bGUtcHJpb3Jp
+dHk6OTk7DQoJY29sb3I6cHVycGxlOw0KCXRleHQtZGVjb3JhdGlvbjp1bmRlcmxpbmU7fQ0KcHJl
+DQoJe21zby1zdHlsZS1wcmlvcml0eTo5OTsNCgltc28tc3R5bGUtbGluazoiSFRNTCBQcmVmb3Jt
+YXR0ZWQgQ2hhciI7DQoJbWFyZ2luOjBjbTsNCgltYXJnaW4tYm90dG9tOi4wMDAxcHQ7DQoJZm9u
+dC1zaXplOjEwLjBwdDsNCglmb250LWZhbWlseToiQ291cmllciBOZXciO30NCnNwYW4uSFRNTFBy
+ZWZvcm1hdHRlZENoYXINCgl7bXNvLXN0eWxlLW5hbWU6IkhUTUwgUHJlZm9ybWF0dGVkIENoYXIi
+Ow0KCW1zby1zdHlsZS1wcmlvcml0eTo5OTsNCgltc28tc3R5bGUtbGluazoiSFRNTCBQcmVmb3Jt
+YXR0ZWQiOw0KCWZvbnQtZmFtaWx5OkNvbnNvbGFzO30NCnNwYW4uRW1haWxTdHlsZTE5DQoJe21z
+by1zdHlsZS10eXBlOnBlcnNvbmFsLXJlcGx5Ow0KCWZvbnQtZmFtaWx5OiJDYWxpYnJpIiwic2Fu
+cy1zZXJpZiI7DQoJY29sb3I6IzFGNDk3RDt9DQouTXNvQ2hwRGVmYXVsdA0KCXttc28tc3R5bGUt
+dHlwZTpleHBvcnQtb25seTsNCglmb250LXNpemU6MTAuMHB0O30NCkBwYWdlIFdvcmRTZWN0aW9u
+MQ0KCXtzaXplOjYxMi4wcHQgNzkyLjBwdDsNCgltYXJnaW46NzAuODVwdCA3MC44NXB0IDcwLjg1
+cHQgNzAuODVwdDt9DQpkaXYuV29yZFNlY3Rpb24xDQoJe3BhZ2U6V29yZFNlY3Rpb24xO30NCi0t
+Pjwvc3R5bGU+PCEtLVtpZiBndGUgbXNvIDldPjx4bWw+DQo8bzpzaGFwZWRlZmF1bHRzIHY6ZXh0
+PSJlZGl0IiBzcGlkbWF4PSIxMDI2IiAvPg0KPC94bWw+PCFbZW5kaWZdLS0+PCEtLVtpZiBndGUg
+bXNvIDldPjx4bWw+DQo8bzpzaGFwZWxheW91dCB2OmV4dD0iZWRpdCI+DQo8bzppZG1hcCB2OmV4
+dD0iZWRpdCIgZGF0YT0iMSIgLz4NCjwvbzpzaGFwZWxheW91dD48L3htbD48IVtlbmRpZl0tLT48
+L2hlYWQ+PGJvZHkgbGFuZz1OTCBsaW5rPWJsdWUgdmxpbms9cHVycGxlPjxkaXYgY2xhc3M9V29y
+ZFNlY3Rpb24xPjxwIGNsYXNzPU1zb05vcm1hbD48c3BhbiBsYW5nPUVOLVVTIHN0eWxlPSdmb250
+LXNpemU6MTEuMHB0O2ZvbnQtZmFtaWx5OiJDYWxpYnJpIiwic2Fucy1zZXJpZiI7Y29sb3I6IzFG
+NDk3RCc+V2XigJlyZSBob3BpbmcgdGhhdCBpdCBpcyBhIGJpZyBzdGVwIHRvd2FyZHMgbW9kdWxh
+cml6YXRpb24gZm9yIGJvdGggdGhlIGRhdGEgY2hhbm5lbCBjcnlwdG8gYW5kIGNvbnRyb2wgY2hh
+bm5lbCBuZWdvdGlhdGlvbi4gQXMgdGhlIGNvbnRyb2wgY2hhbm5lbCB2ZXJpZmljYXRpb24gY29k
+ZSBoYXMgYmVlbiBzZXBhcmF0ZWQsIGl0IHNob3VsZCBhbHNvIGJlIGEgZmlyc3Qgc3RlcCB0b3dh
+cmRzIG1vZHVsYXJpemF0aW9uIG9mIHRoYXQgY29kZS48bzpwPjwvbzpwPjwvc3Bhbj48L3A+PHAg
+Y2xhc3M9TXNvTm9ybWFsPjxzcGFuIGxhbmc9RU4tVVMgc3R5bGU9J2ZvbnQtc2l6ZToxMS4wcHQ7
+Zm9udC1mYW1pbHk6IkNhbGlicmkiLCJzYW5zLXNlcmlmIjtjb2xvcjojMUY0OTdEJz48bzpwPiZu
+YnNwOzwvbzpwPjwvc3Bhbj48L3A+PHAgY2xhc3M9TXNvTm9ybWFsPjxzcGFuIGxhbmc9RU4tVVMg
+c3R5bGU9J2ZvbnQtc2l6ZToxMS4wcHQ7Zm9udC1mYW1pbHk6IkNhbGlicmkiLCJzYW5zLXNlcmlm
+Ijtjb2xvcjojMUY0OTdEJz5BZHJpYWFuPG86cD48L286cD48L3NwYW4+PC9wPjxwIGNsYXNzPU1z
+b05vcm1hbD48c3BhbiBsYW5nPUVOLVVTIHN0eWxlPSdmb250LXNpemU6MTEuMHB0O2ZvbnQtZmFt
+aWx5OiJDYWxpYnJpIiwic2Fucy1zZXJpZiI7Y29sb3I6IzFGNDk3RCc+PG86cD4mbmJzcDs8L286
+cD48L3NwYW4+PC9wPjxkaXYgc3R5bGU9J2JvcmRlcjpub25lO2JvcmRlci1sZWZ0OnNvbGlkIGJs
+dWUgMS41cHQ7cGFkZGluZzowY20gMGNtIDBjbSA0LjBwdCc+PGRpdj48ZGl2IHN0eWxlPSdib3Jk
+ZXI6bm9uZTtib3JkZXItdG9wOnNvbGlkICNCNUM0REYgMS4wcHQ7cGFkZGluZzozLjBwdCAwY20g
+MGNtIDBjbSc+PHAgY2xhc3M9TXNvTm9ybWFsPjxiPjxzcGFuIGxhbmc9RU4tVVMgc3R5bGU9J2Zv
+bnQtc2l6ZToxMC4wcHQ7Zm9udC1mYW1pbHk6IlRhaG9tYSIsInNhbnMtc2VyaWYiJz5Gcm9tOjwv
+c3Bhbj48L2I+PHNwYW4gbGFuZz1FTi1VUyBzdHlsZT0nZm9udC1zaXplOjEwLjBwdDtmb250LWZh
+bWlseToiVGFob21hIiwic2Fucy1zZXJpZiInPiBjaGFudHJhIFttYWlsdG86Y2hhbnRyYUAuLi4x
+MjU4Li4uXSA8YnI+PGI+U2VudDo8L2I+IGRvbmRlcmRhZyAyIGRlY2VtYmVyIDIwMTAgMTE6MjA8
+YnI+PGI+VG86PC9iPiBBZHJpYWFuIGRlIEpvbmc8YnI+PGI+Q2M6PC9iPiBGYXJrYXMgTGV2ZW50
+ZTsgb3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQ8YnI+PGI+U3ViamVjdDo8L2I+
+IFJlOiBbT3BlbnZwbi1kZXZlbF0gRG9jdW1lbnRhdGlvbiBhbmQgYWx0ZXJuYXRpdmUgU1NMIGJh
+Y2tlbmQgcGF0Y2hlczxvOnA+PC9vOnA+PC9zcGFuPjwvcD48L2Rpdj48L2Rpdj48cCBjbGFzcz1N
+c29Ob3JtYWw+PG86cD4mbmJzcDs8L286cD48L3A+PHAgY2xhc3M9TXNvTm9ybWFsPjxicj48YnI+
+PG86cD48L286cD48L3A+PHByZT48bzpwPiZuYnNwOzwvbzpwPjwvcHJlPjxwcmU+UG9sYXJTU0wg
+d2FzIGEgcGVyc29uYWwgY2hvaWNlIGZvciB1cywgbW9zdGx5IGR1ZSB0byBpdHMgc2ltcGxpY2l0
+eSBhbmQgbXVsdGktcGxhdGZvcm0gc3VwcG9ydC4gVGhlIHBhdGNoIGlzIHdyaXR0ZW4gaW4gc3Vj
+aCBhIHdheSB0aGF0IGdlbmVyaWMgb3BlcmF0aW9ucyBmcm9tIG1vc3QgbGlicmFyaWVzIHNob3Vs
+ZCB3b3JrLCBhcyBsb25nIGFzIGEgbmV3IGJhY2tlbmQgaXMgd3JpdHRlbiBmb3IgdGhlbS48bzpw
+PjwvbzpwPjwvcHJlPjxwcmU+PG86cD4mbmJzcDs8L286cD48L3ByZT48cHJlPkFkcmlhYW4gPG86
+cD48L286cD48L3ByZT48cCBjbGFzcz1Nc29Ob3JtYWw+SGksPGJyPjxicj5UaGlzIHNlZW1zIHRv
+IGJlIGEgc3RlcCBmb3J3YXJkIHRvIDxhIGhyZWY9Imh0dHBzOi8vY29tbXVuaXR5Lm9wZW52cG4u
+bmV0L29wZW52cG4vd2lraS9Sb2FkTWFwI09wZW5WUE4zLjA6RGVzaWduYW5kaW1wbGVtZW50YXRp
+b24iPmh0dHBzOi8vY29tbXVuaXR5Lm9wZW52cG4ubmV0L29wZW52cG4vd2lraS9Sb2FkTWFwI09w
+ZW5WUE4zLjA6RGVzaWduYW5kaW1wbGVtZW50YXRpb248L2E+IGFuZCBpbiBteSBvcGluaW9uIGlz
+IGFuIGludGVyZXN0aW5nIGFkZGl0aW9uIHRvIG9wZW52cG4gY29kZS48YnI+PGJyPkNoYW50cmE8
+YnI+PGJyPjxicj48bzpwPjwvbzpwPjwvcD48cHJlPjxvOnA+Jm5ic3A7PC9vOnA+PC9wcmU+PHBy
+ZT48bzpwPiZuYnNwOzwvbzpwPjwvcHJlPjxwcmU+Jmd0OyAtLS0tLU9yaWdpbmFsIE1lc3NhZ2Ut
+LS0tLTxvOnA+PC9vOnA+PC9wcmU+PHByZT4mZ3Q7IEZyb206IEZhcmthcyBMZXZlbnRlIFs8YSBo
+cmVmPSJtYWlsdG86bGZhcmthc0AuLi4xOTMuLi4iPm1haWx0bzpsZmFya2FzQC4uLjE5My4uLjwv
+YT5dPG86cD48L286cD48L3ByZT48cHJlPiZndDsgU2VudDogZG9uZGVyZGFnIDIgZGVjZW1iZXIg
+MjAxMCAxMDo0NzxvOnA+PC9vOnA+PC9wcmU+PHByZT4mZ3Q7IFRvOiBBZHJpYWFuIGRlIEpvbmc8
+bzpwPjwvbzpwPjwvcHJlPjxwcmU+Jmd0OyBDYzogPGEgaHJlZj0ibWFpbHRvOm9wZW52cG4tZGV2
+ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0Ij5vcGVudnBuLWRldmVsQGxpc3RzLnNvdXJjZWZvcmdl
+Lm5ldDwvYT48bzpwPjwvbzpwPjwvcHJlPjxwcmU+Jmd0OyBTdWJqZWN0OiBSZTogW09wZW52cG4t
+ZGV2ZWxdIERvY3VtZW50YXRpb24gYW5kIGFsdGVybmF0aXZlIFNTTCBiYWNrZW5kPG86cD48L286
+cD48L3ByZT48cHJlPiZndDsgcGF0Y2hlczxvOnA+PC9vOnA+PC9wcmU+PHByZT4mZ3Q7IDxvOnA+
+PC9vOnA+PC9wcmU+PHByZT4mZ3Q7IE9uIDEyLzAyLzIwMTAgMTA6MDUgQU0sIEFkcmlhYW4gZGUg
+Sm9uZyB3cm90ZTo8bzpwPjwvbzpwPjwvcHJlPjxwcmU+Jmd0OyAmZ3Q7IEhpIExpc3QsPG86cD48
+L286cD48L3ByZT48cHJlPiZndDsgJmd0OzxvOnA+PC9vOnA+PC9wcmU+PHByZT4mZ3Q7ICZndDsg
+V2UndmUgYmVlbiB3b3JraW5nIG9uIE9wZW5WUE4gaW4gcHJlcGFyYXRpb24gZm9yIGEgc2VjdXJp
+dHk8bzpwPjwvbzpwPjwvcHJlPjxwcmU+Jmd0OyBldmFsdWF0aW9uLiBUaGlzIGVudGFpbGVkIGRv
+Y3VtZW50aW5nIE9wZW5WUE4gYXQgYSByZWxhdGl2ZWx5IGhpZ2g8bzpwPjwvbzpwPjwvcHJlPjxw
+cmU+Jmd0OyBsZXZlbCwgcmVtb3ZpbmcgdGhlIGRlcGVuZGVuY2llcyBvbiBPcGVuU1NMLCBhbmQg
+YWRkaW5nIHN1cHBvcnQgZm9yIGE8bzpwPjwvbzpwPjwvcHJlPjxwcmU+Jmd0OyBzaW1wbGVyLCBl
+YXNpZXIgdG8gZXZhbHVhdGUgbGlicmFyeSAoUG9sYXJTU0wpLjxvOnA+PC9vOnA+PC9wcmU+PHBy
+ZT4mZ3Q7ICZndDs8bzpwPjwvbzpwPjwvcHJlPjxwcmU+Jmd0OyAmZ3Q7IFRoaXMgd2FzIGRvbmUg
+aW4gYSBzZXJpZXMgb2YgcGF0Y2hlczo8bzpwPjwvbzpwPjwvcHJlPjxwcmU+Jmd0OyAmZ3Q7IC0g
+UGF0Y2ggMTogQWRkcyBkb2N1bWVudGF0aW9uIHRvIE9wZW5WUE4gdGhyb3VnaCBEb3h5Z2VuLjxv
+OnA+PC9vOnA+PC9wcmU+PHByZT4mZ3Q7ICZndDsgLSBQYXRjaCAyOiBTcGxpdHMgb3V0IE9wZW5T
+U0wtc3BlY2lmaWMgY29kZSwgZGVmaW5pbmcgYSBjbGVhbjxvOnA+PC9vOnA+PC9wcmU+PHByZT4m
+Z3Q7ICZxdW90O2JhY2tlbmQmcXVvdDsgaW50ZXJmYWNlIGZvciBib3RoIHRoZSBjcnlwdG8gYW5k
+IFNTTCBtb2R1bGVzLiBTcGxpdHMgdGhlIFNTTDxvOnA+PC9vOnA+PC9wcmU+PHByZT4mZ3Q7IG1v
+ZHVsZSBpbnRvIGNoYW5uZWwgc2V0dXAgYW5kIHZlcmlmaWNhdGlvbiBzdWItbW9kdWxlcy48bzpw
+PjwvbzpwPjwvcHJlPjxwcmU+Jmd0OyAmZ3Q7IC0gUGF0Y2ggMzogQWRkcyBhIGJhY2tlbmQgZm9y
+IFBvbGFyU1NMLjxvOnA+PC9vOnA+PC9wcmU+PHByZT4mZ3Q7ICZndDs8bzpwPjwvbzpwPjwvcHJl
+PjxwcmU+Jmd0OyAmZ3Q7IFdlJ2QgbG92ZSB0byByZWxlYXNlIHRoZXNlIHBhdGNoZXMgdG8gdGhl
+IGNvbW11bml0eS4gVW5mb3J0dW5hdGVseSw8bzpwPjwvbzpwPjwvcHJlPjxwcmU+Jmd0OyB0aGUg
+cGF0Y2hlcyBhcmUgbm93IGJhc2VkIG9uIDIuMS40LCBhbmQgbmVlZCB0byBiZSByZWJhc2VkIHRv
+IGEgbmV3ZXI8bzpwPjwvbzpwPjwvcHJlPjxwcmU+Jmd0OyB2ZXJzaW9uLiBCZWZvcmUgd2Ugc3Bl
+bmQgdGltZSBvbiB1cGRhdGluZyB0aGUgcGF0Y2hlcyB0byB0aGUgY3VycmVudDxvOnA+PC9vOnA+
+PC9wcmU+PHByZT4mZ3Q7IHJldmlzaW9uIG9mIE9wZW5WUE4sIHdlJ2QgbGlrZSB0byBrbm93IHdo
+ZXRoZXIgdGhlcmUgaXMgYW4gaW50ZXJlc3QgaW48bzpwPjwvbzpwPjwvcHJlPjxwcmU+Jmd0OyB0
+aGVzZSBwYXRjaGVzIGZyb20gdGhlIGNvbW11bml0eS48bzpwPjwvbzpwPjwvcHJlPjxwcmU+Jmd0
+OyA8bzpwPjwvbzpwPjwvcHJlPjxwcmU+Jmd0OyBtb3N0IGRpc3RybyBzd2l0Y2ggZnJvbSBvcGVu
+c3NsIHRvIG5zcy4gaXMgdGhlcmUgYW55IHJlYXNvbiB5b3Ugc3dpdGNoPG86cD48L286cD48L3By
+ZT48cHJlPiZndDsgdG8gcG9sYXJzc2wgaW4gc3RlYWQgb2YgbnNzPzxvOnA+PC9vOnA+PC9wcmU+
+PHByZT4mZ3Q7IDxvOnA+PC9vOnA+PC9wcmU+PHByZT4mZ3Q7IC0tPG86cD48L286cD48L3ByZT48
+cHJlPiZndDvCoMKgIExldmVudGXCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgJnF1b3Q7U2kgdmlzIHBhY2VtIHBhcmEgYmVsbHVtISZx
+dW90OzxvOnA+PC9vOnA+PC9wcmU+PC9kaXY+PC9kaXY+PC9ib2R5PjwvaHRtbD4=
 
-Adriaan 
-</PRE>
-</BLOCKQUOTE>
-Hi,<BR>
-<BR>
-This seems to be a step forward to <A HREF="https://community.openvpn.net/openvpn/wiki/RoadMap#OpenVPN3.0:Designandimplementation">https://community.openvpn.net/openvpn/wiki/RoadMap#OpenVPN3.0:Designandimplementation</A> and in my opinion is an interesting addition to openvpn code.<BR>
-<BR>
-Chantra<BR>
-<BR>
-<BLOCKQUOTE TYPE=CITE>
-<PRE>
-
-&gt; -----Original Message-----
-&gt; From: Farkas Levente [<A HREF="mailto:lfarkas@...193...">mailto:lfarkas@...193...</A>]
-&gt; Sent: donderdag 2 december 2010 10:47
-&gt; To: Adriaan de Jong
-&gt; Cc: <A HREF="mailto:openvpn-devel@lists.sourceforge.net">openvpn-devel@lists.sourceforge.net</A>
-&gt; Subject: Re: [Openvpn-devel] Documentation and alternative SSL backend
-&gt; patches
-&gt; 
-&gt; On 12/02/2010 10:05 AM, Adriaan de Jong wrote:
-&gt; &gt; Hi List,
-&gt; &gt;
-&gt; &gt; We've been working on OpenVPN in preparation for a security
-&gt; evaluation. This entailed documenting OpenVPN at a relatively high
-&gt; level, removing the dependencies on OpenSSL, and adding support for a
-&gt; simpler, easier to evaluate library (PolarSSL).
-&gt; &gt;
-&gt; &gt; This was done in a series of patches:
-&gt; &gt; - Patch 1: Adds documentation to OpenVPN through Doxygen.
-&gt; &gt; - Patch 2: Splits out OpenSSL-specific code, defining a clean
-&gt; &quot;backend&quot; interface for both the crypto and SSL modules. Splits the SSL
-&gt; module into channel setup and verification sub-modules.
-&gt; &gt; - Patch 3: Adds a backend for PolarSSL.
-&gt; &gt;
-&gt; &gt; We'd love to release these patches to the community. Unfortunately,
-&gt; the patches are now based on 2.1.4, and need to be rebased to a newer
-&gt; version. Before we spend time on updating the patches to the current
-&gt; revision of OpenVPN, we'd like to know whether there is an interest in
-&gt; these patches from the community.
-&gt; 
-&gt; most distro switch from openssl to nss. is there any reason you switch
-&gt; to polarssl in stead of nss?
-&gt; 
-&gt; --
-&gt;   Levente                               &quot;Si vis pacem para bellum!&quot;
-
-------------------------------------------------------------------------------
-Increase Visibility of Your 3D Game App &amp; Earn a Chance To Win $500!
-Tap into the largest installed PC base &amp; get more eyes on your game by
-optimizing for Intel(R) Graphics Technology. Get started today with the
-Intel(R) Software Partner Program. Five $500 cash prizes are up for grabs.
-<A HREF="http://p.sf.net/sfu/intelisp-dev2dev">http://p.sf.net/sfu/intelisp-dev2dev</A>
-_______________________________________________
-Openvpn-devel mailing list
-<A HREF="mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@lists.sourceforge.net</A>
-<A HREF="https://lists.sourceforge.net/lists/listinfo/openvpn-devel">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</A>
-
-</PRE>
-</BLOCKQUOTE>
-<BR>
-<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
-<TR>
-<TD>
-<PRE>
--- 
-<A HREF="http://www.debuntu.org">http://www.debuntu.org</A>
-</PRE>
-</TD>
-</TR>
-</TABLE>
-</BODY>
-</HTML>
-
---=-e7nO4OR+Z7rsqF0fQ3fp--
-
-
+--_000_BF88BCF2F8AD5843B2250C5DB8DDE0AFBEE713C5FOXDFT02FOXloca_--
 
