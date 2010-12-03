@@ -1,8 +1,8 @@
-Message-ID: <4CF90B25.3010104@...515...>
-Date: Fri, 03 Dec 2010 17:22:13 +0200
+Message-ID: <4CF95E1E.5090009@...515...>
+Date: Fri, 03 Dec 2010 23:16:14 +0200
 From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Error C2010 in openvpnserv.c during VS2008 build
+Subject: [Openvpn-devel] OpenVPN 2.2-beta5 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +13,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
 
-Hi,
+The OpenVPN community project team is proud to release OpenVPN
+2.2-beta5. It can be downloaded from here:
 
-I've managed to extend the Python build system so that it now tries to
-build the Windows service wrapper, "openvpnserv.exe", after building
-"openvpn.exe". However, the Visual Studio 2008 C compiler gives these
-errors:
+<http://openvpn.net/index.php/open-source/downloads.html>
 
-   openvpnserv.c(87): error C2010: '.' : unexpected in macro formal
-parameter list
-   openvpnserv.c(101): error C2010: '.' : unexpected in macro formal
-parameter list
+Changes since last beta release (2.2-beta3) include:
 
-The offending lines with context (in beta2.2 branch) are these:
+- Adding support for SOCKS plain text authentication
+- Add HTTP/1.1 Host header
+- TAP support on Solaris
+- "topology subnet" made to work on Solaris
+- Lots of bugfixes, see changelog for details
 
-   #define mysnprintf(out, args...) \
-   ...
-   #define MSG(flags, args...) \
+If you find a bug in this release, please file a bug report to our Trac
+bug tracker at
 
-The C2010 error is described (very briefly) here:
+<https://community.openvpn.net>
 
-<http://msdn.microsoft.com/en-us/library/64sxk83h.aspx>
-
-Any ideas how to fix this issue?
+In uncertain cases please contact our developers first, either using the
+openvpn-devel mailinglist
+<https://lists.sourceforge.net/mailman/listinfo/openvpn-devel>or the
+developer IRC channel (#openvpn-devel@...1334...).
 
 --=20
 Samuli Sepp=E4nen
