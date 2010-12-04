@@ -1,10 +1,11 @@
-Message-ID: <4CFA1A01.2000602@...515...>
-Date: Sat, 04 Dec 2010 12:37:53 +0200
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <4CFA2341.3080905@...68...>
+Date: Sat, 04 Dec 2010 12:17:21 +0100
+From: Matthias Andree <matthias.andree@...68...>
 MIME-Version: 1.0
-References: <4CF90B25.3010104@...515...>
-	<20101204025529.GA3200@...33...>
-In-Reply-To: <20101204025529.GA3200@...33...>
+References: <4CF90B25.3010104@...515...>	<20101204025529.GA3200@...33...>
+	<4CFA1A01.2000602@...515...>
+In-Reply-To: <4CFA1A01.2000602@...515...>
+Content-Type: multipart/mixed; boundary="------------070100040601070200090002"
 Subject: Re: [Openvpn-devel] Error C2010 in openvpnserv.c during VS2008 build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,71 +15,95 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-Matthias Andree ha scritto:
-> Am 03.12.2010 16:22, schrieb Samuli Sepp=E4nen:
->=20=20=20
->> Hi,
->>
->> I've managed to extend the Python build system so that it now tries to
->> build the Windows service wrapper, "openvpnserv.exe", after building
->> "openvpn.exe". However, the Visual Studio 2008 C compiler gives these
->> errors:
->>
->>    openvpnserv.c(87): error C2010: '.' : unexpected in macro formal
->> parameter list
->>    openvpnserv.c(101): error C2010: '.' : unexpected in macro formal
->> parameter list
->>
->> The offending lines with context (in beta2.2 branch) are these:
->>
->>    #define mysnprintf(out, args...) \
->>    ...
->>    #define MSG(flags, args...) \
->>
->> The C2010 error is described (very briefly) here:
->>
->> <http://msdn.microsoft.com/en-us/library/64sxk83h.aspx>
->>
->> Any ideas how to fix this issue?
->>=20=20=20=20=20
->
-> Hi Samuli,
->
-> What you see in the offending lines is GCC's old syntax for variadic macr=
-os.  If
-> Visual Studio 2008 understands C99 sufficiently, you could #ifdef around =
-this
-> and use the current form in the code for GCC compilers, and the C99 form =
-for others.
->
-> See http://gcc.gnu.org/onlinedocs/gcc/Variadic-Macros.html#Variadic-Macro=
-s for
-> an explanation.
->
-> Please try the attached patch - note I haven't been able to test this bey=
-ond
-> making sure it compiles on GCC 4.3.
->
-> HTH.
->
-> Best regards
-> Matthias
->=20=20=20
-Hi Matthias,
+This is a multi-part message in MIME format.
+--------------070100040601070200090002
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-Your patch fixes the issue.
+Am 04.12.2010 11:37, schrieb Samuli Sepp=E4nen:
+> Hi Matthias,
+>=20
+> Your patch fixes the issue.
 
-Thanks!
+Hi Samuli,
+
+then please use the attached /updated/ patch (same code, different log entr=
+y).
+It fixes VS2008, and breaks compatibility with GCC before 3.0.
+
+For the records, it was discussed on IRC with David Sommerseth and yourself=
+ on
+2010-12-04 around 11:08 UTC that we deem it unnecessary to keep GCC < 3.0
+compatibility for this new Windows-only code.
+
+Best
 
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+Matthias Andree
 
-irc freenode net: mattock
+--------------070100040601070200090002
+Content-Type: text/x-diff;
+	name="0001-Change-variadic-macros-to-C99-style.patch"
+Content-Transfer-Encoding: 8bit
+Content-Disposition: attachment;
+	filename="0001-Change-variadic-macros-to-C99-style.patch"
 
+From 0374c641d4086dfea91bd64c22bb5280bbddf346 Mon Sep 17 00:00:00 2001
+From: Matthias Andree <matthias.andree@...68...>
+Date: Sat, 4 Dec 2010 03:51:11 +0100
+Subject: [PATCH] Change variadic macros to C99 style.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The macros used GCC's pre-C99 syntax, which could not be compiled with
+Microsoft Visual Studio 2008.
+
+Note this breaks compatibility with GCC versions before 3.0, which is
+deemed safe in a discussion on IRC with David Sommerseth and Samuli
+Sepp��nen on #openvpn-devel (RHEL 3 uses GCC 3.2 already).
+
+Compiled tested on VS2008 by Samuli, on Cygwin GCC 3.4 and GCC 4.3 by myself.
+
+Signed-off-by: Matthias Andree <matthias.andree@...68...>
+---
+ service-win32/openvpnserv.c |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/service-win32/openvpnserv.c b/service-win32/openvpnserv.c
+index 6c9ff1e..07374e2 100755
+--- a/service-win32/openvpnserv.c
++++ b/service-win32/openvpnserv.c
+@@ -84,9 +84,9 @@ static HANDLE exit_event = NULL;
+ #define CLEAR(x) memset(&(x), 0, sizeof(x))
+ 
+ /* snprintf with guaranteed null termination */
+-#define mysnprintf(out, args...) \
++#define mysnprintf(out, ...) \
+         { \
+-           snprintf (out, sizeof(out), args); \
++           snprintf (out, sizeof(out), __VA_ARGS__); \
+            out [sizeof (out) - 1] = '\0'; \
+         }
+ 
+@@ -98,10 +98,10 @@ static HANDLE exit_event = NULL;
+ #define M_ERR     (MSG_FLAGS_ERROR)                    // error
+ 
+ /* write error to event log */
+-#define MSG(flags, args...) \
++#define MSG(flags, ...) \
+         { \
+            char x_msg[256]; \
+-           mysnprintf (x_msg, args); \
++           mysnprintf (x_msg, __VA_ARGS__); \
+            AddToMessageLog ((flags), x_msg); \
+         }
+ 
+-- 
+1.7.3.2.438.g94fdb6
+
+
+--------------070100040601070200090002--
 
