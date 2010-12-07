@@ -1,10 +1,10 @@
-Message-ID: <4CFA3D34.2030300@...68...>
-Date: Sat, 04 Dec 2010 14:08:04 +0100
-From: Matthias Andree <matthias.andree@...68...>
 MIME-Version: 1.0
-References: <1291467757-7115-1-git-send-email-matthias.andree@...68...>
-In-Reply-To: <1291467757-7115-1-git-send-email-matthias.andree@...68...>
-Subject: Re: [Openvpn-devel] [PATCH] Remove excess semicolon (invalid C99).
+Date: Tue, 7 Dec 2010 15:42:52 +0800
+Message-ID: <AANLkTinsSLTvGEJuzbfStOw=4zfJue4AdXVGkBwpbNzW@...278...>
+From: hmy <huangmingyou@...277...>
+Content-Type: multipart/alternative; boundary=90e6ba53aae2eeeac90496cd2615
+Subject: [Openvpn-devel] does auth-pam support to terminate a connected
+	session ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,35 +13,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Am 04.12.2010 14:02, schrieb Matthias Andree:
-> Signed-off-by: Matthias Andree <matthias.andree@...68...>
-> ---
->  misc.h |    2 +-
->  1 files changed, 1 insertions(+), 1 deletions(-)
+--90e6ba53aae2eeeac90496cd2615
+Content-Type: text/plain; charset=UTF-8
 
-This applies to the beta2.2 branch and affects this code section:
+hi,all
 
-   138
-   139  static inline bool
-   140  openvpn_run_script (const struct argv *a, const struct env_set *es,
-const unsigned int flags, const char *hook)
-   141  {
-   142    char msg[256];
-   143
-   144    openvpn_snprintf(msg, sizeof(msg), "WARNING: Failed running command
-(%s)", hook);
-   145    return openvpn_execve_check(a, es, flags | S_SCRIPT, msg);
-   146  };
-   147
+I want use the auth-pam in openvpn. and I want terminate a connected session
+when I needed? like the user get the net thought limit or other something.
 
-Evidently this is a function definition and hence not to be followed by a
-semicolon.  Most compilers will accept it, but try gcc -Wall -Wextra -pedantic
--std=c99 and see what you get :)
+so ,use the auth-pam can do this ? or the openvpn can do this ?
 
--- 
-Matthias Andree
+--90e6ba53aae2eeeac90496cd2615
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div>hi,all</div><div><br></div><div>I want use the auth-pam in openvpn. an=
+d I want terminate a connected session when I needed? like the user get the=
+ net thought limit or other something.</div><div><br></div><div>so ,use the=
+ auth-pam can do this ? or the openvpn can do this ?</div>
+
+--90e6ba53aae2eeeac90496cd2615--
 
