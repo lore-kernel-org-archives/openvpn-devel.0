@@ -1,12 +1,10 @@
+Message-ID: <4D00AAEA.2050505@...1114...>
+Date: Thu, 09 Dec 2010 11:09:46 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-In-Reply-To: <AANLkTikEe8bhZggrC5O4PECKQ6iSfUsJ_OrvUVToj787@...278...>
-References: <AANLkTi=0bWqKxGcr7fdiZSG+9h4tFkhm1i2vry_5Rw6E@...278...>
-	<20101209050405.5497.qmail@...1287...>
-	<AANLkTikEe8bhZggrC5O4PECKQ6iSfUsJ_OrvUVToj787@...278...>
-Date: Thu, 9 Dec 2010 16:29:32 +0800
-Message-ID: <AANLkTi=+cQxk0P+vzyyFyby6X0gp_BUXQNALRd4Gd4op@...278...>
-From: hmy <huangmingyou@...277...>
-Content-Type: multipart/alternative; boundary=0016367f997e7f422d0496f6099e
+References: <AANLkTi=0bWqKxGcr7fdiZSG+9h4tFkhm1i2vry_5Rw6E@...278...>	<20101209050405.5497.qmail@...1287...>	<AANLkTikEe8bhZggrC5O4PECKQ6iSfUsJ_OrvUVToj787@...278...>
+	<AANLkTi=+cQxk0P+vzyyFyby6X0gp_BUXQNALRd4Gd4op@...278...>
+In-Reply-To: <AANLkTi=+cQxk0P+vzyyFyby6X0gp_BUXQNALRd4Gd4op@...278...>
 Subject: Re: [Openvpn-devel] how to limite the bandwidth of every client ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,81 +14,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
---0016367f997e7f422d0496f6099e
 Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: hmy <huangmingyou@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-may be I'm wrong ,tc can do that.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-2010/12/9 hmy <huangmingyou@...277...>
+On 09/12/10 09:29, hmy wrote:
+> may be I'm wrong ,tc can do that.
 
-> I think tc can't do this. may be iptables can do it ?
->
-> 2010/12/9 Peter Stuge <peter@...1287...>
->
-> hmy wrote:
->> > I use openvpn in server mode. more than 100 clients to connect it
->> > . I want limit every client's bandwidth ? how to do it ?
->>
->> Suggest on networking layer in the operating system.
->>
->>
->> //Peter
->>
->>
->> ------------------------------------------------------------------------------
->> This SF Dev2Dev email is sponsored by:
->>
->> WikiLeaks The End of the Free Internet
->> http://p.sf.net/sfu/therealnews-com
->> _______________________________________________
->> Openvpn-devel mailing list
->> Openvpn-devel@lists.sourceforge.net
->> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->>
->
->
+First of all, yes tc can do that.  That's the concept of traffic control
+and traffic shaping.
 
---0016367f997e7f422d0496f6099e
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Second ... this is the developers mailing list, not the users mailing.
+This topic belongs to the openvpn-users list.
 
-may be I&#39;m wrong ,tc can do that.<br><br><div class=3D"gmail_quote">201=
-0/12/9 hmy <span dir=3D"ltr">&lt;<a href=3D"mailto:huangmingyou@...277...">=
-huangmingyou@...277...</a>&gt;</span><br><blockquote class=3D"gmail_quote" =
-style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex;">
-I think tc can&#39;t do this. may be iptables can do it ?=C2=A0<br><br><div=
- class=3D"gmail_quote">2010/12/9 Peter Stuge <span dir=3D"ltr">&lt;<a href=
-=3D"mailto:peter@...1287..." target=3D"_blank">peter@...1287...</a>&gt;</sp=
-an><div><div></div>
-<div class=3D"h5"><br><blockquote class=3D"gmail_quote" style=3D"margin:0 0=
- 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
-<div>hmy wrote:<br>
-&gt; I use openvpn in server mode. more than 100 clients to connect it<br>
-&gt; . I want limit every client&#39;s bandwidth ? how to do it ?<br>
-<br>
-</div>Suggest on networking layer in the operating system.<br>
-<br>
-<br>
-//Peter<br>
-<br>
----------------------------------------------------------------------------=
----<br>
-This SF Dev2Dev email is sponsored by:<br>
-<br>
-WikiLeaks The End of the Free Internet<br>
-<a href=3D"http://p.sf.net/sfu/therealnews-com" target=3D"_blank">http://p.=
-sf.net/sfu/therealnews-com</a><br>
-_______________________________________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
-envpn-devel@lists.sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" targ=
-et=3D"_blank">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a=
-><br>
-</blockquote></div></div></div><br>
-</blockquote></div><br>
+Third:
+   A: Because it messes up the order in which people normally read text.
+   Q: Why is top-posting such a bad thing?
+   A: Top-posting.
+   Q: What is the most annoying thing in e-mail?
 
---0016367f997e7f422d0496f6099e--
+   For more info: <http://www.html-faq.com/etiquette/?toppost>
+
+
+kind regards,
+
+David Sommerseth
+
+
+> 2010/12/9 hmy <huangmingyou@...277... <mailto:huangmingyou@...277...>>
+> 
+>     I think tc can't do this. may be iptables can do it ? 
+> 
+>     2010/12/9 Peter Stuge <peter@...1287... <mailto:peter@...1287...>>
+> 
+>         hmy wrote:
+>         > I use openvpn in server mode. more than 100 clients to connect it
+>         > . I want limit every client's bandwidth ? how to do it ?
+> 
+>         Suggest on networking layer in the operating system.
+> 
+> 
+>         //Peter
+> 
+>         ------------------------------------------------------------------------------
+>         This SF Dev2Dev email is sponsored by:
+> 
+>         WikiLeaks The End of the Free Internet
+>         http://p.sf.net/sfu/therealnews-com
+>         _______________________________________________
+>         Openvpn-devel mailing list
+>         Openvpn-devel@lists.sourceforge.net
+>         <mailto:Openvpn-devel@lists.sourceforge.net>
+>         https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> 
+> 
+> 
+> 
+> 
+> ------------------------------------------------------------------------------
+> This SF Dev2Dev email is sponsored by:
+> 
+> WikiLeaks The End of the Free Internet
+> http://p.sf.net/sfu/therealnews-com
+> 
+> 
+> 
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk0AqugACgkQDC186MBRfrqVPwCfe+NWxApUz0l60cY0a5m2iVLJ
++E0AoIvYbpjE5NDBkT2wyCJ800MWGaVT
+=EVKK
+-----END PGP SIGNATURE-----
 
