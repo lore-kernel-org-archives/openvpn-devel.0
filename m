@@ -1,11 +1,10 @@
-Message-ID: <20101210062338.17649.qmail@...1287...>
-Date: Fri, 10 Dec 2010 07:23:37 +0100
+Message-ID: <20101210062512.17827.qmail@...1287...>
+Date: Fri, 10 Dec 2010 07:25:12 +0100
 From: Peter Stuge <peter@...1287...>
-References: <BF88BCF2F8AD5843B2250C5DB8DDE0AFBF2E3C53@...1436...>
+References: <BF88BCF2F8AD5843B2250C5DB8DDE0AFBF2E3C5F@...1436...>
 MIME-Version: 1.0
-In-Reply-To: <BF88BCF2F8AD5843B2250C5DB8DDE0AFBF2E3C53@...1436...>
-Subject: Re: [Openvpn-devel] [Patch] OpenVPN OpenSSL Crypto
-	Separation	Preview [2/8]
+In-Reply-To: <BF88BCF2F8AD5843B2250C5DB8DDE0AFBF2E3C5F@...1436...>
+Subject: Re: [Openvpn-devel] [Patch] OpenVPN PolarSSL Support Preview [7/8]
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,39 +19,27 @@ Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
 Adriaan de Jong wrote:
-Content-Description: 02_openssl_crypto_separation.patch.gz
-> Separate OpenSSL specific code
-> 
-> diff -r 228dee8676bf Makefile.am
-> --- a/Makefile.am	Wed Aug 11 14:37:00 2010 +0200
-> +++ b/Makefile.am	Wed Dec 08 11:49:46 2010 +0100
-> @@ -74,18 +74,18 @@
->  	INSTALL-win32.txt
->  
->  openvpn_SOURCES = \
-> -        base64.c base64.h \
-> +	base64.c base64.h \
+Content-Description: 07_polarssl_addition.patch.gz
+> Add PolarSSL support to OpenVPN
 
-Please make all whitespace changes in a separate patch.
-
-> +++ b/configure.ac	Wed Dec 08 11:49:46 2010 +0100
-..
-> @@ -272,6 +272,16 @@
->     [MEMCHECK="$withval"]
+> +++ b/configure.ac	Wed Dec 08 12:35:42 2010 +0100
+> @@ -273,14 +273,16 @@
 >  )
 >  
-> +AC_ARG_WITH([ssl-type],
-> +   [  --with-ssl-type=TYPE  Build with the given SSL library, TYPE = openssl ],
-> +   [case "${withval}" in 
-> +        openssl) SSL_LIB=openssl ;;
-> +        *) AC_MSG_ERROR([bad value ${withval} for --with-ssl-type]) ;;
-> +   esac],
-> +   [SSL_LIB="openssl"]
-> +)
-> +AM_CONDITIONAL([USE_OPENSSL], [test x$SSL_LIB = xopenssl])
-> +
+>  AC_ARG_WITH([ssl-type],
+> -   [  --with-ssl-type=TYPE  Build with the given SSL library, TYPE = openssl ],
+> +   [  --with-ssl-type=TYPE  Build with the given SSL library, TYPE = openssl or polarssl ],
+>     [case "${withval}" in 
+>          openssl) SSL_LIB=openssl ;;
+> +        polarssl) SSL_LIB=polarssl ;;
+>          *) AC_MSG_ERROR([bad value ${withval} for --with-ssl-type]) ;;
+>     esac],
+>     [SSL_LIB="openssl"]
+>  )
+>  AM_CONDITIONAL([USE_OPENSSL], [test x$SSL_LIB = xopenssl])
+> +AM_CONDITIONAL([USE_POLARSSL], [test x$SSL_LIB = xpolarssl])
 
-I think --with-openssl is the common way.
+Again, I think --with-polarssl may be more common.
 
 
 //Peter
