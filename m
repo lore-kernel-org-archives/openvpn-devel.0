@@ -1,10 +1,10 @@
 From: David Sommerseth <dazo@...384...>
-Date: Fri, 10 Dec 2010 01:30:50 +0100
-Message-Id: <1291941053-748-2-git-send-email-dazo@...384...>
+Date: Fri, 10 Dec 2010 01:30:53 +0100
+Message-Id: <1291941053-748-5-git-send-email-dazo@...384...>
 In-Reply-To: <1291941053-748-1-git-send-email-dazo@...384...>
 References: <1291941053-748-1-git-send-email-dazo@...384...>
-Subject: [Openvpn-devel] [PATCH v2 1/4] Define the new openvpn_plugin_{open,
-	func}_v3() API
+Subject: [Openvpn-devel] [PATCH v2 4/4] Added a simple plug-in demonstrating
+	the v3 plug-in API.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,306 +18,282 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: David Sommerseth <dazo@...384...>
 
-This just implements the basic API changes needed for the newer and more
-flexible plug-in API.
+To build the plug-in, do ./build log_v3 in the plugin/examples directory.
+
+This plug-in can be tested by running an OpenVPN server like this:
+
+ # ./openvpn --plugin plugin/examples/log_v3.so --dev tun \
+             --server 192.168.240.0 255.255.255.0 --ca sample-keys/ca.crt \
+             --cert sample-keys/server.crt --key sample-keys/server.key \
+             --dh sample-keys/dh1024.pem
+
+The client can be started like this:
+
+ # ./openvpn --client --remote localhost --ca sample-keys/ca.crt \
+             --cert sample-keys/client.crt --key sample-keys/client.key \
+             --dev tun --nobind --auth-user-pass
+
+This plug-in will only log arguments and environment variables it receives
+during all the different plug-in phases OpenVPN currently supports.  It will
+also parse the X509 certificate information given during the TLS_VERIFY phase.
 
 Signed-off-by: David Sommerseth <dazo@...384...>
 ---
- openvpn-plugin.h |  222 +++++++++++++++++++++++++++++++++++++++++++++++++++++-
- plugin.c         |    6 +-
- plugin.h         |    2 +
- 3 files changed, 227 insertions(+), 3 deletions(-)
+ plugin/examples/log_v3.c |  245 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 245 insertions(+), 0 deletions(-)
+ create mode 100644 plugin/examples/log_v3.c
 
-diff --git a/openvpn-plugin.h b/openvpn-plugin.h
-index 173a0c1..43c1d3a 100644
---- a/openvpn-plugin.h
-+++ b/openvpn-plugin.h
-@@ -22,7 +22,7 @@
-  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-  */
- 
--#define OPENVPN_PLUGIN_VERSION 2
-+#define OPENVPN_PLUGIN_VERSION 3
- 
- /*
-  * Plug-in types.  These types correspond to the set of script callbacks
-@@ -163,6 +163,114 @@ struct openvpn_plugin_string_list
-   char *value;
- };
- 
-+
-+/* openvpn_plugin_{open,func}_v3() related structs */
-+
-+/**
-+ * Arguments used to transport variables to the plug-in.
-+ * The struct openvpn_plugin_args_open_in is only used
-+ * by the openvpn_plugin_open_v3() function.
+diff --git a/plugin/examples/log_v3.c b/plugin/examples/log_v3.c
+new file mode 100644
+index 0000000..4974ef2
+--- /dev/null
++++ b/plugin/examples/log_v3.c
+@@ -0,0 +1,245 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
 + *
-+ * STRUCT MEMBERS
++ *  Copyright (C) 2002-2009 OpenVPN Technologies, Inc. <sales@...515...>
++ *  Copyright (C) 2010 David Sommerseth <dazo@...384...>
 + *
-+ * type_mask : Set by OpenVPN to the logical OR of all script
-+ *             types which this version of OpenVPN supports.
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
 + *
-+ * argv : a NULL-terminated array of options provided to the OpenVPN
-+ *        "plug-in" directive.  argv[0] is the dynamic library pathname.
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
 + *
-+ * envp : a NULL-terminated array of OpenVPN-set environmental
-+ *        variables in "name=value" format.  Note that for security reasons,
-+ *        these variables are not actually written to the "official"
-+ *        environmental variable store of the process.
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program (see the file COPYING included with this
++ *  distribution); if not, write to the Free Software Foundation, Inc.,
++ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 + */
-+struct openvpn_plugin_args_open_in
-+{
-+  const int type_mask;
-+  const char const **argv;
-+  const char const **envp;
-+};
-+
-+
-+/**
-+ * Aruguments used to transport variables from the plug-in back
-+ * to the OpenVPN process.  The struct openvpn_plugin_args_open_return
-+ * is only used by the openvpn_plugin_open_v3() function.
-+ *
-+ * STRUCT MEMBERS
-+ *
-+ * *type_mask : The plug-in should set this value to the logical OR of all script
-+ *              types which the plug-in wants to intercept.  For example, if the
-+ *              script wants to intercept the client-connect and client-disconnect
-+ *              script types:
-+ *
-+ *              *type_mask = OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_CLIENT_CONNECT)
-+ *                         | OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_CLIENT_DISCONNECT)
-+ *
-+ * *handle :    Pointer to a global plug-in context, created by the plug-in.  This pointer
-+ *              is passed on to the other plug-in calls.
-+ *
-+ * return_list : used to return data back to OpenVPN.
-+ *
-+ */
-+struct openvpn_plugin_args_open_return
-+{
-+  int  type_mask;
-+  openvpn_plugin_handle_t *handle;
-+  struct openvpn_plugin_string_list **return_list;
-+};
-+
-+/**
-+ * Aruguments used to transport variables to and from the
-+ * plug-in.  The struct openvpn_plugin_args_func is only used
-+ * by the openvpn_plugin_func_v3() function.
-+ *
-+ * STRUCT MEMBERS:
-+ *
-+ * type : one of the PLUGIN_x types.
-+ *
-+ * argv : a NULL-terminated array of "command line" options which
-+ *        would normally be passed to the script.  argv[0] is the dynamic
-+ *        library pathname.
-+ *
-+ * envp : a NULL-terminated array of OpenVPN-set environmental
-+ *        variables in "name=value" format.  Note that for security reasons,
-+ *        these variables are not actually written to the "official"
-+ *        environmental variable store of the process.
-+ *
-+ * *handle : Pointer to a global plug-in context, created by the plug-in's openvpn_plugin_open_v3().
-+ *
-+ * *per_client_context : the per-client context pointer which was returned by
-+ *        openvpn_plugin_client_constructor_v1, if defined.
-+ *
-+ *
-+ */
-+struct openvpn_plugin_args_func_in
-+{
-+  const int type;
-+  const char const **argv;
-+  const char const **envp;
-+  openvpn_plugin_handle_t handle;
-+  void *per_client_context;
-+};
-+
-+
-+/**
-+ * Aruguments used to transport variables to and from the
-+ * plug-in.  The struct openvpn_plugin_args_func is only used
-+ * by the openvpn_plugin_func_v3() function.
-+ *
-+ * STRUCT MEMBERS:
-+ *
-+ * return_list : used to return data back to OpenVPN for further processing/usage by
-+ *               the OpenVPN executable.
-+ *
-+ */
-+struct openvpn_plugin_args_func_return
-+{
-+  struct openvpn_plugin_string_list **return_list;
-+};
-+
- /*
-  * Multiple plugin modules can be cascaded, and modules can be
-  * used in tandem with scripts.  The order of operation is that
-@@ -329,6 +437,118 @@ OPENVPN_PLUGIN_DEF int OPENVPN_PLUGIN_FUNC(openvpn_plugin_func_v2)
-       void *per_client_context,
-       struct openvpn_plugin_string_list **return_list);
- 
 +
 +/*
-+ * FUNCTION: openvpn_plugin_open_v3
++ * This plugin is similar to simple.c, except it also logs extra information
++ * to stdout for every plugin method called by OpenVPN.  The only difference
++ * between this (log_v3.c) and log.c is that this module uses the v3 plug-in
++ * API.
 + *
-+ * REQUIRED: YES
-+ *
-+ * Called on initial plug-in load.  OpenVPN will preserve plug-in state
-+ * across SIGUSR1 restarts but not across SIGHUP restarts.  A SIGHUP reset
-+ * will cause the plugin to be closed and reopened.
-+ *
-+ * ARGUMENTS
-+ *
-+ * version : fixed value, defines the API version of the OpenVPN plug-in API.  The plug-in
-+ *	     should validate that this value is matching the OPENVPN_PLUGIN_VERSION value.
-+ *
-+ * arguments : Structure with all arguments available to the plug-in.
-+ *
-+ * retptr :    used to return data back to OpenVPN.
-+ *
-+ * RETURN VALUE
-+ *
-+ * OPENVPN_PLUGIN_FUNC_SUCCESS on success, OPENVPN_PLUGIN_FUNC_ERROR on failure
++ * See the README file for build instructions.
 + */
-+OPENVPN_PLUGIN_DEF int OPENVPN_PLUGIN_FUNC(openvpn_plugin_open_v3)
-+     (const int version,
-+      struct openvpn_plugin_args_open_in const *arguments,
-+      struct openvpn_plugin_args_open_return *retptr);
++
++#include <stdio.h>
++#include <string.h>
++#include <stdlib.h>
++
++#include "openvpn-plugin.h"
 +
 +/*
-+ * FUNCTION: openvpn_plugin_func_v3
-+ *
-+ * Called to perform the work of a given script type.
-+ *
-+ * REQUIRED: YES
-+ *
-+ * ARGUMENTS
-+ *
-+ * version : fixed value, defines the API version of the OpenVPN plug-in API.  The plug-in
-+ *           should validate that this value is matching the OPENVPN_PLUGIN_VERSION value.
-+ *
-+ * handle : the openvpn_plugin_handle_t value which was returned by
-+ *          openvpn_plugin_open.
-+ *
-+ * return_list : used to return data back to OpenVPN.
-+ *
-+ * RETURN VALUE
-+ *
-+ * OPENVPN_PLUGIN_FUNC_SUCCESS on success, OPENVPN_PLUGIN_FUNC_ERROR on failure
-+ *
-+ * In addition, OPENVPN_PLUGIN_FUNC_DEFERRED may be returned by
-+ * OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY.  This enables asynchronous
-+ * authentication where the plugin (or one of its agents) may indicate
-+ * authentication success/failure some number of seconds after the return
-+ * of the OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY handler by writing a single
-+ * char to the file named by auth_control_file in the environmental variable
-+ * list (envp).
-+ *
-+ * first char of auth_control_file:
-+ * '0' -- indicates auth failure
-+ * '1' -- indicates auth success
-+ *
-+ * OpenVPN will delete the auth_control_file after it goes out of scope.
-+ *
-+ * If an OPENVPN_PLUGIN_ENABLE_PF handler is defined and returns success
-+ * for a particular client instance, packet filtering will be enabled for that
-+ * instance.  OpenVPN will then attempt to read the packet filter configuration
-+ * from the temporary file named by the environmental variable pf_file.  This
-+ * file may be generated asynchronously and may be dynamically updated during the
-+ * client session, however the client will be blocked from sending or receiving
-+ * VPN tunnel packets until the packet filter file has been generated.  OpenVPN
-+ * will periodically test the packet filter file over the life of the client
-+ * instance and reload when modified.  OpenVPN will delete the packet filter file
-+ * when the client instance goes out of scope.
-+ *
-+ * Packet filter file grammar:
-+ *
-+ * [CLIENTS DROP|ACCEPT]
-+ * {+|-}common_name1
-+ * {+|-}common_name2
-+ * . . .
-+ * [SUBNETS DROP|ACCEPT]
-+ * {+|-}subnet1
-+ * {+|-}subnet2
-+ * . . .
-+ * [END]
-+ *
-+ * Subnet: IP-ADDRESS | IP-ADDRESS/NUM_NETWORK_BITS
-+ *
-+ * CLIENTS refers to the set of clients (by their common-name) which
-+ * this instance is allowed ('+') to connect to, or is excluded ('-')
-+ * from connecting to.  Note that in the case of client-to-client
-+ * connections, such communication must be allowed by the packet filter
-+ * configuration files of both clients.
-+ *
-+ * SUBNETS refers to IP addresses or IP address subnets which this
-+ * instance may connect to ('+') or is excluded ('-') from connecting
-+ * to.
-+ *
-+ * DROP or ACCEPT defines default policy when there is no explicit match
-+ * for a common-name or subnet.  The [END] tag must exist.  A special
-+ * purpose tag called [KILL] will immediately kill the client instance.
-+ * A given client or subnet rule applies to both incoming and outgoing
-+ * packets.
-+ *
-+ * See plugin/defer/simple.c for an example on using asynchronous
-+ * authentication and client-specific packet filtering.
++ * Our context, where we keep our state.
 + */
-+OPENVPN_PLUGIN_DEF int OPENVPN_PLUGIN_FUNC(openvpn_plugin_func_v3)
-+     (const int version,
-+      struct openvpn_plugin_args_func_in const *arguments,
-+      struct openvpn_plugin_args_func_return *retptr);
++struct plugin_context {
++  const char *username;
++  const char *password;
++};
 +
- /*
-  * FUNCTION: openvpn_plugin_close_v1
-  *
-diff --git a/plugin.c b/plugin.c
-index 769de8d..92f7908 100644
---- a/plugin.c
-+++ b/plugin.c
-@@ -232,8 +232,10 @@ plugin_init_item (struct plugin *p, const struct plugin_option *o)
- 
-   PLUGIN_SYM (open1, "openvpn_plugin_open_v1", 0);
-   PLUGIN_SYM (open2, "openvpn_plugin_open_v2", 0);
-+  PLUGIN_SYM (open3, "openvpn_plugin_open_v3", 0);
-   PLUGIN_SYM (func1, "openvpn_plugin_func_v1", 0);
-   PLUGIN_SYM (func2, "openvpn_plugin_func_v2", 0);
-+  PLUGIN_SYM (func3, "openvpn_plugin_func_v3", 0);
-   PLUGIN_SYM (close, "openvpn_plugin_close_v1", PLUGIN_SYMBOL_REQUIRED);
-   PLUGIN_SYM (abort, "openvpn_plugin_abort_v1", 0);
-   PLUGIN_SYM (client_constructor, "openvpn_plugin_client_constructor_v1", 0);
-@@ -241,10 +243,10 @@ plugin_init_item (struct plugin *p, const struct plugin_option *o)
-   PLUGIN_SYM (min_version_required, "openvpn_plugin_min_version_required_v1", 0);
-   PLUGIN_SYM (initialization_point, "openvpn_plugin_select_initialization_point_v1", 0);
- 
--  if (!p->open1 && !p->open2)
-+  if (!p->open1 && !p->open2 && !p->open3)
-     msg (M_FATAL, "PLUGIN: symbol openvpn_plugin_open_vX is undefined in plugin: %s", p->so_pathname);
- 
--  if (!p->func1 && !p->func2)
-+  if (!p->func1 && !p->func2 && !p->func3)
-     msg (M_FATAL, "PLUGIN: symbol openvpn_plugin_func_vX is undefined in plugin: %s", p->so_pathname);
- 
-   /*
-diff --git a/plugin.h b/plugin.h
-index 969d451..214db2f 100644
---- a/plugin.h
-+++ b/plugin.h
-@@ -61,8 +61,10 @@ struct plugin {
- 
-   openvpn_plugin_open_v1 open1;
-   openvpn_plugin_open_v2 open2;
-+  openvpn_plugin_open_v3 open3;
-   openvpn_plugin_func_v1 func1;
-   openvpn_plugin_func_v2 func2;
-+  openvpn_plugin_func_v3 func3;
-   openvpn_plugin_close_v1 close;
-   openvpn_plugin_abort_v1 abort;
-   openvpn_plugin_client_constructor_v1 client_constructor;
++/*
++ * Given an environmental variable name, search
++ * the envp array for its value, returning it
++ * if found or NULL otherwise.
++ */
++static const char *
++get_env (const char *name, const char *envp[])
++{
++  if (envp)
++    {
++      int i;
++      const int namelen = strlen (name);
++      for (i = 0; envp[i]; ++i)
++	{
++	  if (!strncmp (envp[i], name, namelen))
++	    {
++	      const char *cp = envp[i] + namelen;
++	      if (*cp == '=')
++		return cp + 1;
++	    }
++	}
++    }
++  return NULL;
++}
++
++OPENVPN_EXPORT int
++openvpn_plugin_open_v3 (const int apiver,
++                        struct openvpn_plugin_args_open_in const *args,
++                        struct openvpn_plugin_args_open_return *ret)
++{
++  struct plugin_context *context = NULL;
++
++  /* Check that we are API compatible */
++  if( apiver != OPENVPN_PLUGIN_VERSION ) {
++    return OPENVPN_PLUGIN_FUNC_ERROR;
++  }
++
++  /*  Which callbacks to intercept.  */
++  ret->type_mask =
++    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_UP) |
++    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_DOWN) |
++    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_ROUTE_UP) |
++    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_IPCHANGE) |
++    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_TLS_VERIFY) |
++    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY) |
++    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_CLIENT_CONNECT_V2) |
++    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_CLIENT_DISCONNECT) |
++    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_LEARN_ADDRESS) |
++    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_TLS_FINAL);
++
++
++  /* Allocate our context */
++  context = (struct plugin_context *) calloc (1, sizeof (struct plugin_context));
++
++  /* Set the username/password we will require. */
++  context->username = "foo";
++  context->password = "bar";
++
++  /* Point the global context handle to our newly created context */
++  ret->handle = (void *) context;
++
++  return OPENVPN_PLUGIN_FUNC_SUCCESS;
++}
++
++void
++show (const int type, const char *argv[], const char *envp[])
++{
++  size_t i;
++  switch (type)
++    {
++    case OPENVPN_PLUGIN_UP:
++      printf ("OPENVPN_PLUGIN_UP\n");
++      break;
++    case OPENVPN_PLUGIN_DOWN:
++      printf ("OPENVPN_PLUGIN_DOWN\n");
++      break;
++    case OPENVPN_PLUGIN_ROUTE_UP:
++      printf ("OPENVPN_PLUGIN_ROUTE_UP\n");
++      break;
++    case OPENVPN_PLUGIN_IPCHANGE:
++      printf ("OPENVPN_PLUGIN_IPCHANGE\n");
++      break;
++    case OPENVPN_PLUGIN_TLS_VERIFY:
++      printf ("OPENVPN_PLUGIN_TLS_VERIFY\n");
++      break;
++    case OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY:
++      printf ("OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY\n");
++      break;
++    case OPENVPN_PLUGIN_CLIENT_CONNECT_V2:
++      printf ("OPENVPN_PLUGIN_CLIENT_CONNECT_V2\n");
++      break;
++    case OPENVPN_PLUGIN_CLIENT_DISCONNECT:
++      printf ("OPENVPN_PLUGIN_CLIENT_DISCONNECT\n");
++      break;
++    case OPENVPN_PLUGIN_LEARN_ADDRESS:
++      printf ("OPENVPN_PLUGIN_LEARN_ADDRESS\n");
++      break;
++    case OPENVPN_PLUGIN_TLS_FINAL:
++      printf ("OPENVPN_PLUGIN_TLS_FINAL\n");
++      break;
++    default:
++      printf ("OPENVPN_PLUGIN_?\n");
++      break;
++    }
++
++  printf ("ARGV\n");
++  for (i = 0; argv[i] != NULL; ++i)
++    printf ("%d '%s'\n", (int)i, argv[i]);
++
++  printf ("ENVP\n");
++  for (i = 0; envp[i] != NULL; ++i)
++    printf ("%d '%s'\n", (int)i, envp[i]);
++}
++
++static void
++x509_print_info (X509 *x509crt)
++{
++  int i, n;
++  int fn_nid;
++  ASN1_OBJECT *fn;
++  ASN1_STRING *val;
++  X509_NAME *x509_name;
++  X509_NAME_ENTRY *ent;
++  const char *objbuf;
++  unsigned char *buf;
++
++  x509_name = X509_get_subject_name (x509crt);
++  n = X509_NAME_entry_count (x509_name);
++  for (i = 0; i < n; ++i)
++    {
++      ent = X509_NAME_get_entry (x509_name, i);
++      if (!ent)
++	continue;
++      fn = X509_NAME_ENTRY_get_object (ent);
++      if (!fn)
++	continue;
++      val = X509_NAME_ENTRY_get_data (ent);
++      if (!val)
++	continue;
++      fn_nid = OBJ_obj2nid (fn);
++      if (fn_nid == NID_undef)
++	continue;
++      objbuf = OBJ_nid2sn (fn_nid);
++      if (!objbuf)
++	continue;
++      buf = (unsigned char *)1; /* bug in OpenSSL 0.9.6b ASN1_STRING_to_UTF8 requires this workaround */
++      if (ASN1_STRING_to_UTF8 (&buf, val) <= 0)
++	continue;
++
++      printf("X509 %s: %s\n", objbuf, (char *)buf);
++      OPENSSL_free (buf);
++    }
++}
++
++
++
++OPENVPN_EXPORT int
++openvpn_plugin_func_v3 (const int version,
++                        struct openvpn_plugin_args_func_in const *args,
++                        struct openvpn_plugin_args_func_return *retptr)
++{
++  struct plugin_context *context = (struct plugin_context *) args->handle;
++
++  printf("\nopenvpn_plugin_func_v3() :::::>> ");
++  show (args->type, args->argv, args->envp);
++
++  /* Dump some X509 information if we're in the TLS_VERIFY phase */
++  if ((args->type == OPENVPN_PLUGIN_TLS_VERIFY) && args->current_cert ) {
++    printf("---- X509 Subject information ----\n");
++    printf("Certificate depth: %i\n", args->current_cert_depth);
++    x509_print_info(args->current_cert);
++    printf("----------------------------------\n");
++  }
++
++  /* check entered username/password against what we require */
++  if (args->type == OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY)
++    {
++      /* get username/password from envp string array */
++      const char *username = get_env ("username", args->envp);
++      const char *password = get_env ("password", args->envp);
++
++      if (username && !strcmp (username, context->username)
++	  && password && !strcmp (password, context->password))
++	return OPENVPN_PLUGIN_FUNC_SUCCESS;
++      else
++	return OPENVPN_PLUGIN_FUNC_ERROR;
++    }
++  else
++    return OPENVPN_PLUGIN_FUNC_SUCCESS;
++}
++
++OPENVPN_EXPORT void
++openvpn_plugin_close_v1 (openvpn_plugin_handle_t handle)
++{
++  struct plugin_context *context = (struct plugin_context *) handle;
++  free (context);
++}
 -- 
 1.7.2.3
 
