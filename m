@@ -1,10 +1,15 @@
-From: David Sommerseth <dazo@...384...>
-Date: Fri, 10 Dec 2010 01:30:52 +0100
-Message-Id: <1291941053-748-4-git-send-email-dazo@...384...>
-In-Reply-To: <1291941053-748-1-git-send-email-dazo@...384...>
-References: <1291941053-748-1-git-send-email-dazo@...384...>
-Subject: [Openvpn-devel] [PATCH v2 3/4] Extend the v3 plug-in API to send
-	over X509 certificates
+MIME-Version: 1.0
+In-Reply-To: <4D00AAEA.2050505@...1114...>
+References: <AANLkTi=0bWqKxGcr7fdiZSG+9h4tFkhm1i2vry_5Rw6E@...278...>
+	<20101209050405.5497.qmail@...1287...>
+	<AANLkTikEe8bhZggrC5O4PECKQ6iSfUsJ_OrvUVToj787@...278...>
+	<AANLkTi=+cQxk0P+vzyyFyby6X0gp_BUXQNALRd4Gd4op@...278...>
+	<4D00AAEA.2050505@...1114...>
+Date: Fri, 10 Dec 2010 08:42:30 +0800
+Message-ID: <AANLkTi=KJSyM0q5ROWszZU2evMf99BQnUz7kwxZoVuDZ@...278...>
+From: hmy <huangmingyou@...277...>
+Content-Type: multipart/alternative; boundary=0016367f997e1ce76c049703a157
+Subject: Re: [Openvpn-devel] how to limite the bandwidth of every client ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,246 +18,210 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: David Sommerseth <dazo@...384...>
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-The certificates sent to the plug-in API will only happen during the
-OPENVPN_PLUGIN_TLS_VERIFY phase and will contain a pointer to the OpenSSL
-X509 certificate data.
+--0016367f997e1ce76c049703a157
+Content-Type: text/plain; charset=UTF-8
 
-Signed-off-by: David Sommerseth <dazo@...384...>
----
- init.c           |    2 +-
- misc.c           |    2 +-
- multi.c          |    8 ++++----
- openvpn-plugin.h |    7 +++++++
- pf.c             |    2 +-
- plugin.c         |   15 +++++++++++----
- plugin.h         |    4 +++-
- socket.c         |    2 +-
- ssl.c            |    6 +++---
- 9 files changed, 32 insertions(+), 16 deletions(-)
+I'm sorry , I will quit this mail list. sorry!
 
-diff --git a/init.c b/init.c
-index 2049daf..f041bc6 100644
---- a/init.c
-+++ b/init.c
-@@ -1182,7 +1182,7 @@ do_route (const struct options *options,
- 
-   if (plugin_defined (plugins, OPENVPN_PLUGIN_ROUTE_UP))
-     {
--      if (plugin_call (plugins, OPENVPN_PLUGIN_ROUTE_UP, NULL, NULL, es) != OPENVPN_PLUGIN_FUNC_SUCCESS)
-+      if (plugin_call (plugins, OPENVPN_PLUGIN_ROUTE_UP, NULL, NULL, es, -1, NULL) != OPENVPN_PLUGIN_FUNC_SUCCESS)
- 	msg (M_WARN, "WARNING: route-up plugin call failed");
-     }
- 
-diff --git a/misc.c b/misc.c
-index d3e67ef..7d80c69 100644
---- a/misc.c
-+++ b/misc.c
-@@ -211,7 +211,7 @@ run_up_down (const char *command,
- 		   ifconfig_local, ifconfig_remote,
- 		   context);
- 
--      if (plugin_call (plugins, plugin_type, &argv, NULL, es) != OPENVPN_PLUGIN_FUNC_SUCCESS)
-+      if (plugin_call (plugins, plugin_type, &argv, NULL, es, -1, NULL) != OPENVPN_PLUGIN_FUNC_SUCCESS)
- 	msg (M_FATAL, "ERROR: up/down plugin call failed");
- 
-       argv_reset (&argv);
-diff --git a/multi.c b/multi.c
-index dc26a02..138aaea 100644
---- a/multi.c
-+++ b/multi.c
-@@ -91,7 +91,7 @@ learn_address_script (const struct multi_context *m,
- 		   mroute_addr_print (addr, &gc));
-       if (mi)
- 	argv_printf_cat (&argv, "%s", tls_common_name (mi->context.c2.tls_multi, false));
--      if (plugin_call (plugins, OPENVPN_PLUGIN_LEARN_ADDRESS, &argv, NULL, es) != OPENVPN_PLUGIN_FUNC_SUCCESS)
-+      if (plugin_call (plugins, OPENVPN_PLUGIN_LEARN_ADDRESS, &argv, NULL, es, -1, NULL) != OPENVPN_PLUGIN_FUNC_SUCCESS)
- 	{
- 	  msg (M_WARN, "WARNING: learn-address plugin call failed");
- 	  ret = false;
-@@ -471,7 +471,7 @@ multi_client_disconnect_script (struct multi_context *m,
- 
-       if (plugin_defined (mi->context.plugins, OPENVPN_PLUGIN_CLIENT_DISCONNECT))
- 	{
--	  if (plugin_call (mi->context.plugins, OPENVPN_PLUGIN_CLIENT_DISCONNECT, NULL, NULL, mi->context.c2.es) != OPENVPN_PLUGIN_FUNC_SUCCESS)
-+	  if (plugin_call (mi->context.plugins, OPENVPN_PLUGIN_CLIENT_DISCONNECT, NULL, NULL, mi->context.c2.es, -1, NULL) != OPENVPN_PLUGIN_FUNC_SUCCESS)
- 	    msg (M_WARN, "WARNING: client-disconnect plugin call failed");
- 	}
- 
-@@ -1538,7 +1538,7 @@ multi_connection_established (struct multi_context *m, struct multi_instance *mi
-           }
- 
- 	  argv_printf (&argv, "%s", dc_file);
--	  if (plugin_call (mi->context.plugins, OPENVPN_PLUGIN_CLIENT_CONNECT, &argv, NULL, mi->context.c2.es) != OPENVPN_PLUGIN_FUNC_SUCCESS)
-+	  if (plugin_call (mi->context.plugins, OPENVPN_PLUGIN_CLIENT_CONNECT, &argv, NULL, mi->context.c2.es, -1, NULL) != OPENVPN_PLUGIN_FUNC_SUCCESS)
- 	    {
- 	      msg (M_WARN, "WARNING: client-connect plugin call failed");
- 	      cc_succeeded = false;
-@@ -1559,7 +1559,7 @@ multi_connection_established (struct multi_context *m, struct multi_instance *mi
- 
- 	  plugin_return_init (&pr);
- 
--	  if (plugin_call (mi->context.plugins, OPENVPN_PLUGIN_CLIENT_CONNECT_V2, NULL, &pr, mi->context.c2.es) != OPENVPN_PLUGIN_FUNC_SUCCESS)
-+	  if (plugin_call (mi->context.plugins, OPENVPN_PLUGIN_CLIENT_CONNECT_V2, NULL, &pr, mi->context.c2.es, -1, NULL) != OPENVPN_PLUGIN_FUNC_SUCCESS)
- 	    {
- 	      msg (M_WARN, "WARNING: client-connect-v2 plugin call failed");
- 	      cc_succeeded = false;
-diff --git a/openvpn-plugin.h b/openvpn-plugin.h
-index 43c1d3a..d08d249 100644
---- a/openvpn-plugin.h
-+++ b/openvpn-plugin.h
-@@ -22,6 +22,8 @@
-  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-  */
- 
-+#include <openssl/x509v3.h>
-+
- #define OPENVPN_PLUGIN_VERSION 3
- 
- /*
-@@ -243,6 +245,9 @@ struct openvpn_plugin_args_open_return
-  * per_client_context : the per-client context pointer which was returned by
-  *        openvpn_plugin_client_constructor_v1, if defined.
-  *
-+ * current_cert_depth : Certificate depth of the certificate being passed over
-+ *
-+ * *current_cert : X509 Certificate object received from the client
-  *
-  */
- struct openvpn_plugin_args_func_in
-@@ -252,6 +257,8 @@ struct openvpn_plugin_args_func_in
-   const char const **envp;
-   openvpn_plugin_handle_t handle;
-   void *per_client_context;
-+  int current_cert_depth;
-+  X509 *current_cert;
- };
- 
- 
-diff --git a/pf.c b/pf.c
-index aed836e..d2c7075 100644
---- a/pf.c
-+++ b/pf.c
-@@ -563,7 +563,7 @@ pf_init_context (struct context *c)
-       if( pf_file ) {
-         setenv_str (c->c2.es, "pf_file", pf_file);
- 
--        if (plugin_call (c->plugins, OPENVPN_PLUGIN_ENABLE_PF, NULL, NULL, c->c2.es) == OPENVPN_PLUGIN_FUNC_SUCCESS)
-+        if (plugin_call (c->plugins, OPENVPN_PLUGIN_ENABLE_PF, NULL, NULL, c->c2.es, -1, NULL) == OPENVPN_PLUGIN_FUNC_SUCCESS)
-           {
-             event_timeout_init (&c->c2.pf.reload, 1, now);
-             c->c2.pf.filename = string_alloc (pf_file, NULL);
-diff --git a/plugin.c b/plugin.c
-index ca52087..c7a69eb 100644
---- a/plugin.c
-+++ b/plugin.c
-@@ -345,7 +345,9 @@ plugin_call_item (const struct plugin *p,
- 		  const int type,
- 		  const struct argv *av,
- 		  struct openvpn_plugin_string_list **retlist,
--		  const char **envp)
-+		  const char **envp,
-+		  int certdepth,
-+		  X509 *current_cert)
- {
-   int status = OPENVPN_PLUGIN_FUNC_SUCCESS;
- 
-@@ -369,7 +371,9 @@ plugin_call_item (const struct plugin *p,
-                                                     .argv    = (const char **) a.argv,
-                                                     .envp    = envp,
-                                                     .handle  = p->plugin_handle,
--                                                    .per_client_context = per_client_context };
-+						    .per_client_context = per_client_context,
-+						    .current_cert_depth = (current_cert ? certdepth : -1),
-+						    .current_cert = current_cert };
-         struct openvpn_plugin_args_func_return retargs;
- 
-         CLEAR(retargs);
-@@ -570,7 +574,9 @@ plugin_call (const struct plugin_list *pl,
- 	     const int type,
- 	     const struct argv *av,
- 	     struct plugin_return *pr,
--	     struct env_set *es)
-+	     struct env_set *es,
-+             int certdepth,
-+	     X509 *current_cert)
- {
-   if (pr)
-     plugin_return_init (pr);
-@@ -597,7 +603,8 @@ plugin_call (const struct plugin_list *pl,
- 					       type,
- 					       av,
- 					       pr ? &pr->list[i] : NULL,
--					       envp);
-+					       envp,
-+					       certdepth, current_cert);
- 	  switch (status)
- 	    {
- 	    case OPENVPN_PLUGIN_FUNC_SUCCESS:
-diff --git a/plugin.h b/plugin.h
-index 214db2f..846973f 100644
---- a/plugin.h
-+++ b/plugin.h
-@@ -120,7 +120,9 @@ int plugin_call (const struct plugin_list *pl,
- 		 const int type,
- 		 const struct argv *av,
- 		 struct plugin_return *pr,
--		 struct env_set *es);
-+		 struct env_set *es,
-+		 int current_cert_depth,
-+		 X509 *current_cert);
- 
- void plugin_list_close (struct plugin_list *pl);
- bool plugin_defined (const struct plugin_list *pl, const int type);
-diff --git a/socket.c b/socket.c
-index 660e2ac..6e63730 100644
---- a/socket.c
-+++ b/socket.c
-@@ -1684,7 +1684,7 @@ link_socket_connection_initiated (const struct buffer *buf,
-     {
-       struct argv argv = argv_new ();
-       ipchange_fmt (false, &argv, info, &gc);
--      if (plugin_call (info->plugins, OPENVPN_PLUGIN_IPCHANGE, &argv, NULL, es) != OPENVPN_PLUGIN_FUNC_SUCCESS)
-+      if (plugin_call (info->plugins, OPENVPN_PLUGIN_IPCHANGE, &argv, NULL, es, -1, NULL) != OPENVPN_PLUGIN_FUNC_SUCCESS)
- 	msg (M_WARN, "WARNING: ipchange plugin call failed");
-       argv_reset (&argv);
-     }
-diff --git a/ssl.c b/ssl.c
-index 7618c8f..ea4b6d5 100644
---- a/ssl.c
-+++ b/ssl.c
-@@ -915,7 +915,7 @@ verify_callback (int preverify_ok, X509_STORE_CTX * ctx)
- 		   ctx->error_depth,
- 		   subject);
- 
--      ret = plugin_call (opt->plugins, OPENVPN_PLUGIN_TLS_VERIFY, &argv, NULL, opt->es);
-+      ret = plugin_call (opt->plugins, OPENVPN_PLUGIN_TLS_VERIFY, &argv, NULL, opt->es, ctx->error_depth, ctx->current_cert);
- 
-       if (ret == OPENVPN_PLUGIN_FUNC_SUCCESS)
- 	{
-@@ -3345,7 +3345,7 @@ verify_user_pass_plugin (struct tls_session *session, const struct user_pass *up
- #endif
- 
-       /* call command */
--      retval = plugin_call (session->opt->plugins, OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY, NULL, NULL, session->opt->es);
-+      retval = plugin_call (session->opt->plugins, OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY, NULL, NULL, session->opt->es, -1, NULL);
- 
- #ifdef PLUGIN_DEF_AUTH
-       /* purge auth control filename (and file itself) for non-deferred returns */
-@@ -3874,7 +3874,7 @@ key_method_2_read (struct buffer *buf, struct tls_multi *multi, struct tls_sessi
-    */
-   if (ks->authenticated && plugin_defined (session->opt->plugins, OPENVPN_PLUGIN_TLS_FINAL))
-     {
--      if (plugin_call (session->opt->plugins, OPENVPN_PLUGIN_TLS_FINAL, NULL, NULL, session->opt->es) != OPENVPN_PLUGIN_FUNC_SUCCESS)
-+      if (plugin_call (session->opt->plugins, OPENVPN_PLUGIN_TLS_FINAL, NULL, NULL, session->opt->es, -1, NULL) != OPENVPN_PLUGIN_FUNC_SUCCESS)
- 	ks->authenticated = false;
-     }
- 
--- 
-1.7.2.3
+2010/12/9 David Sommerseth <openvpn.list@...1114...>
 
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+>
+> On 09/12/10 09:29, hmy wrote:
+> > may be I'm wrong ,tc can do that.
+>
+> First of all, yes tc can do that.  That's the concept of traffic control
+> and traffic shaping.
+>
+> Second ... this is the developers mailing list, not the users mailing.
+> This topic belongs to the openvpn-users list.
+>
+> Third:
+>   A: Because it messes up the order in which people normally read text.
+>   Q: Why is top-posting such a bad thing?
+>   A: Top-posting.
+>   Q: What is the most annoying thing in e-mail?
+>
+>   For more info: <http://www.html-faq.com/etiquette/?toppost>
+>
+>
+> kind regards,
+>
+> David Sommerseth
+>
+>
+> > 2010/12/9 hmy <huangmingyou@...277... <mailto:huangmingyou@...277...>>
+> >
+> >     I think tc can't do this. may be iptables can do it ?
+> >
+> >     2010/12/9 Peter Stuge <peter@...1287... <mailto:peter@...1287...>>
+> >
+> >         hmy wrote:
+> >         > I use openvpn in server mode. more than 100 clients to connect
+> it
+> >         > . I want limit every client's bandwidth ? how to do it ?
+> >
+> >         Suggest on networking layer in the operating system.
+> >
+> >
+> >         //Peter
+> >
+> >
+> ------------------------------------------------------------------------------
+> >         This SF Dev2Dev email is sponsored by:
+> >
+> >         WikiLeaks The End of the Free Internet
+> >         http://p.sf.net/sfu/therealnews-com
+> >         _______________________________________________
+> >         Openvpn-devel mailing list
+> >         Openvpn-devel@lists.sourceforge.net
+> >         <mailto:Openvpn-devel@lists.sourceforge.net>
+> >         https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> >
+> >
+> >
+> >
+> >
+> >
+> ------------------------------------------------------------------------------
+> > This SF Dev2Dev email is sponsored by:
+> >
+> > WikiLeaks The End of the Free Internet
+> > http://p.sf.net/sfu/therealnews-com
+> >
+> >
+> >
+> > _______________________________________________
+> > Openvpn-devel mailing list
+> > Openvpn-devel@lists.sourceforge.net
+> > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
+> -----BEGIN PGP SIGNATURE-----
+> Version: GnuPG v1.4.11 (GNU/Linux)
+> Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+>
+> iEYEARECAAYFAk0AqugACgkQDC186MBRfrqVPwCfe+NWxApUz0l60cY0a5m2iVLJ
+> +E0AoIvYbpjE5NDBkT2wyCJ800MWGaVT
+> =EVKK
+> -----END PGP SIGNATURE-----
+>
+
+--0016367f997e1ce76c049703a157
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+I&#39;m sorry , I will quit this mail list. sorry!<br><br><div class=3D"gma=
+il_quote">2010/12/9 David Sommerseth <span dir=3D"ltr">&lt;<a href=3D"mailt=
+o:openvpn.list@...1114...">openvpn.list@...1114...</a>&gt;</span><br>
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex;">-----BEGIN PGP SIGNED MESSAGE-----<br>
+Hash: SHA1<br>
+<div class=3D"im"><br>
+On 09/12/10 09:29, hmy wrote:<br>
+&gt; may be I&#39;m wrong ,tc can do that.<br>
+<br>
+</div>First of all, yes tc can do that. =C2=A0That&#39;s the concept of tra=
+ffic control<br>
+and traffic shaping.<br>
+<br>
+Second ... this is the developers mailing list, not the users mailing.<br>
+This topic belongs to the openvpn-users list.<br>
+<br>
+Third:<br>
+ =C2=A0 A: Because it messes up the order in which people normally read tex=
+t.<br>
+ =C2=A0 Q: Why is top-posting such a bad thing?<br>
+ =C2=A0 A: Top-posting.<br>
+ =C2=A0 Q: What is the most annoying thing in e-mail?<br>
+<br>
+ =C2=A0 For more info: &lt;<a href=3D"http://www.html-faq.com/etiquette/?to=
+ppost" target=3D"_blank">http://www.html-faq.com/etiquette/?toppost</a>&gt;=
+<br>
+<br>
+<br>
+kind regards,<br>
+<br>
+David Sommerseth<br>
+<br>
+<br>
+&gt; 2010/12/9 hmy &lt;<a href=3D"mailto:huangmingyou@...277...">huangmingy=
+ou@...277...</a> &lt;mailto:<a href=3D"mailto:huangmingyou@...277...">huang=
+mingyou@...277...</a>&gt;&gt;<br>
+<div class=3D"im">&gt;<br>
+&gt; =C2=A0 =C2=A0 I think tc can&#39;t do this. may be iptables can do it =
+?<br>
+&gt;<br>
+</div>&gt; =C2=A0 =C2=A0 2010/12/9 Peter Stuge &lt;<a href=3D"mailto:peter@=
+...1287...">peter@...1287...</a> &lt;mailto:<a href=3D"mailto:peter@...1438...=
+...">peter@...1287...</a>&gt;&gt;<br>
+<div class=3D"im">&gt;<br>
+&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 hmy wrote:<br>
+&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 &gt; I use openvpn in server mode. more th=
+an 100 clients to connect it<br>
+&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 &gt; . I want limit every client&#39;s ban=
+dwidth ? how to do it ?<br>
+&gt;<br>
+&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 Suggest on networking layer in the operati=
+ng system.<br>
+&gt;<br>
+&gt;<br>
+&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 //Peter<br>
+&gt;<br>
+&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 ------------------------------------------=
+------------------------------------<br>
+&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 This SF Dev2Dev email is sponsored by:<br>
+&gt;<br>
+&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 WikiLeaks The End of the Free Internet<br>
+&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 <a href=3D"http://p.sf.net/sfu/therealnews=
+-com" target=3D"_blank">http://p.sf.net/sfu/therealnews-com</a><br>
+&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 __________________________________________=
+_____<br>
+&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 Openvpn-devel mailing list<br>
+&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 <a href=3D"mailto:Openvpn-devel@...1439...=
+ceforge.net">Openvpn-devel@lists.sourceforge.net</a><br>
+</div>&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;mailto:<a href=3D"mailto:Openvpn=
+-devel@lists.sourceforge.net">Openvpn-devel@lists.sourceforge.net</a>&gt;<b=
+r>
+<div class=3D"im">&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 <a href=3D"https://lists=
+.sourceforge.net/lists/listinfo/openvpn-devel" target=3D"_blank">https://li=
+sts.sourceforge.net/lists/listinfo/openvpn-devel</a><br>
+&gt;<br>
+&gt;<br>
+&gt;<br>
+&gt;<br>
+&gt;<br>
+&gt; ----------------------------------------------------------------------=
+--------<br>
+&gt; This SF Dev2Dev email is sponsored by:<br>
+&gt;<br>
+&gt; WikiLeaks The End of the Free Internet<br>
+&gt; <a href=3D"http://p.sf.net/sfu/therealnews-com" target=3D"_blank">http=
+://p.sf.net/sfu/therealnews-com</a><br>
+&gt;<br>
+&gt;<br>
+&gt;<br>
+&gt; _______________________________________________<br>
+&gt; Openvpn-devel mailing list<br>
+&gt; <a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...465...=
+ists.sourceforge.net</a><br>
+&gt; <a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel"=
+ target=3D"_blank">https://lists.sourceforge.net/lists/listinfo/openvpn-dev=
+el</a><br>
+<br>
+</div>-----BEGIN PGP SIGNATURE-----<br>
+Version: GnuPG v1.4.11 (GNU/Linux)<br>
+Comment: Using GnuPG with Fedora - <a href=3D"http://enigmail.mozdev.org/" =
+target=3D"_blank">http://enigmail.mozdev.org/</a><br>
+<br>
+iEYEARECAAYFAk0AqugACgkQDC186MBRfrqVPwCfe+NWxApUz0l60cY0a5m2iVLJ<br>
++E0AoIvYbpjE5NDBkT2wyCJ800MWGaVT<br>
+=3DEVKK<br>
+-----END PGP SIGNATURE-----<br>
+</blockquote></div><br>
+
+--0016367f997e1ce76c049703a157--
 
