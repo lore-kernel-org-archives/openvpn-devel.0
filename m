@@ -1,10 +1,16 @@
-Message-ID: <4D021673.7040702@...68...>
-Date: Fri, 10 Dec 2010 13:00:51 +0100
-From: Matthias Andree <matthias.andree@...68...>
+Message-ID: <20101210164800.15840.qmail@...1287...>
+Date: Fri, 10 Dec 2010 17:48:00 +0100
+From: Peter Stuge <peter@...1287...>
+References: <BF88BCF2F8AD5843B2250C5DB8DDE0AFBF2E3C5F@...1436...>
+	<20101210062512.17827.qmail@...1287...>
+	<BF88BCF2F8AD5843B2250C5DB8DDE0AFBF2E3EF3@...1436...>
+	<4D01DD1C.5010506@...1114...>
+	<BF88BCF2F8AD5843B2250C5DB8DDE0AFBF2E3EFD@...1436...>
+	<20101210081613.3086.qmail@...1287...>
+	<BF88BCF2F8AD5843B2250C5DB8DDE0AFBF2E3F13@...1436...>
+	<20101210084436.7399.qmail@...1287...> <4D021673.7040702@...68...>
 MIME-Version: 1.0
-References: <BF88BCF2F8AD5843B2250C5DB8DDE0AFBF2E3C5F@...1436...>	<20101210062512.17827.qmail@...1287...>	<BF88BCF2F8AD5843B2250C5DB8DDE0AFBF2E3EF3@...1436...>	<4D01DD1C.5010506@...1114...>	<BF88BCF2F8AD5843B2250C5DB8DDE0AFBF2E3EFD@...1436...>	<20101210081613.3086.qmail@...1287...>	<BF88BCF2F8AD5843B2250C5DB8DDE0AFBF2E3F13@...1436...>
-	<20101210084436.7399.qmail@...1287...>
-In-Reply-To: <20101210084436.7399.qmail@...1287...>
+In-Reply-To: <4D021673.7040702@...68...>
 Subject: Re: [Openvpn-devel] [Patch] OpenVPN PolarSSL Support Preview [7/8]
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,29 +20,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-Am 10.12.2010 09:44, schrieb Peter Stuge:
-> Adriaan de Jong wrote:
->> > I'd use git for the patches right away anyway,
->> 
->> I'm afraid that we started off development based on checked out
->> sources (quite a long time ago). I'll start rebasing to git as soon
->> as I've heard that the git tree is stable.
+Matthias Andree wrote:
+> > Having the branch in git allows iterating over the commits with
+> > great ease.
 > 
-> By git I don't mean the very latest contents of the tree, but the
-> tool. I would branch off the commit that corresponds to your starting
-> state, apply the patches, and then rebase that branch forward at some
-> later time.
-> 
-> Having the branch in git allows iterating over the commits with great
-> ease.
+> let's not waste time discussing this over and over
 
-OTOH, Adriaan has the patches in Mercurial Queues for now, so let's not waste
-time discussing this over and over again. :)
+I'm sorry I wasted your time.
 
--- 
-Matthias Andree
+
+//Peter
 
