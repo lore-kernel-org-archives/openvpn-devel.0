@@ -1,9 +1,18 @@
-Message-ID: <4D036D80.20409@...1114...>
-Date: Sat, 11 Dec 2010 13:24:32 +0100
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Feature branch drop warning - --passtos and VLAN
-	patch set
+Date: Sat, 11 Dec 2010 13:41:50 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20101211124150.GA12709@...1296...>
+References: <AANLkTi=0bWqKxGcr7fdiZSG+9h4tFkhm1i2vry_5Rw6E@...278...>
+	<20101209050405.5497.qmail@...1287...>
+	<AANLkTikEe8bhZggrC5O4PECKQ6iSfUsJ_OrvUVToj787@...278...>
+	<AANLkTi=+cQxk0P+vzyyFyby6X0gp_BUXQNALRd4Gd4op@...278...>
+	<4D00AAEA.2050505@...1114...>
+	<AANLkTi=KJSyM0q5ROWszZU2evMf99BQnUz7kwxZoVuDZ@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="jn/MQTzma+jNUHFC"
+Content-Disposition: inline
+In-Reply-To: <AANLkTi=KJSyM0q5ROWszZU2evMf99BQnUz7kwxZoVuDZ@...278...>
+Subject: Re: [Openvpn-devel] how to limite the bandwidth of every client ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,89 +21,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Cc: Davide Guerri <dguerri@...384...>
+To: hmy <huangmingyou@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--jn/MQTzma+jNUHFC
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 28/02/10 23:07, David Sommerseth wrote:
-| From: Davide Guerri<dguerri@...384...>
-|
-| This patch makes it possible to use the --passtos option with 802.1Q tagged
-| ethernet frames.
-|
-| sf.net tracker:
-|
-<https://sourceforge.net/tracker/?func=detail&aid=2829878&group_id=48978&atid=454721>
-|
-| Signed-off-by: David Sommerseth<dazo@...384...>
-| ---
-|   proto.c |   14 +++++++++++---
-|   proto.h |   12 ++++++++++++
-|   2 files changed, 23 insertions(+), 3 deletions(-)
+Hi,
 
-This patch has been laying around in a separate feature branch for about 40
-weeks without any responses at all.  We have asked for help to test this feature:
+On Fri, Dec 10, 2010 at 08:42:30AM +0800, hmy wrote:
+> I'm sorry , I will quit this mail list. sorry!
 
-<http://thread.gmane.org/gmane.network.openvpn.devel/3365>
-<http://thread.gmane.org/gmane.network.openvpn.devel/3165/focus=3306>
+This is somewhat missing the point David made...:
 
-Due to this lack of response, I am considering to drop that feature branch.
+> > Third:
+> >   A: Because it messes up the order in which people normally read text.
+> >   Q: Why is top-posting such a bad thing?
+> >   A: Top-posting.
+> >   Q: What is the most annoying thing in e-mail?
 
-Unfortunately, this will result in some consequences for another patch-set,
-which we also don't know too much about in regards to testing, VLAN support
-patches from Fabian Knittel.
+gert
 
-<http://thread.gmane.org/gmane.network.openvpn.devel/3645>
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-IIRC, this VLAN patch set depends on parts of the infrastructure for --passtos.
+--jn/MQTzma+jNUHFC
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-I personally see the a broader use case for the VLAN patches, and I would
-*not* like to throw out the VLAN patches in addition.  So I therefore see just
-a few solutions.  I would like to see the VLAN patches go into OpenVPN 2.3.
-
-*a)* --passtos gets serious testing with responses *back to the mailing list*.
-We need to know if this patch has any side-effects to users who do not use
-this feature.  It needs to be validated that the patch itself does work properly.
-
-Testing instructions are available here:
-<http://www.secure-computing.net/wiki/index.php/OpenVPN/802.1Q_--passtos_patch>
-
-*b)* Fabian Knittel embraces the pieces he needs from the --passtos patch to
-his VLAN patches, thus becoming independent of --passtos.  This might require
-some restructuring of Fabians feature branch and replacing the current one
-with a new feat_vlan_tagging branch.
-
-Fabian: Can you please also provide us with some testing instructions?
-Including how to set it up and how to validate things works.  And also here we
-need to test that this works for both users enabling and not enabling this
-feature.
-
-*c)* To drop --passtos and the VLAN patches completely.  This is the choice I
-really want to try to avoid.
-
-
-I would really like to have this solved before *mid January* - which means
-approx. 5-6 weeks.  If silence continues to rule, I am forced to kick them out
-- - as these patches are based on an older 2.1 release and we are planning a 2.2
-release in January.
-
-*If* we get these features tested and confirmed, these patches will be
-considered for the OpenVPN 2.3 release.
-
-
-kind regards,
-
-David Sommerseth
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+Version: GnuPG v1.4.11 (NetBSD)
 
-iEYEARECAAYFAk0DbYAACgkQDC186MBRfrrFDQCfTZr1rzoGE8CeBhWcMfEEK/HP
-AMsAn2eRm7pgf0w60tpjweA6XQ5uBtbf
-=YI92
+iQCVAwUBTQNxjqkuBuNlUUl1AQKgTgP+O6KxZo8rs3D+nFIc9n5JTnJomVv17SZQ
+XJtnvB2Z/Hf2+MUEMameGwREEugBiCohSfmo3OTeUNs4VBVO6nX9mIIX6NNQkEsA
+3OpgGy6QuBmpDjX8ExdYTOGuzUR5dKOtolokO2Pff9e4AnbZzCoMpPvEC6Sb7mOB
+uM4Z6BLrjAY=
+=KfcR
 -----END PGP SIGNATURE-----
+
+--jn/MQTzma+jNUHFC--
 
