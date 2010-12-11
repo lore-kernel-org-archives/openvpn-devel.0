@@ -1,8 +1,12 @@
-Message-ID: <4D0392A1.3030406@...1114...>
-Date: Sat, 11 Dec 2010 16:02:57 +0100
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Follow-up: --tls-float and protocol changes
+From: chantra <chantra@...1258...>
+In-Reply-To: <4D036D80.20409@...1114...>
+References: <4D036D80.20409@...1114...>
+Content-Type: multipart/mixed; boundary="=-MhRxM79CiG3rg0Sc9171"
+Date: Sat, 11 Dec 2010 18:49:15 +0100
+Message-ID: <1292089756.2743.69.camel@...1259...>
+Mime-Version: 1.0
+Subject: Re: [Openvpn-devel] Feature branch drop warning - --passtos and
+	VLAN patch set
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,149 +15,333 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Davide Guerri <dguerri@...384...>
+
+--=-MhRxM79CiG3rg0Sc9171
+Content-Type: multipart/alternative; boundary="=-twNCOgln/wfE+4R+GGJ1"
+
+--=-twNCOgln/wfE+4R+GGJ1
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-To: Openvpn-devel@lists.sourceforge.net
-
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
 
 
-In the developers meeting December 2 the patch introducing a --tls-float
-feature was discussed.  The feature itself seems reasonable for several
-scenarios and makes it possible for a client to change IP address without
-needing to re-negotiate the TLS connection [1].
 
-The implementation itself was discussed with James Yonan and the conclusion
-was that it was reasonable to prepends a connection ID field in front of
-the control and data packets [2].  The server will then use this
-connection ID instead of the IP address, as it does today.
+> I personally see the a broader use case for the VLAN patches, and I would
+> *not* like to throw out the VLAN patches in addition.  So I therefore see just
+> a few solutions.  I would like to see the VLAN patches go into OpenVPN 2.3.
+> 
+> *a)* --passtos gets serious testing with responses *back to the mailing list*.
+> We need to know if this patch has any side-effects to users who do not use
+> this feature.  It needs to be validated that the patch itself does work properly.
+> 
 
-To avoid compatibility issues with clients not using --tls-float, a
-separate op-code is used in the scenario when the client sends this
-connection ID.  If a server or client receives this op-code and do not
-support it, the packet will be dropped.  And, if I have understood it
-correctly, the server will be able to detect if the client is supporting
-- --tls-float or not and will therefore be able to support both clients which
-supports this feature and not.
+I do not have any TAP setting running so I cant really test that, but
+looking at the patch I do not see any side effect
+for people not using the feature.
 
-How it works is basically a packet stream which looks like this if
-- --tls-float is enabled [3]:
+What it does is to check if the protocol encapsulated in ethernet frame
+is 802.1Q and apply the logic behind it.
+If not, check if it is a IPv4 packet encapsulated and do the usual
+logic.
 
-~   TLS_OPCODE | Connection ID | OpenVPN control/data stream
+The only point that would get my attention is kind of silly, but instead
+of testing VLAN type first, I would rather test IPv4 type first.
 
-When it is not enabled [4]:
+As obviously most people use IPv4 only, it makes more sense to stop the
+"if then else if" part as early as possible to avoid useless test.
+Thus, the patch might look more like the one attached to this email.
+Where the logic is:
+if IPv4 encapsulated:
+  get_offset_for_packet
+else if 802.1Q:
+  if IPv4 encapsulated in 802.1Q:
+    get_offset_for_tagged_packet
+  else:
+    return false
+else:
+  return false
 
-~   "NORMAL_OPCODE" | OpenVPN control/data stream
-
-When it comes to the use of an own op-code for --tls-float to work, that is
-more tricky.  It was identified that the op-code field is only 5 bits[5].
-Currently 8 op-codes are already in use, which leaves 23 op-codes available
-now.  Rightfully enough, it is not often you need to extend a protocol like
-this, but we know that OpenVPN 3 will most likely extend the protocol even
-further.  So to be sure we don't limit us self in the future, the use of
-op-codes needs a broader discussion.
-
-What I am proposing is a separate op-code instead of the TLS_OPCODE which
-will give a feature bit-set which can be used to enable different features,
-like --tls-float.
-
-The idea is to do it something like this:
-
-~   FEAT_OPCODE | feature_bits | <feature data...> | OpenVPN control/data
-
-The feature_bits section can be f.ex. 32 or 64 bits.  And a bit here can
-be used identify that --tls-float is enabled.  A data stream which only
-have that FEATURE_OPCODE in use with only the TLS_FLOAT bit set will then
-look like this:
-
-~   FEAT_OPCODE | feature(tls_float) | ConnectionID | OpenVPN control/data
-
-If feature X is used in addition, the stream will look like this:
-
-~   FEAT_OPCODE | feature(tls_float,X) | ConnectionID | X-data | OpenVPN data
-
-In this example, it's considered that tls_float is the first bit and X is
-the second bit.  One bit can even be set to indicate that there are more
-feature bits coming, thus the protocol would be more dynamically
-expandable.
-
-The downside of this is that if the feature bits will give more overhead to
-the data stream.  A 64 bit mask (8 bytes) might be way too much.  Therefore
-a 32bit mask (4 bytes) might be more reasonable.  Maybe even 16 bits, where
-one bit is reserved for feature bits chaining.
-
-However, as these feature bits are flexible, the feature data do not need
-to be sent over constantly.  And if there are no feature_bits set, the
-"NORMAL_OPCODE" will be used instead.  Due to this, protocol compatibility
-with older clients should be preserved as well, just as the current
-- --tls-float implementation.
-
-Another thing to beware of is that as these feature bits are sent outside
-the OpenVPN control/data stream, so these feature data bytes will not be
-encrypted.  If the data needs to be encrypted, it should use the control
-channel in OpenVPN instead.  But as the --tls-float feature shows,
-sometimes the data cannot be encrypted to work.
-
-It will be the "packet parser" which will be responsible for mux/demux
-of these data streams.  With a clever (re-?)design of the current code, it
-should be pretty straight forward to also make this part more modular so
-that even a third-party plug-in can register itself to this packet
-parser.  This registration process will indicate which bit it will use.
-The packet parser can then send parts of the data stream to the plug-in
-and it will report back how many bytes it read of the stream.
-
-Of course, this plug-in support of protocol features must be discussed in
-more details, as there are many flaws here.  Compatibility between
-client/server if they don't use/support a feature or conflicting feature
-bits.  Those details are a different discussion and will need to come in
-the next phase, when the --tls-float solution is decided upon.
+Now, as said earlier, it seems this patch will not affect people not
+using VLAN feature.
+I would not be able to tell if it works though :s
 
 
-So, why not just let give --tls-float an op-code and skip this feature
-stuff now? (or: let's postpone the feature stuff until we really need it)
-We all agreed that the --tls-float feature is useful in several scenarios,
-but as it was requested this feature will be compile-time disabled by
-default [6].  In my opinion, it would be wasting of an op-code slot if
-a feature is not enabled by default.  Therefore I suggest that the
-- --tls-float will use a solution like described above.
 
-Why should we spend time and energy implementing a FEAT_OPCODE solution?
-First of all to be sure we can expand the wire-protocol in the future
-without breaking compatibility with older clients.  Secondly, OpenVPN 3 will
-be more modular and flexible so we might see completely different use-cases
-than we can imagine today.
+> *b)* Fabian Knittel embraces the pieces he needs from the --passtos patch to
+> his VLAN patches, thus becoming independent of --passtos.  This might require
+> some restructuring of Fabians feature branch and replacing the current one
+> with a new feat_vlan_tagging branch.
+> 
+> Fabian: Can you please also provide us with some testing instructions?
+> Including how to set it up and how to validate things works.  And also here we
+> need to test that this works for both users enabling and not enabling this
+> feature.
 
-It might even be that we need to implement a more advanced control channel
-for OpenVPN 3 to support more new features.  In this case, we set a
-"openvpn3" feature bit, and encrypt that kind of data separately and put it
-in the stream.  That way we can support both the old and the new data
-stream simultaneously.  Old clients will not see the OpenVPN v3 control
-data, as they don't support it.  And newer clients will receive these data
-and can make use of it.
+This patch is based on the previous one, so I guess it confirms the
+feature from Davide works.
+It is indeed a feature I find useful (even though i dont use it
+myself :) ).
+Same here, I cant really try this that easily and intensively as I dont
+have any infrastructure using TAP.
+But I would say +1 to the feature.
+
+Hopefully, this will kick in the thread, avoiding c) ;)
+
+BR,
+
+Chantra
 
 
-Kind regards,
+> *c)* To drop --passtos and the VLAN patches completely.  This is the choice I
+> really want to try to avoid.
+> 
+> 
+> I would really like to have this solved before *mid January* - which means
+> approx. 5-6 weeks.  If silence continues to rule, I am forced to kick them out
+> - - as these patches are based on an older 2.1 release and we are planning a 2.2
+> release in January.
+> 
+> *If* we get these features tested and confirmed, these patches will be
+> considered for the OpenVPN 2.3 release.
+> 
+> 
+> kind regards,
+> 
+> David Sommerseth
+> -----BEGIN PGP SIGNATURE-----
+> Version: GnuPG v1.4.10 (GNU/Linux)
+> Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+> 
+> iEYEARECAAYFAk0DbYAACgkQDC186MBRfrrFDQCfTZr1rzoGE8CeBhWcMfEEK/HP
+> AMsAn2eRm7pgf0w60tpjweA6XQ5uBtbf
+> =YI92
+> -----END PGP SIGNATURE-----
+> 
+> ------------------------------------------------------------------------------
+> Oracle to DB2 Conversion Guide: Learn learn about native support for PL/SQL,
+> new data types, scalar functions, improved concurrency, built-in packages, 
+> OCI, SQL*Plus, data movement tools, best practices and more.
+> http://p.sf.net/sfu/oracle-sfdev2dev 
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> 
+
+
+-- 
+http://www.debuntu.org
+
+--=-twNCOgln/wfE+4R+GGJ1
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 TRANSITIONAL//EN">
+<HTML>
+<HEAD>
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=UTF-8">
+  <META NAME="GENERATOR" CONTENT="GtkHTML/3.30.3">
+</HEAD>
+<BODY>
+<BR>
+<BLOCKQUOTE TYPE=CITE>
+<PRE>
+I personally see the a broader use case for the VLAN patches, and I would
+*not* like to throw out the VLAN patches in addition.  So I therefore see just
+a few solutions.  I would like to see the VLAN patches go into OpenVPN 2.3.
+
+*a)* --passtos gets serious testing with responses *back to the mailing list*.
+We need to know if this patch has any side-effects to users who do not use
+this feature.  It needs to be validated that the patch itself does work properly.
+
+</PRE>
+</BLOCKQUOTE>
+I do not have any TAP setting running so I cant really test that, but looking at the patch I do not see any side effect<BR>
+for people not using the feature.<BR>
+<BR>
+What it does is to check if the protocol encapsulated in ethernet frame is 802.1Q and apply the logic behind it.<BR>
+If not, check if it is a IPv4 packet encapsulated and do the usual logic.<BR>
+<BR>
+The only point that would get my attention is kind of silly, but instead of testing VLAN type first, I would rather test IPv4 type first.<BR>
+<BR>
+As obviously most people use IPv4 only, it makes more sense to stop the &quot;if then else if&quot; part as early as possible to avoid useless test.<BR>
+Thus, the patch might look more like the one attached to this email.<BR>
+Where the logic is:<BR>
+if IPv4 encapsulated:<BR>
+&nbsp; get_offset_for_packet<BR>
+else if 802.1Q:<BR>
+&nbsp; if IPv4 encapsulated in 802.1Q:<BR>
+&nbsp;&nbsp;&nbsp; get_offset_for_tagged_packet<BR>
+&nbsp; else:<BR>
+&nbsp;&nbsp;&nbsp; return false<BR>
+else:<BR>
+&nbsp; return false<BR>
+<BR>
+Now, as said earlier, it seems this patch will not affect people not using VLAN feature.<BR>
+I would not be able to tell if it works though :s<BR>
+<BR>
+<BR>
+<BLOCKQUOTE TYPE=CITE>
+<PRE>
+*b)* Fabian Knittel embraces the pieces he needs from the --passtos patch to
+his VLAN patches, thus becoming independent of --passtos.  This might require
+some restructuring of Fabians feature branch and replacing the current one
+with a new feat_vlan_tagging branch.
+
+Fabian: Can you please also provide us with some testing instructions?
+Including how to set it up and how to validate things works.  And also here we
+need to test that this works for both users enabling and not enabling this
+feature.
+</PRE>
+</BLOCKQUOTE>
+This patch is based on the previous one, so I guess it confirms the feature from Davide works.<BR>
+It is indeed a feature I find useful (even though i dont use it myself :) ).<BR>
+Same here, I cant really try this that easily and intensively as I dont have any infrastructure using TAP.<BR>
+But I would say +1 to the feature.<BR>
+<BR>
+Hopefully, this will kick in the thread, avoiding c) ;)<BR>
+<BR>
+BR,<BR>
+<BR>
+Chantra<BR>
+<BR>
+<BLOCKQUOTE TYPE=CITE>
+<PRE>
+*c)* To drop --passtos and the VLAN patches completely.  This is the choice I
+really want to try to avoid.
+
+
+I would really like to have this solved before *mid January* - which means
+approx. 5-6 weeks.  If silence continues to rule, I am forced to kick them out
+- - as these patches are based on an older 2.1 release and we are planning a 2.2
+release in January.
+
+*If* we get these features tested and confirmed, these patches will be
+considered for the OpenVPN 2.3 release.
+
+
+kind regards,
 
 David Sommerseth
-
-
-
-Meeting minutes:
-<http://thread.gmane.org/gmane.network.openvpn.devel/4221>
-
-[1] See meeting minutes, 20:17:08 to 20:19:16 and 20:49:25.
-[2] See meeting minutes, 20:40:50
-[3] See meeting minutes, 21:04:48
-[4] See meeting minutes, 21:05:02
-[5] See meeting minutes, 21:02:08
-[6] See meeting minutes, 20:49:25
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+Comment: Using GnuPG with Fedora - <A HREF="http://enigmail.mozdev.org/">http://enigmail.mozdev.org/</A>
 
-iEYEARECAAYFAk0DkqEACgkQDC186MBRfrqTJwCfW677y4JbjmPlXpU4c63ydbh8
-Bu0AoKF/E+4U2LQk1OCWBwiZQRGMREtM
-=giIu
+iEYEARECAAYFAk0DbYAACgkQDC186MBRfrrFDQCfTZr1rzoGE8CeBhWcMfEEK/HP
+AMsAn2eRm7pgf0w60tpjweA6XQ5uBtbf
+=YI92
 -----END PGP SIGNATURE-----
+
+------------------------------------------------------------------------------
+Oracle to DB2 Conversion Guide: Learn learn about native support for PL/SQL,
+new data types, scalar functions, improved concurrency, built-in packages, 
+OCI, SQL*Plus, data movement tools, best practices and more.
+<A HREF="http://p.sf.net/sfu/oracle-sfdev2dev">http://p.sf.net/sfu/oracle-sfdev2dev</A> 
+_______________________________________________
+Openvpn-devel mailing list
+<A HREF="mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@lists.sourceforge.net</A>
+<A HREF="https://lists.sourceforge.net/lists/listinfo/openvpn-devel">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</A>
+
+</PRE>
+</BLOCKQUOTE>
+<BR>
+<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
+<TR>
+<TD>
+<PRE>
+-- 
+<A HREF="http://www.debuntu.org">http://www.debuntu.org</A>
+</PRE>
+</TD>
+</TR>
+</TABLE>
+</BODY>
+</HTML>
+
+--=-twNCOgln/wfE+4R+GGJ1--
+
+--=-MhRxM79CiG3rg0Sc9171
+Content-Disposition: attachment;
+	filename="0001-Modified-version-of-VLAN-patch.patch"
+Content-Type: text/x-patch; name="0001-Modified-version-of-VLAN-patch.patch";
+	charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+From acaeeb006a5b6c218bd3eb7542fce92f3299e851 Mon Sep 17 00:00:00 2001
+From: chantra <chantra@...1258...>
+Date: Sat, 11 Dec 2010 18:27:23 +0100
+Subject: [PATCH] Modified version of VLAN patch
+
+From: Davide Guerri <dguerri <at> users.sourceforge.net>
+
+This patch makes it possible to use the --passtos option with 802.1Q
+tagged
+ethernet frames.
+
+sf.net tracker:
+<https://sourceforge.net/tracker/?func=detail&aid=2829878&group_id=48978&atid=454721>
+
+Signed-off-by: David Sommerseth <dazo <at> users.sourceforge.net>
+Signed-off-by: chantra <chantra@...1258...>
+---
+ proto.c |   14 +++++++++++---
+ proto.h |   12 ++++++++++++
+ 2 files changed, 23 insertions(+), 3 deletions(-)
+
+diff --git a/proto.c b/proto.c
+index 65a6b67..3cab61d 100644
+--- a/proto.c
++++ b/proto.c
+@@ -53,9 +53,17 @@ is_ipv4 (int tunnel_type, struct buffer *buf)
+ 	  + sizeof (struct openvpn_iphdr)))
+ 	return false;
+       eh = (const struct openvpn_ethhdr *) BPTR (buf);
+-      if (ntohs (eh->proto) != OPENVPN_ETH_P_IPV4)
+-	return false;
+-      offset = sizeof (struct openvpn_ethhdr);
++      if (ntohs (eh->proto) == OPENVPN_ETH_P_IPV4)
++        offset = sizeof (struct openvpn_ethhdr);
++      else if (ntohs (eh->proto) == OPENVPN_ETH_P_8021Q) {
++        const struct openvpn_8021qhdr *evh;
++        evh = (const struct openvpn_8021qhdr *) BPTR (buf);
++        if (ntohs (evh->proto) != OPENVPN_ETH_P_IPV4)
++          return false;
++        else
++          offset = sizeof (struct openvpn_8021qhdr);
++      } else
++        return false;
+     }
+   else
+     return false;
+diff --git a/proto.h b/proto.h
+index 55f0832..66041b6 100644
+--- a/proto.h
++++ b/proto.h
+@@ -64,6 +64,18 @@ struct openvpn_ethhdr
+   uint16_t proto;                     /* packet type ID field */
+ };
+ 
++# define OPENVPN_ETH_P_8021Q  0x8100  /* 802.1Q protocol */
++
++struct openvpn_8021qhdr
++{
++  uint8_t dest[OPENVPN_ETH_ALEN];     /* destination ethernet addr */
++  uint8_t source[OPENVPN_ETH_ALEN];   /* source ethernet addr	*/
++
++  uint32_t tag;                       /* packet 802.1Q Vlan Tag */
++  uint16_t proto;                     /* packet type ID field */
++};
++
++
+ struct openvpn_arp {
+ # define ARP_MAC_ADDR_TYPE 0x0001
+   uint16_t mac_addr_type;       /* 0x0001 */
+-- 
+1.7.1
+
+
+--=-MhRxM79CiG3rg0Sc9171--
+
+
 
