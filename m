@@ -1,15 +1,12 @@
-Message-ID: <4D077FF4.7070001@...1147...>
-Date: Tue, 14 Dec 2010 15:32:20 +0100
-From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-References: <4D021744.7010307@...515...> <4D060C34.7050801@...1147...>
-	<BF88BCF2F8AD5843B2250C5DB8DDE0AFBF2E418F@...1436...>
-	<4D063404.4050208@...1147...>
-In-Reply-To: <4D063404.4050208@...1147...>
-Content-Type: multipart/alternative;
-	boundary="------------070307050500010605040409"
-Subject: [Openvpn-devel] Using certificate chains (was: Re: Summary of the
- IRC meeting (9th Dec 2010))
+In-Reply-To: <1292286924.6222.3.camel@...1259...>
+References: <AANLkTi=Fykb-NkSxx+=HM1U0ob4mmD0GkyfP_Mhb9=m1@...278...>
+	<1292286924.6222.3.camel@...1259...>
+Date: Tue, 14 Dec 2010 09:47:12 -0800
+Message-ID: <AANLkTikhRr-YhNP4OaZM8kCJ++-OcKh=eQ9jAeedxjNj@...278...>
+From: Vineet Kumar <vineet.kumar@...277...>
+Content-Type: multipart/alternative; boundary=0016367f967817f9a6049762690e
+Subject: Re: [Openvpn-devel] Can *plugin* kill specific ovpn tunnel?...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,270 +15,152 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: chantra <chantra@...1258...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------070307050500010605040409
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+--0016367f967817f9a6049762690e
+Content-Type: text/plain; charset=ISO-8859-1
 
-Hi all,
+Thanks for your response. This seems to involve file I/O and iptables right?
+File I/O seems like a performance bottleneck, no?
 
-I hate to reply to my own posting but I managed to get certificate 
-chains working. The trick is in setting up the stacked client 
-certificate in the right order. Here's what I did:
+Vineet
+On Mon, Dec 13, 2010 at 4:35 PM, chantra <chantra@...1258...> wrote:
 
-ca.crt --- server.crt
-       +-- sub-ca.crt --- client.crt
-
-the server is configured with --ca ca.crt and --cert server.crt
-the client is configured with --ca ca.crt and --cert stacked.crt where 
-'stacked.crt' is created using
-  cat client.crt sub-ca.crt > stacked.crt
-
-(my certs consist of BEGIN/END blocks only, not textual output in between)
-
-With this setup I can connect to my server.
-
-having said that, this still does not make a good idea to use
-  --ca Verisign.crt
-as your server CA, as you're still wide open to anybody with a valid 
-Verisign cert - if you want to use certificate paths like this also 
-include something like a tls-verify script.
-
-
-share and enjoy,
-
-JJK
-
-
-Jan Just Keijser wrote:
-> Hi Adriaan,
+>  Vineet,
 >
-> Adriaan de Jong wrote:
->>   
->>> -----Original Message-----
->>> From: Jan Just Keijser [mailto:janjust@...1147...]
->>> Hi Samuli, David, list,
->>>
->>> What some people get confused about is a stacked certificate vs a
->>> certificate chain: OpenVPN only supports stacked CA certificates,
->>> meaning that any of the certs present in the stacked file are
->>> considered
->>> trusted.
->>> What some people want is a certificate chain, like some websites use:
->>> the website has a server certificate signed by a sub-CA which in turn
->>> is
->>> signed by Verisign. The webserver sends the entire chain (server cert +
->>> sub-CA cert + verisign cert) to the client for verification. That way
->>> the client only needs the Verisign cert to trust a particular website
->>> (the Verisign CA cert is installed in most browser by default). OpenVPN
->>> does not support this at the moment. It would require changing
->>>   SSL_CTX_use_certificate()
->>> to
->>>   SSL_CTX_use_certificate_chain()
->>> to ensure that the entire certificate chain is sent to the remote end
->>> (client or server).
->>>     
->>
->> I think SSL_CTX_use_certificate_chain_file() is actually used when loading the certificate from a separate cert file. It's just slightly confusing due to the fact that it is loaded twice:
->>
->> - SSL_CTX_use_certificate_file is used here:
->> http://openvpn.git.sourceforge.net/git/gitweb.cgi?p=openvpn/openvpn-testing.git;a=blob;f=ssl.c;h=a1268ac2a9291dc1512fa28e3ab4efc65085c952;hb=HEAD#l1639
->>
->> - SSL_CTX_use_certificate_chain_file is used here:
->>   http://openvpn.git.sourceforge.net/git/gitweb.cgi?p=openvpn/openvpn-testing.git;a=blob;f=ssl.c;h=a1268ac2a9291dc1512fa28e3ab4efc65085c952;hb=HEAD#l1738
->>
->> I'm not entirely sure whether I'm right, and why things are done this way. Does anyone know the reasoning behind this?
->>
->>   
+> I think you could use Packet filtering plugin hook and use the [KILL] tag
+> at the end of the pf file .
 >
-> ah mea culpa - I did not read the rest of the init_ssl function. It 
-> does seem a bit odd though:
+> See
+> http://openvpn.git.sourceforge.net/git/gitweb.cgi?p=openvpn/openvpn-testing.git;a=blob;f=openvpn-plugin.h;h=56b0a701574e6913b3a714e941cdc4899dbea8e1;hb=HEAD#l316
 >
-> this happens first (2.1.3 code base):
-> 1623           if (!SSL_CTX_use_certificate_file (ctx, 
-> options->cert_file, SSL_FILETYPE_PEM))
-> 1624             msg (M_SSLERR, "Cannot load certificate file %s", 
-> options->cert_file);
-> 1625           using_cert_file = true;
+> I have never used it myself, but I think that should sort you out.
 >
-> so we load the cert and we set 'using_cert_file = true' . Then later:
-> 1721   /* Enable the use of certificate chains */
-> 1722   if (using_cert_file)
-> 1723     {
-> 1724       if (!SSL_CTX_use_certificate_chain_file (ctx, 
-> options->cert_file))
-> 1725     msg (M_SSLERR, "Cannot load certificate chain file %s 
-> (SSL_use_certificate_chain_file)", options->cert_file);
-> 1726     }
+> The doc says that this file may be dynamically updated during a client
+> session. I assume the main process will pick up the change quick fast.
 >
-> so the certificate is loaded again but now using 
-> _use_certificate_chain ! It does suggest that you can use certificate 
-> chains , however.
->
-> I just tested a setup where the client cert is a concatenation of the 
-> client cert + intermediate CA. The client sends these certs to a 
-> server which only trusts the "root" CA (i.e. the one that signed the 
-> intermediate CA to begin with) but I cannot connect. It seems the 
-> 'verify_callback' function does not work with certificate chains (yet) 
-> : only the top level cert is inspected.
->
-> to be continued...
->
-> cheers,
->
-> JJK
+> Chantra
 >
 >
+> On Mon, 2010-12-13 at 15:16 -0800, Vineet Kumar wrote:
+>
+> Hi,
+>   If my openvpn plugin spawns its own thread and from that thread
+> wants to kill a tunnel specified by IP:port how can that be done?
+> (something like what the 'telnet' management provides: "kill IP:port")
+> This plugin is meant to do other stuff and in certain scenarios wants
+> to close specific tunnels.
+> First I thought of using the plugin to write code to establish a
+> telnet-client sessions and send over "kill IP:port" command. But I
+> notice an issue with the management listener: if I run more than 1
+> telnet session only the first one can pass through data whereas all
+> others' telnet sessions just hang.
+>
+> Is this even possible?
+>
+> Vineet
+>
+> ------------------------------------------------------------------------------
+> Lotusphere 2011
+> Register now for Lotusphere 2011 and learn how
+> to connect the dots, take your collaborative environment
+> to the next level, and enter the era of Social Business.http://p.sf.net/sfu/lotusphere-d2d
+> _______________________________________________
+> Openvpn-devel mailing listOpenvpn-devel@...1440...://lists.sourceforge.net/lists/listinfo/openvpn-devel
 >
 >
->
->
+>   -- http://www.debuntu.org
 >
 >
 
+--0016367f967817f9a6049762690e
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
---------------070307050500010605040409
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Thanks for your response. This seems to involve file I/O and iptables right=
+? File I/O seems like a performance bottleneck, no?<br><br>Vineet<br><div c=
+lass=3D"gmail_quote">On Mon, Dec 13, 2010 at 4:35 PM, chantra <span dir=3D"=
+ltr">&lt;<a href=3D"mailto:chantra@...1258...">chantra@...1258...</a>&gt;</=
+span> wrote:<br>
+<blockquote class=3D"gmail_quote" style=3D"margin: 0pt 0pt 0pt 0.8ex; borde=
+r-left: 1px solid rgb(204, 204, 204); padding-left: 1ex;">
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
-</head>
-<body bgcolor="#ffffff" text="#000000">
-Hi all,<br>
+
+=20=20
+=20=20
+
+<div>
+Vineet,<br>
 <br>
-I hate to reply to my own posting but I managed to get certificate
-chains working. The trick is in setting up the stacked client
-certificate in the right order. Here's what I did:<br>
+I think you could use Packet filtering plugin hook and use the [KILL] tag a=
+t the end of the pf file .<br>
 <br>
-<tt>ca.crt --- server.crt<br>
-&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; +-- sub-ca.crt --- client.crt<br>
-<br>
-the server is configured with --ca ca.crt and --cert server.crt<br>
-the client is configured with --ca ca.crt and --cert stacked.crt where
-'stacked.crt' is created using<br>
-&nbsp; cat client.crt sub-ca.crt &gt; stacked.crt<br>
-<br>
-(my certs consist of BEGIN/END blocks only, not textual output in
-between)<br>
-<br>
-With this setup I can connect to my server.<br>
-<br>
-having said that, this still does not make a good idea to use<br>
-&nbsp; --ca Verisign.crt<br>
-as your server CA, as you're still wide open to anybody with a valid
-Verisign cert - if you want to use certificate paths like this also
-include something like a tls-verify script.<br>
-<br>
-<br>
-share and enjoy,<br>
-<br>
-JJK</tt><br>
-<br>
-<br>
-Jan Just Keijser wrote:
-<blockquote cite="mid:4D063404.4050208@...1147..." type="cite">
-  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
-Hi Adriaan,<br>
-  <br>
-Adriaan de Jong wrote:
-  <blockquote
- cite="mid:BF88BCF2F8AD5843B2250C5DB8DDE0AFBF2E418F@...1436..."
- type="cite">
-    <pre wrap="">  </pre>
-    <blockquote type="cite">
-      <pre wrap="">-----Original Message-----
-From: Jan Just Keijser [<a moz-do-not-send="true"
- class="moz-txt-link-freetext" href="mailto:janjust@...1147...">mailto:janjust@...1147...</a>]
-Hi Samuli, David, list,
+See <a href=3D"http://openvpn.git.sourceforge.net/git/gitweb.cgi?p=3Dopenvp=
+n/openvpn-testing.git;a=3Dblob;f=3Dopenvpn-plugin.h;h=3D56b0a701574e6913b3a=
+714e941cdc4899dbea8e1;hb=3DHEAD#l316" target=3D"_blank">http://openvpn.git.=
+sourceforge.net/git/gitweb.cgi?p=3Dopenvpn/openvpn-testing.git;a=3Dblob;f=
+=3Dopenvpn-plugin.h;h=3D56b0a701574e6913b3a714e941cdc4899dbea8e1;hb=3DHEAD#=
+l316</a><br>
 
-What some people get confused about is a stacked certificate vs a
-certificate chain: OpenVPN only supports stacked CA certificates,
-meaning that any of the certs present in the stacked file are
-considered
-trusted.
-What some people want is a certificate chain, like some websites use:
-the website has a server certificate signed by a sub-CA which in turn
-is
-signed by Verisign. The webserver sends the entire chain (server cert +
-sub-CA cert + verisign cert) to the client for verification. That way
-the client only needs the Verisign cert to trust a particular website
-(the Verisign CA cert is installed in most browser by default). OpenVPN
-does not support this at the moment. It would require changing
-  SSL_CTX_use_certificate()
-to
-  SSL_CTX_use_certificate_chain()
-to ensure that the entire certificate chain is sent to the remote end
-(client or server).
-    </pre>
-    </blockquote>
-    <pre wrap=""><!---->
-I think SSL_CTX_use_certificate_chain_file() is actually used when loading the certificate from a separate cert file. It's just slightly confusing due to the fact that it is loaded twice:
+<br>
+I have never used it myself, but I think that should sort you out.<br>
+<br>
+The doc says that this file may be dynamically updated during a client sess=
+ion. I assume the main process will pick up the change quick fast.<br>
+<br>
+Chantra<div><div></div><div class=3D"h5"><br>
+<br>
+On Mon, 2010-12-13 at 15:16 -0800, Vineet Kumar wrote:
+</div></div><blockquote type=3D"CITE">
+<pre>Hi,
+  If my openvpn plugin spawns its own thread and from that thread
+wants to kill a tunnel specified by IP:port how can that be done?
+(something like what the &#39;telnet&#39; management provides: &quot;kill I=
+P:port&quot;)
+This plugin is meant to do other stuff and in certain scenarios wants
+to close specific tunnels.
+First I thought of using the plugin to write code to establish a
+telnet-client sessions and send over &quot;kill IP:port&quot; command. But I
+notice an issue with the management listener: if I run more than 1
+telnet session only the first one can pass through data whereas all
+others&#39; telnet sessions just hang.
 
-- SSL_CTX_use_certificate_file is used here:
-<a moz-do-not-send="true" class="moz-txt-link-freetext"
- href="http://openvpn.git.sourceforge.net/git/gitweb.cgi?p=openvpn/openvpn-testing.git;a=blob;f=ssl.c;h=a1268ac2a9291dc1512fa28e3ab4efc65085c952;hb=HEAD#l1639">http://openvpn.git.sourceforge.net/git/gitweb.cgi?p=openvpn/openvpn-testing.git;a=blob;f=ssl.c;h=a1268ac2a9291dc1512fa28e3ab4efc65085c952;hb=HEAD#l1639</a>
+Is this even possible?
 
-- SSL_CTX_use_certificate_chain_file is used here:
-  <a moz-do-not-send="true" class="moz-txt-link-freetext"
- href="http://openvpn.git.sourceforge.net/git/gitweb.cgi?p=openvpn/openvpn-testing.git;a=blob;f=ssl.c;h=a1268ac2a9291dc1512fa28e3ab4efc65085c952;hb=HEAD#l1738">http://openvpn.git.sourceforge.net/git/gitweb.cgi?p=openvpn/openvpn-testing.git;a=blob;f=ssl.c;h=a1268ac2a9291dc1512fa28e3ab4efc65085c952;hb=HEAD#l1738</a>
+Vineet
 
-I'm not entirely sure whether I'm right, and why things are done this way. Does anyone know the reasoning behind this?
+---------------------------------------------------------------------------=
+---
+Lotusphere 2011
+Register now for Lotusphere 2011 and learn how
+to connect the dots, take your collaborative environment
+to the next level, and enter the era of Social Business.
+<a href=3D"http://p.sf.net/sfu/lotusphere-d2d" target=3D"_blank">http://p.s=
+f.net/sfu/lotusphere-d2d</a>
+_______________________________________________
+Openvpn-devel mailing list
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
+envpn-devel@lists.sourceforge.net</a>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" targ=
+et=3D"_blank">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a>
 
-  </pre>
-  </blockquote>
-  <br>
-ah mea culpa - I did not read the rest of the init_ssl function. It
-does seem a bit odd though: <br>
-  <br>
-this happens first (2.1.3 code base):<br>
-1623&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (!SSL_CTX_use_certificate_file (ctx,
-options-&gt;cert_file, SSL_FILETYPE_PEM))<br>
-1624&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; msg (M_SSLERR, "Cannot load certificate file %s",
-options-&gt;cert_file);<br>
-1625&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; using_cert_file = true;<br>
-  <br>
-so we load the cert and we set 'using_cert_file = true' . Then later:<br>
-1721&nbsp;&nbsp; /* Enable the use of certificate chains */<br>
-1722&nbsp;&nbsp; if (using_cert_file)<br>
-1723&nbsp;&nbsp;&nbsp;&nbsp; {<br>
-1724&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (!SSL_CTX_use_certificate_chain_file (ctx,
-options-&gt;cert_file))<br>
-1725&nbsp;&nbsp;&nbsp;&nbsp; msg (M_SSLERR, "Cannot load certificate chain file %s
-(SSL_use_certificate_chain_file)", options-&gt;cert_file);<br>
-1726&nbsp;&nbsp;&nbsp;&nbsp; } <br>
-  <br>
-so the certificate is loaded again but now using _use_certificate_chain
-! It does suggest that you can use certificate chains , however. <br>
-  <br>
-I just tested a setup where the client cert is a concatenation of the
-client cert + intermediate CA. The client sends these certs to a server
-which only trusts the "root" CA (i.e. the one that signed the
-intermediate CA to begin with) but I cannot connect. It seems the
-'verify_callback' function does not work with certificate chains (yet)
-: only the top level cert is inspected.<br>
-  <br>
-to be continued...<br>
-  <br>
-cheers,<br>
-  <br>
-JJK<br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
+</pre>
 </blockquote>
 <br>
-</body>
-</html>
+<table cellpadding=3D"0" cellspacing=3D"0" width=3D"100%">
+<tbody><tr>
+<td>
+<pre>--=20
+<a href=3D"http://www.debuntu.org" target=3D"_blank">http://www.debuntu.org=
+</a>
+</pre>
+</td>
+</tr>
+</tbody></table>
+</div>
 
---------------070307050500010605040409--
+</blockquote></div><br>
+
+--0016367f967817f9a6049762690e--
 
