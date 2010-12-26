@@ -1,11 +1,10 @@
-Date: Wed, 22 Dec 2010 22:00:56 -0800
-From: travis+ml-openvpn-devel@...1442...
-Message-ID: <20101223060056.GF2794@...1442...>
+Message-ID: <4D177C14.4040300@...1030...>
+Date: Sun, 26 Dec 2010 17:32:04 +0000
+From: Mr Dash Four <mr.dash.four@...1030...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="4ndw/alBWmZEhfcZ"
-Content-Disposition: inline
-Subject: [Openvpn-devel] CBC mode attack
+Content-Type: multipart/mixed; boundary="------------070805040003050205040709"
+Subject: [Openvpn-devel] [OpenVPN 2.1.4 BUG]: hard-coded values in Makefiles
+ for down-root and auth-pam plugins prevent cross compilation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,47 +15,89 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
---4ndw/alBWmZEhfcZ
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+This is a multi-part message in MIME format.
+--------------070805040003050205040709
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hey guys...
+Due to the fact that I have spent the last two and a half hours trying 
+to find a place where to submit a bug report via the Trac system 
+(https://community.openvpn.net/openvpn) - and failing, miserably so - I 
+am submitting it here!
 
-Was wondering if you were familiar with this:
+In this version of OpenVPN, the Makefiles for the above plugins contain 
+hard-coded compile/link parameters, which prevent cross compilation.
 
-http://news.ycombinator.com/item?id=3D2029640
+For example, during building openvpn-down-root.so the value of the c/c++ 
+compiler is assumed to be gcc, along with various other settings (CLFAGS 
+being set as "-O2 and -Wall" and LDFLAGS as "-shared -Wl,-soname"), 
+disregarding the rest, therefore ruining any possibility of cross 
+compilation as the file produced will have the same attributes as the 
+build system!
 
-And, well... it sounded really familiar:
+If I build OpenVPN on x86_64-based machine to be executed on i686 the 
+two Makefiles will produce code for x86_64, despite the openvpn 
+executable being produced, correctly, for the i686 host system. Thus, 
+the produced 'package' will introduce at least 2 additional - and highly 
+undesired - dependencies, namely: glibc (x86_64) and libpam (x86_64).
 
-http://www.mail-archive.com/cryptography@...1443.../msg07521.html
---=20
-Good code works on most inputs; correct code works on all inputs.
-My emails do not have attachments; it's a digital signature that your mail
-program doesn't understand. | http://www.subspacefield.org/~travis/=20
-If you are a spammer, please email john@...1442... to get blacklisted.
+To prevent that I am enclosing a patch, which although fixes this 
+problem I am of the opinion that it could be optimised further to 
+co-exist with the rest of the build system and be auto-generated, though 
+I will leave that with the developers to decide what is the best way to 
+proceed and fix this bug.
 
---4ndw/alBWmZEhfcZ
-Content-Type: application/pgp-signature
-Content-Disposition: inline
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.9 (OpenBSD)
 
-iQIcBAEBAgAGBQJNEuWYAAoJEGQVZZEDJt9HdtUP/3UW+D9WpyLlZhSCxx+u9rhH
-XhQ3ehUb32X4+t/XNG45WO9g8ia9vzqASky1Y1b4XZioYiJ3fE8iZDvXWhDJvLyM
-EKG8gMjiFz858MG72YZ1ncBTm3V4pbF2DneLSW58mzEOFupGMYjCSsqXGroGoICA
-pGrqMue89B1sbhZn3KBphDYPl9Weu3BggTv/h34HgYpW/Fv77SPyjm6vQSzDTe22
-xgViNzoBlF/vTYeef3kWIyy847XN7sz4KwwltVd8/TtLxvFVgNUnLIcf9Nxye4AH
-r7ejdDlZJ9xjBhgEVzs7S8gJWRlKYhCfs1J8XBxDtsTiy4ur5kQoPQY+/Vy87DnK
-QJOK44VuwTEylYa4l6F4eCgD6O2rc3IfaAC5ViFUfxmIpSQ31AYcIPCYy0xdd0oj
-hLVXgusCBqTRbksHnpJgXRkf63yb8egwzE24duhP7CfFcuSbHXYTATw7ZX9mONXk
-5jLNk/12rqmbRlnnZZDB6BBKS0s256KiGhn9vJhz4jFn3AZqVTPae3IUme1VqZQ3
-y1o/yIAj8gJA1G95R5sOF847HIpclbTS988MNkxuxmBC5Ruvd0bwSa/HtV5hSOXW
-XFvQF/VSVsC+BRbTjlyojTrisXz2zhFrdyfD7I1KjQeZWSxZdFz2dhDYK4W0ASCJ
-CeaKOhmwBv0CXOUbqs0m
-=Dqu1
------END PGP SIGNATURE-----
+--------------070805040003050205040709
+Content-Type: text/plain;
+ name="openvpn-2.1.4-plugins.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="openvpn-2.1.4-plugins.patch"
 
---4ndw/alBWmZEhfcZ--
+diff -NurBb openvpn-2.1.4/plugin/auth-pam/Makefile a/plugin/auth-pam/Makefile
+--- openvpn-2.1.4/plugin/auth-pam/Makefile	2010-10-21 18:37:51.000000000 +0100
++++ a/plugin/auth-pam/Makefile	2010-12-26 01:57:45.345754000 +0000
+@@ -15,16 +15,14 @@
+ # This directory is where we will look for openvpn-plugin.h
+ INCLUDE=-I../..
+ 
+-CC_FLAGS=-O2 -Wall -DDLOPEN_PAM=$(DLOPEN_PAM)
+-
+ openvpn-auth-pam.so : auth-pam.o pamdl.o
+-	gcc ${CC_FLAGS} -fPIC -shared -Wl,-soname,openvpn-auth-pam.so -o openvpn-auth-pam.so auth-pam.o pamdl.o -lc $(LIBPAM)
++	${CC} -DDLOPEN_PAM=$(DLOPEN_PAM) -fPIC -shared ${LDFLAGS} -Wl,-soname,openvpn-auth-pam.so -o openvpn-auth-pam.so auth-pam.o pamdl.o -lc $(LIBPAM)
+ 
+ auth-pam.o : auth-pam.c pamdl.h
+-	gcc ${CC_FLAGS} -fPIC -c ${INCLUDE} auth-pam.c
++	${CC} ${CFLAGS} -DDLOPEN_PAM=$(DLOPEN_PAM) -fPIC -c ${INCLUDE} auth-pam.c
+ 
+ pamdl.o : pamdl.c pamdl.h
+-	gcc ${CC_FLAGS} -fPIC -c ${INCLUDE} pamdl.c
++	${CC} ${CFLAGS} -DDLOPEN_PAM=$(DLOPEN_PAM) -fPIC -c ${INCLUDE} pamdl.c
+ 
+ clean :
+ 	rm -f *.o *.so
+diff -NurBb openvpn-2.1.4/plugin/down-root/Makefile a/plugin/down-root/Makefile
+--- openvpn-2.1.4/plugin/down-root/Makefile	2010-10-21 18:37:51.000000000 +0100
++++ a/plugin/down-root/Makefile	2010-12-26 01:58:07.976755000 +0000
+@@ -5,13 +5,11 @@
+ # This directory is where we will look for openvpn-plugin.h
+ INCLUDE=-I../..
+ 
+-CC_FLAGS=-O2 -Wall
+-
+ down-root.so : down-root.o
+-	gcc ${CC_FLAGS} -fPIC -shared -Wl,-soname,openvpn-down-root.so -o openvpn-down-root.so down-root.o -lc
++	${CC} -fPIC -shared ${LDFLAGS} -Wl,-soname,openvpn-down-root.so -o openvpn-down-root.so down-root.o -lc
+ 
+ down-root.o : down-root.c
+-	gcc ${CC_FLAGS} -fPIC -c ${INCLUDE} down-root.c
++	${CC} ${CFLAGS} -fPIC -c ${INCLUDE} down-root.c
+ 
+ clean :
+ 	rm -f *.o *.so
+
+--------------070805040003050205040709--
 
