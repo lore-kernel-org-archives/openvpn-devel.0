@@ -1,12 +1,10 @@
-Message-ID: <4D1CFF2B.6030006@...68...>
-Date: Thu, 30 Dec 2010 22:52:43 +0100
-From: Matthias Andree <matthias.andree@...68...>
+Message-ID: <4D243F7C.5030202@...515...>
+Date: Wed, 05 Jan 2011 11:53:00 +0200
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <4D177C14.4040300@...1030...> <4D1CAE99.4050406@...68...>
-	<4D1CF3E1.7080205@...1030...>
-In-Reply-To: <4D1CF3E1.7080205@...1030...>
-Subject: Re: [Openvpn-devel] [OpenVPN 2.1.4 BUG]: hard-coded values in
- Makefiles for down-root and auth-pam plugins prevent cross compilation
+Content-Type: multipart/mixed; boundary="------------010708040004060509080506"
+Subject: [Openvpn-devel] [PATCH 1/6] Added automated configure.h creation to
+ Python-based build system.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,23 +13,116 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+This is a multi-part message in MIME format.
+--------------010708040004060509080506
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-To: Mr Dash Four <mr.dash.four@...1030...>
-Cc: David Sommerseth <dazo@...384...>, openvpn-devel@lists.sourceforge.net
 
-Am 30.12.2010 22:04, schrieb Mr Dash Four:
-> 
->> I think it would be good to integrate this with automake if the whole
->> setup is
->> to be integrated and these plugins are supposed to be built more or
->> less officially.
->>   
-> Yep, that's what I meant. Better still, autogen can be utilised to do
-> the same thing, but automake is a good start.
+Hi all,
 
-Automake is what's already in place, so it seems diligent to reuse that
-and not instigate new build fashions to a branch in maintenance mode
-such as 2.1. :-)
+Here's the first of a set of six patches that fix various issues with
+the Python-based build system. Also, some clarifying comments have been
+added to the existing code. After this patchset is merged it's possible
+to build openvpnserv.exe in addition to openvpn.exe and the TAP drivers.
+NSI installer integration is still mostly missing, but is coming up.
 
+This patch could be simplified by removing the #ifdef / #ifndef "depth"
+detection code. That code is a leftover from earlier implementation
+where all defines - not just #define ENABLE_SOMETHING - were parsed. The
+idea was to skip any defines inside an #ifdef block as there is no
+(easy) way to detect if they're enabled or not.
+
+Samuli
+
+--------------010708040004060509080506
+Content-Type: text/x-patch;
+	name="0001-Added-automated-configure.h-creation-to-Python-based.patch"
+Content-Transfer-Encoding: base64
+Content-Disposition: inline;
+	filename*0="0001-Added-automated-configure.h-creation-to-Python-based.pa";
+	filename*1="tch"
+
+RnJvbSA2YTQyYzhjNWFhOTAyOTZiZThkNmEzODNkNDEwNDE0YzhkOTgwMGM3IE1vbiBTZXAg
+MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiA9P3V0Zi04P3E/U2FtdWxpPTIwU2VwcD1DMz1BNG5l
+bj89IDxzYW11bGlAb3BlbnZwbi5uZXQ+CkRhdGU6IE1vbiwgMyBKYW4gMjAxMSAxNTo1Mjo1
+OSArMDIwMApTdWJqZWN0OiBbUEFUQ0ggMS82XSBBZGRlZCBhdXRvbWF0ZWQgY29uZmlndXJl
+LmggY3JlYXRpb24gdG8gUHl0aG9uLWJhc2VkIGJ1aWxkIHN5c3RlbS4KClRoZSBjb25maWd1
+cmUuaCBmaWxlIGlzIGdlbmVyYXRlZCBmcm9tIGNvbmZpZy13aW4zMiBhbmQgaXMgdXNlZCB0
+byBlbWJlZCBidWlsZApmbGFncyBpbnRvIG9wZW52cG4uIFRoZXNlIGJ1aWxkIGZsYWdzIGNh
+biBiZSB2aWV3ZWQgd2l0aCAib3BlbnZwbiAtLXZlcnNpb24iLgpPbmx5IGRlZmluZXMgdGhh
+dCBzdGFydCB3aXRoIEVOQUJMRSBhcmUgaW5jbHVkZWQgKGUuZy4gIkVOQUJMRV9NQU5BR0VN
+RU5UIDEiKS4KLS0tCiB3aW4vY29uZmlnLnB5IHwgICAgMyArLQogd2luL3diLnB5ICAgICB8
+ICAgNjIgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysrCiAyIGZpbGVzIGNoYW5nZWQsIDY0IGluc2VydGlvbnMoKyksIDEgZGVsZXRp
+b25zKC0pCgpkaWZmIC0tZ2l0IGEvd2luL2NvbmZpZy5weSBiL3dpbi9jb25maWcucHkKaW5k
+ZXggY2YzOGNhYy4uYzk5NTZjYyAxMDA2NDQKLS0tIGEvd2luL2NvbmZpZy5weQorKysgYi93
+aW4vY29uZmlnLnB5CkBAIC0xLDYgKzEsNyBAQAotZnJvbSB3YiBpbXBvcnQgcHJlcHJvY2Vz
+cywgYXV0b2dlbiwgbW9kX2ZuLCBob21lX2ZuLCBidWlsZF9hdXRvZGVmcywgbWFrZV9oZWFk
+ZXJzX29ianMsIGRpY3RfZGVmDQorZnJvbSB3YiBpbXBvcnQgcHJlcHJvY2VzcywgYXV0b2dl
+biwgbW9kX2ZuLCBob21lX2ZuLCBidWlsZF9jb25maWd1cmVfaCwgYnVpbGRfYXV0b2RlZnMs
+IG1ha2VfaGVhZGVyc19vYmpzLCBkaWN0X2RlZg0KIA0KIGRlZiBtYWluKGNvbmZpZyk6DQor
+ICAgIGJ1aWxkX2NvbmZpZ3VyZV9oKGNvbmZpZywgbW9kX2ZuKGhvbWVfZm4oJ2NvbmZpZ3Vy
+ZS5oJykpLCBoZWFkX2NvbW1lbnQ9Jy8qICVzICovXG5cbicgJSBhdXRvZ2VuKQ0KICAgICBi
+dWlsZF9hdXRvZGVmcyhjb25maWcsIG1vZF9mbignYXV0b2RlZnMuaC5pbicpLCBob21lX2Zu
+KCdhdXRvZGVmcy5oJykpDQogICAgIGhvID0gbWFrZV9oZWFkZXJzX29ianMoaG9tZV9mbign
+TWFrZWZpbGUuYW0nKSkNCiANCmRpZmYgLS1naXQgYS93aW4vd2IucHkgYi93aW4vd2IucHkK
+aW5kZXggOGUyMzY4NC4uZjY3M2JiYSAxMDA2NDQKLS0tIGEvd2luL3diLnB5CisrKyBiL3dp
+bi93Yi5weQpAQCAtMTksNiArMTksMTIgQEAgZGVmIGdldF9jb25maWcoKToKIA0KICAgICBy
+ZXR1cm4ga3YNCiANCitkZWYgZ2V0X2J1aWxkX3BhcmFtcygpOg0KKyAgICBrdiA9IHt9DQor
+ICAgIHBhcnNlX2NvbmZpZ193aW4zMl9oKGt2LGhvbWVfZm4oJ2NvbmZpZy13aW4zMi5oJykp
+DQorDQorICAgIHJldHVybiBrdg0KKw0KIGRlZiBtb2RfZm4oZm4sIHNyYz1fX2ZpbGVfXywg
+cmVhbD1UcnVlKToNCiAgICAgcCA9IG9zLnBhdGguam9pbihvcy5wYXRoLmRpcm5hbWUoc3Jj
+KSwgb3MucGF0aC5ub3JtcGF0aChmbikpDQogICAgIGlmIHJlYWw6DQpAQCAtNTcsNiArNjMs
+NDAgQEAgZGVmIHBhcnNlX3NldHRpbmdzX2luKGt2LCBzZXR0aW5nc19pbik6CiAgICAgICAg
+ICAgICBrdltnWzBdXSA9IGdbMV0gb3IgJycNCiAgICAgZi5jbG9zZSgpDQogDQorZGVmIHBh
+cnNlX2NvbmZpZ193aW4zMl9oKGt2LCBjb25maWdfd2luMzJfaCk6DQorICAgIHIgPSByZS5j
+b21waWxlKHInXiNkZWZpbmVccysoRU5BQkxFX1x3KylccysoXHcrKScpDQorICAgIHMgPSBy
+ZS5jb21waWxlKHInXiNpZmRlZnxeI2lmbmRlZicpDQorICAgIGUgPSByZS5jb21waWxlKHIn
+XiNlbmRpZicpDQorDQorICAgICMgSG93ICJkZWVwIiBpbiBuZXN0ZWQgY29uZGl0aW9uYWwg
+c3RhdGVtZW50cyBhcmUgd2U/DQorICAgIGRlcHRoPTANCisNCisgICAgZiA9IG9wZW4oY29u
+ZmlnX3dpbjMyX2gpDQorDQorICAgIGZvciBsaW5lIGluIGY6DQorCWxpbmUgPSBsaW5lLnJz
+dHJpcCgpDQorDQorCSMgQ2hlY2sgaWYgdGhpcyBpcyBhICNkZWZpbmUgbGluZQ0KKyAgICAg
+ICAgbSA9IHJlLm1hdGNoKHIsIGxpbmUpDQorDQorCSMgQ2FsY3VsYXRlIGhvdyBkZWVwIHdl
+J3JlIGluIChuZXN0ZWQpIGNvbmRpdGlvbmFsIHN0YXRlbWVudHMuIEEgc2ltcGxlIA0KKwkj
+ICNpZmRlZi8jZW5kaWYgc3RhdGUgc3dpdGNoZXIgd291bGQgZ2V0IGNvbmZ1c2VkIGJ5IGFu
+ICNlbmRpZiBmb2xsb3dlZCANCisJIyBieSBhICNkZWZpbmUuDQorCWlmIHJlLm1hdGNoKHMs
+IGxpbmUpOg0KKwkJZGVwdGg9ZGVwdGgrMQ0KKwlpZiByZS5tYXRjaChlLCBsaW5lKToNCisJ
+CWRlcHRoPWRlcHRoLTENCisJDQorICAgICAgICBpZiBtOg0KKwkgICAgIyBPbmx5IGFkZCB0
+aGlzICNkZWZpbmUgaWYgaXQncyBub3QgaW5zaWRlIGEgY29uZGl0aW9uYWwgc3RhdGVtZW50
+IA0KKwkgICAgIyBibG9jaw0KKwkgICAgaWYgZGVwdGggPT0gMDoNCisJCSAgICBnID0gbS5n
+cm91cHMoKQ0KKyAgICAgICAgCSAgICBrdltnWzBdXSA9IGdbMV0gb3IgJycNCisgICAgZi5j
+bG9zZSgpDQorDQorDQorDQogZGVmIGRpY3RfZGVmKGRpY3QsIG5ld2RlZnMpOg0KICAgICBy
+ZXQgPSBkaWN0LmNvcHkoKQ0KICAgICByZXQudXBkYXRlKG5ld2RlZnMpDQpAQCAtNzAsNiAr
+MTEwLDI2IEBAIGRlZiBidWlsZF9hdXRvZGVmcyhrdiwgYXV0b2RlZnNfaW4sIGF1dG9kZWZz
+X291dCk6CiAgICAgICAgICAgICAgICBxdW90ZV9lbmQ9J0AnLA0KICAgICAgICAgICAgICAg
+IGhlYWRfY29tbWVudD0nLyogJXMgKi9cblxuJyAlIGF1dG9nZW4pDQogDQorJycnR2VuZXJh
+dGUgYSBmYWtlIGNvbmZpZ3VyZS5oIGR5bmFtaWNhbGx5JycnDQorZGVmIGJ1aWxkX2NvbmZp
+Z3VyZV9oKGt2LCBjb25maWd1cmVfaF9vdXQsIGhlYWRfY29tbWVudCk6DQorICAgIGZvdXQg
+PSBvcGVuKGNvbmZpZ3VyZV9oX291dCwgJ3cnKQ0KKyAgICBjb25maWd1cmVfZGVmaW5lcz0n
+I2RlZmluZSBDT05GSUdVUkVfREVGSU5FUyBcIicNCisgICAgY29uZmlndXJlX2NhbGw9JyNk
+ZWZpbmUgQ09ORklHVVJFX0NBTEwgXCIgY29uZmlnX2FsbC5weSBcIicNCisNCisgICAgZm91
+dC53cml0ZShoZWFkX2NvbW1lbnQpDQorDQorICAgIGRpY3QgPSBnZXRfYnVpbGRfcGFyYW1z
+KCkNCisNCisgICAgZm9yIGtleSwgdmFsdWUgaW4gZGljdC5pdGVyaXRlbXMoKToNCisgICAg
+ICAgIGNvbmZpZ3VyZV9kZWZpbmVzID0gY29uZmlndXJlX2RlZmluZXMgKyAiICIgKyBrZXkg
+KyAiPSIgKyB2YWx1ZSArICIsIg0KKw0KKyAgICBjb25maWd1cmVfZGVmaW5lcyA9IGNvbmZp
+Z3VyZV9kZWZpbmVzICsgIlwiIiArICJcbiINCisNCisgICAgZm91dC53cml0ZShjb25maWd1
+cmVfZGVmaW5lcykNCisgICAgZm91dC53cml0ZShjb25maWd1cmVfY2FsbCkNCisgICAgZm91
+dC5jbG9zZSgpDQorDQorDQogZGVmIHByZXByb2Nlc3Moa3YsIGluX2ZuLCBvdXRfZm4sIHF1
+b3RlX2JlZ2luPU5vbmUsIHF1b3RlX2VuZD1Ob25lLCBpZl9wcmVmaXg9Tm9uZSwgaGVhZF9j
+b21tZW50PU5vbmUpOg0KICAgICBkZWYgcmVwZm4obSk6DQogICAgICAgICB2YXIsID0gbS5n
+cm91cHMoKQ0KQEAgLTExNSw2ICsxNzUsNyBAQCBkZWYgcHJpbnRfa2V5X3ZhbHVlcyhrdik6
+CiAgICAgZm9yIGssIHYgaW4gc29ydGVkKGt2Lml0ZW1zKCkpOg0KICAgICAgICAgcHJpbnQg
+IiVzJXMlcyIgJSAoaywgJyAnKigzMi1sZW4oaykpLCByZXByKHYpKQ0KIA0KKycnJ1BhcnNl
+IC4uL01ha2VmaWxlLmFtIHRvIG9idGFpbiBhIGxpc3Qgb2YgLmggYW5kIC5jIGZpbGVzLiBS
+ZXR1cm5zIGEgbGlzdC4nJycNCiBkZWYgZ2V0X3NvdXJjZXMobWFrZWZpbGVfYW0pOg0KICAg
+ICBjID0gc2V0KCkNCiAgICAgaCA9IHNldCgpDQpAQCAtMTQ2LDYgKzIwNyw3IEBAIGRlZiBv
+dXRwdXRfbWFrX2xpc3QodGl0bGUsIHNyY2xpc3QsIGV4dCk6CiAgICAgcmV0ICs9ICdcblxu
+Jw0KICAgICByZXR1cm4gcmV0DQogDQorJycnR2VuZXJhdGUgSEVBREVSIGFuZCBPQkpTIGVu
+dHJpZXMgZHluYW1pY2FsbHkgZnJvbSAuLi9NYWtlZmlsZS5hbScnJw0KIGRlZiBtYWtlX2hl
+YWRlcnNfb2JqcyhtYWtlZmlsZV9hbSk6DQogICAgIGMsIGggPSBnZXRfc291cmNlcyhtYWtl
+ZmlsZV9hbSkNCiAgICAgcmV0ID0gb3V0cHV0X21ha19saXN0KCdIRUFERVJTJywgaCwgJ2gn
+KQ0KLS0gCjEuNi4zLjMKCg==
+--------------010708040004060509080506--
 
