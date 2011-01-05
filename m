@@ -1,10 +1,11 @@
-Message-ID: <4D2443BB.6040005@...515...>
-Date: Wed, 05 Jan 2011 12:11:07 +0200
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <4D244FA8.8030909@...1114...>
+Date: Wed, 05 Jan 2011 12:02:00 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------070007070808020708000403"
-Subject: [Openvpn-devel] [PATCH 6/6] Added copying of files from
- service-win32 directory to build root directory.
+References: <4D243F7C.5030202@...515...>
+In-Reply-To: <4D243F7C.5030202@...515...>
+Subject: Re: [Openvpn-devel] [PATCH 1/6] Added automated configure.h
+ creation to Python-based build system.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,95 +14,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-This is a multi-part message in MIME format.
---------------070007070808020708000403
-Content-Type: text/plain; charset="ISO-8859-15"
+Content-Type: text/plain; charset="iso-8859-15"
 Content-Transfer-Encoding: quoted-printable
+To: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This looks like a hack (and it is), so here's the underlying logic:
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-- service-win32/service.h (or .c?) refers to non-existing header files
-when using the Python-based build system, but changing the header file
-name would  break(?) the older automake-based Windows buildsystem. By
-making a copy of the file it can be safely modified on the fly.
+On 05/01/11 10:53, Samuli Sepp=E4nen wrote:
+> Hi all,
+>=20
+> Here's the first of a set of six patches that fix various issues with
+> the Python-based build system. Also, some clarifying comments have been
+> added to the existing code. After this patchset is merged it's possible
+> to build openvpnserv.exe in addition to openvpn.exe and the TAP drivers.
+> NSI installer integration is still mostly missing, but is coming up.
+>=20
+> This patch could be simplified by removing the #ifdef / #ifndef "depth"
+> detection code. That code is a leftover from earlier implementation
+> where all defines - not just #define ENABLE_SOMETHING - were parsed. The
+> idea was to skip any defines inside an #ifdef block as there is no
+> (easy) way to detect if they're enabled or not.
+>=20
+> Samuli
 
-- nmake seems to get confused with working directories when some source
-files are located in subdirectories  (here ./service-win32)
+A few comments ...
 
-If somebody knows a cleaner solution to this issue, I'm all ears :).
++'''Generate a fake configure.h dynamically'''
++def build_configure_h(kv, configure_h_out, head_comment):
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+These two lines should be swapped.  Python places the
+function/method/class documentation as a part of the block it describes.
+ In addition, it is not a fake configure.h which is generated.  This is
+the proper creation of configure.h, as that file should only contain
+configuration information, no matter build system.
 
-irc freenode net: mattock
+So a proper way would be:
+
+def build_configure_h(kv, configure_h_out, head_comment):
+        '''Generate a fake configure.h dynamically'''
+
+Then you can do pydoc on the python file, or use the help() function in
+python to get the documentation of a function/method/class/etc.
+
+I suggest cleaning up these comments as a separate patch on top of this
+patch.
+
+Except of that, PATCH 1/6 gets an ACK from me.
 
 
---------------070007070808020708000403
-Content-Type: text/x-patch;
-	name="0006-Added-copying-of-files-from-service-win32-directory-.patch"
-Content-Transfer-Encoding: base64
-Content-Disposition: inline;
-	filename*0="0006-Added-copying-of-files-from-service-win32-directory-.pa";
-	filename*1="tch"
+kind regards,
 
-RnJvbSBlZGI4NDQ1YmRkNDcyZDRhYWQzNTliNzhjMzBmMzUxNTRiZjRiNTU0IE1vbiBTZXAg
-MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiA9P3V0Zi04P3E/U2FtdWxpPTIwU2VwcD1DMz1BNG5l
-bj89IDxzYW11bGlAb3BlbnZwbi5uZXQ+CkRhdGU6IE1vbiwgMyBKYW4gMjAxMSAxNjo1NTow
-NCArMDIwMApTdWJqZWN0OiBbUEFUQ0ggNi82XSBBZGRlZCBjb3B5aW5nIG9mIGZpbGVzIGZy
-b20gc2VydmljZS13aW4zMiBkaXJlY3RvcnkgdG8gYnVpbGQgcm9vdCBkaXJlY3RvcnkuCgpC
-dWlsZGluZyBvZiBvcGVudnBuc2Vydi5leGUgdXNpbmcgbm1ha2UgaXMgbGVhc3QgcGFpbmZ1
-bCBpZiBmaWxlcyBpbgpzZXJ2aWNlLXdpbjMyIChzZXJ2aWNlLmgsIHNlcnZpY2UuYyBhbmQg
-b3BlbnZwbnNlcnYuYykgYXJlIGF2YWlsYWJsZSBpbiBidWlsZApyb290IGRpcmVjdG9yeTsg
-YWRkZWQgY29kZSB0byB3aW4vYnVpbGQucHkgYW5kIHdpbi93Yi5weSB0byB0YWtlIGNhcmUg
-b2YgdGhpcwpiZWZvcmUgYnVpbGQgaXMgc3RhcnRlZC4gQWxzbyBtb2RpZmllZCB0aGUgY2xl
-YW4gdGFyZ2V0IGluIHdpbi9tc3ZjLm1hay5pbiB0bwpyZW1vdmUgdGhvc2UgZmlsZXMuCi0t
-LQogd2luL2NvbmZpZy5weSAgIHwgICAgNCArKystCiB3aW4vbXN2Yy5tYWsuaW4gfCAgICA3
-ICsrKysrKy0KIHdpbi93Yi5weSAgICAgICB8ICAgIDcgKysrKysrLQogMyBmaWxlcyBjaGFu
-Z2VkLCAxNSBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL3dp
-bi9jb25maWcucHkgYi93aW4vY29uZmlnLnB5CmluZGV4IGM5OTU2Y2MuLjk1NDcyZTMgMTAw
-NjQ0Ci0tLSBhL3dpbi9jb25maWcucHkKKysrIGIvd2luL2NvbmZpZy5weQpAQCAtMSw0ICsx
-LDQgQEAKLWZyb20gd2IgaW1wb3J0IHByZXByb2Nlc3MsIGF1dG9nZW4sIG1vZF9mbiwgaG9t
-ZV9mbiwgYnVpbGRfY29uZmlndXJlX2gsIGJ1aWxkX2F1dG9kZWZzLCBtYWtlX2hlYWRlcnNf
-b2JqcywgZGljdF9kZWYNCitmcm9tIHdiIGltcG9ydCBwcmVwcm9jZXNzLCBhdXRvZ2VuLCBt
-b2RfZm4sIGhvbWVfZm4sIGJ1aWxkX2NvbmZpZ3VyZV9oLCBidWlsZF9hdXRvZGVmcywgbWFr
-ZV9oZWFkZXJzX29ianMsIGRpY3RfZGVmLCBjb3B5X3NlcnZpY2Vfd2luMzJfZmlsZXMNCiAN
-CiBkZWYgbWFpbihjb25maWcpOg0KICAgICBidWlsZF9jb25maWd1cmVfaChjb25maWcsIG1v
-ZF9mbihob21lX2ZuKCdjb25maWd1cmUuaCcpKSwgaGVhZF9jb21tZW50PScvKiAlcyAqL1xu
-XG4nICUgYXV0b2dlbikNCkBAIC0xMyw2ICsxMyw4IEBAIGRlZiBtYWluKGNvbmZpZyk6CiAg
-ICAgICAgICAgICAgICBpZl9wcmVmaXg9JyEnLA0KICAgICAgICAgICAgICAgIGhlYWRfY29t
-bWVudD0nIyAlc1xuXG4nICUgYXV0b2dlbikNCiANCisgICAgY29weV9zZXJ2aWNlX3dpbjMy
-X2ZpbGVzKCkNCisNCiAjIGlmIHdlIGFyZSBydW4gZGlyZWN0bHksIGFuZCBub3QgbG9hZGVk
-IGFzIGEgbW9kdWxlDQogaWYgX19uYW1lX18gPT0gIl9fbWFpbl9fIjoNCiAgICAgZnJvbSB3
-YiBpbXBvcnQgY29uZmlnDQpkaWZmIC0tZ2l0IGEvd2luL21zdmMubWFrLmluIGIvd2luL21z
-dmMubWFrLmluCmluZGV4IGFlNTE1MzguLjNmYzBiOTQgMTAwNjQ0Ci0tLSBhL3dpbi9tc3Zj
-Lm1hay5pbgorKysgYi93aW4vbXN2Yy5tYWsuaW4KQEAgLTQ3LDYgKzQ3LDExIEBAIExJTksz
-Ml9GTEFHUz0vbm9sb2dvIC9zdWJzeXN0ZW06Y29uc29sZSAvaW5jcmVtZW50YWw6bm8KICMg
-SEVBREVSUyBhbmQgT0JKUyBkZWZpbml0aW9ucywgYXV0b21hdGljYWxseSBnZW5lcmF0ZWQg
-ZnJvbSAuLi9NYWtlZmlsZS5hbQ0KIEBIRUFERVJTX09CSlNADQogDQorU0VSVklDRTMyRklM
-RVMgPSBcDQorCXNlcnZpY2UuYyBcDQorCXNlcnZpY2UuaCBcDQorCW9wZW52cG5zZXJ2LmMN
-CisNCiBTRVJWT0JKUyA9IFwNCiAJb3BlbnZwbnNlcnYub2JqIFwNCiAJc2VydmljZS5vYmoN
-CkBAIC02Myw3ICs2OCw3IEBAIG9wZW52cG5zZXJ2IDogb3BlbnZwbiAkKFNFUlZPQkpTKQog
-DQogDQogY2xlYW4gOg0KLQlkZWwgL1EgJChPQkpTKSAkKFNFUlZPQkpTKSAkKFNFUlZFWEUp
-ICQoRVhFKSAqLmlkYiAqLnBkYg0KKwlkZWwgL1EgJChPQkpTKSAkKFNFUlZJQ0UzMkZJTEVT
-KSAkKFNFUlZPQkpTKSAkKFNFUlZFWEUpICQoRVhFKSAqLmlkYiAqLnBkYg0KIA0KIC5jLm9i
-ajo6DQogICAgJChDUFApIEA8PA0KZGlmZiAtLWdpdCBhL3dpbi93Yi5weSBiL3dpbi93Yi5w
-eQppbmRleCBmNjczYmJhLi4zYmQyNTQ0IDEwMDY0NAotLS0gYS93aW4vd2IucHkKKysrIGIv
-d2luL3diLnB5CkBAIC05Niw3ICs5Niw2IEBAIGRlZiBwYXJzZV9jb25maWdfd2luMzJfaChr
-diwgY29uZmlnX3dpbjMyX2gpOgogICAgIGYuY2xvc2UoKQ0KIA0KIA0KLQ0KIGRlZiBkaWN0
-X2RlZihkaWN0LCBuZXdkZWZzKToNCiAgICAgcmV0ID0gZGljdC5jb3B5KCkNCiAgICAgcmV0
-LnVwZGF0ZShuZXdkZWZzKQ0KQEAgLTIxNCw2ICsyMTMsMTIgQEAgZGVmIG1ha2VfaGVhZGVy
-c19vYmpzKG1ha2VmaWxlX2FtKToKICAgICByZXQgKz0gb3V0cHV0X21ha19saXN0KCdPQkpT
-JywgYywgJ29iaicpDQogICAgIHJldHVybiByZXQNCiANCisnJydDb3B5IGZpbGVzIGZyb20g
-Li4vc2VydmljZS13aW4zMiB0byAuLiB0byBhdm9pZCBubWFrZSBpc3N1ZXMnJycNCitkZWYg
-Y29weV9zZXJ2aWNlX3dpbjMyX2ZpbGVzKCk6DQorICAgIGNwIChob21lX2ZuKCJzZXJ2aWNl
-LXdpbjMyL3NlcnZpY2UuaCIpLCBob21lX2ZuKCIuIikpDQorICAgIGNwIChob21lX2ZuKCJz
-ZXJ2aWNlLXdpbjMyL3NlcnZpY2UuYyIpLCBob21lX2ZuKCIuIikpDQorICAgIGNwIChob21l
-X2ZuKCJzZXJ2aWNlLXdpbjMyL29wZW52cG5zZXJ2LmMiKSwgaG9tZV9mbigiLiIpKQ0KKw0K
-IGRlZiBjaG9vc2VfYXJjaChhcmNoX25hbWUpOg0KICAgICBpZiBhcmNoX25hbWUgPT0gJ3g2
-NCc6DQogICAgICAgICByZXR1cm4gKFRydWUsKQ0KLS0gCjEuNi4zLjMKCg==
---------------070007070808020708000403--
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk0kT6QACgkQDC186MBRfroVVwCfcn3fsl6q1hCacpFd3rIYGomd
+BHkAoJDPL6IGoD2k/AFwmoOpGP+TSLdp
+=3DkDXE
+-----END PGP SIGNATURE-----
 
