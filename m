@@ -1,11 +1,11 @@
-Message-ID: <4D245076.10802@...1114...>
-Date: Wed, 05 Jan 2011 12:05:26 +0100
+Message-ID: <4D24515D.8070605@...1114...>
+Date: Wed, 05 Jan 2011 12:09:17 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4D244096.9040606@...515...>
-In-Reply-To: <4D244096.9040606@...515...>
-Subject: Re: [Openvpn-devel] [PATCH 4/6] Added build flag printing to
-	win/show.py
+References: <4D244153.4040401@...515...>
+In-Reply-To: <4D244153.4040401@...515...>
+Subject: Re: [Openvpn-devel] [PATCH 5/6] Added openvpnserv-specific files
+ to	clean target in win/msvc.mak.in
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,14 +22,22 @@ Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 05/01/11 10:57, Samuli Sepp=E4nen wrote:
-> FYI: show.py is only used interactively to visualize current build
-> configuration
+On 05/01/11 11:00, Samuli Sepp=E4nen wrote:
+> This patch depends on patch 2/6. Patch 6/6 depends on this patch. Maybe
+> integrating them into one would have made more sense? :)
+>=20
 
-ACK.
+Patch 5/6 and Patch 6/6 could be merged.  Patch 2/6 is doing more
+changes, but I see the pattern so you might be right that they could all
+be merged into one patch.  However small commits isn't necessarily a bad
+idea, so I have no complaints about this fragmentation - as long as it
+is clear they do belong to each other.  When applying to the tree, I
+will probably rearrange the order of these three so they come together.
+
+This patch gets an ACK from me anyway.
 
 
-Kind regards,
+kind regards,
 
 David Sommerseth
 
@@ -37,8 +45,8 @@ David Sommerseth
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk0kUHIACgkQDC186MBRfro9mgCeOyf1rxFXtUU/RXigXuQe+Fo6
-oVYAn1y8i2QX6qofX/msx5ly8EHFmwTN
-=3DbEg4
+iEYEARECAAYFAk0kUVsACgkQDC186MBRfroPDgCcCtu0vjtgRwwe2XnysSRHlD7H
+Q0sAnjfpPDUz3kVoTBh/OFPrXO59WAOk
+=3Df2pw
 -----END PGP SIGNATURE-----
 
