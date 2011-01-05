@@ -1,11 +1,11 @@
-Message-ID: <4D245043.3040609@...1114...>
-Date: Wed, 05 Jan 2011 12:04:35 +0100
+Message-ID: <4D245076.10802@...1114...>
+Date: Wed, 05 Jan 2011 12:05:26 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4D244044.9000204@...515...>
-In-Reply-To: <4D244044.9000204@...515...>
-Subject: Re: [Openvpn-devel] [PATCH 3/6] Added PKCS11_HELPER_DIR directive
- to	win/settings.in
+References: <4D244096.9040606@...515...>
+In-Reply-To: <4D244096.9040606@...515...>
+Subject: Re: [Openvpn-devel] [PATCH 4/6] Added build flag printing to
+	win/show.py
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,17 +22,14 @@ Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 05/01/11 10:56, Samuli Sepp=E4nen wrote:
->=20
->=20
+On 05/01/11 10:57, Samuli Sepp=E4nen wrote:
+> FYI: show.py is only used interactively to visualize current build
+> configuration
 
-ACK!
-
-(For the future, some of the comments you placed in the code would fit
-well into a commit log comment as well)
+ACK.
 
 
-kind regards,
+Kind regards,
 
 David Sommerseth
 
@@ -40,8 +37,8 @@ David Sommerseth
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk0kUEAACgkQDC186MBRfrqVLQCglsNwlXKDyUwdj/NbQIF8JAsf
-O5IAn0Ij6xOeVnuoZXNZGR02O83U8U9u
-=3D6YIj
+iEYEARECAAYFAk0kUHIACgkQDC186MBRfro9mgCeOyf1rxFXtUU/RXigXuQe+Fo6
+oVYAn1y8i2QX6qofX/msx5ly8EHFmwTN
+=3DbEg4
 -----END PGP SIGNATURE-----
 
