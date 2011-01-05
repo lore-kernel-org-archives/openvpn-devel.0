@@ -1,10 +1,10 @@
-Message-ID: <4D244153.4040401@...515...>
-Date: Wed, 05 Jan 2011 12:00:51 +0200
+Message-ID: <4D2443BB.6040005@...515...>
+Date: Wed, 05 Jan 2011 12:11:07 +0200
 From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------050605040305080107080702"
-Subject: [Openvpn-devel] [PATCH 5/6] Added openvpnserv-specific files to
-	clean target in win/msvc.mak.in
+Content-Type: multipart/mixed; boundary="------------070007070808020708000403"
+Subject: [Openvpn-devel] [PATCH 6/6] Added copying of files from
+ service-win32 directory to build root directory.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,12 +16,21 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is a multi-part message in MIME format.
---------------050605040305080107080702
+--------------070007070808020708000403
 Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
 
-This patch depends on patch 2/6. Patch 6/6 depends on this patch. Maybe
-integrating them into one would have made more sense? :)
+This looks like a hack (and it is), so here's the underlying logic:
+
+- service-win32/service.h (or .c?) refers to non-existing header files
+when using the Python-based build system, but changing the header file
+name would  break(?) the older automake-based Windows buildsystem. By
+making a copy of the file it can be safely modified on the fly.
+
+- nmake seems to get confused with working directories when some source
+files are located in subdirectories  (here ./service-win32)
+
+If somebody knows a cleaner solution to this issue, I'm all ears :).
 
 --=20
 Samuli Sepp=E4nen
@@ -31,26 +40,68 @@ OpenVPN Technologies, Inc
 irc freenode net: mattock
 
 
---------------050605040305080107080702
+--------------070007070808020708000403
 Content-Type: text/x-patch;
-	name="0005-Added-openvpnserv-specific-files-to-clean-target-in-.patch"
+	name="0006-Added-copying-of-files-from-service-win32-directory-.patch"
 Content-Transfer-Encoding: base64
 Content-Disposition: inline;
-	filename*0="0005-Added-openvpnserv-specific-files-to-clean-target-in-.pa";
+	filename*0="0006-Added-copying-of-files-from-service-win32-directory-.pa";
 	filename*1="tch"
 
-RnJvbSAzY2U1YmE1ZmI4ZDlhMTYyN2UyNWIwMWFkNmY2ZDYxYTI5YjYwODRmIE1vbiBTZXAg
+RnJvbSBlZGI4NDQ1YmRkNDcyZDRhYWQzNTliNzhjMzBmMzUxNTRiZjRiNTU0IE1vbiBTZXAg
 MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiA9P3V0Zi04P3E/U2FtdWxpPTIwU2VwcD1DMz1BNG5l
-bj89IDxzYW11bGlAb3BlbnZwbi5uZXQ+CkRhdGU6IE1vbiwgMyBKYW4gMjAxMSAxNjoyMjoz
-MiArMDIwMApTdWJqZWN0OiBbUEFUQ0ggNS82XSBBZGRlZCBvcGVudnBuc2Vydi1zcGVjaWZp
-YyBmaWxlcyB0byBjbGVhbiB0YXJnZXQgaW4gd2luL21zdmMubWFrLmluCgotLS0KIHdpbi9t
-c3ZjLm1hay5pbiB8ICAgIDIgKy0KIDEgZmlsZXMgY2hhbmdlZCwgMSBpbnNlcnRpb25zKCsp
-LCAxIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL3dpbi9tc3ZjLm1hay5pbiBiL3dpbi9t
-c3ZjLm1hay5pbgppbmRleCA2NmU1NDZjLi5hZTUxNTM4IDEwMDY0NAotLS0gYS93aW4vbXN2
-Yy5tYWsuaW4KKysrIGIvd2luL21zdmMubWFrLmluCkBAIC02Myw3ICs2Myw3IEBAIG9wZW52
-cG5zZXJ2IDogb3BlbnZwbiAkKFNFUlZPQkpTKQogDQogDQogY2xlYW4gOg0KLQlkZWwgL1Eg
-JChPQkpTKSAkKEVYRSkgKi5pZGIgKi5wZGINCisJZGVsIC9RICQoT0JKUykgJChTRVJWT0JK
-UykgJChTRVJWRVhFKSAkKEVYRSkgKi5pZGIgKi5wZGINCiANCiAuYy5vYmo6Og0KICAgICQo
-Q1BQKSBAPDwNCi0tIAoxLjYuMy4zCgo=
---------------050605040305080107080702--
+bj89IDxzYW11bGlAb3BlbnZwbi5uZXQ+CkRhdGU6IE1vbiwgMyBKYW4gMjAxMSAxNjo1NTow
+NCArMDIwMApTdWJqZWN0OiBbUEFUQ0ggNi82XSBBZGRlZCBjb3B5aW5nIG9mIGZpbGVzIGZy
+b20gc2VydmljZS13aW4zMiBkaXJlY3RvcnkgdG8gYnVpbGQgcm9vdCBkaXJlY3RvcnkuCgpC
+dWlsZGluZyBvZiBvcGVudnBuc2Vydi5leGUgdXNpbmcgbm1ha2UgaXMgbGVhc3QgcGFpbmZ1
+bCBpZiBmaWxlcyBpbgpzZXJ2aWNlLXdpbjMyIChzZXJ2aWNlLmgsIHNlcnZpY2UuYyBhbmQg
+b3BlbnZwbnNlcnYuYykgYXJlIGF2YWlsYWJsZSBpbiBidWlsZApyb290IGRpcmVjdG9yeTsg
+YWRkZWQgY29kZSB0byB3aW4vYnVpbGQucHkgYW5kIHdpbi93Yi5weSB0byB0YWtlIGNhcmUg
+b2YgdGhpcwpiZWZvcmUgYnVpbGQgaXMgc3RhcnRlZC4gQWxzbyBtb2RpZmllZCB0aGUgY2xl
+YW4gdGFyZ2V0IGluIHdpbi9tc3ZjLm1hay5pbiB0bwpyZW1vdmUgdGhvc2UgZmlsZXMuCi0t
+LQogd2luL2NvbmZpZy5weSAgIHwgICAgNCArKystCiB3aW4vbXN2Yy5tYWsuaW4gfCAgICA3
+ICsrKysrKy0KIHdpbi93Yi5weSAgICAgICB8ICAgIDcgKysrKysrLQogMyBmaWxlcyBjaGFu
+Z2VkLCAxNSBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL3dp
+bi9jb25maWcucHkgYi93aW4vY29uZmlnLnB5CmluZGV4IGM5OTU2Y2MuLjk1NDcyZTMgMTAw
+NjQ0Ci0tLSBhL3dpbi9jb25maWcucHkKKysrIGIvd2luL2NvbmZpZy5weQpAQCAtMSw0ICsx
+LDQgQEAKLWZyb20gd2IgaW1wb3J0IHByZXByb2Nlc3MsIGF1dG9nZW4sIG1vZF9mbiwgaG9t
+ZV9mbiwgYnVpbGRfY29uZmlndXJlX2gsIGJ1aWxkX2F1dG9kZWZzLCBtYWtlX2hlYWRlcnNf
+b2JqcywgZGljdF9kZWYNCitmcm9tIHdiIGltcG9ydCBwcmVwcm9jZXNzLCBhdXRvZ2VuLCBt
+b2RfZm4sIGhvbWVfZm4sIGJ1aWxkX2NvbmZpZ3VyZV9oLCBidWlsZF9hdXRvZGVmcywgbWFr
+ZV9oZWFkZXJzX29ianMsIGRpY3RfZGVmLCBjb3B5X3NlcnZpY2Vfd2luMzJfZmlsZXMNCiAN
+CiBkZWYgbWFpbihjb25maWcpOg0KICAgICBidWlsZF9jb25maWd1cmVfaChjb25maWcsIG1v
+ZF9mbihob21lX2ZuKCdjb25maWd1cmUuaCcpKSwgaGVhZF9jb21tZW50PScvKiAlcyAqL1xu
+XG4nICUgYXV0b2dlbikNCkBAIC0xMyw2ICsxMyw4IEBAIGRlZiBtYWluKGNvbmZpZyk6CiAg
+ICAgICAgICAgICAgICBpZl9wcmVmaXg9JyEnLA0KICAgICAgICAgICAgICAgIGhlYWRfY29t
+bWVudD0nIyAlc1xuXG4nICUgYXV0b2dlbikNCiANCisgICAgY29weV9zZXJ2aWNlX3dpbjMy
+X2ZpbGVzKCkNCisNCiAjIGlmIHdlIGFyZSBydW4gZGlyZWN0bHksIGFuZCBub3QgbG9hZGVk
+IGFzIGEgbW9kdWxlDQogaWYgX19uYW1lX18gPT0gIl9fbWFpbl9fIjoNCiAgICAgZnJvbSB3
+YiBpbXBvcnQgY29uZmlnDQpkaWZmIC0tZ2l0IGEvd2luL21zdmMubWFrLmluIGIvd2luL21z
+dmMubWFrLmluCmluZGV4IGFlNTE1MzguLjNmYzBiOTQgMTAwNjQ0Ci0tLSBhL3dpbi9tc3Zj
+Lm1hay5pbgorKysgYi93aW4vbXN2Yy5tYWsuaW4KQEAgLTQ3LDYgKzQ3LDExIEBAIExJTksz
+Ml9GTEFHUz0vbm9sb2dvIC9zdWJzeXN0ZW06Y29uc29sZSAvaW5jcmVtZW50YWw6bm8KICMg
+SEVBREVSUyBhbmQgT0JKUyBkZWZpbml0aW9ucywgYXV0b21hdGljYWxseSBnZW5lcmF0ZWQg
+ZnJvbSAuLi9NYWtlZmlsZS5hbQ0KIEBIRUFERVJTX09CSlNADQogDQorU0VSVklDRTMyRklM
+RVMgPSBcDQorCXNlcnZpY2UuYyBcDQorCXNlcnZpY2UuaCBcDQorCW9wZW52cG5zZXJ2LmMN
+CisNCiBTRVJWT0JKUyA9IFwNCiAJb3BlbnZwbnNlcnYub2JqIFwNCiAJc2VydmljZS5vYmoN
+CkBAIC02Myw3ICs2OCw3IEBAIG9wZW52cG5zZXJ2IDogb3BlbnZwbiAkKFNFUlZPQkpTKQog
+DQogDQogY2xlYW4gOg0KLQlkZWwgL1EgJChPQkpTKSAkKFNFUlZPQkpTKSAkKFNFUlZFWEUp
+ICQoRVhFKSAqLmlkYiAqLnBkYg0KKwlkZWwgL1EgJChPQkpTKSAkKFNFUlZJQ0UzMkZJTEVT
+KSAkKFNFUlZPQkpTKSAkKFNFUlZFWEUpICQoRVhFKSAqLmlkYiAqLnBkYg0KIA0KIC5jLm9i
+ajo6DQogICAgJChDUFApIEA8PA0KZGlmZiAtLWdpdCBhL3dpbi93Yi5weSBiL3dpbi93Yi5w
+eQppbmRleCBmNjczYmJhLi4zYmQyNTQ0IDEwMDY0NAotLS0gYS93aW4vd2IucHkKKysrIGIv
+d2luL3diLnB5CkBAIC05Niw3ICs5Niw2IEBAIGRlZiBwYXJzZV9jb25maWdfd2luMzJfaChr
+diwgY29uZmlnX3dpbjMyX2gpOgogICAgIGYuY2xvc2UoKQ0KIA0KIA0KLQ0KIGRlZiBkaWN0
+X2RlZihkaWN0LCBuZXdkZWZzKToNCiAgICAgcmV0ID0gZGljdC5jb3B5KCkNCiAgICAgcmV0
+LnVwZGF0ZShuZXdkZWZzKQ0KQEAgLTIxNCw2ICsyMTMsMTIgQEAgZGVmIG1ha2VfaGVhZGVy
+c19vYmpzKG1ha2VmaWxlX2FtKToKICAgICByZXQgKz0gb3V0cHV0X21ha19saXN0KCdPQkpT
+JywgYywgJ29iaicpDQogICAgIHJldHVybiByZXQNCiANCisnJydDb3B5IGZpbGVzIGZyb20g
+Li4vc2VydmljZS13aW4zMiB0byAuLiB0byBhdm9pZCBubWFrZSBpc3N1ZXMnJycNCitkZWYg
+Y29weV9zZXJ2aWNlX3dpbjMyX2ZpbGVzKCk6DQorICAgIGNwIChob21lX2ZuKCJzZXJ2aWNl
+LXdpbjMyL3NlcnZpY2UuaCIpLCBob21lX2ZuKCIuIikpDQorICAgIGNwIChob21lX2ZuKCJz
+ZXJ2aWNlLXdpbjMyL3NlcnZpY2UuYyIpLCBob21lX2ZuKCIuIikpDQorICAgIGNwIChob21l
+X2ZuKCJzZXJ2aWNlLXdpbjMyL29wZW52cG5zZXJ2LmMiKSwgaG9tZV9mbigiLiIpKQ0KKw0K
+IGRlZiBjaG9vc2VfYXJjaChhcmNoX25hbWUpOg0KICAgICBpZiBhcmNoX25hbWUgPT0gJ3g2
+NCc6DQogICAgICAgICByZXR1cm4gKFRydWUsKQ0KLS0gCjEuNi4zLjMKCg==
+--------------070007070808020708000403--
 
