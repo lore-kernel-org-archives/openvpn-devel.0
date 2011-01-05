@@ -1,8 +1,8 @@
-Message-ID: <4D24763A.1050406@...1114...>
-Date: Wed, 05 Jan 2011 14:46:34 +0100
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
+Message-ID: <20110105140943.27570.qmail@...1287...>
+Date: Wed, 5 Jan 2011 15:09:43 +0100
+From: Peter Stuge <peter@...1287...>
 References: <4D24703E.70504@...515...>
+MIME-Version: 1.0
 In-Reply-To: <4D24703E.70504@...515...>
 Subject: Re: [Openvpn-devel] [PATCH] Changed snprintf to _snprintf
 	in	service-win32/openvpnserv.c
@@ -14,38 +14,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Samuli Seppänen wrote:
+> +++ b/service-win32/openvpnserv.c
+> @@ -86,7 +86,7 @@ static HANDLE exit_event = NULL;
+>  /* snprintf with guaranteed null termination */
+>  #define mysnprintf(out, ...) \
+>          { \
+> -           snprintf (out, sizeof(out), __VA_ARGS__); \
+> +           _snprintf (out, sizeof(out), __VA_ARGS__); \
+>             out [sizeof (out) - 1] = '\0'; \
+>          }
 
-On 05/01/11 14:21, Samuli Sepp=E4nen wrote:
-> This fixes a generic Windows/VC++ issue:
->=20
-> <http://thedailyreviewer.com/dotnet/view/strncasecmp-and-snprintf-functio=
-ns-not-available-in-vc-109235975>
->=20
 > Does this change affect the automake/gcc-based Windows builds?
->=20
 
-I'm leaning towards a NAK on this one, as it might influence
-non-Visual C builds.  OpenVPN have openvpn_snprintf() which is a
-portable snprintf() function, and this one should be used instead.  It's
-found in buffer.[ch].
+My MinGW compiles both snprintf() and _snprintf() fine.
 
 
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk0kdjgACgkQDC186MBRfrq+/ACfZ0XlQpSSJpEatxvnoQY0MQU7
-RA4AoI6ahmFBh1QugQt/EG7WrIQchNQu
-=3DrRM9
------END PGP SIGNATURE-----
+//Peter
 
