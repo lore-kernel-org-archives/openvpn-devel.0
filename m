@@ -1,10 +1,10 @@
-Message-ID: <4D244008.6050205@...515...>
-Date: Wed, 05 Jan 2011 11:55:20 +0200
+Message-ID: <4D244044.9000204@...515...>
+Date: Wed, 05 Jan 2011 11:56:20 +0200
 From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------090104080100050603020106"
-Subject: [Openvpn-devel] [PATCH 2/6] Added openvpnserv.exe building to
-	win/msvc.mak.in
+Content-Type: multipart/mixed; boundary="------------090804000102000600030001"
+Subject: [Openvpn-devel] [PATCH 3/6] Added PKCS11_HELPER_DIR directive to
+	win/settings.in
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,7 +16,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is a multi-part message in MIME format.
---------------090104080100050603020106
+--------------090804000102000600030001
 Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
 
@@ -29,74 +29,59 @@ OpenVPN Technologies, Inc
 irc freenode net: mattock
 
 
---------------090104080100050603020106
+--------------090804000102000600030001
 Content-Type: text/x-patch;
-	name="0002-Added-openvpnserv.exe-building-to-win-msvc.mak.in.patch"
-Content-Transfer-Encoding: base64
+	name="0003-Added-PKCS11_HELPER_DIR-directive-to-win-settings.in.patch"
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline;
-	filename*0="0002-Added-openvpnserv.exe-building-to-win-msvc.mak.in.patch"
+	filename*0="0003-Added-PKCS11_HELPER_DIR-directive-to-win-settings.in.pa";
+	filename*1="tch"
 
-RnJvbSBjNWQ1MDU3NmI5YmU2MTc1MTMyZGE2N2E1NzMwNmJmNDE2MTFmNzkxIE1vbiBTZXAg
-MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiA9P3V0Zi04P3E/U2FtdWxpPTIwU2VwcD1DMz1BNG5l
-bj89IDxzYW11bGlAb3BlbnZwbi5uZXQ+CkRhdGU6IE1vbiwgMyBKYW4gMjAxMSAxNjowNzoy
-OCArMDIwMApTdWJqZWN0OiBbUEFUQ0ggMi82XSBBZGRlZCBvcGVudnBuc2Vydi5leGUgYnVp
-bGRpbmcgdG8gd2luL21zdmMubWFrLmluCgotLS0KIHdpbi9tc3ZjLm1hay5pbiB8ICAgNDYg
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrLS0tLS0tLS0tLS0tLS0tLQogMSBmaWxl
-cyBjaGFuZ2VkLCAzMCBpbnNlcnRpb25zKCspLCAxNiBkZWxldGlvbnMoLSkKCmRpZmYgLS1n
-aXQgYS93aW4vbXN2Yy5tYWsuaW4gYi93aW4vbXN2Yy5tYWsuaW4KaW5kZXggNWQ5NGE2ZS4u
-NjZlNTQ2YyAxMDA2NDQKLS0tIGEvd2luL21zdmMubWFrLmluCisrKyBiL3dpbi9tc3ZjLm1h
-ay5pbgpAQCAtMSwxMiArMSwxNSBAQAotIyBUaGlzIG1ha2VmaWxlIGJ1aWxkcyB0aGUgdXNl
-ci1tb2RlIGNvbXBvbmVudA0KLSMgb2YgT3BlblZQTiBmb3IgV2luZG93cyBpbiB0aGUgVmlz
-dWFsIFN0dWRpbyAyMDA4IGVudmlyb25tZW50Lg0KLQ0KLSMgVG8gYnVpbGQ6DQotIyAgICBw
-eXRob24gd2luXGNvbmZpZy5weQ0KLSMgICAgbm1ha2UgL2YgbXN2Yy5tYWsNCi0NCi0jIEVh
-Y2ggb2YgdGhlIE9QRU5TU0wgYW5kIExaTyBkaXJzIHNob3VsZCBoYXZlICdsaWInIGFuZCAn
-aW5jbHVkZScNCi0jIGRpcmVjdG9yaWVzIHVuZGVyIHRoZW0uDQorIyBUaGlzIG1ha2VmaWxl
-IGJ1aWxkcyB0aGUgdXNlci1tb2RlIGNvbXBvbmVudCBvZiBPcGVuVlBOIGZvciBXaW5kb3dz
-IGluIHRoZSANCisjIFZpc3VhbCBTdHVkaW8gMjAwOCBlbnZpcm9ubWVudC4gTm90ZSB0aGF0
-IHRoaXMgZmlsZSBpcyBiYXNpcyBmb3IgdGhlIHJlYWwgDQorIyBtYWtlZmlsZSAoLi5cbXN2
-Yy5tYWspIGJ1dCB1bnVzYWJsZSBhcyBpcy4gVGhlIHJlYWwgbWFrZWZpbGUgaXMgYXV0b21h
-dGljYWxseSANCisjIGdlbmVyYXRlZCBkdXJpbmcgdGhlIGJ1aWxkIHByb2Nlc3MgYnkgdGhl
-IFB5dGhvbiBidWlsZCBzY3JpcHRzLg0KKyMNCisjIEEgZmV3IGRldGFpbHMgYXJlIGluIG9y
-ZGVyOg0KKyMNCisjIC0gRXZlcnl0aGluZyBiZXR3ZWVuIEA8PCBhbmQgPDwgaXMgaW5zZXJ0
-ZWQgaW50byBhIHMuYy4gImluLWxpbmUgZmlsZSIuIFRoaXMgDQorIyAgIGZpbGUgZHJpdmVz
-IHRoZSBsaW5rZXIgKGxpbmsuZXhlKS4NCisjIC0gSEVBREVSU19PQkpTIGlzIGV4cGFuZGVk
-IHRvIGFsbCBhbGwgaGVhZGVyIGFuZCBzb3VyY2UgZmlsZXMgbGlzdGVkIGluIA0KKyMgIC4u
-XE1ha2VmaWxlLmFtDQorIyAtIE9QRU5TU0xfRElSIGFuZCBMWk9fRElSIGFyZSBkeW5hbWlj
-YWxseSBjcmVhdGVkIGZyb20gc2V0dGluZ3MuaW4NCiANCiBPUEVOU1NMID0gQE9QRU5TU0xf
-RElSQA0KIE9QRU5TU0xfRFlOQU1JQyA9IGxpYmVheTMyLmxpYiBzc2xlYXkzMi5saWINCkBA
-IC0xOCw5ICsyMSwxMyBAQCBJTkNMVURFX0RJUlMgPSAtSSQoT1BFTlNTTCkvaW5jbHVkZSAt
-SSQoTFpPKS9pbmNsdWRlCiANCiBMSUJTID0gJChPUEVOU1NMX0RZTkFNSUMpICQoTFpPX0RZ
-TkFNSUMpIHdzMl8zMi5saWIgY3J5cHQzMi5saWIgaXBobHBhcGkubGliIHdpbm1tLmxpYiB1
-c2VyMzIubGliIGdkaTMyLmxpYiBhZHZhcGkzMi5saWIgd2luaW5ldC5saWINCiANCisjIFNv
-bWUgb2YgdGhlc2UgbGlicyBtYXkgbm90IGJlIG5lZWRlZA0KK1NFUlZMSUJTID0gd3MyXzMy
-LmxpYiBjcnlwdDMyLmxpYiBpcGhscGFwaS5saWIgd2lubW0ubGliIHVzZXIzMi5saWIgZ2Rp
-MzIubGliIGFkdmFwaTMyLmxpYiB3aW5pbmV0LmxpYg0KKw0KIExJQl9ESVJTID0gLUxJQlBB
-VEg6JChPUEVOU1NMKVxsaWIgLUxJQlBBVEg6JChMWk8pXGxpYg0KIA0KIEVYRSA9IG9wZW52
-cG4uZXhlDQorU0VSVkVYRSA9IG9wZW52cG5zZXJ2LmV4ZQ0KIA0KIENQUD1jbC5leGUNCiBD
-UFBfQVJHX0NPTU1PTj0vbm9sb2dvIC9XMyAtRFdJTjMyIC1EV0lOMzJfTEVBTl9BTkRfTUVB
-TiAtRF9DT05TT0xFIC1EX01CQ1MgLURfQ1JUX1NFQ1VSRV9OT19ERVBSRUNBVEUgJChJTkNM
-VURFX0RJUlMpIC9GRCAvYw0KQEAgLTMwLDI0ICszNywzMSBAQCBMSU5LMzI9bGluay5leGUK
-ICFpZmRlZiBQUk9EVUNUX09QRU5WUE5fREVCVUcNCiAjIGRlYnVnOg0KIENQUF9QUk9KPSQo
-Q1BQX0FSR19DT01NT04pIC9NRCAvWjcNCi1MSU5LMzJfRkxBR1M9L25vbG9nbyAvc3Vic3lz
-dGVtOmNvbnNvbGUgL2luY3JlbWVudGFsOm5vIC9vcHQ6cmVmIC9vcHQ6aWNmIC9kZWJ1ZyAv
-b3V0OiIkKEVYRSkiDQotIyBvbGQgZGVidWc6DQotI0NQUF9QUk9KPSQoQ1BQX0FSR19DT01N
-T04pIC9NRGQgL1ppIC9PZCAtRF9ERUJVRw0KLSNMSU5LMzJfRkxBR1M9L25vbG9nbyAvc3Vi
-c3lzdGVtOmNvbnNvbGUgL2luY3JlbWVudGFsOm5vIC9kZWJ1ZyAvb3V0OiIkKEVYRSkiDQor
-TElOSzMyX0ZMQUdTPS9ub2xvZ28gL3N1YnN5c3RlbTpjb25zb2xlIC9pbmNyZW1lbnRhbDpu
-byAvb3B0OnJlZiAvb3B0OmljZiAvZGVidWcNCiAhZWxzZQ0KICMgcmVsZWFzZToNCiBDUFBf
-UFJPSj0kKENQUF9BUkdfQ09NTU9OKSAvTzIgL01EIC1ETkRFQlVHDQotTElOSzMyX0ZMQUdT
-PS9ub2xvZ28gL3N1YnN5c3RlbTpjb25zb2xlIC9pbmNyZW1lbnRhbDpubyAvb3V0OiIkKEVY
-RSkiDQorTElOSzMyX0ZMQUdTPS9ub2xvZ28gL3N1YnN5c3RlbTpjb25zb2xlIC9pbmNyZW1l
-bnRhbDpubw0KICFlbmRpZg0KIA0KLSMgSEVBREVSUyBhbmQgT0JKUyBkZWZpbml0aW9ucywg
-YXV0b21hdGljYWxseSBnZW5lcmF0ZWQNCisjIEhFQURFUlMgYW5kIE9CSlMgZGVmaW5pdGlv
-bnMsIGF1dG9tYXRpY2FsbHkgZ2VuZXJhdGVkIGZyb20gLi4vTWFrZWZpbGUuYW0NCiBASEVB
-REVSU19PQkpTQA0KIA0KK1NFUlZPQkpTID0gXA0KKwlvcGVudnBuc2Vydi5vYmogXA0KKwlz
-ZXJ2aWNlLm9iag0KKw0KIG9wZW52cG4gOiAkKE9CSlMpDQogCSQoTElOSzMyKSBAPDwNCi0J
-JChMSU5LMzJfRkxBR1MpICQoTElCX0RJUlMpICQoTElCUykgJChPQkpTKQ0KKwkkKExJTksz
-Ml9GTEFHUykgIi9vdXQ6JChFWEUpIiAkKExJQl9ESVJTKSAkKExJQlMpICQoT0JKUykNCiA8
-PA0KIA0KK29wZW52cG5zZXJ2IDogb3BlbnZwbiAkKFNFUlZPQkpTKQ0KKwkkKExJTkszMikg
-QDw8DQorCSQoTElOSzMyX0ZMQUdTKSAiL291dDokKFNFUlZFWEUpIiAkKFNFUlZMSUJTKSAk
-KFNFUlZPQkpTKQ0KKzw8DQorDQorDQogY2xlYW4gOg0KIAlkZWwgL1EgJChPQkpTKSAkKEVY
-RSkgKi5pZGIgKi5wZGINCiANCi0tIAoxLjYuMy4zCgo=
---------------090104080100050603020106--
+From e46bee78a2d5bbdfc140bccad37c37344a32e604 Mon Sep 17 00:00:00 2001
+From: =?utf-8?q?Samuli=20Sepp=C3=A4nen?= <samuli@...515...>
+Date: Mon, 3 Jan 2011 16:08:37 +0200
+Subject: [PATCH 3/6] Added PKCS11_HELPER_DIR directive to win/settings.in.
+
+This variable is needed when NSI installer generation is integrated to the
+Python-based build system.
+---
+ win/settings.in |   10 +++++++---
+ 1 files changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/win/settings.in b/win/settings.in
+index f8eeb20..0dd3bfc 100644
+--- a/win/settings.in
++++ b/win/settings.in
+@@ -1,5 +1,9 @@
+ # Version numbers, settings, and dependencies
+ # for Windows OpenVPN installer.
++#
++# Note that some variables are parsed by wb.py from version.m4 and are not 
++# stored in this file. This is done to allow using the old and new Windows build 
++# systems side-by-side
+ 
+ # Branding
+ !define PRODUCT_NAME      "OpenVPN"
+@@ -17,13 +21,13 @@
+ # Prebuilt libraries.  DMALLOC is optional.
+ !define OPENSSL_DIR	  "../openssl"
+ !define LZO_DIR		  "../lzo"
++!define PKCS11_HELPER_DIR "../pkcs11-helper"
+ 
+ # write output files here
+ !define DIST   "dist"
+ 
+-# tapinstall.exe source code.
+-# Not needed if DRVBINSRC is defined
+-# (or if using pre-built mode).
++# devcon.exe (a.k.a. tapinstall.exe) source code. Not needed if DRVBINSRC is 
++# defined (or if using pre-built mode).
+ !define TISRC	"../tapinstall"
+ 
+ # TAP Adapter parameters.  Note that PRODUCT_TAP_ID is
+-- 
+1.6.3.3
+
+
+--------------090804000102000600030001--
 
