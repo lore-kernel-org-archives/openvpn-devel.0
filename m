@@ -1,14 +1,11 @@
-Message-ID: <4D264FEB.5030504@...68...>
-Date: Fri, 07 Jan 2011 00:27:39 +0100
-From: Matthias Andree <matthias.andree@...68...>
+Message-ID: <4D2656EF.8090908@...1114...>
+Date: Fri, 07 Jan 2011 00:57:35 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <jb2PkGhmqClC.rQXy2JmT@...1444...>
-	<4D260407.9090004@...1030...> <4D260739.1030201@...68...>
-	<4D262940.5020104@...1030...> <4D262C21.6080905@...68...>
-	<4D263D2C.2090708@...1030...> <4D264928.3010701@...68...>
-	<4D264C44.1090908@...1030...>
-In-Reply-To: <4D264C44.1090908@...1030...>
-Subject: Re: [Openvpn-devel] bugfix2.1: automake support for plugin build
+References: <1294334039-28892-1-git-send-email-matthias.andree@...68...>
+	<4D263917.80908@...1114...> <4D2647FB.4070302@...68...>
+In-Reply-To: <4D2647FB.4070302@...68...>
+Subject: Re: [Openvpn-devel] beta2.2: automake support for plugin build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,84 +14,104 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Mr Dash Four <mr.dash.four@...1030...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Matthias Andree <matthias.andree@...68...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Am 07.01.2011 00:12, schrieb Mr Dash Four:
-> 
->> If the patch is applied, the libtoolize tool has populated m4/* and you've
->> regenerated the aclocal.m4 with aclocal, the configure and Makefile.in, then it
->> should suffice, yes.
->>   
-> I am more than willing to send you my spec file for you to look at and 
-> can also attach instructions on how to try to build this from source if 
-> you wish - just let me know. But it definitely isn't working!
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Please do. It works for me on FreeBSD amd64 (that's how they call x86_64) with
-an arcane configure call to tweak everything for a 32-bit build,  like this:
+On 06/01/11 23:53, Matthias Andree wrote:
+| Am 06.01.2011 22:50, schrieb David Sommerseth:
+|> On 06/01/11 18:13, Matthias Andree wrote:
+|> | Greetings,
+|> |
+|> | this is the beta2.2 patch pair for hooking the auth-pam and down-root
+|> | plugins to the build.
+|> |
+|> | The bugfix2.1 patch pair has been sent earlier.
+|> |
+|> | Looking for review, ACK and NAK.
+|> |
+|>
+|> Hi Matthias,
+|>
+|> And thanks a lot for your patches.  Just one question.  I see you try to do
+|> all the Makefile generation in the main/root Makefile.am.  That is for sure a
+|> fast-track to get started.  But I'm concerned if that might backfire in the
+|> long run.
+|
+| Yes, but in my experience with autotools, the fewer SUBDIRS you have the better
+| it works, the faster and more reliably everything builds.  SUBDIRS should only
+| be used as a last resort.
+|
+|> Why not to use the SUBDIRS variable in the root Makefile.am, and then have
+|> separate Makefile.am per plugin?  That way, each plug-in can more easily
+|> control the build independently.
+|
+| SUBDIRS is one of the worst ideas I've seen in autotools, and I try to avoid
+| that wherever reasonable.  SUBDIRS breaks dependencies because you run multiple
+| "make" processes that all only have a partial view. It is inefficient, leads to
+| autotools bloat, and other reasons are given in "Recursive make considered
+| harmful" by Peter Miller of "cook" fame (URL below).  Old as it may seem its
+| points still stand.
+|
+| Automake allows for per-target build control through _LDADD, _DEPENDENCIES and
+| all sorts of options, and if that fails you can still hand-code the build rules,
+| automake passes them through.
+|
+| http://miller.emu.id.au/pmiller/books/rmch/
 
-../configure -C \
-	CPPFLAGS="-I/usr/local/include -m32" \
-	LDFLAGS="-L/usr/local/lib -L/usr/lib32 -m32 -B /usr/lib32" \
-	--disable-lzo
+Thanks for that link, that was a good and enlightening read, and one of the
+better arguments I've heard in a long long time.  I can agree to a lot of the
+issues here (I have even experienced many of these issues in other projects).
+~ However the examples he brings up are not directly comparable to the OpenVPN
+build process.
 
-I was too lazy to compile 32-bit lzo for now, hence the --disable. There is no
-technical reason though.
+* OpenVPN is mainly single directory/single Makefile oriented, considering the
+build process.  Even though, we have been discussing about to separate the
+bits and pieces a little bit into separate directories, to make the source
+tree more readable.  If we slice it up a bit, that still does not mean that we
+can't use a single Makefile approach for building OpenVPN executable itself.
 
-> That's not the point. The point is to build a clean i686 package, which 
-> is free from any build-machine-arch dependencies (like libgc-x86_64 
-> etc). With the patch I attached (which even though quite basic and 
-> rudimentary) this is done, though I think a better solution needs to be 
-> found.
+* The OpenVPN plug-ins are to be considered third-party plug-ins, even though
+some plug-ins are shipped with the source tree.  However, the *only* thing
+they depend on is openvpn-plugin.h in the root directory.  Nothing more and it
+will not be anything else they should need to compile in, even in the future.
+~ The plug-in system is a pure API, which is all defined in that header file
+(it's kind of what /usr/include/stdio.h is to glibc).  If this header file is
+modified, it is irrelevant if OpenVPN is rebuilt or the plug-ins are rebuilt
+first.
 
-That's what I get:
 
-$ uname -m
-amd64
+So when taking into account this and what is mentioned in the summary on
+page 13:
 
-$ find . -type f | xargs file | grep ELF | grep -v \\.o: | cut -f1 -d: | xargs file
-./.libs/down-root.so: ELF 32-bit LSB shared object, Intel 80386, version 1
-(FreeBSD), dynamically linked, not stripped
-./.libs/auth-pam.so:  ELF 32-bit LSB shared object, Intel 80386, version 1
-(FreeBSD), dynamically linked, not stripped
-./openvpn:            ELF 32-bit LSB executable, Intel 80386, version 1
-(FreeBSD), dynamically linked (uses shared libs), for FreeBSD 8.1 (801500), not
-stripped
+~    "Because make can only operate correctly with a complete DAG, the error
+~     is in segmenting the Makefile into incomplete pieces."
 
-$ find . -type f | xargs file | grep ELF | grep -v \\.o: | cut -f1 -d: | xargs ldd
-./.libs/down-root.so:
-        libssl.so.6 => /usr/lib32/libssl.so.6 (0x281ad000)
-        libcrypto.so.6 => /usr/lib32/libcrypto.so.6 (0x28400000)
-        libc.so.7 => /usr/lib32/libc.so.7 (0x28090000)
-./.libs/auth-pam.so:
-        libpam.so.5 => /usr/lib32/libpam.so.5 (0x281ae000)
-        libssl.so.6 => /usr/lib32/libssl.so.6 (0x281b5000)
-        libcrypto.so.6 => /usr/lib32/libcrypto.so.6 (0x28400000)
-        libc.so.7 => /usr/lib32/libc.so.7 (0x28090000)
-./openvpn:
-        libssl.so.6 => /usr/lib32/libssl.so.6 (0x28100000)
-        libcrypto.so.6 => /usr/lib32/libcrypto.so.6 (0x28149000)
-        libc.so.7 => /usr/lib32/libc.so.7 (0x282a5000)
+I would say that this should not be a problem for OpenVPN.  The core OpenVPN
+executable and the plug-ins are really segmented into individual and complete
+pieces.
 
-> The arch-dependent flags (line -mXX, -mtune etc) are handled 
-> 'automatically' when I specify the --target parameter (i.e. 
-> --target=i686 'automatically' sets a bunch of CCFLAGS/LDFLAGS which are 
-> arch-dependent) - these are stored in a pretty standard way through 1) 
-> the appropriate environment variables (CCFLAGS, LDFLAGS etc); and 2) via 
-> the Makefile generated after ./configure is run/executed.
+Yes, Make does not tackle all kind of Makefile setups well, and especially
+when sliced into incomplete pieces which depends on each other.  This is not
+the case for OpenVPN (at least 2.x)
 
-I know that --target= triggers macro expansion in various places, but my point
-is that if you can build openvpn, you get these two plugins for free with the
-same "make call", and automake takes care to propagate all the needed flags.
+Therefore I am still of the opinion that SUBDIRS are not that bad or risky for
+OpenVPN as in other more "sliced up" projects.  But it is important to beware
+of this pitfall.
 
-> This works for 99% of all cases, except where the appropriate CCFLAGS or 
-> LDFLAGS are hard-coded (which is very bad program practice by the way) 
-> in a propriety Makefile as is the case with the OpenVPN plugins.
 
-Which means that it's still somehow in your build.
+kind regards,
 
--- 
-Matthias Andree
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk0mVu8ACgkQDC186MBRfromWACgr1mgkUR+GZ4UgohM9linIgm0
+2RcAmgL25F+s9B4tstihWsaYt3bjaiqe
+=F5Qq
+-----END PGP SIGNATURE-----
 
