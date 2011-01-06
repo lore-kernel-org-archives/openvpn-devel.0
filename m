@@ -1,9 +1,11 @@
-From: Matthias Andree <matthias.andree@...68...>
-Date: Thu,  6 Jan 2011 18:08:33 +0100
-Message-Id: <1294333715-28771-1-git-send-email-matthias.andree@...68...>
-In-Reply-To: <4D1CFF2B.6030006@...68...>
+Message-ID: <4D25FEE3.3000701@...1030...>
+Date: Thu, 06 Jan 2011 17:41:55 +0000
+From: Mr Dash Four <mr.dash.four@...1030...>
+MIME-Version: 1.0
 References: <4D1CFF2B.6030006@...68...>
-Subject: [Openvpn-devel] bugfix2.1: automake support for plugin build
+	<1294333715-28771-1-git-send-email-matthias.andree@...68...>
+In-Reply-To: <1294333715-28771-1-git-send-email-matthias.andree@...68...>
+Subject: Re: [Openvpn-devel] bugfix2.1: automake support for plugin build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,28 +14,20 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Matthias Andree <matthias.andree@...68...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Greetings,
 
-following up the "[OpenVPN 2.1.4 BUG]: hard-coded values in Makefiles
-for down-root and auth-pam plugins prevent cross compilation" bug, I am
-providing patches for review and test in cross-compilation environments.
-
-I have tested these on native compiles with Ubuntu Linux 10.10 32-bit,
-openSUSE 11.3 32-bit, and FreeBSD 8.1 32-bit (all ix86), but the actual
-plugins are lightly tested (they load and don't crash), and that's about
-it.
-
-This is the patch series for the bugfix2.1 branch.
-
-I will send a separate patch pair for beta 2.2 soon.
-
-Looking for feedback, review, and ACK or NAK :-)
-
-Best regards
-Matthias
+> This is the patch series for the bugfix2.1 branch.
+>
+> I will send a separate patch pair for beta 2.2 soon.
+>
+> Looking for feedback, review, and ACK or NAK :-)
+>   
+I take it that these patches could be applied to the 2.1.4 version tree, 
+right? If so, I would be able to test this tonight (including 
+cross-compilation) and provide you with some feedback on these.
 
 
