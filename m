@@ -1,10 +1,12 @@
-Message-ID: <4D263917.80908@...1114...>
-Date: Thu, 06 Jan 2011 22:50:15 +0100
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <4D263D2C.2090708@...1030...>
+Date: Thu, 06 Jan 2011 22:07:40 +0000
+From: Mr Dash Four <mr.dash.four@...1030...>
 MIME-Version: 1.0
-References: <1294334039-28892-1-git-send-email-matthias.andree@...68...>
-In-Reply-To: <1294334039-28892-1-git-send-email-matthias.andree@...68...>
-Subject: Re: [Openvpn-devel] beta2.2: automake support for plugin build
+References: <jb2PkGhmqClC.rQXy2JmT@...1444...>
+	<4D260407.9090004@...1030...> <4D260739.1030201@...68...>
+	<4D262940.5020104@...1030...> <4D262C21.6080905@...68...>
+In-Reply-To: <4D262C21.6080905@...68...>
+Subject: Re: [Openvpn-devel] bugfix2.1: automake support for plugin build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,46 +15,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 To: Matthias Andree <matthias.andree@...68...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
 
-On 06/01/11 18:13, Matthias Andree wrote:
-| Greetings,
-|
-| this is the beta2.2 patch pair for hooking the auth-pam and down-root
-| plugins to the build.
-|
-| The bugfix2.1 patch pair has been sent earlier.
-|
-| Looking for review, ACK and NAK.
-|
+> This has gone wrong.  The plugins should be built from the top-level
+> directory instead (see below how it works for me), with the regular
+> "make" that also builds openvpn, so the "for plugin in ... make -C
+> $plugin ..." is no longer needed for these two guys.
+>
+> "make install" should load the material where it belongs, namely into
+> libdir/packagename, i. e. /usr[/local]/lib/openvpn/*.so
+>
+> But I should possibly remove the Makefiles that are no longer needed.
+>
+> My log excerpt is given below.
+>   
+So, should I remove the for loop then? Would that be enough?
 
-Hi Matthias,
+I don't know if it is clear to you, but I am not building OpenVPN to 
+install it on a local machine - I am doing cross-compilation build to 
+end up with rpm, which is for a different architecture to be installed 
+on a completely different machine (my build machine is x86_64, host 
+machine is i686).
 
-And thanks a lot for your patches.  Just one question.  I see you try to do
-all the Makefile generation in the main/root Makefile.am.  That is for sure a
-fast-track to get started.  But I'm concerned if that might backfire in the
-long run.
+So, I am not using ./configure, make and then make install in a sense - 
+I am running "rpmbuild -bb" (which in itself runs configure and make) 
+with a custom-designed openvpn.spec file - this is also where I apply 
+your patches.
 
-Why not to use the SUBDIRS variable in the root Makefile.am, and then have
-separate Makefile.am per plugin?  That way, each plug-in can more easily
-control the build independently.
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk0mORcACgkQDC186MBRfrrUMQCdEyCiQoerumQOo3ghc4F+kmrj
-EGIAn3KhLzYGShvTZ5BRKoCcSVNIFXvl
-=LG/J
------END PGP SIGNATURE-----
 
