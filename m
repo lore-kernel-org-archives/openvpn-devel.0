@@ -1,11 +1,11 @@
-Message-ID: <4D262940.5020104@...1030...>
-Date: Thu, 06 Jan 2011 20:42:40 +0000
-From: Mr Dash Four <mr.dash.four@...1030...>
+Message-ID: <4D262C21.6080905@...68...>
+Date: Thu, 06 Jan 2011 21:54:57 +0100
+From: Matthias Andree <matthias.andree@...68...>
 MIME-Version: 1.0
 References: <jb2PkGhmqClC.rQXy2JmT@...1444...>
 	<4D260407.9090004@...1030...> <4D260739.1030201@...68...>
-In-Reply-To: <4D260739.1030201@...68...>
-Content-Type: multipart/mixed; boundary="------------080509050102040506080500"
+	<4D262940.5020104@...1030...>
+In-Reply-To: <4D262940.5020104@...1030...>
 Subject: Re: [Openvpn-devel] bugfix2.1: automake support for plugin build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,159 +15,135 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Matthias Andree <matthias.andree@...68...>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: Mr Dash Four <mr.dash.four@...1030...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------080509050102040506080500
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Am 06.01.2011 21:42, schrieb Mr Dash Four:
+> 
+>> I suppose you need to modify the .spec file to make sure you're running
+>> autoreconf twice up front (or libtoolize, aclocal, autoconf, automake,
+>> possibly autoheader).
+>>
+>> Note you'll want to remove the .la files from the destdir, and list the
+>> .so files in the %files section, /usr/lib/openvpn/*.so might do the
+>> trick ISTR that RPM does globbing.
+>>   
+> Your patches did not work!
+> 
+> As with my initial post on this thread - the flags are *exactly* the
+> same (hard-coded):
+> 
+> make: Entering directory
+> `/home/zeek/rpmbuild/BUILD/openvpn-2.1.4/plugin/down-root'
+> gcc -O2 -Wall -fPIC -c -I../.. down-root.c
+> gcc -O2 -Wall -fPIC -shared -Wl,-soname,openvpn-down-root.so -o
+> openvpn-down-root.so down-root.o -lc
+> make: Leaving directory
+> `/home/zeek/rpmbuild/BUILD/openvpn-2.1.4/plugin/down-root'
+> + for plugin in down-root auth-pam
+> + /usr/bin/make -C plugin/auth-pam
+
+This has gone wrong.  The plugins should be built from the top-level
+directory instead (see below how it works for me), with the regular
+"make" that also builds openvpn, so the "for plugin in ... make -C
+$plugin ..." is no longer needed for these two guys.
+
+"make install" should load the material where it belongs, namely into
+libdir/packagename, i. e. /usr[/local]/lib/openvpn/*.so
+
+But I should possibly remove the Makefiles that are no longer needed.
+
+My log excerpt is given below.
+
+> make: Entering directory
+> `/home/zeek/rpmbuild/BUILD/openvpn-2.1.4/plugin/auth-pam'
+> gcc -O2 -Wall -DDLOPEN_PAM=0 -fPIC -c -I../.. auth-pam.c
+> gcc -O2 -Wall -DDLOPEN_PAM=0 -fPIC -c -I../.. pamdl.c
+> gcc -O2 -Wall -DDLOPEN_PAM=0 -fPIC -shared
+> -Wl,-soname,openvpn-auth-pam.so -o openvpn-auth-pam.so auth-pam.o
+> pamdl.o -lc -lpam
+> make: Leaving directory
+> `/home/zeek/rpmbuild/BUILD/openvpn-2.1.4/plugin/auth-pam'
+> 
+> I also had to adjust your patches slightly to fit the 2.1.4 source tree
+> - see the modified versions attached.
+> 
+
+Quite possibly, mine were against git's bugfix2.1 branch. There are
+minor differences.
 
 
-> I suppose you need to modify the .spec file to make sure you're running
-> autoreconf twice up front (or libtoolize, aclocal, autoconf, automake,
-> possibly autoheader).
->
-> Note you'll want to remove the .la files from the destdir, and list the
-> .so files in the %files section, /usr/lib/openvpn/*.so might do the
-> trick ISTR that RPM does globbing.
->   
-Your patches did not work!
+...
+make[2]: Leaving directory `/tmp/ovpn/install-win32'
+make[2]: Entering directory `/tmp/ovpn'
+/bin/bash ./libtool  --tag=CC   --mode=compile gcc -DHAVE_CONFIG_H -I.
+-I/home/emma/VCS-other/openvpn-testing.git
+-I/home/emma/VCS-other/openvpn-testing.git    -g -O2 -MT down-root.lo
+-MD -MP -MF .deps/down-root.Tpo -c -o down-root.lo `test -f
+'plugin/down-root/down-root.c' || echo
+'/home/emma/VCS-other/openvpn-testing.git/'`plugin/down-root/down-root.c
+libtool: compile:  gcc -DHAVE_CONFIG_H -I.
+-I/home/emma/VCS-other/openvpn-testing.git
+-I/home/emma/VCS-other/openvpn-testing.git -g -O2 -MT down-root.lo -MD
+-MP -MF .deps/down-root.Tpo -c
+/home/emma/VCS-other/openvpn-testing.git/plugin/down-root/down-root.c
+-fPIC -DPIC -o .libs/down-root.o
+mv -f .deps/down-root.Tpo .deps/down-root.Plo
+/bin/bash ./libtool --tag=CC   --mode=link gcc  -g -O2 -module
+-avoid-version  -o down-root.la -rpath /usr/local/lib/openvpn
+down-root.lo  -lselinux -lssl -lcrypto -llzo2 -ldl
+libtool: link: gcc -shared  .libs/down-root.o   -lselinux -lssl -lcrypto
+/usr/lib/liblzo2.so -ldl    -Wl,-soname -Wl,down-root.so -o
+.libs/down-root.so
+libtool: link: ( cd ".libs" && rm -f "down-root.la" && ln -s
+"../down-root.la" "down-root.la" )
+/bin/bash ./libtool  --tag=CC   --mode=compile gcc -DHAVE_CONFIG_H -I.
+-I/home/emma/VCS-other/openvpn-testing.git
+-I/home/emma/VCS-other/openvpn-testing.git    -g -O2 -MT auth-pam.lo -MD
+-MP -MF .deps/auth-pam.Tpo -c -o auth-pam.lo `test -f
+'plugin/auth-pam/auth-pam.c' || echo
+'/home/emma/VCS-other/openvpn-testing.git/'`plugin/auth-pam/auth-pam.c
+libtool: compile:  gcc -DHAVE_CONFIG_H -I.
+-I/home/emma/VCS-other/openvpn-testing.git
+-I/home/emma/VCS-other/openvpn-testing.git -g -O2 -MT auth-pam.lo -MD
+-MP -MF .deps/auth-pam.Tpo -c
+/home/emma/VCS-other/openvpn-testing.git/plugin/auth-pam/auth-pam.c
+-fPIC -DPIC -o .libs/auth-pam.o
+mv -f .deps/auth-pam.Tpo .deps/auth-pam.Plo
+/bin/bash ./libtool  --tag=CC   --mode=compile gcc -DHAVE_CONFIG_H -I.
+-I/home/emma/VCS-other/openvpn-testing.git
+-I/home/emma/VCS-other/openvpn-testing.git    -g -O2 -MT pamdl.lo -MD
+-MP -MF .deps/pamdl.Tpo -c -o pamdl.lo `test -f
+'plugin/auth-pam/pamdl.c' || echo
+'/home/emma/VCS-other/openvpn-testing.git/'`plugin/auth-pam/pamdl.c
+libtool: compile:  gcc -DHAVE_CONFIG_H -I.
+-I/home/emma/VCS-other/openvpn-testing.git
+-I/home/emma/VCS-other/openvpn-testing.git -g -O2 -MT pamdl.lo -MD -MP
+-MF .deps/pamdl.Tpo -c
+/home/emma/VCS-other/openvpn-testing.git/plugin/auth-pam/pamdl.c  -fPIC
+-DPIC -o .libs/pamdl.o
+mv -f .deps/pamdl.Tpo .deps/pamdl.Plo
+/bin/bash ./libtool --tag=CC   --mode=link gcc  -g -O2 -module
+-avoid-version  -o auth-pam.la -rpath /usr/local/lib/openvpn auth-pam.lo
+pamdl.lo -lpam -lselinux -lssl -lcrypto -llzo2 -ldl
+libtool: link: gcc -shared  .libs/auth-pam.o .libs/pamdl.o   -lpam
+-lselinux -lssl -lcrypto /usr/lib/liblzo2.so -ldl    -Wl,-soname
+-Wl,auth-pam.so -o .libs/auth-pam.so
+libtool: link: ( cd ".libs" && rm -f "auth-pam.la" && ln -s
+"../auth-pam.la" "auth-pam.la" )
+gcc -DHAVE_CONFIG_H -I. -I/home/emma/VCS-other/openvpn-testing.git
+-I/home/emma/VCS-other/openvpn-testing.git    -g -O2 -MT base64.o -MD
+-MP -MF .deps/base64.Tpo -c -o base64.o
+/home/emma/VCS-other/openvpn-testing.git/base64.c
+mv -f .deps/base64.Tpo .deps/base64.Po
+gcc -DHAVE_CONFIG_H -I. -I/home/emma/VCS-other/openvpn-testing.git
+-I/home/emma/VCS-other/openvpn-testing.git    -g -O2 -MT buffer.o -MD
+-MP -MF .deps/buffer.Tpo -c -o buffer.o
+/home/emma/VCS-other/openvpn-testing.git/buffer.c
+mv -f .deps/buffer.Tpo .deps/buffer.Po
+...
 
-As with my initial post on this thread - the flags are *exactly* the 
-same (hard-coded):
-
-make: Entering directory 
-`/home/zeek/rpmbuild/BUILD/openvpn-2.1.4/plugin/down-root'
-gcc -O2 -Wall -fPIC -c -I../.. down-root.c
-gcc -O2 -Wall -fPIC -shared -Wl,-soname,openvpn-down-root.so -o 
-openvpn-down-root.so down-root.o -lc
-make: Leaving directory 
-`/home/zeek/rpmbuild/BUILD/openvpn-2.1.4/plugin/down-root'
-+ for plugin in down-root auth-pam
-+ /usr/bin/make -C plugin/auth-pam
-make: Entering directory 
-`/home/zeek/rpmbuild/BUILD/openvpn-2.1.4/plugin/auth-pam'
-gcc -O2 -Wall -DDLOPEN_PAM=0 -fPIC -c -I../.. auth-pam.c
-gcc -O2 -Wall -DDLOPEN_PAM=0 -fPIC -c -I../.. pamdl.c
-gcc -O2 -Wall -DDLOPEN_PAM=0 -fPIC -shared 
--Wl,-soname,openvpn-auth-pam.so -o openvpn-auth-pam.so auth-pam.o 
-pamdl.o -lc -lpam
-make: Leaving directory 
-`/home/zeek/rpmbuild/BUILD/openvpn-2.1.4/plugin/auth-pam'
-
-I also had to adjust your patches slightly to fit the 2.1.4 source tree 
-- see the modified versions attached.
-
-
---------------080509050102040506080500
-Content-Type: text/plain; charset="utf-8";
- name=openvpn-2.1.4-plugins-01.patch
-Content-Transfer-Encoding: base64
-Content-Disposition: inline;
- filename="openvpn-2.1.4-plugins-01.patch"
-
-LS0tDQogY29uZmlndXJlLmFjIHwgICAgMiArLQ0KIDEgZmlsZXMgY2hhbmdlZCwgMSBpbnNlcnRp
-b25zKCspLCAxIGRlbGV0aW9ucygtKQ0KDQpkaWZmIC0tZ2l0IGEvY29uZmlndXJlLmFjIGIvY29u
-ZmlndXJlLmFjDQppbmRleCA0Nzc3MTA4Li41MjlhYmQzIDEwMDY0NA0KLS0tIGEvY29uZmlndXJl
-LmFjDQorKysgYi9jb25maWd1cmUuYWMNCkBAIC0zMyw2ICszMyw3IEBAIEFDX0NPTkZJR19TUkNE
-SVIoc3lzaGVhZC5oKQ0KIGRubCBHdWVzcyBob3N0IHR5cGUuDQogQUNfQ0FOT05JQ0FMX0hPU1QN
-CiBBQ19DQU5PTklDQUxfU1lTVEVNDQorQUNfR05VX1NPVVJDRQ0KIEFNX0lOSVRfQVVUT01BS0Uo
-b3BlbnZwbiwgWyRQQUNLQUdFX1ZFUlNJT05dKQ0KIA0KIEFDX0FSR19XSVRIKGN5Z3dpbi1uYXRp
-dmUsDQpAQCAtMzMxLDcgKzMzMiw2IEBAIGRubCBDaGVja3MgZm9yIHByb2dyYW1zLg0KIEFDX1BS
-T0dfQ0MNCiBBQ19QUk9HX0lOU1RBTEwNCiBBQ19QUk9HX0dDQ19UUkFESVRJT05BTA0KLUFDX0dO
-VV9TT1VSQ0UNCiANCiBpZiB0ZXN0ICIke1dJTjMyfSIgPSAieWVzIjsgdGhlbg0KIAlBQ19BUkdf
-VkFSKFtNQU4ySFRNTF0sIFttYW4yaHRtbCB1dGlsaXR5XSkNCg==
-
---------------080509050102040506080500
-Content-Type: text/plain; charset="utf-8";
- name=openvpn-2.1.4-plugins-02.patch
-Content-Transfer-Encoding: base64
-Content-Disposition: inline;
- filename="openvpn-2.1.4-plugins-02.patch"
-
-VGhpcyBpbmNsdWRlcyBhdXRvY29uZiBjaGVja3Mgc28gd2Ugb25seSBidWlsZCBhdXRoLXBhbSBv
-biBzeXN0ZW1zIHRoYXQgaGF2ZQ0Kc2VjdXJpdHkvcGFtX2FwcGwuaA0KLS0tDQogTWFrZWZpbGUu
-YW0gICB8ICAgMTYgKysrKysrKysrKysrKysrKw0KIGNvbmZpZ3VyZS5hYyAgfCAgIDEwICsrKysr
-KysrKysNCiBtNC9SRUFETUUgICAgIHwgICAgMyArKysNCiBwbHVnaW4vUkVBRE1FIHwgICAxMyAr
-KysrKysrLS0tLS0tDQogNCBmaWxlcyBjaGFuZ2VkLCAzNiBpbnNlcnRpb25zKCspLCA2IGRlbGV0
-aW9ucygtKQ0KIGNyZWF0ZSBtb2RlIDEwMDY0NCBtNC9SRUFETUUNCg0KZGlmZiAtLWdpdCBhL01h
-a2VmaWxlLmFtIGIvTWFrZWZpbGUuYW0NCmluZGV4IGFkMGY3ZTMuLjM5MThjZjcgMTAwNjQ0DQot
-LS0gYS9NYWtlZmlsZS5hbQ0KKysrIGIvTWFrZWZpbGUuYW0NCkBAIC0yOSw2ICsyOSw4IEBAIExE
-QUREID0gQExJQk9CSlNADQogIyBJTlNUQUxMIHRhcmdldHM6DQogQVVUT01BS0VfT1BUSU9OUyA9
-IGZvcmVpZ24NCiANCitBQ0xPQ0FMX0FNRkxBR1MgPSAtSSBtNA0KKw0KIE1BSU5UQUlORVJDTEVB
-TkZJTEVTID0gXA0KIAljb25maWcubG9nIGNvbmZpZy5zdGF0dXMgXA0KIAkkKHNyY2RpcikvTWFr
-ZWZpbGUuaW4gXA0KQEAgLTE0MSw2ICsxNDMsMjAgQEAgb3BlbnZwbl9TT1VSQ0VTID0gXA0KIAl3
-aW4zMi5oIHdpbjMyLmMgXA0KIAljcnlwdG9hcGkuaCBjcnlwdG9hcGkuYw0KIA0KKyMgYnVpbGRp
-bmcgZGVmYXVsdCBwbHVnaW5zDQorcGtnbGliX0xUTElCUkFSSUVTID0JZG93bi1yb290LmxhDQor
-aWYgSEFWRV9QQU0NCitwa2dsaWJfTFRMSUJSQVJJRVMgKz0JYXV0aC1wYW0ubGENCitlbmRpZg0K
-K2xpYnRvb2xtb2R1bGVmbGFncyA9CS1tb2R1bGUgLWF2b2lkLXZlcnNpb24NCitkb3duX3Jvb3Rf
-bGFfU09VUkNFUyA9CXBsdWdpbi9kb3duLXJvb3QvZG93bi1yb290LmMNCitkb3duX3Jvb3RfbGFf
-TERGTEFHUyA9CSQobGlidG9vbG1vZHVsZWZsYWdzKQ0KKw0KK2F1dGhfcGFtX2xhX1NPVVJDRVMg
-PQlwbHVnaW4vYXV0aC1wYW0vYXV0aC1wYW0uYyBcDQorCQkJcGx1Z2luL2F1dGgtcGFtL3BhbWRs
-LmggXA0KKwkJCXBsdWdpbi9hdXRoLXBhbS9wYW1kbC5jDQorYXV0aF9wYW1fbGFfTElCQUREID0J
-LWxwYW0NCithdXRoX3BhbV9sYV9MREZMQUdTID0JJChsaWJ0b29sbW9kdWxlZmxhZ3MpDQogDQog
-ZGlzdC1ob29rOg0KIAljZCAkKGRpc3RkaXIpICYmIGZvciBpIGluICQoRVhUUkFfRElTVCkgJChT
-VUJESVJTKSA7IGRvIGZpbmQgJCRpIC1uYW1lIC5zdm4gLXR5cGUgZCAtcHJ1bmUgLWV4ZWMgcm0g
-LXJmICd7fScgJzsnIDsgcm0gLWYgYGZpbmQgJCRpIC10eXBlIGYgfCBncmVwIC1FICcoXnxcLylc
-Lj9cI3xcfiQkfFwucz9vJCQnYCA7IGRvbmUNCmRpZmYgLS1naXQgYS9jb25maWd1cmUuYWMgYi9j
-b25maWd1cmUuYWMNCmluZGV4IDUyOWFiZDMuLmY2MjgwY2QgMTAwNjQ0DQotLS0gYS9jb25maWd1
-cmUuYWMNCisrKyBiL2NvbmZpZ3VyZS5hYw0KQEAgLTI5LDYgKzI5LDcgQEAgbTRfaW5jbHVkZSh2
-ZXJzaW9uLm00KQ0KIEFDX0lOSVQoW09wZW5WUE5dLCBbUFJPRFVDVF9WRVJTSU9OXSwgW29wZW52
-cG4tdXNlcnNAbGlzdHMuc291cmNlZm9yZ2UubmV0XSwgW29wZW52cG5dKQ0KIEFNX0NPTkZJR19I
-RUFERVIoY29uZmlnLmgpDQogQUNfQ09ORklHX1NSQ0RJUihzeXNoZWFkLmgpDQorQUNfQ09ORklH
-X01BQ1JPX0RJUihbbTRdKQ0KIA0KIGRubCBHdWVzcyBob3N0IHR5cGUuDQogQUNfQ0FOT05JQ0FM
-X0hPU1QNCkBAIC0zMjUsNiArMzI2LDExIEBAIGRubCBDaGVja3MgZm9yIHByb2dyYW1zLg0KIEFD
-X1BST0dfQ0MNCiBBQ19QUk9HX0lOU1RBTEwNCiBBQ19QUk9HX0dDQ19UUkFESVRJT05BTA0KK0xU
-X0lOSVQoW2Rpc2FibGUtc3RhdGljXSkNCitkbmwgd2UgbmVlZCB0byBkbG9wZW4oKSB0aGluZ3Ms
-IGxhdGVyLCB3ZSBtaWdodA0KK2RubCBsb29rIGludG8gbGlibHRkbCBzdHVmZiB0aGF0IGNhbiBw
-b3NzaWJseSBsaW5rIHRoZSBwbHVnaW4NCitkbmwgc3RhdGljYWxseSwgYnV0IEkgc3VwcG9zZSB0
-aGF0IHRha2VzIGNoYW5nZXMgdG8gcGx1Z2luLj8gY29kZSwNCitkbmwgdG9vLiAgLS0gTWF0dGhp
-YXMgQW5kcmVlLCAyMDExLTAxLTA2DQogDQogaWYgdGVzdCAiJHtXSU4zMn0iID0gInllcyI7IHRo
-ZW4NCglBQ19BUkdfVkFSKFtNQU4ySFRNTF0sIFttYW4yaHRtbCB1dGlsaXR5XSkNCkBAIC0zNjcs
-NyArMzczLDkgQEAgaWYgdGVzdCAiJHtXSU4zMn0iICE9ICJ5ZXMiOyB0aGVuDQogCQkgbmV0aW5l
-dC90Y3AuaCBhcnBhL2luZXQuaCBkbmwNCiAJCSBuZXRkYi5oIHN5cy91aW8uaCBsaW51eC9pZl90
-dW4uaCBsaW51eC9zb2NraW9zLmggZG5sDQogCQkgbGludXgvdHlwZXMuaCBzeXMvcG9sbC5oIHN5
-cy9lcG9sbC5oIGVyci5oIGRubA0KKwkJIHNlY3VyaXR5L3BhbV9hcHBsLmggZG5sDQogICAgKQ0K
-Kw0KICAgIEFDX0NIRUNLX0hFQURFUlMobmV0L2lmLmgsLCwNCgkJIFsjaWZkZWYgSEFWRV9TWVNf
-U09DS0VUX0ggDQoJCSAgIyBpbmNsdWRlIDxzeXMvc29ja2V0Lmg+DQpAQCAtNDA3LDYgKzQxNyw4
-IEBAIGlmIHRlc3QgIiR7V0lOMzJ9IiAhPSAieWVzIjsgdGhlbg0KIAldKQ0KIGZpDQogDQorQU1f
-Q09ORElUSU9OQUwoSEFWRV9QQU0sIHRlc3QgIiRhY19jdl9oZWFkZXJfc2VjdXJpdHlfcGFtX2Fw
-cGxfaCIgPSB5ZXMpDQorDQogQUNfQ0FDSEVfU0FWRQ0KIA0KIGRubCBjaGVjayB0aGF0IGluX2Fk
-ZHJfdCBpcyBkZWZpbmVkDQpkaWZmIC0tZ2l0IGEvbTQvUkVBRE1FIGIvbTQvUkVBRE1FDQpuZXcg
-ZmlsZSBtb2RlIDEwMDY0NA0KaW5kZXggMDAwMDAwMC4uOGY4MzY3OQ0KLS0tIC9kZXYvbnVsbA0K
-KysrIGIvbTQvUkVBRE1FDQpAQCAtMCwwICsxLDMgQEANCitUaGlzIGRpcmVjdG9yeSBpcyBlbXB0
-eSBpbiB0aGUgR2l0IHJlcG9zaXRvcnkgYW5kIGdldHMNCitwb3B1bGF0ZWQgYnkgbGlidG9vbGl6
-ZSAod2hpY2ggaXMgdXN1YWxseSBydW4gYXV0b21hdGljYWxseSBmcm9tDQorYXV0b3JlY29uZiku
-DQpkaWZmIC0tZ2l0IGEvcGx1Z2luL1JFQURNRSBiL3BsdWdpbi9SRUFETUUNCmluZGV4IDZlNDkw
-YzUuLjdmOGQ4MDUgMTAwNjQ0DQotLS0gYS9wbHVnaW4vUkVBRE1FDQorKysgYi9wbHVnaW4vUkVB
-RE1FDQpAQCAtMiw4ICsyLDggQEAgT3BlblZQTiBQbHVnaW5zDQogLS0tLS0tLS0tLS0tLS0tDQog
-DQogU3RhcnRpbmcgd2l0aCBPcGVuVlBOIDIuMC1iZXRhMTcsIGNvbXBpbGVkIHBsdWdpbiBtb2R1
-bGVzIGFyZQ0KLXN1cHBvcnRlZCBvbiBhbnkgKm5peCBPUyB3aGljaCBpbmNsdWRlcyBsaWJkbCBv
-ciBvbiBXaW5kb3dzLg0KLU9uZSBvciBtb3JlIG1vZHVsZXMgbWF5IGJlIGxvYWRlZCBpbnRvIE9w
-ZW5WUE4gdXNpbmcNCitzdXBwb3J0ZWQgb24gYW55ICpuaXggT1Mgd2hpY2ggaW5jbHVkZXMgbGli
-ZGwsIG9yIG9uIFdpbmRvd3MuDQorICAgT25lIG9yIG1vcmUgbW9kdWxlcyBtYXkgYmUgbG9hZGVk
-IGludG8gT3BlblZQTiB1c2luZw0KIHRoZSAtLXBsdWdpbiBkaXJlY3RpdmUsIGFuZCBlYWNoIHBs
-dWdpbiBtb2R1bGUgaXMgY2FwYWJsZSBvZg0KIGludGVyY2VwdGluZyBhbnkgb2YgdGhlIHNjcmlw
-dCBjYWxsYmFja3Mgd2hpY2ggT3BlblZQTiBzdXBwb3J0czoNCiANCkBAIC0yOCw3ICsyOCw3IEBA
-IGF1dGgtcGFtIC0tIEF1dGhlbnRpY2F0ZSB1c2luZyBQQU0gYW5kIGEgc3BsaXQgcHJpdmlsZWdl
-DQogICAgICAgICAgICAgZXhlY3V0aW9uIG1vZGVsIHdoaWNoIGZ1bmN0aW9ucyBldmVuIGlmDQog
-ICAgICAgICAgICAgcm9vdCBwcml2aWxlZ2VzIG9yIHRoZSBleGVjdXRpb24gZW52aXJvbm1lbnQN
-CiAgICAgICAgICAgICBoYXZlIGJlZW4gYWx0ZXJlZCB3aXRoIC0tdXNlci8tLWdyb3VwLy0tY2hy
-b290Lg0KLSAgICAgICAgICAgIFRlc3RlZCBvbiBMaW51eCBvbmx5Lg0KKyAgICAgICAgICAgIFRl
-c3RlZCBvbiBMaW51eCBvbmx5LiAgDQogDQogZG93bi1yb290IC0tIEVuYWJsZSB0aGUgcnVubmlu
-ZyBvZiBkb3duIHNjcmlwdHMgd2l0aCByb290IHByaXZpbGVnZXMNCiAgICAgICAgICAgICAgZXZl
-biBpZiAtLXVzZXIvLS1ncm91cC8tLWNocm9vdCBoYXZlIGJlZW4gdXNlZA0KQEAgLTQyLDYgKzQy
-LDcgQEAgZXhhbXBsZXMgLS0gQSBzaW1wbGUgZXhhbXBsZSB0aGF0IGRlbW9uc3RyYXRlcyBhIHBv
-cnRhYmxlDQogQnVpbGRpbmcgUGx1Z2lucw0KIC0tLS0tLS0tLS0tLS0tLS0NCiANCi1jZCB0byB0
-aGUgdG9wLWxldmVsIGRpcmVjdG9yeSBvZiBhIHBsdWdpbiwgYW5kIHVzZSB0aGUNCi0ibWFrZSIg
-Y29tbWFuZCB0byBidWlsZCBpdC4gIFRoZSBleGFtcGxlcyBwbHVnaW4gaXMNCi1idWlsdCB1c2lu
-ZyBhIGJ1aWxkIHNjcmlwdCwgbm90IGEgbWFrZWZpbGUuDQorVGhlIGF1dGgtcGFtIGFuZCBkb3du
-LXJvb3QgbW9kdWxlcyBhcmUgYnVpbHQgYXMgcGFydCBvZiB0aGUgcmVndWxhcg0KK09wZW5WUE4g
-YnVpbGQuICBPdGhlciB0aGFuIHRoYXQsIGNkIHRvIHRoZSB0b3AtbGV2ZWwgZGlyZWN0b3J5IG9m
-IGENCitwbHVnaW4sIGFuZCB1c2UgdGhlICJtYWtlIiBjb21tYW5kIHRvIGJ1aWxkIGl0LiAgVGhl
-IGV4YW1wbGVzIHBsdWdpbiBpcw0KK2J1aWx0IHVzaW5nIGEgYnVpbGQgc2NyaXB0LCBub3QgYSBN
-YWtlZmlsZS4NCi0tIA0K
-
---------------080509050102040506080500--
+HTH
 
