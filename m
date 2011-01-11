@@ -1,8 +1,13 @@
-Message-ID: <4D2C3D0A.2060607@...1114...>
-Date: Tue, 11 Jan 2011 12:20:42 +0100
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <4D2CC78A.1010504@...1147...>
+Date: Tue, 11 Jan 2011 22:11:38 +0100
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN documentation (man page) review
+References: <20110110061937.GA4712@...1446...>	<4D2C6D23.6040101@...1147...>
+	<4D2C74DC.3@...453...>
+In-Reply-To: <4D2C74DC.3@...453...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] Using EasyRSA intermediate CA
+ with OpenVPN - warning with certificate revocation list: "CRL crl.pem
+ is	from a different issuer than the issuer of certificate ..."
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,92 +16,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: OpenVPN developers <openvpn-devel@lists.sourceforge.net>, OpenVPN List <openvpn-users@lists.sourceforge.net>
+To: Erich Titl <erich.titl@...453...>
+Cc: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi Erich,
 
+(copying in the openvpn-devel list as this might be considered a minor bug)
 
-Hi folks!
+Erich Titl wrote:
+> Hi JJK
+>
+> at 11.01.2011 15:45, Jan Just Keijser wrote:
+>   
+>> Hi,
+>>
+>>     
+> ...
+>
+>   
+>>>   
+>>>       
+>> the "CRL crl.pem is from a different issuer" warning is actually an 
+>> error: when OpenVPN goes through a stacked CRL list it prints out this 
+>> message. This should be raised as a (minor) bug.
+>> The message is harmless however, as clients with revoked certs are 
+>> denied access (as I have tested myself).
+>>
+>> the only way to get rid of this warning is to switch to
+>>   capath <directory>
+>> mode, where the capath directory contains your CA certs and CRL certs as 
+>> .0 and .r0 files.
+>> You can generate the .0 and .r0 files using
+>>   cp ca.crt    cadir/`openssl x509 -hash -noout -in ca.crt`.0
+>>   cp crl.pem cadir/`openssl x509 -hash -noout -in ca.crt`.r0
+>>     
+>
+> Now this raises a number of questions
+>
+> 1) is the file name suffix responsible for the warning to go away
+> 2) is the hash based filename responsible ....
+> 3) is the fact that both files reside in the cadir directory responsible
+>
+> If all 3 then what should be achieved with this condition stacking
+>
+>   
+actually, it's all 3. OpenSSL has two ways of using certificates and 
+CRLs; the first method, which is used most often, is to supply a single 
+certificate file and single CRL file. The cert file and CRL file may be 
+"stacked" , that is , more than one CA can be specified, related or not, 
+and also more than one CRL file, related or not. The OpenVPN code 
+processes the CA and CRL file and prints out the warning mentioned when 
+it finds a CRL that does not belong to a particular cert. This warning 
+is to prevent people from loading the wrong CRL alongside a particular 
+ca.crt file. When the wrong file is loaded it is simply ignored by 
+OpenSSL. It would be nicer to match each CRL against *a* certificate in 
+the stacked ca.crt file, but this makes the verification algorithm a bit 
+more complex.
+With two certs and CRLs are stacked the warning is printed twice:
+- first when CRL_1 is matched against CA_CERT_2
+- second when CRL_2 is matched against CA_CERT_1
 
-This is a little cry for help from us playing with the OpenVPN code.
-
-We have a quite good man page today with a lot of information.  But
-maintaining it and to make sure it is up-to-date with all the features
-OpenVPN supports is often not high up on the priority list.  In
-addition, the current format (one single file, in pure man page format)
-is getting harder and harder to maintain as well.
-
-So, we're hoping some people with some English skills is interested to
-help out improving this situation.  What we immediately would like to
-see is something along these lines:
-
-* Move the man page to a better format than the pure man page format.
-  Are there some good tools/formats like ascii2man or DocBookXML which
-  could help easing the maintenance of our documentation?
-
-* Split up the documentation into more focused sections, like
-  - main openvpn page (kind of like openvpn.8 today)
-      Gives an executive overview over OpenVPN, features and references
-      to the other documentation pages.  A bonus would be if it easily
-      can produce other formats in addition, like HTML, PS/PDF, ePub.
-
-  - openvpn common options
-      Gives information about the common options openvpn has, which is
-      useful on both server and client instances.  F.ex. --keepalive,
-      --tls-auth, --cert, --key, --ca, etc
-
-  - openvpn server options
-      Describes only the options which are relevant for openvpn servers
-
-  - openvpn client options
-      Describes only options useful for openvpn clients
-
-  - openvpn plug-ins
-      Describes the different script plug-in hooks and environment
-      variables available to scripts and plug-ins written in C
-
-* Review the contents of all the documentation, check their accuracy
-  - Make sure no options are not available in OpenVPN 2.2 or later
-  - Make sure no options are missing in the documentation, which is
-    available in the source code  (options.c is a good reference)
-
-* Review and check if all external references
-  - Make sure all references to external sources, like web-sites, are
-    still available, valid and relevant in the document context
-  - Find other external resources which are worth including.
-
-(These points are not carved into stone, but is more like a guideline of
-what needs to be considered)
-
-This task should hopefully not require too much in-depth development
-knowledge.  It should be user-focused, so that we avoid using terms and
-details which is not so easy to understand.  What I'm saying is that
-this documentation can be more useful and readable if users are involved
-in this process.
-
-If someone are willing to step up and take a lead, that would be great!
- Further, discussions and reviews of the document changes should
-probably happen on the openvpn-users mailing list.  That way, it might
-be easier for users to review the documentation and provide feedback.
-
-We don't want this to just be a solo-project from someone in our OpenVPN
-community, so we hope more people can help out and contribute, also if
-you don't consider yourself a developer.
+The second method for using certs and CRLs is to use a 'capath' method 
+where all certs and CRLs are put in a single directory using a special 
+naming scheme (the 'openssl x509 -hash' thingie). When validating a 
+client certificate OpenSSL (and thus, OpenVPN) will go through each of 
+the .0 files in the 'capath' directory to find a matching CA cert. It 
+then looks at the corresponding .r0 file (the CRL) to check whether the 
+certificate has been revoked. Due to the way OpenVPN is coded the CRL 
+warning is NOT printed in this case.
 
 
-kind regards,
+cheers,
 
-David Sommerseth
+JJK
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk0sPQcACgkQDC186MBRfrrX2gCgnymM0Rx8yMronRPhfXatFts9
-S24An13g48fdlKXnb9O1Zud8z/elaLRM
-=qXo0
------END PGP SIGNATURE-----
 
