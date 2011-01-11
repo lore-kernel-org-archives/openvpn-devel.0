@@ -1,11 +1,8 @@
-Message-ID: <4D27CBA1.8080808@...68...>
-Date: Sat, 08 Jan 2011 03:27:45 +0100
-From: Matthias Andree <matthias.andree@...68...>
+Message-ID: <4D2C3D0A.2060607@...1114...>
+Date: Tue, 11 Jan 2011 12:20:42 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4D2714C1.6040000@...515...>
-In-Reply-To: <4D2714C1.6040000@...515...>
-Subject: Re: [Openvpn-devel] further mysnprintf discussion (was: Summary of
- the IRC meeting (6th Jan 2011))
+Subject: [Openvpn-devel] OpenVPN documentation (man page) review
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,59 +11,92 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: OpenVPN developers <openvpn-devel@lists.sourceforge.net>, OpenVPN List <openvpn-users@lists.sourceforge.net>
 
-Am 07.01.2011 14:27, schrieb Samuli Sepp=E4nen:
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-> Discussed the snprintf issue in service-win32/openvpnserv.c:
->=20
-> <http://thread.gmane.org/gmane.network.openvpn.devel/4325>
->=20
-> Apparently the least bad solution is to replace the mysnprintf function
-> in openvpnserv.c with a copy of openvpn_snprintf function in buffer.c.
-> Although this results in some duplicate code, it avoids creating a
-> dependency from openvpnserv code to openvpn code: currently these
-> codebases are completely separate. Also, including only one function
-> ("openvpn_snprintf") from buffer.c object file is probably not possible.
 
-Hi,
+Hi folks!
 
-if you can include only one function from buffer.o depends on platform,
-compilation environment, and thereabouts - and it requires that the program=
-mer
-puts up with changed semantics.  If that's all given, and if the build plat=
-form
-supports gcc's -ffunction-sections, it's possible, and I've been doing it o=
-n a
-MSP430-based embedded system for a different project for three years or so =
-(and
-with gcc4 you can use -fdata-sections) -- these options allow the linker to=
- take
-out individual functions or data items out of an object file, without linki=
-ng
-the whole .o file -- but note that it can have minor ill side effects if you
-play with dynamic linking, weak symbols, and possibly in other situations, =
-for
-instance, ID strings might go missing.
+This is a little cry for help from us playing with the OpenVPN code.
 
-No idea if VC++ can do something similar, or Intel C++, or clang, or tcc, or
-Codewarrior, or whatever else people use to compile
+We have a quite good man page today with a lot of information.  But
+maintaining it and to make sure it is up-to-date with all the features
+OpenVPN supports is often not high up on the priority list.  In
+addition, the current format (one single file, in pure man page format)
+is getting harder and harder to maintain as well.
 
-The alternative is to split out openvpn_snprintf plus its dependencies from
-buffer.c to a separate source file. That would work everywhere and slice do=
-wn
-the ballast you're pulling in.
+So, we're hoping some people with some English skills is interested to
+help out improving this situation.  What we immediately would like to
+see is something along these lines:
 
-As a last resort, the openvpn_snprintf can become a separate file that gets
-#include "..."-d by buffer.c and by service-win32/openvpnserv.c, then at le=
-ast
-you don't have the headaches to remember to change two places when fixing a=
- bug.
+* Move the man page to a better format than the pure man page format.
+  Are there some good tools/formats like ascii2man or DocBookXML which
+  could help easing the maintenance of our documentation?
 
-HTH & best regards
+* Split up the documentation into more focused sections, like
+  - main openvpn page (kind of like openvpn.8 today)
+      Gives an executive overview over OpenVPN, features and references
+      to the other documentation pages.  A bonus would be if it easily
+      can produce other formats in addition, like HTML, PS/PDF, ePub.
 
---=20
-Matthias Andree
+  - openvpn common options
+      Gives information about the common options openvpn has, which is
+      useful on both server and client instances.  F.ex. --keepalive,
+      --tls-auth, --cert, --key, --ca, etc
+
+  - openvpn server options
+      Describes only the options which are relevant for openvpn servers
+
+  - openvpn client options
+      Describes only options useful for openvpn clients
+
+  - openvpn plug-ins
+      Describes the different script plug-in hooks and environment
+      variables available to scripts and plug-ins written in C
+
+* Review the contents of all the documentation, check their accuracy
+  - Make sure no options are not available in OpenVPN 2.2 or later
+  - Make sure no options are missing in the documentation, which is
+    available in the source code  (options.c is a good reference)
+
+* Review and check if all external references
+  - Make sure all references to external sources, like web-sites, are
+    still available, valid and relevant in the document context
+  - Find other external resources which are worth including.
+
+(These points are not carved into stone, but is more like a guideline of
+what needs to be considered)
+
+This task should hopefully not require too much in-depth development
+knowledge.  It should be user-focused, so that we avoid using terms and
+details which is not so easy to understand.  What I'm saying is that
+this documentation can be more useful and readable if users are involved
+in this process.
+
+If someone are willing to step up and take a lead, that would be great!
+ Further, discussions and reviews of the document changes should
+probably happen on the openvpn-users mailing list.  That way, it might
+be easier for users to review the documentation and provide feedback.
+
+We don't want this to just be a solo-project from someone in our OpenVPN
+community, so we hope more people can help out and contribute, also if
+you don't consider yourself a developer.
+
+
+kind regards,
+
+David Sommerseth
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk0sPQcACgkQDC186MBRfrrX2gCgnymM0Rx8yMronRPhfXatFts9
+S24An13g48fdlKXnb9O1Zud8z/elaLRM
+=qXo0
+-----END PGP SIGNATURE-----
 
