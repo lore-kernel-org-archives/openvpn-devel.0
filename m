@@ -1,13 +1,9 @@
-Message-ID: <4D2F17FA.3020306@...1114...>
-Date: Thu, 13 Jan 2011 16:19:22 +0100
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4D2C3D0A.2060607@...1114...>
-	<4D2E139D.8020809@...1147...>	<4D2ED809.9060008@...1114...>
-	<4D2EF9B7.6000303@...515...>
-In-Reply-To: <4D2EF9B7.6000303@...515...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN documentation
- (man	page) review
+Date: Fri, 14 Jan 2011 21:00:25 +0100
+Message-ID: <AANLkTi=O+pg_K-W4AkT=3__VymknQ5dK0tq3czxBjLXL@...278...>
+From: Magnus Lindholm <linmag7@...277...>
+Content-Type: multipart/alternative; boundary=0016e65a073e9da0a20499d3e2cc
+Subject: [Openvpn-devel] get_default_gateway for solaris
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,54 +12,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
+To: Openvpn-devel@lists.sourceforge.net
+
+--0016e65a073e9da0a20499d3e2cc
+Content-Type: text/plain; charset=ISO-8859-1
+
+Hi,
+
+I've recently started to use OpenVPN at home I'm running the 2.2-beta5. I'm
+using OpenVPN (client) on a Solaris 11 express SPARC box and, from what I
+could tell, the get_default_gateway function in route.c is not implemented
+yet for the Solaris platform. This was a problem for me since I want the
+client to be able to detect the default gateway in order for the route
+add/del stuff to work properly when I connect/disconnect the VPN.
+
+I've added code inside the TARGET_SOLARIS section so that OpenVPN now is
+able to correctly determine the default gateway on my Solaris system. This
+seems to  work for me and OpenVPN is really a great VPN software and seems
+to work great on the Solaris/SPARC platform.
+
+If anyone has the same problem on the Solaris platform and would like to try
+out the changes I made, let me know.
+
+Regards
+
+Magnus Lindholm
+
+--0016e65a073e9da0a20499d3e2cc
+Content-Type: text/html; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-Cc: OpenVPN developers <openvpn-devel@lists.sourceforge.net>, OpenVPN List <openvpn-users@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi,<br><br>I&#39;ve recently started to use OpenVPN at home I&#39;m running=
+ the 2.2-beta5. I&#39;m using OpenVPN (client) on a Solaris 11 express SPAR=
+C box and, from what I could tell, the get_default_gateway function in rout=
+e.c is not implemented yet for the Solaris platform. This was a problem for=
+ me since I want the client to be able to detect the default gateway in ord=
+er for the route add/del stuff to work properly when I connect/disconnect t=
+he VPN.<br>
+<br>I&#39;ve added code inside the TARGET_SOLARIS section so that OpenVPN n=
+ow is able to correctly determine the default gateway on my Solaris system.=
+ This seems to=A0 work for me and OpenVPN is really a great VPN software an=
+d seems to work great on the Solaris/SPARC platform. <br>
+<br>If anyone has the same problem on the Solaris platform and would like t=
+o try out the changes I made, let me know.<br><br>Regards<br><br>Magnus Lin=
+dholm<br><br><br>
 
-On 13/01/11 14:10, Samuli Sepp=E4nen wrote:
->=20
->>
->> It should be possible to write a little script which parses the wiki
->> (page content) source text and makes man/html pages and example files
->> based on this.  This could be done before each release.
->>
->> The drawback is that the wiki markup might be too flexible (too many
->> features) and the parsing script might get complicated.
-> I'm pretty sure we can get the Wiki contents out in HTML format. And
-> there should be plenty of "HTML -> something" converters out there.
->=20
-
-It will probably be just as easy as parsing the wiki markup as the HTML
-result.  That parsing code already exists somewhere in Trac.
-
-The problem I was more thinking of is to have a style/layout which
-matches man pages, f.ex.  There are certain elements which are required,
-and a certain order.  And there are certain things which are not so
-easily accessible in man, like how to center text, bullet lists, misc
-indentation stuff.
-
-There are several and different "tags" in *roff which are rather
-limited, but they work flawlessly when used correctly, in the strict
-manner they was designed for.  Wiki-markup/HTML is way more flexible.
-Or to say it another way, converting *roff -> HTML is easy as going
-downhill, HTML -> *roff is more like going uphill.
-
-However - nothing is impossible, it just takes a bit longer time :)
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk0vF/gACgkQDC186MBRfrqO4QCdFzSN7NEbuMkL78TpOE8Ki/H0
-zA8AoJe62qdFM25XUK4WjFvSfhhKqXlb
-=3D+NCV
------END PGP SIGNATURE-----
+--0016e65a073e9da0a20499d3e2cc--
 
