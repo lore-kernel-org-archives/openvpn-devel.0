@@ -1,11 +1,11 @@
-Date: Mon, 17 Jan 2011 22:30:43 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20110117213043.GH12114@...1296...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="CblX+4bnyfN0pR09"
-Content-Disposition: inline
-Subject: [Openvpn-devel] configure not finding lzo (Solaris, NetBSD)
+Message-ID: <4D34B683.2050105@...1194...>
+Date: Mon, 17 Jan 2011 13:37:07 -0800
+From: Roman Vasilyev <roman@...1194...>
+MIME-Version: 1.0
+References: <4D34A90F.7080008@...1194...>
+	<20110117212323.GG12114@...1296...>
+In-Reply-To: <20110117212323.GG12114@...1296...>
+Subject: Re: [Openvpn-devel] openvpn FreeBSD kqueue
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,56 +14,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>
+Cc: Openvpn-devel@lists.sourceforge.net
 
---CblX+4bnyfN0pR09
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+after vpn deployment on FreeBSD without kqueue support, I want to add 
+code for kqueue
+and will send here patches and profiling results.
+On 01/17/2011 01:23 PM, Gert Doering wrote:
+> Hi,
+>
+> On Mon, Jan 17, 2011 at 12:39:43PM -0800, Roman Vasilyev wrote:
+>    
+>> I want to try FreeBSD with OpenVPN on high load, checked event.c ???
+>> found that it can work only with epoll, just want to ask is it possible
+>> to use kqueue in openvpn?
+>> If not, what people thinking if I'll add this support there?
+>>      
+> We'd need to see some profiling that shows that the change is making
+> a noticeable performance (or load) difference.  This sort of system
+> dependent code can be a burden for a project, because it is hard to
+> maintain if you don't develop on FreeBSD - but if it's a significant
+> gain, it could be worth the effort.
+>
+> (Speaking my personal opinion here, not for all the developers)
+>
+> gert
+>
+>    
 
-Hi,
-
-since there's folks on this list that understand configure way better
-than I do...
-
-Building OpenVPN on Solaris and on NetBSD fails "as is" because configure
-does not find the lzo headers and library.
-
-On NetBSD, these are (usually) installed by pkgsrc, and live in
-/usr/pkg/include and /usr/pkg/lib.
-
-On Solaris, if installed "from the source", the LZO stuff lives in
-/usr/local/include and /usr/local/lib (same place the libraries would
-end up on NetBSD if installed manually, not from pkgsrc).
-
-"Other packages" don't seem to have problems finding libraries in=20
-"the usual places for this operating system", even if it's not plain
-/usr/include + /usr/lib.
-
-So - should this be fixed?  If yes, what's the "right" way to get it
-fixed?
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---CblX+4bnyfN0pR09
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
-
-iQCVAwUBTTS1AqkuBuNlUUl1AQI8XwP8CTK5z9oKUizROF+46ZkBrGHftRcJqoRV
-HKkgGCSxwcaTjSHOqAYqIDBM7T7MYFgR6F+fc4XmVVbgX+/QW9Puk0LCQMktMSpB
-R+LHRt4R4bInxSq/BTbk1TSljGOmMvRDladp8cVkam0NMIj9HkGHPlgDcV3NnBn9
-ag4JbeJDlGM=
-=yZvW
------END PGP SIGNATURE-----
-
---CblX+4bnyfN0pR09--
 
