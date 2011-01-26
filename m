@@ -1,11 +1,9 @@
+Message-ID: <4D40B3B9.9070208@...1194...>
+Date: Wed, 26 Jan 2011 15:52:25 -0800
+From: Roman Vasilyev <roman@...1194...>
 MIME-Version: 1.0
-In-Reply-To: <AANLkTim0SDf=7KLqH_BkVwd4UyHLkCUCdn=2ycDRdyNY@...278...>
-References: <4D0392A1.3030406@...1114...>
-	<AANLkTim0SDf=7KLqH_BkVwd4UyHLkCUCdn=2ycDRdyNY@...278...>
-Date: Fri, 21 Jan 2011 08:50:42 -0800
-Message-ID: <AANLkTinciwPbV7=j7np45SSBRFNiJDWix12HPEey4U6e@...278...>
-From: Blaise Gassend <blaise@...1426...>
-Subject: [Openvpn-devel] Fwd:  Follow-up: --tls-float and protocol changes
+Content-Type: multipart/mixed; boundary="------------060405020906010709020002"
+Subject: [Openvpn-devel] FreeBSD kqueue patch
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,97 +12,227 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-I just realized that my reply to Dave's email on floating-tls didn't
-go to the list. Here it is below.
-
----------- Forwarded message ----------
-From: Blaise Gassend <blaise@...1426...>
-Date: Thu, Dec 16, 2010 at 11:13 PM
-Subject: Re: [Openvpn-devel] Follow-up: --tls-float and protocol changes
-To: David Sommerseth <openvpn.list@...1114...>
-
+--------------060405020906010709020002
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
 
 Hi,
 
-Just wanted to put in some quick comments on this floating tls post.
-I'm really not convinced by the usefulness of the feature vector
-approach.
+I've made patch for kqueue FreeBSD support, could somebody review it?
 
-> To avoid compatibility issues with clients not using --tls-float, a
-> separate op-code is used in the scenario when the client sends this
-> connection ID. =A0If a server or client receives this op-code and do not
-> support it, the packet will be dropped. =A0And, if I have understood it
-> correctly, the server will be able to detect if the client is supporting
-> - --tls-float or not and will therefore be able to support both clients w=
-hich
-> supports this feature and not.
 
-Correct. The server can support both types of clients.
 
-> How it works is basically a packet stream which looks like this if
-> - --tls-float is enabled [3]:
->
-> ~ =A0 TLS_OPCODE | Connection ID | OpenVPN control/data stream
+--------------060405020906010709020002
+Content-Type: text/x-patch; name="kqueue.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="kqueue.patch"
 
-Not quite. It is:
-FLOATING_TLS_OPCODE | Connection ID | NORMAL_OPCODE | OpenVPN
-control/data stream
+diff -Naur openvpn-2.1.4/event.c openvpn-2.1.4.new/event.c
+--- openvpn-2.1.4/event.c	2010-10-21 10:37:51.000000000 -0700
++++ openvpn-2.1.4.new/event.c	2011-01-26 15:11:06.000000000 -0800
+@@ -30,6 +30,10 @@
+ #include "event.h"
+ 
+ #include "memdbg.h"
++#define KQUEUE 1
++#if KQUEUE
++#include <sys/event.h>
++#endif
+ 
+ /*
+  * Some OSes will prefer select() over poll()
+@@ -599,7 +603,163 @@
+ 
+   return (struct event_set *) eps;
+ }
+-#endif /* EPOLL */
++
++#elif KQUEUE /* EPOLL */
++
++struct kq_set
++{
++  struct event_set_functions func;
++  bool fast;
++  int kqfd;
++  int maxevents;
++  struct kevent *changes;
++  size_t changes_size;
++  size_t maxchanges;
++  struct kevent *events;
++};
++
++static void
++kq_free (struct event_set *es)
++{
++  struct kq_set *kqs = (struct kq_set *) es;
++  close (kqs->kqfd);
++  free (kqs->changes);
++  free (kqs->events);
++  free (kqs);
++}
++
++static void
++kq_reset (struct event_set *es)
++{
++  const struct kq_set *kqs = (struct kq_set *) es;
++  ASSERT (kqs->fast);
++}
++
++static void
++kq_del (struct event_set *es, event_t event)
++{
++  struct kq_set *kqs = (struct kq_set *) es;
++  struct kevent *ev;
++
++  dmsg (D_EVENT_WAIT, "KQ_DEL ev=%d", (int)event);
++
++  ASSERT (!kqs->fast);
++  if ( kqs->changes_size+2 > kqs->maxchanges) {
++    kqs->maxchanges+=128;
++    kqs->changes = realloc(kqs->changes, sizeof(struct kevent)*kqs->maxchanges);
++  }
++
++  ev=&kqs->changes[kqs->changes_size++];
++  ev->ident = event;
++  ev->flags = EV_DELETE;
++  ev->filter = EVFILT_READ;
++
++  ev=&kqs->changes[kqs->changes_size++];
++  ev->ident = event;
++  ev->flags = EV_DELETE;
++  ev->filter = EVFILT_WRITE;
++}
++
++static void
++kq_ctl (struct event_set *es, event_t event, unsigned int rwflags, void *arg)
++{
++  struct kq_set *kqs = (struct kq_set *) es;
++  if ( kqs->changes_size+2 > kqs->maxchanges) {
++    kqs->maxchanges+=128;
++    kqs->changes = realloc(kqs->changes, sizeof(struct kevent)*kqs->maxchanges);
++  }
++
++  if (rwflags & EVENT_READ) {
++    struct kevent *ev=&kqs->changes[kqs->changes_size++];
++    ev->udata=arg;
++    ev->ident = event;
++    ev->flags = EV_ADD;
++    ev->filter = EVFILT_READ;
++  }
++  if (rwflags & EVENT_WRITE) {
++    struct kevent *ev=&kqs->changes[kqs->changes_size++];
++    ev->udata=arg;
++    ev->ident = event;
++    ev->flags = EV_ADD;
++    ev->filter = EVFILT_WRITE;
++  }
++}
++
++static int
++kq_wait (struct event_set *es, const struct timeval *tv, struct event_set_return *out, int outlen)
++{
++  struct kq_set *kqs = (struct kq_set *) es;
++  int stat;
++  struct timespec ts;
++  TIMEVAL_TO_TIMESPEC(tv, &ts);
++
++  if (outlen > kqs->maxevents) {
++    kqs->maxevents=outlen;
++    kqs->events = realloc(kqs->events, sizeof(struct kevent)*outlen);
++  }
++
++  stat = kevent (kqs->kqfd, kqs->changes, kqs->changes_size, kqs->events, outlen, &ts );
++  kqs->changes_size=0;
++
++  if (stat > 0)
++    {
++      int i;
++      const struct kevent *ev = kqs->events;
++      struct event_set_return *esr = out;
++      for (i = 0; i < stat; ++i)
++	{
++	  esr->rwflags = 0;
++	  if (ev->filter == EVFILT_READ)
++	    esr->rwflags |= EVENT_READ;
++	  if (ev->filter == EVFILT_WRITE)
++	    esr->rwflags |= EVENT_WRITE;
++	  esr->arg = ev->udata;
++	  dmsg (D_EVENT_WAIT, "KQ_WAIT[%d] rwflags=0x%04x ev=0x%08x arg=" ptr_format,
++	       i, esr->rwflags, ev->flags, (ptr_type)ev->udata);
++	  ++ev;
++	  ++esr;
++	}
++    }
++  return stat;
++}
++
++static struct event_set *
++kq_init (int *maxevents, unsigned int flags)
++{
++  struct kq_set *kqs;
++  int fd;
++
++  dmsg (D_EVENT_WAIT, "KQ_INIT maxevents=%d flags=0x%08x", *maxevents, flags);
++
++  /* open epoll file descriptor */
++  fd = kqueue ();
++  if (fd < 0)
++    return NULL;
++
++  ALLOC_OBJ_CLEAR (kqs, struct kq_set);
++
++  /* set dispatch functions */
++  kqs->func.free = kq_free;
++  kqs->func.reset = kq_reset;
++  kqs->func.del = kq_del;
++  kqs->func.ctl = kq_ctl;
++  kqs->func.wait = kq_wait;
++
++  /* fast method ("sort of") corresponds to epoll one-shot */
++  if (flags & EVENT_METHOD_FAST)
++    kqs->fast = true;
++
++  /* allocate space for epoll_wait return */
++  ASSERT (*maxevents > 0);
++  kqs->maxevents = *maxevents;
++  ALLOC_ARRAY_CLEAR (kqs->events, struct kevent, kqs->maxevents);
++
++  /* set epoll control fd */
++  kqs->kqfd = fd;
++
++  return (struct event_set *) kqs;
++}
++#endif
+ 
+ #if POLL
+ 
+@@ -1005,6 +1165,10 @@
+   if (flags & EVENT_METHOD_US_TIMEOUT)
+     ret = se_init (maxevents, flags); 
+ #endif
++# ifdef KQUEUE
++   if (!ret)
++     ret = kq_init (maxevents, flags);
++# endif
+ # ifdef SELECT_PREFERRED_OVER_POLL
+    if (!ret)
+      ret = se_init (maxevents, flags);
+@@ -1038,6 +1202,13 @@
+       msg (M_WARN, "Note: sys_epoll API is unavailable, falling back to poll/select API");
+       ret = event_set_init_simple (maxevents, flags);
+     }
++#elif KQUEUE
++  ret = kq_init (maxevents, flags);
++  if (!ret)
++    {
++      msg (M_WARN, "Note: sys_epoll API is unavailable, falling back to poll/select API");
++      ret = event_set_init_simple (maxevents, flags);
++    }
+ #else
+   ret = event_set_init_simple (maxevents, flags);
+ #endif
 
-The normal packet is completely encapsulated in the floating TLS packet.
-
-> When it comes to the use of an own op-code for --tls-float to work, that =
-is
-> more tricky. =A0It was identified that the op-code field is only 5 bits[5=
-].
-> Currently 8 op-codes are already in use, which leaves 23 op-codes availab=
-le
-> now. =A0Rightfully enough, it is not often you need to extend a protocol =
-like
-> this, but we know that OpenVPN 3 will most likely extend the protocol even
-> further. =A0So to be sure we don't limit us self in the future, the use of
-> op-codes needs a broader discussion.
-
-Most enhancements do not require a new opcode. Are there any proposed
-OpenVPN 3 enhancements that will require a new opcode? What are they?
-
-75% of opcodes are still free. It doesn't strike me that there is a
-scarcity yet. If you actually do run out of opcodes, you can use one
-of them as an escape opcode that is followed by an extension opcode,
-allowing you to get a whole new set of opcodes (256 for one byte).
-Contrast this with the feature vector proposal which is suggesting
-using a larger 4 byte feature vector, that will run out after 32
-features. The feature vector tradeoff doesn't make sense to me.
-
-Encapsulation arises very naturally by using an extra opcode. Other
-ways of achieving the same effect require a patch that is a lot more
-intrusive and error prone.
-
-Are there any other examples of features that would be better served
-by the feature vector approach than by having options negociated
-during session initiation?
-
-> So, why not just let give --tls-float an op-code and skip this feature
-> stuff now? (or: let's postpone the feature stuff until we really need it)
-> We all agreed that the --tls-float feature is useful in several scenarios,
-> but as it was requested this feature will be compile-time disabled by
-> default [6]. =A0In my opinion, it would be wasting of an op-code slot if
-> a feature is not enabled by default. =A0Therefore I suggest that the
-> - --tls-float will use a solution like described above.
-
-Again, I would want to see a case that there actually are other
-features that could benefit from their own opcode.
-
-> Why should we spend time and energy implementing a FEAT_OPCODE solution?
-> First of all to be sure we can expand the wire-protocol in the future
-> without breaking compatibility with older clients.
-
-Adding a new opcode or using an unsupported feature bit will break
-compatibility with older clients just as much.
-
-Cheers,
-Blaise
+--------------060405020906010709020002--
 
