@@ -1,11 +1,9 @@
-Message-ID: <4D505025.2010007@...515...>
-Date: Mon, 07 Feb 2011 22:03:49 +0200
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <4D4BE51E.1050905@...515...> <4D4C7466.4030301@...1147...>
-	<4D4FAEB0.3040508@...515...> <4D4FDDF2.6000002@...1147...>
-In-Reply-To: <4D4FDDF2.6000002@...1147...>
-Subject: Re: [Openvpn-devel] Help testing OpenVPN 2.2-rc Windows installer?
+Date: Mon, 7 Feb 2011 17:12:16 -0800
+Message-ID: <AANLkTi=r_utzB7C8AOpOdYB5MsH72og5PmTPBa3fKC3a@...278...>
+From: anjini shukla <anjinishukla@...277...>
+Content-Type: multipart/alternative; boundary=20cf3054a7370b4bd3049bbb0ac1
+Subject: [Openvpn-devel] setting up routes after connecting to via openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,116 +12,110 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
+To: Openvpn-devel@lists.sourceforge.net
+
+--20cf3054a7370b4bd3049bbb0ac1
+Content-Type: text/plain; charset=ISO-8859-1
+
+I need some help in setting up routes, once i have a point to point
+connection between two computers using openVpn.
+
+-Computer A:      10.8.0.1
+ ( windows xp)    10.10.15.39
+
+-Computer B:    10.8.0.2
+  ( windows xp)  10.208.54.100
+
+I can ping 10.8.0.1 from computerB and 10.8.0.2 from computer A.
+
+I want  to connect computerB to the 10.10.15.x subnet. I explicitly added
+route using command :
+
+ComputerB: "route add 10.10.15.0 mask 255.255.255.255 10.10.8.2"
+and  modified
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\IPEnableRouter
+1
+
+I expect all the traffic for 10.10.15.x subnet to be routed through
+10.8.0.2, but that is never the case. I observed in tracert and wireshark a
+ping 10.10.15.39 always has source as 10.208.54.100. Anyone has seen
+a similar issue? I also tried adding push route parameter as openVpn
+documentation suggests, but that did not help.
+
+Thank you for all help in advance,
+Anjini
+
+ps:
+command used to connect to openvpn
+
+ComputerA: "openvpn.exe --dev tun --proto tcp-server --ifconfig 10.8.0.1
+10.8.0.2"
+
+Computer V: "openvpn.exe --dev tun --proto tcp-client --remote
+computerBIPAddress --ifconfig 10.8.0.2 10.8.0.1 "
+
+--20cf3054a7370b4bd3049bbb0ac1
+Content-Type: text/html; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: Jan Just Keijser <janjust@...1147...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
+<div>I need some help in setting up routes, once i have a=A0point to point =
+connection between two computers using openVpn.</div><div><br></div><div>-C=
+omputer A: =A0 =A0 =A010.8.0.1</div><div>=A0( windows xp) =A0 =A010.10.15.3=
+9</div><div>
 
-> hi  Samuli,
->
-> Samuli Sepp=E4nen wrote:
->=20=20=20
->>> Hi Samuli,
->>>
->>> Samuli Sepp=E4nen wrote:
->>>=20=20=20
->>>=20=20=20=20=20
->>>=20=20=20=20=20=20=20
->>>> Hi,
->>>>
->>>> As some of you may be aware, I've been working on the new Python-based
->>>> OpenVPN Windows buildsystem; now the first fully functional OpenVPN
->>>> installer is ready:
->>>>
->>>> <http://build.openvpn.net/downloads/releases/openvpn-2.2-rc-install-pr=
-eview-1.exe>
->>>>
->>>> However, I've only done very limited testing. On Windows 7 64-bit
->>>> platform the following seems to work:
->>>>
->>>> - installing and uninstalling all userspace components
->>>> - installing and uninstalling the (64-bit) TAP driver
->>>> - running OpenVPN as service
->>>> - running OpenVPN using the OpenVPN-GUI
->>>>
->>>> I've only noticed two small issues on the Win7 64-bit platform:
->>>>
->>>> - uninstall does not remove the OpenVPN start menu entries properly
->>>> (remove manually using right click -> delete)
->>>> - "View README" at the end of install does not work
->>>>
->>>> Note that the installer itself is not signed, even though the TAP
->>>> drivers are. This will be fixed in the final 2.2-rc release.
->>>>
->>>> Now, I'd need help in verifying that both the installer and the includ=
-ed
->>>> executables work properly on all supported 32 and 64-bit Windows
->>>> platforms (XP and later). If you can, please test the installer on some
->>>> _non-critical system_ and report back, whether everything works proper=
-ly
->>>> or not. Once all installer bugs are squashed, I'll make the
->>>> openvpn-2.2-rc release. After that I'll clean up my buildsystem patche=
-s,
->>>> send them here for review and then update the Windows building Wiki pa=
-ge:
->>>>
->>>>=20=20=20
->>>>=20=20=20=20=20
->>>>=20=20=20=20=20=20=20
->>>>=20=20=20=20=20=20=20=20=20
->>> just tried it on a 32bit Windows XP SP3 machine. Installation went OK,=
-=20
->>> the README works but the format of the README file itself does not=20
->>> display properly in Notepad (CR/LF problem?).
->>>=20=20=20
->>> The bad news is that the binaries don't work. All binaries refuse to=20
->>> start (openvpn.exe, openssl.exe, openvpn-gui.exe). The command-line=20
->>> tools fail with 'Cannot execute the specified program'. The OpenVPN GUI=
-=20
->>> fails with an error 0xC0150002.
->>>=20=20=20
->>>=20=20=20=20=20
->>>=20=20=20=20=20=20=20
->> Interesting, given that OpenVPN was built on WinXP. This may have
->> something to do with the (external) manifest files or DLL versions. I'll
->> setup another WinXP VM to test the installer, fix these issues and then
->> upload a second preview.
->>=20=20=20
->>=20=20=20=20=20
-> did some testing: turns out that the new executables depend on the=20
-> Visual Studio 2008 runtime (msvcr90.dll). The manifest files point to=20
-> these MSVCR files but I did not install them in my VM (nor do I think I=20
-> should have to install them).
-> After installing the Visual Studio 2008 RT the openvpn.exe command at=20
-> least *runs* .
-> If I remove the manifest files it no longer works - personally I think=20
-> this is kinda ugly ...
->
-> cheers,
->
-> JJK
->=20=20=20
-Hi Jan,
+<br></div><div>-Computer B: =A0 =A010.8.0.2</div><div>=A0=A0( windows xp) =
+=A010.208.54.100=A0</div><div><br></div><div>I can ping 10.8.0.1 from compu=
+terB and 10.8.0.2 from computer A.</div><div><br></div><div>I want =A0to co=
+nnect computerB to the 10.10.15.x subnet. I explicitly added route using co=
+mmand :=A0</div>
 
-Ok, this makes sense. The openvpn.exe runs fine on the build computer,
-which is running Windows XP and has Visual Studio 2008 installed.
-However, the installer does/should contain a redistributable version of
-msvcrt90.dll along with an external manifest file pointing to it.
-Windows should find this  msvcrt90.dll if it's placed in the executable
-directory ($OPENVPN_INSTALL_DIR\bin). Now, I'm not sure if VS tools
-automatically generate an internal (embedded) manifest for each EXE/DLL
-or not. If they do, then manifest/DLL version mismatch is one
-possibility, depending on whether internal or external manifest file
-takes precedence.
+<div><br></div><div>ComputerB: &quot;route add 10.10.15.0 mask 255.255.255.=
+255 10.10.8.2&quot;</div><div>and =A0modified=A0</div><div><span style=3D"f=
+ont-family:Verdana, Arial, Helvetica, sans-serif;font-size:11px;line-height=
+:17px">HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameter=
+s\</span><span style=3D"font-family:Verdana, Arial, Helvetica, sans-serif;f=
+ont-size:11px;line-height:17px">IPEnableRouter 1</span></div>
 
-I will create a WinXP VM tomorrow and see what's going on.
+<div><span style=3D"font-family:Verdana, Arial, Helvetica, sans-serif;font-=
+size:11px;line-height:17px"><br></span></div><div><font face=3D"Verdana, Ar=
+ial, Helvetica, sans-serif"><span style=3D"font-size:11px;line-height:17px"=
+>I expect all the traffic for 10.10.15.x subnet to be routed through 10.8.0=
+.2, but that is never the case. I observed in tracert and wireshark a ping =
+10.10.15.39 always has source as 10.208.54.100. Anyone has seen a=A0similar=
+ issue? I also tried adding push route parameter as openVpn documentation s=
+uggests, but that did not help.=A0</span></font></div>
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+<div><font face=3D"Verdana, Arial, Helvetica, sans-serif"><span style=3D"fo=
+nt-size:11px;line-height:17px"><br></span></font></div><div><font face=3D"V=
+erdana, Arial, Helvetica, sans-serif"><span style=3D"font-size:11px;line-he=
+ight:17px">Thank you for all help in advance,</span></font></div>
 
-irc freenode net: mattock
+<div><font face=3D"Verdana, Arial, Helvetica, sans-serif"><span style=3D"fo=
+nt-size:11px;line-height:17px"></span></font><span style=3D"font-family:Ver=
+dana, Arial, Helvetica, sans-serif;font-size:11px;line-height:17px">Anjini=
+=A0</span></div>
 
+<div><span style=3D"font-family:Verdana, Arial, Helvetica, sans-serif;font-=
+size:11px;line-height:17px"><br></span></div><div><span style=3D"font-famil=
+y:Verdana, Arial, Helvetica, sans-serif;font-size:11px;line-height:17px">ps=
+:=A0</span></div>
+
+<div><span style=3D"font-family:Verdana, Arial, Helvetica, sans-serif;font-=
+size:11px;line-height:17px">command used to connect to openvpn</span></div>=
+<div><span style=3D"font-family:Verdana, Arial, Helvetica, sans-serif;font-=
+size:11px;line-height:17px"><br>
+
+</span></div><div><span style=3D"font-family:Verdana, Arial, Helvetica, san=
+s-serif;font-size:11px;line-height:17px">ComputerA: &quot;openvpn.exe --dev=
+ tun --proto tcp-server --ifconfig 10.8.0.1 10.8.0.2&quot;</span></div>
+<div><span style=3D"font-family:Verdana, Arial, Helvetica, sans-serif;font-=
+size:11px;line-height:17px"><br></span></div><div><span style=3D"font-famil=
+y:Verdana, Arial, Helvetica, sans-serif;font-size:11px;line-height:17px">Co=
+mputer V: &quot;openvpn.exe --dev tun --proto tcp-client --remote computerB=
+IPAddress --ifconfig 10.8.0.2 10.8.0.1 &quot;</span></div>
+
+<div><span style=3D"font-family:Verdana, Arial, Helvetica, sans-serif;font-=
+size:11px;line-height:17px"><br></span></div>
+
+--20cf3054a7370b4bd3049bbb0ac1--
 
