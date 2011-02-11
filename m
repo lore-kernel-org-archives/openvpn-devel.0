@@ -1,10 +1,10 @@
 From: =?utf-8?q?Samuli=20Sepp=C3=A4nen?= <samuli@...515...>
-Date: Fri, 11 Feb 2011 17:09:43 +0200
-Message-Id: <1297436985-18991-11-git-send-email-samuli@...515...>
+Date: Fri, 11 Feb 2011 17:09:44 +0200
+Message-Id: <1297436985-18991-12-git-send-email-samuli@...515...>
 In-Reply-To: <1297436985-18991-1-git-send-email-samuli@...515...>
 References: <1297436985-18991-1-git-send-email-samuli@...515...>
-Subject: [Openvpn-devel] [PATCH 11/13] Several modifications to
-	win/make_dist.py to allow building the NSI installer
+Subject: [Openvpn-devel] [PATCH 12/13] Copied install-win32/setpath.nsi to
+	win/setpath.nsi
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,92 +17,248 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Added copying of all remaining openvpn dependencies to dist directory so that
-the NSI installer script (win/openvpn.nsi) can find and use them more easily.
-This includes openvpn.exe, openvpnserv.exe, libpkcs11-helper-1.dll, openssl.exe,
-and example files. The associated, external DDL/manifest files are copied also,
-so that embedding them with mt.exe is easier. This is a temporary solution until
-nmake makefiles are modified to automate this process, except for a few of the
-library dependencies (lzo2.dll and libpkcs11-helper-1.dll).
 ---
- win/make_dist.py |   28 +++++++++++++++++++++++++---
- 1 files changed, 25 insertions(+), 3 deletions(-)
+ win/setpath.nsi |  231 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 231 insertions(+), 0 deletions(-)
+ create mode 100755 win/setpath.nsi
 
-diff --git a/win/make_dist.py b/win/make_dist.py
-index a6a0563..ab54c2a 100644
---- a/win/make_dist.py
-+++ b/win/make_dist.py
-@@ -1,5 +1,5 @@
- import os
--from wb import home_fn, rm_rf, mkdir, cp_a, cp
-+from wb import home_fn, rm_rf, mkdir, cp_a, cp, rename
- 
- def main(config, tap=True):
-     dist = config['DIST']
-@@ -8,6 +8,7 @@ def main(config, tap=True):
-     bin = os.path.join(dist, 'bin')
-     i386 = os.path.join(dist, 'i386')
-     amd64 = os.path.join(dist, 'amd64')
-+    samples = os.path.join(dist, 'samples')
- 
-     # build dist and subdirectories
-     rm_rf(dist)
-@@ -16,15 +17,34 @@ def main(config, tap=True):
-     if tap:
-         mkdir(i386)
-         mkdir(amd64)
-+    mkdir(samples)
- 
--    # copy openvpn.exe and manifest
-+    # copy openvpn.exe, openvpnserv.exe and their manifests
-     cp(home_fn('openvpn.exe'), bin)
-     cp(home_fn('openvpn.exe.manifest'), bin)
-+    cp(home_fn('service-win32/openvpnserv.exe'), bin)
-+    cp(home_fn('service-win32/openvpnserv.exe.manifest'), bin)
+diff --git a/win/setpath.nsi b/win/setpath.nsi
+new file mode 100755
+index 0000000..a9626c3
+--- /dev/null
++++ b/win/setpath.nsi
+@@ -0,0 +1,231 @@
++; Modify the user's PATH variable.
++;
++; Modified by JY to have both a RemoveFromPath
++; and an un.RemoveFromPath which are basically
++; copies of each other.  Why does NSIS demand
++; this nonsense?
++;
++; Modified Feb 14, 2005 by Mathias Sundman:
++;   Added code to remove the semicolon at the end of the path
++;   when uninstalling.
++;
++;   Added code to make sure we don't insert an extra semicolon
++;   before our path if there already exist one at the end of
++;   the original path.
++;
++;   Removed duplicated "un. and install" functions and made
++;   macros to duplicate the code instead.
 +
-+    # copy openvpn-gui
-+    cp(home_fn(config['OPENVPN_GUI_DIR']+"/"+config['OPENVPN_GUI']), bin)
- 
-     # copy DLL dependencies
-     cp(home_fn(config['LZO_DIR']+'/bin/lzo2.dll'), bin)
-+    cp(home_fn(config['LZO_DIR']+'/bin/lzo2.dll.manifest'), bin)
-     cp(home_fn(config['OPENSSL_DIR']+'/bin/libeay32.dll'), bin)
-     cp(home_fn(config['OPENSSL_DIR']+'/bin/ssleay32.dll'), bin)
-+    cp(home_fn(config['PKCS11_HELPER_DIR']+'/lib/libpkcs11-helper-1.dll'), bin)
-+    cp(home_fn(config['PKCS11_HELPER_DIR']+'/lib/libpkcs11-helper-1.dll.manifest'), bin)
++; example usage
++;
++;Section "Add to path"
++;  Push $INSTDIR
++;  Call AddToPath
++;SectionEnd
++;
++;# ...
++;
++;Section "uninstall"
++;  # ...
++;  Push $INSTDIR
++;  Call un.RemoveFromPath
++;  # ...
++;SectionEnd
 +
-+    # copy OpenSSL utilities (=openvpn.exe)
-+    cp(home_fn(config['OPENSSL_DIR']+'/bin/openssl.exe'), bin)
++!verbose 3
++!include "WinMessages.NSH"
++!verbose 4
 +
-+    # copy sample config files; renaming is necessary due to openvpn.nsi script
-+    cp(home_fn('install-win32/sample.ovpn'), samples)
-+    cp(home_fn('sample-config-files/client.conf'), samples)
-+    cp(home_fn('sample-config-files/server.conf'), samples)
-+    rename(os.path.join(samples,'client.conf'), os.path.join(samples, 'client.ovpn'))
-+    rename(os.path.join(samples,'server.conf'), os.path.join(samples, 'server.ovpn'))
- 
-     # copy MSVC CRT
-     cp_a(home_fn(config['MSVC_CRT']), bin)
-@@ -40,16 +60,18 @@ def main(config, tap=True):
-                         cp(os.path.join(dir, f), dest)
-                 break
- 
--        # copy tapinstall
-+        # Copy tapinstall.exe (usually known as devcon.exe)
-         dest = {'amd64' : amd64, 'i386' : i386}
-         for dirpath, dirnames, filenames in os.walk(home_fn('tapinstall')):
-             for f in filenames:
-                 if f == 'tapinstall.exe':
-+		    # dir_name is either i386 or amd64
-                     dir_name = os.path.basename(dirpath)
-                     src = os.path.join(dirpath, f)
-                     if dir_name in dest:
-                         cp(src, dest[dir_name])
- 
++;====================================================
++; AddToPath - Adds the given dir to the search path.
++;        Input - head of the stack
++;        Note - Win9x systems requires reboot
++;====================================================
++Function AddToPath
++  Exch $0
++  Push $1
++  Push $2
++  
++  Call IsNT
++  Pop $1
++  StrCmp $1 1 AddToPath_NT
++    ; Not on NT
++    StrCpy $1 $WINDIR 2
++    FileOpen $1 "$1\autoexec.bat" a
++    FileSeek $1 0 END
++    GetFullPathName /SHORT $0 $0
++    FileWrite $1 "$\r$\nSET PATH=%PATH%;$0$\r$\n"
++    FileClose $1
++    Goto AddToPath_done
 +
- # if we are run directly, and not loaded as a module
- if __name__ == "__main__":
-     from wb import config
++  AddToPath_NT:
++    ReadRegStr $1 HKCU "Environment" "PATH"
++    StrCpy $2 $1 1 -1 # copy last char
++    StrCmp $2 ";" 0 +2 # if last char == ;
++      StrCpy $1 $1 -1 # remove last char
++
++    StrCmp $1 "" AddToPath_NTdoIt
++      StrCpy $0 "$1;$0"
++      Goto AddToPath_NTdoIt
++    AddToPath_NTdoIt:
++      WriteRegExpandStr HKCU "Environment" "PATH" $0
++      SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
++  
++  AddToPath_done:
++    Pop $2
++    Pop $1
++    Pop $0
++FunctionEnd
++
++;====================================================
++; RemoveFromPath - Remove a given dir from the path
++;     Input: head of the stack
++;====================================================
++!macro RemoveFromPath un
++Function ${un}RemoveFromPath
++  Exch $0
++  Push $1
++  Push $2
++  Push $3
++  Push $4
++  Push $5
++  
++  Call ${un}IsNT
++  Pop $1
++  StrCmp $1 1 RemoveFromPath_NT
++    ; Not on NT
++    StrCpy $1 $WINDIR 2
++    FileOpen $1 "$1\autoexec.bat" r
++    GetTempFileName $4
++    FileOpen $2 $4 w
++    GetFullPathName /SHORT $0 $0
++    StrCpy $0 "SET PATH=%PATH%;$0"
++    SetRebootFlag true
++    Goto RemoveFromPath_dosLoop
++    
++    RemoveFromPath_dosLoop:
++      FileRead $1 $3
++      StrCmp $3 "$0$\r$\n" RemoveFromPath_dosLoop
++      StrCmp $3 "$0$\n" RemoveFromPath_dosLoop
++      StrCmp $3 "$0" RemoveFromPath_dosLoop
++      StrCmp $3 "" RemoveFromPath_dosLoopEnd
++      FileWrite $2 $3
++      Goto RemoveFromPath_dosLoop
++    
++    RemoveFromPath_dosLoopEnd:
++      FileClose $2
++      FileClose $1
++      StrCpy $1 $WINDIR 2
++      Delete "$1\autoexec.bat"
++      CopyFiles /SILENT $4 "$1\autoexec.bat"
++      Delete $4
++      Goto RemoveFromPath_done
++
++  RemoveFromPath_NT:
++    StrLen $2 $0
++    ReadRegStr $1 HKCU "Environment" "PATH"
++    Push $1
++    Push $0
++    Call ${un}StrStr ; Find $0 in $1
++    Pop $0 ; pos of our dir
++    IntCmp $0 -1 RemoveFromPath_done
++      ; else, it is in path
++      StrCpy $3 $1 $0 ; $3 now has the part of the path before our dir
++      IntOp $2 $2 + $0 ; $2 now contains the pos after our dir in the path (';')
++      IntOp $2 $2 + 1 ; $2 now containts the pos after our dir and the semicolon.
++      StrLen $0 $1
++      StrCpy $1 $1 $0 $2
++      StrCpy $3 "$3$1"
++
++      StrCpy $5 $3 1 -1 # copy last char
++      StrCmp $5 ";" 0 +2 # if last char == ;
++        StrCpy $3 $3 -1 # remove last char
++
++      WriteRegExpandStr HKCU "Environment" "PATH" $3
++      SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
++  
++  RemoveFromPath_done:
++    Pop $5
++    Pop $4
++    Pop $3
++    Pop $2
++    Pop $1
++    Pop $0
++FunctionEnd
++!macroend
++!insertmacro RemoveFromPath ""
++!insertmacro RemoveFromPath "un."
++
++
++;====================================================
++; StrStr - Finds a given string in another given string.
++;               Returns -1 if not found and the pos if found.
++;          Input: head of the stack - string to find
++;                      second in the stack - string to find in
++;          Output: head of the stack
++;====================================================
++!macro StrStr un
++Function ${un}StrStr
++  Push $0
++  Exch
++  Pop $0 ; $0 now have the string to find
++  Push $1
++  Exch 2
++  Pop $1 ; $1 now have the string to find in
++  Exch
++  Push $2
++  Push $3
++  Push $4
++  Push $5
++
++  StrCpy $2 -1
++  StrLen $3 $0
++  StrLen $4 $1
++  IntOp $4 $4 - $3
++
++  StrStr_loop:
++    IntOp $2 $2 + 1
++    IntCmp $2 $4 0 0 StrStrReturn_notFound
++    StrCpy $5 $1 $3 $2
++    StrCmp $5 $0 StrStr_done StrStr_loop
++
++  StrStrReturn_notFound:
++    StrCpy $2 -1
++
++  StrStr_done:
++    Pop $5
++    Pop $4
++    Pop $3
++    Exch $2
++    Exch 2
++    Pop $0
++    Pop $1
++FunctionEnd
++!macroend
++!insertmacro StrStr ""
++!insertmacro StrStr "un."
++
++;====================================================
++; IsNT - Returns 1 if the current system is NT, 0
++;        otherwise.
++;     Output: head of the stack
++;====================================================
++!macro IsNT un
++Function ${un}IsNT
++  Push $0
++  ReadRegStr $0 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
++  StrCmp $0 "" 0 IsNT_yes
++  ; we are not NT.
++  Pop $0
++  Push 0
++  Return
++
++  IsNT_yes:
++    ; NT!!!
++    Pop $0
++    Push 1
++FunctionEnd
++!macroend
++!insertmacro IsNT ""
++!insertmacro IsNT "un."
++
 -- 
 1.6.3.3
 
