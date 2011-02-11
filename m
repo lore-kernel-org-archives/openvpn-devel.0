@@ -1,10 +1,10 @@
 From: =?utf-8?q?Samuli=20Sepp=C3=A4nen?= <samuli@...515...>
-Date: Fri, 11 Feb 2011 17:09:39 +0200
-Message-Id: <1297436985-18991-7-git-send-email-samuli@...515...>
+Date: Fri, 11 Feb 2011 17:09:40 +0200
+Message-Id: <1297436985-18991-8-git-send-email-samuli@...515...>
 In-Reply-To: <1297436985-18991-1-git-send-email-samuli@...515...>
 References: <1297436985-18991-1-git-send-email-samuli@...515...>
-Subject: [Openvpn-devel] [PATCH 07/13] Added command-line switch to
-	win/build_all.py to skip TAP driver building
+Subject: [Openvpn-devel] [PATCH 08/13] Added configure.h and version.m4
+	variable parsing to win/config.py
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,74 +17,27 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Modified win/build_all.py so that by giving -n or --notap switch the TAP driver
-is not built. This is useful if using prebuilt TAP drivers, or when WinDDK is
-not installed.
+Python-based buildsystem uses win/config.py to obtain global build parameters
+from various sources. Added parsing of the (fake) configure.h and version.m4 to
+it so that other Python build files can use them.
 ---
- win/build_all.py |   23 ++++++++++++++++-------
- 1 files changed, 16 insertions(+), 7 deletions(-)
+ win/config.py |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
 
-diff --git a/win/build_all.py b/win/build_all.py
-index dec3a78..2c4d1aa 100644
---- a/win/build_all.py
-+++ b/win/build_all.py
-@@ -11,6 +11,7 @@ def Usage():
-     print
-     print " -h, --help		Show this help"
-     print " -u, --unsigned	Do not sign the TAP drivers"
-+    print " -n, --notap		Don't build the TAP driver"
-     sys.exit(1)
+diff --git a/win/config.py b/win/config.py
+index cf38cac..d4dc6f4 100644
+--- a/win/config.py
++++ b/win/config.py
+@@ -1,6 +1,8 @@
+-from wb import preprocess, autogen, mod_fn, home_fn, build_autodefs, make_headers_objs, dict_def
++from wb import preprocess, autogen, mod_fn, home_fn, build_configure_h, build_version_m4_vars, build_autodefs, make_headers_objs, dict_def
  
  def main(config):
-@@ -18,9 +19,12 @@ def main(config):
-     # Do a signed build by default
-     signedBuild=True
++    build_configure_h(config, mod_fn(home_fn('configure.h')), head_comment='/* %s */\n\n' % autogen)
++    build_version_m4_vars(mod_fn(mod_fn('version_m4_vars.tmp')), head_comment='/* %s */\n\n' % autogen)
+     build_autodefs(config, mod_fn('autodefs.h.in'), home_fn('autodefs.h'))
+     ho = make_headers_objs(home_fn('Makefile.am'))
  
-+    # Build the TAP driver by default
-+    tap=True
-+
-     # Parse the command line argument(s)
-     try:
--       opts, args = getopt.getopt(sys.argv[1:], "hu", ["help", "unsigned"])
-+       opts, args = getopt.getopt(sys.argv[1:], "hun", ["help", "unsigned", "notap"])
-     except getopt.GetoptError:
-        Usage()
- 
-@@ -29,7 +33,8 @@ def main(config):
-           Usage()
-        if o in ("-u", "--unsigned"):
-           signedBuild=False
--
-+       if o in ("-n", "--notap"):
-+          tap=False
- 
-     # Check if the SignTool module is present. This avoids ImportErrors popping
-     # up annoyingly _after_ the build.
-@@ -45,8 +50,12 @@ def main(config):
-     # Start the build
-     config_all(config)
-     build_openvpn()
--    build_ddk(config, 'tap', 'all')
--    build_ddk(config, 'tapinstall', 'all')
-+
-+    if tap:
-+       build_ddk(config, 'tap', 'all')
-+       build_ddk(config, 'tapinstall', 'all')
-+    else:
-+       print "Not building the TAP driver"
- 
-     if signedBuild:
-        sign(config, 'all')
-@@ -54,6 +63,6 @@ def main(config):
-     make_dist(config)
- 
- # if we are run directly, and not loaded as a module
--if __name__ == "__main__":
--    from wb import config
--    main(config)
-+if __name__ == "__main__":
-+    from wb import config
-+    main(config)
 -- 
 1.6.3.3
 
