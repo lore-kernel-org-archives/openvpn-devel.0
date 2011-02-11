@@ -1,10 +1,10 @@
 From: =?utf-8?q?Samuli=20Sepp=C3=A4nen?= <samuli@...515...>
-Date: Fri, 11 Feb 2011 17:09:38 +0200
-Message-Id: <1297436985-18991-6-git-send-email-samuli@...515...>
+Date: Fri, 11 Feb 2011 17:09:39 +0200
+Message-Id: <1297436985-18991-7-git-send-email-samuli@...515...>
 In-Reply-To: <1297436985-18991-1-git-send-email-samuli@...515...>
 References: <1297436985-18991-1-git-send-email-samuli@...515...>
-Subject: [Openvpn-devel] [PATCH 06/13] Added comments and made small
-	modifications to win/msvc.mak.in
+Subject: [Openvpn-devel] [PATCH 07/13] Added command-line switch to
+	win/build_all.py to skip TAP driver building
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,69 +17,74 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The win/msvc.mak.in file is used as basis for msvc.mak file which drives
-openvpn.exe building. This change separates output file from LINK32_FLAGS and
-adds helpful comments to the win/msvc.mak.in file.
+Modified win/build_all.py so that by giving -n or --notap switch the TAP driver
+is not built. This is useful if using prebuilt TAP drivers, or when WinDDK is
+not installed.
 ---
- win/msvc.mak.in |   32 ++++++++++++++++----------------
- 1 files changed, 16 insertions(+), 16 deletions(-)
+ win/build_all.py |   23 ++++++++++++++++-------
+ 1 files changed, 16 insertions(+), 7 deletions(-)
 
-diff --git a/win/msvc.mak.in b/win/msvc.mak.in
-index 5d94a6e..1ffb5da 100644
---- a/win/msvc.mak.in
-+++ b/win/msvc.mak.in
-@@ -1,12 +1,15 @@
--# This makefile builds the user-mode component
--# of OpenVPN for Windows in the Visual Studio 2008 environment.
+diff --git a/win/build_all.py b/win/build_all.py
+index dec3a78..2c4d1aa 100644
+--- a/win/build_all.py
++++ b/win/build_all.py
+@@ -11,6 +11,7 @@ def Usage():
+     print
+     print " -h, --help		Show this help"
+     print " -u, --unsigned	Do not sign the TAP drivers"
++    print " -n, --notap		Don't build the TAP driver"
+     sys.exit(1)
+ 
+ def main(config):
+@@ -18,9 +19,12 @@ def main(config):
+     # Do a signed build by default
+     signedBuild=True
+ 
++    # Build the TAP driver by default
++    tap=True
++
+     # Parse the command line argument(s)
+     try:
+-       opts, args = getopt.getopt(sys.argv[1:], "hu", ["help", "unsigned"])
++       opts, args = getopt.getopt(sys.argv[1:], "hun", ["help", "unsigned", "notap"])
+     except getopt.GetoptError:
+        Usage()
+ 
+@@ -29,7 +33,8 @@ def main(config):
+           Usage()
+        if o in ("-u", "--unsigned"):
+           signedBuild=False
 -
--# To build:
--#    python win\config.py
--#    nmake /f msvc.mak
--
--# Each of the OPENSSL and LZO dirs should have 'lib' and 'include'
--# directories under them.
-+# This makefile builds the user-mode component of OpenVPN for Windows in the 
-+# Visual Studio 2008 environment. Note that this file is basis for the real 
-+# makefile (..\msvc.mak) but unusable as is. The real makefile is automatically 
-+# generated during the build process by the Python build scripts.
-+#
-+# A few details are in order:
-+#
-+# - Everything between @<< and << is inserted into a s.c. "in-line file". This 
-+#   file drives the linker (link.exe).
-+# - HEADERS_OBJS is expanded to all all header and source files listed in 
-+#  ..\Makefile.am
-+# - OPENSSL_DIR and LZO_DIR are dynamically created from settings.in
++       if o in ("-n", "--notap"):
++          tap=False
  
- OPENSSL = @OPENSSL_DIR@
- OPENSSL_DYNAMIC = libeay32.lib ssleay32.lib
-@@ -30,22 +33,19 @@ LINK32=link.exe
- !ifdef PRODUCT_OPENVPN_DEBUG
- # debug:
- CPP_PROJ=$(CPP_ARG_COMMON) /MD /Z7
--LINK32_FLAGS=/nologo /subsystem:console /incremental:no /opt:ref /opt:icf /debug /out:"$(EXE)"
--# old debug:
--#CPP_PROJ=$(CPP_ARG_COMMON) /MDd /Zi /Od -D_DEBUG
--#LINK32_FLAGS=/nologo /subsystem:console /incremental:no /debug /out:"$(EXE)"
-+LINK32_FLAGS=/nologo /subsystem:console /incremental:no /opt:ref /opt:icf /debug
- !else
- # release:
- CPP_PROJ=$(CPP_ARG_COMMON) /O2 /MD -DNDEBUG
--LINK32_FLAGS=/nologo /subsystem:console /incremental:no /out:"$(EXE)"
-+LINK32_FLAGS=/nologo /subsystem:console /incremental:no
- !endif
+     # Check if the SignTool module is present. This avoids ImportErrors popping
+     # up annoyingly _after_ the build.
+@@ -45,8 +50,12 @@ def main(config):
+     # Start the build
+     config_all(config)
+     build_openvpn()
+-    build_ddk(config, 'tap', 'all')
+-    build_ddk(config, 'tapinstall', 'all')
++
++    if tap:
++       build_ddk(config, 'tap', 'all')
++       build_ddk(config, 'tapinstall', 'all')
++    else:
++       print "Not building the TAP driver"
  
--# HEADERS and OBJS definitions, automatically generated
-+# HEADERS and OBJS definitions, automatically generated from ../Makefile.am
- @HEADERS_OBJS@
+     if signedBuild:
+        sign(config, 'all')
+@@ -54,6 +63,6 @@ def main(config):
+     make_dist(config)
  
- openvpn : $(OBJS)
- 	$(LINK32) @<<
--	$(LINK32_FLAGS) $(LIB_DIRS) $(LIBS) $(OBJS)
-+	$(LINK32_FLAGS) "/out:$(EXE)" $(LIB_DIRS) $(LIBS) $(OBJS)
- <<
- 
- clean :
+ # if we are run directly, and not loaded as a module
+-if __name__ == "__main__":
+-    from wb import config
+-    main(config)
++if __name__ == "__main__":
++    from wb import config
++    main(config)
 -- 
 1.6.3.3
 
