@@ -1,15 +1,8 @@
-Message-ID: <20110216035924.26449.qmail@...1287...>
-Date: Wed, 16 Feb 2011 04:59:24 +0100
-From: Peter Stuge <peter@...1287...>
-References: <4D53FD4B.8050302@...515...> <4D540B3B.5040602@...1147...>
-	<4D54F653.4040809@...515...>
-	<20110211224046.GP13740@...1296...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="TYecfFk8j8mZq+dy"
-Content-Disposition: inline
-In-Reply-To: <20110211224046.GP13740@...1296...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.2-rc Windows installer ready
+From: Gilles Espinasse <g.esp@...260...>
+Date: Wed, 16 Feb 2011 22:55:14 +0100
+Message-Id: <1297893314-9037-1-git-send-email-g.esp@...260...>
+Subject: [Openvpn-devel] [PATCH 1/1] Fix warning: format not a string
+	literal and no format arguments
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,40 +11,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
---TYecfFk8j8mZq+dy
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Seen with gcc-4.4.5 and -Wformat -Wformat-security
 
-Gert Doering wrote:
-> On Fri, Feb 11, 2011 at 10:41:55AM +0200, Samuli Sepp=C3=A4nen wrote:
-> > The older TAP driver probably works fine for the 2.2 branch. However, it
-> > won't work properly in 2.3, which will contain IPv6 support.=20
->=20
-> It will just not do IPv6, but the code in tun.c checks for this, and
-> will print a warning so users can see why IPv6 is not working.=20=20
->=20
-> It won't explode or break IPv4.
+Signed-off-by: Gilles Espinasse <g.esp@...260...>
+---
+ options.c |    6 +++---
+ push.c    |    4 ++--
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-So OpenVPN must not hard depend on the new driver, and can then
-continue to work on w2k. Great news!
+diff --git a/options.c b/options.c
+index 5f1efc5..208db30 100644
+--- a/options.c
++++ b/options.c
+@@ -4002,7 +4002,7 @@ add_option (struct options *options,
+ 		    {
+ 		      if (options->inetd != -1)
+ 			{
+-			  msg (msglevel, opterr);
++			  msg (msglevel, "%s", opterr);
+ 			  goto err;
+ 			}
+ 		      else
+@@ -4012,7 +4012,7 @@ add_option (struct options *options,
+ 		    {
+ 		      if (options->inetd != -1)
+ 			{
+-			  msg (msglevel, opterr);
++			  msg (msglevel, "%s", opterr);
+ 			  goto err;
+ 			}
+ 		      else
+@@ -4022,7 +4022,7 @@ add_option (struct options *options,
+ 		    {
+ 		      if (name != NULL)
+ 			{
+-			  msg (msglevel, opterr);
++			  msg (msglevel, "%s", opterr);
+ 			  goto err;
+ 			}
+ 		      name = p[z];
+diff --git a/push.c b/push.c
+index 9ddc900..86ac4a7 100644
+--- a/push.c
++++ b/push.c
+@@ -178,7 +178,7 @@ send_push_reply (struct context *c)
+   const int extra = 64; /* extra space for possible trailing ifconfig and push-continuation */
+   const int safe_cap = BCAP (&buf) - extra;
+ 
+-  buf_printf (&buf, cmd);
++  buf_printf (&buf, "%s", cmd);
+ 
+   while (e)
+     {
+@@ -194,7 +194,7 @@ send_push_reply (struct context *c)
+ 		  goto fail;
+ 		multi_push = true;
+ 		buf_reset_len (&buf);
+-		buf_printf (&buf, cmd);
++		buf_printf (&buf, "%s", cmd);
+ 	      }
+ 	    }
+ 	  if (BLEN (&buf) + l >= safe_cap)
+-- 
+1.7.3.4
 
-
-//Peter
-
---TYecfFk8j8mZq+dy
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-
-iD8DBQFNW0uchR3Q0dhIfEgRAsCwAJ4rFXvfZbVPveCxSFt716L8e8HgeQCg4+/C
-bT4Iu/cXf0pg8qRLdgURWKE=
-=4IvQ
------END PGP SIGNATURE-----
-
---TYecfFk8j8mZq+dy--
 
