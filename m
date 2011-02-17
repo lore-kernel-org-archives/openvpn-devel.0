@@ -1,11 +1,8 @@
-Message-ID: <4D5CF955.3030507@...68...>
-Date: Thu, 17 Feb 2011 11:32:53 +0100
-From: Matthias Andree <matthias.andree@...68...>
+Message-ID: <4D5D324A.7030307@...515...>
+Date: Thu, 17 Feb 2011 16:35:54 +0200
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <1297893314-9037-1-git-send-email-g.esp@...260...>
-In-Reply-To: <1297893314-9037-1-git-send-email-g.esp@...260...>
-Subject: Re: [Openvpn-devel] [PATCH 1/1] Fix warning: format not a string
- literal and no format arguments
+Subject: [Openvpn-devel] Topics for today's meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,21 +11,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Am 16.02.2011 22:55, schrieb Gilles Espinasse:
-> Seen with gcc-4.4.5 and -Wformat -Wformat-security
-> 
-> Signed-off-by: Gilles Espinasse <g.esp@...260...>
-> ---
->  options.c |    6 +++---
->  push.c    |    4 ++--
->  2 files changed, 5 insertions(+), 5 deletions(-)
+Hi,
 
-Good catch, patch approved.
+We're having an IRC meeting today, starting at 18:00 UTC on
+#openvpn-devel@...1422... Current topic list is here:
 
--- 
-Matthias Andree
+<https://community.openvpn.net/openvpn/wiki/Topics-2011-02-17>
+
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
 
