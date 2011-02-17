@@ -1,11 +1,8 @@
-Message-ID: <4D5C65CE.4040403@...1114...>
-Date: Thu, 17 Feb 2011 01:03:26 +0100
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <4D5CE662.8040903@...515...>
+Date: Thu, 17 Feb 2011 11:12:02 +0200
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <1297893314-9037-1-git-send-email-g.esp@...260...>
-In-Reply-To: <1297893314-9037-1-git-send-email-g.esp@...260...>
-Subject: Re: [Openvpn-devel] [PATCH 1/1] Fix warning: format not a string
- literal and no format arguments
+Subject: [Openvpn-devel] Splitting the ACK/NACK system into two?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,73 +11,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gilles Espinasse <g.esp@...260...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi all,
 
-On 16/02/11 22:55, Gilles Espinasse wrote:
-| Seen with gcc-4.4.5 and -Wformat -Wformat-security
-|
-| Signed-off-by: Gilles Espinasse<g.esp@...260...>
-| ---
-|   options.c |    6 +++---
-|   push.c    |    4 ++--
-|   2 files changed, 5 insertions(+), 5 deletions(-)
+Lately I've been thinking of ways to improve our ACK/NACK system so that
+patches could get merged _or_ rejected faster. There have some cases
+where no clear resolution has been reached, one example being the
+floating-tls patch[1]. The way I see it, whether a patch should be
+merged into OpenVPN depends on two factors:
 
-Thank you very much, but I'm sorry to be a party killer ... this is already
-implemented in the beta2.2, bugfix2.1 and allmerged branches.
+a) Does it make sense (feature-vise) to include the patch in OpenVPN?
+b) Is the patch of good quality / does it follow our coding conventions?
 
-commit d6b783a8ec505c8e158bd0304c5e195cff5bb8c3
-Author: David Sommerseth <dazo@...384...>
-Date:   Fri Sep 17 17:10:25 2010 +0200
+Of these a) should be the primary consideration, after which b) can be
+looked into. In some cases determining a) is trivial, e.g. if the patch
+fixes a bug. Similarly, determining b) should be easy most of the time.
+Only patches which add, modify or remove features may require in-depth
+discussion on b). Although all of this is obvious, I've noted that very
+few non-developers have participated in the ACK/NACK system, even they
+would be perfectly capable of handling a). A good example is the DHCP
+filtering patch[2]. Therefore, I propose the following formal
+modification to the ACK/NACK system:
 
-~    Fixed compiler warnings reported on Ubuntu 10.04
+- anybody can give a "Feature ACK/NACK" (a) for any given patch; or, in
+other words saying "this patch is worth/not worth including"
+- once (a) is given, a developer can give "Code ACK/NACK" (b), which
+will result in merging the patch or in request to modify the patch
 
-~    The warnings reported where:
-~    --------------------------------------------------------
-~    misc.c:158: warning: ignoring return value of ?nice?, declared with
-~    attribute warn_unused_result
-~    options.c:4033: warning: format not a string literal and no format
-~    arguments
-~    options.c:4043: warning: format not a string literal and no format
-~    arguments
-~    options.c:4053: warning: format not a string literal and no format
-~    arguments
-~    push.c:182: warning: format not a string literal and no format arguments
-~    push.c:199: warning: format not a string literal and no format arguments
-~    push.c:235: warning: format not a string literal and no format arguments
-~    status.c:171: warning: ignoring return value of ?ftruncate?, declared
-~    with attribute warn_unused_result
-~    --------------------------------------------------------
+To avoid adding extra layer of bureaucracy both ACKs (a+b) could be
+given by the same person. I believe this approach would give us several
+benefits:
 
-~    Signed-off-by: David Sommerseth <dazo@...384...>
-~    Acked-by: Gert Doering <gert@...1296...>
-~    Acked-by: Peter Stuge <peter@...1287...>
+- allow more people to participate in the ACK/NACK work
+- reduce workload of the developers (due to ^^^)
+- help focus on a) before b)
+- allow quicker rejection of "this does not make sense" type patches
+- allow sharing responsibility in giving an ACK (e.g. if developer can't
+give a "Feature ACK", but can still give a "Code ACK")
 
+Any thoughts?
 
-But good catch!  Please be sure you check against at least the allmerged
-branch in the future, and you might avoid dumping into this issue again.
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-And kudos for using the git tree and git send-email!
-
-We're also in the last stages of finalising the 2.2-RC release, so in the near
-future beta2.2 will become our master branch.  The git tree will go through
-some minor changes, and we will simplify where to grab the correct code.
+irc freenode net: mattock
 
 
-kind regards,
+[1] <http://thread.gmane.org/gmane.network.openvpn.devel/4213>
+<http://thread.gmane.org/gmane.network.openvpn.devel/4378>
+<http://article.gmane.org/gmane.network.openvpn.devel/4221>
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+[2] <https://forums.openvpn.net/topic7479.html>
 
-iEYEARECAAYFAk1cZc4ACgkQDC186MBRfrocIwCfUqNQIH/0D+OGZrNoW4QeauDg
-AqIAoJ29S4PtV3NCiPQxnq4GldOS+sAK
-=SNZs
------END PGP SIGNATURE-----
 
