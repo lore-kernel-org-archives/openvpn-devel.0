@@ -1,13 +1,10 @@
+Message-ID: <4D68E86D.7000203@...1114...>
+Date: Sat, 26 Feb 2011 12:47:57 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-In-Reply-To: <20110226112534.GV9835@...1296...>
-References: <AANLkTikHd0G_8-JAkXTojetsG7-w5TV3j9fdUwx309A+@mail.gmail.com>
-	<20110226104526.GT9835@...1296...>
-	<AANLkTik-vCrO=yQW7FNiUXyrXfKjNe-3Dq4aGUkHsfT5@...278...>
+References: <AANLkTikHd0G_8-JAkXTojetsG7-w5TV3j9fdUwx309A+@mail.gmail.com>	<20110226104526.GT9835@...1296...>	<AANLkTik-vCrO=yQW7FNiUXyrXfKjNe-3Dq4aGUkHsfT5@...278...>
 	<20110226112534.GV9835@...1296...>
-Date: Sat, 26 Feb 2011 11:31:20 +0000
-Message-ID: <AANLkTi=KoZtLH+pO2uPhqTxyUrcBEiYRS8gbbNo2-byU@...278...>
-From: Olivier Van Acker <cyberroadie@...277...>
-Content-Type: multipart/alternative; boundary=000e0cd1514a222685049d2dc936
+In-Reply-To: <20110226112534.GV9835@...1296...>
 Subject: Re: [Openvpn-devel] sctp in openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,75 +14,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Olivier Van Acker <cyberroadie@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---000e0cd1514a222685049d2dc936
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
->
->
-> This doesn't help me a single bit if I'm sitting behind a firewall that
->
+On 26/02/11 12:25, Gert Doering wrote:
+| Hi,
+|
+| On Sat, Feb 26, 2011 at 11:19:19AM +0000, Olivier Van Acker wrote:
+|>> The code parts in question inside OpenVPN (socket.c) are somewhat
+|>> complicated due to lots of existing options and lots of existing
+|>> operating systems being supported, so this will not be a trivial
+|>> task.
+|>
+|> Would it be a good idea to limit the scope of this project by concentrating
+|> on one OS first? I was thinking FreeBSD first since that contains the
+|> reference implementation of SCTP.
+|
+| Well, you'd certainly start with one OS, but in the long run, you'd want
+| the mainstream OSes (Linux and Windows) as well...
 
-Ah, sorry, I re-read what you were saying, I cherry picked the word
-paralelI without reading the rest :-P No, SCTP won't help with this
+I second this.  SCTP is really interesting for OpenVPN in my perspective, but
+we should rather quickly after having "something which works" support other
+OSes as well.  When we reach that point, merging SCTP support into 'allmerged'
+for broader testing gets interesting.  If Linux gets support quickly, I'm able
+to test this out pretty soonish in a limited prod environment.
+
+Some practical details.  General info about the development process can be
+found here:
+<https://community.openvpn.net/openvpn/wiki/DeveloperDocumentation>, including
+git repositories.
+
+For the git branch to look at, JJO's IPv6 transport patches is called
+feat_ipv6_transport.  *But* as soon as we manage to get the OpenVPN 2.2
+release out the door (I'm hope I'll be able to finalise the beta2.2 branch
+today for the RC release), we're going to merge stuff, including JJO's branch
+and Gert's feat_ipv6_payload branches officially and get started with the
+OpenVPN 2.3 cycle.  So what I'm saying, please base your stuff on JJO's branch
+now, but be sure your changes can be merged against the feat_ipv6_payload
+branch too.  As I'm the one going to do the merges, I'm going to be noisy if
+it doesn't go smooth ;-)
+
+And just let me state that, if someone got time to do a real overhaul of
+socket.c, that would really be beneficial.  That source file is confusing at
+best to read.  However, we do have some source documentation patches is the
+wild somewhere, waiting to go in soonish too - which I'd like to see go into
+the 2.3 cycle.  So - there's a little coordination needed to be done here with
+such an overhaul too.
 
 
-Olivier
+kind regards,
 
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-
-
-
-
-> gert
-> --
-> USENET is *not* the non-clickable part of WWW!
->                                                           //
-> www.muc.de/~gert/
-> Gert Doering - Munich, Germany
-> gert@...1296...
-> fax: +49-89-35655025
-> gert@...1297...
->
-
-
-
---=20
-=93If you know what you're doing, three layers is enough; if you don't, even
-seventeen levels won't help=94. ~ Padlipsky
-
---000e0cd1514a222685049d2dc936
-Content-Type: text/html; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-
-<div class=3D"gmail_quote"><blockquote class=3D"gmail_quote" style=3D"margi=
-n:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex;"><div class=3D"im=
-"><br>
-</div>This doesn&#39;t help me a single bit if I&#39;m sitting behind a fir=
-ewall that<br></blockquote><div><br></div><div>Ah, sorry, I re-read what yo=
-u were saying, I cherry picked the word=A0</div><div>paralelI without readi=
-ng the rest :-P No,=A0SCTP won&#39;t help with this</div>
-<div><br></div><div><br></div><div>Olivier</div><div><br></div><div><br></d=
-iv><div><br></div><div><br></div><div>=A0</div><blockquote class=3D"gmail_q=
-uote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1e=
-x;">
-<div><div class=3D"h5">
-gert<br>
---<br>
-USENET is *not* the non-clickable part of WWW!<br>
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 //<a href=3D"http://www.muc.de/=
-~gert/" target=3D"_blank">www.muc.de/~gert/</a><br>
-Gert Doering - Munich, Germany =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 <a href=3D"mailto:gert@...1296...">gert@...1296...</a><br>
-fax: +49-89-35655025 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0<a href=
-=3D"mailto:gert@...1297...">gert@...1297...</a><br>
-</div></div></blockquote></div><br><br clear=3D"all"><br>-- <br>=93If you k=
-now what you&#39;re doing, three layers is enough; if you don&#39;t, even s=
-eventeen levels won&#39;t help=94. ~ Padlipsky<br>
-
---000e0cd1514a222685049d2dc936--
+iEYEARECAAYFAk1o6G0ACgkQDC186MBRfrrnPACgg5MNumXBR0McuTEip6/c76lY
+BacAoIANCG/ZGas/yhiGEbw4U7xqDYeI
+=PMoQ
+-----END PGP SIGNATURE-----
 
