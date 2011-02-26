@@ -1,14 +1,13 @@
-Date: Sat, 26 Feb 2011 12:25:34 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20110226112534.GV9835@...1296...>
+MIME-Version: 1.0
+In-Reply-To: <20110226112534.GV9835@...1296...>
 References: <AANLkTikHd0G_8-JAkXTojetsG7-w5TV3j9fdUwx309A+@mail.gmail.com>
 	<20110226104526.GT9835@...1296...>
 	<AANLkTik-vCrO=yQW7FNiUXyrXfKjNe-3Dq4aGUkHsfT5@...278...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="G44BJl3Aq1QbV/QL"
-Content-Disposition: inline
-In-Reply-To: <AANLkTik-vCrO=yQW7FNiUXyrXfKjNe-3Dq4aGUkHsfT5@...278...>
+	<20110226112534.GV9835@...1296...>
+Date: Sat, 26 Feb 2011 11:31:20 +0000
+Message-ID: <AANLkTi=KoZtLH+pO2uPhqTxyUrcBEiYRS8gbbNo2-byU@...278...>
+From: Olivier Van Acker <cyberroadie@...277...>
+Content-Type: multipart/alternative; boundary=000e0cd1514a222685049d2dc936
 Subject: Re: [Openvpn-devel] sctp in openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,67 +17,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Olivier Van Acker <cyberroadie@...277...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---G44BJl3Aq1QbV/QL
-Content-Type: text/plain; charset="us-ascii"
+--000e0cd1514a222685049d2dc936
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
-
-On Sat, Feb 26, 2011 at 11:19:19AM +0000, Olivier Van Acker wrote:
-> > The code parts in question inside OpenVPN (socket.c) are somewhat
-> > complicated due to lots of existing options and lots of existing
-> > operating systems being supported, so this will not be a trivial
-> > task.
 >
-> Would it be a good idea to limit the scope of this project by concentrati=
-ng
-> on one OS first? I was thinking FreeBSD first since that contains the
-> reference implementation of SCTP.
+>
+> This doesn't help me a single bit if I'm sitting behind a firewall that
+>
 
-Well, you'd certainly start with one OS, but in the long run, you'd want
-the mainstream OSes (Linux and Windows) as well...
+Ah, sorry, I re-read what you were saying, I cherry picked the word
+paralelI without reading the rest :-P No, SCTP won't help with this
 
-[..]
-> > functionality to listen on multiple sockets in parallel,
->=20
-> This is somethings SCTP has build in.
-> One SCTP association (connection over one or more nodes) can contain
-> multiple independent data streams.
 
-This doesn't help me a single bit if I'm sitting behind a firewall that
-doesn't even let UDP/1194 pass - listening on SCTP *and* UDP/TCP in parallel
-will be necesary, because too many clients won't be able to use SCTP, at
-least when starting this.
+Olivier
 
-Or are you implying that by listening on a SCTP socket, the kernel
-machinery will also handle incoming "plain UDP" and "plain TCP" connects
-via that SCTP socket?
 
-gert
+
+
+
+
+> gert
+> --
+> USENET is *not* the non-clickable part of WWW!
+>                                                           //
+> www.muc.de/~gert/
+> Gert Doering - Munich, Germany
+> gert@...1296...
+> fax: +49-89-35655025
+> gert@...1297...
+>
+
+
+
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+=93If you know what you're doing, three layers is enough; if you don't, even
+seventeen levels won't help=94. ~ Padlipsky
 
---G44BJl3Aq1QbV/QL
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+--000e0cd1514a222685049d2dc936
+Content-Type: text/html; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
+<div class=3D"gmail_quote"><blockquote class=3D"gmail_quote" style=3D"margi=
+n:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex;"><div class=3D"im=
+"><br>
+</div>This doesn&#39;t help me a single bit if I&#39;m sitting behind a fir=
+ewall that<br></blockquote><div><br></div><div>Ah, sorry, I re-read what yo=
+u were saying, I cherry picked the word=A0</div><div>paralelI without readi=
+ng the rest :-P No,=A0SCTP won&#39;t help with this</div>
+<div><br></div><div><br></div><div>Olivier</div><div><br></div><div><br></d=
+iv><div><br></div><div><br></div><div>=A0</div><blockquote class=3D"gmail_q=
+uote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1e=
+x;">
+<div><div class=3D"h5">
+gert<br>
+--<br>
+USENET is *not* the non-clickable part of WWW!<br>
+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 //<a href=3D"http://www.muc.de/=
+~gert/" target=3D"_blank">www.muc.de/~gert/</a><br>
+Gert Doering - Munich, Germany =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 <a href=3D"mailto:gert@...1296...">gert@...1296...</a><br>
+fax: +49-89-35655025 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0<a href=
+=3D"mailto:gert@...1297...">gert@...1297...</a><br>
+</div></div></blockquote></div><br><br clear=3D"all"><br>-- <br>=93If you k=
+now what you&#39;re doing, three layers is enough; if you don&#39;t, even s=
+eventeen levels won&#39;t help=94. ~ Padlipsky<br>
 
-iQCVAwUBTWjjLqkuBuNlUUl1AQJhdQQAov+PHIsQ3hZuCwtS+ofPXVV3eVfLhpgV
-DA1oCo6zJK+oivLLP+imThPtzJI49zMHmDx2jkDz9qXkEBgzriSCYTR1J4qs8Gv7
-PypZ+SYDAJHVK3ucy8z5DM5jPWVfWui85q76FKtFOrePelw4E9KFkC5HYC9UKZjS
-+6kcxAXnUvY=
-=ZAFw
------END PGP SIGNATURE-----
-
---G44BJl3Aq1QbV/QL--
+--000e0cd1514a222685049d2dc936--
 
