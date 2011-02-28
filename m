@@ -1,12 +1,13 @@
-Message-ID: <4D6BB3DD.6090806@...1449...>
-Date: Mon, 28 Feb 2011 15:40:29 +0100
-From: Stefan Hellermann <stefan@...1449...>
+Message-ID: <4D6BC1D1.7060604@...1114...>
+Date: Mon, 28 Feb 2011 16:40:01 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4D6ABF00.8070309@...1449...> <4D6B580C.4030606@...515...>
-	<4D6BAFDC.7040307@...1449...>
-In-Reply-To: <4D6BAFDC.7040307@...1449...>
-Subject: [Openvpn-devel] [PATCH] plugin.h: update prototype of plugin_call
- dummy in !ENABLE_PLUGIN case [v2]
+References: <4D6ABF00.8070309@...1449...>
+	<4D6B580C.4030606@...515...>	<4D6BAFDC.7040307@...1449...>
+	<4D6BB3DD.6090806@...1449...>
+In-Reply-To: <4D6BB3DD.6090806@...1449...>
+Subject: Re: [Openvpn-devel] [PATCH] plugin.h: update prototype of
+ plugin_call dummy in !ENABLE_PLUGIN case [v2]
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,59 +18,77 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+To: Stefan Hellermann <stefan@...1449...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Am 28.02.2011 15:23, schrieb Stefan Hellermann:
-> Am 28.02.2011 09:08, schrieb Samuli Sepp=E4nen:
->> Hi Stefan,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 28/02/11 15:40, Stefan Hellermann wrote:
+> Am 28.02.2011 15:23, schrieb Stefan Hellermann:
+>> Am 28.02.2011 09:08, schrieb Samuli Sepp=E4nen:
+>>> Hi Stefan,
+>>>
+>>> I think you should rebase your patch against the "beta2.2" branch. No
+>>> development is done in the "allmerged" branch, it only used to aggregate
+>>> code from other branches.
+>>>
+>> The commit which introduces this build-failure is in the bugfix2.1
+>> branch. Could you apply it there and merge the patch to allmerged?
 >>
->> I think you should rebase your patch against the "beta2.2" branch. No
->> development is done in the "allmerged" branch, it only used to aggregate
->> code from other branches.
+>> Otherwise the weekly snapshots linked on
+>> https://community.openvpn.net/openvpn/wiki/TesterDocumentation
+>> do not build in the !ENABLE_PLUGIN case.
 >>
-> The commit which introduces this build-failure is in the bugfix2.1
-> branch. Could you apply it there and merge the patch to allmerged?
+>> The router distribution Openwrt is using these.
+>>
 >=20
-> Otherwise the weekly snapshots linked on
-> https://community.openvpn.net/openvpn/wiki/TesterDocumentation
-> do not build in the !ENABLE_PLUGIN case.
+> plugin.h: update prototype of plugin_call dummy in !ENABLE_PLUGIN case [v=
+2]
 >=20
-> The router distribution Openwrt is using these.
+> Commit 2db5a0ac3e053857d97e468de53e70a605f54561 adds two arguments to
+> plugin_call(...), but missed the !ENABLE_PLUGIN case. With
+> !ENABLE_PLUGIN, plugin_call(...) is only a dummy, so add these two
+> parameters there too.
 >=20
+> ---
+>  plugin.h |    4 +++-
+>  1 files changed, 3 insertions(+), 1 deletions(-)
+>=20
+>=20
+> There is a small copy-paste failure in the patch, the correct one below.
+> This one is now really run-time tested.
+>=20
+> Signed-off-by: Stefan Hellermann <stefan@...1449...>
 
-plugin.h: update prototype of plugin_call dummy in !ENABLE_PLUGIN case [v2]
+ACK!
 
-Commit 2db5a0ac3e053857d97e468de53e70a605f54561 adds two arguments to
-plugin_call(...), but missed the !ENABLE_PLUGIN case. With
-!ENABLE_PLUGIN, plugin_call(...) is only a dummy, so add these two
-parameters there too.
+Thanks a lot for this fix.  Good catch!
 
----
- plugin.h |    4 +++-
- 1 files changed, 3 insertions(+), 1 deletions(-)
+Applied to bugfix2.1 and merged into allmerged.
 
+commit 4c4b8cedfa98e8892a53eadd154836f8fa8cea7a
+Author: Stefan Hellermann <stefan@...1449...>
+Date:   Sun Feb 27 22:15:44 2011 +0100
 
-There is a small copy-paste failure in the patch, the correct one below.
-This one is now really run-time tested.
-
-Signed-off-by: Stefan Hellermann <stefan@...1449...>
+    Signed-off-by: Stefan Hellermann <stefan@...1449...>
+    Acked-by: David Sommerseth <davids@...1347...>
+    Signed-off-by: David Sommerseth <davids@...1347...>
 
 
-diff --git a/plugin.h b/plugin.h
-index 846973f..9d48651 100644
---- a/plugin.h
-+++ b/plugin.h
-@@ -174,7 +174,9 @@ plugin_call (const struct plugin_list *pl,
- 	     const int type,
- 	     const struct argv *av,
- 	     struct plugin_return *pr,
--	     struct env_set *es)
-+	     struct env_set *es,
-+	     int current_cert_depth,
-+	     X509 *current_cert)
- {
-   return 0;
- }
--- 1.7.4
+You asked earlier if this patch was good, and I see you managed to add the
+"Signed-off-by:" line (git commit -s).  So this basically looks good to me!
+
+
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk1rwdEACgkQDC186MBRfrq+9gCdGgk78cFkcXo+Oc1yEFi7Y5l0
+SDkAni0Oa4lDyvK/9OrIwOAIeaEWFpVT
+=3DRoHL
+-----END PGP SIGNATURE-----
 
