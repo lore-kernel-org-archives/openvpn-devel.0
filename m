@@ -1,15 +1,11 @@
-Message-ID: <20110228033132.7863.qmail@...1287...>
-Date: Mon, 28 Feb 2011 04:31:32 +0100
-From: Peter Stuge <peter@...1287...>
-References: <AANLkTikHd0G_8-JAkXTojetsG7-w5TV3j9fdUwx309A+@mail.gmail.com>
-	<20110226104526.GT9835@...1296...>
-	<AANLkTik-vCrO=yQW7FNiUXyrXfKjNe-3Dq4aGUkHsfT5@...278...>
-	<20110226112534.GV9835@...1296...>
-	<4D68E86D.7000203@...1114...>
-	<AANLkTintZLuN1c6_2TEUjvmJvxC3ZpS2Ra9ejF=pA+2S@...278...>
+Message-ID: <4D6B580C.4030606@...515...>
+Date: Mon, 28 Feb 2011 10:08:44 +0200
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <AANLkTintZLuN1c6_2TEUjvmJvxC3ZpS2Ra9ejF=pA+2S@...278...>
-Subject: Re: [Openvpn-devel] sctp in openvpn
+References: <4D6ABF00.8070309@...1449...>
+In-Reply-To: <4D6ABF00.8070309@...1449...>
+Subject: Re: [Openvpn-devel] [PATCH] plugin.h: update prototype of
+ plugin_call dummy in !ENABLE_PLUGIN case
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,17 +14,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
-
-Olivier Van Acker wrote:
-> I might start with Linux first since, as you rightly point out,
-> more people can use/test it.
-
-I'd be happy to test it too.
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: Stefan Hellermann <stefan@...1449...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 
-//Peter
+> plugin.h: update prototype of plugin_call dummy in !ENABLE_PLUGIN case
+>
+> Commit 2db5a0ac3e053857d97e468de53e70a605f54561 adds two arguments to
+> plugin_call(...), but missed the !ENABLE_PLUGIN case. With
+> !ENABLE_PLUGIN, plugin_call(...) is only a dummy, so add these two
+> parameters there too.
+>
+> ---
+>  plugin.h |    4 +++-
+>  1 files changed, 3 insertions(+), 1 deletions(-)
+>
+> This is my first patch with git, is everything correct? This patch is
+> against the allmerged branch.
+>
+>=20=20=20
+Hi Stefan,
+
+I think you should rebase your patch against the "beta2.2" branch. No
+development is done in the "allmerged" branch, it only used to aggregate
+code from other branches.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
 
