@@ -1,11 +1,8 @@
-Message-ID: <4D720E38.2050602@...1030...>
-Date: Sat, 05 Mar 2011 10:19:36 +0000
-From: Mr Dash Four <mr.dash.four@...1030...>
 MIME-Version: 1.0
-References: <4D713CD3.3000606@...515...>	<AANLkTin4QkZ36mi7qHyB9R+i1FdQJi66mi6nhhvYMWmN@...278...>	<4D716245.6040500@...1114...>	<4D717DB0.3030107@...1030...>
-	<AANLkTikYoeusGQ3yFcCN9QrrAPWknAngoqiv5iWRD+Y3@...278...>
-In-Reply-To: <AANLkTikYoeusGQ3yFcCN9QrrAPWknAngoqiv5iWRD+Y3@...278...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.2-RC released
+From: Joe Patterson <j.m.patterson@...277...>
+Date: Mon, 7 Mar 2011 11:44:50 -0500
+Message-ID: <AANLkTinSNNNtmS78KquJbmA81eZdxubr1rdZcKHD0Y0n@...278...>
+Subject: [Openvpn-devel] [PATCH] common_name passing in auth_pam plugin
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,28 +11,92 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
+I had wanted to have the capability of forcing users to match their
+username with their cert common name.  It's possible to do this using
+the environment variables passed to an auth script, but I figured it
+would be useful to add the capability to the auth_pam plugin.  It
+would be nice to be able to pass arbitrary strings from envp to pam so
+that you could, for instance, use an OU to hold a domain or realm name
+or some such, but for now I'm just passing the common_name and using
+it to replace "COMMONNAME", much as the USERNAME and PASSWORD strings
+get replaced in the pam auth dialog.  Here's the patch for the 2.1.3i
+source I pulled from svn (apologies if this format isn't as it should
+be, I seldom submit code anywhere):
 
->> Speaking of which, I also proposed a (rather trivial) patch which enables
->> cross compilation of a number of OpenVPN plugins (that patch is attached
->> again) as in the 2.1.4 version that was not possible.
->>     
->
-> I think you should leave the -O2 as default to CFLAGS.
->
-> CFLAGS=-O2
->
-> Can be overridden by:
->
-> make CFLAGS="-O0"
->   
-As evident from the patch I provided, I haven't put the O2 flags there - 
-I only alter the hard-coded values in that makefile which prevents 
-cross-compilation. Whether the O2 (or O0) flags should have been there 
-in the first place is not for me to decide as I do not maintain these 
-plugins - my patch only ensures that cross-compilation is made possible.
+Index: openvpn/plugin/auth-pam/README
+===================================================================
+--- openvpn/plugin/auth-pam/README    (revision 7003)
++++ openvpn/plugin/auth-pam/README    (working copy)
+@@ -48,7 +48,7 @@
+
+   plugin openvpn-auth-pam.so "test name USERNAME password PASSWORD"
+
+-While "USERNAME" and "PASSWORD" are special strings which substitute
++While "USERNAME" "COMMONNAME" and "PASSWORD" are special strings
+which substitute
+ to client-supplied values, it is also possible to name literal values
+ to use as PAM module query responses.  For example, suppose that the
+ login module queried for a third parameter, "domain" which
+Index: openvpn/plugin/auth-pam/auth-pam.c
+===================================================================
+--- openvpn/plugin/auth-pam/auth-pam.c    (revision 7003)
++++ openvpn/plugin/auth-pam/auth-pam.c    (working copy)
+@@ -81,6 +81,7 @@
+  *
+  *  "USERNAME" -- substitute client-supplied username
+  *  "PASSWORD" -- substitute client-specified password
++ *  "COMMONNAME" -- substitute client certificate common name
+  */
+
+ #define N_NAME_VALUE 16
+@@ -104,6 +105,7 @@
+
+   char username[128];
+   char password[128];
++  char common_name[128];
+
+   const struct name_value_list *name_value_list;
+ };
+@@ -441,12 +443,14 @@
+       /* get username/password from envp string array */
+       const char *username = get_env ("username", envp);
+       const char *password = get_env ("password", envp);
++      const char *common_name = get_env ("common_name", envp) ?
+get_env ("common_name", envp) : "";
+
+       if (username && strlen (username) > 0 && password)
+     {
+       if (send_control (context->foreground_fd, COMMAND_VERIFY) == -1
+           || send_string (context->foreground_fd, username) == -1
+-          || send_string (context->foreground_fd, password) == -1)
++          || send_string (context->foreground_fd, password) == -1
++          || send_string (context->foreground_fd, common_name) == -1)
+         {
+           fprintf (stderr, "AUTH-PAM: Error sending auth info to
+background process\n");
+         }
+@@ -563,6 +567,8 @@
+             return_value = up->username;
+           else if (!strcmp (match_value, "PASSWORD"))
+             return_value = up->password;
++                  else if (!strcmp (match_value, "COMMONNAME"))
++                    return_value = up->common_name;
+           else
+             return_value = match_value;
+
+@@ -709,7 +715,8 @@
+     {
+     case COMMAND_VERIFY:
+       if (recv_string (fd, up.username, sizeof (up.username)) == -1
+-          || recv_string (fd, up.password, sizeof (up.password)) == -1)
++          || recv_string (fd, up.password, sizeof (up.password)) == -1
++        || recv_string (fd, up.common_name, sizeof (up.common_name)) == -1)
+         {
+           fprintf (stderr, "AUTH-PAM: BACKGROUND: read error on
+command channel: code=%d, exiting\n",
+                command);
 
