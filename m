@@ -1,11 +1,14 @@
-MIME-Version: 1.0
-In-Reply-To: <4D779123.8060303@...1432...>
-References: <4D713CD3.3000606@...515...>
-	<4D779123.8060303@...1432...>
-Date: Wed, 9 Mar 2011 16:46:23 +0200
-Message-ID: <AANLkTikYJ+7uroci45Hu2FVwOMd+M8SoE2FwordZ-T4Y@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.2-RC released
+Date: Wed, 9 Mar 2011 11:54:20 -0300
+From: Federico Heinz <fheinz@...277...>
+Message-ID: <20110309115420.6785189b@...1451...>
+In-Reply-To: <4D778661.9060709@...1432...>
+References: <20110308185252.301d0a1d@...1451...>
+	<AANLkTi=FFxhdD5avAov9F8giPr-a_A=9Hzf3+Prm4p0V@...278...>
+	<20110308210525.7d75f081@...1451...>
+	<4D774565.7080507@...1114...>
+	<4D778661.9060709@...1432...>
+Mime-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH] Bind only to specified interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,40 +17,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: Markus Koetter <koetter@...1432...>
+To: Markus =?ISO-8859-1?B?S/Z0dGVy?= <koetter@...1432...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Can you please send the patch again?
+On 09/03/2011, Markus K=F6tter wrote:
+> David Sommerseth wrote:
+> > One is that you do resolve the IP address based on the device
+> > name.  What if the IP address changes on that device?  It would
+> > be anticipated by most users that it would then listen to the new
+> > IP address.  When being done via the command line, it is much
+> > more obvious OpenVPN needs to be restarted on an IP address
+> > change.
+> You do not want to get into supporting changing addresses, really.
+> While libnl would work for linux, but that does not cover bsds or=20
+> anything else.
 
-On Wed, Mar 9, 2011 at 4:39 PM, Markus Koetter
-<koetter@...1432...> wrote:
->
-> Hi,
->
-> On 03/04/2011 08:26 PM, Samuli Sepp=C3=A4nen wrote:
-> > =C2=A0 =C2=A0 =C2=A0* Make the --x509-username-field feature an opt-in =
-feature
->
-> given the x509 username field is optional now, any chance to get x509 v3
-> extensions as username [1] merged if they are made opt-in too?
->
->
-> Markus
->
->
->
-> [1] http://thread.gmane.org/gmane.network.openvpn.devel/4266
->
-> -------------------------------------------------------------------------=
------
-> Colocation vs. Managed Hosting
-> A question and answer guide to determining the best fit
-> for your organization - today and in the future.
-> http://p.sf.net/sfu/internap-sfd2d
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+Agreed!
+
+> To do this properly ...
+> Either use SO_BINDTODEVICE, which is not portable again, or
+> getifaddrs() to gather the addresses for the interface and
+> multi-listen the daemon - which is not implemented.
+> Neither getifaddrs nor SO_BINDTODEVICE are 100% portable, so there
+> is no real proper way, nevertheless getifaddrs would be my choice.
+
+I agree that getifaddrs() would be a better way of doing this *if*
+the deamon knew how to multi-listen (or, to put it in another way,
+*when* the daemon lerns to).
+
+While I am willing to revise the code to use getifaddr() if that will
+make it more palatable to the project, the current approach does work
+and seems to me to be more portable.
+
+	Fede
 
