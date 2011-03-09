@@ -1,12 +1,13 @@
-Date: Wed, 9 Mar 2011 09:18:17 -0300
+Date: Wed, 9 Mar 2011 08:56:56 -0300
 From: Federico Heinz <fheinz@...277...>
-Message-ID: <20110309091817.2dab4f87@...1451...>
-In-Reply-To: <4D774565.7080507@...1114...>
+Message-ID: <20110309085656.18e0e796@...1451...>
+In-Reply-To: <20110309084745.GN9835@...1296...>
 References: <20110308185252.301d0a1d@...1451...>
-	<AANLkTi=FFxhdD5avAov9F8giPr-a_A=9Hzf3+Prm4p0V@...278...>
-	<20110308210525.7d75f081@...1451...>
-	<4D774565.7080507@...1114...>
+	<20110309084745.GN9835@...1296...>
 Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=PGP-SHA1;
+	boundary="Sig_/Cc5QDMGyHHD3SRmXjPUB4E0";
+	protocol="application/pgp-signature"
 Subject: Re: [Openvpn-devel] [PATCH] Bind only to specified interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,62 +17,104 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: base64
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: Alon Bar-Lev <alon.barlev@...277...>, openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-LS0tLS1CRUdJTiBQR1AgU0lHTkVEIE1FU1NBR0UtLS0tLQ0KSGFzaDogU0hBMQ0KDQpPbiAwOS8w
-My8yMDExLCBEYXZpZCBTb21tZXJzZXRoIHdyb3RlOg0KPiBFdmVuIHRob3VnaCB0aGF0IHNoZWxs
-IHRyaWNrIGlzbid0IHNvIG9idmlvdXMsIEkgd291bGQgc2F5IGl0DQo+IHNvbHZlcyBleGFjdGx5
-IHRoZSBzYW1lIHRoaW5nLiAgSXQncyBub3QgYXMgcHJldHR5LCBidXQgeW91ciBwYXRjaA0KPiBk
-b2VzIG5vdCBnaXZlIGFueSBleHRyYSBhZHZhbnRhZ2VzIGVpdGhlci4NCg0KSXQgcHJvdmlkZXMg
-dGhlIG9ubHkgYWR2YW50YWdlIGl0IHdhcyBtZWFudCB0byBwcm92aWRlOiBhIHNpbXBsZXINCnNl
-dHVwIHN5bnRheCB0aGF0IGlzIGVhc3kgdG8gcmVhZCBhbmQgd3JpdGUuDQoNCj4gT25lIGlzIHRo
-YXQgeW91IGRvIHJlc29sdmUgdGhlIElQIGFkZHJlc3MgYmFzZWQgb24gdGhlIGRldmljZQ0KPiBu
-YW1lLiAgV2hhdCBpZiB0aGUgSVAgYWRkcmVzcyBjaGFuZ2VzIG9uIHRoYXQgZGV2aWNlPyAgSXQg
-d291bGQgYmUNCj4gYW50aWNpcGF0ZWQgYnkgbW9zdCB1c2VycyB0aGF0IGl0IHdvdWxkIHRoZW4g
-bGlzdGVuIHRvIHRoZSBuZXcgSVANCj4gYWRkcmVzcy4gIFdoZW4gYmVpbmcgZG9uZSB2aWEgdGhl
-IGNvbW1hbmQgbGluZSwgaXQgaXMgbXVjaCBtb3JlDQo+IG9idmlvdXMgT3BlblZQTiBuZWVkcyB0
-byBiZSByZXN0YXJ0ZWQgb24gYW4gSVAgYWRkcmVzcyBjaGFuZ2UuDQoNCkFGQUlLLCB0ZSBuZWVk
-IHRvIHJlc3RhcnQgdW5kZXIgc3VjaCBhIGNpcmN1bXN0YW5jZSBpcyB0aGVyZSBmb3IgYW55DQph
-bmQgYWxsIGludGVybmV0IGRhZW1vbnMgdGhhdCBhbGxvdyB0aGUgdXNlciB0byBiaW5kIHRvIGFu
-IGludGVyZmFjZSwNCnNvIHRoZXJlJ3Mgbm90aGluZyB1bmV4cGVjdGVkIGhlcmUuDQoNCj4gVGhl
-biB0aGVyZSBhcmUgaXMgdGhpcyBpc3N1ZSB3aXRoIElQdjYuICBJdCdzIG5vdCBhdmFpbGFibGUg
-aW4gdGhlDQo+IGNvbWluZyAyLjIgb3IgZWFybGllciByZWxlYXNlcyAodW5sZXNzIHlvdSd2ZSBh
-ZGRlZCBzdXBwb3J0IHBhdGNoZXMNCj4gZm9yIGl0KS4gIEJ1dCB3ZSdyZSBzb29uICg0LTEyIHdl
-ZWtzKSBzdGFydGluZyBvbiB0aGUgMi4zIGJldGENCj4gY3ljbGUgd2hpY2ggd2lsbCBpbmNsdWRl
-IGZ1bGwgSVB2NiBzdXBwb3J0LiAgQW5kIHdpdGggSVB2NiBhbg0KPiBpbnRlcmZhY2UgY2FuIGFs
-c28gbXVsdGlwbGUgSVAgYWRkcmVzc2VzLCBldmVuIHdpdGhvdXQgdXNpbmcNCj4gYWxpYXNpbmcg
-aW4gTGludXguICBJbiBmYWN0LCBJIHdvbmRlciBpZiBpdCBpcyBldmVuIHBvc3NpYmxlIHRvDQo+
-IGFzc2lnbiBtdWx0aXBsZSBJUHY0IGFkZHJlc3NlcyB1c2luZyBpcHJvdXRlMiB0byBhIGRldmlj
-ZSB3aXRob3V0DQo+IGFsaWFzZXMuICBJdCBtaWdodCBiZSBzb21ldGhpbmcgc2ltaWxhciBpbiAq
-QlNEIGFzIHdlbGwuICBZb3VyDQo+IHBhdGNoIGRvZXMgbm90IGNvdmVyIHRoaXMgc2NlbmFyaW8g
-YXQgYWxsLg0KDQpJdCdzIG5vdCBtZWFudCB0bywgc2luY2UgT3BlblZQTiBkb2VzIG5vdCBjdXJy
-ZW50bHkgc3VwcG9ydCBsaXN0ZW5pbmcNCm9uIGEgbXVsdGktbWVtYmVyZWQgc3Vic2V0IG9mIHRo
-ZSBzeXN0ZW0ncyBJUCBhZGRyZXNzZXMuIEluIHRoZQ0KY3VycmVudCBzY2VuYXJpbywgdGhlbiBp
-ZiB5b3UgaGF2ZSBhbiBpbnRlcmZhY2Ugd2l0aCBtb3JlIHRoYW4gb25lDQphZGRyZXNzLCB3ZSB3
-aWxsIGJlIGZvcmNlZCB0byBjaG9vc2Ugb25lIG9mIHRoZW0gYXJiaXRyYXJpbHkuLi4NCndoaWNo
-IGlzIGV4YWN0bHkgd2hhdCBteSBwYXRjaCBkb2VzOiBpdCB0YWtlcyB3aGF0ZXZlciBJUCBhZGRy
-ZXNzIGVuZHMNCnVwIGluIHRoZSBzb2NrZXQncyBJUCBhZGRyZXNzIGZpZWxkLg0KDQpTdW1taW5n
-IHVwOiBpbiB0aGUgbW9zdCBsaWtlbHkgY2FzZSwgbXkgY29kZSBkb2VzIHRoZSBleHBlY3RlZA0K
-dGhpbmcuIEluIHVubGlrZWx5IGNhc2VzLCBpdCBkb2VzIGFzIGdvb2QgYXMgaXQgY2FuIGZvciB0
-aGUgY3VycmVuDQpPcGVuVlBOIGltcGxlbWVudGF0aW9uLiBJZiBhbmQgd2hlbiBPcGVuVlBOIHN1
-cHBvcnRzIGxpc3RlbmluZyBvbg0KYSBsaXN0IG9mIElQIGFkZHJlc3NlcywgdGhlIGNvZGUgY2Fu
-IGVhc2lseSBiZSB1cGdyYWRlZCB0byBzdXBwb3J0DQppdCwgYnV0IGl0J3MgaW1wb3NzaWJsZSB0
-byBkbyBpdCBiZWZvcmUuDQoNCj4gWy4uLl0gU28gc29ja2V0LmMgbmVlZHMgYSBtYWpvciBvdmVy
-aGF1bCBhbmQgdGhpcyBmZWF0dXJlIG11c3QgYmUNCj4gaW1wbGVtZW50ZWQuICBXaGVuIHdlIG1h
-bmFnZSB0aGlzLCB3ZSBjYW4gYmluZCB0byBkZXZpY2VzIGluc3RlYWQNCj4gb2YgSVAgYWRkcmVz
-c2VzLCBhcyB0aGVuIE9wZW5WUE4gd291bGQgYmVoYXZlIGFzIGV4cGVjdGVkIGJ5IG1vc3QNCj4g
-dXNlcnMuDQoNCkkgdW5kZXJzdGFuZCB0aGF0IHNvY2tldC5jIG5lZWRzIGEgbWFqb3Igb3Zlcmhh
-dWwsIGJ1dCBteSBwYXRjaGVzDQpzaG93IHR3byBzdHJhdGVnaWVzIGhvdyB0aGlzIHVzZWZ1bCBi
-ZWhhdmlvdXIgY2FuIGJlIGltcGxlbWVudGVkDQoqdG9kYXkqIHdpdGhvdXQgbXVjaCBoYXNzbGUu
-IEkgdGhpbmsgaXQgd291bGQgYmUgYmV0dGVyIHRvIGluY2x1ZGUgdGhlDQpmdW5jdGlvbmFsaXR5
-IG5vdywgYXQgdGhlIHNhbWUgdGltZSBwcm92aWRpbmcgYSB0ZW1wbGF0ZSBvZiB3aGF0DQpuZWVk
-cyB0byBiZSBkb25lIGZvciB0aGUgZnV0dXJlLCB0aGFuIHRvIGRlbGF5IHRoZSBpbmNsdXNpb24g
-b2YgdXNlZnVsDQpmdW5jdGlvbmFsaXR5IHRvIGFuIHVuc3BlY2lmaWVkIHRpbWUgd2hlbiBzb2Nr
-ZXQuYyBmaW5hbGx5IGdldHMgaXRzDQpvdmVyaGF1bC4NCg0KCUZlZGUNCi0tLS0tQkVHSU4gUEdQ
-IFNJR05BVFVSRS0tLS0tDQpWZXJzaW9uOiBHbnVQRyB2MS40LjEwIChHTlUvTGludXgpDQoNCmlE
-OERCUUZOZDNBSmJQVUxETDBDeHVBUkFuaytBS0RyeUxDNmUyUWVKQVpUU1hXcUdxZ2Vqa2Z2elFD
-ZlVjeSsNCjdhYWp1emtPdFowaDJoZ3UzbS94dFk4PQ0KPXFYNngNCi0tLS0tRU5EIFBHUCBTSUdO
-QVRVUkUtLS0tLQ0K
+--Sig_/Cc5QDMGyHHD3SRmXjPUB4E0
+Content-Type: multipart/mixed; boundary="MP_/ZAmBSV8RHvD1QqudZYp931V"
+
+--MP_/ZAmBSV8RHvD1QqudZYp931V
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+On 09/03/2011, Gert Doering wrote:
+> I can understand why this feature is desirable - there are a couple
+> of problems with the implementation, though.=20=20
+>  - From a code modularity point of view, socket stuff should not go=20
+>    to options.c, but to socket.c
+
+I understand that with "socket stuff" you probably mean "socket
+operations". Actually, my first implementation of this feature
+(attached) was entirely confined to socket.c, amd simply accepted an
+interface name as a possible value. The reason I didn't like it was
+because because I couldn't easily identify a spot in socket.c that
+would confine this behaviour to just the local interface.
+
+>  - your code is likely to work on Linux and *BSD, but will it work
+>    "as is" on Solaris and Windows?  I don't expect it to, so
+>    additional #ifdef's are needed --> and that's why it should go to
+>    one of the more system-dependent (and already #ifdef-filled)
+>    source files
+
+I'll need help from people with access to those systems to place the
+appropriate #ifdefs...
+
+> In general, I wonder why binding to the interface is really needed
+> - what happens if you don't specify "local" at all?  It should pick
+> the proper source address automatically.
+
+It does, unless you have more than one interface, and you need
+OpenVPN to bind to only one of them.
+
+	Fede
+
+--MP_/ZAmBSV8RHvD1QqudZYp931V
+Content-Type: text/x-patch
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment; filename=bind-to-interface.patch
+
+diff -r 66ad68054f67 socket.c
+--- a/socket.c	Tue Mar 01 10:21:42 2011 +0100
++++ b/socket.c	Wed Mar 09 08:49:20 2011 -0300
+@@ -32,6 +32,7 @@
+ #include "ps.h"
+ #include "manage.h"
+ #include "misc.h"
++#include <net/if.h>
+=20
+ #include "memdbg.h"
+=20
+@@ -129,6 +130,24 @@
+=20
+   status =3D openvpn_inet_aton (hostname, &ia); /* parse ascii IP address =
+*/
+=20
++  if (status !=3D OIA_IP)		/* Attempt to parse as interface name */
++    {
++      int fd;
++      struct ifreq ifr;
++
++      ifr.ifr_addr.sa_family =3D AF_INET;
++      strncpy(ifr.ifr_name, hostname, IFNAMSIZ-1);
++      if ((fd =3D socket(AF_INET, SOCK_DGRAM, 0))>=3D 0)
++	{
++	  if (ioctl(fd, SIOCGIFADDR, &ifr) >=3D 0)
++	    {
++	      ia =3D ((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr;
++	      status =3D OIA_IP;
++	    }
++	  close(fd);
++	}
++    }
++
+   if (status !=3D OIA_IP) /* parse as IP address failed? */
+     {
+       const int fail_wait_interval =3D 5; /* seconds */
+
+--MP_/ZAmBSV8RHvD1QqudZYp931V--
+
+--Sig_/Cc5QDMGyHHD3SRmXjPUB4E0
+Content-Type: application/pgp-signature; name=signature.asc
+Content-Disposition: attachment; filename=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+
+iD8DBQFNd2sIbPULDL0CxuARAobzAKCZSyd7WIIzUWKjRDahAijhuOHONwCg9yMt
+yYGWzbUmbbKT0eFf14xqNRE=
+=/eE3
+-----END PGP SIGNATURE-----
+
+--Sig_/Cc5QDMGyHHD3SRmXjPUB4E0--
+
