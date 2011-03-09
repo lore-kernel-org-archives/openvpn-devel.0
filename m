@@ -1,10 +1,12 @@
-Date: Tue, 8 Mar 2011 21:05:25 -0300
-From: Federico Heinz <fheinz@...277...>
-Message-ID: <20110308210525.7d75f081@...1451...>
-In-Reply-To: <AANLkTi=FFxhdD5avAov9F8giPr-a_A=9Hzf3+Prm4p0V@...278...>
+Date: Wed, 9 Mar 2011 09:47:45 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20110309084745.GN9835@...1296...>
 References: <20110308185252.301d0a1d@...1451...>
-	<AANLkTi=FFxhdD5avAov9F8giPr-a_A=9Hzf3+Prm4p0V@...278...>
 Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="QVgWX4+QEldMe/r9"
+Content-Disposition: inline
+In-Reply-To: <20110308185252.301d0a1d@...1451...>
 Subject: Re: [Openvpn-devel] [PATCH] Bind only to specified interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,39 +16,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-To: Alon Bar-Lev <alon.barlev@...277...>
+To: Federico Heinz <fheinz@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On 09/03/2011, Alon Bar-Lev wrote:
-> I don't understand why it is needed.
-> You can always start openvpn and override configuration via
-> command-line.
-> So add --local "$(/sbin/ip addr show dev wlan0 | grep inet | sed
-> 's#.*inet \(.*\)/.*#\1#')" parameter while starting it.
+--QVgWX4+QEldMe/r9
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Sure: there's a huge number of workarounds one could use. Only I
-think this is a useful feature in its own right, and much easier for
-people to find.
+Hi,
 
-Fumbling with the command line also works fairly well when you are
-running only one instance of OpenVPN (say, in Debian you could get
-away with clever code in /etc/defaults/openvpn). When you run more
-than one (say, for multiple interfaces), however, the doctoring that
-has to be done in the startup scripts is more arcane.
+On Tue, Mar 08, 2011 at 06:52:52PM -0300, Federico Heinz wrote:
+> Accept "local if:<ifname>" option.
 
-Workarounds like to one you propose, are much more complicated and
-cryptic than the solution I propose.
+I can understand why this feature is desirable - there are a couple of
+problems with the implementation, though.=20=20
 
-I'd like to point out that OpenVPN is rather an odd case among
-internet daemons in not providing an easy way to say "bind to
-interface so-and-so", most other daemons have such a configuration
-option.
+ - From a code modularity point of view, socket stuff should not go=20
+   to options.c, but to socket.c
 
-So, while I agree that there are ways of achieving this by fiddling
-with the command line and startup scripts, I rather strongly feel
-that this feature is worthwhile.
+ - your code is likely to work on Linux and *BSD, but will it work
+   "as is" on Solaris and Windows?  I don't expect it to, so additional=20
+   #ifdef's are needed --> and that's why it should go to one of the more=20
+   system-dependent (and already #ifdef-filled) source files
 
-	Fede
+
+In general, I wonder why binding to the interface is really needed - what
+happens if you don't specify "local" at all?  It should pick the proper
+source address automatically.
+
+gert
+
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--QVgWX4+QEldMe/r9
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBTXc+sKkuBuNlUUl1AQKCAAQAqQ11xaWf6a5Yd+LkXPpxrSxBGGFF6guS
+C0FZArrxjwAK8MtOElLJsrtiIesFVmIeQYwjrpKyOC8kUjMxL5aZ8qRoLfkMJYt9
+HI9NWfSzI5wXAqoX54QYSjiW63lCLeRlH8cwlOrZW5O4lYej8hFZqsadkYH1NNkY
+SuvGD9brVqE=
+=+Tqs
+-----END PGP SIGNATURE-----
+
+--QVgWX4+QEldMe/r9--
 
