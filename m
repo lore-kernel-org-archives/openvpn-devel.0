@@ -1,14 +1,11 @@
-Date: Wed, 9 Mar 2011 11:54:20 -0300
-From: Federico Heinz <fheinz@...277...>
-Message-ID: <20110309115420.6785189b@...1451...>
-In-Reply-To: <4D778661.9060709@...1432...>
-References: <20110308185252.301d0a1d@...1451...>
-	<AANLkTi=FFxhdD5avAov9F8giPr-a_A=9Hzf3+Prm4p0V@...278...>
-	<20110308210525.7d75f081@...1451...>
-	<4D774565.7080507@...1114...>
-	<4D778661.9060709@...1432...>
-Mime-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] Bind only to specified interface
+Message-ID: <4D78AE2A.6050308@...1114...>
+Date: Thu, 10 Mar 2011 11:55:38 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <4D713CD3.3000606@...515...>
+	<4D779123.8060303@...1432...>
+In-Reply-To: <4D779123.8060303@...1432...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.2-RC released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,39 +14,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="iso-8859-15"
 Content-Transfer-Encoding: quoted-printable
-To: Markus =?ISO-8859-1?B?S/Z0dGVy?= <koetter@...1432...>
+To: Markus Koetter <koetter@...1432...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On 09/03/2011, Markus K=F6tter wrote:
-> David Sommerseth wrote:
-> > One is that you do resolve the IP address based on the device
-> > name.  What if the IP address changes on that device?  It would
-> > be anticipated by most users that it would then listen to the new
-> > IP address.  When being done via the command line, it is much
-> > more obvious OpenVPN needs to be restarted on an IP address
-> > change.
-> You do not want to get into supporting changing addresses, really.
-> While libnl would work for linux, but that does not cover bsds or=20
-> anything else.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Agreed!
+On 09/03/11 15:39, Markus Koetter wrote:
+> Hi,
+>=20
+> On 03/04/2011 08:26 PM, Samuli Sepp=E4nen wrote:
+>>      * Make the --x509-username-field feature an opt-in feature
+>=20
+> given the x509 username field is optional now, any chance to get x509 v3 =
 
-> To do this properly ...
-> Either use SO_BINDTODEVICE, which is not portable again, or
-> getifaddrs() to gather the addresses for the interface and
-> multi-listen the daemon - which is not implemented.
-> Neither getifaddrs nor SO_BINDTODEVICE are 100% portable, so there
-> is no real proper way, nevertheless getifaddrs would be my choice.
+> extensions as username [1] merged if they are made opt-in too?
+>=20
 
-I agree that getifaddrs() would be a better way of doing this *if*
-the deamon knew how to multi-listen (or, to put it in another way,
-*when* the daemon lerns to).
+commit 1e5a8a8d4461c1fb58b16760a7ac1aaf422fa396
+Author: Markus Koetter <koetter@...1432...>
+Date:   Fri Dec 10 20:30:09 2010 +0100
 
-While I am willing to revise the code to use getifaddr() if that will
-make it more palatable to the project, the current approach does work
-and seems to me to be more portable.
+    Add extv3 X509 field support to --x509-username-field
 
-	Fede
+    This allows using other X509 certificate fields for the certificate
+    authentication.  To use altSubjectName, use
+    --x509-username-field ext:altSubjectName
+
+    This feature requires OpenVPN to be built with --enable-x509-alt-userna=
+me
+
+    This patch is slightly modified, to honour --enable-x509-alt-username
+    compile time configuration.  Two #ifdef's are added.
+
+    Signed-off-by: Markus Koetter <koetter@...1432...>
+    Signed-off-by: David Sommerseth <davids@...1347...>
+    Acked-by: David Sommerseth <davids@...1347...>
+    Signed-off-by: David Sommerseth <davids@...1347...>
+
+
+It will appear in OpenVPN 2.3.  It's already in allmerged, so by using the
+development snapshots [1] or git source it can be tested already.  I expect
+us to start pushing 2.3 beta in 2-3 months.  It all depends when v2.2 is
+declared golden.
+
+
+kind regards,
+
+David Sommerseth
+
+
+
+
+[1] <ftp://ftp.secure-computing.net/pub/FreeBSD/ports/openvpn-devel/>
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk14ricACgkQDC186MBRfrpj6wCgmW2lUysLnH5pUbHwIA3BLznf
+r/EAoJOk3wPtpcAI3e8XoS/ya0PCjC4P
+=3DJpup
+-----END PGP SIGNATURE-----
 
