@@ -1,17 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <4D7AADA0.6070201@...1299...>
-References: <AANLkTi=gX2zHuk40P5RVtM8XmgZCp3V5_o20OeSy80N_@...278...>
-	<20110311090414.GE9835@...1296...>
-	<4D79ECC4.8010805@...1114...>
-	<AANLkTi=5kX-fweV=wzAR0e_mMpvBbNuKGkt0rNQVUZ5P@...278...>
-	<AANLkTimvV+iW_ZeF2PFZvFjNNRDwDwZUHzTxY_wY__qr@...278...>
-	<AANLkTinfb7AZpdOj=-6=2fjpomzwTn2KWKCkvHF7VjMY@...278...>
-	<4D7AADA0.6070201@...1299...>
-Date: Fri, 11 Mar 2011 15:27:51 -0800
-Message-ID: <AANLkTime7WW-ojcWEV3H4gW_vjKy1sAmVCJZw=BxEK3O@...278...>
-From: Vineet Kumar <vineet.kumar@...277...>
-Subject: Re: [Openvpn-devel] openvpn protocol breaks proxies intercepting
-	SSL ...
+Date: Sat, 12 Mar 2011 00:35:17 -0300
+From: Federico Heinz <fheinz@...277...>
+Message-ID: <20110312003517.3a86c508@...1451...>
+In-Reply-To: <4D7A7455.4070805@...1114...>
+References: <20110308185252.301d0a1d@...1451...>
+	<20110309084745.GN9835@...1296...>
+	<20110309085656.18e0e796@...1451...> <20110311122309.1292c1dd@...1451...>
+	<4D7A7455.4070805@...1114...>
+Mime-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH] Bind only to specified interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,47 +16,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8bit
-To: Jason Haar <Jason.Haar@...1299...>
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: base64
+To: David Sommerseth <openvpn.list@...1114...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Skype breaks too. They also send non-SSL bytes and then SSL.
-
-On Fri, Mar 11, 2011 at 3:17 PM, Jason Haar <Jason.Haar@...1299...> wrote:
-> On 03/12/2011 10:34 AM, Vineet Kumar wrote:
->> BlueCoat's ProxySG is one that runs tranparent SSL protocol detection
->> and breaks if openvpn traffic is coming in via 443. This proxy is able
->> to pass through other non-HTTP pure SSL traffic though and not just
->> HTTPS.
->
-> A bit off-topic, but do you know if Skype works through that proxy?
-> Skype falls back to attempting connections over port 443 if it can't get
-> others to work, and as it is primarily a UDP-based product - like
-> openvpn - I've always wondered if their "port 443" traffic was true SSL
-> or just some other encrypted "skype protocol".
->
-> i.e. if an organization has a policied BlueCoat transparent HTTPS proxy,
-> and general egress filtering, does Skype work?
->
->
-> --
-> Cheers
->
-> Jason Haar
-> Information Security Manager, Trimble Navigation Ltd.
-> Phone: +64 3 9635 377 Fax: +64 3 9635 417
-> PGP Fingerprint: 7A2E 0407 C9A6 CAF6 2B9F 8422 C063 5EBB FE1D 66D1
->
->
-> ------------------------------------------------------------------------------
-> Colocation vs. Managed Hosting
-> A question and answer guide to determining the best fit
-> for your organization - today and in the future.
-> http://p.sf.net/sfu/internap-sfd2d
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
-
+LS0tLS1CRUdJTiBQR1AgU0lHTkVEIE1FU1NBR0UtLS0tLQ0KSGFzaDogU0hBMQ0KDQpPbiAxMS8w
+My8yMDExLCBEYXZpZCBTb21tZXJzZXRoIHdyb3RlOg0KPiBTb3JyeSB0aGF0IHlvdSBoYXZlbid0
+IHJlY2VpdmVkIGFueSByZXNwb25zZSBxdWlja2x5LiAgTW9zdCBvZiB1cw0KPiBoZXJlIGFyZSBo
+YXZpbmcgZnVsbCB0aW1lIGpvYnMgd2hpY2ggaXMgbm90IGRpcmVjdGx5IHJlbGF0ZWQgdG8NCj4g
+T3BlblZQTi4NCg0KSSdtIHNvcnJ5IGlmIEkgc291bmRlZCBsaWtlIEkgZmVsdCB0aGF0IGFuc3dl
+cnMgd2VyZSBzbG93IGluIGNvbWluZy4NCkFjdHVhbGx5LCBJIHdhcyBhbWF6ZWQgd2l0aCB0aGUg
+cmVzcG9uc2UgdGltZSB0byBteSBpbml0aWFsDQpzdWJtaXNzaW9uLiBXaGVuIHRoZSByaHl0aG0g
+b2YgdGhlIGRpc2N1c3Npb24gZHJvcHBlZCwgSSB0aG91Z2h0DQpwZW9wbGUgd2VyZSBsb3Npbmcg
+aW50ZXJlc3QsIHRoYXQncyB3aHkgSSBhc2tlZC4NCg0KPiBOb25lIG9mIHRoZXNlIHByb2R1Y3Rz
+IHN1cHBvcnRzIG5ldHdvcmsgZGV2aWNlIG5hbWUgZm9yIHNldHRpbmcgdXANCj4gbGlzdGVuIGFk
+ZHJlc3Nlcy4gIEkgY2hvc2UgdGhlc2UgcHJvZHVjdHMgYXMgdGhleSBhcmUgYWxsIGFpbWVkIGF0
+DQo+IGJlaW5nIGFjY2Vzc2VkIGZyb20gdGhlICJ3aWxkIEludGVybmV0IiwgYWNjZXB0aW5nIGNv
+bm5lY3Rpb25zIGZyb20NCj4gd2hvZXZlciB3aG8gYXJlIG5vdCBuZWNlc3NhcmlseSBrbm93biB0
+byB0aGUgc2VydmVyLiAgV2hpY2ggbWFrZXMNCj4gdGhlaXIgdXNlIGNhc2VzIGNsb3NlciB0byBP
+cGVuVlBOLg0KDQpUaGUgcmVhc29uIEkgbG9va2VkIGludG8gdGhpcyBpbiB0aGUgZmlyc3QgcGxh
+Y2Ugd2FzIHRoYXQsIHVubGlrZQ0KdGhvc2UgVENQLWJhc2VkIHByb3RvY29scywgSSBjb3VsZG4n
+dCBnZXQgT3BlblZQTiB0byB3b3JrIG9uIGENCmZpcmV3YWxsIHdpdGggdHdvIGV4dGVybmFsIElQ
+IGFkZHJlc3NlcyB3aXRob3V0IHJ1bm5pbmcgdHdvIGRlYW1vbnMsDQplYWNoIG9uZSBib3VuZCB0
+byBvbmUgaW50ZXJmYWNlIG9ubHkuIEl0IGlzIHRoZW4gdGhhdCBJIHN0dW1ibGVkIHVwb24NCnRo
+ZSBkaWZmaWN1bHR5IG9mIHNldHRpbmcgdXAgdGhlIHNlcnZlciB0aGF0IG11c3QgbGlzdGVuIG9u
+IGFuDQppbnRlcmZhY2UgdGhhdCBoYXMgYSBkeW5hbWljYWxseS1hc3NpZ25lZCBhZGRyZXNzLg0K
+PiBCdXQgdG8gc3VtbWFyaXNlIGl0IHNvbWVob3csIGJhc2VkIG9uIG15IHBvbmRlcmluZyAuLi4g
+YSBxdWljaw0KPiBwcm8vY29ucyBsaXN0Og0KPiAgICArIG1ha2VzIGNvbmZpZyBlYXNpZXIgZm9y
+IHN5cy1hZG1pbnMNCj4gICAgLSBPcGVuVlBOIHdpbGwgb25seSBsaXN0ZW4gdG8gdGhlIGZpcnN0
+IGlkZW50aWZpZWQgSVAgYWRkcmVzcywNCj4gICAgICB3aGljaCB3aWxsIG5lZWQgdG8gYmUgYm90
+aCBJUHY0IGFuZCBJUHY2IGF3YXJlLiAgVGhpcyB3aWxsDQo+ICAgICAgYmVjb21lIGEgc3VwcG9y
+dCBpc3N1ZSBwcmV0dHkgcXVpY2tseS4NCg0KQWN0dWFsbHksIHRoYXQgd291bGQgcmVxdWlyZSBh
+IHVzZXIgdG8gKmJvdGgqIGhhdmUgbXVsdGlwbGUgSVANCmFkZHJlc3NlcyBvbiB0aGUgc2FtZSBp
+bnRlcmZhY2UsICphbmQqIHRvIHdhbnQgdG8gdXNlIHRoaXMgZmVhdHVyZSwNCndoaWNoIEknZCBn
+YXRoZXIgaXMgbm90IGxpa2VseS4gSW4gYW55IGNhc2UsIGEgc2hvcnQgbWVudGlvbiBpbiB0aGUN
+CmRvY3VtZW50YXRpb24gdGhhdCB0aGUgImlmOiIgbm90YXRpb24gb25seSB3b3JrcyB3aXRoIGlu
+dGVyZmFjZXMgdGhhdA0KaGF2ZSBqdXN0IG9uZSBpbnRlcmZhY2Ugd291bGQgc29sdmUgaXQgKEkg
+Y2FuIGV2ZW4gYWRkIGNvZGUgdG8gY2hlY2sNCmZvciB0aGlzIGNvbmRpdGlvbiBhbmQgbG9nIGEg
+d2FybmluZykuIFRoaXMgb2YgY291cnNlLCB3b3VsZCBvbmx5IGJlDQp0aGUgY2FzZSB1bnRpbCBP
+cGVuVlBOIHN1cHBvcnRzIGxpc3RlbmluZyBvbiBtdWx0aXBsZSBhZGRyZXNzZXMsIHRoZW4NCndl
+IGNhbiBzaW1wbHkgZml4IGl0Lg0KDQo+ICAgIC0gNiBkaWZmZXJlbnQgb3BlbiBzb3VyY2UgcHJv
+ZHVjdHMgd2hpY2ggaGFzIGEgc2ltaWxhciB1c2FnZQ0KPiBwcm9maWxlIChvcGVuIGFjY2VzcyBm
+cm9tIHRoZSBJbnRlcm5ldCkgZG8gbm90IGhhdmUgdGhpcyBzdXBwb3J0Lg0KDQpUaG9zZSBwcm90
+b2NvbHMgYXJlbid0IGFmZmVjdGVkIGJ5IHRoZSBpc3N1ZSBJIG1lbnRpb25lZCwgYW5kIEknZA0K
+dmVudHVyZSB0byBzYXkgdGhhdCB0aGV5IGFyZSBub3QgbmVhcmx5IGFzIGxpa2VseSB0byBiZSB1
+c2VkIGluIGENCmR5bmFtaWMtSVAgYWRkcmVzcyBzZXR1cCBhcyBPcGVuVlBOLCB3aGljaCBpcyBn
+cmVhdCBmb3IgdHVubmVsbGluZw0KaW50byBob21lLg0KDQpJbiBhbnkgY2FzZTogSSBkaWRuJ3Qg
+dGFja2xlIHRoaXMgYmVjYXVzZSBJIHdhcyBib3JlZCwgYnV0IGJlY2F1c2UgSQ0KaGF2ZSBhIHJl
+YWwgdXNlIGNhc2UsIGFuZCBhIHdvcmtpbmcgc2V0dXAsIHdoaWNoIEkgdGhpbmsgb3RoZXIgcGVv
+cGxlDQptYXkgZmluZCB1c2VmdWwuDQoNCj4gICAgLSBDYW4gY2F1c2Ugc29tZSBzdXJwcmlzZXMs
+IGlmIHBlb3BsZSByZS1wbHVnIGEgbmV0d29yayBjYWJsZQ0KPiBiZXR3ZWVuIHR3byBuZXR3b3Jr
+IGRldmljZXMuICBTdWRkZW5seSBPcGVuVlBOIGlzIGF2YWlsYWJsZSBvbiBhDQo+IG5ldHdvcmsg
+c2VnbWVudCBpdCBzaG91bGQgbm90IGJlIGF2YWlsYWJsZSBvbiwgZHVlIHRvIG5vdCBiZWluZw0K
+PiByZXN0cmljdGVkIHRvIHBhcnRpY3VsYXIgYSBJUCBhZGRyZXNzLiAgT2YgY291cnNlIGl0IHNo
+b3VsZCBiZSBhDQo+IGZpcmV3YWxsIHN0b3BwaW5nIGl0IGluIGZyb250LCBidXQgdGhhdCBtaWdo
+dCBoYXZlIGJlZW4gZGlzYWJsZWQgYXMNCj4gd2VsbCAtIGZvciB1bmtub3duIHJlYXNvbnMuICBT
+dXJlbHkgdGhpcyBpcyBhIFBFQktBQyBpc3N1ZSwgYnV0DQo+IHRoZXkgZG8gaGFwcGVuIG1vcmUg
+b2Z0ZW4gdGhhbiB3ZSBsaWtlIHRvIGFkbWl0Lg0KDQpTdXJlLi4uIGJ1dCBzdWNoIGEgcHJvYmxl
+bSB3b3VsZDoNCg0KICAgMSkgYmUgcmF0aGVyIHF1aWNrbHkgZGlzY292ZXJlZCwgd2hlbiBwZW9w
+bGUgY2Fubm90IGNvbm5lY3QgdG8gdGhlDQogICAgICBWUE4sDQogICAyKSBiZSByYXRoZXIgdW5s
+aWtlbHkgdG8gY2F1c2Ugc2VjdXJpdHkgaXNzdWVzLCBzaW5jZSBldmVuDQogICAgICBmcm9tIHRo
+ZSB3cm9uZyBuZXR3b3JrLCBwZW9wbGUgd291bGQgbmVlZCB0aGUgY3JlZGVudGlhbHMgdG8NCiAg
+ICAgIGdldCBjb25uZWN0ZWQuDQoNCglGZWRlDQotLS0tLUJFR0lOIFBHUCBTSUdOQVRVUkUtLS0t
+LQ0KVmVyc2lvbjogR251UEcgdjEuNC4xMCAoR05VL0xpbnV4KQ0KDQppRDhEQlFGTmV1bjFiUFVM
+REwwQ3h1QVJBdFNzQUo5REZuYjhTRnMvR2QwQW05L0E5SVJLcHVpNkxBQ2cxL2F3DQpsaWYrOTJw
+YWp6aVdNMS94NDFrUmJoQT0NCj1OLzhBDQotLS0tLUVORCBQR1AgU0lHTkFUVVJFLS0tLS0NCg==
