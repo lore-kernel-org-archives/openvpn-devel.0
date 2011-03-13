@@ -1,8 +1,7 @@
-Message-ID: <20110313015913.30049.qmail@...1287...>
-Date: Sun, 13 Mar 2011 02:59:13 +0100
+Message-ID: <20110313020838.31171.qmail@...1287...>
+Date: Sun, 13 Mar 2011 03:08:38 +0100
 From: Peter Stuge <peter@...1287...>
-References: <20110311122309.1292c1dd@...1451...>
-	<4D7A7455.4070805@...1114...>
+References: <4D7A7455.4070805@...1114...>
 	<20110312003517.3a86c508@...1451...>
 	<20110312153620.8987.qmail@...1287...>
 	<20110312184423.3fee2f17@...1451...>
@@ -11,8 +10,9 @@ References: <20110311122309.1292c1dd@...1451...>
 	<20110312232602.10422.qmail@...1287...>
 	<20110312213345.694340df@...1451...>
 	<20110313014000.27475.qmail@...1287...>
+	<20110313015913.30049.qmail@...1287...>
 MIME-Version: 1.0
-In-Reply-To: <20110313014000.27475.qmail@...1287...>
+In-Reply-To: <20110313015913.30049.qmail@...1287...>
 Subject: Re: [Openvpn-devel] [PATCH] Bind only to specified interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -28,21 +28,44 @@ Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
 Peter Stuge wrote:
-> Changing startup scripts or wrapping openvpn is one way. But I
-> would probably drive everything from the DHCP client instead.
+> Your /usr/share/udhcpc/default.script to accomplish this would be:
 > 
-> As I wrote, udhcpc is very very easy to deal with.
+> #!/bin/sh
+> test "$1" = bound || exit 0
+> sed -i "/^local /s/.*/local $ip/" /etc/openvpn/something/local.conf
+> /etc/init.d/openvpn.something restart
+> 
+> 
+> This covers initial config and reconfig. Zero distro changes. How
+> much simpler do you need?
 
-Your /usr/share/udhcpc/default.script to accomplish this would be:
+Actually no, you get to also apply address changes. So more like this:
 
-#!/bin/sh
-test "$1" = bound || exit 0
-sed -i "/^local /s/.*/local $ip/" /etc/openvpn/something/local.conf
-/etc/init.d/openvpn.something restart
+#!/bin/bash
+case "${1}" in
+deconfig)
+  ip a f dev "${interface}"
+  ;;
+bound)
+  ip a a "${ip}/${mask}" dev "${interface}"
+  ip r a default via "${router}" dev "${interface}"
+  sed -i "/^local /s/.*/local ${ip}/" /etc/openvpn/something/local.conf
+  /etc/init.d/openvpn.something restart
+  ;;
+*)
+  exit 1
+  ;;
+esac
+exit 0
 
 
-This covers initial config and reconfig. Zero distro changes. How
-much simpler do you need?
+(Might work also with plain sh, but this is similar to what I had in
+production so known working, as opposed to the previous which I just
+wrote from memory. :)
+
+Suggest you name (or at least symlink) the vpn config to the
+interface name, then the above can be generic for all interfaces by
+substituing ${interface} for "something".
 
 
 //Peter
