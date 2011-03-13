@@ -1,6 +1,7 @@
-Message-ID: <20110312232602.10422.qmail@...1287...>
-Date: Sun, 13 Mar 2011 00:26:02 +0100
-From: Peter Stuge <peter@...1287...>
+Date: Sat, 12 Mar 2011 21:33:45 -0300
+From: Federico Heinz <fheinz@...277...>
+Message-ID: <20110312213345.694340df@...1451...>
+In-Reply-To: <20110312232602.10422.qmail@...1287...>
 References: <20110308185252.301d0a1d@...1451...>
 	<20110309084745.GN9835@...1296...>
 	<20110309085656.18e0e796@...1451...> <20110311122309.1292c1dd@...1451...>
@@ -10,8 +11,8 @@ References: <20110308185252.301d0a1d@...1451...>
 	<20110312184423.3fee2f17@...1451...>
 	<20110312215420.31033.qmail@...1287...>
 	<20110312195923.55eaa915@...1451...>
-MIME-Version: 1.0
-In-Reply-To: <20110312195923.55eaa915@...1451...>
+	<20110312232602.10422.qmail@...1287...>
+Mime-Version: 1.0
 Subject: Re: [Openvpn-devel] [PATCH] Bind only to specified interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -21,58 +22,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Federico Heinz wrote:
-> On 12/03/2011, Peter Stuge wrote:
-> > Federico Heinz wrote:
-> > > What I'm trying to solve here is a much simpler (and, in my case,
-> > > frequent) use case: I'm starting several instances of OpenVPN,
-> > > and I need each of them to listen on specific interfaces, but
-> > > their dyndns addresses may not be up-to date yet, so I can
-> > > specify neither an IP nor a domain name in the "local" directive.
-> > Why can't you specify the IP address?
-> 
-> Because I don't know it at configuration time.
+On 13/03/2011, Peter Stuge wrote:
+> Federico Heinz wrote:
+> > Because I don't know it at configuration time.
+> You said that you already have a solution in place for dealing with
+> interface reconfiguration.
 
-You said that you already have a solution in place for dealing with
-interface reconfiguration.
+I said I have a solution in place to restart OpenVPN when the
+configuration changes. The solution is part of my distro of choice
+(Debian), and works pretty well for that purspose.
+ 
+> Simply use the same mechanism for initial configuration.
 
-Simply use the same mechanism for initial configuration.
+That's an odd way of unsing the word "simply".
 
+Sure, I could change a few system scripts, and include something like
+Alon suggested (/sbin/ip addr show dev ppp0 | grep inet | sed
+'s#.*inet \(.*\)/.*#\1#'), to figure out the IP address, change the
+configuration files and only then restart OpenVPN.
 
-> The "local" directive will currently accept either a fixed IP
-> address (which I don't know, because it will be assigned in the
-> future, and may change every time that particular interface is
-> brought up)
+What I fail to see is how that is "simpler" or easier to understand
+or maintain than writing "local if:ppp0" in the daemon's config file.
 
-Yes. Third time, tap the configuration information from the
-authoritative source. Until OpenVPN has multilisten there's no point
-in OpenVPN trying to do this, because it will only do a poor job.
+> Until OpenVPN has multilisten there's no point in OpenVPN trying to
+> do this, because it will only do a poor job.
 
+This is simply not true. It will do a good job in most cases, and a
+well-specified, if incomplete, job in the rather unlikely case that
+someone deliberately attempts to use this feature together with
+multiple IP addresses on a single interface, and even then it will
+emit a warning.
 
-> or a domain name.
+You are arguing that because it cannot do the job perfectly in an
+unlikely edge case, it shouldn't even attempt to solve a
+different, well-defined use case.
 
-The domain name is irrelevant. Go closer to the authoritative source,
-not further away.
+I'm sorry, that doesn't make sense to me.
 
+> > or a domain name.
+> The domain name is irrelevant. Go closer to the authoritative
+> source, not further away.
 
-> Alon mentioned earlier that this could be dealt with at run-time by
-> modifying the startup scripts to determine the IP address and
-> specify it through the command-line, but it's an unnecessarily
-> complex solution,
+Agreed. I'm going as close to it as I can: the interface itself, from
+the viewpoint of the program that is using it.
 
-I actually think this is an extremely simple solution.
+> > which in some cases involves messing around with the way
+> > your distro usually does things,
+> Why would it?
 
+It means modifying the distro's startup scripts for OpenVPN, to get
+them to figure out the IP address of the interface for *some*
+instances of the server but not necessarily for all.
 
-> which in some cases involves messing around with the way
-> your distro usually does things,
+Sure, modifying those scripts isn't taboo, but it's not as usual and
+clean as it is to modify the subsystem's own configuration files (in
+Debian, /etc/openvpn/*.conf and /etc/default/openvpn), because they
+simply assume the program will be able to gather all the info it
+needs to run from those configuration files.
 
-Why would it?
+The change I'm proposing simply aims at meeting that assumption.
 
-
-//Peter
+	Fede
 
