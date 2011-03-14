@@ -1,8 +1,7 @@
-Message-ID: <20110313231620.12432.qmail@...1287...>
-Date: Mon, 14 Mar 2011 00:16:20 +0100
-From: Peter Stuge <peter@...1287...>
-References: <20110312153620.8987.qmail@...1287...>
-	<20110312184423.3fee2f17@...1451...>
+Date: Mon, 14 Mar 2011 09:38:46 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20110314083845.GL9835@...1296...>
+References: <20110312184423.3fee2f17@...1451...>
 	<20110312215420.31033.qmail@...1287...>
 	<20110312195923.55eaa915@...1451...>
 	<20110312232602.10422.qmail@...1287...>
@@ -11,11 +10,12 @@ References: <20110312153620.8987.qmail@...1287...>
 	<20110313142200.GJ9835@...1296...>
 	<20110313160421.3004.qmail@...1287...>
 	<20110313173833.GK9835@...1296...>
-MIME-Version: 1.0
+	<20110313231620.12432.qmail@...1287...>
+Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="yEPQxsgoJgBvi8ip"
+	protocol="application/pgp-signature"; boundary="7kW37LRKoI6fR2de"
 Content-Disposition: inline
-In-Reply-To: <20110313173833.GK9835@...1296...>
+In-Reply-To: <20110313231620.12432.qmail@...1287...>
 Subject: Re: [Openvpn-devel] [PATCH] Bind only to specified interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -27,53 +27,45 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
---yEPQxsgoJgBvi8ip
+--7kW37LRKoI6fR2de
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-Gert Doering wrote:
-> On Sun, Mar 13, 2011 at 05:04:21PM +0100, Peter Stuge wrote:
-> > Was this for PPP? Sorry then, I completely overlooked that! I'm
-> > fortunate to not have to deal with many PPP links now, but I have,
-> > and pppd of course /etc/ppp/ip-up and -down where the same info about
-> > (de/re)config is available as in the udhcpc script.
+Hi,
+
+On Mon, Mar 14, 2011 at 12:16:20AM +0100, Peter Stuge wrote:
+> > - or try to understand why this is needed in the first place :-) - I st=
+ill
+> >   don't understand why not binding to anything + --multihome isn't work=
+ing
 >=20
-> Which is actually somewhat underlining the point :-) - if you absolutely
-> need to do this outside of OpenVPN, it can be done, but how to do that
-> depends on interface technology used, specific distribution used (what
-> if your distribution doesn't *have* udhcp?), etc.
+> Third time: Multiple openvpn daemons on different interfaces and same
+> port.
 
-Sure, but in any case it remains quite trivial.
+That's one possible use case, but not how I understood Federico.
 
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-> - or try to understand why this is needed in the first place :-) - I still
->   don't understand why not binding to anything + --multihome isn't working
-
-Third time: Multiple openvpn daemons on different interfaces and same
-port.
-
-
-> As for including the patch, in either form, I'd rather wait for the
-> to-be-implemented-and-cleaned-up "multi-listen" infrastructure that
-> someone will hopefully implement for 2.3...
-
-+1
-
-
-//Peter
-
---yEPQxsgoJgBvi8ip
+--7kW37LRKoI6fR2de
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
+Version: GnuPG v1.4.11 (NetBSD)
 
-iD8DBQFNfVBEhR3Q0dhIfEgRAtYxAJwMSZCIim6ySwK9Q+muz0+joN0WhwCeOGfa
-hde68ec4IEivhrbBo7xYw7Q=
-=yKnV
+iQCVAwUBTX3UFakuBuNlUUl1AQJO9wP/Wfx8y5hYi7jldKNLHSp3fniCDRa3cWAY
+z+Xx2gVrksmU9+Ze+rvH+RfFW87HSN++eeGSbobMGksPQ7ijmFghp2LA+ikptJ23
+ilvB7BQiUk790cZnUcYqXfZOI0bftxQVD4AM9YmZ377kcsBgmHCoqWD5bgVxcmLr
+GpNSRpYett4=
+=gmCU
 -----END PGP SIGNATURE-----
 
---yEPQxsgoJgBvi8ip--
+--7kW37LRKoI6fR2de--
 
