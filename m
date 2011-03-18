@@ -1,9 +1,10 @@
-From: Heiko Hund <hhund@...194...>
-Date: Fri, 18 Mar 2011 13:31:50 +0100
+Date: Fri, 18 Mar 2011 14:02:26 +0100
+From: Thomas Glanzmann <thomas@...1029...>
+Message-ID: <20110318130226.GD26254@...1029...>
 References: <20110317054155.GA9684@...1029...>
-In-Reply-To: <20110317054155.GA9684@...1029...>
+	<201103181331.51247.hhund@...194...>
 MIME-Version: 1.0
-Message-Id: <201103181331.51247.hhund@...194...>
+In-Reply-To: <201103181331.51247.hhund@...194...>
 Subject: Re: [Openvpn-devel] OpenVPN GUI and ntlm Proxy password
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,43 +14,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: Text/Plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
-Cc: info@...454...
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: Heiko Hund <hhund@...194...>
+Cc: openvpn-devel@lists.sourceforge.net, info@...454...
 
-Hi Thomas,
+Hello Heiko,
 
-On Thursday 17 March 2011 06:41:55 Thomas Glanzmann wrote:
-> Hello Mathias,
+> I fear Mathias is not involved with the OpenVPN GUI since five years or so.
+> There's a project on SourceForge now where I forked the GUI and try to improve 
+> it: https://sourceforge.net/projects/openvpn-gui/ 
 
-I fear Mathias is not involved with the OpenVPN GUI since five years or so.
-There's a project on SourceForge now where I forked the GUI and try to impr=
-ove=20
-it: https://sourceforge.net/projects/openvpn-gui/=20
+I see. Thanks for putting in the effort.
 
-> I would like to use you OpenVPN GUI for Windows to authenticate over an
-> NTLM proxy in Windows and wonder if you're thinking about asking and
-> supplying the password for NTLM-proxy authentication or planing on doing
-> so.
+> Maybe you want to check out the latest snapshot and see if it works
+> for you.  The GUI uses the OpenVPN management interface for
+> communication and monitoring since a while now. So, there's a fair
+> chance it'll work right away or won't be much work to make it work. =)
 
-Maybe you want to check out the latest snapshot and see if it works for you=
-.=20
-The GUI uses the OpenVPN management interface for communication and monitor=
-ing=20
-since a while now. So, there's a fair chance it'll work right away or won't=
- be=20
-much work to make it work. =3D)
+It did not work, because it couldn't read or write the file
 
-Regards
-Heiko
---=20
-Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
-Astaro GmbH & Co. KG | An der RaumFabrik 33a | 76227 Karlsruhe | Germany
-Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
-=20
-Represented by the General Partner Astaro Verwaltungs GmbH
-An der RaumFabrik 33a | 76227 Karlsruhe | Germany=20
-Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
-Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
+Fri Mar 18 13:56:53 2011 Error opening 'HTTP Proxy' auth file: C:\DOCUME~1\adglth0\LOCALS~1\Temp\openvpn_authfile.: Das System kann die angegebene Datei nicht finden.   (errno=2)
+
+containing the credentials. But the directory exists.
+
+I also saw a few other things that are confusing:
+
+        - The 'About' button mentions GUI version 1.3
+
+        - When using 'Intenet Explorer' to determine the proxy, it
+          doesn't work with proxy pac but doesn't mention  it (the
+          OpenVPN Gui 1.3 did mention that it doesn't work with proxy
+          pacs).
+
+Any ideas to track the problem down. My configuration file is:
+
+client
+dev tun
+proto tcp
+nobind
+remote full.qualified.hostname.de 443
+resolv-retry infinite
+persist-key
+persist-tun
+ca edge1ca.crt
+ns-cert-type server
+comp-lzo
+verb 3
+mute 20
+auth-user-pass
+tun-mtu 1400
+# http-proxy 192.168.1.211 8080 paaf.txt ntlm
+
+Cheers,
+        Thomas
 
