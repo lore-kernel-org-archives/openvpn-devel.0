@@ -1,9 +1,10 @@
-Message-ID: <4D87C556.3000606@...1114...>
-Date: Mon, 21 Mar 2011 22:38:30 +0100
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
+In-Reply-To: <4D87C556.3000606@...1114...>
 References: <AANLkTinSNNNtmS78KquJbmA81eZdxubr1rdZcKHD0Y0n@...278...>
-In-Reply-To: <AANLkTinSNNNtmS78KquJbmA81eZdxubr1rdZcKHD0Y0n@...278...>
+	<4D87C556.3000606@...1114...>
+From: Joe Patterson <j.m.patterson@...277...>
+Date: Mon, 21 Mar 2011 18:07:19 -0400
+Message-ID: <AANLkTi=_QkRWUYO5R_NDhAUty+Q1ckPdTrB=9bsUUUD9@...278...>
 Subject: Re: [Openvpn-devel] [PATCH] common_name passing in auth_pam plugin
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,78 +15,94 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Joe Patterson <j.m.patterson@...277...>
+Content-Transfer-Encoding: 8bit
+To: David Sommerseth <openvpn.list@...1114...>
 Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+[PATCH] -added the ability to have "COMMONNAME" replaced
+  with certificate common name in pam conversation
 
-On 07/03/11 17:44, Joe Patterson wrote:
-> I had wanted to have the capability of forcing users to match their
-> username with their cert common name.  It's possible to do this using
-> the environment variables passed to an auth script, but I figured it
-> would be useful to add the capability to the auth_pam plugin.  It
-> would be nice to be able to pass arbitrary strings from envp to pam so
-> that you could, for instance, use an OU to hold a domain or realm name
-> or some such, but for now I'm just passing the common_name and using
-> it to replace "COMMONNAME", much as the USERNAME and PASSWORD strings
-> get replaced in the pam auth dialog.  Here's the patch for the 2.1.3i
-> source I pulled from svn (apologies if this format isn't as it should
-> be, I seldom submit code anywhere):
-> 
+Signed-off-by: Joe Patterson <j.m.patterson@...277...>
+---
+ plugin/auth-pam/README     |    2 +-
+ plugin/auth-pam/auth-pam.c |   11 +++++++++--
+ 2 files changed, 10 insertions(+), 3 deletions(-)
 
-Thank you very much for your patch.  Unfortunately I cannot make this patch
-apply to the git tree which we primarily use now for community patches.  If
-you can please fix this and resubmit this patch, I'll make sure this one
-gets applied to the bugfix2.1 branch.
+diff --git a/plugin/auth-pam/README b/plugin/auth-pam/README
+index c957c02..e123690 100644
+--- a/plugin/auth-pam/README
++++ b/plugin/auth-pam/README
+@@ -48,7 +48,7 @@ For example, suppose you were using a PAM module called
 
-One comment:
-@@ -709,7 +715,8 @@
-     {
-     case COMMAND_VERIFY:
-       if (recv_string (fd, up.username, sizeof (up.username)) == -1
-- -          || recv_string (fd, up.password, sizeof (up.password)) == -1)
-+          || recv_string (fd, up.password, sizeof (up.password)) == -1
-+        || recv_string (fd, up.common_name, sizeof (up.common_name)) == -1)
+   plugin openvpn-auth-pam.so "test name USERNAME password PASSWORD"
 
-It seems like you're missing some spaces in the if() statement.  Please fix
-this as well.
+-While "USERNAME" and "PASSWORD" are special strings which substitute
++While "USERNAME" "COMMONNAME" and "PASSWORD" are special strings
+which substitute
+ to client-supplied values, it is also possible to name literal values
+ to use as PAM module query responses.  For example, suppose that the
+ login module queried for a third parameter, "domain" which
+diff --git a/plugin/auth-pam/auth-pam.c b/plugin/auth-pam/auth-pam.c
+index 5a8e269..8719c30 100644
+--- a/plugin/auth-pam/auth-pam.c
++++ b/plugin/auth-pam/auth-pam.c
+@@ -81,6 +81,7 @@ struct auth_pam_context
+  *
+  *  "USERNAME" -- substitute client-supplied username
+  *  "PASSWORD" -- substitute client-specified password
++ *  "COMMONNAME" -- substitute client certificate common name
+  */
 
-I'm keen on giving this one an ACK.  This seems sensible at first glance to me.
+ #define N_NAME_VALUE 16
+@@ -104,6 +105,7 @@ struct user_pass {
 
-A very quick git crash course:
+   char username[128];
+   char password[128];
++  char common_name[128];
 
- $ git config --global user.name 'Your name'
- $ git config --global user.email 'my@...1452...'
- $ git clone
-git://openvpn.git.sourceforge.net/gitroot/openvpn/openvpn-testing.git
- $ cd openvpn-testing
- $ git checkout -b bugfix2.1 origin/bugfix2.1
-[do your hacking, applying your patch changes]
- $ git add <modified files>
- $ git commit -s
- $ git format-patch origin/bugfix2.1..HEAD
+   const struct name_value_list *name_value_list;
+ };
+@@ -470,12 +472,14 @@ openvpn_plugin_func_v1 (openvpn_plugin_handle_t
+handle, const int type, const ch
+       /* get username/password from envp string array */
+       const char *username = get_env ("username", envp);
+       const char *password = get_env ("password", envp);
++      const char *common_name = get_env ("common_name", envp) ?
+get_env ("common_name", envp) : "";
 
-This last command produces a patch file for each commit you have done.
-Please send these patch files to the mailing list again for another review.
+       if (username && strlen (username) > 0 && password)
+ 	{
+ 	  if (send_control (context->foreground_fd, COMMAND_VERIFY) == -1
+ 	      || send_string (context->foreground_fd, username) == -1
+-	      || send_string (context->foreground_fd, password) == -1)
++	      || send_string (context->foreground_fd, password) == -1
++              || send_string (context->foreground_fd, common_name) == -1)
+ 	    {
+ 	      fprintf (stderr, "AUTH-PAM: Error sending auth info to
+background process\n");
+ 	    }
+@@ -592,6 +596,8 @@ my_conv (int n, const struct pam_message **msg_array,
+ 		    aresp[i].resp = searchandreplace(match_value, "USERNAME", up->username);
+ 		  else if (strstr(match_value, "PASSWORD"))
+ 		    aresp[i].resp = searchandreplace(match_value, "PASSWORD", up->password);
++		  else if (strstr(match_value, "COMMONNAME"))
++		    aresp[i].resp = searchandreplace(match_value, "COMMONNAME",
+up->common_name);
+ 		  else
+ 		    aresp[i].resp = strdup (match_value);
 
-For more info about the development process, look here:
-<https://community.openvpn.net/openvpn/wiki/DeveloperDocumentation>
-
-For a little bit more verbose git crash course:
-<https://community.openvpn.net/openvpn/wiki/GitCrashCourse>
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk2HxVYACgkQDC186MBRfrplqwCeP4Swqfhg6L2otdSE9K9hAtYn
-dzUAnjcM5adFKpiDRraGEwC7aw9rHTKf
-=1xSv
------END PGP SIGNATURE-----
+@@ -737,7 +743,8 @@ pam_server (int fd, const char *service, int verb,
+const struct name_value_list
+ 	{
+ 	case COMMAND_VERIFY:
+ 	  if (recv_string (fd, up.username, sizeof (up.username)) == -1
+-	      || recv_string (fd, up.password, sizeof (up.password)) == -1)
++	      || recv_string (fd, up.password, sizeof (up.password)) == -1
++	      || recv_string (fd, up.common_name, sizeof (up.common_name)) == -1)
+ 	    {
+ 	      fprintf (stderr, "AUTH-PAM: BACKGROUND: read error on command
+channel: code=%d, exiting\n",
+ 		       command);
+-- 
+1.6.0.4
 
