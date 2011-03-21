@@ -1,11 +1,10 @@
-Message-ID: <4D875453.2000508@...515...>
-Date: Mon, 21 Mar 2011 15:36:19 +0200
-From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
+Message-ID: <4D87B87E.9030801@...1114...>
+Date: Mon, 21 Mar 2011 21:43:42 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4D836B41.2040600@...515...>	<AANLkTi=VPAkEkUjPWgEqZg_p+Fspuc=v5kEPe3z5LN=+@mail.gmail.com>	<4D8376F0.3080202@...515...>
-	<AANLkTimARrUoZR5-B92_c2mXgEF4QUW475ZqYuhTERU-@...278...>
-In-Reply-To: <AANLkTimARrUoZR5-B92_c2mXgEF4QUW475ZqYuhTERU-@...278...>
-Subject: Re: [Openvpn-devel] First OpenVPN 2.2-RC2 preview available
+References: <1300199887-4806-1-git-send-email-samuli@...515...>
+In-Reply-To: <1300199887-4806-1-git-send-email-samuli@...515...>
+Subject: Re: [Openvpn-devel] [PATCH] Updated INSTALL-win32.txt
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,47 +13,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi Alon,
-> Hello,
->
-> GIT/SVN repository is expected to be published clearly in opened
-> source projects, just like you have Download option in menu, there
-> should be Source or similar.
->=20=20=20
-Agreed, Git repo is too hard to find currently. I'll get this fixed.
-> If your git is the one that is candidate for next release, publish it,
-> better something than nothing.
->
-> Also, please install gitweb, so the repository can be tracked online.
->=20=20=20
-The "beta2.2" branch in Git is the basis for the next release. It's
-hosted on SF.net, and instructions for using it are here:
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-<https://community.openvpn.net/openvpn/wiki>
+On 15/03/11 15:38, Samuli Seppänen wrote:
+> Signed-off-by: Samuli Seppänen <samuli@...515...>
+> ---
+>  INSTALL-win32.txt |   23 ++++++++++++-----------
+>  1 files changed, 12 insertions(+), 11 deletions(-)
+> 
 
-Trac has it's own Git browser, but it's pretty slow and does not scale
-up well. Fortunately SF.net provides a GitWeb interface already: click
-on the "Source" link in Trac panel. Or use this direct link:
+Applied to beta2.2 and merged into allmerged as well.
 
-<http://openvpn.git.sourceforge.net/git/gitweb.cgi?p=3Dopenvpn/openvpn-test=
-ing.git;a=3Dsummary>
-> You should have a branch for the "james" openvpn so people know what he a=
-cked.
->=20=20=20
-James' SVN tree is just another "external" tree, like cron2's or jjo's.
-All ACKs James gives will be announced on openvpn-devel and will also
-show up in Git commit logs.
+commit 58704ea66478942ae82c013d0d48c7931cb79fa0
+Author: Samuli Seppänen <samuli@...515...>
+Date:   Tue Mar 15 16:38:07 2011 +0200
 
---=20
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
+    Updated INSTALL-win32.txt
 
-irc freenode net: mattock
+    Signed-off-by: Samuli Seppänen <samuli@...515...>
+    Acked-by: Gert Doering <gert@...1296...>
+    Signed-off-by: David Sommerseth <davids@...1347...>
 
+
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk2HuHwACgkQDC186MBRfrr5mwCfdWVPvdAjjPkD2I3rcVYNL4EB
+gCUAoKJL5VxYS68+hkTMsPhiiNkkLmZF
+=+GNj
+-----END PGP SIGNATURE-----
 
