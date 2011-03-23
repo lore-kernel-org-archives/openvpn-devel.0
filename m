@@ -1,6 +1,6 @@
-Message-ID: <4D89E4F3.1050408@...515...>
-Date: Wed, 23 Mar 2011 14:17:55 +0200
-From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
+Message-ID: <4D89E62F.2000607@...1114...>
+Date: Wed, 23 Mar 2011 13:23:11 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
 References: <1300880316-5779-1-git-send-email-samuli@...515...>
 	<1300882472-11494-1-git-send-email-samuli@...515...>
@@ -14,43 +14,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
+On 23/03/11 13:14, Samuli Seppänen wrote:
 > Removed reference to config-win32.h, which has been removed. Added
 > management-notes.txt to dist_doc_DATA.
->
-> Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
-> ---
->  Makefile.am |    4 ++--
->  1 files changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/Makefile.am b/Makefile.am
-> index 1c9468c..f311837 100644
-> --- a/Makefile.am
-> +++ b/Makefile.am
-> @@ -60,8 +60,8 @@ SUBDIRS =3D \
->  TESTS =3D t_client.sh t_lpback.sh t_cltsrv.sh
->  sbin_PROGRAMS =3D openvpn
->=20=20
-> -dist_noinst_HEADERS =3D \
-> -	config-win32.h
-> +dist_doc_DATA =3D \
-> +	management/management-notes.txt
->=20=20
->  dist_noinst_SCRIPTS =3D \
->  	$(TESTS) \
->=20=20=20
-Tested building and installing on Ubuntu 9.10. The
-"management-notes.txt" ends up in /usr/local/share/doc as it's supposed to.
 
---=20
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
+ACK.  Applied to the beta2.2 branch.
 
-irc freenode net: mattock
+commit ef2cbc771a6cf95868f2bb1c692e3cc9e2be5280
+Author: Samuli Seppänen <samuli@...515...>
+Date:   Wed Mar 23 14:14:32 2011 +0200
 
+    Fixes to Makefile.am
+
+    Removed reference to config-win32.h, which has been removed. Added
+    management-notes.txt to dist_doc_DATA.
+
+    Signed-off-by: Samuli Seppänen <samuli@...515...>
+    Acked-by: David Sommerseth <davids@...1347...>
+    Signed-off-by: David Sommerseth <davids@...1347...>
+
+
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk2J5i0ACgkQDC186MBRfrr6wgCgnEgYgTiUT/doQ3oQJSlKHt3p
+xjwAnRmf+1lJybbUuA47v+DzY36k5VOc
+=1+9q
+-----END PGP SIGNATURE-----
 
