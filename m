@@ -1,12 +1,11 @@
-Date: Thu, 24 Mar 2011 23:57:19 +0100
+Date: Thu, 24 Mar 2011 23:58:28 +0100
 From: JuanJo Ciarlante <jjo+ml@...410...>
-Message-ID: <20110324225717.GA26539@...1453...>
+Message-ID: <20110324225826.GB26539@...1453...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ReaqsoxgOBHFXBhH"
+	protocol="application/pgp-signature"; boundary="H+4ONPRPur6+Ovig"
 Content-Disposition: inline
-Subject: [Openvpn-devel] [PATCH 1/3] fix --multihome for ipv6:
-	IPV6_RECVPKTINFO
+Subject: [Openvpn-devel] [PATCH 2/3] ipv6-0.4.14: fix xinetd usage
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,103 +16,98 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
---ReaqsoxgOBHFXBhH
+--H+4ONPRPur6+Ovig
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-NOTE: this is patch 1/3 over feat_ipv6_transport branch,
+NOTE: this is patch 2/3 over feat_ipv6_transport branch,
       commit 1b96baa8fc964bfba8bfba87f1e0e1fbabf0b47b
 
-   - setsockopt IPV6_RECVPKTINFO (not IPV6_PKTINFO!)
-   - do check for setsockopt() failures
-   - append %<iface> in INFO msg
+  - closes http://bugs.debian.org/574164
+  - also needed for --disable-ipv6 builds
+  - supports IPv6 from xinetd
+
 
 Signed-off-by: JuanJo Ciarlante <jjo@...410...>
 ---
- socket.c |   27 +++++++++++++++++----------
- 1 files changed, 17 insertions(+), 10 deletions(-)
+ socket.c |   36 ++++++++++++++++++++++++++++++++++--
+ 1 files changed, 34 insertions(+), 2 deletions(-)
 
 diff --git a/socket.c b/socket.c
-index 810bb23..08cab0e 100644
+index 08cab0e..d9e6bc9 100644
 --- a/socket.c
 +++ b/socket.c
-@@ -813,7 +813,9 @@ create_socket_udp (const unsigned int flags)
-   else if (flags & SF_USE_IP_PKTINFO)
+@@ -1680,7 +1680,11 @@ link_socket_init_phase1 (struct link_socket *sock,
+   /* were we started by inetd or xinetd? */
+   if (sock->inetd)
      {
-       int pad =3D 1;
--      setsockopt (sd, SOL_IP, IP_PKTINFO, (void*)&pad, sizeof(pad));
-+      if (setsockopt (sd, SOL_IP, IP_PKTINFO,
-+		      (void*)&pad, sizeof(pad)) < 0)
-+        msg(M_SOCKERR, "UDP: failed setsockopt for IP_PKTINFO");
+-      ASSERT (sock->info.proto !=3D PROTO_TCPv4_CLIENT);
++      ASSERT (sock->info.proto !=3D PROTO_TCPv4_CLIENT
++#ifdef USE_PF_INET6
++	      && sock->info.proto !=3D PROTO_TCPv6_CLIENT
++#endif
++      );
+       ASSERT (socket_defined (inetd_socket_descriptor));
+       sock->sd =3D inetd_socket_descriptor;
      }
- #endif
-   return sd;
-@@ -831,7 +833,9 @@ create_socket_udp6 (const unsigned int flags)
-   else if (flags & SF_USE_IP_PKTINFO)
+@@ -1729,7 +1733,34 @@ link_socket_init_phase2 (struct link_socket *sock,
+   /* were we started by inetd or xinetd? */
+   if (sock->inetd)
      {
-       int pad =3D 1;
--      setsockopt (sd, IPPROTO_IPV6, IPV6_PKTINFO, (void*)&pad, sizeof(pad)=
-);
-+      if (setsockopt (sd, IPPROTO_IPV6, IPV6_RECVPKTINFO,
-+		      (void*)&pad, sizeof(pad)) < 0)
-+	msg(M_SOCKERR, "UDP: failed setsockopt for IPV6_RECVPKTINFO");
-     }
- #endif
-   return sd;
-@@ -2423,6 +2427,7 @@ print_link_socket_actual_ex (const struct link_socket=
-_actual *act,
- {
-   if (act)
-     {
-+      char ifname[IF_NAMESIZE] =3D "[undef]";
-       struct buffer out =3D alloc_buf_gc (128, gc);
-       buf_printf (&out, "%s", print_sockaddr_ex (&act->dest, separator, fl=
-ags, gc));
- #if ENABLE_IP_PKTINFO
-@@ -2438,7 +2443,10 @@ print_link_socket_actual_ex (const struct link_socke=
-t_actual *act,
- 		  CLEAR (sa);
- 		  sa.addr.in4.sin_family =3D AF_INET;
- 		  sa.addr.in4.sin_addr =3D act->pi.in4.ipi_spec_dst;
--		  buf_printf (&out, " (via %s)", print_sockaddr_ex (&sa, separator, 0, g=
-c));
-+		  if_indextoname(act->pi.in4.ipi_ifindex, ifname);
-+		  buf_printf (&out, " (via %s%%%s)",
-+			      print_sockaddr_ex (&sa, separator, 0, gc),
-+			      ifname);
- 		}
- #ifdef USE_PF_INET6
- 	      break;
-@@ -2449,13 +2457,12 @@ print_link_socket_actual_ex (const struct link_sock=
-et_actual *act,
- 		  CLEAR(sin6);
- 		  sin6.sin6_family =3D AF_INET6;
- 		  sin6.sin6_addr =3D act->pi.in6.ipi6_addr;
--		    {
--		      if (getnameinfo((struct sockaddr *)&sin6, sizeof (struct sockaddr_=
-in6),
--				      buf, sizeof (buf), NULL, 0, NI_NUMERICHOST) =3D=3D 0)
--			buf_printf (&out, " (via %s)", buf);
--		      else
--			buf_printf (&out, " (via [getnameinfo() err])");
--		    }
-+		  if_indextoname(act->pi.in6.ipi6_ifindex, ifname);
-+		  if (getnameinfo((struct sockaddr *)&sin6, sizeof (struct sockaddr_in6),
-+				  buf, sizeof (buf), NULL, 0, NI_NUMERICHOST) =3D=3D 0)
-+		    buf_printf (&out, " (via %s%%%s)", buf, ifname);
-+		  else
-+		    buf_printf (&out, " (via [getnameinfo() err]%%%s)", ifname);
- 		}
- 	      break;
- 	    }
+-      if (sock->info.proto =3D=3D PROTO_TCPv4_SERVER)
++      if (sock->info.proto =3D=3D PROTO_TCPv4_SERVER
++#ifdef USE_PF_INET6
++	  || sock->info.proto =3D=3D PROTO_TCPv6_SERVER
++#endif
++      ) {
++	/* AF_INET as default (and fallback) for inetd */
++	sock->info.lsa->actual.dest.addr.sa.sa_family =3D AF_INET;
++#ifdef USE_PF_INET6
++#ifdef HAVE_GETSOCKNAME
++	  {
++	    /* inetd: hint family type for dest =3D local's */
++	    struct openvpn_sockaddr local_addr;
++	    socklen_t addrlen =3D sizeof(local_addr);
++	    if (getsockname (sock->sd, (struct sockaddr *)&local_addr, &addrlen) =
+=3D=3D 0) {
++	      sock->info.lsa->actual.dest.addr.sa.sa_family =3D local_addr.addr.s=
+a.sa_family;
++	      dmsg (D_SOCKET_DEBUG, "inetd(%s): using sa_family=3D%d from getsock=
+name(%d)",
++		    proto2ascii(sock->info.proto, false), local_addr.addr.sa.sa_family,
++		    sock->sd);
++	    } else
++	      msg (M_WARN, "inetd(%s): getsockname(%d) failed, using AF_INET",
++		   proto2ascii(sock->info.proto, false), sock->sd);
++	  }
++#else
++	msg (M_WARN, "inetd(%s): this OS does not provide the getsockname() "
++	     "function, using AF_INET",
++	     proto2ascii(sock->info.proto, false));
++#endif
++#endif
+ 	sock->sd =3D
+ 	  socket_listen_accept (sock->sd,
+ 				&sock->info.lsa->actual,
+@@ -1739,6 +1770,7 @@ link_socket_init_phase2 (struct link_socket *sock,
+ 				false,
+ 				sock->inetd =3D=3D INETD_NOWAIT,
+ 				signal_received);
++      }
+       ASSERT (!remote_changed);
+       if (*signal_received)
+ 	goto done;
 --=20
 1.7.1
 
+
+--=20
+--JuanJo
 oO Juan Jose Ciarlante - juanjosec Ogmail.com - jjo O{um.edu.ar,google.com}
 Oo gpg --keyserver wwwkeys.eu.pgp.net --recv-key 81276430
 
---ReaqsoxgOBHFXBhH
+--H+4ONPRPur6+Ovig
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 Content-Disposition: inline
@@ -121,10 +115,10 @@ Content-Disposition: inline
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
 
-iEYEARECAAYFAk2LzE0ACgkQo/fiSWZycXcgGACdECK+wd/Xi/JBCgfoDUK373bG
-nrIAoJxZLJxP9aUp8JMh4WwhB9UR9kiO
-=SJY6
+iEYEARECAAYFAk2LzJIACgkQo/fiSWZycXcpmwCeKwIh0cUnoEeVxzZGQ6jw4mlq
+AE4AniPojGqms0hW5VkTQLSCFnA8GNZh
+=8mpz
 -----END PGP SIGNATURE-----
 
---ReaqsoxgOBHFXBhH--
+--H+4ONPRPur6+Ovig--
 
