@@ -1,8 +1,14 @@
-From: David Sommerseth <davids@...1347...>
-Date: Thu, 24 Mar 2011 14:54:04 +0100
-Message-Id: <1300974844-23829-1-git-send-email-davids@...1347...>
-Subject: [Openvpn-devel] [PATCH] Clarify default value for the --inactive
-	option.
+Date: Thu, 24 Mar 2011 19:57:56 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20110324185756.GA1261@...1296...>
+References: <1300974844-23829-1-git-send-email-davids@...1347...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="r5Pyd7+fXNt84Ff3"
+Content-Disposition: inline
+In-Reply-To: <1300974844-23829-1-git-send-email-davids@...1347...>
+Subject: Re: [Openvpn-devel] [PATCH] Clarify default value for the
+	--inactive option.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,33 +17,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: David Sommerseth <davids@...1347...>
+To: David Sommerseth <davids@...1347...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-It is not clear in the manual that this feature is disabled
-by default.
+--r5Pyd7+fXNt84Ff3
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Signed-off-by: David Sommerseth <davids@...1347...>
----
- openvpn.8 |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+Hi,
 
-diff --git a/openvpn.8 b/openvpn.8
-index 525ddd5..9639f75 100644
---- a/openvpn.8
-+++ b/openvpn.8
-@@ -1374,7 +1374,7 @@ Causes OpenVPN to exit after
- .B n
- seconds of inactivity on the TUN/TAP device. The time length of
- inactivity is measured since the last incoming or outgoing tunnel
--packet.
-+packet.  The default value is 0 seconds, which disables this feature.
- 
- If the optional
- .B bytes
--- 
-1.7.4
+On Thu, Mar 24, 2011 at 02:54:04PM +0100, David Sommerseth wrote:
+> It is not clear in the manual that this feature is disabled
+> by default.
+>=20
+> Signed-off-by: David Sommerseth <davids@...1347...>
 
+ACK.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--r5Pyd7+fXNt84Ff3
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBTYuUNKkuBuNlUUl1AQJ5egP+Kt5aa1WQcq7vdu3PH9vF/SEynaARB2NV
+X20N4npIaLdDem3i808AXe57zmAMLLdHR3b54K4twHbZSq9wclWDICGomgYWrPue
+7S6HVYxHZgpTUcNlE9VTnXUy/YI7KvEkh/XtGRiPJ13ZpHpSJUdIP52L/biclBQu
+/eKtNJrGiCs=
+=qVpQ
+-----END PGP SIGNATURE-----
+
+--r5Pyd7+fXNt84Ff3--
 
