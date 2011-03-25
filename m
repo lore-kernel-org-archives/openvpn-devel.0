@@ -1,11 +1,11 @@
-Message-ID: <4D8C43ED.90301@...1114...>
-Date: Fri, 25 Mar 2011 08:27:41 +0100
+Message-ID: <4D8C44E3.30805@...1114...>
+Date: Fri, 25 Mar 2011 08:31:47 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1300974844-23829-1-git-send-email-davids@...1347...>
-In-Reply-To: <1300974844-23829-1-git-send-email-davids@...1347...>
-Subject: Re: [Openvpn-devel] [PATCH] Clarify default value for the
- --inactive option.
+References: <4D713CD3.3000606@...515...>
+	<AANLkTin4QkZ36mi7qHyB9R+i1FdQJi66mi6nhhvYMWmN@...278...>
+In-Reply-To: <AANLkTin4QkZ36mi7qHyB9R+i1FdQJi66mi6nhhvYMWmN@...278...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.2-RC released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,37 +14,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: David Sommerseth <davids@...1347...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 24/03/11 14:54, David Sommerseth wrote:
-> It is not clear in the manual that this feature is disabled
-> by default.
->
-> Signed-off-by: David Sommerseth <davids@...1347...>
-> ---
->  openvpn.8 |    2 +-
->  1 files changed, 1 insertions(+), 1 deletions(-)
->
+On 04/03/11 22:14, Alon Bar-Lev wrote:
+> Hello,
+> 
+> Any reason why the windows cross compile fix we discussed [1] did not
+> made it into mainline?
+> 
+> Attached again.
+> 
+> This is trivial patch, which resume the ability to build openvpn using
+> cross compiler and autotools.
+> 
+> Please apply so we don't need to maintain this out of tree.
+> 
+> You can test build at [2].
+> 
+> Alon
+> 
+> [1] http://permalink.gmane.org/gmane.network.openvpn.devel/3991
+> [2] https://www.opensc-project.org/opensc/wiki/build
+> 
 
-Applied to beta2.2.
+This patch was ACKed by James Yonan yesterday.  Applied to beta2.2 and will
+be included in the coming v2.2-RC2 release.
 
-commit 1b71eafd4a0251740be28c495c874c2ffc9af3f6
-Author: David Sommerseth <davids@...1347...>
-Date:   Thu Mar 24 14:51:48 2011 +0100
+commit aab2f95439c28e2aa9358dbfe1ce7a15c774a766
+Author: Alon Bar-Lev <alon.barlev@...277...>
+Date:   Fri Mar 4 23:14:33 2011 +0200
 
-    Clarify default value for the --inactive option.
+    Windows cross-compile cleanup
 
-    It is not clear in the manual that this feature is disabled
-    by default.
+    It should be sufficient to just try to see if socklen_t is defined.
+    Next, on all platforms it would be int in all other platforms.
+    And, there is no need to check for the type in monolitic environment
+    like Windows, as it will be always the same.
 
+    Currently it fails cross compile windows in mingw-w64 compiler, as
+    winsock.h is as follows:
+       """
+         /* define WINSOCK_API_LINKAGE and WSAAPI for less
+          * diff output between winsock.h and winsock2.h, but
+          * remember to undefine them at the end of file */
+       """
+    And the macro uses these macros which are internal winsock macros and
+    should not be used anyway.
+
+    Also, when did the autodefs.h went mandatory? Why is it in
+    tap-win32/common.h while no constant is actually used?
+
+    The use of WSA_IO_INCOMPLETE without including winsock2.h is invalid!
+    Look at http://msdn.microsoft.com/en-us/library/aa921087.aspx
+
+    Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+    Acked-by: James Yonan <james@...515...>
     Signed-off-by: David Sommerseth <davids@...1347...>
-    Acked-by: Gert Doering <gert@...1296...>
 
 
 kind regards,
@@ -54,8 +85,8 @@ David Sommerseth
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk2MQ+0ACgkQDC186MBRfrrRuQCeKV8y/rjE6Kj1ZOahac45gIkQ
-eK0Ani75fzFnpNU6zzp2vsTo7SVKcV7Z
-=vccs
+iEYEARECAAYFAk2MROMACgkQDC186MBRfrrNiQCbB4o3dKxKxFSrSJjiDeiViK4Z
+aIYAnR0BcNVuvyJjnCTssyvTwVQVH1D9
+=7V6N
 -----END PGP SIGNATURE-----
 
