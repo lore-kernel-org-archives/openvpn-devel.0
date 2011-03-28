@@ -1,8 +1,11 @@
-Message-ID: <4D8CF9BD.3060306@...515...>
-Date: Fri, 25 Mar 2011 22:23:25 +0200
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <4D90A05E.10804@...1114...>
+Date: Mon, 28 Mar 2011 16:51:10 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 2.2-RC2 released
+References: <4D8C6068.2070702@...1114...>
+	<1CED409804E2164C8104F9E623B08B901259D87760@...1436...>
+In-Reply-To: <1CED409804E2164C8104F9E623B08B901259D87760@...1436...>
+Subject: Re: [Openvpn-devel] Changes to the git tree
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,45 +14,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Adriaan de Jong <dejong@...1435...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-The OpenVPN community project team is proud to release OpenVPN 2.2-RC2.
-It can be downloaded from here:
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-<http://openvpn.net/index.php/open-source/downloads.html>
+On 28/03/11 16:42, Adriaan de Jong wrote:
+>> -----Original Message-----
+>> From: David Sommerseth [mailto:openvpn.list@...1114...]
+>>
+>> As we're getting closer and closer to the v2.2 release, I've began to
+>> prepare the git tree for the v2.3 development phase.
+> 
+> Great News! I'll try to rebase the PolarSSL and Doxygen patches to this branch soon.
 
-Changes include:
+Perfect!
 
-* Turn off ENABLE_CLIENT_ONLY build setting that disabled all server
-functionality (turned on in 2.2-RC by mistake)
-* Implement IPv6 in TUN mode for Windows TAP driver
-* Several buildsystem fixes and enhancements
-* Several man-page fixes
+> I hope there's still room for our patches in 2.3. People seemed
+> optimistic a few months ago, hopefully this is still the case.
 
-A more comprehensive list of changes is available here:
+Definitely!  To modularise the SSL code is really a good step forward for
+OpenVPN.  And the documentation is surely needed.  So the quicker your
+rebase gets ready, the quicker I can give you a feature branch.  You'll get
+a feature branch as this is a rather intrusive code change.
 
-<http://openvpn.net/index.php/open-source/documentation/change-log/425-chan=
-gelog-for-openvpn-22.html>
+The doxygen patches should be possible to merge into master asap, as that
+shouldn't be any core code changes
 
-If you find a bug in this release, please file a bug report to our Trac
-bug tracker:
+Thank you for your work on these parts, and for still pushing it!
 
-<https://community.openvpn.net>
 
-In uncertain cases please contact our developers first, either using the
-openvpn-devel mailinglist (http://sourceforge.net/mail/?group_id=3D48978)
-or the developer IRC channel (#openvpn-devel at irc.freenode.net).
+kind regards,
 
-NOTE: In production environments you should use the latest stable
-release, not this release candidate build.
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
+iEYEARECAAYFAk2QoF4ACgkQDC186MBRfrrErQCbBtIxRu7AO7IyfEvRPaIWvaDZ
+DHYAoKrpAaymp0LZBwnuRraog1A+HDy7
+=PisH
+-----END PGP SIGNATURE-----
 
