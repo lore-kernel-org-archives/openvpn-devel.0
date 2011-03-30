@@ -1,8 +1,7 @@
-Message-ID: <4D91BF5B.9070100@...1114...>
-Date: Tue, 29 Mar 2011 13:15:39 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] man page updates needed for the coming OpenVPN 2.2
+From: David Sommerseth <davids@...1347...>
+Date: Wed, 30 Mar 2011 14:23:38 +0200
+Message-Id: <1301487818-4450-1-git-send-email-davids@...1347...>
+Subject: [Openvpn-devel] [PATCH] Fix the --client-cert-not-required feature
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,50 +10,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Openvpn-users@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: David Sommerseth <davids@...1347...>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Commit 2e8337de248ef0b5b48cbb2964da0d5c3f28b15b introduced a new
+feature for using other SSL certificate fields for authentication
+than then CN field.
 
+This commit introduced a bug, which made the verify_callback()
+function getting called even if --client-cert-not-required was
+enabled in the config.
 
-I have checked the man page against the options OpenVPN 2.2 supports and
-cross-checked it against the man page.  There are quite some features which
-are not documented at all in the man page, and this should be fixed.
+The reason for this was that an 'else' statement was lacking a
+couple of curly braces.  The offending commit in reality moved
+the setup the verify_callback() function out of the 'else'
+statement.
 
-<https://community.openvpn.net/openvpn/wiki/ManPageUpdatesFor2.2>
+Report-URL: https://community.openvpn.net/openvpn/ticket/108
+Report-URL: https://forums.openvpn.net/topic7751.html
+Signed-off-by: David Sommerseth <davids@...1347...>
+---
+ ssl.c |   10 ++++++----
+ 1 files changed, 6 insertions(+), 4 deletions(-)
 
-So this is a little request for help.  This request is also sent to the
-openvpn-users mailing list, as many users are often able to write more
-understandable documentation for other users than if only developers do it.
+diff --git a/ssl.c b/ssl.c
+index ed10714..6d9a9fd 100644
+--- a/ssl.c
++++ b/ssl.c
+@@ -1874,13 +1874,15 @@ init_ssl (const struct options *options)
+     }
+   else
+ #endif
++    {
+ #ifdef ENABLE_X509ALTUSERNAME
+-  x509_username_field = (char *) options->x509_username_field;
++      x509_username_field = (char *) options->x509_username_field;
+ #else
+-  x509_username_field = X509_USERNAME_FIELD_DEFAULT;
++      x509_username_field = X509_USERNAME_FIELD_DEFAULT;
+ #endif
+-  SSL_CTX_set_verify (ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT,
+-			verify_callback);
++      SSL_CTX_set_verify (ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT,
++                          verify_callback);
++    }
+ 
+   /* Connection information callback */
+   SSL_CTX_set_info_callback (ctx, info_callback);
+-- 
+1.7.4
 
-If you know something about these features or would like to get to know
-OpenVPN better, please pick your option(s) and submit your documentation
-proposal.  We want to track all these modifications in the bug tracker and
-on the wiki page, so hopefully it should be easy to see which options are
-still lacking.
-
-Some of the options are very easy to document, others require some digging
-into the source code.  But please have a look, all submissions are highly
-appreciated.  If you have questions, please don't hesitate to discuss these
-things on the mailing list or on IRC (#openvpn @ freenode)
-
-We will do our best to all the submitted proposals approved for the final
-2.2 release.  Which means that we need to have them latest within the next
-couple of weeks.  What is lacking will be postponed to OpenVPN 2.3.
-
-
-kind regards,
-
-David Sommerseth
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk2Rv1kACgkQDC186MBRfroNTwCgnL3aAAdgapONZrx0Ug+5fnoK
-HBIAnjsn3NUrNnxZgvEMR/rc8Pe8TFof
-=5opY
------END PGP SIGNATURE-----
 
