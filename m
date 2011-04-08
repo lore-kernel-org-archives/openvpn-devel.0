@@ -1,11 +1,15 @@
-From: David Sommerseth <davids@...1347...>
-Date: Fri,  8 Apr 2011 13:40:05 +0200
-Message-Id: <1302262805-23686-3-git-send-email-davids@...1347...>
-In-Reply-To: <1302262805-23686-1-git-send-email-davids@...1347...>
+Date: Fri, 8 Apr 2011 17:41:36 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20110408154136.GW8496@...1296...>
 References: <1302106222-10256-1-git-send-email-davids@...1347...>
 	<1302262805-23686-1-git-send-email-davids@...1347...>
-Subject: [Openvpn-devel] [PATCH 2/2] Use %SystemRoot% instead of hard-coded
-	C:\WINDOWS for temp directory path
+	<1302262805-23686-2-git-send-email-davids@...1347...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="9uazBBczf8QSjDPd"
+Content-Disposition: inline
+In-Reply-To: <1302262805-23686-2-git-send-email-davids@...1347...>
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Make use of $TMPDIR on non-Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,88 +18,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: David Sommerseth <davids@...1347...>
+To: David Sommerseth <davids@...1347...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-It is expected that %SystemRoot% is always defined to the directory of the
-Windows system.  If this is undefined, Windows do not work properly.
+--9uazBBczf8QSjDPd
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-So instead of hard-coding C:\WINDOWS\Temp as the default temporary directory
-if %TEMP% or %TMP% is not found, use %SystemRoot%\Temp instead as the fallback.
+Hi,
 
-Signed-off-by: David Sommerseth <davids@...1347...>
----
- win/config.h.in |    3 ---
- win32.c         |   36 ++++++++++++++++++++++++++----------
- 2 files changed, 26 insertions(+), 13 deletions(-)
+On Fri, Apr 08, 2011 at 01:40:04PM +0200, David Sommerseth wrote:
+> According to the Single Unix Specification (SuS) [1] the $TMPDIR environm=
+ent
+> variable may define another temporary directory than the standard /tmp
+> directory.  As it is considered safe to assume /tmp will always exist, re=
+move
+> the possibility to change this at compile time.
 
-diff --git a/win/config.h.in b/win/config.h.in
-index abf71d2..fb349d0 100644
---- a/win/config.h.in
-+++ b/win/config.h.in
-@@ -286,9 +286,6 @@ typedef unsigned long in_addr_t;
- /* Route command */
- #define ROUTE_PATH "route"
- 
--/* Default temporary directory, if not found via getenv() */
--#define DEFAULT_TMPDIR "C:\\WINDOWS\\Temp"   /* FIXME: Should be configurable */
--
- #ifdef _MSC_VER
- /* MSVC++ hacks */
- #pragma warning(disable:4244) // conversion from 'foo' to 'bar', possible loss of data
-diff --git a/win32.c b/win32.c
-index b65f987..29653da 100644
---- a/win32.c
-+++ b/win32.c
-@@ -1097,19 +1097,35 @@ env_set_add_win32 (struct env_set *es)
- const char *
- win_get_tempdir()
- {
--  static char *tmpdir = NULL;
-+  static char tmpdir[258];
-+  char *envptr = NULL;
- 
--  /* Try to use %TEMP% or %TMP% */
--  tmpdir = getenv("TEMP");
--  if( !tmpdir ) {
--    tmpdir = getenv("TMP");
-+  CLEAR (tmpdir);
-+
-+  /* Try to use %TEMP%, %TMP% or %SystemRoot%\Temp */
-+  envptr = getenv("TEMP");
-+  if( envptr ) {
-+    return envptr;
-   }
--  if( !tmpdir ) {
--    /* Warn if we're using a hard coded path */
--    msg (M_WARN, "Could not find %TEMP% or %TMP% environment variables.  "
--         "Falling back to %s.  Consider to use --tmp-dir", DEFAULT_TMPDIR);
--    tmpdir = DEFAULT_TMPDIR;
-+
-+  envptr = getenv("TMP");
-+  if( envptr ) {
-+    return envptr;
-   }
-+
-+  envptr = getenv(SYS_PATH_ENV_VAR_NAME);
-+  if( !envptr ) {
-+    /* This indicates something is really wrong with the Windows
-+     * environment, and we shouldn't try to start OpenVPN in this case
-+     */
-+    msg (M_FATAL, "Could not find %%%s%% environment variable",
-+         SYS_PATH_ENV_VAR_NAME);
-+    return NULL; /* Just in case M_FATAL doesn't exit() */
-+  }
-+
-+  openvpn_snprintf(tmpdir, 256, "%.249s\\Temp", envptr);
-+  msg (M_WARN, "Could not find %%TEMP%% or %%TMP%% environment variables.  "
-+       "Falling back to %s.  Consider to use --tmp-dir", tmpdir);
-   return tmpdir;
- }
- #endif
--- 
-1.7.4.2
+ACK.
 
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--9uazBBczf8QSjDPd
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBTZ8ssKkuBuNlUUl1AQJ1iwP+Ie0rbyGBAsaVp2FsqPgLR4bsnF65tOVS
+sRbml4+XLzV3N4AIgWXR4qKNzR6dz6MfObSDhs2Tstf/RnJI1jGw7n2XVn5ygQs1
+X7r+QaaQfNaUfd0rPcYobKf5OaPxLxXsOQGchEgpWVDqoHJDBnta9/HKFthrrawP
+70fWjQhyxog=
+=MTOg
+-----END PGP SIGNATURE-----
+
+--9uazBBczf8QSjDPd--
 
