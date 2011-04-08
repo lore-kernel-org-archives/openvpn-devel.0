@@ -1,10 +1,12 @@
-MIME-version: 1.0
-Message-id: <0A8F79E22F384F3C9C2431348D66C11E@...139...>
-From: Gisle Vanem <gvanem@...139...>
+MIME-Version: 1.0
+In-Reply-To: <0A8F79E22F384F3C9C2431348D66C11E@...139...>
 References: <1302106222-10256-1-git-send-email-davids@...1347...>
 	<1302262805-23686-1-git-send-email-davids@...1347...>
 	<1302262805-23686-3-git-send-email-davids@...1347...>
-Date: Fri, 08 Apr 2011 18:03:04 +0200
+	<0A8F79E22F384F3C9C2431348D66C11E@...139...>
+Date: Fri, 8 Apr 2011 19:32:47 +0300
+Message-ID: <BANLkTi=E-7JGgTD0WTTn_jysYFsr2_LuTg@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
 Subject: Re: [Openvpn-devel] [PATCH 2/2] Use %SystemRoot% instead of
  hard-codedC:\WINDOWS for temp directory path
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,39 +17,16 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-type: text/plain; CHARSET=US-ASCII; charset="US-ASCII"; format=flowed;
- reply-type=original
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Gisle Vanem <gvanem@...139...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-"David Sommerseth" <davids@...1347...> wrote:
+On Fri, Apr 8, 2011 at 7:03 PM, Gisle Vanem <gvanem@...139...> wrote:
+> Why not a bit simpler; GetTempPath() (kernel32.dll) already does these tests.
+> Ref: http://msdn.microsoft.com/en-us/library/aa364992(v=vs.85).aspx :
 
-> -  /* Try to use %TEMP% or %TMP% */
-> -  tmpdir = getenv("TEMP");
-> -  if( !tmpdir ) {
-> -    tmpdir = getenv("TMP");
-> +  CLEAR (tmpdir);
-> +
-> +  /* Try to use %TEMP%, %TMP% or %SystemRoot%\Temp */
-> +  envptr = getenv("TEMP");
-> +  if( envptr ) {
-> +    return envptr;
->   }
-> -  if( !tmpdir ) {
-> -    /* Warn if we're using a hard coded path */
-> -    msg (M_WARN, "Could not find %TEMP% or %TMP% environment variables.  "
-> -         "Falling back to %s.  Consider to use --tmp-dir", DEFAULT_TMPDIR);
-> -    tmpdir = DEFAULT_TMPDIR;
+Good catch.
 
-Why not a bit simpler; GetTempPath() (kernel32.dll) already does these tests. 
-Ref: http://msdn.microsoft.com/en-us/library/aa364992(v=vs.85).aspx :
-
-The GetTempPath function checks for the existence of environment 
-variables in the following order and uses the first path found:
-  1.. The path specified by the TMP environment variable.
-  2.. The path specified by the TEMP environment variable.
-  3.. The path specified by the USERPROFILE environment variable.
-  4.. The Windows directory.
-
---gv
+Alon.
 
