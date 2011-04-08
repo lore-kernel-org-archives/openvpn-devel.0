@@ -1,12 +1,12 @@
-Date: Fri, 8 Apr 2011 18:00:17 +0200
-From: =?iso-8859-15?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>
-Message-ID: <5110611539.20110408180017@...449...>
-In-Reply-To: <1302106222-10256-1-git-send-email-davids@...1347...>
+MIME-version: 1.0
+Message-id: <0A8F79E22F384F3C9C2431348D66C11E@...139...>
+From: Gisle Vanem <gvanem@...139...>
 References: <1302106222-10256-1-git-send-email-davids@...1347...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] Change the default --tmp-dir path to a
-	more suitable path
-Reply-To: =?iso-8859-15?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>
+	<1302262805-23686-1-git-send-email-davids@...1347...>
+	<1302262805-23686-3-git-send-email-davids@...1347...>
+Date: Fri, 08 Apr 2011 18:03:04 +0200
+Subject: Re: [Openvpn-devel] [PATCH 2/2] Use %SystemRoot% instead of
+ hard-codedC:\WINDOWS for temp directory path
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +15,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=iso-8859-15
-Content-Transfer-Encoding: 8bit
+Content-type: text/plain; CHARSET=US-ASCII; charset="US-ASCII"; format=flowed;
+ reply-type=original
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hello David,
+"David Sommerseth" <davids@...1347...> wrote:
 
-> On Windows, it will look up %TEMP% and %TMP% first, and if that doesn't give any clues, it
-> will fallback to C:\WINDOWS\Temp in the end.
+> -  /* Try to use %TEMP% or %TMP% */
+> -  tmpdir = getenv("TEMP");
+> -  if( !tmpdir ) {
+> -    tmpdir = getenv("TMP");
+> +  CLEAR (tmpdir);
+> +
+> +  /* Try to use %TEMP%, %TMP% or %SystemRoot%\Temp */
+> +  envptr = getenv("TEMP");
+> +  if( envptr ) {
+> +    return envptr;
+>   }
+> -  if( !tmpdir ) {
+> -    /* Warn if we're using a hard coded path */
+> -    msg (M_WARN, "Could not find %TEMP% or %TMP% environment variables.  "
+> -         "Falling back to %s.  Consider to use --tmp-dir", DEFAULT_TMPDIR);
+> -    tmpdir = DEFAULT_TMPDIR;
 
-I think that's not the right location.
+Why not a bit simpler; GetTempPath() (kernel32.dll) already does these tests. 
+Ref: http://msdn.microsoft.com/en-us/library/aa364992(v=vs.85).aspx :
 
-Use
-http://msdn.microsoft.com/en-us/library/system.environment.getfolderpath.aspx
+The GetTempPath function checks for the existence of environment 
+variables in the following order and uses the first path found:
+  1.. The path specified by the TMP environment variable.
+  2.. The path specified by the TEMP environment variable.
+  3.. The path specified by the USERPROFILE environment variable.
+  4.. The Windows directory.
 
-with this constant
-CSIDL_LOCAL_APPDATA to locate system/language independant:
-"C:\Documents and Settings\username\Local Settings\Application Data"
-http://msdn.microsoft.com/en-us/library/bb762494.aspx
-and than create OpenVPN\temp at this location.
-
-Windows has no special temp location that is "allowed" from MS.
-
-greetings
-Carsten
-
+--gv
 
