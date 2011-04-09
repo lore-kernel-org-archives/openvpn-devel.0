@@ -1,9 +1,14 @@
-MIME-version: 1.0
-Message-id: <A6E7264D7DC743ADA5DB898E03F6B624@...139...>
-From: Gisle Vanem <gvanem@...139...>
-Date: Sat, 09 Apr 2011 14:56:52 +0200
-Subject: Re: [Openvpn-devel] [Patch] config-win32.h (actually
-	win/config-win32.h.in)
+Date: Sat, 9 Apr 2011 18:24:39 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20110409162438.GE8496@...1296...>
+References: <4D91BF5B.9070100@...1114...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="NQqDiQVflaif2hna"
+Content-Disposition: inline
+In-Reply-To: <4D91BF5B.9070100@...1114...>
+Subject: Re: [Openvpn-devel] man page updates needed for the coming OpenVPN
+	2.2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,57 +17,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-type: text/plain; CHARSET=US-ASCII; charset="US-ASCII"; format=flowed;
- reply-type=original
-Content-Transfer-Encoding: 7bit
-To: OpenVPN-dev <openvpn-devel@lists.sourceforge.net>
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Openvpn-users@lists.sourceforge.net
 
-Sorry for the noise. I just discovered you've switchd to Git since I was involved
-with OpenVPN. With the SVN-repo still there, I wrongfully assumed that was the
-trunk (latest top) of developement. Here is an updated patch:
+--NQqDiQVflaif2hna
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
---- Git-latest\win\config.h.in  Sat Apr 09 14:25:58 2011
-+++ win\config.h.in     Sat Apr 09 14:51:55 2011
-@@ -26,6 +26,9 @@
-  * Configuration header for Win32 using the MSVC environment.
-  */
+Hi,
 
-+#ifndef OPENVPN_CONFIG_H
-+#define OPENVPN_CONFIG_H
-+
- #include <windows.h>
- #include <winsock2.h>
- #include "autodefs.h" /* machine generated */
-@@ -274,6 +277,7 @@
- /* type to use in place of socklen_t if not defined */
- #define socklen_t unsigned int
+On Tue, Mar 29, 2011 at 01:15:39PM +0200, David Sommerseth wrote:
+> I have checked the man page against the options OpenVPN 2.2 supports and
+> cross-checked it against the man page.  There are quite some features whi=
+ch
+> are not documented at all in the man page, and this should be fixed.
+>=20
+> <https://community.openvpn.net/openvpn/wiki/ManPageUpdatesFor2.2>
 
-+#ifndef __MINGW32__
- /* 32-bit unsigned type */
- #define uint32_t unsigned int
+As agreed in last thursday's IRC meeting, I've added a comment to the
+code explaining "--rdns-internal".  It's really very much an internal
+option, so it does not need to go to the man page.
 
-@@ -282,6 +286,7 @@
-
- /* 8-bit unsigned type */
- #define uint8_t unsigned char
-+#endif
-
- /* Route command */
- #define ROUTE_PATH "route"
-@@ -314,3 +319,5 @@
- #define HAVE_CPP_VARARG_MACRO_ISO 1
- #endif
- #endif
-+
-+#endif  /* OPENVPN_CONFIG_H */
-
----------------
-
-The above header-guard makes service-win32/openvpnserv.c compile
-since config.h is included twice for this file.
-
---gv
-
-
-
-
+gert
+---
+--NQqDiQVflaif2hna--
