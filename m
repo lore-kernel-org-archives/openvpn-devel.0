@@ -1,14 +1,9 @@
-Date: Sat, 9 Apr 2011 18:24:39 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20110409162438.GE8496@...1296...>
-References: <4D91BF5B.9070100@...1114...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="NQqDiQVflaif2hna"
-Content-Disposition: inline
-In-Reply-To: <4D91BF5B.9070100@...1114...>
-Subject: Re: [Openvpn-devel] man page updates needed for the coming OpenVPN
-	2.2
+MIME-Version: 1.0
+Date: Tue, 12 Apr 2011 05:23:27 +0900
+Message-ID: <BANLkTi=-c2jxGcNj=+gdujJhhDjwrWP2TQ@...278...>
+From: crocket <crockabiscuit@...277...>
+Subject: [Openvpn-devel] I made a patch that prevents POSIX capabilities
+ from disappearing during UID downgrade.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,28 +12,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Openvpn-users@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---NQqDiQVflaif2hna
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+diff -Naur a/init.c b/init.c
+--- a/init.c	2010-11-05 04:29:02.000000000 +0900
++++ b/init.c	2011-04-12 05:11:43.540370471 +0900
+@@ -41,6 +41,10 @@
 
-Hi,
+ #include "occ-inline.h"
 
-On Tue, Mar 29, 2011 at 01:15:39PM +0200, David Sommerseth wrote:
-> I have checked the man page against the options OpenVPN 2.2 supports and
-> cross-checked it against the man page.  There are quite some features whi=
-ch
-> are not documented at all in the man page, and this should be fixed.
->=20
-> <https://community.openvpn.net/openvpn/wiki/ManPageUpdatesFor2.2>
++#ifdef TARGET_LINUX
++#include <sys/prctl.h>
++#endif
++
+ static struct context *static_context; /* GLOBAL */
 
-As agreed in last thursday's IRC meeting, I've added a comment to the
-code explaining "--rdns-internal".  It's really very much an internal
-option, so it does not need to go to the man page.
+ /*
+@@ -904,6 +908,10 @@
+       if (no_delay)
+ 	{
+ 	  set_group (&c0->group_state);
++#ifdef TARGET_LINUX
++	  if(prctl(PR_SET_KEEPCAPS, 1) < 0)
++	    msg (M_ERR, "prctl(PR_SET_KEEPCAPS, 1) failed");
++#endif
+ 	  set_user (&c0->user_state);
+ 	  c0->uid_gid_set = true;
+ 	}
 
-gert
----
---NQqDiQVflaif2hna--
+The patch is above.
+I had been investigating why OpenVPN refused to use CAP_IPC_LOCK capability.
+I found out that it was because OpenVPN invoked setuid and setuid
+erased POSIX capabilities.
+prctl(PR_SET_KEEPCAPS, 1) lets OpenVPN keep capabilities after setuid
+invocation.
+
+Thanks in advance for considering this patch.
+
