@@ -1,11 +1,8 @@
-MIME-Version: 1.0
-In-Reply-To: <BANLkTi=-c2jxGcNj=+gdujJhhDjwrWP2TQ@...278...>
-References: <BANLkTi=-c2jxGcNj=+gdujJhhDjwrWP2TQ@...278...>
-Date: Tue, 12 Apr 2011 12:52:00 +0900
-Message-ID: <BANLkTimVUW444FFjtaMSQti-yTmV5QcwZg@...278...>
-From: crocket <crockabiscuit@...277...>
-Subject: Re: [Openvpn-devel] I made a patch that prevents POSIX capabilities
- from disappearing during UID downgrade.
+From: David Sommerseth <davids@...1347...>
+Date: Thu, 14 Apr 2011 16:29:58 +0200
+Message-Id: <1302791399-23728-1-git-send-email-davids@...1347...>
+Subject: [Openvpn-devel] [PATCH v2] Change the default --tmp-dir path to a
+	more suitable path
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,49 +11,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: David Sommerseth <davids@...1347...>
 
-Forget about this patch.
-The bug section in "man mlock" tells me that it's a kernel bug.
-It seems prctl can't remove the bug.
+After all the discussions regarding the --tmp-dir patch [1], I have now
+condenced everything into one single patch.  The main change is that
+the new win_get_tempdir() function is simplified by using GetTempPath()
+instead.
 
-On Tue, Apr 12, 2011 at 5:23 AM, crocket <crockabiscuit@...277...> wrote:
-> diff -Naur a/init.c b/init.c
-> --- a/init.c =A0 =A02010-11-05 04:29:02.000000000 +0900
-> +++ b/init.c =A0 =A02011-04-12 05:11:43.540370471 +0900
-> @@ -41,6 +41,10 @@
->
-> =A0#include "occ-inline.h"
->
-> +#ifdef TARGET_LINUX
-> +#include <sys/prctl.h>
-> +#endif
-> +
-> =A0static struct context *static_context; /* GLOBAL */
->
-> =A0/*
-> @@ -904,6 +908,10 @@
-> =A0 =A0 =A0 if (no_delay)
-> =A0 =A0 =A0 =A0{
-> =A0 =A0 =A0 =A0 =A0set_group (&c0->group_state);
-> +#ifdef TARGET_LINUX
-> + =A0 =A0 =A0 =A0 if(prctl(PR_SET_KEEPCAPS, 1) < 0)
-> + =A0 =A0 =A0 =A0 =A0 msg (M_ERR, "prctl(PR_SET_KEEPCAPS, 1) failed");
-> +#endif
-> =A0 =A0 =A0 =A0 =A0set_user (&c0->user_state);
-> =A0 =A0 =A0 =A0 =A0c0->uid_gid_set =3D true;
-> =A0 =A0 =A0 =A0}
->
-> The patch is above.
-> I had been investigating why OpenVPN refused to use CAP_IPC_LOCK capabili=
-ty.
-> I found out that it was because OpenVPN invoked setuid and setuid
-> erased POSIX capabilities.
-> prctl(PR_SET_KEEPCAPS, 1) lets OpenVPN keep capabilities after setuid
-> invocation.
->
-> Thanks in advance for considering this patch.
->
+On Windows the fallback solution, if GetTempPath() returns NULL, is now to
+behave as before - write temporary files in the directory where OpenVPN was
+started.
+
+
+[1] <http://thread.gmane.org/gmane.network.openvpn.devel/4561>
+
+
+David Sommerseth (1):
+  Change the default --tmp-dir path to a more suitable path
+
+ options.c |   18 ++++++++++++++----
+ win32.c   |   19 +++++++++++++++++++
+ win32.h   |    3 +++
+ 3 files changed, 36 insertions(+), 4 deletions(-)
+
+-- 
+1.7.4.2
+
 
