@@ -1,11 +1,8 @@
-Message-ID: <4DA85273.9020503@...515...>
-Date: Fri, 15 Apr 2011 17:13:07 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <4DA8CD5E.9080301@...1030...>
+Date: Fri, 15 Apr 2011 23:57:34 +0100
+From: Mr Dash Four <mr.dash.four@...1030...>
 MIME-Version: 1.0
-References: <4DA805FA.6070908@...515...>
-In-Reply-To: <4DA805FA.6070908@...515...>
-Subject: Re: [Openvpn-devel] First test build of OpenVPN 2.2 for Windows is
-	now available
+Subject: [Openvpn-devel] route-up and iproute plugins
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,74 +11,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+Is there a plugin allowing me to run "route-up" and "iproute" 
+(replacement) scripts taking advantage of the split privilege execution?
 
-Here's the next version of the installer:
+I know there is down-root which allows a "down" script to be executed in 
+this fashion, but I am not sure I could find a similar one for the above 
+two scripts.
 
-<http://build.openvpn.net/openvpn-2.2-preview-2-install.exe>
+The reason I am asking this is two-fold: currently I have to install the 
+sudo package, configure it and include sudo commands in the above 2 
+scripts in order to avoid route/ip commands being executed in 
+unprivileged environment. While this works well, I'd much rather have 
+everything better organised (and more secure) within OpenVPN.
 
-This version fixes this issue:
+I've had a (very) quick look at down-root.c and openvpn-plugin.h files 
+and it seems possible to use those as a template to write 2 additional 
+plugins dealing with those two scripts, though I do not wish to reinvent 
+the wheel if there are already in existence or if there is an easier way 
+of doing this (if at all possible).
 
-<https://community.openvpn.net/openvpn/ticket/120>
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
-
-> Hi everyone,
->
-> The first test build of OpenVPN 2.2 for Windows is available here:
->
-> <http://build.openvpn.net/openvpn-2.2-preview-1-install.exe>
->
-> Any help in testing it prior to the final release - hopefully 22nd April
-> - is much appreciated! Changes to 2.2-RC2 include:
->
-> ---
->
-> 2011.04.xx -- Version 2.2
-> David Sommerseth (2):
->       Fix the --client-cert-not-required feature
->       Change the default --tmp-dir path to a more suitable path
->
-> Gert Doering (1):
->       Add more detailed explanation regarding the function of "--rdns-int=
-ernal"
->
-> Gisle Vanem (1):
->       Avoid re-defining uint32_t when using mingw compiler
->
-> James Yonan (1):
->       Fixed bug in port-share that could cause port share process to crash
->
-> Samuli Sepp=E4nen (5):
->       Add man page entry for --redirect-private
->       Change all CRLF linefeeds to LF linefeeds
->       Fix a bug in devcon source code handling
->       Removed Win2k from supported platforms list in INSTALL and win/open=
-vpn.nsi
->       Fixed copying of tapinstall.exe to dist/bin when using prebuilt TAP=
--drivers
->
-> chantra (1):
->       Clarify --tmp-dir option
->
-> rf (2):
->       Update man page with info about --remote-random-hostname
->       Added man page entry for --management-client
->
-> ---
->
-> The final 2.2 installer may include a few minor additional changes.
->
->=20=20=20
-
+Many thanks in advance!
 
