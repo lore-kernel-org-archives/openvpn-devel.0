@@ -1,12 +1,11 @@
-Message-ID: <4DA8523E.5080608@...1114...>
-Date: Fri, 15 Apr 2011 16:12:14 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <4DA85273.9020503@...515...>
+Date: Fri, 15 Apr 2011 17:13:07 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <1302872235-22152-1-git-send-email-samuli@...515...>
-	<1302873917-22599-1-git-send-email-samuli@...515...>
-In-Reply-To: <1302873917-22599-1-git-send-email-samuli@...515...>
-Subject: Re: [Openvpn-devel] [PATCHv2] Fixed a bug with GUI icon deletion
- on	upgrade from 2.2-RC or earlier
+References: <4DA805FA.6070908@...515...>
+In-Reply-To: <4DA805FA.6070908@...515...>
+Subject: Re: [Openvpn-devel] First test build of OpenVPN 2.2 for Windows is
+	now available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,46 +14,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi,
 
-On 15/04/11 15:25, Samuli Seppänen wrote:
-> This bug was introduced in commit 110e42d199e735ab1a31388c5678f59d0fa9510c.
-> 
-> Trac-ticket: 120
-> Signed-off-by: Samuli Seppänen <samuli@...515...>
+Here's the next version of the installer:
 
-ACK.  Applied to master and beta2.2
+<http://build.openvpn.net/openvpn-2.2-preview-2-install.exe>
 
-commit 1cc2b62d97d651ce9b05466928faba3b463838b7
-Author: Samuli Seppänen <samuli@...515...>
-Date:   Fri Apr 15 16:25:17 2011 +0300
+This version fixes this issue:
 
-    Fixed a bug with GUI icon deletion on upgrade from 2.2-RC or earlier
+<https://community.openvpn.net/openvpn/ticket/120>
 
-    This bug was introduced in commit 110e42d199e735ab1a31388c5678f59d0fa9
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-    Trac-ticket: 120
-    Signed-off-by: Samuli Seppänen <samuli@...515...>
-    Acked-by: David Sommerseth <davids@...1347...>
-    Signed-off-by: David Sommerseth <davids@...1347...>
-    (cherry picked from commit 6d1d08f6792109a4a4cdd9cd0936fd4338c76fa1)
+irc freenode net: mattock
 
 
-kind regards,
+> Hi everyone,
+>
+> The first test build of OpenVPN 2.2 for Windows is available here:
+>
+> <http://build.openvpn.net/openvpn-2.2-preview-1-install.exe>
+>
+> Any help in testing it prior to the final release - hopefully 22nd April
+> - is much appreciated! Changes to 2.2-RC2 include:
+>
+> ---
+>
+> 2011.04.xx -- Version 2.2
+> David Sommerseth (2):
+>       Fix the --client-cert-not-required feature
+>       Change the default --tmp-dir path to a more suitable path
+>
+> Gert Doering (1):
+>       Add more detailed explanation regarding the function of "--rdns-int=
+ernal"
+>
+> Gisle Vanem (1):
+>       Avoid re-defining uint32_t when using mingw compiler
+>
+> James Yonan (1):
+>       Fixed bug in port-share that could cause port share process to crash
+>
+> Samuli Sepp=E4nen (5):
+>       Add man page entry for --redirect-private
+>       Change all CRLF linefeeds to LF linefeeds
+>       Fix a bug in devcon source code handling
+>       Removed Win2k from supported platforms list in INSTALL and win/open=
+vpn.nsi
+>       Fixed copying of tapinstall.exe to dist/bin when using prebuilt TAP=
+-drivers
+>
+> chantra (1):
+>       Clarify --tmp-dir option
+>
+> rf (2):
+>       Update man page with info about --remote-random-hostname
+>       Added man page entry for --management-client
+>
+> ---
+>
+> The final 2.2 installer may include a few minor additional changes.
+>
+>=20=20=20
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk2oUj4ACgkQDC186MBRfrpNtACfVtuKzYJ36/gx/irIYtFfruPb
-kVgAn2v3v3N/aJJDOj2crbwH3+mbF5UN
-=/qmi
------END PGP SIGNATURE-----
 
