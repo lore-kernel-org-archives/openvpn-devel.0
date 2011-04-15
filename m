@@ -1,11 +1,9 @@
-Message-ID: <4DA80325.8030201@...1114...>
-Date: Fri, 15 Apr 2011 10:34:45 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <4DA805FA.6070908@...515...>
+Date: Fri, 15 Apr 2011 11:46:50 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <1302791399-23728-1-git-send-email-davids@...1347...>
-In-Reply-To: <1302791399-23728-1-git-send-email-davids@...1347...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Change the default --tmp-dir path to
- a	more suitable path
+Subject: [Openvpn-devel] First test build of OpenVPN 2.2 for Windows is now
+	available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,56 +12,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi everyone,
 
-On 14/04/11 16:29, David Sommerseth wrote:
-> After all the discussions regarding the --tmp-dir patch [1], I have now
-> condenced everything into one single patch.  The main change is that
-> the new win_get_tempdir() function is simplified by using GetTempPath()
-> instead.
-> 
-> On Windows the fallback solution, if GetTempPath() returns NULL, is now to
-> behave as before - write temporary files in the directory where OpenVPN was
-> started.
-> 
-> 
-> [1] <http://thread.gmane.org/gmane.network.openvpn.devel/4561>
-> 
-> 
-> David Sommerseth (1):
->   Change the default --tmp-dir path to a more suitable path
-> 
->  options.c |   18 ++++++++++++++----
->  win32.c   |   19 +++++++++++++++++++
->  win32.h   |    3 +++
->  3 files changed, 36 insertions(+), 4 deletions(-)
+The first test build of OpenVPN 2.2 for Windows is available here:
 
-Applied to master and beta2.2.
+<http://build.openvpn.net/openvpn-2.2-preview-1-install.exe>
 
-commit eb4b1bb6adc7fb1828839967a7807b6317305145 (beta2.2)
-commit eb4b1bb6adc7fb1828839967a7807b6317305145 (master)
-Author: David Sommerseth <davids@...1347...>
-Date:   Thu Apr 14 16:21:16 2011 +0200
+Any help in testing it prior to the final release - hopefully 22nd April
+- is much appreciated! Changes to 2.2-RC2 include:
 
-    Signed-off-by: David Sommerseth <davids@...1347...>
-    Tested-by: Jan Just Keijser <janjust@...1147...>
-    Acked-by: Gert Doering <gert@...1296...>
+---
 
+2011.04.xx -- Version 2.2
+David Sommerseth (2):
+      Fix the --client-cert-not-required feature
+      Change the default --tmp-dir path to a more suitable path
 
-Kind regards,
+Gert Doering (1):
+      Add more detailed explanation regarding the function of "--rdns-inter=
+nal"
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+Gisle Vanem (1):
+      Avoid re-defining uint32_t when using mingw compiler
 
-iEYEARECAAYFAk2oAyUACgkQDC186MBRfroWKgCdFp47roG5t8GlwBUtbqSWl36I
-N1AAn2uPVZgh8itgrQlLUi/hZcfrUEOz
-=t8A0
------END PGP SIGNATURE-----
+James Yonan (1):
+      Fixed bug in port-share that could cause port share process to crash
+
+Samuli Sepp=E4nen (5):
+      Add man page entry for --redirect-private
+      Change all CRLF linefeeds to LF linefeeds
+      Fix a bug in devcon source code handling
+      Removed Win2k from supported platforms list in INSTALL and win/openvp=
+n.nsi
+      Fixed copying of tapinstall.exe to dist/bin when using prebuilt TAP-d=
+rivers
+
+chantra (1):
+      Clarify --tmp-dir option
+
+rf (2):
+      Update man page with info about --remote-random-hostname
+      Added man page entry for --management-client
+
+---
+
+The final 2.2 installer may include a few minor additional changes.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
 
