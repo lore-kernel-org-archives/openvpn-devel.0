@@ -1,11 +1,11 @@
-Message-ID: <4DA80200.1020105@...1114...>
-Date: Fri, 15 Apr 2011 10:29:52 +0200
+Message-ID: <4DA8023D.6030601@...1114...>
+Date: Fri, 15 Apr 2011 10:30:53 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1302792220-9173-1-git-send-email-samuli@...515...>
-In-Reply-To: <1302792220-9173-1-git-send-email-samuli@...515...>
-Subject: Re: [Openvpn-devel] [PATCH] Fixed copying of tapinstall.exe to
- dist/bin when using prebuilt TAP-drivers
+References: <1302792083-9066-1-git-send-email-samuli@...515...>
+In-Reply-To: <1302792083-9066-1-git-send-email-samuli@...515...>
+Subject: Re: [Openvpn-devel] [PATCH] Removed Win2k from supported platforms
+ list	in INSTALL and win/openvpn.nsi
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,31 +14,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 14/04/11 16:43, Samuli Seppänen wrote:
-> Signed-off-by: Samuli Seppänen <samuli@...515...>
-> ---
->  win/make_dist.py |    2 +-
->  1 files changed, 1 insertions(+), 1 deletions(-)
 
-ACK.  Applied to master and beta2.2
+ACK.  Applied to master and beta2.2.
 
-commit f71233577e573c5d1dc0cd711b7b78867a7853be (beta2.2)
-commit 343037a99708bd7785de10cc5be37a150609bd01 (master)
-Author: Samuli Seppänen <samuli@...515...>
-Date:   Thu Apr 14 17:43:40 2011 +0300
 
-    Fixed copying of tapinstall.exe to dist/bin when using prebuilt
-    TAP-drivers
+commit 8cf7903c31d76ea905b7fd5d9257f116f424fe9e (beta2.2)
+commit 9b8247edf3e58893eb3ecc38dbfb2805ff1bb83d
+Author: Samuli Sepp=E4nen <samuli@...515...>
+Date:   Thu Apr 14 17:41:23 2011 +0300
 
-    Signed-off-by: Samuli Seppänen <samuli@...515...>
+    Removed Win2k from supported platforms list in INSTALL and
+    win/openvpn.nsi
+
+    Signed-off-by: Samuli Sepp=E4nen <samuli@...515...>
     Acked-by: David Sommerseth <dazo@...384...>
     Signed-off-by: David Sommerseth <dazo@...384...>
 
@@ -50,8 +46,8 @@ David Sommerseth
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk2oAf8ACgkQDC186MBRfrrK6ACfQsgyQvYG2jgqrE6jFpqXQljw
-i0MAn3kYpyswjRu0SutaBVimF/XQ90X4
-=gmLp
+iEYEARECAAYFAk2oAjwACgkQDC186MBRfrp7NACcCgWlTCAQWb6uTXi3Zj68JhO6
+MJUAn1wROrwEO4YPRjCiohDIPJtNq/jq
+=3DBqRw
 -----END PGP SIGNATURE-----
 
