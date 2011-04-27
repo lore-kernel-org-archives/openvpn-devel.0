@@ -1,11 +1,8 @@
-Message-ID: <4DB080B3.9070901@...1114...>
-Date: Thu, 21 Apr 2011 21:08:35 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <4DB864E0.4060207@...515...>
+Date: Wed, 27 Apr 2011 21:48:00 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <1303411629-8344-1-git-send-email-davids@...1347...>
-In-Reply-To: <1303411629-8344-1-git-send-email-davids@...1347...>
-Subject: Re: [Openvpn-devel] [PATCH] Improve the mysprintf() issue
-	in	openvpnserv.c
+Subject: [Openvpn-devel] OpenVPN 2.2.0 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,65 +11,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: David Sommerseth <davids@...1347...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+The OpenVPN community project team is proud to release OpenVPN 2.2.0. It
+can be downloaded from here:
 
-On 21/04/11 20:47, David Sommerseth wrote:
-> From: David Sommerseth <dazo@...384...>
->
-> A quick and dirty compile fix was introduced in commit 77d244050964525417,
-> and was accepted under the condition that it would be a temporary fix.
->
-> As the usage of _snprintf() is realy not ideal on Windows, this patch
-> uses the same well tested openvpn_snprintf() function from buffer.c.
-> It was a longer discussion of several possibilities to re-use that code,
-> but in the end it seemed easier to just copy-paste this function to
-> openvpnserv.c for now.
->
-> The reason for this conclusion was that the function is really simple,
-> well defined and will most likely not be changed much in the future.
-> It is also added a comment in openvpnserv.c where this function
-> has its origins.
->
-> Signed-off-by: David Sommerseth <dazo@...384...>
-> ---
->  service-win32/openvpnserv.c |   39 ++++++++++++++++++++++++++++-----------
->  1 files changed, 28 insertions(+), 11 deletions(-)
+<http://openvpn.net/index.php/open-source/downloads.html>
 
-ACKed by James Yonan on IRC 2011-04-11 18:51 UTC:
+Changes include:
 
-<dazo> jamesyonan: do you have time to have a look at this patch?  and ACK
-it if you agree ... <http://thread.gmane.org/gmane.network.openvpn.devel/4621>
-<jamesyonan> looking at it now...
-<jamesyonan> dazo: sure, looks fine
+- Several man-page updates
+- Several buildsystem fixes
+- Fixed a bug with GUI icon deletion on upgrade from 2.2-RC or earlier
+- Change the default --tmp-dir path to a more suitable path
+- Improve the mysprintf() issue in openvpnserv.c
+- Fixed bug in port-share that could cause port share process to crash
+- Fix the --client-cert-not-required feature
 
-Applied to master and cherry-picked to beta2.2.
+A more comprehensive list of changes is available here:
 
-commit 47dd9a4d7b2930f6e1b5d6f0ce0c154efc87ac29 (beta2.2)
-commit df5a4380c3931520d5fae2b18f0fc2e67a883aae (master)
-Author: David Sommerseth <dazo@...384...>
-Date:   Thu Apr 21 20:32:26 2011 +0200
+<http://openvpn.net/index.php/open-source/documentation/change-log/425-chan=
+gelog-for-openvpn-22.html>
 
-    Improve the mysprintf() issue in openvpnserv.c
+For generic help use these support channels:
 
-    Signed-off-by: David Sommerseth <dazo@...384...>
-    Acked-by: James Yonan <james@...515...>
+- Official documentation:
+<http://openvpn.net/index.php/open-source/documentation/howto.html>
+- Wiki: <https://community.openvpn.net>
+- Forums: <https://forums.openvpn.net>
+- User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+- User IRC channel: #openvpn at irc.freenode.net
+
+Please report bugs and ask development questions here:
+
+- Bug tracker and Wiki: <https://community.openvpn.net>
+- Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+- Developer IRC channel: #openvpn-devel at irc.freenode.net
+
+Note that we've recently switched to using a different Git repository:
+
+<git://openvpn.git.sourceforge.net/gitroot/openvpn/openvpn.git>
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
 
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk2wgLMACgkQDC186MBRfrpHowCgnEQbjP2foyBbNtHcxULaVd4B
-MzEAn02/K92yp6ujE3d39gLpngghV7YG
-=jMRx
------END PGP SIGNATURE-----
 
