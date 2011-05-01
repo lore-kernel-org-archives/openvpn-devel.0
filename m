@@ -1,8 +1,10 @@
-Message-ID: <4DBAA96B.4010407@...1114...>
-Date: Fri, 29 Apr 2011 14:04:59 +0200
+Message-ID: <4DBDA4FE.7000308@...1114...>
+Date: Sun, 01 May 2011 20:22:54 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Build issues with Microsoft Visual Studio
+References: <4DBA6D8D.1070900@...515...>
+In-Reply-To: <4DBA6D8D.1070900@...515...>
+Subject: Re: [Openvpn-devel] Summary of the IRC meeting (28th Apr 2011)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,53 +13,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
+On 29/04/11 09:49, Samuli Sepp=E4nen wrote:
+| Discussed the purpose of openvpn-testing.git and openvpn.git repos. Dazo
+| outlined his current thoughts:
+|
+| - openvpn-testing.git
+|    - would contain feature branches
+|    - would be a "sandbox" for testing potentially unstable features
+|
+| - openvpn.git
+|    - would contain release/maintenance branches (e.g. 2.1, 2.2)
+|    - would contain pre-release branches (e.g. 2.3 alpha, beta and rc)
+|
+| The "master" branch on both would be kept in sync. Agreed that this
+| setup makes sense.
+|
 
-Hi folks,
+I have today updated the git trees accordingly, in addition to clean up old
+and obsolete branches.
 
-We need some help here to figure out why we get much more build errors when
-compiling the new 'master' branch (checkout of commit b70d99fb617350).
+* branches on openvpn.git  (stable tree)
+~  master
+~  release/2.1
+~  release/2.2
 
-The issues can be found here:
-<http://build.openvpn.net/buildlog.txt>
+* branches on openvpn-testing.git  (testing tree)
+~  master
+~  experimental
+~  feat_ipv6_payload
+~  feat_ipv6_transport
+~  feat_ipv6_wintap
+~  feat_passtos
+~  feat_vlan_tagging
+~  frp
+~  svn-branch/2.1
+~  svn-branch/BETA21
+~  obsolete/bugfix2.1
+~  obsolete/feat_eurephia
+~  obsolete/feat_misc
 
-What has happened since the v2.2.0 builds and master is basically merging
-in feat_ipv6_payload and feat_ipv6_transport branches, in addition to
-syncing up with the latest changes from James' SVN 2.1 branch.  In total
-there are 137 commits differentiating the v2.2.0 and master branch.
+The obsolete/ branches are branches which are now merged into master and th=
+ey
+will be further developed there.  They are kept as obsolete branches for so=
+me
+time until their historic value is no longer interesting.
 
-I've just sent a patch for review which fixes the openvpn-plugin.h warnings
-[1].  But there are plentiful of other things to fix as well.
+I have also rebuilt  the frp branch.  This one had old cruft and was outdat=
+ed.
+~ As we have no features in the "Feature Removal Process", I decided to just
+start clean on from the master branch.
 
-Samuli has tried to use git bisect to isolate the commit, and it can look
-like commit 49a945eafea2c [2] might cause some of these issues.  But it's
-not enough to confirm if it solves everything.  I'm Cc'ing JuanJo Ciarlante
-as he is the author of that commit.
+The experimental branch is also now just a copy of the master branch.  We w=
+ill
+discuss what more to merge into this branch.
 
-If anyone have some good ideas or insight, please share! :)
+As you also see, the release branch is removed from the testing tree and on=
+ly
+available in the stable tree.
+
+Both git trees will have release tags for each release we've done.  Those
+releases based on the git tree will also be signed tags.
 
 
 kind regards,
 
 David Sommerseth
-
-
-[1] <http://thread.gmane.org/gmane.network.openvpn.devel/4629>
-[2]
-<http://openvpn.git.sourceforge.net/git/gitweb.cgi?p=openvpn/openvpn.git;a=commitdiff;h=49a945eafea2c64dbaa5cb2ecdfd4ca9a82aa26e>
-
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
+Version: GnuPG v1.4.10 (GNU/Linux)
 Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-iEUEARECAAYFAk26qWYACgkQDC186MBRfrpjHwCfcPc3EcinjQMUkQTWEBD8L+Ta
-Qm4Al1479RV2vwEpJO/FMQlA+x5XAyY=
-=Uzez
+iEYEARECAAYFAk29pP4ACgkQDC186MBRfrpC9gCghFxLS2bZPW9uDWHSljrWv0zB
+QogAoI5jRNXF1O2GW2qJBigeOOVcX22v
+=3Dzg1e
 -----END PGP SIGNATURE-----
 
