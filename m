@@ -1,10 +1,12 @@
-Message-ID: <4DBDA4FE.7000308@...1114...>
-Date: Sun, 01 May 2011 20:22:54 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <4DBA6D8D.1070900@...515...>
-In-Reply-To: <4DBA6D8D.1070900@...515...>
-Subject: Re: [Openvpn-devel] Summary of the IRC meeting (28th Apr 2011)
+From: Jean-Michel =?ISO-8859-1?Q?Pour=E9?= - GOOZE <jmpoure@...1457...>
+In-Reply-To: <4DB9CF1F.9040001@...1147...>
+References: <4DB864E0.4060207@...515...>
+	<4DB88287.7070006@...1114...>  <4DB9CF1F.9040001@...1147...>
+Date: Tue, 03 May 2011 15:51:54 +0200
+Message-ID: <1304430714.2822.0.camel@...1331...>
+Mime-Version: 1.0
+Subject: Re: [Openvpn-devel] OpenVPN 2.2.0 released
+Reply-To: jmpoure@...1457...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,84 +15,18 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: OpenVPN Users <Openvpn-users@lists.sourceforge.net>, openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Le jeudi 28 avril 2011 à 22:33 +0200, Jan Just Keijser a écrit :
+> I just would like to thank dazo, mattock and all the other developers 
+> and contributors who have put so much time into creating this release
+> - 
+> great job guys!
 
-On 29/04/11 09:49, Samuli Sepp=E4nen wrote:
-| Discussed the purpose of openvpn-testing.git and openvpn.git repos. Dazo
-| outlined his current thoughts:
-|
-| - openvpn-testing.git
-|    - would contain feature branches
-|    - would be a "sandbox" for testing potentially unstable features
-|
-| - openvpn.git
-|    - would contain release/maintenance branches (e.g. 2.1, 2.2)
-|    - would contain pre-release branches (e.g. 2.3 alpha, beta and rc)
-|
-| The "master" branch on both would be kept in sync. Agreed that this
-| setup makes sense.
-|
+Good job, thanks!
+-- 
+                  Jean-Michel Pouré - Gooze - http://www.gooze.eu
 
-I have today updated the git trees accordingly, in addition to clean up old
-and obsolete branches.
-
-* branches on openvpn.git  (stable tree)
-~  master
-~  release/2.1
-~  release/2.2
-
-* branches on openvpn-testing.git  (testing tree)
-~  master
-~  experimental
-~  feat_ipv6_payload
-~  feat_ipv6_transport
-~  feat_ipv6_wintap
-~  feat_passtos
-~  feat_vlan_tagging
-~  frp
-~  svn-branch/2.1
-~  svn-branch/BETA21
-~  obsolete/bugfix2.1
-~  obsolete/feat_eurephia
-~  obsolete/feat_misc
-
-The obsolete/ branches are branches which are now merged into master and th=
-ey
-will be further developed there.  They are kept as obsolete branches for so=
-me
-time until their historic value is no longer interesting.
-
-I have also rebuilt  the frp branch.  This one had old cruft and was outdat=
-ed.
-~ As we have no features in the "Feature Removal Process", I decided to just
-start clean on from the master branch.
-
-The experimental branch is also now just a copy of the master branch.  We w=
-ill
-discuss what more to merge into this branch.
-
-As you also see, the release branch is removed from the testing tree and on=
-ly
-available in the stable tree.
-
-Both git trees will have release tags for each release we've done.  Those
-releases based on the git tree will also be signed tags.
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk29pP4ACgkQDC186MBRfrpC9gCghFxLS2bZPW9uDWHSljrWv0zB
-QogAoI5jRNXF1O2GW2qJBigeOOVcX22v
-=3Dzg1e
------END PGP SIGNATURE-----
 
