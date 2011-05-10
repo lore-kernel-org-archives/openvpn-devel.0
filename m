@@ -1,12 +1,10 @@
-Message-ID: <4DC94132.1040302@...1147...>
-Date: Tue, 10 May 2011 15:44:18 +0200
-From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <4DC94AB2.6030008@...1114...>
+Date: Tue, 10 May 2011 16:24:50 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
 References: <4DC936F3.6000509@...1458...> <4DC93E4C.5070606@...1147...>
 	<20110510133830.GD8496@...1296...>
 In-Reply-To: <20110510133830.GD8496@...1296...>
-Content-Type: multipart/alternative;
-	boundary="------------010805000109050506060209"
 Subject: Re: [Openvpn-devel] Fwd: OpenVPN netsh.exe patch
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,97 +14,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------010805000109050506060209
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Hi,
+On 10/05/11 15:38, Gert Doering wrote:
+> I have not yet tested this, but Seth has, both on XP and Win7, so "ACK!"...
 
-Gert Doering wrote:
-> Hi,
->
-> On Tue, May 10, 2011 at 03:31:56PM +0200, Jan Just Keijser wrote:
->   
->> Seth Mos wrote:
->>     
->>> Here is the tun.c patch for correction of the netsh.exe commands.
->>>
->>> I've confirmed that the patch works on Windows XP SP2 and Windows 7.
->>>
->>> Patch!
->>> http://iserv.nl/files/pfsense/0001-Change-the-netsh.exe-command-from-add-to-set-.-Th.patch
->>>       
->> please explain the rationale behind this patch: is something wrong when
->> using 'ipv6 add address' ? 
->>     
->
-> Without "store=active", address assignment is "sticky" and will even
-> survive reboots - thus making the next tunnel setup fail, because the
-> address is already there.  On WinXP, that was not needed, but Win7 seems
-> to have changed the default.
->
->   
-but then why not use
-  add address <> store=active
-? why switch to "set address" ? what's the difference?
+Windows XP SP2 is tested ... what about older XPs?  Personally, I am in
+favour of only supporting Windows versions which Microsoft officially supports.
 
-JJK
+<http://windows.microsoft.com/en-us/windows/products/lifecycle>
+
+Windows XP SP2 was supported until June 13, 2010.  Now only Windows XP SP3
+is supported.
+
+> David: I think it's easiest in this case if I integrate it, and then send
+> it to you.  It needs to go to my "based on 2.2" branch as well.
+
+It doesn't matter for me.  You either pull it in, and I merge in your tree.
+ Or I pull it in and you rebase your 2.3 working branch against my master
+and then you can cherry-pick this commit for your IPv6 2.2 branch.
 
 
---------------010805000109050506060209
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+kind regards,
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
-</head>
-<body bgcolor="#ffffff" text="#000000">
-Hi,<br>
-<br>
-Gert Doering wrote:
-<blockquote cite="mid:20110510133830.GD8496@...1296..." type="cite">
-  <pre wrap="">Hi,
+David Sommerseth
 
-On Tue, May 10, 2011 at 03:31:56PM +0200, Jan Just Keijser wrote:
-  </pre>
-  <blockquote type="cite">
-    <pre wrap="">Seth Mos wrote:
-    </pre>
-    <blockquote type="cite">
-      <pre wrap="">Here is the tun.c patch for correction of the netsh.exe commands.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-I've confirmed that the patch works on Windows XP SP2 and Windows 7.
-
-Patch!
-<a class="moz-txt-link-freetext" href="http://iserv.nl/files/pfsense/0001-Change-the-netsh.exe-command-from-add-to-set-.-Th.patch">http://iserv.nl/files/pfsense/0001-Change-the-netsh.exe-command-from-add-to-set-.-Th.patch</a>
-      </pre>
-    </blockquote>
-    <pre wrap="">please explain the rationale behind this patch: is something wrong when
-using 'ipv6 add address' ? 
-    </pre>
-  </blockquote>
-  <pre wrap=""><!---->
-Without "store=active", address assignment is "sticky" and will even
-survive reboots - thus making the next tunnel setup fail, because the
-address is already there.  On WinXP, that was not needed, but Win7 seems
-to have changed the default.
-
-  </pre>
-</blockquote>
-but then why not use<br>
-&nbsp; add address &lt;&gt; store=active<br>
-? why switch to "set address" ? what's the difference?<br>
-<br>
-JJK<br>
-<br>
-</body>
-</html>
-
---------------010805000109050506060209--
+iEYEARECAAYFAk3JSrIACgkQDC186MBRfrp9MwCgk/df5IPuAEoTZS3vse6TjDX3
+JaAAoJNPMglECeeC6flBczbRhT0An9cx
+=MmyN
+-----END PGP SIGNATURE-----
 
