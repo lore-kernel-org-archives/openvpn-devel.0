@@ -1,13 +1,10 @@
-Message-ID: <4DC9E469.20708@...1459...>
-Date: Tue, 10 May 2011 18:20:41 -0700
-From: Jim Burwell <jimb@...1459...>
 MIME-Version: 1.0
-References: <4DC936F3.6000509@...1458...> <4DC93E4C.5070606@...1147...>
-	<20110510133830.GD8496@...1296...>
-In-Reply-To: <20110510133830.GD8496@...1296...>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature";
-	micalg=sha1; boundary="------------ms030903020304040804090003"
-Subject: Re: [Openvpn-devel] Fwd: OpenVPN netsh.exe patch
+Date: Wed, 11 May 2011 17:57:28 -0400
+Message-ID: <BANLkTimDEA004RuTcUBKDXPWffEWBo3-iw@...278...>
+From: "Matthew L. Creech" <mlcreech@...277...>
+Content-Type: multipart/mixed; boundary=20cf307f395e9e12e204a3072848
+Subject: [Openvpn-devel] [PATCH] fix 2.2.0 build failure when management
+	interface disabled
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,151 +15,38 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
-This is a cryptographically signed message in MIME format.
+--20cf307f395e9e12e204a3072848
+Content-Type: text/plain; charset=ISO-8859-1
 
---------------ms030903020304040804090003
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-On 5/10/2011 06:38, Gert Doering wrote:
-> Hi,
->
-> On Tue, May 10, 2011 at 03:31:56PM +0200, Jan Just Keijser wrote:
->> Seth Mos wrote:
->>> Here is the tun.c patch for correction of the netsh.exe commands.
->>>
->>> I've confirmed that the patch works on Windows XP SP2 and Windows 7.
->>>
->>> Patch!
->>> http://iserv.nl/files/pfsense/0001-Change-the-netsh.exe-command-from-ad=
-d-to-set-.-Th.patch
->> please explain the rationale behind this patch: is something wrong when
->> using 'ipv6 add address' ?=20
-> Without "store=3Dactive", address assignment is "sticky" and will even
-> survive reboots - thus making the next tunnel setup fail, because the
-> address is already there.  On WinXP, that was not needed, but Win7 seems
-> to have changed the default.
->
->> why is the patch applied only for IPv6 addresses?
-> OpenVPN by default doesn't use netsh to configure IPv4 - so it might be
-> necessary there as well, but didn't show up yet.  For IPv6, there is only
-> a single method of configuration - netsh - and that breaks on Win7=20
-> otherwise.
->
-> I have not yet tested this, but Seth has, both on XP and Win7, so "ACK!".=
-..
->
-> David: I think it's easiest in this case if I integrate it, and then send
-> it to you.  It needs to go to my "based on 2.2" branch as well.
->
-> gert
->
-I can confirm that the IPv6 configuration stays around after
-disconnect.  I run a openvpn server with Gert's patches, and I have to
-run a "cleanup" down script after I disconnect to remove the IPv6
-address and route.
+I just upgraded to 2.2.0, and my build fails with:
 
+ps.c: In function 'port_share_open':
+ps.c:778:7: error: 'management' undeclared (first use in this function)
+ps.c:778:7: note: each undeclared identifier is reported only once for
+each function it appears in
+make[5]: *** [ps.o] Error 1
 
---------------ms030903020304040804090003
-Content-Type: application/pkcs7-signature; name="smime.p7s"
+The attached patch fixed the problem.
+
+-- 
+Matthew L. Creech
+
+--20cf307f395e9e12e204a3072848
+Content-Type: text/x-patch; charset=US-ASCII; name="01-no-management.patch"
+Content-Disposition: attachment; filename="01-no-management.patch"
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+X-Attachment-Id: f_gnkt7d2q0
 
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIPYjCC
-BIowggNyoAMCAQICECf06hH0eobEbp27bqkXBwcwDQYJKoZIhvcNAQEFBQAwbzELMAkGA1UE
-BhMCU0UxFDASBgNVBAoTC0FkZFRydXN0IEFCMSYwJAYDVQQLEx1BZGRUcnVzdCBFeHRlcm5h
-bCBUVFAgTmV0d29yazEiMCAGA1UEAxMZQWRkVHJ1c3QgRXh0ZXJuYWwgQ0EgUm9vdDAeFw0w
-NTA2MDcwODA5MTBaFw0yMDA1MzAxMDQ4MzhaMIGuMQswCQYDVQQGEwJVUzELMAkGA1UECBMC
-VVQxFzAVBgNVBAcTDlNhbHQgTGFrZSBDaXR5MR4wHAYDVQQKExVUaGUgVVNFUlRSVVNUIE5l
-dHdvcmsxITAfBgNVBAsTGGh0dHA6Ly93d3cudXNlcnRydXN0LmNvbTE2MDQGA1UEAxMtVVRO
-LVVTRVJGaXJzdC1DbGllbnQgQXV0aGVudGljYXRpb24gYW5kIEVtYWlsMIIBIjANBgkqhkiG
-9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsjmFpPJ9q0E7YkY3rs3BYHW8OWX5ShpHornMSMxqmNVN
-NRm5pELlzkniii8efNIxB8dOtINknS4p1aJkxIW9hVE1eaROaJB7HHqkkqgX8pgV8pPMyaQy
-lbsMTzC9mKALi+VuG6JG+ni8om+rWV6lL8/K2m2qL+usobNqqrcuZzWLeeEeaYji5kbNoKXq
-vgvOdjp6Dpvq/NonWz1zHyLmSGHGTPNpsaguG7bUMSAsvIKKjqQOpdeJQ/wWWq8dcdcRWdq6
-hw2v+vPhwvCkxWeM1tZUOt4KpLoDd7NlyP0e03RiqhjKaJMeoYV+9Udly/hNVyh00jT/MLbu
-9mIwFIws6wIDAQABo4HhMIHeMB8GA1UdIwQYMBaAFK29mHo0tCb3+sQmVO8DveAky1QaMB0G
-A1UdDgQWBBSJgmd9xJ0mcABLtFBIfN49rgRufTAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/
-BAUwAwEB/zB7BgNVHR8EdDByMDigNqA0hjJodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9BZGRU
-cnVzdEV4dGVybmFsQ0FSb290LmNybDA2oDSgMoYwaHR0cDovL2NybC5jb21vZG8ubmV0L0Fk
-ZFRydXN0RXh0ZXJuYWxDQVJvb3QuY3JsMA0GCSqGSIb3DQEBBQUAA4IBAQAZ2IkRbyispgCi
-54fBm5AD236hEv0e8+LwAamUVEJrmgnEoG3XkJIEA2Z5Q3H8+G+v23ZF4jcaPd3kWQR4rBz0
-g0bzes9bhHIt5UbBuhgRKfPLSXmHPLptBZ2kbWhPrXIUNqi5sf2/z3/wpGqUNVCPz4FtVbHd
-WTBK322gnGQfSXzvNrv042n0+DmPWq1LhTq3Du3Tzw1EovsEv+QvcI4l+1pUBrPQxLxtjftz
-Mizpm4QkLdZ/kXpoAlAfDj9N6cz1u2fo3BwuO/xOzf4CjuOoEwqlJkRl6RDyTVKnrtw+ymsy
-XEFs/vVdoOr/0fqbhlhtPZZH5f4ulQTCAMyOofK7MIIFZjCCBE6gAwIBAgIQCqtUxr/cO415
-jzFjzppjoDANBgkqhkiG9w0BAQUFADCBrjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAlVUMRcw
-FQYDVQQHEw5TYWx0IExha2UgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBOZXR3b3Jr
-MSEwHwYDVQQLExhodHRwOi8vd3d3LnVzZXJ0cnVzdC5jb20xNjA0BgNVBAMTLVVUTi1VU0VS
-Rmlyc3QtQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBFbWFpbDAeFw0xMTAxMDIwMDAwMDBa
-Fw0xMjAxMDIyMzU5NTlaMB0xGzAZBgkqhkiG9w0BCQEWDGppbWJAanNiYy5jYzCCASIwDQYJ
-KoZIhvcNAQEBBQADggEPADCCAQoCggEBALqce+7kMcsjSHaGxiRfUzmHLnkyu9aOlHbG50S4
-zLrd3wdNpIx/qLAz7+JFcM+DI03qsutmf2SVIRO3SZuKy0nHURZ/6xrKkTThoC35fodt5LeW
-XRE2F9GdJyV7YDjGeAcDjR3Q2TsdR58jynCF9HrEfhbvoPlMIElLeUnv/fS8lUrL3O82xaFD
-DWZxCF3Lc/spuMYuUKWjrqC/e4+vcaGNdZLYn8Z04sx444Q1j0DqQUopG2h5mdlYtyz8X42Z
-EJ4hZBIrn8MsDKRSL44GNnwHZCzmem8KdLPpA4ovX+389/0effPwLjxVgL0Yl4IL89c99b4v
-5GgmsLGFvfa7bg0CAwEAAaOCAg4wggIKMB8GA1UdIwQYMBaAFImCZ33EnSZwAEu0UEh83j2u
-BG59MB0GA1UdDgQWBBQGwNXwVYU+nLr91R84361mRzbydTAOBgNVHQ8BAf8EBAMCBaAwDAYD
-VR0TAQH/BAIwADAgBgNVHSUEGTAXBggrBgEFBQcDBAYLKwYBBAGyMQEDBQIwEQYJYIZIAYb4
-QgEBBAQDAgUgMEYGA1UdIAQ/MD0wOwYMKwYBBAGyMQECAQEBMCswKQYIKwYBBQUHAgEWHWh0
-dHBzOi8vc2VjdXJlLmNvbW9kby5uZXQvQ1BTMIGlBgNVHR8EgZ0wgZowTKBKoEiGRmh0dHA6
-Ly9jcmwuY29tb2RvY2EuY29tL1VUTi1VU0VSRmlyc3QtQ2xpZW50QXV0aGVudGljYXRpb25h
-bmRFbWFpbC5jcmwwSqBIoEaGRGh0dHA6Ly9jcmwuY29tb2RvLm5ldC9VVE4tVVNFUkZpcnN0
-LUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kRW1haWwuY3JsMGwGCCsGAQUFBwEBBGAwXjA2Bggr
-BgEFBQcwAoYqaHR0cDovL2NydC5jb21vZG9jYS5jb20vVVROQUFBQ2xpZW50Q0EuY3J0MCQG
-CCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wFwYDVR0RBBAwDoEMamltYkBq
-c2JjLmNjMA0GCSqGSIb3DQEBBQUAA4IBAQA8x4yfnQjSNZcQx6tR2GErOPoJ83CqcTvB6c+s
-z029U2ILIbu5BmWLwD6j5e05p5mYR7fQLOMeEx2Jxl5hPt/nPsSfiQ6HHPsZvIQ8nR7XjZjf
-IKX7V3Gw7CRpMEPlW8OonEddC09JT49WdDEyS504cDZVqyXMdaQINFr+jQhMQ3QLdRwsVdOx
-9qlklG0oiV3oqogjEkPwiNtMoC+BB0v7uY7fodftlZzOGe7/B1VJ3yrv4raDxD7+6OjJ0LJR
-ljZY2SzZwjzkoVkJHuAA9PgffIyuaQ8JJzhdXvjU5rM3uk7etr+nyIvdqnJ+onNymQEpxx0t
-fUjk6DRbGySyYjp9MIIFZjCCBE6gAwIBAgIQCqtUxr/cO415jzFjzppjoDANBgkqhkiG9w0B
-AQUFADCBrjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAlVUMRcwFQYDVQQHEw5TYWx0IExha2Ug
-Q2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBOZXR3b3JrMSEwHwYDVQQLExhodHRwOi8v
-d3d3LnVzZXJ0cnVzdC5jb20xNjA0BgNVBAMTLVVUTi1VU0VSRmlyc3QtQ2xpZW50IEF1dGhl
-bnRpY2F0aW9uIGFuZCBFbWFpbDAeFw0xMTAxMDIwMDAwMDBaFw0xMjAxMDIyMzU5NTlaMB0x
-GzAZBgkqhkiG9w0BCQEWDGppbWJAanNiYy5jYzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCC
-AQoCggEBALqce+7kMcsjSHaGxiRfUzmHLnkyu9aOlHbG50S4zLrd3wdNpIx/qLAz7+JFcM+D
-I03qsutmf2SVIRO3SZuKy0nHURZ/6xrKkTThoC35fodt5LeWXRE2F9GdJyV7YDjGeAcDjR3Q
-2TsdR58jynCF9HrEfhbvoPlMIElLeUnv/fS8lUrL3O82xaFDDWZxCF3Lc/spuMYuUKWjrqC/
-e4+vcaGNdZLYn8Z04sx444Q1j0DqQUopG2h5mdlYtyz8X42ZEJ4hZBIrn8MsDKRSL44GNnwH
-ZCzmem8KdLPpA4ovX+389/0effPwLjxVgL0Yl4IL89c99b4v5GgmsLGFvfa7bg0CAwEAAaOC
-Ag4wggIKMB8GA1UdIwQYMBaAFImCZ33EnSZwAEu0UEh83j2uBG59MB0GA1UdDgQWBBQGwNXw
-VYU+nLr91R84361mRzbydTAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAgBgNVHSUE
-GTAXBggrBgEFBQcDBAYLKwYBBAGyMQEDBQIwEQYJYIZIAYb4QgEBBAQDAgUgMEYGA1UdIAQ/
-MD0wOwYMKwYBBAGyMQECAQEBMCswKQYIKwYBBQUHAgEWHWh0dHBzOi8vc2VjdXJlLmNvbW9k
-by5uZXQvQ1BTMIGlBgNVHR8EgZ0wgZowTKBKoEiGRmh0dHA6Ly9jcmwuY29tb2RvY2EuY29t
-L1VUTi1VU0VSRmlyc3QtQ2xpZW50QXV0aGVudGljYXRpb25hbmRFbWFpbC5jcmwwSqBIoEaG
-RGh0dHA6Ly9jcmwuY29tb2RvLm5ldC9VVE4tVVNFUkZpcnN0LUNsaWVudEF1dGhlbnRpY2F0
-aW9uYW5kRW1haWwuY3JsMGwGCCsGAQUFBwEBBGAwXjA2BggrBgEFBQcwAoYqaHR0cDovL2Ny
-dC5jb21vZG9jYS5jb20vVVROQUFBQ2xpZW50Q0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8v
-b2NzcC5jb21vZG9jYS5jb20wFwYDVR0RBBAwDoEMamltYkBqc2JjLmNjMA0GCSqGSIb3DQEB
-BQUAA4IBAQA8x4yfnQjSNZcQx6tR2GErOPoJ83CqcTvB6c+sz029U2ILIbu5BmWLwD6j5e05
-p5mYR7fQLOMeEx2Jxl5hPt/nPsSfiQ6HHPsZvIQ8nR7XjZjfIKX7V3Gw7CRpMEPlW8OonEdd
-C09JT49WdDEyS504cDZVqyXMdaQINFr+jQhMQ3QLdRwsVdOx9qlklG0oiV3oqogjEkPwiNtM
-oC+BB0v7uY7fodftlZzOGe7/B1VJ3yrv4raDxD7+6OjJ0LJRljZY2SzZwjzkoVkJHuAA9Pgf
-fIyuaQ8JJzhdXvjU5rM3uk7etr+nyIvdqnJ+onNymQEpxx0tfUjk6DRbGySyYjp9MYIEXTCC
-BFkCAQEwgcMwga4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJVVDEXMBUGA1UEBxMOU2FsdCBM
-YWtlIENpdHkxHjAcBgNVBAoTFVRoZSBVU0VSVFJVU1QgTmV0d29yazEhMB8GA1UECxMYaHR0
-cDovL3d3dy51c2VydHJ1c3QuY29tMTYwNAYDVQQDEy1VVE4tVVNFUkZpcnN0LUNsaWVudCBB
-dXRoZW50aWNhdGlvbiBhbmQgRW1haWwCEAqrVMa/3DuNeY8xY86aY6AwCQYFKw4DAhoFAKCC
-Am4wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTEwNTExMDEy
-MDQxWjAjBgkqhkiG9w0BCQQxFgQUQejOYhI6/m4RU8Gh6GUQr340jR4wXwYJKoZIhvcNAQkP
-MVIwUDALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3
-DQMCAgFAMAcGBSsOAwIHMA0GCCqGSIb3DQMCAgEoMIHUBgkrBgEEAYI3EAQxgcYwgcMwga4x
-CzAJBgNVBAYTAlVTMQswCQYDVQQIEwJVVDEXMBUGA1UEBxMOU2FsdCBMYWtlIENpdHkxHjAc
-BgNVBAoTFVRoZSBVU0VSVFJVU1QgTmV0d29yazEhMB8GA1UECxMYaHR0cDovL3d3dy51c2Vy
-dHJ1c3QuY29tMTYwNAYDVQQDEy1VVE4tVVNFUkZpcnN0LUNsaWVudCBBdXRoZW50aWNhdGlv
-biBhbmQgRW1haWwCEAqrVMa/3DuNeY8xY86aY6AwgdYGCyqGSIb3DQEJEAILMYHGoIHDMIGu
-MQswCQYDVQQGEwJVUzELMAkGA1UECBMCVVQxFzAVBgNVBAcTDlNhbHQgTGFrZSBDaXR5MR4w
-HAYDVQQKExVUaGUgVVNFUlRSVVNUIE5ldHdvcmsxITAfBgNVBAsTGGh0dHA6Ly93d3cudXNl
-cnRydXN0LmNvbTE2MDQGA1UEAxMtVVROLVVTRVJGaXJzdC1DbGllbnQgQXV0aGVudGljYXRp
-b24gYW5kIEVtYWlsAhAKq1TGv9w7jXmPMWPOmmOgMA0GCSqGSIb3DQEBAQUABIIBAC1/d9bv
-b3zImCBjuKvp0KARW5EOyco7nLDhys/o7r6rDHK1kKOFyMTdgIUkkDTUDgeM+nIwyqZMhRWu
-ajzoYHR9o/UVkKgPpRBkcTrmCf+MYsV7UenvIYc38tRirNMv8F+24T/1OF57BctP63rwR6o5
-VrHzk9NeK1YlAblAFyCvQr1WQ9Z1D6zqic1Q1b00HojGcOaJ5O/6ilpsSK1KiMQthY3WXRaP
-w3zsudaUoXI2H8y3oZw08oZYdrHMiuVMRK32zCB200pbQ6hRTno2I5kwqpTY6IjpuT9WhXJW
-ZvZGxeuF26slrK26g9z6DfZzawnOZml0mKowgZTphMeH1xUAAAAAAAA=
---------------ms030903020304040804090003--
+ZGlmZiAtcHVyTiBvcmlnL3BzLmMgb3BlbnZwbi0yLjIuMC9wcy5jCi0tLSBvcmlnL3BzLmMJMjAx
+MS0wNS0xMSAxNzo0Mzo0My41NTIwMzIyNDQgLTA0MDAKKysrIG9wZW52cG4tMi4yLjAvcHMuYwky
+MDExLTA1LTExIDE3OjQ0OjE0LjQ5MjAzMTczMCAtMDQwMApAQCAtNzc0LDggKzc3NCwxMCBAQCBw
+b3J0X3NoYXJlX29wZW4gKGNvbnN0IGNoYXIgKmhvc3QsIGNvbnN0CiAgICAgICAvKiBMZXQgbXNn
+IGtub3cgdGhhdCB3ZSBmb3JrZWQgKi8KICAgICAgIG1zZ19mb3JrZWQgKCk7CiAKKyNpZmRlZiBN
+QU5BR0VNRU5UX0VOQUJMRUQKICAgICAgIC8qIERvbid0IGludGVyYWN0IHdpdGggbWFuYWdlbWVu
+dCBpbnRlcmZhY2UgKi8KICAgICAgIG1hbmFnZW1lbnQgPSBOVUxMOworI2VuZGlmCiAKICAgICAg
+IC8qIGNsb3NlIGFsbCBwYXJlbnQgZmRzIGV4Y2VwdCBvdXIgc29ja2V0IGJhY2sgdG8gcGFyZW50
+ICovCiAgICAgICBjbG9zZV9mZHNfZXhjZXB0IChmZFsxXSk7Cg==
+--20cf307f395e9e12e204a3072848--
 
