@@ -1,10 +1,11 @@
+Message-ID: <4DCBC87B.40202@...1147...>
+Date: Thu, 12 May 2011 13:46:03 +0200
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-Date: Wed, 11 May 2011 17:57:28 -0400
-Message-ID: <BANLkTimDEA004RuTcUBKDXPWffEWBo3-iw@...278...>
-From: "Matthew L. Creech" <mlcreech@...277...>
-Content-Type: multipart/mixed; boundary=20cf307f395e9e12e204a3072848
-Subject: [Openvpn-devel] [PATCH] fix 2.2.0 build failure when management
-	interface disabled
+References: <4DCBB9A5.9010409@...1460...>
+In-Reply-To: <4DCBB9A5.9010409@...1460...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] behavior of remote address with
+ more than one A	record
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,40 +14,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: William Cooley <william@...1460...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, openvpn-users <openvpn-users@lists.sourceforge.net>
 
---20cf307f395e9e12e204a3072848
-Content-Type: text/plain; charset=ISO-8859-1
+William Cooley wrote:
+> I'd like to have a remote address setting that has two A records. The 
+> client should randomly try to connect to one of the addresses and if 
+> it fails it should either try the other IP address or do a randomize 
+> operation on the IP selection again.
+> In previous versions of openvpn if you specified a domain that 
+> resolved to two or more IP addresses you'd get a long line like
+> /RESOLVE: NOTE: vpndomain.com resolves to 2 addresses, choosing one by 
+> random/
+> and I believe it performed as I described above.
+> However it looks like with openvpn 2.1.4 and newer you simply get
+> /RESOLVE: NOTE: vpndomain.com resolves to 2 addresses/
+> and if it fails to connect to the first IP address it never tries the 
+> other address and simply indefinitely tries to connect to the same 
+> address.
+>
+> Was there some type of change in the code that was not mentioned in 
+> the changelog? Does any one have more information on this? Is there a 
+> setting that can restore this behavior?
+>
+it's mentioned in the changelog:
 
-Hi,
+* Implemented multi-address DNS expansion on the network field of route
+  commands.
 
-I just upgraded to 2.2.0, and my build fails with:
+  When only a single IP address is desired from a multi-address DNS
+  expansion, use the first address rather than a random selection.
 
-ps.c: In function 'port_share_open':
-ps.c:778:7: error: 'management' undeclared (first use in this function)
-ps.c:778:7: note: each undeclared identifier is reported only once for
-each function it appears in
-make[5]: *** [ps.o] Error 1
 
-The attached patch fixed the problem.
+but it seems this had the unintentional side-effect , namely what you 
+describe.
+this is either a bug or it should have been documented better.
 
--- 
-Matthew L. Creech
+cheers,
 
---20cf307f395e9e12e204a3072848
-Content-Type: text/x-patch; charset=US-ASCII; name="01-no-management.patch"
-Content-Disposition: attachment; filename="01-no-management.patch"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_gnkt7d2q0
+JJK
 
-ZGlmZiAtcHVyTiBvcmlnL3BzLmMgb3BlbnZwbi0yLjIuMC9wcy5jCi0tLSBvcmlnL3BzLmMJMjAx
-MS0wNS0xMSAxNzo0Mzo0My41NTIwMzIyNDQgLTA0MDAKKysrIG9wZW52cG4tMi4yLjAvcHMuYwky
-MDExLTA1LTExIDE3OjQ0OjE0LjQ5MjAzMTczMCAtMDQwMApAQCAtNzc0LDggKzc3NCwxMCBAQCBw
-b3J0X3NoYXJlX29wZW4gKGNvbnN0IGNoYXIgKmhvc3QsIGNvbnN0CiAgICAgICAvKiBMZXQgbXNn
-IGtub3cgdGhhdCB3ZSBmb3JrZWQgKi8KICAgICAgIG1zZ19mb3JrZWQgKCk7CiAKKyNpZmRlZiBN
-QU5BR0VNRU5UX0VOQUJMRUQKICAgICAgIC8qIERvbid0IGludGVyYWN0IHdpdGggbWFuYWdlbWVu
-dCBpbnRlcmZhY2UgKi8KICAgICAgIG1hbmFnZW1lbnQgPSBOVUxMOworI2VuZGlmCiAKICAgICAg
-IC8qIGNsb3NlIGFsbCBwYXJlbnQgZmRzIGV4Y2VwdCBvdXIgc29ja2V0IGJhY2sgdG8gcGFyZW50
-ICovCiAgICAgICBjbG9zZV9mZHNfZXhjZXB0IChmZFsxXSk7Cg==
---20cf307f395e9e12e204a3072848--
 
