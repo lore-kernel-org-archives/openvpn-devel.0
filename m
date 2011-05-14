@@ -1,12 +1,14 @@
-Message-ID: <4DCC4CC7.9050803@...1114...>
-Date: Thu, 12 May 2011 23:10:31 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <4DCBFE39.7080508@...1114...>
-	<jwvwrhv4sxr.fsf-monnier+INBOX@...1269...>
-In-Reply-To: <jwvwrhv4sxr.fsf-monnier+INBOX@...1269...>
-Subject: Re: [Openvpn-devel] Fwd: Re: [Openvpn-users] behavior of remote
- address with more than one A	record
+Date: Sat, 14 May 2011 14:03:04 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20110514120304.GO8496@...1296...>
+References: <BANLkTimDEA004RuTcUBKDXPWffEWBo3-iw@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="KsSkVHHhotaZRe1D"
+Content-Disposition: inline
+In-Reply-To: <BANLkTimDEA004RuTcUBKDXPWffEWBo3-iw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] fix 2.2.0 build failure when management
+	interface disabled
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,50 +17,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Stefan Monnier <monnier@...1268...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "Matthew L. Creech" <mlcreech@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--KsSkVHHhotaZRe1D
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 12/05/11 21:46, Stefan Monnier wrote:
->> You can test this by making sure the TTL is set low enough on your server
->> records (say 60 seconds), make sure that your client will do a new DNS
->> lookup with the proper TTL (you can check this with 'dig').  Then connect
->> to your server and break the connection after one minute and then
->> reconnect.  In this case, if the DNS server does the job properly, it would
->> now give your second server - which OpenVPN should use.
-> 
-> But this is about load-balancing, whereas the OP's issue is with
-> fail-over.  If the TTL is not low enough then the fail-over will not
-> happen (OpenVPN will keep trying to connect to same first host in the
-> list).  It seems that for fail-over, OpenVPN should do a single DNS
-> request and then cycle though the list of hosts it received.
+Hi,
 
-Fair enough, but playing the devils advocate, would you use a
-load-balancing feature (round-robin) as fail-over solution generally?
+On Wed, May 11, 2011 at 05:57:28PM -0400, Matthew L. Creech wrote:
+> I just upgraded to 2.2.0, and my build fails with:
+>=20
+> ps.c: In function 'port_share_open':
+> ps.c:778:7: error: 'management' undeclared (first use in this function)
+> ps.c:778:7: note: each undeclared identifier is reported only once for
+> each function it appears in
+> make[5]: *** [ps.o] Error 1
 
-Rightfully enough, the former behaviour could be used for both, but the
-fail-over would still just be a side-effect - which still would be prune to
-get the same host again, due to TTL and randomisation of that result could
-pick the same host again.
+Thanks for reporting it.  As far as I can see, this problem came in via
+c7dd80cf45efa (aka 2.1.3s), and that is obviously only needed if management
+is enabled.
 
-For a more proper and cleaner fail-over solution, you can use multiple
-- --remote options together with --remote-random.  This can also be used for
-load-balancing as well.
+So: ACK from me.
 
+Samuli: we need buildbot variants with/without management, it seems...
 
-kind regards,
+gert
 
-David Sommerseth
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--KsSkVHHhotaZRe1D
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+Version: GnuPG v1.4.11 (NetBSD)
 
-iEYEARECAAYFAk3MTMIACgkQDC186MBRfrrxyQCgpfOxcPJqNZAgDzR739HsCg/8
-utgAnA7NHvmDw8fokZpsHQDa7q45BB3K
-=xzG8
+iQCVAwUBTc5veKkuBuNlUUl1AQLSHwP+O7pSUqjylrSbRo4iaelKttjODWZu8lfM
+dkNik+6xcVFwCrFsY2ze5C6xh3X2Vs0UyQZ4cmA5+zkrB4cbQQJBU7wsPri07srS
+HkjXY+W8sxofwGHSZnM/RbXBw3lDw580VfU9Hls8M7E7gLmdUdM9+Pq2eWKsLx0r
+vind3u5wyD4=
+=g5IB
 -----END PGP SIGNATURE-----
+
+--KsSkVHHhotaZRe1D--
 
