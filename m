@@ -1,14 +1,8 @@
-Date: Sun, 15 May 2011 16:25:29 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20110515142529.GR8496@...1296...>
-References: <4DC936F3.6000509@...1458...> <4DC93E4C.5070606@...1147...>
-	<20110510133830.GD8496@...1296...> <4DC94132.1040302@...1147...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="eUJndGal4TJgqj0h"
-Content-Disposition: inline
-In-Reply-To: <4DC94132.1040302@...1147...>
-Subject: Re: [Openvpn-devel] Fwd: OpenVPN netsh.exe patch
+From: David Sommerseth <davids@...1347...>
+Date: Mon, 16 May 2011 13:10:15 +0200
+Message-Id: <1305544215-12654-1-git-send-email-davids@...1347...>
+Subject: [Openvpn-devel] [PATCH] Make '--comp-lzo no' the default behaviour
+	if LZO is enabled
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,67 +11,85 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jan Just Keijser <janjust@...1147...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: David Sommerseth <davids@...1347...>
 
---eUJndGal4TJgqj0h
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+This makes 'comp-lzo' pushable without requiring clients to have
+--comp-lzo defined in the client configs.  To make 'comp-lzo' not
+pushable on the client, a new 'disabled' argument have been added.
 
-Hi,
+Trac-ticket: 128
+Signed-off-by: David Sommerseth <davids@...1347...>
+---
+ openvpn.8 |   12 ++++++------
+ options.c |   10 +++++++---
+ 2 files changed, 13 insertions(+), 9 deletions(-)
 
-On Tue, May 10, 2011 at 03:44:18PM +0200, Jan Just Keijser wrote:
-> > Without "store=3Dactive", address assignment is "sticky" and will even
-> > survive reboots - thus making the next tunnel setup fail, because the
-> > address is already there.  On WinXP, that was not needed, but Win7 seems
-> > to have changed the default.
-> >=20=20=20
-> but then why not use
->   add address <> store=3Dactive
-> ? why switch to "set address" ? what's the difference?
+diff --git a/openvpn.8 b/openvpn.8
+index 5cbf4c5..89759b6 100644
+--- a/openvpn.8
++++ b/openvpn.8
+@@ -2284,7 +2284,9 @@ limit repetitive logging of similar message types.
+ Use fast LZO compression \-\- may add up to 1 byte per
+ packet for incompressible data.
+ .B mode
+-may be "yes", "no", or "adaptive" (default).
++may be "yes", "adaptive" or "disabled".
++If  \-\-comp-lzo is used without an argument, it defaults to
++"adaptive".
+ 
+ In a server mode setup, it is possible to selectively turn
+ compression on or off for individual clients.
+@@ -2293,11 +2295,9 @@ First, make sure the client-side config file enables selective
+ compression by having at least one
+ .B \-\-comp-lzo
+ directive, such as
+-.B \-\-comp-lzo no.
+-This will turn off compression by default,
+-but allow a future directive push from the server to
+-dynamically change the
+-on/off/adaptive setting.
++
++If the "disabled" argument is given, \-\-comp-lzo can not be pushed
++from the server to the client.
+ 
+ Next in a
+ .B \-\-client-config-dir
+diff --git a/options.c b/options.c
+index f643acc..dc45282 100644
+--- a/options.c
++++ b/options.c
+@@ -816,6 +816,10 @@ init_options (struct options *o, const bool init_gc)
+           o->tmp_dir = "/tmp";
+   }
+ #endif /* WIN32 */
++
++#ifdef USE_LZO
++  o->lzo = LZO_SELECTED;
++#endif
+ }
+ 
+ void
+@@ -5889,13 +5893,13 @@ add_option (struct options *options,
+ 	{
+ 	  if (streq (p[1], "yes"))
+ 	    options->lzo = LZO_SELECTED|LZO_ON;
+-	  else if (streq (p[1], "no"))
+-	    options->lzo = LZO_SELECTED;
+ 	  else if (streq (p[1], "adaptive"))
+ 	    options->lzo = LZO_SELECTED|LZO_ON|LZO_ADAPTIVE;
++	  else if (streq (p[1], "disabled"))
++	    options->lzo = 0;
+ 	  else
+ 	    {
+-	      msg (msglevel, "bad comp-lzo option: %s -- must be 'yes', 'no', or 'adaptive'", p[1]);
++	      msg (msglevel, "bad comp-lzo option: %s -- must be 'yes', 'adaptive' or 'disabled", p[1]);
+ 	      goto err;
+ 	    }
+ 	}
+-- 
+1.7.4.4
 
-Sorry for taking a while to come back to this.  I needed to re-read
-the Windows reference docs to be sure.
-
-I originally had "add address" there because that's what I tried and what
-worked - and that's sort of based on "ip -6 addr add" thinking in the
-back of my head, where there is basically only "add" and "delete" (and
-"replace a *given* address").
-
-OTOH, what I really want here is "whatever is on the interface, make it
-go away and use only the address that I'm telling you to use!", and
-that's "netsh interface ipv6 *set*"...
-
-Reference is here:
-  http://technet.microsoft.com/en-us/library/cc740203%28WS.10%29.aspx#BKMK_=
-20
-
-
-So, strictly speaking, the change "add" -> "set" is not required to make
-it work on Win7, it actually better fits what the code is trying to do.
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---eUJndGal4TJgqj0h
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
-
-iQCVAwUBTc/iWakuBuNlUUl1AQJTfgP/UFr9ddkvlsds7bogCm+FSED5Y764Q6xe
-2PSFP1tlGWWzlsO6owflCh6XqACDuUSiCSfivDINV/ZeSX0Ah/kNHexdNOsVr/1f
-M8uzf/ucqLEaOvflMB43HQ4ttQrNE0yxhI7x9Is2ZqUjxf/mOPTrJBF9o9TojBVt
-Zn6Xo499CiE=
-=9k7Q
------END PGP SIGNATURE-----
-
---eUJndGal4TJgqj0h--
 
