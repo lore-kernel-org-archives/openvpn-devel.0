@@ -1,11 +1,10 @@
+Message-ID: <4DD54930.5080304@...1114...>
+Date: Thu, 19 May 2011 18:45:36 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-In-Reply-To: <4DD5432E.7070003@...1114...>
-References: <BANLkTimDEA004RuTcUBKDXPWffEWBo3-iw@...278...>
-	<4DD54252.90405@...1114...>
+References: <BANLkTimDEA004RuTcUBKDXPWffEWBo3-iw@...278...>	<4DD54252.90405@...1114...>
 	<4DD5432E.7070003@...1114...>
-Date: Thu, 19 May 2011 12:23:25 -0400
-Message-ID: <BANLkTikT3V_qvub7Jt7F5bfmOTmrZRsdNg@...278...>
-From: "Matthew L. Creech" <mlcreech@...277...>
+In-Reply-To: <4DD5432E.7070003@...1114...>
 Subject: Re: [Openvpn-devel] [PATCH] fix 2.2.0 build failure when management
  interface disabled
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,26 +15,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net, "Matthew L. Creech" <mlcreech@...277...>
 
-On Thu, May 19, 2011 at 12:19 PM, David Sommerseth
-<openvpn.list@...1114...> wrote:
->
-> Sorry! =A0I need to revert this patch. =A0You use MANAGEMENT_ENABLED, but=
- it
-> should be ENABLE_MANAGEMENT. =A0I just noticed it now. =A0I'm sorry for t=
-he
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 19/05/11 18:19, David Sommerseth wrote:
+> On 19/05/11 18:16, David Sommerseth wrote:
+>> On 11/05/11 23:57, Matthew L. Creech wrote:
+>>> Hi,
+> 
+>>> I just upgraded to 2.2.0, and my build fails with:
+> 
+>>> ps.c: In function 'port_share_open':
+>>> ps.c:778:7: error: 'management' undeclared (first use in this function)
+>>> ps.c:778:7: note: each undeclared identifier is reported only once for
+>>> each function it appears in
+>>> make[5]: *** [ps.o] Error 1
+> 
+>>> The attached patch fixed the problem.
+> 
+>> Hi,
+> 
+>> Thanks a lot for your patch.  Your patch is applied to master and
+>> cherry-picked for the next 2.2 release.
+> 
+>> commit 76ef46144f7e3ecc760dcb9f25a7ecb769d39c59 (master)
+>> commit e7fa867d2685e6c455ce49042d4c0cbffdd68ff9 (release/2.2)
+>> Author: Matthew L. Creech <mlcreech@...277...>
+>> Date:   Wed May 11 17:57:28 2011 -0400
+> 
+> Sorry!  I need to revert this patch.  You use MANAGEMENT_ENABLED, but it
+> should be ENABLE_MANAGEMENT.  I just noticed it now.  I'm sorry for the
 > noise, I'll fix this and apply it again.
->
+> 
 
-Oops, sorry about that!  Didn't notice it was wrong, since neither one
-is defined for my build.  :)
+Okay, everything is fixed again.  Since the time between the push and
+announcement and when I noticed this mistake, I did rolled back the tree
+and have pushed out new correct commits.
 
-Thanks David
+Correct commit ids are:
 
---=20
-Matthew L. Creech
+commit ca0ed8458a355aea46d26c209984caaf533784ec (master)
+commit e1f2f5f61e5be20be9abd9c747fa83e8189d34c8 (release/2.2)
+
+
+kind regards,
+
+David Sommerseth
+
+
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk3VSTAACgkQDC186MBRfrpvjACgjes/w2IUcb33c/TpXoOAnj0F
+x9sAn15CA61YjzHy5o7cLjKitxNi/O54
+=2kbf
+-----END PGP SIGNATURE-----
 
