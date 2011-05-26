@@ -1,11 +1,13 @@
-From: =?utf-8?q?Samuli=20Sepp=C3=A4nen?= <samuli@...515...>
-Date: Thu, 26 May 2011 17:35:29 +0300
-Message-Id: <1306420529-5959-1-git-send-email-samuli@...515...>
-In-Reply-To: <20110526135308.GU8496@...1296...>
-References: <20110526135308.GU8496@...1296...>
+Message-ID: <4DDE6623.60307@...515...>
+Date: Thu, 26 May 2011 17:39:31 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix problems with fixes to socket.c and
-	win32.h
+References: <1306416185-4901-1-git-send-email-samuli@...515...>
+	<1306416185-4901-2-git-send-email-samuli@...515...>
+	<20110526135308.GU8496@...1296...>
+In-Reply-To: <20110526135308.GU8496@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH 1/4] Fixed a number of fatal build
+ errors on Visual Studio 2008
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,56 +16,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Signed-off-by: Gert Doering <gert@...1296...>
-Tested-by: Samuli Sepp=C3=A4nen <samuli@...515...>
-Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
----
- socket.c |    5 ++---
- win32.h  |    2 +-
- 2 files changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/socket.c b/socket.c
-index 3d4801f..b1160d7 100644
---- a/socket.c
-+++ b/socket.c
-@@ -3157,7 +3157,7 @@ link_socket_write_udp_posix_sendmsg (struct link_sock=
-et *sock,
-  * WSAAddressToString() and WSAStringToAddress() functions
-  */
-=20
--/*
-+#ifndef _MSC_VER
- const char *
- inet_ntop(int af, const void *src, char *dst, socklen_t size)
- {
-@@ -3205,8 +3205,7 @@ inet_pton(int af, const char *src, void *dst)
-   }
-   return 0;
- }
--
--*/
-+#endif
-=20
- int
- socket_recv_queue (struct link_socket *sock, int maxsize)
-diff --git a/win32.h b/win32.h
-index 3b26bb1..528af6c 100644
---- a/win32.h
-+++ b/win32.h
-@@ -272,7 +272,7 @@ char *get_win_sys_path (void);
-=20
- /* call self in a subprocess */
- void fork_to_self (const char *cmdline);
--#ifdef _MSV_VER
-+#ifndef _MSC_VER
- const char *inet_ntop(int af, const void *src, char *dst, socklen_t size);
- int inet_pton(int af, const char *src, void *st);
- #endif
+>> diff --git a/win/config.h.in b/win/config.h.in
+>> index 82344a0..ec447a2 100644
+>> --- a/win/config.h.in
+>> +++ b/win/config.h.in
+>> @@ -275,7 +275,7 @@ typedef unsigned long in_addr_t;
+>>  #define inline __inline
+>>=20=20
+>>  /* type to use in place of socklen_t if not defined */
+>> -#define socklen_t unsigned int
+>> +/*#define socklen_t unsigned int*/
+>>=20=20
+>>  #ifndef __MINGW32__
+>>  /* 32-bit unsigned type */
+>>=20=20=20=20=20
+>
+> This needs to be tested whether it still works with mingw/msys - I have
+> my doubts.  So this change also needs to be conditional=20
+>
+> #ifndef _MSC_VER
+> #define socklen_t unsigned int
+> #endif
+>
+> (or vice versa, "#ifdef __MINGW32__").
+>=20=20=20
+As discussed on the IRC, win/config.h.in is only used by the new build
+system and will not affect mingw/msys. The rest of the problems
+(hopefully) fixed in the patch I sent a few minutes ago.
+
 --=20
-1.6.3.3
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
 
