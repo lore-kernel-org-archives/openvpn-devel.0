@@ -1,12 +1,14 @@
+Message-ID: <4DE55CDE.10300@...1030...>
+Date: Tue, 31 May 2011 22:25:50 +0100
+From: Mr Dash Four <mr.dash.four@...1030...>
 MIME-Version: 1.0
-In-Reply-To: <4DE4EFA2.9090401@...515...>
-References: <20110530162036.GA11197@...1462...>
-	<BANLkTimGaCouQO+XE9O=hJ2mkSs0oQh-hpJEW+=+_qAkD_92Pw@...278...>
-	<4DE4EFA2.9090401@...515...>
-From: JuanJo Ciarlante <jjo+ml@...410...>
-Date: Tue, 31 May 2011 18:53:01 +0200
-Message-ID: <BANLkTinspz-TXPTqbgxEVrgF=FSjQs0q4+y44fLUxVi=7G5mUA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] USE_PF_INET6 by default for v2.3
+References: <4DB864E0.4060207@...515...> <4DE4F116.2000904@...1030...>
+	<4DE502D5.3070403@...1114...>
+	<4DE504BA.6060209@...1030...>
+	<4DE50E52.2000509@...1114...>
+In-Reply-To: <4DE50E52.2000509@...1114...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.2.0 build failure
+	with	"--disable-management"
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,67 +17,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-Cc: David Sommerseth <dazo@...384...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-Hi,
-
-On Tue, May 31, 2011 at 3:39 PM, Samuli Sepp=E4nen <samuli@...515...> wrote:
-> JuanJo Ciarlante ha scritto:
->> On Mon, May 30, 2011 at 6:20 PM, JuanJo <jjo+ml@...410...> wrote:
->>
->>> - put all #ifdef'd code in place, kill the cpp symbol,
->>> - thus in v2.3 it's not actually possible to --disable-ipv6 :)
->>>
->>> RATIONALE:
->>> =A0#1 some wacky compilers choke on #ifdef'd constructions for
->>> =A0 =A0concatenated strings, and given that:
->>> =A0#2 v2.3 has already transport ipv6 by default
->>> =3D> doesn't justify putting effort on #1 to keep USE_PF_INET6
->>> =A0 ifdef wraps.
->>>
->>> Signed-off-by: JuanJo Ciarlante <jjo+ml@...410...>
->>> <...snip...>
->>>
->>
->> FWIW you can also peek at the diff at:
->> =A0 https://github.com/jjo/openvpn-ipv6/commit/77fed9c07c1461cd926ab4e86=
-c587cac8414b957
->> =A0 http://codereview.appspot.com/4564045/
->>
->> Cheers,
->>
-> Hi JuanJo,
->
-> This patch did not apply on top of the earlier "Visual Studio 2008 build
-> fix" patches applied on top of "master". There was one whitespace error
-> and it choked on syshead.h due to a new #include. Besides that it worked
-> great!
-
-Thanks Samuli for stuffing those bits :) !
-
->
-> A fixed patch is attached.
-
-Shameless ACK 8)
-
-Cheers,
-
->
-> --
->
-> Samuli Sepp=E4nen
-> Community Manager
-> OpenVPN Technologies, Inc
->
-> irc freenode net: mattock
->
->
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 
+> If this works for you, I'll take this as an ACK from you, then this patch
+> will get into the queue for a 2.2.1 release.
+>   
+Yep, the patch works without a hitch, but when I now have this:
 
---=20
---JuanJo ; echo jAjo@...1263... | sed 's/[SPAM]//g'
+configure \
+--build=x86_64-redhat-linux-gnu \
+--host=i686-redhat-linux-gnu \
+--enable-password-save \
+--enable-iproute2 \
+--with-ifconfig-path=/sbin/ifconfig  \
+--with-iproute-path=/sbin/ip \
+--with-route-path=/sbin/route \
+--disable-port-share \
+--disable-multi \
+--disable-server \
+--disable-eurephia \
+--disable-socks \
+--disable-http \
+--disable-management
+
+I get the following error during make:
+
+gcc -DHAVE_CONFIG_H -I.   -I.    -O2 -g -pipe -Wall 
+-Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector 
+--param=ssp-buffer-size=4 -m32 -march=i686 -mtune=pentium2 
+-fasynchronous-unwind-tables -c options.c
+options.c: In function 'init_options':
+options.c:781: error: 'struct options' has no member named 'tmp_dir'
+options.c:782: error: 'struct options' has no member named 'tmp_dir'
+options.c:783: error: 'struct options' has no member named 'tmp_dir'
+make[2]: *** [options.o] Error 1
+make[2]: Leaving directory `/home/me/rpmbuild/BUILD/openvpn-2.2.0'
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory `/home/me/rpmbuild/BUILD/openvpn-2.2.0'
+make: *** [all] Error 2
+
+I hope there is equally effective patch ready to squash this bug as 
+well! :-)
 
