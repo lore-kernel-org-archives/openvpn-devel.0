@@ -1,13 +1,15 @@
-Message-ID: <4DE50E52.2000509@...1114...>
-Date: Tue, 31 May 2011 17:50:42 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <4DB864E0.4060207@...515...> <4DE4F116.2000904@...1030...>
-	<4DE502D5.3070403@...1114...>
-	<4DE504BA.6060209@...1030...>
-In-Reply-To: <4DE504BA.6060209@...1030...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.2.0 build failure
-	with	"--disable-management"
+Date: Tue, 31 May 2011 18:24:40 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20110531162439.GA4164@...1296...>
+References: <1306416185-4901-1-git-send-email-samuli@...515...>
+	<1306416185-4901-3-git-send-email-samuli@...515...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="EeQfGwPcQSOJBaQU"
+Content-Disposition: inline
+In-Reply-To: <1306416185-4901-3-git-send-email-samuli@...515...>
+Subject: Re: [Openvpn-devel] [PATCH 2/4] Fix Microsoft Visual Studio
+	incompatibility in plugin.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,44 +18,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Mr Dash Four <mr.dash.four@...1030...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
+Cc: David Sommerseth <davids@...1347...>, openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--EeQfGwPcQSOJBaQU
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 31/05/11 17:09, Mr Dash Four wrote:
-> 
->> Quick fix: add --disable-pkcs11 in addition to --disable-management
->>
->> Can you try to apply the attached patch?  I believe that might solve your
->> compile issues.
->>   
-> Many thanks - I think applying the patch would be easier (I'll just list it
-> in the .spec file and include it during the rpm build) - I take it that
-> would solve the above. I'll let you know when I try this later tonight.
+Hi,
 
-Yes, this patch should hopefully solve it.
+On Thu, May 26, 2011 at 04:23:03PM +0300, Samuli Sepp=E4nen wrote:
+> MS Visual Studio don't like to have struct members named in the
+> variable declaration.  Without this fix, Visual Studio is not able
+> to compile the new v3 plug-in API.
 
-It seems like pkcs11.c was missing some header files which the management
-interface includes.  When you disable the management API, these include
-files is missing and it collapses.
+ACK.  Looks reasonable (what I've checked is: make sure that the variables
+in question are in the order that the structure expect it - which the=20
+compiler can't sort out for you if it doesn't understand the new format
+of specifying struct inits).
 
-If this works for you, I'll take this as an ACK from you, then this patch
-will get into the queue for a 2.2.1 release.
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
+--EeQfGwPcQSOJBaQU
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-Kind regards,
-
-David Sommerseth
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+Version: GnuPG v1.4.11 (NetBSD)
 
-iEYEARECAAYFAk3lDlIACgkQDC186MBRfrqU/wCfRHrJreXpOeAcMS5ZbHrpUg5Q
-dlsAnj7iXiiMWYIa2CmyH7gm07X/EnnK
-=I/lp
+iQCVAwUBTeUWR6kuBuNlUUl1AQKhcwP/Vig5O8V644AiPPyXbPHVwi1BeLCoY/3s
+eYPmEnYPrL+zEz2HiyZKPLRV8g2c0r6gM+pF4cQdDRpKDqqjSToaL7iDqQfnQNPB
+yqUY/h90SIAz7xVhLkfgbb7PxAYOo5e5ou3G7mOlin3LGFE0CJXaQvfSF9MZO6vQ
+aajxCzl9XZ8=
+=QpYU
 -----END PGP SIGNATURE-----
+
+--EeQfGwPcQSOJBaQU--
 
