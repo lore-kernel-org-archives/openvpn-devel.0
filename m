@@ -1,10 +1,11 @@
+From: =?utf-8?q?Samuli=20Sepp=C3=A4nen?= <samuli@...515...>
+Date: Tue, 31 May 2011 16:17:40 +0300
+Message-Id: <1306847860-11695-1-git-send-email-samuli@...515...>
+In-Reply-To: <1306416185-4901-1-git-send-email-samuli@...515...>
+References: <1306416185-4901-1-git-send-email-samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <20110530162036.GA11197@...1462...>
-References: <20110530162036.GA11197@...1462...>
-From: JuanJo Ciarlante <jjo+ml@...410...>
-Date: Tue, 31 May 2011 13:47:34 +0200
-Message-ID: <BANLkTimGaCouQO+XE9O=hJ2mkSs0oQh-hpJEW+=+_qAkD_92Pw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] USE_PF_INET6 by default for v2.3
+Subject: [Openvpn-devel] [PATCH] Fix a Visual Studio 2008 build issue in
+	socket.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,30 +14,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, David Sommerseth <dazo@...384...>, Gert Doering <gert@...1296...>
+To: openvpn-devel@lists.sourceforge.net
 
-On Mon, May 30, 2011 at 6:20 PM, JuanJo <jjo+ml@...410...> wrote:
-> - put all #ifdef'd code in place, kill the cpp symbol,
-> - thus in v2.3 it's not actually possible to --disable-ipv6 :)
->
-> RATIONALE:
-> =A0#1 some wacky compilers choke on #ifdef'd constructions for
-> =A0 =A0concatenated strings, and given that:
-> =A0#2 v2.3 has already transport ipv6 by default
-> =3D> doesn't justify putting effort on #1 to keep USE_PF_INET6
-> =A0 ifdef wraps.
->
-> Signed-off-by: JuanJo Ciarlante <jjo+ml@...410...>
-> <...snip...>
+Signed-off-by: Gert Doering <gert@...1296...>
+Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
+---
+ socket.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
-FWIW you can also peek at the diff at:
-  https://github.com/jjo/openvpn-ipv6/commit/77fed9c07c1461cd926ab4e86c587c=
-ac8414b957
-  http://codereview.appspot.com/4564045/
-
-Cheers,
+diff --git a/socket.c b/socket.c
+index 69be132..6659bcc 100644
+--- a/socket.c
++++ b/socket.c
+@@ -647,8 +647,9 @@ update_remote (const char* host,
+       if (host && addr)
+         {
+           struct sockaddr_in6 sin6;
++          int success;
+           CLEAR(sin6);
+-          int success =3D getaddr6 (
++          success =3D getaddr6 (
+                                     sf2gaf(GETADDR_RESOLVE|GETADDR_UPDATE_=
+MANAGEMENT_STATE, sockflags),
+                                     host,
+                                     1,
 --=20
---JuanJo ; echo jAjo@...1263... | sed 's/[SPAM]//g'
+1.6.3.3
+
 
