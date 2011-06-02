@@ -1,9 +1,10 @@
-Mime-Version: 1.0 (Apple Message framework v1084)
-From: Seth Mos <seth.mos@...1458...>
-In-Reply-To: <4DE7B038.8010804@...1030...>
-Date: Thu, 2 Jun 2011 18:03:47 +0200
-Message-Id: <0ECF861E-D07F-43F1-A159-820FF9D6DB9F@...1458...>
+Date: Thu, 02 Jun 2011 11:03:26 -0500
+From: "Karl O. Pinc" <kop@...1206...>
 References: <4DE7B038.8010804@...1030...>
+In-Reply-To: <4DE7B038.8010804@...1030...> (from
+	mr.dash.four@...1030... on Thu Jun  2 10:46:00 2011)
+Message-Id: <1307030606.29183.4@...1207...>
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] minimalistic OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,21 +16,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: Mr Dash Four <mr.dash.four@...1030...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
-
-
-Op 2 jun 2011, om 17:46 heeft Mr Dash Four het volgende geschreven:
-
-> Is it possible to build a minimalistic version of OpenVPN to be used on=20
+On 06/02/2011 10:46:00 AM, Mr Dash Four wrote:
+> Is it possible to build a minimalistic version of OpenVPN to be used
+> on=20
 > portables?
+>=20
+> As part of in-house project I would like to be able to compile, build=20
+> install and use OpenVPN on HTC (Desire). I already have the modified
+> OS=20
+> and the toolchain is already built and sufficiently tested, though I
+> am=20
+> not certain as to whether building and using OpenVPN in such
+> environment=20
+> is possible? Has this been attempted before?
 
-Cyanogenmod v7 includes working openvpn support. A co-worker of mine has it=
- on his HTC desire to connect to his home network.
+OpenVPN runs under OpenWRT, which is designed for minimal devices.
+I suppose it depends on how minimal.
 
-Regards,
 
-Seth
+
+
+Karl <kop@...1206...>
+Free Software:  "You don't pay back, you pay forward."
+                 -- Robert A. Heinlein
 
 
