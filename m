@@ -1,10 +1,12 @@
-Date: Thu, 02 Jun 2011 11:03:26 -0500
-From: "Karl O. Pinc" <kop@...1206...>
+Date: Thu, 2 Jun 2011 19:39:02 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20110602173901.GV8496@...1296...>
 References: <4DE7B038.8010804@...1030...>
-In-Reply-To: <4DE7B038.8010804@...1030...> (from
-	mr.dash.four@...1030... on Thu Jun  2 10:46:00 2011)
-Message-Id: <1307030606.29183.4@...1207...>
-MIME-Version: 1.0
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="0cIwUVkPINaeW+5C"
+Content-Disposition: inline
+In-Reply-To: <4DE7B038.8010804@...1030...>
 Subject: Re: [Openvpn-devel] minimalistic OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,34 +16,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Mr Dash Four <mr.dash.four@...1030...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--0cIwUVkPINaeW+5C
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-To: Mr Dash Four <mr.dash.four@...1030...>
-Cc: openvpn-devel@lists.sourceforge.net
 
-On 06/02/2011 10:46:00 AM, Mr Dash Four wrote:
-> Is it possible to build a minimalistic version of OpenVPN to be used
-> on=20
+Hi,
+
+On Thu, Jun 02, 2011 at 04:46:00PM +0100, Mr Dash Four wrote:
+> Is it possible to build a minimalistic version of OpenVPN to be used on=20
 > portables?
->=20
-> As part of in-house project I would like to be able to compile, build=20
-> install and use OpenVPN on HTC (Desire). I already have the modified
-> OS=20
-> and the toolchain is already built and sufficiently tested, though I
-> am=20
-> not certain as to whether building and using OpenVPN in such
-> environment=20
-> is possible? Has this been attempted before?
 
-OpenVPN runs under OpenWRT, which is designed for minimal devices.
-I suppose it depends on how minimal.
+configure --enable-small --disable-management (and maybe a few others)
 
+As far as I have heard others talk about it, there already is an OpenVPN
+version for Android...  so maybe that is an even easier approach :-)
 
+gert
 
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                 -- Robert A. Heinlein
+--0cIwUVkPINaeW+5C
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBTefKs6kuBuNlUUl1AQJanQP/cV0+OjgsFcUPXg8R2wVR2+yQoDK+d/h/
+V0mpVfSfKw1BhyK1iAlELhOUVlgpidplB9UeYKMTHSxwpJ+J5Wsk4la9M9AxeURZ
+zkKAczWQ//+dErZWMAXgXy1HwsmcmestoOpR4NZ8vZ6ew4vfkBu1oln3vBcMJPo1
+fBQEHO/2cXA=
+=Webv
+-----END PGP SIGNATURE-----
+
+--0cIwUVkPINaeW+5C--
 
