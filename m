@@ -1,8 +1,9 @@
-From: David Sommerseth <davids@...1347...>
-Date: Fri,  3 Jun 2011 13:53:45 +0200
-Message-Id: <1307102025-18627-1-git-send-email-davids@...1347...>
-Subject: [Openvpn-devel] [PATCH] Remove support for Linux 2.2 configuration
-	fallback
+From: Flaviano Maricotti <Flaviano.Maricotti@...1463...>
+Date: Fri, 3 Jun 2011 14:40:11 +0200
+Message-ID: <552C1CE8297C9A408B3F0EEE515F3F2C013D109D0442@...1464...>
+Content-Language: it-IT
+MIME-Version: 1.0
+Subject: [Openvpn-devel] OemWin2k.inf specify network adapter name
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,96 +12,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-When configuring OpenVPN nowadays, the TUN/TAP configuration can
-sometimes jump into the Linux 2.2 fallback code paths, which will
-also fails.  The reason it jumps into fallback mode is that the
-tun/tap device already exists or that /dev/net/tun does not exist.
-This can be very confusing, as /dev/tunX which the fallback mode tries
-to use, does not exist on Linux 2.4 and newer.
+Hi,
+Is it possibile to have the name of network adapter as "OpenVPN" instead of=
+ default "Local area network" ?
+I would like to automatize the installation without rename the "Local area =
+network".
+I can modify OemWin2k.inf or the winddk source of the driver.
 
-Considering that the last Linux 2.2 update was released 25-Feb-2004
-and the first Linux 2.4 release came 04-Jan-2001, there are no
-reasonable reasons to help users to stay on outdated kernels.
-I consider this extra code path just waste of bytes ... so lets make
-the world simpler.
+Thanks
 
-Signed-off-by: David Sommerseth <davids@...1347...>
----
- openvpn.8 |   10 +---------
- tun.c     |   13 ++-----------
- 2 files changed, 3 insertions(+), 20 deletions(-)
+Software Department
+software@...1463...
 
-diff --git a/openvpn.8 b/openvpn.8
-index 5cbf4c5..b6ea9e4 100644
---- a/openvpn.8
-+++ b/openvpn.8
-@@ -5747,11 +5747,6 @@ Make device:
- 
- Load driver:
- .B modprobe tun
--
--If you have Linux 2.2 or earlier, you should obtain version 1.1 of the
--TUN/TAP driver from
--.I http://vtun.sourceforge.net/tun/
--and follow the installation instructions.
- .\"*********************************************************
- .SH EXAMPLES
- Prior to running these examples, you should have OpenVPN installed on two
-@@ -5772,10 +5767,7 @@ If you installed from RPM, the
- .B mknod
- step may be omitted, because the RPM install does that for you.
- 
--If you have Linux 2.2, you should obtain version 1.1 of the
--TUN/TAP driver from
--.I http://vtun.sourceforge.net/tun/
--and follow the installation instructions.
-+Only Linux 2.4 and newer are supported.
- 
- For other platforms, consult the INSTALL file at
- .I http://openvpn.net/install.html
-diff --git a/tun.c b/tun.c
-index 8cdd248..1abcf6d 100644
---- a/tun.c
-+++ b/tun.c
-@@ -1369,7 +1369,7 @@ open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tu
-       if ((tt->fd = open (node, O_RDWR)) < 0)
- 	{
- 	  msg (M_WARN | M_ERRNO, "Note: Cannot open TUN/TAP dev %s", node);
--	  goto linux_2_2_fallback;
-+	  return;
- 	}
- 
-       /*
-@@ -1413,7 +1413,7 @@ open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tu
-       if (ioctl (tt->fd, TUNSETIFF, (void *) &ifr) < 0)
- 	{
- 	  msg (M_WARN | M_ERRNO, "Note: Cannot ioctl TUNSETIFF %s", dev);
--	  goto linux_2_2_fallback;
-+	  return;
- 	}
- 
-       msg (M_INFO, "TUN/TAP device %s opened", ifr.ifr_name);
-@@ -1449,15 +1449,6 @@ open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tu
-       tt->actual_name = string_alloc (ifr.ifr_name, NULL);
-     }
-   return;
--
-- linux_2_2_fallback:
--  msg (M_INFO, "Note: Attempting fallback to kernel 2.2 TUN/TAP interface");
--  if (tt->fd >= 0)
--    {
--      close (tt->fd);
--      tt->fd = -1;
--    }
--  open_tun_generic (dev, dev_type, dev_node, false, true, tt);
- }
- 
- #else
--- 
-1.7.4.4
+---------------------------------------------------------------------------=
+----------------------------------
+TESEO spa            via Agnelli, 49              63023 FERMO (FM) ITALY
+Tel. +39 0734 628818   --    Fax. +39 0734 628816
 
+Disclaimer: This electronic mail transmission may contain legally privilege=
+d and/or confidential information. Do not read this if you are not the pers=
+on(s) named. Any use, distribution, copying or disclosure by any other pers=
+on is strictly prohibited. If you receive this transmission by mistake dest=
+roy the original transmission and its attachments without reading or saving=
+ in any manner.
 
