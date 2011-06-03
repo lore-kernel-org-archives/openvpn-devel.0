@@ -1,9 +1,10 @@
-From: Flaviano Maricotti <Flaviano.Maricotti@...1463...>
-Date: Fri, 3 Jun 2011 14:40:11 +0200
-Message-ID: <552C1CE8297C9A408B3F0EEE515F3F2C013D109D0442@...1464...>
-Content-Language: it-IT
+Message-ID: <4DE9167F.5030503@...1114...>
+Date: Fri, 03 Jun 2011 19:14:39 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OemWin2k.inf specify network adapter name
+References: <552C1CE8297C9A408B3F0EEE515F3F2C013D109D0442@...1464...>
+In-Reply-To: <552C1CE8297C9A408B3F0EEE515F3F2C013D109D0442@...1464...>
+Subject: Re: [Openvpn-devel] OemWin2k.inf specify network adapter name
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,31 +13,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Flaviano Maricotti <Flaviano.Maricotti@...1463...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
-Is it possibile to have the name of network adapter as "OpenVPN" instead of=
- default "Local area network" ?
-I would like to automatize the installation without rename the "Local area =
-network".
-I can modify OemWin2k.inf or the winddk source of the driver.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Thanks
+On 03/06/11 14:40, Flaviano Maricotti wrote:
+> Hi,
+> Is it possibile to have the name of network adapter as "OpenVPN" instead of default "Local area network" ?
+> I would like to automatize the installation without rename the "Local area network".
+> I can modify OemWin2k.inf or the winddk source of the driver.
+> 
 
-Software Department
-software@...1463...
+I'm no Windows developer, so I can't help out with a technical solution
+here.  But if you can provide a patch with a proper fix, I will happily
+merge it if it gets an ACK from people who understand this.
 
----------------------------------------------------------------------------=
-----------------------------------
-TESEO spa            via Agnelli, 49              63023 FERMO (FM) ITALY
-Tel. +39 0734 628818   --    Fax. +39 0734 628816
+Pure feature wise, this really sounds like a reasonable thing to change.
 
-Disclaimer: This electronic mail transmission may contain legally privilege=
-d and/or confidential information. Do not read this if you are not the pers=
-on(s) named. Any use, distribution, copying or disclosure by any other pers=
-on is strictly prohibited. If you receive this transmission by mistake dest=
-roy the original transmission and its attachments without reading or saving=
- in any manner.
+
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk3pFnwACgkQDC186MBRfroLAgCfVRDqYB8g4skX8cu8HWE+cWXV
+ZK8An1mKnnygqnLn4veYrimQImp/zRNy
+=iGgt
+-----END PGP SIGNATURE-----
 
