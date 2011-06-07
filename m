@@ -1,10 +1,8 @@
-Message-ID: <4DEC8E60.1000900@...515...>
-Date: Mon, 06 Jun 2011 11:22:56 +0300
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-References: <552C1CE8297C9A408B3F0EEE515F3F2C013D109D0442@...1464...>
-In-Reply-To: <552C1CE8297C9A408B3F0EEE515F3F2C013D109D0442@...1464...>
-Subject: Re: [Openvpn-devel] OemWin2k.inf specify network adapter name
+From: Russell Morris <openvpn@...1315...>
+Date: Tue, 07 Jun 2011 16:31:09 -0500
+Message-id: <1307482269235447500@...1315...>
+MIME-version: 1.0
+Subject: [Openvpn-devel] Application Questions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,40 +11,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-To: Flaviano Maricotti <Flaviano.Maricotti@...1463...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-disposition: inline
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, openvpn-users@lists.sourceforge.net
 
+Hi,
 
-> Hi,
-> Is it possibile to have the name of network adapter as "OpenVPN" instead =
-of default "Local area network" ?
-> I would like to automatize the installation without rename the "Local are=
-a network".
-> I can modify OemWin2k.inf or the winddk source of the driver.
->
-> Thanks
->
-> Software Department
-> software@...1463...
->=20=20=20
-Hi Flaviano,
+I am trying to use an external (GUI) to control OpenVPN ... and a few quest=
+ions as a result. If you have any thoughts about these items your comments =
+would be greatly appreciated!
+- why is the management interface not available until a connection to a rem=
+ote server is initiated (and first contact proceeding)? Why not bring this =
+interface up immediately, and perhaps limit commands that are available (un=
+til a "full" connection is made)?
+- why does OpenVPN not support / provide exit codes (e.g. a particular exit=
+ code to indicate that no available TAP adapters are available)?
+- can OpenVPN use machine / domain login information to authenticate with a=
+ proxy server (i.e. to send for NTLM authentication)? Web browsers seem to =
+provide this, so I assume that it's possible.
+- has anyone observed a "dead" connection (meaning that OpenVPN connects, b=
+ut cannot pass traffic over the link ... but then is fine if run again)?
 
-I would take a look at the "tap-win32" directory and change the source
-code or the OemWin2k.inf.in file. Building the modified TAP-driver is
-probably easiest using the new Python-based buildsystem:
+Thanks!
 
-<https://community.openvpn.net/openvpn/wiki/BuildingOnWindows>
-
-You will also need to sign the driver with signtool.exe or it will fail
-to load on Windows Vista/7 64-bit.
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
+... Russell
 
