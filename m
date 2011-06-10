@@ -1,12 +1,9 @@
-Date: Thu, 9 Jun 2011 19:48:52 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20110609174852.GZ8496@...1296...>
-References: <4DF0FEC8.4040105@...1465...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="80wSvbVxSilpZkXN"
-Content-Disposition: inline
-In-Reply-To: <4DF0FEC8.4040105@...1465...>
+Message-ID: <4DF1E1F8.6080701@...1465...>
+Date: Fri, 10 Jun 2011 13:20:56 +0400
+From: Sergey Matveychuk <sem@...1465...>
+MIME-Version: 1.0
+References: <4DF0FEC8.4040105@...1465...> <20110609174852.GZ8496@...1296...>
+In-Reply-To: <20110609174852.GZ8496@...1296...>
 Subject: Re: [Openvpn-devel] Why no ipv6 support for tap?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,70 +13,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Sergey Matveychuk <sem@...1465...>
+Content-Type: text/plain; charset="windows-1251"; format="flowed"
+Content-Transfer-Encoding: base64
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---80wSvbVxSilpZkXN
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-Hi,
-
-On Thu, Jun 09, 2011 at 09:11:36PM +0400, Sergey Matveychuk wrote:
-> It's really weird that I can't set up IPv6 address for tap interface.=20
-
-You can, but you need the "top of the tree" code, not 2.2 release.
-
-> server-ipv6 turns a tun mode,=20
-
-Actually, it doesn't.  server-ipv6 will use whatever is configured as=20
-"device" (device tun / device tap).
-
-> ifconfig-ipv6 suppose p2p interface and=20
-
-No.  It will work in p2p and p2pm mode.
-
-> even 'push route-ipv6' misticaly discards because of some flag=20
-> (tt->ipv6) has been unset.
-
-push route-ipv6 will fail if you have no ifconfig-ipv6 on the interface
-(because then it would not work anyway).
-
-First get the ifconfig right, then worry about the routes.
-
-
-> Looking on added ipv6 support I have only one question but many times=20
-> "why? why? why?".
-
-"Something is wrong in your setup".
-
-It works nicely for a number of people in p2mp tun mode, and it works
-to some extent in p2mp tap mode (pushing routes does not yet, you need
-to add them manually / by script after the interface is "up" - but=20
-that's a documented limitation of the current state of the code).
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---80wSvbVxSilpZkXN
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
-
-iQCVAwUBTfEHg6kuBuNlUUl1AQI+EQQAoNYLmk6Zutjyszv72VtM4EvHZXRu9b7t
-5gCdSFdQO1O7+USS2Pcm7TCNX7FsLWzMBgaysVKZsd5iRII9eyACPFhaLmiCo2/7
-G+JhSQ+A73crkh9F04LMsTJRed3ykmQ5+30/dFeQzIGNL5a5fVmuuxJB7R9ylp5/
-4WX74/fLEMg=
-=sO78
------END PGP SIGNATURE-----
-
---80wSvbVxSilpZkXN--
-
+MDkuMDYuMjAxMSAyMTo0OCwgR2VydCBEb2VyaW5nIO/o+OXyOgo+IEhpLAo+Cj4gT24gVGh1LCBK
+dW4gMDksIDIwMTEgYXQgMDk6MTE6MzZQTSArMDQwMCwgU2VyZ2V5IE1hdHZleWNodWsgd3JvdGU6
+Cj4+IEl0J3MgcmVhbGx5IHdlaXJkIHRoYXQgSSBjYW4ndCBzZXQgdXAgSVB2NiBhZGRyZXNzIGZv
+ciB0YXAgaW50ZXJmYWNlLgo+Cj4gWW91IGNhbiwgYnV0IHlvdSBuZWVkIHRoZSAidG9wIG9mIHRo
+ZSB0cmVlIiBjb2RlLCBub3QgMi4yIHJlbGVhc2UuCgpPZiBjb3Vyc2UsIEkgdXNlIGl0LgoKPgo+
+PiBzZXJ2ZXItaXB2NiB0dXJucyBhIHR1biBtb2RlLAo+Cj4gQWN0dWFsbHksIGl0IGRvZXNuJ3Qu
+ICBzZXJ2ZXItaXB2NiB3aWxsIHVzZSB3aGF0ZXZlciBpcyBjb25maWd1cmVkIGFzCj4gImRldmlj
+ZSIgKGRldmljZSB0dW4gLyBkZXZpY2UgdGFwKS4KCiBGcm9tIGEgbWFuIHBhZ2U6Ci0tc2VydmVy
+LWlwdjYgaXB2NmFkZHIvYml0cwogICAgICAgIGNvbnZlbmllbmNlLWZ1bmN0aW9uIHRvIGVuYWJs
+ZSBhIG51bWJlciBvZiBJUHY2IHJlbGF0ZWQgIG9wdGlvbnMKICAgICAgICBhdCAgb25jZSwgIG5h
+bWVseSAgLS1pZmNvbmZpZy1pcHY2LCAtLWlmY29uZmlnLWlwdjYtcG9vbCwgLS10dW4tCiAgICAg
+ICAgaXB2NiBhbmQgLS1wdXNoIHR1bi1pcHY2IElzIG9ubHkgYWNjZXB0ZWQgaWYgIGBgLS1tb2Rl
+ICBzZXJ2ZXInJwogICAgICAgIG9yIGBgLS1zZXJ2ZXInJyBpcyBzZXQuCgpJdCB0dXJucyAtLXR1
+bi1pcHY2IGFuZCAtLXB1c2ggdHVuLWlwdjYuIEl0J3Mgbm90IGV4YWN0bHkgSSB3YW50LiBBbmQg
+aXQgCnJlcXVpcmUgLS1zZXJ2ZXIgb3B0aW9uLCBJIGNhbid0IHVuZGVyc3RhbmQgd2h5LgoKPgo+
+PiBpZmNvbmZpZy1pcHY2IHN1cHBvc2UgcDJwIGludGVyZmFjZSBhbmQKPgo+IE5vLiAgSXQgd2ls
+bCB3b3JrIGluIHAycCBhbmQgcDJwbSBtb2RlLgoKLS1pZmNvbmZpZy1pcHY2IGlwdjZhZGRyL2Jp
+dHMgaXB2NnJlbW90ZQogICAgICAgIGNvbmZpZ3VyZSBJUHY2IGFkZHJlc3MgaXB2NmFkZHIvYml0
+cyBvbiB0aGUgYGB0dW4nJyBkZXZpY2UuICBUaGUKICAgICAgICBzZWNvbmQgcGFyYW1ldGVyIGlz
+IHVzZWQgYXMgcm91dGUgdGFyZ2V0IGZvciAtLXJvdXRlLWlwdjYgaWYgIG5vCiAgICAgICAgZ2F0
+ZXdheSBpcyBzcGVjaWZpZWQuCgpJIGhhdmUgbm8gaWRlYSB3aGF0IGlzIGlwdjZyZW1vdGUgZm9y
+IHRhcCBpbnRlcmZhY2UuIE1vcmVvdmVyIGl0IAoiY29uZmlndXJlIElQdjYgYWRkcmVzcyBpcHY2
+YWRkci9iaXRzIG9uIHRoZSAqYGB0dW4nJyBkZXZpY2UqIi4KCj4KPj4gZXZlbiAncHVzaCByb3V0
+ZS1pcHY2JyBtaXN0aWNhbHkgZGlzY2FyZHMgYmVjYXVzZSBvZiBzb21lIGZsYWcKPj4gKHR0LT5p
+cHY2KSBoYXMgYmVlbiB1bnNldC4KPgo+IHB1c2ggcm91dGUtaXB2NiB3aWxsIGZhaWwgaWYgeW91
+IGhhdmUgbm8gaWZjb25maWctaXB2NiBvbiB0aGUgaW50ZXJmYWNlCj4gKGJlY2F1c2UgdGhlbiBp
+dCB3b3VsZCBub3Qgd29yayBhbnl3YXkpLgo+Cj4gRmlyc3QgZ2V0IHRoZSBpZmNvbmZpZyByaWdo
+dCwgdGhlbiB3b3JyeSBhYm91dCB0aGUgcm91dGVzLgoKSSBzZWUgbm90IGFueSBJUHY2IGFkZHJl
+c3Mgb24gdGFwIGludGVyZmFjZSBhZnRlciAtLWlmY29uZmlnLWlwdjYuIEhlcmUgCmlzIG15IGNv
+bmZpZyBsaW5lOgppZmNvbmZpZy1pcHY2IHh4eDp5eXk6ejoyMWY6Oi82NCB4eHg6eXl5Ono6MjFm
+OjoyCgpBbmQgbXkgdGFwIGludGVyZmFjZToKCiMgaWZjb25maWcgdGFwMAp0YXAwOiBmbGFncz04
+ODQzPFVQLEJST0FEQ0FTVCxSVU5OSU5HLFNJTVBMRVgsTVVMVElDQVNUPiBtZXRyaWMgMCBtdHUg
+MTUwMAogICAgICAgICBvcHRpb25zPTgwMDAwPExJTktTVEFURT4KICAgICAgICAgZXRoZXIgMDA6
+YmQ6ZTg6MTg6MDQ6MDAKICAgICAgICAgaW5ldDYgZmU4MDo6MmJkOmU4ZmY6ZmUxODo0MDAldGFw
+MCBwcmVmaXhsZW4gNjQgc2NvcGVpZCAweGUKICAgICAgICAgaW5ldCB4eC55eXkuMTU0LjI1NCBu
+ZXRtYXNrIDB4ZmZmZmZmMDAgYnJvYWRjYXN0IHh4Lnl5eS4xNTQuMjU1CiAgICAgICAgIG5kNiBv
+cHRpb25zPTM8UEVSRk9STU5VRCxBQ0NFUFRfUlRBRFY+CiAgICAgICAgIE9wZW5lZCBieSBQSUQg
+MzU2MzUKCkxpbmVzIGZyb20gc3lzbG9nOgouLi4KaWZjb25maWdfaXB2Nl9sb2NhbCA9ICd4eHg6
+eXl5Ono6MjFmOjonCmlmY29uZmlnX2lwdjZfbmV0Yml0cyA9IDY0CmlmY29uZmlnX2lwdjZfcmVt
+b3RlID0gJ3h4eDp5eXk6ejoyMWY6OjInCi4uLgpPcGVuVlBOIDIueC1tYXN0ZXIgYW1kNjQtcG9y
+dGJsZC1mcmVlYnNkOC4yIFtTU0xdIFtMWk8yXSBbZXVyZXBoaWFdIFtNSF0gCltQRl9JTkVUNl0g
+W0lQdjYgcGF5bG9hZCAyMDExMDUyMi0xICgyLjIuMCldIGJ1aWx0IG9uIEp1biAgNyAyMDExCi4u
+LgpUVU4vVEFQIGRldmljZSAvZGV2L3RhcDAgb3BlbmVkCmRvX2lmY29uZmlnLCB0dC0+aXB2Nj0w
+LCB0dC0+ZGlkX2lmY29uZmlnX2lwdjZfc2V0dXA9MQouLi4KCkJ1dCBubyByZWFsIGlmY29uZmln
+IGNhbGwgYXMgSSBjYW4gc2VlLgoKPgo+Cj4+IExvb2tpbmcgb24gYWRkZWQgaXB2NiBzdXBwb3J0
+IEkgaGF2ZSBvbmx5IG9uZSBxdWVzdGlvbiBidXQgbWFueSB0aW1lcwo+PiAid2h5PyB3aHk/IHdo
+eT8iLgo+Cj4gIlNvbWV0aGluZyBpcyB3cm9uZyBpbiB5b3VyIHNldHVwIi4KClN1cmUgOikKCj4K
+PiBJdCB3b3JrcyBuaWNlbHkgZm9yIGEgbnVtYmVyIG9mIHBlb3BsZSBpbiBwMm1wIHR1biBtb2Rl
+LCBhbmQgaXQgd29ya3MKPiB0byBzb21lIGV4dGVudCBpbiBwMm1wIHRhcCBtb2RlIChwdXNoaW5n
+IHJvdXRlcyBkb2VzIG5vdCB5ZXQsIHlvdSBuZWVkCj4gdG8gYWRkIHRoZW0gbWFudWFsbHkgLyBi
+eSBzY3JpcHQgYWZ0ZXIgdGhlIGludGVyZmFjZSBpcyAidXAiIC0gYnV0Cj4gdGhhdCdzIGEgZG9j
+dW1lbnRlZCBsaW1pdGF0aW9uIG9mIHRoZSBjdXJyZW50IHN0YXRlIG9mIHRoZSBjb2RlKS4KClJl
+YWxseSB0aGVyZSBpcyBubyByZWFzb24gZm9yIHRoaXMuIEkgaGFjayBhIGNvZGUgKGp1c3QgY3V0
+IG9mZiBhIGNvZGUgCndpdGggaWYoIXR0LT5pcHY2KSB7IHByaW50X2FfbWVzc2FnZTsgcmV0dXJu
+fSBmb3Igcm91dGUgYWRkIGFuZCByb3V0ZSAKZGVsZXRlKSBmcm9tIGEgY2xpZW50IGFuZCBwdXNo
+aW5nIHN0YXJ0IHdvcmtzLgoKSVB2NiBwYXlsb2FkIHBhc3NlZCB0aHJvdWdoIHRhcCBpbnRlcmZh
+Y2Ugd2l0aCBhbnkgdmVyc2lvbiBvZiBvcGVudnBuLiAKSSdtIHRlbGxpbmcgYWJvdXQgd29ya2lu
+ZyB3aXRoIElQdjYgYWRkcmVzc2VzLiAoSSBkb24ndCBjYXJlIGFib3V0IAppZmNvbmZpZy1pcHY2
+LXBvb2wgcmlnaHQgbm93LCBydGFkdmQgZG8gdGhpbmdzIGZvciBjbGllbnRzLikKCg==
