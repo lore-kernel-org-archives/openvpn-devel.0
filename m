@@ -1,7 +1,10 @@
-From: samuli@...515...
-Date: Fri, 17 Jun 2011 12:18:02 +0300
-Message-Id: <1308302282-27985-1-git-send-email-samuli@...515...>
-Subject: [Openvpn-devel] [PATCH] Fix a build-ca issue on Windows
+MIME-Version: 1.0
+From: Anmol Jain <jain.anmol@...277...>
+Date: Sat, 18 Jun 2011 20:42:43 +0530
+Message-ID: <BANLkTinexSqdH7YgFTJ+3We8OGWOUGtLkA@...278...>
+Content-Type: multipart/alternative; boundary=00504501610943587c04a5fdf016
+Subject: [Openvpn-devel] How to modify the OpenVPN code and build it using
+	msys for Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,42 +13,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Samuli SeppÃ¤nen <samuli@...515...>
+--00504501610943587c04a5fdf016
+Content-Type: text/plain; charset=ISO-8859-1
 
-Fixes Trac ticket #125
----
- easy-rsa/Windows/init-config.bat |    1 -
- win/openvpn.nsi                  |    5 +++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+Hi All
 
-diff --git a/easy-rsa/Windows/init-config.bat b/easy-rsa/Windows/init-config.bat
-index 048d558..12e6d78 100755
---- a/easy-rsa/Windows/init-config.bat
-+++ b/easy-rsa/Windows/init-config.bat
-@@ -1,2 +1 @@
- copy vars.bat.sample vars.bat
--copy openssl.cnf.sample openssl.cnf
-diff --git a/win/openvpn.nsi b/win/openvpn.nsi
-index d3f80d0..82be118 100755
---- a/win/openvpn.nsi
-+++ b/win/openvpn.nsi
-@@ -272,8 +272,9 @@ Section "${PRODUCT_NAME} RSA Certificate Management Scripts" SecOpenVPNEasyRSA
- 
-   # FIXME: the easy-rsa directory would need cleaning up
- 
--  # Original nsi script looked for openssl.cnf.sample
--  File "${EASYRSA}\2.0\openssl.cnf"
-+  # Original nsi script looked for ${EASYRSA}\2.0\openssl.cnf.sample. A newer 
-+  # openssl.cnf is needed on OpenVPN 2.2+.
-+  File "${EASYRSA}\Windows\openssl.cnf"
- 
-   File "${EASYRSA}\Windows\vars.bat.sample"
- 
--- 
-1.7.4.1
+I have very recently started working on OpenVPN. I need to make some changes
+to the source code for my requirement. I am working on a windows machine and
+have installed mingw and msys. I was able to generate the OpenVPN installer
+for windows by modifying the settings.in to include pre-built libraries but
+my aim is to make some changes in the code and then install that. When I
+made a simple change in a C file misc.c and re-built the installer the
+change didn't reflect. When I did gcc misc.c it gave me the error that not
+able to find config.h which is included in syshead.h (which is included in
+misc.c originally). Basically I do not know how to build this code and use
+the binaries generated thereby for creating the installer. Can anyone please
+help?
 
+Thanks,
+Anmol
+
+--00504501610943587c04a5fdf016
+Content-Type: text/html; charset=ISO-8859-1
+
+Hi All<br><div class="gmail_quote"><br>I have very recently started working on OpenVPN. I need to 
+make some changes to the source code for my requirement. I am working on
+ a windows machine and have installed mingw and msys. I was able to 
+generate the OpenVPN installer for windows by modifying the <a href="http://settings.in" target="_blank">settings.in</a> 
+to include pre-built libraries but my aim is to make some changes in the
+ code and then install that. When I made a simple change in a C file 
+misc.c and re-built the installer the change didn&#39;t reflect. When I did 
+gcc misc.c it gave me the error that not able to find config.h which is 
+included in syshead.h (which is included in misc.c originally). 
+Basically I do not know how to build this code and use the binaries generated thereby for creating the installer. Can anyone please help?<br><br>Thanks,<br><font color="#888888">Anmol
+</font></div><br>
+
+--00504501610943587c04a5fdf016--
 
