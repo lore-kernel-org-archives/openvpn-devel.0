@@ -1,10 +1,10 @@
 From: Adriaan de Jong <dejong@...1435...>
-Date: Wed, 22 Jun 2011 08:51:35 +0200
-Message-ID: <1308725496-10620-8-git-send-email-dejong@...1435...>
+Date: Wed, 22 Jun 2011 08:51:32 +0200
+Message-ID: <1308725496-10620-5-git-send-email-dejong@...1435...>
 In-Reply-To: <1308725496-10620-1-git-send-email-dejong@...1435...>
 References: <1308725496-10620-1-git-send-email-dejong@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 7/8] Added data channel fragmentation docs
+Subject: [Openvpn-devel] [PATCH 4/8] Added compression docs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,17 +19,18 @@ To: openvpn-devel@lists.sourceforge.net
 
 Signed-off-by: Adriaan de Jong <dejong@...1435...>
 ---
- doc_fragmentation.h |   96 +++++++++++
- fragment.h          |  439 ++++++++++++++++++++++++++++++++++++++++++---------
- 2 files changed, 461 insertions(+), 74 deletions(-)
- create mode 100644 doc_fragmentation.h
+ doc_compression.h |   92 ++++++++++++++++++
+ lzo.c             |   19 ++--
+ lzo.h             |  279 +++++++++++++++++++++++++++++++++++++++++++++--------
+ 3 files changed, 341 insertions(+), 49 deletions(-)
+ create mode 100644 doc_compression.h
 
-diff --git a/doc_fragmentation.h b/doc_fragmentation.h
+diff --git a/doc_compression.h b/doc_compression.h
 new file mode 100644
-index 0000000..e7e9c1e
+index 0000000..0296b27
 --- /dev/null
-+++ b/doc_fragmentation.h
-@@ -0,0 +1,96 @@
++++ b/doc_compression.h
+@@ -0,0 +1,92 @@
 +/*
 + *  OpenVPN -- An application to securely tunnel IP networks
 + *             over a single TCP/UDP port, with support for SSL/TLS-based
@@ -56,48 +57,37 @@ index 0000000..e7e9c1e
 + */
 +
 +/**
-+ * @file
-+ * Data Channel Fragmentation module documentation file.
++ * @file Data Channel Compression module documentation file.
 + */
 +
 +/**
-+ * @defgroup fragmentation Data Channel Fragmentation module
++ * @defgroup compression Data Channel Compression module
 + * 
-+ * The Data Channel Fragmentation module offers fragmentation of data
-+ * channel packets.
++ * This module offers compression of data channel packets.
 + * 
 + * @par State structures
-+ * The Data Channel Fragmentation module stores its internal state in a \c
-+ * fragment_master structure.  One such structure is present for each VPN
-+ * tunnel, and is stored in \c context.c2.fragment of the \c context
-+ * associated with that VPN tunnel.
-+ * 
-+ * @par
-+ * The \c fragment_master structure contains one \c fragment_list
-+ * structure \c fragment_master.incoming.  This is a list of \c fragment
-+ * structures, each of which can store the parts of one fragmented packet
-+ * while it is being reassembled.  The \c fragment_master structure also
-+ * contains one \c buffer called \c fragment_master.outgoing, in which a
-+ * data channel large packet to be sent to a remote OpenVPN peer can be
-+ * broken up into parts to be sent one by one.
++ * The Data Channel Compression module stores its internal state in a \c
++ * lzo_compress_workspace structure.  This state includes flags which
++ * control the module's behavior and preallocated working memory.  One
++ * such structure is present for each VPN tunnel, and is stored in the \c
++ * context.c2.lzo_compwork of the \c context associated with that VPN
++ * tunnel.
 + * 
 + * @par Initialization and cleanup
-+ * Every time a new \c fragment_master is needed, it must be allocated and
-+ * initialized by the \c fragment_init() function.  Similarly, every time
-+ * a \c fragment_master is no longer needed, it must be cleaned up using
-+ * the \c fragment_free() function.  These functions take care of the
-+ * allocation and freeing of the \c fragment_master structure itself and
-+ * all internal memory required for the use of that structure.  Note that
-+ * this behavior is different from that displayed by the \link compression
-+ * Data Channel Compression module\endlink.
++ * Every time a new \c lzo_compress_workspace is needed, it must be
++ * initialized using the \c lzo_compress_init() function.  Similarly,
++ * every time a \c lzo_compress_workspace is no longer needed, it must be
++ * cleaned up using the \c lzo_compress_uninit() function.  These
++ * functions take care of the allocation and freeing of internal working
++ * memory, but not of the \c lzo_compress_workspace structures themselves.
 + * 
 + * @par
-+ * Because of the one-to-one relationship between \c fragment_master
-+ * structures and VPN tunnels, the above-mentioned initialization and
-+ * cleanup functions are called directly from the \c init_instance() and
-+ * \c close_instance() functions, which control the initialization and
-+ * cleanup of VPN tunnel instances and their associated \c context
-+ * structures.
++ * Because of the one-to-one relationship between \c
++ * lzo_compress_workspace structures and VPN tunnels, the above-mentioned
++ * initialization and cleanup functions are called directly from the \c
++ * init_instance() and \c close_instance() functions, which control the
++ * initialization and cleanup of VPN tunnel instances and their associated
++ * \c context structures.
 + * 
 + * @par Packet processing functions
 + * This module receives data channel packets from the \link data_control
@@ -105,560 +95,430 @@ index 0000000..e7e9c1e
 + * settings of the packet's VPN tunnel.  The \link data_control Data
 + * Channel Control module\endlink uses the following interface functions:
 + * - For packets which will be sent to a remote OpenVPN peer: \c
-+ *   fragment_outgoing() \n This function inspects data channel packets as
-+ *   they are being made ready to be sent as VPN tunnel packets to a
-+ *   remote OpenVPN peer.  If a packet's size is larger than its
-+ *   destination VPN tunnel's maximum transmission unit (MTU), then this
-+ *   module breaks that packet up into smaller parts, each of which is
-+ *   smaller than or equal to the VPN tunnel's MTU.  See \c
-+ *   fragment_outgoing() for details.
++ *   lzo_compress()
 + * - For packets which have been received from a remote OpenVPN peer: \c
-+ *   fragment_incoming() \n This function inspects data channel packets
-+ *   that have been received from a remote OpenVPN peer through a VPN
-+ *   tunnel.  It reads the fragmentation header of the packet, and
-+ *   depending on its value performs the appropriate action.  See \c
-+ *   fragment_incoming() for details.
++ *   lzo_decompress()
 + * 
 + * @par Settings that control this module's activity
-+ * Whether the Data Channel Fragmentation module is active or not depends
-+ * on the compile-time \c ENABLE_FRAGMENT preprocessor macro and the
-+ * runtime flag \c options.fragment, which gets its value from the
-+ * process's configuration sources, such as the configuration file and
-+ * commandline %options.
++ * Whether or not the Data Channel Compression module is active depends on
++ * the compile-time \c USE_LZO preprocessor macro and the runtime flags
++ * stored in \c lzo_compress_workspace.flags of the associated VPN tunnel.
++ * The latter are initialized from \c options.lzo, which gets its value
++ * from the process's configuration sources, such as its configuration
++ * file or command line %options.
++ * 
++ * @par Adaptive compression
++ * The compression module supports adaptive compression.  If this feature
++ * is enabled, the compression routines monitor their own performance and
++ * turn compression on or off depending on whether it is leading to
++ * significantly reduced payload size.
++ * 
++ * @par Compression algorithms
++ * This module uses the Lempel-Ziv-Oberhumer (LZO) compression algorithms.
++ * These offer lossless compression and are designed for high-performance
++ * decompression.  This module uses the external \c lzo library's
++ * implementation of the algorithms.
++ * 
++ * @par
++ * For more information on the LZO library, see:\n
++ * http://www.oberhumer.com/opensource/lzo/
 + */
-diff --git a/fragment.h b/fragment.h
-index fc2b1b8..10bb6b2 100644
---- a/fragment.h
-+++ b/fragment.h
-@@ -25,8 +25,20 @@
- #ifndef FRAGMENT_H
- #define FRAGMENT_H
+diff --git a/lzo.c b/lzo.c
+index 3d6aa5a..64945d0 100644
+--- a/lzo.c
++++ b/lzo.c
+@@ -22,6 +22,10 @@
+  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  */
  
++/**
++ * @file Data Channel Compression module function definitions.
++ */
++
+ #include "syshead.h"
+ 
+ #ifdef USE_LZO
+@@ -33,7 +37,13 @@
+ #include "memdbg.h"
+ 
+ #ifndef LZO_STUB
+-
++/**
++ * Perform adaptive compression housekeeping.
++ * 
++ * @param ac the adaptive compression state structure.
++ * 
++ * @return 
++ */
+ static bool
+ lzo_adaptive_compress_test (struct lzo_adaptive_compress *ac)
+ {
+@@ -142,10 +152,6 @@ lzo_compression_enabled (struct lzo_compress_workspace *lzowork)
+   return false;
+ }
+ 
+-/* Magic numbers to tell our peer if we compressed or not */
+-#define YES_COMPRESS 0x66
+-#define NO_COMPRESS  0xFA
+-
+ void
+ lzo_compress (struct buffer *buf, struct buffer work,
+ 	      struct lzo_compress_workspace *lzowork,
+@@ -281,9 +287,6 @@ lzo_modify_flags (struct lzo_compress_workspace *lzowork, unsigned int flags)
+   lzowork->flags = flags;
+ }
+ 
+-/*
+- * Print statistics
+- */
+ void lzo_print_stats (const struct lzo_compress_workspace *lzo_compwork, struct status_output *so)
+ {
+   ASSERT (lzo_compwork->defined);
+diff --git a/lzo.h b/lzo.h
+index 831f204..cc25869 100644
+--- a/lzo.h
++++ b/lzo.h
+@@ -25,8 +25,20 @@
+ #ifndef OPENVPN_LZO_H
+ #define OPENVPN_LZO_H
+ 
++
 +/**
 + * @file
-+ * Data Channel Fragmentation module header file.
++ * Data Channel Compression module header file.
 + */
 +
 +
- #ifdef ENABLE_FRAGMENT
+ #ifdef USE_LZO
  
 +/**
-+ * @addtogroup fragmentation
++ * @addtogroup compression
 + * @{
 + */
 +
-+
+ #ifndef LZO_STUB
+ #ifdef LZO_HEADER_DIR
+ #include "lzo/lzoutil.h"
+@@ -42,52 +54,89 @@
  #include "common.h"
- #include "buffer.h"
- #include "interval.h"
-@@ -34,143 +46,422 @@
- #include "shaper.h"
- #include "error.h"
+ #include "status.h"
  
--#define N_FRAG_BUF                   25      /* number of packet buffers */
--#define FRAG_TTL_SEC                 10      /* number of seconds time-to-live for a fragment */
--#define FRAG_WAKEUP_INTERVAL         5       /* wakeup code called once per n seconds */
- 
--struct fragment {
--  bool defined;
-+#define N_FRAG_BUF                   25
-+                                /**< Number of packet buffers for
-+                                 *   reassembling incoming fragmented
-+                                 *   packets. */
- 
--  int max_frag_size;               /* maximum size of each fragment */
-+#define FRAG_TTL_SEC                 10
-+                                /**< Time-to-live in seconds for a %fragment. */
- 
--  /*
--   * 32 bit array corresponding to each fragment.  A 1 bit in element n means that
--   * the fragment n has been received.  Needs to have at least MAX_FRAGS bits.
--   */
--# define FRAG_MAP_MASK 0xFFFFFFFF
--# define MAX_FRAGS             32  /* maximum number of fragments per packet */
--  unsigned int map;
-+#define FRAG_WAKEUP_INTERVAL         5
-+                                /**< Interval in seconds between calls to
-+                                 *   wakeup code. */
- 
--  time_t timestamp;                /* timestamp for time-to-live purposes */
+-/* LZO flags */
+-#define LZO_SELECTED   (1<<0)
+-#define LZO_ON         (1<<1)
+-#define LZO_ADAPTIVE   (1<<2)  
+-
+-/*
+- * Length of prepended prefix on LZO packets
+- */ 
+-#define LZO_PREFIX_LEN 1
+-
+-/*
+- * LZO 2.0 worst case size expansion
+- */
+-#define LZO_EXTRA_BUFFER(len) ((len)/8 + 128 + 3)
 +/**************************************************************************/
-+/**
-+ * Structure for reassembling one incoming fragmented packet.
-+ */
-+struct fragment {
-+  bool defined;                 /**< Whether reassembly is currently
-+                                 *   taking place in this structure. */
-+	
-+  int max_frag_size;		/**< Maximum size of each %fragment. */
++/** @name Bit-flags which control data channel packet compression *//******/
++/** @{ */
++#define LZO_SELECTED   (1<<0)   /**< Bit-flag indicating that compression
++                                 *   of data channel packets is enabled. */
++#define LZO_ON         (1<<1)   /**< Bit-flag indicating that compression
++                                 *   of data channel packets is active. */
++#define LZO_ADAPTIVE   (1<<2)   /**< Bit-flag indicating that adaptive
++                                 *   compression of data channel packets
++                                 *   has been selected. */
++/** @} name Bit-flags which control data channel packet compression *//****/
  
--  struct buffer buf;               /* fragment assembly buffer for received datagrams */
-+# define FRAG_MAP_MASK 0xFFFFFFFF
-+                                /**< Mask for reassembly map. */
-+# define MAX_FRAGS 32		/**< Maximum number of fragments per packet. */
-+  unsigned int map;             
-+                                /**< Reassembly map for recording which
-+                                 *   fragments have been received.
++/**************************************************************************/
++/** @name LZO library interface defines *//** @{ *//***********************/
+ #ifndef LZO_STUB
+-
+-/*
+- * Use LZO compress routine lzo1x_1_15_compress which is described
+- * as faster but needs a bit more memory than the standard routine.
+- * Use safe decompress (i.e. check for buffer overflows).
+- * You may want to use the non-safe version
+- * of decompress if speed is essential and if you know
+- * that you will always be using a MAC to verify the
+- * integrity of incoming packets.
+- */
+ #define LZO_COMPRESS    lzo1x_1_15_compress
++                                /**< LZO library compression function.
 +                                 *   
-+                                 *   A bit array where each bit
-+                                 *   corresponds to a %fragment.  A 1 bit
-+                                 *   in element n means that the %fragment
-+                                 *   n has been received.  Needs to have
-+                                 *   at least \c MAX_FRAGS bits. */
-+
-+  time_t timestamp;		/**< Timestamp for time-to-live purposes. */
-+
-+  struct buffer buf;            /**< Buffer in which received datagrams
-+                                 *   are reassembled. */
- };
- 
-+
-+/**
-+ * List of fragment structures for reassembling multiple incoming packets
-+ * concurrently.
-+ */
- struct fragment_list {
--  int seq_id;
--  int index;
-+  int seq_id;                   /**< Highest fragmentation sequence ID of
-+                                 *   the packets currently being
-+                                 *   reassembled. */
-+  int index;                    /**< Index of the packet being reassembled
-+                                 *   with the highest fragmentation
-+                                 *   sequence ID into the \c
-+                                 *   fragment_list.fragments array. */
-+
-+/** Array of reassembly structures, each can contain one whole packet.
-+ *  
-+ *  The fragmentation sequence IDs of the packets being reassembled in
-+ *  this array are linearly increasing. \c
-+ *  fragment_list.fragments[fragment_list.index] has an ID of \c
-+ *  fragment_list.seq_id.  This means that one of these \c fragment_list
-+ *  structures can at any one time contain at most packets with the
-+ *  fragmentation sequence IDs in the range \c fragment_list.seq_id \c -
-+ *  \c N_FRAG_BUF \c + \c 1 to \c fragment_list.seq_id, inclusive.
-+ */
-   struct fragment fragments[N_FRAG_BUF];
- };
- 
--struct fragment_master {
--  struct event_timeout wakeup;     /* when should main openvpn event loop wake us up */
--
--  /* true if the OS has explicitly recommended an MTU value */
--  bool received_os_mtu_hint;
- 
--  /* a sequence ID describes a set of fragments that make up one datagram */
--# define N_SEQ_ID            256   /* sequence number wraps to 0 at this value (should be a power of 2) */
--  int outgoing_seq_id;             /* sent as FRAG_SEQ_ID below */
--
--  /* outgoing packet is possibly sent as a series of fragments */
--
--# define MAX_FRAG_PKT_SIZE 65536   /* maximum packet size */
--  int outgoing_frag_size;          /* sent to peer via FRAG_SIZE when FRAG_YES_LAST set */
--
--  int outgoing_frag_id;            /* each fragment in a datagram is numbered 0 to MAX_FRAGS-1 */ 
--
--  struct buffer outgoing;          /* outgoing datagram, free if current_frag_id == 0 */
--  struct buffer outgoing_return;   /* buffer to return outgoing fragment */
-+/**
-+ * Fragmentation and reassembly state for one VPN tunnel instance.
-+ * 
-+ * This structure contains all the state necessary for sending and
-+ * receiving fragmented data channel packets associated with one VPN
-+ * tunnel.
-+ * 
-+ * The fragmented packet currently being sent to a remote OpenVPN peer is
-+ * stored in \c fragment_master.outgoing.  It is copied into that buffer
-+ * by the \c fragment_outgoing() function and the remaining parts to be
-+ * sent can be retrieved by successive calls to \c
-+ * fragment_ready_to_send().
-+ * 
-+ * The received packets currently being reassembled are stored in the \c
-+ * fragment_master.incoming array of \c fragment structures.  The \c
-+ * fragment_incoming() function adds newly received parts into this array
-+ * and returns the whole packets once reassembly is complete.
-+ */
-+struct fragment_master {
-+  struct event_timeout wakeup;  /**< Timeout structure used by the main
-+                                 *   event loop to know when to do
-+                                 *   fragmentation housekeeping. */
-+  bool received_os_mtu_hint;    /**< Whether the operating system has
-+                                 *   explicitly recommended an MTU value. */
-+# define N_SEQ_ID            256
-+                                /**< One more than the maximum fragment
-+                                 *   sequence ID, above which the IDs wrap
-+                                 *   to zero.  Should be a power of 2. */
-+  int outgoing_seq_id;          /**< Fragment sequence ID of the current
-+                                 *   fragmented packet waiting to be sent.
++                                 *   Use \c lzo1x_1_15_compress because it
++                                 *   is described as faster than the
++                                 *   standard routine, although it does
++                                 *   need a bit more memory. */
+ #define LZO_WORKSPACE	LZO1X_1_15_MEM_COMPRESS
++                                /**< The size in bytes of the memory
++                                 *   %buffer required by the LZO library
++                                 *   compression algorithm. */
+ #define LZO_DECOMPRESS  lzo1x_decompress_safe
++                                /**< LZO library decompression function.
 +                                 *   
-+                                 *   All parts of a fragmented packet
-+                                 *   share the same sequence ID, so that
-+                                 *   the remote OpenVPN peer can determine
-+                                 *   which parts belong to which original
-+                                 *   packet. */
-+# define MAX_FRAG_PKT_SIZE 65536
-+                                /**< (Not used) Maximum packet size before
-+                                 *   fragmenting. */
-+  int outgoing_frag_size;       /**< Size in bytes of each part to be
-+                                 *   sent, except for the last part which
-+                                 *   may be smaller.
-+                                 *   
-+                                 *   This value is computed by the \c
-+                                 *   optimal_fragment_size() function. Its
-+                                 *   value is sent to the remote peer in
-+                                 *   the fragmentation header of the last
-+                                 *   part (i.e. with %fragment type \c
-+                                 *   FRAG_YES_LAST) using the \c
-+                                 *   FRAG_SIZE_MASK and \c FRAG_SIZE_SHIFT
-+                                 *   bits. */
-+  int outgoing_frag_id;         /**< The fragment ID of the next part to
-+                                 *   be sent.  Must have a value between 0
-+                                 *   and \c MAX_FRAGS-1. */
-+  struct buffer outgoing;       /**< Buffer containing the remaining parts
-+                                 *   of the fragmented packet being sent. */
-+  struct buffer outgoing_return;
-+                                /**< Buffer used by \c
-+                                 *   fragment_ready_to_send() to return a
-+                                 *   part to send. */
- 
--  /* incoming fragments from remote */
-   struct fragment_list incoming;
-+                                /**< List of structures for reassembling
-+                                 *   incoming packets. */
- };
++                                 *   Use safe decompress because it
++                                 *   includes checks for possible %buffer
++                                 *   overflows. If speed is essential and
++                                 *   you will always be using a MAC to
++                                 *   verify the integrity of incoming
++                                 *   packets, you might want to consider
++                                 *   using the non-safe version. */
++#endif /* LZO_STUB */
++/** @} name LZO library interface *//**************************************/
  
 -/*
-- * Fragment header sent over the wire.
+- * Don't try to compress any packet smaller than this.
 - */
-+
-+/**************************************************************************/
-+/** @name Fragment header
-+ *  @todo Add description of %fragment header format.
-+ *//** @{ *//*************************************/
- 
- typedef uint32_t fragment_header_type;
-+                                /**< Fragmentation information is stored in
-+                                 *   a 32-bit packet header. */
- 
--/* convert a fragment_header_type from host to network order */
- #define hton_fragment_header_type(x) htonl(x)
-+                                /**< Convert a fragment_header_type from
-+                                 *   host to network order. */
- 
--/* convert a fragment_header_type from network to host order */
- #define ntoh_fragment_header_type(x) ntohl(x)
-+                                /**< Convert a \c fragment_header_type
-+                                 *   from network to host order. */
- 
--/* FRAG_TYPE 2 bits */
- #define FRAG_TYPE_MASK        0x00000003
--#define FRAG_TYPE_SHIFT       0
--
--#define FRAG_WHOLE            0    /* packet is whole, FRAG_N_PACKETS_RECEIVED echoed back to peer */
--#define FRAG_YES_NOTLAST      1    /* packet is a fragment, but is not the last fragment,
--				      FRAG_N_PACKETS_RECEIVED set as above */
--#define FRAG_YES_LAST         2    /* packet is the last fragment, FRAG_SIZE = size of non-last frags */
--#define FRAG_TEST             3    /* control packet for establishing MTU size (not implemented yet) */
-+                                /**< Bit mask for %fragment type info. */
-+#define FRAG_TYPE_SHIFT       0 /**< Bit shift for %fragment type info. */
-+
-+#define FRAG_WHOLE            0 /**< Fragment type indicating packet is
-+                                 *   whole. */
-+#define FRAG_YES_NOTLAST      1 /**< Fragment type indicating packet is
-+                                 *   part of a fragmented packet, but not
-+                                 *   the last part in the sequence. */
-+#define FRAG_YES_LAST         2 /**< Fragment type indicating packet is
-+                                 *   the last part in the sequence of
-+                                 *   parts. */
-+#define FRAG_TEST             3 /**< Fragment type not implemented yet. 
-+                                 *   In the future might be used as a
-+                                 *   control packet for establishing MTU
-+                                 *   size. */
- 
--/* FRAG_SEQ_ID 8 bits */
- #define FRAG_SEQ_ID_MASK      0x000000ff
--#define FRAG_SEQ_ID_SHIFT     2
-+                                /**< Bit mask for %fragment sequence ID. */
-+#define FRAG_SEQ_ID_SHIFT     2 /**< Bit shift for %fragment sequence ID. */
- 
--/* FRAG_ID 5 bits */
- #define FRAG_ID_MASK          0x0000001f
-+                                /**< Bit mask for %fragment ID. */
- #define FRAG_ID_SHIFT         10
-+                                /**< Bit shift for %fragment ID. */
- 
- /*
-  * FRAG_SIZE  14 bits
-  *
-  * IF FRAG_YES_LAST (FRAG_SIZE):
-- *   The max size of a fragment.  If a fragment is not the last fragment in the packet,
-- *   then the fragment size is guaranteed to be equal to the max fragment size.  Therefore,
-+ *   The max size of a %fragment.  If a %fragment is not the last %fragment in the packet,
-+ *   then the %fragment size is guaranteed to be equal to the max %fragment size.  Therefore,
-  *   max_frag_size is only sent over the wire if FRAG_LAST is set.  Otherwise it is assumed
-- *   to be the actual fragment size received.
-+ *   to be the actual %fragment size received.
-  */
--
--/* FRAG_SIZE 14 bits */
- #define FRAG_SIZE_MASK        0x00003fff
-+                                /**< Bit mask for %fragment size. */
- #define FRAG_SIZE_SHIFT       15
--#define FRAG_SIZE_ROUND_SHIFT 2  /* fragment/datagram sizes represented as multiple of 4 */
--
-+                                /**< Bit shift for %fragment size. */
-+#define FRAG_SIZE_ROUND_SHIFT 2 /**< Bit shift for %fragment size rounding. */
- #define FRAG_SIZE_ROUND_MASK ((1 << FRAG_SIZE_ROUND_SHIFT) - 1)
-+                                /**< Bit mask for %fragment size rounding. */
- 
- /*
-  * FRAG_EXTRA 16 bits
-  *
-  * IF FRAG_WHOLE or FRAG_YES_NOTLAST, these 16 bits are available (not currently used)
-  */
--
--/* FRAG_EXTRA 16 bits */
- #define FRAG_EXTRA_MASK         0x0000ffff
-+                                /**< Bit mask for extra bits. */
- #define FRAG_EXTRA_SHIFT        15
-+                                /**< Bit shift for extra bits. */
+-#define COMPRESS_THRESHOLD 100
  
 -/*
-- * Public functions
+- * Adaptive compress parameters
 - */
-+/** @} name Fragment header *//********************************************/
+-#define AC_SAMP_SEC    2      /* number of seconds in sample period */
+-#define AC_MIN_BYTES   1000   /* sample period must have at least n bytes
+-				 to be valid for testing */
+-#define AC_SAVE_PCT    5      /* turn off compress if we didn't save at
+-				 least this % during sample period */
+-#define AC_OFF_SEC     60     /* if we turn off compression, don't do sample
+-				 retest for n seconds */
++/**************************************************************************/
++/** @name Miscellaneous compression defines *//** @{ *//*******************/
++#define LZO_EXTRA_BUFFER(len) ((len)/8 + 128 + 3)
++                                /**< LZO 2.0 worst-case size expansion. */
++#ifndef LZO_STUB
++#define COMPRESS_THRESHOLD 100  /**< Minimum packet size to attempt
++                                 *   compression. */
++#endif /* LZO_STUB */
++/** @} name Miscellaneous compression defines *//**************************/
++
++
++/**************************************************************************/
++/** @name Compression header defines *//** @{ *//**************************/
++#define LZO_PREFIX_LEN 1        /**< Length in bytes of prepended
++                                 *   compression header. */
++#define YES_COMPRESS 0x66       /**< Single-byte compression header
++                                 *   indicating this packet has been
++                                 *   compressed. */
++#define NO_COMPRESS  0xFA       /**< Single-byte compression header
++                                 *   indicating this packet has not been
++                                 *   compressed. */
++/** @} name Compression header defines *//*********************************/
++
++/**************************************************************************/
++/** @name Adaptive compression defines *//** @{ *//************************/
++#ifndef LZO_STUB
++#define AC_SAMP_SEC    2        /**< Number of seconds in a sample period. */
++#define AC_MIN_BYTES   1000     /**< Minimum number of bytes a sample
++                                 *   period must contain for it to be
++                                 *   evaluated. */
++#define AC_SAVE_PCT    5        /**< Minimum size reduction percentage
++                                 *   below which compression will be
++                                 *   turned off. */
++#define AC_OFF_SEC     60       /**< Seconds to wait after compression has
++                                 *   been turned off before retesting. */
++#endif /* LZO_STUB */
++/** @} name Adaptive compression defines *//*******************************/
+ 
++#ifndef LZO_STUB
++
++/**
++ * Adaptive compression state.
++ */
+ struct lzo_adaptive_compress {
+   bool compress_state;
+   time_t next;
+@@ -97,10 +146,17 @@ struct lzo_adaptive_compress {
+ 
+ #endif /* LZO_STUB */
+ 
+-/*
+- * Compress and Uncompress routines.
+- */
+ 
++/**
++ * State for the compression and decompression routines.
++ * 
++ * This structure contains compression module state, such as whether
++ * compression is enabled and the status of the adaptive compression
++ * routines.  It also contains an allocated working buffer.
++ * 
++ * One of these compression workspace structures is maintained for each
++ * VPN tunnel.
++ */
+ struct lzo_compress_workspace
+ {
+   bool defined;
+@@ -118,30 +174,171 @@ struct lzo_compress_workspace
+ #endif
+ };
  
 +
 +/**************************************************************************/
 +/** @name Functions for initialization and cleanup *//** @{ *//************/
 +
 +/**
-+ * Allocate and initialize a \c fragment_master structure.
++ * Adjust %frame parameters for data channel payload compression.
 + * 
-+ * This function also modifies the \a frame packet geometry parameters to
-+ * include space for the fragmentation header.
++ * Data channel packet compression requires a single-byte header to
++ * indicate whether a packet has been compressed or not. The packet
++ * handling buffers must also allow for worst-case payload compression
++ * where the compressed content size is actually larger than the original
++ * content size. This function adjusts the parameters of a given frame
++ * structure to include the header and allow for worst-case compression
++ * expansion.
 + * 
-+ * @param frame        - The packet geometry parameters for this VPN
-+ *                       tunnel, modified by this function to include the
-+ *                       fragmentation header.
-+ * 
-+ * @return A pointer to the new \c fragment_master structure.
++ * @param frame        - The frame structure to adjust.
 + */
- struct fragment_master *fragment_init (struct frame *frame);
+ void lzo_adjust_frame_parameters(struct frame *frame);
  
-+
 +/**
-+ * Allocate internal packet buffers for a \c fragment_master structure.
++ * Initialize a compression workspace structure.
 + * 
-+ * @param f            - The \c fragment_master structure for which to
-+ *                       allocate the internal buffers.
-+ * @param frame        - The packet geometry parameters for this VPN
-+ *                       tunnel, used to determine how much memory to
-+ *                       allocate for each packet buffer.
++ * This function initializes the given workspace structure \a lzowork.
++ * This includes allocating a work buffer for internal use and setting its
++ * flags to the given value of \a flags.
++ * 
++ * This function also initializes the lzo library.
++ * 
++ * @param lzowork      - A pointer to the workspace structure to
++ *                       initialize.
++ * @param flags        - The initial flags to set in the workspace
++ *                       structure.
 + */
- void fragment_frame_init (struct fragment_master *f, const struct frame *frame);
+ void lzo_compress_init (struct lzo_compress_workspace *lzowork, unsigned int flags);
  
-+
 +/**
-+ * Free a \c fragment_master structure and its internal packet buffers.
++ * Cleanup a compression workspace structure.
 + * 
-+ * @param f            - The \c fragment_master structure to free.
++ * This function cleans up the given workspace structure \a lzowork.  This
++ * includes freeing the structure's internal work buffer.
++ * 
++ * @param lzowork      - A pointer to the workspace structure to clean up.
 + */
- void fragment_free (struct fragment_master *f);
+ void lzo_compress_uninit (struct lzo_compress_workspace *lzowork);
+ 
++/**
++ * Set a workspace structure's flags.
++ * 
++ * @param lzowork      - The workspace structure of which to modify the
++ *                       flags.
++ * @param flags        - The new value to assign to the workspace
++ *                       structure's flags.
++ */
+ void lzo_modify_flags (struct lzo_compress_workspace *lzowork, unsigned int flags);
  
 +/** @} name Functions for initialization and cleanup *//*******************/
 +
 +
 +/**************************************************************************/
-+/** @name Functions for processing packets received from a remote OpenVPN peer */
++/** @name Function for packets to be sent to a remote OpenVPN peer *//*****/
 +/** @{ */
 +
 +/**
-+ * Process an incoming packet, which may or may not be fragmented.
++ * Process an outgoing packet according to a VPN tunnel's settings.
++ * @ingroup compression
 + * 
-+ * This function inspects the fragmentation header of the incoming packet
-+ * and processes the packet accordingly. Depending on the %fragment type
-+ * bits (\c FRAG_TYPE_MASK and \c FRAG_TYPE_SHIFT) the packet is processed
-+ * in the following ways:
-+ *  - \c FRAG_WHOLE: the packet is not fragmented, and this function does
-+ *    not modify its contents, except for removing the fragmentation
-+ *    header.
-+ *  - \c FRAG_YES_NOTLAST or \c FRAG_YES_LAST: the packet is part of a
-+ *    fragmented packet.  This function copies the packet into an internal
-+ *    reassembly buffer.  If the incoming part completes the packet being
-+ *    reassembled, the \a buf argument is modified to point to the fully
-+ *    reassembled packet.  If, on the other hand, reassembly is not yet
-+ *    complete, then the the \a buf buffer is set to empty.
-+ *  - Any other value: error.
++ * This function processes the packet contained in \a buf.  Its behavior
++ * depends on the settings contained within \a lzowork.  If compression is
++ * enabled and active, this function compresses the packet.  After
++ * compression, the size of the uncompressed and compressed packets are
++ * compared, and the smallest is used.
++ * 
++ * This function prepends a one-byte header indicating whether the packet
++ * was or was not compressed, so as to let the peer know how to handle the
++ * packet.
 + * 
 + * If an error occurs during processing, an error message is logged and
 + * the length of \a buf is set to zero.
 + * 
-+ * @param f            - The \c fragment_master structure for this VPN
-+ *                       tunnel.
-+ * @param buf          - A pointer to the buffer structure containing the
-+ *                       incoming packet.  This pointer will have been
-+ *                       modified on return either to point to a
-+ *                       completely reassembled packet, or to have length
-+ *                       set to zero if reassembly is not yet complete.
-+ * @param frame        - The packet geometry parameters for this VPN
-+ *                       tunnel.
++ * @param buf          - A pointer to the buffer containing the outgoing
++ *                       packet.  This pointer will be modified to point
++ *                       to the processed packet on return.
++ * @param work         - A preallocated working buffer.
++ * @param lzowork      - The compression workspace structure associated
++ *                       with this VPN tunnel.
++ * @param frame        - The frame parameters of this tunnel.
 + * 
-+ * @return Void.\n On return, the \a buf argument will point to a buffer.
-+ *     The buffer will have nonzero length if the incoming packet passed
-+ *     to this function was whole and unfragmented, or if it was the final
-+ *     part of a fragmented packet thereby completing reassembly.  On the
-+ *     other hand, the buffer will have a length of zero if the incoming
-+ *     packet was part of a fragmented packet and reassembly is not yet
-+ *     complete.  If an error occurs during processing, the buffer length
-+ *     is also set to zero.
++ * @return Void.\n  On return, \a buf will point to a buffer containing
++ *     the processed, possibly compressed, packet data with a compression
++ *     header prepended.
 + */
- void fragment_incoming (struct fragment_master *f, struct buffer *buf,
- 			const struct frame* frame);
+ void lzo_compress (struct buffer *buf, struct buffer work,
+ 		   struct lzo_compress_workspace *lzowork,
+ 		   const struct frame* frame);
  
-+/** @} name Functions for processing packets received from a VPN tunnel */
++/** @} name Function for packets to be sent to a remote OpenVPN peer *//***/
 +
 +
 +/**************************************************************************/
-+/** @name Functions for processing packets to be sent to a remote OpenVPN peer */
++/** @name Function for packets received from a remote OpenVPN peer *//*****/
 +/** @{ */
 +
 +/**
-+ * Process an outgoing packet, which may or may not need to be fragmented.
++ * Inspect an incoming packet and decompress if it is compressed.
 + * 
-+ * This function inspects the outgoing packet, determines whether it needs
-+ * to be fragmented, and processes it accordingly.
++ * This function inspects the incoming packet contained in \a buf.  If its
++ * one-byte compression header indicates that it was compressed (i.e. \c
++ * YES_COMPRESS), then it will be decompressed.  If its header indicates
++ * that it was not compressed (i.e. \c NO_COMPRESS), then the buffer is
++ * not modified except for removing the compression header.
 + * 
-+ * Depending on the size of the outgoing packet and the packet geometry
-+ * parameters for the VPN tunnel, the packet will or will not be
-+ * fragmented.
-+ * @li Packet size is less than or equal to the maximum packet size for
-+ *     this VPN tunnel: fragmentation is not necessary.  The \a buf
-+ *     argument points to a buffer containing the unmodified outgoing
-+ *     packet with a fragmentation header indicating the packet is whole
-+ *     (FRAG_WHOLE) prepended.
-+ * @li Packet size is greater than the maximum packet size for this VPN
-+ *     tunnel: fragmentation is necessary.  The original outgoing packet
-+ *     is copied into an internal buffer for fragmentation.  The \a buf
-+ *     argument is modified to point to the first part of the fragmented
-+ *     packet. The remaining parts remain stored in the internal buffer,
-+ *     and can be retrieved using the \c fragment_ready_to_send()
-+ *     function.
++ * If an error occurs during processing, for example if the compression
++ * header has a value other than \c YES_COMPRESS or \c NO_COMPRESS, then
++ * the error is logged and the length of \a buf is set to zero.
 + * 
-+ * If an error occurs during processing, an error message is logged and
-+ * the length of \a buf is set to zero.
++ * @param buf          - A pointer to the buffer containing the incoming
++ *                       packet.  This pointer will be modified to point
++ *                       to the processed packet on return.
++ * @param work         - A preallocated working buffer.
++ * @param lzowork      - The compression workspace structure associated
++ *                       with this VPN tunnel.
++ * @param frame        - The frame parameters of this tunnel.
 + * 
-+ * @param f            - The \c fragment_master structure for this VPN
-+ *                       tunnel.
-+ * @param buf          - A pointer to the buffer structure containing the
-+ *                       outgoing packet.  This pointer will be modified
-+ *                       to point to a whole unfragmented packet or to the
-+ *                       first part of a fragmented packet on return.
-+ * @param frame        - The packet geometry parameters for this VPN
-+ *                       tunnel.
-+ * 
-+ * @return Void.\n On return, the \a buf argument will point to a buffer.
-+ *     This buffer contains either the whole original outgoing packet if
-+ *     fragmentation was not necessary, or the first part of the
-+ *     fragmented outgoing packet if fragmentation was necessary. In both
-+ *     cases a fragmentation header will have been prepended to inform the
-+ *     remote peer how to handle the packet.
++ * @return Void.\n  On return, \a buf will point to a buffer containing
++ *     the uncompressed packet data and the one-byte compression header
++ *     will have been removed.
 + */
- void fragment_outgoing (struct fragment_master *f, struct buffer *buf,
- 			const struct frame* frame);
+ void lzo_decompress (struct buffer *buf, struct buffer work,
+ 		     struct lzo_compress_workspace *lzowork,
+ 		     const struct frame* frame);
  
-+/**
-+ * Check whether outgoing fragments are ready to be send, and if so make
-+ * one available.
-+ * 
-+ * This function checks whether the internal buffer for fragmenting
-+ * outgoing packets contains any unsent parts.  If it does not, meaning
-+ * there is nothing waiting to be sent, it returns false.  Otherwise there
-+ * are parts ready to be sent, and it returns true.  In that case it also
-+ * modifies the \a buf argument to point to a buffer containing the next
-+ * part to be sent.
-+ * 
-+ * @param f            - The \a fragment_master structure for this VPN
-+ *                       tunnel.
-+ * @param buf          - A pointer to a buffer structure which on return,
-+ *                       if there are parts waiting to be sent, will point
-+ *                       to the next part to be sent.
-+ * @param frame        - The packet geometry parameters for this VPN
-+ *                       tunnel.
-+ * 
-+ * @return
-+ * @li True, if an outgoing packet has been fragmented and not all parts
-+ *     have been sent yet.  In this case this function will modify the \a
-+ *     buf argument to point to a buffer containing the next part to be
-+ *     sent.
-+ * @li False, if there are no outgoing fragmented parts waiting to be
-+ *     sent.
-+ */
- bool fragment_ready_to_send (struct fragment_master *f, struct buffer *buf,
- 			     const struct frame* frame);
- 
--/*
-- * Private functions.
-+/**
-+ * Check whether a \c fragment_master structure contains fragments ready
-+ * to be sent.
-+ * 
-+ * @param f            - The \c fragment_master structure for this VPN
-+ *                       tunnel.
-+ * 
-+ * @return
-+ * @li True, if there are one or more fragments ready to be sent.
-+ * @li False, otherwise.
-  */
-+static inline bool
-+fragment_outgoing_defined (struct fragment_master *f)
-+{
-+  return f->outgoing.len > 0;
-+}
-+
-+/** @} name Functions for processing packets going out through a VPN tunnel */
++/** @} name Function for packets received from a remote OpenVPN peer *//***/
 +
 +
- void fragment_wakeup (struct fragment_master *f, struct frame *frame);
- 
--/*
-- * Inline functions
-- */
- 
 +/**************************************************************************/
-+/** @name Functions for regular housekeeping *//** @{ *//******************/
++/** @name Utility functions *//** @{ *//***********************************/
 +
 +/**
-+ * Perform housekeeping of a \c fragment_master structure.
++ * Print statistics on compression and decompression performance.
 + * 
-+ * Housekeeping includes scanning incoming packet reassembly buffers for
-+ * packets which have not yet been reassembled completely but are already
-+ * older than their time-to-live.
-+ * 
-+ * @param f            - The \c fragment_master structure for this VPN
-+ *                       tunnel.
-+ * @param frame        - The packet geometry parameters for this VPN
-+ *                       tunnel.
++ * @param lzo_compwork - The workspace structure from which to get the
++ *                       statistics.
++ * @param so           - The status output structure to which to write the
++ *                       statistics.
 + */
- static inline void
- fragment_housekeeping (struct fragment_master *f, struct frame *frame, struct timeval *tv)
+ void lzo_print_stats (const struct lzo_compress_workspace *lzo_compwork, struct status_output *so);
+ 
++/**
++ * Check whether compression is enabled for a workspace structure.
++ * 
++ * @param lzowork      - The workspace structure to check.
++ * 
++ * @return true if compression is enabled; false otherwise.
++ */
+ static inline bool
+ lzo_defined (const struct lzo_compress_workspace *lzowork)
  {
-@@ -178,11 +469,11 @@ fragment_housekeeping (struct fragment_master *f, struct frame *frame, struct ti
-     fragment_wakeup (f, frame);
+   return lzowork->defined;
  }
  
--static inline bool
--fragment_outgoing_defined (struct fragment_master *f)
--{
--  return f->outgoing.len > 0;
--}
-+/** @} name Functions for regular housekeeping *//*************************/
++/** @} name Utility functions *//******************************************/
 +
 +
-+/** @} addtogroup fragmentation *//****************************************/
++/** @} addtogroup compression */
 +
  
- #endif
+ #endif /* USE_LZO */
  #endif
 -- 
 1.7.4.1
