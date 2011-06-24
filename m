@@ -1,10 +1,10 @@
 From: Adriaan de Jong <dejong@...1435...>
-Date: Fri, 24 Jun 2011 11:55:06 +0200
-Message-ID: <1308909312-17824-14-git-send-email-dejong@...1435...>
+Date: Fri, 24 Jun 2011 11:55:05 +0200
+Message-ID: <1308909312-17824-13-git-send-email-dejong@...1435...>
 In-Reply-To: <1308909312-17824-1-git-send-email-dejong@...1435...>
 References: <1308909312-17824-1-git-send-email-dejong@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 22/28] Refactored cipher key types
+Subject: [Openvpn-devel] [PATCH 21/28] Refactored HMAC functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,364 +18,292 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
 ---
- crypto.c         |   48 +++---------------------
- crypto.h         |    6 +--
- crypto_backend.h |   63 +++++++++++++++++++++++++++++++
- crypto_openssl.c |  108 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
- options.c        |    4 +-
- 5 files changed, 181 insertions(+), 48 deletions(-)
+ crypto.c         |   57 ++++++++++--------------------------------
+ crypto_backend.h |   60 +++++++++++++++++++++++++++++++++++++++++++++
+ crypto_openssl.c |   71 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ ntlm.c           |   15 ++++++-----
+ 4 files changed, 153 insertions(+), 50 deletions(-)
 
 diff --git a/crypto.c b/crypto.c
-index cf1c8be..13c54b5 100644
+index 4c16979..cf1c8be 100644
 --- a/crypto.c
 +++ b/crypto.c
-@@ -378,27 +378,11 @@ crypto_adjust_frame_parameters(struct frame *frame,
- {
-   frame_add_to_extra_frame (frame,
- 			    (packet_id ? packet_id_size (packet_id_long_form) : 0) +
--			    ((cipher_defined && use_iv) ? EVP_CIPHER_iv_length (kt->cipher) : 0) +
--			    (cipher_defined ? EVP_CIPHER_block_size (kt->cipher) : 0) + /* worst case padding expansion */
-+			    ((cipher_defined && use_iv) ? cipher_kt_iv_size (kt->cipher) : 0) +
-+			    (cipher_defined ? cipher_kt_block_size (kt->cipher) : 0) + /* worst case padding expansion */
- 			    kt->hmac_length);
+@@ -174,15 +174,13 @@ openvpn_encrypt (struct buffer *buf, struct buffer work,
+       /* HMAC the ciphertext (or plaintext if !cipher) */
+       if (ctx->hmac)
+ 	{
+-	  int hmac_len;
+-	  uint8_t *output;
++	  uint8_t *output = NULL;
+ 
+-	  HMAC_Init_ex (ctx->hmac, NULL, 0, NULL, NULL);
+-	  HMAC_Update (ctx->hmac, BPTR (&work), BLEN (&work));
+-	  output = buf_prepend (&work, HMAC_size (ctx->hmac));
++	  hmac_ctx_reset (ctx->hmac);
++	  hmac_ctx_update (ctx->hmac, BPTR(&work), BLEN(&work));
++	  output = buf_prepend (&work, hmac_ctx_size(ctx->hmac));
+ 	  ASSERT (output);
+-	  HMAC_Final (ctx->hmac, output, (unsigned int *)&hmac_len);
+-	  ASSERT (hmac_len == HMAC_size (ctx->hmac));
++	  hmac_ctx_final (ctx->hmac, output);
+ 	}
+ 
+       *buf = work;
+@@ -226,21 +224,18 @@ openvpn_decrypt (struct buffer *buf, struct buffer work,
+ 	{
+ 	  int hmac_len;
+ 	  uint8_t local_hmac[MAX_HMAC_KEY_LENGTH]; /* HMAC of ciphertext computed locally */
+-	  int in_hmac_len;
+ 
+-	  HMAC_Init_ex (ctx->hmac, NULL, 0, NULL, NULL);
++	  hmac_ctx_reset(ctx->hmac);
+ 
+ 	  /* Assume the length of the input HMAC */
+-	  hmac_len = HMAC_size (ctx->hmac);
++	  hmac_len = hmac_ctx_size (ctx->hmac);
+ 
+ 	  /* Authentication fails if insufficient data in packet for HMAC */
+ 	  if (buf->len < hmac_len)
+ 	    CRYPT_ERROR ("missing authentication info");
+ 
+-	  HMAC_Update (ctx->hmac, BPTR (buf) + hmac_len,
+-		       BLEN (buf) - hmac_len);
+-	  HMAC_Final (ctx->hmac, local_hmac, (unsigned int *)&in_hmac_len);
+-	  ASSERT (hmac_len == in_hmac_len);
++	  hmac_ctx_update (ctx->hmac, BPTR (buf) + hmac_len, BLEN (buf) - hmac_len);
++	  hmac_ctx_final (ctx->hmac, local_hmac);
+ 
+ 	  /* Compare locally computed HMAC with packet HMAC */
+ 	  if (memcmp (local_hmac, BPTR (buf), hmac_len))
+@@ -439,31 +434,6 @@ init_cipher (EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher,
+   gc_free (&gc);
  }
  
--static const EVP_CIPHER *
--get_cipher (const char *ciphername)
+-static void
+-init_hmac (HMAC_CTX *ctx, const EVP_MD *digest,
+-	   struct key *key, const struct key_type *kt, const char *prefix)
 -{
--  const EVP_CIPHER *cipher = NULL;
--  ASSERT (ciphername);
--  cipher = EVP_get_cipherbyname (ciphername);
--  if ( !(cipher && cipher_ok (OBJ_nid2sn (EVP_CIPHER_nid (cipher)))))
--    msg (M_SSLERR, "Cipher algorithm '%s' not found", ciphername);
--  if (EVP_CIPHER_key_length (cipher) > MAX_CIPHER_KEY_LENGTH)
--    msg (M_FATAL, "Cipher algorithm '%s' uses a default key size (%d bytes) which is larger than " PACKAGE_NAME "'s current maximum key size (%d bytes)",
--	 ciphername,
--	 EVP_CIPHER_key_length (cipher),
--	 MAX_CIPHER_KEY_LENGTH);
--  return cipher;
+-  struct gc_arena gc = gc_new ();
+-
+-  HMAC_CTX_init (ctx);
+-  HMAC_Init_ex (ctx, key->hmac, kt->hmac_length, digest, NULL);
+-  msg (D_HANDSHAKE,
+-       "%s: Using %d bit message hash '%s' for HMAC authentication",
+-       prefix, HMAC_size (ctx) * 8, OBJ_nid2sn (EVP_MD_type (digest)));
+-
+-  /* make sure we used a big enough key */
+-  ASSERT (HMAC_size (ctx) <= kt->hmac_length);
+-
+-  dmsg (D_SHOW_KEYS, "%s: HMAC KEY: %s", prefix,
+-       format_hex (key->hmac, kt->hmac_length, 0, &gc));
+-  dmsg (D_CRYPTO_DEBUG, "%s: HMAC size=%d block_size=%d",
+-       prefix,
+-       EVP_MD_size (digest),
+-       EVP_MD_block_size (digest));
+-
+-  gc_free (&gc);
 -}
 -
- static void
- init_cipher (EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher,
- 	     struct key *key, const struct key_type *kt, int enc,
-@@ -446,14 +430,14 @@ init_key_type (struct key_type *kt, const char *ciphername,
-   CLEAR (*kt);
-   if (ciphername && ciphername_defined)
+ /*
+  * Build a struct key_type.
+  */
+@@ -547,8 +517,9 @@ init_key_ctx (struct key_ctx *ctx, struct key *key,
+     }
+   if (kt->digest && kt->hmac_length > 0)
      {
--      kt->cipher = get_cipher (ciphername);
--      kt->cipher_length = EVP_CIPHER_key_length (kt->cipher);
-+      kt->cipher = cipher_kt_get (ciphername);
-+      kt->cipher_length = cipher_kt_key_size (kt->cipher);
-       if (keysize > 0 && keysize <= MAX_CIPHER_KEY_LENGTH)
- 	kt->cipher_length = keysize;
- 
-       /* check legal cipher mode */
-       {
--	const unsigned int mode = EVP_CIPHER_mode (kt->cipher);
-+	const unsigned int mode = cipher_kt_mode (kt->cipher);
- 	if (!(mode == OPENVPN_MODE_CBC
- #ifdef ALLOW_NON_CBC_CIPHERS
- 	      || (cfb_ofb_allowed && (mode == OPENVPN_MODE_CFB || mode == OPENVPN_MODE_OFB))
-@@ -483,26 +467,6 @@ init_key_type (struct key_type *kt, const char *ciphername,
+-      ALLOC_OBJ (ctx->hmac, HMAC_CTX);
+-      init_hmac (ctx->hmac, kt->digest, key, kt, prefix);
++      ALLOC_OBJ(ctx->hmac, hmac_ctx_t);
++      hmac_ctx_init (ctx->hmac, key->hmac, kt->hmac_length, kt->digest,
++	  prefix);
      }
  }
  
--const char *
--kt_cipher_name (const struct key_type *kt)
--{
--  if (kt->cipher)
--    return EVP_CIPHER_name (kt->cipher);
--  else
--    return "[null-cipher]";
--}
--
--int
--kt_key_size (const struct key_type *kt)
--{
--  if (kt->cipher_length)
--    return kt->cipher_length * 8;
--  else if (kt->cipher)
--    return EVP_CIPHER_key_length (kt->cipher) * 8;
--  else
--    return 0;
--}
--
- /* given a key and key_type, build a key_ctx */
- void
- init_key_ctx (struct key_ctx *ctx, struct key *key,
-@@ -632,8 +596,8 @@ check_replay_iv_consistency (const struct key_type *kt, bool packet_id, bool use
- bool
- cfb_ofb_mode (const struct key_type* kt)
- {
--    const unsigned int mode = EVP_CIPHER_mode (kt->cipher);
-   if (kt && kt->cipher) {
-+      const unsigned int mode = cipher_kt_mode (kt->cipher);
-       return mode == OPENVPN_MODE_CFB || mode == OPENVPN_MODE_OFB;
-   }
-   return false;
-diff --git a/crypto.h b/crypto.h
-index fea1b7b..daa083f 100644
---- a/crypto.h
-+++ b/crypto.h
-@@ -164,9 +164,9 @@ cipher_ok (const char* name)
-  */
- struct key_type
- {
--  uint8_t cipher_length;
-+  uint8_t cipher_length; 	/**< Cipher length, in bytes */
-   uint8_t hmac_length;		/**< HMAC length, in bytes */
--  const EVP_CIPHER *cipher;
-+  const cipher_kt_t *cipher;	/**< Cipher static parameters */
-   const md_kt_t *digest;	/**< Message digest static parameters */
- };
- 
-@@ -309,8 +309,6 @@ int read_key (struct key *key, const struct key_type *kt, struct buffer *buf);
- 
- bool cfb_ofb_mode (const struct key_type* kt);
- 
--const char *kt_cipher_name (const struct key_type *kt);
--int kt_key_size (const struct key_type *kt);
- void init_key_type (struct key_type *kt, const char *ciphername,
-     bool ciphername_defined, const char *authname, bool authname_defined,
-     int keysize, bool cfb_ofb_allowed, bool warn);
+@@ -563,8 +534,8 @@ free_key_ctx (struct key_ctx *ctx)
+     }
+   if (ctx->hmac)
+     {
+-      HMAC_CTX_cleanup (ctx->hmac);
+-      free (ctx->hmac);
++      hmac_ctx_cleanup(ctx->hmac);
++      free(ctx->hmac);
+       ctx->hmac = NULL;
+     }
+ }
 diff --git a/crypto_backend.h b/crypto_backend.h
-index ae3e7fb..c70b60f 100644
+index b6fd996..ae3e7fb 100644
 --- a/crypto_backend.h
 +++ b/crypto_backend.h
-@@ -156,6 +156,69 @@ void cipher_des_encrypt_ecb (const unsigned char key[8],
-  */
- #define MAX_CIPHER_KEY_LENGTH 64
+@@ -264,4 +264,64 @@ void md_ctx_update (md_ctx_t *ctx, const uint8_t *src, int src_len);
+ void md_ctx_final (md_ctx_t *ctx, uint8_t *dst);
  
-+/**
-+ * Return cipher parameters, based on the given cipher name. The
-+ * contents of these parameters are library-specific, and can be used to
-+ * initialise encryption/decryption.
+ 
++/*
 + *
-+ * @param ciphername 	Name of the cipher to retrieve parameters for (e.g.
-+ * 			\c AES-128-CBC).
++ * Generic HMAC functions
 + *
-+ * @return		A statically allocated structure containing parameters
-+ * 			for the given cipher.
 + */
-+const cipher_kt_t * cipher_kt_get (const char *ciphername);
 +
-+/**
-+ * Retrieve a string describing the cipher (e.g. \c AES-128-CBC).
++/*
++ * Initialises the given HMAC context, using the given digest
++ * and key.
 + *
-+ * @param cipher_kt 	Static cipher parameters
++ * @param ctx		HMAC context to intialise
++ * @param key		The key to use for the HMAC
++ * @param key_len	The key length to use
++ * @param kt 		Static message digest parameters
++ * @param prefix	Prefix to use when printing debug information.
 + *
-+ * @return a statically allocated string describing the cipher.
 + */
-+const char * cipher_kt_name (const cipher_kt_t *cipher_kt);
++void hmac_ctx_init (hmac_ctx_t *ctx, const uint8_t *key, int key_length,
++    const md_kt_t *kt, const char *prefix);
 +
-+/**
-+ * Returns the size of keys used by the cipher, in bytes. If the cipher has a
-+ * variable key size, return the default key size.
++/*
++ * Free the given HMAC context.
 + *
-+ * @param cipher_kt 	Static cipher parameters
-+ *
-+ * @return 		(Default) size of keys used by the cipher, in bytes.
++ * @param ctx		HMAC context
 + */
-+int cipher_kt_key_size (const cipher_kt_t *cipher_kt);
++void hmac_ctx_cleanup(hmac_ctx_t *ctx);
 +
-+/**
-+ * Returns the size of the IV used by the cipher, in bytes, or 0 if no IV is
-+ * used.
++/*
++ * Returns the size of the HMAC output by the given HMAC Context
 + *
-+ * @param cipher_kt 	Static cipher parameters
++ * @param ctx 		HMAC context.
 + *
-+ * @return 		Size of the IV, in bytes, or 0 if the cipher does not
-+ * 			use an IV.
++ * @return 		Size of the HMAC, or \0 if ctx is NULL.
 + */
-+int cipher_kt_iv_size (const cipher_kt_t *cipher_kt);
++int hmac_ctx_size (const hmac_ctx_t *ctx);
 +
-+/**
-+ * Returns the block size of the cipher, in bytes.
++/*
++ * Resets the given HMAC context, preserving the associated key information
 + *
-+ * @param cipher_kt 	Static cipher parameters
-+ *
-+ * @return 		Block size, in bytes.
++ * @param ctx 		HMAC context. May not be NULL.
 + */
-+int cipher_kt_block_size (const cipher_kt_t *cipher_kt);
++void hmac_ctx_reset (hmac_ctx_t *ctx);
 +
-+/**
-+ * Returns the mode that the cipher runs in.
++/*
++ * Process the given data for use in the HMAC.
 + *
-+ * @param cipher_kt 	Static cipher parameters
-+ *
-+ * @return 		Cipher mode, either \c OPENVPN_MODE_CBC, \c
-+ * 			OPENVPN_MODE_OFB or \c OPENVPN_MODE_CFB
++ * @param ctx		HMAC context. May not be NULL.
++ * @param src		The buffer to HMAC. May not be NULL.
++ * @param src_len	The length of the incoming buffer.
 + */
-+bool cipher_kt_mode (const cipher_kt_t *cipher_kt);
++void hmac_ctx_update (hmac_ctx_t *ctx, const uint8_t *src, int src_len);
 +
++/*
++ * Output the HMAC to the given buffer.
++ *
++ * @param ctx		HMAC context. May not be NULL.
++ * @param dst		buffer to write the HMAC to. May not be NULL.
++ */
++void hmac_ctx_final (hmac_ctx_t *ctx, uint8_t *dst);
 +
- /*
-  *
-  * Generic message digest information functions
+ #endif /* CRYPTO_BACKEND_H_ */
 diff --git a/crypto_openssl.c b/crypto_openssl.c
-index 55d88db..15e2aa6 100644
+index 852cac5..55d88db 100644
 --- a/crypto_openssl.c
 +++ b/crypto_openssl.c
-@@ -58,6 +58,10 @@
- 
- #if SSLEAY_VERSION_NUMBER < 0x00907000L
- 
-+/* Workaround: EVP_CIPHER_mode is defined wrong in OpenSSL 0.9.6 but is fixed in 0.9.7 */
-+#undef EVP_CIPHER_mode
-+#define EVP_CIPHER_mode(e)                (((e)->flags) & EVP_CIPH_MODE)
-+
- #define DES_cblock                        des_cblock
- #define DES_is_weak_key                   des_is_weak_key
- #define DES_check_key_parity              des_check_key_parity
-@@ -74,6 +78,33 @@
- 
- #if SSLEAY_VERSION_NUMBER < 0x00906000
- 
-+#undef EVP_CIPHER_mode
-+#define EVP_CIPHER_mode(x) 1
-+#define EVP_CIPHER_CTX_mode(x) 1
-+#define EVP_CIPHER_flags(x) 0
-+
-+#define EVP_CIPH_CBC_MODE 1
-+#define EVP_CIPH_CFB_MODE 0
-+#define EVP_CIPH_OFB_MODE 0
-+#define EVP_CIPH_VARIABLE_LENGTH 0
-+
-+#define OPENSSL_malloc(x) malloc(x)
-+#define OPENSSL_free(x) free(x)
-+
-+static inline int
-+EVP_CipherInit_ov (EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, uint8_t *key, uint8_t *iv, int enc)
-+{
-+  EVP_CipherInit (ctx, type, key, iv, enc);
-+  return 1;
-+}
-+
-+static inline int
-+EVP_CipherUpdate_ov (EVP_CIPHER_CTX *ctx, uint8_t *out, int *outl, uint8_t *in, int inl)
-+{
-+  EVP_CipherUpdate (ctx, out, outl, in, inl);
-+  return 1;
-+}
-+
- static inline bool
- cipher_ok (const char* name)
- {
-@@ -86,6 +117,18 @@ cipher_ok (const char* name)
- 
- #else
- 
-+static inline int
-+EVP_CipherInit_ov (EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, uint8_t *key, uint8_t *iv, int enc)
-+{
-+  return EVP_CipherInit (ctx, type, key, iv, enc);
-+}
-+
-+static inline int
-+EVP_CipherUpdate_ov (EVP_CIPHER_CTX *ctx, uint8_t *out, int *outl, uint8_t *in, int inl)
-+{
-+  return EVP_CipherUpdate (ctx, out, outl, in, inl);
-+}
-+
- static inline bool
- cipher_ok (const char* name)
- {
-@@ -98,6 +141,10 @@ cipher_ok (const char* name)
- 
- #endif /* SSLEAY_VERSION_NUMBER < 0x0090581f */
- 
-+#ifndef EVP_CIPHER_name
-+#define EVP_CIPHER_name(e)		OBJ_nid2sn(EVP_CIPHER_nid(e))
-+#endif
-+
- #ifndef EVP_MD_name
- #define EVP_MD_name(e)			OBJ_nid2sn(EVP_MD_type(e))
- #endif
-@@ -452,6 +499,67 @@ key_des_fixup (uint8_t *key, int key_len, int ndc)
+@@ -553,3 +553,74 @@ md_ctx_final (EVP_MD_CTX *ctx, uint8_t *dst)
  }
  
  
 +/*
 + *
-+ * Generic cipher key type functions
++ * Generic HMAC functions
 + *
 + */
 +
 +
-+const EVP_CIPHER *
-+cipher_kt_get (const char *ciphername)
++void
++hmac_ctx_init (HMAC_CTX *ctx, const uint8_t *key, int key_len,
++    const EVP_MD *kt, const char *prefix)
 +{
-+  const EVP_CIPHER *cipher = NULL;
++  struct gc_arena gc = gc_new ();
 +
-+  ASSERT (ciphername);
++  ASSERT(NULL != kt && NULL != ctx);
 +
-+  cipher = EVP_get_cipherbyname (ciphername);
++  CLEAR(*ctx);
 +
-+  if ((NULL == cipher) || !cipher_ok (OBJ_nid2sn (EVP_CIPHER_nid (cipher))))
-+    msg (M_SSLERR, "Cipher algorithm '%s' not found", ciphername);
++  HMAC_CTX_init (ctx);
++  HMAC_Init_ex (ctx, key, key_len, kt, NULL);
 +
-+  if (EVP_CIPHER_key_length (cipher) > MAX_CIPHER_KEY_LENGTH)
-+    msg (M_FATAL, "Cipher algorithm '%s' uses a default key size (%d bytes) which is larger than " PACKAGE_NAME "'s current maximum key size (%d bytes)",
-+	 ciphername,
-+	 EVP_CIPHER_key_length (cipher),
-+	 MAX_CIPHER_KEY_LENGTH);
++  if (prefix)
++    msg (D_HANDSHAKE,
++	"%s: Using %d bit message hash '%s' for HMAC authentication",
++	prefix, HMAC_size (ctx) * 8, OBJ_nid2sn (EVP_MD_type (kt)));
 +
-+  return cipher;
++  /* make sure we used a big enough key */
++  ASSERT (HMAC_size (ctx) <= key_len);
++
++  if (prefix)
++    dmsg (D_SHOW_KEYS, "%s: HMAC KEY: %s", prefix,
++	format_hex (key, key_len, 0, &gc));
++  if (prefix)
++    dmsg (D_CRYPTO_DEBUG, "%s: HMAC size=%d block_size=%d",
++	prefix,
++	EVP_MD_size (kt),
++	EVP_MD_block_size (kt));
++
++  gc_free (&gc);
 +}
 +
-+const char *
-+cipher_kt_name (const EVP_CIPHER *cipher_kt)
++void
++hmac_ctx_cleanup(HMAC_CTX *ctx)
 +{
-+  if (NULL == cipher_kt)
-+    return "[null-cipher]";
-+  return EVP_CIPHER_name (cipher_kt);
++  HMAC_CTX_cleanup (ctx);
 +}
 +
 +int
-+cipher_kt_key_size (const EVP_CIPHER *cipher_kt)
++hmac_ctx_size (const HMAC_CTX *ctx)
 +{
-+  return EVP_CIPHER_key_length (cipher_kt);
++  return HMAC_size (ctx);
 +}
 +
-+int
-+cipher_kt_iv_size (const EVP_CIPHER *cipher_kt)
++void
++hmac_ctx_reset (HMAC_CTX *ctx)
 +{
-+  return EVP_CIPHER_iv_length (cipher_kt);
++  HMAC_Init_ex (ctx, NULL, 0, NULL, NULL);
 +}
 +
-+int
-+cipher_kt_block_size (const EVP_CIPHER *cipher_kt)
++void
++hmac_ctx_update (HMAC_CTX *ctx, const uint8_t *src, int src_len)
 +{
-+  return EVP_CIPHER_block_size (cipher_kt);
++  HMAC_Update (ctx, src, src_len);
 +}
 +
-+bool
-+cipher_kt_mode (const EVP_CIPHER *cipher_kt)
++void
++hmac_ctx_final (HMAC_CTX *ctx, uint8_t *dst)
 +{
-+  ASSERT(NULL != cipher_kt);
-+  return EVP_CIPHER_mode (cipher_kt);
-+}
++  unsigned int in_hmac_len = 0;
 +
- void
- cipher_des_encrypt_ecb (const unsigned char key[8],
-     unsigned char *src,
-diff --git a/options.c b/options.c
-index f61cd16..c634318 100644
---- a/options.c
-+++ b/options.c
-@@ -2802,9 +2802,9 @@ options_string (const struct options *o,
- 		       o->authname, o->authname_defined,
- 		       o->keysize, true, false);
++  HMAC_Final (ctx, dst, &in_hmac_len);
++}
+diff --git a/ntlm.c b/ntlm.c
+index 512c26f..30d5d11 100644
+--- a/ntlm.c
++++ b/ntlm.c
+@@ -80,13 +80,14 @@ gen_md4_hash (const char* data, int data_len, char *result)
+ static void
+ gen_hmac_md5 (const char* data, int data_len, const char* key, int key_len,char *result)
+ {
+-	unsigned int len;
+-
+-	HMAC_CTX c;
+-	HMAC_Init (&c, key, key_len, EVP_md5());
+-	HMAC_Update (&c, (const unsigned char *)data, data_len);
+-	HMAC_Final (&c, (unsigned char *)result, &len);
+-	HMAC_CTX_cleanup(&c);
++	const md_kt_t *md5_kt = md_kt_get("MD5");
++	hmac_ctx_t hmac_ctx;
++	CLEAR(hmac_ctx);
++
++	hmac_ctx_init(&hmac_ctx, key, key_len, md5_kt, NULL);
++	hmac_ctx_update(&hmac_ctx, (const unsigned char *)data, data_len);
++	hmac_ctx_final(&hmac_ctx, (unsigned char *)result);
++	hmac_ctx_cleanup(&hmac_ctx);
+ }
  
--	buf_printf (&out, ",cipher %s", kt_cipher_name (&kt));
-+	buf_printf (&out, ",cipher %s", cipher_kt_name (kt.cipher));
- 	buf_printf (&out, ",auth %s", md_kt_name (kt.digest));
--	buf_printf (&out, ",keysize %d", kt_key_size (&kt));
-+	buf_printf (&out, ",keysize %d", kt.cipher_length);
- 	if (o->shared_secret_file)
- 	  buf_printf (&out, ",secret");
- 	if (!o->replay)
+ static void
 -- 
 1.7.4.1
 
