@@ -1,10 +1,10 @@
 From: Adriaan de Jong <dejong@...1435...>
-Date: Fri, 24 Jun 2011 11:55:04 +0200
-Message-ID: <1308909312-17824-12-git-send-email-dejong@...1435...>
+Date: Fri, 24 Jun 2011 11:55:07 +0200
+Message-ID: <1308909312-17824-15-git-send-email-dejong@...1435...>
 In-Reply-To: <1308909312-17824-1-git-send-email-dejong@...1435...>
 References: <1308909312-17824-1-git-send-email-dejong@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 20/28] Refactored message digest functions
+Subject: [Openvpn-devel] [PATCH 23/28] Refactored cipher functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,455 +18,436 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
 ---
- crypto.c         |   47 +++++++++++++++++----------------
- crypto.h         |    4 +-
- crypto_backend.h |   60 ++++++++++++++++++++++++++++++++++++++++++
- crypto_openssl.c |   52 ++++++++++++++++++++++++++++++++++++
- httpdigest.c     |   77 ++++++++++++++++++++++++++++-------------------------
- misc.c           |   15 ++++++----
- ntlm.c           |    8 +----
- 7 files changed, 190 insertions(+), 73 deletions(-)
+ crypto.c         |   68 +++++++++---------------------------
+ crypto.h         |   26 ++++++-------
+ crypto_backend.h |  100 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ crypto_openssl.c |   89 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 218 insertions(+), 65 deletions(-)
 
 diff --git a/crypto.c b/crypto.c
-index 9baf9d4..4c16979 100644
+index 13c54b5..995558b 100644
 --- a/crypto.c
 +++ b/crypto.c
-@@ -1088,7 +1088,7 @@ read_passphrase_hash (const char *passphrase_file,
-   ASSERT (len >= md_kt_size(digest));
-   memset (output, 0, len);
- 
--  EVP_DigestInit (&md, digest);
-+  md_ctx_init(&md, digest);
- 
-   /* read passphrase file */
-   {
-@@ -1108,7 +1108,7 @@ read_passphrase_hash (const char *passphrase_file,
- 	if (size == -1)
- 	  msg (M_ERR, "Read error on passphrase file: '%s'",
- 	       passphrase_file);
--	EVP_DigestUpdate (&md, buf, size);
-+	md_ctx_update(&md, buf, size);
- 	total_size += size;
-       }
-     close (fd);
-@@ -1120,10 +1120,9 @@ read_passphrase_hash (const char *passphrase_file,
- 	   "Passphrase file '%s' is too small (must have at least %d characters)",
- 	   passphrase_file, min_passphrase_size);
-   }
--
--  EVP_DigestFinal (&md, output, &outlen);
--  EVP_MD_CTX_cleanup (&md);
--  return outlen;
-+  md_ctx_final(&md, output);
-+  md_ctx_cleanup(&md);
-+  return md_kt_size(digest);
- }
- 
- /*
-@@ -1403,17 +1402,13 @@ prng_bytes (uint8_t *output, int len)
- {
-   if (nonce_md)
-     {
--      EVP_MD_CTX ctx;
-+      md_ctx_t ctx;
-       const int md_size = md_kt_size (nonce_md);
-       while (len > 0)
+@@ -75,8 +75,8 @@ openvpn_encrypt (struct buffer *buf, struct buffer work,
+       if (ctx->cipher)
  	{
- 	  unsigned int outlen = 0;
- 	  const int blen = min_int (len, md_size);
--	  EVP_DigestInit (&ctx, nonce_md);
--	  EVP_DigestUpdate (&ctx, nonce_data, md_size + nonce_secret_len);
--	  EVP_DigestFinal (&ctx, nonce_data, &outlen);
--	  ASSERT (outlen == md_size);
--	  EVP_MD_CTX_cleanup (&ctx);
-+	  md_full(nonce_md, nonce_data, md_size + nonce_secret_len, nonce_data);
- 	  memcpy (output, nonce_data, blen);
- 	  output += blen;
- 	  len -= blen;
-@@ -1434,14 +1429,6 @@ get_random()
-   return l;
+ 	  uint8_t iv_buf[OPENVPN_MAX_IV_LENGTH];
+-	  const int iv_size = EVP_CIPHER_CTX_iv_length (ctx->cipher);
+-	  const unsigned int mode = EVP_CIPHER_CTX_mode (ctx->cipher);  
++          const int iv_size = cipher_ctx_iv_length (ctx->cipher);
++	  const unsigned int mode = cipher_ctx_mode (ctx->cipher);
+ 	  int outlen;
+ 
+ 	  if (mode == OPENVPN_MODE_CBC)
+@@ -124,10 +124,10 @@ openvpn_encrypt (struct buffer *buf, struct buffer work,
+ 	       format_hex (BPTR (buf), BLEN (buf), 80, &gc));
+ 
+ 	  /* cipher_ctx was already initialized with key & keylen */
+-	  ASSERT (EVP_CipherInit_ov (ctx->cipher, NULL, NULL, iv_buf, DO_ENCRYPT));
++	  ASSERT (cipher_ctx_reset(ctx->cipher, iv_buf));
+ 
+ 	  /* Buffer overflow check */
+-	  if (!buf_safe (&work, buf->len + EVP_CIPHER_CTX_block_size (ctx->cipher)))
++	  if (!buf_safe (&work, buf->len + cipher_ctx_block_size(ctx->cipher)))
+ 	    {
+ 	      msg (D_CRYPT_ERRORS, "ENCRYPT: buffer size error, bc=%d bo=%d bl=%d wc=%d wo=%d wl=%d cbs=%d",
+ 		   buf->capacity,
+@@ -136,16 +136,16 @@ openvpn_encrypt (struct buffer *buf, struct buffer work,
+ 		   work.capacity,
+ 		   work.offset,
+ 		   work.len,
+-		   EVP_CIPHER_CTX_block_size (ctx->cipher));
++		   cipher_ctx_block_size (ctx->cipher));
+ 	      goto err;
+ 	    }
+ 
+ 	  /* Encrypt packet ID, payload */
+-	  ASSERT (EVP_CipherUpdate_ov (ctx->cipher, BPTR (&work), &outlen, BPTR (buf), BLEN (buf)));
++	  ASSERT (cipher_ctx_update (ctx->cipher, BPTR (&work), &outlen, BPTR (buf), BLEN (buf)));
+ 	  work.len += outlen;
+ 
+ 	  /* Flush the encryption buffer */
+-	  ASSERT (EVP_CipherFinal (ctx->cipher, BPTR (&work) + outlen, &outlen));
++	  ASSERT(cipher_ctx_final(ctx->cipher, BPTR (&work) + outlen, &outlen));
+ 	  work.len += outlen;
+ 	  ASSERT (outlen == iv_size);
+ 
+@@ -248,8 +248,8 @@ openvpn_decrypt (struct buffer *buf, struct buffer work,
+ 
+       if (ctx->cipher)
+ 	{
+-	  const unsigned int mode = EVP_CIPHER_CTX_mode (ctx->cipher);
+-	  const int iv_size = EVP_CIPHER_CTX_iv_length (ctx->cipher);
++	  const unsigned int mode = cipher_ctx_mode (ctx->cipher);
++	  const int iv_size = cipher_ctx_iv_length (ctx->cipher);
+ 	  uint8_t iv_buf[OPENVPN_MAX_IV_LENGTH];
+ 	  int outlen;
+ 
+@@ -274,7 +274,7 @@ openvpn_decrypt (struct buffer *buf, struct buffer work,
+ 	    CRYPT_ERROR ("missing payload");
+ 
+ 	  /* ctx->cipher was already initialized with key & keylen */
+-	  if (!EVP_CipherInit_ov (ctx->cipher, NULL, NULL, iv_buf, DO_DECRYPT))
++	  if (!cipher_ctx_reset (ctx->cipher, iv_buf))
+ 	    CRYPT_ERROR ("cipher init failed");
+ 
+ 	  /* Buffer overflow check (should never happen) */
+@@ -282,12 +282,12 @@ openvpn_decrypt (struct buffer *buf, struct buffer work,
+ 	    CRYPT_ERROR ("buffer overflow");
+ 
+ 	  /* Decrypt packet ID, payload */
+-	  if (!EVP_CipherUpdate_ov (ctx->cipher, BPTR (&work), &outlen, BPTR (buf), BLEN (buf)))
++	  if (!cipher_ctx_update (ctx->cipher, BPTR (&work), &outlen, BPTR (buf), BLEN (buf)))
+ 	    CRYPT_ERROR ("cipher update failed");
+ 	  work.len += outlen;
+ 
+ 	  /* Flush the decryption buffer */
+-	  if (!EVP_CipherFinal (ctx->cipher, BPTR (&work) + outlen, &outlen))
++	  if (!cipher_ctx_final (ctx->cipher, BPTR (&work) + outlen, &outlen))
+ 	    CRYPT_ERROR ("cipher final failed");
+ 	  work.len += outlen;
+ 
+@@ -383,41 +383,6 @@ crypto_adjust_frame_parameters(struct frame *frame,
+ 			    kt->hmac_length);
  }
  
--const char *
--md5sum (uint8_t *buf, int len, int n_print_chars, struct gc_arena *gc)
+-static void
+-init_cipher (EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher,
+-	     struct key *key, const struct key_type *kt, int enc,
+-	     const char *prefix)
 -{
--  uint8_t digest[MD5_DIGEST_LENGTH];
--  MD5 (buf, len, digest);
--  return format_hex (digest, MD5_DIGEST_LENGTH, n_print_chars, gc);
+-  struct gc_arena gc = gc_new ();
+-
+-  EVP_CIPHER_CTX_init (ctx);
+-  if (!EVP_CipherInit_ov (ctx, cipher, NULL, NULL, enc))
+-    msg (M_SSLERR, "EVP cipher init #1");
+-#ifdef HAVE_EVP_CIPHER_CTX_SET_KEY_LENGTH
+-  if (!EVP_CIPHER_CTX_set_key_length (ctx, kt->cipher_length))
+-    msg (M_SSLERR, "EVP set key size");
+-#endif
+-  if (!EVP_CipherInit_ov (ctx, NULL, key->cipher, NULL, enc))
+-    msg (M_SSLERR, "EVP cipher init #2");
+-
+-  msg (D_HANDSHAKE, "%s: Cipher '%s' initialized with %d bit key",
+-       prefix,
+-       OBJ_nid2sn (EVP_CIPHER_CTX_nid (ctx)),
+-       EVP_CIPHER_CTX_key_length (ctx) * 8);
+-
+-  /* make sure we used a big enough key */
+-  ASSERT (EVP_CIPHER_CTX_key_length (ctx) <= kt->cipher_length);
+-
+-  dmsg (D_SHOW_KEYS, "%s: CIPHER KEY: %s", prefix,
+-       format_hex (key->cipher, kt->cipher_length, 0, &gc));
+-  dmsg (D_CRYPTO_DEBUG, "%s: CIPHER block_size=%d iv_size=%d",
+-       prefix,
+-       EVP_CIPHER_CTX_block_size (ctx),
+-       EVP_CIPHER_CTX_iv_length (ctx));
+-
+-  gc_free (&gc);
 -}
 -
- #ifndef USE_SSL
- 
- void
-@@ -1466,22 +1453,36 @@ free_ssl_lib (void)
-  * md5 functions
+ /*
+  * Build a struct key_type.
   */
- 
-+const char *
-+md5sum (uint8_t *buf, int len, int n_print_chars, struct gc_arena *gc)
-+{
-+  uint8_t digest[MD5_DIGEST_LENGTH];
-+  const md_kt_t *md5_kt = md_kt_get("MD5");
-+
-+  md_full(md5_kt, buf, len, digest);
-+
-+  return format_hex (digest, MD5_DIGEST_LENGTH, n_print_chars, gc);
-+}
-+
- void
- md5_state_init (struct md5_state *s)
+@@ -476,8 +441,9 @@ init_key_ctx (struct key_ctx *ctx, struct key *key,
+   CLEAR (*ctx);
+   if (kt->cipher && kt->cipher_length > 0)
+     {
+-      ALLOC_OBJ (ctx->cipher, EVP_CIPHER_CTX);
+-      init_cipher (ctx->cipher, kt->cipher, key, kt, enc, prefix);
++      ALLOC_OBJ(ctx->cipher, cipher_ctx_t);
++      cipher_ctx_init (ctx->cipher, key->cipher, kt->cipher_length,
++	  kt->cipher, enc, prefix);
+     }
+   if (kt->digest && kt->hmac_length > 0)
+     {
+@@ -492,8 +458,8 @@ free_key_ctx (struct key_ctx *ctx)
  {
--  MD5_Init (&s->ctx);
-+  const md_kt_t *md5_kt = md_kt_get("MD5");
-+
-+  md_ctx_init(&s->ctx, md5_kt);
- }
- 
- void
- md5_state_update (struct md5_state *s, void *data, size_t len)
- {
--  MD5_Update (&s->ctx, data, len);
-+  md_ctx_update(&s->ctx, data, len);
- }
- 
- void
- md5_state_final (struct md5_state *s, struct md5_digest *out)
- {
--  MD5_Final (out->digest, &s->ctx);
-+  md_ctx_final(&s->ctx, out->digest);
-+  md_ctx_cleanup(&s->ctx);
- }
- 
- void
+   if (ctx->cipher)
+     {
+-      EVP_CIPHER_CTX_cleanup (ctx->cipher);
+-      free (ctx->cipher);
++      cipher_ctx_cleanup(ctx->cipher);
++      free(ctx->cipher);
+       ctx->cipher = NULL;
+     }
+   if (ctx->hmac)
 diff --git a/crypto.h b/crypto.h
-index 432e7f3..fea1b7b 100644
+index daa083f..1f9eca9 100644
 --- a/crypto.h
 +++ b/crypto.h
-@@ -419,7 +419,6 @@ void prng_uninit ();
+@@ -182,6 +182,17 @@ struct key
+                                 /**< %Key material for HMAC operations. */
+ };
  
- void test_crypto (const struct crypto_options *co, struct frame* f);
++
++/**
++ * Container for one set of OpenSSL cipher and/or HMAC contexts.
++ * @ingroup control_processor
++ */
++struct key_ctx
++{
++  cipher_ctx_t *cipher;      	/**< Generic cipher %context. */
++  hmac_ctx_t *hmac;               /**< Generic HMAC %context. */
++};
++
+ #define KEY_DIRECTION_BIDIRECTIONAL 0 /* same keys for both directions */
+ #define KEY_DIRECTION_NORMAL        1 /* encrypt with keys[0], decrypt with keys[1] */
+ #define KEY_DIRECTION_INVERSE       2 /* encrypt with keys[1], decrypt with keys[0] */
+@@ -224,16 +235,6 @@ struct key_direction_state
+ };
  
--const char *md5sum(uint8_t *buf, int len, int n_print_chars, struct gc_arena *gc);
+ /**
+- * Container for one set of OpenSSL cipher and/or HMAC contexts.
+- * @ingroup control_processor
+- */
+-struct key_ctx
+-{
+-  EVP_CIPHER_CTX *cipher;       /**< OpenSSL cipher %context. */
+-  HMAC_CTX *hmac;               /**< OpenSSL HMAC %context. */
+-};
+-
+-/**
+  * Container for two sets of OpenSSL cipher and/or HMAC contexts for both
+  * sending and receiving directions.
+  * @ingroup control_processor
+@@ -313,9 +314,6 @@ void init_key_type (struct key_type *kt, const char *ciphername,
+     bool ciphername_defined, const char *authname, bool authname_defined,
+     int keysize, bool cfb_ofb_allowed, bool warn);
  
- /* key direction functions */
- 
-@@ -470,13 +469,14 @@ key_ctx_bi_defined(const struct key_ctx_bi* key)
+-/* enc parameter in init_key_ctx */
+-#define DO_ENCRYPT 1
+-#define DO_DECRYPT 0
+ /*
+  * Key context functions
   */
+@@ -325,6 +323,7 @@ void init_key_ctx (struct key_ctx *ctx, struct key *key,
+ 		   const char *prefix);
  
- struct md5_state {
--  MD5_CTX ctx;
-+  md_ctx_t ctx;
- };
+ void free_key_ctx (struct key_ctx *ctx);
++
+ void free_key_ctx_bi (struct key_ctx_bi *ctx);
  
- struct md5_digest {
-   uint8_t digest [MD5_DIGEST_LENGTH];
- };
  
-+const char *md5sum(uint8_t *buf, int len, int n_print_chars, struct gc_arena *gc);
- void md5_state_init (struct md5_state *s);
- void md5_state_update (struct md5_state *s, void *data, size_t len);
- void md5_state_final (struct md5_state *s, struct md5_digest *out);
+@@ -401,7 +400,6 @@ bool openvpn_decrypt (struct buffer *buf, struct buffer work,
+ 
+ /** @} name Functions for performing security operations on data channel packets */
+ 
+-
+ void crypto_adjust_frame_parameters(struct frame *frame,
+ 				    const struct key_type* kt,
+ 				    bool cipher_defined,
 diff --git a/crypto_backend.h b/crypto_backend.h
-index 527f6b6..b6fd996 100644
+index c70b60f..8d1f37e 100644
 --- a/crypto_backend.h
 +++ b/crypto_backend.h
-@@ -204,4 +204,64 @@ const char * md_kt_name (const md_kt_t *kt);
- int md_kt_size (const md_kt_t *kt);
+@@ -219,6 +219,106 @@ int cipher_kt_block_size (const cipher_kt_t *cipher_kt);
+ bool cipher_kt_mode (const cipher_kt_t *cipher_kt);
  
  
-+/*
++/**
 + *
-+ * Generic message digest functions
++ * Generic cipher functions
 + *
 + */
 +
-+/*
-+ * Calculates the message digest for the given buffer.
++/**
++ * Initialise a cipher context, based on the given key and key type.
 + *
-+ * @param kt 		Static message digest parameters
-+ * @param src		Buffer to digest. May not be NULL.
-+ * @param src_len	The length of the incoming buffer.
-+ * @param dst		Buffer to write the message digest to. May not be NULL.
-+ *
-+ * @return		\c 1 on success, \c 0 on failure
++ * @param ctx		Cipher context. May not be NULL
++ * @param key		Buffer containing the key to use
++ * @param key_len 	Length of the key, in bytes
++ * @param kt		Static cipher parameters to use
++ * @param enc		Whether to encrypt or decrypt (either
++ * 			\c POLARSSL_OP_ENCRYPT or \c POLARSSL_OP_DECRYPT).
++ * @param prefix	Prefix to use for output.
 + */
-+int md_full (const md_kt_t *kt, const uint8_t *src, int src_len, uint8_t *dst);
++void cipher_ctx_init (cipher_ctx_t *ctx, uint8_t *key, int key_len,
++    const cipher_kt_t *kt, int enc, const char *prefix);
 +
-+/*
-+ * Initialises the given message digest context.
++/**
++ * Cleanup the specified context.
 + *
-+ * @param ctx		Message digest context
-+ * @param kt 		Static message digest parameters
++ * @param ctx	Cipher context to cleanup.
 + */
-+void md_ctx_init (md_ctx_t *ctx, const md_kt_t *kt);
++void cipher_ctx_cleanup (cipher_ctx_t *ctx);
 +
-+/*
-+ * Free the given message digest context.
++/**
++ * Returns the size of the IV used by the cipher, in bytes, or 0 if no IV is
++ * used.
 + *
-+ * @param ctx		Message digest context
++ * @param ctx	 	The cipher's context
++ *
++ * @return 		Size of the IV, in bytes, or \c 0 if the cipher does not
++ * 			use an IV or ctx was NULL.
 + */
-+void md_ctx_cleanup(md_ctx_t *ctx);
++int cipher_ctx_iv_length (const cipher_ctx_t *ctx);
 +
-+/*
-+ * Returns the size of the message digest output by the given context
++/**
++ * Returns the block size of the cipher, in bytes.
 + *
-+ * @param ctx 		Message digest context.
++ * @param ctx	 	The cipher's context
 + *
-+ * @return 		Size of the message digest, or \0 if ctx is NULL.
++ * @return 		Block size, in bytes, or 0 if ctx was NULL.
 + */
-+int md_ctx_size (const md_ctx_t *ctx);
++int cipher_ctx_block_size (const cipher_ctx_t *ctx);
 +
-+/*
-+ * Process the given data for use in the message digest.
++/**
++ * Returns the mode that the cipher runs in.
 + *
-+ * @param ctx		Message digest context. May not be NULL.
-+ * @param src		Buffer to digest. May not be NULL.
-+ * @param src_len	The length of the incoming buffer.
-+ */
-+void md_ctx_update (md_ctx_t *ctx, const uint8_t *src, int src_len);
-+
-+/*
-+ * Output the message digest to the given buffer.
++ * @param ctx 		Cipher's context. May not be NULL.
 + *
-+ * @param ctx		Message digest context. May not be NULL.
-+ * @param dst		Buffer to write the message digest to. May not be NULL.
++ * @return 		Cipher mode, either \c OPENVPN_MODE_CBC, \c
++ * 			OPENVPN_MODE_OFB or \c OPENVPN_MODE_CFB
 + */
-+void md_ctx_final (md_ctx_t *ctx, uint8_t *dst);
++int cipher_ctx_mode (const cipher_ctx_t *ctx);
 +
++/**
++ * Resets the given cipher context, setting the IV to the specified value.
++ * Preserves the associated key information.
++ *
++ * @param ctx 		Cipher's context. May not be NULL.
++ * @param iv_buf	The IV to use.
++ *
++ * @return 		\c 0 on failure, \c 1 on success.
++ */
++int cipher_ctx_reset (cipher_ctx_t *ctx, uint8_t *iv_buf);
 +
- #endif /* CRYPTO_BACKEND_H_ */
++/**
++ * Updates the given cipher context, encrypting data in the source buffer, and
++ * placing any complete blocks in the destination buffer.
++ *
++ * Note that if a complete block cannot be written, data is cached in the
++ * context, and emitted at a later call to \c cipher_ctx_update, or by a call
++ * to \c cipher_ctx_final(). This implies that dst should have enough room for
++ * src_len + \c cipher_ctx_block_size() - 1.
++ *
++ * @param ctx 		Cipher's context. May not be NULL.
++ * @param dst		Destination buffer
++ * @param dst_len	Length of the destination buffer, in bytes
++ * @param src		Source buffer
++ * @param src_len	Length of the source buffer, in bytes
++ *
++ * @return 		\c 0 on failure, \c 1 on success.
++ */
++int cipher_ctx_update (cipher_ctx_t *ctx, uint8_t *dst, int *dst_len,
++    uint8_t *src, int src_len);
++
++/**
++ * Pads the final cipher block using PKCS padding, and output to the destination
++ * buffer.
++ *
++ * @param ctx 		Cipher's context. May not be NULL.
++ * @param dst		Destination buffer
++ * @param dst_len	Length of the destination buffer, in bytes
++ *
++ * @return 		\c 0 on failure, \c 1 on success.
++ */
++int cipher_ctx_final (cipher_ctx_t *ctx, uint8_t *dst, int *dst_len);
++
+ /*
+  *
+  * Generic message digest information functions
 diff --git a/crypto_openssl.c b/crypto_openssl.c
-index e2fb014..852cac5 100644
+index 15e2aa6..57f10ae 100644
 --- a/crypto_openssl.c
 +++ b/crypto_openssl.c
-@@ -501,3 +501,55 @@ md_kt_size (const EVP_MD *kt)
+@@ -560,6 +560,95 @@ cipher_kt_mode (const EVP_CIPHER *cipher_kt)
+   return EVP_CIPHER_mode (cipher_kt);
  }
- 
  
 +/*
 + *
-+ * Generic message digest functions
++ * Generic cipher context functions
 + *
 + */
 +
-+int
-+md_full (const EVP_MD *kt, const uint8_t *src, int src_len, uint8_t *dst)
-+{
-+  unsigned int in_md_len = 0;
-+
-+  return EVP_Digest(src, src_len, dst, &in_md_len, kt, NULL);
-+}
 +
 +void
-+md_ctx_init (EVP_MD_CTX *ctx, const EVP_MD *kt)
++cipher_ctx_init (EVP_CIPHER_CTX *ctx, uint8_t *key, int key_len,
++    const EVP_CIPHER *kt, int enc, const char *prefix)
 +{
-+  ASSERT(NULL != ctx && NULL != kt);
++  struct gc_arena gc = gc_new ();
++
++  ASSERT(NULL != kt && NULL != ctx);
 +
 +  CLEAR (*ctx);
 +
-+  EVP_MD_CTX_init (ctx);
-+  EVP_DigestInit(ctx, kt);
++  EVP_CIPHER_CTX_init (ctx);
++  if (!EVP_CipherInit_ov (ctx, kt, NULL, NULL, enc))
++    msg (M_SSLERR, "EVP cipher init #1");
++#ifdef HAVE_EVP_CIPHER_CTX_SET_KEY_LENGTH
++  if (!EVP_CIPHER_CTX_set_key_length (ctx, key_len))
++    msg (M_SSLERR, "EVP set key size");
++#endif
++  if (!EVP_CipherInit_ov (ctx, NULL, key, NULL, enc))
++    msg (M_SSLERR, "EVP cipher init #2");
++
++  msg (D_HANDSHAKE, "%s: Cipher '%s' initialized with %d bit key",
++      prefix,
++      OBJ_nid2sn (EVP_CIPHER_CTX_nid (ctx)),
++      EVP_CIPHER_CTX_key_length (ctx) * 8);
++
++  /* make sure we used a big enough key */
++  ASSERT (EVP_CIPHER_CTX_key_length (ctx) <= key_len);
++
++  dmsg (D_SHOW_KEYS, "%s: CIPHER KEY: %s", prefix,
++      format_hex (key, key_len, 0, &gc));
++  dmsg (D_CRYPTO_DEBUG, "%s: CIPHER block_size=%d iv_size=%d",
++      prefix,
++      EVP_CIPHER_CTX_block_size (ctx),
++      EVP_CIPHER_CTX_iv_length (ctx));
++
++  gc_free (&gc);
 +}
 +
 +void
-+md_ctx_cleanup(EVP_MD_CTX *ctx)
++cipher_ctx_cleanup (EVP_CIPHER_CTX *ctx)
 +{
-+  EVP_MD_CTX_cleanup(ctx);
++  EVP_CIPHER_CTX_cleanup (ctx);
 +}
 +
 +int
-+md_ctx_size (const EVP_MD_CTX *ctx)
++cipher_ctx_iv_length (const EVP_CIPHER_CTX *ctx)
 +{
-+  return EVP_MD_CTX_size(ctx);
++  return EVP_CIPHER_CTX_iv_length (ctx);
 +}
 +
-+void
-+md_ctx_update (EVP_MD_CTX *ctx, const uint8_t *src, int src_len)
++int
++cipher_ctx_block_size(const EVP_CIPHER_CTX *ctx)
 +{
-+  EVP_DigestUpdate(ctx, src, src_len);
++  return EVP_CIPHER_CTX_block_size (ctx);
 +}
 +
-+void
-+md_ctx_final (EVP_MD_CTX *ctx, uint8_t *dst)
++int
++cipher_ctx_mode (const EVP_CIPHER_CTX *ctx)
 +{
-+  unsigned int in_md_len = 0;
++  return EVP_CIPHER_CTX_mode (ctx);
++}
 +
-+  EVP_DigestFinal(ctx, dst, &in_md_len);
++int
++cipher_ctx_reset (EVP_CIPHER_CTX *ctx, uint8_t *iv_buf)
++{
++  return EVP_CipherInit_ov (ctx, NULL, NULL, iv_buf, -1);
++}
++
++int
++cipher_ctx_update (EVP_CIPHER_CTX *ctx, uint8_t *dst, int *dst_len,
++    uint8_t *src, int src_len)
++{
++  return EVP_CipherUpdate_ov (ctx, dst, dst_len, src, src_len);
++}
++
++int
++cipher_ctx_final (EVP_CIPHER_CTX *ctx, uint8_t *dst, int *dst_len)
++{
++  return EVP_CipherFinal (ctx, dst, dst_len);
 +}
 +
 +
-diff --git a/httpdigest.c b/httpdigest.c
-index 90abc6a..5907637 100644
---- a/httpdigest.c
-+++ b/httpdigest.c
-@@ -65,26 +65,28 @@ DigestCalcHA1(
- 	      OUT HASHHEX SessionKey
- 	      )
- {
--  MD5_CTX Md5Ctx;
-   HASH HA1;
-+  md_ctx_t md5_ctx;
-+  const md_kt_t *md5_kt = md_kt_get("MD5");
- 
--  MD5_Init(&Md5Ctx);
--  MD5_Update(&Md5Ctx, pszUserName, strlen(pszUserName));
--  MD5_Update(&Md5Ctx, ":", 1);
--  MD5_Update(&Md5Ctx, pszRealm, strlen(pszRealm));
--  MD5_Update(&Md5Ctx, ":", 1);
--  MD5_Update(&Md5Ctx, pszPassword, strlen(pszPassword));
--  MD5_Final(HA1, &Md5Ctx);
-+  md_ctx_init(&md5_ctx, md5_kt);
-+  md_ctx_update(&md5_ctx, pszUserName, strlen(pszUserName));
-+  md_ctx_update(&md5_ctx, ":", 1);
-+  md_ctx_update(&md5_ctx, pszRealm, strlen(pszRealm));
-+  md_ctx_update(&md5_ctx, ":", 1);
-+  md_ctx_update(&md5_ctx, pszPassword, strlen(pszPassword));
-+  md_ctx_final(&md5_ctx, HA1);
-   if (pszAlg && strcasecmp(pszAlg, "md5-sess") == 0)
-     {
--      MD5_Init(&Md5Ctx);
--      MD5_Update(&Md5Ctx, HA1, HASHLEN);
--      MD5_Update(&Md5Ctx, ":", 1);
--      MD5_Update(&Md5Ctx, pszNonce, strlen(pszNonce));
--      MD5_Update(&Md5Ctx, ":", 1);
--      MD5_Update(&Md5Ctx, pszCNonce, strlen(pszCNonce));
--      MD5_Final(HA1, &Md5Ctx);
-+      md_ctx_init(&md5_ctx, md5_kt);
-+      md_ctx_update(&md5_ctx, HA1, HASHLEN);
-+      md_ctx_update(&md5_ctx, ":", 1);
-+      md_ctx_update(&md5_ctx, pszNonce, strlen(pszNonce));
-+      md_ctx_update(&md5_ctx, ":", 1);
-+      md_ctx_update(&md5_ctx, pszCNonce, strlen(pszCNonce));
-+      md_ctx_final(&md5_ctx, HA1);
-     };
-+  md_ctx_cleanup(&md5_ctx);
-   CvtHex(HA1, SessionKey);
- }
- 
-@@ -102,41 +104,44 @@ DigestCalcResponse(
- 		   OUT HASHHEX Response      /* request-digest or response-digest */
- 		   )
- {
--  MD5_CTX Md5Ctx;
-   HASH HA2;
-   HASH RespHash;
-   HASHHEX HA2Hex;
- 
-+  md_ctx_t md5_ctx;
-+  const md_kt_t *md5_kt = md_kt_get("MD5");
-+
-   // calculate H(A2)
--  MD5_Init(&Md5Ctx);
--  MD5_Update(&Md5Ctx, pszMethod, strlen(pszMethod));
--  MD5_Update(&Md5Ctx, ":", 1);
--  MD5_Update(&Md5Ctx, pszDigestUri, strlen(pszDigestUri));
-+  md_ctx_init(&md5_ctx, md5_kt);
-+  md_ctx_update(&md5_ctx, pszMethod, strlen(pszMethod));
-+  md_ctx_update(&md5_ctx, ":", 1);
-+  md_ctx_update(&md5_ctx, pszDigestUri, strlen(pszDigestUri));
-   if (strcasecmp(pszQop, "auth-int") == 0)
-     {
--      MD5_Update(&Md5Ctx, ":", 1);
--      MD5_Update(&Md5Ctx, HEntity, HASHHEXLEN);
-+      md_ctx_update(&md5_ctx, ":", 1);
-+      md_ctx_update(&md5_ctx, HEntity, HASHHEXLEN);
-     };
--  MD5_Final(HA2, &Md5Ctx);
-+  md_ctx_final(&md5_ctx, HA2);
-   CvtHex(HA2, HA2Hex);
- 
-   // calculate response
--  MD5_Init(&Md5Ctx);
--  MD5_Update(&Md5Ctx, HA1, HASHHEXLEN);
--  MD5_Update(&Md5Ctx, ":", 1);
--  MD5_Update(&Md5Ctx, pszNonce, strlen(pszNonce));
--  MD5_Update(&Md5Ctx, ":", 1);
-+  md_ctx_init(&md5_ctx, md5_kt);
-+  md_ctx_update(&md5_ctx, HA1, HASHHEXLEN);
-+  md_ctx_update(&md5_ctx, ":", 1);
-+  md_ctx_update(&md5_ctx, pszNonce, strlen(pszNonce));
-+  md_ctx_update(&md5_ctx, ":", 1);
-   if (*pszQop)
-     {
--      MD5_Update(&Md5Ctx, pszNonceCount, strlen(pszNonceCount));
--      MD5_Update(&Md5Ctx, ":", 1);
--      MD5_Update(&Md5Ctx, pszCNonce, strlen(pszCNonce));
--      MD5_Update(&Md5Ctx, ":", 1);
--      MD5_Update(&Md5Ctx, pszQop, strlen(pszQop));
--      MD5_Update(&Md5Ctx, ":", 1);
-+      md_ctx_update(&md5_ctx, pszNonceCount, strlen(pszNonceCount));
-+      md_ctx_update(&md5_ctx, ":", 1);
-+      md_ctx_update(&md5_ctx, pszCNonce, strlen(pszCNonce));
-+      md_ctx_update(&md5_ctx, ":", 1);
-+      md_ctx_update(&md5_ctx, pszQop, strlen(pszQop));
-+      md_ctx_update(&md5_ctx, ":", 1);
-     };
--  MD5_Update(&Md5Ctx, HA2Hex, HASHHEXLEN);
--  MD5_Final(RespHash, &Md5Ctx);
-+  md_ctx_update(&md5_ctx, HA2Hex, HASHHEXLEN);
-+  md_ctx_final(&md5_ctx, RespHash);
-+  md_ctx_cleanup(&md5_ctx);
-   CvtHex(RespHash, Response);
- }
- 
-diff --git a/misc.c b/misc.c
-index 2d6c6f3..6eaadcc 100644
---- a/misc.c
-+++ b/misc.c
-@@ -1664,23 +1664,26 @@ void
- get_user_pass_auto_userid (struct user_pass *up, const char *tag)
- {
-   struct gc_arena gc = gc_new ();
--  MD5_CTX ctx;
-   struct buffer buf;
-   uint8_t macaddr[6];
-   static uint8_t digest [MD5_DIGEST_LENGTH];
-   static const uint8_t hashprefix[] = "AUTO_USERID_DIGEST";
- 
-+  const md_kt_t *md5_kt = md_kt_get("MD5");
-+  md_ctx_t ctx;
-+
-   CLEAR (*up);
-   buf_set_write (&buf, (uint8_t*)up->username, USER_PASS_LEN);
-   buf_printf (&buf, "%s", get_platform_prefix ());
-   if (get_default_gateway_mac_addr (macaddr))
-     {
-       dmsg (D_AUTO_USERID, "GUPAU: macaddr=%s", format_hex_ex (macaddr, sizeof (macaddr), 0, 1, ":", &gc));
--      MD5_Init (&ctx);
--      MD5_Update (&ctx, hashprefix, sizeof (hashprefix) - 1);
--      MD5_Update (&ctx, macaddr, sizeof (macaddr));
--      MD5_Final (digest, &ctx);
--      buf_printf (&buf, "%s", format_hex_ex (digest, sizeof (digest), 0, 256, " ", &gc));
-+      md_ctx_init(&ctx, md5_kt);
-+      md_ctx_update(&ctx, hashprefix, sizeof (hashprefix) - 1);
-+      md_ctx_update(&ctx, macaddr, sizeof (macaddr));
-+      md_ctx_final(&ctx, digest);
-+      md_ctx_cleanup(&ctx)
-+      buf_printf(&buf, "%s", format_hex_ex (digest, sizeof (digest), 0, 256, " ", &gc));
-     }
-   else
-     {
-diff --git a/ntlm.c b/ntlm.c
-index 40a11b9..512c26f 100644
---- a/ntlm.c
-+++ b/ntlm.c
-@@ -70,14 +70,10 @@ static void
- gen_md4_hash (const char* data, int data_len, char *result)
- {
-   /* result is 16 byte md4 hash */
--
--  MD4_CTX c;
-+  const md_kt_t *md4_kt = md_kt_get("MD4");
-   char md[16];
- 
--  MD4_Init (&c);
--  MD4_Update (&c, data, data_len);
--  MD4_Final ((unsigned char *)md, &c);
--
-+  md_full(md4_kt, data, data_len, md);
-   memcpy (result, md, 16);
- }
- 
+ void
+ cipher_des_encrypt_ecb (const unsigned char key[8],
+     unsigned char *src,
 -- 
 1.7.4.1
 
