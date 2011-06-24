@@ -1,11 +1,11 @@
 From: Adriaan de Jong <dejong@...1435...>
-Date: Fri, 24 Jun 2011 11:54:54 +0200
-Message-ID: <1308909312-17824-2-git-send-email-dejong@...1435...>
+Date: Fri, 24 Jun 2011 11:54:55 +0200
+Message-ID: <1308909312-17824-3-git-send-email-dejong@...1435...>
 In-Reply-To: <1308909312-17824-1-git-send-email-dejong@...1435...>
 References: <1308909312-17824-1-git-send-email-dejong@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 10/28] Changed configure to accept
-	--with-ssl-type=openssl
+Subject: [Openvpn-devel] [PATCH 11/28] Refactored to rand_bytes for
+	OpenSSL-independency
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,216 +18,303 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Adriaan de Jong <dejong@...1435...>
 ---
- configure.ac |  153 ++++++++++++++++++++++++++++++++--------------------------
- 1 files changed, 84 insertions(+), 69 deletions(-)
+ Makefile.am      |    7 +++++-
+ crypto.c         |   11 +++++----
+ crypto_backend.h |   61 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ crypto_openssl.c |   53 ++++++++++++++++++++++++++++++++++++++++++++++
+ crypto_openssl.h |   37 ++++++++++++++++++++++++++++++++
+ init.c           |    2 +-
+ proxy.c          |    2 +-
+ ssl.c            |    2 +-
+ 8 files changed, 166 insertions(+), 9 deletions(-)
+ create mode 100644 crypto_backend.h
+ create mode 100644 crypto_openssl.c
+ create mode 100644 crypto_openssl.h
 
-diff --git a/configure.ac b/configure.ac
-index a3789d9..5e7c10d 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -75,13 +75,13 @@ AC_ARG_ENABLE(lzo-stub,
- )
+diff --git a/Makefile.am b/Makefile.am
+index 32b40bb..aeba51c 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -85,7 +85,7 @@ openvpn_SOURCES = \
+ 	clinat.c clinat.h \
+ 	common.h \
+ 	config-win32.h \
+-	crypto.c crypto.h \
++	crypto.c crypto.h crypto_backend.h \
+ 	dhcp.c dhcp.h \
+ 	errlevel.h \
+ 	error.c error.h \
+@@ -153,6 +153,11 @@ configure.h: Makefile
+ 	awk -f $(srcdir)/configure_h.awk config.h > $@
+ 	awk -f $(srcdir)/configure_log.awk config.log >> $@
  
- AC_ARG_ENABLE(crypto,
--   [  --disable-crypto        Disable OpenSSL crypto support],
-+   [  --disable-crypto        Disable crypto support],
-    [CRYPTO="$enableval"],
-    [CRYPTO="yes"]
- )
- 
- AC_ARG_ENABLE(ssl,
--   [  --disable-ssl           Disable OpenSSL SSL support for TLS-based key exchange],
-+   [  --disable-ssl           Disable SSL support for TLS-based key exchange],
-    [SSL="$enableval"],
-    [SSL="yes"]
- )
-@@ -296,6 +296,16 @@ AC_ARG_WITH(mem-check,
-    [MEMCHECK="$withval"]
- )
- 
-+AC_ARG_WITH([ssl-type],
-+   [  --with-ssl-type=TYPE  Build with the given SSL library, TYPE = openssl ],
-+   [case "${withval}" in 
-+        openssl) SSL_LIB=openssl ;;
-+        *) AC_MSG_ERROR([bad value ${withval} for --with-ssl-type]) ;;
-+   esac],
-+   [SSL_LIB="openssl"]
-+)
-+AM_CONDITIONAL([USE_OPENSSL], [test x$SSL_LIB = xopenssl])
++if USE_OPENSSL
++openvpn_SOURCES += \
++	crypto_openssl.c crypto_openssl.h
++endif
 +
- dnl fix search path, to allow compilers to find syshead.h
- CPPFLAGS="$CPPFLAGS -I${srcdir}"
+ dist-hook:
+ 	cd $(distdir) && for i in $(EXTRA_DIST) $(SUBDIRS) ; do find $$i -name .svn -type d -prune -exec rm -rf '{}' ';' ; rm -f `find $$i -type f | grep -E '(^|\/)\.?\#|\~$$|\.s?o$$'` ; done
  
-@@ -309,7 +319,7 @@ case "$host" in
- *-*-linux*)
- 	AC_DEFINE(TARGET_LINUX, 1, [Are we running on Linux?])
- 	dnl RH9 SSL headers workaround
--        if test -z $CS_HDR_DIR && test "$CRYPTO" = "yes"; then
-+	    if test -z $CS_HDR_DIR && test "$CRYPTO" = "yes"; then
-            CPPFLAGS="$CPPFLAGS $(pkg-config --cflags openssl 2>/dev/null)"
-         fi
- 	;;
-@@ -708,80 +718,84 @@ if test "$LZO_STUB" = "yes"; then
- fi
+diff --git a/crypto.c b/crypto.c
+index 5cfc34a..68b8564 100644
+--- a/crypto.c
++++ b/crypto.c
+@@ -6,6 +6,7 @@
+  *             packet compression.
+  *
+  *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
++ *  Copyright (C) 2010 Fox Crypto B.V. <openvpn@...1435...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+@@ -803,8 +804,8 @@ generate_key_random (struct key *key, const struct key_type *kt)
+ 	if (kt->digest && kt->hmac_length > 0 && kt->hmac_length <= hmac_len)
+ 	  hmac_len = kt->hmac_length;
+       }
+-    if (!RAND_bytes (key->cipher, cipher_len)
+-	|| !RAND_bytes (key->hmac, hmac_len))
++    if (!rand_bytes (key->cipher, cipher_len)
++	|| !rand_bytes (key->hmac, hmac_len))
+       msg (M_FATAL, "ERROR: Random number generator cannot obtain entropy for key generation");
  
- dnl
--dnl check for OpenSSL-crypto library
-+dnl check for SSL-crypto library
- dnl
+     dmsg (D_SHOW_KEY_SOURCE, "Cipher source entropy: %s", format_hex (key->cipher, cipher_len, 0, &gc));
+@@ -870,7 +871,7 @@ test_crypto (const struct crypto_options *co, struct frame* frame)
+       ASSERT (buf_init (&src, 0));
+       ASSERT (i <= src.capacity);
+       src.len = i;
+-      ASSERT (RAND_pseudo_bytes (BPTR (&src), BLEN (&src)));
++      ASSERT (rand_bytes (BPTR (&src), BLEN (&src)));
  
- if test "$CRYPTO" = "yes"; then
--   AC_CHECKING([for OpenSSL Crypto Library and Header files])
--   AC_CHECK_HEADER(openssl/evp.h,,
--	[AC_MSG_ERROR([OpenSSL Crypto headers not found.])])
--
--   for lib in crypto eay32; do
--      AC_CHECK_LIB($lib, EVP_CIPHER_CTX_init,
--            [
--		cryptofound=1
--		OPENVPN_ADD_LIBS(-l$lib)
--	    ]
--      )
--   done
--
--   test -n "$cryptofound" || AC_MSG_ERROR([OpenSSL Crypto library not found.])
--
--   AC_MSG_CHECKING([that OpenSSL Library is at least version 0.9.6])
--   AC_EGREP_CPP(yes,
--     [
--       #include <openssl/evp.h>
--       #if SSLEAY_VERSION_NUMBER >= 0x00906000L
--	 yes
--       #endif
--     ],
--     [
--       AC_MSG_RESULT([yes])
--       AC_DEFINE(USE_CRYPTO, 1, [Use OpenSSL crypto library])
--       AC_CHECK_FUNCS(EVP_CIPHER_CTX_set_key_length)
--
--       dnl check for OpenSSL crypto acceleration capability
--       AC_CHECK_HEADERS(openssl/engine.h)
--       AC_CHECK_FUNCS(ENGINE_load_builtin_engines)
--       AC_CHECK_FUNCS(ENGINE_register_all_complete)
--       AC_CHECK_FUNCS(ENGINE_cleanup)
--     ],
--     [AC_MSG_ERROR([OpenSSL crypto Library is too old.])]
--   )
-+   if test "$SSL_LIB" = "openssl"; then  
-+       AC_CHECKING([for OpenSSL Crypto Library and Header files])
-+       AC_CHECK_HEADER(openssl/evp.h,,
-+	       [AC_MSG_ERROR([OpenSSL Crypto headers not found.])])
-+
-+       for lib in crypto eay32; do
-+          AC_CHECK_LIB($lib, EVP_CIPHER_CTX_init,
-+                [
-+            		cryptofound=1
-+            		OPENVPN_ADD_LIBS(-l$lib)
-+    	        ]
-+          )
-+       done
-+       test -n "$cryptofound" || AC_MSG_ERROR([OpenSSL Crypto library not found.])
-+
-+       AC_MSG_CHECKING([that OpenSSL Library is at least version 0.9.6])
-+       AC_EGREP_CPP(yes,
-+         [
-+           #include <openssl/evp.h>
-+           #if SSLEAY_VERSION_NUMBER >= 0x00906000L
-+    	       yes
-+           #endif
-+         ],
-+         [
-+           AC_MSG_RESULT([yes])
-+           AC_DEFINE(USE_CRYPTO, 1, [Use crypto library])
-+           AC_DEFINE(USE_OPENSSL, 1, [Use OpenSSL library])
-+           AC_CHECK_FUNCS(EVP_CIPHER_CTX_set_key_length)
-+    
-+           dnl check for OpenSSL crypto acceleration capability
-+           AC_CHECK_HEADERS(openssl/engine.h)
-+           AC_CHECK_FUNCS(ENGINE_load_builtin_engines)
-+           AC_CHECK_FUNCS(ENGINE_register_all_complete)
-+           AC_CHECK_FUNCS(ENGINE_cleanup)
-+         ],
-+         [AC_MSG_ERROR([OpenSSL crypto Library is too old.])]
-+       )
-+   fi
+       /* copy source to input buf */
+       buf = work;
+@@ -1671,7 +1672,7 @@ prng_init (const char *md_name, const int nonce_secret_len_parm)
+ 	nonce_data = (uint8_t*) malloc (size);
+ 	check_malloc_return (nonce_data);
+ #if 1 /* Must be 1 for real usage */
+-	if (!RAND_bytes (nonce_data, size))
++	if (!rand_bytes (nonce_data, size))
+ 	  msg (M_FATAL, "ERROR: Random number generator cannot obtain entropy for PRNG");
+ #else
+ 	/* Only for testing -- will cause a predictable PRNG sequence */
+@@ -1716,7 +1717,7 @@ prng_bytes (uint8_t *output, int len)
+ 	}
+     }
+   else
+-    RAND_bytes (output, len);
++    rand_bytes (output, len);
+ }
  
--dnl
--dnl check for OpenSSL-SSL library
--dnl
-+   dnl
-+   dnl check for OpenSSL-SSL library
-+   dnl
+ /* an analogue to the random() function, but use prng_bytes */
+diff --git a/crypto_backend.h b/crypto_backend.h
+new file mode 100644
+index 0000000..9f8eb04
+--- /dev/null
++++ b/crypto_backend.h
+@@ -0,0 +1,61 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
++ *  Copyright (C) 2010 Fox Crypto B.V. <openvpn@...1435...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program (see the file COPYING included with this
++ *  distribution); if not, write to the Free Software Foundation, Inc.,
++ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ */
++
++/**
++ * @file Data Channel Cryptography SSL library-specific backend interface
++ */
++
++#ifndef CRYPTO_BACKEND_H_
++#define CRYPTO_BACKEND_H_
++
++#include "config.h"
++
++#ifdef USE_OPENSSL
++#include "crypto_openssl.h"
++#endif
++
++#include "basic.h"
++
++/*
++ *
++ * Random number functions, used in cases where we want
++ * reasonably strong cryptographic random number generation
++ * without depleting our entropy pool.  Used for random
++ * IV values and a number of other miscellaneous tasks.
++ *
++ */
++
++/**
++ * Wrapper for secure random number generator. Retrieves len bytes of random
++ * data, and places it in output.
++ *
++ * @param output	Output buffer
++ * @param len		Length of the output buffer, in bytes
++ *
++ * @return 		\c 1 on success, \c 0 on failure
++ */
++int rand_bytes (uint8_t *output, int len);
++
++#endif /* CRYPTO_BACKEND_H_ */
+diff --git a/crypto_openssl.c b/crypto_openssl.c
+new file mode 100644
+index 0000000..cbe559a
+--- /dev/null
++++ b/crypto_openssl.c
+@@ -0,0 +1,53 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
++ *  Copyright (C) 2010 Fox Crypto B.V. <openvpn@...1435...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program (see the file COPYING included with this
++ *  distribution); if not, write to the Free Software Foundation, Inc.,
++ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ */
++
++/**
++ * @file Data Channel Cryptography OpenSSL-specific backend interface
++ */
++
++#include "syshead.h"
++
++#include "basic.h"
++#include "buffer.h"
++#include "integer.h"
++#include "crypto_backend.h"
++#include <openssl/objects.h>
++#include <openssl/evp.h>
++#include <openssl/des.h>
++
++/*
++ *
++ * Random number functions, used in cases where we want
++ * reasonably strong cryptographic random number generation
++ * without depleting our entropy pool.  Used for random
++ * IV values and a number of other miscellaneous tasks.
++ *
++ */
++
++int rand_bytes(uint8_t *output, int len)
++{
++  return RAND_bytes (output, len);
++}
++
+diff --git a/crypto_openssl.h b/crypto_openssl.h
+new file mode 100644
+index 0000000..cae00b9
+--- /dev/null
++++ b/crypto_openssl.h
+@@ -0,0 +1,37 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
++ *  Copyright (C) 2010 Fox Crypto B.V. <openvpn@...1435...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program (see the file COPYING included with this
++ *  distribution); if not, write to the Free Software Foundation, Inc.,
++ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ */
++
++/**
++ * @file Data Channel Cryptography OpenSSL-specific backend interface
++ */
++
++#ifndef CRYPTO_OPENSSL_H_
++#define CRYPTO_OPENSSL_H_
++
++#include <openssl/evp.h>
++#include <openssl/hmac.h>
++#include <openssl/md5.h>
++
++#endif /* CRYPTO_OPENSSL_H_ */
+diff --git a/init.c b/init.c
+index 4a16fba..cb8dc42 100644
+--- a/init.c
++++ b/init.c
+@@ -664,7 +664,7 @@ init_static (void)
+ #if 1
+ 	prng_bytes (rndbuf, sizeof (rndbuf));
+ #else
+-	ASSERT(RAND_bytes (rndbuf, sizeof (rndbuf)));
++	ASSERT(rand_bytes (rndbuf, sizeof (rndbuf)));
+ #endif
+ 	printf ("[%d] %s\n", i, format_hex (rndbuf, sizeof (rndbuf), 0, &gc));
+       }
+diff --git a/proxy.c b/proxy.c
+index fce64a1..7963673 100644
+--- a/proxy.c
++++ b/proxy.c
+@@ -745,7 +745,7 @@ establish_http_proxy_passthru (struct http_proxy_info *p,
+ 	      const char *opaque = get_pa_var("opaque", pa, &gc);
  
-    if test "$SSL" = "yes"; then
--      AC_CHECKING([for OpenSSL SSL Library and Header files])
--      AC_CHECK_HEADER(openssl/ssl.h,,
--	   [AC_MSG_ERROR([OpenSSL SSL headers not found.])]
--      )
--
--      for lib in ssl ssl32; do
--	  AC_CHECK_LIB($lib, SSL_CTX_new,
--		[
--			sslfound=1
--			OPENVPN_ADD_LIBS(-l$lib)
--		]
--	  )
--      done
--
--      test -n "${sslfound}" || AC_MSG_ERROR([OpenSSL SSL library not found.])
--
--      if test "$MEMCHECK" = "ssl"; then
--	     AC_CHECKING([for Memory Debugging Capabilities in OpenSSL Library])
--	     AC_CHECK_LIB(ssl, CRYPTO_mem_ctrl,
--		 [
--		     AC_DEFINE(CRYPTO_MDEBUG, 1, [Use memory debugging function in OpenSSL])
--		     AC_MSG_RESULT([NOTE: OpenSSL library must be compiled with CRYPTO_MDEBUG])
--		 ],
--		 [AC_MSG_ERROR([Memory Debugging function in OpenSSL library not found.])]
-+      if test "$SSL_LIB" = "openssl"; then  
-+         AC_CHECKING([for OpenSSL SSL Library and Header files])
-+         AC_CHECK_HEADER(openssl/ssl.h,,
-+	      [AC_MSG_ERROR([OpenSSL SSL headers not found.])]
-+         )
-+
-+         for lib in ssl ssl32; do
-+	     AC_CHECK_LIB($lib, SSL_CTX_new,
-+		   [
-+			   sslfound=1
-+			   OPENVPN_ADD_LIBS(-l$lib)
-+		   ]
- 	     )
-+         done
-+
-+         test -n "${sslfound}" || AC_MSG_ERROR([OpenSSL SSL library not found.])
-+
-+         if test "$MEMCHECK" = "ssl"; then
-+	        AC_CHECKING([for Memory Debugging Capabilities in OpenSSL Library])
-+	        AC_CHECK_LIB(ssl, CRYPTO_mem_ctrl,
-+		    [
-+		        AC_DEFINE(CRYPTO_MDEBUG, 1, [Use memory debugging function in OpenSSL])
-+		        AC_MSG_RESULT([NOTE: OpenSSL library must be compiled with CRYPTO_MDEBUG])
-+		    ],
-+		    [AC_MSG_ERROR([Memory Debugging function in OpenSSL library not found.])]
-+	        )
-+         fi
-+
-+         AC_DEFINE(USE_SSL, 1, [Use OpenSSL SSL library])
-       fi
--
--      AC_DEFINE(USE_SSL, 1, [Use OpenSSL SSL library])
-    fi
- fi
+ 	      /* generate a client nonce */
+-	      ASSERT(RAND_bytes(cnonce_raw, sizeof(cnonce_raw)));
++	      ASSERT(rand_bytes(cnonce_raw, sizeof(cnonce_raw)));
+ 	      cnonce = make_base64_string2(cnonce_raw, sizeof(cnonce_raw), &gc);
  
-@@ -791,6 +805,7 @@ if test "$X509ALTUSERNAME" = "yes"; then
- fi
  
- dnl enable pkcs11 capability
-+
- if test "$PKCS11" = "yes"; then
-    AC_CHECKING([for pkcs11-helper Library and Header files])
-    AC_CHECK_HEADER(pkcs11-helper-1.0/pkcs11h-core.h,
+diff --git a/ssl.c b/ssl.c
+index 2260ccb..4477b54 100644
+--- a/ssl.c
++++ b/ssl.c
+@@ -3883,7 +3883,7 @@ random_bytes_to_buf (struct buffer *buf,
+ 		     uint8_t *out,
+ 		     int outlen)
+ {
+-  if (!RAND_bytes (out, outlen))
++  if (!rand_bytes (out, outlen))
+     msg (M_FATAL, "ERROR: Random number generator cannot obtain entropy for key generation [SSL]");
+   if (!buf_write (buf, out, outlen))
+     return false;
 -- 
 1.7.4.1
 
