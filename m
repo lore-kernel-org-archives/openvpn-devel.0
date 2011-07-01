@@ -1,11 +1,11 @@
-Message-ID: <4E0D8AC1.8010704@...68...>
-Date: Fri, 01 Jul 2011 10:52:17 +0200
-From: Matthias Andree <matthias.andree@...68...>
+Content-Class: urn:content-classes:message
+Message-ID: <4E0DBF8C.1050505@...544...>
+Date: Fri, 01 Jul 2011 14:37:32 +0200
+From: "Pierre Crokaert" <pct@...544...>
 MIME-Version: 1.0
-References: <1309335848-14414-1-git-send-email-samuli@...515...>	<1309420750-26524-1-git-send-email-samuli@...515...>
-	<4E0C3D87.6050407@...68...> <4E0D84B5.9070108@...1114...>
-In-Reply-To: <4E0D84B5.9070108@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH] Fixes to easy-rsa/2.0
+Subject: [Openvpn-devel] Patch for HTTP Proxy with NTLM or error: NTLM
+	Proxy-Authorization phase 3 failed: received corrupted data
+	from proxy server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,18 +14,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain;
+	format=flowed;
+	charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Am 01.07.2011 10:26, schrieb David Sommerseth:
+Hello,
 
-> Agreed, and we decided yesterday in the developers meeting to remove 0.9.6
-> support.  However we found it better to remove that support first in
-> OpenVPN 2.3, as we will then go through the source code and remove all
-> 0.9.6 related stuff in the same go.  We don't want to change this in a
-> stable release.
+This kind of error occurs with some HTTP proxy. This happens when the 
+response from the server in phase 2 is longer than 128 bytes, in that 
+case the response is truncated because we are only interrested by the 
+beginning, but as it is still in base 64 format when it is truncated, it 
+must be truncated at a multiple of 4 chars. Today it truncated one char 
+too short and it results in a bad base64decode result and response is 
+rejected in phase 3.
 
-Alright, sounds very reasonable.
+This was reproduced and fixed on a Microsoft forefront proxy server.
+
+Here is the patch against current git head (dc2ccc825c69...aacd)
+
+@@ -519,7 +519,7 @@ establish_http_proxy_passthru (struct http_proxy_info *p,
+  {
+    struct gc_arena gc = gc_new ();
+    char buf[512];
+-  char buf2[128];
++  char buf2[129]; /* this buffer is a zero terminated base 64 string So it has to be a multiple of 4 char */
+    char get[80];
+    int status;
+    int nparms;
+@@ -642,7 +642,7 @@ establish_http_proxy_passthru (struct http_proxy_info *p,
+
+                openvpn_snprintf (get, sizeof get, "%%*s NTLM %%%ds", (int) sizeof (buf2) - 1);
+                nparms = sscanf (buf, get, buf2);
+-              buf2[127] = 0; /* we only need the beginning - ensure it's null terminated. */
++              buf2[128] = 0; /* we only need the beginning - ensure it's null terminated.  and multiple of 4 char*/
+
+                /* check for "Proxy-Authenticate: NTLM TlRM..." */
+                if (nparms == 1)
+
+
 
