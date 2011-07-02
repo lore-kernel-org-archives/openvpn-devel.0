@@ -1,14 +1,10 @@
-Date: Fri, 1 Jul 2011 22:49:28 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20110701204928.GX8496@...1296...>
-References: <4E0DD5E4.2040609@...515...>
-	<201107011929.47404.hhund@...194...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Fe9KwyZAx9D5K0S8"
-Content-Disposition: inline
-In-Reply-To: <201107011929.47404.hhund@...194...>
-Subject: Re: [Openvpn-devel] Summary of the IRC meeting (30th June 2011)
+MIME-Version: 1.0
+In-Reply-To: <20110701205610.GA4992@...1474...>
+References: <20110701205610.GA4992@...1474...>
+Date: Sat, 2 Jul 2011 09:42:54 +0300
+Message-ID: <CAOazyz2thLv=NURM89wXEHFb6rNWju5QtsL8LWqVoJFWXN4tnQ@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] Builing OpenVPN for Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,65 +13,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Heiko Hund <hhund@...194...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---Fe9KwyZAx9D5K0S8
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: Bertrand Jacquin <beber@...1472...>
+Cc: David Sommerseth <davids@...1347...>, "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-Hi,
+Please ask these stuff on the list.
 
-On Fri, Jul 01, 2011 at 07:29:47PM +0200, Heiko Hund wrote:
-> Have you guys considered autotools for building native WIN32 binaries in=
-=20
-> cygwin? We use it for building openvpn itself. With a little effort one c=
-ould=20
-> even build the driver, sign the binaries and create the installer using m=
-ake=20
-> targets.
+1. You should use i686-w64-mingw32 for 32bit.
 
-I haven't considered it yet, mostly because I don't know my way around
-windows.  So, if I understand you right, you can use cygwin as a build
-platform, but the resulting openvpn.exe will run on machines without
-cygwin installed ("as for mingw-built openvpn.exe")?
+2. NSI build is not supported for cross compile, there openvpn
+developers prefer to use their own build system in order to produce
+the installer.
 
-That would be interesting, given that there seems to doubt regarding the
-(long-term) community support behind mingw, and cygwin is traditionally
-supported quite well.
+3. As openvpn is not modular, you must compile your self the tap
+driver and sign it, most people are not interested in that. A better
+alternative would have been to provide asigned .MSI for the tab driver
+and embed it into the openvpn .MSI.
 
-And indeed, having all nicely included in the main make file would make
-windows building a lot easier.
+Alon.
 
-
-> I'm not sure if that would be more convenient for the majority of the peo=
-ple=20
-> building openvpn for Windows, but it feels more like home to me. =3D)
-
-I like msys/mingw - "bash.exe" :-)
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---Fe9KwyZAx9D5K0S8
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
-
-iQCVAwUBTg4y2KkuBuNlUUl1AQJgpAP9H5QXK+kE1P06/z4Ad8pZM43KfVwb0VBA
-ythFAcxJPUhdGVOh+7/HkW3ZQ7Qot4zV12EZb8ilWWKWakhDbdEHEZZ+sN0lYQsi
-UGxrpd2z+W3jdO5hNZ6t1+uFEkMeSq+MH/82pIbi+0t0Q8nThPlCu+yYpngKCHRj
-1IsKk5lko18=
-=NXc9
------END PGP SIGNATURE-----
-
---Fe9KwyZAx9D5K0S8--
+On Fri, Jul 1, 2011 at 11:56 PM, Bertrand Jacquin <beber@...1472...> wrote:
+>
+> Hi,
+>
+> I'm tring to build openvpn from sources for Windows (x32 & x64) from
+> with gentoo toolchain (i686-pc-mingw32 x86_64-w64-mingw32) but I face to
+> some issue like how to sign drivers and why is there many nsi files like
+> :
+>
+> beber@...1473... /data/build/src/openvpn $ find . -name setpath.nsi | xar=
+gs sha1sum
+> c379b947d55e49ad7496d89c1e002986a367d572 =C2=A0./gen/nsi/setpath.nsi
+> c379b947d55e49ad7496d89c1e002986a367d572 =C2=A0./win/setpath.nsi
+> c379b947d55e49ad7496d89c1e002986a367d572 =C2=A0./install-win32/setpath.nsi
+> beber@...1473... /data/build/src/openvpn $ find . -name openvpn.nsi | xar=
+gs sha1sum
+> 5c9c4d360c188017475e26d3a524d54deeee23b4 =C2=A0./gen/nsi/openvpn.nsi
+> 1f00a55d49551487307c644214830a67ba55f6ea =C2=A0./win/openvpn.nsi
+> 5c9c4d360c188017475e26d3a524d54deeee23b4 =C2=A0./install-win32/openvpn.nsi
+>
+> Why do theses files are duplicated ?
+>
+> Thanks
+>
+> --
+> Beber
 
