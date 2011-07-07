@@ -1,11 +1,13 @@
-From: chantra <chantra@...1258...>
-In-Reply-To: <4E14B584.9040905@...515...>
+From: Adriaan de Jong <dejong@...1435...>
+Date: Thu, 7 Jul 2011 09:09:25 +0200
+Message-ID: <1CED409804E2164C8104F9E623B08B901269D8E721@...1436...>
 References: <1CED409804E2164C8104F9E623B08B901269D8E391@...1436...>
 	<4E14B584.9040905@...515...>
-Content-Type: multipart/alternative; boundary="=-IYIkY049vQTOoKhUNCzU"
-Date: Thu, 07 Jul 2011 01:08:09 +0200
-Message-ID: <1309993689.2862.60.camel@...1471...>
-Mime-Version: 1.0
+In-Reply-To: <4E14B584.9040905@...515...>
+Content-Language: en-US
+Content-Type: multipart/alternative;
+	boundary="_000_1CED409804E2164C8104F9E623B08B901269D8E721FOXDFT02FOXlo_"
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] PolarSSL patches
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,306 +17,251 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Samuli =?ISO-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
+To: =?iso-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---=-IYIkY049vQTOoKhUNCzU
-Content-Type: text/plain; charset="UTF-8"
+--_000_1CED409804E2164C8104F9E623B08B901269D8E721FOXDFT02FOXlo_
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-Samuli,=20
+Hi Samuli,
 
-You will need patch openvpn-plugin.h
+Since plugins have support for X.509 certificates, they need to enable eith=
+er USE_OPENSSL or USE_POLARSSL, and include the appropriate X.509 backend (=
+ssl_verify_*.h). Since neither was defined, the file was not included and t=
+herefore the build failed.
 
-diff --git a/openvpn-plugin.h b/openvpn-plugin.h
-index 9cce9d8..529a1c6 100644
---- a/openvpn-plugin.h
-+++ b/openvpn-plugin.h
-@@ -25,12 +25,8 @@
- #ifndef OPENVPN_PLUGIN_H_
- #define OPENVPN_PLUGIN_H_
-=20
--#ifdef USE_OPENSSL
--#include "ssl_verify_openssl.h"
--#endif
--#ifdef USE_POLARSSL
--#include "ssl_verify_polarssl.h"
--#endif
-+struct x509_cert;
-+typedef struct x509_cert x509_cert_t;
+This is part of a larger problem, where if USE_SSL is not defined a depende=
+ncy to OpenSSL's x509 header still exists for plugins. I've fixed this in a=
+ patch that I'll upload and mail soon.
 
-That will get the plugin to compile, but will break when using openssl.
+Adriaan
 
-I believe the plugins should not need to know if openvpn uses polarssl
-or openssl... that might meant that openvpn will need to provide a
-generic x509 cert library to be used by openvpn plugins.
+From: Samuli Sepp=E4nen [mailto:samuli@...515...]
+Sent: woensdag 6 juli 2011 21:21
+To: Adriaan de Jong
+Cc: openvpn-devel@lists.sourceforge.net
+Subject: Re: [Openvpn-devel] PolarSSL patches
 
-chantra
+Hi Adriaan,
 
-On Wed, 2011-07-06 at 12:20 -0700, Samuli Sepp=C3=A4nen wrote:
+I tried building your tree on Debian 5 (amd64) VM and got this error:
 
-> Hi Adriaan,
->=20
-> I tried building your tree on Debian 5 (amd64) VM and got this error:
->=20
-> #make plugins
-> /usr/bin/make -C plugin/auth-pam/
-> make[1]: Entering directory
-> `/home/buildslave/andj-openvpn-ssl-refactoring-4970f14/plugin/auth-pam'
-> gcc -O2 -Wall -DDLOPEN_PAM=3D0 -fPIC -c -I../.. auth-pam.c
-> In file included from auth-pam.c:49:
-> ../../openvpn-plugin.h:283: error: expected specifier-qualifier-list
-> before =E2=80=98x509_cert_t=E2=80=99
-> make[1]: *** [auth-pam.o] Error 1
-> make[1]: Leaving directory
-> `/home/buildslave/andj-openvpn-ssl-refactoring-4970f14/plugin/auth-pam'
-> make: *** [build-stamp] Error 2
->=20
-> The same VM has been used to successfully build the official release
-> packages.
->=20
-> Samuli
->=20
->=20
->=20
-> > Hi everyone,
-> >=20
-> >=20=20
-> >=20
-> > During last week=E2=80=99s meeting we decided to temporarily create a g=
-ithub
-> > tree for OpenVPN. It can be found at
-> > https://github.com/andj/openvpn-ssl-refactoring . The version found
-> > there is now ready for testing, and will (hopefully) be included in
-> > the 2.3 alpha versions.
-> >=20
-> >=20=20
-> >=20
-> > Could interested parties please have a look and provide me with
-> > feedback (through IRC/e-mail?).=20
-> >=20
-> >=20=20
-> >=20
-> > Thanks!
-> >=20
-> >=20=20
-> >=20
-> > Adriaan de Jong
-> >=20
-> >=20=20
-> >=20
-> > PS. Note that due to limitations in PolarSSL, it is still missing a
-> > number of features:
-> >=20
-> >=20=20
-> >=20
-> >  * PKCS#12 file support
-> >=20
-> >  * --capath support - Loading certificate authorities from a
-> > directory
-> >=20
-> >  * Windows CryptoAPI support
-> >=20
-> >  * Management external key support
-> >=20
-> >  * X.509 alternative username fields (must be "CN")
-> >=20
-> >=20=20
-> >=20
-> > Plugin/Script features:
-> >=20
-> >=20=20
-> >=20
-> >  * X.509 Serial number is in hex, not decimal as with OpenSSL
-> >=20
-> >  * X.509 subject line has a different format than the OpenSSL
-> > subject line
-> >=20
-> >  * X.509 certificate export does not work
-> >=20
-> >  * X.509 certificate tracking
-> >=20
-> >=20=20
-> >=20
-> > Fox-IT    ...for a more secure society=20
-> >=20
-> > I www.fox-it.com
-> >=20
-> >=20
-> >=20
-> >=20=20
-> >=20
-> >=20
->=20
->=20
->=20
-> -------------------------------------------------------------------------=
------
-> All of the data generated in your IT infrastructure is seriously valuable.
-> Why? It contains a definitive record of application performance, security=
-=20
-> threats, fraudulent activity, and more. Splunk takes this data and makes=
-=20
-> sense of it. IT sense. And common sense.
-> http://p.sf.net/sfu/splunk-d2d-c2
-> _______________________________________________ Openvpn-devel mailing lis=
-t Openvpn-devel@lists.sourceforge.net https://lists.sourceforge.net/lists/l=
-istinfo/openvpn-devel
+#make plugins
+/usr/bin/make -C plugin/auth-pam/
+make[1]: Entering directory `/home/buildslave/andj-openvpn-ssl-refactoring-=
+4970f14/plugin/auth-pam'
+gcc -O2 -Wall -DDLOPEN_PAM=3D0 -fPIC -c -I../.. auth-pam.c
+In file included from auth-pam.c:49:
+../../openvpn-plugin.h:283: error: expected specifier-qualifier-list before=
+ 'x509_cert_t'
+make[1]: *** [auth-pam.o] Error 1
+make[1]: Leaving directory `/home/buildslave/andj-openvpn-ssl-refactoring-4=
+970f14/plugin/auth-pam'
+make: *** [build-stamp] Error 2
+
+The same VM has been used to successfully build the official release packag=
+es.
+
+Samuli
 
 
---=20
-http://www.debuntu.org
 
---=-IYIkY049vQTOoKhUNCzU
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Hi everyone,
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 TRANSITIONAL//EN">
-<HTML>
-<HEAD>
-  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=UTF-8">
-  <META NAME="GENERATOR" CONTENT="GtkHTML/3.32.2">
-</HEAD>
-<BODY TEXT="#000000" BGCOLOR="#ffffff">
-Samuli, <BR>
-<BR>
-You will need patch openvpn-plugin.h<BR>
-<BR>
-diff --git a/openvpn-plugin.h b/openvpn-plugin.h<BR>
-index 9cce9d8..529a1c6 100644<BR>
---- a/openvpn-plugin.h<BR>
-+++ b/openvpn-plugin.h<BR>
-@@ -25,12 +25,8 @@<BR>
- #ifndef OPENVPN_PLUGIN_H_<BR>
- #define OPENVPN_PLUGIN_H_<BR>
- <BR>
--#ifdef USE_OPENSSL<BR>
--#include &quot;ssl_verify_openssl.h&quot;<BR>
--#endif<BR>
--#ifdef USE_POLARSSL<BR>
--#include &quot;ssl_verify_polarssl.h&quot;<BR>
--#endif<BR>
-+struct x509_cert;<BR>
-+typedef struct x509_cert x509_cert_t;<BR>
-<BR>
-That will get the plugin to compile, but will break when using openssl.<BR>
-<BR>
-I believe the plugins should not need to know if openvpn uses polarssl or openssl... that might meant that openvpn will need to provide a generic x509 cert library to be used by openvpn plugins.<BR>
-<BR>
-chantra<BR>
-<BR>
-On Wed, 2011-07-06 at 12:20 -0700, Samuli Sepp&#228;nen wrote:<BR>
-<BLOCKQUOTE TYPE=CITE>
-    Hi Adriaan,<BR>
-    <BR>
-    I tried building your tree on Debian 5 (amd64) VM and got this error:<BR>
-    <BR>
-    #make plugins<BR>
-    /usr/bin/make -C plugin/auth-pam/<BR>
-    make[1]: Entering directory `/home/buildslave/andj-openvpn-ssl-refactoring-4970f14/plugin/auth-pam'<BR>
-    gcc -O2 -Wall -DDLOPEN_PAM=0 -fPIC -c -I../.. auth-pam.c<BR>
-    In file included from auth-pam.c:49:<BR>
-    ../../openvpn-plugin.h:283: error: expected specifier-qualifier-list before &#8216;x509_cert_t&#8217;<BR>
-    make[1]: *** [auth-pam.o] Error 1<BR>
-    make[1]: Leaving directory `/home/buildslave/andj-openvpn-ssl-refactoring-4970f14/plugin/auth-pam'<BR>
-    make: *** [build-stamp] Error 2<BR>
-    <BR>
-    The same VM has been used to successfully build the official release packages.<BR>
-    <BR>
-    Samuli<BR>
-    <BR>
-    <BR>
-</BLOCKQUOTE>
-<BLOCKQUOTE TYPE=CITE>
-    <BLOCKQUOTE TYPE=CITE>
-        Hi everyone,<BR>
-        <BR>
-        &nbsp;<BR>
-        <BR>
-        During last week&#8217;s meeting we decided to temporarily create a github tree for OpenVPN. It can be found at <A HREF="https://github.com/andj/openvpn-ssl-refactoring">https://github.com/andj/openvpn-ssl-refactoring</A> . The version found there is now ready for testing, and will (hopefully) be included in the 2.3 alpha versions.<BR>
-        <BR>
-        &nbsp;<BR>
-        <BR>
-        Could interested parties please have a look and provide me with feedback (through IRC/e-mail?). <BR>
-        <BR>
-        &nbsp;<BR>
-        <BR>
-        Thanks!<BR>
-        <BR>
-        &nbsp;<BR>
-        <BR>
-        Adriaan de Jong<BR>
-        <BR>
-        &nbsp;<BR>
-        <BR>
-        PS. Note that due to limitations in PolarSSL, it is still missing a number of features:<BR>
-        <BR>
-        &nbsp;<BR>
-        <BR>
-        &nbsp;* PKCS#12 file support<BR>
-        <BR>
-        &nbsp;* --capath support - Loading certificate authorities from a directory<BR>
-        <BR>
-        &nbsp;* Windows CryptoAPI support<BR>
-        <BR>
-        &nbsp;* Management external key support<BR>
-        <BR>
-        &nbsp;* X.509 alternative username fields (must be &quot;CN&quot;)<BR>
-        <BR>
-        &nbsp;<BR>
-        <BR>
-        Plugin/Script features:<BR>
-        <BR>
-        &nbsp;<BR>
-        <BR>
-        &nbsp;* X.509 Serial number is in hex, not decimal as with OpenSSL<BR>
-        <BR>
-        &nbsp;* X.509 subject line has a different format than the OpenSSL subject line<BR>
-        <BR>
-        &nbsp;* X.509 certificate export does not work<BR>
-        <BR>
-        &nbsp;* X.509 certificate tracking<BR>
-        <BR>
-        &nbsp;<BR>
-        <BR>
-        <B><FONT COLOR="#000080">Fox-IT</FONT></B><FONT COLOR="#000080">&nbsp;&nbsp;&nbsp;&nbsp;</FONT><FONT COLOR="#000080"><I>...for a more secure society</I></FONT><FONT COLOR="#000080"> </FONT><BR>
-        <BR>
-        I <FONT COLOR="#0000ff"><A HREF="http://www.fox-it.com/">www.fox-it.com</A></FONT><BR>
-        <BR>
-        <BR>
-        <BR>
-        &nbsp;<BR>
-        <BR>
-        <BR>
-    </BLOCKQUOTE>
-</BLOCKQUOTE>
-<BLOCKQUOTE TYPE=CITE>
-    <BR>
-<PRE>
-------------------------------------------------------------------------------
-All of the data generated in your IT infrastructure is seriously valuable.
-Why? It contains a definitive record of application performance, security 
-threats, fraudulent activity, and more. Splunk takes this data and makes 
-sense of it. IT sense. And common sense.
-<A HREF="http://p.sf.net/sfu/splunk-d2d-c2">http://p.sf.net/sfu/splunk-d2d-c2</A>
-_______________________________________________ Openvpn-devel mailing list <A HREF="mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@lists.sourceforge.net</A> <A HREF="https://lists.sourceforge.net/lists/listinfo/openvpn-devel">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</A>
-</PRE>
-</BLOCKQUOTE>
-<BR>
-<TABLE CELLSPACING="0" CELLPADDING="0" WIDTH="100%">
-<TR>
-<TD>
-<PRE>
--- 
-<A HREF="http://www.debuntu.org">http://www.debuntu.org</A>
-</PRE>
-</TD>
-</TR>
-</TABLE>
-</BODY>
-</HTML>
+During last week's meeting we decided to temporarily create a github tree f=
+or OpenVPN. It can be found at https://github.com/andj/openvpn-ssl-refactor=
+ing . The version found there is now ready for testing, and will (hopefully=
+) be included in the 2.3 alpha versions.
 
---=-IYIkY049vQTOoKhUNCzU--
+Could interested parties please have a look and provide me with feedback (t=
+hrough IRC/e-mail?).
+
+Thanks!
+
+Adriaan de Jong
+
+PS. Note that due to limitations in PolarSSL, it is still missing a number =
+of features:
+
+ * PKCS#12 file support
+ * --capath support - Loading certificate authorities from a directory
+ * Windows CryptoAPI support
+ * Management external key support
+ * X.509 alternative username fields (must be "CN")
+
+Plugin/Script features:
+
+ * X.509 Serial number is in hex, not decimal as with OpenSSL
+ * X.509 subject line has a different format than the OpenSSL subject line
+ * X.509 certificate export does not work
+ * X.509 certificate tracking
+
+Fox-IT    ...for a more secure society
+I www.fox-it.com<http://www.fox-it.com/>
 
 
+
+
+
+--_000_1CED409804E2164C8104F9E623B08B901269D8E721FOXDFT02FOXlo_
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40"><head><meta http-equiv=3DContent-Type content=
+=3D"text/html; charset=3Diso-8859-1"><meta name=3DGenerator content=3D"Micr=
+osoft Word 12 (filtered medium)"><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Tahoma;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:Verdana;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";
+	color:black;}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+pre
+	{mso-style-priority:99;
+	mso-style-link:"HTML Preformatted Char";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:10.0pt;
+	font-family:"Courier New";
+	color:black;}
+span.HTMLPreformattedChar
+	{mso-style-name:"HTML Preformatted Char";
+	mso-style-priority:99;
+	mso-style-link:"HTML Preformatted";
+	font-family:"Courier New";}
+span.EmailStyle19
+	{mso-style-type:personal;
+	font-family:"Calibri","sans-serif";
+	color:windowtext;}
+span.EmailStyle20
+	{mso-style-type:personal-reply;
+	font-family:"Calibri","sans-serif";
+	color:#1F497D;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-size:10.0pt;}
+@page WordSection1
+	{size:612.0pt 792.0pt;
+	margin:70.85pt 70.85pt 70.85pt 70.85pt;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]--></head><body bgcolor=3Dwhite lang=3DNL li=
+nk=3Dblue vlink=3Dpurple><div class=3DWordSection1><p class=3DMsoNormal><sp=
+an style=3D'color:#1F497D'>Hi Samuli,<o:p></o:p></span></p><p class=3DMsoNo=
+rmal><span style=3D'color:#1F497D'><o:p>&nbsp;</o:p></span></p><p class=3DM=
+soNormal><span lang=3DEN-GB style=3D'color:#1F497D'>Since plugins have supp=
+ort for X.509 certificates, they need to enable either USE_OPENSSL or USE_P=
+OLARSSL, and include the appropriate X.509 backend (ssl_verify_*.h). Since =
+neither was defined, the file was not included and therefore the build fail=
+ed.<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'c=
+olor:#1F497D'><o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal><span lang=
+=3DEN-GB style=3D'color:#1F497D'>This is part of a larger problem, where if=
+ USE_SSL is not defined a dependency to OpenSSL&#8217;s x509 header still e=
+xists for plugins. I&#8217;ve fixed this in a patch that I&#8217;ll upload =
+and mail soon. <o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-G=
+B style=3D'color:#1F497D'><o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal>=
+<span lang=3DEN-GB style=3D'color:#1F497D'>Adriaan<o:p></o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-GB style=3D'color:#1F497D'><o:p>&nbsp;</o=
+:p></span></p><div style=3D'border:none;border-left:solid blue 1.5pt;paddin=
+g:0cm 0cm 0cm 4.0pt'><div><div style=3D'border:none;border-top:solid #B5C4D=
+F 1.0pt;padding:3.0pt 0cm 0cm 0cm'><p class=3DMsoNormal><b><span lang=3DEN-=
+US style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif";color:window=
+text'>From:</span></b><span lang=3DEN-US style=3D'font-size:10.0pt;font-fam=
+ily:"Tahoma","sans-serif";color:windowtext'> Samuli Sepp=E4nen [mailto:samu=
+li@...515...] <br><b>Sent:</b> woensdag 6 juli 2011 21:21<br><b>To:</b> Adr=
+iaan de Jong<br><b>Cc:</b> openvpn-devel@lists.sourceforge.net<br><b>Subjec=
+t:</b> Re: [Openvpn-devel] PolarSSL patches<o:p></o:p></span></p></div></di=
+v><p class=3DMsoNormal><o:p>&nbsp;</o:p></p><p class=3DMsoNormal>Hi Adriaan=
+,<br><br>I tried building your tree on Debian 5 (amd64) VM and got this err=
+or:<br><br>#make plugins<br>/usr/bin/make -C plugin/auth-pam/<br>make[1]: E=
+ntering directory `/home/buildslave/andj-openvpn-ssl-refactoring-4970f14/pl=
+ugin/auth-pam'<br>gcc -O2 -Wall -DDLOPEN_PAM=3D0 -fPIC -c -I../.. auth-pam.=
+c<br>In file included from auth-pam.c:49:<br>../../openvpn-plugin.h:283: er=
+ror: expected specifier-qualifier-list before &#8216;x509_cert_t&#8217;<br>=
+make[1]: *** [auth-pam.o] Error 1<br>make[1]: Leaving directory `/home/buil=
+dslave/andj-openvpn-ssl-refactoring-4970f14/plugin/auth-pam'<br>make: *** [=
+build-stamp] Error 2<br><br>The same VM has been used to successfully build=
+ the official release packages.<br><br>Samuli<br><br><br><br><o:p></o:p></p=
+><p class=3DMsoNormal>Hi everyone,<o:p></o:p></p><p class=3DMsoNormal>&nbsp=
+;<o:p></o:p></p><p class=3DMsoNormal><span lang=3DEN-GB>During last week&#8=
+217;s meeting we decided to temporarily create a github tree for OpenVPN. I=
+t can be found at <a href=3D"https://github.com/andj/openvpn-ssl-refactorin=
+g">https://github.com/andj/openvpn-ssl-refactoring</a> . The version found =
+there is now ready for testing, and will (hopefully) be included in the 2.3=
+ alpha versions.</span><o:p></o:p></p><p class=3DMsoNormal><span lang=3DEN-=
+GB>&nbsp;</span><o:p></o:p></p><p class=3DMsoNormal><span lang=3DEN-GB>Coul=
+d interested parties please have a look and provide me with feedback (throu=
+gh IRC/e-mail?). </span><o:p></o:p></p><p class=3DMsoNormal><span lang=3DEN=
+-GB>&nbsp;</span><o:p></o:p></p><p class=3DMsoNormal><span lang=3DEN-GB>Tha=
+nks!</span><o:p></o:p></p><p class=3DMsoNormal><span lang=3DEN-GB>&nbsp;</s=
+pan><o:p></o:p></p><p class=3DMsoNormal><span lang=3DEN-GB>Adriaan de Jong<=
+/span><o:p></o:p></p><p class=3DMsoNormal><span lang=3DEN-GB>&nbsp;</span><=
+o:p></o:p></p><p class=3DMsoNormal><span lang=3DEN-GB>PS. Note that due to =
+limitations in PolarSSL, it is still missing a number of features:</span><o=
+:p></o:p></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'font-size:10.=
+0pt'>&nbsp;</span><o:p></o:p></p><p class=3DMsoNormal><span lang=3DEN-GB st=
+yle=3D'font-size:10.0pt'>&nbsp;* PKCS#12 file support</span><o:p></o:p></p>=
+<p class=3DMsoNormal><span lang=3DEN-GB style=3D'font-size:10.0pt'>&nbsp;* =
+--capath support - Loading certificate authorities from a directory</span><=
+o:p></o:p></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'font-size:10=
+.0pt'>&nbsp;* Windows CryptoAPI support</span><o:p></o:p></p><p class=3DMso=
+Normal><span lang=3DEN-GB style=3D'font-size:10.0pt'>&nbsp;* Management ext=
+ernal key support</span><o:p></o:p></p><p class=3DMsoNormal><span lang=3DEN=
+-GB style=3D'font-size:10.0pt'>&nbsp;* X.509 alternative username fields (m=
+ust be &quot;CN&quot;)</span><o:p></o:p></p><p class=3DMsoNormal><span lang=
+=3DEN-GB style=3D'font-size:10.0pt'>&nbsp;</span><o:p></o:p></p><p class=3D=
+MsoNormal><span lang=3DEN-GB style=3D'font-size:10.0pt'>Plugin/Script featu=
+res:</span><o:p></o:p></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'=
+font-size:10.0pt'>&nbsp;</span><o:p></o:p></p><p class=3DMsoNormal><span la=
+ng=3DEN-GB style=3D'font-size:10.0pt'>&nbsp;* X.509 Serial number is in hex=
+, not decimal as with OpenSSL</span><o:p></o:p></p><p class=3DMsoNormal><sp=
+an lang=3DEN-GB style=3D'font-size:10.0pt'>&nbsp;* X.509 subject line has a=
+ different format than the OpenSSL subject line</span><o:p></o:p></p><p cla=
+ss=3DMsoNormal><span lang=3DEN-GB style=3D'font-size:10.0pt'>&nbsp;* X.509 =
+certificate export does not work</span><o:p></o:p></p><p class=3DMsoNormal>=
+<span lang=3DEN-GB style=3D'font-size:10.0pt'>&nbsp;* X.509 certificate tra=
+cking</span><o:p></o:p></p><p class=3DMsoNormal><span lang=3DEN-GB>&nbsp;</=
+span><o:p></o:p></p><p class=3DMsoNormal><b><span lang=3DEN-US style=3D'fon=
+t-size:9.0pt;font-family:"Verdana","sans-serif";color:navy'>Fox-IT</span></=
+b><span lang=3DEN-US style=3D'font-size:9.0pt;font-family:"Verdana","sans-s=
+erif";color:navy'>&nbsp;&nbsp;&nbsp;&nbsp;<i>...for a more secure society</=
+i> </span><o:p></o:p></p><p class=3DMsoNormal><span lang=3DEN-US style=3D'f=
+ont-size:8.0pt;font-family:"Verdana","sans-serif"'>I <a href=3D"http://www.=
+fox-it.com/">www.fox-it.com</a><br><br><br></span><o:p></o:p></p><p class=
+=3DMsoNormal><span lang=3DEN-GB>&nbsp;</span><o:p></o:p></p><p class=3DMsoN=
+ormal><span style=3D'font-size:12.0pt;font-family:"Times New Roman","serif"=
+'><o:p>&nbsp;</o:p></span></p></div></div></body></html>=
+
+--_000_1CED409804E2164C8104F9E623B08B901269D8E721FOXDFT02FOXlo_--
 
