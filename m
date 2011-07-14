@@ -1,12 +1,12 @@
-From: Adriaan de Jong <dejong@...1435...>
-Date: Thu, 14 Jul 2011 08:18:56 +0200
-Message-ID: <1CED409804E2164C8104F9E623B08B90126C7D2F75@...1436...>
+From: Jean-Michel =?ISO-8859-1?Q?Pour=E9?= - GOOZE <jmpoure@...1457...>
+In-Reply-To: <1CED409804E2164C8104F9E623B08B90126C7D2F75@...1436...>
 References: <20110713163816.GT32373@...1281...> <4E1DF85D.4010705@...515...>
-In-Reply-To: <4E1DF85D.4010705@...515...>
-Content-Language: en-US
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] openvpn support for
-	challenge-response	otp	(user+pass+otp)
+	<1CED409804E2164C8104F9E623B08B90126C7D2F75@...1436...>
+Date: Thu, 14 Jul 2011 09:08:41 +0200
+Message-ID: <1310627321.4020.2.camel@...1331...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Donation of an OTP for the OpenVPN project
+Reply-To: jmpoure@...1457...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,33 +15,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: =?iso-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, =?iso-8859-1?Q?Pasi_K=E4rkk=E4inen?= <pasik@...124...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Adriaan de Jong <dejong@...1435...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Pasi, =?ISO-8859-1?Q?K=E4rkk=E4inen?= <pasik@...124...>
 
-> -----Original Message-----
-> From: Samuli Sepp=E4nen [mailto:samuli@...515...]
+>  and now lives in its own verification module.=20
 >=20
-> There's some support for challenge-response authentication in OpenVPN:
->=20
-> <http://openvpn.git.sourceforge.net/git/gitweb.cgi?p=3Dopenvpn/openvpn-
-> testing.git;a=3Dcommit;h=3D3cf9dd88fd84108eccfcce0ebf44e00f9481cd82>
->=20
-> This code is in the "master" branch. Look here for instructions on how
-> to fetch the sources:
->=20
-> <https://community.openvpn.net/openvpn/wiki/DeveloperDocumentation#Main
-> developmentrepositorygit>
->=20
+> It lives here at the moment: https://github.com/andj/openvpn-ssl-refactor=
+ing/blob/master/ssl_verify.c . The verification code is called from key_met=
+hod_2_write and key_method_2_read, in ssl.c (https://github.com/andj/openvp=
+n-ssl-refactoring/blob/master/ssl.c).=20
 
-Note that this code was refactored quite heavily, and now lives in its own =
-verification module.=20
+Dear Adrian,
 
-It lives here at the moment: https://github.com/andj/openvpn-ssl-refactorin=
-g/blob/master/ssl_verify.c . The verification code is called from key_metho=
-d_2_write and key_method_2_read, in ssl.c (https://github.com/andj/openvpn-=
-ssl-refactoring/blob/master/ssl.c).=20
+OTP are very interesting devices. We recommend using OATH OTP tokens.
+The main algorithms are hotp (event based) and totp (time based). GOOZE
+offers the c100 (event based) and the c200 (time based).
 
-Adriaan
+In order to help OpenVPN community add support for OTPs, GOOZE is happy
+to offer 10 OTP c200 tokens to interested developers.
+
+To receive a free token, visit this page:
+http://www.gooze.eu/feitian-otp-c200-for-free-software-development
+
+There are numerous projects using GOOZE Feitian c100 and C200, including
+OATH toolkit: http://www.nongnu.org/oath-toolkit/
+
+Kind regards,
+Jean-Michel Pour=C3=A9
+--=20
+                      GOOZE - http://www.gooze.eu
+                   High quality cryptographic tools=20
+                  for GNU/Linux, Mac OS X and Windows
+                     including the FEITIAN PKI card
+     POURE SASU - 17 rue Saint Jacques - 95160 Montmorency - France
+       Tel : +33 (0)9 72 13 53 90 - Mobile : +33 (0)6 27 87 52 38
+         Registry: FR 527 672 448 00018 - VAT: FR54527672448
+
 
