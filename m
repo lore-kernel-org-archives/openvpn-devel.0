@@ -1,11 +1,12 @@
-From: samuli@...515...
-Date: Wed, 13 Jul 2011 17:12:29 -0700
-Message-Id: <1310602349-22195-3-git-send-email-samuli@...515...>
-In-Reply-To: <1310602349-22195-1-git-send-email-samuli@...515...>
-References: <1310602349-22195-1-git-send-email-samuli@...515...>
+From: Adriaan de Jong <dejong@...1435...>
+Date: Thu, 14 Jul 2011 08:18:56 +0200
+Message-ID: <1CED409804E2164C8104F9E623B08B90126C7D2F75@...1436...>
+References: <20110713163816.GT32373@...1281...> <4E1DF85D.4010705@...515...>
+In-Reply-To: <4E1DF85D.4010705@...515...>
+Content-Language: en-US
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/2] Fixed a typo in win32.h that prevented
-	building with Visual Studio
+Subject: Re: [Openvpn-devel] openvpn support for
+	challenge-response	otp	(user+pass+otp)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,32 +15,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: =?iso-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, =?iso-8859-1?Q?Pasi_K=E4rkk=E4inen?= <pasik@...124...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-From: Samuli Sepp=C3=A4nen <samuli@...515...>
+> -----Original Message-----
+> From: Samuli Sepp=E4nen [mailto:samuli@...515...]
+>=20
+> There's some support for challenge-response authentication in OpenVPN:
+>=20
+> <http://openvpn.git.sourceforge.net/git/gitweb.cgi?p=3Dopenvpn/openvpn-
+> testing.git;a=3Dcommit;h=3D3cf9dd88fd84108eccfcce0ebf44e00f9481cd82>
+>=20
+> This code is in the "master" branch. Look here for instructions on how
+> to fetch the sources:
+>=20
+> <https://community.openvpn.net/openvpn/wiki/DeveloperDocumentation#Main
+> developmentrepositorygit>
+>=20
 
-Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
-Tested-by: Samuli Sepp=C3=A4nen <samuli@...515...>
----
- win32.h |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+Note that this code was refactored quite heavily, and now lives in its own =
+verification module.=20
 
-diff --git a/win32.h b/win32.h
-index ca6dd32..528af6c 100644
---- a/win32.h
-+++ b/win32.h
-@@ -272,7 +272,7 @@ char *get_win_sys_path (void);
-=20
- /* call self in a subprocess */
- void fork_to_self (const char *cmdline);
--#ifndef _MSV_VER
-+#ifndef _MSC_VER
- const char *inet_ntop(int af, const void *src, char *dst, socklen_t size);
- int inet_pton(int af, const char *src, void *st);
- #endif
---=20
-1.7.4.1
+It lives here at the moment: https://github.com/andj/openvpn-ssl-refactorin=
+g/blob/master/ssl_verify.c . The verification code is called from key_metho=
+d_2_write and key_method_2_read, in ssl.c (https://github.com/andj/openvpn-=
+ssl-refactoring/blob/master/ssl.c).=20
 
+Adriaan
 
