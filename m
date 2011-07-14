@@ -1,11 +1,13 @@
-From: Adriaan de Jong <dejong@...1435...>
-Date: Thu, 14 Jul 2011 11:54:26 +0200
-Message-ID: <1CED409804E2164C8104F9E623B08B90126C7D303D@...1436...>
-Content-Language: en-US
-Content-Type: multipart/alternative;
-	boundary="_000_1CED409804E2164C8104F9E623B08B90126C7D303DFOXDFT02FOXlo_"
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Minor issue in master git
+Date: Thu, 14 Jul 2011 12:02:59 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20110714100259.GE8496@...1296...>
+References: <1CED409804E2164C8104F9E623B08B90126C7D303D@...1436...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="R4+EwJQA1QUEuvQX"
+Content-Disposition: inline
+In-Reply-To: <1CED409804E2164C8104F9E623B08B90126C7D303D@...1436...>
+Subject: Re: [Openvpn-devel] Minor issue in master git
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,85 +16,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Adriaan de Jong <dejong@...1435...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---_000_1CED409804E2164C8104F9E623B08B90126C7D303DFOXDFT02FOXlo_
+--R4+EwJQA1QUEuvQX
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Hi everyone,
+Hi,
 
-There's a minor annoyance in the master git tree, which rears its head on W=
-indows. Both the TODO.IPv6 and README.IPv6 have a little brother  called *.=
-ipv6 (note the capitalisation). On Windows, this is the same filename.
+On Thu, Jul 14, 2011 at 11:54:26AM +0200, Adriaan de Jong wrote:
+> There's a minor annoyance in the master git tree, which rears its head on=
+ Windows. Both the TODO.IPv6 and README.IPv6 have a little brother  called =
+*.ipv6 (note the capitalisation). On Windows, this is the same filename.
+>=20
+> Could someone closer to the subject merge/rename these files (I'm not ent=
+irely sure what needs to be done here?)
 
-Could someone closer to the subject merge/rename these files (I'm not entir=
-ely sure what needs to be done here?)
+Why can't folks just use reasonable file systems...?
 
-Thanks,
-Adriaan de Jong
+More seriously: well, thanks for reminding me.  One of these file sets
+is from me ("IPv6 payload patch") the other half is from JJO ("IPv6
+transport patch"), and I had intended to merge them already weeks ago...
 
---_000_1CED409804E2164C8104F9E623B08B90126C7D303DFOXDFT02FOXlo_
-Content-Type: text/html; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+"Soon!"
 
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
-osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
-//www.w3.org/TR/REC-html40"><head><meta http-equiv=3DContent-Type content=
-=3D"text/html; charset=3Dus-ascii"><meta name=3DGenerator content=3D"Micros=
-oft Word 12 (filtered medium)"><style><!--
-/* Font Definitions */
-@font-face
-	{font-family:"Cambria Math";
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
-@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
-/* Style Definitions */
-p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0cm;
-	margin-bottom:.0001pt;
-	font-size:11.0pt;
-	font-family:"Calibri","sans-serif";}
-a:link, span.MsoHyperlink
-	{mso-style-priority:99;
-	color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{mso-style-priority:99;
-	color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:"Calibri","sans-serif";
-	color:windowtext;}
-.MsoChpDefault
-	{mso-style-type:export-only;}
-@page WordSection1
-	{size:612.0pt 792.0pt;
-	margin:70.85pt 70.85pt 70.85pt 70.85pt;}
-div.WordSection1
-	{page:WordSection1;}
---></style><!--[if gte mso 9]><xml>
-<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
-<o:shapelayout v:ext=3D"edit">
-<o:idmap v:ext=3D"edit" data=3D"1" />
-</o:shapelayout></xml><![endif]--></head><body lang=3DNL link=3Dblue vlink=
-=3Dpurple><div class=3DWordSection1><p class=3DMsoNormal><span lang=3DEN-GB=
->Hi everyone,<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB>=
-<o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB>There&#=
-8217;s a minor annoyance in the master git tree, which rears its head on Wi=
-ndows. Both the TODO.IPv6 and README.IPv6 have a little brother &nbsp;calle=
-d *.ipv6 (note the capitalisation). On Windows, this is the same filename.<=
-o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB><o:p>&nbsp;</o=
-:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB>Could someone closer =
-to the subject merge/rename these files (I&#8217;m not entirely sure what n=
-eeds to be done here?)<o:p></o:p></span></p><p class=3DMsoNormal><span lang=
-=3DEN-GB><o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal><span lang=3DEN-G=
-B>Thanks,<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB>Adri=
-aan de Jong<o:p></o:p></span></p></div></body></html>=
+gert
 
---_000_1CED409804E2164C8104F9E623B08B90126C7D303DFOXDFT02FOXlo_--
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--R4+EwJQA1QUEuvQX
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBTh6+06kuBuNlUUl1AQLYJQP/cVywhNC2PdSUMheXFOAuziOuFgge95gG
+Up0+gHNfnEm2Pp+B5HbH75TYcyNi5TStTiLxp0Y5NknnRLnYNiyy3ZfPOouXryp4
+zLpH7cqKVxp+MRMXjyh4vA1RjYe3CIbwCuzdwgw/Fnc8Fbi66nZh07shGJzHVDip
+clONonCw3AQ=
+=/46t
+-----END PGP SIGNATURE-----
+
+--R4+EwJQA1QUEuvQX--
 
