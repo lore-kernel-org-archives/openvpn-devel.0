@@ -1,14 +1,13 @@
-Date: Tue, 19 Jul 2011 13:42:47 +0200
+Date: Tue, 19 Jul 2011 15:59:28 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20110719114246.GA8496@...1296...>
-References: <4E1F227F.7060308@...515...> <4E1F672E.1010305@...515...>
-	<1935589941.20110715004918@...449...>
+Message-ID: <20110719135928.GJ8496@...1296...>
+References: <4E1F78E8.4050203@...515...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="lec7CLJ9cqIyQUfJ"
+	protocol="application/pgp-signature"; boundary="8AyhkHmF38pqBh1Q"
 Content-Disposition: inline
-In-Reply-To: <1935589941.20110715004918@...449...>
-Subject: Re: [Openvpn-devel] First Windows installer snapshot now available
+In-Reply-To: <4E1F78E8.4050203@...515...>
+Subject: Re: [Openvpn-devel] Merged TODO.IPv6 and README.IPv6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,30 +16,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Carsten =?iso-8859-1?Q?Kr=FCger?= <C.Krueger@...448...>
+To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---lec7CLJ9cqIyQUfJ
+--8AyhkHmF38pqBh1Q
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Jul 15, 2011 at 12:49:18AM +0200, Carsten Kr=FCger wrote:
-> Does establishing a VPN connection now works without administrator
-> privileges (or to be more precise Network Configuration Operators
-> membership)?
+On Thu, Jul 14, 2011 at 04:16:56PM -0700, Samuli Sepp=E4nen wrote:
+> As discussed earlier[1], Windows has trouble coping with filenames that
+> are identical except for the case. Here is my proposal for merged
+> .ipv6/.IPv6 files:
+>=20
+> <http://pastebin.com/TbSVNpYH> (TODO.IPv6)
+> <http://pastebin.com/4nGzRezE> (README.IPv6)
+>=20
+> Shall I create a patch against the "master" branch?
 
-Not yet.  Currently, the openvpn.exe binary is started by the GUI process,
-and runs with the privileges of the user that started the GUI.
+Yes, please.  It's a good starting point and if it reduces the pain
+for Windows builders, it's worth doing.
 
-There are plans to change that architecture to enable unprivileged GUI,
-but you've seen Heiko's response "not done yet"...  (I do hope that we
-can get that into 2.3 :-) ).
+JJO's README.IPv6 needs to be reworked somewhat, but that is a separate
+project.
 
 gert
-
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -48,19 +50,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---lec7CLJ9cqIyQUfJ
+--8AyhkHmF38pqBh1Q
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (NetBSD)
 
-iQCVAwUBTiVttqkuBuNlUUl1AQKyYQQAuHp0qDoYlJH5RotLX2EIldRP7K4H7UA0
-ogN412TKCVODNJxlmL7Rb9412cxsxnafnZPvfP3YNRoZ4p0hFBXULT8XRQNr/itp
-wgcp8D4CsDhKEkgBhoeGFa4syQJR/6SHSci5QT5Iza3ROG3HcZQdByPAfSE5U6a0
-J9xgsSnBvKA=
-=X1UC
+iQCVAwUBTiWNwKkuBuNlUUl1AQL8LAQAkJIqmjZJh3OF92MUbs+luEESNlzFt/qY
+r6Glrc5wNz6VKgFm9G4zEWgB7+FDhD+RWBcL06YXZqKH59/9LFmzL8bAPlEf/r/7
+UAHsToQTT4e/0AcL0qv70kL4cPQ4LxyfNLaSMiO/RwjNK+EbbpCC1qbvr2lvJsTZ
+vKSfgQOkAvg=
+=ZKUO
 -----END PGP SIGNATURE-----
 
---lec7CLJ9cqIyQUfJ--
+--8AyhkHmF38pqBh1Q--
 
