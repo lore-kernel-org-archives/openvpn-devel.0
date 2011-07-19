@@ -1,17 +1,8 @@
-Date: Sat, 16 Jul 2011 19:16:56 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20110716171656.GY8496@...1296...>
-References: <1312f1908b4.-8162753897021314559.8311264442879771774@...1486...>
-	<1313210dc57.-2479533967587045360.2173550128923027198@...1486...>
-	<13132141bbe.-6554633753716236145.-6995683147743455020@...1486...>
-	<20110716100908.GX8496@...1296...>
-	<131329a1c4e.-7251372065913038672.6406239187025865679@...1486...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="09NQ3WWIOaov9Ws2"
-Content-Disposition: inline
-In-Reply-To: <131329a1c4e.-7251372065913038672.6406239187025865679@...1486...>
-Subject: Re: [Openvpn-devel] Fwd: Re: OpenVPN on OpenWrt
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Tue, 19 Jul 2011 10:06:37 +0200
+MIME-Version: 1.0
+Message-Id: <201107191006.37716.heiko.hund@...1489...>
+Subject: Re: [Openvpn-devel] First Windows installer snapshot now available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,69 +11,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: lancebaynes87 <lancebaynes87@...1486...>
-Cc: OpenVPN devel <openvpn-devel@lists.sourceforge.net>
-
---09NQ3WWIOaov9Ws2
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: Text/Plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
+Cc: =?iso-8859-1?q?Kr=FCger?= <C.Krueger@...448...>, Carsten
 
-Hi,
-
-On Sat, Jul 16, 2011 at 03:59:45AM -0700, lancebaynes87 wrote:
-> yes, really sorry for posting to the devel-list, I already posted on the =
-users+forum.
+On Friday 15 July 2011 01:25:12 Samuli Sepp=E4nen wrote:
+> In my smoketests I had to run it as administrator on Win7 64-bit or
+> routes would not get created. That said, the included README file seems
+> to be the same as in the old GUI, so I'm not really sure of what the new
+> GUI is capable of.
 >=20
-> So the problem is at:
->=20
-> /etc/openvpn/server.conf
->=20
-> in the:=20
->=20
-> server 192.168.80.0 255.255.255.0
->=20
-> line! wow! :) thx. ehhh.... what should I write to get it work? :O
+> Heiko: could you shed some light on this?
 
-Find a network number that is not in use at the client or the server side.
+Sorry, it's not yet ready for that. Plans are made, I just haven't gotten=20
+around to start coding as I was involved in doing other projects. When the=
+=20
+work will be done OpenVPN-GUI will run as any user and be able to establish=
+ a=20
+tunnel. Hope I get time for it this quarter. I'll keep you posted.
 
-server 192.168.81.0 255.255.255.0
-
-might just work - we don't know your network setup.
-
-
-How do you access the Internet?  Is there another router for "Internet"
-(if yes, it needs to know that it should route the 192.168.81.0/24 to
-the OpenVPN router)?  If the VPN and the Internet access is on the same
-box, you need to make sure that 192.168.81.0/24 is properly NATted
-(which *should* be automatic on the WRT, but check with=20
-"iptables -t nat -n -L")
-
-There's lots of doku in the secure-computing wiki on this, like:
-
-http://www.secure-computing.net/wiki/index.php/OpenVPN/Routing
-
-gert
+Heiko
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---09NQ3WWIOaov9Ws2
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
-
-iQCVAwUBTiHHiKkuBuNlUUl1AQIGYgP/WZOI3IWwz3KJtLOGM+mHlfAwlGXxSo7b
-WY9/yrxO4TOIzJbnuIccb+/4hwkeBJsjd4GLUiL6mZQEheNaHf3bZutq5rRNx0Vy
-kMpc7MPU2mAxUMaKTWJdwsMmuMObwLPBJJBlSSv24UOTuI0ECPirLwRculjqX6bB
-nAOD4v+xUnM=
-=jxLQ
------END PGP SIGNATURE-----
-
---09NQ3WWIOaov9Ws2--
+Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
+Astaro a Sophos Company | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germ=
+any
+Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
+=20
+Represented by the General Partner Astaro Verwaltungs GmbH
+Amalienbadstra=DFe 41 Bau 52 | 76227 Karlsruhe | Germany=20
+Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
+Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
 
