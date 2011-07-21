@@ -1,11 +1,8 @@
-Message-ID: <4E27E306.2010005@...515...>
-Date: Thu, 21 Jul 2011 11:27:50 +0300
+Message-ID: <4E27FE2D.5070304@...515...>
+Date: Thu, 21 Jul 2011 13:23:41 +0300
 From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <4E1F227F.7060308@...515...>
-	<20110719114109.GZ8496@...1296...>
-In-Reply-To: <20110719114109.GZ8496@...1296...>
-Subject: Re: [Openvpn-devel] First Windows installer snapshot now available
+Subject: [Openvpn-devel] Topics for today's meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,28 +13,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
+Hi,
 
-> Hi,
->
-> On Thu, Jul 14, 2011 at 10:08:15AM -0700, Samuli Sepp=E4nen wrote:
->> The first Windows installer snapshot is now available here:
-> Cool :-)
->
->> I did basic IPv4 smoketests on Windows 7 64-bit and it seems to work.
->> Both the installer and the TAP-driver are unsigned, so users of 64-bit
->> versions of Vista (and above) need to start their computers in "Test
->> mode" to try this out. The goal is to put signed TAP-drivers to future
->> installers.
-> Since the TAP driver unchanged between 2.2.x release and "master"
-> we could just use the already-signed TAP driver bundle from 2.2.x.
->
-> gert
->
-Ok, I assumed there were some changes in the TAP-driver. I'll use the
-signed one in the next snapshot, then.
+NOTE: meeting time is one hour earlier than usual (17:00 UTC). Also,
+this time the meeting will be a "sprint" where we try to get ACKs for as
+many of Adriaan's PolarSSL patches as possible. If necessary, the
+patches will be fixed on the fly. Nothing will be added to the Git
+repository, though, until the meeting summary is published and people
+have chance to comment on the (modified) patches.
+
+---
+
+We're having an IRC meeting today, starting at 17:00 UTC on
+#openvpn-devel@...1422... Current topic list is here:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2011-07-21>
+
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
+
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting.
 
 --=20
 Samuli Sepp=E4nen
@@ -45,5 +44,4 @@ Community Manager
 OpenVPN Technologies, Inc
 
 irc freenode net: mattock
-
 
