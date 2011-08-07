@@ -1,10 +1,7 @@
 From: Bertrand Jacquin <beber@...1472...>
-Date: Sun,  7 Aug 2011 12:59:15 +0200
-Message-Id: <1312714757-10317-3-git-send-email-beber@...1472...>
-In-Reply-To: <1312714757-10317-1-git-send-email-beber@...1472...>
-References: <1312714757-10317-1-git-send-email-beber@...1472...>
-Subject: [Openvpn-devel] [PATCH 2/4] Win32: Add OpenVPN RC file to add fill
-	"Details" exe properties tabs
+Date: Sun,  7 Aug 2011 12:59:13 +0200
+Message-Id: <1312714757-10317-1-git-send-email-beber@...1472...>
+Subject: [Openvpn-devel] Allow to fill Details tab for exe files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,27 +14,16 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Bertrand Jacquin <beber@...1472...>
----
- openvpn-res.rc |    8 ++++++++
- 1 files changed, 8 insertions(+), 0 deletions(-)
- 1 files changed, 8 insertions(+), 0 deletions(-)
+Hi there,
 
-diff --git a/openvpn-res.rc b/openvpn-res.rc
-new file mode 100644
-index 0000000..f5176a2
---- /dev/null
-+++ b/openvpn-res.rc
-@@ -0,0 +1,8 @@
-+/*
-+ * (c) 2011 Bertrand Jacquin <beber@...1472...>
-+ */
-+
-+#include <windows.h>
-+
-+1 VERSIONINFO
-+
+Here is a serie of patch to allow get a details properties tab filled on
+exe files using windres tool.
+
+[PATCH 1/4] WIN32: Check for windres tool
+[PATCH 2/4] Win32: Add OpenVPN RC file to add fill "Details" exe
+[PATCH 3/4] Win32: Fill "Details" properties for openvpn.exe
+[PATCH 4/4] Win32: Fill "Details" properties for openvpnserv.exe
+
 -- 
-1.7.6
-
+Beber
 
