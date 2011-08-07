@@ -1,10 +1,11 @@
+MIME-Version: 1.0
+Date: Sun, 07 Aug 2011 16:13:03 +0200
 From: Bertrand Jacquin <beber@...1472...>
-Date: Sun,  7 Aug 2011 13:08:22 +0200
-Message-Id: <1312715302-10808-1-git-send-email-beber@...1472...>
-In-Reply-To: <1312714757-10317-3-git-send-email-beber@...1472...>
-References: <1312714757-10317-3-git-send-email-beber@...1472...>
-Subject: [Openvpn-devel] [PATCH 1/3] Win32: Add OpenVPN RC file to add fill
-	"Details" exe properties tabs
+In-Reply-To: <1312714757-10317-1-git-send-email-beber@...1472...>
+References: <1312714757-10317-1-git-send-email-beber@...1472...>
+Message-ID: <430b86c89889b28e473dfed2fc3ae817@...1492...>
+Sender: added by portage for apache <apache@...1491...>
+Subject: Re: [Openvpn-devel] Allow to fill Details tab for exe files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,60 +14,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-First patch was incomplete
+ On Sun,  7 Aug 2011 12:59:13 +0200, Bertrand Jacquin wrote:
+> Hi there,
+>
+> Here is a serie of patch to allow get a details properties tab filled 
+> on
+> exe files using windres tool.
+>
+> [PATCH 1/4] WIN32: Check for windres tool
+> [PATCH 2/4] Win32: Add OpenVPN RC file to add fill "Details" exe
+> [PATCH 3/4] Win32: Fill "Details" properties for openvpn.exe
+> [PATCH 4/4] Win32: Fill "Details" properties for openvpnserv.exe
 
-Signed-off-by: Bertrand Jacquin <beber@...1472...>
----
- openvpn-res.rc |   35 +++++++++++++++++++++++++++++++++++
- 1 files changed, 35 insertions(+), 0 deletions(-)
- 1 files changed, 35 insertions(+), 0 deletions(-)
+ I just can't figure out why my patch are not diffused even when SF MX 
+ say they have been accepted.
 
-diff --git a/openvpn-res.rc b/openvpn-res.rc
-new file mode 100644
-index 0000000..0352807
---- /dev/null
-+++ b/openvpn-res.rc
-@@ -0,0 +1,35 @@
-+/*
-+ * (c) 2011 Bertrand Jacquin <beber@...1472...>
-+ */
-+
-+#include <windows.h>
-+#include "config.h"
-+
-+1 VERSIONINFO
-+  FILEVERSION    _VERSION_
-+  PRODUCTVERSION _VERSION_
-+  FILEOS         VOS__WINDOWS32
-+  FILETYPE       VFT_APP
-+
-+BEGIN
-+  BLOCK "StringFileInfo"
-+  BEGIN
-+    BLOCK "040904b0"  /* en_US, Unicode */
-+    BEGIN
-+      // required
-+      VALUE "CompanyName",      PACKAGE_NAME "\0"
-+      VALUE "FileDescription",  PACKAGE_NAME "\0"
-+      VALUE "FileVersion",      PACKAGE_VERSION "\0"
-+      VALUE "InternalName",     PACKAGE_TARNAME "\0"
-+      VALUE "OriginalFilename", PACKAGE_TARNAME ".exe\0"
-+      VALUE "ProductName",      PACKAGE_NAME "\0"
-+      VALUE "ProductVersion",   PACKAGE_VERSION "\0"
-+      // optional
-+      VALUE "LegalCopyright",   "(C) 2002-2010 " PACKAGE_NAME " Technologies, Inc.\0"
-+    END
-+  END
-+  BLOCK "VarFileInfo"
-+  BEGIN
-+    VALUE "Translation", 0x409, 0x4b0
-+  END
-+END
--- 
-1.7.6
-
+ Patches can be found there 
+ http://git.meleeweb.net/cgit.cgi/openvpn.git/
 
