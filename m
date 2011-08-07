@@ -1,14 +1,15 @@
-Date: Sun, 7 Aug 2011 19:56:24 +0200
-From: Bertrand Jacquin <beber@...1472...>
-Message-ID: <20110807175624.GW12223@...1474...>
+Date: Sun, 7 Aug 2011 20:11:03 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20110807181103.GV8496@...1296...>
 References: <1312714757-10317-1-git-send-email-beber@...1472...>
 	<430b86c89889b28e473dfed2fc3ae817@...1492...>
 	<20110807175142.GS8496@...1296...>
-MIME-Version: 1.0
+	<20110807175624.GW12223@...1474...>
+Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="A1VS04HCCjrR2aaM"
+	protocol="application/pgp-signature"; boundary="MveNns2vwg5u+Dv2"
 Content-Disposition: inline
-In-Reply-To: <20110807175142.GS8496@...1296...>
+In-Reply-To: <20110807175624.GW12223@...1474...>
 Subject: Re: [Openvpn-devel] Allow to fill Details tab for exe files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,65 +19,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
+To: Bertrand Jacquin <beber@...1472...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---A1VS04HCCjrR2aaM
-Content-Type: text/plain; charset="utf-8"
+--MveNns2vwg5u+Dv2
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-D'ar sul 07 a viz Eost 2011 e 19 eur 51, =C2=AB Gert Doering =C2=BB he deus=
- skrivet :
-> Hi,
->=20
-> On Sun, Aug 07, 2011 at 04:13:03PM +0200, Bertrand Jacquin wrote:
-> > > [PATCH 1/4] WIN32: Check for windres tool
-> > > [PATCH 2/4] Win32: Add OpenVPN RC file to add fill "Details" exe
-> > > [PATCH 3/4] Win32: Fill "Details" properties for openvpn.exe
-> > > [PATCH 4/4] Win32: Fill "Details" properties for openvpnserv.exe
+Hi,
+
+On Sun, Aug 07, 2011 at 07:56:24PM +0200, Bertrand Jacquin wrote:
+> > Two questions:
 > >=20
-> >  I just can't figure out why my patch are not diffused even when SF MX=
-=20
-> >  say they have been accepted.
+> >  - what happens if windres is not found?  will the compilation break?
+> >    (I'm not sure whether windres will always be there or not)
 >=20
-> Your patches have arrived here just fine.
+> In the present configure.ac, it's only needed when WIN32 =3D yes, so it's
+> windows/mingw only.
+
+Yes.  So mingw always has "windres"?  Otherwise the produced Makefiles
+won't work.
+
+> >  - if I read this right, it will only work for the autoconf / mingw bas=
+ed
+> >    build, but not for the msvc++ / python based build, right?  will it
+> >    co-exist, or break the python build?
 >=20
-> I think the functionality is useful, but don't know enough about windows
-> to give this a full technical ACK.
+> I have to say that I didn't test with msvc++/python as I only use to
+> cross compile applications. But if I read well the build process for
+> msvc++/python it does not use autotools stuffs.
 
-Oh, ok, maybe some huge spool on SF, doono
+Indeed.  David / Samuli: how is the python Makefile built?  How does
+this build system know which files to compile?
 
-> Two questions:
->=20
->  - what happens if windres is not found?  will the compilation break?
->    (I'm not sure whether windres will always be there or not)
-
-In the present configure.ac, it's only needed when WIN32 =3D yes, so it's
-windows/mingw only.
-
->  - if I read this right, it will only work for the autoconf / mingw based
->    build, but not for the msvc++ / python based build, right?  will it
->    co-exist, or break the python build?
-
-I have to say that I didn't test with msvc++/python as I only use to
-cross compile applications. But if I read well the build process for
-msvc++/python it does not use autotools stuffs.
-
+gert
 --=20
-Beber
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
---A1VS04HCCjrR2aaM
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+--MveNns2vwg5u+Dv2
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.18 (GNU/Linux)
+Version: GnuPG v1.4.11 (NetBSD)
 
-iEYEARECAAYFAk4+0cgACgkQibjJUzm7jPRwZgCggm4DLivPwIupYKHGT+mu4lZE
-XlYAn0LbbNozYVBlmiI4NDQtqDY/Lc5q
-=Wvf/
+iQCVAwUBTj7VN6kuBuNlUUl1AQKJ0AP/VGHK9dli8xllDBzRkBOMlcJpcZjjBYYP
+z6OyDwrUlU6DuCmfe7rqS/hpn78JNQ8xi1ee0x372eiffR4lB4fTEkgLjUFdFmX9
+1/fAwibLIvL0fDBmCY8ZiScJwNbBGjU6wVWQ/5qM2iJTCbgsaP9rr/OhXAmKfR/S
+BwGmPV/WnsQ=
+=BalH
 -----END PGP SIGNATURE-----
 
---A1VS04HCCjrR2aaM--
+--MveNns2vwg5u+Dv2--
 
