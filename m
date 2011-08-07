@@ -1,10 +1,9 @@
 From: Bertrand Jacquin <beber@...1472...>
-Date: Sun,  7 Aug 2011 12:59:17 +0200
-Message-Id: <1312714757-10317-5-git-send-email-beber@...1472...>
+Date: Sun,  7 Aug 2011 12:59:14 +0200
+Message-Id: <1312714757-10317-2-git-send-email-beber@...1472...>
 In-Reply-To: <1312714757-10317-1-git-send-email-beber@...1472...>
 References: <1312714757-10317-1-git-send-email-beber@...1472...>
-Subject: [Openvpn-devel] [PATCH 4/4] Win32: Fill "Details" properties for
-	openvpnserv.exe
+Subject: [Openvpn-devel] [PATCH 1/4] WIN32: Check for windres tool
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,29 +18,22 @@ To: openvpn-devel@lists.sourceforge.net
 
 Signed-off-by: Bertrand Jacquin <beber@...1472...>
 ---
- service-win32/Makefile.am |    8 ++++++++
- 1 files changed, 8 insertions(+), 0 deletions(-)
- 1 files changed, 8 insertions(+), 0 deletions(-)
+ configure.ac |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
-diff --git a/service-win32/Makefile.am b/service-win32/Makefile.am
-index 4e4f55e..bb7b993 100644
---- a/service-win32/Makefile.am
-+++ b/service-win32/Makefile.am
-@@ -32,6 +32,14 @@ openvpnserv_SOURCES = \
- 	openvpnserv.c \
- 	service.h service.c
+diff --git a/configure.ac b/configure.ac
+index a3789d9..2edb05e 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -356,6 +356,7 @@ if test "${WIN32}" = "yes"; then
+ 	AC_ARG_VAR([MAN2HTML], [man2html utility])
+ 	AC_CHECK_PROGS([MAN2HTML], [man2html])
+ 	test -z "${MAN2HTML}" && AC_MSG_ERROR([man2html is required for win32])
++	AC_CHECK_TOOL(WINDRES, windres)
+ fi
  
-+openvpnserv_LDADD = \
-+	../openvpn-res.o
-+
-+comma = ,
-+
-+%.o: %.rc
-+	$(WINDRES) -D _VERSION_=$(subst .,$(comma),$(VERSION)),0 -i $< -o $@
-+
- else
- 
- dist_noinst_DATA = \
+ dnl Checks for header files.
 -- 
 1.7.6
 
