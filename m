@@ -1,9 +1,10 @@
 From: Bertrand Jacquin <beber@...1472...>
-Date: Sun,  7 Aug 2011 12:59:14 +0200
-Message-Id: <1312714757-10317-2-git-send-email-beber@...1472...>
+Date: Sun,  7 Aug 2011 12:59:16 +0200
+Message-Id: <1312714757-10317-4-git-send-email-beber@...1472...>
 In-Reply-To: <1312714757-10317-1-git-send-email-beber@...1472...>
 References: <1312714757-10317-1-git-send-email-beber@...1472...>
-Subject: [Openvpn-devel] [PATCH 1/4] WIN32: Check for windres tool
+Subject: [Openvpn-devel] [PATCH 3/4] Win32: Fill "Details" properties for
+	openvpn.exe
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,22 +19,40 @@ To: openvpn-devel@lists.sourceforge.net
 
 Signed-off-by: Bertrand Jacquin <beber@...1472...>
 ---
- configure.ac |    1 +
- 1 files changed, 1 insertions(+), 0 deletions(-)
- 1 files changed, 1 insertions(+), 0 deletions(-)
+ Makefile.am |   12 ++++++++++++
+ 1 files changed, 12 insertions(+), 0 deletions(-)
+ 1 files changed, 12 insertions(+), 0 deletions(-)
 
-diff --git a/configure.ac b/configure.ac
-index a3789d9..2edb05e 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -356,6 +356,7 @@ if test "${WIN32}" = "yes"; then
- 	AC_ARG_VAR([MAN2HTML], [man2html utility])
- 	AC_CHECK_PROGS([MAN2HTML], [man2html])
- 	test -z "${MAN2HTML}" && AC_MSG_ERROR([man2html is required for win32])
-+	AC_CHECK_TOOL(WINDRES, windres)
- fi
+diff --git a/Makefile.am b/Makefile.am
+index 32b40bb..d5d620d 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -146,6 +146,13 @@ openvpn_SOURCES = \
+ 	win32.h win32.c \
+ 	cryptoapi.h cryptoapi.c
  
- dnl Checks for header files.
++if WIN32
++openvpn_SOURCES += openvpn-res.rc
++
++openvpn_LDADD = openvpn-res.o
++endif
++
++
+ nodist_openvpn_SOURCES = configure.h
+ options.$(OBJEXT): configure.h
+ 
+@@ -161,6 +168,11 @@ dist_noinst_DATA += openvpn.8
+ nodist_html_DATA = openvpn.8.html
+ openvpn.8.html: $(srcdir)/openvpn.8
+ 	$(MAN2HTML) < $(srcdir)/openvpn.8 > openvpn.8.html
++
++comma = ,
++
++%.o: %.rc
++	$(WINDRES) -D _VERSION_=$(subst .,$(comma),$(VERSION)),0 -i $< -o $@
+ else
+ dist_man_MANS = openvpn.8
+ endif
 -- 
 1.7.6
 
