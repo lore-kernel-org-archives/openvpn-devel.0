@@ -1,7 +1,11 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Wed, 10 Aug 2011 12:55:06 +0000
-Message-Id: <1312980908-25157-1-git-send-email-heiko.hund@...1489...>
-Subject: [Openvpn-devel] [PATCH 0/2] fix building for WIN32
+MIME-version: 1.0
+Message-id: <4FAA35BD289B4FD989857452D4E18777@...139...>
+From: Gisle Vanem <gvanem@...139...>
+References: <1312980908-25157-1-git-send-email-heiko.hund@...1489...>
+	<1312980908-25157-2-git-send-email-heiko.hund@...1489...>
+Date: Wed, 10 Aug 2011 15:47:36 +0200
+Subject: Re: [Openvpn-devel] [PATCH 1/2] define IN6_ARE_ADDR_EQUAL macro
+	for	WIN32
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,38 +14,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-type: text/plain; CHARSET=US-ASCII; charset="US-ASCII"; format=flowed;
+ reply-type=original
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+"Heiko Hund" <heiko.hund@...1489...> wrote:
 
-git master currently fails when cross compiling for WIN32 in Debian testing.
-Two IPv6 related things were introduced in commits
+> +#ifndef IN6_ARE_ADDR_EQUAL
+> +#define IN6_ARE_ADDR_EQUAL(a,b) \
+> +    ((((__const uint32_t *) (a))[0] == ((__const uint32_t *) (b))[0]) \
+> +  && (((__const uint32_t *) (a))[1] == ((__const uint32_t *) (b))[1]) \
+> +  && (((__const uint32_t *) (a))[2] == ((__const uint32_t *) (b))[2]) \
+> +  && (((__const uint32_t *) (a))[3] == ((__const uint32_t *) (b))[3]))
+> +#endif
 
-  512cda46b0f65f388e24436cd28d44bdc90fe985 and
-  8335caf929f21b317a0243a12285e1f04361db25
+A little more readable:
+  #define IN6_ARE_ADDR_EQUAL(a, b)   \
+              (!memcmp ((const void*)(a), (const void*)(b), sizeof (struct in6_addr)))
 
-that are incompatible with Windows. IN6_ARE_ADDR_EQUAL and
-struct in6_addr.s6_addr32 are not available there.
+(almost the same as in MingW's <ws2tcpip.h>).
 
-While MinGW added both features to ws2tcpip.h, the Microsoft
-Platform SDK headers do not include them and they are (correctly)
-missing in the MinGW-w64 headers as well.
-
-Following are two patches that try to fix these issues.
-
-Heiko Hund (2):
-  define IN6_ARE_ADDR_EQUAL macro for WIN32
-  don't use struct in6_addr s6_addr32 member anymore
-
- socket.c |   16 +++++++---------
- win32.h  |   13 +++++++++++++
- 2 files changed, 20 insertions(+), 9 deletions(-)
-
-Regards
-Heiko
--- 
-1.7.5.4
-
+--gv
 
