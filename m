@@ -1,14 +1,13 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Wed, 10 Aug 2011 16:20:07 +0200
+Date: Wed, 10 Aug 2011 22:31:42 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20110810203141.GA8496@...1296...>
 References: <1312980908-25157-1-git-send-email-heiko.hund@...1489...>
-	<1312980908-25157-2-git-send-email-heiko.hund@...1489...>
-	<4FAA35BD289B4FD989857452D4E18777@...139...>
-In-Reply-To: <4FAA35BD289B4FD989857452D4E18777@...139...>
-MIME-Version: 1.0
-Message-Id: <201108101620.07584.heiko.hund@...1489...>
-Subject: Re: [Openvpn-devel]
- =?iso-8859-1?q?=5BPATCH_1/2=5D_define_IN6=5FARE?=
- =?iso-8859-1?q?=5FADDR=5FEQUAL_macro_for=09WIN32?=
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="e59Ae4BottLx1djM"
+Content-Disposition: inline
+In-Reply-To: <1312980908-25157-1-git-send-email-heiko.hund@...1489...>
+Subject: Re: [Openvpn-devel] [PATCH 0/2] fix building for WIN32
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,43 +16,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: Text/Plain; charset="iso-8859-1"
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--e59Ae4BottLx1djM
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
 
-On Wednesday 10 August 2011 15:47:36 Gisle Vanem wrote:
-> "Heiko Hund" <heiko.hund@...1489...> wrote:
-> > +#ifndef IN6_ARE_ADDR_EQUAL
-> > +#define IN6_ARE_ADDR_EQUAL(a,b) \
-> > +    ((((__const uint32_t *) (a))[0] =3D=3D ((__const uint32_t *) (b))[=
-0]) \
-> > +  && (((__const uint32_t *) (a))[1] =3D=3D ((__const uint32_t *) (b))[=
-1]) \
-> > +  && (((__const uint32_t *) (a))[2] =3D=3D ((__const uint32_t *) (b))[=
-2]) \
-> > +  && (((__const uint32_t *) (a))[3] =3D=3D ((__const uint32_t *) (b))[=
-3]))
-> > +#endif
->=20
-> A little more readable:
->   #define IN6_ARE_ADDR_EQUAL(a, b)   \
->               (!memcmp ((const void*)(a), (const void*)(b), sizeof (struct
-> in6_addr)))
->=20
-> (almost the same as in MingW's <ws2tcpip.h>).
+Hi,
 
-The version I posted is taken from eglibc 2.13 on Debian testing, by the wa=
-y.
+On Wed, Aug 10, 2011 at 12:55:06PM +0000, Heiko Hund wrote:
+> struct in6_addr.s6_addr32 are not available there.
 
-Heiko
+I've sent a fix for that one to the list some two months ago, but it's
+stuck somewhere in the commit queue...
+
+gert
 --=20
-Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
-Astaro a Sophos Company | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germ=
-any
-Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
-=20
-Represented by the General Partner Astaro Verwaltungs GmbH
-Amalienbadstra=DFe 41 Bau 52 | 76227 Karlsruhe | Germany=20
-Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
-Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--e59Ae4BottLx1djM
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBTkLqrakuBuNlUUl1AQL28QP9EjMSI10z2UBPpWuB7YBKhT1CVTwmNddr
+O6tIvfoSTYr4TrR9VPcGhUILHzaZSc6B/92YWkElEwb22HMHFjHTDxNeUC3jzbjl
+IWjBsb2enbgzdR7aWTNV2D6X+K4q3aihyWAK65h8kw3i/BQuIEtmEH7fonugVIUV
+V+cL5K8Mu4k=
+=iCoy
+-----END PGP SIGNATURE-----
+
+--e59Ae4BottLx1djM--
 
