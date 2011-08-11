@@ -1,14 +1,14 @@
-Date: Thu, 11 Aug 2011 17:45:07 +0200
-From: Bertrand Jacquin <beber@...1472...>
-Message-ID: <20110811154507.GA1438@...1493...>
-References: <1312714757-10317-1-git-send-email-beber@...1472...>
-	<4E43F614.2030800@...515...>
-MIME-Version: 1.0
+Date: Thu, 11 Aug 2011 17:54:17 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20110811155416.GS8496@...1296...>
+References: <1313075986-26862-1-git-send-email-heiko.hund@...1489...>
+Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="3V7upXqbjpZ4EhLz"
+	protocol="application/pgp-signature"; boundary="GcLbzumBudVYaWfy"
 Content-Disposition: inline
-In-Reply-To: <4E43F614.2030800@...515...>
-Subject: Re: [Openvpn-devel] d Re:  Allow to fill Details tab for exe files
+In-Reply-To: <1313075986-26862-1-git-send-email-heiko.hund@...1489...>
+Subject: Re: [Openvpn-devel] [PATCH] remove legacy code to query IE proxy
+	information
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,46 +17,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---3V7upXqbjpZ4EhLz
-Content-Type: text/plain; charset="iso-8859-1"
+--GcLbzumBudVYaWfy
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-D'ar yaou 11 a viz Eost 2011 e 17 eur 32, =AB Samuli Sepp=E4nen =BB he deus=
- skrivet :
->=20
-> > Hi there,
-> >
-> > Here is a serie of patch to allow get a details properties tab filled on
-> > exe files using windres tool.
-> >
-> > [PATCH 1/4] WIN32: Check for windres tool
-> > [PATCH 2/4] Win32: Add OpenVPN RC file to add fill "Details" exe
-> > [PATCH 3/4] Win32: Fill "Details" properties for openvpn.exe
-> > [PATCH 4/4] Win32: Fill "Details" properties for openvpnserv.exe
-> >
-> I just tested these patches with the Python-based buildsystem and there
-> were no negative side-effects (=3Dbuild worked as intended).
+Hi,
 
-Is the intented feature is effective with that kind of build ?
+On Thu, Aug 11, 2011 at 03:19:46PM +0000, Heiko Hund wrote:
+> The code in ieproxy.[ch] is not used anywhere in OpenVPN anymore.
+> So, there's no need to keep it.
 
+ACK!  (This is great, and fully inline with one of the goals for 2.3=20
+"cleanup accumulated cruft" :) ).
+
+gert
 --=20
-Beber
-On Lady Voodoo
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
---3V7upXqbjpZ4EhLz
+--GcLbzumBudVYaWfy
 Content-Type: application/pgp-signature
+Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
+Version: GnuPG v1.4.11 (NetBSD)
 
-iEYEARECAAYFAk5D+QMACgkQibjJUzm7jPSVqACfVl/re0amTEbi+JGJBSl2fAow
-kycAnRR79TVlbdE0kqYbWlLj5/zjMLrF
-=e4QG
+iQCVAwUBTkP7KKkuBuNlUUl1AQKoDQQAlsLKr75u5kV0+StUAItJabcOEf6KqhnJ
+u9LGNHOs1ReZlTlBYS2dYAQuKz5VmIRaqqcUlPdHTUb4PGcZG3DeHIHZN/P0OQrD
+lo1NJONxpy3sKixvQdrEbY6Zcfm2ojmJpcKAfTz0WHGStjc8109HEf/WHgHce/SR
+7LlnIYjViaE=
+=QKaj
 -----END PGP SIGNATURE-----
 
---3V7upXqbjpZ4EhLz--
+--GcLbzumBudVYaWfy--
 
