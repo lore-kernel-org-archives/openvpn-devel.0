@@ -1,12 +1,16 @@
-MIME-Version: 1.0
-In-Reply-To: <1312980908-25157-3-git-send-email-heiko.hund@...1489...>
+Date: Thu, 11 Aug 2011 08:18:03 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20110811061803.GD8496@...1296...>
 References: <1312980908-25157-1-git-send-email-heiko.hund@...1489...>
 	<1312980908-25157-3-git-send-email-heiko.hund@...1489...>
-Date: Wed, 10 Aug 2011 23:40:28 +0300
-Message-ID: <CAOazyz3rzcfQaCpS0stJiGHHxyP_5D+ZcAmXH+8_JoJhsUw_uA@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+	<CAOazyz3rzcfQaCpS0stJiGHHxyP_5D+ZcAmXH+8_JoJhsUw_uA@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="3U3bYITUAgF/y0A0"
+Content-Disposition: inline
+In-Reply-To: <CAOazyz3rzcfQaCpS0stJiGHHxyP_5D+ZcAmXH+8_JoJhsUw_uA@...278...>
 Subject: Re: [Openvpn-devel] [PATCH 2/2] don't use struct in6_addr s6_addr32
- member anymore
+	member anymore
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,79 +19,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Heiko Hund <heiko.hund@...1489...>
+To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Hello,
-I think this should be done by autoconf.
-And hand added into win32 for MSVC.
-Alon.
+--3U3bYITUAgF/y0A0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On Wed, Aug 10, 2011 at 3:55 PM, Heiko Hund <heiko.hund@...1489...> wrote:
-> The s6_addr32 member of struct in6_addr is not available when building
-> for WIN32. To work around this, a local union is defined that allows
-> accessing 32 bit chunks of the IPv6 address passed to add_in6_addr().
->
-> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
-> ---
-> =C2=A0socket.c | =C2=A0 16 +++++++---------
-> =C2=A01 files changed, 7 insertions(+), 9 deletions(-)
->
-> diff --git a/socket.c b/socket.c
-> index 6b855c0..887569c 100644
-> --- a/socket.c
-> +++ b/socket.c
-> @@ -2622,13 +2622,6 @@ print_in6_addr (struct in6_addr a6, unsigned int f=
-lags, struct gc_arena *gc)
-> =C2=A0/* add some offset to an ipv6 address
-> =C2=A0* (add in steps of 32 bits, taking overflow into next round)
-> =C2=A0*/
-> -#ifndef s6_addr32
-> -# ifdef TARGET_SOLARIS
-> -# =C2=A0define s6_addr32 _S6_un._S6_u32
-> -# else
-> -# =C2=A0define s6_addr32 __u6_addr.__u6_addr32
-> -# endif
-> -#endif
-> =C2=A0#ifndef UINT32_MAX
-> =C2=A0# define UINT32_MAX (4294967295U)
-> =C2=A0#endif
-> @@ -2637,10 +2630,15 @@ struct in6_addr add_in6_addr( struct in6_addr bas=
-e, uint32_t add )
-> =C2=A0 =C2=A0 int i;
-> =C2=A0 =C2=A0 uint32_t h;
->
-> + =C2=A0 =C2=A0union {
-> + =C2=A0 =C2=A0 =C2=A0uint8_t =C2=A0*addr;
-> + =C2=A0 =C2=A0 =C2=A0uint32_t *addr32;
-> + =C2=A0 =C2=A0} in6 =3D { .addr =3D base.s6_addr };
-> +
-> =C2=A0 =C2=A0 for( i=3D3; i>=3D0 && add > 0 ; i-- )
-> =C2=A0 =C2=A0 {
-> - =C2=A0 =C2=A0 =C2=A0 h =3D ntohl( base.s6_addr32[i] );
-> - =C2=A0 =C2=A0 =C2=A0 base.s6_addr32[i] =3D htonl( (h+add) & UINT32_MAX =
-);
-> + =C2=A0 =C2=A0 =C2=A0 h =3D ntohl( in6.addr32[i] );
-> + =C2=A0 =C2=A0 =C2=A0 in6.addr32[i] =3D htonl( (h+add) & UINT32_MAX );
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0/* 32-bit overrun?
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 * caveat: can't do "h+add > UINT32_MAX" with =
-32bit math!
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0*/
-> --
-> 1.7.5.4
->
->
-> -------------------------------------------------------------------------=
------
-> uberSVN's rich system and user administration capabilities and model
-> configuration take the hassle out of deploying and managing Subversion and
-> the tools developers use with it. Learn more about uberSVN and get a free
-> download at: =C2=A0http://p.sf.net/sfu/wandisco-dev2dev
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+Hi,
+
+On Wed, Aug 10, 2011 at 11:40:28PM +0300, Alon Bar-Lev wrote:
+> I think this should be done by autoconf.
+> And hand added into win32 for MSVC.
+
+Any sort of conditional code here is causing more pain than just using
+the 8-bit accessors in a straightforward way with no #ifdefs.
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--3U3bYITUAgF/y0A0
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBTkN0GqkuBuNlUUl1AQJfXgP/Zn8tWRTs3/Ked6JpDlhKU6nfrbN6Zfir
+RnjjhRMq2daoS17FwDk9WigWA24ql0B+chhOAqJyexo7WchjN9GF+tIikzm2KCDA
+3hsjffhTH4+ovcMbUpoTOdRzssRhoaliexYlUq7pMLVHhWn4zHlLKBJPWJQ822v7
+UpgwlFWGtSY=
+=HCIq
+-----END PGP SIGNATURE-----
+
+--3U3bYITUAgF/y0A0--
 
