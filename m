@@ -1,13 +1,10 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Thu, 11 Aug 2011 08:44:53 +0200
-References: <1312980908-25157-1-git-send-email-heiko.hund@...1489...>
-	<1312980908-25157-3-git-send-email-heiko.hund@...1489...>
-	<20110810203646.GC8496@...1296...>
-In-Reply-To: <20110810203646.GC8496@...1296...>
-MIME-Version: 1.0
-Message-Id: <201108110844.53606.heiko.hund@...1489...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] don't use struct in6_addr s6_addr32
-	member anymore
+Date: Thu, 11 Aug 2011 07:00:31 +0000
+Message-Id: <1313046031-14499-1-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <1312980908-25157-2-git-send-email-heiko.hund@...1489...>
+References: <1312980908-25157-2-git-send-email-heiko.hund@...1489...>
+Subject: [Openvpn-devel] [PATCH 1/2] define IN6_ARE_ADDR_EQUAL macro for
+	WIN32
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,35 +13,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: Text/Plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-On Wednesday 10 August 2011 22:36:47 Gert Doering wrote:
-> On Wed, Aug 10, 2011 at 12:55:08PM +0000, Heiko Hund wrote:
-> > The s6_addr32 member of struct in6_addr is not available when building
-> > for WIN32. To work around this, a local union is defined that allows
-> > accessing 32 bit chunks of the IPv6 address passed to add_in6_addr().
->=20
-> NAK, that's massively ugly.
+Windows headers do not define the IN6_ARE_ADDR_EQUAL macro. It needs
+to be defined locally when building for WIN32 with IPv6 enabled.
 
-o_O
-=20
-> I've changed the code to do 8-bit rounds.  While somewhat slower, the
-> code is actually more readable that way, and since this is only called
-> once per connecting client, the few microseconds are well-spent.
+Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+---
+ win32.h |   10 ++++++++++
+ 1 files changed, 10 insertions(+), 0 deletions(-)
 
-ACK, as it fixes the issue
+diff --git a/win32.h b/win32.h
+index d0ecc85..87d8ecc 100644
+--- a/win32.h
++++ b/win32.h
+@@ -41,6 +41,16 @@
+  * development environment.
+  */
+ 
++#ifdef USE_PF_INET6
++
++/* MSVC headers do not define this macro, so do it here */
++#ifndef IN6_ARE_ADDR_EQUAL
++#define IN6_ARE_ADDR_EQUAL(a,b) \
++  (memcmp ((const void*)(a), (const void*)(b), sizeof (struct in6_addr)) == 0)
++#endif
++
++#endif
++
+ void init_win32 (void);
+ void uninit_win32 (void);
+ 
+-- 
+1.7.5.4
 
-Heiko
---=20
-Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
-Astaro a Sophos Company | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germ=
-any
-Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
-=20
-Represented by the General Partner Astaro Verwaltungs GmbH
-Amalienbadstra=DFe 41 Bau 52 | 76227 Karlsruhe | Germany=20
-Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
-Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
 
