@@ -1,10 +1,8 @@
 MIME-Version: 1.0
-Sender: flagel@...277...
-Date: Sun, 14 Aug 2011 00:24:33 +0200
-Message-ID: <CANdUpHPLMwTJRD69vo+ZUQi=wFQEX=s-5Lt72Xhvn+dW+1WtwA@...278...>
-From: Tanel Rebane <tanel@...1495...>
-Subject: [Openvpn-devel] [PATCH] Make easy-rsa/2.0/vars handle paths with
-	whitespaces
+Date: Tue, 16 Aug 2011 22:34:34 +0300
+Message-ID: <CAOazyz0G7jzP0O0iD1OjynHf4gEP8j+6VFfS_fRcZPKBJG7zvw@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: [Openvpn-devel] pkcs11-helper-1.09 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,18 +11,20 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: opensc-announce@...1496..., OpenSC Development <opensc-devel@...1496...>, "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
 Hello,
 
-Line 29 of vars, export KEY_CONFIG=`$EASY_RSA/whichopensslcnf
-$EASY_RSA`, cannot handle whitespaces contained in $EASY_RSA. This
-line could be changed - depending on preference - to either of:
-a) export KEY_CONFIG="`"${EASY_RSA}"/whichopensslcnf "${EASY_RSA}"`"
-b) export KEY_CONFIG=$("${EASY_RSA}"/whichopensslcnf "${EASY_RSA}")
+pkcs11-helper-1.09 is available.
 
-Regards,
-Tanel Rebane
+Fixed issue introduced in 1.08 related to OpenSSL engine signature.
+
+ChangeLog
+
+2011-08-16 - Version 1.09
+
+ * Do not retry if CKR_BUFFER_TOO_SMALL and none NULL target.
+ * Fixup OpenSSL engine's rsa_priv_enc to use RSA size output buffer.
 
