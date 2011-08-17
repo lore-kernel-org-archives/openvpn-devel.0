@@ -1,10 +1,12 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Wed, 17 Aug 2011 13:42:48 +0000
-Message-Id: <1313588569-18927-3-git-send-email-heiko.hund@...1489...>
-In-Reply-To: <1313588569-18927-1-git-send-email-heiko.hund@...1489...>
+MIME-Version: 1.0
+In-Reply-To: <1313588569-18927-2-git-send-email-heiko.hund@...1489...>
 References: <1313588569-18927-1-git-send-email-heiko.hund@...1489...>
-Subject: [Openvpn-devel] [PATCH 2/3] do automatic proxy detection on Windows
-	right
+	<1313588569-18927-2-git-send-email-heiko.hund@...1489...>
+Date: Wed, 17 Aug 2011 16:58:17 +0300
+Message-ID: <CAOazyz0gdd6+367C94OnsWPfmaAKtBXO0-OAttXSna2mAVX6OQ@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 1/3] add MinGW WinHTTP compatibility
+	layer
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,350 +15,223 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Automatic proxy detection is now done using WinHTTP and its built
-in support for WPAD and PAC. This also means that settings for the
-currently active network connection are queried, instead of using
-the default one all the time.
-
-If WPAD or a PAC script are not configured or fail, the static Internet
-Options proxy settings from the Control Panel are taken into account.
-If those are unavailable as well, the default proxy configuration, set
-with proxycfg.exe, is used.
-
-Closes ticket #24.
-
-Signed-off-by: Heiko Hund <heiko.hund@...1489...>
----
- openvpn.8 |    9 ++--
- options.c |    9 ++--
- proxy.c   |  173 ++++++++++++++++++++++++++++++++++--------------------------
- proxy.h   |    4 +-
- 4 files changed, 110 insertions(+), 85 deletions(-)
-
-diff --git a/openvpn.8 b/openvpn.8
-index 7118737..3855e86 100644
---- a/openvpn.8
-+++ b/openvpn.8
-@@ -490,13 +490,14 @@ If the HTTP proxy server requires a password, it will be queried from
- stdin or the management interface.  If the underlying OS doesn't support an API for
- returning proxy settings, a direct connection will be attempted.
- Currently, only Windows clients support this option via the
--InternetQueryOption API.
-+WinHTTP API.
- This option exists in OpenVPN 2.1 or higher.
- .\"*********************************************************
- .TP
--.B \-\-show-proxy-settings
--Show sensed HTTP or SOCKS proxy settings. Currently, only Windows clients
--support this option.
-+.B \-\-show-proxy-settings [url]
-+Show sensed HTTP or SOCKS proxy settings. The optional URL parameter is used
-+with the PAC script, if there is one detected or configured. Currently, only
-+Windows clients support this option.
- .\"*********************************************************
- .TP
- .B \-\-http-proxy server port [authfile|'auto'|'auto-nct'] [auth-method]
-diff --git a/options.c b/options.c
-index 77e7c7f..62c2ac8 100644
---- a/options.c
-+++ b/options.c
-@@ -118,7 +118,7 @@ static const char usage_message[] =
-   "--connect-retry-max n : Maximum connection attempt retries, default infinite.\n"
- #ifdef GENERAL_PROXY_SUPPORT
-   "--auto-proxy    : Try to sense proxy settings (or lack thereof) automatically.\n"
--  "--show-proxy-settings : Show sensed proxy settings.\n"
-+  "--show-proxy-settings [url] : Show sensed proxy settings for url.\n"
- #endif
- #ifdef ENABLE_HTTP_PROXY
-   "--http-proxy s p [up] [auth] : Connect to remote host\n"
-@@ -4677,17 +4677,18 @@ add_option (struct options *options,
-       char *error = NULL;
- 
-       VERIFY_PERMISSION (OPT_P_GENERAL);
--      options->auto_proxy_info = get_proxy_settings (&error, &options->gc);
-+      options->auto_proxy_info = get_proxy_settings ("https://openvpn.net", &error, &options->gc);
-       if (error)
- 	msg (M_WARN, "PROXY: %s", error);
-     }
-   else if (streq (p[0], "show-proxy-settings"))
-     {
-       struct auto_proxy_info *pi;
-+      const char *url = p[1] ? p[1] : "https://openvpn.net";
-       char *error = NULL;
- 
-       VERIFY_PERMISSION (OPT_P_GENERAL);
--      pi = get_proxy_settings (&error, &options->gc);
-+      pi = get_proxy_settings (url, &error, &options->gc);
-       if (pi)
- 	{
- 	  msg (M_INFO|M_NOPREFIX, "HTTP Server: %s", np(pi->http.server));
-@@ -4698,7 +4699,7 @@ add_option (struct options *options,
-       if (error)
- 	msg (msglevel, "Proxy error: %s", error);
- #ifdef WIN32
--      show_win_proxy_settings (M_INFO|M_NOPREFIX);
-+      show_win_proxy_settings (url, M_INFO|M_NOPREFIX);
- #endif
-       openvpn_exit (OPENVPN_EXIT_STATUS_GOOD); /* exit point */
-     }
-diff --git a/proxy.c b/proxy.c
-index b00532c..3403c1a 100644
---- a/proxy.c
-+++ b/proxy.c
-@@ -924,42 +924,99 @@ static void dummy(void) {}
- 
- #ifdef WIN32
- 
--#if 0
--char *
--get_windows_internet_string (const DWORD dwOption, struct gc_arena *gc)
-+static char *
-+get_windows_proxy_settings (const char *url, struct gc_arena *gc)
- {
--  DWORD size = 0;
--  char *ret = NULL;
-+  char *retval = NULL;
-+  LPWSTR proxy = NULL;
-+  LPWSTR auto_config_url = NULL;
-+  BOOL auto_detect = FALSE;
-+  WINHTTP_PROXY_INFO proxy_info;
-+  WINHTTP_CURRENT_USER_IE_PROXY_CONFIG proxy_config;
-+
-+  if (WinHttpGetIEProxyConfigForCurrentUser (&proxy_config))
-+    {
-+      auto_detect = proxy_config.fAutoDetect;
-+      auto_config_url = proxy_config.lpszAutoConfigUrl;
-+      proxy = proxy_config.lpszProxy;
-+      GlobalFree (proxy_config.lpszProxyBypass);
-+    }
-+  else if (GetLastError () == ERROR_FILE_NOT_FOUND &&
-+           WinHttpGetDefaultProxyConfiguration (&proxy_info))
-+    {
-+      if (proxy_info.dwAccessType == WINHTTP_ACCESS_TYPE_NAMED_PROXY)
-+      {
-+	proxy = proxy_info.lpszProxy;
-+	GlobalFree (proxy_info.lpszProxyBypass);
-+      }
-+    }
-+  else /* failed to get proxy info, try to auto detect it */
-+    {
-+      auto_detect = TRUE;
-+    }
- 
--  /* Initially, get size of return buffer */
--  InternetQueryOption (NULL, dwOption, NULL, &size);
--  if (size)
-+  if (auto_detect)
-     {
--      /* Now get actual info */
--      ret = (INTERNET_PROXY_INFO *) gc_malloc (size, false, gc);
--      if (!InternetQueryOption (NULL, dwOption, (LPVOID) ret, &size))
--	ret = NULL;
-+      LPWSTR old_url = auto_config_url;
-+      DWORD flags = WINHTTP_AUTO_DETECT_TYPE_DHCP | WINHTTP_AUTO_DETECT_TYPE_DNS_A;
-+
-+      if (WinHttpDetectAutoProxyConfigUrl (flags, &auto_config_url))
-+	GlobalFree (old_url);
-     }
--  return ret;
--}
--#endif
- 
--static INTERNET_PROXY_INFO *
--get_windows_proxy_settings (struct gc_arena *gc)
--{
--  DWORD size = 0;
--  INTERNET_PROXY_INFO *ret = NULL;
-+  if (auto_config_url && url)
-+    {
-+      HINTERNET session;
-+      WINHTTP_AUTOPROXY_OPTIONS options = {
-+	.dwFlags = WINHTTP_AUTOPROXY_CONFIG_URL,
-+	.dwAutoDetectFlags = 0,
-+	.lpszAutoConfigUrl = auto_config_url,
-+	.lpvReserved = NULL,
-+	.dwReserved = 0,
-+	.fAutoLogonIfChallenged = FALSE
-+      };
-+
-+      session = WinHttpOpen (NULL, WINHTTP_ACCESS_TYPE_NO_PROXY,
-+                             WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
-+      if (session)
-+	{
-+	  LPWSTR old_proxy = proxy;
-+	  LPWSTR url_w;
-+	  int size;
- 
--  /* Initially, get size of return buffer */
--  InternetQueryOption (NULL, INTERNET_OPTION_PROXY, NULL, &size);
--  if (size)
-+	  size = MultiByteToWideChar (CP_ACP, 0, url, -1, NULL, 0);
-+	  url_w = gc_malloc (size * sizeof (WCHAR), 0, gc);
-+	  MultiByteToWideChar (CP_ACP, 0, url, -1, url_w, size);
-+
-+	  if (WinHttpGetProxyForUrl (session, url_w, &options, &proxy_info))
-+	    {
-+	      GlobalFree (old_proxy);
-+	      GlobalFree (proxy_info.lpszProxyBypass);
-+	      proxy = proxy_info.lpszProxy;
-+	    }
-+
-+	  WinHttpCloseHandle (session);
-+	}
-+
-+      GlobalFree (auto_config_url);
-+    }
-+
-+  if (proxy)
-     {
--      /* Now get actual info */
--      ret = (INTERNET_PROXY_INFO *) gc_malloc (size, false, gc);
--      if (!InternetQueryOption (NULL, INTERNET_OPTION_PROXY, (LPVOID) ret, &size))
--	ret = NULL;
-+      int size;
-+      BOOL invalid_chars;
-+      size = WideCharToMultiByte (CP_ACP, WC_NO_BEST_FIT_CHARS, proxy, -1,
-+                                  NULL, 0, "_", &invalid_chars);
-+      if (!invalid_chars)
-+	{
-+	  retval = gc_malloc (size, 0, gc);
-+	  WideCharToMultiByte (CP_ACP, 0, proxy, -1, retval, size, NULL, NULL);
-+	}
-+
-+      GlobalFree (proxy);
-     }
--  return ret;
-+
-+  return retval;
- }
- 
- static const char *
-@@ -1003,7 +1060,7 @@ parse_windows_proxy_setting_list (const char *str, const char *type, struct auto
-       buf_set_read (&in, (const uint8_t *)str, strlen (str));
-       if (strchr (str, '=') != NULL)
- 	{
--	  while (buf_parse (&in, ' ', buf, sizeof (buf)))
-+	  while (buf_parse (&in, ';', buf, sizeof (buf)))
- 	    {
- 	      const char *t = parse_windows_proxy_setting (buf, &el, &gc_local);
- 	      if (t && !strcmp (t, type))
-@@ -1029,74 +1086,40 @@ parse_windows_proxy_setting_list (const char *str, const char *type, struct auto
-   gc_free (&gc_local);
- }
- 
--static const char *
--win_proxy_access_type (const DWORD dwAccessType)
--{
--  switch (dwAccessType)
--    {
--    case INTERNET_OPEN_TYPE_DIRECT:
--      return "INTERNET_OPEN_TYPE_DIRECT";
--    case INTERNET_OPEN_TYPE_PROXY:
--      return "INTERNET_OPEN_TYPE_PROXY";
--    default:
--      return "[UNKNOWN]";
--    }
--}
--
- void
--show_win_proxy_settings (const int msglevel)
-+show_win_proxy_settings (const char *url, const int msglevel)
- {
--  INTERNET_PROXY_INFO *info;
-+  char *settings;
-   struct gc_arena gc = gc_new ();
- 
--  info = get_windows_proxy_settings (&gc);
--  msg (msglevel, "PROXY INFO: %s %s",
--       win_proxy_access_type (info->dwAccessType),
--       info->lpszProxy ? info->lpszProxy : "[NULL]");
-+  settings = get_windows_proxy_settings (url, &gc);
-+  msg (msglevel, "PROXY INFO: proxy: %s", settings ? settings : "[NULL]");
- 
-   gc_free (&gc);
- }
- 
- struct auto_proxy_info *
--get_proxy_settings (char **err, struct gc_arena *gc)
-+get_proxy_settings (const char *url, char **err, struct gc_arena *gc)
- {
-   struct gc_arena gc_local = gc_new ();
--  INTERNET_PROXY_INFO *info;
-   struct auto_proxy_info *pi;
-+  char *settings;
- 
-   ALLOC_OBJ_CLEAR_GC (pi, struct auto_proxy_info, gc);
- 
-   if (err)
-     *err = NULL;
- 
--  info = get_windows_proxy_settings (&gc_local);
-+  settings = get_windows_proxy_settings (url, &gc_local);
- 
--  if (!info)
-+  if (settings)
-     {
--      if (err)
--	*err = "PROXY: failed to obtain windows proxy info";
--      goto done;
--    }
--
--  switch (info->dwAccessType)
--    {
--    case INTERNET_OPEN_TYPE_DIRECT:
--      break;
--    case INTERNET_OPEN_TYPE_PROXY:
--      if (!info->lpszProxy)
--	break;
--      parse_windows_proxy_setting_list (info->lpszProxy, NULL, &pi->http, gc);
-+      parse_windows_proxy_setting_list (settings, NULL, &pi->http, gc);
-       if (!pi->http.server)
--	parse_windows_proxy_setting_list (info->lpszProxy, "http", &pi->http, gc);
--      parse_windows_proxy_setting_list (info->lpszProxy, "socks", &pi->socks, gc);
--      break;
--    default:
--      if (err)
--	*err = "PROXY: unknown proxy type";
--      break;
-+	parse_windows_proxy_setting_list (settings, "http", &pi->http, gc);
-+      parse_windows_proxy_setting_list (settings, "socks", &pi->socks, gc);
-     }
- 
-- done:
-   gc_free (&gc_local);
-   return pi;
- }
-@@ -1104,7 +1127,7 @@ get_proxy_settings (char **err, struct gc_arena *gc)
- #else
- 
- struct auto_proxy_info *
--get_proxy_settings (char **err, struct gc_arena *gc)
-+get_proxy_settings (const char *url, char **err, struct gc_arena *gc)
- {
- #if 1
-   if (err)
-diff --git a/proxy.h b/proxy.h
-index d89aa4a..daa4907 100644
---- a/proxy.h
-+++ b/proxy.h
-@@ -44,10 +44,10 @@ struct auto_proxy_info {
-   struct auto_proxy_info_entry socks;
- };
- 
--struct auto_proxy_info *get_proxy_settings (char **err, struct gc_arena *gc);
-+struct auto_proxy_info *get_proxy_settings (const char *url, char **err, struct gc_arena *gc);
- 
- #ifdef WIN32
--void show_win_proxy_settings (const int msglevel);
-+void show_win_proxy_settings (const char *url, const int msglevel);
- #endif /* WIN32 */
- 
- #endif /* GENERAL_PROXY_SUPPORT */
--- 
-1.7.5.4
-
-
+VGhlc2UgbWFjcm9zIGFyZSBzb29vb29vb28gdWdseSEKd2h5IG5vdCBkbyB0aGlzIHNpbXBseSBs
+aWtlIG90aGVyIGV4YW1wbGVzIGluIE9wZW5WUE4gY29kZSwgaWYgSQpyZWNhbGwgY29ycmVjdGx5
+IGluIENyeXB0b0FQSSBtb2R1bGUuCgpPbiBXZWQsIEF1ZyAxNywgMjAxMSBhdCA0OjQyIFBNLCBI
+ZWlrbyBIdW5kIDxoZWlrby5odW5kQC4uLjE0ODkuLi4+IHdyb3RlOgo+IE1pbkdXIGlzIG1pc3Np
+bmcgc3VwcG9ydCBmb3Igd2luaHR0cC5kbGwgd2hpY2ggd2lsbCBiZSB1c2VkIGZvciBhdXRvbWF0
+aWMKPiBwcm94eSBzZXJ2ZXIgZGV0ZWN0aW9uIGluIFdpbmRvd3MuIFVudGlsIGl0IGJlY29tZXMg
+YXZhaWxhYmxlIHRoZSB3b3JrYXJvdW5kCj4gcGVyZm9ybWVkIGlzIHRvIHByb3ZpZGUgd3JhcHBl
+ciBmdW5jdGlvbnMgYW5kIGR5bmFtaWNhbGx5IG1hcCB0aGUgbWlzc2luZwo+IGxpYnJhcnkgaW50
+byB0aGUgYWRkcmVzcyBzcGFjZSwgZ2V0IHRoZSBmdW5jdGlvbiBwb2ludGVyIGZvciB0aGUgYWN0
+dWFsIEFQSQo+IGFuZCBjYWxsIGl0IHdpdGggdGhlIGFyZ3VtZW50cyBwcm92aWRlZC4KPgo+IFRv
+IGtlZXAgdGhpbmdzIG1hbmFnYWJsZSBhbmQgc2hvcnQgaW4gdGhlIHNvdXJjZSBjb2RlIHR3byBw
+cmVwcm9jZXNzb3IgbWFjcm9zCj4gYXJlIGRlZmluZWQgdGhhdCBkbyBtb3N0IG9mIHRoZSB3b3Jr
+Lgo+Cj4gU2lnbmVkLW9mZi1ieTogSGVpa28gSHVuZCA8aGVpa28uaHVuZEAuLi4xNDg5Li4uPgo+
+IC0tLQo+IMKgY29uZmlndXJlLmFjIHwgwqAgMzAgKysrKysrKysrKysrKysrKwo+IMKgd2luMzIu
+YyDCoCDCoCDCoHwgwqAxMDggKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKwo+IMKgd2luMzIuaCDCoCDCoCDCoHwgwqAgNjEgKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysKPiDCoDMgZmlsZXMgY2hhbmdlZCwgMTk5IGluc2VydGlv
+bnMoKyksIDAgZGVsZXRpb25zKC0pCj4KPiBkaWZmIC0tZ2l0IGEvY29uZmlndXJlLmFjIGIvY29u
+ZmlndXJlLmFjCj4gaW5kZXggYTM3ODlkOS4uNDJkNDZjYiAxMDA2NDQKPiAtLS0gYS9jb25maWd1
+cmUuYWMKPiArKysgYi9jb25maWd1cmUuYWMKPiBAQCAtNjY1LDYgKzY2NSwzNiBAQCBpZiB0ZXN0
+ICIke1dJTjMyfSIgPSAieWVzIjsgdGhlbgo+IMKgZmkKPgo+IMKgZG5sCj4gK2RubCBDaGVjayBp
+ZiBNaW5HVyBrbm93cyBhYm91dCBXaW5IVFRQIEFQSQo+ICtkbmwKPiAraWYgdGVzdCAiJHtXSU4z
+Mn0iID0gInllcyI7IHRoZW4KPiArIMKgIEFDX01TR19DSEVDS0lORyhbaWYgTWluR1cga25vd3Mg
+YWJvdXQgV2luSFRUUF0pCj4gKyDCoCBBQ19UUllfTElOSyhbCj4gKyDCoCDCoCDCoCAjaW5jbHVk
+ZSA8d2luZG93cy5oPgo+ICsgwqAgwqAgwqAgI2luY2x1ZGUgPHdpbmh0dHAuaD4KPiArIMKgIMKg
+IF0sIFsKPiArIMKgIMKgIMKgIExQV1NUUiAqdXJsOwo+ICsgwqAgwqAgwqAgSElOVEVSTkVUIHNl
+c3Npb247Cj4gKyDCoCDCoCDCoCBXSU5IVFRQX1BST1hZX0lORk8gcHJveHlfaW5mbzsKPiArIMKg
+IMKgIMKgIFdJTkhUVFBfQVVUT1BST1hZX09QVElPTlMgcHJveHlfb3B0aW9uczsKPiArIMKgIMKg
+IMKgIFdJTkhUVFBfQ1VSUkVOVF9VU0VSX0lFX1BST1hZX0NPTkZJRyBpZV9wcm94eV9pbmZvOwo+
+ICsKPiArIMKgIMKgIMKgIFdpbkh0dHBHZXREZWZhdWx0UHJveHlDb25maWd1cmF0aW9uICgmcHJv
+eHlfaW5mbyk7Cj4gKyDCoCDCoCDCoCBXaW5IdHRwR2V0SUVQcm94eUNvbmZpZ0ZvckN1cnJlbnRV
+c2VyICgmaWVfcHJveHlfaW5mbyk7Cj4gKyDCoCDCoCDCoCBXaW5IdHRwRGV0ZWN0QXV0b1Byb3h5
+Q29uZmlnVXJsIChXSU5IVFRQX0FVVE9fREVURUNUX1RZUEVfREhDUCB8IFdJTkhUVFBfQVVUT19E
+RVRFQ1RfVFlQRV9ETlNfQSwgdXJsKTsKPiArIMKgIMKgIMKgIHNlc3Npb24gPSBXaW5IdHRwT3Bl
+biAoTlVMTCwgV0lOSFRUUF9BQ0NFU1NfVFlQRV9OT19QUk9YWSwgV0lOSFRUUF9OT19QUk9YWV9O
+QU1FLCBXSU5IVFRQX05PX1BST1hZX0JZUEFTUywgMCk7Cj4gKyDCoCDCoCDCoCBXaW5IdHRwR2V0
+UHJveHlGb3JVcmwgKHNlc3Npb24sIEwiaHR0cDovL29wZW52cG4ubmV0IiwgJnByb3h5X29wdGlv
+bnMsICZwcm94eV9pbmZvKTsKPiArIMKgIMKgIMKgIFdpbkh0dHBDbG9zZUhhbmRsZSAoc2Vzc2lv
+bik7Cj4gKyDCoCDCoCBdLCBbCj4gKyDCoCDCoCDCoCBBQ19NU0dfUkVTVUxUKFt5ZXNdKQo+ICsg
+wqAgwqAgXSwgWwo+ICsgwqAgwqAgwqAgQUNfTVNHX1JFU1VMVChbbm8uXSkKPiArIMKgIMKgIMKg
+IEFDX01TR19OT1RJQ0UoW0VuYWJsaW5nIFdpbkhUVFAgY29tcGF0aWJpbGl0eSBsYXllci5dKQo+
+ICsgwqAgwqAgwqAgQUNfREVGSU5FKFVTRV9XSU5IVFRQX0NPTVBBVCwgMSwgW1VzZSB0aGUgV2lu
+SFRUUCBjb21wYXRpYmlsaXR5IGxheWVyXSkKPiArIMKgIMKgIF0pCj4gK2ZpCj4gKwo+ICtkbmwK
+PiDCoGRubCBjaGVjayBmb3IgTFpPIGxpYnJhcnkKPiDCoGRubAo+Cj4gZGlmZiAtLWdpdCBhL3dp
+bjMyLmMgYi93aW4zMi5jCj4gaW5kZXggY2Y2Y2MyZC4uMTU3NDNhOCAxMDA2NDQKPiAtLS0gYS93
+aW4zMi5jCj4gKysrIGIvd2luMzIuYwo+IEBAIC0xMTI4LDQgKzExMjgsMTEyIEBAIHdpbl9nZXRf
+dGVtcGRpcigpCj4gwqAgfQo+IMKgIHJldHVybiB0bXBkaXI7Cj4gwqB9Cj4gKwo+ICsKPiArI2lm
+ZGVmIFVTRV9XSU5IVFRQX0NPTVBBVAo+ICsKPiArLyoKPiArICogTWluR1cgaXMgbWlzc2luZyBz
+dXBwb3J0IGZvciB3aW5odHRwLmRsbCB3aGljaCBpcyB1c2VkIGZvciBhdXRvbWF0aWMKPiArICog
+cHJveHkgc2VydmVyIGRldGVjdGlvbi4gVW50aWwgaXQgYmVjb21lcyBhdmFpbGFibGUgdGhlIHdv
+cmthcm91bmQgaXMKPiArICogdG8gZHluYW1pY2FsbHkgbWFwIHRoZSBsaWJyYXJ5IGludG8gdGhl
+IGFkZHJlc3Mgc3BhY2UgYW5kIGdldCB0aGUKPiArICogZnVuY3Rpb24gcG9pbnRlcnMgZm9yIHRo
+ZSBBUElzIHRoYXQgYXJlIHVzZWQuIFRoZSB0d28gbWFjcm9zIGJlbG93Cj4gKyAqIGRvIGp1c3Qg
+dGhhdC4KPiArICoKPiArICogUFJPVklERV9XSU4zMl9MSUJSQVJZIHByb3ZpZGVzIG1lYW5zIHRv
+IGFjY2VzcyBBUEkgZnVuY3Rpb25zLgo+ICsgKiDCoCDCoCBBcmd1bWVudHM6IExJQiAtIG5hbWUg
+b2YgdGhlIERMTCB0byBsb2FkCj4gKyAqCj4gKyAqIERFRklORV9XSU4zMl9XUkFQUEVSIGRlZmlu
+ZXMgYSB3cmFwcGVyIGZ1bmN0aW9uIGFyb3VuZCB0aGUKPiArICogb3JpZ2luYWwgQVBJIHByb3Zv
+ZGVkIGJ5IHRoZSBsaWJyYXJ5LiBUaGUgb3JpZ2luYWwgQVBJIGNhbgo+ICsgKiBiZSBhY2Nlc3Nl
+ZCB3aXRoaW4gdGhlIHdyYXBwZXIgYXMgPExJQj5fPEZVTkM+IChzZWUgQXJndW1lbnRzKS4KPiAr
+ICogwqAgwqAgQXJndW1lbnRzOiBMSUIgwqAgbmFtZSBvZiB0aGUgRExMIHRoZSBmdW5jdGlvbiBp
+cyBleHBvcnRlZCBpbgo+ICsgKiDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoEVSUiDCoCB2YWx1ZSB0
+byByZXR1cm4gaW4gY2FzZSBzb21ldGhpbmcgZ29lcyB3cm9uZwo+ICsgKiDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoFJFVCDCoCBBUEkgZnVuY3Rpb24ncyByZXR1cm4gdmFsdWUgdHlwZQo+ICsgKiDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoEZVTkMgwqBleHBvcnRlZCBuYW1lIG9mIHRoZSBBUEkgZnVu
+Y3Rpb24KPiArICogwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqBBUkdTIMKgZGVjbGFyYXRpb24gb2Yg
+dGhlIEFQSSBmdW5jdGlvbiBhcmd1bWVudHMKPiArICogwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqBC
+T0RZIMKgdGhlIHdyYXBwZXIgZnVuY3Rpb24ncyBib2R5Cj4gKyAqLwo+ICsKPiArI2RlZmluZSBQ
+Uk9WSURFX1dJTjMyX0xJQlJBUlkoTElCKSDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoFwKPiArIMKgc3RhdGljIEhNT0RVTEUgZ2V0XyAjIyBMSUIg
+IyMgX2xpYnJhcnkgKCkgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgXAo+
+ICsgwqB7IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIFwKPiArIMKg
+IMKgc3RhdGljIEhNT0RVTEUgbGliID0gTlVMTDsgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqBcCj4gKyDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoFwKPiArIMKgIMKgaWYgKGxpYiA9PSBOVUxMKSDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoFwKPiArIMKgIMKgIMKgeyDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCBcCj4gKyDCoCDCoCDCoCBjaGFyIG5hbWVbTUFYX1BBVEhdOyDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoFwKPiAr
+IMKgIMKgIMKgIFVJTlQgbGVuID0gR2V0U3lzdGVtRGlyZWN0b3J5IChuYW1lLCBzaXplb2YgKG5h
+bWUpKTsgwqAgwqAgwqAgwqAgwqBcCj4gKyDCoCDCoCDCoCBpZiAobGVuID09IDApIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIFwKPiArIMKgIMKgIMKgIMKgIHJldHVybiBOVUxMOyDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoFwKPiAr
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgXAo+ICsgwqAg
+wqAgwqAgc3RybmNweSAobmFtZSArIGxlbiwgIlxcIiAjTElCICIuZGxsIiwgc2l6ZW9mIChuYW1l
+KSAtIGxlbik7IMKgXAo+ICsgwqAgwqAgwqAgbmFtZVtzaXplb2YgKG5hbWUpIC0gMV0gPSAnXDAn
+OyDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCBcCj4gKyDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoFwKPiArIMKgIMKgIMKg
+IGxpYiA9IExvYWRMaWJyYXJ5IChuYW1lKTsgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgXAo+ICsgwqAgwqAgwqB9IMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIFwKPiArIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgXAo+ICsgwqAgwqByZXR1cm4gbGliOyDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCBcCj4gKyDCoH0KPiArCj4gKyNkZWZpbmUgREVGSU5FX1dJTjMyX1dSQVBQRVIoTElCLCBF
+UlIsIFJFVCwgRlVOQywgQVJHUywgQk9EWSkgwqBcCj4gKyDCoFJFVCBGVU5DIEFSR1MgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqBcCj4gKyDCoHsgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqBcCj4gKyDC
+oCDCoHR5cGVkZWYgUkVUIChXSU5BUEkgKihGVU5DICMjIF9mbikpIEFSR1M7IMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgXAo+ICsgwqAgwqBzdGF0aWMgRlVOQyAjIyBfZm4gwqBMSUIgIyMgXyAj
+IyBGVU5DID0gTlVMTDsgwqAgwqAgwqAgwqAgwqAgwqAgwqAgXAo+ICsgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgXAo+ICsgwqAgwqBpZiAoKExJQiAjIyBfICMjIEZVTkMpID09
+IE5VTEwpIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgXAo+ICsgwqAg
+wqAgwqB7IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgXAo+ICsgwqAgwqAgwqAgdW5pb24geyDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoFwKPiArIMKgIMKgIMKgIMKgIEZVTkMgIyMgX2ZuICp0eXBlOyDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCBcCj4gKyDCoCDCoCDC
+oCDCoCBGQVJQUk9DICpwdHI7IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgXAo+ICsgwqAgwqAgwqAgfSB1ID0geyAudHlwZSA9ICYoTElC
+ICMjIF8gIyMgRlVOQykgfTsgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgXAo+ICsgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgXAo+ICsgwqAgwqAgwqAgSE1PRFVMRSBsaWIgPSBn
+ZXRfICMjIExJQiAjIyBfbGlicmFyeSAoKTsgwqAgwqAgwqAgwqAgwqAgwqAgwqBcCj4gKyDCoCDC
+oCDCoCBpZiAobGliID09IE5VTEwpIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIFwKPiArIMKgIMKgIMKgIMKgIHJldHVybiAoRVJSKTsgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqBc
+Cj4gKyDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCBcCj4gKyDCoCDCoCDCoCAq
+KHUucHRyKSA9IEdldFByb2NBZGRyZXNzIChsaWIsICgjRlVOQykpOyDCoCDCoCDCoCDCoCDCoCDC
+oCDCoFwKPiArIMKgIMKgIMKgIGlmICgoTElCICMjIF8gIyMgRlVOQykgPT0gTlVMTCkgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqBcCj4gKyDCoCDCoCDCoCDCoCByZXR1cm4gKEVS
+Uik7IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgXAo+ICsgwqAgwqAgwqB9IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgXAo+ICsgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgXAo+ICsgwqAgwqBCT0RZIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIFwKPiArIMKgfQo+ICsKPiArCj4gK1BST1ZJREVfV0lOMzJfTElCUkFS
+WSAod2luaHR0cCkKPiArCj4gK0RFRklORV9XSU4zMl9XUkFQUEVSICh3aW5odHRwLCBOVUxMLCBI
+SU5URVJORVQsCj4gK1dpbkh0dHBPcGVuLCAoTFBDV1NUUiB1c2VyX2FnZW50LCBEV09SRCBhY2Nl
+c3NfdHlwZSwgTFBDV1NUUiBwcm94eSwgTFBDV1NUUiBieXBhc3MsIERXT1JEIGZsYWdzKSwKPiAr
+IMKgcmV0dXJuIHdpbmh0dHBfV2luSHR0cE9wZW4gKHVzZXJfYWdlbnQsIGFjY2Vzc190eXBlLCBw
+cm94eSwgYnlwYXNzLCBmbGFncyk7Cj4gKykKPiArCj4gK0RFRklORV9XSU4zMl9XUkFQUEVSICh3
+aW5odHRwLCBGQUxTRSwgQk9PTCwKPiArV2luSHR0cENsb3NlSGFuZGxlLCAoSElOVEVSTkVUIHNl
+c3Npb24pLAo+ICsgwqByZXR1cm4gd2luaHR0cF9XaW5IdHRwQ2xvc2VIYW5kbGUgKHNlc3Npb24p
+Owo+ICspCj4gKwo+ICtERUZJTkVfV0lOMzJfV1JBUFBFUiAod2luaHR0cCwgRkFMU0UsIEJPT0ws
+Cj4gK1dpbkh0dHBHZXREZWZhdWx0UHJveHlDb25maWd1cmF0aW9uLCAoV0lOSFRUUF9QUk9YWV9J
+TkZPICpwcm94eV9pbmZvKSwKPiArIMKgcmV0dXJuIHdpbmh0dHBfV2luSHR0cEdldERlZmF1bHRQ
+cm94eUNvbmZpZ3VyYXRpb24gKHByb3h5X2luZm8pOwo+ICspCj4gKwo+ICtERUZJTkVfV0lOMzJf
+V1JBUFBFUiAod2luaHR0cCwgRkFMU0UsIEJPT0wsCj4gK1dpbkh0dHBHZXRJRVByb3h5Q29uZmln
+Rm9yQ3VycmVudFVzZXIsIChXSU5IVFRQX0NVUlJFTlRfVVNFUl9JRV9QUk9YWV9DT05GSUcgKnBy
+b3h5X2NvbmZpZyksCj4gKyDCoHJldHVybiB3aW5odHRwX1dpbkh0dHBHZXRJRVByb3h5Q29uZmln
+Rm9yQ3VycmVudFVzZXIocHJveHlfY29uZmlnKTsKPiArKQo+ICsKPiArREVGSU5FX1dJTjMyX1dS
+QVBQRVIgKHdpbmh0dHAsIEZBTFNFLCBCT09MLAo+ICtXaW5IdHRwRGV0ZWN0QXV0b1Byb3h5Q29u
+ZmlnVXJsLCAoRFdPUkQgZmxhZ3MsIExQV1NUUiAqdXJsKSwKPiArIMKgcmV0dXJuIHdpbmh0dHBf
+V2luSHR0cERldGVjdEF1dG9Qcm94eUNvbmZpZ1VybCAoZmxhZ3MsIHVybCk7Cj4gKykKPiArCj4g
+K0RFRklORV9XSU4zMl9XUkFQUEVSICh3aW5odHRwLCBGQUxTRSwgQk9PTCwKPiArV2luSHR0cEdl
+dFByb3h5Rm9yVXJsLCAoSElOVEVSTkVUIHNlc3Npb24sIExQQ1dTVFIgdXJsLAo+ICsgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgV0lOSFRUUF9BVVRPUFJPWFlfT1BUSU9OUyAqb3B0
+aW9ucywKPiArIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIFdJTkhUVFBfUFJPWFlf
+SU5GTyAqcHJveHlfaW5mbyksCj4gKyDCoHJldHVybiB3aW5odHRwX1dpbkh0dHBHZXRQcm94eUZv
+clVybCAoc2Vzc2lvbiwgdXJsLCBvcHRpb25zLCBwcm94eV9pbmZvKTsKPiArKQo+ICsKPiArI2Vu
+ZGlmIC8qIFVTRV9XSU5IVFRQX0NPTVBBVCAqLwo+ICsKPiDCoCNlbmRpZgo+IGRpZmYgLS1naXQg
+YS93aW4zMi5oIGIvd2luMzIuaAo+IGluZGV4IDg3ZDhlY2MuLjJmZjRiOGMgMTAwNjQ0Cj4gLS0t
+IGEvd2luMzIuaAo+ICsrKyBiL3dpbjMyLmgKPiBAQCAtMjg4LDUgKzI4OCw2NiBAQCBpbnQgaW5l
+dF9wdG9uKGludCBhZiwgY29uc3QgY2hhciAqc3JjLCB2b2lkICpzdCk7Cj4gwqAvKiBGaW5kIHRl
+bXBvcmFyeSBkaXJlY3RvcnkgKi8KPiDCoGNvbnN0IGNoYXIgKndpbl9nZXRfdGVtcGRpcigpOwo+
+Cj4gKy8qCj4gKyAqIElmIE1pbkdXIGRvZXMgbm90IGtub3cgYWJvdXQgdGhlIFdpbkhUVFAgQyBB
+UEkgZnVuY3Rpb25zIGFuZAo+ICsgKiBjb25zdGFudHMgdGhhdCBhcmUgdXNlZCBmb3IgYXV0b21h
+dGljIHByb3h5IHNlcnZlciBkZXRlY3Rpb24KPiArICogdGhleSBhcmUgZGVjbGFyZWQgaGVyZS4g
+Rm9yIGRldGFpbGVkIGluZm9ybWF0aW9uIHNlZToKPiArICogaHR0cDovL21zZG4ubWljcm9zb2Z0
+LmNvbS9lbi11cy9saWJyYXJ5L2FhMzg0MjUyJTI4dj1WUy44NSUyOS5hc3B4Cj4gKyAqLwo+ICsj
+aWZkZWYgVVNFX1dJTkhUVFBfQ09NUEFUCj4gKwo+ICsjaW5jbHVkZSA8d2luZG93cy5oPgo+ICsj
+aW5jbHVkZSA8d2luaW5ldC5oPgo+ICsKPiArLyogV0lOSFRUUF9QUk9YWV9JTkZPIGR3QWNjZXNz
+VHlwZSBjb25zdGFudHMgKi8KPiArLyogYW5kIFdpbkh0dHBPcGVuKCkgYWNjZXNzX3R5cGUgwqAg
+wqAgwqAgwqAgwqAgwqAgKi8KPiArI2RlZmluZSBXSU5IVFRQX0FDQ0VTU19UWVBFX05PX1BST1hZ
+IMKgIMKgIDEKPiArI2RlZmluZSBXSU5IVFRQX0FDQ0VTU19UWVBFX05BTUVEX1BST1hZIMKgMwo+
+ICsKPiArLyogV2luSHR0cERldGVjdEF1dG9Qcm94eUNvbmZpZ1VybCgpIGZsYWdzICovCj4gKyNk
+ZWZpbmUgV0lOSFRUUF9BVVRPX0RFVEVDVF9UWVBFX0RIQ1AgwqAgMQo+ICsjZGVmaW5lIFdJTkhU
+VFBfQVVUT19ERVRFQ1RfVFlQRV9ETlNfQSDCoDIKPiArCj4gKy8qIFdJTkhUVFBfQVVUT1BST1hZ
+X09QVElPTlMgZHdGbGFncyAqLwo+ICsjZGVmaW5lIFdJTkhUVFBfQVVUT1BST1hZX0NPTkZJR19V
+UkwgwqAgMgo+ICsKPiArLyogV2luSHR0cE9wZW4oKSBwcm94eSBhbmQgYnlwYXNzIHZhbHVlcyAq
+Lwo+ICsjZGVmaW5lIFdJTkhUVFBfTk9fUFJPWFlfTkFNRSDCoCDCoDAKPiArI2RlZmluZSBXSU5I
+VFRQX05PX1BST1hZX0JZUEFTUyDCoDAKPiArCj4gK3R5cGVkZWYgc3RydWN0IHsKPiArIMKgRFdP
+UkQgwqBkd0FjY2Vzc1R5cGU7Cj4gKyDCoExQV1NUUiBscHN6UHJveHk7Cj4gKyDCoExQV1NUUiBs
+cHN6UHJveHlCeXBhc3M7Cj4gK30gV0lOSFRUUF9QUk9YWV9JTkZPOwo+ICsKPiArdHlwZWRlZiBz
+dHJ1Y3Qgewo+ICsgwqBCT09MIMKgIGZBdXRvRGV0ZWN0Owo+ICsgwqBMUFdTVFIgbHBzekF1dG9D
+b25maWdVcmw7Cj4gKyDCoExQV1NUUiBscHN6UHJveHk7Cj4gKyDCoExQV1NUUiBscHN6UHJveHlC
+eXBhc3M7Cj4gK30gV0lOSFRUUF9DVVJSRU5UX1VTRVJfSUVfUFJPWFlfQ09ORklHOwo+ICsKPiAr
+dHlwZWRlZiBzdHJ1Y3Qgewo+ICsgwqBEV09SRCDCoCBkd0ZsYWdzOwo+ICsgwqBEV09SRCDCoCBk
+d0F1dG9EZXRlY3RGbGFnczsKPiArIMKgTFBDV1NUUiBscHN6QXV0b0NvbmZpZ1VybDsKPiArIMKg
+TFBWT0lEIMKgbHB2UmVzZXJ2ZWQ7Cj4gKyDCoERXT1JEIMKgIGR3UmVzZXJ2ZWQ7Cj4gKyDCoEJP
+T0wgwqAgwqBmQXV0b0xvZ29uSWZDaGFsbGVuZ2VkOwo+ICt9IFdJTkhUVFBfQVVUT1BST1hZX09Q
+VElPTlM7Cj4gKwo+ICtISU5URVJORVQgV2luSHR0cE9wZW4gKExQQ1dTVFIgdXNlcl9hZ2VudCwg
+RFdPUkQgYWNjZXNzX3R5cGUsCj4gKyDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoExQ
+Q1dTVFIgcHJveHksIExQQ1dTVFIgYnlwYXNzLCBEV09SRCBmbGFncyk7Cj4gK0JPT0wgV2luSHR0
+cENsb3NlSGFuZGxlIChISU5URVJORVQgc2Vzc2lvbik7Cj4gK0JPT0wgV2luSHR0cEdldERlZmF1
+bHRQcm94eUNvbmZpZ3VyYXRpb24gKFdJTkhUVFBfUFJPWFlfSU5GTyAqcHJveHlfaW5mbyk7Cj4g
+K0JPT0wgV2luSHR0cEdldElFUHJveHlDb25maWdGb3JDdXJyZW50VXNlciAoV0lOSFRUUF9DVVJS
+RU5UX1VTRVJfSUVfUFJPWFlfQ09ORklHICpwcm94eV9jb25maWcpOwo+ICtCT09MIFdpbkh0dHBE
+ZXRlY3RBdXRvUHJveHlDb25maWdVcmwgKERXT1JEIGZsYWdzLCBMUFdTVFIgKnVybCk7Cj4gK0JP
+T0wgV2luSHR0cEdldFByb3h5Rm9yVXJsIChISU5URVJORVQgc2Vzc2lvbiwgTFBDV1NUUiB1cmws
+Cj4gKyDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCBXSU5IVFRQX0FVVE9Q
+Uk9YWV9PUFRJT05TICpvcHRpb25zLAo+ICsgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgV0lOSFRUUF9QUk9YWV9JTkZPICpwcm94eV9pbmZvKTsKPiArCj4gKyNlbmRpZiAv
+KiBVU0VfV0lOSFRUUF9DT01QQVQgKi8KPiArCj4gwqAjZW5kaWYKPiDCoCNlbmRpZgo+IC0tCj4g
+MS43LjUuNAo+Cj4KPiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPiBHZXQgYSBGUkVFIERPV05MT0FE
+ISBhbmQgbGVhcm4gbW9yZSBhYm91dCB1YmVyU1ZOIHJpY2ggc3lzdGVtLAo+IHVzZXIgYWRtaW5p
+c3RyYXRpb24gY2FwYWJpbGl0aWVzIGFuZCBtb2RlbCBjb25maWd1cmF0aW9uLiBUYWtlCj4gdGhl
+IGhhc3NsZSBvdXQgb2YgZGVwbG95aW5nIGFuZCBtYW5hZ2luZyBTdWJ2ZXJzaW9uIGFuZCB0aGUK
+PiB0b29scyBkZXZlbG9wZXJzIHVzZSB3aXRoIGl0LiBodHRwOi8vcC5zZi5uZXQvc2Z1L3dhbmRp
+c2NvLWQyZC0yCj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18KPiBPcGVudnBuLWRldmVsIG1haWxpbmcgbGlzdAo+IE9wZW52cG4tZGV2ZWxAbGlzdHMuc291
+cmNlZm9yZ2UubmV0Cj4gaHR0cHM6Ly9saXN0cy5zb3VyY2Vmb3JnZS5uZXQvbGlzdHMvbGlzdGlu
+Zm8vb3BlbnZwbi1kZXZlbAo+Cg==
