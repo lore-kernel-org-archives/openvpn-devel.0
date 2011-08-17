@@ -1,8 +1,11 @@
+Message-ID: <4E4B873F.6080009@...515...>
+Date: Wed, 17 Aug 2011 12:17:51 +0300
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Date: Tue, 16 Aug 2011 22:34:34 +0300
-Message-ID: <CAOazyz0G7jzP0O0iD1OjynHf4gEP8j+6VFfS_fRcZPKBJG7zvw@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: [Openvpn-devel] pkcs11-helper-1.09 released
+References: <CANdUpHPLMwTJRD69vo+ZUQi=wFQEX=s-5Lt72Xhvn+dW+1WtwA@...278...>
+In-Reply-To: <CANdUpHPLMwTJRD69vo+ZUQi=wFQEX=s-5Lt72Xhvn+dW+1WtwA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Make easy-rsa/2.0/vars handle paths
+ with whitespaces
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,20 +14,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: opensc-announce@...1496..., OpenSC Development <opensc-devel@...1496...>, "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: Tanel Rebane <tanel@...1495...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hello,
 
-pkcs11-helper-1.09 is available.
+> Hello,
+>
+> Line 29 of vars, export KEY_CONFIG=3D`$EASY_RSA/whichopensslcnf
+> $EASY_RSA`, cannot handle whitespaces contained in $EASY_RSA. This
+> line could be changed - depending on preference - to either of:
+> a) export KEY_CONFIG=3D"`"${EASY_RSA}"/whichopensslcnf "${EASY_RSA}"`"
+> b) export KEY_CONFIG=3D$("${EASY_RSA}"/whichopensslcnf "${EASY_RSA}")
+>
+> Regards,
+> Tanel Rebane
+>
+> -------------------------------------------------------------------------=
+-----
+> FREE DOWNLOAD - uberSVN with Social Coding for Subversion.
+> Subversion made easy with a complete admin console. Easy=20
+> to use, easy to manage, easy to install, easy to extend.=20
+> Get a Free download of the new open ALM Subversion platform now.
+> http://p.sf.net/sfu/wandisco-dev2dev
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+Hi Tanel,
 
-Fixed issue introduced in 1.08 related to OpenSSL engine signature.
+Both approaches seem POSIX-compliant. I'll do some tests and send in a
+proper patch.
 
-ChangeLog
+Btw. I noted that some of the easy-rsa scripts lack the customary
+interpreter line (e.g. #!/bin/sh). We should probably fix that, too.
 
-2011-08-16 - Version 1.09
+--=20
 
- * Do not retry if CKR_BUFFER_TOO_SMALL and none NULL target.
- * Fixup OpenSSL engine's rsa_priv_enc to use RSA size output buffer.
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+
+
 
