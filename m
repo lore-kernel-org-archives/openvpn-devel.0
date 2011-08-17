@@ -1,11 +1,7 @@
-Message-ID: <4E4B873F.6080009@...515...>
-Date: Wed, 17 Aug 2011 12:17:51 +0300
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-References: <CANdUpHPLMwTJRD69vo+ZUQi=wFQEX=s-5Lt72Xhvn+dW+1WtwA@...278...>
-In-Reply-To: <CANdUpHPLMwTJRD69vo+ZUQi=wFQEX=s-5Lt72Xhvn+dW+1WtwA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Make easy-rsa/2.0/vars handle paths
- with whitespaces
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Wed, 17 Aug 2011 13:42:46 +0000
+Message-Id: <1313588569-18927-1-git-send-email-heiko.hund@...1489...>
+Subject: [Openvpn-devel] [PATCH 0/3] better --auto-proxy support for Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,50 +10,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: Tanel Rebane <tanel@...1495...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
+Hi,
 
-> Hello,
->
-> Line 29 of vars, export KEY_CONFIG=3D`$EASY_RSA/whichopensslcnf
-> $EASY_RSA`, cannot handle whitespaces contained in $EASY_RSA. This
-> line could be changed - depending on preference - to either of:
-> a) export KEY_CONFIG=3D"`"${EASY_RSA}"/whichopensslcnf "${EASY_RSA}"`"
-> b) export KEY_CONFIG=3D$("${EASY_RSA}"/whichopensslcnf "${EASY_RSA}")
->
-> Regards,
-> Tanel Rebane
->
-> -------------------------------------------------------------------------=
------
-> FREE DOWNLOAD - uberSVN with Social Coding for Subversion.
-> Subversion made easy with a complete admin console. Easy=20
-> to use, easy to manage, easy to install, easy to extend.=20
-> Get a Free download of the new open ALM Subversion platform now.
-> http://p.sf.net/sfu/wandisco-dev2dev
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-Hi Tanel,
+the auto-proxy support for Windows was rather sub-optimal. Since Internet
+Explorer 5 proxy settings were configured with the network or VPN connection,
+but OpenVPN always queried the settings for the LAN connection. Truely automatic
+proxy configuration via WPAD and PAC script was not used, either.
 
-Both approaches seem POSIX-compliant. I'll do some tests and send in a
-proper patch.
+This patch series tries to change that. Auto proxy detetction is done with
+WinHTTP which has support for WPAD, PAC and per connection proxy settings.
 
-Btw. I noted that some of the easy-rsa scripts lack the customary
-interpreter line (e.g. #!/bin/sh). We should probably fix that, too.
+Another thing that is changed is the time at which the auto proxy config
+takes place in OpenVPN. Instead of doing it once during start-up, potentially
+changed settings are now fetched once every connect.
 
---=20
+Heiko Hund (3):
+  add MinGW WinHTTP compatibility layer
+  do automatic proxy detection on Windows right
+  query auto-proxy information when connecting
 
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+ configure.ac |   30 ++++++++++
+ init.c       |   23 ++++++-
+ openvpn.8    |    9 ++-
+ options.c    |   15 ++---
+ options.h    |    2 +-
+ proxy.c      |  173 +++++++++++++++++++++++++++++++++-------------------------
+ proxy.h      |    4 +-
+ win32.c      |  108 ++++++++++++++++++++++++++++++++++++
+ win32.h      |   61 ++++++++++++++++++++
+ 9 files changed, 330 insertions(+), 95 deletions(-)
 
-irc freenode net: mattock
-
-
+Regards
+Heiko
+-- 
+1.7.5.4
 
 
