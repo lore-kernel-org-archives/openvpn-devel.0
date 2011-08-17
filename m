@@ -1,9 +1,10 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Wed, 17 Aug 2011 13:42:47 +0000
-Message-Id: <1313588569-18927-2-git-send-email-heiko.hund@...1489...>
+Date: Wed, 17 Aug 2011 13:42:49 +0000
+Message-Id: <1313588569-18927-4-git-send-email-heiko.hund@...1489...>
 In-Reply-To: <1313588569-18927-1-git-send-email-heiko.hund@...1489...>
 References: <1313588569-18927-1-git-send-email-heiko.hund@...1489...>
-Subject: [Openvpn-devel] [PATCH 1/3] add MinGW WinHTTP compatibility layer
+Subject: [Openvpn-devel] [PATCH 3/3] query auto-proxy information when
+	connecting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,251 +17,112 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-MinGW is missing support for winhttp.dll which will be used for automatic
-proxy server detection in Windows. Until it becomes available the workaround
-performed is to provide wrapper functions and dynamically map the missing
-library into the address space, get the function pointer for the actual API
-and call it with the arguments provided.
-
-To keep things managable and short in the source code two preprocessor macros
-are defined that do most of the work.
+Delaying automatic proxy detection from the time options are parsed
+to connection initialization makes sense as proxy information may have
+changed since the tunnel was established. Especially if the network
+connection or PAC script changed since then. Now, if openvpn receives
+an SIGUSR1 it requeries the settings and uses them.
 
 Signed-off-by: Heiko Hund <heiko.hund@...1489...>
 ---
- configure.ac |   30 ++++++++++++++++
- win32.c      |  108 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- win32.h      |   61 ++++++++++++++++++++++++++++++++
- 3 files changed, 199 insertions(+), 0 deletions(-)
+ init.c    |   23 +++++++++++++++++++----
+ options.c |    8 ++------
+ options.h |    2 +-
+ 3 files changed, 22 insertions(+), 11 deletions(-)
 
-diff --git a/configure.ac b/configure.ac
-index a3789d9..42d46cb 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -665,6 +665,36 @@ if test "${WIN32}" = "yes"; then
- fi
- 
- dnl
-+dnl Check if MinGW knows about WinHTTP API
-+dnl
-+if test "${WIN32}" = "yes"; then
-+   AC_MSG_CHECKING([if MinGW knows about WinHTTP])
-+   AC_TRY_LINK([
-+       #include <windows.h>
-+       #include <winhttp.h>
-+     ], [
-+       LPWSTR *url;
-+       HINTERNET session;
-+       WINHTTP_PROXY_INFO proxy_info;
-+       WINHTTP_AUTOPROXY_OPTIONS proxy_options;
-+       WINHTTP_CURRENT_USER_IE_PROXY_CONFIG ie_proxy_info;
-+
-+       WinHttpGetDefaultProxyConfiguration (&proxy_info);
-+       WinHttpGetIEProxyConfigForCurrentUser (&ie_proxy_info);
-+       WinHttpDetectAutoProxyConfigUrl (WINHTTP_AUTO_DETECT_TYPE_DHCP | WINHTTP_AUTO_DETECT_TYPE_DNS_A, url);
-+       session = WinHttpOpen (NULL, WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
-+       WinHttpGetProxyForUrl (session, L"http://openvpn.net", &proxy_options, &proxy_info);
-+       WinHttpCloseHandle (session);
-+     ], [
-+       AC_MSG_RESULT([yes])
-+     ], [
-+       AC_MSG_RESULT([no.])
-+       AC_MSG_NOTICE([Enabling WinHTTP compatibility layer.])
-+       AC_DEFINE(USE_WINHTTP_COMPAT, 1, [Use the WinHTTP compatibility layer])
-+     ])
-+fi
-+
-+dnl
- dnl check for LZO library
- dnl
- 
-diff --git a/win32.c b/win32.c
-index cf6cc2d..15743a8 100644
---- a/win32.c
-+++ b/win32.c
-@@ -1128,4 +1128,112 @@ win_get_tempdir()
-   }
-   return tmpdir;
- }
-+
-+
-+#ifdef USE_WINHTTP_COMPAT
-+
-+/*
-+ * MinGW is missing support for winhttp.dll which is used for automatic
-+ * proxy server detection. Until it becomes available the workaround is
-+ * to dynamically map the library into the address space and get the
-+ * function pointers for the APIs that are used. The two macros below
-+ * do just that.
-+ *
-+ * PROVIDE_WIN32_LIBRARY provides means to access API functions.
-+ *     Arguments: LIB - name of the DLL to load
-+ *
-+ * DEFINE_WIN32_WRAPPER defines a wrapper function around the
-+ * original API provoded by the library. The original API can
-+ * be accessed within the wrapper as <LIB>_<FUNC> (see Arguments).
-+ *     Arguments: LIB   name of the DLL the function is exported in
-+ *                ERR   value to return in case something goes wrong
-+ *                RET   API function's return value type
-+ *                FUNC  exported name of the API function
-+ *                ARGS  declaration of the API function arguments
-+ *                BODY  the wrapper function's body
-+ */
-+
-+#define PROVIDE_WIN32_LIBRARY(LIB)                                    \
-+  static HMODULE get_ ## LIB ## _library ()                           \
-+  {                                                                   \
-+    static HMODULE lib = NULL;                                        \
-+                                                                      \
-+    if (lib == NULL)                                                  \
-+      {                                                               \
-+	char name[MAX_PATH];                                          \
-+	UINT len = GetSystemDirectory (name, sizeof (name));          \
-+	if (len == 0)                                                 \
-+	  return NULL;                                                \
-+                                                                      \
-+	strncpy (name + len, "\\" #LIB ".dll", sizeof (name) - len);  \
-+	name[sizeof (name) - 1] = '\0';                               \
-+                                                                      \
-+	lib = LoadLibrary (name);                                     \
-+      }                                                               \
-+                                                                      \
-+    return lib;                                                       \
-+  }
-+
-+#define DEFINE_WIN32_WRAPPER(LIB, ERR, RET, FUNC, ARGS, BODY)  \
-+  RET FUNC ARGS                                                \
-+  {                                                            \
-+    typedef RET (WINAPI *(FUNC ## _fn)) ARGS;                  \
-+    static FUNC ## _fn  LIB ## _ ## FUNC = NULL;               \
-+                                                               \
-+    if ((LIB ## _ ## FUNC) == NULL)                            \
-+      {                                                        \
-+	union {                                                \
-+	  FUNC ## _fn *type;                                   \
-+	  FARPROC *ptr;                                        \
-+	} u = { .type = &(LIB ## _ ## FUNC) };                 \
-+                                                               \
-+	HMODULE lib = get_ ## LIB ## _library ();              \
-+	if (lib == NULL)                                       \
-+	  return (ERR);                                        \
-+                                                               \
-+	*(u.ptr) = GetProcAddress (lib, (#FUNC));              \
-+	if ((LIB ## _ ## FUNC) == NULL)                        \
-+	  return (ERR);                                        \
-+      }                                                        \
-+                                                               \
-+    BODY                                                       \
-+  }
-+
-+
-+PROVIDE_WIN32_LIBRARY (winhttp)
-+
-+DEFINE_WIN32_WRAPPER (winhttp, NULL, HINTERNET,
-+WinHttpOpen, (LPCWSTR user_agent, DWORD access_type, LPCWSTR proxy, LPCWSTR bypass, DWORD flags),
-+  return winhttp_WinHttpOpen (user_agent, access_type, proxy, bypass, flags);
-+)
-+
-+DEFINE_WIN32_WRAPPER (winhttp, FALSE, BOOL,
-+WinHttpCloseHandle, (HINTERNET session),
-+  return winhttp_WinHttpCloseHandle (session);
-+)
-+
-+DEFINE_WIN32_WRAPPER (winhttp, FALSE, BOOL,
-+WinHttpGetDefaultProxyConfiguration, (WINHTTP_PROXY_INFO *proxy_info),
-+  return winhttp_WinHttpGetDefaultProxyConfiguration (proxy_info);
-+)
-+
-+DEFINE_WIN32_WRAPPER (winhttp, FALSE, BOOL,
-+WinHttpGetIEProxyConfigForCurrentUser, (WINHTTP_CURRENT_USER_IE_PROXY_CONFIG *proxy_config),
-+  return winhttp_WinHttpGetIEProxyConfigForCurrentUser(proxy_config);
-+)
-+
-+DEFINE_WIN32_WRAPPER (winhttp, FALSE, BOOL,
-+WinHttpDetectAutoProxyConfigUrl, (DWORD flags, LPWSTR *url),
-+  return winhttp_WinHttpDetectAutoProxyConfigUrl (flags, url);
-+)
-+
-+DEFINE_WIN32_WRAPPER (winhttp, FALSE, BOOL,
-+WinHttpGetProxyForUrl, (HINTERNET session, LPCWSTR url,
-+			WINHTTP_AUTOPROXY_OPTIONS *options,
-+			WINHTTP_PROXY_INFO *proxy_info),
-+  return winhttp_WinHttpGetProxyForUrl (session, url, options, proxy_info);
-+)
-+
-+#endif /* USE_WINHTTP_COMPAT */
-+
+diff --git a/init.c b/init.c
+index 4a16fba..8219a11 100644
+--- a/init.c
++++ b/init.c
+@@ -388,15 +388,30 @@ init_proxy_dowork (struct context *c)
+ #else
+   const bool did_http = false;
  #endif
-diff --git a/win32.h b/win32.h
-index 87d8ecc..2ff4b8c 100644
---- a/win32.h
-+++ b/win32.h
-@@ -288,5 +288,66 @@ int inet_pton(int af, const char *src, void *st);
- /* Find temporary directory */
- const char *win_get_tempdir();
++  struct auto_proxy_info *auto_proxy_info = NULL;
  
-+/*
-+ * If MinGW does not know about the WinHTTP C API functions and
-+ * constants that are used for automatic proxy server detection
-+ * they are declared here. For detailed information see:
-+ * http://msdn.microsoft.com/en-us/library/aa384252%28v=VS.85%29.aspx
-+ */
-+#ifdef USE_WINHTTP_COMPAT
+   uninit_proxy_dowork (c);
+ 
++  if (c->options.auto_proxy)
++    {
++      char *error;
++      char url[128];
 +
-+#include <windows.h>
-+#include <wininet.h>
++      openvpn_snprintf (url, sizeof (url), "%s://%s:%d/",
++			(proto_is_udp (c->options.ce.proto) ? "socks" : "https"),
++			c->options.ce.remote, c->options.ce.remote_port);
 +
-+/* WINHTTP_PROXY_INFO dwAccessType constants */
-+/* and WinHttpOpen() access_type             */
-+#define WINHTTP_ACCESS_TYPE_NO_PROXY     1
-+#define WINHTTP_ACCESS_TYPE_NAMED_PROXY  3
++      auto_proxy_info = get_proxy_settings (url, &error, &c->c2.gc);
++      if (error)
++	msg (M_WARN, "PROXY: %s", error);
++    }
 +
-+/* WinHttpDetectAutoProxyConfigUrl() flags */
-+#define WINHTTP_AUTO_DETECT_TYPE_DHCP   1
-+#define WINHTTP_AUTO_DETECT_TYPE_DNS_A  2
-+
-+/* WINHTTP_AUTOPROXY_OPTIONS dwFlags */
-+#define WINHTTP_AUTOPROXY_CONFIG_URL   2
-+
-+/* WinHttpOpen() proxy and bypass values */
-+#define WINHTTP_NO_PROXY_NAME    0
-+#define WINHTTP_NO_PROXY_BYPASS  0
-+
-+typedef struct {
-+  DWORD  dwAccessType;
-+  LPWSTR lpszProxy;
-+  LPWSTR lpszProxyBypass;
-+} WINHTTP_PROXY_INFO;
-+
-+typedef struct {
-+  BOOL   fAutoDetect;
-+  LPWSTR lpszAutoConfigUrl;
-+  LPWSTR lpszProxy;
-+  LPWSTR lpszProxyBypass;
-+} WINHTTP_CURRENT_USER_IE_PROXY_CONFIG;
-+
-+typedef struct {
-+  DWORD   dwFlags;
-+  DWORD   dwAutoDetectFlags;
-+  LPCWSTR lpszAutoConfigUrl;
-+  LPVOID  lpvReserved;
-+  DWORD   dwReserved;
-+  BOOL    fAutoLogonIfChallenged;
-+} WINHTTP_AUTOPROXY_OPTIONS;
-+
-+HINTERNET WinHttpOpen (LPCWSTR user_agent, DWORD access_type,
-+		       LPCWSTR proxy, LPCWSTR bypass, DWORD flags);
-+BOOL WinHttpCloseHandle (HINTERNET session);
-+BOOL WinHttpGetDefaultProxyConfiguration (WINHTTP_PROXY_INFO *proxy_info);
-+BOOL WinHttpGetIEProxyConfigForCurrentUser (WINHTTP_CURRENT_USER_IE_PROXY_CONFIG *proxy_config);
-+BOOL WinHttpDetectAutoProxyConfigUrl (DWORD flags, LPWSTR *url);
-+BOOL WinHttpGetProxyForUrl (HINTERNET session, LPCWSTR url,
-+			    WINHTTP_AUTOPROXY_OPTIONS *options,
-+			    WINHTTP_PROXY_INFO *proxy_info);
-+
-+#endif /* USE_WINHTTP_COMPAT */
-+
+ #ifdef ENABLE_HTTP_PROXY
+-  if (c->options.ce.http_proxy_options || c->options.auto_proxy_info)
++  if (c->options.ce.http_proxy_options || auto_proxy_info)
+     {
+       /* Possible HTTP proxy user/pass input */
+       c->c1.http_proxy = http_proxy_new (c->options.ce.http_proxy_options,
+-					 c->options.auto_proxy_info);
++					 auto_proxy_info);
+       if (c->c1.http_proxy)
+ 	{
+ 	  did_http = true;
+@@ -406,13 +421,13 @@ init_proxy_dowork (struct context *c)
  #endif
+ 
+ #ifdef ENABLE_SOCKS
+-  if (!did_http && (c->options.ce.socks_proxy_server || c->options.auto_proxy_info))
++  if (!did_http && (c->options.ce.socks_proxy_server || auto_proxy_info))
+     {
+       c->c1.socks_proxy = socks_proxy_new (c->options.ce.socks_proxy_server,
+ 					   c->options.ce.socks_proxy_port,
+ 					   c->options.ce.socks_proxy_authfile,
+ 					   c->options.ce.socks_proxy_retry,
+-					   c->options.auto_proxy_info);
++					   auto_proxy_info);
+       if (c->c1.socks_proxy)
+ 	{
+ 	  c->c1.socks_proxy_owned = true;
+diff --git a/options.c b/options.c
+index 62c2ac8..c6243cd 100644
+--- a/options.c
++++ b/options.c
+@@ -2025,7 +2025,7 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
+     msg (M_USAGE, "--remote MUST be used in TCP Client mode");
+ 
+ #ifdef ENABLE_HTTP_PROXY
+-  if ((ce->http_proxy_options || options->auto_proxy_info) && ce->proto != PROTO_TCPv4_CLIENT)
++  if ((ce->http_proxy_options || options->auto_proxy) && ce->proto != PROTO_TCPv4_CLIENT)
+     msg (M_USAGE, "--http-proxy or --auto-proxy MUST be used in TCP Client mode (i.e. --proto tcp-client)");
  #endif
+ 
+@@ -4674,12 +4674,8 @@ add_option (struct options *options,
+ #ifdef GENERAL_PROXY_SUPPORT
+   else if (streq (p[0], "auto-proxy"))
+     {
+-      char *error = NULL;
+-
+       VERIFY_PERMISSION (OPT_P_GENERAL);
+-      options->auto_proxy_info = get_proxy_settings ("https://openvpn.net", &error, &options->gc);
+-      if (error)
+-	msg (M_WARN, "PROXY: %s", error);
++      options->auto_proxy = true;
+     }
+   else if (streq (p[0], "show-proxy-settings"))
+     {
+diff --git a/options.h b/options.h
+index 8a51502..47b7ddb 100644
+--- a/options.h
++++ b/options.h
+@@ -193,7 +193,7 @@ struct options
+ #endif
+ 
+ #ifdef GENERAL_PROXY_SUPPORT
+-  struct auto_proxy_info *auto_proxy_info;
++  bool auto_proxy;
+ #endif
+ 
+ #if HTTP_PROXY_FALLBACK
 -- 
 1.7.5.4
 
