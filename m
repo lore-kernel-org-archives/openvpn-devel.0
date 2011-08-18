@@ -1,13 +1,13 @@
-MIME-Version: 1.0
-Sender: flagel@...277...
-In-Reply-To: <4E4B873F.6080009@...515...>
-References: <CANdUpHPLMwTJRD69vo+ZUQi=wFQEX=s-5Lt72Xhvn+dW+1WtwA@...278...>
-	<4E4B873F.6080009@...515...>
-Date: Thu, 18 Aug 2011 14:30:26 +0200
-Message-ID: <CANdUpHMjF43pmSO=2K_T-hAy+iY9dEYPE4n3YOVGvch_fZhCuw@...278...>
-From: Tanel Rebane <tanel@...1495...>
-Subject: Re: [Openvpn-devel] [PATCH] Make easy-rsa/2.0/vars handle paths
-	with whitespaces
+Date: Thu, 18 Aug 2011 20:25:36 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20110818182536.GM8496@...1296...>
+References: <1313662581-30181-1-git-send-email-heiko.hund@...1489...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="IFbVDofONQA6Jk4C"
+Content-Disposition: inline
+In-Reply-To: <1313662581-30181-1-git-send-email-heiko.hund@...1489...>
+Subject: Re: [Openvpn-devel] [PATCH] remove function is_proto_tcp()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,77 +16,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--IFbVDofONQA6Jk4C
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
-As I've understood, the second approach is safer, but the first one is
-more portable. Then again, don't hold me to it as I have no sources
-available (other than myself) confirming that.
+Hi,
 
-I also noticed that easy-rsa/2.0/build-dh has issues with whitespaces.
-This can easily be fixed with some double-quotes on line 6 and 7.
+On Thu, Aug 18, 2011 at 10:16:21AM +0000, Heiko Hund wrote:
+> The implementation of is_proto_tcp() was invalid since the IPv6 stuff got
+> merged into master. There's proto_is_tcp() that does the same job right.
+>=20
+> Remove is_proto_tcp() and make its only caller use proto_is_tcp() instead.
 
-The current...
-if [ -d $KEY_DIR ] && [ $KEY_SIZE ]; then
-    $OPENSSL dhparam -out ${KEY_DIR}/dh${KEY_SIZE}.pem ${KEY_SIZE}
+ACK.
 
-...becomes:
-if [ -d "$KEY_DIR" ] && [ "$KEY_SIZE" ]; then
-    "$OPENSSL" dhparam -out "$KEY_DIR"/dh"$KEY_SIZE".pem "$KEY_SIZE"
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Also, I don't see the point of those curly brackets, might as well
-keep it consistent.
+--IFbVDofONQA6Jk4C
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-I general I think it would be a good idea to run a "grep '$'
-easy-rsa/2.0/*" and make sure that variables are properly quoted.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
 
-Regards,
-Tanel Rebane
+iQCVAwUBTk1ZH6kuBuNlUUl1AQLUmgQAw/6Ep+YQXgJA5ArZfOMvsS5OXHf7AYyy
+drm4eafLdPg73/swxoYTpA8hba4mIQvUTf5W8r6dKStDolrUiFnWLl7neKGT3HHB
+dc9xJHBUCLRhzriQxVRR870CEMKLoQQ0aUNh4P3CMqbk2Wyz9s7YlunX4MUexJWz
+G1Ayeu8bdu4=
+=hLE8
+-----END PGP SIGNATURE-----
 
-
-2011/8/17 Samuli Sepp=E4nen <samuli@...515...>:
->
->> Hello,
->>
->> Line 29 of vars, export KEY_CONFIG=3D`$EASY_RSA/whichopensslcnf
->> $EASY_RSA`, cannot handle whitespaces contained in $EASY_RSA. This
->> line could be changed - depending on preference - to either of:
->> a) export KEY_CONFIG=3D"`"${EASY_RSA}"/whichopensslcnf "${EASY_RSA}"`"
->> b) export KEY_CONFIG=3D$("${EASY_RSA}"/whichopensslcnf "${EASY_RSA}")
->>
->> Regards,
->> Tanel Rebane
->>
->> ------------------------------------------------------------------------=
-------
->> FREE DOWNLOAD - uberSVN with Social Coding for Subversion.
->> Subversion made easy with a complete admin console. Easy
->> to use, easy to manage, easy to install, easy to extend.
->> Get a Free download of the new open ALM Subversion platform now.
->> http://p.sf.net/sfu/wandisco-dev2dev
->> _______________________________________________
->> Openvpn-devel mailing list
->> Openvpn-devel@lists.sourceforge.net
->> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> Hi Tanel,
->
-> Both approaches seem POSIX-compliant. I'll do some tests and send in a
-> proper patch.
->
-> Btw. I noted that some of the easy-rsa scripts lack the customary
-> interpreter line (e.g. #!/bin/sh). We should probably fix that, too.
->
-> --
->
-> Samuli Sepp=E4nen
-> Community Manager
-> OpenVPN Technologies, Inc
->
-> irc freenode net: mattock
->
->
->
->
+--IFbVDofONQA6Jk4C--
 
