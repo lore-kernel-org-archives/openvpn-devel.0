@@ -1,8 +1,7 @@
-Message-ID: <4E4CC419.4040606@...515...>
-Date: Thu, 18 Aug 2011 10:49:45 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Topics for today's meeting
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Thu, 18 Aug 2011 10:16:21 +0000
+Message-Id: <1313662581-30181-1-git-send-email-heiko.hund@...1489...>
+Subject: [Openvpn-devel] [PATCH] remove function is_proto_tcp()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,33 +10,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+The implementation of is_proto_tcp() was invalid since the IPv6 stuff got
+merged into master. There's proto_is_tcp() that does the same job right.
 
-We're having an IRC meeting today, starting at 18:00 UTC on
-#openvpn-devel@...1422... Current topic list is here:
+Remove is_proto_tcp() and make its only caller use proto_is_tcp() instead.
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2011-08-18>
+Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+---
+ options.c |    2 +-
+ socket.h  |    6 ------
+ 2 files changed, 1 insertions(+), 7 deletions(-)
 
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
+diff --git a/options.c b/options.c
+index 77e7c7f..902cc81 100644
+--- a/options.c
++++ b/options.c
+@@ -2409,7 +2409,7 @@ options_postprocess_mutate_ce (struct options *o, struct connection_entry *ce)
+     ce->local_port = 0;
+ 
+   /* if protocol forcing is enabled, disable all protocols except for the forced one */
+-  if (o->proto_force >= 0 && is_proto_tcp(o->proto_force) != is_proto_tcp(ce->proto))
++  if (o->proto_force >= 0 && proto_is_tcp(o->proto_force) != proto_is_tcp(ce->proto))
+     ce->flags |= CE_DISABLED;
+ }
+ 
+diff --git a/socket.h b/socket.h
+index 33da53c..6336f92 100644
+--- a/socket.h
++++ b/socket.h
+@@ -563,12 +563,6 @@ legal_ipv4_port (int port)
+   return port > 0 && port < 65536;
+ }
+ 
+-static inline int
+-is_proto_tcp(const int p)
+-{
+-  return p > 0; /* depends on the definition of PROTO_x */
+-}
+-
+ static inline bool
+ link_socket_proto_connection_oriented (int proto)
+ {
+-- 
+1.7.5.4
 
-In case you can't attend the meeting, please feel free to make comments
-on the topics by responding to this email or to the summary email sent
-after the meeting.
-
-NOTE: It's required to use a registered Freenode IRC nickname to join
-#openvpn-devel - look here for details:
-
-<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
 
