@@ -1,11 +1,8 @@
-Message-ID: <4E5515A5.8080101@...1114...>
-Date: Wed, 24 Aug 2011 17:15:49 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <4E565DD5.3090702@...515...>
+Date: Thu, 25 Aug 2011 17:36:05 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <1311195380-28406-1-git-send-email-matthias.andree@...68...>
-In-Reply-To: <1311195380-28406-1-git-send-email-matthias.andree@...68...>
-Subject: Re: [Openvpn-devel] [PATCH] Skip rather than fail test in
- addressless FreeBSD jails.
+Subject: [Openvpn-devel] Topics for today's meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,34 +11,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi,
 
-On 20/07/11 22:56, Matthias Andree wrote:
-| Signed-off-by: Matthias Andree<matthias.andree@...68...>
-| ---
-|   t_cltsrv.sh |    2 +-
-|   1 files changed, 1 insertions(+), 1 deletions(-)
-|
+We're having an IRC meeting today, starting at 18:00 UTC on
+#openvpn-devel@...1422... Current topic list is here:
 
-ACK.  Applied to testing and stable master branches.
-Commit 3f1745666bac31458b33f09c888769cc8c1c829b
+<https://community.openvpn.net/openvpn/wiki/Topics-2011-08-25>
 
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
 
-kind regards,
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting.
 
-David Sommerseth
+NOTE: It's required to use a registered Freenode IRC nickname to join
+#openvpn-devel - look here for details:
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
 
-iEYEARECAAYFAk5VFaUACgkQDC186MBRfro5LgCfZA0rZa1nsYjgEM9u03UpH03F
-NE4An1LRahZyf7y8Y7NsfK6U8/5zMh9p
-=9bKn
------END PGP SIGNATURE-----
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
