@@ -1,17 +1,10 @@
-From: Stefan Monnier <monnier@...1268...>
-Message-ID: <jwvd3fl7oxm.fsf-monnier+INBOX@...1269...>
-References: <4E4B873F.6080009@...515...>
-	<1313652334-15914-1-git-send-email-samuli@...515...>
-	<4E575276.80206@...1114...> <4E576922.8010209@...515...>
-	<jwvty94e087.fsf-monnier+INBOX@...1269...>
-	<20110829140648.GU8496@...1296...> <4E5DCD83.9080507@...515...>
-	<4E5DFF88.70701@...1114...>
-Date: Wed, 31 Aug 2011 08:22:31 -0400
-In-Reply-To: <4E5DFF88.70701@...1114...> (David Sommerseth's message of
-	"Wed, 31 Aug 2011 11:31:52 +0200")
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] Added whitespace handling for
-	$KEY_CONFIG variable in easy-rsa/2.0/vars
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Wed, 31 Aug 2011 14:49:22 +0000
+Message-Id: <1314802162-26070-1-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <1313046031-14499-1-git-send-email-heiko.hund@...1489...>
+References: <1313046031-14499-1-git-send-email-heiko.hund@...1489...>
+Subject: [Openvpn-devel] [PATCH-UPDATE] define IN6_ARE_ADDR_EQUAL macro for
+	WIN32
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,17 +15,38 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-> ACK!  That makes sense to me.  But it needs to be clearly visible in some
-> kind of requirements list.  If we don't have that, that's probably
-> something we should have.
+Windows headers do not define the IN6_ARE_ADDR_EQUAL macro. It needs
+to be defined locally when building for WIN32.
 
-You could even start your shell scripts with something like:
+Signed-off-by: Heiko Hund <heiko.hund@...1489...>
 
-test "x$(pwd)" = "x`pwd`" || (echo "This shell is not good enough"; exit 1)
+Update: remove check for USE_PF_INET6 since commit
+eb23089183745853fac9414d45a559a478ef51d6 removed the definition
+of this macro. IPv6 is now always compiled in.
+---
+ win32.h |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
 
+diff --git a/win32.h b/win32.h
+index 528af6c..5b18e3c 100644
+--- a/win32.h
++++ b/win32.h
+@@ -41,6 +41,12 @@
+  * development environment.
+  */
+ 
++/* MSVC headers do not define this macro, so do it here */
++#ifndef IN6_ARE_ADDR_EQUAL
++#define IN6_ARE_ADDR_EQUAL(a,b) \
++  (memcmp ((const void*)(a), (const void*)(b), sizeof (struct in6_addr)) == 0)
++#endif
++
+ void init_win32 (void);
+ void uninit_win32 (void);
+ 
+-- 
+1.7.5.4
 
-        Stefan
 
