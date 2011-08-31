@@ -1,9 +1,15 @@
-Sender: "scottywz@...277..." <scottywz@...277...>
-From: Scott Zeid <s@...1497...>
-Date: Tue, 30 Aug 2011 03:47:16 -0500
-Message-Id: <1314694036-3749-1-git-send-email-s@...1497...>
-Subject: [Openvpn-devel] [PATCH] Add IPv6 gateway support for Linux, FreeBSD,
-	and Darwin
+Message-ID: <4E5DCD83.9080507@...515...>
+Date: Wed, 31 Aug 2011 08:58:27 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+MIME-Version: 1.0
+References: <4E4B873F.6080009@...515...>
+	<1313652334-15914-1-git-send-email-samuli@...515...>
+	<4E575276.80206@...1114...> <4E576922.8010209@...515...>
+	<jwvty94e087.fsf-monnier+INBOX@...1269...>
+	<20110829140648.GU8496@...1296...>
+In-Reply-To: <20110829140648.GU8496@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Added whitespace handling for
+ $KEY_CONFIG variable in easy-rsa/2.0/vars
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,87 +18,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Scott Zeid <s@...1497...>
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This patch adds IPv6 gateway configuration for Linux, FreeBSD, and Darwin.
-Apparently this functionality already exists on Win32, Solaris, OpenBSD, and
-NetBSD.
 
-This patch does not implement the --route-ipv6-gateway option; it only
-implements adding the gateway in add_route_ipv6().
+> Hi,
+>
+> On Fri, Aug 26, 2011 at 10:07:00AM -0400, Stefan Monnier wrote:
+>> POSIX mandates $() so any posix shell will support it.  The issue is
+>> with non-POSIX shells, if you do want to support them (e.g. Solaris's
+>> /bin/sh).
+> I'd rather not go down that rat-hole.  Even Solaris has POSIX-compliant
+> shells today (ISTR that there is /bin/ksh).
+>
+> gert
+Perhaps this is simply a documentation issue:
 
-I am only able to test this patch on Linux; the FreeBSD and Darwin code was
-guessed by reading the respective route(8) man pages.
+"Please use a POSIX-compliant shell (e.g. dash) with easy-rsa or you may
+get unexpected results. For example, /bin/sh on Solaris is not
+compliant, but you can use /bin/ksh instead."
 
-(Thoughts:  Some platforms do not specify the TUN/TAP interface in the route
-commands.  Is this intentional?)
+What do you think?
 
-Signed-off-by: Scott Zeid <s@...1497...>
----
- route.c |   19 +++++++++++--------
- 1 files changed, 11 insertions(+), 8 deletions(-)
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-diff --git a/route.c b/route.c
-index d632b45..7f7b6fc 100644
---- a/route.c
-+++ b/route.c
-@@ -1537,20 +1537,22 @@ add_route_ipv6 (struct route_ipv6 *r6, const struct tuntap *tt, unsigned int fla
- 
- #if defined(TARGET_LINUX)
- #ifdef CONFIG_FEATURE_IPROUTE
--  argv_printf (&argv, "%s -6 route add %s/%d dev %s",
-+  argv_printf (&argv, "%s -6 route add %s/%d dev %s via %s",
-   	      iproute_path,
- 	      network,
- 	      r6->netbits,
--	      device);
-+	      device,
-+	      gateway);
-   if (r6->metric_defined)
-     argv_printf_cat (&argv, " metric %d", r6->metric);
- 
- #else
--  argv_printf (&argv, "%s -A inet6 add %s/%d dev %s",
-+  argv_printf (&argv, "%s -A inet6 add %s/%d dev %s gw %s",
- 		ROUTE_PATH,
- 	      network,
- 	      r6->netbits,
--	      device);
-+	      device,
-+	      gateway);
-   if (r6->metric_defined)
-     argv_printf_cat (&argv, " metric %d", r6->metric);
- #endif  /*CONFIG_FEATURE_IPROUTE*/
-@@ -1613,20 +1615,21 @@ add_route_ipv6 (struct route_ipv6 *r6, const struct tuntap *tt, unsigned int fla
- 
- #elif defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY)
- 
--  argv_printf (&argv, "%s add -inet6 %s/%d -iface %s",
-+  argv_printf (&argv, "%s add -inet6 %s/%d -iface %s %s",
- 		ROUTE_PATH,
- 	        network,
- 	        r6->netbits,
--	        device );
-+	        device,
-+		gateway );
- 
-   argv_msg (D_ROUTE, &argv);
-   status = openvpn_execve_check (&argv, es, 0, "ERROR: *BSD route add -inet6 command failed");
- 
- #elif defined(TARGET_DARWIN) 
- 
--  argv_printf (&argv, "%s add -inet6 %s -prefixlen %d -iface %s",
-+  argv_printf (&argv, "%s add -inet6 %s -prefixlen %d -iface %s %s",
- 		ROUTE_PATH,
--	        network, r6->netbits, device );
-+	        network, r6->netbits, device, gateway );
- 
-   argv_msg (D_ROUTE, &argv);
-   status = openvpn_execve_check (&argv, es, 0, "ERROR: MacOS X route add -inet6 command failed");
--- 
-1.7.4.1
+irc freenode net: mattock
 
 
