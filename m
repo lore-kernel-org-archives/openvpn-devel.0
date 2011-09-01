@@ -1,12 +1,12 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Thu, 1 Sep 2011 22:15:02 +0200
-References: <1312714757-10317-1-git-send-email-beber@...1472...>
-	<1312714757-10317-4-git-send-email-beber@...1472...>
-In-Reply-To: <1312714757-10317-4-git-send-email-beber@...1472...>
+Date: Thu, 1 Sep 2011 22:27:49 +0200
+References: <1312714757-10317-3-git-send-email-beber@...1472...>
+	<1312715302-10808-1-git-send-email-beber@...1472...>
+In-Reply-To: <1312715302-10808-1-git-send-email-beber@...1472...>
 MIME-Version: 1.0
-Message-Id: <201109012215.03152.heiko.hund@...1489...>
-Subject: Re: [Openvpn-devel] [PATCH 3/4] Win32: Fill "Details" properties
-	for openvpn.exe
+Message-Id: <201109012227.49712.heiko.hund@...1489...>
+Subject: Re: [Openvpn-devel] [PATCH 1/3] Win32: Add OpenVPN RC file to add
+	fill "Details" exe properties tabs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,30 +19,37 @@ Content-Type: Text/Plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-On Sunday 07 August 2011 12:59:16 Bertrand Jacquin wrote:
-> @@ -161,6 +168,11 @@ dist_noinst_DATA +=3D openvpn.8
->  nodist_html_DATA =3D openvpn.8.html
->  openvpn.8.html: $(srcdir)/openvpn.8
->  	$(MAN2HTML) < $(srcdir)/openvpn.8 > openvpn.8.html
-> +
-> +comma =3D ,
-> +
-> +%.o: %.rc
-> +	$(WINDRES) -D _VERSION_=3D$(subst .,$(comma),$(VERSION)),0 -i $< -o $@
->  else
->  dist_man_MANS =3D openvpn.8
->  endif
+On Sunday 07 August 2011 13:08:22 Bertrand Jacquin wrote:
+> +1 VERSIONINFO
 
-This will at least break compilation on master where=20
+Could use VS_VERSION_INFO instead of 1
 
-	#define VERSION "2.x-master"
+> +  FILEVERSION    _VERSION_
+> +  PRODUCTVERSION _VERSION_
 
-_VERSION_ needs needs to be stricly numerical. Maybe we could define a=20
-WINDOWS_VERSION a,b,c,0 in version.m4 for this. Or even have separate major=
-,=20
-minor and patch version definitions in there that could be used to build th=
-e=20
-versions in the .rc file itself.
+See my other mail about the version.
+
+> +    BLOCK "040904b0"  /* en_US, Unicode */
+
+Openvpn itself is not compiled as Unicode binary, so 04090000 for ASCII wou=
+ld=20
+be more precise.
+
+> +      VALUE "CompanyName",      PACKAGE_NAME "\0"
+> +      VALUE "FileDescription",  PACKAGE_NAME "\0"
+> +      VALUE "FileVersion",      PACKAGE_VERSION "\0"
+> +      VALUE "InternalName",     PACKAGE_TARNAME "\0"
+> +      VALUE "OriginalFilename", PACKAGE_TARNAME ".exe\0"
+> +      VALUE "ProductName",      PACKAGE_NAME "\0"
+> +      VALUE "ProductVersion",   PACKAGE_VERSION "\0"
+> +      VALUE "LegalCopyright",   "(C) 2002-2010 " PACKAGE_NAME "
+> Technologies, Inc.\0"
+
+The \0's are not needed here.
+
+> +    VALUE "Translation", 0x409, 0x4b0
+
+Same, no Unicode.
 
 Heiko
 --=20
