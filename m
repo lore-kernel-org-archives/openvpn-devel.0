@@ -1,15 +1,8 @@
-Date: Fri, 2 Sep 2011 20:46:33 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20110902184633.GX8496@...1296...>
-References: <1313046031-14499-1-git-send-email-heiko.hund@...1489...>
-	<1314802162-26070-1-git-send-email-heiko.hund@...1489...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="2RPzo/4ugryNNa1+"
-Content-Disposition: inline
-In-Reply-To: <1314802162-26070-1-git-send-email-heiko.hund@...1489...>
-Subject: Re: [Openvpn-devel] [PATCH-UPDATE] define IN6_ARE_ADDR_EQUAL macro
-	for WIN32
+MIME-Version: 1.0
+Date: Sun, 4 Sep 2011 04:27:16 +0800
+Message-ID: <CANvbpLQFkb6W9BeUjrsF3nb=JnjgruUMMTPSncKQtQjBT1d_nQ@...278...>
+From: Yang Zhe <yangzhe1990@...277...>
+Subject: [Openvpn-devel] Does OpenVPN get IP_PKTINFO in the correct manner?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,49 +11,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Heiko Hund <heiko.hund@...1489...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---2RPzo/4ugryNNa1+
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Let's say openvpn 2.2.0
 
-On Wed, Aug 31, 2011 at 02:49:22PM +0000, Heiko Hund wrote:
-> Windows headers do not define the IN6_ARE_ADDR_EQUAL macro. It needs
-> to be defined locally when building for WIN32.
->=20
-> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
->=20
-> Update: remove check for USE_PF_INET6 since commit
-> eb23089183745853fac9414d45a559a478ef51d6 removed the definition
-> of this macro. IPv6 is now always compiled in.
+In function link_socket_read_udp_posix_recvmsg() writes:
 
-ACK.
+     struct cmsghdr *cmsg;
+     fromlen =3D mesg.msg_namelen;
+     cmsg =3D CMSG_FIRSTHDR (&mesg);
+     if (cmsg !=3D NULL
+         && CMSG_NXTHDR (&mesg, cmsg) =3D=3D NULL
+#ifdef IP_PKTINFO
+         && cmsg->cmsg_level =3D=3D SOL_IP
+         && cmsg->cmsg_type =3D=3D IP_PKTINFO
+#elif defined(IP_RECVDSTADDR)
+         && cmsg->cmsg_level =3D=3D IPPROTO_IP
+         && cmsg->cmsg_type =3D=3D IP_RECVDSTADDR
+#else
+#error ENABLE_IP_PKTINFO is set without IP_PKTINFO xor IP_RECVDSTADDR (fix
+syshead.h)
+#endif
+         && cmsg->cmsg_len >=3D sizeof (struct openvpn_in4_pktinfo))
+       {
+#ifdef IP_PKTINFO
+         struct in_pktinfo *pkti =3D (struct in_pktinfo *) CMSG_DATA (cmsg);
+         from->pi.in4.ipi_ifindex =3D pkti->ipi_ifindex;
+         from->pi.in4.ipi_spec_dst =3D pkti->ipi_spec_dst;
+#elif defined(IP_RECVDSTADDR)
+         from->pi.in4 =3D *(struct in_addr*) CMSG_DATA (cmsg);
+#else
+#error ENABLE_IP_PKTINFO is set without IP_PKTINFO xor IP_RECVDSTADDR (fix
+syshead.h)
+#endif
+       }
 
-gert
+I looked up manpages and other web resources, normally they iterated in the
+cmsghdr list then find the required information by
+
+for (cmsg =3D CMSG_FIRSTHDR(&mesg); cmsg; cmsg =3D CMSG_NXTHDR(&mesg, cmsg))
+  if (cmsg->cmsg_level =3D=3D SOL_IP && cmsg->cmsg_type =3D=3D IP_PKTINFO
+      && ... ) {
+  }
+
+In the openvpn's code, it only examine the FIRSTHDR, and assuming CMSG_NXTH=
+DR =3D
+NULL, which is odd.
+
+Anybody get "--multihome" worked?
+
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---2RPzo/4ugryNNa1+
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
-
-iQCVAwUBTmEkiakuBuNlUUl1AQIriAP+LuUmhZlLfE5f4scyVJax3G/cGZpUZXk6
-kR+46Uyuc5yxCJC3YpRtZrtlNsrwPqehSbGub2+IZ7CzrC3s9VH4Q+RoLyzHWBr3
-buL38q2y/oQ8FA6yLiI2/Aqxl4n06D5cl4p79OvZLD2Vah/yjsliThIdDQytY2z0
-gbJs3V6Vzxk=
-=Grcp
------END PGP SIGNATURE-----
-
---2RPzo/4ugryNNa1+--
+Sincerely,
+=C2=A0 =C2=A0 Yang Zhe
 
