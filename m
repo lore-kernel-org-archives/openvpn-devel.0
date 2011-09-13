@@ -1,9 +1,9 @@
-Date: Tue, 13 Sep 2011 11:43:56 +0200
+Date: Tue, 13 Sep 2011 12:02:18 +0200
 From: "Krashan Brahmanjara" <krokodylowy3@...1498...>
-Message-ID: <4e6f25dc2a58c3.42657146@...1498...>
+Message-ID: <4e6f2a2a9566c7.34175400@...1498...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Snapshot openvpn-2.x-20110909-master-install.exe
-	fails
+Subject: Re: [Openvpn-devel] First Windows snapshot installer of "master"
+ branch now available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,11 +15,10 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset=iso-8859-2
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Current snapshot openvpn-2.x-20110909-master-install.exe.
-openvpngui fails with "no entry inet_ntop found in ws2_32.dll library'
-on windows xp
+Can you release also version compatibile with Windows XP
+and patches from thres "PATCH 0/3] better --auto-proxy support for Windows"?
 
 
 
