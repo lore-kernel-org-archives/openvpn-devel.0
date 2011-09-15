@@ -1,11 +1,8 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Wed, 14 Sep 2011 19:00:33 +0200
-References: <4E69CC6F.5000105@...515...>
-In-Reply-To: <4E69CC6F.5000105@...515...>
-MIME-Version: 1.0
-Message-Id: <201109141900.33862.heiko.hund@...1489...>
-Subject: Re: [Openvpn-devel] Summary of the IRC meeting / sprint (8th Sep
-	2011)
+From: Eric Crist <ecrist@...1286...>
+Date: Thu, 15 Sep 2011 09:22:09 -0500
+Message-Id: <D37A00C0-4EDA-4ACD-A872-7A6D876C5905@...1286...>
+Mime-Version: 1.0 (Apple Message framework v1244.3)
+Subject: [Openvpn-devel] tun.c patch breaks compile on FreeBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,55 +11,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: Text/Plain; charset="iso-8859-15"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: James Yonan <james@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Friday 09 September 2011 10:21:03 Samuli Sepp=E4nen wrote:
-> Discussed the "Better --auto-proxy support for Windows" patchset:
->=20
-> <http://thread.gmane.org/gmane.network.openvpn.devel/4927>
->=20
-> Suggested the following modifications:
->=20
-> Patch [1/3]: Add MinGW WinHTTP compatibility layer
->=20
-> - Make use of import libraries:
-> <http://www.mingw.org/wiki/CreateImportLibraries>
+James,
 
-See my patch from yesterday.
-=20
-> Patch [2/3]: Do automatic proxy detection on Windows right...
-> Patch [3/3]: Query auto-proxy information when connecting...
->=20
-> - Verify that these patches play well with existing functionality:
->   - PROXY queries from the management interface
->   - http-proxy-fallback option
->   - http-proxy-override option
+It would appear a patch you committed breaks compile on FreeBSD.  Part of t=
+his removes r.defined, which is looked for during compile on FreeBSD, and s=
+pecifically stops things during compile of tun.c.  The commit in question i=
+s 7fb0e07ec3f7c5f65 visible here:
 
-Have done the tests now:
+http://openvpn.git.sourceforge.net/git/gitweb.cgi?p=3Dopenvpn/openvpn-testi=
+ng.git;a=3Dcommitdiff;h=3D7fb0e07ec3f7c5f6514523085dbe02ea6b8933e2
 
---http-proxy-override works. The server configured here overrides the one f=
-rom=20
---auto-proxy.
+The configure line used is as follows:
 
---http-proxy-fallback works as long as no proxy is configured via=20
---http-proxy or --auto-proxy. In that case ">PROXY:NEED_NOW" can be answere=
-d=20
-with "http-proxy-fallback <host> <port>" via management interface and the=20
-fallback proxy entered is used.
+$ ./configure --with-lzo-lib=3D/usr/local/lib --with-lzo-headers=3D/usr/loc=
+al/include --disable-depr-random-resolv --enable-password-save --disable-pk=
+cs11 --prefix=3D/usr/local --mandir=3D/usr/local/man --infodir=3D/usr/local=
+/info/ --build=3Damd64-portbld-freebsd9.0
 
-So, as expected, we're still fine regarding compatibiliy with these options.
+Feel free to talk to me here or, easier for me, on IRC if you'd like to tes=
+t.
 
-Heiko
---=20
-Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
-Astaro a Sophos Company | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germ=
-any
-Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
-=20
-Represented by the General Partner Astaro Verwaltungs GmbH
-Amalienbadstra=DFe 41 Bau 52 | 76227 Karlsruhe | Germany=20
-Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
-Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
-
+Eric Crist
