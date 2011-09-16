@@ -1,13 +1,10 @@
-From: Davide Guerri <d.guerri@...1502...>
-Mime-Version: 1.0 (Apple Message framework v1244.3)
-Content-Type: multipart/mixed;
-	boundary="Apple-Mail=_ECF275DD-ED5A-47CB-AB61-2DB7CFA9E04D"
-Date: Thu, 15 Sep 2011 23:42:22 +0200
-In-Reply-To: <B96E3F2E-F1EF-41B4-9342-16AE68F53A8D@...1502...>
-References: <C8EBC1CC-8304-4A97-A2C6-DE114CB05EFF@...1502...>
-	<B96E3F2E-F1EF-41B4-9342-16AE68F53A8D@...1502...>
-Message-Id: <49806E1A-9928-4272-8EF5-55943866941D@...1502...>
-Subject: [Openvpn-devel] [PATCH] Client's routes ageing timer
+From: Samuli =?ISO-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
+Content-Type: multipart/mixed; boundary="=-D1iIE0NcuFGE09jBs+tL"
+Date: Fri, 16 Sep 2011 17:53:17 +0200
+Message-Id: <1316188397.1563.29.camel@...1503...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Summary of the IRC meeting (15th Sep 2011)
+Reply-To: Samuli =?ISO-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,490 +15,361 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
---Apple-Mail=_ECF275DD-ED5A-47CB-AB61-2DB7CFA9E04D
-Content-Type: text/plain; charset="us-ascii"
+--=-D1iIE0NcuFGE09jBs+tL
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-ID: <1316188396.1563.26.camel@...1503...>
+
+Hi,
+
+Here's the summary of the previous IRC meeting.
+
+---
+
+COMMUNITY MEETING
+
+Place: #openvpn-devel on irc.freenode.net
+Date: Thursday 15th Sep 2011
+Time: 18:00 UTC
+
+Planned meeting topics for this meeting were on this page:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2011-09-15>
+
+Next meeting will be announced in advance, but will probably be on the same=
+ weekday and at the same time. Your local meeting time is easy to check fro=
+m services such as
+
+<http://www.timeanddate.com/worldclock>
+
+or with
+
+$ date -u
+
+
+SUMMARY
+
+dazo, dguerri, ecrist, jamesyonan and mattock participated in this meeting.
+
+--
+
+Discussed the "tun.c patch breaks compile on FreeBSD" issue:
+
+<http://thread.gmane.org/gmane.network.openvpn.devel/4993>
+
+Dazo wrote a patch that fixed this issue. The patch was tested by ecrist on=
+ FreeBSD: he also promised to test it on OSX.
+
+--
+
+Discussed the updated "Add MinGW WinHTTP compatibility import library" patc=
+h:
+
+<http://thread.gmane.org/gmane.network.openvpn.devel/4927/focus=3D4987>
+
+Jamesyonan needed further details from the author before giving it an ACK.
+
+--
+
+Discussed dguerri's "Client's routes ageing timer" patch:
+
+<http://thread.gmane.org/gmane.network.openvpn.devel/4990/focus=3D4994>=20
+
+Dazo gave it an ACK on the condition that a few small changes are made.
+
+--
+
+Discussed the "Snapshot openvpn-2.x-20110909-master-install.exe fails" issu=
+e:
+
+<http://thread.gmane.org/gmane.network.openvpn.devel/4983>
+
+Mattock will reproduce this issue on WinXP after which appropriate actions =
+can be taken.
+
+---
+
+Full chatlog as an attachment
+
+--=20
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock=
+
+--=-D1iIE0NcuFGE09jBs+tL
+Content-Disposition: attachment;
+	filename=openvpn_irc_meeting_chatlog_2011-09-15.txt
+Content-Type: text/plain; name=openvpn_irc_meeting_chatlog_2011-09-15.txt
+Content-ID: <0>
 Content-Transfer-Encoding: quoted-printable
 
-Please find attached a patch for a new stale-routes-check (and remove) opti=
-on.
+<jamesyonan> Hi
+<dazo> Hey!
+<mattock> topic page updated: https://community.openvpn.net/openvpn/wiki/=
+Topics-2011-09-14
+<vpnHelper> Title: Topics-2011-09-14 =E2=80=93 OpenVPN Community (at comm=
+unity.openvpn.net)
+<mattock> which topic first?
+<dazo> d12fk:  d457k: Are you around?
+<mattock> page renamed: https://community.openvpn.net/openvpn/wiki/Topics=
+-2011-09-15
+<vpnHelper> Title: Topics-2011-09-15 =E2=80=93 OpenVPN Community (at comm=
+unity.openvpn.net)
+<mattock> maybe we could start with http://thread.gmane.org/gmane.network=
+.openvpn.devel/4993 ?
+<vpnHelper> Title: Gmane Loom (at thread.gmane.org)
+<dazo> makes sense
+<mattock> ecrist: are you around?
+<dazo> I know a little bit about that issue as well
+<dazo> This is the compile error he got: http://pastebin.com/F8rd6136
+<dazo> and it turns out to be the commit 7fb0e07ec3f7c5f65 which is a pri=
+me candidate as suspect
+<ecrist> I'm here
+<dazo> that's the rediect-gateway block-local feature
+<mattock> hi ecrist!
+<mattock> dazo, jamesyonan: any ideas how to fix this?
+<dazo> the fix itself is basically to do the same changes to the OSX/DARW=
+IN and BSD platforms as has been done on the other platforms ... not sure=
+ if there are even more platforms suffering from this
+<mattock> ah, so they were just "left behind"
+<dazo> yupp, exactly
+<dazo> well, that's my impression after having looked at that commit and =
+seeing ecrist's error
+<mattock> is the fix straightforward enough to be "just fixed" without fu=
+rther discussion?
+<dazo> well, it's difficult for me to say ... that initial commit is pret=
+ty big, and it changes a lot of the logic ... so at first glance, it does=
+n't look like a simple trivial fix ... but for all I know, it might be
+<mattock> jamesyonan: any ideas?
+<jamesyonan> so is the issue that FreeBSD is using the old add_route prot=
+otype
+<dazo> yes
+<jamesyonan> one sec, I'm looking at the code now...
+<jamesyonan> probably just change to: add_route (&r, tt, 0, NULL, es);
+<jamesyonan> the const struct route_gateway_info * parm may be NULL
+<mattock> ecrist: can you try that out?
+<ecrist> what am I changing?
+<dazo> I think that's the syntax used other places as well ... and there =
+is the change of r.defined moving over to r.flags too
+<dazo> it would probably be better to offer ecrist a patch ... it'll be m=
+ore changes
+<ecrist> i agree
+<mattock> ah, ok
+<mattock> who'll write the patch?
+<dazo> I wouldn't mind doing it ... but I have too much to do, and needs =
+BSD boxes to test on ... so it can't happen soonish .... :/
+<mattock> jamesyonan: do you have some time to write the patch?
+<mattock> e.g. during
+<mattock> the meeting
+<jamesyonan> I don't generally use FreeBSD
+<mattock> ecrist could probably do the testing?
+<mattock> if you guys have good hunch what's causing this
+<ecrist> I don't mind at all
+<ecrist> I even have a freebsd box I'll make available.
+<mattock> that'd be nice
+<jamesyonan> it might work to just copy/paste the OS X code, since that c=
+ode is known to work, and OS X is also a BSD
+<ecrist> well, os x shares a lot of userland, but has a different kernel
+<dazo> well, this is basically userland related
+<mattock> ecrist: can you try that first?
+<ecrist> no idea what I'm trying, but sure.
+<ecrist> :)
+<mattock> don't hesitate to ask for help ;)
+<mattock> I would have a clear idea myself either yet
+<mattock> would not
+<mattock> maybe move to next topic?
+<dazo> jamesyonan:  if you look at tun.c:1064 ... that's inside the TARGE=
+T_DARWIN block which is used on OSX; right?
+<dazo> that line says:
+<dazo>    r.defined =3D true;
+<dazo> and I don't see a 'defined' member being declared in route.h
+<dazo> in the 'struct route' struct
+<dazo> I don't understand how this can compile on OSX ....
+<dazo> (me is using the latest master branch)
+<jamesyonan> basically r.defined doesn't exist any more -- it's now a bit=
+ flag RT_DEFINED set in r.flags
+<dazo> exactly ... so I'm just wondering what's missing in our tree, if t=
+his compiles for you on OSX
+<jamesyonan> I've only built 2.1 branch on OSX
+<jamesyonan> but 2.1 branch absolutely compiles on OSX
+<dazo> okay, I'll check that branch
+<mattock> ecrist: you got OSX where you could tesr bulding "master"?
+<mattock> test
+<mattock> to see if it's missing something that's in james' 2.1
+<dazo> wooow .... those two tun.c files looks quite different ... seems t=
+he big nasty merge has failed on this point
+<dazo> the BSD parts are the same, but not the OSX
+<mattock> any other differences?
+<dazo> I've not diffed them yet ... just going through do_ifconfig() now
+<ecrist> how about, I just wait until you smart people figure it out? :)
+<dazo> heh
+<dazo> TARGET_SOLARIS is slightly different (not considering IPv6 support=
+ and proper tun/subnet support - which is community patches)
+<dazo> actually, the TARGET_SOLARIS difference most likely due to the tun=
+/subnet patch
+<dazo> TARGET_NETBSD is very different, but that's most likely due to som=
+e bug fixes as well
+<mattock> does this mean we need to take closer look before fixing the Fr=
+eeBSD build issue?
+<dazo> I'm going through now ... it's not too bad ... I might have a patc=
+h in a few mintues
+<mattock> great!
+<mattock> jamesyonan: can you take a look at d12fk's fixed mingw patch: h=
+ttp://sourceforge.net/mailarchive/forum.php?thread_name=3D1315932286-6992=
+-1-git-send-email-heiko.hund%40sophos.com&forum_name=3Dopenvpn-devel
+<vpnHelper> Title: SourceForge.net: OpenVPN: openvpn-devel (at sourceforg=
+e.net)
+<mattock> if it's a straight ACK
+<dazo> ecrist:  http://www.fpaste.org/4JRV/ ... can you test that one ...=
+ great if you can also test it on OSX, as I'm fixing some issues there to=
+o
+* dguerri (~cdtdaddy@...1504...) has joined #openvpn-devel
+<dguerri> hi there
+<mattock> hi dguerri!
+<mattock> what's up?
+<dguerri> is there someone interested in the aging timer for openvpn rout=
+es patch?
+<dguerri> here: http://sourceforge.net/mailarchive/message.php?msg_id=3D2=
+8087359
+<vpnHelper> Title: SourceForge.net: OpenVPN: (at sourceforge.net)
+<ecrist> testing now, dazo
+<mattock> ah, that one
+<dguerri> can you give me some hints about it's clean implementation? :)
+<jamesyonan> re: mingw patch, why is http://openvpn.net embedded in the c=
+all to WinHttpGetProxyForUrl?
+<vpnHelper> Title: OpenVPN - Open Source VPN (at openvpn.net)
+<ecrist> dazo: that patch gets it past the old error
+<ecrist> waiting to see if it finishes
+<mattock> jamesyonan: can't help with that...d12fk had to do some semi-na=
+sty issues but I can't remember details
+<ecrist> dazo: I think that fixes it
+<ecrist> it compiles anyway
+<mattock> would dguerri's patch be generally useful?
+<dguerri> @mattock it seems to me that the openvpn routing table should b=
+ehave like a forwarding db when opnevpn is in tap mode or like a routing =
+cache when it is in tun mode
+<dguerri> bot "tables" do have a aging timer=20
+<dguerri> but openvpn does not
+<dguerri> am i right?
+<dazo> I think jamesyonan is the one who can best answer this
+<dguerri> I think that the problem is the combination of 2 things: first,=
+ routes doesn't expire (so they are monotonically increasing), second we =
+have a maximum amount of routes per client (the defaults to 256)
+<dazo> dguerri:  I'm reading quickly through your patch ... is it only un=
+used routes which are removed?
+<jamesyonan> are you talking about route handling in route.[ch] or mroute=
+.[ch]?
+<dazo> dguerri:  and I'm wondering what makes these routes increase over =
+time ....
+<dguerri> yeah, routes that have a last activity timestamp older that a c=
+onfigurable amount of time
+<dguerri> older than not that :)
+<dguerri> @dazo i have to admit we have a rather uncommon setup
+<dazo> dguerri:  then the man page part could be more clear on that ... b=
+y the way, there's a ---- prefix too, which should probably be just -- ..=
+.. and it should probably be escaped as \-\- .... debian complains about =
+such missing escapes ... except of that, the patch looks fine enough at f=
+irst glance
+<dazo> but I'm uncertain how useful this feature would be main stream
+<dguerri> in tap mode, for instance, if you have a "guest" lag behind you=
+r openvpn client, you could a increasingly number of routes=20
+<dguerri> omg sorry for this automagic correction NOT lag but LAN
+<dazo> aha, so it's LAN-to-LAN over VPN which creates this issues, with e=
+ver growing routes?
+<dguerri> yes
+<dguerri> i don't know if tho apply also in tun mode.. but i it should be
+<dguerri> (lemme turn autocorrect off :) )
+<dazo> I see, then it can begin to make sense ... it's probably not too m=
+any who have LAN behind the openvpn client routing, which this would hit =
+then
+<dazo> thus this has not been raised as an issue, from what I know at lea=
+st
+<dguerri> that's sure
+<mattock> so this would have no negative side-effects for most users?
+<dguerri> for instance, we have many access point that bridge theirs wlan=
+ network (L2) into a vpn tunnels
+<dazo> mattock:  doesn't look so at all
+<dguerri> since the wlan network is open, we have a lot of clients
+<dguerri> so a lot of routes per vpn-clients
+<dazo> mattock:  1) it needs to be activated by --stale-routes-check ....=
+ 2) it does sensible route maintenance from what I can understand
+<dguerri> @dazo I hope so :)
+<dazo> :)
+<mattock> if it's generally useful then perhaps the configure flag could =
+be eventually be dropped?
+<dazo> it's not a configure flag involved at all
+<dguerri> @dazo thanks for the hints about the man page, I will reissue a=
+ patch with these corrections
+<dazo> mattock:  it's enabled at run-time
+<mattock> ah, sorry
+<dazo> dguerri:  please provide a patch which is based on the latest mast=
+er branch ... the 2.1 base is very different from what the current master=
+ is on this area
+<dguerri> @dazo sure
+<dazo> mattock:  unless jamesyonan says NACK ... this patch does make sen=
+se to me
+<mattock> nice!
+<dguerri> it sounds great to me, thanks for now
+<mattock> so, we need d12fk for mingw
+<mattock> freebsd issue is fixed
+<mattock> then we have the inet_ntop issue
+<mattock> haven't had time to reproduce it yet
+<dazo> I would like to know for sure that BSD is fixed ... compiler error=
+ is fixed, but does it work at runtime?
+<mattock> ecrist: can you do some quick tests?
+<mattock> now or later ;)
+<mattock> dazo: are basic smoketests enough?
+<ecrist> let me try to connect ot a vpn, gimme one minute
+<dazo> yeah, I'd say so ... smoketest which includes getting a connection=
+ and seeing that the tun/tap adapter is configured=20
+<dazo> I've reviewed tun.c with the suggested patch against the 2.1 SVN v=
+ersion ... and now it looks like it's generally IPv6 plus other community=
+ patches which makes it differ
+<dazo> I don't recognise all changes, but most of them I know I've seen b=
+efore
+<ecrist> it works
+<ecrist> tested on tap
+<ecrist> let me test on tun
+<dazo> ecrist:  perfect!  could you also please do a similar test on OSX =
+too?  Since I do some changes there as well
+<ecrist> hrm
+<ecrist> not sure, it fails at configure, and I'm not sure what I should =
+be using
+<ecrist> log isn't overly revealing
+<ecrist> doh
+<ecrist> I don't have developer tools on this box yet
+<ecrist> I just upgraded to lion
+<ecrist> WHICH btw, has a proper bridge adapter
+<mattock> can we do anything about the inet_ntop issue khasran reported?
+<dazo> that happened on WinXP, right?
+<mattock> yep
+<mattock> I only tested win7 64bit
+<mattock> http://thread.gmane.org/gmane.network.openvpn.devel/4983
+<vpnHelper> Title: Gmane Loom (at thread.gmane.org)
+<dazo> I think that WinXP is lacking inet_ntop ... but as the compiler fo=
+und it while linking it ... it might have passed through
+<dazo> the compile box was newer than XP, or do I remember wrong?
+<mattock> win2008r2
+<dazo> that might be the reason why the linking worked fine
+<mattock> maybe I'll try to reproduce the issue first
+<mattock> on winxp
+<dazo> probably a good idea
+<mattock> at the end of the month, there are things even N900 can't do :P
+<mattock> anything else for today?
+<dazo> We're an hour over :)
+<ecrist> I'll install Xcode 4 and test on os x, dazo
+<dazo> I think this would cover it for today
+<dazo> ecrist:  thx a lot!  If that works out, I'll mail it to the mailin=
+g list, and will add a Tested-by: reference to you if you don't mind
+<ecrist> sure
+<mattock> ok, excellent!
+<mattock> I'll see if I have nerves to write the summary with this N900..=
+. can somebody mail me the chatlog?
+<mattock> not sure I can copy and paste from this client
+<ecrist> mattock, sounds like you need screen + irssi
+<ecrist> ;)
+--=-D1iIE0NcuFGE09jBs+tL--
 
-As requested on IRC #openvpn-devel channel, I've fixed my previously submit=
-ted patch against version 2.1.0 (i.e. the version currently used by ubuntu =
-10.04.3 LTS) and I'm also submitting a patch against the latest master bran=
-ch.
-
-I've been testing both versions for a while with no issues so far.=20
-
-
-
---Apple-Mail=_ECF275DD-ED5A-47CB-AB61-2DB7CFA9E04D
-Content-Disposition: attachment;
-	filename=openvpn-2.1.0-aged-routes.patch
-Content-Type: application/octet-stream; name="openvpn-2.1.0-aged-routes.patch"
-Content-Transfer-Encoding: 7bit
-
-diff -ruN openvpn-2.1.0-orig/multi.c openvpn-2.1.0/multi.c
---- openvpn-2.1.0-orig/multi.c	2009-10-25 01:17:29.000000000 +0200
-+++ openvpn-2.1.0/multi.c	2011-09-14 16:21:57.000000000 +0200
-@@ -375,6 +375,14 @@
-    * tun/tap interface and network stack?
-    */
-   m->enable_c2c = t->options.enable_c2c;
-+  
-+  /* initialize stale routes check timer */
-+  if (t->options.stale_routes_check_interval > 0)
-+    {
-+      msg (M_INFO, "Initializing stale route check timer to run every %i seconds and to removing routes with activity timeout older than %i seconds", 
-+        t->options.stale_routes_check_interval, t->options.stale_routes_ageing_time);
-+      event_timeout_init (&m->stale_routes_check_et, t->options.stale_routes_check_interval, 0);
-+    }
- }
- 
- const char *
-@@ -1159,6 +1167,32 @@
-     }
- }
- 
-+static void
-+check_stale_routes (struct multi_context *m)
-+{
-+
-+  struct gc_arena gc = gc_new ();
-+  struct hash_iterator hi;
-+  struct hash_element *he;
-+
-+  dmsg (D_MULTI_DEBUG, "MULTI: Checking stale routes");
-+  hash_iterator_init_range (m->vhash, &hi, true, 0, hash_n_buckets (m->vhash));
-+  while ((he = hash_iterator_next (&hi)) != NULL)
-+    {
-+      struct multi_route *r = (struct multi_route *) he->value;
-+      if (multi_route_defined (m, r) && difftime(now, r->last_reference) >= m->top.options.stale_routes_ageing_time)
-+        {
-+          dmsg (D_MULTI_DEBUG, "MULTI: Deleting stale route for address '%s'",
-+               mroute_addr_print (&r->addr, &gc));
-+          learn_address_script (m, NULL, "delete", &r->addr);
-+          multi_route_del (r);
-+          hash_iterator_delete_element (&hi);
-+        }
-+    }
-+  hash_iterator_free (&hi);
-+  gc_free (&gc);
-+}
-+
- /*
-  * Ensure that endpoint to be pushed to client
-  * complies with --ifconfig-push-constraint directive.
-@@ -2349,6 +2383,14 @@
- }
- #endif
- 
-+bool
-+stale_route_check_trigger (struct multi_context *m)
-+{
-+  struct timeval null;
-+  CLEAR (null);
-+  return event_timeout_trigger (&m->stale_routes_check_et, &null, ETT_DEFAULT);
-+}
-+
- /*
-  * Process timers in the top-level context
-  */
-@@ -2371,6 +2413,10 @@
- #ifdef ENABLE_DEBUG
-   gremlin_flood_clients (m);
- #endif
-+  
-+  /* Should we check for stale routes? */
-+  if (m->top.options.stale_routes_check_interval && stale_route_check_trigger (m))
-+    check_stale_routes (m);
- }
- 
- void
-diff -ruN openvpn-2.1.0-orig/multi.h openvpn-2.1.0/multi.h
---- openvpn-2.1.0-orig/multi.h	2009-10-01 20:02:18.000000000 +0200
-+++ openvpn-2.1.0/multi.h	2011-09-14 12:06:41.000000000 +0200
-@@ -129,6 +129,11 @@
-   time_t per_second_trigger;
- 
-   struct context top;
-+  
-+  /*
-+   * Timer object for stale route check
-+   */
-+  struct event_timeout stale_routes_check_et;
- };
- 
- /*
-diff -ruN openvpn-2.1.0-orig/openvpn.8 openvpn-2.1.0/openvpn.8
---- openvpn-2.1.0-orig/openvpn.8	2009-12-11 09:04:24.000000000 +0100
-+++ openvpn-2.1.0/openvpn.8	2011-09-14 14:45:18.000000000 +0200
-@@ -2976,6 +2976,25 @@
- kernel routing table.
- .\"*********************************************************
- .TP
-+.B \-\-stale-routes-check n [t]
-+Remove routes older than
-+.B n
-+seconds (i.e. the ageing time).
-+
-+This check is ran every
-+.B t
-+seconds (i.e. check interval).
-+
-+If
-+.B t
-+is not present it defaults to
-+.B n
-+
-+This option helps to keep the dynamic routing table small.
-+See also
-+.B \-\-max-routes-per-client
-+.\"*********************************************************
-+.TP
- .B \-\-connect-freq n sec
- Allow a maximum of
- .B n
-diff -ruN openvpn-2.1.0-orig/options.c openvpn-2.1.0/options.c
---- openvpn-2.1.0-orig/options.c	2009-12-11 09:09:39.000000000 +0100
-+++ openvpn-2.1.0/options.c	2011-09-14 16:12:17.000000000 +0200
-@@ -416,6 +416,9 @@
-   "--connect-freq n s : Allow a maximum of n new connections per s seconds.\n"
-   "--max-clients n : Allow a maximum of n simultaneously connected clients.\n"
-   "--max-routes-per-client n : Allow a maximum of n internal routes per client.\n"
-+  "--stale-routes-check n [t] : Remove routes with a last activity timestamp\n"
-+  "                             older than n seconds. Run this check every t\n"
-+  "                             seconds (defaults to n).\n"
- #if PORT_SHARE
-   "--port-share host port : When run in TCP mode, proxy incoming HTTPS sessions\n"
-   "                  to a web server at host:port.\n"
-@@ -725,6 +728,7 @@
-   o->tcp_queue_limit = 64;
-   o->max_clients = 1024;
-   o->max_routes_per_client = 256;
-+  o->stale_routes_check_interval = 0;
-   o->ifconfig_pool_persist_refresh_freq = 600;
- #endif
- #if P2MP
-@@ -1788,7 +1792,8 @@
-       if (options->port_share_host || options->port_share_port)
- 	msg (M_USAGE, "--port-share requires TCP server mode (--mode server --proto tcp-server)");
- #endif
-
-+      if (options->stale_routes_check_interval)
-+        msg (M_USAGE, "--stale-routes-check requires --mode server");
-     }
- #endif /* P2MP_SERVER */
- 
-@@ -4373,6 +4378,25 @@
- 	}
-       options->max_routes = max_routes;
-     }
-+  else if (streq (p[0], "stale-routes-check") && p[1])
-+    {
-+      int ageing_time, check_interval;
-+
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-+      ageing_time = atoi (p[1]);
-+      if (p[2])
-+        check_interval = atoi (p[2]);
-+      else
-+        check_interval = ageing_time;
-+
-+      if (ageing_time < 1 || check_interval < 1)
-+        {
-+        msg (msglevel, "--stale-routes-check aging time and check interval must be >= 1");
-+        goto err;
-+        }
-+      options->stale_routes_ageing_time  = ageing_time;
-+      options->stale_routes_check_interval = check_interval;
-+    }
-   else if (streq (p[0], "route-gateway") && p[1])
-     {
-       VERIFY_PERMISSION (OPT_P_ROUTE_EXTRAS);
-diff -ruN openvpn-2.1.0-orig/options.h openvpn-2.1.0/options.h
---- openvpn-2.1.0-orig/options.h	2009-10-01 20:02:18.000000000 +0200
-+++ openvpn-2.1.0/options.h	2011-09-14 14:45:18.000000000 +0200
-@@ -383,6 +383,8 @@
-   int cf_per;
-   int max_clients;
-   int max_routes_per_client;
-+  int stale_routes_check_interval;
-+  int stale_routes_ageing_time;
- 
-   const char *auth_user_pass_verify_script;
-   bool auth_user_pass_verify_script_via_file;
-
---Apple-Mail=_ECF275DD-ED5A-47CB-AB61-2DB7CFA9E04D
-Content-Disposition: attachment;
-	filename=openvpn-master-aged-routes.patch
-Content-Type: application/octet-stream; name="openvpn-master-aged-routes.patch"
-Content-Transfer-Encoding: 7bit
-
-diff --git a/multi.c b/multi.c
-index 1a2f86a..f198e17 100644
---- a/multi.c
-+++ b/multi.c
-@@ -368,6 +368,14 @@ multi_init (struct multi_context *m, struct context *t, bool tcp_mode, int threa
-    * tun/tap interface and network stack?
-    */
-   m->enable_c2c = t->options.enable_c2c;
-+
-+  /* initialize stale routes check timer */
-+  if (t->options.stale_routes_check_interval > 0)
-+    {
-+      msg (M_INFO, "Initializing stale route check timer to run every %i seconds and to removing routes with activity timeout older than %i seconds", 
-+        t->options.stale_routes_check_interval, t->options.stale_routes_ageing_time);
-+      event_timeout_init (&m->stale_routes_check_et, t->options.stale_routes_check_interval, 0);
-+    }
- }
- 
- const char *
-@@ -1197,6 +1205,32 @@ multi_delete_dup (struct multi_context *m, struct multi_instance *new_mi)
-     }
- }
- 
-+static void
-+check_stale_routes (struct multi_context *m)
-+{
-+
-+  struct gc_arena gc = gc_new ();
-+  struct hash_iterator hi;
-+  struct hash_element *he;
-+
-+  dmsg (D_MULTI_DEBUG, "MULTI: Checking stale routes");
-+  hash_iterator_init_range (m->vhash, &hi, 0, hash_n_buckets (m->vhash));
-+  while ((he = hash_iterator_next (&hi)) != NULL)
-+    {
-+      struct multi_route *r = (struct multi_route *) he->value;
-+      if (multi_route_defined (m, r) && difftime(now, r->last_reference) >= m->top.options.stale_routes_ageing_time)
-+        {
-+          dmsg (D_MULTI_DEBUG, "MULTI: Deleting stale route for address '%s'",
-+               mroute_addr_print (&r->addr, &gc));
-+          learn_address_script (m, NULL, "delete", &r->addr);
-+          multi_route_del (r);
-+          hash_iterator_delete_element (&hi);
-+        }
-+    }
-+  hash_iterator_free (&hi);
-+  gc_free (&gc);
-+}
-+
- /*
-  * Ensure that endpoint to be pushed to client
-  * complies with --ifconfig-push-constraint directive.
-@@ -2469,6 +2503,14 @@ gremlin_flood_clients (struct multi_context *m)
- }
- #endif
- 
-+bool
-+stale_route_check_trigger (struct multi_context *m)
-+{
-+  struct timeval null;
-+  CLEAR (null);
-+  return event_timeout_trigger (&m->stale_routes_check_et, &null, ETT_DEFAULT);
-+}
-+
- /*
-  * Process timers in the top-level context
-  */
-@@ -2491,6 +2533,10 @@ multi_process_per_second_timers_dowork (struct multi_context *m)
- #ifdef ENABLE_DEBUG
-   gremlin_flood_clients (m);
- #endif
-+
-+  /* Should we check for stale routes? */
-+  if (m->top.options.stale_routes_check_interval && stale_route_check_trigger (m))
-+    check_stale_routes (m);
- }
- 
- void
-diff --git a/multi.h b/multi.h
-index 58e65a3..2bc0c8a 100644
---- a/multi.h
-+++ b/multi.h
-@@ -161,6 +161,11 @@ struct multi_context {
- 
-   struct context top;           /**< Storage structure for process-wide
-                                  *   configuration. */
-+
-+  /*
-+   * Timer object for stale route check
-+   */
-+  struct event_timeout stale_routes_check_et;
- };
- 
- /*
-diff --git a/openvpn.8 b/openvpn.8
-index 55a9b80..c585da4 100644
---- a/openvpn.8
-+++ b/openvpn.8
-@@ -3118,6 +3118,25 @@ directive affects OpenVPN's internal routing table, not the
- kernel routing table.
- .\"*********************************************************
- .TP
-+.B \-\-stale-routes-check n [t]
-+Remove routes haven't had activity for
-+.B n
-+seconds (i.e. the ageing time).
-+
-+This check is ran every
-+.B t
-+seconds (i.e. check interval).
-+
-+If
-+.B t
-+is not present it defaults to
-+.B n
-+
-+This option helps to keep the dynamic routing table small.
-+See also
-+.B \-\-max-routes-per-client
-+.\"*********************************************************
-+.TP
- .B \-\-connect-freq n sec
- Allow a maximum of
- .B n
-diff --git a/options.c b/options.c
-index d410782..68255a5 100644
---- a/options.c
-+++ b/options.c
-@@ -455,6 +455,9 @@ static const char usage_message[] =
-   "--connect-freq n s : Allow a maximum of n new connections per s seconds.\n"
-   "--max-clients n : Allow a maximum of n simultaneously connected clients.\n"
-   "--max-routes-per-client n : Allow a maximum of n internal routes per client.\n"
-+  "--stale-routes-check n [t] : Remove routes with a last activity timestamp\n"
-+  "                             older than n seconds. Run this check every t\n"
-+  "                             seconds (defaults to n).\n"
- #if PORT_SHARE
-   "--port-share host port [dir] : When run in TCP mode, proxy incoming HTTPS\n"
-   "                  sessions to a web server at host:port.  dir specifies an\n"
-@@ -781,6 +784,7 @@ init_options (struct options *o, const bool init_gc)
-   o->tcp_queue_limit = 64;
-   o->max_clients = 1024;
-   o->max_routes_per_client = 256;
-+  o->stale_routes_check_interval = 0;
-   o->ifconfig_pool_persist_refresh_freq = 600;
- #endif
- #if P2MP
-@@ -2182,6 +2186,8 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
- 	msg (M_USAGE, "--port-share requires TCP server mode (--mode server --proto tcp-server)");
- #endif
- 
-+      if (options->stale_routes_check_interval)
-+        msg (M_USAGE, "--stale-routes-check requires --mode server");
-     }
- #endif /* P2MP_SERVER */
- 
-@@ -4944,6 +4950,25 @@ add_option (struct options *options,
- 	}
-       options->max_routes = max_routes;
-     }
-+  else if (streq (p[0], "stale-routes-check") && p[1])
-+    {
-+      int ageing_time, check_interval;
-+
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-+      ageing_time = atoi (p[1]);
-+      if (p[2])
-+        check_interval = atoi (p[2]);
-+      else
-+        check_interval = ageing_time;
-+
-+      if (ageing_time < 1 || check_interval < 1)
-+        {
-+        msg (msglevel, "--stale-routes-check aging time and check interval must be >= 1");
-+        goto err;
-+        }
-+      options->stale_routes_ageing_time  = ageing_time;
-+      options->stale_routes_check_interval = check_interval;
-+    }
-   else if (streq (p[0], "route-gateway") && p[1])
-     {
-       VERIFY_PERMISSION (OPT_P_ROUTE_EXTRAS);
-diff --git a/options.h b/options.h
-index d792872..902fef4 100644
---- a/options.h
-+++ b/options.h
-@@ -460,6 +460,8 @@ struct options
-   int cf_per;
-   int max_clients;
-   int max_routes_per_client;
-+  int stale_routes_check_interval;
-+  int stale_routes_ageing_time;
- 
-   const char *auth_user_pass_verify_script;
-   bool auth_user_pass_verify_script_via_file;
-
---Apple-Mail=_ECF275DD-ED5A-47CB-AB61-2DB7CFA9E04D
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-
-
-Signed-off-by: Davide Guerri <d.guerri@...1502...>
-
-
-
-
-On 14/set/2011, at 16:58, Davide Guerri wrote:
-
-> Hi all,
-> please find attached the patch Matteo is referring to.
->=20
-> Since we're not expert of the openvpn source code, we think it should be =
-considered as a starting point for a discussion.
->=20
-> Basically this patch adds a stale-routes-check option that takes 2 parame=
-ters: a ageing time (in seconds) and a check interval (in seconds). The lat=
-ter defaults to the former if it's not present.
-> Internally, a new "check" is added in multi_process_per_second_timers_dow=
-ork(). This check deletes stale routes and it is inspired to the function m=
-ulti_reap_range().
->=20
-> We're running a very large connectivity infrastructure based on openVPN (=
-more than 4000 different clients connected per day per server), so we can t=
-hroughly check this patch (or, of course, any variant of it).
->=20
-> Regards,
-> Matteo and Davide.
->=20
-> On 14/set/2011, at 15:42, Matteo Latini wrote:
->=20
->> Hi,
->> we (openwisp.it) are an open source wireless ISP using openvpn's tap dev=
-ices=20
->> to bridge access points with our main servers.
->>=20
->> We recently ran into a problem with openvpn's internal routing table get=
-ting filled up by "old and stale" routes.
->> Some routes are kept for months (till the vpn gets restarted). This and =
-the --max-routes-per-client option makes
->> the internal routing table fill up and never let newer clients add new i=
-nternal routes.
->>=20
->> Since we were unable to find a way to clean stale routes by reading the =
-manpages, we began exploring openvpn's
->> code to create a patch that would clean old and inactive routes. The pat=
-ch is working but, by looking through code,
->> we found some reference to MULTI_ROUTE_AGEABLE and ageable_ttl_secs in t=
-he multi_route_defined method (multi.h).
->>=20
->> Are those in any way meant to clean, in any way (maybe yet to implement)=
-, aged routes?
->> We tried using multi_route_defined to keep track of such routes without =
-success.
->>=20
->> Should we keep trying with MULTI_ROUTE_AGEABLE or find other ways (we im=
-plemented the patch by using a dedicated
->> timer that triggers a function that does something similar to what happe=
-ns on teardown)?
->>=20
->> We are currently patching OpenVPN 2.1.0
->>=20
->>=20
->> Regards,
->> Matteo Latini
-
-
---Apple-Mail=_ECF275DD-ED5A-47CB-AB61-2DB7CFA9E04D--
 
