@@ -1,10 +1,10 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Tue, 20 Sep 2011 12:28:30 +0200
-References: <4e6f25dc2a58c3.42657146@...1498...> <4E6F73B1.7070600@...515...>
-	<4e7850551f9909.15751189@...1498...>
-In-Reply-To: <4e7850551f9909.15751189@...1498...>
+Date: Tue, 20 Sep 2011 13:17:59 +0200
+References: <4e6f25dc2a58c3.42657146@...1498...> <4e7850551f9909.15751189@...1498...>
+	<201109201228.30353.heiko.hund@...1489...>
+In-Reply-To: <201109201228.30353.heiko.hund@...1489...>
 MIME-Version: 1.0
-Message-Id: <201109201228.30353.heiko.hund@...1489...>
+Message-Id: <201109201318.00120.heiko.hund@...1489...>
 Subject: Re: [Openvpn-devel] Snapshot
 	openvpn-2.x-20110909-master-install.exe fails
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,26 +18,19 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: Text/Plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
-Cc: Samuli
 
-On Tuesday 20 September 2011 10:35:33 Krashan Brahmanjara wrote:
-> > Krashan: how can I reproduce this? Is trying to connect to an OpenVPN
-> > server enough?
->=20
-> I installed this package and start openvpnggui only. It doesn't start at
-> all.
+On Tuesday 20 September 2011 12:28:30 Heiko Hund wrote:
+> or maybe it's just that _MSC_VER was not defined
 
-The GUI runs openvpn during startup to get version information. That's wher=
-e=20
-the error occurs. ws2_32.dll on Windows XP doesn't have inet_pton and=20
-inet_ntop. However, openvpn has its own version of these functions on Windo=
-ws.=20
-I wonder why the linker is looking for it in the dll? I assume it has=20
-something to do with the import library on the build system overriding the=
-=20
-symbols or maybe it's just that _MSC_VER was not defined. Samuli could you=
-=20
-investigate?
+Misread the code, it's an #ifndef. Could someone test if replacing the
+
+	#ifndef _MSC_VER
+
+lines in socket.c and win32.h with
+
+	#if WINVER < 0x0600
+
+leads to a problem when building with MSVC.=20
 
 Heiko
 --=20
