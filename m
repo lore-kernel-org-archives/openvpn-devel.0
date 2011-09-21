@@ -1,10 +1,8 @@
-Message-ID: <4E79E638.9080403@...1114...>
-Date: Wed, 21 Sep 2011 15:27:20 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <4E7A4D82.7060603@...41...>
+Date: Wed, 21 Sep 2011 14:48:02 -0600
+From: James Yonan <jim@...41...>
 MIME-Version: 1.0
-References: <20110916180039.GR8496@...1296...>
-In-Reply-To: <20110916180039.GR8496@...1296...>
-Subject: Re: [Openvpn-devel] NetBSD platform cleanup
+Subject: [Openvpn-devel] OpenVPN and BEAST
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,42 +11,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+We've gotten some questions about whether OpenVPN is vulnerable to the 
+"BEAST" exploit.
 
-On 16/09/11 20:00, Gert Doering wrote:
-> Hi,
-> 
-> testing today's "master" for problems due to the SVN merger (what bit
-> ecrist on FreeBSD), I noticed a number of problems on NetBSD with the
-> way tun/tap devices are handled, and (not) cleaned up at session end.
-> 
-> The attached patch cleans up the tun.c code for NetBSD, and has been
-> tested with IPv4 + IPv6, TUN mode, TUN/top-subnet mode and TAP mode,
-> and passes all tests *except* TAP+IPv6 (and that one seems to be a
-> NetBSD kernel side issue, still investigating).
-> 
-> David, please ACK and merge :-)
-> 
+At the time of this writing, the details of the "BEAST" exploit haven't 
+been released yet, but the general consensus is that it exploits the 
+known-IV weakness in SSL and TLS 1.0 that is discussed by Bard back in 2004:
 
-ACK.  Applied to testing and stable master branches.
-commit 8ca19c014c149cf69257798afa6c75d1ff8f11a7
+http://eprint.iacr.org/2004/111.pdf
 
+The vulnerability is present in all versions of SSL and TLS 1.0 but not 
+TLS 1.1 or higher (OpenVPN currently uses TLS 1.0).
 
-kind regards,
+One of the common workarounds for this vulnerability is to have the SSL 
+implementation add empty fragments into the application data stream. 
+OpenSSL has implemented this workaround since 0.9.6d (9 May 2002).
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
+See http://www.openssl.org/~bodo/tls-cbc.txt
 
-iEYEARECAAYFAk555jUACgkQDC186MBRfrq4QQCaApUgHs7lVi9hPDFwfN7aarp3
-H7wAoLF7l7SY7hdcT047SIy6HsxZmWPz
-=WCZq
------END PGP SIGNATURE-----
+So the bottom line is that even though OpenVPN uses TLS 1.0 which is 
+technically vulnerable, the OpenSSL workaround added in 0.9.6d 
+effectively protects TLS 1.0 from this vulnerability, and hence OpenVPN 
+as well.
+
+Now if OpenSSL patched this back in 2002, you might be wondering why 
+it's an exploitable vulnerability today.  I think the answer is that 
+while OpenSSL patched the vulnerability, NSS did not (NSS is an 
+alternative to OpenSSL that is widely used in web browsers).
+
+In fact, if you look at this recent commit to NSS by the Chromium 
+project (presumably to address the BEAST exploit), you see the same 
+workaround being added to NSS that was added to OpenSSL 9 years ago.
+
+https://src.chromium.org/viewvc/chrome?view=rev&revision=90643
+
+James
 
