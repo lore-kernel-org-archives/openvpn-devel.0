@@ -1,11 +1,12 @@
-Message-ID: <4E802C84.2050607@...515...>
-Date: Mon, 26 Sep 2011 10:40:52 +0300
+Message-ID: <4E806C6A.9090907@...515...>
+Date: Mon, 26 Sep 2011 15:13:30 +0300
 From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <20110919113206.2fe282f8@...1506...>
-	<4E773F7A.7010902@...1114...>
-In-Reply-To: <4E773F7A.7010902@...1114...>
-Subject: Re: [Openvpn-devel] Incorrect instructions in tester documentation
+References: <4e6f25dc2a58c3.42657146@...1498...>	<4e7850551f9909.15751189@...1498...>	<201109201228.30353.heiko.hund@...1489...>	<201109201318.00120.heiko.hund@...1489...>
+	<4E801FAE.5010700@...515...>
+In-Reply-To: <4E801FAE.5010700@...515...>
+Subject: Re: [Openvpn-devel]
+ Snapshot	openvpn-2.x-20110909-master-install.exe fails
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,53 +15,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: David Sommerseth <openvpn.list@...1114...>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: Heiko Hund <heiko.hund@...1489...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
+Il 26/09/2011 09:46, Samuli Sepp=E4nen ha scritto:
+>> On Tuesday 20 September 2011 12:28:30 Heiko Hund wrote:
+>>> or maybe it's just that _MSC_VER was not defined
+>> Misread the code, it's an #ifndef. Could someone test if replacing the
+>>
+>> 	#ifndef _MSC_VER
+>>
+>> lines in socket.c and win32.h with
+>>
+>> 	#if WINVER < 0x0600
+>>
+>> leads to a problem when building with MSVC.=20
+>>
+>> Heiko
+> I'll test and report back later today.
+>
+Ok, did as suggested for socket.c and win32.h and got the following
+build failure using MSVC:
 
-> On 19/09/11 11:32, Davide Brini wrote:
-> > On the "TesterDocumentation" page, the instructions say
->
-> > When testing this version of OpenVPN, we would appreciate if all
-> deprecated
-> > features would be disabled by default. We want to know how OpenVPN
-> behaves
-> > for you without these features. When doing the compile-time configuration
-> > of OpenVPN, please make sure the following arguments are included:
->
-> >     --disable-depr-random-resolv
->
->
-> > However there doesn't appear to be such an option recognized by the
-> > configure script:
->
-> > $ ./configure --disable-depr-random-resolv
-> > configure: WARNING: unrecognized options: --disable-depr-random-resolv
-> > ...
->
-> > Not sure whether I'm doing something wrong or the docs need to be
-> updated.
-> > Thanks!
->
-> Hi,
->
-> The docs probably need a review again.  That configure option was
-> obsoleted
-> when James resolved this in a complete different way a while ago.
-> Nowadays, you don't need to use this argument at all.  That's the only
-> change AFAIR.  Please feel free to update the docs!
->
->
-> kind regards,
->
-> David Sommerseth
->
->
-Fixed:
+<http://pastebin.com/xZ8J2yrq>
 
-<https://community.openvpn.net/openvpn/wiki/TesterDocumentation#Building>
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-Samuli
+irc freenode net: mattock
+
 
