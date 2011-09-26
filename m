@@ -1,8 +1,13 @@
-Message-ID: <4E7A4D82.7060603@...41...>
-Date: Wed, 21 Sep 2011 14:48:02 -0600
-From: James Yonan <jim@...41...>
+Message-ID: <4E801FAE.5010700@...515...>
+Date: Mon, 26 Sep 2011 09:46:06 +0300
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN and BEAST
+References: <4e6f25dc2a58c3.42657146@...1498...>
+	<4e7850551f9909.15751189@...1498...>	<201109201228.30353.heiko.hund@...1489...>
+	<201109201318.00120.heiko.hund@...1489...>
+In-Reply-To: <201109201318.00120.heiko.hund@...1489...>
+Subject: Re: [Openvpn-devel]
+ Snapshot	openvpn-2.x-20110909-master-install.exe fails
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,43 +16,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-We've gotten some questions about whether OpenVPN is vulnerable to the 
-"BEAST" exploit.
 
-At the time of this writing, the details of the "BEAST" exploit haven't 
-been released yet, but the general consensus is that it exploits the 
-known-IV weakness in SSL and TLS 1.0 that is discussed by Bard back in 2004:
+> On Tuesday 20 September 2011 12:28:30 Heiko Hund wrote:
+>> or maybe it's just that _MSC_VER was not defined
+> Misread the code, it's an #ifndef. Could someone test if replacing the
+>
+> 	#ifndef _MSC_VER
+>
+> lines in socket.c and win32.h with
+>
+> 	#if WINVER < 0x0600
+>
+> leads to a problem when building with MSVC.=20
+>
+> Heiko
 
-http://eprint.iacr.org/2004/111.pdf
+I'll test and report back later today.
 
-The vulnerability is present in all versions of SSL and TLS 1.0 but not 
-TLS 1.1 or higher (OpenVPN currently uses TLS 1.0).
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-One of the common workarounds for this vulnerability is to have the SSL 
-implementation add empty fragments into the application data stream. 
-OpenSSL has implemented this workaround since 0.9.6d (9 May 2002).
+irc freenode net: mattock
 
-See http://www.openssl.org/~bodo/tls-cbc.txt
-
-So the bottom line is that even though OpenVPN uses TLS 1.0 which is 
-technically vulnerable, the OpenSSL workaround added in 0.9.6d 
-effectively protects TLS 1.0 from this vulnerability, and hence OpenVPN 
-as well.
-
-Now if OpenSSL patched this back in 2002, you might be wondering why 
-it's an exploitable vulnerability today.  I think the answer is that 
-while OpenSSL patched the vulnerability, NSS did not (NSS is an 
-alternative to OpenSSL that is widely used in web browsers).
-
-In fact, if you look at this recent commit to NSS by the Chromium 
-project (presumably to address the BEAST exploit), you see the same 
-workaround being added to NSS that was added to OpenSSL 9 years ago.
-
-https://src.chromium.org/viewvc/chrome?view=rev&revision=90643
-
-James
 
