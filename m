@@ -1,9 +1,9 @@
-Message-ID: <1317652758.96228.YahooMailNeo@...1509...>
-Date: Mon, 3 Oct 2011 22:39:18 +0800 (SGT)
+Message-ID: <1317652763.62059.YahooMailNeo@...1511...>
+Date: Mon, 3 Oct 2011 22:39:23 +0800 (SGT)
 From: Septian Eko P Tian <septian_pras@...1507...>
 MIME-Version: 1.0
 Content-Type: multipart/alternative;
-	boundary="1567435116-1901710945-1317652758=:96228"
+	boundary="1580330623-80679437-1317652763=:62059"
 Subject: [Openvpn-devel] (no subject)
 Reply-To: Septian Eko P Tian <septian_pras@...1507...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,19 +16,19 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---1567435116-1901710945-1317652758=:96228
+--1580330623-80679437-1317652763=:62059
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-ok
+yes
 
---1567435116-1901710945-1317652758=:96228
+--1580330623-80679437-1317652763=:62059
 Content-Type: text/html; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
 <html><body><div style=3D"color:#000; background-color:#fff; font-family:ti=
-mes new roman, new york, times, serif;font-size:12pt"><div>ok</div></div></=
-body></html>=
+mes new roman, new york, times, serif;font-size:12pt"><div>yes</div></div><=
+/body></html>=
 
---1567435116-1901710945-1317652758=:96228--
+--1580330623-80679437-1317652763=:62059--
 
