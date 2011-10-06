@@ -1,11 +1,8 @@
-Message-ID: <1317652789.38486.YahooMailNeo@...1512...>
-Date: Mon, 3 Oct 2011 22:39:49 +0800 (SGT)
-From: Septian Eko P Tian <septian_pras@...1507...>
+Message-ID: <4E8DC6C4.7040002@...515...>
+Date: Thu, 06 Oct 2011 18:18:28 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="1294404759-1991570065-1317652789=:38486"
-Subject: [Openvpn-devel] (no subject)
-Reply-To: Septian Eko P Tian <septian_pras@...1507...>
+Subject: [Openvpn-devel] Topics for today's meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,21 +11,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
 To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---1294404759-1991570065-1317652789=:38486
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-yes
+We're having an IRC meeting today, starting at 18:00 UTC on
+#openvpn-devel@...1422... Current topic list is here:
 
---1294404759-1991570065-1317652789=:38486
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+<https://community.openvpn.net/openvpn/wiki/Topics-2011-10-06>
 
-<html><body><div style=3D"color:#000; background-color:#fff; font-family:ti=
-mes new roman, new york, times, serif;font-size:12pt"><div>yes</div></div><=
-/body></html>=
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
 
---1294404759-1991570065-1317652789=:38486--
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting.
+
+NOTE: It's required to use a registered Freenode IRC nickname to join
+#openvpn-devel - look here for details:
+
+<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
