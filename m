@@ -1,9 +1,11 @@
-Message-ID: <4E8EC507.3010907@...515...>
-Date: Fri, 07 Oct 2011 12:23:19 +0300
-From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
+From: "Richard Francis" <rfransix@...164...>
+Date: Fri, 7 Oct 2011 14:55:37 -0500
+Message-ID: <056601cc852b$1637b7e0$42a727a0$@net>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------070808090300050806030209"
-Subject: [Openvpn-devel] Summary of the IRC meeting / sprint (6th Oct 2011)
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0567_01CC8501.2D61AFE0"
+Content-Language: en-us
+Subject: [Openvpn-devel] Fatal Error on XP
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,428 +14,392 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
 This is a multi-part message in MIME format.
---------------070808090300050806030209
-Content-Type: text/plain; charset="UTF-8"
+
+------=_NextPart_000_0567_01CC8501.2D61AFE0
+Content-Type: text/plain;
+	charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+
+Hi, anyone can help? Greatly appreciative of your expertise.
+
+ 
+
+Fri Oct 07 14:41:38 2011 us=958000 Current Parameter Settings:
+
+Fri Oct 07 14:41:38 2011 us=958000 config = 'VPN.ovpn'
+
+Fri Oct 07 14:41:38 2011 us=958000 mode = 0
+
+Fri Oct 07 14:41:38 2011 us=958000 show_ciphers = DISABLED
+
+Fri Oct 07 14:41:38 2011 us=958000 show_digests = DISABLED
+
+Fri Oct 07 14:41:38 2011 us=958000 show_engines = DISABLED
+
+Fri Oct 07 14:41:38 2011 us=958000 genkey = DISABLED
+
+Fri Oct 07 14:41:38 2011 us=958000 key_pass_file = '[UNDEF]'
+
+Fri Oct 07 14:41:38 2011 us=958000 show_tls_ciphers = DISABLED
+
+Fri Oct 07 14:41:38 2011 us=958000 Connection profiles [default]:
+
+Fri Oct 07 14:41:38 2011 us=958000 proto = tcp-client
+
+Fri Oct 07 14:41:38 2011 us=958000 local = '[UNDEF]'
+
+Fri Oct 07 14:41:38 2011 us=958000 local_port = 0
+
+Fri Oct 07 14:41:38 2011 us=958000 remote = 'vpn.certify.com'
+
+Fri Oct 07 14:41:38 2011 us=958000 remote_port = 443
+
+Fri Oct 07 14:41:38 2011 us=958000 remote_float = DISABLED
+
+Fri Oct 07 14:41:38 2011 us=958000 bind_defined = DISABLED
+
+Fri Oct 07 14:41:38 2011 us=958000 bind_local = DISABLED
+
+Fri Oct 07 14:41:38 2011 us=958000 connect_retry_seconds = 5
+
+Fri Oct 07 14:41:38 2011 us=958000 connect_timeout = 10
+
+Fri Oct 07 14:41:38 2011 us=958000 NOTE: --mute triggered...
+
+Fri Oct 07 14:41:38 2011 us=958000 252 variation(s) on previous 20
+message(s) suppressed by --mute
+
+Fri Oct 07 14:41:38 2011 us=958000 OpenVPN 2.1.3 i686-pc-mingw32 [SSL]
+[LZO2] [PKCS11] built on Aug 20 2010
+
+Fri Oct 07 14:41:38 2011 us=978000 WARNING: No server certificate
+verification method has been enabled. See http://openvpn.net/howto.html#mitm
+for more info.
+
+Fri Oct 07 14:41:38 2011 us=978000 NOTE: OpenVPN 2.1 requires
+'--script-security 2' or higher to call user-defined scripts or executables
+
+Fri Oct 07 14:41:39 2011 us=508000 LZO compression initialized
+
+Fri Oct 07 14:41:39 2011 us=528000 Control Channel MTU parms [ L:1576 D:140
+EF:40 EB:0 ET:0 EL:0 ]
+
+Fri Oct 07 14:41:39 2011 us=538000 Socket Buffers: R=[8192->8192]
+S=[8192->8192]
+
+Fri Oct 07 14:41:39 2011 us=819000 Data Channel MTU parms [ L:1576 D:1450
+EF:44 EB:135 ET:32 EL:0 AF:3/1 ]
+
+Fri Oct 07 14:41:39 2011 us=819000 Local Options String: 'V4,dev-type
+tap,link-mtu 1576,tun-mtu 1532,proto TCPv4_CLIENT,comp-lzo,cipher
+BF-CBC,auth SHA1,keysize 128,key-method 2,tls-client'
+
+Fri Oct 07 14:41:39 2011 us=819000 Expected Remote Options String:
+'V4,dev-type tap,link-mtu 1576,tun-mtu 1532,proto
+TCPv4_SERVER,comp-lzo,cipher BF-CBC,auth SHA1,keysize 128,key-method
+2,tls-server'
+
+Fri Oct 07 14:41:39 2011 us=819000 Local Options hash (VER=V4): '31fdf004'
+
+Fri Oct 07 14:41:39 2011 us=819000 Expected Remote Options hash (VER=V4):
+'3e6d1056'
+
+Fri Oct 07 14:41:39 2011 us=819000 Attempting to establish TCP connection
+with 1.1.1.1:443
+
+Fri Oct 07 14:41:39 2011 us=909000 TCP connection established with
+1.1.1.1:443
+
+Fri Oct 07 14:41:39 2011 us=909000 TCPv4_CLIENT link local: [undef]
+
+Fri Oct 07 14:41:39 2011 us=909000 TCPv4_CLIENT link remote: 1.1.1.1:443
+
+Fri Oct 07 14:41:39 2011 us=979000 TLS: Initial packet from 1.1.1.1:443,
+sid=48fe7a7z 189d19pc
+
+Fri Oct 07 14:41:41 2011 us=401000 VERIFY ERROR: depth=1, error=self signed
+certificate in certificate chain:
+/C=US/ST=NewYork/L=minerals/O=certify.com/OU=R_D/CN=certify/emailAddress=cer
+tify@...1513...
+
+Fri Oct 07 14:41:41 2011 us=401000 TLS_ERROR: BIO read tls_read_plaintext
+error: error:14090086:SSL routines:SSL3_GET_SERVER_CERTIFICATE:certificate
+verify failed
+
+Fri Oct 07 14:41:41 2011 us=401000 TLS Error: TLS object -> incoming
+plaintext read error
+
+Fri Oct 07 14:41:41 2011 us=401000 TLS Error: TLS handshake failed
+
+Fri Oct 07 14:41:41 2011 us=401000 Fatal TLS error (check_tls_errors_co),
+restarting
+
+Fri Oct 07 14:41:41 2011 us=401000 TCP/UDP: Closing socket
+
+Fri Oct 07 14:41:41 2011 us=411000 SIGUSR1[soft,tls-error] received, process
+restarting
+
+Fri Oct 07 14:41:41 2011 us=411000 Restart pause, 5 second(s)
+
+ 
+
+ 
+
+Richard Francis
+
+ <http://www.pelicancomputers.us> http://www.pelicancomputers.us
+
+1.847.256.0639
+
+ 
+
+
+------=_NextPart_000_0567_01CC8501.2D61AFE0
+Content-Type: text/html; charset="US-ASCII"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40"><head><meta http-equiv=3DContent-Type content=
+=3D"text/html; charset=3Dus-ascii"><meta name=3DGenerator content=3D"Micros=
+oft Word 12 (filtered medium)"><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Tahoma;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri","sans-serif";
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]--></head><body lang=3DEN-US link=3Dblue vli=
+nk=3Dpurple><div class=3DWordSection1><p class=3DMsoNormal>Hi, anyone can h=
+elp? Greatly appreciative of your expertise.<o:p></o:p></p><p class=3DMsoNo=
+rmal><o:p>&nbsp;</o:p></p><p class=3DMsoNormal><span style=3D'font-size:7.5=
+pt;font-family:"Tahoma","sans-serif";color:black'>Fri Oct 07 14:41:38 2011 =
+us=3D958000 Current Parameter Settings:</span><span style=3D'font-size:10.0=
+pt;font-family:"Tahoma","sans-serif";color:black'><o:p></o:p></span></p><p =
+class=3DMsoNormal><span style=3D'font-size:7.5pt;font-family:"Tahoma","sans=
+-serif";color:black'>Fri Oct 07 14:41:38 2011 us=3D958000 config =3D 'VPN.o=
+vpn'</span><span style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif=
+";color:black'><o:p></o:p></span></p><p class=3DMsoNormal><span style=3D'fo=
+nt-size:7.5pt;font-family:"Tahoma","sans-serif";color:black'>Fri Oct 07 14:=
+41:38 2011 us=3D958000 mode =3D 0</span><span style=3D'font-size:10.0pt;fon=
+t-family:"Tahoma","sans-serif";color:black'><o:p></o:p></span></p><p class=
+=3DMsoNormal><span style=3D'font-size:7.5pt;font-family:"Tahoma","sans-seri=
+f";color:black'>Fri Oct 07 14:41:38 2011 us=3D958000 show_ciphers =3D DISAB=
+LED</span><span style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif"=
+;color:black'><o:p></o:p></span></p><p class=3DMsoNormal><span style=3D'fon=
+t-size:7.5pt;font-family:"Tahoma","sans-serif";color:black'>Fri Oct 07 14:4=
+1:38 2011 us=3D958000 show_digests =3D DISABLED</span><span style=3D'font-s=
+ize:10.0pt;font-family:"Tahoma","sans-serif";color:black'><o:p></o:p></span=
+></p><p class=3DMsoNormal><span style=3D'font-size:7.5pt;font-family:"Tahom=
+a","sans-serif";color:black'>Fri Oct 07 14:41:38 2011 us=3D958000 show_engi=
+nes =3D DISABLED</span><span style=3D'font-size:10.0pt;font-family:"Tahoma"=
+,"sans-serif";color:black'><o:p></o:p></span></p><p class=3DMsoNormal><span=
+ style=3D'font-size:7.5pt;font-family:"Tahoma","sans-serif";color:black'>Fr=
+i Oct 07 14:41:38 2011 us=3D958000 genkey =3D DISABLED</span><span style=3D=
+'font-size:10.0pt;font-family:"Tahoma","sans-serif";color:black'><o:p></o:p=
+></span></p><p class=3DMsoNormal><span style=3D'font-size:7.5pt;font-family=
+:"Tahoma","sans-serif";color:black'>Fri Oct 07 14:41:38 2011 us=3D958000 ke=
+y_pass_file =3D '[UNDEF]'</span><span style=3D'font-size:10.0pt;font-family=
+:"Tahoma","sans-serif";color:black'><o:p></o:p></span></p><p class=3DMsoNor=
+mal><span style=3D'font-size:7.5pt;font-family:"Tahoma","sans-serif";color:=
+black'>Fri Oct 07 14:41:38 2011 us=3D958000 show_tls_ciphers =3D DISABLED</=
+span><span style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif";colo=
+r:black'><o:p></o:p></span></p><p class=3DMsoNormal><span style=3D'font-siz=
+e:7.5pt;font-family:"Tahoma","sans-serif";color:black'>Fri Oct 07 14:41:38 =
+2011 us=3D958000 Connection profiles [default]:</span><span style=3D'font-s=
+ize:10.0pt;font-family:"Tahoma","sans-serif";color:black'><o:p></o:p></span=
+></p><p class=3DMsoNormal><span style=3D'font-size:7.5pt;font-family:"Tahom=
+a","sans-serif";color:black'>Fri Oct 07 14:41:38 2011 us=3D958000 proto =3D=
+ tcp-client</span><span style=3D'font-size:10.0pt;font-family:"Tahoma","san=
+s-serif";color:black'><o:p></o:p></span></p><p class=3DMsoNormal><span styl=
+e=3D'font-size:7.5pt;font-family:"Tahoma","sans-serif";color:black'>Fri Oct=
+ 07 14:41:38 2011 us=3D958000 local =3D '[UNDEF]'</span><span style=3D'font=
+-size:10.0pt;font-family:"Tahoma","sans-serif";color:black'><o:p></o:p></sp=
+an></p><p class=3DMsoNormal><span style=3D'font-size:7.5pt;font-family:"Tah=
+oma","sans-serif";color:black'>Fri Oct 07 14:41:38 2011 us=3D958000 local_p=
+ort =3D 0</span><span style=3D'font-size:10.0pt;font-family:"Tahoma","sans-=
+serif";color:black'><o:p></o:p></span></p><p class=3DMsoNormal><span style=
+=3D'font-size:7.5pt;font-family:"Tahoma","sans-serif";color:black'>Fri Oct =
+07 14:41:38 2011 us=3D958000 remote =3D 'vpn.certify.com'</span><span style=
+=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif";color:black'><o:p></=
+o:p></span></p><p class=3DMsoNormal><span style=3D'font-size:7.5pt;font-fam=
+ily:"Tahoma","sans-serif";color:black'>Fri Oct 07 14:41:38 2011 us=3D958000=
+ remote_port =3D 443</span><span style=3D'font-size:10.0pt;font-family:"Tah=
+oma","sans-serif";color:black'><o:p></o:p></span></p><p class=3DMsoNormal><=
+span style=3D'font-size:7.5pt;font-family:"Tahoma","sans-serif";color:black=
+'>Fri Oct 07 14:41:38 2011 us=3D958000 remote_float =3D DISABLED</span><spa=
+n style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif";color:black'>=
+<o:p></o:p></span></p><p class=3DMsoNormal><span style=3D'font-size:7.5pt;f=
+ont-family:"Tahoma","sans-serif";color:black'>Fri Oct 07 14:41:38 2011 us=
+=3D958000 bind_defined =3D DISABLED</span><span style=3D'font-size:10.0pt;f=
+ont-family:"Tahoma","sans-serif";color:black'><o:p></o:p></span></p><p clas=
+s=3DMsoNormal><span style=3D'font-size:7.5pt;font-family:"Tahoma","sans-ser=
+if";color:black'>Fri Oct 07 14:41:38 2011 us=3D958000 bind_local =3D DISABL=
+ED</span><span style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif";=
+color:black'><o:p></o:p></span></p><p class=3DMsoNormal><span style=3D'font=
+-size:7.5pt;font-family:"Tahoma","sans-serif";color:black'>Fri Oct 07 14:41=
+:38 2011 us=3D958000 connect_retry_seconds =3D 5</span><span style=3D'font-=
+size:10.0pt;font-family:"Tahoma","sans-serif";color:black'><o:p></o:p></spa=
+n></p><p class=3DMsoNormal><span style=3D'font-size:7.5pt;font-family:"Taho=
+ma","sans-serif";color:black'>Fri Oct 07 14:41:38 2011 us=3D958000 connect_=
+timeout =3D 10</span><span style=3D'font-size:10.0pt;font-family:"Tahoma","=
+sans-serif";color:black'><o:p></o:p></span></p><p class=3DMsoNormal><span s=
+tyle=3D'font-size:7.5pt;font-family:"Tahoma","sans-serif";color:black'>Fri =
+Oct 07 14:41:38 2011 us=3D958000 NOTE: --mute triggered...</span><span styl=
+e=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif";color:black'><o:p><=
+/o:p></span></p><p class=3DMsoNormal><span style=3D'font-size:7.5pt;font-fa=
+mily:"Tahoma","sans-serif";color:black'>Fri Oct 07 14:41:38 2011 us=3D95800=
+0 252 variation(s) on previous 20 message(s) suppressed by --mute</span><sp=
+an style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif";color:black'=
+><o:p></o:p></span></p><p class=3DMsoNormal><span style=3D'font-size:7.5pt;=
+font-family:"Tahoma","sans-serif";color:black'>Fri Oct 07 14:41:38 2011 us=
+=3D958000 OpenVPN 2.1.3 i686-pc-mingw32 [SSL] [LZO2] [PKCS11] built on Aug =
+20 2010</span><span style=3D'font-size:10.0pt;font-family:"Tahoma","sans-se=
+rif";color:black'><o:p></o:p></span></p><p class=3DMsoNormal><span style=3D=
+'font-size:7.5pt;font-family:"Tahoma","sans-serif";color:black'>Fri Oct 07 =
+14:41:38 2011 us=3D978000 WARNING: No server certificate verification metho=
+d has been enabled. See http://openvpn.net/howto.html#mitm for more info.</=
+span><span style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif";colo=
+r:black'><o:p></o:p></span></p><p class=3DMsoNormal><span style=3D'font-siz=
+e:7.5pt;font-family:"Tahoma","sans-serif";color:black'>Fri Oct 07 14:41:38 =
+2011 us=3D978000 NOTE: OpenVPN 2.1 requires '--script-security 2' or higher=
+ to call user-defined scripts or executables</span><span style=3D'font-size=
+:10.0pt;font-family:"Tahoma","sans-serif";color:black'><o:p></o:p></span></=
+p><p class=3DMsoNormal><span style=3D'font-size:7.5pt;font-family:"Tahoma",=
+"sans-serif";color:black'>Fri Oct 07 14:41:39 2011 us=3D508000 LZO compress=
+ion initialized</span><span style=3D'font-size:10.0pt;font-family:"Tahoma",=
+"sans-serif";color:black'><o:p></o:p></span></p><p class=3DMsoNormal><span =
+style=3D'font-size:7.5pt;font-family:"Tahoma","sans-serif";color:black'>Fri=
+ Oct 07 14:41:39 2011 us=3D528000 Control Channel MTU parms [ L:1576 D:140 =
+EF:40 EB:0 ET:0 EL:0 ]</span><span style=3D'font-size:10.0pt;font-family:"T=
+ahoma","sans-serif";color:black'><o:p></o:p></span></p><p class=3DMsoNormal=
+><span style=3D'font-size:7.5pt;font-family:"Tahoma","sans-serif";color:bla=
+ck'>Fri Oct 07 14:41:39 2011 us=3D538000 Socket Buffers: R=3D[8192-&gt;8192=
+] S=3D[8192-&gt;8192]</span><span style=3D'font-size:10.0pt;font-family:"Ta=
+homa","sans-serif";color:black'><o:p></o:p></span></p><p class=3DMsoNormal>=
+<span style=3D'font-size:7.5pt;font-family:"Tahoma","sans-serif";color:blac=
+k'>Fri Oct 07 14:41:39 2011 us=3D819000 Data Channel MTU parms [ L:1576 D:1=
+450 EF:44 EB:135 ET:32 EL:0 AF:3/1 ]</span><span style=3D'font-size:10.0pt;=
+font-family:"Tahoma","sans-serif";color:black'><o:p></o:p></span></p><p cla=
+ss=3DMsoNormal><span style=3D'font-size:7.5pt;font-family:"Tahoma","sans-se=
+rif";color:black'>Fri Oct 07 14:41:39 2011 us=3D819000 Local Options String=
+: 'V4,dev-type tap,link-mtu 1576,tun-mtu 1532,proto TCPv4_CLIENT,comp-lzo,c=
+ipher BF-CBC,auth SHA1,keysize 128,key-method 2,tls-client'</span><span sty=
+le=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif";color:black'><o:p>=
+</o:p></span></p><p class=3DMsoNormal><span style=3D'font-size:7.5pt;font-f=
+amily:"Tahoma","sans-serif";color:black'>Fri Oct 07 14:41:39 2011 us=3D8190=
+00 Expected Remote Options String: 'V4,dev-type tap,link-mtu 1576,tun-mtu 1=
+532,proto TCPv4_SERVER,comp-lzo,cipher BF-CBC,auth SHA1,keysize 128,key-met=
+hod 2,tls-server'</span><span style=3D'font-size:10.0pt;font-family:"Tahoma=
+","sans-serif";color:black'><o:p></o:p></span></p><p class=3DMsoNormal><spa=
+n style=3D'font-size:7.5pt;font-family:"Tahoma","sans-serif";color:black'>F=
+ri Oct 07 14:41:39 2011 us=3D819000 Local Options hash (VER=3DV4): '31fdf00=
+4'</span><span style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif";=
+color:black'><o:p></o:p></span></p><p class=3DMsoNormal><span style=3D'font=
+-size:7.5pt;font-family:"Tahoma","sans-serif";color:black'>Fri Oct 07 14:41=
+:39 2011 us=3D819000 Expected Remote Options hash (VER=3DV4): '3e6d1056'</s=
+pan><span style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif";color=
+:black'><o:p></o:p></span></p><p class=3DMsoNormal><span style=3D'font-size=
+:7.5pt;font-family:"Tahoma","sans-serif";color:black'>Fri Oct 07 14:41:39 2=
+011 us=3D819000 Attempting to establish TCP connection with 1.1.1.1:443</sp=
+an><span style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif";color:=
+black'><o:p></o:p></span></p><p class=3DMsoNormal><span style=3D'font-size:=
+7.5pt;font-family:"Tahoma","sans-serif";color:black'>Fri Oct 07 14:41:39 20=
+11 us=3D909000 TCP connection established with 1.1.1.1:443</span><span styl=
+e=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif";color:black'><o:p><=
+/o:p></span></p><p class=3DMsoNormal><span style=3D'font-size:7.5pt;font-fa=
+mily:"Tahoma","sans-serif";color:black'>Fri Oct 07 14:41:39 2011 us=3D90900=
+0 TCPv4_CLIENT link local: [undef]</span><span style=3D'font-size:10.0pt;fo=
+nt-family:"Tahoma","sans-serif";color:black'><o:p></o:p></span></p><p class=
+=3DMsoNormal><span style=3D'font-size:7.5pt;font-family:"Tahoma","sans-seri=
+f";color:black'>Fri Oct 07 14:41:39 2011 us=3D909000 TCPv4_CLIENT link remo=
+te: 1.1.1.1:443</span><span style=3D'font-size:10.0pt;font-family:"Tahoma",=
+"sans-serif";color:black'><o:p></o:p></span></p><p class=3DMsoNormal><span =
+style=3D'font-size:7.5pt;font-family:"Tahoma","sans-serif";color:black'>Fri=
+ Oct 07 14:41:39 2011 us=3D979000 TLS: Initial packet from 1.1.1.1:443, sid=
+=3D48fe7a7z 189d19pc</span><span style=3D'font-size:10.0pt;font-family:"Tah=
+oma","sans-serif";color:black'><o:p></o:p></span></p><p class=3DMsoNormal><=
+span style=3D'font-size:7.5pt;font-family:"Tahoma","sans-serif";color:black=
+'>Fri Oct 07 14:41:41 2011 us=3D401000 VERIFY ERROR: depth=3D1, error=3Dsel=
+f signed certificate in certificate chain: /C=3DUS/ST=3DNewYork/L=3Dmineral=
+s/O=3Dcertify.com/OU=3DR_D/CN=3Dcertify/emailAddress=3Dcertify@...1513...</=
+span><span style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif";colo=
+r:black'><o:p></o:p></span></p><p class=3DMsoNormal><span style=3D'font-siz=
+e:7.5pt;font-family:"Tahoma","sans-serif";color:black'>Fri Oct 07 14:41:41 =
+2011 us=3D401000 TLS_ERROR: BIO read tls_read_plaintext error: error:140900=
+86:SSL routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed</span=
+><span style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif";color:bl=
+ack'><o:p></o:p></span></p><p class=3DMsoNormal><span style=3D'font-size:7.=
+5pt;font-family:"Tahoma","sans-serif";color:black'>Fri Oct 07 14:41:41 2011=
+ us=3D401000 TLS Error: TLS object -&gt; incoming plaintext read error</spa=
+n><span style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif";color:b=
+lack'><o:p></o:p></span></p><p class=3DMsoNormal><span style=3D'font-size:7=
+.5pt;font-family:"Tahoma","sans-serif";color:black'>Fri Oct 07 14:41:41 201=
+1 us=3D401000 TLS Error: TLS handshake failed</span><span style=3D'font-siz=
+e:10.0pt;font-family:"Tahoma","sans-serif";color:black'><o:p></o:p></span><=
+/p><p class=3DMsoNormal><span style=3D'font-size:7.5pt;font-family:"Tahoma"=
+,"sans-serif";color:black'>Fri Oct 07 14:41:41 2011 us=3D401000 Fatal TLS e=
+rror (check_tls_errors_co), restarting</span><span style=3D'font-size:10.0p=
+t;font-family:"Tahoma","sans-serif";color:black'><o:p></o:p></span></p><p c=
+lass=3DMsoNormal><span style=3D'font-size:7.5pt;font-family:"Tahoma","sans-=
+serif";color:black'>Fri Oct 07 14:41:41 2011 us=3D401000 TCP/UDP: Closing s=
+ocket</span><span style=3D'font-size:10.0pt;font-family:"Tahoma","sans-seri=
+f";color:black'><o:p></o:p></span></p><p class=3DMsoNormal><span style=3D'f=
+ont-size:7.5pt;font-family:"Tahoma","sans-serif";color:black'>Fri Oct 07 14=
+:41:41 2011 us=3D411000 SIGUSR1[soft,tls-error] received, process restartin=
+g</span><span style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif";c=
+olor:black'><o:p></o:p></span></p><p class=3DMsoNormal><span style=3D'font-=
+size:7.5pt;font-family:"Tahoma","sans-serif";color:black'>Fri Oct 07 14:41:=
+41 2011 us=3D411000 Restart pause, 5 second(s)<o:p></o:p></span></p><p clas=
+s=3DMsoNormal><span style=3D'font-size:7.5pt;font-family:"Tahoma","sans-ser=
+if";color:black'><o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal><span sty=
+le=3D'font-size:7.5pt;font-family:"Tahoma","sans-serif";color:black'><o:p>&=
+nbsp;</o:p></span></p><p class=3DMsoNormal> <o:p></o:p></p><p class=3DMsoNo=
+rmal><span style=3D'color:#1F497D'>Richard Francis<o:p></o:p></span></p><p =
+class=3DMsoNormal><span style=3D'color:#1F497D'><a href=3D"http://www.pelic=
+ancomputers.us"><span style=3D'color:blue'>http://www.pelicancomputers.us</=
+span></a><o:p></o:p></span></p><p class=3DMsoNormal><span style=3D'color:#1=
+F497D'>1.847.256.0639</span><span style=3D'color:#1F497D'><o:p></o:p></span=
+></p><p class=3DMsoNormal><o:p>&nbsp;</o:p></p></div></body></html>=
 
-Here's the summary of the previous IRC meeting / sprint.
+------=_NextPart_000_0567_01CC8501.2D61AFE0--
 
----
-
-COMMUNITY MEETING
-
-Place: #openvpn-devel on irc.freenode.net
-Date: Thursday 6th Oct 2011
-Time: 18:00 UTC
-
-Planned meeting topics for this meeting were on this page:
-
-<https://community.openvpn.net/openvpn/wiki/Topics-2011-10-06>
-
-Next meeting will be announced in advance, but will probably be on the same
-weekday and at the same time. Your local meeting time is easy to check
-from services such as
-
-<http://www.timeanddate.com/worldclock>
-
-or with
-
-$ date -u
-
-
-SUMMARY
-
-andj, cron2, ecrist, jamesyonan, krzie, mattock and SviMik participated
-in this meeting.
-
---
-
-Reviewed andj's "PolarSSL addition" patches. Their status before and
-after the meeting:
-
-<https://community.openvpn.net/openvpn/wiki/PolarSSLintegration?version=3D6=
-5#PolarSSLaddition>
-<https://community.openvpn.net/openvpn/wiki/PolarSSLintegration?version=3D7=
-3#PolarSSLaddition>
-
---
-
-Discussed the "UNDEF user with big uptime" bug:
-
-<https://community.openvpn.net/openvpn/ticket/167>
-
-Preliminary analysis from the meeting has been added to ticket comments.
-
----
-
-Discussed the "GUI: broken log encoding on non-english Windows":
-
-<https://community.openvpn.net/openvpn/ticket/165>
-
-Mattock will try to reproduce this on his test VMs.
-
----
-
-Full chatlog as an attachment
-
---=20
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
-
---------------070808090300050806030209
-Content-Type: text/plain;
- name="openvpn_irc_meeting_chatlog_2011-10-06.txt"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
-	filename="openvpn_irc_meeting_chatlog_2011-10-06.txt"
-
-YW5kaiAyMToyNzo1NgpoZWxsbwkKClN2aU1payAyMToyODoxOApkbyB3ZSBoYXZlIGEgbWVl
-dGluZyB0b2RheT8JCgphbmRqIDIxOjI4OjI5CndlIHNob3VsZCBoYXZlLCBidXQgbWF0dG9j
-ayBpcyBhIHRhZCBsYXRlCQoKY3JvbjIgMjE6Mjg6MzEKc3VwcG9zZWRseSB5ZXMKYW5kajog
-aG93IG1hbnkgb2YgeW91ciBwYXRjaGVzIGFyZSBzdGlsbCBwZW5kaW5nPyAyMToyODo1MQog
-CmFuZGogMjE6Mjg6NTUKSSBndWVzcyB3ZSBjb3VsZCBnZXQgc3RhcnRlZCB3aXRoIHRoZSBw
-YXRjaGVzIG5vdyB0aGF0IGphbWVzIGlzIGhlcmUKbm90IG1hbnksIHdlIHNob3VsZCBiZSBh
-YmxlIHRvIGdldCB0aHJvdWdoIHRoZW0gdGhpcyBldmVuaW5nIDIxOjI5OjA0CnNoYWxsIHdl
-IGdldCBzdGFydGVkIHdpdGggdGhlIHBhdGNoZXMgdGhlbj8gMjE6Mjk6MzgKamFtZXN5b25h
-biwgY3JvbjI/IDIxOjMxOjA2CiAKamFtZXN5b25hbiAyMTozMTozNgpoaSBhbmRqCQoKU3Zp
-TWlrIDIxOjMxOjM5CkkgaGF2ZSAyIGJ1Z3JlcG9ydHMsIGJ1dCB0aGV5IGFyZSBub3QgaW4g
-YWdlbmRhLCBkb24ndCBrbm93IHdoeQpwcmV2aW91cyBidWdyZXBvcnQgd2FzIGlzIGFnZW5k
-YSAyMTozMjoyMQogCmNyb24yIDIxOjMyOjM3CmFuZGo6IHllcAkKTCd1dGVudGUgbWF0dG9j
-a18gw6ggZW50cmF0byBuZWxsYSBzdGFuemEgMjE6MzIJCgpjcm9uMiAyMTozMjo1MQp0aGUg
-bWF0dG9jayBoYXMgcmV0dXJuZWQhCQoKbWF0dG9ja18gMjE6MzI6NTQKaGkJCgprcnppZSAy
-MTozMjo1NgplY3Jpc3QsIGkgbWVzc2FnZWQgYSBuaWNlIHVwZGF0ZSB0byB0aGF0IHNjcmlw
-dAkKCmFuZGogMjE6MzM6MDkKYWgsIGhpIG1hdHRvY2sJCgptYXR0b2NrXyAyMTozMzowOQp3
-YXMgSSBtaXNzaW5nIGZvciBhIGxvbmc/Cm9yIGp1c3QgYnJpZWZseT8gMjE6MzM6MTkKIApT
-dmlNaWsgMjE6MzM6MTkKYSBtZWV0aW5nPwkKCmFuZGogMjE6MzM6MjUKYWJvdXQgNDAgbWlu
-cwkKClN2aU1payAyMTozMzozNAoJCgphbmRqIDIxOjM0OjA0CnRoZSBmaXJzdCBwYXRjaCBp
-cyB0aGUgYmlnIG9uZTogaHR0cHM6Ly9naXRodWIuY29tL2FuZGovb3BlbnZwbi1zc2wtcmVm
-YWN0b3JpbmcvY29tbWl0LzBlZjhkNDRjYzRiOWIxMGYxNzQxMDFjZjQyMGFmMGE1YjIxNTA4
-MDkJCgp2cG5IZWxwZXIgMjE6MzQ6MDUKVGl0bGU6IENvbW1pdCAwZWY4ZDQ0Y2M0YjliMTBm
-MTc0MTAxY2Y0MjBhZjBhNWIyMTUwODA5IHRvIGFuZGovb3BlbnZwbi1zc2wtcmVmYWN0b3Jp
-bmcgLSBHaXRIdWIgKGF0IGdpdGh1Yi5jb20pCQoKYW5kaiAyMTozNDoyOApzaGFsbCB3ZSBn
-byB0aHJvdWdoIGl0IGZpbGUtYnkgZmlsZSwgc2tpcHBpbmcgdGhlICpfcG9sYXJzc2wuW2No
-XQpvbmVzLCBhcyBkaXNjdXNzZWQgbGFzdCB3ZWVrPyAyMTozNDozNgogCmNyb24yIDIxOjM1
-OjA4CmZpbmUgd2l0aCBtZQkKCmFuZGogMjE6MzU6MjEKTWFrZWZpbGUuYW0gYWRkcyB0aGUg
-bmV3IGZpbGVzCQoKZWNyaXN0IDIxOjM1OjM1CmtyemllOiBsb29raW5nCQoKYW5kaiAyMToz
-NjowMApSRUFETUUucG9sYXJzc2wgYWRkcyBzb21lIGV4dHJhIGluc3RydWN0aW9ucywgYW5k
-IHNvbWUgdGhpbmdzIHRoYXQgYXJlIG1pc3NpbmcJCgptYXR0b2NrXyAyMTozNjoxOApvaAkK
-CmFuZGogMjE6Mzg6MjQKZG8geW91IGd1eXMgcHJlZmVyIGRvaW5nIGFuIGFjayBwZXIgZmls
-ZT8gb3IganVzdCBmb3IgdGhlIHdob2xlIHBhdGNoPwkKCmNyb24yIDIxOjQwOjEzCndlbGws
-IHRoZSBhdXRvY29uZiByZWxhdGVkIHN0dWZmIGxvb2tzIHJlYXNvbmFibGUgdG8gbWUuIFRo
-ZSBjcnlwdG9fcG9sYXJzc2wuYyBuZWVkcyB0ZXN0aW5nLCBJJ2Qgc2F5LCBvciByZXZpZXcg
-ZnJvbSBzb21lb25lIHdobyB1bmRlcnN0YW5kcyBwb2xhciBzc2wgCQoKYW5kaiAyMTo0MDo0
-Ngp5ZWFoLCB3ZSBkZWNpZGVkIGxhc3Qgd2VlayB0aGF0IHRoZSBfcG9sYXJzc2wgc3R1ZmYg
-Y291bGQgYmUgcmV2aWV3ZWQgYXQgYSBzbG93ZXIgcGFjZSwgYXMgaXQgaXNuJ3QgcGFydCBv
-ZiB0aGUgZGVmYXVsdCBidWlsZAppdCdzIGp1c3QgdGhlIGZpbGVzIHRoYXQgYWxyZWFkeSBl
-eGlzdCB0aGF0IGFyZSBpbXBvcnRhbnQgMjE6NDE6MDIKaHR0cHM6Ly9naXRodWIuY29tL2Fu
-ZGovb3BlbnZwbi1zc2wtcmVmYWN0b3JpbmcvY29tbWl0LzBlZjhkNDRjYzRiOWIxMGYxNzQx
-MDFjZjQyMGFmMGE1YjIxNTA4MDkjZGlmZi04IDIxOjQxOjIwCiAKdnBuSGVscGVyIDIxOjQx
-OjIxClRpdGxlOiBDb21taXQgMGVmOGQ0NGNjNGI5YjEwZjE3NDEwMWNmNDIwYWYwYTViMjE1
-MDgwOSB0byBhbmRqL29wZW52cG4tc3NsLXJlZmFjdG9yaW5nIC0gR2l0SHViIChhdCBnaXRo
-dWIuY29tKQkKCmphbWVzeW9uYW4gMjE6NDE6MjEKeWVzLCBpdCBzZWVtcyByZWFzb25hYmxl
-IGluIHRoZSB3YXkgdGhhdCBpdCB0b3VjaGVzIHRoZSBkZWZhdWx0IGJ1aWxkCQoKYW5kaiAy
-MTo0MTozOQp0aGF0IGJpdCBpcyB0aGUgb25seSBvbmUgdGhhdCBtb2RpZmllcyBzdHVmZgpi
-dXQgaXQncyBqdXN0IGlmZGVmcyAyMTo0MTo1NQpvaywgaXMgdGhhdCBhbiBhY2s/IDIxOjQy
-OjAyCmNyb24yIGlzIHN0aWxsIHNjcm9sbGluZyAyMTo0MgkKCmFuZGogMjE6NDI6NDEKb2sg
-CQoKY3JvbjIgMjE6NDM6MTMKbG9va3MgcmVhc29uYWJsZSB0byBtZSwgdG9vCQoKYW5kaiAy
-MTo0MzozMgpvaywgdGhlIG5leHQgb25lIGlzIGEgbWlub3IgYnVnIGZpeDogaHR0cHM6Ly9n
-aXRodWIuY29tL2FuZGovb3BlbnZwbi1zc2wtcmVmYWN0b3JpbmcvY29tbWl0LzUxMTY5MWIw
-OWUyYWM3Mzk0ODIyNjAyNjdhMGExYjk3Y2Q4NzBkMzYJCgp2cG5IZWxwZXIgMjE6NDM6MzUK
-VGl0bGU6IENvbW1pdCA1MTE2OTFiMDllMmFjNzM5NDgyMjYwMjY3YTBhMWI5N2NkODcwZDM2
-IHRvIGFuZGovb3BlbnZwbi1zc2wtcmVmYWN0b3JpbmcgLSBHaXRIdWIgKGF0IGdpdGh1Yi5j
-b20pCQoKbWF0dG9ja18gMjE6NDU6MDIKYW5kajogYXJlIHlvdSB1cGRhdGluZyB0aGUgd2lr
-aSB0b28/CQoKYW5kaiAyMTo0NToxNApJIGFtIG5vdyAJCgptYXR0b2NrXyAyMTo0NToyNwph
-aCwgbmljZSEJCgpjcm9uMiAyMTo0NTo0OQphbmRqOiBhY2sgb24gdGhhdCwgbG9va3MgbGlr
-ZSBhIHNlcGFyYXRpb24gb3ZlcnNpZ2h0CQoKbWF0dG9ja18gMjE6NDU6NTgKKHVzaW5nIG15
-IG1vYmlsZSkJCgphbmRqIDIxOjQ2OjA3Cmh0dHBzOi8vZ2l0aHViLmNvbS9hbmRqL29wZW52
-cG4tc3NsLXJlZmFjdG9yaW5nL2NvbW1pdC9mNDNlMzNlNGFiYjk2MWE4NWNkNjcyMzRjNTdi
-ZjE2MTU3YjRkNzY0IGh0dHBzOi8vZ2l0aHViLmNvbS9hbmRqL29wZW52cG4tc3NsLXJlZmFj
-dG9yaW5nL2NvbW1pdC8wZjNiYjY4ZGIxMGNlNGFhMDI5NTAxMDkyZGMzNmNkZGQ0OGQ0MWVk
-CQoKdnBuSGVscGVyIDIxOjQ2OjA5ClRpdGxlOiBDb21taXQgZjQzZTMzZTRhYmI5NjFhODVj
-ZDY3MjM0YzU3YmYxNjE1N2I0ZDc2NCB0byBhbmRqL29wZW52cG4tc3NsLXJlZmFjdG9yaW5n
-IC0gR2l0SHViIChhdCBnaXRodWIuY29tKQkKCmNyb24yIDIxOjQ2OjI2CndoaWNoIG9uZT8J
-CgphbmRqIDIxOjQ2OjMxCmJvdGggdG9nZXRoZXIJCgpqYW1lc3lvbmFuIDIxOjQ3OjEyCmxv
-b2tzIGZpbmUJCgphbmRqIDIxOjQ3OjQzCndoaWNoIG9uZXMsIGphbWVzeW9uYW4/CQoKY3Jv
-bjIgMjE6NDc6NDMKd2hvIGlzIGZyZWUoKWluZyB0aGUgbWVtb3J5PwkKCmVjcmlzdCAyMTo0
-ODowMApkYXpvJ3Mgbm90IGhlcmUgdG9kYXk/CQoKYW5kaiAyMTo0ODoxOApjcm9uMjogbGV0
-IG1lIGNoZWNrIGZvciB5b3UJCgptYXR0b2NrXyAyMTo0ODoyMAphcHBhcmVudGx5IG5vdAkK
-CmFuZGogMjE6NDk6MTEKc3NsX3ZlcmlmeS5jCQoKamFtZXN5b25hbiAyMTo0OToxNAphbmRq
-OiB0aGUgdHJpdmlhbCBwYXRjaGVzIGZvciBTSEFfRElHRVNUX1NJWkUgZGVmaW5pdGlvbiBh
-bmQgRml4ZWQgYSBidWcgaW4gdGhlIGhhc2ggZ2VuZXJhdGlvbgkKCmFuZGogMjE6NDk6MTcK
-aXMgZnJlZWluZyB0aGUgbWVtb3J5CQoKY3JvbjIgMjE6NDk6MzIKdGhlbiBhY2sgCQoKYW5k
-aiAyMTo0OTo1MQpodHRwczovL2dpdGh1Yi5jb20vYW5kai9vcGVudnBuLXNzbC1yZWZhY3Rv
-cmluZy9jb21taXQvOGQ0MzYwZDE3OWNiMTc2ODAzZTMzMGUzYTk0N2U2YzM0MzE1YjIyNQkK
-CnZwbkhlbHBlciAyMTo0OTo1MwpUaXRsZTogQ29tbWl0IDhkNDM2MGQxNzljYjE3NjgwM2Uz
-MzBlM2E5NDdlNmMzNDMxNWIyMjUgdG8gYW5kai9vcGVudnBuLXNzbC1yZWZhY3RvcmluZyAt
-IEdpdEh1YiAoYXQgZ2l0aHViLmNvbSkJCgphbmRqIDIxOjUwOjE0CnRoYXQgb25lIG1pZ3Jh
-dGVzIHRvIGEgbmV3ZXIgdmVyc2lvbiBvZiBQb2xhclNTTCwgd2hpY2ggdXNlcyAoY29ycmVj
-dGx5KSBzaXplX3QgaW5zdGVhZCBvZiBpbnQKYW5kIGhhcyBkaWZmZXJlbnQgcmV0dXJuIHZh
-bHVlcyBvbiAxIG9yIDIgZnVuY3Rpb25zIDIxOjUwOjM2CiAKY3JvbjIgMjE6NTI6MTAKZ3Vl
-c3NlZCBzb21ldGhpbmcgbGlrZSB0aGF0LCB5ZWFoLiBOb3QgZXhhY3RseSBwcmV0dHksIGJ1
-dCBvYnZpb3VzbHkgbmVlZGVkCQoKYW5kaiAyMTo1MjoyOAp3aGF0IGhhcHBlbmVkIGlzIHRo
-YXQgSSB3cm90ZSBzb21lIHBhdGNoZXMgZm9yIFBvbGFyU1NMCnRvIGFkZCBzb21lIGV4dHJh
-IGZ1bmN0aW9uYWxpdHkgMjE6NTI6MzMKYW5kIHRob3NlIGdvdCBpbnRlZ3JhdGVkIGludG8g
-UG9sYXIgMC45OSAyMTo1Mjo0MgogCmphbWVzeW9uYW4gMjE6NTI6NDYKeWVhaCwgT3BlblNT
-TCB1c2VzIGludHMgaW4gYSBsb3Qgb2YgcGxhY2VzIHdoZXJlIG1vZGVybiBjb2RlIHdvdWxk
-IHVzZSBhIHNpemVfdAkKCmFuZGogMjE6NTM6MDEKVGhlcmUnbGwgYmUgYSBzaW1pbGFyIHBh
-dGNoIGZyb20gMC45OS0+MS4wIHNvb24KeWVhaCwgUG9sYXIgbW9kZXJuaXNlZCB0aGUgY29k
-ZSBiYXNlIGJlZm9yZSAxLjAgMjE6NTM6MTcKbm93IHRoZXkgc3RpbGwgaGFkIHRoZSBjaGFu
-Y2UgMjE6NTM6MjQKbmV4dCBvbmU6IGh0dHBzOi8vZ2l0aHViLmNvbS9hbmRqL29wZW52cG4t
-c3NsLXJlZmFjdG9yaW5nL2NvbW1pdC9hNmNlMjRlZjI5OTlmY2M3M2VlMTU5MGZkYzQ1MTg4
-NDJjMjI4ZjRlIDIxOjU0OjA5CiAKdnBuSGVscGVyIDIxOjU0OjEyClRpdGxlOiBDb21taXQg
-YTZjZTI0ZWYyOTk5ZmNjNzNlZTE1OTBmZGM0NTE4ODQyYzIyOGY0ZSB0byBhbmRqL29wZW52
-cG4tc3NsLXJlZmFjdG9yaW5nIC0gR2l0SHViIChhdCBnaXRodWIuY29tKQkKCmFuZGogMjE6
-NTQ6MTgKc2FtZSBzdG9yeSwgYnV0IGZvciB0aGUgU1NMIGJpdAkKCmphbWVzeW9uYW4gMjE6
-NTU6MTMKYW5kajogaG93IGRvZXMgUG9sYXJTU0wgZGVhbCB3aXRoIGV4dGVybmFsIHByaXZh
-dGUga2V5cyAtLSBJIG5vdGljZWQgeW91IGRpZG4ndCBpbXBsZW1lbnQgbW9zdCBvZiB0aGUg
-T3BlblZQTiBleHRlcm5hbCBwcml2YXRlIGtleSBmdW5jdGlvbnMgbGlrZSBtYW5hZ2VtZW50
-LWV4dGVybmFsLWtleSBhbmQgY3J5cHRvIEFQSQkKCmFuZGogMjE6NTU6NDYKYXQgdGhlIG1v
-bWVudCwgaXQgZG9lc24ndAp0aGUgUlNBIGNvZGUgaXMgcHJldHR5IHN0YXRpYyAyMTo1NTo1
-NQphbmQgZG9lc24ndCBwbGF5IGFsbCB0byB3ZWxsIHdpdGggb3RoZXIgcHJvdmlkZXJzIDIx
-OjU2OjA2Cml0J3Mgc29tZXRoaW5nIHRoYXQgd2lsbCBjb21lIHVwLCBwcm9iYWJseSB0b2dl
-dGhlciB3aXRoIGVsbGlwdGljIGN1cnZlIGNyeXB0byAyMTo1Njo0NgogCmphbWVzeW9uYW4g
-MjE6NTY6NTQKdGhlc2UgZGF5cywgbW9zdCBwZW9wbGUgaW4gYSBoaWdoLXNlY3VyaXR5IGVu
-dmlyb25tZW50IGFyZSBnb2luZyB0byB3YW50IG11bHRpZmFjdG9yIGF1dGggd2hpY2ggb2Z0
-ZW4gcmVxdWlyZXMgZXh0ZXJuYWwga2V5IHN1cHBvcnQJCgpjcm9uMiAyMTo1NzozOQphbmRq
-OiBwYXRjaCBkb2Vzbid0IG1ha2Ugc2Vuc2UgdG8gbWUsIGJ1dCBpdCBkb2VzIG5vdCBoYXZl
-IHRvICJpZiBpdCB3b3JrcyB3aXRoIHBvbGFyc3NsLCBpdCB3aWxsIGJlIGZpbmUiCQoKYW5k
-aiAyMTo1ODoyOApqYW1lc3lvbmFuOiBpdCdzIGdvaW5nIHRvIGhhcHBlbiBpbiBQb2xhclNT
-TCBhdCBzb21lIHBvaW50LCBFQ0MgaXMgdGhlIG1vc3QgcmVxdWVzdGVkIGZlYXR1cmUgYXRt
-IGFueXdheSwgYnV0IEknbSBsZWF2aW5nIHRoYXQgdXAgdG8gdGhlbS4KYW5kIHRoYXQncyB0
-aGUgcGVyZmVjdCBtb21lbnQgdG8gbW9kdWxhcmlzZSB0aGUgYXN5bW1ldHJpYyBjb2RlIGZ1
-cnRoZXIgMjE6NTg6NTQKY3JvbjI6IGluZGVlZCwgaXQncyBqdXN0IHNvbWUgQVBJIGNoYW5n
-ZXMgMjE6NTk6MTAKYWNrIG9uIHRoYXQgb25lPyAyMTo1OToyMgpuZXh0IG9uZSBpcyBhIHBy
-aW50ZiBmaXg6IGh0dHBzOi8vZ2l0aHViLmNvbS9hbmRqL29wZW52cG4tc3NsLXJlZmFjdG9y
-aW5nL2NvbW1pdC8zYmZmNWQzZGMwY2Q2MmUyNDI2OWFkOGYxY2IxNTg4YzllNDdiNDMzIDIx
-OjU5OjU4CiAKdnBuSGVscGVyIDIxOjU5OjU5ClRpdGxlOiBDb21taXQgM2JmZjVkM2RjMGNk
-NjJlMjQyNjlhZDhmMWNiMTU4OGM5ZTQ3YjQzMyB0byBhbmRqL29wZW52cG4tc3NsLXJlZmFj
-dG9yaW5nIC0gR2l0SHViIChhdCBnaXRodWIuY29tKQkKCmNyb24yIDIyOjAwOjA4CmdpdmVu
-IGxhc3Qgd2VlaydzIHBsYW4gb24gbm90IGxvb2tpbmcgdmVyeSBjbG9zZSBhdCB0aGUgKnBv
-bGFyc3NsKiBmaWxlcywgQUNLIApodWgsIHdoYXQgaXMgJXpkPyAyMjowMDo0MwogCmFuZGog
-MjI6MDA6NTcKc3BlY2lhbCB2YWx1ZSBmb3Igc2l6ZV90CndlIGhhZCBhIHNpbWlsYXIgZGlz
-Y3Vzc2lvbiBhIGZldyBtZWV0aW5ncyBhZ28gZm9yICVwIDIyOjAxOjE3CiAKY3JvbjIgMjI6
-MDE6MjAKaXMgdGhhdCBwb3J0YWJsZSwgbGlrZSwgdG8gU29sYXJpcywgKkJTRCwgV2luZG93
-cz8Kbm93ICVwICppcyogKGZvciBwb2ludGVyIHZhbHVlcykgMjI6MDE6MjgKYnV0IEkndmUg
-bmV2ZXIgc2VlbiAlemQgMjI6MDE6MzIKIApqYW1lc3lvbmFuIDIyOjAxOjM0CmRvZXMgd2lu
-ZG93cy92aXN1YWwtc3R1ZGlvIHN1cHBvcnQgJXpkPwkKCmNyb24yIDIyOjAyOjIzCkZyZWVC
-U0QgNyBoYXMgJXpkCQoKYW5kaiAyMjowMjozNQpNUyBkb2Vzbid0OiBodHRwOi8vbXNkbi5t
-aWNyb3NvZnQuY29tL2VuLXVzL2xpYnJhcnkvdGN4ZjFkdzYuYXNweAkKCnZwbkhlbHBlciAy
-MjowMjozNwpUaXRsZTogU2l6ZSBTcGVjaWZpY2F0aW9uIChhdCBtc2RuLm1pY3Jvc29mdC5j
-b20pCQoKY3JvbjIgMjI6MDM6MTMKRnJlZUJTRCA2IGRvZXNuJ3QJCgphbmRqIDIyOjAzOjMy
-Cm9rLCBwb2ludCB0YWtlbiwgSSdsbCB3cml0ZSBhIHBhdGNoIGZvciBpdAkKCmNyb24yIDIy
-OjAzOjMzCkknZCB0ZW5kIHRvIG5hY2sgdGhhdCBjaGFuZ2UsIGFuZCB1c2UgYSBjYXN0CiVs
-ZCBhbmQgKGxvbmcpIG9yICVkIGFuZCAoaW50KSwgd2hhdGV2ZXIgaXMgcmVhc29uYWJsZSAy
-MjowMzo1NAogCmphbWVzeW9uYW4gMjI6MDQ6MTkKT3BlblZQTiBhY3R1YWxseSBoYXMgYSAu
-aCBmaWxlIHdoZXJlIHdlIGRlZmluZSB2YXJpb3VzIHBsYXRmb3JtLXNwZWNpZmljIGZvcm1h
-dCBzcGVjaWZpZXJzCQoKYW5kaiAyMjowNDozMQp0aGFua3MsIEknbGwgbG9vayBmb3IgaXQJ
-CgpqYW1lc3lvbmFuIDIyOjA0OjM1CndlIHVzZSBpdCBmb3IgcHJpbnRpbmcgNjQtYml0IGJ5
-dGUgY291bnRlcnMJCgphbmRqIDIyOjA0OjUzCm5leHQgb25lOiBodHRwczovL2dpdGh1Yi5j
-b20vYW5kai9vcGVudnBuLXNzbC1yZWZhY3RvcmluZy9jb21taXQvYmMyZGJmYzdlOWNmOWQw
-NTUyMzc0ZTQ5NzUwMDEyYTQ0NGUyYTcwZgkKCnZwbkhlbHBlciAyMjowNDo1NApUaXRsZTog
-Q29tbWl0IGJjMmRiZmM3ZTljZjlkMDU1MjM3NGU0OTc1MDAxMmE0NDRlMmE3MGYgdG8gYW5k
-ai9vcGVudnBuLXNzbC1yZWZhY3RvcmluZyAtIEdpdEh1YiAoYXQgZ2l0aHViLmNvbSkJCgph
-bmRqIDIyOjA0OjU3CmRpc2FibGUgcGtjczEyCQoKY3JvbjIgMjI6MDY6MjIKYWNrCQoKYW5k
-aiAyMjowNzowMwpzYW1lLCBidXQgZm9yIGNhcGF0aDogaHR0cHM6Ly9naXRodWIuY29tL2Fu
-ZGovb3BlbnZwbi1zc2wtcmVmYWN0b3JpbmcvY29tbWl0Lzc0Y2EwMTEwMjY5YTQ2NjA3ZTMy
-MTFmOGQ3YzZiMWQyNTAzNjFkOTkJCgp2cG5IZWxwZXIgMjI6MDc6MDQKVGl0bGU6IENvbW1p
-dCA3NGNhMDExMDI2OWE0NjYwN2UzMjExZjhkN2M2YjFkMjUwMzYxZDk5IHRvIGFuZGovb3Bl
-bnZwbi1zc2wtcmVmYWN0b3JpbmcgLSBHaXRIdWIgKGF0IGdpdGh1Yi5jb20pCQoKamFtZXN5
-b25hbiAyMjowODoxOQpib3RoIGxvb2sgZmluZQkKCmFuZGogMjI6MDg6MjYKY29vbCwgbmV4
-dCBpcyBkaXNhYmxlIENyQVBJOiBodHRwczovL2dpdGh1Yi5jb20vYW5kai9vcGVudnBuLXNz
-bC1yZWZhY3RvcmluZy9jb21taXQvZjc5ZjE1NTY5MDJkMWM3MzQxNjg1ODgxM2NjNzU1OTRk
-M2QyZmRmNgkKCnZwbkhlbHBlciAyMjowODoyNwpUaXRsZTogQ29tbWl0IGY3OWYxNTU2OTAy
-ZDFjNzM0MTY4NTg4MTNjYzc1NTk0ZDNkMmZkZjYgdG8gYW5kai9vcGVudnBuLXNzbC1yZWZh
-Y3RvcmluZyAtIEdpdEh1YiAoYXQgZ2l0aHViLmNvbSkJCgplY3Jpc3QgMjI6MDg6NTgKaGVo
-LCBDckFQSQkKCmFuZGogMjI6MDk6MDQKCQoKZWNyaXN0IDIyOjA5OjM0Cj48e3t7Kj4JCgpj
-cm9uMiAyMjowOTo1MApsb29rcyBnb29kIHRvIG1lICh0aG91Z2ggSSBjYW4ndCBzYXkgd2hl
-dGhlciB5b3UgY2F1Z2h0IGFsbCBwbGFjZXMpCQoKYW5kaiAyMjowOTo1NwpleHRlcm5hbCBr
-ZXlzOiBodHRwczovL2dpdGh1Yi5jb20vYW5kai9vcGVudnBuLXNzbC1yZWZhY3RvcmluZy9j
-b21taXQvMDlmMTU2YTk5YWMxNmMxMTU3MzkyODE4ZDQzYjZkZDRiODk4ZDY1OQkKCnZwbkhl
-bHBlciAyMjowOTo1OApUaXRsZTogQ29tbWl0IDA5ZjE1NmE5OWFjMTZjMTE1NzM5MjgxOGQ0
-M2I2ZGQ0Yjg5OGQ2NTkgdG8gYW5kai9vcGVudnBuLXNzbC1yZWZhY3RvcmluZyAtIEdpdEh1
-YiAoYXQgZ2l0aHViLmNvbSkJCgpqYW1lc3lvbmFuIDIyOjEwOjIzCnRoYXQncyB0aGUga2lu
-ZCBvZiBwYXRjaCB0aGF0IHdpbGwgdXN1YWxseSBnaXZlIHlvdSBhIGNvbXBpbGUgZXJyb3Ig
-aWYgeW91IGdldCBpdCB3cm9uZwkKCmFuZGogMjI6MTA6MzgKeWVhaCwgYW5kIEkgZG91Ymxl
-IGNoZWNrZWQgdXNpbmcgZ3JlcAkKCmphbWVzeW9uYW4gMjI6MTA6NDYKQ3J5cHRvQVBJIHBh
-dGNoIGxvb2tzIGZpbmUJCgpjcm9uMiAyMjoxMTowNwp5ZXAsIGJ1dCBvbmx5IGlmIHlvdSBj
-b21waWxlIG9uIHdpbmRvd3MgIC0gc28gdGhpcyBpcyBzb21ldGhpbmcgdGhhdCBjZXJ0YWlu
-bHkgbmVlZHMgdGVzdGluZyBhZnRlciB0aGUgbWVyZ2UKKCpleHRyYSogdGVzdGluZykgMjI6
-MTE6MTQKIAphbmRqIDIyOjExOjM0CkkgY29tcGlsZSBvbiBib3RoIHdpbmRvd3MgYW5kIGxp
-bnV4IGJ0dwkKCmNyb24yIDIyOjExOjQxCmFuZGo6IG9oPyBjb29sCQoKamFtZXN5b25hbiAy
-MjoxMTo1NAptaW5ndyBvciB2aXN1YWwgc3R1ZGlvPwkKCmFuZGogMjI6MTE6NTYKSSd2ZSBn
-b3QgYSBjdXRlIGxpdHRsZSBidWlsZCBmYXJtIHNldCB1cCBmb3IgdGhlIHBvbGFyc3NsIGJ1
-aWxkCQoKY3JvbjIgMjI6MTE6NTgKQUNLLCB0aGVuIAkKCmFuZGogMjI6MTE6NTkKdmlzdWFs
-IHN0dWRpbwkKCmphbWVzeW9uYW4gMjI6MTI6MTEKYWNrIGFzIHdlbGwJCgphbmRqIDIyOjEy
-OjIwCmJ1dCBpdCdzIGN1cnJlbnRseSAyLjEuNCAmIHBvbGFyc3NsIDAuMTQuMwpodHRwczov
-L2dpdGh1Yi5jb20vYW5kai9vcGVudnBuLXNzbC1yZWZhY3RvcmluZy9jb21taXQvYjI4NTMy
-MzYwYzRkZGYyZDJiZWM2MmI1YzdiNjJkMmFlMDVjOWNlMSAyMjoxMjozMAogCnZwbkhlbHBl
-ciAyMjoxMjozMQpUaXRsZTogQ29tbWl0IGIyODUzMjM2MGM0ZGRmMmQyYmVjNjJiNWM3YjYy
-ZDJhZTA1YzljZTEgdG8gYW5kai9vcGVudnBuLXNzbC1yZWZhY3RvcmluZyAtIEdpdEh1YiAo
-YXQgZ2l0aHViLmNvbSkJCgpqYW1lc3lvbmFuIDIyOjE0OjA0Cmxvb2tzIGZpbmUJCgphbmRq
-IDIyOjE0OjI3Cmh0dHBzOi8vZ2l0aHViLmNvbS9hbmRqL29wZW52cG4tc3NsLXJlZmFjdG9y
-aW5nL2NvbW1pdC8yYjAxOGNjODg3NDRiZjU4MGU2MmUzYTQwM2I1OGRlYmEyNjdhNzk4CQoK
-dnBuSGVscGVyIDIyOjE0OjI4ClRpdGxlOiBDb21taXQgMmIwMThjYzg4NzQ0YmY1ODBlNjJl
-M2E0MDNiNThkZWJhMjY3YTc5OCB0byBhbmRqL29wZW52cG4tc3NsLXJlZmFjdG9yaW5nIC0g
-R2l0SHViIChhdCBnaXRodWIuY29tKQkKCmFuZGogMjI6MTQ6MzEKbW9yZSBleHRlcm5hbCBj
-ZXJ0IHN0dWZmCQoKamFtZXN5b25hbiAyMjoxNzowOAp3aHkgZG8geW91IG5lZWQgdG8gd3Jp
-dGUgYSBjZXJ0aWZpY2F0ZT8KKHRvIGEgZmlsZSkgMjI6MTc6MTgKIAphbmRqIDIyOjE3OjI0
-Ckl0J3MgZm9yIGV4dGVybmFsIHNjcmlwdHMJCgpqYW1lc3lvbmFuIDIyOjE3OjM1CmFoLCBv
-awkKCmFuZGogMjI6MTg6MDUKYmFzaWNhbGx5LCBpdCdzIG5vdCB5ZXQgcG9zc2libGUgaW4g
-UG9sYXIKc28gaXQncyBvcGVuc3NsLW9ubHkgMjI6MTg6MTEKYWdhaW4sIGEgZmVhdHVyZSB0
-aGF0J3MgaW1taW5lbnQgaW4gUG9sYXJTU0wgMjI6MTg6MjcKIApqYW1lc3lvbmFuIDIyOjE5
-OjMzCmp1c3QgY3VyaW91cywgd2hhdCdzIHRoZSByb3VnaCBzaXplIG9mIHRoZSBidWlsdCBQ
-b2xhclNTTCBsaWJzCQoKYW5kaiAyMjoyMDo1OQpkZXBlbmRzIG9uIHdoYXQgeW91IGluY2x1
-ZGUKbm90IGV4YWN0bHkgc3VyZSB0aG91Z2ggMjI6MjE6MTcKNDAwayBvciBzbyBJIHRoaW5r
-IDIyOjIxOjM2CmJ1dCB0aGF0IG1pZ2h0IGJlIHdpdGggZGVidWcgc3ltYm9scyAyMjoyMTo1
-OQphbmQgc3RhdGljIDIyOjIyOjIzCiAKamFtZXN5b25hbiAyMjoyMjozNQp5ZWFoLCB0aGF0
-J3MgZGVmaW5pdGVseSBzbWFsbGVyIHRoYW4gT3BlblNTTAkKCmFuZGogMjI6MjI6NTUKdGhp
-bmsgbGliY3J5cHRvIGlzIGFib3V0IDQtNSBNQiAJCgpqYW1lc3lvbmFuIDIyOjIzOjA3Cm5v
-LCBub3QgdGhhdCBsYXJnZQkKCmFuZGogMjI6MjM6MTAKYWNrIG9uIGV4dGVybmVsIGNlcnQ/
-CjEuNiBNQiAyMjoyMzo0MwogCmphbWVzeW9uYW4gMjI6MjM6NDYKeWVzLCBhY2sJCgphbmRq
-IDIyOjIzOjQ2CnRoZSBkeW5hbWljIG9uZQpvaywgb25seSAzIHNtYWxsIG9uZXMgbGVmdDog
-aHR0cHM6Ly9naXRodWIuY29tL2FuZGovb3BlbnZwbi1zc2wtcmVmYWN0b3JpbmcvY29tbWl0
-LzYwODkwMTAyYjc1NTM5MGU3MDRhNzRlZTI5NjI3ODA0ODBiNTBjODAgMjI6MjQ6MDIKIAp2
-cG5IZWxwZXIgMjI6MjQ6MDMKVGl0bGU6IENvbW1pdCA2MDg5MDEwMmI3NTUzOTBlNzA0YTc0
-ZWUyOTYyNzgwNDgwYjUwYzgwIHRvIGFuZGovb3BlbnZwbi1zc2wtcmVmYWN0b3JpbmcgLSBH
-aXRIdWIgKGF0IGdpdGh1Yi5jb20pCQoKamFtZXN5b25hbiAyMjoyNDo1Mwpsb29rcyBmaW5l
-CQoKYW5kaiAyMjoyNDo1NQpBZGQgYSB0YWcgZm9yIGEgYnVpbGQ6IGh0dHBzOi8vZ2l0aHVi
-LmNvbS9hbmRqL29wZW52cG4tc3NsLXJlZmFjdG9yaW5nL2NvbW1pdC81ZjVlY2EwMGYzMTE5
-OTU3MTQ1MGNjZWVlMWY0NDY5MTU0YmQ0ZDM4CQoKdnBuSGVscGVyIDIyOjI0OjU2ClRpdGxl
-OiBDb21taXQgNWY1ZWNhMDBmMzExOTk1NzE0NTBjY2VlZTFmNDQ2OTE1NGJkNGQzOCB0byBh
-bmRqL29wZW52cG4tc3NsLXJlZmFjdG9yaW5nIC0gR2l0SHViIChhdCBnaXRodWIuY29tKQkK
-CmphbWVzeW9uYW4gMjI6MjU6MjcKYWNrCQoKYW5kaiAyMjoyNTozMgphbmQsIGZpbmFsbHkg
-ZGlzYWJsZSB4NTA5IHRyYWNrOiBodHRwczovL2dpdGh1Yi5jb20vYW5kai9vcGVudnBuLXNz
-bC1yZWZhY3RvcmluZy9jb21taXQvN2MxOGY3Y2QxZWY3ZTc5YTQ4OWJmMTE2YTRjYTMzYzk3
-MjI3ZGMwOAkKCnZwbkhlbHBlciAyMjoyNTozMwpUaXRsZTogQ29tbWl0IDdjMThmN2NkMWVm
-N2U3OWE0ODliZjExNmE0Y2EzM2M5NzIyN2RjMDggdG8gYW5kai9vcGVudnBuLXNzbC1yZWZh
-Y3RvcmluZyAtIEdpdEh1YiAoYXQgZ2l0aHViLmNvbSkJCgpjcm9uMiAyMjoyNTo1NAphY2sg
-Zm9yIHRoZSBidWlsZCB0YWcJCgphbmRqIDIyOjI2OjE3CmJ1aWxkIHRhZz8KYWgsIHRoYXQg
-b25lIDIyOjI2OjIzCndoYXQgaGVhZGVyIGZpbGUgY29udGFpbmVkIHRoZSBzaXplX3QgZGVm
-aW5lcywgY2FuJ3Qgc2VlbSB0byBmaW5kIGl0PyAyMjoyNjo0NgogCmphbWVzeW9uYW4gMjI6
-Mjg6NTgKYWNrIGZvciBEaXNhYmxlZCBYLjUwOSB0cmFjawkKCmFuZGogMjI6Mjk6MTMKd2hl
-ZSAKdGhhdCdzIHRoZSBsYXN0IG9uZSAyMjoyOToxNwogCmNyb24yIDIyOjI5OjIxCmNvb2wJ
-CgphbmRqIDIyOjI5OjI1CmFzaWRlIGZyb20gdGhlIGZpeCBmb3IgdGhlIG5hY2sKZnJvbSBq
-dXN0IG5vdyAyMjoyOToyNwogCmphbWVzeW9uYW4gMjI6Mjk6MzEKY29tbW9uLmgJCgpjcm9u
-MiAyMjoyOTozMwp5ZXAJCgpqYW1lc3lvbmFuIDIyOjMwOjMzCnlvdSBjYW4gcHJvYmFibHkg
-bGV2ZXJhZ2Ugb24gY291bnRlcl9mb3JtYXQJCgphbmRqIDIyOjMwOjQ0CnllYWgsIEkgd2Fz
-IHRoaW5rIHRoZSBzYW1lIHRoaW5nCnBhdGNoIGluY29taW5nLCBnaXZlIG1lIDIgbWludXRl
-cyBjb21waWxlIHRpbWUgMjI6MzI6MzYKIAptYXR0b2NrXyAyMjozMzoyMQphbG1vc3QgdGhl
-cmUgCQoKYW5kaiAyMjozNjozNgphbnl3YXksIHRoZXJlIHdpbGwgYmUgc29tZSBzbWFsbGVy
-IHBhdGNoZXMgaW4gdGhlIG5leHQgZmV3IHdlZWtzLCB0byBtb3ZlIHRvIFBvbGFyU1NMIDEu
-MCwgYW5kIHBlcmhhcHMgYSBmZXcgV2luZG93cyBidWlsZCBmaXhlcwkKCmNyb24yIDIyOjM3
-OjIyCnNvdW5kcyBnb29kCQoKbWF0dG9ja18gMjI6Mzc6MzEKYW5kajogZm9yIHB5dGhvbiBi
-dWlsZCBzeXN0ZW0/CQoKYW5kaiAyMjozNzo0Ngp5ZWFoLApidXQgdGhhdCdsbCBiZSBpbiBh
-IGZldyB3ZWVrcyAyMjozNzo1OAogCm1hdHRvY2tfIDIyOjM5OjM3Cm9rCQoKYW5kaiAyMjo0
-MDo0MwpodHRwczovL2dpdGh1Yi5jb20vYW5kai9vcGVudnBuLXNzbC1yZWZhY3RvcmluZy9j
-b21taXQvODhkNjM5NjMwY2QzMTk4ODJiZTA1YTI5YmNjNWFjNDljYjc5ZDFiYwkKCnZwbkhl
-bHBlciAyMjo0MDo0NApUaXRsZTogQ29tbWl0IDg4ZDYzOTYzMGNkMzE5ODgyYmUwNWEyOWJj
-YzVhYzQ5Y2I3OWQxYmMgdG8gYW5kai9vcGVudnBuLXNzbC1yZWZhY3RvcmluZyAtIEdpdEh1
-YiAoYXQgZ2l0aHViLmNvbSkJCgphbmRqIDIyOjQwOjUzCm9rLCBtb3ZlZCB0byBjb3VudGVy
-X3R5cGUgYW5kIGNvdW50ZXJfZm9ybWF0CQoKY3JvbjIgMjI6NDE6NTcKdGhhdCBzaG91bGQg
-YmUgIihjb3VudGVyX3R5cGUpIDgqIC4uLiIsIG5vdCAobG9uZyBsb25nIGludCkJCgphbmRq
-IDIyOjQyOjEwCm9vcHMsIG1pc3Rha2UgaW4gbXkgY29tbWl0LCBzZWMKaHR0cHM6Ly9naXRo
-dWIuY29tL2FuZGovb3BlbnZwbi1zc2wtcmVmYWN0b3JpbmcvY29tbWl0LzgyZTc0NWI2ZTRj
-ODFiNWZhNWYwZDA3OTMzODNhMjkyNjk2ZDI5OTEgMjI6NDc6MDMKIAp2cG5IZWxwZXIgMjI6
-NDc6MDQKVGl0bGU6IENvbW1pdCA4MmU3NDViNmU0YzgxYjVmYTVmMGQwNzkzMzgzYTI5MjY5
-NmQyOTkxIHRvIGFuZGovb3BlbnZwbi1zc2wtcmVmYWN0b3JpbmcgLSBHaXRIdWIgKGF0IGdp
-dGh1Yi5jb20pCQoKYW5kaiAyMjo0NzoxNQpmaXhlZCBpdCwgYWNjaWRlbnRseSBwdXNoZWQg
-dGhlIHdyb25nIGxvY2FsIGNvbW1pdAkKCmNyb24yIDIyOjQ4OjE5CndlbGwsIGZvcm1hbCBh
-Y2ssIGJ1dCBsb29raW5nIGF0IHRoZSBjb2RlIHRoYXQgcHJpbnRzIG51bWJlcnMgd2VsbCBp
-biB0aGUgMTYtYml0IHJhbmdlLCBJIHJlYWxseSB3b25kZXIgd2h5IHBlb3BsZSB0aGluayB0
-aGF0ICJzaXplX3QiIGlzIGEgZ29vZCBpZGVhIGhlcmUKd2l0aCBhbGwgdGhlIGV4dHJhIGNv
-bXBsaWNhdGlvbiB0aGF0IGJyaW5ncyAyMjo0ODozMQpidXQgdGhhdCdzIGp1c3QgdGhlIHJh
-bWJsaW5ncyBvZiBhbiBvbGQgbWFuLi4uIDIyOjQ5OjI5CiAKYW5kaiAyMjo0OTozMApwb2lu
-dCB0YWtlbgphbnl3YXksIHRoYXQgc2hvdWxkIGJlIG9rIG5vdyAyMjo0OTo0MQogCmNyb24y
-IDIyOjQ5OjQ5CnllcCwgdGhlIGNvZGUgaXMgZmluZQkKYW5kaiBpcyB2ZXJ5IGhhcHB5IDIy
-OjQ5CQoKYW5kaiAyMjo1MDo0NAp3aGF0J3MgbmV4dCBmb3IgdGhlIG1lZXRpbmc/IFN2aU1p
-aydzIGJ1ZyByZXBvcnRzPwkKCmphbWVzeW9uYW4gMjI6NTA6NTIKeWVhaCwgc2l6ZV90IHNv
-cnQgb2YgY2FtZSBpbnRvIGZhc2hpb24gd2l0aCB0aGUgcmlzZSBvZiA2NC1iaXQgYXJjaGl0
-ZWN0dXJlcwkKCmNyb24yIDIyOjUxOjM1CmZvciB0aGlzIG1lZXRpbmcsIEknbSBkb25lICAt
-IG5lZWQgdG8gYnJlYWsgYSBmZXcgY3VzdG9tZXIgbmV0d29ya3Mgbm93CQoKYW5kaiAyMjo1
-MTo0NgpvaywgaGF2ZSBmdW4gCndlIGNvdWxkIGNhbGwgaXQgYSBkYXkgdGhlbj8gMjI6NTI6
-MDEKIApjcm9uMiAyMjo1MjowMgpteSBuZXh0IGFnZW5kYSBpdGVtcyBhcmUgImdldCBtYXR0
-b2NrIHRvIG1ha2UgdGhlIGZyZWVic2QgOC4yIGJ1aWxkc2xhdmUgd29yayIgCQoKbWF0dG9j
-a18gMjI6NTI6MDkKc3VtbWFyeSB3aWxsIGZvbGxvdyB0b21vcnJvdwkKCmFuZGogMjI6NTI6
-MTEKVGhhbmtzIGV2ZXJ5b25lCQoKbWF0dG9ja18gMjI6NTI6MjgKYW5kajogdGhhbmtzIGZv
-ciBtYW5hZ2luZyB0aGluZ3MhCQpTdmlNaWsgaXMgaGVyZSwgaWYgc29tZWJvZHkgaXMgZ29p
-bmcgdG8gbG9vayBhdCBteSBidWcgcmVwb3J0cyAyMjo1MwkKCmFuZGogMjI6NTM6MzAKbWF0
-dG9jazogbnAKc3ZpbWlrLCB3aGljaCBvbmVzPyAyMjo1NDo0OAogClN2aU1payAyMjo1NToy
-OQpmaXJzdCBpcyBodHRwczovL2NvbW11bml0eS5vcGVudnBuLm5ldC9vcGVudnBuL3RpY2tl
-dC8xNjcJCgp2cG5IZWxwZXIgMjI6NTU6MzAKVGl0bGU6ICMxNjcgKFVOREVGIHVzZXIgd2l0
-aCBiaWcgdXB0aW1lKSDigJMgT3BlblZQTiBDb21tdW5pdHkgKGF0IGNvbW11bml0eS5vcGVu
-dnBuLm5ldCkJCgpTdmlNaWsgMjI6NTU6NTQKdGhlIGxvZyB3aXRoIG1hbnkgZXJyb3JzIGlz
-IGhlcmU6IGh0dHA6Ly9zdmltaWsuY29tL292cG51bmRlZi50eHQJCgphbmRqIDIyOjU3OjE3
-CnN2aW1pazogSSdsbCB0YWtlIGEgcGVlayBhdCB0aGUgbG9nIGZpbGUsIHNlZSBpZiBJIGNh
-biBmaW5kIGFueXRoaW5nCQoKU3ZpTWlrIDIyOjU4OjU5CnRoZSBzZWNvbmQgYnVnIGlzIGxv
-ZyBlbmNvZGluZy4uLiBJIHdvbmRlciBpZiBhbnlib2R5IHRlc3RlZCBvcGVudnBuIHdpdGgg
-bm9uLWVuZ2xpc2ggV2luZG93cz8JCgphbmRqIDIyOjU5OjI3Cmxvb2tzIGxpa2UgdGhlcmUn
-cyBhIHJlamVjdGVkIGluaXRpYWwgcGFja2V0OiBQRjogL2V0Yy9vcGVudnBuL3RtcC9vcGVu
-dnBuX3BmXzNjMDEyNTg4MGUyOGNkMjRiMjk3ZjcwYzQyYTY5NDBjLnRtcCByZWplY3RlZCBk
-dWUgdG8gMSBlcnJvcihzKQkKClN2aU1payAyMzowMToxNwphbmRqIHRoYXQncyBub3JtYWwg
-SSB0aGluay4gd2hlbiBwZiBmaWxlIGlzIGlnbm9yZWQsIG9wZW52cG4ganVzdCB1c2luZyBz
-b21lIGRlZmF1bHQgc2V0dGluZ3MKc28gaXQncyBub3QgcmVsYXRlZCB3aXRoIHRoaXMgYnVn
-IDIzOjAxOjQzCiAKbWF0dG9ja18gMjM6MDE6NTMKU3ZpTWlrOiBJIGhhdmUgbm90LCBpdCdz
-IGFsbCBlbmdsaXNoCmNhbiB5b3UgY2hhbmdlIHdpbmRvd3MgbGFuZ3VhZ2Ugd2l0aG91dCBi
-dXlpbmcgYSBzZXBhcmF0ZSB2ZXJzaW9uPyAyMzowMjo0NgogClN2aU1payAyMzowMzozMApk
-b24ndCB1bmRlcnN0YW5kIGxhc3QgcXVlc3Rpb24uIHdoeSBJIG5lZWQgY2hhbmdlIGl0PwkK
-TCd1dGVudGUga3J6aWUgc2kgw6ggZGlzY29ubmVzc28gKFF1aXQ6IExlYXZpbmcpIDIzOjAz
-CQoKU3ZpTWlrIDIzOjA0OjQ2CmFuZGogdGhhdCB1c2VyJ3MgY2VydGlmaWNhdGUgaGFzIGV4
-cGlyZWQsIHNvIEkgZG9uJ3Qga25vdyBldmVuIGhvdyBoZSBnb3QgY29ubmVjdGVkIGFuZCB3
-aHkgdGhlIGNvbm5lY3Rpb24gd2FzIG5vdCByZWplY3RlZAkKCmFuZGogMjM6MDU6NTIKSSdt
-IGEgbGl0dGxlIHN1cnByaXNlZCBhYm91dCBhbGwgb2YgdGhlIHJlcGxheSBlcnJvcnMgdG9v
-CQoKbWF0dG9ja18gMjM6MDU6NTMKSSBtZWFuIGNhbiBfSV8gY2hhbmdlIHRoZSBsYW5ndWFn
-ZSBpZiBJIHdhbnQ/IAkKCmFuZGogMjM6MDY6NDAKdGhlbiBhdCBtaWRuaWdodCBoaXMgc2Vz
-c2lvbiBleHBpcmVzCmFuZCBoZSBjYW4ndCBjb25uZWN0IGFueW1vcmUgMjM6MDY6NDYKIApT
-dmlNaWsgMjM6MDc6MDIKbWF0dG9ja18geW91IGNhbi4gYnV0IHlvdSBoYXZlIHRvIGluc3Rh
-bGwgTVVJOiBodHRwOi8vZW4ud2lraXBlZGlhLm9yZy93aWtpL011bHRpbGluZ3VhbF9Vc2Vy
-X0ludGVyZmFjZQkKCnZwbkhlbHBlciAyMzowNzowMwpUaXRsZTogTXVsdGlsaW5ndWFsIFVz
-ZXIgSW50ZXJmYWNlIC0gV2lraXBlZGlhLCB0aGUgZnJlZSBlbmN5Y2xvcGVkaWEgKGF0IGVu
-Lndpa2lwZWRpYS5vcmcpCQoKU3ZpTWlrIDIzOjEwOjA5CmZvciBYUCB0aGVyZSB3YXMgYWxz
-byBNVUksIHdoaWNoIHRyYW5zbGF0ZXMgbW9zdCB1c2VyIGludGVyZmFjZSAoYnV0IG5vdCBh
-bGwsIHNvIHRoZSByZXN1bHQgbWF5IGJlIHNsaWdodGx5IGRpZmZlcmVudCBjb21wYXJpbmcg
-d2l0aCBvcmlnaW5hbGx5IG5vbi1lbmdsaXNoIFhQKS4JCkwndXRlbnRlIG1hdHRvY2tfIHNp
-IMOoIGRpc2Nvbm5lc3NvIChQaW5nIHRpbWVvdXQ6IDI1MiBzZWNvbmRzKSAyMzoxMAkKClN2
-aU1payAyMzoxMDo1NAppbiBteSBjYXNlLCBJIGZvdW5kIDIgYnVncyBpbiBYUCAoZGlkbid0
-IHRlc3RlZCBpbiA3IHlldCkJCgphbmRqIDIzOjEyOjEzCnN2aW1pazogSSB0aGluayB0aGUg
-Zm9sbG93aW5nIGhhcHBlbmVkCmNlcnRpZmljYXRlIGV4cGlyZWQgYXQgc29tZSBwb2ludCwg
-YW5kIHRoZSBjb250cm9sIGNoYW5uZWwgc3RpbGwgZXhpc3RlZCAyMzoxMjozMQpidXQgYSBu
-ZXcgY29udHJvbCBjaGFubmVsIGNhbid0IGJlIHNldCB1cCAyMzoxMjo0MQp0aGUgc2Vzc2lv
-biB0aGVuIHN0aWxsIGV4aXN0cyBidXQgY2FuJ3QgYmUgdXNlZCBhbnltb3JlIDIzOjEzOjQy
-CiAKU3ZpTWlrIDIzOjE0OjM4CnNvIHRoZSB1c2VyIHNob3VsZCBiZSBraWNrZWQgaW4gdGhh
-dCBjYXNlCmJlY2F1c2Ugc2Vzc2lvbiBpcyBub3QgdXNhYmxlIGFueXdheSAyMzoxNTowMAog
-CmFuZGogMjM6MTU6MjcKeWVhaCwgYW5kIHRoZSBlcnJvciBzaG91bGQgYmUgYSBsaXR0bGUg
-Y2xlYXJlciBhcyB3ZWxsCmZhaWxlZCBUTFMgY29ubmVjdGlvbnMgY291bGQgYmUgaGFuZGxl
-ZCBtb3JlIGNsZWFubHkgMjM6MTY6NDIKIApTdmlNaWsgMjM6MTc6MzYKYWN0dWFsbHkgaW4g
-bXkgcHJldmlvdXMgdGVzdHMgY29ubmVjdGlvbiB3YXMgd29ya2luZyB3ZWxsIGV2ZW4gYWZ0
-ZXIgY2VydGlmaWNhdGUgZXhwaXJhdGlvbiAodXBvbiBmaXJzdCByZWNvbm5lY3QpCQoKbWF0
-dG9jayAyMzoxNzo0NgpTdmlNaWs6IEknbGwgY2hlY2sgb3V0IE1VSSwgaXQgbWFrZXMgc2Vu
-c2UgdG8gZG8gc29tZSBiYXNpYyB0ZXN0cyB3aXRoIG5vbi1FbmdsaXNoIGxhbmd1YWdlcwkK
-ClN2aU1payAyMzoxODoyOAphbmRqIHNvLCB0aGUgZXhwaXJlZCBjZXJ0aWZpY2F0ZSBtYXkg
-YmUgb25seSBhIHBhcnQgb2YgY29uZGl0aW9uIHRvIHJlcHJvZHVjZSB0aGlzIGJ1ZwkKCmFu
-ZGogMjM6MTk6NDEKaG1tLCBpdCdzIHNvbWV0aGluZyB0aGF0IG5lZWRzIGxvb2tpbmcgYXQs
-IGJ1dCBJJ20gYWZyYWlkIEkgaGF2ZW4ndCBnb3QgdGltZSByaWdodCBub3cgKGdldHRpbmcg
-bGF0ZSBoZXJlKQkKClN2aU1payAyMzoyMDoxNwphYm91dCBlbmNvZGluZzoKMS4gaWYgYWRh
-cHRlcidzIG5hbWUgY29udGFpbnMgbm9uLWVuZ2xpc2ggY2hhcmFjdGVycywgdGhlIGVuY29k
-aW5nIGluIENMSSBpcyB3cm9uZy4gaW4gR1VJIGl0IGFwcGVhcnMgY29ycmVjdGx5IHRob3Vn
-aC4gSSBzdXBwb3NlIHRoZSB3aW5kb3dzIENMSSBhbmQgb3BlbnZwbiBHVUkgYXJlIHVzaW5n
-IGRpZmZlcmVudCBlbmNvZGluZyB0byBkaXNwbGF5IHRleHQgMjM6MjA6MTcKMi4gYnV0ICJy
-b3V0ZSBhZGQiIGVycm9ycyB2aWNlIHZlcnNhIGFyZSBub3QgcmVhZGFibGUgaW4gb3BlbnZw
-biBHVUkgMjM6MjA6MTcKIAphbmRqIDIzOjIxOjA3CnNlZSB5b3UgYWxsIHNvb24JCgpTdmlN
-aWsgMjM6MjE6MzcKb2sJCkwndXRlbnRlIGtyemVlIMOoIGVudHJhdG8gbmVsbGEgc3Rhbnph
-IDIzOjIxCQoKU3ZpTWlrIDIzOjI5OjE1Cm1hdHRvY2sgSSBjYW4gYWxzbyBtYWtlIHRlc3Rz
-IGlmIHNvbWVib2R5IHdyaXRlcyBhIHBhdGNoIGZvciBpdApJIHNlZSB0aGVyZSBpcyBlbmNv
-ZGluZyBtZXNzIGJvdGggaW4gb3BlbnZwbiBhbmQgaXRzIEdVSSAyMzozMDoyOQpiZWNhdXNl
-IG5vYm9keSB0ZXN0ZWQgaXQgMjM6MzA6NDEKIApTdmlNaWsgMjM6Mzg6NDEKbWF0dG9jayBJ
-IGNhbiBzZXQgdXAgYSB2aXJ0dWFsIG1hY2hpbmUgd2l0aCB3aW5kb3dzIGZvciB5b3UgaWYg
-eW91IG5lZWQsIHdpdGggcmVtb3RlIGRlc2t0b3AgYWNjZXNzCQoK
---------------070808090300050806030209--
 
