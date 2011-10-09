@@ -1,15 +1,13 @@
-Mime-Version: 1.0 (Apple Message framework v1244.3)
-From: Davide Guerri <d.guerri@...1502...>
-In-Reply-To: <20111008205754.GI8496@...1296...>
-Date: Sun, 9 Oct 2011 10:31:35 +0200
-Message-Id: <B671C011-D5FD-4CE6-B599-F33BCE462177@...1502...>
+Message-ID: <4E918726.9090908@...1114...>
+Date: Sun, 09 Oct 2011 13:36:06 +0200
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
 References: <C8EBC1CC-8304-4A97-A2C6-DE114CB05EFF@...1502...>
 	<B96E3F2E-F1EF-41B4-9342-16AE68F53A8D@...1502...>
 	<49806E1A-9928-4272-8EF5-55943866941D@...1502...>
 	<4E8587EC.1020201@...1114...>
 	<20111008103117.GG8496@...1296...>
-	<5AB7CBF4-64C6-4EF1-A8A1-A902095F14A1@...1502...>
-	<20111008205754.GI8496@...1296...>
+In-Reply-To: <20111008103117.GG8496@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH] Client's routes ageing timer
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -19,54 +17,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
-compiled _with default flags_ (i.e. autoreconf -v -i; ./configure; make) an=
-d tested w/ and w/o stale-routes-check option on Ubuntu 10.10 x86_64 and on=
- Ubuntu 8.04.4 LTS x86_64.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-So, I formally ACK your patched patch :)
+On 08/10/11 12:31, Gert Doering wrote:
+| Hi,
+|
+| On Fri, Sep 30, 2011 at 11:12:12AM +0200, David Sommerseth wrote:
+|> On 15/09/11 23:42, Davide Guerri wrote:
+|>> Please find attached a patch for a new stale-routes-check (and remove)
+|>> option.
+|>
+|> Applied to the master branch in testing and stable trees.
+|
+| The way this is currently implemented breaks compilation with
+| --disable-crypto --disable-ssl (glad we have buildbot to test this :) ),
+| because in that case, P2MP_SERVER is not enabled, and
+| options->stale_routes_ageing_time and options->stale_routes_check_interval
+| are not defined.
+|
+| The patch below moves the block inside the #ifdef P2MP_SERVER block
+| inside options.c - the code is not changed, just moved elsewhere.
+|
+| Smoke-tested on FreeBSD 8.2 (just compilation, not even started).
+|
+| Please verify, ACK, and commit :-)
 
-D.
+Applied to master branches in testing and stable.
+Commit 32ab329bc69c6292c205d4f33a4b8069341798d3
+
+~    Signed-off-by: Gert Doering <gert@...1296...>
+~    Acked-by: Davide Guerri <d.guerri@...1502...>
+~    Signed-off-by: David Sommerseth <dazo@...384...>
 
 
-On 08/ott/2011, at 22:57, Gert Doering wrote:
+kind regards,
 
-> Hi,
->=20
-> On Sat, Oct 08, 2011 at 05:50:13PM +0200, Davide Guerri wrote:
->> sorry for that.
->>=20
->> I've just double checked the patch and there is no other code outside an=
- #ifdef P2MP_SERVER=20
->=20
-> Could you test and formally ACK my patch to your patch? :-)
->=20
-> Thanks,
->=20
-> gert
->=20
-> --=20
-> USENET is *not* the non-clickable part of WWW!
->                                                           //www.muc.de/~g=
-ert/
-> Gert Doering - Munich, Germany                             gert@...1296...
-> fax: +49-89-35655025                        gert@...1297...
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-
-
---
-dott. Davide Guerri - C.A.S.P.U.R. Interuniversity Consortium
-Lead R&D Eng. OpenWISP (http://openwisp.caspur.it)
-CTO CASPUR per Provinciawifi, Pratowifi, FreeWiFiGenova,=20
-Maremmawifi, ProvinciaGoriziaWiFi, IX-WiFi
-
-e-mail: d.guerri@...1502...
-phone: +39 06.44486.404
-www: http://openwisp.caspur.it/projects/ow/wiki/Davide_Guerri
-
+iEYEARECAAYFAk6RhyYACgkQDC186MBRfrpUhQCglzfsZwAJpPLgGP8pC4T9cFev
+/8oAoKrVgg7IjXNqhACSHp9qJciBB6qS
+=R7tm
+-----END PGP SIGNATURE-----
 
