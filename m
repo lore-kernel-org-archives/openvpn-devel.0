@@ -1,9 +1,10 @@
-Message-ID: <4E92967E.3030206@...1147...>
-Date: Mon, 10 Oct 2011 08:53:50 +0200
-From: Jan Just Keijser <janjust@...1147...>
+From: "Richard Francis" <rfransix@...164...>
+References: <056601cc852b$1637b7e0$42a727a0$@net> <4E92967E.3030206@...1147...>
+In-Reply-To: <4E92967E.3030206@...1147...>
+Date: Mon, 10 Oct 2011 10:17:16 -0500
+Message-ID: <068f01cc875f$b289a5f0$179cf1d0$@net>
 MIME-Version: 1.0
-References: <056601cc852b$1637b7e0$42a727a0$@net>
-In-Reply-To: <056601cc852b$1637b7e0$42a727a0$@net>
+Content-Language: en-us
 Subject: Re: [Openvpn-devel] Fatal Error on XP
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,17 +14,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain;
+	charset="US-ASCII"
 Content-Transfer-Encoding: 7bit
-To: Richard Francis <rfransix@...164...>
+To: 'Jan Just Keijser' <janjust@...1147...>
 Cc: openvpn-devel@lists.sourceforge.net
+
+Excellent idea. The CA cert issuer was incorrect to the client issuer.
+
+Thank you very much.
+
+Richard
+
+
+
+-----Original Message-----
+From: Jan Just Keijser [mailto:janjust@...1147...] 
+Sent: Monday, October 10, 2011 1:54 AM
+To: Richard Francis
+Cc: openvpn-devel@lists.sourceforge.net
+Subject: Re: [Openvpn-devel] Fatal Error on XP
 
 Hi,
 
 the log line
 "VERIFY ERROR: depth=1, error=self signed certificate in certificate 
 chain: 
-/C=US/ST=NewYork/L=minerals/O=certify.com/OU=R_D/CN=certify/emailAddress=certify@...1513..."
+/C=US/ST=NewYork/L=minerals/O=certify.com/OU=R_D/CN=certify/emailAddress=cer
+tify@...1513..."
 
 shows that the client does not trust the server certificate, or the CA 
 certificate that signed the server certificate; verify that you have 
@@ -139,7 +157,9 @@ Richard Francis wrote:
 >
 > Fri Oct 07 14:41:41 2011 us=401000 VERIFY ERROR: depth=1, error=self 
 > signed certificate in certificate chain: 
-> /C=US/ST=NewYork/L=minerals/O=certify.com/OU=R_D/CN=certify/emailAddress=certify@...1513...
+>
+/C=US/ST=NewYork/L=minerals/O=certify.com/OU=R_D/CN=certify/emailAddress=cer
+tify@...1513...
 >
 > Fri Oct 07 14:41:41 2011 us=401000 TLS_ERROR: BIO read 
 > tls_read_plaintext error: error:14090086:SSL 
@@ -174,7 +194,9 @@ Richard Francis wrote:
 >
 > ------------------------------------------------------------------------
 >
-> ------------------------------------------------------------------------------
+>
+----------------------------------------------------------------------------
+--
 > All of the data generated in your IT infrastructure is seriously valuable.
 > Why? It contains a definitive record of application performance, security
 > threats, fraudulent activity, and more. Splunk takes this data and makes
