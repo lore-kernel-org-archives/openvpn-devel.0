@@ -1,14 +1,10 @@
-Message-ID: <4E918726.9090908@...1114...>
-Date: Sun, 09 Oct 2011 13:36:06 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <4E92967E.3030206@...1147...>
+Date: Mon, 10 Oct 2011 08:53:50 +0200
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-References: <C8EBC1CC-8304-4A97-A2C6-DE114CB05EFF@...1502...>
-	<B96E3F2E-F1EF-41B4-9342-16AE68F53A8D@...1502...>
-	<49806E1A-9928-4272-8EF5-55943866941D@...1502...>
-	<4E8587EC.1020201@...1114...>
-	<20111008103117.GG8496@...1296...>
-In-Reply-To: <20111008103117.GG8496@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Client's routes ageing timer
+References: <056601cc852b$1637b7e0$42a727a0$@net>
+In-Reply-To: <056601cc852b$1637b7e0$42a727a0$@net>
+Subject: Re: [Openvpn-devel] Fatal Error on XP
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,52 +15,177 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
+To: Richard Francis <rfransix@...164...>
 Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi,
 
-On 08/10/11 12:31, Gert Doering wrote:
-| Hi,
-|
-| On Fri, Sep 30, 2011 at 11:12:12AM +0200, David Sommerseth wrote:
-|> On 15/09/11 23:42, Davide Guerri wrote:
-|>> Please find attached a patch for a new stale-routes-check (and remove)
-|>> option.
-|>
-|> Applied to the master branch in testing and stable trees.
-|
-| The way this is currently implemented breaks compilation with
-| --disable-crypto --disable-ssl (glad we have buildbot to test this :) ),
-| because in that case, P2MP_SERVER is not enabled, and
-| options->stale_routes_ageing_time and options->stale_routes_check_interval
-| are not defined.
-|
-| The patch below moves the block inside the #ifdef P2MP_SERVER block
-| inside options.c - the code is not changed, just moved elsewhere.
-|
-| Smoke-tested on FreeBSD 8.2 (just compilation, not even started).
-|
-| Please verify, ACK, and commit :-)
+the log line
+"VERIFY ERROR: depth=1, error=self signed certificate in certificate 
+chain: 
+/C=US/ST=NewYork/L=minerals/O=certify.com/OU=R_D/CN=certify/emailAddress=certify@...1513..."
 
-Applied to master branches in testing and stable.
-Commit 32ab329bc69c6292c205d4f33a4b8069341798d3
+shows that the client does not trust the server certificate, or the CA 
+certificate that signed the server certificate; verify that you have 
+loaded the right 'ca.crt' file in the client. You can print information 
+about certificates using
+  openssl x509 -text -noout -in ca.crt
+or
+  openssl x509 -subject -issuer -noout -in ca.crt
 
-~    Signed-off-by: Gert Doering <gert@...1296...>
-~    Acked-by: Davide Guerri <d.guerri@...1502...>
-~    Signed-off-by: David Sommerseth <dazo@...384...>
+HTH,
 
+JJK
 
-kind regards,
+Richard Francis wrote:
+>
+> Hi, anyone can help? Greatly appreciative of your expertise.
+>
+>  
+>
+> Fri Oct 07 14:41:38 2011 us=958000 Current Parameter Settings:
+>
+> Fri Oct 07 14:41:38 2011 us=958000 config = 'VPN.ovpn'
+>
+> Fri Oct 07 14:41:38 2011 us=958000 mode = 0
+>
+> Fri Oct 07 14:41:38 2011 us=958000 show_ciphers = DISABLED
+>
+> Fri Oct 07 14:41:38 2011 us=958000 show_digests = DISABLED
+>
+> Fri Oct 07 14:41:38 2011 us=958000 show_engines = DISABLED
+>
+> Fri Oct 07 14:41:38 2011 us=958000 genkey = DISABLED
+>
+> Fri Oct 07 14:41:38 2011 us=958000 key_pass_file = '[UNDEF]'
+>
+> Fri Oct 07 14:41:38 2011 us=958000 show_tls_ciphers = DISABLED
+>
+> Fri Oct 07 14:41:38 2011 us=958000 Connection profiles [default]:
+>
+> Fri Oct 07 14:41:38 2011 us=958000 proto = tcp-client
+>
+> Fri Oct 07 14:41:38 2011 us=958000 local = '[UNDEF]'
+>
+> Fri Oct 07 14:41:38 2011 us=958000 local_port = 0
+>
+> Fri Oct 07 14:41:38 2011 us=958000 remote = 'vpn.certify.com'
+>
+> Fri Oct 07 14:41:38 2011 us=958000 remote_port = 443
+>
+> Fri Oct 07 14:41:38 2011 us=958000 remote_float = DISABLED
+>
+> Fri Oct 07 14:41:38 2011 us=958000 bind_defined = DISABLED
+>
+> Fri Oct 07 14:41:38 2011 us=958000 bind_local = DISABLED
+>
+> Fri Oct 07 14:41:38 2011 us=958000 connect_retry_seconds = 5
+>
+> Fri Oct 07 14:41:38 2011 us=958000 connect_timeout = 10
+>
+> Fri Oct 07 14:41:38 2011 us=958000 NOTE: --mute triggered...
+>
+> Fri Oct 07 14:41:38 2011 us=958000 252 variation(s) on previous 20 
+> message(s) suppressed by --mute
+>
+> Fri Oct 07 14:41:38 2011 us=958000 OpenVPN 2.1.3 i686-pc-mingw32 [SSL] 
+> [LZO2] [PKCS11] built on Aug 20 2010
+>
+> Fri Oct 07 14:41:38 2011 us=978000 WARNING: No server certificate 
+> verification method has been enabled. See 
+> http://openvpn.net/howto.html#mitm for more info.
+>
+> Fri Oct 07 14:41:38 2011 us=978000 NOTE: OpenVPN 2.1 requires 
+> '--script-security 2' or higher to call user-defined scripts or 
+> executables
+>
+> Fri Oct 07 14:41:39 2011 us=508000 LZO compression initialized
+>
+> Fri Oct 07 14:41:39 2011 us=528000 Control Channel MTU parms [ L:1576 
+> D:140 EF:40 EB:0 ET:0 EL:0 ]
+>
+> Fri Oct 07 14:41:39 2011 us=538000 Socket Buffers: R=[8192->8192] 
+> S=[8192->8192]
+>
+> Fri Oct 07 14:41:39 2011 us=819000 Data Channel MTU parms [ L:1576 
+> D:1450 EF:44 EB:135 ET:32 EL:0 AF:3/1 ]
+>
+> Fri Oct 07 14:41:39 2011 us=819000 Local Options String: 'V4,dev-type 
+> tap,link-mtu 1576,tun-mtu 1532,proto TCPv4_CLIENT,comp-lzo,cipher 
+> BF-CBC,auth SHA1,keysize 128,key-method 2,tls-client'
+>
+> Fri Oct 07 14:41:39 2011 us=819000 Expected Remote Options String: 
+> 'V4,dev-type tap,link-mtu 1576,tun-mtu 1532,proto 
+> TCPv4_SERVER,comp-lzo,cipher BF-CBC,auth SHA1,keysize 128,key-method 
+> 2,tls-server'
+>
+> Fri Oct 07 14:41:39 2011 us=819000 Local Options hash (VER=V4): '31fdf004'
+>
+> Fri Oct 07 14:41:39 2011 us=819000 Expected Remote Options hash 
+> (VER=V4): '3e6d1056'
+>
+> Fri Oct 07 14:41:39 2011 us=819000 Attempting to establish TCP 
+> connection with 1.1.1.1:443
+>
+> Fri Oct 07 14:41:39 2011 us=909000 TCP connection established with 
+> 1.1.1.1:443
+>
+> Fri Oct 07 14:41:39 2011 us=909000 TCPv4_CLIENT link local: [undef]
+>
+> Fri Oct 07 14:41:39 2011 us=909000 TCPv4_CLIENT link remote: 1.1.1.1:443
+>
+> Fri Oct 07 14:41:39 2011 us=979000 TLS: Initial packet from 
+> 1.1.1.1:443, sid=48fe7a7z 189d19pc
+>
+> Fri Oct 07 14:41:41 2011 us=401000 VERIFY ERROR: depth=1, error=self 
+> signed certificate in certificate chain: 
+> /C=US/ST=NewYork/L=minerals/O=certify.com/OU=R_D/CN=certify/emailAddress=certify@...1513...
+>
+> Fri Oct 07 14:41:41 2011 us=401000 TLS_ERROR: BIO read 
+> tls_read_plaintext error: error:14090086:SSL 
+> routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed
+>
+> Fri Oct 07 14:41:41 2011 us=401000 TLS Error: TLS object -> incoming 
+> plaintext read error
+>
+> Fri Oct 07 14:41:41 2011 us=401000 TLS Error: TLS handshake failed
+>
+> Fri Oct 07 14:41:41 2011 us=401000 Fatal TLS error 
+> (check_tls_errors_co), restarting
+>
+> Fri Oct 07 14:41:41 2011 us=401000 TCP/UDP: Closing socket
+>
+> Fri Oct 07 14:41:41 2011 us=411000 SIGUSR1[soft,tls-error] received, 
+> process restarting
+>
+> Fri Oct 07 14:41:41 2011 us=411000 Restart pause, 5 second(s)
+>
+>  
+>
+>  
+>
+> Richard Francis
+>
+> http://www.pelicancomputers.us
+>
+> 1.847.256.0639
+>
+>  
+>
+> ------------------------------------------------------------------------
+>
+> ------------------------------------------------------------------------------
+> All of the data generated in your IT infrastructure is seriously valuable.
+> Why? It contains a definitive record of application performance, security
+> threats, fraudulent activity, and more. Splunk takes this data and makes
+> sense of it. IT sense. And common sense.
+> http://p.sf.net/sfu/splunk-d2dcopy2
+> ------------------------------------------------------------------------
+>
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>   
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk6RhyYACgkQDC186MBRfrpUhQCglzfsZwAJpPLgGP8pC4T9cFev
-/8oAoKrVgg7IjXNqhACSHp9qJciBB6qS
-=R7tm
------END PGP SIGNATURE-----
 
