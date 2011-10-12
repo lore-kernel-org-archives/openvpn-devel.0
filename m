@@ -1,11 +1,11 @@
 From: "Richard Francis" <rfransix@...164...>
-References: <056601cc852b$1637b7e0$42a727a0$@net> <4E92967E.3030206@...1147...>
-In-Reply-To: <4E92967E.3030206@...1147...>
-Date: Mon, 10 Oct 2011 10:17:16 -0500
-Message-ID: <068f01cc875f$b289a5f0$179cf1d0$@net>
+Date: Tue, 11 Oct 2011 22:39:57 -0500
+Message-ID: <000001cc8890$9d6d35b0$d847a110$@net>
 MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0001_01CC8866.B4972DB0"
 Content-Language: en-us
-Subject: Re: [Openvpn-devel] Fatal Error on XP
+Subject: [Openvpn-devel] VPN Connects but can't route to destinations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,200 +14,113 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: openvpn-devel@lists.sourceforge.net
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_0001_01CC8866.B4972DB0
 Content-Type: text/plain;
 	charset="US-ASCII"
 Content-Transfer-Encoding: 7bit
-To: 'Jan Just Keijser' <janjust@...1147...>
-Cc: openvpn-devel@lists.sourceforge.net
 
-Excellent idea. The CA cert issuer was incorrect to the client issuer.
-
-Thank you very much.
-
-Richard
-
-
-
------Original Message-----
-From: Jan Just Keijser [mailto:janjust@...1147...] 
-Sent: Monday, October 10, 2011 1:54 AM
-To: Richard Francis
-Cc: openvpn-devel@lists.sourceforge.net
-Subject: Re: [Openvpn-devel] Fatal Error on XP
+ 
 
 Hi,
 
-the log line
-"VERIFY ERROR: depth=1, error=self signed certificate in certificate 
-chain: 
-/C=US/ST=NewYork/L=minerals/O=certify.com/OU=R_D/CN=certify/emailAddress=cer
-tify@...1513..."
+ 
 
-shows that the client does not trust the server certificate, or the CA 
-certificate that signed the server certificate; verify that you have 
-loaded the right 'ca.crt' file in the client. You can print information 
-about certificates using
-  openssl x509 -text -noout -in ca.crt
-or
-  openssl x509 -subject -issuer -noout -in ca.crt
+I've configured an openvpn TAP-Win32 Adapter V9 with an ip address of
+12.0.0.2, subnet mask of 255.0.0.0, DHCP of 12.0.0.0, and DNS of 10.0.0.222.
 
-HTH,
+ 
 
-JJK
+After I connect, I can only ping 10.0.0.222, nothing else on the 10.x.x.x
+network.
 
-Richard Francis wrote:
->
-> Hi, anyone can help? Greatly appreciative of your expertise.
->
->  
->
-> Fri Oct 07 14:41:38 2011 us=958000 Current Parameter Settings:
->
-> Fri Oct 07 14:41:38 2011 us=958000 config = 'VPN.ovpn'
->
-> Fri Oct 07 14:41:38 2011 us=958000 mode = 0
->
-> Fri Oct 07 14:41:38 2011 us=958000 show_ciphers = DISABLED
->
-> Fri Oct 07 14:41:38 2011 us=958000 show_digests = DISABLED
->
-> Fri Oct 07 14:41:38 2011 us=958000 show_engines = DISABLED
->
-> Fri Oct 07 14:41:38 2011 us=958000 genkey = DISABLED
->
-> Fri Oct 07 14:41:38 2011 us=958000 key_pass_file = '[UNDEF]'
->
-> Fri Oct 07 14:41:38 2011 us=958000 show_tls_ciphers = DISABLED
->
-> Fri Oct 07 14:41:38 2011 us=958000 Connection profiles [default]:
->
-> Fri Oct 07 14:41:38 2011 us=958000 proto = tcp-client
->
-> Fri Oct 07 14:41:38 2011 us=958000 local = '[UNDEF]'
->
-> Fri Oct 07 14:41:38 2011 us=958000 local_port = 0
->
-> Fri Oct 07 14:41:38 2011 us=958000 remote = 'vpn.certify.com'
->
-> Fri Oct 07 14:41:38 2011 us=958000 remote_port = 443
->
-> Fri Oct 07 14:41:38 2011 us=958000 remote_float = DISABLED
->
-> Fri Oct 07 14:41:38 2011 us=958000 bind_defined = DISABLED
->
-> Fri Oct 07 14:41:38 2011 us=958000 bind_local = DISABLED
->
-> Fri Oct 07 14:41:38 2011 us=958000 connect_retry_seconds = 5
->
-> Fri Oct 07 14:41:38 2011 us=958000 connect_timeout = 10
->
-> Fri Oct 07 14:41:38 2011 us=958000 NOTE: --mute triggered...
->
-> Fri Oct 07 14:41:38 2011 us=958000 252 variation(s) on previous 20 
-> message(s) suppressed by --mute
->
-> Fri Oct 07 14:41:38 2011 us=958000 OpenVPN 2.1.3 i686-pc-mingw32 [SSL] 
-> [LZO2] [PKCS11] built on Aug 20 2010
->
-> Fri Oct 07 14:41:38 2011 us=978000 WARNING: No server certificate 
-> verification method has been enabled. See 
-> http://openvpn.net/howto.html#mitm for more info.
->
-> Fri Oct 07 14:41:38 2011 us=978000 NOTE: OpenVPN 2.1 requires 
-> '--script-security 2' or higher to call user-defined scripts or 
-> executables
->
-> Fri Oct 07 14:41:39 2011 us=508000 LZO compression initialized
->
-> Fri Oct 07 14:41:39 2011 us=528000 Control Channel MTU parms [ L:1576 
-> D:140 EF:40 EB:0 ET:0 EL:0 ]
->
-> Fri Oct 07 14:41:39 2011 us=538000 Socket Buffers: R=[8192->8192] 
-> S=[8192->8192]
->
-> Fri Oct 07 14:41:39 2011 us=819000 Data Channel MTU parms [ L:1576 
-> D:1450 EF:44 EB:135 ET:32 EL:0 AF:3/1 ]
->
-> Fri Oct 07 14:41:39 2011 us=819000 Local Options String: 'V4,dev-type 
-> tap,link-mtu 1576,tun-mtu 1532,proto TCPv4_CLIENT,comp-lzo,cipher 
-> BF-CBC,auth SHA1,keysize 128,key-method 2,tls-client'
->
-> Fri Oct 07 14:41:39 2011 us=819000 Expected Remote Options String: 
-> 'V4,dev-type tap,link-mtu 1576,tun-mtu 1532,proto 
-> TCPv4_SERVER,comp-lzo,cipher BF-CBC,auth SHA1,keysize 128,key-method 
-> 2,tls-server'
->
-> Fri Oct 07 14:41:39 2011 us=819000 Local Options hash (VER=V4): '31fdf004'
->
-> Fri Oct 07 14:41:39 2011 us=819000 Expected Remote Options hash 
-> (VER=V4): '3e6d1056'
->
-> Fri Oct 07 14:41:39 2011 us=819000 Attempting to establish TCP 
-> connection with 1.1.1.1:443
->
-> Fri Oct 07 14:41:39 2011 us=909000 TCP connection established with 
-> 1.1.1.1:443
->
-> Fri Oct 07 14:41:39 2011 us=909000 TCPv4_CLIENT link local: [undef]
->
-> Fri Oct 07 14:41:39 2011 us=909000 TCPv4_CLIENT link remote: 1.1.1.1:443
->
-> Fri Oct 07 14:41:39 2011 us=979000 TLS: Initial packet from 
-> 1.1.1.1:443, sid=48fe7a7z 189d19pc
->
-> Fri Oct 07 14:41:41 2011 us=401000 VERIFY ERROR: depth=1, error=self 
-> signed certificate in certificate chain: 
->
-/C=US/ST=NewYork/L=minerals/O=certify.com/OU=R_D/CN=certify/emailAddress=cer
-tify@...1513...
->
-> Fri Oct 07 14:41:41 2011 us=401000 TLS_ERROR: BIO read 
-> tls_read_plaintext error: error:14090086:SSL 
-> routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed
->
-> Fri Oct 07 14:41:41 2011 us=401000 TLS Error: TLS object -> incoming 
-> plaintext read error
->
-> Fri Oct 07 14:41:41 2011 us=401000 TLS Error: TLS handshake failed
->
-> Fri Oct 07 14:41:41 2011 us=401000 Fatal TLS error 
-> (check_tls_errors_co), restarting
->
-> Fri Oct 07 14:41:41 2011 us=401000 TCP/UDP: Closing socket
->
-> Fri Oct 07 14:41:41 2011 us=411000 SIGUSR1[soft,tls-error] received, 
-> process restarting
->
-> Fri Oct 07 14:41:41 2011 us=411000 Restart pause, 5 second(s)
->
->  
->
->  
->
-> Richard Francis
->
-> http://www.pelicancomputers.us
->
-> 1.847.256.0639
->
->  
->
-> ------------------------------------------------------------------------
->
->
-----------------------------------------------------------------------------
---
-> All of the data generated in your IT infrastructure is seriously valuable.
-> Why? It contains a definitive record of application performance, security
-> threats, fraudulent activity, and more. Splunk takes this data and makes
-> sense of it. IT sense. And common sense.
-> http://p.sf.net/sfu/splunk-d2dcopy2
-> ------------------------------------------------------------------------
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->   
+ 
+
+And to get to .222, I had to, route add 10.0.0.0 MASK 255.0.0.0 12.0.0.2
+METRIC 30 to get there.
+
+ 
+
+What am I missing?
+
+ 
+
+Thank you very much.
+
+ 
+
+Richard
+
+ 
+
+
+------=_NextPart_000_0001_01CC8866.B4972DB0
+Content-Type: text/html; charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40"><head><META HTTP-EQUIV=3D"Content-Type" CONTENT=
+=3D"text/html; charset=3Dus-ascii"><meta name=3DGenerator content=3D"Micros=
+oft Word 12 (filtered medium)"><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri","sans-serif";
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]--></head><body lang=3DEN-US link=3Dblue vli=
+nk=3Dpurple><div class=3DWordSection1><p class=3DMsoNormal><o:p>&nbsp;</o:p=
+></p><p class=3DMsoNormal>Hi,<o:p></o:p></p><p class=3DMsoNormal><o:p>&nbsp=
+;</o:p></p><p class=3DMsoNormal>I&#8217;ve configured an openvpn TAP-Win32 =
+Adapter V9 with an ip address of 12.0.0.2, subnet mask of 255.0.0.0, DHCP o=
+f 12.0.0.0, and DNS of 10.0.0.222.<o:p></o:p></p><p class=3DMsoNormal><o:p>=
+&nbsp;</o:p></p><p class=3DMsoNormal>After I connect, I can only ping 10.0.=
+0.222, nothing else on the 10.x.x.x network.<o:p></o:p></p><p class=3DMsoNo=
+rmal><o:p>&nbsp;</o:p></p><p class=3DMsoNormal>And to get to .222, I had to=
+, route add 10.0.0.0 MASK 255.0.0.0 12.0.0.2 METRIC 30 to get there.<o:p></=
+o:p></p><p class=3DMsoNormal><o:p>&nbsp;</o:p></p><p class=3DMsoNormal>What=
+ am I missing?<o:p></o:p></p><p class=3DMsoNormal><o:p>&nbsp;</o:p></p><p c=
+lass=3DMsoNormal>Thank you very much.<o:p></o:p></p><p class=3DMsoNormal><o=
+:p>&nbsp;</o:p></p><p class=3DMsoNormal><span style=3D'color:#1F497D'>Richa=
+rd</span><span style=3D'color:#1F497D'><o:p></o:p></span></p><p class=3DMso=
+Normal><o:p>&nbsp;</o:p></p></div></body></html>=
+
+------=_NextPart_000_0001_01CC8866.B4972DB0--
 
 
