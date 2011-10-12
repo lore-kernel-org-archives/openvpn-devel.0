@@ -1,11 +1,11 @@
-From: "Richard Francis" <rfransix@...164...>
-Date: Tue, 11 Oct 2011 22:39:57 -0500
-Message-ID: <000001cc8890$9d6d35b0$d847a110$@net>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_0001_01CC8866.B4972DB0"
-Content-Language: en-us
-Subject: [Openvpn-devel] VPN Connects but can't route to destinations
+In-Reply-To: <000001cc8890$9d6d35b0$d847a110$@net>
+References: <000001cc8890$9d6d35b0$d847a110$@net>
+Date: Tue, 11 Oct 2011 21:42:58 -0700
+Message-ID: <CADKk8=uwCojh_xxuQMXGHNQNnFbFfWf0Tdp0wp9ikxHsu43vEQ@...278...>
+From: anjini shukla <anjinishukla@...277...>
+Content-Type: multipart/alternative; boundary=90e6ba613bf08d99c504af12a879
+Subject: Re: [Openvpn-devel] VPN Connects but can't route to destinations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,113 +14,118 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Richard Francis <rfransix@...164...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
-
-------=_NextPart_000_0001_01CC8866.B4972DB0
-Content-Type: text/plain;
-	charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-
- 
-
-Hi,
-
- 
-
-I've configured an openvpn TAP-Win32 Adapter V9 with an ip address of
-12.0.0.2, subnet mask of 255.0.0.0, DHCP of 12.0.0.0, and DNS of 10.0.0.222.
-
- 
-
-After I connect, I can only ping 10.0.0.222, nothing else on the 10.x.x.x
-network.
-
- 
-
-And to get to .222, I had to, route add 10.0.0.0 MASK 255.0.0.0 12.0.0.2
-METRIC 30 to get there.
-
- 
-
-What am I missing?
-
- 
-
-Thank you very much.
-
- 
-
-Richard
-
- 
-
-
-------=_NextPart_000_0001_01CC8866.B4972DB0
-Content-Type: text/html; charset="US-ASCII"
+--90e6ba613bf08d99c504af12a879
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
-osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
-//www.w3.org/TR/REC-html40"><head><META HTTP-EQUIV=3D"Content-Type" CONTENT=
-=3D"text/html; charset=3Dus-ascii"><meta name=3DGenerator content=3D"Micros=
-oft Word 12 (filtered medium)"><style><!--
-/* Font Definitions */
-@font-face
-	{font-family:"Cambria Math";
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
-@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
-/* Style Definitions */
-p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	margin-bottom:.0001pt;
-	font-size:11.0pt;
-	font-family:"Calibri","sans-serif";}
-a:link, span.MsoHyperlink
-	{mso-style-priority:99;
-	color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{mso-style-priority:99;
-	color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:"Calibri","sans-serif";
-	color:windowtext;}
-.MsoChpDefault
-	{mso-style-type:export-only;}
-@page WordSection1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.0in 1.0in 1.0in;}
-div.WordSection1
-	{page:WordSection1;}
---></style><!--[if gte mso 9]><xml>
-<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
-<o:shapelayout v:ext=3D"edit">
-<o:idmap v:ext=3D"edit" data=3D"1" />
-</o:shapelayout></xml><![endif]--></head><body lang=3DEN-US link=3Dblue vli=
-nk=3Dpurple><div class=3DWordSection1><p class=3DMsoNormal><o:p>&nbsp;</o:p=
-></p><p class=3DMsoNormal>Hi,<o:p></o:p></p><p class=3DMsoNormal><o:p>&nbsp=
-;</o:p></p><p class=3DMsoNormal>I&#8217;ve configured an openvpn TAP-Win32 =
-Adapter V9 with an ip address of 12.0.0.2, subnet mask of 255.0.0.0, DHCP o=
-f 12.0.0.0, and DNS of 10.0.0.222.<o:p></o:p></p><p class=3DMsoNormal><o:p>=
-&nbsp;</o:p></p><p class=3DMsoNormal>After I connect, I can only ping 10.0.=
-0.222, nothing else on the 10.x.x.x network.<o:p></o:p></p><p class=3DMsoNo=
-rmal><o:p>&nbsp;</o:p></p><p class=3DMsoNormal>And to get to .222, I had to=
-, route add 10.0.0.0 MASK 255.0.0.0 12.0.0.2 METRIC 30 to get there.<o:p></=
-o:p></p><p class=3DMsoNormal><o:p>&nbsp;</o:p></p><p class=3DMsoNormal>What=
- am I missing?<o:p></o:p></p><p class=3DMsoNormal><o:p>&nbsp;</o:p></p><p c=
-lass=3DMsoNormal>Thank you very much.<o:p></o:p></p><p class=3DMsoNormal><o=
-:p>&nbsp;</o:p></p><p class=3DMsoNormal><span style=3D'color:#1F497D'>Richa=
-rd</span><span style=3D'color:#1F497D'><o:p></o:p></span></p><p class=3DMso=
-Normal><o:p>&nbsp;</o:p></p></div></body></html>=
+You need to set up IP masquerading, it is simple for linux machines:
+iptables -t nat -I POSTROUTING -o eth0 -j MASQUERADE
+for windows you require to set up ICS which can be done using windows UI
 
-------=_NextPart_000_0001_01CC8866.B4972DB0--
+On Tue, Oct 11, 2011 at 8:39 PM, Richard Francis <rfransix@...164...>wrote:
 
+> ** **
+>
+> Hi,****
+>
+> ** **
+>
+> I=92ve configured an openvpn TAP-Win32 Adapter V9 with an ip address of
+> 12.0.0.2, subnet mask of 255.0.0.0, DHCP of 12.0.0.0, and DNS of 10.0.0.2=
+22.
+> ****
+>
+> ** **
+>
+> After I connect, I can only ping 10.0.0.222, nothing else on the 10.x.x.x
+> network.****
+>
+> ** **
+>
+> And to get to .222, I had to, route add 10.0.0.0 MASK 255.0.0.0 12.0.0.2
+> METRIC 30 to get there.****
+>
+> ** **
+>
+> What am I missing?****
+>
+> ** **
+>
+> Thank you very much.****
+>
+> ** **
+>
+> Richard****
+>
+> ** **
+>
+>
+> -------------------------------------------------------------------------=
+-----
+> All the data continuously generated in your IT infrastructure contains a
+> definitive record of customers, application performance, security
+> threats, fraudulent activity and more. Splunk takes this data and makes
+> sense of it. Business sense. IT sense. Common sense.
+> http://p.sf.net/sfu/splunk-d2d-oct
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
+>
+
+--90e6ba613bf08d99c504af12a879
+Content-Type: text/html; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+You need to set up IP=A0masquerading, it is simple for linux machines:<div>=
+<span class=3D"Apple-style-span" style=3D"font-family: arial, sans-serif; f=
+ont-size: 13px; background-color: rgb(255, 255, 255); ">iptables -t nat -I =
+POSTROUTING -o eth0 -j MASQUERADE</span></div>
+<div><font class=3D"Apple-style-span" face=3D"arial, sans-serif">for window=
+s you require to set up ICS which can be done using windows UI<br></font><b=
+r><div class=3D"gmail_quote">On Tue, Oct 11, 2011 at 8:39 PM, Richard Franc=
+is <span dir=3D"ltr">&lt;<a href=3D"mailto:rfransix@...164...">rfransix@...493...=
+164...</a>&gt;</span> wrote:<br>
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex;"><div lang=3D"EN-US" link=3D"blue" vlink=3D"=
+purple"><div><p class=3D"MsoNormal"><u></u>=A0<u></u></p><p class=3D"MsoNor=
+mal">Hi,<u></u><u></u></p>
+<p class=3D"MsoNormal"><u></u>=A0<u></u></p><p class=3D"MsoNormal">I=92ve c=
+onfigured an openvpn TAP-Win32 Adapter V9 with an ip address of 12.0.0.2, s=
+ubnet mask of 255.0.0.0, DHCP of 12.0.0.0, and DNS of 10.0.0.222.<u></u><u>=
+</u></p>
+<p class=3D"MsoNormal"><u></u>=A0<u></u></p><p class=3D"MsoNormal">After I =
+connect, I can only ping 10.0.0.222, nothing else on the 10.x.x.x network.<=
+u></u><u></u></p><p class=3D"MsoNormal"><u></u>=A0<u></u></p><p class=3D"Ms=
+oNormal">
+And to get to .222, I had to, route add 10.0.0.0 MASK 255.0.0.0 12.0.0.2 ME=
+TRIC 30 to get there.<u></u><u></u></p><p class=3D"MsoNormal"><u></u>=A0<u>=
+</u></p><p class=3D"MsoNormal">What am I missing?<u></u><u></u></p><p class=
+=3D"MsoNormal">
+<u></u>=A0<u></u></p><p class=3D"MsoNormal">Thank you very much.<u></u><u><=
+/u></p><p class=3D"MsoNormal"><u></u>=A0<u></u></p><font color=3D"#888888">=
+<p class=3D"MsoNormal"><span style=3D"color:#1F497D">Richard</span><span st=
+yle=3D"color:#1F497D"><u></u><u></u></span></p>
+<p class=3D"MsoNormal"><u></u>=A0<u></u></p></font></div></div><br>--------=
+----------------------------------------------------------------------<br>
+All the data continuously generated in your IT infrastructure contains a<br>
+definitive record of customers, application performance, security<br>
+threats, fraudulent activity and more. Splunk takes this data and makes<br>
+sense of it. Business sense. IT sense. Common sense.<br>
+<a href=3D"http://p.sf.net/sfu/splunk-d2d-oct" target=3D"_blank">http://p.s=
+f.net/sfu/splunk-d2d-oct</a><br>___________________________________________=
+____<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...1199...=
+sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" targ=
+et=3D"_blank">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a=
+><br>
+<br></blockquote></div><br></div>
+
+--90e6ba613bf08d99c504af12a879--
 
