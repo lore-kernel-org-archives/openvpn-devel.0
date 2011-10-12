@@ -1,10 +1,10 @@
+Message-ID: <4E953753.3090702@...1147...>
+Date: Wed, 12 Oct 2011 08:44:35 +0200
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-In-Reply-To: <000001cc8890$9d6d35b0$d847a110$@net>
 References: <000001cc8890$9d6d35b0$d847a110$@net>
-Date: Tue, 11 Oct 2011 21:42:58 -0700
-Message-ID: <CADKk8=uwCojh_xxuQMXGHNQNnFbFfWf0Tdp0wp9ikxHsu43vEQ@...278...>
-From: anjini shukla <anjinishukla@...277...>
-Content-Type: multipart/alternative; boundary=90e6ba613bf08d99c504af12a879
+	<CADKk8=uwCojh_xxuQMXGHNQNnFbFfWf0Tdp0wp9ikxHsu43vEQ@...278...>
+In-Reply-To: <CADKk8=uwCojh_xxuQMXGHNQNnFbFfWf0Tdp0wp9ikxHsu43vEQ@...278...>
 Subject: Re: [Openvpn-devel] VPN Connects but can't route to destinations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,118 +14,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Richard Francis <rfransix@...164...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---90e6ba613bf08d99c504af12a879
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: quoted-printable
+To: anjini shukla <anjinishukla@...277...>
+Cc: Richard Francis <rfransix@...164...>, openvpn-devel@lists.sourceforge.net
 
-You need to set up IP masquerading, it is simple for linux machines:
-iptables -t nat -I POSTROUTING -o eth0 -j MASQUERADE
-for windows you require to set up ICS which can be done using windows UI
+Hi *,
 
-On Tue, Oct 11, 2011 at 8:39 PM, Richard Francis <rfransix@...164...>wrote:
+please do not use the 'openvpn-devel' mailing list for this. That=20
+mailing list is intended for developers working on patches, bugs and new=20
+versions of OpenVPN.
 
-> ** **
+Setup questions (like the one Richard is asking) are best sent to the=20
+openvpn-users@lists.sourceforge.net mailing list, or ask a question on=20
+the OpenVPN forum at https://forums.openvpn.net/
+
+thanks,
+
+JJK
+
+anjini shukla wrote:
+> You need to set up IP masquerading, it is simple for linux machines:
+> iptables -t nat -I POSTROUTING -o eth0 -j MASQUERADE
+> for windows you require to set up ICS which can be done using windows UI
 >
-> Hi,****
+> On Tue, Oct 11, 2011 at 8:39 PM, Richard Francis <rfransix@...164...=20
+> <mailto:rfransix@...164...>> wrote:
 >
-> ** **
+>=20=20=20=20=20=20
 >
-> I=92ve configured an openvpn TAP-Win32 Adapter V9 with an ip address of
-> 12.0.0.2, subnet mask of 255.0.0.0, DHCP of 12.0.0.0, and DNS of 10.0.0.2=
-22.
-> ****
+>     Hi,
 >
-> ** **
+>=20=20=20=20=20=20
 >
-> After I connect, I can only ping 10.0.0.222, nothing else on the 10.x.x.x
-> network.****
+>     I=92ve configured an openvpn TAP-Win32 Adapter V9 with an ip address
+>     of 12.0.0.2, subnet mask of 255.0.0.0, DHCP of 12.0.0.0, and DNS
+>     of 10.0.0.222.
 >
-> ** **
+>=20=20=20=20=20=20
 >
-> And to get to .222, I had to, route add 10.0.0.0 MASK 255.0.0.0 12.0.0.2
-> METRIC 30 to get there.****
+>     After I connect, I can only ping 10.0.0.222, nothing else on the
+>     10.x.x.x network.
 >
-> ** **
+>=20=20=20=20=20=20
 >
-> What am I missing?****
+>     And to get to .222, I had to, route add 10.0.0.0 MASK 255.0.0.0
+>     12.0.0.2 METRIC 30 to get there.
 >
-> ** **
+>=20=20=20=20=20=20
 >
-> Thank you very much.****
->
-> ** **
->
-> Richard****
->
-> ** **
->
->
-> -------------------------------------------------------------------------=
------
-> All the data continuously generated in your IT infrastructure contains a
-> definitive record of customers, application performance, security
-> threats, fraudulent activity and more. Splunk takes this data and makes
-> sense of it. Business sense. IT sense. Common sense.
-> http://p.sf.net/sfu/splunk-d2d-oct
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+>     What am I missing?
 >
 
---90e6ba613bf08d99c504af12a879
-Content-Type: text/html; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-
-You need to set up IP=A0masquerading, it is simple for linux machines:<div>=
-<span class=3D"Apple-style-span" style=3D"font-family: arial, sans-serif; f=
-ont-size: 13px; background-color: rgb(255, 255, 255); ">iptables -t nat -I =
-POSTROUTING -o eth0 -j MASQUERADE</span></div>
-<div><font class=3D"Apple-style-span" face=3D"arial, sans-serif">for window=
-s you require to set up ICS which can be done using windows UI<br></font><b=
-r><div class=3D"gmail_quote">On Tue, Oct 11, 2011 at 8:39 PM, Richard Franc=
-is <span dir=3D"ltr">&lt;<a href=3D"mailto:rfransix@...164...">rfransix@...493...=
-164...</a>&gt;</span> wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex;"><div lang=3D"EN-US" link=3D"blue" vlink=3D"=
-purple"><div><p class=3D"MsoNormal"><u></u>=A0<u></u></p><p class=3D"MsoNor=
-mal">Hi,<u></u><u></u></p>
-<p class=3D"MsoNormal"><u></u>=A0<u></u></p><p class=3D"MsoNormal">I=92ve c=
-onfigured an openvpn TAP-Win32 Adapter V9 with an ip address of 12.0.0.2, s=
-ubnet mask of 255.0.0.0, DHCP of 12.0.0.0, and DNS of 10.0.0.222.<u></u><u>=
-</u></p>
-<p class=3D"MsoNormal"><u></u>=A0<u></u></p><p class=3D"MsoNormal">After I =
-connect, I can only ping 10.0.0.222, nothing else on the 10.x.x.x network.<=
-u></u><u></u></p><p class=3D"MsoNormal"><u></u>=A0<u></u></p><p class=3D"Ms=
-oNormal">
-And to get to .222, I had to, route add 10.0.0.0 MASK 255.0.0.0 12.0.0.2 ME=
-TRIC 30 to get there.<u></u><u></u></p><p class=3D"MsoNormal"><u></u>=A0<u>=
-</u></p><p class=3D"MsoNormal">What am I missing?<u></u><u></u></p><p class=
-=3D"MsoNormal">
-<u></u>=A0<u></u></p><p class=3D"MsoNormal">Thank you very much.<u></u><u><=
-/u></p><p class=3D"MsoNormal"><u></u>=A0<u></u></p><font color=3D"#888888">=
-<p class=3D"MsoNormal"><span style=3D"color:#1F497D">Richard</span><span st=
-yle=3D"color:#1F497D"><u></u><u></u></span></p>
-<p class=3D"MsoNormal"><u></u>=A0<u></u></p></font></div></div><br>--------=
-----------------------------------------------------------------------<br>
-All the data continuously generated in your IT infrastructure contains a<br>
-definitive record of customers, application performance, security<br>
-threats, fraudulent activity and more. Splunk takes this data and makes<br>
-sense of it. Business sense. IT sense. Common sense.<br>
-<a href=3D"http://p.sf.net/sfu/splunk-d2d-oct" target=3D"_blank">http://p.s=
-f.net/sfu/splunk-d2d-oct</a><br>___________________________________________=
-____<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...1199...=
-sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" targ=
-et=3D"_blank">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a=
-><br>
-<br></blockquote></div><br></div>
-
---90e6ba613bf08d99c504af12a879--
 
