@@ -1,14 +1,9 @@
-From: "Richard Francis" <rfransix@...164...>
-References: <000001cc8890$9d6d35b0$d847a110$@net>
-	<CADKk8=uwCojh_xxuQMXGHNQNnFbFfWf0Tdp0wp9ikxHsu43vEQ@...278...>
-In-Reply-To: <CADKk8=uwCojh_xxuQMXGHNQNnFbFfWf0Tdp0wp9ikxHsu43vEQ@...278...>
-Date: Wed, 12 Oct 2011 10:40:41 -0500
-Message-ID: <006a01cc88f5$4c96ad50$e5c407f0$@net>
-MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_006B_01CC88CB.63C0A550"
-Content-Language: en-us
-Subject: Re: [Openvpn-devel] VPN Connects but can't route to destinations
+From: =?iso-8859-1?Q?Aivo_J=FCrgenson?= <aivo.jurgenson@...277...>
+Date: Thu, 13 Oct 2011 10:41:24 +0300
+Message-Id: <5688103A-7248-49C3-9DD8-4CF889DC500F@...277...>
+Mime-Version: 1.0 (Apple Message framework v1244.3)
+Subject: [Openvpn-devel] Management interface doesn't handle PKCS11 tokens
+	with umlaut characters in the label
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,239 +12,295 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: 'anjini shukla' <anjinishukla@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-This is a multi-part message in MIME format.
-
-------=_NextPart_000_006B_01CC88CB.63C0A550
-Content-Type: text/plain;
-	charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-
-Thanks for the reply. I resolved this by adding 2 routes, one to the vpn
-gateway and one to my local network gateway. BAM. Working fine now.
-
- 
-
-Except for one thing.the OpenVPN connection terminates by other CISCO VPN
-connection.I can only work with one VPN on the network (I have a standard
-network-cable to hub to router to cable-modem to Internet setup). I may have
-to figure out how to configure 2 routers to one modem.
-
- 
-
-PS: Subscribing to users list now.
-
- 
-
-Richard 
-
- 
-
- 
-
-From: anjini shukla [mailto:anjinishukla@...277...] 
-Sent: Tuesday, October 11, 2011 11:43 PM
-To: Richard Francis
-Cc: openvpn-devel@lists.sourceforge.net
-Subject: Re: [Openvpn-devel] VPN Connects but can't route to destinations
-
- 
-
-You need to set up IP masquerading, it is simple for linux machines:
-
-iptables -t nat -I POSTROUTING -o eth0 -j MASQUERADE
-
-for windows you require to set up ICS which can be done using windows UI
-
-On Tue, Oct 11, 2011 at 8:39 PM, Richard Francis <rfransix@...164...>
-wrote:
-
- 
-
-Hi,
-
- 
-
-I've configured an openvpn TAP-Win32 Adapter V9 with an ip address of
-12.0.0.2, subnet mask of 255.0.0.0, DHCP of 12.0.0.0, and DNS of 10.0.0.222.
-
- 
-
-After I connect, I can only ping 10.0.0.222, nothing else on the 10.x.x.x
-network.
-
- 
-
-And to get to .222, I had to, route add 10.0.0.0 MASK 255.0.0.0 12.0.0.2
-METRIC 30 to get there.
-
- 
-
-What am I missing?
-
- 
-
-Thank you very much.
-
- 
-
-Richard
-
- 
-
-
-----------------------------------------------------------------------------
---
-All the data continuously generated in your IT infrastructure contains a
-definitive record of customers, application performance, security
-threats, fraudulent activity and more. Splunk takes this data and makes
-sense of it. Business sense. IT sense. Common sense.
-http://p.sf.net/sfu/splunk-d2d-oct
-_______________________________________________
-Openvpn-devel mailing list
-Openvpn-devel@lists.sourceforge.net
-https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
- 
-
-
-------=_NextPart_000_006B_01CC88CB.63C0A550
-Content-Type: text/html; charset="US-ASCII"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
+Cc: James Bekkema <support@...1515...>
 
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
-osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
-//www.w3.org/TR/REC-html40"><head><META HTTP-EQUIV=3D"Content-Type" CONTENT=
-=3D"text/html; charset=3Dus-ascii"><meta name=3DGenerator content=3D"Micros=
-oft Word 12 (filtered medium)"><style><!--
-/* Font Definitions */
-@font-face
-	{font-family:"Cambria Math";
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
-@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
-@font-face
-	{font-family:Tahoma;
-	panose-1:2 11 6 4 3 5 4 4 2 4;}
-/* Style Definitions */
-p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman","serif";}
-a:link, span.MsoHyperlink
-	{mso-style-priority:99;
-	color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{mso-style-priority:99;
-	color:purple;
-	text-decoration:underline;}
-span.apple-style-span
-	{mso-style-name:apple-style-span;}
-span.EmailStyle18
-	{mso-style-type:personal-reply;
-	font-family:"Calibri","sans-serif";
-	color:#1F497D;}
-.MsoChpDefault
-	{mso-style-type:export-only;}
-@page WordSection1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.0in 1.0in 1.0in;}
-div.WordSection1
-	{page:WordSection1;}
---></style><!--[if gte mso 9]><xml>
-<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
-<o:shapelayout v:ext=3D"edit">
-<o:idmap v:ext=3D"edit" data=3D"1" />
-</o:shapelayout></xml><![endif]--></head><body lang=3DEN-US link=3Dblue vli=
-nk=3Dpurple><div class=3DWordSection1><p class=3DMsoNormal><span style=3D'f=
-ont-size:11.0pt;font-family:"Calibri","sans-serif";color:#1F497D'>Thanks fo=
-r the reply. I resolved this by adding 2 routes, one to the vpn gateway and=
- one to my local network gateway. BAM. Working fine now.<o:p></o:p></span><=
-/p><p class=3DMsoNormal><span style=3D'font-size:11.0pt;font-family:"Calibr=
-i","sans-serif";color:#1F497D'><o:p>&nbsp;</o:p></span></p><p class=3DMsoNo=
-rmal><span style=3D'font-size:11.0pt;font-family:"Calibri","sans-serif";col=
-or:#1F497D'>Except for one thing&#8230;the OpenVPN connection terminates by=
- other CISCO VPN connection&#8230;I can only work with one VPN on the netwo=
-rk (I have a standard network-cable to hub to router to cable-modem to Inte=
-rnet setup). I may have to figure out how to configure 2 routers to one mod=
-em.<o:p></o:p></span></p><p class=3DMsoNormal><span style=3D'font-size:11.0=
-pt;font-family:"Calibri","sans-serif";color:#1F497D'><o:p>&nbsp;</o:p></spa=
-n></p><p class=3DMsoNormal><span style=3D'font-size:11.0pt;font-family:"Cal=
-ibri","sans-serif";color:#1F497D'>PS: Subscribing to users list now.<o:p></=
-o:p></span></p><p class=3DMsoNormal><span style=3D'font-size:11.0pt;font-fa=
-mily:"Calibri","sans-serif";color:#1F497D'><o:p>&nbsp;</o:p></span></p><p c=
-lass=3DMsoNormal><span style=3D'font-size:11.0pt;font-family:"Calibri","san=
-s-serif";color:#1F497D'>Richard </span><span style=3D'font-size:11.0pt;font=
--family:"Calibri","sans-serif";color:#1F497D'><o:p></o:p></span></p><p clas=
-s=3DMsoNormal><span style=3D'font-size:11.0pt;font-family:"Calibri","sans-s=
-erif";color:#1F497D'><o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal><span=
- style=3D'font-size:11.0pt;font-family:"Calibri","sans-serif";color:#1F497D=
-'><o:p>&nbsp;</o:p></span></p><div style=3D'border:none;border-top:solid #B=
-5C4DF 1.0pt;padding:3.0pt 0in 0in 0in'><p class=3DMsoNormal><b><span style=
-=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif"'>From:</span></b><sp=
-an style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif"'> anjini shu=
-kla [mailto:anjinishukla@...277...] <br><b>Sent:</b> Tuesday, October 11, 2=
-011 11:43 PM<br><b>To:</b> Richard Francis<br><b>Cc:</b> openvpn-devel@...1514...=
-s.sourceforge.net<br><b>Subject:</b> Re: [Openvpn-devel] VPN Connects but c=
-an't route to destinations<o:p></o:p></span></p></div><p class=3DMsoNormal>=
-<o:p>&nbsp;</o:p></p><p class=3DMsoNormal>You need to set up IP&nbsp;masque=
-rading, it is simple for linux machines:<o:p></o:p></p><div><p class=3DMsoN=
-ormal><span class=3Dapple-style-span><span style=3D'font-size:10.0pt;font-f=
-amily:"Arial","sans-serif";background:white'>iptables -t nat -I POSTROUTING=
- -o eth0 -j MASQUERADE</span></span><o:p></o:p></p></div><div><p class=3DMs=
-oNormal style=3D'margin-bottom:12.0pt'><span style=3D'font-family:"Arial","=
-sans-serif"'>for windows you require to set up ICS which can be done using =
-windows UI</span><o:p></o:p></p><div><p class=3DMsoNormal>On Tue, Oct 11, 2=
-011 at 8:39 PM, Richard Francis &lt;<a href=3D"mailto:rfransix@...164...">r=
-fransix@...164...</a>&gt; wrote:<o:p></o:p></p><div><div><p class=3DMsoNorm=
-al style=3D'mso-margin-top-alt:auto;mso-margin-bottom-alt:auto'>&nbsp;<o:p>=
-</o:p></p><p class=3DMsoNormal style=3D'mso-margin-top-alt:auto;mso-margin-=
-bottom-alt:auto'>Hi,<o:p></o:p></p><p class=3DMsoNormal style=3D'mso-margin=
--top-alt:auto;mso-margin-bottom-alt:auto'>&nbsp;<o:p></o:p></p><p class=3DM=
-soNormal style=3D'mso-margin-top-alt:auto;mso-margin-bottom-alt:auto'>I&#82=
-17;ve configured an openvpn TAP-Win32 Adapter V9 with an ip address of 12.0=
-.0.2, subnet mask of 255.0.0.0, DHCP of 12.0.0.0, and DNS of 10.0.0.222.<o:=
-p></o:p></p><p class=3DMsoNormal style=3D'mso-margin-top-alt:auto;mso-margi=
-n-bottom-alt:auto'>&nbsp;<o:p></o:p></p><p class=3DMsoNormal style=3D'mso-m=
-argin-top-alt:auto;mso-margin-bottom-alt:auto'>After I connect, I can only =
-ping 10.0.0.222, nothing else on the 10.x.x.x network.<o:p></o:p></p><p cla=
-ss=3DMsoNormal style=3D'mso-margin-top-alt:auto;mso-margin-bottom-alt:auto'=
->&nbsp;<o:p></o:p></p><p class=3DMsoNormal style=3D'mso-margin-top-alt:auto=
-;mso-margin-bottom-alt:auto'>And to get to .222, I had to, route add 10.0.0=
-.0 MASK 255.0.0.0 12.0.0.2 METRIC 30 to get there.<o:p></o:p></p><p class=
-=3DMsoNormal style=3D'mso-margin-top-alt:auto;mso-margin-bottom-alt:auto'>&=
-nbsp;<o:p></o:p></p><p class=3DMsoNormal style=3D'mso-margin-top-alt:auto;m=
-so-margin-bottom-alt:auto'>What am I missing?<o:p></o:p></p><p class=3DMsoN=
-ormal style=3D'mso-margin-top-alt:auto;mso-margin-bottom-alt:auto'>&nbsp;<o=
-:p></o:p></p><p class=3DMsoNormal style=3D'mso-margin-top-alt:auto;mso-marg=
-in-bottom-alt:auto'>Thank you very much.<o:p></o:p></p><p class=3DMsoNormal=
- style=3D'mso-margin-top-alt:auto;mso-margin-bottom-alt:auto'>&nbsp;<o:p></=
-o:p></p><p class=3DMsoNormal style=3D'mso-margin-top-alt:auto;mso-margin-bo=
-ttom-alt:auto'><span style=3D'color:#1F497D'>Richard</span><span style=3D'c=
-olor:#888888'><o:p></o:p></span></p><p class=3DMsoNormal style=3D'mso-margi=
-n-top-alt:auto;mso-margin-bottom-alt:auto'><span style=3D'color:#888888'>&n=
-bsp;<o:p></o:p></span></p></div></div><p class=3DMsoNormal style=3D'margin-=
-bottom:12.0pt'><br>--------------------------------------------------------=
-----------------------<br>All the data continuously generated in your IT in=
-frastructure contains a<br>definitive record of customers, application perf=
-ormance, security<br>threats, fraudulent activity and more. Splunk takes th=
-is data and makes<br>sense of it. Business sense. IT sense. Common sense.<b=
-r><a href=3D"http://p.sf.net/sfu/splunk-d2d-oct" target=3D"_blank">http://p=
-.sf.net/sfu/splunk-d2d-oct</a><br>_________________________________________=
-______<br>Openvpn-devel mailing list<br><a href=3D"mailto:Openvpn-devel@...1484...=
-ts.sourceforge.net">Openvpn-devel@lists.sourceforge.net</a><br><a href=3D"h=
-ttps://lists.sourceforge.net/lists/listinfo/openvpn-devel" target=3D"_blank=
-">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a><o:p></o:p>=
-</p></div><p class=3DMsoNormal><o:p>&nbsp;</o:p></p></div></div></body></ht=
-ml>=
+Hello.
 
-------=_NextPart_000_006B_01CC88CB.63C0A550--
+I'm having a problem with OpenVPN when using it with a smart card and with =
+client software Viscosity. The problem is that the smart card PKCS#11 token=
+ label contains the umlaut characters and the OpenVPN management interface =
+doesn't handle those characters well and doesn't understand that I'm enteri=
+ng the PIN number for that token and therefore the authentication never suc=
+ceeds.=20
+
+We first figured that the problem is with Viscosity software, but nice peop=
+le at thesparklabs provided several fixes and now it seems that the OpenVPN=
+ management interface is the problem.
+
+OS: MacOSX 10.7.1
+OpenVPN version: OpenVPN 2.2.1 x86_64-apple-darwin10.8.0 [SSL] [LZO2] [PKCS=
+11] [eurephia] built on Aug  1 2011
+Viscosity version: 1.3.5b7 (1037)
+OpenSC version: opensc 0.12.1-svn [gcc  4.2.1 (Apple Inc. build 5666) (dot =
+3)]
+Cardreader: OmniKey CardMan 1021 00 00
+
+Effectively I'm using the following configuration file:=20
+
+#-- Config Auto Generated By Viscosity --#
+
+#viscosity startonopen false
+#viscosity dhcp true
+#viscosity dnssupport true
+#viscosity ipv6 false
+remote xxx.xxx.xxx.xxx 1193 udp
+pull
+tls-client
+pkcs11-id-management
+ca ca.crt
+dev tun
+persist-tun
+pkcs11-providers /Library/OpenSC/lib/opensc-pkcs11.so
+keepalive 5 10
+verb 5
+script-security 2
+
+When I start the connection, the following log is created:=20
+
+Oct 12 17:07:58: Viscosity 1.3.5b7 (1037)
+Oct 12 17:07:58: Checking reachability status of connection...
+Oct 12 17:07:58: Connection is reachable. Starting connection attempt.
+>INFO:OpenVPN Management Interface Version 1 -- type 'help' for more info
+>HOLD:Waiting for hold release
+Oct 12 17:08:02: OpenVPN 2.2.1 x86_64-apple-darwin10.8.0 [SSL] [LZO2] [PKCS=
+11] [eurephia] built on Aug  1 2011
+SUCCESS: pid=3D61690
+SUCCESS: real-time log notification set to ON
+>LOG:1318428481,D,MANAGEMENT: CMD 'state on'
+Oct 12 17:08:01: MANAGEMENT: CMD 'state on'
+SUCCESS: real-time state notification set to ON
+>LOG:1318428481,D,MANAGEMENT: CMD 'hold release'
+Oct 12 17:08:01: MANAGEMENT: CMD 'hold release'
+SUCCESS: hold release succeeded
+>LOG:1318428481,I,PKCS#11: Adding PKCS#11 provider '/Library/OpenSC/lib/ope=
+nsc-pkcs11.so'
+Oct 12 17:08:01: PKCS#11: Adding PKCS#11 provider '/Library/OpenSC/lib/open=
+sc-pkcs11.so'
+>LOG:1318428490,W,WARNING: No server certificate verification method has be=
+en enabled.  See http://openvpn.net/howto.html#mitm for more info.
+Oct 12 17:08:10: WARNING: No server certificate verification method has bee=
+n enabled.  See http://openvpn.net/howto.html#mitm for more info.
+>LOG:1318428490,W,NOTE: the current --script-security setting may allow thi=
+s configuration to call user-defined scripts
+Oct 12 17:08:10: NOTE: the current --script-security setting may allow this=
+ configuration to call user-defined scripts
+>NEED-STR:Need 'pkcs11-id-request' string MSG:Please specify PKCS#11 id to =
+use
+>LOG:1318428490,D,MANAGEMENT: CMD 'hold release'
+Oct 12 17:08:10: MANAGEMENT: CMD 'hold release'
+SUCCESS: hold release succeeded
+>LOG:1318428490,D,MANAGEMENT: CMD 'state on'
+Oct 12 17:08:10: MANAGEMENT: CMD 'state on'
+SUCCESS: real-time state notification set to ON
+>LOG:1318428490,D,MANAGEMENT: CMD 'hold release'
+Oct 12 17:08:10: MANAGEMENT: CMD 'hold release'
+SUCCESS: hold release succeeded
+>LOG:1318428490,D,MANAGEMENT: CMD 'pid'
+Oct 12 17:08:10: MANAGEMENT: CMD 'pid'
+SUCCESS: pid=3D61690
+>LOG:1318428501,D,MANAGEMENT: CMD 'pid'
+Oct 12 17:08:21: MANAGEMENT: CMD 'pid'
+SUCCESS: pid=3D61690
+>LOG:1318428502,D,MANAGEMENT: CMD 'hold release'
+Oct 12 17:08:22: MANAGEMENT: CMD 'hold release'
+SUCCESS: hold release succeeded
+>LOG:1318428502,D,MANAGEMENT: CMD 'pid'
+Oct 12 17:08:22: MANAGEMENT: CMD 'pid'
+SUCCESS: pid=3D61690
+>LOG:1318428502,D,MANAGEMENT: CMD 'pid'
+Oct 12 17:08:22: MANAGEMENT: CMD 'pid'
+SUCCESS: pid=3D61690
+>LOG:1318428506,D,MANAGEMENT: CMD 'needstr pkcs11-id-request "AS\\x20Sertif=
+itseerimiskeskus/PKCS\\x2315\\x20emulated/A1019298/J\\xC3\\x9CRGENSON\\x2CA=
+IVO\\x2C37807156011\\x20\\x28PIN/01"'
+Oct 12 17:08:26: MANAGEMENT: CMD 'needstr pkcs11-id-request "AS\\x20Sertifi=
+tseerimiskeskus/PKCS\\x2315\\x20emulated/A1019298/J\\xC3\\x9CRGENSON\\x2CAI=
+VO\\x2C37807156011\\x20\\x28PIN/01"'
+SUCCESS: 'pkcs11-id-request' needstr-string entered, but not yet verified
+>LOG:1318428506,,Control Channel MTU parms [ L:1541 D:138 EF:38 EB:0 ET:0 E=
+L:0 ]
+Oct 12 17:08:26: Control Channel MTU parms [ L:1541 D:138 EF:38 EB:0 ET:0 E=
+L:0 ]
+>LOG:1318428506,,Socket Buffers: R=3D[42080->65536] S=3D[9216->65536]
+Oct 12 17:08:26: Socket Buffers: R=3D[42080->65536] S=3D[9216->65536]
+>LOG:1318428506,,Data Channel MTU parms [ L:1541 D:1450 EF:41 EB:4 ET:0 EL:=
+0 ]
+Oct 12 17:08:26: Data Channel MTU parms [ L:1541 D:1450 EF:41 EB:4 ET:0 EL:=
+0 ]
+>LOG:1318428506,,Local Options String: 'V4,dev-type tun,link-mtu 1541,tun-m=
+tu 1500,proto UDPv4,cipher BF-CBC,auth SHA1,keysize 128,key-method 2,tls-cl=
+ient'
+Oct 12 17:08:26: Local Options String: 'V4,dev-type tun,link-mtu 1541,tun-m=
+tu 1500,proto UDPv4,cipher BF-CBC,auth SHA1,keysize 128,key-method 2,tls-cl=
+ient'
+>LOG:1318428506,,Expected Remote Options String: 'V4,dev-type tun,link-mtu =
+1541,tun-mtu 1500,proto UDPv4,cipher BF-CBC,auth SHA1,keysize 128,key-metho=
+d 2,tls-server'
+Oct 12 17:08:26: Expected Remote Options String: 'V4,dev-type tun,link-mtu =
+1541,tun-mtu 1500,proto UDPv4,cipher BF-CBC,auth SHA1,keysize 128,key-metho=
+d 2,tls-server'
+>LOG:1318428506,,Local Options hash (VER=3DV4): '3514370b'
+Oct 12 17:08:26: Local Options hash (VER=3DV4): '3514370b'
+>LOG:1318428506,,Expected Remote Options hash (VER=3DV4): '239669a8'
+Oct 12 17:08:26: Expected Remote Options hash (VER=3DV4): '239669a8'
+>LOG:1318428506,I,UDPv4 link local (bound): [undef]:1194
+Oct 12 17:08:26: UDPv4 link local (bound): [undef]:1194
+>LOG:1318428506,I,UDPv4 link remote: xxx.xxx.xxx.xxx:1193
+Oct 12 17:08:26: UDPv4 link remote: xxx.xxx.xxx.xxx:1193
+>LOG:1318428506,,MANAGEMENT: >STATE:1318428506,WAIT,,,
+Oct 12 17:08:26: MANAGEMENT: >STATE:1318428506,WAIT,,,
+>STATE:1318428506,WAIT,,,
+>LOG:1318428506,,MANAGEMENT: >STATE:1318428506,AUTH,,,
+Oct 12 17:08:26: MANAGEMENT: >STATE:1318428506,AUTH,,,
+>STATE:1318428506,AUTH,,,
+>LOG:1318428506,,TLS: Initial packet from xxx.xxx.xxx.xxx:1193, sid=3Dbd935=
+2a0 9beb379e
+Oct 12 17:08:26: TLS: Initial packet from xxx.xxx.xxx.xxx:1193, sid=3Dbd935=
+2a0 9beb379e
+>LOG:1318428506,,VERIFY OK: depth=3D2, /CN=3DXXX_CA
+Oct 12 17:08:26: VERIFY OK: depth=3D2, /CN=3DXXX_CA
+>LOG:1318428506,,VERIFY OK: depth=3D1, /CN=3DYYY_CA
+Oct 12 17:08:26: VERIFY OK: depth=3D1, /CN=3DYYY_CA
+>LOG:1318428506,,VERIFY OK: depth=3D0, /C=3DEE/ST=3DHarjumaa/L=3DTallinn/O=
+=3DZZZ/OU=3DZZZ/CN=3Dxxx.YYY.ee
+Oct 12 17:08:26: VERIFY OK: depth=3D0, /C=3DEE/ST=3DHarjumaa/L=3DTallinn/O=
+=3DZZZ/OU=3DZZZ/CN=3Dxxx.YYY.ee
+>PASSWORD:Need 'J=DCRGENSON,AIVO,37807156011 (PIN token' password
+>LOG:1318428511,D,MANAGEMENT: CMD 'password [...]'
+Oct 12 17:08:31: MANAGEMENT: CMD 'password [...]'
+ERROR: password of type 'JRGENSON,AIVO,37807156011 (PIN token' entered, but=
+ we need one of type 'J=DCRGENSON,AIVO,37807156011 (PIN token'
+
+When I try to run OpenVPN on the command line with the same configuration f=
+ile, I'm able to enter the PIN in the terminal and the authentication succe=
+eds just fine. When I did tcpdump on the management interface traffic and c=
+aptured the actual bytes sent between the Viscosity and OpenVPN, I got the =
+following hex trace:=20
+
+> 00000000  70 61 73 73 77 6f 72 64  20 22 4a c3 9c 52 47 45 password  "J..=
+RGE
+>=20
+> 00000010  4e 53 4f 4e 2c 41 49 56  4f 2c 33 37 38 30 37 31 NSON,AIV O,378=
+071
+>=20
+> 00000020  35 36 30 31 31 20 28 50  49 4e 20 74 6f 6b 65 6e 56011 (P IN to=
+ken
+>=20
+> 00000030  22 20 22 XX XX XX XX 22  0a                      " "XXXX" .
+>=20
+>   00000000  3e 4c 4f 47 3a 31 33 31  36 30 37 35 33 37 33 2c >LOG:131 607=
+5373,
+>=20
+>   00000010  44 2c 4d 41 4e 41 47 45  4d 45 4e 54 3a 20 43 4d D,MANAGE MEN=
+T: CM
+>=20
+>   00000020  44 20 27 70 61 73 73 77  6f 72 64 20 5b 2e 2e 2e D 'passw ord=
+ [...
+>=20
+>   00000030  5d 27 0d 0a                                      ]'..
+>=20
+>   00000034  45 52 52 4f 52 3a 20 70  61 73 73 77 6f 72 64 20 ERROR: p ass=
+word=20
+>=20
+>   00000044  6f 66 20 74 79 70 65 20  27 4a 52 47 45 4e 53 4f of type  'JR=
+GENSO
+>=20
+>   00000054  4e 2c 41 49 56 4f 2c 33  37 38 30 37 31 35 36 30 N,AIVO,3 780=
+71560
+>=20
+>   00000064  31 31 20 28 50 49 4e 20  74 6f 6b 65 6e 27 20 65 11 (PIN  tok=
+en' e
+>=20
+>   00000074  6e 74 65 72 65 64 2c 20  62 75 74 20 77 65 20 6e ntered,  but=
+ we n
+>=20
+>   00000084  65 65 64 20 6f 6e 65 20  6f 66 20 74 79 70 65 20 eed one  of =
+type=20
+>=20
+>   00000094  27 4a c3 9c 52 47 45 4e  53 4f 4e 2c 41 49 56 4f 'J..RGEN SON=
+,AIVO
+>=20
+>   000000A4  2c 33 37 38 30 37 31 35  36 30 31 31 20 28 50 49 ,3780715 601=
+1 (PI
+>=20
+>   000000B4  4e 20 74 6f 6b 65 6e 27  0d 0a                   N token' ..
+
+Viscosity is sending the whole token name and with the correct bytes (20 22=
+ 4a c3 9c =85) but OpenVPN is responding that this wasn't what he was expec=
+ting, even though "4a c3 9c" match what OpenVPN requested earlier.=20
+
+It seems that the umlaut characters are stripped somewhere in the OpenVPN, =
+during processing the management command. The appropriate code snippet for =
+giving the error message is in the manage.c file:=20
+
+static void
+man_query_user_pass (struct management *man,
+		     const char *type,
+		     const char *string,
+		     const bool needed,
+		     const char *prompt,
+		     char *dest,
+		     int len)
+{
+  if (needed)
+    {
+      ASSERT (man->connection.up_query_type);
+      if (streq (man->connection.up_query_type, type))
+	{
+	  strncpynt (dest, string, len);
+	  man_up_finalize (man);
+	  msg (M_CLIENT, "SUCCESS: '%s' %s entered, but not yet verified",
+	       type,
+	       prompt);
+	}
+      else
+	msg (M_CLIENT, "ERROR: %s of type '%s' entered, but we need one of type '%=
+s'",
+	     prompt,
+	     type,
+	     man->connection.up_query_type);
+    }
+  else
+    {
+      msg (M_CLIENT, "ERROR: no %s is currently needed at this time", promp=
+t);
+    }
+}
+
+
+But unfortunately I'm not able to track this problem further and find the a=
+ctual point in code, where some characters are being dropped. Possible work=
+around would be to configure OpenSC or simply get another smart card with a=
+nother token label, but the smart card is the government issued national id=
+entity card and I'm afraid that I cannot change the token label myself.
+
+Also, the similar problem can easily occur with other users as well, for ex=
+ample in Belgium, in Germany and in Finland, where government issued smart =
+cards are in use and people's names easily contain umlaut characters. The s=
+ame issue has been registered for the TunneBlick client software (http://co=
+de.google.com/p/tunnelblick/issues/detail?id=3D138) with person from Hungar=
+y, but it doesn't seem to be registered in the OpenVPN bug database itself =
+(https://community.openvpn.net/openvpn/query?status=3Daccepted&status=3Dass=
+igned&status=3Dclosed&status=3Dnew&status=3Dreopened&component=3DManagement=
+&order=3Dpriority)
+
+There has been a similar issue in the OpenVPN mailing list in the year 2006=
+ (http://article.gmane.org/gmane.network.openvpn.devel/1527), but that one =
+had problems with the umlaut characters in the actual PIN code or password =
+itself, not just the username or token label part. In my case, the PIN code=
+ entered contains just ASCII numbers and those are transferred fine between=
+ Viscosity and OpenVPN, but OpenVPN doesn't seem to understand that it is r=
+eceiving the PIN code for that token.=20
+
+Would it be possible to patch OpenVPN in some way, so that the umlaut chara=
+cters doesn't get stripped in the management interface =85 or perhaps there=
+'s some other, more robust way of handling such kind of smart-card authenti=
+cation?
+
+--=20
+Aivo J=FCrgenson, aivo.jurgenson@...277...
 
 
