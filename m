@@ -1,10 +1,12 @@
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Mon, 17 Oct 2011 15:44:36 +0200
+References: <5688103A-7248-49C3-9DD8-4CF889DC500F@...277...>
+	<4E97E60E.5000408@...515...>
+In-Reply-To: <4E97E60E.5000408@...515...>
 MIME-Version: 1.0
-Sender: adriaan@...1475...
-Date: Sun, 16 Oct 2011 15:59:51 +0200
-Message-ID: <CAHyOtR=BzU8F15MOkJck35K++Cx4w8rkvSBfj_E01yB6OKcgOg@...278...>
-From: Adriaan de Jong <openvpn@...1475...>
-Content-Type: multipart/alternative; boundary=bcaec52156df6f626204af6ae745
-Subject: [Openvpn-devel] PolarSSL 1.0.0 support
+Message-ID: <201110171544.37084.heiko.hund@...1489...>
+Subject: Re: [Openvpn-devel] Management interface doesn't handle PKCS11
+	tokens with umlaut characters in the label
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,40 +15,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
---bcaec52156df6f626204af6ae745
-Content-Type: text/plain; charset=ISO-8859-1
-
-Hi everyone,
-
-The patch available at
-https://github.com/andj/openvpn-ssl-refactoring/commit/77b34616e70dcab081b2a2f0f567d1ab8fd25349
-moves
-OpenVPN master from PolarSSL v0.99-pre5 to v1.0.0, the first stable release
-of PolarSSL.
-
-I've kept it on github instead of using git-mail as It exists on top of the
-existing unmerged patches. If you prefer an e-mail version, don't hesitate
-to ask.
-
-Kind regards,
-Adriaan
-
---bcaec52156df6f626204af6ae745
-Content-Type: text/html; charset="ISO-8859-1"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
+Cc: Aivo, James Bekkema <support@...1515...>
 
-Hi everyone,<div><br></div><div>The patch available at=A0<a href=3D"https:/=
-/github.com/andj/openvpn-ssl-refactoring/commit/77b34616e70dcab081b2a2f0f56=
-7d1ab8fd25349">https://github.com/andj/openvpn-ssl-refactoring/commit/77b34=
-616e70dcab081b2a2f0f567d1ab8fd25349</a>=A0moves OpenVPN master from PolarSS=
-L v0.99-pre5 to v1.0.0, the first stable release of PolarSSL.</div>
-<div><br></div><div>I&#39;ve kept it on github instead of using git-mail as=
- It exists on top of the existing unmerged patches. If you prefer an e-mail=
- version, don&#39;t hesitate to ask.</div><div><br></div><div>Kind regards,=
-</div>
-<div>Adriaan</div><div><br></div>
+Aivo
 
---bcaec52156df6f626204af6ae745--
+On Friday 14 October 2011 09:34:38 Samuli Sepp=E4nen wrote:
+> > Would it be possible to patch OpenVPN in some way, so that the umlaut
+> > characters doesn't get stripped in the management interface =85 or perh=
+aps
+> > there's some other, more robust way of handling such kind of smart-card
+> > authentication?
+>=20
+> James, who is responsible for the management interface, can probably fix
+> this easily.
+
+Have you checked with git master. I believe commit=20
+2627335ac2605d0987a68ce97a0a2c4efbe25159 should have fixed most of the non-
+ASCII charset related problems.
+
+Heiko
+--=20
+Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
+Astaro a Sophos Company | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germ=
+any
+Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
+=20
+Represented by the General Partner Astaro Verwaltungs GmbH
+Amalienbadstra=DFe 41 Bau 52 | 76227 Karlsruhe | Germany=20
+Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
+Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
+
+
 
