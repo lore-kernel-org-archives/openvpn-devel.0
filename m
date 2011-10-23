@@ -1,10 +1,8 @@
-Message-ID: <4EA3FBE4.9000808@...1114...>
-Date: Sun, 23 Oct 2011 13:35:00 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <CAHyOtR=BzU8F15MOkJck35K++Cx4w8rkvSBfj_E01yB6OKcgOg@...278...>
-In-Reply-To: <CAHyOtR=BzU8F15MOkJck35K++Cx4w8rkvSBfj_E01yB6OKcgOg@...278...>
-Subject: Re: [Openvpn-devel] PolarSSL 1.0.0 support
+MIME-version: 1.0
+From: David Sommerseth <davids@...1347...>
+Date: Sun, 23 Oct 2011 12:35:13 +0200
+Message-id: <1319366113-6891-1-git-send-email-davids@...1347...>
+Subject: [Openvpn-devel] [PATCH] Fix PolarSSL and --pkcs12 option issues
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,41 +11,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-type: TEXT/PLAIN; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-To: Adriaan de Jong <openvpn@...1475...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: David Sommerseth <davids@...1347...>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+PolarSSL does not support PKCS#12 certificate/key bundles, but had a
+typo where #ifdef USE_POLARSSL was used, and it should have been #ifndef
+instead.
 
-On 16/10/11 15:59, Adriaan de Jong wrote:
-> Hi everyone,
-> 
-> The patch available at
-> https://github.com/andj/openvpn-ssl-refactoring/commit/77b34616e70dcab081b2a2f0f567d1ab8fd25349
-> moves OpenVPN master from PolarSSL v0.99-pre5 to v1.0.0, the first
-> stable release of PolarSSL.
-> 
-> I've kept it on github instead of using git-mail as It exists on top
-> of the existing unmerged patches. If you prefer an e-mail version,
-> don't hesitate to ask.
+Also added a few extra exclusions of PKCS#12 messages where appropriate,
+to avoid confusing users.
 
-ACK!  I've applied it together with the complete PolarSSL patch.  For
-more info about commits applied, see this URL:
+Signed-off-by: David Sommerseth <davids@...1347...>
+---
+ options.c |    8 +++++++-
+ 1 files changed, 7 insertions(+), 1 deletions(-)
 
-<https://community.openvpn.net/openvpn/wiki/PolarSSLintegration>
+diff --git a/options.c b/options.c
+index 39e7a57..4fd6933 100644
+--- a/options.c
++++ b/options.c
+@@ -559,7 +559,9 @@ static const char usage_message[] =
+   "                  by a Certificate Authority in --ca file.\n"
+   "--extra-certs file : one or more PEM certs that complete the cert chain.\n"
+   "--key file      : Local private key in .pem format.\n"
++#ifndef USE_POLARSSL
+   "--pkcs12 file   : PKCS#12 file containing local private key, local certificate\n"
++#endif
+   "                  and optionally the root CA certificate.\n"
+ #ifdef ENABLE_X509ALTUSERNAME
+   "--x509-username-field : Field used in x509 certificate to be username.\n"
+@@ -1575,7 +1577,9 @@ show_settings (const struct options *o)
+   SHOW_STR (dh_file);
+   SHOW_STR (cert_file);
+   SHOW_STR (priv_key_file);
++#ifndef USE_POLARSSL
+   SHOW_STR (pkcs12_file);
++#endif
+ #ifdef ENABLE_CRYPTOAPI
+   SHOW_STR (cryptoapi_cert);
+ #endif
+@@ -2341,7 +2345,9 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
+       MUST_BE_UNDEF (dh_file);
+       MUST_BE_UNDEF (cert_file);
+       MUST_BE_UNDEF (priv_key_file);
++#ifndef USE_POLARSSL
+       MUST_BE_UNDEF (pkcs12_file);
++#endif
+       MUST_BE_UNDEF (cipher_list);
+       MUST_BE_UNDEF (tls_verify);
+       MUST_BE_UNDEF (tls_export_cert);
+@@ -6262,7 +6268,7 @@ add_option (struct options *options,
+ 	}
+ #endif
+     }
+-#ifdef USE_POLARSSL
++#ifndef USE_POLARSSL
+   else if (streq (p[0], "pkcs12") && p[1])
+     {
+       VERIFY_PERMISSION (OPT_P_GENERAL);
+-- 
+1.7.4.4
 
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk6j++QACgkQDC186MBRfrpHIQCgnneCxaFoBl9ZMmXoxfwXiecX
-iAkAn1W64W0Ka7U/RuFCRIaWGUUx49Yu
-=yrwc
------END PGP SIGNATURE-----
 
