@@ -1,8 +1,10 @@
-MIME-version: 1.0
-From: David Sommerseth <davids@...1347...>
-Date: Sun, 23 Oct 2011 13:15:08 +0200
-Message-id: <1319368508-3411-1-git-send-email-davids@...1347...>
-Subject: [Openvpn-devel] [PATCH] Fix plugin_call() struct env_set corruption
+Message-ID: <4EA3FBE4.9000808@...1114...>
+Date: Sun, 23 Oct 2011 13:35:00 +0200
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <CAHyOtR=BzU8F15MOkJck35K++Cx4w8rkvSBfj_E01yB6OKcgOg@...278...>
+In-Reply-To: <CAHyOtR=BzU8F15MOkJck35K++Cx4w8rkvSBfj_E01yB6OKcgOg@...278...>
+Subject: Re: [Openvpn-devel] PolarSSL 1.0.0 support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,84 +13,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-type: TEXT/PLAIN; charset="utf-8"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: David Sommerseth <davids@...1347...>
+To: Adriaan de Jong <openvpn@...1475...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-For some odd reasons, the static inline plugin_call() function managed
-to corrupt the struct env_set *es pointer.  The result was that es->list
-pointed at an invalid address, which again caused SEGV.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-This patch replaces the static inline function with a macro instead, and
-let the plugin_call_ssl() keep all its arguments - no matter if SSL is
-enabled or not.
+On 16/10/11 15:59, Adriaan de Jong wrote:
+> Hi everyone,
+> 
+> The patch available at
+> https://github.com/andj/openvpn-ssl-refactoring/commit/77b34616e70dcab081b2a2f0f567d1ab8fd25349
+> moves OpenVPN master from PolarSSL v0.99-pre5 to v1.0.0, the first
+> stable release of PolarSSL.
+> 
+> I've kept it on github instead of using git-mail as It exists on top
+> of the existing unmerged patches. If you prefer an e-mail version,
+> don't hesitate to ask.
 
-This issues appeared first in commit 1876ccd012e9e2ca6f8e1cd9e7e9bb4bf24ccecb,
-which does modify the plugin system.
+ACK!  I've applied it together with the complete PolarSSL patch.  For
+more info about commits applied, see this URL:
 
-Signed-off-by: David Sommerseth <davids@...1347...>
----
- plugin.c |    5 +----
- plugin.h |   21 +++------------------
- 2 files changed, 4 insertions(+), 22 deletions(-)
+<https://community.openvpn.net/openvpn/wiki/PolarSSLintegration>
 
-diff --git a/plugin.c b/plugin.c
-index 737a868..2fdf0d4 100644
---- a/plugin.c
-+++ b/plugin.c
-@@ -584,11 +584,8 @@ plugin_call_ssl (const struct plugin_list *pl,
- 	     const int type,
- 	     const struct argv *av,
- 	     struct plugin_return *pr,
--	     struct env_set *es
--#ifdef USE_SSL
--             , int certdepth,
-+	     struct env_set *es, int certdepth,
- 	     x509_cert_t *current_cert
--#endif
- 	    )
- {
-   if (pr)
-diff --git a/plugin.h b/plugin.h
-index 8782751..2ad8883 100644
---- a/plugin.h
-+++ b/plugin.h
-@@ -122,30 +122,15 @@ void plugin_list_open (struct plugin_list *pl,
- 
- struct plugin_list *plugin_list_inherit (const struct plugin_list *src);
- 
--
--static inline int
--plugin_call(const struct plugin_list *pl,
--	const int type,
--	const struct argv *av,
--	struct plugin_return *pr,
--	struct env_set *es)
--{
--  return plugin_call_ssl(pl, type, av, pr, es
--#ifdef USE_SSL
--      -1, NULL
--#endif
--      );
--}
-+/** Wrapper for function calls not needing to pass SSL certificate information */
-+#define plugin_call(pl, type, av, pr, es) plugin_call_ssl(pl, type, av, pr, es, -1, NULL)
- 
- int plugin_call_ssl (const struct plugin_list *pl,
- 		 const int type,
- 		 const struct argv *av,
- 		 struct plugin_return *pr,
--		 struct env_set *es
--#ifdef USE_SSL
--		 , int current_cert_depth,
-+		 struct env_set *es, int current_cert_depth,
- 		 x509_cert_t *current_cert
--#endif
- 		);
- 
- void plugin_list_close (struct plugin_list *pl);
--- 
-1.7.4.4
 
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk6j++QACgkQDC186MBRfrpHIQCgnneCxaFoBl9ZMmXoxfwXiecX
+iAkAn1W64W0Ka7U/RuFCRIaWGUUx49Yu
+=yrwc
+-----END PGP SIGNATURE-----
 
