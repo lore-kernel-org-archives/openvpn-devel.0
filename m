@@ -1,14 +1,11 @@
-Date: Mon, 24 Oct 2011 12:08:51 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20111024100850.GB8496@...1296...>
+Message-ID: <4EA53C2A.30808@...1114...>
+Date: Mon, 24 Oct 2011 12:21:30 +0200
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
 References: <1319449145-27671-1-git-send-email-dejong@...1435...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="PJQ/mdcU8Q0HUpEr"
-Content-Disposition: inline
 In-Reply-To: <1319449145-27671-1-git-send-email-dejong@...1435...>
 Subject: Re: [Openvpn-devel] [PATCH] Added missing #ifdef to allow
-	--disable-managent to work again
+ --disable-managent to work again
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,53 +14,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 To: Adriaan de Jong <dejong@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---PJQ/mdcU8Q0HUpEr
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Hi,
+On 24/10/11 11:39, Adriaan de Jong wrote:
+> Signed-off-by: Adriaan de Jong <dejong@...1435...>
 
-On Mon, Oct 24, 2011 at 11:39:05AM +0200, Adriaan de Jong wrote:
-> @@ -172,7 +172,10 @@ static inline bool verify_user_pass_enabled(struct t=
-ls_session *session)
->  {
->    return (session->opt->auth_user_pass_verify_script
->          || plugin_defined (session->opt->plugins, OPENVPN_PLUGIN_AUTH_US=
-ER_PASS_VERIFY)
-> -        || management_enable_def_auth (management));
-> +#ifdef MANAGEMENT_DEF_AUTH
-> +        || management_enable_def_auth (management)
-> +#endif
-> +        );
->  }
+Applied to master branch in -testing and -stable trees.
 
-ACK.
+commit 7c785a27bfe5267ee4aac12fe6d0a24c42e388d6
+Author: Adriaan de Jong <dejong@...1435...>
+Date:   Mon Oct 24 11:39:05 2011 +0200
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+    Added missing #ifdef to allow --disable-managent to work again
 
---PJQ/mdcU8Q0HUpEr
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+    Signed-off-by: Adriaan de Jong <dejong@...1435...>
+    Acked-by: Gert Doering <gert@...1296...>
+    Signed-off-by: David Sommerseth <davids@...1347...>
 
+
+kind regards,
+
+David Sommerseth
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iQCVAwUBTqU5MqkuBuNlUUl1AQIEkgP+OM114uzTxztMAd1u7suv+XbISV0iW2ma
-oMV6xSM2icSSh1fJIIagAud0wKi//6vFt6bbTSEd4/y7mHDhsHn8mZ+SouIbcDy3
-DqNE3zvkNctiJ5dRZm0YR/N9e3acld2fKXDE/yLy0vklOJOo2lRRMmA93UL7CfdE
-XHyHIEJjefo=
-=XuPP
+iEYEARECAAYFAk6lPCYACgkQDC186MBRfroGXgCeMOAdUqK6IEskhbTa6RpT+/RM
+NygAniULo59KPmbfEufbrv+bVJHm4WOL
+=M39S
 -----END PGP SIGNATURE-----
-
---PJQ/mdcU8Q0HUpEr--
 
