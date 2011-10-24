@@ -1,11 +1,8 @@
-Message-ID: <4EA50BBD.6030109@...1114...>
-Date: Mon, 24 Oct 2011 08:54:53 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <1319366113-6891-1-git-send-email-davids@...1347...>
-	<20111023153353.GX13250@...1518...>
-In-Reply-To: <20111023153353.GX13250@...1518...>
-Subject: Re: [Openvpn-devel] Fix PolarSSL and --pkcs12 option issues
+MIME-version: 1.0
+From: David Sommerseth <davids@...1347...>
+Date: Mon, 24 Oct 2011 08:53:35 +0200
+Message-id: <1319439215-4363-1-git-send-email-davids@...1347...>
+Subject: [Openvpn-devel] [PATCH v2] Fix PolarSSL and --pkcs12 option issues
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,44 +11,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-type: TEXT/PLAIN; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-To: Nathan Stratton Treadway <nathanst@...1517...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: David Sommerseth <davids@...1347...>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+PolarSSL does not support PKCS#12 certificate/key bundles, but had a
+typo where #ifdef USE_POLARSSL was used, and it should have been #ifndef
+instead.
 
-On 23/10/11 17:33, Nathan Stratton Treadway wrote:
-> On Sun, Oct 23, 2011 at 12:35:13 +0200, David Sommerseth wrote:
->> diff --git a/options.c b/options.c index 39e7a57..4fd6933 100644 ---
->> a/options.c +++ b/options.c @@ -559,7 +559,9 @@ static const char
->> usage_message[] = "                  by a Certificate Authority in
->> --ca file.\n" "--extra-certs file : one or more PEM certs that
->> complete the cert chain.\n" "--key file      : Local private key in
->> .pem format.\n" +#ifndef USE_POLARSSL "--pkcs12 file   : PKCS#12
->> file containing local private key, local certificate\n" +#endif "
->> and optionally the root CA certificate.\n"
-> 
-> 
-> Shouldn't that "#endif" be one line farther down, so that the "and 
-> optionally the root CA certificate.\n" line is excluded along with
-> the preceding line?
+Also added a few extra exclusions of PKCS#12 messages where appropriate,
+to avoid confusing users.
 
-Duh!  Thanks a lot!  I've submitted a v2 patch of this patch, which fixes
-this as well.
+Signed-off-by: David Sommerseth <davids@...1347...>
+---
+ options.c |    8 +++++++-
+ 1 files changed, 7 insertions(+), 1 deletions(-)
 
+diff --git a/options.c b/options.c
+index 39e7a57..0d86cd0 100644
+--- a/options.c
++++ b/options.c
+@@ -559,8 +559,10 @@ static const char usage_message[] =
+   "                  by a Certificate Authority in --ca file.\n"
+   "--extra-certs file : one or more PEM certs that complete the cert chain.\n"
+   "--key file      : Local private key in .pem format.\n"
++#ifndef USE_POLARSSL
+   "--pkcs12 file   : PKCS#12 file containing local private key, local certificate\n"
+   "                  and optionally the root CA certificate.\n"
++#endif
+ #ifdef ENABLE_X509ALTUSERNAME
+   "--x509-username-field : Field used in x509 certificate to be username.\n"
+   "                        Default is CN.\n"
+@@ -1575,7 +1577,9 @@ show_settings (const struct options *o)
+   SHOW_STR (dh_file);
+   SHOW_STR (cert_file);
+   SHOW_STR (priv_key_file);
++#ifndef USE_POLARSSL
+   SHOW_STR (pkcs12_file);
++#endif
+ #ifdef ENABLE_CRYPTOAPI
+   SHOW_STR (cryptoapi_cert);
+ #endif
+@@ -2341,7 +2345,9 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
+       MUST_BE_UNDEF (dh_file);
+       MUST_BE_UNDEF (cert_file);
+       MUST_BE_UNDEF (priv_key_file);
++#ifndef USE_POLARSSL
+       MUST_BE_UNDEF (pkcs12_file);
++#endif
+       MUST_BE_UNDEF (cipher_list);
+       MUST_BE_UNDEF (tls_verify);
+       MUST_BE_UNDEF (tls_export_cert);
+@@ -6262,7 +6268,7 @@ add_option (struct options *options,
+ 	}
+ #endif
+     }
+-#ifdef USE_POLARSSL
++#ifndef USE_POLARSSL
+   else if (streq (p[0], "pkcs12") && p[1])
+     {
+       VERIFY_PERMISSION (OPT_P_GENERAL);
+-- 
+1.7.4.4
 
-kind regards,
-
-David Sommerseth
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk6lC7oACgkQDC186MBRfrovQQCgpzGkFut1J0+0fh0NjD2sPh5z
-HasAn3wHXRfHAVVLcHLdydpe4OmTuQxQ
-=VE2C
------END PGP SIGNATURE-----
 
