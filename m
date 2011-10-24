@@ -1,15 +1,11 @@
-Message-ID: <4EA54150.2010606@...1114...>
-Date: Mon, 24 Oct 2011 12:43:28 +0200
+Message-ID: <4EA5432A.2070301@...1114...>
+Date: Mon, 24 Oct 2011 12:51:22 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
 References: <1319445962-21686-1-git-send-email-dejong@...1435...>
-	<1319445962-21686-3-git-send-email-dejong@...1435...>
-	<4EA52800.4080205@...1147...>
-	<1CED409804E2164C8104F9E623B08B90127CB75804@...1436...>
-	<4EA534DB.5000201@...1114...> <4EA5404F.8010207@...1435...>
-In-Reply-To: <4EA5404F.8010207@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH 3/3] Changed default algorithm for
- PolarSSL to AES-128, as BF is not supported
+In-Reply-To: <1319445962-21686-1-git-send-email-dejong@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH 1/3] Got rid of a few magic numbers in
+ ntlm.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,37 +17,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 To: Adriaan de Jong <dejong@...1435...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 24/10/11 12:39, Adriaan de Jong wrote:
-> On 10/24/2011 11:50 AM, David Sommerseth wrote:
->> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
->> 
->> On 24/10/11 10:58, Adriaan de Jong wrote:
->>> Unfortunately BF isn't supported in PolarSSL though.
->>> 
->>> Do you have any other suggestions? I'm open to most ideas other
->>> than "implement blowfish" :)
->> I agree with JJK, that this is probably not a clever idea - to
->> change the default encryption algorithm.
->> 
->> What about to enforce the use of --cipher when OpenVPN is compiled
->> with PolarSSL support?  Stating that blowfish isn't supported and
->> another cipher must explicit be set.
-> I like this idea. I'll see about implementing it instead of patch
-> 3/3.
+On 24/10/11 10:46, Adriaan de Jong wrote:
+> Signed-off-by: Adriaan de Jong <dejong@...1435...> --- 
+> crypto_backend.h  |    6 +++--- crypto_openssl.c  |    2 +- 
+> crypto_openssl.h  |    3 +++ crypto_polarssl.c |    2 +- 
+> crypto_polarssl.h |    2 ++ ntlm.c            |   30
+> +++++++++++++++--------------- 6 files changed, 25 insertions(+), 20
+> deletions(-)
 
-Great!  Then we'll consider patch 3/3 as officially NACKed.
+As this is the same patch [1] as the one in the original PolarSSL patch
+inclusion round [2], I kept James Yonan's ACK and gave myself an extra
+ACK to this one.  The reason it failed was due to a formatting patch
+which was NACKed during the review which the previous patch [1] depended on.
 
-> Perhaps in the long term we could try going for a protocol change as 
-> suggested by JJK.
+Pushed out new master branch to -testing and -stable trees.
 
-Agreed!  That is something which falls natural into the OpenVPN 3
-development, where we most likely will do changes to with the wire
-protocol as well.
+commit 9788322b9566101119484d992364e8b1bb1d4dd4
+Author: Adriaan de Jong <dejong@...1435...>
+Date:   Mon Oct 24 10:46:00 2011 +0200
+
+    Got rid of a few magic numbers in ntlm.c
+
+    Signed-off-by: Adriaan de Jong <dejong@...1435...>
+    Acked-by: James Yonan <james@...515...>
+    Acked-by: David Sommerseth <davids@...1347...>
+    Signed-off-by: David Sommerseth <davids@...1347...>
 
 
 kind regards,
@@ -61,8 +56,8 @@ David Sommerseth
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk6lQVAACgkQDC186MBRfroz6ACeLb3dYOQbb0ydX79CefGlclxd
-RLQAoKDHRJxK3+IyJWBjyS1amcP9x4vL
-=9ynn
+iEYEARECAAYFAk6lQygACgkQDC186MBRfroNbgCfUAuA7TMrvyuh4sEv/ZYy8wyB
+k14AnA2gpY0cL+M/36UNDyF96XnPOLtD
+=dLJr
 -----END PGP SIGNATURE-----
 
