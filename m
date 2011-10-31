@@ -1,10 +1,11 @@
-Message-ID: <1320075008.29689.31.camel@...1520...>
-From: Frederic Crozat <fcrozat@...1519...>
-Date: Mon, 31 Oct 2011 16:30:08 +0100
-Content-Type: multipart/mixed; boundary="=-3dnKs9tSk7ec2REPCRsE"
-Mime-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] adding support for systemd tty console
-	wrapper
+Message-ID: <4EAF0EFD.6060106@...1114...>
+Date: Mon, 31 Oct 2011 22:11:25 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <1320075008.29689.31.camel@...1520...>
+In-Reply-To: <1320075008.29689.31.camel@...1520...>
+Subject: Re: [Openvpn-devel] [PATCH] adding support for systemd tty console
+ wrapper
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,109 +14,85 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
---=-3dnKs9tSk7ec2REPCRsE
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+To: Frederic Crozat <fcrozat@...1519...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-as part of openSUSE switching to systemd by default, openVPN was made
-compatible with the systemd way of querying passphrase during boot
-(directly opening tty isn't supported).
+On 31/10/11 16:30, Frederic Crozat wrote:
+> Hi,
+> 
+> as part of openSUSE switching to systemd by default, openVPN was made 
+> compatible with the systemd way of querying passphrase during boot 
+> (directly opening tty isn't supported).
+> 
 
--- 
-Frederic Crozat <fcrozat@...1519...>
-SUSE
+Thanks a lot for looking into this!  I feared that we would need to do
+some changes due to systemd.
 
+Generally, this looks very fine.  But I would like to see a few changes
+first before including it.
 
---=-3dnKs9tSk7ec2REPCRsE
-Content-Disposition: inline;
-	filename="0001-Add-support-to-forward-console-query-to-systemd.patch"
-Content-Type: text/x-patch;
-	name="0001-Add-support-to-forward-console-query-to-systemd.patch";
-	charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+a) From what I've understood, systemd is by design a Linux only thing.
+So I'd like to see these code paths restricted to TARGET_LINUX (#ifdef
+statements).  A lot of the dependencies is kernel related, so we probably
+won't see systemd for BSD, for example.  And even less realistic is
+Solaris.  Windows already goes a different route, so this won't be
+affected here.
 
-From 02a9e6b213eba6dbb90b92b4d51e907718e46a56 Mon Sep 17 00:00:00 2001
-From: Frederic Crozat <fcrozat@...1519...>
-Date: Mon, 31 Oct 2011 15:51:53 +0100
-Subject: [PATCH] Add support to forward console query to systemd
+b) As systemd is not targetted for embedded Linux devices (it's a massive
+resource hog, esp. in RAM and looks like to be most suitable in
+desktop/laptop environments), it could be useful to have this support
+compile time confiugrable via ./configure.  I would even vote for
+disabling it by default.  Right now, systemd only got traction from SuSE,
+Fedora.  Debian is in the works and Ubuntu usually follows Debian.  Arch
+Linux will move over as well.
 
-Systemd requires console query to be forwarded using its own
-tool.
+However, I am systemd sceptic, and I would like to see if systemd really
+settles as a de-facto SySV replacement across the majority of Linux
+distributions, before enabling this support by default on Linux.  I
+struggle to see that systemd will be beneficial on (enterprise) servers,
+as if the booting goes twice as fast or not on a server isn't that
+critical compared to a desktop/laptop system.  And boot performance is
+one of the key points systemd tries to resolve.
 
-Signed-off-by: Frederic Crozat <fcrozat@...1519...>
----
- misc.c |   37 ++++++++++++++++++++++++++++++-------
- 1 files changed, 30 insertions(+), 7 deletions(-)
+c) It would probably be better to but the "check if systemd is available"
+into it's own function, for clarity - isolated in
+#ifdef defined(TARGET_LINUX) && defined(USE_SYSTEMD) blocks.  And
+likewise, do the /bin/systemd-ask-password in a separate function similar
+fashion as what is done with Windows' get_console_input_win32().
 
-diff --git a/misc.c b/misc.c
-index 99e5bc5..c074abe 100644
---- a/misc.c
-+++ b/misc.c
-@@ -1338,26 +1338,49 @@ get_console_input (const char *prompt, const bool echo, char *input, const int c
-   ASSERT (input);
-   ASSERT (capacity > 0);
-   input[0] = '\0';
-+  bool is_systemd_running;
-+  struct stat a, b;
-+
-+  /* We simply test whether the systemd cgroup hierarchy is
-+   * mounted */
-+
-+  is_systemd_running = (lstat("/sys/fs/cgroup", &a) == 0)
-+	  && (lstat("/sys/fs/cgroup/systemd", &b) == 0)
-+	  && (a.st_dev != b.st_dev);
- 
- #if defined(WIN32)
-   return get_console_input_win32 (prompt, echo, input, capacity);
- #elif defined(HAVE_GETPASS)
--  if (echo)
-+  if (echo || is_systemd_running)
-     {
-       FILE *fp;
- 
--      fp = open_tty (true);
--      fprintf (fp, "%s", prompt);
--      fflush (fp);
--      close_tty (fp);
-+      if (is_systemd_running)
-+        {
-+	 char *cmd;
- 
--      fp = open_tty (false);
-+	 asprintf(&cmd, "/bin/systemd-ask-password \"%s\"", prompt);
-+         fp = popen (cmd, "re");
-+	 free (cmd);
-+        }
-+      else
-+        {
-+          fp = open_tty (true);
-+          fprintf (fp, "%s", prompt);
-+          fflush (fp);
-+          close_tty (fp);
-+
-+          fp = open_tty (false);
-+        }
-       if (fgets (input, capacity, fp) != NULL)
- 	{
- 	  chomp (input);
- 	  ret = true;
- 	}
--      close_tty (fp);
-+      if (is_systemd_running)
-+	fclose (fp);
-+      else
-+	close_tty (fp);
-     }
-   else
-     {
--- 
-1.7.7
+d) Instead of asprintf(), use openvpn_snprintf() functions.  That can
+probably be just as fine work against a static sized buffer (say 256
+bytes - it's for a password, right?)  As this is called during startup,
+and it is serialised among all those places this might be asked for,
+there are no threading issues here, AFAICS.
+
+e) Consider to make use of openvpn_execve_check() or openvpn_execve()
+instead of the popen() - or make a popen() variant which got similar
+error controls to popen() as openvpn_execve*() functions.  I also think
+that this execution should honour the --script-security setting (which is
+implicitly checked for with openvpn_execve())
+
+f) There are a few mixtures between tab and spaces in your patch.  If you
+could please use space only, that would be great.  The code is a mess in
+this regard, but we're trying to (very slowly) reduce the variety in new
+patches.
 
 
---=-3dnKs9tSk7ec2REPCRsE--
 
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk6vDvoACgkQDC186MBRfrr6PwCdGFh7VKA9nRN05ommWCnAe9CH
+xJIAoJRW8+pjM7ipFeQW4nHgBY7S1Ty7
+=0kja
+-----END PGP SIGNATURE-----
 
