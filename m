@@ -1,10 +1,11 @@
 From: Adriaan de Jong <dejong@...1435...>
-Date: Mon, 31 Oct 2011 16:29:16 +0100
-Message-ID: <1320074961-3809-4-git-send-email-dejong@...1435...>
+Date: Mon, 31 Oct 2011 16:29:19 +0100
+Message-ID: <1320074961-3809-7-git-send-email-dejong@...1435...>
 In-Reply-To: <1320074961-3809-1-git-send-email-dejong@...1435...>
 References: <1320074961-3809-1-git-send-email-dejong@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 3/8] Fixed missing comma in plugin.h
+Subject: [Openvpn-devel] [PATCH 6/8] Moved from strsep to strtok,
+	for Windows compatibility
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,26 +18,44 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Fixed a bug where the wrong value was being passed to plugin_call_ssl, due to a missing comma.
-
 Signed-off-by: Adriaan de Jong <dejong@...1435...>
 ---
- plugin.h |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ ssl_polarssl.c |   14 +++++++++-----
+ 1 files changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/plugin.h b/plugin.h
-index 8782751..7aacb47 100644
---- a/plugin.h
-+++ b/plugin.h
-@@ -132,7 +132,7 @@ plugin_call(const struct plugin_list *pl,
+diff --git a/ssl_polarssl.c b/ssl_polarssl.c
+index 9a8c49c..60d99a8 100644
+--- a/ssl_polarssl.c
++++ b/ssl_polarssl.c
+@@ -164,7 +164,7 @@ tls_ctx_set_options (struct tls_root_ctx *ctx, unsigned int ssl_flags)
+ void
+ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
  {
-   return plugin_call_ssl(pl, type, av, pr, es
- #ifdef USE_SSL
--      -1, NULL
-+      , -1, NULL
- #endif
-       );
+-  char *tmp_ciphers, *tmp_ciphers_orig;
++  char *tmp_ciphers, *tmp_ciphers_orig, *token;
+   int i, cipher_count;
+   int ciphers_len = strlen (ciphers);
+ 
+@@ -182,11 +182,15 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+   /* Parse allowed ciphers, getting IDs */
+   i = 0;
+   tmp_ciphers_orig = tmp_ciphers = strdup(ciphers);
+-  while(tmp_ciphers) {
+-      ctx->allowed_ciphers[i] = ssl_get_ciphersuite_id (strsep (&tmp_ciphers, ":"));
+-      if (ctx->allowed_ciphers[i] != 0)
++
++  token = strtok (tmp_ciphers, ":");
++  while(token)
++    {
++      ctx->allowed_ciphers[i] = ssl_get_ciphersuite_id (token);
++      if (0 != ctx->allowed_ciphers[i])
+ 	i++;
+-  }
++      token = strtok (NULL, ":");
++    }
+   free(tmp_ciphers_orig);
  }
+ 
 -- 
 1.7.5.4
 
