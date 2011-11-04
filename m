@@ -1,11 +1,8 @@
-Message-ID: <4EAF0EFD.6060106@...1114...>
-Date: Mon, 31 Oct 2011 22:11:25 +0100
-From: David Sommerseth <openvpn.list@...1114...>
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Fri, 4 Nov 2011 14:28:13 +0100
+Message-ID: <1320413293-12380-1-git-send-email-heiko.hund@...1489...>
 MIME-Version: 1.0
-References: <1320075008.29689.31.camel@...1520...>
-In-Reply-To: <1320075008.29689.31.camel@...1520...>
-Subject: Re: [Openvpn-devel] [PATCH] adding support for systemd tty console
- wrapper
+Subject: [Openvpn-devel] [PATCH] add check for struct in_pktinfo.ipi_spec_dst
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,85 +11,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Frederic Crozat <fcrozat@...1519...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+While Windows has struct in_pktinfo it's missing the ipi_spec_dst
+member. The current autoconf check needs to be extended to also
+check for availablity of ipi_spec_dst for openvpn to compile cleanly.
 
-On 31/10/11 16:30, Frederic Crozat wrote:
-> Hi,
-> 
-> as part of openSUSE switching to systemd by default, openVPN was made 
-> compatible with the systemd way of querying passphrase during boot 
-> (directly opening tty isn't supported).
-> 
+Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+---
+ configure.ac |    6 ++++++
+ socket.h     |    2 +-
+ syshead.h    |    2 +-
+ 3 files changed, 8 insertions(+), 2 deletions(-)
 
-Thanks a lot for looking into this!  I feared that we would need to do
-some changes due to systemd.
+diff --git a/configure.ac b/configure.ac
+index a4d68e6..a89c89c 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -503,6 +503,12 @@ AC_CHECK_TYPE(
+ 	[AC_DEFINE(HAVE_IN_PKTINFO, 1, [struct in_pktinfo needed for IP_PKTINFO support])],
+ 	[],
+ 	[#include "syshead.h"])
++AC_CHECK_MEMBER(
++	[struct in_pktinfo.ipi_spec_dst],
++	[AC_DEFINE(HAVE_IPI_SPEC_DST, 1, [struct in_pktinfo.ipi_spec_dst needed for IP_PKTINFO support])],
++	[],
++	[#include "syshead.h"])
++
+ 
+ AC_CHECK_SIZEOF(unsigned int)
+ AC_CHECK_SIZEOF(unsigned long)
+diff --git a/socket.h b/socket.h
+index 4a4f75d..63ef53e 100644
+--- a/socket.h
++++ b/socket.h
+@@ -586,7 +586,7 @@ addr_defined_ipi (const struct link_socket_actual *lsa)
+ #if ENABLE_IP_PKTINFO
+   if (!lsa) return 0;
+   switch (lsa->dest.addr.sa.sa_family) {
+-#ifdef HAVE_IN_PKTINFO
++#if defined(HAVE_IN_PKTINFO) && defined(HAVE_IPI_SPEC_DST)
+     case AF_INET: return lsa->pi.in4.ipi_spec_dst.s_addr != 0;
+ #elif defined(IP_RECVDSTADDR)
+     case AF_INET: return lsa->pi.in4.s_addr != 0;
+diff --git a/syshead.h b/syshead.h
+index f3c0ac9..200cdb8 100644
+--- a/syshead.h
++++ b/syshead.h
+@@ -404,7 +404,7 @@
+  * Does this platform support linux-style IP_PKTINFO
+  * or bsd-style IP_RECVDSTADDR ?
+  */
+-#if defined(ENABLE_MULTIHOME) && ((defined(HAVE_IN_PKTINFO)&&defined(IP_PKTINFO)) || defined(IP_RECVDSTADDR)) && defined(HAVE_MSGHDR) && defined(HAVE_CMSGHDR) && defined(HAVE_IOVEC) && defined(CMSG_FIRSTHDR) && defined(CMSG_NXTHDR) && defined(HAVE_RECVMSG) && defined(HAVE_SENDMSG)
++#if defined(ENABLE_MULTIHOME) && ((defined(HAVE_IN_PKTINFO)&&defined(HAVE_IPI_SPEC_DST)&&defined(IP_PKTINFO)) || defined(IP_RECVDSTADDR)) && defined(HAVE_MSGHDR) && defined(HAVE_CMSGHDR) && defined(HAVE_IOVEC) && defined(CMSG_FIRSTHDR) && defined(CMSG_NXTHDR) && defined(HAVE_RECVMSG) && defined(HAVE_SENDMSG)
+ #define ENABLE_IP_PKTINFO 1
+ #else
+ #define ENABLE_IP_PKTINFO 0
+-- 
+1.7.4.1
 
-Generally, this looks very fine.  But I would like to see a few changes
-first before including it.
-
-a) From what I've understood, systemd is by design a Linux only thing.
-So I'd like to see these code paths restricted to TARGET_LINUX (#ifdef
-statements).  A lot of the dependencies is kernel related, so we probably
-won't see systemd for BSD, for example.  And even less realistic is
-Solaris.  Windows already goes a different route, so this won't be
-affected here.
-
-b) As systemd is not targetted for embedded Linux devices (it's a massive
-resource hog, esp. in RAM and looks like to be most suitable in
-desktop/laptop environments), it could be useful to have this support
-compile time confiugrable via ./configure.  I would even vote for
-disabling it by default.  Right now, systemd only got traction from SuSE,
-Fedora.  Debian is in the works and Ubuntu usually follows Debian.  Arch
-Linux will move over as well.
-
-However, I am systemd sceptic, and I would like to see if systemd really
-settles as a de-facto SySV replacement across the majority of Linux
-distributions, before enabling this support by default on Linux.  I
-struggle to see that systemd will be beneficial on (enterprise) servers,
-as if the booting goes twice as fast or not on a server isn't that
-critical compared to a desktop/laptop system.  And boot performance is
-one of the key points systemd tries to resolve.
-
-c) It would probably be better to but the "check if systemd is available"
-into it's own function, for clarity - isolated in
-#ifdef defined(TARGET_LINUX) && defined(USE_SYSTEMD) blocks.  And
-likewise, do the /bin/systemd-ask-password in a separate function similar
-fashion as what is done with Windows' get_console_input_win32().
-
-d) Instead of asprintf(), use openvpn_snprintf() functions.  That can
-probably be just as fine work against a static sized buffer (say 256
-bytes - it's for a password, right?)  As this is called during startup,
-and it is serialised among all those places this might be asked for,
-there are no threading issues here, AFAICS.
-
-e) Consider to make use of openvpn_execve_check() or openvpn_execve()
-instead of the popen() - or make a popen() variant which got similar
-error controls to popen() as openvpn_execve*() functions.  I also think
-that this execution should honour the --script-security setting (which is
-implicitly checked for with openvpn_execve())
-
-f) There are a few mixtures between tab and spaces in your patch.  If you
-could please use space only, that would be great.  The code is a mess in
-this regard, but we're trying to (very slowly) reduce the variety in new
-patches.
-
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk6vDvoACgkQDC186MBRfrr6PwCdGFh7VKA9nRN05ommWCnAe9CH
-xJIAoJRW8+pjM7ipFeQW4nHgBY7S1Ty7
-=0kja
------END PGP SIGNATURE-----
 
