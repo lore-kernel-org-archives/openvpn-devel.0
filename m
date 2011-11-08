@@ -1,11 +1,11 @@
-Message-ID: <4EB7E6D8.4040708@...1114...>
-Date: Mon, 07 Nov 2011 15:10:32 +0100
+Message-ID: <4EB9549B.2020104@...1114...>
+Date: Tue, 08 Nov 2011 17:11:07 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1319368508-3411-1-git-send-email-davids@...1347...>
-In-Reply-To: <1319368508-3411-1-git-send-email-davids@...1347...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix plugin_call() struct env_set
-	corruption
+References: <1319439215-4363-1-git-send-email-davids@...1347...>
+In-Reply-To: <1319439215-4363-1-git-send-email-davids@...1347...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Fix PolarSSL and --pkcs12 option
+	issues
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,30 +16,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 23/10/11 13:15, David Sommerseth wrote:
-> For some odd reasons, the static inline plugin_call() function
-> managed to corrupt the struct env_set *es pointer.  The result was
-> that es->list pointed at an invalid address, which again caused SEGV.
+On 24/10/11 08:53, David Sommerseth wrote:
+> PolarSSL does not support PKCS#12 certificate/key bundles, but had a 
+> typo where #ifdef USE_POLARSSL was used, and it should have been 
+> #ifndef instead.
 > 
-> This patch replaces the static inline function with a macro instead,
-> and let the plugin_call_ssl() keep all its arguments - no matter if
-> SSL is enabled or not.
+> Also added a few extra exclusions of PKCS#12 messages where 
+> appropriate, to avoid confusing users.
 > 
-> This issues appeared first in commit
-> 1876ccd012e9e2ca6f8e1cd9e7e9bb4bf24ccecb, which does modify the plugin
-> system.
+> Signed-off-by: David Sommerseth <davids@...1347...> --- options.c | 8
+> +++++++- 1 files changed, 7 insertions(+), 1 deletions(-)
 > 
-> Signed-off-by: David Sommerseth <davids@...1347...> --- plugin.c |
-> 5 +---- plugin.h |   21 +++------------------ 2 files changed, 4
-> insertions(+), 22 deletions(-)
 
-This patch is obsoleted by this patch:
-<http://thread.gmane.org/gmane.network.openvpn.devel/5080/focus=5076>
+ACKed on IRC by Adriaan.  Pushed to -testing and -stable master branches.
+
+commit 93ee3932aaaa806dddbc1524515f45837d94aa8f
+Author: David Sommerseth <davids@...1347...>
+Date:   Mon Oct 24 08:53:35 2011 +0200
+
+    Signed-off-by: David Sommerseth <davids@...1347...>
+    Acked-by: Adriaan de Jong <dejong@...1435...>
+
 
 
 kind regards,
@@ -49,8 +51,8 @@ David Sommerseth
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk635tgACgkQDC186MBRfrqDzwCggGdglsuRKYERtPMpET7U5ewT
-wHYAn1koidWoqGEOtda6hMotf1vze36f
-=GFgo
+iEYEARECAAYFAk65VJsACgkQDC186MBRfrpuWgCglI5KRkZs3JEM7t6Sc0RuI4tK
+1jEAniQhputcBRZGriFxYyUxE+JMM/ex
+=51xX
 -----END PGP SIGNATURE-----
 
