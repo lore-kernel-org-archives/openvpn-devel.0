@@ -1,11 +1,11 @@
-Message-ID: <4EB9549B.2020104@...1114...>
-Date: Tue, 08 Nov 2011 17:11:07 +0100
-From: David Sommerseth <openvpn.list@...1114...>
+From: samuli@...515...
+Date: Wed,  9 Nov 2011 11:49:36 +0200
+Message-Id: <1320832176-11704-1-git-send-email-samuli@...515...>
+In-Reply-To: <1320074961-3809-6-git-send-email-dejong@...1435...>
+References: <1320074961-3809-6-git-send-email-dejong@...1435...>
 MIME-Version: 1.0
-References: <1319439215-4363-1-git-send-email-davids@...1347...>
-In-Reply-To: <1319439215-4363-1-git-send-email-davids@...1347...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Fix PolarSSL and --pkcs12 option
-	issues
+Subject: [Openvpn-devel] [PATCH] Fixed a regression causing VS2008/Python
+	build failure
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,45 +14,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+From: Samuli Sepp=C3=A4nen <samuli@...515...>
 
-On 24/10/11 08:53, David Sommerseth wrote:
-> PolarSSL does not support PKCS#12 certificate/key bundles, but had a 
-> typo where #ifdef USE_POLARSSL was used, and it should have been 
-> #ifndef instead.
-> 
-> Also added a few extra exclusions of PKCS#12 messages where 
-> appropriate, to avoid confusing users.
-> 
-> Signed-off-by: David Sommerseth <davids@...1347...> --- options.c | 8
-> +++++++- 1 files changed, 7 insertions(+), 1 deletions(-)
-> 
+Patch "Added options to switch between OpenSSL and PolarSSL and PKCS11" cau=
+sed a
+regression when building OpenVPN with Visual Studio 2008/Python build syste=
+m.
+The underlying cause was a wrong path to lzo2.lib.
+---
+ win/msvc.mak.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-ACKed on IRC by Adriaan.  Pushed to -testing and -stable master branches.
+diff --git a/win/msvc.mak.in b/win/msvc.mak.in
+index d2babcf..26d7a33 100644
+--- a/win/msvc.mak.in
++++ b/win/msvc.mak.in
+@@ -33,7 +33,7 @@ INCLUDE_DIRS =3D -I$(OPENSSL)/include -I$(POLARSSL)/inclu=
+de -I$(LZO)/include -I$(P
+=20
+ LIBS =3D $(OPENSSL_DYNAMIC) $(POLARSSL_DYNAMIC) $(PKCS11_HELPER_DYNAMIC) $=
+(LZO_DYNAMIC) ws2_32.lib crypt32.lib iphlpapi.lib winmm.lib user32.lib gdi3=
+2.lib advapi32.lib wininet.lib
+=20
+-LIB_DIRS =3D -LIBPATH:$(OPENSSL)\lib -LIBPATH:$(POLARSSL)\build\library -L=
+IBPATH:$(PKCS11_HELPER)\lib -LIBPATH:$(LZO)
++LIB_DIRS =3D -LIBPATH:$(OPENSSL)\lib -LIBPATH:$(POLARSSL)\build\library -L=
+IBPATH:$(PKCS11_HELPER)\lib -LIBPATH:$(LZO)\lib
+=20
+ EXE =3D openvpn.exe
+=20
+--=20
+1.7.4.1
 
-commit 93ee3932aaaa806dddbc1524515f45837d94aa8f
-Author: David Sommerseth <davids@...1347...>
-Date:   Mon Oct 24 08:53:35 2011 +0200
-
-    Signed-off-by: David Sommerseth <davids@...1347...>
-    Acked-by: Adriaan de Jong <dejong@...1435...>
-
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk65VJsACgkQDC186MBRfrpuWgCglI5KRkZs3JEM7t6Sc0RuI4tK
-1jEAniQhputcBRZGriFxYyUxE+JMM/ex
-=51xX
------END PGP SIGNATURE-----
 
