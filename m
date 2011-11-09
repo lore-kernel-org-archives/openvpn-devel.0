@@ -1,11 +1,13 @@
-From: samuli@...515...
-Date: Wed,  9 Nov 2011 11:49:36 +0200
-Message-Id: <1320832176-11704-1-git-send-email-samuli@...515...>
-In-Reply-To: <1320074961-3809-6-git-send-email-dejong@...1435...>
+From: Adriaan de Jong <dejong@...1435...>
+Date: Wed, 9 Nov 2011 10:58:22 +0100
+Message-ID: <1CED409804E2164C8104F9E623B08B9012879CD245@...1436...>
 References: <1320074961-3809-6-git-send-email-dejong@...1435...>
+	<1320832176-11704-1-git-send-email-samuli@...515...>
+In-Reply-To: <1320832176-11704-1-git-send-email-samuli@...515...>
+Content-Language: en-US
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fixed a regression causing VS2008/Python
-	build failure
+Subject: Re: [Openvpn-devel] [PATCH] Fixed a regression causing
+ VS2008/Python	build failure
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,40 +16,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: "samuli@...515..." <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-From: Samuli Sepp=C3=A4nen <samuli@...515...>
-
-Patch "Added options to switch between OpenSSL and PolarSSL and PKCS11" cau=
-sed a
-regression when building OpenVPN with Visual Studio 2008/Python build syste=
-m.
-The underlying cause was a wrong path to lzo2.lib.
----
- win/msvc.mak.in |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-diff --git a/win/msvc.mak.in b/win/msvc.mak.in
-index d2babcf..26d7a33 100644
---- a/win/msvc.mak.in
-+++ b/win/msvc.mak.in
-@@ -33,7 +33,7 @@ INCLUDE_DIRS =3D -I$(OPENSSL)/include -I$(POLARSSL)/inclu=
-de -I$(LZO)/include -I$(P
-=20
- LIBS =3D $(OPENSSL_DYNAMIC) $(POLARSSL_DYNAMIC) $(PKCS11_HELPER_DYNAMIC) $=
-(LZO_DYNAMIC) ws2_32.lib crypt32.lib iphlpapi.lib winmm.lib user32.lib gdi3=
-2.lib advapi32.lib wininet.lib
-=20
--LIB_DIRS =3D -LIBPATH:$(OPENSSL)\lib -LIBPATH:$(POLARSSL)\build\library -L=
-IBPATH:$(PKCS11_HELPER)\lib -LIBPATH:$(LZO)
-+LIB_DIRS =3D -LIBPATH:$(OPENSSL)\lib -LIBPATH:$(POLARSSL)\build\library -L=
-IBPATH:$(PKCS11_HELPER)\lib -LIBPATH:$(LZO)\lib
-=20
- EXE =3D openvpn.exe
-=20
---=20
-1.7.4.1
-
-
+QUNLLCBteSBMWk8gbGlicmFyeSBlbmRzIHVwIGluIGEgZGlmZmVyZW50IHBsYWNlIGZvciBzb21l
+IHJlYXNvbi4uLiANCg0KQWRyaWFhbg0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+
+IEZyb206IHNhbXVsaUAuLi41MTUuLi4gW21haWx0bzpzYW11bGlALi4uNTE1Li4uXQ0KPiBTZW50
+OiB3b2Vuc2RhZyA5IG5vdmVtYmVyIDIwMTEgMTA6NTANCj4gVG86IG9wZW52cG4tZGV2ZWxAbGlz
+dHMuc291cmNlZm9yZ2UubmV0DQo+IFN1YmplY3Q6IFtPcGVudnBuLWRldmVsXSBbUEFUQ0hdIEZp
+eGVkIGEgcmVncmVzc2lvbiBjYXVzaW5nDQo+IFZTMjAwOC9QeXRob24gYnVpbGQgZmFpbHVyZQ0K
+PiANCj4gRnJvbTogU2FtdWxpIFNlcHDDpG5lbiA8c2FtdWxpQC4uLjUxNS4uLj4NCj4gDQo+IFBh
+dGNoICJBZGRlZCBvcHRpb25zIHRvIHN3aXRjaCBiZXR3ZWVuIE9wZW5TU0wgYW5kIFBvbGFyU1NM
+IGFuZCBQS0NTMTEiDQo+IGNhdXNlZCBhDQo+IHJlZ3Jlc3Npb24gd2hlbiBidWlsZGluZyBPcGVu
+VlBOIHdpdGggVmlzdWFsIFN0dWRpbyAyMDA4L1B5dGhvbiBidWlsZA0KPiBzeXN0ZW0uDQo+IFRo
+ZSB1bmRlcmx5aW5nIGNhdXNlIHdhcyBhIHdyb25nIHBhdGggdG8gbHpvMi5saWIuDQo+IC0tLQ0K
+PiAgd2luL21zdmMubWFrLmluIHwgICAgMiArLQ0KPiAgMSBmaWxlcyBjaGFuZ2VkLCAxIGluc2Vy
+dGlvbnMoKyksIDEgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvd2luL21zdmMubWFr
+LmluIGIvd2luL21zdmMubWFrLmluDQo+IGluZGV4IGQyYmFiY2YuLjI2ZDdhMzMgMTAwNjQ0DQo+
+IC0tLSBhL3dpbi9tc3ZjLm1hay5pbg0KPiArKysgYi93aW4vbXN2Yy5tYWsuaW4NCj4gQEAgLTMz
+LDcgKzMzLDcgQEAgSU5DTFVERV9ESVJTID0gLUkkKE9QRU5TU0wpL2luY2x1ZGUgLQ0KPiBJJChQ
+T0xBUlNTTCkvaW5jbHVkZSAtSSQoTFpPKS9pbmNsdWRlIC1JJChQDQo+IA0KPiAgTElCUyA9ICQo
+T1BFTlNTTF9EWU5BTUlDKSAkKFBPTEFSU1NMX0RZTkFNSUMpICQoUEtDUzExX0hFTFBFUl9EWU5B
+TUlDKQ0KPiAkKExaT19EWU5BTUlDKSB3czJfMzIubGliIGNyeXB0MzIubGliIGlwaGxwYXBpLmxp
+YiB3aW5tbS5saWIgdXNlcjMyLmxpYg0KPiBnZGkzMi5saWIgYWR2YXBpMzIubGliIHdpbmluZXQu
+bGliDQo+IA0KPiAtTElCX0RJUlMgPSAtTElCUEFUSDokKE9QRU5TU0wpXGxpYiAtTElCUEFUSDok
+KFBPTEFSU1NMKVxidWlsZFxsaWJyYXJ5DQo+IC1MSUJQQVRIOiQoUEtDUzExX0hFTFBFUilcbGli
+IC1MSUJQQVRIOiQoTFpPKQ0KPiArTElCX0RJUlMgPSAtTElCUEFUSDokKE9QRU5TU0wpXGxpYiAt
+TElCUEFUSDokKFBPTEFSU1NMKVxidWlsZFxsaWJyYXJ5DQo+IC1MSUJQQVRIOiQoUEtDUzExX0hF
+TFBFUilcbGliIC1MSUJQQVRIOiQoTFpPKVxsaWINCj4gDQo+ICBFWEUgPSBvcGVudnBuLmV4ZQ0K
+PiANCj4gLS0NCj4gMS43LjQuMQ0KPiANCj4gDQo+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+IC0tLS0tLS0N
+Cj4gUlNBKFIpIENvbmZlcmVuY2UgMjAxMg0KPiBTYXZlICQ3MDAgYnkgTm92IDE4DQo+IFJlZ2lz
+dGVyIG5vdw0KPiBodHRwOi8vcC5zZi5uZXQvc2Z1L3JzYS1zZmRldjJkZXYxDQo+IF9fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo+IE9wZW52cG4tZGV2ZWwg
+bWFpbGluZyBsaXN0DQo+IE9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0DQo+IGh0
+dHBzOi8vbGlzdHMuc291cmNlZm9yZ2UubmV0L2xpc3RzL2xpc3RpbmZvL29wZW52cG4tZGV2ZWwN
+Cg==
