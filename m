@@ -1,13 +1,13 @@
-From: Adriaan de Jong <dejong@...1435...>
-Date: Wed, 9 Nov 2011 10:58:22 +0100
-Message-ID: <1CED409804E2164C8104F9E623B08B9012879CD245@...1436...>
-References: <1320074961-3809-6-git-send-email-dejong@...1435...>
-	<1320832176-11704-1-git-send-email-samuli@...515...>
-In-Reply-To: <1320832176-11704-1-git-send-email-samuli@...515...>
-Content-Language: en-US
+Message-ID: <4EBA6F45.2030006@...515...>
+Date: Wed, 09 Nov 2011 14:17:09 +0200
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] Fixed a regression causing
- VS2008/Python	build failure
+References: <4e6f25dc2a58c3.42657146@...1498...> <4E801FAE.5010700@...515...>
+	<4E806C6A.9090907@...515...>
+	<201109261437.45686.heiko.hund@...1489...>
+In-Reply-To: <201109261437.45686.heiko.hund@...1489...>
+Subject: Re: [Openvpn-devel]
+ Snapshot	openvpn-2.x-20110909-master-install.exe fails
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,40 +16,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: "samuli@...515..." <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-QUNLLCBteSBMWk8gbGlicmFyeSBlbmRzIHVwIGluIGEgZGlmZmVyZW50IHBsYWNlIGZvciBzb21l
-IHJlYXNvbi4uLiANCg0KQWRyaWFhbg0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+
-IEZyb206IHNhbXVsaUAuLi41MTUuLi4gW21haWx0bzpzYW11bGlALi4uNTE1Li4uXQ0KPiBTZW50
-OiB3b2Vuc2RhZyA5IG5vdmVtYmVyIDIwMTEgMTA6NTANCj4gVG86IG9wZW52cG4tZGV2ZWxAbGlz
-dHMuc291cmNlZm9yZ2UubmV0DQo+IFN1YmplY3Q6IFtPcGVudnBuLWRldmVsXSBbUEFUQ0hdIEZp
-eGVkIGEgcmVncmVzc2lvbiBjYXVzaW5nDQo+IFZTMjAwOC9QeXRob24gYnVpbGQgZmFpbHVyZQ0K
-PiANCj4gRnJvbTogU2FtdWxpIFNlcHDDpG5lbiA8c2FtdWxpQC4uLjUxNS4uLj4NCj4gDQo+IFBh
-dGNoICJBZGRlZCBvcHRpb25zIHRvIHN3aXRjaCBiZXR3ZWVuIE9wZW5TU0wgYW5kIFBvbGFyU1NM
-IGFuZCBQS0NTMTEiDQo+IGNhdXNlZCBhDQo+IHJlZ3Jlc3Npb24gd2hlbiBidWlsZGluZyBPcGVu
-VlBOIHdpdGggVmlzdWFsIFN0dWRpbyAyMDA4L1B5dGhvbiBidWlsZA0KPiBzeXN0ZW0uDQo+IFRo
-ZSB1bmRlcmx5aW5nIGNhdXNlIHdhcyBhIHdyb25nIHBhdGggdG8gbHpvMi5saWIuDQo+IC0tLQ0K
-PiAgd2luL21zdmMubWFrLmluIHwgICAgMiArLQ0KPiAgMSBmaWxlcyBjaGFuZ2VkLCAxIGluc2Vy
-dGlvbnMoKyksIDEgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvd2luL21zdmMubWFr
-LmluIGIvd2luL21zdmMubWFrLmluDQo+IGluZGV4IGQyYmFiY2YuLjI2ZDdhMzMgMTAwNjQ0DQo+
-IC0tLSBhL3dpbi9tc3ZjLm1hay5pbg0KPiArKysgYi93aW4vbXN2Yy5tYWsuaW4NCj4gQEAgLTMz
-LDcgKzMzLDcgQEAgSU5DTFVERV9ESVJTID0gLUkkKE9QRU5TU0wpL2luY2x1ZGUgLQ0KPiBJJChQ
-T0xBUlNTTCkvaW5jbHVkZSAtSSQoTFpPKS9pbmNsdWRlIC1JJChQDQo+IA0KPiAgTElCUyA9ICQo
-T1BFTlNTTF9EWU5BTUlDKSAkKFBPTEFSU1NMX0RZTkFNSUMpICQoUEtDUzExX0hFTFBFUl9EWU5B
-TUlDKQ0KPiAkKExaT19EWU5BTUlDKSB3czJfMzIubGliIGNyeXB0MzIubGliIGlwaGxwYXBpLmxp
-YiB3aW5tbS5saWIgdXNlcjMyLmxpYg0KPiBnZGkzMi5saWIgYWR2YXBpMzIubGliIHdpbmluZXQu
-bGliDQo+IA0KPiAtTElCX0RJUlMgPSAtTElCUEFUSDokKE9QRU5TU0wpXGxpYiAtTElCUEFUSDok
-KFBPTEFSU1NMKVxidWlsZFxsaWJyYXJ5DQo+IC1MSUJQQVRIOiQoUEtDUzExX0hFTFBFUilcbGli
-IC1MSUJQQVRIOiQoTFpPKQ0KPiArTElCX0RJUlMgPSAtTElCUEFUSDokKE9QRU5TU0wpXGxpYiAt
-TElCUEFUSDokKFBPTEFSU1NMKVxidWlsZFxsaWJyYXJ5DQo+IC1MSUJQQVRIOiQoUEtDUzExX0hF
-TFBFUilcbGliIC1MSUJQQVRIOiQoTFpPKVxsaWINCj4gDQo+ICBFWEUgPSBvcGVudnBuLmV4ZQ0K
-PiANCj4gLS0NCj4gMS43LjQuMQ0KPiANCj4gDQo+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+IC0tLS0tLS0N
-Cj4gUlNBKFIpIENvbmZlcmVuY2UgMjAxMg0KPiBTYXZlICQ3MDAgYnkgTm92IDE4DQo+IFJlZ2lz
-dGVyIG5vdw0KPiBodHRwOi8vcC5zZi5uZXQvc2Z1L3JzYS1zZmRldjJkZXYxDQo+IF9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo+IE9wZW52cG4tZGV2ZWwg
-bWFpbGluZyBsaXN0DQo+IE9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0DQo+IGh0
-dHBzOi8vbGlzdHMuc291cmNlZm9yZ2UubmV0L2xpc3RzL2xpc3RpbmZvL29wZW52cG4tZGV2ZWwN
-Cg==
+Il 26/09/2011 15:37, Heiko Hund ha scritto:
+> On Monday 26 September 2011 14:13:30 Samuli Sepp=E4nen wrote:
+>> Ok, did as suggested for socket.c and win32.h and got the following
+>> build failure using MSVC:
+>>
+>> <http://pastebin.com/xZ8J2yrq>
+> ---8<------------------------------------------------------------------
+> c:\users\samuli\openvpn-build\openvpn\win32.h(282) :=20
+> error C2373: 'inet_ntop' : redefinition; different type modifiers
+> ---8<------------------------------------------------------------------
+>
+> This is hopefully just because MSVC still believes it's building for Vist=
+a or=20
+> later. Does the message disappear if you include syshead.h in win32.h? In=
+=20
+> there WINVER is already defined to signal building for XP. If that doesn'=
+t=20
+> help, you should also check in <Ws2tcpip.h> if the declaration of inet_nt=
+op is=20
+> #ifdef'd taking WINVER into account.
+>
+> Heiko
+Hi Heiko,
+
+Took a while, but I finally managed to debug the WinXP inet_ntop issue
+somewhat. The results are here:
+
+<https://community.openvpn.net/openvpn/ticket/169>
+
+In a nutshell, OpenVPN builds ok, but does not launch. Did not look into
+<Ws2tcpip.h> yet.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+
