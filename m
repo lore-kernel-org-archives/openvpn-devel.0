@@ -1,12 +1,11 @@
-Message-ID: <4EBBF31F.6090009@...515...>
-Date: Thu, 10 Nov 2011 17:51:59 +0200
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-References: <1320074961-3809-1-git-send-email-dejong@...1435...>
-	<1320074961-3809-8-git-send-email-dejong@...1435...>
-In-Reply-To: <1320074961-3809-8-git-send-email-dejong@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH 7/8] Minor cleanup to enable
- warning-free Windows build:
+Date: Thu, 10 Nov 2011 19:20:04 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20111110182004.GR8496@...1296...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Kf7Emwp3eNAROHJg"
+Content-Disposition: inline
+Subject: [Openvpn-devel] patch to windows tap driver
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,141 +14,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+To: openvpn-devel@lists.sourceforge.net
+
+--Kf7Emwp3eNAROHJg
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: Adriaan de Jong <dejong@...1435...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
+
+Hi,
+
+I received a bugfix for my IPv6 patch to the Windows TAP driver today,
+which affects IPv4 - and there is this open bug with small-size IPv4
+packets in our trac, which this should fix...
+
+The problem is a missing "break" statement at the end of the IPv6=20
+block, which now leads to "fall into IPv6 block" and that one has a
+larger minimum packet size...
+
+ACK from me - David, could you please integrate the one-line patch,
+and then we need James to compile + sign a new driver  (and I think
+this warrants a 2.2 bugfix release).
+
+[I'm not on IRC these days as I'm technically on vacation, but I saw
+this mail today and it warrants action]
+
+gert
 
 
-> - Changed int32_t to size_t
-> - Removed some unused variables
-> - Added missing include files
-> - changed ordering to ensure variable declarations are before asserts
->=20
-> Signed-off-by: Adriaan de Jong <dejong@...1435...>
-> ---
->  crypto.c              |    3 +--
->  pkcs11_polarssl.c     |    1 -
->  ssl_openssl.c         |    6 +++---
->  ssl_polarssl.c        |    2 --
->  ssl_verify_openssl.c  |    1 +
->  ssl_verify_polarssl.c |    2 +-
->  6 files changed, 6 insertions(+), 9 deletions(-)
->=20
-> diff --git a/crypto.c b/crypto.c
-> index 375d35a..e628578 100644
-> --- a/crypto.c
-> +++ b/crypto.c
-> @@ -1336,11 +1336,10 @@ prng_uninit (void)
->  void
->  prng_bytes (uint8_t *output, int len)
->  {
-> -  static int32_t processed =3D 0;
-> +  static size_t processed =3D 0;
->=20=20
->    if (nonce_md)
->      {
-> -      md_ctx_t ctx;
->        const int md_size =3D md_kt_size (nonce_md);
->        while (len > 0)
->  	{
-> diff --git a/pkcs11_polarssl.c b/pkcs11_polarssl.c
-> index 4f8bf33..0f9daab 100644
-> --- a/pkcs11_polarssl.c
-> +++ b/pkcs11_polarssl.c
-> @@ -40,7 +40,6 @@ pkcs11_init_tls_session(pkcs11h_certificate_t certifica=
-te,
->      struct tls_root_ctx * const ssl_ctx)
->  {
->    int ret =3D 1;
-> -  pkcs11_context pkcs11_ctx;
->=20=20
->    ASSERT (NULL !=3D ssl_ctx);
->=20=20
-> diff --git a/ssl_openssl.c b/ssl_openssl.c
-> index 1cc2bfb..391968a 100644
-> --- a/ssl_openssl.c
-> +++ b/ssl_openssl.c
-> @@ -38,6 +38,7 @@
->  #include "memdbg.h"
->  #include "ssl_backend.h"
->  #include "ssl_common.h"
-> +#include "base64.h"
->=20=20
->  #ifdef ENABLE_CRYPTOAPI
->  #include "cryptoapi.h"
-> @@ -349,7 +350,6 @@ tls_ctx_load_cryptoapi(struct tls_root_ctx *ctx, cons=
-t char *cryptoapi_cert)
->  static int
->  tls_ctx_read_certificate_file(SSL_CTX *ctx, const char *file, X509 **x50=
-9)
->  {
-> -  int j;
->    BIO *in;
->    int ret=3D0;
->    X509 *x=3DNULL;
-> @@ -480,10 +480,10 @@ tls_ctx_load_priv_file (struct tls_root_ctx *ctx, c=
-onst char *priv_key_file
->  #endif
->      )
->  {
-> -  ASSERT(NULL !=3D ctx);
-> -
->    int status;
->=20=20
-> +  ASSERT(NULL !=3D ctx);
-> +
->  #if ENABLE_INLINE_FILES
->    if (!strcmp (priv_key_file, INLINE_FILE_TAG) && priv_key_file_inline)
->      {
-> diff --git a/ssl_polarssl.c b/ssl_polarssl.c
-> index 60d99a8..c50cf0a 100644
-> --- a/ssl_polarssl.c
-> +++ b/ssl_polarssl.c
-> @@ -347,8 +347,6 @@ void tls_ctx_load_ca (struct tls_root_ctx *ctx, const=
- char *ca_file,
->      const char *ca_path, bool tls_server
->      )
->  {
-> -  int status;
-> -
->    if (ca_path)
->        msg(M_FATAL, "ERROR: PolarSSL cannot handle the capath directive");
->=20=20
-> diff --git a/ssl_verify_openssl.c b/ssl_verify_openssl.c
-> index 13c2f4e..e82f6f9 100644
-> --- a/ssl_verify_openssl.c
-> +++ b/ssl_verify_openssl.c
-> @@ -35,6 +35,7 @@
->  #include "ssl_verify_backend.h"
->  #include "ssl_openssl.h"
->  #include <openssl/x509v3.h>
-> +#include <openssl/err.h>
->=20=20
->  int
->  verify_callback (int preverify_ok, X509_STORE_CTX * ctx)
-> diff --git a/ssl_verify_polarssl.c b/ssl_verify_polarssl.c
-> index 7fdca1f..699eb47 100644
-> --- a/ssl_verify_polarssl.c
-> +++ b/ssl_verify_polarssl.c
-> @@ -191,7 +191,7 @@ x509_free_subject (char *subject)
->  void
->  x509_setenv (struct env_set *es, int cert_depth, x509_cert_t *cert)
->  {
-> -  int i, ret;
-> +  int i;
->    unsigned char c;
->    const x509_name *name;
->    char s[128];
+----- Forwarded message from Christian Niessner <bug-report@...1523...> ---=
+--
 
-Can confirm that Visual Studio/Python does not give any build errors
-when this patch and patch 4/8 have been applied. The resulting binary
-also seems to work properly.
+
+@@ -1611,6 +1766,27 @@ AdapterTransmit (IN NDIS_HANDLE p_AdapterContext,
+=20
+            // Packet looks like IPv4, queue it.
+            l_PacketBuffer->m_SizeFlags |=3D TP_TUN;
++
++         case ETH_P_IPV6:
++           // make sure that packet is large
++           // enough to be IPv6
++           if (l_PacketLength
++               < ETHERNET_HEADER_SIZE + IPV6_HEADER_SIZE)
++             goto no_queue;
++
+
+[..]
+
+--- ../tap-win32-latest/tapdrvr.c       2011-11-09 17:12:19.000000000 +0100
++++ tapdrvr.c   2011-11-10 09:24:24.000000000 +0100
+@@ -1766,6 +1766,7 @@
+=20
+            // Packet looks like IPv4, queue it.
+            l_PacketBuffer->m_SizeFlags |=3D TP_TUN;
++           break;
+=20
+          case ETH_P_IPV6:
+            // make sure that packet is large
+
+
+----- End forwarded message -----
 
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-irc freenode net: mattock
+--Kf7Emwp3eNAROHJg
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBTrwV06kuBuNlUUl1AQLatgP/Tpsc3vxD2nHTXk4THPbh0848H03HvApQ
+duQm+zQctRBZq1jQWu8td6BJzlxYKzXnMEMza3YfM9SDstz8LgA8Cu5tJLX/umeC
+ThL6mXZJWfzkHPxYTi1EnNBz5YFFdlsGjSA2uk7S3ZflRz/4jGZU0KKpU4riML6U
+TfMMzPwvmDk=
+=CXNN
+-----END PGP SIGNATURE-----
+
+--Kf7Emwp3eNAROHJg--
 
