@@ -1,12 +1,12 @@
-Message-ID: <4EBBF24B.2020602@...515...>
-Date: Thu, 10 Nov 2011 17:48:27 +0200
+Message-ID: <4EBBF31F.6090009@...515...>
+Date: Thu, 10 Nov 2011 17:51:59 +0200
 From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
 References: <1320074961-3809-1-git-send-email-dejong@...1435...>
-	<1320074961-3809-6-git-send-email-dejong@...1435...>
-In-Reply-To: <1320074961-3809-6-git-send-email-dejong@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH 5/8] Added options to switch between
- OpenSSL and PolarSSL and PKCS11...
+	<1320074961-3809-8-git-send-email-dejong@...1435...>
+In-Reply-To: <1320074961-3809-8-git-send-email-dejong@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH 7/8] Minor cleanup to enable
+ warning-free Windows build:
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,129 +21,130 @@ To: Adriaan de Jong <dejong@...1435...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 
-
-> at compile time. Also included the option to enable/disable PKCS11.
+> - Changed int32_t to size_t
+> - Removed some unused variables
+> - Added missing include files
+> - changed ordering to ensure variable declarations are before asserts
 >=20
 > Signed-off-by: Adriaan de Jong <dejong@...1435...>
 > ---
->  win/config.h.in |   18 +++++++++++++++---
->  win/msvc.mak.in |   18 +++++++++++++++---
->  win/settings.in |   13 +++++++++++++
->  3 files changed, 43 insertions(+), 6 deletions(-)
+>  crypto.c              |    3 +--
+>  pkcs11_polarssl.c     |    1 -
+>  ssl_openssl.c         |    6 +++---
+>  ssl_polarssl.c        |    2 --
+>  ssl_verify_openssl.c  |    1 +
+>  ssl_verify_polarssl.c |    2 +-
+>  6 files changed, 6 insertions(+), 9 deletions(-)
 >=20
-> diff --git a/win/config.h.in b/win/config.h.in
-> index ec447a2..e9df379 100644
-> --- a/win/config.h.in
-> +++ b/win/config.h.in
-> @@ -74,7 +74,9 @@ typedef unsigned long in_addr_t;
+> diff --git a/crypto.c b/crypto.c
+> index 375d35a..e628578 100644
+> --- a/crypto.c
+> +++ b/crypto.c
+> @@ -1336,11 +1336,10 @@ prng_uninit (void)
+>  void
+>  prng_bytes (uint8_t *output, int len)
+>  {
+> -  static int32_t processed =3D 0;
+> +  static size_t processed =3D 0;
+>=20=20
+>    if (nonce_md)
+>      {
+> -      md_ctx_t ctx;
+>        const int md_size =3D md_kt_size (nonce_md);
+>        while (len > 0)
+>  	{
+> diff --git a/pkcs11_polarssl.c b/pkcs11_polarssl.c
+> index 4f8bf33..0f9daab 100644
+> --- a/pkcs11_polarssl.c
+> +++ b/pkcs11_polarssl.c
+> @@ -40,7 +40,6 @@ pkcs11_init_tls_session(pkcs11h_certificate_t certifica=
+te,
+>      struct tls_root_ctx * const ssl_ctx)
+>  {
+>    int ret =3D 1;
+> -  pkcs11_context pkcs11_ctx;
+>=20=20
+>    ASSERT (NULL !=3D ssl_ctx);
+>=20=20
+> diff --git a/ssl_openssl.c b/ssl_openssl.c
+> index 1cc2bfb..391968a 100644
+> --- a/ssl_openssl.c
+> +++ b/ssl_openssl.c
+> @@ -38,6 +38,7 @@
+>  #include "memdbg.h"
+>  #include "ssl_backend.h"
+>  #include "ssl_common.h"
+> +#include "base64.h"
+>=20=20
+>  #ifdef ENABLE_CRYPTOAPI
+>  #include "cryptoapi.h"
+> @@ -349,7 +350,6 @@ tls_ctx_load_cryptoapi(struct tls_root_ctx *ctx, cons=
+t char *cryptoapi_cert)
+>  static int
+>  tls_ctx_read_certificate_file(SSL_CTX *ctx, const char *file, X509 **x50=
+9)
+>  {
+> -  int j;
+>    BIO *in;
+>    int ret=3D0;
+>    X509 *x=3DNULL;
+> @@ -480,10 +480,10 @@ tls_ctx_load_priv_file (struct tls_root_ctx *ctx, c=
+onst char *priv_key_file
 >  #endif
+>      )
+>  {
+> -  ASSERT(NULL !=3D ctx);
+> -
+>    int status;
 >=20=20
->  /* Enable PKCS#11 support */
-> -/* #define USE_PKCS11 1 */
-> +#if @USE_PKCS11@ !=3D 0
-> +#define USE_PKCS11 1
-> +#endif
->=20=20
->  /* Enable HTTP proxy support */
->  #if @ENABLE_HTTP_PROXY@ !=3D 0
-> @@ -252,7 +254,17 @@ typedef unsigned long in_addr_t;
->  #define TIME_WITH_SYS_TIME 1
->  #endif
->=20=20
-> -/* Use OpenSSL crypto library */
-> +/* Use the PolarSSL crypto library */
-> +#if @USE_POLARSSL@ !=3D 0
-> +#define USE_POLARSSL 1
-> +#endif
+> +  ASSERT(NULL !=3D ctx);
 > +
-> +/* Use the OpenSSL crypto library */
-> +#if @USE_OPENSSL@ !=3D 0
-> +#define USE_OPENSSL 1
-> +#endif
-> +
-> +/* Use the crypto library */
->  #define USE_CRYPTO 1
+>  #if ENABLE_INLINE_FILES
+>    if (!strcmp (priv_key_file, INLINE_FILE_TAG) && priv_key_file_inline)
+>      {
+> diff --git a/ssl_polarssl.c b/ssl_polarssl.c
+> index 60d99a8..c50cf0a 100644
+> --- a/ssl_polarssl.c
+> +++ b/ssl_polarssl.c
+> @@ -347,8 +347,6 @@ void tls_ctx_load_ca (struct tls_root_ctx *ctx, const=
+ char *ca_file,
+>      const char *ca_path, bool tls_server
+>      )
+>  {
+> -  int status;
+> -
+>    if (ca_path)
+>        msg(M_FATAL, "ERROR: PolarSSL cannot handle the capath directive");
 >=20=20
->  /* Use LZO compression library */
-> @@ -264,7 +276,7 @@ typedef unsigned long in_addr_t;
->  /* Use lzo/ directory prefix for LZO header files (for LZO 2.0) */
->  #define LZO_HEADER_DIR 1
+> diff --git a/ssl_verify_openssl.c b/ssl_verify_openssl.c
+> index 13c2f4e..e82f6f9 100644
+> --- a/ssl_verify_openssl.c
+> +++ b/ssl_verify_openssl.c
+> @@ -35,6 +35,7 @@
+>  #include "ssl_verify_backend.h"
+>  #include "ssl_openssl.h"
+>  #include <openssl/x509v3.h>
+> +#include <openssl/err.h>
 >=20=20
-> -/* Use OpenSSL SSL library */
-> +/* Use the SSL library */
->  #define USE_SSL 1
->=20=20
->  /* Version number of package */
-> diff --git a/win/msvc.mak.in b/win/msvc.mak.in
-> index ac17ae9..d2babcf 100644
-> --- a/win/msvc.mak.in
-> +++ b/win/msvc.mak.in
-> @@ -12,16 +12,28 @@
->  # - OPENSSL_DIR and LZO_DIR are dynamically created from settings.in
->=20=20
->  OPENSSL =3D @OPENSSL_DIR@
-> +!ifdef INCLUDE_OPENSSL
->  OPENSSL_DYNAMIC =3D libeay32.lib ssleay32.lib
-> +!endif
-> +
-> +POLARSSL =3D @POLARSSL_DIR@
-> +!ifdef INCLUDE_POLARSSL
-> +POLARSSL_DYNAMIC =3D polarssl.lib
-> +!endif
-> +
-> +PKCS11_HELPER =3D @PKCS11_HELPER_DIR@
-> +!ifdef INCLUDE_PKCS11
-> +PKCS11_HELPER_DYNAMIC =3D pkcs11-helper.lib
-> +!endif
->=20=20
->  LZO =3D @LZO_DIR@
->  LZO_DYNAMIC =3D lzo2.lib
->=20=20
-> -INCLUDE_DIRS =3D -I$(OPENSSL)/include -I$(LZO)/include
-> +INCLUDE_DIRS =3D -I$(OPENSSL)/include -I$(POLARSSL)/include -I$(LZO)/inc=
-lude -I$(PKCS11_HELPER)/include
->=20=20
-> -LIBS =3D $(OPENSSL_DYNAMIC) $(LZO_DYNAMIC) ws2_32.lib crypt32.lib iphlpa=
-pi.lib winmm.lib user32.lib gdi32.lib advapi32.lib wininet.lib
-> +LIBS =3D $(OPENSSL_DYNAMIC) $(POLARSSL_DYNAMIC) $(PKCS11_HELPER_DYNAMIC)=
- $(LZO_DYNAMIC) ws2_32.lib crypt32.lib iphlpapi.lib winmm.lib user32.lib gd=
-i32.lib advapi32.lib wininet.lib
->=20=20
-> -LIB_DIRS =3D -LIBPATH:$(OPENSSL)\lib -LIBPATH:$(LZO)\lib
-> +LIB_DIRS =3D -LIBPATH:$(OPENSSL)\lib -LIBPATH:$(POLARSSL)\build\library =
--LIBPATH:$(PKCS11_HELPER)\lib -LIBPATH:$(LZO)
->=20=20
->  EXE =3D openvpn.exe
->=20=20
-> diff --git a/win/settings.in b/win/settings.in
-> index 10c7926..79033dd 100644
-> --- a/win/settings.in
-> +++ b/win/settings.in
-> @@ -33,8 +33,21 @@
->  !define OPENVPN_GUI_DIR "../openvpn-gui"
->  !define OPENVPN_GUI     "openvpn-gui-1.0.3.exe"
->=20=20
-> +# Use either PolarSSL or OpenSSL. Only one may be active at a time
-> +!define USE_POLARSSL 0
-> +!define USE_OPENSSL 1
-> +
-> +# The same as above, but for library inclusion (must be defined/undefine=
-d due to build system)
-> +;!define INCLUDE_POLARSSL
-> +!define INCLUDE_OPENSSL
-> +
-> +# Uncomment to use the PKCS#11 helper library
-> +!define USE_PKCS11 0
-> +;!define INCLUDE_PKCS11
-> +
->  # Prebuilt libraries.  DMALLOC is optional.
->  !define OPENSSL_DIR	  "../openssl"
-> +!define POLARSSL_DIR	  "../polarssl"
->  !define LZO_DIR		  "../lzo"
->  !define PKCS11_HELPER_DIR "../pkcs11-helper"
->=20=20
+>  int
+>  verify_callback (int preverify_ok, X509_STORE_CTX * ctx)
+> diff --git a/ssl_verify_polarssl.c b/ssl_verify_polarssl.c
+> index 7fdca1f..699eb47 100644
+> --- a/ssl_verify_polarssl.c
+> +++ b/ssl_verify_polarssl.c
+> @@ -191,7 +191,7 @@ x509_free_subject (char *subject)
+>  void
+>  x509_setenv (struct env_set *es, int cert_depth, x509_cert_t *cert)
+>  {
+> -  int i, ret;
+> +  int i;
+>    unsigned char c;
+>    const x509_name *name;
+>    char s[128];
 
-ACK, provided that my small OpenSSL build fix is applied on top of this.
+Can confirm that Visual Studio/Python does not give any build errors
+when this patch and patch 4/8 have been applied. The resulting binary
+also seems to work properly.
 
 --=20
 Samuli Sepp=E4nen
