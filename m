@@ -1,14 +1,8 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Fri, 11 Nov 2011 11:11:06 +0100
-Message-ID: <6786111.khz1FHIxJB@...1524...>
-In-Reply-To: <1320074961-3809-9-git-send-email-dejong@...1435...>
-References: <1320074961-3809-1-git-send-email-dejong@...1435...>
-	<1320074961-3809-9-git-send-email-dejong@...1435...>
-MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="nextPart1826289.xy28apzrLp"
-Content-Transfer-Encoding: 7Bit
-Subject: Re: [Openvpn-devel] [PATCH 8/8] Fixed a typo when initialising
-	cryptoapi certs
+Date: Fri, 18 Nov 2011 13:39:50 +0100
+From: David Sommerseth <davids@...1347...>
+Message-id: <1321619990-12173-1-git-send-email-davids@...1347...>
+MIME-version: 1.0
+Subject: [Openvpn-devel] [PATCH] Make '--win-sys env' default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,148 +11,151 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
---nextPart1826289.xy28apzrLp
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Without this patch, the default path used by OpenVPN is hard coded
+to C:\WINDOWS.  As users might install Windows in a different directory,
+this approach will cause OpenVPN to malfunction in some configurations.
 
-On Monday 31 October 2011 15:29:21 Adriaan de Jong wrote:
-> Signed-off-by: Adriaan de Jong <dejong@...1435...>
-> ---
->  ssl_openssl.c |    2 +-
->  1 files changed, 1 insertions(+), 1 deletions(-)
->=20
-> diff --git a/ssl_openssl.c b/ssl_openssl.c
-> index 391968a..b95944c 100644
-> --- a/ssl_openssl.c
-> +++ b/ssl_openssl.c
-> @@ -339,7 +339,7 @@ tls_ctx_load_cryptoapi(struct tls_root_ctx *ctx, const
-> char *cryptoapi_cert) /* Load Certificate and Private Key */
->    if (!SSL_CTX_use_CryptoAPI_certificate (ctx->ctx, cryptoapi_cert))
->      msg (M_SSLERR, "Cannot load certificate \"%s\" from Microsoft
-> Certificate Store", -	   options->cryptoapi_cert);
-> +	   cryptoapi_cert);
->  }
->  #endif /* WIN32 */
+OpenVPN have supported using the system path, by adding --win-sys env.
+This patch removes the hard coded approach and uses the --win-sys env
+approach by default instead.
 
-ACK, as this fixes building git master for Windows.
---=20
-Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
-Astaro a Sophos Company | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germ=
-any
-Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
+Trac-ticket: 66
+URL: http://thread.gmane.org/gmane.network.openvpn.user/32508
+Signed-off-by: David Sommerseth <davids@...1347...>
+Tested-by: Samuli Sepp=C3=A4nen <samuli@...515...>
+---
+ openvpn.8 |   19 +++++++++++--------
+ openvpn.c |    2 +-
+ options.c |    8 +++++---
+ win32.c   |    6 ------
+ win32.h   |    2 --
+ 5 files changed, 17 insertions(+), 20 deletions(-)
+
+diff --git a/openvpn.8 b/openvpn.8
+index b8594e1..4a86ce7 100644
+--- a/openvpn.8
++++ b/openvpn.8
+@@ -4769,20 +4769,23 @@ Optional group to be owner of this tunnel.
+ .SS Windows-Specific Options:
+ .\"*********************************************************
+ .TP
+-.B \-\-win-sys path|'env'
++.B \-\-win-sys path
+ Set the Windows system directory pathname to use when looking for system
+ executables such as
+ .B route.exe
+ and
+ .B netsh.exe.
+ By default, if this directive is
+-not specified, the pathname will be set to "C:\\WINDOWS"
+-
+-The special string
+-.B 'env'
+-indicates that the pathname should be read from the
+-.B SystemRoot
+-environmental variable.
++not specified, OpenVPN will use the SystemRoot environment variable.
++
++This option have changed behaviour in OpenVPN 2.3.  Earlier you had to
++define
++.B --win-sys env
++to use the SystemRoot environment variable, otherwise it defaulted to C:\\=
+WINDOWS.
++It is not needed to use the
++.B env
++keyword any more, and it will just be ignored. A warning is logged when th=
+is
++is found in the configuration file.
+ .\"*********************************************************
+ .TP
+ .B \-\-ip-win32 method
+diff --git a/openvpn.c b/openvpn.c
+index 520fda1..b4d6fd2 100644
+--- a/openvpn.c
++++ b/openvpn.c
+@@ -162,7 +162,7 @@ main (int argc, char *argv[])
+ 	  /* initialize environmental variable store */
+ 	  c.es =3D env_set_create (NULL);
+ #ifdef WIN32
+-	  env_set_add_win32 (c.es);
++	  set_win_sys_path_via_env (c.es);
+ #endif
 =20
-Represented by the General Partner Astaro Verwaltungs GmbH
-Amalienbadstra=DFe 41 Bau 52 | 76227 Karlsruhe | Germany=20
-Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
-Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
+ #ifdef ENABLE_MANAGEMENT
+diff --git a/options.c b/options.c
+index 0d86cd0..e422c0d 100644
+--- a/options.c
++++ b/options.c
+@@ -652,8 +652,8 @@ static const char usage_message[] =3D
+ #ifdef WIN32
+   "\n"
+   "Windows Specific:\n"
+-  "--win-sys path|'env' : Pathname of Windows system directory, C:\\WINDOW=
+S by default.\n"
+-  "                       If specified as 'env', read the pathname from Sy=
+stemRoot env var.\n"
++  "--win-sys path    : Pathname of Windows system directory. Default is th=
+e pathname\n"
++  "                    from SystemRoot environment variable.\n"
+   "--ip-win32 method : When using --ifconfig on Windows, set TAP-Win32 ada=
+pter\n"
+   "                    IP address using method =3D manual, netsh, ipapi,\n"
+   "                    dynamic, or adaptive (default =3D adaptive).\n"
+@@ -5687,7 +5687,9 @@ add_option (struct options *options,
+     {
+       VERIFY_PERMISSION (OPT_P_GENERAL);
+       if (streq (p[1], "env"))
+-	set_win_sys_path_via_env (es);
++	msg (M_INFO, "NOTE: --win-sys env is default from OpenVPN v2.3.	 "
++	     "This entry will now be ignored.  "
++	     "Please remove this entry from your configuration file.");
+       else
+ 	set_win_sys_path (p[1], es);
+     }
+diff --git a/win32.c b/win32.c
+index cf6cc2d..416af86 100644
+--- a/win32.c
++++ b/win32.c
+@@ -1103,12 +1103,6 @@ set_win_sys_path_via_env (struct env_set *es)
+   set_win_sys_path (buf, es);
+ }
+=20
+-void
+-env_set_add_win32 (struct env_set *es)
+-{
+-  set_win_sys_path (DEFAULT_WIN_SYS_PATH, es);
+-}
+-
+=20
+ const char *
+ win_get_tempdir()
+diff --git a/win32.h b/win32.h
+index 5b18e3c..9ee95ef 100644
+--- a/win32.h
++++ b/win32.h
+@@ -30,7 +30,6 @@
+=20
+ /* location of executables */
+ #define SYS_PATH_ENV_VAR_NAME "SystemRoot"  /* environmental variable name=
+ that normally contains the system path */
+-#define DEFAULT_WIN_SYS_PATH  "C:\\WINDOWS" /* --win-sys default value */
+ #define NETSH_PATH_SUFFIX     "\\system32\\netsh.exe"
+ #define WIN_ROUTE_PATH_SUFFIX "\\system32\\route.exe"
+ #define WIN_IPCONFIG_PATH_SUFFIX "\\system32\\ipconfig.exe"
+@@ -269,7 +268,6 @@ bool win_safe_filename (const char *fn);
+=20
+ /* add constant environmental variables needed by Windows */
+ struct env_set;
+-void env_set_add_win32 (struct env_set *es);
+=20
+ /* get and set the current windows system path */
+ void set_win_sys_path (const char *newpath, struct env_set *es);
+--=20
+1.7.4.4
 
 
-
---nextPart1826289.xy28apzrLp
-Content-Type: text/html; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-=
-html40/strict.dtd">
-<html><head><meta name=3D"qrichtext" content=3D"1" /><style type=3D"text/cs=
-s">
-p, li { white-space: pre-wrap; }
-</style></head><body style=3D" font-family:'Courier New'; font-size:8pt; fo=
-nt-weight:400; font-style:normal;">
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">On Monday 3=
-1 October 2011 15:29:21 Adriaan de Jong wrote:</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt; Signed=
--off-by: Adriaan de Jong &lt;dejong@...1435...&gt;</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt; ---</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt;  ssl_o=
-penssl.c |    2 +-</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt;  1 fil=
-es changed, 1 insertions(+), 1 deletions(-)</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt; </p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt; diff -=
--git a/ssl_openssl.c b/ssl_openssl.c</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt; index =
-391968a..b95944c 100644</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt; --- a/=
-ssl_openssl.c</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt; +++ b/=
-ssl_openssl.c</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt; @@ -33=
-9,7 +339,7 @@ tls_ctx_load_cryptoapi(struct tls_root_ctx *ctx, const</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt; char *=
-cryptoapi_cert) /* Load Certificate and Private Key */</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt;    if =
-(!SSL_CTX_use_CryptoAPI_certificate (ctx-&gt;ctx, cryptoapi_cert))</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt;      m=
-sg (M_SSLERR, &quot;Cannot load certificate \&quot;%s\&quot; from Microsoft=
-</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt; Certif=
-icate Store&quot;, -	   options-&gt;cryptoapi_cert);</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt; +	   c=
-ryptoapi_cert);</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt;  }</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt;  #endi=
-f /* WIN32 */</p>
-<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
-rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; ">&nb=
-sp;</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">ACK, as thi=
-s fixes building git master for Windows.</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">-- </p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">Heiko Hund =
-| Software Engineer | Phone +49-721-25516-237 | Fax -200</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">Astaro a So=
-phos Company | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germany</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">Commercial =
-Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;"> </p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">Represented=
- by the General Partner Astaro Verwaltungs GmbH</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">Amalienbads=
-tra=DFe 41 Bau 52 | 76227 Karlsruhe | Germany </p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">Commercial =
-Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">Markus Henn=
-ig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen</p>
-<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
-rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; ">&nb=
-sp;</p>
-<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
-rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; ">&nb=
-sp;</p>
-<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
-rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; ">&nb=
-sp;</p></body></html>=
-
---nextPart1826289.xy28apzrLp--
 
