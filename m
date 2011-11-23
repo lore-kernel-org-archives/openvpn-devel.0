@@ -1,13 +1,11 @@
-Date: Wed, 23 Nov 2011 09:34:38 +0100
+Date: Wed, 23 Nov 2011 11:23:44 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20111123083437.GZ8496@...1296...>
-References: <4ECC6EE6.5050709@...1388...>
+Message-ID: <20111123102344.GA8496@...1296...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="yin1XIsa6qgNGXVp"
+	protocol="application/pgp-signature"; boundary="VBeXCwbVT6X1cXag"
 Content-Disposition: inline
-In-Reply-To: <4ECC6EE6.5050709@...1388...>
-Subject: Re: [Openvpn-devel] Problems with add_route_ipv6()
+Subject: [Openvpn-devel] extra patches needed for tap driver bugfix
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,53 +14,24 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Michal Ludvig <mludvig@...1388...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
---yin1XIsa6qgNGXVp
+--VBeXCwbVT6X1cXag
+Content-Type: multipart/mixed; boundary="tl7K513ixPcpknIx"
+Content-Disposition: inline
+
+--tl7K513ixPcpknIx
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Wed, Nov 23, 2011 at 04:56:22PM +1300, Michal Ludvig wrote:
-> I'm using the latest openvpn from GIT on OpenSUSE 11.4 and am=20
-> experiencing a problem with IPv6 payload setup. It works but openvpn=20
-> seems to be somewhat confused when setting up the v6 route.
+bugfixing the tap driver is nice and well, but I think we MUST bump the
+driver version as well, and we SHOULD have a check in tun.c to refuse
+operation if the known-buggy version (9.8) is detected.
 
-There's two interesting things in here...
-
-> However every 2 minutes OpenVPN for some reason triggers a restart and=20
-> then it tries to call add_route_ipv6() more then once. In fact it calls=20
-> it 2x on the first restrat, 3x on the 2nd restart, etc. Here you go=20
-> after a couple of minutes:
->=20
-> 16:42:16 [xyz.logix.net.nz] Inactivity timeout (--ping-restart), restarti=
-ng
-
-... first, the restart, due to --ping timeout.  This normally shouldn't
-happen in the first place - but it's not "the bug", it's just the trigger.
-
-> 16:42:21 add_route_ipv6(2001:e20:abcd:400::/56 -> 2001:e20:abcd:403::1=20
-> metric 0) dev tunHome
-> 16:42:21 /bin/ip -6 route add 2001:e20:abcd:400::/56 dev tunHome
-> 16:42:21 add_route_ipv6(2001:e20:abcd:400::/56 -> 2001:e20:abcd:403::1=20
-> metric 0) dev tunHome
-> 16:42:21 /bin/ip -6 route add 2001:e20:abcd:400::/56 dev tunHome
-> RTNETLINK answers: File exists
-
-... and *that* is quite obviously a bug.  It seems as if the pushed
-route list isn't properly flushed upon disconnect, and then the routes=20
-are just added again on top of it.
-
-I'll go and investigate.  Thanks for bringing this up.
-
-> Is there anything wrong with my setup or is it an OpenVPN bug?
-
-The "ping restart" could be missing --ping* options on the server, but
-that's just triggering the real bug - so it's good that you found it,=20
-and we can fix it in time for 2.3.
+Patches below.
 
 gert
 
@@ -73,19 +42,97 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---yin1XIsa6qgNGXVp
+--tl7K513ixPcpknIx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment;
+	filename="0001-bump-tap-driver-version-from-9.8-to-9.9.patch"
+Content-Transfer-Encoding: quoted-printable
+
+=46rom c8e7ad5ed0a91d8b595e8b1862416f226a86968f Mon Sep 17 00:00:00 2001
+From: Gert Doering <gert@...1296...>
+Date: Wed, 23 Nov 2011 11:07:09 +0100
+Subject: [PATCH 1/2] bump tap driver version from 9.8 to 9.9
+ (bugfixed tapdrvr.c regarding small IPv4 packets)
+
+---
+ version.m4 |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/version.m4 b/version.m4
+index 78e69aa..514ae72 100644
+--- a/version.m4
++++ b/version.m4
+@@ -3,4 +3,4 @@ define(PRODUCT_VERSION,[2.x-master])
+ dnl define the TAP version
+ define(PRODUCT_TAP_ID,[tap0901])
+ define(PRODUCT_TAP_WIN32_MIN_MAJOR,[9])
+-define(PRODUCT_TAP_WIN32_MIN_MINOR,[8])
++define(PRODUCT_TAP_WIN32_MIN_MINOR,[9])
+--=20
+1.7.3.4
+
+
+--tl7K513ixPcpknIx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment;
+	filename="0002-log-error-message-and-exit-for-win32-tun-mode-tap-dr.patch"
+Content-Transfer-Encoding: quoted-printable
+
+=46rom ce6329e86dfd4b4af1371c09abf06795540fa28a Mon Sep 17 00:00:00 2001
+From: Gert Doering <gert@...1296...>
+Date: Wed, 23 Nov 2011 11:11:54 +0100
+Subject: [PATCH 2/2] log error message and exit for "win32, tun mode, tap d=
+river version 9.8"
+ (driver is known-buggy for small IPv4 packets in tun mode)
+
+---
+ tun.c |    8 ++++++++
+ 1 files changed, 8 insertions(+), 0 deletions(-)
+
+diff --git a/tun.c b/tun.c
+index c8ac394..70d9f5a 100644
+--- a/tun.c
++++ b/tun.c
+@@ -4584,6 +4584,14 @@ open_tun (const char *dev, const char *dev_type, con=
+st char *dev_node, struct tu
+ 	msg( M_INFO, "WARNING:  Tap-Win32 driver version %d.%d does not support I=
+Pv6 in TUN mode.  IPv6 will be disabled.  Upgrade to Tap-Win32 9.8 (2.2-bet=
+a3 release or later) or use TAP mode to get IPv6", (int) info[0], (int) inf=
+o[1] );
+ 	tt->ipv6 =3D false;
+       }
++
++    /* tap driver 9.8 (2.2.0 and 2.2.1 release) is buggy
++     */
++    if ( tt->type =3D=3D DEV_TYPE_TUN &&=20
++	 info[0] =3D=3D 9 && info[1] =3D=3D 8)
++      {
++	msg( M_FATAL, "ERROR:  Tap-Win32 driver version %d.%d is buggy regarding =
+small IPv4 packets in TUN mode.  Upgrade to Tap-Win32 9.9 (2.2.2 release or=
+ later) or use TAP mode", (int) info[0], (int) info[1] );
++      }
+   }
+=20
+   /* get driver MTU */
+--=20
+1.7.3.4
+
+
+--tl7K513ixPcpknIx--
+
+--VBeXCwbVT6X1cXag
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (NetBSD)
 
-iQCVAwUBTsywHakuBuNlUUl1AQKjMgP/QHG0bXoCQzBNf+YFD7+hnpsanIYFMzfr
-zpO7xASFr80PcX02t9IrHc5P/o9KILKZol25WN11zWRiT1D8hjvj9K55VvIKQXEO
-1hv9R/+JlMeeBKEVSwIuTmWG5dg4+xKx/oSiHCIRk/BPR++7QfJR2R4Ci5IATWJF
-kfNdt7zhIhM=
-=h8nb
+iQCVAwUBTszJsKkuBuNlUUl1AQLEMQP9HIGvSfaxBqKdwP26qW3mNw7oZ3kYS6Xx
+00W8ISp/2GVgPzDmmVwXbcvZ6dK/SnKJyglO2TCXRDimjEhnkY6YdjBNwTdRwA/Z
+tDr0iDD9jLjI5GKgMDiMKLAEivKo3le0ZqsxJJIs+JRFkkwaQzmijqh4W9jOiN59
+JezDj2p1aug=
+=mWRn
 -----END PGP SIGNATURE-----
 
---yin1XIsa6qgNGXVp--
+--VBeXCwbVT6X1cXag--
 
