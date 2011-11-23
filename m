@@ -1,12 +1,8 @@
-From: Adriaan de Jong <dejong@...1435...>
-Date: Wed, 23 Nov 2011 11:40:17 +0100
-Message-ID: <1CED409804E2164C8104F9E623B08B90128A57E62D@...1436...>
-Content-Language: en-US
-Content-Type: multipart/alternative;
-	boundary="_000_1CED409804E2164C8104F9E623B08B90128A57E62DFOXDFT02FOXlo_"
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Wed, 23 Nov 2011 15:14:15 +0100
+Message-ID: <1322057655-15463-1-git-send-email-heiko.hund@...1489...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN approved for government use in the
-	Netherlands
+Subject: [Openvpn-devel] [PATCH] UTF-8 X.509 distinguished names
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,136 +11,426 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---_000_1CED409804E2164C8104F9E623B08B90128A57E62DFOXDFT02FOXlo_
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-As many of you know, my company, Fox-IT, has been hired to help the Dutch g=
-overnment prepare OpenVPN for government evaluation. Part of that process w=
-as the addition of more API documentation, and the refactoring of the backe=
-nd crypto system. We've tried to return all of the (useful) patches to the =
-community, and most of them have already been integrated with the community=
- version of OpenVPN.
+The UTF-8 support that came with commit 2627335 does allow international
+usernames and passwords. This patch introduces UTF-8 support for X.509 DNs.
+Additionally, instead of using the legacy openssl format, DNs are now
+displayed in RFC 2253 format; "/C=3Dru/L=3D\xD0\x9C\xD0\xBE\xD1\x81\xD0\xBA=
+\xD0
+\xB2\xD0\xB0/O=3D\xD0\x9A\xD1\x80\xD0\xB5\xD0\xBC\xD0\xBB\xD1\x8C/CN=3Dkrem=
+l.ru"
+becomes "C=3Dru, L=3D=D0=9C=D0=BE=D1=81=D0=BA=D0=B2=D0=B0, O=3D=D0=9A=D1=80=
+=D0=B5=D0=BC=D0=BB=D1=8C, CN=3Dkreml.ru".
 
-The evaluation has been completed, and OpenVPN has been approved for use at=
- a (Dutch) Departementaal Vertrouwelijk level, which is similar to NATO Res=
-tricted. Another part of that process was the creation of a secure distribu=
-tion channel for the hardened OpenVPN version (OpenVPN-NL), which has now b=
-een launched at https://openvpn.fox-it.com/ .
+Since the specific character classes for X.509 names are removed, the
+"no-name-remapping" configuration option has no use anymore and is removed
+as well.
 
-I'd like to thank everyone in the OpenVPN community for helping throughout =
-the process!
+Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+---
+ openvpn.8                |   23 +----------------------
+ options.c                |   12 +-----------
+ pkcs11_openssl.c         |    2 +-
+ sample-scripts/verify-cn |    6 +++---
+ ssl_openssl.c            |   36 ++++++++++++++++++++++++++++++++++++
+ ssl_openssl.h            |    1 +
+ ssl_verify.c             |   45 +++++++++---------------------------------=
+---
+ ssl_verify_openssl.c     |    4 ++--
+ 8 files changed, 54 insertions(+), 75 deletions(-)
 
-Kind Regards,
-Adriaan de Jong
+diff --git a/openvpn.8 b/openvpn.8
+index b8594e1..e96c1e4 100644
+--- a/openvpn.8
++++ b/openvpn.8
+@@ -3322,27 +3322,6 @@ the authenticated username as the common name,
+ rather than the common name from the client cert.
+ .\"*********************************************************
+ .TP
+-.B \-\-no-name-remapping
+-Allow Common Name, X509 Subject, and username strings to include
+-any printable character including space, but excluding control
+-characters such as tab, newline, and carriage-return.
+-
+-By default, OpenVPN will remap
+-any character other than alphanumeric, underbar ('_'), dash
+-('-'), dot ('.'), and slash ('/') to underbar ('_').  The X509
+-Subject string as returned by the
+-.B tls_id
+-environmental variable, can additionally contain colon (':') or
+-equal ('=3D').
+-
+-While name remapping is performed for security reasons to reduce
+-the possibility of introducing string expansion security vulnerabilities
+-in user-defined authentication
+-scripts, this option is provided for those cases where it is desirable to
+-disable the remapping feature.  Don't use this option unless you=20
+-know what you are doing!
+-.\"*********************************************************
+-.TP
+ .B \-\-port-share host port [dir]
+ When run in TCP server mode, share the OpenVPN port with
+ another application, such as an HTTPS server.  If OpenVPN
+@@ -4463,7 +4442,7 @@ When
+ .B cmd
+ is executed two arguments are appended, as follows:
+=20
+-.B cmd certificate_depth X509_NAME_oneline
++.B cmd certificate_depth subject
+=20
+ These arguments are, respectively, the current certificate depth and
+ the X509 common name (cn) of the peer.
+diff --git a/options.c b/options.c
+index 0d86cd0..a01ae76 100644
+--- a/options.c
++++ b/options.c
+@@ -597,7 +597,7 @@ static const char usage_message[] =3D
+   "                  pending TLS connection that has otherwise passed all =
+other\n"
+   "                  tests of certification.  cmd should return 0 to allow=
+\n"
+   "                  TLS handshake to proceed, or 1 to fail.  (cmd is\n"
+-  "                  executed as 'cmd certificate_depth X509_NAME_oneline'=
+)\n"
++  "                  executed as 'cmd certificate_depth subject')\n"
+   "--tls-export-cert [directory] : Get peer cert in PEM format and store i=
+t \n"
+   "                  in an openvpn temporary file in [directory]. Peer cer=
+t is \n"
+   "                  stored before tls-verify script execution and deleted=
+ after.\n"
+@@ -2160,9 +2160,6 @@ options_postprocess_verify_ce (const struct options *=
+options, const struct conne
+ 	  if ((options->ssl_flags & SSLF_AUTH_USER_PASS_OPTIONAL) && !ccnr)
+ 	    msg (M_USAGE, "--auth-user-pass-optional %s", postfix);
+ 	}
+-
+-	if ((options->ssl_flags & SSLF_NO_NAME_REMAPPING) && script_method =3D=3D=
+ SM_SYSTEM)
+-	  msg (M_USAGE, "--script-security method=3D'system' cannot be combined w=
+ith --no-name-remapping");
+     }
+   else
+     {
+@@ -2197,8 +2194,6 @@ options_postprocess_verify_ce (const struct options *=
+options, const struct conne
+ 	msg (M_USAGE, "--username-as-common-name requires --mode server");
+       if (options->ssl_flags & SSLF_AUTH_USER_PASS_OPTIONAL)
+ 	msg (M_USAGE, "--auth-user-pass-optional requires --mode server");
+-      if (options->ssl_flags & SSLF_NO_NAME_REMAPPING)
+-	msg (M_USAGE, "--no-name-remapping requires --mode server");
+       if (options->ssl_flags & SSLF_OPT_VERIFY)
+ 	msg (M_USAGE, "--opt-verify requires --mode server");
+       if (options->server_flags & SF_TCP_NODELAY_HELPER)
+@@ -5389,11 +5384,6 @@ add_option (struct options *options,
+       VERIFY_PERMISSION (OPT_P_GENERAL);
+       options->ssl_flags |=3D SSLF_AUTH_USER_PASS_OPTIONAL;
+     }
+-  else if (streq (p[0], "no-name-remapping"))
+-    {
+-      VERIFY_PERMISSION (OPT_P_GENERAL);
+-      options->ssl_flags |=3D SSLF_NO_NAME_REMAPPING;
+-    }
+   else if (streq (p[0], "opt-verify"))
+     {
+       VERIFY_PERMISSION (OPT_P_GENERAL);
+diff --git a/pkcs11_openssl.c b/pkcs11_openssl.c
+index e3463dc..943b90f 100644
+--- a/pkcs11_openssl.c
++++ b/pkcs11_openssl.c
+@@ -129,7 +129,7 @@ pkcs11_certificate_dn (pkcs11h_certificate_t certificat=
+e, char *dn,
+       goto cleanup;
+     }
+=20
+-  X509_NAME_oneline (X509_get_subject_name (x509), dn, dn_len);
++  openssl_get_subject (x509, dn, dn_len);
+=20
+   ret =3D 0;
+=20
+diff --git a/sample-scripts/verify-cn b/sample-scripts/verify-cn
+index f9fea0f..6e747ef 100755
+--- a/sample-scripts/verify-cn
++++ b/sample-scripts/verify-cn
+@@ -3,7 +3,7 @@
+ # verify-cn -- a sample OpenVPN tls-verify script
+ #
+ # Return 0 if cn matches the common name component of
+-# X509_NAME_oneline, 1 otherwise.
++# subject, 1 otherwise.
+ #
+ # For example in OpenVPN, you could use the directive:
+ #
+@@ -13,7 +13,7 @@
+ # the client common name is listed on a line in the
+ # allowed_clients file.
+=20
+-die "usage: verify-cn cnfile certificate_depth X509_NAME_oneline" if (@ARG=
+V !=3D 3);
++die "usage: verify-cn cnfile certificate_depth subject" if (@ARGV !=3D 3);
+=20
+ # Parse out arguments:
+ #   cnfile -- The file containing the list of common names, one per
+@@ -37,7 +37,7 @@ if ($depth =3D=3D 0) {
+     # If so, parse out the common name substring in
+     # the X509 subject string.
+=20
+-    if ($x509 =3D~ /\/CN=3D([^\/]+)/) {
++    if ($x509 =3D~ / CN=3D([^,]+)/) {
+         $cn =3D $1;
+ 	# Accept the connection if the X509 common name
+ 	# string matches the passed cn argument.
+diff --git a/ssl_openssl.c b/ssl_openssl.c
+index 2e9fc4d..536b5f0 100644
+--- a/ssl_openssl.c
++++ b/ssl_openssl.c
+@@ -1290,4 +1290,40 @@ get_highest_preference_tls_cipher (char *buf, int si=
+ze)
+   SSL_CTX_free (ctx);
+ }
+=20
++char *
++openssl_get_subject (X509 *cert, char *buf, int size)
++{
++  BIO *subject_bio;
++  BUF_MEM *subject_mem;
++  char *subject =3D buf;
++  int maxlen =3D size;
++
++  subject_bio =3D BIO_new (BIO_s_mem ());
++  if (subject_bio =3D=3D NULL)
++    goto out;
++
++  X509_NAME_print_ex (subject_bio, X509_get_subject_name (cert),
++                      0, XN_FLAG_SEP_CPLUS_SPC | XN_FLAG_FN_SN |
++                      ASN1_STRFLGS_UTF8_CONVERT | ASN1_STRFLGS_ESC_CTRL);
++
++  if (BIO_eof (subject_bio))
++    goto out_free;
++
++  BIO_get_mem_ptr (subject_bio, &subject_mem);
++  if (subject =3D=3D NULL)
++    {
++      maxlen =3D subject_mem->length + 1;
++      subject =3D malloc (maxlen);
++      check_malloc_return (subject);
++    }
++
++  memcpy (subject, subject_mem->data, maxlen);
++  subject[maxlen - 1] =3D '\0';
++
++out_free:
++  BIO_free (subject_bio);
++out:
++  return subject;
++}
++
+ #endif /* defined(USE_SSL) && defined(USE_OPENSSL) */
+diff --git a/ssl_openssl.h b/ssl_openssl.h
+index fc2052c..e5e303a 100644
+--- a/ssl_openssl.h
++++ b/ssl_openssl.h
+@@ -54,5 +54,6 @@ struct key_state_ssl {
+ extern int mydata_index; /* GLOBAL */
+=20
+ void openssl_set_mydata_index (void);
++char *openssl_get_subject (X509 *cert, char *buf, int size);
+=20
+ #endif /* SSL_OPENSSL_H_ */
+diff --git a/ssl_verify.c b/ssl_verify.c
+index 326b005..0b2a1fb 100644
+--- a/ssl_verify.c
++++ b/ssl_verify.c
+@@ -40,24 +40,9 @@
+ #include "ssl_verify_openssl.h"
+ #endif
+=20
+-/** Legal characters in an X509 name */
+-#define X509_NAME_CHAR_CLASS   (CC_ALNUM|CC_UNDERBAR|CC_DASH|CC_DOT|CC_AT|=
+CC_COLON|CC_SLASH|CC_EQUAL)
+-
+-/** Legal characters in a common name */
+-#define COMMON_NAME_CHAR_CLASS (CC_ALNUM|CC_UNDERBAR|CC_DASH|CC_DOT|CC_AT|=
+CC_SLASH)
+-
+ /** Maximum length of common name */
+ #define TLS_USERNAME_LEN 64
+=20
+-static void
+-string_mod_sslname (char *str, const unsigned int restrictive_flags, const=
+ unsigned int ssl_flags)
+-{
+-  if (ssl_flags & SSLF_NO_NAME_REMAPPING)
+-    string_mod (str, CC_PRINT, CC_CRLF, '_');
+-  else
+-    string_mod (str, restrictive_flags, 0, '_');
+-}
+-
+ /*
+  * Export the untrusted IP address and port to the environment
+  */
+@@ -595,7 +580,7 @@ verify_cert(struct tls_session *session, x509_cert_t *c=
+ert, int cert_depth)
+     }
+=20
+   /* enforce character class restrictions in X509 name */
+-  string_mod_sslname (subject, X509_NAME_CHAR_CLASS, opt->ssl_flags);
++  string_mod (subject, CC_PRINT, CC_CRLF, '_');
+   string_replace_leading (subject, '-', '_');
+=20
+   /* extract the username (default is CN) */
+@@ -615,7 +600,7 @@ verify_cert(struct tls_session *session, x509_cert_t *c=
+ert, int cert_depth)
+     }
+=20
+   /* enforce character class restrictions in common name */
+-  string_mod_sslname (common_name, COMMON_NAME_CHAR_CLASS, opt->ssl_flags);
++  string_mod (common_name, CC_PRINT, CC_CRLF, '_');
+=20
+   /* warn if cert chain is too deep */
+   if (cert_depth >=3D MAX_CERT_DEPTH)
+@@ -1005,7 +990,7 @@ verify_user_pass_script (struct tls_session *session, =
+const struct user_pass *up
+  * Verify the username and password using a plugin
+  */
+ static int
+-verify_user_pass_plugin (struct tls_session *session, const struct user_pa=
+ss *up, const char *raw_username)
++verify_user_pass_plugin (struct tls_session *session, const struct user_pa=
+ss *up)
+ {
+   int retval =3D OPENVPN_PLUGIN_FUNC_ERROR;
+   struct key_state *ks =3D &session->key[KS_PRIMARY]; 	   /* primary key */
+@@ -1014,7 +999,7 @@ verify_user_pass_plugin (struct tls_session *session, =
+const struct user_pass *up
+   if ((session->opt->ssl_flags & SSLF_AUTH_USER_PASS_OPTIONAL) || strlen (=
+up->username))
+     {
+       /* set username/password in private env space */
+-      setenv_str (session->opt->es, "username", raw_username);
++      setenv_str (session->opt->es, "username", up->username);
+       setenv_str (session->opt->es, "password", up->password);
+=20
+       /* setenv incoming cert common name for script */
+@@ -1038,7 +1023,6 @@ verify_user_pass_plugin (struct tls_session *session,=
+ const struct user_pass *up
+ #endif
+=20
+       setenv_del (session->opt->es, "password");
+-      setenv_str (session->opt->es, "username", up->username);
+     }
+   else
+     {
+@@ -1059,7 +1043,7 @@ verify_user_pass_plugin (struct tls_session *session,=
+ const struct user_pass *up
+ #define KMDA_DEF     3
+=20
+ static int
+-verify_user_pass_management (struct tls_session *session, const struct use=
+r_pass *up, const char *raw_username)
++verify_user_pass_management (struct tls_session *session, const struct use=
+r_pass *up)
+ {
+   int retval =3D KMDA_ERROR;
+   struct key_state *ks =3D &session->key[KS_PRIMARY]; 	   /* primary key */
+@@ -1068,7 +1052,7 @@ verify_user_pass_management (struct tls_session *sess=
+ion, const struct user_pass
+   if ((session->opt->ssl_flags & SSLF_AUTH_USER_PASS_OPTIONAL) || strlen (=
+up->username))
+     {
+       /* set username/password in private env space */
+-      setenv_str (session->opt->es, "username", raw_username);
++      setenv_str (session->opt->es, "username", up->username);
+       setenv_str (session->opt->es, "password", up->password);
+=20
+       /* setenv incoming cert common name for script */
+@@ -1081,7 +1065,6 @@ verify_user_pass_management (struct tls_session *sess=
+ion, const struct user_pass
+ 	management_notify_client_needing_auth (management, ks->mda_key_id, sessio=
+n->opt->mda_context, session->opt->es);
+=20
+       setenv_del (session->opt->es, "password");
+-      setenv_str (session->opt->es, "username", up->username);
+=20
+       retval =3D KMDA_SUCCESS;
+     }
+@@ -1105,9 +1088,6 @@ verify_user_pass(struct user_pass *up, struct tls_mul=
+ti *multi,
+   bool s2 =3D true;
+   struct key_state *ks =3D &session->key[KS_PRIMARY]; 	   /* primary key */
+=20
+-  struct gc_arena gc =3D gc_new ();
+-  char *raw_username;
+-
+ #ifdef MANAGEMENT_DEF_AUTH
+   int man_def_auth =3D KMDA_UNDEF;
+=20
+@@ -1115,22 +1095,17 @@ verify_user_pass(struct user_pass *up, struct tls_m=
+ulti *multi,
+     man_def_auth =3D KMDA_DEF;
+ #endif
+=20
+-  /* preserve raw username before string_mod remapping, for plugins */
+-  ALLOC_ARRAY_CLEAR_GC (raw_username, char, USER_PASS_LEN, &gc);
+-  strcpy (raw_username, up->username);
+-  string_mod (raw_username, CC_PRINT, CC_CRLF, '_');
+-
+   /* enforce character class restrictions in username/password */
+-  string_mod_sslname (up->username, COMMON_NAME_CHAR_CLASS, session->opt->=
+ssl_flags);
++  string_mod (up->username, CC_PRINT, CC_CRLF, '_');
+   string_mod (up->password, CC_PRINT, CC_CRLF, '_');
+=20
+   /* call plugin(s) and/or script */
+ #ifdef MANAGEMENT_DEF_AUTH
+   if (man_def_auth =3D=3D KMDA_DEF)
+-    man_def_auth =3D verify_user_pass_management (session, up, raw_usernam=
+e);
++    man_def_auth =3D verify_user_pass_management (session, up);
+ #endif
+   if (plugin_defined (session->opt->plugins, OPENVPN_PLUGIN_AUTH_USER_PASS=
+_VERIFY))
+-    s1 =3D verify_user_pass_plugin (session, up, raw_username);
++    s1 =3D verify_user_pass_plugin (session, up);
+   if (session->opt->auth_user_pass_verify_script)
+     s2 =3D verify_user_pass_script (session, up);
+=20
+@@ -1179,8 +1154,6 @@ verify_user_pass(struct user_pass *up, struct tls_mul=
+ti *multi,
+     {
+       msg (D_TLS_ERRORS, "TLS Auth Error: Auth Username/Password verificat=
+ion failed for peer");
+     }
+-
+-  gc_free (&gc);
+ }
+=20
+ void
+diff --git a/ssl_verify_openssl.c b/ssl_verify_openssl.c
+index 13c2f4e..7a99469 100644
+--- a/ssl_verify_openssl.c
++++ b/ssl_verify_openssl.c
+@@ -248,14 +248,14 @@ x509_free_sha1_hash (unsigned char *hash)
+ char *
+ x509_get_subject (X509 *cert)
+ {
+-  return X509_NAME_oneline (X509_get_subject_name (cert), NULL, 0);
++  return openssl_get_subject (cert, NULL, 0);
+ }
+=20
+ void
+ x509_free_subject (char *subject)
+ {
+   if (subject)
+-    OPENSSL_free(subject);
++    free(subject);
+ }
+=20
+=20
+--=20
+1.7.5.4
 
-PS. The press release is available at https://www.fox-it.com/en/news-and-ev=
-ents/news/recent-news/news-article/openvpn-modified-for-dutch-government-us=
-e/200
-
-Fox-IT    ...for a more secure society
-Olof Palmestraat 6
-P.O. box 638
-2600 AP DELFT
-The Netherlands
-
-T +31 (0) 15 284 79 99
-F +31 (0) 15 284 79 90
-I www.fox-it.com<http://www.fox-it.com/>
-KvK Haaglanden 27301624
-
-
---_000_1CED409804E2164C8104F9E623B08B90128A57E62DFOXDFT02FOXlo_
-Content-Type: text/html; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
-osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
-//www.w3.org/TR/REC-html40"><head><meta http-equiv=3DContent-Type content=
-=3D"text/html; charset=3Dus-ascii"><meta name=3DGenerator content=3D"Micros=
-oft Word 12 (filtered medium)"><style><!--
-/* Font Definitions */
-@font-face
-	{font-family:"Cambria Math";
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
-@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
-@font-face
-	{font-family:Verdana;
-	panose-1:2 11 6 4 3 5 4 4 2 4;}
-/* Style Definitions */
-p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0cm;
-	margin-bottom:.0001pt;
-	font-size:11.0pt;
-	font-family:"Calibri","sans-serif";}
-a:link, span.MsoHyperlink
-	{mso-style-priority:99;
-	color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{mso-style-priority:99;
-	color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:"Calibri","sans-serif";
-	color:windowtext;}
-.MsoChpDefault
-	{mso-style-type:export-only;}
-@page WordSection1
-	{size:612.0pt 792.0pt;
-	margin:70.85pt 70.85pt 70.85pt 70.85pt;}
-div.WordSection1
-	{page:WordSection1;}
---></style><!--[if gte mso 9]><xml>
-<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
-<o:shapelayout v:ext=3D"edit">
-<o:idmap v:ext=3D"edit" data=3D"1" />
-</o:shapelayout></xml><![endif]--></head><body lang=3DNL link=3Dblue vlink=
-=3Dpurple><div class=3DWordSection1><p class=3DMsoNormal><span lang=3DEN-GB=
->As many of you know, my company, Fox-IT, has been hired to help the Dutch =
-government prepare OpenVPN for government evaluation. Part of that process =
-was the addition of more API documentation, and the refactoring of the back=
-end crypto system. We&#8217;ve tried to return all of the (useful) patches =
-to the community, and most of them have already been integrated with the co=
-mmunity version of OpenVPN. <o:p></o:p></span></p><p class=3DMsoNormal><spa=
-n lang=3DEN-GB><o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal><span lang=
-=3DEN-GB>The evaluation has been completed, and OpenVPN has been approved f=
-or use at a (Dutch) Departementaal Vertrouwelijk level, which is similar to=
- NATO Restricted. Another part of that process was the creation of a secure=
- distribution channel for the hardened OpenVPN version (OpenVPN-NL), which =
-has now been launched at https://openvpn.fox-it.com/ .<o:p></o:p></span></p=
-><p class=3DMsoNormal><span lang=3DEN-GB><o:p>&nbsp;</o:p></span></p><p cla=
-ss=3DMsoNormal><span lang=3DEN-GB>I&#8217;d like to thank everyone in the O=
-penVPN community for helping throughout the process! <o:p></o:p></span></p>=
-<p class=3DMsoNormal><span lang=3DEN-GB><o:p>&nbsp;</o:p></span></p><p clas=
-s=3DMsoNormal><span lang=3DEN-GB>Kind Regards,<o:p></o:p></span></p><p clas=
-s=3DMsoNormal><span lang=3DEN-GB>Adriaan de Jong<o:p></o:p></span></p><p cl=
-ass=3DMsoNormal><span lang=3DEN-GB><o:p>&nbsp;</o:p></span></p><p class=3DM=
-soNormal><span lang=3DEN-GB>PS. The press release is available at </span><a=
- href=3D"https://www.fox-it.com/en/news-and-events/news/recent-news/news-ar=
-ticle/openvpn-modified-for-dutch-government-use/200"><span lang=3DEN-GB>htt=
-ps://www.fox-it.com/en/news-and-events/news/recent-news/news-article/openvp=
-n-modified-for-dutch-government-use/200</span></a><span lang=3DEN-GB><o:p><=
-/o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB><o:p>&nbsp;</o:p></=
-span></p><p class=3DMsoNormal><b><span lang=3DEN-US style=3D'font-size:9.0p=
-t;font-family:"Verdana","sans-serif";color:navy'>Fox-IT</span></b><span lan=
-g=3DEN-US style=3D'font-size:9.0pt;font-family:"Verdana","sans-serif";color=
-:navy'>&nbsp;&nbsp;&nbsp;&nbsp;<i>...for a more secure society</i> <o:p></o=
-:p></span></p><p class=3DMsoNormal><span lang=3DEN-US style=3D'font-size:8.=
-0pt;font-family:"Verdana","sans-serif";color:#1F497D'>Olof Palmestraat 6<br=
->P.O. box 638<br>2600 AP DELFT<br>The Netherlands<br><br>T +31 (0) 15 284 7=
-9 99<br>F +31 (0) 15 284 79 90<br>I <a href=3D"http://www.fox-it.com/"><spa=
-n style=3D'color:blue'>www.fox-it.com</span></a><br>KvK Haaglanden 27301624=
-</span><span lang=3DEN-US style=3D'color:#1F497D'><o:p></o:p></span></p><p =
-class=3DMsoNormal><span lang=3DEN-GB><o:p>&nbsp;</o:p></span></p></div></bo=
-dy></html>=
-
---_000_1CED409804E2164C8104F9E623B08B90128A57E62DFOXDFT02FOXlo_--
 
