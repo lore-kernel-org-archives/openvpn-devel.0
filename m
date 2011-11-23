@@ -1,11 +1,11 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Wed, 23 Nov 2011 16:02:42 +0100
-Message-ID: <9869451.Fvo0nLyisR@...1526...>
-In-Reply-To: <CAOazyz1uPqYfVRJp0H5vjgxgBo0Mc2oqYJt=KDUWXrjzU+615w@...278...>
-References: <1322057700-15531-1-git-send-email-heiko.hund@...1489...>
-	<CAOazyz1uPqYfVRJp0H5vjgxgBo0Mc2oqYJt=KDUWXrjzU+615w@...278...>
+Date: Wed, 23 Nov 2011 16:14:35 +0100
+Message-ID: <8817069.bUavoJz72o@...1526...>
+In-Reply-To: <CAOazyz0mAOkx5VBBM2WDiCBQ-S6ikV++9ixQpdg4LCCJ0D1sLg@...278...>
+References: <1322057655-15463-1-git-send-email-heiko.hund@...1489...>
+	<CAOazyz0mAOkx5VBBM2WDiCBQ-S6ikV++9ixQpdg4LCCJ0D1sLg@...278...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] Windows UTF-8 input/output
+Subject: Re: [Openvpn-devel] [PATCH] UTF-8 X.509 distinguished names
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,12 +19,27 @@ Content-Transfer-Encoding: quoted-printable
 To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Wednesday 23 November 2011 14:55:57 Alon Bar-Lev wrote:
-> OpenVPN output is not always a console.
+On Wednesday 23 November 2011 14:53:06 Alon Bar-Lev wrote:
+> As this is inserted into environment, what happens if locale is not
+> unicode enabled?
 
-What output are you concerned about? Log file is fine, as much as managemen=
-t=20
-interface.
+Then the script will receive funny looking strings depending on your locale=
+'s=20
+code page. However, this is nothing that's being introduced with this patch=
+,=20
+as mentioned in the commit message 2627335 already puts UTF-8 user names an=
+d=20
+passwords into the environment.
+
+> I think this may break some configurations.
+
+Aren't the environments lacking UTF-8 locales broken with regards to non-AS=
+CII=20
+characters anyways? As UTF-8 encoding doesn't change any character < 128 no=
+n-
+ASCII DNs, user names and password will be passed to scripts just like in t=
+he=20
+good old days.
 
 Regards
 Heiko
