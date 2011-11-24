@@ -1,13 +1,17 @@
-MIME-Version: 1.0
-In-Reply-To: <CAOazyz0FFF26C1y9Q7pyN4aPBtfm9iZj+QBK9S=81PJW54rAMg@...278...>
-References: <4ECE04B8.3000100@...515...>
-	<CAOazyz1XptNoQWsskiEDLk31h0djzB0zLairjLrK0u5YfyxMBw@...278...>
-	<CAOazyz0BcACFG_XiH=R1R3NQR=1RnMbPDMv--92w-xTEWKyHLA@...278...>
-	<CAOazyz0FFF26C1y9Q7pyN4aPBtfm9iZj+QBK9S=81PJW54rAMg@...278...>
-Date: Thu, 24 Nov 2011 15:52:44 +0200
-Message-ID: <CAOazyz3TBPbLjXQP2iRYJsH+MRTR2BTt7Xs2N7OXu2mbeGkOUw@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] Topics for today's meeting
+Date: Thu, 24 Nov 2011 20:51:28 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20111124195128.GE2555@...1296...>
+References: <4e6f25dc2a58c3.42657146@...1498...> <4E801FAE.5010700@...515...>
+	<4E806C6A.9090907@...515...>
+	<201109261437.45686.heiko.hund@...1489...>
+	<4EBA6F45.2030006@...515...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="yH1ZJFh+qWm+VodA"
+Content-Disposition: inline
+In-Reply-To: <4EBA6F45.2030006@...515...>
+Subject: Re: [Openvpn-devel]
+	Snapshot	openvpn-2.x-20110909-master-install.exe fails
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,116 +20,143 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-My build script is working as-is with cygwin, compiling native win32 binari=
-es!
+--yH1ZJFh+qWm+VodA
+Content-Type: multipart/mixed; boundary="vv4Sf/kQfcwinyKX"
+Content-Disposition: inline
 
-2011/11/24 Alon Bar-Lev <alon.barlev@...277...>:
-> I am *VERY* impressed from cygwin jump, I must admit I have not kept
-> track on this project for a long time!
-> But now it is up to date with fully operational native windows tools.
-> I've done some testing, and it looks like ./configure
-> --host=3Dx86_64-w64-mingw32 or i686-w64-mingw will actually work!
-> I will build with dependencies now, it will take some time.
->
-> 2011/11/24 Alon Bar-Lev <alon.barlev@...277...>:
->> Correction!
->> cygwin provides mingw-w64 now!!!
->> Also recent autoconf/automake/libtool.
->> So we can also cross compile using mingw.
->>
->> 2011/11/24 Alon Bar-Lev <alon.barlev@...277...>:
->>> Hello,
->>>
->>> I won't participate in sync meeting.... don't have the time.
->>> Anyway, for windows build.
->>> I already provide binaries for OpenVPN using mingw-w64 project, and it
->>> works fine!
->>> I use mingw-w64 for both win32 and win64 binaries, much better than
->>> old mingw project, as mingw-w64 is maintained!
->>> You can see my build system at [1][2].
->>> So mingw cross compile is supported. I would have re-written the
->>> openvpn autoconf script to clean it up and make it more standard, but
->>> current is enough to be usable.
->>>
->>> msys can be used on Windows to build not sure it worth the effort...
->>> mingw can be used with -mno-cygwin parameter, but from my experience
->>> the toolchain in cygwin are way too old to be usable.
->>>
->>> For the tap driver, I always note this... IT SHOULD BE SEPARATE MSI
->>> and SEPARATE PROJECT.
->>> There should be absolutely no dependency between openvpn release cycle
->>> and tap release cycle.
->>> It is just like wireshark and libpcap projects.
->>> OpenVPN installer can embed the tap msi and run it during installation.
->>> When tap installed, it should register its version in registry key, so
->>> openvpn may read it in order to connect (currently it is done
->>> hardcoded within openvpn).
->>>
->>> The TAP driver should be built and signed using Microsoft toolchain,
->>> there is no problem in that. There is almost a single developer for
->>> the tap driver..
->>> The usermode components may be signed on Linux using the
->>> osslsigncode[3], so actual signing is not an issue, if this is desired
->>> I can submit a patch for "make install" to sign, as I do in other
->>> projects.
->>>
->>> Most (99%) users are interested in building custom user mode component
->>> only, so there is no sense in keeping the tap driver as dependency
->>> (build and sign).
->>>
->>> Regards,
->>> Alon.
->>>
->>> [1] https://www.opensc-project.org/build/
->>> [2] https://www.opensc-project.org/build/browser
->>> [3] http://sourceforge.net/projects/osslsigncode/
->>>
->>> 2011/11/24 Samuli Sepp=C3=A4nen <samuli@...515...>
->>>>
->>>> Hi,
->>>>
->>>> We're having an IRC meeting today, starting at 18:00 UTC on
->>>> #openvpn-devel@...1422... Current topic list is here:
->>>>
->>>> <https://community.openvpn.net/openvpn/wiki/Topics-2011-11-24>
->>>>
->>>> If you have any other things you'd like to bring up, respond to this
->>>> mail, send me mail privately or add them to the list yourself.
->>>>
->>>> In case you can't attend the meeting, please feel free to make comments
->>>> on the topics by responding to this email or to the summary email sent
->>>> after the meeting.
->>>>
->>>> NOTE: It's required to use a registered Freenode IRC nickname to join
->>>> #openvpn-devel - look here for details:
->>>>
->>>> <https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCch=
-annel>
->>>>
->>>> --
->>>> Samuli Sepp=C3=A4nen
->>>> Community Manager
->>>> OpenVPN Technologies, Inc
->>>>
->>>> irc freenode net: mattock
->>>>
->>>> ----------------------------------------------------------------------=
---------
->>>> All the data continuously generated in your IT infrastructure
->>>> contains a definitive record of customers, application performance,
->>>> security threats, fraudulent activity, and more. Splunk takes this
->>>> data and makes sense of it. IT sense. And common sense.
->>>> http://p.sf.net/sfu/splunk-novd2d
->>>> _______________________________________________
->>>> Openvpn-devel mailing list
->>>> Openvpn-devel@lists.sourceforge.net
->>>> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->>>
->>
->
+--vv4Sf/kQfcwinyKX
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+Hi,
+
+On Wed, Nov 09, 2011 at 02:17:09PM +0200, Samuli Sepp=E4nen wrote:
+> Il 26/09/2011 15:37, Heiko Hund ha scritto:
+> > On Monday 26 September 2011 14:13:30 Samuli Sepp=E4nen wrote:
+> >> Ok, did as suggested for socket.c and win32.h and got the following
+> >> build failure using MSVC:
+> >>
+> >> <http://pastebin.com/xZ8J2yrq>
+> > ---8<------------------------------------------------------------------
+> > c:\users\samuli\openvpn-build\openvpn\win32.h(282) :=20
+> > error C2373: 'inet_ntop' : redefinition; different type modifiers
+> > ---8<------------------------------------------------------------------
+
+after discussions with Samuli and Heiko, I propose to solve this in a
+different way, namely "always use our own version of inet_ntop/inet_pton,
+and do not even try to keep the prototypes right on windows".
+
+That is, I #define inet_ntop() to openvpn_inet_ntop() and inet_pton()
+to openvpn_inet_pton(), and thus change all the function calls to call
+our own function on "#ifdef WIN32" builds.
+
+Trying to keep the function names and playing with prototypes didn't
+lead anywhere, and trying to play with the NTDDI_VERSION defines is
+far beyond the level of detail I want to know about Windows building.
+
+So here's the patch - it compiles (MSVC on Win7), the resulting binary
+works on WinXP, and it's not too ugly - actually it removes more #ifdef's
+that it adds...
+
+Let me know your comments.
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--vv4Sf/kQfcwinyKX
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment;
+	filename="0001-work-around-inet_ntop-inet_pton-problems-for-MSVC-bu.patch"
+Content-Transfer-Encoding: quoted-printable
+
+=46rom 853662a6d1f5ad90e8d73032cea137541f6194e2 Mon Sep 17 00:00:00 2001
+From: Gert Doering <gert@...1296...>
+Date: Thu, 24 Nov 2011 19:48:27 +0100
+Subject: [PATCH] work around inet_ntop/inet_pton problems for MSVC builds on
+ WinXP
+
+always use our built-in replacement functions now, even if building
+on Win7 (which has inet_ntop/inet_pton in the system libraries) because
+the resulting binary will then fail on WinXP.
+
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ socket.c |    3 ---
+ win32.h  |   10 ++++++----
+ 2 files changed, 6 insertions(+), 7 deletions(-)
+
+diff --git a/socket.c b/socket.c
+index 5302eca..d91f2dc 100644
+--- a/socket.c
++++ b/socket.c
+@@ -3085,7 +3085,6 @@ link_socket_write_udp_posix_sendmsg (struct link_sock=
+et *sock,
+  * WSAAddressToString() and WSAStringToAddress() functions
+  */
+=20
+-#ifndef _MSC_VER
+ const char *
+ inet_ntop(int af, const void *src, char *dst, socklen_t size)
+ {
+@@ -3134,8 +3133,6 @@ inet_pton(int af, const char *src, void *dst)
+   return 0;
+ }
+=20
+-#endif
+-
+ int
+ socket_recv_queue (struct link_socket *sock, int maxsize)
+ {
+diff --git a/win32.h b/win32.h
+index 5b18e3c..0607cad 100644
+--- a/win32.h
++++ b/win32.h
+@@ -278,10 +278,12 @@ char *get_win_sys_path (void);
+=20
+ /* call self in a subprocess */
+ void fork_to_self (const char *cmdline);
+-#ifndef _MSC_VER
+-const char *inet_ntop(int af, const void *src, char *dst, socklen_t size);
+-int inet_pton(int af, const char *src, void *st);
+-#endif
++
++const char *openvpn_inet_ntop(int af, const void *src,=20
++                              char *dst, socklen_t size);
++int openvpn_inet_pton(int af, const char *src, void *dst);
++#define inet_ntop(af,src,dst,size) openvpn_inet_ntop(af,src,dst,size)
++#define inet_pton(af,src,dst)      openvpn_inet_pton(af,src,dst)
+=20
+ /* Find temporary directory */
+ const char *win_get_tempdir();
+--=20
+1.7.4.4
+
+
+--vv4Sf/kQfcwinyKX--
+
+--yH1ZJFh+qWm+VodA
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBTs6gQKkuBuNlUUl1AQIqwAP+MBzx0ONbBXv+CayPslc52uBfthm/+nOr
+2gbESzgf+cv8xA0wRy8Da4AJBdK1hSIfzNOIj5b5gzqO91cxQmyVYBRmDyC916Ui
+2wP5WNDeCef+M/9sRp6tCx13gukVJlF8PFKDjCcSKsFv5jBO7cZ4R9NH6YcQG8nw
+xrj5B3Z17QY=
+=yq7/
+-----END PGP SIGNATURE-----
+
+--yH1ZJFh+qWm+VodA--
 
