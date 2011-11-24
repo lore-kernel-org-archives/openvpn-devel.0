@@ -1,8 +1,8 @@
 MIME-version: 1.0
 From: David Sommerseth <davids@...1347...>
-Date: Thu, 24 Nov 2011 22:54:43 +0100
-Message-id: <1322171683-17358-1-git-send-email-davids@...1347...>
-Subject: [Openvpn-devel] [PATCH] Fix bug after removing Linux 2.2 support
+Date: Thu, 24 Nov 2011 23:10:25 +0100
+Message-id: <1322172626-18434-1-git-send-email-davids@...1347...>
+Subject: [Openvpn-devel] [PATCH] RFC: Improve file checking during start-up
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,48 +18,20 @@ Cc: David Sommerseth <dazo@...384...>
 
 From: David Sommerseth <dazo@...384...>
 
-In commit ce637abdafdc19547fc97192033a4d1703ecaf23 the Linux 2.2 support
-was removed.  When this happened an extra error check was avoided which
-would normally kicked in if the tun/tap device would not be available.
-Instead the following line was filling the log continously:
+The following patch has been laying in my repository for some time, unsure
+why it's been there for so long.  I can't see nor recall if I posted it to
+this -devel list either.  If there are things I should have fixed up before
+re-posting it (if this is a repost), I appologise for that.
 
-   Thu Nov 24 22:33:15 2011 read from TUN/TAP : File descriptor in bad state (code=77)
+Please review this patch.  I don't know if this is the best approach, and if
+others have better ideas for solving this.
 
-This patch changes the msg() declarations to use the M_FATAL *) flag,
-which will halt the execution of the program in these error sitauations.
-As the program will really halt, the return declarations was also removed.
+David Sommerseth (1):
+  Do some file/directory tests before really starting openvpn
 
-*) #define M_ERR   (M_FATAL | M_ERRNO)  (from error.h)
+ options.c |  151 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 151 insertions(+), 0 deletions(-)
 
-Signed-off-by: David Sommerseth <dazo@...384...>
----
- tun.c |    6 ++----
- 1 files changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/tun.c b/tun.c
-index 7a3b2e9..1defe58 100644
---- a/tun.c
-+++ b/tun.c
-@@ -1397,8 +1397,7 @@ open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tu
-        */
-       if ((tt->fd = open (node, O_RDWR)) < 0)
- 	{
--	  msg (M_WARN | M_ERRNO, "Note: Cannot open TUN/TAP dev %s", node);
--	  return;
-+	  msg (M_ERR, "Note: Cannot open TUN/TAP dev %s", node);
- 	}
- 
-       /*
-@@ -1441,8 +1440,7 @@ open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tu
-        */
-       if (ioctl (tt->fd, TUNSETIFF, (void *) &ifr) < 0)
- 	{
--	  msg (M_WARN | M_ERRNO, "Note: Cannot ioctl TUNSETIFF %s", dev);
--	  return;
-+	  msg (M_ERR, "Note: Cannot ioctl TUNSETIFF %s", dev);
- 	}
- 
-       msg (M_INFO, "TUN/TAP device %s opened", ifr.ifr_name);
 -- 
 1.7.4.4
 
