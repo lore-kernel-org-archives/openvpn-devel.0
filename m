@@ -1,11 +1,15 @@
-MIME-Version: 1.0
-In-Reply-To: <CAOazyz0BcACFG_XiH=R1R3NQR=1RnMbPDMv--92w-xTEWKyHLA@...278...>
+Date: Thu, 24 Nov 2011 11:13:58 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20111124101358.GK8496@...1296...>
 References: <4ECE04B8.3000100@...515...>
-	<CAOazyz1XptNoQWsskiEDLk31h0djzB0zLairjLrK0u5YfyxMBw@...278...>
-	<CAOazyz0BcACFG_XiH=R1R3NQR=1RnMbPDMv--92w-xTEWKyHLA@...278...>
-Date: Thu, 24 Nov 2011 12:07:33 +0200
-Message-ID: <CAOazyz0FFF26C1y9Q7pyN4aPBtfm9iZj+QBK9S=81PJW54rAMg@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+	<1CED409804E2164C8104F9E623B08B90128A57E9B4@...1436...>
+	<CAOazyz3MMoTPXHau65fR8aWB1Yuzk-q3Y+14AAqCDHbG6evCLw@...278...>
+	<4ECE155A.9040202@...1147...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="2tkl5P9a/KwyykFi"
+Content-Disposition: inline
+In-Reply-To: <4ECE155A.9040202@...1147...>
 Subject: Re: [Openvpn-devel] Topics for today's meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,111 +19,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+To: Jan Just Keijser <janjust@...1147...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-I am *VERY* impressed from cygwin jump, I must admit I have not kept
-track on this project for a long time!
-But now it is up to date with fully operational native windows tools.
-I've done some testing, and it looks like ./configure
---host=3Dx86_64-w64-mingw32 or i686-w64-mingw will actually work!
-I will build with dependencies now, it will take some time.
+--2tkl5P9a/KwyykFi
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-2011/11/24 Alon Bar-Lev <alon.barlev@...277...>:
-> Correction!
-> cygwin provides mingw-w64 now!!!
-> Also recent autoconf/automake/libtool.
-> So we can also cross compile using mingw.
->
-> 2011/11/24 Alon Bar-Lev <alon.barlev@...277...>:
->> Hello,
->>
->> I won't participate in sync meeting.... don't have the time.
->> Anyway, for windows build.
->> I already provide binaries for OpenVPN using mingw-w64 project, and it
->> works fine!
->> I use mingw-w64 for both win32 and win64 binaries, much better than
->> old mingw project, as mingw-w64 is maintained!
->> You can see my build system at [1][2].
->> So mingw cross compile is supported. I would have re-written the
->> openvpn autoconf script to clean it up and make it more standard, but
->> current is enough to be usable.
->>
->> msys can be used on Windows to build not sure it worth the effort...
->> mingw can be used with -mno-cygwin parameter, but from my experience
->> the toolchain in cygwin are way too old to be usable.
->>
->> For the tap driver, I always note this... IT SHOULD BE SEPARATE MSI
->> and SEPARATE PROJECT.
->> There should be absolutely no dependency between openvpn release cycle
->> and tap release cycle.
->> It is just like wireshark and libpcap projects.
->> OpenVPN installer can embed the tap msi and run it during installation.
->> When tap installed, it should register its version in registry key, so
->> openvpn may read it in order to connect (currently it is done
->> hardcoded within openvpn).
->>
->> The TAP driver should be built and signed using Microsoft toolchain,
->> there is no problem in that. There is almost a single developer for
->> the tap driver..
->> The usermode components may be signed on Linux using the
->> osslsigncode[3], so actual signing is not an issue, if this is desired
->> I can submit a patch for "make install" to sign, as I do in other
->> projects.
->>
->> Most (99%) users are interested in building custom user mode component
->> only, so there is no sense in keeping the tap driver as dependency
->> (build and sign).
->>
->> Regards,
->> Alon.
->>
->> [1] https://www.opensc-project.org/build/
->> [2] https://www.opensc-project.org/build/browser
->> [3] http://sourceforge.net/projects/osslsigncode/
->>
->> 2011/11/24 Samuli Sepp=C3=A4nen <samuli@...515...>
->>>
->>> Hi,
->>>
->>> We're having an IRC meeting today, starting at 18:00 UTC on
->>> #openvpn-devel@...1422... Current topic list is here:
->>>
->>> <https://community.openvpn.net/openvpn/wiki/Topics-2011-11-24>
->>>
->>> If you have any other things you'd like to bring up, respond to this
->>> mail, send me mail privately or add them to the list yourself.
->>>
->>> In case you can't attend the meeting, please feel free to make comments
->>> on the topics by responding to this email or to the summary email sent
->>> after the meeting.
->>>
->>> NOTE: It's required to use a registered Freenode IRC nickname to join
->>> #openvpn-devel - look here for details:
->>>
->>> <https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCcha=
-nnel>
->>>
->>> --
->>> Samuli Sepp=C3=A4nen
->>> Community Manager
->>> OpenVPN Technologies, Inc
->>>
->>> irc freenode net: mattock
->>>
->>> -----------------------------------------------------------------------=
--------
->>> All the data continuously generated in your IT infrastructure
->>> contains a definitive record of customers, application performance,
->>> security threats, fraudulent activity, and more. Splunk takes this
->>> data and makes sense of it. IT sense. And common sense.
->>> http://p.sf.net/sfu/splunk-novd2d
->>> _______________________________________________
->>> Openvpn-devel mailing list
->>> Openvpn-devel@lists.sourceforge.net
->>> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->>
->
+Hi,
+
+On Thu, Nov 24, 2011 at 10:58:50AM +0100, Jan Just Keijser wrote:
+> +1 autoconf
+> -9 CMake
+
++1 autoconf
+-450 anything that requires installation of additional tools on unix systems
+
+(I wouldn't mind if anyone were to create a cmake build environment for
+windows, documents that, and commits to maintaining it for a while - but=20
+please do not convolute the working unix build environment we have right=20
+now)
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--2tkl5P9a/KwyykFi
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBTs4Y5qkuBuNlUUl1AQKRJgP8CMFUn4MLeMafhn4tHlLbrtzPYJDODVUd
+CRh4bC4VmZhPm0UAVpj3qCpTykN5ban6EmxQZPDoB3hRV85UzHmPNM8d3g7t8vQs
+ncR92nCY98DlipuszS/0wunL9LS6DER8n7ymDD95hyUBG+60g6a/HdlxvxDxN97C
+EN2DagxIeiA=
+=Fq6L
+-----END PGP SIGNATURE-----
+
+--2tkl5P9a/KwyykFi--
 
