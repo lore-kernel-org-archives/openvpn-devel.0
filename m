@@ -1,10 +1,12 @@
-MIME-version: 1.0
-From: David Sommerseth <davids@...1347...>
-Date: Fri, 25 Nov 2011 11:57:59 +0100
-Message-id: <1322218679-4946-1-git-send-email-davids@...1347...>
-In-reply-to: <20111125083853.GU8496@...1296...>
-References: <20111125083853.GU8496@...1296...>
-Subject: [Openvpn-devel] [PATCH v2] Fix bug after removing Linux 2.2 support
+Message-ID: <4ECF988E.10309@...1114...>
+Date: Fri, 25 Nov 2011 14:30:54 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <1322172626-18434-1-git-send-email-davids@...1347...>
+	<1322172626-18434-2-git-send-email-davids@...1347...>
+In-Reply-To: <1322172626-18434-2-git-send-email-davids@...1347...>
+Subject: Re: [Openvpn-devel] [PATCH] Do some file/directory tests before
+ really starting openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,56 +15,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-type: TEXT/PLAIN; charset="utf-8"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: David Sommerseth <dazo@...384...>
 
-From: David Sommerseth <dazo@...384...>
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-In commit ce637abdafdc19547fc97192033a4d1703ecaf23 the Linux 2.2 support
-was removed.  When this happened an extra error check was avoided which
-would normally kicked in if the tun/tap device would not be available.
-Instead the following line was filling the log continously:
+On 24/11/11 23:10, David Sommerseth wrote:
+> OpenVPN can handle over 30 different files and directories, and it is 
+> easy to misconfigure some of them.  In many situations OpenVPN will 
+> even start running, even with a wrong file path or without the proper 
+> permissions, and then it will complain much later on.  In some cases 
+> the error being seen at this late point might even be difficult to 
+> relate to a configuration option.
+> 
+> This patch tries to catch as many of these files as soon as possible, 
+> kind of to "smoke-test" the files and directories to avoid the most 
+> likely errors.
+> 
+> Trac-ticket: 73 Signed-off-by: David Sommerseth <davids@...1347...> 
+> --- options.c |  151 
+> +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 1 files 
+> changed, 151 insertions(+), 0 deletions(-)
+> 
 
-   Thu Nov 24 22:33:15 2011 read from TUN/TAP : File descriptor in bad state (code=77)
+Applied to -testing and -stable master branches.
+commit 0f2bc0dd92f43c91e33bba8a66b06b98f281efc1
 
-This patch changes the msg() declarations to use the M_FATAL *) flag,
-which will halt the execution of the program in these error sitauations.
-As the program will really halt, the return declarations was also removed.
+    Trac-ticket: 73
+    Signed-off-by: David Sommerseth <davids@...1347...>
+    Acked-by: Gert Doering <gert@...1296...>
 
-*) #define M_ERR   (M_FATAL | M_ERRNO)  (from error.h)
 
-Signed-off-by: David Sommerseth <dazo@...384...>
----
- tun.c |    6 ++----
- 1 files changed, 2 insertions(+), 4 deletions(-)
+kind regards,
 
-diff --git a/tun.c b/tun.c
-index 7a3b2e9..d71d902 100644
---- a/tun.c
-+++ b/tun.c
-@@ -1397,8 +1397,7 @@ open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tu
-        */
-       if ((tt->fd = open (node, O_RDWR)) < 0)
- 	{
--	  msg (M_WARN | M_ERRNO, "Note: Cannot open TUN/TAP dev %s", node);
--	  return;
-+	  msg (M_ERR, "ERROR: Cannot open TUN/TAP dev %s", node);
- 	}
- 
-       /*
-@@ -1441,8 +1440,7 @@ open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tu
-        */
-       if (ioctl (tt->fd, TUNSETIFF, (void *) &ifr) < 0)
- 	{
--	  msg (M_WARN | M_ERRNO, "Note: Cannot ioctl TUNSETIFF %s", dev);
--	  return;
-+	  msg (M_ERR, "ERROR: Cannot ioctl TUNSETIFF %s", dev);
- 	}
- 
-       msg (M_INFO, "TUN/TAP device %s opened", ifr.ifr_name);
--- 
-1.7.4.4
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
+iEYEARECAAYFAk7PmIwACgkQDC186MBRfrrKSQCfae50lVKb++D4IKgKm8XYwlTo
+V1kAn3pCg2G5YdsNH4ce8vszngOdKMBp
+=3dLY
+-----END PGP SIGNATURE-----
 
