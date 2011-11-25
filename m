@@ -1,16 +1,12 @@
-Message-ID: <4ECFC290.8030106@...1114...>
-Date: Fri, 25 Nov 2011 17:30:08 +0100
+Message-ID: <4ECFC299.209@...1114...>
+Date: Fri, 25 Nov 2011 17:30:17 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4e6f25dc2a58c3.42657146@...1498...> <4E801FAE.5010700@...515...>
-	<4E806C6A.9090907@...515...>
-	<201109261437.45686.heiko.hund@...1489...>
-	<4EBA6F45.2030006@...515...>
-	<20111124195128.GE2555@...1296...>
-	<20111124201109.GR8496@...1296...>
-In-Reply-To: <20111124201109.GR8496@...1296...>
-Subject: Re: [Openvpn-devel]
- Snapshot	openvpn-2.x-20110909-master-install.exe fails
+References: <20111125083853.GU8496@...1296...>
+	<1322218679-4946-1-git-send-email-davids@...1347...>
+In-Reply-To: <1322218679-4946-1-git-send-email-davids@...1347...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Fix bug after removing Linux 2.2
+	support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -26,39 +22,39 @@ To: openvpn-devel@lists.sourceforge.net
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 24/11/11 21:11, Gert Doering wrote:
-> Hi,
+On 25/11/11 11:57, David Sommerseth wrote:
+> From: David Sommerseth <dazo@...384...>
 > 
-> On Thu, Nov 24, 2011 at 08:51:28PM +0100, Gert Doering wrote:
->> So here's the patch - it compiles (MSVC on Win7), the resulting 
->> binary works on WinXP, and it's not too ugly - actually it removes 
->> more #ifdef's that it adds...
->> 
->> Let me know your comments.
+> In commit ce637abdafdc19547fc97192033a4d1703ecaf23 the Linux 2.2 
+> support was removed.  When this happened an extra error check was 
+> avoided which would normally kicked in if the tun/tap device would
+> not be available. Instead the following line was filling the log 
+> continously:
 > 
-> So David found it confusing, and I agree to some extend :-) - it's 
-> easier to see what is happening if we declare our replacement 
-> functions as openvpn_inet_ntop() and openvpn_inet_pton() right away, 
-> instead of having the preprocessor #define rename them on the fly.
+> Thu Nov 24 22:33:15 2011 read from TUN/TAP : File descriptor in bad 
+> state (code=77)
 > 
-> new patch.
+> This patch changes the msg() declarations to use the M_FATAL *) flag, 
+> which will halt the execution of the program in these error 
+> sitauations. As the program will really halt, the return declarations 
+> was also removed.
+> 
+> *) #define M_ERR   (M_FATAL | M_ERRNO)  (from error.h)
+> 
+> Signed-off-by: David Sommerseth <dazo@...384...> ---
+> tun.c |    6 ++---- 1 files changed, 2 insertions(+), 4 deletions(-)
+> 
 
-ACK.  Applied to master branch in -testing and -stable.
+Applied to master branch in -stable and -testing.
 
+commit e7d1ac82f9a21ef91030e4f104d4ef0810b07f8e
+Author: David Sommerseth <dazo@...384...>
+Date:   Thu Nov 24 22:45:21 2011 +0100
 
-commit 53fb2c5c465ea97fccdc8be1823fff2616f08b50
-Author: Gert Doering <gert@...1296...>
-Date:   Thu Nov 24 21:09:36 2011 +0100
+    Fix bug after removing Linux 2.2 support
 
-    work around inet_ntop/inet_pton problems for MSVC builds on WinXP
-
-    always use our built-in replacement functions now, even if building
-    on Win7 (which has inet_ntop/inet_pton in the system libraries) because
-    the resulting binary will then fail on WinXP.
-
-    Signed-off-by: Gert Doering <gert@...1296...>
-    Acked-by: David Sommerseth <davids@...1347...>
-    Signed-off-by: David Sommerseth <davids@...1347...>
+    Signed-off-by: David Sommerseth <dazo@...384...>
+    Acked-by: Gert Doering <gert@...1296...>
 
 
 kind regards,
@@ -68,8 +64,8 @@ David Sommerseth
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk7PwpAACgkQDC186MBRfrrb9ACcCYMVyBpIJUwsF5SzdAUZurpU
-KJAAoKayma19gm4jwJgAykjkvXaZX0Tq
-=L43N
+iEYEARECAAYFAk7PwpkACgkQDC186MBRfroAkgCfdqLb4FuOFhunFZrtzBsYjrhL
+yv0AniPang2dib+ltujnseCdnUWrTkxb
+=2gSS
 -----END PGP SIGNATURE-----
 
