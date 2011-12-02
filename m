@@ -1,13 +1,11 @@
-MIME-Version: 1.0
-In-Reply-To: <4ED8C6B0.2000609@...1114...>
-References: <1322823734-17993-1-git-send-email-davids@...1347...>
-	<CAOazyz0=n=7w6d-k3rcwBOsEJ+35aDLwZ8uPugPb8_b2QbgM6g@...278...>
-	<4ED8C6B0.2000609@...1114...>
-Date: Fri, 2 Dec 2011 14:45:11 +0200
-Message-ID: <CAOazyz0-vG8JHNa-MxvSSnsUScmRncBQXU6Gq_2RWnLi8QoPzQ@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Windows does not have dirname() -
- reimplement a portable version
+MIME-version: 1.0
+Message-id: <08FAFA87DB33410B973A78243D6791E6@...139...>
+From: Gisle Vanem <gvanem@...139...>
+References: <1322828243-21196-1-git-send-email-davids@...1347...>
+	<CAOazyz3QLENvuKcchda6sooFJCF60zT=AnrfhGnaXAhyHDBkPA@...278...>
+Date: Fri, 02 Dec 2011 13:54:39 +0100
+Subject: Re: [Openvpn-devel] [PATCH v2] Provide an access() wrapper
+	for	Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,30 +14,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-type: text/plain; CHARSET=US-ASCII; charset="US-ASCII"; format=flowed;
+ reply-type=original
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-On Fri, Dec 2, 2011 at 2:38 PM, David Sommerseth
-<openvpn.list@...1114...> wrote:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
->
-> On 02/12/11 13:28, Alon Bar-Lev wrote:
->> I think the whole code should be more autoconf depended. Autoconf can
->> detect if POSIX version is available and if not, code can provide
->> alternative. No need for the openvpn_ functions and wrappers.
->
-> Fair enough statement, but we have a python oriented build environment on
-> Windows too, which will not be so easy to tackle in this regards. =C2=A0T=
-his
-> environment is required by OpenVPN Technologies for their internal build
-> farms (most likely for the OpenVPN Access Server product).
->
+"Alon Bar-Lev" <alon.barlev@...277...> wrote:
 
-It is not matter if you use python for Windows, as you create
-config-msvc.h with all constants that autoconf would have found.
+> Why not:
+> #ifdef WIN32
+> #define access _access
+> #endif
 
-Alon.
+We should write "#ifndef _MSC_VER". MingW's access() handles 
+X_OK correctly. From MingW's <io.h>:
+
+#ifdef __USE_MINGW_ACCESS
+/*  Old versions of MSVCRT access() just ignored X_OK, while the version
+    shipped with Vista, returns an error code.  This will restore the
+    old behaviour  */
+static inline int __mingw_access (const char* __fname, int __mode)
+  { return  _access (__fname, __mode & ~X_OK); }
+#define access(__f,__m)  __mingw_access (__f, __m)
+#endif
+
+--gv
+
+
 
