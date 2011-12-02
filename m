@@ -1,9 +1,8 @@
 MIME-version: 1.0
 From: David Sommerseth <davids@...1347...>
-Date: Fri, 02 Dec 2011 12:02:14 +0100
-Message-id: <1322823734-17993-1-git-send-email-davids@...1347...>
-Subject: [Openvpn-devel] [PATCH] Windows does not have dirname() -
- reimplement a portable version
+Date: Fri, 02 Dec 2011 12:02:35 +0100
+Message-id: <1322823755-18052-1-git-send-email-davids@...1347...>
+Subject: [Openvpn-devel] [PATCH] Provide an access() wrapper for Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,117 +15,82 @@ Content-type: TEXT/PLAIN; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Commit 0f2bc0dd92f43c91e33bba8a66b06b98f281efc1 adds some extra
-checks on configured files and directories.  This required use of
-the dirname() function.  Unfortunately, this function is not available
-on Windows.
+Commit 0f2bc0dd92f43c91e33bba8a66b06b98f281efc1 adds extra file and
+directory checks at startup.  However, this patch makes use of some
+features not directly available in Windows.
 
-This function reimplements the POSIX variant of dirname(), using the
-framework already available in openvpn_basename().  The POSIX variant
-of dirname() will modify the input data.
+This patch avoids #include <unistd.h> on Windows and provides a
+wrapper for the needed access() function.
 
 Signed-off-by: David Sommerseth <davids@...1347...>
 Cc: Heiko Hund <heiko.hund@...1489...>
 ---
- misc.c    |   36 ++++++++++++++++++++++++++++++++----
- misc.h    |    3 +++
- options.c |    3 +--
- 3 files changed, 36 insertions(+), 6 deletions(-)
+ options.c |    1 -
+ syshead.h |    3 +++
+ win32.h   |   21 +++++++++++++++++++++
+ 3 files changed, 24 insertions(+), 1 deletions(-)
 
-diff --git a/misc.c b/misc.c
-index 99e5bc5..eb04918 100644
---- a/misc.c
-+++ b/misc.c
-@@ -2370,10 +2370,13 @@ argv_test (void)
- }
- #endif
- 
--const char *
--openvpn_basename (const char *path)
-+
-+enum ovpn_dirbasename_t { DIRNAME, BASENAME };
-+
-+static inline char *
-+openvpn_dirbasename(char *path, enum ovpn_dirbasename_t type)
- {
--  const char *ret;
-+  char *ret;
-   const int dirsep = OS_SPECIFIC_DIRSEP;
- 
-   if (path)
-@@ -2384,11 +2387,36 @@ openvpn_basename (const char *path)
-       else
- 	ret = path;
-       if (*ret)
--	return ret;
-+        switch( type ) {
-+        case BASENAME:
-+          return ret;
-+
-+        case DIRNAME:
-+          /* This implements the POSIX variant of dirname(),
-+           * which do modify the input
-+           */
-+          *(ret-1) = 0;
-+          return path;
-+        }
-     }
-   return NULL;
- }
- 
-+const char *
-+openvpn_basename (const char *path)
-+{
-+  /* the path is recasted as non-const, as we are sure it will not be modified
-+   * in the basename type
-+   */
-+  return (const char *) openvpn_dirbasename((char *) path, BASENAME);
-+}
-+
-+const char *
-+openvpn_dirname (char *path)
-+{
-+        return openvpn_dirbasename(path, DIRNAME);
-+}
-+
- /*
-  * Remove security-sensitive strings from control message
-  * so that they will not be output to log file.
-diff --git a/misc.h b/misc.h
-index b2e6f91..9b35f18 100644
---- a/misc.h
-+++ b/misc.h
-@@ -384,6 +384,9 @@ size_t adjust_power_of_2 (size_t u);
- /* return the basename of path */
- const char *openvpn_basename (const char *path);
- 
-+/* return the dirname of path - POSIX variant, which modifies the input */
-+const char *openvpn_dirname (char *path);
-+
- /*
-  * A printf-like function (that only recognizes a subset of standard printf
-  * format operators) that prints arguments to an argv list instead
 diff --git a/options.c b/options.c
-index 28296a5..a29c115 100644
+index a29c115..090bbde 100644
 --- a/options.c
 +++ b/options.c
-@@ -53,7 +53,6 @@
+@@ -52,7 +52,6 @@
+ #include "configure.h"
  #include "forward.h"
  #include <ctype.h>
- #include <unistd.h>
--#include <libgen.h>
+-#include <unistd.h>
  
  #include "memdbg.h"
  
-@@ -2616,7 +2615,7 @@ check_file_access(const int type, const char *file, const int mode, const char *
-   if (type & CHKACC_DIRPATH)
-     {
-       char *fullpath = strdup(file);  /* POSIX dirname() implementaion may modify its arguments */
--      char *dirpath = dirname(fullpath);
-+      const char *dirpath = openvpn_dirname(fullpath);
+diff --git a/syshead.h b/syshead.h
+index f3c0ac9..232c214 100644
+--- a/syshead.h
++++ b/syshead.h
+@@ -52,9 +52,12 @@
+ #ifdef WIN32
+ #include <windows.h>
+ #include <winsock2.h>
++#include <io.h>
+ #define sleep(x) Sleep((x)*1000)
+ #define random rand
+ #define srandom srand
++#else
++#include <unistd.h>
+ #endif
  
-       if (access (dirpath, mode|X_OK) != 0)
-           errcode = errno;
+ #if defined(__APPLE__)
+diff --git a/win32.h b/win32.h
+index 23c04be..f973849 100644
+--- a/win32.h
++++ b/win32.h
+@@ -70,6 +70,27 @@ struct security_attributes
+ 
+ #define HANDLE_DEFINED(h) ((h) != NULL && (h) != INVALID_HANDLE_VALUE)
+ 
++/* Provide wrapper for the access() function
++ * based on information found here:
++ * http://msdn.microsoft.com/en-us/library/1w06ktdy%28v=vs.80%29.aspx
++ */
++#ifndef R_OK
++#define R_OK 4
++#endif
++
++#ifndef W_OK
++#define W_OK 2
++#endif
++
++#ifndef X_OK
++#define X_OK 1
++#endif
++
++static inline int
++access( const char *path, int mode) {
++  return _access(path, mode);
++}
++
+ /*
+  * Save old window title.
+  */
 -- 
 1.7.4.4
 
