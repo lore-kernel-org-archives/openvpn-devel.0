@@ -1,13 +1,14 @@
-Date: Sat, 3 Dec 2011 11:09:26 +0100
+Date: Sat, 3 Dec 2011 11:12:45 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20111203100926.GE8496@...1296...>
-References: <1322823755-18052-1-git-send-email-davids@...1347...>
+Message-ID: <20111203101245.GF8496@...1296...>
+References: <1322840064-30528-1-git-send-email-davids@...1347...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="F9CWS3VM42WKjaeu"
+	protocol="application/pgp-signature"; boundary="ySLh/fXpNxWaNtMt"
 Content-Disposition: inline
-In-Reply-To: <1322823755-18052-1-git-send-email-davids@...1347...>
-Subject: Re: [Openvpn-devel] [PATCH] Provide an access() wrapper for Windows
+In-Reply-To: <1322840064-30528-1-git-send-email-davids@...1347...>
+Subject: Re: [Openvpn-devel] [PATCH] Don't look for 'stdin' file when using
+	--auth-user-pass
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,20 +20,17 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: David Sommerseth <davids@...1347...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---F9CWS3VM42WKjaeu
+--ySLh/fXpNxWaNtMt
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Dec 02, 2011 at 12:02:35PM +0100, David Sommerseth wrote:
-> Commit 0f2bc0dd92f43c91e33bba8a66b06b98f281efc1 adds extra file and
-> directory checks at startup.  However, this patch makes use of some
-> features not directly available in Windows.
->
-> This patch avoids #include <unistd.h> on Windows and provides a
-> wrapper for the needed access() function.
+On Fri, Dec 02, 2011 at 04:34:24PM +0100, David Sommerseth wrote:
+> This argument allows the keyword 'stdin' to indicate that the input
+> is to be read from the stdin.  Don't check for file existence if the
+> file name is set to 'stdin'
 
 ACK.
 
@@ -44,19 +42,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---F9CWS3VM42WKjaeu
+--ySLh/fXpNxWaNtMt
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (NetBSD)
 
-iQCVAwUBTtn1VakuBuNlUUl1AQK/VQQAoEsCyPXevYKFwZEyU/LlMYOrvdaURVLA
-LN2Ox9lLMqr7ayMxdALyeIU8OXpeK7T0xdejpfWQO4DuZuQ5WxUVm+/UFO3q01Pn
-3YMKNCNWfeWzw7EgZOdbd0BhqUM40a31PCy1KrHdwSbTud61n7ESBVjcQgAF7dwq
-ejsTVpMDBp0=
-=vBD6
+iQCVAwUBTtn2HakuBuNlUUl1AQIeGAP/XHN4SlDSenE1NETTer1MPCr0sTQ+hmXu
+IKNa9ZY58POnyFgRz8W2pg10coo2t7tu1Ab3U7SkXyDKNWv+OW07uvPQJzV4ODlW
+yk9qfjjErSV7AEbZ3ZR31NJAHZJ+uqocX9BfV9CoYnAko0kYn3XG+Zq8uWwlPtCU
+vgM4wjCsfLk=
+=78G8
 -----END PGP SIGNATURE-----
 
---F9CWS3VM42WKjaeu--
+--ySLh/fXpNxWaNtMt--
 
