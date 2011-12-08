@@ -1,9 +1,11 @@
-MIME-version: 1.0
-From: David Sommerseth <davids@...1347...>
-Date: Thu, 08 Dec 2011 01:13:49 +0100
-Message-id: <1323303229-31079-1-git-send-email-davids@...1347...>
-Subject: [Openvpn-devel] [PATCH] Add a wrapper for access() when compiling
-	via Visual Studio
+Message-ID: <4EE0033C.9050403@...1114...>
+Date: Thu, 08 Dec 2011 01:22:20 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <1322840064-30528-1-git-send-email-davids@...1347...>
+In-Reply-To: <1322840064-30528-1-git-send-email-davids@...1347...>
+Subject: Re: [Openvpn-devel] [PATCH] Don't look for 'stdin' file when using
+ --auth-user-pass
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,91 +14,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-type: TEXT/PLAIN; charset="utf-8"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This adds the access() function as a wrapper for _access() to be
-able to compile OpenVPN via Visual Studio.  It also adds the required
-macros which used in POSIX environments (R_OK, W_OK, X_OK, F_OK).
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-This patch will also disable a compiler warning, C4996, as the compiler
-complains about the usage of access() - despite it is being redefinded
-as _access().
+On 02/12/11 16:34, David Sommerseth wrote:
+> This argument allows the keyword 'stdin' to indicate that the input is
+> to be read from the stdin.  Don't check for file existence if the file
+> name is set to 'stdin'
+> 
+> Signed-off-by: David Sommerseth <davids@...1347...> --- options.c |
+> 5 +++-- 1 files changed, 3 insertions(+), 2 deletions(-)
+> 
 
-Signed-off-by: David Sommerseth <davids@...1347...>
----
- configure.ac    |    2 +-
- options.c       |    1 -
- win/config.h.in |   29 +++++++++++++++++++++++++++++
- 3 files changed, 30 insertions(+), 2 deletions(-)
+Applied and pushed out to -testing and -stable master branches.
 
-diff --git a/configure.ac b/configure.ac
-index 173d6e2..f8b3dd6 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -515,7 +515,7 @@ AC_CHECK_FUNCS(daemon chroot getpwnam setuid nice system getpid dup dup2 dnl
- 	       getpass strerror syslog openlog mlockall getgrnam setgid dnl
- 	       setgroups stat flock readv writev time dnl
- 	       setsid chdir putenv getpeername unlink dnl
--	       chsize ftruncate execve getpeereid umask basename dirname)
-+	       chsize ftruncate execve getpeereid umask basename dirname access)
- 
- # Windows use stdcall for winsock so we cannot auto detect these
- m4_define([SOCKET_FUNCS], [socket recv recvfrom send sendto listen dnl
-diff --git a/options.c b/options.c
-index 2280e9b..508fc82 100644
---- a/options.c
-+++ b/options.c
-@@ -52,7 +52,6 @@
- #include "configure.h"
- #include "forward.h"
- #include <ctype.h>
--#include <unistd.h>
- 
- #include "memdbg.h"
- 
-diff --git a/win/config.h.in b/win/config.h.in
-index e9df379..b44f564 100644
---- a/win/config.h.in
-+++ b/win/config.h.in
-@@ -223,6 +223,35 @@ typedef unsigned long in_addr_t;
- /* Special Windows version of getpass() defined in io.c */
- #define HAVE_GETPASS 1
- 
-+
-+/* The POSIX access() function is called via _access() on Windows,
-+ * defined in io.h
-+ */
-+#define HAVE_ACCESS 1
-+#define access _access
-+#pragma warning(disable : 4996) /* Avoid Visual Studio to complain about access(), which is redefined */
-+
-+/* Macros used by the POSIX access() function might not be available on Windows.
-+ * Based on information found here:
-+ * http://msdn.microsoft.com/en-us/library/1w06ktdy%28v=vs.80%29.aspx
-+ */
-+#ifndef R_OK
-+#define R_OK 4
-+#endif
-+
-+#ifndef W_OK
-+#define W_OK 2
-+#endif
-+
-+#ifndef X_OK
-+#define X_OK 1
-+#endif
-+
-+#ifndef F_OK
-+#define F_OK 0
-+#endif
-+
-+
- /* Define to the full name and version of this package. */
- #ifdef DEBUG_LABEL
- #define PACKAGE_STRING PACKAGE_NAME " " PACKAGE_VERSION " " DEBUG_LABEL
--- 
-1.7.4.4
+commit 870cf166add7ea0aa15c9d12b7916e669a9f441f
+Author: David Sommerseth <davids@...1347...>
+Date:   Fri Dec 2 16:32:56 2011 +0100
 
+    Signed-off-by: David Sommerseth <davids@...1347...>
+    Acked-by: Gert Doering <gert@...1296...>
+
+
+Kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk7gAzoACgkQDC186MBRfrrEZACfdekwNa5Vkxx68fMvnLD75+v0
+FkQAn0FjLR5Pihduhva/oPuVzQhratnL
+=Zui4
+-----END PGP SIGNATURE-----
 
