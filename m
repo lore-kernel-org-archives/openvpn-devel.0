@@ -1,11 +1,14 @@
-Message-ID: <4EE08E3A.7010209@...1114...>
-Date: Thu, 08 Dec 2011 11:15:22 +0100
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <d3f7c10b2411aa41afce3788970ca839@...1528...>
-In-Reply-To: <d3f7c10b2411aa41afce3788970ca839@...1528...>
-Subject: Re: [Openvpn-devel] [PATCH] Add option to disable priority tagged
- packets (VID=0)
+Date: Thu, 8 Dec 2011 11:22:49 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20111208102249.GP18948@...1296...>
+References: <1323301588-29815-1-git-send-email-davids@...1347...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="T7mxYSe680VjQnyC"
+Content-Disposition: inline
+In-Reply-To: <1323301588-29815-1-git-send-email-davids@...1347...>
+Subject: Re: [Openvpn-devel] [PATCH] Move away from openvpn_basename() over
+	to platform provided basename()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,72 +17,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: michael-dev <michael-dev@...1528...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: David Sommerseth <davids@...1347...>
+Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--T7mxYSe680VjQnyC
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
+Hi,
 
-Adding Fabian to Cc, he knows more about the VLAN code.
+On Thu, Dec 08, 2011 at 12:46:28AM +0100, David Sommerseth wrote:
+> This kicks out the openvpn_basename() function from misc.[ch] andputs
+> it into compat.[ch].  This is to provide the same functionality on
+> platforms not having a native basename() function available.
 
-With this feedback, I'm willing merge in the feat_vlan_tagging branch
-into master.  I'm not sure if this should happen now in the v2.3 time
-frame (which is getting more and more ready for alpha/beta releases), or
-if we will take it in the next round with v2.4.  But I will bring that up
-for discussion soonish.
+Agree with this in principle, but...
 
+> diff --git a/compat.h b/compat.h
+> new file mode 100644
+> index 0000000..d44ab56
+[..]
 
-kind regards,
+> +#ifndef HAVE_DIRNAME
+> +static inline char *
+> +dirname(char *str)
+> +{
+> +  return openvpn_dirbasename(str, DIRNAME);
+> +}
+> +#endif /* HAVE_DIRNAME */
 
-David Sommerseth
+... I don't think we should put even more code into .h files than we
+already have.  This is not a performance critical call, and it makes
+following the sources so much harder if actual functions are hidden in
+header files.
 
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-On 08/12/11 09:33, michael-dev wrote:
-> This patch adds an option to disable the creation of tagged priority
-> packets with VID=0. This is for the feature_vlan_tagging
-> openvpn-testing head.
-> 
-> I tested the vlan feature and it works fine for me (no dhcp tested). 
-> Therefore I bridged my eth0 (LAN) and tap0 (OpenVPN) but as my switch 
-> flags arp replys with priority, the client ended up with 802.1q
-> tagged (VID=0) priority packets. These were not expected on the client
-> (Ubuntu 10.04 lts) and I found a linux kernel discussion from summer
-> 2010 about supporting VID=0 priority packets, so I expect more linux
-> clients (windows untested) to not support this kind of packets. This
-> option prevents the creating of these packets by ignoring the
-> priority information.
-> 
-> This patch has already been tested and works fine for me.
-> 
-> Signed-off-by: Michael Braun <michael-dev@...1528...>
-> 
-> 
-> 
-> 
-> ------------------------------------------------------------------------------
->
-> 
-Cloud Services Checklist: Pricing and Packaging Optimization
-> This white paper is intended to serve as a reference, checklist and
-> point of discussion for anyone considering optimizing the pricing and
-> packaging model of a cloud services business. Read Now! 
-> http://www.accelacomm.com/jaw/sfnl/114/51491232/
-> 
-> 
-> 
-> _______________________________________________ Openvpn-devel mailing
-> list Openvpn-devel@lists.sourceforge.net 
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+--T7mxYSe680VjQnyC
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+Version: GnuPG v1.4.11 (NetBSD)
 
-iEYEARECAAYFAk7gjjgACgkQDC186MBRfrqtsACgm8JiXbRQPTicmDjxL0WxDfGC
-KQkAoJu4gKtBtu6esT582SCBTD0z5J15
-=q6lu
+iQCVAwUBTuCP+akuBuNlUUl1AQKAhAP/RNNxWK9d12JGFJ06yXl8sRxmPLqNjJ6R
+gPmOXxaxJkPvkM7kBtEX59YWd+/VuugfZGqrE1E2Lp0GxxvSPXDj3e2muEGfLC1P
+eavBvtp1i+XX8H4zBtRsRTuVrsVadlWYm9+bjYBGfC9U0/zsJeNG4oR4ZnnhFzht
+DC1Orrz1uiw=
+=+WwR
 -----END PGP SIGNATURE-----
+
+--T7mxYSe680VjQnyC--
 
