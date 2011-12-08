@@ -1,15 +1,10 @@
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Thu, 8 Dec 2011 12:06:37 +0100
+Message-ID: <7880280.vOpaqr0gUp@...1526...>
+In-Reply-To: <1323280731-26083-1-git-send-email-heiko.hund@...1489...>
+References: <1323280731-26083-1-git-send-email-heiko.hund@...1489...>
 MIME-Version: 1.0
-In-Reply-To: <CAOazyz0Q=a6uKKX03MokunME=SD+sy_NDXBi+1w1UBASPTdGpA@...278...>
-References: <1323303229-31079-1-git-send-email-davids@...1347...>
-	<CAOazyz1wxUHB27gj0y7L048af-ajfqvZno5KjtFUC9Ad4Uqn3w@...278...>
-	<4EE0951E.80900@...1114...>
-	<CAOazyz13pmU4=6XOA-2uq0rAwTMRrRYF73sszehxbcPQsa2rmQ@...278...>
-	<CAOazyz0Q=a6uKKX03MokunME=SD+sy_NDXBi+1w1UBASPTdGpA@...278...>
-Date: Thu, 8 Dec 2011 13:02:16 +0200
-Message-ID: <CAOazyz1=D+htv7VAStnj-xaCAKEBBLQXsxMB1QvqYkLF2HndGw@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Add a wrapper for access() when
- compiling via Visual Studio
+Subject: Re: [Openvpn-devel] [PATCH] handle Windows unicode paths
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,53 +13,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: David Sommerseth <davids@...1347...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Thu, Dec 8, 2011 at 12:57 PM, Alon Bar-Lev <alon.barlev@...277...> wrote:
-> On Thu, Dec 8, 2011 at 12:51 PM, Alon Bar-Lev <alon.barlev@...277...> wro=
-te:
->> On Thu, Dec 8, 2011 at 12:44 PM, David Sommerseth
->> <openvpn.list@...1114...> wrote:
->>> -----BEGIN PGP SIGNED MESSAGE-----
->>> Hash: SHA1
->>>
->>> On 08/12/11 08:44, Alon Bar-Lev wrote:
->>>> On Thu, Dec 8, 2011 at 2:13 AM, David Sommerseth <davids@...1347...>
->>>> wrote:
->>>>> +/* The POSIX access() function is called via _access() on Windows,
->>>>> + * defined in io.h + */ +#define HAVE_ACCESS 1 +#define access
->>>>> _access +#pragma warning(disable : 4996) /* Avoid Visual Studio to
->>>>> complain about access(), which is redefined */
->>>>
->>>> Where is it defined? Anyway, won't it better: --- #ifdef access #undef
->>>> access #endif #define access _access ---
->>>
->>> I tried that approach as well, and I still got this warning:
->>> - ---------------------------------------------------------------------=
-----
->>> options.c(2619) : warning C4996: '_access': The POSIX name for this item
->>> is deprecated. Instead, use the ISO C++ conformant name: _access. See
->>> online help for details.
->>> =C2=A0 =C2=A0 =C2=A0 =C2=A0c:\Program Files (x86)\Microsoft Visual Stud=
-io
->>> 9.0\VC\INCLUDE\io.h(185): see declaration of '_access'
->>> options.c(2625) : warning C4996: '_access': The POSIX name for this item
->>> is deprecated. Instead, use the ISO C++ conformant name: _access. See
->>> online help for details.
->>
->> This is something else!
->> Try defining _CRT_NONSTDC_NO_WARNINGS and _CRT_SECURE_NO_WARNINGS.
->>
->> Alon.
->
-> This of course should be only in your vcproj not anywhere in openvpn.
->
-> Alon.
+On Wednesday 07 December 2011 17:58:51 Heiko Hund wrote:
+> This patch makes openvpn read the command line in UCS-2 and convert
+> it to UTF-8 internally. Windows stores names in the filesystem in UCS-2.
+> When using a paths openvpn converts it from UTF-8 to UCS-2 and uses the
+> wide character Windows API function.
 
-Just checked, with this enabled you don't need to override access at all.
+One thing I left out on purpose for now was handling --capath with a Unicod=
+e=20
+path. To have that work, openvpn would need to define a custom  LOOKUP_METH=
+OD=20
+that is Unicode-safe. The one that is currently used is at [1]. The problem=
+=20
+here is the _stat call that needs to be _wstat. Please let me know if that'=
+s=20
+something that should be done or not and I'll provide a patch.
 
-Alon.
+Heiko
+
+[1] http://cvs.openssl.org/fileview?f=3Dopenssl/crypto/x509/by_dir.c&v=3D1.=
+32
+--=20
+Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
+Astaro a Sophos Company | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germ=
+any
+Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
+=20
+Represented by the General Partner Astaro Verwaltungs GmbH
+Amalienbadstra=DFe 41 Bau 52 | 76227 Karlsruhe | Germany=20
+Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
+Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
+
 
