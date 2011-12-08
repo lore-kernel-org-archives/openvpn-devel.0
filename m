@@ -1,13 +1,12 @@
+Message-ID: <4EE0951E.80900@...1114...>
+Date: Thu, 08 Dec 2011 11:44:46 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-In-Reply-To: <4EE0910F.8010108@...1114...>
-References: <1323301588-29815-1-git-send-email-davids@...1347...>
-	<CAOazyz3B=PWg7jySe41p8KTZmWk87H0NM51EvkW1qKC1XPtSXA@...278...>
-	<4EE0910F.8010108@...1114...>
-Date: Thu, 8 Dec 2011 12:35:55 +0200
-Message-ID: <CAOazyz0DHUMDODSd22o48v+55Ai3+ATtVwYeu=0qXteWYrCA-g@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Move away from openvpn_basename() over
- to platform provided basename()
+References: <1323303229-31079-1-git-send-email-davids@...1347...>
+	<CAOazyz1wxUHB27gj0y7L048af-ajfqvZno5KjtFUC9Ad4Uqn3w@...278...>
+In-Reply-To: <CAOazyz1wxUHB27gj0y7L048af-ajfqvZno5KjtFUC9Ad4Uqn3w@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Add a wrapper for access() when
+ compiling via Visual Studio
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,121 +15,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: David Sommerseth <davids@...1347...>, openvpn-devel@lists.sourceforge.net
 
-On Thu, Dec 8, 2011 at 12:27 PM, David Sommerseth
-<openvpn.list@...1114...> wrote:
-> Hi Alon,
->
-> I'm not sure I understand the critique too well now. =C2=A0As this is the
-> approach I tried to do. =C2=A0However, I put the basename() and dirname()
-> implementations in compat.h, calling the combined openvpn_dirbasename()
-> function.
->
-> The reason for the combined version is basically to keep as much generic
-> code as possible. =C2=A0And the old openvpn_basename() has been tested and
-> tried for many years, so that code base can be considered solid. =C2=A0As=
- you
-> know, the difference between dirname() and basename() is basically if you
-> return the string from the beginning to the split point, or from the
-> split point and to the end of the string.
->
-> But I can move the static inline functions from the compat.h file over to
-> the compat.c file, and declare openvpn_dirbasename() static instead. =C2=
-=A0If
-> that is a better solution.
->
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Yes, this what I meant... :)
+On 08/12/11 08:44, Alon Bar-Lev wrote:
+> On Thu, Dec 8, 2011 at 2:13 AM, David Sommerseth <davids@...1347...>
+> wrote:
+>> +/* The POSIX access() function is called via _access() on Windows, 
+>> + * defined in io.h + */ +#define HAVE_ACCESS 1 +#define access
+>> _access +#pragma warning(disable : 4996) /* Avoid Visual Studio to
+>> complain about access(), which is redefined */
+> 
+> Where is it defined? Anyway, won't it better: --- #ifdef access #undef
+> access #endif #define access _access ---
 
-Best not to put code in headers, unless absolutely required... when?
-if you prove by profiler
-that you can optimize anything... Most likely you won't call basename
-in 1000000000 loop.
+I tried that approach as well, and I still got this warning:
+- -------------------------------------------------------------------------
+options.c(2619) : warning C4996: '_access': The POSIX name for this item
+is deprecated. Instead, use the ISO C++ conformant name: _access. See
+online help for details.
+        c:\Program Files (x86)\Microsoft Visual Studio
+9.0\VC\INCLUDE\io.h(185): see declaration of '_access'
+options.c(2625) : warning C4996: '_access': The POSIX name for this item
+is deprecated. Instead, use the ISO C++ conformant name: _access. See
+online help for details.
+        c:\Program Files (x86)\Microsoft Visual Studio
+9.0\VC\INCLUDE\io.h(185): see declaration of '_access'
+options.c(2629) : warning C4996: '_access': The POSIX name for this item
+is deprecated. Instead, use the ISO C++ conformant name: _access. See
+online help for details.
+        c:\Program Files (x86)\Microsoft Visual Studio
+9.0\VC\INCLUDE\io.h(185): see declaration of '_access'
+options.c(2630) : warning C4996: '_access': The POSIX name for this item
+is deprecated. Instead, use the ISO C++ conformant name: _access. See
+online help for details.
+        c:\Program Files (x86)\Microsoft Visual Studio
+9.0\VC\INCLUDE\io.h(185): see declaration of '_access'
+- -------------------------------------------------------------------------
 
-However, you should be very careful from relying of the "solid"
-openvpn_dirbasename
-as it won't be used at most systems... as most have basename/dirname...
+In io.h:185, this line can be found:
+- -------------------------------------------------------------------------
+_Check_return_ _CRTIMP int __cdecl _access(_In_z_ const char * _Filename,
+_In_ int _AccessMode);
+- -------------------------------------------------------------------------
 
-This is the code from glibc, which most probably be linked into your
-code, the only difference
-in windows it to check both '/' and '\'.... I like to use '/' also in
-windows. But if you don't like it
-we can do AC_DEFINE([PATH_SEPARATOR], ...) in configure.ac, if not
-already there,
-then use PATH_SEPARATOR constant in code.
----
-char *
-basename (filename)
-     const char *filename;
-{
-  char *p =3D strrchr (filename, '/');
-  return p ? p + 1 : (char *) filename;
-}
+And access() is declared like this in io.h:303
+- -------------------------------------------------------------------------
+_Check_return_ _CRT_NONSTDC_DEPRECATE(_access) _CRTIMP int __cdecl
+access(_In_z_ const char * _Filename, _In_ int _AccessMode);
+- -------------------------------------------------------------------------
 
-char *
-dirname (char *path)
-{
-  static const char dot[] =3D ".";
-  char *last_slash;
+The only way around this warning was to use the #pragma declaration to
+disable the C4996 warning.  But I'm no Visual Studio expert, I might have
+overlooked something.
 
-  /* Find last '/'.  */
-  last_slash =3D path !=3D NULL ? strrchr (path, '/') : NULL;
 
-  if (last_slash !=3D NULL && last_slash !=3D path && last_slash[1] =3D=3D =
-'\0')
-    {
-      /* Determine whether all remaining characters are slashes.  */
-      char *runp;
+kind regards,
 
-      for (runp =3D last_slash; runp !=3D path; --runp)
-        if (runp[-1] !=3D '/')
-          break;
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-      /* The '/' is the last character, we have to look further.  */
-      if (runp !=3D path)
-        last_slash =3D __memrchr (path, '/', runp - path);
-    }
-
-  if (last_slash !=3D NULL)
-    {
-      /* Determine whether all remaining characters are slashes.  */
-      char *runp;
-
-      for (runp =3D last_slash; runp !=3D path; --runp)
-        if (runp[-1] !=3D '/')
-          break;
-
-      /* Terminate the path.  */
-      if (runp =3D=3D path)
-        {
-          /* The last slash is the first character in the string.  We have =
-to
-             return "/".  As a special case we have to return "//" if there
-             are exactly two slashes at the beginning of the string.  See
-             XBD 4.10 Path Name Resolution for more information.  */
-          if (last_slash =3D=3D path + 1)
-            ++last_slash;
-          else
-            last_slash =3D path + 1;
-        }
-      else
-        last_slash =3D runp;
-
-      last_slash[0] =3D '\0';
-    }
-  else
-    /* This assignment is ill-designed but the XPG specs require to
-       return a string containing "." in any case no directory part is
-       found and so a static and constant string is required.  */
-    path =3D (char *) dot;
-
-  return path;
-}
----
-
-Alon.
+iEYEARECAAYFAk7glRwACgkQDC186MBRfrrM3QCgpgkDi4JWMaa4mmWjDeopDQfG
+iWMAoKsMJC5zp4O9UwAwNtDXIM7wHkcB
+=+4J5
+-----END PGP SIGNATURE-----
 
