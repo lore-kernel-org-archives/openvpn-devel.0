@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...1347...>
-Date: Thu,  8 Dec 2011 14:01:00 +0100
-Message-Id: <1323349260-20970-1-git-send-email-davids@...1347...>
-In-Reply-To: <1323301588-29815-1-git-send-email-davids@...1347...>
-References: <1323301588-29815-1-git-send-email-davids@...1347...>
-Subject: [Openvpn-devel] [PATCH v2] Move away from openvpn_basename() over
-	to platform provided basename()
+Date: Thu,  8 Dec 2011 14:01:36 +0100
+Message-Id: <1323349296-21088-1-git-send-email-davids@...1347...>
+In-Reply-To: <CAOazyz13pmU4=6XOA-2uq0rAwTMRrRYF73sszehxbcPQsa2rmQ@...278...>
+References: <CAOazyz13pmU4=6XOA-2uq0rAwTMRrRYF73sszehxbcPQsa2rmQ@...278...>
+Subject: [Openvpn-devel] [PATCH] Move away from openvpn_basename() over to
+	platform provided basename()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
