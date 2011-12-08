@@ -1,11 +1,11 @@
+Message-ID: <4EE08E3A.7010209@...1114...>
+Date: Thu, 08 Dec 2011 11:15:22 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="=_032beecdabd2ecf3075250a2a2057929"
-Date: Thu, 08 Dec 2011 09:33:04 +0100
-From: michael-dev <michael-dev@...1528...>
-Message-ID: <d3f7c10b2411aa41afce3788970ca839@...1528...>
-Subject: [Openvpn-devel] =?utf-8?q?=5BPATCH=5D_Add_option_to_disable_prior?=
- =?utf-8?q?ity_tagged_packets_=28VID=3D0=29?=
+References: <d3f7c10b2411aa41afce3788970ca839@...1528...>
+In-Reply-To: <d3f7c10b2411aa41afce3788970ca839@...1528...>
+Subject: Re: [Openvpn-devel] [PATCH] Add option to disable priority tagged
+ packets (VID=0)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,81 +14,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
---=_032beecdabd2ecf3075250a2a2057929
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
+To: michael-dev <michael-dev@...1528...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This patch adds an option to disable the creation of tagged priority 
-packets
-with VID=0. This is for the feature_vlan_tagging openvpn-testing head.
-
-I tested the vlan feature and it works fine for me (no dhcp tested).
-Therefore I bridged my eth0 (LAN) and tap0 (OpenVPN) but as my switch
-flags arp replys with priority, the client ended up with 802.1q tagged
-(VID=0) priority packets. These were not expected on the client (Ubuntu 
-10.04 lts)
-and I found a linux kernel discussion from summer 2010 about supporting 
-VID=0
-priority packets, so I expect more linux clients (windows untested) to 
-not support
-this kind of packets.
-This option prevents the creating of these packets by ignoring the 
-priority information.
-
-This patch has already been tested and works fine for me.
-
-Signed-off-by: Michael Braun <michael-dev@...1528...>
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
 
+Adding Fabian to Cc, he knows more about the VLAN code.
 
---=_032beecdabd2ecf3075250a2a2057929
-Content-Transfer-Encoding: base64
-Content-Type: text/x-diff;
- name=vlan-disable-priority.diff
-Content-Disposition: attachment;
- filename=vlan-disable-priority.diff
+With this feedback, I'm willing merge in the feat_vlan_tagging branch
+into master.  I'm not sure if this should happen now in the v2.3 time
+frame (which is getting more and more ready for alpha/beta releases), or
+if we will take it in the next round with v2.4.  But I will bring that up
+for discussion soonish.
 
-LS0tCiBtdWx0aS5jICAgfCAgICAyICstCiBvcHRpb25zLmMgfCAgICA5ICsrKysrKysrKwogb3B0
-aW9ucy5oIHwgICAgMSArCiAzIGZpbGVzIGNoYW5nZWQsIDExIGluc2VydGlvbnMoKyksIDEgZGVs
-ZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvbXVsdGkuYyBiL211bHRpLmMKaW5kZXggYjc3NzkxYS4u
-ZDA5ZmE2OCAxMDA2NDQKLS0tIGEvbXVsdGkuYworKysgYi9tdWx0aS5jCkBAIC0yMjQ2LDcgKzIy
-NDYsNyBAQCByZW1vdmVfdmxhbl90YWcgKGNvbnN0IHN0cnVjdCBjb250ZXh0ICpjLCBzdHJ1Y3Qg
-YnVmZmVyICpidWYpCiAgICAgICByZXR1cm4gYy0+b3B0aW9ucy52bGFuX3B2aWQ7CiAgICAgfQog
-Ci0gIGlmIChwY3AgPT0gMCkKKyAgaWYgKHBjcCA9PSAwIHx8IGMtPm9wdGlvbnMudmxhbl9kaXNh
-YmxlX3ByaW9yaXR5KQogICAgIHsKICAgICAgIC8qIFZMQU4tdGFnZ2VkIHdpdGhvdXQgcHJpb3Jp
-dHkgaW5mb3JtYXRpb24uICovCiAKZGlmZiAtLWdpdCBhL29wdGlvbnMuYyBiL29wdGlvbnMuYwpp
-bmRleCA4MjdiOWYwLi5mZTBlYWM2IDEwMDY0NAotLS0gYS9vcHRpb25zLmMKKysrIGIvb3B0aW9u
-cy5jCkBAIC03NjMsNiArNzYzLDcgQEAgaW5pdF9vcHRpb25zIChzdHJ1Y3Qgb3B0aW9ucyAqbywg
-Y29uc3QgYm9vbCBpbml0X2djKQogI2lmZGVmIEVOQUJMRV9WTEFOX1RBR0dJTkcKICAgby0+dmxh
-bl9hY2NlcHQgPSBWQUZfQUxMOwogICBvLT52bGFuX3B2aWQgPSAxOworICBvLT52bGFuX2Rpc2Fi
-bGVfcHJpb3JpdHkgPSBmYWxzZTsKICNlbmRpZgogfQogCkBAIC0xMDM3LDYgKzEwMzgsNyBAQCBz
-aG93X3AybXBfcGFybXMgKGNvbnN0IHN0cnVjdCBvcHRpb25zICpvKQogICBTSE9XX0JPT0wgKHZs
-YW5fdGFnZ2luZyk7CiAgIG1zZyAoRF9TSE9XX1BBUk1TLCAiICB2bGFuX2FjY2VwdCA9ICVzIiwg
-cHJpbnRfdmxhbl9hY2NlcHQgKG8tPnZsYW5fYWNjZXB0KSk7CiAgIFNIT1dfSU5UICh2bGFuX3B2
-aWQpOworICBTSE9XX0JPT0wgKHZsYW5fZGlzYWJsZV9wcmlvcml0eSk7CiAjZW5kaWYKICNlbmRp
-ZiAvKiBQMk1QX1NFUlZFUiAqLwogCkBAIC0xNzgzLDYgKzE3ODUsOCBAQCBvcHRpb25zX3Bvc3Rw
-cm9jZXNzX3ZlcmlmeV9jZSAoY29uc3Qgc3RydWN0IG9wdGlvbnMgKm9wdGlvbnMsIGNvbnN0IHN0
-cnVjdCBjb25uZQogCSAgICBtc2cgKE1fVVNBR0UsICItLXZsYW4tYWNjZXB0IHJlcXVpcmVzIC0t
-dmxhbi10YWdnaW5nIik7CiAJICBpZiAob3B0aW9ucy0+dmxhbl9wdmlkICE9IGRlZmF1bHRzLnZs
-YW5fcHZpZCkKIAkgICAgbXNnIChNX1VTQUdFLCAiLS12bGFuLXB2aWQgcmVxdWlyZXMgLS12bGFu
-LXRhZ2dpbmciKTsKKwkgIGlmIChvcHRpb25zLT52bGFuX2Rpc2FibGVfcHJpb3JpdHkgIT0gZGVm
-YXVsdHMudmxhbl9kaXNhYmxlX3ByaW9yaXR5KQorCSAgICBtc2cgKE1fVVNBR0UsICItLXZsYW5f
-ZGlzYWJsZV9wcmlvcml0eSByZXF1aXJlcyAtLXZsYW4tdGFnZ2luZyIpOwogCX0KICNlbmRpZgog
-ICAgIH0KQEAgLTU3ODIsNiArNTc4NiwxMSBAQCBhZGRfb3B0aW9uIChzdHJ1Y3Qgb3B0aW9ucyAq
-b3B0aW9ucywKICAgICAgIFZFUklGWV9QRVJNSVNTSU9OIChPUFRfUF9HRU5FUkFMKTsKICAgICAg
-IG9wdGlvbnMtPnZsYW5fdGFnZ2luZyA9IHRydWU7CiAgICAgfQorICBlbHNlIGlmIChzdHJlcSAo
-cFswXSwgInZsYW4tZGlzYWJsZS1wcmlvcml0eSIpKQorICAgIHsKKyAgICAgIFZFUklGWV9QRVJN
-SVNTSU9OIChPUFRfUF9HRU5FUkFMKTsKKyAgICAgIG9wdGlvbnMtPnZsYW5fZGlzYWJsZV9wcmlv
-cml0eSA9IHRydWU7CisgICAgfQogICBlbHNlIGlmIChzdHJlcSAocFswXSwgInZsYW4tYWNjZXB0
-IikgJiYgcFsxXSkKICAgICB7CiAgICAgICBWRVJJRllfUEVSTUlTU0lPTiAoT1BUX1BfR0VORVJB
-TCk7CmRpZmYgLS1naXQgYS9vcHRpb25zLmggYi9vcHRpb25zLmgKaW5kZXggYTI3ODU2MS4uNTQ0
-NGUzNyAxMDA2NDQKLS0tIGEvb3B0aW9ucy5oCisrKyBiL29wdGlvbnMuaApAQCAtNTIzLDYgKzUy
-Myw3IEBAIHN0cnVjdCBvcHRpb25zCiAgIGJvb2wgdmxhbl90YWdnaW5nOwogICBlbnVtIHZsYW5f
-YWNjZXB0YWJsZV9mcmFtZXMgdmxhbl9hY2NlcHQ7CiAgIHVpbnQxNl90IHZsYW5fcHZpZDsKKyAg
-Ym9vbCB2bGFuX2Rpc2FibGVfcHJpb3JpdHk7CiAjZW5kaWYKIH07CiAKLS0gCjEuNy4zLjQKCg==
---=_032beecdabd2ecf3075250a2a2057929--
 
+kind regards,
+
+David Sommerseth
+
+
+On 08/12/11 09:33, michael-dev wrote:
+> This patch adds an option to disable the creation of tagged priority
+> packets with VID=0. This is for the feature_vlan_tagging
+> openvpn-testing head.
+> 
+> I tested the vlan feature and it works fine for me (no dhcp tested). 
+> Therefore I bridged my eth0 (LAN) and tap0 (OpenVPN) but as my switch 
+> flags arp replys with priority, the client ended up with 802.1q
+> tagged (VID=0) priority packets. These were not expected on the client
+> (Ubuntu 10.04 lts) and I found a linux kernel discussion from summer
+> 2010 about supporting VID=0 priority packets, so I expect more linux
+> clients (windows untested) to not support this kind of packets. This
+> option prevents the creating of these packets by ignoring the
+> priority information.
+> 
+> This patch has already been tested and works fine for me.
+> 
+> Signed-off-by: Michael Braun <michael-dev@...1528...>
+> 
+> 
+> 
+> 
+> ------------------------------------------------------------------------------
+>
+> 
+Cloud Services Checklist: Pricing and Packaging Optimization
+> This white paper is intended to serve as a reference, checklist and
+> point of discussion for anyone considering optimizing the pricing and
+> packaging model of a cloud services business. Read Now! 
+> http://www.accelacomm.com/jaw/sfnl/114/51491232/
+> 
+> 
+> 
+> _______________________________________________ Openvpn-devel mailing
+> list Openvpn-devel@lists.sourceforge.net 
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk7gjjgACgkQDC186MBRfrqtsACgm8JiXbRQPTicmDjxL0WxDfGC
+KQkAoJu4gKtBtu6esT582SCBTD0z5J15
+=q6lu
+-----END PGP SIGNATURE-----
 
