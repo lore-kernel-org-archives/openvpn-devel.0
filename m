@@ -1,15 +1,15 @@
-Message-ID: <4EE14A5B.6050409@...1338...>
-Date: Fri, 09 Dec 2011 00:38:03 +0100
-From: Fabian Knittel <fabian.knittel@...1338...>
-MIME-Version: 1.0
-References: <d3f7c10b2411aa41afce3788970ca839@...1528...>	<4EE08E3A.7010209@...1114...>	<CAOazyz1MCx8x42YK6-fQs0iAzDS0kRLvZ1sw4hvmcZ4gikJrUA@...278...>	<4EE0EDA4.2090704@...1338...>
-	<CAOazyz1P=BhFXogEXUpqqEfrm-UadW1zet8vZpNZBAOm6y5_Eg@...278...>
-In-Reply-To: <CAOazyz1P=BhFXogEXUpqqEfrm-UadW1zet8vZpNZBAOm6y5_Eg@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="------------enig57715DFAAD5ECEE145D8B169"
-Subject: Re: [Openvpn-devel] [PATCH] Add option to disable priority tagged
- packets (VID=0)
+Date: Fri, 9 Dec 2011 09:02:12 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20111209080212.GC18948@...1296...>
+References: <1323301588-29815-1-git-send-email-davids@...1347...>
+	<1323357860-2506-1-git-send-email-davids@...1347...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="MzdA25v054BPvyZa"
+Content-Disposition: inline
+In-Reply-To: <1323357860-2506-1-git-send-email-davids@...1347...>
+Subject: Re: [Openvpn-devel] [PATCH v3] Move away from openvpn_basename()
+	over to platform provided basename()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,59 +18,85 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: davids@...1347..., "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: David Sommerseth <davids@...1347...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig57715DFAAD5ECEE145D8B169
-Content-Type: text/plain; charset="UTF-8"
+--MzdA25v054BPvyZa
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Hi Alon,
+Hi,
 
-Am 08.12.2011 21:17, schrieb Alon Bar-Lev:
-> I fail to understand why this is relevant as far as usage (openvpn --help=
-) and
-> manual (man openvpn) to document this.
+On Thu, Dec 08, 2011 at 04:24:20PM +0100, David Sommerseth wrote:
+> This kicks out the openvpn_basename() function from misc.[ch] and puts
+> glibc equivalents into compat.[ch].  This is to provide the same
+> functionality on platforms not having a native basename() function
+> available.
+>=20
+> In addition this patch adds dirname() which commit 0f2bc0dd92f43c91e
+> depends.  Without dirname(), openvpn won't build in Visual Studio.
+>=20
+> v2: Move all functions from compat.h to compat.c
+> v3: Use glibc versions of basename() and dirname() instead
 
-Ah.  Sorry for the misunderstanding.
+ACK for the dirname() part.
 
-Are you referring to the specific patch by Michael?  I agree that it
-would have needed more documentation before being acceptable for inclusion.
-Or are you referring to the VLAN patch-set in general?  (BTW, the latest
-version adds a few additional clarifications to the openvpn man page [0].)
+I'm not particularily happy with the basename() changes, though.
 
-Cheers
-Fabian
+> --- a/init.c
+> +++ b/init.c
+> @@ -862,8 +862,10 @@ init_verb_mute (struct context *c, unsigned int flag=
+s)
+>  void
+>  init_options_dev (struct options *options)
+>  {
+> -  if (!options->dev)
+> -    options->dev =3D openvpn_basename (options->dev_node);
+> +  if (!options->dev && options->dev_node) {
+> +    char *dev_node =3D strdup(options->dev_node); /* POSIX basename() im=
+plementaions may modify its arguments */
+> +    options->dev =3D basename (dev_node);
+> +  }
+>  }
 
-0:
-http://opensource.fsmi.uni-karlsruhe.de/gitweb/?p=3Dopenvpn.git;a=3Dcommit;=
-h=3D5c5cce29f2230a8fdaf7b135d2e3255f54af1395
+These changes, just to take into account some system somewhere that
+has a basename() implementation that modifies the argument string, are
+ugly, and prone to memleak-errors.  Also, some other "basename(3)" man
+pages talk about basename() returning a pointer to an internal static
+storage which can be overwritten at the next call - so the code above=20
+would then not work on such a system (as the next call to basename()=20
+would modify the memory are where options->dev is pointing to).
 
 
---------------enig57715DFAAD5ECEE145D8B169
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+So I'd propose to keep openvpn_basename() - it's simple and short enough,
+and has well-defined semantics that can be relied upon.
+
+
+OTOH, David's compat.c basename() is nicer than what we currently have -
+so let's use that implementation, but let's call it openvpn_basename().
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--MzdA25v054BPvyZa
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+Version: GnuPG v1.4.11 (NetBSD)
 
-iQIcBAEBCAAGBQJO4UplAAoJEPGZx5Q4PJrzj/EQAIyK6x3s6uxTAlkf9GKwoY6F
-mqYVlEHmitl9aigBrUhdnog4x7yzXnLxsCJsLKPPUkVQhIVKoEm/1JzkCuQeUsTO
-s8vcPqvUaJ44C5AtUwzpSfw/Wd9xywqPoqK5S61x0Hgq2ro5e7uQ+Oao8SmGj6Te
-0DE8ANchlTqVLRPYKuFulpdsvrWZtFwzXVB2El/FR31P1NzFW13FnRb/SalScJUD
-Ja2+Hid+4cXgD0HKTxEWqjUyKcVvQK8BuQ2IqUNzULNkw6VgpTOfw4U5J093V7zE
-EQJwtwsx8OYQFn6VnGDbNhzkOe1kqCfHdC8HMby0wAg1nug2UhP9fsGQulZpzgGM
-RbbMbvxsy4OlNPBdTR9SEMZiwIWXME7Nq5Gln47xfugouMI9sL2LX2uUaKqecIS+
-Qf1eD9o2a0Lv/opT9P6QwdQCjTLFA44THuMimulEeXMDfXmiFzN8FsitzTizJb6A
-iObPCDOOwkpTYxq6IJzRy40W+YBZcD7VPQfoQX+kQFKGH4Q2Ku18yi2lGgLbjKRt
-bQo6YbQ1wpkcSvhLe/r4cRjevMBILK+rB0I8cJafGDwPuz+pu9KbDw6f8vkPT9Mr
-4tr/umXIUg0WLL75X9Qymd/bCqpyJGEnHpIPHvUFv8CILLYFNGcW8ZuFi6EbbdOT
-R1ejKpuOAd1jwI1ERIM3
-=giqZ
+iQCVAwUBTuHAhKkuBuNlUUl1AQJc+wP+MoUdFb443n+ofeI7dFPbkZfIbZx64C9l
+BxX/Z9p4rnXhPYVQ1skiUgXPuDNsbNlqoR2qUtsx+PbuCfE6vipixa4KwvcDqIHp
+bS0vsXmePaCjH8oXzoLpzxpOound1HQVxw0sthBY4nMk5h84gFRsp7SlV7hoHAe8
+7teQMrUanDU=
+=RcxY
 -----END PGP SIGNATURE-----
 
---------------enig57715DFAAD5ECEE145D8B169--
+--MzdA25v054BPvyZa--
 
