@@ -1,11 +1,13 @@
-Date: Sun, 11 Dec 2011 15:16:09 -0600
-From: "Karl O. Pinc" <kop@...1206...>
-In-Reply-To: <20111211203701.GH18948@...1296...> (from
-	gert@...1296... on Sun Dec 11 14:37:02 2011)
-Message-Id: <1323638169.31975.0@...1207...>
+Message-ID: <4EE52A57.1040906@...1338...>
+Date: Sun, 11 Dec 2011 23:10:31 +0100
+From: Fabian Knittel <fabian.knittel@...1338...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH v3] Move away from openvpn_basename()
- over to platform provided basename()
+References: <A273A2F6519C0D42BFF02CA9C6A825112D003E1E@...1531...>
+In-Reply-To: <A273A2F6519C0D42BFF02CA9C6A825112D003E1E@...1531...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="------------enig46E1C5E93B8240FE1DEB864C"
+Subject: Re: [Openvpn-devel] Problem with alloc_buf_gc function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,36 +16,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+To: Tiran Kaskas <Tiran.Kaskas@...1530...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig46E1C5E93B8240FE1DEB864C
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Gert Doering <gert@...1296...>
-Cc: Alon Bar-Lev <alon.barlev@...277...>, openvpn-devel@lists.sourceforge.net
 
-On 12/11/2011 02:37:02 PM, Gert Doering wrote:
+Hi Tiran,
 
-> Of course nobody wants to reimplement all library functions (except=20
-> djb, maybe, but we do not want to go there), but given some functions=20
-> with sufficiently vague or messy calling semantics, having a better=20
-> defined local implementation can improvide the code a lot.
+Am 11.12.2011 21:57, schrieb Tiran Kaskas:
+> Looking into the function alloc_buf_gc() in file buffer.c, it returns a
+> struct buffer, which seems to me is allocated on the stack, which is
+> causing an issue, I believe, since the function calling alloc_buf_gc()
+> will work on a buffer which becomes garbage.
 
-I'm sorry if this is injecting noise into the conversation
-but I cannot resist commenting.
+'alloc_buf_gc()' is returning 'buf' (of type 'struct buffer') by value,
+not by pointer, so there is no problem here.  If it were returning 'buf'
+by pointer your observation would be correct.  (In C++ a typical mistake
+would be to return 'buf' by reference.)
 
-I don't know the answer, but I do know the question: Improve
-the code when?  The old adage is "standard is better than better"
-comes to mind.  If the code is calling basename all the time
-then it makes sense to improve it.  If we're talking about
-saving a few microseconds here or there on startup or shutdown
-I'd question whether yet another interface, better or not,
-makes sense.  Likewise, if there's a problem that needs to
-be fixed, say, people are introducing bugs, then by all
-means it needs fixing.  Otherwise, if it ain't broke....
+The function calling 'alloc_buf_gc()' will copy the contents of 'buf' to
+its local instance of 'struct buffer' before continuing.  (An optimised
+build might even eliminate the copy.)
 
-Regards,
+Are you observing a specific problem with buffers or did you just happen
+to stumble over this piece of code?
 
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                 -- Robert A. Heinlein
+Cheers
+Fabian
 
+
+--------------enig46E1C5E93B8240FE1DEB864C
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iQIcBAEBCAAGBQJO5SpqAAoJEPGZx5Q4PJrzsLoP/iSzvoXKyV+/I+HoW/9uCX0o
+/qeUtJmzQlwBxSEiCSaI+UCOVjdAEBST3w2EbW+6z9PksvQ5MIVGrgPSDpGZYSDY
+EQgG4nzqV9fdCQ2hrb/xV+T7Vn8mIMuKG/C+TQDhxa3rygHCg+cLouJHgR2Z0t08
+hDpI81sSIErehbWmKC9M6eip+x8FA0LxPpN2iB55M0CHkpEKJSTo7kDEFQcizkt2
+Qae2ldTq3tnRPV27R8Ptokpk6ZT6fp0KsS4qpxtaSVlvYo/dn2FeJfaZWlnBTTy2
+Z/PFCrbWGKBiuuOlynSBSBkUaZF/duUJWL71kXUSLzlhkHIetVUrjjetXUlS749a
+wZ+v5GMjznE6mhlOB6RoCPFurAGW1x91clTZZcmclcmTX+Tpdfa/KiISwf0AllEl
+HB/2GQvdo/PdVXV0P3p0Nkyxf1sWxYvlOqd6K+2eiqnzery7aGRnjv8HZ7TK+HRU
+Or4avV/36MuIRNlliOS/6/Xzqr2lN5cuoONLY/KA764KIjzqKbHxh49/SoiK+wf1
+GnuEi/X6rxJh7MbZRYYRIdAcWqGlrULBxQr0lFz7oTJXg73o9MB0KAG8dDuDX7bo
+bI3qLSGmiG4rchDmo5nkh8EoEPzt6CX2NOxMvsUzwaB33uud4VOWYbmxBxo4g8Zi
+KehxoHl5546EwVqQx8HG
+=ysQx
+-----END PGP SIGNATURE-----
+
+--------------enig46E1C5E93B8240FE1DEB864C--
 
