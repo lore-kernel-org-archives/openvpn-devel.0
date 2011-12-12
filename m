@@ -1,12 +1,11 @@
-Message-ID: <4EE52A57.1040906@...1338...>
-Date: Sun, 11 Dec 2011 23:10:31 +0100
-From: Fabian Knittel <fabian.knittel@...1338...>
-MIME-Version: 1.0
+From: Tiran Kaskas <Tiran.Kaskas@...1530...>
+Date: Mon, 12 Dec 2011 07:41:56 +0000
+Message-ID: <A273A2F6519C0D42BFF02CA9C6A825112D003F02@...1531...>
 References: <A273A2F6519C0D42BFF02CA9C6A825112D003E1E@...1531...>
-In-Reply-To: <A273A2F6519C0D42BFF02CA9C6A825112D003E1E@...1531...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="------------enig46E1C5E93B8240FE1DEB864C"
+	<4EE52A57.1040906@...1338...>
+In-Reply-To: <4EE52A57.1040906@...1338...>
+Content-Language: en-US
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] Problem with alloc_buf_gc function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,61 +15,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Tiran Kaskas <Tiran.Kaskas@...1530...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Fabian Knittel <fabian.knittel@...1338...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig46E1C5E93B8240FE1DEB864C
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-Hi Tiran,
-
-Am 11.12.2011 21:57, schrieb Tiran Kaskas:
-> Looking into the function alloc_buf_gc() in file buffer.c, it returns a
-> struct buffer, which seems to me is allocated on the stack, which is
-> causing an issue, I believe, since the function calling alloc_buf_gc()
-> will work on a buffer which becomes garbage.
-
-'alloc_buf_gc()' is returning 'buf' (of type 'struct buffer') by value,
-not by pointer, so there is no problem here.  If it were returning 'buf'
-by pointer your observation would be correct.  (In C++ a typical mistake
-would be to return 'buf' by reference.)
-
-The function calling 'alloc_buf_gc()' will copy the contents of 'buf' to
-its local instance of 'struct buffer' before continuing.  (An optimised
-build might even eliminate the copy.)
-
-Are you observing a specific problem with buffers or did you just happen
-to stumble over this piece of code?
-
-Cheers
-Fabian
-
-
---------------enig46E1C5E93B8240FE1DEB864C
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iQIcBAEBCAAGBQJO5SpqAAoJEPGZx5Q4PJrzsLoP/iSzvoXKyV+/I+HoW/9uCX0o
-/qeUtJmzQlwBxSEiCSaI+UCOVjdAEBST3w2EbW+6z9PksvQ5MIVGrgPSDpGZYSDY
-EQgG4nzqV9fdCQ2hrb/xV+T7Vn8mIMuKG/C+TQDhxa3rygHCg+cLouJHgR2Z0t08
-hDpI81sSIErehbWmKC9M6eip+x8FA0LxPpN2iB55M0CHkpEKJSTo7kDEFQcizkt2
-Qae2ldTq3tnRPV27R8Ptokpk6ZT6fp0KsS4qpxtaSVlvYo/dn2FeJfaZWlnBTTy2
-Z/PFCrbWGKBiuuOlynSBSBkUaZF/duUJWL71kXUSLzlhkHIetVUrjjetXUlS749a
-wZ+v5GMjznE6mhlOB6RoCPFurAGW1x91clTZZcmclcmTX+Tpdfa/KiISwf0AllEl
-HB/2GQvdo/PdVXV0P3p0Nkyxf1sWxYvlOqd6K+2eiqnzery7aGRnjv8HZ7TK+HRU
-Or4avV/36MuIRNlliOS/6/Xzqr2lN5cuoONLY/KA764KIjzqKbHxh49/SoiK+wf1
-GnuEi/X6rxJh7MbZRYYRIdAcWqGlrULBxQr0lFz7oTJXg73o9MB0KAG8dDuDX7bo
-bI3qLSGmiG4rchDmo5nkh8EoEPzt6CX2NOxMvsUzwaB33uud4VOWYbmxBxo4g8Zi
-KehxoHl5546EwVqQx8HG
-=ysQx
------END PGP SIGNATURE-----
-
---------------enig46E1C5E93B8240FE1DEB864C--
-
+WW91IGFyZSByaWdodCwgSSBzb21laG93IG1peGVkIHRoZSBkYXRhIHB0ciB3aXRoIHRoZSBzdHJ1
+Y3QgY29weSBieSB2YWx1ZS4NCkkgZG8gaGF2ZSBhIHByb2JsZW0gd2l0aCByZXR1cm5pbmcgc3Ry
+dWN0dXJlcyB3aXRoIG15IDE2IGJpdCBtYWNoaW5lLCBzZWVtcyBzb21lIG9mIHRoZSBkYXRhIG5v
+dCBiZWluZyBjb3BpZWQgKHByb2JhYmx5IG5lZWQgdG8gZGVmaW5lIGZhciBzZWdtZW50KS4NCg0K
+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEZhYmlhbiBLbml0dGVsIFttYWlsdG86
+ZmFiaWFuLmtuaXR0ZWxALi4uMTMzOC4uLl0gDQpTZW50OiBNb25kYXksIERlY2VtYmVyIDEyLCAy
+MDExIDEyOjExIEFNDQpUbzogVGlyYW4gS2Fza2FzDQpDYzogb3BlbnZwbi1kZXZlbEBsaXN0cy5z
+b3VyY2Vmb3JnZS5uZXQNClN1YmplY3Q6IFJlOiBbT3BlbnZwbi1kZXZlbF0gUHJvYmxlbSB3aXRo
+IGFsbG9jX2J1Zl9nYyBmdW5jdGlvbg0KDQpIaSBUaXJhbiwNCg0KQW0gMTEuMTIuMjAxMSAyMTo1
+Nywgc2NocmllYiBUaXJhbiBLYXNrYXM6DQo+IExvb2tpbmcgaW50byB0aGUgZnVuY3Rpb24gYWxs
+b2NfYnVmX2djKCkgaW4gZmlsZSBidWZmZXIuYywgaXQgcmV0dXJucyANCj4gYSBzdHJ1Y3QgYnVm
+ZmVyLCB3aGljaCBzZWVtcyB0byBtZSBpcyBhbGxvY2F0ZWQgb24gdGhlIHN0YWNrLCB3aGljaCBp
+cyANCj4gY2F1c2luZyBhbiBpc3N1ZSwgSSBiZWxpZXZlLCBzaW5jZSB0aGUgZnVuY3Rpb24gY2Fs
+bGluZyBhbGxvY19idWZfZ2MoKSANCj4gd2lsbCB3b3JrIG9uIGEgYnVmZmVyIHdoaWNoIGJlY29t
+ZXMgZ2FyYmFnZS4NCg0KJ2FsbG9jX2J1Zl9nYygpJyBpcyByZXR1cm5pbmcgJ2J1ZicgKG9mIHR5
+cGUgJ3N0cnVjdCBidWZmZXInKSBieSB2YWx1ZSwgbm90IGJ5IHBvaW50ZXIsIHNvIHRoZXJlIGlz
+IG5vIHByb2JsZW0gaGVyZS4gIElmIGl0IHdlcmUgcmV0dXJuaW5nICdidWYnDQpieSBwb2ludGVy
+IHlvdXIgb2JzZXJ2YXRpb24gd291bGQgYmUgY29ycmVjdC4gIChJbiBDKysgYSB0eXBpY2FsIG1p
+c3Rha2Ugd291bGQgYmUgdG8gcmV0dXJuICdidWYnIGJ5IHJlZmVyZW5jZS4pDQoNClRoZSBmdW5j
+dGlvbiBjYWxsaW5nICdhbGxvY19idWZfZ2MoKScgd2lsbCBjb3B5IHRoZSBjb250ZW50cyBvZiAn
+YnVmJyB0byBpdHMgbG9jYWwgaW5zdGFuY2Ugb2YgJ3N0cnVjdCBidWZmZXInIGJlZm9yZSBjb250
+aW51aW5nLiAgKEFuIG9wdGltaXNlZCBidWlsZCBtaWdodCBldmVuIGVsaW1pbmF0ZSB0aGUgY29w
+eS4pDQoNCkFyZSB5b3Ugb2JzZXJ2aW5nIGEgc3BlY2lmaWMgcHJvYmxlbSB3aXRoIGJ1ZmZlcnMg
+b3IgZGlkIHlvdSBqdXN0IGhhcHBlbiB0byBzdHVtYmxlIG92ZXIgdGhpcyBwaWVjZSBvZiBjb2Rl
+Pw0KDQpDaGVlcnMNCkZhYmlhbg0KDQo=
