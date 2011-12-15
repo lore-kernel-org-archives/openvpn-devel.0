@@ -1,14 +1,11 @@
-Date: Wed, 14 Dec 2011 19:27:00 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20111214182700.GX18948@...1296...>
+Message-ID: <4EE9D003.5060704@...1114...>
+Date: Thu, 15 Dec 2011 11:46:27 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
 References: <1323882919-2145-1-git-send-email-davids@...1347...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="PPxI8paQBs33t8dK"
-Content-Disposition: inline
 In-Reply-To: <1323882919-2145-1-git-send-email-davids@...1347...>
 Subject: Re: [Openvpn-devel] [PATCH] Fix compiling with --disable-crypto
-	and/or --disable-ssl
+ and/or --disable-ssl
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,44 +14,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 To: David Sommerseth <davids@...1347...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---PPxI8paQBs33t8dK
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Hi,
+On 14/12/11 18:15, David Sommerseth wrote:
+> The checks introduced in commit
+> 0f2bc0dd92f43c91e33bba8a66b06b98f281efc1 didn't properly remove checks
+> if crypto or SSL was disabled at compile time.
+> 
+> Signed-off-by: David Sommerseth <davids@...1347...> --- options.c |
+> 10 +++++----- 1 files changed, 5 insertions(+), 5 deletions(-)
 
-On Wed, Dec 14, 2011 at 06:15:19PM +0100, David Sommerseth wrote:
-> The checks introduced in commit 0f2bc0dd92f43c91e33bba8a66b06b98f281efc1
-> didn't properly remove checks if crypto or SSL was disabled at compile ti=
-me.
+Applied and pushed to master branches on testing and stable git trees.
 
-ACK.  Nasty #idef's, good that we have Buildbot to tell us :-)
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+commit 1d5c4433cdb7ab0a9d9f7496e6dc2cee189d375f
+Author: David Sommerseth <davids@...1347...>
+Date:   Wed Dec 14 18:12:23 2011 +0100
 
---PPxI8paQBs33t8dK
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+    Signed-off-by: David Sommerseth <davids@...1347...>
+    Acked-by: Gert Doering <gert@...1296...>
 
+
+kind regards,
+
+David Sommerseth
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iQCVAwUBTujqdKkuBuNlUUl1AQI4UQP/ey13BCYCrzYdHq00drAwnKRKhSyrjqjl
-fEYJoT72WHngnOKNWTWwd0sBdmBzIf9uoHe816GFBC+XCFFPZu31HaOHw2qiUXhw
-JRTsosYfEAODiVeTuMcGBN18Vilae2dcS0ArPH/PjxrU3PoDqUCeyXTBW9IgnNCZ
-9Pe40jzN7Pc=
-=Vs7B
+iEYEARECAAYFAk7p0AEACgkQDC186MBRfrp+kwCeKejrGoNeKoofE3mgZOsin+Dp
+cTkAnRiZRAj+x+qT3V1/pumqoXAf/mrz
+=yPJD
 -----END PGP SIGNATURE-----
-
---PPxI8paQBs33t8dK--
 
