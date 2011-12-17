@@ -1,11 +1,8 @@
-Message-ID: <4EE9D003.5060704@...1114...>
-Date: Thu, 15 Dec 2011 11:46:27 +0100
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1323882919-2145-1-git-send-email-davids@...1347...>
-In-Reply-To: <1323882919-2145-1-git-send-email-davids@...1347...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix compiling with --disable-crypto
- and/or --disable-ssl
+Date: Sat, 17 Dec 2011 15:47:39 -0500
+Message-ID: <CAMaBZnF0n8rNjkvjQE0M7fyFMDDC2qQgAAQEac9d5RD9JXc+ow@...278...>
+From: Praetorian <praetoriancode@...277...>
+Subject: [Openvpn-devel] Debian master branch build?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,41 +12,20 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: David Sommerseth <davids@...1347...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+A few weeks/months ago in an IRC meeting I asked about a debian build
+for the master branch.  I recently installed the
+openvpn-2.x-master-20111202-wo-startup-test-install.exe on my vista
+laptop (which installed fine btw).  Is there a debian build coming
+that I could install to test all the new ipv6 functions in the updated
+windows master branch installer?  I know the holidays are right upon
+us,  but it would be great to be able to work on this over the
+holidays as I have some extra time.
 
-On 14/12/11 18:15, David Sommerseth wrote:
-> The checks introduced in commit
-> 0f2bc0dd92f43c91e33bba8a66b06b98f281efc1 didn't properly remove checks
-> if crypto or SSL was disabled at compile time.
-> 
-> Signed-off-by: David Sommerseth <davids@...1347...> --- options.c |
-> 10 +++++----- 1 files changed, 5 insertions(+), 5 deletions(-)
+Thank you.
 
-Applied and pushed to master branches on testing and stable git trees.
-
-
-commit 1d5c4433cdb7ab0a9d9f7496e6dc2cee189d375f
-Author: David Sommerseth <davids@...1347...>
-Date:   Wed Dec 14 18:12:23 2011 +0100
-
-    Signed-off-by: David Sommerseth <davids@...1347...>
-    Acked-by: Gert Doering <gert@...1296...>
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk7p0AEACgkQDC186MBRfrp+kwCeKejrGoNeKoofE3mgZOsin+Dp
-cTkAnRiZRAj+x+qT3V1/pumqoXAf/mrz
-=yPJD
------END PGP SIGNATURE-----
+I would be installing this on a new Debian 64bit Squeeze Xen VM I
+setup this weekend already.
 
