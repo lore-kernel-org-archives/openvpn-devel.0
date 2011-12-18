@@ -1,14 +1,11 @@
-Date: Sun, 18 Dec 2011 10:21:06 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20111218092106.GB1435@...1296...>
-References: <CAMaBZnF0n8rNjkvjQE0M7fyFMDDC2qQgAAQEac9d5RD9JXc+ow@...278...>
-	<1324180977.31186.0@...1207...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="4bRzO86E/ozDv8r1"
-Content-Disposition: inline
-In-Reply-To: <1324180977.31186.0@...1207...>
-Subject: Re: [Openvpn-devel] Debian master branch build?
+From: Eric Crist <ecrist@...1286...>
+Content-Type: multipart/signed;
+	boundary="Apple-Mail=_B7AA08BA-7A06-4FAF-B2C9-B25FD6AEA934";
+	protocol="application/pgp-signature"; micalg=pgp-sha1
+Date: Sun, 18 Dec 2011 10:21:28 -0600
+Message-Id: <3C9EF92E-4AF8-48C3-BA5D-5C6E22231CF0@...1286...>
+Mime-Version: 1.0 (Apple Message framework v1251.1)
+Subject: [Openvpn-devel] 2011-51 Snapshot Signature
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,59 +14,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "Karl O. Pinc" <kop@...1206...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---4bRzO86E/ozDv8r1
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+--Apple-Mail=_B7AA08BA-7A06-4FAF-B2C9-B25FD6AEA934
+X-Eric-Conspiracy: There is no conspiracy.
+Content-Type: text/plain;
+	charset=us-ascii
+Content-Transfer-Encoding: 7bit
 
-Hi,
+The signature for openvpn-201151.tar.gz weekly snapshot is below:
 
-On Sat, Dec 17, 2011 at 10:02:57PM -0600, Karl O. Pinc wrote:
-> On 12/17/2011 02:47:39 PM, Praetorian wrote:
-> > A few weeks/months ago in an IRC meeting I asked about a debian build
-> > for the master branch.  I recently installed the
-> > openvpn-2.x-master-20111202-wo-startup-test-install.exe on my vista
-> > laptop (which installed fine btw).  Is there a debian build coming
-> > that I could install to test all the new ipv6 functions in the=20
-> > updated
-> > windows master branch installer?=20
->=20
-> Is openvpn doing debian builds?  Sounds like a debian question.
-
-Actually, Samuli *does* debian builds for the snapshots.  It's just=20
-something new, and not fully tested & not announced yet (as far as I
-can see).  Stay tuned.
-
-> Debian's irc bot has useful factoids for getting newer
-> software for Debian stable.  See:
-
-This is not about "newer software" - it doesn't make sense for Debian
-to include *snapshots* in their distribution.
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---4bRzO86E/ozDv8r1
-Content-Type: application/pgp-signature
-Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
+Version: GnuPG v2.0.16 (FreeBSD)
 
-iQCVAwUBTu2wgakuBuNlUUl1AQJNlQP+J8kmOQn6GQ9xoFBM8ygJCUZsEfcV/hOA
-tocxizUr62LqXySjK4sL8KCGxAV0kcnONYuuSJ9yxZlGnpJqwtzzH+HLK3xqsfEb
-TurCcLbkCbL2U1QGfcp6Ru+1MHa7MF9PezN/c7ZW5Y1o9gZgs5Fs2Np3GOPQfp7F
-lQAFpdmbtFQ=
-=aTdj
+iQEcBAABAgAGBQJO7hKnAAoJEHKWQhk5DQ0OHhcIAMR3j0wkEGWh6paF+AxPIvf9
+6P04CjzJQ46ljtsAuAPLpEeouhChcTGDPteuVJUVjm74xDLWirUeJEO3iApHZDzG
+Bg+Cl6nM9I4p/EZ0ljzYu6E/7ZziUeBwoZeDPBy9eC9/PyAnDTv7x8QIR7tasCPU
+fQIzAXo0QqjWPDmV0jdRB1AsUxwZFsHY4/6swCXu4m6Fb6kNj5I2MQXN2i2untut
+0i8zVKk+u6e4U9YefYQIDqGvjJJriYoaS40oj4nVZDOCyAfOFSt/IHgZIBZLBMcK
+JqbzaWLLmd/6l0/M0ZOcLJvuOItvsZ4W0aRmCMacc5dk0aqi/WPSCcDpiIDMD0M=
+=zDhG
 -----END PGP SIGNATURE-----
 
---4bRzO86E/ozDv8r1--
+Cheers
+-----
+Eric F Crist
+Secure Computing Networks
+
+
+	
+--Apple-Mail=_B7AA08BA-7A06-4FAF-B2C9-B25FD6AEA934
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+	filename=signature.asc
+X-Eric-Conspiracy: There is no conspiracy.
+Content-Type: application/pgp-signature;
+	name=signature.asc
+Content-Description: Message signed with OpenPGP using GPGMail
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEcBAEBAgAGBQJO7hMJAAoJEHKWQhk5DQ0OTpgH/0Sa2L8UdWehFZTo4YM6SEmr
+ZwFiHQqgpJfPCymvSNz0q5TqHP8LK3ni3+N4nC+ABIe+frMoU8ZgMlTJ7FIJLvfh
+0g2WpNMzM8f3+70N1PzWFNX8/7NjQxRgKaMgB0OCNqdSsY3mfGObRAUF5Efq4SRU
+nOF5ZHGZWQ7E24SDOPTiuOSIQg00ywqvnHEAm10S+QtOtoW+f4jpLZHsaravNRYT
+aXkgWydiHlMPOuBWp5cNIpANVEG+QN+EQg0l/tLFJl+LmKbF2/m2Exn97pE5Vq3k
+Sw6Ecu84l8Bkg0kI+F+YnxiA9DRGEYX//Z1wBMMg9puZDlAZxuB5y6wyXwvndcA=
+=3bMb
+-----END PGP SIGNATURE-----
+
+--Apple-Mail=_B7AA08BA-7A06-4FAF-B2C9-B25FD6AEA934--
 
