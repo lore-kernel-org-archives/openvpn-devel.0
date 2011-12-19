@@ -1,9 +1,9 @@
-Date: Mon, 19 Dec 2011 00:10:58 -0600
-From: "Karl O. Pinc" <kop@...1206...>
-In-Reply-To: <20111218092106.GB1435@...1296...> (from
-	gert@...1296... on Sun Dec 18 03:21:06 2011)
-Message-Id: <1324275058.22823.1@...1207...>
+Message-ID: <4EEF15A1.2090705@...515...>
+Date: Mon, 19 Dec 2011 12:44:49 +0200
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
+References: <CAMaBZnF0n8rNjkvjQE0M7fyFMDDC2qQgAAQEac9d5RD9JXc+ow@...278...>
+In-Reply-To: <CAMaBZnF0n8rNjkvjQE0M7fyFMDDC2qQgAAQEac9d5RD9JXc+ow@...278...>
 Subject: Re: [Openvpn-devel] Debian master branch build?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,27 +13,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Gert Doering <gert@...1296...>
+To: Praetorian <praetoriancode@...277...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-On 12/18/2011 03:21:06 AM, Gert Doering wrote
->=20
-> This is not about "newer software" - it doesn't make sense for Debian
-> to include *snapshots* in their distribution.
 
-Debian provides tools (uupdate) that facilitate putting
-snapshots, or head or whatever, into packages for installation=20
-on Debian Stable.  Other Debian tools may be more appropriate if
-the newest software is not required.  Debian users can
-choose the tool and target software version that best
-suit their requirements.
+> A few weeks/months ago in an IRC meeting I asked about a debian build
+> for the master branch.  I recently installed the
+> openvpn-2.x-master-20111202-wo-startup-test-install.exe on my vista
+> laptop (which installed fine btw).  Is there a debian build coming
+> that I could install to test all the new ipv6 functions in the updated
+> windows master branch installer?  I know the holidays are right upon
+> us,  but it would be great to be able to work on this over the
+> holidays as I have some extra time.
+>
+> Thank you.
+>
+> I would be installing this on a new Debian 64bit Squeeze Xen VM I
+> setup this weekend already.
+Actually, I just built a new repository server and automated the
+release/snapshot package building process. We now have two flavours of
+repositories: "stable" are for official releases and "snapshots" are for
+development snapshots/releases:
 
+<https://community.openvpn.net/openvpn/wiki/OpenvpnAptRepos#Usingrepos.open=
+vpn.net>
 
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                 -- Robert A. Heinlein
+Let me know how the snapshot packages work for you - I've only briefly
+tested the "Ubuntu Lucid (10.04)" version.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
 
