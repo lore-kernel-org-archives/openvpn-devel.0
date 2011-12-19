@@ -1,9 +1,9 @@
-Message-ID: <4EEF15A1.2090705@...515...>
-Date: Mon, 19 Dec 2011 12:44:49 +0200
+Message-ID: <4EEF169B.6000308@...515...>
+Date: Mon, 19 Dec 2011 12:48:59 +0200
 From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <CAMaBZnF0n8rNjkvjQE0M7fyFMDDC2qQgAAQEac9d5RD9JXc+ow@...278...>
-In-Reply-To: <CAMaBZnF0n8rNjkvjQE0M7fyFMDDC2qQgAAQEac9d5RD9JXc+ow@...278...>
+References: <1324180977.31186.0@...1207...>
+In-Reply-To: <1324180977.31186.0@...1207...>
 Subject: Re: [Openvpn-devel] Debian master branch build?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,33 +15,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: Praetorian <praetoriancode@...277...>
+To: "Karl O. Pinc" <kop@...1206...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 
-> A few weeks/months ago in an IRC meeting I asked about a debian build
-> for the master branch.  I recently installed the
-> openvpn-2.x-master-20111202-wo-startup-test-install.exe on my vista
-> laptop (which installed fine btw).  Is there a debian build coming
-> that I could install to test all the new ipv6 functions in the updated
-> windows master branch installer?  I know the holidays are right upon
-> us,  but it would be great to be able to work on this over the
-> holidays as I have some extra time.
+> On 12/17/2011 02:47:39 PM, Praetorian wrote:
+>> A few weeks/months ago in an IRC meeting I asked about a debian build
+>> for the master branch.  I recently installed the
+>> openvpn-2.x-master-20111202-wo-startup-test-install.exe on my vista
+>> laptop (which installed fine btw).  Is there a debian build coming
+>> that I could install to test all the new ipv6 functions in the=20
+>> updated
+>> windows master branch installer?=20
+> Is openvpn doing debian builds?  Sounds like a debian question.
 >
-> Thank you.
->
-> I would be installing this on a new Debian 64bit Squeeze Xen VM I
-> setup this weekend already.
-Actually, I just built a new repository server and automated the
-release/snapshot package building process. We now have two flavours of
-repositories: "stable" are for official releases and "snapshots" are for
-development snapshots/releases:
-
-<https://community.openvpn.net/openvpn/wiki/OpenvpnAptRepos#Usingrepos.open=
-vpn.net>
-
-Let me know how the snapshot packages work for you - I've only briefly
-tested the "Ubuntu Lucid (10.04)" version.
+Yes we are :). As the build process is now automated (and seems very
+reliable), I'll be pushing new snapshots to the "-snapshots" repos on a
+weekly/biweekly basis. Also, forgot to mention in my mail to praetorian
+that current snapshots are built from latest Git sources (HEAD at
+1d5c4433cd...) from "master" branch.
 
 --=20
 Samuli Sepp=E4nen
