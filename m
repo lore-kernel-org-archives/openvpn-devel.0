@@ -1,11 +1,10 @@
-From: Eric Crist <ecrist@...1286...>
-Content-Type: multipart/signed;
-	boundary="Apple-Mail=_B7AA08BA-7A06-4FAF-B2C9-B25FD6AEA934";
-	protocol="application/pgp-signature"; micalg=pgp-sha1
-Date: Sun, 18 Dec 2011 10:21:28 -0600
-Message-Id: <3C9EF92E-4AF8-48C3-BA5D-5C6E22231CF0@...1286...>
-Mime-Version: 1.0 (Apple Message framework v1251.1)
-Subject: [Openvpn-devel] 2011-51 Snapshot Signature
+Date: Mon, 19 Dec 2011 00:10:58 -0600
+From: "Karl O. Pinc" <kop@...1206...>
+In-Reply-To: <20111218092106.GB1435@...1296...> (from
+	gert@...1296... on Sun Dec 18 03:21:06 2011)
+Message-Id: <1324275058.22823.1@...1207...>
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] Debian master branch build?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,55 +13,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Apple-Mail=_B7AA08BA-7A06-4FAF-B2C9-B25FD6AEA934
-X-Eric-Conspiracy: There is no conspiracy.
-Content-Type: text/plain;
-	charset=us-ascii
-Content-Transfer-Encoding: 7bit
+On 12/18/2011 03:21:06 AM, Gert Doering wrote
+>=20
+> This is not about "newer software" - it doesn't make sense for Debian
+> to include *snapshots* in their distribution.
 
-The signature for openvpn-201151.tar.gz weekly snapshot is below:
-
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.16 (FreeBSD)
-
-iQEcBAABAgAGBQJO7hKnAAoJEHKWQhk5DQ0OHhcIAMR3j0wkEGWh6paF+AxPIvf9
-6P04CjzJQ46ljtsAuAPLpEeouhChcTGDPteuVJUVjm74xDLWirUeJEO3iApHZDzG
-Bg+Cl6nM9I4p/EZ0ljzYu6E/7ZziUeBwoZeDPBy9eC9/PyAnDTv7x8QIR7tasCPU
-fQIzAXo0QqjWPDmV0jdRB1AsUxwZFsHY4/6swCXu4m6Fb6kNj5I2MQXN2i2untut
-0i8zVKk+u6e4U9YefYQIDqGvjJJriYoaS40oj4nVZDOCyAfOFSt/IHgZIBZLBMcK
-JqbzaWLLmd/6l0/M0ZOcLJvuOItvsZ4W0aRmCMacc5dk0aqi/WPSCcDpiIDMD0M=
-=zDhG
------END PGP SIGNATURE-----
-
-Cheers
------
-Eric F Crist
-Secure Computing Networks
+Debian provides tools (uupdate) that facilitate putting
+snapshots, or head or whatever, into packages for installation=20
+on Debian Stable.  Other Debian tools may be more appropriate if
+the newest software is not required.  Debian users can
+choose the tool and target software version that best
+suit their requirements.
 
 
-	
---Apple-Mail=_B7AA08BA-7A06-4FAF-B2C9-B25FD6AEA934
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
-	filename=signature.asc
-X-Eric-Conspiracy: There is no conspiracy.
-Content-Type: application/pgp-signature;
-	name=signature.asc
-Content-Description: Message signed with OpenPGP using GPGMail
+Karl <kop@...1206...>
+Free Software:  "You don't pay back, you pay forward."
+                 -- Robert A. Heinlein
 
------BEGIN PGP SIGNATURE-----
-
-iQEcBAEBAgAGBQJO7hMJAAoJEHKWQhk5DQ0OTpgH/0Sa2L8UdWehFZTo4YM6SEmr
-ZwFiHQqgpJfPCymvSNz0q5TqHP8LK3ni3+N4nC+ABIe+frMoU8ZgMlTJ7FIJLvfh
-0g2WpNMzM8f3+70N1PzWFNX8/7NjQxRgKaMgB0OCNqdSsY3mfGObRAUF5Efq4SRU
-nOF5ZHGZWQ7E24SDOPTiuOSIQg00ywqvnHEAm10S+QtOtoW+f4jpLZHsaravNRYT
-aXkgWydiHlMPOuBWp5cNIpANVEG+QN+EQg0l/tLFJl+LmKbF2/m2Exn97pE5Vq3k
-Sw6Ecu84l8Bkg0kI+F+YnxiA9DRGEYX//Z1wBMMg9puZDlAZxuB5y6wyXwvndcA=
-=3bMb
------END PGP SIGNATURE-----
-
---Apple-Mail=_B7AA08BA-7A06-4FAF-B2C9-B25FD6AEA934--
 
