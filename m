@@ -1,9 +1,16 @@
-Message-ID: <4EEF3192.1080000@...515...>
-Date: Mon, 19 Dec 2011 14:44:02 +0200
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN community get-together in Brussels 3.-5.
- February 2012 during FOSDEM conference
+Date: Thu, 22 Dec 2011 08:44:05 +0100
+From: michael-dev <michael-dev@...1528...>
+In-Reply-To: <4EE0EDA4.2090704@...1338...>
+References: "<d3f7c10b2411aa41afce3788970ca839@...1528...>"
+	<4EE08E3A.7010209@...1114...>
+	<CAOazyz1MCx8x42YK6-fQs0iAzDS0kRLvZ1sw4hvmcZ4gikJrUA@...278...>
+	<4EE0EDA4.2090704@...1338...>
+Message-ID: <791d427732dff3d334ee0d812c7f68bb@...1528...>
+Subject: Re: [Openvpn-devel]
+ =?utf-8?q?=5BPATCH=5D_Add_option_to_disable_prior?=
+ =?utf-8?q?ity_tagged_packets_=28VID=3D0=29?=
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,22 +19,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
 Content-Transfer-Encoding: 7bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
+To: Fabian Knittel <fabian.knittel@...1338...>
+Cc: alon.barlev@...277..., davids@...1347..., openvpn-devel@lists.sourceforge.net
 
-Hi all,
+Hi,
 
-We're arranging a community get-together in Brussels during the FOSDEM
-conference. There are no exact plans yet, but socializing and hacking
-will obviously be involved both inside and outside the conference. More
-detailed information will be published later. If you want to
-participate, it's probably best to make the travel arrangements soon,
-before prices start rising steeply.
+the usage here is with the FeM e.V. [1] WLAN project in order to reuse 
+the existing vlans and ip assignments on them.
 
-More information about FOSDEM:
+> And Michael, would you be willing to review and test the full, 
+> rebased patch-set [...]?
 
-<http://fosdem.org/2012>
+Testing should be no problem. I currently use a gentoo ebuild that 
+points to the git feature branch + patches
+so that part should be easy. Further, the openvpn server here is 
+currently testing only (until the wlan gets ready)
+so I'm free to break it again ;). But I might need some time to put it 
+into the schedule.
 
-Samuli
+Regards,
+  M. Braun
+--
+[1] http://www.fem.tu-ilmenau.de/
+
 
