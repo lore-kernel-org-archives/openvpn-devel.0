@@ -1,21 +1,9 @@
-From: Tiran Kaskas <Tiran.Kaskas@...1530...>
-Date: Thu, 22 Dec 2011 10:07:42 +0000
-Message-ID: <A273A2F6519C0D42BFF02CA9C6A825112D00A3D3@...1534...>
-References: <A273A2F6519C0D42BFF02CA9C6A825112D003E1E@...1531...>
-	<4EE52A57.1040906@...1338...>
-	<A273A2F6519C0D42BFF02CA9C6A825112D003F02@...1531...>
-	<A273A2F6519C0D42BFF02CA9C6A825112D003F72@...1531...>
-	<20111213092241.GO18948@...1296...>
-	<1CED409804E2164C8104F9E623B08B90128ACE5B0A@...1436...>
-	<A273A2F6519C0D42BFF02CA9C6A825112D005928@...1531...>
-	<4EE863A2.5010302@...1114...>
-	<A273A2F6519C0D42BFF02CA9C6A825112D005B6D@...1531...>
-	<0E891FB5E6304C73BB4338093E409304@...139...>
-	<A273A2F6519C0D42BFF02CA9C6A825112D005C00@...1531...>
-In-Reply-To: <A273A2F6519C0D42BFF02CA9C6A825112D005C00@...1531...>
-Content-Language: en-US
+Message-ID: <4EF33D15.3070104@...515...>
+Date: Thu, 22 Dec 2011 16:22:13 +0200
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Problem with alloc_buf_gc function
+Content-Type: multipart/mixed; boundary="------------030800000408030706050006"
+Subject: [Openvpn-devel] OpenVPN 2.2.2 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,79 +12,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, "openvpn-announce@lists.sourceforge.net" <openvpn-announce@lists.sourceforge.net>
+
+This is a multi-part message in MIME format.
+--------------030800000408030706050006
+Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Again, need some help:
+The OpenVPN community project team is proud to release OpenVPN 2.2.2. It
+can be downloaded from here:
 
-It seems like I am through with the vpn initialization, and seems like the =
-session is created successfully.
-Now, I start sending data to some server from the client side (I have an ap=
-plication which opens a socket to google.com and sends some data).
-I do see the packet is received on the server side and decrypted successful=
-ly (virtual address is the client's tun ip).
-I see the server reads this packet from the link adapter(ethernet), and wri=
-tes it to the tun adapter.
-Looking at the tun adapter (using wireshark), I see a packet is there with:
-source ip: client's tun ip
-destination ip: the google ip
+<http://openvpn.net/index.php/open-source/downloads.html>
 
-The problem is that nothing happens from this point.
-I am missing something, pretty sure about that, but do not know what...
-I know that when the server write this packet to the TUN, it means the pack=
-et is injected into the OS ip stack, as if it was received from the outside=
-. But who will take care of actually sending it to the destination address?=
- Am I missing some routing configuration?
+Changes include:
 
-Thanks!
+- Pkcs11 support built into the Windows version
+- Fixed a bug in the Windows TAP-driver
 
------Original Message-----
-From: Tiran Kaskas [mailto:Tiran.Kaskas@...1530...]=20
-Sent: Wednesday, December 14, 2011 11:47 AM
-To: Gisle Vanem; openvpn-devel@lists.sourceforge.net
-Subject: Re: [Openvpn-devel] Problem with alloc_buf_gc function
+Full list of changes is attached to this email and is also available here:
 
-Indeed, a large model is used
+<http://openvpn.net/index.php/open-source/documentation/change-log/425-chan=
+gelog-for-openvpn-22.html>
 
------Original Message-----
-From: Gisle Vanem [mailto:gvanem@...139...]=20
-Sent: Wednesday, December 14, 2011 11:45 AM
-To: openvpn-devel@lists.sourceforge.net
-Subject: Re: [Openvpn-devel] Problem with alloc_buf_gc function
+For generic help use these support channels:
 
-"Tiran Kaskas" <Tiran.Kaskas@...1530...> wrote:
+- Official documentation:
+<http://openvpn.net/index.php/open-source/documentation/howto.html>
+- Wiki: <https://community.openvpn.net>
+- Forums: <https://forums.openvpn.net>
+- User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+- User IRC channel: #openvpn at irc.freenode.net
 
-> Already done the ssl part, only polarssl. It is working perfect and does =
-support 16bit with no change.
+Please report bugs and ask development questions here:
 
-You got all the data in PolarSSL, LZO and OpenVPN to fit in a 16-bit data-s=
-egment of 64 kByte? I'll be amazed. What memory model would be needed to li=
-nk in all the code. 64 kByte would be not enough, so at least large model w=
-ould be needed (1 data-segment multiple code- segments).
+- Bug tracker and Wiki: <https://community.openvpn.net>
+- Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+- Developer IRC channel: #openvpn-devel at irc.freenode.net
 
---gv
+Note that we've recently switched to using a different Git repository:
 
+<git://openvpn.git.sourceforge.net/gitroot/openvpn/openvpn.git>
 
----------------------------------------------------------------------------=
----
-Cloud Computing - Latest Buzzword or a Glimpse of the Future?
-This paper surveys cloud computing today: What are the benefits?=20
-Why are businesses embracing it? What are its payoffs and pitfalls?
-http://www.accelacomm.com/jaw/sdnl/114/51425149/
-_______________________________________________
-Openvpn-devel mailing list
-Openvpn-devel@lists.sourceforge.net
-https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
----------------------------------------------------------------------------=
----
-Cloud Computing - Latest Buzzword or a Glimpse of the Future?
-This paper surveys cloud computing today: What are the benefits?=20
-Why are businesses embracing it? What are its payoffs and pitfalls?
-http://www.accelacomm.com/jaw/sdnl/114/51425149/
-_______________________________________________
-Openvpn-devel mailing list
-Openvpn-devel@lists.sourceforge.net
-https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+irc freenode net: mattock
+
+--------------030800000408030706050006
+Content-Type: text/plain;
+ name="openvpn-2.2.2-changelog.txt"
+Content-Disposition: attachment;
+ filename="openvpn-2.2.2-changelog.txt"
+Content-Transfer-Encoding: quoted-printable
+
+OpenVPN Change Log
+
+2011.12.22 -- Version 2.2.2
+
+David Sommerseth (1):
+      Only warn about non-tackled IPv6 packets once
+
+Gert Doering (3):
+      Add missing break between "case IPv4" and "case IPv6", leading to t=
+he    =20
+      Bump tap driver version from 9.8 to 9.9
+      Log error message and exit for "win32, tun mode, tap driver version=
+ 9.8"
+
+Samuli Sepp=C3=A4nen (1):
+      Backported pkcs11-related parts of 7a8d707237bb18 to 2.2 branch
+
+--------------030800000408030706050006--
 
