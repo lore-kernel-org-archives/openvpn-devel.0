@@ -1,10 +1,22 @@
-Message-ID: <4EF45ECC.1020205@...1147...>
-Date: Fri, 23 Dec 2011 11:58:20 +0100
-From: Jan Just Keijser <janjust@...1147...>
-MIME-Version: 1.0
-References: <4EF33D15.3070104@...515...>
-In-Reply-To: <4EF33D15.3070104@...515...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.2.2 released
+Date: Thu, 29 Dec 2011 15:24:54 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20111229142454.GV5060@...1296...>
+References: <A273A2F6519C0D42BFF02CA9C6A825112D003F02@...1531...>
+	<A273A2F6519C0D42BFF02CA9C6A825112D003F72@...1531...>
+	<20111213092241.GO18948@...1296...>
+	<1CED409804E2164C8104F9E623B08B90128ACE5B0A@...1436...>
+	<A273A2F6519C0D42BFF02CA9C6A825112D005928@...1531...>
+	<4EE863A2.5010302@...1114...>
+	<A273A2F6519C0D42BFF02CA9C6A825112D005B6D@...1531...>
+	<0E891FB5E6304C73BB4338093E409304@...139...>
+	<A273A2F6519C0D42BFF02CA9C6A825112D005C00@...1531...>
+	<A273A2F6519C0D42BFF02CA9C6A825112D00A3D3@...1534...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="ZrCu0B0FMx3UnjE2"
+Content-Disposition: inline
+In-Reply-To: <A273A2F6519C0D42BFF02CA9C6A825112D00A3D3@...1534...>
+Subject: Re: [Openvpn-devel] Problem with alloc_buf_gc function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,69 +25,95 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"; format=flowed
+To: Tiran Kaskas <Tiran.Kaskas@...1530...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--ZrCu0B0FMx3UnjE2
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
+Content-Disposition: inline
 
-Hi mattock,
+Hi,
 
-Samuli Sepp=E4nen wrote:
-> The OpenVPN community project team is proud to release OpenVPN 2.2.2. It
-> can be downloaded from here:
->
-> <http://openvpn.net/index.php/open-source/downloads.html>
->
-> Changes include:
->
-> - Pkcs11 support built into the Windows version
-> - Fixed a bug in the Windows TAP-driver
->
->=20=20=20
-this tap-driver bug seems to fix the DHCP NAK storm on Win7 !
-I ran OpenVPN 2.2.0 with the tap-win32 9.8 driver, and checked that I=20
-could trigger the DHCP NAK storm quite easily (just reconnect a couple=20
-of times)
-I then upgraded to 2.2.2 + tap-win32 9.9 and since then I have not seen=20
-the DHCP NAK storm (in wireshark).
+On Thu, Dec 22, 2011 at 10:07:42AM +0000, Tiran Kaskas wrote:
+> It seems like I am through with the vpn initialization, and seems like th=
+e session is created successfully.
+> Now, I start sending data to some server from the client side (I have an =
+application which opens a socket to google.com and sends some data).
+> I do see the packet is received on the server side and decrypted successf=
+ully (virtual address is the client's tun ip).
 
-http://www.youtube.com/my_speed performance also seems improved:
-- raw link : 14000+ kbps
-- vpn link: between 3000 and 10000 kbps
+Cool :-)
 
-(I remember it was worse before).
+> I see the server reads this packet from the link adapter(ethernet), and w=
+rites it to the tun adapter.
+> Looking at the tun adapter (using wireshark), I see a packet is there wit=
+h:
+> source ip: client's tun ip
+> destination ip: the google ip
 
-Excellent findings by Gert - I can't believe nobody caught the missing=20
-'break' statement sooner; I went through the entire tapdrvr.c source=20
-code to see if I could find any other missing 'breaks' but it seems OK.
+That's good.
 
-cheers,
+> The problem is that nothing happens from this point.
 
-JJK
+Most likely, the Linux kernel side of things is dropping the packet because
+"ip forwarding" is not turned on - so it's not a router, and will not
+forward packets destined to someone else's address.
 
-> Full list of changes is attached to this email and is also available here:
->
-> <http://openvpn.net/index.php/open-source/documentation/change-log/425-ch=
-angelog-for-openvpn-22.html>
->
-> For generic help use these support channels:
->
-> - Official documentation:
-> <http://openvpn.net/index.php/open-source/documentation/howto.html>
-> - Wiki: <https://community.openvpn.net>
-> - Forums: <https://forums.openvpn.net>
-> - User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
-> - User IRC channel: #openvpn at irc.freenode.net
->
-> Please report bugs and ask development questions here:
->
-> - Bug tracker and Wiki: <https://community.openvpn.net>
-> - Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
-> - Developer IRC channel: #openvpn-devel at irc.freenode.net
->
-> Note that we've recently switched to using a different Git repository:
->
->=20=20=20
+What you need to do is:
+
+ - make sure that your linux server is forwarding packets to its gateway
+ - make sure that the answer packets from google (etc) are routed *back*
+   to your linux server
+     - either your external router knows how to route the client subnet
+       back to the openvpn machine
+     - or you need to turn on NAT (masquerading) on the openvpn server, so=
+=20
+       that google will see all requests coming from the openvpn server's
+       IP address
+
+Some useful info is here:
+
+http://www.secure-computing.net/wiki/index.php/OpenVPN/Routing
 
 
+> I am missing something, pretty sure about that, but do not know what...
+> I know that when the server write this packet to the TUN, it means the=20
+> packet is injected into the OS ip stack, as if it was received from the=20
+> outside.=20
+
+Exactly.
+
+> But who will take care of actually sending it to the destination=20
+> address? Am I missing some routing configuration?
+
+Linux needs to know that it is to be a router:
+
+ # echo 1 >/proc/sys/net/ipv4/ip_forward
+
+and it needs to have routes toward the destination.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--ZrCu0B0FMx3UnjE2
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBTvx4NakuBuNlUUl1AQIH9wQAr+xj8VCwigM5Bo+BYeL9cpTX1hVDC/7E
+ejHG3UsCvRxh9W9YdFRuAjd7UVqqwXXqZRQie+36b72ihUoyCAs0wzVWFuwRVx7i
+fylwxZnESvl7DUPzXyMYCE1PgligiTF4RBRdpqpVth3XxIpo6rZ3i8EoCvJ1MyT4
+8EtbT6h1LCQ=
+=X5KK
+-----END PGP SIGNATURE-----
+
+--ZrCu0B0FMx3UnjE2--
 
