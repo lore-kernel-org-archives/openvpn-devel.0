@@ -1,11 +1,11 @@
-Date: Fri, 30 Dec 2011 21:48:38 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20111230204838.GJ5060@...1296...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="BfbbJsf3thGkpLcA"
-Content-Disposition: inline
-Subject: [Openvpn-devel] range-checking bug in route.c
+From: Eric Crist <ECRIST@...1537...>
+Content-Type: multipart/signed;
+	boundary="Apple-Mail=_E3A76643-5E45-497A-9AE2-380922A6D8F3";
+	protocol="application/pgp-signature"; micalg=pgp-sha1
+Date: Sun, 1 Jan 2012 21:41:42 -0600
+Message-Id: <9F2D982F-6058-4181-B9D6-4FA0F5D9F930@...1537...>
+Mime-Version: 1.0 (Apple Message framework v1251.1)
+Subject: [Openvpn-devel] 2012-01 Snapshot Signature
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,120 +16,53 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
---BfbbJsf3thGkpLcA
-Content-Type: multipart/mixed; boundary="o/5eNASeIIpuMggS"
-Content-Disposition: inline
-
---o/5eNASeIIpuMggS
+--Apple-Mail=_E3A76643-5E45-497A-9AE2-380922A6D8F3
+X-Eric-Conspiracy: There is no conspiracy.
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
-
-when implementing the missing helpers for saving/restoring ipv6 route
-option lists, I noticed that the existing code has safeguards against
-buffer overruns, but they do not work in all circumstances.
-
-Imagine:
-
- - source list: capacity =3D 20, n =3D 5 (only 5 items in there)
- - destination list: capacity =3D 10
-
-the check was "src->n > dst->capacity", which is OK, but then the full
-source list of "20 items" is copied over to dst - overrunning the memory.
-
-Change to compare src->capacity to dst->capacity.  (We could change
-the logic to copy only src->n items instead, and restore dst->capacity
-later on, but that's just another way to fix things :) ).
-
-Applies to master, on top of the previous patch.
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---o/5eNASeIIpuMggS
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment;
-	filename="0001-Fix-list-overrun-checks-in-copy_route_-ipv6_-option_.patch"
-Content-Transfer-Encoding: quoted-printable
-
-=46rom 95597af44714ccd350e849a0fc14e89db7e1529e Mon Sep 17 00:00:00 2001
-From: Gert Doering <gert@...1296...>
-Date: Fri, 30 Dec 2011 21:42:13 +0100
-Subject: [PATCH] Fix list-overrun checks in copy_route_[ipv6_]option_list()
-
-The old code checks how many items are in use(!) in the source
-list, but then copies the full list over the destination memory
-arena.  Check the source list *capacity*.
-
-Signed-off-by: Gert Doering <gert@...1296...>
----
- route.c |    8 ++++----
- 1 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/route.c b/route.c
-index e95292c..ce17f1f 100644
---- a/route.c
-+++ b/route.c
-@@ -121,8 +121,8 @@ void
- copy_route_option_list (struct route_option_list *dest, const struct route=
-_option_list *src)
- {
-   const size_t src_size =3D array_mult_safe (sizeof(struct route_option), =
-src->capacity, sizeof(struct route_option_list));
--  if (src->n > dest->capacity)
--    msg (M_FATAL, PACKAGE_NAME " ROUTE: (copy) number of route options in =
-src (%d) is greater than route list capacity in dest (%d)", src->n, dest->c=
-apacity);
-+  if (src->capacity > dest->capacity)
-+    msg (M_FATAL, PACKAGE_NAME " ROUTE: (copy) number of route options in =
-src (%d) is greater than route list capacity in dest (%d)", src->capacity, =
-dest->capacity);
-   memcpy (dest, src, src_size);
- }
-=20
-@@ -131,8 +131,8 @@ copy_route_ipv6_option_list (struct route_ipv6_option_l=
-ist *dest,
- 			     const struct route_ipv6_option_list *src)
- {
-   const size_t src_size =3D array_mult_safe (sizeof(struct route_ipv6_opti=
-on), src->capacity, sizeof(struct route_ipv6_option_list));
--  if (src->n > dest->capacity)
--    msg (M_FATAL, PACKAGE_NAME " ROUTE: (copy) number of route options in =
-src (%d) is greater than route list capacity in dest (%d)", src->n, dest->c=
-apacity);
-+  if (src->capacity > dest->capacity)
-+    msg (M_FATAL, PACKAGE_NAME " ROUTE: (copy) number of route options in =
-src (%d) is greater than route list capacity in dest (%d)", src->capacity, =
-dest->capacity);
-   memcpy (dest, src, src_size);
- }
-=20
---=20
-1.7.3.4
-
-
---o/5eNASeIIpuMggS--
-
---BfbbJsf3thGkpLcA
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+Weekly snapshot of the openvpn source tree are built every Sunday at midnig=
+ht CST/CDT.  The snapshot for week 1 of 2012 is as follows:
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
+Version: GnuPG v2.0.16 (FreeBSD)
 
-iQCVAwUBTv4jpqkuBuNlUUl1AQJrEQQAu19u01LbS4wTbSqHh4VDeFsIpiHlzGRH
-sXch5FPYli7CC8+Ajjqjf9gMKxFdpqtGWa/37n48DEHfbasd5K/Nn5YjTOtE1nRi
-dlzRv72JDmxFLayCJ3qY1awbmPYdaU/GYnfHxvmaXRMVlUKmX6l2GyctCuYwhCn+
-BI+V2dDsWBk=
-=HLyh
+iQEcBAABAgAGBQJPASbjAAoJEHKWQhk5DQ0Owd4H/0VXszqMBnomN7VTQaNs9eg6
+mwvSwQxrt5q2KVuihJGVfGSn5Jl/w+ywlegYZsLB7dwfhcIQmzx3IaaZrxo2jsjI
+/MpRbQqpJt3CZZAWWc4xEBi6h+AKAB8jZywYsdQ/vmmLukSeEXL+8n0oF7SBdbKT
+03/wFl7BfyCwNeCY53OpcDopYglgs/xkmB3t485zSyHxbPT/Uo0PGSYAvT4iBK6z
+f3DKeDkYl2BNzPgVwAMqhf7LaPv6DmUcPu+q2TDZbaJRtqHvs1mBixts3/bpZFiz
+wdTgylSZoAzbJRjj1gTbThz29rxyYsqL7GLNhQNDLxohQx+pn14Me9diKlG7HWM=3D
+=3DXmYa
 -----END PGP SIGNATURE-----
 
---BfbbJsf3thGkpLcA--
+Happy New Year!
+-----
+Eric F Crist
+Secure Computing Networks
+
+
+
+
+--Apple-Mail=_E3A76643-5E45-497A-9AE2-380922A6D8F3
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+	filename=signature.asc
+X-Eric-Conspiracy: There is no conspiracy.
+Content-Type: application/pgp-signature;
+	name=signature.asc
+Content-Description: Message signed with OpenPGP using GPGMail
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEcBAEBAgAGBQJPASd3AAoJEHKWQhk5DQ0Ol78H/0zz/i0g2iUnapfNDoASGBv5
+r3xAEt30YUp1y5geYu6289rtniv1kRnn+9bC7aWU/Dyf8e8+hR9BGw2bPLtG5PRL
+86cf7o9UJkC4+Hty4+2HKQ64B7HUAWACbMCHg7EBwWFe7mnofa9FtaU4P5hQNMNE
+YVaVxbZudtKvxlmoM6FLoSmiHyKvaGddmog9hpg6frCnl9HWYIyuoTBRel5gq8aB
+FBITkyAnQ/HQj0eJHQ2ehLkHgwyGs3b3OthjCtv00xgtiEBDX3Xua7xuLWes/eJM
+O46wrTs9Js49a/utNx1sSt96Ed7q6PUcQ13ilQVLvakAvmyHSDVBBAdCm3lGXTc=
+=YxEq
+-----END PGP SIGNATURE-----
+
+--Apple-Mail=_E3A76643-5E45-497A-9AE2-380922A6D8F3--
 
