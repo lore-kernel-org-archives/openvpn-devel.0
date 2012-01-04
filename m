@@ -1,10 +1,17 @@
-Message-ID: <4F043F78.8080806@...1114...>
-Date: Wed, 04 Jan 2012 13:00:56 +0100
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <20111230204838.GJ5060@...1296...>
-In-Reply-To: <20111230204838.GJ5060@...1296...>
-Subject: Re: [Openvpn-devel] range-checking bug in route.c
+Date: Wed, 4 Jan 2012 21:50:00 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120104205000.GZ5060@...1296...>
+References: <d3f7c10b2411aa41afce3788970ca839@...1528...>
+	<4EE08E3A.7010209@...1114...>
+	<CAOazyz1MCx8x42YK6-fQs0iAzDS0kRLvZ1sw4hvmcZ4gikJrUA@...278...>
+	<4EE0EDA4.2090704@...1338...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="oIMVlEQ///Q2JYC7"
+Content-Disposition: inline
+In-Reply-To: <4EE0EDA4.2090704@...1338...>
+Subject: Re: [Openvpn-devel] [PATCH] Add option to disable priority tagged
+	packets (VID=0)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,65 +20,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Fabian Knittel <fabian.knittel@...1338...>
+Cc: alon.barlev@...277..., davids@...1347..., "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--oIMVlEQ///Q2JYC7
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 30/12/11 21:48, Gert Doering wrote:
-> Hi,
-> 
-> when implementing the missing helpers for saving/restoring ipv6 route 
-> option lists, I noticed that the existing code has safeguards against 
-> buffer overruns, but they do not work in all circumstances.
-> 
-> Imagine:
-> 
-> - source list: capacity = 20, n = 5 (only 5 items in there) -
-> destination list: capacity = 10
-> 
-> the check was "src->n > dst->capacity", which is OK, but then the
-> full source list of "20 items" is copied over to dst - overrunning the
-> memory.
-> 
-> Change to compare src->capacity to dst->capacity.  (We could change 
-> the logic to copy only src->n items instead, and restore
-> dst->capacity later on, but that's just another way to fix things :)
-> ).
-> 
-> Applies to master, on top of the previous patch.
-> 
-> gert
+Hi,
 
-ACK.  Applied to master on -testing and -stable trees.
+On Thu, Dec 08, 2011 at 06:02:28PM +0100, Fabian Knittel wrote:
+> What I was meaning to ask: Did you guys come up with some kind of test
+> framework in the last year?  I was looking at creating something like
+> that for the VLAN patchset, but it was far too time intensive for my
+> extremely limited OpenVPN time budget ...
 
-commit 6abb6cdd46e50b61452b1b2d3d796ab0061e9128
-Author: Gert Doering <gert@...1296...>
-Date:   Fri Dec 30 21:42:13 2011 +0100
+There's the t_client.sh/t_client.rc frame work, which works quite well
+to run well-defined=20
 
-    Fix list-overrun checks in copy_route_[ipv6_]option_list()
+  - invoke openvpn (-client) like *this*
+  - then test that ping to *that* list of addresses works
 
-    The old code checks how many items are in use(!) in the source
-    list, but then copies the full list over the destination memory
-    arena.  Check the source list *capacity*.
-
-    Signed-off-by: Gert Doering <gert@...1296...>
-    Acked-by: David Sommerseth <davids@...1347...>
-    Signed-off-by: David Sommerseth <davids@...1347...>
+test sets.  Creating the tests can be a bit of a nuisance, but after
+that it really eases automated testing :-)  (and of course you need
+a known-working reference server).
 
 
-kind regards,
+Automated testing of the server end is a bit more tricky, and thus not
+yet done.
 
-David Sommerseth
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--oIMVlEQ///Q2JYC7
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+Version: GnuPG v1.4.11 (NetBSD)
 
-iEYEARECAAYFAk8EP3gACgkQDC186MBRfrrLOACfXyrGjwgP/fSzL4eTXwWdEpXy
-P4kAoIX1H8HSV5lXw+wd3JCifUP/+ko8
-=yjMx
+iQCVAwUBTwS7eKkuBuNlUUl1AQKEOwQAp1YAa7mmVRN6JN7DNhFElpGbEifqp4lK
+K6ez00af39N1aHtBOldBQadUt2Jg87F9sRblU4Ba6EIS2gamMaGdKZgYsj/RzvOa
+2XzNQWTGhbtxySeVwC+d1RMw4aA+l3Qwi1T7D2DnjCILWf+RQcAj/MEInFSSvfKY
+4rf3yq5ZokY=
+=3tRp
 -----END PGP SIGNATURE-----
+
+--oIMVlEQ///Q2JYC7--
 
