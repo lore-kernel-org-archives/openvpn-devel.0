@@ -1,12 +1,12 @@
-Message-ID: <4F0C8745.4070207@...1114...>
-Date: Tue, 10 Jan 2012 19:45:25 +0100
+Message-ID: <4F0C88B8.5090603@...1114...>
+Date: Tue, 10 Jan 2012 19:51:36 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1323301588-29815-1-git-send-email-davids@...1347...>
-	<1323357860-2506-1-git-send-email-davids@...1347...>
-In-Reply-To: <1323357860-2506-1-git-send-email-davids@...1347...>
-Subject: Re: [Openvpn-devel] [PATCH v3] Move away from openvpn_basename()
- over to platform provided basename()
+References: <CAOazyz13pmU4=6XOA-2uq0rAwTMRrRYF73sszehxbcPQsa2rmQ@...278...>
+	<1323344337-13193-1-git-send-email-davids@...1347...>
+In-Reply-To: <1323344337-13193-1-git-send-email-davids@...1347...>
+Subject: Re: [Openvpn-devel] [PATCH] Enable access() when building in Visual
+ Studio
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,37 +22,33 @@ To: openvpn-devel@lists.sourceforge.net
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 08/12/11 16:24, David Sommerseth wrote:
-> This kicks out the openvpn_basename() function from misc.[ch] and puts
-> glibc equivalents into compat.[ch].  This is to provide the same 
-> functionality on platforms not having a native basename() function 
-> available.
+On 08/12/11 12:38, David Sommerseth wrote:
+> Visual Studio does not enable certiain standard Unix functions, such 
+> as access().  By defining _CRT_NONSTDC_NO_WARNINGS and 
+> _CRT_SECURE_NO_WARNINGS, these functions are enabled.
 > 
-> In addition this patch adds dirname() which commit 0f2bc0dd92f43c91e 
-> depends.  Without dirname(), openvpn won't build in Visual Studio.
+> This patch also adds a ./configure check for access() as well, in
+> case this needs to be implemented on other platforms lacking this
+> feature. Which is why HAVE_ACCESS is defined in win/config.h.in
 > 
-> v2: Move all functions from compat.h to compat.c v3: Use glibc 
-> versions of basename() and dirname() instead
+> Thanks to Alon Bar-Lev for helping solving this.
 > 
-> Signed-off-by: David Sommerseth <davids@...1347...> --- Makefile.am
-> | 1 + compat.c     |  129 
-> ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ compat.h |
-> 42 +++++++++++++++++++ configure.ac |    2 +- init.c       |    6 ++-
-> misc.c       |   23 +--------- misc.h       |    3 - options.c |    1
-> - syshead.h    |    2 + 9 files changed, 182 insertions(+), 27 
-> deletions(-) create mode 100644 compat.c create mode 100644 compat.h
+> Signed-off-by: David Sommerseth <davids@...1347...> --- configure.ac |
+> 2 +- options.c       |    1 - win/config.h.in |   28 
+> ++++++++++++++++++++++++++++ win/msvc.mak.in |    2 +- 4 files 
+> changed, 30 insertions(+), 3 deletions(-)
 
-Applied to master branches on -testing and -stable
+Applied to master branch on -testing and -stable
 
-commit ec302f7061b7ab4dd21bdac77dd115e75b50cbc0
+commit a4234e1e26693e8fe6a67eea5824ef02d11c825e
 Author: David Sommerseth <davids@...1347...>
-Date:   Thu Dec 8 00:40:45 2011 +0100
-
+Date:   Thu Dec 8 12:38:57 2011 +0100
 
     Signed-off-by: David Sommerseth <davids@...1347...>
     Acked-by: Alon Bar-Lev <alon.barlev@...277...>
+    Acked-by: Gert Doering <gert@...1296...>
     URL:
-<http://thread.gmane.org/gmane.network.openvpn.devel/5178/focus=5215>
+<http://thread.gmane.org/gmane.network.openvpn.devel/5179/focus=5200>
 
 
 kind regards,
@@ -62,8 +58,8 @@ David Sommerseth
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk8Mh0UACgkQDC186MBRfrpzKACZAbyca0UVkxkdtwBn5OF6bqEx
-CB4AnA7tpFZsvACpTjHkTYr7HTUCNiGw
-=qewL
+iEYEARECAAYFAk8MiLUACgkQDC186MBRfroMzgCfV8EIUlYNx+ezvsbDHO2ShwCz
+79MAn0IBrPeP6c8TM1hkeyeN+KJJAgYA
+=BftI
 -----END PGP SIGNATURE-----
 
