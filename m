@@ -1,11 +1,12 @@
-Message-ID: <4F0C62F3.5000105@...1114...>
-Date: Tue, 10 Jan 2012 17:10:27 +0100
+Message-ID: <4F0C8745.4070207@...1114...>
+Date: Tue, 10 Jan 2012 19:45:25 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1326129087-8697-1-git-send-email-davids@...1347...>
-In-Reply-To: <1326129087-8697-1-git-send-email-davids@...1347...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix a couple of issues in
-	openvpn_execve()
+References: <1323301588-29815-1-git-send-email-davids@...1347...>
+	<1323357860-2506-1-git-send-email-davids@...1347...>
+In-Reply-To: <1323357860-2506-1-git-send-email-davids@...1347...>
+Subject: Re: [Openvpn-devel] [PATCH v3] Move away from openvpn_basename()
+ over to platform provided basename()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,25 +22,37 @@ To: openvpn-devel@lists.sourceforge.net
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 09/01/12 18:11, David Sommerseth wrote:
-> If openvpn_execve() is not able to fork(), it would make any noise 
-> about it.  So this patch adds a log notification if this happens.
+On 08/12/11 16:24, David Sommerseth wrote:
+> This kicks out the openvpn_basename() function from misc.[ch] and puts
+> glibc equivalents into compat.[ch].  This is to provide the same 
+> functionality on platforms not having a native basename() function 
+> available.
 > 
-> In addition, if openvpn_execve() is called with an empty argv array, 
-> it should exit instantly.  This is not expected to happen at all and 
-> might indicate a much more serious issue (or programming error) 
-> somewhere else in the code.  Thus, abort execution to get these issues
-> flushed out as quickly as possible.
+> In addition this patch adds dirname() which commit 0f2bc0dd92f43c91e 
+> depends.  Without dirname(), openvpn won't build in Visual Studio.
 > 
-> Signed-off-by: David Sommerseth <davids@...1347...> --- misc.c |    4 
-> ++-- 1 files changed, 2 insertions(+), 2 deletions(-)
+> v2: Move all functions from compat.h to compat.c v3: Use glibc 
+> versions of basename() and dirname() instead
 > 
+> Signed-off-by: David Sommerseth <davids@...1347...> --- Makefile.am
+> | 1 + compat.c     |  129 
+> ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ compat.h |
+> 42 +++++++++++++++++++ configure.ac |    2 +- init.c       |    6 ++-
+> misc.c       |   23 +--------- misc.h       |    3 - options.c |    1
+> - syshead.h    |    2 + 9 files changed, 182 insertions(+), 27 
+> deletions(-) create mode 100644 compat.c create mode 100644 compat.h
 
-Applied to master branch in -testing and -stable.
+Applied to master branches on -testing and -stable
 
-commit 8ee5646111625c598efbc82413649b1ab6275877
+commit ec302f7061b7ab4dd21bdac77dd115e75b50cbc0
+Author: David Sommerseth <davids@...1347...>
+Date:   Thu Dec 8 00:40:45 2011 +0100
+
+
     Signed-off-by: David Sommerseth <davids@...1347...>
-    Acked-by: Gert Doering <gert@...1296...>
+    Acked-by: Alon Bar-Lev <alon.barlev@...277...>
+    URL:
+<http://thread.gmane.org/gmane.network.openvpn.devel/5178/focus=5215>
 
 
 kind regards,
@@ -49,8 +62,8 @@ David Sommerseth
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk8MYvAACgkQDC186MBRfrpbtwCeIo9lIFjRaAWXL9NM7yIBaD4V
-+1YAoKZ+SdjP2vHRX+lq3i8G5Rg4UuhW
-=+Oq1
+iEYEARECAAYFAk8Mh0UACgkQDC186MBRfrpzKACZAbyca0UVkxkdtwBn5OF6bqEx
+CB4AnA7tpFZsvACpTjHkTYr7HTUCNiGw
+=qewL
 -----END PGP SIGNATURE-----
 
