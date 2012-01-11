@@ -1,11 +1,8 @@
-Date: Wed, 11 Jan 2012 20:11:19 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120111191118.GA27815@...1296...>
+Message-ID: <4F0DE05F.1090305@...1114...>
+Date: Wed, 11 Jan 2012 20:17:51 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
 References: <1326290252-25076-1-git-send-email-davids@...1347...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="fdj2RfSjLxBAspz7"
-Content-Disposition: inline
 In-Reply-To: <1326290252-25076-1-git-send-email-davids@...1347...>
 Subject: Re: [Openvpn-devel] [PATCH] autotools ./configure don't like
 	compat.h
@@ -17,50 +14,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <davids@...1347...>
-Cc: dazo@...1345..., openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
---fdj2RfSjLxBAspz7
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Hi,
-
-On Wed, Jan 11, 2012 at 02:57:32PM +0100, David Sommerseth wrote:
-> The compat.h include file cannot be loaded when ./configure runs,
-> as many of the HAVE_* declarations are not set.  This makes test
+On 11/01/12 14:57, David Sommerseth wrote:
+> The compat.h include file cannot be loaded when ./configure runs, as
+> many of the HAVE_* declarations are not set.  This makes test 
 > compilations when looking for features fail.
->=20
-> As ./configure will load syshead.h, it pulls in compat.h this way.
-> Looking more carefully at syshead.h, there's a #ifndef PACKAGE_NAME
-> check if config.h should be included.  This looks like a check if
-> syshead.h is loaded via ./configure or if it is a more normal
+> 
+> As ./configure will load syshead.h, it pulls in compat.h this way. 
+> Looking more carefully at syshead.h, there's a #ifndef PACKAGE_NAME 
+> check if config.h should be included.  This looks like a check if 
+> syshead.h is loaded via ./configure or if it is a more normal 
 > compilation.  Moving the compat.h inclusion into this #ifndef block.
+> 
+> Signed-off-by: David Sommerseth <davids@...1347...> --- syshead.h |
+> 2 +- 1 files changed, 1 insertions(+), 1 deletions(-)
 
-As I've seen you testing this on IRC and this fixes things -> ACK :)
+Applied to master branches on -stable and -testing trees.
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+commit 330baf2aee70b351cce2d138299118837adbe237
+Author: David Sommerseth <davids@...1347...>
+Date:   Wed Jan 11 14:52:21 2012 +0100
 
---fdj2RfSjLxBAspz7
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+    Signed-off-by: David Sommerseth <davids@...1347...>
+    Acked-by: Gert Doering <gert@...1296...>
 
+
+kind regards,
+
+David Sommerseth
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iQCVAwUBTw3e1qkuBuNlUUl1AQLR+AQAgiEv28SMP+lHPZIj1UEMvf0MqIBtnf7+
-h0EAH0OUkBSRh25ePtlveBULRjC9VRvL7w8iGX7A5zrCr4O2A5j6U1Xh8bI42ouf
-kfYgDPzaBrd5XXHFP/feXKYPmgYlV1YKOayoKCH6Ndpri/YLueVrsC2A27e1upT1
-C7TqP+UBtRI=
-=efBU
+iEYEARECAAYFAk8N4F0ACgkQDC186MBRfrrKXACgl9S32mQ5DXHZwuI8VEyykoSm
+Hi8AoLF2f1+NEd32qflZIqn4f812CbG3
+=6SVX
 -----END PGP SIGNATURE-----
-
---fdj2RfSjLxBAspz7--
 
