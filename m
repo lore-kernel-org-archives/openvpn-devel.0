@@ -1,12 +1,7 @@
-Message-ID: <4F0C88B8.5090603@...1114...>
-Date: Tue, 10 Jan 2012 19:51:36 +0100
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <CAOazyz13pmU4=6XOA-2uq0rAwTMRrRYF73sszehxbcPQsa2rmQ@...278...>
-	<1323344337-13193-1-git-send-email-davids@...1347...>
-In-Reply-To: <1323344337-13193-1-git-send-email-davids@...1347...>
-Subject: Re: [Openvpn-devel] [PATCH] Enable access() when building in Visual
- Studio
+From: David Sommerseth <davids@...1347...>
+Date: Wed, 11 Jan 2012 14:57:32 +0100
+Message-Id: <1326290252-25076-1-git-send-email-davids@...1347...>
+Subject: [Openvpn-devel] [PATCH] autotools ./configure don't like compat.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,51 +10,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: dazo@...1345...
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+The compat.h include file cannot be loaded when ./configure runs,
+as many of the HAVE_* declarations are not set.  This makes test
+compilations when looking for features fail.
 
-On 08/12/11 12:38, David Sommerseth wrote:
-> Visual Studio does not enable certiain standard Unix functions, such 
-> as access().  By defining _CRT_NONSTDC_NO_WARNINGS and 
-> _CRT_SECURE_NO_WARNINGS, these functions are enabled.
-> 
-> This patch also adds a ./configure check for access() as well, in
-> case this needs to be implemented on other platforms lacking this
-> feature. Which is why HAVE_ACCESS is defined in win/config.h.in
-> 
-> Thanks to Alon Bar-Lev for helping solving this.
-> 
-> Signed-off-by: David Sommerseth <davids@...1347...> --- configure.ac |
-> 2 +- options.c       |    1 - win/config.h.in |   28 
-> ++++++++++++++++++++++++++++ win/msvc.mak.in |    2 +- 4 files 
-> changed, 30 insertions(+), 3 deletions(-)
+As ./configure will load syshead.h, it pulls in compat.h this way.
+Looking more carefully at syshead.h, there's a #ifndef PACKAGE_NAME
+check if config.h should be included.  This looks like a check if
+syshead.h is loaded via ./configure or if it is a more normal
+compilation.  Moving the compat.h inclusion into this #ifndef block.
 
-Applied to master branch on -testing and -stable
+Signed-off-by: David Sommerseth <davids@...1347...>
+---
+ syshead.h |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-commit a4234e1e26693e8fe6a67eea5824ef02d11c825e
-Author: David Sommerseth <davids@...1347...>
-Date:   Thu Dec 8 12:38:57 2011 +0100
+diff --git a/syshead.h b/syshead.h
+index fba6f84..f121114 100644
+--- a/syshead.h
++++ b/syshead.h
+@@ -34,9 +34,9 @@
+ #endif
+ #ifndef PACKAGE_NAME
+ #include "config.h"
++#include "compat.h"
+ #endif
+ 
+-#include "compat.h"
+ 
+ /* branch prediction hints */
+ #if defined(__GNUC__)
+-- 
+1.7.4.4
 
-    Signed-off-by: David Sommerseth <davids@...1347...>
-    Acked-by: Alon Bar-Lev <alon.barlev@...277...>
-    Acked-by: Gert Doering <gert@...1296...>
-    URL:
-<http://thread.gmane.org/gmane.network.openvpn.devel/5179/focus=5200>
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk8MiLUACgkQDC186MBRfroMzgCfV8EIUlYNx+ezvsbDHO2ShwCz
-79MAn0IBrPeP6c8TM1hkeyeN+KJJAgYA
-=BftI
------END PGP SIGNATURE-----
 
