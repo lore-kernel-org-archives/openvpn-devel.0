@@ -1,8 +1,8 @@
-Message-ID: <4F0FE1E1.6050808@...515...>
-Date: Fri, 13 Jan 2012 09:48:49 +0200
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <4F116B5F.1070100@...1114...>
+Date: Sat, 14 Jan 2012 12:47:43 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN apt/yum repos now available
+Subject: [Openvpn-devel] [PATCH] Fix pool logging when IPv6 is not enabled
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,46 +11,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi all,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-We now have several apt/yum repositories for OpenVPN:
 
-<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos>
+Hi,
 
-Currently the following operating systems are supported, both on i386
-and amd64/x86_64 architectures:
+I'm running the master branch (commit 330baf2aee70b35) on a site where IPv6
+tunnelling is not enabled.  I found some odd IPv6 addresses in the log file
+when clients connected.  Attached is a patch solving this issue.  It's
+basically a bogus message, and nothing seems to be pushed to the client.
 
-- Fedora 16
-- CentOS 6
-- Ubuntu 10.04
-- Debian 5
-- Debian 6
+This site is now running with this patch applied, and it behaves better.
 
-At the moment, there are three kinds of repositories/packages:
 
-- "stable" : official OpenVPN releases (e.g. 2.2.2, only for Debian/Ubuntu)
-- "snapshots" : OpenVPN builds based on Git "master" branch, rebuilt
-weekly/bi-weekly
-- "as" : official Access Server releases
+kind regards,
 
-For further details and usage instructions, please refer to the above link.
+David Sommerseth
 
-NOTE: If you started using OpenVPN apt repos prior to 2.2.2 release,
-you're probably using the old repository server. If so, please take a
-look here:
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Fedora - http://enigmail.mozdev.org/
 
-<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos#Upgradingf=
-rombuild.openvpn.net>
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
+iEYEARECAAYFAk8Ra18ACgkQDC186MBRfrqEEgCghBVhGlZdYNtejPP8Gx3A9gXL
+IEUAn35XkgcXuWmnjvAokf6NivrdtIma
+=tG4S
+-----END PGP SIGNATURE-----
 
