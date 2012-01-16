@@ -1,10 +1,11 @@
-Date: Mon, 16 Jan 2012 13:27:47 +0000
-From: Russell Reformado via Yahoo! <russellreformado@...109...>
-Message-ID: <e2bdbffd878f78d746ca6de6f8e0f15f@...1539...>
-MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="b1_e2bdbffd878f78d746ca6de6f8e0f15f"
-Subject: [Openvpn-devel] Russell Reformado invites you to connect
+From: Eric Crist <ecrist@...1286...>
+Content-Type: multipart/signed;
+	boundary="Apple-Mail=_64211C5A-50D0-417E-9DC4-2D4EE4C3B866";
+	protocol="application/pgp-signature"; micalg=pgp-sha1
+Date: Mon, 16 Jan 2012 08:01:25 -0600
+Message-Id: <911E4F8D-704C-4622-A2B5-117402A76F6A@...1286...>
+Mime-Version: 1.0 (Apple Message framework v1251.1)
+Subject: [Openvpn-devel] 2012-03 Snapshot Signature
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,128 +16,50 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
---b1_e2bdbffd878f78d746ca6de6f8e0f15f
-Content-Type: text/plain; charset = "utf-8"
-Content-Transfer-Encoding: 8bit
+--Apple-Mail=_64211C5A-50D0-417E-9DC4-2D4EE4C3B866
+X-Eric-Conspiracy: There is no conspiracy.
+Content-Type: text/plain;
+	charset=us-ascii
+Content-Transfer-Encoding: 7bit
 
-Join Russell Reformado on Yahoo! Messenger.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.16 (FreeBSD)
 
-Hi! Come join me on Yahoo! Messenger so we can chat, share files, watch videos and more.
+iQEcBAABAgAGBQJPFC2WAAoJEHKWQhk5DQ0OMZ4IAJytUvxqAWeU/nCrhEu340TQ
+UwXwZsmtWejZcKFP8MtV2vG+1gtBgy1hWcmeq7vNvNvKR75db4vvPsYkaG7tEiXx
+PKCF15VgR2XfvT2fvnhXtHh/lNbUprLJ789ukJ2l07SMTn7o+0o0JCleynINS/Cj
+eW+c/WV2OX8xO6p/u/p5/YkTixBJzR/XP+iiAGfNi6IVr5cTa7WeYxgo2qIuaoSp
+xLSlODpFQhxknVWB4/zOGg5d/Kf3IGtgheZEnBWHl9V+rH5V9ZWaO/fTkeFQ41Cw
+7wDpLUvs+5fd8ySLeiKBgRhKZ98mFR7WJj/udaep+gHHsELs1gHgPtRpfM3HuRk=
+=PG7H
+-----END PGP SIGNATURE-----
 
-Stay in the loop with all your friends.
-Get started : http://invite.msg.yahoo.com/invite?op=accept&intl=ph&sig=HaD3087mBDsJmiO55od.EgzalTn02db.Wau3LhM3dIpKeRw75efdaCr0oFQ02ns411g.
-
-* Stay connected at home, at work, or on the go
-* Have fun with games, emoticons, and more
-* Join a community of over 100 million people from around the world
-
-Join Your Friends : http://invite.msg.yahoo.com/invite?op=accept&intl=ph&sig=HaD3087mBDsJmiO55od.EgzalTn02db.Wau3LhM3dIpKeRw75efdaCr0oFQ02ns411g.
-
---
-this email was sent to you by an automated system - please do not reply directly
-
-
---b1_e2bdbffd878f78d746ca6de6f8e0f15f
-Content-Type: text/html; charset = "utf-8"
-Content-Transfer-Encoding: 8bit
-
-<!DOCTYPE HTML>
-<html>
-<head>
-	<title>Russell Reformado invites you to connect</title>
-</head>
-<body>
-
-<div style="font-family:sans-serif; color:#000033; text-align:center; ">
-
-	<div style="font-size:8pt; padding:10px 0; color:gray">
-		this email was sent to you by an automated system - please do not reply directly
-	</div>
-
-	<div style="width:572px; text-align:left; margin:auto;">
-		<div style="border:1px solid #BBB; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px">
-			<div style="padding:5px; border-bottom:1px solid #BBB">
-				<img src="http://l.yimg.com/a/i/us/msg/9/inv/lg_ym_us_1.jpg" alt="Yahoo! Messenger" />
-			</div>
-			<div style="border:1px solid white; background-color: #d6f6f6;">
-
-				<table border="0" cellspacing="0" cellpadding="0">
-					<tr><td background="http://l.yimg.com/a/i/us/msg/9/inv/bg_email_1.jpg" style="background-repeat:no-repeat">
-
-						<table border="0" cellspacing="0" cellpadding="0">
-							<tr>
-								<th colspan="2" style="padding:13px 3px 8px; font-weight:bold; font-size:18pt; text-align:right">
-									Join Russell Reformado on Yahoo! Messenger.
-								</th>
-							</tr>
-							<tr>
-								<td style="width:280px" valign="top">
-									<blockquote style="font-family:serif; font-size:9pt; color:gray; padding:3px 13px; margin:0; line-height:1em;">
-										Hi! Come join me on Yahoo! Messenger so we can chat, share files, watch videos and more.
-									</blockquote>
-								</td>
-								<td style="padding:0 5px 10px 20px; min-height:230px; *height:230px" valign="top">
-
-									<h2 style="margin:0; font-weight:bold; font-size:11pt">
-										Stay in the loop with all your friends.
-										<a href="http://invite.msg.yahoo.com/invite?op=accept&intl=ph&sig=HaD3087mBDsJmiO55od.EgzalTn02db.Wau3LhM3dIpKeRw75efdaCr0oFQ02ns411g." style="color:#006699;">
-											Get started
-										</a>
-									</h2>
-
-									<ul style="padding:5px 0 5px 1.4em; margin:0; list-style:disc outside; font-size:11pt">
-										<li style="padding:.4em 0">
-											Stay connected at home, at work, or on the go
-										</li>
-										<li style="padding:.4em 0">
-											Have fun with games, emoticons, and more
-										</li>
-										<li style="padding:.4em 0">
-											Join a community of over 100 million people from around the world
-										</li>
-									</ul>
-
-									<table border="0" cellspacing="0" cellpadding="0"><tr><td background="http://l.yimg.com/a/i/us/msg/9/inv/cta256_def_1.gif" style="background-repeat:no-repeat"><a href="http://invite.msg.yahoo.com/invite?op=accept&intl=ph&sig=HaD3087mBDsJmiO55od.EgzalTn02db.Wau3LhM3dIpKeRw75efdaCr0oFQ02ns411g." style="display:block; text-align:center; font-size:13pt; font-weight:bold; line-height:36px; width:256px; overflow:hidden; color:#000; text-decoration:none">
-		                               	Join Your Friends 
-									</a></td></tr></table>
-
-								</td>
-							</tr>
-						</table>
-
-					</td></tr>
-				</table>
-
-			</div>
-
-
-			<div style="font-size:8pt; color:#333; border-top:1px solid #BBB">
-				<img src="http://l.yimg.com/a/i/us/msg/9/inv/lg_ybang_1.jpg" alt="Y!" style="vertical-align:middle;margin:3px 6px 4px 5px" />
-				<span style="">
-					Get easy, one-click access to your favorites.
-					<a href="http://www.yahoo.com/r/hs" style="color:#006699;">
-						Make Yahoo! your homepage.
-					</a>
-				</span>
-			</div>
-
-
-		</div>
-
-	</div>
-
-	<div style="font-size:8pt; color:gray; padding-top:20px;">
-		Trouble with the button above? Click the link below or copy and paste it into your browser's address bar:<br />
-		<a href="http://invite.msg.yahoo.com/invite?op=accept&intl=ph&sig=HaD3087mBDsJmiO55od.EgzalTn02db.Wau3LhM3dIpKeRw75efdaCr0oFQ02ns411g." style="text-decoration:none; color:#006699">http://invite.msg.yahoo.com/invite?op=accept&intl=ph&sig=HaD3087mBDsJmiO55od.EgzalTn02db.Wau3LhM3dIpKeRw75efdaCr0oFQ02ns411g.</a>
-	</div>
-</div>
-
-</body>
-</html>
+-----
+Eric F Crist
+Secure Computing Networks
 
 
 
 
+--Apple-Mail=_64211C5A-50D0-417E-9DC4-2D4EE4C3B866
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+	filename=signature.asc
+X-Eric-Conspiracy: There is no conspiracy.
+Content-Type: application/pgp-signature;
+	name=signature.asc
+Content-Description: Message signed with OpenPGP using GPGMail
 
---b1_e2bdbffd878f78d746ca6de6f8e0f15f--
+-----BEGIN PGP SIGNATURE-----
+
+iQEcBAEBAgAGBQJPFC21AAoJEHKWQhk5DQ0OKhgH/1Ya/WOHPuUdIKM80kLuXEpj
+mCfOeXtxnhW4X8vtWTFZBcMPX+TuF7pMVDcevwU3+ealC96YTnE+SZlV0UZ3qta9
+Vcg4MuI2sMsa/zFQHQb0rxntzvxW0+B5cEpFfEOoM6uFp2CLffiobijRys9R6U2S
++GuzCj7XVCXic1cEt1ZyYdPVkb9xEFEMehFoIFOoKwlmji/4w0iyARnLZHfWWRUT
+NXqTqJuM2sq4+7+gCy9kn9C7nt5aFgVns7H8w44IvcUiqKoQWSuqsRsp7cRnF1uy
+h+e38+/N8TOOS98vfUqZmoA2Fm/a8Z1bz3SIPOQWgknyyeg58JWFc60IQAT979Y=
+=4yyp
+-----END PGP SIGNATURE-----
+
+--Apple-Mail=_64211C5A-50D0-417E-9DC4-2D4EE4C3B866--
 
