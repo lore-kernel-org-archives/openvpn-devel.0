@@ -1,15 +1,12 @@
-Date: Mon, 16 Jan 2012 12:06:26 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120116110626.GU5060@...1296...>
+Message-ID: <4F1406EA.7030709@...1114...>
+Date: Mon, 16 Jan 2012 12:15:54 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
 References: <1326709901-16246-1-git-send-email-davids@...1347...>
 	<1326711858-18337-1-git-send-email-davids@...1347...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="oHxSCaSS3y4TqjY8"
-Content-Disposition: inline
 In-Reply-To: <1326711858-18337-1-git-send-email-davids@...1347...>
 Subject: Re: [Openvpn-devel] [PATCH v2] Don't check for file presence on
-	inline files
+ inline files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,49 +15,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <davids@...1347...>
-Cc: dazo@...1345..., openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
---oHxSCaSS3y4TqjY8
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Hi,
-
-On Mon, Jan 16, 2012 at 12:04:18PM +0100, David Sommerseth wrote:
-> The configuration file supports inline files for --ca, --cert, --dh,
+On 16/01/12 12:04, David Sommerseth wrote:
+> The configuration file supports inline files for --ca, --cert, --dh, 
 > --extra-certs, --key, --pkcs12, --secret and --tls-auth.  When this
-> is used, the filename is set to [[INLINE]] (defined by INLINE_FILE_TAG).
->=20
-> If the filename is set to INLINE_FILE_TAG for these options, don't
+> is used, the filename is set to [[INLINE]] (defined by
+> INLINE_FILE_TAG).
+> 
+> If the filename is set to INLINE_FILE_TAG for these options, don't 
 > call check_file_access().
->=20
+> 
 > [v2 Simplify the code, using a flag to check_file_access()]
+> 
+> Signed-off-by: David Sommerseth <davids@...1347...> --- options.c | 23
+> +++++++++++++++-------- 1 files changed, 15 insertions(+), 8 
+> deletions(-)
 
-ACK!
+Applied to master on -testing and -stable trees.
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+commit 06e781f885125b05de0a731743acd90d4492a435
+Author: David Sommerseth <davids@...1347...>
+Date:   Mon Jan 16 12:00:33 2012 +0100
 
---oHxSCaSS3y4TqjY8
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+    Signed-off-by: David Sommerseth <davids@...1347...>
+    Acked-by: Gert Doering <gert@...1296...>
 
+
+kind regards,
+
+David Sommerseth
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iQCVAwUBTxQEsqkuBuNlUUl1AQIP8QQAh9Pys4XD7LGHfsLz4rObK1X+/nOFSsI/
-eklcVHj4JzcU0RsSYkak1ypWYoX8i4TjmaKmJwXsTCHvv5VE/6QXv9goBTu7fS4H
-e+omOl7QDyLNpzHgHsfXRiBLC4w07K3qU33LEJ6g1JjoSQKiBVHZ/QOyogmLHUK8
-1oRVyvKrsWA=
-=6zU4
+iEYEARECAAYFAk8UBugACgkQDC186MBRfrp8cwCfT8dwBmDTEnctTskfPZKCupxF
+/LkAnA3Yo850ws19VLT0380fJbwI+GhX
+=TeDU
 -----END PGP SIGNATURE-----
-
---oHxSCaSS3y4TqjY8--
 
