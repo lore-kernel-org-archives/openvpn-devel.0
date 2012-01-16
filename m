@@ -1,12 +1,8 @@
-Message-ID: <4F13E937.2070809@...1114...>
-Date: Mon, 16 Jan 2012 10:09:11 +0100
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <4F116B5F.1070100@...1114...>
-	<4F116C87.5090805@...1114...>
-In-Reply-To: <4F116C87.5090805@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix pool logging when IPv6 is not
-	enabled
+From: David Sommerseth <davids@...1347...>
+Date: Mon, 16 Jan 2012 11:31:41 +0100
+Message-Id: <1326709901-16246-1-git-send-email-davids@...1347...>
+Subject: [Openvpn-devel] [PATCH] Don't check for file presence on inline
+	files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,46 +11,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: dazo@...1345...
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+The configuration file supports inline files for --ca, --cert, --dh,
+--extra-certs, --key, --pkcs12, --secret and --tls-auth.  When this
+is used, the filename is set to [[INLINE]] (defined by INLINE_FILE_TAG).
 
-On 14/01/12 12:52, David Sommerseth wrote:
-> On 14/01/12 12:47, David Sommerseth wrote: | | Hi, | | I'm running
-> the master branch (commit 330baf2aee70b35) on a site where IPv6 | 
-> tunnelling is not enabled.  I found some odd IPv6 addresses in the
-> log file | when clients connected.  Attached is a patch solving this 
-> issue.  It's | basically a bogus message, and nothing seems to be 
-> pushed to the client. | | This site is now running with this patch 
-> applied, and it behaves better. |
-> 
-> New improvement, now even with an attachment ... duh!  ;-)
+If the filename is set to INLINE_FILE_TAG for these options, don't
+call check_file_access().
 
-Applied to master branch on -testing and -stable trees.
+Signed-off-by: David Sommerseth <davids@...1347...>
+---
+ options.c |   37 ++++++++++++++++++++++++++-----------
+ 1 files changed, 26 insertions(+), 11 deletions(-)
 
+diff --git a/options.c b/options.c
+index 562c6f6..573bde5 100644
+--- a/options.c
++++ b/options.c
+@@ -2653,24 +2653,39 @@ options_postprocess_filechecks (struct options *options)
+ 
+   /* ** SSL/TLS/crypto related files ** */
+ #ifdef USE_SSL
+-  errs |= check_file_access (CHKACC_FILE, options->dh_file, R_OK, "--dh");
+-  errs |= check_file_access (CHKACC_FILE, options->ca_file, R_OK, "--ca");
++  if( options->dh_file && !streq(options->dh_file, INLINE_FILE_TAG) )
++    errs |= check_file_access (CHKACC_FILE, options->dh_file, R_OK, "--dh");
++
+   errs |= check_file_access (CHKACC_FILE, options->ca_path, R_OK, "--capath");
+-  errs |= check_file_access (CHKACC_FILE, options->cert_file, R_OK, "--cert");
+-  errs |= check_file_access (CHKACC_FILE, options->extra_certs_file, R_OK,
+-                             "--extra-certs");
+-  errs |= check_file_access (CHKACC_FILE, options->priv_key_file, R_OK,
+-                             "--key");
+-  errs |= check_file_access (CHKACC_FILE, options->pkcs12_file, R_OK,
+-                             "--pkcs12");
++
++  if( options->ca_file && !streq(options->ca_file, INLINE_FILE_TAG) )
++    errs |= check_file_access (CHKACC_FILE, options->ca_file, R_OK, "--ca");
++
++  if( options->cert_file && !streq(options->cert_file, INLINE_FILE_TAG) )
++    errs |= check_file_access (CHKACC_FILE, options->cert_file, R_OK, "--cert");
++
++  if( options->extra_certs_file && !streq(options->extra_certs_file, INLINE_FILE_TAG) )
++    errs |= check_file_access (CHKACC_FILE, options->extra_certs_file, R_OK,
++                               "--extra-certs");
++
++  if( options->priv_key_file && !streq(options->priv_key_file, INLINE_FILE_TAG) )
++    errs |= check_file_access (CHKACC_FILE, options->priv_key_file, R_OK,
++                               "--key");
++
++  if( options->pkcs12_file && !streq(options->pkcs12_file, INLINE_FILE_TAG) )
++    errs |= check_file_access (CHKACC_FILE, options->pkcs12_file, R_OK,
++                               "--pkcs12");
++
+   if (options->ssl_flags & SSLF_CRL_VERIFY_DIR)
+     errs |= check_file_access (CHKACC_FILE, options->crl_file, R_OK|X_OK,
+                                "--crl-verify directory");
+   else
+     errs |= check_file_access (CHKACC_FILE, options->crl_file, R_OK,
+                                "--crl-verify");
+-  errs |= check_file_access (CHKACC_FILE, options->tls_auth_file, R_OK,
+-                             "--tls-auth");
++
++  if( options->tls_auth_file && !streq(options->tls_auth_file, INLINE_FILE_TAG) )
++    errs |= check_file_access (CHKACC_FILE, options->tls_auth_file, R_OK,
++                               "--tls-auth");
+ #endif /* USE_SSL */
+ #ifdef USE_CRYPTO
+   errs |= check_file_access (CHKACC_FILE, options->shared_secret_file, R_OK,
+-- 
+1.7.4.4
 
-commit cb383dc3bc161c1e4ea6b535097e0f64a725e081
-Author: David Sommerseth <dazo@...384...>
-Date:   Sat Jan 14 12:34:59 2012 +0100
-
-    Fix pool logging when IPv6 is not enabled
-
-    Signed-off-by: David Sommerseth <dazo@...384...>
-    Acked-by: Gert Doering <gert@...1296...>
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk8T6TUACgkQDC186MBRfrpxSwCfSsuiqs4T4QNYrnnQQLgB3Y2g
-IX0AoKnZOVQ5grJzMkvBExBfK8jqMBFL
-=u/la
------END PGP SIGNATURE-----
 
