@@ -1,14 +1,12 @@
-Date: Sat, 14 Jan 2012 22:46:25 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120114214625.GQ5060@...1296...>
-References: <CAMaBZnHTP5SbPhf5sCGeE2E-zQOGFYhXFQRSh2t1mnNvZ0c3Wg@...278...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="XLWMkxR+mZNQ4WTO"
-Content-Disposition: inline
-In-Reply-To: <CAMaBZnHTP5SbPhf5sCGeE2E-zQOGFYhXFQRSh2t1mnNvZ0c3Wg@...278...>
-Subject: Re: [Openvpn-devel] Setup a test openvpn network with ipv6 payload
-	between all sites.
+Message-ID: <4F13E937.2070809@...1114...>
+Date: Mon, 16 Jan 2012 10:09:11 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <4F116B5F.1070100@...1114...>
+	<4F116C87.5090805@...1114...>
+In-Reply-To: <4F116C87.5090805@...1114...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix pool logging when IPv6 is not
+	enabled
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,49 +15,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Praetorian <praetoriancode@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
---XLWMkxR+mZNQ4WTO
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Hi,
+On 14/01/12 12:52, David Sommerseth wrote:
+> On 14/01/12 12:47, David Sommerseth wrote: | | Hi, | | I'm running
+> the master branch (commit 330baf2aee70b35) on a site where IPv6 | 
+> tunnelling is not enabled.  I found some odd IPv6 addresses in the
+> log file | when clients connected.  Attached is a patch solving this 
+> issue.  It's | basically a bogus message, and nothing seems to be 
+> pushed to the client. | | This site is now running with this patch 
+> applied, and it behaves better. |
+> 
+> New improvement, now even with an attachment ... duh!  ;-)
 
-On Sat, Jan 14, 2012 at 04:36:13PM -0500, Praetorian wrote:
-> #6 In linux client config file should be dev tun-ipv6 and not just tun-ip=
-v6
+Applied to master branch on -testing and -stable trees.
 
-The command "tun-ipv6" is not there to set the device, but to enable IPv6
-on tunnels :-) - and normally you don't need that command in the client
-config at all, as the server will push it (if server-ipv6 is configured).
 
-"dev tun-ipv6" tells it to use a tunnel device named "tun-ipv6", which
-is something else.
+commit cb383dc3bc161c1e4ea6b535097e0f64a725e081
+Author: David Sommerseth <dazo@...384...>
+Date:   Sat Jan 14 12:34:59 2012 +0100
 
-gert
+    Fix pool logging when IPv6 is not enabled
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+    Signed-off-by: David Sommerseth <dazo@...384...>
+    Acked-by: Gert Doering <gert@...1296...>
 
---XLWMkxR+mZNQ4WTO
-Content-Type: application/pgp-signature
-Content-Disposition: inline
 
+kind regards,
+
+David Sommerseth
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iQCVAwUBTxH3sakuBuNlUUl1AQKXAQQAgJwN/5PIEqTpN/Ih2sbKMG0rJ8/egLGL
-7PkBtmm0kzrm24m+olD57CZHzWn65sT44rwR3muz1cyAAE86Eqmih9xWSabEYuBO
-ePX7pt7511Zh3l2Kmm9/OqxdT09HcgF6DZow1Zn0A4iUFnj3CBuCe5+GUGlQ8ObR
-LEQBOm9xAcI=
-=6eys
+iEYEARECAAYFAk8T6TUACgkQDC186MBRfrpxSwCfSsuiqs4T4QNYrnnQQLgB3Y2g
+IX0AoKnZOVQ5grJzMkvBExBfK8jqMBFL
+=u/la
 -----END PGP SIGNATURE-----
-
---XLWMkxR+mZNQ4WTO--
 
