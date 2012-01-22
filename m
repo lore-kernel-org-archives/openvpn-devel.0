@@ -1,9 +1,11 @@
-Message-ID: <4F1926B3.40709@...515...>
-Date: Fri, 20 Jan 2012 10:32:51 +0200
-From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------060103070809090101080109"
-Subject: [Openvpn-devel] Summary of the IRC meeting (19th Jan 2012)
+Date: Sun, 22 Jan 2012 22:32:47 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120122213247.GI5060@...1296...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Zp4J6pIOF3L3ZAe7"
+Content-Disposition: inline
+Subject: [Openvpn-devel] FreeBSD platform cleanup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,261 +14,168 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------060103070809090101080109
-Content-Type: text/plain; charset="UTF-8"
+--Zp4J6pIOF3L3ZAe7
+Content-Type: multipart/mixed; boundary="HE8xRhbuhm5Vuapo"
+Content-Disposition: inline
+
+--HE8xRhbuhm5Vuapo
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-Here's the summary of the previous IRC meeting / sprint.
+the current "master" code on FreeBSD has two problems:
 
----
+ - tun or tap devices are not removed at program end, so a "dead"=20
+   interface is left behind - not critical, but we should not do that
+   -> call "ifconfig destroy" in tun_close().
 
-COMMUNITY MEETING
+ - "topology subnet" for IPv4 causes failure for IPv6 (because the
+   interface is ioctl()'ed to IFF_BROADCAST mode, which changes the
+   IPv6 behaviour to "use neighbour discovery", which would have to
+   be implemented by the OpenVPN server - and isn't, as of today).
 
-Place: #openvpn-devel on irc.freenode.net
-Date: Thursday 19th Jan 2012
-Time: 18:00 UTC
+   With my change, the interface is left as "point to point" interface
+   (which it really is), but routing and ifconfig is setup with the=20
+   proper netmask, so all interesting packets are still sent down the
+   tun if to OpenVPN.
 
-Planned meeting topics for this meeting were on this page:
+Patch below, auto-tested for tun and tap devices on FreeBSD 7.4 and
+FreeBSD 8.2 on amd64.=20=20
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2012-01-19>
+(There's one catch for FreeBSD 8.2 if you use pf(4): it will block IPv6=20
+fragments by default, so the standard t_client.sh test sets fail unless=20
+you specifically add "pass in on tun1 fragment" rules - but there's=20
+nothing OpenVPN can do about it.  I'm just mentioning it here for the
+sake of the archives, in case someone else falls over it)
 
-Next meeting will be announced in advance, but will probably be on the same
-weekday and at the same time. Your local meeting time is easy to check
-from services such as
-
-<http://www.timeanddate.com/worldclock>
-
-or with
-
-$ date -u
-
-
-SUMMARY
-
-cron2, dazo, ecrist and mattock participated in this meeting.
-
---
-
-Discussed Bruessels/FOSDEM hackfests. Agreed that arranging them on
-Sat-Sun (4.-5. Feb) makes most sense for all. The goal is to complete
-three related mini-projects:
-
-1) The "squash/close as many bugs as possible"
-2) Complete all tasks holding back 2.3 alpha and make the release
-3) Review d12fk's Windows patches that got stuck to the patch queue
-
-All of these should be doable within the given timeframe.
-
---
-
-Discussed vBulletin's OpenVPN theme. According to raidz, the theme
-should be ready next Monday.
-
----
-
-Full chatlog as an attachment
-
+gert
 --=20
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-irc freenode net: mattock
-
-
---------------060103070809090101080109
-Content-Type: text/plain;
- name="openvpn_irc_meeting_chatlog_2012-01-19.txt"
-Content-Transfer-Encoding: base64
+--HE8xRhbuhm5Vuapo
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: attachment;
-	filename="openvpn_irc_meeting_chatlog_2012-01-19.txt"
+	filename="0001-Platform-cleanup-for-FreeBSD.patch"
+Content-Transfer-Encoding: quoted-printable
 
-Y3JvbjIgMjAuMDEuNDUKbWVldGluZyEJCgptYXR0b2NrIDIwLjAyLjA2CnllcApodHRwczov
-L2NvbW11bml0eS5vcGVudnBuLm5ldC9vcGVudnBuL3dpa2kvVG9waWNzLTIwMTItMDEtMTkK
-MjAuMDIuMzUKIAp2cG5IZWxwZXIgMjAuMDQuMDYKVGl0bGU6IFRvcGljcy0yMDEyLTAxLTE5
-IOKAkyBPcGVuVlBOIENvbW11bml0eSAoYXQgY29tbXVuaXR5Lm9wZW52cG4ubmV0KQkKCm1h
-dHRvY2sgMjAuMDQuMjMKc28sIHdlIG9ubHkgaGF2ZSBvbmUgbWFqb3IgdG9waWMgdG9kYXku
-Li4Kd2hpY2ggaXMgIndoYXQgc2hvdWxkIHdlIGRvIGF0IEZPU0RFTS9CcnVlc3NlbHMgT3Bl
-blZQTi12aXNlIj8KMjAuMDQuNDcKdGhyZWUgc3VnZ2VzdGlvbnMgb24gdGhlIHRvcGljIGxp
-c3QgYWxyZWFkeQoyMC4wNS40OQogCmRhem8gMjAuMDYuMjgKVGhlIGZpcnN0IHN1Z2dlc3Rp
-b24gb24gdGhlIGFnZW5kYSBpcyBtaW5lIC4uLi4gYXMgSSBzZWUgd2UgaGF2ZSBhIGxvdCBv
-ZiBvcGVuIGlzc3VlcyBpbiBUcmFjLCBhbmQgSSBob3BlIHRoZSBtYWluIHJlYXNvbiB0aGV5
-J3JlIG9wZW4gYXJlIHRoYXQgcGVvcGxlIGp1c3QgZG9uJ3QgaGF2ZSB0aW1lIHRvIGxvb2sg
-YXQgdGhlc2UgdGhpbmdzIC4uLiBzb21lIG9mIHRoZW0gYXJlIHJlYWxseSBlYXN5IHRvIGZp
-eCwgYXQgZmlyc3QgZ2xhbmNlCnNvIGEgbGl0dGxlIGhhY2tmZXN0IHdoZXJlIHdlIGNvdWxk
-IHF1aWNrbHkgc3ByZWFkIHNvbWUgdGFza3MsIGhhY2sgb24gdGhlbSwgZ2V0IHRoZW0gYWNr
-ZWQgcXVpY2sgLi4uIHRoYXQnZCB3b3VsZCBiZSBraW5kIG9mIGlkZWFsLCBJIHRoaW5rCjIw
-LjA3LjAwCihhdCBsZWFzdCB0byBzdGFydCBvbiB0aG9zZSB3aXRoIGEgY3VycmVudC9leHBp
-cmVkIG1pbGVzdG9uZXMgZmlyc3QsIHRoZW4gbG9vayBhdCB0aG9zZSB3aXRob3V0IG1pbGVz
-dG9uZXMpCjIwLjA3LjI2CihmdXR1cmUgbWlsZXN0b25lcywgYXMgaW4gdjIuNCwgaXMgbGVz
-cyBpbXBvcnRhbnQgbm93KQoyMC4wNy40MQogCmNyb24yIDIwLjA4LjA0CkknbSBmaW5lIHdp
-dGggdGhhdC4gIEhhY2tpbmcgdG9nZXRoZXIgd2l0aCBmb2xrcyBpcyBtb3JlIGZ1biB0aGFu
-IGdvaW5nIGF0IGl0IGFsb25lLgkKCmRhem8gMjAuMDguMTQKeWVwcAkKCmNyb24yIDIwLjA4
-LjE3CihhbmQgSSdsbCBiZSBhd2F5IGZyb20gaG9tZSwgc28gSSBoYXZlIG5vdGhpbmcgdG8g
-ZGlzdHVyYiAgKQkKCmRhem8gMjAuMDguMjMKCQoKbWF0dG9jayAyMC4wOC4zOAoKb25lIHRo
-aW5nIHdlJ2QgbmVlZCB0byBkZWNpZGUgaXMgYSByb3VnaCBzY2hlZHVsZSBmb3IgdGhlc2Ug
-aGFja2Zlc3RzCjIwLjA4LjUzCmFuZCBtYXliZSBzb21lYm9keSB3b3VsZCBhbHNvIGxpa2Ug
-dG8gdmlzaXQgRk9TREVNLCB0b28gCjIwLjA5LjA2CiAKZGF6byAyMC4wOS41NQpZZWFoLCBJ
-IGtub3cgdGhlcmUgYXJlIHNvbWUgc2Vzc2lvbnMgSSdkIGxpa2UgdG8gZ28gdG9vIC4uLiBi
-dXQgdGhlcmUgYXJlIHRoaW5ncyB3aGljaCBhcmUgbGVzcyAob3Igbm90IGF0IGFsbCkgaW50
-ZXJlc3RpbmcgdG9vCQoKbWF0dG9jayAyMC4xMS40MwpJJ2xsIGNoZWNrICJ3aGF0J3MgbGVm
-dCIgZm9yIDIuMyBhbHBoYQkKCmRhem8gMjAuMTIuMjAKRm9yIG1lLCBJJ2xsIGdpdmUgcHJp
-b3JpdHkgdG8gT3BlblZQTiB0aW1lcyAuLi4gc28gSSdsbCBhZGFwdCB0aGluZ3MgY29tcGxl
-dGVseSB0byB0aGF0IC4uLi4gaXQncyBzbyBtdWNoIHRvIGxvb2sgYXQgdGhlcmUsIHNvIGl0
-J3MgcHJvYmFibHkgbmV2ZXIgZ29pbmcgdG8gYmUgYW4gaWRlYWwgdGltZSBmb3IgYW55b25l
-Cmhvd2V2ZXIsIEknbSB0aGUgVGh1cnNkYXkgLSBNb25kYXk7IHNvIEZyaWRheSBhbmQvb3Ig
-U3VuZGF5IGFmdGVyIGZvc2RlbSBhcmUgYWxzbyBvcHRpb25zIGZvciBtZQoyMC4xMy4xMwog
-Cm1hdHRvY2sgMjAuMTMuMjMKbWUgdG9vCkknbGwgYmUgbGVhdmluZyBhdCBhcm91bmQgMTk6
-MDAgb24gU3VuZGF5IEkgdGhpbmsKMjAuMTQuMDYKd2UgY2FuIHByb2JhYmx5IGFycmFuZ2Ug
-b3VyIHNjaGVkdWxlIHdoZW4gd2UgbWVldAoyMC4xNC40MgpqdXN0IGtlZXAgdGhlIGhhY2tm
-ZXN0cyBpbiBtaW5kCjIwLjE0LjU3CiAKY3JvbjIgMjAuMTcuMTIKdGhlIGtleW5vdGUgc3Rh
-cnRzIHNhdHVyZGF5IDEwOjAwCQoKbWF0dG9jayAyMC4xOC4xNQouLi5jbG9zaW5nIGZpbmlz
-aGVkIDIuMyBhbHBoYSB0aWNrZXQKcwoyMC4xOC4xNgogCmNyb24yIDIwLjE4LjI1CmZpbmRp
-bmcgYSBwbGFjZSB0byBkbyB0aGUgaGFja2Zlc3QgY291bGQgZ2V0IGludGVyZXN0aW5nCQoK
-ZGF6byAyMC4xOS4xNwpjbG9zZXN0IHB1Yj8gCQoKbWF0dG9jayAyMC4xOS41MQptYXliZSBh
-IHByaXZhdGUgcm9vbSBpbiBhIHJlc3RhdXJhbnQ/IG9yIHNoYW1lbGVzc2x5IGdvIHRvIHNv
-bWVvbmUncyBob3RlbCByb29tPwplLmcuIG1pbmU/IAoyMC4xOS41OQp3ZSBoYXZlICJmcmVl
-IHdpZmkgKGZvciBleHRyYSBjaGFyZ2UpIiB0aGVyZSAKMjAuMjAuMjAKIApkYXpvIDIwLjIw
-LjQyCndvcmtzIGZvciBtZSAJCgptYXR0b2NrIDIwLjIwLjQzCmJ0dy4gdGhlcmUgYXJlIHR3
-byBvZiBteSB0aWNrZXRzIGxlZnQgZm9yIDIuMyBhbHBoYSAodGFwaW5zdGFsbC5leGUgLXJl
-bGF0ZWQgYW5kIGJ1aWxkYm90KQkKCmNyb24yIDIwLjIwLjQ1Cipkb2Vzbid0IGdvIHRvIGhv
-dGVsIHJvb21zIHdpdGggbWVuKgkKCmRhem8gMjAuMjAuNTUKaGVoZWhlCQoKZWNyaXN0IDIw
-LjIxLjAxCmxvbAkKCm1hdHRvY2sgMjAuMjEuMDMKY3JvbjI6IGV2ZW4gb25lcyB3aXRoIGEg
-bWluaWJhciB5b3UgZG9uJ3QgaGF2ZSB0byBwYXk/IAkKCmVjcmlzdCAyMC4yMS4yMQpjcm9u
-MiAtIG1heWJlIGRhem8gYW5kIG1hdHRvY2sgYXJlIHJlYWxseSBwcmV0dHk/ICBpbiB0aGUg
-VVMgd2UgY2FsbCB0aGUgJ3RyYXBzJwoKMjAuMjEuMjQKIAptYXR0b2NrIDIwLjIxLjI5CmVj
-cmlzdDogKzEJCgpkYXpvIDIwLjIxLjQxCipzdWRkZW5seSBnb3Qgc3VzcGljaW91cyBub3cg
-Li4uLi4uLi4qCQoKbWF0dG9jayAyMC4yMS41MQpoYWhhaGEKYW55d2F5cywgYmFjayB0byAy
-LjMgcmVsZWFzZSBoYWNrZmVzdCBpZGVhLi4uIGRvIHlvdSB0aGluayBpdCdzIGRvYWJsZTog
-aHR0cHM6Ly9jb21tdW5pdHkub3BlbnZwbi5uZXQvb3BlbnZwbi9yZXBvcnQvMwoyMC4yMi4z
-MgogCnZwbkhlbHBlciAyMC4yMi4zOQpUaXRsZTogezN9IEFjdGl2ZSBUaWNrZXRzIGJ5IE1p
-bGVzdG9uZSDigJMgT3BlblZQTiBDb21tdW5pdHkgKGF0IGNvbW11bml0eS5vcGVudnBuLm5l
-dCkJCgpkYXpvIDIwLjIzLjI1Cm1vc3Qgb2YgdGhvc2Ugd2hpY2ggYXJlICIyLjMiIHJlbGF0
-ZWQgbWlsZXN0b25lcywgc2hvdWxkIGJlIGRvYWJsZSAuLi4gaXQncyBub3QgdGhhdCBoZWZ0
-eSBzdHVmZiB0aGVyZQkKCmNyb24yIDIwLjIzLjQ3CiMxNjkgaXMgZml4ZWQgYWxyZWFkeSwg
-aXNuJ3QgaXQ/CQoKZGF6byAyMC4yMy40OAp0aGVyZSBhcmUgYSBjb3VwbGUgb2Ygb25lcywg
-ZXNwIFdpblhQIGFuZCBzdXNwZW5kIGlzc3VlcyB3aGljaCBpcyB0cmlja3kKSSdkIHNheSBz
-byAuLi4gb3Igbm90PwoyMC4yNC4xNQogCmVjcmlzdCAyMC4yNC4yNQoqcG9rZXMgcmFpZHog
-KgkKCmNyb24yIDIwLjI0LjU1CkkgdGhpbmsgampvIHNhaWQgdGhhdCAjOTcgaXMgZml4ZWQg
-d2l0aCB0aGUgbmV3IHRhcCBkcml2ZXIJCgpyYWlkeiAyMC4yNC41NwpoZXkgaGV5CndoYXRz
-IHVwIGVjcmlzdD8KMjAuMjUuMDQKIAplY3Jpc3QgMjAuMjUuMjUKYW55IGlkZWEgb24gdGhl
-IHN0YXR1cyBvZiBmb3J1bSB0aGVtZQkKCmRhem8gMjAuMjYuMTIKY3JvbjI6IEkndmUgdW5k
-ZXJzdG9vZCBpdCBsaWtlIHRoYXQgYXMgd2VsbAkKCm1hdHRvY2sgMjAuMjYuMTkKY2xvc2Ug
-Izk3PwkKCmNyb24yIDIwLjI2LjMwCkkganVzdCBjb21tZW50ZWQgaXQgYW5kIGFza2VkIGpq
-byB0byBjb25maXJtCmpqawoyMC4yNi4zMwogCmRhem8gMjAuMjYuNTAKampvIGlzIHRoZSBv
-dGhlciBpcHY2IGd1eSAJCgpyYWlkeiAyMC4yNi41MwplY3Jpc3Q6IHRoZXkgc2FpZCBpdCB3
-aWxsIGJlIGRvbmUgb24gbW9uZGF5CQoKZWNyaXN0IDIwLjI2LjU3CgkKCnJhaWR6IDIwLjI2
-LjU3Cmp1c3Qgc3Bva2UgdG8gdGhlbSBhbiBob3VyIGFnbwkKCmVjcmlzdCAyMC4yNy41NQp0
-aGFua3MJCgptYXR0b2NrIDIwLjI4LjE1Cm5vdywgcmVnYXJkaW5nIGF1dG9tYXRlZCB0ZXN0
-aW5nIGluZnJhc3RydXJlIChvbmUgb2YgbXkgMi4zIHRhc2tzKQpzbywgSSB0aWVkIGl0IHRv
-IHRoZSBidWlsZGJvdCB1cGdyYWRlCjIwLjI4LjI0CndoaWNoIG5lZWRzIHRvIGJlIGRvbmUg
-YW55d2F5cyBmb3IgYSBudW1iZXIgb2YgcmVhc29ucwoyMC4yOC4zMQpidWlsZGJvdHMgc2hv
-dWxkIGJlIHVwZ3JhZGVkIGVhcmx5IG5leHQgd2VlayB0byAwLjguNSAobGF0ZXN0IHZlcnNp
-b24pCjIwLjI4LjU1CkkgbWVhbiwgdGhlIHVwZ3JhZGUgc2hvdWxkIGJlIHJlYWR5CjIwLjI5
-LjA0CmlmIEknbSBsdWNreSwgSSBjYW4gZ2V0IGF1dG9tYXRlZCBjb25uZWN0aW9uIHRlc3Rz
-IHBhcnRpYWxseSB3b3JraW5nIGJ5IEJydWVzc2VscwoyMC4yOS4zNAplY3Jpc3Q6IGlzIHRo
-ZSB0by1iZSBwdWJsaWMgdGVzdCBzZXJ2ZXIgc3RpbGwgYXZhaWxhYmxlPwoyMC4yOS41Ngog
-CmRhem8gMjAuMzAuMDAKdGhhdCB3b3VsZCBoZWxwIGEgbG90IQkKCmVjcmlzdCAyMC4zMC4w
-Mgp5ZXMJCgptYXR0b2NrIDIwLjMwLjA1Cm5pY2UhCm9uY2UgdGhlIG5ldyBidWxkYm90IHZl
-cnNpb24gaXMgcnVubmluZyB3aXRoIHNhbWUgZnVuY3Rpb25hbGl0eSBhcyB0aGUgY3VycmVu
-dCBvbmUsIEknbGwgbW92ZSBvbiB0byBjb25uZWN0aXZpdHkgdGVzdHMKMjAuMzAuNDQKIApj
-cm9uMiAyMC4zMC40NwoqbmVlZHMgdG8gc2V0dXAgYSBmcmVlYnNkIDcuNCBidWlsZCBzbGF2
-ZSoJCgptYXR0b2NrIDIwLjMwLjU2CnRoYXQgc2hvdWxkIG5vdCBiZSB0b28gZGlmZmljdWx0
-LCBiZWNhdXNlIEkndmUgc29sdmVkIHRoYXQgcHJvYmxlbSBvbmNlIGFscmVhZHkJCgpjcm9u
-MiAyMC4zMS4xNQoodGhlcmUgc2VlbXMgdG8gYmUgbWFqb3IgbmV0d29ya2luZyBjaGFuZ2Vz
-IGJldHdlZW4gNyBhbmQgOCwgYW5kIEkgaGF2ZSBzb21lIHN1c3BpY2lvdXMgYWJvdXQgT3Bl
-blZQTiB0aGVyZSkJCgptYXR0b2NrIDIwLjMzLjEwCmFueXdheXMsIEkgdGhpbmsgd2Ugc2hv
-dWxkIHJlbGVhc2UgZmlyc3QgMi4zIGFscGhhIGV2ZW4gaWYgdGhlIGNvbm5lY3Rpdml0eSB0
-ZXN0cyBhcmUgbm90IDEwMCUgZnVuY3Rpb25hbCBhdCByZWxlYXNlIHRpbWUuLi4gd2hhdCBk
-byB5b3UgdGhpbms/Cml0J3MgImFscGhhIiBhZnRlciBhbGwKMjAuMzMuMTgKYW5kIGl0J2Qg
-YmUgbmljZSB0byBtYWtlIHRoZSByZWxlYXNlIGluIGJydWVzc2VscwoyMC4zMy40MgogCmRh
-em8gMjAuMzQuMjEKbWF0dG9jazogcGxlYXNlIGFkZCBvbiB5b3VyIGZhbW91cyB0b2RvIGxp
-c3QgZm9yIGJ1aWxkYm90IC4uLiB0byByZW1vdmUgLS1kaXNhYmxlLXJhbmRvbS1yZXNvbHYg
-YXJndW1lbnRzIGluIGNvbmZpZ3MJCgptYXR0b2NrIDIwLjM0LjMxCmFoLCB3aWxsIGRvCkkg
-d291bGQgYmUgdXNlbGVzcyB3aXRob3V0IHRoYXQgVE9ETy1saXN0IAoyMC4zNC40NQogCmRh
-em8gMjAuMzQuNTMKdGhhdCdzIGEgZmVhdHVyZSB3ZSB3YW50ZWQgdG8gcmVtb3ZlIHNsb3ds
-eSAuLi4gdW50aWwgSmFtZXMgaGl0IHVzIHdpdGggYSBwYXRjaCB3aGljaCB3YXN0ZWQgb3Vy
-IHRpbWUgCQoKbWF0dG9jayAyMC4zNS4yOQpyZW1vdmVkIHRoZSBmZWF0dXJlIG5vdCBzbyBz
-bG93bHksIHJpZ2h0PwkKCmRhem8gMjAuMzUuNTIKeWVhaAp3ZWxsLCBpdCB3YXMgcmVtb3Zl
-ZCwgYnV0IGFsc28gaW1wcm92ZWQgCjIwLjM2LjAxCiAKY3JvbjIgMjAuMzYuMTIKYW55IHdv
-cmQgZnJvbSBqYW1lcyBhYm91dCBzdm4gYW5kIGdpdD8JCgpkYXpvIDIwLjM2LjM3CmtpbmQg
-b2YgLi4uIHRoZWlyIGN1c3RvbWVycyBhcmUgYmVnaW5uaW5nIHRvIHB1c2ggZm9yIElQdjYJ
-Cgpjcm9uMiAyMC4zNi40MgpoYWhhCQoKbWF0dG9jayAyMC4zNi41MwphbHNvLCBJJ2xsIHBh
-dmUgdGhlIHdheSBmb3IgQVMgKyBPcGVuVlBOIDIuMwkKCmRhem8gMjAuMzYuNTcKc28gaGUg
-c2F5cyB0ZXN0aW5nIG91dCAyLjMgYWxwaGEgaW4gQVMgaXMgYW4gaW50ZXJlc3RpbmcgaWRl
-YSBmb3IgaGltIC4uLgkKCm1hdHRvY2sgMjAuMzYuNTgKYnkgdGFraW5nIHRoZSBoaXQgbXlz
-ZWxmCnNvLCBvbmNlIHRoaXMgMi4zIHJlbGVhc2UgdGhpbmd5IGlzIHBhc3QgdXMsIEknbGwg
-c3RhcnQgdGVzdGluZyBpZiBBUyB3b3VsZCB3b3JrIHdpdGggMi4zIGFscGhhL2JldGEvcmMv
-Li4uCjIwLjM3LjI5CnRoZW4sIHdoZW4gdGhpbmdzIGJyZWFrLCBJJ2xsIGZpbGUgYnVnIHJl
-cG9ydHMgdG8gamFtZXMKMjAuMzcuNDQKIAplY3Jpc3QgMjAuMzguMTQKSSBuZWVkIHRvIGZp
-bmQgbmV3IGhvc3Rpbmcgb3Igc29tZXRoaW5nLgkKCm1hdHRvY2sgMjAuMzguNDgKSSB0aGlu
-ayB0aGF0J3MgdGhlIGJlc3Qgd2F5IHRvIG1vdmUgSmFtZXMgYXdheSBmcm9tIFNWTiBhbmQg
-aGlzIG93biBicmFuY2gKbWFrZSBoaW0gZGVwZW5kYW50IG9uIDIuMydzIGZlYXR1cmVzIAoy
-MC4zOS4wNgpzL2FudC9lbnQvZwoyMC4zOS4yNQogCmRhem8gMjAuMzkuNTEKYWdyZWVkCmFu
-ZCB3aGVuIGhlIGlzIGxhY2tpbmcgZmVhdHVyZXMgdGhlcmUgd2hpY2ggaGUgaGFkIGluIGhp
-cyBBUyB2ZXJzaW9uIC4uLiBoZSBzaG91bGQgYmUgYWJsZSB0byBmb3J3YXJkIHBvcnQgdGhv
-c2UgcGF0Y2hlcyBmYWlybHkgc2ltcGxlCjIwLjQwLjE5CiAKbWF0dG9jayAyMC40MC4zOQp5
-ZXAKdGhlbiB3ZSBoYXZlIHRoZSBsYXN0IGhhY2tmZXN0Li4uIGQxMmZrJ3Mgd2luZG93cyBw
-YXRjaCBtZXJnZQoyMC40MC41NQpwcm9iYWJseSBub3QgYSBiaWdnaWUgd2hlbiBhbGwgb2Yg
-b3VyIGJyaWdodCBtaW5kcyBhcmUgaW4gdGhlIHNhbWUgcGh5c2ljYWwgcGxhY2UKMjAuNDEu
-MTkKIApkYXpvIDIwLjQxLjM5ClllYWgsIHRoYXQgb25lIHJlcXVpcmVzIHNvbWUgcHJlcGFy
-YXRpb25zIGZyb20gbXkgc2lkZSAuLi4gYXMgaXQgd2FzIGEgbGVuZ3RoaWVyIGRpc2N1c3Np
-b24gb24gc29tZSBvZiB0aGVzZSBwYXRjaGVzCih3aGljaCBpbnZvbHZlZCBBbG9uIGFzIHdl
-bGwpCjIwLjQxLjQzCnNvIEkgd2FudCB0byBzdGVwIGNhcmVmdWxseSB0aGVyZSwgd2hpY2gg
-SSBhbHNvIG5lZWQgdG8gYXMgSSdtIG5vIFdpbmRvd3MgZGV2ZWxvcGVyICh3aGljaCBteSBw
-YXRjaGVzIGhhdmUgcHJvdmVkIGZvciBlYWNoIFdpbmRvd3MgcGF0Y2ggSSd2ZSBzZW50KQoy
-MC40Mi4zMgogCm1hdHRvY2sgMjAuNDIuNDUKCndlbGwsIEkgZG9uJ3QgdGhpbmsgYW55IG9m
-IHRob3NlIHBhdGNoZXMgYXJlIGJsb2NrZXJzIGZvciAyLjMgYWxwaGEKMjAuNDMuMTAKc28s
-IGlmIHdlIGNhbiBzb3J0IG91dCBhIGdvb2Qgc29sdXRpb24gYW5kIHNlbmQgaXQgdG8gdGhl
-IG1sLCB0aGF0J3MgZ29vZyBlbm91Z2gsIHJpZ2h0PwoyMC40My4zMQpnb29kCjIwLjQ0LjA5
-CiAKZGF6byAyMC40NC4xNwpJIHRoaW5rIHNvCmQxMmZrIGlzIGNvbWluZywgcmlnaHQ/CjIw
-LjQ0LjMxCiAKbWF0dG9jayAyMC40NC4zNwp3aGF0IGFib3V0IHNvbWUgc29jaWFsIGV2ZW50
-cz8KZGF6bzogc28gSSB1bmRlcnN0b29kCjIwLjQ0LjQyCndhc24ndCBoZSBpbnZpdGluZyB1
-cyBmb3IgZGlubmVyIG9uIHNhdHVyZGF5PwoyMC40NC41NAogCmRhem8gMjAuNDQuNTYKZ29v
-ZGllISAgd2UgbmVlZCBzb21lb25lIHdobyBrbm93cyB3aW5kb3dzIGZhciBiZXR0ZXIKb2gg
-dHJ1ZSEKMjAuNDQuNTkKIAptYXR0b2NrIDIwLjQ3LjA1CndoYXQgYWJvdXQgb3RoZXIgc29j
-aWFsIGV2ZW50cz8gSSdkIGxpa2UgdG8gdGFzdGUgc29tZSBvZiB0aGF0IGZhbW91cyBCZWxn
-aWFuIGJlZXIuLi4JCgpkYXpvIDIwLjQ3LjMzCkknbSBubyByZWFsIGJlZXIgcGVyc29uLCBi
-dXQgSSdtIGluIHRvIHRhc3RlIHNvbWV0aGluZyAKKnN1ZGRlbmx5IHVuZGVyc3Rvb2Qgd2h5
-IG1hdHRvY2sgc3VnZ2VzdGVkIGhpcyBob3RlbCByb29tIC4uLi4gbm8gbmVlZCB0byBnbyB0
-byBob3RlbCByb29tIHdpdGggbGFwdG9wIGJlZm9yZSBnb2luZyBvdXQgLi4uLioKMjAuNDcu
-NTcKIAptYXR0b2NrIDIwLjQ4LjM4CndlbGwsIGdvb2QgcG9pbnQsIHdhc24ndCB0aGlua2lu
-ZyBhYm91dCB0aGF0LCB0aG91Z2ggCm1heWJlIGEgaG90ZWwgaGFzIGEgY29uZmVyZW5jZSBy
-b29tIGZvciByZW50IG9yIHNvbWV0aGluZwoyMC40OS4wNQpub3Qgc3VyZSBob3cgbXVjaCB0
-aGF0J2QgY29zdAoyMC40OS4xMAogCmVjcmlzdCAyMC40OS4yMQpvZnRlbiwgdGhleSdsbCBs
-ZXQgYSBndWVzdCB1c2UgaXQgZm9yIGZyZWUKb3IgYSBidXNpbmVzcyBjZW50ZXIKMjAuNDku
-MjUKIApkYXpvIDIwLjQ5LjQzCmFuZCBpaXJjLCBtYXR0b2NrIGFuZCBJIHN0YXkgYXQgdGhl
-IHNhbWUgaG90ZWwgLi4uCnNvIHRoYXQgbWlnaHQgZXZlbiBzcGVhayBpbiBmYXZvdXIgb2Yg
-YmVpbmcgbmljZSB0b28KMjAuNDkuNTYKIAptYXR0b2NrIDIwLjUxLjIxCmFueXdheXMsIEkg
-Y2FuIHRha2UgYSBxdWljayBsb29rIGF0IHdoYXQgcGxhY2VzIHdlIGNvdWxkIHVzZSBmb3Ig
-dGhlIGhhY2tmZXN0cwpyZWdhcmRpbmcgd2hpY2guLi4gaG93IG11Y2ggdGltZSBhcmUgeW91
-IGd1eXMgd2lsbGluZyB0byBhbGxvY2F0ZSBmb3IgdGhvc2U/CjIwLjUxLjQwCkknbGwgYmUg
-dGhlcmUgb24gVHVlc2RheSwgc28gSSBjYW4gc3BlbmQgdGhlIGVudGlyZSB3ZWVrZW5kIGhh
-Y2tpbmcgaWYgbmVjZXNzYXJ5IAoyMC41Mi4wOQogCmNyb24yIDIwLjUyLjQ0Ckkgd2FudCB0
-byBnbyBhbmQgdmlzaXQgYSBmZXcgZm9zZGVtIHRhbGtzLCBidXQgYmVzaWRlcyB0aGF0LCBJ
-J3ZlIHNlZW4gYnJ1c3NlbHMgYW5kIGNhbiBhbHNvIHNwZW5kIHRoZSByZXN0IG9mIHRoZSB3
-ZWVrZW5kCQoKZGF6byAyMC41My4yMApJIGJhc2ljYWxseSBnb3QgRnJpZGF5IGFuZCBNb25k
-YXkgZm9yIHNpZ2h0c2VlaW5nLCBzbyBJIGNhbiBzcGVuZCB0aGUgd2Vla2VuZCBmb3IgaGFj
-a2luZwkKCm1hdHRvY2sgMjAuNTMuMjcKSSBjYW4gc2VuZCAkZmlhbmNlZSBvbiBoZXIgd2F5
-LCBzbyB0aGF0IHNoZSBkb2VzIG5vdCBoYXZlIHRvIHN0YXkgd2l0aCB0aGUgbmVyZHMgCQoK
-ZGF6byAyMC41My41NgpjbGV2ZXIgCQoKbWF0dG9jayAyMC41NC4wOApzbyBtYXliZSBtb3N0
-IG9mIFNhdHVyZGF5IChtaW51cyBzb21lIGZvc2RlbSkgYW5kIG1vc3Qgb2YgU3VuZGF5ICht
-aW51cyBzb21lIGZvc2RlbSkKbWludXMgc29jaWFsaXppbmcsIG9mIGNvdXJzZQoyMC41NC4x
-OApvciwgYXMgbG9uZyBhcyB3ZSBjYW4gdGFrZSBpdCAKMjAuNTQuMjkKIApjcm9uMiAyMC41
-NC41Nwp5ZXMJCgptYXR0b2NrIDIwLjU1LjE4CkkgdGhpbmsgd2UnbGwgbWFuYWdlIHRvIGRv
-IHF1aXRlIGEgbG90IG9mIHN0dWZmCnNvbWUgb3RoZXIgdG9waWNzIHdlJ2QgbGlrZSB0byBk
-aXNjdXNzPwoyMC41NS41NgplY3Jpc3Q6IGRpZCB5b3UgZ2V0IHlvdXIgc2lnbmVkIEdQRyBr
-ZXk/CjIwLjU2LjQ0CmFuZCB3YXMgaXQgc2lnbmVkIHByb3Blcmx5PwoyMC41Ni40OQogCmRh
-em8gMjAuNTguMTAKc291bmRzIGxpa2UgYSBwbGFuIHRvIG1lCQoKbWF0dG9jayAyMC41OC4y
-OQpleGNlbGxlbnQhCkknbGwgd3JpdGUgc3VtbWFyeSB0b21vcnJvdwoyMC41OC4zOApJIGhv
-cGUgSSBnZXQgYmFzaWMgYnVpbGRib3Qgc2V0dXAgbW9yZSBvciBsZXNzIHRhY2tsZWQgdG9t
-b3Jyb3cKMjAuNTguNTYKc2VlIHlvdSBsYXRlciwgbmljZSB0byBoYXZlIGEgbWVldGluZyBh
-ZnRlciBhIGxvbmcgcGF1c2UhCjIwLjU5LjI0CjZ0aCBEZWMgMjAxMSB3YXMgdGhlIGxhc3Qg
-b25lCjIwLjU5LjMwCiAKZGF6byAyMC41OS41MAp0aHghCg==
---------------060103070809090101080109--
+=46rom 1b9e8c58bebde6be369859078d41ef48001a35d5 Mon Sep 17 00:00:00 2001
+From: Gert Doering <gert@...1540...>
+Date: Sun, 22 Jan 2012 23:21:22 +0200
+Subject: [PATCH] Platform cleanup for FreeBSD
+
+- cleanup TUN/TAP devices at program end ("ifconfig ... destroy")
+- make TUN device setup for "topology subnet" work together with IPv6
+  (setup correct netmask and route, but do not use IFF_BROADCAST)
+
+Tested with IPv4 and IPv6 on 7.4-RELEASE/amd64 and 8.2-RELEASE/amd64
+
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ tun.c |   37 ++++++++++++++++++++++++++++++++++---
+ 1 files changed, 34 insertions(+), 3 deletions(-)
+
+diff --git a/tun.c b/tun.c
+index ea0e226..5285b86 100644
+--- a/tun.c
++++ b/tun.c
+@@ -1098,6 +1098,18 @@ do_ifconfig (struct tuntap *tt,
+ 			  ifconfig_remote_netmask,
+ 			  tun_mtu
+ 			  );
++      else if ( tt->topology =3D=3D TOP_SUBNET )
++	{
++	    argv_printf (&argv,
++			  "%s %s %s %s mtu %d netmask %s up",
++			  IFCONFIG_PATH,
++			  actual,
++			  ifconfig_local,
++			  ifconfig_local,
++			  tun_mtu,
++			  ifconfig_remote_netmask
++			  );
++	}
+       else
+ 	argv_printf (&argv,
+ 		      "%s %s %s netmask %s mtu %d up",
+@@ -2246,10 +2258,8 @@ open_tun (const char *dev, const char *dev_type, con=
+st char *dev_node, struct tu
+=20
+   if (tt->fd >=3D 0 && tt->type =3D=3D DEV_TYPE_TUN)
+     {
+-      int i =3D 0;
++      int i =3D IFF_POINTOPOINT | IFF_MULTICAST;
+=20
+-      i =3D tt->topology =3D=3D TOP_SUBNET ? IFF_BROADCAST : IFF_POINTOPOI=
+NT;
+-      i |=3D IFF_MULTICAST;
+       if (ioctl (tt->fd, TUNSIFMODE, &i) < 0) {
+ 	msg (M_WARN | M_ERRNO, "ioctl(TUNSIFMODE): %s", strerror(errno));
+       }
+@@ -2260,12 +2270,33 @@ open_tun (const char *dev, const char *dev_type, co=
+nst char *dev_node, struct tu
+     }
+ }
+=20
++/* tun(4): "These network interfaces persist until the if_tun.ko module is=
+=20
++ *          unloaded, or until removed with the ifconfig(8) command."
++ *          (verified for FreeBSD 6.3, 7.4, 8.2 and 9, same for tap(4))
++ *
++ * so, to avoid lingering tun/tap interfaces after OpenVPN quits,=20
++ * we need to call "ifconfig ... destroy" for cleanup
++ */
+ void
+ close_tun (struct tuntap *tt)
+ {
+   if (tt)
+     {
++      struct gc_arena gc =3D gc_new ();
++      struct argv argv;
++
++      /* setup command, close tun dev (clears tt->actual_name!), run comma=
+nd
++       */
++
++      argv_init (&argv);
++      argv_printf (&argv, "%s %s destroy",
++                          IFCONFIG_PATH, tt->actual_name);
++
+       close_tun_generic (tt);
++
++      argv_msg (M_INFO, &argv);
++      openvpn_execve_check (&argv, NULL, 0, "FreeBSD 'destroy tun interfac=
+e' failed (non-critical)");
++
+       free (tt);
+     }
+ }
+--=20
+1.7.3.5
+
+
+--HE8xRhbuhm5Vuapo--
+
+--Zp4J6pIOF3L3ZAe7
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBTxyAf6kuBuNlUUl1AQJB1gQAwYW9+jhTB2IHV7OCyUDaYXT9VXTkkGRs
+fEYhdl3AqVXqkvXfTU4TTv/Eecn8APAq+qTgJkMO8WOuor9dV/+G2FStohW54mmJ
+tMjrNzWS6gdU9P22p0uqteN75nUT0bzaekypPW5u95bA2HwcljqdgzyvILvzowXL
+9cWkhxaXCCE=
+=iSat
+-----END PGP SIGNATURE-----
+
+--Zp4J6pIOF3L3ZAe7--
 
