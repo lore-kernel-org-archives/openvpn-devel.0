@@ -1,10 +1,10 @@
-Message-ID: <4F1D246C.10508@...1114...>
-Date: Mon, 23 Jan 2012 10:12:12 +0100
+Message-ID: <4F1D2474.3020501@...1114...>
+Date: Mon, 23 Jan 2012 10:12:20 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <20120122213247.GI5060@...1296...>
-In-Reply-To: <20120122213247.GI5060@...1296...>
-Subject: Re: [Openvpn-devel] FreeBSD platform cleanup
+References: <20120122214129.GJ5060@...1296...>
+In-Reply-To: <20120122214129.GJ5060@...1296...>
+Subject: Re: [Openvpn-devel] t_client.sh enhancements
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,47 +21,34 @@ Cc: openvpn-devel@lists.sourceforge.net
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 22/01/12 22:32, Gert Doering wrote:
+On 22/01/12 22:41, Gert Doering wrote:
 > Hi,
 > 
-> the current "master" code on FreeBSD has two problems:
+> I run all my cross-platform clients tests via t_client.sh, and a few 
+> things started to annoy me:
 > 
-> - tun or tap devices are not removed at program end, so a "dead" 
-> interface is left behind - not critical, but we should not do that ->
-> call "ifconfig destroy" in tun_close().
+> - must run "make check" as root (which is problematic for buildbot) -
+> just prints "test #4", but doesn't tell me what this particular test 
+> is doing ("tcp/tap/ipv4-only").
 > 
-> - "topology subnet" for IPv4 causes failure for IPv6 (because the 
-> interface is ioctl()'ed to IFF_BROADCAST mode, which changes the IPv6
-> behaviour to "use neighbour discovery", which would have to be
-> implemented by the OpenVPN server - and isn't, as of today).
-> 
-> With my change, the interface is left as "point to point" interface 
-> (which it really is), but routing and ifconfig is setup with the 
-> proper netmask, so all interesting packets are still sent down the tun
-> if to OpenVPN.
-> 
-> Patch below, auto-tested for tun and tap devices on FreeBSD 7.4 and 
-> FreeBSD 8.2 on amd64.
-> 
-> (There's one catch for FreeBSD 8.2 if you use pf(4): it will block
-> IPv6 fragments by default, so the standard t_client.sh test sets fail
-> unless you specifically add "pass in on tun1 fragment" rules - but
-> there's nothing OpenVPN can do about it.  I'm just mentioning it here
-> for the sake of the archives, in case someone else falls over it)
-> 
+> So - add a variable that can be used to call sudo, and add another
+> set of config variables that will make it print out a user-specified
+> title of what it's doing.  Fairly trivial, really, but might be useful
+> for someone else as well :-)
 
-ACK, as I see you've done the real testing.  Applied to master branch on
-- -testing/-stable.
+Just one comment, please feel free to put such verbose messages directly
+in the commit log.  The more verbose they are, the easier it is in the
+future to understand what were were thinking when adding these commits.
 
+Anyhow ... ACK!  Applied to master branches on -testing/-stable.
 
-commit 62c613d46dc495d747074ca030d2cbdfd255c386
-Author: Gert Doering <gert@...1540...>
-Date:   Sun Jan 22 23:21:22 2012 +0200
+commit 9c6ee9d1ecd85535c5529df1144fb02f613f5134
+Author: Gert Doering <gert@...1296...>
+Date:   Sun Jan 22 22:37:25 2012 +0100
 
-    Platform cleanup for FreeBSD
+    add "print test titles" and "use sudo" functionality to t_client.rc
 
     Signed-off-by: Gert Doering <gert@...1296...>
-    URL: http://thread.gmane.org/gmane.network.openvpn.devel/5303
     Acked-by: David Sommerseth <davids@...1347...>
     Signed-off-by: David Sommerseth <davids@...1347...>
 
@@ -73,8 +60,8 @@ David Sommerseth
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk8dJGoACgkQDC186MBRfrqW/QCeIi1rXiF8s+xSKVXWxDECx9ZQ
-3r8AmwQlA6kK2b+EBLMvN+m9eA/h/EPI
-=cjd5
+iEYEARECAAYFAk8dJHQACgkQDC186MBRfrqBgwCeMVXsQW7uMbU9g4Jrjm4QfbLZ
+iTkAoJYuntv7qjAGJsf0jas8cvrpodlA
+=tM9Q
 -----END PGP SIGNATURE-----
 
