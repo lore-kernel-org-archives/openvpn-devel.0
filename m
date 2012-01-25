@@ -1,10 +1,15 @@
-Message-ID: <4F207170.2040608@...1147...>
-Date: Wed, 25 Jan 2012 22:17:36 +0100
-From: Jan Just Keijser <janjust@...1147...>
-MIME-Version: 1.0
-References: <4F1926B3.40709@...515...>
-In-Reply-To: <4F1926B3.40709@...515...>
-Subject: Re: [Openvpn-devel] Summary of the IRC meeting (19th Jan 2012)
+Date: Wed, 25 Jan 2012 23:18:03 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120125221803.GE5060@...1296...>
+References: <1327405130-22393-1-git-send-email-davids@...1347...>
+	<CAEsd45R22XK71TEfe8rVCooQ65XsKDTCW_QB9p06VuQmQK0C3g@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="gi8aKAu241S2WqNd"
+Content-Disposition: inline
+In-Reply-To: <CAEsd45R22XK71TEfe8rVCooQ65XsKDTCW_QB9p06VuQmQK0C3g@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Add
+	--route-pre-down/OPENVPN_PLUGIN_ROUTE_PREDOWN script/plug-in hook
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,83 +18,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To: "Jonathan K. Bullard" <jkbullard@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--gi8aKAu241S2WqNd
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
-Hi all,
+Hi,
 
+On Wed, Jan 25, 2012 at 11:08:42AM -0500, Jonathan K. Bullard wrote:
+> This is great. Two comments:
+>=20
+> 1. Is the man page (i.e., the page shown at
+> http://openvpn.net/index.php/open-source/documentation/manuals/openvpn-22=
+.html)
+> part of the source code repository?=20
 
-Samuli Sepp=C3=A4nen wrote:
-> Hi,
->
-> Here's the summary of the previous IRC meeting / sprint.
->
->=20=20=20
-I've been offline for a while but am slowly getting back online ; as for=20
-the chatlog attachment: Gert did ask me about bug #97 (dhcpnak storm) ;=20
-I have not been able to reproduce the DHCP NAK storm with the openvpn=20
-2.2.2. tap-win32 adapter , so I'm inclined to consider this bug solved.=20
-I hope someone else can also verify this (i.e. install 2.2.1, produce=20
-the DHCP NAK storm, then upgrade to 2.2.2. etc).
+It is...
 
-cheers,
+> If so, shouldn't patches that
+> change the interface include appropriate changes to the man page?=20
 
-JJK
+... and so does the patch.  At least my copy of it had a section starting
+with
 
-PS I'm intending to go to FOSDEM on sunday; which room will you guys=20
-meet in?
+diff --git a/openvpn.8 b/openvpn.8
+index 4a86ce7..a6d7567 100644
 
+> 2. Can this be used to release a DHCP lease? That would be wonderful!
 
-> ---
->
-> COMMUNITY MEETING
->
-> Place: #openvpn-devel on irc.freenode.net
-> Date: Thursday 19th Jan 2012
-> Time: 18:00 UTC
->
-> Planned meeting topics for this meeting were on this page:
->
-> <https://community.openvpn.net/openvpn/wiki/Topics-2012-01-19>
->
-> Next meeting will be announced in advance, but will probably be on the sa=
-me
-> weekday and at the same time. Your local meeting time is easy to check
-> from services such as
->
-> <http://www.timeanddate.com/worldclock>
->
-> or with
->
-> $ date -u
->
->
-> SUMMARY
->
-> cron2, dazo, ecrist and mattock participated in this meeting.
->
-> --
->
-> Discussed Bruessels/FOSDEM hackfests. Agreed that arranging them on
-> Sat-Sun (4.-5. Feb) makes most sense for all. The goal is to complete
-> three related mini-projects:
->
-> 1) The "squash/close as many bugs as possible"
-> 2) Complete all tasks holding back 2.3 alpha and make the release
-> 3) Review d12fk's Windows patches that got stuck to the patch queue
->
-> All of these should be doable within the given timeframe.
->
-> --
->
-> Discussed vBulletin's OpenVPN theme. According to raidz, the theme
-> should be ready next Monday.
->
-> ---
->
-> Full chatlog as an attachment
->=20=20=20
+Sure, just add a script that signals the dhcp client...
 
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--gi8aKAu241S2WqNd
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBTyB/m6kuBuNlUUl1AQJZEwP/aXaBtzU+yk9FQGqq7dEYVQHA3za0r7WH
+9QKz8DqcxGHyXA95GFy1DUWxRIxhN0h2hailm98yccCYlCiifyIBPN3+sgvaEv2i
+UU0gZI0bowxxezDK0rGKD4N+u0AbJ0vSrGTVlfjColQP3q5XDVFD0T42DjbdOiRh
+TTcsiKVXDig=
+=fcsr
+-----END PGP SIGNATURE-----
+
+--gi8aKAu241S2WqNd--
 
