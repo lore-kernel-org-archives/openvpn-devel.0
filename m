@@ -1,11 +1,10 @@
-Date: Fri, 3 Feb 2012 18:21:57 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120203172157.GN13929@...1296...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="XStn23h1fwudRqtG"
-Content-Disposition: inline
-Subject: [Openvpn-devel] more t_client.sh fixes
+Message-ID: <4F2D2C35.9080708@...1114...>
+Date: Sat, 04 Feb 2012 14:01:41 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <20120203172157.GN13929@...1296...>
+In-Reply-To: <20120203172157.GN13929@...1296...>
+Subject: Re: [Openvpn-devel] more t_client.sh fixes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,104 +13,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
---XStn23h1fwudRqtG
-Content-Type: multipart/mixed; boundary="zaRBsRFn0XYhEU69"
-Content-Disposition: inline
+On 03/02/12 18:21, Gert Doering wrote:
+> Hi,
+>
+> last patch for "sudo functionality in t_client.sh" was incomplete, and
+> for some reason I didn't notice on the test system - fell on my feet on
+> the freebsd 7.4 test client, and is now fixed for good :-)
+>
+> gert
 
---zaRBsRFn0XYhEU69
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+ACK.  Applied to master branch on -testing and -stable.
 
-Hi,
+commit fc3ee19dee6c66e2325a24e864b5328128404e83
+Author: Gert Doering <gert@...1296...>
+Date:   Fri Feb 3 19:18:07 2012 +0200
 
-last patch for "sudo functionality in t_client.sh" was incomplete, and
-for some reason I didn't notice on the test system - fell on my feet on
-the freebsd 7.4 test client, and is now fixed for good :-)
+     Fix RUN_SUDO functionality for t_client.sh
 
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---zaRBsRFn0XYhEU69
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment;
-	filename="0001-Fix-RUN_SUDO-functionality-for-t_client.sh.patch"
-Content-Transfer-Encoding: quoted-printable
-
-=46rom 7557b960593aa7240cfe7f9e9b5628e3b4ef55c9 Mon Sep 17 00:00:00 2001
-From: Gert Doering <gert@...1296...>
-Date: Fri, 3 Feb 2012 19:18:07 +0200
-Subject: [PATCH] Fix RUN_SUDO functionality for t_client.sh
-
-Commit 9c6ee9d1ecd85535c was incomplete - while it will run openvpn with
-sudo, it will not use sudo for the "kill" commands needed to test whether
-the background process is still there, and for actually stopping openvpn
-after the test has finished.
-
-Signed-off-by: Gert Doering <gert@...1296...>
----
- t_client.sh.in |    8 ++++----
- 1 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/t_client.sh.in b/t_client.sh.in
-index a6377db..47839de 100755
---- a/t_client.sh.in
-+++ b/t_client.sh.in
-@@ -233,14 +233,14 @@ do
-     opid=3D$!
-=20
-     # make sure openvpn client is terminated in case shell exits
--    trap "kill $opid" 0
--    trap "kill $opid ; trap - 0 ; exit 1" 1 2 3 15
-+    trap "$RUN_SUDO kill $opid" 0
-+    trap "$RUN_SUDO kill $opid ; trap - 0 ; exit 1" 1 2 3 15
-=20
-     echo "wait for connection to establish..."
-     sleep 10
-=20
-     # test whether OpenVPN process is still there
--    if kill -0 $opid
-+    if $RUN_SUDO kill -0 $opid
-     then :
-     else
- 	echo -e "OpenVPN process has failed to start up, check log ($LOGDIR/$SUF:=
-openvpn.log).  FAIL.\ntail of logfile follows:\n..." >&2
-@@ -271,7 +271,7 @@ do
-     echo -e "ping tests done.\n"
-=20
-     echo "stopping OpenVPN"
--    kill $opid
-+    $RUN_SUDO kill $opid
-     wait $!
-     rc=3D$?
-     if [ $rc !=3D 0 ] ; then
---=20
-1.7.3.5
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: David Sommerseth <davids@...1347...>
+     Signed-off-by: David Sommerseth <davids@...1347...>
 
 
---zaRBsRFn0XYhEU69--
+kind regards,
 
---XStn23h1fwudRqtG
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+David Sommerseth
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
-
-iQCVAwUBTywXtakuBuNlUUl1AQLrowP/UNl1DEhb27UxoU00M1LQVHtZhxNUEJo8
-HQFd6zcl2a5M/MHNDe6+ZCsVeGO+lNXnVKPAYlwSmH1NmOdkpZe3BBw2Zfa7PeAd
-XoAK58oJVORRoocWeCOYa3ebjGzjK9qGm8lTJI/swmd0oXhHbZg/dAPhMQXruoV9
-GF86WSt7h3k=
-=b6Xd
------END PGP SIGNATURE-----
-
---XStn23h1fwudRqtG--
 
