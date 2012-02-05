@@ -1,13 +1,15 @@
-Date: Sun, 5 Feb 2012 16:54:27 +0100
+Date: Sun, 5 Feb 2012 16:57:27 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20120205155426.GC13929@...1296...>
-References: <4F2E9BCE.6020902@...1543...>
+Message-ID: <20120205155727.GA9813@...1296...>
+References: <1328442685-8550-1-git-send-email-dejong@...1435...>
+	<1328442685-8550-2-git-send-email-dejong@...1435...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="HrsILUyxNtiOryfc"
+	protocol="application/pgp-signature"; boundary="9jxsPFA5p3P2qPhR"
 Content-Disposition: inline
-In-Reply-To: <4F2E9BCE.6020902@...1543...>
-Subject: Re: [Openvpn-devel] FOSDEM
+In-Reply-To: <1328442685-8550-2-git-send-email-dejong@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH 2/2] Removed support for calling
+	gc_malloc with a NULL gc_arena struct
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,30 +18,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Paul Bakker <p.j.bakker@...1543...>
+To: Adriaan de Jong <dejong@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---HrsILUyxNtiOryfc
+--9jxsPFA5p3P2qPhR
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Sun, Feb 05, 2012 at 04:10:06PM +0100, Paul Bakker wrote:
-> Hi OpenVPN Devel..
+On Sun, Feb 05, 2012 at 12:51:25PM +0100, Adriaan de Jong wrote:
+> Signed-off-by: Adriaan de Jong <dejong@...1435...>
+> ---
+>  buffer.c |   29 ++++++++++-------------------
+>  1 files changed, 10 insertions(+), 19 deletions(-)
 >=20
-> As promised ;) I'm now subscribed to the OpenVPN devel list.
+> diff --git a/buffer.c b/buffer.c
+> index 2f8e4b8..c39bbcb 100644
+> --- a/buffer.c
+> +++ b/buffer.c
+> @@ -310,28 +310,19 @@ gc_malloc (size_t size, bool clear, struct gc_arena=
+ *a)
+>  #endif
+>  {
+>    void *ret;
+> -  if (a)
+> -    {
+> -      struct gc_entry *e;
 
-Cool, welcome!
+NACK on that.  We discovered that there are use cases where "second-level"
+callers pass NULL, seemingly on purpose to allocate global memory instead
+of "in the GC".
 
-> So if you need me for any questions related to PolarSSL, just mail..
+main(), in openvpn.c:
 
-So is the blowfish support already finished? ;-)
+          /* initialize environmental variable store */
+          c.es =3D env_set_create (NULL);
 
-gert,
-  having too much time at the airport (but not enough to seriously start
-  hacking)
+... which calls into misc.c:
+
+struct env_set *
+env_set_create (struct gc_arena *gc)=20=20=20
+{
+  struct env_set *es;
+  ALLOC_OBJ_CLEAR_GC (es, struct env_set, gc);
+  es->list =3D NULL;
+  es->gc =3D gc;
+  return es;
+}
+
+... and boom, assert() fail.
+
+
+Adriaan saw the crash ("my nice OpenBSD test run!!!") and promised to work
+on this on the way back in the train.
+
+gert
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -47,19 +82,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---HrsILUyxNtiOryfc
+--9jxsPFA5p3P2qPhR
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (NetBSD)
 
-iQCVAwUBTy6mMqkuBuNlUUl1AQJzOAQAw6b1IKzIoLqcjlfusvM4rcmNFQCjYqx+
-aKKJ+lwxyO7UMk307UcBNXltxMAS9IMWiq+cE449Rls5vdNHbwlf6OVW7GrW3T9c
-Avr+e5G2EtzW6rDbcqzWpthHT5LvwRictqiBjG8oZFz/v28CO+2OM3mae8rDonI8
-34zXbwOPNno=
-=YHbV
+iQCVAwUBTy6m56kuBuNlUUl1AQI/YQQAnmkyLMsXxnpuqb1cF2s1cxbWj/CZty0p
+GUMe40LRA250dr2pQzFM5eGD9RamO0mvduR+INRfC+JS2ofYp66BkbLkmN5OIh9A
+PEhcM4Bnlov5GdyvNYm4uVa+fdA2gbiTTNNSHUZwwGM7dj8qLtn7p3JvRYf9hPuD
+b9GPDS56Y9w=
+=aGY2
 -----END PGP SIGNATURE-----
 
---HrsILUyxNtiOryfc--
+--9jxsPFA5p3P2qPhR--
 
