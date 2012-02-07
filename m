@@ -1,10 +1,8 @@
-Message-ID: <4F2FBF3C.6000808@...1543...>
-Date: Mon, 06 Feb 2012 12:53:32 +0100
-From: Paul Bakker <p.j.bakker@...1543...>
+Message-ID: <4F307A83.8020606@...1388...>
+Date: Tue, 07 Feb 2012 14:12:35 +1300
+From: Michal Ludvig <mludvig@...1388...>
 MIME-Version: 1.0
-References: <4F2E9BCE.6020902@...1543...> <4F2F7FB7.9010606@...1147...>
-In-Reply-To: <4F2F7FB7.9010606@...1147...>
-Subject: Re: [Openvpn-devel] FOSDEM
+Subject: [Openvpn-devel] Assertion failed at buffer.c:313
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,22 +11,21 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Jan Just Keijser <janjust@...1147...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
+Hi guys
 
-On 6-2-2012 8:22, Jan Just Keijser wrote:
->   as David mentioned: is BlowFish support finished ;) ?
-Almost! :)..
-> my wiki page on comparing OpenSSL vs NSS vs GnuTLS vs PolarSSL when
-> used in Curl can be found here:
->  
-> http://www.nikhef.nl/pub/projects/grid/gridwiki/index.php/Funny_Curly_things
->
-Did you actually have problems reading in key files with extra text data
-in the last version? If so, can you share? They should parse without a
-problem..
+I experience "Assertion failed at buffer.c:313" on my RHEL5/x64 caused by:
 
+commit bee92b479414d12035b0422f81ac5fcfe14fa645
+Author: Adriaan de Jong <dejong@...1435...>
+Date:   Sun Feb 5 12:51:25 2012 +0100
+
+     Removed support for calling gc_malloc with a NULL gc_arena struct
+
+Once this patch is reverted OpenVPN compiles and runs smoothly.
+
+Michal
 
