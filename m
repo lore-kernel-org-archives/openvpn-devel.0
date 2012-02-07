@@ -1,10 +1,8 @@
-From: David Sommerseth <davids@...1347...>
-Date: Tue,  7 Feb 2012 14:31:48 +0100
-Message-Id: <1328621508-18076-1-git-send-email-davids@...1347...>
-In-Reply-To: <1328612333-10321-1-git-send-email-davids@...1347...>
-References: <1328612333-10321-1-git-send-email-davids@...1347...>
-Subject: [Openvpn-devel] [PATCH v2] Fix assert() situations where
-	gc_malloc() is called without a gc_arena object
+From: Jan Just Keijser <janjust@...1147...>
+Date: Tue,  7 Feb 2012 16:13:49 +0100
+Message-Id: <1328627629-4675-1-git-send-email-janjust@...1147...>
+Subject: [Openvpn-devel] [PATCH] Signed-off-by: Jan Just Keijser
+	<janjust@...1147...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,172 +15,264 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-In commit bee92b479414d12035b0422f81ac5fcfe14fa645 the gc_malloc() was hardened
-to always require a gc_arena object for garbage collection.  Some places in the
-code expected the old behaviour of a normal malloc() in these cases, that is a
-memory allocation without garbage collection.
-
-This old behaviour is partly restored by allowing string_alloc() to do a non-gc
-based allocation if no gc_arena object is available.  In addition some other
-places string_alloc() will now be called with a gc_arena pointer where such an
-object is available.
-
-The alloc_buf() function has also been refactored to not use gc_malloc() at
-all.
-
-v2: - removes a memleak when --ifconfig-ipv6 is used several times
-    - makes string_alloc() behave properly if DMALLOC is enabled
-
-Signed-off-by: David Sommerseth <davids@...1347...>
+Added support for Elliptic curves (ECDSA) + SHA2 family signed
+certificates.
 ---
- buffer.c     |   32 ++++++++++++++++++++++++++++----
- init.c       |    2 +-
- openvpn.c    |    2 +-
- options.c    |    7 ++++++-
- pf.c         |    2 +-
- ssl_verify.c |    2 ++
- 6 files changed, 39 insertions(+), 8 deletions(-)
+ init.c         |    7 ++++
+ options.c      |   15 ++++++++++
+ options.h      |    6 ++++
+ ssl.c          |    3 ++
+ ssl_backend.h  |   10 ++++++
+ ssl_openssl.c  |   84 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ ssl_polarssl.c |    9 ++++++
+ 7 files changed, 134 insertions(+), 0 deletions(-)
 
-diff --git a/buffer.c b/buffer.c
-index c39bbcb..fca6a90 100644
---- a/buffer.c
-+++ b/buffer.c
-@@ -54,11 +54,21 @@ alloc_buf_debug (size_t size, const char *file, int line)
- alloc_buf (size_t size)
- #endif
- {
-+  struct buffer buf;
-+
-+  if (!buf_size_valid (size))
-+    buf_size_error (size);
-+  buf.capacity = (int)size;
-+  buf.offset = 0;
-+  buf.len = 0;
- #ifdef DMALLOC
--  return alloc_buf_gc_debug (size, NULL, file, line);
-+  buf.data = openvpn_dmalloc (file, line, size);
- #else
--  return alloc_buf_gc (size, NULL);
-+  buf.data = calloc (1, size);
- #endif
-+  check_malloc_return(buf.data);
-+
-+  return buf;
- }
- 
- struct buffer
-@@ -515,11 +525,25 @@ string_alloc (const char *str, struct gc_arena *gc)
-       const int n = strlen (str) + 1;
-       char *ret;
- 
-+      if (gc) {
-+#ifdef DMALLOC
-+        ret = (char *) gc_malloc_debug (n, false, gc, file, line);
-+#else
-+        ret = (char *) gc_malloc (n, false, gc);
-+#endif
-+      } else {
-+        /* If there are no garbage collector available, it's expected
-+         * that the caller cleans up afterwards.  This is coherent with the
-+         * earlier behaviour when gc_malloc() would be called with gc == NULL
-+         */
- #ifdef DMALLOC
--      ret = (char *) gc_malloc_debug (n, false, gc, file, line);
-+        ret = openvpn_dmalloc (file, line, n);
-+        memset(ret, 0, n);
- #else
--      ret = (char *) gc_malloc (n, false, gc);
-+        ret = calloc(1, n);
- #endif
-+        check_malloc_return(ret);
-+      }
-       memcpy (ret, str, n);
-       return ret;
-     }
 diff --git a/init.c b/init.c
-index 525f441..f0c3693 100644
+index 525f441..51b0d64 100644
 --- a/init.c
 +++ b/init.c
-@@ -3012,7 +3012,7 @@ do_close_ifconfig_pool_persist (struct context *c)
- static void
- do_inherit_env (struct context *c, const struct env_set *src)
- {
--  c->c2.es = env_set_create (NULL);
-+  c->c2.es = env_set_create (&c->c2.gc);
-   c->c2.es_owned = true;
-   env_set_inherit (c->c2.es, src);
- }
-diff --git a/openvpn.c b/openvpn.c
-index f5f2bce..84289d2 100644
---- a/openvpn.c
-+++ b/openvpn.c
-@@ -164,7 +164,7 @@ main (int argc, char *argv[])
- 	  gc_init (&c.gc);
- 
- 	  /* initialize environmental variable store */
--	  c.es = env_set_create (NULL);
-+	  c.es = env_set_create (&c.gc);
- #ifdef WIN32
- 	  set_win_sys_path_via_env (c.es);
+@@ -895,6 +895,9 @@ print_openssl_info (const struct options *options)
+   if (options->show_ciphers || options->show_digests || options->show_engines
+ #ifdef USE_SSL
+       || options->show_tls_ciphers
++#ifdef USE_SSL_EC
++|| options->show_curves
++#endif
  #endif
+     )
+     {
+@@ -907,6 +910,10 @@ print_openssl_info (const struct options *options)
+ #ifdef USE_SSL
+       if (options->show_tls_ciphers)
+ 	show_available_tls_ciphers ();
++#ifdef USE_SSL_EC
++      if (options->show_curves)
++    show_available_curves ();
++#endif
+ #endif
+       return true;
+     }
 diff --git a/options.c b/options.c
-index 6b8ae22..a0b3431 100644
+index 6b8ae22..ce23dbc 100644
 --- a/options.c
 +++ b/options.c
-@@ -4291,7 +4291,7 @@ add_option (struct options *options,
-     {
-       unsigned int netbits;
-       char * ipv6_local;
--	
-+
-       VERIFY_PERMISSION (OPT_P_UP);
-       if ( get_ipv6_addr( p[1], NULL, &netbits, &ipv6_local, msglevel ) &&
-            ipv6_addr_safe( p[2] ) )
-@@ -4301,6 +4301,11 @@ add_option (struct options *options,
- 	      msg( msglevel, "ifconfig-ipv6: /netbits must be between 64 and 124, not '/%d'", netbits );
- 	      goto err;
- 	    }
-+
-+          if (options->ifconfig_ipv6_local)
-+            /* explicitly ignoring this is a const char */
-+            free ((char *) options->ifconfig_ipv6_local);
-+
- 	  options->ifconfig_ipv6_local = ipv6_local;
- 	  options->ifconfig_ipv6_netbits = netbits;
- 	  options->ifconfig_ipv6_remote = p[2];
-diff --git a/pf.c b/pf.c
-index 6b4cba4..79915fa 100644
---- a/pf.c
-+++ b/pf.c
-@@ -566,7 +566,7 @@ pf_init_context (struct context *c)
-         if (plugin_call (c->plugins, OPENVPN_PLUGIN_ENABLE_PF, NULL, NULL, c->c2.es) == OPENVPN_PLUGIN_FUNC_SUCCESS)
-           {
-             event_timeout_init (&c->c2.pf.reload, 1, now);
--            c->c2.pf.filename = string_alloc (pf_file, NULL);
-+            c->c2.pf.filename = string_alloc (pf_file, &c->c2.gc);
-             c->c2.pf.enabled = true;
- #ifdef ENABLE_DEBUG
-             if (check_debug_level (D_PF_DEBUG))
-diff --git a/ssl_verify.c b/ssl_verify.c
-index e45f149..37d4982 100644
---- a/ssl_verify.c
-+++ b/ssl_verify.c
-@@ -83,6 +83,7 @@ set_common_name (struct tls_session *session, const char *common_name)
+@@ -836,6 +836,9 @@ init_options (struct options *o, const bool init_gc)
+ #ifdef ENABLE_X509ALTUSERNAME
+   o->x509_username_field = X509_USERNAME_FIELD_DEFAULT;
+ #endif
++#ifdef USE_SSL_EC
++  o->curve_name = NULL;
++#endif
+ #endif /* USE_SSL */
+ #endif /* USE_CRYPTO */
+ #ifdef ENABLE_PKCS11
+@@ -6368,6 +6371,18 @@ add_option (struct options *options,
+       VERIFY_PERMISSION (OPT_P_GENERAL);
+       options->show_tls_ciphers = true;
      }
-   if (common_name)
++#ifdef USE_SSL_EC
++  else if (streq (p[0], "show-curves"))
++    {
++      VERIFY_PERMISSION (OPT_P_GENERAL);
++      options->show_curves = true;
++    }
++  else if (streq (p[0], "ecdh") && p[1])
++    {
++      VERIFY_PERMISSION (OPT_P_CRYPTO);
++      options->curve_name= p[1];
++    }
++#endif
+   else if (streq (p[0], "tls-server"))
      {
-+      /* FIXME: Last alloc will never be freed */
-       session->common_name = string_alloc (common_name, NULL);
- #ifdef ENABLE_PF
-       {
-@@ -703,6 +704,7 @@ man_def_auth_set_client_reason (struct tls_multi *multi, const char *client_reas
-       multi->client_reason = NULL;
+       VERIFY_PERMISSION (OPT_P_GENERAL);
+diff --git a/options.h b/options.h
+index 831d4f6..81e0757 100644
+--- a/options.h
++++ b/options.h
+@@ -200,6 +200,9 @@ struct options
+   bool show_engines;
+ #ifdef USE_SSL
+   bool show_tls_ciphers;
++#ifdef USE_SSL_EC
++  bool show_curves;
++#endif
+ #endif
+   bool genkey;
+ #endif
+@@ -533,6 +536,9 @@ struct options
+   const char *priv_key_file;
+   const char *pkcs12_file;
+   const char *cipher_list;
++#ifdef USE_SSL_EC
++  const char *curve_name;
++#endif
+   const char *tls_verify;
+   const char *tls_export_cert;
+   const char *tls_remote;
+diff --git a/ssl.c b/ssl.c
+index c26756e..54efe2f 100644
+--- a/ssl.c
++++ b/ssl.c
+@@ -308,6 +308,9 @@ init_ssl (const struct options *options, struct tls_root_ctx *new_ctx)
+     {
+       tls_ctx_server_new(new_ctx);
+       tls_ctx_load_dh_params(new_ctx, options->dh_file, options->dh_file_inline);
++#ifdef USE_SSL_EC
++      tls_ctx_load_ecdh_params(new_ctx, options->curve_name);
++#endif
      }
-   if (client_reason && strlen (client_reason))
-+    /* FIXME: Last alloc will never be freed */
-     multi->client_reason = string_alloc (client_reason, NULL);
+   else				/* if client */
+     {
+diff --git a/ssl_backend.h b/ssl_backend.h
+index 243c9e3..ebf9f36 100644
+--- a/ssl_backend.h
++++ b/ssl_backend.h
+@@ -145,6 +145,16 @@ void tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file
+     );
+ 
+ /**
++ * Load Elliptic Curve Parameters, and load them into the library-specific
++ * TLS context.
++ *
++ * @param ctx			TLS context to use
++ * @param curve_name	The name of the elliptic curve to load.
++ */
++void tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
++    );
++
++/**
+  * Load PKCS #12 file for key, cert and (optionally) CA certs, and add to
+  * library-specific TLS context.
+  *
+diff --git a/ssl_openssl.c b/ssl_openssl.c
+index b95944c..912dd8f 100644
+--- a/ssl_openssl.c
++++ b/ssl_openssl.c
+@@ -50,6 +50,9 @@
+ #include <openssl/pkcs12.h>
+ #include <openssl/x509.h>
+ #include <openssl/crypto.h>
++#ifdef USE_SSL_EC
++#include <openssl/ec.h>
++#endif
+ 
+ /*
+  * Allocate space in SSL objects in which to store a struct tls_session
+@@ -238,6 +241,46 @@ tls_ctx_load_dh_params (struct tls_root_ctx *ctx, const char *dh_file
+   DH_free (dh);
  }
  
++void
++tls_ctx_load_ecdh_params (struct tls_root_ctx *ctx, const char *curve_name
++    )
++{
++#ifdef USE_SSL_EC
++  if (curve_name != NULL)
++  {
++    int nid;
++    EC_KEY   *ecdh  = NULL;
++  
++    nid = OBJ_sn2nid(curve_name);
++  
++    if (nid == 0)
++      msg(M_SSLERR, "unknown curve name (%s)", curve_name);
++    else
++    {
++      ecdh = EC_KEY_new_by_curve_name(nid);
++      if (ecdh == NULL)
++        msg (M_SSLERR, "Unable to create curve (%s)", curve_name);
++      else
++      {
++        const char *sname;
++  
++        if (!SSL_CTX_set_tmp_ecdh(ctx->ctx, ecdh))
++          msg (M_SSLERR, "SSL_CTX_set_tmp_ecdh: cannot add curve");
++  
++        /* Translate NID back to name , just for kicks */
++        sname   = OBJ_nid2sn(nid);
++        if (sname == NULL) sname = "(Unknown)";
++        msg (D_TLS_DEBUG_LOW, "ECDH curve %s added", sname);
++  
++        EC_KEY_free(ecdh);
++      }
++    }
++  }
++#else
++  msg(M_SSLERR, "Elliptic Curves not supported by this version of OpenSSL");
++#endif
++}
++
+ int
+ tls_ctx_load_pkcs12(struct tls_root_ctx *ctx, const char *pkcs12_file,
+ #if ENABLE_INLINE_FILES
+@@ -1273,6 +1316,47 @@ show_available_tls_ciphers ()
+   SSL_CTX_free (ctx);
+ }
+ 
++/*
++ *  * Show the Elliptic curves that are available for us to use
++ *   * in the OpenSSL library.
++ *    */
++#ifdef USE_SSL_EC
++void
++show_available_curves()
++{
++  EC_builtin_curve *curves = NULL;
++  size_t crv_len = 0;
++  size_t n = 0;
++
++  crv_len = EC_get_builtin_curves(NULL, 0);
++
++  curves = OPENSSL_malloc((int)(sizeof(EC_builtin_curve) * crv_len));
++
++  if (curves == NULL)
++    msg (M_SSLERR, "Cannot create EC_builtin_curve object");
++  else
++  {
++    if (EC_get_builtin_curves(curves, crv_len))
++    {
++      printf ("Available Elliptic curves:\n");
++      for (n = 0; n < crv_len; n++)
++      {
++        const char *sname;
++        sname   = OBJ_nid2sn(curves[n].nid);
++        if (sname == NULL) sname = "";
++
++        printf("%s\n", sname);
++      }
++    }
++    else
++    {
++      msg (M_SSLERR, "Cannot get list of builtin curves");
++    }
++    OPENSSL_free(curves);
++  }
++}
++#endif
++
+ void
+ get_highest_preference_tls_cipher (char *buf, int size)
+ {
+diff --git a/ssl_polarssl.c b/ssl_polarssl.c
+index c50cf0a..a7a6d61 100644
+--- a/ssl_polarssl.c
++++ b/ssl_polarssl.c
+@@ -218,6 +218,15 @@ else
+       (counter_type) 8 * mpi_size(&ctx->dhm_ctx->P));
+ }
+ 
++#ifdef USE_SSL_EC
++void
++tls_ctx_load_ecdh_params (struct tls_root_ctx *ctx, const char *curve_name
++    )
++{
++    msg(M_WARN, "Elliptic Curves not yet supported by PolarSSL");
++}
++#endif
++
+ int
+ tls_ctx_load_pkcs12(struct tls_root_ctx *ctx, const char *pkcs12_file,
+ #if ENABLE_INLINE_FILES
 -- 
 1.7.4.4
 
