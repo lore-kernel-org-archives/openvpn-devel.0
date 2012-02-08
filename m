@@ -1,12 +1,12 @@
-Message-ID: <4F32A2A9.8020303@...1114...>
-Date: Wed, 08 Feb 2012 17:28:25 +0100
+Message-ID: <4F32A2CD.4040004@...1114...>
+Date: Wed, 08 Feb 2012 17:29:01 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1328612333-10321-1-git-send-email-davids@...1347...>
-	<1328621508-18076-1-git-send-email-davids@...1347...>
-In-Reply-To: <1328621508-18076-1-git-send-email-davids@...1347...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Fix assert() situations where
- gc_malloc() is called without a gc_arena object
+References: <20120205131601.GA26602@...1296...>
+	<4F2E8C00.6090909@...384...>
+	<20120205154846.GB13929@...1296...>
+In-Reply-To: <20120205154846.GB13929@...1296...>
+Subject: Re: [Openvpn-devel] OpenBSD platform cleanup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,56 +22,66 @@ To: openvpn-devel@lists.sourceforge.net
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 07/02/12 14:31, David Sommerseth wrote:
-> In commit bee92b479414d12035b0422f81ac5fcfe14fa645 the gc_malloc()
-> was hardened to always require a gc_arena object for garbage
-> collection. Some places in the code expected the old behaviour of a
-> normal malloc() in these cases, that is a memory allocation without
-> garbage collection.
+On 05/02/12 16:48, Gert Doering wrote:
+> Hi,
 > 
-> This old behaviour is partly restored by allowing string_alloc() to
-> do a non-gc based allocation if no gc_arena object is available.  In 
-> addition some other places string_alloc() will now be called with a 
-> gc_arena pointer where such an object is available.
+> On Sun, Feb 05, 2012 at 03:02:40PM +0100, David Sommerseth wrote:
+>>> as promised :-) - it now passes all my t_client.rc tests, and 
+>>> smells a lot less funny.  We now might even throw out all these 
+>>> weird #ifdefs from tun.h...
+>> 
+>> Maybe an attachment would be nice? ;-)
 > 
-> The alloc_buf() function has also been refactored to not use 
-> gc_malloc() at all.
-> 
-> v2: - removes a memleak when --ifconfig-ipv6 is used several times - 
-> makes string_alloc() behave properly if DMALLOC is enabled
-> 
-> Signed-off-by: David Sommerseth <davids@...1347...> --- buffer.c
-> | 32 ++++++++++++++++++++++++++++---- init.c       |    2 +-
-> openvpn.c |    2 +- options.c    |    7 ++++++- pf.c         |    2
-> +- ssl_verify.c |    2 ++ 6 files changed, 39 insertions(+), 8 
-> deletions(-)
-> 
+> And I thought you could just fetch this from the git repo on my laptop
+> (suspended to disk and turned off, of course!).  Well, that's what you
+> get when debugging assert() crashes instead concentrating on your
+> e-mail :-)
 
-Acked by Gert on #openvpn-devel.  Applied to master and pushed out to -stable
-and -testing.
+ACK.  Applied to master and pushed to -stable and -testing trees.
 
-commit dc7be6d078ba106f9b0de12f3e879c3561c3c537
-Author: David Sommerseth <davids@...1347...>
-Date:   Mon Feb 6 00:30:47 2012 +0100
+commit 82d4e12068774b0a6ca787ef1345b8a16c460466
+Author: Gert Doering <gert@...1296...>
+Date:   Sun Feb 5 13:35:03 2012 +0100
 
-    Fix assert() situations where gc_malloc() is called without a
-gc_arena object
+    Platform cleanup for OpenBSD
 
+    Turn around initialization order (IFCONFIG_AFTER_TUN_OPEN) to make it
+    "the same as all other platforms besides Windows" (tun.h).
+
+    Remove "ifconfig destroy / ifconfig create" from open_tun() and change
+    to generic "create tun device by opening /dev/tunN" approach, thus
+    cleaning up the IFCONFIG_BEFORE_TUN_OPEN bit.
+
+    Add "-link0" for ifconfig calls in tun mode, to make sure that even if
+    we happen to re-use a not-cleaned-up tun interface in tap mode, it will
+    then be setup correctly (-link0 -> tun, link0 -> tap).
+
+    Add correct ifconfig calls for "topology subnet".
+
+    On tunnel close, only call "ifconfig destroy" if it was a tap interface
+    (tun + link0), because those do not auto-disappear (OpenBSD bug?)
+
+    Get rid of READV/WRITEV #ifdef's - as per the man page, these calls have
+    been added to 4.2BSD, and there never was an OpenBSD version without.
+
+    Tested on OpenBSD 4.9 with tun+tap, ipv4+ipv6, topology net30+subnet
+
+    Signed-off-by: Gert Doering <gert@...1296...>
+    Acked-by: David Sommerseth <davids@...1347...>
     Signed-off-by: David Sommerseth <davids@...1347...>
-    Acked-by: Gert Doering <gert@...1296...>
-
 
 
 kind regards,
 
 David Sommerseth
 
+
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk8yoqkACgkQDC186MBRfrpwUQCgqMy+nI3jvoIzxJF6j8tOgNRo
-gdcAnAn9q5OOK4p8z/OJDvRkOkxxRQJs
-=kYaj
+iEYEARECAAYFAk8yos0ACgkQDC186MBRfrrVqgCffQQV0Dbpv9r3aKPVE/Vc9So/
+wxIAnR37yPY1qGC7hzZQcyRReRLOjCRw
+=TDBp
 -----END PGP SIGNATURE-----
 
