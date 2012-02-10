@@ -1,7 +1,7 @@
-Content-Type: multipart/mixed; boundary="========GMX119661328835261779992"
-Date: Thu, 09 Feb 2012 19:54:20 -0500
+Content-Type: multipart/mixed; boundary="========GMX119681328836168609782"
+Date: Thu, 09 Feb 2012 20:09:27 -0500
 From: "Kingsuk Mukherjee" <kingsuk@...1278...>
-Message-ID: <20120210005421.119660@...1278...>
+Message-ID: <20120210010928.119680@...1278...>
 MIME-Version: 1.0
 Subject: [Openvpn-devel] openvpn binary giving error on Android HC 3.2.1
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -14,43 +14,40 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
---========GMX119661328835261779992
-Content-Type: multipart/alternative;
-	boundary="========GMXBoundary119661328835261780311"
-
---========GMXBoundary119661328835261780311
+--========GMX119681328836168609782
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-Dear openvpn developers,
 
-I am trying to configure the openvpn access to my vpn service provider CyberGhostVPN servers in last few days on non-Windows platforms. I have one laptop running Fedora 16 & one Toshiba Thrive tablet running Android HC 3.2.1 (Kernel version: 2.6.36.3-00020-g3d351b6).
-
+ Dear openvpn developers,
+   
+ I am trying to configure the openvpn access to my vpn service provider CyberGhostVPN servers in last few days on non-Windows platforms. I have one laptop running Fedora 16 & one Toshiba Thrive tablet running Android HC 3.2.1 (Kernel version: 2.6.36.3-00020-g3d351b6).
+ 
  I have the config file which cyberghostvpn has provided me for connection. I have used successfully the config file given below on my fedora Linux machine and connected with cyberghostvpn servers without any error.
-
+ 
  However, when I'm running it on android (thrive) via the app openvpn-settings , I'm getting the error message : "Unrecognized option or missing parameter(s) in test.ovpn: 1: client(2.1.1)".
-
+ 
  I have checked that my tun.ko is being loaded properly and upon lsmod I can see :
  tun 12536 2 -Live 0xbf043000.
-
+ 
  Also on subsequent ls -l /dev/tun*, it is displayed that,
  "crw-r----- vpn vpn 10,200 2012-02-04 09:21 tun"
-
+ 
  My openvpn binary and busybox is located in /system/xbin and symlinks are created for ifconfig and route from /system/xbin to /system/xbin/bb.
-
+ 
  It seems to me that somehow the openvpn binary is failing to recognize/read my config file and hence I'm unable to connect with the server.
-
+ 
  test.ovpn config file :
-
+ 
  *************************
  client
-
+ 
  ca ca.crt
  cert myusername.crt
  key myusername.key
-
+ 
  remote ch.openvpn.cyberghostvpn.com 9081
-
+ 
  auth-user-pass
  dev tun
  proto udp
@@ -73,174 +70,37 @@ I am trying to configure the openvpn access to my vpn service provider CyberGhos
  fragment 1300
  mssfix
  **********************************
-
+ 
  I have then continued my trouble shooting further on Thrive with the same config file options as shown above manually (like --client --ca ca.crt --cert myusername.cert .... -- mssfix) by running them as command line arguments because the openvpn binary was not reading them from config files. Upon executing from command line the following options are shown as not valid ones.
-
- 1. --dhcp-renew
- 2. --dhcp-release
- 3. --win-sys env
-
+ 
+ 1.  --dhcp-renew
+ 2.  --dhcp-release
+ 3.  --win-sys env
+ 
  It needs to be mentioned here that as per openvpn man pages they are all valid command line options and in my fedora machine all of them are running without throwing incompatibility errors. They were also read from the config file in fedora as I had mentioned in my last post. This gives cause to raise my suspicion whether the openvpn binary we are getting via openvpn-installer app is perfect !
-
- I continued with my trouble shooting by removing these three options and the system starts initiating the connection and comes to the message , " Enter Auth Username: ", which should be followed by a , "Enter Auth Password : ". * But this password prompt is NOT coming in thrive (android) at all* though it's coming in Fedora(Linux).
-
+ 
+ I continued with my trouble shooting by removing these three options and the system starts initiating the connection and comes to the message , " Enter Auth Username: ", which should be followed by a , "Enter Auth Password : ". But this password prompt is NOT coming in thrive (android) at all though it's coming in Fedora(Linux).
+ 
  After entering username in thrive, the sytem continues further in initiating the connection assuming password as 'blank' (which I have verified by intentionally proving my password as blank in Fedora later) which results into a AUTH_FAILURE message slightly later and the connection is closed. I have tried to input the user name and password through text file (in 2 lines) also e,g. --auth-user-pass mypass.txt still receiving AUTH_FAILURE message. Then I had decided to log the output in a file for review by other experts which is enclosed for your review.
-
- Now, my conclusion as of this point is that the openvpn binary is DEFECTIVE....based on my understanding on the excerpt from the man page.... /I think it may have been built without the --enable-password-save configure option/
-
- *--auth-user-pass [up]* Authenticate with server using username/password.  *up* is a file containing username/password on 2 lines (Note: OpenVPN will only read passwords from a file if it has been built with the --enable-password-save configure option, or on Windows by defining ENABLE_PASSWORD_SAVE in config-win32.h). If  *up* is omitted, username/password will be prompted from the console.
-
- I have used openvpn binary 2.1.1 as installed by the app openvpn-installer from android market. Please let me know if it's a problem of openvpn binary or I'm missing something ? 
-
+ 
+ Now, my conclusion as of this point is that the openvpn binary is DEFECTIVE....based on my understanding on the excerpt from the man page....I think it may have been built without the --enable-password-save configure option
+ 
+ --auth-user-pass [up] Authenticate with server using username/password. up is a file containing username/password on 2 lines (Note: OpenVPN will only read passwords from a file if it has been built with the --enable-password-save configure option, or on Windows by defining ENABLE_PASSWORD_SAVE in config-win32.h). If up is omitted, username/password will be prompted from the console.
+ 
+ I have used openvpn binary 2.1.1 as installed by the app openvpn-installer from android market. Please let me know if it's a problem of openvpn binary or I'm missing something ? 
+ 
  One more info, I'm not very expert in compiling my openvpn binary but willing to learn if someone kindly helps me.
-
+ 
  Warm regards,
  Kingsuk
+ 
+ 
+   
+ 
+       
+  
 
---========GMXBoundary119661328835261780311
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-
-<span style=3D'font-family:Verdana'><span style=3D'font-size:12px'>Dear ope=
-nvpn developers,<br />=20
-<blockquote style=3D"border-left: 1px solid #CCC; padding-left: 5px; margin=
--left: 5px; margin-bottom: 0px; margin-top: 0px; margin-right: 0px;" type=
-=3D"cite">=20
-	<div>=20
-		<br />=20
-		<span style=3D"font-family:Verdana"><span style=3D"font-size:12px">I am t=
-rying to configure the openvpn access to my vpn service provider CyberGhost=
-VPN servers in last few days on non-Windows platforms. I have one laptop ru=
-nning Fedora 16 &amp; one Toshiba Thrive tablet running Android HC 3.2.1 (K=
-ernel version: 2.6.36.3-00020-g3d351b6).<br />=20
-		<br />=20
-		I have the config file which cyberghostvpn has provided me for connection=
-. I have used successfully the config file given below on my fedora Linux m=
-achine and connected with cyberghostvpn servers without any error.<br />=20
-		<br />=20
-		However, when I'm running it on android (thrive) via the app openvpn-sett=
-ings , I'm getting the error message : "Unrecognized option or missing para=
-meter(s) in test.ovpn: 1: client(2.1.1)".<br />=20
-		<br />=20
-		I have checked that my tun.ko is being loaded properly and upon lsmod I c=
-an see :<br />=20
-		tun 12536 2 -Live 0xbf043000.<br />=20
-		<br />=20
-		Also on subsequent ls -l /dev/tun*, it is displayed that,<br />=20
-		"crw-r----- vpn vpn 10,200 2012-02-04 09:21 tun"<br />=20
-		<br />=20
-		My openvpn binary and busybox is located in /system/xbin and symlinks are=
- created for ifconfig and route from /system/xbin to /system/xbin/bb.<br />=
-=20
-		<br />=20
-		It seems to me that somehow the openvpn binary is failing to recognize/re=
-ad my config file and hence I'm unable to connect with the server.<br />=20
-		<br />=20
-		test.ovpn config file :<br />=20
-		<br />=20
-		*************************<br />=20
-		client<br />=20
-		<br />=20
-		ca ca.crt<br />=20
-		cert myusername.crt<br />=20
-		key myusername.key<br />=20
-		<br />=20
-		remote ch.openvpn.cyberghostvpn.com 9081<br />=20
-		<br />=20
-		auth-user-pass<br />=20
-		dev tun<br />=20
-		proto udp<br />=20
-		dhcp-renew<br />=20
-		dhcp-release<br />=20
-		resolv-retry infinite<br />=20
-		persist-key<br />=20
-		persist-tun<br />=20
-		ping-restart 0<br />=20
-		nobind<br />=20
-		ping-timer-rem<br />=20
-		cipher aes-128-cbc<br />=20
-		comp-lzo yes<br />=20
-		verb 4<br />=20
-		script-security 2<br />=20
-		remote-cert-tls server<br />=20
-		win-sys env<br />=20
-		route-delay 5<br />=20
-		tun-mtu 1500<br />=20
-		fragment 1300<br />=20
-		mssfix<br />=20
-		**********************************<br />=20
-		<br />=20
-		I have then continued my trouble shooting further on Thrive with the same=
- config file options as shown above manually (like --client --ca ca.crt --c=
-ert myusername.cert .... -- mssfix) by running them as command line argumen=
-ts because the openvpn binary was not reading them from config files. Upon =
-executing from command line the following options are shown as not valid on=
-es.<br />=20
-		<br />=20
-		1.&nbsp; --dhcp-renew<br />=20
-		2.&nbsp; --dhcp-release<br />=20
-		3.&nbsp; --win-sys env<br />=20
-		<br />=20
-		It needs to be mentioned here that as per openvpn man pages they are all =
-valid command line options and in my fedora machine all of them are running=
- without throwing incompatibility errors. They were also read from the conf=
-ig file in fedora as I had mentioned in my last post. This gives cause to r=
-aise my suspicion whether the openvpn binary we are getting via openvpn-ins=
-taller app is perfect !<br />=20
-		<br />=20
-		I continued with my trouble shooting by removing these three options and =
-the system starts initiating the connection and comes to the message , " En=
-ter Auth Username: ", which should be followed by a , "Enter Auth Password =
-: ".<b> But this password prompt is NOT coming in thrive (android) at all</=
-b> though it's coming in Fedora(Linux).<br />=20
-		<br />=20
-		After entering username in thrive, the sytem continues further in initiat=
-ing the connection assuming password as 'blank' (which I have verified by i=
-ntentionally proving my password as blank in Fedora later) which results in=
-to a AUTH_FAILURE message slightly later and the connection is closed. I ha=
-ve tried to input the user name and password through text file (in 2 lines)=
- also e,g. --auth-user-pass mypass.txt still receiving AUTH_FAILURE message=
-. Then I had decided to log the output in a file for review by other expert=
-s which is enclosed for your review.<br />=20
-		<br />=20
-		Now, my conclusion as of this point is that the openvpn binary is DEFECTI=
-VE....based on my understanding on the excerpt from the man page....<span s=
-tyle=3D"color:#0000ff;"><em>I think it may have been built without the --en=
-able-password-save configure option</em></span><br />=20
-		<br />=20
-		<b>--auth-user-pass [up]</b> Authenticate with server using username/pass=
-word. <b>up</b> is a file containing username/password on 2 lines (Note: Op=
-enVPN will only read passwords from a file if it has been built with the --=
-enable-password-save configure option, or on Windows by defining ENABLE_PAS=
-SWORD_SAVE in config-win32.h). If <b>up</b> is omitted, username/password w=
-ill be prompted from the console.<br />=20
-		<br />=20
-		I have used openvpn binary 2.1.1 as installed by the app openvpn-installe=
-r from android market. Please let me know if it's a problem of openvpn bina=
-ry or I'm missing something ?&nbsp;<br />=20
-		<br />=20
-		One more info, I'm not very expert in compiling my openvpn binary but wil=
-ling to learn if someone kindly helps me.<br />=20
-		<br />=20
-		Warm regards,<br />=20
-		Kingsuk</span></span><br />=20
-		<br />=20
-		<br />=20
-		<p style=3D"margin:0px; padding:0px; margin:0px; padding:0px;">=20
-			<span style=3D"font-family:Verdana"><span style=3D"font-size:12px">&nbsp=
-;</span></span></p>=20
-		<br />=20
-		<span style=3D"font-family:Verdana"><span style=3D"font-size:12px"><span>=
-<span style=3D"font-family:Verdana; font-size:12px">&nbsp;</span></span></s=
-pan></span></div>=20
-</blockquote>=20
-<p style=3D"margin:0px; padding:0px;" >=20
-	=C2=A0</p>=20
-</span></span>
-
---========GMXBoundary119661328835261780311--
-
---========GMX119661328835261779992
+--========GMX119681328836168609782
 Content-Type: text/plain; charset="utf-8"; name="consolelog.txt"
 Content-Transfer-Encoding: 8bit
 Content-Disposition: attachment; filename="consolelog.txt"
@@ -488,5 +348,5 @@ Tue Feb  7 21:36:17 2012 us=270214 AUTH: Received AUTH_FAILED control message
 Tue Feb  7 21:36:17 2012 us=272745 TCP/UDP: Closing socket
 Tue Feb  7 21:36:17 2012 us=273194 SIGTERM[soft,auth-failure] received, process exiting
 
---========GMX119661328835261779992--
+--========GMX119681328836168609782--
 
