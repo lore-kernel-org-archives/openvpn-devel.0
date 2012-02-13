@@ -1,11 +1,11 @@
-Message-ID: <4F396AD4.7080106@...1114...>
-Date: Mon, 13 Feb 2012 20:56:04 +0100
+Message-ID: <4F396AE9.3080106@...1114...>
+Date: Mon, 13 Feb 2012 20:56:25 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1328628587-4906-1-git-send-email-janjust@...1147...>
-In-Reply-To: <1328628587-4906-1-git-send-email-janjust@...1147...>
-Subject: Re: [Openvpn-devel] [PATCH] Made some options connection-entry
-	specific
+References: <7c22eb11c37c167998cc7975576fe585@...1550...>
+In-Reply-To: <7c22eb11c37c167998cc7975576fe585@...1550...>
+Subject: Re: [Openvpn-devel] [PATCH] Check for ENABLE_MANAGEMENT for
+	ENABLE_CLIENT_CR
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,44 +21,78 @@ To: openvpn-devel@lists.sourceforge.net
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 07/02/12 16:29, Jan Just Keijser wrote:
-> Made some options connection-entry specific: fragment mssfix tun-mtu 
-> tun-mtu-extra link-mtu mtu_discover_type explicit-exit-notification
-> in order to support stuff like <connection> remote host proto udp 
-> fragment explicit-exit-notification 3 </connection> <connection> 
-> remote host proto tcp </connection>
+On 12/02/12 19:40, igor@...1550... wrote:
+> When building a very minimal OpenVPN for OpenWRT with 
+> --disable-management among others, the compilaton fails due to 
+> ENABLE_CLIENT_CR being defined, although the management interface, 
+> which makes use of it, has been disabled.
 > 
-> Signed-off-by: Jan Just Keijser <janjust@...1147...> --- forward.c | 2
-> +- init.c    |   38 ++++++++++--------- occ.c     |    2 +- options.c
-> |  125 +++++++++++++++++++++++++++++++------------------------------ 
-> options.h |   36 +++++++++--------- sig.c     |    6 +- 6 files 
-> changed, 107 insertions(+), 102 deletions(-)
+> The attached simple patch checks for ENABLE_MANAGEMENT before defining
+> ENABLE_CLIENT_CR.
+> 
 
-ACK.  Applied to the master branch for -stable and -testing trees.
+I've already ACKed this patch in another response in this mail thread.  But
+here is the complete overview of all patches pushed out on the master branch
+for the -testing and -stable source trees.
 
-commit 76809cae0eae07817160b423d3f9551df1a1d68e
-Author: Jan Just Keijser <janjust@...1147...>
-Date:   Tue Feb 7 16:29:47 2012 +0100
 
-    Made some options connection-entry specific
+commit 2ee0dc2bd72ec318fcc227af54e5ca7e1384a6cc
+Author: Igor Novgorodov <igor@...1550...>
+Date:   Sun Feb 12 22:40:02 2012 +0400
 
-    Signed-off-by: Jan Just Keijser <janjust@...1147...>
+    The code blocks enabled by ENABLE_CLIENT_CR depends on management
+
+    If the management interface is not enabled, it makes no sense in
+    including the ENABLE_CLIENT_CR #ifdef blocks.  This will also in
+    some configurations cause build issues if these blocks are enabled.
+
+    Signed-off-by: Igor Novgorodov <igor@...1550...>
     Acked-by: David Sommerseth <davids@...1347...>
     Signed-off-by: David Sommerseth <davids@...1347...>
+
+commit ecede953d6366e9fbfecea62cc1f61fd2347dab7
+Author: David Sommerseth <davids@...1347...>
+Date:   Mon Feb 13 16:03:46 2012 +0100
+
+    Remove --show-gateway if debug info is not enabled (--disable-debug)
+
+    The --show-gateway feature depends on functions only being enabled when
+    --disable-debug is _not_ used.  As this I consider --show-gateway more
+    a handy function for debugging, removing this feature when
+- --disable-debug
+    is used seems like the proper approach.
+
+    Signed-off-by: David Sommerseth <davids@...1347...>
+    Acked-by: Gert Doering <gert@...1296...>
+
+commit 22277ec675847f73203bf908144f9903d13e2869
+Author: David Sommerseth <davids@...1347...>
+Date:   Mon Feb 13 15:52:00 2012 +0100
+
+    Fix compile issues when plug-ins are disabled.
+
+    Commit 1876ccd012e9e2ca6f8e1cd9e7e9bb4bf24ccecb modified
+    plugin_call() and introduced plugin_call_ssl().  But the similar
+    approach was missing for situations without plug-ins.
+
+    Solution: Rename plugin_call() in the #else !ENABLE_PLUGIN
+    section to plugin_call_ssl().  Then move the plugin_ssl() function
+    inside the #ifdef ENABLE_PLUGIN section outside the #ifdef, making
+    it available for builds with and without plug-ins enabled.
+
+    Signed-off-by: David Sommerseth <davids@...1347...>
+    Acked-by: Gert Doering <gert@...1296...>
 
 
 kind regards,
 
 David Sommerseth
-
-
-
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk85atQACgkQDC186MBRfrpRcACeOAUc3CWM1ORg2hWBDSwwS4hQ
-4B8AoK8lWaZQKO5m589P3TgjUB2IE9/v
-=meS6
+iEYEARECAAYFAk85aukACgkQDC186MBRfrq0tACgojflVPWaBkrac+epuuk5Je2n
+5NwAn3wyj5omLMZ1CtsGM3XpJBIyV/MU
+=oXDO
 -----END PGP SIGNATURE-----
 
