@@ -1,12 +1,10 @@
-Message-ID: <4F390984.9080503@...1550...>
-Date: Mon, 13 Feb 2012 17:00:52 +0400
-From: Igor Novgorodov <igor@...1550...>
+Message-ID: <4F390B9C.0@...1114...>
+Date: Mon, 13 Feb 2012 14:09:48 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <7c22eb11c37c167998cc7975576fe585@...1550...>
-	<4F3902E7.3050901@...384...>
-In-Reply-To: <4F3902E7.3050901@...384...>
-Subject: Re: [Openvpn-devel] [PATCH] Check for ENABLE_MANAGEMENT for
-	ENABLE_CLIENT_CR
+References: <4F39094B.7030805@...277...>
+In-Reply-To: <4F39094B.7030805@...277...>
+Subject: Re: [Openvpn-devel] Obfuscation for Iran SSL blocking
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,85 +13,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Jun Matsushita <junflow@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-I'm building latest GIT with:
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-./configure \
---disable-debug \
---disable-plugins \
---disable-management \
---disable-socks \
---disable-password-save \
---disable-multi \
---disable-server \
---disable-pkcs11 \
---disable-http \
---disable-port-share \
---disable-def-auth \
---disable-pf \
---disable-lzo \
---disable-selinux \
---disable-iproute2 \
---enable-small
-
-(effectively, the version that supports only static keys and no fancy stuff)
-
-Build fails with:
-...
-gcc -DHAVE_CONFIG_H -I. -I. -g -O2 -MT init.o -MD -MP -MF .deps/init.Tpo=20
--c -o init.o init.c
-init.c: In function =91do_route=92:
-init.c:1364:7: error: too few arguments to function =91plugin_call=92
-plugin.h:196:1: note: declared here
-init.c: In function =91do_init_crypto_tls=92:
-init.c:2286:20: error: =91const struct options=92 has no member named =91sc=
-_info=92
-make[2]: *** [init.o] Error 1
-...
-
-Here are even two errors, one of which (plugin_call) function is=20
-addressed in OpenWRT patchset:
-https://dev.openwrt.org/browser/packages/net/openvpn-polarssl/patches/300-f=
-ix-plugin_call-with-ssl.patch
-
-And another is that i'm talking about.
-
-On 13.02.2012 16:32, David Sommerseth wrote:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
+On 13/02/12 13:59, Jun Matsushita wrote:
+> This is my first post in this list. As probably a lot of you heard,
+> Iran has stepped up its filtering by apparently blocking SSL/TLS using
+> DPI. This is a good read about what's happening 
+> http://news.ycombinator.com/item?id=3575029. As these statistics from 
+> TOR attest 
+> https://metrics.torproject.org/users.html?graph=direct-users&start=2012-01-12&end=2012-02-12&country=ir&events=on&dpi=72#direct-users
 >
-> On 12/02/12 19:40, igor@...1550... wrote:
->> When building a very minimal OpenVPN for OpenWRT with
->> --disable-management among others, the compilaton fails due to
->> ENABLE_CLIENT_CR being defined, although the management interface,
->> which makes use of it, has been disabled.
->>
->> The attached simple patch checks for ENABLE_MANAGEMENT before defining
->> ENABLE_CLIENT_CR.
-> Which version are you compiling?  I tried a couple of compile with the
-> latest version in git (master branch) in combination with
-> - --disable-management and --enable-small ... And I could not manage to
-> trigger this one.  Our buildbot (even though, not testing all
-> combinations) have also not triggered this one.
->
-> Could you provide more version information and the configure arguments
-> you use?
->
->
-> kind regards,
->
-> David Sommerseth
->
-> -----BEGIN PGP SIGNATURE-----
-> Version: GnuPG v1.4.11 (GNU/Linux)
-> Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
->
-> iEYEARECAAYFAk85AuIACgkQDC186MBRfroHEACfbJfdxCqMM0rp+wqlWx6yxc6F
-> T+UAnAkQ1T7n0vb4F1cOqxaLTmQyQ4Zh
-> =3DGwvf
-> -----END PGP SIGNATURE-----
+> 
+the impact has been immediate and surely concerns the majority of tools
+> out there.
+> 
+> Does OpenVPN allow the use of some form of Obfuscation (such as the
+> one TOR is testing now and seem to work from within Iran 
+> https://www.torproject.org/projects/obfsproxy-instructions.html.en)?
+> 
+> Anyone has thoughts about this or would be interested in discussing
+> the matter?
+> 
 
+Hi Jun,
+
+OpenVPN uses SSL under the hood.  But it does some tricks to allow SSL
+over UDP (SSL is strictly designed for TCP).  This however makes some
+changes that many DPI firewalls *might* not identify OpenVPN traffic as
+SSL traffic.  But as it's not really an obfuscation which changes over
+time, it might still be possible to block it if this kind of traffic is
+detected.
+
+However, the obfsproxy project sounds very interesting.  And it should be
+possible to use obfsproxy (as it can talk like a SOCKS proxy) with
+OpenVPN, by using the --socks-proxy argument.  But I'm not aware of any
+openvpn services providing obfsproxy services in conjunction with OpenVPN.
+
+
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk85C5gACgkQDC186MBRfro25ACfVYHhArEonjCmWalM9aUx4/av
+Xc4AniLaPP0au8uXWCav9r0+2g/bB1F8
+=WeLG
+-----END PGP SIGNATURE-----
 
