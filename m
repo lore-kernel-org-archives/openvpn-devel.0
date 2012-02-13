@@ -1,11 +1,8 @@
-MIME-version: 1.0
-Message-id: <0LZC00BTC12PDO10@...1551...>
-Date: Mon, 13 Feb 2012 13:32:39 +0100
-From: David Sommerseth <openvpn.list@...1114...>
-References: <7c22eb11c37c167998cc7975576fe585@...1550...>
-In-reply-to: <7c22eb11c37c167998cc7975576fe585@...1550...>
-Subject: Re: [Openvpn-devel] [PATCH] Check for ENABLE_MANAGEMENT
-	for	ENABLE_CLIENT_CR
+Message-ID: <4F39094B.7030805@...277...>
+Date: Mon, 13 Feb 2012 12:59:55 +0000
+From: Jun Matsushita <junflow@...277...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Obfuscation for Iran SSL blocking
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,43 +11,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-To: igor@...1550...
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 12/02/12 19:40, igor@...1550... wrote:
-> When building a very minimal OpenVPN for OpenWRT with 
-> --disable-management among others, the compilaton fails due to 
-> ENABLE_CLIENT_CR being defined, although the management interface, 
-> which makes use of it, has been disabled.
-> 
-> The attached simple patch checks for ENABLE_MANAGEMENT before defining
-> ENABLE_CLIENT_CR.
+This is my first post in this list. As probably a lot of you heard, Iran
+has stepped up its filtering by apparently blocking SSL/TLS using DPI.
+This is a good read about what's happening
+http://news.ycombinator.com/item?id=3575029. As these statistics from
+TOR attest
+https://metrics.torproject.org/users.html?graph=direct-users&start=2012-01-12&end=2012-02-12&country=ir&events=on&dpi=72#direct-users
+the impact has been immediate and surely concerns the majority of tools
+out there.
 
-Which version are you compiling?  I tried a couple of compile with the
-latest version in git (master branch) in combination with
-- --disable-management and --enable-small ... And I could not manage to
-trigger this one.  Our buildbot (even though, not testing all
-combinations) have also not triggered this one.
+Does OpenVPN allow the use of some form of Obfuscation (such as the one
+TOR is testing now and seem to work from within Iran
+https://www.torproject.org/projects/obfsproxy-instructions.html.en)?
 
-Could you provide more version information and the configure arguments
-you use?
+Anyone has thoughts about this or would be interested in discussing the
+matter?
 
+Best,
 
-kind regards,
-
-David Sommerseth
-
+Jun.
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
+Version: GnuPG v2.0.17 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk85AuIACgkQDC186MBRfroHEACfbJfdxCqMM0rp+wqlWx6yxc6F
-T+UAnAkQ1T7n0vb4F1cOqxaLTmQyQ4Zh
-=Gwvf
+iQEcBAEBAgAGBQJPOQlLAAoJECoH9wygNueS81AH/0a56HP4YQb8ZSGFuU/isLz1
+0ujlkOHYxssHxVYZ6UV0O0p9C7lHIxlEj/ymPlb3FbB2rE1qzrCjwCGj2idYAnCb
+r+m/8QMI6Tei1U8+iVEsZn8wP5ZmoG8QsacwE8gat5rc0o7HuNCK7GKoXX6H2nvz
+pKdakP3gR8J4dRP/uOFWU/jxIhGZagIf5kSKSFFH7J+CuI5a1rese0TOQKg2lz95
+NoT1loaMdh7LOMnPLyM0aiR1h4kKn1pJ68PSj23ggrWcZB4o/uDMzrBpIsX1q/D0
++hdxlKki44CjwaHbFTeKIK0tyC/aiSEN1bOvdidURcHEVObSgPYt+Xhi9wHflqE=
+=ryUY
 -----END PGP SIGNATURE-----
 
