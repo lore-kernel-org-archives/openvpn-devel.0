@@ -1,14 +1,11 @@
-Date: Tue, 14 Feb 2012 17:26:40 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120214162639.GT7024@...1296...>
-References: <1329216527-14035-1-git-send-email-davids@...1347...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="6Vw0j8UKbyX0bfpA"
-Content-Disposition: inline
-In-Reply-To: <1329216527-14035-1-git-send-email-davids@...1347...>
-Subject: Re: [Openvpn-devel] [PATCH] Connection entry {tun,
-	link}_mtu_defined not set correctly
+From: Adriaan de Jong <dejong@...1435...>
+Date: Tue, 14 Feb 2012 18:27:37 +0100
+Message-ID: <1CED409804E2164C8104F9E623B08B90129336981D@...1436...>
+References: <4F36E202.3010503@...1549...>
+In-Reply-To: <4F36E202.3010503@...1549...>
+Content-Language: en-US
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] Cipher problem on Mac OS X
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,51 +14,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <davids@...1347...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---6Vw0j8UKbyX0bfpA
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: Freek Dijkstra <public@...1549...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
-
-On Tue, Feb 14, 2012 at 11:48:47AM +0100, David Sommerseth wrote:
-> Commit 76809cae0eae07817160b423d3f9551df1a1d68e enabled setting MTU
-> variables inside <connection> blocks.  But in that process, the
-> tun_mtu_defined and link_mtu_defined was not set as it should.
+> -----Original Message-----
+> From: Freek Dijkstra [mailto:public@...1549...]
 >=20
-> By moving this out of the options_postprocess_mutate_invariant()
-> function and into options_postprocess_mutate_ce(), these variables
-> get these *_mtu_defined variables are set correctly in each connection
-> entry.
+> Hi,
+
+
+Hi Freek,
+
+Sorry for the delay, but I've had some trouble replicating the bug.=20
+
 >=20
-> Signed-off-by: David Sommerseth <davids@...1347...>
+> Sat Feb 11 22:46:37 2012 OpenVPN 2.x-master x86_64-apple-darwin11.2.0
+> [SSL (OpenSSL)] [LZO2] [eurephia] [MH] [PF_INET6] [IPv6 payload
+> 20110522-1 (2.2.0)] built on Feb 11 2012 Sat Feb 11 22:46:37 2012
+> Cipher 'BF-CBC' uses a mode not supported by OpenVPN in your current
+> ...
 
-ACK.
+I've tried to replicate the bug on Linux and have been unsuccessful so far.=
+ Thankfully a colleague managed to replicate it on a Mac using the stock Op=
+enSSL (v0.9.8.something). I think it's related to the value returned by EVP=
+_cipher_mode(). Unfortunately I don't have direct access to a mac, so could=
+ you try compiling and running the following code, please?
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+--- SNIP ---
+#include <stdio.h>
+#include <openssl/evp.h>
 
---6Vw0j8UKbyX0bfpA
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+int main()
+{
+        OpenSSL_add_all_algorithms();
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
+        const EVP_CIPHER *ciph =3D EVP_get_cipherbyname ("BF-CBC");
+        printf("%p\n", ciph);
 
-iQCVAwUBTzqLP6kuBuNlUUl1AQKhFQP/foRQOiC7cRBC2XwYC8Y/AlSpohdDuzax
-3ZorbV3eC1gOe/XvoqselycDPcdLymFlYPgFLK877B0F4EEZ2H8v21D/JBVxTffO
-XJNn5uoElMWuebnljU2LGB+Hlift2Eqf9Kna2IfMV4y23/jooknN1ZxR7b8RTJEt
-6zSMELNfNOg=
-=gXey
------END PGP SIGNATURE-----
+        printf ("EVP_CIPH_CBC_MODE: %u\n", EVP_CIPH_CBC_MODE);
+        printf ("Function: %lu\n", EVP_CIPHER_mode (ciph));
+        return 0;
+}
 
---6Vw0j8UKbyX0bfpA--
+--- SNIP ---
+
+The commands would be:
+
+$ gcc <sourcefile.c> -lssl
+$ ./a.out
+
+Thanks,
+Adriaan de Jong
 
