@@ -1,11 +1,8 @@
-From: Adriaan de Jong <dejong@...1435...>
-Date: Tue, 14 Feb 2012 11:11:25 +0100
-Message-ID: <1329214286-9179-3-git-send-email-dejong@...1435...>
-In-Reply-To: <1329214286-9179-1-git-send-email-dejong@...1435...>
-References: <1329214286-9179-1-git-send-email-dejong@...1435...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/3] Migrated x509_get_serial to use the
-	garbage collector
+From: David Sommerseth <davids@...1347...>
+Date: Tue, 14 Feb 2012 11:48:47 +0100
+Message-Id: <1329216527-14035-1-git-send-email-davids@...1347...>
+Subject: [Openvpn-devel] [PATCH] Connection entry {tun,
+	link}_mtu_defined not set correctly
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,195 +15,78 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Adriaan de Jong <dejong@...1435...>
----
- ssl_verify.c          |   28 ++++++++++++++--------------
- ssl_verify_backend.h  |   11 ++---------
- ssl_verify_openssl.c  |   17 +++++++----------
- ssl_verify_polarssl.c |   17 +++--------------
- 4 files changed, 26 insertions(+), 47 deletions(-)
+Commit 76809cae0eae07817160b423d3f9551df1a1d68e enabled setting MTU
+variables inside <connection> blocks.  But in that process, the
+tun_mtu_defined and link_mtu_defined was not set as it should.
 
-diff --git a/ssl_verify.c b/ssl_verify.c
-index 06585d8..352118a 100644
---- a/ssl_verify.c
-+++ b/ssl_verify.c
-@@ -377,6 +377,8 @@ verify_cert_set_env(struct env_set *es, x509_cert_t *peer_cert, int cert_depth,
-     )
+By moving this out of the options_postprocess_mutate_invariant()
+function and into options_postprocess_mutate_ce(), these variables
+get these *_mtu_defined variables are set correctly in each connection
+entry.
+
+Signed-off-by: David Sommerseth <davids@...1347...>
+---
+ options.c |   32 +++++++++++++++++---------------
+ 1 files changed, 17 insertions(+), 15 deletions(-)
+
+diff --git a/options.c b/options.c
+index 5e972b1..43e9e27 100644
+--- a/options.c
++++ b/options.c
+@@ -2395,6 +2395,8 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
+ static void
+ options_postprocess_mutate_ce (struct options *o, struct connection_entry *ce)
  {
-   char envname[64];
-+  char *serial = NULL;
-+  struct gc_arena gc = gc_new ();
++  const int dev = dev_type_enum (o->dev, o->dev_type);
++
+ #if P2MP_SERVER
+   if (o->server_defined || o->server_bridge_defined || o->server_bridge_proxy_dhcp)
+     {
+@@ -2441,6 +2443,21 @@ options_postprocess_mutate_ce (struct options *o, struct connection_entry *ce)
+ #endif      
+     }
  
-   /* Save X509 fields in environment */
- #ifdef ENABLE_X509_TRACK
-@@ -399,25 +401,21 @@ verify_cert_set_env(struct env_set *es, x509_cert_t *peer_cert, int cert_depth,
- #ifdef ENABLE_EUREPHIA
-   /* export X509 cert SHA1 fingerprint */
-   {
--    struct gc_arena gc = gc_new ();
-     unsigned char *sha1_hash = x509_get_sha1_hash(peer_cert);
++  /*
++   * Set MTU defaults
++   */
++  {
++    if (!ce->tun_mtu_defined && !ce->link_mtu_defined)
++      {
++	ce->tun_mtu_defined = true;
++      }
++    if ((dev == DEV_TYPE_TAP) && !ce->tun_mtu_extra_defined)
++      {
++	ce->tun_mtu_extra_defined = true;
++	ce->tun_mtu_extra = TAP_MTU_EXTRA_DEFAULT;
++      }
++  }
++
+ }
  
-     openvpn_snprintf (envname, sizeof(envname), "tls_digest_%d", cert_depth);
-     setenv_str (es, envname, format_hex_ex(sha1_hash, SHA_DIGEST_LENGTH, 0, 1,
- 					  ":", &gc));
-     x509_free_sha1_hash(sha1_hash);
--    gc_free(&gc);
-   }
- #endif
+ static void
+@@ -2455,21 +2472,6 @@ options_postprocess_mutate_invariant (struct options *options)
+   if (options->inetd == INETD_NOWAIT)
+     options->ifconfig_noexec = true;
  
--  /* export serial number as environmental variable,
--     use bignum in case serial number is large */
+-  /*
+-   * Set MTU defaults
+-   */
 -  {
--    char *serial = x509_get_serial(peer_cert);
--    openvpn_snprintf (envname, sizeof(envname), "tls_serial_%d", cert_depth);
--    setenv_str (es, envname, serial);
--    x509_free_serial(serial);
+-    if (!options->ce.tun_mtu_defined && !options->ce.link_mtu_defined)
+-      {
+-	options->ce.tun_mtu_defined = true;
+-      }
+-    if ((dev == DEV_TYPE_TAP) && !options->ce.tun_mtu_extra_defined)
+-      {
+-	options->ce.tun_mtu_extra_defined = true;
+-	options->ce.tun_mtu_extra = TAP_MTU_EXTRA_DEFAULT;
+-      }
 -  }
-+  /* export serial number as environmental variable */
-+  serial = x509_get_serial(peer_cert, &gc);
-+  openvpn_snprintf (envname, sizeof(envname), "tls_serial_%d", cert_depth);
-+  setenv_str (es, envname, serial);
-+
-+  gc_free(&gc);
- }
- 
- /*
-@@ -537,24 +535,26 @@ verify_check_crl_dir(const char *crl_dir, x509_cert_t *cert)
- {
-   char fn[256];
-   int fd;
--  char *serial = x509_get_serial(cert);
-+  struct gc_arena gc = gc_new();
-+
-+  char *serial = x509_get_serial(cert, &gc);
- 
-   if (!openvpn_snprintf(fn, sizeof(fn), "%s%c%s", crl_dir, OS_SPECIFIC_DIRSEP, serial))
-     {
-       msg (D_HANDSHAKE, "VERIFY CRL: filename overflow");
--      x509_free_serial(serial);
-+      gc_free(&gc);
-       return FAILURE;
-     }
-   fd = openvpn_open (fn, O_RDONLY, 0);
-   if (fd >= 0)
-     {
-       msg (D_HANDSHAKE, "VERIFY CRL: certificate serial number %s is revoked", serial);
--      x509_free_serial(serial);
-       close(fd);
-+      gc_free(&gc);
-       return FAILURE;
-     }
- 
--  x509_free_serial(serial);
-+  gc_free(&gc);
- 
-   return SUCCESS;
- }
-diff --git a/ssl_verify_backend.h b/ssl_verify_backend.h
-index a1fd682..5c69b11 100644
---- a/ssl_verify_backend.h
-+++ b/ssl_verify_backend.h
-@@ -125,20 +125,13 @@ result_t x509_get_username (char *common_name, int cn_len,
-  * Return the certificate's serial number.
-  *
-  * The serial number is returned as a string, since it might be a bignum.
-- * The returned string must be freed with \c verify_free_serial()
-  *
-  * @param cert		Certificate to retrieve the serial number from.
-+ * @param gc		Garbage collection arena to use when allocating string.
-  *
-  * @return 		The certificate's serial number.
-  */
--char *x509_get_serial (x509_cert_t *cert);
 -
--/*
-- * Free a serial number string as returned by \c verify_get_serial()
-- *
-- * @param serial	The string to be freed.
-- */
--void x509_free_serial (char *serial);
-+char *x509_get_serial (x509_cert_t *cert, struct gc_arena *gc);
- 
- /*
-  * Save X509 fields to environment, using the naming convention:
-diff --git a/ssl_verify_openssl.c b/ssl_verify_openssl.c
-index 473835e..6d31bb3 100644
---- a/ssl_verify_openssl.c
-+++ b/ssl_verify_openssl.c
-@@ -213,25 +213,22 @@ x509_get_username (char *common_name, int cn_len,
- }
- 
- char *
--x509_get_serial (x509_cert_t *cert)
-+x509_get_serial (x509_cert_t *cert, struct gc_arena *gc)
- {
-   ASN1_INTEGER *asn1_i;
-   BIGNUM *bignum;
--  char *serial;
-+  char *openssl_serial, *serial;
- 
-   asn1_i = X509_get_serialNumber(cert);
-   bignum = ASN1_INTEGER_to_BN(asn1_i, NULL);
--  serial = BN_bn2dec(bignum);
-+  openssl_serial = BN_bn2dec(bignum);
-+
-+  serial = string_alloc(openssl_serial, gc);
- 
-   BN_free(bignum);
--  return serial;
--}
-+  OPENSSL_free(openssl_serial);
- 
--void
--x509_free_serial (char *serial)
--{
--  if (serial)
--    OPENSSL_free(serial);
-+  return serial;
- }
- 
- unsigned char *
-diff --git a/ssl_verify_polarssl.c b/ssl_verify_polarssl.c
-index c4afb24..065b30d 100644
---- a/ssl_verify_polarssl.c
-+++ b/ssl_verify_polarssl.c
-@@ -119,32 +119,21 @@ x509_get_username (char *cn, int cn_len,
- }
- 
- char *
--x509_get_serial (x509_cert *cert)
-+x509_get_serial (x509_cert *cert, struct gc_arena *gc)
- {
-   int ret = 0;
-   int i = 0;
-   char *buf = NULL;
-   size_t len = cert->serial.len * 3;
- 
--  buf = malloc(len);
--  ASSERT(buf);
-+  buf = gc_malloc(len, true, gc);
- 
-   if(x509parse_serial_gets(buf, len-1, &cert->serial) < 0)
--    {
--      free(buf);
--      buf = NULL;
--    }
-+    buf = NULL;
- 
-   return buf;
- }
- 
--void
--x509_free_serial (char *serial)
--{
--  if (serial)
--    free(serial);
--}
--
- unsigned char *
- x509_get_sha1_hash (x509_cert *cert)
- {
+ #ifdef WIN32
+   if ((dev == DEV_TYPE_TUN || dev == DEV_TYPE_TAP) && !options->route_delay_defined)
+     {
 -- 
-1.7.5.4
+1.7.4.4
 
 
