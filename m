@@ -1,11 +1,11 @@
-Message-ID: <4F3AB3F8.2050206@...1114...>
-Date: Tue, 14 Feb 2012 20:20:24 +0100
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <4F3AD2B8.1030201@...1549...>
+Date: Tue, 14 Feb 2012 22:31:36 +0100
+From: Freek Dijkstra <public@...1549...>
 MIME-Version: 1.0
-References: <1329216527-14035-1-git-send-email-davids@...1347...>
-In-Reply-To: <1329216527-14035-1-git-send-email-davids@...1347...>
-Subject: Re: [Openvpn-devel] [PATCH] Connection entry {tun,
- link}_mtu_defined not set correctly
+References: <4F36E202.3010503@...1549...>
+	<1CED409804E2164C8104F9E623B08B90129336981D@...1436...>
+In-Reply-To: <1CED409804E2164C8104F9E623B08B90129336981D@...1436...>
+Subject: Re: [Openvpn-devel] Cipher problem on Mac OS X
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,49 +14,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi Adriaan,
 
-On 14/02/12 11:48, David Sommerseth wrote:
-> Commit 76809cae0eae07817160b423d3f9551df1a1d68e enabled setting MTU 
-> variables inside <connection> blocks.  But in that process, the 
-> tun_mtu_defined and link_mtu_defined was not set as it should.
-> 
-> By moving this out of the options_postprocess_mutate_invariant() 
-> function and into options_postprocess_mutate_ce(), these variables get
-> these *_mtu_defined variables are set correctly in each connection 
-> entry.
-> 
-> Signed-off-by: David Sommerseth <davids@...1347...> --- options.c |
-> 32 +++++++++++++++++--------------- 1 files changed, 17 insertions(+),
-> 15 deletions(-)
-> 
+Thanks a lot for your efforts!
 
-Applied to master and pushed to -stable and -testing
+> --- SNIP ---
+> #include <stdio.h>
+> #include <openssl/evp.h>
+>=20
+> int main()
+> {
+>         OpenSSL_add_all_algorithms();
+>=20
+>         const EVP_CIPHER *ciph =3D EVP_get_cipherbyname ("BF-CBC");
+>         printf("%p\n", ciph);
+>=20
+>         printf ("EVP_CIPH_CBC_MODE: %u\n", EVP_CIPH_CBC_MODE);
+>         printf ("Function: %lu\n", EVP_CIPHER_mode (ciph));
+>         return 0;
+> }
+>=20
+> --- SNIP ---
+>=20
+> The commands would be:
+>=20
+> $ gcc <sourcefile.c> -lssl
+> $ ./a.out
 
-commit 86e8754cd83d6c91a1ead344aea8c0ee131a9f26
-Author: David Sommerseth <davids@...1347...>
-Date:   Tue Feb 14 11:45:27 2012 +0100
+I added -lcrypto as well:
 
-    Connection entry {tun,link}_mtu_defined not set correctly
+% gcc -L/opt/local/lib -I/opt/local/include -lssl -lcrypt sourcefile.c
+% ./a.out
+0x100e37d60
+EVP_CIPH_CBC_MODE: 2
+Function: 2
 
-    Signed-off-by: David Sommerseth <davids@...1347...>
-    Acked-by: Gert Doering <gert@...1296...>
+FYI, this is with Openssl 1.0.0f (installed with MacPorts, a package
+maanger for Mac OS X).
 
+The result with OpenSSL 0.9.8r (that came with Mac OS X) is:
 
-kind regards,
+% gcc -L/usr/lib -I/usr/include -lssl -lcrypto sourcefile.c
+sourcefile.c: In function =E2=80=98main=E2=80=99:
+sourcefile.c:6: warning: =E2=80=98OPENSSL_add_all_algorithms_noconf=E2=80=
+=99 is
+deprecated (declared at /usr/include/openssl/evp.h:828)
+sourcefile.c:8: warning: =E2=80=98EVP_get_cipherbyname=E2=80=99 is deprecat=
+ed (declared
+at /usr/include/openssl/evp.h:848)
+sourcefile.c:12: warning: =E2=80=98EVP_CIPHER_flags=E2=80=99 is deprecated =
+(declared at
+/usr/include/openssl/evp.h:496)
+% ./a.out
+0x7fff75d9d000
+EVP_CIPH_CBC_MODE: 2
+Function: 2
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+> Unfortunately I don't have direct access to a mac
 
-iEYEARECAAYFAk86s/UACgkQDC186MBRfrqcSQCfYj0KKbHutmaPPfm8jd+hh1RU
-QKsAn2Me6yfjxaVb1qoXpcKoJTpumyop
-=gEeV
------END PGP SIGNATURE-----
+If required, I may be able to get you access next weekend.
+
+Freek
 
