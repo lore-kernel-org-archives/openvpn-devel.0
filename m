@@ -1,15 +1,11 @@
-Date: Thu, 16 Feb 2012 19:29:09 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120216182908.GM7024@...1296...>
+MIME-Version: 1.0
+In-Reply-To: <1329413441-22538-3-git-send-email-heiko.hund@...1489...>
 References: <1329413441-22538-1-git-send-email-heiko.hund@...1489...>
-	<1329413441-22538-4-git-send-email-heiko.hund@...1489...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="hdW7zL/qDS6RXdAL"
-Content-Disposition: inline
-In-Reply-To: <1329413441-22538-4-git-send-email-heiko.hund@...1489...>
-Subject: Re: [Openvpn-devel] [PATCH 3/4] use the underscore version of stat
-	on Windows
+	<1329413441-22538-3-git-send-email-heiko.hund@...1489...>
+Date: Thu, 16 Feb 2012 20:34:34 +0200
+Message-ID: <CAOazyz0W43Hop+8d4gzB9cAsA-CH55185rgd6evDR0uJ=tf7SQ@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 2/4] do not use mode_t on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,49 +14,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 To: Heiko Hund <heiko.hund@...1489...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---hdW7zL/qDS6RXdAL
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+I stopped following all OpenVPN changes.
+It seems like more changes are entered than should without proper review.
 
-Hi,
+Anyway, this is not the correct solution.
+Correct solution is to have config-msvc.h and have:
+---
+#define mode_t int
+---
 
-On Thu, Feb 16, 2012 at 06:30:40PM +0100, Heiko Hund wrote:
-> MSVC does not know wstat(). Instead _wstat() must be used here.
-> Unfortunately _wstat() takes a 'struct _stat'. A type 'stat_t' is
-> introduced to handle this situation in a portable way.
+And in autoconf (if mingw does not have this as well):
+AC_CHECK_DECLS(
+    [mode_t],
+    ,
+    [AC_DEFINE([mode_t],[int], [Emulate mode_t])],
+    [[
+        #include <fcntl.h>
+    ]]
+)
 
-Semi-ACK.=20=20
-
-In general, ACK, though it might be a bit easier to understand the code=20
-if there were an explantory comment at the typedef, and the type would be=20
-called "openvpn_stat_t" or such - so that when referenced in pf.c, it's=20
-clear that this is not something "from the build environment" but "local".
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---hdW7zL/qDS6RXdAL
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
-
-iQCVAwUBTz1K9KkuBuNlUUl1AQJW4AP9GHBoZss1B1DUutoPMnwexPPU8bZSX7V2
-ZI8KB0wJFt9gP97+Hu+fCODLlwkQZBR+cjipaLnGj1e8/pILvuUlzTSUay6UuWZ1
-MA/XZCR3ngvDC++XIGl6GD5a8KMbWJzp3K74O4vl30OOfcEpt9PiXolnDEirB4aU
-K6+5i4oi/Bk=
-=kuLi
------END PGP SIGNATURE-----
-
---hdW7zL/qDS6RXdAL--
+On Thu, Feb 16, 2012 at 7:30 PM, Heiko Hund <heiko.hund@...1489...> wrote:
+>
+> The MSVC headers do not define mode_t. open() uses an int for
+> the permissions instead. Fixes building with the MSVC based
+> buildsystem.
+>
+> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+> ---
+> =C2=A0misc.h =C2=A0| =C2=A0 =C2=A02 +-
+> =C2=A0win32.c | =C2=A0 =C2=A02 +-
+> =C2=A02 files changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/misc.h b/misc.h
+> index 8c0bae1..e7a0b55 100644
+> --- a/misc.h
+> +++ b/misc.h
+> @@ -158,7 +158,7 @@ openvpn_fopen (const char *path, const char *mode)
+> =C2=A0#endif
+>
+> =C2=A0#ifdef WIN32
+> -int openvpn_open (const char *path, int flags, mode_t mode);
+> +int openvpn_open (const char *path, int flags, int mode);
+> =C2=A0#else
+> =C2=A0static inline int
+> =C2=A0openvpn_open (const char *path, int flags, mode_t mode)
+> diff --git a/win32.c b/win32.c
+> index 5b38918..a8f4ed9 100644
+> --- a/win32.c
+> +++ b/win32.c
+> @@ -1064,7 +1064,7 @@ openvpn_fopen (const char *path, const char *mode)
+> =C2=A0}
+>
+> =C2=A0int
+> -openvpn_open (const char *path, int flags, mode_t mode)
+> +openvpn_open (const char *path, int flags, int mode)
+> =C2=A0{
+> =C2=A0 struct gc_arena gc =3D gc_new ();
+> =C2=A0 int fd =3D _wopen (wide_string (path, &gc), flags, mode);
+> --
+> 1.7.5.4
+>
+>
+> -------------------------------------------------------------------------=
+-----
+> Virtualization & Cloud Management Using Capacity Planning
+> Cloud computing makes use of virtualization - but cloud computing
+> also focuses on allowing computing to be delivered as a service.
+> http://www.accelacomm.com/jaw/sfnl/114/51521223/
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
