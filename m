@@ -1,9 +1,9 @@
-From: Frank de Brabander <brabander@...1435...>
-Date: Thu, 16 Feb 2012 15:00:55 +0100
-Message-ID: <CB62CAA7.E8F%brabander@...1435...>
-Content-Language: en-US
-Content-Type: multipart/mixed; boundary="_002_CB62CAA7E8Fbrabanderfoxitcom_"
+Message-ID: <4F3D1030.4000408@...1114...>
+Date: Thu, 16 Feb 2012 15:18:24 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
+References: <CB62CAA7.E8F%brabander@...1435...>
+In-Reply-To: <CB62CAA7.E8F%brabander@...1435...>
 Subject: Re: [Openvpn-devel] Cipher problem on Mac OS X
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,55 +13,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
---_002_CB62CAA7E8Fbrabanderfoxitcom_
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Sorry, patch format got broken in previous email. Hope this works better.
+On 16/02/12 15:00, Frank de Brabander wrote:
+> Sorry, patch format got broken in previous email. Hope this works
+> better.
+
+No worries, patches is tricky in quite some MUAs.
+
+Anyhow, patch is applied to master on -testing and -stable trees.
+
+commit 6449a149f850e9e1207233f3ca642d9342fbfbaf
+Author: Frank de Brabander <brabander@...1435...>
+Date:   Thu Feb 16 13:51:04 2012 +0100
+
+    Fixed wrong return type of cipher_kt_mode
+
+    The cipher_kt_mode uses bool as return type, this should be int. On
+    some platforms like OS X, any returned value larger than one will
+    be converted to 1.
+
+    Signed-off-by: Frank de Brabander <brabander@...1435...>
+    Acked-by: Adriaan de Jong <dejong@...1435...>
+    Signed-off-by: David Sommerseth <davids@...1347...>
 
 
---_002_CB62CAA7E8Fbrabanderfoxitcom_
-Content-Type: application/octet-stream;
-	name="0001-Fixed-wrong-return-type-of-cipher_kt_mode.patch"
-Content-Description: 0001-Fixed-wrong-return-type-of-cipher_kt_mode.patch
-Content-Disposition: attachment;
-	filename="0001-Fixed-wrong-return-type-of-cipher_kt_mode.patch";
-	size=1679; creation-date="Thu, 16 Feb 2012 14:00:57 GMT";
-	modification-date="Thu, 16 Feb 2012 14:00:57 GMT"
-Content-Transfer-Encoding: base64
+Kind regards,
 
-RnJvbSA4Nzc0NTc3ZjQ4Y2I5MDFhYjIyODI1YWE2ZGY4MDkzYjQ3ZGU2MzNiIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBGcmFuayBkZSBCcmFiYW5kZXIgPGJyYWJhbmRlckBmb3gtaXQu
-Y29tPgpEYXRlOiBUaHUsIDE2IEZlYiAyMDEyIDEzOjUxOjA0ICswMTAwClN1YmplY3Q6IFtQQVRD
-SF0gRml4ZWQgd3JvbmcgcmV0dXJuIHR5cGUgb2YgY2lwaGVyX2t0X21vZGUKClRoZSBjaXBoZXJf
-a3RfbW9kZSB1c2VzIGJvb2wgYXMgcmV0dXJuIHR5cGUsIHRoaXMgc2hvdWxkIGJlIGludC4gT24g
-c29tZSBwbGF0Zm9ybXMgbGlrZSBPUyBYLCBhbnkgcmV0dXJuZWQgdmFsdWUgbGFyZ2VyIHRoYW4g
-b25lIHdpbGwgYmUgY29udmVydGVkIHRvIDEuCgpTaWduZWQtb2ZmLWJ5OiBGcmFuayBkZSBCcmFi
-YW5kZXIgPGJyYWJhbmRlckBmb3gtaXQuY29tPgotLS0KIGNyeXB0b19iYWNrZW5kLmggIHwgICAg
-MiArLQogY3J5cHRvX29wZW5zc2wuYyAgfCAgICAyICstCiBjcnlwdG9fcG9sYXJzc2wuYyB8ICAg
-IDIgKy0KIDMgZmlsZXMgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQoK
-ZGlmZiAtLWdpdCBhL2NyeXB0b19iYWNrZW5kLmggYi9jcnlwdG9fYmFja2VuZC5oCmluZGV4IDg2
-MjI5NjIuLmEwOTY2ZGQgMTAwNjQ0Ci0tLSBhL2NyeXB0b19iYWNrZW5kLmgKKysrIGIvY3J5cHRv
-X2JhY2tlbmQuaApAQCAtMjE4LDcgKzIxOCw3IEBAIGludCBjaXBoZXJfa3RfYmxvY2tfc2l6ZSAo
-Y29uc3QgY2lwaGVyX2t0X3QgKmNpcGhlcl9rdCk7CiAgKiBAcmV0dXJuIAkJQ2lwaGVyIG1vZGUs
-IGVpdGhlciBcYyBPUEVOVlBOX01PREVfQ0JDLCBcYwogICogCQkJT1BFTlZQTl9NT0RFX09GQiBv
-ciBcYyBPUEVOVlBOX01PREVfQ0ZCCiAgKi8KLWJvb2wgY2lwaGVyX2t0X21vZGUgKGNvbnN0IGNp
-cGhlcl9rdF90ICpjaXBoZXJfa3QpOworaW50IGNpcGhlcl9rdF9tb2RlIChjb25zdCBjaXBoZXJf
-a3RfdCAqY2lwaGVyX2t0KTsKIAogCiAvKioKZGlmZiAtLWdpdCBhL2NyeXB0b19vcGVuc3NsLmMg
-Yi9jcnlwdG9fb3BlbnNzbC5jCmluZGV4IGRiNmI3OGUuLjBhNDFiMzkgMTAwNjQ0Ci0tLSBhL2Ny
-eXB0b19vcGVuc3NsLmMKKysrIGIvY3J5cHRvX29wZW5zc2wuYwpAQCAtNTU1LDcgKzU1NSw3IEBA
-IGNpcGhlcl9rdF9ibG9ja19zaXplIChjb25zdCBFVlBfQ0lQSEVSICpjaXBoZXJfa3QpCiAgIHJl
-dHVybiBFVlBfQ0lQSEVSX2Jsb2NrX3NpemUgKGNpcGhlcl9rdCk7CiB9CiAKLWJvb2wKK2ludAog
-Y2lwaGVyX2t0X21vZGUgKGNvbnN0IEVWUF9DSVBIRVIgKmNpcGhlcl9rdCkKIHsKICAgQVNTRVJU
-KE5VTEwgIT0gY2lwaGVyX2t0KTsKZGlmZiAtLWdpdCBhL2NyeXB0b19wb2xhcnNzbC5jIGIvY3J5
-cHRvX3BvbGFyc3NsLmMKaW5kZXggZTc0NzBkNS4uYWM0Y2FkZCAxMDA2NDQKLS0tIGEvY3J5cHRv
-X3BvbGFyc3NsLmMKKysrIGIvY3J5cHRvX3BvbGFyc3NsLmMKQEAgLTMxMyw3ICszMTMsNyBAQCBj
-aXBoZXJfa3RfYmxvY2tfc2l6ZSAoY29uc3QgY2lwaGVyX2luZm9fdCAqY2lwaGVyX2t0KQogICBy
-ZXR1cm4gY2lwaGVyX2t0LT5ibG9ja19zaXplOwogfQogCi1ib29sCitpbnQKIGNpcGhlcl9rdF9t
-b2RlIChjb25zdCBjaXBoZXJfaW5mb190ICpjaXBoZXJfa3QpCiB7CiAgIEFTU0VSVChOVUxMICE9
-IGNpcGhlcl9rdCk7Ci0tIAoxLjcuNS40Cgo=
+David Sommerseth
 
---_002_CB62CAA7E8Fbrabanderfoxitcom_--
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk89EC4ACgkQDC186MBRfrpLNgCcDo+3ZRWi5T62iUZVEjaVOsBH
++cIAoKQbItKZqgR+f372PCqCy8Fuo3ia
+=pey+
+-----END PGP SIGNATURE-----
 
