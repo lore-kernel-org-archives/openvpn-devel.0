@@ -1,11 +1,15 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Thu, 16 Feb 2012 18:30:40 +0100
-Message-ID: <1329413441-22538-4-git-send-email-heiko.hund@...1489...>
-In-Reply-To: <1329413441-22538-1-git-send-email-heiko.hund@...1489...>
+Date: Thu, 16 Feb 2012 18:47:53 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120216174753.GJ7024@...1296...>
 References: <1329413441-22538-1-git-send-email-heiko.hund@...1489...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 3/4] use the underscore version of stat on
-	Windows
+	<1329413441-22538-5-git-send-email-heiko.hund@...1489...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="qLni7iB6Dl8qUSwk"
+Content-Disposition: inline
+In-Reply-To: <1329413441-22538-5-git-send-email-heiko.hund@...1489...>
+Subject: Re: [Openvpn-devel] [PATCH 4/4] make MSVC link against shell32 as
+	well
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,71 +18,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-MSVC does not know wstat(). Instead _wstat() must be used here.
-Unfortunately _wstat() takes a 'struct _stat'. A type 'stat_t' is
-introduced to handle this situation in a portable way.
+--qLni7iB6Dl8qUSwk
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Signed-off-by: Heiko Hund <heiko.hund@...1489...>
----
- misc.h  |    6 ++++--
- pf.c    |    2 +-
- win32.c |    4 ++--
- 3 files changed, 7 insertions(+), 5 deletions(-)
+Hi,
 
-diff --git a/misc.h b/misc.h
-index e7a0b55..55d494f 100644
---- a/misc.h
-+++ b/misc.h
-@@ -168,10 +168,12 @@ openvpn_open (const char *path, int flags, mode_t mode)
- #endif
- 
- #ifdef WIN32
--int openvpn_stat (const char *path, struct stat *buf);
-+typedef struct _stat stat_t;
-+int openvpn_stat (const char *path, stat_t *buf);
- #else
-+typedef struct stat stat_t;
- static inline int
--openvpn_stat (const char *path, struct stat *buf)
-+openvpn_stat (const char *path, stat_t *buf)
- {
-   return stat (path, buf);
- }
-diff --git a/pf.c b/pf.c
-index a0e9fc8..67cd28f 100644
---- a/pf.c
-+++ b/pf.c
-@@ -498,7 +498,7 @@ pf_check_reload (struct context *c)
-       && c->c2.pf.filename
-       && event_timeout_trigger (&c->c2.pf.reload, &c->c2.timeval, ETT_DEFAULT))
-     {
--      struct stat s;
-+      stat_t s;
-       if (!openvpn_stat (c->c2.pf.filename, &s))
- 	{
- 	  if (s.st_mtime > c->c2.pf.file_last_mod)
-diff --git a/win32.c b/win32.c
-index a8f4ed9..4efc8df 100644
---- a/win32.c
-+++ b/win32.c
-@@ -1073,10 +1073,10 @@ openvpn_open (const char *path, int flags, int mode)
- }
- 
- int
--openvpn_stat (const char *path, struct stat *buf)
-+openvpn_stat (const char *path, stat_t *buf)
- {
-   struct gc_arena gc = gc_new ();
--  int res = wstat (wide_string (path, &gc), buf);
-+  int res = _wstat (wide_string (path, &gc), buf);
-   gc_free (&gc);
-   return res;
- }
--- 
-1.7.5.4
+On Thu, Feb 16, 2012 at 06:30:41PM +0100, Heiko Hund wrote:
+> Windows API CommandLineToArgvW(), introduced in Windows unicode path
+> commit 71bbbd76c62630c88441237d72fe5b61f0b45b2a, is defined therein.
+>=20
+> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
 
+Since you've tested it and it makes Samuli happy -> ACK :-)
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--qLni7iB6Dl8qUSwk
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBTz1BSakuBuNlUUl1AQIYmQP5AdXxI4Lvzuv2XSfViAN3jA47b1VDf1gM
+uGzIyYPD95SE6oUTZNZLP6Wj/Wm1fnVRKmGTqxMD+pQsiSlTI3gE0h3sHWpB6XAh
+w7yWzYMvGHuHEzQVmzIAtIksrpOO94PMTPbCTA9U+pR70Sg1V/1xFFMfgtKt0cDF
+jiZMAgdIkHg=
+=VHTB
+-----END PGP SIGNATURE-----
+
+--qLni7iB6Dl8qUSwk--
 
