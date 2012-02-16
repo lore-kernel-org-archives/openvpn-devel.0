@@ -1,10 +1,10 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Thu, 16 Feb 2012 18:30:39 +0100
-Message-ID: <1329413441-22538-3-git-send-email-heiko.hund@...1489...>
+Date: Thu, 16 Feb 2012 18:30:41 +0100
+Message-ID: <1329413441-22538-5-git-send-email-heiko.hund@...1489...>
 In-Reply-To: <1329413441-22538-1-git-send-email-heiko.hund@...1489...>
 References: <1329413441-22538-1-git-send-email-heiko.hund@...1489...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/4] do not use mode_t on Windows
+Subject: [Openvpn-devel] [PATCH 4/4] make MSVC link against shell32 as well
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,42 +17,27 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The MSVC headers do not define mode_t. open() uses an int for
-the permissions instead. Fixes building with the MSVC based
-buildsystem.
+Windows API CommandLineToArgvW(), introduced in Windows unicode path
+commit 71bbbd76c62630c88441237d72fe5b61f0b45b2a, is defined therein.
 
 Signed-off-by: Heiko Hund <heiko.hund@...1489...>
 ---
- misc.h  |    2 +-
- win32.c |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ win/msvc.mak.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/misc.h b/misc.h
-index 8c0bae1..e7a0b55 100644
---- a/misc.h
-+++ b/misc.h
-@@ -158,7 +158,7 @@ openvpn_fopen (const char *path, const char *mode)
- #endif
+diff --git a/win/msvc.mak.in b/win/msvc.mak.in
+index 115e395..191f370 100644
+--- a/win/msvc.mak.in
++++ b/win/msvc.mak.in
+@@ -31,7 +31,7 @@ LZO_DYNAMIC = lzo2.lib
  
- #ifdef WIN32
--int openvpn_open (const char *path, int flags, mode_t mode);
-+int openvpn_open (const char *path, int flags, int mode);
- #else
- static inline int
- openvpn_open (const char *path, int flags, mode_t mode)
-diff --git a/win32.c b/win32.c
-index 5b38918..a8f4ed9 100644
---- a/win32.c
-+++ b/win32.c
-@@ -1064,7 +1064,7 @@ openvpn_fopen (const char *path, const char *mode)
- }
+ INCLUDE_DIRS = -I$(OPENSSL)/include -I$(POLARSSL)/include -I$(LZO)/include -I$(PKCS11_HELPER)/include
  
- int
--openvpn_open (const char *path, int flags, mode_t mode)
-+openvpn_open (const char *path, int flags, int mode)
- {
-   struct gc_arena gc = gc_new ();
-   int fd = _wopen (wide_string (path, &gc), flags, mode);
+-LIBS = $(OPENSSL_DYNAMIC) $(POLARSSL_DYNAMIC) $(PKCS11_HELPER_DYNAMIC) $(LZO_DYNAMIC) ws2_32.lib crypt32.lib iphlpapi.lib winmm.lib user32.lib gdi32.lib advapi32.lib wininet.lib
++LIBS = $(OPENSSL_DYNAMIC) $(POLARSSL_DYNAMIC) $(PKCS11_HELPER_DYNAMIC) $(LZO_DYNAMIC) ws2_32.lib crypt32.lib iphlpapi.lib winmm.lib user32.lib gdi32.lib advapi32.lib wininet.lib shell32.lib
+ 
+ LIB_DIRS = -LIBPATH:$(OPENSSL)\lib -LIBPATH:$(POLARSSL)\build\library -LIBPATH:$(PKCS11_HELPER)\lib -LIBPATH:$(LZO)\lib
+ 
 -- 
 1.7.5.4
 
