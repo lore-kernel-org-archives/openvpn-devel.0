@@ -1,10 +1,11 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Thu, 16 Feb 2012 18:30:41 +0100
-Message-ID: <1329413441-22538-5-git-send-email-heiko.hund@...1489...>
+Date: Thu, 16 Feb 2012 18:30:40 +0100
+Message-ID: <1329413441-22538-4-git-send-email-heiko.hund@...1489...>
 In-Reply-To: <1329413441-22538-1-git-send-email-heiko.hund@...1489...>
 References: <1329413441-22538-1-git-send-email-heiko.hund@...1489...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 4/4] make MSVC link against shell32 as well
+Subject: [Openvpn-devel] [PATCH 3/4] use the underscore version of stat on
+	Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,27 +18,66 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Windows API CommandLineToArgvW(), introduced in Windows unicode path
-commit 71bbbd76c62630c88441237d72fe5b61f0b45b2a, is defined therein.
+MSVC does not know wstat(). Instead _wstat() must be used here.
+Unfortunately _wstat() takes a 'struct _stat'. A type 'stat_t' is
+introduced to handle this situation in a portable way.
 
 Signed-off-by: Heiko Hund <heiko.hund@...1489...>
 ---
- win/msvc.mak.in |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ misc.h  |    6 ++++--
+ pf.c    |    2 +-
+ win32.c |    4 ++--
+ 3 files changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/win/msvc.mak.in b/win/msvc.mak.in
-index 115e395..191f370 100644
---- a/win/msvc.mak.in
-+++ b/win/msvc.mak.in
-@@ -31,7 +31,7 @@ LZO_DYNAMIC = lzo2.lib
+diff --git a/misc.h b/misc.h
+index e7a0b55..55d494f 100644
+--- a/misc.h
++++ b/misc.h
+@@ -168,10 +168,12 @@ openvpn_open (const char *path, int flags, mode_t mode)
+ #endif
  
- INCLUDE_DIRS = -I$(OPENSSL)/include -I$(POLARSSL)/include -I$(LZO)/include -I$(PKCS11_HELPER)/include
+ #ifdef WIN32
+-int openvpn_stat (const char *path, struct stat *buf);
++typedef struct _stat stat_t;
++int openvpn_stat (const char *path, stat_t *buf);
+ #else
++typedef struct stat stat_t;
+ static inline int
+-openvpn_stat (const char *path, struct stat *buf)
++openvpn_stat (const char *path, stat_t *buf)
+ {
+   return stat (path, buf);
+ }
+diff --git a/pf.c b/pf.c
+index a0e9fc8..67cd28f 100644
+--- a/pf.c
++++ b/pf.c
+@@ -498,7 +498,7 @@ pf_check_reload (struct context *c)
+       && c->c2.pf.filename
+       && event_timeout_trigger (&c->c2.pf.reload, &c->c2.timeval, ETT_DEFAULT))
+     {
+-      struct stat s;
++      stat_t s;
+       if (!openvpn_stat (c->c2.pf.filename, &s))
+ 	{
+ 	  if (s.st_mtime > c->c2.pf.file_last_mod)
+diff --git a/win32.c b/win32.c
+index a8f4ed9..4efc8df 100644
+--- a/win32.c
++++ b/win32.c
+@@ -1073,10 +1073,10 @@ openvpn_open (const char *path, int flags, int mode)
+ }
  
--LIBS = $(OPENSSL_DYNAMIC) $(POLARSSL_DYNAMIC) $(PKCS11_HELPER_DYNAMIC) $(LZO_DYNAMIC) ws2_32.lib crypt32.lib iphlpapi.lib winmm.lib user32.lib gdi32.lib advapi32.lib wininet.lib
-+LIBS = $(OPENSSL_DYNAMIC) $(POLARSSL_DYNAMIC) $(PKCS11_HELPER_DYNAMIC) $(LZO_DYNAMIC) ws2_32.lib crypt32.lib iphlpapi.lib winmm.lib user32.lib gdi32.lib advapi32.lib wininet.lib shell32.lib
- 
- LIB_DIRS = -LIBPATH:$(OPENSSL)\lib -LIBPATH:$(POLARSSL)\build\library -LIBPATH:$(PKCS11_HELPER)\lib -LIBPATH:$(LZO)\lib
- 
+ int
+-openvpn_stat (const char *path, struct stat *buf)
++openvpn_stat (const char *path, stat_t *buf)
+ {
+   struct gc_arena gc = gc_new ();
+-  int res = wstat (wide_string (path, &gc), buf);
++  int res = _wstat (wide_string (path, &gc), buf);
+   gc_free (&gc);
+   return res;
+ }
 -- 
 1.7.5.4
 
