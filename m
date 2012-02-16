@@ -1,15 +1,15 @@
-Date: Thu, 16 Feb 2012 18:47:53 +0100
+Date: Thu, 16 Feb 2012 19:23:50 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20120216174753.GJ7024@...1296...>
+Message-ID: <20120216182350.GK7024@...1296...>
 References: <1329413441-22538-1-git-send-email-heiko.hund@...1489...>
-	<1329413441-22538-5-git-send-email-heiko.hund@...1489...>
+	<1329413441-22538-2-git-send-email-heiko.hund@...1489...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="qLni7iB6Dl8qUSwk"
+	protocol="application/pgp-signature"; boundary="liqSWPDvh3eyfZ9k"
 Content-Disposition: inline
-In-Reply-To: <1329413441-22538-5-git-send-email-heiko.hund@...1489...>
-Subject: Re: [Openvpn-devel] [PATCH 4/4] make MSVC link against shell32 as
-	well
+In-Reply-To: <1329413441-22538-2-git-send-email-heiko.hund@...1489...>
+Subject: Re: [Openvpn-devel] [PATCH 1/4] replace check for TARGET_WIN32 with
+	WIN32
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,20 +21,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Heiko Hund <heiko.hund@...1489...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---qLni7iB6Dl8qUSwk
+--liqSWPDvh3eyfZ9k
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Thu, Feb 16, 2012 at 06:30:41PM +0100, Heiko Hund wrote:
-> Windows API CommandLineToArgvW(), introduced in Windows unicode path
-> commit 71bbbd76c62630c88441237d72fe5b61f0b45b2a, is defined therein.
->=20
-> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+On Thu, Feb 16, 2012 at 06:30:38PM +0100, Heiko Hund wrote:
+> Use of TARGET_WIN32 breaks MSVC builds as it is only defined
+> for mingw builds done with the autotools buildsystem.
 
-Since you've tested it and it makes Samuli happy -> ACK :-)
+ACK.  I think it's reasonable to have exactly one CPP symbol to=20
+identify "building in the windows 32bit environment".
+
+I have no particular preference, and there are less TARGET_WIN32s in
+the code - so get rid of that one :-)
+
+(Yes, we should get rid of all the windows build cruft, but the focus
+for now is "have something that *builds* and can be tagged as 2.3-alpha1").
 
 gert
 --=20
@@ -44,19 +49,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---qLni7iB6Dl8qUSwk
+--liqSWPDvh3eyfZ9k
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (NetBSD)
 
-iQCVAwUBTz1BSakuBuNlUUl1AQIYmQP5AdXxI4Lvzuv2XSfViAN3jA47b1VDf1gM
-uGzIyYPD95SE6oUTZNZLP6Wj/Wm1fnVRKmGTqxMD+pQsiSlTI3gE0h3sHWpB6XAh
-w7yWzYMvGHuHEzQVmzIAtIksrpOO94PMTPbCTA9U+pR70Sg1V/1xFFMfgtKt0cDF
-jiZMAgdIkHg=
-=VHTB
+iQCVAwUBTz1JtqkuBuNlUUl1AQKtawP9HK3Dz4meo8o7ruPzlI6gvOOJJrZdfEcO
+UBDMYPWDCsNkDXmDIldLjKTuU40J8tPg8AHNOmLijVtIkQZBU8ozjz5fQ4IgNzHu
+dlYA16dcPZPVNAGb1Nu7juClduVEZ5x0298Gfa3FSISygvU4UDqWVWY8i6u9IAGP
+Vl89254bbMw=
+=yCPG
 -----END PGP SIGNATURE-----
 
---qLni7iB6Dl8qUSwk--
+--liqSWPDvh3eyfZ9k--
 
