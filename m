@@ -1,12 +1,13 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Fri, 17 Feb 2012 10:39:15 +0100
-Message-ID: <1784273.hoPHCvA0K1@...1526...>
-In-Reply-To: <CAOazyz0W43Hop+8d4gzB9cAsA-CH55185rgd6evDR0uJ=tf7SQ@...278...>
+Date: Fri, 17 Feb 2012 10:51:10 +0100
+Message-ID: <5374780.EoPQ9uqcdy@...1526...>
+In-Reply-To: <CAOazyz3q3iCDAaxaQbmWYmTx=wHDv5TDxzJhmXMmC82VOEcA3w@...278...>
 References: <1329413441-22538-1-git-send-email-heiko.hund@...1489...>
-	<1329413441-22538-3-git-send-email-heiko.hund@...1489...>
-	<CAOazyz0W43Hop+8d4gzB9cAsA-CH55185rgd6evDR0uJ=tf7SQ@...278...>
+	<1329413441-22538-5-git-send-email-heiko.hund@...1489...>
+	<CAOazyz3q3iCDAaxaQbmWYmTx=wHDv5TDxzJhmXMmC82VOEcA3w@...278...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 2/4] do not use mode_t on Windows
+Subject: Re: [Openvpn-devel] [PATCH 4/4] make MSVC link against shell32 as
+	well
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,23 +23,23 @@ Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 Alon,
 
-On Thursday 16 February 2012 18:34:34 Alon Bar-Lev wrote:
-> Anyway, this is not the correct solution.
-> Correct solution is to have config-msvc.h and have:
-> ---
-> #define mode_t int
+On Thursday 16 February 2012 18:37:21 Alon Bar-Lev wrote:
+> On Thu, Feb 16, 2012 at 7:30 PM, Heiko Hund <heiko.hund@...1489...> wrote:
+> > Windows API CommandLineToArgvW(), introduced in Windows unicode path
+> > commit 71bbbd76c62630c88441237d72fe5b61f0b45b2a, is defined therein.
+>=20
+> Usually this should be avoided and get command-line from wmain().
 
-I don't think that a MSVC specific header will do good. mode_t shouldn't=20
-actually be used in mingw either, even if they define it. I stumbled over s=
-uch=20
-glue code a couple of times and the only reason I can come up with why they=
-=20
-have it is backwards compatibility with old code. So it's rather a general=
-=20
-WIN32 thing. And I absolutely agree that putting all the WIN32 stuff into=20
-win32.[ch] would make the code prettier. I just don't feel enough itch to=20
-approach this scratching myself.
+the general idea is to make Unicode things happen without changing the open=
+vpn=20
+code too much in a very Windows specific way. Converting UCS-2 to UTF-8=20
+directly where input and output is happening and passing it through the res=
+t=20
+of openvpn as char* does that. I don't see any benefit in converting openvp=
+n=20
+into a native unicode binary.
 
+Regards
 Heiko
 --=20
 Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
