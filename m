@@ -1,7 +1,13 @@
-From: Frank de Brabander <debrabander@...277...>
-Date: Fri, 17 Feb 2012 22:04:50 +0100
-Message-Id: <1329512690-18831-1-git-send-email-debrabander@...277...>
-Subject: [Openvpn-devel] [PATCH] Bogus check for negative values on an
+Date: Fri, 17 Feb 2012 22:58:16 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120217215816.GW7024@...1296...>
+References: <1329512690-18831-1-git-send-email-debrabander@...277...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="JQ29orswtRjjfiJM"
+Content-Disposition: inline
+In-Reply-To: <1329512690-18831-1-git-send-email-debrabander@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Bogus check for negative values on an
 	unsigned number.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -11,62 +17,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Frank de Brabander <debrabander@...277...>
+To: Frank de Brabander <debrabander@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This causes compiler warnings when using Clang instead of default GCC.
+--JQ29orswtRjjfiJM
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Signed-off-by: Frank de Brabander <debrabander@...277...>
----
- mroute.c |   24 +++++++++---------------
- 1 files changed, 9 insertions(+), 15 deletions(-)
+Hi,
 
-diff --git a/mroute.c b/mroute.c
-index 285b151..0213a3e 100644
---- a/mroute.c
-+++ b/mroute.c
-@@ -516,29 +516,23 @@ void
- mroute_helper_add_iroute6 (struct mroute_helper *mh, 
-                            const struct iroute_ipv6 *ir6)
- {
--  if (ir6->netbits >= 0)
--    {
--      ASSERT (ir6->netbits < MR_HELPER_NET_LEN);
--      ++mh->cache_generation;
--      ++mh->net_len_refcount[ir6->netbits];
--      if (mh->net_len_refcount[ir6->netbits] == 1)
-+  ASSERT (ir6->netbits < MR_HELPER_NET_LEN);
-+  ++mh->cache_generation;
-+  ++mh->net_len_refcount[ir6->netbits];
-+  if (mh->net_len_refcount[ir6->netbits] == 1)
- 	mroute_helper_regenerate (mh);
--    }
- }
- 
- void
- mroute_helper_del_iroute6 (struct mroute_helper *mh, 
- 			   const struct iroute_ipv6 *ir6)
- {
--  if (ir6->netbits >= 0)
--    {
--      ASSERT (ir6->netbits < MR_HELPER_NET_LEN);
--      ++mh->cache_generation;
--      --mh->net_len_refcount[ir6->netbits];
--      ASSERT (mh->net_len_refcount[ir6->netbits] >= 0);
--      if (!mh->net_len_refcount[ir6->netbits])
-+  ASSERT (ir6->netbits < MR_HELPER_NET_LEN);
-+  ++mh->cache_generation;
-+  --mh->net_len_refcount[ir6->netbits];
-+  ASSERT (mh->net_len_refcount[ir6->netbits] >= 0);
-+  if (!mh->net_len_refcount[ir6->netbits])
- 	mroute_helper_regenerate (mh);
--    }
- }
- 
- void
--- 
-1.7.5.4
+On Fri, Feb 17, 2012 at 10:04:50PM +0100, Frank de Brabander wrote:
+> This causes compiler warnings when using Clang instead of default GCC.
 
+I'm not particularily interested in source code fixes "just to silence
+a compiler warning" - but Clang is right, of course, that this variable
+cannot ever be negative, and thus it should be cleaned up :-)
+
+I'm not ACKing this patch anyway, because I think the issue is bigger - I
+want to look at the IPv4 code paths and see whether the IPv4 "netbits"
+structure element can ever be negative - and if yes, figure out whether
+this should be possible for IPv6, and if not, convert the IPv4 netbits
+to "unsigned int" as well, and get rid of the if() statement there as
+well.
+
+Thanks for reporting this.  I'll look into it.
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--JQ29orswtRjjfiJM
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBTz7NeKkuBuNlUUl1AQLB8wP9EHIoGoNpkaULFRpAqGELRp3ZDqxCGnWA
+QvmvAdq9R4yk9Nwon7Xm5BTbeYJMTL+VcgeVQMe8v8SRZ/Uu0r6/X/pvFovAkZvG
+KCvBuxlOj4+0qQIHWNL1+wrm/R3WAMF+vnkrzAmxPyidADaFqYnYXHe1HQcGD0RX
+qrrlUQwrkD4=
+=f1sA
+-----END PGP SIGNATURE-----
+
+--JQ29orswtRjjfiJM--
 
