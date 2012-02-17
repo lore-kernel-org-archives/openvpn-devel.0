@@ -1,12 +1,7 @@
-Message-ID: <4F3E38DE.6050409@...1114...>
-Date: Fri, 17 Feb 2012 12:24:14 +0100
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <1329477191-634-1-git-send-email-davids@...1347...>
-	<CAOazyz2YPRM9WEt4LjEVOR05FrYkVr4W1OMWcbHVeDf7m6E+-Q@...278...>
-In-Reply-To: <CAOazyz2YPRM9WEt4LjEVOR05FrYkVr4W1OMWcbHVeDf7m6E+-Q@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Makefile.am referenced a now
- non-existing config-win32.h
+From: David Sommerseth <davids@...1347...>
+Date: Fri, 17 Feb 2012 12:30:33 +0100
+Message-Id: <1329478233-20295-1-git-send-email-davids@...1347...>
+Subject: [Openvpn-devel] [PATCH] Makefile.am was missing ssl_common.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,52 +12,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: David Sommerseth <davids@...1347...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+In commit 9a160b796e1a40f9635231e5533ce40d46dba25f ssl_common.h
+was introduced, but never listed as a source file in Makefile.am
 
-On 17/02/12 12:18, Alon Bar-Lev wrote:
-> When did this file gone? Anyway, this was required with compiling 
-> using MSVC...
+Signed-off-by: David Sommerseth <davids@...1347...>
+---
+ Makefile.am |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
-This is the commit referenced:
+diff --git a/Makefile.am b/Makefile.am
+index 2029389..26b80f3 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -146,6 +146,7 @@ openvpn_SOURCES = \
+ 	ssl.c ssl.h  ssl_backend.h \
+ 	ssl_openssl.c ssl_openssl.h \
+ 	ssl_polarssl.c ssl_polarssl.h \
++	ssl_common.h \
+ 	ssl_verify.c ssl_verify.h ssl_verify_backend.h \
+ 	ssl_verify_openssl.c ssl_verify_openssl.h \
+ 	ssl_verify_polarssl.c ssl_verify_polarssl.h \
+-- 
+1.7.4.4
 
-commit 4b312378e9e7084a0699ca6d4b895bdadb7540db
-Author: Samuli Seppänen <samuli@...515...>
-Date:   Tue Mar 15 16:37:41 2011 +0200
-
-    Replaced config-win32.h with win/config.h.in
-
-    The original config-win32.h - a static header file - has been
-    superceded by both "domake-win" script and the new Python-based
-    buildsystem. Transformed it into a template file, win/config.h.in,
-    which obtains the most commonly used build parameters from
-    win/settings.in.
-
-    Added support code to win/config.py and win/wb.py to preprocess
-    win/config.h.in and copy it to config.h, from where source and header
-    files can find it.
-
-    Removed all references to config-win32.h. Also removed obsolete
-    PACKAGE_BUGREPORT and USE_PTHREAD variables from the win/config.h.in
-    file.
-
-    Signed-off-by: Samuli Seppänen <samuli@...515...>
-    Acked-by: James Yonan <james@...515...>
-    Signed-off-by: David Sommerseth <davids@...1347...>
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk8+ONwACgkQDC186MBRfrociQCfTopQrINB9mjNUnqgPShF7hvA
-d7gAoJvf0XjI59upjzKdKdqDVqh7n3Eo
-=vB7z
------END PGP SIGNATURE-----
 
