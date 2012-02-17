@@ -1,11 +1,8 @@
-Date: Fri, 17 Feb 2012 13:06:50 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120217120650.GU7024@...1296...>
+Message-ID: <4F3E498D.6080602@...1114...>
+Date: Fri, 17 Feb 2012 13:35:25 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
 References: <1329478233-20295-1-git-send-email-davids@...1347...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="OmL7C/BU0IhhC9Of"
-Content-Disposition: inline
 In-Reply-To: <1329478233-20295-1-git-send-email-davids@...1347...>
 Subject: Re: [Openvpn-devel] [PATCH] Makefile.am was missing ssl_common.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,46 +13,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <davids@...1347...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
---OmL7C/BU0IhhC9Of
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Hi,
+On 17/02/12 12:30, David Sommerseth wrote:
+> In commit 9a160b796e1a40f9635231e5533ce40d46dba25f ssl_common.h was 
+> introduced, but never listed as a source file in Makefile.am
+> 
+> Signed-off-by: David Sommerseth <davids@...1347...> --- Makefile.am | 
+> 1 + 1 files changed, 1 insertions(+), 0 deletions(-)
+> 
 
-On Fri, Feb 17, 2012 at 12:30:33PM +0100, David Sommerseth wrote:
-> In commit 9a160b796e1a40f9635231e5533ce40d46dba25f ssl_common.h
-> was introduced, but never listed as a source file in Makefile.am
+Applied to master branch on -testing and -stable trees.
 
-ACK, together with the other one.
+commit 5e1e5495328bb491a186d72544d2e57f49dfdedc
+Author: David Sommerseth <davids@...1347...>
+Date:   Fri Feb 17 12:29:27 2012 +0100
 
-(Side remark: buildbot should do "make distcheck", at least on one of
-the instances - so we see this right away when moving around files)
+    Makefile.am was missing ssl_common.h
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+    In commit 9a160b796e1a40f9635231e5533ce40d46dba25f ssl_common.h
+    was introduced, but never listed as a source file in Makefile.am
 
---OmL7C/BU0IhhC9Of
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+    Signed-off-by: David Sommerseth <davids@...1347...>
+    Acked-by: Gert Doering <gert@...1296...>
 
+
+kind regards,
+
+David Sommerseth
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iQCVAwUBTz5C2qkuBuNlUUl1AQL9JwP/X42XESUl2W2BhZYjc0WDmzoNnYLsy4TZ
-mkm6+rhXRhEkAPF8zVJxgIT57a/cxFs2nDBqi2bcmoS0GV9WvWNSEyoJ23YuYWdx
-Bq1RBPD4TF+GPA6Yi5EnM7guwnlSfw3nmObaSPoY6f7kUZA81xdnlxrtFFdu6X37
-o80ZRZBUbRg=
-=poOU
+iEYEARECAAYFAk8+SYoACgkQDC186MBRfrqq2gCglwyqhnfiCCuE6sUMlQ324paz
+vsMAoI5WpwMbYWhaDHISphVi7xW5c0rs
+=IPb6
 -----END PGP SIGNATURE-----
-
---OmL7C/BU0IhhC9Of--
 
