@@ -1,14 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <5374780.EoPQ9uqcdy@...1526...>
+In-Reply-To: <1784273.hoPHCvA0K1@...1526...>
 References: <1329413441-22538-1-git-send-email-heiko.hund@...1489...>
-	<1329413441-22538-5-git-send-email-heiko.hund@...1489...>
-	<CAOazyz3q3iCDAaxaQbmWYmTx=wHDv5TDxzJhmXMmC82VOEcA3w@...278...>
-	<5374780.EoPQ9uqcdy@...1526...>
-Date: Fri, 17 Feb 2012 11:55:19 +0200
-Message-ID: <CAOazyz15xpgFxzqQFaotZSmS2=-gSmUsMMwy=SZay6bi3EEMAg@...278...>
+	<1329413441-22538-3-git-send-email-heiko.hund@...1489...>
+	<CAOazyz0W43Hop+8d4gzB9cAsA-CH55185rgd6evDR0uJ=tf7SQ@...278...>
+	<1784273.hoPHCvA0K1@...1526...>
+Date: Fri, 17 Feb 2012 11:56:56 +0200
+Message-ID: <CAOazyz10nhuOLTHqJt3A3FxWPzgW52DWmz_Ka79LWfVFwMHRmg@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 4/4] make MSVC link against shell32 as
-	well
+Subject: Re: [Openvpn-devel] [PATCH 2/4] do not use mode_t on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,29 +21,27 @@ Content-Transfer-Encoding: 8bit
 To: Heiko Hund <heiko.hund@...1489...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Fri, Feb 17, 2012 at 11:51 AM, Heiko Hund <heiko.hund@...1489...> wrote:
+On Fri, Feb 17, 2012 at 11:39 AM, Heiko Hund <heiko.hund@...1489...> wrote:
 > Alon,
 >
-> On Thursday 16 February 2012 18:37:21 Alon Bar-Lev wrote:
->> On Thu, Feb 16, 2012 at 7:30 PM, Heiko Hund <heiko.hund@...1489...> wrote:
->> > Windows API CommandLineToArgvW(), introduced in Windows unicode path
->> > commit 71bbbd76c62630c88441237d72fe5b61f0b45b2a, is defined therein.
->>
->> Usually this should be avoided and get command-line from wmain().
+> On Thursday 16 February 2012 18:34:34 Alon Bar-Lev wrote:
+>> Anyway, this is not the correct solution.
+>> Correct solution is to have config-msvc.h and have:
+>> ---
+>> #define mode_t int
 >
-> the general idea is to make Unicode things happen without changing the openvpn
-> code too much in a very Windows specific way. Converting UCS-2 to UTF-8
-> directly where input and output is happening and passing it through the rest
-> of openvpn as char* does that. I don't see any benefit in converting openvpn
-> into a native unicode binary.
+> I don't think that a MSVC specific header will do good. mode_t shouldn't
+> actually be used in mingw either, even if they define it. I stumbled over such
+> glue code a couple of times and the only reason I can come up with why they
+> have it is backwards compatibility with old code. So it's rather a general
+> WIN32 thing. And I absolutely agree that putting all the WIN32 stuff into
+> win32.[ch] would make the code prettier. I just don't feel enough itch to
+> approach this scratching myself.
+>
 
-I agree.
-Compiling entry point as wmain and not main is not bigger change than
-any other change in the unicode patch.
-Anyway as it seem we have an opportunity window to cleanup the mess,
-so apply whatever needed in orderer to make it work and then we revise
-it.
-Personally, I don't think this unicode patch was ready to be merged...
+You will  be surprised how mingw is better in this sense.
+Anyway, as I wrote commit whatever you need for now, we will clean up
+the build system soon.
 
 Alon.
 
