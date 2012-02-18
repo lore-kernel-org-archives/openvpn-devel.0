@@ -1,14 +1,13 @@
-Date: Fri, 17 Feb 2012 22:58:16 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120217215816.GW7024@...1296...>
-References: <1329512690-18831-1-git-send-email-debrabander@...277...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="JQ29orswtRjjfiJM"
-Content-Disposition: inline
-In-Reply-To: <1329512690-18831-1-git-send-email-debrabander@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Bogus check for negative values on an
-	unsigned number.
+Message-ID: <4F3EFC40.3070608@...1552...>
+Date: Fri, 17 Feb 2012 17:17:52 -0800
+From: awgh <awgh@...1552...>
+MIME-Version: 1.0
+References: <4F3EE1BD.9090306@...1553...>
+In-Reply-To: <4F3EE1BD.9090306@...1553...>
+Content-Type: multipart/signed;
+	boundary="PGP_Universal_C845020C_EC0417DE_EA17EED4_BD53385A";
+	protocol="application/pgp-signature"; micalg="pgp-sha256"
+Subject: Re: [Openvpn-devel] Obfuscation for Iran SSL blocking
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,54 +16,119 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Frank de Brabander <debrabander@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: junflow@...277..., openvpn-devel@lists.sourceforge.net
 
---JQ29orswtRjjfiJM
-Content-Type: text/plain; charset="us-ascii"
+--PGP_Universal_C845020C_EC0417DE_EA17EED4_BD53385A
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
 
-On Fri, Feb 17, 2012 at 10:04:50PM +0100, Frank de Brabander wrote:
-> This causes compiler warnings when using Clang instead of default GCC.
+Hello Jun!
 
-I'm not particularily interested in source code fixes "just to silence
-a compiler warning" - but Clang is right, of course, that this variable
-cannot ever be negative, and thus it should be cleaned up :-)
+   I have spent the last couple of days preparing a bundled installer
+for the Tor Obfuscation Proxy combined with OpenVPN.  The installer
+currently works on 32-bit and 64-bit Windows.
 
-I'm not ACKing this patch anyway, because I think the issue is bigger - I
-want to look at the IPv4 code paths and see whether the IPv4 "netbits"
-structure element can ever be negative - and if yes, figure out whether
-this should be possible for IPv6, and if not, convert the IPv4 netbits
-to "unsigned int" as well, and get rid of the if() statement there as
-well.
+   It simply installs obfsproxy in SOCKS proxy mode and sets it up as a
+Windows service, so it starts at boot.  The goal is to make this an=20
+automatic install for both clients and servers.
 
-Thanks for reporting this.  I'll look into it.
+   To convert an existing OpenVPN profile to use the obfsproxy, you
+simply change the destination port of your remote line to point at the
+obfuscated server port instead of the regular OpenVPN server port:
+BEFORE:  remote my.server.com 443
+AFTER:   remote my.server.com 80  (assuming obfsproxy server is
+listening on 80)
 
-gert
+   Then, you just set OpenVPN to use a socks proxy by adding these lines
+to you config file:
+socks-proxy-retry
+socks-proxy 127.0.0.1 1050
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+   After this, when you initiate the OpenVPN connection, it will use
+obfsproxy as a SOCKS proxy.  Just remember to connect to the obfsproxy
+port on the server, not the OpenVPN port, in your client config and it
+works great!
 
---JQ29orswtRjjfiJM
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+   A couple of important notes:
+    1)  I have only tested this with TCP mode.  I don't expect UDP to
+work through Socks proxy, but haven't yet tried it.
+    2)  Once, obfsproxy died on me and I had to go to Control
+Panel->Administrative Tools->Services and restart the obfsproxy service.
+  This seems to be a one-time crash, though.
+
+   The Windows Installer is available here:
+	http://awgh.org/files/obfsvpn-installer-0_0_1.exe
+
+   You can build it yourself by checking out the project on bitbucket here:
+	https://bitbucket.org/awgh/obfsproxy-windows-installer
+
+   I am also working on init scripts and packages for Linux distros,
+which can be used for both the client side and server side of an
+obfsproxy connection.  So far, I just have CentOS RPMs and init scripts,
+which are available in this project:
+	https://bitbucket.org/awgh/obfsproxy-rpm-build
+
+   I am planning on adding some additional features to the installer
+bundle, to allow the configuration of shared secrets and the importation
+of existing config files.
+
+   Please feel free to either email me with bugs/feature requests or to
+use the issue tracking on bitbucket!  Hope this will be useful to some
+of you.
+
+
+Best Regards,
+
+- Ben
+
+
+> -------- Original Message --------
+> Subject:        Re: [Openvpn-devel] Obfuscation for Iran SSL blocking
+> Date:   Thu, 16 Feb 2012 15:01:45 +0200
+> From:   Samuli Sepp=C3=A4nen<  samuli@...515...>
+> Organization:   OpenVPN Technologies, Inc
+> To:     Jun Matsushita<  junflow@...277...>
+> CC:     David Sommerseth<  openvpn.list@...1114...>,
+> " openvpn-devel@lists.sourceforge.net"
+> <  openvpn-devel@lists.sourceforge.net>
+>
+>
+>
+>
+> Hi Jun,
+>
+> I would try David's obfsproxy + OpenVPN suggestion first and reconsider
+> if that fails.
+> If we would add obfuscation into OpenVPN itself, we'd soon be in the
+> same cat and mouse game as Tor, with the exception we don't have the
+> same amount of developer interest to follow it through. So, I think
+> keeping the obfuscation functionality would be challenging in the long
+> run.
+>
+> * Unknown Key
+> * 0xA036E792(L)
+>
+>
+
+
+--PGP_Universal_C845020C_EC0417DE_EA17EED4_BD53385A
+Content-Type: application/pgp-signature;
+	x-mac-type=70674453;
+	name=PGP.sig
+Content-Disposition: attachment; filename=PGP.sig
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
+Version: PGP Desktop 10.2.0 (Build 1672)
 
-iQCVAwUBTz7NeKkuBuNlUUl1AQLB8wP9EHIoGoNpkaULFRpAqGELRp3ZDqxCGnWA
-QvmvAdq9R4yk9Nwon7Xm5BTbeYJMTL+VcgeVQMe8v8SRZ/Uu0r6/X/pvFovAkZvG
-KCvBuxlOj4+0qQIHWNL1+wrm/R3WAMF+vnkrzAmxPyidADaFqYnYXHe1HQcGD0RX
-qrrlUQwrkD4=
-=f1sA
+iQEVAwUBTz78Uk7y/e9dE4VrAQjjtQf8DeRMWIIWUeDlMxr1NLr8RkJqKpAtaJkc
+tA+lbcrha/dUeMiEac2IQwjl52ZvfFjDPFG7C9BL5xzo7OO5kHJr8FyZl/GQGtnY
+Pubdr+i+p13HFzh1UHWSnqunaY1rlPjasyx7jJ3ywHXE4wcPLxNJltukyM8Zk+9w
+pRUzgtlykchHXwmArhAdl4WrP1eCtxCoICfPeRu9JIWkVPfEnA4dYanwJ+ao8G72
+KaOnAHf+VJh/xQTjbzW3GDcWf9DAA0TAzKetfqK5hPfXhwPFWGraFM2Zfgy0BMFT
+so6VnnpLPMRHVEi3UG5577kGy3rl2Y6dj45zndHe8KXakDP25y+dGg==
+=r7rm
 -----END PGP SIGNATURE-----
 
---JQ29orswtRjjfiJM--
+--PGP_Universal_C845020C_EC0417DE_EA17EED4_BD53385A--
 
