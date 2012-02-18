@@ -1,8 +1,7 @@
-MIME-Version: 1.0
-Date: Sat, 18 Feb 2012 17:05:16 +0200
-Message-ID: <CAOazyz3S2GAFu+TN0s7482ovQBdWJYUxALVfOEiF6UGHR0oW0Q@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: [Openvpn-devel] [DEVELOPER REQUESTED] Repackage TAP-Win32
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Sat, 18 Feb 2012 20:44:12 +0100
+Message-Id: <1329594252-5257-1-git-send-email-heiko.hund@...1489...>
+Subject: [Openvpn-devel] [PATCH] define access mode flag X_OK as 0 on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,43 +10,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hello,
+The _access and _waccess functions in Windows don't know about
+X_OK (1). If you pass an uneven mode flag the C runtime's default
+invalid parameter handler ends execution of openvpn.
 
-We have a go to rewrite the OpenvPN build system.
-I started to work at core product [1].
+Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+---
+ win/config.h.in |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-As part of the re-write we split out the TAP-Win32 out of OpenVPN code base.
+diff --git a/win/config.h.in b/win/config.h.in
+index b5c31b8..fcb8d6c 100644
+--- a/win/config.h.in
++++ b/win/config.h.in
+@@ -243,7 +243,7 @@ typedef unsigned long in_addr_t;
+ #endif
+ 
+ #ifndef X_OK
+-#define X_OK 1
++#define X_OK 0
+ #endif
+ 
+ #ifndef F_OK
+-- 
+1.7.5.4
 
-To make things go faster we may try to parallelize the effort.
-
-Here are the tasks to perform:
-1. Create a GIT repository of the master TAP-Win32 sources with all
-history, to ease our work, please use github.
-2. Detach the TAP-Win32 build from the OpenVPN build. It should be a
-simpler build as it now only use the DDK.
-3. Rename the TAP-Win32 to TAP-Windows as we do not need the legacy
-"Win32" any more.
-4. Rename the TAP common.h into tap-windows.h.
-5. Sync tap-windows.h symbols per [2], I added prefix and removed the
-"32", add another header for version information.
-6. Create tap nsis installation (based on current openvpn nsis), the
-msi must be silent installation mode enabled.
-7. Within installation, add a group "SDK" or similar to nsis to
-install the tap-windows.h as well.
-8. Create build script to build and optionally sign the driver and the msi.
-9. Output of build system would be [at least] (msi, tarball) for
-(win32, win64). Why tarball? To enable people to fetch files without
-hacking the msi (example: cross compile).
-
-Anyone interested?
-Need someone experienced with courage!
-
-Alon.
-
-[1] https://github.com/alonbl/openvpn branch build.
-[2] https://github.com/alonbl/openvpn/blob/build/include/tap-windows.h
 
