@@ -1,9 +1,11 @@
-Date: Sat, 18 Feb 2012 16:42:21 -0600
-From: "Karl O. Pinc" <kop@...1206...>
-In-Reply-To: <CAOazyz3S2GAFu+TN0s7482ovQBdWJYUxALVfOEiF6UGHR0oW0Q@...278...>
-	(from alon.barlev@...277... on Sat Feb 18 09:05:16 2012)
-Message-Id: <1329604941.26494.7@...1207...>
 MIME-Version: 1.0
+Sender: scottywz@...277...
+In-Reply-To: <CAOazyz3S2GAFu+TN0s7482ovQBdWJYUxALVfOEiF6UGHR0oW0Q@...278...>
+References: <CAOazyz3S2GAFu+TN0s7482ovQBdWJYUxALVfOEiF6UGHR0oW0Q@...278...>
+Date: Sat, 18 Feb 2012 16:53:50 -0600
+Message-ID: <CAJKrh+Ujepn465ebS2yHThjZMqDRKA7+qWvHF1XNAjpVches1A@...278...>
+From: Scott Zeid <s@...1497...>
+Content-Type: multipart/alternative; boundary=00248c7119d14e704804b944ef83
 Subject: Re: [Openvpn-devel] [DEVELOPER REQUESTED] Repackage TAP-Win32
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,34 +15,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-On 02/18/2012 09:05:16 AM, Alon Bar-Lev wrote:
-> Hello,
->=20
-> We have a go to rewrite the OpenvPN build system.
+--00248c7119d14e704804b944ef83
+Content-Type: text/plain; charset=UTF-8
 
+On Feb 18, 2012 9:05 AM, "Alon Bar-Lev" <alon.barlev@...277...> wrote:
 > 9. Output of build system would be [at least] (msi, tarball) for
 > (win32, win64). Why tarball? To enable people to fetch files without
 > hacking the msi (example: cross compile).
 
-I'd like to second the motion to produce a MS tarball.  People
-who want only to produce a custom OpenVPN installer, such
-as the recent thread here regarding packaging OpenVPN
-in conjunction with an SSL obfuscation proxy, should
-not also have to go to the trouble to produce OpenVPN
-binaries.  People should instead be able to rely on
-the OpenVPN project for high-quality prebuilt
-binaries suitable for repackaging into a customized
-installer.
+It should probably be a zip file since Windows doesn't support tarballs out
+of the box.
 
+--00248c7119d14e704804b944ef83
+Content-Type: text/html; charset=UTF-8
 
+<p><br>
+On Feb 18, 2012 9:05 AM, &quot;Alon Bar-Lev&quot; &lt;<a href="mailto:alon.barlev@...277...">alon.barlev@...277...</a>&gt; wrote:<br>
+&gt; 9. Output of build system would be [at least] (msi, tarball) for<br>
+&gt; (win32, win64). Why tarball? To enable people to fetch files without<br>
+&gt; hacking the msi (example: cross compile).</p>
+<p>It should probably be a zip file since Windows doesn&#39;t support tarballs out of the box.</p>
 
-Karl <kop@...1206...>
-Free Software:  "You don't pay back, you pay forward."
-                 -- Robert A. Heinlein
-
+--00248c7119d14e704804b944ef83--
 
