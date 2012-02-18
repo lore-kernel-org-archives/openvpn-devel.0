@@ -1,11 +1,11 @@
-Message-ID: <4F3EFC40.3070608@...1552...>
-Date: Fri, 17 Feb 2012 17:17:52 -0800
+Message-ID: <4F3EFC6F.3010500@...1552...>
+Date: Fri, 17 Feb 2012 17:18:39 -0800
 From: awgh <awgh@...1552...>
 MIME-Version: 1.0
 References: <4F3EE1BD.9090306@...1553...>
 In-Reply-To: <4F3EE1BD.9090306@...1553...>
 Content-Type: multipart/signed;
-	boundary="PGP_Universal_C845020C_EC0417DE_EA17EED4_BD53385A";
+	boundary="PGP_Universal_2B2E507D_75B3C2F5_6336AD71_9425CD11";
 	protocol="application/pgp-signature"; micalg="pgp-sha256"
 Subject: Re: [Openvpn-devel] Obfuscation for Iran SSL blocking
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,7 +18,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: junflow@...277..., openvpn-devel@lists.sourceforge.net
 
---PGP_Universal_C845020C_EC0417DE_EA17EED4_BD53385A
+--PGP_Universal_2B2E507D_75B3C2F5_6336AD71_9425CD11
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: quoted-printable
 
@@ -112,7 +112,7 @@ Best Regards,
 >
 
 
---PGP_Universal_C845020C_EC0417DE_EA17EED4_BD53385A
+--PGP_Universal_2B2E507D_75B3C2F5_6336AD71_9425CD11
 Content-Type: application/pgp-signature;
 	x-mac-type=70674453;
 	name=PGP.sig
@@ -121,14 +121,14 @@ Content-Disposition: attachment; filename=PGP.sig
 -----BEGIN PGP SIGNATURE-----
 Version: PGP Desktop 10.2.0 (Build 1672)
 
-iQEVAwUBTz78Uk7y/e9dE4VrAQjjtQf8DeRMWIIWUeDlMxr1NLr8RkJqKpAtaJkc
-tA+lbcrha/dUeMiEac2IQwjl52ZvfFjDPFG7C9BL5xzo7OO5kHJr8FyZl/GQGtnY
-Pubdr+i+p13HFzh1UHWSnqunaY1rlPjasyx7jJ3ywHXE4wcPLxNJltukyM8Zk+9w
-pRUzgtlykchHXwmArhAdl4WrP1eCtxCoICfPeRu9JIWkVPfEnA4dYanwJ+ao8G72
-KaOnAHf+VJh/xQTjbzW3GDcWf9DAA0TAzKetfqK5hPfXhwPFWGraFM2Zfgy0BMFT
-so6VnnpLPMRHVEi3UG5577kGy3rl2Y6dj45zndHe8KXakDP25y+dGg==
-=r7rm
+iQEVAwUBTz78cE7y/e9dE4VrAQhAWwgAj4XV8VKdgKvC69l+QRKOJ99mOgFZmkJJ
+HjB8HT+vYIS4ILgjzqFzHrSDt+Y9wkC5oV1BAt853J0msN7tBtDk85fG/vaz537p
+iqI2yPiQOJgm416Vd0ZZ0KHCTvLKl9uiQheDw3E3wdBj86H0iqbFFzmh1F6Gx8Wx
+OlbG4wuAOxvZ7kyeqMTGOP3hufRKtLp8YlWk3y5zD5SNl4GE42sCgxWShbqfBW3Q
+435IYiPp6V1HxA5434RC1xaqekZ0RCJkODgm+eRWiWX0aNY7+r2Z/FqZY2OlAB/m
+dSQAOIcEr1BfVvlXgHJpm/HGue9njeGAzMdLLxzpFZl4/bxIuDpVtw==
+=yH9t
 -----END PGP SIGNATURE-----
 
---PGP_Universal_C845020C_EC0417DE_EA17EED4_BD53385A--
+--PGP_Universal_2B2E507D_75B3C2F5_6336AD71_9425CD11--
 
