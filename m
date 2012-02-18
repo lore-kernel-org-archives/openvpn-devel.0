@@ -1,12 +1,8 @@
 MIME-Version: 1.0
-In-Reply-To: <20120217215816.GW7024@...1296...>
-References: <1329512690-18831-1-git-send-email-debrabander@...277...>
-	<20120217215816.GW7024@...1296...>
-Date: Sat, 18 Feb 2012 07:37:15 +0100
-Message-ID: <CAOBzU4Pr3JuycDY_RuhXs5tDArVAiMSu6wwyaXBA+XbLFUiBjg@...278...>
-From: Frank de Brabander <debrabander@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Bogus check for negative values on an
- unsigned number.
+Date: Sat, 18 Feb 2012 17:05:16 +0200
+Message-ID: <CAOazyz3S2GAFu+TN0s7482ovQBdWJYUxALVfOEiF6UGHR0oW0Q@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: [Openvpn-devel] [DEVELOPER REQUESTED] Repackage TAP-Win32
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,42 +11,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-I totally agree on not ACKing the patch and your solution description
-;-) I tried to start a discussion on IRC about the preferred solution
-before sending this patch, but that didn't get very far.
+Hello,
 
-Op 17 februari 2012 22:58 heeft Gert Doering <gert@...1296...> het
-volgende geschreven:
-> Hi,
->
-> On Fri, Feb 17, 2012 at 10:04:50PM +0100, Frank de Brabander wrote:
->> This causes compiler warnings when using Clang instead of default GCC.
->
-> I'm not particularily interested in source code fixes "just to silence
-> a compiler warning" - but Clang is right, of course, that this variable
-> cannot ever be negative, and thus it should be cleaned up :-)
->
-> I'm not ACKing this patch anyway, because I think the issue is bigger - I
-> want to look at the IPv4 code paths and see whether the IPv4 "netbits"
-> structure element can ever be negative - and if yes, figure out whether
-> this should be possible for IPv6, and if not, convert the IPv4 netbits
-> to "unsigned int" as well, and get rid of the if() statement there as
-> well.
->
-> Thanks for reporting this. =A0I'll look into it.
->
-> gert
->
-> --
-> USENET is *not* the non-clickable part of WWW!
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 //www.muc.de/~gert/
-> Gert Doering - Munich, Germany =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 gert@...1296...
-> fax: +49-89-35655025 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0gert@=
-...1297...
+We have a go to rewrite the OpenvPN build system.
+I started to work at core product [1].
+
+As part of the re-write we split out the TAP-Win32 out of OpenVPN code base.
+
+To make things go faster we may try to parallelize the effort.
+
+Here are the tasks to perform:
+1. Create a GIT repository of the master TAP-Win32 sources with all
+history, to ease our work, please use github.
+2. Detach the TAP-Win32 build from the OpenVPN build. It should be a
+simpler build as it now only use the DDK.
+3. Rename the TAP-Win32 to TAP-Windows as we do not need the legacy
+"Win32" any more.
+4. Rename the TAP common.h into tap-windows.h.
+5. Sync tap-windows.h symbols per [2], I added prefix and removed the
+"32", add another header for version information.
+6. Create tap nsis installation (based on current openvpn nsis), the
+msi must be silent installation mode enabled.
+7. Within installation, add a group "SDK" or similar to nsis to
+install the tap-windows.h as well.
+8. Create build script to build and optionally sign the driver and the msi.
+9. Output of build system would be [at least] (msi, tarball) for
+(win32, win64). Why tarball? To enable people to fetch files without
+hacking the msi (example: cross compile).
+
+Anyone interested?
+Need someone experienced with courage!
+
+Alon.
+
+[1] https://github.com/alonbl/openvpn branch build.
+[2] https://github.com/alonbl/openvpn/blob/build/include/tap-windows.h
 
