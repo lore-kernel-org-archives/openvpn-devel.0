@@ -1,7 +1,10 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Sat, 18 Feb 2012 20:44:12 +0100
-Message-Id: <1329594252-5257-1-git-send-email-heiko.hund@...1489...>
-Subject: [Openvpn-devel] [PATCH] define access mode flag X_OK as 0 on Windows
+Date: Sat, 18 Feb 2012 16:42:21 -0600
+From: "Karl O. Pinc" <kop@...1206...>
+In-Reply-To: <CAOazyz3S2GAFu+TN0s7482ovQBdWJYUxALVfOEiF6UGHR0oW0Q@...278...>
+	(from alon.barlev@...277... on Sat Feb 18 09:05:16 2012)
+Message-Id: <1329604941.26494.7@...1207...>
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] [DEVELOPER REQUESTED] Repackage TAP-Win32
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,33 +13,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-The _access and _waccess functions in Windows don't know about
-X_OK (1). If you pass an uneven mode flag the C runtime's default
-invalid parameter handler ends execution of openvpn.
+On 02/18/2012 09:05:16 AM, Alon Bar-Lev wrote:
+> Hello,
+>=20
+> We have a go to rewrite the OpenvPN build system.
 
-Signed-off-by: Heiko Hund <heiko.hund@...1489...>
----
- win/config.h.in |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+> 9. Output of build system would be [at least] (msi, tarball) for
+> (win32, win64). Why tarball? To enable people to fetch files without
+> hacking the msi (example: cross compile).
 
-diff --git a/win/config.h.in b/win/config.h.in
-index b5c31b8..fcb8d6c 100644
---- a/win/config.h.in
-+++ b/win/config.h.in
-@@ -243,7 +243,7 @@ typedef unsigned long in_addr_t;
- #endif
- 
- #ifndef X_OK
--#define X_OK 1
-+#define X_OK 0
- #endif
- 
- #ifndef F_OK
--- 
-1.7.5.4
+I'd like to second the motion to produce a MS tarball.  People
+who want only to produce a custom OpenVPN installer, such
+as the recent thread here regarding packaging OpenVPN
+in conjunction with an SSL obfuscation proxy, should
+not also have to go to the trouble to produce OpenVPN
+binaries.  People should instead be able to rely on
+the OpenVPN project for high-quality prebuilt
+binaries suitable for repackaging into a customized
+installer.
+
+
+
+Karl <kop@...1206...>
+Free Software:  "You don't pay back, you pay forward."
+                 -- Robert A. Heinlein
 
 
