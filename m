@@ -1,14 +1,11 @@
-Date: Mon, 20 Feb 2012 11:05:02 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120220100502.GJ7024@...1296...>
-References: <1329730625-21681-1-git-send-email-davids@...1347...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="o99acAvKqrTZeiCU"
-Content-Disposition: inline
-In-Reply-To: <1329730625-21681-1-git-send-email-davids@...1347...>
-Subject: Re: [Openvpn-devel] [PATCH] Revamp check_file_access() checks in
-	stdin scenarios
+Message-ID: <4F421C32.1040403@...1114...>
+Date: Mon, 20 Feb 2012 11:10:58 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <1329594252-5257-1-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <1329594252-5257-1-git-send-email-heiko.hund@...1489...>
+Subject: Re: [Openvpn-devel] [PATCH] define access mode flag X_OK as 0 on
+ Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,49 +14,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <davids@...1347...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
---o99acAvKqrTZeiCU
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Hi,
+On 18/02/12 20:44, Heiko Hund wrote:
+> The _access and _waccess functions in Windows don't know about X_OK
+> (1). If you pass an uneven mode flag the C runtime's default invalid
+> parameter handler ends execution of openvpn.
+> 
+> Signed-off-by: Heiko Hund <heiko.hund@...1489...> --- win/config.h.in
+> |    2 +- 1 files changed, 1 insertions(+), 1 deletions(-)
+> 
 
-On Mon, Feb 20, 2012 at 10:37:05AM +0100, David Sommerseth wrote:
-> It was discovered that --management also can take stdin as argument
-> instead of a file.  Enabled this by revamping the check_file_access()
-> flags by adding CHKACC_ACPTSTDIN.  Setting this flag will then consider
-> filenames as 'stdin' as always present.
->=20
-> The other place where 'stdin' was accepted is also modified to use this
-> flag instead.
+ACK and applied to master branch on -testing and -stable trees.
 
-I like this better than the old one for --auth-user-pass, and of course,
-the patch solves a problem, so ack :-)
+commit 4ebc587eab73e03ef64d344a5707d84e7f8d875a
+Author: Heiko Hund <heiko.hund@...1489...>
+Date:   Sat Feb 18 20:44:12 2012 +0100
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+    define access mode flag X_OK as 0 on Windows
 
---o99acAvKqrTZeiCU
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+    Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+    Acked-by: David Sommerseth <davids@...1347...>
+    Signed-off-by: David Sommerseth <davids@...1347...>
 
+
+kind regards,
+
+David Sommerseth
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iQCVAwUBT0IazqkuBuNlUUl1AQKTOAP/Sb99Me1ZUtk4rfJ5Pa3dfLWlpJKdWHI+
-qJWeRhD3C72Bk9ZLdB6BKHN63WDpdhd+kwnwpdbCXnOIRieBzIfrjAsMtCZOOwlg
-u6FyokegSzeqVuVRIFm9T2P5A2JT1pB+ijcAy8wqgwp1c7eIeQg9Vf3W4R+JUe2M
-IxLduyavnjU=
-=62Jd
+iEYEARECAAYFAk9CHC8ACgkQDC186MBRfrrHegCfUMxu2lHG4Rso8cw1qt7eLEZN
+OgAAn0cAwDCQKUq5MLJd6WAZJeVsdyje
+=2vak
 -----END PGP SIGNATURE-----
-
---o99acAvKqrTZeiCU--
 
