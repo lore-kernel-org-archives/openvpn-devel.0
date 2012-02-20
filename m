@@ -1,11 +1,11 @@
-Message-ID: <4F421C32.1040403@...1114...>
-Date: Mon, 20 Feb 2012 11:10:58 +0100
+Message-ID: <4F421C5D.6040007@...1114...>
+Date: Mon, 20 Feb 2012 11:11:41 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1329594252-5257-1-git-send-email-heiko.hund@...1489...>
-In-Reply-To: <1329594252-5257-1-git-send-email-heiko.hund@...1489...>
-Subject: Re: [Openvpn-devel] [PATCH] define access mode flag X_OK as 0 on
- Windows
+References: <1329730625-21681-1-git-send-email-davids@...1347...>
+In-Reply-To: <1329730625-21681-1-git-send-email-davids@...1347...>
+Subject: Re: [Openvpn-devel] [PATCH] Revamp check_file_access() checks in
+ stdin scenarios
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,26 +21,29 @@ To: openvpn-devel@lists.sourceforge.net
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 18/02/12 20:44, Heiko Hund wrote:
-> The _access and _waccess functions in Windows don't know about X_OK
-> (1). If you pass an uneven mode flag the C runtime's default invalid
-> parameter handler ends execution of openvpn.
+On 20/02/12 10:37, David Sommerseth wrote:
+> It was discovered that --management also can take stdin as argument 
+> instead of a file.  Enabled this by revamping the check_file_access() 
+> flags by adding CHKACC_ACPTSTDIN.  Setting this flag will then
+> consider filenames as 'stdin' as always present.
 > 
-> Signed-off-by: Heiko Hund <heiko.hund@...1489...> --- win/config.h.in
-> |    2 +- 1 files changed, 1 insertions(+), 1 deletions(-)
+> The other place where 'stdin' was accepted is also modified to use
+> this flag instead.
+> 
+> Signed-off-by: David Sommerseth <davids@...1347...> --- options.c |
+> 16 ++++++++++++---- 1 files changed, 12 insertions(+), 4 deletions(-)
 > 
 
-ACK and applied to master branch on -testing and -stable trees.
+Applied to master branch on -testing and -stable trees.
 
-commit 4ebc587eab73e03ef64d344a5707d84e7f8d875a
-Author: Heiko Hund <heiko.hund@...1489...>
-Date:   Sat Feb 18 20:44:12 2012 +0100
+commit a4de190b92f9464602222454dd753072eecc0407
+Author: David Sommerseth <davids@...1347...>
+Date:   Mon Feb 20 10:31:54 2012 +0100
 
-    define access mode flag X_OK as 0 on Windows
+    Revamp check_file_access() checks in stdin scenarios
 
-    Signed-off-by: Heiko Hund <heiko.hund@...1489...>
-    Acked-by: David Sommerseth <davids@...1347...>
     Signed-off-by: David Sommerseth <davids@...1347...>
+    Acked-by: Gert Doering <gert@...1296...>
 
 
 kind regards,
@@ -50,8 +53,8 @@ David Sommerseth
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk9CHC8ACgkQDC186MBRfrrHegCfUMxu2lHG4Rso8cw1qt7eLEZN
-OgAAn0cAwDCQKUq5MLJd6WAZJeVsdyje
-=2vak
+iEYEARECAAYFAk9CHF0ACgkQDC186MBRfrrYsgCfdgdGMYuHGL7ZMKwRbir2YkSO
+EsUAnRh509YrV7S/NcvBxNJFayVzmLXW
+=hQNt
 -----END PGP SIGNATURE-----
 
