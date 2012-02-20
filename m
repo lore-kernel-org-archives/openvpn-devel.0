@@ -1,11 +1,9 @@
 MIME-Version: 1.0
-In-Reply-To: <4F420D7D.5020006@...515...>
-References: <CAOazyz3S2GAFu+TN0s7482ovQBdWJYUxALVfOEiF6UGHR0oW0Q@...278...>
-	<4F420D7D.5020006@...515...>
-Date: Mon, 20 Feb 2012 13:02:58 +0200
-Message-ID: <CAOazyz2PCAL7JPGZKG82bmF+OqbN7O6hnHZBxTL+PQkuy9+SPg@...278...>
+Date: Mon, 20 Feb 2012 15:05:40 +0200
+Message-ID: <CAOazyz0nDj78COr6sd4FAMPz3sML0+-5ZNOx7s_62qtk12tnag@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [DEVELOPER REQUESTED] Repackage TAP-Win32
+Subject: [Openvpn-devel] [CRASH] on master
+	/packet_id.c::packet_id_debug_print
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,97 +12,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-2012/2/20 Samuli Sepp=C3=A4nen <samuli@...515...>
-> > Here are the tasks to perform:
-> > 1. Create a GIT repository of the master TAP-Win32 sources with all
-> > history, to ease our work, please use github.
-> Any thoughts of this anyone? Personally, I don't care where the source
-> code lives. It seems[1] that GitHub can send commit notifications to
-> Buildbot directly, which would be nice. At the moment I have to poll the
-> SF.net Git repo, which causes some delays.
+Hi,
 
-github is much more comfortable than source forge, as you can do the
-merge process and review process within its interface.
-It supports a complete workflow which can be used in parallel to the
-official commit process.
-I suggest github so we can work on the changes, perfecting the patch
-before submitting.
+Master with verb 255 I get the following after a few packets...
+Can someone else try out to see if it reproduced?
 
-Can you please also split out the easy-rsa while you are at it?
+tls-client
+tls-cipher DHE-RSA-AES256-SHA
+cipher AES-256-CBC
+Server DH 4096bit
+Server certificate 2048bit
+Client certificate 2048bit
 
-> > 2. Detach the TAP-Win32 build from the OpenVPN build. It should be a
-> > simpler build as it now only use the DDK.
-> This sounds like a job for me. I'll get on to it after the 2.3-alpha1
-> release and buildbot connection test integration; expect first patches
-> in 2-3 weeks. This should be fairly trivial to do, as the Python build
-> system is split into separate steps stored in separate modules already.
+Mon Feb 20 14:53:58 2012 us=139424 TCPv4_CLIENT read returned 149
+Mon Feb 20 14:53:58 2012 us=139473 TCPv4_CLIENT READ [149] from
+[AF_INET]95.35.21.149:443: P_DATA_V1 kid=0 DATA b008ba2f 08bde634
+fce22834 7b91d496 4c8db39b 32fc6c52 cf5ccf81 7b63584[more...]
+Mon Feb 20 14:53:58 2012 us=139486 TLS: tls_pre_decrypt, key_id=0,
+IP=[AF_INET]95.35.21.149:443
+Mon Feb 20 14:53:58 2012 us=139502 DECRYPT IV: 32fc6c52 cf5ccf81
+7b635843 681dbd25
+Mon Feb 20 14:53:58 2012 us=139536 DECRYPT TO: 00000001 fa450000
+610c5c00 007f1136 6d0a0a32 02c0a8fc 0e0035b5 55004d0[more...]
 
-Will you do this?
+Program received signal SIGSEGV, Segmentation fault.
+packet_id_debug_print (msglevel=1174405255, p=0x555555833858,
+pin=0x7fffffffc8b0,
+    message=0x5555555e5f80 "PID_TEST", value=0) at ../packet_id.c:498
+498       for (i = 0; i < sl->x_size; ++i)
 
-> > 3. Rename the TAP-Win32 to TAP-Windows as we do not need the legacy
-> > "Win32" any more.
-> > 4. Rename the TAP common.h into tap-windows.h.
-> > 5. Sync tap-windows.h symbols per [2], I added prefix and removed the
-> > "32", add another header for version information.
-> > 6. Create tap nsis installation (based on current openvpn nsis), the
-> > msi must be silent installation mode enabled.
-> This (6) is something I can do also. Will get on to this after my other
-> stuff ^^^.
-
-OK, so I will do 3-5, just give me repository location.
-
-> > 7. Within installation, add a group "SDK" or similar to nsis to
-> > install the tap-windows.h as well.
-> > 8. Create build script to build and optionally sign the driver and the
-> > msi.
-> This (8) is already being done for the driver. However, the Python glue
-> for signtool.exe is missing, so signing won't work at the moment. James
-> uses his own tricks to sign the TAP-driver - I don't any of the details.
->
-> That said, rewriting the functionality should be trivial. Anyone
-> interested? I got tons of stuff on my plate already.
-
-The signing stuff is trivial.
-The nsis is the complicate task.
-
->
-> > 9. Output of build system would be [at least] (msi, tarball) for
-> > (win32, win64). Why tarball? To enable people to fetch files without
-> > hacking the msi (example: cross compile).
-> As I responsed to Karl, this is trivial to do; essentially it's just
-> packaging the "dist" directory into a tarball after the Windows build.
-> I'll do this for future releases, including 2.3-alpha1.
-> > Anyone interested?
-> > Need someone experienced with courage!
-> >
-> > Alon.
-> >
-> > [1] https://github.com/alonbl/openvpn branch build.
-> > [2] https://github.com/alonbl/openvpn/blob/build/include/tap-windows.h
-> >
-> >
-> > -----------------------------------------------------------------------=
--------
-> > Virtualization & Cloud Management Using Capacity Planning
-> > Cloud computing makes use of virtualization - but cloud computing
-> > also focuses on allowing computing to be delivered as a service.
-> > http://www.accelacomm.com/jaw/sfnl/114/51521223/
-> > _______________________________________________
-> > Openvpn-devel mailing list
-> > Openvpn-devel@lists.sourceforge.net
-> > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
->
-> --
-> Samuli Sepp=C3=A4nen
-> Community Manager
-> OpenVPN Technologies, Inc
->
-> irc freenode net: mattock
->
+#0  packet_id_debug_print (msglevel=1174405255, p=0x555555833858,
+pin=0x7fffffffc8b0,
+    message=0x5555555e5f80 "PID_TEST", value=0) at ../packet_id.c:498
+#1  0x00005555555a6bcc in packet_id_debug (value=0,
+message=0x5555555e5f80 "PID_TEST",
+    pin=0x7fffffffc8b0, p=0x555555833858, msglevel=1174405255) at
+../packet_id.c:68
+#2  packet_id_test (p=0x555555833858, pin=0x7fffffffc8b0) at ../packet_id.c:191
+#3  0x0000555555560185 in openvpn_decrypt (buf=0x7fffffffd678,
+work=..., opt=0x7fffffffd598,
+    frame=<optimized out>) at ../crypto.c:340
+#4  0x0000555555569ce1 in process_incoming_link (c=0x7fffffffca00) at
+../forward.c:826
+#5  0x00005555555929fa in tunnel_point_to_point (c=0x7fffffffca00) at
+../openvpn.c:89
+#6  main (argc=7, argv=0x7fffffffd978) at ../openvpn.c:242
 
