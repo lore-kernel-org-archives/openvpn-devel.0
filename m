@@ -1,12 +1,16 @@
-Message-ID: <4F4362EC.60708@...515...>
-Date: Tue, 21 Feb 2012 11:25:00 +0200
+Message-ID: <4F4368C0.5080602@...515...>
+Date: Tue, 21 Feb 2012 11:49:52 +0200
 From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
 MIME-Version: 1.0
-References: <CAOazyz3S2GAFu+TN0s7482ovQBdWJYUxALVfOEiF6UGHR0oW0Q@...278...>
-	<4F420D7D.5020006@...515...>
-	<CAOazyz2PCAL7JPGZKG82bmF+OqbN7O6hnHZBxTL+PQkuy9+SPg@...278...>
-In-Reply-To: <CAOazyz2PCAL7JPGZKG82bmF+OqbN7O6hnHZBxTL+PQkuy9+SPg@...278...>
-Subject: Re: [Openvpn-devel] [DEVELOPER REQUESTED] Repackage TAP-Win32
+References: <CAOazyz08kLGKyq-Wcd1KTQ9akdQCAYPP9b1aMVne-b9TArMKDQ@...278...>
+	<1329749121-24501-1-git-send-email-alon.barlev@...277...>
+	<4F426F81.6040201@...1114...>
+	<CAOazyz1DhzxPf3GS1dqhYKXSkL5NeSDy03z340VYibKWBKxPRQ@...278...>
+	<4F42CB9E.8060207@...1114...>
+	<CAOazyz1xoNbT+T2y8C+Y72e1oDt2ZYXs_-shoK3x8g-vw4ZXVQ@...278...>
+In-Reply-To: <CAOazyz1xoNbT+T2y8C+Y72e1oDt2ZYXs_-shoK3x8g-vw4ZXVQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] windows: do not use X_OK as it is
+	unsupported
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,28 +22,44 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 
-> 2012/2/20 Samuli Sepp=C3=A4nen <samuli@...515...>
->>> Here are the tasks to perform:
->>> 1. Create a GIT repository of the master TAP-Win32 sources with all
->>> history, to ease our work, please use github.
->> Any thoughts of this anyone? Personally, I don't care where the source
->> code lives. It seems[1] that GitHub can send commit notifications to
->> Buildbot directly, which would be nice. At the moment I have to poll the
->> SF.net Git repo, which causes some delays.
-> github is much more comfortable than source forge, as you can do the
-> merge process and review process within its interface.
-> It supports a complete workflow which can be used in parallel to the
-> official commit process.
-> I suggest github so we can work on the changes, perfecting the patch
-> before submitting.
+> On Tue, Feb 21, 2012 at 12:39 AM, David Sommerseth
+> <openvpn.list@...1114...> wrote:
+>> But remember that all your patches *will* go through review as for
+>> everyone else in the community.  That means either *1)* patch reviews on
+>> the mailing list, or *2)* reviewed through a sprint review in a
+>> developers meeting on the IRC.  You are free to choose between which
+>> approach fits you best.  But I will not accept patches into the tree
+>> unless it has been clearly ACKed publicly.
+> David,
 >
-> Can you please also split out the easy-rsa while you are at it?
+> I see I wasted three days of work.
 >
-No problem. And also get rid of easy-rsa 1.0 in the process. Not sure
-why it's still in the repo.
+> You agreed that you have a problem "Huston we have a problem, the
+> build process of OpenVPN causes maintenance overhead".
+>
+> Nobody in this community maintains the build system so it became so
+> complex and none intuitive that it is unusable.
+Agreed. I would very much like to see what the alternative is. I'm not
+interested in details, but the whole. The goal is to have a buildsystem
+that sucks less.
+>
+> You won't be able to review all my changes as it is a revolution not
+> evolution, I warned you guys ahead! It will touch almost all the
+> sources.
+I don't think reviewing individual patches is very productive at this
+point. It makes perfect sense for incremental, small changes that we
+want to go to the repository right away. In this case I'd prefer to see
+a working prototype of the new buildsystem and review it as whole. If it
+fulfils the basic requirements[1] then we can comment on the details.
+And then we can start moving the code to the official repository - no
+need to do it right now.
+
+Could you (the other devs) take a look at Alon's Git tree as a whole and
+see what you think, without getting into details? I can take a look to
+see how the MSVC build (w.o. the TAP-driver build) would integrate with it.
 
 --=20
 Samuli Sepp=C3=A4nen
@@ -48,4 +68,7 @@ OpenVPN Technologies, Inc
 
 irc freenode net: mattock
 
+
+
+[1] We have not clearly specified these, and we should a.s.a.p.
 
