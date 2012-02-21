@@ -1,11 +1,11 @@
-Message-ID: <4F43A09B.8040007@...1114...>
-Date: Tue, 21 Feb 2012 14:48:11 +0100
+Message-ID: <4F43A0F4.7010401@...1114...>
+Date: Tue, 21 Feb 2012 14:49:40 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1313669531-31867-1-git-send-email-heiko.hund@...1489...>
-In-Reply-To: <1313669531-31867-1-git-send-email-heiko.hund@...1489...>
-Subject: Re: [Openvpn-devel] [PATCH] fix warnings in event.c when building
- for win32-64
+References: <1313596381-23302-1-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <1313596381-23302-1-git-send-email-heiko.hund@...1489...>
+Subject: Re: [Openvpn-devel] [PATCH] remove wrapper code for Windows
+ CryptoAPI function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,26 +21,30 @@ To: openvpn-devel@lists.sourceforge.net
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 18/08/11 14:12, Heiko Hund wrote:
-> When compiling for 64-bit Windows gcc warns about
+On 17/08/11 17:53, Heiko Hund wrote:
+> The CryptoAPI function CryptAcquireCertificatePrivateKey() was
+> previously unsupported in MinGW. With recent w32api headers it's now
+> defined, mostly. Since the code used to load the CryptoAPI DLL is
+> prone to a DLL hijacking attack [1], it's now a good time to get rid
+> of wrapper completely.
 > 
-> "cast from pointer to integer of different size"
+> Just a few macros left that may still be undefined on some systems
+> using the original MinGW headers.
 > 
-> on two occasions in file event.c, due to invalid casting. This patch
-> removes the type casts and uses the correct format specifier instead.
+> [1] http://isc.sans.edu/diary.html?storyid=9445
 > 
-> Signed-off-by: Heiko Hund <heiko.hund@...1489...> --- event.c |    8
-> ++++---- 1 files changed, 4 insertions(+), 4 deletions(-)
-> 
+> Signed-off-by: Heiko Hund <heiko.hund@...1489...> --- cryptoapi.c |
+> 43 +++++++++++++------------------------------ 1 files changed, 13
+> insertions(+), 30 deletions(-)
 
-Cleaning up some old patches which had slipped the patch queue.  Applied
-to master and new master branch is pushed to -stable and -testing trees.
+One more old patch recovered from the dust.  Applied to master branch on
+- -testing and -stable trees.
 
-commit 3c19fcc2099d8ddf6bfeec6550d4e3cb1cbf3431
+commit 14a382a3f1c70fdbc822bcad27096040ed394661
 Author: Heiko Hund <heiko.hund@...1489...>
-Date:   Thu Aug 18 12:12:11 2011 +0000
+Date:   Wed Aug 17 15:53:01 2011 +0000
 
-    fix warnings in event.c when building for win32-64
+    remove wrapper code for Windows CryptoAPI function
 
     Signed-off-by: Heiko Hund <heiko.hund@...1489...>
     Acked-by: James Yonan <james@...515...>
@@ -55,8 +59,8 @@ David Sommerseth
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk9DoJkACgkQDC186MBRfrrN8gCfdtscvYfl3S4tMAbI3/lPUYmg
-COwAmwQyA/13DWVRppNs9Cleo1ov+sdJ
-=VUzA
+iEYEARECAAYFAk9DoPMACgkQDC186MBRfromnwCeP8qqwfaEtZ1//ql+AAVM3RMG
+6M0AoInMli3/80vp1zFCL42O26iUyTUP
+=LpaP
 -----END PGP SIGNATURE-----
 
