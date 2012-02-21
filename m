@@ -1,10 +1,9 @@
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Tue, 21 Feb 2012 03:22:10 +0200
-Message-Id: <1329787361-26096-5-git-send-email-alon.barlev@...277...>
+Date: Tue, 21 Feb 2012 03:22:13 +0200
+Message-Id: <1329787361-26096-8-git-send-email-alon.barlev@...277...>
 In-Reply-To: <1329787361-26096-1-git-send-email-alon.barlev@...277...>
 References: <1329787361-26096-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [PATCH 04/35] cleanup: memcmp.c: remove unused
-	source
+Subject: [Openvpn-devel] [PATCH 07/35] build: tests do not work disable
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,74 +20,33 @@ Cc: Alon Bar-Lev <alon.barlev@...277...>
 
 Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 ---
- configure.ac |    3 ---
- memcmp.c     |   43 -------------------------------------------
- 2 files changed, 0 insertions(+), 46 deletions(-)
- delete mode 100644 memcmp.c
+ Makefile.am |    5 +++--
+ 1 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/configure.ac b/configure.ac
-index 25dcc37..1c4d66c 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -564,9 +564,6 @@ else
+diff --git a/Makefile.am b/Makefile.am
+index 26b80f3..f96eb45 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -57,16 +57,17 @@ SUBDIRS = \
+ 	service-win32 \
+ 	install-win32
  
- fi
+-TESTS = t_client.sh t_lpback.sh t_cltsrv.sh
++test_scripts = t_client.sh t_lpback.sh t_cltsrv.sh
++#TESTS = $(test_scripts)
+ sbin_PROGRAMS = openvpn
  
--dnl Required library functions
--AC_FUNC_MEMCMP
--
- dnl
- dnl Check for res_init
- dnl
-diff --git a/memcmp.c b/memcmp.c
-deleted file mode 100644
-index d921aac..0000000
---- a/memcmp.c
-+++ /dev/null
-@@ -1,43 +0,0 @@
--/*
-- *  OpenVPN -- An application to securely tunnel IP networks
-- *             over a single TCP/UDP port, with support for SSL/TLS-based
-- *             session authentication and key exchange,
-- *             packet encryption, packet authentication, and
-- *             packet compression.
-- *
-- *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-- *
-- *  This program is free software; you can redistribute it and/or modify
-- *  it under the terms of the GNU General Public License version 2
-- *  as published by the Free Software Foundation.
-- *
-- *  This program is distributed in the hope that it will be useful,
-- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- *  GNU General Public License for more details.
-- *
-- *  You should have received a copy of the GNU General Public License
-- *  along with this program (see the file COPYING included with this
-- *  distribution); if not, write to the Free Software Foundation, Inc.,
-- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-- */
--
--#include "syshead.h"
--
--#include "memdbg.h"
--
--int
--memcmp (const void *s1, const void *s2, size_t n)
--{
--  unsigned const char *p1 = s1, *p2 = s2;
--  int d;
--
--  if (n)
--    while (n-- > 0)
--      {
--	d = *p1++ - *p2++;
--	if (d != 0)
--	  return d;
--      }
--  return 0;
--}
+ dist_doc_DATA = \
+ 	management/management-notes.txt
+ 
+ dist_noinst_SCRIPTS = \
+-	$(TESTS) \
+ 	doclean \
+ 	domake-win \
++	$(test_scripts) \
+ 	t_cltsrv-down.sh \
+ 	configure_h.awk configure_log.awk
+ 
 -- 
 1.7.3.4
 
