@@ -1,10 +1,10 @@
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Tue, 21 Feb 2012 03:22:08 +0200
-Message-Id: <1329787361-26096-3-git-send-email-alon.barlev@...277...>
+Date: Tue, 21 Feb 2012 03:22:11 +0200
+Message-Id: <1329787361-26096-6-git-send-email-alon.barlev@...277...>
 In-Reply-To: <1329787361-26096-1-git-send-email-alon.barlev@...277...>
 References: <1329787361-26096-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [PATCH 02/35] cleanup: crypto_openssl.c: remove
-	support for pre-openssl-0.9.6
+Subject: [Openvpn-devel] [PATCH 05/35] build: correct place to alter WINVER
+	is at build system
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,85 +18,55 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Alon Bar-Lev <alon.barlev@...277...>
 
-autoconf rejecting this anyway:
----
-AC_MSG_CHECKING([that OpenSSL Library is at least version 0.9.6])
-<snip>
-AC_MSG_ERROR([OpenSSL crypto Library is too old.])
----
 
 Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 ---
- crypto_openssl.c |   49 -------------------------------------------------
- 1 files changed, 0 insertions(+), 49 deletions(-)
+ configure.ac    |    2 +-
+ syshead.h       |    4 ----
+ win/msvc.mak.in |    2 +-
+ 3 files changed, 2 insertions(+), 6 deletions(-)
 
-diff --git a/crypto_openssl.c b/crypto_openssl.c
-index 0a41b39..e5e1122 100644
---- a/crypto_openssl.c
-+++ b/crypto_openssl.c
-@@ -78,47 +78,6 @@
- 
- #endif
- 
--#if SSLEAY_VERSION_NUMBER < 0x00906000
--
--#undef EVP_CIPHER_mode
--#define EVP_CIPHER_mode(x) 1
--#define EVP_CIPHER_CTX_mode(x) 1
--#define EVP_CIPHER_flags(x) 0
--
--#define EVP_CIPH_CBC_MODE 1
--#define EVP_CIPH_CFB_MODE 0
--#define EVP_CIPH_OFB_MODE 0
--#define EVP_CIPH_VARIABLE_LENGTH 0
--
--#define OPENSSL_malloc(x) malloc(x)
--#define OPENSSL_free(x) free(x)
--
--static inline int
--EVP_CipherInit_ov (EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, uint8_t *key, uint8_t *iv, int enc)
--{
--  EVP_CipherInit (ctx, type, key, iv, enc);
--  return 1;
--}
--
--static inline int
--EVP_CipherUpdate_ov (EVP_CIPHER_CTX *ctx, uint8_t *out, int *outl, uint8_t *in, int inl)
--{
--  EVP_CipherUpdate (ctx, out, outl, in, inl);
--  return 1;
--}
--
--static inline bool
--cipher_ok (const char* name)
--{
--  const int i = strlen (name) - 4;
--  if (i >= 0)
--    return !strcmp (name + i, "-CBC");
--  else
--    return false;
--}
--
--#else
--
- static inline int
- EVP_CipherInit_ov (EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, uint8_t *key, uint8_t *iv, int enc)
- {
-@@ -137,14 +96,6 @@ cipher_ok (const char* name)
-   return true;
- }
- 
+diff --git a/configure.ac b/configure.ac
+index 1c4d66c..aa1d509 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -342,7 +342,7 @@ case "$host" in
+ 	;;
+ *-mingw*)
+ 	AC_DEFINE(TARGET_WIN32, 1, [Are we running WIN32?])
+-	CPPFLAGS="${CPPFLAGS} -DWIN32_LEAN_AND_MEAN"
++	CPPFLAGS="${CPPFLAGS} -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501"
+ 	OPENVPN_ADD_LIBS(-lgdi32)
+ 	OPENVPN_ADD_LIBS(-lws2_32)
+ 	OPENVPN_ADD_LIBS(-lwininet)
+diff --git a/syshead.h b/syshead.h
+index 0235abd..e8e70d2 100644
+--- a/syshead.h
++++ b/syshead.h
+@@ -28,10 +28,6 @@
+ /*
+  * Only include if not during configure
+  */
+-#ifdef WIN32
+-/* PF_INET6: win32 ipv6 exists only after 0x0501 (XP) */
+-#define WINVER 0x0501
 -#endif
--
--#if SSLEAY_VERSION_NUMBER < 0x0090581f
--
--#undef DES_check_key_parity
--#define DES_check_key_parity(x) 1
--#endif /* SSLEAY_VERSION_NUMBER < 0x0090581f */
--
- #ifndef EVP_CIPHER_name
- #define EVP_CIPHER_name(e)		OBJ_nid2sn(EVP_CIPHER_nid(e))
- #endif
+ #ifndef PACKAGE_NAME
+ #include "config.h"
+ #include "compat.h"
+diff --git a/win/msvc.mak.in b/win/msvc.mak.in
+index 191f370..43c3335 100644
+--- a/win/msvc.mak.in
++++ b/win/msvc.mak.in
+@@ -38,7 +38,7 @@ LIB_DIRS = -LIBPATH:$(OPENSSL)\lib -LIBPATH:$(POLARSSL)\build\library -LIBPATH:$
+ EXE = openvpn.exe
+ 
+ CPP=cl.exe
+-CPP_ARG_COMMON=/nologo /W3 -DWIN32 -DWIN32_LEAN_AND_MEAN -D_CONSOLE -D_MBCS -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS $(INCLUDE_DIRS) /FD /c
++CPP_ARG_COMMON=/nologo /W3 -DWIN32 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_CONSOLE -D_MBCS -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS $(INCLUDE_DIRS) /FD /c
+ 
+ LINK32=link.exe
+ 
 -- 
 1.7.3.4
 
