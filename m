@@ -1,10 +1,10 @@
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Tue, 21 Feb 2012 03:22:11 +0200
-Message-Id: <1329787361-26096-6-git-send-email-alon.barlev@...277...>
+Date: Tue, 21 Feb 2012 03:22:09 +0200
+Message-Id: <1329787361-26096-4-git-send-email-alon.barlev@...277...>
 In-Reply-To: <1329787361-26096-1-git-send-email-alon.barlev@...277...>
 References: <1329787361-26096-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [PATCH 05/35] build: correct place to alter WINVER
-	is at build system
+Subject: [Openvpn-devel] [PATCH 03/35] cleanup: tun.c: fix incorrect option
+	in message (ip-win32)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,52 +21,22 @@ Cc: Alon Bar-Lev <alon.barlev@...277...>
 
 Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 ---
- configure.ac    |    2 +-
- syshead.h       |    4 ----
- win/msvc.mak.in |    2 +-
- 3 files changed, 2 insertions(+), 6 deletions(-)
+ tun.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/configure.ac b/configure.ac
-index 1c4d66c..aa1d509 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -342,7 +342,7 @@ case "$host" in
- 	;;
- *-mingw*)
- 	AC_DEFINE(TARGET_WIN32, 1, [Are we running WIN32?])
--	CPPFLAGS="${CPPFLAGS} -DWIN32_LEAN_AND_MEAN"
-+	CPPFLAGS="${CPPFLAGS} -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501"
- 	OPENVPN_ADD_LIBS(-lgdi32)
- 	OPENVPN_ADD_LIBS(-lws2_32)
- 	OPENVPN_ADD_LIBS(-lwininet)
-diff --git a/syshead.h b/syshead.h
-index 0235abd..e8e70d2 100644
---- a/syshead.h
-+++ b/syshead.h
-@@ -28,10 +28,6 @@
- /*
-  * Only include if not during configure
-  */
--#ifdef WIN32
--/* PF_INET6: win32 ipv6 exists only after 0x0501 (XP) */
--#define WINVER 0x0501
--#endif
- #ifndef PACKAGE_NAME
- #include "config.h"
- #include "compat.h"
-diff --git a/win/msvc.mak.in b/win/msvc.mak.in
-index 191f370..43c3335 100644
---- a/win/msvc.mak.in
-+++ b/win/msvc.mak.in
-@@ -38,7 +38,7 @@ LIB_DIRS = -LIBPATH:$(OPENSSL)\lib -LIBPATH:$(POLARSSL)\build\library -LIBPATH:$
- EXE = openvpn.exe
+diff --git a/tun.c b/tun.c
+index c92c0d7..81b66fb 100644
+--- a/tun.c
++++ b/tun.c
+@@ -4492,7 +4492,7 @@ dhcp_masq_addr (const in_addr_t local, const in_addr_t netmask, const int offset
+     msg (M_FATAL, "ERROR: There is a clash between the --ifconfig local address and the internal DHCP server address -- both are set to %s -- please use the --ip-win32 dynamic option to choose a different free address from the --ifconfig subnet for the internal DHCP server", print_in_addr_t (dsa, 0, &gc));
  
- CPP=cl.exe
--CPP_ARG_COMMON=/nologo /W3 -DWIN32 -DWIN32_LEAN_AND_MEAN -D_CONSOLE -D_MBCS -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS $(INCLUDE_DIRS) /FD /c
-+CPP_ARG_COMMON=/nologo /W3 -DWIN32 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_CONSOLE -D_MBCS -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS $(INCLUDE_DIRS) /FD /c
+   if ((local & netmask) != (dsa & netmask))
+-    msg (M_FATAL, "ERROR: --tap-win32 dynamic [offset] : offset is outside of --ifconfig subnet");
++    msg (M_FATAL, "ERROR: --ip-win32 dynamic [offset] : offset is outside of --ifconfig subnet");
  
- LINK32=link.exe
- 
+   gc_free (&gc);
+   return htonl(dsa);
 -- 
 1.7.3.4
 
