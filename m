@@ -1,10 +1,10 @@
-Message-ID: <4F42E51A.1060208@...68...>
-Date: Tue, 21 Feb 2012 01:28:10 +0100
-From: Matthias Andree <matthias.andree@...68...>
-MIME-Version: 1.0
-References: <20120207102413.GQ13929@...1296...>
-In-Reply-To: <20120207102413.GQ13929@...1296...>
-Subject: Re: [Openvpn-devel] configure patch for MacOS 10.7
+From: Alon Bar-Lev <alon.barlev@...277...>
+Date: Tue, 21 Feb 2012 03:22:07 +0200
+Message-Id: <1329787361-26096-2-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1329787361-26096-1-git-send-email-alon.barlev@...277...>
+References: <1329787361-26096-1-git-send-email-alon.barlev@...277...>
+Subject: [Openvpn-devel] [PATCH 01/35] cleanup: options.c: remove redundant
+	include
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,18 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Alon Bar-Lev <alon.barlev@...277...>
 
-Am 07.02.2012 11:24, schrieb Gert Doering:
-> Hi,
-> 
-> I'm forwarding this "as-is", as I do not have enough understanding of
-> autoconf to say whether this is necessary, or "the right fix" - but
-> anyway, I've been told that this is needed to make our configure 
-> behave on MacOS 10.7.
 
-Looks useful at first superficial inspection - haven't tested it though.
- If it breaks, you'll likely notice on the next ./configure run :)
+Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+---
+ options.c |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
+
+diff --git a/options.c b/options.c
+index a596ffe..3d8085c 100644
+--- a/options.c
++++ b/options.c
+@@ -50,7 +50,6 @@
+ #include "manage.h"
+ #include "forward.h"
+ #include "configure.h"
+-#include "forward.h"
+ #include <ctype.h>
+ 
+ #include "memdbg.h"
+-- 
+1.7.3.4
+
 
