@@ -1,14 +1,12 @@
-MIME-Version: 1.0
-In-Reply-To: <4F43EE92.50802@...515...>
+Date: Tue, 21 Feb 2012 21:17:02 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120221201702.GC7024@...1296...>
 References: <CAOazyz34oFXrQ8vh5qXcEFPC3wA8Qhn7ivzLKasB=B9mOCKyZQ@...278...>
-	<4F43BEB5.6050404@...1114...>
-	<CAOazyz2rRpsKzitWS5bWe8Ug7ut=ODQy9PDkq7v4Aa7E1ygHHA@...278...>
-	<4F43D9B0.6010900@...1114...>
-	<CAOazyz0Z4Lv=qDN1r_W504vBOgaF1YWiNs+9j_MCorACOzfyzQ@...278...>
-	<4F43EE92.50802@...515...>
-Date: Tue, 21 Feb 2012 22:10:03 +0200
-Message-ID: <CAOazyz3HJpv_thGRNhHBrGxfUzBja45AX9Eq_HK53ZXQ5FmMyA@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="1gsfN/+pS0/2Ta7u"
+Content-Disposition: inline
+In-Reply-To: <CAOazyz34oFXrQ8vh5qXcEFPC3wA8Qhn7ivzLKasB=B9mOCKyZQ@...278...>
 Subject: Re: [Openvpn-devel] [RFC] openssl minimum supported version
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,30 +16,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+
+--1gsfN/+pS0/2Ta7u
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>, James Yonan <jim@...41...>
+Content-Disposition: inline
 
-2012/2/21 Samuli Sepp=C3=A4nen <samuli@...515...>:
-> I would be inclined to focus on cutting down complexity as much as
-> possible. I think the best way to gauge real need for old autotools is
-> to scrap support for it. We can always fix things afterwards, if
-> necessary. I can ask James' opinion if he does not step in soonish.
+Hi,
 
-Never mind.
-I've updated build to support >=3Dautoconf-2.59, >=3Dautomake-1.9, >=3Dlibt=
-ool-1.5.22
-I hope it won't get more complex than this.
-Please try it[1] out.
+On Tue, Feb 21, 2012 at 05:15:22PM +0200, Alon Bar-Lev wrote:
+> OpenVPN supports minimum openssl version of 0.9.6, while this version
+> is unsupported by upstream and probably a security risk.
+>=20
+> What would be a suitable minimum version to support?
+>=20
+> I think that 0.9.8 is the one.
 
-But you must promise me that formal tarballs will be relased using
->=3Dautoconf-2.65, >=3Dautomake-1.11, >=3Dlibtool-2.4.
+FreeBSD 7.3 has 0.9.8e, and that's the oldest version supported by
+the FreeBSD security team.  So if anyone wants to run OpenVPN on an
+older version of FreeBSD, they need to use the ports version of=20
+openssl - but that's their decision to not upgrade.
 
-Why? So people won't be required to autoreconf if they like to do cross com=
-pile.
+I'm not exactly sure at which point NetBSD and OpenBSD moved to 0.9.8,
+but I'm fairly sure that dropping support for anything older than
+that is OK for these platforms as well (and if needed, the pkgsrc
+version of openssl can be used).
 
-Alon.
+So "+1" on that one.
 
-https://github.com/alonbl/openvpn/downloads
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--1gsfN/+pS0/2Ta7u
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBT0P7vakuBuNlUUl1AQKGhAQAsnirur0j37Qpk23F4xZw0er91CNcg2sc
+H6FDn4J7LQvLITvJ66wTSyIxEr/CKja/IwL19JKPKQ3RsodRhbWRqndt8GdpfW1T
+C1UzpARvsGcdr3DPJEmXWWUFadV+ypsoUhrn/1NscLRaV2HIuVa6XKg2Gq9Pyukj
+aMkmVMl77eE=
+=NMoq
+-----END PGP SIGNATURE-----
+
+--1gsfN/+pS0/2Ta7u--
 
