@@ -1,9 +1,9 @@
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Tue, 21 Feb 2012 03:22:24 +0200
-Message-Id: <1329787361-26096-19-git-send-email-alon.barlev@...277...>
+Date: Tue, 21 Feb 2012 03:22:23 +0200
+Message-Id: <1329787361-26096-18-git-send-email-alon.barlev@...277...>
 In-Reply-To: <1329787361-26096-1-git-send-email-alon.barlev@...277...>
 References: <1329787361-26096-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [PATCH 18/35] build: m4/ax_emptyarray.m4: cleanup
+Subject: [Openvpn-devel] [PATCH 17/35] build: m4/ax_varargs.m4: cleanup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,66 +20,104 @@ Cc: Alon Bar-Lev <alon.barlev@...277...>
 
 Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 ---
- m4/ax_emptyarray.m4 |   49 +++++++++++++++++++++++++++++++------------------
- 1 files changed, 31 insertions(+), 18 deletions(-)
+ m4/ax_varargs.m4 |   78 ++++++++++++++++++++++++++++++++++++++----------------
+ 1 files changed, 55 insertions(+), 23 deletions(-)
 
-diff --git a/m4/ax_emptyarray.m4 b/m4/ax_emptyarray.m4
-index 0a8755c..c6781c1 100644
---- a/m4/ax_emptyarray.m4
-+++ b/m4/ax_emptyarray.m4
-@@ -7,21 +7,34 @@ dnl
+diff --git a/m4/ax_varargs.m4 b/m4/ax_varargs.m4
+index fd5e8b0..37cdebe 100644
+--- a/m4/ax_varargs.m4
++++ b/m4/ax_varargs.m4
+@@ -6,18 +6,34 @@ dnl
  dnl @version
- dnl @author James Yonan <jim@...41...>
- AC_DEFUN([AX_EMPTY_ARRAY], [
--  AC_MSG_RESULT([checking for C compiler empty array support])
--  AC_COMPILE_IFELSE([AC_LANG_SOURCE(
--    [
--        struct { int foo; int bar[[0]]; } mystruct;
--    ])], [
--        AC_DEFINE_UNQUOTED(EMPTY_ARRAY_SIZE, 0, [Dimension to use for empty array declaration])
--    ], [
--        AC_COMPILE_IFELSE([AC_LANG_SOURCE(
--	    [
--	        struct { int foo; int bar[[]]; } mystruct;
--	    ])], [
--                AC_DEFINE_UNQUOTED(EMPTY_ARRAY_SIZE,, [Dimension to use for empty array declaration])
--	    ], [
--	        AC_MSG_ERROR([C compiler is unable to creaty empty arrays])
--	    ])
--    ])
--  ]
--)
-+	AS_VAR_PUSHDEF([VAR],[ax_cv_c_empty_array])dnl
+ dnl @author James Yonan <jim@...41...>, Matthias Andree <matthias.andree@...83...>
+ AC_DEFUN([AX_CPP_VARARG_MACRO_GCC], [dnl
+-    AS_VAR_PUSHDEF([VAR],[ax_cv_cpp_vararg_macro_gcc])dnl
+-    AC_CACHE_CHECK([for GNU GCC vararg macro support], VAR, [dnl
+-      AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+-	#define macro(a, b...) func(a, b)
+-	int func(int a, int b, int c);
+-	int test() { return macro(1, 2, 3); }
+-	])], [ VAR=yes ], [VAR=no])])
+-    if test $VAR = yes ; then
+-    AC_DEFINE([HAVE_CPP_VARARG_MACRO_GCC], 1,
+-      [Define to 1 if your compiler supports GNU GCC-style variadic macros])
+-    fi
+-    AS_VAR_POPDEF([VAR])dnl
++	AS_VAR_PUSHDEF([VAR], [ax_cv_cpp_vararg_macro_gcc])dnl
 +	AC_CACHE_CHECK(
-+		[for C compiler empty array size],
++		[for GNU GCC vararg macro support],
 +		[VAR],
 +		[AC_COMPILE_IFELSE(
 +			[AC_LANG_PROGRAM(
 +				,
 +				[[
-+struct { int foo; int bar[0]; } mystruct;
++#define macro(a, b...) func(a, b)
++int func(int a, int b, int c);
++int test() { return macro(1, 2, 3); }
 +				]]
 +			)],
-+			[VAR=0],
-+			[AC_COMPILE_IFELSE(
-+				[AC_LANG_PROGRAM(
-+					,
-+					[[
-+struct { int foo; int bar[]; } mystruct;
-+					]]
-+				)],
-+				[VAR=],
-+				[AC_MSG_ERROR([C compiler is unable to creaty empty arrays])]
-+			)]
++			[VAR=yes],
++			[VAR=no]
 +		)]
 +	)dnl
-+	AC_DEFINE_UNQUOTED(
-+		[EMPTY_ARRAY_SIZE],
-+		[$VAR],
-+		[Dimension to use for empty array declaration]
++
++	AS_VAR_IF(
++		[VAR],
++		[yes],
++		[AC_DEFINE(
++			[HAVE_CPP_VARARG_MACRO_GCC],
++			[1], 
++			[Define to 1 if your compiler supports GNU GCC-style variadic macros]
++		)]
 +	)dnl
 +	AS_VAR_POPDEF([VAR])dnl
-+])
+ ])
+ 
+ dnl @synopsis AX_CPP_VARARG_MACRO_ISO
+@@ -28,16 +44,32 @@ dnl
+ dnl @version
+ dnl @author James Yonan <jim@...41...>, Matthias Andree <matthias.andree@...83...>
+ AC_DEFUN([AX_CPP_VARARG_MACRO_ISO], [dnl
+-    AS_VAR_PUSHDEF([VAR],[ax_cv_cpp_vararg_macro_iso])dnl
+-    AC_CACHE_CHECK([for ISO C 1999 vararg macro support], VAR, [dnl
+-      AC_COMPILE_IFELSE([AC_LANG_SOURCE([
++	AS_VAR_PUSHDEF([VAR],[ax_cv_cpp_vararg_macro_iso])dnl
++	AC_CACHE_CHECK(
++		[for ISO C 1999 vararg macro support],
++		[VAR],
++		[AC_COMPILE_IFELSE(
++			[AC_LANG_PROGRAM(
++				,
++				[[
+ #define macro(a, ...) func(a, __VA_ARGS__)
+-	int func(int a, int b, int c);
+-	int test() { return macro(1, 2, 3); }
+-	])], [ VAR=yes ], [VAR=no])])
+-    if test $VAR = yes ; then
+-    AC_DEFINE([HAVE_CPP_VARARG_MACRO_ISO], 1,
+-      [Define to 1 if your compiler supports ISO C99 variadic macros])
+-    fi
+-    AS_VAR_POPDEF([VAR])dnl
++int func(int a, int b, int c);
++int test() { return macro(1, 2, 3); }
++				]]
++			)],
++			[VAR=yes],
++			[VAR=no]
++		)]
++	)dnl
++
++	AS_VAR_IF(
++		[VAR],
++		[yes],
++		[AC_DEFINE(
++			[HAVE_CPP_VARARG_MACRO_ISO],
++			[1], 
++			[Define to 1 if your compiler supports ISO C99 variadic macros]
++		)]
++	)dnl
++	AS_VAR_POPDEF([VAR])dnl
+ ])
 -- 
 1.7.3.4
 
