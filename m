@@ -1,11 +1,11 @@
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Tue, 21 Feb 2012 17:44:13 +0000
+Message-ID: <1329846253-23464-1-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <20120220213246.GV7024@...1296...>
+References: <20120220213246.GV7024@...1296...>
 MIME-Version: 1.0
-In-Reply-To: <4F43BEB5.6050404@...1114...>
-References: <CAOazyz34oFXrQ8vh5qXcEFPC3wA8Qhn7ivzLKasB=B9mOCKyZQ@...278...>
-	<4F43BEB5.6050404@...1114...>
-Date: Tue, 21 Feb 2012 18:12:25 +0200
-Message-ID: <CAOazyz2rRpsKzitWS5bWe8Ug7ut=ODQy9PDkq7v4Aa7E1ygHHA@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [RFC] openssl minimum supported version
+Subject: [Openvpn-devel] [PATCH] mask out X_OK when calling WIN32 API
+	_waccess()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,32 +14,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-On Tue, Feb 21, 2012 at 5:56 PM, David Sommerseth
-<openvpn.list@...1114...> wrote:
-> There might be similar restrictions related to autoconf/automake tools
-> too. =C2=A0As James has some automation for the Access Server builds for =
-those
-> supported platforms, we must be sure we don't break that for him. =C2=A0F=
-rom
-> what I see, on a recent 5.7 box ...
+This reverts commit 4ebc587e. Instead of defining X_OK 0 for MSVC,
+this undefined mode value is now simply masked out close to where
+it causes the trouble; in the call to _waccess() as suggested
+during the discussion on the development mailing list:
+http://thread.gmane.org/gmane.network.openvpn.devel/5452
 
-No there is none.
-Unlike other dependencies autotools dependencies are of development machine.
-You should create tarball on newer machine then compile it on the
-target platform.
-Target platform may not have autotools installed at all.
+Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+---
+ misc.c          |    2 +-
+ win/config.h.in |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-The new build system will support >=3Dautoconf-2.60, automake>=3D1.10, libt=
-ool>=3D2.2
+diff --git a/misc.c b/misc.c
+index a07780f..67345bc 100644
+--- a/misc.c
++++ b/misc.c
+@@ -629,7 +629,7 @@ openvpn_access (const char *path, int mode)
+ {
+ #ifdef WIN32
+   struct gc_arena gc = gc_new ();
+-  int ret = _waccess (wide_string (path, &gc), mode);
++  int ret = _waccess (wide_string (path, &gc), mode & ~X_OK);
+   gc_free (&gc);
+   return ret;
+ #else
+diff --git a/win/config.h.in b/win/config.h.in
+index fcb8d6c..b5c31b8 100644
+--- a/win/config.h.in
++++ b/win/config.h.in
+@@ -243,7 +243,7 @@ typedef unsigned long in_addr_t;
+ #endif
+ 
+ #ifndef X_OK
+-#define X_OK 0
++#define X_OK 1
+ #endif
+ 
+ #ifndef F_OK
+-- 
+1.7.8.3
 
-Again, from experience generating tarball using these versions tends
-to work well
-on very old platforms.
-
-Alon.
 
