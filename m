@@ -1,14 +1,11 @@
-Date: Tue, 21 Feb 2012 21:20:05 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120221202005.GD7024@...1296...>
-References: <CAOazyz34oFXrQ8vh5qXcEFPC3wA8Qhn7ivzLKasB=B9mOCKyZQ@...278...>
-	<4F43BEB5.6050404@...1114...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="v6gilOcl2gU05R9Q"
-Content-Disposition: inline
-In-Reply-To: <4F43BEB5.6050404@...1114...>
-Subject: Re: [Openvpn-devel] [RFC] openssl minimum supported version
+MIME-Version: 1.0
+In-Reply-To: <CAOazyz0f3sERwjZsf3Ts3Xu7CQqBEf_-_VdbUZ7TrzhLbmTEsg@...278...>
+References: <CAOBzU4PN6qDxf39+s4noXEiW8hNbDy-hkQWGSauBd3hX0pu2hw@...278...>
+	<CAOazyz0f3sERwjZsf3Ts3Xu7CQqBEf_-_VdbUZ7TrzhLbmTEsg@...278...>
+Date: Tue, 21 Feb 2012 22:21:08 +0200
+Message-ID: <CAOazyz1buhSdSF7g6MzePAiQ=irD_Qo-RKPC_jXoR9AVqbtkvQ@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 00/35] build revolution
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,56 +14,150 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: Alon Bar-Lev <alon.barlev@...277...>, "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
-
---v6gilOcl2gU05R9Q
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: Frank de Brabander <debrabander@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Hello Frank,
 
-On Tue, Feb 21, 2012 at 04:56:37PM +0100, David Sommerseth wrote:
-> There might be similar restrictions related to autoconf/automake tools
-> too.  As James has some automation for the Access Server builds for those
-> supported platforms, we must be sure we don't break that for him.  From
-> what I see, on a recent 5.7 box ...
-[..]
-> Otherwise, I presume most of the *BSD versions have more recent versions.
+Can you please try the recent branch head?
+It should solve this issue as it turns out that for some strange
+reason your environment autoreconf using <autoconf-2.60.
 
-As Alon has already pointed out, to compile the tarball, you don't
-need to have the autotools installed - and "configure" will work even on
-older systems.
+Now it should be supported.
 
-On the *BSD buildslaves, we can install whatever we need (and their
-autotools versions are coming from ports/pkgsrc, and that's up-to-date=20
-anyway :-) ).
+Thanks!
+Alon
 
-Now we just need to see whether this causes problems for James' build
-environment.
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---v6gilOcl2gU05R9Q
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
-
-iQCVAwUBT0P8dakuBuNlUUl1AQJOpQQApKkNGYwB+K2S/+FQ+4tNBISYTt8xM67Z
-xZmetJjRBngy1oxFRI4AxE3cO4j3ZCaMDyeZQd/vMcaNPhR1f68DXg/aR3e9Z04n
-n34xafqf6O/RNN5+wIxQns9VezioB3axBeZ1sZdvH0FqUpS7dkv44Z5fsoWH64UQ
-QweoRNENUcE=
-=DP8r
------END PGP SIGNATURE-----
-
---v6gilOcl2gU05R9Q--
+On Tue, Feb 21, 2012 at 10:07 AM, Alon Bar-Lev <alon.barlev@...277...> wrot=
+e:
+> Hello Frank,
+>
+> Thank you for testing.
+>
+> Can you please try to download my tarball[1] and not autoreconf at your m=
+achine?
+> I think your autotools are waaay to old.
+>
+> And... can you please send me:
+> # autoconf --version
+> # aclocal --version
+> # automake --version
+> # libtool --version
+>
+> Alon
+>
+> [1] https://github.com/alonbl/openvpn/downloads
+>
+>
+> On Tue, Feb 21, 2012 at 9:47 AM, Frank de Brabander
+> <debrabander@...277...> wrote:
+>> I did a quick test on OS X (Lion) and the build fails.
+>>
+>> mekboek:openvpn_src brabander$ git clone --branch build
+>> https://github.com/alonbl/openvpn.git openvpn_alonbl
+>> mekboek:openvpn_src brabander$ cd openvpn_alonbl/
+>> mekboek:openvpn_alonbl brabander$ autoreconf -i -v
+>> autoreconf: Entering directory `.'
+>> autoreconf: configure.ac: not using Gettext
+>> autoreconf: running: aclocal -I m4
+>> configure.ac:337: warning: AC_CACHE_VAL(VAR, ...): suspicious presence
+>> of an AC_DEFINE in the second argument, where no actions should be
+>> taken
+>> /private/var/tmp/autoconf/autoconf-17.1~539/SRC/autoconf/lib/autoconf/ge=
+neral.m4:1905:
+>> AC_CACHE_VAL is expanded from...
+>> /private/var/tmp/autoconf/autoconf-17.1~539/SRC/autoconf/lib/autoconf/ge=
+neral.m4:1918:
+>> AC_CACHE_CHECK is expanded from...
+>> /private/var/tmp/autoconf/autoconf-17.1~539/SRC/autoconf/lib/m4sugar/m4s=
+h.m4:523:
+>> AS_IF is expanded from...
+>> /private/var/tmp/autoconf/autoconf-17.1~539/SRC/autoconf/lib/autoconf/ty=
+pes.m4:243:
+>> AC_CHECK_TYPE is expanded from...
+>> m4/ax_socklen_t.m4:63: AX_TYPE_SOCKLEN_T is expanded from...
+>> configure.ac:337: the top level
+>> autoreconf: configure.ac: tracing
+>> configure.ac:337: warning: AC_CACHE_VAL(VAR, ...): suspicious presence
+>> of an AC_DEFINE in the second argument, where no actions should be
+>> taken
+>> /private/var/tmp/autoconf/autoconf-17.1~539/SRC/autoconf/lib/autoconf/ge=
+neral.m4:1905:
+>> AC_CACHE_VAL is expanded from...
+>> /private/var/tmp/autoconf/autoconf-17.1~539/SRC/autoconf/lib/autoconf/ge=
+neral.m4:1918:
+>> AC_CACHE_CHECK is expanded from...
+>> /private/var/tmp/autoconf/autoconf-17.1~539/SRC/autoconf/lib/m4sugar/m4s=
+h.m4:523:
+>> AS_IF is expanded from...
+>> /private/var/tmp/autoconf/autoconf-17.1~539/SRC/autoconf/lib/autoconf/ty=
+pes.m4:243:
+>> AC_CHECK_TYPE is expanded from...
+>> m4/ax_socklen_t.m4:63: AX_TYPE_SOCKLEN_T is expanded from...
+>> configure.ac:337: the top level
+>> autoreconf: running: glibtoolize --copy
+>> glibtoolize: putting auxiliary files in AC_CONFIG_AUX_DIR, `.'.
+>> glibtoolize: copying file `./ltmain.sh'
+>> glibtoolize: putting macros in AC_CONFIG_MACRO_DIR, `m4'.
+>> glibtoolize: copying file `m4/libtool.m4'
+>> glibtoolize: copying file `m4/ltoptions.m4'
+>> glibtoolize: copying file `m4/ltsugar.m4'
+>> glibtoolize: copying file `m4/ltversion.m4'
+>> glibtoolize: copying file `m4/lt~obsolete.m4'
+>> configure.ac:337: warning: AC_CACHE_VAL(VAR, ...): suspicious presence
+>> of an AC_DEFINE in the second argument, where no actions should be
+>> taken
+>> /private/var/tmp/autoconf/autoconf-17.1~539/SRC/autoconf/lib/autoconf/ge=
+neral.m4:1905:
+>> AC_CACHE_VAL is expanded from...
+>> /private/var/tmp/autoconf/autoconf-17.1~539/SRC/autoconf/lib/autoconf/ge=
+neral.m4:1918:
+>> AC_CACHE_CHECK is expanded from...
+>> /private/var/tmp/autoconf/autoconf-17.1~539/SRC/autoconf/lib/m4sugar/m4s=
+h.m4:523:
+>> AS_IF is expanded from...
+>> /private/var/tmp/autoconf/autoconf-17.1~539/SRC/autoconf/lib/autoconf/ty=
+pes.m4:243:
+>> AC_CHECK_TYPE is expanded from...
+>> m4/ax_socklen_t.m4:63: AX_TYPE_SOCKLEN_T is expanded from...
+>> configure.ac:337: the top level
+>> autoreconf: running: /usr/bin/autoconf
+>> configure.ac:337: warning: AC_CACHE_VAL(VAR, ...): suspicious presence
+>> of an AC_DEFINE in the second argument, where no actions should be
+>> taken
+>> /private/var/tmp/autoconf/autoconf-17.1~539/SRC/autoconf/lib/autoconf/ge=
+neral.m4:1905:
+>> AC_CACHE_VAL is expanded from...
+>> /private/var/tmp/autoconf/autoconf-17.1~539/SRC/autoconf/lib/autoconf/ge=
+neral.m4:1918:
+>> AC_CACHE_CHECK is expanded from...
+>> /private/var/tmp/autoconf/autoconf-17.1~539/SRC/autoconf/lib/m4sugar/m4s=
+h.m4:523:
+>> AS_IF is expanded from...
+>> /private/var/tmp/autoconf/autoconf-17.1~539/SRC/autoconf/lib/autoconf/ty=
+pes.m4:243:
+>> AC_CHECK_TYPE is expanded from...
+>> m4/ax_socklen_t.m4:63: AX_TYPE_SOCKLEN_T is expanded from...
+>> configure.ac:337: the top level
+>> configure.ac:31: error: possibly undefined macro: AC_DEFINE
+>> =C2=A0 =C2=A0 =C2=A0If this token and others are legitimate, please use =
+m4_pattern_allow.
+>> =C2=A0 =C2=A0 =C2=A0See the Autoconf documentation.
+>> configure.ac:545: error: possibly undefined macro: AC_CHECK_LIB
+>> configure:14349: error: possibly undefined macro: AS_VAR_IF
+>> autoreconf: /usr/bin/autoconf failed with exit status: 1
+>>
+>> ------------------------------------------------------------------------=
+------
+>> Keep Your Developer Skills Current with LearnDevNow!
+>> The most comprehensive online learning library for Microsoft developers
+>> is just $99.99! Visual Studio, SharePoint, SQL - plus HTML5, CSS3, MVC3,
+>> Metro Style Apps, more. Free future releases when you subscribe now!
+>> http://p.sf.net/sfu/learndevnow-d2d
+>> _______________________________________________
+>> Openvpn-devel mailing list
+>> Openvpn-devel@lists.sourceforge.net
+>> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
