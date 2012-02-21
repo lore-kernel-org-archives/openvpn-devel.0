@@ -1,11 +1,12 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Tue, 21 Feb 2012 17:44:13 +0000
-Message-ID: <1329846253-23464-1-git-send-email-heiko.hund@...1489...>
-In-Reply-To: <20120220213246.GV7024@...1296...>
-References: <20120220213246.GV7024@...1296...>
+Message-ID: <4F43D9B0.6010900@...1114...>
+Date: Tue, 21 Feb 2012 18:51:44 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] mask out X_OK when calling WIN32 API
-	_waccess()
+References: <CAOazyz34oFXrQ8vh5qXcEFPC3wA8Qhn7ivzLKasB=B9mOCKyZQ@...278...>
+	<4F43BEB5.6050404@...1114...>
+	<CAOazyz2rRpsKzitWS5bWe8Ug7ut=ODQy9PDkq7v4Aa7E1ygHHA@...278...>
+In-Reply-To: <CAOazyz2rRpsKzitWS5bWe8Ug7ut=ODQy9PDkq7v4Aa7E1ygHHA@...278...>
+Subject: Re: [Openvpn-devel] [RFC] openssl minimum supported version
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,49 +15,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-This reverts commit 4ebc587e. Instead of defining X_OK 0 for MSVC,
-this undefined mode value is now simply masked out close to where
-it causes the trouble; in the call to _waccess() as suggested
-during the discussion on the development mailing list:
-http://thread.gmane.org/gmane.network.openvpn.devel/5452
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Signed-off-by: Heiko Hund <heiko.hund@...1489...>
----
- misc.c          |    2 +-
- win/config.h.in |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+On 21/02/12 17:12, Alon Bar-Lev wrote:
+> On Tue, Feb 21, 2012 at 5:56 PM, David Sommerseth 
+> <openvpn.list@...1114...> wrote:
+>> There might be similar restrictions related to autoconf/automake
+>> tools too.  As James has some automation for the Access Server
+>> builds for those supported platforms, we must be sure we don't break
+>> that for him.  From what I see, on a recent 5.7 box ...
+> 
+> No there is none. Unlike other dependencies autotools dependencies are
+> of development machine. You should create tarball on newer machine
+> then compile it on the target platform. Target platform may not have
+> autotools installed at all.
+> 
+> The new build system will support >=autoconf-2.60, automake>=1.10,
+> libtool>=2.2
 
-diff --git a/misc.c b/misc.c
-index a07780f..67345bc 100644
---- a/misc.c
-+++ b/misc.c
-@@ -629,7 +629,7 @@ openvpn_access (const char *path, int mode)
- {
- #ifdef WIN32
-   struct gc_arena gc = gc_new ();
--  int ret = _waccess (wide_string (path, &gc), mode);
-+  int ret = _waccess (wide_string (path, &gc), mode & ~X_OK);
-   gc_free (&gc);
-   return ret;
- #else
-diff --git a/win/config.h.in b/win/config.h.in
-index fcb8d6c..b5c31b8 100644
---- a/win/config.h.in
-+++ b/win/config.h.in
-@@ -243,7 +243,7 @@ typedef unsigned long in_addr_t;
- #endif
- 
- #ifndef X_OK
--#define X_OK 0
-+#define X_OK 1
- #endif
- 
- #ifndef F_OK
--- 
-1.7.8.3
+That is not how James does his builds, from what I've understood.  He
+does builds in his own compile farm straight from source repositories.
+James might just as well pop up NACKing things if these changes breaks
+his tool chain.  To put is simple: We are not allowed to break his
+environments.
 
+On the RHEL5.7 base, libtool-1.5.22 is the base version.
+
+> Again, from experience generating tarball using these versions tends 
+> to work well on very old platforms.
+
+That's good, which can solve RHEL4 issues in a nice way.  But I expect
+James to do plenty of RHEL5 builds in the future, so there is noway we
+are allowed to break this.
+
+
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk9D2a4ACgkQDC186MBRfrr4RQCdFid58/1E8SEDyAs7QQvoo83q
+KrkAn0KXXd5WRDJFeUnPa+iG1aIuH0CC
+=uw9T
+-----END PGP SIGNATURE-----
 
