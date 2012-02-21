@@ -1,9 +1,8 @@
-Message-ID: <4F43BA49.2030702@...1147...>
-Date: Tue, 21 Feb 2012 16:37:45 +0100
-From: Jan Just Keijser <janjust@...1147...>
-MIME-Version: 1.0
-References: <CAOazyz34oFXrQ8vh5qXcEFPC3wA8Qhn7ivzLKasB=B9mOCKyZQ@...278...>
+Date: Tue, 21 Feb 2012 16:54:44 +0100 (CET)
+From: g.esp@...260...
+Message-ID: <6d72447b-01a4-4a16-ac04-6a65b0c3fbdc@...1545...>
 In-Reply-To: <CAOazyz34oFXrQ8vh5qXcEFPC3wA8Qhn7ivzLKasB=B9mOCKyZQ@...278...>
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] [RFC] openssl minimum supported version
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,12 +12,20 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-Alon Bar-Lev wrote:
+
+
+----- Mail original -----
+> De: "Alon Bar-Lev" <alon.barlev@...277...>
+> =C3=80: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@...1659...=
+forge.net>
+> Envoy=C3=A9: Mardi 21 F=C3=A9vrier 2012 16:15:22
+> Objet: [Openvpn-devel] [RFC] openssl minimum supported version
+>
 > Hello,
 >
 > OpenVPN supports minimum openssl version of 0.9.6, while this version
@@ -27,11 +34,14 @@ Alon Bar-Lev wrote:
 > What would be a suitable minimum version to support?
 >
 > I think that 0.9.8 is the one.
->   
+>
+> Regards,
+> Alon.
+>
 
-EL5 and most SuSE distro's still use 0.9.8 , so I think that is probably
-the right minimum version.
+I confirm openssl no more maintain 0.9.7 version.
+RHEL-4 will reach end of life support at february end and use 0.9.7.
+So supporting 0.9.8 as the last version make sense.
 
-JJK
-
+Gilles
 
