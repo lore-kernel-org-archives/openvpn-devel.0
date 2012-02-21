@@ -1,6 +1,5 @@
-From: Adriaan de Jong <dejong@...1435...>
-Date: Tue, 21 Feb 2012 12:39:17 +0100
-Message-ID: <1CED409804E2164C8104F9E623B08B9012934331F4@...1436...>
+MIME-Version: 1.0
+In-Reply-To: <CAOBzU4MOLVY1-0D5TXEYzEy35CeM8U-RK5HKY7wW77fwuuvfNg@...278...>
 References: <CAOBzU4PN6qDxf39+s4noXEiW8hNbDy-hkQWGSauBd3hX0pu2hw@...278...>
 	<CAOazyz0f3sERwjZsf3Ts3Xu7CQqBEf_-_VdbUZ7TrzhLbmTEsg@...278...>
 	<CAOBzU4M02rr2U0kT6F=5s=NAX58AnbJZ+QfO2fZTPGyNnR1+7Q@...278...>
@@ -8,11 +7,10 @@ References: <CAOBzU4PN6qDxf39+s4noXEiW8hNbDy-hkQWGSauBd3hX0pu2hw@...278...>
 	<CAOBzU4PtoHi66QDaKuL6FX55cyccwgfS+0vZ4SOR3dBhNMMXKQ@...278...>
 	<CAOazyz2yKB5+SSK1cjWWnVryKxoYvxJjpE39ZTv+6_fBKvFmpQ@...278...>
 	<CAOazyz0MzDDGW=A9SnwW2z7HSXW7XMocAvtvr_qKvF65qjbZuA@...278...>
-	<1CED409804E2164C8104F9E623B08B90129343318D@...1436...>
-	<CAOazyz2CRrbmWMUS9we9v-0m_DYToTD9_6pfw4kK36Rc+5brgA@...278...>
-In-Reply-To: <CAOazyz2CRrbmWMUS9we9v-0m_DYToTD9_6pfw4kK36Rc+5brgA@...278...>
-Content-Language: en-US
-MIME-Version: 1.0
+	<CAOBzU4MOLVY1-0D5TXEYzEy35CeM8U-RK5HKY7wW77fwuuvfNg@...278...>
+Date: Tue, 21 Feb 2012 13:44:02 +0200
+Message-ID: <CAOazyz3DXz4bfEhii2YHPUKa_jn+DcTbMSMFEsXBDxWZqsEiHg@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
 Subject: Re: [Openvpn-devel] [PATCH 00/35] build revolution
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -22,60 +20,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Frank de Brabander <debrabander@...277...>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Frank de Brabander <debrabander@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBbG9uIEJhci1MZXYgW21haWx0
-bzphbG9uLmJhcmxldkAuLi4yNzcuLi5dDQo+IFNlbnQ6IGRpbnNkYWcgMjEgZmVicnVhcmkgMjAx
-MiAxMTo1Mw0KPiANCj4gV2VsbCwgbW9zdCBjYXNlcyBhIHBhY2thZ2UgbWFuYWdlbWVudCBzeXN0
-ZW0gYnVpbGRzIHRoZSBwYWNrYWdlLg0KPiBJdCBleHBsaWNpdGx5IGVuYWJsZXMvZGlzYWJsZSBm
-ZWF0dXJlcywgc28gd2UgYXJlIGZpbmUgd2l0aCBwYWNrYWdlDQo+IG1hbmFnZW1lbnQgc3lzdGVt
-cy4NCj4gTm93IGZvciBtYW51YWwgY29tcGlsYXRpb24sIHRoZXJlIGFyZSB0d28gYXBwcm9hY2hl
-czoNCj4gMS4gVGhlICJkZXRlY3QiIGFwcHJvYWNoIC0gZXZlbiBpZiBlbmFibGUgZGlzYWJsZSBp
-ZiBub3QgZGV0ZWN0ZWQuDQo+IDIuIFRoZSAiZXhwbGljaXQiIGFwcHJvYWNoIC0gaWYgZW5hYmxl
-IGZhaWwgaWYgbm90IGZvdW5kLg0KPiANCj4gSSBhbSBubyBmYW4gb2YgdGhlICJkZXRlY3QiIGFw
-cHJvYWNoIGFzIHlvdSBuZXZlciBrbm93IHdoYXQgeW91IGdldCwNCj4gYW5kIHBhY2thZ2UgbWFu
-YWdlbWVudCBzeXN0ZW0gY2FuIGJ1aWxkIGludmFsaWQgcGFja2FnZXMuDQo+IA0KPiBUaGUgcXVl
-c3Rpb24gb2Ygd2hhdCB0byBlbmFibGUgYnkgZGVmYXVsdCBpcyBvcGVuZWQgb25lLiBJIHN1Z2dl
-c3QgdG8NCj4gZW5hYmxlIHRoZSBtaW5pbXVtIGZvciBwYWNrYWdlIHRvIHN1Y2Nlc3NmdWxseSBi
-dWlsZC4gQnV0IG5vIHByb2JsZW0gaW4NCj4gYWRkaW5nIG90aGVyIGRlZmF1bHRzLg0KPiANCg0K
-SSBhZ3JlZSBhYm91dCB0aGUgZGV0ZWN0IGFwcHJvYWNoLiBJIHRoaW5rIGVuYWJsaW5nIGEgbGlz
-dCBvZiBtaW5pbXVtIHBhY2thZ2VzIGZvciBhIGJ1aWxkIHdpdGggdGhlIGZlYXR1cmVzIHdlIGxp
-a2Ugd291bGQgYmUgYSBnb29kIGlkZWEuIFBlcmhhcHMgZ29pbmcgdGhyb3VnaCB0aGUgbGlzdCBh
-dCBhbiBJUkMgbWVldGluZyB3b3VsZCBiZSBhIGdvb2QgaWRlYT8NCg0KPiA+IFRoYXQgYmVnZ2Fy
-cyB0aGUgcXVlc3Rpb25zOg0KPiA+DQo+ID4gwqAtIFdoaWNoIG90aGVyIGxpYnJhcmllcy9mZWF0
-dXJlcyBhcmUgZGlzYWJsZWQgYnkgZGVmYXVsdCBpbiB0aGUgbmV3DQo+IGJ1aWxkIHN5c3RlbT8N
-Cj4gDQo+IEkgd2lsbCBmaXggdGhlIGRvY3VtZW50YXRpb24gYXQgbGFzdCBzdGFnZS4NCj4gTWF5
-YmUgSSBkbyB0aGlzIG5vdy4NCj4gRm9yIG5vdyB5b3UgY2FuIGRldGVybWluZSBpZiBmZWF0dXJl
-IGlzIC0tZW5hYmxlIG9yIC0tZGlzYWJsZS4gSWYgLS0NCj4gZW5hYmxlIGl0IGlzIGRpc2FibGVk
-IDopDQo+IA0KDQpUaGFua3MsIEknbGwgaGF2ZSBhIGxvb2sgYXQgdGhlIGxpc3QuIA0KDQo+ID4g
-wqAtIENvdWxkIHlvdSBwbGVhc2Ugc3BlY2lmeSBhbnkgb3RoZXIgYmVoYXZpb3VyYWwgY2hhbmdl
-cyBpbiB0aGUNCj4gZGVmYXVsdCBPcGVuVlBOIGJ1aWxkIHN5c3RlbT8gVGhpbmdzIGxpa2UgdGhl
-IC0td2l0aC14eHgtaGVhZGVycw0KPiBvcHRpb25zIGRpc2FwcGVhcmluZz8NCj4gPg0KPiA+IEl0
-IHdvdWxkIGJlIG5pY2UgdG8gaGF2ZSBzb21lIGRvY3VtZW50YXRpb24gZm9yIHBhY2thZ2VycyBh
-cyB0byB3aGF0DQo+IGhhcyBjaGFuZ2VkIHdoZXJlLCBhbmQgd2h5LiBGdXJ0aGVyLCBhcyBub3Qg
-ZXZlcnlvbmUga25vd3MgdGhlDQo+ICJjb3JyZWN0IiBhdXRvdG9vbHMgd2F5IG9mIGRvaW5nIHRo
-aW5ncywgYSBsaXR0bGUgZXh0cmEgaW5mb3JtYXRpb24NCj4gZ29lcyBhIGxvbmcgd2F5IGluIGVk
-dWNhdGluZyB1cyBkZXZlbG9wZXJzLiBNZXJlbHkgc2F5aW5nICJiZWNhdXNlIGl0DQo+IHdhcyB3
-cm9uZyIgaXMgbm90IGdvaW5nIHRvIGN1dCBpdCBpbiBhbnkgY29tbXVuaXR5Lg0KPiANCj4gRGVw
-ZW5kZW5jaWVzIGFyZSBkZXRlY3RlZCB1c2luZyBwa2djb25maWcgaWYgcG9zc2libGUuDQo+IE92
-ZXJyaWRpbmcgY2FuIGJlIGRvbmUgYnkgdXNpbmcgZW52aXJvbm1lbnQgdmFyaWFibGVzLg0KPiBT
-ZWUgLi9jb25maWd1cmUgLS1oZWxwIGZvciBhIGxpc3Qgb2YgdmFyaWFibGVzLg0KPiBGb3IgZXhh
-bXBsZSBzZXR0aW5nIExaT19DRkxBR1MvTFpPX0xJQlMgd2lsbCBvdmVycmlkZSBMWk8gc3BlY2lm
-aWMNCj4gc2V0dGluZ3MuDQo+IElmIHlvdSBkb24ndCBoYXZlIHBrZ2NvbmZpZyBzZXQgUEtHX0NP
-TkZJRz10cnVlIGFuZCBwcm92aWRlIGxvY2F0aW9ucw0KPiBvZiBhbGwgbGlicmFyaWVzLiBNb3N0
-IGxpYnJhcmllcyB3aWxsIGJlIGRldGVjdGVkIGlmIHlvdSBwbGFjZQ0KPiBDRkxBR1M9Ii1JLi4u
-L2luY2x1ZGUiIGFuZCBMREZMQUdTPSItTC4uLi9saWIiIHdpdGhvdXQgbGlicmFyeSBzcGVjaWZp
-Yw0KPiBzZXR0aW5ncy4NCj4gDQoNCkRvZXMgcGtnY29uZmlnIHdvcmsvZXhpc3QgYWNyb3NzIG1h
-bnkgcGxhdGZvcm1zLCBvciBpcyBpdCBhIGRlcGVuZGVuY3kgdGhhdCBtaWdodCBodXJ0IHVzIG9u
-IGZvciBleGFtcGxlIE1hYyBPUywgV2luZG93cyBvciAqQlNEPyBUaGUgcmVhc29uIHdoeSBJIGFz
-ayBpcyB0aGF0IGFuIGFyZ3VtZW50IGFnYWluc3Qgb3RoZXIgc3lzdGVtcyBzdWNoIGFzIHNjb25z
-IGFuZCBjbWFrZSB3YXMgdGhhdCB0aGV5IGNyZWF0ZWQgZXh0cmEgYnVpbGQgZGVwZW5kZW5jaWVz
-LiBJcyBpdCBkaWZmaWN1bHQgdG8gaW5zdGFsbCwgb3IgaXMgaXQgc2hpcHBlZCBieSBkZWZhdWx0
-IG9uIG1vc3QgcGxhdGZvcm1zPw0KDQo+IFdpdGhpbiB0aGUgYXV0b2NvbmYgaXRzZWxmIHRoZSBh
-Ym92ZSBoYXMgbXVjaCBpbXBhY3QuIEFzIGluc3RlYWQgb2YNCj4gcHJldmlvdXMgcHJvcHJpZXRh
-cnkgb3BlbnNzbCBsaWJyYXJ5L2hlYWRlciBkZXRlY3Rpb24gdGhlcmUgaXMgYSBtdWNoDQo+IHNp
-bXBsZXIgaW1wbGVtZW50YXRpb24uIFNvIEkgd29uJ3QgZ2V0IGludG8gZGV0YWlscyB3aHkgcHJl
-dmlvdXMgd2FzDQo+IHdyb25nLg0KPiANCg0KVGhhdCBzb3VuZHMgcmVhc29uYWJsZS4NCg==
+On Tue, Feb 21, 2012 at 1:32 PM, Frank de Brabander
+<debrabander@...277...> wrote:
+> When I try to build like this, it seems to fail at linking to openssl
+> (OS X Lion).
+>
+> ./configure PKG_CONFIG=3Dtrue
+> make
+> mekboek:openvpn-2.x-master brabander$ ls /usr/lib/libcrypto.* /usr/lib/li=
+bssl.*
+> /usr/lib/libcrypto.0.9.7.dylib /usr/lib/libcrypto.0.9.8.dylib
+> /usr/lib/libcrypto.dylib =C2=A0 =C2=A0 =C2=A0 /usr/lib/libssl.0.9.7.dylib
+> /usr/lib/libssl.0.9.8.dylib =C2=A0 =C2=A0/usr/lib/libssl.dylib
+
+I am sorry, but for now you will have to add:
+OPENSSL_CRYPTO_LIBS=3D"-lcrypto"
+OPENSSL_SSL_LIBS=3D"-lssl"
+
+I want to get this fixed, but before I do, are you sure you don't have
+pkg-config package for this OS?
+I searched and found that there is pkg-config.
+I don't want to revert to the old detection mechanism if you can
+simply use pkg-config...
+
+Alon.
+
