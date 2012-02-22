@@ -1,13 +1,10 @@
+Message-ID: <4F44A1A3.8050007@...515...>
+Date: Wed, 22 Feb 2012 10:04:51 +0200
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <CAOBzU4P0SxY-jF7rb_HsvmtSH8i9PCk+qe5iDQiwJhajsBuYuw@...278...>
-References: <CAOBzU4PN6qDxf39+s4noXEiW8hNbDy-hkQWGSauBd3hX0pu2hw@...278...>
-	<CAOazyz0f3sERwjZsf3Ts3Xu7CQqBEf_-_VdbUZ7TrzhLbmTEsg@...278...>
-	<CAOazyz1buhSdSF7g6MzePAiQ=irD_Qo-RKPC_jXoR9AVqbtkvQ@...278...>
-	<CAOBzU4P0SxY-jF7rb_HsvmtSH8i9PCk+qe5iDQiwJhajsBuYuw@...278...>
-Date: Wed, 22 Feb 2012 09:21:22 +0200
-Message-ID: <CAOazyz1naScdf+M0pnePS6-bb5deAHsAniTiv+DFw3ZQdAN+kg@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 00/35] build revolution
+References: <CAOazyz3CAK6Huf7qzAv_Uv+bn5QFFd_cC7A8S_s42HZQGNLC4g@...278...>
+In-Reply-To: <CAOazyz3CAK6Huf7qzAv_Uv+bn5QFFd_cC7A8S_s42HZQGNLC4g@...278...>
+Subject: Re: [Openvpn-devel] [build] Windows build test
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,18 +13,94 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Frank de Brabander <debrabander@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-On Wed, Feb 22, 2012 at 9:16 AM, Frank de Brabander
-<debrabander@...277...> wrote:
-> make & make check both run OK, but is it normal that make check
-> doesn't do anything anymore?
+Hi Alon,
+> Hello people who actually use Windows!
+>
+> I will appreciate if you test my new windows build environment for OpenVP=
+N.
+I'll test this today.
 
-Is make check worked for you?
-OpenVPN tests need manual configuration and run as root.
-Manual tests cannot be executed by build system as build system
-must be automated.
+> You have many options, I guess all are needed.
+>
+> While you at it, please try to explain me why we need Visual Studio build=
+... :)
+I guess for building the TAP-driver. Besides that, I've never had a
+clear idea :).
+
+> .
+> Build is here[1]
+>
+> BEST METHOD - Compile on Linux
+
+Agreed :).
+>
+> This is a generic method, it can cross compile OpenVPN using any
+> toolchain to any environment.
+> For Windows, make sure you have mingw-w64 toolchain.
+> We are using nsis so we can also package files at Linux.
+>
+> $ cd generic
+> $ IMAGEROOT=3D`pwd`/image-win32 CHOST=3Di686-w64-mingw32
+> CBUILD=3Dx86_64-pc-linux-gnu ./build
+> $ IMAGEROOT=3D`pwd`/image-win64 CHOST=3Dx86_64-w64-mingw32
+> CBUILD=3Dx86_64-pc-linux-gnu ./build
+> SLOWER METHOD - Compile on cygwin
+>
+> Read README for required packages.
+>
+> $ cd generic
+> $ IMAGEROOT=3D`pwd`/image-win32 CHOST=3Di686-w64-mingw32
+> CBUILD=3Di686-pc-cygwin ./build
+> $ IMAGEROOT=3D`pwd`/image-win64 CHOST=3Dx86_64-w64-mingw32
+> CBUILD=3Di686-pc-cygwin ./build
+>
+> Visual Studio Complete Batch
+>
+> install perl
+>
+>> cd msvc
+>> build
+> Visual Studio IDE
+>
+> After you have the dependencies of Complete Batch or your own.
+> Create msvc-env-local.bat with OPENVPN_DEPROOT pointing to the
+> location of the dependencies.
+>
+>> msvc-dev
+> MSBuild
+>
+> After you have the dependencies of Complete Batch or your own.
+> Create msvc-env-local.bat with OPENVPN_DEPROOT pointing to the
+> location of the dependencies.
+>
+>> msvc-build
+> Good luck,
+> Alon.
+>
+> [1] https://github.com/alonbl/openvpn-build
+>
+> -------------------------------------------------------------------------=
+-----
+> Virtualization & Cloud Management Using Capacity Planning
+> Cloud computing makes use of virtualization - but cloud computing=20
+> also focuses on allowing computing to be delivered as a service.
+> http://www.accelacomm.com/jaw/sfnl/114/51521223/
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
 
