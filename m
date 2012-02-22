@@ -1,9 +1,13 @@
-Message-ID: <4F44A1A3.8050007@...515...>
-Date: Wed, 22 Feb 2012 10:04:51 +0200
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
+Date: Wed, 22 Feb 2012 09:26:20 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120222082619.GJ7024@...1296...>
 References: <CAOazyz3CAK6Huf7qzAv_Uv+bn5QFFd_cC7A8S_s42HZQGNLC4g@...278...>
-In-Reply-To: <CAOazyz3CAK6Huf7qzAv_Uv+bn5QFFd_cC7A8S_s42HZQGNLC4g@...278...>
+	<4F44A1A3.8050007@...515...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="+HwY7O+GdaLKMYOv"
+Content-Disposition: inline
+In-Reply-To: <4F44A1A3.8050007@...515...>
 Subject: Re: [Openvpn-devel] [build] Windows build test
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,94 +17,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
+Cc: Alon Bar-Lev <alon.barlev@...277...>, "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+
+--+HwY7O+GdaLKMYOv
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
-Hi Alon,
-> Hello people who actually use Windows!
->
-> I will appreciate if you test my new windows build environment for OpenVP=
-N.
-I'll test this today.
+Hi,
 
-> You have many options, I guess all are needed.
->
-> While you at it, please try to explain me why we need Visual Studio build=
-... :)
-I guess for building the TAP-driver. Besides that, I've never had a
-clear idea :).
+On Wed, Feb 22, 2012 at 10:04:51AM +0200, Samuli Sepp=E4nen wrote:
+> > While you at it, please try to explain me why we need Visual Studio bui=
+ld... :)
+> I guess for building the TAP-driver.=20
 
-> .
-> Build is here[1]
->
-> BEST METHOD - Compile on Linux
+No, that one builds fine with the msys build environment and the
+windows ddk.
 
-Agreed :).
->
-> This is a generic method, it can cross compile OpenVPN using any
-> toolchain to any environment.
-> For Windows, make sure you have mingw-w64 toolchain.
-> We are using nsis so we can also package files at Linux.
->
-> $ cd generic
-> $ IMAGEROOT=3D`pwd`/image-win32 CHOST=3Di686-w64-mingw32
-> CBUILD=3Dx86_64-pc-linux-gnu ./build
-> $ IMAGEROOT=3D`pwd`/image-win64 CHOST=3Dx86_64-w64-mingw32
-> CBUILD=3Dx86_64-pc-linux-gnu ./build
-> SLOWER METHOD - Compile on cygwin
->
-> Read README for required packages.
->
-> $ cd generic
-> $ IMAGEROOT=3D`pwd`/image-win32 CHOST=3Di686-w64-mingw32
-> CBUILD=3Di686-pc-cygwin ./build
-> $ IMAGEROOT=3D`pwd`/image-win64 CHOST=3Dx86_64-w64-mingw32
-> CBUILD=3Di686-pc-cygwin ./build
->
-> Visual Studio Complete Batch
->
-> install perl
->
->> cd msvc
->> build
-> Visual Studio IDE
->
-> After you have the dependencies of Complete Batch or your own.
-> Create msvc-env-local.bat with OPENVPN_DEPROOT pointing to the
-> location of the dependencies.
->
->> msvc-dev
-> MSBuild
->
-> After you have the dependencies of Complete Batch or your own.
-> Create msvc-env-local.bat with OPENVPN_DEPROOT pointing to the
-> location of the dependencies.
->
->> msvc-build
-> Good luck,
-> Alon.
->
-> [1] https://github.com/alonbl/openvpn-build
->
-> -------------------------------------------------------------------------=
------
-> Virtualization & Cloud Management Using Capacity Planning
-> Cloud computing makes use of virtualization - but cloud computing=20
-> also focuses on allowing computing to be delivered as a service.
-> http://www.accelacomm.com/jaw/sfnl/114/51521223/
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+We have Visual Studio because James was afraid that mingw would stop
+being supported, leaving us without a viable build environment.  Which
+turns out to be not a real problem (yet), given that mingw64 seems to=20
+be supported quite well.
 
-
+gert
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-irc freenode net: mattock
+--+HwY7O+GdaLKMYOv
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBT0Smq6kuBuNlUUl1AQKjFgP/Yoon6/EQayENI4WYzNJM5lSnlGfJmYzF
+BR0g1GybQ4zbDPni591k5Pl3uqvqD/19KFC1i7sHoofKvZB3a1FAL9ijJs0YnoWI
+W6SCtEI9S4jiUu9fTCrQ3AgJ1OYSnT6i5KHkI4WPLJeiMCE34NhxAfX2pDbYNI0z
+hoHehpMCX8c=
+=zl5z
+-----END PGP SIGNATURE-----
+
+--+HwY7O+GdaLKMYOv--
 
