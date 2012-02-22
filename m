@@ -1,13 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <1653841.mDJ7IUcjyx@...1526...>
-References: <CAOazyz3CAK6Huf7qzAv_Uv+bn5QFFd_cC7A8S_s42HZQGNLC4g@...278...>
-	<8821332.jJMvSfGUe1@...1526...>
-	<CAOazyz2gNp_wwXKYHtsZnFh_-ywXLqDkHd3n79X5VxGmv3=Cbg@...278...>
-	<1653841.mDJ7IUcjyx@...1526...>
-Date: Wed, 22 Feb 2012 12:37:59 +0200
-Message-ID: <CAOazyz0xPKxbw-t5H_b39fTy8zVR_G=zhSo1PHy0gOE7Js1ARw@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [build] Windows build test
+In-Reply-To: <4F438CF2.1060305@...515...>
+References: <4F438CF2.1060305@...515...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Wed, 22 Feb 2012 08:47:17 -0500
+Message-ID: <CAEsd45Rw5nYYuMMq_Qy_5tQYagZh+EMHM+2Nugod1_1s-BHthA@...278...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.3-alpha1 preview 1 installer now
+	available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,25 +14,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Heiko Hund <heiko.hund@...1489...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Wed, Feb 22, 2012 at 12:36 PM, Heiko Hund <heiko.hund@...1489...> wrote:
-> On Wednesday 22 February 2012 10:32:23 Alon Bar-Lev wrote:
->> On Wed, Feb 22, 2012 at 12:27 PM, Heiko Hund <heiko.hund@...1489...> wrote:
->> > I was cross compiling for Windows previously doing something very
->> > standard
->> > like `./configure --host=i686-w64-mingw32 ...` followed by `make`. What
->> > the rationale behind moving away from this way?
->>
->> This is exactly what this build is doing.
->> Just it also builds the dependencies and package the output.
->> The most difficult task (usually) is to compile the dependencies.
+2012/2/21 Samuli Sepp=E4nen <samuli@...515...>
+> A preview of OpenVPN 2.3-alpha1 installer for Windows is now available
+> here:
 >
-> What dependencies do you mean? lzo, openssl and pkcs11-helper?
+> <http://build.openvpn.net/downloads/snapshots/openvpn-2.3-alpha1-preview1=
+-install.exe>
 
-Right.
-Look at the script.
+I realize that this post was aimed at Windows, but building on OS X
+10.6.8 (for Tunnelblick) fails with the following:
+
+gcc-4.0 -DHAVE_CONFIG_H -I. -I../.. -I../../include  -no-cpp-precomp
+ -isysroot /Developer/SDKs/MacOSX10.4u.sdk -Os
+-mmacosx-version-min=3D10.4 -arch i386 -c socket.c
+In file included from buffer.h:29,
+                 from socket.h:28,
+                 from socket.c:33:
+error.h:172:5: warning: #warning this compiler appears to lack vararg
+macros which will cause a significant degradation in efficiency (you
+can ignore this warning if you are using LCLINT)
+socket.c: In function 'create_socket_udp6':
+socket.c:902: error: 'IPV6_RECVPKTINFO' undeclared (first use in this funct=
+ion)
+socket.c:902: error: (Each undeclared identifier is reported only once
+socket.c:902: error: for each function it appears in.)
+make[4]: *** [socket.o] Error 1
+
+The error is the main problem, of course, but I'm not sure what to
+make of the warning, which appears in the compilation of (almost?) all
+modules  -- it's hard to believe that gcc 4.0 doesn't have vararg
+macros, since they are a feature of GNU C!
+
+The full compilation log is available at http://pastebin.com/DaPnQZCH
 
