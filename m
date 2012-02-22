@@ -1,9 +1,15 @@
 MIME-Version: 1.0
-Date: Wed, 22 Feb 2012 18:12:24 +0200
-Message-ID: <CAOazyz21EEqHhEabEY_L-ve5JFnuZoE8fgqLVJjEYTjfpBSq9w@...278...>
+In-Reply-To: <20120221202223.GE7024@...1296...>
+References: <CAOazyz34oFXrQ8vh5qXcEFPC3wA8Qhn7ivzLKasB=B9mOCKyZQ@...278...>
+	<4F43BEB5.6050404@...1114...>
+	<CAOazyz2rRpsKzitWS5bWe8Ug7ut=ODQy9PDkq7v4Aa7E1ygHHA@...278...>
+	<4F43D9B0.6010900@...1114...>
+	<CAOazyz0Z4Lv=qDN1r_W504vBOgaF1YWiNs+9j_MCorACOzfyzQ@...278...>
+	<4F43EE92.50802@...515...> <20120221202223.GE7024@...1296...>
+Date: Wed, 22 Feb 2012 18:13:58 +0200
+Message-ID: <CAOazyz1vAeOLWrqoYgK+tOba1yfx4uyhoqt3Gq1+7LLGK9A-+Q@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Content-Type: multipart/mixed; boundary=e89a8f2354bb0b5b6b04b98fcb47
-Subject: [Openvpn-devel] [RFC][windows] gettimeofday()
+Subject: Re: [Openvpn-devel] [RFC] openssl minimum supported version
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,72 +18,11 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
-
---e89a8f2354bb0b5b6b04b98fcb47
 Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: David Sommerseth <openvpn.list@...1114...>, =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-Hello all,
-
-There is an abnormality in the openvpn sources I want to resolve.
-
-In windows there is own implementation of gettimeofday().
-In the past there was no gettimeofday(), so we used performance counters,
-then James optimize it to reduce CPU consumption.
-
-Unlike in the past, mingw does provide this function these days.
-The question is if it is good enough.
-
-There is also a note:
-/* on WIN32, gettimeofday is faster than time(NULL) */
-
-I am not sure about any of these, can you please try to run the
-benchmark and report back the results?
-It must be compiled using mingw, either at cygwin or at linux.
-
-Thanks,
-Alon
-
---e89a8f2354bb0b5b6b04b98fcb47
-Content-Type: text/x-csrc; charset=US-ASCII; name="timebench.c"
-Content-Disposition: attachment; filename="timebench.c"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_gyyk5j5e0
-
-I2luY2x1ZGUgPHN5cy90aW1lLmg+CiNpbmNsdWRlIDxzdGRpby5oPgojaW5jbHVkZSA8d2luZG93
-cy5oPgoKc3RhdGljIHRpbWVfdCBndGNfYmFzZSA9IDA7CnN0YXRpYyBEV09SRCBndGNfbGFzdCA9
-IDA7CnN0YXRpYyB0aW1lX3QgbGFzdF9zZWMgPSAwOwpzdGF0aWMgdW5zaWduZWQgaW50IGxhc3Rf
-bXNlYyA9IDA7CnN0YXRpYyBpbnQgYnRfbGFzdCA9IDA7CgpzdGF0aWMgdm9pZApnZXR0aW1lb2Zk
-YXlfY2FsaWJyYXRlICh2b2lkKQp7CiAgY29uc3QgdGltZV90IHQgPSB0aW1lKE5VTEwpOwogIGNv
-bnN0IERXT1JEIGd0YyA9IEdldFRpY2tDb3VudCgpOwogIGd0Y19iYXNlID0gdCAtIGd0Yy8xMDAw
-OwogIGd0Y19sYXN0ID0gZ3RjOwp9CgovKgogKiBSZXdyaXR0ZW4gYnkgSlkgZm9yIE9wZW5WUE4g
-Mi4xLCBhZnRlciBJIHJlYWxpemVkIHRoYXQKICogUXVlcnlQZXJmb3JtYW5jZUNvdW50ZXIgdGFr
-ZXMgbmVhcmx5IDIgb3JkZXJzIG9mIG1hZ25pdHVkZQogKiBtb3JlIHByb2Nlc3NvciBjeWNsZXMg
-dGhhbiBHZXRUaWNrQ291bnQuCiAqLwppbnQKb3BlbnZwbl9nZXR0aW1lb2ZkYXkgKHN0cnVjdCB0
-aW1ldmFsICp0diwgdm9pZCAqdHopCnsKICBjb25zdCBEV09SRCBndGMgPSBHZXRUaWNrQ291bnQo
-KTsKICBpbnQgYnQgPSAwOwogIHRpbWVfdCBzZWM7CiAgdW5zaWduZWQgaW50IG1zZWM7CiAgY29u
-c3QgaW50IGJhY2t0cmFja19ob2xkX3NlY29uZHMgPSAxMDsKCiAgLyogcmVjYWxpYnJhdGUgYXQg
-dGhlIGRyZWFkZWQgNDkuNyBkYXkgbWFyayAqLwogIGlmICghZ3RjX2Jhc2UgfHwgZ3RjIDwgZ3Rj
-X2xhc3QpCiAgICBnZXR0aW1lb2ZkYXlfY2FsaWJyYXRlICgpOwogIGd0Y19sYXN0ID0gZ3RjOwoK
-ICBzZWMgPSBndGNfYmFzZSArIGd0YyAvIDEwMDA7CiAgbXNlYyA9IGd0YyAlIDEwMDA7CgogIGlm
-IChzZWMgPT0gbGFzdF9zZWMpCiAgICB7CiAgICAgIGlmIChtc2VjIDwgbGFzdF9tc2VjKQoJewoJ
-ICBtc2VjID0gbGFzdF9tc2VjOwoJICBidCA9IDE7Cgl9CiAgICB9CiAgZWxzZSBpZiAoc2VjIDwg
-bGFzdF9zZWMpCiAgICB7CiAgICAgIC8qIFdlIHRyeSB0byBkYW1wZW4gb3V0IGJhY2t0cmFja3Mg
-b2YgbGVzcyB0aGFuIGJhY2t0cmFja19ob2xkX3NlY29uZHMuCgkgTGFyZ2VyIGJhY2t0cmFja3Mg
-d2lsbCBiZSBwYXNzZWQgdGhyb3VnaCBhbmQgZGVhbHQgd2l0aCBieSB0aGUKCSBUSU1FX0JBQ0tU
-UkFDS19QUk9URUNUSU9OIGNvZGUgKGlmIGVuYWJsZWQpICovCiAgICAgIGlmIChzZWMgPiBsYXN0
-X3NlYyAtIGJhY2t0cmFja19ob2xkX3NlY29uZHMpCgl7CgkgIHNlYyA9IGxhc3Rfc2VjOwoJICBt
-c2VjID0gbGFzdF9tc2VjOwoJfQogICAgICBidCA9IDE7CiAgICB9CgogIHR2LT50dl9zZWMgPSBs
-YXN0X3NlYyA9IHNlYzsKICB0di0+dHZfdXNlYyA9IChsYXN0X21zZWMgPSBtc2VjKSAqIDEwMDA7
-CgogIGlmIChidCAmJiAhYnRfbGFzdCkKICAgIGdldHRpbWVvZmRheV9jYWxpYnJhdGUgKCk7CiAg
-YnRfbGFzdCA9IGJ0OwoKICByZXR1cm4gMDsKfQoKaW50IG1haW4odm9pZCkgewoJc3RydWN0IHRp
-bWV2YWwgdHY7Cglsb25nIGk7Cglsb25nIG49MTAwMDAwMDAwMDsKCXRpbWVfdCBtYXJrOwoJbWFy
-ayA9IHRpbWUoTlVMTCk7Cglmb3IoaT0wO2k8bjtpKyspIHsKCQl0aW1lKE5VTEwpOwoJfQoJcHJp
-bnRmKCJ0aW1lKCk6ICVkXG4iLCB0aW1lKE5VTEwpLW1hcmspOwoJbWFyayA9IHRpbWUoTlVMTCk7
-Cglmb3IoaT0wO2k8bjtpKyspIHsKCQlnZXR0aW1lb2ZkYXkoJnR2LCBOVUxMKTsKCX0KCXByaW50
-ZigiZ2V0dGltZW9mZGF5KCk6ICVkXG4iLCB0aW1lKE5VTEwpLW1hcmspOwoJbWFyayA9IHRpbWUo
-TlVMTCk7Cglmb3IoaT0wO2k8bjtpKyspIHsKCQlvcGVudnBuX2dldHRpbWVvZmRheSgmdHYsIE5V
-TEwpOwoJfQoJcHJpbnRmKCJvcGVudnBuX2dldHRpbWVvZmRheSgpOiAlZFxuIiwgdGltZShOVUxM
-KS1tYXJrKTsKCXJldHVybiAwOwp9Cg==
---e89a8f2354bb0b5b6b04b98fcb47--
+Dear project managers.
+I need a decision regarding the minimum supported openssl.
 
