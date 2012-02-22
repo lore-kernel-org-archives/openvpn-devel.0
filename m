@@ -1,14 +1,9 @@
-Message-ID: <4F45126D.9090208@...515...>
-Date: Wed, 22 Feb 2012 18:06:05 +0200
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <4F438CF2.1060305@...515...>
-	<CAEsd45Rw5nYYuMMq_Qy_5tQYagZh+EMHM+2Nugod1_1s-BHthA@...278...>
-In-Reply-To: <CAEsd45Rw5nYYuMMq_Qy_5tQYagZh+EMHM+2Nugod1_1s-BHthA@...278...>
-Content-Type: multipart/alternative;
-	boundary="------------000305030209010500030105"
-Subject: Re: [Openvpn-devel] OpenVPN 2.3-alpha1 preview 1 installer now
-	available
+Date: Wed, 22 Feb 2012 18:12:24 +0200
+Message-ID: <CAOazyz21EEqHhEabEY_L-ve5JFnuZoE8fgqLVJjEYTjfpBSq9w@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Content-Type: multipart/mixed; boundary=e89a8f2354bb0b5b6b04b98fcb47
+Subject: [Openvpn-devel] [RFC][windows] gettimeofday()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,135 +12,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "Jonathan K. Bullard" <jkbullard@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------000305030209010500030105
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+--e89a8f2354bb0b5b6b04b98fcb47
+Content-Type: text/plain; charset=UTF-8
 
-Hi Jonathan,
+Hello all,
 
-This does not really address the issue you're having, but could you try
-if using Alon's new buildsystem helps:
+There is an abnormality in the openvpn sources I want to resolve.
 
-<https://github.com/alonbl/openvpn/downloads>
+In windows there is own implementation of gettimeofday().
+In the past there was no gettimeofday(), so we used performance counters,
+then James optimize it to reduce CPU consumption.
 
-You need to copy the "generic" directory to OpenVPN source directory, cd
-to it and do a ./build. There's some additional info in the README file.
+Unlike in the past, mingw does provide this function these days.
+The question is if it is good enough.
 
-I used it earlier today successfully to compile native + 32/64-bit
-Windows binaries on Ubuntu 11.10. It should also work fine on MacOS X if
-all dependencies are in place:
+There is also a note:
+/* on WIN32, gettimeofday is faster than time(NULL) */
 
-<http://thread.gmane.org/gmane.network.openvpn.devel/5527>
+I am not sure about any of these, can you please try to run the
+benchmark and report back the results?
+It must be compiled using mingw, either at cygwin or at linux.
 
-Samuli
+Thanks,
+Alon
 
+--e89a8f2354bb0b5b6b04b98fcb47
+Content-Type: text/x-csrc; charset=US-ASCII; name="timebench.c"
+Content-Disposition: attachment; filename="timebench.c"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_gyyk5j5e0
 
->> A preview of OpenVPN 2.3-alpha1 installer for Windows is now available
->> here:
->>
->> <http://build.openvpn.net/downloads/snapshots/openvpn-2.3-alpha1-preview1-install.exe>
-> I realize that this post was aimed at Windows, but building on OS X
-> 10.6.8 (for Tunnelblick) fails with the following:
->
-> gcc-4.0 -DHAVE_CONFIG_H -I. -I../.. -I../../include  -no-cpp-precomp
->  -isysroot /Developer/SDKs/MacOSX10.4u.sdk -Os
-> -mmacosx-version-min=10.4 -arch i386 -c socket.c
-> In file included from buffer.h:29,
->                  from socket.h:28,
->                  from socket.c:33:
-> error.h:172:5: warning: #warning this compiler appears to lack vararg
-> macros which will cause a significant degradation in efficiency (you
-> can ignore this warning if you are using LCLINT)
-> socket.c: In function 'create_socket_udp6':
-> socket.c:902: error: 'IPV6_RECVPKTINFO' undeclared (first use in this function)
-> socket.c:902: error: (Each undeclared identifier is reported only once
-> socket.c:902: error: for each function it appears in.)
-> make[4]: *** [socket.o] Error 1
->
-> The error is the main problem, of course, but I'm not sure what to
-> make of the warning, which appears in the compilation of (almost?) all
-> modules  -- it's hard to believe that gcc 4.0 doesn't have vararg
-> macros, since they are a feature of GNU C!
->
-> The full compilation log is available at http://pastebin.com/DaPnQZCH
-
-
-
---------------000305030209010500030105
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-
-<html>
-  <head>
-    <meta content="text/html; charset=ISO-8859-1"
-      http-equiv="Content-Type">
-  </head>
-  <body bgcolor="#FFFFFF" text="#000000">
-    Hi Jonathan,<br>
-    <br>
-    This does not really address the issue you're having, but could you
-    try if using Alon's new buildsystem helps:<br>
-    <pre><a rel="nofollow" href="https://github.com/alonbl/openvpn/downloads" target="_top">&lt;https://github.com/alonbl/openvpn/downloads&gt;</a></pre>
-    You need to copy the "generic" directory to OpenVPN source
-    directory, cd to it and do a ./build. There's some additional info
-    in the README file.<br>
-    <br>
-    I used it earlier today successfully to compile native + 32/64-bit
-    Windows binaries on Ubuntu 11.10. It should also work fine on MacOS
-    X if all dependencies are in place:<br>
-    <br>
-    <a class="moz-txt-link-rfc2396E" href="http://thread.gmane.org/gmane.network.openvpn.devel/5527">&lt;http://thread.gmane.org/gmane.network.openvpn.devel/5527&gt;</a><br>
-    <br>
-    Samuli<br>
-    <br>
-    <br>
-    <blockquote
-cite="mid:CAEsd45Rw5nYYuMMq_Qy_5tQYagZh+EMHM+2Nugod1_1s-BHthA@...278..."
-      type="cite">
-      <blockquote type="cite">
-        <pre wrap="">A preview of OpenVPN 2.3-alpha1 installer for Windows is now available
-here:
-
-<a class="moz-txt-link-rfc2396E" href="http://build.openvpn.net/downloads/snapshots/openvpn-2.3-alpha1-preview1-install.exe">&lt;http://build.openvpn.net/downloads/snapshots/openvpn-2.3-alpha1-preview1-install.exe&gt;</a>
-</pre>
-      </blockquote>
-      <pre wrap="">
-I realize that this post was aimed at Windows, but building on OS X
-10.6.8 (for Tunnelblick) fails with the following:
-
-gcc-4.0 -DHAVE_CONFIG_H -I. -I../.. -I../../include  -no-cpp-precomp
- -isysroot /Developer/SDKs/MacOSX10.4u.sdk -Os
--mmacosx-version-min=10.4 -arch i386 -c socket.c
-In file included from buffer.h:29,
-                 from socket.h:28,
-                 from socket.c:33:
-error.h:172:5: warning: #warning this compiler appears to lack vararg
-macros which will cause a significant degradation in efficiency (you
-can ignore this warning if you are using LCLINT)
-socket.c: In function 'create_socket_udp6':
-socket.c:902: error: 'IPV6_RECVPKTINFO' undeclared (first use in this function)
-socket.c:902: error: (Each undeclared identifier is reported only once
-socket.c:902: error: for each function it appears in.)
-make[4]: *** [socket.o] Error 1
-
-The error is the main problem, of course, but I'm not sure what to
-make of the warning, which appears in the compilation of (almost?) all
-modules  -- it's hard to believe that gcc 4.0 doesn't have vararg
-macros, since they are a feature of GNU C!
-
-The full compilation log is available at <a class="moz-txt-link-freetext" href="http://pastebin.com/DaPnQZCH">http://pastebin.com/DaPnQZCH</a>
-</pre>
-    </blockquote>
-    <br>
-    <br>
-    <pre class="moz-signature" cols="72">
-</pre>
-  </body>
-</html>
-
---------------000305030209010500030105--
+I2luY2x1ZGUgPHN5cy90aW1lLmg+CiNpbmNsdWRlIDxzdGRpby5oPgojaW5jbHVkZSA8d2luZG93
+cy5oPgoKc3RhdGljIHRpbWVfdCBndGNfYmFzZSA9IDA7CnN0YXRpYyBEV09SRCBndGNfbGFzdCA9
+IDA7CnN0YXRpYyB0aW1lX3QgbGFzdF9zZWMgPSAwOwpzdGF0aWMgdW5zaWduZWQgaW50IGxhc3Rf
+bXNlYyA9IDA7CnN0YXRpYyBpbnQgYnRfbGFzdCA9IDA7CgpzdGF0aWMgdm9pZApnZXR0aW1lb2Zk
+YXlfY2FsaWJyYXRlICh2b2lkKQp7CiAgY29uc3QgdGltZV90IHQgPSB0aW1lKE5VTEwpOwogIGNv
+bnN0IERXT1JEIGd0YyA9IEdldFRpY2tDb3VudCgpOwogIGd0Y19iYXNlID0gdCAtIGd0Yy8xMDAw
+OwogIGd0Y19sYXN0ID0gZ3RjOwp9CgovKgogKiBSZXdyaXR0ZW4gYnkgSlkgZm9yIE9wZW5WUE4g
+Mi4xLCBhZnRlciBJIHJlYWxpemVkIHRoYXQKICogUXVlcnlQZXJmb3JtYW5jZUNvdW50ZXIgdGFr
+ZXMgbmVhcmx5IDIgb3JkZXJzIG9mIG1hZ25pdHVkZQogKiBtb3JlIHByb2Nlc3NvciBjeWNsZXMg
+dGhhbiBHZXRUaWNrQ291bnQuCiAqLwppbnQKb3BlbnZwbl9nZXR0aW1lb2ZkYXkgKHN0cnVjdCB0
+aW1ldmFsICp0diwgdm9pZCAqdHopCnsKICBjb25zdCBEV09SRCBndGMgPSBHZXRUaWNrQ291bnQo
+KTsKICBpbnQgYnQgPSAwOwogIHRpbWVfdCBzZWM7CiAgdW5zaWduZWQgaW50IG1zZWM7CiAgY29u
+c3QgaW50IGJhY2t0cmFja19ob2xkX3NlY29uZHMgPSAxMDsKCiAgLyogcmVjYWxpYnJhdGUgYXQg
+dGhlIGRyZWFkZWQgNDkuNyBkYXkgbWFyayAqLwogIGlmICghZ3RjX2Jhc2UgfHwgZ3RjIDwgZ3Rj
+X2xhc3QpCiAgICBnZXR0aW1lb2ZkYXlfY2FsaWJyYXRlICgpOwogIGd0Y19sYXN0ID0gZ3RjOwoK
+ICBzZWMgPSBndGNfYmFzZSArIGd0YyAvIDEwMDA7CiAgbXNlYyA9IGd0YyAlIDEwMDA7CgogIGlm
+IChzZWMgPT0gbGFzdF9zZWMpCiAgICB7CiAgICAgIGlmIChtc2VjIDwgbGFzdF9tc2VjKQoJewoJ
+ICBtc2VjID0gbGFzdF9tc2VjOwoJICBidCA9IDE7Cgl9CiAgICB9CiAgZWxzZSBpZiAoc2VjIDwg
+bGFzdF9zZWMpCiAgICB7CiAgICAgIC8qIFdlIHRyeSB0byBkYW1wZW4gb3V0IGJhY2t0cmFja3Mg
+b2YgbGVzcyB0aGFuIGJhY2t0cmFja19ob2xkX3NlY29uZHMuCgkgTGFyZ2VyIGJhY2t0cmFja3Mg
+d2lsbCBiZSBwYXNzZWQgdGhyb3VnaCBhbmQgZGVhbHQgd2l0aCBieSB0aGUKCSBUSU1FX0JBQ0tU
+UkFDS19QUk9URUNUSU9OIGNvZGUgKGlmIGVuYWJsZWQpICovCiAgICAgIGlmIChzZWMgPiBsYXN0
+X3NlYyAtIGJhY2t0cmFja19ob2xkX3NlY29uZHMpCgl7CgkgIHNlYyA9IGxhc3Rfc2VjOwoJICBt
+c2VjID0gbGFzdF9tc2VjOwoJfQogICAgICBidCA9IDE7CiAgICB9CgogIHR2LT50dl9zZWMgPSBs
+YXN0X3NlYyA9IHNlYzsKICB0di0+dHZfdXNlYyA9IChsYXN0X21zZWMgPSBtc2VjKSAqIDEwMDA7
+CgogIGlmIChidCAmJiAhYnRfbGFzdCkKICAgIGdldHRpbWVvZmRheV9jYWxpYnJhdGUgKCk7CiAg
+YnRfbGFzdCA9IGJ0OwoKICByZXR1cm4gMDsKfQoKaW50IG1haW4odm9pZCkgewoJc3RydWN0IHRp
+bWV2YWwgdHY7Cglsb25nIGk7Cglsb25nIG49MTAwMDAwMDAwMDsKCXRpbWVfdCBtYXJrOwoJbWFy
+ayA9IHRpbWUoTlVMTCk7Cglmb3IoaT0wO2k8bjtpKyspIHsKCQl0aW1lKE5VTEwpOwoJfQoJcHJp
+bnRmKCJ0aW1lKCk6ICVkXG4iLCB0aW1lKE5VTEwpLW1hcmspOwoJbWFyayA9IHRpbWUoTlVMTCk7
+Cglmb3IoaT0wO2k8bjtpKyspIHsKCQlnZXR0aW1lb2ZkYXkoJnR2LCBOVUxMKTsKCX0KCXByaW50
+ZigiZ2V0dGltZW9mZGF5KCk6ICVkXG4iLCB0aW1lKE5VTEwpLW1hcmspOwoJbWFyayA9IHRpbWUo
+TlVMTCk7Cglmb3IoaT0wO2k8bjtpKyspIHsKCQlvcGVudnBuX2dldHRpbWVvZmRheSgmdHYsIE5V
+TEwpOwoJfQoJcHJpbnRmKCJvcGVudnBuX2dldHRpbWVvZmRheSgpOiAlZFxuIiwgdGltZShOVUxM
+KS1tYXJrKTsKCXJldHVybiAwOwp9Cg==
+--e89a8f2354bb0b5b6b04b98fcb47--
 
