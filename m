@@ -1,15 +1,11 @@
-Message-ID: <4F45F523.2060109@...515...>
-Date: Thu, 23 Feb 2012 10:13:23 +0200
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <4F4601A5.3080203@...1549...>
+Date: Thu, 23 Feb 2012 10:06:45 +0100
+From: Freek Dijkstra <public@...1549...>
 MIME-Version: 1.0
-References: <CAOBzU4PN6qDxf39+s4noXEiW8hNbDy-hkQWGSauBd3hX0pu2hw@...278...>
-	<CAOazyz0f3sERwjZsf3Ts3Xu7CQqBEf_-_VdbUZ7TrzhLbmTEsg@...278...>
-	<CAOazyz1buhSdSF7g6MzePAiQ=irD_Qo-RKPC_jXoR9AVqbtkvQ@...278...>
-	<CAOBzU4P0SxY-jF7rb_HsvmtSH8i9PCk+qe5iDQiwJhajsBuYuw@...278...>
-	<CAOazyz1naScdf+M0pnePS6-bb5deAHsAniTiv+DFw3ZQdAN+kg@...278...>
-	<CAOazyz1DE7Y-P9HFK3LN8-HeoGbHzYeqofX3RiEuK0C-zcxnug@...278...>
-In-Reply-To: <CAOazyz1DE7Y-P9HFK3LN8-HeoGbHzYeqofX3RiEuK0C-zcxnug@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 00/35] build revolution
+References: <4F438CF2.1060305@...515...>
+In-Reply-To: <4F438CF2.1060305@...515...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 preview 1
+	installer now available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,52 +14,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: openvpn developers <openvpn-devel@lists.sourceforge.net>
+
+Reporting that
+http://build.openvpn.net/downloads/releases/openvpn-2.3-alpha1.tar.gz
+compiles and runs fine for me.
+
+(after I manully installed lzo manually)
+
+Running Mac OS 10.7.2:
+% uname -mrsv
+Darwin 11.3.0 Darwin Kernel Version 11.3.0: Thu Jan 12 18:47:41 PST
+2012; root:xnu-1699.24.23~1/RELEASE_X86_64 x86_64
 
 
-> Hello All,
->
-> I've reached 2nd milestone in rewrite the build system.
->
-> So far:
-> 1. autotools cleaned up >=3Dautoconf-2.59, >=3Dautomake-1.9, >=3Dlibtool-=
-1.5
-> (not for cross compile)
-> 2. build working for gcc/mingw.
-> 3. build is working for MSVC using msbuild.
-> 4. build script for cross compilers.
-> 5. build script for MSVC.
-> 6. perper directory structure.
-> 7. compat library is standalone library.
-> 8. most of platform specific [simple] wrapper renamed to platform_
-> prefix and moved to platform module.
-> 9. more cleanups of conditional compilations.
->
-> This point is far enough from master to stop and test.
-> I believe that after testing we can merge this.
-> It is important to test and merge ASAP as it will be difficult to
-> rebase new patches pushed to master.
->
-> As usual git repository is available[1] and tarball is also available[2].
->
-> Next milestone will be to split up syshead.h, move all conditionals to
-> autoconf and reduce headers. This will also create a lot of noise.
->
-> Alon.
->
-> [1] https://github.com/alonbl/openvpn
-> [2] https://github.com/alonbl/openvpn/downloads
->
-I can test the MSVC/msbuild part.
+The only comment I have is some confusing messages on the command line.
+The first time I ran
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+% openvpn --config config.conf
+it failed with:
 
-irc freenode net: mattock
+NOTE: explicit support for IPv6 tun devices is not provided for this OS
+Cannot allocate TUN/TAP dev dynamically
+
+It turns out I just forgot to run openvpn as root, and the first message
+seems incorrect (IPv6 does seem to work fine, see below):
+
+% sudo openvpn --config config.conf
+...
+NOTE: explicit support for IPv6 tun devices is not provided for this OS
+TUN/TAP device /dev/tun0 opened
+...
+
+
+My recommendation is to:
+
+1. Remove the "NOTE: explicit support for IPv6 tun devices is not
+provided for this OS"
+
+2. If possible, add a message about the cause to the "Cannot allocate
+TUN/TAP dev dynamically" message (e.g. "permission denied" or "no tun
+interface available" ,...)
+
+Regards,
+Freek Dijkstra
+
+
+Indeed IPv6 seems to work:
+
+...
+do_ifconfig, tt->ipv6=1, tt->did_ifconfig_ipv6_setup=1
+/sbin/ifconfig tun0 inet6 2001:610:767:1975::4/64
+add_route_ipv6(2001:610:767:fd::/64 -> 2001:610:767:1975::1 metric 0)
+dev tun0
+...
+
+% route get -inet6 2001:610:767:fd::70
+   route to: 2001:610:767:fd::70
+destination: 2001:610:767:fd::
+       mask: ffff:ffff:ffff:ffff::
+  interface: tun0
+
+And:
+% ping6 2001:610:767:fd::70
+PING6(56=40+8+8 bytes) 2001:610:767:1975::4 --> 2001:610:767:fd::70
+16 bytes from 2001:610:767:fd::70, icmp_seq=0 hlim=63 time=7.678 ms
+16 bytes from 2001:610:767:fd::70, icmp_seq=1 hlim=63 time=5.728 ms
+16 bytes from 2001:610:767:fd::70, icmp_seq=2 hlim=63 time=4.167 ms
+--- 2001:610:767:fd::70 ping6 statistics ---
+3 packets transmitted, 3 packets received, 0.0% packet loss
 
 
