@@ -1,17 +1,10 @@
-From: Adriaan de Jong <dejong@...1435...>
-Date: Fri, 24 Feb 2012 08:33:59 +0100
-Message-ID: <1CED409804E2164C8104F9E623B08B90129350BEDF@...1436...>
-References: <CAOBzU4PN6qDxf39+s4noXEiW8hNbDy-hkQWGSauBd3hX0pu2hw@...278...>
-	<CAOazyz0f3sERwjZsf3Ts3Xu7CQqBEf_-_VdbUZ7TrzhLbmTEsg@...278...>
-	<CAOazyz1buhSdSF7g6MzePAiQ=irD_Qo-RKPC_jXoR9AVqbtkvQ@...278...>
-	<CAOBzU4P0SxY-jF7rb_HsvmtSH8i9PCk+qe5iDQiwJhajsBuYuw@...278...>
-	<CAOazyz1naScdf+M0pnePS6-bb5deAHsAniTiv+DFw3ZQdAN+kg@...278...>
-	<CAOazyz1DE7Y-P9HFK3LN8-HeoGbHzYeqofX3RiEuK0C-zcxnug@...278...>
-	<CAOazyz0nV8P8Age_wyFCvu1J4g1MECA7YdTAAL4of7TTVctXow@...278...>
-In-Reply-To: <CAOazyz0nV8P8Age_wyFCvu1J4g1MECA7YdTAAL4of7TTVctXow@...278...>
-Content-Language: en-US
+Message-ID: <4F475356.9020508@...515...>
+Date: Fri, 24 Feb 2012 11:07:34 +0200
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 00/35] build revolution
+References: <CAOazyz3CAK6Huf7qzAv_Uv+bn5QFFd_cC7A8S_s42HZQGNLC4g@...278...>
+In-Reply-To: <CAOazyz3CAK6Huf7qzAv_Uv+bn5QFFd_cC7A8S_s42HZQGNLC4g@...278...>
+Subject: Re: [Openvpn-devel] [build] Windows build test
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,48 +13,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: Alon Bar-Lev <alon.barlev@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-> -----Original Message-----
-> From: Alon Bar-Lev [mailto:alon.barlev@...277...]
-> Sent: donderdag 23 februari 2012 21:20
->=20
-> Hello Again,
->=20
-> Now the openvpn-build supports creating nsis installation package,
-> including singing. Output package is at[1].
->=20
-> Notice that all process is done on Linux, Windows is not need to create
-> the package!
->=20
+
+> Hello people who actually use Windows!
+>
+> I will appreciate if you test my new windows build environment for OpenVP=
+N.
+>
+>
+> Visual Studio Complete Batch
+>
+> install perl
+>
+>> cd msvc
+>> build
+> Visual Studio IDE
+>
+> After you have the dependencies of Complete Batch or your own.
+> Create msvc-env-local.bat with OPENVPN_DEPROOT pointing to the
+> location of the dependencies.
+>
+>> msvc-dev
+> MSBuild
+>
+> After you have the dependencies of Complete Batch or your own.
+> Create msvc-env-local.bat with OPENVPN_DEPROOT pointing to the
+> location of the dependencies.
+>
+>> msvc-build
+>
 
 Hi Alon,
 
-Good news! Overall that sounds great, I do have a few minor details to bick=
-er about.=20
+I tried building OpenVPN using the "Visual Studio Complete Batch" method:
 
-> The process:
-> 1. Create binaries using openvpn-build/generic.
+$ cd msvc
+$ build
 
-Could you explain how signing works here? I'm interested in how it's done o=
-n Linux.=20
+All went fine until OpenVPN build itself. The error message is here:
 
-> 2. Create tarball for easyrsa from master (temporary) files should be
-> at easy-rsa-2.0.
+<http://pastebin.com/2uJM4n3y>
 
-Is that a tarball or a zip file? The latter might be easier for Windows use=
-rs.
+A couple of questions:
 
-> 3. Create the installer using openvpn-build/windows-nsis.
->=20
-> I did not add the UI stuff, I think there should be a discussion why
-> these are embedded.
->=20
+a) What is the "Complete Batch"?
+b) Do I need to create an OpenVPN Visual Studio IDE project to build?
+c) Can I avoid b) somehow?
 
-One of the few pieces criticism we got about the OpenVPN-NL release was the=
- fact that we didn't bundle the GUI. End-users expect an all-in-one install=
-er for a simple user experience. As an end user of OpenVPN, I agree. On Win=
-dows, I don't want to use the command line, as it is very painful.
+Btw. I started a new Wiki page explaining the new buildsystem:
+
+<https://community.openvpn.net/openvpn/wiki/BuildingUsingGenericBuildsystem>
+
+The instructions are mostly from your mails, I just edited them a
+little. I hope that's ok for you.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
 
