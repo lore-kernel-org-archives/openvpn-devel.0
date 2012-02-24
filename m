@@ -1,10 +1,8 @@
 MIME-Version: 1.0
-In-Reply-To: <4F466205.5020006@...1030...>
-References: <4F466205.5020006@...1030...>
-Date: Fri, 24 Feb 2012 00:55:25 +0200
-Message-ID: <CAOazyz24mNbDRf0zoCMHrdCsrZui+cgWaETt7AA67qShfs4bGw@...278...>
+Date: Fri, 24 Feb 2012 03:21:39 +0200
+Message-ID: <CAOazyz1UpZgtXTrOkB+A=yDK-wB-OMsE6XLq68b6n-D1z-6Kpw@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] static build
+Subject: [Openvpn-devel] easy-rsa packaging
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,43 +13,21 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To: Mr Dash Four <mr.dash.four@...1030...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
 Hello,
 
-I am working on a new build system for OpenVPN, you can check it[1] out.
+I've created easy-rsa repository[1] and packaging[2] as standard tarball.
 
-To cross compile master to arm in static, do:
-$ git clone git://github.com/alonbl/openvpn-build.git
-$ cd openvpn-build/generic
-$ CHOST="arm-unknown-linux-gnueabi" CBUILD="x86_64-pc-linux-gnu"
-DO_STATIC=1 ./build
+This git repository holds only history of easy-rsa subdirectory.
 
-It will create static dependencies, but dynamic libc, if you want
-really static use DO_REALLY_STATIC=1.
+The installer create script[3] receives the tarball to embed within installer.
+
+Now, all that left is the tap packaging, nobody stepped in so I will do this.
 
 Alon
 
-[1] https://github.com/alonbl/openvpn-build
-
-On Thu, Feb 23, 2012 at 5:57 PM, Mr Dash Four
-<mr.dash.four@...1030...> wrote:
-> I would like to build a slimmed-down version of OpenVPN for armv6 -
-> would that be easy to achieve?
->
-> My aim is to deploy it on my android device (I don't trust the version
-> in existence there, so by statically building OpenVPN I won't be
-> dependent on the bionic toolchain). Has this been attempted before? Many
-> thanks!
->
-> ------------------------------------------------------------------------------
-> Virtualization & Cloud Management Using Capacity Planning
-> Cloud computing makes use of virtualization - but cloud computing
-> also focuses on allowing computing to be delivered as a service.
-> http://www.accelacomm.com/jaw/sfnl/114/51521223/
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+[1] https://github.com/alonbl/easy-rsa
+[2] https://github.com/downloads/alonbl/easy-rsa/easy-rsa-2.1.0.tar.gz
+[3] https://github.com/alonbl/openvpn-build
 
