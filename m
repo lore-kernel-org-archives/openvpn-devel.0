@@ -1,15 +1,14 @@
-Date: Fri, 24 Feb 2012 18:45:48 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120224174548.GE7024@...1296...>
-References: <4F438CF2.1060305@...515...> <4F4601A5.3080203@...1549...>
-	<4F4610F1.7020002@...1114...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="/8Xxy37xq6kDVsli"
-Content-Disposition: inline
-In-Reply-To: <4F4610F1.7020002@...1114...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 preview 1
-	installer now available
+Message-ID: <4F47E175.3030008@...1114...>
+Date: Fri, 24 Feb 2012 20:13:57 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <4F438CF2.1060305@...515...>
+	<CAEsd45Rw5nYYuMMq_Qy_5tQYagZh+EMHM+2Nugod1_1s-BHthA@...278...>
+	<4F44F7F8.4090604@...1114...>
+	<eb2837a3-ce55-4f52-b2fe-f822efc661f7@...1662...>
+In-Reply-To: <eb2837a3-ce55-4f52-b2fe-f822efc661f7@...1662...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.3-alpha1 preview 1 installer now
+	available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,52 +17,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn.list@...1114...>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: debrabander <debrabander@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---/8Xxy37xq6kDVsli
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Hi,
+On 22/02/12 20:49, debrabander wrote:
+> This is not the a problem when building using the latest Mac OS X
+> SDK. I've did a quick search and it seems to be a more common issue on
+> some (old) Darwin platforms. Please try building again after applying
+> the patch below.
+> 
+> 
+> Signed-off-by: Frank de Brabander <debrabander@...277...> --- socket.c
+> |    5 +++++ 1 files changed, 5 insertions(+), 0 deletions(-)
+> 
+> diff --git a/socket.c b/socket.c index 1a772af..6337900 100644 ---
+> a/socket.c +++ b/socket.c @@ -893,8 +893,13 @@ create_socket_udp6
+> (const unsigned int flags) else if (flags & SF_USE_IP_PKTINFO) { int
+> pad = 1; +#ifndef IPV6_RECVPKTINFO /* Some older Darwin platforms
+> require this */ +      if (setsockopt (sd, IPPROTO_IPV6,
+> IPV6_PKTINFO, +		      (void*)&pad, sizeof(pad)) < 0) +#else if
+> (setsockopt (sd, IPPROTO_IPV6, IPV6_RECVPKTINFO, (void*)&pad,
+> sizeof(pad)) < 0) +#endif msg(M_SOCKERR, "UDP: failed setsockopt for
+> IPV6_RECVPKTINFO"); } #endif
 
-On Thu, Feb 23, 2012 at 11:12:01AM +0100, David Sommerseth wrote:
-> Please try the attached patch and see if this works better.  I've flipped
-> the flag about explicit IPv6 support for OSX/Darwin.  Your tests obviously
-> shows the support is present.
+Right now, I'm a bit sceptic to this patch, as the JJO fixed a bug
+related to the --multihome feature by moving over to IPV6_RECVPKTINFO
 
-ACK.  I just checked the code, and the missing "true" there is just an=20
-oversight, OSX is considered "full IPv6 support".  I've considered ripping
-out the whole check, error message and argument to open_tun_generic(),
-but there actually are three cases left where "no IPv6 support" is true
-(old Linux, old NetBSD, "we don't really know anything about this platform"=
-),
-so let's stick to the simple bit-flip for now :)
+commit 5d6dbb03776de4d38f45e429ef674313a2bda8cc
+Author: JuanJo Ciarlante <jjo@...410...>
+Date:   Sun Feb 6 09:52:46 2011 +0100
 
-Also ACK on the added text to the warning message.
+    * fix --multihome for ipv6: IPV6_RECVPKTINFO
+      - setsockopt IPV6_RECVPKTINFO (not IPV6_PKTINFO!)  <<<< [1]
+      - do check for setsockopt() failures
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
 
---/8Xxy37xq6kDVsli
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+[1] This is why I'm nervous for this patch.
 
+If we can confirm that --multihome works as expected on platforms without
+ IPV6_RECVPKTINFO, then I'm fine with this patch.  Otherwise, we need to
+figure out how to make --multihome work too.
+
+JJO, please have a look at this.
+
+
+kind regards
+
+David Sommerseth
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iQCVAwUBT0fMzKkuBuNlUUl1AQJdAwQAhrVkqyux+JWBP3U+PkgEAZjCxE9pwSHQ
-lowBXICNspTo7+6Clu7ANIxW68k2Htj5B4R6IrHAPsaMHGVGoOTjnCYRTfF1Aw4G
-5RTomkYv3bOqH4JiHTT1OB9c5zXtuEjHYiJXnVsQS3zClU4ITNQwKmk5Wi+gWL/g
-QhkcJwJghZc=
-=kYPi
+iEYEARECAAYFAk9H4XMACgkQDC186MBRfrqpVwCfdX8B62YecoVSdXUQ17K0Ra4o
+FC8AoKn+1eI3NNtAFrEs71TjSWXFf2Po
+=yRcC
 -----END PGP SIGNATURE-----
-
---/8Xxy37xq6kDVsli--
 
