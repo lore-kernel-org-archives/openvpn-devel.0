@@ -1,13 +1,10 @@
+Message-ID: <4F4A4929.6040407@...1030...>
+Date: Sun, 26 Feb 2012 15:00:57 +0000
+From: Mr Dash Four <mr.dash.four@...1030...>
 MIME-Version: 1.0
-In-Reply-To: <4F4A31E1.2080503@...1030...>
-References: <4F466205.5020006@...1030...>
-	<CAOazyz24mNbDRf0zoCMHrdCsrZui+cgWaETt7AA67qShfs4bGw@...278...>
-	<4F4978D2.70706@...1030...>
-	<CAOazyz2jCkj2ox9edFap05zze2i5-pW1J9W4ho=jSVhZTUZQFw@...278...>
-	<4F4A31E1.2080503@...1030...>
-Date: Sun, 26 Feb 2012 16:08:21 +0200
-Message-ID: <CAOazyz1n6Uz3TuSywisO41J=tjNJ94rbq7LUgw5y3b+dR0J8nA@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+References: <4F466205.5020006@...1030...>	<CAOazyz24mNbDRf0zoCMHrdCsrZui+cgWaETt7AA67qShfs4bGw@...278...>	<4F4978D2.70706@...1030...>	<CAOazyz2jCkj2ox9edFap05zze2i5-pW1J9W4ho=jSVhZTUZQFw@...278...>	<4F4A31E1.2080503@...1030...>
+	<CAOazyz1n6Uz3TuSywisO41J=tjNJ94rbq7LUgw5y3b+dR0J8nA@...278...>
+In-Reply-To: <CAOazyz1n6Uz3TuSywisO41J=tjNJ94rbq7LUgw5y3b+dR0J8nA@...278...>
 Subject: Re: [Openvpn-devel] static build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,71 +14,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Mr Dash Four <mr.dash.four@...1030...>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Hello,
 
-You can check if executable is static by using
-arm-unknown-linux-gnueabi-readelf --relocas.
-The fact that the archive has a lot of files does not mean the openvpn
-is not static.
-Anyway it is working at my side, and it is a standard process.
-You can adjust the script for your needs.
+> You can check if executable is static by using
+> arm-unknown-linux-gnueabi-readelf --relocas.
+> The fact that the archive has a lot of files does not mean the openvpn
+> is not static.
+>   
+Well, I don't really know what you understand "static linking" to be, 
+but to me it means that all external functions, subroutines etc, which 
+are resolved at compile-time, are copied into a target application by 
+the gcc linker, producing an object file and then a stand-alone 
+executable ("stand-alone" being the key word here!). Your build script, 
+evidently, does not do that and I already pointed out the changes you 
+may need to make to allow a *stand-alone* openvpn executable to be produced.
 
-Alon.
+If you believe "static linking" to mean something else from what I 
+described above, please enlighten us all!
 
+If I have to deploy additional files alongside openvpn, then I may as 
+well have it dynamically linked and deploy the entire dependencies chain 
+(using ldd as guidance). The reason I can't/won't do that is because to 
+satisfy this, I have to 1) spend a lot of my time digging out 
+dependencies, without the guarantee that it would ever work, and 2) as 
+my rootfs is read-only, whatever I do it will be instantly lost on 
+reboot, so the whole exercise would be utterly pointless.
 
-On Sun, Feb 26, 2012 at 3:21 PM, Mr Dash Four
-<mr.dash.four@...1030...> wrote:
->
->>> Reason being, I suspect, that the lzo static libraries cannot be found
->>> (strange as the compilation succeeded).
->>>
->>
->>
->> I need tmp/openvpn/config.log
->> Better to have the complete build output...
->>
->
-> This was done in mock environment (both the rpm and "normal" build). When I
-> did this from outside, using a specific arm cross-toolchain, the build
-> succeeded, *but* the package created does not contain static openvpn - it
-> still needs all of its dependencies (though them being statically-build
-> components, like lzo etc). The output produced from your build script seems
-> to be an archive, presumably containing all the files openvpn needs, spread
-> across multiple directories (I am also not sure whether openvpn produced in
-> this way won't need its libgc library).
->
-> I suspect all I need to do is to unpack this archive to the target, but that
-> won't do me any good at all, because my root system on the android device is
-> squashfs (read-only) and whatever I do with it (provided I succeed) will be
-> destroyed the next time I reboot the device. What I need is a single openvpn
-> executable, so that I could just place it somewhere in my path and fire it
-> off.
->
-> I was able to slightly amend the running order of openvpn compilation
-> process and succeeded in building a single, statically-linked openvpn
-> executable for my android device.
->
-> The error your build script has with this is that the last statement which
-> links all objects into the openvpn executable should contain "-static",
-> "-static-libgcc" along with "-ldl" - currently you don't have that and the
-> openvpn executable produced is about 700kB, still needing its static
-> libraries at the very least.
->
-> When openvpn is statically linked in the way I just described, the file
-> produced is about 7MB, coming down to about 1.7MB after stripping. Copying
-> this single file to my android device (and briefly testing it) seems to have
-> done the trick.
->
-> One drawback from this, which is valid for *all* statically-linked
-> executables in this way, is that there are some arch-dependent functions,
-> like "gethostbyname", which are implemented, possibly in a different way in
-> different environments, hence when I statically link and produce one single
-> monolithic executable in such a way I get a warning from the linker, but
-> since I am not likely to use such functions, I think there is nothing to
-> worry about.
+> Anyway it is working at my side, and it is a standard process.
+> You can adjust the script for your needs.
+>   
+I already did, you may as well do the same and make the changes I 
+suggested earlier for the "really_static" option to really work, 
+because, as it stands, "really_static" isn't so as openvpn still needs 
+external files to operate.
 
