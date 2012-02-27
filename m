@@ -1,19 +1,15 @@
-Message-ID: <4F4B542D.9090309@...1114...>
-Date: Mon, 27 Feb 2012 11:00:13 +0100
+Message-ID: <4F4B5535.40709@...1114...>
+Date: Mon, 27 Feb 2012 11:04:37 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <CAOBzU4PN6qDxf39+s4noXEiW8hNbDy-hkQWGSauBd3hX0pu2hw@...278...>
-	<CAOazyz0f3sERwjZsf3Ts3Xu7CQqBEf_-_VdbUZ7TrzhLbmTEsg@...278...>
-	<CAOazyz1buhSdSF7g6MzePAiQ=irD_Qo-RKPC_jXoR9AVqbtkvQ@...278...>
-	<CAOBzU4P0SxY-jF7rb_HsvmtSH8i9PCk+qe5iDQiwJhajsBuYuw@...278...>
-	<CAOazyz1naScdf+M0pnePS6-bb5deAHsAniTiv+DFw3ZQdAN+kg@...278...>
-	<CAOazyz1DE7Y-P9HFK3LN8-HeoGbHzYeqofX3RiEuK0C-zcxnug@...278...>
-	<CAOazyz0nV8P8Age_wyFCvu1J4g1MECA7YdTAAL4of7TTVctXow@...278...>
-	<1CED409804E2164C8104F9E623B08B90129350BEDF@...1436...>
-	<CAOazyz0daYPAH=ooKDenavTyG1qK1=wJv8ZJ0VF+u-vXWBE2xQ@...278...>
-	<4F4B456A.8010208@...515...>
-In-Reply-To: <4F4B456A.8010208@...515...>
-Subject: Re: [Openvpn-devel] [PATCH 00/35] build revolution
+References: <4F438CF2.1060305@...515...>
+	<CAEsd45Rw5nYYuMMq_Qy_5tQYagZh+EMHM+2Nugod1_1s-BHthA@...278...>
+	<4F44F7F8.4090604@...1114...>
+	<eb2837a3-ce55-4f52-b2fe-f822efc661f7@...1662...>
+	<4F47E175.3030008@...1114...>
+In-Reply-To: <4F47E175.3030008@...1114...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.3-alpha1 preview 1 installer now
+	available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,65 +18,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-Cc: Alon Bar-Lev <alon.barlev@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: debrabander <debrabander@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 27/02/12 09:57, Samuli Sepp=E4nen wrote:
->=20
->> On Fri, Feb 24, 2012 at 9:33 AM, Adriaan de Jong <dejong@...1435...>
->> wrote:
->>>> I did not add the UI stuff, I think there should be a discussion
->>>> why these are embedded.
->>>>=20
->>> One of the few pieces criticism we got about the OpenVPN-NL
->>> release was the fact that we didn't bundle the GUI. End-users
->>> expect an all-in-one installer for a simple user experience. As an
->>> end user of OpenVPN, I agree. On Windows, I don't want to use the
->>> command line, as it is very painful.
->> There are two options which are better.
->>=20
->> 1. Embed openvpn installer within the UI of your choice.
->>=20
->> 2. Embed more defined UI installer into openvpn installer.
->>=20
->> In both cases every project handles the installation of its own
->> components.
->>=20
-> Makes sense, especially when as we're splitting the TAP-driver,=20
-> easy-rsa, etc. into separate subprojects. I would prefer 2) where
-> each subproject would have it's own installer, which the OpenVPN
-> "bundle" installer could call as necessary. As a bonus, each
-> subproject could be installed separately without touching OpenVPN
-> itself. The only downside would be some duplicate code in the
-> installer scripts.
+On 24/02/12 20:13, David Sommerseth wrote:
+> On 22/02/12 20:49, debrabander wrote:
+>> This is not the a problem when building using the latest Mac OS X 
+>> SDK. I've did a quick search and it seems to be a more common issue
+>> on some (old) Darwin platforms. Please try building again after
+>> applying the patch below.
+> 
+> 
+>> Signed-off-by: Frank de Brabander <debrabander@...277...> ---
+>> socket.c |    5 +++++ 1 files changed, 5 insertions(+), 0
+>> deletions(-)
+> 
+>> diff --git a/socket.c b/socket.c index 1a772af..6337900 100644 --- 
+>> a/socket.c +++ b/socket.c @@ -893,8 +893,13 @@ create_socket_udp6 
+>> (const unsigned int flags) else if (flags & SF_USE_IP_PKTINFO) {
+>> int pad = 1; +#ifndef IPV6_RECVPKTINFO /* Some older Darwin
+>> platforms require this */ +      if (setsockopt (sd, IPPROTO_IPV6, 
+>> IPV6_PKTINFO, +		      (void*)&pad, sizeof(pad)) < 0) +#else if 
+>> (setsockopt (sd, IPPROTO_IPV6, IPV6_RECVPKTINFO, (void*)&pad, 
+>> sizeof(pad)) < 0) +#endif msg(M_SOCKERR, "UDP: failed setsockopt
+>> for IPV6_RECVPKTINFO"); } #endif
+> 
+> Right now, I'm a bit sceptic to this patch, as the JJO fixed a bug 
+> related to the --multihome feature by moving over to IPV6_RECVPKTINFO
+> 
+> commit 5d6dbb03776de4d38f45e429ef674313a2bda8cc Author: JuanJo
+> Ciarlante <jjo@...410...> Date:   Sun Feb 6 09:52:46 2011 +0100
+> 
+> * fix --multihome for ipv6: IPV6_RECVPKTINFO - setsockopt
+> IPV6_RECVPKTINFO (not IPV6_PKTINFO!)  <<<< [1] - do check for
+> setsockopt() failures
+> 
+> 
+> [1] This is why I'm nervous for this patch.
+> 
+> If we can confirm that --multihome works as expected on platforms
+> without IPV6_RECVPKTINFO, then I'm fine with this patch.  Otherwise,
+> we need to figure out how to make --multihome work too.
+> 
+> JJO, please have a look at this.
 
-If each sub-project just bundles .msi installers, that would just be
-smooth!  Where a "global" installer bundles it into a single package for
-OpenVPN.  Which means other projects which needs a TAP driver on Windows
-can just pull down our MSI installer and bundle that one.
+(somehow JJO fell off the Cc list; re-adding)
 
-Upgrades could also be handled much smoother than now.  The "global"
-installer detects if the sub-components are up-to-date or not, and
-updates just the needed packages.
+Gert and I discussed this a little bit further.  We are concerned about
+breaking --multihome.  But we're also not sure how important that feature
+is on OSX.  The use case is server setups with UDP and who use either
+- --proto udp6 to accept incoming IPv4 and IPv6 traffic - or accepting
+traffic from multiple IPv4 (or IPv6) addresses.
+
+So if someone could test this patch on OSX which is lacking
+IPV6_RECVPKTINFO, setting up a test server with --multihome and --proto
+udp6 and test incomming IPv4 and IPv6 traffic, especially simultaneously
+(2-3 IPv4 and 1-2 IPv6 clients at the same time).  If this works, please
+report back to the mailing list.
+
+The second test would be to see how this setup would work _without_
+- --multihome.  And then document the test results here too.
+
+
+If all this works fine, then we don't need to worry - and I'll pull this
+patch in instantly.  But if it does not and we don't get a good fix at
+some point, we need to consider if we will allow --multihome to break on
+OSX.  A related question to this is, how many do use the server features
+in OpenVPN on OSX?   Not being able to build on OSX is also not a real
+option.
 
 
 kind regards,
 
 David Sommerseth
-
-
-
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk9LVCoACgkQDC186MBRfroAJACfZ0GB+2wiHKk9FJlgVxbbsyo0
-fTsAn3YwKBltC35+UBeb0i8kbPSKIq8z
-=3DI3lE
+iEYEARECAAYFAk9LVTUACgkQDC186MBRfrqKcQCdF/9/A1XIDgeTh8H+5Wv4xoZI
+aQMAn11Y0miv3LjH271SF0GKxPW9OVfQ
+=09kn
 -----END PGP SIGNATURE-----
 
