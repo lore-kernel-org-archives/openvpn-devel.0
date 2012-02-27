@@ -1,12 +1,12 @@
-Message-ID: <4F4B4495.3040805@...1114...>
-Date: Mon, 27 Feb 2012 09:53:41 +0100
+Message-ID: <4F4B44F0.4090504@...1114...>
+Date: Mon, 27 Feb 2012 09:55:12 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
 References: <1329787361-26096-1-git-send-email-alon.barlev@...277...>
-	<1329787361-26096-4-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1329787361-26096-4-git-send-email-alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 03/35] cleanup: tun.c: fix incorrect
- option in message (ip-win32)
+	<1329787361-26096-5-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1329787361-26096-5-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 04/35] cleanup: memcmp.c: remove unused
+ source
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -25,24 +25,41 @@ Hash: SHA1
 
 On 21/02/12 02:22, Alon Bar-Lev wrote:
 > 
-> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-> ---
->  tun.c |    2 +-
->  1 files changed, 1 insertions(+), 1 deletions(-)
+> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...> --- configure.ac |
+> 3 --- memcmp.c     |   43 ------------------------------------------- 
+> 2 files changed, 0 insertions(+), 46 deletions(-) delete mode 100644
+> memcmp.c
 > 
-> diff --git a/tun.c b/tun.c
-> index c92c0d7..81b66fb 100644
-> --- a/tun.c
-> +++ b/tun.c
-> @@ -4492,7 +4492,7 @@ dhcp_masq_addr (const in_addr_t local, const in_addr_t netmask, const int offset
->      msg (M_FATAL, "ERROR: There is a clash between the --ifconfig local address and the internal DHCP server address -- both are set to %s -- please use the --ip-win32 dynamic option to choose a different free address from the --ifconfig subnet for the internal DHCP server", print_in_addr_t (dsa, 0, &gc));
->  
->    if ((local & netmask) != (dsa & netmask))
-> -    msg (M_FATAL, "ERROR: --tap-win32 dynamic [offset] : offset is outside of --ifconfig subnet");
-> +    msg (M_FATAL, "ERROR: --ip-win32 dynamic [offset] : offset is outside of --ifconfig subnet");
->  
->    gc_free (&gc);
->    return htonl(dsa);
+> diff --git a/configure.ac b/configure.ac index 25dcc37..1c4d66c
+> 100644 --- a/configure.ac +++ b/configure.ac @@ -564,9 +564,6 @@ else
+> 
+> fi
+> 
+> -dnl Required library functions -AC_FUNC_MEMCMP - dnl dnl Check for
+> res_init dnl diff --git a/memcmp.c b/memcmp.c deleted file mode
+> 100644 index d921aac..0000000 --- a/memcmp.c +++ /dev/null @@ -1,43
+> +0,0 @@ -/* - *  OpenVPN -- An application to securely tunnel IP
+> networks - *             over a single TCP/UDP port, with support for
+> SSL/TLS-based - *             session authentication and key
+> exchange, - *             packet encryption, packet authentication,
+> and - *             packet compression. - * - *  Copyright (C)
+> 2002-2010 OpenVPN Technologies, Inc. <sales@...515...> - * - *  This
+> program is free software; you can redistribute it and/or modify - *
+> it under the terms of the GNU General Public License version 2 - *  as
+> published by the Free Software Foundation. - * - *  This program is
+> distributed in the hope that it will be useful, - *  but WITHOUT ANY
+> WARRANTY; without even the implied warranty of - *  MERCHANTABILITY or
+> FITNESS FOR A PARTICULAR PURPOSE.  See the - *  GNU General Public
+> License for more details. - * - *  You should have received a copy of
+> the GNU General Public License - *  along with this program (see the
+> file COPYING included with this - *  distribution); if not, write to
+> the Free Software Foundation, Inc., - *  59 Temple Place, Suite 330,
+> Boston, MA  02111-1307  USA - */ - -#include "syshead.h" - -#include
+> "memdbg.h" - -int -memcmp (const void *s1, const void *s2, size_t n) 
+> -{ -  unsigned const char *p1 = s1, *p2 = s2; -  int d; - -  if (n) -
+> while (n-- > 0) -      { -	d = *p1++ - *p2++; -	if (d != 0) -	  return
+> d; -      } -  return 0; -}
+
 
 ACK.
 
@@ -50,12 +67,13 @@ ACK.
 Kind regards,
 
 David Sommerseth
+
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk9LRJEACgkQDC186MBRfrpufwCaApTJnlpQQJ9iWW3PBh+sJCxo
-0TIAn1j4gSvEM7GiwuVhep7q/yELWcuf
-=F7DR
+iEYEARECAAYFAk9LRPAACgkQDC186MBRfrryIgCfZey8UxGKJWZRtLOcAnwyE4Ew
+nB0AoKFQCqaIam9Wb37VlP07dushqYqs
+=CVAz
 -----END PGP SIGNATURE-----
 
