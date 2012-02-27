@@ -1,11 +1,12 @@
 MIME-Version: 1.0
-In-Reply-To: <4F4BE238.502@...1550...>
-References: <4F4BE238.502@...1550...>
-Date: Mon, 27 Feb 2012 22:10:06 +0200
-Message-ID: <CAOazyz19-bfVtb+o2tt86S5txE3iofBhAz+JR5hw7-qHmfoVeQ@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 02/02] Remove calls to OpenSSL when
- building with --disable-ssl
+Sender: fabian@...1547...
+In-Reply-To: <4F4BE07E.70603@...1550...>
+References: <4F4BE07E.70603@...1550...>
+From: Fabian Knittel <fabian.knittel@...1547...>
+Date: Mon, 27 Feb 2012 22:37:00 +0100
+Message-ID: <CAP+U6tJFjY8g3bNTcjCKoU+W2hg3=kaPfYS2XGp4Lc1BUNTbAA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 01/02] Add support for PolarSSL 1.1.x
+	branch
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,29 +20,22 @@ Content-Transfer-Encoding: 8bit
 To: Igor Novgorodov <igor@...1550...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-These are needed for 0.9.8 as far as I remember.
+Hi Igor,
 
-On Mon, Feb 27, 2012 at 10:06 PM, Igor Novgorodov <igor@...1550...> wrote:
-> The attached patch removes deprecated(?) calls to OpenSSL functions from
-> crypro.c,
-> which are called when USE_SSL is not defined.
->
-> I'm not so deep into OpenVPN, so maybe these functions are needed, but i
-> thought that all crypto-lib
-> dependent functions should be moved to the corresponding crypto_LIB.c files.
->
-> If they are needed, we should #ifdef them, so that PolarSSL-based build
-> won't break on it.
->
-> ------------------------------------------------------------------------------
-> Try before you buy = See our experts in action!
-> The most comprehensive online learning library for Microsoft developers
-> is just $99.99! Visual Studio, SharePoint, SQL - plus HTML5, CSS3, MVC3,
-> Metro Style Apps, more. Free future releases when you subscribe now!
-> http://p.sf.net/sfu/learndevnow-dev2
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+2012/2/27 Igor Novgorodov <igor@...1550...>:
+> The attached patch adds checking for PolarSSL version on crypto_polarssl.c
+> and depending on which version we are using (1.0.x or 1.1.x) chooses a new
+> shiny havege_random() function, or an old ugly while{} loop hack to generate
+> randomness.
+
+Your patch removes the code that causes havege_init() to only be
+called once. You never want to initialise your PRNG more than once,
+otherwise you increase the risk that your randomness is predictable.
+So please revert that part of your patch.
+
+(The rest looks fine, although I haven't tested it and don't have any
+experience with PolarSSL.)
+
+Cheers
+Fabian
 
