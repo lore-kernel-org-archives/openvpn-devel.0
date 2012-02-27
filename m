@@ -1,11 +1,11 @@
-Message-ID: <4F4B4A0E.6020804@...1114...>
-Date: Mon, 27 Feb 2012 10:17:02 +0100
+Message-ID: <4F4B4B44.4070502@...1114...>
+Date: Mon, 27 Feb 2012 10:22:12 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
 References: <1329787361-26096-1-git-send-email-alon.barlev@...277...>
-	<1329787361-26096-13-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1329787361-26096-13-git-send-email-alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 12/35] Remove easy-rsa
+	<1329787361-26096-14-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1329787361-26096-14-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 13/35] Remove tap-win32
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,109 +23,46 @@ Cc: openvpn-devel@lists.sourceforge.net
 Hash: SHA1
 
 On 21/02/12 02:22, Alon Bar-Lev wrote:
+> Introduce tap-win32.h which is modified tap-win32/common.h. Except of
+> function rename, it is the same without the tap_id. This file should
+> be provided as part of tap-win32 MSI. For now we hold a copy.
 > 
 > Signed-off-by: Alon Bar-Lev <alon.barlev@...277...> --- Makefile.am
-> |    1 - easy-rsa/1.0/README                        |  161
-> ------------ easy-rsa/1.0/build-ca                      |   13 - 
-> easy-rsa/1.0/build-dh                      |   12 - 
-> easy-rsa/1.0/build-inter                   |   19 -- 
-> easy-rsa/1.0/build-key                     |   20 -- 
-> easy-rsa/1.0/build-key-pass                |   20 -- 
-> easy-rsa/1.0/build-key-pkcs12              |   21 -- 
-> easy-rsa/1.0/build-key-server              |   22 -- 
-> easy-rsa/1.0/build-req                     |   18 -- 
-> easy-rsa/1.0/build-req-pass                |   18 -- 
-> easy-rsa/1.0/clean-all                     |   19 -- 
-> easy-rsa/1.0/list-crl                      |   18 -- 
-> easy-rsa/1.0/make-crl                      |   18 -- 
-> easy-rsa/1.0/openssl.cnf                   |  255 ------------------- 
-> easy-rsa/1.0/revoke-crt                    |   18 -- 
-> easy-rsa/1.0/revoke-full                   |   29 --- 
-> easy-rsa/1.0/sign-req                      |   18 -- easy-rsa/1.0/vars
-> |   49 ---- easy-rsa/2.0/Makefile                      |   13 - 
-> easy-rsa/2.0/README                        |  229 ----------------- 
-> easy-rsa/2.0/build-ca                      |    8 - 
-> easy-rsa/2.0/build-dh                      |   11 - 
-> easy-rsa/2.0/build-inter                   |    7 - 
-> easy-rsa/2.0/build-key                     |    7 - 
-> easy-rsa/2.0/build-key-pass                |    7 - 
-> easy-rsa/2.0/build-key-pkcs12              |    8 - 
-> easy-rsa/2.0/build-key-server              |   10 - 
-> easy-rsa/2.0/build-req                     |    7 - 
-> easy-rsa/2.0/build-req-pass                |    7 - 
-> easy-rsa/2.0/clean-all                     |   16 -- 
-> easy-rsa/2.0/inherit-inter                 |   39 --- 
-> easy-rsa/2.0/list-crl                      |   13 - 
-> easy-rsa/2.0/openssl-0.9.6.cnf             |  265 ------------------- 
-> easy-rsa/2.0/openssl-0.9.8.cnf             |  290
-> --------------------- easy-rsa/2.0/openssl-1.0.0.cnf             |
-> 285 --------------------- easy-rsa/2.0/pkitool                       |
-> 379 ---------------------------- easy-rsa/2.0/revoke-full
-> |   40 --- easy-rsa/2.0/sign-req                      |    7 - 
-> easy-rsa/2.0/vars                          |   74 ------ 
-> easy-rsa/2.0/whichopensslcnf               |   26 -- 
-> easy-rsa/Windows/README.txt                |   44 ---- 
-> easy-rsa/Windows/build-ca-pass.bat         |    8 - 
-> easy-rsa/Windows/build-ca.bat              |    4 - 
-> easy-rsa/Windows/build-dh.bat              |    4 - 
-> easy-rsa/Windows/build-key-pass.bat        |    8 - 
-> easy-rsa/Windows/build-key-pkcs12.bat      |   10 - 
-> easy-rsa/Windows/build-key-server-pass.bat |    8 - 
-> easy-rsa/Windows/build-key-server.bat      |    8 - 
-> easy-rsa/Windows/build-key.bat             |    8 - 
-> easy-rsa/Windows/clean-all.bat             |   13 - 
-> easy-rsa/Windows/init-config.bat           |    1 - 
-> easy-rsa/Windows/revoke-full.bat           |   13 - 
-> easy-rsa/Windows/serial.start              |    1 - 
-> easy-rsa/Windows/vars.bat.sample           |   40 --- 55 files
-> changed, 0 insertions(+), 2667 deletions(-) delete mode 100644
-> easy-rsa/1.0/README delete mode 100755 easy-rsa/1.0/build-ca delete
-> mode 100755 easy-rsa/1.0/build-dh delete mode 100755
-> easy-rsa/1.0/build-inter delete mode 100755 easy-rsa/1.0/build-key 
-> delete mode 100755 easy-rsa/1.0/build-key-pass delete mode 100755
-> easy-rsa/1.0/build-key-pkcs12 delete mode 100755
-> easy-rsa/1.0/build-key-server delete mode 100755
-> easy-rsa/1.0/build-req delete mode 100755 easy-rsa/1.0/build-req-pass 
-> delete mode 100755 easy-rsa/1.0/clean-all delete mode 100644
-> easy-rsa/1.0/list-crl delete mode 100644 easy-rsa/1.0/make-crl delete
-> mode 100644 easy-rsa/1.0/openssl.cnf delete mode 100644
-> easy-rsa/1.0/revoke-crt delete mode 100755 easy-rsa/1.0/revoke-full 
-> delete mode 100755 easy-rsa/1.0/sign-req delete mode 100644
-> easy-rsa/1.0/vars delete mode 100644 easy-rsa/2.0/Makefile delete mode
-> 100644 easy-rsa/2.0/README delete mode 100755 easy-rsa/2.0/build-ca 
-> delete mode 100755 easy-rsa/2.0/build-dh delete mode 100755
-> easy-rsa/2.0/build-inter delete mode 100755 easy-rsa/2.0/build-key 
-> delete mode 100755 easy-rsa/2.0/build-key-pass delete mode 100755
-> easy-rsa/2.0/build-key-pkcs12 delete mode 100755
-> easy-rsa/2.0/build-key-server delete mode 100755
-> easy-rsa/2.0/build-req delete mode 100755 easy-rsa/2.0/build-req-pass 
-> delete mode 100755 easy-rsa/2.0/clean-all delete mode 100755
-> easy-rsa/2.0/inherit-inter delete mode 100755 easy-rsa/2.0/list-crl 
-> delete mode 100755 easy-rsa/2.0/openssl-0.9.6.cnf delete mode 100755
-> easy-rsa/2.0/openssl-0.9.8.cnf delete mode 100755
-> easy-rsa/2.0/openssl-1.0.0.cnf delete mode 100755
-> easy-rsa/2.0/pkitool delete mode 100755 easy-rsa/2.0/revoke-full 
-> delete mode 100755 easy-rsa/2.0/sign-req delete mode 100755
-> easy-rsa/2.0/vars delete mode 100755 easy-rsa/2.0/whichopensslcnf 
-> delete mode 100644 easy-rsa/Windows/README.txt delete mode 100644
-> easy-rsa/Windows/build-ca-pass.bat delete mode 100644
-> easy-rsa/Windows/build-ca.bat delete mode 100644
-> easy-rsa/Windows/build-dh.bat delete mode 100644
-> easy-rsa/Windows/build-key-pass.bat delete mode 100644
-> easy-rsa/Windows/build-key-pkcs12.bat delete mode 100644
-> easy-rsa/Windows/build-key-server-pass.bat delete mode 100644
-> easy-rsa/Windows/build-key-server.bat delete mode 100644
-> easy-rsa/Windows/build-key.bat delete mode 100644
-> easy-rsa/Windows/clean-all.bat delete mode 100644
-> easy-rsa/Windows/index.txt.start delete mode 100755
-> easy-rsa/Windows/init-config.bat delete mode 100644
-> easy-rsa/Windows/revoke-full.bat delete mode 100644
-> easy-rsa/Windows/serial.start delete mode 100644
-> easy-rsa/Windows/vars.bat.sample
-> 
+> |    3 +- configure.ac                   |   14 +- tap-win32/MAKEFILE
+> |    6 - tap-win32/SOURCES.in           |   64 - tap-win32/common.h
+> |   82 -- tap-win32/constants.h          |   52 - tap-win32/dhcp.c
+> |  599 -------- tap-win32/dhcp.h               |  164 --- 
+> tap-win32/endian.h             |   35 - tap-win32/error.c
+> |  378 ----- tap-win32/error.h              |   88 -- 
+> tap-win32/hexdump.c            |   69 - tap-win32/hexdump.h
+> |   63 - tap-win32/i386/OemWin2k.inf.in |  195 --- 
+> tap-win32/instance.c           |  241 --- tap-win32/lock.h
+> |   75 - tap-win32/macinfo.c            |  154 -- tap-win32/macinfo.h
+> |   38 - tap-win32/mem.c                |  186 --- tap-win32/proto.h
+> |  224 --- tap-win32/prototypes.h         |  260 ---- 
+> tap-win32/resource.rc          |   58 - tap-win32/tapdrvr.c
+> | 3146 ---------------------------------------- tap-win32/types.h
+> |  178 --- tap-windows.h                  |   68 + tun.h
+> |    2 +- win/autodefs.h.in              |    2 +- 27 files changed,
+> 78 insertions(+), 6366 deletions(-) delete mode 100755
+> tap-win32/MAKEFILE delete mode 100755 tap-win32/SOURCES.in delete mode
+> 100755 tap-win32/common.h delete mode 100755 tap-win32/constants.h 
+> delete mode 100755 tap-win32/dhcp.c delete mode 100755
+> tap-win32/dhcp.h delete mode 100755 tap-win32/endian.h delete mode
+> 100755 tap-win32/error.c delete mode 100755 tap-win32/error.h delete
+> mode 100755 tap-win32/hexdump.c delete mode 100755
+> tap-win32/hexdump.h delete mode 100755 tap-win32/i386/OemWin2k.inf.in 
+> delete mode 100755 tap-win32/instance.c delete mode 100755
+> tap-win32/lock.h delete mode 100755 tap-win32/macinfo.c delete mode
+> 100755 tap-win32/macinfo.h delete mode 100755 tap-win32/mem.c delete
+> mode 100755 tap-win32/proto.h delete mode 100755
+> tap-win32/prototypes.h delete mode 100755 tap-win32/resource.rc delete
+> mode 100755 tap-win32/tapdrvr.c delete mode 100755 tap-win32/types.h 
+> create mode 100644 tap-windows.h
 
-ACK.  These files will be pulled into a separate git repository, so this
-makes a lot of sense.
+
+ACK.  The Windows TAP driver will be moved to a separate git repository,
+so this again makes a lot of sense.
 
 
 kind regards,
@@ -135,8 +72,8 @@ David Sommerseth
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk9LSgwACgkQDC186MBRfroViQCfR+t1pZJJ6lF6Ge82YtOgeaMB
-6s4AoJz+q60torElpk/vNw5Z6846Mqxk
-=o2nV
+iEYEARECAAYFAk9LS0IACgkQDC186MBRfrqvOgCgrk42BkzoFKemGFCW/tXZtdti
+IwkAn2FiVqsYdK59F1C4hqxq39AfR58T
+=ODEe
 -----END PGP SIGNATURE-----
 
