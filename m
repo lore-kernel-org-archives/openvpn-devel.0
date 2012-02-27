@@ -1,15 +1,19 @@
-Message-ID: <4F4B5535.40709@...1114...>
-Date: Mon, 27 Feb 2012 11:04:37 +0100
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <4F4B584A.30705@...515...>
+Date: Mon, 27 Feb 2012 12:17:46 +0200
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <4F438CF2.1060305@...515...>
-	<CAEsd45Rw5nYYuMMq_Qy_5tQYagZh+EMHM+2Nugod1_1s-BHthA@...278...>
-	<4F44F7F8.4090604@...1114...>
-	<eb2837a3-ce55-4f52-b2fe-f822efc661f7@...1662...>
-	<4F47E175.3030008@...1114...>
-In-Reply-To: <4F47E175.3030008@...1114...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.3-alpha1 preview 1 installer now
-	available
+References: <4F466205.5020006@...1030...>
+	<CAOazyz24mNbDRf0zoCMHrdCsrZui+cgWaETt7AA67qShfs4bGw@...278...>
+	<4F4978D2.70706@...1030...>
+	<CAOazyz2jCkj2ox9edFap05zze2i5-pW1J9W4ho=jSVhZTUZQFw@...278...>
+	<4F4A31E1.2080503@...1030...>
+	<CAOazyz1n6Uz3TuSywisO41J=tjNJ94rbq7LUgw5y3b+dR0J8nA@...278...>
+	<4F4A4929.6040407@...1030...>
+	<CAOazyz1wNQQgxTciUq0uQjfMyDSJqDdpy63LcUpcwXbs3pWsxQ@...278...>
+	<4F4A52DB.1040907@...1030...>
+	<CAOazyz2SyQjGk9w00KA93tKUyyMMY9iQ3rL=C8X0wpFKFrLZrw@...278...>
+In-Reply-To: <CAOazyz2SyQjGk9w00KA93tKUyyMMY9iQ3rL=C8X0wpFKFrLZrw@...278...>
+Subject: Re: [Openvpn-devel] static build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,90 +22,97 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: debrabander <debrabander@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
-
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
-
-On 24/02/12 20:13, David Sommerseth wrote:
-> On 22/02/12 20:49, debrabander wrote:
->> This is not the a problem when building using the latest Mac OS X 
->> SDK. I've did a quick search and it seems to be a more common issue
->> on some (old) Darwin platforms. Please try building again after
->> applying the patch below.
-> 
-> 
->> Signed-off-by: Frank de Brabander <debrabander@...277...> ---
->> socket.c |    5 +++++ 1 files changed, 5 insertions(+), 0
->> deletions(-)
-> 
->> diff --git a/socket.c b/socket.c index 1a772af..6337900 100644 --- 
->> a/socket.c +++ b/socket.c @@ -893,8 +893,13 @@ create_socket_udp6 
->> (const unsigned int flags) else if (flags & SF_USE_IP_PKTINFO) {
->> int pad = 1; +#ifndef IPV6_RECVPKTINFO /* Some older Darwin
->> platforms require this */ +      if (setsockopt (sd, IPPROTO_IPV6, 
->> IPV6_PKTINFO, +		      (void*)&pad, sizeof(pad)) < 0) +#else if 
->> (setsockopt (sd, IPPROTO_IPV6, IPV6_RECVPKTINFO, (void*)&pad, 
->> sizeof(pad)) < 0) +#endif msg(M_SOCKERR, "UDP: failed setsockopt
->> for IPV6_RECVPKTINFO"); } #endif
-> 
-> Right now, I'm a bit sceptic to this patch, as the JJO fixed a bug 
-> related to the --multihome feature by moving over to IPV6_RECVPKTINFO
-> 
-> commit 5d6dbb03776de4d38f45e429ef674313a2bda8cc Author: JuanJo
-> Ciarlante <jjo@...410...> Date:   Sun Feb 6 09:52:46 2011 +0100
-> 
-> * fix --multihome for ipv6: IPV6_RECVPKTINFO - setsockopt
-> IPV6_RECVPKTINFO (not IPV6_PKTINFO!)  <<<< [1] - do check for
-> setsockopt() failures
-> 
-> 
-> [1] This is why I'm nervous for this patch.
-> 
-> If we can confirm that --multihome works as expected on platforms
-> without IPV6_RECVPKTINFO, then I'm fine with this patch.  Otherwise,
-> we need to figure out how to make --multihome work too.
-> 
-> JJO, please have a look at this.
-
-(somehow JJO fell off the Cc list; re-adding)
-
-Gert and I discussed this a little bit further.  We are concerned about
-breaking --multihome.  But we're also not sure how important that feature
-is on OSX.  The use case is server setups with UDP and who use either
-- --proto udp6 to accept incoming IPv4 and IPv6 traffic - or accepting
-traffic from multiple IPv4 (or IPv6) addresses.
-
-So if someone could test this patch on OSX which is lacking
-IPV6_RECVPKTINFO, setting up a test server with --multihome and --proto
-udp6 and test incomming IPv4 and IPv6 traffic, especially simultaneously
-(2-3 IPv4 and 1-2 IPv6 clients at the same time).  If this works, please
-report back to the mailing list.
-
-The second test would be to see how this setup would work _without_
-- --multihome.  And then document the test results here too.
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 
-If all this works fine, then we don't need to worry - and I'll pull this
-patch in instantly.  But if it does not and we don't get a good fix at
-some point, we need to consider if we will allow --multihome to break on
-OSX.  A related question to this is, how many do use the server features
-in OpenVPN on OSX?   Not being able to build on OSX is also not a real
-option.
+> This is my last reply on this thread.
+> What I show you is that without any change I compile static code for
+> arm using cross compiler.
+> I guess I am far more knowledgeable than you to tell me what is right,
+> and I disapprove your comments and language.
+>
+> So the answer to your initial question: yes, openvpn can be compiled stat=
+ically.
+> Figure it out your-self.
+
+Timeout guys, getting personal does not help.
+
+Mr Dash Four: could you try following the steps Alon gave in his earlier
+mail to see if it works for you? The buildsystem fetches the
+dependencies from standard URLs, see "openvpn-build/generic/build.vars".
+
+Best regards,
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
 
-kind regards,
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+> On Sun, Feb 26, 2012 at 5:42 PM, Mr Dash Four
+> <mr.dash.four@...1030...> wrote:
+>>> arm-unknown-linux-gnueabi-objdump:
+>>> image-arm-static/openvpn/sbin/openvpn: Invalid operation
+>>>
+>> Huh?
+>>
+>> Have you altered the sources/makefiles of openvpn or any of the dependent
+>> libraries (lzo, openssh etc) by any chance? I noticed you are applying a
+>> single patch to the lzo source, which I had to re-adjust as I was using a
+>> newer version, but I am not aware of any alterations that you have made =
+to
+>> these - if you have done so, please state what these alterations are?
+>>
+>> I don't know whether you've altered the original build script or not, but
+>> the end result, before applying my changes, clearly produces openvpn
+>> executable, which has external dependencies on all statically-produced .=
+la
+>> files/libraries (lzo, openssh etc) - they are all packed in the .tar arc=
+hive
+>> produced at the end of this script (located in the /lib directory to be =
+more
+>> precise).
+>>
+>> I don't know what you are trying to prove by posting the above though - =
+the
+>> final gcc linker call, which produces the openvpn executable before pack=
+ing
+>> the image does *not* have any static-linking related options whatsoever!=
+ I
+>> could post the exact gcc command line, but I do not have access to that
+>> machine at present.
+>>
+>> These options are, as I already pointed out previously, "-static",
+>> "-static-gcc" as well as "-ldl" - the latter being a new dependencies,
+>> necessary to offset the fact that all dl* calls (dlopen etc) won't be
+>> satisfied if static linking is invoked, so this external library needs t=
+o be
+>> included so that static linking succeeds, otherwise you will get "unknown
+>> symbol" errors.
+>>
+>> Again, all that is provided you haven't altered any of the core source
+>> and/or makefile scripts in any way (I haven't used your own - alonbv - r=
+epos
+>> to download these, but downloaded these packages from their original sou=
+rce
+>> where these projects are created - openvpn.net, openssh.org etc). If you
+>> have made such alterations, I'd like to know what changes have you made?
+>>
+> -------------------------------------------------------------------------=
+-----
+> Virtualization & Cloud Management Using Capacity Planning
+> Cloud computing makes use of virtualization - but cloud computing=20
+> also focuses on allowing computing to be delivered as a service.
+> http://www.accelacomm.com/jaw/sfnl/114/51521223/
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
-iEYEARECAAYFAk9LVTUACgkQDC186MBRfrqKcQCdF/9/A1XIDgeTh8H+5Wv4xoZI
-aQMAn11Y0miv3LjH271SF0GKxPW9OVfQ
-=09kn
------END PGP SIGNATURE-----
 
