@@ -1,19 +1,12 @@
-Message-ID: <4F4B584A.30705@...515...>
-Date: Mon, 27 Feb 2012 12:17:46 +0200
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <4F466205.5020006@...1030...>
-	<CAOazyz24mNbDRf0zoCMHrdCsrZui+cgWaETt7AA67qShfs4bGw@...278...>
-	<4F4978D2.70706@...1030...>
-	<CAOazyz2jCkj2ox9edFap05zze2i5-pW1J9W4ho=jSVhZTUZQFw@...278...>
-	<4F4A31E1.2080503@...1030...>
-	<CAOazyz1n6Uz3TuSywisO41J=tjNJ94rbq7LUgw5y3b+dR0J8nA@...278...>
-	<4F4A4929.6040407@...1030...>
-	<CAOazyz1wNQQgxTciUq0uQjfMyDSJqDdpy63LcUpcwXbs3pWsxQ@...278...>
-	<4F4A52DB.1040907@...1030...>
-	<CAOazyz2SyQjGk9w00KA93tKUyyMMY9iQ3rL=C8X0wpFKFrLZrw@...278...>
-In-Reply-To: <CAOazyz2SyQjGk9w00KA93tKUyyMMY9iQ3rL=C8X0wpFKFrLZrw@...278...>
-Subject: Re: [Openvpn-devel] static build
+In-Reply-To: <4F4B4660.5020108@...1114...>
+References: <1329787361-26096-1-git-send-email-alon.barlev@...277...>
+	<1329787361-26096-8-git-send-email-alon.barlev@...277...>
+	<4F4B4660.5020108@...1114...>
+Date: Mon, 27 Feb 2012 13:02:27 +0200
+Message-ID: <CAOazyz1pPsu_k9B_SaN+KOhZdFs9O75otW=xCZx5CLRqFEVxtA@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 07/35] build: tests do not work disable
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,97 +15,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: openvpn-devel@lists.sourceforge.net
 
+Checkout the latest HEAD.
+The tests were modified and it is now working.
 
-> This is my last reply on this thread.
-> What I show you is that without any change I compile static code for
-> arm using cross compiler.
-> I guess I am far more knowledgeable than you to tell me what is right,
-> and I disapprove your comments and language.
+On Mon, Feb 27, 2012 at 11:01 AM, David Sommerseth
+<openvpn.list@...1114...> wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
 >
-> So the answer to your initial question: yes, openvpn can be compiled stat=
-ically.
-> Figure it out your-self.
-
-Timeout guys, getting personal does not help.
-
-Mr Dash Four: could you try following the steps Alon gave in his earlier
-mail to see if it works for you? The buildsystem fetches the
-dependencies from standard URLs, see "openvpn-build/generic/build.vars".
-
-Best regards,
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
-
-
-> On Sun, Feb 26, 2012 at 5:42 PM, Mr Dash Four
-> <mr.dash.four@...1030...> wrote:
->>> arm-unknown-linux-gnueabi-objdump:
->>> image-arm-static/openvpn/sbin/openvpn: Invalid operation
->>>
->> Huh?
+> On 21/02/12 02:22, Alon Bar-Lev wrote:
 >>
->> Have you altered the sources/makefiles of openvpn or any of the dependent
->> libraries (lzo, openssh etc) by any chance? I noticed you are applying a
->> single patch to the lzo source, which I had to re-adjust as I was using a
->> newer version, but I am not aware of any alterations that you have made =
-to
->> these - if you have done so, please state what these alterations are?
+>> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...> --- Makefile.am |
+>> 5 +++-- 1 files changed, 3 insertions(+), 2 deletions(-)
 >>
->> I don't know whether you've altered the original build script or not, but
->> the end result, before applying my changes, clearly produces openvpn
->> executable, which has external dependencies on all statically-produced .=
-la
->> files/libraries (lzo, openssh etc) - they are all packed in the .tar arc=
-hive
->> produced at the end of this script (located in the /lib directory to be =
-more
->> precise).
+>> diff --git a/Makefile.am b/Makefile.am index 26b80f3..f96eb45 100644
+>> --- a/Makefile.am +++ b/Makefile.am @@ -57,16 +57,17 @@ SUBDIRS =3D \
+>> service-win32 \ install-win32
 >>
->> I don't know what you are trying to prove by posting the above though - =
-the
->> final gcc linker call, which produces the openvpn executable before pack=
-ing
->> the image does *not* have any static-linking related options whatsoever!=
- I
->> could post the exact gcc command line, but I do not have access to that
->> machine at present.
+>> -TESTS =3D t_client.sh t_lpback.sh t_cltsrv.sh +test_scripts =3D
+>> t_client.sh t_lpback.sh t_cltsrv.sh +#TESTS =3D $(test_scripts)
+>> sbin_PROGRAMS =3D openvpn
 >>
->> These options are, as I already pointed out previously, "-static",
->> "-static-gcc" as well as "-ldl" - the latter being a new dependencies,
->> necessary to offset the fact that all dl* calls (dlopen etc) won't be
->> satisfied if static linking is invoked, so this external library needs t=
-o be
->> included so that static linking succeeds, otherwise you will get "unknown
->> symbol" errors.
+>> dist_doc_DATA =3D \ management/management-notes.txt
 >>
->> Again, all that is provided you haven't altered any of the core source
->> and/or makefile scripts in any way (I haven't used your own - alonbv - r=
-epos
->> to download these, but downloaded these packages from their original sou=
-rce
->> where these projects are created - openvpn.net, openssh.org etc). If you
->> have made such alterations, I'd like to know what changes have you made?
+>> dist_noinst_SCRIPTS =3D \ - =C2=A0 =C2=A0 $(TESTS) \ doclean \ domake-wi=
+n \ +
+>> $(test_scripts) \ t_cltsrv-down.sh \ configure_h.awk
+>> configure_log.awk
 >>
-> -------------------------------------------------------------------------=
------
-> Virtualization & Cloud Management Using Capacity Planning
-> Cloud computing makes use of virtualization - but cloud computing=20
-> also focuses on allowing computing to be delivered as a service.
-> http://www.accelacomm.com/jaw/sfnl/114/51521223/
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
+>
+> Which of these tests are not working? =C2=A0And how do they fail?
+>
+> I'm running 'make check' before pushing a new git tree, and it passes
+> fine for me. =C2=A0The only "exception" is t_client.sh (generated via
+> t_client.sh.in) which depends on a configuration file (t_client.rc) -
+> otherwise it is just skipped. =C2=A0This test is however run in our build=
+bot
+> farm, AFAIR. =C2=A0Gert also runs this test in his development repos. =C2=
+=A0So it's
+> rather odd to hear that these tests fail.
+>
+>
+> kind regards,
+>
+> David Sommerseth
+>
+>
+>
+> -----BEGIN PGP SIGNATURE-----
+> Version: GnuPG v1.4.11 (GNU/Linux)
+> Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+>
+> iEYEARECAAYFAk9LRl4ACgkQDC186MBRfrrWcQCgklcEZ8ATjLQqsQ9mxOFLbMjM
+> 2FAAoI2cJAVd7GVdv9hO7TvkSSVCAPmK
+> =3DxG/s
+> -----END PGP SIGNATURE-----
 
