@@ -1,10 +1,19 @@
-Message-ID: <4F4B526A.2010603@...515...>
-Date: Mon, 27 Feb 2012 11:52:42 +0200
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <4F4B542D.9090309@...1114...>
+Date: Mon, 27 Feb 2012 11:00:13 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <CAOazyz2MWSWqf6L4XQYNBpCHL73vgZKB=StzLEL5s0oQjihJPA@...278...>
-In-Reply-To: <CAOazyz2MWSWqf6L4XQYNBpCHL73vgZKB=StzLEL5s0oQjihJPA@...278...>
-Subject: Re: [Openvpn-devel] [build] tap-windows
+References: <CAOBzU4PN6qDxf39+s4noXEiW8hNbDy-hkQWGSauBd3hX0pu2hw@...278...>
+	<CAOazyz0f3sERwjZsf3Ts3Xu7CQqBEf_-_VdbUZ7TrzhLbmTEsg@...278...>
+	<CAOazyz1buhSdSF7g6MzePAiQ=irD_Qo-RKPC_jXoR9AVqbtkvQ@...278...>
+	<CAOBzU4P0SxY-jF7rb_HsvmtSH8i9PCk+qe5iDQiwJhajsBuYuw@...278...>
+	<CAOazyz1naScdf+M0pnePS6-bb5deAHsAniTiv+DFw3ZQdAN+kg@...278...>
+	<CAOazyz1DE7Y-P9HFK3LN8-HeoGbHzYeqofX3RiEuK0C-zcxnug@...278...>
+	<CAOazyz0nV8P8Age_wyFCvu1J4g1MECA7YdTAAL4of7TTVctXow@...278...>
+	<1CED409804E2164C8104F9E623B08B90129350BEDF@...1436...>
+	<CAOazyz0daYPAH=ooKDenavTyG1qK1=wJv8ZJ0VF+u-vXWBE2xQ@...278...>
+	<4F4B456A.8010208@...515...>
+In-Reply-To: <4F4B456A.8010208@...515...>
+Subject: Re: [Openvpn-devel] [PATCH 00/35] build revolution
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,47 +24,63 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+To: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Cc: Alon Bar-Lev <alon.barlev@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 27/02/12 09:57, Samuli Sepp=E4nen wrote:
+>=20
+>> On Fri, Feb 24, 2012 at 9:33 AM, Adriaan de Jong <dejong@...1435...>
+>> wrote:
+>>>> I did not add the UI stuff, I think there should be a discussion
+>>>> why these are embedded.
+>>>>=20
+>>> One of the few pieces criticism we got about the OpenVPN-NL
+>>> release was the fact that we didn't bundle the GUI. End-users
+>>> expect an all-in-one installer for a simple user experience. As an
+>>> end user of OpenVPN, I agree. On Windows, I don't want to use the
+>>> command line, as it is very painful.
+>> There are two options which are better.
+>>=20
+>> 1. Embed openvpn installer within the UI of your choice.
+>>=20
+>> 2. Embed more defined UI installer into openvpn installer.
+>>=20
+>> In both cases every project handles the installation of its own
+>> components.
+>>=20
+> Makes sense, especially when as we're splitting the TAP-driver,=20
+> easy-rsa, etc. into separate subprojects. I would prefer 2) where
+> each subproject would have it's own installer, which the OpenVPN
+> "bundle" installer could call as necessary. As a bonus, each
+> subproject could be installed separately without touching OpenVPN
+> itself. The only downside would be some duplicate code in the
+> installer scripts.
+
+If each sub-project just bundles .msi installers, that would just be
+smooth!  Where a "global" installer bundles it into a single package for
+OpenVPN.  Which means other projects which needs a TAP driver on Windows
+can just pull down our MSI installer and bundle that one.
+
+Upgrades could also be handled much smoother than now.  The "global"
+installer detects if the sub-components are up-to-date or not, and
+updates just the needed packages.
 
 
-> Hello,
->
-> A repository is available[1], stripped down with only tap sources.
->
-> To build use you need ddk available:
->> configure
->> build
-Checked out the sources using "Git Bash", then ran the commands from a
-(non-admin) Visual Studio 2008 command prompt. Got these errors:
+kind regards,
 
-<http://pastebin.com/XfZDJPpa>
-
-The OS is Windows server 2008r2. Any ideas? I noticed there was some
-ActiveX stuff in the scripts... could this be related to security settings?
-
-> It builds winxp 32bit and win7 64bit I hope this is what the current
-> installer is doing,
-> as building the tap is kept secret.
-Actually, the TAP-driver is built using the Python build scripts in the
-"win" subdirectory. Those scripts build both 32-bit and 64-bit drivers.
-
-> In the open source package we will provide vanilla devcon and not the mod=
-ified
-> tapinstaller which we do not have the sources of. I it is so important
-> to hack computer
-> and bypass Windows confirmation dialog.
-The Python-based buildsystem also builds tapinstall.exe/devcon.exe. It
-looks for the sources from ../tapinstall by default (see "grep T1SRC
-win/*"). The sources are standard devcon sources; the resulting binary
-is simply renamed to "tapinstall.exe".
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
+David Sommerseth
 
 
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk9LVCoACgkQDC186MBRfroAJACfZ0GB+2wiHKk9FJlgVxbbsyo0
+fTsAn3YwKBltC35+UBeb0i8kbPSKIq8z
+=3DI3lE
+-----END PGP SIGNATURE-----
 
