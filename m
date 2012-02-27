@@ -1,21 +1,9 @@
-Date: Mon, 27 Feb 2012 19:25:45 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120227182545.GO7024@...1296...>
-References: <4F4978D2.70706@...1030...>
-	<CAOazyz2jCkj2ox9edFap05zze2i5-pW1J9W4ho=jSVhZTUZQFw@...278...>
-	<4F4A31E1.2080503@...1030...>
-	<CAOazyz1n6Uz3TuSywisO41J=tjNJ94rbq7LUgw5y3b+dR0J8nA@...278...>
-	<4F4A4929.6040407@...1030...>
-	<CAOazyz1wNQQgxTciUq0uQjfMyDSJqDdpy63LcUpcwXbs3pWsxQ@...278...>
-	<4F4A52DB.1040907@...1030...>
-	<CAOazyz2SyQjGk9w00KA93tKUyyMMY9iQ3rL=C8X0wpFKFrLZrw@...278...>
-	<4F4B584A.30705@...515...> <4F4BA12E.4080707@...1030...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="+dJ5Ea9E9bxtHwvD"
-Content-Disposition: inline
-In-Reply-To: <4F4BA12E.4080707@...1030...>
-Subject: Re: [Openvpn-devel] static build
+Message-ID: <4F4BE07E.70603@...1550...>
+Date: Mon, 27 Feb 2012 23:58:54 +0400
+From: Igor Novgorodov <igor@...1550...>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="------------080706070402040502000606"
+Subject: [Openvpn-devel] [PATCH 01/02] Add support for PolarSSL 1.1.x branch
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,80 +12,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Mr Dash Four <mr.dash.four@...1030...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---+dJ5Ea9E9bxtHwvD
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+This is a multi-part message in MIME format.
+--------------080706070402040502000606
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi,
+Continuing to struggle with making OpenVPN as tiny as possible :)
 
-On Mon, Feb 27, 2012 at 03:28:46PM +0000, Mr Dash Four wrote:
-> The Alon's version of "openvpn 2.3_alpha1" is very different from=20
-> "openvpn 2.3_alpha1" downloaded from the official openvpn git repository=
-=20
-> using the same tag! If you do not believe me - take a look for yourself.
+The attached patch adds checking for PolarSSL version on 
+crypto_polarssl.c and depending
+on which version we are using (1.0.x or 1.1.x) chooses a new shiny 
+havege_random() function,
+or an old ugly while{} loop hack to generate randomness.
 
-This is well understood.=20=20
+--------------080706070402040502000606
+Content-Type: text/plain; x-mac-type="0"; x-mac-creator="0";
+	name="001-polarssl-havege-random.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="001-polarssl-havege-random.patch"
 
-The C sources are (basically) the same, but in Alon's tree, the build=20
-system has been re-built from scratch, from "something that sort-of works"=
-=20
-to something new, which is more flexible, and (most important here) handles=
-=20
-cross-building including all the dependencies in a fully automated way.
+--- a/crypto_polarssl.c
++++ b/crypto_polarssl.c
+@@ -41,6 +41,7 @@
+ #include <polarssl/md5.h>
+ #include <polarssl/cipher.h>
+ #include <polarssl/havege.h>
++#include <polarssl/version.h>
+ 
+ /*
+  *
+@@ -157,25 +158,24 @@
+ rand_bytes (uint8_t *output, int len)
+ {
+   static havege_state hs = {0};
+-  static bool hs_initialised = false;
+-  const int int_size = sizeof(int);
+ 
+-  if (!hs_initialised)
+-    {
+-      /* Initialise PolarSSL RNG */
+-      havege_init(&hs);
+-      hs_initialised = true;
+-    }
++  /* Initialise PolarSSL RNG */
++  havege_init(&hs);
++#if (POLARSSL_VERSION_MAJOR >= 1 && POLARSSL_VERSION_MINOR >= 1)
++  havege_random(&hs, output, len);
++#else
++  const int int_size = sizeof(int);
+ 
+   while (len > 0)
+     {
+-      const int blen 	= min_int (len, int_size);
+-      const int rand_int 	= havege_rand(&hs);
++      const int blen    = min_int (len, int_size);
++      const int rand_int        = havege_rand(&hs);
+ 
+       memcpy (output, &rand_int, blen);
+       output += blen;
+       len -= blen;
+     }
++#endif
+   return 1;
+ }
+ 
 
-As soon as the rest of the OpenVPN developers agree on all the details,
-Alon's changes will be integrated into the "main" openvpn git.
-
-> I don't mind Alon (or anybody else for that matter) altering the openvpn=
-=20
-> source code and its structure, because at the end of the day it is an=20
-> open source project, but to give it a name like "openvpn 2.3_alpha1"=20
-> clearly implying that this is the official "openvpn 2.3_alpha1" source=20
-> without explicitly stating that there were alterations/changes made to=20
-> that source code is clearly very misleading and in this respect Alon is=20
-> no better than the scum out there offering "loaded" source code of=20
-> well-known software products to naive idiots like myself, stupid enough=20
-> to download it.
-
-Alon's new build system was announced here on the list just a few days
-ago.
-
-> As for the main topic of this thread - static build of openvpn, the=20
-> following is the last gcc command line which links and creates the final=
-=20
-> openvpn executable (again, using the "standard" openvpn source and not=20
-> the mickey-mouse version Alon is "offering") - judge for yourself=20
-> whether this produces a monolithic, statically-linked openvpn executable:
-
-We don't care.  Really.  Alon's build system is where the journey is
-going to, and we are not going to do piecemeal fixes in the existing
-build system.
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---+dJ5Ea9E9bxtHwvD
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
-
-iQCVAwUBT0vKqakuBuNlUUl1AQIkNQP9GtS07JLCHdOG/n1eqe2gKHg4Qvy+DcD5
-8n1uTy2OpVRHnc8YJv2XR1ECSm45N2vGd3clrcxCeqQGSzG6YIHsSkFpzvFKP7h6
-TE8dAYZMhDSsvM2bRn2WgkYf15QaLl1wAenVxKa8wn5EVP4QsWVRL7+vNN9HcMOx
-3PGGYJJ0wy0=
-=KMLY
------END PGP SIGNATURE-----
-
---+dJ5Ea9E9bxtHwvD--
+--------------080706070402040502000606--
 
