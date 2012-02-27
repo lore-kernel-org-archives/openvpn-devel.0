@@ -1,10 +1,10 @@
+Message-ID: <4F4B402F.70507@...515...>
+Date: Mon, 27 Feb 2012 10:34:55 +0200
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <CAOazyz2MWSWqf6L4XQYNBpCHL73vgZKB=StzLEL5s0oQjihJPA@...278...>
-References: <CAOazyz2MWSWqf6L4XQYNBpCHL73vgZKB=StzLEL5s0oQjihJPA@...278...>
-Date: Mon, 27 Feb 2012 03:11:19 +0200
-Message-ID: <CAOazyz09NdwccVwLgpVAzpnBX-2X3dH5E+DS_2=KXpYWBJhNoA@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [build] tap-windows
+References: <CAOazyz2Rr6JgnmojZ3Naht6eybdq1KnooEAbARSS=3ZM-iLVJg@...278...>
+In-Reply-To: <CAOazyz2Rr6JgnmojZ3Naht6eybdq1KnooEAbARSS=3ZM-iLVJg@...278...>
+Subject: Re: [Openvpn-devel] openvpn windows gui
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +13,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-Also signs and package.
-Please test.
 
-On Sun, Feb 26, 2012 at 4:49 AM, Alon Bar-Lev <alon.barlev@...277...> wrote:
 > Hello,
 >
-> A repository is available[1], stripped down with only tap sources.
+> A stupid question....
+> Which GUI is embedded in the installer?
+> What is GUI and what is XGUI?
+> All I found is[1].
 >
-> To build use you need ddk available:
->> configure
->> build
->
-> It builds winxp 32bit and win7 64bit I hope this is what the current
-> installer is doing,
-> as building the tap is kept secret.
->
-> In the open source package we will provide vanilla devcon and not the modified
-> tapinstaller which we do not have the sources of. I it is so important
-> to hack computer
-> and bypass Windows confirmation dialog.
->
-> Left is to package it up.
->
-> Alon.
->
-> [1] https://github.com/alonbl/tap-windows/
+In 2.2.x installers the GUI is the old one from here, just signed:
+
+<http://openvpn.se>
+
+In 2.3-alpha1 we use the latest snapshot from here:
+
+<http://sourceforge.net/projects/openvpn-gui>
+
+XGUI is obsolete, it can be ignored. I removed all of the XGUI-related
+stuff from the Python-based buildsystem, but it's still lurking in the
+old "domake-win" buildscripts/.nsi files.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
 
