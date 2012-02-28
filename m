@@ -1,9 +1,12 @@
 MIME-Version: 1.0
-Date: Tue, 28 Feb 2012 19:05:35 +0200
-Message-ID: <CAOazyz0_D7b+oyDDQ8y2gjWUD6F8Dkp-r3UT-VNT+0dXx6J5RQ@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: [Openvpn-devel] Another undocumented feature:
-	management-external-key
+Sender: fabian@...1547...
+In-Reply-To: <1330446625-5768-1-git-send-email-dejong@...1435...>
+References: <1330446625-5768-1-git-send-email-dejong@...1435...>
+From: Fabian Knittel <fabian.knittel@...1547...>
+Date: Tue, 28 Feb 2012 18:10:07 +0100
+Message-ID: <CAP+U6tJUgraKJLB2BEdoW3_WHWxc_UFV=YhjQguWyfwDKPof_Q@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Added support for new PolarSSL 1.1
+	RNG
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,48 +15,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>, David Sommerseth <openvpn.list@...1114...>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Adriaan de Jong <dejong@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hello David,
+Hi Adriaan,
 
-Please also work to document this commit (management-notes, man).
-It is extrenely important feature, for example it can be used to move
-the whole smartcard
-interaction to the UI.
+I only found a minor nit:
 
-This feature should be extended to provide X.509 certificate as well,
-it is incomplete without this.
+2012/2/28 Adriaan de Jong <dejong@...1435...>:
+> --- a/ssl.c
+> +++ b/ssl.c
+> @@ -385,6 +385,11 @@ init_ssl (const struct options *options, struct tls_=
+root_ctx *new_ctx)
+> =C2=A0 =C2=A0 =C2=A0 tls_ctx_restrict_ciphers(new_ctx, options->cipher_li=
+st);
+> =C2=A0 =C2=A0 }
+>
+> +#ifdef USE_POLARSSL
+> + =C2=A0/* Fox-IT hardening: Personalise the random by mixing in the cert=
+ificate */
+> + =C2=A0tls_ctx_personalise_random (new_ctx);
+> +#endif
 
-Alon
+Unless it's intentional, the "Fox-IT hardening" string is probably
+from an earlier, internal iteration?
 
----
+The rest looks fine AFAICT. :)
 
-commit cf69617bbea45a15423c4188daa9386debcbe1ec
-Author: James Yonan <james@...515...>
-Date:   Thu Dec 9 11:21:04 2010 +0000
-
-    Added "management-external-key" option.  This option can be used
-    instead of "key" in client mode, and allows the client to run
-    without the need to load the actual private key.  When the SSL
-    protocol needs to perform an RSA sign operation, the data to
-    be signed will be sent to the management interface via a
-    notification as follows:
-
-      >RSA_SIGN:[BASE64_DATA]
-
-    The management interface client should then sign BASE64_DATA
-    using the private key and return the signature as follows:
-
-      rsa-sig
-      [BASE64_SIG_LINE]
-      .
-      .
-      .
-      END
-
-    This capability is intended to allow the use of arbitrary
-    cryptographic service providers with OpenVPN via the
-    management interface.
+Cheers
+Fabian
 
