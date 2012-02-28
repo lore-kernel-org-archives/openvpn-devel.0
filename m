@@ -1,12 +1,14 @@
 MIME-Version: 1.0
-Sender: fabian@...1547...
-In-Reply-To: <4F4BE07E.70603@...1550...>
-References: <4F4BE07E.70603@...1550...>
-From: Fabian Knittel <fabian.knittel@...1547...>
-Date: Mon, 27 Feb 2012 22:37:00 +0100
-Message-ID: <CAP+U6tJFjY8g3bNTcjCKoU+W2hg3=kaPfYS2XGp4Lc1BUNTbAA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 01/02] Add support for PolarSSL 1.1.x
-	branch
+In-Reply-To: <CAOazyz0h5G_X0eRpRR4J9K4TQJtccb+R+RnXF3Mc8RPUdhhtEg@...278...>
+References: <CAOazyz2Rr6JgnmojZ3Naht6eybdq1KnooEAbARSS=3ZM-iLVJg@...278...>
+	<4F4B402F.70507@...515...>
+	<CAOazyz1xxbxSzHRvS1+3my_86iOQh0Jsvk-G_0+kMLERr0UXog@...278...>
+	<6021266.D0OP5FaSJF@...1526...>
+	<CAOazyz0h5G_X0eRpRR4J9K4TQJtccb+R+RnXF3Mc8RPUdhhtEg@...278...>
+Date: Tue, 28 Feb 2012 02:37:37 +0200
+Message-ID: <CAOazyz3EtWN0K0fdjgUHzg2ffjdvfEPTvqZ-MV09bcGWQKuFgg@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] openvpn windows gui
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,25 +19,24 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To: Igor Novgorodov <igor@...1550...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-Hi Igor,
+On Mon, Feb 27, 2012 at 6:18 PM, Alon Bar-Lev <alon.barlev@...277...> wrote:
+> Will be ready in a few hours.
 
-2012/2/27 Igor Novgorodov <igor@...1550...>:
-> The attached patch adds checking for PolarSSL version on crypto_polarssl.c
-> and depending on which version we are using (1.0.x or 1.1.x) chooses a new
-> shiny havege_random() function, or an old ugly while{} loop hack to generate
-> randomness.
+Done [1].
+Tarball is available.
+Please review/pull.
 
-Your patch removes the code that causes havege_init() to only be
-called once. You never want to initialise your PRNG more than once,
-otherwise you increase the risk that your randomness is predictable.
-So please revert that part of your patch.
+Basically you need to modify the --with-crypto...
+With:
+./configure CFLAGS="-Ixxx/include" LDFLAGS="-Lxxx/lib"
+Where xxx is the openssl location.
+The build script now also builds the gui, so you use it...
 
-(The rest looks fine, although I haven't tested it and don't have any
-experience with PolarSSL.)
+I added --enable-deponly to allow "make dist" at Linux.
 
-Cheers
-Fabian
+[1] https://github.com/alonbl/openvpn-gui
+[2] https://github.com/alonbl/openvpn-build
 
