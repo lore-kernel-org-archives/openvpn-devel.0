@@ -1,12 +1,11 @@
+Date: Tue, 28 Feb 2012 18:31:03 +0100
+From: =?iso-8859-15?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>
+Message-ID: <1848924920.20120228183103@...449...>
+In-Reply-To: <4F4CE4FE.3010009@...515...>
+References: <4F4CE4FE.3010009@...515...>
 MIME-Version: 1.0
-Sender: fabian@...1547...
-In-Reply-To: <1330446625-5768-1-git-send-email-dejong@...1435...>
-References: <1330446625-5768-1-git-send-email-dejong@...1435...>
-From: Fabian Knittel <fabian.knittel@...1547...>
-Date: Tue, 28 Feb 2012 18:10:07 +0100
-Message-ID: <CAP+U6tJUgraKJLB2BEdoW3_WHWxc_UFV=YhjQguWyfwDKPof_Q@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Added support for new PolarSSL 1.1
-	RNG
+Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 released
+Reply-To: =?iso-8859-15?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,35 +14,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Adriaan de Jong <dejong@...1435...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+To: 
 
-Hi Adriaan,
+Hello Samuli,
 
-I only found a minor nit:
+> The OpenVPN community project team is proud to release OpenVPN
+> 2.3-alpha1. It can be downloaded from here:
 
-2012/2/28 Adriaan de Jong <dejong@...1435...>:
-> --- a/ssl.c
-> +++ b/ssl.c
-> @@ -385,6 +385,11 @@ init_ssl (const struct options *options, struct tls_=
-root_ctx *new_ctx)
-> =C2=A0 =C2=A0 =C2=A0 tls_ctx_restrict_ciphers(new_ctx, options->cipher_li=
-st);
-> =C2=A0 =C2=A0 }
->
-> +#ifdef USE_POLARSSL
-> + =C2=A0/* Fox-IT hardening: Personalise the random by mixing in the cert=
-ificate */
-> + =C2=A0tls_ctx_personalise_random (new_ctx);
-> +#endif
+> <http://openvpn.net/index.php/open-source/downloads.html>
 
-Unless it's intentional, the "Fox-IT hardening" string is probably
-from an earlier, internal iteration?
+> This release includes a few new major features:
 
-The rest looks fine AFAICT. :)
+>  * Complete IPv6 support, both transport and payload
+>  * Optional PolarSSL support (build time configuration)
+>  * Improved plug-in API (v3) which can more easily be expanded in the
+>    future: includes support for direct access to X.509 certificate data in
+>    plug-ins
+>  * Several improvements to the management interface
+>  * One-to-one NAT to circumvent IP address conflicts between local and
+>    remote networks
+>  * New OpenVPN-GUI
 
-Cheers
-Fabian
+Are there any chances to get full non-admin support for windows in version 2.3 final?
+
+I mean strict seperation between OpenVPN service running with local system
+privileges (can modify routes, etc.) and usermode part (command line, maybe GUI) that
+interacts with user (start/stop tunnel, ask for passphrase, pin for smartcard, etc.).
+
+In companies that have security in mind it's impossible to allow
+roadwarriors to connect via openvpn because they would need admin
+privileges.
+Give them only the privilege to start/stop the openvpn service didn't help because they can't supply credentials.
+
+I'm complaining about this show stoppper for ~4 years :-(
+
+I personally like openvpn very much and would like to deploy it for
+our users but I've to buy Cisco because the windows client is better.
+
+greetings
+Carsten
+
 
