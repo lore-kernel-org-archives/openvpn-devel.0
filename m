@@ -1,12 +1,14 @@
-Message-ID: <4F4C6C14.9030303@...1550...>
-Date: Tue, 28 Feb 2012 09:54:28 +0400
-From: Igor Novgorodov <igor@...1550...>
 MIME-Version: 1.0
-References: <4F4BE238.502@...1550...>
-	<CAOazyz19-bfVtb+o2tt86S5txE3iofBhAz+JR5hw7-qHmfoVeQ@...278...>
-In-Reply-To: <CAOazyz19-bfVtb+o2tt86S5txE3iofBhAz+JR5hw7-qHmfoVeQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 02/02] Remove calls to OpenSSL when
- building with --disable-ssl
+Sender: fabian@...1547...
+In-Reply-To: <4F4C6A50.5070103@...1550...>
+References: <4F4BE07E.70603@...1550...>
+	<CAP+U6tJFjY8g3bNTcjCKoU+W2hg3=kaPfYS2XGp4Lc1BUNTbAA@...278...>
+	<4F4C6A50.5070103@...1550...>
+From: Fabian Knittel <fabian.knittel@...1547...>
+Date: Tue, 28 Feb 2012 08:39:57 +0100
+Message-ID: <CAP+U6t+d3ZJPdTMAH7d==HzJUmW3o=bPGRKJ4b0hGwT8KyDsRA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 01/02] Add support for PolarSSL 1.1.x
+	branch
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,42 +17,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Alon Bar-Lev <alon.barlev@...277...>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Igor Novgorodov <igor@...1550...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Then maybe we should move these calls to crypto_openssl.c into 
-crypto_init_lib() function to make crypto.c library-independent?
-And why OpenSSL_add_all_algorithms() and stuff is called only when 
-USE_SSL is not defined?
+Hi Igor,
 
-And if these calls are for 0.9.8, maybe add a check for OpenSSL version?
+2012/2/28 Igor Novgorodov <igor@...1550...>:
+> On 28.02.2012 1:37, Fabian Knittel wrote:
+>> Your patch removes the code that causes havege_init() to only be
+>> called once. You never want to initialise your PRNG more than once,
+>> otherwise you increase the risk that your randomness is predictable.
+>> So please revert that part of your patch.
+>
+> Yes, my fault. I didn't notice that the variable was static, so i though
+> that it was local-scope only and removed the check... The fixed patch is attached
 
-On 28.02.2012 0:10, Alon Bar-Lev wrote:
-> These are needed for 0.9.8 as far as I remember.
-> On Mon, Feb 27, 2012 at 10:06 PM, Igor Novgorodov<igor@...1550...>  wrote:
->> The attached patch removes deprecated(?) calls to OpenSSL functions from
->> crypro.c,
->> which are called when USE_SSL is not defined.
->>
->> I'm not so deep into OpenVPN, so maybe these functions are needed, but i
->> thought that all crypto-lib
->> dependent functions should be moved to the corresponding crypto_LIB.c files.
->>
->> If they are needed, we should #ifdef them, so that PolarSSL-based build
->> won't break on it.
->>
->> ------------------------------------------------------------------------------
->> Try before you buy = See our experts in action!
->> The most comprehensive online learning library for Microsoft developers
->> is just $99.99! Visual Studio, SharePoint, SQL - plus HTML5, CSS3, MVC3,
->> Metro Style Apps, more. Free future releases when you subscribe now!
->> http://p.sf.net/sfu/learndevnow-dev2
->> _______________________________________________
->> Openvpn-devel mailing list
->> Openvpn-devel@lists.sourceforge.net
->> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->>
+Thanks!
 
+>> ([...], although I haven't tested it and don't have any
+>> experience with PolarSSL.)
+
+Maybe Adriaan or someone else can take a quick peek and give a full-hearted ACK?
+
+Cheers
+Fabian
 
