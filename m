@@ -1,8 +1,11 @@
 From: Adriaan de Jong <dejong@...1435...>
-Date: Tue, 28 Feb 2012 17:30:24 +0100
-Message-ID: <1330446625-5768-1-git-send-email-dejong@...1435...>
+Date: Tue, 28 Feb 2012 17:30:25 +0100
+Message-ID: <1330446625-5768-2-git-send-email-dejong@...1435...>
+In-Reply-To: <1330446625-5768-1-git-send-email-dejong@...1435...>
+References: <1330446625-5768-1-git-send-email-dejong@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/2] Added support for new PolarSSL 1.1 RNG
+Subject: [Openvpn-devel] [PATCH 2/2] Added a configuration option to enable
+	prediction resistance in the PolarSSL random number generator.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,351 +18,190 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This patch, while retaining PolarSSL 1.0 support, introduces the PolarSSL 1.1 DRBG. This RNG adds a number of features, including support for personalisation strings and multiple entropy sources.
-
-Personalisation strings have been implemented, based on PID, program name, place within memory, and a hash of the user's certificate.
-
-The entropy sources used are the platform default ones. Which ones these are depends on how PolarSSL was built, but usually this includes:
-
- - /dev/urandom or the Windows CryptoAPI RNG
- - the HAVEGE RNG
- - the output of PolarSSL's hardclock() call (usually RDTSC)
-
-Finally, this patch moves to only one instance of the RNG  per OpenVPN instance, instead of one per keystate
-
-Signed-off-by: Adriaan de Jong <dejong@...1435...>
 Signed-off-by: Eelse-jan Stutvoet <stutvoet@...1435...>
+Signed-off-by: Adriaan de Jong <dejong@...1435...>
 ---
- crypto_polarssl.c |   84 ++++++++++++++++++++++++++++++++++++++++++++++------
- crypto_polarssl.h |   25 ++++++++++++++++
- ssl.c             |    5 +++
- ssl_backend.h     |   10 ++++++
- ssl_polarssl.c    |   44 +++++++++++++++++++++------
- ssl_polarssl.h    |    2 -
- 6 files changed, 148 insertions(+), 22 deletions(-)
+ crypto_polarssl.c |    9 +++++++++
+ crypto_polarssl.h |    7 +++++++
+ init.c            |    6 ++++++
+ openvpn.8         |   14 ++++++++++++++
+ options.c         |   22 ++++++++++++++++++++++
+ options.h         |    3 +++
+ syshead.h         |    8 ++++++++
+ 7 files changed, 69 insertions(+), 0 deletions(-)
 
 diff --git a/crypto_polarssl.c b/crypto_polarssl.c
-index e7470d5..8eb47db 100644
+index 8eb47db..b37c8b2 100644
 --- a/crypto_polarssl.c
 +++ b/crypto_polarssl.c
-@@ -36,12 +36,18 @@
- #include "buffer.h"
- #include "integer.h"
- #include "crypto_backend.h"
-+#include "otime.h"
-+#include "misc.h"
+@@ -213,6 +213,15 @@ havege_state * rand_ctx_get()
  
- #include <polarssl/des.h>
- #include <polarssl/md5.h>
- #include <polarssl/cipher.h>
- #include <polarssl/havege.h>
+ #endif /* (POLARSSL_VERSION_NUMBER >= 0x01010000) */
  
-+#if (POLARSSL_VERSION_NUMBER >= 0x01010000)
-+#include <polarssl/entropy.h>
-+#endif
-+
- /*
-  *
-  * Hardware engine support. Allows loading/unloading of engines.
-@@ -143,7 +149,6 @@ show_available_engines ()
-       "available\n");
- }
- 
--
- /*
-  *
-  * Random number functions, used in cases where we want
-@@ -153,29 +158,88 @@ show_available_engines ()
-  *
-  */
- 
--int
--rand_bytes (uint8_t *output, int len)
-+/*
-+ * Initialise the given ctr_drbg context, using a personalisation string and an
-+ * entropy gathering function.
-+ */
-+#if (POLARSSL_VERSION_NUMBER >= 0x01010000)
-+ctr_drbg_context * rand_ctx_get()
++#ifdef ENABLE_PREDICTION_RESISTANCE
++void rand_ctx_enable_prediction_resistance()
 +{
-+  static entropy_context ec = {0};
-+  static ctr_drbg_context cd_ctx = {0};
-+  static bool rand_initialised = false;
++  ctr_drbg_context *cd_ctx = rand_ctx_get();
 +
-+  if (!rand_initialised)
-+    {
-+      struct gc_arena gc = gc_new();
-+      struct buffer pers_string = alloc_buf_gc(100, &gc);
-+
-+      /*
-+       * Personalisation string, should be as unique as possible (see NIST
-+       * 800-90 section 8.7.1). We have very little information at this stage.
-+       * Include Program Name, memory address of the context and PID.
-+       */
-+      buf_printf(&pers_string, "OpenVPN %0u %p %s", openvpn_getpid(), &cd_ctx, time_string(0, 0, 0, &gc));
-+
-+      /* Initialise PolarSSL RNG, and built-in entropy sources */
-+      entropy_init(&ec);
-+
-+      if (0 != ctr_drbg_init(&cd_ctx, entropy_func, &ec, BPTR(&pers_string), BLEN(&pers_string)))
-+        msg (M_FATAL, "Failed to initialize random generator");
-+
-+      gc_free(&gc);
-+      rand_initialised = true;
-+  }
-+
-+  return &cd_ctx;
++  ctr_drbg_set_prediction_resistance(cd_ctx, 1);
 +}
++#endif /* ENABLE_PREDICTION_RESISTANCE */
 +
-+#else /* (POLARSSL_VERSION_NUMBER < 0x01010000) */
-+
-+havege_state * rand_ctx_get()
+ int
+ rand_bytes (uint8_t *output, int len)
  {
-   static havege_state hs = {0};
--  static bool hs_initialised = false;
--  const int int_size = sizeof(int);
-+  static bool rand_initialised = false;
- 
--  if (!hs_initialised)
-+  if (!rand_initialised)
-     {
-       /* Initialise PolarSSL RNG */
-       havege_init(&hs);
--      hs_initialised = true;
-+      rand_initialised = true;
-     }
- 
-+  return &hs;
-+}
-+
-+#endif /* (POLARSSL_VERSION_NUMBER >= 0x01010000) */
-+
-+int
-+rand_bytes (uint8_t *output, int len)
-+{
-+#if (POLARSSL_VERSION_NUMBER >= 0x01010000)
-+  ctr_drbg_context *rng_ctx = rand_ctx_get();
-+#else /* (POLARSSL_VERSION_NUMBER >= 0x01010000) */
-+  havege_state *rng_ctx = rand_ctx_get();
-+#endif /* (POLARSSL_VERSION_NUMBER >= 0x01010000) */
-+
-   while (len > 0)
-     {
--      const int blen 	= min_int (len, int_size);
--      const int rand_int 	= havege_rand(&hs);
--
-+#if (POLARSSL_VERSION_NUMBER >= 0x01010000)
-+      const size_t blen = min_int (len, CTR_DRBG_MAX_REQUEST);
-+      if (0 != ctr_drbg_random(rng_ctx, output, blen))
-+	return 0;
-+
-+#else /* (POLARSSL_VERSION_NUMBER >= 0x01010000) */
-+      const size_t blen = min_int (len, sizeof(int));
-+      const int rand_int = havege_rand(rng_ctx);
-       memcpy (output, &rand_int, blen);
-+
-+#endif /* (POLARSSL_VERSION_NUMBER >= 0x01010000) */
-+
-       output += blen;
-       len -= blen;
-     }
-+
-   return 1;
- }
- 
 diff --git a/crypto_polarssl.h b/crypto_polarssl.h
-index 358483a..2f303db 100644
+index 2f303db..6152878 100644
 --- a/crypto_polarssl.h
 +++ b/crypto_polarssl.h
-@@ -30,9 +30,16 @@
- #ifndef CRYPTO_POLARSSL_H_
- #define CRYPTO_POLARSSL_H_
+@@ -96,4 +96,11 @@ ctr_drbg_context * rand_ctx_get();
+ havege_state * rand_ctx_get();
+ #endif
  
-+#include <polarssl/version.h>
- #include <polarssl/cipher.h>
- #include <polarssl/md.h>
- 
-+#if (POLARSSL_VERSION_NUMBER >= 0x01010000)
-+#  include <polarssl/ctr_drbg.h>
-+#else
-+#  include <polarssl/havege.h>
-+#endif
-+
- /** Generic cipher key type %context. */
- typedef cipher_info_t cipher_kt_t;
- 
-@@ -71,4 +78,22 @@ typedef md_context_t hmac_ctx_t;
- #define SHA_DIGEST_LENGTH 	20
- #define DES_KEY_LENGTH 8
- 
++#ifdef ENABLE_PREDICTION_RESISTANCE
 +/**
-+ * Returns a singleton instance of the PolarSSL random number generator.
-+ *
-+ * For PolarSSL 1.0, this is the HAVEGE random number generator.
-+ *
-+ * For PolarSSL 1.1+, this is the CTR_DRBG random number generator. If it
-+ * hasn't been initialised yet, the RNG will be initialised using the default
-+ * entropy sources. Aside from the default platform entropy sources, an
-+ * additional entropy source, the HAVEGE random number generator will also be
-+ * added. During initialisation, a personalisation string will be added based
-+ * on the time, the PID, and a pointer to the random context.
++ * Enable prediction resistance on the random number generator.
 + */
-+#if (POLARSSL_VERSION_NUMBER >= 0x01010000)
-+ctr_drbg_context * rand_ctx_get();
-+#else
-+havege_state * rand_ctx_get();
++void rand_ctx_enable_prediction_resistance();
 +#endif
 +
  #endif /* CRYPTO_POLARSSL_H_ */
-diff --git a/ssl.c b/ssl.c
-index c26756e..e852485 100644
---- a/ssl.c
-+++ b/ssl.c
-@@ -385,6 +385,11 @@ init_ssl (const struct options *options, struct tls_root_ctx *new_ctx)
-       tls_ctx_restrict_ciphers(new_ctx, options->cipher_list);
-     }
+diff --git a/init.c b/init.c
+index fb8fe00..5259690 100644
+--- a/init.c
++++ b/init.c
+@@ -2002,6 +2002,12 @@ init_crypto_pre (struct context *c, const unsigned int flags)
  
-+#ifdef USE_POLARSSL
-+  /* Fox-IT hardening: Personalise the random by mixing in the certificate */
-+  tls_ctx_personalise_random (new_ctx);
+   if (c->options.mute_replay_warnings)
+     c->c2.crypto_options.flags |= CO_MUTE_REPLAY_WARNINGS;
++
++#ifdef ENABLE_PREDICTION_RESISTANCE
++  if (c->options.use_prediction_resistance)
++    rand_ctx_enable_prediction_resistance();
 +#endif
 +
-   tls_clear_error ();
-   return;
- 
-diff --git a/ssl_backend.h b/ssl_backend.h
-index 243c9e3..b3e0c68 100644
---- a/ssl_backend.h
-+++ b/ssl_backend.h
-@@ -272,6 +272,16 @@ void tls_ctx_load_extra_certs (struct tls_root_ctx *ctx, const char *extra_certs
- #endif
-     );
- 
-+#ifdef USE_POLARSSL
-+/**
-+ * Add a personalisation string to the PolarSSL RNG, based on the certificate
-+ * loaded into the given context.
-+ *
-+ * @param ctx			TLS context to use
-+ */
-+void tls_ctx_personalise_random(struct tls_root_ctx *ctx);
-+#endif
-+
- /* **************************************
-  *
-  * Key-state specific functions
-diff --git a/ssl_polarssl.c b/ssl_polarssl.c
-index c50cf0a..bc28c60 100644
---- a/ssl_polarssl.c
-+++ b/ssl_polarssl.c
-@@ -38,6 +38,9 @@
- #include "manage.h"
- #include "ssl_common.h"
- 
-+#include <polarssl/sha2.h>
-+#include <polarssl/havege.h>
-+
- #include "ssl_verify_polarssl.h"
- #include <polarssl/pem.h>
- 
-@@ -79,9 +82,6 @@ tls_ctx_server_new(struct tls_root_ctx *ctx)
-   ASSERT(NULL != ctx);
-   CLEAR(*ctx);
- 
--  ALLOC_OBJ_CLEAR(ctx->hs, havege_state);
--  havege_init(ctx->hs);
--
-   ALLOC_OBJ_CLEAR(ctx->dhm_ctx, dhm_context);
-   ALLOC_OBJ_CLEAR(ctx->priv_key, rsa_context);
- 
-@@ -97,12 +97,8 @@ void
- tls_ctx_client_new(struct tls_root_ctx *ctx)
- {
-   ASSERT(NULL != ctx);
--
-   CLEAR(*ctx);
- 
--  ALLOC_OBJ_CLEAR(ctx->hs, havege_state);
--  havege_init(ctx->hs);
--
-   ALLOC_OBJ_CLEAR(ctx->dhm_ctx, dhm_context);
-   ALLOC_OBJ_CLEAR(ctx->priv_key, rsa_context);
- 
-@@ -137,8 +133,6 @@ tls_ctx_free(struct tls_root_ctx *ctx)
-       }
- #endif
- 
--      free(ctx->hs);
--
-       if (ctx->allowed_ciphers)
- 	free(ctx->allowed_ciphers);
- 
-@@ -496,6 +490,30 @@ static void my_debug( void *ctx, int level, const char *str )
-     }
  }
  
-+/*
-+ * Further personalise the RNG using a hash of the public key
-+ */
-+void tls_ctx_personalise_random(struct tls_root_ctx *ctx)
-+{
-+#if (POLARSSL_VERSION_NUMBER >= 0x01010000)
-+  static char old_sha256_hash[32] = {0};
-+  char sha256_hash[32] = {0};
-+  ctr_drbg_context *cd_ctx = rand_ctx_get();
+ /*
+diff --git a/openvpn.8 b/openvpn.8
+index 53d6bdb..ee46de6 100644
+--- a/openvpn.8
++++ b/openvpn.8
+@@ -3846,6 +3846,20 @@ space-saving optimization that uses the unique identifier for
+ datagram replay protection as the IV.
+ .\"*********************************************************
+ .TP
++.B \-\-use-prediction-resistance
++Enable prediction resistance on PolarSSL's RNG.
 +
-+  if (NULL != ctx->crt_chain)
++Enabling prediction resistance causes the RNG to reseed in each
++call for random. Reseeding this often can quickly deplete the kernel
++entropy pool.
++
++If you need this option, please consider running a daemon that adds
++entropy to the kernel pool.
++
++Note that this option only works with PolarSSL versions greater
++than 1.1.
++.\"*********************************************************
++.TP
+ .B \-\-test-crypto
+ Do a self-test of OpenVPN's crypto options by encrypting and
+ decrypting test packets using the data channel encryption options
+diff --git a/options.c b/options.c
+index 5e972b1..c2896da 100644
+--- a/options.c
++++ b/options.c
+@@ -537,6 +537,10 @@ static const char usage_message[] =
+   "                  using file.\n"
+   "--test-crypto   : Run a self-test of crypto features enabled.\n"
+   "                  For debugging only.\n"
++#ifdef ENABLE_PREDICTION_RESISTANCE
++  "--use-prediction-resistance: Enable prediction resistance on the random\n"
++  "                             number generator.\n"
++#endif
+ #ifdef USE_SSL
+   "\n"
+   "TLS Key Negotiation Options:\n"
+@@ -829,6 +833,9 @@ init_options (struct options *o, const bool init_gc)
+   o->replay_time = DEFAULT_TIME_BACKTRACK;
+   o->use_iv = true;
+   o->key_direction = KEY_DIRECTION_BIDIRECTIONAL;
++#ifdef ENABLE_PREDICTION_RESISTANCE
++  o->use_prediction_resistance = false;
++#endif
+ #ifdef USE_SSL
+   o->key_method = 2;
+   o->tls_timeout = 2;
+@@ -1573,6 +1580,9 @@ show_settings (const struct options *o)
+   SHOW_STR (packet_id_file);
+   SHOW_BOOL (use_iv);
+   SHOW_BOOL (test_crypto);
++#ifdef ENABLE_PREDICTION_RESISTANCE
++  SHOW_BOOL (use_prediction_resistance);
++#endif
+ 
+ #ifdef USE_SSL
+   SHOW_BOOL (tls_server);
+@@ -3000,6 +3010,11 @@ options_string (const struct options *o,
+ 	  buf_printf (&out, ",no-replay");
+ 	if (!o->use_iv)
+ 	  buf_printf (&out, ",no-iv");
++
++#ifdef ENABLE_PREDICTION_RESISTANCE
++        if (o->use_prediction_resistance)
++          buf_printf (&out, ",use-prediction-resistance");
++#endif
+       }
+ 
+ #ifdef USE_SSL
+@@ -6401,6 +6416,13 @@ add_option (struct options *options,
+       options->keysize = keysize;
+     }
+ #endif
++#ifdef ENABLE_PREDICTION_RESISTANCE
++  else if (streq (p[0], "use-prediction-resistance"))
 +    {
-+      x509_cert *cert = ctx->crt_chain;
-+
-+      sha2(cert->tbs.p, cert->tbs.len, sha256_hash, false);
-+      if ( 0 != memcmp(old_sha256_hash, sha256_hash, sizeof(sha256_hash)))
-+	{
-+	  ctr_drbg_update(cd_ctx, sha256_hash, 32);
-+	  memcpy(old_sha256_hash, sha256_hash, sizeof(old_sha256_hash));
-+	}
++      VERIFY_PERMISSION (OPT_P_GENERAL);
++      options->use_prediction_resistance = true;
 +    }
-+#endif /* POLARSSL_VERSION_NUMBER >= 0x01010000 */
-+}
++#endif
+ #ifdef USE_SSL
+   else if (streq (p[0], "show-tls"))
+     {
+diff --git a/options.h b/options.h
+index 6af4b3a..4794a08 100644
+--- a/options.h
++++ b/options.h
+@@ -520,6 +520,9 @@ struct options
+   const char *packet_id_file;
+   bool use_iv;
+   bool test_crypto;
++#ifdef ENABLE_PREDICTION_RESISTANCE
++  bool use_prediction_resistance;
++#endif
+ 
+ #ifdef USE_SSL
+   /* TLS (control channel) parms */
+diff --git a/syshead.h b/syshead.h
+index 0235abd..6c8329b 100644
+--- a/syshead.h
++++ b/syshead.h
+@@ -546,6 +546,14 @@ socket_defined (const socket_descriptor_t sd)
+ #define MANAGMENT_EXTERNAL_KEY
+ #endif
+ 
++/* Enable PolarSSL RNG prediction resistance support */
++#ifdef USE_POLARSSL
++#include <polarssl/version.h>
++#if POLARSSL_VERSION_NUMBER >= 0x01010000
++#define ENABLE_PREDICTION_RESISTANCE
++#endif
++#endif /* USE_POLARSSL */
 +
- void key_state_ssl_init(struct key_state_ssl *ks_ssl,
-     const struct tls_root_ctx *ssl_ctx, bool is_server, void *session)
- {
-@@ -509,7 +527,13 @@ void key_state_ssl_init(struct key_state_ssl *ks_ssl,
-       /* Initialise SSL context */
-       ssl_set_dbg (ks_ssl->ctx, my_debug, NULL);
-       ssl_set_endpoint (ks_ssl->ctx, ssl_ctx->endpoint);
--      ssl_set_rng (ks_ssl->ctx, havege_rand, ssl_ctx->hs);
-+
-+#if (POLARSSL_VERSION_NUMBER >= 0x01010000)
-+      ssl_set_rng (ks_ssl->ctx, ctr_drbg_random, rand_ctx_get());
-+#else /* POLARSSL_VERSION_NUMBER >= 0x01010000 */
-+      ssl_set_rng (ks_ssl->ctx, havege_rand, rand_ctx_get());
-+#endif /* POLARSSL_VERSION_NUMBER >= 0x01010000 */
-+
-       ALLOC_OBJ_CLEAR (ks_ssl->ssn, ssl_session);
-       ssl_set_session (ks_ssl->ctx, 0, 0, ks_ssl->ssn );
-       if (ssl_ctx->allowed_ciphers)
-diff --git a/ssl_polarssl.h b/ssl_polarssl.h
-index e6149b6..2b02a6f 100644
---- a/ssl_polarssl.h
-+++ b/ssl_polarssl.h
-@@ -30,7 +30,6 @@
- #ifndef SSL_POLARSSL_H_
- #define SSL_POLARSSL_H_
- 
--#include <polarssl/havege.h>
- #include <polarssl/ssl.h>
- #include "config.h"
- 
-@@ -63,7 +62,6 @@ struct tls_root_ctx {
- 
-     int endpoint; 		/**< Whether or not this is a server or a client */
- 
--    havege_state *hs;		/**< HAVEGE random number state */
-     dhm_context *dhm_ctx;	/**< Diffie-Helmann-Merkle context */
-     x509_cert *crt_chain;	/**< Local Certificate chain */
-     x509_cert *ca_chain;	/**< CA chain for remote verification */
+ /*
+  * MANAGEMENT_IN_EXTRA allows the management interface to
+  * read multi-line inputs from clients.
 -- 
 1.7.5.4
 
