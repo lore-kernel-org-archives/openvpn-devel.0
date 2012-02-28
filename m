@@ -1,11 +1,10 @@
-From: Adriaan de Jong <dejong@...1435...>
-Date: Tue, 28 Feb 2012 17:30:25 +0100
-Message-ID: <1330446625-5768-2-git-send-email-dejong@...1435...>
-In-Reply-To: <1330446625-5768-1-git-send-email-dejong@...1435...>
-References: <1330446625-5768-1-git-send-email-dejong@...1435...>
+Message-ID: <4F4D019B.2090704@...1030...>
+Date: Tue, 28 Feb 2012 16:32:27 +0000
+From: Mr Dash Four <mr.dash.four@...1030...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/2] Added a configuration option to enable
-	prediction resistance in the PolarSSL random number generator.
+References: <4F4CE4FE.3010009@...515...>
+In-Reply-To: <4F4CE4FE.3010009@...515...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.3-alpha1 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,195 +13,18 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Signed-off-by: Eelse-jan Stutvoet <stutvoet@...1435...>
-Signed-off-by: Adriaan de Jong <dejong@...1435...>
----
- crypto_polarssl.c |    9 +++++++++
- crypto_polarssl.h |    7 +++++++
- init.c            |    6 ++++++
- openvpn.8         |   14 ++++++++++++++
- options.c         |   22 ++++++++++++++++++++++
- options.h         |    3 +++
- syshead.h         |    8 ++++++++
- 7 files changed, 69 insertions(+), 0 deletions(-)
 
-diff --git a/crypto_polarssl.c b/crypto_polarssl.c
-index 8eb47db..b37c8b2 100644
---- a/crypto_polarssl.c
-+++ b/crypto_polarssl.c
-@@ -213,6 +213,15 @@ havege_state * rand_ctx_get()
- 
- #endif /* (POLARSSL_VERSION_NUMBER >= 0x01010000) */
- 
-+#ifdef ENABLE_PREDICTION_RESISTANCE
-+void rand_ctx_enable_prediction_resistance()
-+{
-+  ctr_drbg_context *cd_ctx = rand_ctx_get();
-+
-+  ctr_drbg_set_prediction_resistance(cd_ctx, 1);
-+}
-+#endif /* ENABLE_PREDICTION_RESISTANCE */
-+
- int
- rand_bytes (uint8_t *output, int len)
- {
-diff --git a/crypto_polarssl.h b/crypto_polarssl.h
-index 2f303db..6152878 100644
---- a/crypto_polarssl.h
-+++ b/crypto_polarssl.h
-@@ -96,4 +96,11 @@ ctr_drbg_context * rand_ctx_get();
- havege_state * rand_ctx_get();
- #endif
- 
-+#ifdef ENABLE_PREDICTION_RESISTANCE
-+/**
-+ * Enable prediction resistance on the random number generator.
-+ */
-+void rand_ctx_enable_prediction_resistance();
-+#endif
-+
- #endif /* CRYPTO_POLARSSL_H_ */
-diff --git a/init.c b/init.c
-index fb8fe00..5259690 100644
---- a/init.c
-+++ b/init.c
-@@ -2002,6 +2002,12 @@ init_crypto_pre (struct context *c, const unsigned int flags)
- 
-   if (c->options.mute_replay_warnings)
-     c->c2.crypto_options.flags |= CO_MUTE_REPLAY_WARNINGS;
-+
-+#ifdef ENABLE_PREDICTION_RESISTANCE
-+  if (c->options.use_prediction_resistance)
-+    rand_ctx_enable_prediction_resistance();
-+#endif
-+
- }
- 
- /*
-diff --git a/openvpn.8 b/openvpn.8
-index 53d6bdb..ee46de6 100644
---- a/openvpn.8
-+++ b/openvpn.8
-@@ -3846,6 +3846,20 @@ space-saving optimization that uses the unique identifier for
- datagram replay protection as the IV.
- .\"*********************************************************
- .TP
-+.B \-\-use-prediction-resistance
-+Enable prediction resistance on PolarSSL's RNG.
-+
-+Enabling prediction resistance causes the RNG to reseed in each
-+call for random. Reseeding this often can quickly deplete the kernel
-+entropy pool.
-+
-+If you need this option, please consider running a daemon that adds
-+entropy to the kernel pool.
-+
-+Note that this option only works with PolarSSL versions greater
-+than 1.1.
-+.\"*********************************************************
-+.TP
- .B \-\-test-crypto
- Do a self-test of OpenVPN's crypto options by encrypting and
- decrypting test packets using the data channel encryption options
-diff --git a/options.c b/options.c
-index 5e972b1..c2896da 100644
---- a/options.c
-+++ b/options.c
-@@ -537,6 +537,10 @@ static const char usage_message[] =
-   "                  using file.\n"
-   "--test-crypto   : Run a self-test of crypto features enabled.\n"
-   "                  For debugging only.\n"
-+#ifdef ENABLE_PREDICTION_RESISTANCE
-+  "--use-prediction-resistance: Enable prediction resistance on the random\n"
-+  "                             number generator.\n"
-+#endif
- #ifdef USE_SSL
-   "\n"
-   "TLS Key Negotiation Options:\n"
-@@ -829,6 +833,9 @@ init_options (struct options *o, const bool init_gc)
-   o->replay_time = DEFAULT_TIME_BACKTRACK;
-   o->use_iv = true;
-   o->key_direction = KEY_DIRECTION_BIDIRECTIONAL;
-+#ifdef ENABLE_PREDICTION_RESISTANCE
-+  o->use_prediction_resistance = false;
-+#endif
- #ifdef USE_SSL
-   o->key_method = 2;
-   o->tls_timeout = 2;
-@@ -1573,6 +1580,9 @@ show_settings (const struct options *o)
-   SHOW_STR (packet_id_file);
-   SHOW_BOOL (use_iv);
-   SHOW_BOOL (test_crypto);
-+#ifdef ENABLE_PREDICTION_RESISTANCE
-+  SHOW_BOOL (use_prediction_resistance);
-+#endif
- 
- #ifdef USE_SSL
-   SHOW_BOOL (tls_server);
-@@ -3000,6 +3010,11 @@ options_string (const struct options *o,
- 	  buf_printf (&out, ",no-replay");
- 	if (!o->use_iv)
- 	  buf_printf (&out, ",no-iv");
-+
-+#ifdef ENABLE_PREDICTION_RESISTANCE
-+        if (o->use_prediction_resistance)
-+          buf_printf (&out, ",use-prediction-resistance");
-+#endif
-       }
- 
- #ifdef USE_SSL
-@@ -6401,6 +6416,13 @@ add_option (struct options *options,
-       options->keysize = keysize;
-     }
- #endif
-+#ifdef ENABLE_PREDICTION_RESISTANCE
-+  else if (streq (p[0], "use-prediction-resistance"))
-+    {
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-+      options->use_prediction_resistance = true;
-+    }
-+#endif
- #ifdef USE_SSL
-   else if (streq (p[0], "show-tls"))
-     {
-diff --git a/options.h b/options.h
-index 6af4b3a..4794a08 100644
---- a/options.h
-+++ b/options.h
-@@ -520,6 +520,9 @@ struct options
-   const char *packet_id_file;
-   bool use_iv;
-   bool test_crypto;
-+#ifdef ENABLE_PREDICTION_RESISTANCE
-+  bool use_prediction_resistance;
-+#endif
- 
- #ifdef USE_SSL
-   /* TLS (control channel) parms */
-diff --git a/syshead.h b/syshead.h
-index 0235abd..6c8329b 100644
---- a/syshead.h
-+++ b/syshead.h
-@@ -546,6 +546,14 @@ socket_defined (const socket_descriptor_t sd)
- #define MANAGMENT_EXTERNAL_KEY
- #endif
- 
-+/* Enable PolarSSL RNG prediction resistance support */
-+#ifdef USE_POLARSSL
-+#include <polarssl/version.h>
-+#if POLARSSL_VERSION_NUMBER >= 0x01010000
-+#define ENABLE_PREDICTION_RESISTANCE
-+#endif
-+#endif /* USE_POLARSSL */
-+
- /*
-  * MANAGEMENT_IN_EXTRA allows the management interface to
-  * read multi-line inputs from clients.
--- 
-1.7.5.4
-
+>  * Improved plug-in API (v3) which can more easily be expanded in the
+>    future: includes support for direct access to X.509 certificate data in
+>    plug-ins
+> [...]
+>  * One-to-one NAT to circumvent IP address conflicts between local and
+>    remote networks
+>   
+Is there any help/doc/wiki where I could get more information/learn more 
+about these new features?
 
