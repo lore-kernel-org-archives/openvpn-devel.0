@@ -1,11 +1,11 @@
+Message-ID: <4F4CAEF1.9070001@...1114...>
+Date: Tue, 28 Feb 2012 11:39:45 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-In-Reply-To: <4F4C6C14.9030303@...1550...>
 References: <4F4BE238.502@...1550...>
 	<CAOazyz19-bfVtb+o2tt86S5txE3iofBhAz+JR5hw7-qHmfoVeQ@...278...>
 	<4F4C6C14.9030303@...1550...>
-Date: Tue, 28 Feb 2012 10:51:58 +0200
-Message-ID: <CAOazyz3hsYzEX6irEvgr894XoUgyoG9bUvYeN7XmYO=EQCBKzA@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+In-Reply-To: <4F4C6C14.9030303@...1550...>
 Subject: Re: [Openvpn-devel] [PATCH 02/02] Remove calls to OpenSSL when
  building with --disable-ssl
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,56 +16,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 To: Igor Novgorodov <igor@...1550...>
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: Alon Bar-Lev <alon.barlev@...277...>, openvpn-devel@lists.sourceforge.net
 
-Hmmm....
-I really can't tell... maybe can be removed until someone reports an issue.=
-..
-I just remember that there were cases it was needed and cases it wasn't.
-It will not hurt to call these in any case.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-On Tue, Feb 28, 2012 at 7:54 AM, Igor Novgorodov <igor@...1550...> wrote:
-> Then maybe we should move these calls to crypto_openssl.c into
-> crypto_init_lib() function to make crypto.c library-independent?
-> And why OpenSSL_add_all_algorithms() and stuff is called only when USE_SSL
-> is not defined?
->
-> And if these calls are for 0.9.8, maybe add a check for OpenSSL version?
->
->
-> On 28.02.2012 0:10, Alon Bar-Lev wrote:
->>
->> These are needed for 0.9.8 as far as I remember.
->> On Mon, Feb 27, 2012 at 10:06 PM, Igor Novgorodov<igor@...1550...> =C2=
-=A0wrote:
->>>
->>> The attached patch removes deprecated(?) calls to OpenSSL functions from
->>> crypro.c,
->>> which are called when USE_SSL is not defined.
->>>
->>> I'm not so deep into OpenVPN, so maybe these functions are needed, but i
->>> thought that all crypto-lib
->>> dependent functions should be moved to the corresponding crypto_LIB.c
->>> files.
->>>
->>> If they are needed, we should #ifdef them, so that PolarSSL-based build
->>> won't break on it.
->>>
->>>
->>> -----------------------------------------------------------------------=
--------
->>> Try before you buy =3D See our experts in action!
->>> The most comprehensive online learning library for Microsoft developers
->>> is just $99.99! Visual Studio, SharePoint, SQL - plus HTML5, CSS3, MVC3,
->>> Metro Style Apps, more. Free future releases when you subscribe now!
->>> http://p.sf.net/sfu/learndevnow-dev2
->>> _______________________________________________
->>> Openvpn-devel mailing list
->>> Openvpn-devel@lists.sourceforge.net
->>> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->>>
->
+On 28/02/12 06:54, Igor Novgorodov wrote:
+> Then maybe we should move these calls to crypto_openssl.c into 
+> crypto_init_lib() function to make crypto.c library-independent? And 
+> why OpenSSL_add_all_algorithms() and stuff is called only when
+> USE_SSL is not defined?
+> 
+> And if these calls are for 0.9.8, maybe add a check for OpenSSL 
+> version?
+
+Remember that OpenSSL covers two parts.  One part is the SSL stuff, the
+other part is the crypto layer.  So even if the SSL stuff isn't used, the
+crypto stuff most likely is.  In the crypto stuff, also all the hashing
+algorithms are included.  However, using SSL without crypto doesn't make
+sense.  If it's not needed any more by OpenSSL 1.0.0, then make it
+version dependent.  Can probably be done at compile time.
+
+Removing the ERR_load_crypto_strings() call will most likely break the
+error logging too, which is used by the msg() function.  It will not make
+the crypto/SSL errors more understandable, how I understand it.
+
+May I suggest that both ERR_load_crypto_strings() and
+SSL_load_error_strings() (gotta love the consistency of function naming)
+is loaded by default, unless ENABLE_SMALL is defined?
+
+Right now, this patch makes me really concerned and scared.  For this to
+be accepted, a lot of testing must be done - and most likely by people
+understanding the darker sides of crypto far better than I.  We can't
+risk that we're regressing on a well proved and tested encryption layer.
+ There are people located in not so democratic countries who use OpenVPN
+to access a not-restricted/censored Internet - and their safety may rely
+on the security OpenVPN provides.
+
+
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk9MrvEACgkQDC186MBRfroaSgCdGkPFPLK7D9XKiJa30lkfWmaV
+BJkAnAyAg+GbYmA3OrQ3HmNL+4AQTisq
+=kilG
+-----END PGP SIGNATURE-----
 
