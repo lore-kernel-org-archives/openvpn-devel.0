@@ -1,14 +1,13 @@
-Date: Tue, 28 Feb 2012 21:01:51 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120228200150.GU7024@...1296...>
+Date: Tue, 28 Feb 2012 21:34:18 +0100
+From: =?utf-8?Q?Carsten_Kr=C3=BCger?= <C.Krueger@...448...>
+Message-ID: <319492303.20120228213418@...449...>
+In-Reply-To: <CAOazyz0x4hKsREcGi+9TGc+AO0d+i1d5qbmPJ2hQfCsUbVanNQ@...278...>
 References: <4F4CE4FE.3010009@...515...>
 	<1848924920.20120228183103@...449...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="171LwGa4zcdgM9o6"
-Content-Disposition: inline
-In-Reply-To: <1848924920.20120228183103@...449...>
+	<CAOazyz0x4hKsREcGi+9TGc+AO0d+i1d5qbmPJ2hQfCsUbVanNQ@...278...>
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 released
+Reply-To: =?utf-8?Q?Carsten_Kr=C3=BCger?= <C.Krueger@...448...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,49 +16,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Carsten =?iso-8859-1?Q?Kr=FCger?= <C.Krueger@...448...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+To: 
 
---171LwGa4zcdgM9o6
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hello Alon,
 
-Hi,
+> This is *THE* missing functionality in Windows environment.
+> It seems that nobody interested in developing proper UI using
+> management interface for Windows.
+> Same goes to proper smartcard support.
 
-On Tue, Feb 28, 2012 at 06:31:03PM +0100, Carsten Kr=FCger wrote:
-> Are there any chances to get full non-admin support for windows in versio=
-n 2.3 final?
+I found that openvpn management interface works as I'd like it.
 
-Work is going on on full privilege separation for windows.
+Add the following lines to client.ovpn
+--------------------------------
+management localhost 1000
+management-query-passwords
+auth-retry interact
+management-hold
+--------------------------------
+and start the service.
 
-It's not done yet, so we'll see whether it will make 2.3 (which was the
-initial plan) or 2.4.
+Use putty to connect to localhost port 1000, format RAW
 
-I'll let the author comment on more details if he wants to :-)  (thus
-not naming anyone - it's not me, though).
+|>INFO:OpenVPN Management Interface Version 1 -- type 'help' for more info
+|>HOLD:Waiting for hold release
+|hold release
+|SUCCESS: hold release succeeded
+|>PASSWORD:Need 'Auth' username/password
+|username Auth here_comes_my_username
+|SUCCESS: 'Auth' username entered, but not yet verified
+|password Auth here_comes_my_mypassword
+|SUCCESS: 'Auth' password entered, but not yet verified
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+et voila openvpn connects.
 
---171LwGa4zcdgM9o6
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+I'd like to cry, how long did this works?
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
+I found this in changelog:
+2004.11.28 -- Version 2.0-beta18
 
-iQCVAwUBT00yrqkuBuNlUUl1AQLTpQP+M6WLRU3+HiVUgrMFJkNyxY3LZPwKd7vG
-xJNakyZ7w4X9qfnNDtGYFZw7DJ0wYTV4D0kO1rV1rMCgA38ty3SNEf4SomfWOO2j
-532xukFjpMU6yPQ88Tygn61ijDfyWkl7Ktm3g+sT10BMG/222WNUyyJ/HNVT2LsE
-CfTsGV1jjCw=
-=46Tg
------END PGP SIGNATURE-----
+* Added management interface.  See new --management-*
+  options or the full management interface documentation
+  in management/management-notes.txt in the tarball.
 
---171LwGa4zcdgM9o6--
+
+greetings
+Carsten
+
 
