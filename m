@@ -1,13 +1,19 @@
 MIME-Version: 1.0
-In-Reply-To: <319492303.20120228213418@...449...>
-References: <4F4CE4FE.3010009@...515...>
-	<1848924920.20120228183103@...449...>
-	<CAOazyz0x4hKsREcGi+9TGc+AO0d+i1d5qbmPJ2hQfCsUbVanNQ@...278...>
-	<319492303.20120228213418@...449...>
-Date: Tue, 28 Feb 2012 22:39:36 +0200
-Message-ID: <CAOazyz14xa3+hWxwE1GDw7Qv_Qknbt4WBPwN66PiHwYXtThTjg@...278...>
+In-Reply-To: <4F4B542D.9090309@...1114...>
+References: <CAOBzU4PN6qDxf39+s4noXEiW8hNbDy-hkQWGSauBd3hX0pu2hw@...278...>
+	<CAOazyz0f3sERwjZsf3Ts3Xu7CQqBEf_-_VdbUZ7TrzhLbmTEsg@...278...>
+	<CAOazyz1buhSdSF7g6MzePAiQ=irD_Qo-RKPC_jXoR9AVqbtkvQ@...278...>
+	<CAOBzU4P0SxY-jF7rb_HsvmtSH8i9PCk+qe5iDQiwJhajsBuYuw@...278...>
+	<CAOazyz1naScdf+M0pnePS6-bb5deAHsAniTiv+DFw3ZQdAN+kg@...278...>
+	<CAOazyz1DE7Y-P9HFK3LN8-HeoGbHzYeqofX3RiEuK0C-zcxnug@...278...>
+	<CAOazyz0nV8P8Age_wyFCvu1J4g1MECA7YdTAAL4of7TTVctXow@...278...>
+	<1CED409804E2164C8104F9E623B08B90129350BEDF@...1436...>
+	<CAOazyz0daYPAH=ooKDenavTyG1qK1=wJv8ZJ0VF+u-vXWBE2xQ@...278...>
+	<4F4B456A.8010208@...515...> <4F4B542D.9090309@...1114...>
+Date: Tue, 28 Feb 2012 23:31:55 +0200
+Message-ID: <CAOazyz1E809DFQ7-GBvopezmELL+SuW+A5A+EKgbXTsZTNVd8w@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 released
+Subject: Re: [Openvpn-devel] [PATCH 00/35] build revolution
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,57 +22,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Carsten_Kr=C3=BCger?= <C.Krueger@...448...>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: David Sommerseth <openvpn.list@...1114...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-2012/2/28 Carsten Kr=C3=BCger <C.Krueger@...448...>:
-> Hello Alon,
->
->> This is *THE* missing functionality in Windows environment.
->> It seems that nobody interested in developing proper UI using
->> management interface for Windows.
->> Same goes to proper smartcard support.
->
-> I found that openvpn management interface works as I'd like it.
->
-> Add the following lines to client.ovpn
-> --------------------------------
-> management localhost 1000
-> management-query-passwords
-> auth-retry interact
-> management-hold
-> --------------------------------
-> and start the service.
->
-> Use putty to connect to localhost port 1000, format RAW
->
-> |>INFO:OpenVPN Management Interface Version 1 -- type 'help' for more info
-> |>HOLD:Waiting for hold release
-> |hold release
-> |SUCCESS: hold release succeeded
-> |>PASSWORD:Need 'Auth' username/password
-> |username Auth here_comes_my_username
-> |SUCCESS: 'Auth' username entered, but not yet verified
-> |password Auth here_comes_my_mypassword
-> |SUCCESS: 'Auth' password entered, but not yet verified
->
-> et voila openvpn connects.
->
-> I'd like to cry, how long did this works?
->
-> I found this in changelog:
-> 2004.11.28 -- Version 2.0-beta18
->
-> * Added management interface. =C2=A0See new --management-*
-> =C2=A0options or the full management interface documentation
-> =C2=A0in management/management-notes.txt in the tarball.
->
+Hello,
 
-Right. This is long existing feature, just that in Windows people
-expect to work using UI...
-Years back I wrote a simple .net to do to this...
+I think I finished.
+David, tell me if you want me to send the patches to the list.
+I think these are way too long.
 
-Alon.
+I will be happy if people can test this.
+
+Modified OpenVPN repository[1], build system re-write + cleanups.
+Build automation repository[2], provides cross compile, msvc and
+completely re-written installer.
+TAP-Windows as own repository[3], output is standalone tap installer[8].
+Easy-RSA as own repository[4], output is plain tarball.
+OpenVPN-GUI repository[5], build system re-write.
+
+Installers are available[6][7], unsigned but should work.
+I am interested especially in win64 installations.
+The standalone tap installation[8] should be used for problem isolation
+ if the embed tap installer within openvpn installer fails.
+
+To create windows installer use:
+$ git clone https://github.com/alonbl/openvpn-build
+$ cd openvpn-build/windows-nsis
+$ ./build-complete
+
+Alon
+
+[1] https://github.com/alonbl/openvpn (build)
+[2] https://github.com/alonbl/openvpn-build
+[3] https://github.com/alonbl/tap-windows
+[4] https://github.com/alonbl/easy-rsa
+[5] https://github.com/alonbl/openvpn-gui (build)
+[6] https://github.com/downloads/alonbl/openvpn/openvpn-install-2.3_alpha1-I000-x86_64.exe
+[7] https://github.com/downloads/alonbl/openvpn/openvpn-install-2.3_alpha1-I000-i686.exe
+[8] https://github.com/downloads/alonbl/tap-windows/tap-windows-9.9.exe
 
