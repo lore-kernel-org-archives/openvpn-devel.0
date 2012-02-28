@@ -1,19 +1,15 @@
+Date: Tue, 28 Feb 2012 23:09:13 +0100
+From: =?iso-8859-1?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>
+Message-ID: <1945967716.20120228230913@...449...>
+In-Reply-To: <4F4D2212.2020008@...1114...>
+References: <4F4CE4FE.3010009@...515...>
+	<1848924920.20120228183103@...449...>
+	<4F4D18C0.1020008@...1114...>
+	<1958561304.20120228192904@...449...>
+	<4F4D2212.2020008@...1114...>
 MIME-Version: 1.0
-In-Reply-To: <4F4B542D.9090309@...1114...>
-References: <CAOBzU4PN6qDxf39+s4noXEiW8hNbDy-hkQWGSauBd3hX0pu2hw@...278...>
-	<CAOazyz0f3sERwjZsf3Ts3Xu7CQqBEf_-_VdbUZ7TrzhLbmTEsg@...278...>
-	<CAOazyz1buhSdSF7g6MzePAiQ=irD_Qo-RKPC_jXoR9AVqbtkvQ@...278...>
-	<CAOBzU4P0SxY-jF7rb_HsvmtSH8i9PCk+qe5iDQiwJhajsBuYuw@...278...>
-	<CAOazyz1naScdf+M0pnePS6-bb5deAHsAniTiv+DFw3ZQdAN+kg@...278...>
-	<CAOazyz1DE7Y-P9HFK3LN8-HeoGbHzYeqofX3RiEuK0C-zcxnug@...278...>
-	<CAOazyz0nV8P8Age_wyFCvu1J4g1MECA7YdTAAL4of7TTVctXow@...278...>
-	<1CED409804E2164C8104F9E623B08B90129350BEDF@...1436...>
-	<CAOazyz0daYPAH=ooKDenavTyG1qK1=wJv8ZJ0VF+u-vXWBE2xQ@...278...>
-	<4F4B456A.8010208@...515...> <4F4B542D.9090309@...1114...>
-Date: Tue, 28 Feb 2012 23:31:55 +0200
-Message-ID: <CAOazyz1E809DFQ7-GBvopezmELL+SuW+A5A+EKgbXTsZTNVd8w@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 00/35] build revolution
+Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 released
+Reply-To: =?iso-8859-1?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,44 +18,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+To: 
 
-Hello,
+Hello David,
 
-I think I finished.
-David, tell me if you want me to send the patches to the list.
-I think these are way too long.
+DS> Heiko can probably give a much better answer, but if I remember right,
+DS> the argument was this:  Think of a multi-user setup (like a Terminal
+DS> Server), the management interface will be accessible for all users on
+DS> that server.
 
-I will be happy if people can test this.
+a) Who an earth allows users on a terminal server to create VPN-sessions?
+What happens if one of the sessions use redirect gateway?
+All users are redirected?
 
-Modified OpenVPN repository[1], build system re-write + cleanups.
-Build automation repository[2], provides cross compile, msvc and
-completely re-written installer.
-TAP-Windows as own repository[3], output is standalone tap installer[8].
-Easy-RSA as own repository[4], output is plain tarball.
-OpenVPN-GUI repository[5], build system re-write.
+b) you can set a password for management interface
 
-Installers are available[6][7], unsigned but should work.
-I am interested especially in win64 installations.
-The standalone tap installation[8] should be used for problem isolation
- if the embed tap installer within openvpn installer fails.
+I don't think that this is a valid point.
 
-To create windows installer use:
-$ git clone https://github.com/alonbl/openvpn-build
-$ cd openvpn-build/windows-nsis
-$ ./build-complete
+Privilege seperation in openvnp deamon is nice, but is a complete
+different thing than management interface access.
 
-Alon
+I try to compare it with apache.
+Apache on linux need root rights to bind to port below 1024 but it
+didn't need to have root privilege to serve a page.
+So it's a good idea to use root rights to bind to port 80 and than
+serve all pages without root rights.
 
-[1] https://github.com/alonbl/openvpn (build)
-[2] https://github.com/alonbl/openvpn-build
-[3] https://github.com/alonbl/tap-windows
-[4] https://github.com/alonbl/easy-rsa
-[5] https://github.com/alonbl/openvpn-gui (build)
-[6] https://github.com/downloads/alonbl/openvpn/openvpn-install-2.3_alpha1-I000-x86_64.exe
-[7] https://github.com/downloads/alonbl/openvpn/openvpn-install-2.3_alpha1-I000-i686.exe
-[8] https://github.com/downloads/alonbl/tap-windows/tap-windows-9.9.exe
+OpenVPN need root rights on linux/administrator rights on windows
+(to be more precise network operator rights) to modify routing tables.
+
+In openvpn case it should be something like this:
+openvpnserv.exe running as a service, has no privileges and opens
+management interface
+openvpnhelpserv.exe running as a service has network operator rights
+(no need for local system ...)
+
+openvpnserv and openvpnhelpserv could communicate via pipe.
+
+openvpn-management client (could be a perl script) connects to
+management interface of openvpnserv.exe to start/stop a tunnel and
+supply secrets.
+
+DS> And how this is implemented, the OpenVPN Service will be started
+DS> automatically.  The GUI contacts the Service and the service starts the
+DS> OpenVPN process with the privileges of the GUI user (IIRC, it was some
+DS> neat Windows functions which allows to create processes with privileges
+DS> based upon the user credentials of the other side of the named pipe).
+
+The sounds very bad.
+The service shouldn't create processes in the name of the user.
+
+DS> This service should be able to (for now only in theory; it has not been
+DS> tested yet) handle more users simultaneously.
+
+Pretty useless, see above
+
+DS> However, the management interface will be used in addition too, at least
+DS> in the very beginning, where the logging is transferred back to the GUI
+DS> and so on.  I don't recall now all the GUI would do via this interface.
+
+Sounds very weird.
+
+greetings
+Carsten
+
+
+
 
