@@ -1,10 +1,9 @@
-Message-ID: <4F4D08EF.6040404@...1114...>
-Date: Tue, 28 Feb 2012 18:03:43 +0100
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4F4CE4FE.3010009@...515...> <4F4D019B.2090704@...1030...>
-In-Reply-To: <4F4D019B.2090704@...1030...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.3-alpha1 released
+Date: Tue, 28 Feb 2012 19:05:35 +0200
+Message-ID: <CAOazyz0_D7b+oyDDQ8y2gjWUD6F8Dkp-r3UT-VNT+0dXx6J5RQ@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: [Openvpn-devel] Another undocumented feature:
+	management-external-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,43 +12,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Mr Dash Four <mr.dash.four@...1030...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>, David Sommerseth <openvpn.list@...1114...>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hello David,
 
-On 28/02/12 17:32, Mr Dash Four wrote:
-> 
->> * Improved plug-in API (v3) which can more easily be expanded in
->> the future: includes support for direct access to X.509 certificate
->> data in plug-ins [...] * One-to-one NAT to circumvent IP address
->> conflicts between local and remote networks
->> 
-> Is there any help/doc/wiki where I could get more information/learn
-> more about these new features?
+Please also work to document this commit (management-notes, man).
+It is extrenely important feature, for example it can be used to move
+the whole smartcard
+interaction to the UI.
 
-For the plug-in API ... look at openvpn-plugin.h ... look for
-openvpn_plugin_*_v3.  Especially openvpn_plugin_open_v3() and
-openvpn_plugin_func_v3().  If fact, most of the openvpn-plugin.h is a
-pretty comprehensive reference for the plugin API.  For a working
-example, look at plugin/examples/log_v3.c.
+This feature should be extended to provide X.509 certificate as well,
+it is incomplete without this.
 
-For the --client-nat ... look at the man new page.
-<http://openvpn.net/index.php/manuals/523-openvpn-23.html>
+Alon
 
+---
 
-kind regards,
+commit cf69617bbea45a15423c4188daa9386debcbe1ec
+Author: James Yonan <james@...515...>
+Date:   Thu Dec 9 11:21:04 2010 +0000
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+    Added "management-external-key" option.  This option can be used
+    instead of "key" in client mode, and allows the client to run
+    without the need to load the actual private key.  When the SSL
+    protocol needs to perform an RSA sign operation, the data to
+    be signed will be sent to the management interface via a
+    notification as follows:
 
-iEYEARECAAYFAk9NCO0ACgkQDC186MBRfrpXDQCghQoK0eW927kHqHtzri5KOdme
-p2IAn0WIwLjrv5rTwWtA7FcFzo5IKLbU
-=zu4J
------END PGP SIGNATURE-----
+      >RSA_SIGN:[BASE64_DATA]
+
+    The management interface client should then sign BASE64_DATA
+    using the private key and return the signature as follows:
+
+      rsa-sig
+      [BASE64_SIG_LINE]
+      .
+      .
+      .
+      END
+
+    This capability is intended to allow the use of arbitrary
+    cryptographic service providers with OpenVPN via the
+    management interface.
 
