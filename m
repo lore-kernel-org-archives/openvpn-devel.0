@@ -1,12 +1,11 @@
-Message-ID: <4F4E3D2E.2040600@...1030...>
-Date: Wed, 29 Feb 2012 14:58:54 +0000
+Message-ID: <4F4E3D65.3010102@...1030...>
+Date: Wed, 29 Feb 2012 14:59:49 +0000
 From: Mr Dash Four <mr.dash.four@...1030...>
 MIME-Version: 1.0
-References: <4F4CE4FE.3010009@...515...>
-	<8191371.i5gkeDqFZM@...1526...>	<CAOazyz0hEyD_ZaaJeNz25+8jkX-BNZHzXbs=umdyQv+T3ngk4Q@...278...>	<4746830.2MuuAeNMnA@...1526...>
-	<CAOazyz0qRcgWCEmHavO9L_hG8HVmEy5Tr=9dvZ4AVR25XUoyoA@...278...>
-In-Reply-To: <CAOazyz0qRcgWCEmHavO9L_hG8HVmEy5Tr=9dvZ4AVR25XUoyoA@...278...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 released
+References: <4F4CE4FE.3010009@...515...> <4F4D019B.2090704@...1030...>
+	<4F4DE8E6.6060907@...515...>
+In-Reply-To: <4F4DE8E6.6060907@...515...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.3-alpha1 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,35 +16,17 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: =?ISO-8859-1?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 
-> I disagree, open source project is not different than any other
-> software project.
+> The one-to-one NAT feature seems to be described on the man-page in the
+> "--client-nat" section. The new management features are James'
+> handywork, so they're probably described here:
+>
+> <http://openvpn.net/index.php/open-source/documentation/miscellaneous/79-management-interface.html>
+>
+> If not, then maybe on the man-page, or not at all.
 >   
-OK, I'll bite.
-
-I disagree with the above entirely. Open-source project *is* different 
-"from any other project" - vastly so - not least because it is open for 
-scrutiny by the whole community, not just individuals involved in it, 
-and that makes it stand out compared to a commercial/closed-source project.
-
-That scrutiny involves various levels of communication between the 
-parties involved and members of the community (and that includes IRC, 
-email, phone calls, online video conferencing - the lot).
-
-> when you reach to the point of writing code (hence patches), it is way
-> too late to
-> discuss requirements and design. And the emotional impact of rejecting people
-> work at this stage is huge, especially when these involves in great effort.
->   
-Alon, this is not some sort of charity - as a developer you develop, you 
-are not a shrinking violet, are you? Rejection of developer's code is 
-part-and-parcel of the whole process, don't be so precious! There is a 
-say in where I come from: "If you can't stand the heat, get out of the 
-kitchen". To translate - if you can't bear to see the code you proposed 
-being rejected, then don't submit it and find some other ways to channel 
-your creativity.
-
+Thanks, that's good, I'll have a detailed look later on today.
 
