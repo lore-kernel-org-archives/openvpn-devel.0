@@ -1,14 +1,14 @@
+Message-ID: <4F4D6E53.70507@...1490...>
+Date: Wed, 29 Feb 2012 13:16:19 +1300
+From: Jason Haar <Jason_Haar@...1490...>
 MIME-Version: 1.0
-In-Reply-To: <425349696.20120228234756@...449...>
 References: <4F4CE4FE.3010009@...515...>
 	<1848924920.20120228183103@...449...>
 	<CAOazyz0x4hKsREcGi+9TGc+AO0d+i1d5qbmPJ2hQfCsUbVanNQ@...278...>
 	<319492303.20120228213418@...449...>
 	<CAOazyz14xa3+hWxwE1GDw7Qv_Qknbt4WBPwN66PiHwYXtThTjg@...278...>
 	<425349696.20120228234756@...449...>
-Date: Wed, 29 Feb 2012 00:57:04 +0200
-Message-ID: <CAOazyz3nMqpmA9reiv=RZZ4jURBHbU3_cvYOV=-FGKXRoXZNvQ@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+In-Reply-To: <425349696.20120228234756@...449...>
 Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,24 +18,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Carsten_Kr=C3=BCger?= <C.Krueger@...448...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-2012/2/29 Carsten Kr=C3=BCger <C.Krueger@...448...>:
->> Years back I wrote a simple .net to do to this...
->
-> Could you please share?
-> I found that openvpn.exe is extremly unstable on non perfectly friendly
-> behaving client ...
+On 29/02/12 11:47, Carsten Kr=FCger wrote:
+> I found that openvpn.exe is extremly unstable on non perfectly
+> friendly behaving client ... Now I use the Non-Sucking Service Manager
+> ( http://nssm.cc/ ) instead of openvpnserv.exe to spawn openvpn.exe It
+> restarts openvpn.exe automatically if it's crashed.
 
-I use [1], a simple perl/kde UI for Linux.
-I deleted the .net as I did not maintain it, but it should be simple
-for you to convert, or simply run the perl, and write kdialog
-replacement.
+Good point. I reported this in Mar last year ("bugs with
+openvpnserv.exe") and it seems it was acknowledged as an issue. Is that
+fixed now? Would be great to see openvpn.exe restarting on error -
+without having to resort to srvany or nssm ;-)
 
-Alon.
+Thanks
 
-[1] http://sites.google.com/site/alonbarlev/openvpn-pkcs11
+--=20
+Cheers
+
+Jason Haar
+Information Security Manager, Trimble Navigation Ltd.
+Phone: +1 408 481 8171
+PGP Fingerprint: 7A2E 0407 C9A6 CAF6 2B9F 8422 C063 5EBB FE1D 66D1
+
 
