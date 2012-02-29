@@ -1,10 +1,11 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Wed, 29 Feb 2012 15:01:52 +0100
-Message-ID: <4746830.2MuuAeNMnA@...1526...>
-In-Reply-To: <CAOazyz0hEyD_ZaaJeNz25+8jkX-BNZHzXbs=umdyQv+T3ngk4Q@...278...>
-References: <4F4CE4FE.3010009@...515...> <8191371.i5gkeDqFZM@...1526...>
-	<CAOazyz0hEyD_ZaaJeNz25+8jkX-BNZHzXbs=umdyQv+T3ngk4Q@...278...>
 MIME-Version: 1.0
+Sender: fabian@...1547...
+In-Reply-To: <7855235.EvfmKnZP6h@...1526...>
+References: <4F4CE4FE.3010009@...515...> <3440230.bBsdCSzEj1@...1526...>
+	<1375292789.20120229123817@...449...> <7855235.EvfmKnZP6h@...1526...>
+From: Fabian Knittel <fabian.knittel@...1547...>
+Date: Wed, 29 Feb 2012 15:07:01 +0100
+Message-ID: <CAP+U6t+ZUA3UpYfKms0Qr=-Cn1M-GP1EJtGybG0+j+O2xnfv7g@...278...>
 Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,45 +15,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: Carsten =?ISO-8859-1?Q?Kr=FCger?= <C.Krueger@...448...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: =?UTF-8?Q?Carsten_Kr=C3=BCger?= <C.Krueger@...448...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Wednesday 29 February 2012 13:45:49 Alon Bar-Lev wrote:
-> I don't understand you attitude, I am not trying to take anything from yo=
-u,
-> and I don't think you can find anything in my record that had negative
-> impact on this (or any other) project. And I do know one or two things in
-> security and networking.
+Hi Heiko,
 
-I'm just trying to get a statement from you about the spotted complexity an=
-d=20
-how it can be reduced, but somehow there's still nothing coming from your=20
-direction.
-=20
-> I only recommend the OpenVPN project manager to hold with this solution,
-> and manage a proper design process, there are people here who can help, if
-> the process is managed correctly.
+Am 29. Februar 2012 13:18 schrieb Heiko Hund <heiko.hund@...1489...>:
+> [...] There will be a new service, I called it
+> interactive service. The GUI/client connects to a named pipe of that service.
+> It passes the working directory, command line options and stdin input for
+> openpvn to the service. The service impersonates the client, creates another
+> named pipe and starts openvpn. Besides the stuff from the GUI it also passes
+> to client end of the created pipe to openvpn. The GUI may now connect the the
+> management interface. If openvpn needs to perform a privileged operation it
+> request it through the named pipe that was passed by the interactive service.
+> There's only a limited and well defined set of privileged operations that are
+> serviced through the pipe. Currently only setting of IPv4 and IPv6 routes, but
+> that will be extended to whatever makes sense e.g. ARP table flush is the next
+> thing that will come.
 
-Alon, there is a process. It's just different from what you imagine it to b=
-e.=20
-If you're not keen to get on IRC then read the chat log that gets posted he=
-re=20
-the next day and comment on it. Comment and counter-propose on patches - as=
-=20
-you do - and this project will go forward.
+Let's see whether I understood the design. After initial setup, the
+GUI has a connection via the mgmt interface to OpenVPN and OpenVPN has
+a connection via the "privilege interface" to the "interactive
+service". OpenVPN basically runs in the same context as the GUI, i.e.
+without permission to change the network configuration (change routes,
+etc.). The "interactive service" runs in a context with permissions to
+change the network configuration. Any privileged operations are
+requested by OpenVPN via the "privilege interface" and performed by
+the "interactive service". (There must be something missing, otherwise
+I don't get why you call it "interactive service" ...?)
 
-Heiko
---=20
-Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
-Astaro a Sophos Company | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germ=
-any
-Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
-=20
-Represented by the General Partner Astaro Verwaltungs GmbH
-Amalienbadstra=DFe 41 Bau 52 | 76227 Karlsruhe | Germany=20
-Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
-Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
+Why does the "interactive service" need to start OpenVPN? Why not let
+the GUI start OpenVPN and let OpenVPN connect to the "interactive
+service"? OTOH, if you're going to start OpenVPN as a service anyway,
+it probably doesn't really make much of a difference. Although this
+could mean that you can keep the GUI-facing side of OpenVPN identical
+to what it is now... the "interactive service" would just be an
+implementation detail of how openvpn performs its privileged
+operations.
 
+Does creating a tun/tap device belong to the operations that need
+special privileges under windows? If so, this sounds a lot like an
+interface that might also allow splitting off most of the system
+specific code ... as in, this could also work on Android, no?
+
+Cheers
+Fabian
 
