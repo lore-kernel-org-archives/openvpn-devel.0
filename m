@@ -1,14 +1,10 @@
-Message-ID: <4F4DE135.4020706@...515...>
-Date: Wed, 29 Feb 2012 10:26:29 +0200
+Message-ID: <4F4DE8E6.6060907@...515...>
+Date: Wed, 29 Feb 2012 10:59:18 +0200
 From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <CAOazyz2Rr6JgnmojZ3Naht6eybdq1KnooEAbARSS=3ZM-iLVJg@...278...>
-	<4F4B402F.70507@...515...>
-	<CAOazyz1xxbxSzHRvS1+3my_86iOQh0Jsvk-G_0+kMLERr0UXog@...278...>
-	<6021266.D0OP5FaSJF@...1526...> <4F4CCDD4.4080701@...515...>
-	<4F4CCEDD.10607@...1147...>
-In-Reply-To: <4F4CCEDD.10607@...1147...>
-Subject: Re: [Openvpn-devel] openvpn windows gui
+References: <4F4CE4FE.3010009@...515...> <4F4D019B.2090704@...1030...>
+In-Reply-To: <4F4D019B.2090704@...1030...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.3-alpha1 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,47 +15,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: Jan Just Keijser <janjust@...1147...>
-Cc: Alon Bar-Lev <alon.barlev@...277...>, "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+To: Mr Dash Four <mr.dash.four@...1030...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Il 28.02.2012 14:55, Jan Just Keijser ha scritto:
-> Samuli Sepp=E4nen wrote:
->>>> We should probably write an installer.
->>>>=20=20=20=20=20=20=20
->>> I'm not sure if it's the best idea to make each and every GUI project o=
-ut=20
->>> there write it's own installer, when it's mostly a single executable th=
-at=20
->>> needs to be replaced to package it with upstream openvpn. The pragmatic=
- way to=20
->>> do it would be to leave the GUI stuff in openvpn itself, but I guess yo=
-u guys=20
->>> like the idea of bundling installers with other installers, right?
->>>
->>> Heiko=20
->>>=20=20=20=20=20
->> Right :). The primary benefit I see in having separate installers for
->> the OpenVPN-GUI, TAP-driver and easy-rsa is the possibility of
->> installing and upgrading each component separately more easily. It might
->> even be possible (=3Dhave not checked) to have the "OpenVPN Windows
->> installer bundle" fetch the latest dependency installers from predefined
->> URLs prior to installation and fallback to included ones if that fails.
->> Not sure if we want do that, but it's an option.
->>
+
+>>  * Improved plug-in API (v3) which can more easily be expanded in the
+>>    future: includes support for direct access to X.509 certificate data =
+in
+>>    plug-ins
+>> [...]
+>>  * One-to-one NAT to circumvent IP address conflicts between local and
+>>    remote networks
 >>=20=20=20
-> errrr, it would be nice to keep/have a "single click install" option -=20
-> one of the nice features of the current OpenVPN installer is that you=20
-> get everything in one download. Also, it will ensure that there is at=20
-> least one set of components that works together.
+> Is there any help/doc/wiki where I could get more information/learn more=
+=20
+> about these new features?
 >
-> JM2CW,
->
-> JJK
-Agreed. I think having all the dependencies in one installer is
-necessary, so that Internet access is not required during install. The
-"fetch updated dependencies from the Internet" would be most useful for
-things like important bugfixes and security updates, which shouldn't in
-general create compatibility headaches.
+The one-to-one NAT feature seems to be described on the man-page in the
+"--client-nat" section. The new management features are James'
+handywork, so they're probably described here:
+
+<http://openvpn.net/index.php/open-source/documentation/miscellaneous/79-ma=
+nagement-interface.html>
+
+If not, then maybe on the man-page, or not at all.
 
 --=20
 Samuli Sepp=E4nen
