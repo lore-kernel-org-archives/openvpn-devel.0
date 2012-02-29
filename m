@@ -1,15 +1,14 @@
-Message-ID: <4F4D6E53.70507@...1490...>
-Date: Wed, 29 Feb 2012 13:16:19 +1300
-From: Jason Haar <Jason_Haar@...1490...>
+Message-ID: <4F4DE135.4020706@...515...>
+Date: Wed, 29 Feb 2012 10:26:29 +0200
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <4F4CE4FE.3010009@...515...>
-	<1848924920.20120228183103@...449...>
-	<CAOazyz0x4hKsREcGi+9TGc+AO0d+i1d5qbmPJ2hQfCsUbVanNQ@...278...>
-	<319492303.20120228213418@...449...>
-	<CAOazyz14xa3+hWxwE1GDw7Qv_Qknbt4WBPwN66PiHwYXtThTjg@...278...>
-	<425349696.20120228234756@...449...>
-In-Reply-To: <425349696.20120228234756@...449...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 released
+References: <CAOazyz2Rr6JgnmojZ3Naht6eybdq1KnooEAbARSS=3ZM-iLVJg@...278...>
+	<4F4B402F.70507@...515...>
+	<CAOazyz1xxbxSzHRvS1+3my_86iOQh0Jsvk-G_0+kMLERr0UXog@...278...>
+	<6021266.D0OP5FaSJF@...1526...> <4F4CCDD4.4080701@...515...>
+	<4F4CCEDD.10607@...1147...>
+In-Reply-To: <4F4CCEDD.10607@...1147...>
+Subject: Re: [Openvpn-devel] openvpn windows gui
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,29 +17,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: Jan Just Keijser <janjust@...1147...>
+Cc: Alon Bar-Lev <alon.barlev@...277...>, "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-On 29/02/12 11:47, Carsten Kr=FCger wrote:
-> I found that openvpn.exe is extremly unstable on non perfectly
-> friendly behaving client ... Now I use the Non-Sucking Service Manager
-> ( http://nssm.cc/ ) instead of openvpnserv.exe to spawn openvpn.exe It
-> restarts openvpn.exe automatically if it's crashed.
-
-Good point. I reported this in Mar last year ("bugs with
-openvpnserv.exe") and it seems it was acknowledged as an issue. Is that
-fixed now? Would be great to see openvpn.exe restarting on error -
-without having to resort to srvany or nssm ;-)
-
-Thanks
+Il 28.02.2012 14:55, Jan Just Keijser ha scritto:
+> Samuli Sepp=E4nen wrote:
+>>>> We should probably write an installer.
+>>>>=20=20=20=20=20=20=20
+>>> I'm not sure if it's the best idea to make each and every GUI project o=
+ut=20
+>>> there write it's own installer, when it's mostly a single executable th=
+at=20
+>>> needs to be replaced to package it with upstream openvpn. The pragmatic=
+ way to=20
+>>> do it would be to leave the GUI stuff in openvpn itself, but I guess yo=
+u guys=20
+>>> like the idea of bundling installers with other installers, right?
+>>>
+>>> Heiko=20
+>>>=20=20=20=20=20
+>> Right :). The primary benefit I see in having separate installers for
+>> the OpenVPN-GUI, TAP-driver and easy-rsa is the possibility of
+>> installing and upgrading each component separately more easily. It might
+>> even be possible (=3Dhave not checked) to have the "OpenVPN Windows
+>> installer bundle" fetch the latest dependency installers from predefined
+>> URLs prior to installation and fallback to included ones if that fails.
+>> Not sure if we want do that, but it's an option.
+>>
+>>=20=20=20
+> errrr, it would be nice to keep/have a "single click install" option -=20
+> one of the nice features of the current OpenVPN installer is that you=20
+> get everything in one download. Also, it will ensure that there is at=20
+> least one set of components that works together.
+>
+> JM2CW,
+>
+> JJK
+Agreed. I think having all the dependencies in one installer is
+necessary, so that Internet access is not required during install. The
+"fetch updated dependencies from the Internet" would be most useful for
+things like important bugfixes and security updates, which shouldn't in
+general create compatibility headaches.
 
 --=20
-Cheers
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-Jason Haar
-Information Security Manager, Trimble Navigation Ltd.
-Phone: +1 408 481 8171
-PGP Fingerprint: 7A2E 0407 C9A6 CAF6 2B9F 8422 C063 5EBB FE1D 66D1
+irc freenode net: mattock
 
 
