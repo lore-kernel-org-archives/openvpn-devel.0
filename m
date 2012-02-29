@@ -1,10 +1,9 @@
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Wed, 29 Feb 2012 22:11:44 +0200
-Message-Id: <1330546342-17794-15-git-send-email-alon.barlev@...277...>
+Date: Wed, 29 Feb 2012 22:11:48 +0200
+Message-Id: <1330546342-17794-19-git-send-email-alon.barlev@...277...>
 In-Reply-To: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
 References: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [PATCH 14/52] build: rename plugin directory to
-	plugins
+Subject: [Openvpn-devel] [PATCH 18/52] Remove easy-rsa
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,5854 +17,3140 @@ Content-Transfer-Encoding: 8bit
 To: 
 Cc: Alon Bar-Lev <alon.barlev@...277...>
 
-This to avoid conflit with plugin.c rules
 
 Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 ---
- Makefile.am                   |    3 +-
- openvpn.spec.in               |   16 +-
- plugin/README                 |   47 ---
- plugin/auth-pam/.svnignore    |    1 -
- plugin/auth-pam/Makefile      |   30 --
- plugin/auth-pam/README        |   74 ----
- plugin/auth-pam/auth-pam.c    |  804 -----------------------------------------
- plugin/auth-pam/pamdl.c       |  180 ---------
- plugin/auth-pam/pamdl.h       |    7 -
- plugin/defer/README           |   16 -
- plugin/defer/build            |   14 -
- plugin/defer/simple.c         |  305 ----------------
- plugin/defer/simple.def       |    6 -
- plugin/defer/winbuild         |   18 -
- plugin/down-root/Makefile     |   17 -
- plugin/down-root/README       |   29 --
- plugin/down-root/down-root.c  |  553 ----------------------------
- plugin/examples/README        |   16 -
- plugin/examples/build         |   14 -
- plugin/examples/log.c         |  184 ----------
- plugin/examples/log_v3.c      |  249 -------------
- plugin/examples/simple.c      |  120 ------
- plugin/examples/simple.def    |    6 -
- plugin/examples/winbuild      |   18 -
- plugins/README                |   47 +++
- plugins/auth-pam/.svnignore   |    1 +
- plugins/auth-pam/Makefile     |   30 ++
- plugins/auth-pam/README       |   74 ++++
- plugins/auth-pam/auth-pam.c   |  804 +++++++++++++++++++++++++++++++++++++++++
- plugins/auth-pam/pamdl.c      |  180 +++++++++
- plugins/auth-pam/pamdl.h      |    7 +
- plugins/defer/README          |   16 +
- plugins/defer/build           |   14 +
- plugins/defer/simple.c        |  305 ++++++++++++++++
- plugins/defer/simple.def      |    6 +
- plugins/defer/winbuild        |   18 +
- plugins/down-root/Makefile    |   17 +
- plugins/down-root/README      |   29 ++
- plugins/down-root/down-root.c |  553 ++++++++++++++++++++++++++++
- plugins/examples/README       |   16 +
- plugins/examples/build        |   14 +
- plugins/examples/log.c        |  184 ++++++++++
- plugins/examples/log_v3.c     |  249 +++++++++++++
- plugins/examples/simple.c     |  120 ++++++
- plugins/examples/simple.def   |    6 +
- plugins/examples/winbuild     |   18 +
- 46 files changed, 2717 insertions(+), 2718 deletions(-)
- delete mode 100644 plugin/README
- delete mode 100644 plugin/auth-pam/.svnignore
- delete mode 100755 plugin/auth-pam/Makefile
- delete mode 100644 plugin/auth-pam/README
- delete mode 100644 plugin/auth-pam/auth-pam.c
- delete mode 100644 plugin/auth-pam/pamdl.c
- delete mode 100644 plugin/auth-pam/pamdl.h
- delete mode 100644 plugin/defer/README
- delete mode 100755 plugin/defer/build
- delete mode 100644 plugin/defer/simple.c
- delete mode 100755 plugin/defer/simple.def
- delete mode 100755 plugin/defer/winbuild
- delete mode 100755 plugin/down-root/Makefile
- delete mode 100644 plugin/down-root/README
- delete mode 100644 plugin/down-root/down-root.c
- delete mode 100644 plugin/examples/README
- delete mode 100755 plugin/examples/build
- delete mode 100644 plugin/examples/log.c
- delete mode 100644 plugin/examples/log_v3.c
- delete mode 100644 plugin/examples/simple.c
- delete mode 100755 plugin/examples/simple.def
- delete mode 100755 plugin/examples/winbuild
- create mode 100644 plugins/README
- create mode 100644 plugins/auth-pam/.svnignore
- create mode 100755 plugins/auth-pam/Makefile
- create mode 100644 plugins/auth-pam/README
- create mode 100644 plugins/auth-pam/auth-pam.c
- create mode 100644 plugins/auth-pam/pamdl.c
- create mode 100644 plugins/auth-pam/pamdl.h
- create mode 100644 plugins/defer/README
- create mode 100755 plugins/defer/build
- create mode 100644 plugins/defer/simple.c
- create mode 100755 plugins/defer/simple.def
- create mode 100755 plugins/defer/winbuild
- create mode 100755 plugins/down-root/Makefile
- create mode 100644 plugins/down-root/README
- create mode 100644 plugins/down-root/down-root.c
- create mode 100644 plugins/examples/README
- create mode 100755 plugins/examples/build
- create mode 100644 plugins/examples/log.c
- create mode 100644 plugins/examples/log_v3.c
- create mode 100644 plugins/examples/simple.c
- create mode 100755 plugins/examples/simple.def
- create mode 100755 plugins/examples/winbuild
+ Makefile.am                                |    1 -
+ easy-rsa/1.0/README                        |  161 ------------
+ easy-rsa/1.0/build-ca                      |   13 -
+ easy-rsa/1.0/build-dh                      |   12 -
+ easy-rsa/1.0/build-inter                   |   19 --
+ easy-rsa/1.0/build-key                     |   20 --
+ easy-rsa/1.0/build-key-pass                |   20 --
+ easy-rsa/1.0/build-key-pkcs12              |   21 --
+ easy-rsa/1.0/build-key-server              |   22 --
+ easy-rsa/1.0/build-req                     |   18 --
+ easy-rsa/1.0/build-req-pass                |   18 --
+ easy-rsa/1.0/clean-all                     |   19 --
+ easy-rsa/1.0/list-crl                      |   18 --
+ easy-rsa/1.0/make-crl                      |   18 --
+ easy-rsa/1.0/openssl.cnf                   |  255 -------------------
+ easy-rsa/1.0/revoke-crt                    |   18 --
+ easy-rsa/1.0/revoke-full                   |   29 ---
+ easy-rsa/1.0/sign-req                      |   18 --
+ easy-rsa/1.0/vars                          |   49 ----
+ easy-rsa/2.0/Makefile                      |   13 -
+ easy-rsa/2.0/README                        |  229 -----------------
+ easy-rsa/2.0/build-ca                      |    8 -
+ easy-rsa/2.0/build-dh                      |   11 -
+ easy-rsa/2.0/build-inter                   |    7 -
+ easy-rsa/2.0/build-key                     |    7 -
+ easy-rsa/2.0/build-key-pass                |    7 -
+ easy-rsa/2.0/build-key-pkcs12              |    8 -
+ easy-rsa/2.0/build-key-server              |   10 -
+ easy-rsa/2.0/build-req                     |    7 -
+ easy-rsa/2.0/build-req-pass                |    7 -
+ easy-rsa/2.0/clean-all                     |   16 --
+ easy-rsa/2.0/inherit-inter                 |   39 ---
+ easy-rsa/2.0/list-crl                      |   13 -
+ easy-rsa/2.0/openssl-0.9.6.cnf             |  265 -------------------
+ easy-rsa/2.0/openssl-0.9.8.cnf             |  290 ---------------------
+ easy-rsa/2.0/openssl-1.0.0.cnf             |  285 ---------------------
+ easy-rsa/2.0/pkitool                       |  379 ----------------------------
+ easy-rsa/2.0/revoke-full                   |   40 ---
+ easy-rsa/2.0/sign-req                      |    7 -
+ easy-rsa/2.0/vars                          |   74 ------
+ easy-rsa/2.0/whichopensslcnf               |   26 --
+ easy-rsa/Windows/README.txt                |   44 ----
+ easy-rsa/Windows/build-ca-pass.bat         |    8 -
+ easy-rsa/Windows/build-ca.bat              |    4 -
+ easy-rsa/Windows/build-dh.bat              |    4 -
+ easy-rsa/Windows/build-key-pass.bat        |    8 -
+ easy-rsa/Windows/build-key-pkcs12.bat      |   10 -
+ easy-rsa/Windows/build-key-server-pass.bat |    8 -
+ easy-rsa/Windows/build-key-server.bat      |    8 -
+ easy-rsa/Windows/build-key.bat             |    8 -
+ easy-rsa/Windows/clean-all.bat             |   13 -
+ easy-rsa/Windows/init-config.bat           |    1 -
+ easy-rsa/Windows/revoke-full.bat           |   13 -
+ easy-rsa/Windows/serial.start              |    1 -
+ easy-rsa/Windows/vars.bat.sample           |   40 ---
+ openvpn.spec.in                            |    2 +-
+ 56 files changed, 1 insertions(+), 2668 deletions(-)
+ delete mode 100644 easy-rsa/1.0/README
+ delete mode 100755 easy-rsa/1.0/build-ca
+ delete mode 100755 easy-rsa/1.0/build-dh
+ delete mode 100755 easy-rsa/1.0/build-inter
+ delete mode 100755 easy-rsa/1.0/build-key
+ delete mode 100755 easy-rsa/1.0/build-key-pass
+ delete mode 100755 easy-rsa/1.0/build-key-pkcs12
+ delete mode 100755 easy-rsa/1.0/build-key-server
+ delete mode 100755 easy-rsa/1.0/build-req
+ delete mode 100755 easy-rsa/1.0/build-req-pass
+ delete mode 100755 easy-rsa/1.0/clean-all
+ delete mode 100644 easy-rsa/1.0/list-crl
+ delete mode 100644 easy-rsa/1.0/make-crl
+ delete mode 100644 easy-rsa/1.0/openssl.cnf
+ delete mode 100644 easy-rsa/1.0/revoke-crt
+ delete mode 100755 easy-rsa/1.0/revoke-full
+ delete mode 100755 easy-rsa/1.0/sign-req
+ delete mode 100644 easy-rsa/1.0/vars
+ delete mode 100644 easy-rsa/2.0/Makefile
+ delete mode 100644 easy-rsa/2.0/README
+ delete mode 100755 easy-rsa/2.0/build-ca
+ delete mode 100755 easy-rsa/2.0/build-dh
+ delete mode 100755 easy-rsa/2.0/build-inter
+ delete mode 100755 easy-rsa/2.0/build-key
+ delete mode 100755 easy-rsa/2.0/build-key-pass
+ delete mode 100755 easy-rsa/2.0/build-key-pkcs12
+ delete mode 100755 easy-rsa/2.0/build-key-server
+ delete mode 100755 easy-rsa/2.0/build-req
+ delete mode 100755 easy-rsa/2.0/build-req-pass
+ delete mode 100755 easy-rsa/2.0/clean-all
+ delete mode 100755 easy-rsa/2.0/inherit-inter
+ delete mode 100755 easy-rsa/2.0/list-crl
+ delete mode 100755 easy-rsa/2.0/openssl-0.9.6.cnf
+ delete mode 100755 easy-rsa/2.0/openssl-0.9.8.cnf
+ delete mode 100755 easy-rsa/2.0/openssl-1.0.0.cnf
+ delete mode 100755 easy-rsa/2.0/pkitool
+ delete mode 100755 easy-rsa/2.0/revoke-full
+ delete mode 100755 easy-rsa/2.0/sign-req
+ delete mode 100755 easy-rsa/2.0/vars
+ delete mode 100755 easy-rsa/2.0/whichopensslcnf
+ delete mode 100644 easy-rsa/Windows/README.txt
+ delete mode 100644 easy-rsa/Windows/build-ca-pass.bat
+ delete mode 100644 easy-rsa/Windows/build-ca.bat
+ delete mode 100644 easy-rsa/Windows/build-dh.bat
+ delete mode 100644 easy-rsa/Windows/build-key-pass.bat
+ delete mode 100644 easy-rsa/Windows/build-key-pkcs12.bat
+ delete mode 100644 easy-rsa/Windows/build-key-server-pass.bat
+ delete mode 100644 easy-rsa/Windows/build-key-server.bat
+ delete mode 100644 easy-rsa/Windows/build-key.bat
+ delete mode 100644 easy-rsa/Windows/clean-all.bat
+ delete mode 100644 easy-rsa/Windows/index.txt.start
+ delete mode 100755 easy-rsa/Windows/init-config.bat
+ delete mode 100644 easy-rsa/Windows/revoke-full.bat
+ delete mode 100644 easy-rsa/Windows/serial.start
+ delete mode 100644 easy-rsa/Windows/vars.bat.sample
 
 diff --git a/Makefile.am b/Makefile.am
-index 26b80f3..a1c210e 100644
+index 33c4545..b6fcfbb 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -24,7 +24,6 @@
- #
+@@ -40,7 +40,6 @@ MAINTAINERCLEANFILES = \
+ CLEANFILES = openvpn.8.html configure.h
  
- LDADD = @LIBOBJS@
--.PHONY: plugin
- 
- # This option prevents autoreconf from overriding our COPYING and
- # INSTALL targets:
-@@ -49,7 +48,7 @@ EXTRA_DIST = \
- 	tap-win32 \
- 	contrib \
- 	debug \
--	plugin \
-+	plugins \
- 	win
- 
- SUBDIRS = \
+ EXTRA_DIST = \
+-	easy-rsa \
+ 	sample-config-files \
+ 	sample-keys \
+ 	sample-scripts \
+diff --git a/easy-rsa/1.0/README b/easy-rsa/1.0/README
+deleted file mode 100644
+index fd424ef..0000000
+--- a/easy-rsa/1.0/README
++++ /dev/null
+@@ -1,161 +0,0 @@
+-This is a small RSA key management package,
+-based on the openssl command line tool, that
+-can be found in the easy-rsa subdirectory
+-of the OpenVPN distribution.
+-
+-These are reference notes.  For step
+-by step instructions, see the HOWTO:
+-
+-http://openvpn.net/howto.html
+-
+-INSTALL
+-
+-1. Edit vars.
+-2. Set KEY_CONFIG to point to the openssl.cnf file
+-   included in this distribution.
+-3. Set KEY_DIR to point to a directory which will
+-   contain all keys, certificates, etc.  This
+-   directory need not exist, and if it does,
+-   it will be deleted with rm -rf, so BE
+-   CAREFUL how you set KEY_DIR.
+-4. (Optional) Edit other fields in vars
+-   per your site data.  You may want to
+-   increase KEY_SIZE to 2048 if you are
+-   paranoid and don't mind slower key
+-   processing, but certainly 1024 is
+-   fine for testing purposes.  KEY_SIZE
+-   must be compatible across both peers
+-   participating in a secure SSL/TLS
+-   connection.
+-5  . vars
+-6. ./clean-all
+-7. As you create certificates, keys, and
+-   certificate signing requests, understand that
+-   only .key files should be kept confidential.
+-   .crt and .csr files can be sent over insecure
+-   channels such as plaintext email.
+-8. You should never need to copy a .key file
+-   between computers.  Normally each computer
+-   will have its own certificate/key pair.
+-
+-BUILD YOUR OWN ROOT CERTIFICATE AUTHORITY (CA) CERTIFICATE/KEY
+-
+-1. ./build-ca
+-2. ca.crt and ca.key will be built in your KEY_DIR
+-   directory
+-
+-BUILD AN INTERMEDIATE CERTIFICATE AUTHORITY CERTIFICATE/KEY (optional)
+-
+-1. ./build-inter inter
+-2. inter.crt and inter.key will be built in your KEY_DIR
+-   directory and signed with your root certificate.
+-
+-BUILD DIFFIE-HELLMAN PARAMETERS (necessary for
+-the server end of a SSL/TLS connection).
+-
+-1. ./build-dh
+-
+-BUILD A CERTIFICATE SIGNING REQUEST (If
+-you want to sign your certificate with a root
+-certificate controlled by another individual
+-or organization, or residing on a different machine).
+-
+-1. Get ca.crt (the root certificate) from your
+-   certificate authority.  Though this
+-   transfer can be over an insecure channel, to prevent
+-   man-in-the-middle attacks you must confirm that
+-   ca.crt was not tampered with.  Large CAs solve this
+-   problem by hardwiring their root certificates into
+-   popular web browsers.  A simple way to verify a root
+-   CA is to call the issuer on the telephone and confirm
+-   that the md5sum or sha1sum signatures on the ca.crt
+-   files match (such as with the command: "md5sum ca.crt").
+-2. Choose a name for your certificate such as your computer
+-   name.  In our example we will use "mycert".
+-3. ./build-req mycert
+-4. You can ignore most of the fields, but set
+-   "Common Name" to something unique such as your
+-   computer's host name.  Leave all password
+-   fields blank, unless you want your private key
+-   to be protected by password.  Using a password
+-   is not required -- it will make your key more secure
+-   but also more inconvenient to use, because you will
+-   need to supply your password anytime the key is used.
+-   NOTE: if you are using a password, use ./build-req-pass
+-   instead of ./build-req
+-5. Your key will be written to $KEY_DIR/mycert.key
+-6. Your certificate signing request will be written to
+-   to $KEY_DIR/mycert.csr
+-7. Email mycert.csr to the individual or organization
+-   which controls the root certificate.  This can be
+-   done over an insecure channel.
+-8. After the .csr file is signed by the root certificate
+-   authority, you will receive a file mycert.crt
+-   (your certificate).  Place mycert.crt in your
+-   KEY_DIR directory.
+-9. The combined files of mycert.crt, mycert.key,
+-   and ca.crt can now be used to secure one end of
+-   an SSL/TLS connection.
+-
+-SIGN A CERTIFICATE SIGNING REQUEST
+-
+-1. ./sign-req mycert
+-2. mycert.crt will be built in your KEY_DIR
+-   directory using mycert.csr and your root CA
+-   file as input.
+-
+-BUILD AND SIGN A CERTIFICATE SIGNING REQUEST
+-USING A LOCALLY INSTALLED ROOT CERTIFICATE/KEY -- this
+-script generates and signs a certificate in one step,
+-but it requires that the generated certificate and private
+-key files be copied to the destination host over a
+-secure channel.
+-
+-1. ./build-key mycert (no password protection)
+-2. OR ./build-key-pass mycert (with password protection)
+-3. OR ./build-key-pkcs12 mycert (PKCS #12 format)
+-4. OR ./build-key-server mycert (with nsCertType=server)
+-5. mycert.crt and mycert.key will be built in your
+-   KEY_DIR directory, and mycert.crt will be signed
+-   by your root CA. If ./build-key-pkcs12 was used a
+-   mycert.p12 file will also be created including the
+-   private key, certificate and the ca certificate.
+-
+-IMPORTANT
+-
+-To avoid a possible Man-in-the-Middle attack where an authorized
+-client tries to connect to another client by impersonating the
+-server, make sure to enforce some kind of server certificate
+-verification by clients.  There are currently four different ways
+-of accomplishing this, listed in the order of preference:
+-
+-(1) Build your server certificates with the build-key-server
+-    script.  This will designate the certificate as a
+-    server-only certificate by setting nsCertType=server.
+-    Now add the following line to your client configuration:
+-      
+-    ns-cert-type server
+-
+-    This will block clients from connecting to any
+-    server which lacks the nsCertType=server designation
+-    in its certificate, even if the certificate has been
+-    signed by the CA which is cited in the OpenVPN configuration
+-    file (--ca directive).
+-
+-(2) Use the --tls-remote directive on the client to
+-    accept/reject the server connection based on the common
+-    name of the server certificate.
+-
+-(3) Use a --tls-verify script or plugin to accept/reject the
+-    server connection based on a custom test of the server
+-    certificate's embedded X509 subject details.
+-
+-(4) Sign server certificates with one CA and client certificates
+-    with a different CA.  The client config "ca" directive should
+-    reference the server-signing CA while the server config "ca"
+-    directive should reference the client-signing CA.
+-
+-NOTES
+-
+-Show certificate fields:
+-  openssl x509 -in cert.crt -text
+diff --git a/easy-rsa/1.0/build-ca b/easy-rsa/1.0/build-ca
+deleted file mode 100755
+index 5ad59cc..0000000
+--- a/easy-rsa/1.0/build-ca
++++ /dev/null
+@@ -1,13 +0,0 @@
+-#!/bin/sh
+-
+-#
+-# Build a root certificate
+-#
+-
+-if test $KEY_DIR; then
+-	cd $KEY_DIR && \
+-	openssl req -days 3650 -nodes -new -x509 -keyout ca.key -out ca.crt -config $KEY_CONFIG && \
+-        chmod 0600 ca.key
+-else
+-	echo you must define KEY_DIR
+-fi
+diff --git a/easy-rsa/1.0/build-dh b/easy-rsa/1.0/build-dh
+deleted file mode 100755
+index 6de4baf..0000000
+--- a/easy-rsa/1.0/build-dh
++++ /dev/null
+@@ -1,12 +0,0 @@
+-#!/bin/sh
+-
+-#
+-# Build Diffie-Hellman parameters for the server side
+-# of an SSL/TLS connection.
+-#
+-
+-if test $KEY_DIR; then
+-    openssl dhparam -out ${KEY_DIR}/dh${KEY_SIZE}.pem ${KEY_SIZE}
+-else
+-    echo you must define KEY_DIR
+-fi
+diff --git a/easy-rsa/1.0/build-inter b/easy-rsa/1.0/build-inter
+deleted file mode 100755
+index 8b3a6b2..0000000
+--- a/easy-rsa/1.0/build-inter
++++ /dev/null
+@@ -1,19 +0,0 @@
+-#!/bin/sh
+-
+-#
+-# Make an intermediate CA certificate/private key pair using a locally generated
+-# root certificate.
+-#
+-
+-if test $# -ne 1; then
+-        echo "usage: build-inter <name>";
+-        exit 1
+-fi                                                                             
+-
+-if test $KEY_DIR; then
+-	cd $KEY_DIR && \
+-	openssl req -days 3650 -nodes -new -keyout $1.key -out $1.csr -config $KEY_CONFIG && \
+-	openssl ca -extensions v3_ca -days 3650 -out $1.crt -in $1.csr -config $KEY_CONFIG
+-else
+-	echo you must define KEY_DIR
+-fi
+diff --git a/easy-rsa/1.0/build-key b/easy-rsa/1.0/build-key
+deleted file mode 100755
+index 3159d2b..0000000
+--- a/easy-rsa/1.0/build-key
++++ /dev/null
+@@ -1,20 +0,0 @@
+-#!/bin/sh
+-
+-#
+-# Make a certificate/private key pair using a locally generated
+-# root certificate.
+-#
+-
+-if test $# -ne 1; then
+-        echo "usage: build-key <name>";
+-        exit 1
+-fi                                                                             
+-
+-if test $KEY_DIR; then
+-	cd $KEY_DIR && \
+-	openssl req -days 3650 -nodes -new -keyout $1.key -out $1.csr -config $KEY_CONFIG && \
+-	openssl ca -days 3650 -out $1.crt -in $1.csr -config $KEY_CONFIG && \
+-	chmod 0600 $1.key
+-else
+-	echo you must define KEY_DIR
+-fi
+diff --git a/easy-rsa/1.0/build-key-pass b/easy-rsa/1.0/build-key-pass
+deleted file mode 100755
+index 03ab304..0000000
+--- a/easy-rsa/1.0/build-key-pass
++++ /dev/null
+@@ -1,20 +0,0 @@
+-#!/bin/sh
+-
+-#
+-# Similar to build-key, but protect the private key
+-# with a password.
+-#
+-
+-if test $# -ne 1; then
+-        echo "usage: build-key-pass <name>";
+-        exit 1
+-fi
+-
+-if test $KEY_DIR; then
+-	cd $KEY_DIR && \
+-	openssl req -days 3650 -new -keyout $1.key -out $1.csr -config $KEY_CONFIG && \
+-	openssl ca -days 3650 -out $1.crt -in $1.csr -config $KEY_CONFIG && \
+-	chmod 0600 $1.key
+-else
+-	echo you must define KEY_DIR
+-fi
+diff --git a/easy-rsa/1.0/build-key-pkcs12 b/easy-rsa/1.0/build-key-pkcs12
+deleted file mode 100755
+index f8a057b..0000000
+--- a/easy-rsa/1.0/build-key-pkcs12
++++ /dev/null
+@@ -1,21 +0,0 @@
+-#!/bin/sh
+-
+-#
+-# Make a certificate/private key pair using a locally generated
+-# root certificate and convert it to a PKCS #12 file including the
+-# the CA certificate as well.
+-
+-if test $# -ne 1; then
+-        echo "usage: build-key-pkcs12 <name>";
+-        exit 1
+-fi                                                                             
+-
+-if test $KEY_DIR; then
+-	cd $KEY_DIR && \
+-	openssl req -days 3650 -nodes -new -keyout $1.key -out $1.csr -config $KEY_CONFIG && \
+-	openssl ca -days 3650 -out $1.crt -in $1.csr -config $KEY_CONFIG && \
+-        openssl pkcs12 -export -inkey $1.key -in $1.crt -certfile ca.crt -out $1.p12 && \
+-	chmod 0600 $1.key $1.p12
+-else
+-	echo you must define KEY_DIR
+-fi
+diff --git a/easy-rsa/1.0/build-key-server b/easy-rsa/1.0/build-key-server
+deleted file mode 100755
+index 30dc41e..0000000
+--- a/easy-rsa/1.0/build-key-server
++++ /dev/null
+@@ -1,22 +0,0 @@
+-#!/bin/sh
+-
+-#
+-# Make a certificate/private key pair using a locally generated
+-# root certificate.
+-#
+-# Explicitly set nsCertType to server using the "server"
+-# extension in the openssl.cnf file.
+-
+-if test $# -ne 1; then
+-        echo "usage: build-key-server <name>";
+-        exit 1
+-fi                                                                             
+-
+-if test $KEY_DIR; then
+-	cd $KEY_DIR && \
+-	openssl req -days 3650 -nodes -new -keyout $1.key -out $1.csr -extensions server -config $KEY_CONFIG && \
+-	openssl ca -days 3650 -out $1.crt -in $1.csr -extensions server -config $KEY_CONFIG && \
+-        chmod 0600 $1.key
+-else
+-	echo you must define KEY_DIR
+-fi
+diff --git a/easy-rsa/1.0/build-req b/easy-rsa/1.0/build-req
+deleted file mode 100755
+index 30f62f5..0000000
+--- a/easy-rsa/1.0/build-req
++++ /dev/null
+@@ -1,18 +0,0 @@
+-#!/bin/sh
+-
+-#
+-# Build a certificate signing request and private key.  Use this
+-# when your root certificate and key is not available locally.
+-#
+-
+-if test $# -ne 1; then
+-    echo "usage: build-req <name>";
+-    exit 1
+-fi                                                                             
+-
+-if test $KEY_DIR; then
+-    cd $KEY_DIR && \
+-    openssl req -days 3650 -nodes -new -keyout $1.key -out $1.csr -config $KEY_CONFIG
+-else
+-    echo you must define KEY_DIR
+-fi
+diff --git a/easy-rsa/1.0/build-req-pass b/easy-rsa/1.0/build-req-pass
+deleted file mode 100755
+index 829b286..0000000
+--- a/easy-rsa/1.0/build-req-pass
++++ /dev/null
+@@ -1,18 +0,0 @@
+-#!/bin/sh
+-
+-#
+-# Like build-req, but protect your private key
+-# with a password.
+-#
+-
+-if test $# -ne 1; then
+-    echo "usage: build-req-pass <name>";
+-    exit 1
+-fi                                                                             
+-
+-if test $KEY_DIR; then
+-    cd $KEY_DIR && \
+-    openssl req -days 3650 -new -keyout $1.key -out $1.csr -config $KEY_CONFIG
+-else
+-    echo you must define KEY_DIR
+-fi
+diff --git a/easy-rsa/1.0/clean-all b/easy-rsa/1.0/clean-all
+deleted file mode 100755
+index d10aef5..0000000
+--- a/easy-rsa/1.0/clean-all
++++ /dev/null
+@@ -1,19 +0,0 @@
+-#!/bin/sh
+-
+-#
+-# Initialize the $KEY_DIR directory.
+-# Note that this script does a
+-# rm -rf on $KEY_DIR so be careful!
+-#
+-
+-d=$KEY_DIR
+-
+-if test $d; then
+-	rm -rf $d
+-	mkdir $d && \
+-	chmod go-rwx $d && \
+-	touch $d/index.txt && \
+-	echo 01 >$d/serial
+-else
+-	echo you must define KEY_DIR
+-fi
+diff --git a/easy-rsa/1.0/list-crl b/easy-rsa/1.0/list-crl
+deleted file mode 100644
+index b214dbd..0000000
+--- a/easy-rsa/1.0/list-crl
++++ /dev/null
+@@ -1,18 +0,0 @@
+-#!/bin/sh
+-
+-#
+-# list revoked certificates
+-#
+-#
+-
+-if test $# -ne 1; then
+-        echo "usage: list-crl <crlfile.pem>";
+-        exit 1
+-fi
+-
+-if test $KEY_DIR; then
+-       cd $KEY_DIR && \
+-       openssl crl -text -noout -in $1
+-else
+-       echo you must define KEY_DIR
+-fi
+diff --git a/easy-rsa/1.0/make-crl b/easy-rsa/1.0/make-crl
+deleted file mode 100644
+index 62fe6c1..0000000
+--- a/easy-rsa/1.0/make-crl
++++ /dev/null
+@@ -1,18 +0,0 @@
+-#!/bin/sh
+-
+-#
+-# generate a CRL
+-#
+-#
+-
+-if test $# -ne 1; then
+-        echo "usage: make-crl <crlfile.pem>";
+-        exit 1
+-fi
+-
+-if test $KEY_DIR; then
+-       cd $KEY_DIR && \
+-       openssl ca -gencrl -out $1 -config $KEY_CONFIG
+-else
+-       echo you must define KEY_DIR
+-fi
+diff --git a/easy-rsa/1.0/openssl.cnf b/easy-rsa/1.0/openssl.cnf
+deleted file mode 100644
+index 270b069..0000000
+--- a/easy-rsa/1.0/openssl.cnf
++++ /dev/null
+@@ -1,255 +0,0 @@
+-#
+-# OpenSSL example configuration file.
+-# This is mostly being used for generation of certificate requests.
+-#
+-
+-# This definition stops the following lines choking if HOME isn't
+-# defined.
+-HOME			= .
+-RANDFILE		= $ENV::HOME/.rnd
+-
+-# Extra OBJECT IDENTIFIER info:
+-#oid_file		= $ENV::HOME/.oid
+-oid_section		= new_oids
+-
+-# To use this configuration file with the "-extfile" option of the
+-# "openssl x509" utility, name here the section containing the
+-# X.509v3 extensions to use:
+-# extensions		= 
+-# (Alternatively, use a configuration file that has only
+-# X.509v3 extensions in its main [= default] section.)
+-
+-[ new_oids ]
+-
+-# We can add new OIDs in here for use by 'ca' and 'req'.
+-# Add a simple OID like this:
+-# testoid1=1.2.3.4
+-# Or use config file substitution like this:
+-# testoid2=${testoid1}.5.6
+-
+-####################################################################
+-[ ca ]
+-default_ca	= CA_default		# The default ca section
+-
+-####################################################################
+-[ CA_default ]
+-
+-dir		= $ENV::KEY_DIR		# Where everything is kept
+-certs		= $dir			# Where the issued certs are kept
+-crl_dir		= $dir			# Where the issued crl are kept
+-database	= $dir/index.txt	# database index file.
+-new_certs_dir	= $dir			# default place for new certs.
+-
+-certificate	= $dir/ca.crt	 	# The CA certificate
+-serial		= $dir/serial 		# The current serial number
+-crl		= $dir/crl.pem 		# The current CRL
+-private_key	= $dir/ca.key	 	# The private key
+-RANDFILE	= $dir/.rand		# private random number file
+-
+-x509_extensions	= usr_cert		# The extentions to add to the cert
+-
+-# Extensions to add to a CRL. Note: Netscape communicator chokes on V2 CRLs
+-# so this is commented out by default to leave a V1 CRL.
+-# crl_extensions	= crl_ext
+-
+-default_days	= 3650			# how long to certify for
+-default_crl_days= 30			# how long before next CRL
+-default_md	= md5			# which md to use.
+-preserve	= no			# keep passed DN ordering
+-
+-# A few difference way of specifying how similar the request should look
+-# For type CA, the listed attributes must be the same, and the optional
+-# and supplied fields are just that :-)
+-policy		= policy_match
+-
+-# For the CA policy
+-[ policy_match ]
+-countryName		= match
+-stateOrProvinceName	= match
+-organizationName	= match
+-organizationalUnitName	= optional
+-commonName		= supplied
+-emailAddress		= optional
+-
+-# For the 'anything' policy
+-# At this point in time, you must list all acceptable 'object'
+-# types.
+-[ policy_anything ]
+-countryName		= optional
+-stateOrProvinceName	= optional
+-localityName		= optional
+-organizationName	= optional
+-organizationalUnitName	= optional
+-commonName		= supplied
+-emailAddress		= optional
+-
+-####################################################################
+-[ req ]
+-default_bits		= $ENV::KEY_SIZE
+-default_keyfile 	= privkey.pem
+-distinguished_name	= req_distinguished_name
+-attributes		= req_attributes
+-x509_extensions	= v3_ca	# The extentions to add to the self signed cert
+-
+-# Passwords for private keys if not present they will be prompted for
+-# input_password = secret
+-# output_password = secret
+-
+-# This sets a mask for permitted string types. There are several options. 
+-# default: PrintableString, T61String, BMPString.
+-# pkix	 : PrintableString, BMPString.
+-# utf8only: only UTF8Strings.
+-# nombstr : PrintableString, T61String (no BMPStrings or UTF8Strings).
+-# MASK:XXXX a literal mask value.
+-# WARNING: current versions of Netscape crash on BMPStrings or UTF8Strings
+-# so use this option with caution!
+-string_mask = nombstr
+-
+-# req_extensions = v3_req # The extensions to add to a certificate request
+-
+-[ req_distinguished_name ]
+-countryName			= Country Name (2 letter code)
+-countryName_default		= $ENV::KEY_COUNTRY
+-countryName_min			= 2
+-countryName_max			= 2
+-
+-stateOrProvinceName		= State or Province Name (full name)
+-stateOrProvinceName_default	= $ENV::KEY_PROVINCE
+-
+-localityName			= Locality Name (eg, city)
+-localityName_default		= $ENV::KEY_CITY
+-
+-0.organizationName		= Organization Name (eg, company)
+-0.organizationName_default	= $ENV::KEY_ORG
+-
+-# we can do this but it is not needed normally :-)
+-#1.organizationName		= Second Organization Name (eg, company)
+-#1.organizationName_default	= World Wide Web Pty Ltd
+-
+-organizationalUnitName		= Organizational Unit Name (eg, section)
+-#organizationalUnitName_default	=
+-
+-commonName			= Common Name (eg, your name or your server\'s hostname)
+-commonName_max			= 64
+-
+-emailAddress			= Email Address
+-emailAddress_default		= $ENV::KEY_EMAIL
+-emailAddress_max		= 40
+-
+-# SET-ex3			= SET extension number 3
+-
+-[ req_attributes ]
+-challengePassword		= A challenge password
+-challengePassword_min		= 4
+-challengePassword_max		= 20
+-
+-unstructuredName		= An optional company name
+-
+-[ usr_cert ]
+-
+-# These extensions are added when 'ca' signs a request.
+-
+-# This goes against PKIX guidelines but some CAs do it and some software
+-# requires this to avoid interpreting an end user certificate as a CA.
+-
+-basicConstraints=CA:FALSE
+-
+-# Here are some examples of the usage of nsCertType. If it is omitted
+-# the certificate can be used for anything *except* object signing.
+-
+-# This is OK for an SSL server.
+-# nsCertType			= server
+-
+-# For an object signing certificate this would be used.
+-# nsCertType = objsign
+-
+-# For normal client use this is typical
+-# nsCertType = client, email
+-
+-# and for everything including object signing:
+-# nsCertType = client, email, objsign
+-
+-# This is typical in keyUsage for a client certificate.
+-# keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+-
+-# This will be displayed in Netscape's comment listbox.
+-nsComment			= "OpenSSL Generated Certificate"
+-
+-# PKIX recommendations harmless if included in all certificates.
+-subjectKeyIdentifier=hash
+-authorityKeyIdentifier=keyid,issuer:always
+-
+-# This stuff is for subjectAltName and issuerAltname.
+-# Import the email address.
+-# subjectAltName=email:copy
+-
+-# Copy subject details
+-# issuerAltName=issuer:copy
+-
+-#nsCaRevocationUrl		= http://www.domain.dom/ca-crl.pem
+-#nsBaseUrl
+-#nsRevocationUrl
+-#nsRenewalUrl
+-#nsCaPolicyUrl
+-#nsSslServerName
+-
+-[ server ]
+-
+-# JY ADDED -- Make a cert with nsCertType set to "server"
+-basicConstraints=CA:FALSE
+-nsCertType			= server
+-nsComment			= "OpenSSL Generated Server Certificate"
+-subjectKeyIdentifier=hash
+-authorityKeyIdentifier=keyid,issuer:always
+-
+-[ v3_req ]
+-
+-# Extensions to add to a certificate request
+-
+-basicConstraints = CA:FALSE
+-keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+-
+-[ v3_ca ]
+-
+-
+-# Extensions for a typical CA
+-
+-
+-# PKIX recommendation.
+-
+-subjectKeyIdentifier=hash
+-
+-authorityKeyIdentifier=keyid:always,issuer:always
+-
+-# This is what PKIX recommends but some broken software chokes on critical
+-# extensions.
+-#basicConstraints = critical,CA:true
+-# So we do this instead.
+-basicConstraints = CA:true
+-
+-# Key usage: this is typical for a CA certificate. However since it will
+-# prevent it being used as an test self-signed certificate it is best
+-# left out by default.
+-# keyUsage = cRLSign, keyCertSign
+-
+-# Some might want this also
+-# nsCertType = sslCA, emailCA
+-
+-# Include email address in subject alt name: another PKIX recommendation
+-# subjectAltName=email:copy
+-# Copy issuer details
+-# issuerAltName=issuer:copy
+-
+-# DER hex encoding of an extension: beware experts only!
+-# obj=DER:02:03
+-# Where 'obj' is a standard or added object
+-# You can even override a supported extension:
+-# basicConstraints= critical, DER:30:03:01:01:FF
+-
+-[ crl_ext ]
+-
+-# CRL extensions.
+-# Only issuerAltName and authorityKeyIdentifier make any sense in a CRL.
+-
+-# issuerAltName=issuer:copy
+-authorityKeyIdentifier=keyid:always,issuer:always
+diff --git a/easy-rsa/1.0/revoke-crt b/easy-rsa/1.0/revoke-crt
+deleted file mode 100644
+index 35b071a..0000000
+--- a/easy-rsa/1.0/revoke-crt
++++ /dev/null
+@@ -1,18 +0,0 @@
+-#!/bin/sh
+-
+-#
+-# revoke a certificate
+-#
+-#
+-
+-if test $# -ne 1; then
+-        echo "usage: revoke-crt <file.crt>";
+-        exit 1
+-fi
+-
+-if test $KEY_DIR; then
+-       cd $KEY_DIR && \
+-       openssl ca -revoke $1 -config $KEY_CONFIG
+-else
+-       echo you must define KEY_DIR
+-fi
+diff --git a/easy-rsa/1.0/revoke-full b/easy-rsa/1.0/revoke-full
+deleted file mode 100755
+index 66ea03f..0000000
+--- a/easy-rsa/1.0/revoke-full
++++ /dev/null
+@@ -1,29 +0,0 @@
+-#!/bin/sh
+-
+-# revoke a certificate, regenerate CRL,
+-# and verify revocation
+-
+-CRL=crl.pem
+-RT=revoke-test.pem
+-
+-if test $# -ne 1; then
+-        echo "usage: revoke-full <name>";
+-        exit 1
+-fi
+-
+-if test $KEY_DIR; then
+-       cd $KEY_DIR
+-       rm -f $RT
+-
+-       # revoke key and generate a new CRL
+-       openssl ca -revoke $1.crt -config $KEY_CONFIG
+-
+-       # generate a new CRL
+-       openssl ca -gencrl -out $CRL -config $KEY_CONFIG
+-       cat ca.crt $CRL >$RT
+-    
+-       # verify the revocation
+-       openssl verify -CAfile $RT -crl_check $1.crt
+-else
+-       echo you must define KEY_DIR
+-fi
+diff --git a/easy-rsa/1.0/sign-req b/easy-rsa/1.0/sign-req
+deleted file mode 100755
+index 59edc42..0000000
+--- a/easy-rsa/1.0/sign-req
++++ /dev/null
+@@ -1,18 +0,0 @@
+-#!/bin/sh
+-
+-#
+-# Sign a certificate signing request (a .csr file)
+-# with a local root certificate and key.
+-#
+-
+-if test $# -ne 1; then
+-        echo "usage: sign-req <name>";
+-        exit 1
+-fi                                                                             
+-
+-if test $KEY_DIR; then
+-	cd $KEY_DIR && \
+-	openssl ca -days 3650 -out $1.crt -in $1.csr -config $KEY_CONFIG
+-else
+-	echo you must define KEY_DIR
+-fi
+diff --git a/easy-rsa/1.0/vars b/easy-rsa/1.0/vars
+deleted file mode 100644
+index da89cd2..0000000
+--- a/easy-rsa/1.0/vars
++++ /dev/null
+@@ -1,49 +0,0 @@
+-# easy-rsa parameter settings
+-
+-# NOTE: If you installed from an RPM,
+-# don't edit this file in place in
+-# /usr/share/openvpn/easy-rsa --
+-# instead, you should copy the whole
+-# easy-rsa directory to another location
+-# (such as /etc/openvpn) so that your
+-# edits will not be wiped out by a future
+-# OpenVPN package upgrade.
+-
+-# This variable should point to
+-# the top level of the easy-rsa
+-# tree.
+-export D=`pwd`
+-
+-# This variable should point to
+-# the openssl.cnf file included
+-# with easy-rsa.
+-export KEY_CONFIG=$D/openssl.cnf
+-
+-# Edit this variable to point to
+-# your soon-to-be-created key
+-# directory.
+-#
+-# WARNING: clean-all will do
+-# a rm -rf on this directory
+-# so make sure you define
+-# it correctly!
+-export KEY_DIR=$D/keys
+-
+-# Issue rm -rf warning
+-echo NOTE: when you run ./clean-all, I will be doing a rm -rf on $KEY_DIR
+-
+-# Increase this to 2048 if you
+-# are paranoid.  This will slow
+-# down TLS negotiation performance
+-# as well as the one-time DH parms
+-# generation process.
+-export KEY_SIZE=1024
+-
+-# These are the default values for fields
+-# which will be placed in the certificate.
+-# Don't leave any of these fields blank.
+-export KEY_COUNTRY=KG
+-export KEY_PROVINCE=NA
+-export KEY_CITY=BISHKEK
+-export KEY_ORG="OpenVPN-TEST"
+-export KEY_EMAIL="me@...430..."
+diff --git a/easy-rsa/2.0/Makefile b/easy-rsa/2.0/Makefile
+deleted file mode 100644
+index 8000cc5..0000000
+--- a/easy-rsa/2.0/Makefile
++++ /dev/null
+@@ -1,13 +0,0 @@
+-
+-DESTDIR=
+-PREFIX=
+-
+-all:
+-	echo "All done."
+-	echo "Run make install DESTDIR=/usr/share/somewhere"
+-
+-install:
+-	install -d "${DESTDIR}/${PREFIX}"
+-	install -m 0755 build-* "${DESTDIR}/${PREFIX}"
+-	install -m 0755 clean-all list-crl inherit-inter pkitool revoke-full sign-req whichopensslcnf "${DESTDIR}/${PREFIX}"
+-	install -m 0644 openssl-0.9.6.cnf openssl-0.9.8.cnf openssl-1.0.0.cnf README vars "${DESTDIR}/${PREFIX}"
+diff --git a/easy-rsa/2.0/README b/easy-rsa/2.0/README
+deleted file mode 100644
+index 6f5395c..0000000
+--- a/easy-rsa/2.0/README
++++ /dev/null
+@@ -1,229 +0,0 @@
+-EASY-RSA Version 2.0-rc1
+-
+-This is a small RSA key management package, based on the openssl
+-command line tool, that can be found in the easy-rsa subdirectory
+-of the OpenVPN distribution.  While this tool is primary concerned
+-with key management for the SSL VPN application space, it can also
+-be used for building web certificates.
+-
+-These are reference notes.  For step-by-step instructions, see the
+-HOWTO:
+-
+-http://openvpn.net/howto.html
+-
+-This package is based on the ./pkitool script.  Run ./pkitool
+-without arguments for a detailed help message (which is also pasted
+-below).
+-
+-Release Notes for easy-rsa-2.0
+-
+-* Most functionality has been consolidated into the pkitool
+-  script. For compatibility, all previous scripts from 1.0 such
+-  as build-key and build-key-server are provided as stubs
+-  which call pkitool to do the real work.
+-
+-* pkitool has a --batch flag (enabled by default) which generates
+-  keys/certs without needing any interactive input.  pkitool
+-  can still generate certs/keys using interactive prompting by
+-  using the --interact flag.
+-
+-* The inherit-inter script has been provided for creating
+-  a new PKI rooted on an intermediate certificate built within a
+-  higher-level PKI.  See comments in the inherit-inter script
+-  for more info.
+-
+-* The openssl.cnf file has been modified.  pkitool will not
+-  work with the openssl.cnf file included with previous
+-  easy-rsa releases.
+-
+-* The vars file has been modified -- the following extra
+-  variables have been added: EASY_RSA, CA_EXPIRE,
+-  KEY_EXPIRE.
+-
+-* The make-crl and revoke-crt scripts have been removed and
+-  are replaced by the revoke-full script.
+-
+-* The "Organizational Unit" X509 field can be set using
+-  the KEY_OU environmental variable before calling pkitool.
+-
+-* This release only affects the Linux/Unix version of easy-rsa.
+-  The Windows version (written to use the Windows shell) is unchanged.
+-
+-* Use the revoke-full script to revoke a certificate, and generate
+-  (or update) the crl.pem file in the keys directory (as set by the
+-  vars script).  Then use "crl-verify crl.pem" in your OpenVPN server
+-  config file, so that OpenVPN can reject any connections coming from
+-  clients which present a revoked certificate.  Usage for the script is:
+-
+-    revoke-full <common-name>
+-
+-  Note this this procedure is primarily designed to revoke client
+-  certificates. You could theoretically use this method to revoke
+-  server certificates as well, but then you would need to propagate
+-  the crl.pem file to all clients as well, and have them include
+-  "crl-verify crl.pem" in their configuration files.
+-
+-* PKCS#11 support was added.
+-
+-* For those interested in using this tool to generate web certificates,
+-  A variant of the easy-rsa package that allows the creation of multi-domain
+-  certificates with subjectAltName can be obtained from here:
+-
+-  http://www.bisente.com/proyectos/easy-rsa-subjectaltname/
+-
+-INSTALL easy-rsa
+-
+-1. Edit vars.
+-2. Set KEY_CONFIG to point to the correct openssl-<version>.cnf
+-   file included in this distribution.
+-3. Set KEY_DIR to point to a directory which will
+-   contain all keys, certificates, etc.  This
+-   directory need not exist, and if it does,
+-   it will be deleted with rm -rf, so BE
+-   CAREFUL how you set KEY_DIR.
+-4. (Optional) Edit other fields in vars
+-   per your site data.  You may want to
+-   increase KEY_SIZE to 2048 if you are
+-   paranoid and don't mind slower key
+-   processing, but certainly 1024 is
+-   fine for testing purposes.  KEY_SIZE
+-   must be compatible across both peers
+-   participating in a secure SSL/TLS
+-   connection.
+-5. (Optional) If you intend to use PKCS#11,
+-   install openssl >= 0.9.7, install the 
+-   following components from www.opensc.org:
+-   - opensc >= 0.10.0
+-   - engine_pkcs11 >= 0.1.3
+-   Update the openssl.cnf to load the engine:
+-   - Uncomment pkcs11 under engine_section.
+-   - Validate path at dynamic_path under pkcs11_section.
+-6. . vars
+-7. ./clean-all
+-8. As you create certificates, keys, and
+-   certificate signing requests, understand that
+-   only .key files should be kept confidential.
+-   .crt and .csr files can be sent over insecure
+-   channels such as plaintext email.
+-
+-IMPORTANT
+-
+-To avoid a possible Man-in-the-Middle attack where an authorized
+-client tries to connect to another client by impersonating the
+-server, make sure to enforce some kind of server certificate
+-verification by clients.  There are currently four different ways
+-of accomplishing this, listed in the order of preference:
+-
+-(1) Build your server certificates with specific key usage and
+-    extended key usage. The RFC3280 determine that the following
+-    attributes should be provided for TLS connections:
+-
+-    Mode      Key usage	                         Extended key usage
+-    ---------------------------------------------------------------------------
+-    Client    digitalSignature	                 TLS Web Client Authentication
+-              keyAgreement
+-              digitalSignature, keyAgreement
+-	      
+-    Server    digitalSignature, keyEncipherment  TLS Web Server Authentication
+-              digitalSignature, keyAgreement
+-
+-    Now add the following line to your client configuration:
+-      
+-    remote-cert-tls server
+-
+-    This will block clients from connecting to any
+-    server which lacks the required extension designation
+-    in its certificate, even if the certificate has been
+-    signed by the CA which is cited in the OpenVPN configuration
+-    file (--ca directive).
+-
+-(3) Use the --tls-remote directive on the client to
+-    accept/reject the server connection based on the common
+-    name of the server certificate.
+-
+-(3) Use a --tls-verify script or plugin to accept/reject the
+-    server connection based on a custom test of the server
+-    certificate's embedded X509 subject details.
+-
+-(4) Sign server certificates with one CA and client certificates
+-    with a different CA.  The client config "ca" directive should
+-    reference the server-signing CA while the server config "ca"
+-    directive should reference the client-signing CA.
+-
+-NOTES
+-
+-Show certificate fields:
+-  openssl x509 -in cert.crt -text
+-
+-PKITOOL documentation
+-
+-pkitool 2.0
+-Usage: pkitool [options...] [common-name]
+-Options:
+-  --batch    : batch mode (default)
+-  --keysize  : Set keysize
+-      size   : size (default=1024)
+-  --interact : interactive mode
+-  --server   : build server cert
+-  --initca   : build root CA
+-  --inter    : build intermediate CA
+-  --pass     : encrypt private key with password
+-  --csr      : only generate a CSR, do not sign
+-  --sign     : sign an existing CSR
+-  --pkcs12   : generate a combined PKCS#12 file
+-  --pkcs11   : generate certificate on PKCS#11 token
+-      lib    : PKCS#11 library
+-      slot   : PKCS#11 slot
+-      id     : PKCS#11 object id (hex string)
+-      label  : PKCS#11 object label
+-Standalone options:
+-  --pkcs11-slots   : list PKCS#11 slots
+-      lib    : PKCS#11 library
+-  --pkcs11-objects : list PKCS#11 token objects
+-      lib    : PKCS#11 library
+-      slot   : PKCS#11 slot
+-  --pkcs11-init    : initialize PKCS#11 token DANGEROUS!!!
+-      lib    : PKCS#11 library
+-      slot   : PKCS#11 slot
+-      label  : PKCS#11 token label
+-Notes:
+-  Please edit the vars script to reflect your configuration,
+-  then source it with "source ./vars".
+-  Next, to start with a fresh PKI configuration and to delete any
+-  previous certificates and keys, run "./clean-all".
+-  Finally, you can run this tool (pkitool) to build certificates/keys.
+-  In order to use PKCS#11 interface you must have opensc-0.10.0 or higher.
+-Generated files and corresponding OpenVPN directives:
+-(Files will be placed in the $KEY_DIR directory, defined in ./vars)
+-  ca.crt     -> root certificate (--ca)
+-  ca.key     -> root key, keep secure (not directly used by OpenVPN)
+-  .crt files -> client/server certificates (--cert)
+-  .key files -> private keys, keep secure (--key)
+-  .csr files -> certificate signing request (not directly used by OpenVPN)
+-  dh1024.pem or dh2048.pem -> Diffie Hellman parameters (--dh)
+-Examples:
+-  pkitool --initca          -> Build root certificate
+-  pkitool --initca --pass   -> Build root certificate with password-protected key
+-  pkitool --server server1  -> Build "server1" certificate/key
+-  pkitool client1           -> Build "client1" certificate/key
+-  pkitool --pass client2    -> Build password-protected "client2" certificate/key
+-  pkitool --pkcs12 client3  -> Build "client3" certificate/key in PKCS#12 format
+-  pkitool --csr client4     -> Build "client4" CSR to be signed by another CA
+-  pkitool --sign client4    -> Sign "client4" CSR
+-  pkitool --inter interca   -> Build an intermediate key-signing certificate/key
+-                               Also see ./inherit-inter script.
+-  pkitool --pkcs11 /usr/lib/pkcs11/lib1 0 010203 "client5 id" client5
+-                              -> Build "client5" certificate/key in PKCS#11 token
+-Typical usage for initial PKI setup.  Build myserver, client1, and client2 cert/keys.
+-Protect client2 key with a password.  Build DH parms.  Generated files in ./keys :
+-  [edit vars with your site-specific info]
+-  source ./vars
+-  ./clean-all
+-  ./build-dh     -> takes a long time, consider backgrounding
+-  ./pkitool --initca
+-  ./pkitool --server myserver
+-  ./pkitool client1
+-  ./pkitool --pass client2
+-Typical usage for adding client cert to existing PKI:
+-  source ./vars
+-  ./pkitool client-new
+diff --git a/easy-rsa/2.0/build-ca b/easy-rsa/2.0/build-ca
+deleted file mode 100755
+index bce29a6..0000000
+--- a/easy-rsa/2.0/build-ca
++++ /dev/null
+@@ -1,8 +0,0 @@
+-#!/bin/sh
+-
+-#
+-# Build a root certificate
+-#
+-
+-export EASY_RSA="${EASY_RSA:-.}"
+-"$EASY_RSA/pkitool" --interact --initca $*
+diff --git a/easy-rsa/2.0/build-dh b/easy-rsa/2.0/build-dh
+deleted file mode 100755
+index 4beb127..0000000
+--- a/easy-rsa/2.0/build-dh
++++ /dev/null
+@@ -1,11 +0,0 @@
+-#!/bin/sh
+-
+-# Build Diffie-Hellman parameters for the server side
+-# of an SSL/TLS connection.
+-
+-if [ -d $KEY_DIR ] && [ $KEY_SIZE ]; then
+-    $OPENSSL dhparam -out ${KEY_DIR}/dh${KEY_SIZE}.pem ${KEY_SIZE}
+-else
+-    echo 'Please source the vars script first (i.e. "source ./vars")'
+-    echo 'Make sure you have edited it to reflect your configuration.'
+-fi
+diff --git a/easy-rsa/2.0/build-inter b/easy-rsa/2.0/build-inter
+deleted file mode 100755
+index 87bf98d..0000000
+--- a/easy-rsa/2.0/build-inter
++++ /dev/null
+@@ -1,7 +0,0 @@
+-#!/bin/sh
+-
+-# Make an intermediate CA certificate/private key pair using a locally generated
+-# root certificate.
+-
+-export EASY_RSA="${EASY_RSA:-.}"
+-"$EASY_RSA/pkitool" --interact --inter $*
+diff --git a/easy-rsa/2.0/build-key b/easy-rsa/2.0/build-key
+deleted file mode 100755
+index 6c0fed8..0000000
+--- a/easy-rsa/2.0/build-key
++++ /dev/null
+@@ -1,7 +0,0 @@
+-#!/bin/sh
+-
+-# Make a certificate/private key pair using a locally generated
+-# root certificate.
+-
+-export EASY_RSA="${EASY_RSA:-.}"
+-"$EASY_RSA/pkitool" --interact $*
+diff --git a/easy-rsa/2.0/build-key-pass b/easy-rsa/2.0/build-key-pass
+deleted file mode 100755
+index 8ef8307..0000000
+--- a/easy-rsa/2.0/build-key-pass
++++ /dev/null
+@@ -1,7 +0,0 @@
+-#!/bin/sh
+-
+-# Similar to build-key, but protect the private key
+-# with a password.
+-
+-export EASY_RSA="${EASY_RSA:-.}"
+-"$EASY_RSA/pkitool" --interact --pass $*
+diff --git a/easy-rsa/2.0/build-key-pkcs12 b/easy-rsa/2.0/build-key-pkcs12
+deleted file mode 100755
+index ba90e6a..0000000
+--- a/easy-rsa/2.0/build-key-pkcs12
++++ /dev/null
+@@ -1,8 +0,0 @@
+-#!/bin/sh
+-
+-# Make a certificate/private key pair using a locally generated
+-# root certificate and convert it to a PKCS #12 file including the
+-# the CA certificate as well.
+-
+-export EASY_RSA="${EASY_RSA:-.}"
+-"$EASY_RSA/pkitool" --interact --pkcs12 $*
+diff --git a/easy-rsa/2.0/build-key-server b/easy-rsa/2.0/build-key-server
+deleted file mode 100755
+index fee0194..0000000
+--- a/easy-rsa/2.0/build-key-server
++++ /dev/null
+@@ -1,10 +0,0 @@
+-#!/bin/sh
+-
+-# Make a certificate/private key pair using a locally generated
+-# root certificate.
+-#
+-# Explicitly set nsCertType to server using the "server"
+-# extension in the openssl.cnf file.
+-
+-export EASY_RSA="${EASY_RSA:-.}"
+-"$EASY_RSA/pkitool" --interact --server $*
+diff --git a/easy-rsa/2.0/build-req b/easy-rsa/2.0/build-req
+deleted file mode 100755
+index 559d512..0000000
+--- a/easy-rsa/2.0/build-req
++++ /dev/null
+@@ -1,7 +0,0 @@
+-#!/bin/sh
+-
+-# Build a certificate signing request and private key.  Use this
+-# when your root certificate and key is not available locally.
+-
+-export EASY_RSA="${EASY_RSA:-.}"
+-"$EASY_RSA/pkitool" --interact --csr $*
+diff --git a/easy-rsa/2.0/build-req-pass b/easy-rsa/2.0/build-req-pass
+deleted file mode 100755
+index b73ee1b..0000000
+--- a/easy-rsa/2.0/build-req-pass
++++ /dev/null
+@@ -1,7 +0,0 @@
+-#!/bin/sh
+-
+-# Like build-req, but protect your private key
+-# with a password.
+-
+-export EASY_RSA="${EASY_RSA:-.}"
+-"$EASY_RSA/pkitool" --interact --csr --pass $*
+diff --git a/easy-rsa/2.0/clean-all b/easy-rsa/2.0/clean-all
+deleted file mode 100755
+index cc6e3b2..0000000
+--- a/easy-rsa/2.0/clean-all
++++ /dev/null
+@@ -1,16 +0,0 @@
+-#!/bin/sh
+-
+-# Initialize the $KEY_DIR directory.
+-# Note that this script does a
+-# rm -rf on $KEY_DIR so be careful!
+-
+-if [ "$KEY_DIR" ]; then
+-    rm -rf "$KEY_DIR"
+-    mkdir "$KEY_DIR" && \
+-	chmod go-rwx "$KEY_DIR" && \
+-	touch "$KEY_DIR/index.txt" && \
+-	echo 01 >"$KEY_DIR/serial"
+-else
+-    echo 'Please source the vars script first (i.e. "source ./vars")'
+-    echo 'Make sure you have edited it to reflect your configuration.'
+-fi
+diff --git a/easy-rsa/2.0/inherit-inter b/easy-rsa/2.0/inherit-inter
+deleted file mode 100755
+index aaa5168..0000000
+--- a/easy-rsa/2.0/inherit-inter
++++ /dev/null
+@@ -1,39 +0,0 @@
+-#!/bin/sh
+-
+-# Build a new PKI which is rooted on an intermediate certificate generated
+-# by ./build-inter or ./pkitool --inter from a parent PKI.  The new PKI should
+-# have independent vars settings, and must use a different KEY_DIR directory
+-# from the parent.  This tool can be used to generate arbitrary depth
+-# certificate chains.
+-#
+-# To build an intermediate CA, follow the same steps for a regular PKI but
+-# replace ./build-key or ./pkitool --initca with this script.
+-
+-# The EXPORT_CA file will contain the CA certificate chain and should be
+-# referenced by the OpenVPN "ca" directive in config files.  The ca.crt file
+-# will only contain the local intermediate CA -- it's needed by the easy-rsa
+-# scripts but not by OpenVPN directly.
+-EXPORT_CA="export-ca.crt"
+-
+-if [ $# -ne 2 ]; then
+-    echo "usage: $0 <parent-key-dir> <common-name>"
+-    echo "parent-key-dir: the KEY_DIR directory of the parent PKI"
+-    echo "common-name: the common name of the intermediate certificate in the parent PKI"
+-    exit 1;
+-fi
+-
+-if [ "$KEY_DIR" ]; then
+-    cp "$1/$2.crt" "$KEY_DIR/ca.crt"
+-    cp "$1/$2.key" "$KEY_DIR/ca.key"
+-
+-    if [ -e "$1/$EXPORT_CA" ]; then
+-	PARENT_CA="$1/$EXPORT_CA"
+-    else
+-	PARENT_CA="$1/ca.crt"
+-    fi
+-    cp "$PARENT_CA" "$KEY_DIR/$EXPORT_CA"
+-    cat "$KEY_DIR/ca.crt" >> "$KEY_DIR/$EXPORT_CA"
+-else
+-    echo 'Please source the vars script first (i.e. "source ./vars")'
+-    echo 'Make sure you have edited it to reflect your configuration.'
+-fi
+diff --git a/easy-rsa/2.0/list-crl b/easy-rsa/2.0/list-crl
+deleted file mode 100755
+index d1d8a69..0000000
+--- a/easy-rsa/2.0/list-crl
++++ /dev/null
+@@ -1,13 +0,0 @@
+-#!/bin/sh
+-
+-# list revoked certificates
+-
+-CRL="${1:-crl.pem}"
+-
+-if [ "$KEY_DIR" ]; then
+-    cd "$KEY_DIR" && \
+-	$OPENSSL crl -text -noout -in "$CRL"
+-else
+-    echo 'Please source the vars script first (i.e. "source ./vars")'
+-    echo 'Make sure you have edited it to reflect your configuration.'
+-fi
+diff --git a/easy-rsa/2.0/openssl-0.9.6.cnf b/easy-rsa/2.0/openssl-0.9.6.cnf
+deleted file mode 100755
+index d28341d..0000000
+--- a/easy-rsa/2.0/openssl-0.9.6.cnf
++++ /dev/null
+@@ -1,265 +0,0 @@
+-# For use with easy-rsa version 2.0
+-
+-#
+-# OpenSSL example configuration file.
+-# This is mostly being used for generation of certificate requests.
+-#
+-
+-# This definition stops the following lines choking if HOME isn't
+-# defined.
+-HOME			= .
+-RANDFILE		= $ENV::HOME/.rnd
+-
+-# Extra OBJECT IDENTIFIER info:
+-#oid_file		= $ENV::HOME/.oid
+-oid_section		= new_oids
+-
+-# To use this configuration file with the "-extfile" option of the
+-# "openssl x509" utility, name here the section containing the
+-# X.509v3 extensions to use:
+-# extensions		= 
+-# (Alternatively, use a configuration file that has only
+-# X.509v3 extensions in its main [= default] section.)
+-
+-[ new_oids ]
+-
+-# We can add new OIDs in here for use by 'ca' and 'req'.
+-# Add a simple OID like this:
+-# testoid1=1.2.3.4
+-# Or use config file substitution like this:
+-# testoid2=${testoid1}.5.6
+-
+-####################################################################
+-[ ca ]
+-default_ca	= CA_default		# The default ca section
+-
+-####################################################################
+-[ CA_default ]
+-
+-dir		= $ENV::KEY_DIR		# Where everything is kept
+-certs		= $dir			# Where the issued certs are kept
+-crl_dir		= $dir			# Where the issued crl are kept
+-database	= $dir/index.txt	# database index file.
+-new_certs_dir	= $dir			# default place for new certs.
+-
+-certificate	= $dir/ca.crt	 	# The CA certificate
+-serial		= $dir/serial 		# The current serial number
+-crl		= $dir/crl.pem 		# The current CRL
+-private_key	= $dir/ca.key	 	# The private key
+-RANDFILE	= $dir/.rand		# private random number file
+-
+-x509_extensions	= usr_cert		# The extentions to add to the cert
+-
+-# Extensions to add to a CRL. Note: Netscape communicator chokes on V2 CRLs
+-# so this is commented out by default to leave a V1 CRL.
+-# crl_extensions	= crl_ext
+-
+-default_days	= 3650			# how long to certify for
+-default_crl_days= 30			# how long before next CRL
+-default_md	= md5			# which md to use.
+-preserve	= no			# keep passed DN ordering
+-
+-# A few difference way of specifying how similar the request should look
+-# For type CA, the listed attributes must be the same, and the optional
+-# and supplied fields are just that :-)
+-policy		= policy_anything
+-
+-# For the CA policy
+-[ policy_match ]
+-countryName		= match
+-stateOrProvinceName	= match
+-organizationName	= match
+-organizationalUnitName	= optional
+-commonName		= supplied
+-emailAddress		= optional
+-
+-# For the 'anything' policy
+-# At this point in time, you must list all acceptable 'object'
+-# types.
+-[ policy_anything ]
+-countryName		= optional
+-stateOrProvinceName	= optional
+-localityName		= optional
+-organizationName	= optional
+-organizationalUnitName	= optional
+-commonName		= supplied
+-emailAddress		= optional
+-
+-####################################################################
+-[ req ]
+-default_bits		= $ENV::KEY_SIZE
+-default_keyfile 	= privkey.pem
+-distinguished_name	= req_distinguished_name
+-attributes		= req_attributes
+-x509_extensions	= v3_ca	# The extentions to add to the self signed cert
+-
+-# Passwords for private keys if not present they will be prompted for
+-# input_password = secret
+-# output_password = secret
+-
+-# This sets a mask for permitted string types. There are several options. 
+-# default: PrintableString, T61String, BMPString.
+-# pkix	 : PrintableString, BMPString.
+-# utf8only: only UTF8Strings.
+-# nombstr : PrintableString, T61String (no BMPStrings or UTF8Strings).
+-# MASK:XXXX a literal mask value.
+-# WARNING: current versions of Netscape crash on BMPStrings or UTF8Strings
+-# so use this option with caution!
+-string_mask = nombstr
+-
+-# req_extensions = v3_req # The extensions to add to a certificate request
+-
+-[ req_distinguished_name ]
+-countryName			= Country Name (2 letter code)
+-countryName_default		= $ENV::KEY_COUNTRY
+-countryName_min			= 2
+-countryName_max			= 2
+-
+-stateOrProvinceName		= State or Province Name (full name)
+-stateOrProvinceName_default	= $ENV::KEY_PROVINCE
+-
+-localityName			= Locality Name (eg, city)
+-localityName_default		= $ENV::KEY_CITY
+-
+-0.organizationName		= Organization Name (eg, company)
+-0.organizationName_default	= $ENV::KEY_ORG
+-
+-# we can do this but it is not needed normally :-)
+-#1.organizationName		= Second Organization Name (eg, company)
+-#1.organizationName_default	= World Wide Web Pty Ltd
+-
+-organizationalUnitName		= Organizational Unit Name (eg, section)
+-#organizationalUnitName_default	=
+-
+-commonName			= Common Name (eg, your name or your server\'s hostname)
+-commonName_max			= 64
+-
+-emailAddress			= Email Address
+-emailAddress_default		= $ENV::KEY_EMAIL
+-emailAddress_max		= 40
+-
+-# JY -- added for batch mode
+-organizationalUnitName_default = $ENV::KEY_OU
+-commonName_default = $ENV::KEY_CN
+-
+-# SET-ex3			= SET extension number 3
+-
+-[ req_attributes ]
+-challengePassword		= A challenge password
+-challengePassword_min		= 4
+-challengePassword_max		= 20
+-
+-unstructuredName		= An optional company name
+-
+-[ usr_cert ]
+-
+-# These extensions are added when 'ca' signs a request.
+-
+-# This goes against PKIX guidelines but some CAs do it and some software
+-# requires this to avoid interpreting an end user certificate as a CA.
+-
+-basicConstraints=CA:FALSE
+-
+-# Here are some examples of the usage of nsCertType. If it is omitted
+-# the certificate can be used for anything *except* object signing.
+-
+-# This is OK for an SSL server.
+-# nsCertType			= server
+-
+-# For an object signing certificate this would be used.
+-# nsCertType = objsign
+-
+-# For normal client use this is typical
+-# nsCertType = client, email
+-
+-# and for everything including object signing:
+-# nsCertType = client, email, objsign
+-
+-# This is typical in keyUsage for a client certificate.
+-# keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+-
+-# This will be displayed in Netscape's comment listbox.
+-nsComment			= "Easy-RSA Generated Certificate"
+-
+-# PKIX recommendations harmless if included in all certificates.
+-subjectKeyIdentifier=hash
+-authorityKeyIdentifier=keyid,issuer:always
+-extendedKeyUsage=clientAuth
+-keyUsage = digitalSignature
+-
+-# This stuff is for subjectAltName and issuerAltname.
+-# Import the email address.
+-# subjectAltName=email:copy
+-
+-# Copy subject details
+-# issuerAltName=issuer:copy
+-
+-#nsCaRevocationUrl		= http://www.domain.dom/ca-crl.pem
+-#nsBaseUrl
+-#nsRevocationUrl
+-#nsRenewalUrl
+-#nsCaPolicyUrl
+-#nsSslServerName
+-
+-[ server ]
+-
+-# JY ADDED -- Make a cert with nsCertType set to "server"
+-basicConstraints=CA:FALSE
+-nsCertType			= server
+-nsComment			= "Easy-RSA Generated Server Certificate"
+-subjectKeyIdentifier=hash
+-authorityKeyIdentifier=keyid,issuer:always
+-extendedKeyUsage=serverAuth
+-keyUsage = digitalSignature, keyEncipherment
+-
+-[ v3_req ]
+-
+-# Extensions to add to a certificate request
+-
+-basicConstraints = CA:FALSE
+-keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+-
+-[ v3_ca ]
+-
+-
+-# Extensions for a typical CA
+-
+-
+-# PKIX recommendation.
+-
+-subjectKeyIdentifier=hash
+-
+-authorityKeyIdentifier=keyid:always,issuer:always
+-
+-# This is what PKIX recommends but some broken software chokes on critical
+-# extensions.
+-#basicConstraints = critical,CA:true
+-# So we do this instead.
+-basicConstraints = CA:true
+-
+-# Key usage: this is typical for a CA certificate. However since it will
+-# prevent it being used as an test self-signed certificate it is best
+-# left out by default.
+-# keyUsage = cRLSign, keyCertSign
+-
+-# Some might want this also
+-# nsCertType = sslCA, emailCA
+-
+-# Include email address in subject alt name: another PKIX recommendation
+-# subjectAltName=email:copy
+-# Copy issuer details
+-# issuerAltName=issuer:copy
+-
+-# DER hex encoding of an extension: beware experts only!
+-# obj=DER:02:03
+-# Where 'obj' is a standard or added object
+-# You can even override a supported extension:
+-# basicConstraints= critical, DER:30:03:01:01:FF
+-
+-[ crl_ext ]
+-
+-# CRL extensions.
+-# Only issuerAltName and authorityKeyIdentifier make any sense in a CRL.
+-
+-# issuerAltName=issuer:copy
+-authorityKeyIdentifier=keyid:always,issuer:always
+diff --git a/easy-rsa/2.0/openssl-0.9.8.cnf b/easy-rsa/2.0/openssl-0.9.8.cnf
+deleted file mode 100755
+index 340b8af..0000000
+--- a/easy-rsa/2.0/openssl-0.9.8.cnf
++++ /dev/null
+@@ -1,290 +0,0 @@
+-# For use with easy-rsa version 2.0
+-
+-#
+-# OpenSSL example configuration file.
+-# This is mostly being used for generation of certificate requests.
+-#
+-
+-# This definition stops the following lines choking if HOME isn't
+-# defined.
+-HOME			= .
+-RANDFILE		= $ENV::HOME/.rnd
+-openssl_conf		= openssl_init
+-
+-[ openssl_init ]
+-# Extra OBJECT IDENTIFIER info:
+-#oid_file		= $ENV::HOME/.oid
+-oid_section		= new_oids
+-engines                 = engine_section
+-
+-# To use this configuration file with the "-extfile" option of the
+-# "openssl x509" utility, name here the section containing the
+-# X.509v3 extensions to use:
+-# extensions		=
+-# (Alternatively, use a configuration file that has only
+-# X.509v3 extensions in its main [= default] section.)
+-
+-[ new_oids ]
+-
+-# We can add new OIDs in here for use by 'ca' and 'req'.
+-# Add a simple OID like this:
+-# testoid1=1.2.3.4
+-# Or use config file substitution like this:
+-# testoid2=${testoid1}.5.6
+-
+-####################################################################
+-[ ca ]
+-default_ca	= CA_default		# The default ca section
+-
+-####################################################################
+-[ CA_default ]
+-
+-dir		= $ENV::KEY_DIR		# Where everything is kept
+-certs		= $dir			# Where the issued certs are kept
+-crl_dir		= $dir			# Where the issued crl are kept
+-database	= $dir/index.txt	# database index file.
+-new_certs_dir	= $dir			# default place for new certs.
+-
+-certificate	= $dir/ca.crt	 	# The CA certificate
+-serial		= $dir/serial 		# The current serial number
+-crl		= $dir/crl.pem 		# The current CRL
+-private_key	= $dir/ca.key	 	# The private key
+-RANDFILE	= $dir/.rand		# private random number file
+-
+-x509_extensions	= usr_cert		# The extentions to add to the cert
+-
+-# Extensions to add to a CRL. Note: Netscape communicator chokes on V2 CRLs
+-# so this is commented out by default to leave a V1 CRL.
+-# crl_extensions	= crl_ext
+-
+-default_days	= 3650			# how long to certify for
+-default_crl_days= 30			# how long before next CRL
+-default_md	= md5			# which md to use.
+-preserve	= no			# keep passed DN ordering
+-
+-# A few difference way of specifying how similar the request should look
+-# For type CA, the listed attributes must be the same, and the optional
+-# and supplied fields are just that :-)
+-policy		= policy_anything
+-
+-# For the CA policy
+-[ policy_match ]
+-countryName		= match
+-stateOrProvinceName	= match
+-organizationName	= match
+-organizationalUnitName	= optional
+-commonName		= supplied
+-name			= optional
+-emailAddress		= optional
+-
+-# For the 'anything' policy
+-# At this point in time, you must list all acceptable 'object'
+-# types.
+-[ policy_anything ]
+-countryName		= optional
+-stateOrProvinceName	= optional
+-localityName		= optional
+-organizationName	= optional
+-organizationalUnitName	= optional
+-commonName		= supplied
+-name			= optional
+-emailAddress		= optional
+-
+-####################################################################
+-[ req ]
+-default_bits		= $ENV::KEY_SIZE
+-default_keyfile 	= privkey.pem
+-distinguished_name	= req_distinguished_name
+-attributes		= req_attributes
+-x509_extensions	= v3_ca	# The extentions to add to the self signed cert
+-
+-# Passwords for private keys if not present they will be prompted for
+-# input_password = secret
+-# output_password = secret
+-
+-# This sets a mask for permitted string types. There are several options.
+-# default: PrintableString, T61String, BMPString.
+-# pkix	 : PrintableString, BMPString.
+-# utf8only: only UTF8Strings.
+-# nombstr : PrintableString, T61String (no BMPStrings or UTF8Strings).
+-# MASK:XXXX a literal mask value.
+-# WARNING: current versions of Netscape crash on BMPStrings or UTF8Strings
+-# so use this option with caution!
+-string_mask = nombstr
+-
+-# req_extensions = v3_req # The extensions to add to a certificate request
+-
+-[ req_distinguished_name ]
+-countryName			= Country Name (2 letter code)
+-countryName_default		= $ENV::KEY_COUNTRY
+-countryName_min			= 2
+-countryName_max			= 2
+-
+-stateOrProvinceName		= State or Province Name (full name)
+-stateOrProvinceName_default	= $ENV::KEY_PROVINCE
+-
+-localityName			= Locality Name (eg, city)
+-localityName_default		= $ENV::KEY_CITY
+-
+-0.organizationName		= Organization Name (eg, company)
+-0.organizationName_default	= $ENV::KEY_ORG
+-
+-# we can do this but it is not needed normally :-)
+-#1.organizationName		= Second Organization Name (eg, company)
+-#1.organizationName_default	= World Wide Web Pty Ltd
+-
+-organizationalUnitName		= Organizational Unit Name (eg, section)
+-#organizationalUnitName_default	=
+-
+-commonName			= Common Name (eg, your name or your server\'s hostname)
+-commonName_max			= 64
+-
+-name				= Name
+-name_max			= 64
+-
+-emailAddress			= Email Address
+-emailAddress_default		= $ENV::KEY_EMAIL
+-emailAddress_max		= 40
+-
+-# JY -- added for batch mode
+-organizationalUnitName_default = $ENV::KEY_OU
+-commonName_default = $ENV::KEY_CN
+-name_default = $ENV::KEY_NAME
+-
+-# SET-ex3			= SET extension number 3
+-
+-[ req_attributes ]
+-challengePassword		= A challenge password
+-challengePassword_min		= 4
+-challengePassword_max		= 20
+-
+-unstructuredName		= An optional company name
+-
+-[ usr_cert ]
+-
+-# These extensions are added when 'ca' signs a request.
+-
+-# This goes against PKIX guidelines but some CAs do it and some software
+-# requires this to avoid interpreting an end user certificate as a CA.
+-
+-basicConstraints=CA:FALSE
+-
+-# Here are some examples of the usage of nsCertType. If it is omitted
+-# the certificate can be used for anything *except* object signing.
+-
+-# This is OK for an SSL server.
+-# nsCertType			= server
+-
+-# For an object signing certificate this would be used.
+-# nsCertType = objsign
+-
+-# For normal client use this is typical
+-# nsCertType = client, email
+-
+-# and for everything including object signing:
+-# nsCertType = client, email, objsign
+-
+-# This is typical in keyUsage for a client certificate.
+-# keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+-
+-# This will be displayed in Netscape's comment listbox.
+-nsComment			= "Easy-RSA Generated Certificate"
+-
+-# PKIX recommendations harmless if included in all certificates.
+-subjectKeyIdentifier=hash
+-authorityKeyIdentifier=keyid,issuer:always
+-extendedKeyUsage=clientAuth
+-keyUsage = digitalSignature
+-
+-# This stuff is for subjectAltName and issuerAltname.
+-# Import the email address.
+-# subjectAltName=email:copy
+-
+-# Copy subject details
+-# issuerAltName=issuer:copy
+-
+-#nsCaRevocationUrl		= http://www.domain.dom/ca-crl.pem
+-#nsBaseUrl
+-#nsRevocationUrl
+-#nsRenewalUrl
+-#nsCaPolicyUrl
+-#nsSslServerName
+-
+-[ server ]
+-
+-# JY ADDED -- Make a cert with nsCertType set to "server"
+-basicConstraints=CA:FALSE
+-nsCertType			= server
+-nsComment			= "Easy-RSA Generated Server Certificate"
+-subjectKeyIdentifier=hash
+-authorityKeyIdentifier=keyid,issuer:always
+-extendedKeyUsage=serverAuth
+-keyUsage = digitalSignature, keyEncipherment
+-
+-[ v3_req ]
+-
+-# Extensions to add to a certificate request
+-
+-basicConstraints = CA:FALSE
+-keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+-
+-[ v3_ca ]
+-
+-
+-# Extensions for a typical CA
+-
+-
+-# PKIX recommendation.
+-
+-subjectKeyIdentifier=hash
+-
+-authorityKeyIdentifier=keyid:always,issuer:always
+-
+-# This is what PKIX recommends but some broken software chokes on critical
+-# extensions.
+-#basicConstraints = critical,CA:true
+-# So we do this instead.
+-basicConstraints = CA:true
+-
+-# Key usage: this is typical for a CA certificate. However since it will
+-# prevent it being used as an test self-signed certificate it is best
+-# left out by default.
+-# keyUsage = cRLSign, keyCertSign
+-
+-# Some might want this also
+-# nsCertType = sslCA, emailCA
+-
+-# Include email address in subject alt name: another PKIX recommendation
+-# subjectAltName=email:copy
+-# Copy issuer details
+-# issuerAltName=issuer:copy
+-
+-# DER hex encoding of an extension: beware experts only!
+-# obj=DER:02:03
+-# Where 'obj' is a standard or added object
+-# You can even override a supported extension:
+-# basicConstraints= critical, DER:30:03:01:01:FF
+-
+-[ crl_ext ]
+-
+-# CRL extensions.
+-# Only issuerAltName and authorityKeyIdentifier make any sense in a CRL.
+-
+-# issuerAltName=issuer:copy
+-authorityKeyIdentifier=keyid:always,issuer:always
+-
+-[ engine_section ]
+-#
+-# If you are using PKCS#11
+-# Install engine_pkcs11 of opensc (www.opensc.org)
+-# And uncomment the following
+-# verify that dynamic_path points to the correct location
+-#
+-#pkcs11 = pkcs11_section
+-
+-[ pkcs11_section ]
+-engine_id = pkcs11
+-dynamic_path = /usr/lib/engines/engine_pkcs11.so
+-MODULE_PATH = $ENV::PKCS11_MODULE_PATH
+-PIN = $ENV::PKCS11_PIN
+-init = 0
+diff --git a/easy-rsa/2.0/openssl-1.0.0.cnf b/easy-rsa/2.0/openssl-1.0.0.cnf
+deleted file mode 100755
+index fa258a5..0000000
+--- a/easy-rsa/2.0/openssl-1.0.0.cnf
++++ /dev/null
+@@ -1,285 +0,0 @@
+-# For use with easy-rsa version 2.0 and OpenSSL 1.0.0*
+-
+-# This definition stops the following lines choking if HOME isn't
+-# defined.
+-HOME			= .
+-RANDFILE		= $ENV::HOME/.rnd
+-openssl_conf		= openssl_init
+-
+-[ openssl_init ]
+-# Extra OBJECT IDENTIFIER info:
+-#oid_file		= $ENV::HOME/.oid
+-oid_section		= new_oids
+-engines			= engine_section
+-
+-# To use this configuration file with the "-extfile" option of the
+-# "openssl x509" utility, name here the section containing the
+-# X.509v3 extensions to use:
+-# extensions		=
+-# (Alternatively, use a configuration file that has only
+-# X.509v3 extensions in its main [= default] section.)
+-
+-[ new_oids ]
+-
+-# We can add new OIDs in here for use by 'ca' and 'req'.
+-# Add a simple OID like this:
+-# testoid1=1.2.3.4
+-# Or use config file substitution like this:
+-# testoid2=${testoid1}.5.6
+-
+-####################################################################
+-[ ca ]
+-default_ca	= CA_default		# The default ca section
+-
+-####################################################################
+-[ CA_default ]
+-
+-dir		= $ENV::KEY_DIR		# Where everything is kept
+-certs		= $dir			# Where the issued certs are kept
+-crl_dir		= $dir			# Where the issued crl are kept
+-database	= $dir/index.txt	# database index file.
+-new_certs_dir	= $dir			# default place for new certs.
+-
+-certificate	= $dir/ca.crt	 	# The CA certificate
+-serial		= $dir/serial 		# The current serial number
+-crl		= $dir/crl.pem 		# The current CRL
+-private_key	= $dir/ca.key		# The private key
+-RANDFILE	= $dir/.rand		# private random number file
+-
+-x509_extensions	= usr_cert		# The extentions to add to the cert
+-
+-# Extensions to add to a CRL. Note: Netscape communicator chokes on V2 CRLs
+-# so this is commented out by default to leave a V1 CRL.
+-# crl_extensions	= crl_ext
+-
+-default_days	= 3650			# how long to certify for
+-default_crl_days= 30			# how long before next CRL
+-default_md	= md5			# use public key default MD
+-preserve	= no			# keep passed DN ordering
+-
+-# A few difference way of specifying how similar the request should look
+-# For type CA, the listed attributes must be the same, and the optional
+-# and supplied fields are just that :-)
+-policy		= policy_anything
+-
+-# For the CA policy
+-[ policy_match ]
+-countryName		= match
+-stateOrProvinceName	= match
+-organizationName	= match
+-organizationalUnitName	= optional
+-commonName		= supplied
+-name			= optional
+-emailAddress		= optional
+-
+-# For the 'anything' policy
+-# At this point in time, you must list all acceptable 'object'
+-# types.
+-[ policy_anything ]
+-countryName		= optional
+-stateOrProvinceName	= optional
+-localityName		= optional
+-organizationName	= optional
+-organizationalUnitName	= optional
+-commonName		= supplied
+-name			= optional
+-emailAddress		= optional
+-
+-####################################################################
+-[ req ]
+-default_bits		= $ENV::KEY_SIZE
+-default_keyfile 	= privkey.pem
+-distinguished_name	= req_distinguished_name
+-attributes		= req_attributes
+-x509_extensions	= v3_ca	# The extentions to add to the self signed cert
+-
+-# Passwords for private keys if not present they will be prompted for
+-# input_password = secret
+-# output_password = secret
+-
+-# This sets a mask for permitted string types. There are several options.
+-# default: PrintableString, T61String, BMPString.
+-# pkix	 : PrintableString, BMPString (PKIX recommendation after 2004).
+-# utf8only: only UTF8Strings (PKIX recommendation after 2004).
+-# nombstr : PrintableString, T61String (no BMPStrings or UTF8Strings).
+-# MASK:XXXX a literal mask value.
+-string_mask = nombstr
+-
+-# req_extensions = v3_req # The extensions to add to a certificate request
+-
+-[ req_distinguished_name ]
+-countryName			= Country Name (2 letter code)
+-countryName_default		= $ENV::KEY_COUNTRY
+-countryName_min			= 2
+-countryName_max			= 2
+-
+-stateOrProvinceName		= State or Province Name (full name)
+-stateOrProvinceName_default	= $ENV::KEY_PROVINCE
+-
+-localityName			= Locality Name (eg, city)
+-localityName_default		= $ENV::KEY_CITY
+-
+-0.organizationName		= Organization Name (eg, company)
+-0.organizationName_default	= $ENV::KEY_ORG
+-
+-# we can do this but it is not needed normally :-)
+-#1.organizationName		= Second Organization Name (eg, company)
+-#1.organizationName_default	= World Wide Web Pty Ltd
+-
+-organizationalUnitName		= Organizational Unit Name (eg, section)
+-#organizationalUnitName_default	=
+-
+-commonName			= Common Name (eg, your name or your server\'s hostname)
+-commonName_max			= 64
+-
+-name				= Name
+-name_max			= 64
+-
+-emailAddress			= Email Address
+-emailAddress_default		= $ENV::KEY_EMAIL
+-emailAddress_max		= 40
+-
+-# JY -- added for batch mode
+-organizationalUnitName_default = $ENV::KEY_OU
+-commonName_default = $ENV::KEY_CN
+-name_default = $ENV::KEY_NAME
+-
+-
+-# SET-ex3			= SET extension number 3
+-
+-[ req_attributes ]
+-challengePassword		= A challenge password
+-challengePassword_min		= 4
+-challengePassword_max		= 20
+-
+-unstructuredName		= An optional company name
+-
+-[ usr_cert ]
+-
+-# These extensions are added when 'ca' signs a request.
+-
+-# This goes against PKIX guidelines but some CAs do it and some software
+-# requires this to avoid interpreting an end user certificate as a CA.
+-
+-basicConstraints=CA:FALSE
+-
+-# Here are some examples of the usage of nsCertType. If it is omitted
+-# the certificate can be used for anything *except* object signing.
+-
+-# This is OK for an SSL server.
+-# nsCertType			= server
+-
+-# For an object signing certificate this would be used.
+-# nsCertType = objsign
+-
+-# For normal client use this is typical
+-# nsCertType = client, email
+-
+-# and for everything including object signing:
+-# nsCertType = client, email, objsign
+-
+-# This is typical in keyUsage for a client certificate.
+-# keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+-
+-# This will be displayed in Netscape's comment listbox.
+-nsComment			= "Easy-RSA Generated Certificate"
+-
+-# PKIX recommendations harmless if included in all certificates.
+-subjectKeyIdentifier=hash
+-authorityKeyIdentifier=keyid,issuer:always
+-extendedKeyUsage=clientAuth
+-keyUsage = digitalSignature
+-
+-
+-# This stuff is for subjectAltName and issuerAltname.
+-# Import the email address.
+-# subjectAltName=email:copy
+-
+-# Copy subject details
+-# issuerAltName=issuer:copy
+-
+-#nsCaRevocationUrl		= http://www.domain.dom/ca-crl.pem
+-#nsBaseUrl
+-#nsRevocationUrl
+-#nsRenewalUrl
+-#nsCaPolicyUrl
+-#nsSslServerName
+-
+-[ server ]
+-
+-# JY ADDED -- Make a cert with nsCertType set to "server"
+-basicConstraints=CA:FALSE
+-nsCertType                     = server
+-nsComment                      = "Easy-RSA Generated Server Certificate"
+-subjectKeyIdentifier=hash
+-authorityKeyIdentifier=keyid,issuer:always
+-extendedKeyUsage=serverAuth
+-keyUsage = digitalSignature, keyEncipherment
+-
+-[ v3_req ]
+-
+-# Extensions to add to a certificate request
+-
+-basicConstraints = CA:FALSE
+-keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+-
+-[ v3_ca ]
+-
+-
+-# Extensions for a typical CA
+-
+-
+-# PKIX recommendation.
+-
+-subjectKeyIdentifier=hash
+-
+-authorityKeyIdentifier=keyid:always,issuer:always
+-
+-# This is what PKIX recommends but some broken software chokes on critical
+-# extensions.
+-#basicConstraints = critical,CA:true
+-# So we do this instead.
+-basicConstraints = CA:true
+-
+-# Key usage: this is typical for a CA certificate. However since it will
+-# prevent it being used as an test self-signed certificate it is best
+-# left out by default.
+-# keyUsage = cRLSign, keyCertSign
+-
+-# Some might want this also
+-# nsCertType = sslCA, emailCA
+-
+-# Include email address in subject alt name: another PKIX recommendation
+-# subjectAltName=email:copy
+-# Copy issuer details
+-# issuerAltName=issuer:copy
+-
+-# DER hex encoding of an extension: beware experts only!
+-# obj=DER:02:03
+-# Where 'obj' is a standard or added object
+-# You can even override a supported extension:
+-# basicConstraints= critical, DER:30:03:01:01:FF
+-
+-[ crl_ext ]
+-
+-# CRL extensions.
+-# Only issuerAltName and authorityKeyIdentifier make any sense in a CRL.
+-
+-# issuerAltName=issuer:copy
+-authorityKeyIdentifier=keyid:always,issuer:always
+-
+-[ engine_section ]
+-#
+-# If you are using PKCS#11
+-# Install engine_pkcs11 of opensc (www.opensc.org)
+-# And uncomment the following
+-# verify that dynamic_path points to the correct location
+-#
+-#pkcs11 = pkcs11_section
+-
+-[ pkcs11_section ]
+-engine_id = pkcs11
+-dynamic_path = /usr/lib/engines/engine_pkcs11.so
+-MODULE_PATH = $ENV::PKCS11_MODULE_PATH
+-PIN = $ENV::PKCS11_PIN
+-init = 0
+diff --git a/easy-rsa/2.0/pkitool b/easy-rsa/2.0/pkitool
+deleted file mode 100755
+index 49588f5..0000000
+--- a/easy-rsa/2.0/pkitool
++++ /dev/null
+@@ -1,379 +0,0 @@
+-#!/bin/sh
+-
+-#  OpenVPN -- An application to securely tunnel IP networks
+-#             over a single TCP/UDP port, with support for SSL/TLS-based
+-#             session authentication and key exchange,
+-#             packet encryption, packet authentication, and
+-#             packet compression.
+-#
+-#  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
+-#
+-#  This program is free software; you can redistribute it and/or modify
+-#  it under the terms of the GNU General Public License version 2
+-#  as published by the Free Software Foundation.
+-#
+-#  This program is distributed in the hope that it will be useful,
+-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-#  GNU General Public License for more details.
+-#
+-#  You should have received a copy of the GNU General Public License
+-#  along with this program (see the file COPYING included with this
+-#  distribution); if not, write to the Free Software Foundation, Inc.,
+-#  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-
+-# pkitool is a front-end for the openssl tool.
+-
+-# Calling scripts can set the certificate organizational 
+-# unit with the KEY_OU environmental variable. 
+-
+-# Calling scripts can also set the KEY_NAME environmental
+-# variable to set the "name" X509 subject field.
+-
+-PROGNAME=pkitool
+-VERSION=2.0
+-DEBUG=0
+-
+-die()
+-{
+-    local m="$1"
+-
+-    echo "$m" >&2
+-    exit 1
+-}
+-
+-need_vars()
+-{
+-    echo '  Please edit the vars script to reflect your configuration,'
+-    echo '  then source it with "source ./vars".'
+-    echo '  Next, to start with a fresh PKI configuration and to delete any'
+-    echo '  previous certificates and keys, run "./clean-all".'
+-    echo "  Finally, you can run this tool ($PROGNAME) to build certificates/keys."
+-}
+-
+-usage()
+-{
+-    echo "$PROGNAME $VERSION"
+-    echo "Usage: $PROGNAME [options...] [common-name]"
+-    echo "Options:"
+-    echo "  --batch    : batch mode (default)"
+-    echo "  --keysize  : Set keysize"
+-    echo "      size   : size (default=1024)"
+-    echo "  --interact : interactive mode"
+-    echo "  --server   : build server cert"
+-    echo "  --initca   : build root CA"
+-    echo "  --inter    : build intermediate CA"
+-    echo "  --pass     : encrypt private key with password"
+-    echo "  --csr      : only generate a CSR, do not sign"
+-    echo "  --sign     : sign an existing CSR"
+-    echo "  --pkcs12   : generate a combined PKCS#12 file"
+-    echo "  --pkcs11   : generate certificate on PKCS#11 token"
+-    echo "      lib    : PKCS#11 library"
+-    echo "      slot   : PKCS#11 slot"
+-    echo "      id     : PKCS#11 object id (hex string)"
+-    echo "      label  : PKCS#11 object label"
+-    echo "Standalone options:"
+-    echo "  --pkcs11-slots   : list PKCS#11 slots"
+-    echo "      lib    : PKCS#11 library"
+-    echo "  --pkcs11-objects : list PKCS#11 token objects"
+-    echo "      lib    : PKCS#11 library"
+-    echo "      slot   : PKCS#11 slot"
+-    echo "  --pkcs11-init    : initialize PKCS#11 token DANGEROUS!!!"
+-    echo "      lib    : PKCS#11 library"
+-    echo "      slot   : PKCS#11 slot"
+-    echo "      label  : PKCS#11 token label"
+-    echo "Notes:"
+-    need_vars
+-    echo "  In order to use PKCS#11 interface you must have opensc-0.10.0 or higher."
+-    echo "Generated files and corresponding OpenVPN directives:"
+-    echo '(Files will be placed in the $KEY_DIR directory, defined in ./vars)'
+-    echo "  ca.crt     -> root certificate (--ca)"
+-    echo "  ca.key     -> root key, keep secure (not directly used by OpenVPN)"
+-    echo "  .crt files -> client/server certificates (--cert)"
+-    echo "  .key files -> private keys, keep secure (--key)"
+-    echo "  .csr files -> certificate signing request (not directly used by OpenVPN)"
+-    echo "  dh1024.pem or dh2048.pem -> Diffie Hellman parameters (--dh)"
+-    echo "Examples:"
+-    echo "  $PROGNAME --initca          -> Build root certificate"
+-    echo "  $PROGNAME --initca --pass   -> Build root certificate with password-protected key"
+-    echo "  $PROGNAME --server server1  -> Build \"server1\" certificate/key"
+-    echo "  $PROGNAME client1           -> Build \"client1\" certificate/key"
+-    echo "  $PROGNAME --pass client2    -> Build password-protected \"client2\" certificate/key"
+-    echo "  $PROGNAME --pkcs12 client3  -> Build \"client3\" certificate/key in PKCS#12 format"
+-    echo "  $PROGNAME --csr client4     -> Build \"client4\" CSR to be signed by another CA"
+-    echo "  $PROGNAME --sign client4    -> Sign \"client4\" CSR"
+-    echo "  $PROGNAME --inter interca   -> Build an intermediate key-signing certificate/key"
+-    echo "                               Also see ./inherit-inter script."
+-    echo "  $PROGNAME --pkcs11 /usr/lib/pkcs11/lib1 0 010203 \"client5 id\" client5"
+-    echo "                              -> Build \"client5\" certificate/key in PKCS#11 token"
+-    echo "Typical usage for initial PKI setup.  Build myserver, client1, and client2 cert/keys."
+-    echo "Protect client2 key with a password.  Build DH parms.  Generated files in ./keys :"
+-    echo "  [edit vars with your site-specific info]"
+-    echo "  source ./vars"
+-    echo "  ./clean-all"
+-    echo "  ./build-dh     -> takes a long time, consider backgrounding"
+-    echo "  ./$PROGNAME --initca"
+-    echo "  ./$PROGNAME --server myserver"
+-    echo "  ./$PROGNAME client1"
+-    echo "  ./$PROGNAME --pass client2"
+-    echo "Typical usage for adding client cert to existing PKI:"
+-    echo "  source ./vars"
+-    echo "  ./$PROGNAME client-new"
+-}
+-
+-# Set tool defaults
+-[ -n "$OPENSSL" ] || export OPENSSL="openssl"
+-[ -n "$PKCS11TOOL" ] || export PKCS11TOOL="pkcs11-tool"
+-[ -n "$GREP" ] || export GREP="grep"
+-
+-# Set defaults
+-DO_REQ="1"
+-REQ_EXT=""
+-DO_CA="1"
+-CA_EXT=""
+-DO_P12="0"
+-DO_P11="0"
+-DO_ROOT="0"
+-NODES_REQ="-nodes"
+-NODES_P12=""
+-BATCH="-batch"
+-CA="ca"
+-# must be set or errors of openssl.cnf
+-PKCS11_MODULE_PATH="dummy"
+-PKCS11_PIN="dummy"
+-
+-# Process options
+-while [ $# -gt 0 ]; do
+-    case "$1" in
+-        --keysize  ) KEY_SIZE=$2
+-		     shift;;
+-	--server   ) REQ_EXT="$REQ_EXT -extensions server"
+-	             CA_EXT="$CA_EXT -extensions server" ;;
+-	--batch    ) BATCH="-batch" ;;
+-	--interact ) BATCH="" ;;
+-        --inter    ) CA_EXT="$CA_EXT -extensions v3_ca" ;;
+-        --initca   ) DO_ROOT="1" ;;
+-	--pass     ) NODES_REQ="" ;;
+-        --csr      ) DO_CA="0" ;;
+-        --sign     ) DO_REQ="0" ;;
+-        --pkcs12   ) DO_P12="1" ;;
+-	--pkcs11   ) DO_P11="1"
+-	             PKCS11_MODULE_PATH="$2"
+-		     PKCS11_SLOT="$3"
+-		     PKCS11_ID="$4"
+-		     PKCS11_LABEL="$5"
+-		     shift 4;;
+-
+-	# standalone
+-	--pkcs11-init)
+-	             PKCS11_MODULE_PATH="$2"
+-	             PKCS11_SLOT="$3"
+-	             PKCS11_LABEL="$4"
+-		     if [ -z "$PKCS11_LABEL" ]; then
+-		       die "Please specify library name, slot and label"
+-		     fi
+-		     $PKCS11TOOL --module "$PKCS11_MODULE_PATH" --init-token --slot "$PKCS11_SLOT" \
+-		     	--label "$PKCS11_LABEL" &&
+-			$PKCS11TOOL --module "$PKCS11_MODULE_PATH" --init-pin --slot "$PKCS11_SLOT"
+-		     exit $?;;
+-	--pkcs11-slots)
+-	             PKCS11_MODULE_PATH="$2"
+-		     if [ -z "$PKCS11_MODULE_PATH" ]; then
+-		       die "Please specify library name"
+-		     fi
+-		     $PKCS11TOOL --module "$PKCS11_MODULE_PATH" --list-slots
+-		     exit 0;;
+-	--pkcs11-objects)
+-	             PKCS11_MODULE_PATH="$2"
+-	             PKCS11_SLOT="$3"
+-		     if [ -z "$PKCS11_SLOT" ]; then
+-		       die "Please specify library name and slot"
+-		     fi
+-		     $PKCS11TOOL --module "$PKCS11_MODULE_PATH" --list-objects --login --slot "$PKCS11_SLOT"
+-		     exit 0;;
+-
+-        --help|--usage)
+-                    usage
+-                    exit ;;
+-        --version)
+-                    echo "$PROGNAME $VERSION"
+-                    exit ;;
+-	# errors
+-	--*        ) die "$PROGNAME: unknown option: $1" ;;
+-	*          ) break ;;
+-    esac
+-    shift   
+-done
+-
+-if ! [ -z "$BATCH" ]; then
+-	if $OPENSSL version | grep 0.9.6 > /dev/null; then
+-		die "Batch mode is unsupported in openssl<0.9.7"
+-	fi
+-fi
+-
+-if [ $DO_P12 -eq 1 -a $DO_P11 -eq 1 ]; then
+-	die "PKCS#11 and PKCS#12 cannot be specified together"
+-fi
+-
+-if [ $DO_P11 -eq 1 ]; then
+-	if ! grep "^pkcs11.*=" "$KEY_CONFIG" > /dev/null; then
+-		die "Please edit $KEY_CONFIG and setup PKCS#11 engine"
+-	fi
+-fi
+-
+-# If we are generating pkcs12, only encrypt the final step
+-if [ $DO_P12 -eq 1 ]; then
+-    NODES_P12="$NODES_REQ"
+-    NODES_REQ="-nodes"
+-fi
+-
+-if [ $DO_P11 -eq 1 ]; then
+-	if [ -z "$PKCS11_LABEL" ]; then
+-		die "PKCS#11 arguments incomplete"
+-	fi
+-fi
+-
+-# If undefined, set default key expiration intervals
+-if [ -z "$KEY_EXPIRE" ]; then
+-    KEY_EXPIRE=3650
+-fi
+-if [ -z "$CA_EXPIRE" ]; then
+-    CA_EXPIRE=3650
+-fi
+-
+-# Set organizational unit to empty string if undefined
+-if [ -z "$KEY_OU" ]; then
+-    KEY_OU=""
+-fi
+-
+-# Set X509 Name string to empty string if undefined
+-if [ -z "$KEY_NAME" ]; then
+-    KEY_NAME=""
+-fi
+-
+-# Set KEY_CN, FN
+-if [ $DO_ROOT -eq 1 ]; then
+-    if [ -z "$KEY_CN" ]; then
+-	if [ "$1" ]; then
+-	    KEY_CN="$1"
+-	elif [ "$KEY_ORG" ]; then
+-	    KEY_CN="$KEY_ORG CA"
+-	fi
+-    fi
+-    if [ $BATCH ] && [ "$KEY_CN" ]; then
+-	echo "Using CA Common Name:" "$KEY_CN"
+-    fi
+-    FN="$KEY_CN"
+-elif [ $BATCH ] && [ "$KEY_CN" ]; then
+-    echo "Using Common Name:" "$KEY_CN"
+-    FN="$KEY_CN"
+-    if [ "$1" ]; then
+-	FN="$1"
+-    fi
+-else
+-    if [ $# -ne 1 ]; then
+-	usage
+-	exit 1
+-    else
+-	KEY_CN="$1"
+-    fi
+-    FN="$KEY_CN"
+-fi
+-
+-export CA_EXPIRE KEY_EXPIRE KEY_OU KEY_NAME KEY_CN PKCS11_MODULE_PATH PKCS11_PIN
+-
+-# Show parameters (debugging)
+-if [ $DEBUG -eq 1 ]; then
+-    echo DO_REQ $DO_REQ
+-    echo REQ_EXT $REQ_EXT
+-    echo DO_CA $DO_CA
+-    echo CA_EXT $CA_EXT
+-    echo NODES_REQ $NODES_REQ
+-    echo NODES_P12 $NODES_P12
+-    echo DO_P12 $DO_P12
+-    echo KEY_CN $KEY_CN
+-    echo BATCH $BATCH
+-    echo DO_ROOT $DO_ROOT
+-    echo KEY_EXPIRE $KEY_EXPIRE
+-    echo CA_EXPIRE $CA_EXPIRE
+-    echo KEY_OU $KEY_OU
+-    echo KEY_NAME $KEY_NAME
+-    echo DO_P11 $DO_P11
+-    echo PKCS11_MODULE_PATH $PKCS11_MODULE_PATH
+-    echo PKCS11_SLOT $PKCS11_SLOT
+-    echo PKCS11_ID $PKCS11_ID
+-    echo PKCS11_LABEL $PKCS11_LABEL
+-fi
+-
+-# Make sure ./vars was sourced beforehand
+-if [ -d "$KEY_DIR" ] && [ "$KEY_CONFIG" ]; then
+-    cd "$KEY_DIR"
+-
+-    # Make sure $KEY_CONFIG points to the correct version
+-    # of openssl.cnf
+-    if $GREP -i 'easy-rsa version 2\.[0-9]' "$KEY_CONFIG" >/dev/null; then
+-	:
+-    else
+-	echo "$PROGNAME: KEY_CONFIG (set by the ./vars script) is pointing to the wrong"
+-        echo "version of openssl.cnf: $KEY_CONFIG"
+-	echo "The correct version should have a comment that says: easy-rsa version 2.x";
+-	exit 1;
+-    fi
+-
+-    # Build root CA
+-    if [ $DO_ROOT -eq 1 ]; then
+-	$OPENSSL req $BATCH -days $CA_EXPIRE $NODES_REQ -new -newkey rsa:$KEY_SIZE -sha1 \
+-	    -x509 -keyout "$CA.key" -out "$CA.crt" -config "$KEY_CONFIG" && \
+-	    chmod 0600 "$CA.key"
+-    else        
+-        # Make sure CA key/cert is available
+-	if [ $DO_CA -eq 1 ] || [ $DO_P12 -eq 1 ]; then
+-	    if [ ! -r "$CA.crt" ] || [ ! -r "$CA.key" ]; then
+-		echo "$PROGNAME: Need a readable $CA.crt and $CA.key in $KEY_DIR"
+-		echo "Try $PROGNAME --initca to build a root certificate/key."
+-		exit 1
+-	    fi
+-	fi
+-
+-	# Generate key for PKCS#11 token
+-	PKCS11_ARGS=
+-	if [ $DO_P11 -eq 1 ]; then
+-	        stty -echo
+-	        echo -n "User PIN: "
+-	        read -r PKCS11_PIN
+-	        stty echo
+-		export PKCS11_PIN
+-
+-		echo "Generating key pair on PKCS#11 token..."
+-		$PKCS11TOOL --module "$PKCS11_MODULE_PATH" --keypairgen \
+-			--login --pin "$PKCS11_PIN" \
+-			--key-type rsa:1024 \
+-			--slot "$PKCS11_SLOT" --id "$PKCS11_ID" --label "$PKCS11_LABEL" || exit 1
+-		PKCS11_ARGS="-engine pkcs11 -keyform engine -key $PKCS11_SLOT:$PKCS11_ID"
+-	fi
+-
+-        # Build cert/key
+-	( [ $DO_REQ -eq 0 ] || $OPENSSL req $BATCH -days $KEY_EXPIRE $NODES_REQ -new -newkey rsa:$KEY_SIZE \
+-	        -keyout "$FN.key" -out "$FN.csr" $REQ_EXT -config "$KEY_CONFIG" $PKCS11_ARGS ) && \
+-	    ( [ $DO_CA -eq 0 ]  || $OPENSSL ca $BATCH -days $KEY_EXPIRE -out "$FN.crt" \
+-	        -in "$FN.csr" $CA_EXT -md sha1 -config "$KEY_CONFIG" ) && \
+-	    ( [ $DO_P12 -eq 0 ] || $OPENSSL pkcs12 -export -inkey "$FN.key" \
+-	        -in "$FN.crt" -certfile "$CA.crt" -out "$FN.p12" $NODES_P12 ) && \
+-	    ( [ $DO_CA -eq 0 -o $DO_P11 -eq 1 ]  || chmod 0600 "$FN.key" ) && \
+-	    ( [ $DO_P12 -eq 0 ] || chmod 0600 "$FN.p12" )
+-
+-	# Load certificate into PKCS#11 token
+-	if [ $DO_P11 -eq 1 ]; then
+-		$OPENSSL x509 -in "$FN.crt" -inform PEM -out "$FN.crt.der" -outform DER && \
+-		  $PKCS11TOOL --module "$PKCS11_MODULE_PATH" --write-object "$FN.crt.der" --type cert \
+-			--login --pin "$PKCS11_PIN" \
+-			--slot "$PKCS11_SLOT" --id "$PKCS11_ID" --label "$PKCS11_LABEL" 
+-		[ -e "$FN.crt.der" ]; rm "$FN.crt.der"
+-	fi
+-
+-    fi
+-
+-# Need definitions
+-else
+-    need_vars
+-fi
+diff --git a/easy-rsa/2.0/revoke-full b/easy-rsa/2.0/revoke-full
+deleted file mode 100755
+index 4169c4c..0000000
+--- a/easy-rsa/2.0/revoke-full
++++ /dev/null
+@@ -1,40 +0,0 @@
+-#!/bin/sh
+-
+-# revoke a certificate, regenerate CRL,
+-# and verify revocation
+-
+-CRL="crl.pem"
+-RT="revoke-test.pem"
+-
+-if [ $# -ne 1 ]; then
+-    echo "usage: revoke-full <cert-name-base>";
+-    exit 1
+-fi
+-
+-if [ "$KEY_DIR" ]; then
+-    cd "$KEY_DIR"
+-    rm -f "$RT"
+-
+-    # set defaults
+-    export KEY_CN=""
+-    export KEY_OU=""
+-    export KEY_NAME=""
+-
+-    # revoke key and generate a new CRL
+-    $OPENSSL ca -revoke "$1.crt" -config "$KEY_CONFIG"
+-
+-    # generate a new CRL -- try to be compatible with
+-    # intermediate PKIs
+-    $OPENSSL ca -gencrl -out "$CRL" -config "$KEY_CONFIG"
+-    if [ -e export-ca.crt ]; then
+-	cat export-ca.crt "$CRL" >"$RT"
+-    else
+-	cat ca.crt "$CRL" >"$RT"
+-    fi
+-    
+-    # verify the revocation
+-    $OPENSSL verify -CAfile "$RT" -crl_check "$1.crt"
+-else
+-    echo 'Please source the vars script first (i.e. "source ./vars")'
+-    echo 'Make sure you have edited it to reflect your configuration.'
+-fi
+diff --git a/easy-rsa/2.0/sign-req b/easy-rsa/2.0/sign-req
+deleted file mode 100755
+index 6cae7b4..0000000
+--- a/easy-rsa/2.0/sign-req
++++ /dev/null
+@@ -1,7 +0,0 @@
+-#!/bin/sh
+-
+-# Sign a certificate signing request (a .csr file)
+-# with a local root certificate and key.
+-
+-export EASY_RSA="${EASY_RSA:-.}"
+-"$EASY_RSA/pkitool" --interact --sign $*
+diff --git a/easy-rsa/2.0/vars b/easy-rsa/2.0/vars
+deleted file mode 100755
+index 2ea1ced..0000000
+--- a/easy-rsa/2.0/vars
++++ /dev/null
+@@ -1,74 +0,0 @@
+-# easy-rsa parameter settings
+-
+-# NOTE: If you installed from an RPM,
+-# don't edit this file in place in
+-# /usr/share/openvpn/easy-rsa --
+-# instead, you should copy the whole
+-# easy-rsa directory to another location
+-# (such as /etc/openvpn) so that your
+-# edits will not be wiped out by a future
+-# OpenVPN package upgrade.
+-
+-# This variable should point to
+-# the top level of the easy-rsa
+-# tree.
+-export EASY_RSA="`pwd`"
+-
+-#
+-# This variable should point to
+-# the requested executables
+-#
+-export OPENSSL="openssl"
+-export PKCS11TOOL="pkcs11-tool"
+-export GREP="grep"
+-
+-
+-# This variable should point to
+-# the openssl.cnf file included
+-# with easy-rsa.
+-export KEY_CONFIG=`$EASY_RSA/whichopensslcnf $EASY_RSA`
+-
+-# Edit this variable to point to
+-# your soon-to-be-created key
+-# directory.
+-#
+-# WARNING: clean-all will do
+-# a rm -rf on this directory
+-# so make sure you define
+-# it correctly!
+-export KEY_DIR="$EASY_RSA/keys"
+-
+-# Issue rm -rf warning
+-echo NOTE: If you run ./clean-all, I will be doing a rm -rf on $KEY_DIR
+-
+-# PKCS11 fixes
+-export PKCS11_MODULE_PATH="dummy"
+-export PKCS11_PIN="dummy"
+-
+-# Increase this to 2048 if you
+-# are paranoid.  This will slow
+-# down TLS negotiation performance
+-# as well as the one-time DH parms
+-# generation process.
+-export KEY_SIZE=1024
+-
+-# In how many days should the root CA key expire?
+-export CA_EXPIRE=3650
+-
+-# In how many days should certificates expire?
+-export KEY_EXPIRE=3650
+-
+-# These are the default values for fields
+-# which will be placed in the certificate.
+-# Don't leave any of these fields blank.
+-export KEY_COUNTRY="US"
+-export KEY_PROVINCE="CA"
+-export KEY_CITY="SanFrancisco"
+-export KEY_ORG="Fort-Funston"
+-export KEY_EMAIL="me@...430..."
+-export KEY_EMAIL=mail@...1470...
+-export KEY_CN=changeme
+-export KEY_NAME=changeme
+-export KEY_OU=changeme
+-export PKCS11_MODULE_PATH=changeme
+-export PKCS11_PIN=1234
+diff --git a/easy-rsa/2.0/whichopensslcnf b/easy-rsa/2.0/whichopensslcnf
+deleted file mode 100755
+index 2226a8e..0000000
+--- a/easy-rsa/2.0/whichopensslcnf
++++ /dev/null
+@@ -1,26 +0,0 @@
+-#!/bin/sh
+-
+-cnf="$1/openssl.cnf"
+-
+-if [ "$OPENSSL" ]; then
+-	if $OPENSSL version | grep -E "0\.9\.6[[:alnum:]]" > /dev/null; then
+-		cnf="$1/openssl-0.9.6.cnf"
+-	elif $OPENSSL version | grep -E "0\.9\.8[[:alnum:]]" > /dev/null; then
+-		cnf="$1/openssl-0.9.8.cnf"
+-	elif $OPENSSL version | grep -E "1\.0\.([[:digit:]][[:alnum:]])" > /dev/null; then
+-                cnf="$1/openssl-1.0.0.cnf"
+-	else
+-		cnf="$1/openssl.cnf"
+-	fi
+-fi
+-
+-echo $cnf
+-
+-if [ ! -r $cnf ]; then
+-    echo "**************************************************************" >&2
+-    echo "  No $cnf file could be found" >&2
+-    echo "  Further invocations will fail" >&2
+-    echo "**************************************************************" >&2
+-fi
+-
+-exit 0
+diff --git a/easy-rsa/Windows/README.txt b/easy-rsa/Windows/README.txt
+deleted file mode 100644
+index 2ede7b1..0000000
+--- a/easy-rsa/Windows/README.txt
++++ /dev/null
+@@ -1,44 +0,0 @@
+-Extract all zip'd files to the OpenVPN home directory,
+-including the openssl.cnf file from the top-level
+-"easy-rsa" directory.
+-
+-First run init-config.bat
+-
+-Next, edit vars.bat to adapt it to your environment, and
+-create the directory that will hold your key files.
+-
+-To generate TLS keys:
+-
+-Create new empty index and serial files (once only)
+-1. vars
+-2. clean-all
+-
+-Build a CA key (once only)
+-1. vars
+-2. build-ca
+-
+-Build a DH file (for server side, once only)
+-1. vars
+-2. build-dh
+-
+-Build a private key/certficate for the openvpn server
+-1. vars
+-2. build-key-server <machine-name>
+-
+-Build key files in PEM format (for each client machine)
+-1. vars
+-2. build-key <machine-name>
+-   (use <machine name> for specific name within script)
+-
+-or
+-
+-Build key files in PKCS #12 format (for each client machine)
+-1. vars
+-2. build-key-pkcs12 <machine-name>
+-   (use <machine name> for specific name within script)
+-
+-To revoke a TLS certificate and generate a CRL file:
+-1. vars
+-2. revoke-full <machine-name>
+-3. verify last line of output confirms revokation
+-4. copy crl.pem to server directory and ensure config file uses "crl-verify <crl filename>"
+diff --git a/easy-rsa/Windows/build-ca-pass.bat b/easy-rsa/Windows/build-ca-pass.bat
+deleted file mode 100644
+index ab0b2a4..0000000
+--- a/easy-rsa/Windows/build-ca-pass.bat
++++ /dev/null
+@@ -1,8 +0,0 @@
+-@...1657... off
+-cd %HOME%
+-rem build a request for a cert that will be valid for ten years
+-openssl req -days 3650 -new -keyout %KEY_DIR%\%1.key -out %KEY_DIR%\%1.csr -config %KEY_CONFIG%
+-rem sign the cert request with our ca, creating a cert/key pair
+-openssl ca -days 3650 -out %KEY_DIR%\%1.crt -in %KEY_DIR%\%1.csr -config %KEY_CONFIG%
+-rem delete any .old files created in this process, to avoid future file creation errors
+-del /q %KEY_DIR%\*.old
+diff --git a/easy-rsa/Windows/build-ca.bat b/easy-rsa/Windows/build-ca.bat
+deleted file mode 100644
+index a3f234b..0000000
+--- a/easy-rsa/Windows/build-ca.bat
++++ /dev/null
+@@ -1,4 +0,0 @@
+-@...1657... off
+-cd %HOME%
+-rem build a cert authority valid for ten years, starting now
+-openssl req -days 3650 -nodes -new -x509 -keyout %KEY_DIR%\ca.key -out %KEY_DIR%\ca.crt -config %KEY_CONFIG%
+diff --git a/easy-rsa/Windows/build-dh.bat b/easy-rsa/Windows/build-dh.bat
+deleted file mode 100644
+index 74bc603..0000000
+--- a/easy-rsa/Windows/build-dh.bat
++++ /dev/null
+@@ -1,4 +0,0 @@
+-@...1657... off
+-cd %HOME%
+-rem build a dh file for the server side
+-openssl dhparam -out %KEY_DIR%/dh%KEY_SIZE%.pem %KEY_SIZE%
+diff --git a/easy-rsa/Windows/build-key-pass.bat b/easy-rsa/Windows/build-key-pass.bat
+deleted file mode 100644
+index ab0b2a4..0000000
+--- a/easy-rsa/Windows/build-key-pass.bat
++++ /dev/null
+@@ -1,8 +0,0 @@
+-@...1657... off
+-cd %HOME%
+-rem build a request for a cert that will be valid for ten years
+-openssl req -days 3650 -new -keyout %KEY_DIR%\%1.key -out %KEY_DIR%\%1.csr -config %KEY_CONFIG%
+-rem sign the cert request with our ca, creating a cert/key pair
+-openssl ca -days 3650 -out %KEY_DIR%\%1.crt -in %KEY_DIR%\%1.csr -config %KEY_CONFIG%
+-rem delete any .old files created in this process, to avoid future file creation errors
+-del /q %KEY_DIR%\*.old
+diff --git a/easy-rsa/Windows/build-key-pkcs12.bat b/easy-rsa/Windows/build-key-pkcs12.bat
+deleted file mode 100644
+index 1fc083e..0000000
+--- a/easy-rsa/Windows/build-key-pkcs12.bat
++++ /dev/null
+@@ -1,10 +0,0 @@
+-@...1657... off
+-cd %HOME%
+-rem build a request for a cert that will be valid for ten years
+-openssl req -days 3650 -nodes -new -keyout %KEY_DIR%\%1.key -out %KEY_DIR%\%1.csr -config %KEY_CONFIG%
+-rem sign the cert request with our ca, creating a cert/key pair
+-openssl ca -days 3650 -out %KEY_DIR%\%1.crt -in %KEY_DIR%\%1.csr -config %KEY_CONFIG%
+-rem convert the key/cert and embed the ca cert into a pkcs12 file.
+-openssl pkcs12 -export -inkey %KEY_DIR%\%1.key -in %KEY_DIR%\%1.crt -certfile %KEY_DIR%\ca.crt -out %KEY_DIR%\%1.p12
+-rem delete any .old files created in this process, to avoid future file creation errors
+-del /q %KEY_DIR%\*.old
+diff --git a/easy-rsa/Windows/build-key-server-pass.bat b/easy-rsa/Windows/build-key-server-pass.bat
+deleted file mode 100644
+index 99ed4d3..0000000
+--- a/easy-rsa/Windows/build-key-server-pass.bat
++++ /dev/null
+@@ -1,8 +0,0 @@
+-@...1657... off
+-cd %HOME%
+-rem build a request for a cert that will be valid for ten years
+-openssl req -days 3650 -new -keyout %KEY_DIR%\%1.key -out %KEY_DIR%\%1.csr -config %KEY_CONFIG%
+-rem sign the cert request with our ca, creating a cert/key pair
+-openssl ca -days 3650 -out %KEY_DIR%\%1.crt -in %KEY_DIR%\%1.csr -extensions server -config %KEY_CONFIG%
+-rem delete any .old files created in this process, to avoid future file creation errors
+-del /q %KEY_DIR%\*.old
+diff --git a/easy-rsa/Windows/build-key-server.bat b/easy-rsa/Windows/build-key-server.bat
+deleted file mode 100644
+index 20e3605..0000000
+--- a/easy-rsa/Windows/build-key-server.bat
++++ /dev/null
+@@ -1,8 +0,0 @@
+-@...1657... off
+-cd %HOME%
+-rem build a request for a cert that will be valid for ten years
+-openssl req -days 3650 -nodes -new -keyout %KEY_DIR%\%1.key -out %KEY_DIR%\%1.csr -config %KEY_CONFIG%
+-rem sign the cert request with our ca, creating a cert/key pair
+-openssl ca -days 3650 -out %KEY_DIR%\%1.crt -in %KEY_DIR%\%1.csr -extensions server -config %KEY_CONFIG%
+-rem delete any .old files created in this process, to avoid future file creation errors
+-del /q %KEY_DIR%\*.old
+diff --git a/easy-rsa/Windows/build-key.bat b/easy-rsa/Windows/build-key.bat
+deleted file mode 100644
+index c040904..0000000
+--- a/easy-rsa/Windows/build-key.bat
++++ /dev/null
+@@ -1,8 +0,0 @@
+-@...1657... off
+-cd %HOME%
+-rem build a request for a cert that will be valid for ten years
+-openssl req -days 3650 -nodes -new -keyout %KEY_DIR%\%1.key -out %KEY_DIR%\%1.csr -config %KEY_CONFIG%
+-rem sign the cert request with our ca, creating a cert/key pair
+-openssl ca -days 3650 -out %KEY_DIR%\%1.crt -in %KEY_DIR%\%1.csr -config %KEY_CONFIG%
+-rem delete any .old files created in this process, to avoid future file creation errors
+-del /q %KEY_DIR%\*.old
+diff --git a/easy-rsa/Windows/clean-all.bat b/easy-rsa/Windows/clean-all.bat
+deleted file mode 100644
+index 71cbf4d..0000000
+--- a/easy-rsa/Windows/clean-all.bat
++++ /dev/null
+@@ -1,13 +0,0 @@
+-@...1657... off
+-rem move to the HOME directory specified in VARS script
+-cd %HOME%
+-rem set a temporary KEY_DIR variable
+-set d=%KEY_DIR%
+-rem delete the KEY_DIR and any subdirs quietly
+-rmdir /s /q %d%
+-rem make a new KEY_DIR
+-mkdir %d%
+-rem copy in a fesh index file so we begin with an empty database
+-copy index.txt.start %d%\index.txt
+-rem copy in a fresh serial file so we begin generating keys at index 01
+-copy serial.start %d%\serial.
+diff --git a/easy-rsa/Windows/index.txt.start b/easy-rsa/Windows/index.txt.start
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/easy-rsa/Windows/init-config.bat b/easy-rsa/Windows/init-config.bat
+deleted file mode 100755
+index 12e6d78..0000000
+--- a/easy-rsa/Windows/init-config.bat
++++ /dev/null
+@@ -1 +0,0 @@
+-copy vars.bat.sample vars.bat
+diff --git a/easy-rsa/Windows/revoke-full.bat b/easy-rsa/Windows/revoke-full.bat
+deleted file mode 100644
+index ef2e4b5..0000000
+--- a/easy-rsa/Windows/revoke-full.bat
++++ /dev/null
+@@ -1,13 +0,0 @@
+-@...1657... off
+-cd %HOME%
+-rem revoke cert
+-openssl ca -revoke %KEY_DIR%\%1.crt -config %KEY_CONFIG%
+-rem generate new crl
+-openssl ca -gencrl -out %KEY_DIR%\crl.pem -config %KEY_CONFIG%
+-rem test revocation
+-rem first concatinate ca cert with newly generated crl
+-copy %KEY_DIR%\ca.crt+%KEY_DIR%\crl.pem %KEY_DIR%\revoke_test_file.pem
+-rem now verify the revocation
+-openssl verify -CAfile %KEY_DIR%\revoke_test_file.pem -crl_check %KEY_DIR%\%1.crt
+-rem delete temporary test file
+-del /q %KEY_DIR%\revoke_test_file.pem
+diff --git a/easy-rsa/Windows/serial.start b/easy-rsa/Windows/serial.start
+deleted file mode 100644
+index 8a0f05e..0000000
+--- a/easy-rsa/Windows/serial.start
++++ /dev/null
+@@ -1 +0,0 @@
+-01
+diff --git a/easy-rsa/Windows/vars.bat.sample b/easy-rsa/Windows/vars.bat.sample
+deleted file mode 100644
+index 36e6f71..0000000
+--- a/easy-rsa/Windows/vars.bat.sample
++++ /dev/null
+@@ -1,40 +0,0 @@
+-@...1657... off
+-rem Edit this variable to point to
+-rem the openssl.cnf file included
+-rem with easy-rsa.
+-
+-set HOME=%ProgramFiles%\OpenVPN\easy-rsa
+-set KEY_CONFIG=openssl-1.0.0.cnf
+-
+-rem Edit this variable to point to
+-rem your soon-to-be-created key
+-rem directory.
+-rem
+-rem WARNING: clean-all will do
+-rem a rm -rf on this directory
+-rem so make sure you define
+-rem it correctly!
+-set KEY_DIR=keys
+-
+-rem Increase this to 2048 if you
+-rem are paranoid.  This will slow
+-rem down TLS negotiation performance
+-rem as well as the one-time DH parms
+-rem generation process.
+-set KEY_SIZE=1024
+-
+-rem These are the default values for fields
+-rem which will be placed in the certificate.
+-rem Change these to reflect your site.
+-rem Don't leave any of these parms blank.
+-
+-set KEY_COUNTRY=US
+-set KEY_PROVINCE=CA
+-set KEY_CITY=SanFrancisco
+-set KEY_ORG=OpenVPN
+-set KEY_EMAIL=mail@...1470...
+-set KEY_CN=changeme
+-set KEY_NAME=changeme
+-set KEY_OU=changeme
+-set PKCS11_MODULE_PATH=changeme
+-set PKCS11_PIN=1234
 diff --git a/openvpn.spec.in b/openvpn.spec.in
-index c42e7c6..9a45c79 100644
+index 9a45c79..a2f0cb1 100644
 --- a/openvpn.spec.in
 +++ b/openvpn.spec.in
-@@ -103,13 +103,13 @@ and portability to most major OS platforms.
- %__make
- 
- # Build down-root plugin
--pushd plugin/down-root
-+pushd plugins/down-root
- %__make
- popd
- 
- # Build auth-pam plugin
- %if %{build_auth_pam}
--pushd plugin/auth-pam
-+pushd plugins/auth-pam
- %__make
- popd
- %endif
-@@ -153,16 +153,16 @@ popd
- # Install the plugins
- #
- 
--%__mkdir_p %{buildroot}%{_datadir}/%{name}/plugin/lib
-+%__mkdir_p %{buildroot}%{_datadir}/%{name}/plugins/lib
- 
- for pi in auth-pam down-root; do
--  %__mv -f plugin/$pi/README plugin/README.$pi
--  if [ -e plugin/$pi/openvpn-$pi.so ]; then
--    %__install -c -m 755 plugin/$pi/openvpn-$pi.so %{buildroot}%{_datadir}/openvpn/plugin/lib/openvpn-$pi.so
-+  %__mv -f plugins/$pi/README plugins/README.$pi
-+  if [ -e plugins/$pi/openvpn-$pi.so ]; then
-+    %__install -c -m 755 plugins/$pi/openvpn-$pi.so %{buildroot}%{_datadir}/openvpn/plugins/lib/openvpn-$pi.so
-   fi
- done
- 
--%__mv -f plugin/README plugin/README.plugins
-+%__mv -f plugins/README plugins/README.plugins
- 
- #
- # Clean section
 @@ -222,7 +222,7 @@ fi
  %endif
  
  # Install extra %doc stuff
--%doc contrib/ easy-rsa/ sample-*/ plugin/README.*
-+%doc contrib/ easy-rsa/ sample-*/ plugins/README.*
+-%doc contrib/ easy-rsa/ sample-*/ plugins/README.*
++%doc contrib/ sample-*/ plugins/README.*
  
  %changelog
  * Thu Jul 30 2009 David Sommerseth <dazo@...384...>
-diff --git a/plugin/README b/plugin/README
-deleted file mode 100644
-index 6e490c5..0000000
---- a/plugin/README
-+++ /dev/null
-@@ -1,47 +0,0 @@
--OpenVPN Plugins
-----------------
--
--Starting with OpenVPN 2.0-beta17, compiled plugin modules are
--supported on any *nix OS which includes libdl or on Windows.
--One or more modules may be loaded into OpenVPN using
--the --plugin directive, and each plugin module is capable of
--intercepting any of the script callbacks which OpenVPN supports:
--
--(1) up
--(2) down
--(3) route-up
--(4) ipchange
--(5) tls-verify
--(6) auth-user-pass-verify
--(7) client-connect
--(8) client-disconnect
--(9) learn-address
--
--See the openvpn-plugin.h file in the top-level directory of the
--OpenVPN source distribution for more detailed information
--on the plugin interface.
--
--Included Plugins
------------------
--
--auth-pam -- Authenticate using PAM and a split privilege
--            execution model which functions even if
--            root privileges or the execution environment
--            have been altered with --user/--group/--chroot.
--            Tested on Linux only.
--
--down-root -- Enable the running of down scripts with root privileges
--             even if --user/--group/--chroot have been used
--             to drop root privileges or change the execution
--             environment.  Not applicable on Windows.
--
--examples -- A simple example that demonstrates a portable
--            plugin, i.e. one which can be built for *nix
--            or Windows from the same source.
--
--Building Plugins
------------------
--
--cd to the top-level directory of a plugin, and use the
--"make" command to build it.  The examples plugin is
--built using a build script, not a makefile.
-diff --git a/plugin/auth-pam/.svnignore b/plugin/auth-pam/.svnignore
-deleted file mode 100644
-index 140f8cf..0000000
---- a/plugin/auth-pam/.svnignore
-+++ /dev/null
-@@ -1 +0,0 @@
--*.so
-diff --git a/plugin/auth-pam/Makefile b/plugin/auth-pam/Makefile
-deleted file mode 100755
-index e69fe3f..0000000
---- a/plugin/auth-pam/Makefile
-+++ /dev/null
-@@ -1,30 +0,0 @@
--#
--# Build the OpenVPN auth-pam plugin module.
--#
--
--# If PAM modules are not linked against libpam.so, set DLOPEN_PAM to 1. This
--# must be done on SUSE 9.1, at least.
--DLOPEN_PAM=0
--
--ifeq ($(DLOPEN_PAM),1)
--	LIBPAM=-ldl
--else
--	LIBPAM=-lpam
--endif
--
--# This directory is where we will look for openvpn-plugin.h
--INCLUDE=-I../..
--
--CC_FLAGS=-O2 -Wall -DDLOPEN_PAM=$(DLOPEN_PAM)
--
--openvpn-auth-pam.so : auth-pam.o pamdl.o
--	gcc ${CC_FLAGS} -fPIC -shared -Wl,-soname,openvpn-auth-pam.so -o openvpn-auth-pam.so auth-pam.o pamdl.o -lc $(LIBPAM)
--
--auth-pam.o : auth-pam.c pamdl.h
--	gcc ${CC_FLAGS} -fPIC -c ${INCLUDE} auth-pam.c
--
--pamdl.o : pamdl.c pamdl.h
--	gcc ${CC_FLAGS} -fPIC -c ${INCLUDE} pamdl.c
--
--clean :
--	rm -f *.o *.so
-diff --git a/plugin/auth-pam/README b/plugin/auth-pam/README
-deleted file mode 100644
-index e123690..0000000
---- a/plugin/auth-pam/README
-+++ /dev/null
-@@ -1,74 +0,0 @@
--openvpn-auth-pam
--
--SYNOPSIS
--
--The openvpn-auth-pam module implements username/password
--authentication via PAM, and essentially allows any authentication
--method supported by PAM (such as LDAP, RADIUS, or Linux Shadow
--passwords) to be used with OpenVPN.  While PAM supports
--username/password authentication, this can be combined with X509
--certificates to provide two indepedent levels of authentication.
--
--This module uses a split privilege execution model which will
--function even if you drop openvpn daemon privileges using the user,
--group, or chroot directives.
--
--BUILD
--
--To build openvpn-auth-pam, you will need to have the pam-devel
--package installed.
--
--Build with the "make" command.  The module will be named
--openvpn-auth-pam.so
--
--USAGE
--
--To use this plugin module, add to your OpenVPN config file:
--
--  plugin openvpn-auth-pam.so service-type
--
--The required service-type parameter corresponds to
--the PAM service definition file usually found
--in /etc/pam.d.
--
--This plugin also supports the usage of a list of name/value
--pairs to answer PAM module queries.
--
--For example:
--
--  plugin openvpn-auth-pam.so "login login USERNAME password PASSWORD"
--
--tells auth-pam to (a) use the "login" PAM module, (b) answer a
--"login" query with the username given by the OpenVPN client, and
--(c) answer a "password" query with the password given by the
--OpenVPN client.  This provides flexibility in dealing with the different
--types of query strings which different PAM modules might generate.
--For example, suppose you were using a PAM module called
--"test" which queried for "name" rather than "login":
--
--  plugin openvpn-auth-pam.so "test name USERNAME password PASSWORD"
--
--While "USERNAME" "COMMONNAME" and "PASSWORD" are special strings which substitute
--to client-supplied values, it is also possible to name literal values
--to use as PAM module query responses.  For example, suppose that the
--login module queried for a third parameter, "domain" which
--is to be answered with the constant value "mydomain.com":
--
--  plugin openvpn-auth-pam.so "login login USERNAME password PASSWORD domain mydomain.com"
--
--The following OpenVPN directives can also influence
--the operation of this plugin:
--
--  client-cert-not-required
--  username-as-common-name
--
--Run OpenVPN with --verb 7 or higher to get debugging output from
--this plugin, including the list of queries presented by the
--underlying PAM module.  This is a useful debugging tool to figure
--out which queries a given PAM module is making, so that you can
--craft the appropriate plugin directive to answer it.
--
--CAVEATS
--
--This module will only work on *nix systems which support PAM,
--not Windows.
-diff --git a/plugin/auth-pam/auth-pam.c b/plugin/auth-pam/auth-pam.c
-deleted file mode 100644
-index e52f632..0000000
---- a/plugin/auth-pam/auth-pam.c
-+++ /dev/null
-@@ -1,804 +0,0 @@
--/*
-- *  OpenVPN -- An application to securely tunnel IP networks
-- *             over a single TCP/UDP port, with support for SSL/TLS-based
-- *             session authentication and key exchange,
-- *             packet encryption, packet authentication, and
-- *             packet compression.
-- *
-- *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-- *
-- *  This program is free software; you can redistribute it and/or modify
-- *  it under the terms of the GNU General Public License version 2
-- *  as published by the Free Software Foundation.
-- *
-- *  This program is distributed in the hope that it will be useful,
-- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- *  GNU General Public License for more details.
-- *
-- *  You should have received a copy of the GNU General Public License
-- *  along with this program (see the file COPYING included with this
-- *  distribution); if not, write to the Free Software Foundation, Inc.,
-- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-- */
--
--/*
-- * OpenVPN plugin module to do PAM authentication using a split
-- * privilege model.
-- */
--
--#if DLOPEN_PAM
--#include <dlfcn.h>
--#include "pamdl.h"
--#else
--#include <security/pam_appl.h>
--#endif
--
--#include <stdio.h>
--#include <string.h>
--#include <ctype.h>
--#include <unistd.h>
--#include <stdlib.h>
--#include <sys/types.h>
--#include <sys/socket.h>
--#include <sys/wait.h>
--#include <fcntl.h>
--#include <signal.h>
--#include <syslog.h>
--
--#include "openvpn-plugin.h"
--
--#define DEBUG(verb) ((verb) >= 4)
--
--/* Command codes for foreground -> background communication */
--#define COMMAND_VERIFY 0
--#define COMMAND_EXIT   1
--
--/* Response codes for background -> foreground communication */
--#define RESPONSE_INIT_SUCCEEDED   10
--#define RESPONSE_INIT_FAILED      11
--#define RESPONSE_VERIFY_SUCCEEDED 12
--#define RESPONSE_VERIFY_FAILED    13
--
--/*
-- * Plugin state, used by foreground
-- */
--struct auth_pam_context
--{
--  /* Foreground's socket to background process */
--  int foreground_fd;
--
--  /* Process ID of background process */
--  pid_t background_pid;
--
--  /* Verbosity level of OpenVPN */
--  int verb;
--};
--
--/*
-- * Name/Value pairs for conversation function.
-- * Special Values:
-- *
-- *  "USERNAME" -- substitute client-supplied username
-- *  "PASSWORD" -- substitute client-specified password
-- *  "COMMONNAME" -- substitute client certificate common name
-- */
--
--#define N_NAME_VALUE 16
--
--struct name_value {
--  const char *name;
--  const char *value;
--};
--
--struct name_value_list {
--  int len;
--  struct name_value data[N_NAME_VALUE];
--};
--
--/*
-- * Used to pass the username/password
-- * to the PAM conversation function.
-- */
--struct user_pass {
--  int verb;
--
--  char username[128];
--  char password[128];
--  char common_name[128];
--
--  const struct name_value_list *name_value_list;
--};
--
--/* Background process function */
--static void pam_server (int fd, const char *service, int verb, const struct name_value_list *name_value_list);
--
--/*  Read 'tosearch', replace all occurences of 'searchfor' with 'replacewith' and return
-- *  a pointer to the NEW string.  Does not modify the input strings.  Will not enter an
-- *  infinite loop with clever 'searchfor' and 'replacewith' strings.
-- *  Daniel Johnson - Progman2000@...1085... / djohnson@...1167...
-- */
--static char *
--searchandreplace(const char *tosearch, const char *searchfor, const char *replacewith)
--{
--  const char *searching=tosearch;
--  char *scratch;
--  char temp[strlen(tosearch)*10];
--  temp[0]=0;
--
--  if (!tosearch || !searchfor || !replacewith) return 0;
--  if (!strlen(tosearch) || !strlen(searchfor) || !strlen(replacewith)) return 0;
--
--  scratch = strstr(searching,searchfor);
--  if (!scratch) return strdup(tosearch);
--
--  while (scratch) {
--    strncat(temp,searching,scratch-searching);
--    strcat(temp,replacewith);
--
--    searching=scratch+strlen(searchfor);
--    scratch = strstr(searching,searchfor);
--  }
--  return strdup(temp);
--}
--
--/*
-- * Given an environmental variable name, search
-- * the envp array for its value, returning it
-- * if found or NULL otherwise.
-- */
--static const char *
--get_env (const char *name, const char *envp[])
--{
--  if (envp)
--    {
--      int i;
--      const int namelen = strlen (name);
--      for (i = 0; envp[i]; ++i)
--	{
--	  if (!strncmp (envp[i], name, namelen))
--	    {
--	      const char *cp = envp[i] + namelen;
--	      if (*cp == '=')
--		return cp + 1;
--	    }
--	}
--    }
--  return NULL;
--}
--
--/*
-- * Return the length of a string array
-- */
--static int
--string_array_len (const char *array[])
--{
--  int i = 0;
--  if (array)
--    {
--      while (array[i])
--	++i;
--    }
--  return i;
--}
--
--/*
-- * Socket read/write functions.
-- */
--
--static int
--recv_control (int fd)
--{
--  unsigned char c;
--  const ssize_t size = read (fd, &c, sizeof (c));
--  if (size == sizeof (c))
--    return c;
--  else
--    {
--      /*fprintf (stderr, "AUTH-PAM: DEBUG recv_control.read=%d\n", (int)size);*/
--      return -1;
--    }
--}
--
--static int
--send_control (int fd, int code)
--{
--  unsigned char c = (unsigned char) code;
--  const ssize_t size = write (fd, &c, sizeof (c));
--  if (size == sizeof (c))
--    return (int) size;
--  else
--    return -1;
--}
--
--static int
--recv_string (int fd, char *buffer, int len)
--{
--  if (len > 0)
--    {
--      ssize_t size;
--      memset (buffer, 0, len);
--      size = read (fd, buffer, len);
--      buffer[len-1] = 0;
--      if (size >= 1)
--	return (int)size;
--    }
--  return -1;
--}
--
--static int
--send_string (int fd, const char *string)
--{
--  const int len = strlen (string) + 1;
--  const ssize_t size = write (fd, string, len);
--  if (size == len)
--    return (int) size;
--  else
--    return -1;
--}
--
--#ifdef DO_DAEMONIZE
--
--/*
-- * Daemonize if "daemon" env var is true.
-- * Preserve stderr across daemonization if
-- * "daemon_log_redirect" env var is true.
-- */
--static void
--daemonize (const char *envp[])
--{
--  const char *daemon_string = get_env ("daemon", envp);
--  if (daemon_string && daemon_string[0] == '1')
--    {
--      const char *log_redirect = get_env ("daemon_log_redirect", envp);
--      int fd = -1;
--      if (log_redirect && log_redirect[0] == '1')
--	fd = dup (2);
--      if (daemon (0, 0) < 0)
--	{
--	  fprintf (stderr, "AUTH-PAM: daemonization failed\n");
--	}
--      else if (fd >= 3)
--	{
--	  dup2 (fd, 2);
--	  close (fd);
--	}
--    }
--}
--
--#endif
--
--/*
-- * Close most of parent's fds.
-- * Keep stdin/stdout/stderr, plus one
-- * other fd which is presumed to be
-- * our pipe back to parent.
-- * Admittedly, a bit of a kludge,
-- * but posix doesn't give us a kind
-- * of FD_CLOEXEC which will stop
-- * fds from crossing a fork().
-- */
--static void
--close_fds_except (int keep)
--{
--  int i;
--  closelog ();
--  for (i = 3; i <= 100; ++i)
--    {
--      if (i != keep)
--	close (i);
--    }
--}
--
--/*
-- * Usually we ignore signals, because our parent will
-- * deal with them.
-- */
--static void
--set_signals (void)
--{
--  signal (SIGTERM, SIG_DFL);
--
--  signal (SIGINT, SIG_IGN);
--  signal (SIGHUP, SIG_IGN);
--  signal (SIGUSR1, SIG_IGN);
--  signal (SIGUSR2, SIG_IGN);
--  signal (SIGPIPE, SIG_IGN);
--}
--
--/*
-- * Return 1 if query matches match.
-- */
--static int
--name_value_match (const char *query, const char *match)
--{
--  while (!isalnum (*query))
--    {
--      if (*query == '\0')
--	return 0;
--      ++query;
--    }
--  return strncasecmp (match, query, strlen (match)) == 0;
--}
--
--OPENVPN_EXPORT openvpn_plugin_handle_t
--openvpn_plugin_open_v1 (unsigned int *type_mask, const char *argv[], const char *envp[])
--{
--  pid_t pid;
--  int fd[2];
--
--  struct auth_pam_context *context;
--  struct name_value_list name_value_list;
--
--  const int base_parms = 2;
--
--  /*
--   * Allocate our context
--   */
--  context = (struct auth_pam_context *) calloc (1, sizeof (struct auth_pam_context));
--  if (!context)
--    goto error;
--  context->foreground_fd = -1;
--
--  /*
--   * Intercept the --auth-user-pass-verify callback.
--   */
--  *type_mask = OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY);
--
--  /*
--   * Make sure we have two string arguments: the first is the .so name,
--   * the second is the PAM service type.
--   */
--  if (string_array_len (argv) < base_parms)
--    {
--      fprintf (stderr, "AUTH-PAM: need PAM service parameter\n");
--      goto error;
--    }
--
--  /*
--   * See if we have optional name/value pairs to match against
--   * PAM module queried fields in the conversation function.
--   */
--  name_value_list.len = 0;
--  if (string_array_len (argv) > base_parms)
--    {
--      const int nv_len = string_array_len (argv) - base_parms;
--      int i;
--
--      if ((nv_len & 1) == 1 || (nv_len / 2) > N_NAME_VALUE)
--	{
--	  fprintf (stderr, "AUTH-PAM: bad name/value list length\n");
--	  goto error;
--	}
--
--      name_value_list.len = nv_len / 2;
--      for (i = 0; i < name_value_list.len; ++i)
--	{
--	  const int base = base_parms + i * 2;
--	  name_value_list.data[i].name = argv[base];
--	  name_value_list.data[i].value = argv[base+1];
--	}
--    }
--
--  /*
--   * Get verbosity level from environment
--   */
--  {
--    const char *verb_string = get_env ("verb", envp);
--    if (verb_string)
--      context->verb = atoi (verb_string);
--  }
--
--  /*
--   * Make a socket for foreground and background processes
--   * to communicate.
--   */
--  if (socketpair (PF_UNIX, SOCK_DGRAM, 0, fd) == -1)
--    {
--      fprintf (stderr, "AUTH-PAM: socketpair call failed\n");
--      goto error;
--    }
--
--  /*
--   * Fork off the privileged process.  It will remain privileged
--   * even after the foreground process drops its privileges.
--   */
--  pid = fork ();
--
--  if (pid)
--    {
--      int status;
--
--      /*
--       * Foreground Process
--       */
--
--      context->background_pid = pid;
--
--      /* close our copy of child's socket */
--      close (fd[1]);
--
--      /* don't let future subprocesses inherit child socket */
--      if (fcntl (fd[0], F_SETFD, FD_CLOEXEC) < 0)
--	fprintf (stderr, "AUTH-PAM: Set FD_CLOEXEC flag on socket file descriptor failed\n");
--
--      /* wait for background child process to initialize */
--      status = recv_control (fd[0]);
--      if (status == RESPONSE_INIT_SUCCEEDED)
--	{
--	  context->foreground_fd = fd[0];
--	  return (openvpn_plugin_handle_t) context;
--	}
--    }
--  else
--    {
--      /*
--       * Background Process
--       */
--
--      /* close all parent fds except our socket back to parent */
--      close_fds_except (fd[1]);
--
--      /* Ignore most signals (the parent will receive them) */
--      set_signals ();
--
--#ifdef DO_DAEMONIZE
--      /* Daemonize if --daemon option is set. */
--      daemonize (envp);
--#endif
--
--      /* execute the event loop */
--      pam_server (fd[1], argv[1], context->verb, &name_value_list);
--
--      close (fd[1]);
--
--      exit (0);
--      return 0; /* NOTREACHED */
--    }
--
-- error:
--  if (context)
--    free (context);
--  return NULL;
--}
--
--OPENVPN_EXPORT int
--openvpn_plugin_func_v1 (openvpn_plugin_handle_t handle, const int type, const char *argv[], const char *envp[])
--{
--  struct auth_pam_context *context = (struct auth_pam_context *) handle;
--
--  if (type == OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY && context->foreground_fd >= 0)
--    {
--      /* get username/password from envp string array */
--      const char *username = get_env ("username", envp);
--      const char *password = get_env ("password", envp);
--      const char *common_name = get_env ("common_name", envp) ? get_env ("common_name", envp) : "";
--
--      if (username && strlen (username) > 0 && password)
--	{
--	  if (send_control (context->foreground_fd, COMMAND_VERIFY) == -1
--	      || send_string (context->foreground_fd, username) == -1
--	      || send_string (context->foreground_fd, password) == -1
--             || send_string (context->foreground_fd, common_name) == -1)
--	    {
--	      fprintf (stderr, "AUTH-PAM: Error sending auth info to background process\n");
--	    }
--	  else
--	    {
--	      const int status = recv_control (context->foreground_fd);
--	      if (status == RESPONSE_VERIFY_SUCCEEDED)
--		return OPENVPN_PLUGIN_FUNC_SUCCESS;
--	      if (status == -1)
--		fprintf (stderr, "AUTH-PAM: Error receiving auth confirmation from background process\n");
--	    }
--	}
--    }
--  return OPENVPN_PLUGIN_FUNC_ERROR;
--}
--
--OPENVPN_EXPORT void
--openvpn_plugin_close_v1 (openvpn_plugin_handle_t handle)
--{
--  struct auth_pam_context *context = (struct auth_pam_context *) handle;
--
--  if (DEBUG (context->verb))
--    fprintf (stderr, "AUTH-PAM: close\n");
--
--  if (context->foreground_fd >= 0)
--    {
--      /* tell background process to exit */
--      if (send_control (context->foreground_fd, COMMAND_EXIT) == -1)
--	fprintf (stderr, "AUTH-PAM: Error signaling background process to exit\n");
--
--      /* wait for background process to exit */
--      if (context->background_pid > 0)
--	waitpid (context->background_pid, NULL, 0);
--
--      close (context->foreground_fd);
--      context->foreground_fd = -1;
--    }
--
--  free (context);
--}
--
--OPENVPN_EXPORT void
--openvpn_plugin_abort_v1 (openvpn_plugin_handle_t handle)
--{
--  struct auth_pam_context *context = (struct auth_pam_context *) handle;
--
--  /* tell background process to exit */
--  if (context && context->foreground_fd >= 0)
--    {
--      send_control (context->foreground_fd, COMMAND_EXIT);
--      close (context->foreground_fd);
--      context->foreground_fd = -1;
--    }
--}
--
--/*
-- * PAM conversation function
-- */
--static int
--my_conv (int n, const struct pam_message **msg_array,
--	 struct pam_response **response_array, void *appdata_ptr)
--{
--  const struct user_pass *up = ( const struct user_pass *) appdata_ptr;
--  struct pam_response *aresp;
--  int i;
--  int ret = PAM_SUCCESS;
--
--  *response_array = NULL;
--
--  if (n <= 0 || n > PAM_MAX_NUM_MSG)
--    return (PAM_CONV_ERR);
--  if ((aresp = calloc (n, sizeof *aresp)) == NULL)
--    return (PAM_BUF_ERR);
--
--  /* loop through each PAM-module query */
--  for (i = 0; i < n; ++i)
--    {
--      const struct pam_message *msg = msg_array[i];
--      aresp[i].resp_retcode = 0;
--      aresp[i].resp = NULL;
--
--      if (DEBUG (up->verb))
--	{
--	  fprintf (stderr, "AUTH-PAM: BACKGROUND: my_conv[%d] query='%s' style=%d\n",
--		   i,
--		   msg->msg ? msg->msg : "NULL",
--		   msg->msg_style);
--	}
--
--      if (up->name_value_list && up->name_value_list->len > 0)
--	{
--	  /* use name/value list match method */
--	  const struct name_value_list *list = up->name_value_list;
--	  int j;
--
--	  /* loop through name/value pairs */
--	  for (j = 0; j < list->len; ++j)
--	    {
--	      const char *match_name = list->data[j].name;
--	      const char *match_value = list->data[j].value;
--
--	      if (name_value_match (msg->msg, match_name))
--		{
--		  /* found name/value match */
--		  aresp[i].resp = NULL;
--
--		  if (DEBUG (up->verb))
--		    fprintf (stderr, "AUTH-PAM: BACKGROUND: name match found, query/match-string ['%s', '%s'] = '%s'\n",
--			     msg->msg,
--			     match_name,
--			     match_value);
--
--		  if (strstr(match_value, "USERNAME"))
--		    aresp[i].resp = searchandreplace(match_value, "USERNAME", up->username);
--		  else if (strstr(match_value, "PASSWORD"))
--		    aresp[i].resp = searchandreplace(match_value, "PASSWORD", up->password);
--		  else if (strstr(match_value, "COMMONNAME"))
--		    aresp[i].resp = searchandreplace(match_value, "COMMONNAME", up->common_name);
--		  else
--		    aresp[i].resp = strdup (match_value);
--
--		  if (aresp[i].resp == NULL)
--		    ret = PAM_CONV_ERR;
--		  break;
--		}
--	    }
--
--	  if (j == list->len)
--	    ret = PAM_CONV_ERR;
--	}
--      else
--	{
--	  /* use PAM_PROMPT_ECHO_x hints */
--	  switch (msg->msg_style)
--	    {
--	    case PAM_PROMPT_ECHO_OFF:
--	      aresp[i].resp = strdup (up->password);
--	      if (aresp[i].resp == NULL)
--		ret = PAM_CONV_ERR;
--	      break;
--
--	    case PAM_PROMPT_ECHO_ON:
--	      aresp[i].resp = strdup (up->username);
--	      if (aresp[i].resp == NULL)
--		ret = PAM_CONV_ERR;
--	      break;
--
--	    case PAM_ERROR_MSG:
--	    case PAM_TEXT_INFO:
--	      break;
--
--	    default:
--	      ret = PAM_CONV_ERR;
--	      break;
--	    }
--	}
--    }
--
--  if (ret == PAM_SUCCESS)
--    *response_array = aresp;
--  return ret;
--}
--
--/*
-- * Return 1 if authenticated and 0 if failed.
-- * Called once for every username/password
-- * to be authenticated.
-- */
--static int
--pam_auth (const char *service, const struct user_pass *up)
--{
--  struct pam_conv conv;
--  pam_handle_t *pamh = NULL;
--  int status = PAM_SUCCESS;
--  int ret = 0;
--  const int name_value_list_provided = (up->name_value_list && up->name_value_list->len > 0);
--
--  /* Initialize PAM */
--  conv.conv = my_conv;
--  conv.appdata_ptr = (void *)up;
--  status = pam_start (service, name_value_list_provided ? NULL : up->username, &conv, &pamh);
--  if (status == PAM_SUCCESS)
--    {
--      /* Call PAM to verify username/password */
--      status = pam_authenticate(pamh, 0);
--      if (status == PAM_SUCCESS)
--	status = pam_acct_mgmt (pamh, 0);
--      if (status == PAM_SUCCESS)
--	ret = 1;
--
--      /* Output error message if failed */
--      if (!ret)
--	{
--	  fprintf (stderr, "AUTH-PAM: BACKGROUND: user '%s' failed to authenticate: %s\n",
--		   up->username,
--		   pam_strerror (pamh, status));
--	}
--
--      /* Close PAM */
--      pam_end (pamh, status);      
--    }
--
--  return ret;
--}
--
--/*
-- * Background process -- runs with privilege.
-- */
--static void
--pam_server (int fd, const char *service, int verb, const struct name_value_list *name_value_list)
--{
--  struct user_pass up;
--  int command;
--#if DLOPEN_PAM
--  static const char pam_so[] = "libpam.so";
--#endif
--
--  /*
--   * Do initialization
--   */
--  if (DEBUG (verb))
--    fprintf (stderr, "AUTH-PAM: BACKGROUND: INIT service='%s'\n", service);
--
--#if DLOPEN_PAM
--  /*
--   * Load PAM shared object
--   */
--  if (!dlopen_pam (pam_so))
--    {
--      fprintf (stderr, "AUTH-PAM: BACKGROUND: could not load PAM lib %s: %s\n", pam_so, dlerror());
--      send_control (fd, RESPONSE_INIT_FAILED);
--      goto done;
--    }
--#endif
--
--  /*
--   * Tell foreground that we initialized successfully
--   */
--  if (send_control (fd, RESPONSE_INIT_SUCCEEDED) == -1)
--    {
--      fprintf (stderr, "AUTH-PAM: BACKGROUND: write error on response socket [1]\n");
--      goto done;
--    }
--
--  /*
--   * Event loop
--   */
--  while (1)
--    {
--      memset (&up, 0, sizeof (up));
--      up.verb = verb;
--      up.name_value_list = name_value_list;
--
--      /* get a command from foreground process */
--      command = recv_control (fd);
--
--      if (DEBUG (verb))
--	fprintf (stderr, "AUTH-PAM: BACKGROUND: received command code: %d\n", command);
--
--      switch (command)
--	{
--	case COMMAND_VERIFY:
--	  if (recv_string (fd, up.username, sizeof (up.username)) == -1
--	      || recv_string (fd, up.password, sizeof (up.password)) == -1
--	      || recv_string (fd, up.common_name, sizeof (up.common_name)) == -1)
--	    {
--	      fprintf (stderr, "AUTH-PAM: BACKGROUND: read error on command channel: code=%d, exiting\n",
--		       command);
--	      goto done;
--	    }
--
--	  if (DEBUG (verb))
--	    {
--#if 0
--	      fprintf (stderr, "AUTH-PAM: BACKGROUND: USER/PASS: %s/%s\n",
--		       up.username, up.password);
--#else
--	      fprintf (stderr, "AUTH-PAM: BACKGROUND: USER: %s\n", up.username);
--#endif
--	    }
--
--	  if (pam_auth (service, &up)) /* Succeeded */
--	    {
--	      if (send_control (fd, RESPONSE_VERIFY_SUCCEEDED) == -1)
--		{
--		  fprintf (stderr, "AUTH-PAM: BACKGROUND: write error on response socket [2]\n");
--		  goto done;
--		}
--	    }
--	  else /* Failed */
--	    {
--	      if (send_control (fd, RESPONSE_VERIFY_FAILED) == -1)
--		{
--		  fprintf (stderr, "AUTH-PAM: BACKGROUND: write error on response socket [3]\n");
--		  goto done;
--		}
--	    }
--	  break;
--
--	case COMMAND_EXIT:
--	  goto done;
--
--	case -1:
--	  fprintf (stderr, "AUTH-PAM: BACKGROUND: read error on command channel\n");
--	  goto done;
--
--	default:
--	  fprintf (stderr, "AUTH-PAM: BACKGROUND: unknown command code: code=%d, exiting\n",
--		   command);
--	  goto done;
--	}
--    }
-- done:
--
--#if DLOPEN_PAM
--  dlclose_pam ();
--#endif
--  if (DEBUG (verb))
--    fprintf (stderr, "AUTH-PAM: BACKGROUND: EXIT\n");
--
--  return;
--}
-diff --git a/plugin/auth-pam/pamdl.c b/plugin/auth-pam/pamdl.c
-deleted file mode 100644
-index 8636a8e..0000000
---- a/plugin/auth-pam/pamdl.c
-+++ /dev/null
-@@ -1,180 +0,0 @@
--#if DLOPEN_PAM
--/*
-- * If you want to dynamically load libpam using dlopen() or something,
-- * then dlopen( ' this shared object ' ); It takes care of exporting
-- * the right symbols to any modules loaded by libpam.
-- *
-- * Modified by JY for use with openvpn-pam-auth
-- */
--
--#include <stdio.h>
--#include <dlfcn.h>
--#include <security/pam_appl.h>
--
--#include "pamdl.h"
--
--static void *libpam_h = NULL;
--
--#define RESOLVE_PAM_FUNCTION(x, y, z, err) \
--    { \
--        union { const void *tpointer; y (*fn) z ; } fptr; \
--	fptr.tpointer = dlsym(libpam_h, #x); real_##x = fptr.fn; \
--	if (real_##x == NULL) { \
--	    fprintf (stderr, "PAMDL: unable to resolve '%s': %s\n", #x, dlerror()); \
--	    return err; \
--	} \
--    }
--
--int
--dlopen_pam (const char *so)
--{
--  if (libpam_h == NULL)
--    {
--      libpam_h = dlopen(so, RTLD_GLOBAL|RTLD_NOW);
--    }
--  return libpam_h != NULL;
--}
--
--void
--dlclose_pam (void)
--{
--  if (libpam_h != NULL)
--    {
--      dlclose(libpam_h);
--      libpam_h = NULL;
--    }
--}
--
--int pam_start(const char *service_name, const char *user,
--	      const struct pam_conv *pam_conversation,
--	      pam_handle_t **pamh)
--{
--    int (*real_pam_start)(const char *, const char *,
--				 const struct pam_conv *,
--				 pam_handle_t **);
--    RESOLVE_PAM_FUNCTION(pam_start, int, (const char *, const char *,
--					  const struct pam_conv *,
--					  pam_handle_t **), PAM_ABORT);
--    return real_pam_start(service_name, user, pam_conversation, pamh);
--}
--
--int pam_end(pam_handle_t *pamh, int pam_status)
--{
--    int (*real_pam_end)(pam_handle_t *, int);
--    RESOLVE_PAM_FUNCTION(pam_end, int, (pam_handle_t *, int), PAM_ABORT);
--    return real_pam_end(pamh, pam_status);
--}
--
--int pam_set_item(pam_handle_t *pamh, int item_type, const void *item)
--{
--    int (*real_pam_set_item)(pam_handle_t *, int, const void *);
--    RESOLVE_PAM_FUNCTION(pam_set_item, int,
--			 (pam_handle_t *, int, const void *), PAM_ABORT);
--    return real_pam_set_item(pamh, item_type, item);
--}
--
--int pam_get_item(pam_handle_t *pamh, int item_type, const void **item)
--{
--    int (*real_pam_get_item)(const pam_handle_t *, int, const void **);
--    RESOLVE_PAM_FUNCTION(pam_get_item, int,
--			 (const pam_handle_t *, int, const void **),
--			 PAM_ABORT);
--    return real_pam_get_item(pamh, item_type, item);
--}
--
--int pam_fail_delay(pam_handle_t *pamh, unsigned int musec_delay)
--{
--    int (*real_pam_fail_delay)(pam_handle_t *, unsigned int);
--    RESOLVE_PAM_FUNCTION(pam_fail_delay, int, (pam_handle_t *, unsigned int),
--			 PAM_ABORT);
--    return real_pam_fail_delay(pamh, musec_delay);
--}
--
--typedef const char * const_char_pointer;
--
--const_char_pointer pam_strerror(pam_handle_t *pamh, int errnum)
--{
--    const_char_pointer (*real_pam_strerror)(pam_handle_t *, int);
--    RESOLVE_PAM_FUNCTION(pam_strerror, const_char_pointer,
--			 (pam_handle_t *, int), NULL);
--    return real_pam_strerror(pamh, errnum);
--}
--
--int pam_putenv(pam_handle_t *pamh, const char *name_value)
--{
--    int (*real_pam_putenv)(pam_handle_t *, const char *);
--    RESOLVE_PAM_FUNCTION(pam_putenv, int, (pam_handle_t *, const char *),
--			 PAM_ABORT);
--    return real_pam_putenv(pamh, name_value);
--}
--
--const_char_pointer pam_getenv(pam_handle_t *pamh, const char *name)
--{
--    const_char_pointer (*real_pam_getenv)(pam_handle_t *, const char *);
--    RESOLVE_PAM_FUNCTION(pam_getenv, const_char_pointer,
--			 (pam_handle_t *, const char *), NULL);
--    return real_pam_getenv(pamh, name);
--}
--
--typedef char ** char_ppointer;
--char_ppointer pam_getenvlist(pam_handle_t *pamh)
--{
--    char_ppointer (*real_pam_getenvlist)(pam_handle_t *);
--    RESOLVE_PAM_FUNCTION(pam_getenvlist, char_ppointer, (pam_handle_t *),
--			 NULL);
--    return real_pam_getenvlist(pamh);
--}
--
--/* Authentication management */
--
--int pam_authenticate(pam_handle_t *pamh, int flags)
--{
--    int (*real_pam_authenticate)(pam_handle_t *, int);
--    RESOLVE_PAM_FUNCTION(pam_authenticate, int, (pam_handle_t *, int),
--			 PAM_ABORT);
--    return real_pam_authenticate(pamh, flags);
--}
--
--int pam_setcred(pam_handle_t *pamh, int flags)
--{
--    int (*real_pam_setcred)(pam_handle_t *, int);
--    RESOLVE_PAM_FUNCTION(pam_setcred, int, (pam_handle_t *, int), PAM_ABORT);
--    return real_pam_setcred(pamh, flags);
--}
--
--/* Account Management API's */
--
--int pam_acct_mgmt(pam_handle_t *pamh, int flags)
--{
--    int (*real_pam_acct_mgmt)(pam_handle_t *, int);
--    RESOLVE_PAM_FUNCTION(pam_acct_mgmt, int, (pam_handle_t *, int), PAM_ABORT);
--    return real_pam_acct_mgmt(pamh, flags);
--}
--
--/* Session Management API's */
--
--int pam_open_session(pam_handle_t *pamh, int flags)
--{
--    int (*real_pam_open_session)(pam_handle_t *, int);
--    RESOLVE_PAM_FUNCTION(pam_open_session, int, (pam_handle_t *, int),
--			 PAM_ABORT);
--    return real_pam_open_session(pamh, flags);
--}
--
--int pam_close_session(pam_handle_t *pamh, int flags)
--{
--    int (*real_pam_close_session)(pam_handle_t *, int);
--    RESOLVE_PAM_FUNCTION(pam_close_session, int, (pam_handle_t *, int),
--			 PAM_ABORT);
--    return real_pam_close_session(pamh, flags);
--}
--
--/* Password Management API's */
--
--int pam_chauthtok(pam_handle_t *pamh, int flags)
--{
--    int (*real_pam_chauthtok)(pam_handle_t *, int);
--    RESOLVE_PAM_FUNCTION(pam_chauthtok, int, (pam_handle_t *, int), PAM_ABORT);
--    return real_pam_chauthtok(pamh, flags);
--}
--#endif
-diff --git a/plugin/auth-pam/pamdl.h b/plugin/auth-pam/pamdl.h
-deleted file mode 100644
-index b10b035..0000000
---- a/plugin/auth-pam/pamdl.h
-+++ /dev/null
-@@ -1,7 +0,0 @@
--#if DLOPEN_PAM
--#include <security/pam_appl.h>
--
--/* Dynamically load and unload the PAM library */
--int dlopen_pam (const char *so);
--void dlclose_pam (void);
--#endif
-diff --git a/plugin/defer/README b/plugin/defer/README
-deleted file mode 100644
-index d8990f8..0000000
---- a/plugin/defer/README
-+++ /dev/null
-@@ -1,16 +0,0 @@
--OpenVPN plugin examples.
--
--Examples provided:
--
--simple.c -- using the --auth-user-pass-verify callback,
--            test deferred authentication.
--
--To build:
--
--  ./build simple (Linux/BSD/etc.)
--  ./winbuild simple (MinGW on Windows)
--
--To use in OpenVPN, add to config file:
--
--  plugin simple.so (Linux/BSD/etc.)
--  plugin simple.dll (MinGW on Windows)
-diff --git a/plugin/defer/build b/plugin/defer/build
-deleted file mode 100755
-index 5907afa..0000000
---- a/plugin/defer/build
-+++ /dev/null
-@@ -1,14 +0,0 @@
--#!/bin/sh
--
--#
--# Build an OpenVPN plugin module on *nix.  The argument should
--# be the base name of the C source file (without the .c).
--#
--
--# This directory is where we will look for openvpn-plugin.h
--INCLUDE="-I../.."
--
--CC_FLAGS="-O2 -Wall -g"
--
--gcc $CC_FLAGS -fPIC -c $INCLUDE $1.c && \
--gcc $CC_FLAGS -fPIC -shared -Wl,-soname,$1.so -o $1.so $1.o -lc
-diff --git a/plugin/defer/simple.c b/plugin/defer/simple.c
-deleted file mode 100644
-index 6539865..0000000
---- a/plugin/defer/simple.c
-+++ /dev/null
-@@ -1,305 +0,0 @@
--/*
-- *  OpenVPN -- An application to securely tunnel IP networks
-- *             over a single TCP/UDP port, with support for SSL/TLS-based
-- *             session authentication and key exchange,
-- *             packet encryption, packet authentication, and
-- *             packet compression.
-- *
-- *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-- *
-- *  This program is free software; you can redistribute it and/or modify
-- *  it under the terms of the GNU General Public License version 2
-- *  as published by the Free Software Foundation.
-- *
-- *  This program is distributed in the hope that it will be useful,
-- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- *  GNU General Public License for more details.
-- *
-- *  You should have received a copy of the GNU General Public License
-- *  along with this program (see the file COPYING included with this
-- *  distribution); if not, write to the Free Software Foundation, Inc.,
-- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-- */
--
--/*
-- * This file implements a simple OpenVPN plugin module which
-- * will test deferred authentication and packet filtering.
-- * 
-- * Will run on Windows or *nix.
-- *
-- * Sample usage:
-- *
-- * setenv test_deferred_auth 20
-- * setenv test_packet_filter 10
-- * plugin plugin/defer/simple.so
-- *
-- * This will enable deferred authentication to occur 20
-- * seconds after the normal TLS authentication process,
-- * and will cause a packet filter file to be generated 10
-- * seconds after the initial TLS negotiation, using
-- * {common-name}.pf as the source.
-- *
-- * Sample packet filter configuration:
-- *
-- * [CLIENTS DROP]
-- * +otherclient
-- * [SUBNETS DROP]
-- * +10.0.0.0/8
-- * -10.10.0.8
-- * [END]
-- *
-- * See the README file for build instructions.
-- */
--
--#include <stdio.h>
--#include <string.h>
--#include <stdlib.h>
--
--#include "openvpn-plugin.h"
--
--/* bool definitions */
--#define bool int
--#define true 1
--#define false 0
--
--/*
-- * Our context, where we keep our state.
-- */
--
--struct plugin_context {
--  int test_deferred_auth;
--  int test_packet_filter;
--};
--
--struct plugin_per_client_context {
--  int n_calls;
--  bool generated_pf_file;
--};
--
--/*
-- * Given an environmental variable name, search
-- * the envp array for its value, returning it
-- * if found or NULL otherwise.
-- */
--static const char *
--get_env (const char *name, const char *envp[])
--{
--  if (envp)
--    {
--      int i;
--      const int namelen = strlen (name);
--      for (i = 0; envp[i]; ++i)
--	{
--	  if (!strncmp (envp[i], name, namelen))
--	    {
--	      const char *cp = envp[i] + namelen;
--	      if (*cp == '=')
--		return cp + 1;
--	    }
--	}
--    }
--  return NULL;
--}
--
--/* used for safe printf of possible NULL strings */
--static const char *
--np (const char *str)
--{
--  if (str)
--    return str;
--  else
--    return "[NULL]";
--}
--
--static int
--atoi_null0 (const char *str)
--{
--  if (str)
--    return atoi (str);
--  else
--    return 0;
--}
--
--OPENVPN_EXPORT openvpn_plugin_handle_t
--openvpn_plugin_open_v1 (unsigned int *type_mask, const char *argv[], const char *envp[])
--{
--  struct plugin_context *context;
--
--  printf ("FUNC: openvpn_plugin_open_v1\n");
--
--  /*
--   * Allocate our context
--   */
--  context = (struct plugin_context *) calloc (1, sizeof (struct plugin_context));
--
--  context->test_deferred_auth = atoi_null0 (get_env ("test_deferred_auth", envp));
--  printf ("TEST_DEFERRED_AUTH %d\n", context->test_deferred_auth);
--
--  context->test_packet_filter = atoi_null0 (get_env ("test_packet_filter", envp));
--  printf ("TEST_PACKET_FILTER %d\n", context->test_packet_filter);
--
--  /*
--   * Which callbacks to intercept.
--   */
--  *type_mask =
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_UP) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_DOWN) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_ROUTE_UP) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_IPCHANGE) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_TLS_VERIFY) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_CLIENT_CONNECT_V2) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_CLIENT_DISCONNECT) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_LEARN_ADDRESS) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_TLS_FINAL) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_ENABLE_PF);
--
--  return (openvpn_plugin_handle_t) context;
--}
--
--static int
--auth_user_pass_verify (struct plugin_context *context, struct plugin_per_client_context *pcc, const char *argv[], const char *envp[])
--{
--  if (context->test_deferred_auth)
--    {
--      /* get username/password from envp string array */
--      const char *username = get_env ("username", envp);
--      const char *password = get_env ("password", envp);
--
--      /* get auth_control_file filename from envp string array*/
--      const char *auth_control_file = get_env ("auth_control_file", envp);
--
--      printf ("DEFER u='%s' p='%s' acf='%s'\n",
--	      np(username),
--	      np(password),
--	      np(auth_control_file));
--
--      /* Authenticate asynchronously in n seconds */
--      if (auth_control_file)
--	{
--	  char buf[256];
--	  int auth = 2;
--	  sscanf (username, "%d", &auth);
--	  snprintf (buf, sizeof(buf), "( sleep %d ; echo AUTH %s %d ; echo %d >%s ) &",
--		    context->test_deferred_auth,
--		    auth_control_file,
--		    auth,
--		    pcc->n_calls < auth,
--		    auth_control_file);
--	  printf ("%s\n", buf);
--	  system (buf);
--	  pcc->n_calls++;
--	  return OPENVPN_PLUGIN_FUNC_DEFERRED;
--	}
--      else
--	return OPENVPN_PLUGIN_FUNC_ERROR;
--    }
--  else
--    return OPENVPN_PLUGIN_FUNC_SUCCESS;
--}
--
--static int
--tls_final (struct plugin_context *context, struct plugin_per_client_context *pcc, const char *argv[], const char *envp[])
--{
--  if (context->test_packet_filter)
--    {
--      if (!pcc->generated_pf_file)
--	{
--	  const char *pff = get_env ("pf_file", envp);
--	  const char *cn = get_env ("username", envp);
--	  if (pff && cn)
--	    {
--	      char buf[256];
--	      snprintf (buf, sizeof(buf), "( sleep %d ; echo PF %s/%s ; cp \"%s.pf\" \"%s\" ) &",
--			context->test_packet_filter, cn, pff, cn, pff);
--	      printf ("%s\n", buf);
--	      system (buf);
--	      pcc->generated_pf_file = true;
--	      return OPENVPN_PLUGIN_FUNC_SUCCESS;
--	    }
--	  else
--	    return OPENVPN_PLUGIN_FUNC_ERROR;
--	}
--      else
--	return OPENVPN_PLUGIN_FUNC_ERROR;
--    }
--  else
--    return OPENVPN_PLUGIN_FUNC_SUCCESS;
--}
--
--OPENVPN_EXPORT int
--openvpn_plugin_func_v2 (openvpn_plugin_handle_t handle,
--			const int type,
--			const char *argv[],
--			const char *envp[],
--			void *per_client_context,
--			struct openvpn_plugin_string_list **return_list)
--{
--  struct plugin_context *context = (struct plugin_context *) handle;
--  struct plugin_per_client_context *pcc = (struct plugin_per_client_context *) per_client_context;
--  switch (type)
--    {
--    case OPENVPN_PLUGIN_UP:
--      printf ("OPENVPN_PLUGIN_UP\n");
--      return OPENVPN_PLUGIN_FUNC_SUCCESS;
--    case OPENVPN_PLUGIN_DOWN:
--      printf ("OPENVPN_PLUGIN_DOWN\n");
--      return OPENVPN_PLUGIN_FUNC_SUCCESS;
--    case OPENVPN_PLUGIN_ROUTE_UP:
--      printf ("OPENVPN_PLUGIN_ROUTE_UP\n");
--      return OPENVPN_PLUGIN_FUNC_SUCCESS;
--    case OPENVPN_PLUGIN_IPCHANGE:
--      printf ("OPENVPN_PLUGIN_IPCHANGE\n");
--      return OPENVPN_PLUGIN_FUNC_SUCCESS;
--    case OPENVPN_PLUGIN_TLS_VERIFY:
--      printf ("OPENVPN_PLUGIN_TLS_VERIFY\n");
--      return OPENVPN_PLUGIN_FUNC_SUCCESS;
--    case OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY:
--      printf ("OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY\n");
--      return auth_user_pass_verify (context, pcc, argv, envp);
--    case OPENVPN_PLUGIN_CLIENT_CONNECT_V2:
--      printf ("OPENVPN_PLUGIN_CLIENT_CONNECT_V2\n");
--      return OPENVPN_PLUGIN_FUNC_SUCCESS;
--    case OPENVPN_PLUGIN_CLIENT_DISCONNECT:
--      printf ("OPENVPN_PLUGIN_CLIENT_DISCONNECT\n");
--      return OPENVPN_PLUGIN_FUNC_SUCCESS;
--    case OPENVPN_PLUGIN_LEARN_ADDRESS:
--      printf ("OPENVPN_PLUGIN_LEARN_ADDRESS\n");
--      return OPENVPN_PLUGIN_FUNC_SUCCESS;
--    case OPENVPN_PLUGIN_TLS_FINAL:
--      printf ("OPENVPN_PLUGIN_TLS_FINAL\n");
--      return tls_final (context, pcc, argv, envp);
--    case OPENVPN_PLUGIN_ENABLE_PF:
--      printf ("OPENVPN_PLUGIN_ENABLE_PF\n");
--      if (context->test_packet_filter)
--	return OPENVPN_PLUGIN_FUNC_SUCCESS;
--      else
--	return OPENVPN_PLUGIN_FUNC_ERROR;
--    default:
--      printf ("OPENVPN_PLUGIN_?\n");
--      return OPENVPN_PLUGIN_FUNC_ERROR;
--    }
--}
--
--OPENVPN_EXPORT void *
--openvpn_plugin_client_constructor_v1 (openvpn_plugin_handle_t handle)
--{
--  printf ("FUNC: openvpn_plugin_client_constructor_v1\n");
--  return calloc (1, sizeof (struct plugin_per_client_context));
--}
--
--OPENVPN_EXPORT void
--openvpn_plugin_client_destructor_v1 (openvpn_plugin_handle_t handle, void *per_client_context)
--{
--  printf ("FUNC: openvpn_plugin_client_destructor_v1\n");
--  free (per_client_context);
--}
--
--OPENVPN_EXPORT void
--openvpn_plugin_close_v1 (openvpn_plugin_handle_t handle)
--{
--  struct plugin_context *context = (struct plugin_context *) handle;
--  printf ("FUNC: openvpn_plugin_close_v1\n");
--  free (context);
--}
-diff --git a/plugin/defer/simple.def b/plugin/defer/simple.def
-deleted file mode 100755
-index a87507d..0000000
---- a/plugin/defer/simple.def
-+++ /dev/null
-@@ -1,6 +0,0 @@
--LIBRARY   OpenVPN_PLUGIN_SAMPLE
--DESCRIPTION "Sample OpenVPN plug-in module."
--EXPORTS
--   openvpn_plugin_open_v1   @1
--   openvpn_plugin_func_v1   @2
--   openvpn_plugin_close_v1  @3
-diff --git a/plugin/defer/winbuild b/plugin/defer/winbuild
-deleted file mode 100755
-index 97e724a..0000000
---- a/plugin/defer/winbuild
-+++ /dev/null
-@@ -1,18 +0,0 @@
--#
--# Build an OpenVPN plugin module on Windows/MinGW.
--# The argument should be the base name of the C source file
--# (without the .c).
--#
--
--# This directory is where we will look for openvpn-plugin.h
--INCLUDE="-I.."
--
--CC_FLAGS="-O2 -Wall"
--
--gcc -DBUILD_DLL $CC_FLAGS $INCLUDE -c $1.c
--gcc --disable-stdcall-fixup -mdll -DBUILD_DLL -o junk.tmp -Wl,--base-file,base.tmp $1.o
--rm junk.tmp
--dlltool --dllname $1.dll --base-file base.tmp --output-exp temp.exp --input-def $1.def
--rm base.tmp
--gcc --enable-stdcall-fixup -mdll -DBUILD_DLL -o $1.dll $1.o -Wl,temp.exp
--rm temp.exp
-diff --git a/plugin/down-root/Makefile b/plugin/down-root/Makefile
-deleted file mode 100755
-index 5ce4ffb..0000000
---- a/plugin/down-root/Makefile
-+++ /dev/null
-@@ -1,17 +0,0 @@
--#
--# Build the OpenVPN down-root plugin module.
--#
--
--# This directory is where we will look for openvpn-plugin.h
--INCLUDE=-I../..
--
--CC_FLAGS=-O2 -Wall
--
--down-root.so : down-root.o
--	gcc ${CC_FLAGS} -fPIC -shared -Wl,-soname,openvpn-down-root.so -o openvpn-down-root.so down-root.o -lc
--
--down-root.o : down-root.c
--	gcc ${CC_FLAGS} -fPIC -c ${INCLUDE} down-root.c
--
--clean :
--	rm -f *.o *.so
-diff --git a/plugin/down-root/README b/plugin/down-root/README
-deleted file mode 100644
-index d337ffe..0000000
---- a/plugin/down-root/README
-+++ /dev/null
-@@ -1,29 +0,0 @@
--down-root -- an OpenVPN Plugin Module
--
--SYNOPSIS
--
--The down-root module allows an OpenVPN configuration to
--call a down script with root privileges, even when privileges
--have been dropped using --user/--group/--chroot.
--
--This module uses a split privilege execution model which will
--fork() before OpenVPN drops root privileges, at the point where
--the --up script is usually called.  The module will then remain
--in a wait state until it receives a message from OpenVPN via
--pipe to execute the down script.  Thus, the down script will be
--run in the same execution environment as the up script.
--
--BUILD
--
--Build this module with the "make" command.  The plugin
--module will be named openvpn-down-root.so
--
--USAGE
--
--To use this module, add to your OpenVPN config file:
--
--  plugin openvpn-down-root.so "command ..."
--
--CAVEATS
--
--This module will only work on *nix systems, not Windows.
-diff --git a/plugin/down-root/down-root.c b/plugin/down-root/down-root.c
-deleted file mode 100644
-index fced23b..0000000
---- a/plugin/down-root/down-root.c
-+++ /dev/null
-@@ -1,553 +0,0 @@
--/*
-- *  OpenVPN -- An application to securely tunnel IP networks
-- *             over a single TCP/UDP port, with support for SSL/TLS-based
-- *             session authentication and key exchange,
-- *             packet encryption, packet authentication, and
-- *             packet compression.
-- *
-- *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-- *
-- *  This program is free software; you can redistribute it and/or modify
-- *  it under the terms of the GNU General Public License version 2
-- *  as published by the Free Software Foundation.
-- *
-- *  This program is distributed in the hope that it will be useful,
-- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- *  GNU General Public License for more details.
-- *
-- *  You should have received a copy of the GNU General Public License
-- *  along with this program (see the file COPYING included with this
-- *  distribution); if not, write to the Free Software Foundation, Inc.,
-- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-- */
--
--/*
-- * OpenVPN plugin module to do privileged down-script execution.
-- */
--
--#include <stdio.h>
--#include <string.h>
--#include <unistd.h>
--#include <stdlib.h>
--#include <sys/types.h>
--#include <sys/socket.h>
--#include <sys/wait.h>
--#include <fcntl.h>
--#include <signal.h>
--#include <syslog.h>
--
--#include "openvpn-plugin.h"
--
--#define DEBUG(verb) ((verb) >= 7)
--
--/* Command codes for foreground -> background communication */
--#define COMMAND_RUN_SCRIPT 0
--#define COMMAND_EXIT       1
--
--/* Response codes for background -> foreground communication */
--#define RESPONSE_INIT_SUCCEEDED   10
--#define RESPONSE_INIT_FAILED      11
--#define RESPONSE_SCRIPT_SUCCEEDED 12
--#define RESPONSE_SCRIPT_FAILED    13
--
--/* Background process function */
--static void down_root_server (const int fd, char *command, const char *argv[], const char *envp[], const int verb);
--
--/*
-- * Plugin state, used by foreground
-- */
--struct down_root_context
--{
--  /* Foreground's socket to background process */
--  int foreground_fd;
--
--  /* Process ID of background process */
--  pid_t background_pid;
--
--  /* Verbosity level of OpenVPN */
--  int verb;
--
--  /* down command */
--  char *command;
--};
--
--/*
-- * Given an environmental variable name, search
-- * the envp array for its value, returning it
-- * if found or NULL otherwise.
-- */
--static const char *
--get_env (const char *name, const char *envp[])
--{
--  if (envp)
--    {
--      int i;
--      const int namelen = strlen (name);
--      for (i = 0; envp[i]; ++i)
--	{
--	  if (!strncmp (envp[i], name, namelen))
--	    {
--	      const char *cp = envp[i] + namelen;
--	      if (*cp == '=')
--		return cp + 1;
--	    }
--	}
--    }
--  return NULL;
--}
--
--/*
-- * Return the length of a string array
-- */
--static int
--string_array_len (const char *array[])
--{
--  int i = 0;
--  if (array)
--    {
--      while (array[i])
--	++i;
--    }
--  return i;
--}
--
--/*
-- * Socket read/write functions.
-- */
--
--static int
--recv_control (int fd)
--{
--  unsigned char c;
--  const ssize_t size = read (fd, &c, sizeof (c));
--  if (size == sizeof (c))
--    return c;
--  else
--    return -1;
--}
--
--static int
--send_control (int fd, int code)
--{
--  unsigned char c = (unsigned char) code;
--  const ssize_t size = write (fd, &c, sizeof (c));
--  if (size == sizeof (c))
--    return (int) size;
--  else
--    return -1;
--}
--
--/*
-- * Daemonize if "daemon" env var is true.
-- * Preserve stderr across daemonization if
-- * "daemon_log_redirect" env var is true.
-- */
--static void
--daemonize (const char *envp[])
--{
--  const char *daemon_string = get_env ("daemon", envp);
--  if (daemon_string && daemon_string[0] == '1')
--    {
--      const char *log_redirect = get_env ("daemon_log_redirect", envp);
--      int fd = -1;
--      if (log_redirect && log_redirect[0] == '1')
--	fd = dup (2);
--      if (daemon (0, 0) < 0)
--	{
--	  fprintf (stderr, "DOWN-ROOT: daemonization failed\n");
--	}
--      else if (fd >= 3)
--	{
--	  dup2 (fd, 2);
--	  close (fd);
--	}
--    }
--}
--
--/*
-- * Close most of parent's fds.
-- * Keep stdin/stdout/stderr, plus one
-- * other fd which is presumed to be
-- * our pipe back to parent.
-- * Admittedly, a bit of a kludge,
-- * but posix doesn't give us a kind
-- * of FD_CLOEXEC which will stop
-- * fds from crossing a fork().
-- */
--static void
--close_fds_except (int keep)
--{
--  int i;
--  closelog ();
--  for (i = 3; i <= 100; ++i)
--    {
--      if (i != keep)
--	close (i);
--    }
--}
--
--/*
-- * Usually we ignore signals, because our parent will
-- * deal with them.
-- */
--static void
--set_signals (void)
--{
--  signal (SIGTERM, SIG_DFL);
--
--  signal (SIGINT, SIG_IGN);
--  signal (SIGHUP, SIG_IGN);
--  signal (SIGUSR1, SIG_IGN);
--  signal (SIGUSR2, SIG_IGN);
--  signal (SIGPIPE, SIG_IGN);
--}
--
--/*
-- * convert system() return into a success/failure value
-- */
--int
--system_ok (int stat)
--{
--#ifdef WIN32
--  return stat == 0;
--#else
--  return stat != -1 && WIFEXITED (stat) && WEXITSTATUS (stat) == 0;
--#endif
--}
--
--static char *
--build_command_line (const char *argv[])
--{
--  int size = 0;
--  int n = 0;
--  int i;
--  char *string;
--
--  /* precompute size */
--  if (argv)
--    {
--      for (i = 0; argv[i]; ++i)
--	{
--	  size += (strlen (argv[i]) + 1); /* string length plus trailing space */
--	  ++n;
--	}
--    }
--  ++size;                                 /* for null terminator */
--
--  /* allocate memory */
--  string = (char *) malloc (size);
--  if (!string)
--    {
--      fprintf (stderr, "DOWN-ROOT: out of memory\n");
--      exit (1);
--    }
--  string[0] = '\0';
--
--  /* build string */
--  for (i = 0; i < n; ++i)
--    {
--      strcat (string, argv[i]);
--      if (i + 1 < n)
--	strcat (string, " ");
--    }
--  return string;
--}
--
--static void
--free_context (struct down_root_context *context)
--{
--  if (context)
--    {
--      if (context->command)
--	free (context->command);
--      free (context);
--    }
--}
--
--OPENVPN_EXPORT openvpn_plugin_handle_t
--openvpn_plugin_open_v1 (unsigned int *type_mask, const char *argv[], const char *envp[])
--{
--  struct down_root_context *context;
--
--  /*
--   * Allocate our context
--   */
--  context = (struct down_root_context *) calloc (1, sizeof (struct down_root_context));
--  if (!context)
--    goto error;
--  context->foreground_fd = -1;
--
--  /*
--   * Intercept the --up and --down callbacks
--   */
--  *type_mask = OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_UP) | OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_DOWN);
--
--  /*
--   * Make sure we have two string arguments: the first is the .so name,
--   * the second is the script command.
--   */
--  if (string_array_len (argv) < 2)
--    {
--      fprintf (stderr, "DOWN-ROOT: need down script command\n");
--      goto error;
--    }
--
--  /*
--   * Save our argument in context
--   */
--  context->command = build_command_line (&argv[1]);
--
--  /*
--   * Get verbosity level from environment
--   */
--  {
--    const char *verb_string = get_env ("verb", envp);
--    if (verb_string)
--      context->verb = atoi (verb_string);
--  }
--
--  return (openvpn_plugin_handle_t) context;
--
-- error:
--  free_context (context);
--  return NULL;
--}
--
--OPENVPN_EXPORT int
--openvpn_plugin_func_v1 (openvpn_plugin_handle_t handle, const int type, const char *argv[], const char *envp[])
--{
--  struct down_root_context *context = (struct down_root_context *) handle;
--
--  if (type == OPENVPN_PLUGIN_UP && context->foreground_fd == -1) /* fork off a process to hold onto root */
--    {
--      pid_t pid;
--      int fd[2];
--
--      /*
--       * Make a socket for foreground and background processes
--       * to communicate.
--       */
--      if (socketpair (PF_UNIX, SOCK_DGRAM, 0, fd) == -1)
--	{
--	  fprintf (stderr, "DOWN-ROOT: socketpair call failed\n");
--	  return OPENVPN_PLUGIN_FUNC_ERROR;
--	}
--
--      /*
--       * Fork off the privileged process.  It will remain privileged
--       * even after the foreground process drops its privileges.
--       */
--      pid = fork ();
--
--      if (pid)
--	{
--	  int status;
--
--	  /*
--	   * Foreground Process
--	   */
--
--	  context->background_pid = pid;
--
--	  /* close our copy of child's socket */
--	  close (fd[1]);
--
--	  /* don't let future subprocesses inherit child socket */
--	  if (fcntl (fd[0], F_SETFD, FD_CLOEXEC) < 0)
--	    fprintf (stderr, "DOWN-ROOT: Set FD_CLOEXEC flag on socket file descriptor failed\n");
--
--	  /* wait for background child process to initialize */
--	  status = recv_control (fd[0]);
--	  if (status == RESPONSE_INIT_SUCCEEDED)
--	    {
--	      context->foreground_fd = fd[0];
--	      return OPENVPN_PLUGIN_FUNC_SUCCESS;
--	    }
--	}
--      else
--	{
--	  /*
--	   * Background Process
--	   */
--
--	  /* close all parent fds except our socket back to parent */
--	  close_fds_except (fd[1]);
--
--	  /* Ignore most signals (the parent will receive them) */
--	  set_signals ();
--
--	  /* Daemonize if --daemon option is set. */
--	  daemonize (envp);
--
--	  /* execute the event loop */
--	  down_root_server (fd[1], context->command, argv, envp, context->verb);
--
--	  close (fd[1]);
--	  exit (0);
--	  return 0; /* NOTREACHED */
--	}
--    }
--  else if (type == OPENVPN_PLUGIN_DOWN && context->foreground_fd >= 0)
--    {
--      if (send_control (context->foreground_fd, COMMAND_RUN_SCRIPT) == -1)
--	{
--	  fprintf (stderr, "DOWN-ROOT: Error sending script execution signal to background process\n");
--	}
--      else
--	{
--	  const int status = recv_control (context->foreground_fd);
--	  if (status == RESPONSE_SCRIPT_SUCCEEDED)
--	    return OPENVPN_PLUGIN_FUNC_SUCCESS;
--	  if (status == -1)
--	    fprintf (stderr, "DOWN-ROOT: Error receiving script execution confirmation from background process\n");
--	}
--    }
--  return OPENVPN_PLUGIN_FUNC_ERROR;
--}
--
--OPENVPN_EXPORT void
--openvpn_plugin_close_v1 (openvpn_plugin_handle_t handle)
--{
--  struct down_root_context *context = (struct down_root_context *) handle;
--
--  if (DEBUG (context->verb))
--    fprintf (stderr, "DOWN-ROOT: close\n");
--
--  if (context->foreground_fd >= 0)
--    {
--      /* tell background process to exit */
--      if (send_control (context->foreground_fd, COMMAND_EXIT) == -1)
--	fprintf (stderr, "DOWN-ROOT: Error signaling background process to exit\n");
--
--      /* wait for background process to exit */
--      if (context->background_pid > 0)
--	waitpid (context->background_pid, NULL, 0);
--
--      close (context->foreground_fd);
--      context->foreground_fd = -1;
--    }
--
--  free_context (context);
--}
--
--OPENVPN_EXPORT void
--openvpn_plugin_abort_v1 (openvpn_plugin_handle_t handle)
--{
--  struct down_root_context *context = (struct down_root_context *) handle;
--
--  if (context && context->foreground_fd >= 0)
--    {
--      /* tell background process to exit */
--      send_control (context->foreground_fd, COMMAND_EXIT);
--      close (context->foreground_fd);
--      context->foreground_fd = -1;
--    }
--}
--
--/*
-- * Background process -- runs with privilege.
-- */
--static void
--down_root_server (const int fd, char *command, const char *argv[], const char *envp[], const int verb)
--{
--  const char *p[3];
--  char *command_line = NULL;
--  char *argv_cat = NULL;
--  int i;
--
--  /*
--   * Do initialization
--   */
--  if (DEBUG (verb))
--    fprintf (stderr, "DOWN-ROOT: BACKGROUND: INIT command='%s'\n", command);
--
--  /*
--   * Tell foreground that we initialized successfully
--   */
--  if (send_control (fd, RESPONSE_INIT_SUCCEEDED) == -1)
--    {
--      fprintf (stderr, "DOWN-ROOT: BACKGROUND: write error on response socket [1]\n");
--      goto done;
--    }
--
--  /*
--   * Build command line
--   */
--  if (string_array_len (argv) >= 2)
--    argv_cat = build_command_line (&argv[1]);
--  else
--    argv_cat = build_command_line (NULL);
--  p[0] = command;
--  p[1] = argv_cat;
--  p[2] = NULL;
--  command_line = build_command_line (p);
--
--  /*
--   * Save envp in environment
--   */
--  for (i = 0; envp[i]; ++i)
--    {
--      putenv ((char *)envp[i]);
--    }
--
--  /*
--   * Event loop
--   */
--  while (1)
--    {
--      int command_code;
--      int status;
--
--      /* get a command from foreground process */
--      command_code = recv_control (fd);
--
--      if (DEBUG (verb))
--	fprintf (stderr, "DOWN-ROOT: BACKGROUND: received command code: %d\n", command_code);
--
--      switch (command_code)
--	{
--	case COMMAND_RUN_SCRIPT:
--	  status = system (command_line);
--	  if (system_ok (status)) /* Succeeded */
--	    {
--	      if (send_control (fd, RESPONSE_SCRIPT_SUCCEEDED) == -1)
--		{
--		  fprintf (stderr, "DOWN-ROOT: BACKGROUND: write error on response socket [2]\n");
--		  goto done;
--		}
--	    }
--	  else /* Failed */
--	    {
--	      if (send_control (fd, RESPONSE_SCRIPT_FAILED) == -1)
--		{
--		  fprintf (stderr, "DOWN-ROOT: BACKGROUND: write error on response socket [3]\n");
--		  goto done;
--		}
--	    }
--	  break;
--
--	case COMMAND_EXIT:
--	  goto done;
--
--	case -1:
--	  fprintf (stderr, "DOWN-ROOT: BACKGROUND: read error on command channel\n");
--	  goto done;
--
--	default:
--	  fprintf (stderr, "DOWN-ROOT: BACKGROUND: unknown command code: code=%d, exiting\n",
--		   command_code);
--	  goto done;
--	}
--    }
--
-- done:
--  if (argv_cat)
--    free (argv_cat);
--  if (command_line)
--    free (command_line);
--  if (DEBUG (verb))
--    fprintf (stderr, "DOWN-ROOT: BACKGROUND: EXIT\n");
--
--  return;
--}
-diff --git a/plugin/examples/README b/plugin/examples/README
-deleted file mode 100644
-index 4400cd3..0000000
---- a/plugin/examples/README
-+++ /dev/null
-@@ -1,16 +0,0 @@
--OpenVPN plugin examples.
--
--Examples provided:
--
--simple.c -- using the --auth-user-pass-verify callback, verify
--            that the username/password is "foo"/"bar".
--
--To build:
--
--  ./build simple (Linux/BSD/etc.)
--  ./winbuild simple (MinGW on Windows)
--
--To use in OpenVPN, add to config file:
--
--  plugin simple.so (Linux/BSD/etc.)
--  plugin simple.dll (MinGW on Windows)
-diff --git a/plugin/examples/build b/plugin/examples/build
-deleted file mode 100755
-index 5907afa..0000000
---- a/plugin/examples/build
-+++ /dev/null
-@@ -1,14 +0,0 @@
--#!/bin/sh
--
--#
--# Build an OpenVPN plugin module on *nix.  The argument should
--# be the base name of the C source file (without the .c).
--#
--
--# This directory is where we will look for openvpn-plugin.h
--INCLUDE="-I../.."
--
--CC_FLAGS="-O2 -Wall -g"
--
--gcc $CC_FLAGS -fPIC -c $INCLUDE $1.c && \
--gcc $CC_FLAGS -fPIC -shared -Wl,-soname,$1.so -o $1.so $1.o -lc
-diff --git a/plugin/examples/log.c b/plugin/examples/log.c
-deleted file mode 100644
-index 1cc4650..0000000
---- a/plugin/examples/log.c
-+++ /dev/null
-@@ -1,184 +0,0 @@
--/*
-- *  OpenVPN -- An application to securely tunnel IP networks
-- *             over a single TCP/UDP port, with support for SSL/TLS-based
-- *             session authentication and key exchange,
-- *             packet encryption, packet authentication, and
-- *             packet compression.
-- *
-- *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-- *
-- *  This program is free software; you can redistribute it and/or modify
-- *  it under the terms of the GNU General Public License version 2
-- *  as published by the Free Software Foundation.
-- *
-- *  This program is distributed in the hope that it will be useful,
-- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- *  GNU General Public License for more details.
-- *
-- *  You should have received a copy of the GNU General Public License
-- *  along with this program (see the file COPYING included with this
-- *  distribution); if not, write to the Free Software Foundation, Inc.,
-- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-- */
--
--/*
-- * This plugin is similar to simple.c, except it also logs extra information
-- * to stdout for every plugin method called by OpenVPN.
-- *
-- * See the README file for build instructions.
-- */
--
--#include <stdio.h>
--#include <string.h>
--#include <stdlib.h>
--
--#include "openvpn-plugin.h"
--
--/*
-- * Our context, where we keep our state.
-- */
--struct plugin_context {
--  const char *username;
--  const char *password;
--};
--
--/*
-- * Given an environmental variable name, search
-- * the envp array for its value, returning it
-- * if found or NULL otherwise.
-- */
--static const char *
--get_env (const char *name, const char *envp[])
--{
--  if (envp)
--    {
--      int i;
--      const int namelen = strlen (name);
--      for (i = 0; envp[i]; ++i)
--	{
--	  if (!strncmp (envp[i], name, namelen))
--	    {
--	      const char *cp = envp[i] + namelen;
--	      if (*cp == '=')
--		return cp + 1;
--	    }
--	}
--    }
--  return NULL;
--}
--
--OPENVPN_EXPORT openvpn_plugin_handle_t
--openvpn_plugin_open_v1 (unsigned int *type_mask, const char *argv[], const char *envp[])
--{
--  struct plugin_context *context;
--
--  /*
--   * Allocate our context
--   */
--  context = (struct plugin_context *) calloc (1, sizeof (struct plugin_context));
--
--  /*
--   * Set the username/password we will require.
--   */
--  context->username = "foo";
--  context->password = "bar";
--
--  /*
--   * Which callbacks to intercept.
--   */
--  *type_mask =
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_UP) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_DOWN) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_ROUTE_UP) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_IPCHANGE) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_TLS_VERIFY) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_CLIENT_CONNECT_V2) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_CLIENT_DISCONNECT) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_LEARN_ADDRESS) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_TLS_FINAL);
--
--  return (openvpn_plugin_handle_t) context;
--}
--
--void
--show (const int type, const char *argv[], const char *envp[])
--{
--  size_t i;
--  switch (type)
--    {
--    case OPENVPN_PLUGIN_UP:
--      printf ("OPENVPN_PLUGIN_UP\n");
--      break;
--    case OPENVPN_PLUGIN_DOWN:
--      printf ("OPENVPN_PLUGIN_DOWN\n");
--      break;
--    case OPENVPN_PLUGIN_ROUTE_UP:
--      printf ("OPENVPN_PLUGIN_ROUTE_UP\n");
--      break;
--    case OPENVPN_PLUGIN_IPCHANGE:
--      printf ("OPENVPN_PLUGIN_IPCHANGE\n");
--      break;
--    case OPENVPN_PLUGIN_TLS_VERIFY:
--      printf ("OPENVPN_PLUGIN_TLS_VERIFY\n");
--      break;
--    case OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY:
--      printf ("OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY\n");
--      break;
--    case OPENVPN_PLUGIN_CLIENT_CONNECT_V2:
--      printf ("OPENVPN_PLUGIN_CLIENT_CONNECT_V2\n");
--      break;
--    case OPENVPN_PLUGIN_CLIENT_DISCONNECT:
--      printf ("OPENVPN_PLUGIN_CLIENT_DISCONNECT\n");
--      break;
--    case OPENVPN_PLUGIN_LEARN_ADDRESS:
--      printf ("OPENVPN_PLUGIN_LEARN_ADDRESS\n");
--      break;
--    case OPENVPN_PLUGIN_TLS_FINAL:
--      printf ("OPENVPN_PLUGIN_TLS_FINAL\n");
--      break;
--    default:
--      printf ("OPENVPN_PLUGIN_?\n");
--      break;
--    }
--
--  printf ("ARGV\n");
--  for (i = 0; argv[i] != NULL; ++i)
--    printf ("%d '%s'\n", (int)i, argv[i]);
--
--  printf ("ENVP\n");
--  for (i = 0; envp[i] != NULL; ++i)
--    printf ("%d '%s'\n", (int)i, envp[i]);
--}
--
--OPENVPN_EXPORT int
--openvpn_plugin_func_v1 (openvpn_plugin_handle_t handle, const int type, const char *argv[], const char *envp[])
--{
--  struct plugin_context *context = (struct plugin_context *) handle;
--
--  show (type, argv, envp);
--
--  /* check entered username/password against what we require */
--  if (type == OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY)
--    {
--      /* get username/password from envp string array */
--      const char *username = get_env ("username", envp);
--      const char *password = get_env ("password", envp);
--
--      if (username && !strcmp (username, context->username)
--	  && password && !strcmp (password, context->password))
--	return OPENVPN_PLUGIN_FUNC_SUCCESS;
--      else
--	return OPENVPN_PLUGIN_FUNC_ERROR;
--    }
--  else
--    return OPENVPN_PLUGIN_FUNC_SUCCESS;
--}
--
--OPENVPN_EXPORT void
--openvpn_plugin_close_v1 (openvpn_plugin_handle_t handle)
--{
--  struct plugin_context *context = (struct plugin_context *) handle;
--  free (context);
--}
-diff --git a/plugin/examples/log_v3.c b/plugin/examples/log_v3.c
-deleted file mode 100644
-index 187c592..0000000
---- a/plugin/examples/log_v3.c
-+++ /dev/null
-@@ -1,249 +0,0 @@
--/*
-- *  OpenVPN -- An application to securely tunnel IP networks
-- *             over a single TCP/UDP port, with support for SSL/TLS-based
-- *             session authentication and key exchange,
-- *             packet encryption, packet authentication, and
-- *             packet compression.
-- *
-- *  Copyright (C) 2002-2009 OpenVPN Technologies, Inc. <sales@...515...>
-- *  Copyright (C) 2010 David Sommerseth <dazo@...384...>
-- *
-- *  This program is free software; you can redistribute it and/or modify
-- *  it under the terms of the GNU General Public License version 2
-- *  as published by the Free Software Foundation.
-- *
-- *  This program is distributed in the hope that it will be useful,
-- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- *  GNU General Public License for more details.
-- *
-- *  You should have received a copy of the GNU General Public License
-- *  along with this program (see the file COPYING included with this
-- *  distribution); if not, write to the Free Software Foundation, Inc.,
-- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-- */
--
--/*
-- * This plugin is similar to simple.c, except it also logs extra information
-- * to stdout for every plugin method called by OpenVPN.  The only difference
-- * between this (log_v3.c) and log.c is that this module uses the v3 plug-in
-- * API.
-- *
-- * See the README file for build instructions.
-- */
--
--#include <stdio.h>
--#include <string.h>
--#include <stdlib.h>
--
--#define USE_SSL
--#define USE_OPENSSL
--#include "ssl_verify_openssl.h"
--
--#include "openvpn-plugin.h"
--
--/*
-- * Our context, where we keep our state.
-- */
--struct plugin_context {
--  const char *username;
--  const char *password;
--};
--
--/*
-- * Given an environmental variable name, search
-- * the envp array for its value, returning it
-- * if found or NULL otherwise.
-- */
--static const char *
--get_env (const char *name, const char *envp[])
--{
--  if (envp)
--    {
--      int i;
--      const int namelen = strlen (name);
--      for (i = 0; envp[i]; ++i)
--	{
--	  if (!strncmp (envp[i], name, namelen))
--	    {
--	      const char *cp = envp[i] + namelen;
--	      if (*cp == '=')
--		return cp + 1;
--	    }
--	}
--    }
--  return NULL;
--}
--
--OPENVPN_EXPORT int
--openvpn_plugin_open_v3 (const int v3structver,
--                        struct openvpn_plugin_args_open_in const *args,
--                        struct openvpn_plugin_args_open_return *ret)
--{
--  struct plugin_context *context = NULL;
--
--  /* Check that we are API compatible */
--  if( v3structver != OPENVPN_PLUGINv3_STRUCTVER ) {
--    return OPENVPN_PLUGIN_FUNC_ERROR;
--  }
--
--  /*  Which callbacks to intercept.  */
--  ret->type_mask =
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_UP) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_DOWN) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_ROUTE_UP) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_IPCHANGE) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_TLS_VERIFY) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_CLIENT_CONNECT_V2) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_CLIENT_DISCONNECT) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_LEARN_ADDRESS) |
--    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_TLS_FINAL);
--
--
--  /* Allocate our context */
--  context = (struct plugin_context *) calloc (1, sizeof (struct plugin_context));
--
--  /* Set the username/password we will require. */
--  context->username = "foo";
--  context->password = "bar";
--
--  /* Point the global context handle to our newly created context */
--  ret->handle = (void *) context;
--
--  return OPENVPN_PLUGIN_FUNC_SUCCESS;
--}
--
--void
--show (const int type, const char *argv[], const char *envp[])
--{
--  size_t i;
--  switch (type)
--    {
--    case OPENVPN_PLUGIN_UP:
--      printf ("OPENVPN_PLUGIN_UP\n");
--      break;
--    case OPENVPN_PLUGIN_DOWN:
--      printf ("OPENVPN_PLUGIN_DOWN\n");
--      break;
--    case OPENVPN_PLUGIN_ROUTE_UP:
--      printf ("OPENVPN_PLUGIN_ROUTE_UP\n");
--      break;
--    case OPENVPN_PLUGIN_IPCHANGE:
--      printf ("OPENVPN_PLUGIN_IPCHANGE\n");
--      break;
--    case OPENVPN_PLUGIN_TLS_VERIFY:
--      printf ("OPENVPN_PLUGIN_TLS_VERIFY\n");
--      break;
--    case OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY:
--      printf ("OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY\n");
--      break;
--    case OPENVPN_PLUGIN_CLIENT_CONNECT_V2:
--      printf ("OPENVPN_PLUGIN_CLIENT_CONNECT_V2\n");
--      break;
--    case OPENVPN_PLUGIN_CLIENT_DISCONNECT:
--      printf ("OPENVPN_PLUGIN_CLIENT_DISCONNECT\n");
--      break;
--    case OPENVPN_PLUGIN_LEARN_ADDRESS:
--      printf ("OPENVPN_PLUGIN_LEARN_ADDRESS\n");
--      break;
--    case OPENVPN_PLUGIN_TLS_FINAL:
--      printf ("OPENVPN_PLUGIN_TLS_FINAL\n");
--      break;
--    default:
--      printf ("OPENVPN_PLUGIN_?\n");
--      break;
--    }
--
--  printf ("ARGV\n");
--  for (i = 0; argv[i] != NULL; ++i)
--    printf ("%d '%s'\n", (int)i, argv[i]);
--
--  printf ("ENVP\n");
--  for (i = 0; envp[i] != NULL; ++i)
--    printf ("%d '%s'\n", (int)i, envp[i]);
--}
--
--static void
--x509_print_info (X509 *x509crt)
--{
--  int i, n;
--  int fn_nid;
--  ASN1_OBJECT *fn;
--  ASN1_STRING *val;
--  X509_NAME *x509_name;
--  X509_NAME_ENTRY *ent;
--  const char *objbuf;
--  unsigned char *buf;
--
--  x509_name = X509_get_subject_name (x509crt);
--  n = X509_NAME_entry_count (x509_name);
--  for (i = 0; i < n; ++i)
--    {
--      ent = X509_NAME_get_entry (x509_name, i);
--      if (!ent)
--	continue;
--      fn = X509_NAME_ENTRY_get_object (ent);
--      if (!fn)
--	continue;
--      val = X509_NAME_ENTRY_get_data (ent);
--      if (!val)
--	continue;
--      fn_nid = OBJ_obj2nid (fn);
--      if (fn_nid == NID_undef)
--	continue;
--      objbuf = OBJ_nid2sn (fn_nid);
--      if (!objbuf)
--	continue;
--      buf = (unsigned char *)1; /* bug in OpenSSL 0.9.6b ASN1_STRING_to_UTF8 requires this workaround */
--      if (ASN1_STRING_to_UTF8 (&buf, val) <= 0)
--	continue;
--
--      printf("X509 %s: %s\n", objbuf, (char *)buf);
--      OPENSSL_free (buf);
--    }
--}
--
--
--
--OPENVPN_EXPORT int
--openvpn_plugin_func_v3 (const int version,
--                        struct openvpn_plugin_args_func_in const *args,
--                        struct openvpn_plugin_args_func_return *retptr)
--{
--  struct plugin_context *context = (struct plugin_context *) args->handle;
--
--  printf("\nopenvpn_plugin_func_v3() :::::>> ");
--  show (args->type, args->argv, args->envp);
--
--  /* Dump some X509 information if we're in the TLS_VERIFY phase */
--  if ((args->type == OPENVPN_PLUGIN_TLS_VERIFY) && args->current_cert ) {
--    printf("---- X509 Subject information ----\n");
--    printf("Certificate depth: %i\n", args->current_cert_depth);
--    x509_print_info(args->current_cert);
--    printf("----------------------------------\n");
--  }
--
--  /* check entered username/password against what we require */
--  if (args->type == OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY)
--    {
--      /* get username/password from envp string array */
--      const char *username = get_env ("username", args->envp);
--      const char *password = get_env ("password", args->envp);
--
--      if (username && !strcmp (username, context->username)
--	  && password && !strcmp (password, context->password))
--	return OPENVPN_PLUGIN_FUNC_SUCCESS;
--      else
--	return OPENVPN_PLUGIN_FUNC_ERROR;
--    }
--  else
--    return OPENVPN_PLUGIN_FUNC_SUCCESS;
--}
--
--OPENVPN_EXPORT void
--openvpn_plugin_close_v1 (openvpn_plugin_handle_t handle)
--{
--  struct plugin_context *context = (struct plugin_context *) handle;
--  free (context);
--}
-diff --git a/plugin/examples/simple.c b/plugin/examples/simple.c
-deleted file mode 100644
-index f26d89f..0000000
---- a/plugin/examples/simple.c
-+++ /dev/null
-@@ -1,120 +0,0 @@
--/*
-- *  OpenVPN -- An application to securely tunnel IP networks
-- *             over a single TCP/UDP port, with support for SSL/TLS-based
-- *             session authentication and key exchange,
-- *             packet encryption, packet authentication, and
-- *             packet compression.
-- *
-- *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-- *
-- *  This program is free software; you can redistribute it and/or modify
-- *  it under the terms of the GNU General Public License version 2
-- *  as published by the Free Software Foundation.
-- *
-- *  This program is distributed in the hope that it will be useful,
-- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- *  GNU General Public License for more details.
-- *
-- *  You should have received a copy of the GNU General Public License
-- *  along with this program (see the file COPYING included with this
-- *  distribution); if not, write to the Free Software Foundation, Inc.,
-- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-- */
--
--/*
-- * This file implements a simple OpenVPN plugin module which
-- * will examine the username/password provided by a client,
-- * and make an accept/deny determination.  Will run
-- * on Windows or *nix.
-- *
-- * See the README file for build instructions.
-- */
--
--#include <stdio.h>
--#include <string.h>
--#include <stdlib.h>
--
--#include "openvpn-plugin.h"
--
--/*
-- * Our context, where we keep our state.
-- */
--struct plugin_context {
--  const char *username;
--  const char *password;
--};
--
--/*
-- * Given an environmental variable name, search
-- * the envp array for its value, returning it
-- * if found or NULL otherwise.
-- */
--static const char *
--get_env (const char *name, const char *envp[])
--{
--  if (envp)
--    {
--      int i;
--      const int namelen = strlen (name);
--      for (i = 0; envp[i]; ++i)
--	{
--	  if (!strncmp (envp[i], name, namelen))
--	    {
--	      const char *cp = envp[i] + namelen;
--	      if (*cp == '=')
--		return cp + 1;
--	    }
--	}
--    }
--  return NULL;
--}
--
--OPENVPN_EXPORT openvpn_plugin_handle_t
--openvpn_plugin_open_v1 (unsigned int *type_mask, const char *argv[], const char *envp[])
--{
--  struct plugin_context *context;
--
--  /*
--   * Allocate our context
--   */
--  context = (struct plugin_context *) calloc (1, sizeof (struct plugin_context));
--
--  /*
--   * Set the username/password we will require.
--   */
--  context->username = "foo";
--  context->password = "bar";
--
--  /*
--   * We are only interested in intercepting the
--   * --auth-user-pass-verify callback.
--   */
--  *type_mask = OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY);
--
--  return (openvpn_plugin_handle_t) context;
--}
--
--OPENVPN_EXPORT int
--openvpn_plugin_func_v1 (openvpn_plugin_handle_t handle, const int type, const char *argv[], const char *envp[])
--{
--  struct plugin_context *context = (struct plugin_context *) handle;
--
--  /* get username/password from envp string array */
--  const char *username = get_env ("username", envp);
--  const char *password = get_env ("password", envp);
--
--  /* check entered username/password against what we require */
--  if (username && !strcmp (username, context->username)
--      && password && !strcmp (password, context->password))
--    return OPENVPN_PLUGIN_FUNC_SUCCESS;
--  else
--    return OPENVPN_PLUGIN_FUNC_ERROR;
--}
--
--OPENVPN_EXPORT void
--openvpn_plugin_close_v1 (openvpn_plugin_handle_t handle)
--{
--  struct plugin_context *context = (struct plugin_context *) handle;
--  free (context);
--}
-diff --git a/plugin/examples/simple.def b/plugin/examples/simple.def
-deleted file mode 100755
-index a87507d..0000000
---- a/plugin/examples/simple.def
-+++ /dev/null
-@@ -1,6 +0,0 @@
--LIBRARY   OpenVPN_PLUGIN_SAMPLE
--DESCRIPTION "Sample OpenVPN plug-in module."
--EXPORTS
--   openvpn_plugin_open_v1   @1
--   openvpn_plugin_func_v1   @2
--   openvpn_plugin_close_v1  @3
-diff --git a/plugin/examples/winbuild b/plugin/examples/winbuild
-deleted file mode 100755
-index 97e724a..0000000
---- a/plugin/examples/winbuild
-+++ /dev/null
-@@ -1,18 +0,0 @@
--#
--# Build an OpenVPN plugin module on Windows/MinGW.
--# The argument should be the base name of the C source file
--# (without the .c).
--#
--
--# This directory is where we will look for openvpn-plugin.h
--INCLUDE="-I.."
--
--CC_FLAGS="-O2 -Wall"
--
--gcc -DBUILD_DLL $CC_FLAGS $INCLUDE -c $1.c
--gcc --disable-stdcall-fixup -mdll -DBUILD_DLL -o junk.tmp -Wl,--base-file,base.tmp $1.o
--rm junk.tmp
--dlltool --dllname $1.dll --base-file base.tmp --output-exp temp.exp --input-def $1.def
--rm base.tmp
--gcc --enable-stdcall-fixup -mdll -DBUILD_DLL -o $1.dll $1.o -Wl,temp.exp
--rm temp.exp
-diff --git a/plugins/README b/plugins/README
-new file mode 100644
-index 0000000..6e490c5
---- /dev/null
-+++ b/plugins/README
-@@ -0,0 +1,47 @@
-+OpenVPN Plugins
-+---------------
-+
-+Starting with OpenVPN 2.0-beta17, compiled plugin modules are
-+supported on any *nix OS which includes libdl or on Windows.
-+One or more modules may be loaded into OpenVPN using
-+the --plugin directive, and each plugin module is capable of
-+intercepting any of the script callbacks which OpenVPN supports:
-+
-+(1) up
-+(2) down
-+(3) route-up
-+(4) ipchange
-+(5) tls-verify
-+(6) auth-user-pass-verify
-+(7) client-connect
-+(8) client-disconnect
-+(9) learn-address
-+
-+See the openvpn-plugin.h file in the top-level directory of the
-+OpenVPN source distribution for more detailed information
-+on the plugin interface.
-+
-+Included Plugins
-+----------------
-+
-+auth-pam -- Authenticate using PAM and a split privilege
-+            execution model which functions even if
-+            root privileges or the execution environment
-+            have been altered with --user/--group/--chroot.
-+            Tested on Linux only.
-+
-+down-root -- Enable the running of down scripts with root privileges
-+             even if --user/--group/--chroot have been used
-+             to drop root privileges or change the execution
-+             environment.  Not applicable on Windows.
-+
-+examples -- A simple example that demonstrates a portable
-+            plugin, i.e. one which can be built for *nix
-+            or Windows from the same source.
-+
-+Building Plugins
-+----------------
-+
-+cd to the top-level directory of a plugin, and use the
-+"make" command to build it.  The examples plugin is
-+built using a build script, not a makefile.
-diff --git a/plugins/auth-pam/.svnignore b/plugins/auth-pam/.svnignore
-new file mode 100644
-index 0000000..140f8cf
---- /dev/null
-+++ b/plugins/auth-pam/.svnignore
-@@ -0,0 +1 @@
-+*.so
-diff --git a/plugins/auth-pam/Makefile b/plugins/auth-pam/Makefile
-new file mode 100755
-index 0000000..e69fe3f
---- /dev/null
-+++ b/plugins/auth-pam/Makefile
-@@ -0,0 +1,30 @@
-+#
-+# Build the OpenVPN auth-pam plugin module.
-+#
-+
-+# If PAM modules are not linked against libpam.so, set DLOPEN_PAM to 1. This
-+# must be done on SUSE 9.1, at least.
-+DLOPEN_PAM=0
-+
-+ifeq ($(DLOPEN_PAM),1)
-+	LIBPAM=-ldl
-+else
-+	LIBPAM=-lpam
-+endif
-+
-+# This directory is where we will look for openvpn-plugin.h
-+INCLUDE=-I../..
-+
-+CC_FLAGS=-O2 -Wall -DDLOPEN_PAM=$(DLOPEN_PAM)
-+
-+openvpn-auth-pam.so : auth-pam.o pamdl.o
-+	gcc ${CC_FLAGS} -fPIC -shared -Wl,-soname,openvpn-auth-pam.so -o openvpn-auth-pam.so auth-pam.o pamdl.o -lc $(LIBPAM)
-+
-+auth-pam.o : auth-pam.c pamdl.h
-+	gcc ${CC_FLAGS} -fPIC -c ${INCLUDE} auth-pam.c
-+
-+pamdl.o : pamdl.c pamdl.h
-+	gcc ${CC_FLAGS} -fPIC -c ${INCLUDE} pamdl.c
-+
-+clean :
-+	rm -f *.o *.so
-diff --git a/plugins/auth-pam/README b/plugins/auth-pam/README
-new file mode 100644
-index 0000000..e123690
---- /dev/null
-+++ b/plugins/auth-pam/README
-@@ -0,0 +1,74 @@
-+openvpn-auth-pam
-+
-+SYNOPSIS
-+
-+The openvpn-auth-pam module implements username/password
-+authentication via PAM, and essentially allows any authentication
-+method supported by PAM (such as LDAP, RADIUS, or Linux Shadow
-+passwords) to be used with OpenVPN.  While PAM supports
-+username/password authentication, this can be combined with X509
-+certificates to provide two indepedent levels of authentication.
-+
-+This module uses a split privilege execution model which will
-+function even if you drop openvpn daemon privileges using the user,
-+group, or chroot directives.
-+
-+BUILD
-+
-+To build openvpn-auth-pam, you will need to have the pam-devel
-+package installed.
-+
-+Build with the "make" command.  The module will be named
-+openvpn-auth-pam.so
-+
-+USAGE
-+
-+To use this plugin module, add to your OpenVPN config file:
-+
-+  plugin openvpn-auth-pam.so service-type
-+
-+The required service-type parameter corresponds to
-+the PAM service definition file usually found
-+in /etc/pam.d.
-+
-+This plugin also supports the usage of a list of name/value
-+pairs to answer PAM module queries.
-+
-+For example:
-+
-+  plugin openvpn-auth-pam.so "login login USERNAME password PASSWORD"
-+
-+tells auth-pam to (a) use the "login" PAM module, (b) answer a
-+"login" query with the username given by the OpenVPN client, and
-+(c) answer a "password" query with the password given by the
-+OpenVPN client.  This provides flexibility in dealing with the different
-+types of query strings which different PAM modules might generate.
-+For example, suppose you were using a PAM module called
-+"test" which queried for "name" rather than "login":
-+
-+  plugin openvpn-auth-pam.so "test name USERNAME password PASSWORD"
-+
-+While "USERNAME" "COMMONNAME" and "PASSWORD" are special strings which substitute
-+to client-supplied values, it is also possible to name literal values
-+to use as PAM module query responses.  For example, suppose that the
-+login module queried for a third parameter, "domain" which
-+is to be answered with the constant value "mydomain.com":
-+
-+  plugin openvpn-auth-pam.so "login login USERNAME password PASSWORD domain mydomain.com"
-+
-+The following OpenVPN directives can also influence
-+the operation of this plugin:
-+
-+  client-cert-not-required
-+  username-as-common-name
-+
-+Run OpenVPN with --verb 7 or higher to get debugging output from
-+this plugin, including the list of queries presented by the
-+underlying PAM module.  This is a useful debugging tool to figure
-+out which queries a given PAM module is making, so that you can
-+craft the appropriate plugin directive to answer it.
-+
-+CAVEATS
-+
-+This module will only work on *nix systems which support PAM,
-+not Windows.
-diff --git a/plugins/auth-pam/auth-pam.c b/plugins/auth-pam/auth-pam.c
-new file mode 100644
-index 0000000..e52f632
---- /dev/null
-+++ b/plugins/auth-pam/auth-pam.c
-@@ -0,0 +1,804 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program (see the file COPYING included with this
-+ *  distribution); if not, write to the Free Software Foundation, Inc.,
-+ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-+ */
-+
-+/*
-+ * OpenVPN plugin module to do PAM authentication using a split
-+ * privilege model.
-+ */
-+
-+#if DLOPEN_PAM
-+#include <dlfcn.h>
-+#include "pamdl.h"
-+#else
-+#include <security/pam_appl.h>
-+#endif
-+
-+#include <stdio.h>
-+#include <string.h>
-+#include <ctype.h>
-+#include <unistd.h>
-+#include <stdlib.h>
-+#include <sys/types.h>
-+#include <sys/socket.h>
-+#include <sys/wait.h>
-+#include <fcntl.h>
-+#include <signal.h>
-+#include <syslog.h>
-+
-+#include "openvpn-plugin.h"
-+
-+#define DEBUG(verb) ((verb) >= 4)
-+
-+/* Command codes for foreground -> background communication */
-+#define COMMAND_VERIFY 0
-+#define COMMAND_EXIT   1
-+
-+/* Response codes for background -> foreground communication */
-+#define RESPONSE_INIT_SUCCEEDED   10
-+#define RESPONSE_INIT_FAILED      11
-+#define RESPONSE_VERIFY_SUCCEEDED 12
-+#define RESPONSE_VERIFY_FAILED    13
-+
-+/*
-+ * Plugin state, used by foreground
-+ */
-+struct auth_pam_context
-+{
-+  /* Foreground's socket to background process */
-+  int foreground_fd;
-+
-+  /* Process ID of background process */
-+  pid_t background_pid;
-+
-+  /* Verbosity level of OpenVPN */
-+  int verb;
-+};
-+
-+/*
-+ * Name/Value pairs for conversation function.
-+ * Special Values:
-+ *
-+ *  "USERNAME" -- substitute client-supplied username
-+ *  "PASSWORD" -- substitute client-specified password
-+ *  "COMMONNAME" -- substitute client certificate common name
-+ */
-+
-+#define N_NAME_VALUE 16
-+
-+struct name_value {
-+  const char *name;
-+  const char *value;
-+};
-+
-+struct name_value_list {
-+  int len;
-+  struct name_value data[N_NAME_VALUE];
-+};
-+
-+/*
-+ * Used to pass the username/password
-+ * to the PAM conversation function.
-+ */
-+struct user_pass {
-+  int verb;
-+
-+  char username[128];
-+  char password[128];
-+  char common_name[128];
-+
-+  const struct name_value_list *name_value_list;
-+};
-+
-+/* Background process function */
-+static void pam_server (int fd, const char *service, int verb, const struct name_value_list *name_value_list);
-+
-+/*  Read 'tosearch', replace all occurences of 'searchfor' with 'replacewith' and return
-+ *  a pointer to the NEW string.  Does not modify the input strings.  Will not enter an
-+ *  infinite loop with clever 'searchfor' and 'replacewith' strings.
-+ *  Daniel Johnson - Progman2000@...1085... / djohnson@...1167...
-+ */
-+static char *
-+searchandreplace(const char *tosearch, const char *searchfor, const char *replacewith)
-+{
-+  const char *searching=tosearch;
-+  char *scratch;
-+  char temp[strlen(tosearch)*10];
-+  temp[0]=0;
-+
-+  if (!tosearch || !searchfor || !replacewith) return 0;
-+  if (!strlen(tosearch) || !strlen(searchfor) || !strlen(replacewith)) return 0;
-+
-+  scratch = strstr(searching,searchfor);
-+  if (!scratch) return strdup(tosearch);
-+
-+  while (scratch) {
-+    strncat(temp,searching,scratch-searching);
-+    strcat(temp,replacewith);
-+
-+    searching=scratch+strlen(searchfor);
-+    scratch = strstr(searching,searchfor);
-+  }
-+  return strdup(temp);
-+}
-+
-+/*
-+ * Given an environmental variable name, search
-+ * the envp array for its value, returning it
-+ * if found or NULL otherwise.
-+ */
-+static const char *
-+get_env (const char *name, const char *envp[])
-+{
-+  if (envp)
-+    {
-+      int i;
-+      const int namelen = strlen (name);
-+      for (i = 0; envp[i]; ++i)
-+	{
-+	  if (!strncmp (envp[i], name, namelen))
-+	    {
-+	      const char *cp = envp[i] + namelen;
-+	      if (*cp == '=')
-+		return cp + 1;
-+	    }
-+	}
-+    }
-+  return NULL;
-+}
-+
-+/*
-+ * Return the length of a string array
-+ */
-+static int
-+string_array_len (const char *array[])
-+{
-+  int i = 0;
-+  if (array)
-+    {
-+      while (array[i])
-+	++i;
-+    }
-+  return i;
-+}
-+
-+/*
-+ * Socket read/write functions.
-+ */
-+
-+static int
-+recv_control (int fd)
-+{
-+  unsigned char c;
-+  const ssize_t size = read (fd, &c, sizeof (c));
-+  if (size == sizeof (c))
-+    return c;
-+  else
-+    {
-+      /*fprintf (stderr, "AUTH-PAM: DEBUG recv_control.read=%d\n", (int)size);*/
-+      return -1;
-+    }
-+}
-+
-+static int
-+send_control (int fd, int code)
-+{
-+  unsigned char c = (unsigned char) code;
-+  const ssize_t size = write (fd, &c, sizeof (c));
-+  if (size == sizeof (c))
-+    return (int) size;
-+  else
-+    return -1;
-+}
-+
-+static int
-+recv_string (int fd, char *buffer, int len)
-+{
-+  if (len > 0)
-+    {
-+      ssize_t size;
-+      memset (buffer, 0, len);
-+      size = read (fd, buffer, len);
-+      buffer[len-1] = 0;
-+      if (size >= 1)
-+	return (int)size;
-+    }
-+  return -1;
-+}
-+
-+static int
-+send_string (int fd, const char *string)
-+{
-+  const int len = strlen (string) + 1;
-+  const ssize_t size = write (fd, string, len);
-+  if (size == len)
-+    return (int) size;
-+  else
-+    return -1;
-+}
-+
-+#ifdef DO_DAEMONIZE
-+
-+/*
-+ * Daemonize if "daemon" env var is true.
-+ * Preserve stderr across daemonization if
-+ * "daemon_log_redirect" env var is true.
-+ */
-+static void
-+daemonize (const char *envp[])
-+{
-+  const char *daemon_string = get_env ("daemon", envp);
-+  if (daemon_string && daemon_string[0] == '1')
-+    {
-+      const char *log_redirect = get_env ("daemon_log_redirect", envp);
-+      int fd = -1;
-+      if (log_redirect && log_redirect[0] == '1')
-+	fd = dup (2);
-+      if (daemon (0, 0) < 0)
-+	{
-+	  fprintf (stderr, "AUTH-PAM: daemonization failed\n");
-+	}
-+      else if (fd >= 3)
-+	{
-+	  dup2 (fd, 2);
-+	  close (fd);
-+	}
-+    }
-+}
-+
-+#endif
-+
-+/*
-+ * Close most of parent's fds.
-+ * Keep stdin/stdout/stderr, plus one
-+ * other fd which is presumed to be
-+ * our pipe back to parent.
-+ * Admittedly, a bit of a kludge,
-+ * but posix doesn't give us a kind
-+ * of FD_CLOEXEC which will stop
-+ * fds from crossing a fork().
-+ */
-+static void
-+close_fds_except (int keep)
-+{
-+  int i;
-+  closelog ();
-+  for (i = 3; i <= 100; ++i)
-+    {
-+      if (i != keep)
-+	close (i);
-+    }
-+}
-+
-+/*
-+ * Usually we ignore signals, because our parent will
-+ * deal with them.
-+ */
-+static void
-+set_signals (void)
-+{
-+  signal (SIGTERM, SIG_DFL);
-+
-+  signal (SIGINT, SIG_IGN);
-+  signal (SIGHUP, SIG_IGN);
-+  signal (SIGUSR1, SIG_IGN);
-+  signal (SIGUSR2, SIG_IGN);
-+  signal (SIGPIPE, SIG_IGN);
-+}
-+
-+/*
-+ * Return 1 if query matches match.
-+ */
-+static int
-+name_value_match (const char *query, const char *match)
-+{
-+  while (!isalnum (*query))
-+    {
-+      if (*query == '\0')
-+	return 0;
-+      ++query;
-+    }
-+  return strncasecmp (match, query, strlen (match)) == 0;
-+}
-+
-+OPENVPN_EXPORT openvpn_plugin_handle_t
-+openvpn_plugin_open_v1 (unsigned int *type_mask, const char *argv[], const char *envp[])
-+{
-+  pid_t pid;
-+  int fd[2];
-+
-+  struct auth_pam_context *context;
-+  struct name_value_list name_value_list;
-+
-+  const int base_parms = 2;
-+
-+  /*
-+   * Allocate our context
-+   */
-+  context = (struct auth_pam_context *) calloc (1, sizeof (struct auth_pam_context));
-+  if (!context)
-+    goto error;
-+  context->foreground_fd = -1;
-+
-+  /*
-+   * Intercept the --auth-user-pass-verify callback.
-+   */
-+  *type_mask = OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY);
-+
-+  /*
-+   * Make sure we have two string arguments: the first is the .so name,
-+   * the second is the PAM service type.
-+   */
-+  if (string_array_len (argv) < base_parms)
-+    {
-+      fprintf (stderr, "AUTH-PAM: need PAM service parameter\n");
-+      goto error;
-+    }
-+
-+  /*
-+   * See if we have optional name/value pairs to match against
-+   * PAM module queried fields in the conversation function.
-+   */
-+  name_value_list.len = 0;
-+  if (string_array_len (argv) > base_parms)
-+    {
-+      const int nv_len = string_array_len (argv) - base_parms;
-+      int i;
-+
-+      if ((nv_len & 1) == 1 || (nv_len / 2) > N_NAME_VALUE)
-+	{
-+	  fprintf (stderr, "AUTH-PAM: bad name/value list length\n");
-+	  goto error;
-+	}
-+
-+      name_value_list.len = nv_len / 2;
-+      for (i = 0; i < name_value_list.len; ++i)
-+	{
-+	  const int base = base_parms + i * 2;
-+	  name_value_list.data[i].name = argv[base];
-+	  name_value_list.data[i].value = argv[base+1];
-+	}
-+    }
-+
-+  /*
-+   * Get verbosity level from environment
-+   */
-+  {
-+    const char *verb_string = get_env ("verb", envp);
-+    if (verb_string)
-+      context->verb = atoi (verb_string);
-+  }
-+
-+  /*
-+   * Make a socket for foreground and background processes
-+   * to communicate.
-+   */
-+  if (socketpair (PF_UNIX, SOCK_DGRAM, 0, fd) == -1)
-+    {
-+      fprintf (stderr, "AUTH-PAM: socketpair call failed\n");
-+      goto error;
-+    }
-+
-+  /*
-+   * Fork off the privileged process.  It will remain privileged
-+   * even after the foreground process drops its privileges.
-+   */
-+  pid = fork ();
-+
-+  if (pid)
-+    {
-+      int status;
-+
-+      /*
-+       * Foreground Process
-+       */
-+
-+      context->background_pid = pid;
-+
-+      /* close our copy of child's socket */
-+      close (fd[1]);
-+
-+      /* don't let future subprocesses inherit child socket */
-+      if (fcntl (fd[0], F_SETFD, FD_CLOEXEC) < 0)
-+	fprintf (stderr, "AUTH-PAM: Set FD_CLOEXEC flag on socket file descriptor failed\n");
-+
-+      /* wait for background child process to initialize */
-+      status = recv_control (fd[0]);
-+      if (status == RESPONSE_INIT_SUCCEEDED)
-+	{
-+	  context->foreground_fd = fd[0];
-+	  return (openvpn_plugin_handle_t) context;
-+	}
-+    }
-+  else
-+    {
-+      /*
-+       * Background Process
-+       */
-+
-+      /* close all parent fds except our socket back to parent */
-+      close_fds_except (fd[1]);
-+
-+      /* Ignore most signals (the parent will receive them) */
-+      set_signals ();
-+
-+#ifdef DO_DAEMONIZE
-+      /* Daemonize if --daemon option is set. */
-+      daemonize (envp);
-+#endif
-+
-+      /* execute the event loop */
-+      pam_server (fd[1], argv[1], context->verb, &name_value_list);
-+
-+      close (fd[1]);
-+
-+      exit (0);
-+      return 0; /* NOTREACHED */
-+    }
-+
-+ error:
-+  if (context)
-+    free (context);
-+  return NULL;
-+}
-+
-+OPENVPN_EXPORT int
-+openvpn_plugin_func_v1 (openvpn_plugin_handle_t handle, const int type, const char *argv[], const char *envp[])
-+{
-+  struct auth_pam_context *context = (struct auth_pam_context *) handle;
-+
-+  if (type == OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY && context->foreground_fd >= 0)
-+    {
-+      /* get username/password from envp string array */
-+      const char *username = get_env ("username", envp);
-+      const char *password = get_env ("password", envp);
-+      const char *common_name = get_env ("common_name", envp) ? get_env ("common_name", envp) : "";
-+
-+      if (username && strlen (username) > 0 && password)
-+	{
-+	  if (send_control (context->foreground_fd, COMMAND_VERIFY) == -1
-+	      || send_string (context->foreground_fd, username) == -1
-+	      || send_string (context->foreground_fd, password) == -1
-+             || send_string (context->foreground_fd, common_name) == -1)
-+	    {
-+	      fprintf (stderr, "AUTH-PAM: Error sending auth info to background process\n");
-+	    }
-+	  else
-+	    {
-+	      const int status = recv_control (context->foreground_fd);
-+	      if (status == RESPONSE_VERIFY_SUCCEEDED)
-+		return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+	      if (status == -1)
-+		fprintf (stderr, "AUTH-PAM: Error receiving auth confirmation from background process\n");
-+	    }
-+	}
-+    }
-+  return OPENVPN_PLUGIN_FUNC_ERROR;
-+}
-+
-+OPENVPN_EXPORT void
-+openvpn_plugin_close_v1 (openvpn_plugin_handle_t handle)
-+{
-+  struct auth_pam_context *context = (struct auth_pam_context *) handle;
-+
-+  if (DEBUG (context->verb))
-+    fprintf (stderr, "AUTH-PAM: close\n");
-+
-+  if (context->foreground_fd >= 0)
-+    {
-+      /* tell background process to exit */
-+      if (send_control (context->foreground_fd, COMMAND_EXIT) == -1)
-+	fprintf (stderr, "AUTH-PAM: Error signaling background process to exit\n");
-+
-+      /* wait for background process to exit */
-+      if (context->background_pid > 0)
-+	waitpid (context->background_pid, NULL, 0);
-+
-+      close (context->foreground_fd);
-+      context->foreground_fd = -1;
-+    }
-+
-+  free (context);
-+}
-+
-+OPENVPN_EXPORT void
-+openvpn_plugin_abort_v1 (openvpn_plugin_handle_t handle)
-+{
-+  struct auth_pam_context *context = (struct auth_pam_context *) handle;
-+
-+  /* tell background process to exit */
-+  if (context && context->foreground_fd >= 0)
-+    {
-+      send_control (context->foreground_fd, COMMAND_EXIT);
-+      close (context->foreground_fd);
-+      context->foreground_fd = -1;
-+    }
-+}
-+
-+/*
-+ * PAM conversation function
-+ */
-+static int
-+my_conv (int n, const struct pam_message **msg_array,
-+	 struct pam_response **response_array, void *appdata_ptr)
-+{
-+  const struct user_pass *up = ( const struct user_pass *) appdata_ptr;
-+  struct pam_response *aresp;
-+  int i;
-+  int ret = PAM_SUCCESS;
-+
-+  *response_array = NULL;
-+
-+  if (n <= 0 || n > PAM_MAX_NUM_MSG)
-+    return (PAM_CONV_ERR);
-+  if ((aresp = calloc (n, sizeof *aresp)) == NULL)
-+    return (PAM_BUF_ERR);
-+
-+  /* loop through each PAM-module query */
-+  for (i = 0; i < n; ++i)
-+    {
-+      const struct pam_message *msg = msg_array[i];
-+      aresp[i].resp_retcode = 0;
-+      aresp[i].resp = NULL;
-+
-+      if (DEBUG (up->verb))
-+	{
-+	  fprintf (stderr, "AUTH-PAM: BACKGROUND: my_conv[%d] query='%s' style=%d\n",
-+		   i,
-+		   msg->msg ? msg->msg : "NULL",
-+		   msg->msg_style);
-+	}
-+
-+      if (up->name_value_list && up->name_value_list->len > 0)
-+	{
-+	  /* use name/value list match method */
-+	  const struct name_value_list *list = up->name_value_list;
-+	  int j;
-+
-+	  /* loop through name/value pairs */
-+	  for (j = 0; j < list->len; ++j)
-+	    {
-+	      const char *match_name = list->data[j].name;
-+	      const char *match_value = list->data[j].value;
-+
-+	      if (name_value_match (msg->msg, match_name))
-+		{
-+		  /* found name/value match */
-+		  aresp[i].resp = NULL;
-+
-+		  if (DEBUG (up->verb))
-+		    fprintf (stderr, "AUTH-PAM: BACKGROUND: name match found, query/match-string ['%s', '%s'] = '%s'\n",
-+			     msg->msg,
-+			     match_name,
-+			     match_value);
-+
-+		  if (strstr(match_value, "USERNAME"))
-+		    aresp[i].resp = searchandreplace(match_value, "USERNAME", up->username);
-+		  else if (strstr(match_value, "PASSWORD"))
-+		    aresp[i].resp = searchandreplace(match_value, "PASSWORD", up->password);
-+		  else if (strstr(match_value, "COMMONNAME"))
-+		    aresp[i].resp = searchandreplace(match_value, "COMMONNAME", up->common_name);
-+		  else
-+		    aresp[i].resp = strdup (match_value);
-+
-+		  if (aresp[i].resp == NULL)
-+		    ret = PAM_CONV_ERR;
-+		  break;
-+		}
-+	    }
-+
-+	  if (j == list->len)
-+	    ret = PAM_CONV_ERR;
-+	}
-+      else
-+	{
-+	  /* use PAM_PROMPT_ECHO_x hints */
-+	  switch (msg->msg_style)
-+	    {
-+	    case PAM_PROMPT_ECHO_OFF:
-+	      aresp[i].resp = strdup (up->password);
-+	      if (aresp[i].resp == NULL)
-+		ret = PAM_CONV_ERR;
-+	      break;
-+
-+	    case PAM_PROMPT_ECHO_ON:
-+	      aresp[i].resp = strdup (up->username);
-+	      if (aresp[i].resp == NULL)
-+		ret = PAM_CONV_ERR;
-+	      break;
-+
-+	    case PAM_ERROR_MSG:
-+	    case PAM_TEXT_INFO:
-+	      break;
-+
-+	    default:
-+	      ret = PAM_CONV_ERR;
-+	      break;
-+	    }
-+	}
-+    }
-+
-+  if (ret == PAM_SUCCESS)
-+    *response_array = aresp;
-+  return ret;
-+}
-+
-+/*
-+ * Return 1 if authenticated and 0 if failed.
-+ * Called once for every username/password
-+ * to be authenticated.
-+ */
-+static int
-+pam_auth (const char *service, const struct user_pass *up)
-+{
-+  struct pam_conv conv;
-+  pam_handle_t *pamh = NULL;
-+  int status = PAM_SUCCESS;
-+  int ret = 0;
-+  const int name_value_list_provided = (up->name_value_list && up->name_value_list->len > 0);
-+
-+  /* Initialize PAM */
-+  conv.conv = my_conv;
-+  conv.appdata_ptr = (void *)up;
-+  status = pam_start (service, name_value_list_provided ? NULL : up->username, &conv, &pamh);
-+  if (status == PAM_SUCCESS)
-+    {
-+      /* Call PAM to verify username/password */
-+      status = pam_authenticate(pamh, 0);
-+      if (status == PAM_SUCCESS)
-+	status = pam_acct_mgmt (pamh, 0);
-+      if (status == PAM_SUCCESS)
-+	ret = 1;
-+
-+      /* Output error message if failed */
-+      if (!ret)
-+	{
-+	  fprintf (stderr, "AUTH-PAM: BACKGROUND: user '%s' failed to authenticate: %s\n",
-+		   up->username,
-+		   pam_strerror (pamh, status));
-+	}
-+
-+      /* Close PAM */
-+      pam_end (pamh, status);      
-+    }
-+
-+  return ret;
-+}
-+
-+/*
-+ * Background process -- runs with privilege.
-+ */
-+static void
-+pam_server (int fd, const char *service, int verb, const struct name_value_list *name_value_list)
-+{
-+  struct user_pass up;
-+  int command;
-+#if DLOPEN_PAM
-+  static const char pam_so[] = "libpam.so";
-+#endif
-+
-+  /*
-+   * Do initialization
-+   */
-+  if (DEBUG (verb))
-+    fprintf (stderr, "AUTH-PAM: BACKGROUND: INIT service='%s'\n", service);
-+
-+#if DLOPEN_PAM
-+  /*
-+   * Load PAM shared object
-+   */
-+  if (!dlopen_pam (pam_so))
-+    {
-+      fprintf (stderr, "AUTH-PAM: BACKGROUND: could not load PAM lib %s: %s\n", pam_so, dlerror());
-+      send_control (fd, RESPONSE_INIT_FAILED);
-+      goto done;
-+    }
-+#endif
-+
-+  /*
-+   * Tell foreground that we initialized successfully
-+   */
-+  if (send_control (fd, RESPONSE_INIT_SUCCEEDED) == -1)
-+    {
-+      fprintf (stderr, "AUTH-PAM: BACKGROUND: write error on response socket [1]\n");
-+      goto done;
-+    }
-+
-+  /*
-+   * Event loop
-+   */
-+  while (1)
-+    {
-+      memset (&up, 0, sizeof (up));
-+      up.verb = verb;
-+      up.name_value_list = name_value_list;
-+
-+      /* get a command from foreground process */
-+      command = recv_control (fd);
-+
-+      if (DEBUG (verb))
-+	fprintf (stderr, "AUTH-PAM: BACKGROUND: received command code: %d\n", command);
-+
-+      switch (command)
-+	{
-+	case COMMAND_VERIFY:
-+	  if (recv_string (fd, up.username, sizeof (up.username)) == -1
-+	      || recv_string (fd, up.password, sizeof (up.password)) == -1
-+	      || recv_string (fd, up.common_name, sizeof (up.common_name)) == -1)
-+	    {
-+	      fprintf (stderr, "AUTH-PAM: BACKGROUND: read error on command channel: code=%d, exiting\n",
-+		       command);
-+	      goto done;
-+	    }
-+
-+	  if (DEBUG (verb))
-+	    {
-+#if 0
-+	      fprintf (stderr, "AUTH-PAM: BACKGROUND: USER/PASS: %s/%s\n",
-+		       up.username, up.password);
-+#else
-+	      fprintf (stderr, "AUTH-PAM: BACKGROUND: USER: %s\n", up.username);
-+#endif
-+	    }
-+
-+	  if (pam_auth (service, &up)) /* Succeeded */
-+	    {
-+	      if (send_control (fd, RESPONSE_VERIFY_SUCCEEDED) == -1)
-+		{
-+		  fprintf (stderr, "AUTH-PAM: BACKGROUND: write error on response socket [2]\n");
-+		  goto done;
-+		}
-+	    }
-+	  else /* Failed */
-+	    {
-+	      if (send_control (fd, RESPONSE_VERIFY_FAILED) == -1)
-+		{
-+		  fprintf (stderr, "AUTH-PAM: BACKGROUND: write error on response socket [3]\n");
-+		  goto done;
-+		}
-+	    }
-+	  break;
-+
-+	case COMMAND_EXIT:
-+	  goto done;
-+
-+	case -1:
-+	  fprintf (stderr, "AUTH-PAM: BACKGROUND: read error on command channel\n");
-+	  goto done;
-+
-+	default:
-+	  fprintf (stderr, "AUTH-PAM: BACKGROUND: unknown command code: code=%d, exiting\n",
-+		   command);
-+	  goto done;
-+	}
-+    }
-+ done:
-+
-+#if DLOPEN_PAM
-+  dlclose_pam ();
-+#endif
-+  if (DEBUG (verb))
-+    fprintf (stderr, "AUTH-PAM: BACKGROUND: EXIT\n");
-+
-+  return;
-+}
-diff --git a/plugins/auth-pam/pamdl.c b/plugins/auth-pam/pamdl.c
-new file mode 100644
-index 0000000..8636a8e
---- /dev/null
-+++ b/plugins/auth-pam/pamdl.c
-@@ -0,0 +1,180 @@
-+#if DLOPEN_PAM
-+/*
-+ * If you want to dynamically load libpam using dlopen() or something,
-+ * then dlopen( ' this shared object ' ); It takes care of exporting
-+ * the right symbols to any modules loaded by libpam.
-+ *
-+ * Modified by JY for use with openvpn-pam-auth
-+ */
-+
-+#include <stdio.h>
-+#include <dlfcn.h>
-+#include <security/pam_appl.h>
-+
-+#include "pamdl.h"
-+
-+static void *libpam_h = NULL;
-+
-+#define RESOLVE_PAM_FUNCTION(x, y, z, err) \
-+    { \
-+        union { const void *tpointer; y (*fn) z ; } fptr; \
-+	fptr.tpointer = dlsym(libpam_h, #x); real_##x = fptr.fn; \
-+	if (real_##x == NULL) { \
-+	    fprintf (stderr, "PAMDL: unable to resolve '%s': %s\n", #x, dlerror()); \
-+	    return err; \
-+	} \
-+    }
-+
-+int
-+dlopen_pam (const char *so)
-+{
-+  if (libpam_h == NULL)
-+    {
-+      libpam_h = dlopen(so, RTLD_GLOBAL|RTLD_NOW);
-+    }
-+  return libpam_h != NULL;
-+}
-+
-+void
-+dlclose_pam (void)
-+{
-+  if (libpam_h != NULL)
-+    {
-+      dlclose(libpam_h);
-+      libpam_h = NULL;
-+    }
-+}
-+
-+int pam_start(const char *service_name, const char *user,
-+	      const struct pam_conv *pam_conversation,
-+	      pam_handle_t **pamh)
-+{
-+    int (*real_pam_start)(const char *, const char *,
-+				 const struct pam_conv *,
-+				 pam_handle_t **);
-+    RESOLVE_PAM_FUNCTION(pam_start, int, (const char *, const char *,
-+					  const struct pam_conv *,
-+					  pam_handle_t **), PAM_ABORT);
-+    return real_pam_start(service_name, user, pam_conversation, pamh);
-+}
-+
-+int pam_end(pam_handle_t *pamh, int pam_status)
-+{
-+    int (*real_pam_end)(pam_handle_t *, int);
-+    RESOLVE_PAM_FUNCTION(pam_end, int, (pam_handle_t *, int), PAM_ABORT);
-+    return real_pam_end(pamh, pam_status);
-+}
-+
-+int pam_set_item(pam_handle_t *pamh, int item_type, const void *item)
-+{
-+    int (*real_pam_set_item)(pam_handle_t *, int, const void *);
-+    RESOLVE_PAM_FUNCTION(pam_set_item, int,
-+			 (pam_handle_t *, int, const void *), PAM_ABORT);
-+    return real_pam_set_item(pamh, item_type, item);
-+}
-+
-+int pam_get_item(pam_handle_t *pamh, int item_type, const void **item)
-+{
-+    int (*real_pam_get_item)(const pam_handle_t *, int, const void **);
-+    RESOLVE_PAM_FUNCTION(pam_get_item, int,
-+			 (const pam_handle_t *, int, const void **),
-+			 PAM_ABORT);
-+    return real_pam_get_item(pamh, item_type, item);
-+}
-+
-+int pam_fail_delay(pam_handle_t *pamh, unsigned int musec_delay)
-+{
-+    int (*real_pam_fail_delay)(pam_handle_t *, unsigned int);
-+    RESOLVE_PAM_FUNCTION(pam_fail_delay, int, (pam_handle_t *, unsigned int),
-+			 PAM_ABORT);
-+    return real_pam_fail_delay(pamh, musec_delay);
-+}
-+
-+typedef const char * const_char_pointer;
-+
-+const_char_pointer pam_strerror(pam_handle_t *pamh, int errnum)
-+{
-+    const_char_pointer (*real_pam_strerror)(pam_handle_t *, int);
-+    RESOLVE_PAM_FUNCTION(pam_strerror, const_char_pointer,
-+			 (pam_handle_t *, int), NULL);
-+    return real_pam_strerror(pamh, errnum);
-+}
-+
-+int pam_putenv(pam_handle_t *pamh, const char *name_value)
-+{
-+    int (*real_pam_putenv)(pam_handle_t *, const char *);
-+    RESOLVE_PAM_FUNCTION(pam_putenv, int, (pam_handle_t *, const char *),
-+			 PAM_ABORT);
-+    return real_pam_putenv(pamh, name_value);
-+}
-+
-+const_char_pointer pam_getenv(pam_handle_t *pamh, const char *name)
-+{
-+    const_char_pointer (*real_pam_getenv)(pam_handle_t *, const char *);
-+    RESOLVE_PAM_FUNCTION(pam_getenv, const_char_pointer,
-+			 (pam_handle_t *, const char *), NULL);
-+    return real_pam_getenv(pamh, name);
-+}
-+
-+typedef char ** char_ppointer;
-+char_ppointer pam_getenvlist(pam_handle_t *pamh)
-+{
-+    char_ppointer (*real_pam_getenvlist)(pam_handle_t *);
-+    RESOLVE_PAM_FUNCTION(pam_getenvlist, char_ppointer, (pam_handle_t *),
-+			 NULL);
-+    return real_pam_getenvlist(pamh);
-+}
-+
-+/* Authentication management */
-+
-+int pam_authenticate(pam_handle_t *pamh, int flags)
-+{
-+    int (*real_pam_authenticate)(pam_handle_t *, int);
-+    RESOLVE_PAM_FUNCTION(pam_authenticate, int, (pam_handle_t *, int),
-+			 PAM_ABORT);
-+    return real_pam_authenticate(pamh, flags);
-+}
-+
-+int pam_setcred(pam_handle_t *pamh, int flags)
-+{
-+    int (*real_pam_setcred)(pam_handle_t *, int);
-+    RESOLVE_PAM_FUNCTION(pam_setcred, int, (pam_handle_t *, int), PAM_ABORT);
-+    return real_pam_setcred(pamh, flags);
-+}
-+
-+/* Account Management API's */
-+
-+int pam_acct_mgmt(pam_handle_t *pamh, int flags)
-+{
-+    int (*real_pam_acct_mgmt)(pam_handle_t *, int);
-+    RESOLVE_PAM_FUNCTION(pam_acct_mgmt, int, (pam_handle_t *, int), PAM_ABORT);
-+    return real_pam_acct_mgmt(pamh, flags);
-+}
-+
-+/* Session Management API's */
-+
-+int pam_open_session(pam_handle_t *pamh, int flags)
-+{
-+    int (*real_pam_open_session)(pam_handle_t *, int);
-+    RESOLVE_PAM_FUNCTION(pam_open_session, int, (pam_handle_t *, int),
-+			 PAM_ABORT);
-+    return real_pam_open_session(pamh, flags);
-+}
-+
-+int pam_close_session(pam_handle_t *pamh, int flags)
-+{
-+    int (*real_pam_close_session)(pam_handle_t *, int);
-+    RESOLVE_PAM_FUNCTION(pam_close_session, int, (pam_handle_t *, int),
-+			 PAM_ABORT);
-+    return real_pam_close_session(pamh, flags);
-+}
-+
-+/* Password Management API's */
-+
-+int pam_chauthtok(pam_handle_t *pamh, int flags)
-+{
-+    int (*real_pam_chauthtok)(pam_handle_t *, int);
-+    RESOLVE_PAM_FUNCTION(pam_chauthtok, int, (pam_handle_t *, int), PAM_ABORT);
-+    return real_pam_chauthtok(pamh, flags);
-+}
-+#endif
-diff --git a/plugins/auth-pam/pamdl.h b/plugins/auth-pam/pamdl.h
-new file mode 100644
-index 0000000..b10b035
---- /dev/null
-+++ b/plugins/auth-pam/pamdl.h
-@@ -0,0 +1,7 @@
-+#if DLOPEN_PAM
-+#include <security/pam_appl.h>
-+
-+/* Dynamically load and unload the PAM library */
-+int dlopen_pam (const char *so);
-+void dlclose_pam (void);
-+#endif
-diff --git a/plugins/defer/README b/plugins/defer/README
-new file mode 100644
-index 0000000..d8990f8
---- /dev/null
-+++ b/plugins/defer/README
-@@ -0,0 +1,16 @@
-+OpenVPN plugin examples.
-+
-+Examples provided:
-+
-+simple.c -- using the --auth-user-pass-verify callback,
-+            test deferred authentication.
-+
-+To build:
-+
-+  ./build simple (Linux/BSD/etc.)
-+  ./winbuild simple (MinGW on Windows)
-+
-+To use in OpenVPN, add to config file:
-+
-+  plugin simple.so (Linux/BSD/etc.)
-+  plugin simple.dll (MinGW on Windows)
-diff --git a/plugins/defer/build b/plugins/defer/build
-new file mode 100755
-index 0000000..5907afa
---- /dev/null
-+++ b/plugins/defer/build
-@@ -0,0 +1,14 @@
-+#!/bin/sh
-+
-+#
-+# Build an OpenVPN plugin module on *nix.  The argument should
-+# be the base name of the C source file (without the .c).
-+#
-+
-+# This directory is where we will look for openvpn-plugin.h
-+INCLUDE="-I../.."
-+
-+CC_FLAGS="-O2 -Wall -g"
-+
-+gcc $CC_FLAGS -fPIC -c $INCLUDE $1.c && \
-+gcc $CC_FLAGS -fPIC -shared -Wl,-soname,$1.so -o $1.so $1.o -lc
-diff --git a/plugins/defer/simple.c b/plugins/defer/simple.c
-new file mode 100644
-index 0000000..6539865
---- /dev/null
-+++ b/plugins/defer/simple.c
-@@ -0,0 +1,305 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program (see the file COPYING included with this
-+ *  distribution); if not, write to the Free Software Foundation, Inc.,
-+ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-+ */
-+
-+/*
-+ * This file implements a simple OpenVPN plugin module which
-+ * will test deferred authentication and packet filtering.
-+ * 
-+ * Will run on Windows or *nix.
-+ *
-+ * Sample usage:
-+ *
-+ * setenv test_deferred_auth 20
-+ * setenv test_packet_filter 10
-+ * plugin plugin/defer/simple.so
-+ *
-+ * This will enable deferred authentication to occur 20
-+ * seconds after the normal TLS authentication process,
-+ * and will cause a packet filter file to be generated 10
-+ * seconds after the initial TLS negotiation, using
-+ * {common-name}.pf as the source.
-+ *
-+ * Sample packet filter configuration:
-+ *
-+ * [CLIENTS DROP]
-+ * +otherclient
-+ * [SUBNETS DROP]
-+ * +10.0.0.0/8
-+ * -10.10.0.8
-+ * [END]
-+ *
-+ * See the README file for build instructions.
-+ */
-+
-+#include <stdio.h>
-+#include <string.h>
-+#include <stdlib.h>
-+
-+#include "openvpn-plugin.h"
-+
-+/* bool definitions */
-+#define bool int
-+#define true 1
-+#define false 0
-+
-+/*
-+ * Our context, where we keep our state.
-+ */
-+
-+struct plugin_context {
-+  int test_deferred_auth;
-+  int test_packet_filter;
-+};
-+
-+struct plugin_per_client_context {
-+  int n_calls;
-+  bool generated_pf_file;
-+};
-+
-+/*
-+ * Given an environmental variable name, search
-+ * the envp array for its value, returning it
-+ * if found or NULL otherwise.
-+ */
-+static const char *
-+get_env (const char *name, const char *envp[])
-+{
-+  if (envp)
-+    {
-+      int i;
-+      const int namelen = strlen (name);
-+      for (i = 0; envp[i]; ++i)
-+	{
-+	  if (!strncmp (envp[i], name, namelen))
-+	    {
-+	      const char *cp = envp[i] + namelen;
-+	      if (*cp == '=')
-+		return cp + 1;
-+	    }
-+	}
-+    }
-+  return NULL;
-+}
-+
-+/* used for safe printf of possible NULL strings */
-+static const char *
-+np (const char *str)
-+{
-+  if (str)
-+    return str;
-+  else
-+    return "[NULL]";
-+}
-+
-+static int
-+atoi_null0 (const char *str)
-+{
-+  if (str)
-+    return atoi (str);
-+  else
-+    return 0;
-+}
-+
-+OPENVPN_EXPORT openvpn_plugin_handle_t
-+openvpn_plugin_open_v1 (unsigned int *type_mask, const char *argv[], const char *envp[])
-+{
-+  struct plugin_context *context;
-+
-+  printf ("FUNC: openvpn_plugin_open_v1\n");
-+
-+  /*
-+   * Allocate our context
-+   */
-+  context = (struct plugin_context *) calloc (1, sizeof (struct plugin_context));
-+
-+  context->test_deferred_auth = atoi_null0 (get_env ("test_deferred_auth", envp));
-+  printf ("TEST_DEFERRED_AUTH %d\n", context->test_deferred_auth);
-+
-+  context->test_packet_filter = atoi_null0 (get_env ("test_packet_filter", envp));
-+  printf ("TEST_PACKET_FILTER %d\n", context->test_packet_filter);
-+
-+  /*
-+   * Which callbacks to intercept.
-+   */
-+  *type_mask =
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_UP) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_DOWN) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_ROUTE_UP) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_IPCHANGE) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_TLS_VERIFY) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_CLIENT_CONNECT_V2) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_CLIENT_DISCONNECT) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_LEARN_ADDRESS) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_TLS_FINAL) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_ENABLE_PF);
-+
-+  return (openvpn_plugin_handle_t) context;
-+}
-+
-+static int
-+auth_user_pass_verify (struct plugin_context *context, struct plugin_per_client_context *pcc, const char *argv[], const char *envp[])
-+{
-+  if (context->test_deferred_auth)
-+    {
-+      /* get username/password from envp string array */
-+      const char *username = get_env ("username", envp);
-+      const char *password = get_env ("password", envp);
-+
-+      /* get auth_control_file filename from envp string array*/
-+      const char *auth_control_file = get_env ("auth_control_file", envp);
-+
-+      printf ("DEFER u='%s' p='%s' acf='%s'\n",
-+	      np(username),
-+	      np(password),
-+	      np(auth_control_file));
-+
-+      /* Authenticate asynchronously in n seconds */
-+      if (auth_control_file)
-+	{
-+	  char buf[256];
-+	  int auth = 2;
-+	  sscanf (username, "%d", &auth);
-+	  snprintf (buf, sizeof(buf), "( sleep %d ; echo AUTH %s %d ; echo %d >%s ) &",
-+		    context->test_deferred_auth,
-+		    auth_control_file,
-+		    auth,
-+		    pcc->n_calls < auth,
-+		    auth_control_file);
-+	  printf ("%s\n", buf);
-+	  system (buf);
-+	  pcc->n_calls++;
-+	  return OPENVPN_PLUGIN_FUNC_DEFERRED;
-+	}
-+      else
-+	return OPENVPN_PLUGIN_FUNC_ERROR;
-+    }
-+  else
-+    return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+}
-+
-+static int
-+tls_final (struct plugin_context *context, struct plugin_per_client_context *pcc, const char *argv[], const char *envp[])
-+{
-+  if (context->test_packet_filter)
-+    {
-+      if (!pcc->generated_pf_file)
-+	{
-+	  const char *pff = get_env ("pf_file", envp);
-+	  const char *cn = get_env ("username", envp);
-+	  if (pff && cn)
-+	    {
-+	      char buf[256];
-+	      snprintf (buf, sizeof(buf), "( sleep %d ; echo PF %s/%s ; cp \"%s.pf\" \"%s\" ) &",
-+			context->test_packet_filter, cn, pff, cn, pff);
-+	      printf ("%s\n", buf);
-+	      system (buf);
-+	      pcc->generated_pf_file = true;
-+	      return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+	    }
-+	  else
-+	    return OPENVPN_PLUGIN_FUNC_ERROR;
-+	}
-+      else
-+	return OPENVPN_PLUGIN_FUNC_ERROR;
-+    }
-+  else
-+    return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+}
-+
-+OPENVPN_EXPORT int
-+openvpn_plugin_func_v2 (openvpn_plugin_handle_t handle,
-+			const int type,
-+			const char *argv[],
-+			const char *envp[],
-+			void *per_client_context,
-+			struct openvpn_plugin_string_list **return_list)
-+{
-+  struct plugin_context *context = (struct plugin_context *) handle;
-+  struct plugin_per_client_context *pcc = (struct plugin_per_client_context *) per_client_context;
-+  switch (type)
-+    {
-+    case OPENVPN_PLUGIN_UP:
-+      printf ("OPENVPN_PLUGIN_UP\n");
-+      return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+    case OPENVPN_PLUGIN_DOWN:
-+      printf ("OPENVPN_PLUGIN_DOWN\n");
-+      return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+    case OPENVPN_PLUGIN_ROUTE_UP:
-+      printf ("OPENVPN_PLUGIN_ROUTE_UP\n");
-+      return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+    case OPENVPN_PLUGIN_IPCHANGE:
-+      printf ("OPENVPN_PLUGIN_IPCHANGE\n");
-+      return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+    case OPENVPN_PLUGIN_TLS_VERIFY:
-+      printf ("OPENVPN_PLUGIN_TLS_VERIFY\n");
-+      return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+    case OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY:
-+      printf ("OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY\n");
-+      return auth_user_pass_verify (context, pcc, argv, envp);
-+    case OPENVPN_PLUGIN_CLIENT_CONNECT_V2:
-+      printf ("OPENVPN_PLUGIN_CLIENT_CONNECT_V2\n");
-+      return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+    case OPENVPN_PLUGIN_CLIENT_DISCONNECT:
-+      printf ("OPENVPN_PLUGIN_CLIENT_DISCONNECT\n");
-+      return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+    case OPENVPN_PLUGIN_LEARN_ADDRESS:
-+      printf ("OPENVPN_PLUGIN_LEARN_ADDRESS\n");
-+      return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+    case OPENVPN_PLUGIN_TLS_FINAL:
-+      printf ("OPENVPN_PLUGIN_TLS_FINAL\n");
-+      return tls_final (context, pcc, argv, envp);
-+    case OPENVPN_PLUGIN_ENABLE_PF:
-+      printf ("OPENVPN_PLUGIN_ENABLE_PF\n");
-+      if (context->test_packet_filter)
-+	return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+      else
-+	return OPENVPN_PLUGIN_FUNC_ERROR;
-+    default:
-+      printf ("OPENVPN_PLUGIN_?\n");
-+      return OPENVPN_PLUGIN_FUNC_ERROR;
-+    }
-+}
-+
-+OPENVPN_EXPORT void *
-+openvpn_plugin_client_constructor_v1 (openvpn_plugin_handle_t handle)
-+{
-+  printf ("FUNC: openvpn_plugin_client_constructor_v1\n");
-+  return calloc (1, sizeof (struct plugin_per_client_context));
-+}
-+
-+OPENVPN_EXPORT void
-+openvpn_plugin_client_destructor_v1 (openvpn_plugin_handle_t handle, void *per_client_context)
-+{
-+  printf ("FUNC: openvpn_plugin_client_destructor_v1\n");
-+  free (per_client_context);
-+}
-+
-+OPENVPN_EXPORT void
-+openvpn_plugin_close_v1 (openvpn_plugin_handle_t handle)
-+{
-+  struct plugin_context *context = (struct plugin_context *) handle;
-+  printf ("FUNC: openvpn_plugin_close_v1\n");
-+  free (context);
-+}
-diff --git a/plugins/defer/simple.def b/plugins/defer/simple.def
-new file mode 100755
-index 0000000..a87507d
---- /dev/null
-+++ b/plugins/defer/simple.def
-@@ -0,0 +1,6 @@
-+LIBRARY   OpenVPN_PLUGIN_SAMPLE
-+DESCRIPTION "Sample OpenVPN plug-in module."
-+EXPORTS
-+   openvpn_plugin_open_v1   @1
-+   openvpn_plugin_func_v1   @2
-+   openvpn_plugin_close_v1  @3
-diff --git a/plugins/defer/winbuild b/plugins/defer/winbuild
-new file mode 100755
-index 0000000..97e724a
---- /dev/null
-+++ b/plugins/defer/winbuild
-@@ -0,0 +1,18 @@
-+#
-+# Build an OpenVPN plugin module on Windows/MinGW.
-+# The argument should be the base name of the C source file
-+# (without the .c).
-+#
-+
-+# This directory is where we will look for openvpn-plugin.h
-+INCLUDE="-I.."
-+
-+CC_FLAGS="-O2 -Wall"
-+
-+gcc -DBUILD_DLL $CC_FLAGS $INCLUDE -c $1.c
-+gcc --disable-stdcall-fixup -mdll -DBUILD_DLL -o junk.tmp -Wl,--base-file,base.tmp $1.o
-+rm junk.tmp
-+dlltool --dllname $1.dll --base-file base.tmp --output-exp temp.exp --input-def $1.def
-+rm base.tmp
-+gcc --enable-stdcall-fixup -mdll -DBUILD_DLL -o $1.dll $1.o -Wl,temp.exp
-+rm temp.exp
-diff --git a/plugins/down-root/Makefile b/plugins/down-root/Makefile
-new file mode 100755
-index 0000000..5ce4ffb
---- /dev/null
-+++ b/plugins/down-root/Makefile
-@@ -0,0 +1,17 @@
-+#
-+# Build the OpenVPN down-root plugin module.
-+#
-+
-+# This directory is where we will look for openvpn-plugin.h
-+INCLUDE=-I../..
-+
-+CC_FLAGS=-O2 -Wall
-+
-+down-root.so : down-root.o
-+	gcc ${CC_FLAGS} -fPIC -shared -Wl,-soname,openvpn-down-root.so -o openvpn-down-root.so down-root.o -lc
-+
-+down-root.o : down-root.c
-+	gcc ${CC_FLAGS} -fPIC -c ${INCLUDE} down-root.c
-+
-+clean :
-+	rm -f *.o *.so
-diff --git a/plugins/down-root/README b/plugins/down-root/README
-new file mode 100644
-index 0000000..d337ffe
---- /dev/null
-+++ b/plugins/down-root/README
-@@ -0,0 +1,29 @@
-+down-root -- an OpenVPN Plugin Module
-+
-+SYNOPSIS
-+
-+The down-root module allows an OpenVPN configuration to
-+call a down script with root privileges, even when privileges
-+have been dropped using --user/--group/--chroot.
-+
-+This module uses a split privilege execution model which will
-+fork() before OpenVPN drops root privileges, at the point where
-+the --up script is usually called.  The module will then remain
-+in a wait state until it receives a message from OpenVPN via
-+pipe to execute the down script.  Thus, the down script will be
-+run in the same execution environment as the up script.
-+
-+BUILD
-+
-+Build this module with the "make" command.  The plugin
-+module will be named openvpn-down-root.so
-+
-+USAGE
-+
-+To use this module, add to your OpenVPN config file:
-+
-+  plugin openvpn-down-root.so "command ..."
-+
-+CAVEATS
-+
-+This module will only work on *nix systems, not Windows.
-diff --git a/plugins/down-root/down-root.c b/plugins/down-root/down-root.c
-new file mode 100644
-index 0000000..fced23b
---- /dev/null
-+++ b/plugins/down-root/down-root.c
-@@ -0,0 +1,553 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program (see the file COPYING included with this
-+ *  distribution); if not, write to the Free Software Foundation, Inc.,
-+ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-+ */
-+
-+/*
-+ * OpenVPN plugin module to do privileged down-script execution.
-+ */
-+
-+#include <stdio.h>
-+#include <string.h>
-+#include <unistd.h>
-+#include <stdlib.h>
-+#include <sys/types.h>
-+#include <sys/socket.h>
-+#include <sys/wait.h>
-+#include <fcntl.h>
-+#include <signal.h>
-+#include <syslog.h>
-+
-+#include "openvpn-plugin.h"
-+
-+#define DEBUG(verb) ((verb) >= 7)
-+
-+/* Command codes for foreground -> background communication */
-+#define COMMAND_RUN_SCRIPT 0
-+#define COMMAND_EXIT       1
-+
-+/* Response codes for background -> foreground communication */
-+#define RESPONSE_INIT_SUCCEEDED   10
-+#define RESPONSE_INIT_FAILED      11
-+#define RESPONSE_SCRIPT_SUCCEEDED 12
-+#define RESPONSE_SCRIPT_FAILED    13
-+
-+/* Background process function */
-+static void down_root_server (const int fd, char *command, const char *argv[], const char *envp[], const int verb);
-+
-+/*
-+ * Plugin state, used by foreground
-+ */
-+struct down_root_context
-+{
-+  /* Foreground's socket to background process */
-+  int foreground_fd;
-+
-+  /* Process ID of background process */
-+  pid_t background_pid;
-+
-+  /* Verbosity level of OpenVPN */
-+  int verb;
-+
-+  /* down command */
-+  char *command;
-+};
-+
-+/*
-+ * Given an environmental variable name, search
-+ * the envp array for its value, returning it
-+ * if found or NULL otherwise.
-+ */
-+static const char *
-+get_env (const char *name, const char *envp[])
-+{
-+  if (envp)
-+    {
-+      int i;
-+      const int namelen = strlen (name);
-+      for (i = 0; envp[i]; ++i)
-+	{
-+	  if (!strncmp (envp[i], name, namelen))
-+	    {
-+	      const char *cp = envp[i] + namelen;
-+	      if (*cp == '=')
-+		return cp + 1;
-+	    }
-+	}
-+    }
-+  return NULL;
-+}
-+
-+/*
-+ * Return the length of a string array
-+ */
-+static int
-+string_array_len (const char *array[])
-+{
-+  int i = 0;
-+  if (array)
-+    {
-+      while (array[i])
-+	++i;
-+    }
-+  return i;
-+}
-+
-+/*
-+ * Socket read/write functions.
-+ */
-+
-+static int
-+recv_control (int fd)
-+{
-+  unsigned char c;
-+  const ssize_t size = read (fd, &c, sizeof (c));
-+  if (size == sizeof (c))
-+    return c;
-+  else
-+    return -1;
-+}
-+
-+static int
-+send_control (int fd, int code)
-+{
-+  unsigned char c = (unsigned char) code;
-+  const ssize_t size = write (fd, &c, sizeof (c));
-+  if (size == sizeof (c))
-+    return (int) size;
-+  else
-+    return -1;
-+}
-+
-+/*
-+ * Daemonize if "daemon" env var is true.
-+ * Preserve stderr across daemonization if
-+ * "daemon_log_redirect" env var is true.
-+ */
-+static void
-+daemonize (const char *envp[])
-+{
-+  const char *daemon_string = get_env ("daemon", envp);
-+  if (daemon_string && daemon_string[0] == '1')
-+    {
-+      const char *log_redirect = get_env ("daemon_log_redirect", envp);
-+      int fd = -1;
-+      if (log_redirect && log_redirect[0] == '1')
-+	fd = dup (2);
-+      if (daemon (0, 0) < 0)
-+	{
-+	  fprintf (stderr, "DOWN-ROOT: daemonization failed\n");
-+	}
-+      else if (fd >= 3)
-+	{
-+	  dup2 (fd, 2);
-+	  close (fd);
-+	}
-+    }
-+}
-+
-+/*
-+ * Close most of parent's fds.
-+ * Keep stdin/stdout/stderr, plus one
-+ * other fd which is presumed to be
-+ * our pipe back to parent.
-+ * Admittedly, a bit of a kludge,
-+ * but posix doesn't give us a kind
-+ * of FD_CLOEXEC which will stop
-+ * fds from crossing a fork().
-+ */
-+static void
-+close_fds_except (int keep)
-+{
-+  int i;
-+  closelog ();
-+  for (i = 3; i <= 100; ++i)
-+    {
-+      if (i != keep)
-+	close (i);
-+    }
-+}
-+
-+/*
-+ * Usually we ignore signals, because our parent will
-+ * deal with them.
-+ */
-+static void
-+set_signals (void)
-+{
-+  signal (SIGTERM, SIG_DFL);
-+
-+  signal (SIGINT, SIG_IGN);
-+  signal (SIGHUP, SIG_IGN);
-+  signal (SIGUSR1, SIG_IGN);
-+  signal (SIGUSR2, SIG_IGN);
-+  signal (SIGPIPE, SIG_IGN);
-+}
-+
-+/*
-+ * convert system() return into a success/failure value
-+ */
-+int
-+system_ok (int stat)
-+{
-+#ifdef WIN32
-+  return stat == 0;
-+#else
-+  return stat != -1 && WIFEXITED (stat) && WEXITSTATUS (stat) == 0;
-+#endif
-+}
-+
-+static char *
-+build_command_line (const char *argv[])
-+{
-+  int size = 0;
-+  int n = 0;
-+  int i;
-+  char *string;
-+
-+  /* precompute size */
-+  if (argv)
-+    {
-+      for (i = 0; argv[i]; ++i)
-+	{
-+	  size += (strlen (argv[i]) + 1); /* string length plus trailing space */
-+	  ++n;
-+	}
-+    }
-+  ++size;                                 /* for null terminator */
-+
-+  /* allocate memory */
-+  string = (char *) malloc (size);
-+  if (!string)
-+    {
-+      fprintf (stderr, "DOWN-ROOT: out of memory\n");
-+      exit (1);
-+    }
-+  string[0] = '\0';
-+
-+  /* build string */
-+  for (i = 0; i < n; ++i)
-+    {
-+      strcat (string, argv[i]);
-+      if (i + 1 < n)
-+	strcat (string, " ");
-+    }
-+  return string;
-+}
-+
-+static void
-+free_context (struct down_root_context *context)
-+{
-+  if (context)
-+    {
-+      if (context->command)
-+	free (context->command);
-+      free (context);
-+    }
-+}
-+
-+OPENVPN_EXPORT openvpn_plugin_handle_t
-+openvpn_plugin_open_v1 (unsigned int *type_mask, const char *argv[], const char *envp[])
-+{
-+  struct down_root_context *context;
-+
-+  /*
-+   * Allocate our context
-+   */
-+  context = (struct down_root_context *) calloc (1, sizeof (struct down_root_context));
-+  if (!context)
-+    goto error;
-+  context->foreground_fd = -1;
-+
-+  /*
-+   * Intercept the --up and --down callbacks
-+   */
-+  *type_mask = OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_UP) | OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_DOWN);
-+
-+  /*
-+   * Make sure we have two string arguments: the first is the .so name,
-+   * the second is the script command.
-+   */
-+  if (string_array_len (argv) < 2)
-+    {
-+      fprintf (stderr, "DOWN-ROOT: need down script command\n");
-+      goto error;
-+    }
-+
-+  /*
-+   * Save our argument in context
-+   */
-+  context->command = build_command_line (&argv[1]);
-+
-+  /*
-+   * Get verbosity level from environment
-+   */
-+  {
-+    const char *verb_string = get_env ("verb", envp);
-+    if (verb_string)
-+      context->verb = atoi (verb_string);
-+  }
-+
-+  return (openvpn_plugin_handle_t) context;
-+
-+ error:
-+  free_context (context);
-+  return NULL;
-+}
-+
-+OPENVPN_EXPORT int
-+openvpn_plugin_func_v1 (openvpn_plugin_handle_t handle, const int type, const char *argv[], const char *envp[])
-+{
-+  struct down_root_context *context = (struct down_root_context *) handle;
-+
-+  if (type == OPENVPN_PLUGIN_UP && context->foreground_fd == -1) /* fork off a process to hold onto root */
-+    {
-+      pid_t pid;
-+      int fd[2];
-+
-+      /*
-+       * Make a socket for foreground and background processes
-+       * to communicate.
-+       */
-+      if (socketpair (PF_UNIX, SOCK_DGRAM, 0, fd) == -1)
-+	{
-+	  fprintf (stderr, "DOWN-ROOT: socketpair call failed\n");
-+	  return OPENVPN_PLUGIN_FUNC_ERROR;
-+	}
-+
-+      /*
-+       * Fork off the privileged process.  It will remain privileged
-+       * even after the foreground process drops its privileges.
-+       */
-+      pid = fork ();
-+
-+      if (pid)
-+	{
-+	  int status;
-+
-+	  /*
-+	   * Foreground Process
-+	   */
-+
-+	  context->background_pid = pid;
-+
-+	  /* close our copy of child's socket */
-+	  close (fd[1]);
-+
-+	  /* don't let future subprocesses inherit child socket */
-+	  if (fcntl (fd[0], F_SETFD, FD_CLOEXEC) < 0)
-+	    fprintf (stderr, "DOWN-ROOT: Set FD_CLOEXEC flag on socket file descriptor failed\n");
-+
-+	  /* wait for background child process to initialize */
-+	  status = recv_control (fd[0]);
-+	  if (status == RESPONSE_INIT_SUCCEEDED)
-+	    {
-+	      context->foreground_fd = fd[0];
-+	      return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+	    }
-+	}
-+      else
-+	{
-+	  /*
-+	   * Background Process
-+	   */
-+
-+	  /* close all parent fds except our socket back to parent */
-+	  close_fds_except (fd[1]);
-+
-+	  /* Ignore most signals (the parent will receive them) */
-+	  set_signals ();
-+
-+	  /* Daemonize if --daemon option is set. */
-+	  daemonize (envp);
-+
-+	  /* execute the event loop */
-+	  down_root_server (fd[1], context->command, argv, envp, context->verb);
-+
-+	  close (fd[1]);
-+	  exit (0);
-+	  return 0; /* NOTREACHED */
-+	}
-+    }
-+  else if (type == OPENVPN_PLUGIN_DOWN && context->foreground_fd >= 0)
-+    {
-+      if (send_control (context->foreground_fd, COMMAND_RUN_SCRIPT) == -1)
-+	{
-+	  fprintf (stderr, "DOWN-ROOT: Error sending script execution signal to background process\n");
-+	}
-+      else
-+	{
-+	  const int status = recv_control (context->foreground_fd);
-+	  if (status == RESPONSE_SCRIPT_SUCCEEDED)
-+	    return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+	  if (status == -1)
-+	    fprintf (stderr, "DOWN-ROOT: Error receiving script execution confirmation from background process\n");
-+	}
-+    }
-+  return OPENVPN_PLUGIN_FUNC_ERROR;
-+}
-+
-+OPENVPN_EXPORT void
-+openvpn_plugin_close_v1 (openvpn_plugin_handle_t handle)
-+{
-+  struct down_root_context *context = (struct down_root_context *) handle;
-+
-+  if (DEBUG (context->verb))
-+    fprintf (stderr, "DOWN-ROOT: close\n");
-+
-+  if (context->foreground_fd >= 0)
-+    {
-+      /* tell background process to exit */
-+      if (send_control (context->foreground_fd, COMMAND_EXIT) == -1)
-+	fprintf (stderr, "DOWN-ROOT: Error signaling background process to exit\n");
-+
-+      /* wait for background process to exit */
-+      if (context->background_pid > 0)
-+	waitpid (context->background_pid, NULL, 0);
-+
-+      close (context->foreground_fd);
-+      context->foreground_fd = -1;
-+    }
-+
-+  free_context (context);
-+}
-+
-+OPENVPN_EXPORT void
-+openvpn_plugin_abort_v1 (openvpn_plugin_handle_t handle)
-+{
-+  struct down_root_context *context = (struct down_root_context *) handle;
-+
-+  if (context && context->foreground_fd >= 0)
-+    {
-+      /* tell background process to exit */
-+      send_control (context->foreground_fd, COMMAND_EXIT);
-+      close (context->foreground_fd);
-+      context->foreground_fd = -1;
-+    }
-+}
-+
-+/*
-+ * Background process -- runs with privilege.
-+ */
-+static void
-+down_root_server (const int fd, char *command, const char *argv[], const char *envp[], const int verb)
-+{
-+  const char *p[3];
-+  char *command_line = NULL;
-+  char *argv_cat = NULL;
-+  int i;
-+
-+  /*
-+   * Do initialization
-+   */
-+  if (DEBUG (verb))
-+    fprintf (stderr, "DOWN-ROOT: BACKGROUND: INIT command='%s'\n", command);
-+
-+  /*
-+   * Tell foreground that we initialized successfully
-+   */
-+  if (send_control (fd, RESPONSE_INIT_SUCCEEDED) == -1)
-+    {
-+      fprintf (stderr, "DOWN-ROOT: BACKGROUND: write error on response socket [1]\n");
-+      goto done;
-+    }
-+
-+  /*
-+   * Build command line
-+   */
-+  if (string_array_len (argv) >= 2)
-+    argv_cat = build_command_line (&argv[1]);
-+  else
-+    argv_cat = build_command_line (NULL);
-+  p[0] = command;
-+  p[1] = argv_cat;
-+  p[2] = NULL;
-+  command_line = build_command_line (p);
-+
-+  /*
-+   * Save envp in environment
-+   */
-+  for (i = 0; envp[i]; ++i)
-+    {
-+      putenv ((char *)envp[i]);
-+    }
-+
-+  /*
-+   * Event loop
-+   */
-+  while (1)
-+    {
-+      int command_code;
-+      int status;
-+
-+      /* get a command from foreground process */
-+      command_code = recv_control (fd);
-+
-+      if (DEBUG (verb))
-+	fprintf (stderr, "DOWN-ROOT: BACKGROUND: received command code: %d\n", command_code);
-+
-+      switch (command_code)
-+	{
-+	case COMMAND_RUN_SCRIPT:
-+	  status = system (command_line);
-+	  if (system_ok (status)) /* Succeeded */
-+	    {
-+	      if (send_control (fd, RESPONSE_SCRIPT_SUCCEEDED) == -1)
-+		{
-+		  fprintf (stderr, "DOWN-ROOT: BACKGROUND: write error on response socket [2]\n");
-+		  goto done;
-+		}
-+	    }
-+	  else /* Failed */
-+	    {
-+	      if (send_control (fd, RESPONSE_SCRIPT_FAILED) == -1)
-+		{
-+		  fprintf (stderr, "DOWN-ROOT: BACKGROUND: write error on response socket [3]\n");
-+		  goto done;
-+		}
-+	    }
-+	  break;
-+
-+	case COMMAND_EXIT:
-+	  goto done;
-+
-+	case -1:
-+	  fprintf (stderr, "DOWN-ROOT: BACKGROUND: read error on command channel\n");
-+	  goto done;
-+
-+	default:
-+	  fprintf (stderr, "DOWN-ROOT: BACKGROUND: unknown command code: code=%d, exiting\n",
-+		   command_code);
-+	  goto done;
-+	}
-+    }
-+
-+ done:
-+  if (argv_cat)
-+    free (argv_cat);
-+  if (command_line)
-+    free (command_line);
-+  if (DEBUG (verb))
-+    fprintf (stderr, "DOWN-ROOT: BACKGROUND: EXIT\n");
-+
-+  return;
-+}
-diff --git a/plugins/examples/README b/plugins/examples/README
-new file mode 100644
-index 0000000..4400cd3
---- /dev/null
-+++ b/plugins/examples/README
-@@ -0,0 +1,16 @@
-+OpenVPN plugin examples.
-+
-+Examples provided:
-+
-+simple.c -- using the --auth-user-pass-verify callback, verify
-+            that the username/password is "foo"/"bar".
-+
-+To build:
-+
-+  ./build simple (Linux/BSD/etc.)
-+  ./winbuild simple (MinGW on Windows)
-+
-+To use in OpenVPN, add to config file:
-+
-+  plugin simple.so (Linux/BSD/etc.)
-+  plugin simple.dll (MinGW on Windows)
-diff --git a/plugins/examples/build b/plugins/examples/build
-new file mode 100755
-index 0000000..5907afa
---- /dev/null
-+++ b/plugins/examples/build
-@@ -0,0 +1,14 @@
-+#!/bin/sh
-+
-+#
-+# Build an OpenVPN plugin module on *nix.  The argument should
-+# be the base name of the C source file (without the .c).
-+#
-+
-+# This directory is where we will look for openvpn-plugin.h
-+INCLUDE="-I../.."
-+
-+CC_FLAGS="-O2 -Wall -g"
-+
-+gcc $CC_FLAGS -fPIC -c $INCLUDE $1.c && \
-+gcc $CC_FLAGS -fPIC -shared -Wl,-soname,$1.so -o $1.so $1.o -lc
-diff --git a/plugins/examples/log.c b/plugins/examples/log.c
-new file mode 100644
-index 0000000..1cc4650
---- /dev/null
-+++ b/plugins/examples/log.c
-@@ -0,0 +1,184 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program (see the file COPYING included with this
-+ *  distribution); if not, write to the Free Software Foundation, Inc.,
-+ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-+ */
-+
-+/*
-+ * This plugin is similar to simple.c, except it also logs extra information
-+ * to stdout for every plugin method called by OpenVPN.
-+ *
-+ * See the README file for build instructions.
-+ */
-+
-+#include <stdio.h>
-+#include <string.h>
-+#include <stdlib.h>
-+
-+#include "openvpn-plugin.h"
-+
-+/*
-+ * Our context, where we keep our state.
-+ */
-+struct plugin_context {
-+  const char *username;
-+  const char *password;
-+};
-+
-+/*
-+ * Given an environmental variable name, search
-+ * the envp array for its value, returning it
-+ * if found or NULL otherwise.
-+ */
-+static const char *
-+get_env (const char *name, const char *envp[])
-+{
-+  if (envp)
-+    {
-+      int i;
-+      const int namelen = strlen (name);
-+      for (i = 0; envp[i]; ++i)
-+	{
-+	  if (!strncmp (envp[i], name, namelen))
-+	    {
-+	      const char *cp = envp[i] + namelen;
-+	      if (*cp == '=')
-+		return cp + 1;
-+	    }
-+	}
-+    }
-+  return NULL;
-+}
-+
-+OPENVPN_EXPORT openvpn_plugin_handle_t
-+openvpn_plugin_open_v1 (unsigned int *type_mask, const char *argv[], const char *envp[])
-+{
-+  struct plugin_context *context;
-+
-+  /*
-+   * Allocate our context
-+   */
-+  context = (struct plugin_context *) calloc (1, sizeof (struct plugin_context));
-+
-+  /*
-+   * Set the username/password we will require.
-+   */
-+  context->username = "foo";
-+  context->password = "bar";
-+
-+  /*
-+   * Which callbacks to intercept.
-+   */
-+  *type_mask =
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_UP) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_DOWN) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_ROUTE_UP) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_IPCHANGE) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_TLS_VERIFY) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_CLIENT_CONNECT_V2) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_CLIENT_DISCONNECT) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_LEARN_ADDRESS) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_TLS_FINAL);
-+
-+  return (openvpn_plugin_handle_t) context;
-+}
-+
-+void
-+show (const int type, const char *argv[], const char *envp[])
-+{
-+  size_t i;
-+  switch (type)
-+    {
-+    case OPENVPN_PLUGIN_UP:
-+      printf ("OPENVPN_PLUGIN_UP\n");
-+      break;
-+    case OPENVPN_PLUGIN_DOWN:
-+      printf ("OPENVPN_PLUGIN_DOWN\n");
-+      break;
-+    case OPENVPN_PLUGIN_ROUTE_UP:
-+      printf ("OPENVPN_PLUGIN_ROUTE_UP\n");
-+      break;
-+    case OPENVPN_PLUGIN_IPCHANGE:
-+      printf ("OPENVPN_PLUGIN_IPCHANGE\n");
-+      break;
-+    case OPENVPN_PLUGIN_TLS_VERIFY:
-+      printf ("OPENVPN_PLUGIN_TLS_VERIFY\n");
-+      break;
-+    case OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY:
-+      printf ("OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY\n");
-+      break;
-+    case OPENVPN_PLUGIN_CLIENT_CONNECT_V2:
-+      printf ("OPENVPN_PLUGIN_CLIENT_CONNECT_V2\n");
-+      break;
-+    case OPENVPN_PLUGIN_CLIENT_DISCONNECT:
-+      printf ("OPENVPN_PLUGIN_CLIENT_DISCONNECT\n");
-+      break;
-+    case OPENVPN_PLUGIN_LEARN_ADDRESS:
-+      printf ("OPENVPN_PLUGIN_LEARN_ADDRESS\n");
-+      break;
-+    case OPENVPN_PLUGIN_TLS_FINAL:
-+      printf ("OPENVPN_PLUGIN_TLS_FINAL\n");
-+      break;
-+    default:
-+      printf ("OPENVPN_PLUGIN_?\n");
-+      break;
-+    }
-+
-+  printf ("ARGV\n");
-+  for (i = 0; argv[i] != NULL; ++i)
-+    printf ("%d '%s'\n", (int)i, argv[i]);
-+
-+  printf ("ENVP\n");
-+  for (i = 0; envp[i] != NULL; ++i)
-+    printf ("%d '%s'\n", (int)i, envp[i]);
-+}
-+
-+OPENVPN_EXPORT int
-+openvpn_plugin_func_v1 (openvpn_plugin_handle_t handle, const int type, const char *argv[], const char *envp[])
-+{
-+  struct plugin_context *context = (struct plugin_context *) handle;
-+
-+  show (type, argv, envp);
-+
-+  /* check entered username/password against what we require */
-+  if (type == OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY)
-+    {
-+      /* get username/password from envp string array */
-+      const char *username = get_env ("username", envp);
-+      const char *password = get_env ("password", envp);
-+
-+      if (username && !strcmp (username, context->username)
-+	  && password && !strcmp (password, context->password))
-+	return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+      else
-+	return OPENVPN_PLUGIN_FUNC_ERROR;
-+    }
-+  else
-+    return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+}
-+
-+OPENVPN_EXPORT void
-+openvpn_plugin_close_v1 (openvpn_plugin_handle_t handle)
-+{
-+  struct plugin_context *context = (struct plugin_context *) handle;
-+  free (context);
-+}
-diff --git a/plugins/examples/log_v3.c b/plugins/examples/log_v3.c
-new file mode 100644
-index 0000000..187c592
---- /dev/null
-+++ b/plugins/examples/log_v3.c
-@@ -0,0 +1,249 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2009 OpenVPN Technologies, Inc. <sales@...515...>
-+ *  Copyright (C) 2010 David Sommerseth <dazo@...384...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program (see the file COPYING included with this
-+ *  distribution); if not, write to the Free Software Foundation, Inc.,
-+ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-+ */
-+
-+/*
-+ * This plugin is similar to simple.c, except it also logs extra information
-+ * to stdout for every plugin method called by OpenVPN.  The only difference
-+ * between this (log_v3.c) and log.c is that this module uses the v3 plug-in
-+ * API.
-+ *
-+ * See the README file for build instructions.
-+ */
-+
-+#include <stdio.h>
-+#include <string.h>
-+#include <stdlib.h>
-+
-+#define USE_SSL
-+#define USE_OPENSSL
-+#include "ssl_verify_openssl.h"
-+
-+#include "openvpn-plugin.h"
-+
-+/*
-+ * Our context, where we keep our state.
-+ */
-+struct plugin_context {
-+  const char *username;
-+  const char *password;
-+};
-+
-+/*
-+ * Given an environmental variable name, search
-+ * the envp array for its value, returning it
-+ * if found or NULL otherwise.
-+ */
-+static const char *
-+get_env (const char *name, const char *envp[])
-+{
-+  if (envp)
-+    {
-+      int i;
-+      const int namelen = strlen (name);
-+      for (i = 0; envp[i]; ++i)
-+	{
-+	  if (!strncmp (envp[i], name, namelen))
-+	    {
-+	      const char *cp = envp[i] + namelen;
-+	      if (*cp == '=')
-+		return cp + 1;
-+	    }
-+	}
-+    }
-+  return NULL;
-+}
-+
-+OPENVPN_EXPORT int
-+openvpn_plugin_open_v3 (const int v3structver,
-+                        struct openvpn_plugin_args_open_in const *args,
-+                        struct openvpn_plugin_args_open_return *ret)
-+{
-+  struct plugin_context *context = NULL;
-+
-+  /* Check that we are API compatible */
-+  if( v3structver != OPENVPN_PLUGINv3_STRUCTVER ) {
-+    return OPENVPN_PLUGIN_FUNC_ERROR;
-+  }
-+
-+  /*  Which callbacks to intercept.  */
-+  ret->type_mask =
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_UP) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_DOWN) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_ROUTE_UP) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_IPCHANGE) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_TLS_VERIFY) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_CLIENT_CONNECT_V2) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_CLIENT_DISCONNECT) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_LEARN_ADDRESS) |
-+    OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_TLS_FINAL);
-+
-+
-+  /* Allocate our context */
-+  context = (struct plugin_context *) calloc (1, sizeof (struct plugin_context));
-+
-+  /* Set the username/password we will require. */
-+  context->username = "foo";
-+  context->password = "bar";
-+
-+  /* Point the global context handle to our newly created context */
-+  ret->handle = (void *) context;
-+
-+  return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+}
-+
-+void
-+show (const int type, const char *argv[], const char *envp[])
-+{
-+  size_t i;
-+  switch (type)
-+    {
-+    case OPENVPN_PLUGIN_UP:
-+      printf ("OPENVPN_PLUGIN_UP\n");
-+      break;
-+    case OPENVPN_PLUGIN_DOWN:
-+      printf ("OPENVPN_PLUGIN_DOWN\n");
-+      break;
-+    case OPENVPN_PLUGIN_ROUTE_UP:
-+      printf ("OPENVPN_PLUGIN_ROUTE_UP\n");
-+      break;
-+    case OPENVPN_PLUGIN_IPCHANGE:
-+      printf ("OPENVPN_PLUGIN_IPCHANGE\n");
-+      break;
-+    case OPENVPN_PLUGIN_TLS_VERIFY:
-+      printf ("OPENVPN_PLUGIN_TLS_VERIFY\n");
-+      break;
-+    case OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY:
-+      printf ("OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY\n");
-+      break;
-+    case OPENVPN_PLUGIN_CLIENT_CONNECT_V2:
-+      printf ("OPENVPN_PLUGIN_CLIENT_CONNECT_V2\n");
-+      break;
-+    case OPENVPN_PLUGIN_CLIENT_DISCONNECT:
-+      printf ("OPENVPN_PLUGIN_CLIENT_DISCONNECT\n");
-+      break;
-+    case OPENVPN_PLUGIN_LEARN_ADDRESS:
-+      printf ("OPENVPN_PLUGIN_LEARN_ADDRESS\n");
-+      break;
-+    case OPENVPN_PLUGIN_TLS_FINAL:
-+      printf ("OPENVPN_PLUGIN_TLS_FINAL\n");
-+      break;
-+    default:
-+      printf ("OPENVPN_PLUGIN_?\n");
-+      break;
-+    }
-+
-+  printf ("ARGV\n");
-+  for (i = 0; argv[i] != NULL; ++i)
-+    printf ("%d '%s'\n", (int)i, argv[i]);
-+
-+  printf ("ENVP\n");
-+  for (i = 0; envp[i] != NULL; ++i)
-+    printf ("%d '%s'\n", (int)i, envp[i]);
-+}
-+
-+static void
-+x509_print_info (X509 *x509crt)
-+{
-+  int i, n;
-+  int fn_nid;
-+  ASN1_OBJECT *fn;
-+  ASN1_STRING *val;
-+  X509_NAME *x509_name;
-+  X509_NAME_ENTRY *ent;
-+  const char *objbuf;
-+  unsigned char *buf;
-+
-+  x509_name = X509_get_subject_name (x509crt);
-+  n = X509_NAME_entry_count (x509_name);
-+  for (i = 0; i < n; ++i)
-+    {
-+      ent = X509_NAME_get_entry (x509_name, i);
-+      if (!ent)
-+	continue;
-+      fn = X509_NAME_ENTRY_get_object (ent);
-+      if (!fn)
-+	continue;
-+      val = X509_NAME_ENTRY_get_data (ent);
-+      if (!val)
-+	continue;
-+      fn_nid = OBJ_obj2nid (fn);
-+      if (fn_nid == NID_undef)
-+	continue;
-+      objbuf = OBJ_nid2sn (fn_nid);
-+      if (!objbuf)
-+	continue;
-+      buf = (unsigned char *)1; /* bug in OpenSSL 0.9.6b ASN1_STRING_to_UTF8 requires this workaround */
-+      if (ASN1_STRING_to_UTF8 (&buf, val) <= 0)
-+	continue;
-+
-+      printf("X509 %s: %s\n", objbuf, (char *)buf);
-+      OPENSSL_free (buf);
-+    }
-+}
-+
-+
-+
-+OPENVPN_EXPORT int
-+openvpn_plugin_func_v3 (const int version,
-+                        struct openvpn_plugin_args_func_in const *args,
-+                        struct openvpn_plugin_args_func_return *retptr)
-+{
-+  struct plugin_context *context = (struct plugin_context *) args->handle;
-+
-+  printf("\nopenvpn_plugin_func_v3() :::::>> ");
-+  show (args->type, args->argv, args->envp);
-+
-+  /* Dump some X509 information if we're in the TLS_VERIFY phase */
-+  if ((args->type == OPENVPN_PLUGIN_TLS_VERIFY) && args->current_cert ) {
-+    printf("---- X509 Subject information ----\n");
-+    printf("Certificate depth: %i\n", args->current_cert_depth);
-+    x509_print_info(args->current_cert);
-+    printf("----------------------------------\n");
-+  }
-+
-+  /* check entered username/password against what we require */
-+  if (args->type == OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY)
-+    {
-+      /* get username/password from envp string array */
-+      const char *username = get_env ("username", args->envp);
-+      const char *password = get_env ("password", args->envp);
-+
-+      if (username && !strcmp (username, context->username)
-+	  && password && !strcmp (password, context->password))
-+	return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+      else
-+	return OPENVPN_PLUGIN_FUNC_ERROR;
-+    }
-+  else
-+    return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+}
-+
-+OPENVPN_EXPORT void
-+openvpn_plugin_close_v1 (openvpn_plugin_handle_t handle)
-+{
-+  struct plugin_context *context = (struct plugin_context *) handle;
-+  free (context);
-+}
-diff --git a/plugins/examples/simple.c b/plugins/examples/simple.c
-new file mode 100644
-index 0000000..f26d89f
---- /dev/null
-+++ b/plugins/examples/simple.c
-@@ -0,0 +1,120 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program (see the file COPYING included with this
-+ *  distribution); if not, write to the Free Software Foundation, Inc.,
-+ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-+ */
-+
-+/*
-+ * This file implements a simple OpenVPN plugin module which
-+ * will examine the username/password provided by a client,
-+ * and make an accept/deny determination.  Will run
-+ * on Windows or *nix.
-+ *
-+ * See the README file for build instructions.
-+ */
-+
-+#include <stdio.h>
-+#include <string.h>
-+#include <stdlib.h>
-+
-+#include "openvpn-plugin.h"
-+
-+/*
-+ * Our context, where we keep our state.
-+ */
-+struct plugin_context {
-+  const char *username;
-+  const char *password;
-+};
-+
-+/*
-+ * Given an environmental variable name, search
-+ * the envp array for its value, returning it
-+ * if found or NULL otherwise.
-+ */
-+static const char *
-+get_env (const char *name, const char *envp[])
-+{
-+  if (envp)
-+    {
-+      int i;
-+      const int namelen = strlen (name);
-+      for (i = 0; envp[i]; ++i)
-+	{
-+	  if (!strncmp (envp[i], name, namelen))
-+	    {
-+	      const char *cp = envp[i] + namelen;
-+	      if (*cp == '=')
-+		return cp + 1;
-+	    }
-+	}
-+    }
-+  return NULL;
-+}
-+
-+OPENVPN_EXPORT openvpn_plugin_handle_t
-+openvpn_plugin_open_v1 (unsigned int *type_mask, const char *argv[], const char *envp[])
-+{
-+  struct plugin_context *context;
-+
-+  /*
-+   * Allocate our context
-+   */
-+  context = (struct plugin_context *) calloc (1, sizeof (struct plugin_context));
-+
-+  /*
-+   * Set the username/password we will require.
-+   */
-+  context->username = "foo";
-+  context->password = "bar";
-+
-+  /*
-+   * We are only interested in intercepting the
-+   * --auth-user-pass-verify callback.
-+   */
-+  *type_mask = OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY);
-+
-+  return (openvpn_plugin_handle_t) context;
-+}
-+
-+OPENVPN_EXPORT int
-+openvpn_plugin_func_v1 (openvpn_plugin_handle_t handle, const int type, const char *argv[], const char *envp[])
-+{
-+  struct plugin_context *context = (struct plugin_context *) handle;
-+
-+  /* get username/password from envp string array */
-+  const char *username = get_env ("username", envp);
-+  const char *password = get_env ("password", envp);
-+
-+  /* check entered username/password against what we require */
-+  if (username && !strcmp (username, context->username)
-+      && password && !strcmp (password, context->password))
-+    return OPENVPN_PLUGIN_FUNC_SUCCESS;
-+  else
-+    return OPENVPN_PLUGIN_FUNC_ERROR;
-+}
-+
-+OPENVPN_EXPORT void
-+openvpn_plugin_close_v1 (openvpn_plugin_handle_t handle)
-+{
-+  struct plugin_context *context = (struct plugin_context *) handle;
-+  free (context);
-+}
-diff --git a/plugins/examples/simple.def b/plugins/examples/simple.def
-new file mode 100755
-index 0000000..a87507d
---- /dev/null
-+++ b/plugins/examples/simple.def
-@@ -0,0 +1,6 @@
-+LIBRARY   OpenVPN_PLUGIN_SAMPLE
-+DESCRIPTION "Sample OpenVPN plug-in module."
-+EXPORTS
-+   openvpn_plugin_open_v1   @1
-+   openvpn_plugin_func_v1   @2
-+   openvpn_plugin_close_v1  @3
-diff --git a/plugins/examples/winbuild b/plugins/examples/winbuild
-new file mode 100755
-index 0000000..97e724a
---- /dev/null
-+++ b/plugins/examples/winbuild
-@@ -0,0 +1,18 @@
-+#
-+# Build an OpenVPN plugin module on Windows/MinGW.
-+# The argument should be the base name of the C source file
-+# (without the .c).
-+#
-+
-+# This directory is where we will look for openvpn-plugin.h
-+INCLUDE="-I.."
-+
-+CC_FLAGS="-O2 -Wall"
-+
-+gcc -DBUILD_DLL $CC_FLAGS $INCLUDE -c $1.c
-+gcc --disable-stdcall-fixup -mdll -DBUILD_DLL -o junk.tmp -Wl,--base-file,base.tmp $1.o
-+rm junk.tmp
-+dlltool --dllname $1.dll --base-file base.tmp --output-exp temp.exp --input-def $1.def
-+rm base.tmp
-+gcc --enable-stdcall-fixup -mdll -DBUILD_DLL -o $1.dll $1.o -Wl,temp.exp
-+rm temp.exp
 -- 
 1.7.3.4
 
