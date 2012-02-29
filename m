@@ -1,10 +1,11 @@
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Wed, 29 Feb 2012 22:12:01 +0200
-Message-Id: <1330546342-17794-32-git-send-email-alon.barlev@...277...>
+Date: Wed, 29 Feb 2012 22:12:06 +0200
+Message-Id: <1330546342-17794-37-git-send-email-alon.barlev@...277...>
 In-Reply-To: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
 References: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [PATCH 31/52] build: autoconf: commands as
-	environment
+MIME-Version: 1.0
+Subject: [Openvpn-devel] =?utf-8?q?=5BPATCH_36/52=5D_build=3A_distribute_p?=
+	=?utf-8?q?kg=2Em4?=
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,117 +19,179 @@ Content-Transfer-Encoding: 8bit
 To: 
 Cc: Alon Bar-Lev <alon.barlev@...277...>
 
+RHEL and others do not install this globally, so we provide our own copy.
 
 Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 ---
- configure.ac |   66 ++++++++++++++++++++++++---------------------------------
- 1 files changed, 28 insertions(+), 38 deletions(-)
+ m4/pkg.m4 |  159 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 159 insertions(+), 0 deletions(-)
+ create mode 100644 m4/pkg.m4
 
-diff --git a/configure.ac b/configure.ac
-index 6b5cf71..ed98464 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -267,37 +267,6 @@ AC_ARG_WITH(
- )
- 
- AC_ARG_WITH(
--	[ifconfig-path],
--	[AS_HELP_STRING([--with-ifconfig-path=PATH], [Path to ifconfig tool])],
--	[IFCONFIG="$withval"],
--	[AC_PATH_PROG([IFCONFIG], [ifconfig], [ifconfig], [$PATH:/usr/local/sbin:/usr/sbin:/sbin])]
--)
--AC_DEFINE_UNQUOTED([IFCONFIG_PATH], ["$IFCONFIG"], [Path to ifconfig tool])
--
--AC_ARG_WITH(
--	[iproute-path],
--	[AS_HELP_STRING([--with-iproute-path=PATH], [Path to iproute tool])],
--	[IPROUTE="$withval"],
--	[AC_PATH_PROG([IPROUTE], [ip], [ip], [$PATH:/usr/local/sbin:/usr/sbin:/sbin])]
--)
--AC_DEFINE_UNQUOTED([IPROUTE_PATH], ["$IPROUTE"], [Path to iproute tool])
--
--AC_ARG_WITH([route-path],
--   [AS_HELP_STRING([--with-route-path=PATH], [Path to route tool])],
--   [ROUTE="$withval"],
--   [AC_PATH_PROG([ROUTE], [route], [route], [$PATH:/usr/local/sbin:/usr/sbin:/sbin])]
--)
--AC_DEFINE_UNQUOTED([ROUTE_PATH], ["$ROUTE"], [Path to route tool])
--
--AC_ARG_WITH(
--	[netstat-path],
--	[AS_HELP_STRING([--with-netstat-path=PATH], [Path to netstat tool])],
--	[NETSTAT="$withval"],
--	[AC_PATH_PROG([NETSTAT], [netstat], [netstat], [$PATH:/usr/local/sbin:/usr/sbin:/sbin:/etc])]
--)
--AC_DEFINE_UNQUOTED([NETSTAT_PATH], ["$NETSTAT"], [Path to netstat tool])
--
--AC_ARG_WITH(
- 	[mem-check],
- 	[AS_HELP_STRING([--with-mem-check=TYPE], [build with debug memory checking, TYPE=dmalloc|valgrind|ssl])],
- 	[
-@@ -370,6 +339,20 @@ AC_PROG_INSTALL
- AC_PROG_LN_S
- AC_PROG_MAKE_SET
- 
-+AC_ARG_VAR([IFCONFIG], [full path to ipconfig utility])
-+AC_ARG_VAR([ROUTE], [full path to route utility])
-+AC_ARG_VAR([IPROUTE], [full path to ip utility])
-+AC_ARG_VAR([NETSTAT], [path to netstat utility]) # tests
-+AC_ARG_VAR([MAN2HTML], [path to man2html utility])
-+AC_PATH_PROGS([IFCONFIG], [ifconfig],, [$PATH:/usr/local/sbin:/usr/sbin:/sbin])
-+AC_PATH_PROGS([ROUTE], [route],, [$PATH:/usr/local/sbin:/usr/sbin:/sbin])
-+AC_PATH_PROGS([IPROUTE], [ip],, [$PATH:/usr/local/sbin:/usr/sbin:/sbin])
-+AC_CHECK_PROGS([NETSTAT], [netstat], [netstat], [$PATH:/usr/local/sbin:/usr/sbin:/sbin:/etc]) # tests
-+AC_CHECK_PROGS([MAN2HTML], [man2html])
-+AC_DEFINE_UNQUOTED([IFCONFIG_PATH], ["$IFCONFIG"], [Path to ifconfig tool])
-+AC_DEFINE_UNQUOTED([IPROUTE_PATH], ["$IPROUTE"], [Path to iproute tool])
-+AC_DEFINE_UNQUOTED([ROUTE_PATH], ["$ROUTE"], [Path to route tool])
+diff --git a/m4/pkg.m4 b/m4/pkg.m4
+new file mode 100644
+index 0000000..9a71878
+--- /dev/null
++++ b/m4/pkg.m4
+@@ -0,0 +1,159 @@
++# pkg.m4 - Macros to locate and utilise pkg-config.            -*- Autoconf -*-
++# serial 1 (pkg-config-0.24)
++# 
++# Copyright © 2004 Scott James Remnant <scott@...1668...>.
++#
++# This program is free software; you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation; either version 2 of the License, or
++# (at your option) any later version.
++#
++# This program is distributed in the hope that it will be useful, but
++# WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++# General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
++#
++# As a special exception to the GNU General Public License, if you
++# distribute this file as part of a program that contains a
++# configuration script generated by Autoconf, you may include it under
++# the same distribution terms that you use for the rest of that program.
 +
- #
- # Libtool
- #
-@@ -386,12 +369,6 @@ ifdef(
- 	]
- )
- 
--if test "${WIN32}" = "yes"; then
--	AC_ARG_VAR([MAN2HTML], [man2html utility])
--	AC_CHECK_PROGS([MAN2HTML], [man2html])
--	test -z "${MAN2HTML}" && AC_MSG_ERROR([man2html is required for win32])
--fi
--
- AC_C_CONST
- AC_C_INLINE
- AC_C_VOLATILE
-@@ -920,7 +897,16 @@ test "${enable_pf}" = "yes" && AC_DEFINE([ENABLE_PF], [1], [Enable internal pack
- test "${enable_strict_options}" = "yes" && AC_DEFINE([ENABLE_STRICT_OPTIONS_CHECK], [1], [Enable strict options check between peers])
- test "${enable_password_save}" = "yes" && AC_DEFINE([ENABLE_PASSWORD_SAVE], [1], [Allow --askpass and --auth-user-pass passwords to be read from a file])
- test "${enable_systemd}" = "yes" && AC_DEFINE([ENABLE_SYSTEMD], [1], [Enable systemd support])
--test "${enable_iproute2}" = "yes" && AC_DEFINE([ENABLE_IPROUTE], [1], [enable iproute2 support])
++# PKG_PROG_PKG_CONFIG([MIN-VERSION])
++# ----------------------------------
++AC_DEFUN([PKG_PROG_PKG_CONFIG],
++[m4_pattern_forbid([^_?PKG_[A-Z_]+$])
++m4_pattern_allow([^PKG_CONFIG(_(PATH|LIBDIR|SYSROOT_DIR|ALLOW_SYSTEM_(CFLAGS|LIBS)))?$])
++m4_pattern_allow([^PKG_CONFIG_(DISABLE_UNINSTALLED|TOP_BUILD_DIR|DEBUG_SPEW)$])
++AC_ARG_VAR([PKG_CONFIG], [path to pkg-config utility])
++AC_ARG_VAR([PKG_CONFIG_PATH], [directories to add to pkg-config's search path])
++AC_ARG_VAR([PKG_CONFIG_LIBDIR], [path overriding pkg-config's built-in search path])
 +
-+if test "${enable_iproute2}" = "yes"; then
-+	test -z "${IPROUTE}" && AC_MSG_ERROR([ip utility is required but missing])
-+	AC_DEFINE([ENABLE_IPROUTE], [1], [enable iproute2 support])
-+else
-+	if test "${WIN32}" != "yes"; then
-+		test -z "${ROUTE}" && AC_MSG_ERROR([route utility is required but missing])
-+		test -z "${IFCONFIG}" && AC_MSG_ERROR([ifconfig utility is required but missing])
++if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
++	AC_PATH_TOOL([PKG_CONFIG], [pkg-config])
++fi
++if test -n "$PKG_CONFIG"; then
++	_pkg_min_version=m4_default([$1], [0.9.0])
++	AC_MSG_CHECKING([pkg-config is at least version $_pkg_min_version])
++	if $PKG_CONFIG --atleast-pkgconfig-version $_pkg_min_version; then
++		AC_MSG_RESULT([yes])
++	else
++		AC_MSG_RESULT([no])
++		PKG_CONFIG=""
 +	fi
-+fi
- 
- if test "${enable_pedantic}" = "yes"; then
- 	enable_strict="yes"
-@@ -930,6 +916,10 @@ if test "${enable_strict}" = "yes"; then
- 	CFLAGS="${CFLAGS} -Wall -Wno-unused-parameter -Wno-unused-function"
- fi
- 
-+if test "${WIN32}" = "yes"; then
-+	test -z "${MAN2HTML}" && AC_MSG_ERROR([man2html is required for win32])
-+fi
++fi[]dnl
++])# PKG_PROG_PKG_CONFIG
 +
- CONFIGURE_DEFINES="`set | grep '^enable_.*=' ; set | grep '^with_.*='`"
- AC_DEFINE_UNQUOTED([CONFIGURE_DEFINES], ["`echo ${CONFIGURE_DEFINES}`"], [Configuration settings])
- 
++# PKG_CHECK_EXISTS(MODULES, [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
++#
++# Check to see whether a particular set of modules exists.  Similar
++# to PKG_CHECK_MODULES(), but does not set variables or print errors.
++#
++# Please remember that m4 expands AC_REQUIRE([PKG_PROG_PKG_CONFIG])
++# only at the first occurence in configure.ac, so if the first place
++# it's called might be skipped (such as if it is within an "if", you
++# have to call PKG_CHECK_EXISTS manually
++# --------------------------------------------------------------
++AC_DEFUN([PKG_CHECK_EXISTS],
++[AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
++if test -n "$PKG_CONFIG" && \
++    AC_RUN_LOG([$PKG_CONFIG --exists --print-errors "$1"]); then
++  m4_default([$2], [:])
++m4_ifvaln([$3], [else
++  $3])dnl
++fi])
++
++# _PKG_CONFIG([VARIABLE], [COMMAND], [MODULES])
++# ---------------------------------------------
++m4_define([_PKG_CONFIG],
++[if test -n "$$1"; then
++    pkg_cv_[]$1="$$1"
++ elif test -n "$PKG_CONFIG"; then
++    PKG_CHECK_EXISTS([$3],
++                     [pkg_cv_[]$1=`$PKG_CONFIG --[]$2 "$3" 2>/dev/null`
++		      test "x$?" != "x0" && pkg_failed=yes ],
++		     [pkg_failed=yes])
++ else
++    pkg_failed=untried
++fi[]dnl
++])# _PKG_CONFIG
++
++# _PKG_SHORT_ERRORS_SUPPORTED
++# -----------------------------
++AC_DEFUN([_PKG_SHORT_ERRORS_SUPPORTED],
++[AC_REQUIRE([PKG_PROG_PKG_CONFIG])
++if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
++        _pkg_short_errors_supported=yes
++else
++        _pkg_short_errors_supported=no
++fi[]dnl
++])# _PKG_SHORT_ERRORS_SUPPORTED
++
++
++# PKG_CHECK_MODULES(VARIABLE-PREFIX, MODULES, [ACTION-IF-FOUND],
++# [ACTION-IF-NOT-FOUND])
++#
++#
++# Note that if there is a possibility the first call to
++# PKG_CHECK_MODULES might not happen, you should be sure to include an
++# explicit call to PKG_PROG_PKG_CONFIG in your configure.ac
++#
++#
++# --------------------------------------------------------------
++AC_DEFUN([PKG_CHECK_MODULES],
++[AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
++AC_ARG_VAR([$1][_CFLAGS], [C compiler flags for $1, overriding pkg-config])dnl
++AC_ARG_VAR([$1][_LIBS], [linker flags for $1, overriding pkg-config])dnl
++
++pkg_failed=no
++AC_MSG_CHECKING([for $1])
++
++_PKG_CONFIG([$1][_CFLAGS], [cflags], [$2])
++_PKG_CONFIG([$1][_LIBS], [libs], [$2])
++
++m4_define([_PKG_TEXT], [Alternatively, you may set the environment variables $1[]_CFLAGS
++and $1[]_LIBS to avoid the need to call pkg-config.
++See the pkg-config man page for more details.])
++
++if test $pkg_failed = yes; then
++   	AC_MSG_RESULT([no])
++        _PKG_SHORT_ERRORS_SUPPORTED
++        if test $_pkg_short_errors_supported = yes; then
++	        $1[]_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "$2" 2>&1`
++        else 
++	        $1[]_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "$2" 2>&1`
++        fi
++	# Put the nasty error message in config.log where it belongs
++	echo "$$1[]_PKG_ERRORS" >&AS_MESSAGE_LOG_FD
++
++	m4_default([$4], [AC_MSG_ERROR(
++[Package requirements ($2) were not met:
++
++$$1_PKG_ERRORS
++
++Consider adjusting the PKG_CONFIG_PATH environment variable if you
++installed software in a non-standard prefix.
++
++_PKG_TEXT])[]dnl
++        ])
++elif test $pkg_failed = untried; then
++     	AC_MSG_RESULT([no])
++	m4_default([$4], [AC_MSG_FAILURE(
++[The pkg-config script could not be found or is too old.  Make sure it
++is in your PATH or set the PKG_CONFIG environment variable to the full
++path to pkg-config.
++
++_PKG_TEXT
++
++To get pkg-config, see <http://pkg-config.freedesktop.org/>.])[]dnl
++        ])
++else
++	$1[]_CFLAGS=$pkg_cv_[]$1[]_CFLAGS
++	$1[]_LIBS=$pkg_cv_[]$1[]_LIBS
++        AC_MSG_RESULT([yes])
++	$3
++fi[]dnl
++])# PKG_CHECK_MODULES
 -- 
 1.7.3.4
 
