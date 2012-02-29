@@ -1,9 +1,10 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Wed, 29 Feb 2012 11:16:27 +0100
-Message-ID: <1671265.SLJ8CLno3T@...1526...>
-In-Reply-To: <CAOazyz1Wcj8ap9niXMs5pPW=3TvfG75NW7L_eHV_9aGQNcWP6g@...278...>
-References: <4F4CE4FE.3010009@...515...> <4F4D1C29.5060606@...1114...>
-	<CAOazyz1Wcj8ap9niXMs5pPW=3TvfG75NW7L_eHV_9aGQNcWP6g@...278...>
+Date: Wed, 29 Feb 2012 11:17:38 +0100
+Message-ID: <21488509.z1FzZULYLD@...1526...>
+In-Reply-To: <319492303.20120228213418@...449...>
+References: <4F4CE4FE.3010009@...515...>
+	<CAOazyz0x4hKsREcGi+9TGc+AO0d+i1d5qbmPJ2hQfCsUbVanNQ@...278...>
+	<319492303.20120228213418@...449...>
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,26 +17,20 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
-Cc: Alon Bar-Lev <alon.barlev@...277...>, Carsten =?ISO-8859-1?Q?Kr=FCger?= <C.Krueger@...448...>
+To: openvpn-devel@lists.sourceforge.net, Carsten =?ISO-8859-1?Q?Kr=FCger?= <C.Krueger@...448...>
+Cc: "openvpn-devel@" <lists.sourceforge.netopenvpn-devel@lists.sourceforge.net>
 
-On Tuesday 28 February 2012 18:38:57 Alon Bar-Lev wrote:
-> > Even though, the new communication pipe between the "helper service" and
-> > openvpn.exe  might gain more features with time, which might cover much
-> > of what the management interface provides today too.  But we're _not_
-> > trying to kill the management interface.
->=20
-> There is no need for the helper service.
-> Nobody care if the openvpn daemon is running in privilege mode.
-> The problem is the user interaction.
-> So I would have avoided to invest resources at the daemon side and invest
-> resources at proper UI.
+On Tuesday 28 February 2012 20:34:18 Carsten Kr=FCger wrote:
+> Add the following lines to client.ovpn
+> --------------------------------
+> management localhost 1000
+> management-query-passwords
+> auth-retry interact
+> management-hold
+> --------------------------------
+> and start the service.
 
-The idea to have the service do the privileged operations instead of just=20
-starting openvpn as "Local System" (or whatever) came from the fear of=20
-privilege escalation in the scripts that are run by openvpn. So, at least I=
-=20
-care that it's not running in privilege mode. Your point is invalid. =3DP
+That's pretty much what the GUI is using at the moment.
 
 Heiko
 --=20
