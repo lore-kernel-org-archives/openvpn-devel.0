@@ -1,22 +1,18 @@
-MIME-Version: 1.0
-In-Reply-To: <CAOazyz3fg_qSWb92ftSeq3Z7qN1fhfEBnuURfxenOsBbxGWQ4g@...278...>
-References: <CAOBzU4PN6qDxf39+s4noXEiW8hNbDy-hkQWGSauBd3hX0pu2hw@...278...>
-	<CAOazyz0f3sERwjZsf3Ts3Xu7CQqBEf_-_VdbUZ7TrzhLbmTEsg@...278...>
-	<CAOazyz1buhSdSF7g6MzePAiQ=irD_Qo-RKPC_jXoR9AVqbtkvQ@...278...>
-	<CAOBzU4P0SxY-jF7rb_HsvmtSH8i9PCk+qe5iDQiwJhajsBuYuw@...278...>
-	<CAOazyz1naScdf+M0pnePS6-bb5deAHsAniTiv+DFw3ZQdAN+kg@...278...>
-	<CAOazyz1DE7Y-P9HFK3LN8-HeoGbHzYeqofX3RiEuK0C-zcxnug@...278...>
-	<CAOazyz0nV8P8Age_wyFCvu1J4g1MECA7YdTAAL4of7TTVctXow@...278...>
-	<1CED409804E2164C8104F9E623B08B90129350BEDF@...1436...>
-	<CAOazyz0daYPAH=ooKDenavTyG1qK1=wJv8ZJ0VF+u-vXWBE2xQ@...278...>
-	<4F4B456A.8010208@...515...> <4F4B542D.9090309@...1114...>
-	<CAOazyz1E809DFQ7-GBvopezmELL+SuW+A5A+EKgbXTsZTNVd8w@...278...>
-	<4F4E6104.2000900@...1114...>
-	<CAOazyz3fg_qSWb92ftSeq3Z7qN1fhfEBnuURfxenOsBbxGWQ4g@...278...>
-Date: Wed, 29 Feb 2012 22:48:40 +0200
-Message-ID: <CAOazyz1=87RqYEo=ovMtGkc1n=yh5VOQcc_YdM4nMHbQ8oNTNA@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 00/35] build revolution
+Date: Wed, 29 Feb 2012 22:28:32 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120229212832.GC7024@...1296...>
+References: <4F4CE4FE.3010009@...515...> <7855235.EvfmKnZP6h@...1526...>
+	<CAP+U6t+ZUA3UpYfKms0Qr=-Cn1M-GP1EJtGybG0+j+O2xnfv7g@...278...>
+	<1404593.Apkr3x9kAi@...1526...>
+	<CAP+U6t+-8n=fFk+QP0Dm-H9YijcssjZjOHOpU5pwkSrXt1+qMQ@...278...>
+	<20120229154604.GA7024@...1296...>
+	<1056463883.20120229194318@...449...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="vtBqmokgY1evbO3C"
+Content-Disposition: inline
+In-Reply-To: <1056463883.20120229194318@...449...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -25,24 +21,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: David Sommerseth <openvpn.list@...1114...>
+To: Carsten =?iso-8859-1?Q?Kr=FCger?= <C.Krueger@...448...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Wed, Feb 29, 2012 at 7:38 PM, Alon Bar-Lev <alon.barlev@...277...> wrote:
->> However, I'm not terrified of 52 patches to the mailing list. =C2=A0That=
-'s
->> definitely doable.
->
-> OK.
+--vtBqmokgY1evbO3C
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Well, I sent, not sure all is OK, as I don't see it in archive and
-some were rejected
-because of size.
+Hi,
 
-At the end of review, please pull from my repository, do not mess with the =
-MIME.
+On Wed, Feb 29, 2012 at 07:43:18PM +0100, Carsten Kr=FCger wrote:
+> > Part of the assumption here is "the user controls the openvpn config",
+> > and as such, he can make openvpn.exe run arbitrary scripts anyway - and
+> > to stop this from being a problem, just run openvpn.exe with your uid.
+>=20
+> What operation could be in script that is usefull when it's executed
+> in user context.
+>=20
+> I never used script with openvpn. I've no idea which are real world
+> applications for it.
 
-Alon.
+Scripts are for creative uses that the programmers of openvpn have not
+foreseen.  Like "after the VPN is up, auto-sync all your git repositories"
+or "open up a few xterms with ssh's to $internalhosts".
+
+David had some other idea recently, which I forgot.
+
+I use scripts for routing table changes on the OpenVPN *server* side
+(dynamic "route" behaviour).  But that's a bad example because it wouldn't
+work in the "openvpn and all its script childs are not privileged".
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--vtBqmokgY1evbO3C
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBT06YgKkuBuNlUUl1AQJpKQP/Rhc9JE2scSrw6bJSkYVuFIYGq1b0sG9l
+e9ju6TivqQ1zzfa+1LIhCwMglcTyGah9Erc1ZpUtMm408mm9+eg36u++ZStxhcvQ
+8sG8u98mqwKSUXZFUIds5xMpk8su8rDFO1Qdkqox5mfzfgN0AhFMKxC2SxTj6Pda
+0kvL14kRXNI=
+=OO4G
+-----END PGP SIGNATURE-----
+
+--vtBqmokgY1evbO3C--
 
