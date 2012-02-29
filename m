@@ -1,10 +1,10 @@
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Wed, 29 Feb 2012 22:11:39 +0200
-Message-Id: <1330546342-17794-10-git-send-email-alon.barlev@...277...>
+Date: Wed, 29 Feb 2012 22:11:37 +0200
+Message-Id: <1330546342-17794-8-git-send-email-alon.barlev@...277...>
 In-Reply-To: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
 References: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [PATCH 09/52] cleanup: memcmp.c: remove unused
-	source
+Subject: [Openvpn-devel] [PATCH 07/52] cleanup: crypto_openssl.c: remove
+	support for pre-openssl-0.9.6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,77 +18,85 @@ Content-Transfer-Encoding: 8bit
 To: 
 Cc: Alon Bar-Lev <alon.barlev@...277...>
 
+autoconf rejecting this anyway:
+---
+AC_MSG_CHECKING([that OpenSSL Library is at least version 0.9.6])
+<snip>
+AC_MSG_ERROR([OpenSSL crypto Library is too old.])
+---
 
 Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 ---
- configure.ac |    3 ---
- memcmp.c     |   43 -------------------------------------------
- 2 files changed, 0 insertions(+), 46 deletions(-)
- delete mode 100644 memcmp.c
+ crypto_openssl.c |   49 -------------------------------------------------
+ 1 files changed, 0 insertions(+), 49 deletions(-)
 
-diff --git a/configure.ac b/configure.ac
-index 25dcc37..1c4d66c 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -564,9 +564,6 @@ else
+diff --git a/crypto_openssl.c b/crypto_openssl.c
+index 0a41b39..e5e1122 100644
+--- a/crypto_openssl.c
++++ b/crypto_openssl.c
+@@ -78,47 +78,6 @@
  
- fi
+ #endif
  
--dnl Required library functions
--AC_FUNC_MEMCMP
+-#if SSLEAY_VERSION_NUMBER < 0x00906000
 -
- dnl
- dnl Check for res_init
- dnl
-diff --git a/memcmp.c b/memcmp.c
-deleted file mode 100644
-index d921aac..0000000
---- a/memcmp.c
-+++ /dev/null
-@@ -1,43 +0,0 @@
--/*
-- *  OpenVPN -- An application to securely tunnel IP networks
-- *             over a single TCP/UDP port, with support for SSL/TLS-based
-- *             session authentication and key exchange,
-- *             packet encryption, packet authentication, and
-- *             packet compression.
-- *
-- *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-- *
-- *  This program is free software; you can redistribute it and/or modify
-- *  it under the terms of the GNU General Public License version 2
-- *  as published by the Free Software Foundation.
-- *
-- *  This program is distributed in the hope that it will be useful,
-- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- *  GNU General Public License for more details.
-- *
-- *  You should have received a copy of the GNU General Public License
-- *  along with this program (see the file COPYING included with this
-- *  distribution); if not, write to the Free Software Foundation, Inc.,
-- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-- */
+-#undef EVP_CIPHER_mode
+-#define EVP_CIPHER_mode(x) 1
+-#define EVP_CIPHER_CTX_mode(x) 1
+-#define EVP_CIPHER_flags(x) 0
 -
--#include "syshead.h"
+-#define EVP_CIPH_CBC_MODE 1
+-#define EVP_CIPH_CFB_MODE 0
+-#define EVP_CIPH_OFB_MODE 0
+-#define EVP_CIPH_VARIABLE_LENGTH 0
 -
--#include "memdbg.h"
+-#define OPENSSL_malloc(x) malloc(x)
+-#define OPENSSL_free(x) free(x)
 -
--int
--memcmp (const void *s1, const void *s2, size_t n)
+-static inline int
+-EVP_CipherInit_ov (EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, uint8_t *key, uint8_t *iv, int enc)
 -{
--  unsigned const char *p1 = s1, *p2 = s2;
--  int d;
--
--  if (n)
--    while (n-- > 0)
--      {
--	d = *p1++ - *p2++;
--	if (d != 0)
--	  return d;
--      }
--  return 0;
+-  EVP_CipherInit (ctx, type, key, iv, enc);
+-  return 1;
 -}
+-
+-static inline int
+-EVP_CipherUpdate_ov (EVP_CIPHER_CTX *ctx, uint8_t *out, int *outl, uint8_t *in, int inl)
+-{
+-  EVP_CipherUpdate (ctx, out, outl, in, inl);
+-  return 1;
+-}
+-
+-static inline bool
+-cipher_ok (const char* name)
+-{
+-  const int i = strlen (name) - 4;
+-  if (i >= 0)
+-    return !strcmp (name + i, "-CBC");
+-  else
+-    return false;
+-}
+-
+-#else
+-
+ static inline int
+ EVP_CipherInit_ov (EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, uint8_t *key, uint8_t *iv, int enc)
+ {
+@@ -137,14 +96,6 @@ cipher_ok (const char* name)
+   return true;
+ }
+ 
+-#endif
+-
+-#if SSLEAY_VERSION_NUMBER < 0x0090581f
+-
+-#undef DES_check_key_parity
+-#define DES_check_key_parity(x) 1
+-#endif /* SSLEAY_VERSION_NUMBER < 0x0090581f */
+-
+ #ifndef EVP_CIPHER_name
+ #define EVP_CIPHER_name(e)		OBJ_nid2sn(EVP_CIPHER_nid(e))
+ #endif
 -- 
 1.7.3.4
 
