@@ -1,10 +1,10 @@
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Wed, 29 Feb 2012 22:11:43 +0200
-Message-Id: <1330546342-17794-14-git-send-email-alon.barlev@...277...>
+Date: Wed, 29 Feb 2012 22:11:45 +0200
+Message-Id: <1330546342-17794-16-git-send-email-alon.barlev@...277...>
 In-Reply-To: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
 References: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [PATCH 13/52] build: handle printf style format in
-	mingw
+Subject: [Openvpn-devel] [PATCH 15/52] build: plugins: properly use CC,
+	CFLAGS and LDFLAGS
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,104 +21,107 @@ Cc: Alon Bar-Lev <alon.barlev@...277...>
 
 Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 ---
- buffer.h |   12 ++++++++++--
- error.h  |    6 +++++-
- misc.h   |   12 ++++++++++--
- status.h |    6 +++++-
- 4 files changed, 30 insertions(+), 6 deletions(-)
+ plugins/auth-pam/Makefile  |   14 ++++++++------
+ plugins/defer/build        |    9 +++++----
+ plugins/down-root/Makefile |   11 ++++++-----
+ plugins/examples/build     |    9 +++++----
+ 4 files changed, 24 insertions(+), 19 deletions(-)
 
-diff --git a/buffer.h b/buffer.h
-index 6c79007..9bc33db 100644
---- a/buffer.h
-+++ b/buffer.h
-@@ -312,7 +312,11 @@ has_digit (const unsigned char* src)
-  */
- bool buf_printf (struct buffer *buf, const char *format, ...)
- #ifdef __GNUC__
--    __attribute__ ((format (printf, 2, 3)))
-+#if __USE_MINGW_ANSI_STDIO
-+	__attribute__ ((format (gnu_printf, 2, 3)))
-+#else
-+	__attribute__ ((format (__printf__, 2, 3)))
-+#endif
- #endif
-     ;
+diff --git a/plugins/auth-pam/Makefile b/plugins/auth-pam/Makefile
+index e69fe3f..d45a203 100755
+--- a/plugins/auth-pam/Makefile
++++ b/plugins/auth-pam/Makefile
+@@ -13,18 +13,20 @@ else
+ endif
  
-@@ -326,7 +330,11 @@ bool buf_puts (struct buffer *buf, const char *str);
-  */
- bool openvpn_snprintf(char *str, size_t size, const char *format, ...)
- #ifdef __GNUC__
--    __attribute__ ((format (printf, 3, 4)))
-+#if __USE_MINGW_ANSI_STDIO
-+	__attribute__ ((format (gnu_printf, 3, 4)))
-+#else
-+	__attribute__ ((format (__printf__, 3, 4)))
-+#endif
- #endif
-     ;
+ # This directory is where we will look for openvpn-plugin.h
+-INCLUDE=-I../..
++CPPFLAGS=-I../..
  
-diff --git a/error.h b/error.h
-index aafd055..d2c04b0 100644
---- a/error.h
-+++ b/error.h
-@@ -178,7 +178,11 @@ bool dont_mute (unsigned int flags); /* check muting filter */
+-CC_FLAGS=-O2 -Wall -DDLOPEN_PAM=$(DLOPEN_PAM)
++CC=gcc
++CFLAGS=-O2 -Wall
++DEFS = -DDLOPEN_PAM=$(DLOPEN_PAM)
  
- void x_msg (const unsigned int flags, const char *format, ...)
- #ifdef __GNUC__
--    __attribute__ ((format (printf, 2, 3)))
-+#if __USE_MINGW_ANSI_STDIO
-+	__attribute__ ((format (gnu_printf, 2, 3)))
-+#else
-+	__attribute__ ((format (__printf__, 2, 3)))
-+#endif
- #endif
-     ; /* should be called via msg above */
+ openvpn-auth-pam.so : auth-pam.o pamdl.o
+-	gcc ${CC_FLAGS} -fPIC -shared -Wl,-soname,openvpn-auth-pam.so -o openvpn-auth-pam.so auth-pam.o pamdl.o -lc $(LIBPAM)
++	$(CC) $(CFLAGS) -fPIC -shared $(LDFLAGS) -Wl,-soname,openvpn-auth-pam.so -o openvpn-auth-pam.so auth-pam.o pamdl.o -lc $(LIBPAM)
  
-diff --git a/misc.h b/misc.h
-index dd6bd5a..a9548c5 100644
---- a/misc.h
-+++ b/misc.h
-@@ -435,13 +435,21 @@ void argv_printf_arglist (struct argv *a, const char *format, const unsigned int
+ auth-pam.o : auth-pam.c pamdl.h
+-	gcc ${CC_FLAGS} -fPIC -c ${INCLUDE} auth-pam.c
++	$(CC) $(CPPFLAGS) $(CFLAGS) $(DEFS) -fPIC -c auth-pam.c
  
- void argv_printf (struct argv *a, const char *format, ...)
- #ifdef __GNUC__
--  __attribute__ ((format (printf, 2, 3)))
-+#if __USE_MINGW_ANSI_STDIO
-+	__attribute__ ((format (gnu_printf, 2, 3)))
-+#else
-+	__attribute__ ((format (__printf__, 2, 3)))
-+#endif
- #endif
-   ;
+ pamdl.o : pamdl.c pamdl.h
+-	gcc ${CC_FLAGS} -fPIC -c ${INCLUDE} pamdl.c
++	$(CC) $(CPPFLAGS) $(CFLAGS) $(DEFS) -fPIC -c pamdl.c
  
- void argv_printf_cat (struct argv *a, const char *format, ...)
- #ifdef __GNUC__
--  __attribute__ ((format (printf, 2, 3)))
-+#if __USE_MINGW_ANSI_STDIO
-+	__attribute__ ((format (gnu_printf, 2, 3)))
-+#else
-+	__attribute__ ((format (__printf__, 2, 3)))
-+#endif
- #endif
-   ;
+ clean :
+-	rm -f *.o *.so
++	-rm -f *.o *.so
+diff --git a/plugins/defer/build b/plugins/defer/build
+index 5907afa..9629c11 100755
+--- a/plugins/defer/build
++++ b/plugins/defer/build
+@@ -6,9 +6,10 @@
+ #
  
-diff --git a/status.h b/status.h
-index 0bdad4e..af16fd2 100644
---- a/status.h
-+++ b/status.h
-@@ -77,7 +77,11 @@ void status_flush (struct status_output *so);
- bool status_close (struct status_output *so);
- void status_printf (struct status_output *so, const char *format, ...)
- #ifdef __GNUC__
--    __attribute__ ((format (printf, 2, 3)))
-+#if __USE_MINGW_ANSI_STDIO
-+	__attribute__ ((format (gnu_printf, 2, 3)))
-+#else
-+	__attribute__ ((format (__printf__, 2, 3)))
-+#endif
- #endif
-     ;
+ # This directory is where we will look for openvpn-plugin.h
+-INCLUDE="-I../.."
++CPPFLAGS="${CPPFLAGS:--I../..}"
  
+-CC_FLAGS="-O2 -Wall -g"
++CC="${CC:-gcc}"
++CFLAGS="${CFLAGS:--O2 -Wall -g}"
+ 
+-gcc $CC_FLAGS -fPIC -c $INCLUDE $1.c && \
+-gcc $CC_FLAGS -fPIC -shared -Wl,-soname,$1.so -o $1.so $1.o -lc
++$CC $CPPFLAGS $CFLAGS -fPIC -c $1.c && \
++$CC $CFLAGS -fPIC -shared $LDFLAGS -Wl,-soname,$1.so -o $1.so $1.o -lc
+diff --git a/plugins/down-root/Makefile b/plugins/down-root/Makefile
+index 5ce4ffb..9659b7f 100755
+--- a/plugins/down-root/Makefile
++++ b/plugins/down-root/Makefile
+@@ -3,15 +3,16 @@
+ #
+ 
+ # This directory is where we will look for openvpn-plugin.h
+-INCLUDE=-I../..
++CPPFLAGS=-I../..
+ 
+-CC_FLAGS=-O2 -Wall
++CC=gcc
++CFLAGS=-O2 -Wall
+ 
+ down-root.so : down-root.o
+-	gcc ${CC_FLAGS} -fPIC -shared -Wl,-soname,openvpn-down-root.so -o openvpn-down-root.so down-root.o -lc
++	$(CC) $(CFLAGS) -fPIC -shared $(LDFLAGS) -Wl,-soname,openvpn-down-root.so -o openvpn-down-root.so down-root.o -lc
+ 
+ down-root.o : down-root.c
+-	gcc ${CC_FLAGS} -fPIC -c ${INCLUDE} down-root.c
++	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -c down-root.c
+ 
+ clean :
+-	rm -f *.o *.so
++	-rm -f *.o *.so
+diff --git a/plugins/examples/build b/plugins/examples/build
+index 5907afa..7605595 100755
+--- a/plugins/examples/build
++++ b/plugins/examples/build
+@@ -6,9 +6,10 @@
+ #
+ 
+ # This directory is where we will look for openvpn-plugin.h
+-INCLUDE="-I../.."
++CPPFLAGS="${CPPFLAGS:--I../..}"
+ 
+-CC_FLAGS="-O2 -Wall -g"
++CC="${CC:-gcc}"
++CFLAGS="${CFLAGS:--O2 -Wall -g}"
+ 
+-gcc $CC_FLAGS -fPIC -c $INCLUDE $1.c && \
+-gcc $CC_FLAGS -fPIC -shared -Wl,-soname,$1.so -o $1.so $1.o -lc
++$CC $CPPFLAGS $CFLAGS -fPIC -c $1.c && \
++$CC $CFLAGS -fPIC -shared ${LDFLAS} -Wl,-soname,$1.so -o $1.so $1.o -lc
 -- 
 1.7.3.4
 
