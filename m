@@ -1,12 +1,15 @@
-MIME-Version: 1.0
-Sender: fabian@...1547...
-In-Reply-To: <1404593.Apkr3x9kAi@...1526...>
+Date: Wed, 29 Feb 2012 16:46:05 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120229154604.GA7024@...1296...>
 References: <4F4CE4FE.3010009@...515...> <7855235.EvfmKnZP6h@...1526...>
 	<CAP+U6t+ZUA3UpYfKms0Qr=-Cn1M-GP1EJtGybG0+j+O2xnfv7g@...278...>
 	<1404593.Apkr3x9kAi@...1526...>
-From: Fabian Knittel <fabian.knittel@...1547...>
-Date: Wed, 29 Feb 2012 16:28:31 +0100
-Message-ID: <CAP+U6t+-8n=fFk+QP0Dm-H9YijcssjZjOHOpU5pwkSrXt1+qMQ@...278...>
+	<CAP+U6t+-8n=fFk+QP0Dm-H9YijcssjZjOHOpU5pwkSrXt1+qMQ@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="RU5vHP6eAM91MAfE"
+Content-Disposition: inline
+In-Reply-To: <CAP+U6t+-8n=fFk+QP0Dm-H9YijcssjZjOHOpU5pwkSrXt1+qMQ@...278...>
 Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,86 +19,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Heiko Hund <heiko.hund@...1489...>
-Cc: =?UTF-8?Q?Carsten_Kr=C3=BCger?= <C.Krueger@...448...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Fabian Knittel <fabian.knittel@...1547...>
+Cc: Carsten =?iso-8859-1?Q?Kr=FCger?= <C.Krueger@...448...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi Heiko,
+--RU5vHP6eAM91MAfE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-2012/2/29 Heiko Hund <heiko.hund@...1489...>:
-> On Wednesday 29 February 2012 14:07:01 Fabian Knittel wrote:
-[...]
->> (There must be something missing, otherwise
->> I don't get why you call it "interactive service" ...?)
->
-> It's interactive in contrast to the other already existing service, that just
-> starts all openvpn connections that it finds at the time the service itself is
-> started. I internally called that service automatic. The GUI and openvpn
-> interact with the interactive service, hence the name. And partially because I
-> couldn't come up with something that made more sense.
+Hi,
 
-Ah, I see. My confusion stemmed from the fact that I don't know
-much/anything about how OpenVPN is currently used on Windows.
+On Wed, Feb 29, 2012 at 04:28:31PM +0100, Fabian Knittel wrote:
+> To ensure this in classic Linux this would mean that the OpenVPN
+> process needs to run as a _different_ user than the GUI user or else
+> the GUI user could freely manipulate the program using, e.g. ptrace. I
+> know that similar manipulations are possible in Windows, so can you
+> protect the service-started OpenVPN-executable from such
+> manipulations?=20
 
->> Why does the "interactive service" need to start OpenVPN? Why not let
->> the GUI start OpenVPN and let OpenVPN connect to the "interactive
->> service"?
->
-> The key point here is the inheritance of the client end of the named pipe
-> that's being used to request privileged operations. If there would just be a
-> named pipe anyone could connect to, anyone could modify i.e. the routing
-> table. Something MS tries to prevent obviously.
+The model we follow is "openvpn.exe has the same permissions that you
+already have, so there is no benefit in manipulating anything".
 
-Ah, I see. So when you say that the "working directory, command line
-options and stdin input for openpvn" are passed in, the idea is that
-this MUST not allow the GUI-user to manipulate the OpenVPN process to
-send arbitrary commands down the named pipe. (I initially you were
-saying "pass in the path to the OpenVPN exe, but now I understand that
-this is not what you meant.)
+For those bits that need additional privileges, there's the named pipe
+to the openvpn service - with some very well-defined messages to
+add/delete routes, setup interfaces, and such.
 
-To ensure this in classic Linux this would mean that the OpenVPN
-process needs to run as a _different_ user than the GUI user or else
-the GUI user could freely manipulate the program using, e.g. ptrace. I
-know that similar manipulations are possible in Windows, so can you
-protect the service-started OpenVPN-executable from such
-manipulations? (And I also assume that _named_ pipes still allow you
-to hide the name from some processes of the same user?) (I'm not an
-experienced Windows programmer, so please excuse my ignorance...)
+Part of the assumption here is "the user controls the openvpn config",
+and as such, he can make openvpn.exe run arbitrary scripts anyway - and
+to stop this from being a problem, just run openvpn.exe with your uid.
 
->> OTOH, if you're going to start OpenVPN as a service anyway,
->> it probably doesn't really make much of a difference. Although this
->> could mean that you can keep the GUI-facing side of OpenVPN identical
->> to what it is now... the "interactive service" would just be an
->> implementation detail of how openvpn performs its privileged
->> operations.
->
-> I got lost at "going to start OpenVPN as a service anyway". Openvpn isn't
-> started as a service, the service starts openvpn. Openvpn is not running with
-> same token the service runs, but the token of the GUI that invoked the
-> service.
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-I was mistakenly using "run in background" and "service" as synonyms.
-Anyway, you explained why who-starts-who makes all of the difference,
-so this point is moot.
+--RU5vHP6eAM91MAfE
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
->> Does creating a tun/tap device belong to the operations that need
->> special privileges under windows? If so, this sounds a lot like an
->> interface that might also allow splitting off most of the system
->> specific code ... as in, this could also work on Android, no?
->
-> No, that example was a spin off to my lengthy and highly fictional
-> NetworkManager story. =) Essentially you're right, though. It could be used as
-> such. Usually I#d say that stuff that can be setup before privileges are
-> dropped should be done at that time. Setting of routes can only be done after
-> privdrop and that's the main use for the new interface.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
 
-Yes, that makes sense. Hypothetically, the tun/tap-opening part would
-be something the "interactive service" would do before launching the
-OpenVPN executable, based on the parameters given by the GUI.
+iQCVAwUBT05IPKkuBuNlUUl1AQJwCwP/UaCGA7y6puPiA3jxBiDOX/MizWnU60xM
+ziBWVIbq11fX7lVQWpJwfUNKsd18wTY7JKmEtYkETV44Um78/Ln7WSZot5iL3hzc
+QC3FSqu3wjtU2P235zVLdd9Bvh/L+dhcwBD90vIFbDNo9UJLElGqkBsAEd7wK/qZ
+u7mwxFItP7o=
+=OakU
+-----END PGP SIGNATURE-----
 
-Thanks for clarifying.
-
-Cheers
-Fabian
+--RU5vHP6eAM91MAfE--
 
