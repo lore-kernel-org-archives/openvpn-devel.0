@@ -1,13 +1,12 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Wed, 29 Feb 2012 12:17:12 +0100
-Message-ID: <1962546.PuBHVYuXmq@...1526...>
-In-Reply-To: <1338219750.20120229120536@...449...>
-References: <4F4CE4FE.3010009@...515...> <1625912.DtZ8esD6qH@...1526...>
-	<1338219750.20120229120536@...449...>
+Date: Wed, 29 Feb 2012 12:38:17 +0100
+From: =?iso-8859-1?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>
+Message-ID: <1375292789.20120229123817@...449...>
+In-Reply-To: <3440230.bBsdCSzEj1@...1526...>
+References: <4F4CE4FE.3010009@...515...> <4F4D2212.2020008@...1114...>
+	<1945967716.20120228230913@...449...> <3440230.bBsdCSzEj1@...1526...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="nextPart4763586.5UMFNjmk3r"
-Content-Transfer-Encoding: 7Bit
 Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 released
+Reply-To: =?iso-8859-1?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,119 +15,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Carsten =?ISO-8859-1?Q?Kr=FCger?= <C.Krueger@...448...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---nextPart4763586.5UMFNjmk3r
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Hello Heiko,
 
-On Wednesday 29 February 2012 11:05:36 Carsten Kr=FCger wrote:
-> > [Advertisement] Maybe you want to take a look at UTM9, beta starts
-> > tomorrow.
-> Definitely!
->=20
-> Is Beta available to non customers?
+> However it was only an example and thus
+> didn't have to make any practical sense. =)
 
-Yes, it will be announced at http://astaro.org in the "Beta Versions" secti=
-on=20
-and you can get special licenses for the beta with limited lifetime there.
+:-)
 
-This is getting too off topic now. Actually it's more an abuse of this list=
-.=20
-So, please send private mail to me directly if further questions remain.
+> You forgot the GUI in this picture. If the service is connected to the
+> management interface the GUI can't connect anymore.
 
-Regards
-Heiko
---=20
-Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
-Astaro a Sophos Company | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germ=
-any
-Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
-=20
-Represented by the General Partner Astaro Verwaltungs GmbH
-Amalienbadstra=DFe 41 Bau 52 | 76227 Karlsruhe | Germany=20
-Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
-Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
+?
+If I understand you correctly it works this way:
 
---nextPart4763586.5UMFNjmk3r
-Content-Type: text/html; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+openvpnserv.exe spawns openvpn.exe
+openvpnhelperserv.exe spawns openvpnhelper.exe
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-=
-html40/strict.dtd">
-<html><head><meta name=3D"qrichtext" content=3D"1" /><style type=3D"text/cs=
-s">
-p, li { white-space: pre-wrap; }
-</style></head><body style=3D" font-family:'Courier New'; font-size:9pt; fo=
-nt-weight:400; font-style:normal;">
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">On Wednesda=
-y 29 February 2012 11:05:36 Carsten Kr=FCger wrote:</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt; &gt; [=
-Advertisement] Maybe you want to take a look at UTM9, beta starts</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt; &gt; t=
-omorrow.</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt; Defini=
-tely!</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt; </p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">&gt; Is Bet=
-a available to non customers?</p>
-<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
-rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; ">&nb=
-sp;</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">Yes, it wil=
-l be announced at http://astaro.org in the &quot;Beta Versions&quot; sectio=
-n and you can get special licenses for the beta with limited lifetime there=
-.</p>
-<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
-rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; ">&nb=
-sp;</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">This is get=
-ting too off topic now. Actually it's more an abuse of this list. So, pleas=
-e send private mail to me directly if further questions remain.</p>
-<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
-rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; ">&nb=
-sp;</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">Regards</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">Heiko</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">-- </p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">Heiko Hund =
-| Software Engineer | Phone +49-721-25516-237 | Fax -200</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">Astaro a So=
-phos Company | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germany</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">Commercial =
-Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;"> </p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">Represented=
- by the General Partner Astaro Verwaltungs GmbH</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">Amalienbads=
-tra=DFe 41 Bau 52 | 76227 Karlsruhe | Germany </p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">Commercial =
-Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,</p>
-<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
-ht:0px; -qt-block-indent:0; text-indent:0px; -qt-user-state:0;">Markus Henn=
-ig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen</p>
-<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
-rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; ">&nb=
-sp;</p></body></html>=
+openvpn.exe runs with no privileges at all (local service) and
+openvpnhelper.exe with priviliges to modify routing (network configuration operator)
 
---nextPart4763586.5UMFNjmk3r--
+openvpn.exe communicates via pipe to openvpnhelper.exe, for example "please add a route"
+
+the user client (for example perl script) uses management interface to
+connect to openvpn.exe (please establish connection, credentials are xyz)
+
+> Interesting, could you elaborate?
+
+The process needs to much rights.
+
+AFAIK openvpnhelper.exe would than need SE_ASSIGNPRIMARYTOKEN_NAME
+Why should it have so much power?
+
+Can you explain the architeture in more detail?
+
+Do you need it for smartcard auth? I don't know the details of Smartcard API ...
+
+> Not users, really. More like session. So you can connect to different server
+> simultaneously.
+
+Yeah, that's a point.
+But I think it would only need management commands like "connect vpn session 1"
+"disconnect vpn session 1", "supply credentials for sessions 1".
+Credentials could be more than username/password, for example tls key
+or smartcard "connection".
+
+>  Of course this could be used by two different users at the
+> same time or different impersonations in the same session, while still running
+> ovpn with the credentials of the entity who started openvpn. So the point
+> isn't really that many user can connect, but that the running sessions will be
+> isolated from each other by the service.
+
+hmm, I'm unsure if you would win something.
+If the network communicating process is compromised (exploited from
+internet) than it could get all the credentials via normal interface
+from processes that holds them.
+
+greetings
+Carsten
+
 
