@@ -1,10 +1,10 @@
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Wed, 29 Feb 2012 22:11:45 +0200
-Message-Id: <1330546342-17794-16-git-send-email-alon.barlev@...277...>
+Date: Wed, 29 Feb 2012 22:11:46 +0200
+Message-Id: <1330546342-17794-17-git-send-email-alon.barlev@...277...>
 In-Reply-To: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
 References: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [PATCH 15/52] build: plugins: properly use CC,
-	CFLAGS and LDFLAGS
+Subject: [Openvpn-devel] [PATCH 16/52] build: we need the sample.ovpn in
+	future
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,107 +21,230 @@ Cc: Alon Bar-Lev <alon.barlev@...277...>
 
 Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 ---
- plugins/auth-pam/Makefile  |   14 ++++++++------
- plugins/defer/build        |    9 +++++----
- plugins/down-root/Makefile |   11 ++++++-----
- plugins/examples/build     |    9 +++++----
- 4 files changed, 24 insertions(+), 19 deletions(-)
+ install-win32/sample.ovpn  |  103 --------------------------------------------
+ sample-windows/sample.ovpn |  103 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 103 insertions(+), 103 deletions(-)
+ delete mode 100755 install-win32/sample.ovpn
+ create mode 100755 sample-windows/sample.ovpn
 
-diff --git a/plugins/auth-pam/Makefile b/plugins/auth-pam/Makefile
-index e69fe3f..d45a203 100755
---- a/plugins/auth-pam/Makefile
-+++ b/plugins/auth-pam/Makefile
-@@ -13,18 +13,20 @@ else
- endif
- 
- # This directory is where we will look for openvpn-plugin.h
--INCLUDE=-I../..
-+CPPFLAGS=-I../..
- 
--CC_FLAGS=-O2 -Wall -DDLOPEN_PAM=$(DLOPEN_PAM)
-+CC=gcc
-+CFLAGS=-O2 -Wall
-+DEFS = -DDLOPEN_PAM=$(DLOPEN_PAM)
- 
- openvpn-auth-pam.so : auth-pam.o pamdl.o
--	gcc ${CC_FLAGS} -fPIC -shared -Wl,-soname,openvpn-auth-pam.so -o openvpn-auth-pam.so auth-pam.o pamdl.o -lc $(LIBPAM)
-+	$(CC) $(CFLAGS) -fPIC -shared $(LDFLAGS) -Wl,-soname,openvpn-auth-pam.so -o openvpn-auth-pam.so auth-pam.o pamdl.o -lc $(LIBPAM)
- 
- auth-pam.o : auth-pam.c pamdl.h
--	gcc ${CC_FLAGS} -fPIC -c ${INCLUDE} auth-pam.c
-+	$(CC) $(CPPFLAGS) $(CFLAGS) $(DEFS) -fPIC -c auth-pam.c
- 
- pamdl.o : pamdl.c pamdl.h
--	gcc ${CC_FLAGS} -fPIC -c ${INCLUDE} pamdl.c
-+	$(CC) $(CPPFLAGS) $(CFLAGS) $(DEFS) -fPIC -c pamdl.c
- 
- clean :
--	rm -f *.o *.so
-+	-rm -f *.o *.so
-diff --git a/plugins/defer/build b/plugins/defer/build
-index 5907afa..9629c11 100755
---- a/plugins/defer/build
-+++ b/plugins/defer/build
-@@ -6,9 +6,10 @@
- #
- 
- # This directory is where we will look for openvpn-plugin.h
--INCLUDE="-I../.."
-+CPPFLAGS="${CPPFLAGS:--I../..}"
- 
--CC_FLAGS="-O2 -Wall -g"
-+CC="${CC:-gcc}"
-+CFLAGS="${CFLAGS:--O2 -Wall -g}"
- 
--gcc $CC_FLAGS -fPIC -c $INCLUDE $1.c && \
--gcc $CC_FLAGS -fPIC -shared -Wl,-soname,$1.so -o $1.so $1.o -lc
-+$CC $CPPFLAGS $CFLAGS -fPIC -c $1.c && \
-+$CC $CFLAGS -fPIC -shared $LDFLAGS -Wl,-soname,$1.so -o $1.so $1.o -lc
-diff --git a/plugins/down-root/Makefile b/plugins/down-root/Makefile
-index 5ce4ffb..9659b7f 100755
---- a/plugins/down-root/Makefile
-+++ b/plugins/down-root/Makefile
-@@ -3,15 +3,16 @@
- #
- 
- # This directory is where we will look for openvpn-plugin.h
--INCLUDE=-I../..
-+CPPFLAGS=-I../..
- 
--CC_FLAGS=-O2 -Wall
-+CC=gcc
-+CFLAGS=-O2 -Wall
- 
- down-root.so : down-root.o
--	gcc ${CC_FLAGS} -fPIC -shared -Wl,-soname,openvpn-down-root.so -o openvpn-down-root.so down-root.o -lc
-+	$(CC) $(CFLAGS) -fPIC -shared $(LDFLAGS) -Wl,-soname,openvpn-down-root.so -o openvpn-down-root.so down-root.o -lc
- 
- down-root.o : down-root.c
--	gcc ${CC_FLAGS} -fPIC -c ${INCLUDE} down-root.c
-+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -c down-root.c
- 
- clean :
--	rm -f *.o *.so
-+	-rm -f *.o *.so
-diff --git a/plugins/examples/build b/plugins/examples/build
-index 5907afa..7605595 100755
---- a/plugins/examples/build
-+++ b/plugins/examples/build
-@@ -6,9 +6,10 @@
- #
- 
- # This directory is where we will look for openvpn-plugin.h
--INCLUDE="-I../.."
-+CPPFLAGS="${CPPFLAGS:--I../..}"
- 
--CC_FLAGS="-O2 -Wall -g"
-+CC="${CC:-gcc}"
-+CFLAGS="${CFLAGS:--O2 -Wall -g}"
- 
--gcc $CC_FLAGS -fPIC -c $INCLUDE $1.c && \
--gcc $CC_FLAGS -fPIC -shared -Wl,-soname,$1.so -o $1.so $1.o -lc
-+$CC $CPPFLAGS $CFLAGS -fPIC -c $1.c && \
-+$CC $CFLAGS -fPIC -shared ${LDFLAS} -Wl,-soname,$1.so -o $1.so $1.o -lc
+diff --git a/install-win32/sample.ovpn b/install-win32/sample.ovpn
+deleted file mode 100755
+index 5accd57..0000000
+--- a/install-win32/sample.ovpn
++++ /dev/null
+@@ -1,103 +0,0 @@
+-# Edit this file, and save to a .ovpn extension
+-# so that OpenVPN will activate it when run
+-# as a service.
+-
+-# Change 'myremote' to be your remote host,
+-# or comment out to enter a listening
+-# server mode.
+-remote myremote
+-
+-# Uncomment this line to use a different
+-# port number than the default of 1194.
+-; port 1194
+-
+-# Choose one of three protocols supported by
+-# OpenVPN.  If left commented out, defaults
+-# to udp.
+-; proto [tcp-server | tcp-client | udp]
+-
+-# You must specify one of two possible network
+-# protocols, 'dev tap' or 'dev tun' to be used
+-# on both sides of the connection.  'tap' creates
+-# a VPN using the ethernet protocol while 'tun'
+-# uses the IP protocol.  You must use 'tap'
+-# if you are ethernet bridging or want to route
+-# broadcasts.  'tun' is somewhat more efficient
+-# but requires configuration of client software
+-# to not depend on broadcasts.  Some platforms
+-# such as Solaris, OpenBSD, and Mac OS X only
+-# support 'tun' interfaces, so if you are
+-# connecting to such a platform, you must also
+-# use a 'tun' interface on the Windows side.
+-
+-# Enable 'dev tap' or 'dev tun' but not both!
+-dev tap
+-
+-# This is a 'dev tap' ifconfig that creates
+-# a virtual ethernet subnet.
+-# 10.3.0.1 is the local VPN IP address
+-# and 255.255.255.0 is the VPN subnet.
+-# Only define this option for 'dev tap'.
+-ifconfig 10.3.0.1 255.255.255.0
+-
+-# This is a 'dev tun' ifconfig that creates
+-# a point-to-point IP link.
+-# 10.3.0.1 is the local VPN IP address and
+-# 10.3.0.2 is the remote VPN IP address. 
+-# Only define this option for 'dev tun'.
+-# Make sure to include the "tun-mtu" option
+-# on the remote machine, but swap the order
+-# of the ifconfig addresses.
+-;tun-mtu 1500
+-;ifconfig 10.3.0.1 10.3.0.2
+-
+-# If you have fragmentation issues or misconfigured
+-# routers in the path which block Path MTU discovery,
+-# lower the TCP MSS and internally fragment non-TCP
+-# protocols.
+-;fragment 1300
+-;mssfix
+-
+-# If you have set up more than one TAP-Win32 adapter
+-# on your system, you must refer to it by name.
+-;dev-node my-tap
+-
+-# You can generate a static OpenVPN key
+-# by selecting the Generate Key option
+-# in the start menu.
+-#
+-# You can also generate key.txt manually
+-# with the following command:
+-#   openvpn --genkey --secret key.txt
+-#
+-# key must match on both ends of the connection,
+-# so you should generate it on one machine and
+-# copy it to the other over a secure medium.
+-# Place key.txt in the same directory as this
+-# config file.
+-secret key.txt
+-
+-# Uncomment this section for a more reliable
+-# detection when a system loses its connection.
+-# For example, dial-ups or laptops that travel
+-# to other locations.
+-#
+-# If this section is enabled and "myremote"
+-# above is a dynamic DNS name (i.e. dyndns.org),
+-# OpenVPN will dynamically "follow" the IP
+-# address of "myremote" if it changes.
+-; ping-restart 60
+-; ping-timer-rem
+-; persist-tun
+-; persist-key
+-; resolv-retry 86400
+-
+-# keep-alive ping
+-ping 10
+-
+-# enable LZO compression
+-comp-lzo
+-
+-# moderate verbosity
+-verb 4
+-mute 10
+diff --git a/sample-windows/sample.ovpn b/sample-windows/sample.ovpn
+new file mode 100755
+index 0000000..5accd57
+--- /dev/null
++++ b/sample-windows/sample.ovpn
+@@ -0,0 +1,103 @@
++# Edit this file, and save to a .ovpn extension
++# so that OpenVPN will activate it when run
++# as a service.
++
++# Change 'myremote' to be your remote host,
++# or comment out to enter a listening
++# server mode.
++remote myremote
++
++# Uncomment this line to use a different
++# port number than the default of 1194.
++; port 1194
++
++# Choose one of three protocols supported by
++# OpenVPN.  If left commented out, defaults
++# to udp.
++; proto [tcp-server | tcp-client | udp]
++
++# You must specify one of two possible network
++# protocols, 'dev tap' or 'dev tun' to be used
++# on both sides of the connection.  'tap' creates
++# a VPN using the ethernet protocol while 'tun'
++# uses the IP protocol.  You must use 'tap'
++# if you are ethernet bridging or want to route
++# broadcasts.  'tun' is somewhat more efficient
++# but requires configuration of client software
++# to not depend on broadcasts.  Some platforms
++# such as Solaris, OpenBSD, and Mac OS X only
++# support 'tun' interfaces, so if you are
++# connecting to such a platform, you must also
++# use a 'tun' interface on the Windows side.
++
++# Enable 'dev tap' or 'dev tun' but not both!
++dev tap
++
++# This is a 'dev tap' ifconfig that creates
++# a virtual ethernet subnet.
++# 10.3.0.1 is the local VPN IP address
++# and 255.255.255.0 is the VPN subnet.
++# Only define this option for 'dev tap'.
++ifconfig 10.3.0.1 255.255.255.0
++
++# This is a 'dev tun' ifconfig that creates
++# a point-to-point IP link.
++# 10.3.0.1 is the local VPN IP address and
++# 10.3.0.2 is the remote VPN IP address. 
++# Only define this option for 'dev tun'.
++# Make sure to include the "tun-mtu" option
++# on the remote machine, but swap the order
++# of the ifconfig addresses.
++;tun-mtu 1500
++;ifconfig 10.3.0.1 10.3.0.2
++
++# If you have fragmentation issues or misconfigured
++# routers in the path which block Path MTU discovery,
++# lower the TCP MSS and internally fragment non-TCP
++# protocols.
++;fragment 1300
++;mssfix
++
++# If you have set up more than one TAP-Win32 adapter
++# on your system, you must refer to it by name.
++;dev-node my-tap
++
++# You can generate a static OpenVPN key
++# by selecting the Generate Key option
++# in the start menu.
++#
++# You can also generate key.txt manually
++# with the following command:
++#   openvpn --genkey --secret key.txt
++#
++# key must match on both ends of the connection,
++# so you should generate it on one machine and
++# copy it to the other over a secure medium.
++# Place key.txt in the same directory as this
++# config file.
++secret key.txt
++
++# Uncomment this section for a more reliable
++# detection when a system loses its connection.
++# For example, dial-ups or laptops that travel
++# to other locations.
++#
++# If this section is enabled and "myremote"
++# above is a dynamic DNS name (i.e. dyndns.org),
++# OpenVPN will dynamically "follow" the IP
++# address of "myremote" if it changes.
++; ping-restart 60
++; ping-timer-rem
++; persist-tun
++; persist-key
++; resolv-retry 86400
++
++# keep-alive ping
++ping 10
++
++# enable LZO compression
++comp-lzo
++
++# moderate verbosity
++verb 4
++mute 10
 -- 
 1.7.3.4
 
