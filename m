@@ -1,10 +1,9 @@
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Wed, 29 Feb 2012 22:11:51 +0200
-Message-Id: <1330546342-17794-22-git-send-email-alon.barlev@...277...>
+Date: Wed, 29 Feb 2012 22:11:49 +0200
+Message-Id: <1330546342-17794-20-git-send-email-alon.barlev@...277...>
 In-Reply-To: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
 References: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [PATCH 21/52] build: remove windows specific build
-	system
+Subject: [Openvpn-devel] [PATCH 19/52] Remove tap-win32
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,781 +17,209 @@ Content-Transfer-Encoding: 8bit
 To: 
 Cc: Alon Bar-Lev <alon.barlev@...277...>
 
-It will be completely re-written in future
+Introduce tap-windows.h which is modified tap-win32/common.h.
+Except of function rename, it is the same without the tap_id.
+This file should be provided as part of tap-win32 MSI.
+For now we hold a copy.
 
 Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 ---
- Makefile.am            |    8 +-
- doclean                |   73 -----
- domake-win             |  138 --------
- msvc/autodefs.h.in     |   20 --
- msvc/config.py         |   93 ------
- msvc/msvc.mak          |   52 ---
- service-win32/msvc.mak |   30 --
- win/autodefs.h.in      |   31 --
- win/build.py           |   23 --
- win/build_all.py       |   69 ----
- win/build_ddk.py       |   55 ----
- win/build_exe.py       |   15 -
- win/config.h.in        |  363 ---------------------
- win/config.py          |   21 --
- win/config_all.py      |   13 -
- win/config_tap.py      |   35 --
- win/config_ti.py       |   18 -
- win/js.py              |   10 -
- win/make_dist.py       |  107 -------
- win/msvc.mak.in        |   69 ----
- win/openvpn.nsi        |  822 ------------------------------------------------
- win/setpath.nsi        |  231 --------------
- win/settings.in        |  100 ------
- win/show.py            |    9 -
- win/sign.py            |   23 --
- win/tap_span.py        |  129 --------
- win/wb.py              |  322 -------------------
- 27 files changed, 2 insertions(+), 2877 deletions(-)
- delete mode 100755 doclean
- delete mode 100644 domake-win
- delete mode 100644 msvc/autodefs.h.in
- delete mode 100644 msvc/config.py
- delete mode 100644 msvc/msvc.mak
- delete mode 100644 service-win32/msvc.mak
- delete mode 100644 win/__init__.py
- delete mode 100644 win/autodefs.h.in
- delete mode 100644 win/build.py
- delete mode 100644 win/build_all.py
- delete mode 100644 win/build_ddk.py
- delete mode 100644 win/build_exe.py
- delete mode 100644 win/config.h.in
- delete mode 100644 win/config.py
- delete mode 100644 win/config_all.py
- delete mode 100644 win/config_tap.py
- delete mode 100644 win/config_ti.py
- delete mode 100644 win/js.py
- delete mode 100644 win/make_dist.py
- delete mode 100644 win/msvc.mak.in
- delete mode 100755 win/openvpn.nsi
- delete mode 100755 win/setpath.nsi
- delete mode 100644 win/settings.in
- delete mode 100644 win/show.py
- delete mode 100644 win/sign.py
- delete mode 100644 win/tap_span.py
- delete mode 100644 win/wb.py
+ Makefile.am                    |    3 +-
+ configure.ac                   |   14 +-
+ tap-win32/MAKEFILE             |    6 -
+ tap-win32/SOURCES.in           |   64 -
+ tap-win32/common.h             |   82 --
+ tap-win32/constants.h          |   52 -
+ tap-win32/dhcp.c               |  599 --------
+ tap-win32/dhcp.h               |  164 ---
+ tap-win32/endian.h             |   35 -
+ tap-win32/error.c              |  378 -----
+ tap-win32/error.h              |   88 --
+ tap-win32/hexdump.c            |   69 -
+ tap-win32/hexdump.h            |   63 -
+ tap-win32/i386/OemWin2k.inf.in |  195 ---
+ tap-win32/instance.c           |  241 ---
+ tap-win32/lock.h               |   75 -
+ tap-win32/macinfo.c            |  154 --
+ tap-win32/macinfo.h            |   38 -
+ tap-win32/mem.c                |  186 ---
+ tap-win32/proto.h              |  224 ---
+ tap-win32/prototypes.h         |  260 ----
+ tap-win32/resource.rc          |   58 -
+ tap-win32/tapdrvr.c            | 3146 ----------------------------------------
+ tap-win32/types.h              |  178 ---
+ tap-windows.h                  |   68 +
+ tun.h                          |    2 +-
+ win/autodefs.h.in              |    2 +-
+ 27 files changed, 78 insertions(+), 6366 deletions(-)
+ delete mode 100755 tap-win32/MAKEFILE
+ delete mode 100755 tap-win32/SOURCES.in
+ delete mode 100755 tap-win32/common.h
+ delete mode 100755 tap-win32/constants.h
+ delete mode 100755 tap-win32/dhcp.c
+ delete mode 100755 tap-win32/dhcp.h
+ delete mode 100755 tap-win32/endian.h
+ delete mode 100755 tap-win32/error.c
+ delete mode 100755 tap-win32/error.h
+ delete mode 100755 tap-win32/hexdump.c
+ delete mode 100755 tap-win32/hexdump.h
+ delete mode 100755 tap-win32/i386/OemWin2k.inf.in
+ delete mode 100755 tap-win32/instance.c
+ delete mode 100755 tap-win32/lock.h
+ delete mode 100755 tap-win32/macinfo.c
+ delete mode 100755 tap-win32/macinfo.h
+ delete mode 100755 tap-win32/mem.c
+ delete mode 100755 tap-win32/proto.h
+ delete mode 100755 tap-win32/prototypes.h
+ delete mode 100755 tap-win32/resource.rc
+ delete mode 100755 tap-win32/tapdrvr.c
+ delete mode 100755 tap-win32/types.h
+ create mode 100644 tap-windows.h
 
 diff --git a/Makefile.am b/Makefile.am
-index 74f388a..a14f4e1 100644
+index b6fcfbb..74f388a 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -46,8 +46,7 @@ EXTRA_DIST = \
+@@ -44,7 +44,6 @@ EXTRA_DIST = \
+ 	sample-keys \
+ 	sample-scripts \
  	suse \
+-	tap-win32 \
  	contrib \
  	debug \
--	plugins \
--	win
-+	plugins
+ 	plugins \
+@@ -147,7 +146,7 @@ openvpn_SOURCES = \
+ 	ssl_verify_polarssl.c ssl_verify_polarssl.h \
+ 	status.c status.h \
+ 	syshead.h \
+-	tun.c tun.h \
++	tun.c tun.h tap-windows.h \
+ 	win32.h win32.c \
+ 	cryptoapi.h cryptoapi.c
  
- SUBDIRS = service-win32
+diff --git a/configure.ac b/configure.ac
+index 747c7b4..937ce1f 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -959,15 +959,15 @@ if test "$SELINUX" = "yes"; then
+    )
+ fi
  
-@@ -59,8 +58,6 @@ dist_doc_DATA = \
+-TAP_ID="PRODUCT_TAP_ID"
++TAP_COMPONENT_ID="PRODUCT_TAP_ID"
+ TAP_WIN32_MIN_MAJOR="PRODUCT_TAP_WIN32_MIN_MAJOR"
+ TAP_WIN32_MIN_MINOR="PRODUCT_TAP_WIN32_MIN_MINOR"
+-AC_DEFINE_UNQUOTED(TAP_ID, "${TAP_ID}", [The TAP-Win32 id defined in tap-win32/SOURCES])
+-AC_DEFINE_UNQUOTED(TAP_WIN32_MIN_MAJOR, ${TAP_WIN32_MIN_MAJOR}, [The TAP-Win32 version number is defined in tap-win32/SOURCES])
+-AC_DEFINE_UNQUOTED(TAP_WIN32_MIN_MINOR, ${TAP_WIN32_MIN_MINOR}, [The TAP-Win32 version number is defined in tap-win32/SOURCES])
+-AC_SUBST(TAP_ID)
+-AC_SUBST(TAP_WIN32_MIN_MAJOR)
+-AC_SUBST(TAP_WIN32_MIN_MINOR)
++AC_DEFINE_UNQUOTED([TAP_ID], ["${TAP_ID}"], [The TAP-Win32 id])
++AC_DEFINE_UNQUOTED([TAP_WIN32_MIN_MAJOR], [${TAP_WIN32_MIN_MAJOR}], [The TAP-Win32 version number is defined in tap-win32/SOURCES])
++AC_DEFINE_UNQUOTED([TAP_WIN32_MIN_MINOR], [${TAP_WIN32_MIN_MINOR}], [The TAP-Win32 version number is defined in tap-win32/SOURCES])
++AC_SUBST([TAP_COMPONENT_ID])
++AC_SUBST([TAP_WIN32_MIN_MAJOR])
++AC_SUBST([TAP_WIN32_MIN_MINOR])
  
- dist_noinst_SCRIPTS = \
- 	$(TESTS) \
--	doclean \
--	domake-win \
- 	t_cltsrv-down.sh \
- 	configure_h.awk configure_log.awk
- 
-@@ -68,8 +65,7 @@ dist_noinst_DATA = \
- 	openvpn.spec \
- 	COPYRIGHT.GPL \
- 	PORTS \
--	INSTALL-win32.txt \
--	service-win32/msvc.mak
-+	INSTALL-win32.txt
- 
- openvpn_SOURCES = \
-         base64.c base64.h \
-diff --git a/doclean b/doclean
+ win32datadir="\${datadir}/${PACKAGE}-win32"
+ AC_SUBST(win32datadir)
+diff --git a/tap-win32/MAKEFILE b/tap-win32/MAKEFILE
 deleted file mode 100755
-index 8b35dd6..0000000
---- a/doclean
+index 6ee4f43..0000000
+--- a/tap-win32/MAKEFILE
 +++ /dev/null
-@@ -1,73 +0,0 @@
--#!/bin/sh
--
--# Let's have a fresh start.  Remove all
--# generated files.
+@@ -1,6 +0,0 @@
 -#
--# Run this script, then:
--#        autoreconf -i -v
--#        ./configure
--#        make
--#        make install
--
--if ! [ "$KEEPAUTODEFS" = "yes" ]; then
--    rm -rf autodefs
--fi
--
--rm -f \
--    *.o \
--    service-win32/*.o \
--    service-win32/*.exe \
--    *.exe \
--    openvpn \
--    config.cache \
--    configure \
--    Makefile \
--    Makefile.in \
--    stamp-h* \
--    config.guess \
--    config.sub \
--    depcomp \
--    missing \
--    mkinstalldirs \
--    config.log \
--    config.status \
--    config.h \
--    config.h.in \
--    aclocal.m4 \
--    openvpn.spec \
--    install-sh \
--    openvpn.8.html \
--    install-win32/*.exe \
--    install-win32/makensis.log \
--    install-win32/settings \
--    install-win32/Makefile \
--    install-win32/Makefile.in \
--    images/Makefile \
--    images/Makefile.in \
--    service-win32/Makefile \
--    service-win32/Makefile.in
--
--rm -rf \
--    autom4te*.cache \
--    .deps \
--    */.deps \
--    windest \
--    gen \
--    tapinstall \
--    install-win32/tmp
--
--rm -rf \
--    tap-win32/objfre_w2k_x86 \
--    tap-win32/dist \
--    tap-win32/SOURCES \
--    tap-win32/tapdrvr.cod \
--    tap-win32/buildfre_wnet_amd64.wrn \
--    tap-win32/buildfre_w2k_x86.wrn \
--    tap-win32/objfre_wnet_amd64 \
--    tap-win32/buildfre_wnet_amd64.log \
--    tap-win32/buildfre_w2k_x86.log \
--    tap-win32/amd64 \
--    tap-win32/i386/tap0901.pdb \
--    tap-win32/i386/OemWin2k.inf \
--    tap-win32/i386/tap0901.map \
--    tap-win32/i386/tap0901.sys
-diff --git a/domake-win b/domake-win
-deleted file mode 100644
-index bd730e0..0000000
---- a/domake-win
+-# DO NOT EDIT THIS FILE!!!  Edit .\sources. if you want to add a new source
+-# file to this component.  This file merely indirects to the real make file
+-# that is shared by all the components of NT OS/2
+-#
+-!INCLUDE $(NTMAKEENV)\makefile.def
+diff --git a/tap-win32/SOURCES.in b/tap-win32/SOURCES.in
+deleted file mode 100755
+index cf030f4..0000000
+--- a/tap-win32/SOURCES.in
 +++ /dev/null
-@@ -1,138 +0,0 @@
--#!/bin/sh
+@@ -1,64 +0,0 @@
+-# Build TAP-Win32 driver.
+-# Build Command: build -cef
 -
--# This is the master OpenVPN build script for Windows.
--# This script will build OpenVPN, the TAP driver, and
--# the installer from source, targeting x86 on Windows
--# 2000 and higher, and x64 on Windows 2003 and higher.
--# For quick start options, see pre-built notes below.
--#
--# Note that if you are only looking to build the
--# openvpn user-space binaries (openvpn.exe
--# and openvpnserv.exe) you can use the
--# provided autoconf/automake build environment.
--#
--# If you are building from an expanded .tar.gz file,
--# make sure to run "./doclean" before "./domake-win".
--#
--# See top-level build configuration and settings in:
--#
--#   version.m4
--#   install-win32/settings.in
--#
--# Mandatory prerequisites:
--#
--# MinGW     -- for GNU C compiler
--# MSYS      -- for bash
--# msysDTK   -- for perl
--# NSIS      -- for building installer
--#
--# The following additional prerequisites may be omitted
--# when building in pre-built mode (see note below). 
--#
--# svn       -- for checking out source code (or TortoiseSVN)
--# Windows Driver Kit (6001_17121_HyperV_WDK.iso) -- for building
--#    TAP driver + tapinstall
--#
--# Required libraries (must be prebuilt)
--#
--# OpenSSL       -- define OPENSSL_DIR in settings.in
--# LZO           -- define LZO_DIR in settings.in
--# PKCS11-HELPER -- define PKCS11_HELPER_DIR
--#
--# Optional OpenVPN GUI binary (prebuilt)
--#           -- define OPENVPN_GUI_DIR and OPENVPN_GUI in settings.in
--#
--# Required source code not included in OpenVPN SVN repository
--# because of MS licensing restrictions:
--#
--# ../tapinstall -- This is based on 'devcon' which is found in the
--#                  Windows Driver Kit (formerly known as DDK).
--#                  Copy the 'devcon' source tree to ../tapinstall
--#                  Edit 'sources' and modify TARGETNAME=tapinstall
+-MAJORCOMP=ntos
+-MINORCOMP=ndis
 -
--# Note that all variables referenced here such as GENOUT,
--# GENOUT_PREBUILT, and CLEAN are defined in install-win32/settings.in
+-TARGETNAME=@@PRODUCT_TAP_ID@@
+-TARGETTYPE=DRIVER
+-TARGETPATH=.
+-TARGETLIBS=$(DDK_LIB_PATH)\ndis.lib $(DDK_LIB_PATH)\ntstrsafe.lib
+-INCLUDES=$(DDK_INCLUDE_PATH) ..
 -
--# SPECIAL NOTES ON PRE-BUILT MODE
--#   Setting up a complete tool chain to build OpenVPN and all
--#   dependencies on Windows can be an onerous task, so the capability
--#   is provided to reference a directory of pre-built components during
--#   the build process.  When dependencies are missing to build a given
--#   component (such as the TAP driver), the build script will auto-detect
--#   this and use the pre-built version instead.  This would allow you, for
--#   example, to build an OpenVPN installer with custom edits to
--#   install-win32/settings.in, but then avoid needing to build all other
--#   components (such as OpenSSL, LZO, Pkcs11-helper, TAP driver, Windows
--#   service, etc.).  The procedure is as follows. First Download and expand
--#   the pre-built binaries from:
+-# The TAP version numbers here must be >=
+-# PRODUCT_TAP_WIN32_MIN_x values defined in version.m4
+-C_DEFINES=
+-C_DEFINES=$(C_DEFINES) -DTAP_DRIVER_MAJOR_VERSION=@@PRODUCT_TAP_MAJOR_VER@@
+-C_DEFINES=$(C_DEFINES) -DTAP_DRIVER_MINOR_VERSION=@@PRODUCT_TAP_MINOR_VER@@
+-
+-# Produce the same symbolic information for both free & checked builds.
+-# This will allow us to perform full source-level debugging on both
+-# builds without affecting the free build's performance.
+-!IF "$(DDKBUILDENV)" != "chk"
+-NTDEBUGTYPE=both
+-USE_PDB=1
+-!ELSE
+-NTDEBUGTYPE=both
+-USE_PDB=1
+-!ENDIF
+-
+-# Set compiler optimizations:
+-# /Ox - Full optimization enabled
+-# /Os - favor speed over size when optimizing
+-# /Od - Disable all optimizations
+-# /Oi - Enable optimization for intrinsic functions
+-# /Fc - Generate mixed assembler/source code files
 -#
--#     http://openvpn.net/prebuilt/ (choose the most recent -prebuilt .tbz file)
--#
--#   After expanding the .tbz file, cd to the top level directory and
--#   expand an OpenVPN source distribution taken from either the subversion
--#   repository or a source .tar.gz file.  It's best to use an OpenVPN source
--#   version that is the same or slightly later than the pre-built binaries
--#   file.  So now you have a directory containing something that looks like
--#   this:
--#
--#   gen-prebuilt     -> from prebuilt .tbz file
--#   lzo-2.02         -> from prebuilt .tbz file
--#   openssl-0.9.8i   -> from prebuilt .tbz file
--#   pkcs11-helper    -> from prebuilt .tbz file
--#   openvpn-2.1_rc13.tar.gz  -> downloaded from openvpn.net
--#   openvpn-2.1_rc13 -> directory expanded from above file
--#
--#   Now cd to your expanded source tree (openvpn-2.1_rc13 in the
--#   example above), make edits to install-win32/settings.in (or even
--#   patch the OpenVPN source code directly), and run this script:
--#
--#       ./domake-win
--#
--#   If everything runs correctly, you should have a custom installer
--#   written to ./gen/install
+-# For both checked and free builds, make sure that any intrinsic
+-# functions are compiled correctly. To do this, ensure that /Oi
+-# is selected for both free and checked builds. There is a bug in
+-# VC++ 6.0 (at least through SP4) where, if you specify any
+-# intrinsic functions in your code with "#pragma intrinsic" but
+-# you don't have the /Oi optimization enabled, neither a call
+-# to the function, nor the intrinsic inline version of the function
+-# will end up in your object code. This bug only applies to free
+-# builds, but just to be safe we'll make sure that the flag is
+-# enabled for all builds.
 -
--# First build the autodefs directory, containing C, sh, and NSIS versions
--# of global settings, using install-win32/settings.in as source.
--# These settings will then drive the rest of the build process. 
--install-win32/winconfig
+-!IF "$(DDKBUILDENV)" != "chk"
+-MSC_OPTIMIZATION=/Ox /Oi /Fc
+-!ELSE
+-MSC_OPTIMIZATION=/Od /Oi /Fc
+-!ENDIF
 -
--# clean all generated files
--install-win32/doclean
+-# Generate a linker map file just in case we need one for debugging
+-LINKER_FLAGS=$(LINKER_FLAGS) /INCREMENTAL:NO /MAP /MAPINFO:EXPORTS
 -
--# Load a pre-built GENOUT directory if GENOUT_PREBUILT is defined
--# and the GENOUT directory is non-existing
--install-win32/getprebuilt
+-# Generate a browser information file for use in IDE development
+-#BROWSER_INFO=1
+-#BROWSERFILE=$(TARGETNAME).BSC -n
 -
--# Each of the scripts below build, get, and/or possibly sign a different
--# OpenVPN component, placing the generated files in GENOUT.  Each of these
--# steps is fully indepedent, and can be executed in any order or omitted.
--# The exception is the last script which gathers together all files from
--# GENOUT and builds the installer.
+-# Abort compilation on warnings by adding /WX
+-MSC_WARNING_LEVEL=/W3
 -
--# Make the OpenVPN user-space components (OpenVPN and service)
--install-win32/makeopenvpn
--
--# Make the OpenVPN TAP driver
--install-win32/maketap
--
--# Make the tapinstall utility, used to install the TAP driver
--install-win32/maketapinstall
--
--# Get the OpenSSL libraries from a pre-build OpenSSL tree
--install-win32/getopenssl
--
--# Get the PKCS-11 helper library from a pre-built OpenSSL tree
--install-win32/getpkcs11helper
--
--# Get the OpenVPN GUI (must be prebuilt)
--install-win32/getgui
--
--# Get the OpenVPN XML-based GUI (must be prebuilt)
--install-win32/getxgui
--
--# Produce the license text, install README, and sample config files
--install-win32/maketext
--
--# This final step builds the OpenVPN installer using generated
--# files from GENOUT
--install-win32/buildinstaller
-diff --git a/msvc/autodefs.h.in b/msvc/autodefs.h.in
-deleted file mode 100644
-index b0fa7f5..0000000
---- a/msvc/autodefs.h.in
+-SOURCES=tapdrvr.c resource.rc
+diff --git a/tap-win32/common.h b/tap-win32/common.h
+deleted file mode 100755
+index bb8ab90..0000000
+--- a/tap-win32/common.h
 +++ /dev/null
-@@ -1,20 +0,0 @@
+@@ -1,82 +0,0 @@
 -/*
-- * Minimum TAP-Win32 version number expected by userspace
+- *  TAP-Win32/TAP-Win64 -- A kernel driver to provide virtual tap
+- *                         device functionality on Windows.
 - *
-- * The TAP-Win32 version number is defined in tap-win32/SOURCES
-- */
--#define TAP_ID "@PRODUCT_TAP_ID@"
--#define TAP_WIN32_MIN_MAJOR @PRODUCT_TAP_WIN32_MIN_MAJOR@
--#define TAP_WIN32_MIN_MINOR @PRODUCT_TAP_WIN32_MIN_MINOR@
--
--/* Name of package */
--#define PACKAGE "@PRODUCT_UNIX_NAME@"
--
--/* Define to the full name of this package. */
--#define PACKAGE_NAME "@PRODUCT_NAME@"
--
--/* Define to the one symbol short name of this package. */
--#define PACKAGE_TARNAME "@PRODUCT_UNIX_NAME@"
--
--/* Define to the version of this package. */
--#define PACKAGE_VERSION "@PRODUCT_VERSION@"
-diff --git a/msvc/config.py b/msvc/config.py
-deleted file mode 100644
-index 9915cd0..0000000
---- a/msvc/config.py
-+++ /dev/null
-@@ -1,93 +0,0 @@
--# build autodefs.h and
--
--import re
--
--autogen = "Automatically generated by config.py"
--
--def parse_version_m4(kv, version_m4):
--    r = re.compile(r'^define\((\w+),\[(.*)\]\)$')
--    f = open(version_m4)
--    for line in f:
--        line = line.rstrip()
--        m = re.match(r, line)
--        if m:
--            g = m.groups()
--            kv[g[0]] = g[1]
--    f.close()
--
--def parse_settings_in(kv, settings_in):
--    r = re.compile(r'^!define\s+(\w+)(?:\s+"?(.*?)"?)$')
--    f = open(settings_in)
--    for line in f:
--        line = line.rstrip()
--        m = re.match(r, line)
--        if m:
--            g = m.groups()
--            kv[g[0]] = g[1] or ''
--    f.close()
--
--def build_autodefs(kv, autodefs_in, autodefs_out):
--    def repfn(m):
--        var, = m.groups()
--        return kv.get(var, '')
--
--    r = re.compile(r'@(\w+)@')
--    fin = open(autodefs_in)
--    fout = open(autodefs_out, 'w')
--    fout.write("/* %s */\n\n" % autogen)
--    for line in fin:
--        newline = re.sub(r, repfn, line)
--        fout.write(newline)
--    fin.close()
--    fout.close()
--
--def print_key_values(kv):
--    for k, v in sorted(kv.items()):
--        print "%s%s%s" % (k, ' '*(32-len(k)), repr(v))
--
--def get_sources(makefile_am):
--    c = set()
--    h = set()
--    f = open(makefile_am)
--    state = False
--    for line in f:
--        line = line.rstrip()
--        if line == 'openvpn_SOURCES = \\':
--            state = True
--        elif not line:
--            state = False
--        elif state:
--            for sf in line.split():
--                if sf.endswith('.c'):
--                    c.add(sf[:-2])
--                elif sf.endswith('.h'):
--                    h.add(sf[:-2])
--                elif sf == '\\':
--                    pass
--                else:
--                    print >>sys.stderr, "Unrecognized filename:", sf
--    f.close()
--    return [ sorted(list(s)) for s in (c, h) ]
--
--def output_mak_list(out, title, srclist, ext):
--    out.write("%s =" % (title,))
--    for x in srclist:
--        out.write(" \\\n\t%s.%s" % (x, ext))
--    out.write('\n\n')
--
--def output_mak(makefile_am, outfile):
--    c, h = get_sources(makefile_am)
--    out = open(outfile, 'w')
--    out.write("# %s\n\n" % autogen)
--    output_mak_list(out, 'HEADERS', h, 'h')
--    output_mak_list(out, 'OBJS', c, 'obj')
--    out.close()
--
--def main():
--    kv = {}
--    parse_version_m4(kv, 'version.m4')
--    parse_settings_in(kv, 'install-win32/settings.in')
--    build_autodefs(kv, 'msvc/autodefs.h.in', 'autodefs.h')
--    output_mak('Makefile.am', 'head_obj.mak')
--
--main()
-diff --git a/msvc/msvc.mak b/msvc/msvc.mak
-deleted file mode 100644
-index 2d99de7..0000000
---- a/msvc/msvc.mak
-+++ /dev/null
-@@ -1,52 +0,0 @@
--# This makefile builds the user-mode component
--# of OpenVPN for Windows in the Visual Studio 2008 environment.
--
--# To build:
--#    python msvc\config.py
--#    nmake /f msvc\msvc.mak
--
--# Each of the OPENSSL and LZO dirs should have 'lib' and 'include'
--# directories under them.
--
--OPENSSL = \src\openssl
--OPENSSL_DYNAMIC = libeay32.lib ssleay32.lib
--
--LZO = \src\lzo
--LZO_DYNAMIC = lzo2.lib
--
--INCLUDE_DIRS = -I$(OPENSSL)/include -I$(LZO)/include
--
--LIBS = $(OPENSSL_DYNAMIC) $(LZO_DYNAMIC) ws2_32.lib crypt32.lib iphlpapi.lib winmm.lib user32.lib gdi32.lib advapi32.lib wininet.lib
--
--LIB_DIRS = -LIBPATH:$(OPENSSL)\lib -LIBPATH:$(LZO)\lib
--
--EXE = openvpn.exe
--
--CPP=cl.exe
--CPP_ARG_COMMON=/nologo /W3 /O2 -DWIN32 -DWIN32_LEAN_AND_MEAN -D_CONSOLE -D_MBCS -D_CRT_SECURE_NO_DEPRECATE $(INCLUDE_DIRS) /FD /c
--# release:
--CPP_PROJ=$(CPP_ARG_COMMON) /MD -DNDEBUG
--# debug:
--#CPP_PROJ=$(CPP_ARG_COMMON) /MDd /Zi /Od -D_DEBUG
--
--LINK32=link.exe
--# release:
--LINK32_FLAGS=/nologo /subsystem:console /incremental:no /out:"$(EXE)"
--# debug:
--#LINK32_FLAGS=/nologo /subsystem:console /incremental:no /debug /out:"$(EXE)"
--
--# HEADERS and OBJS definitions, automatically generated
--!INCLUDE head_obj.mak
--
--openvpn : $(OBJS)
--	$(LINK32) @<<
--	$(LINK32_FLAGS) $(LIB_DIRS) $(LIBS) $(OBJS)
--<<
--
--clean :
--	del /Q $(OBJS) $(EXE) *.idb *.pdb
--
--.c.obj::
--   $(CPP) @<<
--   $(CPP_PROJ) $<
--<<
-diff --git a/service-win32/msvc.mak b/service-win32/msvc.mak
-deleted file mode 100644
-index ba4bab7..0000000
---- a/service-win32/msvc.mak
-+++ /dev/null
-@@ -1,30 +0,0 @@
--# This makefile builds the OpenVPN service wrapper for Windows in the 
--# Visual Studio 2008 environment.
--
--# Some of these libs may not be needed
--LIBS = ws2_32.lib crypt32.lib iphlpapi.lib winmm.lib user32.lib gdi32.lib advapi32.lib wininet.lib
--EXE = openvpnserv.exe
--
--CPP=cl.exe
--CPP_ARG_COMMON=/nologo /W3 -DWIN32 -DWIN32_LEAN_AND_MEAN -D_CONSOLE -D_MBCS -D_CRT_SECURE_NO_DEPRECATE /FD /c -I".."
--CPP_PROJ=$(CPP_ARG_COMMON) /O2 /MD -DNDEBUG
--
--LINK32=link.exe
--LINK32_FLAGS=/nologo /subsystem:console /incremental:no
--
--OBJS = \
--	openvpnserv.obj \
--	service.obj
--
--openvpnserv : $(OBJS)
--	$(LINK32) @<<
--	$(LINK32_FLAGS) "/out:$(EXE)" $(LIBS) $(OBJS)
--<<
--
--clean :
--	del /Q $(OBJS) $(EXE) *.idb *.pdb
--
--.c.obj::
--   $(CPP) @<<
--   $(CPP_PROJ) $<
--<<
-diff --git a/win/__init__.py b/win/__init__.py
-deleted file mode 100644
-index e69de29..0000000
-diff --git a/win/autodefs.h.in b/win/autodefs.h.in
-deleted file mode 100644
-index 760b0df..0000000
---- a/win/autodefs.h.in
-+++ /dev/null
-@@ -1,31 +0,0 @@
--#ifndef AUTODEFS_H
--#define AUTODEFS_H
--
--/*
-- * Minimum TAP-Win32 version number expected by userspace
+- *  This code was inspired by the CIPE-Win32 driver by Damion K. Wilson.
 - *
-- * The TAP-Win32 version number is defined in tap-win32/SOURCES
-- */
--#define TAP_WIN_COMPONENT_ID "@PRODUCT_TAP_WIN_COMPONENT_ID@"
--#define TAP_WIN_MIN_MAJOR @PRODUCT_TAP_WIN_MIN_MAJOR@
--#define TAP_WIN_MIN_MINOR @PRODUCT_TAP_WIN_MIN_MINOR@
--
--/* Friendly name for TAP driver */
--#define PRODUCT_TAP_DEVICE_DESCRIPTION "@PRODUCT_TAP_DEVICE_DESCRIPTION@"
--
--/* Version number of DDK/WDK used to build TAP driver */
--#define DDKVER_MAJOR @DDKVER_MAJOR@
--
--/* Name of package */
--#define PACKAGE "@PRODUCT_UNIX_NAME@"
--
--/* Define to the full name of this package. */
--#define PACKAGE_NAME "@PRODUCT_NAME@"
--
--/* Define to the one symbol short name of this package. */
--#define PACKAGE_TARNAME "@PRODUCT_UNIX_NAME@"
--
--/* Define to the version of this package. */
--#define PACKAGE_VERSION "@PRODUCT_VERSION@"
--
--#endif
-diff --git a/win/build.py b/win/build.py
-deleted file mode 100644
-index 69137f2..0000000
---- a/win/build.py
-+++ /dev/null
-@@ -1,23 +0,0 @@
--import os, sys
--from wb import system, config, home_fn, cd_home, cd_service_win32, run_in_vs_shell
--
--def main():
--    """Build openvpn.exe and openvpnserv.exe"""
--    cd_home()
--    run_in_vs_shell("nmake /f %s" % (home_fn('msvc.mak'),))
--    cd_service_win32()
--    run_in_vs_shell("nmake /f %s" % ('msvc.mak'))
--
--def clean():
--    """Clean up after openvpn.exe and openvpnserv.exe build"""
--    cd_home()
--    run_in_vs_shell("nmake /f %s clean" % (home_fn('msvc.mak'),))
--    os.chdir("service-win32")
--    run_in_vs_shell("nmake /f %s clean" % ('msvc.mak'))
--
--# if we are run directly, and not loaded as a module
--if __name__ == "__main__":
--    if len(sys.argv) == 2 and sys.argv[1] == 'clean':
--        clean()
--    else:
--        main()
-diff --git a/win/build_all.py b/win/build_all.py
-deleted file mode 100644
-index 47716a1..0000000
---- a/win/build_all.py
-+++ /dev/null
-@@ -1,69 +0,0 @@
--import getopt, sys
--from config_all import main as config_all
--from build import main as build_openvpn
--from build_ddk import main as build_ddk
--from make_dist import main as make_dist
--
--def Usage():
--    '''Show usage information'''
--    print "Usage: build_all.py [OPTIONS]..."
--    print "Build OpenVPN using Visual Studio tools"
--    print
--    print " -h, --help		Show this help"
--    print " -u, --unsigned	Do not sign the TAP drivers"
--    print " -n, --notap		Don't build the TAP driver"
--    sys.exit(1)
--
--def main(config):
--
--    # Do a signed build by default
--    signedBuild=True
--
--    # Build the TAP driver by default
--    tap=True
--
--    # Parse the command line argument(s)
--    try:
--       opts, args = getopt.getopt(sys.argv[1:], "hun", ["help", "unsigned", "notap"])
--    except getopt.GetoptError:
--       Usage()
--
--    for o, a in opts:
--       if o in ("-h","--help"):
--          Usage()
--       if o in ("-u", "--unsigned"):
--          signedBuild=False
--       if o in ("-n", "--notap"):
--          tap=False
--
--    # Check if the SignTool module is present. This avoids ImportErrors popping
--    # up annoyingly _after_ the build.
--    if signedBuild:
--       try:
--          from signtool import SignTool
--       except (ImportError):
--          print "ERROR: SignTool python module not found! Can't do a signed build."
--          sys.exit(1)
--    else:
--       print "Doing an unsigned build as requested"
--
--    # Start the build
--    config_all(config)
--    build_openvpn()
--
--    if tap:
--       build_ddk(config, 'tap', 'all')
--       build_ddk(config, 'tapinstall', 'all')
--       if signedBuild:
--          sign(config, 'all')
--       make_dist(config,tap=True)
--
--    else:
--       if 'TAP_PREBUILT' in config:
--          print "Using prebuilt TAP driver"
--          make_dist(config,tap=False)
--
--# if we are run directly, and not loaded as a module
--if __name__ == "__main__":
--    from wb import config
--    main(config)
-diff --git a/win/build_ddk.py b/win/build_ddk.py
-deleted file mode 100644
-index a197bf5..0000000
---- a/win/build_ddk.py
-+++ /dev/null
-@@ -1,55 +0,0 @@
--import os
--from wb import system, home_fn, choose_arch
--
--def build_ddk(config, dir, x64):
--    ddk_path = config['DDK_PATH']
--    ddk_major = int(config['DDKVER_MAJOR'])
--    debug = 'PRODUCT_TAP_DEBUG' in config
--    return build_tap(ddk_path, ddk_major, debug, dir, x64)
--
--def build_tap(ddk_path, ddk_major, debug, dir, x64):
--    """Build drivers using WinDDK tools"""
--    setenv_bat = os.path.realpath(os.path.join(ddk_path, 'bin/setenv.bat'))
--    target = 'chk' if debug else 'fre'
--    if x64:
--        target += ' x64'
--    else:
--        target += ' x86'
--    if ddk_major >= 7600:
--        if x64:
--            target += ' wlh'  # vista
--        else:
--            target += ' wnet' # server 2003
--    else:
--        if x64:
--            target += ' wnet' # server 2003
--        else:
--            target += ' w2k'  # 2000
--
--    system('cmd /c "%s %s %s && cd %s && build -cef"' % (
--           setenv_bat,
--           os.path.realpath(ddk_path),
--           target,
--           dir
--           ))
--
--def main(config, proj, arch):
--    if proj == 'tap':
--        dir = home_fn('tap-win32')
--    elif proj == 'tapinstall':
--        dir = home_fn('tapinstall')
--    else:
--        raise ValueError("unknown project: %s" % (proj,))
--
--    for x64 in choose_arch(arch):
--        build_ddk(config, dir, x64)
--
--# if we are run directly, and not loaded as a module
--if __name__ == "__main__":
--    import sys
--    from wb import config
--    if len(sys.argv) >= 3:
--        main(config, sys.argv[1], sys.argv[2])
--    else:
--        print "usage: build <tap|tapinstall> <x64|x86|all>"
--        sys.exit(2)
-diff --git a/win/build_exe.py b/win/build_exe.py
-deleted file mode 100644
-index dae4825..0000000
---- a/win/build_exe.py
-+++ /dev/null
-@@ -1,15 +0,0 @@
--from config import main as config_main
--from build import main as build_openvpn
--from build_ddk import main as build_ddk
--from sign import main as sign
--from make_dist import main as make_dist
--
--def main(config):
--    config_main(config)
--    build_openvpn()
--    make_dist(config, tap=False)
--
--# if we are run directly, and not loaded as a module
--if __name__ == "__main__":
--    from wb import config
--    main(config)
-diff --git a/win/config.h.in b/win/config.h.in
-deleted file mode 100644
-index fcb8d6c..0000000
---- a/win/config.h.in
-+++ /dev/null
-@@ -1,363 +0,0 @@
--/*
-- *  OpenVPN -- An application to securely tunnel IP networks
-- *             over a single UDP port, with support for SSL/TLS-based
-- *             session authentication and key exchange,
-- *             packet encryption, packet authentication, and
-- *             packet compression.
-- *
-- *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
+- *  This source code is Copyright (C) 2002-2010 OpenVPN Technologies, Inc.,
+- *  and is released under the GPL version 2 (see below).
 - *
 - *  This program is free software; you can redistribute it and/or modify
 - *  it under the terms of the GNU General Public License version 2
@@ -809,2338 +236,6481 @@ index fcb8d6c..0000000
 - *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 - */
 -
+-//===============================================
+-// This file is included both by OpenVPN and
+-// the TAP-Win32 driver and contains definitions
+-// common to both.
+-//===============================================
+-
+-#ifndef HAVE_CONFIG_H
+-#include "autodefs.h"
+-#endif
+-
+-//=============
+-// TAP IOCTLs
+-//=============
+-
+-#define TAP_CONTROL_CODE(request,method) \
+-  CTL_CODE (FILE_DEVICE_UNKNOWN, request, method, FILE_ANY_ACCESS)
+-
+-// Present in 8.1
+-
+-#define TAP_IOCTL_GET_MAC               TAP_CONTROL_CODE (1, METHOD_BUFFERED)
+-#define TAP_IOCTL_GET_VERSION           TAP_CONTROL_CODE (2, METHOD_BUFFERED)
+-#define TAP_IOCTL_GET_MTU               TAP_CONTROL_CODE (3, METHOD_BUFFERED)
+-#define TAP_IOCTL_GET_INFO              TAP_CONTROL_CODE (4, METHOD_BUFFERED)
+-#define TAP_IOCTL_CONFIG_POINT_TO_POINT TAP_CONTROL_CODE (5, METHOD_BUFFERED)
+-#define TAP_IOCTL_SET_MEDIA_STATUS      TAP_CONTROL_CODE (6, METHOD_BUFFERED)
+-#define TAP_IOCTL_CONFIG_DHCP_MASQ      TAP_CONTROL_CODE (7, METHOD_BUFFERED)
+-#define TAP_IOCTL_GET_LOG_LINE          TAP_CONTROL_CODE (8, METHOD_BUFFERED)
+-#define TAP_IOCTL_CONFIG_DHCP_SET_OPT   TAP_CONTROL_CODE (9, METHOD_BUFFERED)
+-
+-// Added in 8.2
+-
+-/* obsoletes TAP_IOCTL_CONFIG_POINT_TO_POINT */
+-#define TAP_IOCTL_CONFIG_TUN            TAP_CONTROL_CODE (10, METHOD_BUFFERED)
+-
+-//=================
+-// Registry keys
+-//=================
+-
+-#define ADAPTER_KEY "SYSTEM\\CurrentControlSet\\Control\\Class\\{4D36E972-E325-11CE-BFC1-08002BE10318}"
+-
+-#define NETWORK_CONNECTIONS_KEY "SYSTEM\\CurrentControlSet\\Control\\Network\\{4D36E972-E325-11CE-BFC1-08002BE10318}"
+-
+-//======================
+-// Filesystem prefixes
+-//======================
+-
+-#define USERMODEDEVICEDIR "\\\\.\\Global\\"
+-#define SYSDEVICEDIR      "\\Device\\"
+-#define USERDEVICEDIR     "\\DosDevices\\Global\\"
+-#define TAPSUFFIX         ".tap"
+-
+-//=========================================================
+-// TAP_COMPONENT_ID -- This string defines the TAP driver
+-// type -- different component IDs can reside in the system
+-// simultaneously.
+-//=========================================================
+-
+-#define TAP_COMPONENT_ID TAP_ID
+diff --git a/tap-win32/constants.h b/tap-win32/constants.h
+deleted file mode 100755
+index 9bbd7ee..0000000
+--- a/tap-win32/constants.h
++++ /dev/null
+@@ -1,52 +0,0 @@
 -/*
-- * Configuration header for Win32 using the MSVC environment.
+- *  TAP-Win32/TAP-Win64 -- A kernel driver to provide virtual tap
+- *                         device functionality on Windows.
+- *
+- *  This code was inspired by the CIPE-Win32 driver by Damion K. Wilson.
+- *
+- *  This source code is Copyright (C) 2002-2010 OpenVPN Technologies, Inc.,
+- *  and is released under the GPL version 2 (see below).
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program (see the file COPYING included with this
+- *  distribution); if not, write to the Free Software Foundation, Inc.,
+- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 - */
 -
--#ifndef OPENVPN_CONFIG_H
--#define OPENVPN_CONFIG_H
+-//====================================================================
+-//                        Product and Version public settings
+-//====================================================================
 -
--#include <windows.h>
--#include <winsock2.h>
--#include "autodefs.h" /* machine generated */
+-#define PRODUCT_STRING PRODUCT_TAP_DEVICE_DESCRIPTION
 -
--//#define sleep(x) Sleep((x)*1000)
+-#define TAP_NDIS_MAJOR_VERSION 5
+-#define TAP_NDIS_MINOR_VERSION 0
 -
--//#define random rand
--//#define srandom srand
+-//===========================================================
+-// Driver constants
+-//===========================================================
 -
--typedef unsigned long in_addr_t;
+-#define ETHERNET_HEADER_SIZE     (sizeof (ETH_HEADER))
+-#define ETHERNET_MTU             1500
+-#define ETHERNET_PACKET_SIZE     (ETHERNET_MTU + ETHERNET_HEADER_SIZE)
+-#define DEFAULT_PACKET_LOOKAHEAD (ETHERNET_PACKET_SIZE)
 -
--#ifndef _SSIZE_T_
--#define _SSIZE_T_
-- typedef unsigned int ssize_t;
--#endif
+-#define NIC_MAX_MCAST_LIST 32  // Max length of multicast address list
 -
--/* Append a label to program startup title */
--/*#define DEBUG_LABEL "DEBUG1"*/
+-#define MINIMUM_MTU 576        // USE TCP Minimum MTU
+-#define MAXIMUM_MTU 65536      // IP maximum MTU
 -
--/* Should we print debug info from driver? */
--#ifdef PRODUCT_TAP_DEBUG
--#define TAP_WIN32_DEBUG
--#endif
+-#define PACKET_QUEUE_SIZE   64 // tap -> userspace queue size
+-#define IRP_QUEUE_SIZE      16 // max number of simultaneous i/o operations from userspace
+-#define INJECT_QUEUE_SIZE   16 // DHCP/ARP -> tap injection queue
 -
--/* Enable reading credentials from a file */
--#if @ENABLE_PASSWORD_SAVE@ != 0
--#define ENABLE_PASSWORD_SAVE @ENABLE_PASSWORD_SAVE@
--#endif
--
--/* Enable client/server capability */
--#if @ENABLE_CLIENT_SERVER@ != 0
--#define ENABLE_CLIENT_SERVER @ENABLE_CLIENT_SERVER@
--#endif
--
--/* Enable client capability only */
--#if @ENABLE_CLIENT_ONLY@ != 0
--#define ENABLE_CLIENT_ONLY @ENABLE_CLIENT_ONLY@
--#endif
--
--/* Enable management server capability */
--#if @ENABLE_MANAGEMENT@ != 0
--#define ENABLE_MANAGEMENT @ENABLE_MANAGEMENT@
--#endif
--
--/* Enable PKCS#11 support */
--#if @USE_PKCS11@ != 0
--#define USE_PKCS11 1
--#endif
--
--/* Enable HTTP proxy support */
--#if @ENABLE_HTTP_PROXY@ != 0
--#define ENABLE_HTTP_PROXY @ENABLE_HTTP_PROXY@
--#endif
--
--/* Enable Socks proxy support */
--#if @ENABLE_SOCKS@ != 0
--#define ENABLE_SOCKS @ENABLE_SOCKS@
--#endif
--
--/* Enable internal fragmentation support */
--#if @ENABLE_FRAGMENT@ != 0
--#define ENABLE_FRAGMENT @ENABLE_FRAGMENT@
--#endif
--
--/* Enable smaller executable size */
--/* #undef ENABLE_SMALL */
--
--/* Enable debugging support */
--#if @ENABLE_DEBUG@ != 0
--#define ENABLE_DEBUG @ENABLE_DEBUG@
--#endif
--
--/* if defined, will allow usage of the --plugin directive */
--#define USE_LOAD_LIBRARY
--
--/* Dimension size to use for empty array declaration */
--#define EMPTY_ARRAY_SIZE 0
--
--/* Define to 1 if you have the `getsockname' function. */
--#define HAVE_GETSOCKNAME 1
--
--/* Define to 1 if you have the <openssl/engine.h> header file. */
--#define HAVE_OPENSSL_ENGINE_H 1
--
--/* Define to 1 if you have the `ENGINE_load_builtin_engines' function. */
--#define HAVE_ENGINE_LOAD_BUILTIN_ENGINES 1
--
--/* Define to 1 if you have the `ENGINE_register_all_complete' function. */
--#define HAVE_ENGINE_REGISTER_ALL_COMPLETE 1
--
--/* Define to 1 if you have the `ENGINE_cleanup' function. */
--#define HAVE_ENGINE_CLEANUP 1
--
--/* gettimeofday() is implemented in otime.c for Windows */
--#define HAVE_GETTIMEOFDAY 1
--
--/* Define to 1 if you have the 'chsize' function. */
--#define HAVE_CHSIZE 1
--
--/* Define to 1 if you have the `chdir' function. */
--#define HAVE_CHDIR 1
--
--/* Define to 1 if your compiler supports GNU GCC-style variadic macros */
--#ifndef _MSC_VER /* Defines MSFT compiler version. Defined as 1200 for MSVC++ 6.0. */
--#define HAVE_CPP_VARARG_MACRO_GCC 1
--#endif
--
--/* Define to 1 if you have the <ctype.h> header file. */
--#define HAVE_CTYPE_H 1
--
--/* Define to 1 if you have the <errno.h> header file. */
--#define HAVE_ERRNO_H 1
--
--/* Define to 1 if you have the `EVP_CIPHER_CTX_set_key_length' function. */
--#define HAVE_EVP_CIPHER_CTX_SET_KEY_LENGTH 1
--
--/* Define to 1 if you have the <fcntl.h> header file. */
--#define HAVE_FCNTL_H 1
--
--/* Define to 1 if you have the `getsockopt' function. */
--#define HAVE_GETSOCKOPT 1
--
--/* Define to 1 if you have the `inet_ntoa' function. */
--#define HAVE_INET_NTOA 1
--
--/* Define to 1 if your system has a GNU libc compatible `malloc' function, and
--   to 0 otherwise. */
--#define HAVE_MALLOC 1
--
--/* Define to 1 if you have the `memset' function. */
--#define HAVE_MEMSET 1
--
--/* Define to 1 if you have the `setsockopt' function. */
--#define HAVE_SETSOCKOPT 1
--
--/* Define to 1 if you have the `socket' function. */
--#define HAVE_SOCKET 1
--
--/* Define to 1 if you have the <stdarg.h> header file. */
--#define HAVE_STDARG_H 1
--
--/* Define to 1 if you have the <stdint.h> header file. */
--#ifndef _MSC_VER
--#define HAVE_STDINT_H 1
--#endif
--
--/* Define to 1 if you have the <stdio.h> header file. */
--#define HAVE_STDIO_H 1
--
--/* Define to 1 if you have the <stdlib.h> header file. */
--#define HAVE_STDLIB_H 1
--
--/* Define to 1 if you have the `strerror' function. */
--#define HAVE_STRERROR 1
--
--/* Define to 1 if you have the <strings.h> header file. */
--#define HAVE_STRINGS_H 1
--
--/* Define to 1 if you have the <string.h> header file. */
--#define HAVE_STRING_H 1
--
--/* Define to 1 if you have the `system' function. */
--#define HAVE_SYSTEM 1
--
--/* Define to 1 if you have the <sys/file.h> header file. */
--#ifndef _MSC_VER
--#define HAVE_SYS_FILE_H 1
--#endif
--
--/* Define to 1 if you have the <sys/stat.h> header file. */
--#define HAVE_SYS_STAT_H 1
--
--/* Define to 1 if you have the <sys/time.h> header file. */
--#ifndef _MSC_VER
--#define HAVE_SYS_TIME_H 1
--#endif
--
--/* Define to 1 if you have the <sys/types.h> header file. */
--#define HAVE_SYS_TYPES_H 1
--
--/* Define to 1 if you have the `time' function. */
--#define HAVE_TIME 1
--
--/* Define to 1 if you have the <unistd.h> header file. */
--#ifndef _MSC_VER
--#define HAVE_UNISTD_H 1
--#endif
--
--/* Define to 1 if you have the `vsnprintf' function. */
--#define HAVE_VSNPRINTF 1
--
--/* Special Windows version of getpass() defined in io.c */
--#define HAVE_GETPASS 1
--
--
--/* The POSIX access() function is available, but requires
-- * _CRT_NONSTDC_NO_WARNINGS and _CRT_SECURE_NO_WARNINGS
-- * to be defined
-- */
--#define HAVE_ACCESS 1
--
--/* Macros used by the POSIX access() function might not be available on Windows.
-- * Based on information found here:
-- * http://msdn.microsoft.com/en-us/library/1w06ktdy%28v=vs.80%29.aspx
-- */
--#ifndef R_OK
--#define R_OK 4
--#endif
--
--#ifndef W_OK
--#define W_OK 2
--#endif
--
--#ifndef X_OK
--#define X_OK 0
--#endif
--
--#ifndef F_OK
--#define F_OK 0
--#endif
--
--
--/* Define to the full name and version of this package. */
--#ifdef DEBUG_LABEL
--#define PACKAGE_STRING PACKAGE_NAME " " PACKAGE_VERSION " " DEBUG_LABEL
--#else
--#define PACKAGE_STRING PACKAGE_NAME " " PACKAGE_VERSION
--#endif
--
--/* Define as the return type of signal handlers (`int' or `void'). */
--#define RETSIGTYPE void
--
--/* The size of a `unsigned int', as computed by sizeof. */
--#define SIZEOF_UNSIGNED_INT 4
--
--/* The size of a `unsigned long', as computed by sizeof. */
--#define SIZEOF_UNSIGNED_LONG 4
--
--/* Define to 1 if you have the ANSI C header files. */
--#define STDC_HEADERS 1
--
--/* A string representing our target */
--#ifdef _MSC_VER
--#define TARGET_ALIAS "Win32-MSVC++"
--#else
--#define TARGET_ALIAS "Win32-MinGW"
--#endif
--
--/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
--#ifndef _MSC_VER
--#define TIME_WITH_SYS_TIME 1
--#endif
--
--/* Use the PolarSSL crypto library */
--#if @USE_POLARSSL@ != 0
--#define USE_POLARSSL 1
--#endif
--
--/* Use the OpenSSL crypto library */
--#if @USE_OPENSSL@ != 0
--#define USE_OPENSSL 1
--#endif
--
--/* Use the crypto library */
--#define USE_CRYPTO 1
--
--/* Use LZO compression library */
--#define USE_LZO 1
--
--/* LZO version number */
--#define LZO_VERSION_NUM "2"
--
--/* Use lzo/ directory prefix for LZO header files (for LZO 2.0) */
--#define LZO_HEADER_DIR 1
--
--/* Use the SSL library */
--#define USE_SSL 1
--
--/* Version number of package */
--#define VERSION PACKAGE_VERSION
--
--/* Define as `__inline' if that's what the C compiler calls it, or to nothing
--   if it is not supported. */
--#define inline __inline
--
--/* type to use in place of socklen_t if not defined */
--/*#define socklen_t unsigned int*/
--
--#ifndef __MINGW32__
--/* 32-bit unsigned type */
--#define uint32_t unsigned int
--
--/* 16-bit unsigned type */
--#define uint16_t unsigned short
--
--/* 8-bit unsigned type */
--#define uint8_t unsigned char
--#endif /* __MINGW32__ */
--
--/* Route command */
--#define ROUTE_PATH "route"
--
--#ifdef _MSC_VER
--/* MSVC++ hacks */
--#pragma warning(disable:4244) // conversion from 'foo' to 'bar', possible loss of data
--#pragma warning(disable:4018) // signed/unsigned mismatch
--#include <io.h>
--#include <direct.h>
--//#define vsnprintf _vsnprintf
--//#define vsnwprintf _vsnwprintf
--#define snwprintf _snwprintf
--#define write _write
--#define open _open
--#define read _read
--#define close _close
--#define lseek _lseek
--#define chdir _chdir
--#define strdup _strdup
--#define strcasecmp _stricmp
--#define chsize _chsize
--#define S_IRUSR 0
--#define S_IWUSR 0
--#define TV_SEC_CAST (long)
--#define TV_USEC_CAST (long)
--typedef int intptr_t;
--/* Visual Studio 2005 supports vararg macros */
--#if _MSC_VER >= 1400
--#define HAVE_CPP_VARARG_MACRO_ISO 1
--#endif
--#endif
--
--#endif /* OPENVPN_CONFIG_H */
-diff --git a/win/config.py b/win/config.py
-deleted file mode 100644
-index b820510..0000000
---- a/win/config.py
+-#define TAP_LITTLE_ENDIAN      // affects ntohs, htonl, etc. functions
+diff --git a/tap-win32/dhcp.c b/tap-win32/dhcp.c
+deleted file mode 100755
+index 3891d42..0000000
+--- a/tap-win32/dhcp.c
 +++ /dev/null
-@@ -1,21 +0,0 @@
--from wb import preprocess, autogen, mod_fn, home_fn, build_config_h, build_configure_h, build_version_m4_vars, build_autodefs, make_headers_objs, dict_def
+@@ -1,599 +0,0 @@
+-/*
+- *  TAP-Win32/TAP-Win64 -- A kernel driver to provide virtual tap
+- *                         device functionality on Windows.
+- *
+- *  This code was inspired by the CIPE-Win32 driver by Damion K. Wilson.
+- *
+- *  This source code is Copyright (C) 2002-2010 OpenVPN Technologies, Inc.,
+- *  and is released under the GPL version 2 (see below).
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program (see the file COPYING included with this
+- *  distribution); if not, write to the Free Software Foundation, Inc.,
+- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+- */
 -
--def main(config):
--    build_config_h(config)
--    build_configure_h(config, mod_fn(home_fn('configure.h')), head_comment='/* %s */\n\n' % autogen)
--    build_version_m4_vars(mod_fn(mod_fn('version_m4_vars.tmp')), head_comment='/* %s */\n\n' % autogen)
--    build_autodefs(config, mod_fn('autodefs.h.in'), home_fn('autodefs.h'))
--    ho = make_headers_objs(home_fn('Makefile.am'))
+-//=========================
+-// Code to set DHCP options
+-//=========================
 -
--    preprocess(dict_def(config, [('HEADERS_OBJS', ho)]),
--               in_fn=mod_fn('msvc.mak.in'),
--               out_fn=home_fn('msvc.mak'),
--               quote_begin='@',
--               quote_end='@',
--               if_prefix='!',
--               head_comment='# %s\n\n' % autogen)
+-VOID
+-SetDHCPOpt (DHCPMsg *m, void *data, unsigned int len)
+-{
+-  if (!m->overflow)
+-    {
+-      if (m->optlen + len <= DHCP_OPTIONS_BUFFER_SIZE)
+-	{
+-	  if (len)
+-	    {
+-	      NdisMoveMemory (m->msg.options + m->optlen, data, len);
+-	      m->optlen += len;
+-	    }
+-	}
+-      else
+-	{
+-	  m->overflow = TRUE;
+-	}
+-    }
+-}
 -
--# if we are run directly, and not loaded as a module
--if __name__ == "__main__":
--    from wb import config
--    main(config)
-diff --git a/win/config_all.py b/win/config_all.py
-deleted file mode 100644
-index ba6affe..0000000
---- a/win/config_all.py
+-VOID
+-SetDHCPOpt0 (DHCPMsg *msg, int type)
+-{
+-  DHCPOPT0 opt;
+-  opt.type = (UCHAR) type;
+-  SetDHCPOpt (msg, &opt, sizeof (opt));
+-}
+-
+-VOID
+-SetDHCPOpt8 (DHCPMsg *msg, int type, ULONG data)
+-{
+-  DHCPOPT8 opt;
+-  opt.type = (UCHAR) type;
+-  opt.len = sizeof (opt.data);
+-  opt.data = (UCHAR) data;
+-  SetDHCPOpt (msg, &opt, sizeof (opt));
+-}
+-
+-VOID
+-SetDHCPOpt32 (DHCPMsg *msg, int type, ULONG data)
+-{
+-  DHCPOPT32 opt;
+-  opt.type = (UCHAR) type;
+-  opt.len = sizeof (opt.data);
+-  opt.data = data;
+-  SetDHCPOpt (msg, &opt, sizeof (opt));
+-}
+-
+-//==============
+-// Checksum code
+-//==============
+-
+-USHORT
+-ip_checksum (const UCHAR *buf, const int len_ip_header)
+-{
+-  USHORT word16;
+-  ULONG sum = 0;
+-  int i;
+-    
+-  // make 16 bit words out of every two adjacent 8 bit words in the packet
+-  // and add them up
+-  for (i = 0; i < len_ip_header - 1; i += 2) {
+-    word16 = ((buf[i] << 8) & 0xFF00) + (buf[i+1] & 0xFF);
+-    sum += (ULONG) word16;
+-  }
+-
+-  // take only 16 bits out of the 32 bit sum and add up the carries
+-  while (sum >> 16)
+-    sum = (sum & 0xFFFF) + (sum >> 16);
+-
+-  // one's complement the result
+-  return ((USHORT) ~sum);
+-}
+-
+-USHORT
+-udp_checksum (const UCHAR *buf,
+-	      const int len_udp,
+-	      const UCHAR *src_addr,
+-	      const UCHAR *dest_addr)
+-{
+-  USHORT word16;
+-  ULONG sum = 0;
+-  int i;
+-	
+-  // make 16 bit words out of every two adjacent 8 bit words and 
+-  // calculate the sum of all 16 bit words
+-  for (i = 0; i < len_udp; i += 2){
+-    word16 = ((buf[i] << 8) & 0xFF00) + ((i + 1 < len_udp) ? (buf[i+1] & 0xFF) : 0);
+-    sum += word16;
+-  }
+-
+-  // add the UDP pseudo header which contains the IP source and destination addresses
+-  for (i = 0; i < 4; i += 2){
+-    word16 =((src_addr[i] << 8) & 0xFF00) + (src_addr[i+1] & 0xFF);
+-    sum += word16;
+-  }
+-  for (i = 0; i < 4; i += 2){
+-    word16 =((dest_addr[i] << 8) & 0xFF00) + (dest_addr[i+1] & 0xFF);
+-    sum += word16; 	
+-  }
+-
+-  // the protocol number and the length of the UDP packet
+-  sum += (USHORT) IPPROTO_UDP + (USHORT) len_udp;
+-
+-  // keep only the last 16 bits of the 32 bit calculated sum and add the carries
+-  while (sum >> 16)
+-    sum = (sum & 0xFFFF) + (sum >> 16);
+-		
+-  // Take the one's complement of sum
+-  return ((USHORT) ~sum);
+-}
+-
+-//================================
+-// Set IP and UDP packet checksums
+-//================================
+-
+-VOID
+-SetChecksumDHCPMsg (DHCPMsg *m)
+-{
+-  // Set IP checksum
+-  m->msg.pre.ip.check = htons (ip_checksum ((UCHAR *) &m->msg.pre.ip, sizeof (IPHDR)));
+-
+-  // Set UDP Checksum
+-  m->msg.pre.udp.check = htons (udp_checksum ((UCHAR *) &m->msg.pre.udp, 
+-					      sizeof (UDPHDR) + sizeof (DHCP) + m->optlen,
+-					      (UCHAR *)&m->msg.pre.ip.saddr,
+-					      (UCHAR *)&m->msg.pre.ip.daddr));
+-}
+-
+-//===================
+-// DHCP message tests
+-//===================
+-
+-int
+-GetDHCPMessageType (const DHCP *dhcp, const int optlen)
+-{
+-  const UCHAR *p = (UCHAR *) (dhcp + 1);
+-  int i;
+-
+-  for (i = 0; i < optlen; ++i)
+-    {
+-      const UCHAR type = p[i];
+-      const int room = optlen - i - 1;
+-      if (type == DHCP_END)           // didn't find what we were looking for
+-	return -1;
+-      else if (type == DHCP_PAD)      // no-operation
+-	;
+-      else if (type == DHCP_MSG_TYPE) // what we are looking for
+-	{
+-	  if (room >= 2)
+-	    {
+-	      if (p[i+1] == 1)        // message length should be 1
+-		return p[i+2];        // return message type
+-	    }
+-	  return -1;
+-	}
+-      else                            // some other message
+-	{
+-	  if (room >= 1)
+-	    {
+-	      const int len = p[i+1]; // get message length
+-	      i += (len + 1);         // advance to next message
+-	    }
+-	}
+-    }
+-  return -1;
+-}
+-
+-BOOLEAN
+-DHCPMessageOurs (const TapAdapterPointer p_Adapter,
+-		 const ETH_HEADER *eth,
+-		 const IPHDR *ip,
+-		 const UDPHDR *udp,
+-		 const DHCP *dhcp)
+-{
+-  // Must be UDPv4 protocol
+-  if (!(eth->proto == htons (ETH_P_IP) && ip->protocol == IPPROTO_UDP))
+-    return FALSE;
+-
+-  // Source MAC must be our adapter
+-  if (!MAC_EQUAL (eth->src, p_Adapter->m_MAC))
+-    return FALSE;
+-
+-  // Dest MAC must be either broadcast or our virtual DHCP server
+-  if (!(MAC_EQUAL (eth->dest, p_Adapter->m_MAC_Broadcast)
+-	|| MAC_EQUAL (eth->dest, p_Adapter->m_dhcp_server_mac)))
+-    return FALSE;
+-
+-  // Port numbers must be correct
+-  if (!(udp->dest == htons (BOOTPS_PORT)
+-	&& udp->source == htons (BOOTPC_PORT)))
+-    return FALSE;
+-
+-  // Hardware address must be MAC addr sized
+-  if (!(dhcp->hlen == sizeof (MACADDR)))
+-    return FALSE;
+-
+-  // Hardware address must match our adapter
+-  if (!MAC_EQUAL (eth->src, dhcp->chaddr))
+-    return FALSE;
+-
+-  return TRUE;
+-}
+-
+-
+-//=====================================================
+-// Build all of DHCP packet except for DHCP options.
+-// Assume that *p has been zeroed before we are called.
+-//=====================================================
+-
+-VOID
+-BuildDHCPPre (const TapAdapterPointer a,
+-	      DHCPPre *p,
+-	      const ETH_HEADER *eth,
+-	      const IPHDR *ip,
+-	      const UDPHDR *udp,
+-	      const DHCP *dhcp,
+-	      const int optlen,
+-	      const int type)
+-{
+-  // Should we broadcast or direct to a specific MAC / IP address?
+-  const BOOLEAN broadcast = (type == DHCPNAK
+-			     || MAC_EQUAL (eth->dest, a->m_MAC_Broadcast));
+-  // Build ethernet header
+-
+-  COPY_MAC (p->eth.src, a->m_dhcp_server_mac);
+-
+-  if (broadcast)
+-    COPY_MAC (p->eth.dest, a->m_MAC_Broadcast);
+-  else
+-    COPY_MAC (p->eth.dest, eth->src);
+-
+-  p->eth.proto = htons (ETH_P_IP);
+-
+-  // Build IP header
+-
+-  p->ip.version_len = (4 << 4) | (sizeof (IPHDR) >> 2);
+-  p->ip.tos = 0;
+-  p->ip.tot_len = htons (sizeof (IPHDR) + sizeof (UDPHDR) + sizeof (DHCP) + optlen);
+-  p->ip.id = 0;
+-  p->ip.frag_off = 0;
+-  p->ip.ttl = 16;
+-  p->ip.protocol = IPPROTO_UDP;
+-  p->ip.check = 0;
+-  p->ip.saddr = a->m_dhcp_server_ip;
+-
+-  if (broadcast)
+-    p->ip.daddr = ~0;
+-  else
+-    p->ip.daddr = a->m_dhcp_addr;
+-
+-  // Build UDP header
+-
+-  p->udp.source = htons (BOOTPS_PORT);
+-  p->udp.dest = htons (BOOTPC_PORT);
+-  p->udp.len = htons (sizeof (UDPHDR) + sizeof (DHCP) + optlen);
+-  p->udp.check = 0;
+-
+-  // Build DHCP response
+-
+-  p->dhcp.op = BOOTREPLY;
+-  p->dhcp.htype = 1;
+-  p->dhcp.hlen = sizeof (MACADDR);
+-  p->dhcp.hops = 0;
+-  p->dhcp.xid = dhcp->xid;
+-  p->dhcp.secs = 0;
+-  p->dhcp.flags = 0;
+-  p->dhcp.ciaddr = 0;
+-
+-  if (type == DHCPNAK)
+-    p->dhcp.yiaddr = 0;
+-  else
+-    p->dhcp.yiaddr = a->m_dhcp_addr;
+-
+-  p->dhcp.siaddr = a->m_dhcp_server_ip;
+-  p->dhcp.giaddr = 0;
+-  COPY_MAC (p->dhcp.chaddr, eth->src);
+-  p->dhcp.magic = htonl (0x63825363);
+-}
+-//=============================
+-// Build specific DHCP messages
+-//=============================
+-
+-VOID
+-SendDHCPMsg (const TapAdapterPointer a,
+-	     const int type,
+-	     const ETH_HEADER *eth,
+-	     const IPHDR *ip,
+-	     const UDPHDR *udp,
+-	     const DHCP *dhcp)
+-{
+-  DHCPMsg *pkt;
+-
+-  if (!(type == DHCPOFFER || type == DHCPACK || type == DHCPNAK))
+-    {
+-      DEBUGP (("[TAP] SendDHCPMsg: Bad DHCP type: %d\n", type));
+-      return;
+-    }
+-
+-  pkt = (DHCPMsg *) MemAlloc (sizeof (DHCPMsg), TRUE);
+-
+-  if (pkt)
+-    {
+-      //-----------------------
+-      // Build DHCP options
+-      //-----------------------
+-
+-      // Message Type
+-      SetDHCPOpt8 (pkt, DHCP_MSG_TYPE, type);
+-
+-      // Server ID
+-      SetDHCPOpt32 (pkt, DHCP_SERVER_ID, a->m_dhcp_server_ip);
+-
+-      if (type == DHCPOFFER || type == DHCPACK)
+-	{
+-	  // Lease Time
+-	  SetDHCPOpt32 (pkt, DHCP_LEASE_TIME, htonl (a->m_dhcp_lease_time));
+-
+-	  // Netmask
+-	  SetDHCPOpt32 (pkt, DHCP_NETMASK, a->m_dhcp_netmask);
+-
+-	  // Other user-defined options
+-	  SetDHCPOpt (pkt,
+-		      a->m_dhcp_user_supplied_options_buffer,
+-		      a->m_dhcp_user_supplied_options_buffer_len);
+-	}
+-
+-      // End
+-      SetDHCPOpt0 (pkt, DHCP_END);
+-
+-      if (!DHCPMSG_OVERFLOW (pkt))
+-	{
+-	  // The initial part of the DHCP message (not including options) gets built here
+-	  BuildDHCPPre (a,
+-			&pkt->msg.pre,
+-			eth,
+-			ip,
+-			udp,
+-			dhcp,
+-			DHCPMSG_LEN_OPT (pkt),
+-			type);
+-
+-	  SetChecksumDHCPMsg (pkt);
+-
+-	  DUMP_PACKET ("DHCPMsg",
+-		       DHCPMSG_BUF (pkt),
+-		       DHCPMSG_LEN_FULL (pkt));
+-
+-	  // Return DHCP response to kernel
+-	  InjectPacketDeferred (a,
+-				DHCPMSG_BUF (pkt),
+-				DHCPMSG_LEN_FULL (pkt));
+-	}
+-      else
+-	{
+-	  DEBUGP (("[TAP] SendDHCPMsg: DHCP buffer overflow\n"));
+-	}
+-
+-      MemFree (pkt, sizeof (DHCPMsg));
+-    }
+-}
+-
+-//===================================================================
+-// Handle a BOOTPS packet produced by the local system to
+-// resolve the address/netmask of this adapter.
+-// If we are in TAP_IOCTL_CONFIG_DHCP_MASQ mode, reply
+-// to the message.  Return TRUE if we processed the passed
+-// message, so that downstream stages can ignore it.
+-//===================================================================
+-
+-BOOLEAN
+-ProcessDHCP (TapAdapterPointer p_Adapter,
+-	     const ETH_HEADER *eth,
+-	     const IPHDR *ip,
+-	     const UDPHDR *udp,
+-	     const DHCP *dhcp,
+-	     int optlen)
+-{
+-  int msg_type;
+-
+-  // Sanity check IP header
+-  if (!(ntohs (ip->tot_len) == sizeof (IPHDR) + sizeof (UDPHDR) + sizeof (DHCP) + optlen
+-	&& (ntohs (ip->frag_off) & IP_OFFMASK) == 0))
+-    return TRUE;
+-
+-  // Does this message belong to us?
+-  if (!DHCPMessageOurs (p_Adapter, eth, ip, udp, dhcp))
+-    return FALSE;
+-
+-  msg_type = GetDHCPMessageType (dhcp, optlen);
+-
+-  // Drop non-BOOTREQUEST messages
+-  if (dhcp->op != BOOTREQUEST)
+-    return TRUE;
+-
+-  // Drop any messages except DHCPDISCOVER or DHCPREQUEST
+-  if (!(msg_type == DHCPDISCOVER || msg_type == DHCPREQUEST))
+-    return TRUE;
+-
+-  // Should we reply with DHCPOFFER, DHCPACK, or DHCPNAK?
+-  if (msg_type == DHCPREQUEST
+-      && ((dhcp->ciaddr && dhcp->ciaddr != p_Adapter->m_dhcp_addr)
+-	  || !p_Adapter->m_dhcp_received_discover
+-	  || p_Adapter->m_dhcp_bad_requests >= BAD_DHCPREQUEST_NAK_THRESHOLD))
+-    SendDHCPMsg (p_Adapter,
+-		 DHCPNAK,
+-		 eth, ip, udp, dhcp);
+-  else
+-    SendDHCPMsg (p_Adapter,
+-		 (msg_type == DHCPDISCOVER ? DHCPOFFER : DHCPACK),
+-		 eth, ip, udp, dhcp);
+-
+-  // Remember if we received a DHCPDISCOVER
+-  if (msg_type == DHCPDISCOVER)
+-    p_Adapter->m_dhcp_received_discover = TRUE;
+-
+-  // Is this a bad DHCPREQUEST?
+-  if (msg_type == DHCPREQUEST && dhcp->ciaddr != p_Adapter->m_dhcp_addr)
+-    ++p_Adapter->m_dhcp_bad_requests;
+-
+-  return TRUE;
+-}
+-
+-#if DBG
+-
+-const char *
+-message_op_text (int op)
+-{
+-  switch (op)
+-    {
+-    case BOOTREQUEST:
+-      return "BOOTREQUEST";
+-    case BOOTREPLY:
+-      return "BOOTREPLY";
+-    default:
+-      return "???";
+-    }
+-}
+-
+-const char *
+-message_type_text (int type)
+-{
+-  switch (type)
+-    {
+-    case DHCPDISCOVER:
+-      return "DHCPDISCOVER";
+-    case DHCPOFFER:
+-      return "DHCPOFFER";
+-    case DHCPREQUEST:
+-      return "DHCPREQUEST";
+-    case DHCPDECLINE:
+-      return "DHCPDECLINE";
+-    case DHCPACK:
+-      return "DHCPACK";
+-    case DHCPNAK:
+-      return "DHCPNAK";
+-    case DHCPRELEASE:
+-      return "DHCPRELEASE";
+-    case DHCPINFORM:
+-      return "DHCPINFORM";
+-    default:
+-      return "???";
+-    }
+-}
+-
+-const char *
+-port_name (int port)
+-{
+-  switch (port)
+-    {
+-    case BOOTPS_PORT:
+-      return "BOOTPS";
+-    case BOOTPC_PORT:
+-      return "BOOTPC";
+-    default:
+-      return "unknown";
+-    }
+-}
+-
+-VOID
+-DumpDHCP (const ETH_HEADER *eth,
+-	  const IPHDR *ip,
+-	  const UDPHDR *udp,
+-	  const DHCP *dhcp,
+-	  const int optlen)
+-{
+-  DEBUGP ((" %s", message_op_text (dhcp->op)));
+-  DEBUGP ((" %s ", message_type_text (GetDHCPMessageType (dhcp, optlen))));
+-  PrIP (ip->saddr);
+-  DEBUGP ((":%s[", port_name (ntohs (udp->source))));
+-  PrMac (eth->src);
+-  DEBUGP (("] -> "));
+-  PrIP (ip->daddr);
+-  DEBUGP ((":%s[", port_name (ntohs (udp->dest))));
+-  PrMac (eth->dest);
+-  DEBUGP (("]"));
+-  if (dhcp->ciaddr)
+-    {
+-      DEBUGP ((" ci="));
+-      PrIP (dhcp->ciaddr);
+-    }
+-  if (dhcp->yiaddr)
+-    {
+-      DEBUGP ((" yi="));
+-      PrIP (dhcp->yiaddr);
+-    }
+-  if (dhcp->siaddr)
+-    {
+-      DEBUGP ((" si="));
+-      PrIP (dhcp->siaddr);
+-    }
+-  if (dhcp->hlen == sizeof (MACADDR))
+-    {
+-      DEBUGP ((" ch="));
+-      PrMac (dhcp->chaddr);
+-    }
+-
+-  DEBUGP ((" xid=0x%08x", ntohl (dhcp->xid)));
+-
+-  if (ntohl (dhcp->magic) != 0x63825363)
+-    DEBUGP ((" ma=0x%08x", ntohl (dhcp->magic)));
+-  if (dhcp->htype != 1)
+-    DEBUGP ((" htype=%d", dhcp->htype));
+-  if (dhcp->hops)
+-    DEBUGP ((" hops=%d", dhcp->hops));
+-  if (ntohs (dhcp->secs))
+-    DEBUGP ((" secs=%d", ntohs (dhcp->secs)));
+-  if (ntohs (dhcp->flags))
+-    DEBUGP ((" flags=0x%04x", ntohs (dhcp->flags)));
+-
+-  // extra stuff
+-  
+-  if (ip->version_len != 0x45)
+-    DEBUGP ((" vl=0x%02x", ip->version_len));
+-  if (ntohs (ip->tot_len) != sizeof (IPHDR) + sizeof (UDPHDR) + sizeof (DHCP) + optlen)
+-    DEBUGP ((" tl=%d", ntohs (ip->tot_len)));
+-  if (ntohs (udp->len) != sizeof (UDPHDR) + sizeof (DHCP) + optlen)
+-    DEBUGP ((" ul=%d", ntohs (udp->len)));
+-
+-  if (ip->tos)
+-    DEBUGP ((" tos=0x%02x", ip->tos));
+-  if (ntohs (ip->id))
+-    DEBUGP ((" id=0x%04x", ntohs (ip->id)));
+-  if (ntohs (ip->frag_off))
+-    DEBUGP ((" frag_off=0x%04x", ntohs (ip->frag_off)));
+-  
+-  DEBUGP ((" ttl=%d", ip->ttl));
+-  DEBUGP ((" ic=0x%04x [0x%04x]", ntohs (ip->check),
+-	    ip_checksum ((UCHAR*)ip, sizeof (IPHDR))));
+-  DEBUGP ((" uc=0x%04x [0x%04x/%d]", ntohs (udp->check),
+-	    udp_checksum ((UCHAR *) udp,
+-			  sizeof (UDPHDR) + sizeof (DHCP) + optlen,
+-			  (UCHAR *) &ip->saddr,
+-			  (UCHAR *) &ip->daddr),
+-	    optlen));
+-
+-  // Options
+-  {
+-    const UCHAR *opt = (UCHAR *) (dhcp + 1);
+-    int i;
+-
+-    DEBUGP ((" OPT"));
+-    for (i = 0; i < optlen; ++i)
+-      {
+-	const UCHAR data = opt[i];
+-	DEBUGP ((".%d", data));
+-      }
+-  }
+-}
+-
+-#endif /* DBG */
+diff --git a/tap-win32/dhcp.h b/tap-win32/dhcp.h
+deleted file mode 100755
+index 4215f81..0000000
+--- a/tap-win32/dhcp.h
 +++ /dev/null
-@@ -1,13 +0,0 @@
--from config import main as config_main
--from config_tap import main as config_tap
--from config_ti import main as config_ti
+@@ -1,164 +0,0 @@
+-/*
+- *  TAP-Win32/TAP-Win64 -- A kernel driver to provide virtual tap
+- *                         device functionality on Windows.
+- *
+- *  This code was inspired by the CIPE-Win32 driver by Damion K. Wilson.
+- *
+- *  This source code is Copyright (C) 2002-2010 OpenVPN Technologies, Inc.,
+- *  and is released under the GPL version 2 (see below).
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program (see the file COPYING included with this
+- *  distribution); if not, write to the Free Software Foundation, Inc.,
+- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+- */
 -
--def main(config):
--    config_main(config)
--    config_tap(config)
--    config_ti(config)
+-#pragma pack(1)
 -
--# if we are run directly, and not loaded as a module
--if __name__ == "__main__":
--    from wb import config
--    main(config)
-diff --git a/win/config_tap.py b/win/config_tap.py
-deleted file mode 100644
-index a5b1d6c..0000000
---- a/win/config_tap.py
+-//===================================================
+-// How many bad DHCPREQUESTs do we receive before we
+-// return a NAK?
+-//
+-// A bad DHCPREQUEST is defined to be one where the
+-// requestor doesn't know its IP address.
+-//===================================================
+-
+-#define BAD_DHCPREQUEST_NAK_THRESHOLD 3
+-
+-//==============================================
+-// Maximum number of DHCP options bytes supplied
+-//==============================================
+-
+-#define DHCP_USER_SUPPLIED_OPTIONS_BUFFER_SIZE 256
+-#define DHCP_OPTIONS_BUFFER_SIZE               256
+-
+-//===================================
+-// UDP port numbers of DHCP messages.
+-//===================================
+-
+-#define BOOTPS_PORT 67
+-#define BOOTPC_PORT 68
+-
+-//===========================
+-// The DHCP message structure
+-//===========================
+-
+-typedef struct {
+-# define BOOTREQUEST 1
+-# define BOOTREPLY   2
+-  UCHAR op;          /* message op */
+-
+-  UCHAR  htype;      /* hardware address type (e.g. '1' = 10Mb Ethernet) */
+-  UCHAR  hlen;       /* hardware address length (e.g. '6' for 10Mb Ethernet) */
+-  UCHAR  hops;       /* client sets to 0, may be used by relay agents */
+-  ULONG  xid;        /* transaction ID, chosen by client */
+-  USHORT secs;       /* seconds since request process began, set by client */
+-  USHORT flags;
+-  ULONG  ciaddr;     /* client IP address, client sets if known */
+-  ULONG  yiaddr;     /* 'your' IP address -- server's response to client */
+-  ULONG  siaddr;     /* server IP address */
+-  ULONG  giaddr;     /* relay agent IP address */
+-  UCHAR  chaddr[16]; /* client hardware address */
+-  UCHAR  sname[64];  /* optional server host name */
+-  UCHAR  file[128];  /* boot file name */
+-  ULONG  magic;      /* must be 0x63825363 (network order) */
+-} DHCP;
+-
+-typedef struct {
+-  ETH_HEADER eth;
+-  IPHDR ip;
+-  UDPHDR udp;
+-  DHCP dhcp;
+-} DHCPPre;
+-
+-typedef struct {
+-  DHCPPre pre;
+-  UCHAR options[DHCP_OPTIONS_BUFFER_SIZE];
+-} DHCPFull;
+-
+-typedef struct {
+-  unsigned int optlen;
+-  BOOLEAN overflow;
+-  DHCPFull msg;
+-} DHCPMsg;
+-
+-//===================
+-// Macros for DHCPMSG
+-//===================
+-
+-#define DHCPMSG_LEN_BASE(p) (sizeof (DHCPPre))
+-#define DHCPMSG_LEN_OPT(p)  ((p)->optlen)
+-#define DHCPMSG_LEN_FULL(p) (DHCPMSG_LEN_BASE(p) + DHCPMSG_LEN_OPT(p))
+-#define DHCPMSG_BUF(p)      ((UCHAR*) &(p)->msg)
+-#define DHCPMSG_OVERFLOW(p) ((p)->overflow)
+-
+-//========================================
+-// structs to hold individual DHCP options
+-//========================================
+-
+-typedef struct {
+-  UCHAR type;
+-} DHCPOPT0;
+-
+-typedef struct {
+-  UCHAR type;
+-  UCHAR len;
+-  UCHAR data;
+-} DHCPOPT8;
+-
+-typedef struct {
+-  UCHAR type;
+-  UCHAR len;
+-  ULONG data;
+-} DHCPOPT32;
+-
+-#pragma pack()
+-
+-//==================
+-// DHCP Option types
+-//==================
+-
+-#define DHCP_MSG_TYPE    53  /* message type (u8) */
+-#define DHCP_PARM_REQ    55  /* parameter request list: c1 (u8), ... */
+-#define DHCP_CLIENT_ID   61  /* client ID: type (u8), i1 (u8), ... */
+-#define DHCP_IP          50  /* requested IP addr (u32) */
+-#define DHCP_NETMASK      1  /* subnet mask (u32) */
+-#define DHCP_LEASE_TIME  51  /* lease time sec (u32) */
+-#define DHCP_RENEW_TIME  58  /* renewal time sec (u32) */
+-#define DHCP_REBIND_TIME 59  /* rebind time sec (u32) */
+-#define DHCP_SERVER_ID   54  /* server ID: IP addr (u32) */
+-#define DHCP_PAD          0
+-#define DHCP_END        255
+-
+-//====================
+-// DHCP Messages types
+-//====================
+-
+-#define DHCPDISCOVER 1
+-#define DHCPOFFER    2
+-#define DHCPREQUEST  3
+-#define DHCPDECLINE  4
+-#define DHCPACK      5
+-#define DHCPNAK      6
+-#define DHCPRELEASE  7
+-#define DHCPINFORM   8
+-
+-#if DBG
+-
+-VOID
+-DumpDHCP (const ETH_HEADER *eth,
+-	  const IPHDR *ip,
+-	  const UDPHDR *udp,
+-	  const DHCP *dhcp,
+-	  const int optlen);
+-
+-#endif
+diff --git a/tap-win32/endian.h b/tap-win32/endian.h
+deleted file mode 100755
+index 128029a..0000000
+--- a/tap-win32/endian.h
 +++ /dev/null
 @@ -1,35 +0,0 @@
--import os
--from wb import preprocess, home_fn, autogen, dict_def
+-/*
+- *  TAP-Win32/TAP-Win64 -- A kernel driver to provide virtual tap
+- *                         device functionality on Windows.
+- *
+- *  This code was inspired by the CIPE-Win32 driver by Damion K. Wilson.
+- *
+- *  This source code is Copyright (C) 2002-2010 OpenVPN Technologies, Inc.,
+- *  and is released under the GPL version 2 (see below).
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program (see the file COPYING included with this
+- *  distribution); if not, write to the Free Software Foundation, Inc.,
+- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+- */
 -
--def main(config):
--    preprocess(config,
--               in_fn=home_fn('tap-win32/SOURCES.in'),
--               out_fn=home_fn('tap-win32/SOURCES'),
--               quote_begin='@@',
--               quote_end='@@',
--               head_comment='# %s\n\n' % autogen)
--
--    preprocess(config,
--               in_fn=home_fn('tap-win32/i386/OemWin2k.inf.in'),
--               out_fn=home_fn('tap-win32/i386/OemWin2k.inf'),
--               quote_begin='@@',
--               quote_end='@@',
--               if_prefix='!',
--               head_comment='; %s\n\n' % autogen)
--
--    try:
--        os.mkdir(home_fn('tap-win32/amd64'))
--    except:
--        pass
--    preprocess(dict_def(config, [('AMD64', '1')]),
--               in_fn=home_fn('tap-win32/i386/OemWin2k.inf.in'),
--               out_fn=home_fn('tap-win32/amd64/OemWin2k.inf'),
--               quote_begin='@@',
--               quote_end='@@',
--               if_prefix='!',
--               head_comment='; %s\n\n' % autogen)
--
--# if we are run directly, and not loaded as a module
--if __name__ == "__main__":
--    from wb import config
--    main(config)
-diff --git a/win/config_ti.py b/win/config_ti.py
-deleted file mode 100644
-index 8742caa..0000000
---- a/win/config_ti.py
+-#ifdef TAP_LITTLE_ENDIAN
+-#define ntohs(x) RtlUshortByteSwap(x)
+-#define htons(x) RtlUshortByteSwap(x)
+-#define ntohl(x) RtlUlongByteSwap(x)
+-#define htonl(x) RtlUlongByteSwap(x)
+-#else
+-#define ntohs(x) ((USHORT)(x))
+-#define htons(x) ((USHORT)(x))
+-#define ntohl(x) ((ULONG)(x))
+-#define htonl(x) ((ULONG)(x))
+-#endif
+diff --git a/tap-win32/error.c b/tap-win32/error.c
+deleted file mode 100755
+index 5b25f48..0000000
+--- a/tap-win32/error.c
 +++ /dev/null
-@@ -1,18 +0,0 @@
--import os, shutil
--from wb import preprocess, home_fn, autogen
+@@ -1,378 +0,0 @@
+-/*
+- *  TAP-Win32/TAP-Win64 -- A kernel driver to provide virtual tap
+- *                         device functionality on Windows.
+- *
+- *  This code was inspired by the CIPE-Win32 driver by Damion K. Wilson.
+- *
+- *  This source code is Copyright (C) 2002-2010 OpenVPN Technologies, Inc.,
+- *  and is released under the GPL version 2 (see below).
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program (see the file COPYING included with this
+- *  distribution); if not, write to the Free Software Foundation, Inc.,
+- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+- */
 -
--def main(config):
--    src = os.path.join(home_fn(config['TISRC']), config['DDKVER_MAJOR'])
--    dest = home_fn('tapinstall')
--    shutil.rmtree(dest, ignore_errors=True)
--    shutil.copytree(src, dest)
--    preprocess(config,
--               in_fn=os.path.join(src, 'sources'),
--               out_fn=os.path.join(dest, 'sources'),
--               if_prefix='!',
--               head_comment='# %s\n\n' % autogen)
+-//-----------------
+-// DEBUGGING OUTPUT
+-//-----------------
 -
--# if we are run directly, and not loaded as a module
--if __name__ == "__main__":
--    from wb import config
--    main(config)
-diff --git a/win/js.py b/win/js.py
-deleted file mode 100644
-index d1d4db3..0000000
---- a/win/js.py
+-const char *g_LastErrorFilename;
+-int g_LastErrorLineNumber;
+-
+-#if DBG
+-
+-DebugOutput g_Debug;
+-
+-BOOLEAN
+-NewlineExists (const char *str, int len)
+-{
+-  while (len-- > 0)
+-    {
+-      const char c = *str++;
+-      if (c == '\n')
+-	return TRUE;
+-      else if (c == '\0')
+-	break;
+-    }
+-  return FALSE;
+-}
+-
+-VOID
+-MyDebugInit (unsigned int bufsiz)
+-{
+-  NdisZeroMemory (&g_Debug, sizeof (g_Debug));
+-  g_Debug.text = (char *) MemAlloc (bufsiz, FALSE);
+-  if (g_Debug.text)
+-    g_Debug.capacity = bufsiz;
+-}
+-
+-VOID
+-MyDebugFree ()
+-{
+-  if (g_Debug.text)
+-    MemFree (g_Debug.text, g_Debug.capacity);
+-  NdisZeroMemory (&g_Debug, sizeof (g_Debug));
+-}
+-
+-VOID
+-MyDebugPrint (const unsigned char* format, ...)
+-{
+-  if (g_Debug.text && g_Debug.capacity > 0 && CAN_WE_PRINT)
+-    {
+-      BOOLEAN owned;
+-      ACQUIRE_MUTEX_ADAPTIVE (&g_Debug.lock, owned);
+-      if (owned)
+-	{
+-	  const int remaining = (int)g_Debug.capacity - (int)g_Debug.out;
+-
+-	  if (remaining > 0)
+-	    {
+-	      va_list args;
+-	      NTSTATUS status;
+-	      char *end;
+-
+-	      va_start (args, format);
+-	      status = RtlStringCchVPrintfExA (g_Debug.text + g_Debug.out,
+-					       remaining,
+-					       &end,
+-					       NULL,
+-					       STRSAFE_NO_TRUNCATION | STRSAFE_IGNORE_NULLS,
+-					       format,
+-					       args);
+-	      va_end (args);
+-
+-	      if (status == STATUS_SUCCESS)
+-		g_Debug.out = (unsigned int) (end - g_Debug.text);
+-	      else
+-		g_Debug.error = TRUE;
+-	    }
+-	  else
+-	    g_Debug.error = TRUE;
+-
+-	  RELEASE_MUTEX (&g_Debug.lock);
+-	}
+-      else
+-	g_Debug.error = TRUE;
+-    }
+-}
+-
+-BOOLEAN
+-GetDebugLine (char *buf, const int len)
+-{
+-  static const char *truncated = "[OUTPUT TRUNCATED]\n";
+-  BOOLEAN ret = FALSE;
+-
+-  NdisZeroMemory (buf, len);
+-
+-  if (g_Debug.text && g_Debug.capacity > 0)
+-    {
+-      BOOLEAN owned;
+-      ACQUIRE_MUTEX_ADAPTIVE (&g_Debug.lock, owned);
+-      if (owned)
+-	{
+-	  int i = 0;
+-
+-	  if (g_Debug.error || NewlineExists (g_Debug.text + g_Debug.in, (int)g_Debug.out - (int)g_Debug.in))
+-	    {
+-	      while (i < (len - 1) && g_Debug.in < g_Debug.out)
+-		{
+-		  const char c = g_Debug.text[g_Debug.in++];
+-		  if (c == '\n')
+-		    break;
+-		  buf[i++] = c;
+-		}
+-	      if (i < len)
+-		buf[i] = '\0';
+-	    }
+-
+-	  if (!i)
+-	    {
+-	      if (g_Debug.in == g_Debug.out)
+-		{
+-		  g_Debug.in = g_Debug.out = 0;
+-		  if (g_Debug.error)
+-		    {
+-		      const unsigned int tlen = strlen (truncated);
+-		      if (tlen < g_Debug.capacity)
+-			{
+-			  NdisMoveMemory (g_Debug.text, truncated, tlen+1);
+-			  g_Debug.out = tlen;
+-			}
+-		      g_Debug.error = FALSE;
+-		    }
+-		}
+-	    }
+-	  else
+-	    ret = TRUE;
+-
+-	  RELEASE_MUTEX (&g_Debug.lock);
+-	}      
+-    }
+-  return ret;
+-}
+-
+-VOID
+-MyAssert (const unsigned char *file, int line)
+-{
+-      DEBUGP (("MYASSERT failed %s/%d\n", file, line));
+-      KeBugCheckEx (0x0F00BABA,
+-		    (ULONG_PTR) line,
+-		    (ULONG_PTR) 0,
+-		    (ULONG_PTR) 0,
+-		    (ULONG_PTR) 0);
+-}
+-
+-VOID
+-PrMac (const MACADDR mac)
+-{
+-  DEBUGP (("%x:%x:%x:%x:%x:%x",
+-	    mac[0], mac[1], mac[2],
+-	    mac[3], mac[4], mac[5]));
+-}
+-
+-VOID
+-PrIP (IPADDR ip_addr)
+-{
+-  const unsigned char *ip = (const unsigned char *) &ip_addr;
+-
+-  DEBUGP (("%d.%d.%d.%d",
+-	    ip[0], ip[1], ip[2], ip[3]));
+-}
+-
+-const char *
+-PrIPProto (int proto)
+-{
+-  switch (proto)
+-    {
+-    case IPPROTO_UDP:
+-      return "UDP";
+-    case IPPROTO_TCP:
+-      return "TCP";
+-    case IPPROTO_ICMP:
+-      return "ICMP";
+-    case IPPROTO_IGMP:
+-      return "IGMP";
+-    default:
+-      return "???";
+-    }
+-}
+-
+-VOID
+-DumpARP (const char *prefix, const ARP_PACKET *arp)
+-{
+-  DEBUGP (("%s ARP src=", prefix));
+-  PrMac (arp->m_MAC_Source);
+-  DEBUGP ((" dest="));
+-  PrMac (arp->m_MAC_Destination);
+-  DEBUGP ((" OP=0x%04x",
+-	    (int)ntohs(arp->m_ARP_Operation)));
+-  DEBUGP ((" M=0x%04x(%d)",
+-	    (int)ntohs(arp->m_MAC_AddressType),
+-	    (int)arp->m_MAC_AddressSize));
+-  DEBUGP ((" P=0x%04x(%d)",
+-	    (int)ntohs(arp->m_PROTO_AddressType),
+-	    (int)arp->m_PROTO_AddressSize));
+-
+-  DEBUGP ((" MacSrc="));
+-  PrMac (arp->m_ARP_MAC_Source);
+-  DEBUGP ((" MacDest="));
+-  PrMac (arp->m_ARP_MAC_Destination);
+-
+-  DEBUGP ((" IPSrc="));
+-  PrIP (arp->m_ARP_IP_Source);
+-  DEBUGP ((" IPDest="));
+-  PrIP (arp->m_ARP_IP_Destination);
+-
+-  DEBUGP (("\n"));
+-}
+-
+-struct ethpayload {
+-  ETH_HEADER eth;
+-  UCHAR payload[DEFAULT_PACKET_LOOKAHEAD];
+-};
+-
+-VOID
+-DumpPacket2 (const char *prefix,
+-	     const ETH_HEADER *eth,
+-	     const unsigned char *data,
+-	     unsigned int len)
+-{
+-  struct ethpayload *ep = (struct ethpayload *) MemAlloc (sizeof (struct ethpayload), TRUE);
+-  if (ep)
+-    {
+-      if (len > DEFAULT_PACKET_LOOKAHEAD)
+-	len = DEFAULT_PACKET_LOOKAHEAD;
+-      ep->eth = *eth;
+-      NdisMoveMemory (ep->payload, data, len);
+-      DumpPacket (prefix, (unsigned char *) ep, sizeof (ETH_HEADER) + len);
+-      MemFree (ep, sizeof (struct ethpayload));
+-    }
+-}
+-
+-VOID
+-DumpPacket (const char *prefix,
+-	    const unsigned char *data,
+-	    unsigned int len)
+-{
+-  const ETH_HEADER *eth = (const ETH_HEADER *) data;
+-  const IPHDR *ip = (const IPHDR *) (data + sizeof (ETH_HEADER));
+-
+-  if (len < sizeof (ETH_HEADER))
+-    {
+-      DEBUGP (("%s TRUNCATED PACKET LEN=%d\n", prefix, len));
+-      return;
+-    }
+-
+-  // ARP Packet?
+-  if (len >= sizeof (ARP_PACKET) && eth->proto == htons (ETH_P_ARP))
+-    {
+-      DumpARP (prefix, (const ARP_PACKET *) data);
+-      return;
+-    }
+-
+-  // IPv4 packet?
+-  if (len >= (sizeof (IPHDR) + sizeof (ETH_HEADER))
+-      && eth->proto == htons (ETH_P_IP)
+-      && IPH_GET_VER (ip->version_len) == 4)
+-    {
+-      const int hlen = IPH_GET_LEN (ip->version_len);
+-      const int blen = len - sizeof (ETH_HEADER);
+-      BOOLEAN did = FALSE;
+-
+-      DEBUGP (("%s IPv4 %s[%d]", prefix, PrIPProto (ip->protocol), len));
+-
+-      if (!(ntohs (ip->tot_len) == blen && hlen <= blen))
+-	{
+-	  DEBUGP ((" XXX"));
+-	  return;
+-	}
+-      
+-      // TCP packet?
+-      if (ip->protocol == IPPROTO_TCP
+-	  && blen - hlen >= (sizeof (TCPHDR)))
+-	{
+-	  const TCPHDR *tcp = (TCPHDR *) (data + sizeof (ETH_HEADER) + hlen);
+-	  DEBUGP ((" "));
+-	  PrIP (ip->saddr);
+-	  DEBUGP ((":%d", ntohs (tcp->source)));
+-	  DEBUGP ((" -> "));
+-	  PrIP (ip->daddr);
+-	  DEBUGP ((":%d", ntohs (tcp->dest)));
+-	  did = TRUE;
+-	}
+-
+-      // UDP packet?
+-      else if ((ntohs (ip->frag_off) & IP_OFFMASK) == 0
+-	       && ip->protocol == IPPROTO_UDP
+-	       && blen - hlen >= (sizeof (UDPHDR)))
+-	{
+-	  const UDPHDR *udp = (UDPHDR *) (data + sizeof (ETH_HEADER) + hlen);
+-	  
+-	  // DHCP packet?
+-	  if ((udp->dest == htons (BOOTPC_PORT) || udp->dest == htons (BOOTPS_PORT))
+-	      && blen - hlen >= (sizeof (UDPHDR) + sizeof (DHCP)))
+-	    {
+-	      const DHCP *dhcp = (DHCP *) (data
+-					   + hlen
+-					   + sizeof (ETH_HEADER)
+-					   + sizeof (UDPHDR));
+-	      
+-	      int optlen = len
+-		- sizeof (ETH_HEADER)
+-		- hlen
+-		- sizeof (UDPHDR)
+-		- sizeof (DHCP);
+-
+-	      if (optlen < 0)
+-		optlen = 0;
+-
+-	      DumpDHCP (eth, ip, udp, dhcp, optlen);
+-	      did = TRUE;
+-	    }
+-
+-	  if (!did)
+-	    {
+-	      DEBUGP ((" "));
+-	      PrIP (ip->saddr);
+-	      DEBUGP ((":%d", ntohs (udp->source)));
+-	      DEBUGP ((" -> "));
+-	      PrIP (ip->daddr);
+-	      DEBUGP ((":%d", ntohs (udp->dest)));
+-	      did = TRUE;
+-	    }
+-	}
+-
+-      if (!did)
+-	{
+-	  DEBUGP ((" ipproto=%d ", ip->protocol));
+-	  PrIP (ip->saddr);
+-	  DEBUGP ((" -> "));
+-	  PrIP (ip->daddr);
+-	}
+-
+-      DEBUGP (("\n"));
+-      return;
+-    }
+-
+-  {
+-    DEBUGP (("%s ??? src=", prefix));
+-    PrMac (eth->src);
+-    DEBUGP ((" dest="));
+-    PrMac (eth->dest);
+-    DEBUGP ((" proto=0x%04x len=%d\n",
+-	      (int) ntohs(eth->proto),
+-	      len));
+-  }
+-}
+-
+-#endif
+diff --git a/tap-win32/error.h b/tap-win32/error.h
+deleted file mode 100755
+index d8436dc..0000000
+--- a/tap-win32/error.h
 +++ /dev/null
-@@ -1,10 +0,0 @@
--import json
+@@ -1,88 +0,0 @@
+-/*
+- *  TAP-Win32/TAP-Win64 -- A kernel driver to provide virtual tap
+- *                         device functionality on Windows.
+- *
+- *  This code was inspired by the CIPE-Win32 driver by Damion K. Wilson.
+- *
+- *  This source code is Copyright (C) 2002-2010 OpenVPN Technologies, Inc.,
+- *  and is released under the GPL version 2 (see below).
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program (see the file COPYING included with this
+- *  distribution); if not, write to the Free Software Foundation, Inc.,
+- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+- */
 -
--# usage:
--#   print JSON().encode(kv)
+-//-----------------
+-// DEBUGGING OUTPUT
+-//-----------------
 -
--class JSON(json.JSONEncoder):
--    def __init__(self, **kwargs):
--        args = dict(sort_keys=True, indent=2)
--        args.update(kwargs)
--        json.JSONEncoder.__init__(self, **args)
-diff --git a/win/make_dist.py b/win/make_dist.py
-deleted file mode 100644
-index edb0e6a..0000000
---- a/win/make_dist.py
-+++ /dev/null
-@@ -1,107 +0,0 @@
--import os
--from wb import home_fn, rm_rf, mkdir, cp_a, cp, rename, run_in_vs_shell
+-#define NOTE_ERROR() \
+-{ \
+-  g_LastErrorFilename = __FILE__; \
+-  g_LastErrorLineNumber = __LINE__; \
+-}
 -
--def main(config, tap=True):
--    dist = config['DIST']
--    assert dist
--    dist = home_fn(dist)
--    bin = os.path.join(dist, 'bin')
--    i386 = os.path.join(dist, 'i386')
--    amd64 = os.path.join(dist, 'amd64')
--    samples = os.path.join(dist, 'samples')
+-#if DBG
 -
--    # build dist and subdirectories
--    rm_rf(dist)
--    mkdir(dist)
--    mkdir(bin)
--    mkdir(i386)
--    mkdir(amd64)
--    mkdir(samples)
+-typedef struct {
+-  unsigned int in;
+-  unsigned int out;
+-  unsigned int capacity;
+-  char *text;
+-  BOOLEAN error;
+-  MUTEX lock;
+-} DebugOutput;
 -
--    # copy openvpn.exe, openvpnserv.exe and their manifests
--    cp(home_fn('openvpn.exe'), bin)
--    cp(home_fn('openvpn.exe.manifest'), bin)
--    cp(home_fn('service-win32/openvpnserv.exe'), bin)
--    cp(home_fn('service-win32/openvpnserv.exe.manifest'), bin)
+-VOID MyDebugPrint (const unsigned char* format, ...);
 -
--    # copy openvpn-gui
--    cp(home_fn(config['OPENVPN_GUI_DIR']+"/"+config['OPENVPN_GUI']), bin)
+-VOID MyAssert (const unsigned char *file, int line);
 -
--    # copy DLL dependencies
--    cp(home_fn(config['LZO_DIR']+'/bin/lzo2.dll'), bin)
--    cp(home_fn(config['LZO_DIR']+'/bin/lzo2.dll.manifest'), bin)
--    cp(home_fn(config['OPENSSL_DIR']+'/bin/libeay32.dll'), bin)
--    cp(home_fn(config['OPENSSL_DIR']+'/bin/ssleay32.dll'), bin)
--    cp(home_fn(config['PKCS11_HELPER_DIR']+'/lib/libpkcs11-helper-1.dll'), bin)
--    cp(home_fn(config['PKCS11_HELPER_DIR']+'/lib/libpkcs11-helper-1.dll.manifest'), bin)
+-VOID DumpPacket (const char *prefix,
+-		 const unsigned char *data,
+-		 unsigned int len);
 -
--    # copy OpenSSL utilities (=openvpn.exe)
--    cp(home_fn(config['OPENSSL_DIR']+'/bin/openssl.exe'), bin)
+-VOID DumpPacket2 (const char *prefix,
+-		  const ETH_HEADER *eth,
+-		  const unsigned char *data,
+-		  unsigned int len);
 -
--    # copy sample config files; renaming is necessary due to openvpn.nsi script
--    cp(home_fn('install-win32/sample.ovpn'), samples)
--    cp(home_fn('sample-config-files/client.conf'), samples)
--    cp(home_fn('sample-config-files/server.conf'), samples)
--    rename(os.path.join(samples,'client.conf'), os.path.join(samples, 'client.ovpn'))
--    rename(os.path.join(samples,'server.conf'), os.path.join(samples, 'server.ovpn'))
+-#define CAN_WE_PRINT (DEBUGP_AT_DISPATCH || KeGetCurrentIrql () < DISPATCH_LEVEL)
 -
--    # embed manifests to executables and DLLs
--    for f in [ "openvpn.exe", "openvpnserv.exe", "lzo2.dll", "libpkcs11-helper-1.dll" ]:
+-#if ALSO_DBGPRINT
+-#define DEBUGP(fmt) { MyDebugPrint fmt; if (CAN_WE_PRINT) DbgPrint fmt; }
+-#else
+-#define DEBUGP(fmt) { MyDebugPrint fmt; }
+-#endif
 -
--        outputresource = os.path.join(bin,f)
--        manifest = outputresource+".manifest"
+-#define MYASSERT(exp) \
+-{ \
+-  if (!(exp)) \
+-    { \
+-      MyAssert(__FILE__, __LINE__); \
+-    } \
+-}
 -
--        # EXEs and DLLs require slightly different treatment
--        if f.endswith(".exe"):
--            type = "1"
--        elif f.endswith(".dll"):
--            type = "2"
--        else:
--            print "ERROR: Could not embed manifest to "+outputresouce+", bailing out."
--            sys.exit(1)
+-#define DUMP_PACKET(prefix, data, len) \
+-  DumpPacket (prefix, data, len)
 -
--        # Embed the manifest
--        run_in_vs_shell('mt.exe -manifest %s -outputresource:%s;%s' % (manifest, outputresource, type))
+-#define DUMP_PACKET2(prefix, eth, data, len) \
+-  DumpPacket2 (prefix, eth, data, len)
 -
--    # copy MSVC CRT
--    cp_a(home_fn(config['MSVC_CRT']), bin)
+-#else 
 -
--    # TAP-driver and tapinstall.exe were built, so copy those over
--    if tap:
--        drv_dir = 'tap-win32'
--        ti_dir = 'tapinstall'
+-#define DEBUGP(fmt)
+-#define MYASSERT(exp)
+-#define DUMP_PACKET(prefix, data, len)
+-#define DUMP_PACKET2(prefix, eth, data, len)
 -
--    # we're using prebuilt TAP-driver and tapinstall.exe
--    elif 'TAP_PREBUILT' in config:
--        drv_dir = config['TAP_PREBUILT']
--        ti_dir = config['TAP_PREBUILT']
--
--    else:
--        print "ERROR: Could not find prebuilt TAP-drivers or tapinstall.exe. Please check win/settings.in"
--        sys.exit(1)
--
--    # copy TAP drivers
--    for dir_name, dest in (('amd64', amd64), ('i386', i386)):
--        dir = home_fn(os.path.join(drv_dir, dir_name))
--        for dirpath, dirnames, filenames in os.walk(dir):
--            for f in filenames:
--                root, ext = os.path.splitext(f)
--                if ext in ('.inf', '.cat', '.sys'):
--                    cp(os.path.join(dir, f), dest)
--            break
--
--    # Copy tapinstall.exe (usually known as devcon.exe)
--    dest = {'amd64' : amd64, 'i386' : i386}
--    for dirpath, dirnames, filenames in os.walk(home_fn(ti_dir)):
--        for f in filenames:
--            if f in ( 'devcon.exe', 'tapinstall.exe' ):
--                dir_name = os.path.basename(dirpath)
--                src = os.path.join(dirpath, f)
--                dst = os.path.join(dest[dir_name],'tapinstall.exe')
--                if dir_name in dest:
--                    cp(src, dst, dest_is_dir=False)
--
--# if we are run directly, and not loaded as a module
--if __name__ == "__main__":
--    from wb import config
--    main(config)
-diff --git a/win/msvc.mak.in b/win/msvc.mak.in
-deleted file mode 100644
-index 43c3335..0000000
---- a/win/msvc.mak.in
+-#endif
+diff --git a/tap-win32/hexdump.c b/tap-win32/hexdump.c
+deleted file mode 100755
+index 49bc38c..0000000
+--- a/tap-win32/hexdump.c
 +++ /dev/null
 @@ -1,69 +0,0 @@
--# This makefile builds the user-mode component of OpenVPN for Windows in the 
--# Visual Studio 2008 environment. Note that this file is basis for the real 
--# makefile (..\msvc.mak) but unusable as is. The real makefile is automatically 
--# generated during the build process by the Python build scripts.
--#
--# A few details are in order:
--#
--# - Everything between @<< and << is inserted into a s.c. "in-line file". This 
--#   file drives the linker (link.exe).
--# - HEADERS_OBJS is expanded to all all header and source files listed in
--#  ..\Makefile.am
--# - OPENSSL_DIR and LZO_DIR are dynamically created from settings.in
+-/*
+- *  TAP-Win32/TAP-Win64 -- A kernel driver to provide virtual tap
+- *                         device functionality on Windows.
+- *
+- *  This code was inspired by the CIPE-Win32 driver by Damion K. Wilson.
+- *
+- *  This source code is Copyright (C) 2002-2010 OpenVPN Technologies, Inc.,
+- *  and is released under the GPL version 2 (see below).
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program (see the file COPYING included with this
+- *  distribution); if not, write to the Free Software Foundation, Inc.,
+- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+- */
 -
--OPENSSL = @OPENSSL_DIR@
--!ifdef INCLUDE_OPENSSL
--OPENSSL_DYNAMIC = libeay32.lib ssleay32.lib
--!endif
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
 -
--POLARSSL = @POLARSSL_DIR@
--!ifdef INCLUDE_POLARSSL
--POLARSSL_DYNAMIC = polarssl.lib
--!endif
+-#include "hexdump.h"
 -
--PKCS11_HELPER = @PKCS11_HELPER_DIR@
--!ifdef INCLUDE_PKCS11
--PKCS11_HELPER_DYNAMIC = pkcs11-helper.lib
--!endif
+-#ifndef NDIS_MINIPORT_DRIVER
 -
--LZO = @LZO_DIR@
--LZO_DYNAMIC = lzo2.lib
+-VOID (*DbgMessage)(char *p_Format, ...) = DisplayDebugString;
 -
--INCLUDE_DIRS = -I$(OPENSSL)/include -I$(POLARSSL)/include -I$(LZO)/include -I$(PKCS11_HELPER)/include
+-VOID DisplayDebugString (char *p_Format, ...)
+-   {
+-    static char l_Buffer [4096];
 -
--LIBS = $(OPENSSL_DYNAMIC) $(POLARSSL_DYNAMIC) $(PKCS11_HELPER_DYNAMIC) $(LZO_DYNAMIC) ws2_32.lib crypt32.lib iphlpapi.lib winmm.lib user32.lib gdi32.lib advapi32.lib wininet.lib shell32.lib
+-    va_list l_ArgumentList; 
+-    va_start (l_ArgumentList, p_Format); 
+-    vsprintf (l_Buffer, p_Format, l_ArgumentList); 
+-    va_end (l_ArgumentList); 
 -
--LIB_DIRS = -LIBPATH:$(OPENSSL)\lib -LIBPATH:$(POLARSSL)\build\library -LIBPATH:$(PKCS11_HELPER)\lib -LIBPATH:$(LZO)\lib
+-    OutputDebugStringA (l_Buffer);
+-   }
 -
--EXE = openvpn.exe
+-#endif
 -
--CPP=cl.exe
--CPP_ARG_COMMON=/nologo /W3 -DWIN32 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_CONSOLE -D_MBCS -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS $(INCLUDE_DIRS) /FD /c
+-VOID HexDump (unsigned char *p_Buffer, unsigned long p_Size)
+-   {
+-    unsigned long l_Index, l_Idx;
+-    unsigned char l_Row [17];
 -
--LINK32=link.exe
+-    for (l_Index = l_Row [16] = 0; l_Index < p_Size || l_Index % 16; ++l_Index)
+-       {
+-        if (l_Index % 16 == 0)
+-	  DEBUGP (("%05x   ", l_Index));
+-        DEBUGP (("%02x ", l_Row [l_Index % 16] = (l_Index < p_Size ? p_Buffer [l_Index] : 0)));
+-        l_Row [l_Index % 16] = IfPrint (l_Row [l_Index % 16]);
+-        if ((l_Index + 1) % 16 == 0)
+-	  DEBUGP (("   %s\n", l_Row));
+-       }
 -
--!ifdef PRODUCT_OPENVPN_DEBUG
--# debug:
--CPP_PROJ=$(CPP_ARG_COMMON) /MD /Z7
--LINK32_FLAGS=/nologo /subsystem:console /incremental:no /opt:ref /opt:icf /debug
--!else
--# release:
--CPP_PROJ=$(CPP_ARG_COMMON) /O2 /MD -DNDEBUG
--LINK32_FLAGS=/nologo /subsystem:console /incremental:no
--!endif
+-    DEBUGP (("\n"));
+-   }
 -
--# HEADERS and OBJS definitions, automatically generated from ../Makefile.am
--@...1658...@
--
--openvpn : $(OBJS)
--	$(LINK32) @<<
--	$(LINK32_FLAGS) "/out:$(EXE)" $(LIB_DIRS) $(LIBS) $(OBJS)
--<<
--
--clean :
--	del /Q $(OBJS) $(EXE) *.idb *.pdb
--
--.c.obj::
--   $(CPP) @<<
--   $(CPP_PROJ) $<
--<<
-diff --git a/win/openvpn.nsi b/win/openvpn.nsi
+-#ifdef __cplusplus
+-}
+-#endif
+diff --git a/tap-win32/hexdump.h b/tap-win32/hexdump.h
 deleted file mode 100755
-index 4167c89..0000000
---- a/win/openvpn.nsi
+index c1af705..0000000
+--- a/tap-win32/hexdump.h
 +++ /dev/null
-@@ -1,822 +0,0 @@
+@@ -1,63 +0,0 @@
+-/*
+- *  TAP-Win32/TAP-Win64 -- A kernel driver to provide virtual tap
+- *                         device functionality on Windows.
+- *
+- *  This code was inspired by the CIPE-Win32 driver by Damion K. Wilson.
+- *
+- *  This source code is Copyright (C) 2002-2010 OpenVPN Technologies, Inc.,
+- *  and is released under the GPL version 2 (see below).
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program (see the file COPYING included with this
+- *  distribution); if not, write to the Free Software Foundation, Inc.,
+- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+- */
+-
+-#ifndef HEXDUMP_DEFINED
+-#define HEXDUMP_DEFINED
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+-//=====================================================================================
+-//                                   Debug Routines
+-//=====================================================================================
+-
+-#ifndef NDIS_MINIPORT_DRIVER
+-#   include <stdio.h>
+-#   include <ctype.h>
+-#   include <windows.h>
+-#   include <winnt.h>
+-#   include <memory.h>
+-
+-#   ifndef DEBUGP
+-#      define DEBUGP(fmt) { DbgMessage fmt; }
+-#   endif
+-
+-    extern VOID (*DbgMessage)(char *p_Format, ...);
+-
+-    VOID DisplayDebugString (char *p_Format, ...);
+-#endif
+-
+-//===================================================================================
+-//                              Reporting / Debugging
+-//===================================================================================
+-#define IfPrint(c) (c >= 32 && c < 127 ? c : '.')
+-
+-VOID HexDump (unsigned char *p_Buffer, unsigned long p_Size);
+-
+-#ifdef __cplusplus
+-}
+-#endif
+-
+-#endif
+diff --git a/tap-win32/i386/OemWin2k.inf.in b/tap-win32/i386/OemWin2k.inf.in
+deleted file mode 100755
+index 031b06c..0000000
+--- a/tap-win32/i386/OemWin2k.inf.in
++++ /dev/null
+@@ -1,195 +0,0 @@
 -; ****************************************************************************
--; * Copyright (C) 2002-2010 OpenVPN Technologies, Inc.                       *
+-; * Copyright (C) 2002-2010 OpenVPN Technologies, Inc.                            *
 -; *  This program is free software; you can redistribute it and/or modify    *
 -; *  it under the terms of the GNU General Public License version 2          *
 -; *  as published by the Free Software Foundation.                           *
 -; ****************************************************************************
 -
--; OpenVPN install script for Windows, using NSIS
+-; SYNTAX CHECKER
+-; cd \WINDDK\3790\tools\chkinf
+-; chkinf c:\src\openvpn\tap-win32\i386\oemwin2k.inf
+-; OUTPUT -> file:///c:/WINDDK/3790/tools/chkinf/htm/c%23+src+openvpn+tap-win32+i386+__OemWin2k.htm
 -
--; Start menu entries don't get uninstalled properly on Windows Vista/7 unless we
--; explicitly state that the installer requires admin privileges. This is
--; caused by backwards compatibility tricks used on those platforms. For details,
--; see http://nsis.sourceforge.net/Shortcuts_removal_fails_on_Windows_Vista
--RequestExecutionLevel admin
+-; INSTALL/REMOVE DRIVER
+-;   tapinstall install OemWin2k.inf TAP0901
+-;   tapinstall update OemWin2k.inf TAP0901
+-;   tapinstall remove TAP0901
 -
--SetCompressor lzma
+-;*********************************************************
+-; Note to Developers:
+-;
+-; If you are bundling the TAP-Win32 driver with your app,
+-; you should try to rename it in such a way that it will
+-; not collide with other instances of TAP-Win32 defined
+-; by other apps.  Multiple versions of the TAP-Win32
+-; driver, each installed by different apps, can coexist
+-; on the same machine if you follow these guidelines.
+-; NOTE: these instructions assume you are editing the
+-; generated OemWin2k.inf file, not the source
+-; OemWin2k.inf.in file which is preprocessed by winconfig
+-; and uses macro definitions from settings.in.
+-;
+-; (1) Rename all tapXXXX instances in this file to
+-;     something different (use at least 5 characters
+-;     for this name!)
+-; (2) Change the "!define TAP" definition in openvpn.nsi
+-;     to match what you changed tapXXXX to.
+-; (3) Change TARGETNAME in SOURCES to match what you
+-;     changed tapXXXX to.
+-; (4) Change TAP_COMPONENT_ID in common.h to match what
+-;     you changed tapXXXX to.
+-; (5) Change SZDEPENDENCIES in service.h to match what
+-;     you changed tapXXXX to.
+-; (6) Change DeviceDescription and Provider strings.
+-; (7) Change PRODUCT_STRING in constants.h to what you
+-;     set DeviceDescription to.
+-;
+-;*********************************************************
 -
--!include "MUI.nsh"
+-[Version]
+-   Signature = "$Windows NT$"
+-   CatalogFile = @@PRODUCT_TAP_ID@@.cat
+-   ClassGUID = {4d36e972-e325-11ce-bfc1-08002be10318}
+-   Provider = %Provider%
+-   Class = Net
 -
--# Include basic build settings
--!include "settings.in"
+-; This version number should match the version
+-; number given in SOURCES.
+-   DriverVer=@@PRODUCT_TAP_RELDATE@@,@@PRODUCT_TAP_MAJOR_VER@@.00.00.@@PRODUCT_TAP_MINOR_VER@@
 -
--# Include variables generated dynamically from version.m4 by wb.py
--!include "version_m4_vars.tmp"
+-[Strings]
+-   DeviceDescription = "@@PRODUCT_TAP_DEVICE_DESCRIPTION@@"
+-   Provider = "@@PRODUCT_TAP_PROVIDER@@"
 -
--;!include "guidefs.nsi"
--!include "setpath.nsi"
--
--!ifdef EXTRACT_FILES
--!include "MultiFileExtract.nsi"
--!endif
--
--!define GEN "..\dist"
--!define BIN "${GEN}\bin"
--!define EASYRSA "..\easy-rsa"
--
--!define PRODUCT_ICON "icon.ico"
--
--!ifdef PRODUCT_TAP_DEBUG
--!define DBG_POSTFIX "-DBG"
+-;----------------------------------------------------------------
+-;                      Manufacturer + Product Section (Done)
+-;----------------------------------------------------------------
+-[Manufacturer]
+-!ifdef AMD64
+-   %Provider% = @@PRODUCT_TAP_ID@@, NTamd64
 -!else
--!define DBG_POSTFIX ""
+-   %Provider% = @@PRODUCT_TAP_ID@@
 -!endif
 -
--!define VERSION "${PRODUCT_VERSION}${DBG_POSTFIX}"
--
--!define TAP "${PRODUCT_TAP_WIN_COMPONENT_ID}"
--!define TAPDRV "${TAP}.sys"
--
--; Default service settings
--!define SERV_CONFIG_DIR   "$INSTDIR\config"
--!define SERV_CONFIG_EXT   "${PRODUCT_FILE_EXT}"
--!define SERV_EXE_PATH     "$INSTDIR\bin\${PRODUCT_UNIX_NAME}.exe"
--!define SERV_LOG_DIR      "$INSTDIR\log"
--!define SERV_PRIORITY     "NORMAL_PRIORITY_CLASS"
--!define SERV_LOG_APPEND   "0"
--
--;--------------------------------
--;Configuration
--
--  ;General
--
--  OutFile "${GEN}\${PRODUCT_UNIX_NAME}-${VERSION}${OUTFILE_LABEL}-install.exe"
--
--  ShowInstDetails show
--  ShowUninstDetails show
--
--  ;Folder selection page
--  InstallDir "$PROGRAMFILES\${PRODUCT_NAME}"
--  
--  ;Remember install folder
--  InstallDirRegKey HKCU "Software\${PRODUCT_NAME}" ""
--
--;--------------------------------
--;Modern UI Configuration
--
--  Name "${PRODUCT_NAME} ${VERSION} ${TITLE_LABEL}"
--
--  !define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of ${PRODUCT_NAME}, an Open Source VPN package by James Yonan.\r\n\r\nNote that the Windows version of ${PRODUCT_NAME} only runs on XP, or higher.\r\n\r\n\r\n"
--
--  !define MUI_COMPONENTSPAGE_TEXT_TOP "Select the components to install/upgrade.  Stop any ${PRODUCT_NAME} processes or the ${PRODUCT_NAME} service if it is running.  All DLLs are installed locally."
--
--  !define MUI_COMPONENTSPAGE_SMALLDESC
--  !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\INSTALL-win32.txt"
--  !define MUI_FINISHPAGE_NOAUTOCLOSE
--  !define MUI_ABORTWARNING
--  !define MUI_ICON "..\images\${PRODUCT_ICON}"
--  !define MUI_UNICON "..\images\${PRODUCT_ICON}"
--  !define MUI_HEADERIMAGE
--  !define MUI_HEADERIMAGE_BITMAP "..\images\install-whirl.bmp"
--  !define MUI_UNFINISHPAGE_NOAUTOCLOSE
--
--  !insertmacro MUI_PAGE_WELCOME
--  !insertmacro MUI_PAGE_LICENSE "..\COPYRIGHT.GPL"
--  !insertmacro MUI_PAGE_COMPONENTS
--  !insertmacro MUI_PAGE_DIRECTORY
--  !insertmacro MUI_PAGE_INSTFILES
--  !insertmacro MUI_PAGE_FINISH
--  
--  !insertmacro MUI_UNPAGE_CONFIRM
--  !insertmacro MUI_UNPAGE_INSTFILES  
--  !insertmacro MUI_UNPAGE_FINISH
--
--
--;--------------------------------
--;Languages
-- 
--  !insertmacro MUI_LANGUAGE "English"
--  
--;--------------------------------
--;Language Strings
--
--  LangString DESC_SecOpenVPNUserSpace ${LANG_ENGLISH} "Install ${PRODUCT_NAME} user-space components, including ${PRODUCT_UNIX_NAME}.exe."
--
--!ifdef USE_GUI
--  LangString DESC_SecOpenVPNGUI ${LANG_ENGLISH} "Install ${PRODUCT_NAME} GUI by Mathias Sundman"
+-!ifdef AMD64
+-[@@PRODUCT_TAP_ID@@.NTamd64]
+-!else
+-[@@PRODUCT_TAP_ID@@]
 -!endif
--
--  LangString DESC_SecOpenVPNEasyRSA ${LANG_ENGLISH} "Install ${PRODUCT_NAME} RSA scripts for X509 certificate management."
--
--  LangString DESC_SecOpenSSLDLLs ${LANG_ENGLISH} "Install OpenSSL DLLs locally (may be omitted if DLLs are already installed globally)."
--
--  LangString DESC_SecPKCS11DLLs ${LANG_ENGLISH} "Install PKCS#11 helper DLLs locally (may be omitted if DLLs are already installed globally)."
--
--  LangString DESC_SecLZO2DLLs ${LANG_ENGLISH} "Install LZO2 DLLs locally (may be omitted if DLLs are already installed globally)."
--
--  LangString DESC_SecMSVCR90DLL ${LANG_ENGLISH} "Install Microsoft Visual C 9.0 Runtime (may be omitted if it is already installed globally)."
--
--  LangString DESC_SecTAP ${LANG_ENGLISH} "Install/Upgrade the TAP virtual device driver.  Will not interfere with CIPE."
--
--  LangString DESC_SecService ${LANG_ENGLISH} "Install the ${PRODUCT_NAME} service wrapper (${PRODUCT_UNIX_NAME}serv.exe)"
--
--  LangString DESC_SecOpenSSLUtilities ${LANG_ENGLISH} "Install the OpenSSL Utilities (used for generating public/private key pairs)."
--
--  LangString DESC_SecAddPath ${LANG_ENGLISH} "Add ${PRODUCT_NAME} executable directory to the current user's PATH."
--
--  LangString DESC_SecAddShortcuts ${LANG_ENGLISH} "Add ${PRODUCT_NAME} shortcuts to the current user's Start Menu."
--
--  LangString DESC_SecFileAssociation ${LANG_ENGLISH} "Register ${PRODUCT_NAME} config file association (*.${SERV_CONFIG_EXT})"
--
--;--------------------------------
--;Reserve Files
--  
--  ;Things that need to be extracted on first (keep these lines before any File command!)
--  ;Only useful for BZIP2 compression
--  
--  ReserveFile "..\images\install-whirl.bmp"
--
--;--------------------------------
--;Macros
--
--!macro WriteRegStringIfUndef ROOT SUBKEY KEY VALUE
--Push $R0
--ReadRegStr $R0 "${ROOT}" "${SUBKEY}" "${KEY}"
--StrCmp $R0 "" +1 +2
--WriteRegStr "${ROOT}" "${SUBKEY}" "${KEY}" '${VALUE}'
--Pop $R0
--!macroend
--
--!macro DelRegStringIfUnchanged ROOT SUBKEY KEY VALUE
--Push $R0
--ReadRegStr $R0 "${ROOT}" "${SUBKEY}" "${KEY}"
--StrCmp $R0 '${VALUE}' +1 +2
--DeleteRegValue "${ROOT}" "${SUBKEY}" "${KEY}"
--Pop $R0
--!macroend
--
--!macro DelRegKeyIfUnchanged ROOT SUBKEY VALUE
--Push $R0
--ReadRegStr $R0 "${ROOT}" "${SUBKEY}" ""
--StrCmp $R0 '${VALUE}' +1 +2
--DeleteRegKey "${ROOT}" "${SUBKEY}"
--Pop $R0
--!macroend
--
--!macro DelRegKeyIfEmpty ROOT SUBKEY
--Push $R0
--EnumRegValue $R0 "${ROOT}" "${SUBKEY}" 1
--StrCmp $R0 "" +1 +2
--DeleteRegKey /ifempty "${ROOT}" "${SUBKEY}"
--Pop $R0
--!macroend
--
--;------------------------------------------
--;Set reboot flag based on tapinstall return
--
--Function CheckReboot
--  IntCmp $R0 1 "" noreboot noreboot
--  IntOp $R0 0 & 0
--  SetRebootFlag true
--  DetailPrint "REBOOT flag set"
-- noreboot:
--FunctionEnd
--
--;--------------------------------
--;Installer Sections
--
--Function .onInit
--  ClearErrors
--
--# Verify that user has admin privs
--  UserInfo::GetName
--  IfErrors ok
--  Pop $R0
--  UserInfo::GetAccountType
--  Pop $R1
--  StrCmp $R1 "Admin" ok
--    Messagebox MB_OK "Administrator privileges required to install ${PRODUCT_NAME} [$R0/$R1]"
--    Abort
--  ok:
--
--# Delete previous start menu
--  RMDir /r $SMPROGRAMS\${PRODUCT_NAME}
--
--# FIXME: reimplement Windows version checking code that was located here, but 
--# disabled intentionally to avoid Windows 7 issues. This should do it:
--#
--# http://nsis.sourceforge.net/Get_Windows_version
--#
--# Blacklisting should be safer than whitelisting used originally.
--
--FunctionEnd
--
--!ifndef SF_SELECTED
--!define SF_SELECTED 1
--!endif
--
--;--------------------
--;Pre-install section
--
--Section -pre
--
--  ; Stop OpenVPN if currently running
--  DetailPrint "Previous Service REMOVE (if exists)"
--  nsExec::ExecToLog '"$INSTDIR\bin\${PRODUCT_UNIX_NAME}serv.exe" -remove'
--  Pop $R0 # return value/error/timeout
--
--  Sleep 3000
--
--  # Fix for Trac ticket 120. Remove after 2.3 has been released.
--  !ifdef USE_GUI
--    SetShellVarContext current
--    Delete "$DESKTOP\${PRODUCT_NAME} GUI.lnk"
--  !endif
--
--SectionEnd
--
--Section "${PRODUCT_NAME} User-Space Components" SecOpenVPNUserSpace
--
--  SetOverwrite on
--  SetOutPath "$INSTDIR\bin"
--
--  File "${BIN}\${PRODUCT_UNIX_NAME}.exe"
--
--SectionEnd
--
--!ifdef USE_GUI
--Section "${PRODUCT_NAME} GUI" SecOpenVPNGUI
--
--  SetOverwrite on
--  SetOutPath "$INSTDIR\bin"
--
--  File "${BIN}\${OPENVPN_GUI}"
--
--SectionEnd
--!endif
--
--Section "${PRODUCT_NAME} RSA Certificate Management Scripts" SecOpenVPNEasyRSA
--
--  SetOverwrite on
--  SetOutPath "$INSTDIR\easy-rsa"
--
--  # FIXME: the easy-rsa directory would need cleaning up
--
--  # Original nsi script looked for ${EASYRSA}\2.0\openssl.cnf.sample. A newer
--  # openssl.cnf is needed on OpenVPN 2.2+.
--  File "${EASYRSA}\2.0\openssl-1.0.0.cnf"
--
--  File "${EASYRSA}\Windows\vars.bat.sample"
--
--  File "${EASYRSA}\Windows\init-config.bat"
--
--  File "${EASYRSA}\Windows\README.txt"
--  File "${EASYRSA}\Windows\build-ca.bat"
--  File "${EASYRSA}\Windows\build-dh.bat"
--  File "${EASYRSA}\Windows\build-key-server.bat"
--  File "${EASYRSA}\Windows\build-key.bat"
--  File "${EASYRSA}\Windows\build-key-pkcs12.bat"
--  File "${EASYRSA}\Windows\clean-all.bat"
--  File "${EASYRSA}\Windows\index.txt.start"
--  File "${EASYRSA}\Windows\revoke-full.bat"
--  File "${EASYRSA}\Windows\serial.start"
--
--SectionEnd
--
--Section "${PRODUCT_NAME} Service" SecService
--
--  SetOverwrite on
--
--  SetOutPath "$INSTDIR\bin"
--  File "${BIN}\${PRODUCT_UNIX_NAME}serv.exe"
--
--  SetOutPath "$INSTDIR\config"
--
--  FileOpen $R0 "$INSTDIR\config\README.txt" w
--  FileWrite $R0 "This directory should contain ${PRODUCT_NAME} configuration files$\r$\n"
--  FileWrite $R0 "each having an extension of .${SERV_CONFIG_EXT}$\r$\n"
--  FileWrite $R0 "$\r$\n"
--  FileWrite $R0 "When ${PRODUCT_NAME} is started as a service, a separate ${PRODUCT_NAME}$\r$\n"
--  FileWrite $R0 "process will be instantiated for each configuration file.$\r$\n"
--  FileClose $R0
--
--  SetOutPath "$INSTDIR\sample-config"
--  File "${GEN}\samples\sample.${SERV_CONFIG_EXT}"
--  File "${GEN}\samples\client.${SERV_CONFIG_EXT}"
--  File "${GEN}\samples\server.${SERV_CONFIG_EXT}"
--
--  CreateDirectory "$INSTDIR\log"
--  FileOpen $R0 "$INSTDIR\log\README.txt" w
--  FileWrite $R0 "This directory will contain the log files for ${PRODUCT_NAME}$\r$\n"
--  FileWrite $R0 "sessions which are being run as a service.$\r$\n"
--  FileClose $R0
--
--SectionEnd
--
--Section "${PRODUCT_NAME} File Associations" SecFileAssociation
--SectionEnd
--
--Section "OpenSSL DLLs" SecOpenSSLDLLs
--
--  SetOverwrite on
--  SetOutPath "$INSTDIR\bin"
--  File "${BIN}\libeay32.dll"
--  File "${BIN}\ssleay32.dll"
--
--SectionEnd
--
--Section "OpenSSL Utilities" SecOpenSSLUtilities
--
--  SetOverwrite on
--  SetOutPath "$INSTDIR\bin"
--  File "${BIN}\openssl.exe"
--
--SectionEnd
--
--Section "PKCS#11 DLLs" SecPKCS11DLLs
--
--  SetOverwrite on
--  SetOutPath "$INSTDIR\bin"
--  File "${BIN}\libpkcs11-helper-1.dll"
--
--SectionEnd
--
--Section "LZO2 DLLs" SecLZO2DLLs
--
--  SetOverwrite on
--  SetOutPath "$INSTDIR\bin"
--  File "${BIN}\lzo2.dll"
--
--SectionEnd
--
--Section "Microsoft Visual C 9.0 Runtime DLL" SecMSVCR90DLL
--
--  SetOverwrite on
--  SetOutPath "$INSTDIR\bin"
--  File "${BIN}\Microsoft.VC90.CRT\msvcr90.dll"
--  File "${BIN}\Microsoft.VC90.CRT\Microsoft.VC90.CRT.manifest"
--
--SectionEnd
--
--
--
--
--Section "TAP Virtual Ethernet Adapter" SecTAP
--
--  SetOverwrite on
--
--  # Generate TAP driver install script dynamically
--  FileOpen $R0 "$INSTDIR\bin\addtap.bat" w
--  FileWrite $R0 "rem Add a new TAP virtual ethernet adapter$\r$\n"
--  FileWrite $R0 '"$INSTDIR\bin\tapinstall.exe" install "$INSTDIR\driver\OemWin2k.inf" ${TAP}$\r$\n'
--  FileWrite $R0 "pause$\r$\n"
--  FileClose $R0
--
--  # Generate TAP driver removal script dynamically
--  FileOpen $R0 "$INSTDIR\bin\deltapall.bat" w
--  FileWrite $R0 "echo WARNING: this script will delete ALL TAP virtual adapters (use the device manager to delete adapters one at a time)$\r$\n"
--  FileWrite $R0 "pause$\r$\n"
--  FileWrite $R0 '"$INSTDIR\bin\tapinstall.exe" remove ${TAP}$\r$\n'
--  FileWrite $R0 "pause$\r$\n"
--  FileClose $R0
--
--  ; Check if we are running on a 64 bit system.
--  System::Call "kernel32::GetCurrentProcess() i .s"
--  System::Call "kernel32::IsWow64Process(i s, *i .r0)"
--  IntCmp $0 0 tap-32bit
--
--; tap-64bit:
--
--  DetailPrint "We are running on a 64-bit system."
--
--  SetOutPath "$INSTDIR\bin"
--
--  File "${GEN}\amd64\tapinstall.exe"
--
--  SetOutPath "$INSTDIR\driver"
--
--  File "${GEN}\amd64\OemWin2k.inf"
--  File "${GEN}\amd64\${TAPDRV}"
--
--  # Don't try to install TAP driver signature if it does not exist.
--  File /nonfatal "${GEN}\amd64\${PRODUCT_TAP_COMPONENT_ID}.cat"
--
--goto tapend
--
--tap-32bit:
--
--  DetailPrint "We are running on a 32-bit system."
--
--  SetOutPath "$INSTDIR\bin"
--  File "${GEN}\i386\tapinstall.exe"
--
--  SetOutPath "$INSTDIR\driver"
--  File "${GEN}\i386\OemWin2k.inf"
--  File "${GEN}\i386\${TAPDRV}"
--
--  # Don't try to install TAP driver signature if it does not exist.
--  File /nonfatal "${GEN}\i386\${PRODUCT_TAP_COMPONENT_ID}.cat"
--
--  tapend:
--
--SectionEnd
--
--Section "Add ${PRODUCT_NAME} to PATH" SecAddPath
--
--  ; remove previously set path (if any)
--  Push "$INSTDIR\bin"
--  Call RemoveFromPath
--
--  ; append our bin directory to end of current user path
--  Push "$INSTDIR\bin"
--  Call AddToPath
--
--SectionEnd
--
--Section "Add Shortcuts to Start Menu" SecAddShortcuts
--
--  ; Required to handle shortcuts properly on Vista/7
--  SetShellVarContext all
--  SetOverwrite on
--  CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
--  CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}\Documentation"
--  WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\Documentation\${PRODUCT_NAME} Windows Notes.url" "InternetShortcut" "URL" "http://openvpn.net/INSTALL-win32.html"
--  WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\Documentation\${PRODUCT_NAME} Manual Page.url" "InternetShortcut" "URL" "http://openvpn.net/man.html"
--  WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\Documentation\${PRODUCT_NAME} HOWTO.url" "InternetShortcut" "URL" "http://openvpn.net/howto.html"
--  WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\Documentation\${PRODUCT_NAME} Web Site.url" "InternetShortcut" "URL" "http://openvpn.net/"
--  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall ${PRODUCT_NAME}.lnk" "$INSTDIR\Uninstall.exe"
--
--SectionEnd
--
--;--------------------
--;Post-install section
--
--Section -post
--
--  SetOverwrite on
--
--  ; delete old tapinstall.exe
--  ;Delete "$INSTDIR\bin\tapinstall.exe"
--
--  ; Store README, license, icon
--  SetOverwrite on
--  SetOutPath $INSTDIR
--  File "..\INSTALL-win32.txt"
--  File "..\COPYRIGHT.GPL"
--  File "..\images\${PRODUCT_ICON}"
--
--  ; store sample config files
--  !ifdef SAMPCONF_DIR
--    SetOverwrite on
--    SetOutPath "$INSTDIR\config"
--  !ifdef SAMPCONF_CONF
--    File "${GEN}\conf\${SAMPCONF_CONF}"
--  !endif
--  !ifdef SAMPCONF_CONF2
--    File "${GEN}\conf\${SAMPCONF_CONF2}"
--  !endif
--  !ifdef SAMPCONF_P12
--    File "${GEN}\conf\${SAMPCONF_P12}"
--  !endif
--  !ifdef SAMPCONF_TA
--    File "${GEN}\conf\${SAMPCONF_TA}"
--  !endif
--  !ifdef SAMPCONF_CA
--    File "${GEN}\conf\${SAMPCONF_CA}"
--  !endif
--  !ifdef SAMPCONF_CRT
--    File "${GEN}\conf\${SAMPCONF_CRT}"
--  !endif
--  !ifdef SAMPCONF_KEY
--    File "${GEN}\conf\${SAMPCONF_KEY}"
--  !endif
--  !ifdef SAMPCONF_DH
--    File "${GEN}\conf\${SAMPCONF_DH}"
--  !endif
--  !endif
--
--  ; Try to extract files if present
--  !ifdef EXTRACT_FILES
--    Push "$INSTDIR"
--    Call MultiFileExtract
--    Pop $R0
--    IntCmp $R0 0 +3 +1 +1
--    DetailPrint "MultiFileExtract Failed status=$R0"
--    goto +2
--    DetailPrint "MultiFileExtract Succeeded"
--  !endif
--
--  ;
--  ; install/upgrade TAP driver if selected, using tapinstall.exe
--  ;
--  SectionGetFlags ${SecTAP} $R0
--  IntOp $R0 $R0 & ${SF_SELECTED}
--  IntCmp $R0 ${SF_SELECTED} "" notap notap
--    ; TAP install/update was selected.
--    ; Should we install or update?
--    ; If tapinstall error occurred, $5 will
--    ; be nonzero.
--    IntOp $5 0 & 0
--    nsExec::ExecToStack '"$INSTDIR\bin\tapinstall.exe" hwids ${TAP}'
--    Pop $R0 # return value/error/timeout
--    IntOp $5 $5 | $R0
--    DetailPrint "tapinstall hwids returned: $R0"
--
--    ; If tapinstall output string contains "${TAP}" we assume
--    ; that TAP device has been previously installed,
--    ; therefore we will update, not install.
--    Push "${TAP}"
--    Call StrStr
--    Pop $R0
--
--    IntCmp $5 0 "" tapinstall_check_error tapinstall_check_error
--    IntCmp $R0 -1 tapinstall
--
-- ;tapupdate:
--    DetailPrint "TAP UPDATE"
--    nsExec::ExecToLog '"$INSTDIR\bin\tapinstall.exe" update "$INSTDIR\driver\OemWin2k.inf" ${TAP}'
--    Pop $R0 # return value/error/timeout
--    Call CheckReboot
--    IntOp $5 $5 | $R0
--    DetailPrint "tapinstall update returned: $R0"
--    Goto tapinstall_check_error
--
-- tapinstall:
--    DetailPrint "TAP REMOVE OLD TAP"
--
--    nsExec::ExecToLog '"$INSTDIR\bin\tapinstall.exe" remove TAP0801'
--    Pop $R0 # return value/error/timeout
--    DetailPrint "tapinstall remove TAP0801 returned: $R0"
--
--    DetailPrint "TAP INSTALL (${TAP})"
--    nsExec::ExecToLog '"$INSTDIR\bin\tapinstall.exe" install "$INSTDIR\driver\OemWin2k.inf" ${TAP}'
--    Pop $R0 # return value/error/timeout
--    Call CheckReboot
--    IntOp $5 $5 | $R0
--    DetailPrint "tapinstall install returned: $R0"
--
-- tapinstall_check_error:
--    DetailPrint "tapinstall cumulative status: $5"
--    IntCmp $5 0 notap
--    MessageBox MB_OK "An error occurred installing the TAP device driver."
--
-- notap:
--
--  ; Store install folder in registry
--  WriteRegStr HKLM SOFTWARE\${PRODUCT_NAME} "" $INSTDIR
--
--  ; install as a service if requested
--  SectionGetFlags ${SecService} $R0
--  IntOp $R0 $R0 & ${SF_SELECTED}
--  IntCmp $R0 ${SF_SELECTED} "" noserv noserv
--
--    ; set registry parameters for openvpnserv	
--    !insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PRODUCT_NAME}" "config_dir"  "${SERV_CONFIG_DIR}"
--    !insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PRODUCT_NAME}" "config_ext"  "${SERV_CONFIG_EXT}"
--    !insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PRODUCT_NAME}" "exe_path"    "${SERV_EXE_PATH}"
--    !insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PRODUCT_NAME}" "log_dir"     "${SERV_LOG_DIR}"
--    !insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PRODUCT_NAME}" "priority"    "${SERV_PRIORITY}"
--    !insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PRODUCT_NAME}" "log_append"  "${SERV_LOG_APPEND}"
--
--    ; install openvpnserv as a service (to be started manually from service control manager)
--    DetailPrint "Service INSTALL"
--    nsExec::ExecToLog '"$INSTDIR\bin\${PRODUCT_UNIX_NAME}serv.exe" -install'
--    Pop $R0 # return value/error/timeout
--
-- noserv:
--
--  ; Create file association if requested
-- fileass:
--  SectionGetFlags ${SecFileAssociation} $R0
--  IntOp $R0 $R0 & ${SF_SELECTED}
--  IntCmp $R0 ${SF_SELECTED} "" noass noass
--    WriteRegStr HKCR ".${SERV_CONFIG_EXT}" "" "${PRODUCT_NAME}File"
--    WriteRegStr HKCR "${PRODUCT_NAME}File" "" "${PRODUCT_NAME} Config File"
--    WriteRegStr HKCR "${PRODUCT_NAME}File\shell" "" "open"
--    WriteRegStr HKCR "${PRODUCT_NAME}File\DefaultIcon" "" "$INSTDIR\${PRODUCT_ICON},0"
--    WriteRegStr HKCR "${PRODUCT_NAME}File\shell\open\command" "" 'notepad.exe "%1"'
--    WriteRegStr HKCR "${PRODUCT_NAME}File\shell\run" "" "Start ${PRODUCT_NAME} on this config file"
--    WriteRegStr HKCR "${PRODUCT_NAME}File\shell\run\command" "" '"$INSTDIR\bin\${PRODUCT_UNIX_NAME}.exe" --pause-exit --config "%1"'
--
-- ; Create start menu folders
-- noass:
--  CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}\Utilities"
--  CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}\Shortcuts"
--
--  ; Create start menu and desktop shortcuts to OpenVPN GUI
--  !ifdef USE_GUI
--      CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME} GUI.lnk" "$INSTDIR\bin\${OPENVPN_GUI}" ""
--      CreateShortcut "$DESKTOP\${PRODUCT_NAME} GUI.lnk" "$INSTDIR\bin\${OPENVPN_GUI}"
--  !endif
--
-- ; Create start menu shortcuts to addtap.bat and deltapall.bat
-- tryaddtap:
--    IfFileExists "$INSTDIR\bin\addtap.bat" "" trydeltap
--      CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Utilities\Add a new TAP virtual ethernet adapter.lnk" "$INSTDIR\bin\addtap.bat" ""
--
-- trydeltap:
--    IfFileExists "$INSTDIR\bin\deltapall.bat" "" config_shortcut
--      CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Utilities\Delete ALL TAP virtual ethernet adapters.lnk" "$INSTDIR\bin\deltapall.bat" ""
--
-- ; Create start menu shortcuts for config and log directories
-- config_shortcut:
--    IfFileExists "$INSTDIR\config" "" log_shortcut
--      CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Shortcuts\${PRODUCT_NAME} configuration file directory.lnk" "$INSTDIR\config" ""
--
-- log_shortcut:
--    IfFileExists "$INSTDIR\log" "" samp_shortcut
--      CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Shortcuts\${PRODUCT_NAME} log file directory.lnk" "$INSTDIR\log" ""
--
-- samp_shortcut:
--    IfFileExists "$INSTDIR\sample-config" "" genkey_shortcut
--      CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Shortcuts\${PRODUCT_NAME} Sample Configuration Files.lnk" "$INSTDIR\sample-config" ""
--
-- genkey_shortcut:
--    IfFileExists "$INSTDIR\bin\${PRODUCT_UNIX_NAME}.exe" "" noshortcuts
--      IfFileExists "$INSTDIR\config" "" noshortcuts
--        CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Utilities\Generate a static ${PRODUCT_NAME} key.lnk" "$INSTDIR\bin\${PRODUCT_UNIX_NAME}.exe" '--pause-exit --verb 3 --genkey --secret "$INSTDIR\config\key.txt"' "$INSTDIR\${PRODUCT_ICON}" 0
--
-- noshortcuts:
--  ; Create uninstaller
--  WriteUninstaller "$INSTDIR\Uninstall.exe"
--
--  ; Show up in Add/Remove programs
--  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "DisplayName" "${PRODUCT_NAME} ${VERSION}"
--  WriteRegExpandStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "UninstallString" "$INSTDIR\Uninstall.exe"
--  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "DisplayIcon" "$INSTDIR\${PRODUCT_ICON}"
--  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "DisplayVersion" "${VERSION}"
--
--  ; Advise a reboot
--  ;Messagebox MB_OK "IMPORTANT: Rebooting the system is advised in order to finalize TAP driver installation/upgrade (this is an informational message only, pressing OK will not reboot)."
--
--SectionEnd
--
--;--------------------------------
--;Descriptions
--
--!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
--  !insertmacro MUI_DESCRIPTION_TEXT ${SecOpenVPNUserSpace} $(DESC_SecOpenVPNUserSpace)
--  !ifdef USE_GUI
--    !insertmacro MUI_DESCRIPTION_TEXT ${SecOpenVPNGUI} $(DESC_SecOpenVPNGUI)
--  !endif
--  !insertmacro MUI_DESCRIPTION_TEXT ${SecOpenVPNEasyRSA} $(DESC_SecOpenVPNEasyRSA)
--  !insertmacro MUI_DESCRIPTION_TEXT ${SecTAP} $(DESC_SecTAP)
--  !insertmacro MUI_DESCRIPTION_TEXT ${SecOpenSSLUtilities} $(DESC_SecOpenSSLUtilities)
--  !insertmacro MUI_DESCRIPTION_TEXT ${SecOpenSSLDLLs} $(DESC_SecOpenSSLDLLs)
--  !insertmacro MUI_DESCRIPTION_TEXT ${SecPKCS11DLLs} $(DESC_SecPKCS11DLLs)
--  !insertmacro MUI_DESCRIPTION_TEXT ${SecLZO2DLLs} $(DESC_SecLZO2DLLs)
--  !insertmacro MUI_DESCRIPTION_TEXT ${SecMSVCR90DLL} $(DESC_SecMSVCR90DLL)
--  !insertmacro MUI_DESCRIPTION_TEXT ${SecAddPath} $(DESC_SecAddPath)
--  !insertmacro MUI_DESCRIPTION_TEXT ${SecAddShortcuts} $(DESC_SecAddShortcuts)
--
--  !insertmacro MUI_DESCRIPTION_TEXT ${SecService} $(DESC_SecService)
--  !insertmacro MUI_DESCRIPTION_TEXT ${SecFileAssociation} $(DESC_SecFileAssociation)
--!insertmacro MUI_FUNCTION_DESCRIPTION_END
--
--;--------------------------------
--;Uninstaller Section
--
--Function un.onInit
--  ClearErrors
--  UserInfo::GetName
--  IfErrors ok
--  Pop $R0
--  UserInfo::GetAccountType
--  Pop $R1
--  StrCmp $R1 "Admin" ok
--    Messagebox MB_OK "Administrator privileges required to uninstall ${PRODUCT_NAME} [$R0/$R1]"
--    Abort
--  ok:
--FunctionEnd
--
--Section "Uninstall"
--
--  ; Required to handle shortcuts properly on Vista/7
--  SetShellVarContext all
--
--  ; Stop OpenVPN if currently running
--
--  DetailPrint "Service REMOVE"
--  nsExec::ExecToLog '"$INSTDIR\bin\${PRODUCT_UNIX_NAME}serv.exe" -remove'
--  Pop $R0 # return value/error/timeout
--  
--  Sleep 3000
--
--  DetailPrint "TAP REMOVE"
--  nsExec::ExecToLog '"$INSTDIR\bin\tapinstall.exe" remove ${TAP}'
--  Pop $R0 # return value/error/timeout
--  DetailPrint "tapinstall remove returned: $R0"
--
--  Push "$INSTDIR\bin"
--  Call un.RemoveFromPath
--
--  RMDir /r $SMPROGRAMS\${PRODUCT_NAME}
--
--  ; delete sample config files
--  !ifdef SAMPCONF_DIR
--  !ifdef SAMPCONF_CONF
--    Delete "$INSTDIR\config\${SAMPCONF_CONF}"
--  !endif
--  !ifdef SAMPCONF_CONF2
--    Delete "$INSTDIR\config\${SAMPCONF_CONF2}"
--  !endif
--  !ifdef SAMPCONF_P12
--    Delete "$INSTDIR\config\${SAMPCONF_P12}"
--  !endif
--  !ifdef SAMPCONF_TA
--    Delete "$INSTDIR\config\${SAMPCONF_TA}"
--  !endif
--  !ifdef SAMPCONF_CA
--    Delete "$INSTDIR\config\${SAMPCONF_CA}"
--  !endif
--  !ifdef SAMPCONF_CRT
--    Delete "$INSTDIR\config\${SAMPCONF_CRT}"
--  !endif
--  !ifdef SAMPCONF_KEY
--    Delete "$INSTDIR\config\${SAMPCONF_KEY}"
--  !endif
--  !ifdef SAMPCONF_DH
--    Delete "$INSTDIR\config\${SAMPCONF_DH}"
--  !endif
--  !endif
--
--  !ifdef USE_GUI
--    Delete "$INSTDIR\bin\${OPENVPN_GUI}"
--    Delete "$DESKTOP\${PRODUCT_NAME} GUI.lnk"
--  !endif
--
--  # Files installed by openvpn-2.2-beta5 and earlier
--  Delete "$INSTDIR\easy-rsa\openssl.cnf.sample"
--  Delete "$INSTDIR\license"
--  Delete "$INSTDIR\bin\libssl32.dll"
--
--  Delete "$INSTDIR\bin\${PRODUCT_UNIX_NAME}.exe"
--  Delete "$INSTDIR\bin\${PRODUCT_UNIX_NAME}serv.exe"
--  Delete "$INSTDIR\bin\libeay32.dll"
--  Delete "$INSTDIR\bin\ssleay32.dll"
--  Delete "$INSTDIR\bin\libpkcs11-helper-1.dll"
--  Delete "$INSTDIR\bin\lzo2.dll"
--  Delete "$INSTDIR\bin\msvcr90.dll"
--  Delete "$INSTDIR\bin\Microsoft.VC90.CRT.manifest"
--  Delete "$INSTDIR\bin\tapinstall.exe"
--  Delete "$INSTDIR\bin\addtap.bat"
--  Delete "$INSTDIR\bin\deltapall.bat"
--
--  Delete "$INSTDIR\config\README.txt"
--  Delete "$INSTDIR\config\sample.${SERV_CONFIG_EXT}.txt"
--
--  Delete "$INSTDIR\log\README.txt"
--
--  Delete "$INSTDIR\driver\OemWin2k.inf"
--  Delete "$INSTDIR\driver\${PRODUCT_TAP_COMPONENT_ID}.cat"
--  Delete "$INSTDIR\driver\${TAPDRV}"
--
--  Delete "$INSTDIR\bin\openssl.exe"
--
--  Delete "$INSTDIR\INSTALL-win32.txt"
--  Delete "$INSTDIR\${PRODUCT_ICON}"
--  Delete "$INSTDIR\COPYRIGHT.GPL"
--  Delete "$INSTDIR\Uninstall.exe"
--
--  Delete "$INSTDIR\easy-rsa\openssl.cnf"
--  Delete "$INSTDIR\easy-rsa\vars.bat.sample"
--  Delete "$INSTDIR\easy-rsa\init-config.bat"
--  Delete "$INSTDIR\easy-rsa\README.txt"
--  Delete "$INSTDIR\easy-rsa\build-ca.bat"
--  Delete "$INSTDIR\easy-rsa\build-dh.bat"
--  Delete "$INSTDIR\easy-rsa\build-key-server.bat"
--  Delete "$INSTDIR\easy-rsa\build-key.bat"
--  Delete "$INSTDIR\easy-rsa\build-key-pkcs12.bat"
--  Delete "$INSTDIR\easy-rsa\clean-all.bat"
--  Delete "$INSTDIR\easy-rsa\index.txt.start"
--  Delete "$INSTDIR\easy-rsa\revoke-key.bat"
--  Delete "$INSTDIR\easy-rsa\revoke-full.bat"
--  Delete "$INSTDIR\easy-rsa\serial.start"
--
--  Delete "$INSTDIR\sample-config\*.${PRODUCT_FILE_EXT}"
--
--  RMDir "$INSTDIR\bin"
--  RMDir "$INSTDIR\config"
--  RMDir "$INSTDIR\driver"
--  RMDir "$INSTDIR\easy-rsa"
--  RMDir "$INSTDIR\sample-config"
--  RMDir /r "$INSTDIR\log"
--  RMDir "$INSTDIR"
--
--  !insertmacro DelRegKeyIfUnchanged HKCR ".${SERV_CONFIG_EXT}" "${PRODUCT_NAME}File"
--  DeleteRegKey HKCR "${PRODUCT_NAME}File"
--  DeleteRegKey HKLM SOFTWARE\${PRODUCT_NAME}
--  DeleteRegKey HKCU "Software\${PRODUCT_NAME}"
--  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
--
--SectionEnd
-diff --git a/win/setpath.nsi b/win/setpath.nsi
+-   %DeviceDescription% = @@PRODUCT_TAP_ID@@.ndi, @@PRODUCT_TAP_ID@@
+-
+-;---------------------------------------------------------------
+-;                             Driver Section (Done)
+-;---------------------------------------------------------------
+-
+-;----------------- Characteristics ------------
+-;    NCF_PHYSICAL = 0x04
+-;    NCF_VIRTUAL = 0x01
+-;    NCF_SOFTWARE_ENUMERATED = 0x02
+-;    NCF_HIDDEN = 0x08
+-;    NCF_NO_SERVICE = 0x10
+-;    NCF_HAS_UI = 0x80
+-;----------------- Characteristics ------------
+-
+-[@@PRODUCT_TAP_ID@@.ndi]
+-   CopyFiles       = @@PRODUCT_TAP_ID@@.driver, @@PRODUCT_TAP_ID@@.files
+-   AddReg          = @@PRODUCT_TAP_ID@@.reg
+-   AddReg          = @@PRODUCT_TAP_ID@@.params.reg
+-   Characteristics = @@PRODUCT_TAP_CHARACTERISTICS@@
+-
+-[@@PRODUCT_TAP_ID@@.ndi.Services]
+-   AddService = @@PRODUCT_TAP_ID@@,        2, @@PRODUCT_TAP_ID@@.service
+-
+-[@@PRODUCT_TAP_ID@@.reg]
+-   HKR, Ndi,            Service,      0, "@@PRODUCT_TAP_ID@@"
+-   HKR, Ndi\Interfaces, UpperRange,   0, "ndis5"
+-   HKR, Ndi\Interfaces, LowerRange,   0, "ethernet"
+-   HKR, ,               Manufacturer, 0, "%Provider%"
+-   HKR, ,               ProductName,  0, "%DeviceDescription%"
+-
+-[@@PRODUCT_TAP_ID@@.params.reg]
+-   HKR, Ndi\params\MTU,                  ParamDesc, 0, "MTU"
+-   HKR, Ndi\params\MTU,                  Type,      0, "int"
+-   HKR, Ndi\params\MTU,                  Default,   0, "1500"
+-   HKR, Ndi\params\MTU,                  Optional,  0, "0"
+-   HKR, Ndi\params\MTU,                  Min,       0, "100"
+-   HKR, Ndi\params\MTU,                  Max,       0, "1500"
+-   HKR, Ndi\params\MTU,                  Step,      0, "1"
+-   HKR, Ndi\params\MediaStatus,          ParamDesc, 0, "Media Status"
+-   HKR, Ndi\params\MediaStatus,          Type,      0, "enum"
+-   HKR, Ndi\params\MediaStatus,          Default,   0, "0"
+-   HKR, Ndi\params\MediaStatus,          Optional,  0, "0"
+-   HKR, Ndi\params\MediaStatus\enum,     "0",       0, "Application Controlled"
+-   HKR, Ndi\params\MediaStatus\enum,     "1",       0, "Always Connected"
+-   HKR, Ndi\params\MAC,                  ParamDesc, 0, "MAC Address"
+-   HKR, Ndi\params\MAC,                  Type,      0, "edit"
+-   HKR, Ndi\params\MAC,                  Optional,  0, "1"
+-   HKR, Ndi\params\AllowNonAdmin,        ParamDesc, 0, "Non-Admin Access"
+-   HKR, Ndi\params\AllowNonAdmin,        Type,      0, "enum"
+-   HKR, Ndi\params\AllowNonAdmin,        Default,   0, "1"
+-   HKR, Ndi\params\AllowNonAdmin,        Optional,  0, "0"
+-   HKR, Ndi\params\AllowNonAdmin\enum,   "0",       0, "Not Allowed"
+-   HKR, Ndi\params\AllowNonAdmin\enum,   "1",       0, "Allowed"
+-
+-;----------------------------------------------------------------
+-;                             Service Section
+-;----------------------------------------------------------------
+-
+-;---------- Service Type -------------
+-;    SERVICE_KERNEL_DRIVER     = 0x01
+-;    SERVICE_WIN32_OWN_PROCESS = 0x10
+-;---------- Service Type -------------
+-
+-;---------- Start Mode ---------------
+-;    SERVICE_BOOT_START   = 0x0
+-;    SERVICE_SYSTEM_START = 0x1
+-;    SERVICE_AUTO_START   = 0x2
+-;    SERVICE_DEMAND_START = 0x3
+-;    SERVICE_DISABLED     = 0x4
+-;---------- Start Mode ---------------
+-
+-[@@PRODUCT_TAP_ID@@.service]
+-   DisplayName = %DeviceDescription%
+-   ServiceType = 1
+-   StartType = 3
+-   ErrorControl = 1
+-   LoadOrderGroup = NDIS
+-   ServiceBinary = %12%\@@PRODUCT_TAP_ID@@.sys
+-
+-;-----------------------------------------------------------------
+-;                                File Installation
+-;-----------------------------------------------------------------
+-
+-;----------------- Copy Flags ------------
+-;    COPYFLG_NOSKIP = 0x02
+-;    COPYFLG_NOVERSIONCHECK = 0x04
+-;----------------- Copy Flags ------------
+-
+-; SourceDisksNames
+-; diskid = description[, [tagfile] [, <unused>, subdir]]
+-; 1 = "Intel Driver Disk 1",e100bex.sys,,
+-
+-[SourceDisksNames]
+-   1 = %DeviceDescription%, @@PRODUCT_TAP_ID@@.sys
+-
+-; SourceDisksFiles
+-; filename_on_source = diskID[, [subdir][, size]]
+-; e100bex.sys = 1,, ; on distribution disk 1
+-
+-[SourceDisksFiles]
+-@@PRODUCT_TAP_ID@@.sys = 1
+-
+-[DestinationDirs]
+-   @@PRODUCT_TAP_ID@@.files  = 11
+-   @@PRODUCT_TAP_ID@@.driver = 12
+-
+-[@@PRODUCT_TAP_ID@@.files]
+-;   TapPanel.cpl,,,6   ; COPYFLG_NOSKIP | COPYFLG_NOVERSIONCHECK
+-;   cipsrvr.exe,,,6     ; COPYFLG_NOSKIP | COPYFLG_NOVERSIONCHECK
+-
+-[@@PRODUCT_TAP_ID@@.driver]
+-   @@PRODUCT_TAP_ID@@.sys,,,6     ; COPYFLG_NOSKIP | COPYFLG_NOVERSIONCHECK
+-
+-;---------------------------------------------------------------
+-;                                      End
+-;---------------------------------------------------------------
+diff --git a/tap-win32/instance.c b/tap-win32/instance.c
 deleted file mode 100755
-index a9626c3..0000000
---- a/win/setpath.nsi
+index 182cee8..0000000
+--- a/tap-win32/instance.c
 +++ /dev/null
-@@ -1,231 +0,0 @@
--; Modify the user's PATH variable.
--;
--; Modified by JY to have both a RemoveFromPath
--; and an un.RemoveFromPath which are basically
--; copies of each other.  Why does NSIS demand
--; this nonsense?
--;
--; Modified Feb 14, 2005 by Mathias Sundman:
--;   Added code to remove the semicolon at the end of the path
--;   when uninstalling.
--;
--;   Added code to make sure we don't insert an extra semicolon
--;   before our path if there already exist one at the end of
--;   the original path.
--;
--;   Removed duplicated "un. and install" functions and made
--;   macros to duplicate the code instead.
+@@ -1,241 +0,0 @@
+-/*
+- *  TAP-Win32/TAP-Win64 -- A kernel driver to provide virtual tap
+- *                         device functionality on Windows.
+- *
+- *  This code was inspired by the CIPE-Win32 driver by Damion K. Wilson.
+- *
+- *  This source code is Copyright (C) 2002-2010 OpenVPN Technologies, Inc.,
+- *  and is released under the GPL version 2 (see below).
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program (see the file COPYING included with this
+- *  distribution); if not, write to the Free Software Foundation, Inc.,
+- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+- */
 -
--; example usage
--;
--;Section "Add to path"
--;  Push $INSTDIR
--;  Call AddToPath
--;SectionEnd
--;
--;# ...
--;
--;Section "uninstall"
--;  # ...
--;  Push $INSTDIR
--;  Call un.RemoveFromPath
--;  # ...
--;SectionEnd
+-#define INSTANCE_KEY(a) ((PVOID)((a)->m_Extension.m_TapDevice))
 -
--!verbose 3
--!include "WinMessages.NSH"
--!verbose 4
+-#define N_INSTANCE_BUCKETS 256
 -
--;====================================================
--; AddToPath - Adds the given dir to the search path.
--;        Input - head of the stack
--;        Note - Win9x systems requires reboot
--;====================================================
--Function AddToPath
--  Exch $0
--  Push $1
--  Push $2
+-typedef struct _INSTANCE {
+-  struct _INSTANCE *next;
+-  TapAdapterPointer m_Adapter;
+-} INSTANCE;
+-
+-typedef struct {
+-  INSTANCE *list;
+-  MUTEX lock;
+-} INSTANCE_BUCKET;
+-
+-typedef struct {
+-  INSTANCE_BUCKET buckets[N_INSTANCE_BUCKETS];
+-} INSTANCE_HASH;
+-
+-INSTANCE_HASH *g_InstanceHash = NULL;
+-
+-// must return a hash >= 0 and < N_INSTANCE_BUCKETS
+-int
+-InstanceHashValue (PVOID addr)
+-{
+-  UCHAR *p = (UCHAR *) &addr;
+-
+-  if (sizeof (addr) == 4)
+-    return p[0] ^ p[1] ^ p[2] ^ p[3];
+-  else if (sizeof (addr) == 8)
+-    return p[0] ^ p[1] ^ p[2] ^ p[3] ^ p[4] ^ p[5] ^ p[6] ^ p[7];
+-  else
+-    {
+-      MYASSERT (0);
+-    }
+-}
+-
+-BOOLEAN
+-InitInstanceList (VOID)
+-{
+-  MYASSERT (g_InstanceHash == NULL);
+-  g_InstanceHash = MemAlloc (sizeof (INSTANCE_HASH), TRUE);
+-  if (g_InstanceHash)
+-    {
+-      int i;
+-      for (i = 0; i < N_INSTANCE_BUCKETS; ++i)
+-	INIT_MUTEX (&g_InstanceHash->buckets[i].lock);
+-      return TRUE;
+-    }
+-  else
+-    return FALSE;
+-}
+-
+-int
+-NInstances (VOID)
+-{
+-  int i, n = 0;
+-
+-  if (g_InstanceHash)
+-    {
+-      for (i = 0; i < N_INSTANCE_BUCKETS; ++i)
+-	{
+-	  BOOLEAN got_lock;
+-	  INSTANCE_BUCKET *ib = &g_InstanceHash->buckets[i];
+-	  ACQUIRE_MUTEX_ADAPTIVE (&ib->lock, got_lock);
+-
+-	  if (got_lock)
+-	    {
+-	      INSTANCE *current;
+-	      for (current = ib->list; current != NULL; current = current->next)
+-		++n;
+-	      RELEASE_MUTEX (&ib->lock);
+-	    }
+-	  else
+-	    return -1;
+-	}
+-    }
+-
+-  return n;
+-}
+-
+-int
+-InstanceMaxBucketSize (VOID)
+-{
+-  int i, n = 0;
+-
+-  if (g_InstanceHash)
+-    {
+-      for (i = 0; i < N_INSTANCE_BUCKETS; ++i)
+-	{
+-	  BOOLEAN got_lock;
+-	  int bucket_size = 0;
+-	  INSTANCE_BUCKET *ib = &g_InstanceHash->buckets[i];
+-	  ACQUIRE_MUTEX_ADAPTIVE (&ib->lock, got_lock);
+-
+-	  if (got_lock)
+-	    {
+-	      INSTANCE *current;
+-	      for (current = ib->list; current != NULL; current = current->next)
+-		  ++bucket_size;
+-	      if (bucket_size > n)
+-		n = bucket_size;
+-	      RELEASE_MUTEX (&ib->lock);
+-	    }
+-	  else
+-	    return -1;
+-	}
+-    }
+-
+-  return n;
+-}
+-
+-VOID
+-FreeInstanceList (VOID)
+-{
+-  if (g_InstanceHash)
+-    {
+-      MYASSERT (NInstances() == 0);
+-      MemFree (g_InstanceHash, sizeof (INSTANCE_HASH));
+-      g_InstanceHash = NULL;
+-    }
+-}
+-
+-BOOLEAN
+-AddAdapterToInstanceList (TapAdapterPointer p_Adapter)
+-{
+-  BOOLEAN got_lock;
+-  BOOLEAN ret = FALSE;
+-  const int hash = InstanceHashValue(INSTANCE_KEY(p_Adapter));
+-  INSTANCE_BUCKET *ib = &g_InstanceHash->buckets[hash];
+-
+-  DEBUGP (("[TAP] AddAdapterToInstanceList hash=%d\n", hash));
+-
+-  ACQUIRE_MUTEX_ADAPTIVE (&ib->lock, got_lock);
+-
+-  if (got_lock)
+-    {
+-      INSTANCE *i = MemAlloc (sizeof (INSTANCE), FALSE);
+-      if (i)
+-	{
+-	  MYASSERT (p_Adapter);
+-	  i->m_Adapter = p_Adapter;
+-	  i->next = ib->list;
+-	  ib->list = i;
+-	  ret = TRUE;
+-	}
+-      RELEASE_MUTEX (&ib->lock);
+-    }
+-
+-  return ret;
+-}
+-
+-BOOLEAN
+-RemoveAdapterFromInstanceList (TapAdapterPointer p_Adapter)
+-{
+-  BOOLEAN got_lock;
+-  BOOLEAN ret = FALSE;
+-  INSTANCE_BUCKET *ib = &g_InstanceHash->buckets[InstanceHashValue(INSTANCE_KEY(p_Adapter))];
+-
+-  ACQUIRE_MUTEX_ADAPTIVE (&ib->lock, got_lock);
+-
+-  if (got_lock)
+-    {
+-      INSTANCE *current, *prev=NULL;
+-      for (current = ib->list; current != NULL; current = current->next)
+-	{
+-	  if (current->m_Adapter == p_Adapter) // found match
+-	    {
+-	      if (prev)
+-		prev->next = current->next;
+-	      else
+-		ib->list = current->next;
+-	      MemFree (current->m_Adapter, sizeof (TapAdapter));
+-	      MemFree (current, sizeof (INSTANCE));
+-	      ret = TRUE;
+-	      break;
+-	    }
+-	  prev = current;
+-	}
+-      RELEASE_MUTEX (&ib->lock);
+-    }
+-
+-  return ret;
+-}
+-
+-TapAdapterPointer
+-LookupAdapterInInstanceList (PDEVICE_OBJECT p_DeviceObject)
+-{
+-  BOOLEAN got_lock;
+-  TapAdapterPointer ret = NULL;
+-  INSTANCE_BUCKET *ib = &g_InstanceHash->buckets[InstanceHashValue((PVOID)p_DeviceObject)];
+-
+-  ACQUIRE_MUTEX_ADAPTIVE (&ib->lock, got_lock);
+-
+-  if (got_lock)
+-    {
+-      INSTANCE *current, *prev=NULL;
+-      for (current = ib->list; current != NULL; current = current->next)
+-	{
+-	  if (p_DeviceObject == INSTANCE_KEY (current->m_Adapter)) // found match
+-	    {
+-	      // move it to head of list
+-	      if (prev)
+-		{
+-		  prev->next = current->next;
+-		  current->next = ib->list;
+-		  ib->list = current;
+-		}
+-	      ret = ib->list->m_Adapter;
+-	      break;
+-	    }
+-	  prev = current;
+-	}
+-      RELEASE_MUTEX (&ib->lock);
+-    }
+-
+-  return ret;
+-}
+diff --git a/tap-win32/lock.h b/tap-win32/lock.h
+deleted file mode 100755
+index ea75414..0000000
+--- a/tap-win32/lock.h
++++ /dev/null
+@@ -1,75 +0,0 @@
+-/*
+- *  TAP-Win32/TAP-Win64 -- A kernel driver to provide virtual tap
+- *                         device functionality on Windows.
+- *
+- *  This code was inspired by the CIPE-Win32 driver by Damion K. Wilson.
+- *
+- *  This source code is Copyright (C) 2002-2010 OpenVPN Technologies, Inc.,
+- *  and is released under the GPL version 2 (see below).
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program (see the file COPYING included with this
+- *  distribution); if not, write to the Free Software Foundation, Inc.,
+- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+- */
+-
+-typedef struct
+-{
+-  volatile long count;
+-} MUTEX;
+-
+-#define MUTEX_SLEEP_TIME  10000 // microseconds
+-
+-#define INIT_MUTEX(m) { (m)->count = 0; }
+-
+-#define ACQUIRE_MUTEX_BLOCKING(m)                         \
+-{                                                         \
+-    while (NdisInterlockedIncrement (&((m)->count)) != 1) \
+-    {                                                     \
+-        NdisInterlockedDecrement(&((m)->count));          \
+-        NdisMSleep(MUTEX_SLEEP_TIME);                     \
+-    }                                                     \
+-}
+-
+-#define RELEASE_MUTEX(m)                                  \
+-{                                                         \
+-        NdisInterlockedDecrement(&((m)->count));          \
+-}
+-
+-#define ACQUIRE_MUTEX_NONBLOCKING(m, result)              \
+-{                                                         \
+-    if (NdisInterlockedIncrement (&((m)->count)) != 1)    \
+-    {                                                     \
+-        NdisInterlockedDecrement(&((m)->count));          \
+-        result = FALSE;                                   \
+-    }                                                     \
+-    else                                                  \
+-    {                                                     \
+-	result = TRUE;                                    \
+-    }                                                     \
+-}
+-
+-#define ACQUIRE_MUTEX_ADAPTIVE(m, result)                 \
+-{                                                         \
+-    result = TRUE;                                        \
+-    while (NdisInterlockedIncrement (&((m)->count)) != 1) \
+-    {                                                     \
+-        NdisInterlockedDecrement(&((m)->count));          \
+-        if (KeGetCurrentIrql () < DISPATCH_LEVEL)         \
+-            NdisMSleep(MUTEX_SLEEP_TIME);                 \
+-        else                                              \
+-        {                                                 \
+-	    result = FALSE;                               \
+-	    break;                                        \
+-        }                                                 \
+-    }                                                     \
+-}
+diff --git a/tap-win32/macinfo.c b/tap-win32/macinfo.c
+deleted file mode 100755
+index 8d512ec..0000000
+--- a/tap-win32/macinfo.c
++++ /dev/null
+@@ -1,154 +0,0 @@
+-/*
+- *  TAP-Win32/TAP-Win64 -- A kernel driver to provide virtual tap
+- *                         device functionality on Windows.
+- *
+- *  This code was inspired by the CIPE-Win32 driver by Damion K. Wilson.
+- *
+- *  This source code is Copyright (C) 2002-2010 OpenVPN Technologies, Inc.,
+- *  and is released under the GPL version 2 (see below).
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program (see the file COPYING included with this
+- *  distribution); if not, write to the Free Software Foundation, Inc.,
+- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+- */
+-
+-#include "macinfo.h"
+-
+-int
+-HexStringToDecimalInt (const int p_Character)
+-{
+-  int l_Value = 0;
+-
+-  if (p_Character >= 'A' && p_Character <= 'F')
+-    l_Value = (p_Character - 'A') + 10;
+-  else if (p_Character >= 'a' && p_Character <= 'f')
+-    l_Value = (p_Character - 'a') + 10;
+-  else if (p_Character >= '0' && p_Character <= '9')
+-    l_Value = p_Character - '0';
+-
+-  return l_Value;
+-}
+-
+-BOOLEAN
+-ParseMAC (MACADDR dest, const char *src)
+-{
+-  int c;
+-  int mac_index = 0;
+-  BOOLEAN high_digit = FALSE;
+-  int delim_action = 1;
+-
+-  MYASSERT (src);
+-  MYASSERT (dest);
+-
+-  CLEAR_MAC (dest);
+-
+-  while (c = *src++)
+-    {
+-      if (IsMacDelimiter (c))
+-	{
+-	  mac_index += delim_action;
+-	  high_digit = FALSE;
+-	  delim_action = 1;
+-	}
+-      else if (IsHexDigit (c))
+-	{
+-	  const int digit = HexStringToDecimalInt (c);
+-	  if (mac_index < sizeof (MACADDR))
+-	    {
+-	      if (!high_digit)
+-		{
+-		  dest[mac_index] = (char)(digit);
+-		  high_digit = TRUE;
+-		  delim_action = 1;
+-		}
+-	      else
+-		{
+-		  dest[mac_index] = (char)(dest[mac_index] * 16 + digit);
+-		  ++mac_index;
+-		  high_digit = FALSE;
+-		  delim_action = 0;
+-		}
+-	    }
+-	  else
+-	    return FALSE;
+-	}
+-      else
+-	return FALSE;
+-    }
+-
+-  return (mac_index + delim_action) >= sizeof (MACADDR);
+-}
+-
+-/*
+- * Generate a MAC using the GUID in the adapter name.
+- *
+- * The mac is constructed as 00:FF:xx:xx:xx:xx where
+- * the Xs are taken from the first 32 bits of the GUID in the
+- * adapter name.  This is similar to the Linux 2.4 tap MAC
+- * generator, except linux uses 32 random bits for the Xs.
+- *
+- * In general, this solution is reasonable for most
+- * applications except for very large bridged TAP networks,
+- * where the probability of address collisions becomes more
+- * than infintesimal.
+- *
+- * Using the well-known "birthday paradox", on a 1000 node
+- * network the probability of collision would be
+- * 0.000116292153.  On a 10,000 node network, the probability
+- * of collision would be 0.01157288998621678766.
+- */
+-
+-VOID GenerateRandomMac (MACADDR mac, const unsigned char *adapter_name)
+-{
+-  unsigned const char *cp = adapter_name;
+-  unsigned char c;
+-  unsigned int i = 2;
+-  unsigned int byte = 0;
+-  int brace = 0;
+-  int state = 0;
+-
+-  CLEAR_MAC (mac);
+-
+-  mac[0] = 0x00;
+-  mac[1] = 0xFF;
+-
+-  while (c = *cp++)
+-    {
+-      if (i >= sizeof (MACADDR))
+-	break;
+-      if (c == '{')
+-	brace = 1;
+-      if (IsHexDigit (c) && brace)
+-	{
+-	  const unsigned int digit = HexStringToDecimalInt (c);
+-	  if (state)
+-	    {
+-	      byte <<= 4;
+-	      byte |= digit;
+-	      mac[i++] = (unsigned char) byte;
+-	      state = 0;
+-	    }
+-	  else
+-	    {
+-	      byte = digit;
+-	      state = 1;
+-	    }
+-	}
+-    }
+-}
+-
+-VOID GenerateRelatedMAC (MACADDR dest, const MACADDR src, const int delta)
+-{
+-  COPY_MAC (dest, src);
+-  dest[2] += (UCHAR) delta;
+-}
+diff --git a/tap-win32/macinfo.h b/tap-win32/macinfo.h
+deleted file mode 100755
+index 51e930d..0000000
+--- a/tap-win32/macinfo.h
++++ /dev/null
+@@ -1,38 +0,0 @@
+-/*
+- *  TAP-Win32/TAP-Win64 -- A kernel driver to provide virtual tap
+- *                         device functionality on Windows.
+- *
+- *  This code was inspired by the CIPE-Win32 driver by Damion K. Wilson.
+- *
+- *  This source code is Copyright (C) 2002-2010 OpenVPN Technologies, Inc.,
+- *  and is released under the GPL version 2 (see below).
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program (see the file COPYING included with this
+- *  distribution); if not, write to the Free Software Foundation, Inc.,
+- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+- */
+-
+-#ifndef MacInfoDefined
+-#define MacInfoDefined
+-
+-//===================================================================================
+-//                                      Macros
+-//===================================================================================
+-#define IsMacDelimiter(a) (a == ':' || a == '-' || a == '.')
+-#define IsHexDigit(c) ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f'))
+-
+-#define COPY_MAC(dest, src) NdisMoveMemory ((dest), (src), sizeof (MACADDR))
+-#define CLEAR_MAC(dest)     NdisZeroMemory ((dest), sizeof (MACADDR))
+-#define MAC_EQUAL(a,b)      (memcmp ((a), (b), sizeof (MACADDR)) == 0)
+-
+-#endif
+diff --git a/tap-win32/mem.c b/tap-win32/mem.c
+deleted file mode 100755
+index 6fbbed5..0000000
+--- a/tap-win32/mem.c
++++ /dev/null
+@@ -1,186 +0,0 @@
+-/*
+- *  TAP-Win32/TAP-Win64 -- A kernel driver to provide virtual tap
+- *                         device functionality on Windows.
+- *
+- *  This code was inspired by the CIPE-Win32 driver by Damion K. Wilson.
+- *
+- *  This source code is Copyright (C) 2002-2010 OpenVPN Technologies, Inc.,
+- *  and is released under the GPL version 2 (see below).
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program (see the file COPYING included with this
+- *  distribution); if not, write to the Free Software Foundation, Inc.,
+- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+- */
+-
+-//------------------
+-// Memory Management
+-//------------------
+-
+-PVOID
+-MemAlloc (ULONG p_Size, BOOLEAN zero)
+-{
+-  PVOID l_Return = NULL;
+-
+-  if (p_Size)
+-    {
+-      __try
+-      {
+-	if (NdisAllocateMemoryWithTag (&l_Return, p_Size, 'APAT')
+-	    == NDIS_STATUS_SUCCESS)
+-	  {
+-	    if (zero)
+-	      NdisZeroMemory (l_Return, p_Size);
+-	  }
+-	else
+-	  l_Return = NULL;
+-      }
+-      __except (EXCEPTION_EXECUTE_HANDLER)
+-      {
+-	l_Return = NULL;
+-      }
+-    }
+-
+-  return l_Return;
+-}
+-
+-VOID
+-MemFree (PVOID p_Addr, ULONG p_Size)
+-{
+-  if (p_Addr && p_Size)
+-    {
+-      __try
+-      {
+-#if DBG
+-	NdisZeroMemory (p_Addr, p_Size);
+-#endif
+-	NdisFreeMemory (p_Addr, p_Size, 0);
+-      }
+-      __except (EXCEPTION_EXECUTE_HANDLER)
+-      {
+-      }
+-    }
+-}
+-
+-/*
+- * Circular queue management routines.
+- */
+-
+-#define QUEUE_BYTE_ALLOCATION(size) \
+-  (sizeof (Queue) + (size * sizeof (PVOID)))
+-
+-#define QUEUE_ADD_INDEX(var, inc) \
+-{ \
+-  var += inc; \
+-  if (var >= q->capacity) \
+-    var -= q->capacity; \
+-  MYASSERT (var < q->capacity); \
+-}
+-
+-#define QUEUE_SANITY_CHECK() \
+-  MYASSERT (q != NULL && q->base < q->capacity && q->size <= q->capacity)
+-
+-#define QueueCount(q) (q->size)
+-
+-#define UPDATE_MAX_SIZE() \
+-{ \
+-  if (q->size > q->max_size) \
+-    q->max_size = q->size; \
+-}
+-
+-Queue *
+-QueueInit (ULONG capacity)
+-{
+-  Queue *q;
+-
+-  MYASSERT (capacity > 0);
+-  q = (Queue *) MemAlloc (QUEUE_BYTE_ALLOCATION (capacity), TRUE);
+-  if (!q)
+-    return NULL;
+-
+-  q->base = q->size = 0;
+-  q->capacity = capacity;
+-  q->max_size = 0;
+-  return q;
+-}
+-
+-VOID
+-QueueFree (Queue *q)
+-{
+-  if (q)
+-    {
+-      QUEUE_SANITY_CHECK ();
+-      MemFree (q, QUEUE_BYTE_ALLOCATION (q->capacity));
+-    }
+-}
+-
+-PVOID
+-QueuePush (Queue *q, PVOID item)
+-{
+-  ULONG dest;
+-  QUEUE_SANITY_CHECK ();
+-  if (q->size == q->capacity)
+-    return NULL;
+-  dest = q->base;
+-  QUEUE_ADD_INDEX (dest, q->size);
+-  q->data[dest] = item;
+-  ++q->size;
+-  UPDATE_MAX_SIZE();
+-  return item;
+-}
+-
+-PVOID
+-QueuePop (Queue *q)
+-{
+-  ULONG oldbase;
+-  QUEUE_SANITY_CHECK ();
+-  if (!q->size)
+-    return NULL;
+-  oldbase = q->base;
+-  QUEUE_ADD_INDEX (q->base, 1);
+-  --q->size;
+-  UPDATE_MAX_SIZE();
+-  return q->data[oldbase];
+-}
+-
+-PVOID
+-QueueExtract (Queue *q, PVOID item)
+-{
+-  ULONG src, dest, count, n;
+-  QUEUE_SANITY_CHECK ();
+-  n = 0;
+-  src = dest = q->base;
+-  count = q->size;
+-  while (count--)
+-    {
+-      if (item == q->data[src])
+-	{
+-	  ++n;
+-	  --q->size;
+-	}
+-      else
+-	{
+-	  q->data[dest] = q->data[src];
+-	  QUEUE_ADD_INDEX (dest, 1);	  
+-	}
+-      QUEUE_ADD_INDEX (src, 1);
+-    }
+-  if (n)
+-    return item;
+-  else
+-    return NULL;
+-}
+-
+-#undef QUEUE_BYTE_ALLOCATION
+-#undef QUEUE_ADD_INDEX
+-#undef QUEUE_SANITY_CHECK
+-#undef UPDATE_MAX_SIZE
+diff --git a/tap-win32/proto.h b/tap-win32/proto.h
+deleted file mode 100755
+index 894a37f..0000000
+--- a/tap-win32/proto.h
++++ /dev/null
+@@ -1,224 +0,0 @@
+-/*
+- *  TAP-Win32/TAP-Win64 -- A kernel driver to provide virtual tap
+- *                         device functionality on Windows.
+- *
+- *  This code was inspired by the CIPE-Win32 driver by Damion K. Wilson.
+- *
+- *  This source code is Copyright (C) 2002-2010 OpenVPN Technologies, Inc.,
+- *  and is released under the GPL version 2 (see below).
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program (see the file COPYING included with this
+- *  distribution); if not, write to the Free Software Foundation, Inc.,
+- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+- */
+-
+-//============================================================
+-// MAC address, Ethernet header, and ARP
+-//============================================================
+-
+-#pragma pack(1)
+-
+-#define IP_HEADER_SIZE 20
+-#define IPV6_HEADER_SIZE 40
+-
+-typedef unsigned char MACADDR [6];
+-typedef unsigned long IPADDR;
+-typedef unsigned char IPV6ADDR [16];
+-
+-//-----------------
+-// Ethernet address
+-//-----------------
+-
+-typedef struct {
+-  MACADDR addr;
+-} ETH_ADDR;
+-
+-typedef struct {
+-  ETH_ADDR list[NIC_MAX_MCAST_LIST];
+-} MC_LIST;
+-
+-//----------------
+-// Ethernet header
+-//----------------
+-
+-typedef struct
+-{
+-  MACADDR dest;               /* destination eth addr	*/
+-  MACADDR src;                /* source ether addr	*/
+-
+-# define ETH_P_IP   0x0800    /* IPv4 protocol */
+-# define ETH_P_IPV6 0x86DD    /* IPv6 protocol */
+-# define ETH_P_ARP  0x0806    /* ARP protocol */
+-  USHORT proto;               /* packet type ID field	*/
+-} ETH_HEADER, *PETH_HEADER;
+-
+-//----------------
+-// ARP packet
+-//----------------
+-
+-typedef struct
+-   {
+-    MACADDR        m_MAC_Destination;        // Reverse these two
+-    MACADDR        m_MAC_Source;             // to answer ARP requests
+-    USHORT         m_Proto;                  // 0x0806
+-
+-#   define MAC_ADDR_TYPE 0x0001
+-    USHORT         m_MAC_AddressType;        // 0x0001
+-
+-    USHORT         m_PROTO_AddressType;      // 0x0800
+-    UCHAR          m_MAC_AddressSize;        // 0x06
+-    UCHAR          m_PROTO_AddressSize;      // 0x04
+-
+-#   define ARP_REQUEST 0x0001
+-#   define ARP_REPLY   0x0002
+-    USHORT         m_ARP_Operation;          // 0x0001 for ARP request, 0x0002 for ARP reply
+-
+-    MACADDR        m_ARP_MAC_Source;
+-    IPADDR         m_ARP_IP_Source;
+-    MACADDR        m_ARP_MAC_Destination;
+-    IPADDR         m_ARP_IP_Destination;
+-   }
+-ARP_PACKET, *PARP_PACKET;
+-
+-//----------
+-// IP Header
+-//----------
+-
+-typedef struct {
+-# define IPH_GET_VER(v) (((v) >> 4) & 0x0F)
+-# define IPH_GET_LEN(v) (((v) & 0x0F) << 2)
+-  UCHAR    version_len;
+-
+-  UCHAR    tos;
+-  USHORT   tot_len;
+-  USHORT   id;
+-
+-# define IP_OFFMASK 0x1fff
+-  USHORT   frag_off;
+-
+-  UCHAR    ttl;
+-
+-# define IPPROTO_UDP  17  /* UDP protocol */
+-# define IPPROTO_TCP   6  /* TCP protocol */
+-# define IPPROTO_ICMP  1  /* ICMP protocol */
+-# define IPPROTO_IGMP  2  /* IGMP protocol */
+-  UCHAR    protocol;
+-
+-  USHORT   check;
+-  ULONG    saddr;
+-  ULONG    daddr;
+-  /* The options start here. */
+-} IPHDR;
+-
+-//-----------
+-// UDP header
+-//-----------
+-
+-typedef struct {
+-  USHORT   source;
+-  USHORT   dest;
+-  USHORT   len;
+-  USHORT   check;
+-} UDPHDR;
+-
+-//--------------------------
+-// TCP header, per RFC 793.
+-//--------------------------
+-
+-typedef struct {
+-  USHORT      source;    /* source port */
+-  USHORT      dest;      /* destination port */
+-  ULONG       seq;       /* sequence number */
+-  ULONG       ack_seq;   /* acknowledgement number */
+-
+-# define TCPH_GET_DOFF(d) (((d) & 0xF0) >> 2)
+-  UCHAR       doff_res;
+-
+-# define TCPH_FIN_MASK (1<<0)
+-# define TCPH_SYN_MASK (1<<1)
+-# define TCPH_RST_MASK (1<<2)
+-# define TCPH_PSH_MASK (1<<3)
+-# define TCPH_ACK_MASK (1<<4)
+-# define TCPH_URG_MASK (1<<5)
+-# define TCPH_ECE_MASK (1<<6)
+-# define TCPH_CWR_MASK (1<<7)
+-  UCHAR       flags;
+-
+-  USHORT      window;
+-  USHORT      check;
+-  USHORT      urg_ptr;
+-} TCPHDR;
+-
+-#define	TCPOPT_EOL     0
+-#define	TCPOPT_NOP     1
+-#define	TCPOPT_MAXSEG  2
+-#define TCPOLEN_MAXSEG 4
+-
+-//------------
+-// IPv6 Header
+-//------------
+-
+-typedef struct {
+-  UCHAR    version_prio;
+-  UCHAR    flow_lbl[3];
+-  USHORT   payload_len;
+-# define IPPROTO_ICMPV6  0x3a  /* ICMP protocol v6 */
+-  UCHAR    nexthdr;
+-  UCHAR    hop_limit;
+-  IPV6ADDR saddr;
+-  IPV6ADDR daddr;
+-} IPV6HDR;
+-
+-//--------------------------------------------
+-// IPCMPv6 NS/NA Packets (RFC4443 and RFC4861)
+-//--------------------------------------------
+-
+-// Neighbor Solictiation - RFC 4861, 4.3
+-// (this is just the ICMPv6 part of the packet)
+-typedef struct {
+-  UCHAR    type;
+-# define ICMPV6_TYPE_NS	135		// neighbour solicitation
+-  UCHAR    code;
+-# define ICMPV6_CODE_0	0		// no specific sub-code for NS/NA
+-  USHORT   checksum;
+-  ULONG    reserved;
+-  IPV6ADDR target_addr;
+-} ICMPV6_NS;
+-
+-// Neighbor Advertisement - RFC 4861, 4.4 + 4.6/4.6.1
+-// (this is just the ICMPv6 payload)
+-typedef struct {
+-  UCHAR    type;
+-# define ICMPV6_TYPE_NA	136		// neighbour advertisement
+-  UCHAR    code;
+-# define ICMPV6_CODE_0	0		// no specific sub-code for NS/NA
+-  USHORT   checksum;
+-  UCHAR    rso_bits;			// Router(0), Solicited(2), Ovrrd(4)
+-  UCHAR	   reserved[3];
+-  IPV6ADDR target_addr;
+-// always include "Target Link-layer Address" option (RFC 4861 4.6.1)
+-  UCHAR    opt_type;
+-#define ICMPV6_OPTION_TLLA 2
+-  UCHAR    opt_length;
+-#define ICMPV6_LENGTH_TLLA 1		// multiplied by 8 -> 1 = 8 bytes
+-  MACADDR  target_macaddr;
+-} ICMPV6_NA;
+-
+-// this is the complete packet with Ethernet and IPv6 headers
+-typedef struct {
+-  ETH_HEADER eth;
+-  IPV6HDR    ipv6;
+-  ICMPV6_NA  icmpv6;
+-} ICMPV6_NA_PKT;
+-
+-#pragma pack()
+diff --git a/tap-win32/prototypes.h b/tap-win32/prototypes.h
+deleted file mode 100755
+index 55454d5..0000000
+--- a/tap-win32/prototypes.h
++++ /dev/null
+@@ -1,260 +0,0 @@
+-/*
+- *  TAP-Win32/TAP-Win64 -- A kernel driver to provide virtual tap
+- *                         device functionality on Windows.
+- *
+- *  This code was inspired by the CIPE-Win32 driver by Damion K. Wilson.
+- *
+- *  This source code is Copyright (C) 2002-2010 OpenVPN Technologies, Inc.,
+- *  and is released under the GPL version 2 (see below).
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program (see the file COPYING included with this
+- *  distribution); if not, write to the Free Software Foundation, Inc.,
+- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+- */
+-
+-#ifndef TAP_PROTOTYPES_DEFINED
+-#define TAP_PROTOTYPES_DEFINED
+-
+-NTSTATUS DriverEntry
+-   (
+-    IN PDRIVER_OBJECT p_DriverObject,
+-    IN PUNICODE_STRING p_RegistryPath
+-   );
+-
+-VOID TapDriverUnload
+-   (
+-    IN PDRIVER_OBJECT p_DriverObject
+-   );
+-
+-NDIS_STATUS AdapterCreate
+-   (
+-    OUT PNDIS_STATUS p_ErrorStatus,
+-    OUT PUINT p_MediaIndex,
+-    IN PNDIS_MEDIUM p_Media,
+-    IN UINT p_MediaCount,
+-    IN NDIS_HANDLE p_AdapterHandle,
+-    IN NDIS_HANDLE p_ConfigurationHandle
+-   );
+-
+-VOID AdapterHalt
+-   (
+-    IN NDIS_HANDLE p_AdapterContext
+-   );
+-
+-VOID AdapterFreeResources
+-   (
+-    TapAdapterPointer p_Adapter
+-   );
+-
+-NDIS_STATUS AdapterReset
+-   (
+-    OUT PBOOLEAN p_AddressingReset,
+-    IN NDIS_HANDLE p_AdapterContext
+-   );
+-
+-NDIS_STATUS AdapterQuery
+-   (
+-    IN NDIS_HANDLE p_AdapterContext,
+-    IN NDIS_OID p_OID,
+-    IN PVOID p_Buffer,
+-    IN ULONG p_BufferLength,
+-    OUT PULONG p_BytesWritten,
+-    OUT PULONG p_BytesNeeded
+-   );
+-
+-NDIS_STATUS AdapterModify
+-   (
+-    IN NDIS_HANDLE p_AdapterContext,
+-    IN NDIS_OID p_OID,
+-    IN PVOID p_Buffer,
+-    IN ULONG p_BufferLength,
+-    OUT PULONG p_BytesRead,
+-    OUT PULONG p_BytesNeeded
+-   );
+-
+-NDIS_STATUS AdapterTransmit
+-   (
+-    IN NDIS_HANDLE p_AdapterContext,
+-    IN PNDIS_PACKET p_Packet,
+-    IN UINT p_Flags
+-   );
+-
+-NDIS_STATUS AdapterReceive
+-   (
+-    OUT PNDIS_PACKET p_Packet,
+-    OUT PUINT p_Transferred,
+-    IN NDIS_HANDLE p_AdapterContext,
+-    IN NDIS_HANDLE p_ReceiveContext,
+-    IN UINT p_Offset,
+-    IN UINT p_ToTransfer
+-   );
+-
+-NTSTATUS TapDeviceHook
+-   (
+-    IN PDEVICE_OBJECT p_DeviceObject,
+-    IN PIRP p_IRP
+-   );
+-
+-NDIS_STATUS CreateTapDevice
+-   (
+-    TapExtensionPointer p_Extension,
+-    const char *p_Name
+-   );
+-
+-VOID DestroyTapDevice
+-   (
+-    TapExtensionPointer p_Extension
+-   );
+-
+-VOID TapDeviceFreeResources
+-   (
+-    TapExtensionPointer p_Extension
+-    );
+-
+-NTSTATUS CompleteIRP
+-   (
+-    IN PIRP p_IRP,
+-    IN TapPacketPointer p_PacketBuffer,
+-    IN CCHAR PriorityBoost
+-   );
+-
+-VOID CancelIRPCallback
+-   (
+-    IN PDEVICE_OBJECT p_DeviceObject,
+-    IN PIRP p_IRP
+-   );
+-
+-VOID CancelIRP
+-   (
+-    TapExtensionPointer p_Extension,
+-    IN PIRP p_IRP,
+-    BOOLEAN callback
+-   );
+-
+-VOID FlushQueues
+-   (
+-    TapExtensionPointer p_Extension
+-   );
+-
+-VOID ResetTapAdapterState
+-   (
+-    TapAdapterPointer p_Adapter
+-   );
+-
+-BOOLEAN ProcessARP
+-   (
+-    TapAdapterPointer p_Adapter,
+-    const PARP_PACKET src,
+-    const IPADDR adapter_ip,
+-    const IPADDR ip_network,
+-    const IPADDR ip_netmask,
+-    const MACADDR mac
+-   );
+-
+-VOID SetMediaStatus
+-   (
+-    TapAdapterPointer p_Adapter,
+-    BOOLEAN state
+-   );
+-
+-VOID InjectPacketDeferred
+-   (
+-    TapAdapterPointer p_Adapter,
+-    UCHAR *packet,
+-    const unsigned int len
+-   );
+-
+-VOID InjectPacketNow
+-   (
+-    TapAdapterPointer p_Adapter,
+-    UCHAR *packet,
+-    const unsigned int len
+-   );
+-
+-// for KDEFERRED_ROUTINE and Static Driver Verifier
+-//#include <wdm.h>
+-//KDEFERRED_ROUTINE InjectPacketDpc;
+-
+-VOID InjectPacketDpc
+-   (
+-    KDPC *Dpc,
+-    PVOID DeferredContext,
+-    PVOID SystemArgument1,
+-    PVOID SystemArgument2
+-    );
+-
+-VOID CheckIfDhcpAndTunMode
+-   (
+-    TapAdapterPointer p_Adapter
+-   );
+-
+-VOID HookDispatchFunctions();
+-
+-#if ENABLE_NONADMIN
+-
+-#if DDKVER_MAJOR < 5600
+-/*
+- * Better solution for use on Vista DDK, but possibly not compatible with
+- * earlier DDKs:
+- *
+- * Eliminate the definition of SECURITY_DESCRIPTOR (and even ZwSetSecurityObject),
+- * and at the top of tapdrv.c change:
+- *
+- * #include <ndis.h>
+- * #include <ntstrsafe.h>
+- * #include <ntddk.h>
+- *
+- * To
+- *
+- * #include <ntifs.h>
+- * #include <ndis.h>
+- * #include <ntstrsafe.h>
+- */
+-typedef struct _SECURITY_DESCRIPTOR {
+-  unsigned char opaque[64];
+-} SECURITY_DESCRIPTOR;
+-
+-NTSYSAPI
+-NTSTATUS
+-NTAPI
+-ZwSetSecurityObject (
+-  IN HANDLE  Handle,
+-  IN SECURITY_INFORMATION  SecurityInformation,
+-  IN PSECURITY_DESCRIPTOR  SecurityDescriptor);
+-
+-#endif
+-
+-VOID AllowNonAdmin (TapExtensionPointer p_Extension);
+-
+-#endif
+-
+-struct WIN2K_NDIS_MINIPORT_BLOCK
+-{
+-  unsigned char  opaque[16];
+-  UNICODE_STRING MiniportName;       // how mini-port refers to us
+-};
+-
+-#if PACKET_TRUNCATION_CHECK
+-
+-VOID IPv4PacketSizeVerify
+-   (
+-    const UCHAR *data,
+-    ULONG length,
+-    BOOLEAN tun,
+-    const char *prefix,
+-    LONG *counter
+-   );
+-
+-#endif
+-
+-#endif
+diff --git a/tap-win32/resource.rc b/tap-win32/resource.rc
+deleted file mode 100755
+index 84884cf..0000000
+--- a/tap-win32/resource.rc
++++ /dev/null
+@@ -1,58 +0,0 @@
+-#include <windows.h>
+-#include <ntverp.h>
+-
+-/* get VERSION */
+-#include "common.h"
+-
+-/* VER_FILETYPE, VER_FILESUBTYPE, VER_FILEDESCRIPTION_STR
+- * and VER_INTERNALNAME_STR must be defined before including COMMON.VER
+- * The strings don't need a '\0', since common.ver has them.
+- */
+-
+-#define	VER_FILETYPE	VFT_DRV
+-/* possible values:		VFT_UNKNOWN
+-				VFT_APP
+-				VFT_DLL
+-				VFT_DRV
+-				VFT_FONT
+-				VFT_VXD
+-				VFT_STATIC_LIB
+-*/
+-#define	VER_FILESUBTYPE	VFT2_DRV_NETWORK
+-/* possible values		VFT2_UNKNOWN
+-				VFT2_DRV_PRINTER
+-				VFT2_DRV_KEYBOARD
+-				VFT2_DRV_LANGUAGE
+-				VFT2_DRV_DISPLAY
+-				VFT2_DRV_MOUSE
+-				VFT2_DRV_NETWORK
+-				VFT2_DRV_SYSTEM
+-				VFT2_DRV_INSTALLABLE
+-				VFT2_DRV_SOUND
+-				VFT2_DRV_COMM
+-*/
+-
+-#define VER_COMPANYNAME_STR         "The OpenVPN Project"
+-#define VER_FILEDESCRIPTION_STR     "TAP-Win32 Virtual Network Driver"
+-#define VER_ORIGINALFILENAME_STR    TAP_COMPONENT_ID ".sys"
+-#define VER_LEGALCOPYRIGHT_YEARS    "2003-2010"
+-#define VER_LEGALCOPYRIGHT_STR      "OpenVPN Technologies, Inc."
+-
+-
+-#define VER_PRODUCTNAME_STR         VER_FILEDESCRIPTION_STR
+-#define VER_PRODUCTVERSION	    TAP_DRIVER_MAJOR_VERSION,00,00,TAP_DRIVER_MINOR_VERSION
+-
+-#define XSTR(s) STR(s)
+-#define STR(s) #s
+-
+-#define VSTRING PACKAGE_VERSION " " XSTR(TAP_DRIVER_MAJOR_VERSION) "/" XSTR(TAP_DRIVER_MINOR_VERSION)
+-
+-#ifdef DBG
+-#define VER_PRODUCTVERSION_STR      VSTRING " (DEBUG)"
+-#else
+-#define VER_PRODUCTVERSION_STR      VSTRING
+-#endif
+-
+-#define VER_INTERNALNAME_STR        VER_ORIGINALFILENAME_STR
+-
+-#include "common.ver"
+diff --git a/tap-win32/tapdrvr.c b/tap-win32/tapdrvr.c
+deleted file mode 100755
+index e5760dc..0000000
+--- a/tap-win32/tapdrvr.c
++++ /dev/null
+@@ -1,3146 +0,0 @@
+-/*
+- *  TAP-Win32/TAP-Win64 -- A kernel driver to provide virtual tap
+- *                         device functionality on Windows.
+- *
+- *  This code was inspired by the CIPE-Win32 driver by Damion K. Wilson.
+- *
+- *  This source code is Copyright (C) 2002-2010 OpenVPN Technologies, Inc.,
+- *  and is released under the GPL version 2 (see below).
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program (see the file COPYING included with this
+- *  distribution); if not, write to the Free Software Foundation, Inc.,
+- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+- */
+-
+-//======================================================
+-// This driver is designed to work on Win 2000 or higher
+-// versions of Windows.
+-//
+-// It is SMP-safe and handles NDIS 5 power management.
+-//
+-// By default we operate as a "tap" virtual ethernet
+-// 802.3 interface, but we can emulate a "tun"
+-// interface (point-to-point IPv4) through the
+-// TAP_IOCTL_CONFIG_POINT_TO_POINT or
+-// TAP_IOCTL_CONFIG_TUN ioctl.
+-//======================================================
+-
+-#include "common.h"
+-#ifndef DDKVER_MAJOR
+-#error DDKVER_MAJOR must be defined as the major number of the DDK Version
+-#endif
+-
+-#define NDIS_MINIPORT_DRIVER
+-#define BINARY_COMPATIBLE 0
+-#define NDIS50_MINIPORT 1
+-#define NDIS_WDM 0
+-#define NDIS50 1
+-#define NTSTRSAFE_LIB
+-
+-// Debug info output
+-#define ALSO_DBGPRINT           1
+-#define DEBUGP_AT_DISPATCH      0
+-
+-//========================================================
+-// Check for truncated IPv4 packets, log errors if found.
+-//========================================================
+-#define PACKET_TRUNCATION_CHECK 0
+-
+-//========================================================
+-// EXPERIMENTAL -- Configure TAP device object to be
+-// accessible from non-administrative accounts, based
+-// on an advanced properties setting.
+-//
+-// Duplicates the functionality of OpenVPN's
+-// --allow-nonadmin directive.
+-//========================================================
+-#define ENABLE_NONADMIN 1
+-
+-#if DDKVER_MAJOR < 5600
+-#include <ndis.h>
+-#include <ntstrsafe.h>
+-#include <ntddk.h>
+-#else
+-#include <ntifs.h>
+-#include <ndis.h>
+-#include <ntstrsafe.h>
+-#endif
+-
+-#include "lock.h"
+-#include "constants.h"
+-#include "proto.h"
+-#include "error.h"
+-#include "endian.h"
+-#include "dhcp.h"
+-#include "types.h"
+-#include "prototypes.h"
+-
+-#include "mem.c"
+-#include "macinfo.c"
+-#include "error.c"
+-#include "dhcp.c"
+-#include "instance.c"
+-
+-#define IS_UP(ta) \
+-  ((ta)->m_InterfaceIsRunning && (ta)->m_Extension.m_TapIsRunning)
+-
+-#define INCREMENT_STAT(s) ++(s)
+-
+-#define NAME_BUFFER_SIZE 80
+-
+-//========================================================
+-//                            Globals
+-//========================================================
+-
+-NDIS_HANDLE g_NdisWrapperHandle;
+-
+-const UINT g_SupportedOIDList[] = {
+-  OID_GEN_HARDWARE_STATUS,
+-  OID_GEN_MEDIA_SUPPORTED,
+-  OID_GEN_MEDIA_IN_USE,
+-  OID_GEN_MAXIMUM_LOOKAHEAD,
+-  OID_GEN_MAC_OPTIONS,
+-  OID_GEN_LINK_SPEED,
+-  OID_GEN_TRANSMIT_BLOCK_SIZE,
+-  OID_GEN_RECEIVE_BLOCK_SIZE,
+-  OID_GEN_VENDOR_DESCRIPTION,
+-  OID_GEN_DRIVER_VERSION,
+-  OID_GEN_XMIT_OK,
+-  OID_GEN_RCV_OK,
+-  OID_GEN_XMIT_ERROR,
+-  OID_GEN_RCV_ERROR,
+-  OID_802_3_PERMANENT_ADDRESS,
+-  OID_802_3_CURRENT_ADDRESS,
+-  OID_GEN_RCV_NO_BUFFER,
+-  OID_802_3_RCV_ERROR_ALIGNMENT,
+-  OID_802_3_XMIT_ONE_COLLISION,
+-  OID_802_3_XMIT_MORE_COLLISIONS,
+-  OID_802_3_MULTICAST_LIST,
+-  OID_802_3_MAXIMUM_LIST_SIZE,
+-  OID_GEN_VENDOR_ID,
+-  OID_GEN_CURRENT_LOOKAHEAD,
+-  OID_GEN_CURRENT_PACKET_FILTER,
+-  OID_GEN_PROTOCOL_OPTIONS,
+-  OID_GEN_MAXIMUM_TOTAL_SIZE,
+-  OID_GEN_TRANSMIT_BUFFER_SPACE,
+-  OID_GEN_RECEIVE_BUFFER_SPACE,
+-  OID_GEN_MAXIMUM_FRAME_SIZE,
+-  OID_GEN_VENDOR_DRIVER_VERSION,
+-  OID_GEN_MAXIMUM_SEND_PACKETS,
+-  OID_GEN_MEDIA_CONNECT_STATUS,
+-  OID_GEN_SUPPORTED_LIST
+-};
+-
+-//============================================================
+-//                         Driver Entry
+-//============================================================
+-#pragma NDIS_INIT_FUNCTION (DriverEntry)
+-
+-NTSTATUS
+-DriverEntry (IN PDRIVER_OBJECT p_DriverObject,
+-	     IN PUNICODE_STRING p_RegistryPath)
+-{
+-  NDIS_STATUS l_Status = NDIS_STATUS_FAILURE;
+-  NDIS_MINIPORT_CHARACTERISTICS *l_Properties = NULL;
+-
+-  //========================================================
+-  // Notify NDIS that a new miniport driver is initializing.
+-  //========================================================
+-
+-  NdisMInitializeWrapper (&g_NdisWrapperHandle,
+-			  p_DriverObject,
+-			  p_RegistryPath, NULL);
+-
+-  //======================
+-  // Global initialization
+-  //======================
+-
+-#if DBG
+-  MyDebugInit (10000); // Allocate debugging text space
+-#endif
+-
+-  if (!InitInstanceList ())
+-    {
+-      DEBUGP (("[TAP] Allocation failed for adapter instance list\n"));
+-      goto cleanup;
+-    }
+-
+-  //=======================================
+-  // Set and register miniport entry points
+-  //=======================================
+-
+-  l_Properties = MemAlloc (sizeof (NDIS_MINIPORT_CHARACTERISTICS), TRUE);
+-
+-  if (l_Properties == NULL)
+-    {
+-      DEBUGP (("[TAP] Allocation failed for miniport entry points\n"));
+-      goto cleanup;
+-    }
+-
+-  l_Properties->MajorNdisVersion = TAP_NDIS_MAJOR_VERSION;
+-  l_Properties->MinorNdisVersion = TAP_NDIS_MINOR_VERSION;
+-  l_Properties->InitializeHandler = AdapterCreate;
+-  l_Properties->HaltHandler = AdapterHalt;
+-  l_Properties->ResetHandler = AdapterReset;               /* DISPATCH_LEVEL */
+-  l_Properties->TransferDataHandler = AdapterReceive;      /* DISPATCH_LEVEL */
+-  l_Properties->SendHandler = AdapterTransmit;             /* DISPATCH_LEVEL */
+-  l_Properties->QueryInformationHandler = AdapterQuery;    /* DISPATCH_LEVEL */
+-  l_Properties->SetInformationHandler = AdapterModify;     /* DISPATCH_LEVEL */
+-
+-  switch (l_Status =
+-	  NdisMRegisterMiniport (g_NdisWrapperHandle, l_Properties,
+-				 sizeof (NDIS_MINIPORT_CHARACTERISTICS)))
+-    {
+-    case NDIS_STATUS_SUCCESS:
+-      {
+-	DEBUGP (("[TAP] version [%d.%d] %s %s registered miniport successfully\n",
+-		 TAP_DRIVER_MAJOR_VERSION,
+-		 TAP_DRIVER_MINOR_VERSION,
+-		 __DATE__,
+-		 __TIME__));
+-	DEBUGP (("Registry Path: '%.*S'\n", p_RegistryPath->Length/2, p_RegistryPath->Buffer));
+-	break;
+-      }
+-
+-    case NDIS_STATUS_BAD_CHARACTERISTICS:
+-      {
+-	DEBUGP (("[TAP] Miniport characteristics were badly defined\n"));
+-	NdisTerminateWrapper (g_NdisWrapperHandle, NULL);
+-	break;
+-      }
+-
+-    case NDIS_STATUS_BAD_VERSION:
+-      {
+-	DEBUGP
+-	  (("[TAP] NDIS Version is wrong for the given characteristics\n"));
+-	NdisTerminateWrapper (g_NdisWrapperHandle, NULL);
+-	break;
+-      }
+-
+-    case NDIS_STATUS_RESOURCES:
+-      {
+-	DEBUGP (("[TAP] Insufficient resources\n"));
+-	NdisTerminateWrapper (g_NdisWrapperHandle, NULL);
+-	break;
+-      }
+-
+-    default:
+-    case NDIS_STATUS_FAILURE:
+-      {
+-	DEBUGP (("[TAP] Unknown fatal registration error\n"));
+-	NdisTerminateWrapper (g_NdisWrapperHandle, NULL);
+-	break;
+-      }
+-    }
+-
+- cleanup:
+-  if (l_Properties)
+-    MemFree (l_Properties, sizeof (NDIS_MINIPORT_CHARACTERISTICS));
+-
+-  if (l_Status == NDIS_STATUS_SUCCESS)
+-    NdisMRegisterUnloadHandler (g_NdisWrapperHandle, TapDriverUnload);
+-  else
+-    TapDriverUnload (p_DriverObject);
+-
+-  return l_Status;
+-}
+-
+-//============================================================
+-//                         Driver Unload
+-//============================================================
+-VOID 
+-TapDriverUnload (IN PDRIVER_OBJECT p_DriverObject)
+-{
+-  DEBUGP (("[TAP] version [%d.%d] %s %s unloaded, instances=%d, imbs=%d\n",
+-	   TAP_DRIVER_MAJOR_VERSION,
+-	   TAP_DRIVER_MINOR_VERSION,
+-	   __DATE__,
+-	   __TIME__,
+-	   NInstances(),
+-	   InstanceMaxBucketSize()));
+-
+-  FreeInstanceList ();
+-
+-  //==============================
+-  // Free debugging text space
+-  //==============================
+-#if DBG
+-  MyDebugFree ();
+-#endif
+-}
+-
+-//==========================================================
+-//                            Adapter Initialization
+-//==========================================================
+-NDIS_STATUS AdapterCreate
+-(OUT PNDIS_STATUS p_ErrorStatus,
+- OUT PUINT p_MediaIndex,
+- IN PNDIS_MEDIUM p_Media,
+- IN UINT p_MediaCount,
+- IN NDIS_HANDLE p_AdapterHandle,
+- IN NDIS_HANDLE p_ConfigurationHandle)
+-{
+-  TapAdapterPointer l_Adapter = NULL;
+-
+-  NDIS_MEDIUM l_PreferredMedium = NdisMedium802_3; // Ethernet
+-  BOOLEAN l_MacFromRegistry = FALSE;
+-  UINT l_Index;
+-  NDIS_STATUS status;
+-
+-#if ENABLE_NONADMIN
+-  BOOLEAN enable_non_admin = FALSE;
+-#endif
+-
+-  DEBUGP (("[TAP] AdapterCreate called\n"));
+-
+-  //====================================
+-  // Make sure adapter type is supported
+-  //====================================
+-
+-  for (l_Index = 0;
+-       l_Index < p_MediaCount && p_Media[l_Index] != l_PreferredMedium;
+-       ++l_Index);
+-
+-  if (l_Index == p_MediaCount)
+-    {
+-      DEBUGP (("[TAP] Unsupported adapter type [wanted: %d]\n",
+-	       l_PreferredMedium));
+-      return NDIS_STATUS_UNSUPPORTED_MEDIA;
+-    }
+-
+-  *p_MediaIndex = l_Index;
+-
+-  //=========================================
+-  // Allocate memory for TapAdapter structure
+-  //=========================================
+-
+-  l_Adapter = MemAlloc (sizeof (TapAdapter), TRUE);
+-
+-  if (l_Adapter == NULL)
+-    {
+-      DEBUGP (("[TAP] Couldn't allocate adapter memory\n"));
+-      return NDIS_STATUS_RESOURCES;
+-    }
+-
+-  //==========================================
+-  // Inform the NDIS library about significant
+-  // features of our virtual NIC.
+-  //==========================================
+-
+-  NdisMSetAttributesEx
+-    (p_AdapterHandle,
+-     (NDIS_HANDLE) l_Adapter,
+-     16,
+-     NDIS_ATTRIBUTE_DESERIALIZE
+-     | NDIS_ATTRIBUTE_IGNORE_PACKET_TIMEOUT
+-     | NDIS_ATTRIBUTE_IGNORE_REQUEST_TIMEOUT
+-     | NDIS_ATTRIBUTE_NO_HALT_ON_SUSPEND,
+-     NdisInterfaceInternal);
+-
+-  //=====================================
+-  // Initialize simple Adapter parameters
+-  //=====================================
+-
+-  l_Adapter->m_Lookahead = DEFAULT_PACKET_LOOKAHEAD;
+-  l_Adapter->m_Medium = l_PreferredMedium;
+-  l_Adapter->m_DeviceState = '?';
+-  l_Adapter->m_MiniportAdapterHandle = p_AdapterHandle;
+-
+-  //==================================
+-  // Allocate spinlock for controlling
+-  // access to multicast address list.
+-  //==================================
+-  NdisAllocateSpinLock (&l_Adapter->m_MCLock);
+-  l_Adapter->m_MCLockAllocated = TRUE;
+-
+-  //====================================================
+-  // Register a shutdown handler which will be called
+-  // on system restart/shutdown to halt our virtual NIC.
+-  //====================================================
+-
+-  NdisMRegisterAdapterShutdownHandler (p_AdapterHandle, l_Adapter,
+-				       AdapterHalt);
+-  l_Adapter->m_RegisteredAdapterShutdownHandler = TRUE;
+-
+-  //============================================
+-  // Get parameters from registry which were set
+-  // in the adapter advanced properties dialog.
+-  //============================================
+-  {
+-    NDIS_STATUS status;
+-    NDIS_HANDLE configHandle;
+-    NDIS_CONFIGURATION_PARAMETER *parm;
+-
+-    // set defaults in case our registry query fails
+-    l_Adapter->m_MTU = ETHERNET_MTU;
+-    l_Adapter->m_MediaStateAlwaysConnected = FALSE;
+-    l_Adapter->m_MediaState = FALSE;
+-
+-    NdisOpenConfiguration (&status, &configHandle, p_ConfigurationHandle);
+-    if (status != NDIS_STATUS_SUCCESS)
+-      {
+-	DEBUGP (("[TAP] Couldn't open adapter registry\n"));
+-	AdapterFreeResources (l_Adapter);
+-	return status;
+-      }
+-
+-    //====================================
+-    // Allocate and construct adapter name
+-    //====================================
+-    {
+-      
+-      NDIS_STRING mkey = NDIS_STRING_CONST("MiniportName");
+-      NDIS_STRING vkey = NDIS_STRING_CONST("NdisVersion");
+-      NDIS_STATUS vstatus;
+-      NDIS_CONFIGURATION_PARAMETER *vparm;
+-
+-      NdisReadConfiguration (&vstatus, &vparm, configHandle, &vkey, NdisParameterInteger);
+-      if (vstatus == NDIS_STATUS_SUCCESS)
+-	DEBUGP (("[TAP] NdisReadConfiguration NdisVersion=%X\n", vparm->ParameterData.IntegerData));
+-
+-      NdisReadConfiguration (&status, &parm, configHandle, &mkey, NdisParameterString);
+-      if (status == NDIS_STATUS_SUCCESS)
+-	{
+-	  if (parm->ParameterType == NdisParameterString)
+-	    {
+-	      DEBUGP (("[TAP] NdisReadConfiguration (MiniportName=%.*S)\n",
+-		       parm->ParameterData.StringData.Length/2,
+-		       parm->ParameterData.StringData.Buffer));
+-
+-	      if (RtlUnicodeStringToAnsiString (
+-						&l_Adapter->m_NameAnsi,
+-						&parm->ParameterData.StringData,
+-						TRUE) != STATUS_SUCCESS)
+-		{
+-		  DEBUGP (("[TAP] MiniportName failed\n"));
+-		  status = NDIS_STATUS_RESOURCES;
+-		}
+-	    }
+-	}
+-      else
+-	{
+-	  /* "MiniportName" is available only XP and above.  Not on Windows 2000. */
+-	  if (vstatus == NDIS_STATUS_SUCCESS && vparm->ParameterData.IntegerData == 0x50000)
+-	    {
+-	      /* Fallback for Windows 2000 with NDIS version 5.00.00
+-		 Don't use this on Vista, 'NDIS_MINIPORT_BLOCK' was changed! */
+-	      if (RtlUnicodeStringToAnsiString (&l_Adapter->m_NameAnsi,
+-						&((struct WIN2K_NDIS_MINIPORT_BLOCK *) p_AdapterHandle)->MiniportName,
+-						TRUE) != STATUS_SUCCESS)
+-		{
+-		  DEBUGP (("[TAP] MiniportName (W2K) failed\n"));
+-		  status = NDIS_STATUS_RESOURCES;
+-		}
+-	      else
+-		{
+-		  DEBUGP (("[TAP] MiniportName (W2K) succeeded: %s\n", l_Adapter->m_NameAnsi.Buffer));
+-		  status = NDIS_STATUS_SUCCESS;
+-		}
+-	    }
+-	}
+-    }
+-
+-    /* Can't continue without name (see macro 'NAME') */
+-    if (status != NDIS_STATUS_SUCCESS || !l_Adapter->m_NameAnsi.Buffer)
+-      {
+-	NdisCloseConfiguration (configHandle);
+-	AdapterFreeResources (l_Adapter);
+-	DEBUGP (("[TAP] failed to get miniport name\n"));
+-	return NDIS_STATUS_RESOURCES;
+-      }
+-
+-    /* Read MTU setting from registry */
+-    {
+-      NDIS_STRING key = NDIS_STRING_CONST("MTU");
+-      NdisReadConfiguration (&status, &parm, configHandle,
+-			     &key, NdisParameterInteger);
+-      if (status == NDIS_STATUS_SUCCESS)
+-	{
+-	  if (parm->ParameterType == NdisParameterInteger)
+-	    {
+-	      int mtu = parm->ParameterData.IntegerData;
+-	      if (mtu < MINIMUM_MTU)
+-		mtu = MINIMUM_MTU;
+-	      if (mtu > MAXIMUM_MTU)
+-		mtu = MAXIMUM_MTU;
+-	      l_Adapter->m_MTU = mtu;
+-	    }
+-	}
+-    }
+-
+-    /* Read Media Status setting from registry */
+-    {
+-      NDIS_STRING key = NDIS_STRING_CONST("MediaStatus");
+-      NdisReadConfiguration (&status, &parm, configHandle,
+-			     &key, NdisParameterInteger);
+-      if (status == NDIS_STATUS_SUCCESS)
+-	{
+-	  if (parm->ParameterType == NdisParameterInteger)
+-	    {
+-	      if (parm->ParameterData.IntegerData)
+-		{
+-		  l_Adapter->m_MediaStateAlwaysConnected = TRUE;
+-		  l_Adapter->m_MediaState = TRUE;
+-		}
+-	    }
+-	}
+-    }
+-
+-#if ENABLE_NONADMIN
+-    /* Read AllowNonAdmin setting from registry */
+-    {
+-      NDIS_STRING key = NDIS_STRING_CONST("AllowNonAdmin");
+-      NdisReadConfiguration (&status, &parm, configHandle,
+-			     &key, NdisParameterInteger);
+-      if (status == NDIS_STATUS_SUCCESS)
+-	{
+-	  if (parm->ParameterType == NdisParameterInteger)
+-	    {
+-	      if (parm->ParameterData.IntegerData)
+-		{
+-		  enable_non_admin = TRUE;
+-		}
+-	    }
+-	}
+-    }
+-#endif
+-
+-    /* Read optional MAC setting from registry */
+-    {
+-      NDIS_STRING key = NDIS_STRING_CONST("MAC");
+-      ANSI_STRING mac_string;
+-      NdisReadConfiguration (&status, &parm, configHandle,
+-			     &key, NdisParameterString);
+-      if (status == NDIS_STATUS_SUCCESS)
+-	{
+-	  if (parm->ParameterType == NdisParameterString)
+-	    {
+-	      if (RtlUnicodeStringToAnsiString (&mac_string, &parm->ParameterData.StringData, TRUE) == STATUS_SUCCESS)
+-		{
+-		  l_MacFromRegistry = ParseMAC (l_Adapter->m_MAC, mac_string.Buffer);
+-		  RtlFreeAnsiString (&mac_string);
+-		}
+-	    }
+-	}
+-    }
+-
+-    NdisCloseConfiguration (configHandle);
+-
+-    DEBUGP (("[%s] MTU=%d\n", NAME (l_Adapter), l_Adapter->m_MTU));
+-  }
+-
+-  //==================================
+-  // Store and update MAC address info
+-  //==================================
+-
+-  if (!l_MacFromRegistry)
+-    GenerateRandomMac (l_Adapter->m_MAC, NAME (l_Adapter));
+-
+-  DEBUGP (("[%s] Using MAC %x:%x:%x:%x:%x:%x\n",
+-	   NAME (l_Adapter),
+-	   l_Adapter->m_MAC[0], l_Adapter->m_MAC[1], l_Adapter->m_MAC[2],
+-	   l_Adapter->m_MAC[3], l_Adapter->m_MAC[4], l_Adapter->m_MAC[5]));
+-
+-  //==================
+-  // Set broadcast MAC
+-  //==================
+-  {
+-    int i;
+-    for (i = 0; i < sizeof (MACADDR); ++i)
+-      l_Adapter->m_MAC_Broadcast[i] = 0xFF;
+-  }
+-
+-  //====================================
+-  // Initialize TAP device
+-  //====================================
+-  {
+-    NDIS_STATUS tap_status;
+-    tap_status = CreateTapDevice (&l_Adapter->m_Extension, NAME (l_Adapter));
+-    if (tap_status != NDIS_STATUS_SUCCESS)
+-      {
+-	AdapterFreeResources (l_Adapter);
+-	DEBUGP (("[TAP] CreateTapDevice failed\n"));
+-	return tap_status;
+-      }
+-  }
+-
+-  if (!AddAdapterToInstanceList (l_Adapter))
+-    {
+-      NOTE_ERROR ();
+-      TapDeviceFreeResources (&l_Adapter->m_Extension);
+-      AdapterFreeResources (l_Adapter);
+-      DEBUGP (("[TAP] AddAdapterToInstanceList failed\n"));
+-      return NDIS_STATUS_RESOURCES;
+-    }
+-
+-  l_Adapter->m_InterfaceIsRunning = TRUE;
+-
+-#if ENABLE_NONADMIN
+-  if (enable_non_admin)
+-    AllowNonAdmin (&l_Adapter->m_Extension);
+-#endif
+-
+-  return NDIS_STATUS_SUCCESS;
+-}
+-
+-VOID
+-AdapterHalt (IN NDIS_HANDLE p_AdapterContext)
+-{
+-  BOOLEAN status;
+-
+-  TapAdapterPointer l_Adapter = (TapAdapterPointer) p_AdapterContext;
+-
+-  NOTE_ERROR ();
+-
+-  l_Adapter->m_InterfaceIsRunning = FALSE;
+-
+-  DEBUGP (("[%s] is being halted\n", NAME (l_Adapter)));
 -  
--  Call IsNT
--  Pop $1
--  StrCmp $1 1 AddToPath_NT
--    ; Not on NT
--    StrCpy $1 $WINDIR 2
--    FileOpen $1 "$1\autoexec.bat" a
--    FileSeek $1 0 END
--    GetFullPathName /SHORT $0 $0
--    FileWrite $1 "$\r$\nSET PATH=%PATH%;$0$\r$\n"
--    FileClose $1
--    Goto AddToPath_done
+-  DestroyTapDevice (&l_Adapter->m_Extension);
 -
--  AddToPath_NT:
--    ReadRegStr $1 HKCU "Environment" "PATH"
--    StrCpy $2 $1 1 -1 # copy last char
--    StrCmp $2 ";" 0 +2 # if last char == ;
--      StrCpy $1 $1 -1 # remove last char
+-  // Free resources
+-  DEBUGP (("[%s] Freeing Resources\n", NAME (l_Adapter)));
+-  AdapterFreeResources (l_Adapter);
 -
--    StrCmp $1 "" AddToPath_NTdoIt
--      StrCpy $0 "$1;$0"
--      Goto AddToPath_NTdoIt
--    AddToPath_NTdoIt:
--      WriteRegExpandStr HKCU "Environment" "PATH" $0
--      SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
+-  status = RemoveAdapterFromInstanceList (l_Adapter);
+-  DEBUGP (("[TAP] RemoveAdapterFromInstanceList returned %d\n", (int) status));
+-
+-  DEBUGP (("[TAP] version [%d.%d] %s %s AdapterHalt returning\n",
+-	   TAP_DRIVER_MAJOR_VERSION,
+-	   TAP_DRIVER_MINOR_VERSION,
+-	   __DATE__,
+-	   __TIME__));
+-}
+-
+-VOID
+-AdapterFreeResources (TapAdapterPointer p_Adapter)
+-{
+-  MYASSERT (!p_Adapter->m_CalledAdapterFreeResources);
+-  p_Adapter->m_CalledAdapterFreeResources = TRUE;
+-
+-  if (p_Adapter->m_NameAnsi.Buffer)
+-    RtlFreeAnsiString (&p_Adapter->m_NameAnsi);
 -  
--  AddToPath_done:
--    Pop $2
--    Pop $1
--    Pop $0
--FunctionEnd
+-  if (p_Adapter->m_RegisteredAdapterShutdownHandler)
+-    NdisMDeregisterAdapterShutdownHandler (p_Adapter->m_MiniportAdapterHandle);
 -
--;====================================================
--; RemoveFromPath - Remove a given dir from the path
--;     Input: head of the stack
--;====================================================
--!macro RemoveFromPath un
--Function ${un}RemoveFromPath
--  Exch $0
--  Push $1
--  Push $2
--  Push $3
--  Push $4
--  Push $5
+-  if (p_Adapter->m_MCLockAllocated)
+-    NdisFreeSpinLock (&p_Adapter->m_MCLock);
+-}
+-
+-VOID
+-DestroyTapDevice (TapExtensionPointer p_Extension)
+-{
+-  DEBUGP (("[%s] Destroying tap device\n", p_Extension->m_TapName));
+-
+-  //======================================
+-  // Let clients know we are shutting down
+-  //======================================
+-  p_Extension->m_TapIsRunning = FALSE;
+-  p_Extension->m_TapOpens = 0;
+-  p_Extension->m_Halt = TRUE;
+-
+-  //=====================================
+-  // If we are concurrently executing in
+-  // TapDeviceHook or AdapterTransmit,
+-  // give those calls time to finish.
+-  // Note that we must be running at IRQL
+-  // < DISPATCH_LEVEL in order to call
+-  // NdisMSleep.
+-  //=====================================
+-  NdisMSleep (500000);
+-
+-  //===========================================================
+-  // Exhaust IRP and packet queues.  Any pending IRPs will
+-  // be cancelled, causing user-space to get this error
+-  // on overlapped reads:
+-  //   The I/O operation has been aborted because of either a
+-  //   thread exit or an application request.   (code=995)
+-  // It's important that user-space close the device handle
+-  // when this code is returned, so that when we finally
+-  // do a NdisMDeregisterDevice, the device reference count
+-  // is 0.  Otherwise the driver will not unload even if the
+-  // the last adapter has been halted.
+-  //===========================================================
+-  FlushQueues (p_Extension);
+-  NdisMSleep (500000); // give user space time to respond to IRP cancel
+-
+-  TapDeviceFreeResources (p_Extension);
+-}
+-
+-VOID
+-TapDeviceFreeResources (TapExtensionPointer p_Extension)
+-{
+-  MYASSERT (p_Extension);
+-  MYASSERT (!p_Extension->m_CalledTapDeviceFreeResources);
+-  p_Extension->m_CalledTapDeviceFreeResources = TRUE;
+-
+-  if (p_Extension->m_PacketQueue)
+-    QueueFree (p_Extension->m_PacketQueue);
+-  if (p_Extension->m_IrpQueue)
+-    QueueFree (p_Extension->m_IrpQueue);
+-  if (p_Extension->m_InjectQueue)
+-    QueueFree (p_Extension->m_InjectQueue);
+-
+-  if (p_Extension->m_CreatedUnicodeLinkName)
+-    RtlFreeUnicodeString (&p_Extension->m_UnicodeLinkName);
+-
+-  //==========================================================
+-  // According to DDK docs, the device is not actually deleted
+-  // until its reference count falls to zero.  That means we
+-  // still need to gracefully fail TapDeviceHook requests
+-  // after this point, otherwise ugly things would happen if
+-  // the device was disabled (e.g. in the network connections
+-  // control panel) while a userspace app still held an open
+-  // file handle to it.
+-  //==========================================================
 -  
--  Call ${un}IsNT
--  Pop $1
--  StrCmp $1 1 RemoveFromPath_NT
--    ; Not on NT
--    StrCpy $1 $WINDIR 2
--    FileOpen $1 "$1\autoexec.bat" r
--    GetTempFileName $4
--    FileOpen $2 $4 w
--    GetFullPathName /SHORT $0 $0
--    StrCpy $0 "SET PATH=%PATH%;$0"
--    SetRebootFlag true
--    Goto RemoveFromPath_dosLoop
+-  if (p_Extension->m_TapDevice)
+-    {
+-      BOOLEAN status;
+-      status = (NdisMDeregisterDevice (p_Extension->m_TapDeviceHandle)
+-		== NDIS_STATUS_SUCCESS);
+-      DEBUGP (("[TAP] Deregistering TAP device, status=%d\n", (int)status));
+-    }
+-
+-  if (p_Extension->m_TapName)
+-    MemFree (p_Extension->m_TapName, NAME_BUFFER_SIZE);
+-  
+-  if (p_Extension->m_InjectDpcInitialized)
+-    KeRemoveQueueDpc (&p_Extension->m_InjectDpc);
+-
+-  if (p_Extension->m_AllocatedSpinlocks)
+-    {
+-      NdisFreeSpinLock (&p_Extension->m_QueueLock);
+-      NdisFreeSpinLock (&p_Extension->m_InjectLock);
+-    }
+-}
+-
+-//========================================================================
+-//                             Tap Device Initialization
+-//========================================================================
+-
+-NDIS_STATUS
+-CreateTapDevice (TapExtensionPointer p_Extension, const char *p_Name)
+-{
+-# define SIZEOF_DISPATCH (sizeof(PDRIVER_DISPATCH) * (IRP_MJ_MAXIMUM_FUNCTION + 1))
+-  PDRIVER_DISPATCH *l_Dispatch = NULL;
+-  ANSI_STRING l_TapString, l_LinkString;
+-  UNICODE_STRING l_TapUnicode;
+-  BOOLEAN l_FreeTapUnicode = FALSE;
+-  NTSTATUS l_Status, l_Return = NDIS_STATUS_SUCCESS;
+-  const char *l_UsableName;
+-
+-  DEBUGP (("[TAP] version [%d.%d] creating tap device: %s\n",
+-	   TAP_DRIVER_MAJOR_VERSION,
+-	   TAP_DRIVER_MINOR_VERSION,
+-	   p_Name));
+-
+-  NdisZeroMemory (p_Extension, sizeof (TapExtension));
+-
+-  INIT_MUTEX (&p_Extension->m_OpenCloseMutex);
+-
+-  l_LinkString.Buffer = NULL;
+-  l_TapString.Buffer = NULL;
+-
+-  l_TapString.MaximumLength = l_LinkString.MaximumLength = NAME_BUFFER_SIZE;
+-
+-  //=======================================
+-  // Set TAP device entry points
+-  //=======================================
+-
+-  if ((l_Dispatch = MemAlloc (SIZEOF_DISPATCH, TRUE)) == NULL)
+-    {
+-      DEBUGP (("[%s] couldn't alloc TAP dispatch table\n", p_Name));
+-      l_Return = NDIS_STATUS_RESOURCES;
+-      goto cleanup;
+-    }
+-
+-  l_Dispatch[IRP_MJ_DEVICE_CONTROL] = TapDeviceHook;
+-  l_Dispatch[IRP_MJ_READ] = TapDeviceHook;
+-  l_Dispatch[IRP_MJ_WRITE] = TapDeviceHook;
+-  l_Dispatch[IRP_MJ_CREATE] = TapDeviceHook;
+-  l_Dispatch[IRP_MJ_CLOSE] = TapDeviceHook;
+-
+-  //==================================
+-  // Find the beginning of the GUID
+-  //==================================
+-  l_UsableName = p_Name;
+-  while (*l_UsableName != '{')
+-    {
+-      if (*l_UsableName == '\0')
+-	{
+-	  DEBUGP (("[%s] couldn't find leading '{' in name\n", p_Name));
+-	  l_Return = NDIS_STATUS_RESOURCES;
+-	  goto cleanup;
+-	}
+-      ++l_UsableName;
+-    }
+-
+-  //==================================
+-  // Allocate pool for TAP device name
+-  //==================================
+-
+-  if ((p_Extension->m_TapName = l_TapString.Buffer =
+-       MemAlloc (NAME_BUFFER_SIZE, TRUE)) == NULL)
+-    {
+-      DEBUGP (("[%s] couldn't alloc TAP name buffer\n", p_Name));
+-      l_Return = NDIS_STATUS_RESOURCES;
+-      goto cleanup;
+-    }
+-
+-  //================================================
+-  // Allocate pool for TAP symbolic link name buffer
+-  //================================================
+-
+-  if ((l_LinkString.Buffer =
+-       MemAlloc (NAME_BUFFER_SIZE, TRUE)) == NULL)
+-    {
+-      DEBUGP (("[%s] couldn't alloc TAP symbolic link name buffer\n",
+-	       p_Name));
+-      l_Return = NDIS_STATUS_RESOURCES;
+-      goto cleanup;
+-    }
+-
+-  //=======================================================
+-  // Set TAP device name
+-  //=======================================================
+-
+-  l_Status = RtlStringCchPrintfExA
+-    (l_TapString.Buffer,
+-     l_TapString.MaximumLength,
+-     NULL,
+-     NULL,
+-     STRSAFE_FILL_BEHIND_NULL | STRSAFE_IGNORE_NULLS,
+-     "%s%s%s",
+-     SYSDEVICEDIR,
+-     l_UsableName,
+-     TAPSUFFIX);
+-
+-  if (l_Status != STATUS_SUCCESS)
+-    {
+-      DEBUGP (("[%s] couldn't format TAP device name\n",
+-	       p_Name));
+-      l_Return = NDIS_STATUS_RESOURCES;
+-      goto cleanup;
+-    }
+-  l_TapString.Length = (USHORT) strlen (l_TapString.Buffer);
+-
+-  DEBUGP (("TAP DEV NAME: '%s'\n", l_TapString.Buffer));
+-
+-  //=======================================================
+-  // Set TAP link name
+-  //=======================================================
+-
+-  l_Status = RtlStringCchPrintfExA
+-    (l_LinkString.Buffer,
+-     l_LinkString.MaximumLength,
+-     NULL,
+-     NULL,
+-     STRSAFE_FILL_BEHIND_NULL | STRSAFE_IGNORE_NULLS,
+-     "%s%s%s",
+-     USERDEVICEDIR,
+-     l_UsableName,
+-     TAPSUFFIX);
+-
+-  if (l_Status != STATUS_SUCCESS)
+-    {
+-      DEBUGP (("[%s] couldn't format TAP device symbolic link\n",
+-	       p_Name));
+-      l_Return = NDIS_STATUS_RESOURCES;
+-      goto cleanup;
+-    }
+-  l_LinkString.Length = (USHORT) strlen (l_LinkString.Buffer);
+-
+-  DEBUGP (("TAP LINK NAME: '%s'\n", l_LinkString.Buffer));
+-
+-  //==================================================
+-  // Convert strings to unicode
+-  //==================================================
+-  if (RtlAnsiStringToUnicodeString (&l_TapUnicode, &l_TapString, TRUE) !=
+-      STATUS_SUCCESS)
+-    {
+-      DEBUGP (("[%s] couldn't alloc TAP unicode name buffer\n",
+-		p_Name));
+-      l_Return = NDIS_STATUS_RESOURCES;
+-      goto cleanup;
+-    }
+-  l_FreeTapUnicode = TRUE;
+-
+-  if (RtlAnsiStringToUnicodeString
+-      (&p_Extension->m_UnicodeLinkName, &l_LinkString, TRUE)
+-      != STATUS_SUCCESS)
+-    {
+-      DEBUGP
+-	(("[%s] Couldn't allocate unicode string for symbolic link name\n",
+-	 p_Name));
+-      l_Return = NDIS_STATUS_RESOURCES;
+-      goto cleanup;
+-    }
+-  p_Extension->m_CreatedUnicodeLinkName = TRUE;
+-
+-  //==================================================
+-  // Create new TAP device with symbolic
+-  // link and associate with adapter.
+-  //==================================================
+-
+-  l_Status = NdisMRegisterDevice
+-    (g_NdisWrapperHandle,
+-     &l_TapUnicode,
+-     &p_Extension->m_UnicodeLinkName,
+-     l_Dispatch,
+-     &p_Extension->m_TapDevice,
+-     &p_Extension->m_TapDeviceHandle
+-     );
+-
+-  if (l_Status != STATUS_SUCCESS)
+-    {
+-      DEBUGP (("[%s] couldn't be created\n", p_Name));
+-      l_Return = NDIS_STATUS_RESOURCES;
+-      goto cleanup;
+-    }
+-
+-  /* Set TAP device flags */
+-  p_Extension->m_TapDevice->Flags |= DO_DIRECT_IO;
+-
+-  //========================================================
+-  // Initialize Packet and IRP queues.
+-  //
+-  // The packet queue is used to buffer data which has been
+-  // "transmitted" by the virtual NIC, before user space
+-  // has had a chance to read it.
+-  //
+-  // The IRP queue is used to buffer pending I/O requests
+-  // from userspace, i.e. read requests on the TAP device
+-  // waiting for the system to "transmit" something through
+-  // the virtual NIC.
+-  //
+-  // Basically, packets in the packet queue are used
+-  // to satisfy IRP requests in the IRP queue.
+-  //
+-  // QueueLock is used to lock the packet queue used
+-  // for the TAP-Win32 NIC -> User Space packet flow direction.
+-  //
+-  // All accesses to packet or IRP queues should be
+-  // bracketed by the QueueLock spinlock,
+-  // in order to be SMP-safe.
+-  //========================================================
+-
+-  NdisAllocateSpinLock (&p_Extension->m_QueueLock);
+-  NdisAllocateSpinLock (&p_Extension->m_InjectLock);
+-  p_Extension->m_AllocatedSpinlocks = TRUE;
+-
+-  p_Extension->m_PacketQueue = QueueInit (PACKET_QUEUE_SIZE);
+-  p_Extension->m_IrpQueue = QueueInit (IRP_QUEUE_SIZE);
+-  p_Extension->m_InjectQueue = QueueInit (INJECT_QUEUE_SIZE);
+-  if (!p_Extension->m_PacketQueue
+-      || !p_Extension->m_IrpQueue
+-      || !p_Extension->m_InjectQueue)
+-    {
+-      DEBUGP (("[%s] couldn't alloc TAP queues\n", p_Name));
+-      l_Return = NDIS_STATUS_RESOURCES;
+-      goto cleanup;
+-    }
+-
+-  //=================================================================
+-  // Initialize deferred procedure call for DHCP/ARP packet injection
+-  //=================================================================
+-
+-  KeInitializeDpc (&p_Extension->m_InjectDpc, InjectPacketDpc, NULL);
+-  p_Extension->m_InjectDpcInitialized = TRUE;
+-
+-  //========================
+-  // Finalize initialization
+-  //========================
+-
+-  p_Extension->m_TapIsRunning = TRUE;
+-
+-  DEBUGP (("[%s] successfully created TAP device [%s]\n", p_Name,
+-	    p_Extension->m_TapName));
+-
+- cleanup:
+-  if (l_FreeTapUnicode)
+-    RtlFreeUnicodeString (&l_TapUnicode);
+-  if (l_LinkString.Buffer)
+-    MemFree (l_LinkString.Buffer, NAME_BUFFER_SIZE);
+-  if (l_Dispatch)
+-    MemFree (l_Dispatch, SIZEOF_DISPATCH);
+-
+-  if (l_Return != NDIS_STATUS_SUCCESS)
+-    TapDeviceFreeResources (p_Extension);
+-
+-  return l_Return;
+-}
+-#undef SIZEOF_DISPATCH
+-
+-//========================================================
+-//                      Adapter Control
+-//========================================================
+-NDIS_STATUS
+-AdapterReset (OUT PBOOLEAN p_AddressingReset, IN NDIS_HANDLE p_AdapterContext)
+-{
+-  TapAdapterPointer l_Adapter = (TapAdapterPointer) p_AdapterContext;
+-  DEBUGP (("[%s] is resetting\n", NAME (l_Adapter)));
+-  return NDIS_STATUS_SUCCESS;
+-}
+-
+-NDIS_STATUS AdapterReceive
+-  (OUT PNDIS_PACKET p_Packet,
+-   OUT PUINT p_Transferred,
+-   IN NDIS_HANDLE p_AdapterContext,
+-   IN NDIS_HANDLE p_ReceiveContext,
+-   IN UINT p_Offset,
+-   IN UINT p_ToTransfer)
+-{
+-  return NDIS_STATUS_SUCCESS;
+-}
+-
+-//==============================================================
+-//                  Adapter Option Query/Modification
+-//==============================================================
+-NDIS_STATUS AdapterQuery
+-(IN NDIS_HANDLE p_AdapterContext,
+- IN NDIS_OID p_OID,
+- IN PVOID p_Buffer,
+- IN ULONG p_BufferLength,
+- OUT PULONG p_BytesWritten, OUT PULONG p_BytesNeeded)
+-{
+-  TapAdapterPointer l_Adapter = (TapAdapterPointer) p_AdapterContext;
+-  TapAdapterQuery l_Query, *l_QueryPtr = &l_Query;
+-  NDIS_STATUS l_Status = NDIS_STATUS_SUCCESS;
+-  UINT l_QueryLength = 4;
+-  BOOLEAN lock_succeeded;
+-
+-  NdisZeroMemory (&l_Query, sizeof (l_Query));
+-
+-  switch (p_OID)
+-    {
+-      //===================================================================
+-      //                       Vendor & Driver version Info
+-      //===================================================================
+-    case OID_GEN_VENDOR_DESCRIPTION:
+-      l_QueryPtr = (TapAdapterQueryPointer) PRODUCT_STRING;
+-      l_QueryLength = strlen (PRODUCT_STRING) + 1;
+-      break;
+-
+-    case OID_GEN_VENDOR_ID:
+-      l_Query.m_Long = 0xffffff;
+-      break;
+-
+-    case OID_GEN_DRIVER_VERSION:
+-      l_Query.m_Short =
+-	(((USHORT) TAP_NDIS_MAJOR_VERSION) << 8 | (USHORT)
+-	 TAP_NDIS_MINOR_VERSION);
+-      l_QueryLength = sizeof (unsigned short);
+-      break;
+-
+-    case OID_GEN_VENDOR_DRIVER_VERSION:
+-      l_Query.m_Long =
+-	(((USHORT) TAP_DRIVER_MAJOR_VERSION) << 8 | (USHORT)
+-	 TAP_DRIVER_MINOR_VERSION);
+-      break;
+-
+-      //=================================================================
+-      //                             Statistics
+-      //=================================================================
+-    case OID_GEN_RCV_NO_BUFFER:
+-      l_Query.m_Long = 0;
+-      break;
+-
+-    case OID_802_3_RCV_ERROR_ALIGNMENT:
+-      l_Query.m_Long = 0;
+-      break;
+-
+-    case OID_802_3_XMIT_ONE_COLLISION:
+-      l_Query.m_Long = 0;
+-      break;
+-
+-    case OID_802_3_XMIT_MORE_COLLISIONS:
+-      l_Query.m_Long = 0;
+-      break;
+-
+-    case OID_GEN_XMIT_OK:
+-      l_Query.m_Long = l_Adapter->m_Tx;
+-      break;
+-
+-    case OID_GEN_RCV_OK:
+-      l_Query.m_Long = l_Adapter->m_Rx;
+-      break;
+-
+-    case OID_GEN_XMIT_ERROR:
+-      l_Query.m_Long = l_Adapter->m_TxErr;
+-      break;
+-
+-    case OID_GEN_RCV_ERROR:
+-      l_Query.m_Long = l_Adapter->m_RxErr;
+-      break;
+-
+-      //===================================================================
+-      //                       Device & Protocol Options
+-      //===================================================================
+-    case OID_GEN_SUPPORTED_LIST:
+-      l_QueryPtr = (TapAdapterQueryPointer) g_SupportedOIDList;
+-      l_QueryLength = sizeof (g_SupportedOIDList);
+-      break;
+-
+-    case OID_GEN_MAC_OPTIONS:
+-      // This MUST be here !!!
+-      l_Query.m_Long = (NDIS_MAC_OPTION_RECEIVE_SERIALIZED
+-			| NDIS_MAC_OPTION_COPY_LOOKAHEAD_DATA
+-			| NDIS_MAC_OPTION_NO_LOOPBACK
+-			| NDIS_MAC_OPTION_TRANSFERS_NOT_PEND);
+-
+-      break;
+-
+-    case OID_GEN_CURRENT_PACKET_FILTER:
+-      l_Query.m_Long =
+-	(NDIS_PACKET_TYPE_ALL_LOCAL |
+-	 NDIS_PACKET_TYPE_BROADCAST |
+-	 NDIS_PACKET_TYPE_DIRECTED | NDIS_PACKET_TYPE_ALL_FUNCTIONAL);
+-
+-      break;
+-
+-    case OID_GEN_PROTOCOL_OPTIONS:
+-      l_Query.m_Long = 0;
+-      break;
+-
+-      //==================================================================
+-      //                            Device Info
+-      //==================================================================
+-    case OID_GEN_MEDIA_CONNECT_STATUS:
+-      l_Query.m_Long = l_Adapter->m_MediaState
+-	? NdisMediaStateConnected : NdisMediaStateDisconnected;
+-      break;
+-
+-    case OID_GEN_HARDWARE_STATUS:
+-      l_Query.m_HardwareStatus = NdisHardwareStatusReady;
+-      l_QueryLength = sizeof (NDIS_HARDWARE_STATUS);
+-      break;
+-
+-    case OID_GEN_MEDIA_SUPPORTED:
+-    case OID_GEN_MEDIA_IN_USE:
+-      l_Query.m_Medium = l_Adapter->m_Medium;
+-      l_QueryLength = sizeof (NDIS_MEDIUM);
+-      break;
+-
+-    case OID_GEN_PHYSICAL_MEDIUM:
+-      l_Query.m_PhysicalMedium = NdisPhysicalMediumUnspecified;
+-      l_QueryLength = sizeof (NDIS_PHYSICAL_MEDIUM);
+-      break;
+-      
+-    case OID_GEN_LINK_SPEED:
+-      l_Query.m_Long = 100000; // rate / 100 bps
+-      break;
+-
+-    case OID_802_3_PERMANENT_ADDRESS:
+-    case OID_802_3_CURRENT_ADDRESS:
+-      COPY_MAC (l_Query.m_MacAddress, l_Adapter->m_MAC);
+-      l_QueryLength = sizeof (MACADDR);
+-      break;
+-
+-      //==================================================================
+-      //                             Limits
+-      //==================================================================
+-
+-    case OID_GEN_MAXIMUM_SEND_PACKETS:
+-      l_Query.m_Long = 1;
+-      break;
+-
+-    case OID_802_3_MAXIMUM_LIST_SIZE:
+-      l_Query.m_Long = NIC_MAX_MCAST_LIST;
+-      break;
+-
+-    case OID_GEN_CURRENT_LOOKAHEAD:
+-      l_Query.m_Long = l_Adapter->m_Lookahead;
+-      break;
+-
+-    case OID_GEN_MAXIMUM_LOOKAHEAD:
+-    case OID_GEN_MAXIMUM_TOTAL_SIZE:
+-    case OID_GEN_RECEIVE_BUFFER_SPACE:
+-    case OID_GEN_RECEIVE_BLOCK_SIZE:
+-      l_Query.m_Long = DEFAULT_PACKET_LOOKAHEAD;
+-      break;
+-
+-    case OID_GEN_MAXIMUM_FRAME_SIZE:
+-    case OID_GEN_TRANSMIT_BLOCK_SIZE:
+-    case OID_GEN_TRANSMIT_BUFFER_SPACE:
+-      l_Query.m_Long = l_Adapter->m_MTU;
+-      break;
+-
+-    case OID_PNP_CAPABILITIES:
+-      do
+-	{
+-	  PNDIS_PNP_CAPABILITIES pPNPCapabilities;
+-	  PNDIS_PM_WAKE_UP_CAPABILITIES pPMstruct;
+-
+-	  if (p_BufferLength >= sizeof (NDIS_PNP_CAPABILITIES))
+-	    {
+-	      pPNPCapabilities = (PNDIS_PNP_CAPABILITIES) (p_Buffer);
+-
+-	      //
+-	      // Setting up the buffer to be returned
+-	      // to the Protocol above the Passthru miniport
+-	      //
+-	      pPMstruct = &pPNPCapabilities->WakeUpCapabilities;
+-	      pPMstruct->MinMagicPacketWakeUp = NdisDeviceStateUnspecified;
+-	      pPMstruct->MinPatternWakeUp = NdisDeviceStateUnspecified;
+-	      pPMstruct->MinLinkChangeWakeUp = NdisDeviceStateUnspecified;
+-	    }
+-	  l_QueryLength = sizeof (NDIS_PNP_CAPABILITIES);
+-	}
+-      while (FALSE);
+-      break;
+-    case OID_PNP_QUERY_POWER:
+-      break;
+-
+-      // Required OIDs that we don't support
+-
+-    case OID_GEN_SUPPORTED_GUIDS:
+-    case OID_GEN_MEDIA_CAPABILITIES:
+-    case OID_TCP_TASK_OFFLOAD:
+-    case OID_FFP_SUPPORT:
+-      l_Status = NDIS_STATUS_INVALID_OID;
+-      break;
+-
+-      // Optional stats OIDs
+-
+-    case OID_GEN_DIRECTED_BYTES_XMIT:
+-    case OID_GEN_DIRECTED_FRAMES_XMIT:
+-    case OID_GEN_MULTICAST_BYTES_XMIT:
+-    case OID_GEN_MULTICAST_FRAMES_XMIT:
+-    case OID_GEN_BROADCAST_BYTES_XMIT:
+-    case OID_GEN_BROADCAST_FRAMES_XMIT:
+-    case OID_GEN_DIRECTED_BYTES_RCV:
+-    case OID_GEN_DIRECTED_FRAMES_RCV:
+-    case OID_GEN_MULTICAST_BYTES_RCV:
+-    case OID_GEN_MULTICAST_FRAMES_RCV:
+-    case OID_GEN_BROADCAST_BYTES_RCV:
+-    case OID_GEN_BROADCAST_FRAMES_RCV:
+-      l_Status = NDIS_STATUS_INVALID_OID;
+-      break;
+-
+-      //===================================================================
+-      //                          Not Handled
+-      //===================================================================
+-    default:
+-      DEBUGP (("[%s] Unhandled OID %lx\n", NAME (l_Adapter), p_OID));
+-      l_Status = NDIS_STATUS_INVALID_OID;
+-      break;
+-    }
+-
+-  if (l_Status != NDIS_STATUS_SUCCESS)
+-    ;
+-  else if (l_QueryLength > p_BufferLength)
+-    {
+-      l_Status = NDIS_STATUS_INVALID_LENGTH;
+-      *p_BytesNeeded = l_QueryLength;
+-    }
+-  else
+-    NdisMoveMemory (p_Buffer, (PVOID) l_QueryPtr,
+-		    (*p_BytesWritten = l_QueryLength));
+-
+-  return l_Status;
+-}
+-
+-NDIS_STATUS AdapterModify
+-(IN NDIS_HANDLE p_AdapterContext,
+- IN NDIS_OID p_OID,
+- IN PVOID p_Buffer,
+- IN ULONG p_BufferLength,
+- OUT PULONG p_BytesRead,
+- OUT PULONG p_BytesNeeded)
+-{
+-  TapAdapterQueryPointer l_Query = (TapAdapterQueryPointer) p_Buffer;
+-  TapAdapterPointer l_Adapter = (TapAdapterPointer) p_AdapterContext;
+-  NDIS_STATUS l_Status = NDIS_STATUS_INVALID_OID;
+-  ULONG l_Long;
+-
+-  switch (p_OID)
+-    {
+-      //==================================================================
+-      //                            Device Info
+-      //==================================================================
+-    case OID_802_3_MULTICAST_LIST:
+-      DEBUGP (("[%s] Setting [OID_802_3_MULTICAST_LIST]\n",
+-	       NAME (l_Adapter)));
+-
+-      *p_BytesNeeded = sizeof (ETH_ADDR);
+-      *p_BytesRead = p_BufferLength;
+-
+-      if (p_BufferLength % sizeof (ETH_ADDR))
+-	l_Status = NDIS_STATUS_INVALID_LENGTH;
+-      else if (p_BufferLength > sizeof (MC_LIST))
+-	{
+-	  l_Status = NDIS_STATUS_MULTICAST_FULL;
+-	  *p_BytesNeeded = sizeof (MC_LIST);
+-	}
+-      else
+-	{
+-	  NdisAcquireSpinLock (&l_Adapter->m_MCLock);
+-
+-	  NdisZeroMemory(&l_Adapter->m_MCList, sizeof (MC_LIST));
+-        
+-	  NdisMoveMemory(&l_Adapter->m_MCList,
+-			 p_Buffer,
+-			 p_BufferLength);
+-
+-	  l_Adapter->m_MCListSize = p_BufferLength / sizeof (ETH_ADDR);
+-        
+-	  NdisReleaseSpinLock (&l_Adapter->m_MCLock);
+-
+-	  l_Status = NDIS_STATUS_SUCCESS;
+-	}
+-      break;
+-
+-    case OID_GEN_CURRENT_PACKET_FILTER:
+-      l_Status = NDIS_STATUS_INVALID_LENGTH;
+-      *p_BytesNeeded = 4;
+-
+-      if (p_BufferLength >= sizeof (ULONG))
+-	{
+-	  DEBUGP
+-	    (("[%s] Setting [OID_GEN_CURRENT_PACKET_FILTER] to [0x%02lx]\n",
+-	      NAME (l_Adapter), l_Query->m_Long));
+-	  l_Status = NDIS_STATUS_SUCCESS;
+-	  *p_BytesRead = sizeof (ULONG);
+-	}
+-      break;
+-
+-    case OID_GEN_CURRENT_LOOKAHEAD:
+-      if (p_BufferLength < sizeof (ULONG))
+-	{
+-	  l_Status = NDIS_STATUS_INVALID_LENGTH;
+-	  *p_BytesNeeded = 4;
+-	}
+-      else if (l_Query->m_Long > DEFAULT_PACKET_LOOKAHEAD
+-	       || l_Query->m_Long <= 0)
+-	{
+-	  l_Status = NDIS_STATUS_INVALID_DATA;
+-	}
+-      else
+-	{
+-	  DEBUGP (("[%s] Setting [OID_GEN_CURRENT_LOOKAHEAD] to [%d]\n",
+-		   NAME (l_Adapter), l_Query->m_Long));
+-	  l_Adapter->m_Lookahead = l_Query->m_Long;
+-	  l_Status = NDIS_STATUS_SUCCESS;
+-	  *p_BytesRead = sizeof (ULONG);
+-	}
+-      break;
+-
+-    case OID_GEN_NETWORK_LAYER_ADDRESSES:
+-      l_Status = NDIS_STATUS_SUCCESS;
+-      *p_BytesRead = *p_BytesNeeded = 0;
+-      break;
+-
+-    case OID_GEN_TRANSPORT_HEADER_OFFSET:
+-      l_Status = NDIS_STATUS_SUCCESS;
+-      *p_BytesRead = *p_BytesNeeded = 0;
+-      break;
+-
+-    case OID_PNP_SET_POWER:
+-      do
+-	{
+-	  NDIS_DEVICE_POWER_STATE NewDeviceState;
+-
+-	  NewDeviceState = (*(PNDIS_DEVICE_POWER_STATE) p_Buffer);
+-
+-	  switch (NewDeviceState)
+-	    {
+-	    case NdisDeviceStateD0:
+-	      l_Adapter->m_DeviceState = '0';
+-	      break;
+-	    case NdisDeviceStateD1:
+-	      l_Adapter->m_DeviceState = '1';
+-	      break;
+-	    case NdisDeviceStateD2:
+-	      l_Adapter->m_DeviceState = '2';
+-	      break;
+-	    case NdisDeviceStateD3:
+-	      l_Adapter->m_DeviceState = '3';
+-	      break;
+-	    default:
+-	      l_Adapter->m_DeviceState = '?';
+-	      break;
+-	    }
+-
+-	  l_Status = NDIS_STATUS_FAILURE;
+-
+-	  //
+-	  // Check for invalid length
+-	  //
+-	  if (p_BufferLength < sizeof (NDIS_DEVICE_POWER_STATE))
+-	    {
+-	      l_Status = NDIS_STATUS_INVALID_LENGTH;
+-	      break;
+-	    }
+-
+-	  if (NewDeviceState > NdisDeviceStateD0)
+-	    {
+-	      l_Adapter->m_InterfaceIsRunning = FALSE;
+-	      DEBUGP (("[%s] Power management device state OFF\n",
+-		       NAME (l_Adapter)));
+-	    }
+-	  else
+-	    {
+-	      l_Adapter->m_InterfaceIsRunning = TRUE;
+-	      DEBUGP (("[%s] Power management device state ON\n",
+-		       NAME (l_Adapter)));
+-	    }
+-
+-	  l_Status = NDIS_STATUS_SUCCESS;
+-	}
+-      while (FALSE);
+-
+-      if (l_Status == NDIS_STATUS_SUCCESS)
+-	{
+-	  *p_BytesRead = sizeof (NDIS_DEVICE_POWER_STATE);
+-	  *p_BytesNeeded = 0;
+-	}
+-      else
+-	{
+-	  *p_BytesRead = 0;
+-	  *p_BytesNeeded = sizeof (NDIS_DEVICE_POWER_STATE);
+-	}
+-      break;
+-
+-    case OID_PNP_REMOVE_WAKE_UP_PATTERN:
+-    case OID_PNP_ADD_WAKE_UP_PATTERN:
+-      l_Status = NDIS_STATUS_SUCCESS;
+-      *p_BytesRead = *p_BytesNeeded = 0;
+-      break;
+-
+-    default:
+-      DEBUGP (("[%s] Can't set value for OID %lx\n", NAME (l_Adapter),
+-	       p_OID));
+-      l_Status = NDIS_STATUS_INVALID_OID;
+-      *p_BytesRead = *p_BytesNeeded = 0;
+-      break;
+-    }
+-
+-  return l_Status;
+-}
+-
+-// checksum code for ICMPv6 packet, taken from dhcp.c / udp_checksum
+-// see RFC 4443, 2.3, and RFC 2460, 8.1
+-USHORT
+-icmpv6_checksum (const UCHAR *buf,
+-	         const int len_icmpv6,
+-	         const UCHAR *saddr6,
+-	         const UCHAR *daddr6)
+-{
+-  USHORT word16;
+-  ULONG sum = 0;
+-  int i;
+-
+-  // make 16 bit words out of every two adjacent 8 bit words and
+-  // calculate the sum of all 16 bit words
+-  for (i = 0; i < len_icmpv6; i += 2){
+-    word16 = ((buf[i] << 8) & 0xFF00) + ((i + 1 < len_icmpv6) ? (buf[i+1] & 0xFF) : 0);
+-    sum += word16;
+-  }
+-
+-  // add the IPv6 pseudo header which contains the IP source and destination addresses
+-  for (i = 0; i < 16; i += 2){
+-    word16 =((saddr6[i] << 8) & 0xFF00) + (saddr6[i+1] & 0xFF);
+-    sum += word16;
+-  }
+-  for (i = 0; i < 16; i += 2){
+-    word16 =((daddr6[i] << 8) & 0xFF00) + (daddr6[i+1] & 0xFF);
+-    sum += word16;
+-  }
+-
+-  // the next-header number and the length of the ICMPv6 packet
+-  sum += (USHORT) IPPROTO_ICMPV6 + (USHORT) len_icmpv6;
+-
+-  // keep only the last 16 bits of the 32 bit calculated sum and add the carries
+-  while (sum >> 16)
+-    sum = (sum & 0xFFFF) + (sum >> 16);
+-
+-  // Take the one's complement of sum
+-  return ((USHORT) ~sum);
+-}
+-
+-// check IPv6 packet for "is this an IPv6 Neighbor Solicitation that
+-// the tap driver needs to answer?"
+-// see RFC 4861 4.3 for the different cases
+-static IPV6ADDR IPV6_NS_TARGET_MCAST =
+-	{ 0xff, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-          0x00, 0x00, 0x00, 0x01, 0xff, 0x00, 0x00, 0x08 };
+-static IPV6ADDR IPV6_NS_TARGET_UNICAST =
+-	{ 0xfe, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+-          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08 };
+-
+-BOOLEAN
+-HandleIPv6NeighborDiscovery( TapAdapterPointer p_Adapter, UCHAR * m_Data )
+-{
+-    const ETH_HEADER * e = (ETH_HEADER *) m_Data;
+-    const IPV6HDR *ipv6 = (IPV6HDR *) (m_Data + sizeof (ETH_HEADER));
+-    const ICMPV6_NS * icmpv6_ns = (ICMPV6_NS *) (m_Data + sizeof (ETH_HEADER) + sizeof (IPV6HDR));
+-    ICMPV6_NA_PKT *na;
+-    USHORT icmpv6_len, icmpv6_csum;
+-
+-    // we don't really care about the destination MAC address here
+-    // - it's either a multicast MAC, or the userland destination MAC
+-    // but since the TAP driver is point-to-point, all packets are "for us"
+-
+-    // IPv6 target address must be ff02::1::ff00:8 (multicast for
+-    // initial NS) or fe80::1 (unicast for recurrent NUD)
+-    if ( memcmp( ipv6->daddr, IPV6_NS_TARGET_MCAST,
+-		 sizeof(IPV6ADDR) ) != 0 &&
+-         memcmp( ipv6->daddr, IPV6_NS_TARGET_UNICAST,
+-		 sizeof(IPV6ADDR) ) != 0 )
+-    {
+-	return FALSE;				// wrong target address
+-    }
+-
+-    // IPv6 Next-Header must be ICMPv6
+-    if ( ipv6->nexthdr != IPPROTO_ICMPV6 )
+-    {
+-	return FALSE;				// wrong next-header
+-    }
+-
+-    // ICMPv6 type+code must be 135/0 for NS
+-    if ( icmpv6_ns->type != ICMPV6_TYPE_NS ||
+-	 icmpv6_ns->code != ICMPV6_CODE_0 )
+-    {
+-	return FALSE;				// wrong ICMPv6 type
+-    }
+-
+-    // ICMPv6 target address must be fe80::8 (magic)
+-    if ( memcmp( icmpv6_ns->target_addr, IPV6_NS_TARGET_UNICAST,
+-	         sizeof(IPV6ADDR) ) != 0 )
+-    {
+-	return FALSE;				// not for us
+-    }
+-
+-    // packet identified, build magic response packet
+-
+-    na = (ICMPV6_NA_PKT *) MemAlloc (sizeof (ICMPV6_NA_PKT), TRUE);
+-    if ( !na ) return FALSE;
+-
+-    //------------------------------------------------
+-    // Initialize Neighbour Advertisement reply packet
+-    //------------------------------------------------
+-
+-    // ethernet header
+-    na->eth.proto = htons(ETH_P_IPV6);
+-    COPY_MAC(na->eth.dest, p_Adapter->m_MAC);
+-    COPY_MAC(na->eth.src, p_Adapter->m_TapToUser.dest);
+-
+-    // IPv6 header
+-    na->ipv6.version_prio = ipv6->version_prio;
+-    NdisMoveMemory( na->ipv6.flow_lbl, ipv6->flow_lbl,
+-		    sizeof(na->ipv6.flow_lbl) );
+-    icmpv6_len = sizeof(ICMPV6_NA_PKT) - sizeof(ETH_HEADER) - sizeof(IPV6HDR);
+-    na->ipv6.payload_len = htons(icmpv6_len);
+-    na->ipv6.nexthdr = IPPROTO_ICMPV6;
+-    na->ipv6.hop_limit = 255;
+-    NdisMoveMemory( na->ipv6.saddr, IPV6_NS_TARGET_UNICAST,
+-		    sizeof(IPV6ADDR) );
+-    NdisMoveMemory( na->ipv6.daddr, ipv6->saddr,
+-		    sizeof(IPV6ADDR) );
+-
+-    // ICMPv6
+-    na->icmpv6.type = ICMPV6_TYPE_NA;
+-    na->icmpv6.code = ICMPV6_CODE_0;
+-    na->icmpv6.checksum = 0;
+-    na->icmpv6.rso_bits = 0x60;		// Solicited + Override
+-    NdisZeroMemory( na->icmpv6.reserved, sizeof(na->icmpv6.reserved) );
+-    NdisMoveMemory( na->icmpv6.target_addr, IPV6_NS_TARGET_UNICAST,
+-		    sizeof(IPV6ADDR) );
+-
+-    // ICMPv6 option "Target Link Layer Address"
+-    na->icmpv6.opt_type = ICMPV6_OPTION_TLLA;
+-    na->icmpv6.opt_length = ICMPV6_LENGTH_TLLA;
+-    COPY_MAC( na->icmpv6.target_macaddr, p_Adapter->m_TapToUser.dest );
+-
+-    // calculate and set checksum
+-    icmpv6_csum = icmpv6_checksum ( (UCHAR*) &(na->icmpv6),
+-				    icmpv6_len,
+-				    na->ipv6.saddr,
+-				    na->ipv6.daddr );
+-    na->icmpv6.checksum = htons( icmpv6_csum );
+-
+-    DUMP_PACKET ("HandleIPv6NeighborDiscovery",
+-		 (unsigned char *) na,
+-		 sizeof (ICMPV6_NA_PKT));
+-
+-    InjectPacketDeferred (p_Adapter, (UCHAR *) na, sizeof (ICMPV6_NA_PKT));
+-
+-    MemFree (na, sizeof (ICMPV6_NA_PKT));
+-
+-    return TRUE;				// all fine
+-}
+-
+-//====================================================================
+-//                               Adapter Transmission
+-//====================================================================
+-NDIS_STATUS
+-AdapterTransmit (IN NDIS_HANDLE p_AdapterContext,
+-		 IN PNDIS_PACKET p_Packet,
+-		 IN UINT p_Flags)
+-{
+-  TapAdapterPointer l_Adapter = (TapAdapterPointer) p_AdapterContext;
+-  ULONG l_Index = 0, l_PacketLength = 0;
+-  UINT l_BufferLength = 0;
+-  PIRP l_IRP;
+-  TapPacketPointer l_PacketBuffer;
+-  PNDIS_BUFFER l_NDIS_Buffer;
+-  PUCHAR l_Buffer;
+-  PVOID result;
+-
+-  NdisQueryPacket (p_Packet, NULL, NULL, &l_NDIS_Buffer, &l_PacketLength);
+-
+-  //====================================================
+-  // Here we abandon the transmission attempt if any of
+-  // the parameters is wrong or memory allocation fails
+-  // but we do not indicate failure. The packet is
+-  // silently dropped.
+-  //====================================================
+-
+-  if (l_PacketLength < ETHERNET_HEADER_SIZE || l_PacketLength > 65535)
+-    goto exit_fail;
+-  else if (!l_Adapter->m_Extension.m_TapOpens || !l_Adapter->m_MediaState)
+-    goto exit_success;              // Nothing is bound to the TAP device
+-
+-  if (NdisAllocateMemoryWithTag (&l_PacketBuffer,
+-				 TAP_PACKET_SIZE (l_PacketLength),
+-				 '5PAT') != NDIS_STATUS_SUCCESS)
+-    goto exit_no_resources;
+-
+-  if (l_PacketBuffer == NULL)
+-    goto exit_no_resources;
+-
+-  l_PacketBuffer->m_SizeFlags = (l_PacketLength & TP_SIZE_MASK);
+-
+-  //===========================
+-  // Reassemble packet contents
+-  //===========================
+-
+-  __try
+-  {
+-    l_Index = 0;
+-    while (l_NDIS_Buffer && l_Index < l_PacketLength)
+-      {
+-	ULONG newlen;
+-	NdisQueryBuffer (l_NDIS_Buffer, (PVOID *) & l_Buffer,
+-			 &l_BufferLength);
+-	newlen = l_Index + l_BufferLength;
+-	if (newlen > l_PacketLength)
+-	  {
+-	    NOTE_ERROR ();
+-	    goto no_queue; /* overflow */
+-	  }
+-	NdisMoveMemory (l_PacketBuffer->m_Data + l_Index, l_Buffer,
+-			l_BufferLength);
+-	l_Index = newlen;
+-	NdisGetNextBuffer (l_NDIS_Buffer, &l_NDIS_Buffer);
+-      }
+-    if (l_Index != l_PacketLength)
+-      {
+-	NOTE_ERROR ();
+-	goto no_queue; /* underflow */
+-      }
+-
+-    DUMP_PACKET ("AdapterTransmit", l_PacketBuffer->m_Data, l_PacketLength);
+-
+-    //=====================================================
+-    // If IPv4 packet, check whether or not packet
+-    // was truncated.
+-    //=====================================================
+-#if PACKET_TRUNCATION_CHECK
+-    IPv4PacketSizeVerify (l_PacketBuffer->m_Data, l_PacketLength, FALSE, "TX", &l_Adapter->m_TxTrunc);
+-#endif
+-
+-    //=====================================================
+-    // Are we running in DHCP server masquerade mode?
+-    //
+-    // If so, catch both DHCP requests and ARP queries
+-    // to resolve the address of our virtual DHCP server.
+-    //=====================================================
+-    if (l_Adapter->m_dhcp_enabled)
+-      {
+-	const ETH_HEADER *eth = (ETH_HEADER *) l_PacketBuffer->m_Data;
+-	const IPHDR *ip = (IPHDR *) (l_PacketBuffer->m_Data + sizeof (ETH_HEADER));
+-	const UDPHDR *udp = (UDPHDR *) (l_PacketBuffer->m_Data + sizeof (ETH_HEADER) + sizeof (IPHDR));
+-
+-	// ARP packet?
+-	if (l_PacketLength == sizeof (ARP_PACKET)
+-	    && eth->proto == htons (ETH_P_ARP)
+-	    && l_Adapter->m_dhcp_server_arp)
+-	  {
+-	    if (ProcessARP (l_Adapter,
+-			    (PARP_PACKET) l_PacketBuffer->m_Data,
+-			    l_Adapter->m_dhcp_addr,
+-			    l_Adapter->m_dhcp_server_ip,
+-			    ~0,
+-			    l_Adapter->m_dhcp_server_mac))
+-	      goto no_queue;
+-	  }
+-
+-	// DHCP packet?
+-	else if (l_PacketLength >= sizeof (ETH_HEADER) + sizeof (IPHDR) + sizeof (UDPHDR) + sizeof (DHCP)
+-		 && eth->proto == htons (ETH_P_IP)
+-		 && ip->version_len == 0x45 // IPv4, 20 byte header
+-		 && ip->protocol == IPPROTO_UDP
+-		 && udp->dest == htons (BOOTPS_PORT))
+-	  {
+-	    const DHCP *dhcp = (DHCP *) (l_PacketBuffer->m_Data
+-					 + sizeof (ETH_HEADER)
+-					 + sizeof (IPHDR)
+-					 + sizeof (UDPHDR));
+-
+-	    const int optlen = l_PacketLength
+-	      - sizeof (ETH_HEADER)
+-	      - sizeof (IPHDR)
+-	      - sizeof (UDPHDR)
+-	      - sizeof (DHCP);
+-
+-	    if (optlen > 0) // we must have at least one DHCP option
+-	      {
+-		if (ProcessDHCP (l_Adapter, eth, ip, udp, dhcp, optlen))
+-		  goto no_queue;
+-	      }
+-	    else
+-	      goto no_queue;
+-	  }
+-      }
+-
+-    //===============================================
+-    // In Point-To-Point mode, check to see whether
+-    // packet is ARP (handled) or IPv4 (sent to app).
+-    // IPv6 packets are inspected for neighbour discovery
+-    // (to be handled locally), and the rest is forwarded
+-    // all other protocols are dropped
+-    //===============================================
+-    if (l_Adapter->m_tun)
+-      {
+-	ETH_HEADER *e;
+-
+-	if (l_PacketLength < ETHERNET_HEADER_SIZE)
+-	  goto no_queue;
+-
+-	e = (ETH_HEADER *) l_PacketBuffer->m_Data;
+-
+-	switch (ntohs (e->proto))
+-	  {
+-	  case ETH_P_ARP:
+-
+-	    // Make sure that packet is the
+-	    // right size for ARP.
+-	    if (l_PacketLength != sizeof (ARP_PACKET))
+-	      goto no_queue;
+-
+-	    ProcessARP (l_Adapter,
+-			(PARP_PACKET) l_PacketBuffer->m_Data,
+-			l_Adapter->m_localIP,
+-			l_Adapter->m_remoteNetwork,
+-			l_Adapter->m_remoteNetmask,
+-			l_Adapter->m_TapToUser.dest);
+-
+-	  default:
+-	    goto no_queue;
+-
+-	  case ETH_P_IP:
+-
+-	    // Make sure that packet is large
+-	    // enough to be IPv4.
+-	    if (l_PacketLength
+-		< ETHERNET_HEADER_SIZE + IP_HEADER_SIZE)
+-	      goto no_queue;
+-
+-	    // Only accept directed packets,
+-	    // not broadcasts.
+-	    if (memcmp (e, &l_Adapter->m_TapToUser, ETHERNET_HEADER_SIZE))
+-	      goto no_queue;
+-
+-	    // Packet looks like IPv4, queue it.
+-	    l_PacketBuffer->m_SizeFlags |= TP_TUN;
+-	    break;
+-
+-	  case ETH_P_IPV6:
+-	    // make sure that packet is large
+-	    // enough to be IPv6
+-	    if (l_PacketLength
+-		< ETHERNET_HEADER_SIZE + IPV6_HEADER_SIZE)
+-	      goto no_queue;
+-
+-	    // broadcasts and multicasts are handled specially
+-	    // (to be implemented)
+-
+-	    // neighbor discovery packets to fe80::8 are special
+-	    // OpenVPN sets this next-hop to signal "handled by tapdrv"
+-	    if ( HandleIPv6NeighborDiscovery( l_Adapter,
+-					      l_PacketBuffer->m_Data ))
+-	      {
+-		goto no_queue;
+-	      }
+-
+-	    // Packet looks like IPv6, queue it :-)
+-	    l_PacketBuffer->m_SizeFlags |= TP_TUN;
+-	  }
+-      }
+-
+-    //===============================================
+-    // Push packet onto queue to wait for read from
+-    // userspace.
+-    //===============================================
+-
+-    NdisAcquireSpinLock (&l_Adapter->m_Extension.m_QueueLock);
+-
+-    result = NULL;
+-    if (IS_UP (l_Adapter))
+-      result = QueuePush (l_Adapter->m_Extension.m_PacketQueue, l_PacketBuffer);
+-
+-    NdisReleaseSpinLock (&l_Adapter->m_Extension.m_QueueLock);
+-
+-    if ((TapPacketPointer) result != l_PacketBuffer)
+-      {
+-	// adapter receive overrun
+-	INCREMENT_STAT (l_Adapter->m_TxErr);
+-	goto no_queue;
+-      }
+-    else
+-      {
+-	INCREMENT_STAT (l_Adapter->m_Tx);
+-      }
+-
+-    //============================================================
+-    // Cycle through IRPs and packets, try to satisfy each pending
+-    // IRP with a queued packet.
+-    //============================================================
+-    while (TRUE)
+-      {
+-	l_IRP = NULL;
+-	l_PacketBuffer = NULL;
+-
+-	NdisAcquireSpinLock (&l_Adapter->m_Extension.m_QueueLock);
+-
+-	if (IS_UP (l_Adapter)
+-	    && QueueCount (l_Adapter->m_Extension.m_PacketQueue)
+-	    && QueueCount (l_Adapter->m_Extension.m_IrpQueue))
+-	  {
+-	    l_IRP = (PIRP) QueuePop (l_Adapter->m_Extension.m_IrpQueue);
+-	    l_PacketBuffer = (TapPacketPointer)
+-	      QueuePop (l_Adapter->m_Extension.m_PacketQueue);
+-	  }
+-
+-	NdisReleaseSpinLock (&l_Adapter->m_Extension.m_QueueLock);
+-
+-	MYASSERT ((l_IRP != NULL) + (l_PacketBuffer != NULL) != 1);
+-
+-	if (l_IRP && l_PacketBuffer)
+-	  {
+-	    CompleteIRP (l_IRP,
+-			 l_PacketBuffer, 
+-			 IO_NETWORK_INCREMENT);
+-	  }
+-	else
+-	  break;
+-      }
+-  }
+-  __except (EXCEPTION_EXECUTE_HANDLER)
+-    {
+-    }
+-
+-  return NDIS_STATUS_SUCCESS;
+-
+- no_queue:
+-  NdisFreeMemory (l_PacketBuffer,
+-		  TAP_PACKET_SIZE (l_PacketLength),
+-		  0);
+-  
+- exit_success:
+-  return NDIS_STATUS_SUCCESS;
 -    
--    RemoveFromPath_dosLoop:
--      FileRead $1 $3
--      StrCmp $3 "$0$\r$\n" RemoveFromPath_dosLoop
--      StrCmp $3 "$0$\n" RemoveFromPath_dosLoop
--      StrCmp $3 "$0" RemoveFromPath_dosLoop
--      StrCmp $3 "" RemoveFromPath_dosLoopEnd
--      FileWrite $2 $3
--      Goto RemoveFromPath_dosLoop
--    
--    RemoveFromPath_dosLoopEnd:
--      FileClose $2
--      FileClose $1
--      StrCpy $1 $WINDIR 2
--      Delete "$1\autoexec.bat"
--      CopyFiles /SILENT $4 "$1\autoexec.bat"
--      Delete $4
--      Goto RemoveFromPath_done
+- exit_fail:
+-  return NDIS_STATUS_FAILURE;
 -
--  RemoveFromPath_NT:
--    StrLen $2 $0
--    ReadRegStr $1 HKCU "Environment" "PATH"
--    Push $1
--    Push $0
--    Call ${un}StrStr ; Find $0 in $1
--    Pop $0 ; pos of our dir
--    IntCmp $0 -1 RemoveFromPath_done
--      ; else, it is in path
--      StrCpy $3 $1 $0 ; $3 now has the part of the path before our dir
--      IntOp $2 $2 + $0 ; $2 now contains the pos after our dir in the path (';')
--      IntOp $2 $2 + 1 ; $2 now containts the pos after our dir and the semicolon.
--      StrLen $0 $1
--      StrCpy $1 $1 $0 $2
--      StrCpy $3 "$3$1"
+- exit_no_resources:
+-  return NDIS_STATUS_RESOURCES;
+-}
 -
--      StrCpy $5 $3 1 -1 # copy last char
--      StrCmp $5 ";" 0 +2 # if last char == ;
--        StrCpy $3 $3 -1 # remove last char
+-//======================================================================
+-// Hooks for catching TAP device IRP's.
+-//======================================================================
 -
--      WriteRegExpandStr HKCU "Environment" "PATH" $3
--      SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
+-NTSTATUS
+-TapDeviceHook (IN PDEVICE_OBJECT p_DeviceObject, IN PIRP p_IRP)
+-{
+-  TapAdapterPointer l_Adapter = LookupAdapterInInstanceList (p_DeviceObject);
+-  PIO_STACK_LOCATION l_IrpSp;
+-  NTSTATUS l_Status = STATUS_SUCCESS;
+-  BOOLEAN accessible;
+-
+-  l_IrpSp = IoGetCurrentIrpStackLocation (p_IRP);
+-
+-  p_IRP->IoStatus.Status = STATUS_SUCCESS;
+-  p_IRP->IoStatus.Information = 0;
+-
+-  if (!l_Adapter || l_Adapter->m_Extension.m_Halt)
+-    {
+-      DEBUGP (("TapDeviceHook called when TAP device is halted, MajorFunction=%d\n",
+-	       (int)l_IrpSp->MajorFunction));
+-
+-      if (l_IrpSp->MajorFunction == IRP_MJ_CLOSE)
+-	{
+-	  IoCompleteRequest (p_IRP, IO_NO_INCREMENT);
+-	  return STATUS_SUCCESS;
+-	}
+-      else
+-	{
+-	  p_IRP->IoStatus.Status = STATUS_NO_SUCH_DEVICE;
+-	  IoCompleteRequest (p_IRP, IO_NO_INCREMENT);
+-	  return STATUS_NO_SUCH_DEVICE;
+-	}
+-    }
+-
+-  switch (l_IrpSp->MajorFunction)
+-    {
+-      //===========================================================
+-      //                 Ioctl call handlers
+-      //===========================================================
+-    case IRP_MJ_DEVICE_CONTROL:
+-      {
+-	switch (l_IrpSp->Parameters.DeviceIoControl.IoControlCode)
+-	  {
+-	  case TAP_IOCTL_GET_MAC:
+-	    {
+-	      if (l_IrpSp->Parameters.DeviceIoControl.OutputBufferLength
+-		  >= sizeof (MACADDR))
+-		{
+-		  COPY_MAC (p_IRP->AssociatedIrp.SystemBuffer,
+-			    l_Adapter->m_MAC);
+-		  p_IRP->IoStatus.Information = sizeof (MACADDR);
+-		}
+-	      else
+-		{
+-		  NOTE_ERROR ();
+-		  p_IRP->IoStatus.Status = l_Status = STATUS_BUFFER_TOO_SMALL;
+-		}
+-	      break;
+-	    }
+-	  case TAP_IOCTL_GET_VERSION:
+-	    {
+-	      const ULONG size = sizeof (ULONG) * 3;
+-	      if (l_IrpSp->Parameters.DeviceIoControl.OutputBufferLength
+-		  >= size)
+-		{
+-		  ((PULONG) (p_IRP->AssociatedIrp.SystemBuffer))[0]
+-		    = TAP_DRIVER_MAJOR_VERSION;
+-		  ((PULONG) (p_IRP->AssociatedIrp.SystemBuffer))[1]
+-		    = TAP_DRIVER_MINOR_VERSION;
+-		  ((PULONG) (p_IRP->AssociatedIrp.SystemBuffer))[2]
+-#if DBG
+-		    = 1;
+-#else
+-		  = 0;
+-#endif
+-		  p_IRP->IoStatus.Information = size;
+-		}
+-	      else
+-		{
+-		  NOTE_ERROR ();
+-		  p_IRP->IoStatus.Status = l_Status = STATUS_BUFFER_TOO_SMALL;
+-		}
+-
+-	      break;
+-	    }
+-	  case TAP_IOCTL_GET_MTU:
+-	    {
+-	      const ULONG size = sizeof (ULONG) * 1;
+-	      if (l_IrpSp->Parameters.DeviceIoControl.OutputBufferLength
+-		  >= size)
+-		{
+-		  ((PULONG) (p_IRP->AssociatedIrp.SystemBuffer))[0]
+-		    = l_Adapter->m_MTU;
+-		  p_IRP->IoStatus.Information = size;
+-		}
+-	      else
+-		{
+-		  NOTE_ERROR ();
+-		  p_IRP->IoStatus.Status = l_Status = STATUS_BUFFER_TOO_SMALL;
+-		}
+-
+-	      break;
+-	    }
+-	  case TAP_IOCTL_GET_INFO:
+-	    {
+-	      char state[16];
+-	      if (l_Adapter->m_InterfaceIsRunning)
+-		state[0] = 'A';
+-	      else
+-		state[0] = 'a';
+-	      if (l_Adapter->m_Extension.m_TapIsRunning)
+-		state[1] = 'T';
+-	      else
+-		state[1] = 't';
+-	      state[2] = l_Adapter->m_DeviceState;
+-	      if (l_Adapter->m_MediaStateAlwaysConnected)
+-		state[3] = 'C';
+-	      else
+-		state[3] = 'c';
+-	      state[4] = '\0';
+-
+-	      p_IRP->IoStatus.Status = l_Status = RtlStringCchPrintfExA (
+-	        ((LPTSTR) (p_IRP->AssociatedIrp.SystemBuffer)),
+-		l_IrpSp->Parameters.DeviceIoControl.OutputBufferLength,
+-		NULL,
+-		NULL,
+-		STRSAFE_FILL_BEHIND_NULL | STRSAFE_IGNORE_NULLS,
+-#if PACKET_TRUNCATION_CHECK
+-		"State=%s Err=[%s/%d] #O=%d Tx=[%d,%d,%d] Rx=[%d,%d,%d] IrpQ=[%d,%d,%d] PktQ=[%d,%d,%d] InjQ=[%d,%d,%d]",
+-#else
+-		"State=%s Err=[%s/%d] #O=%d Tx=[%d,%d] Rx=[%d,%d] IrpQ=[%d,%d,%d] PktQ=[%d,%d,%d] InjQ=[%d,%d,%d]",
+-#endif
+-		state,
+-		g_LastErrorFilename,
+-		g_LastErrorLineNumber,
+-		(int)l_Adapter->m_Extension.m_NumTapOpens,
+-		(int)l_Adapter->m_Tx,
+-		(int)l_Adapter->m_TxErr,
+-#if PACKET_TRUNCATION_CHECK
+-		(int)l_Adapter->m_TxTrunc,
+-#endif
+-		(int)l_Adapter->m_Rx,
+-		(int)l_Adapter->m_RxErr,
+-#if PACKET_TRUNCATION_CHECK
+-		(int)l_Adapter->m_RxTrunc,
+-#endif
+-		(int)l_Adapter->m_Extension.m_IrpQueue->size,
+-		(int)l_Adapter->m_Extension.m_IrpQueue->max_size,
+-		(int)IRP_QUEUE_SIZE,
+-		(int)l_Adapter->m_Extension.m_PacketQueue->size,
+-		(int)l_Adapter->m_Extension.m_PacketQueue->max_size,
+-		(int)PACKET_QUEUE_SIZE,
+-		(int)l_Adapter->m_Extension.m_InjectQueue->size,
+-		(int)l_Adapter->m_Extension.m_InjectQueue->max_size,
+-		(int)INJECT_QUEUE_SIZE
+-		);
+-
+-	      p_IRP->IoStatus.Information
+-		= l_IrpSp->Parameters.DeviceIoControl.OutputBufferLength;
+-
+-	      break;
+-	    }
+-
+-#if DBG
+-	  case TAP_IOCTL_GET_LOG_LINE:
+-	    {
+-	      if (GetDebugLine ((LPTSTR)p_IRP->AssociatedIrp.SystemBuffer,
+-				l_IrpSp->Parameters.DeviceIoControl.OutputBufferLength))
+-		p_IRP->IoStatus.Status = l_Status = STATUS_SUCCESS;
+-	      else
+-		p_IRP->IoStatus.Status = l_Status = STATUS_UNSUCCESSFUL;
+-
+-	      p_IRP->IoStatus.Information
+-		= l_IrpSp->Parameters.DeviceIoControl.OutputBufferLength;
+-
+-	      break;
+-	    }
+-#endif
+-
+-	  case TAP_IOCTL_CONFIG_TUN:
+-	    {
+-	      if (l_IrpSp->Parameters.DeviceIoControl.InputBufferLength >=
+-		  (sizeof (IPADDR) * 3))
+-		{
+-		  MACADDR dest;
+-
+-		  l_Adapter->m_tun = FALSE;
+-
+-		  GenerateRelatedMAC (dest, l_Adapter->m_MAC, 1);
+-
+-		  l_Adapter->m_localIP =       ((IPADDR*) (p_IRP->AssociatedIrp.SystemBuffer))[0];
+-		  l_Adapter->m_remoteNetwork = ((IPADDR*) (p_IRP->AssociatedIrp.SystemBuffer))[1];
+-		  l_Adapter->m_remoteNetmask = ((IPADDR*) (p_IRP->AssociatedIrp.SystemBuffer))[2];
+-
+-		  // sanity check on network/netmask
+-		  if ((l_Adapter->m_remoteNetwork & l_Adapter->m_remoteNetmask) != l_Adapter->m_remoteNetwork)
+-		    {
+-		      NOTE_ERROR ();
+-		      p_IRP->IoStatus.Status = l_Status = STATUS_INVALID_PARAMETER;
+-		      break;
+-		    }
+-
+-		  COPY_MAC (l_Adapter->m_TapToUser.src, l_Adapter->m_MAC);
+-		  COPY_MAC (l_Adapter->m_TapToUser.dest, dest);
+-		  COPY_MAC (l_Adapter->m_UserToTap.src, dest);
+-		  COPY_MAC (l_Adapter->m_UserToTap.dest, l_Adapter->m_MAC);
+-
+-		  l_Adapter->m_TapToUser.proto = l_Adapter->m_UserToTap.proto = htons (ETH_P_IP);
+-		  l_Adapter->m_UserToTap_IPv6 = l_Adapter->m_UserToTap;
+-		  l_Adapter->m_UserToTap_IPv6.proto = htons(ETH_P_IPV6);
+-
+-		  l_Adapter->m_tun = TRUE;
+-
+-		  CheckIfDhcpAndTunMode (l_Adapter);
+-
+-		  p_IRP->IoStatus.Information = 1; // Simple boolean value
+-		}
+-	      else
+-		{
+-		  NOTE_ERROR ();
+-		  p_IRP->IoStatus.Status = l_Status = STATUS_INVALID_PARAMETER;
+-		}
+-	      
+-	      break;
+-	    }
+-
+-	  case TAP_IOCTL_CONFIG_POINT_TO_POINT: // Obsoleted by TAP_IOCTL_CONFIG_TUN
+-	    {
+-	      if (l_IrpSp->Parameters.DeviceIoControl.InputBufferLength >=
+-		  (sizeof (IPADDR) * 2))
+-		{
+-		  MACADDR dest;
+-
+-		  l_Adapter->m_tun = FALSE;
+-
+-		  GenerateRelatedMAC (dest, l_Adapter->m_MAC, 1);
+-
+-		  l_Adapter->m_localIP =       ((IPADDR*) (p_IRP->AssociatedIrp.SystemBuffer))[0];
+-		  l_Adapter->m_remoteNetwork = ((IPADDR*) (p_IRP->AssociatedIrp.SystemBuffer))[1];
+-		  l_Adapter->m_remoteNetmask = ~0;
+-
+-		  COPY_MAC (l_Adapter->m_TapToUser.src, l_Adapter->m_MAC);
+-		  COPY_MAC (l_Adapter->m_TapToUser.dest, dest);
+-		  COPY_MAC (l_Adapter->m_UserToTap.src, dest);
+-		  COPY_MAC (l_Adapter->m_UserToTap.dest, l_Adapter->m_MAC);
+-
+-		  l_Adapter->m_TapToUser.proto = l_Adapter->m_UserToTap.proto = htons (ETH_P_IP);
+-		  l_Adapter->m_UserToTap_IPv6 = l_Adapter->m_UserToTap;
+-		  l_Adapter->m_UserToTap_IPv6.proto = htons(ETH_P_IPV6);
+-
+-		  l_Adapter->m_tun = TRUE;
+-
+-		  CheckIfDhcpAndTunMode (l_Adapter);
+-
+-		  p_IRP->IoStatus.Information = 1; // Simple boolean value
+-		}
+-	      else
+-		{
+-		  NOTE_ERROR ();
+-		  p_IRP->IoStatus.Status = l_Status = STATUS_INVALID_PARAMETER;
+-		}
+-	      
+-	      break;
+-	    }
+-
+-	  case TAP_IOCTL_SET_MEDIA_STATUS:
+-	    {
+-	      if (l_IrpSp->Parameters.DeviceIoControl.InputBufferLength >=
+-		  (sizeof (ULONG) * 1))
+-		{
+-		  ULONG parm = ((PULONG) (p_IRP->AssociatedIrp.SystemBuffer))[0];
+-		  SetMediaStatus (l_Adapter, (BOOLEAN) parm);
+-		  p_IRP->IoStatus.Information = 1;
+-		}
+-	      else
+-		{
+-		  NOTE_ERROR ();
+-		  p_IRP->IoStatus.Status = l_Status = STATUS_INVALID_PARAMETER;
+-		}
+-	      break;
+-	    }
+-
+-	  case TAP_IOCTL_CONFIG_DHCP_MASQ:
+-	    {
+-	      if (l_IrpSp->Parameters.DeviceIoControl.InputBufferLength >=
+-		  (sizeof (IPADDR) * 4))
+-		{
+-		  l_Adapter->m_dhcp_enabled = FALSE;
+-		  l_Adapter->m_dhcp_server_arp = FALSE;
+-		  l_Adapter->m_dhcp_user_supplied_options_buffer_len = 0;
+-
+-		  // Adapter IP addr / netmask
+-		  l_Adapter->m_dhcp_addr =
+-		    ((IPADDR*) (p_IRP->AssociatedIrp.SystemBuffer))[0];
+-		  l_Adapter->m_dhcp_netmask =
+-		    ((IPADDR*) (p_IRP->AssociatedIrp.SystemBuffer))[1];
+-
+-		  // IP addr of DHCP masq server
+-		  l_Adapter->m_dhcp_server_ip =
+-		    ((IPADDR*) (p_IRP->AssociatedIrp.SystemBuffer))[2];
+-
+-		  // Lease time in seconds
+-		  l_Adapter->m_dhcp_lease_time =
+-		    ((IPADDR*) (p_IRP->AssociatedIrp.SystemBuffer))[3];
+-
+-		  GenerateRelatedMAC (l_Adapter->m_dhcp_server_mac, l_Adapter->m_MAC, 2);
+-
+-		  l_Adapter->m_dhcp_enabled = TRUE;
+-		  l_Adapter->m_dhcp_server_arp = TRUE;
+-
+-		  CheckIfDhcpAndTunMode (l_Adapter);
+-
+-		  p_IRP->IoStatus.Information = 1; // Simple boolean value
+-		}
+-	      else
+-		{
+-		  NOTE_ERROR ();
+-		  p_IRP->IoStatus.Status = l_Status = STATUS_INVALID_PARAMETER;
+-		}
+-	      
+-	      break;
+-	    }
+-
+-	  case TAP_IOCTL_CONFIG_DHCP_SET_OPT:
+-	    {
+-	      if (l_IrpSp->Parameters.DeviceIoControl.InputBufferLength <=
+-		  DHCP_USER_SUPPLIED_OPTIONS_BUFFER_SIZE
+-		  && l_Adapter->m_dhcp_enabled)
+-		{
+-		  l_Adapter->m_dhcp_user_supplied_options_buffer_len = 0;
+-
+-		  NdisMoveMemory (l_Adapter->m_dhcp_user_supplied_options_buffer,
+-				  p_IRP->AssociatedIrp.SystemBuffer,
+-				  l_IrpSp->Parameters.DeviceIoControl.InputBufferLength);
+-		  
+-		  l_Adapter->m_dhcp_user_supplied_options_buffer_len = 
+-		    l_IrpSp->Parameters.DeviceIoControl.InputBufferLength;
+-
+-		  p_IRP->IoStatus.Information = 1; // Simple boolean value
+-		}
+-	      else
+-		{
+-		  NOTE_ERROR ();
+-		  p_IRP->IoStatus.Status = l_Status = STATUS_INVALID_PARAMETER;
+-		}
+-	      
+-	      break;
+-	    }
+-
+-	  default:
+-	    {
+-	      NOTE_ERROR ();
+-	      p_IRP->IoStatus.Status = l_Status = STATUS_INVALID_PARAMETER;
+-	      break;
+-	    }
+-	  }
+-
+-	IoCompleteRequest (p_IRP, IO_NO_INCREMENT);
+-	break;
+-      }
+-
+-      //===========================================================
+-      // User mode thread issued a read request on the tap device
+-      // If there are packets waiting to be read, then the request
+-      // will be satisfied here. If not, then the request will be
+-      // queued and satisfied by any packet that is not used to
+-      // satisfy requests ahead of it.
+-      //===========================================================
+-    case IRP_MJ_READ:
+-      {
+-	TapPacketPointer l_PacketBuffer;
+-	BOOLEAN pending = FALSE;
+-
+-	// Save IRP-accessible copy of buffer length
+-	p_IRP->IoStatus.Information = l_IrpSp->Parameters.Read.Length;
+-
+-	if (p_IRP->MdlAddress == NULL)
+-	  {
+-	    DEBUGP (("[%s] MdlAddress is NULL for IRP_MJ_READ\n",
+-		     NAME (l_Adapter)));
+-	    NOTE_ERROR ();
+-	    p_IRP->IoStatus.Status = l_Status = STATUS_INVALID_PARAMETER;
+-	    p_IRP->IoStatus.Information = 0;
+-	    IoCompleteRequest (p_IRP, IO_NO_INCREMENT);
+-	    break;
+-	  }
+-	else if ((p_IRP->AssociatedIrp.SystemBuffer =
+-		  MmGetSystemAddressForMdlSafe
+-		  (p_IRP->MdlAddress, NormalPagePriority)) == NULL)
+-	  {
+-	    DEBUGP (("[%s] Could not map address in IRP_MJ_READ\n",
+-		     NAME (l_Adapter)));
+-	    NOTE_ERROR ();
+-	    p_IRP->IoStatus.Status = l_Status = STATUS_INSUFFICIENT_RESOURCES;
+-	    p_IRP->IoStatus.Information = 0;
+-	    IoCompleteRequest (p_IRP, IO_NO_INCREMENT);
+-	    break;
+-	  }
+-	else if (!l_Adapter->m_InterfaceIsRunning)
+-	  {
+-	    DEBUGP (("[%s] Interface is down in IRP_MJ_READ\n",
+-		     NAME (l_Adapter)));
+-	    NOTE_ERROR ();
+-	    p_IRP->IoStatus.Status = l_Status = STATUS_UNSUCCESSFUL;
+-	    p_IRP->IoStatus.Information = 0;
+-	    IoCompleteRequest (p_IRP, IO_NO_INCREMENT);
+-	    break;
+-	  }
+-
+-	//==================================
+-	// Can we provide immediate service?
+-	//==================================
+-
+-	l_PacketBuffer = NULL;
+-
+-	NdisAcquireSpinLock (&l_Adapter->m_Extension.m_QueueLock);
+-
+-	if (IS_UP (l_Adapter)
+-	    && QueueCount (l_Adapter->m_Extension.m_PacketQueue)
+-	    && QueueCount (l_Adapter->m_Extension.m_IrpQueue) == 0)
+-	  {
+-	    l_PacketBuffer = (TapPacketPointer)
+-	      QueuePop (l_Adapter->m_Extension.m_PacketQueue);
+-	  }
+-
+-	NdisReleaseSpinLock (&l_Adapter->m_Extension.m_QueueLock);
+-
+-	if (l_PacketBuffer)
+-	  {
+-	    l_Status = CompleteIRP (p_IRP,
+-				    l_PacketBuffer,
+-				    IO_NO_INCREMENT);
+-	    break;
+-	  }
+-
+-	//=============================
+-	// Attempt to pend read request
+-	//=============================
+-
+-	NdisAcquireSpinLock (&l_Adapter->m_Extension.m_QueueLock);
+-
+-	if (IS_UP (l_Adapter)
+-	    && QueuePush (l_Adapter->m_Extension.m_IrpQueue, p_IRP) == (PIRP) p_IRP)
+-	  {
+-	    IoSetCancelRoutine (p_IRP, CancelIRPCallback);
+-	    l_Status = STATUS_PENDING;
+-	    IoMarkIrpPending (p_IRP);
+-	    pending = TRUE;
+-	  }
+-
+-	NdisReleaseSpinLock (&l_Adapter->m_Extension.m_QueueLock);
+-
+-	if (pending)
+-	  break;
+-
+-	// Can't queue anymore IRP's
+-	DEBUGP (("[%s] TAP [%s] read IRP overrun\n",
+-		 NAME (l_Adapter), l_Adapter->m_Extension.m_TapName));
+-	NOTE_ERROR ();
+-	p_IRP->IoStatus.Status = l_Status = STATUS_UNSUCCESSFUL;
+-	p_IRP->IoStatus.Information = 0;
+-	IoCompleteRequest (p_IRP, IO_NO_INCREMENT);
+-	break;
+-      }
+-
+-      //==============================================================
+-      // User mode issued a WriteFile request on the TAP file handle.
+-      // The request will always get satisfied here.  The call may
+-      // fail if there are too many pending packets (queue full).
+-      //==============================================================
+-    case IRP_MJ_WRITE:
+-      {
+-	if (p_IRP->MdlAddress == NULL)
+-	  {
+-	    DEBUGP (("[%s] MdlAddress is NULL for IRP_MJ_WRITE\n",
+-		     NAME (l_Adapter)));
+-	    NOTE_ERROR ();
+-	    p_IRP->IoStatus.Status = l_Status = STATUS_INVALID_PARAMETER;
+-	    p_IRP->IoStatus.Information = 0;
+-	  }
+-	else if ((p_IRP->AssociatedIrp.SystemBuffer =
+-		  MmGetSystemAddressForMdlSafe
+-		  (p_IRP->MdlAddress, NormalPagePriority)) == NULL)
+-	  {
+-	    DEBUGP (("[%s] Could not map address in IRP_MJ_WRITE\n",
+-		     NAME (l_Adapter)));
+-	    NOTE_ERROR ();
+-	    p_IRP->IoStatus.Status = l_Status = STATUS_INSUFFICIENT_RESOURCES;
+-	    p_IRP->IoStatus.Information = 0;
+-	  }
+-	else if (!l_Adapter->m_InterfaceIsRunning)
+-	  {
+-	    DEBUGP (("[%s] Interface is down in IRP_MJ_WRITE\n",
+-		     NAME (l_Adapter)));
+-	    NOTE_ERROR ();
+-	    p_IRP->IoStatus.Status = l_Status = STATUS_UNSUCCESSFUL;
+-	    p_IRP->IoStatus.Information = 0;
+-	  }
+-	else if (!l_Adapter->m_tun && ((l_IrpSp->Parameters.Write.Length) >= ETHERNET_HEADER_SIZE))
+-	  {
+-	    __try
+-	      {
+-		p_IRP->IoStatus.Information = l_IrpSp->Parameters.Write.Length;
+-
+-		DUMP_PACKET ("IRP_MJ_WRITE ETH",
+-			     (unsigned char *) p_IRP->AssociatedIrp.SystemBuffer,
+-			     l_IrpSp->Parameters.Write.Length);
+-
+-    //=====================================================
+-    // If IPv4 packet, check whether or not packet
+-    // was truncated.
+-    //=====================================================
+-#if PACKET_TRUNCATION_CHECK
+-		IPv4PacketSizeVerify ((unsigned char *) p_IRP->AssociatedIrp.SystemBuffer,
+-				      l_IrpSp->Parameters.Write.Length,
+-				      FALSE,
+-				      "RX",
+-				      &l_Adapter->m_RxTrunc);
+-#endif
+-
+-		NdisMEthIndicateReceive
+-		  (l_Adapter->m_MiniportAdapterHandle,
+-		   (NDIS_HANDLE) l_Adapter,
+-		   (unsigned char *) p_IRP->AssociatedIrp.SystemBuffer,
+-		   ETHERNET_HEADER_SIZE,
+-		   (unsigned char *) p_IRP->AssociatedIrp.SystemBuffer + ETHERNET_HEADER_SIZE,
+-		   l_IrpSp->Parameters.Write.Length - ETHERNET_HEADER_SIZE,
+-		   l_IrpSp->Parameters.Write.Length - ETHERNET_HEADER_SIZE);
+-		
+-		NdisMEthIndicateReceiveComplete (l_Adapter->m_MiniportAdapterHandle);
+-
+-		p_IRP->IoStatus.Status = l_Status = STATUS_SUCCESS;
+-	      }
+-	    __except (EXCEPTION_EXECUTE_HANDLER)
+-	      {
+-		DEBUGP (("[%s] NdisMEthIndicateReceive failed in IRP_MJ_WRITE\n",
+-			 NAME (l_Adapter)));
+-		NOTE_ERROR ();
+-		p_IRP->IoStatus.Status = l_Status = STATUS_UNSUCCESSFUL;
+-		p_IRP->IoStatus.Information = 0;
+-	      }
+-	  }
+-	else if (l_Adapter->m_tun && ((l_IrpSp->Parameters.Write.Length) >= IP_HEADER_SIZE))
+-	  {
+-	    __try
+-	      {
+-		ETH_HEADER * p_UserToTap = &l_Adapter->m_UserToTap;
+-
+-		// for IPv6, need to use ethernet header with IPv6 proto
+-		if ( IPH_GET_VER( ((IPHDR*) p_IRP->AssociatedIrp.SystemBuffer)->version_len) == 6 )
+-		  {
+-		    p_UserToTap = &l_Adapter->m_UserToTap_IPv6;
+-		  }
+-
+-		p_IRP->IoStatus.Information = l_IrpSp->Parameters.Write.Length;
+-
+-		DUMP_PACKET2 ("IRP_MJ_WRITE P2P",
+-			      p_UserToTap,
+-			      (unsigned char *) p_IRP->AssociatedIrp.SystemBuffer,
+-			      l_IrpSp->Parameters.Write.Length);
+-
+-    //=====================================================
+-    // If IPv4 packet, check whether or not packet
+-    // was truncated.
+-    //=====================================================
+-#if PACKET_TRUNCATION_CHECK
+-		IPv4PacketSizeVerify ((unsigned char *) p_IRP->AssociatedIrp.SystemBuffer,
+-				      l_IrpSp->Parameters.Write.Length,
+-				      TRUE,
+-				      "RX",
+-				      &l_Adapter->m_RxTrunc);
+-#endif
+-
+-		NdisMEthIndicateReceive
+-		  (l_Adapter->m_MiniportAdapterHandle,
+-		   (NDIS_HANDLE) l_Adapter,
+-		   (unsigned char *) p_UserToTap,
+-		   sizeof (ETH_HEADER),
+-		   (unsigned char *) p_IRP->AssociatedIrp.SystemBuffer,
+-		   l_IrpSp->Parameters.Write.Length,
+-		   l_IrpSp->Parameters.Write.Length);
+-
+-		NdisMEthIndicateReceiveComplete (l_Adapter->m_MiniportAdapterHandle);
+-
+-		p_IRP->IoStatus.Status = l_Status = STATUS_SUCCESS;
+-	      }
+-	    __except (EXCEPTION_EXECUTE_HANDLER)
+-	      {
+-		DEBUGP (("[%s] NdisMEthIndicateReceive failed in IRP_MJ_WRITE (P2P)\n",
+-			 NAME (l_Adapter)));
+-		NOTE_ERROR ();
+-		p_IRP->IoStatus.Status = l_Status = STATUS_UNSUCCESSFUL;
+-		p_IRP->IoStatus.Information = 0;
+-	      }
+-	  }
+-	else
+-	  {
+-	    DEBUGP (("[%s] Bad buffer size in IRP_MJ_WRITE, len=%d\n",
+-		     NAME (l_Adapter),
+-		     l_IrpSp->Parameters.Write.Length));
+-	    NOTE_ERROR ();
+-	    p_IRP->IoStatus.Information = 0;	// ETHERNET_HEADER_SIZE;
+-	    p_IRP->IoStatus.Status = l_Status = STATUS_BUFFER_TOO_SMALL;
+-	  }
+-
+-	if (l_Status == STATUS_SUCCESS)
+-	  INCREMENT_STAT (l_Adapter->m_Rx);
+-	else
+-	  INCREMENT_STAT (l_Adapter->m_RxErr);
+-
+-	IoCompleteRequest (p_IRP, IO_NO_INCREMENT);
+-	break;
+-      }
+-
+-      //--------------------------------------------------------------
+-      //   User mode thread has called CreateFile() on the tap device
+-      //--------------------------------------------------------------
+-    case IRP_MJ_CREATE:
+-      {
+-	BOOLEAN succeeded = FALSE;
+-	BOOLEAN mutex_succeeded;
+-
+-	DEBUGP
+-	  (("[%s] [TAP] release [%d.%d] open request (m_TapOpens=%d)\n",
+-	    NAME (l_Adapter), TAP_DRIVER_MAJOR_VERSION,
+-	    TAP_DRIVER_MINOR_VERSION, l_Adapter->m_Extension.m_TapOpens));
+-
+-	ACQUIRE_MUTEX_ADAPTIVE (&l_Adapter->m_Extension.m_OpenCloseMutex, mutex_succeeded);
+-	if (mutex_succeeded)
+-	  {
+-	    if (l_Adapter->m_Extension.m_TapIsRunning && !l_Adapter->m_Extension.m_TapOpens)
+-	      {
+-		ResetTapAdapterState (l_Adapter);
+-		l_Adapter->m_Extension.m_TapOpens = 1;
+-		succeeded = TRUE;
+-	      }
+-
+-	    if (succeeded)
+-	      {
+-		INCREMENT_STAT (l_Adapter->m_Extension.m_NumTapOpens);
+-		p_IRP->IoStatus.Status = l_Status = STATUS_SUCCESS;
+-		p_IRP->IoStatus.Information = 0;
+-	      }
+-	    else
+-	      {
+-		DEBUGP (("[%s] TAP is presently unavailable (m_TapOpens=%d)\n",
+-			 NAME (l_Adapter), l_Adapter->m_Extension.m_TapOpens));
+-		NOTE_ERROR ();
+-		p_IRP->IoStatus.Status = l_Status = STATUS_UNSUCCESSFUL;
+-		p_IRP->IoStatus.Information = 0;
+-	      }
+-
+-	    RELEASE_MUTEX (&l_Adapter->m_Extension.m_OpenCloseMutex);
+-	  }
+-	else
+-	  {
+-	    DEBUGP (("[%s] TAP is presently locked (m_TapOpens=%d)\n",
+-		     NAME (l_Adapter), l_Adapter->m_Extension.m_TapOpens));
+-	    NOTE_ERROR ();
+-	    p_IRP->IoStatus.Status = l_Status = STATUS_UNSUCCESSFUL;
+-	    p_IRP->IoStatus.Information = 0;
+-	  }
+-	
+-	IoCompleteRequest (p_IRP, IO_NO_INCREMENT);
+-	break;
+-      }
+-      
+-      //-----------------------------------------------------------
+-      //  User mode thread called CloseHandle() on the tap device
+-      //-----------------------------------------------------------
+-    case IRP_MJ_CLOSE:
+-      {
+-	BOOLEAN mutex_succeeded;
+-
+-	DEBUGP (("[%s] [TAP] release [%d.%d] close/cleanup request\n",
+-		 NAME (l_Adapter), TAP_DRIVER_MAJOR_VERSION,
+-		 TAP_DRIVER_MINOR_VERSION));
+-
+-	ACQUIRE_MUTEX_ADAPTIVE (&l_Adapter->m_Extension.m_OpenCloseMutex, mutex_succeeded);
+-	if (mutex_succeeded)
+-	  {
+-	    l_Adapter->m_Extension.m_TapOpens = 0;
+-	    ResetTapAdapterState (l_Adapter);
+-	    FlushQueues (&l_Adapter->m_Extension);
+-	    SetMediaStatus (l_Adapter, FALSE);
+-	    RELEASE_MUTEX (&l_Adapter->m_Extension.m_OpenCloseMutex);
+-	  }
+-	else
+-	  {
+-	    DEBUGP (("[%s] TAP is presently locked (m_TapOpens=%d)\n",
+-		     NAME (l_Adapter), l_Adapter->m_Extension.m_TapOpens));
+-	    NOTE_ERROR ();
+-	    p_IRP->IoStatus.Status = l_Status = STATUS_UNSUCCESSFUL;
+-	    p_IRP->IoStatus.Information = 0;
+-	  }
+-	
+-	IoCompleteRequest (p_IRP, IO_NO_INCREMENT);
+-	break;
+-      }
+-
+-      //------------------
+-      // Strange Request
+-      //------------------
+-    default:
+-      {
+-	//NOTE_ERROR ();
+-	p_IRP->IoStatus.Status = l_Status = STATUS_UNSUCCESSFUL;
+-	IoCompleteRequest (p_IRP, IO_NO_INCREMENT);
+-	break;
+-      }
+-    }
+-
+-  return l_Status;
+-}
+-
+-//=============================================================
+-// CompleteIRP is normally called with an adapter -> userspace
+-// network packet and an IRP (Pending I/O request) from userspace.
+-//
+-// The IRP will normally represent a queued overlapped read
+-// operation from userspace that is in a wait state.
+-//
+-// Use the ethernet packet to satisfy the IRP.
+-//=============================================================
+-
+-NTSTATUS
+-CompleteIRP (IN PIRP p_IRP,
+-	     IN TapPacketPointer p_PacketBuffer,
+-	     IN CCHAR PriorityBoost)
+-{
+-  NTSTATUS l_Status = STATUS_UNSUCCESSFUL;
+-
+-  int offset;
+-  int len;
+-
+-  MYASSERT (p_IRP);
+-  MYASSERT (p_PacketBuffer);
+-
+-  IoSetCancelRoutine (p_IRP, NULL);  // Disable cancel routine
+-
+-  //-------------------------------------------
+-  // While p_PacketBuffer always contains a
+-  // full ethernet packet, including the
+-  // ethernet header, in point-to-point mode,
+-  // we only want to return the IPv4
+-  // component.
+-  //-------------------------------------------
+-
+-  if (p_PacketBuffer->m_SizeFlags & TP_TUN)
+-    {
+-      offset = ETHERNET_HEADER_SIZE;
+-      len = (int) (p_PacketBuffer->m_SizeFlags & TP_SIZE_MASK) - ETHERNET_HEADER_SIZE;
+-    }
+-  else
+-    {
+-      offset = 0;
+-      len = (p_PacketBuffer->m_SizeFlags & TP_SIZE_MASK);
+-    }
+-
+-  if (len < 0 || (int) p_IRP->IoStatus.Information < len)
+-    {
+-      p_IRP->IoStatus.Information = 0;
+-      p_IRP->IoStatus.Status = STATUS_BUFFER_OVERFLOW;
+-      NOTE_ERROR ();
+-    }
+-  else
+-    {
+-      p_IRP->IoStatus.Information = len;
+-      p_IRP->IoStatus.Status = l_Status = STATUS_SUCCESS;
+-
+-      __try
+-	{
+-	  NdisMoveMemory (p_IRP->AssociatedIrp.SystemBuffer,
+-			  p_PacketBuffer->m_Data + offset,
+-			  len);
+-	}
+-      __except (EXCEPTION_EXECUTE_HANDLER)
+-	{
+-	  NOTE_ERROR ();
+-	  p_IRP->IoStatus.Status = STATUS_UNSUCCESSFUL;
+-	  p_IRP->IoStatus.Information = 0;
+-	}
+-    }
+-
+-  __try
+-    {
+-      NdisFreeMemory (p_PacketBuffer,
+-		      TAP_PACKET_SIZE (p_PacketBuffer->m_SizeFlags & TP_SIZE_MASK),
+-		      0);
+-    }
+-  __except (EXCEPTION_EXECUTE_HANDLER)
+-    {
+-    }
 -  
--  RemoveFromPath_done:
--    Pop $5
--    Pop $4
--    Pop $3
--    Pop $2
--    Pop $1
--    Pop $0
--FunctionEnd
--!macroend
--!insertmacro RemoveFromPath ""
--!insertmacro RemoveFromPath "un."
+-  if (l_Status == STATUS_SUCCESS)
+-    {
+-      IoCompleteRequest (p_IRP, PriorityBoost);
+-    }
+-  else
+-    IoCompleteRequest (p_IRP, IO_NO_INCREMENT);
+-
+-  return l_Status;
+-}
+-
+-//==============================================
+-// IRPs get cancelled for a number of reasons.
+-//
+-// The TAP device could be closed by userspace
+-// when there are still pending read operations.
+-//
+-// The user could disable the TAP adapter in the
+-// network connections control panel, while the
+-// device is still open by a process.
+-//==============================================
+-VOID
+-CancelIRPCallback (IN PDEVICE_OBJECT p_DeviceObject,
+-		   IN PIRP p_IRP)
+-{
+-  TapAdapterPointer l_Adapter = LookupAdapterInInstanceList (p_DeviceObject);
+-  CancelIRP (l_Adapter ? &l_Adapter->m_Extension : NULL, p_IRP, TRUE);
+-}
+-
+-VOID
+-CancelIRP (TapExtensionPointer p_Extension,
+-	   IN PIRP p_IRP,
+-	   BOOLEAN callback)
+-{
+-  BOOLEAN exists = FALSE;
+-
+-  MYASSERT (p_IRP);
+-
+-  if (p_Extension)
+-    {
+-      NdisAcquireSpinLock (&p_Extension->m_QueueLock);
+-      exists = (QueueExtract (p_Extension->m_IrpQueue, p_IRP) == p_IRP);
+-      NdisReleaseSpinLock (&p_Extension->m_QueueLock);
+-    }
+-  else
+-    exists = TRUE;
+-
+-  if (exists)
+-    {
+-      IoSetCancelRoutine (p_IRP, NULL);
+-      p_IRP->IoStatus.Status = STATUS_CANCELLED;
+-      p_IRP->IoStatus.Information = 0;
+-    }
+-     
+-  if (callback)
+-    IoReleaseCancelSpinLock (p_IRP->CancelIrql);
+-
+-  if (exists)
+-    IoCompleteRequest (p_IRP, IO_NO_INCREMENT);
+-}
+-
+-//===========================================
+-// Exhaust packet, IRP, and injection queues.
+-//===========================================
+-VOID
+-FlushQueues (TapExtensionPointer p_Extension)
+-{
+-  PIRP l_IRP;
+-  TapPacketPointer l_PacketBuffer;
+-  InjectPacketPointer l_InjectBuffer;
+-  int n_IRP=0, n_Packet=0, n_Inject=0;
+-
+-  MYASSERT (p_Extension);
+-  MYASSERT (p_Extension->m_TapDevice);
+-
+-  while (TRUE)
+-    {
+-      NdisAcquireSpinLock (&p_Extension->m_QueueLock);
+-      l_IRP = QueuePop (p_Extension->m_IrpQueue);
+-      NdisReleaseSpinLock (&p_Extension->m_QueueLock);
+-      if (l_IRP)
+-	{
+-	  ++n_IRP;
+-	  CancelIRP (NULL, l_IRP, FALSE);
+-	}
+-      else
+-	break;
+-    }
+-
+-  while (TRUE)
+-    {
+-      NdisAcquireSpinLock (&p_Extension->m_QueueLock);
+-      l_PacketBuffer = QueuePop (p_Extension->m_PacketQueue);
+-      NdisReleaseSpinLock (&p_Extension->m_QueueLock);
+-      if (l_PacketBuffer)
+-	{
+-	  ++n_Packet;
+-	  MemFree (l_PacketBuffer, TAP_PACKET_SIZE (l_PacketBuffer->m_SizeFlags & TP_SIZE_MASK));
+-	}
+-      else
+-	break;
+-    }
+-
+-  while (TRUE)
+-    {
+-      NdisAcquireSpinLock (&p_Extension->m_InjectLock);
+-      l_InjectBuffer = QueuePop (p_Extension->m_InjectQueue);
+-      NdisReleaseSpinLock (&p_Extension->m_InjectLock);
+-      if (l_InjectBuffer)
+-	{
+-	  ++n_Inject;
+-	  INJECT_PACKET_FREE(l_InjectBuffer);
+-	}
+-      else
+-	break;
+-    }
+-
+-  DEBUGP ((
+-	   "[%s] [TAP] FlushQueues n_IRP=[%d,%d,%d] n_Packet=[%d,%d,%d] n_Inject=[%d,%d,%d]\n",
+-	   p_Extension->m_TapName,
+-	   n_IRP,
+-	   p_Extension->m_IrpQueue->max_size,
+-	   IRP_QUEUE_SIZE,
+-	   n_Packet,
+-	   p_Extension->m_PacketQueue->max_size,
+-	   PACKET_QUEUE_SIZE,
+-	   n_Inject,
+-	   p_Extension->m_InjectQueue->max_size,
+-	   INJECT_QUEUE_SIZE
+-	   ));
+-}
+-
+-//===================================================
+-// Tell Windows whether the TAP device should be
+-// considered "connected" or "disconnected".
+-//===================================================
+-VOID
+-SetMediaStatus (TapAdapterPointer p_Adapter, BOOLEAN state)
+-{
+-  if (p_Adapter->m_MediaState != state && !p_Adapter->m_MediaStateAlwaysConnected)
+-    {
+-      if (state)
+-	NdisMIndicateStatus (p_Adapter->m_MiniportAdapterHandle,
+-			     NDIS_STATUS_MEDIA_CONNECT, NULL, 0);
+-      else
+-	NdisMIndicateStatus (p_Adapter->m_MiniportAdapterHandle,
+-			     NDIS_STATUS_MEDIA_DISCONNECT, NULL, 0);
+-
+-      NdisMIndicateStatusComplete (p_Adapter->m_MiniportAdapterHandle);
+-      p_Adapter->m_MediaState = state;
+-    }
+-}
 -
 -
--;====================================================
--; StrStr - Finds a given string in another given string.
--;               Returns -1 if not found and the pos if found.
--;          Input: head of the stack - string to find
--;                      second in the stack - string to find in
--;          Output: head of the stack
--;====================================================
--!macro StrStr un
--Function ${un}StrStr
--  Push $0
--  Exch
--  Pop $0 ; $0 now have the string to find
--  Push $1
--  Exch 2
--  Pop $1 ; $1 now have the string to find in
--  Exch
--  Push $2
--  Push $3
--  Push $4
--  Push $5
+-//======================================================
+-// If DHCP mode is used together with tun
+-// mode, consider the fact that the P2P remote subnet
+-// might enclose the DHCP masq server address.
+-//======================================================
+-VOID
+-CheckIfDhcpAndTunMode (TapAdapterPointer p_Adapter)
+-{
+-  if (p_Adapter->m_tun && p_Adapter->m_dhcp_enabled)
+-    {
+-      if ((p_Adapter->m_dhcp_server_ip & p_Adapter->m_remoteNetmask) == p_Adapter->m_remoteNetwork)
+-	{
+-	  COPY_MAC (p_Adapter->m_dhcp_server_mac, p_Adapter->m_TapToUser.dest);
+-	  p_Adapter->m_dhcp_server_arp = FALSE;
+-	}
+-    }
+-}
 -
--  StrCpy $2 -1
--  StrLen $3 $0
--  StrLen $4 $1
--  IntOp $4 $4 - $3
+-//===================================================
+-// Generate an ARP reply message for specific kinds
+-// ARP queries.
+-//===================================================
+-BOOLEAN
+-ProcessARP (TapAdapterPointer p_Adapter,
+-	    const PARP_PACKET src,
+-	    const IPADDR adapter_ip,
+-	    const IPADDR ip_network,
+-	    const IPADDR ip_netmask,
+-	    const MACADDR mac)
+-{
+-  //-----------------------------------------------
+-  // Is this the kind of packet we are looking for?
+-  //-----------------------------------------------
+-  if (src->m_Proto == htons (ETH_P_ARP)
+-      && MAC_EQUAL (src->m_MAC_Source, p_Adapter->m_MAC)
+-      && MAC_EQUAL (src->m_ARP_MAC_Source, p_Adapter->m_MAC)
+-      && MAC_EQUAL (src->m_MAC_Destination, p_Adapter->m_MAC_Broadcast)
+-      && src->m_ARP_Operation == htons (ARP_REQUEST)
+-      && src->m_MAC_AddressType == htons (MAC_ADDR_TYPE)
+-      && src->m_MAC_AddressSize == sizeof (MACADDR)
+-      && src->m_PROTO_AddressType == htons (ETH_P_IP)
+-      && src->m_PROTO_AddressSize == sizeof (IPADDR)
+-      && src->m_ARP_IP_Source == adapter_ip
+-      && (src->m_ARP_IP_Destination & ip_netmask) == ip_network
+-      && src->m_ARP_IP_Destination != adapter_ip)
+-    {
+-      ARP_PACKET *arp = (ARP_PACKET *) MemAlloc (sizeof (ARP_PACKET), TRUE);
+-      if (arp)
+-	{
+-	  //----------------------------------------------
+-	  // Initialize ARP reply fields
+-	  //----------------------------------------------
+-	  arp->m_Proto = htons (ETH_P_ARP);
+-	  arp->m_MAC_AddressType = htons (MAC_ADDR_TYPE);
+-	  arp->m_PROTO_AddressType = htons (ETH_P_IP);
+-	  arp->m_MAC_AddressSize = sizeof (MACADDR);
+-	  arp->m_PROTO_AddressSize = sizeof (IPADDR);
+-	  arp->m_ARP_Operation = htons (ARP_REPLY);
 -
--  StrStr_loop:
--    IntOp $2 $2 + 1
--    IntCmp $2 $4 0 0 StrStrReturn_notFound
--    StrCpy $5 $1 $3 $2
--    StrCmp $5 $0 StrStr_done StrStr_loop
+-	  //----------------------------------------------
+-	  // ARP addresses
+-	  //----------------------------------------------      
+-	  COPY_MAC (arp->m_MAC_Source, mac);
+-	  COPY_MAC (arp->m_MAC_Destination, p_Adapter->m_MAC);
+-	  COPY_MAC (arp->m_ARP_MAC_Source, mac);
+-	  COPY_MAC (arp->m_ARP_MAC_Destination, p_Adapter->m_MAC);
+-	  arp->m_ARP_IP_Source = src->m_ARP_IP_Destination;
+-	  arp->m_ARP_IP_Destination = adapter_ip;
 -
--  StrStrReturn_notFound:
--    StrCpy $2 -1
+-	  DUMP_PACKET ("ProcessARP",
+-		       (unsigned char *) arp,
+-		       sizeof (ARP_PACKET));
 -
--  StrStr_done:
--    Pop $5
--    Pop $4
--    Pop $3
--    Exch $2
--    Exch 2
--    Pop $0
--    Pop $1
--FunctionEnd
--!macroend
--!insertmacro StrStr ""
--!insertmacro StrStr "un."
+-	  InjectPacketDeferred (p_Adapter, (UCHAR *) arp, sizeof (ARP_PACKET));
 -
--;====================================================
--; IsNT - Returns 1 if the current system is NT, 0
--;        otherwise.
--;     Output: head of the stack
--;====================================================
--!macro IsNT un
--Function ${un}IsNT
--  Push $0
--  ReadRegStr $0 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
--  StrCmp $0 "" 0 IsNT_yes
--  ; we are not NT.
--  Pop $0
--  Push 0
--  Return
+-	  MemFree (arp, sizeof (ARP_PACKET));
+-	}
 -
--  IsNT_yes:
--    ; NT!!!
--    Pop $0
--    Push 1
--FunctionEnd
--!macroend
--!insertmacro IsNT ""
--!insertmacro IsNT "un."
+-      return TRUE;
+-    }
+-  else
+-    return FALSE;
+-}
 -
-diff --git a/win/settings.in b/win/settings.in
-deleted file mode 100644
-index 79033dd..0000000
---- a/win/settings.in
+-//===============================================================
+-// Used in cases where internally generated packets such as
+-// ARP or DHCP replies must be returned to the kernel, to be
+-// seen as an incoming packet "arriving" on the interface.
+-//===============================================================
+-
+-// Defer packet injection till IRQL < DISPATCH_LEVEL
+-VOID
+-InjectPacketDeferred (TapAdapterPointer p_Adapter,
+-		      UCHAR *packet,
+-		      const unsigned int len)
+-{
+-  InjectPacketPointer l_InjectBuffer;
+-  PVOID result;
+-
+-  if (NdisAllocateMemoryWithTag (&l_InjectBuffer,
+-				 INJECT_PACKET_SIZE (len),
+-				 'IPAT') == NDIS_STATUS_SUCCESS)
+-    {
+-      l_InjectBuffer->m_Size = len;
+-      NdisMoveMemory (l_InjectBuffer->m_Data, packet, len);
+-      NdisAcquireSpinLock (&p_Adapter->m_Extension.m_InjectLock);
+-      result = QueuePush (p_Adapter->m_Extension.m_InjectQueue, l_InjectBuffer);
+-      NdisReleaseSpinLock (&p_Adapter->m_Extension.m_InjectLock);
+-      if (result)
+-	KeInsertQueueDpc (&p_Adapter->m_Extension.m_InjectDpc, p_Adapter, NULL);
+-      else
+-	INJECT_PACKET_FREE(l_InjectBuffer);
+-    }
+-}
+-
+-// Handle the injection of previously deferred packets
+-VOID
+-InjectPacketDpc(KDPC *Dpc,
+-		PVOID DeferredContext,
+-		PVOID SystemArgument1,
+-		PVOID SystemArgument2)
+-{
+-  InjectPacketPointer l_InjectBuffer;
+-  TapAdapterPointer l_Adapter = (TapAdapterPointer)SystemArgument1;
+-  while (TRUE)
+-    {
+-      NdisAcquireSpinLock (&l_Adapter->m_Extension.m_InjectLock);
+-      l_InjectBuffer = QueuePop (l_Adapter->m_Extension.m_InjectQueue);
+-      NdisReleaseSpinLock (&l_Adapter->m_Extension.m_InjectLock);
+-      if (l_InjectBuffer)
+-	{
+-	  InjectPacketNow(l_Adapter, l_InjectBuffer->m_Data, l_InjectBuffer->m_Size);
+-	  INJECT_PACKET_FREE(l_InjectBuffer);
+-	}
+-      else
+-	break;
+-    }
+-}
+-
+-// Do packet injection now
+-VOID
+-InjectPacketNow (TapAdapterPointer p_Adapter,
+-		 UCHAR *packet,
+-		 const unsigned int len)
+-{
+-  MYASSERT (len >= ETHERNET_HEADER_SIZE);
+-
+-  __try
+-    {
+-      //------------------------------------------------------------
+-      // NdisMEthIndicateReceive and NdisMEthIndicateReceiveComplete
+-      // could potentially be called reentrantly both here and in
+-      // TapDeviceHook/IRP_MJ_WRITE.
+-      //
+-      // The DDK docs imply that this is okay.
+-      //
+-      // Note that reentrant behavior could only occur if the
+-      // non-deferred version of InjectPacket is used.
+-      //------------------------------------------------------------
+-      NdisMEthIndicateReceive
+-	(p_Adapter->m_MiniportAdapterHandle,
+-	 (NDIS_HANDLE) p_Adapter,
+-	 packet,
+-	 ETHERNET_HEADER_SIZE,
+-	 packet + ETHERNET_HEADER_SIZE,
+-	 len - ETHERNET_HEADER_SIZE,
+-	 len - ETHERNET_HEADER_SIZE);
+-      
+-      NdisMEthIndicateReceiveComplete (p_Adapter->m_MiniportAdapterHandle);
+-    }
+-  __except (EXCEPTION_EXECUTE_HANDLER)
+-    {
+-      DEBUGP (("[%s] NdisMEthIndicateReceive failed in InjectPacketNow\n",
+-	       NAME (p_Adapter)));
+-      NOTE_ERROR ();
+-    }
+-}
+-
+-//===================================================================
+-// Go back to default TAP mode from Point-To-Point mode.
+-// Also reset (i.e. disable) DHCP Masq mode.
+-//===================================================================
+-VOID ResetTapAdapterState (TapAdapterPointer p_Adapter)
+-{
+-  // Point-To-Point
+-  p_Adapter->m_tun = FALSE;
+-  p_Adapter->m_localIP = 0;
+-  p_Adapter->m_remoteNetwork = 0;
+-  p_Adapter->m_remoteNetmask = 0;
+-  NdisZeroMemory (&p_Adapter->m_TapToUser, sizeof (p_Adapter->m_TapToUser));
+-  NdisZeroMemory (&p_Adapter->m_UserToTap, sizeof (p_Adapter->m_UserToTap));
+-  NdisZeroMemory (&p_Adapter->m_UserToTap_IPv6, sizeof (p_Adapter->m_UserToTap_IPv6));
+-
+-  // DHCP Masq
+-  p_Adapter->m_dhcp_enabled = FALSE;
+-  p_Adapter->m_dhcp_server_arp = FALSE;
+-  p_Adapter->m_dhcp_user_supplied_options_buffer_len = 0;
+-  p_Adapter->m_dhcp_addr = 0;
+-  p_Adapter->m_dhcp_netmask = 0;
+-  p_Adapter->m_dhcp_server_ip = 0;
+-  p_Adapter->m_dhcp_lease_time = 0;
+-  p_Adapter->m_dhcp_received_discover = FALSE;
+-  p_Adapter->m_dhcp_bad_requests = 0;
+-  NdisZeroMemory (p_Adapter->m_dhcp_server_mac, sizeof (MACADDR));
+-}
+-
+-#if ENABLE_NONADMIN
+-
+-//===================================================================
+-// Set TAP device handle to be accessible without admin privileges.
+-//===================================================================
+-VOID AllowNonAdmin (TapExtensionPointer p_Extension)
+-{
+-  NTSTATUS stat;
+-  SECURITY_DESCRIPTOR sd;
+-  OBJECT_ATTRIBUTES oa;
+-  IO_STATUS_BLOCK isb;
+-  HANDLE hand = NULL;
+-
+-  NdisZeroMemory (&sd, sizeof (sd));
+-  NdisZeroMemory (&oa, sizeof (oa));
+-  NdisZeroMemory (&isb, sizeof (isb));
+-
+-  if (!p_Extension->m_CreatedUnicodeLinkName)
+-    {
+-      DEBUGP (("[TAP] AllowNonAdmin: UnicodeLinkName is uninitialized\n"));
+-      NOTE_ERROR ();
+-      return;
+-    }
+-
+-  stat = RtlCreateSecurityDescriptor (&sd, SECURITY_DESCRIPTOR_REVISION);
+-  if (stat != STATUS_SUCCESS)
+-    {
+-      DEBUGP (("[TAP] AllowNonAdmin: RtlCreateSecurityDescriptor failed\n"));
+-      NOTE_ERROR ();
+-      return;
+-    }
+-
+-  InitializeObjectAttributes (
+-    &oa,
+-    &p_Extension->m_UnicodeLinkName,
+-    OBJ_KERNEL_HANDLE,
+-    NULL,
+-    NULL
+-    );
+-
+-  stat = ZwOpenFile (
+-    &hand,
+-    WRITE_DAC,
+-    &oa,
+-    &isb,
+-    0,
+-    0
+-    );
+-  if (stat != STATUS_SUCCESS)
+-    {
+-      DEBUGP (("[TAP] AllowNonAdmin: ZwOpenFile failed, status=0x%08x\n", (unsigned int)stat));
+-      NOTE_ERROR ();
+-      return;
+-    }
+-
+-  stat = ZwSetSecurityObject (hand, DACL_SECURITY_INFORMATION, &sd);
+-  if (stat != STATUS_SUCCESS)
+-    {
+-      DEBUGP (("[TAP] AllowNonAdmin: ZwSetSecurityObject failed\n"));
+-      NOTE_ERROR ();
+-      return;
+-    }
+-
+-  stat = ZwClose (hand);
+-  if (stat != STATUS_SUCCESS)
+-    {
+-      DEBUGP (("[TAP] AllowNonAdmin: ZwClose failed\n"));
+-      NOTE_ERROR ();
+-      return;
+-    }
+-
+-  DEBUGP (("[TAP] AllowNonAdmin: SUCCEEDED\n"));
+-}
+-
+-#endif
+-
+-#if PACKET_TRUNCATION_CHECK
+-
+-VOID
+-IPv4PacketSizeVerify (const UCHAR *data, ULONG length, BOOLEAN tun, const char *prefix, LONG *counter)
+-{
+-  const IPHDR *ip;
+-  int len = length;
+-
+-  if (tun)
+-    {
+-      ip = (IPHDR *) data;
+-    }
+-  else
+-    {
+-      if (length >= sizeof (ETH_HEADER))
+-	{
+-	  const ETH_HEADER *eth = (ETH_HEADER *) data;
+-
+-	  if (eth->proto != htons (ETH_P_IP))
+-	    return;
+-
+-	  ip = (IPHDR *) (data + sizeof (ETH_HEADER));
+-	  len -= sizeof (ETH_HEADER);
+-	}
+-      else
+-	return;
+-    }
+-
+-  if (len >= sizeof (IPHDR))
+-    {
+-      const int totlen = ntohs (ip->tot_len);
+-
+-      DEBUGP (("[TAP] IPv4PacketSizeVerify %s len=%d totlen=%d\n", prefix, len, totlen));
+-
+-      if (len != totlen)
+-	++(*counter);
+-    }
+-}
+-
+-#endif
+-
+-//======================================================================
+-//                                    End of Source
+-//======================================================================
+diff --git a/tap-win32/types.h b/tap-win32/types.h
+deleted file mode 100755
+index bdc08e7..0000000
+--- a/tap-win32/types.h
 +++ /dev/null
-@@ -1,100 +0,0 @@
--# Version numbers, settings, and dependencies
--# for Windows OpenVPN installer.
--#
--# Note that some variables are parsed by wb.py from version.m4 and are not 
--# stored in this file. This is done to allow using the old and new Windows build 
--# systems side-by-side
--
--# Features to include. DO NOT comment these out, use 1 to enable and 0 to
--# disable.
--!define ENABLE_PASSWORD_SAVE 1
--
--# ENABLE_CLIENT_SERVER enables the point-to-multipoint support. Normally you
--# want to have this enabled.
--!define ENABLE_CLIENT_SERVER 1
--
--# ENABLE_CLIENT_ONLY removes server-side point-to-multipoint features. This
--# depends on ENABLE_CLIENT_SERVER being set to 1.
--!define ENABLE_CLIENT_ONLY 0
--
--!define ENABLE_MANAGEMENT 1
--!define ENABLE_HTTP_PROXY 1
--!define ENABLE_SOCKS 1
--!define ENABLE_FRAGMENT 1
--!define ENABLE_DEBUG 1
--
--# Branding
--!define PRODUCT_NAME      "OpenVPN"
--!define PRODUCT_UNIX_NAME "openvpn"
--!define PRODUCT_FILE_EXT  "ovpn"
--
--# Include the OpenVPN GUI exe in the installer. Comment out USE_GUI to disable.
--!define USE_GUI
--!define OPENVPN_GUI_DIR "../openvpn-gui"
--!define OPENVPN_GUI     "openvpn-gui-1.0.3.exe"
--
--# Use either PolarSSL or OpenSSL. Only one may be active at a time
--!define USE_POLARSSL 0
--!define USE_OPENSSL 1
--
--# The same as above, but for library inclusion (must be defined/undefined due to build system)
--;!define INCLUDE_POLARSSL
--!define INCLUDE_OPENSSL
--
--# Uncomment to use the PKCS#11 helper library
--!define USE_PKCS11 0
--;!define INCLUDE_PKCS11
--
--# Prebuilt libraries.  DMALLOC is optional.
--!define OPENSSL_DIR	  "../openssl"
--!define POLARSSL_DIR	  "../polarssl"
--!define LZO_DIR		  "../lzo"
--!define PKCS11_HELPER_DIR "../pkcs11-helper"
--
--# write output files here
--!define DIST   "dist"
--
--# tapinstall.exe (a.k.a. devcon.exe) source code. Not needed if DRVBINSRC is 
--# defined (or if using pre-built mode).
--!define TISRC	"../tapinstall"
--
--# TAP adapter icon -- visible=0x81 or hidden=0x89
--!define PRODUCT_TAP_CHARACTERISTICS     0x81
--
--# TAP adapter metadata. Version information in ../version.m4.
--!define PRODUCT_TAP_RELDATE    "04/19/2010"
--!define PRODUCT_TAP_DEVICE_DESCRIPTION    "TAP-Win32 Adapter V9"
--!define PRODUCT_TAP_PROVIDER    "TAP-Win32 Provider V9"
--
--# Build debugging version of TAP driver
--;!define PRODUCT_TAP_DEBUG
--
--# Build debugging version of openvpn.exe
--;!define PRODUCT_OPENVPN_DEBUG
--
--# DDK path -- currently Windows 7 WDK
--!define DDK_PATH "c:/winddk/7600.16385.1"
--;!define DDK_PATH "c:/winddk/6001.18002"
--
--# output path for tap_span.py
--!define TAP_DIST "tap_dist"
--
--# Visual studio path
--!define MSVC "C:/Program Files/Microsoft Visual Studio 9.0"
--
--# Visual studio C run-time library path
--!define MSVC_CRT "../Microsoft.VC90.CRT"
--
--# Code Signing.
--# If undefined, don't sign any files.
--!define SIGNTOOL        "../signtool"
--!define PRODUCT_SIGN_CN "openvpn"
--
--# Directory with prebuilt TAP drivers and tapinstall.exes
--!define TAP_PREBUILT "../tap-prebuilt"
--
--; DEBUGGING -- set to something like "-DBG2"
--!define OUTFILE_LABEL ""
--
--; DEBUGGING -- set to something like "DEBUG2"
--!define TITLE_LABEL ""
-diff --git a/win/show.py b/win/show.py
-deleted file mode 100644
-index ac56e98..0000000
---- a/win/show.py
-+++ /dev/null
-@@ -1,9 +0,0 @@
--from wb import get_config
--from js import JSON
--
--def main():
--    print JSON().encode(get_config())
--
--# if we are run directly, and not loaded as a module
--if __name__ == "__main__":
--    main()
-diff --git a/win/sign.py b/win/sign.py
-deleted file mode 100644
-index a80bf98..0000000
---- a/win/sign.py
-+++ /dev/null
-@@ -1,23 +0,0 @@
--import sys
--from wb import config, choose_arch, home_fn
--
--if 'SIGNTOOL' in config:
--    sys.path.append(home_fn(config['SIGNTOOL']))
--
--def main(conf, arch, tap_dir):
--    from signtool import SignTool
--    st = SignTool(conf, tap_dir)
--    for x64 in choose_arch(arch):
--        st.sign_verify(x64=x64)
--
--# if we are run directly, and not loaded as a module
--if __name__ == "__main__":
--    if len(sys.argv) >= 2:
--        if len(sys.argv) >= 3:
--            tap_dir = home_fn(sys.argv[2])
--        else:
--            tap_dir = None
--        main(config, sys.argv[1], tap_dir)
--    else:
--        print "usage: sign <x64|x86|all> [tap-dir]"
--        sys.exit(2)
-diff --git a/win/tap_span.py b/win/tap_span.py
-deleted file mode 100644
-index 749f6f3..0000000
---- a/win/tap_span.py
-+++ /dev/null
-@@ -1,129 +0,0 @@
--import sys, os, shutil
--from wb import config, home_fn, mod_fn, preprocess, autogen, dict_def, build_autodefs, rm_rf, mkdir_silent, cp
--if 'SIGNTOOL' in config:
--    sys.path.append(home_fn(config['SIGNTOOL']))
--from signtool import SignTool
--from build_ddk import build_tap
--
--ti_dir = "c:/src/tapinstall"
--hi = ("c:/winddk/7600.16385.1", 7600, 7600, ("i386", "amd64"))
--low = ("c:/winddk/6001.18002", 6001, 5600, ("win2k",))
--dest_top = home_fn('tap_build')
--dist = home_fn(config['TAP_DIST'])
--
--def copy_tap(src, dest, x64):
--    dir = os.path.join(src, { False : 'i386', True: 'amd64' }[x64])
--    mkdir_silent(dest)
--    for dirpath, dirnames, filenames in os.walk(dir):
--        for f in filenames:
--            root, ext = os.path.splitext(f)
--            if ext in ('.inf', '.cat', '.sys'):
--                cp(os.path.join(dir, f), dest)
--        break
--
--def copy_tapinstall(src, dest, x64):
--    base = { False : 'i386', True: 'amd64' }[x64]
--    mkdir_silent(dest)
--    for dirpath, dirnames, filenames in os.walk(home_fn(src)):
--        for f in filenames:
--            if f == 'devcon.exe':
--                dir_name = os.path.basename(dirpath)
--                s = os.path.join(dirpath, f)
--                if dir_name == base:
--                    cp(s, dest)
--
--def main():
--    rm_rf(dest_top)
--    os.mkdir(dest_top)
--
--    rm_rf(dist)
--    os.mkdir(dist)
--
--    for ver in hi, low:
--        top = os.path.join(dest_top, str(ver[1]))
--        os.mkdir(top)
--        tap_dest = os.path.join(top, "tap-win32")
--        ti_dest = os.path.join(top, "tapinstall")
--        ti_src = os.path.join(ti_dir, str(ver[2]))
--        shutil.copytree(home_fn("tap-win32"), tap_dest)
--        shutil.copytree(ti_src, ti_dest)
--
--        i386 = os.path.join(tap_dest, "i386")
--        amd64 = os.path.join(tap_dest, "amd64")
--
--        build_amd64 = (len(ver[3]) >= 2)
--
--        build_autodefs(config, mod_fn('autodefs.h.in'), os.path.join(top, 'autodefs.h'))
--
--        st = SignTool(config, tap_dest)
--
--        preprocess(config,
--                   in_fn=os.path.join(tap_dest, 'SOURCES.in'),
--                   out_fn=os.path.join(tap_dest, 'SOURCES'),
--                   quote_begin='@@',
--                   quote_end='@@',
--                   head_comment='# %s\n\n' % autogen)
--
--        preprocess(config,
--                   in_fn=os.path.join(i386, 'OemWin2k.inf.in'),
--                   out_fn=os.path.join(i386, 'OemWin2k.inf'),
--                   quote_begin='@@',
--                   quote_end='@@',
--                   if_prefix='!',
--                   head_comment='; %s\n\n' % autogen)
--
--        preprocess(config,
--                   in_fn=os.path.join(ti_dest, 'sources.in'),
--                   out_fn=os.path.join(ti_dest, 'sources'),
--                   if_prefix='!',
--                   head_comment='# %s\n\n' % autogen)
--
--        build_tap(ddk_path=ver[0],
--                  ddk_major=ver[1],
--                  debug=False,
--                  dir=tap_dest,
--                  x64=False)
--
--        st.sign_verify(x64=False)
--
--        build_tap(ddk_path=ver[0],
--                  ddk_major=ver[1],
--                  debug=False,
--                  dir=ti_dest,
--                  x64=False)
--
--        tap_dist = os.path.join(dist, ver[3][0])
--
--        copy_tap(tap_dest, tap_dist, x64=False)
--        copy_tapinstall(ti_dest, tap_dist, x64=False)
--
--        if build_amd64:
--            os.mkdir(amd64)
--            preprocess(dict_def(config, [('AMD64', '1')]),
--                       in_fn=os.path.join(i386, 'OemWin2k.inf.in'),
--                       out_fn=os.path.join(amd64, 'OemWin2k.inf'),
--                       quote_begin='@@',
--                       quote_end='@@',
--                       if_prefix='!',
--                       head_comment='; %s\n\n' % autogen)
--
--            build_tap(ddk_path=ver[0],
--                      ddk_major=ver[1],
--                      debug=False,
--                      dir=tap_dest,
--                      x64=True)
--
--            build_tap(ddk_path=ver[0],
--                      ddk_major=ver[1],
--                      debug=False,
--                      dir=ti_dest,
--                      x64=True)
--
--            st.sign_verify(x64=True)
--
--            tap_dist_x64 = os.path.join(dist, ver[3][1])
--
--            copy_tap(tap_dest, tap_dist_x64, x64=True)
--            copy_tapinstall(ti_dest, tap_dist_x64, x64=True)
--
--main()
-diff --git a/win/wb.py b/win/wb.py
-deleted file mode 100644
-index 39eadec..0000000
---- a/win/wb.py
-+++ /dev/null
-@@ -1,322 +0,0 @@
--# Python module containing general build functions
--# for OpenVPN on Windows
--
--import os, re, shutil, stat
--
--autogen = "Automatically generated by OpenVPN Windows build system"
--
--def get_config():
--    kv = {}
--    parse_version_m4(kv, home_fn('version.m4'))
--    parse_settings_in(kv, mod_fn('settings.in'))
--
--    # config fixups
--    kv['DDKVER'] = os.path.basename(kv['DDK_PATH'])
--    kv['DDKVER_MAJOR'] = re.match(r'^(\d+)\.', kv['DDKVER']).groups()[0]
--
--    if 'VERSION_SUFFIX' in kv:
--        kv['PRODUCT_VERSION'] += kv['VERSION_SUFFIX']
--
--    return kv
--
--def get_build_params():
--    kv = {}
--    parse_build_params(kv,mod_fn('settings.in'))
--
--    return kv
--
--def mod_fn(fn, src=__file__, real=True):
--    p = os.path.join(os.path.dirname(src), os.path.normpath(fn))
--    if real:
--        p = os.path.realpath(p)
--    return p
--
--def home_fn(fn, real=True):
--    return mod_fn(os.path.join('..', fn), real=real)
--
--def cd_home():
--    os.chdir(os.path.join(os.path.dirname(__file__), '..'))
--
--def cd_service_win32():
--    os.chdir(os.path.join(os.path.dirname(__file__), '../service-win32'))
--
--def system(cmd):
--    print "RUN:", cmd
--    os.system(cmd)
--
--def run_in_vs_shell(cmd):
--    """Make sure environment variables are setup before running command"""
--    os.environ['PATH'] += ";%s\\VC" % (os.path.normpath(config['MSVC']),)
--    system('cmd /c "vcvarsall.bat x86 && %s"' % (cmd,))
--
--def parse_version_m4(kv, version_m4):
--    '''Parse define lines in version.m4'''
--    r = re.compile(r'^define\((\w+),\[(.*)\]\)$')
--    f = open(version_m4)
--    for line in f:
--        line = line.rstrip()
--        m = re.match(r, line)
--
--        if m:
--            g = m.groups()
--
--            # If we encounter PRODUCT_TAP_WIN32_MIN_MAJOR or
--            # PRODUCT_TAP_WIN32_MIN_MAJOR then we need to generate extra
--            # variables, PRODUCT_TAP_MAJOR_VER and PRODUCT_TAP_MINOR_VER with 
--            # the same contents. This is necessary because tap-win32/tapdrv.c 
--            # build depends on those.
--            if g[0] == 'PRODUCT_TAP_WIN32_MIN_MAJOR':
--                kv['PRODUCT_TAP_MAJOR_VER'] = g[1]
--            elif g[0] == 'PRODUCT_TAP_WIN32_MIN_MINOR':
--                kv['PRODUCT_TAP_MINOR_VER'] = g[1]
--
--            # Add the variable to build configuration
--            kv[g[0]] = g[1]
--    f.close()
--
--def parse_settings_in(kv, settings_in):
--    r = re.compile(r'^!define\s+(\w+)(?:\s+"?(.*?)"?)?$')
--    f = open(settings_in)
--    for line in f:
--        line = line.rstrip()
--        m = re.match(r, line)
--        if m:
--            g = m.groups()
--            kv[g[0]] = g[1] or ''
--    f.close()
--
--def parse_build_params(kv, settings_in):
--    r = re.compile(r'^!define\s+(ENABLE_\w+)\s+(\w+)')
--
--    f = open(settings_in)
--
--    for line in f:
--        line = line.rstrip()
--
--        # Check if this is a #define line starts with ENABLE_
--        m = re.match(r, line)
--
--        if m:
--                g = m.groups()
--                kv[g[0]] = g[1] or ''
--    f.close()
--
--def dict_def(dict, newdefs):
--    ret = dict.copy()
--    ret.update(newdefs)
--    return ret
--
--def build_autodefs(kv, autodefs_in, autodefs_out):
--    preprocess(kv,
--               in_fn=autodefs_in,
--               out_fn=autodefs_out,
--               quote_begin='@',
--               quote_end='@',
--               head_comment='/* %s */\n\n' % autogen)
--
--def build_config_h(kv):
--    """Generate static win/config.h to config.h to mimic autotools behavior"""
--    preprocess(kv,
--               in_fn=mod_fn('config.h.in'),
--               out_fn=home_fn('config.h'),
--               quote_begin='@',
--               quote_end='@',
--               head_comment='/* %s */\n\n' % autogen)
--
--def build_configure_h(kv, configure_h_out, head_comment):
--    """Generate a configure.h dynamically"""
--    fout = open(configure_h_out, 'w')
--
--    # These two variables are required to view build parameters during runtime 
--    configure_defines='#define CONFIGURE_DEFINES \"'
--    configure_call='#define CONFIGURE_CALL \" config_all.py \"'
--
--    # Initialize the list of enabled features
--    features = ''
--
--    # Write the header
--    fout.write(head_comment)
--
--    dict = get_build_params()
--
--    for key, value in dict.iteritems():
--        # Add enabled features
--	features = features + "#define " + key + " " + value + "\n"
--
--	# Add each enabled feature to CONFIGURE_DEFINES list
--        configure_defines = configure_defines + " " + key + "=" + value + ","
--
--    configure_defines = configure_defines + "\"" + "\n"
--
--    fout.write(features)
--    fout.write(configure_defines)
--    fout.write(configure_call)
--
--
--    fout.close()
--
--def build_version_m4_vars(version_m4_vars_out, head_comment):
--    """Generate a temporary file containing variables from version.m4 in 
--win/settings.in format. This done to allow importing them in win/openvpn.nsi"""
--
--    fout = open(version_m4_vars_out, 'w')
--    fout.write(head_comment)
--
--    kv = {}
--    parse_version_m4(kv, home_fn('version.m4'))
--
--    for key, value in kv.iteritems():
--         line = "!define " + key + "\t" + "\"" + value + "\"" + "\n"
--         fout.write(line)
--
--    fout.close()
--
--def preprocess(kv, in_fn, out_fn, quote_begin=None, quote_end=None, if_prefix=None, head_comment=None):
--    def repfn(m):
--        var, = m.groups()
--        return kv.get(var, '')
--
--    re_macro = re_ifdef = None
--
--    if quote_begin and quote_end:
--        re_macro = re.compile(r'%s(\w+)%s' % (re.escape(quote_begin), re.escape(quote_end)))
--
--    if if_prefix:
--        re_ifdef = re.compile(r'^\s*%sifdef\s+(\w+)\b' % (re.escape(if_prefix),))
--        re_else = re.compile(r'^\s*%selse\b' % (re.escape(if_prefix),))
--        re_endif = re.compile(r'^\s*%sendif\b' % (re.escape(if_prefix),))
--
--    if_stack = []
--    fin = open(in_fn)
--    fout = open(out_fn, 'w')
--    if head_comment:
--        fout.write(head_comment)
--    for line in fin:
--        if re_ifdef:
--            m = re.match(re_ifdef, line)
--            if m:
--                var, = m.groups()
--                if_stack.append(int(var in kv))
--                continue
--            elif re.match(re_else, line):
--                if_stack[-1] ^= 1
--                continue
--            elif re.match(re_endif, line):
--                if_stack.pop()
--                continue
--        if not if_stack or min(if_stack):
--            if re_macro:
--                line = re.sub(re_macro, repfn, line)
--            fout.write(line)
--    assert not if_stack
--    fin.close()
--    fout.close()
--
--def print_key_values(kv):
--    for k, v in sorted(kv.items()):
--        print "%s%s%s" % (k, ' '*(32-len(k)), repr(v))
--
--def get_sources(makefile_am):
--    """Parse ../Makefile.am to obtain a list of .h and .c files"""
--    c = set()
--    h = set()
--    f = open(makefile_am)
--    state = False
--    for line in f:
--        line = line.rstrip()
--        if line == 'openvpn_SOURCES = \\':
--            state = True
--        elif not line:
--            state = False
--        elif state:
--            for sf in line.split():
--                if sf.endswith('.c'):
--                    c.add(sf[:-2])
--                elif sf.endswith('.h'):
--                    h.add(sf[:-2])
--                elif sf == '\\':
--                    pass
--                else:
--                    print >>sys.stderr, "Unrecognized filename:", sf
--    f.close()
--    return [ sorted(list(s)) for s in (c, h) ]
--
--def output_mak_list(title, srclist, ext):
--    ret = "%s =" % (title,)
--    for x in srclist:
--        ret += " \\\n\t%s.%s" % (x, ext)
--    ret += '\n\n'
--    return ret
--
--def make_headers_objs(makefile_am):
--    """Generate HEADER and OBJS entries dynamically from ../Makefile.am"""
--    c, h = get_sources(makefile_am)
--    ret = output_mak_list('HEADERS', h, 'h')
--    ret += output_mak_list('OBJS', c, 'obj')
--    return ret
--
--def choose_arch(arch_name):
--    if arch_name == 'x64':
--        return (True,)
--    elif arch_name == 'x86':
--        return (False,)
--    elif arch_name == 'all':
--        return (True, False)
--    else:
--        raise ValueError("architecture ('%s') must be x86, x64, or all" % (arch_name,))
--
--def rm_rf(dir):
--    print "REMOVE", dir
--    shutil.rmtree(dir, ignore_errors=True)
--
--def mkdir(dir):
--    print "MKDIR", dir
--    os.mkdir(dir)
--
--def cp_a(src, dest, dest_is_dir=True):
--    if dest_is_dir:
--        dest = os.path.join(dest, os.path.basename(src))
--    print "COPY_DIR %s %s" % (src, dest)
--    shutil.copytree(src, dest)
--
--def cp(src, dest, dest_is_dir=True):
--    if dest_is_dir:
--        dest = os.path.join(dest, os.path.basename(src))
--    print "COPY %s %s" % (src, dest)
--    shutil.copyfile(src, dest)
--
--def rename(src, dest):
--    print "RENAME %s %s" % (src, dest)
--    shutil.move(src, dest)
--
--def rm_rf(path):
--    try:
--        shutil.rmtree(path, onerror=onerror)
--    except:
--        pass
--
--def onerror(func, path, exc_info):
--    """
--    Error handler for ``shutil.rmtree``.
--
--    If the error is due to an access error (read only file)
--    it attempts to add write permission and then retries.
--
--    If the error is for another reason it re-raises the error.
--
--    Usage : ``shutil.rmtree(path, onerror=onerror)``
--    """
--    if not os.access(path, os.W_OK):
--        # Is the error an access error ?
--        os.chmod(path, stat.S_IWUSR)
--        func(path)
--    else:
--        raise
--
--def mkdir_silent(dir):
--    try:
--        os.mkdir(dir)
--    except:
--        pass
--
--config = get_config()
+@@ -1,178 +0,0 @@
+-/*
+- *  TAP-Win32/TAP-Win64 -- A kernel driver to provide virtual tap
+- *                         device functionality on Windows.
+- *
+- *  This code was inspired by the CIPE-Win32 driver by Damion K. Wilson.
+- *
+- *  This source code is Copyright (C) 2002-2010 OpenVPN Technologies, Inc.,
+- *  and is released under the GPL version 2 (see below).
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program (see the file COPYING included with this
+- *  distribution); if not, write to the Free Software Foundation, Inc.,
+- *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+- */
+-
+-#ifndef TAP_TYPES_DEFINED
+-#define TAP_TYPES_DEFINED
+-
+-typedef struct _Queue
+-{
+-  ULONG base;
+-  ULONG size;
+-  ULONG capacity;
+-  ULONG max_size;
+-  PVOID data[];
+-} Queue;
+-
+-typedef struct _TapAdapter;
+-typedef struct _TapPacket;
+-
+-typedef union _TapAdapterQuery
+-{
+-  NDIS_HARDWARE_STATUS m_HardwareStatus;
+-  NDIS_MEDIUM m_Medium;
+-  NDIS_PHYSICAL_MEDIUM m_PhysicalMedium;
+-  UCHAR m_MacAddress [6];
+-  UCHAR m_Buffer [256];
+-  ULONG m_Long;
+-  USHORT m_Short;
+-  UCHAR m_Byte;
+-}
+-TapAdapterQuery, *TapAdapterQueryPointer;
+-
+-typedef struct _TapExtension
+-{
+-  // TAP device object and packet queues
+-  Queue *m_PacketQueue, *m_IrpQueue;
+-  PDEVICE_OBJECT m_TapDevice;
+-  NDIS_HANDLE m_TapDeviceHandle;
+-  ULONG m_TapOpens;
+-
+-  // Used to lock packet queues
+-  NDIS_SPIN_LOCK m_QueueLock;
+-  BOOLEAN m_AllocatedSpinlocks;
+-
+-  // Used to bracket open/close
+-  // state changes.
+-  MUTEX m_OpenCloseMutex;
+-
+-  // True if device has been permanently halted
+-  BOOLEAN m_Halt;
+-
+-  // TAP device name
+-  unsigned char *m_TapName;
+-  UNICODE_STRING m_UnicodeLinkName;
+-  BOOLEAN m_CreatedUnicodeLinkName;
+-
+-  // Used for device status ioctl only
+-  const char *m_LastErrorFilename;
+-  int m_LastErrorLineNumber;
+-  LONG m_NumTapOpens;
+-
+-  // Flags
+-  BOOLEAN m_TapIsRunning;
+-  BOOLEAN m_CalledTapDeviceFreeResources;
+-
+-  // DPC queue for deferred packet injection
+-  BOOLEAN m_InjectDpcInitialized;
+-  KDPC m_InjectDpc;
+-  NDIS_SPIN_LOCK m_InjectLock;
+-  Queue *m_InjectQueue;
+-}
+-TapExtension, *TapExtensionPointer;
+-
+-typedef struct _TapPacket
+-   {
+-#   define TAP_PACKET_SIZE(data_size) (sizeof (TapPacket) + (data_size))
+-#   define TP_TUN 0x80000000
+-#   define TP_SIZE_MASK      (~TP_TUN)
+-    ULONG m_SizeFlags;
+-    UCHAR m_Data []; // m_Data must be the last struct member
+-   }
+-TapPacket, *TapPacketPointer;
+-
+-typedef struct _InjectPacket
+-   {
+-#   define INJECT_PACKET_SIZE(data_size) (sizeof (InjectPacket) + (data_size))
+-#   define INJECT_PACKET_FREE(ib)  NdisFreeMemory ((ib), INJECT_PACKET_SIZE ((ib)->m_Size), 0)
+-    ULONG m_Size;
+-    UCHAR m_Data []; // m_Data must be the last struct member
+-   }
+-InjectPacket, *InjectPacketPointer;
+-
+-typedef struct _TapAdapter
+-{
+-# define NAME(a) ((a)->m_NameAnsi.Buffer)
+-  ANSI_STRING m_NameAnsi;
+-  MACADDR m_MAC;
+-  BOOLEAN m_InterfaceIsRunning;
+-  NDIS_HANDLE m_MiniportAdapterHandle;
+-  LONG m_Rx, m_Tx, m_RxErr, m_TxErr;
+-#if PACKET_TRUNCATION_CHECK
+-  LONG m_RxTrunc, m_TxTrunc;
+-#endif
+-  NDIS_MEDIUM m_Medium;
+-  ULONG m_Lookahead;
+-  ULONG m_MTU;
+-
+-  // TRUE if adapter should always be
+-  // "connected" even when device node
+-  // is not open by a userspace process.
+-  BOOLEAN m_MediaStateAlwaysConnected;
+-
+-  // TRUE if device is "connected"
+-  BOOLEAN m_MediaState;
+-
+-  // Adapter power state
+-  char m_DeviceState;
+-
+-  // Info for point-to-point mode
+-  BOOLEAN m_tun;
+-  IPADDR m_localIP;
+-  IPADDR m_remoteNetwork;
+-  IPADDR m_remoteNetmask;
+-  ETH_HEADER m_TapToUser;
+-  ETH_HEADER m_UserToTap;
+-  ETH_HEADER m_UserToTap_IPv6;		// same as UserToTap but proto=ipv6
+-  MACADDR m_MAC_Broadcast;
+-
+-  // Used for DHCP server masquerade
+-  BOOLEAN m_dhcp_enabled;
+-  IPADDR m_dhcp_addr;
+-  ULONG m_dhcp_netmask;
+-  IPADDR m_dhcp_server_ip;
+-  BOOLEAN m_dhcp_server_arp;
+-  MACADDR m_dhcp_server_mac;
+-  ULONG m_dhcp_lease_time;
+-  UCHAR m_dhcp_user_supplied_options_buffer[DHCP_USER_SUPPLIED_OPTIONS_BUFFER_SIZE];
+-  ULONG m_dhcp_user_supplied_options_buffer_len;
+-  BOOLEAN m_dhcp_received_discover;
+-  ULONG m_dhcp_bad_requests;
+-
+-  // Help to tear down the adapter by keeping
+-  // some state information on allocated
+-  // resources.
+-  BOOLEAN m_CalledAdapterFreeResources;
+-  BOOLEAN m_RegisteredAdapterShutdownHandler;
+-
+-  // Multicast list info
+-  NDIS_SPIN_LOCK m_MCLock;
+-  BOOLEAN m_MCLockAllocated;
+-  ULONG m_MCListSize;
+-  MC_LIST m_MCList;
+-
+-  // Information on the TAP device
+-  TapExtension m_Extension;
+-} TapAdapter, *TapAdapterPointer;
+-
+-#endif
+diff --git a/tap-windows.h b/tap-windows.h
+new file mode 100644
+index 0000000..0655672
+--- /dev/null
++++ b/tap-windows.h
+@@ -0,0 +1,68 @@
++/*
++ *  TAP-Win32/TAP-Win64 -- A kernel driver to provide virtual tap
++ *                         device functionality on Windows.
++ *
++ *  This code was inspired by the CIPE-Win32 driver by Damion K. Wilson.
++ *
++ *  This source code is Copyright (C) 2002-2010 OpenVPN Technologies, Inc.,
++ *  and is released under the GPL version 2 (see below).
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program (see the file COPYING included with this
++ *  distribution); if not, write to the Free Software Foundation, Inc.,
++ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ */
++#ifndef __TAP_H
++#define __TAP_H
++
++//=============
++// TAP IOCTLs
++//=============
++
++#define TAP_CONTROL_CODE(request,method) \
++  CTL_CODE (FILE_DEVICE_UNKNOWN, request, method, FILE_ANY_ACCESS)
++
++// Present in 8.1
++
++#define TAP_IOCTL_GET_MAC               TAP_CONTROL_CODE (1, METHOD_BUFFERED)
++#define TAP_IOCTL_GET_VERSION           TAP_CONTROL_CODE (2, METHOD_BUFFERED)
++#define TAP_IOCTL_GET_MTU               TAP_CONTROL_CODE (3, METHOD_BUFFERED)
++#define TAP_IOCTL_GET_INFO              TAP_CONTROL_CODE (4, METHOD_BUFFERED)
++#define TAP_IOCTL_CONFIG_POINT_TO_POINT TAP_CONTROL_CODE (5, METHOD_BUFFERED)
++#define TAP_IOCTL_SET_MEDIA_STATUS      TAP_CONTROL_CODE (6, METHOD_BUFFERED)
++#define TAP_IOCTL_CONFIG_DHCP_MASQ      TAP_CONTROL_CODE (7, METHOD_BUFFERED)
++#define TAP_IOCTL_GET_LOG_LINE          TAP_CONTROL_CODE (8, METHOD_BUFFERED)
++#define TAP_IOCTL_CONFIG_DHCP_SET_OPT   TAP_CONTROL_CODE (9, METHOD_BUFFERED)
++
++// Added in 8.2
++
++/* obsoletes TAP_IOCTL_CONFIG_POINT_TO_POINT */
++#define TAP_IOCTL_CONFIG_TUN            TAP_CONTROL_CODE (10, METHOD_BUFFERED)
++
++//=================
++// Registry keys
++//=================
++
++#define ADAPTER_KEY "SYSTEM\\CurrentControlSet\\Control\\Class\\{4D36E972-E325-11CE-BFC1-08002BE10318}"
++
++#define NETWORK_CONNECTIONS_KEY "SYSTEM\\CurrentControlSet\\Control\\Network\\{4D36E972-E325-11CE-BFC1-08002BE10318}"
++
++//======================
++// Filesystem prefixes
++//======================
++
++#define USERMODEDEVICEDIR "\\\\.\\Global\\"
++#define SYSDEVICEDIR      "\\Device\\"
++#define USERDEVICEDIR     "\\DosDevices\\Global\\"
++#define TAPSUFFIX         ".tap"
++
++#endif
+diff --git a/tun.h b/tun.h
+index 513257f..ad7b2b1 100644
+--- a/tun.h
++++ b/tun.h
+@@ -27,7 +27,7 @@
+ 
+ #ifdef WIN32
+ #include <winioctl.h>
+-#include "tap-win32/common.h"
++#include <tap-windows.h>
+ #endif
+ 
+ #include "buffer.h"
+diff --git a/win/autodefs.h.in b/win/autodefs.h.in
+index ad0af19..372eb81 100644
+--- a/win/autodefs.h.in
++++ b/win/autodefs.h.in
+@@ -6,7 +6,7 @@
+  *
+  * The TAP-Win32 version number is defined in tap-win32/SOURCES
+  */
+-#define TAP_ID "@PRODUCT_TAP_ID@"
++#define TAP_COMPONENT_ID "@PRODUCT_TAP_ID@"
+ #define TAP_WIN32_MIN_MAJOR @PRODUCT_TAP_WIN32_MIN_MAJOR@
+ #define TAP_WIN32_MIN_MINOR @PRODUCT_TAP_WIN32_MIN_MINOR@
+ 
 -- 
 1.7.3.4
 
