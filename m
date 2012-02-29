@@ -1,9 +1,10 @@
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Wed, 29 Feb 2012 22:12:04 +0200
-Message-Id: <1330546342-17794-35-git-send-email-alon.barlev@...277...>
+Date: Wed, 29 Feb 2012 22:12:07 +0200
+Message-Id: <1330546342-17794-38-git-send-email-alon.barlev@...277...>
 In-Reply-To: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
 References: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [PATCH 34/52] build: autoconf: minor cleanups
+Subject: [Openvpn-devel] [PATCH 37/52] build: proper pkcs11-helper detection
+	and usage
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,195 +21,178 @@ Cc: Alon Bar-Lev <alon.barlev@...277...>
 
 Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 ---
- configure.ac |  145 +++++++++++++++++++++++++++++-----------------------------
- 1 files changed, 72 insertions(+), 73 deletions(-)
+ configure.ac               |   49 ++++++++++++++++---------------------------
+ distro/rpm/openvpn.spec.in |    5 ++-
+ src/openvpn/Makefile.am    |    4 +++
+ src/openvpn/ssl.c          |    2 +-
+ src/openvpn/syshead.h      |    7 ------
+ 5 files changed, 26 insertions(+), 41 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index c540f82..98615c6 100644
+index 2388f17..baa66b2 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -400,6 +400,16 @@ AC_CHECK_HEADERS([ \
- 	netinet/tcp.h arpa/inet.h netdb.h \
- 	windows.h winsock2.h ws2tcpip.h \
- ])
-+AC_CHECK_HEADERS([ \
-+	sys/time.h sys/un.h sys/ioctl.h sys/stat.h \
-+	sys/mman.h sys/file.h \
-+	unistd.h signal.h  \
-+	syslog.h pwd.h grp.h \
-+	net/if_tun.h net/tun/if_tun.h stropts.h \
-+	sys/sockio.h \
-+	sys/uio.h linux/if_tun.h linux/sockios.h \
-+	linux/types.h sys/poll.h sys/epoll.h err.h \
-+])
+@@ -111,9 +111,9 @@ AC_ARG_ENABLE(
  
- SOCKET_INCLUDES="
- #ifdef HAVE_STDLIB_H
-@@ -425,76 +435,11 @@ SOCKET_INCLUDES="
- #endif
- "
+ AC_ARG_ENABLE(
+ 	[pkcs11],
+-	[AS_HELP_STRING([--disable-pkcs11], [disable pkcs11 support])],
++	[AS_HELP_STRING([--enable-pkcs11], [enable pkcs11 support])],
+ 	,
+-	[enable_pkcs11="yes"]
++	[enable_pkcs11="no"]
+ )
  
--if test "${WIN32}" != "yes"; then
--	AC_CHECK_HEADERS([ \
--		sys/time.h sys/un.h sys/ioctl.h sys/stat.h \
--		sys/mman.h sys/file.h \
--		syslog.h pwd.h grp.h \
--		net/if_tun.h net/tun/if_tun.h stropts.h \
--		sys/sockio.h \
--		sys/uio.h linux/if_tun.h linux/sockios.h \
--		linux/types.h sys/poll.h sys/epoll.h err.h \
--	])
--	AC_CHECK_HEADERS(
--		[net/if.h netinet/ip.h netinet/if_ether.h resolv.h],
--		,
--		,
--		[[${SOCKET_INCLUDES}]]
--	)
+ AC_ARG_ENABLE(
+@@ -254,19 +254,6 @@ AC_ARG_WITH(
+ )
+ 
+ AC_ARG_WITH(
+-	[pkcs11-helper-headers],
+-	[AS_HELP_STRING([--with-pkcs11-helper-headers=DIR], [pkcs11-helper Include files location])],
+-	[PKCS11_HELPER_HDR_DIR="$withval"]
+-	[CPPFLAGS="$CPPFLAGS -I$withval"] 
+-)
 -
--	AC_FUNC_FORK
+-AC_ARG_WITH(
+-	[pkcs11-helper-lib],
+-	[AS_HELP_STRING([--with-pkcs11-helper-lib=DIR], [pkcs11-helper Library location])],
+-	[LDFLAGS="$LDFLAGS -L$withval"] 
+-)
+-
+-AC_ARG_WITH(
+ 	[mem-check],
+ 	[AS_HELP_STRING([--with-mem-check=TYPE], [build with debug memory checking, TYPE=dmalloc|valgrind|ssl])],
+ 	[
+@@ -719,22 +706,12 @@ if test "${enable_lzo_stub}" = "yes"; then
+ 	AC_DEFINE([LZO_STUB], [1], [Enable LZO stub capability])
+ fi
+ 
+-dnl
+-dnl enable pkcs11 capability
+-dnl
+-if test "${enable_pkcs11}" = "yes"; then
+-   AC_CHECKING([for pkcs11-helper Library and Header files])
+-   AC_CHECK_HEADER(pkcs11-helper-1.0/pkcs11h-core.h,
+-	[AC_CHECK_LIB(pkcs11-helper, pkcs11h_initialize,
+-	    [
+-		   AC_DEFINE(USE_PKCS11, 1, [Enable PKCS11 capability])
+-		   LIBS="${LIBS} -lpkcs11-helper"
+-	    ],
+-	    [AC_MSG_RESULT([pkcs11-helper library not found.])]
+-	)],
+-	[AC_MSG_RESULT([pkcs11-helper headers not found.])]
+-   )
 -fi
--
--dnl We emulate signals in Windows
--AC_CHECK_DECLS(
--	[SIGHUP],
--	,
--	[AC_DEFINE([SIGHUP], [1], [SIGHUP replacement])],
--	[[
--		#ifdef HAVE_SIGNAL_H
--		#include <signal.h>
--		#endif
--	]]
--)
--AC_CHECK_DECLS(
--	[SIGINT],
--	,
--	[AC_DEFINE([SIGINT], [2], [SIGINT replacement])],
--	[[
--		#ifdef HAVE_SIGNAL_H
--		#include <signal.h>
--		#endif
--	]]
--)
--AC_CHECK_DECLS(
--	[SIGUSR1],
-+AC_CHECK_HEADERS(
-+	[net/if.h netinet/ip.h netinet/if_ether.h resolv.h],
- 	,
--	[AC_DEFINE([SIGUSR1], [10], [SIGUSR1 replacement])],
--	[[
--		#ifdef HAVE_SIGNAL_H
--		#include <signal.h>
--		#endif
--	]]
--)
--AC_CHECK_DECLS(
--	[SIGUSR2],
- 	,
--	[AC_DEFINE([SIGUSR2], [12], [SIGUSR2 replacement])],
--	[[
--		#ifdef HAVE_SIGNAL_H
--		#include <signal.h>
--		#endif
--	]]
--)
--AC_CHECK_DECLS(
--	[SIGTERM],
--	,
--	[AC_DEFINE([SIGTERM], [15], [SIGTERM replacement])],
--	[[
--		#ifdef HAVE_SIGNAL_H
--		#include <signal.h>
--		#endif
--	]]
-+	[[${SOCKET_INCLUDES}]]
- )
- 
- AC_CHECK_TYPES(
-@@ -503,8 +448,6 @@ AC_CHECK_TYPES(
- 	[AC_DEFINE([in_addr_t], [uint32_t], [Workaround missing in_addr_t])],
- 	[[${SOCKET_INCLUDES}]]
- )
--
--dnl check for IPv6 types
- AC_CHECK_TYPE(
- 	[struct tun_pi],
- 	[AC_DEFINE(HAVE_TUN_PI, 1, [struct tun_pi needed for IPv6 support])],
-@@ -547,16 +490,72 @@ AC_CHECK_TYPE(
- 	[AC_MSG_ERROR([struct sockaddr_in6 not found, needed for ipv6 transport support.])],
- 	[[${SOCKET_INCLUDES}]]
- )
-+AC_CHECK_DECLS(
-+	[SO_MARK],
-+	,
-+	,
-+	[[${SOCKET_INCLUDES}]]
++PKG_CHECK_MODULES(
++	[PKCS11_HELPER],
++	[libpkcs11-helper-1 >= 1.02],
++	[have_pkcs11_helper="yes"],
++	[]
 +)
  
--AC_CHECK_FUNCS(
--	[ctime memset vsnprintf strdup],
-+dnl We emulate signals in Windows
-+AC_CHECK_DECLS(
-+	[SIGHUP],
- 	,
--	[AC_MSG_ERROR([Required library function not found])]
-+	[AC_DEFINE([SIGHUP], [1], [SIGHUP replacement])],
-+	[[
-+		#ifdef HAVE_SIGNAL_H
-+		#include <signal.h>
-+		#endif
-+	]]
- )
-+AC_CHECK_DECLS(
-+	[SIGINT],
-+	,
-+	[AC_DEFINE([SIGINT], [2], [SIGINT replacement])],
-+	[[
-+		#ifdef HAVE_SIGNAL_H
-+		#include <signal.h>
-+		#endif
-+	]]
-+)
-+AC_CHECK_DECLS(
-+	[SIGUSR1],
-+	,
-+	[AC_DEFINE([SIGUSR1], [10], [SIGUSR1 replacement])],
-+	[[
-+		#ifdef HAVE_SIGNAL_H
-+		#include <signal.h>
-+		#endif
-+	]]
-+)
-+AC_CHECK_DECLS(
-+	[SIGUSR2],
-+	,
-+	[AC_DEFINE([SIGUSR2], [12], [SIGUSR2 replacement])],
-+	[[
-+		#ifdef HAVE_SIGNAL_H
-+		#include <signal.h>
-+		#endif
-+	]]
-+)
-+AC_CHECK_DECLS(
-+	[SIGTERM],
-+	,
-+	[AC_DEFINE([SIGTERM], [15], [SIGTERM replacement])],
-+	[[
-+		#ifdef HAVE_SIGNAL_H
-+		#include <signal.h>
-+		#endif
-+	]]
-+)
+ dnl
+ dnl check for SSL-crypto library
+@@ -890,6 +867,14 @@ if test "${enable_selinux}" = "yes"; then
+ 	AC_DEFINE([ENABLE_SELINUX], [1], [SELinux support])
+ fi
+ 
++if test "${enable_pkcs11}" = "yes"; then
++	test "${have_pkcs11_helper}" != "yes" && AC_MSG_ERROR([PKCS11 enabled but libpkcs11-helper is missing])
++	test "${enable_ssl}" != "yes" && AC_MSG_ERROR([PKCS11 can be enabled only if SSL is enabled])
++	OPTIONAL_PKCS11_HELPER_CFLAGS="${PKCS11_HELPER_CFLAGS}"
++	OPTIONAL_PKCS11_HELPER_LIBS="${PKCS11_HELPER_LIBS}"
++	AC_DEFINE([ENABLE_PKCS11], [1], [Enable PKCS11])
++fi
 +
-+AC_FUNC_FORK
+ if test "${enable_pedantic}" = "yes"; then
+ 	enable_strict="yes"
+ 	CFLAGS="${CFLAGS} -ansi -pedantic"
+@@ -917,6 +902,8 @@ AC_SUBST([TAP_WIN_MIN_MINOR])
+ 
+ AC_SUBST([OPTIONAL_DL_LIBS])
+ AC_SUBST([OPTIONAL_SELINUX_LIBS])
++AC_SUBST([OPTIONAL_PKCS11_HELPER_CFLAGS])
++AC_SUBST([OPTIONAL_PKCS11_HELPER_LIBS])
+ 
+ AM_CONDITIONAL([WIN32], [test "${WIN32}" = "yes"])
+ 
+diff --git a/distro/rpm/openvpn.spec.in b/distro/rpm/openvpn.spec.in
+index 455f739..8db5172 100644
+--- a/distro/rpm/openvpn.spec.in
++++ b/distro/rpm/openvpn.spec.in
+@@ -52,8 +52,8 @@ Requires:      openssl       >= 0.9.6
+ %{!?without_pam:BuildRequires: pam-devel}
+ %{!?without_pam:Requires:      pam}
+ 
+-%{!?with_pkcs11:BuildRequires: pkcs11-helper-devel}
+-%{!?with_pkcs11:Requires:      pkcs11-helper}
++%{?with_pkcs11:BuildRequires: pkcs11-helper-devel}
++%{?with_pkcs11:Requires:      pkcs11-helper}
+ 
+ #
+ # Description
+@@ -111,6 +111,7 @@ Development support for OpenVPN.
+ 	--docdir="%{_docdir}/%{name}-%{version}" \
+ 	%{?with_password_save:--enable-password-save} \
+ 	%{?without_lzo:--disable-lzo} \
++	%{?with_pkcs11:--enable-pkcs11} \
+ 	%{?with_kerberos:--with-ssl-headers=/usr/kerberos/include}
+ %__make
+ 
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index a3f8b3a..fd92225 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -16,6 +16,9 @@ MAINTAINERCLEANFILES = \
+ 
+ INCLUDES = -I$(top_srcdir)/include
+ 
++AM_CFLAGS = \
++	$(OPTIONAL_PKCS11_HELPER_CFLAGS)
 +
- AC_CHECK_FUNCS([ \
- 	daemon chroot getpwnam setuid nice system getpid dup dup2 \
- 	getpass strerror syslog openlog mlockall getgrnam setgid \
- 	setgroups stat flock readv writev time gettimeofday \
-+	ctime memset vsnprintf strdup \
- 	setsid chdir putenv getpeername unlink \
- 	chsize ftruncate execve getpeereid umask basename dirname access \
- 	epoll_create \
+ sbin_PROGRAMS = openvpn
+ 
+ openvpn_SOURCES = \
+@@ -97,6 +100,7 @@ openvpn_SOURCES = \
+ 	cryptoapi.h cryptoapi.c
+ openvpn_LDADD = \
+ 	$(SOCKETS_LIBS) \
++	$(OPTIONAL_PKCS11_HELPER_LIBS) \
+ 	$(OPTIONAL_SELINUX_LIBS) \
+ 	$(OPTIONAL_DL_LIBS)
+ if WIN32
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index c26756e..e260718 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -264,7 +264,7 @@ ssl_purge_auth (const bool auth_user_pass_only)
+ {
+   if (!auth_user_pass_only)
+     {
+-#ifdef USE_PKCS11
++#ifdef ENABLE_PKCS11
+       pkcs11_logout ();
+ #endif
+       purge_user_pass (&passbuf, true);
+diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
+index cac4757..53b7580 100644
+--- a/src/openvpn/syshead.h
++++ b/src/openvpn/syshead.h
+@@ -590,13 +590,6 @@ socket_defined (const socket_descriptor_t sd)
+ #endif
+ 
+ /*
+- * Do we have PKCS11 capability?
+- */
+-#if defined(USE_PKCS11) && defined(USE_CRYPTO) && defined(USE_SSL)
+-#define ENABLE_PKCS11
+-#endif
+-
+-/*
+  * Do we have CryptoAPI capability?
+  */
+ #if defined(WIN32) && defined(USE_CRYPTO) && defined(USE_SSL) && defined(USE_OPENSSL)
 -- 
 1.7.3.4
 
