@@ -1,14 +1,12 @@
-Message-ID: <4F4F5260.2040807@...515...>
-Date: Thu, 01 Mar 2012 12:41:36 +0200
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Thu, 1 Mar 2012 11:58:39 +0100
+Message-ID: <1677482.aKjq4FLfA1@...1526...>
+In-Reply-To: <CAP+U6t+pQXzvU-kGWDSZo6cQB6mf+LPd3LyLaowdB0xakbzjAQ@...278...>
+References: <4F4CE4FE.3010009@...515...>
+	<20120229154604.GA7024@...1296...>
+	<CAP+U6t+pQXzvU-kGWDSZo6cQB6mf+LPd3LyLaowdB0xakbzjAQ@...278...>
 MIME-Version: 1.0
-References: <4F4CE4FE.3010009@...515...> <8191371.i5gkeDqFZM@...1526...>
-	<CAOazyz0hEyD_ZaaJeNz25+8jkX-BNZHzXbs=umdyQv+T3ngk4Q@...278...>
-	<4746830.2MuuAeNMnA@...1526...>
-	<CAOazyz0qRcgWCEmHavO9L_hG8HVmEy5Tr=9dvZ4AVR25XUoyoA@...278...>
-In-Reply-To: <CAOazyz0qRcgWCEmHavO9L_hG8HVmEy5Tr=9dvZ4AVR25XUoyoA@...278...>
-Subject: [Openvpn-devel] Project management and direction (WAS: Re: OpenVPN
- 2.3-alpha1 released)
+Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,116 +15,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: =?ISO-8859-1?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Fabian Knittel <fabian.knittel@...1547...>
+Cc: Carsten =?ISO-8859-1?Q?Kr=FCger?= <C.Krueger@...448...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Changing the topic line to something more descriptive. Hope nobody minds.
->>> I only recommend the OpenVPN project manager to hold with this solution,
->>> and manage a proper design process, there are people here who can help,=
- if
->>> the process is managed correctly.
->> Alon, there is a process. It's just different from what you imagine it t=
-o be.
->> If you're not keen to get on IRC then read the chat log that gets posted=
- here
->> the next day and comment on it. Comment and counter-propose on patches -=
- as
->> you do - and this project will go forward.
-> I disagree, open source project is not different than any other
-> software project.
-> when you reach to the point of writing code (hence patches), it is way
-> too late to
-> discuss requirements and design. And the emotional impact of rejecting pe=
-ople
-> work at this stage is huge, especially when these involves in great effor=
-t.
-I agree. That said, the same applies to the buildsystem work you did:
-the requirements were vague and there was a lack of design discussion.
-Therefore the emotional impact on other developers was identical.
+On Wednesday 29 February 2012 16:59:03 Fabian Knittel wrote:
+> If users can manipulate their openvpn session to do whatever they want
+> they can also manipulate what gets sent over the named pipe. (I'm not
+> necessarily talking about malformed messages; I'm talking about
+> manipulating the routing tables, etc. to contain arbitrary settings.)
 
-So, in the future, we all should put our major new ideas on the table
-(=3Dthis mailing list) to
+That's good thinking there. I've ignored the fact that one can simply add=20
+--route options to the config. However, just checked the man page, these=20
+routes will get set after a connection is established. So this can't be use=
+d=20
+to manipulate the routing table without establishing a connection first. Th=
+e=20
+whole point about this exercise is to keep users from setting arbitrary rou=
+tes=20
+without openvpn having it's fingers in the process. So, I think this is the=
+=20
+best we can do here, in the end we want openvpn to be able to set routes.
 
-a) figure out the requirements
-b) discuss design
+> Either I'm misunderstanding Heiko's plans or you two aren't in sync
+> regarding this point. AFAIU, Heiko intends to safe-guard access to the
+> named pipe as much as possible, with the underlying assumption that
+> only a trusted OpenVPN process should be allowed to send somewhat
+> trusted commands over the pipe.
 
-After this we can move on to the implementation more safely, without
-excluding anyone. I think the early negative comments on some of your
-buildsystem patches were indirectly caused by lack of a) and b). Or, in
-other words, other developers did not see the big picture because it had
-not been presented to them clearly.
+We're slightly out of sync. I do believe we should protect the elevation pi=
+pe=20
+as good as possible, just to make it harder to sneak in a route.
 
-Of course, there are occasions when this consensus-process gets us
-nowhere due to arguing. In those cases  somebody just needs to move on
-to implementation to prove the design. This should not happen often, and
-never without a) and b).
+> In my opinion, this implies that the
+> openvpn config would need to be restricted to safe settings in some
+> way. I'm not (yet?) convinced that this approach can be secure without
+> crippling the type of tunnels that you can create.
 
-> Also please keep in mind we are not being payed for openvpn, nor payed to=
- keep
-> project alive, we donate our time and our experience.
->
-> If you force people to follow meetings, you may lose experience of people=
- who
-> might be busy at that specific time in their day work.
-I also much prefer the mailing list for this reason. The original reason
-for the IRC meetings was James: he simply didn't have time to read the
-emails on openvpn-devel and we needed his advise on some things. The
-problem with timezones and people not being able to attend was known
-from the beginning, though. That's why the meetings had a specific process:
+Well, it's kind of hard to determine what's a save setting here. Even if th=
+e=20
+local configs are safely locked down one can still just add --route options=
+=20
+the the command line. I guess it's a general discussion if --route on the=20
+client is defined as "secure because we said so" or if it should be removed=
+.=20
+Is there a use case for --route on the client?
 
-1) Preliminary topic list is sent to openvpn-devel ml
-2) The actual meeting (fully open)
-3) The meeting summary + complete chatlog is sent to openvpn-devel ml
-
-The idea was to minimize the negative impact of the meetings as much as
-possible. Also, we haven't had that many meetings in a long while:
-
-<https://community.openvpn.net/openvpn/wiki/IrcMeetings>
-
-The dangerous aspect of the IRC is it's more personal nature, and the
-fact that it's far quicker to get feedback from there than from the
-mailing list. The problem is that only a subset of developers and
-community members hang out on the IRC. This is fine, as long as the
-people on the mailing lists are not excluded from the discussion. This
-is where we need to be really careful and not get too comfortable on the
-IRC channel.
-> Because of this a proper roadmap and design of significant changes should=
- be
-> published and discussed over time, leveraging the overall experience of t=
-he
-> community.
-Very good point, again I agree.
-
->
-> Anyway, I am not managing this project, it is up to him to decide how
-> to progress.
-And the decisions should be made so that as few people are excluded as
-possible.
-
->
-> However, OpenVPN is already very fat monolithic implementation that grow =
-over
-> time with a lot of niche features, the code is so complex and
-> conditional that it
-> is almost impossible to maintain. It is about time to setup up a directio=
-n, and
-> maybe work toward modular approach first, solving the Windows major issue=
-s with
-> as minimal effort as possible for the time being.
-This is probably long overdue, just as the buildsystem overhaul was.
-Some plans for OpenVPN 3.0 were made a while ago:
-
-<https://community.openvpn.net/openvpn/wiki/RoadMap>
-
-We should probably reopen this discussion once 2.3 (final) is out.
-
+Heiko
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
+Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
+Astaro a Sophos Company | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germ=
+any
+Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
+=20
+Represented by the General Partner Astaro Verwaltungs GmbH
+Amalienbadstra=DFe 41 Bau 52 | 76227 Karlsruhe | Germany=20
+Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
+Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
 
 
