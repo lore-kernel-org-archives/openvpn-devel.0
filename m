@@ -1,17 +1,11 @@
-Message-ID: <4F4F6C84.3070503@...1114...>
-Date: Thu, 01 Mar 2012 13:33:08 +0100
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4F4CE4FE.3010009@...515...> <3440230.bBsdCSzEj1@...1526...>
-	<1375292789.20120229123817@...449...> <7855235.EvfmKnZP6h@...1526...>
-	<CAP+U6t+ZUA3UpYfKms0Qr=-Cn1M-GP1EJtGybG0+j+O2xnfv7g@...278...>
-	<1957833067.20120229194040@...449...>
-	<4F4E7BEE.50700@...1114...>
-	<1656594721.20120229203737@...449...>
-	<4F4F6675.1090306@...1114...>
-	<38614505.20120301131554@...449...>
-In-Reply-To: <38614505.20120301131554@...449...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 released
+In-Reply-To: <CAOazyz0mi0WgHe8GqhSaLRKh7ABord6Q96Tb=7jMk3fxwXmm2w@...278...>
+References: <CAOazyz0mi0WgHe8GqhSaLRKh7ABord6Q96Tb=7jMk3fxwXmm2w@...278...>
+Date: Thu, 1 Mar 2012 14:38:33 +0200
+Message-ID: <CAOazyz3Yov8Z=1D0e2mF0wUFi6kdfYLu7+XuoByTUb4kHaUD9Q@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: [Openvpn-devel] Fwd: [DISCUSSION] OpenVPN privilege separation
+	(Windows)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,97 +14,183 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: =?ISO-8859-1?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
-
-On 01/03/12 13:15, Carsten Kr=FCger wrote:
-> Hello David,
->=20
->> a) Mounting and un-mounting networked filesystems after the tunnel
->> is up. Here I even implemented the --route-pre-down script hook, to
->> unmount the filesystem before the tunnel is taken down.  Here's the
->> config extract:
->=20
-> This need root rights?
-
-Not necessarily, if /etc/fstab is configured with 'user' you don't need
-root priv.  Or if you use FUSE stuff, that often don't need root access
-either.  Of course, it all depends on what kind of file system you mount.
-
->> This client has a web server behind it which is available on the
->> public internet via the openvpn server which got the public IP
->> address.  To make sure the incoming public traffic is returned via
->> the VPN tunnel and not the default gateway on the openvpn client,
->> simple ip rules like the ones below are used in the route-up.sh
->=20
->> /sbin/ip rule add from ${ifconfig_local} table 132 /sbin/ip route
->> add default via 10.8.0.1 table 132
->=20
->> And the route-down.sh takes care of deleting the rule.  This is to
->> avoid errors and duplications if openvpn is restarted.  (And there
->> are probably other ways to solve this as well, but this is one way)
->=20
-> Need root rights, too?
-
-This case needs root access, correct.  But this can be tweaked around
-using sudo trikcs or similar stuff.  And using SELinux, you can also lock
-down things even more.
-
-> Maybe it's a good idea to have two type of scripts. One that is
-> controlled from the administrator and is executed with admin/root
-> privileges and the other that runs as the user.
->=20
->> Plugins can be used on both server side and client side.  They can
->> be used to extend the logging, or do other more advanced things
->> which is easier and cleaner solved in a C program than using plenty
->> of scripts.
->=20
-> In an enterprise setup I would think a plugin should be not modifable
-> by the user (i.e. the user should have no chance to load own
-> modules).
-
-Well, I can agree to that.  But this is all open source.  No matter how
-much restrictions you put into the openvpn product, the user can download
-the source, add the features missing, and reconnect with a modified
-OpenVPN version.
-
-Even introducing signatures and hashes which the server evaluates will
-not solve this, as the openvpn client can be modified to return exactly
-the data the server would expect.
-
-To avoid this, you would need to run some code from the server - which
-evaluates the system and reports back to the server.  Then the server can
-decide to open up the firewall on the server side or not.  Otherwise, you
-have no way to trust the client side at all.  And all this would have to
-be code which is not easily available, so the client can't fake this
-operation as well.
-
-Bottom line is, you can't fully control the client environment.  All
-enforcements needs to happen on the server side.
-
-What you can do on the client side, is to avoid a third party (think
-virus/malware) to figure out that openvpn is installed, and tweak the
-config to run code which was not supposed to be run with higher
-privileges.  So the client should try to lock down things locally, to
-reduce the impact from local exploits.  The server side should restrict
-the server side, and what is being passed via the tunnel.  There's no
-real way you can make the server enforce restrictions on the client.
+Sending this again, as it seems people did not receive it.
 
 
-kind regards,
+---------- Forwarded message ----------
+From: Alon Bar-Lev <alon.barlev@...277...>
+Date: Wed, Feb 29, 2012 at 8:52 PM
+Subject: [DISCUSSION] OpenVPN privilege separation (Windows)
+To: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk9PbIIACgkQDC186MBRfrp7GgCdE9FyhidxVP+xYDzZhvbBw6w1
-ps0AmwRBWDSHk2MILKfUlrYr5OcuAkbY
-=3D2DnA
------END PGP SIGNATURE-----
+Hello,
+
+Following recent discussion on Windows platform, I open a new thread.
+I don't think this topic is Windows specific as the security
+principals are the same.
+
+VPN client product has [at least] two different type of configuration.
+
+1. Standalone configuration.
+
+2. Enterprise configuration.
+
+The main difference of these types is who control the workstation. In
+standalone configuration the workstation is controlled by the
+end-user, and in enterprise configuration the enterprise administrator
+controlling the workstation.
+
+These two configurations have different purpose as well, the
+standalone configuration usually protects the workstation against the
+remote network, and the enterprise configuration usually protects the
+remote network against the workstation.
+
+The "enemy" of the two configurations is also different, in standalone
+configuration the "enemy" is the remote network administrator, while
+in the enterprise configuration the "enemy" is the local workstation
+user.
+
+The "scripts" in the standalone configuration or for the sake of the
+user, but within the enterprise solution it usually need to scan the
+computer, disconnect device and other privileged operations.
+
+There is no single solution for both configurations.
+
+Please read till the end before responding.
+
+Provided we have the following components:
+1. tap device aka tap - a virtual Ethernet interface.
+2. openvpn - a tunneling implementation.
+3. openvpn configuration - configuration files.
+3. network utilities aka utils - a set of utilities to manipulate
+workstation network settings.
+4. user interaction aka UI - a program that manages user interaction.
+
+What is the security attribute for each component in each configuration?
+
+Standalone configuration
+1. tap - accessed by interactive user.
+2. openvpn - runs by the interactive user.
+3. openvpn configuration - read/write by interactive user.
+4. network utilities - privileged user required.
+5. UI - runs by interactive user.
+
+Enterprise configuration
+1. tap - access by openvpn user.
+2. openvpn - runs by openvpn user.
+3. openvpn configuration - read by openvpn, read/write by administrator.
+4. network utilities - privileged user required.
+5. UI - runs by interactive user.
+
+Major missing openvpn functionality:
+Specify certificate via the management UI - this feature is required
+so that a configuration in which openvpn knows nothing of
+authentication can be established.
+
+A while back I added to openvpn the ability to create tun/tap device
+with custom permissions
+and the ability to wrap ip utility with custom utility.
+As for now I am using the standalone Linux configuration[1], in few words:
+1. tap is configured so interactive user may access it.
+2. openvpn is run by the interactive user.
+3. openvpn configuration and keys are located at ~/openvpn
+4. network utilities - (ip utility and DNS update) are wrapped within
+sudo scripts.
+5. UI is run by the interactive user.
+
+The network utilities' wrapper can do validation before actually
+executing the commands.
+
+There is no reason why we cannot achieve the same in Windows:
+1. tap - configure ACL of TAP to specific permissions (Users for example).
+2. openvpn - runs by the interactive user, it will have permission to
+open the tap.
+3. openvpn configuration - read/write by interactive user.
+4. network utilities are accessed by wrapper (I will discuss this bellow).
+5. UI is run by the interactive user.
+
+So the network utilities are the only component that needs privilege
+escalation in this configuration.
+
+Let's take the enterprise configuration:
+1. tap - configure ACL of TAP to openvpn user.
+2. openvpn - runs by openvpn user.
+3. openvpn configuration - read by openvpn, read/write by administrator.
+4. network utilities are accessed by wrapper (I will discuss this bellow).
+5. UI runs by the interactive user.
+
+So in this case, network utilities needs privilege escalation, but
+also the ability of the UI to start/stop the tunnel requires special
+privilege.
+
+I gave an example of how this is done in Linux... Now, what is the
+simplest solution to do the same in Windows?
+
+There was a suggestion to use named pipes, services and impersonation,
+I would like to discuss another option.
+
+Windows Component Services provide the ability to create a component
+that may be run in separate security context. It already implements
+the process management and security isolation.
+
+Let's define two components:
+1. OpenVPN.Tunnel component (replaces current service).
+2. OpenVPN.Network component (aka network utilities wrapper).
+
+Now, let's see what we can do with these components.
+
+Standalone configuration
+1. TAP ACL - Group Users can access.
+2. OpenVPN.Tunnel - can be accessed by Users, Interactive User identity.
+3. openvpn configuration - read/write by user.
+4. OpenVPN.Network - can be accessed by Users, Network service identity.
+5. UI - runs under the interactive user, can access the OpenVPN.Tunnel
+to run openvpn, within configuration it sets the iproute utility to
+own wrapper that calls the OpenVPN.Network.
+
+Enterprise configuration
+1. TAP ACL - User openvpn
+2. OpenVPN.Tunnel - can be accessed by Users, openvpn user identity.
+3. openvpn configuration - read by openvpn, read/write by administrator.
+4. OpenVPN.Network - can be accessed by openvpn, Network service identity.
+5. UI - runs under the interactive user, can access the OpenVPN.Tunnel
+to run openvpn, within configuration there is a call to iproute
+utility to own wrapper that calls the OpenVPN.Network.
+
+The switch between the two configurations is simple:
+1. TAP: Change permission Users<->openvpn
+2. OpenVPN.Tunnel - change identity: Interactive User<->openvpn
+3. OpenVPN.Network - change access: Users<->openvpn
+4. openvpn configuration - specific user ACL<->openvpn read,
+administrators read/write
+5. UI - nothing.
+
+As you can see the whole setup is a change in Windows configuration only!
+Simple utility to select the mode can be provided.
+
+The impact on the openvpn project is small... we only need to allow
+windows network configuration replacement similar to ip utility
+replacement.
+The UI can implement the OpenVPN.Tunnel, OpenVPN.Network and the
+network utility wrapper that calls the OpenVPN.Network.
+Well, it can be done as part of the OpenVPN project as well, this is
+out of scope of this discussion.
+
+I think this implementation suggestion provides solution for the
+threats and requirements without huge effort using windows best
+practices.
+
+Then we should discuss how to write a proper UI... until now the UI
+was a standalone none standard VPN program while TAPI integration
+(much like PPTP, L2TP) is required. This will enable users to connect
+to VPN even before login. But this is a totally different discussion.
+
+Alon.
+
+[1] http://en.gentoo-wiki.com/wiki/OpenVPN_Non_Root
 
