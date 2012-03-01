@@ -1,18 +1,11 @@
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Thu, 1 Mar 2012 10:11:23 +0100
+Message-ID: <1520356.eXbvvCDeOI@...1526...>
+In-Reply-To: <1330556666604858500@...1315...>
+References: <4F4CE4FE.3010009@...515...> <1717163.B6krV9DGdl@...1524...>
+	<1330556666604858500@...1315...>
 MIME-Version: 1.0
-In-Reply-To: <4F4EAA97.6020600@...1490...>
-References: <4F4CE4FE.3010009@...515...> <7855235.EvfmKnZP6h@...1526...>
-	<CAP+U6t+ZUA3UpYfKms0Qr=-Cn1M-GP1EJtGybG0+j+O2xnfv7g@...278...>
-	<1404593.Apkr3x9kAi@...1526...>
-	<CAP+U6t+-8n=fFk+QP0Dm-H9YijcssjZjOHOpU5pwkSrXt1+qMQ@...278...>
-	<20120229154604.GA7024@...1296...>
-	<1056463883.20120229194318@...449...>
-	<20120229212832.GC7024@...1296...>
-	<CAOazyz3t+=2SsDA0+_sqByekvbE7R5Y+qHN2ysGDLw2hsiK8wg@...278...>
-	<4F4EAA97.6020600@...1490...>
-Date: Thu, 1 Mar 2012 09:44:25 +0200
-Message-ID: <CAOazyz3r6JguXjk8UEv5xkJFb5HmAfJOFHuA8jRa7NCi7e+wUQ@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 released
+Subject: Re: [Openvpn-devel] OpenVPN 2.3-alpha1 / GUI
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,28 +14,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Jason Haar <Jason_Haar@...1490...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: Russell Morris <openvpn@...1315...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Thu, Mar 1, 2012 at 12:45 AM, Jason Haar <Jason_Haar@...1490...> wrote:
-> A comment on your [1] reference. The issue of remote-user vs enterprise
-> is an old one - that affects many software applications - not just
-> openvpn. I personally think the proper solution is to implement NAC:
-> make "the network/enterprise" audit the remote host and only allow it if
-> it meets expectations. As such I don't think openvpn has to solve this
-> problem itself, as "the enterprise" cares a lot more about the remote
-> machine than whether or not the remote user has injected a couple of
-> routes into the local routing table. eg Windows AV status.
->
-> I think openvpn is quite entitled to act as a "mere" vpn solution, "the
-> enterprise" should invoke a more over-arching solution (such as NAC with
-> NAC agents) to ensure policy compliance.
->
+On Wednesday 29 February 2012 23:04:26 Russell Morris wrote:
+> 1) Makes sense - and that's what I'm doing currently, querying for proxy
+> information (in Windows, including PAC files as well).
 
-Yes, and I guess you read to the end to the technical solution, right?
-Do you have a comment about that?
+The functionality in the GUI will be the same as in the patches posted earl=
+ier=20
+using WPAD, PAC and the IE settings to get proxy info out of Windows.
 
-Alon.
+> - NTLM login to proxy server (using login information)
+
+Isn't NTLM auth supported by openvpn already? I guess that'll be an easy=20
+improvement, just a checkbox to activate the option. Is there anything else?
+
+> - automatic reconnect (when network connections change), or no reconnect =
+if
+> on the same subnet as the server
+
+Isn't that handled within openvpn good enough or does --keepalive not react=
+=20
+fast enough for your needs?
+
+> - recurring ping ... to provide RTT information (plot and histogram)=20
+> - traffic plots (UL / DL traffic) ... and traffic indicators in the System
+> Tray (state and traffic would be nice)
+
+Things like these are interesting for tech people, I don't think that the=20
+average user will get much out of it. UL/DL stats added to the tool tip of =
+the=20
+tray icon however is easy to implement and interesting enough to anyone tha=
+t I=20
+like it immediately.
+
+Heiko
+--=20
+Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
+Astaro a Sophos Company | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germ=
+any
+Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
+=20
+Represented by the General Partner Astaro Verwaltungs GmbH
+Amalienbadstra=DFe 41 Bau 52 | 76227 Karlsruhe | Germany=20
+Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
+Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
+
 
