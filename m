@@ -1,15 +1,19 @@
+Date: Thu, 1 Mar 2012 14:00:47 +0100
+From: =?iso-8859-1?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>
+Message-ID: <237575008.20120301140047@...449...>
+In-Reply-To: <4F4F6C84.3070503@...1114...>
+References: <4F4CE4FE.3010009@...515...> <3440230.bBsdCSzEj1@...1526...>
+	<1375292789.20120229123817@...449...> <7855235.EvfmKnZP6h@...1526...>
+	<CAP+U6t+ZUA3UpYfKms0Qr=-Cn1M-GP1EJtGybG0+j+O2xnfv7g@...278...>
+	<1957833067.20120229194040@...449...>
+	<4F4E7BEE.50700@...1114...>
+	<1656594721.20120229203737@...449...>
+	<4F4F6675.1090306@...1114...>
+	<38614505.20120301131554@...449...>
+	<4F4F6C84.3070503@...1114...>
 MIME-Version: 1.0
-In-Reply-To: <4F4F5260.2040807@...515...>
-References: <4F4CE4FE.3010009@...515...> <8191371.i5gkeDqFZM@...1526...>
-	<CAOazyz0hEyD_ZaaJeNz25+8jkX-BNZHzXbs=umdyQv+T3ngk4Q@...278...>
-	<4746830.2MuuAeNMnA@...1526...>
-	<CAOazyz0qRcgWCEmHavO9L_hG8HVmEy5Tr=9dvZ4AVR25XUoyoA@...278...>
-	<4F4F5260.2040807@...515...>
-Date: Thu, 1 Mar 2012 14:49:25 +0200
-Message-ID: <CAOazyz3RsMS3Oa8rwmEqPw4o5GyU2bKHPgWyiUh5dM0MbKvyHQ@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] Project management and direction (WAS: Re:
- OpenVPN 2.3-alpha1 released)
+Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 released
+Reply-To: =?iso-8859-1?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,51 +22,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: =?UTF-8?Q?Carsten_Kr=C3=BCger?= <C.Krueger@...448...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Thu, Mar 1, 2012 at 12:41 PM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
-ote:
-> 1) Preliminary topic list is sent to openvpn-devel ml
-> 2) The actual meeting (fully open)
-> 3) The meeting summary + complete chatlog is sent to openvpn-devel ml
->
-> The idea was to minimize the negative impact of the meetings as much as
-> possible. Also, we haven't had that many meetings in a long while:
->
-> <https://community.openvpn.net/openvpn/wiki/IrcMeetings>
->
-> The dangerous aspect of the IRC is it's more personal nature, and the
-> fact that it's far quicker to get feedback from there than from the
-> mailing list. The problem is that only a subset of developers and
-> community members hang out on the IRC. This is fine, as long as the
-> people on the mailing lists are not excluded from the discussion. This
-> is where we need to be really careful and not get too comfortable on the
-> IRC channel.
+Hello David,
 
-The problem is with the "Meeting Summary"... It breaks the discussion.
-Let's say you have discussion on topic XXXX, this thread has 10 messages.
-Then there is a "Meeting Summary" where XXXX is discussed.
-Then you continue to discuss the XXXX as reply to the "Meeting
-Summary" or in entirely different thread.
-As a result you may loose the people discussing XXXX.
-And you lose the history of discussion XXXX, as you need to go and
-look in many threads and instances.
+Thx for explantion of script usage.
 
-If IRC tool is used, it should be used as a proxy. Each summary should
-be replied to the designated thread to allow proper asynchronous
-communication without breaking the sequence because of a synchronous
-meeting.
+DS> Well, I can agree to that.  But this is all open source.  No matter how
+DS> much restrictions you put into the openvpn product, the user can download
+DS> the source, add the features missing, and reconnect with a modified
+DS> OpenVPN version.
 
-If James has problems with reading mails, you can discuss with him any
-subject but again reply to the appropriate thread to avoid breaking
-the sequence.
+ACK, if he has the complete configuration and all secrets.
 
-Reading IRC logs is way out of valid request...
+But in enterprise scenario the user has only a company configured
+machine and his own username/password or smartcard. For example
+tls-key could be unkown to user.
+The user can't boot his own machine, install patched openvpn and
+connect to vpn server because one secret is missing.
 
-Just my two cents.
+That's the reason why I think openvpn shouldn't be started as an user
+and config must controlled from enterprise.
 
-Alon.
+Cisco introduced a stupid encryption of key material in .vcf.
+The user should be allowed to setup the tunnel on this own.
+User can take http://newgre.net/passwordrevealer and Shrewsoft Client
+to connect. All enforcements are gone (push redirect-gateway for
+example).
+
+DS> be code which is not easily available, so the client can't fake this
+DS> operation as well.
+
+ACK
+
+DS> Bottom line is, you can't fully control the client environment.
+
+You can't control the client from a VPN tool. You have to control the
+client in enterprise directly. Group policies, software restriction
+policies, good ACLs, etc.
+
+DS> What you can do on the client side, is to avoid a third party (think
+DS> virus/malware) to figure out that openvpn is installed, and tweak the
+DS> config to run code which was not supposed to be run with higher
+DS> privileges.
+
+Virus runs with user privileges, config is only modifiable with admin
+privileges. No problem. Virus can establish VPN connection, same like
+the user.
+
+DS>  So the client should try to lock down things locally, to
+DS> reduce the impact from local exploits.
+
+Not the openvpn client but the complete machine.
+
+DS> There's no real way you can make the server enforce restrictions on the client.
+
+Full ACK
+
+greetings
+Carsten
+
+
+
 
