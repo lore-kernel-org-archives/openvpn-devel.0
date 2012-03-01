@@ -1,11 +1,11 @@
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Thu, 1 Mar 2012 11:19:48 +0100
+Message-ID: <7462163.ufeuZ1iJur@...1526...>
+In-Reply-To: <1787326494.20120229201800@...449...>
+References: <4F4CE4FE.3010009@...515...>
+	<1957833067.20120229194040@...449...>
+	<1787326494.20120229201800@...449...>
 MIME-Version: 1.0
-In-Reply-To: <2202832.nbUQuJyuNX@...1526...>
-References: <4F4CE4FE.3010009@...515...> <12822827.2NuMshZZBO@...1526...>
-	<CAOazyz06Ba-FLzm2i15we1tt4tkvV=gzQBadh0TuhzfPWLQW9A@...278...>
-	<2202832.nbUQuJyuNX@...1526...>
-Date: Thu, 1 Mar 2012 11:36:07 +0200
-Message-ID: <CAOazyz2X5qbL4M1EktJ71WX0Qfmga9Af5Wg6=sAJUZaKH20isA@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
 Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,27 +15,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Heiko Hund <heiko.hund@...1489...>
-Cc: =?UTF-8?Q?Carsten_Kr=C3=BCger?= <C.Krueger@...448...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net, Carsten =?ISO-8859-1?Q?Kr=FCger?= <C.Krueger@...448...>
 
-On Thu, Mar 1, 2012 at 11:24 AM, Heiko Hund <heiko.hund@...1489...> wrote:
->
-> On Thursday 01 March 2012 09:22:38 Alon Bar-Lev wrote:
-> > Also, (technically) impersonation token cannot be used for network
-> > access.
-> > So the solution of impersonating to user will not allow a script to
-> > mount remote filesystem.
->
-> You can't create a process with an impersonation token that's why a
-> primary
-> token is used.
+On Wednesday 29 February 2012 19:18:00 Carsten Kr=FCger wrote:
+> > If openvpn.exe startet in users context the user can manipulate it in
+> > ram arbitrarily.
+>=20
+> Example:
+> http://blog.didierstevens.com/2009/06/25/bpmtk-injecting-vbscript/
+> (great blog about process manipulation :-) )
 
-How do you create primary token of user without him typing his
-credentials again? or add the user "replace token" privilege?
+Took a look, neat tool. In the same blog the author mentions that integrity=
+=20
+levels, introduced in Vista, can be used to circumvent DLL injection. If th=
+at=20
+works out, all that is needed is the service increasing the tokens integrit=
+y=20
+level before starting openvpn and the user will have limited access to the=
+=20
+running openvpn process.
 
-Anyway, I am curios to read your view about the alternate solution I suggested.
+http://blog.didierstevens.com/2010/09/07/integrity-levels-and-dll-injection/
 
-Alon.
+Of course this makes only sense if the ongoing discussion about whether=20
+setting routes via --route config option comes to the conclusion "no". I'll=
+=20
+follow up to Fabian about that.
+
+Heiko
+--=20
+Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
+Astaro a Sophos Company | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germ=
+any
+Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
+=20
+Represented by the General Partner Astaro Verwaltungs GmbH
+Amalienbadstra=DFe 41 Bau 52 | 76227 Karlsruhe | Germany=20
+Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
+Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
+
 
