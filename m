@@ -1,14 +1,8 @@
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Fri, 2 Mar 2012 09:56:58 +0100
+Message-ID: <2587657.DLePWL2mdU@...1526...>
 MIME-Version: 1.0
-In-Reply-To: <4F5000C2.5020902@...1400...>
-References: <CA+3tv22Xq447J_EXKM4SYP-45V7LN0NJfH6o9skUNPPij3PDuQ@...278...>
-	<1CED409804E2164C8104F9E623B08B90129328AD5E@...1436...>
-	<20120208080953.GS13929@...1296...>
-	<CA+3tv2064zxi_v1hJPWaF+bd5FUrXYm+h+qYDnorHz8OrpxyGQ@...278...>
-	<4F5000C2.5020902@...1400...>
-Date: Thu, 1 Mar 2012 16:09:08 -0800
-Message-ID: <CA+3tv23TS4_0+DSMcnaXk34TsmkNL8NUJYhBKYps72jOTy7Nyw@...278...>
-From: James Ring <sjr@...1546...>
-Subject: Re: [Openvpn-devel] OpenVPN and Android 4.0 VPN API
+Subject: [Openvpn-devel] GUI size
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,39 +11,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: Arne Schwabe <schwabe@...1400...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hey Arne,
+Samuli,
 
-On Thu, Mar 1, 2012 at 3:05 PM, Arne Schwabe <schwabe@...1400...> wrote:
->
->>> ... and for the rest, well, we'd need a volunteer that wants to *work* =
-on
->>> this, not just ask for it... =A0I don't have an Android device (and no
->>> time) so it wouldn't be me.
->>
->> I'm raising my hand. This path sounds better than what I thought would
->> be necessary (writing OpenVPN client implementation in Java). I'm also
->> asking around here at Google to see if somebody with more experience
->> with Android is interested in helping out. I'm sure there is
->> sufficient interest on both sides (Android and OpenVPN) to get
->> something working. This would make a niche segment of Android users
->> very happy I'm sure.
->>
-> Are you already actively working on this? Otherwise I would start working=
- on
-> the feature. I have already some experience with the android sdk and ndk.=
- I
-> think I would solve the problem of fd passing and so on by turning openvpn
-> into a JNI library.
+I've received a question about the size of the snapshot binaries in the iss=
+ue=20
+tracker yesterday.
 
-Unfortunately I haven't started anything. If you do get something
-you'd like to share, I'd be happy to try it out and contribute
-patches.
+https://sourceforge.net/tracker/?func=3Ddetail&atid=3D1327094&aid=3D3496102=
+&group_id=3D248281
 
-> Arne
->
+Could you compile the GUI yourself and link against the openssl crypto DLL =
+for=20
+the next release? The GUI shouldn't be linked statically if there a=20
+libeay32.dll lying next to it, really.
+
+Thanks
+Heiko
+--=20
+Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
+Astaro a Sophos Company | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germ=
+any
+Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
+=20
+Represented by the General Partner Astaro Verwaltungs GmbH
+Amalienbadstra=DFe 41 Bau 52 | 76227 Karlsruhe | Germany=20
+Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
+Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
+
 
