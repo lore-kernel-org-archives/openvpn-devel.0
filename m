@@ -1,16 +1,13 @@
-Date: Fri, 2 Mar 2012 15:57:12 +0100
+Date: Fri, 2 Mar 2012 15:59:01 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20120302145712.GE1359@...1296...>
-References: <4F4CE4FE.3010009@...515...>
-	<20120229154604.GA7024@...1296...>
-	<CAP+U6t+pQXzvU-kGWDSZo6cQB6mf+LPd3LyLaowdB0xakbzjAQ@...278...>
-	<1677482.aKjq4FLfA1@...1526...>
+Message-ID: <20120302145900.GF1359@...1296...>
+References: <b7eff4b3227380d9911bac1a18327c69@...1528...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="kXdP64Ggrk/fb43R"
+	protocol="application/pgp-signature"; boundary="8X7/QrJGcKSMr1RN"
 Content-Disposition: inline
-In-Reply-To: <1677482.aKjq4FLfA1@...1526...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 released
+In-Reply-To: <b7eff4b3227380d9911bac1a18327c69@...1528...>
+Subject: Re: [Openvpn-devel] Running udp and tcp server in the same instance
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,33 +16,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Heiko Hund <heiko.hund@...1489...>
-Cc: Carsten =?iso-8859-1?Q?Kr=FCger?= <C.Krueger@...448...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: michael-dev <michael-dev@...1528...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---kXdP64Ggrk/fb43R
+--8X7/QrJGcKSMr1RN
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Thu, Mar 01, 2012 at 11:58:39AM +0100, Heiko Hund wrote:
-> Is there a use case for --route on the client?
+On Fri, Mar 02, 2012 at 03:32:36PM +0100, michael-dev wrote:
+> I've got multiple tcp und udp based OpenVPN instances here, that=20
+> prevent duplicate login of the same user by running some custom=20
+> connect-scripts with some extra user-cannot-connect-anywhere timeslide.
+> Are there any plans to support clients connecting via tcp and udp in=20
+> the same instance?
 
-I've used "--route-nopull" together with specific "--route" statements
-to work around VPN setups that didn't work under specific circumstances
-(the server pushes a heap of routes, some of which caused problems in
-my setup [*], and I only wanted to reach a specific subnet via the VPN).
+I would *love* to have that.  And it's somewhere on my TODO list of things
+to implement in OpenVPN (multiple listening sockets in a single process).
+
+Alas, socket.c is not for the faint of heart, and I haven't had the time
+yet to do so.  So I'd certainly welcome your patch :-)
 
 gert
-
-(*) specifically: some of the hosts in my scenario can be reached=20
-through the VPN, and without VPN.  Firing up the VPN and routing these
-hosts through the VPN would break existing SSH sessions, as further
-packets would get routed through the VPN, and the VPN server would not
-accept the existing source address (not from VPN range).  Yes, not
-your daily issue, but I was quite happy to have that knob to fiddle.
-
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -53,19 +47,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---kXdP64Ggrk/fb43R
+--8X7/QrJGcKSMr1RN
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (NetBSD)
 
-iQCVAwUBT1DfyKkuBuNlUUl1AQLZpQQAnNBzQ38ibSYr2QPNJOSU4bST7iLe+KHm
-XSSFVmn659b5HMgSnzLVTRU+tpVMUgzjzBh/MpTRtFXrRbwcPMuigqMOsbPgxyY2
-bzLUQNHNfFvCunuIMYoM+pc8XJEshcY/O/0zP1zZLsEi70kJ3ECMKSS64N41vfkh
-h+MGiL3KhiU=
-=fb7Z
+iQCVAwUBT1DgNKkuBuNlUUl1AQJcFAP/Wx5/vIs+VXWCKavy4aJo8OJBJak1WYfq
+ptetMCZ6XtHUrHVlYTfxFWnVC0/E/xEh7psTeiLCD3AMAqiGeGN2ARLNYCvjmlQp
+BHDdB7dzwah1KMo6xtl4qUbbGvMkw4rB5/xQ9bGgCGKpgL37BZt0OO6cMYZXyzGG
+CmNZSIYTkyI=
+=flaQ
 -----END PGP SIGNATURE-----
 
---kXdP64Ggrk/fb43R--
+--8X7/QrJGcKSMr1RN--
 
