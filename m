@@ -1,8 +1,10 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Fri, 2 Mar 2012 09:56:58 +0100
-Message-ID: <2587657.DLePWL2mdU@...1526...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] GUI size
+In-Reply-To: <2587657.DLePWL2mdU@...1526...>
+References: <2587657.DLePWL2mdU@...1526...>
+Date: Fri, 2 Mar 2012 13:23:32 +0200
+Message-ID: <CAOazyz0ETRaXkBdAuUF11GpVoKu4X4pV8wfvWa4tWw-Q+1NB6Q@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] GUI size
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,35 +13,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Samuli,
+This is already been done in the new build system.
 
-I've received a question about the size of the snapshot binaries in the iss=
-ue=20
-tracker yesterday.
-
-https://sourceforge.net/tracker/?func=3Ddetail&atid=3D1327094&aid=3D3496102=
-&group_id=3D248281
-
-Could you compile the GUI yourself and link against the openssl crypto DLL =
-for=20
-the next release? The GUI shouldn't be linked statically if there a=20
-libeay32.dll lying next to it, really.
-
-Thanks
-Heiko
---=20
-Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
-Astaro a Sophos Company | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germ=
-any
-Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
-=20
-Represented by the General Partner Astaro Verwaltungs GmbH
-Amalienbadstra=DFe 41 Bau 52 | 76227 Karlsruhe | Germany=20
-Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
-Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
-
+On Fri, Mar 2, 2012 at 10:56 AM, Heiko Hund <heiko.hund@...1489...> wrote:
+> Samuli,
+>
+> I've received a question about the size of the snapshot binaries in the i=
+ssue
+> tracker yesterday.
+>
+> https://sourceforge.net/tracker/?func=3Ddetail&atid=3D1327094&aid=3D34961=
+02&group_id=3D248281
+>
+> Could you compile the GUI yourself and link against the openssl crypto DL=
+L for
+> the next release? The GUI shouldn't be linked statically if there a
+> libeay32.dll lying next to it, really.
+>
+> Thanks
+> Heiko
+> --
+> Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
+> Astaro a Sophos Company | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Ge=
+rmany
+> Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
+>
+> Represented by the General Partner Astaro Verwaltungs GmbH
+> Amalienbadstra=C3=9Fe 41 Bau 52 | 76227 Karlsruhe | Germany
+> Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
+> Markus Hennig, Jan Hichert, G=C3=BCnter Junk, Dr. Frank Nellissen
+>
+>
+> -------------------------------------------------------------------------=
+-----
+> Virtualization & Cloud Management Using Capacity Planning
+> Cloud computing makes use of virtualization - but cloud computing
+> also focuses on allowing computing to be delivered as a service.
+> http://www.accelacomm.com/jaw/sfnl/114/51521223/
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
