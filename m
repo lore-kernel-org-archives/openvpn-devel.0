@@ -1,10 +1,12 @@
+Message-ID: <4F55EAF5.8090804@...515...>
+Date: Tue, 06 Mar 2012 12:46:13 +0200
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Date: Tue, 06 Mar 2012 11:34:19 +0100
-From: michael-dev <michael-dev@...1528...>
-Message-ID: <f9b7371fc3f7c144656ec25e6c20e51b@...1528...>
-Subject: Re: [Openvpn-devel] [DISCUSSION] OpenVPN privilege separation
- (Windows)
-Reply-To: openvpn-devel@lists.sourceforge.net
+References: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
+	<1330546342-17794-12-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1330546342-17794-12-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 11/52] build: correct place to alter
+ WINVER is at build system
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,226 +15,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: "Openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-Hi,
+Il 29.02.2012 22:11, Alon Bar-Lev ha scritto:
+> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+> ---
+>  configure.ac    |    2 +-
+>  syshead.h       |    4 ----
+>  win/msvc.mak.in |    2 +-
+>  3 files changed, 2 insertions(+), 6 deletions(-)
+>
+> diff --git a/configure.ac b/configure.ac
+> index 1c4d66c..aa1d509 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -342,7 +342,7 @@ case "$host" in
+>  	;;
+>  *-mingw*)
+>  	AC_DEFINE(TARGET_WIN32, 1, [Are we running WIN32?])
+> -	CPPFLAGS=3D"${CPPFLAGS} -DWIN32_LEAN_AND_MEAN"
+> +	CPPFLAGS=3D"${CPPFLAGS} -DWIN32_LEAN_AND_MEAN -DWINVER=3D0x0501"
+>  	OPENVPN_ADD_LIBS(-lgdi32)
+>  	OPENVPN_ADD_LIBS(-lws2_32)
+>  	OPENVPN_ADD_LIBS(-lwininet)
+> diff --git a/syshead.h b/syshead.h
+> index 0235abd..e8e70d2 100644
+> --- a/syshead.h
+> +++ b/syshead.h
+> @@ -28,10 +28,6 @@
+>  /*
+>   * Only include if not during configure
+>   */
+> -#ifdef WIN32
+> -/* PF_INET6: win32 ipv6 exists only after 0x0501 (XP) */
+> -#define WINVER 0x0501
+> -#endif
+>  #ifndef PACKAGE_NAME
+>  #include "config.h"
+>  #include "compat.h"
+> diff --git a/win/msvc.mak.in b/win/msvc.mak.in
+> index 191f370..43c3335 100644
+> --- a/win/msvc.mak.in
+> +++ b/win/msvc.mak.in
+> @@ -38,7 +38,7 @@ LIB_DIRS =3D -LIBPATH:$(OPENSSL)\lib -LIBPATH:$(POLARSS=
+L)\build\library -LIBPATH:$
+>  EXE =3D openvpn.exe
+>=20=20
+>  CPP=3Dcl.exe
+> -CPP_ARG_COMMON=3D/nologo /W3 -DWIN32 -DWIN32_LEAN_AND_MEAN -D_CONSOLE -D=
+_MBCS -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_WARNINGS -D_CRT_SECURE_N=
+O_WARNINGS $(INCLUDE_DIRS) /FD /c
+> +CPP_ARG_COMMON=3D/nologo /W3 -DWIN32 -DWIN32_LEAN_AND_MEAN -DWINVER=3D0x=
+0501 -D_CONSOLE -D_MBCS -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_WARNIN=
+GS -D_CRT_SECURE_NO_WARNINGS $(INCLUDE_DIRS) /FD /c
+>=20=20
+>  LINK32=3Dlink.exe
+>=20=20
 
-just to give you feedback that your thread is actually followed.
-I believe the different types of configuration are good and correct and 
-that a good threat analysis is a basic step to proper security, though I 
-cannot say much about the isolation tricks on Windows. The important 
-think is, as far as I get it, that the network component only changes 
-the routes in a trusted way - otherways, there would be no difference in 
-either doing this directly or by instrumenting the network component.
+Makes sense. WINVER defines the minimum supported Windows version[1]. In
+this case (0x501) we support WIndows XP and later. Making this a
+buildsystem option makes perfect sense to me - editing the header files
+to determine which Windows version will be supported seems silly.
 
-Regards,
-  M. Braun
+ACK.
 
-On Wed, 29 Feb 2012 20:52:15 +0200, Alon Bar-Lev wrote:
-> Hello,
->
-> Following recent discussion on Windows platform, I open a new thread.
-> I don't think this topic is Windows specific as the security
-> principals are the same.
->
-> VPN client product has [at least] two different type of 
-> configuration.
->
-> 1. Standalone configuration.
->
-> 2. Enterprise configuration.
->
-> The main difference of these types is who control the workstation. In
-> standalone configuration the workstation is controlled by the
-> end-user, and in enterprise configuration the enterprise 
-> administrator
-> controlling the workstation.
->
-> These two configurations have different purpose as well, the
-> standalone configuration usually protects the workstation against the
-> remote network, and the enterprise configuration usually protects the
-> remote network against the workstation.
->
-> The "enemy" of the two configurations is also different, in 
-> standalone
-> configuration the "enemy" is the remote network administrator, while
-> in the enterprise configuration the "enemy" is the local workstation
-> user.
->
-> The "scripts" in the standalone configuration or for the sake of the
-> user, but within the enterprise solution it usually need to scan the
-> computer, disconnect device and other privileged operations.
->
-> There is no single solution for both configurations.
->
-> Please read till the end before responding.
->
-> Provided we have the following components:
-> 1. tap device aka tap - a virtual Ethernet interface.
-> 2. openvpn - a tunneling implementation.
-> 3. openvpn configuration - configuration files.
-> 3. network utilities aka utils - a set of utilities to manipulate
-> workstation network settings.
-> 4. user interaction aka UI - a program that manages user interaction.
->
-> What is the security attribute for each component in each 
-> configuration?
->
-> Standalone configuration
-> 1. tap - accessed by interactive user.
-> 2. openvpn - runs by the interactive user.
-> 3. openvpn configuration - read/write by interactive user.
-> 4. network utilities - privileged user required.
-> 5. UI - runs by interactive user.
->
-> Enterprise configuration
-> 1. tap - access by openvpn user.
-> 2. openvpn - runs by openvpn user.
-> 3. openvpn configuration - read by openvpn, read/write by 
-> administrator.
-> 4. network utilities - privileged user required.
-> 5. UI - runs by interactive user.
->
-> Major missing openvpn functionality:
-> Specify certificate via the management UI - this feature is required
-> so that a configuration in which openvpn knows nothing of
-> authentication can be established.
->
-> A while back I added to openvpn the ability to create tun/tap device
-> with custom permissions
-> and the ability to wrap ip utility with custom utility.
-> As for now I am using the standalone Linux configuration[1], in few 
-> words:
-> 1. tap is configured so interactive user may access it.
-> 2. openvpn is run by the interactive user.
-> 3. openvpn configuration and keys are located at ~/openvpn
-> 4. network utilities - (ip utility and DNS update) are wrapped within
-> sudo scripts.
-> 5. UI is run by the interactive user.
->
-> The network utilities' wrapper can do validation before actually
-> executing the commands.
->
-> There is no reason why we cannot achieve the same in Windows:
-> 1. tap - configure ACL of TAP to specific permissions (Users for 
-> example).
-> 2. openvpn - runs by the interactive user, it will have permission to
-> open the tap.
-> 3. openvpn configuration - read/write by interactive user.
-> 4. network utilities are accessed by wrapper (I will discuss this 
-> bellow).
-> 5. UI is run by the interactive user.
->
-> So the network utilities are the only component that needs privilege
-> escalation in this configuration.
->
-> Let's take the enterprise configuration:
-> 1. tap - configure ACL of TAP to openvpn user.
-> 2. openvpn - runs by openvpn user.
-> 3. openvpn configuration - read by openvpn, read/write by 
-> administrator.
-> 4. network utilities are accessed by wrapper (I will discuss this 
-> bellow).
-> 5. UI runs by the interactive user.
->
-> So in this case, network utilities needs privilege escalation, but
-> also the ability of the UI to start/stop the tunnel requires special
-> privilege.
->
-> I gave an example of how this is done in Linux... Now, what is the
-> simplest solution to do the same in Windows?
->
-> There was a suggestion to use named pipes, services and 
-> impersonation,
-> I would like to discuss another option.
->
-> Windows Component Services provide the ability to create a component
-> that may be run in separate security context. It already implements
-> the process management and security isolation.
->
-> Let's define two components:
-> 1. OpenVPN.Tunnel component (replaces current service).
-> 2. OpenVPN.Network component (aka network utilities wrapper).
->
-> Now, let's see what we can do with these components.
->
-> Standalone configuration
-> 1. TAP ACL - Group Users can access.
-> 2. OpenVPN.Tunnel - can be accessed by Users, Interactive User 
-> identity.
-> 3. openvpn configuration - read/write by user.
-> 4. OpenVPN.Network - can be accessed by Users, Network service 
-> identity.
-> 5. UI - runs under the interactive user, can access the 
-> OpenVPN.Tunnel
-> to run openvpn, within configuration it sets the iproute utility to
-> own wrapper that calls the OpenVPN.Network.
->
-> Enterprise configuration
-> 1. TAP ACL - User openvpn
-> 2. OpenVPN.Tunnel - can be accessed by Users, openvpn user identity.
-> 3. openvpn configuration - read by openvpn, read/write by 
-> administrator.
-> 4. OpenVPN.Network - can be accessed by openvpn, Network service 
-> identity.
-> 5. UI - runs under the interactive user, can access the 
-> OpenVPN.Tunnel
-> to run openvpn, within configuration there is a call to iproute
-> utility to own wrapper that calls the OpenVPN.Network.
->
-> The switch between the two configurations is simple:
-> 1. TAP: Change permission Users<->openvpn
-> 2. OpenVPN.Tunnel - change identity: Interactive User<->openvpn
-> 3. OpenVPN.Network - change access: Users<->openvpn
-> 4. openvpn configuration - specific user ACL<->openvpn read,
-> administrators read/write
-> 5. UI - nothing.
->
-> As you can see the whole setup is a change in Windows configuration 
-> only!
-> Simple utility to select the mode can be provided.
->
-> The impact on the openvpn project is small... we only need to allow
-> windows network configuration replacement similar to ip utility
-> replacement.
-> The UI can implement the OpenVPN.Tunnel, OpenVPN.Network and the
-> network utility wrapper that calls the OpenVPN.Network.
-> Well, it can be done as part of the OpenVPN project as well, this is
-> out of scope of this discussion.
->
-> I think this implementation suggestion provides solution for the
-> threats and requirements without huge effort using windows best
-> practices.
->
-> Then we should discuss how to write a proper UI... until now the UI
-> was a standalone none standard VPN program while TAPI integration
-> (much like PPTP, L2TP) is required. This will enable users to connect
-> to VPN even before login. But this is a totally different discussion.
->
-> Alon.
->
->
->
->
->
->
->
->
->
-> [1] http://en.gentoo-wiki.com/wiki/OpenVPN_Non_Root
->
-> 
-> ------------------------------------------------------------------------------
-> Virtualization & Cloud Management Using Capacity Planning
-> Cloud computing makes use of virtualization - but cloud computing
-> also focuses on allowing computing to be delivered as a service.
-> http://www.accelacomm.com/jaw/sfnl/114/51521223/
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
+irc freenode net: mattock
+
+
+[1]
+<http://blogs.msdn.com/b/dsvc/archive/2009/06/19/troubleshooting-not-a-vali=
+d-win32-application-error-at-the-startup.aspx>
 
