@@ -1,12 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <4F55E287.2000903@...515...>
+In-Reply-To: <4F55EC7B.1060006@...515...>
 References: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
-	<1330546342-17794-5-git-send-email-alon.barlev@...277...>
-	<4F55E287.2000903@...515...>
-Date: Tue, 6 Mar 2012 13:25:55 +0200
-Message-ID: <CAOazyz35Mn-MDo1J_XYFR2ZdGQUk=s2kfHwpwwq-zsF0u_mUVQ@...278...>
+	<1330546342-17794-17-git-send-email-alon.barlev@...277...>
+	<4F55EC7B.1060006@...515...>
+Date: Tue, 6 Mar 2012 13:29:10 +0200
+Message-ID: <CAOazyz3mbELd=6L5ZV2QrHq6-ad74jpUZHnc35duCii0hB=2Kg@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 04/52] cleanup: remove C++ warnings
+Subject: Re: [Openvpn-devel] [PATCH 16/52] build: we need the sample.ovpn in
+	future
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,14 +22,13 @@ To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
 Cc: "Openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
 2012/3/6 Samuli Sepp=C3=A4nen <samuli@...515...>:
-> Although this commenting style has been valid in C since C99 (year
-> 2000), the actual C99 implementations seem to be incomplete[2]. So, just
-> to be on the safe side, I'll give this one an ACK.
+> Just wondering... why not move sample.ovpn to "sample-config-files"
+> directory?
 
-As long as we need to support old machines, we need to support C89.
-There is much work to be done to cleanup warnings gcc produces using
--pendatic -Wall -Wextra.
-But cleaning these will improve the ability to find issues.
+Because I did not want to change the sample-config-files... This was
+windows specific  so I left it windows specific.
+
+If you want reorder of example, I will be happy to do any other way.
 
 Alon.
 
