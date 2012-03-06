@@ -1,11 +1,12 @@
-Message-ID: <4F55EB33.2050907@...515...>
-Date: Tue, 06 Mar 2012 12:47:15 +0200
+Message-ID: <4F55EC7B.1060006@...515...>
+Date: Tue, 06 Mar 2012 12:52:43 +0200
 From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
 References: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
-	<1330546342-17794-13-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1330546342-17794-13-git-send-email-alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 12/52] Update .gitignore
+	<1330546342-17794-17-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1330546342-17794-17-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 16/52] build: we need the sample.ovpn in
+ future
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,26 +20,241 @@ Content-Transfer-Encoding: quoted-printable
 To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "Openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-
+Il 29.02.2012 22:11, Alon Bar-Lev ha scritto:
 > Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 > ---
->  .gitignore |    1 +
->  1 files changed, 1 insertions(+), 0 deletions(-)
+>  install-win32/sample.ovpn  |  103 --------------------------------------=
+------
+>  sample-windows/sample.ovpn |  103 ++++++++++++++++++++++++++++++++++++++=
+++++++
+>  2 files changed, 103 insertions(+), 103 deletions(-)
+>  delete mode 100755 install-win32/sample.ovpn
+>  create mode 100755 sample-windows/sample.ovpn
 >
-> diff --git a/.gitignore b/.gitignore
-> index 3d12f5d..8cc07de 100644
-> --- a/.gitignore
-> +++ b/.gitignore
-> @@ -5,6 +5,7 @@
->  *.obj
->  *.pyc
->  *.so
-> +*~
->  .deps
->  Makefile
->  Makefile.in
-
-Editor backup files in "git status" are annoying. ACK.
+> diff --git a/install-win32/sample.ovpn b/install-win32/sample.ovpn
+> deleted file mode 100755
+> index 5accd57..0000000
+> --- a/install-win32/sample.ovpn
+> +++ /dev/null
+> @@ -1,103 +0,0 @@
+> -# Edit this file, and save to a .ovpn extension
+> -# so that OpenVPN will activate it when run
+> -# as a service.
+> -
+> -# Change 'myremote' to be your remote host,
+> -# or comment out to enter a listening
+> -# server mode.
+> -remote myremote
+> -
+> -# Uncomment this line to use a different
+> -# port number than the default of 1194.
+> -; port 1194
+> -
+> -# Choose one of three protocols supported by
+> -# OpenVPN.  If left commented out, defaults
+> -# to udp.
+> -; proto [tcp-server | tcp-client | udp]
+> -
+> -# You must specify one of two possible network
+> -# protocols, 'dev tap' or 'dev tun' to be used
+> -# on both sides of the connection.  'tap' creates
+> -# a VPN using the ethernet protocol while 'tun'
+> -# uses the IP protocol.  You must use 'tap'
+> -# if you are ethernet bridging or want to route
+> -# broadcasts.  'tun' is somewhat more efficient
+> -# but requires configuration of client software
+> -# to not depend on broadcasts.  Some platforms
+> -# such as Solaris, OpenBSD, and Mac OS X only
+> -# support 'tun' interfaces, so if you are
+> -# connecting to such a platform, you must also
+> -# use a 'tun' interface on the Windows side.
+> -
+> -# Enable 'dev tap' or 'dev tun' but not both!
+> -dev tap
+> -
+> -# This is a 'dev tap' ifconfig that creates
+> -# a virtual ethernet subnet.
+> -# 10.3.0.1 is the local VPN IP address
+> -# and 255.255.255.0 is the VPN subnet.
+> -# Only define this option for 'dev tap'.
+> -ifconfig 10.3.0.1 255.255.255.0
+> -
+> -# This is a 'dev tun' ifconfig that creates
+> -# a point-to-point IP link.
+> -# 10.3.0.1 is the local VPN IP address and
+> -# 10.3.0.2 is the remote VPN IP address.
+> -# Only define this option for 'dev tun'.
+> -# Make sure to include the "tun-mtu" option
+> -# on the remote machine, but swap the order
+> -# of the ifconfig addresses.
+> -;tun-mtu 1500
+> -;ifconfig 10.3.0.1 10.3.0.2
+> -
+> -# If you have fragmentation issues or misconfigured
+> -# routers in the path which block Path MTU discovery,
+> -# lower the TCP MSS and internally fragment non-TCP
+> -# protocols.
+> -;fragment 1300
+> -;mssfix
+> -
+> -# If you have set up more than one TAP-Win32 adapter
+> -# on your system, you must refer to it by name.
+> -;dev-node my-tap
+> -
+> -# You can generate a static OpenVPN key
+> -# by selecting the Generate Key option
+> -# in the start menu.
+> -#
+> -# You can also generate key.txt manually
+> -# with the following command:
+> -#   openvpn --genkey --secret key.txt
+> -#
+> -# key must match on both ends of the connection,
+> -# so you should generate it on one machine and
+> -# copy it to the other over a secure medium.
+> -# Place key.txt in the same directory as this
+> -# config file.
+> -secret key.txt
+> -
+> -# Uncomment this section for a more reliable
+> -# detection when a system loses its connection.
+> -# For example, dial-ups or laptops that travel
+> -# to other locations.
+> -#
+> -# If this section is enabled and "myremote"
+> -# above is a dynamic DNS name (i.e. dyndns.org),
+> -# OpenVPN will dynamically "follow" the IP
+> -# address of "myremote" if it changes.
+> -; ping-restart 60
+> -; ping-timer-rem
+> -; persist-tun
+> -; persist-key
+> -; resolv-retry 86400
+> -
+> -# keep-alive ping
+> -ping 10
+> -
+> -# enable LZO compression
+> -comp-lzo
+> -
+> -# moderate verbosity
+> -verb 4
+> -mute 10
+> diff --git a/sample-windows/sample.ovpn b/sample-windows/sample.ovpn
+> new file mode 100755
+> index 0000000..5accd57
+> --- /dev/null
+> +++ b/sample-windows/sample.ovpn
+> @@ -0,0 +1,103 @@
+> +# Edit this file, and save to a .ovpn extension
+> +# so that OpenVPN will activate it when run
+> +# as a service.
+> +
+> +# Change 'myremote' to be your remote host,
+> +# or comment out to enter a listening
+> +# server mode.
+> +remote myremote
+> +
+> +# Uncomment this line to use a different
+> +# port number than the default of 1194.
+> +; port 1194
+> +
+> +# Choose one of three protocols supported by
+> +# OpenVPN.  If left commented out, defaults
+> +# to udp.
+> +; proto [tcp-server | tcp-client | udp]
+> +
+> +# You must specify one of two possible network
+> +# protocols, 'dev tap' or 'dev tun' to be used
+> +# on both sides of the connection.  'tap' creates
+> +# a VPN using the ethernet protocol while 'tun'
+> +# uses the IP protocol.  You must use 'tap'
+> +# if you are ethernet bridging or want to route
+> +# broadcasts.  'tun' is somewhat more efficient
+> +# but requires configuration of client software
+> +# to not depend on broadcasts.  Some platforms
+> +# such as Solaris, OpenBSD, and Mac OS X only
+> +# support 'tun' interfaces, so if you are
+> +# connecting to such a platform, you must also
+> +# use a 'tun' interface on the Windows side.
+> +
+> +# Enable 'dev tap' or 'dev tun' but not both!
+> +dev tap
+> +
+> +# This is a 'dev tap' ifconfig that creates
+> +# a virtual ethernet subnet.
+> +# 10.3.0.1 is the local VPN IP address
+> +# and 255.255.255.0 is the VPN subnet.
+> +# Only define this option for 'dev tap'.
+> +ifconfig 10.3.0.1 255.255.255.0
+> +
+> +# This is a 'dev tun' ifconfig that creates
+> +# a point-to-point IP link.
+> +# 10.3.0.1 is the local VPN IP address and
+> +# 10.3.0.2 is the remote VPN IP address.
+> +# Only define this option for 'dev tun'.
+> +# Make sure to include the "tun-mtu" option
+> +# on the remote machine, but swap the order
+> +# of the ifconfig addresses.
+> +;tun-mtu 1500
+> +;ifconfig 10.3.0.1 10.3.0.2
+> +
+> +# If you have fragmentation issues or misconfigured
+> +# routers in the path which block Path MTU discovery,
+> +# lower the TCP MSS and internally fragment non-TCP
+> +# protocols.
+> +;fragment 1300
+> +;mssfix
+> +
+> +# If you have set up more than one TAP-Win32 adapter
+> +# on your system, you must refer to it by name.
+> +;dev-node my-tap
+> +
+> +# You can generate a static OpenVPN key
+> +# by selecting the Generate Key option
+> +# in the start menu.
+> +#
+> +# You can also generate key.txt manually
+> +# with the following command:
+> +#   openvpn --genkey --secret key.txt
+> +#
+> +# key must match on both ends of the connection,
+> +# so you should generate it on one machine and
+> +# copy it to the other over a secure medium.
+> +# Place key.txt in the same directory as this
+> +# config file.
+> +secret key.txt
+> +
+> +# Uncomment this section for a more reliable
+> +# detection when a system loses its connection.
+> +# For example, dial-ups or laptops that travel
+> +# to other locations.
+> +#
+> +# If this section is enabled and "myremote"
+> +# above is a dynamic DNS name (i.e. dyndns.org),
+> +# OpenVPN will dynamically "follow" the IP
+> +# address of "myremote" if it changes.
+> +; ping-restart 60
+> +; ping-timer-rem
+> +; persist-tun
+> +; persist-key
+> +; resolv-retry 86400
+> +
+> +# keep-alive ping
+> +ping 10
+> +
+> +# enable LZO compression
+> +comp-lzo
+> +
+> +# moderate verbosity
+> +verb 4
+> +mute 10
+> --
+> 1.7.3.4
+>
+>
+Just wondering... why not move sample.ovpn to "sample-config-files"
+directory?
 
 --=20
 Samuli Sepp=E4nen
