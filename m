@@ -1,12 +1,12 @@
-Message-ID: <4F55E3EF.2070709@...515...>
-Date: Tue, 06 Mar 2012 12:16:15 +0200
+Message-ID: <4F55E44D.5020207@...515...>
+Date: Tue, 06 Mar 2012 12:17:49 +0200
 From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
 References: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
-	<1330546342-17794-8-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1330546342-17794-8-git-send-email-alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 07/52] cleanup: crypto_openssl.c: remove
- support for pre-openssl-0.9.6
+	<1330546342-17794-9-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1330546342-17794-9-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 08/52] cleanup: tun.c: fix incorrect
+ option in message (ip-win32)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,90 +21,33 @@ To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "Openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
 
-> autoconf rejecting this anyway:
-> ---
-> AC_MSG_CHECKING([that OpenSSL Library is at least version 0.9.6])
-> <snip>
-> AC_MSG_ERROR([OpenSSL crypto Library is too old.])
-> ---
->
 > Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 > ---
->  crypto_openssl.c |   49 -------------------------------------------------
->  1 files changed, 0 insertions(+), 49 deletions(-)
+>  tun.c |    2 +-
+>  1 files changed, 1 insertions(+), 1 deletions(-)
 >
-> diff --git a/crypto_openssl.c b/crypto_openssl.c
-> index 0a41b39..e5e1122 100644
-> --- a/crypto_openssl.c
-> +++ b/crypto_openssl.c
-> @@ -78,47 +78,6 @@
+> diff --git a/tun.c b/tun.c
+> index c92c0d7..81b66fb 100644
+> --- a/tun.c
+> +++ b/tun.c
+> @@ -4492,7 +4492,7 @@ dhcp_masq_addr (const in_addr_t local, const in_add=
+r_t netmask, const int offset
+>      msg (M_FATAL, "ERROR: There is a clash between the --ifconfig local =
+address and the internal DHCP server address -- both are set to %s -- pleas=
+e use the --ip-win32 dynamic option to choose a different free address from=
+ the --ifconfig subnet for the internal DHCP server", print_in_addr_t (dsa,=
+ 0, &gc));
 >=20=20
->  #endif
+>    if ((local & netmask) !=3D (dsa & netmask))
+> -    msg (M_FATAL, "ERROR: --tap-win32 dynamic [offset] : offset is outsi=
+de of --ifconfig subnet");
+> +    msg (M_FATAL, "ERROR: --ip-win32 dynamic [offset] : offset is outsid=
+e of --ifconfig subnet");
 >=20=20
-> -#if SSLEAY_VERSION_NUMBER < 0x00906000
-> -
-> -#undef EVP_CIPHER_mode
-> -#define EVP_CIPHER_mode(x) 1
-> -#define EVP_CIPHER_CTX_mode(x) 1
-> -#define EVP_CIPHER_flags(x) 0
-> -
-> -#define EVP_CIPH_CBC_MODE 1
-> -#define EVP_CIPH_CFB_MODE 0
-> -#define EVP_CIPH_OFB_MODE 0
-> -#define EVP_CIPH_VARIABLE_LENGTH 0
-> -
-> -#define OPENSSL_malloc(x) malloc(x)
-> -#define OPENSSL_free(x) free(x)
-> -
-> -static inline int
-> -EVP_CipherInit_ov (EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, uint8_t =
-*key, uint8_t *iv, int enc)
-> -{
-> -  EVP_CipherInit (ctx, type, key, iv, enc);
-> -  return 1;
-> -}
-> -
-> -static inline int
-> -EVP_CipherUpdate_ov (EVP_CIPHER_CTX *ctx, uint8_t *out, int *outl, uint8=
-_t *in, int inl)
-> -{
-> -  EVP_CipherUpdate (ctx, out, outl, in, inl);
-> -  return 1;
-> -}
-> -
-> -static inline bool
-> -cipher_ok (const char* name)
-> -{
-> -  const int i =3D strlen (name) - 4;
-> -  if (i >=3D 0)
-> -    return !strcmp (name + i, "-CBC");
-> -  else
-> -    return false;
-> -}
-> -
-> -#else
-> -
->  static inline int
->  EVP_CipherInit_ov (EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, uint8_t =
-*key, uint8_t *iv, int enc)
->  {
-> @@ -137,14 +96,6 @@ cipher_ok (const char* name)
->    return true;
->  }
->=20=20
-> -#endif
-> -
-> -#if SSLEAY_VERSION_NUMBER < 0x0090581f
-> -
-> -#undef DES_check_key_parity
-> -#define DES_check_key_parity(x) 1
-> -#endif /* SSLEAY_VERSION_NUMBER < 0x0090581f */
-> -
->  #ifndef EVP_CIPHER_name
->  #define EVP_CIPHER_name(e)		OBJ_nid2sn(EVP_CIPHER_nid(e))
->  #endif
-It has been agreed earlier that OpenSSL 0.9.6 will not be supported
-anymore. ACK.
+>    gc_free (&gc);
+>    return htonl(dsa);
+
+ACK. There is indeed no --tap-win32 option.
 
 --=20
 Samuli Sepp=E4nen
