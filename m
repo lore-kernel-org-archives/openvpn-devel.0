@@ -1,13 +1,12 @@
+Message-ID: <4F55F041.9010400@...515...>
+Date: Tue, 06 Mar 2012 13:08:49 +0200
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <4F55E72D.2010306@...515...>
 References: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
-	<1330546342-17794-10-git-send-email-alon.barlev@...277...>
-	<4F55E72D.2010306@...515...>
-Date: Tue, 6 Mar 2012 13:13:24 +0200
-Message-ID: <CAOazyz1j=gYO__gyeck89kGnJ+BmCHW=qmX8MF3KV9gBJF3k2Q@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 09/52] cleanup: memcmp.c: remove unused
-	source
+	<1330546342-17794-22-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1330546342-17794-22-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 21/52] build: remove windows specific
+ build system
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,116 +15,3152 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "Openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-Not exactly.
-This file is needed for VERY old libc implementations.
-I don't think these exists anymore in supported configurations.
-If we find memcmp() is missing, we add it properly to compat.
+There goes all the sweat and tears I poured onto that buildsystem :).
 
-2012/3/6 Samuli Sepp=C3=A4nen <samuli@...515...>:
+I say let it burn. ACK.
+
+Samuli
+> It will be completely re-written in future
 >
->> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
->> ---
->> =C2=A0configure.ac | =C2=A0 =C2=A03 ---
->> =C2=A0memcmp.c =C2=A0 =C2=A0 | =C2=A0 43 -------------------------------=
-------------
->> =C2=A02 files changed, 0 insertions(+), 46 deletions(-)
->> =C2=A0delete mode 100644 memcmp.c
->>
->> diff --git a/configure.ac b/configure.ac
->> index 25dcc37..1c4d66c 100644
->> --- a/configure.ac
->> +++ b/configure.ac
->> @@ -564,9 +564,6 @@ else
->>
->> =C2=A0fi
->>
->> -dnl Required library functions
->> -AC_FUNC_MEMCMP
->> -
->> =C2=A0dnl
->> =C2=A0dnl Check for res_init
->> =C2=A0dnl
->> diff --git a/memcmp.c b/memcmp.c
->> deleted file mode 100644
->> index d921aac..0000000
->> --- a/memcmp.c
->> +++ /dev/null
->> @@ -1,43 +0,0 @@
->> -/*
->> - * =C2=A0OpenVPN -- An application to securely tunnel IP networks
->> - * =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 over a single TCP/UDP port=
-, with support for SSL/TLS-based
->> - * =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 session authentication and=
- key exchange,
->> - * =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 packet encryption, packet =
-authentication, and
->> - * =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 packet compression.
->> - *
->> - * =C2=A0Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...1696...=
-15...>
->> - *
->> - * =C2=A0This program is free software; you can redistribute it and/or =
-modify
->> - * =C2=A0it under the terms of the GNU General Public License version 2
->> - * =C2=A0as published by the Free Software Foundation.
->> - *
->> - * =C2=A0This program is distributed in the hope that it will be useful,
->> - * =C2=A0but WITHOUT ANY WARRANTY; without even the implied warranty of
->> - * =C2=A0MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. =C2=A0See=
- the
->> - * =C2=A0GNU General Public License for more details.
->> - *
->> - * =C2=A0You should have received a copy of the GNU General Public Lice=
-nse
->> - * =C2=A0along with this program (see the file COPYING included with th=
-is
->> - * =C2=A0distribution); if not, write to the Free Software Foundation, =
-Inc.,
->> - * =C2=A059 Temple Place, Suite 330, Boston, MA =C2=A002111-1307 =C2=A0=
-USA
->> - */
->> -
->> -#include "syshead.h"
->> -
->> -#include "memdbg.h"
->> -
->> -int
->> -memcmp (const void *s1, const void *s2, size_t n)
->> -{
->> - =C2=A0unsigned const char *p1 =3D s1, *p2 =3D s2;
->> - =C2=A0int d;
->> -
->> - =C2=A0if (n)
->> - =C2=A0 =C2=A0while (n-- > 0)
->> - =C2=A0 =C2=A0 =C2=A0{
->> - =C2=A0 =C2=A0 d =3D *p1++ - *p2++;
->> - =C2=A0 =C2=A0 if (d !=3D 0)
->> - =C2=A0 =C2=A0 =C2=A0 return d;
->> - =C2=A0 =C2=A0 =C2=A0}
->> - =C2=A0return 0;
->> -}
+> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+> ---
+>  Makefile.am            |    8 +-
+>  doclean                |   73 -----
+>  domake-win             |  138 --------
+>  msvc/autodefs.h.in     |   20 --
+>  msvc/config.py         |   93 ------
+>  msvc/msvc.mak          |   52 ---
+>  service-win32/msvc.mak |   30 --
+>  win/autodefs.h.in      |   31 --
+>  win/build.py           |   23 --
+>  win/build_all.py       |   69 ----
+>  win/build_ddk.py       |   55 ----
+>  win/build_exe.py       |   15 -
+>  win/config.h.in        |  363 ---------------------
+>  win/config.py          |   21 --
+>  win/config_all.py      |   13 -
+>  win/config_tap.py      |   35 --
+>  win/config_ti.py       |   18 -
+>  win/js.py              |   10 -
+>  win/make_dist.py       |  107 -------
+>  win/msvc.mak.in        |   69 ----
+>  win/openvpn.nsi        |  822 ------------------------------------------------
+>  win/setpath.nsi        |  231 --------------
+>  win/settings.in        |  100 ------
+>  win/show.py            |    9 -
+>  win/sign.py            |   23 --
+>  win/tap_span.py        |  129 --------
+>  win/wb.py              |  322 -------------------
+>  27 files changed, 2 insertions(+), 2877 deletions(-)
+>  delete mode 100755 doclean
+>  delete mode 100644 domake-win
+>  delete mode 100644 msvc/autodefs.h.in
+>  delete mode 100644 msvc/config.py
+>  delete mode 100644 msvc/msvc.mak
+>  delete mode 100644 service-win32/msvc.mak
+>  delete mode 100644 win/__init__.py
+>  delete mode 100644 win/autodefs.h.in
+>  delete mode 100644 win/build.py
+>  delete mode 100644 win/build_all.py
+>  delete mode 100644 win/build_ddk.py
+>  delete mode 100644 win/build_exe.py
+>  delete mode 100644 win/config.h.in
+>  delete mode 100644 win/config.py
+>  delete mode 100644 win/config_all.py
+>  delete mode 100644 win/config_tap.py
+>  delete mode 100644 win/config_ti.py
+>  delete mode 100644 win/js.py
+>  delete mode 100644 win/make_dist.py
+>  delete mode 100644 win/msvc.mak.in
+>  delete mode 100755 win/openvpn.nsi
+>  delete mode 100755 win/setpath.nsi
+>  delete mode 100644 win/settings.in
+>  delete mode 100644 win/show.py
+>  delete mode 100644 win/sign.py
+>  delete mode 100644 win/tap_span.py
+>  delete mode 100644 win/wb.py
 >
-> My C-fu is fairly low, but this still seems to make sense as there's no
-> memcmp.h. The memcmp function calls in other source files seem to use
-> memcmp function stored elsewhere (gcc[1], libc[2], etc.).
+> diff --git a/Makefile.am b/Makefile.am
+> index 74f388a..a14f4e1 100644
+> --- a/Makefile.am
+> +++ b/Makefile.am
+> @@ -46,8 +46,7 @@ EXTRA_DIST = \
+>         suse \
+>         contrib \
+>         debug \
+> -       plugins \
+> -       win
+> +       plugins
 >
-> ACK.
+>  SUBDIRS = service-win32
 >
+> @@ -59,8 +58,6 @@ dist_doc_DATA = \
+>
+>  dist_noinst_SCRIPTS = \
+>         $(TESTS) \
+> -       doclean \
+> -       domake-win \
+>         t_cltsrv-down.sh \
+>         configure_h.awk configure_log.awk
+>
+> @@ -68,8 +65,7 @@ dist_noinst_DATA = \
+>         openvpn.spec \
+>         COPYRIGHT.GPL \
+>         PORTS \
+> -       INSTALL-win32.txt \
+> -       service-win32/msvc.mak
+> +       INSTALL-win32.txt
+>
+>  openvpn_SOURCES = \
+>          base64.c base64.h \
+> diff --git a/doclean b/doclean
+> deleted file mode 100755
+> index 8b35dd6..0000000
+> --- a/doclean
+> +++ /dev/null
+> @@ -1,73 +0,0 @@
+> -#!/bin/sh
+> -
+> -# Let's have a fresh start.  Remove all
+> -# generated files.
+> -#
+> -# Run this script, then:
+> -#        autoreconf -i -v
+> -#        ./configure
+> -#        make
+> -#        make install
+> -
+> -if ! [ "$KEEPAUTODEFS" = "yes" ]; then
+> -    rm -rf autodefs
+> -fi
+> -
+> -rm -f \
+> -    *.o \
+> -    service-win32/*.o \
+> -    service-win32/*.exe \
+> -    *.exe \
+> -    openvpn \
+> -    config.cache \
+> -    configure \
+> -    Makefile \
+> -    Makefile.in \
+> -    stamp-h* \
+> -    config.guess \
+> -    config.sub \
+> -    depcomp \
+> -    missing \
+> -    mkinstalldirs \
+> -    config.log \
+> -    config.status \
+> -    config.h \
+> -    config.h.in \
+> -    aclocal.m4 \
+> -    openvpn.spec \
+> -    install-sh \
+> -    openvpn.8.html \
+> -    install-win32/*.exe \
+> -    install-win32/makensis.log \
+> -    install-win32/settings \
+> -    install-win32/Makefile \
+> -    install-win32/Makefile.in \
+> -    images/Makefile \
+> -    images/Makefile.in \
+> -    service-win32/Makefile \
+> -    service-win32/Makefile.in
+> -
+> -rm -rf \
+> -    autom4te*.cache \
+> -    .deps \
+> -    */.deps \
+> -    windest \
+> -    gen \
+> -    tapinstall \
+> -    install-win32/tmp
+> -
+> -rm -rf \
+> -    tap-win32/objfre_w2k_x86 \
+> -    tap-win32/dist \
+> -    tap-win32/SOURCES \
+> -    tap-win32/tapdrvr.cod \
+> -    tap-win32/buildfre_wnet_amd64.wrn \
+> -    tap-win32/buildfre_w2k_x86.wrn \
+> -    tap-win32/objfre_wnet_amd64 \
+> -    tap-win32/buildfre_wnet_amd64.log \
+> -    tap-win32/buildfre_w2k_x86.log \
+> -    tap-win32/amd64 \
+> -    tap-win32/i386/tap0901.pdb \
+> -    tap-win32/i386/OemWin2k.inf \
+> -    tap-win32/i386/tap0901.map \
+> -    tap-win32/i386/tap0901.sys
+> diff --git a/domake-win b/domake-win
+> deleted file mode 100644
+> index bd730e0..0000000
+> --- a/domake-win
+> +++ /dev/null
+> @@ -1,138 +0,0 @@
+> -#!/bin/sh
+> -
+> -# This is the master OpenVPN build script for Windows.
+> -# This script will build OpenVPN, the TAP driver, and
+> -# the installer from source, targeting x86 on Windows
+> -# 2000 and higher, and x64 on Windows 2003 and higher.
+> -# For quick start options, see pre-built notes below.
+> -#
+> -# Note that if you are only looking to build the
+> -# openvpn user-space binaries (openvpn.exe
+> -# and openvpnserv.exe) you can use the
+> -# provided autoconf/automake build environment.
+> -#
+> -# If you are building from an expanded .tar.gz file,
+> -# make sure to run "./doclean" before "./domake-win".
+> -#
+> -# See top-level build configuration and settings in:
+> -#
+> -#   version.m4
+> -#   install-win32/settings.in
+> -#
+> -# Mandatory prerequisites:
+> -#
+> -# MinGW     -- for GNU C compiler
+> -# MSYS      -- for bash
+> -# msysDTK   -- for perl
+> -# NSIS      -- for building installer
+> -#
+> -# The following additional prerequisites may be omitted
+> -# when building in pre-built mode (see note below).
+> -#
+> -# svn       -- for checking out source code (or TortoiseSVN)
+> -# Windows Driver Kit (6001_17121_HyperV_WDK.iso) -- for building
+> -#    TAP driver + tapinstall
+> -#
+> -# Required libraries (must be prebuilt)
+> -#
+> -# OpenSSL       -- define OPENSSL_DIR in settings.in
+> -# LZO           -- define LZO_DIR in settings.in
+> -# PKCS11-HELPER -- define PKCS11_HELPER_DIR
+> -#
+> -# Optional OpenVPN GUI binary (prebuilt)
+> -#           -- define OPENVPN_GUI_DIR and OPENVPN_GUI in settings.in
+> -#
+> -# Required source code not included in OpenVPN SVN repository
+> -# because of MS licensing restrictions:
+> -#
+> -# ../tapinstall -- This is based on 'devcon' which is found in the
+> -#                  Windows Driver Kit (formerly known as DDK).
+> -#                  Copy the 'devcon' source tree to ../tapinstall
+> -#                  Edit 'sources' and modify TARGETNAME=tapinstall
+> -
+> -# Note that all variables referenced here such as GENOUT,
+> -# GENOUT_PREBUILT, and CLEAN are defined in install-win32/settings.in
+> -
+> -# SPECIAL NOTES ON PRE-BUILT MODE
+> -#   Setting up a complete tool chain to build OpenVPN and all
+> -#   dependencies on Windows can be an onerous task, so the capability
+> -#   is provided to reference a directory of pre-built components during
+> -#   the build process.  When dependencies are missing to build a given
+> -#   component (such as the TAP driver), the build script will auto-detect
+> -#   this and use the pre-built version instead.  This would allow you, for
+> -#   example, to build an OpenVPN installer with custom edits to
+> -#   install-win32/settings.in, but then avoid needing to build all other
+> -#   components (such as OpenSSL, LZO, Pkcs11-helper, TAP driver, Windows
+> -#   service, etc.).  The procedure is as follows. First Download and expand
+> -#   the pre-built binaries from:
+> -#
+> -#     http://openvpn.net/prebuilt/ (choose the most recent -prebuilt .tbz file)
+> -#
+> -#   After expanding the .tbz file, cd to the top level directory and
+> -#   expand an OpenVPN source distribution taken from either the subversion
+> -#   repository or a source .tar.gz file.  It's best to use an OpenVPN source
+> -#   version that is the same or slightly later than the pre-built binaries
+> -#   file.  So now you have a directory containing something that looks like
+> -#   this:
+> -#
+> -#   gen-prebuilt     -> from prebuilt .tbz file
+> -#   lzo-2.02         -> from prebuilt .tbz file
+> -#   openssl-0.9.8i   -> from prebuilt .tbz file
+> -#   pkcs11-helper    -> from prebuilt .tbz file
+> -#   openvpn-2.1_rc13.tar.gz  -> downloaded from openvpn.net
+> -#   openvpn-2.1_rc13 -> directory expanded from above file
+> -#
+> -#   Now cd to your expanded source tree (openvpn-2.1_rc13 in the
+> -#   example above), make edits to install-win32/settings.in (or even
+> -#   patch the OpenVPN source code directly), and run this script:
+> -#
+> -#       ./domake-win
+> -#
+> -#   If everything runs correctly, you should have a custom installer
+> -#   written to ./gen/install
+> -
+> -# First build the autodefs directory, containing C, sh, and NSIS versions
+> -# of global settings, using install-win32/settings.in as source.
+> -# These settings will then drive the rest of the build process.
+> -install-win32/winconfig
+> -
+> -# clean all generated files
+> -install-win32/doclean
+> -
+> -# Load a pre-built GENOUT directory if GENOUT_PREBUILT is defined
+> -# and the GENOUT directory is non-existing
+> -install-win32/getprebuilt
+> -
+> -# Each of the scripts below build, get, and/or possibly sign a different
+> -# OpenVPN component, placing the generated files in GENOUT.  Each of these
+> -# steps is fully indepedent, and can be executed in any order or omitted.
+> -# The exception is the last script which gathers together all files from
+> -# GENOUT and builds the installer.
+> -
+> -# Make the OpenVPN user-space components (OpenVPN and service)
+> -install-win32/makeopenvpn
+> -
+> -# Make the OpenVPN TAP driver
+> -install-win32/maketap
+> -
+> -# Make the tapinstall utility, used to install the TAP driver
+> -install-win32/maketapinstall
+> -
+> -# Get the OpenSSL libraries from a pre-build OpenSSL tree
+> -install-win32/getopenssl
+> -
+> -# Get the PKCS-11 helper library from a pre-built OpenSSL tree
+> -install-win32/getpkcs11helper
+> -
+> -# Get the OpenVPN GUI (must be prebuilt)
+> -install-win32/getgui
+> -
+> -# Get the OpenVPN XML-based GUI (must be prebuilt)
+> -install-win32/getxgui
+> -
+> -# Produce the license text, install README, and sample config files
+> -install-win32/maketext
+> -
+> -# This final step builds the OpenVPN installer using generated
+> -# files from GENOUT
+> -install-win32/buildinstaller
+> diff --git a/msvc/autodefs.h.in b/msvc/autodefs.h.in
+> deleted file mode 100644
+> index b0fa7f5..0000000
+> --- a/msvc/autodefs.h.in
+> +++ /dev/null
+> @@ -1,20 +0,0 @@
+> -/*
+> - * Minimum TAP-Win32 version number expected by userspace
+> - *
+> - * The TAP-Win32 version number is defined in tap-win32/SOURCES
+> - */
+> -#define TAP_ID "@PRODUCT_TAP_ID@"
+> -#define TAP_WIN32_MIN_MAJOR @PRODUCT_TAP_WIN32_MIN_MAJOR@
+> -#define TAP_WIN32_MIN_MINOR @PRODUCT_TAP_WIN32_MIN_MINOR@
+> -
+> -/* Name of package */
+> -#define PACKAGE "@PRODUCT_UNIX_NAME@"
+> -
+> -/* Define to the full name of this package. */
+> -#define PACKAGE_NAME "@PRODUCT_NAME@"
+> -
+> -/* Define to the one symbol short name of this package. */
+> -#define PACKAGE_TARNAME "@PRODUCT_UNIX_NAME@"
+> -
+> -/* Define to the version of this package. */
+> -#define PACKAGE_VERSION "@PRODUCT_VERSION@"
+> diff --git a/msvc/config.py b/msvc/config.py
+> deleted file mode 100644
+> index 9915cd0..0000000
+> --- a/msvc/config.py
+> +++ /dev/null
+> @@ -1,93 +0,0 @@
+> -# build autodefs.h and
+> -
+> -import re
+> -
+> -autogen = "Automatically generated by config.py"
+> -
+> -def parse_version_m4(kv, version_m4):
+> -    r = re.compile(r'^define\((\w+),\[(.*)\]\)$')
+> -    f = open(version_m4)
+> -    for line in f:
+> -        line = line.rstrip()
+> -        m = re.match(r, line)
+> -        if m:
+> -            g = m.groups()
+> -            kv[g[0]] = g[1]
+> -    f.close()
+> -
+> -def parse_settings_in(kv, settings_in):
+> -    r = re.compile(r'^!define\s+(\w+)(?:\s+"?(.*?)"?)$')
+> -    f = open(settings_in)
+> -    for line in f:
+> -        line = line.rstrip()
+> -        m = re.match(r, line)
+> -        if m:
+> -            g = m.groups()
+> -            kv[g[0]] = g[1] or ''
+> -    f.close()
+> -
+> -def build_autodefs(kv, autodefs_in, autodefs_out):
+> -    def repfn(m):
+> -        var, = m.groups()
+> -        return kv.get(var, '')
+> -
+> -    r = re.compile(r'@(\w+)@')
+> -    fin = open(autodefs_in)
+> -    fout = open(autodefs_out, 'w')
+> -    fout.write("/* %s */\n\n" % autogen)
+> -    for line in fin:
+> -        newline = re.sub(r, repfn, line)
+> -        fout.write(newline)
+> -    fin.close()
+> -    fout.close()
+> -
+> -def print_key_values(kv):
+> -    for k, v in sorted(kv.items()):
+> -        print "%s%s%s" % (k, ' '*(32-len(k)), repr(v))
+> -
+> -def get_sources(makefile_am):
+> -    c = set()
+> -    h = set()
+> -    f = open(makefile_am)
+> -    state = False
+> -    for line in f:
+> -        line = line.rstrip()
+> -        if line == 'openvpn_SOURCES = \\':
+> -            state = True
+> -        elif not line:
+> -            state = False
+> -        elif state:
+> -            for sf in line.split():
+> -                if sf.endswith('.c'):
+> -                    c.add(sf[:-2])
+> -                elif sf.endswith('.h'):
+> -                    h.add(sf[:-2])
+> -                elif sf == '\\':
+> -                    pass
+> -                else:
+> -                    print >>sys.stderr, "Unrecognized filename:", sf
+> -    f.close()
+> -    return [ sorted(list(s)) for s in (c, h) ]
+> -
+> -def output_mak_list(out, title, srclist, ext):
+> -    out.write("%s =" % (title,))
+> -    for x in srclist:
+> -        out.write(" \\\n\t%s.%s" % (x, ext))
+> -    out.write('\n\n')
+> -
+> -def output_mak(makefile_am, outfile):
+> -    c, h = get_sources(makefile_am)
+> -    out = open(outfile, 'w')
+> -    out.write("# %s\n\n" % autogen)
+> -    output_mak_list(out, 'HEADERS', h, 'h')
+> -    output_mak_list(out, 'OBJS', c, 'obj')
+> -    out.close()
+> -
+> -def main():
+> -    kv = {}
+> -    parse_version_m4(kv, 'version.m4')
+> -    parse_settings_in(kv, 'install-win32/settings.in')
+> -    build_autodefs(kv, 'msvc/autodefs.h.in', 'autodefs.h')
+> -    output_mak('Makefile.am', 'head_obj.mak')
+> -
+> -main()
+> diff --git a/msvc/msvc.mak b/msvc/msvc.mak
+> deleted file mode 100644
+> index 2d99de7..0000000
+> --- a/msvc/msvc.mak
+> +++ /dev/null
+> @@ -1,52 +0,0 @@
+> -# This makefile builds the user-mode component
+> -# of OpenVPN for Windows in the Visual Studio 2008 environment.
+> -
+> -# To build:
+> -#    python msvc\config.py
+> -#    nmake /f msvc\msvc.mak
+> -
+> -# Each of the OPENSSL and LZO dirs should have 'lib' and 'include'
+> -# directories under them.
+> -
+> -OPENSSL = \src\openssl
+> -OPENSSL_DYNAMIC = libeay32.lib ssleay32.lib
+> -
+> -LZO = \src\lzo
+> -LZO_DYNAMIC = lzo2.lib
+> -
+> -INCLUDE_DIRS = -I$(OPENSSL)/include -I$(LZO)/include
+> -
+> -LIBS = $(OPENSSL_DYNAMIC) $(LZO_DYNAMIC) ws2_32.lib crypt32.lib iphlpapi.lib winmm.lib user32.lib gdi32.lib advapi32.lib wininet.lib
+> -
+> -LIB_DIRS = -LIBPATH:$(OPENSSL)\lib -LIBPATH:$(LZO)\lib
+> -
+> -EXE = openvpn.exe
+> -
+> -CPP=cl.exe
+> -CPP_ARG_COMMON=/nologo /W3 /O2 -DWIN32 -DWIN32_LEAN_AND_MEAN -D_CONSOLE -D_MBCS -D_CRT_SECURE_NO_DEPRECATE $(INCLUDE_DIRS) /FD /c
+> -# release:
+> -CPP_PROJ=$(CPP_ARG_COMMON) /MD -DNDEBUG
+> -# debug:
+> -#CPP_PROJ=$(CPP_ARG_COMMON) /MDd /Zi /Od -D_DEBUG
+> -
+> -LINK32=link.exe
+> -# release:
+> -LINK32_FLAGS=/nologo /subsystem:console /incremental:no /out:"$(EXE)"
+> -# debug:
+> -#LINK32_FLAGS=/nologo /subsystem:console /incremental:no /debug /out:"$(EXE)"
+> -
+> -# HEADERS and OBJS definitions, automatically generated
+> -!INCLUDE head_obj.mak
+> -
+> -openvpn : $(OBJS)
+> -       $(LINK32) @<<
+> -       $(LINK32_FLAGS) $(LIB_DIRS) $(LIBS) $(OBJS)
+> -<<
+> -
+> -clean :
+> -       del /Q $(OBJS) $(EXE) *.idb *.pdb
+> -
+> -.c.obj::
+> -   $(CPP) @<<
+> -   $(CPP_PROJ) $<
+> -<<
+> diff --git a/service-win32/msvc.mak b/service-win32/msvc.mak
+> deleted file mode 100644
+> index ba4bab7..0000000
+> --- a/service-win32/msvc.mak
+> +++ /dev/null
+> @@ -1,30 +0,0 @@
+> -# This makefile builds the OpenVPN service wrapper for Windows in the
+> -# Visual Studio 2008 environment.
+> -
+> -# Some of these libs may not be needed
+> -LIBS = ws2_32.lib crypt32.lib iphlpapi.lib winmm.lib user32.lib gdi32.lib advapi32.lib wininet.lib
+> -EXE = openvpnserv.exe
+> -
+> -CPP=cl.exe
+> -CPP_ARG_COMMON=/nologo /W3 -DWIN32 -DWIN32_LEAN_AND_MEAN -D_CONSOLE -D_MBCS -D_CRT_SECURE_NO_DEPRECATE /FD /c -I".."
+> -CPP_PROJ=$(CPP_ARG_COMMON) /O2 /MD -DNDEBUG
+> -
+> -LINK32=link.exe
+> -LINK32_FLAGS=/nologo /subsystem:console /incremental:no
+> -
+> -OBJS = \
+> -       openvpnserv.obj \
+> -       service.obj
+> -
+> -openvpnserv : $(OBJS)
+> -       $(LINK32) @<<
+> -       $(LINK32_FLAGS) "/out:$(EXE)" $(LIBS) $(OBJS)
+> -<<
+> -
+> -clean :
+> -       del /Q $(OBJS) $(EXE) *.idb *.pdb
+> -
+> -.c.obj::
+> -   $(CPP) @<<
+> -   $(CPP_PROJ) $<
+> -<<
+> diff --git a/win/__init__.py b/win/__init__.py
+> deleted file mode 100644
+> index e69de29..0000000
+> diff --git a/win/autodefs.h.in b/win/autodefs.h.in
+> deleted file mode 100644
+> index 760b0df..0000000
+> --- a/win/autodefs.h.in
+> +++ /dev/null
+> @@ -1,31 +0,0 @@
+> -#ifndef AUTODEFS_H
+> -#define AUTODEFS_H
+> -
+> -/*
+> - * Minimum TAP-Win32 version number expected by userspace
+> - *
+> - * The TAP-Win32 version number is defined in tap-win32/SOURCES
+> - */
+> -#define TAP_WIN_COMPONENT_ID "@PRODUCT_TAP_WIN_COMPONENT_ID@"
+> -#define TAP_WIN_MIN_MAJOR @PRODUCT_TAP_WIN_MIN_MAJOR@
+> -#define TAP_WIN_MIN_MINOR @PRODUCT_TAP_WIN_MIN_MINOR@
+> -
+> -/* Friendly name for TAP driver */
+> -#define PRODUCT_TAP_DEVICE_DESCRIPTION "@PRODUCT_TAP_DEVICE_DESCRIPTION@"
+> -
+> -/* Version number of DDK/WDK used to build TAP driver */
+> -#define DDKVER_MAJOR @DDKVER_MAJOR@
+> -
+> -/* Name of package */
+> -#define PACKAGE "@PRODUCT_UNIX_NAME@"
+> -
+> -/* Define to the full name of this package. */
+> -#define PACKAGE_NAME "@PRODUCT_NAME@"
+> -
+> -/* Define to the one symbol short name of this package. */
+> -#define PACKAGE_TARNAME "@PRODUCT_UNIX_NAME@"
+> -
+> -/* Define to the version of this package. */
+> -#define PACKAGE_VERSION "@PRODUCT_VERSION@"
+> -
+> -#endif
+> diff --git a/win/build.py b/win/build.py
+> deleted file mode 100644
+> index 69137f2..0000000
+> --- a/win/build.py
+> +++ /dev/null
+> @@ -1,23 +0,0 @@
+> -import os, sys
+> -from wb import system, config, home_fn, cd_home, cd_service_win32, run_in_vs_shell
+> -
+> -def main():
+> -    """Build openvpn.exe and openvpnserv.exe"""
+> -    cd_home()
+> -    run_in_vs_shell("nmake /f %s" % (home_fn('msvc.mak'),))
+> -    cd_service_win32()
+> -    run_in_vs_shell("nmake /f %s" % ('msvc.mak'))
+> -
+> -def clean():
+> -    """Clean up after openvpn.exe and openvpnserv.exe build"""
+> -    cd_home()
+> -    run_in_vs_shell("nmake /f %s clean" % (home_fn('msvc.mak'),))
+> -    os.chdir("service-win32")
+> -    run_in_vs_shell("nmake /f %s clean" % ('msvc.mak'))
+> -
+> -# if we are run directly, and not loaded as a module
+> -if __name__ == "__main__":
+> -    if len(sys.argv) == 2 and sys.argv[1] == 'clean':
+> -        clean()
+> -    else:
+> -        main()
+> diff --git a/win/build_all.py b/win/build_all.py
+> deleted file mode 100644
+> index 47716a1..0000000
+> --- a/win/build_all.py
+> +++ /dev/null
+> @@ -1,69 +0,0 @@
+> -import getopt, sys
+> -from config_all import main as config_all
+> -from build import main as build_openvpn
+> -from build_ddk import main as build_ddk
+> -from make_dist import main as make_dist
+> -
+> -def Usage():
+> -    '''Show usage information'''
+> -    print "Usage: build_all.py [OPTIONS]..."
+> -    print "Build OpenVPN using Visual Studio tools"
+> -    print
+> -    print " -h, --help         Show this help"
+> -    print " -u, --unsigned     Do not sign the TAP drivers"
+> -    print " -n, --notap                Don't build the TAP driver"
+> -    sys.exit(1)
+> -
+> -def main(config):
+> -
+> -    # Do a signed build by default
+> -    signedBuild=True
+> -
+> -    # Build the TAP driver by default
+> -    tap=True
+> -
+> -    # Parse the command line argument(s)
+> -    try:
+> -       opts, args = getopt.getopt(sys.argv[1:], "hun", ["help", "unsigned", "notap"])
+> -    except getopt.GetoptError:
+> -       Usage()
+> -
+> -    for o, a in opts:
+> -       if o in ("-h","--help"):
+> -          Usage()
+> -       if o in ("-u", "--unsigned"):
+> -          signedBuild=False
+> -       if o in ("-n", "--notap"):
+> -          tap=False
+> -
+> -    # Check if the SignTool module is present. This avoids ImportErrors popping
+> -    # up annoyingly _after_ the build.
+> -    if signedBuild:
+> -       try:
+> -          from signtool import SignTool
+> -       except (ImportError):
+> -          print "ERROR: SignTool python module not found! Can't do a signed build."
+> -          sys.exit(1)
+> -    else:
+> -       print "Doing an unsigned build as requested"
+> -
+> -    # Start the build
+> -    config_all(config)
+> -    build_openvpn()
+> -
+> -    if tap:
+> -       build_ddk(config, 'tap', 'all')
+> -       build_ddk(config, 'tapinstall', 'all')
+> -       if signedBuild:
+> -          sign(config, 'all')
+> -       make_dist(config,tap=True)
+> -
+> -    else:
+> -       if 'TAP_PREBUILT' in config:
+> -          print "Using prebuilt TAP driver"
+> -          make_dist(config,tap=False)
+> -
+> -# if we are run directly, and not loaded as a module
+> -if __name__ == "__main__":
+> -    from wb import config
+> -    main(config)
+> diff --git a/win/build_ddk.py b/win/build_ddk.py
+> deleted file mode 100644
+> index a197bf5..0000000
+> --- a/win/build_ddk.py
+> +++ /dev/null
+> @@ -1,55 +0,0 @@
+> -import os
+> -from wb import system, home_fn, choose_arch
+> -
+> -def build_ddk(config, dir, x64):
+> -    ddk_path = config['DDK_PATH']
+> -    ddk_major = int(config['DDKVER_MAJOR'])
+> -    debug = 'PRODUCT_TAP_DEBUG' in config
+> -    return build_tap(ddk_path, ddk_major, debug, dir, x64)
+> -
+> -def build_tap(ddk_path, ddk_major, debug, dir, x64):
+> -    """Build drivers using WinDDK tools"""
+> -    setenv_bat = os.path.realpath(os.path.join(ddk_path, 'bin/setenv.bat'))
+> -    target = 'chk' if debug else 'fre'
+> -    if x64:
+> -        target += ' x64'
+> -    else:
+> -        target += ' x86'
+> -    if ddk_major >= 7600:
+> -        if x64:
+> -            target += ' wlh'  # vista
+> -        else:
+> -            target += ' wnet' # server 2003
+> -    else:
+> -        if x64:
+> -            target += ' wnet' # server 2003
+> -        else:
+> -            target += ' w2k'  # 2000
+> -
+> -    system('cmd /c "%s %s %s && cd %s && build -cef"' % (
+> -           setenv_bat,
+> -           os.path.realpath(ddk_path),
+> -           target,
+> -           dir
+> -           ))
+> -
+> -def main(config, proj, arch):
+> -    if proj == 'tap':
+> -        dir = home_fn('tap-win32')
+> -    elif proj == 'tapinstall':
+> -        dir = home_fn('tapinstall')
+> -    else:
+> -        raise ValueError("unknown project: %s" % (proj,))
+> -
+> -    for x64 in choose_arch(arch):
+> -        build_ddk(config, dir, x64)
+> -
+> -# if we are run directly, and not loaded as a module
+> -if __name__ == "__main__":
+> -    import sys
+> -    from wb import config
+> -    if len(sys.argv) >= 3:
+> -        main(config, sys.argv[1], sys.argv[2])
+> -    else:
+> -        print "usage: build <tap|tapinstall> <x64|x86|all>"
+> -        sys.exit(2)
+> diff --git a/win/build_exe.py b/win/build_exe.py
+> deleted file mode 100644
+> index dae4825..0000000
+> --- a/win/build_exe.py
+> +++ /dev/null
+> @@ -1,15 +0,0 @@
+> -from config import main as config_main
+> -from build import main as build_openvpn
+> -from build_ddk import main as build_ddk
+> -from sign import main as sign
+> -from make_dist import main as make_dist
+> -
+> -def main(config):
+> -    config_main(config)
+> -    build_openvpn()
+> -    make_dist(config, tap=False)
+> -
+> -# if we are run directly, and not loaded as a module
+> -if __name__ == "__main__":
+> -    from wb import config
+> -    main(config)
+> diff --git a/win/config.h.in b/win/config.h.in
+> deleted file mode 100644
+> index fcb8d6c..0000000
+> --- a/win/config.h.in
+> +++ /dev/null
+> @@ -1,363 +0,0 @@
+> -/*
+> - *  OpenVPN -- An application to securely tunnel IP networks
+> - *             over a single UDP port, with support for SSL/TLS-based
+> - *             session authentication and key exchange,
+> - *             packet encryption, packet authentication, and
+> - *             packet compression.
+> - *
+> - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
+> - *
+> - *  This program is free software; you can redistribute it and/or modify
+> - *  it under the terms of the GNU General Public License version 2
+> - *  as published by the Free Software Foundation.
+> - *
+> - *  This program is distributed in the hope that it will be useful,
+> - *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+> - *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> - *  GNU General Public License for more details.
+> - *
+> - *  You should have received a copy of the GNU General Public License
+> - *  along with this program (see the file COPYING included with this
+> - *  distribution); if not, write to the Free Software Foundation, Inc.,
+> - *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+> - */
+> -
+> -/*
+> - * Configuration header for Win32 using the MSVC environment.
+> - */
+> -
+> -#ifndef OPENVPN_CONFIG_H
+> -#define OPENVPN_CONFIG_H
+> -
+> -#include <windows.h>
+> -#include <winsock2.h>
+> -#include "autodefs.h" /* machine generated */
+> -
+> -//#define sleep(x) Sleep((x)*1000)
+> -
+> -//#define random rand
+> -//#define srandom srand
+> -
+> -typedef unsigned long in_addr_t;
+> -
+> -#ifndef _SSIZE_T_
+> -#define _SSIZE_T_
+> - typedef unsigned int ssize_t;
+> -#endif
+> -
+> -/* Append a label to program startup title */
+> -/*#define DEBUG_LABEL "DEBUG1"*/
+> -
+> -/* Should we print debug info from driver? */
+> -#ifdef PRODUCT_TAP_DEBUG
+> -#define TAP_WIN32_DEBUG
+> -#endif
+> -
+> -/* Enable reading credentials from a file */
+> -#if @ENABLE_PASSWORD_SAVE@ != 0
+> -#define ENABLE_PASSWORD_SAVE @ENABLE_PASSWORD_SAVE@
+> -#endif
+> -
+> -/* Enable client/server capability */
+> -#if @ENABLE_CLIENT_SERVER@ != 0
+> -#define ENABLE_CLIENT_SERVER @ENABLE_CLIENT_SERVER@
+> -#endif
+> -
+> -/* Enable client capability only */
+> -#if @ENABLE_CLIENT_ONLY@ != 0
+> -#define ENABLE_CLIENT_ONLY @ENABLE_CLIENT_ONLY@
+> -#endif
+> -
+> -/* Enable management server capability */
+> -#if @ENABLE_MANAGEMENT@ != 0
+> -#define ENABLE_MANAGEMENT @ENABLE_MANAGEMENT@
+> -#endif
+> -
+> -/* Enable PKCS#11 support */
+> -#if @USE_PKCS11@ != 0
+> -#define USE_PKCS11 1
+> -#endif
+> -
+> -/* Enable HTTP proxy support */
+> -#if @ENABLE_HTTP_PROXY@ != 0
+> -#define ENABLE_HTTP_PROXY @ENABLE_HTTP_PROXY@
+> -#endif
+> -
+> -/* Enable Socks proxy support */
+> -#if @ENABLE_SOCKS@ != 0
+> -#define ENABLE_SOCKS @ENABLE_SOCKS@
+> -#endif
+> -
+> -/* Enable internal fragmentation support */
+> -#if @ENABLE_FRAGMENT@ != 0
+> -#define ENABLE_FRAGMENT @ENABLE_FRAGMENT@
+> -#endif
+> -
+> -/* Enable smaller executable size */
+> -/* #undef ENABLE_SMALL */
+> -
+> -/* Enable debugging support */
+> -#if @ENABLE_DEBUG@ != 0
+> -#define ENABLE_DEBUG @ENABLE_DEBUG@
+> -#endif
+> -
+> -/* if defined, will allow usage of the --plugin directive */
+> -#define USE_LOAD_LIBRARY
+> -
+> -/* Dimension size to use for empty array declaration */
+> -#define EMPTY_ARRAY_SIZE 0
+> -
+> -/* Define to 1 if you have the `getsockname' function. */
+> -#define HAVE_GETSOCKNAME 1
+> -
+> -/* Define to 1 if you have the <openssl/engine.h> header file. */
+> -#define HAVE_OPENSSL_ENGINE_H 1
+> -
+> -/* Define to 1 if you have the `ENGINE_load_builtin_engines' function. */
+> -#define HAVE_ENGINE_LOAD_BUILTIN_ENGINES 1
+> -
+> -/* Define to 1 if you have the `ENGINE_register_all_complete' function. */
+> -#define HAVE_ENGINE_REGISTER_ALL_COMPLETE 1
+> -
+> -/* Define to 1 if you have the `ENGINE_cleanup' function. */
+> -#define HAVE_ENGINE_CLEANUP 1
+> -
+> -/* gettimeofday() is implemented in otime.c for Windows */
+> -#define HAVE_GETTIMEOFDAY 1
+> -
+> -/* Define to 1 if you have the 'chsize' function. */
+> -#define HAVE_CHSIZE 1
+> -
+> -/* Define to 1 if you have the `chdir' function. */
+> -#define HAVE_CHDIR 1
+> -
+> -/* Define to 1 if your compiler supports GNU GCC-style variadic macros */
+> -#ifndef _MSC_VER /* Defines MSFT compiler version. Defined as 1200 for MSVC++ 6.0. */
+> -#define HAVE_CPP_VARARG_MACRO_GCC 1
+> -#endif
+> -
+> -/* Define to 1 if you have the <ctype.h> header file. */
+> -#define HAVE_CTYPE_H 1
+> -
+> -/* Define to 1 if you have the <errno.h> header file. */
+> -#define HAVE_ERRNO_H 1
+> -
+> -/* Define to 1 if you have the `EVP_CIPHER_CTX_set_key_length' function. */
+> -#define HAVE_EVP_CIPHER_CTX_SET_KEY_LENGTH 1
+> -
+> -/* Define to 1 if you have the <fcntl.h> header file. */
+> -#define HAVE_FCNTL_H 1
+> -
+> -/* Define to 1 if you have the `getsockopt' function. */
+> -#define HAVE_GETSOCKOPT 1
+> -
+> -/* Define to 1 if you have the `inet_ntoa' function. */
+> -#define HAVE_INET_NTOA 1
+> -
+> -/* Define to 1 if your system has a GNU libc compatible `malloc' function, and
+> -   to 0 otherwise. */
+> -#define HAVE_MALLOC 1
+> -
+> -/* Define to 1 if you have the `memset' function. */
+> -#define HAVE_MEMSET 1
+> -
+> -/* Define to 1 if you have the `setsockopt' function. */
+> -#define HAVE_SETSOCKOPT 1
+> -
+> -/* Define to 1 if you have the `socket' function. */
+> -#define HAVE_SOCKET 1
+> -
+> -/* Define to 1 if you have the <stdarg.h> header file. */
+> -#define HAVE_STDARG_H 1
+> -
+> -/* Define to 1 if you have the <stdint.h> header file. */
+> -#ifndef _MSC_VER
+> -#define HAVE_STDINT_H 1
+> -#endif
+> -
+> -/* Define to 1 if you have the <stdio.h> header file. */
+> -#define HAVE_STDIO_H 1
+> -
+> -/* Define to 1 if you have the <stdlib.h> header file. */
+> -#define HAVE_STDLIB_H 1
+> -
+> -/* Define to 1 if you have the `strerror' function. */
+> -#define HAVE_STRERROR 1
+> -
+> -/* Define to 1 if you have the <strings.h> header file. */
+> -#define HAVE_STRINGS_H 1
+> -
+> -/* Define to 1 if you have the <string.h> header file. */
+> -#define HAVE_STRING_H 1
+> -
+> -/* Define to 1 if you have the `system' function. */
+> -#define HAVE_SYSTEM 1
+> -
+> -/* Define to 1 if you have the <sys/file.h> header file. */
+> -#ifndef _MSC_VER
+> -#define HAVE_SYS_FILE_H 1
+> -#endif
+> -
+> -/* Define to 1 if you have the <sys/stat.h> header file. */
+> -#define HAVE_SYS_STAT_H 1
+> -
+> -/* Define to 1 if you have the <sys/time.h> header file. */
+> -#ifndef _MSC_VER
+> -#define HAVE_SYS_TIME_H 1
+> -#endif
+> -
+> -/* Define to 1 if you have the <sys/types.h> header file. */
+> -#define HAVE_SYS_TYPES_H 1
+> -
+> -/* Define to 1 if you have the `time' function. */
+> -#define HAVE_TIME 1
+> -
+> -/* Define to 1 if you have the <unistd.h> header file. */
+> -#ifndef _MSC_VER
+> -#define HAVE_UNISTD_H 1
+> -#endif
+> -
+> -/* Define to 1 if you have the `vsnprintf' function. */
+> -#define HAVE_VSNPRINTF 1
+> -
+> -/* Special Windows version of getpass() defined in io.c */
+> -#define HAVE_GETPASS 1
+> -
+> -
+> -/* The POSIX access() function is available, but requires
+> - * _CRT_NONSTDC_NO_WARNINGS and _CRT_SECURE_NO_WARNINGS
+> - * to be defined
+> - */
+> -#define HAVE_ACCESS 1
+> -
+> -/* Macros used by the POSIX access() function might not be available on Windows.
+> - * Based on information found here:
+> - * http://msdn.microsoft.com/en-us/library/1w06ktdy%28v=vs.80%29.aspx
+> - */
+> -#ifndef R_OK
+> -#define R_OK 4
+> -#endif
+> -
+> -#ifndef W_OK
+> -#define W_OK 2
+> -#endif
+> -
+> -#ifndef X_OK
+> -#define X_OK 0
+> -#endif
+> -
+> -#ifndef F_OK
+> -#define F_OK 0
+> -#endif
+> -
+> -
+> -/* Define to the full name and version of this package. */
+> -#ifdef DEBUG_LABEL
+> -#define PACKAGE_STRING PACKAGE_NAME " " PACKAGE_VERSION " " DEBUG_LABEL
+> -#else
+> -#define PACKAGE_STRING PACKAGE_NAME " " PACKAGE_VERSION
+> -#endif
+> -
+> -/* Define as the return type of signal handlers (`int' or `void'). */
+> -#define RETSIGTYPE void
+> -
+> -/* The size of a `unsigned int', as computed by sizeof. */
+> -#define SIZEOF_UNSIGNED_INT 4
+> -
+> -/* The size of a `unsigned long', as computed by sizeof. */
+> -#define SIZEOF_UNSIGNED_LONG 4
+> -
+> -/* Define to 1 if you have the ANSI C header files. */
+> -#define STDC_HEADERS 1
+> -
+> -/* A string representing our target */
+> -#ifdef _MSC_VER
+> -#define TARGET_ALIAS "Win32-MSVC++"
+> -#else
+> -#define TARGET_ALIAS "Win32-MinGW"
+> -#endif
+> -
+> -/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
+> -#ifndef _MSC_VER
+> -#define TIME_WITH_SYS_TIME 1
+> -#endif
+> -
+> -/* Use the PolarSSL crypto library */
+> -#if @USE_POLARSSL@ != 0
+> -#define USE_POLARSSL 1
+> -#endif
+> -
+> -/* Use the OpenSSL crypto library */
+> -#if @USE_OPENSSL@ != 0
+> -#define USE_OPENSSL 1
+> -#endif
+> -
+> -/* Use the crypto library */
+> -#define USE_CRYPTO 1
+> -
+> -/* Use LZO compression library */
+> -#define USE_LZO 1
+> -
+> -/* LZO version number */
+> -#define LZO_VERSION_NUM "2"
+> -
+> -/* Use lzo/ directory prefix for LZO header files (for LZO 2.0) */
+> -#define LZO_HEADER_DIR 1
+> -
+> -/* Use the SSL library */
+> -#define USE_SSL 1
+> -
+> -/* Version number of package */
+> -#define VERSION PACKAGE_VERSION
+> -
+> -/* Define as `__inline' if that's what the C compiler calls it, or to nothing
+> -   if it is not supported. */
+> -#define inline __inline
+> -
+> -/* type to use in place of socklen_t if not defined */
+> -/*#define socklen_t unsigned int*/
+> -
+> -#ifndef __MINGW32__
+> -/* 32-bit unsigned type */
+> -#define uint32_t unsigned int
+> -
+> -/* 16-bit unsigned type */
+> -#define uint16_t unsigned short
+> -
+> -/* 8-bit unsigned type */
+> -#define uint8_t unsigned char
+> -#endif /* __MINGW32__ */
+> -
+> -/* Route command */
+> -#define ROUTE_PATH "route"
+> -
+> -#ifdef _MSC_VER
+> -/* MSVC++ hacks */
+> -#pragma warning(disable:4244) // conversion from 'foo' to 'bar', possible loss of data
+> -#pragma warning(disable:4018) // signed/unsigned mismatch
+> -#include <io.h>
+> -#include <direct.h>
+> -//#define vsnprintf _vsnprintf
+> -//#define vsnwprintf _vsnwprintf
+> -#define snwprintf _snwprintf
+> -#define write _write
+> -#define open _open
+> -#define read _read
+> -#define close _close
+> -#define lseek _lseek
+> -#define chdir _chdir
+> -#define strdup _strdup
+> -#define strcasecmp _stricmp
+> -#define chsize _chsize
+> -#define S_IRUSR 0
+> -#define S_IWUSR 0
+> -#define TV_SEC_CAST (long)
+> -#define TV_USEC_CAST (long)
+> -typedef int intptr_t;
+> -/* Visual Studio 2005 supports vararg macros */
+> -#if _MSC_VER >= 1400
+> -#define HAVE_CPP_VARARG_MACRO_ISO 1
+> -#endif
+> -#endif
+> -
+> -#endif /* OPENVPN_CONFIG_H */
+> diff --git a/win/config.py b/win/config.py
+> deleted file mode 100644
+> index b820510..0000000
+> --- a/win/config.py
+> +++ /dev/null
+> @@ -1,21 +0,0 @@
+> -from wb import preprocess, autogen, mod_fn, home_fn, build_config_h, build_configure_h, build_version_m4_vars, build_autodefs, make_headers_objs, dict_def
+> -
+> -def main(config):
+> -    build_config_h(config)
+> -    build_configure_h(config, mod_fn(home_fn('configure.h')), head_comment='/* %s */\n\n' % autogen)
+> -    build_version_m4_vars(mod_fn(mod_fn('version_m4_vars.tmp')), head_comment='/* %s */\n\n' % autogen)
+> -    build_autodefs(config, mod_fn('autodefs.h.in'), home_fn('autodefs.h'))
+> -    ho = make_headers_objs(home_fn('Makefile.am'))
+> -
+> -    preprocess(dict_def(config, [('HEADERS_OBJS', ho)]),
+> -               in_fn=mod_fn('msvc.mak.in'),
+> -               out_fn=home_fn('msvc.mak'),
+> -               quote_begin='@',
+> -               quote_end='@',
+> -               if_prefix='!',
+> -               head_comment='# %s\n\n' % autogen)
+> -
+> -# if we are run directly, and not loaded as a module
+> -if __name__ == "__main__":
+> -    from wb import config
+> -    main(config)
+> diff --git a/win/config_all.py b/win/config_all.py
+> deleted file mode 100644
+> index ba6affe..0000000
+> --- a/win/config_all.py
+> +++ /dev/null
+> @@ -1,13 +0,0 @@
+> -from config import main as config_main
+> -from config_tap import main as config_tap
+> -from config_ti import main as config_ti
+> -
+> -def main(config):
+> -    config_main(config)
+> -    config_tap(config)
+> -    config_ti(config)
+> -
+> -# if we are run directly, and not loaded as a module
+> -if __name__ == "__main__":
+> -    from wb import config
+> -    main(config)
+> diff --git a/win/config_tap.py b/win/config_tap.py
+> deleted file mode 100644
+> index a5b1d6c..0000000
+> --- a/win/config_tap.py
+> +++ /dev/null
+> @@ -1,35 +0,0 @@
+> -import os
+> -from wb import preprocess, home_fn, autogen, dict_def
+> -
+> -def main(config):
+> -    preprocess(config,
+> -               in_fn=home_fn('tap-win32/SOURCES.in'),
+> -               out_fn=home_fn('tap-win32/SOURCES'),
+> -               quote_begin='@@',
+> -               quote_end='@@',
+> -               head_comment='# %s\n\n' % autogen)
+> -
+> -    preprocess(config,
+> -               in_fn=home_fn('tap-win32/i386/OemWin2k.inf.in'),
+> -               out_fn=home_fn('tap-win32/i386/OemWin2k.inf'),
+> -               quote_begin='@@',
+> -               quote_end='@@',
+> -               if_prefix='!',
+> -               head_comment='; %s\n\n' % autogen)
+> -
+> -    try:
+> -        os.mkdir(home_fn('tap-win32/amd64'))
+> -    except:
+> -        pass
+> -    preprocess(dict_def(config, [('AMD64', '1')]),
+> -               in_fn=home_fn('tap-win32/i386/OemWin2k.inf.in'),
+> -               out_fn=home_fn('tap-win32/amd64/OemWin2k.inf'),
+> -               quote_begin='@@',
+> -               quote_end='@@',
+> -               if_prefix='!',
+> -               head_comment='; %s\n\n' % autogen)
+> -
+> -# if we are run directly, and not loaded as a module
+> -if __name__ == "__main__":
+> -    from wb import config
+> -    main(config)
+> diff --git a/win/config_ti.py b/win/config_ti.py
+> deleted file mode 100644
+> index 8742caa..0000000
+> --- a/win/config_ti.py
+> +++ /dev/null
+> @@ -1,18 +0,0 @@
+> -import os, shutil
+> -from wb import preprocess, home_fn, autogen
+> -
+> -def main(config):
+> -    src = os.path.join(home_fn(config['TISRC']), config['DDKVER_MAJOR'])
+> -    dest = home_fn('tapinstall')
+> -    shutil.rmtree(dest, ignore_errors=True)
+> -    shutil.copytree(src, dest)
+> -    preprocess(config,
+> -               in_fn=os.path.join(src, 'sources'),
+> -               out_fn=os.path.join(dest, 'sources'),
+> -               if_prefix='!',
+> -               head_comment='# %s\n\n' % autogen)
+> -
+> -# if we are run directly, and not loaded as a module
+> -if __name__ == "__main__":
+> -    from wb import config
+> -    main(config)
+> diff --git a/win/js.py b/win/js.py
+> deleted file mode 100644
+> index d1d4db3..0000000
+> --- a/win/js.py
+> +++ /dev/null
+> @@ -1,10 +0,0 @@
+> -import json
+> -
+> -# usage:
+> -#   print JSON().encode(kv)
+> -
+> -class JSON(json.JSONEncoder):
+> -    def __init__(self, **kwargs):
+> -        args = dict(sort_keys=True, indent=2)
+> -        args.update(kwargs)
+> -        json.JSONEncoder.__init__(self, **args)
+> diff --git a/win/make_dist.py b/win/make_dist.py
+> deleted file mode 100644
+> index edb0e6a..0000000
+> --- a/win/make_dist.py
+> +++ /dev/null
+> @@ -1,107 +0,0 @@
+> -import os
+> -from wb import home_fn, rm_rf, mkdir, cp_a, cp, rename, run_in_vs_shell
+> -
+> -def main(config, tap=True):
+> -    dist = config['DIST']
+> -    assert dist
+> -    dist = home_fn(dist)
+> -    bin = os.path.join(dist, 'bin')
+> -    i386 = os.path.join(dist, 'i386')
+> -    amd64 = os.path.join(dist, 'amd64')
+> -    samples = os.path.join(dist, 'samples')
+> -
+> -    # build dist and subdirectories
+> -    rm_rf(dist)
+> -    mkdir(dist)
+> -    mkdir(bin)
+> -    mkdir(i386)
+> -    mkdir(amd64)
+> -    mkdir(samples)
+> -
+> -    # copy openvpn.exe, openvpnserv.exe and their manifests
+> -    cp(home_fn('openvpn.exe'), bin)
+> -    cp(home_fn('openvpn.exe.manifest'), bin)
+> -    cp(home_fn('service-win32/openvpnserv.exe'), bin)
+> -    cp(home_fn('service-win32/openvpnserv.exe.manifest'), bin)
+> -
+> -    # copy openvpn-gui
+> -    cp(home_fn(config['OPENVPN_GUI_DIR']+"/"+config['OPENVPN_GUI']), bin)
+> -
+> -    # copy DLL dependencies
+> -    cp(home_fn(config['LZO_DIR']+'/bin/lzo2.dll'), bin)
+> -    cp(home_fn(config['LZO_DIR']+'/bin/lzo2.dll.manifest'), bin)
+> -    cp(home_fn(config['OPENSSL_DIR']+'/bin/libeay32.dll'), bin)
+> -    cp(home_fn(config['OPENSSL_DIR']+'/bin/ssleay32.dll'), bin)
+> -    cp(home_fn(config['PKCS11_HELPER_DIR']+'/lib/libpkcs11-helper-1.dll'), bin)
+> -    cp(home_fn(config['PKCS11_HELPER_DIR']+'/lib/libpkcs11-helper-1.dll.manifest'), bin)
+> -
+> -    # copy OpenSSL utilities (=openvpn.exe)
+> -    cp(home_fn(config['OPENSSL_DIR']+'/bin/openssl.exe'), bin)
+> -
+> -    # copy sample config files; renaming is necessary due to openvpn.nsi script
+> -    cp(home_fn('install-win32/sample.ovpn'), samples)
+> -    cp(home_fn('sample-config-files/client.conf'), samples)
+> -    cp(home_fn('sample-config-files/server.conf'), samples)
+> -    rename(os.path.join(samples,'client.conf'), os.path.join(samples, 'client.ovpn'))
+> -    rename(os.path.join(samples,'server.conf'), os.path.join(samples, 'server.ovpn'))
+> -
+> -    # embed manifests to executables and DLLs
+> -    for f in [ "openvpn.exe", "openvpnserv.exe", "lzo2.dll", "libpkcs11-helper-1.dll" ]:
+> -
+> -        outputresource = os.path.join(bin,f)
+> -        manifest = outputresource+".manifest"
+> -
+> -        # EXEs and DLLs require slightly different treatment
+> -        if f.endswith(".exe"):
+> -            type = "1"
+> -        elif f.endswith(".dll"):
+> -            type = "2"
+> -        else:
+> -            print "ERROR: Could not embed manifest to "+outputresouce+", bailing out."
+> -            sys.exit(1)
+> -
+> -        # Embed the manifest
+> -        run_in_vs_shell('mt.exe -manifest %s -outputresource:%s;%s' % (manifest, outputresource, type))
+> -
+> -    # copy MSVC CRT
+> -    cp_a(home_fn(config['MSVC_CRT']), bin)
+> -
+> -    # TAP-driver and tapinstall.exe were built, so copy those over
+> -    if tap:
+> -        drv_dir = 'tap-win32'
+> -        ti_dir = 'tapinstall'
+> -
+> -    # we're using prebuilt TAP-driver and tapinstall.exe
+> -    elif 'TAP_PREBUILT' in config:
+> -        drv_dir = config['TAP_PREBUILT']
+> -        ti_dir = config['TAP_PREBUILT']
+> -
+> -    else:
+> -        print "ERROR: Could not find prebuilt TAP-drivers or tapinstall.exe. Please check win/settings.in"
+> -        sys.exit(1)
+> -
+> -    # copy TAP drivers
+> -    for dir_name, dest in (('amd64', amd64), ('i386', i386)):
+> -        dir = home_fn(os.path.join(drv_dir, dir_name))
+> -        for dirpath, dirnames, filenames in os.walk(dir):
+> -            for f in filenames:
+> -                root, ext = os.path.splitext(f)
+> -                if ext in ('.inf', '.cat', '.sys'):
+> -                    cp(os.path.join(dir, f), dest)
+> -            break
+> -
+> -    # Copy tapinstall.exe (usually known as devcon.exe)
+> -    dest = {'amd64' : amd64, 'i386' : i386}
+> -    for dirpath, dirnames, filenames in os.walk(home_fn(ti_dir)):
+> -        for f in filenames:
+> -            if f in ( 'devcon.exe', 'tapinstall.exe' ):
+> -                dir_name = os.path.basename(dirpath)
+> -                src = os.path.join(dirpath, f)
+> -                dst = os.path.join(dest[dir_name],'tapinstall.exe')
+> -                if dir_name in dest:
+> -                    cp(src, dst, dest_is_dir=False)
+> -
+> -# if we are run directly, and not loaded as a module
+> -if __name__ == "__main__":
+> -    from wb import config
+> -    main(config)
+> diff --git a/win/msvc.mak.in b/win/msvc.mak.in
+> deleted file mode 100644
+> index 43c3335..0000000
+> --- a/win/msvc.mak.in
+> +++ /dev/null
+> @@ -1,69 +0,0 @@
+> -# This makefile builds the user-mode component of OpenVPN for Windows in the
+> -# Visual Studio 2008 environment. Note that this file is basis for the real
+> -# makefile (..\msvc.mak) but unusable as is. The real makefile is automatically
+> -# generated during the build process by the Python build scripts.
+> -#
+> -# A few details are in order:
+> -#
+> -# - Everything between @<< and << is inserted into a s.c. "in-line file". This
+> -#   file drives the linker (link.exe).
+> -# - HEADERS_OBJS is expanded to all all header and source files listed in
+> -#  ..\Makefile.am
+> -# - OPENSSL_DIR and LZO_DIR are dynamically created from settings.in
+> -
+> -OPENSSL = @OPENSSL_DIR@
+> -!ifdef INCLUDE_OPENSSL
+> -OPENSSL_DYNAMIC = libeay32.lib ssleay32.lib
+> -!endif
+> -
+> -POLARSSL = @POLARSSL_DIR@
+> -!ifdef INCLUDE_POLARSSL
+> -POLARSSL_DYNAMIC = polarssl.lib
+> -!endif
+> -
+> -PKCS11_HELPER = @PKCS11_HELPER_DIR@
+> -!ifdef INCLUDE_PKCS11
+> -PKCS11_HELPER_DYNAMIC = pkcs11-helper.lib
+> -!endif
+> -
+> -LZO = @LZO_DIR@
+> -LZO_DYNAMIC = lzo2.lib
+> -
+> -INCLUDE_DIRS = -I$(OPENSSL)/include -I$(POLARSSL)/include -I$(LZO)/include -I$(PKCS11_HELPER)/include
+> -
+> -LIBS = $(OPENSSL_DYNAMIC) $(POLARSSL_DYNAMIC) $(PKCS11_HELPER_DYNAMIC) $(LZO_DYNAMIC) ws2_32.lib crypt32.lib iphlpapi.lib winmm.lib user32.lib gdi32.lib advapi32.lib wininet.lib shell32.lib
+> -
+> -LIB_DIRS = -LIBPATH:$(OPENSSL)\lib -LIBPATH:$(POLARSSL)\build\library -LIBPATH:$(PKCS11_HELPER)\lib -LIBPATH:$(LZO)\lib
+> -
+> -EXE = openvpn.exe
+> -
+> -CPP=cl.exe
+> -CPP_ARG_COMMON=/nologo /W3 -DWIN32 -DWIN32_LEAN_AND_MEAN -DWINVER=0x0501 -D_CONSOLE -D_MBCS -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS $(INCLUDE_DIRS) /FD /c
+> -
+> -LINK32=link.exe
+> -
+> -!ifdef PRODUCT_OPENVPN_DEBUG
+> -# debug:
+> -CPP_PROJ=$(CPP_ARG_COMMON) /MD /Z7
+> -LINK32_FLAGS=/nologo /subsystem:console /incremental:no /opt:ref /opt:icf /debug
+> -!else
+> -# release:
+> -CPP_PROJ=$(CPP_ARG_COMMON) /O2 /MD -DNDEBUG
+> -LINK32_FLAGS=/nologo /subsystem:console /incremental:no
+> -!endif
+> -
+> -# HEADERS and OBJS definitions, automatically generated from ../Makefile.am
+> -@...1658...@
+> -
+> -openvpn : $(OBJS)
+> -       $(LINK32) @<<
+> -       $(LINK32_FLAGS) "/out:$(EXE)" $(LIB_DIRS) $(LIBS) $(OBJS)
+> -<<
+> -
+> -clean :
+> -       del /Q $(OBJS) $(EXE) *.idb *.pdb
+> -
+> -.c.obj::
+> -   $(CPP) @<<
+> -   $(CPP_PROJ) $<
+> -<<
+> diff --git a/win/openvpn.nsi b/win/openvpn.nsi
+> deleted file mode 100755
+> index 4167c89..0000000
+> --- a/win/openvpn.nsi
+> +++ /dev/null
+> @@ -1,822 +0,0 @@
+> -; ****************************************************************************
+> -; * Copyright (C) 2002-2010 OpenVPN Technologies, Inc.                       *
+> -; *  This program is free software; you can redistribute it and/or modify    *
+> -; *  it under the terms of the GNU General Public License version 2          *
+> -; *  as published by the Free Software Foundation.                           *
+> -; ****************************************************************************
+> -
+> -; OpenVPN install script for Windows, using NSIS
+> -
+> -; Start menu entries don't get uninstalled properly on Windows Vista/7 unless we
+> -; explicitly state that the installer requires admin privileges. This is
+> -; caused by backwards compatibility tricks used on those platforms. For details,
+> -; see http://nsis.sourceforge.net/Shortcuts_removal_fails_on_Windows_Vista
+> -RequestExecutionLevel admin
+> -
+> -SetCompressor lzma
+> -
+> -!include "MUI.nsh"
+> -
+> -# Include basic build settings
+> -!include "settings.in"
+> -
+> -# Include variables generated dynamically from version.m4 by wb.py
+> -!include "version_m4_vars.tmp"
+> -
+> -;!include "guidefs.nsi"
+> -!include "setpath.nsi"
+> -
+> -!ifdef EXTRACT_FILES
+> -!include "MultiFileExtract.nsi"
+> -!endif
+> -
+> -!define GEN "..\dist"
+> -!define BIN "${GEN}\bin"
+> -!define EASYRSA "..\easy-rsa"
+> -
+> -!define PRODUCT_ICON "icon.ico"
+> -
+> -!ifdef PRODUCT_TAP_DEBUG
+> -!define DBG_POSTFIX "-DBG"
+> -!else
+> -!define DBG_POSTFIX ""
+> -!endif
+> -
+> -!define VERSION "${PRODUCT_VERSION}${DBG_POSTFIX}"
+> -
+> -!define TAP "${PRODUCT_TAP_WIN_COMPONENT_ID}"
+> -!define TAPDRV "${TAP}.sys"
+> -
+> -; Default service settings
+> -!define SERV_CONFIG_DIR   "$INSTDIR\config"
+> -!define SERV_CONFIG_EXT   "${PRODUCT_FILE_EXT}"
+> -!define SERV_EXE_PATH     "$INSTDIR\bin\${PRODUCT_UNIX_NAME}.exe"
+> -!define SERV_LOG_DIR      "$INSTDIR\log"
+> -!define SERV_PRIORITY     "NORMAL_PRIORITY_CLASS"
+> -!define SERV_LOG_APPEND   "0"
+> -
+> -;--------------------------------
+> -;Configuration
+> -
+> -  ;General
+> -
+> -  OutFile "${GEN}\${PRODUCT_UNIX_NAME}-${VERSION}${OUTFILE_LABEL}-install.exe"
+> -
+> -  ShowInstDetails show
+> -  ShowUninstDetails show
+> -
+> -  ;Folder selection page
+> -  InstallDir "$PROGRAMFILES\${PRODUCT_NAME}"
+> -
+> -  ;Remember install folder
+> -  InstallDirRegKey HKCU "Software\${PRODUCT_NAME}" ""
+> -
+> -;--------------------------------
+> -;Modern UI Configuration
+> -
+> -  Name "${PRODUCT_NAME} ${VERSION} ${TITLE_LABEL}"
+> -
+> -  !define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of ${PRODUCT_NAME}, an Open Source VPN package by James Yonan.\r\n\r\nNote that the Windows version of ${PRODUCT_NAME} only runs on XP, or higher.\r\n\r\n\r\n"
+> -
+> -  !define MUI_COMPONENTSPAGE_TEXT_TOP "Select the components to install/upgrade.  Stop any ${PRODUCT_NAME} processes or the ${PRODUCT_NAME} service if it is running.  All DLLs are installed locally."
+> -
+> -  !define MUI_COMPONENTSPAGE_SMALLDESC
+> -  !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\INSTALL-win32.txt"
+> -  !define MUI_FINISHPAGE_NOAUTOCLOSE
+> -  !define MUI_ABORTWARNING
+> -  !define MUI_ICON "..\images\${PRODUCT_ICON}"
+> -  !define MUI_UNICON "..\images\${PRODUCT_ICON}"
+> -  !define MUI_HEADERIMAGE
+> -  !define MUI_HEADERIMAGE_BITMAP "..\images\install-whirl.bmp"
+> -  !define MUI_UNFINISHPAGE_NOAUTOCLOSE
+> -
+> -  !insertmacro MUI_PAGE_WELCOME
+> -  !insertmacro MUI_PAGE_LICENSE "..\COPYRIGHT.GPL"
+> -  !insertmacro MUI_PAGE_COMPONENTS
+> -  !insertmacro MUI_PAGE_DIRECTORY
+> -  !insertmacro MUI_PAGE_INSTFILES
+> -  !insertmacro MUI_PAGE_FINISH
+> -
+> -  !insertmacro MUI_UNPAGE_CONFIRM
+> -  !insertmacro MUI_UNPAGE_INSTFILES
+> -  !insertmacro MUI_UNPAGE_FINISH
+> -
+> -
+> -;--------------------------------
+> -;Languages
+> -
+> -  !insertmacro MUI_LANGUAGE "English"
+> -
+> -;--------------------------------
+> -;Language Strings
+> -
+> -  LangString DESC_SecOpenVPNUserSpace ${LANG_ENGLISH} "Install ${PRODUCT_NAME} user-space components, including ${PRODUCT_UNIX_NAME}.exe."
+> -
+> -!ifdef USE_GUI
+> -  LangString DESC_SecOpenVPNGUI ${LANG_ENGLISH} "Install ${PRODUCT_NAME} GUI by Mathias Sundman"
+> -!endif
+> -
+> -  LangString DESC_SecOpenVPNEasyRSA ${LANG_ENGLISH} "Install ${PRODUCT_NAME} RSA scripts for X509 certificate management."
+> -
+> -  LangString DESC_SecOpenSSLDLLs ${LANG_ENGLISH} "Install OpenSSL DLLs locally (may be omitted if DLLs are already installed globally)."
+> -
+> -  LangString DESC_SecPKCS11DLLs ${LANG_ENGLISH} "Install PKCS#11 helper DLLs locally (may be omitted if DLLs are already installed globally)."
+> -
+> -  LangString DESC_SecLZO2DLLs ${LANG_ENGLISH} "Install LZO2 DLLs locally (may be omitted if DLLs are already installed globally)."
+> -
+> -  LangString DESC_SecMSVCR90DLL ${LANG_ENGLISH} "Install Microsoft Visual C 9.0 Runtime (may be omitted if it is already installed globally)."
+> -
+> -  LangString DESC_SecTAP ${LANG_ENGLISH} "Install/Upgrade the TAP virtual device driver.  Will not interfere with CIPE."
+> -
+> -  LangString DESC_SecService ${LANG_ENGLISH} "Install the ${PRODUCT_NAME} service wrapper (${PRODUCT_UNIX_NAME}serv.exe)"
+> -
+> -  LangString DESC_SecOpenSSLUtilities ${LANG_ENGLISH} "Install the OpenSSL Utilities (used for generating public/private key pairs)."
+> -
+> -  LangString DESC_SecAddPath ${LANG_ENGLISH} "Add ${PRODUCT_NAME} executable directory to the current user's PATH."
+> -
+> -  LangString DESC_SecAddShortcuts ${LANG_ENGLISH} "Add ${PRODUCT_NAME} shortcuts to the current user's Start Menu."
+> -
+> -  LangString DESC_SecFileAssociation ${LANG_ENGLISH} "Register ${PRODUCT_NAME} config file association (*.${SERV_CONFIG_EXT})"
+> -
+> -;--------------------------------
+> -;Reserve Files
+> -
+> -  ;Things that need to be extracted on first (keep these lines before any File command!)
+> -  ;Only useful for BZIP2 compression
+> -
+> -  ReserveFile "..\images\install-whirl.bmp"
+> -
+> -;--------------------------------
+> -;Macros
+> -
+> -!macro WriteRegStringIfUndef ROOT SUBKEY KEY VALUE
+> -Push $R0
+> -ReadRegStr $R0 "${ROOT}" "${SUBKEY}" "${KEY}"
+> -StrCmp $R0 "" +1 +2
+> -WriteRegStr "${ROOT}" "${SUBKEY}" "${KEY}" '${VALUE}'
+> -Pop $R0
+> -!macroend
+> -
+> -!macro DelRegStringIfUnchanged ROOT SUBKEY KEY VALUE
+> -Push $R0
+> -ReadRegStr $R0 "${ROOT}" "${SUBKEY}" "${KEY}"
+> -StrCmp $R0 '${VALUE}' +1 +2
+> -DeleteRegValue "${ROOT}" "${SUBKEY}" "${KEY}"
+> -Pop $R0
+> -!macroend
+> -
+> -!macro DelRegKeyIfUnchanged ROOT SUBKEY VALUE
+> -Push $R0
+> -ReadRegStr $R0 "${ROOT}" "${SUBKEY}" ""
+> -StrCmp $R0 '${VALUE}' +1 +2
+> -DeleteRegKey "${ROOT}" "${SUBKEY}"
+> -Pop $R0
+> -!macroend
+> -
+> -!macro DelRegKeyIfEmpty ROOT SUBKEY
+> -Push $R0
+> -EnumRegValue $R0 "${ROOT}" "${SUBKEY}" 1
+> -StrCmp $R0 "" +1 +2
+> -DeleteRegKey /ifempty "${ROOT}" "${SUBKEY}"
+> -Pop $R0
+> -!macroend
+> -
+> -;------------------------------------------
+> -;Set reboot flag based on tapinstall return
+> -
+> -Function CheckReboot
+> -  IntCmp $R0 1 "" noreboot noreboot
+> -  IntOp $R0 0 & 0
+> -  SetRebootFlag true
+> -  DetailPrint "REBOOT flag set"
+> - noreboot:
+> -FunctionEnd
+> -
+> -;--------------------------------
+> -;Installer Sections
+> -
+> -Function .onInit
+> -  ClearErrors
+> -
+> -# Verify that user has admin privs
+> -  UserInfo::GetName
+> -  IfErrors ok
+> -  Pop $R0
+> -  UserInfo::GetAccountType
+> -  Pop $R1
+> -  StrCmp $R1 "Admin" ok
+> -    Messagebox MB_OK "Administrator privileges required to install ${PRODUCT_NAME} [$R0/$R1]"
+> -    Abort
+> -  ok:
+> -
+> -# Delete previous start menu
+> -  RMDir /r $SMPROGRAMS\${PRODUCT_NAME}
+> -
+> -# FIXME: reimplement Windows version checking code that was located here, but
+> -# disabled intentionally to avoid Windows 7 issues. This should do it:
+> -#
+> -# http://nsis.sourceforge.net/Get_Windows_version
+> -#
+> -# Blacklisting should be safer than whitelisting used originally.
+> -
+> -FunctionEnd
+> -
+> -!ifndef SF_SELECTED
+> -!define SF_SELECTED 1
+> -!endif
+> -
+> -;--------------------
+> -;Pre-install section
+> -
+> -Section -pre
+> -
+> -  ; Stop OpenVPN if currently running
+> -  DetailPrint "Previous Service REMOVE (if exists)"
+> -  nsExec::ExecToLog '"$INSTDIR\bin\${PRODUCT_UNIX_NAME}serv.exe" -remove'
+> -  Pop $R0 # return value/error/timeout
+> -
+> -  Sleep 3000
+> -
+> -  # Fix for Trac ticket 120. Remove after 2.3 has been released.
+> -  !ifdef USE_GUI
+> -    SetShellVarContext current
+> -    Delete "$DESKTOP\${PRODUCT_NAME} GUI.lnk"
+> -  !endif
+> -
+> -SectionEnd
+> -
+> -Section "${PRODUCT_NAME} User-Space Components" SecOpenVPNUserSpace
+> -
+> -  SetOverwrite on
+> -  SetOutPath "$INSTDIR\bin"
+> -
+> -  File "${BIN}\${PRODUCT_UNIX_NAME}.exe"
+> -
+> -SectionEnd
+> -
+> -!ifdef USE_GUI
+> -Section "${PRODUCT_NAME} GUI" SecOpenVPNGUI
+> -
+> -  SetOverwrite on
+> -  SetOutPath "$INSTDIR\bin"
+> -
+> -  File "${BIN}\${OPENVPN_GUI}"
+> -
+> -SectionEnd
+> -!endif
+> -
+> -Section "${PRODUCT_NAME} RSA Certificate Management Scripts" SecOpenVPNEasyRSA
+> -
+> -  SetOverwrite on
+> -  SetOutPath "$INSTDIR\easy-rsa"
+> -
+> -  # FIXME: the easy-rsa directory would need cleaning up
+> -
+> -  # Original nsi script looked for ${EASYRSA}\2.0\openssl.cnf.sample. A newer
+> -  # openssl.cnf is needed on OpenVPN 2.2+.
+> -  File "${EASYRSA}\2.0\openssl-1.0.0.cnf"
+> -
+> -  File "${EASYRSA}\Windows\vars.bat.sample"
+> -
+> -  File "${EASYRSA}\Windows\init-config.bat"
+> -
+> -  File "${EASYRSA}\Windows\README.txt"
+> -  File "${EASYRSA}\Windows\build-ca.bat"
+> -  File "${EASYRSA}\Windows\build-dh.bat"
+> -  File "${EASYRSA}\Windows\build-key-server.bat"
+> -  File "${EASYRSA}\Windows\build-key.bat"
+> -  File "${EASYRSA}\Windows\build-key-pkcs12.bat"
+> -  File "${EASYRSA}\Windows\clean-all.bat"
+> -  File "${EASYRSA}\Windows\index.txt.start"
+> -  File "${EASYRSA}\Windows\revoke-full.bat"
+> -  File "${EASYRSA}\Windows\serial.start"
+> -
+> -SectionEnd
+> -
+> -Section "${PRODUCT_NAME} Service" SecService
+> -
+> -  SetOverwrite on
+> -
+> -  SetOutPath "$INSTDIR\bin"
+> -  File "${BIN}\${PRODUCT_UNIX_NAME}serv.exe"
+> -
+> -  SetOutPath "$INSTDIR\config"
+> -
+> -  FileOpen $R0 "$INSTDIR\config\README.txt" w
+> -  FileWrite $R0 "This directory should contain ${PRODUCT_NAME} configuration files$\r$\n"
+> -  FileWrite $R0 "each having an extension of .${SERV_CONFIG_EXT}$\r$\n"
+> -  FileWrite $R0 "$\r$\n"
+> -  FileWrite $R0 "When ${PRODUCT_NAME} is started as a service, a separate ${PRODUCT_NAME}$\r$\n"
+> -  FileWrite $R0 "process will be instantiated for each configuration file.$\r$\n"
+> -  FileClose $R0
+> -
+> -  SetOutPath "$INSTDIR\sample-config"
+> -  File "${GEN}\samples\sample.${SERV_CONFIG_EXT}"
+> -  File "${GEN}\samples\client.${SERV_CONFIG_EXT}"
+> -  File "${GEN}\samples\server.${SERV_CONFIG_EXT}"
+> -
+> -  CreateDirectory "$INSTDIR\log"
+> -  FileOpen $R0 "$INSTDIR\log\README.txt" w
+> -  FileWrite $R0 "This directory will contain the log files for ${PRODUCT_NAME}$\r$\n"
+> -  FileWrite $R0 "sessions which are being run as a service.$\r$\n"
+> -  FileClose $R0
+> -
+> -SectionEnd
+> -
+> -Section "${PRODUCT_NAME} File Associations" SecFileAssociation
+> -SectionEnd
+> -
+> -Section "OpenSSL DLLs" SecOpenSSLDLLs
+> -
+> -  SetOverwrite on
+> -  SetOutPath "$INSTDIR\bin"
+> -  File "${BIN}\libeay32.dll"
+> -  File "${BIN}\ssleay32.dll"
+> -
+> -SectionEnd
+> -
+> -Section "OpenSSL Utilities" SecOpenSSLUtilities
+> -
+> -  SetOverwrite on
+> -  SetOutPath "$INSTDIR\bin"
+> -  File "${BIN}\openssl.exe"
+> -
+> -SectionEnd
+> -
+> -Section "PKCS#11 DLLs" SecPKCS11DLLs
+> -
+> -  SetOverwrite on
+> -  SetOutPath "$INSTDIR\bin"
+> -  File "${BIN}\libpkcs11-helper-1.dll"
+> -
+> -SectionEnd
+> -
+> -Section "LZO2 DLLs" SecLZO2DLLs
+> -
+> -  SetOverwrite on
+> -  SetOutPath "$INSTDIR\bin"
+> -  File "${BIN}\lzo2.dll"
+> -
+> -SectionEnd
+> -
+> -Section "Microsoft Visual C 9.0 Runtime DLL" SecMSVCR90DLL
+> -
+> -  SetOverwrite on
+> -  SetOutPath "$INSTDIR\bin"
+> -  File "${BIN}\Microsoft.VC90.CRT\msvcr90.dll"
+> -  File "${BIN}\Microsoft.VC90.CRT\Microsoft.VC90.CRT.manifest"
+> -
+> -SectionEnd
+> -
+> -
+> -
+> -
+> -Section "TAP Virtual Ethernet Adapter" SecTAP
+> -
+> -  SetOverwrite on
+> -
+> -  # Generate TAP driver install script dynamically
+> -  FileOpen $R0 "$INSTDIR\bin\addtap.bat" w
+> -  FileWrite $R0 "rem Add a new TAP virtual ethernet adapter$\r$\n"
+> -  FileWrite $R0 '"$INSTDIR\bin\tapinstall.exe" install "$INSTDIR\driver\OemWin2k.inf" ${TAP}$\r$\n'
+> -  FileWrite $R0 "pause$\r$\n"
+> -  FileClose $R0
+> -
+> -  # Generate TAP driver removal script dynamically
+> -  FileOpen $R0 "$INSTDIR\bin\deltapall.bat" w
+> -  FileWrite $R0 "echo WARNING: this script will delete ALL TAP virtual adapters (use the device manager to delete adapters one at a time)$\r$\n"
+> -  FileWrite $R0 "pause$\r$\n"
+> -  FileWrite $R0 '"$INSTDIR\bin\tapinstall.exe" remove ${TAP}$\r$\n'
+> -  FileWrite $R0 "pause$\r$\n"
+> -  FileClose $R0
+> -
+> -  ; Check if we are running on a 64 bit system.
+> -  System::Call "kernel32::GetCurrentProcess() i .s"
+> -  System::Call "kernel32::IsWow64Process(i s, *i .r0)"
+> -  IntCmp $0 0 tap-32bit
+> -
+> -; tap-64bit:
+> -
+> -  DetailPrint "We are running on a 64-bit system."
+> -
+> -  SetOutPath "$INSTDIR\bin"
+> -
+> -  File "${GEN}\amd64\tapinstall.exe"
+> -
+> -  SetOutPath "$INSTDIR\driver"
+> -
+> -  File "${GEN}\amd64\OemWin2k.inf"
+> -  File "${GEN}\amd64\${TAPDRV}"
+> -
+> -  # Don't try to install TAP driver signature if it does not exist.
+> -  File /nonfatal "${GEN}\amd64\${PRODUCT_TAP_COMPONENT_ID}.cat"
+> -
+> -goto tapend
+> -
+> -tap-32bit:
+> -
+> -  DetailPrint "We are running on a 32-bit system."
+> -
+> -  SetOutPath "$INSTDIR\bin"
+> -  File "${GEN}\i386\tapinstall.exe"
+> -
+> -  SetOutPath "$INSTDIR\driver"
+> -  File "${GEN}\i386\OemWin2k.inf"
+> -  File "${GEN}\i386\${TAPDRV}"
+> -
+> -  # Don't try to install TAP driver signature if it does not exist.
+> -  File /nonfatal "${GEN}\i386\${PRODUCT_TAP_COMPONENT_ID}.cat"
+> -
+> -  tapend:
+> -
+> -SectionEnd
+> -
+> -Section "Add ${PRODUCT_NAME} to PATH" SecAddPath
+> -
+> -  ; remove previously set path (if any)
+> -  Push "$INSTDIR\bin"
+> -  Call RemoveFromPath
+> -
+> -  ; append our bin directory to end of current user path
+> -  Push "$INSTDIR\bin"
+> -  Call AddToPath
+> -
+> -SectionEnd
+> -
+> -Section "Add Shortcuts to Start Menu" SecAddShortcuts
+> -
+> -  ; Required to handle shortcuts properly on Vista/7
+> -  SetShellVarContext all
+> -  SetOverwrite on
+> -  CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
+> -  CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}\Documentation"
+> -  WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\Documentation\${PRODUCT_NAME} Windows Notes.url" "InternetShortcut" "URL" "http://openvpn.net/INSTALL-win32.html"
+> -  WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\Documentation\${PRODUCT_NAME} Manual Page.url" "InternetShortcut" "URL" "http://openvpn.net/man.html"
+> -  WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\Documentation\${PRODUCT_NAME} HOWTO.url" "InternetShortcut" "URL" "http://openvpn.net/howto.html"
+> -  WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\Documentation\${PRODUCT_NAME} Web Site.url" "InternetShortcut" "URL" "http://openvpn.net/"
+> -  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall ${PRODUCT_NAME}.lnk" "$INSTDIR\Uninstall.exe"
+> -
+> -SectionEnd
+> -
+> -;--------------------
+> -;Post-install section
+> -
+> -Section -post
+> -
+> -  SetOverwrite on
+> -
+> -  ; delete old tapinstall.exe
+> -  ;Delete "$INSTDIR\bin\tapinstall.exe"
+> -
+> -  ; Store README, license, icon
+> -  SetOverwrite on
+> -  SetOutPath $INSTDIR
+> -  File "..\INSTALL-win32.txt"
+> -  File "..\COPYRIGHT.GPL"
+> -  File "..\images\${PRODUCT_ICON}"
+> -
+> -  ; store sample config files
+> -  !ifdef SAMPCONF_DIR
+> -    SetOverwrite on
+> -    SetOutPath "$INSTDIR\config"
+> -  !ifdef SAMPCONF_CONF
+> -    File "${GEN}\conf\${SAMPCONF_CONF}"
+> -  !endif
+> -  !ifdef SAMPCONF_CONF2
+> -    File "${GEN}\conf\${SAMPCONF_CONF2}"
+> -  !endif
+> -  !ifdef SAMPCONF_P12
+> -    File "${GEN}\conf\${SAMPCONF_P12}"
+> -  !endif
+> -  !ifdef SAMPCONF_TA
+> -    File "${GEN}\conf\${SAMPCONF_TA}"
+> -  !endif
+> -  !ifdef SAMPCONF_CA
+> -    File "${GEN}\conf\${SAMPCONF_CA}"
+> -  !endif
+> -  !ifdef SAMPCONF_CRT
+> -    File "${GEN}\conf\${SAMPCONF_CRT}"
+> -  !endif
+> -  !ifdef SAMPCONF_KEY
+> -    File "${GEN}\conf\${SAMPCONF_KEY}"
+> -  !endif
+> -  !ifdef SAMPCONF_DH
+> -    File "${GEN}\conf\${SAMPCONF_DH}"
+> -  !endif
+> -  !endif
+> -
+> -  ; Try to extract files if present
+> -  !ifdef EXTRACT_FILES
+> -    Push "$INSTDIR"
+> -    Call MultiFileExtract
+> -    Pop $R0
+> -    IntCmp $R0 0 +3 +1 +1
+> -    DetailPrint "MultiFileExtract Failed status=$R0"
+> -    goto +2
+> -    DetailPrint "MultiFileExtract Succeeded"
+> -  !endif
+> -
+> -  ;
+> -  ; install/upgrade TAP driver if selected, using tapinstall.exe
+> -  ;
+> -  SectionGetFlags ${SecTAP} $R0
+> -  IntOp $R0 $R0 & ${SF_SELECTED}
+> -  IntCmp $R0 ${SF_SELECTED} "" notap notap
+> -    ; TAP install/update was selected.
+> -    ; Should we install or update?
+> -    ; If tapinstall error occurred, $5 will
+> -    ; be nonzero.
+> -    IntOp $5 0 & 0
+> -    nsExec::ExecToStack '"$INSTDIR\bin\tapinstall.exe" hwids ${TAP}'
+> -    Pop $R0 # return value/error/timeout
+> -    IntOp $5 $5 | $R0
+> -    DetailPrint "tapinstall hwids returned: $R0"
+> -
+> -    ; If tapinstall output string contains "${TAP}" we assume
+> -    ; that TAP device has been previously installed,
+> -    ; therefore we will update, not install.
+> -    Push "${TAP}"
+> -    Call StrStr
+> -    Pop $R0
+> -
+> -    IntCmp $5 0 "" tapinstall_check_error tapinstall_check_error
+> -    IntCmp $R0 -1 tapinstall
+> -
+> - ;tapupdate:
+> -    DetailPrint "TAP UPDATE"
+> -    nsExec::ExecToLog '"$INSTDIR\bin\tapinstall.exe" update "$INSTDIR\driver\OemWin2k.inf" ${TAP}'
+> -    Pop $R0 # return value/error/timeout
+> -    Call CheckReboot
+> -    IntOp $5 $5 | $R0
+> -    DetailPrint "tapinstall update returned: $R0"
+> -    Goto tapinstall_check_error
+> -
+> - tapinstall:
+> -    DetailPrint "TAP REMOVE OLD TAP"
+> -
+> -    nsExec::ExecToLog '"$INSTDIR\bin\tapinstall.exe" remove TAP0801'
+> -    Pop $R0 # return value/error/timeout
+> -    DetailPrint "tapinstall remove TAP0801 returned: $R0"
+> -
+> -    DetailPrint "TAP INSTALL (${TAP})"
+> -    nsExec::ExecToLog '"$INSTDIR\bin\tapinstall.exe" install "$INSTDIR\driver\OemWin2k.inf" ${TAP}'
+> -    Pop $R0 # return value/error/timeout
+> -    Call CheckReboot
+> -    IntOp $5 $5 | $R0
+> -    DetailPrint "tapinstall install returned: $R0"
+> -
+> - tapinstall_check_error:
+> -    DetailPrint "tapinstall cumulative status: $5"
+> -    IntCmp $5 0 notap
+> -    MessageBox MB_OK "An error occurred installing the TAP device driver."
+> -
+> - notap:
+> -
+> -  ; Store install folder in registry
+> -  WriteRegStr HKLM SOFTWARE\${PRODUCT_NAME} "" $INSTDIR
+> -
+> -  ; install as a service if requested
+> -  SectionGetFlags ${SecService} $R0
+> -  IntOp $R0 $R0 & ${SF_SELECTED}
+> -  IntCmp $R0 ${SF_SELECTED} "" noserv noserv
+> -
+> -    ; set registry parameters for openvpnserv
+> -    !insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PRODUCT_NAME}" "config_dir"  "${SERV_CONFIG_DIR}"
+> -    !insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PRODUCT_NAME}" "config_ext"  "${SERV_CONFIG_EXT}"
+> -    !insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PRODUCT_NAME}" "exe_path"    "${SERV_EXE_PATH}"
+> -    !insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PRODUCT_NAME}" "log_dir"     "${SERV_LOG_DIR}"
+> -    !insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PRODUCT_NAME}" "priority"    "${SERV_PRIORITY}"
+> -    !insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\${PRODUCT_NAME}" "log_append"  "${SERV_LOG_APPEND}"
+> -
+> -    ; install openvpnserv as a service (to be started manually from service control manager)
+> -    DetailPrint "Service INSTALL"
+> -    nsExec::ExecToLog '"$INSTDIR\bin\${PRODUCT_UNIX_NAME}serv.exe" -install'
+> -    Pop $R0 # return value/error/timeout
+> -
+> - noserv:
+> -
+> -  ; Create file association if requested
+> - fileass:
+> -  SectionGetFlags ${SecFileAssociation} $R0
+> -  IntOp $R0 $R0 & ${SF_SELECTED}
+> -  IntCmp $R0 ${SF_SELECTED} "" noass noass
+> -    WriteRegStr HKCR ".${SERV_CONFIG_EXT}" "" "${PRODUCT_NAME}File"
+> -    WriteRegStr HKCR "${PRODUCT_NAME}File" "" "${PRODUCT_NAME} Config File"
+> -    WriteRegStr HKCR "${PRODUCT_NAME}File\shell" "" "open"
+> -    WriteRegStr HKCR "${PRODUCT_NAME}File\DefaultIcon" "" "$INSTDIR\${PRODUCT_ICON},0"
+> -    WriteRegStr HKCR "${PRODUCT_NAME}File\shell\open\command" "" 'notepad.exe "%1"'
+> -    WriteRegStr HKCR "${PRODUCT_NAME}File\shell\run" "" "Start ${PRODUCT_NAME} on this config file"
+> -    WriteRegStr HKCR "${PRODUCT_NAME}File\shell\run\command" "" '"$INSTDIR\bin\${PRODUCT_UNIX_NAME}.exe" --pause-exit --config "%1"'
+> -
+> - ; Create start menu folders
+> - noass:
+> -  CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}\Utilities"
+> -  CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}\Shortcuts"
+> -
+> -  ; Create start menu and desktop shortcuts to OpenVPN GUI
+> -  !ifdef USE_GUI
+> -      CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME} GUI.lnk" "$INSTDIR\bin\${OPENVPN_GUI}" ""
+> -      CreateShortcut "$DESKTOP\${PRODUCT_NAME} GUI.lnk" "$INSTDIR\bin\${OPENVPN_GUI}"
+> -  !endif
+> -
+> - ; Create start menu shortcuts to addtap.bat and deltapall.bat
+> - tryaddtap:
+> -    IfFileExists "$INSTDIR\bin\addtap.bat" "" trydeltap
+> -      CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Utilities\Add a new TAP virtual ethernet adapter.lnk" "$INSTDIR\bin\addtap.bat" ""
+> -
+> - trydeltap:
+> -    IfFileExists "$INSTDIR\bin\deltapall.bat" "" config_shortcut
+> -      CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Utilities\Delete ALL TAP virtual ethernet adapters.lnk" "$INSTDIR\bin\deltapall.bat" ""
+> -
+> - ; Create start menu shortcuts for config and log directories
+> - config_shortcut:
+> -    IfFileExists "$INSTDIR\config" "" log_shortcut
+> -      CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Shortcuts\${PRODUCT_NAME} configuration file directory.lnk" "$INSTDIR\config" ""
+> -
+> - log_shortcut:
+> -    IfFileExists "$INSTDIR\log" "" samp_shortcut
+> -      CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Shortcuts\${PRODUCT_NAME} log file directory.lnk" "$INSTDIR\log" ""
+> -
+> - samp_shortcut:
+> -    IfFileExists "$INSTDIR\sample-config" "" genkey_shortcut
+> -      CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Shortcuts\${PRODUCT_NAME} Sample Configuration Files.lnk" "$INSTDIR\sample-config" ""
+> -
+> - genkey_shortcut:
+> -    IfFileExists "$INSTDIR\bin\${PRODUCT_UNIX_NAME}.exe" "" noshortcuts
+> -      IfFileExists "$INSTDIR\config" "" noshortcuts
+> -        CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Utilities\Generate a static ${PRODUCT_NAME} key.lnk" "$INSTDIR\bin\${PRODUCT_UNIX_NAME}.exe" '--pause-exit --verb 3 --genkey --secret "$INSTDIR\config\key.txt"' "$INSTDIR\${PRODUCT_ICON}" 0
+> -
+> - noshortcuts:
+> -  ; Create uninstaller
+> -  WriteUninstaller "$INSTDIR\Uninstall.exe"
+> -
+> -  ; Show up in Add/Remove programs
+> -  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "DisplayName" "${PRODUCT_NAME} ${VERSION}"
+> -  WriteRegExpandStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "UninstallString" "$INSTDIR\Uninstall.exe"
+> -  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "DisplayIcon" "$INSTDIR\${PRODUCT_ICON}"
+> -  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" "DisplayVersion" "${VERSION}"
+> -
+> -  ; Advise a reboot
+> -  ;Messagebox MB_OK "IMPORTANT: Rebooting the system is advised in order to finalize TAP driver installation/upgrade (this is an informational message only, pressing OK will not reboot)."
+> -
+> -SectionEnd
+> -
+> -;--------------------------------
+> -;Descriptions
+> -
+> -!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+> -  !insertmacro MUI_DESCRIPTION_TEXT ${SecOpenVPNUserSpace} $(DESC_SecOpenVPNUserSpace)
+> -  !ifdef USE_GUI
+> -    !insertmacro MUI_DESCRIPTION_TEXT ${SecOpenVPNGUI} $(DESC_SecOpenVPNGUI)
+> -  !endif
+> -  !insertmacro MUI_DESCRIPTION_TEXT ${SecOpenVPNEasyRSA} $(DESC_SecOpenVPNEasyRSA)
+> -  !insertmacro MUI_DESCRIPTION_TEXT ${SecTAP} $(DESC_SecTAP)
+> -  !insertmacro MUI_DESCRIPTION_TEXT ${SecOpenSSLUtilities} $(DESC_SecOpenSSLUtilities)
+> -  !insertmacro MUI_DESCRIPTION_TEXT ${SecOpenSSLDLLs} $(DESC_SecOpenSSLDLLs)
+> -  !insertmacro MUI_DESCRIPTION_TEXT ${SecPKCS11DLLs} $(DESC_SecPKCS11DLLs)
+> -  !insertmacro MUI_DESCRIPTION_TEXT ${SecLZO2DLLs} $(DESC_SecLZO2DLLs)
+> -  !insertmacro MUI_DESCRIPTION_TEXT ${SecMSVCR90DLL} $(DESC_SecMSVCR90DLL)
+> -  !insertmacro MUI_DESCRIPTION_TEXT ${SecAddPath} $(DESC_SecAddPath)
+> -  !insertmacro MUI_DESCRIPTION_TEXT ${SecAddShortcuts} $(DESC_SecAddShortcuts)
+> -
+> -  !insertmacro MUI_DESCRIPTION_TEXT ${SecService} $(DESC_SecService)
+> -  !insertmacro MUI_DESCRIPTION_TEXT ${SecFileAssociation} $(DESC_SecFileAssociation)
+> -!insertmacro MUI_FUNCTION_DESCRIPTION_END
+> -
+> -;--------------------------------
+> -;Uninstaller Section
+> -
+> -Function un.onInit
+> -  ClearErrors
+> -  UserInfo::GetName
+> -  IfErrors ok
+> -  Pop $R0
+> -  UserInfo::GetAccountType
+> -  Pop $R1
+> -  StrCmp $R1 "Admin" ok
+> -    Messagebox MB_OK "Administrator privileges required to uninstall ${PRODUCT_NAME} [$R0/$R1]"
+> -    Abort
+> -  ok:
+> -FunctionEnd
+> -
+> -Section "Uninstall"
+> -
+> -  ; Required to handle shortcuts properly on Vista/7
+> -  SetShellVarContext all
+> -
+> -  ; Stop OpenVPN if currently running
+> -
+> -  DetailPrint "Service REMOVE"
+> -  nsExec::ExecToLog '"$INSTDIR\bin\${PRODUCT_UNIX_NAME}serv.exe" -remove'
+> -  Pop $R0 # return value/error/timeout
+> -
+> -  Sleep 3000
+> -
+> -  DetailPrint "TAP REMOVE"
+> -  nsExec::ExecToLog '"$INSTDIR\bin\tapinstall.exe" remove ${TAP}'
+> -  Pop $R0 # return value/error/timeout
+> -  DetailPrint "tapinstall remove returned: $R0"
+> -
+> -  Push "$INSTDIR\bin"
+> -  Call un.RemoveFromPath
+> -
+> -  RMDir /r $SMPROGRAMS\${PRODUCT_NAME}
+> -
+> -  ; delete sample config files
+> -  !ifdef SAMPCONF_DIR
+> -  !ifdef SAMPCONF_CONF
+> -    Delete "$INSTDIR\config\${SAMPCONF_CONF}"
+> -  !endif
+> -  !ifdef SAMPCONF_CONF2
+> -    Delete "$INSTDIR\config\${SAMPCONF_CONF2}"
+> -  !endif
+> -  !ifdef SAMPCONF_P12
+> -    Delete "$INSTDIR\config\${SAMPCONF_P12}"
+> -  !endif
+> -  !ifdef SAMPCONF_TA
+> -    Delete "$INSTDIR\config\${SAMPCONF_TA}"
+> -  !endif
+> -  !ifdef SAMPCONF_CA
+> -    Delete "$INSTDIR\config\${SAMPCONF_CA}"
+> -  !endif
+> -  !ifdef SAMPCONF_CRT
+> -    Delete "$INSTDIR\config\${SAMPCONF_CRT}"
+> -  !endif
+> -  !ifdef SAMPCONF_KEY
+> -    Delete "$INSTDIR\config\${SAMPCONF_KEY}"
+> -  !endif
+> -  !ifdef SAMPCONF_DH
+> -    Delete "$INSTDIR\config\${SAMPCONF_DH}"
+> -  !endif
+> -  !endif
+> -
+> -  !ifdef USE_GUI
+> -    Delete "$INSTDIR\bin\${OPENVPN_GUI}"
+> -    Delete "$DESKTOP\${PRODUCT_NAME} GUI.lnk"
+> -  !endif
+> -
+> -  # Files installed by openvpn-2.2-beta5 and earlier
+> -  Delete "$INSTDIR\easy-rsa\openssl.cnf.sample"
+> -  Delete "$INSTDIR\license"
+> -  Delete "$INSTDIR\bin\libssl32.dll"
+> -
+> -  Delete "$INSTDIR\bin\${PRODUCT_UNIX_NAME}.exe"
+> -  Delete "$INSTDIR\bin\${PRODUCT_UNIX_NAME}serv.exe"
+> -  Delete "$INSTDIR\bin\libeay32.dll"
+> -  Delete "$INSTDIR\bin\ssleay32.dll"
+> -  Delete "$INSTDIR\bin\libpkcs11-helper-1.dll"
+> -  Delete "$INSTDIR\bin\lzo2.dll"
+> -  Delete "$INSTDIR\bin\msvcr90.dll"
+> -  Delete "$INSTDIR\bin\Microsoft.VC90.CRT.manifest"
+> -  Delete "$INSTDIR\bin\tapinstall.exe"
+> -  Delete "$INSTDIR\bin\addtap.bat"
+> -  Delete "$INSTDIR\bin\deltapall.bat"
+> -
+> -  Delete "$INSTDIR\config\README.txt"
+> -  Delete "$INSTDIR\config\sample.${SERV_CONFIG_EXT}.txt"
+> -
+> -  Delete "$INSTDIR\log\README.txt"
+> -
+> -  Delete "$INSTDIR\driver\OemWin2k.inf"
+> -  Delete "$INSTDIR\driver\${PRODUCT_TAP_COMPONENT_ID}.cat"
+> -  Delete "$INSTDIR\driver\${TAPDRV}"
+> -
+> -  Delete "$INSTDIR\bin\openssl.exe"
+> -
+> -  Delete "$INSTDIR\INSTALL-win32.txt"
+> -  Delete "$INSTDIR\${PRODUCT_ICON}"
+> -  Delete "$INSTDIR\COPYRIGHT.GPL"
+> -  Delete "$INSTDIR\Uninstall.exe"
+> -
+> -  Delete "$INSTDIR\easy-rsa\openssl.cnf"
+> -  Delete "$INSTDIR\easy-rsa\vars.bat.sample"
+> -  Delete "$INSTDIR\easy-rsa\init-config.bat"
+> -  Delete "$INSTDIR\easy-rsa\README.txt"
+> -  Delete "$INSTDIR\easy-rsa\build-ca.bat"
+> -  Delete "$INSTDIR\easy-rsa\build-dh.bat"
+> -  Delete "$INSTDIR\easy-rsa\build-key-server.bat"
+> -  Delete "$INSTDIR\easy-rsa\build-key.bat"
+> -  Delete "$INSTDIR\easy-rsa\build-key-pkcs12.bat"
+> -  Delete "$INSTDIR\easy-rsa\clean-all.bat"
+> -  Delete "$INSTDIR\easy-rsa\index.txt.start"
+> -  Delete "$INSTDIR\easy-rsa\revoke-key.bat"
+> -  Delete "$INSTDIR\easy-rsa\revoke-full.bat"
+> -  Delete "$INSTDIR\easy-rsa\serial.start"
+> -
+> -  Delete "$INSTDIR\sample-config\*.${PRODUCT_FILE_EXT}"
+> -
+> -  RMDir "$INSTDIR\bin"
+> -  RMDir "$INSTDIR\config"
+> -  RMDir "$INSTDIR\driver"
+> -  RMDir "$INSTDIR\easy-rsa"
+> -  RMDir "$INSTDIR\sample-config"
+> -  RMDir /r "$INSTDIR\log"
+> -  RMDir "$INSTDIR"
+> -
+> -  !insertmacro DelRegKeyIfUnchanged HKCR ".${SERV_CONFIG_EXT}" "${PRODUCT_NAME}File"
+> -  DeleteRegKey HKCR "${PRODUCT_NAME}File"
+> -  DeleteRegKey HKLM SOFTWARE\${PRODUCT_NAME}
+> -  DeleteRegKey HKCU "Software\${PRODUCT_NAME}"
+> -  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
+> -
+> -SectionEnd
+> diff --git a/win/setpath.nsi b/win/setpath.nsi
+> deleted file mode 100755
+> index a9626c3..0000000
+> --- a/win/setpath.nsi
+> +++ /dev/null
+> @@ -1,231 +0,0 @@
+> -; Modify the user's PATH variable.
+> -;
+> -; Modified by JY to have both a RemoveFromPath
+> -; and an un.RemoveFromPath which are basically
+> -; copies of each other.  Why does NSIS demand
+> -; this nonsense?
+> -;
+> -; Modified Feb 14, 2005 by Mathias Sundman:
+> -;   Added code to remove the semicolon at the end of the path
+> -;   when uninstalling.
+> -;
+> -;   Added code to make sure we don't insert an extra semicolon
+> -;   before our path if there already exist one at the end of
+> -;   the original path.
+> -;
+> -;   Removed duplicated "un. and install" functions and made
+> -;   macros to duplicate the code instead.
+> -
+> -; example usage
+> -;
+> -;Section "Add to path"
+> -;  Push $INSTDIR
+> -;  Call AddToPath
+> -;SectionEnd
+> -;
+> -;# ...
+> -;
+> -;Section "uninstall"
+> -;  # ...
+> -;  Push $INSTDIR
+> -;  Call un.RemoveFromPath
+> -;  # ...
+> -;SectionEnd
+> -
+> -!verbose 3
+> -!include "WinMessages.NSH"
+> -!verbose 4
+> -
+> -;====================================================
+> -; AddToPath - Adds the given dir to the search path.
+> -;        Input - head of the stack
+> -;        Note - Win9x systems requires reboot
+> -;====================================================
+> -Function AddToPath
+> -  Exch $0
+> -  Push $1
+> -  Push $2
+> -
+> -  Call IsNT
+> -  Pop $1
+> -  StrCmp $1 1 AddToPath_NT
+> -    ; Not on NT
+> -    StrCpy $1 $WINDIR 2
+> -    FileOpen $1 "$1\autoexec.bat" a
+> -    FileSeek $1 0 END
+> -    GetFullPathName /SHORT $0 $0
+> -    FileWrite $1 "$\r$\nSET PATH=%PATH%;$0$\r$\n"
+> -    FileClose $1
+> -    Goto AddToPath_done
+> -
+> -  AddToPath_NT:
+> -    ReadRegStr $1 HKCU "Environment" "PATH"
+> -    StrCpy $2 $1 1 -1 # copy last char
+> -    StrCmp $2 ";" 0 +2 # if last char == ;
+> -      StrCpy $1 $1 -1 # remove last char
+> -
+> -    StrCmp $1 "" AddToPath_NTdoIt
+> -      StrCpy $0 "$1;$0"
+> -      Goto AddToPath_NTdoIt
+> -    AddToPath_NTdoIt:
+> -      WriteRegExpandStr HKCU "Environment" "PATH" $0
+> -      SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
+> -
+> -  AddToPath_done:
+> -    Pop $2
+> -    Pop $1
+> -    Pop $0
+> -FunctionEnd
+> -
+> -;====================================================
+> -; RemoveFromPath - Remove a given dir from the path
+> -;     Input: head of the stack
+> -;====================================================
+> -!macro RemoveFromPath un
+> -Function ${un}RemoveFromPath
+> -  Exch $0
+> -  Push $1
+> -  Push $2
+> -  Push $3
+> -  Push $4
+> -  Push $5
+> -
+> -  Call ${un}IsNT
+> -  Pop $1
+> -  StrCmp $1 1 RemoveFromPath_NT
+> -    ; Not on NT
+> -    StrCpy $1 $WINDIR 2
+> -    FileOpen $1 "$1\autoexec.bat" r
+> -    GetTempFileName $4
+> -    FileOpen $2 $4 w
+> -    GetFullPathName /SHORT $0 $0
+> -    StrCpy $0 "SET PATH=%PATH%;$0"
+> -    SetRebootFlag true
+> -    Goto RemoveFromPath_dosLoop
+> -
+> -    RemoveFromPath_dosLoop:
+> -      FileRead $1 $3
+> -      StrCmp $3 "$0$\r$\n" RemoveFromPath_dosLoop
+> -      StrCmp $3 "$0$\n" RemoveFromPath_dosLoop
+> -      StrCmp $3 "$0" RemoveFromPath_dosLoop
+> -      StrCmp $3 "" RemoveFromPath_dosLoopEnd
+> -      FileWrite $2 $3
+> -      Goto RemoveFromPath_dosLoop
+> -
+> -    RemoveFromPath_dosLoopEnd:
+> -      FileClose $2
+> -      FileClose $1
+> -      StrCpy $1 $WINDIR 2
+> -      Delete "$1\autoexec.bat"
+> -      CopyFiles /SILENT $4 "$1\autoexec.bat"
+> -      Delete $4
+> -      Goto RemoveFromPath_done
+> -
+> -  RemoveFromPath_NT:
+> -    StrLen $2 $0
+> -    ReadRegStr $1 HKCU "Environment" "PATH"
+> -    Push $1
+> -    Push $0
+> -    Call ${un}StrStr ; Find $0 in $1
+> -    Pop $0 ; pos of our dir
+> -    IntCmp $0 -1 RemoveFromPath_done
+> -      ; else, it is in path
+> -      StrCpy $3 $1 $0 ; $3 now has the part of the path before our dir
+> -      IntOp $2 $2 + $0 ; $2 now contains the pos after our dir in the path (';')
+> -      IntOp $2 $2 + 1 ; $2 now containts the pos after our dir and the semicolon.
+> -      StrLen $0 $1
+> -      StrCpy $1 $1 $0 $2
+> -      StrCpy $3 "$3$1"
+> -
+> -      StrCpy $5 $3 1 -1 # copy last char
+> -      StrCmp $5 ";" 0 +2 # if last char == ;
+> -        StrCpy $3 $3 -1 # remove last char
+> -
+> -      WriteRegExpandStr HKCU "Environment" "PATH" $3
+> -      SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
+> -
+> -  RemoveFromPath_done:
+> -    Pop $5
+> -    Pop $4
+> -    Pop $3
+> -    Pop $2
+> -    Pop $1
+> -    Pop $0
+> -FunctionEnd
+> -!macroend
+> -!insertmacro RemoveFromPath ""
+> -!insertmacro RemoveFromPath "un."
+> -
+> -
+> -;====================================================
+> -; StrStr - Finds a given string in another given string.
+> -;               Returns -1 if not found and the pos if found.
+> -;          Input: head of the stack - string to find
+> -;                      second in the stack - string to find in
+> -;          Output: head of the stack
+> -;====================================================
+> -!macro StrStr un
+> -Function ${un}StrStr
+> -  Push $0
+> -  Exch
+> -  Pop $0 ; $0 now have the string to find
+> -  Push $1
+> -  Exch 2
+> -  Pop $1 ; $1 now have the string to find in
+> -  Exch
+> -  Push $2
+> -  Push $3
+> -  Push $4
+> -  Push $5
+> -
+> -  StrCpy $2 -1
+> -  StrLen $3 $0
+> -  StrLen $4 $1
+> -  IntOp $4 $4 - $3
+> -
+> -  StrStr_loop:
+> -    IntOp $2 $2 + 1
+> -    IntCmp $2 $4 0 0 StrStrReturn_notFound
+> -    StrCpy $5 $1 $3 $2
+> -    StrCmp $5 $0 StrStr_done StrStr_loop
+> -
+> -  StrStrReturn_notFound:
+> -    StrCpy $2 -1
+> -
+> -  StrStr_done:
+> -    Pop $5
+> -    Pop $4
+> -    Pop $3
+> -    Exch $2
+> -    Exch 2
+> -    Pop $0
+> -    Pop $1
+> -FunctionEnd
+> -!macroend
+> -!insertmacro StrStr ""
+> -!insertmacro StrStr "un."
+> -
+> -;====================================================
+> -; IsNT - Returns 1 if the current system is NT, 0
+> -;        otherwise.
+> -;     Output: head of the stack
+> -;====================================================
+> -!macro IsNT un
+> -Function ${un}IsNT
+> -  Push $0
+> -  ReadRegStr $0 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
+> -  StrCmp $0 "" 0 IsNT_yes
+> -  ; we are not NT.
+> -  Pop $0
+> -  Push 0
+> -  Return
+> -
+> -  IsNT_yes:
+> -    ; NT!!!
+> -    Pop $0
+> -    Push 1
+> -FunctionEnd
+> -!macroend
+> -!insertmacro IsNT ""
+> -!insertmacro IsNT "un."
+> -
+> diff --git a/win/settings.in b/win/settings.in
+> deleted file mode 100644
+> index 79033dd..0000000
+> --- a/win/settings.in
+> +++ /dev/null
+> @@ -1,100 +0,0 @@
+> -# Version numbers, settings, and dependencies
+> -# for Windows OpenVPN installer.
+> -#
+> -# Note that some variables are parsed by wb.py from version.m4 and are not
+> -# stored in this file. This is done to allow using the old and new Windows build
+> -# systems side-by-side
+> -
+> -# Features to include. DO NOT comment these out, use 1 to enable and 0 to
+> -# disable.
+> -!define ENABLE_PASSWORD_SAVE 1
+> -
+> -# ENABLE_CLIENT_SERVER enables the point-to-multipoint support. Normally you
+> -# want to have this enabled.
+> -!define ENABLE_CLIENT_SERVER 1
+> -
+> -# ENABLE_CLIENT_ONLY removes server-side point-to-multipoint features. This
+> -# depends on ENABLE_CLIENT_SERVER being set to 1.
+> -!define ENABLE_CLIENT_ONLY 0
+> -
+> -!define ENABLE_MANAGEMENT 1
+> -!define ENABLE_HTTP_PROXY 1
+> -!define ENABLE_SOCKS 1
+> -!define ENABLE_FRAGMENT 1
+> -!define ENABLE_DEBUG 1
+> -
+> -# Branding
+> -!define PRODUCT_NAME      "OpenVPN"
+> -!define PRODUCT_UNIX_NAME "openvpn"
+> -!define PRODUCT_FILE_EXT  "ovpn"
+> -
+> -# Include the OpenVPN GUI exe in the installer. Comment out USE_GUI to disable.
+> -!define USE_GUI
+> -!define OPENVPN_GUI_DIR "../openvpn-gui"
+> -!define OPENVPN_GUI     "openvpn-gui-1.0.3.exe"
+> -
+> -# Use either PolarSSL or OpenSSL. Only one may be active at a time
+> -!define USE_POLARSSL 0
+> -!define USE_OPENSSL 1
+> -
+> -# The same as above, but for library inclusion (must be defined/undefined due to build system)
+> -;!define INCLUDE_POLARSSL
+> -!define INCLUDE_OPENSSL
+> -
+> -# Uncomment to use the PKCS#11 helper library
+> -!define USE_PKCS11 0
+> -;!define INCLUDE_PKCS11
+> -
+> -# Prebuilt libraries.  DMALLOC is optional.
+> -!define OPENSSL_DIR      "../openssl"
+> -!define POLARSSL_DIR     "../polarssl"
+> -!define LZO_DIR                  "../lzo"
+> -!define PKCS11_HELPER_DIR "../pkcs11-helper"
+> -
+> -# write output files here
+> -!define DIST   "dist"
+> -
+> -# tapinstall.exe (a.k.a. devcon.exe) source code. Not needed if DRVBINSRC is
+> -# defined (or if using pre-built mode).
+> -!define TISRC  "../tapinstall"
+> -
+> -# TAP adapter icon -- visible=0x81 or hidden=0x89
+> -!define PRODUCT_TAP_CHARACTERISTICS     0x81
+> -
+> -# TAP adapter metadata. Version information in ../version.m4.
+> -!define PRODUCT_TAP_RELDATE    "04/19/2010"
+> -!define PRODUCT_TAP_DEVICE_DESCRIPTION    "TAP-Win32 Adapter V9"
+> -!define PRODUCT_TAP_PROVIDER    "TAP-Win32 Provider V9"
+> -
+> -# Build debugging version of TAP driver
+> -;!define PRODUCT_TAP_DEBUG
+> -
+> -# Build debugging version of openvpn.exe
+> -;!define PRODUCT_OPENVPN_DEBUG
+> -
+> -# DDK path -- currently Windows 7 WDK
+> -!define DDK_PATH "c:/winddk/7600.16385.1"
+> -;!define DDK_PATH "c:/winddk/6001.18002"
+> -
+> -# output path for tap_span.py
+> -!define TAP_DIST "tap_dist"
+> -
+> -# Visual studio path
+> -!define MSVC "C:/Program Files/Microsoft Visual Studio 9.0"
+> -
+> -# Visual studio C run-time library path
+> -!define MSVC_CRT "../Microsoft.VC90.CRT"
+> -
+> -# Code Signing.
+> -# If undefined, don't sign any files.
+> -!define SIGNTOOL        "../signtool"
+> -!define PRODUCT_SIGN_CN "openvpn"
+> -
+> -# Directory with prebuilt TAP drivers and tapinstall.exes
+> -!define TAP_PREBUILT "../tap-prebuilt"
+> -
+> -; DEBUGGING -- set to something like "-DBG2"
+> -!define OUTFILE_LABEL ""
+> -
+> -; DEBUGGING -- set to something like "DEBUG2"
+> -!define TITLE_LABEL ""
+> diff --git a/win/show.py b/win/show.py
+> deleted file mode 100644
+> index ac56e98..0000000
+> --- a/win/show.py
+> +++ /dev/null
+> @@ -1,9 +0,0 @@
+> -from wb import get_config
+> -from js import JSON
+> -
+> -def main():
+> -    print JSON().encode(get_config())
+> -
+> -# if we are run directly, and not loaded as a module
+> -if __name__ == "__main__":
+> -    main()
+> diff --git a/win/sign.py b/win/sign.py
+> deleted file mode 100644
+> index a80bf98..0000000
+> --- a/win/sign.py
+> +++ /dev/null
+> @@ -1,23 +0,0 @@
+> -import sys
+> -from wb import config, choose_arch, home_fn
+> -
+> -if 'SIGNTOOL' in config:
+> -    sys.path.append(home_fn(config['SIGNTOOL']))
+> -
+> -def main(conf, arch, tap_dir):
+> -    from signtool import SignTool
+> -    st = SignTool(conf, tap_dir)
+> -    for x64 in choose_arch(arch):
+> -        st.sign_verify(x64=x64)
+> -
+> -# if we are run directly, and not loaded as a module
+> -if __name__ == "__main__":
+> -    if len(sys.argv) >= 2:
+> -        if len(sys.argv) >= 3:
+> -            tap_dir = home_fn(sys.argv[2])
+> -        else:
+> -            tap_dir = None
+> -        main(config, sys.argv[1], tap_dir)
+> -    else:
+> -        print "usage: sign <x64|x86|all> [tap-dir]"
+> -        sys.exit(2)
+> diff --git a/win/tap_span.py b/win/tap_span.py
+> deleted file mode 100644
+> index 749f6f3..0000000
+> --- a/win/tap_span.py
+> +++ /dev/null
+> @@ -1,129 +0,0 @@
+> -import sys, os, shutil
+> -from wb import config, home_fn, mod_fn, preprocess, autogen, dict_def, build_autodefs, rm_rf, mkdir_silent, cp
+> -if 'SIGNTOOL' in config:
+> -    sys.path.append(home_fn(config['SIGNTOOL']))
+> -from signtool import SignTool
+> -from build_ddk import build_tap
+> -
+> -ti_dir = "c:/src/tapinstall"
+> -hi = ("c:/winddk/7600.16385.1", 7600, 7600, ("i386", "amd64"))
+> -low = ("c:/winddk/6001.18002", 6001, 5600, ("win2k",))
+> -dest_top = home_fn('tap_build')
+> -dist = home_fn(config['TAP_DIST'])
+> -
+> -def copy_tap(src, dest, x64):
+> -    dir = os.path.join(src, { False : 'i386', True: 'amd64' }[x64])
+> -    mkdir_silent(dest)
+> -    for dirpath, dirnames, filenames in os.walk(dir):
+> -        for f in filenames:
+> -            root, ext = os.path.splitext(f)
+> -            if ext in ('.inf', '.cat', '.sys'):
+> -                cp(os.path.join(dir, f), dest)
+> -        break
+> -
+> -def copy_tapinstall(src, dest, x64):
+> -    base = { False : 'i386', True: 'amd64' }[x64]
+> -    mkdir_silent(dest)
+> -    for dirpath, dirnames, filenames in os.walk(home_fn(src)):
+> -        for f in filenames:
+> -            if f == 'devcon.exe':
+> -                dir_name = os.path.basename(dirpath)
+> -                s = os.path.join(dirpath, f)
+> -                if dir_name == base:
+> -                    cp(s, dest)
+> -
+> -def main():
+> -    rm_rf(dest_top)
+> -    os.mkdir(dest_top)
+> -
+> -    rm_rf(dist)
+> -    os.mkdir(dist)
+> -
+> -    for ver in hi, low:
+> -        top = os.path.join(dest_top, str(ver[1]))
+> -        os.mkdir(top)
+> -        tap_dest = os.path.join(top, "tap-win32")
+> -        ti_dest = os.path.join(top, "tapinstall")
+> -        ti_src = os.path.join(ti_dir, str(ver[2]))
+> -        shutil.copytree(home_fn("tap-win32"), tap_dest)
+> -        shutil.copytree(ti_src, ti_dest)
+> -
+> -        i386 = os.path.join(tap_dest, "i386")
+> -        amd64 = os.path.join(tap_dest, "amd64")
+> -
+> -        build_amd64 = (len(ver[3]) >= 2)
+> -
+> -        build_autodefs(config, mod_fn('autodefs.h.in'), os.path.join(top, 'autodefs.h'))
+> -
+> -        st = SignTool(config, tap_dest)
+> -
+> -        preprocess(config,
+> -                   in_fn=os.path.join(tap_dest, 'SOURCES.in'),
+> -                   out_fn=os.path.join(tap_dest, 'SOURCES'),
+> -                   quote_begin='@@',
+> -                   quote_end='@@',
+> -                   head_comment='# %s\n\n' % autogen)
+> -
+> -        preprocess(config,
+> -                   in_fn=os.path.join(i386, 'OemWin2k.inf.in'),
+> -                   out_fn=os.path.join(i386, 'OemWin2k.inf'),
+> -                   quote_begin='@@',
+> -                   quote_end='@@',
+> -                   if_prefix='!',
+> -                   head_comment='; %s\n\n' % autogen)
+> -
+> -        preprocess(config,
+> -                   in_fn=os.path.join(ti_dest, 'sources.in'),
+> -                   out_fn=os.path.join(ti_dest, 'sources'),
+> -                   if_prefix='!',
+> -                   head_comment='# %s\n\n' % autogen)
+> -
+> -        build_tap(ddk_path=ver[0],
+> -                  ddk_major=ver[1],
+> -                  debug=False,
+> -                  dir=tap_dest,
+> -                  x64=False)
+> -
+> -        st.sign_verify(x64=False)
+> -
+> -        build_tap(ddk_path=ver[0],
+> -                  ddk_major=ver[1],
+> -                  debug=False,
+> -                  dir=ti_dest,
+> -                  x64=False)
+> -
+> -        tap_dist = os.path.join(dist, ver[3][0])
+> -
+> -        copy_tap(tap_dest, tap_dist, x64=False)
+> -        copy_tapinstall(ti_dest, tap_dist, x64=False)
+> -
+> -        if build_amd64:
+> -            os.mkdir(amd64)
+> -            preprocess(dict_def(config, [('AMD64', '1')]),
+> -                       in_fn=os.path.join(i386, 'OemWin2k.inf.in'),
+> -                       out_fn=os.path.join(amd64, 'OemWin2k.inf'),
+> -                       quote_begin='@@',
+> -                       quote_end='@@',
+> -                       if_prefix='!',
+> -                       head_comment='; %s\n\n' % autogen)
+> -
+> -            build_tap(ddk_path=ver[0],
+> -                      ddk_major=ver[1],
+> -                      debug=False,
+> -                      dir=tap_dest,
+> -                      x64=True)
+> -
+> -            build_tap(ddk_path=ver[0],
+> -                      ddk_major=ver[1],
+> -                      debug=False,
+> -                      dir=ti_dest,
+> -                      x64=True)
+> -
+> -            st.sign_verify(x64=True)
+> -
+> -            tap_dist_x64 = os.path.join(dist, ver[3][1])
+> -
+> -            copy_tap(tap_dest, tap_dist_x64, x64=True)
+> -            copy_tapinstall(ti_dest, tap_dist_x64, x64=True)
+> -
+> -main()
+> diff --git a/win/wb.py b/win/wb.py
+> deleted file mode 100644
+> index 39eadec..0000000
+> --- a/win/wb.py
+> +++ /dev/null
+> @@ -1,322 +0,0 @@
+> -# Python module containing general build functions
+> -# for OpenVPN on Windows
+> -
+> -import os, re, shutil, stat
+> -
+> -autogen = "Automatically generated by OpenVPN Windows build system"
+> -
+> -def get_config():
+> -    kv = {}
+> -    parse_version_m4(kv, home_fn('version.m4'))
+> -    parse_settings_in(kv, mod_fn('settings.in'))
+> -
+> -    # config fixups
+> -    kv['DDKVER'] = os.path.basename(kv['DDK_PATH'])
+> -    kv['DDKVER_MAJOR'] = re.match(r'^(\d+)\.', kv['DDKVER']).groups()[0]
+> -
+> -    if 'VERSION_SUFFIX' in kv:
+> -        kv['PRODUCT_VERSION'] += kv['VERSION_SUFFIX']
+> -
+> -    return kv
+> -
+> -def get_build_params():
+> -    kv = {}
+> -    parse_build_params(kv,mod_fn('settings.in'))
+> -
+> -    return kv
+> -
+> -def mod_fn(fn, src=__file__, real=True):
+> -    p = os.path.join(os.path.dirname(src), os.path.normpath(fn))
+> -    if real:
+> -        p = os.path.realpath(p)
+> -    return p
+> -
+> -def home_fn(fn, real=True):
+> -    return mod_fn(os.path.join('..', fn), real=real)
+> -
+> -def cd_home():
+> -    os.chdir(os.path.join(os.path.dirname(__file__), '..'))
+> -
+> -def cd_service_win32():
+> -    os.chdir(os.path.join(os.path.dirname(__file__), '../service-win32'))
+> -
+> -def system(cmd):
+> -    print "RUN:", cmd
+> -    os.system(cmd)
+> -
+> -def run_in_vs_shell(cmd):
+> -    """Make sure environment variables are setup before running command"""
+> -    os.environ['PATH'] += ";%s\\VC" % (os.path.normpath(config['MSVC']),)
+> -    system('cmd /c "vcvarsall.bat x86 && %s"' % (cmd,))
+> -
+> -def parse_version_m4(kv, version_m4):
+> -    '''Parse define lines in version.m4'''
+> -    r = re.compile(r'^define\((\w+),\[(.*)\]\)$')
+> -    f = open(version_m4)
+> -    for line in f:
+> -        line = line.rstrip()
+> -        m = re.match(r, line)
+> -
+> -        if m:
+> -            g = m.groups()
+> -
+> -            # If we encounter PRODUCT_TAP_WIN32_MIN_MAJOR or
+> -            # PRODUCT_TAP_WIN32_MIN_MAJOR then we need to generate extra
+> -            # variables, PRODUCT_TAP_MAJOR_VER and PRODUCT_TAP_MINOR_VER with
+> -            # the same contents. This is necessary because tap-win32/tapdrv.c
+> -            # build depends on those.
+> -            if g[0] == 'PRODUCT_TAP_WIN32_MIN_MAJOR':
+> -                kv['PRODUCT_TAP_MAJOR_VER'] = g[1]
+> -            elif g[0] == 'PRODUCT_TAP_WIN32_MIN_MINOR':
+> -                kv['PRODUCT_TAP_MINOR_VER'] = g[1]
+> -
+> -            # Add the variable to build configuration
+> -            kv[g[0]] = g[1]
+> -    f.close()
+> -
+> -def parse_settings_in(kv, settings_in):
+> -    r = re.compile(r'^!define\s+(\w+)(?:\s+"?(.*?)"?)?$')
+> -    f = open(settings_in)
+> -    for line in f:
+> -        line = line.rstrip()
+> -        m = re.match(r, line)
+> -        if m:
+> -            g = m.groups()
+> -            kv[g[0]] = g[1] or ''
+> -    f.close()
+> -
+> -def parse_build_params(kv, settings_in):
+> -    r = re.compile(r'^!define\s+(ENABLE_\w+)\s+(\w+)')
+> -
+> -    f = open(settings_in)
+> -
+> -    for line in f:
+> -        line = line.rstrip()
+> -
+> -        # Check if this is a #define line starts with ENABLE_
+> -        m = re.match(r, line)
+> -
+> -        if m:
+> -                g = m.groups()
+> -                kv[g[0]] = g[1] or ''
+> -    f.close()
+> -
+> -def dict_def(dict, newdefs):
+> -    ret = dict.copy()
+> -    ret.update(newdefs)
+> -    return ret
+> -
+> -def build_autodefs(kv, autodefs_in, autodefs_out):
+> -    preprocess(kv,
+> -               in_fn=autodefs_in,
+> -               out_fn=autodefs_out,
+> -               quote_begin='@',
+> -               quote_end='@',
+> -               head_comment='/* %s */\n\n' % autogen)
+> -
+> -def build_config_h(kv):
+> -    """Generate static win/config.h to config.h to mimic autotools behavior"""
+> -    preprocess(kv,
+> -               in_fn=mod_fn('config.h.in'),
+> -               out_fn=home_fn('config.h'),
+> -               quote_begin='@',
+> -               quote_end='@',
+> -               head_comment='/* %s */\n\n' % autogen)
+> -
+> -def build_configure_h(kv, configure_h_out, head_comment):
+> -    """Generate a configure.h dynamically"""
+> -    fout = open(configure_h_out, 'w')
+> -
+> -    # These two variables are required to view build parameters during runtime
+> -    configure_defines='#define CONFIGURE_DEFINES \"'
+> -    configure_call='#define CONFIGURE_CALL \" config_all.py \"'
+> -
+> -    # Initialize the list of enabled features
+> -    features = ''
+> -
+> -    # Write the header
+> -    fout.write(head_comment)
+> -
+> -    dict = get_build_params()
+> -
+> -    for key, value in dict.iteritems():
+> -        # Add enabled features
+> -       features = features + "#define " + key + " " + value + "\n"
+> -
+> -       # Add each enabled feature to CONFIGURE_DEFINES list
+> -        configure_defines = configure_defines + " " + key + "=" + value + ","
+> -
+> -    configure_defines = configure_defines + "\"" + "\n"
+> -
+> -    fout.write(features)
+> -    fout.write(configure_defines)
+> -    fout.write(configure_call)
+> -
+> -
+> -    fout.close()
+> -
+> -def build_version_m4_vars(version_m4_vars_out, head_comment):
+> -    """Generate a temporary file containing variables from version.m4 in
+> -win/settings.in format. This done to allow importing them in win/openvpn.nsi"""
+> -
+> -    fout = open(version_m4_vars_out, 'w')
+> -    fout.write(head_comment)
+> -
+> -    kv = {}
+> -    parse_version_m4(kv, home_fn('version.m4'))
+> -
+> -    for key, value in kv.iteritems():
+> -         line = "!define " + key + "\t" + "\"" + value + "\"" + "\n"
+> -         fout.write(line)
+> -
+> -    fout.close()
+> -
+> -def preprocess(kv, in_fn, out_fn, quote_begin=None, quote_end=None, if_prefix=None, head_comment=None):
+> -    def repfn(m):
+> -        var, = m.groups()
+> -        return kv.get(var, '')
+> -
+> -    re_macro = re_ifdef = None
+> -
+> -    if quote_begin and quote_end:
+> -        re_macro = re.compile(r'%s(\w+)%s' % (re.escape(quote_begin), re.escape(quote_end)))
+> -
+> -    if if_prefix:
+> -        re_ifdef = re.compile(r'^\s*%sifdef\s+(\w+)\b' % (re.escape(if_prefix),))
+> -        re_else = re.compile(r'^\s*%selse\b' % (re.escape(if_prefix),))
+> -        re_endif = re.compile(r'^\s*%sendif\b' % (re.escape(if_prefix),))
+> -
+> -    if_stack = []
+> -    fin = open(in_fn)
+> -    fout = open(out_fn, 'w')
+> -    if head_comment:
+> -        fout.write(head_comment)
+> -    for line in fin:
+> -        if re_ifdef:
+> -            m = re.match(re_ifdef, line)
+> -            if m:
+> -                var, = m.groups()
+> -                if_stack.append(int(var in kv))
+> -                continue
+> -            elif re.match(re_else, line):
+> -                if_stack[-1] ^= 1
+> -                continue
+> -            elif re.match(re_endif, line):
+> -                if_stack.pop()
+> -                continue
+> -        if not if_stack or min(if_stack):
+> -            if re_macro:
+> -                line = re.sub(re_macro, repfn, line)
+> -            fout.write(line)
+> -    assert not if_stack
+> -    fin.close()
+> -    fout.close()
+> -
+> -def print_key_values(kv):
+> -    for k, v in sorted(kv.items()):
+> -        print "%s%s%s" % (k, ' '*(32-len(k)), repr(v))
+> -
+> -def get_sources(makefile_am):
+> -    """Parse ../Makefile.am to obtain a list of .h and .c files"""
+> -    c = set()
+> -    h = set()
+> -    f = open(makefile_am)
+> -    state = False
+> -    for line in f:
+> -        line = line.rstrip()
+> -        if line == 'openvpn_SOURCES = \\':
+> -            state = True
+> -        elif not line:
+> -            state = False
+> -        elif state:
+> -            for sf in line.split():
+> -                if sf.endswith('.c'):
+> -                    c.add(sf[:-2])
+> -                elif sf.endswith('.h'):
+> -                    h.add(sf[:-2])
+> -                elif sf == '\\':
+> -                    pass
+> -                else:
+> -                    print >>sys.stderr, "Unrecognized filename:", sf
+> -    f.close()
+> -    return [ sorted(list(s)) for s in (c, h) ]
+> -
+> -def output_mak_list(title, srclist, ext):
+> -    ret = "%s =" % (title,)
+> -    for x in srclist:
+> -        ret += " \\\n\t%s.%s" % (x, ext)
+> -    ret += '\n\n'
+> -    return ret
+> -
+> -def make_headers_objs(makefile_am):
+> -    """Generate HEADER and OBJS entries dynamically from ../Makefile.am"""
+> -    c, h = get_sources(makefile_am)
+> -    ret = output_mak_list('HEADERS', h, 'h')
+> -    ret += output_mak_list('OBJS', c, 'obj')
+> -    return ret
+> -
+> -def choose_arch(arch_name):
+> -    if arch_name == 'x64':
+> -        return (True,)
+> -    elif arch_name == 'x86':
+> -        return (False,)
+> -    elif arch_name == 'all':
+> -        return (True, False)
+> -    else:
+> -        raise ValueError("architecture ('%s') must be x86, x64, or all" % (arch_name,))
+> -
+> -def rm_rf(dir):
+> -    print "REMOVE", dir
+> -    shutil.rmtree(dir, ignore_errors=True)
+> -
+> -def mkdir(dir):
+> -    print "MKDIR", dir
+> -    os.mkdir(dir)
+> -
+> -def cp_a(src, dest, dest_is_dir=True):
+> -    if dest_is_dir:
+> -        dest = os.path.join(dest, os.path.basename(src))
+> -    print "COPY_DIR %s %s" % (src, dest)
+> -    shutil.copytree(src, dest)
+> -
+> -def cp(src, dest, dest_is_dir=True):
+> -    if dest_is_dir:
+> -        dest = os.path.join(dest, os.path.basename(src))
+> -    print "COPY %s %s" % (src, dest)
+> -    shutil.copyfile(src, dest)
+> -
+> -def rename(src, dest):
+> -    print "RENAME %s %s" % (src, dest)
+> -    shutil.move(src, dest)
+> -
+> -def rm_rf(path):
+> -    try:
+> -        shutil.rmtree(path, onerror=onerror)
+> -    except:
+> -        pass
+> -
+> -def onerror(func, path, exc_info):
+> -    """
+> -    Error handler for ``shutil.rmtree``.
+> -
+> -    If the error is due to an access error (read only file)
+> -    it attempts to add write permission and then retries.
+> -
+> -    If the error is for another reason it re-raises the error.
+> -
+> -    Usage : ``shutil.rmtree(path, onerror=onerror)``
+> -    """
+> -    if not os.access(path, os.W_OK):
+> -        # Is the error an access error ?
+> -        os.chmod(path, stat.S_IWUSR)
+> -        func(path)
+> -    else:
+> -        raise
+> -
+> -def mkdir_silent(dir):
+> -    try:
+> -        os.mkdir(dir)
+> -    except:
+> -        pass
+> -
+> -config = get_config()
 > --
-> Samuli Sepp=C3=A4nen
-> Community Manager
-> OpenVPN Technologies, Inc
->
-> irc freenode net: mattock
+> 1.7.3.4
 >
 >
-> [1] <http://justin.harmonize.fm/index.php/2009/05/exploring-memcmp>
-> [2]
-> <http://www.slac.stanford.edu/comp/unix/package/rtems/doc/html/libc/libc.=
-info.memcmp.html>
+> ------------------------------------------------------------------------------
+> Virtualization & Cloud Management Using Capacity Planning
+> Cloud computing makes use of virtualization - but cloud computing
+> also focuses on allowing computing to be delivered as a service.
+> http://www.accelacomm.com/jaw/sfnl/114/51521223/
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+
 
