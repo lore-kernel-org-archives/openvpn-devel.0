@@ -1,13 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <4F588784.300@...515...>
+In-Reply-To: <4F587F1A.2050905@...515...>
 References: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
-	<1330546342-17794-36-git-send-email-alon.barlev@...277...>
-	<4F588784.300@...515...>
-Date: Thu, 8 Mar 2012 21:36:53 +0200
-Message-ID: <CAOazyz3OzNYscLd01QY_wopFkH9zctixQNhJr-PyoPmTBvrwTw@...278...>
+	<1330546342-17794-32-git-send-email-alon.barlev@...277...>
+	<4F587F1A.2050905@...515...>
+Date: Thu, 8 Mar 2012 21:38:27 +0200
+Message-ID: <CAOazyz1bT9-1fGdSK4d-gpqHMgceMjbM8Zi9rO3zMp7wG9Jf9A@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 35/52] build: proper selinux detection
-	and usage
+Subject: Re: [Openvpn-devel] [PATCH 31/52] build: autoconf: commands as
+	environment
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,29 +21,19 @@ Content-Transfer-Encoding: quoted-printable
 To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
 Cc: "Openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-I wrote this in the introduction of the patch set.
-
-There are two approaches to detecting dependencies:
-
-1. Detect all compile time dependences- you detect headers and
-libraries, this is probably the safest way to go, but makes the code
-very complex.
-
-2. Detect library only - you assume that if library is present, the
-functionality exists, this is what important... no need to check for
-header, most probably this exists as well. This makes the code
-simpler, in the risk of compile failure if header is missing.
-
-In all project I wrote build for (opensc, uswsusp, ntfs3g, ecryptfs)
-we took the 2nd approach, and it is fine.
-
-Alon.
+Just like CPP, CC, CXX, LD, AR, PKG_CONFIG
+Programs are expected to be in environment.
+The autoconf detection get/set these in environment too.
 
 2012/3/8 Samuli Sepp=C3=A4nen <samuli@...515...>:
-> Looks like a cleaner implementation than the earlier one. I take it AC_CH=
-ECK_HEADER is not anymore needed to detect selinux.h, but why exactly?
+> So, this patch replaces (removes?) the "--with-<executable>-path" configu=
+re options with environment variables, right? =C2=A0For example, if one has=
+ "ifconfig" in a non-standard place, he can set the IFCONFIG environment va=
+riable and the build will find it. Did I understand this correctly?
 >
-> Besides that I give this one an ACK.
+> I don't know autotools well enough to give this one an ACK at this point.=
+ That said, the patch does clean up configure.ac a lot, and cleanups are al=
+ways nice :).
 >
 > --
 > Samuli Sepp=C3=A4nen
@@ -52,203 +42,146 @@ ECK_HEADER is not anymore needed to detect selinux.h, but why exactly?
 >
 > irc freenode net: mattock
 >
+>
 >> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 >> ---
->> =C2=A0configure.ac =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0| =C2=A0 35 =
-+++++++++++++++--------------------
->> =C2=A0src/openvpn/Makefile.am | =C2=A0 =C2=A01 +
->> =C2=A0src/openvpn/init.c =C2=A0 =C2=A0 =C2=A0| =C2=A0 =C2=A04 ++--
->> =C2=A0src/openvpn/options.c =C2=A0 | =C2=A0 =C2=A06 +++---
->> =C2=A0src/openvpn/options.h =C2=A0 | =C2=A0 =C2=A02 +-
->> =C2=A0src/openvpn/syshead.h =C2=A0 | =C2=A0 =C2=A02 +-
->> =C2=A06 files changed, 23 insertions(+), 27 deletions(-)
+>> =C2=A0configure.ac | =C2=A0 66 ++++++++++++++++++++++++-----------------=
+----------------
+>> =C2=A01 files changed, 28 insertions(+), 38 deletions(-)
 >>
 >> diff --git a/configure.ac b/configure.ac
->> index 98615c6..2388f17 100644
+>> index 6b5cf71..ed98464 100644
 >> --- a/configure.ac
 >> +++ b/configure.ac
->> @@ -215,7 +215,7 @@ AC_ARG_ENABLE(
->>
->> =C2=A0AC_ARG_ENABLE(
->> =C2=A0 =C2=A0 =C2=A0 [selinux],
->> - =C2=A0 =C2=A0 [AS_HELP_STRING([--disable-selinux], [disable SELinux su=
-pport])],
->> + =C2=A0 =C2=A0 [AS_HELP_STRING([--enable-selinux], [enable SELinux supp=
-ort])],
->> =C2=A0 =C2=A0 =C2=A0 ,
->> =C2=A0 =C2=A0 =C2=A0 [enable_selinux=3D"no"]
+>> @@ -267,37 +267,6 @@ AC_ARG_WITH(
 >> =C2=A0)
->> @@ -619,6 +619,13 @@ AC_CHECK_LIB(
->> =C2=A0)
->> =C2=A0AC_SUBST([SOCKETS_LIBS])
 >>
->> +AC_CHECK_LIB(
->> + =C2=A0 =C2=A0 [selinux],
->> + =C2=A0 =C2=A0 [setcon],
->> + =C2=A0 =C2=A0 [SELINUX_LIBS=3D"-lselinux"]
->> +)
->> +AC_SUBST([SELINUX_LIBS])
+>> =C2=A0AC_ARG_WITH(
+>> - =C2=A0 =C2=A0 [ifconfig-path],
+>> - =C2=A0 =C2=A0 [AS_HELP_STRING([--with-ifconfig-path=3DPATH], [Path to =
+ifconfig tool])],
+>> - =C2=A0 =C2=A0 [IFCONFIG=3D"$withval"],
+>> - =C2=A0 =C2=A0 [AC_PATH_PROG([IFCONFIG], [ifconfig], [ifconfig], [$PATH=
+:/usr/local/sbin:/usr/sbin:/sbin])]
+>> -)
+>> -AC_DEFINE_UNQUOTED([IFCONFIG_PATH], ["$IFCONFIG"], [Path to ifconfig to=
+ol])
+>> -
+>> -AC_ARG_WITH(
+>> - =C2=A0 =C2=A0 [iproute-path],
+>> - =C2=A0 =C2=A0 [AS_HELP_STRING([--with-iproute-path=3DPATH], [Path to i=
+proute tool])],
+>> - =C2=A0 =C2=A0 [IPROUTE=3D"$withval"],
+>> - =C2=A0 =C2=A0 [AC_PATH_PROG([IPROUTE], [ip], [ip], [$PATH:/usr/local/s=
+bin:/usr/sbin:/sbin])]
+>> -)
+>> -AC_DEFINE_UNQUOTED([IPROUTE_PATH], ["$IPROUTE"], [Path to iproute tool])
+>> -
+>> -AC_ARG_WITH([route-path],
+>> - =C2=A0 [AS_HELP_STRING([--with-route-path=3DPATH], [Path to route tool=
+])],
+>> - =C2=A0 [ROUTE=3D"$withval"],
+>> - =C2=A0 [AC_PATH_PROG([ROUTE], [route], [route], [$PATH:/usr/local/sbin=
+:/usr/sbin:/sbin])]
+>> -)
+>> -AC_DEFINE_UNQUOTED([ROUTE_PATH], ["$ROUTE"], [Path to route tool])
+>> -
+>> -AC_ARG_WITH(
+>> - =C2=A0 =C2=A0 [netstat-path],
+>> - =C2=A0 =C2=A0 [AS_HELP_STRING([--with-netstat-path=3DPATH], [Path to n=
+etstat tool])],
+>> - =C2=A0 =C2=A0 [NETSTAT=3D"$withval"],
+>> - =C2=A0 =C2=A0 [AC_PATH_PROG([NETSTAT], [netstat], [netstat], [$PATH:/u=
+sr/local/sbin:/usr/sbin:/sbin:/etc])]
+>> -)
+>> -AC_DEFINE_UNQUOTED([NETSTAT_PATH], ["$NETSTAT"], [Path to netstat tool])
+>> -
+>> -AC_ARG_WITH(
+>> =C2=A0 =C2=A0 =C2=A0 [mem-check],
+>> =C2=A0 =C2=A0 =C2=A0 [AS_HELP_STRING([--with-mem-check=3DTYPE], [build w=
+ith debug memory checking, TYPE=3Ddmalloc|valgrind|ssl])],
+>> =C2=A0 =C2=A0 =C2=A0 [
+>> @@ -370,6 +339,20 @@ AC_PROG_INSTALL
+>> =C2=A0AC_PROG_LN_S
+>> =C2=A0AC_PROG_MAKE_SET
+>>
+>> +AC_ARG_VAR([IFCONFIG], [full path to ipconfig utility])
+>> +AC_ARG_VAR([ROUTE], [full path to route utility])
+>> +AC_ARG_VAR([IPROUTE], [full path to ip utility])
+>> +AC_ARG_VAR([NETSTAT], [path to netstat utility]) # tests
+>> +AC_ARG_VAR([MAN2HTML], [path to man2html utility])
+>> +AC_PATH_PROGS([IFCONFIG], [ifconfig],, [$PATH:/usr/local/sbin:/usr/sbin=
+:/sbin])
+>> +AC_PATH_PROGS([ROUTE], [route],, [$PATH:/usr/local/sbin:/usr/sbin:/sbin=
+])
+>> +AC_PATH_PROGS([IPROUTE], [ip],, [$PATH:/usr/local/sbin:/usr/sbin:/sbin])
+>> +AC_CHECK_PROGS([NETSTAT], [netstat], [netstat], [$PATH:/usr/local/sbin:=
+/usr/sbin:/sbin:/etc]) # tests
+>> +AC_CHECK_PROGS([MAN2HTML], [man2html])
+>> +AC_DEFINE_UNQUOTED([IFCONFIG_PATH], ["$IFCONFIG"], [Path to ifconfig to=
+ol])
+>> +AC_DEFINE_UNQUOTED([IPROUTE_PATH], ["$IPROUTE"], [Path to iproute tool])
+>> +AC_DEFINE_UNQUOTED([ROUTE_PATH], ["$ROUTE"], [Path to route tool])
 >> +
->> =C2=A0case "${with_mem_check}" in
->> =C2=A0 =C2=A0 =C2=A0 valgrind)
->> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 AC_CHECK_HEADER(
->> @@ -826,25 +833,6 @@ if test "${enable_crypto}" =3D "yes"; then
->> =C2=A0 =C2=A0 fi
->> =C2=A0fi
+>> =C2=A0#
+>> =C2=A0# Libtool
+>> =C2=A0#
+>> @@ -386,12 +369,6 @@ ifdef(
+>> =C2=A0 =C2=A0 =C2=A0 ]
+>> =C2=A0)
 >>
->> -dnl
->> -dnl check for SELinux library and headers
->> -dnl
->> -if test "${enable_selinux}" =3D "yes"; then
->> - =C2=A0 =C2=A0 AC_CHECK_HEADER(
->> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 [selinux/selinux.h],
->> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 [AC_CHECK_LIB(
->> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-[selinux],
->> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-[setcon],
->> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 [
->> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 LIBS=3D"${LIBS} -lselinux"
->> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 AC_DEFINE(HAVE_SETCON, 1, [SELinux support])
->> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-],
->> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-[AC_MSG_RESULT([SELinux library not found.])]
->> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 )],
->> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 [AC_MSG_ERROR([SELinux heade=
-rs not found.])]
->> - =C2=A0 =C2=A0 )
+>> -if test "${WIN32}" =3D "yes"; then
+>> - =C2=A0 =C2=A0 AC_ARG_VAR([MAN2HTML], [man2html utility])
+>> - =C2=A0 =C2=A0 AC_CHECK_PROGS([MAN2HTML], [man2html])
+>> - =C2=A0 =C2=A0 test -z "${MAN2HTML}" && AC_MSG_ERROR([man2html is requi=
+red for win32])
 >> -fi
 >> -
->> =C2=A0if test -n "${SP_PLATFORM_WINDOWS}"; then
->> =C2=A0 =C2=A0 =C2=A0 AC_DEFINE_UNQUOTED([PATH_SEPARATOR], ['\\\\'], [Pat=
-h separator]) #"
->> =C2=A0 =C2=A0 =C2=A0 AC_DEFINE_UNQUOTED([PATH_SEPARATOR_STR], ["\\\\"], =
-[Path separator]) #"
->> @@ -896,6 +884,12 @@ else
->> =C2=A0 =C2=A0 =C2=A0 fi
->> =C2=A0fi
->>
->> +if test "${enable_selinux}" =3D "yes"; then
->> + =C2=A0 =C2=A0 test -z "${SELINUX_LIBS}" && AC_MSG_ERROR([libselinux re=
-quired but missing])
->> + =C2=A0 =C2=A0 OPTIONAL_SELINUX_LIBS=3D"${SELINUX_LIBS}"
->> + =C2=A0 =C2=A0 AC_DEFINE([ENABLE_SELINUX], [1], [SELinux support])
->> +fi
+>> =C2=A0AC_C_CONST
+>> =C2=A0AC_C_INLINE
+>> =C2=A0AC_C_VOLATILE
+>> @@ -920,7 +897,16 @@ test "${enable_pf}" =3D "yes" && AC_DEFINE([ENABLE_=
+PF], [1], [Enable internal pack
+>> =C2=A0test "${enable_strict_options}" =3D "yes" && AC_DEFINE([ENABLE_STR=
+ICT_OPTIONS_CHECK], [1], [Enable strict options check between peers])
+>> =C2=A0test "${enable_password_save}" =3D "yes" && AC_DEFINE([ENABLE_PASS=
+WORD_SAVE], [1], [Allow --askpass and --auth-user-pass passwords to be read=
+ from a file])
+>> =C2=A0test "${enable_systemd}" =3D "yes" && AC_DEFINE([ENABLE_SYSTEMD], =
+[1], [Enable systemd support])
+>> -test "${enable_iproute2}" =3D "yes" && AC_DEFINE([ENABLE_IPROUTE], [1],=
+ [enable iproute2 support])
 >> +
+>> +if test "${enable_iproute2}" =3D "yes"; then
+>> + =C2=A0 =C2=A0 test -z "${IPROUTE}" && AC_MSG_ERROR([ip utility is requ=
+ired but missing])
+>> + =C2=A0 =C2=A0 AC_DEFINE([ENABLE_IPROUTE], [1], [enable iproute2 suppor=
+t])
+>> +else
+>> + =C2=A0 =C2=A0 if test "${WIN32}" !=3D "yes"; then
+>> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 test -z "${ROUTE}" && AC_MSG=
+_ERROR([route utility is required but missing])
+>> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 test -z "${IFCONFIG}" && AC_=
+MSG_ERROR([ifconfig utility is required but missing])
+>> + =C2=A0 =C2=A0 fi
+>> +fi
+>>
 >> =C2=A0if test "${enable_pedantic}" =3D "yes"; then
 >> =C2=A0 =C2=A0 =C2=A0 enable_strict=3D"yes"
->> =C2=A0 =C2=A0 =C2=A0 CFLAGS=3D"${CFLAGS} -ansi -pedantic"
->> @@ -922,6 +916,7 @@ AC_SUBST([TAP_WIN_MIN_MAJOR])
->> =C2=A0AC_SUBST([TAP_WIN_MIN_MINOR])
+>> @@ -930,6 +916,10 @@ if test "${enable_strict}" =3D "yes"; then
+>> =C2=A0 =C2=A0 =C2=A0 CFLAGS=3D"${CFLAGS} -Wall -Wno-unused-parameter -Wn=
+o-unused-function"
+>> =C2=A0fi
 >>
->> =C2=A0AC_SUBST([OPTIONAL_DL_LIBS])
->> +AC_SUBST([OPTIONAL_SELINUX_LIBS])
->>
->> =C2=A0AM_CONDITIONAL([WIN32], [test "${WIN32}" =3D "yes"])
->>
->> diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
->> index 86abd09..a3f8b3a 100644
->> --- a/src/openvpn/Makefile.am
->> +++ b/src/openvpn/Makefile.am
->> @@ -97,6 +97,7 @@ openvpn_SOURCES =3D \
->> =C2=A0 =C2=A0 =C2=A0 cryptoapi.h cryptoapi.c
->> =C2=A0openvpn_LDADD =3D \
->> =C2=A0 =C2=A0 =C2=A0 $(SOCKETS_LIBS) \
->> + =C2=A0 =C2=A0 $(OPTIONAL_SELINUX_LIBS) \
->> =C2=A0 =C2=A0 =C2=A0 $(OPTIONAL_DL_LIBS)
->> =C2=A0if WIN32
->> =C2=A0openvpn_SOURCES +=3D openvpn_win32_resources.rc
->> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
->> index b8f57b2..0c995ff 100644
->> --- a/src/openvpn/init.c
->> +++ b/src/openvpn/init.c
->> @@ -1038,7 +1038,7 @@ do_uid_gid_chroot (struct context *c, bool no_dela=
-y)
->> =C2=A0 =C2=A0 =C2=A0 mstats_open(c->options.memstats_fn);
->> =C2=A0#endif
->>
->> -#ifdef HAVE_SETCON
->> +#ifdef ENABLE_SELINUX
->> =C2=A0 =C2=A0 =C2=A0 =C2=A0/* Apply a SELinux context in order to restri=
-ct what OpenVPN can do
->> =C2=A0 =C2=A0 =C2=A0 =C2=A0 * to _only_ what it is supposed to do after =
-initialization is complete
->> =C2=A0 =C2=A0 =C2=A0 =C2=A0 * (basically just network I/O operations). D=
-oing it after chroot
->> @@ -2465,7 +2465,7 @@ do_option_warnings (struct context *c)
->> =C2=A0 =C2=A0 =C2=A0msg (M_WARN, "WARNING: --ping should normally be use=
-d with --ping-restart or --ping-exit");
->>
->> =C2=A0 =C2=A0if (o->username || o->groupname || o->chroot_dir
->> -#ifdef HAVE_SETCON
->> +#ifdef ENABLE_SELINUX
->> =C2=A0 =C2=A0 =C2=A0 =C2=A0|| o->selinux_context
->> =C2=A0#endif
->> =C2=A0 =C2=A0 =C2=A0 =C2=A0)
->> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
->> index d7f848e..4e95b83 100644
->> --- a/src/openvpn/options.c
->> +++ b/src/openvpn/options.c
->> @@ -316,7 +316,7 @@ static const char usage_message[] =3D
->> =C2=A0 =C2=A0"--user user =C2=A0 =C2=A0 : Set UID to user after initiali=
-zation.\n"
->> =C2=A0 =C2=A0"--group group =C2=A0 : Set GID to group after initializati=
-on.\n"
->> =C2=A0 =C2=A0"--chroot dir =C2=A0 =C2=A0: Chroot to this directory after=
- initialization.\n"
->> -#ifdef HAVE_SETCON
->> +#ifdef ENABLE_SELINUX
->> =C2=A0 =C2=A0"--setcon context: Apply this SELinux context after initial=
-ization.\n"
->> =C2=A0#endif
->> =C2=A0 =C2=A0"--cd dir =C2=A0 =C2=A0 =C2=A0 =C2=A0: Change to this direc=
-tory before initialization.\n"
->> @@ -1477,7 +1477,7 @@ show_settings (const struct options *o)
->> =C2=A0 =C2=A0SHOW_STR (groupname);
->> =C2=A0 =C2=A0SHOW_STR (chroot_dir);
->> =C2=A0 =C2=A0SHOW_STR (cd_dir);
->> -#ifdef HAVE_SETCON
->> +#ifdef ENABLE_SELINUX
->> =C2=A0 =C2=A0SHOW_STR (selinux_context);
->> =C2=A0#endif
->> =C2=A0 =C2=A0SHOW_STR (writepid);
->> @@ -4525,7 +4525,7 @@ add_option (struct options *options,
->> =C2=A0 =C2=A0 =C2=A0 }
->> =C2=A0 =C2=A0 =C2=A0 =C2=A0options->cd_dir =3D p[1];
->> =C2=A0 =C2=A0 =C2=A0}
->> -#ifdef HAVE_SETCON
->> +#ifdef ENABLE_SELINUX
->> =C2=A0 =C2=A0else if (streq (p[0], "setcon") && p[1])
->> =C2=A0 =C2=A0 =C2=A0{
->> =C2=A0 =C2=A0 =C2=A0 =C2=A0VERIFY_PERMISSION (OPT_P_GENERAL);
->> diff --git a/src/openvpn/options.h b/src/openvpn/options.h
->> index 6af4b3a..57b88b7 100644
->> --- a/src/openvpn/options.h
->> +++ b/src/openvpn/options.h
->> @@ -310,7 +310,7 @@ struct options
->> =C2=A0 =C2=A0const char *groupname;
->> =C2=A0 =C2=A0const char *chroot_dir;
->> =C2=A0 =C2=A0const char *cd_dir;
->> -#ifdef HAVE_SETCON
->> +#ifdef ENABLE_SELINUX
->> =C2=A0 =C2=A0char *selinux_context;
->> =C2=A0#endif
->> =C2=A0 =C2=A0const char *writepid;
->> diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
->> index 1ad81d8..cac4757 100644
->> --- a/src/openvpn/syshead.h
->> +++ b/src/openvpn/syshead.h
->> @@ -176,7 +176,7 @@
->> =C2=A0#include <sys/epoll.h>
->> =C2=A0#endif
->>
->> -#ifdef HAVE_SETCON
->> +#ifdef ENABLE_SELINUX
->> =C2=A0#include <selinux/selinux.h>
->> =C2=A0#endif
+>> +if test "${WIN32}" =3D "yes"; then
+>> + =C2=A0 =C2=A0 test -z "${MAN2HTML}" && AC_MSG_ERROR([man2html is requi=
+red for win32])
+>> +fi
+>> +
+>> =C2=A0CONFIGURE_DEFINES=3D"`set | grep '^enable_.*=3D' ; set | grep '^wi=
+th_.*=3D'`"
+>> =C2=A0AC_DEFINE_UNQUOTED([CONFIGURE_DEFINES], ["`echo ${CONFIGURE_DEFINE=
+S}`"], [Configuration settings])
 >>
 >
 
