@@ -1,11 +1,12 @@
-Message-ID: <4F588CDA.1070702@...515...>
-Date: Thu, 08 Mar 2012 12:41:30 +0200
+Message-ID: <4F588F93.9060406@...515...>
+Date: Thu, 08 Mar 2012 12:53:07 +0200
 From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
 References: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
-	<1330546342-17794-39-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1330546342-17794-39-git-send-email-alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 38/52] build: properly process lzo-stub
+	<1330546342-17794-42-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1330546342-17794-42-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 41/52] build: autoconf: update defaults
+ for options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,12 +20,11 @@ Content-Transfer-Encoding: quoted-printable
 To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "Openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-Much of this patch is about renaming LZO_STUB as the more descriptive
-ENABLE_LZO_STUB, and making thing clearer is always good.  Also, the
-LZO_STUB-related logic is moved out of syshead.h to configure.ac.
+I'd rather not RTFM... could somebody explain to me what the funky
+"@<:@default=3Dno@:>@" thing exactly does? Does it just add the default
+"enabled/disabled" value to the help strings?
 
-Somebody with more autotools knowledge might want to review this just in
-case. If nobody speaks up, I say ACK this.
+If so it's an ACK.
 
 --=20
 Samuli Sepp=E4nen
@@ -33,288 +33,295 @@ OpenVPN Technologies, Inc
 
 irc freenode net: mattock
 
+
 > Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 > ---
->  configure.ac          |   12 +++++++-----
->  src/openvpn/lzo.c     |   20 ++++++++++----------
->  src/openvpn/lzo.h     |   20 ++++++++++----------
->  src/openvpn/ssl.c     |    2 +-
->  src/openvpn/syshead.h |   12 ------------
->  5 files changed, 28 insertions(+), 38 deletions(-)
+>  configure.ac |   56 ++++++++++++++++++++++++++++------------------------=
+----
+>  1 files changed, 28 insertions(+), 28 deletions(-)
 >
 > diff --git a/configure.ac b/configure.ac
-> index baa66b2..da41554 100644
+> index 57d294d..9ffcc68 100644
 > --- a/configure.ac
 > +++ b/configure.ac
-> @@ -701,11 +701,6 @@ if test "${enable_lzo}" =3D "yes" && test "${enable_=
-lzo_stub}" =3D "no"; then
->     fi
->  fi
+> @@ -41,195 +41,195 @@ AC_USE_SYSTEM_EXTENSIONS
 >
-> -dnl enable multi-client mode
-> -if test "${enable_lzo_stub}" =3D "yes"; then
-> -       AC_DEFINE([LZO_STUB], [1], [Enable LZO stub capability])
-> -fi
-> -
->  PKG_CHECK_MODULES(
->         [PKCS11_HELPER],
->         [libpkcs11-helper-1 >=3D 1.02],
-> @@ -867,6 +862,13 @@ if test "${enable_selinux}" =3D "yes"; then
->         AC_DEFINE([ENABLE_SELINUX], [1], [SELinux support])
->  fi
+>  AC_ARG_ENABLE(
+>         [lzo],
+> -       [AS_HELP_STRING([--enable-lzo], [enable LZO compression support])=
+],
+> +       [AS_HELP_STRING([--enable-lzo], [enable LZO compression support @=
+<:@default=3Dno@:>@])],
+>         ,
+>         [enable_lzo=3D"no"]
+>  )
 >
-> +if test "${enable_lzo_stub}" =3D "yes"; then
-> +       test "${enable_lzo}" =3D "yes" && AC_MSG_ERROR([Cannot have both =
-lzo stub and lzo enabled])
-> +       AC_DEFINE([ENABLE_LZO_STUB], [1], [Enable LZO stub capability])
-> +       AC_DEFINE([USE_LZO], [1], [Enable LZO compression library])
-> +       AC_DEFINE([LZO_VERSION_NUM], ["STUB"], [LZO version number])
-> +fi
-> +
->  if test "${enable_pkcs11}" =3D "yes"; then
->         test "${have_pkcs11_helper}" !=3D "yes" && AC_MSG_ERROR([PKCS11 e=
-nabled but libpkcs11-helper is missing])
->         test "${enable_ssl}" !=3D "yes" && AC_MSG_ERROR([PKCS11 can be en=
-abled only if SSL is enabled])
-> diff --git a/src/openvpn/lzo.c b/src/openvpn/lzo.c
-> index 7e50fc9..ca06f71 100644
-> --- a/src/openvpn/lzo.c
-> +++ b/src/openvpn/lzo.c
-> @@ -36,7 +36,7 @@
+>  AC_ARG_ENABLE(
+>         [lzo-stub],
+> -       [AS_HELP_STRING([--enable-lzo-stub], [don't compile LZO compressi=
+on support but still allow limited interoperability with LZO-enabled peers]=
+)],
+> +       [AS_HELP_STRING([--enable-lzo-stub], [don't compile LZO compressi=
+on support but still allow limited interoperability with LZO-enabled peers =
+@<:@default=3Dno@:>@])],
+>         ,
+>         [enable_lzo_stub=3D"no"]
+>  )
 >
->  #include "memdbg.h"
+>  AC_ARG_ENABLE(
+>         [crypto],
+> -       [AS_HELP_STRING([--disable-crypto], [disable crypto support])],
+> +       [AS_HELP_STRING([--disable-crypto], [disable crypto support @<:@d=
+efault=3Dyes@:>@])],
+>         ,
+>         [enable_crypto=3D"yes"]
+>  )
 >
-> -#ifndef LZO_STUB
-> +#ifndef ENABLE_LZO_STUB
->  /**
->   * Perform adaptive compression housekeeping.
->   *
-> @@ -91,7 +91,7 @@ lzo_adaptive_compress_data (struct lzo_adaptive_compres=
-s *ac, int n_total, int n
->    ac->n_comp +=3D n_comp;
->  }
+>  AC_ARG_ENABLE(
+>         [ssl],
+> -       [AS_HELP_STRING([--disable-ssl], [disable SSL support for TLS-bas=
+ed key exchange])],
+> +       [AS_HELP_STRING([--disable-ssl], [disable SSL support for TLS-bas=
+ed key exchange @<:@default=3Dyes@:>@])],
+>         ,
+>         [enable_ssl=3D"yes"]
+>  )
 >
-> -#endif /* LZO_STUB */
-> +#endif /* ENABLE_LZO_STUB */
+>  AC_ARG_ENABLE(
+>         [x509-alt-username],
+> -       [AS_HELP_STRING([--enable-x509-alt-username], [enable the --x509-=
+username-field feature])],
+> +       [AS_HELP_STRING([--enable-x509-alt-username], [enable the --x509-=
+username-field feature @<:@default=3Dno@:>@])],
+>         ,
+>         [enable_x509_alt_username=3D"no"]
+>  )
 >
->  void lzo_adjust_frame_parameters (struct frame *frame)
->  {
-> @@ -109,7 +109,7 @@ lzo_compress_init (struct lzo_compress_workspace *lzo=
-work, unsigned int flags)
->    CLEAR (*lzowork);
+>  AC_ARG_ENABLE(
+>         [multi],
+> -       [AS_HELP_STRING([--disable-multi], [disable client/server support=
+ (--mode server + client mode)])],
+> +       [AS_HELP_STRING([--disable-multi], [disable client/server support=
+ (--mode server + client mode) @<:@default=3Dyes@:>@])],
+>         ,
+>         [enable_multi=3D"yes"]
+>  )
 >
->    lzowork->flags =3D flags;
-> -#ifndef LZO_STUB
-> +#ifndef ENABLE_LZO_STUB
->    lzowork->wmem_size =3D LZO_WORKSPACE;
+>  AC_ARG_ENABLE(
+>         [server],
+> -       [AS_HELP_STRING([--disable-server], [disable server support only =
+(but retain client support)])],
+> +       [AS_HELP_STRING([--disable-server], [disable server support only =
+(but retain client support) @<:@default=3Dyes@:>@])],
+>         ,
+>         [enable_server=3D"yes"]
+>  )
 >
->    if (lzo_init () !=3D LZO_E_OK)
-> @@ -129,7 +129,7 @@ lzo_compress_uninit (struct lzo_compress_workspace *l=
-zowork)
->    if (lzowork)
->      {
->        ASSERT (lzowork->defined);
-> -#ifndef LZO_STUB
-> +#ifndef ENABLE_LZO_STUB
->        lzo_free (lzowork->wmem);
->        lzowork->wmem =3D NULL;
->  #endif
-> @@ -140,7 +140,7 @@ lzo_compress_uninit (struct lzo_compress_workspace *l=
-zowork)
->  static inline bool
->  lzo_compression_enabled (struct lzo_compress_workspace *lzowork)
->  {
-> -#ifndef LZO_STUB
-> +#ifndef ENABLE_LZO_STUB
->    if ((lzowork->flags & (LZO_SELECTED|LZO_ON)) =3D=3D (LZO_SELECTED|LZO_=
-ON))
->      {
->        if (lzowork->flags & LZO_ADAPTIVE)
-> @@ -157,7 +157,7 @@ lzo_compress (struct buffer *buf, struct buffer work,
->               struct lzo_compress_workspace *lzowork,
->               const struct frame* frame)
->  {
-> -#ifndef LZO_STUB
-> +#ifndef ENABLE_LZO_STUB
->    lzo_uint zlen =3D 0;
->    int err;
->    bool compressed =3D false;
-> @@ -168,7 +168,7 @@ lzo_compress (struct buffer *buf, struct buffer work,
->    if (buf->len <=3D 0)
->      return;
+>  AC_ARG_ENABLE(
+>         [plugins],
+> -       [AS_HELP_STRING([--disable-plugins], [disable plug-in support])],
+> +       [AS_HELP_STRING([--disable-plugins], [disable plug-in support @<:=
+@default=3Dyes@:>@])],
+>         ,
+>         [enable_plugins=3D"yes"]
+>  )
 >
-> -#ifndef LZO_STUB
-> +#ifndef ENABLE_LZO_STUB
->    /*
->     * In order to attempt compression, length must be at least COMPRESS_T=
-HRESHOLD,
->     * and our adaptive level must give the OK.
-> @@ -226,7 +226,7 @@ lzo_decompress (struct buffer *buf, struct buffer wor=
-k,
->                 struct lzo_compress_workspace *lzowork,
->                 const struct frame* frame)
->  {
-> -#ifndef LZO_STUB
-> +#ifndef ENABLE_LZO_STUB
->    lzo_uint zlen =3D EXPANDED_SIZE (frame);
->    int err;
->  #endif
-> @@ -244,7 +244,7 @@ lzo_decompress (struct buffer *buf, struct buffer wor=
-k,
+>  AC_ARG_ENABLE(
+>         [eurephia],
+> -       [AS_HELP_STRING([--disable-eurephia], [disable support for the eu=
+rephia plug-in])],
+> +       [AS_HELP_STRING([--disable-eurephia], [disable support for the eu=
+rephia plug-in @<:@default=3Dyes@:>@])],
+>         ,
+>         [enable_eurephia=3D"yes"]
+>  )
 >
->    if (c =3D=3D YES_COMPRESS)       /* packet was compressed */
->      {
-> -#ifndef LZO_STUB
-> +#ifndef ENABLE_LZO_STUB
->        ASSERT (buf_safe (&work, zlen));
->        err =3D LZO_DECOMPRESS (BPTR (buf), BLEN (buf), BPTR (&work), &zle=
-n,
->                             lzowork->wmem);
-> @@ -291,7 +291,7 @@ void lzo_print_stats (const struct lzo_compress_works=
-pace *lzo_compwork, struct
->  {
->    ASSERT (lzo_compwork->defined);
+>  AC_ARG_ENABLE(
+>         [management],
+> -       [AS_HELP_STRING([--disable-management], [disable management serve=
+r support])],
+> +       [AS_HELP_STRING([--disable-management], [disable management serve=
+r support @<:@default=3Dyes@:>@])],
+>         ,
+>         [enable_management=3D"yes"]
+>  )
 >
-> -#ifndef LZO_STUB
-> +#ifndef ENABLE_LZO_STUB
->    status_printf (so, "pre-compress bytes," counter_format, lzo_compwork-=
->pre_compress);
->    status_printf (so, "post-compress bytes," counter_format, lzo_compwork=
-->post_compress);
->    status_printf (so, "pre-decompress bytes," counter_format, lzo_compwor=
-k->pre_decompress);
-> diff --git a/src/openvpn/lzo.h b/src/openvpn/lzo.h
-> index 5fb2a15..da4bd88 100644
-> --- a/src/openvpn/lzo.h
-> +++ b/src/openvpn/lzo.h
-> @@ -39,7 +39,7 @@
->   * @{
->   */
+>  AC_ARG_ENABLE(
+>         [pkcs11],
+> -       [AS_HELP_STRING([--enable-pkcs11], [enable pkcs11 support])],
+> +       [AS_HELP_STRING([--enable-pkcs11], [enable pkcs11 support @<:@def=
+ault=3Dno@:>@])],
+>         ,
+>         [enable_pkcs11=3D"no"]
+>  )
 >
-> -#ifndef LZO_STUB
-> +#ifndef ENABLE_LZO_STUB
->  #ifdef LZO_HEADER_DIR
->  #include "lzo/lzoutil.h"
->  #include "lzo/lzo1x.h"
-> @@ -68,7 +68,7 @@
+>  AC_ARG_ENABLE(
+>         [socks],
+> -       [AS_HELP_STRING([--disable-socks], [disable Socks support])],
+> +       [AS_HELP_STRING([--disable-socks], [disable Socks support @<:@def=
+ault=3Dyes@:>@])],
+>         ,
+>         [enable_socks=3D"yes"]
+>  )
 >
->  /***********************************************************************=
-***/
->  /** @name LZO library interface defines *//** @{ *//********************=
-***/
-> -#ifndef LZO_STUB
-> +#ifndef ENABLE_LZO_STUB
->  #define LZO_COMPRESS    lzo1x_1_15_compress
->                                  /**< LZO library compression function.
->                                   *
-> @@ -90,7 +90,7 @@
->                                   *   verify the integrity of incoming
->                                   *   packets, you might want to consider
->                                   *   using the non-safe version. */
-> -#endif /* LZO_STUB */
-> +#endif /* ENABLE_LZO_STUB */
->  /** @} name LZO library interface *//***********************************=
-***/
+>  AC_ARG_ENABLE(
+>         [http-proxy],
+> -       [AS_HELP_STRING([--disable-http-proxy], [disable HTTP proxy suppo=
+rt])],
+> +       [AS_HELP_STRING([--disable-http-proxy], [disable HTTP proxy suppo=
+rt @<:@default=3Dyes@:>@])],
+>         ,
+>         [enable_http_proxy=3D"yes"]
+>  )
 >
+>  AC_ARG_ENABLE(
+>         [fragment],
+> -       [AS_HELP_STRING([--disable-fragment], [disable internal fragmenta=
+tion support (--fragment)])],
+> +       [AS_HELP_STRING([--disable-fragment], [disable internal fragmenta=
+tion support (--fragment) @<:@default=3Dyes@:>@])],
+>         ,
+>         [enable_fragment=3D"yes"]
+>  )
 >
-> @@ -98,10 +98,10 @@
->  /** @name Miscellaneous compression defines *//** @{ *//****************=
-***/
->  #define LZO_EXTRA_BUFFER(len) ((len)/8 + 128 + 3)
->                                  /**< LZO 2.0 worst-case size expansion. =
-*/
-> -#ifndef LZO_STUB
-> +#ifndef ENABLE_LZO_STUB
->  #define COMPRESS_THRESHOLD 100  /**< Minimum packet size to attempt
->                                   *   compression. */
-> -#endif /* LZO_STUB */
-> +#endif /* ENABLE_LZO_STUB */
->  /** @} name Miscellaneous compression defines *//***********************=
-***/
+>  AC_ARG_ENABLE(
+>         [multihome],
+> -       [AS_HELP_STRING([--disable-multihome], [disable multi-homed UDP s=
+erver support (--multihome)])],
+> +       [AS_HELP_STRING([--disable-multihome], [disable multi-homed UDP s=
+erver support (--multihome) @<:@default=3Dyes@:>@])],
+>         ,
+>         [enable_multihome=3D"yes"]
+>  )
 >
+>  AC_ARG_ENABLE(
+>         [port-share],
+> -       [AS_HELP_STRING([--disable-port-share], [disable TCP server port-=
+share support (--port-share)])],
+> +       [AS_HELP_STRING([--disable-port-share], [disable TCP server port-=
+share support (--port-share) @<:@default=3Dyes@:>@])],
+>         ,
+>         [enable_port_share=3D"yes"]
+>  )
 >
-> @@ -119,7 +119,7 @@
+>  AC_ARG_ENABLE(
+>         [debug],
+> -       [AS_HELP_STRING([--disable-debug], [disable debugging support (di=
+sable gremlin and verb 7+ messages)])],
+> +       [AS_HELP_STRING([--disable-debug], [disable debugging support (di=
+sable gremlin and verb 7+ messages) @<:@default=3Dyes@:>@])],
+>         ,
+>         [enable_debug=3D"yes"]
+>  )
 >
->  /***********************************************************************=
-***/
->  /** @name Adaptive compression defines *//** @{ *//*********************=
-***/
-> -#ifndef LZO_STUB
-> +#ifndef ENABLE_LZO_STUB
->  #define AC_SAMP_SEC    2        /**< Number of seconds in a sample perio=
-d. */
->  #define AC_MIN_BYTES   1000     /**< Minimum number of bytes a sample
->                                   *   period must contain for it to be
-> @@ -129,10 +129,10 @@
->                                   *   turned off. */
->  #define AC_OFF_SEC     60       /**< Seconds to wait after compression h=
-as
->                                   *   been turned off before retesting. */
-> -#endif /* LZO_STUB */
-> +#endif /* ENABLE_LZO_STUB */
->  /** @} name Adaptive compression defines *//****************************=
-***/
+>  AC_ARG_ENABLE(
+>         [small],
+> -       [AS_HELP_STRING([--enable-small], [enable smaller executable size=
+ (disable OCC, usage message, and verb 4 parm list)])],
+> +       [AS_HELP_STRING([--enable-small], [enable smaller executable size=
+ (disable OCC, usage message, and verb 4 parm list) @<:@default=3Dyes@:>@])=
+],
+>         ,
+>         [enable_small=3D"no"]
+>  )
 >
-> -#ifndef LZO_STUB
-> +#ifndef ENABLE_LZO_STUB
+>  AC_ARG_ENABLE(
+>         [password-save],
+> -       [AS_HELP_STRING([--enable-password-save], [allow --askpass and --=
+auth-user-pass passwords to be read from a file])],
+> +       [AS_HELP_STRING([--enable-password-save], [allow --askpass and --=
+auth-user-pass passwords to be read from a file @<:@default=3Dyes@:>@])],
+>         [enable_password_save=3D"no"]
+>  )
 >
->  /**
->   * Adaptive compression state.
-> @@ -144,7 +144,7 @@ struct lzo_adaptive_compress {
->    int n_comp;
->  };
+>  AC_ARG_ENABLE(
+>         [iproute2],
+> -       [AS_HELP_STRING([--enable-iproute2], [enable support for iproute2=
+])],
+> +       [AS_HELP_STRING([--enable-iproute2], [enable support for iproute2=
+ @<:@default=3Dno@:>@])],
+>         ,
+>         [enable_iproute2=3D"no"]
+>  )
 >
-> -#endif /* LZO_STUB */
-> +#endif /* ENABLE_LZO_STUB */
+>  AC_ARG_ENABLE(
+>         [def-auth],
+> -       [AS_HELP_STRING([--disable-def-auth], [disable deferred authentic=
+ation])],
+> +       [AS_HELP_STRING([--disable-def-auth], [disable deferred authentic=
+ation @<:@default=3Dyes@:>@])],
+>         ,
+>         [enable_def_auth=3D"yes"]
+>  )
 >
+>  AC_ARG_ENABLE(
+>         [pf],
+> -       [AS_HELP_STRING([--disable-pf], [disable internal packet filter])=
+],
+> +       [AS_HELP_STRING([--disable-pf], [disable internal packet filter @=
+<:@default=3Dyes@:>@])],
+>         ,
+>         [enable_pf=3D"yes"]
+>  )
 >
->  /**
-> @@ -161,7 +161,7 @@ struct lzo_compress_workspace
->  {
->    bool defined;
->    unsigned int flags;
-> -#ifndef LZO_STUB
-> +#ifndef ENABLE_LZO_STUB
->    lzo_voidp wmem;
->    int wmem_size;
->    struct lzo_adaptive_compress ac;
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index e260718..ba06ff7 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -1652,7 +1652,7 @@ push_peer_info(struct buffer *buf, struct tls_sessi=
-on *session)
->        }
+>  AC_ARG_ENABLE(
+>         [strict],
+> -       [AS_HELP_STRING([--enable-strict], [enable strict compiler warnin=
+gs (debugging option)])],
+> +       [AS_HELP_STRING([--enable-strict], [enable strict compiler warnin=
+gs (debugging option) @<:@default=3Dno@:>@])],
+>         ,
+>         [enable_strict=3D"no"]
+>  )
 >
->        /* push LZO status */
-> -#ifdef LZO_STUB
-> +#ifdef ENABLE_LZO_STUB
->        buf_printf (&out, "IV_LZO_STUB=3D1\n");
->  #endif
+>  AC_ARG_ENABLE(
+>         [pedantic],
+> -       [AS_HELP_STRING([--enable-pedantic], [enable pedantic compiler wa=
+rnings, will not generate a working executable (debugging option)])],
+> +       [AS_HELP_STRING([--enable-pedantic], [enable pedantic compiler wa=
+rnings, will not generate a working executable (debugging option) @<:@defau=
+lt=3Dno@:>@])],
+>         ,
+>         [enable_pedantic=3D"no"]
+>  )
 >
-> diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-> index 53b7580..bfdf148 100644
-> --- a/src/openvpn/syshead.h
-> +++ b/src/openvpn/syshead.h
-> @@ -700,18 +700,6 @@ socket_defined (const socket_descriptor_t sd)
->  #define ENABLE_CLIENT_NAT
+>  AC_ARG_ENABLE(
+>         [strict-options],
+> -       [AS_HELP_STRING([--enable-strict-options], [enable strict options=
+ check between peers (debugging option)])],
+> +       [AS_HELP_STRING([--enable-strict-options], [enable strict options=
+ check between peers (debugging option) @<:@default=3Dno@:>@])],
+>         ,
+>         [enable_strict_options=3D"no"]
+>  )
 >
->  /*
-> - * Support LZO as a stub in client? (LZO lib not included, but we
-> - * we still support LZO protocol changes that allow us to
-> - * communicate with an LZO-enabled server)
-> - */
-> -#ifdef LZO_STUB
-> -#undef USE_LZO
-> -#undef LZO_VERSION_NUM
-> -#define USE_LZO 1
-> -#define LZO_VERSION_NUM "STUB"
-> -#endif
-> -
-> -/*
->   * Enable --memstats option
->   */
->  #ifdef TARGET_LINUX
+>  AC_ARG_ENABLE(
+>         [selinux],
+> -       [AS_HELP_STRING([--enable-selinux], [enable SELinux support])],
+> +       [AS_HELP_STRING([--enable-selinux], [enable SELinux support @<:@d=
+efault=3Dno@:>@])],
+>         ,
+>         [enable_selinux=3D"no"]
+>  )
+>
+>  AC_ARG_ENABLE(
+>         [systemd],
+> -       [AS_HELP_STRING([--enable-systemd], [enable systemd suppport])],
+> +       [AS_HELP_STRING([--enable-systemd], [enable systemd suppport @<:@=
+default=3Dno@:>@])],
+>         ,
+>         [enable_systemd=3D"no"]
+>  )
+>
+>  AC_ARG_WITH(
+>         [mem-check],
+> -       [AS_HELP_STRING([--with-mem-check=3DTYPE], [build with debug memo=
+ry checking, TYPE=3Ddmalloc|valgrind|ssl])],
+> +       [AS_HELP_STRING([--with-mem-check=3DTYPE], [build with debug memo=
+ry checking, TYPE=3Dno|dmalloc|valgrind|ssl @<:@default=3Dno@:>@])],
+>         [
+>                 case "${withval}" in
+>                         dmalloc|valgrind|ssl|no) ;;
 > --
 > 1.7.3.4
 >
@@ -329,5 +336,6 @@ on *session)
 > Openvpn-devel mailing list
 > Openvpn-devel@lists.sourceforge.net
 > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
 
 
