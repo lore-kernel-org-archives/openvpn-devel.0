@@ -1,12 +1,12 @@
-Message-ID: <4F58781A.2050905@...515...>
-Date: Thu, 08 Mar 2012 11:12:58 +0200
+Message-ID: <4F587F1A.2050905@...515...>
+Date: Thu, 08 Mar 2012 11:42:50 +0200
 From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
 References: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
-	<1330546342-17794-29-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1330546342-17794-29-git-send-email-alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 28/52] build: remove awk and
- non-standard autoconf output processing
+	<1330546342-17794-32-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1330546342-17794-32-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 31/52] build: autoconf: commands as
+	environment
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,25 +20,14 @@ Content-Transfer-Encoding: quoted-printable
 To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "Openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-This looks ok. If I understood it correctly, earlier the Makefile called co=
-nfigure_h.awk to parse config.h to generate configure.h. This configure.h f=
-ile contained only two defines:
+So, this patch replaces (removes?) the "--with-<executable>-path" configure=
+ options with environment variables, right?  For example, if one has "ifcon=
+fig" in a non-standard place, he can set the IFCONFIG environment variable =
+and the build will find it. Did I understand this correctly?
 
-#define CONFIGURE_DEFINES " ENABLE_CLIENT_SERVER ENABLE_DEBUG ENABLE_EUREPH=
-IA ..."
-#define CONFIGURE_CALL "  $ ./configure "
-
-This patch removes configure_h.awk and thus phases out configure.h. After t=
-his change CONFIGURE_DEFINES is generated using this method:
-
-CONFIGURE_DEFINES=3D"`set | grep '^enable_.*=3D' ; set | grep '^with_.*=3D'=
-`"
-
-This should be safe if running "set" does not produce output that would mat=
-ch the regexps without being related to the OpenVPN builds. Given that the =
-regexps are very strictly defined, that doesn't sound likely.
-
-I give this one an ACK. Please NACK if you disagree :).
+I don't know autotools well enough to give this one an ACK at this point. T=
+hat said, the patch does clean up configure.ac a lot, and cleanups are alwa=
+ys nice :).
 
 --=20
 Samuli Sepp=E4nen
@@ -48,183 +37,137 @@ OpenVPN Technologies, Inc
 irc freenode net: mattock
 
 
-> Replace with simpler environment solution.
->
 > Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 > ---
->  Makefile.am       |   12 ++----------
->  configure.ac      |    3 +++
->  configure_h.awk   |   39 ---------------------------------------
->  configure_log.awk |   33 ---------------------------------
->  options.c         |    4 ----
->  5 files changed, 5 insertions(+), 86 deletions(-)
->  delete mode 100644 configure_h.awk
->  delete mode 100644 configure_log.awk
+>  configure.ac |   66 ++++++++++++++++++++++++----------------------------=
+-----
+>  1 files changed, 28 insertions(+), 38 deletions(-)
 >
-> diff --git a/Makefile.am b/Makefile.am
-> index 6c0b2b4..a8ff457 100644
-> --- a/Makefile.am
-> +++ b/Makefile.am
-> @@ -36,7 +36,7 @@ MAINTAINERCLEANFILES =3D \
->  	$(srcdir)/depcomp $(srcdir)/aclocal.m4 \
->  	$(srcdir)/config.guess $(srcdir)/config.sub \
->  	$(srcdir)/openvpn.spec
-> -CLEANFILES =3D openvpn.8.html configure.h
-> +CLEANFILES =3D openvpn.8.html
->=20=20
->  EXTRA_DIST =3D \
->  	sample-config-files \
-> @@ -57,8 +57,7 @@ dist_doc_DATA =3D \
->=20=20
->  dist_noinst_SCRIPTS =3D \
->  	$(TESTS) \
-> -	t_cltsrv-down.sh \
-> -	configure_h.awk configure_log.awk
-> +	t_cltsrv-down.sh
->=20=20
->  dist_doc_DATA =3D \
->  	COPYRIGHT.GPL \
-> @@ -156,13 +155,6 @@ openvpn_SOURCES =3D \
->  	win32.h win32.c \
->  	cryptoapi.h cryptoapi.c
->=20=20
-> -nodist_openvpn_SOURCES =3D configure.h
-> -options.$(OBJEXT): configure.h
-> -
-> -configure.h: Makefile
-> -	awk -f $(srcdir)/configure_h.awk config.h > $@
-> -	awk -f $(srcdir)/configure_log.awk config.log >> $@
-> -
->  if WIN32
->  dist_noinst_DATA +=3D openvpn.8
->  nodist_html_DATA =3D openvpn.8.html
 > diff --git a/configure.ac b/configure.ac
-> index 81bf933..0b70325 100644
+> index 6b5cf71..ed98464 100644
 > --- a/configure.ac
 > +++ b/configure.ac
-> @@ -913,6 +913,9 @@ if test "${enable_strict}" =3D "yes"; then
+> @@ -267,37 +267,6 @@ AC_ARG_WITH(
+>  )
+>=20=20
+>  AC_ARG_WITH(
+> -	[ifconfig-path],
+> -	[AS_HELP_STRING([--with-ifconfig-path=3DPATH], [Path to ifconfig tool])=
+],
+> -	[IFCONFIG=3D"$withval"],
+> -	[AC_PATH_PROG([IFCONFIG], [ifconfig], [ifconfig], [$PATH:/usr/local/sbi=
+n:/usr/sbin:/sbin])]
+> -)
+> -AC_DEFINE_UNQUOTED([IFCONFIG_PATH], ["$IFCONFIG"], [Path to ifconfig too=
+l])
+> -
+> -AC_ARG_WITH(
+> -	[iproute-path],
+> -	[AS_HELP_STRING([--with-iproute-path=3DPATH], [Path to iproute tool])],
+> -	[IPROUTE=3D"$withval"],
+> -	[AC_PATH_PROG([IPROUTE], [ip], [ip], [$PATH:/usr/local/sbin:/usr/sbin:/=
+sbin])]
+> -)
+> -AC_DEFINE_UNQUOTED([IPROUTE_PATH], ["$IPROUTE"], [Path to iproute tool])
+> -
+> -AC_ARG_WITH([route-path],
+> -   [AS_HELP_STRING([--with-route-path=3DPATH], [Path to route tool])],
+> -   [ROUTE=3D"$withval"],
+> -   [AC_PATH_PROG([ROUTE], [route], [route], [$PATH:/usr/local/sbin:/usr/=
+sbin:/sbin])]
+> -)
+> -AC_DEFINE_UNQUOTED([ROUTE_PATH], ["$ROUTE"], [Path to route tool])
+> -
+> -AC_ARG_WITH(
+> -	[netstat-path],
+> -	[AS_HELP_STRING([--with-netstat-path=3DPATH], [Path to netstat tool])],
+> -	[NETSTAT=3D"$withval"],
+> -	[AC_PATH_PROG([NETSTAT], [netstat], [netstat], [$PATH:/usr/local/sbin:/=
+usr/sbin:/sbin:/etc])]
+> -)
+> -AC_DEFINE_UNQUOTED([NETSTAT_PATH], ["$NETSTAT"], [Path to netstat tool])
+> -
+> -AC_ARG_WITH(
+>  	[mem-check],
+>  	[AS_HELP_STRING([--with-mem-check=3DTYPE], [build with debug memory che=
+cking, TYPE=3Ddmalloc|valgrind|ssl])],
+>  	[
+> @@ -370,6 +339,20 @@ AC_PROG_INSTALL
+>  AC_PROG_LN_S
+>  AC_PROG_MAKE_SET
+>=20=20
+> +AC_ARG_VAR([IFCONFIG], [full path to ipconfig utility])
+> +AC_ARG_VAR([ROUTE], [full path to route utility])
+> +AC_ARG_VAR([IPROUTE], [full path to ip utility])
+> +AC_ARG_VAR([NETSTAT], [path to netstat utility]) # tests
+> +AC_ARG_VAR([MAN2HTML], [path to man2html utility])
+> +AC_PATH_PROGS([IFCONFIG], [ifconfig],, [$PATH:/usr/local/sbin:/usr/sbin:=
+/sbin])
+> +AC_PATH_PROGS([ROUTE], [route],, [$PATH:/usr/local/sbin:/usr/sbin:/sbin])
+> +AC_PATH_PROGS([IPROUTE], [ip],, [$PATH:/usr/local/sbin:/usr/sbin:/sbin])
+> +AC_CHECK_PROGS([NETSTAT], [netstat], [netstat], [$PATH:/usr/local/sbin:/=
+usr/sbin:/sbin:/etc]) # tests
+> +AC_CHECK_PROGS([MAN2HTML], [man2html])
+> +AC_DEFINE_UNQUOTED([IFCONFIG_PATH], ["$IFCONFIG"], [Path to ifconfig too=
+l])
+> +AC_DEFINE_UNQUOTED([IPROUTE_PATH], ["$IPROUTE"], [Path to iproute tool])
+> +AC_DEFINE_UNQUOTED([ROUTE_PATH], ["$ROUTE"], [Path to route tool])
+> +
+>  #
+>  # Libtool
+>  #
+> @@ -386,12 +369,6 @@ ifdef(
+>  	]
+>  )
+>=20=20
+> -if test "${WIN32}" =3D "yes"; then
+> -	AC_ARG_VAR([MAN2HTML], [man2html utility])
+> -	AC_CHECK_PROGS([MAN2HTML], [man2html])
+> -	test -z "${MAN2HTML}" && AC_MSG_ERROR([man2html is required for win32])
+> -fi
+> -
+>  AC_C_CONST
+>  AC_C_INLINE
+>  AC_C_VOLATILE
+> @@ -920,7 +897,16 @@ test "${enable_pf}" =3D "yes" && AC_DEFINE([ENABLE_P=
+F], [1], [Enable internal pack
+>  test "${enable_strict_options}" =3D "yes" && AC_DEFINE([ENABLE_STRICT_OP=
+TIONS_CHECK], [1], [Enable strict options check between peers])
+>  test "${enable_password_save}" =3D "yes" && AC_DEFINE([ENABLE_PASSWORD_S=
+AVE], [1], [Allow --askpass and --auth-user-pass passwords to be read from =
+a file])
+>  test "${enable_systemd}" =3D "yes" && AC_DEFINE([ENABLE_SYSTEMD], [1], [=
+Enable systemd support])
+> -test "${enable_iproute2}" =3D "yes" && AC_DEFINE([ENABLE_IPROUTE], [1], =
+[enable iproute2 support])
+> +
+> +if test "${enable_iproute2}" =3D "yes"; then
+> +	test -z "${IPROUTE}" && AC_MSG_ERROR([ip utility is required but missin=
+g])
+> +	AC_DEFINE([ENABLE_IPROUTE], [1], [enable iproute2 support])
+> +else
+> +	if test "${WIN32}" !=3D "yes"; then
+> +		test -z "${ROUTE}" && AC_MSG_ERROR([route utility is required but miss=
+ing])
+> +		test -z "${IFCONFIG}" && AC_MSG_ERROR([ifconfig utility is required bu=
+t missing])
+> +	fi
+> +fi
+>=20=20
+>  if test "${enable_pedantic}" =3D "yes"; then
+>  	enable_strict=3D"yes"
+> @@ -930,6 +916,10 @@ if test "${enable_strict}" =3D "yes"; then
 >  	CFLAGS=3D"${CFLAGS} -Wall -Wno-unused-parameter -Wno-unused-function"
 >  fi
 >=20=20
-> +CONFIGURE_DEFINES=3D"`set | grep '^enable_.*=3D' ; set | grep '^with_.*=
-=3D'`"
-> +AC_DEFINE_UNQUOTED([CONFIGURE_DEFINES], ["`echo ${CONFIGURE_DEFINES}`"],=
- [Configuration settings])
+> +if test "${WIN32}" =3D "yes"; then
+> +	test -z "${MAN2HTML}" && AC_MSG_ERROR([man2html is required for win32])
+> +fi
 > +
->  TAP_WIN_COMPONENT_ID=3D"PRODUCT_TAP_WIN_COMPONENT_ID"
->  TAP_WIN_MIN_MAJOR=3D"PRODUCT_TAP_WIN_MIN_MAJOR"
->  TAP_WIN_MIN_MINOR=3D"PRODUCT_TAP_WIN_MIN_MINOR"
-> diff --git a/configure_h.awk b/configure_h.awk
-> deleted file mode 100644
-> index 672e745..0000000
-> --- a/configure_h.awk
-> +++ /dev/null
-> @@ -1,39 +0,0 @@
-> -#
-> -#  OpenVPN -- An application to securely tunnel IP networks
-> -#             over a single UDP port, with support for SSL/TLS-based
-> -#             session authentication and key exchange,
-> -#             packet encryption, packet authentication, and
-> -#             packet compression.
-> -#
-> -#  Copyright (C) 2010  David Sommerseth <dazo@...384...>
-> -#
-> -#  This program is free software; you can redistribute it and/or modify
-> -#  it under the terms of the GNU General Public License version 2
-> -#  as published by the Free Software Foundation.
-> -#
-> -#  This program is distributed in the hope that it will be useful,
-> -#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-> -#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> -#  GNU General Public License for more details.
-> -#
-> -#  You should have received a copy of the GNU General Public License
-> -#  along with this program (see the file COPYING included with this
-> -#  distribution); if not, write to the Free Software Foundation, Inc.,
-> -#  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-> -#
-> -#
-> -#  This script will build up a line which can be included into a C progr=
-am.
-> -#  The line will contain all interesting #define statements from f.ex. .=
-/config.h
-> -#
-> -
-> -BEGIN {
-> -	printf ("#define CONFIGURE_DEFINES \"")
-> -}
-> -
-> -/^#define (ENABLE|DISABLE|DEPRECATED|USE)_/ {
-> -	printf (" %s", $2)
-> -}
-> -
-> -END {
-> -	printf ("\"\n")
-> -}
-> diff --git a/configure_log.awk b/configure_log.awk
-> deleted file mode 100644
-> index 099e5c4..0000000
-> --- a/configure_log.awk
-> +++ /dev/null
-> @@ -1,33 +0,0 @@
-> -#
-> -#  OpenVPN -- An application to securely tunnel IP networks
-> -#             over a single UDP port, with support for SSL/TLS-based
-> -#             session authentication and key exchange,
-> -#             packet encryption, packet authentication, and
-> -#             packet compression.
-> -#
-> -#  Copyright (C) 2010  David Sommerseth <dazo@...384...>
-> -#
-> -#  This program is free software; you can redistribute it and/or modify
-> -#  it under the terms of the GNU General Public License version 2
-> -#  as published by the Free Software Foundation.
-> -#
-> -#  This program is distributed in the hope that it will be useful,
-> -#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-> -#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> -#  GNU General Public License for more details.
-> -#
-> -#  You should have received a copy of the GNU General Public License
-> -#  along with this program (see the file COPYING included with this
-> -#  distribution); if not, write to the Free Software Foundation, Inc.,
-> -#  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-> -#
-> -#
-> -#  This script will build up a line which can be included into a C progr=
-am.
-> -#  The line will only contain the first entry of the ./configure line fr=
-om
-> -#  ./config.log.
-> -#
-> -
-> -/\$ (.*)\/configure/ {
-> -	printf ("#define CONFIGURE_CALL \"%s\"\n", $0)
-> -	exit 0
-> -}
-> diff --git a/options.c b/options.c
-> index b0ae7fd..d7f848e 100644
-> --- a/options.c
-> +++ b/options.c
-> @@ -49,7 +49,6 @@
->  #include "helper.h"
->  #include "manage.h"
->  #include "forward.h"
-> -#include "configure.h"
->  #include <ctype.h>
+>  CONFIGURE_DEFINES=3D"`set | grep '^enable_.*=3D' ; set | grep '^with_.*=
+=3D'`"
+>  AC_DEFINE_UNQUOTED([CONFIGURE_DEFINES], ["`echo ${CONFIGURE_DEFINES}`"],=
+ [Configuration settings])
 >=20=20
->  #include "memdbg.h"
-> @@ -3403,9 +3402,6 @@ usage_version (void)
->    msg (M_INFO|M_NOPREFIX, "Originally developed by James Yonan");
->    msg (M_INFO|M_NOPREFIX, "Copyright (C) 2002-2010 OpenVPN Technologies,=
- Inc. <sales@...515...>");
->  #ifndef ENABLE_SMALL
-> -#ifdef CONFIGURE_CALL
-> -  msg (M_INFO|M_NOPREFIX, "\n%s\n", CONFIGURE_CALL);
-> -#endif
->  #ifdef CONFIGURE_DEFINES
->    msg (M_INFO|M_NOPREFIX, "Compile time defines: %s", CONFIGURE_DEFINES);
->  #endif
-
 
 
