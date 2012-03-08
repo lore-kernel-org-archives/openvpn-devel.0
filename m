@@ -1,12 +1,11 @@
-Message-ID: <4F588A46.5060106@...515...>
-Date: Thu, 08 Mar 2012 12:30:30 +0200
+Message-ID: <4F588CDA.1070702@...515...>
+Date: Thu, 08 Mar 2012 12:41:30 +0200
 From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
 References: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
-	<1330546342-17794-38-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1330546342-17794-38-git-send-email-alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 37/52] build: proper pkcs11-helper
- detection and usage
+	<1330546342-17794-39-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1330546342-17794-39-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 38/52] build: properly process lzo-stub
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,11 +19,12 @@ Content-Transfer-Encoding: quoted-printable
 To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "Openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-These changes follow the same style as earlier patches, e.g. the selinux
-patch. Pkg-config is now being used to detect pkcs11-helper afaics.
-Also, pkcs11-helper now disabled by default, which I think makes sense.
+Much of this patch is about renaming LZO_STUB as the more descriptive
+ENABLE_LZO_STUB, and making thing clearer is always good.  Also, the
+LZO_STUB-related logic is moved out of syshead.h to configure.ac.
 
-I don't see why this shouldn't be included, so it's an ACK.
+Somebody with more autotools knowledge might want to review this just in
+case. If nobody speaks up, I say ACK this.
 
 --=20
 Samuli Sepp=E4nen
@@ -33,188 +33,301 @@ OpenVPN Technologies, Inc
 
 irc freenode net: mattock
 
-
 > Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 > ---
->  configure.ac               |   49 ++++++++++++++++----------------------=
------
->  distro/rpm/openvpn.spec.in |    5 ++-
->  src/openvpn/Makefile.am    |    4 +++
->  src/openvpn/ssl.c          |    2 +-
->  src/openvpn/syshead.h      |    7 ------
->  5 files changed, 26 insertions(+), 41 deletions(-)
+>  configure.ac          |   12 +++++++-----
+>  src/openvpn/lzo.c     |   20 ++++++++++----------
+>  src/openvpn/lzo.h     |   20 ++++++++++----------
+>  src/openvpn/ssl.c     |    2 +-
+>  src/openvpn/syshead.h |   12 ------------
+>  5 files changed, 28 insertions(+), 38 deletions(-)
 >
 > diff --git a/configure.ac b/configure.ac
-> index 2388f17..baa66b2 100644
+> index baa66b2..da41554 100644
 > --- a/configure.ac
 > +++ b/configure.ac
-> @@ -111,9 +111,9 @@ AC_ARG_ENABLE(
->=20=20
->  AC_ARG_ENABLE(
->  	[pkcs11],
-> -	[AS_HELP_STRING([--disable-pkcs11], [disable pkcs11 support])],
-> +	[AS_HELP_STRING([--enable-pkcs11], [enable pkcs11 support])],
->  	,
-> -	[enable_pkcs11=3D"yes"]
-> +	[enable_pkcs11=3D"no"]
->  )
->=20=20
->  AC_ARG_ENABLE(
-> @@ -254,19 +254,6 @@ AC_ARG_WITH(
->  )
->=20=20
->  AC_ARG_WITH(
-> -	[pkcs11-helper-headers],
-> -	[AS_HELP_STRING([--with-pkcs11-helper-headers=3DDIR], [pkcs11-helper In=
-clude files location])],
-> -	[PKCS11_HELPER_HDR_DIR=3D"$withval"]
-> -	[CPPFLAGS=3D"$CPPFLAGS -I$withval"]=20
-> -)
-> -
-> -AC_ARG_WITH(
-> -	[pkcs11-helper-lib],
-> -	[AS_HELP_STRING([--with-pkcs11-helper-lib=3DDIR], [pkcs11-helper Librar=
-y location])],
-> -	[LDFLAGS=3D"$LDFLAGS -L$withval"]=20
-> -)
-> -
-> -AC_ARG_WITH(
->  	[mem-check],
->  	[AS_HELP_STRING([--with-mem-check=3DTYPE], [build with debug memory che=
-cking, TYPE=3Ddmalloc|valgrind|ssl])],
->  	[
-> @@ -719,22 +706,12 @@ if test "${enable_lzo_stub}" =3D "yes"; then
->  	AC_DEFINE([LZO_STUB], [1], [Enable LZO stub capability])
+> @@ -701,11 +701,6 @@ if test "${enable_lzo}" =3D "yes" && test "${enable_=
+lzo_stub}" =3D "no"; then
+>     fi
 >  fi
->=20=20
-> -dnl
-> -dnl enable pkcs11 capability
-> -dnl
-> -if test "${enable_pkcs11}" =3D "yes"; then
-> -   AC_CHECKING([for pkcs11-helper Library and Header files])
-> -   AC_CHECK_HEADER(pkcs11-helper-1.0/pkcs11h-core.h,
-> -	[AC_CHECK_LIB(pkcs11-helper, pkcs11h_initialize,
-> -	    [
-> -		   AC_DEFINE(USE_PKCS11, 1, [Enable PKCS11 capability])
-> -		   LIBS=3D"${LIBS} -lpkcs11-helper"
-> -	    ],
-> -	    [AC_MSG_RESULT([pkcs11-helper library not found.])]
-> -	)],
-> -	[AC_MSG_RESULT([pkcs11-helper headers not found.])]
-> -   )
+>
+> -dnl enable multi-client mode
+> -if test "${enable_lzo_stub}" =3D "yes"; then
+> -       AC_DEFINE([LZO_STUB], [1], [Enable LZO stub capability])
 > -fi
-> +PKG_CHECK_MODULES(
-> +	[PKCS11_HELPER],
-> +	[libpkcs11-helper-1 >=3D 1.02],
-> +	[have_pkcs11_helper=3D"yes"],
-> +	[]
-> +)
->=20=20
->  dnl
->  dnl check for SSL-crypto library
-> @@ -890,6 +867,14 @@ if test "${enable_selinux}" =3D "yes"; then
->  	AC_DEFINE([ENABLE_SELINUX], [1], [SELinux support])
+> -
+>  PKG_CHECK_MODULES(
+>         [PKCS11_HELPER],
+>         [libpkcs11-helper-1 >=3D 1.02],
+> @@ -867,6 +862,13 @@ if test "${enable_selinux}" =3D "yes"; then
+>         AC_DEFINE([ENABLE_SELINUX], [1], [SELinux support])
 >  fi
->=20=20
-> +if test "${enable_pkcs11}" =3D "yes"; then
-> +	test "${have_pkcs11_helper}" !=3D "yes" && AC_MSG_ERROR([PKCS11 enabled=
- but libpkcs11-helper is missing])
-> +	test "${enable_ssl}" !=3D "yes" && AC_MSG_ERROR([PKCS11 can be enabled =
-only if SSL is enabled])
-> +	OPTIONAL_PKCS11_HELPER_CFLAGS=3D"${PKCS11_HELPER_CFLAGS}"
-> +	OPTIONAL_PKCS11_HELPER_LIBS=3D"${PKCS11_HELPER_LIBS}"
-> +	AC_DEFINE([ENABLE_PKCS11], [1], [Enable PKCS11])
+>
+> +if test "${enable_lzo_stub}" =3D "yes"; then
+> +       test "${enable_lzo}" =3D "yes" && AC_MSG_ERROR([Cannot have both =
+lzo stub and lzo enabled])
+> +       AC_DEFINE([ENABLE_LZO_STUB], [1], [Enable LZO stub capability])
+> +       AC_DEFINE([USE_LZO], [1], [Enable LZO compression library])
+> +       AC_DEFINE([LZO_VERSION_NUM], ["STUB"], [LZO version number])
 > +fi
 > +
->  if test "${enable_pedantic}" =3D "yes"; then
->  	enable_strict=3D"yes"
->  	CFLAGS=3D"${CFLAGS} -ansi -pedantic"
-> @@ -917,6 +902,8 @@ AC_SUBST([TAP_WIN_MIN_MINOR])
->=20=20
->  AC_SUBST([OPTIONAL_DL_LIBS])
->  AC_SUBST([OPTIONAL_SELINUX_LIBS])
-> +AC_SUBST([OPTIONAL_PKCS11_HELPER_CFLAGS])
-> +AC_SUBST([OPTIONAL_PKCS11_HELPER_LIBS])
->=20=20
->  AM_CONDITIONAL([WIN32], [test "${WIN32}" =3D "yes"])
->=20=20
-> diff --git a/distro/rpm/openvpn.spec.in b/distro/rpm/openvpn.spec.in
-> index 455f739..8db5172 100644
-> --- a/distro/rpm/openvpn.spec.in
-> +++ b/distro/rpm/openvpn.spec.in
-> @@ -52,8 +52,8 @@ Requires:      openssl       >=3D 0.9.6
->  %{!?without_pam:BuildRequires: pam-devel}
->  %{!?without_pam:Requires:      pam}
->=20=20
-> -%{!?with_pkcs11:BuildRequires: pkcs11-helper-devel}
-> -%{!?with_pkcs11:Requires:      pkcs11-helper}
-> +%{?with_pkcs11:BuildRequires: pkcs11-helper-devel}
-> +%{?with_pkcs11:Requires:      pkcs11-helper}
->=20=20
->  #
->  # Description
-> @@ -111,6 +111,7 @@ Development support for OpenVPN.
->  	--docdir=3D"%{_docdir}/%{name}-%{version}" \
->  	%{?with_password_save:--enable-password-save} \
->  	%{?without_lzo:--disable-lzo} \
-> +	%{?with_pkcs11:--enable-pkcs11} \
->  	%{?with_kerberos:--with-ssl-headers=3D/usr/kerberos/include}
->  %__make
->=20=20
-> diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-> index a3f8b3a..fd92225 100644
-> --- a/src/openvpn/Makefile.am
-> +++ b/src/openvpn/Makefile.am
-> @@ -16,6 +16,9 @@ MAINTAINERCLEANFILES =3D \
->=20=20
->  INCLUDES =3D -I$(top_srcdir)/include
->=20=20
-> +AM_CFLAGS =3D \
-> +	$(OPTIONAL_PKCS11_HELPER_CFLAGS)
-> +
->  sbin_PROGRAMS =3D openvpn
->=20=20
->  openvpn_SOURCES =3D \
-> @@ -97,6 +100,7 @@ openvpn_SOURCES =3D \
->  	cryptoapi.h cryptoapi.c
->  openvpn_LDADD =3D \
->  	$(SOCKETS_LIBS) \
-> +	$(OPTIONAL_PKCS11_HELPER_LIBS) \
->  	$(OPTIONAL_SELINUX_LIBS) \
->  	$(OPTIONAL_DL_LIBS)
->  if WIN32
+>  if test "${enable_pkcs11}" =3D "yes"; then
+>         test "${have_pkcs11_helper}" !=3D "yes" && AC_MSG_ERROR([PKCS11 e=
+nabled but libpkcs11-helper is missing])
+>         test "${enable_ssl}" !=3D "yes" && AC_MSG_ERROR([PKCS11 can be en=
+abled only if SSL is enabled])
+> diff --git a/src/openvpn/lzo.c b/src/openvpn/lzo.c
+> index 7e50fc9..ca06f71 100644
+> --- a/src/openvpn/lzo.c
+> +++ b/src/openvpn/lzo.c
+> @@ -36,7 +36,7 @@
+>
+>  #include "memdbg.h"
+>
+> -#ifndef LZO_STUB
+> +#ifndef ENABLE_LZO_STUB
+>  /**
+>   * Perform adaptive compression housekeeping.
+>   *
+> @@ -91,7 +91,7 @@ lzo_adaptive_compress_data (struct lzo_adaptive_compres=
+s *ac, int n_total, int n
+>    ac->n_comp +=3D n_comp;
+>  }
+>
+> -#endif /* LZO_STUB */
+> +#endif /* ENABLE_LZO_STUB */
+>
+>  void lzo_adjust_frame_parameters (struct frame *frame)
+>  {
+> @@ -109,7 +109,7 @@ lzo_compress_init (struct lzo_compress_workspace *lzo=
+work, unsigned int flags)
+>    CLEAR (*lzowork);
+>
+>    lzowork->flags =3D flags;
+> -#ifndef LZO_STUB
+> +#ifndef ENABLE_LZO_STUB
+>    lzowork->wmem_size =3D LZO_WORKSPACE;
+>
+>    if (lzo_init () !=3D LZO_E_OK)
+> @@ -129,7 +129,7 @@ lzo_compress_uninit (struct lzo_compress_workspace *l=
+zowork)
+>    if (lzowork)
+>      {
+>        ASSERT (lzowork->defined);
+> -#ifndef LZO_STUB
+> +#ifndef ENABLE_LZO_STUB
+>        lzo_free (lzowork->wmem);
+>        lzowork->wmem =3D NULL;
+>  #endif
+> @@ -140,7 +140,7 @@ lzo_compress_uninit (struct lzo_compress_workspace *l=
+zowork)
+>  static inline bool
+>  lzo_compression_enabled (struct lzo_compress_workspace *lzowork)
+>  {
+> -#ifndef LZO_STUB
+> +#ifndef ENABLE_LZO_STUB
+>    if ((lzowork->flags & (LZO_SELECTED|LZO_ON)) =3D=3D (LZO_SELECTED|LZO_=
+ON))
+>      {
+>        if (lzowork->flags & LZO_ADAPTIVE)
+> @@ -157,7 +157,7 @@ lzo_compress (struct buffer *buf, struct buffer work,
+>               struct lzo_compress_workspace *lzowork,
+>               const struct frame* frame)
+>  {
+> -#ifndef LZO_STUB
+> +#ifndef ENABLE_LZO_STUB
+>    lzo_uint zlen =3D 0;
+>    int err;
+>    bool compressed =3D false;
+> @@ -168,7 +168,7 @@ lzo_compress (struct buffer *buf, struct buffer work,
+>    if (buf->len <=3D 0)
+>      return;
+>
+> -#ifndef LZO_STUB
+> +#ifndef ENABLE_LZO_STUB
+>    /*
+>     * In order to attempt compression, length must be at least COMPRESS_T=
+HRESHOLD,
+>     * and our adaptive level must give the OK.
+> @@ -226,7 +226,7 @@ lzo_decompress (struct buffer *buf, struct buffer wor=
+k,
+>                 struct lzo_compress_workspace *lzowork,
+>                 const struct frame* frame)
+>  {
+> -#ifndef LZO_STUB
+> +#ifndef ENABLE_LZO_STUB
+>    lzo_uint zlen =3D EXPANDED_SIZE (frame);
+>    int err;
+>  #endif
+> @@ -244,7 +244,7 @@ lzo_decompress (struct buffer *buf, struct buffer wor=
+k,
+>
+>    if (c =3D=3D YES_COMPRESS)       /* packet was compressed */
+>      {
+> -#ifndef LZO_STUB
+> +#ifndef ENABLE_LZO_STUB
+>        ASSERT (buf_safe (&work, zlen));
+>        err =3D LZO_DECOMPRESS (BPTR (buf), BLEN (buf), BPTR (&work), &zle=
+n,
+>                             lzowork->wmem);
+> @@ -291,7 +291,7 @@ void lzo_print_stats (const struct lzo_compress_works=
+pace *lzo_compwork, struct
+>  {
+>    ASSERT (lzo_compwork->defined);
+>
+> -#ifndef LZO_STUB
+> +#ifndef ENABLE_LZO_STUB
+>    status_printf (so, "pre-compress bytes," counter_format, lzo_compwork-=
+>pre_compress);
+>    status_printf (so, "post-compress bytes," counter_format, lzo_compwork=
+->post_compress);
+>    status_printf (so, "pre-decompress bytes," counter_format, lzo_compwor=
+k->pre_decompress);
+> diff --git a/src/openvpn/lzo.h b/src/openvpn/lzo.h
+> index 5fb2a15..da4bd88 100644
+> --- a/src/openvpn/lzo.h
+> +++ b/src/openvpn/lzo.h
+> @@ -39,7 +39,7 @@
+>   * @{
+>   */
+>
+> -#ifndef LZO_STUB
+> +#ifndef ENABLE_LZO_STUB
+>  #ifdef LZO_HEADER_DIR
+>  #include "lzo/lzoutil.h"
+>  #include "lzo/lzo1x.h"
+> @@ -68,7 +68,7 @@
+>
+>  /***********************************************************************=
+***/
+>  /** @name LZO library interface defines *//** @{ *//********************=
+***/
+> -#ifndef LZO_STUB
+> +#ifndef ENABLE_LZO_STUB
+>  #define LZO_COMPRESS    lzo1x_1_15_compress
+>                                  /**< LZO library compression function.
+>                                   *
+> @@ -90,7 +90,7 @@
+>                                   *   verify the integrity of incoming
+>                                   *   packets, you might want to consider
+>                                   *   using the non-safe version. */
+> -#endif /* LZO_STUB */
+> +#endif /* ENABLE_LZO_STUB */
+>  /** @} name LZO library interface *//***********************************=
+***/
+>
+>
+> @@ -98,10 +98,10 @@
+>  /** @name Miscellaneous compression defines *//** @{ *//****************=
+***/
+>  #define LZO_EXTRA_BUFFER(len) ((len)/8 + 128 + 3)
+>                                  /**< LZO 2.0 worst-case size expansion. =
+*/
+> -#ifndef LZO_STUB
+> +#ifndef ENABLE_LZO_STUB
+>  #define COMPRESS_THRESHOLD 100  /**< Minimum packet size to attempt
+>                                   *   compression. */
+> -#endif /* LZO_STUB */
+> +#endif /* ENABLE_LZO_STUB */
+>  /** @} name Miscellaneous compression defines *//***********************=
+***/
+>
+>
+> @@ -119,7 +119,7 @@
+>
+>  /***********************************************************************=
+***/
+>  /** @name Adaptive compression defines *//** @{ *//*********************=
+***/
+> -#ifndef LZO_STUB
+> +#ifndef ENABLE_LZO_STUB
+>  #define AC_SAMP_SEC    2        /**< Number of seconds in a sample perio=
+d. */
+>  #define AC_MIN_BYTES   1000     /**< Minimum number of bytes a sample
+>                                   *   period must contain for it to be
+> @@ -129,10 +129,10 @@
+>                                   *   turned off. */
+>  #define AC_OFF_SEC     60       /**< Seconds to wait after compression h=
+as
+>                                   *   been turned off before retesting. */
+> -#endif /* LZO_STUB */
+> +#endif /* ENABLE_LZO_STUB */
+>  /** @} name Adaptive compression defines *//****************************=
+***/
+>
+> -#ifndef LZO_STUB
+> +#ifndef ENABLE_LZO_STUB
+>
+>  /**
+>   * Adaptive compression state.
+> @@ -144,7 +144,7 @@ struct lzo_adaptive_compress {
+>    int n_comp;
+>  };
+>
+> -#endif /* LZO_STUB */
+> +#endif /* ENABLE_LZO_STUB */
+>
+>
+>  /**
+> @@ -161,7 +161,7 @@ struct lzo_compress_workspace
+>  {
+>    bool defined;
+>    unsigned int flags;
+> -#ifndef LZO_STUB
+> +#ifndef ENABLE_LZO_STUB
+>    lzo_voidp wmem;
+>    int wmem_size;
+>    struct lzo_adaptive_compress ac;
 > diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index c26756e..e260718 100644
+> index e260718..ba06ff7 100644
 > --- a/src/openvpn/ssl.c
 > +++ b/src/openvpn/ssl.c
-> @@ -264,7 +264,7 @@ ssl_purge_auth (const bool auth_user_pass_only)
->  {
->    if (!auth_user_pass_only)
->      {
-> -#ifdef USE_PKCS11
-> +#ifdef ENABLE_PKCS11
->        pkcs11_logout ();
+> @@ -1652,7 +1652,7 @@ push_peer_info(struct buffer *buf, struct tls_sessi=
+on *session)
+>        }
+>
+>        /* push LZO status */
+> -#ifdef LZO_STUB
+> +#ifdef ENABLE_LZO_STUB
+>        buf_printf (&out, "IV_LZO_STUB=3D1\n");
 >  #endif
->        purge_user_pass (&passbuf, true);
+>
 > diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-> index cac4757..53b7580 100644
+> index 53b7580..bfdf148 100644
 > --- a/src/openvpn/syshead.h
 > +++ b/src/openvpn/syshead.h
-> @@ -590,13 +590,6 @@ socket_defined (const socket_descriptor_t sd)
->  #endif
->=20=20
+> @@ -700,18 +700,6 @@ socket_defined (const socket_descriptor_t sd)
+>  #define ENABLE_CLIENT_NAT
+>
 >  /*
-> - * Do we have PKCS11 capability?
+> - * Support LZO as a stub in client? (LZO lib not included, but we
+> - * we still support LZO protocol changes that allow us to
+> - * communicate with an LZO-enabled server)
 > - */
-> -#if defined(USE_PKCS11) && defined(USE_CRYPTO) && defined(USE_SSL)
-> -#define ENABLE_PKCS11
+> -#ifdef LZO_STUB
+> -#undef USE_LZO
+> -#undef LZO_VERSION_NUM
+> -#define USE_LZO 1
+> -#define LZO_VERSION_NUM "STUB"
 > -#endif
 > -
 > -/*
->   * Do we have CryptoAPI capability?
+>   * Enable --memstats option
 >   */
->  #if defined(WIN32) && defined(USE_CRYPTO) && defined(USE_SSL) && defined=
-(USE_OPENSSL)
-
+>  #ifdef TARGET_LINUX
+> --
+> 1.7.3.4
+>
+>
+> -------------------------------------------------------------------------=
+-----
+> Virtualization & Cloud Management Using Capacity Planning
+> Cloud computing makes use of virtualization - but cloud computing
+> also focuses on allowing computing to be delivered as a service.
+> http://www.accelacomm.com/jaw/sfnl/114/51521223/
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
 
