@@ -1,11 +1,12 @@
-Message-ID: <4F58C34D.8010305@...515...>
-Date: Thu, 08 Mar 2012 16:33:49 +0200
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
+In-Reply-To: <4F58BEC3.60900@...515...>
 References: <1330547285-18481-1-git-send-email-alon.barlev@...277...>
-	<1330547285-18481-5-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1330547285-18481-5-git-send-email-alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [easy-rsa 4/4] packaging: rpm: initial add
+	<1330547285-18481-2-git-send-email-alon.barlev@...277...>
+	<4F58BEC3.60900@...515...>
+Date: Thu, 8 Mar 2012 21:18:50 +0200
+Message-ID: <CAOazyz3LGT3RwAn-2uz-J6VX_AtzWG=28gcEPz4+w2QtQzUZDg@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [easy-rsa 1/4] cleanup: fix execute permission
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,192 +15,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: Alon Bar-Lev <alon.barlev@...277...>
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
 Cc: "Openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-Support for RPM in easy-rsa, nice. Feature-vise it's an ACK. Afaics
-autotools stuff is ok, but I'm no expert. Somebody else have a look
-please :).
+I can do this as well... unrelated to the packaging though... :)
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
-
-PS. We need Debian rules files too... that's probably something for me
-to look into.
-> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-> ---
->  Makefile.am                 |    2 +
->  configure.ac                |    3 ++
->  distro/Makefile.am          |   15 +++++++++
->  distro/rpm/Makefile.am      |   15 +++++++++
->  distro/rpm/easy-rsa.spec.in |   68 +++++++++++++++++++++++++++++++++++++=
-++++++
->  5 files changed, 103 insertions(+), 0 deletions(-)
->  create mode 100644 distro/Makefile.am
->  create mode 100644 distro/rpm/Makefile.am
->  create mode 100644 distro/rpm/easy-rsa.spec.in
+2012/3/8 Samuli Sepp=C3=A4nen <samuli@...515...>:
+> ACK. A few related questions/suggestions:
 >
-> diff --git a/Makefile.am b/Makefile.am
-> index 743da35..156a3c0 100644
-> --- a/Makefile.am
-> +++ b/Makefile.am
-> @@ -35,6 +35,8 @@ MAINTAINERCLEANFILES =3D \
->=20=20
->  EXTRA_DIST =3D doc easy-rsa
->=20=20
-> +SUBDIRS =3D distro
-> +
->  dist_doc_DATA =3D \
->  	COPYRIGHT.GPL \
->  	COPYING
-> diff --git a/configure.ac b/configure.ac
-> index 1e52ece..61703a2 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -48,5 +48,8 @@ AC_SUBST([easyrsadir])
->  AC_CONFIG_FILES([
->  	Makefile
->  	doc/Makefile
-> +	distro/Makefile
-> +	distro/rpm/Makefile
-> +	distro/rpm/easy-rsa.spec
->  ])
->  AC_OUTPUT
-> diff --git a/distro/Makefile.am b/distro/Makefile.am
-> new file mode 100644
-> index 0000000..f26dc5a
-> --- /dev/null
-> +++ b/distro/Makefile.am
-> @@ -0,0 +1,15 @@
-> +#
-> +#  Easy-RSA -- This is a small RSA key management package, based on the =
-openssl
-> +#              command line tool, that can be found in the easy-rsa subd=
-irectory
-> +#              of the OpenVPN distribution.  While this tool is primary =
-concerned
-> +#              with key management for the SSL VPN application space, it=
- can also
-> +#              be used for building web certificates.
-> +#
-> +#  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-> +#  Copyright (C) 2006-2012 Alon Bar-Lev <alon.barlev@...277...>
-> +#
-> +
-> +MAINTAINERCLEANFILES =3D \
-> +	$(srcdir)/Makefile.in
-> +
-> +SUBDIRS =3D rpm
-> diff --git a/distro/rpm/Makefile.am b/distro/rpm/Makefile.am
-> new file mode 100644
-> index 0000000..49fe48c
-> --- /dev/null
-> +++ b/distro/rpm/Makefile.am
-> @@ -0,0 +1,15 @@
-> +#
-> +#  Easy-RSA -- This is a small RSA key management package, based on the =
-openssl
-> +#              command line tool, that can be found in the easy-rsa subd=
-irectory
-> +#              of the OpenVPN distribution.  While this tool is primary =
-concerned
-> +#              with key management for the SSL VPN application space, it=
- can also
-> +#              be used for building web certificates.
-> +#
-> +#  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-> +#  Copyright (C) 2006-2012 Alon Bar-Lev <alon.barlev@...277...>
-> +#
-> +
-> +MAINTAINERCLEANFILES =3D \
-> +	$(srcdir)/Makefile.in
-> +
-> +dist_noinst_DATA =3D easy-rsa.spec
-> diff --git a/distro/rpm/easy-rsa.spec.in b/distro/rpm/easy-rsa.spec.in
-> new file mode 100644
-> index 0000000..f0d9bfa
-> --- /dev/null
-> +++ b/distro/rpm/easy-rsa.spec.in
-> @@ -0,0 +1,68 @@
-> +#
-> +#  Easy-RSA -- This is a small RSA key management package, based on the =
-openssl
-> +#              command line tool, that can be found in the easy-rsa subd=
-irectory
-> +#              of the OpenVPN distribution.  While this tool is primary =
-concerned
-> +#              with key management for the SSL VPN application space, it=
- can also
-> +#              be used for building web certificates.
-> +#
-> +#  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-> +#  Copyright (C) 2006-2012 Alon Bar-Lev <alon.barlev@...277...>
-> +#
-> +#  This program is free software; you can redistribute it and/or modify
-> +#  it under the terms of the GNU General Public License version 2
-> +#  as published by the Free Software Foundation.
-> +#
-> +#  This program is distributed in the hope that it will be useful,
-> +#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-> +#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> +#  GNU General Public License for more details.
-> +#
-> +#  You should have received a copy of the GNU General Public License
-> +#  along with this program (see the file COPYING included with this
-> +#  distribution); if not, write to the Free Software Foundation, Inc.,
-> +#  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-> +#
-> +
-> +Summary:	Easy-RSA
-> +Name:		easy-rsa
-> +Version:	@PACKAGE_VERSION@
-> +Release:	1
-> +License:	GPL-2
-> +Group:		Security/Cryptography
-> +Source:		%{name}-%{version}.tar.gz
-> +Packager:	OpenVPN Technologies, Inc. <sales@...515...>
-> +Vendor:		OpenVPN Technologies, Inc.
-> +URL:		http://openvpn.net
-> +BuildRoot:	%{_tmppath}/%{name}-buildroot
-> +BuildArch:	noarch
-> +Requires:	openssl
-> +%description
-> +This is a small RSA key management package, based on the openssl
-> +command line tool, that can be found in the easy-rsa subdirectory
-> +of the OpenVPN distribution.  While this tool is primary concerned
-> +with key management for the SSL VPN application space, it can also
-> +be used for building web certificates.
-> +
-> +%prep
-> +%setup -q
-> +
-> +%build
-> +%configure -q -docdir=3D"%{_docdir}/%{name}-%{version}"
-> +%{__make}
-> +
-> +%install
-> +rm -rf "${RPM_BUILD_ROOT}"
-> +%{__make} install DESTDIR=3D"${RPM_BUILD_ROOT}"
-> +
-> +%clean
-> +rm -rf "${RPM_BUILD_ROOT}"
-> +
-> +%files
-> +
-> +%defattr(-,root,root)
-> +%{_datadir}/easy-rsa
-> +%{_docdir}
-> +=20
-> +%changelog
-> +* Fri Feb 24 2012 Alon Bar-Lev <alon.barlev@...277...>
-> +- Created initial spec file
-
-
+> - perhaps "easy-rsa/1.0" could be removed altogether?
+> - perhaps "openssl-0.9.6.cnf" and any references to it could be removed
+> also?
+>
+> --
+> Samuli Sepp=C3=A4nen
+> Community Manager
+> OpenVPN Technologies, Inc
+>
+> irc freenode net: mattock
+>
+>> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+>> ---
+>> =C2=A00 files changed, 0 insertions(+), 0 deletions(-)
+>> =C2=A0mode change 100644 =3D> 100755 easy-rsa/1.0/list-crl
+>> =C2=A0mode change 100644 =3D> 100755 easy-rsa/1.0/make-crl
+>> =C2=A0mode change 100644 =3D> 100755 easy-rsa/1.0/revoke-crt
+>> =C2=A0mode change 100755 =3D> 100644 easy-rsa/2.0/openssl-0.9.6.cnf
+>> =C2=A0mode change 100755 =3D> 100644 easy-rsa/2.0/openssl-0.9.8.cnf
+>> =C2=A0mode change 100755 =3D> 100644 easy-rsa/2.0/openssl-1.0.0.cnf
+>> =C2=A0mode change 100755 =3D> 100644 easy-rsa/2.0/vars
+>> =C2=A0mode change 100755 =3D> 100644 easy-rsa/Windows/init-config.bat
+>>
+>> diff --git a/easy-rsa/1.0/list-crl b/easy-rsa/1.0/list-crl
+>> old mode 100644
+>> new mode 100755
+>> diff --git a/easy-rsa/1.0/make-crl b/easy-rsa/1.0/make-crl
+>> old mode 100644
+>> new mode 100755
+>> diff --git a/easy-rsa/1.0/revoke-crt b/easy-rsa/1.0/revoke-crt
+>> old mode 100644
+>> new mode 100755
+>> diff --git a/easy-rsa/2.0/openssl-0.9.6.cnf b/easy-rsa/2.0/openssl-0.9.6=
+.cnf
+>> old mode 100755
+>> new mode 100644
+>> diff --git a/easy-rsa/2.0/openssl-0.9.8.cnf b/easy-rsa/2.0/openssl-0.9.8=
+.cnf
+>> old mode 100755
+>> new mode 100644
+>> diff --git a/easy-rsa/2.0/openssl-1.0.0.cnf b/easy-rsa/2.0/openssl-1.0.0=
+.cnf
+>> old mode 100755
+>> new mode 100644
+>> diff --git a/easy-rsa/2.0/vars b/easy-rsa/2.0/vars
+>> old mode 100755
+>> new mode 100644
+>> diff --git a/easy-rsa/Windows/init-config.bat b/easy-rsa/Windows/init-co=
+nfig.bat
+>> old mode 100755
+>> new mode 100644
+>
 
