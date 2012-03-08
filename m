@@ -1,12 +1,12 @@
-Message-ID: <4F58A96E.1040305@...515...>
-Date: Thu, 08 Mar 2012 14:43:26 +0200
+Message-ID: <4F58AD4F.7080805@...515...>
+Date: Thu, 08 Mar 2012 14:59:59 +0200
 From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
 References: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
-	<1330546342-17794-47-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1330546342-17794-47-git-send-email-alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 46/52] build: move daemon() emulation
- into compat
+	<1330546342-17794-48-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1330546342-17794-48-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 47/52] build: move inet_ntop(),
+ inet_pton() emulation into compat
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,11 +20,10 @@ Content-Transfer-Encoding: quoted-printable
 To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "Openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-Which platforms need daemon() emulation? Only Windows?
-
-I think it makes sense to isolate OS compatibility functions to files
-under src/compat. Better than having them in misc.c. Also, I can't see
-any obvious issues with the patch, code-vise.
+Windows has this functionality, but not under the same function names as
+UNIX. So thse two are just wrappers around the Windows-specific
+functionality. In any case, I think it makes sense to move inet_pton and
+inet_ntop under src/compat. The actual code changes seem fairly trivial.
 
 ACK.
 
@@ -36,36 +35,60 @@ OpenVPN Technologies, Inc
 irc freenode net: mattock
 
 
+PS. These links should cover the basic idea, in case somebody is interested:
+
+<http://us.generation-nt.com/inet-pton-windows-convert-address-presentation=
+-format-network-format-help-37036482.html>
+<http://pubs.opengroup.org/onlinepubs/009604599/functions/inet_ntop.html>
 > Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 > ---
->  src/compat/Makefile.am     |    3 +-
->  src/compat/compat-daemon.c |  100 ++++++++++++++++++++++++++++++++++++++=
-++++++
->  src/compat/compat.h        |    4 ++
->  src/compat/compat.vcproj   |    4 ++
->  src/openvpn/init.c         |    2 +-
->  src/openvpn/misc.c         |   32 --------------
->  src/openvpn/misc.h         |    4 --
->  7 files changed, 111 insertions(+), 38 deletions(-)
->  create mode 100644 src/compat/compat-daemon.c
+>  configure.ac  I recall many issues with inet_ntop and inet_pton.
 >
+>                 |    2 +-
+>  src/compat/Makefile.am        |    4 ++-
+>  src/compat/compat-inet_ntop.c |   76 +++++++++++++++++++++++++++++++++++=
+++++
+>  src/compat/compat-inet_pton.c |   79 +++++++++++++++++++++++++++++++++++=
+++++++
+>  src/compat/compat.h           |   17 ++++++++-
+>  src/compat/compat.vcproj      |    8 ++++
+>  src/openvpn/socket.c          |   55 ----------------------------
+>  src/openvpn/win32.h           |    6 ---
+>  8 files changed, 183 insertions(+), 64 deletions(-)
+>  create mode 100644 src/compat/compat-inet_ntop.c
+>  create mode 100644 src/compat/compat-inet_pton.c
+>
+> diff --git a/configure.ac b/configure.ac
+> index dc138ba..d53a74a 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -522,7 +522,7 @@ AC_CHECK_FUNCS([ \
+>         chsize ftruncate execve getpeereid umask basename dirname access \
+>         epoll_create \
+>  ])
+> -AC_CHECK_FUNCS([sendmsg recvmsg])
+> +AC_CHECK_FUNCS([sendmsg recvmsg inet_ntop inet_pton])
+>  AC_CHECK_FUNCS(
+>         [res_init],
+>         ,
 > diff --git a/src/compat/Makefile.am b/src/compat/Makefile.am
-> index 5e9db5f..c8a92ce 100644
+> index c8a92ce..91b7f40 100644
 > --- a/src/compat/Makefile.am
 > +++ b/src/compat/Makefile.am
-> @@ -21,4 +21,5 @@ libcompat_la_SOURCES =3D \
->  	compat.h \
->  	compat-dirname.c \
->  	compat-basename.c \
-> -	compat-gettimeofday.c
-> +	compat-gettimeofday.c \
-> +	compat-daemon.c
-> diff --git a/src/compat/compat-daemon.c b/src/compat/compat-daemon.c
+> @@ -22,4 +22,6 @@ libcompat_la_SOURCES =3D \
+>         compat-dirname.c \
+>         compat-basename.c \
+>         compat-gettimeofday.c \
+> -       compat-daemon.c
+> +       compat-daemon.c \
+> +       compat-inet_ntop.c \
+> +       compat-inet_pton.c
+> diff --git a/src/compat/compat-inet_ntop.c b/src/compat/compat-inet_ntop.c
 > new file mode 100644
-> index 0000000..dde96a2
+> index 0000000..0d52142
 > --- /dev/null
-> +++ b/src/compat/compat-daemon.c
-> @@ -0,0 +1,100 @@
+> +++ b/src/compat/compat-inet_ntop.c
+> @@ -0,0 +1,76 @@
 > +/*
 > + *  OpenVPN -- An application to securely tunnel IP networks
 > + *             over a single UDP port, with support for SSL/TLS-based
@@ -96,178 +119,303 @@ irc freenode net: mattock
 > +#include "config-msvc.h"
 > +#endif
 > +
-> +#ifndef HAVE_DAEMON
+> +#ifndef HAVE_INET_NTOP
 > +
-> +#ifdef HAVE_UNISTD_H
-> +#include <unistd.h>
-> +#endif
+> +#include "compat.h"
 > +
-> +#ifdef HAVE_STDLIB_H
-> +#include <stdlib.h>
-> +#endif
+> +#ifdef WIN32
 > +
-> +#ifdef HAVE_SYS_TYPES_H
-> +#include <sys/types.h>
-> +#endif
+> +#include <windows.h>
 > +
-> +#ifdef HAVE_SYS_STAT_H
-> +#include <sys/stat.h>
-> +#endif
+> +/*
+> + * inet_ntop() and inet_pton() wrap-implementations using
+> + * WSAAddressToString() and WSAStringToAddress() functions
+> + *
+> + * this is needed as long as we support running OpenVPN on WinXP
+> + */
 > +
-> +#ifdef HAVE_FCNTL_H
-> +#include <fcntl.h>
-> +#endif
-> +
-> +#ifdef HAVE_ERRNO_H
-> +#include <errno.h>
-> +#endif
-> +
-> +int
-> +daemon(int nochdir, int noclose)
+> +const char *
+> +inet_ntop(int af, const void *src, char *dst, socklen_t size)
 > +{
-> +#if defined(HAVE_FORK) && defined(HAVE_SETSID)
-> +	switch (fork()) {
-> +		case -1:
-> +			return (-1);
-> +		case 0:
-> +		break;
-> +		default:
-> +			exit(0);
-> +	}
+> +  struct sockaddr_storage ss;
+> +  unsigned long s =3D size;
 > +
-> +	if (setsid() =3D=3D -1)
-> +		return (-1);
+> +  ZeroMemory(&ss, sizeof(ss));
+> +  ss.ss_family =3D af;
 > +
-> +	if (!nochdir)
-> +		chdir("/");
-> +
-> +	if (!noclose) {
-> +#if defined(HAVE_DUP) && defined(HAVE_DUP2)
-> +		int fd;
-> +		if ((fd =3D open ("/dev/null", O_RDWR, 0)) !=3D -1) {
-> +			dup2 (fd, 0);
-> +			dup2 (fd, 1);
-> +			dup2 (fd, 2);
-> +			if (fd > 2) {
-> +				close (fd);
-> +			}
-> +		}
-> +#endif
-> +	}
-> +
-> +	return 0;
-> +#else
-> +	(void)nochdir;
-> +	(void)noclose;
-> +	errno =3D EFAULT;
-> +	return -1;
-> +#endif
+> +  switch(af) {
+> +    case AF_INET:
+> +      ((struct sockaddr_in *)&ss)->sin_addr =3D *(struct in_addr *)src;
+> +      break;
+> +    case AF_INET6:
+> +      ((struct sockaddr_in6 *)&ss)->sin6_addr =3D *(struct in6_addr *)sr=
+c;
+> +      break;
+> +    default:
+> +      return NULL;
+> +  }
+> +  /* cannot direclty use &size because of strict aliasing rules */
+> +  return (WSAAddressToString((struct sockaddr *)&ss, sizeof(ss), NULL, d=
+st, &s) =3D=3D 0)?
+> +          dst : NULL;
 > +}
 > +
+> +#else
+> +
+> +#error no emulation for inet_ntop
+> +
 > +#endif
 > +
+> +#endif
+> diff --git a/src/compat/compat-inet_pton.c b/src/compat/compat-inet_pton.c
+> new file mode 100644
+> index 0000000..cdc8d4b
+> --- /dev/null
+> +++ b/src/compat/compat-inet_pton.c
+> @@ -0,0 +1,79 @@
+> +/*
+> + *  OpenVPN -- An application to securely tunnel IP networks
+> + *             over a single UDP port, with support for SSL/TLS-based
+> + *             session authentication and key exchange,
+> + *             packet encryption, packet authentication, and
+> + *             packet compression.
+> + *
+> + *  Copyright (C) 2011 - David Sommerseth <davids@...1347...>
+> + *
+> + *  This program is free software; you can redistribute it and/or modify
+> + *  it under the terms of the GNU General Public License version 2
+> + *  as published by the Free Software Foundation.
+> + *
+> + *  This program is distributed in the hope that it will be useful,
+> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + *  GNU General Public License for more details.
+> + *
+> + *  You should have received a copy of the GNU General Public License
+> + *  along with this program (see the file COPYING included with this
+> + *  distribution); if not, write to the Free Software Foundation, Inc.,
+> + *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+> + */
+> +
+> +#ifdef HAVE_CONFIG_H
+> +#include "config.h"
+> +#elif defined(_MSC_VER)
+> +#include "config-msvc.h"
+> +#endif
+> +
+> +#ifndef HAVE_INET_PTON
+> +
+> +#include "compat.h"
+> +
+> +#ifdef WIN32
+> +
+> +#include <windows.h>
+> +#include <string.h>
+> +
+> +/*
+> + * inet_ntop() and inet_pton() wrap-implementations using
+> + * WSAAddressToString() and WSAStringToAddress() functions
+> + *
+> + * this is needed as long as we support running OpenVPN on WinXP
+> + */
+> +
+> +
+> +int
+> +inet_pton(int af, const char *src, void *dst)
+> +{
+> +  struct sockaddr_storage ss;
+> +  int size =3D sizeof(ss);
+> +  char src_copy[INET6_ADDRSTRLEN+1];
+> +
+> +  ZeroMemory(&ss, sizeof(ss));
+> +  /* stupid non-const API */
+> +  strncpy (src_copy, src, INET6_ADDRSTRLEN+1);
+> +  src_copy[INET6_ADDRSTRLEN] =3D 0;
+> +
+> +  if (WSAStringToAddress(src_copy, af, NULL, (struct sockaddr *)&ss, &si=
+ze) =3D=3D 0) {
+> +    switch(af) {
+> +      case AF_INET:
+> +       *(struct in_addr *)dst =3D ((struct sockaddr_in *)&ss)->sin_addr;
+> +       return 1;
+> +      case AF_INET6:
+> +       *(struct in6_addr *)dst =3D ((struct sockaddr_in6 *)&ss)->sin6_ad=
+dr;
+> +       return 1;
+> +    }
+> +  }
+> +  return 0;
+> +}
+> +
+> +#else
+> +
+> +#error no emulation for inet_ntop
+> +
+> +#endif
+> +
+> +#endif
 > diff --git a/src/compat/compat.h b/src/compat/compat.h
-> index 3f9ac31..e9d51b8 100644
+> index e9d51b8..021573e 100644
 > --- a/src/compat/compat.h
 > +++ b/src/compat/compat.h
-> @@ -46,4 +46,8 @@ char * basename(char *str);
->  int gettimeofday (struct timeval *tv, void *tz);
+> @@ -26,14 +26,21 @@
+>  #define COMPAT_H
+>
+>  #ifdef HAVE_WINSOCK2_H
+> -/* timeval */
+>  #include <winsock2.h>
 >  #endif
->=20=20
-> +#ifndef HAVE_DAEMON
-> +int daemon(int nochdir, int noclose);
+>
+> +#ifdef HAVE_WS2TCPIP_H
+> +#include <ws2tcpip.h>
+> +#endif
+> +
+>  #ifdef HAVE_SYS_TIME_H
+>  #include <sys/time.h>
+>  #endif
+>
+> +#ifdef HAVE_SYS_SOCKET_H
+> +#include <sys/socket.h>
+> +#endif
+> +
+>  #ifndef HAVE_DIRNAME
+>  char * dirname(char *str);
+>  #endif /* HAVE_DIRNAME */
+> @@ -50,4 +57,12 @@ int gettimeofday (struct timeval *tv, void *tz);
+>  int daemon(int nochdir, int noclose);
+>  #endif
+>
+> +#ifndef HAVE_INET_NTOP
+> +const char * inet_ntop(int af, const void *src, char *dst, socklen_t siz=
+e);
+> +#endif
+> +
+> +#ifndef HAVE_INET_PTON
+> +int inet_pton(int af, const char *src, void *dst);
 > +#endif
 > +
 >  #endif /* COMPAT_H */
 > diff --git a/src/compat/compat.vcproj b/src/compat/compat.vcproj
-> index 235163c..efdecb4 100644
+> index efdecb4..43fc0c2 100644
 > --- a/src/compat/compat.vcproj
 > +++ b/src/compat/compat.vcproj
-> @@ -162,6 +162,10 @@
->  				RelativePath=3D".\compat-gettimeofday.c"
->  				>
->  			</File>
-> +			<File
-> +				RelativePath=3D".\compat-daemon.c"
-> +				>
-> +			</File>
->  		</Filter>
->  		<Filter
->  			Name=3D"Header Files"
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index e7edb05..bba3cf8 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -993,7 +993,7 @@ possibly_become_daemon (const struct options *options=
-, const bool first_time)
->      {
->        ASSERT (!options->inetd);
->        if (daemon (options->cd_dir !=3D NULL, options->log) < 0)
-> -	msg (M_ERR, "daemon() failed");
-> +	msg (M_ERR, "daemon() failed or unsupported");
->        restore_signal_state ();
->        if (options->log)
->  	set_std_files_to_null (true);
-> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-> index 898a183..07beaf0 100644
-> --- a/src/openvpn/misc.c
-> +++ b/src/openvpn/misc.c
-> @@ -301,38 +301,6 @@ do_mlockall(bool print_msg)
->  #endif
->  }
->=20=20
-> -#ifndef HAVE_DAEMON
+> @@ -163,6 +163,14 @@
+>                                 >
+>                         </File>
+>                         <File
+> +                               RelativePath=3D".\compat-inet_ntop.c"
+> +                               >
+> +                       </File>
+> +                       <File
+> +                               RelativePath=3D".\compat-inet_pton.c"
+> +                               >
+> +                       </File>
+> +                       <File
+>                                 RelativePath=3D".\compat-daemon.c"
+>                                 >
+>                         </File>
+> diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+> index e1526ff..608213b 100644
+> --- a/src/openvpn/socket.c
+> +++ b/src/openvpn/socket.c
+> @@ -3086,61 +3086,6 @@ link_socket_write_udp_posix_sendmsg (struct link_s=
+ocket *sock,
+>
+>  #ifdef WIN32
+>
+> -/*
+> - * inet_ntop() and inet_pton() wrap-implementations using
+> - * WSAAddressToString() and WSAStringToAddress() functions
+> - *
+> - * this is needed as long as we support running OpenVPN on WinXP
+> - */
 > -
-> -int
-> -daemon(int nochdir, int noclose)
+> -const char *
+> -openvpn_inet_ntop(int af, const void *src, char *dst, socklen_t size)
 > -{
-> -#if defined(HAVE_FORK) && defined(HAVE_SETSID)
-> -  switch (fork())
-> -    {
-> -    case -1:
-> -      return (-1);
-> -    case 0:
+> -  struct sockaddr_storage ss;
+> -  unsigned long s =3D size;
+> -
+> -  CLEAR(ss);
+> -  ss.ss_family =3D af;
+> -
+> -  switch(af) {
+> -    case AF_INET:
+> -      ((struct sockaddr_in *)&ss)->sin_addr =3D *(struct in_addr *)src;
+> -      break;
+> -    case AF_INET6:
+> -      ((struct sockaddr_in6 *)&ss)->sin6_addr =3D *(struct in6_addr *)sr=
+c;
 > -      break;
 > -    default:
-> -      openvpn_exit (OPENVPN_EXIT_STATUS_GOOD); /* exit point */
-> -    }
-> -
-> -  if (setsid() =3D=3D -1)
-> -    return (-1);
-> -
-> -  if (!nochdir)
-> -    openvpn_chdir ("/");
-> -
-> -  if (!noclose)
-> -    set_std_files_to_null (false);
-> -#else
-> -  msg (M_FATAL, "Sorry but I can't become a daemon because this operatin=
-g system doesn't appear to support either the daemon() or fork() system cal=
-ls");
-> -#endif
-> -  return (0);
+> -      ASSERT (0);
+> -  }
+> -  /* cannot direclty use &size because of strict aliasing rules */
+> -  return (WSAAddressToString((struct sockaddr *)&ss, sizeof(ss), NULL, d=
+st, &s) =3D=3D 0)?
+> -          dst : NULL;
 > -}
 > -
-> -#endif
+> -int
+> -openvpn_inet_pton(int af, const char *src, void *dst)
+> -{
+> -  struct sockaddr_storage ss;
+> -  int size =3D sizeof(ss);
+> -  char src_copy[INET6_ADDRSTRLEN+1];
 > -
->  /*
->   * Set standard file descriptors to /dev/null
->   */
-> diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
-> index 9fa8106..9bb2fa2 100644
-> --- a/src/openvpn/misc.h
-> +++ b/src/openvpn/misc.h
-> @@ -115,10 +115,6 @@ unsigned int openvpn_getpid (void);
->=20=20
->  void do_mlockall (bool print_msg); /* Disable paging */
->=20=20
-> -#ifndef HAVE_DAEMON
-> -int daemon (int nochdir, int noclose);
-> -#endif
+> -  CLEAR(ss);
+> -  /* stupid non-const API */
+> -  strncpynt(src_copy, src, INET6_ADDRSTRLEN+1);
 > -
->  /* check file protections */
->  void warn_if_group_others_accessible(const char* filename);
->=20=20
+> -  if (WSAStringToAddress(src_copy, af, NULL, (struct sockaddr *)&ss, &si=
+ze) =3D=3D 0) {
+> -    switch(af) {
+> -      case AF_INET:
+> -       *(struct in_addr *)dst =3D ((struct sockaddr_in *)&ss)->sin_addr;
+> -       return 1;
+> -      case AF_INET6:
+> -       *(struct in6_addr *)dst =3D ((struct sockaddr_in6 *)&ss)->sin6_ad=
+dr;
+> -       return 1;
+> -    }
+> -  }
+> -  return 0;
+> -}
+> -
+>  int
+>  socket_recv_queue (struct link_socket *sock, int maxsize)
+>  {
+> diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
+> index 09f897a..d87e987 100644
+> --- a/src/openvpn/win32.h
+> +++ b/src/openvpn/win32.h
+> @@ -266,12 +266,6 @@ char *get_win_sys_path (void);
+>  /* call self in a subprocess */
+>  void fork_to_self (const char *cmdline);
+>
+> -const char *openvpn_inet_ntop(int af, const void *src,
+> -                              char *dst, socklen_t size);
+> -int openvpn_inet_pton(int af, const char *src, void *dst);
+> -#define inet_ntop(af,src,dst,size) openvpn_inet_ntop(af,src,dst,size)
+> -#define inet_pton(af,src,dst)      openvpn_inet_pton(af,src,dst)
+> -
+>  /* Find temporary directory */
+>  const char *win_get_tempdir();
+>
+> --
+> 1.7.3.4
+>
+>
+> -------------------------------------------------------------------------=
+-----
+> Virtualization & Cloud Management Using Capacity Planning
+> Cloud computing makes use of virtualization - but cloud computing
+> also focuses on allowing computing to be delivered as a service.
+> http://www.accelacomm.com/jaw/sfnl/114/51521223/
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
 
 
