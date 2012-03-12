@@ -1,10 +1,12 @@
-Date: Mon, 12 Mar 2012 12:53:29 +0100
-From: =?iso-8859-1?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>
-Message-ID: <996603503.20120312125329@...449...>
-In-Reply-To: <1841057.UQlKImHBjp@...1526...>
-References: <4F4CE4FE.3010009@...515...> <2610535.JtY05sqIlT@...1526...>
-	<9710628022.20120309180907@...449...> <1841057.UQlKImHBjp@...1526...>
+Message-ID: <4F5E08D2.2040302@...515...>
+Date: Mon, 12 Mar 2012 16:31:46 +0200
+From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
 MIME-Version: 1.0
+References: <4F4CE4FE.3010009@...515...>
+	<883843028.20120301125911@...449...>	<2082061.FfdueT8x4P@...1526...>
+	<2610535.JtY05sqIlT@...1526...>	<9710628022.20120309180907@...449...>
+	<CAOazyz1bWM3AvYi9qhtwQH=TvFjwFNF0=8M-DaA79vk6gbugzg@...278...>
+In-Reply-To: <CAOazyz1bWM3AvYi9qhtwQH=TvFjwFNF0=8M-DaA79vk6gbugzg@...278...>
 Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,29 +16,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: =?UTF-8?B?Q2Fyc3RlbiBLcsO8Z2Vy?= <C.Krueger@...448...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hello Heiko,
+Hi all,
 
-HH> The openvpn.exe process security descriptor will be owned by the user the
-HH> service is run as, i.e. Local System.
+I had a brief email discussion about the OpenVPN privilege separation
+thing with James Yonan and realized that even after having read all
+relevant emails a couple of times, I still had a fairly vague idea of
+various approaches suggested here. So, to clarify my own thoughts (and
+to hopefully help others) I wrote this Wiki page:
 
-Ok. I was unsure if the openvpn.exe is started as user x it will be the
-owner, even if it's started from the service.
+<https://community.openvpn.net/openvpn/wiki/PrivilegeSeparation>
 
-HH>  That's what I meant by "The service
-HH> account will own the process object, so that the user cannot sneak his way in
-HH> by modifying the DACL."
+James proposed yet another alternative to handle the privilege
+separation. It should not require OpenVPN code changes:
 
-I see.
+<https://community.openvpn.net/openvpn/wiki/PrivilegeSeparation#GUIservice>
 
-I'm looking forward to see the next version :-)
+Also, he shared some thoughts about implementing the interactive service:
 
-greetings
-Carsten
+<https://community.openvpn.net/openvpn/wiki/PrivilegeSeparation#Interactive=
+service>
 
+NOTE: the wiki page is incomplete and I may have omitted many important
+things. Please fix them instead of complaining here :).
 
+--=20
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
 
