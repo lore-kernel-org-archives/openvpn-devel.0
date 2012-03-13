@@ -1,11 +1,12 @@
-Message-ID: <4F5F4279.80303@...515...>
-Date: Tue, 13 Mar 2012 14:50:01 +0200
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
+Sender: fabian@...1547...
+In-Reply-To: <70094734.yG4fYDZvM3@...1526...>
 References: <4F4CE4FE.3010009@...515...> <4F5E08D2.2040302@...515...>
 	<CAOazyz0mnZZVbGiMxmkn_JW5+yZ8AUeejeVWi0pMbu9okieRpw@...278...>
 	<70094734.yG4fYDZvM3@...1526...>
-In-Reply-To: <70094734.yG4fYDZvM3@...1526...>
+From: Fabian Knittel <fabian.knittel@...1547...>
+Date: Tue, 13 Mar 2012 13:55:23 +0100
+Message-ID: <CAP+U6tJaseSTk4D8Oh9Vk2f+7+CDMqfXR_8r8FC8joa-9e-dUg@...278...>
 Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.3-alpha1 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,59 +16,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 To: Heiko Hund <heiko.hund@...1489...>
-Cc: Alon Bar-Lev <alon.barlev@...277...>, =?ISO-8859-1?Q?Carsten_Kr=FCger?= <C.Krueger@...448...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: Alon Bar-Lev <alon.barlev@...277...>, =?UTF-8?Q?Carsten_Kr=C3=BCger?= <C.Krueger@...448...>, openvpn-devel@lists.sourceforge.net
 
+Hi,
 
-> Hi
->
+2012/3/13 Heiko Hund <heiko.hund@...1489...>:
 > On Monday 12 March 2012 19:01:41 Alon Bar-Lev wrote:
->> Although I tried to go farther... that what James suggested.
 >> What is the baseline? This what we should agree first...
 >> Should openvpn daemon be run on completely unprivileged account or not.
-> I don't support the idea about running openvpn.exe with elevated privileg=
-es.=20
-> It has been run as the user before and that worked fine until Microsoft=20
-> limited access to system resources in Vista. The service approach with th=
-e=20
+>
+> I don't support the idea about running openvpn.exe with elevated privileges.
+> It has been run as the user before and that worked fine until Microsoft
+> limited access to system resources in Vista. The service approach with the
 > elevation pipe solves exactly that problem.
->
-> Openvpn is very complex, running is under a privileged account is a secur=
-ity=20
-> risk in my opinion. The elevation pipe offers a very limited and well def=
-ined=20
-> interface to configure needed system resources only and tries hard to all=
-ow=20
-> access for openvpn.exe only. If you compare what the possibilities of an=
-=20
-> attacker would be if the openvpn.exe process is compromised in both scena=
-rios=20
-> there's not much room to argue IMO.
->
-> Regards
-> Heiko
-Heiko,
 
-Could you take a look here to verify I'm describing your approach correctly:
+I agree that being able to run openvpn in an unprivileged account is a
+worthwhile goal. The GUI/service-proposal does not appear to achieve
+that while the other two do.
 
-<https://community.openvpn.net/openvpn/wiki/PrivilegeSeparation#Interactive=
-service>
+For regular desktop systems the unprivileged account could potentially
+be the interactive users account. For enterprise systems, the
+unprivileged account should probably be separate from the interactive
+user's account. Only the COM+ approach appears to achieve the latter
+requirement.  Of course, the GUI/service-proposal could be combined
+with the interactive service proposal to achieve something quite
+similar. (I don't see the interactive service proposal as sufficient
+for the enterprise case, because the user still has too much control
+over the connection (where to connect, what scripts to run, etc.))
 
-Also, if anyone has anything to add to the interactive service "Details
-for successful implementation" section, please do so. Things along the
-lines "this needs to be taken care of, or all hell breaks loose". As
-James says, we need to be very careful to avoid privilege escalation bugs.
-
-I'll also try to get James to explain his GUI/service separation
-approach in more detail, maybe in an IRC meeting...
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
+Cheers
+Fabian
 
