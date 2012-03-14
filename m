@@ -1,5 +1,5 @@
 MIME-Version: 1.0
-In-Reply-To: <CABT9mj8P8H86THWzNTGtZZ=gNS4dvmWQYzJJ4EVKWShoNsND7g@...278...>
+In-Reply-To: <CAOazyz0=vkjyx93yyauJC=2Njss0wVmK2FTS6teLERHM80MYAg@...278...>
 References: <CAOBzU4PN6qDxf39+s4noXEiW8hNbDy-hkQWGSauBd3hX0pu2hw@...278...>
 	<CAOazyz1DE7Y-P9HFK3LN8-HeoGbHzYeqofX3RiEuK0C-zcxnug@...278...>
 	<CAOazyz0nV8P8Age_wyFCvu1J4g1MECA7YdTAAL4of7TTVctXow@...278...>
@@ -25,9 +25,11 @@ References: <CAOBzU4PN6qDxf39+s4noXEiW8hNbDy-hkQWGSauBd3hX0pu2hw@...278...>
 	<CABT9mj_XRKAt7uyMv31TmW89izDmGWmCDoBpRpHODmAL7aMenQ@...278...>
 	<CAOazyz3K8sGCWQO4iRCBZSmhqY-Y84BTHAzmpWbTxNWqRnD-Ew@...278...>
 	<CABT9mj8P8H86THWzNTGtZZ=gNS4dvmWQYzJJ4EVKWShoNsND7g@...278...>
-Date: Thu, 15 Mar 2012 01:19:06 +0200
-Message-ID: <CAOazyz0=vkjyx93yyauJC=2Njss0wVmK2FTS6teLERHM80MYAg@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+	<CAOazyz0=vkjyx93yyauJC=2Njss0wVmK2FTS6teLERHM80MYAg@...278...>
+Date: Thu, 15 Mar 2012 01:37:21 +0200
+Message-ID: <CABT9mj_8NZUYJ55WqNkSU1YqsJXH23LBMsUxuNjH6j_yj18cHg@...278...>
+From: Athanasios Douitsis <aduitsis@...277...>
+Content-Type: multipart/alternative; boundary=0023542967b2f7365804bb3c7417
 Subject: Re: [Openvpn-devel] [PATCH 00/35] build revolution
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -37,32 +39,93 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Athanasios Douitsis <aduitsis@...277...>
+To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-On Thu, Mar 15, 2012 at 1:05 AM, Athanasios Douitsis <aduitsis@...277...> wrote:
-> I was just thinking loudly, definitely not asking for someone to write it
-> and replace the existing build process(es). Having said that, I'd like to
-> clarify that what I meant is this would not be an additional dependency on
-> top of others, since neither cygwin nor msvc would be needed anymore.
-> Anyway, not important, just a thought.
+--0023542967b2f7365804bb3c7417
+Content-Type: text/plain; charset=ISO-8859-1
 
-Visual studio build is for compatibility for people who insist of using it.
+On Thu, Mar 15, 2012 at 1:19 AM, Alon Bar-Lev <alon.barlev@...277...> wrote:
 
-The "generic" build system is pure cross compile / native build system
-for dependencies and openvpn. It compiles openvpn using a given
-toolchain to any environment.
+> On Thu, Mar 15, 2012 at 1:05 AM, Athanasios Douitsis <aduitsis@...277...>
+> wrote:
+> > I was just thinking loudly, definitely not asking for someone to write it
+> > and replace the existing build process(es). Having said that, I'd like to
+> > clarify that what I meant is this would not be an additional dependency
+> on
+> > top of others, since neither cygwin nor msvc would be needed anymore.
+> > Anyway, not important, just a thought.
+>
+> Visual studio build is for compatibility for people who insist of using it.
+>
+> The "generic" build system is pure cross compile / native build system
+> for dependencies and openvpn. It compiles openvpn using a given
+> toolchain to any environment.
+>
+> For example, you can use it to compile at Linux for Linux on power pc
+> or to Linux on arm.
+> As a side effect you can also compile openvpn on Linux to windows using
+> mingw.
+> This exact same script without any modification can be used on Windows
+> in cygwin environment to cross compile to windows native.
+>
+> So at the larger picture the target is to maintain a single build
+> system for all environment... same dependencies, same utilities.
+>
+> Alon
+>
 
-For example, you can use it to compile at Linux for Linux on power pc
-or to Linux on arm.
-As a side effect you can also compile openvpn on Linux to windows using mingw.
-This exact same script without any modification can be used on Windows
-in cygwin environment to cross compile to windows native.
+Thanks for taking the time to explain! I'll be happy to provide as much
+feedback as possible on the windows native case with cygwin.
 
-So at the larger picture the target is to maintain a single build
-system for all environment... same dependencies, same utilities.
+Best regards,
+-- 
+Athanasios Douitsis
 
-Alon
+--0023542967b2f7365804bb3c7417
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<br><br><div class=3D"gmail_quote">On Thu, Mar 15, 2012 at 1:19 AM, Alon Ba=
+r-Lev <span dir=3D"ltr">&lt;<a href=3D"mailto:alon.barlev@...277...">alon.b=
+arlev@...277...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" =
+style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
+<div class=3D"im">On Thu, Mar 15, 2012 at 1:05 AM, Athanasios Douitsis &lt;=
+<a href=3D"mailto:aduitsis@...277...">aduitsis@...277...</a>&gt; wrote:<br>
+&gt; I was just thinking loudly, definitely not asking for someone to write=
+ it<br>
+&gt; and replace the existing build process(es). Having said that, I&#39;d =
+like to<br>
+&gt; clarify that what I meant is this would not be an additional dependenc=
+y on<br>
+&gt; top of others, since neither cygwin nor msvc would be needed anymore.<=
+br>
+&gt; Anyway, not important, just a thought.<br>
+<br>
+</div>Visual studio build is for compatibility for people who insist of usi=
+ng it.<br>
+<br>
+The &quot;generic&quot; build system is pure cross compile / native build s=
+ystem<br>
+for dependencies and openvpn. It compiles openvpn using a given<br>
+toolchain to any environment.<br>
+<br>
+For example, you can use it to compile at Linux for Linux on power pc<br>
+or to Linux on arm.<br>
+As a side effect you can also compile openvpn on Linux to windows using min=
+gw.<br>
+This exact same script without any modification can be used on Windows<br>
+in cygwin environment to cross compile to windows native.<br>
+<br>
+So at the larger picture the target is to maintain a single build<br>
+system for all environment... same dependencies, same utilities.<br>
+<span class=3D"HOEnZb"><font color=3D"#888888"><br>
+Alon<br>
+</font></span></blockquote></div><br>Thanks for taking the time to explain!=
+ I&#39;ll be happy to provide as much feedback as possible on the windows n=
+ative case with cygwin. <br><br>Best regards,<br>-- <br>Athanasios Douitsis=
+<br>
+<br><br><br>
+
+--0023542967b2f7365804bb3c7417--
 
