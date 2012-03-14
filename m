@@ -1,5 +1,5 @@
 MIME-Version: 1.0
-In-Reply-To: <CABT9mj8mywqhyiwh_y6zTtxPN8EHeT-M=1er73OD9kdHm87kBQ@...278...>
+In-Reply-To: <CAOazyz15m6go2PxXgE3RR=mO5pnJCTS-ZACYTVh9vawevCxX-A@...278...>
 References: <CAOBzU4PN6qDxf39+s4noXEiW8hNbDy-hkQWGSauBd3hX0pu2hw@...278...>
 	<CAOazyz1DE7Y-P9HFK3LN8-HeoGbHzYeqofX3RiEuK0C-zcxnug@...278...>
 	<CAOazyz0nV8P8Age_wyFCvu1J4g1MECA7YdTAAL4of7TTVctXow@...278...>
@@ -20,8 +20,9 @@ References: <CAOBzU4PN6qDxf39+s4noXEiW8hNbDy-hkQWGSauBd3hX0pu2hw@...278...>
 	<CABT9mj-YbHc_5w_hPBo2DNQ_TA_0dP3Py9ue9JZ32UXg0A4YEg@...278...>
 	<CABT9mj9U0ewSBH=WqJ=nWgkBFGycL4R1Pw27bkhRG6WFgnpf8w@...278...>
 	<CABT9mj8mywqhyiwh_y6zTtxPN8EHeT-M=1er73OD9kdHm87kBQ@...278...>
-Date: Wed, 14 Mar 2012 19:10:57 +0200
-Message-ID: <CAOazyz15m6go2PxXgE3RR=mO5pnJCTS-ZACYTVh9vawevCxX-A@...278...>
+	<CAOazyz15m6go2PxXgE3RR=mO5pnJCTS-ZACYTVh9vawevCxX-A@...278...>
+Date: Wed, 14 Mar 2012 19:22:35 +0200
+Message-ID: <CAOazyz1NCOQOQQt0_JkppC-1ZDewzBKLKOOemXG1f4OGjFp3ww@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
 Subject: Re: [Openvpn-devel] [PATCH 00/35] build revolution
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -37,105 +38,132 @@ Content-Transfer-Encoding: quoted-printable
 To: Athanasios Douitsis <aduitsis@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-I converted it using the VCExpress.
+But I am more interested to see you succeed mingw configuration.
 
-On Wed, Mar 14, 2012 at 7:01 PM, Athanasios Douitsis <aduitsis@...277...> w=
-rote:
-> Right, works, at least for me. I managed to get an openvpn binary.
+Under cygwin:
+
+$ git clone https://github.com/alonbl/openvpn-build.git
+$ cd openvpn-build/generic
+$ ./build
+
+Refer to README for packages required.
+
+Alon.
+
+On Wed, Mar 14, 2012 at 7:10 PM, Alon Bar-Lev <alon.barlev@...277...> wrote:
+> I converted it using the VCExpress.
 >
-> May I ask, how did you convert the previous sln file with VC express 2010?
-> Or it was already compatible with VC2010?
->
-> On Wed, Mar 14, 2012 at 5:13 PM, Athanasios Douitsis <aduitsis@...277...>
-> wrote:
+> On Wed, Mar 14, 2012 at 7:01 PM, Athanasios Douitsis <aduitsis@...277...>=
+ wrote:
+>> Right, works, at least for me. I managed to get an openvpn binary.
 >>
->> Alon,
+>> May I ask, how did you convert the previous sln file with VC express 201=
+0?
+>> Or it was already compatible with VC2010?
 >>
->> Thank you very much for the very quick response, sooner or later I'll let
->> you know how it goes.
->>
->> Kind Regards,
->> Athanasios
->>
->>
->> On Wed, Mar 14, 2012 at 5:09 PM, Athanasios Douitsis <aduitsis@...277...>
+>> On Wed, Mar 14, 2012 at 5:13 PM, Athanasios Douitsis <aduitsis@...277...>
 >> wrote:
 >>>
->>> Oh crap....I've just uninstalled VC2010 from my builder :) :) :)
+>>> Alon,
+>>>
+>>> Thank you very much for the very quick response, sooner or later I'll l=
+et
+>>> you know how it goes.
+>>>
+>>> Kind Regards,
+>>> Athanasios
 >>>
 >>>
->>> 2012/3/14 Alon Bar-Lev <alon.barlev@...277...>
+>>> On Wed, Mar 14, 2012 at 5:09 PM, Athanasios Douitsis <aduitsis@...1663...=
+.>
+>>> wrote:
 >>>>
->>>> Thanks.
+>>>> Oh crap....I've just uninstalled VC2010 from my builder :) :) :)
 >>>>
->>>> In the mean time I upgraded the VC support for 2010 (and above?
->>>> hopefully).
 >>>>
->>>> Athanasios, you may try again.
+>>>> 2012/3/14 Alon Bar-Lev <alon.barlev@...277...>
+>>>>>
+>>>>> Thanks.
+>>>>>
+>>>>> In the mean time I upgraded the VC support for 2010 (and above?
+>>>>> hopefully).
+>>>>>
+>>>>> Athanasios, you may try again.
+>>>>>
+>>>>> Alon.
+>>>>>
+>>>>> 2012/3/14 Samuli Sepp=C3=A4nen <samuli@...515...>
+>>>>> >
+>>>>> > Il 14.03.2012 11:13, Alon Bar-Lev ha scritto:
+>>>>> > > On Wed, Mar 14, 2012 at 11:10 AM, David Sommerseth
+>>>>> > > <openvpn.list@...1114...> wrote:
+>>>>> > >> -----BEGIN PGP SIGNED MESSAGE-----
+>>>>> > >> Hash: SHA1
+>>>>> > >>
+>>>>> > >> On 14/03/12 09:33, Alon Bar-Lev wrote:
+>>>>> > >>> As the mingw build is the formal build, there is no reason to k=
+eep
+>>>>> > >>> supporting old visual studio configurations.
+>>>>> > >> That's debatable. =C2=A0James Yonan is using MSVC for the OpenVP=
+N AS
+>>>>> > >> client,
+>>>>> > >> and has indicated that he wanted that. =C2=A0I don't know much m=
+ore than
+>>>>> > >> this,
+>>>>> > >> but it might be related to his concerns about the old mingw32 to=
+ol
+>>>>> > >> chain
+>>>>> > >> not being too well maintained. =C2=A0I know that's not an issue =
+with the
+>>>>> > >> mingw64 stuff.
+>>>>> > >>
+>>>>> > >> However, currently the official tool chain is MSVC for Windows
+>>>>> > >> builds.
+>>>>> > >> All other platforms uses the autotools toolchain. =C2=A0We can s=
+urely
+>>>>> > >> discuss
+>>>>> > >> if this is the right discussion, but that's a discussion where
+>>>>> > >> James
+>>>>> > >> will
+>>>>> > >> have the final word.
+>>>>> > >>
+>>>>> > >> - From my perspective, the less toolchains we need to care about,
+>>>>> > >> the
+>>>>> > >> better. =C2=A0But we are not in a position where we can overrule=
+ James'
+>>>>> > >> decisions, especially not without involving him in the discussio=
+n.
+>>>>> > > So please involve.
+>>>>> > > Again, I did not wrote to remove MSVC, just to support 2010 and
+>>>>> > > above.
+>>>>> > >
+>>>>> > > Alon.
+>>>>> > I'll try to involve him in this week's or next week's IRC meeting :=
+).
+>>>>> >
+>>>>> > Personally, I got the feeling that the Python-based MSVC buildsystem
+>>>>> > he
+>>>>> > started writing (and which I finished) was a reaction to the general
+>>>>> > crappiness of OpenVPN Windows buildsystem(s). And that should not be
+>>>>> > an
+>>>>> > argument after the new "generic" buildsystem is merged.
+>>>>> >
+>>>>> > --
+>>>>> > Samuli Sepp=C3=A4nen
+>>>>> > Community Manager
+>>>>> > OpenVPN Technologies, Inc
+>>>>> >
+>>>>> > irc freenode net: mattock
+>>>>> >
 >>>>
->>>> Alon.
 >>>>
->>>> 2012/3/14 Samuli Sepp=C3=A4nen <samuli@...515...>
->>>> >
->>>> > Il 14.03.2012 11:13, Alon Bar-Lev ha scritto:
->>>> > > On Wed, Mar 14, 2012 at 11:10 AM, David Sommerseth
->>>> > > <openvpn.list@...1114...> wrote:
->>>> > >> -----BEGIN PGP SIGNED MESSAGE-----
->>>> > >> Hash: SHA1
->>>> > >>
->>>> > >> On 14/03/12 09:33, Alon Bar-Lev wrote:
->>>> > >>> As the mingw build is the formal build, there is no reason to ke=
-ep
->>>> > >>> supporting old visual studio configurations.
->>>> > >> That's debatable. =C2=A0James Yonan is using MSVC for the OpenVPN=
- AS
->>>> > >> client,
->>>> > >> and has indicated that he wanted that. =C2=A0I don't know much mo=
-re than
->>>> > >> this,
->>>> > >> but it might be related to his concerns about the old mingw32 tool
->>>> > >> chain
->>>> > >> not being too well maintained. =C2=A0I know that's not an issue w=
-ith the
->>>> > >> mingw64 stuff.
->>>> > >>
->>>> > >> However, currently the official tool chain is MSVC for Windows
->>>> > >> builds.
->>>> > >> All other platforms uses the autotools toolchain. =C2=A0We can su=
-rely
->>>> > >> discuss
->>>> > >> if this is the right discussion, but that's a discussion where
->>>> > >> James
->>>> > >> will
->>>> > >> have the final word.
->>>> > >>
->>>> > >> - From my perspective, the less toolchains we need to care about,
->>>> > >> the
->>>> > >> better. =C2=A0But we are not in a position where we can overrule =
-James'
->>>> > >> decisions, especially not without involving him in the discussion.
->>>> > > So please involve.
->>>> > > Again, I did not wrote to remove MSVC, just to support 2010 and
->>>> > > above.
->>>> > >
->>>> > > Alon.
->>>> > I'll try to involve him in this week's or next week's IRC meeting :).
->>>> >
->>>> > Personally, I got the feeling that the Python-based MSVC buildsystem
->>>> > he
->>>> > started writing (and which I finished) was a reaction to the general
->>>> > crappiness of OpenVPN Windows buildsystem(s). And that should not be
->>>> > an
->>>> > argument after the new "generic" buildsystem is merged.
->>>> >
->>>> > --
->>>> > Samuli Sepp=C3=A4nen
->>>> > Community Manager
->>>> > OpenVPN Technologies, Inc
->>>> >
->>>> > irc freenode net: mattock
->>>> >
->>>
+>>>>
+>>>>
+>>>> --
+>>>> Athanasios Douitsis
+>>>>
+>>>>
+>>>>
 >>>
 >>>
 >>>
@@ -152,12 +180,4 @@ James'
 >>
 >>
 >>
->
->
->
-> --
-> Athanasios Douitsis
->
->
->
 
