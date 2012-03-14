@@ -1,5 +1,5 @@
 MIME-Version: 1.0
-In-Reply-To: <CAOazyz3hA9LPCq0sEOWbY30PwjwxPUyCkDFWWq9x4S3dxfYVXw@...278...>
+In-Reply-To: <CABT9mj-YbHc_5w_hPBo2DNQ_TA_0dP3Py9ue9JZ32UXg0A4YEg@...278...>
 References: <CAOBzU4PN6qDxf39+s4noXEiW8hNbDy-hkQWGSauBd3hX0pu2hw@...278...>
 	<CAOazyz1DE7Y-P9HFK3LN8-HeoGbHzYeqofX3RiEuK0C-zcxnug@...278...>
 	<CAOazyz0nV8P8Age_wyFCvu1J4g1MECA7YdTAAL4of7TTVctXow@...278...>
@@ -17,10 +17,11 @@ References: <CAOBzU4PN6qDxf39+s4noXEiW8hNbDy-hkQWGSauBd3hX0pu2hw@...278...>
 	<CAOazyz2ZrDL-kaFa+Nc-aDcyWgOVJd82scypg9vZsZghvsY7Wg@...278...>
 	<4F60903E.9090506@...515...>
 	<CAOazyz3hA9LPCq0sEOWbY30PwjwxPUyCkDFWWq9x4S3dxfYVXw@...278...>
-Date: Wed, 14 Mar 2012 17:09:19 +0200
-Message-ID: <CABT9mj-YbHc_5w_hPBo2DNQ_TA_0dP3Py9ue9JZ32UXg0A4YEg@...278...>
+	<CABT9mj-YbHc_5w_hPBo2DNQ_TA_0dP3Py9ue9JZ32UXg0A4YEg@...278...>
+Date: Wed, 14 Mar 2012 17:13:09 +0200
+Message-ID: <CABT9mj9U0ewSBH=WqJ=nWgkBFGycL4R1Pw27bkhRG6WFgnpf8w@...278...>
 From: Athanasios Douitsis <aduitsis@...277...>
-Content-Type: multipart/alternative; boundary=047d7b34429e1def3304bb355c05
+Content-Type: multipart/alternative; boundary=000e0cd1fa62d0245d04bb3569d1
 Subject: Re: [Openvpn-devel] [PATCH 00/35] build revolution
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -33,88 +34,116 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
---047d7b34429e1def3304bb355c05
+--000e0cd1fa62d0245d04bb3569d1
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-Oh crap....I've just uninstalled VC2010 from my builder :) :) :)
+Alon,
 
+Thank you very much for the very quick response, sooner or later I'll let
+you know how it goes.
 
-2012/3/14 Alon Bar-Lev <alon.barlev@...277...>
+Kind Regards,
+Athanasios
 
-> Thanks.
->
-> In the mean time I upgraded the VC support for 2010 (and above? hopefully=
-).
->
-> Athanasios, you may try again.
->
-> Alon.
->
-> 2012/3/14 Samuli Sepp=E4nen <samuli@...515...>
-> >
-> > Il 14.03.2012 11:13, Alon Bar-Lev ha scritto:
-> > > On Wed, Mar 14, 2012 at 11:10 AM, David Sommerseth
-> > > <openvpn.list@...1114...> wrote:
-> > >> -----BEGIN PGP SIGNED MESSAGE-----
-> > >> Hash: SHA1
-> > >>
-> > >> On 14/03/12 09:33, Alon Bar-Lev wrote:
-> > >>> As the mingw build is the formal build, there is no reason to keep
-> > >>> supporting old visual studio configurations.
-> > >> That's debatable.  James Yonan is using MSVC for the OpenVPN AS
-> client,
-> > >> and has indicated that he wanted that.  I don't know much more than
-> > >> this,
-> > >> but it might be related to his concerns about the old mingw32 tool
-> > >> chain
-> > >> not being too well maintained.  I know that's not an issue with the
-> > >> mingw64 stuff.
-> > >>
-> > >> However, currently the official tool chain is MSVC for Windows build=
-s.
-> > >> All other platforms uses the autotools toolchain.  We can surely
-> > >> discuss
-> > >> if this is the right discussion, but that's a discussion where James
-> > >> will
-> > >> have the final word.
-> > >>
-> > >> - From my perspective, the less toolchains we need to care about, the
-> > >> better.  But we are not in a position where we can overrule James'
-> > >> decisions, especially not without involving him in the discussion.
-> > > So please involve.
-> > > Again, I did not wrote to remove MSVC, just to support 2010 and above.
-> > >
-> > > Alon.
-> > I'll try to involve him in this week's or next week's IRC meeting :).
-> >
-> > Personally, I got the feeling that the Python-based MSVC buildsystem he
-> > started writing (and which I finished) was a reaction to the general
-> > crappiness of OpenVPN Windows buildsystem(s). And that should not be an
-> > argument after the new "generic" buildsystem is merged.
-> >
-> > --
-> > Samuli Sepp=E4nen
-> > Community Manager
-> > OpenVPN Technologies, Inc
-> >
-> > irc freenode net: mattock
-> >
->
+On Wed, Mar 14, 2012 at 5:09 PM, Athanasios Douitsis <aduitsis@...277...>wr=
+ote:
 
+> Oh crap....I've just uninstalled VC2010 from my builder :) :) :)
+>
+>
+> 2012/3/14 Alon Bar-Lev <alon.barlev@...277...>
+>
+>> Thanks.
+>>
+>> In the mean time I upgraded the VC support for 2010 (and above?
+>> hopefully).
+>>
+>> Athanasios, you may try again.
+>>
+>> Alon.
+>>
+>> 2012/3/14 Samuli Sepp=E4nen <samuli@...515...>
+>> >
+>> > Il 14.03.2012 11:13, Alon Bar-Lev ha scritto:
+>> > > On Wed, Mar 14, 2012 at 11:10 AM, David Sommerseth
+>> > > <openvpn.list@...1114...> wrote:
+>> > >> -----BEGIN PGP SIGNED MESSAGE-----
+>> > >> Hash: SHA1
+>> > >>
+>> > >> On 14/03/12 09:33, Alon Bar-Lev wrote:
+>> > >>> As the mingw build is the formal build, there is no reason to keep
+>> > >>> supporting old visual studio configurations.
+>> > >> That's debatable.  James Yonan is using MSVC for the OpenVPN AS
+>> client,
+>> > >> and has indicated that he wanted that.  I don't know much more than
+>> > >> this,
+>> > >> but it might be related to his concerns about the old mingw32 tool
+>> > >> chain
+>> > >> not being too well maintained.  I know that's not an issue with the
+>> > >> mingw64 stuff.
+>> > >>
+>> > >> However, currently the official tool chain is MSVC for Windows
+>> builds.
+>> > >> All other platforms uses the autotools toolchain.  We can surely
+>> > >> discuss
+>> > >> if this is the right discussion, but that's a discussion where James
+>> > >> will
+>> > >> have the final word.
+>> > >>
+>> > >> - From my perspective, the less toolchains we need to care about, t=
+he
+>> > >> better.  But we are not in a position where we can overrule James'
+>> > >> decisions, especially not without involving him in the discussion.
+>> > > So please involve.
+>> > > Again, I did not wrote to remove MSVC, just to support 2010 and abov=
+e.
+>> > >
+>> > > Alon.
+>> > I'll try to involve him in this week's or next week's IRC meeting :).
+>> >
+>> > Personally, I got the feeling that the Python-based MSVC buildsystem he
+>> > started writing (and which I finished) was a reaction to the general
+>> > crappiness of OpenVPN Windows buildsystem(s). And that should not be an
+>> > argument after the new "generic" buildsystem is merged.
+>> >
+>> > --
+>> > Samuli Sepp=E4nen
+>> > Community Manager
+>> > OpenVPN Technologies, Inc
+>> >
+>> > irc freenode net: mattock
+>> >
+>>
+>
+>
+>
+> --
+> Athanasios Douitsis
+>
+>
+>
+>
 
 
 --=20
 Athanasios Douitsis
 
---047d7b34429e1def3304bb355c05
+--000e0cd1fa62d0245d04bb3569d1
 Content-Type: text/html; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-Oh crap....I&#39;ve just uninstalled VC2010 from my builder :) :) :)=A0 <br=
-><br><br><div class=3D"gmail_quote">2012/3/14 Alon Bar-Lev <span dir=3D"ltr=
-">&lt;<a href=3D"mailto:alon.barlev@...277...">alon.barlev@...277...</a>&gt=
-;</span><br>
+Alon, <br><br>Thank you very much for the very quick response, sooner or la=
+ter I&#39;ll let you know how it goes.<br><br>Kind Regards,<br>Athanasios<b=
+r><br><div class=3D"gmail_quote">On Wed, Mar 14, 2012 at 5:09 PM, Athanasio=
+s Douitsis <span dir=3D"ltr">&lt;<a href=3D"mailto:aduitsis@...277...">adui=
+tsis@...277...</a>&gt;</span> wrote:<br>
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex">Oh crap....I&#39;ve just uninstalled VC2010 =
+from my builder :) :) :)=A0 <br><div class=3D"HOEnZb"><div class=3D"h5"><br=
+><br><div class=3D"gmail_quote">
+2012/3/14 Alon Bar-Lev <span dir=3D"ltr">&lt;<a href=3D"mailto:alon.barlev@=
+...277..." target=3D"_blank">alon.barlev@...277...</a>&gt;</span><br>
 <blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
 x #ccc solid;padding-left:1ex">Thanks.<br>
 <br>
@@ -122,16 +151,16 @@ In the mean time I upgraded the VC support for 2010 (and above? hopefully).=
 <br>
 <br>
 Athanasios, you may try again.<br>
-<span class=3D"HOEnZb"><font color=3D"#888888"><br>
+<span><font color=3D"#888888"><br>
 Alon.<br>
-</font></span><div class=3D"HOEnZb"><div class=3D"h5"><br>
-2012/3/14 Samuli Sepp=E4nen &lt;<a href=3D"mailto:samuli@...515...">samuli@=
-...515...</a>&gt;<br>
+</font></span><div><div><br>
+2012/3/14 Samuli Sepp=E4nen &lt;<a href=3D"mailto:samuli@...515..." target=
+=3D"_blank">samuli@...515...</a>&gt;<br>
 &gt;<br>
 &gt; Il 14.03.2012 11:13, Alon Bar-Lev ha scritto:<br>
 &gt; &gt; On Wed, Mar 14, 2012 at 11:10 AM, David Sommerseth<br>
-&gt; &gt; &lt;<a href=3D"mailto:openvpn.list@...1114...">openvpn.list@...1173...=
-14...</a>&gt; wrote:<br>
+&gt; &gt; &lt;<a href=3D"mailto:openvpn.list@...1114..." target=3D"_blank">=
+openvpn.list@...1114...</a>&gt; wrote:<br>
 &gt; &gt;&gt; -----BEGIN PGP SIGNED MESSAGE-----<br>
 &gt; &gt;&gt; Hash: SHA1<br>
 &gt; &gt;&gt;<br>
@@ -190,8 +219,11 @@ n<br>
 &gt;<br>
 &gt; irc freenode net: mattock<br>
 &gt;<br>
-</div></div></blockquote></div><br><br clear=3D"all"><br>-- <br>Athanasios =
-Douitsis<br><br><br><br>
+</div></div></blockquote></div><br><br clear=3D"all"><br></div></div><span =
+class=3D"HOEnZb"><font color=3D"#888888">-- <br>Athanasios Douitsis<br><br>=
+<br><br>
+</font></span></blockquote></div><br><br clear=3D"all"><br>-- <br>Athanasio=
+s Douitsis<br><br><br><br>
 
---047d7b34429e1def3304bb355c05--
+--000e0cd1fa62d0245d04bb3569d1--
 
