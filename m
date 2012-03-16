@@ -1,15 +1,19 @@
-MIME-Version: 1.0
-Sender: fabian@...1547...
-In-Reply-To: <CAOazyz11zNQO+5whPA=-LD-mXqfcNCEvqy2iF-vY-NChivB2kg@...278...>
+Date: Fri, 16 Mar 2012 16:21:45 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120316152145.GF1359@...1296...>
 References: <4F632647.30603@...515...>
-	<CAOazyz1+mcBLnt7Uqd5_h75VmcLvWjXz1==u_-FW6wNOzcW+mQ@...278...>
-	<CAP+U6tJySV=3tDipKtym7sS+M0jy1ZBFjc6sEVRs_2wQ=vYrrA@...278...>
-	<CAOazyz11zNQO+5whPA=-LD-mXqfcNCEvqy2iF-vY-NChivB2kg@...278...>
-From: Fabian Knittel <fabian.knittel@...1547...>
-Date: Fri, 16 Mar 2012 15:23:12 +0100
-Message-ID: <CAP+U6tL57Fv=hqEGN3HAG4Pp0uiOacanNcVyS+qDinKmfjvUvw@...278...>
+	<20120316114747.GV6615@...1330...>
+	<CAOazyz2K4s3V3Yq6W8f9Q2us+vk9ArLT1UX3gKCS4Zxr245o+g@...278...>
+	<4F633670.1000807@...1114...>
+	<CAOazyz0nMAdD5H2MbBR=+ssOPPHgFsdgxr2g-SwWb4BHzDMdcw@...278...>
+	<4F633B0C.8080502@...515...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Ivd6Nf4GAZ12BQqh"
+Content-Disposition: inline
+In-Reply-To: <4F633B0C.8080502@...515...>
 Subject: Re: [Openvpn-devel] New generic buildsystem: lzo enabled or
- disabled by default?
+	disabled by default?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,69 +22,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
+Cc: Alon Bar-Lev <alon.barlev@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi Alon,
+--Ivd6Nf4GAZ12BQqh
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-2012/3/16 Alon Bar-Lev <alon.barlev@...277...>:
-> On Fri, Mar 16, 2012 at 3:29 PM, Fabian Knittel
-> <fabian.knittel@...1547...> wrote:
->> In my opinion, the build defaults should reflect what the project
->> considers as the recommended defaults - the features we want to see in
->> every typical OpenVPN server and client.
->
-> I strongly against that approach.
-> This is a common mix up between distribution and software project.
->
-> A software project provides the possibility of using the software in
-> different configurations.
-> A distribution is in charge of the "typical" configuration.
+Hi,
 
-A typical free software project distributes the source as the primary
-artefact, correct.  IMHO it also communicates a set of defaults,
-especially for software that needs to interact across platforms and
-architectures.  Part of communicating what those defaults are, is done
-by providing a default build configuration.
+On Fri, Mar 16, 2012 at 03:07:24PM +0200, Samuli Sepp=E4nen wrote:
+> Having as much stuff as possible disabled by default and then enabled
+> selectively _feels_ cleaner. But I'm fine with either approach.
 
-A dedicated distribution project (like Gentoo or Debian) is in charge
-of allowing a set of software to properly run (binary distribution) or
-compile (source distribution) in combination with all the other
-available software.
-Whether the program is built on a 64 bit processor, where the
-libraries are to be found, which SSL library is to be used, etc. are
-questions a distribution may answer for you. Whether to enable
-encryption or a specific compression mode would be something that the
-distribution should only fiddle with in special cases (for example if
-it's an embedded distribution).
+I think the default should be "what most people are using".
 
-I don't want to be able to connect to an OpenVPN server depending on
-what distribution it was built on.
+ - enable crypto and ssl
+ - enable lzo
 
+> Personally, I don't think we'll get many complaints if lzo is disabled
+> by default. As Alon points out, this is not the only thing packagers
+> need to adjust to, so they expect things to work differently. Hopefully
+> this translates to them paying some attention while doing the builds :).
 
-> Your comment is true for rhel packager, people expect that yum install
-> openvpn will be a "typical" rhel configuration, what exactly this
-> configuration is depends on distribution procedures.
+It would annoy me a lot to have to remember to add --enable-lzo whenever
+I build, and I see no compelling reason to change the default.
 
-OpenVPN provides a source distribution. People expect configure, make,
-make install to provide a "typical" OpenVPN configuration.
+About the only time you want to disable lzo is if you need to save code
+space, like on very small embedded systems - and that's the exception,
+not the common case.
 
-> Why is lzo different than PKCS#11 or selinux? Which are "typical"?
-> Mind "typical" is probably different between server and client.
+(And I don't see any reason why "the packages that people ship" should
+be built with non-default options, except "the default options do not
+make sense, so all the packagers need to change the options")
 
-It's not. I'm just saying that what we set as a default in the build
-system is meaningful and should match what we document as the default
-in the rest of the documentation.
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-> The software project should not make any assumption of its usage, nor
-> enable/disable features for the sake of best practices instead of
-> proper documentation.
+--Ivd6Nf4GAZ12BQqh
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-Setting build defaults is a communication device which should be used
-_in addition_ to other documentation.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
 
-Cheers
-Fabian
+iQCVAwUBT2NaiakuBuNlUUl1AQJv8AP+N1wE2gOSZ8X+k7h7UTg6dZgWm6dg83ah
+IDip4O52BMhEv4IUqlp3gs5ScMlp9Of3KWeaszzWGr28dCqfQtb0mSqIul1qA5kw
+8WxO1zIW0WhU58FGgvfcTafRKUs+AyY32Tduc156RwGthOX3L/P9tuzD0vANuHw7
+wnqYnWvXYog=
+=RBDY
+-----END PGP SIGNATURE-----
+
+--Ivd6Nf4GAZ12BQqh--
 
