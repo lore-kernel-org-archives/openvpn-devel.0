@@ -1,13 +1,11 @@
-Message-ID: <4F633B0C.8080502@...515...>
-Date: Fri, 16 Mar 2012 15:07:24 +0200
-From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
 MIME-Version: 1.0
+Sender: fabian@...1547...
+In-Reply-To: <CAOazyz1+mcBLnt7Uqd5_h75VmcLvWjXz1==u_-FW6wNOzcW+mQ@...278...>
 References: <4F632647.30603@...515...>
-	<20120316114747.GV6615@...1330...>
-	<CAOazyz2K4s3V3Yq6W8f9Q2us+vk9ArLT1UX3gKCS4Zxr245o+g@...278...>
-	<4F633670.1000807@...1114...>
-	<CAOazyz0nMAdD5H2MbBR=+ssOPPHgFsdgxr2g-SwWb4BHzDMdcw@...278...>
-In-Reply-To: <CAOazyz0nMAdD5H2MbBR=+ssOPPHgFsdgxr2g-SwWb4BHzDMdcw@...278...>
+	<CAOazyz1+mcBLnt7Uqd5_h75VmcLvWjXz1==u_-FW6wNOzcW+mQ@...278...>
+From: Fabian Knittel <fabian.knittel@...1547...>
+Date: Fri, 16 Mar 2012 14:29:22 +0100
+Message-ID: <CAP+U6tJySV=3tDipKtym7sS+M0jy1ZBFjc6sEVRs_2wQ=vYrrA@...278...>
 Subject: Re: [Openvpn-devel] New generic buildsystem: lzo enabled or
  disabled by default?
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,40 +16,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
+Hi,
 
-> On Fri, Mar 16, 2012 at 2:47 PM, David Sommerseth
-> <openvpn.list@...1114...> wrote:
->> The impact on this change mainly hits packagers on the Linux, *BSD and
->> Solaris packagers platforms - and those who do their own Windows builds.
->>  The official Windows builds we control and can make sure this feature is
->> enabled.
-> Please keep in mind that this is not the only change packager will
-> need to do when this is released.
-> I rewrote the Gentoo ebuild, in preparation for this.
-> I rewrote the spec file within the openvpn tree.
-> When release of beta, a large note should be written for other
-> packagers to update their packages for this version.
+2012/3/16 Alon Bar-Lev <alon.barlev@...277...>:
+> If we do not want to do auto detection, enabling optional components
+> may lead to configure failure, and force the user to explicitly
+> disable this feature.
 >
-> Alon.
+> It is possible, and I don't mind so much, however, I prefer configure
+> to use the minimum absolutely needed components by default, and in
+> majority of valid cases succeed.
 >
-Having as much stuff as possible disabled by default and then enabled
-selectively _feels_ cleaner. But I'm fine with either approach.
+> Disabling by default does not effect users nor building via build
+> script nor building via package management (rpmbuild, deb). It only
+> effects people who build manually from sources.
 
-Personally, I don't think we'll get many complaints if lzo is disabled
-by default. As Alon points out, this is not the only thing packagers
-need to adjust to, so they expect things to work differently. Hopefully
-this translates to them paying some attention while doing the builds :).
+In my opinion, the build defaults should reflect what the project
+considers as the recommended defaults - the features we want to see in
+every typical OpenVPN server and client. Apart from the
+Windows-binaries, the _source_ is the relevant artefact that gets
+released as official "OpenVPN" and therefore the defaults in the build
+system are important.
 
---=20
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
+If we want to avoid confusing compile-time errors, we should present
+useful and informative warnings to the user at configure-time: "Could
+not find library X, if you want to compile without support for X, pass
+--disable-X" or something similar. No need to hide this from the user.
+(I haven't looked at the build system, so this type of error message
+might already be present.)
 
-irc freenode net: mattock
+While building a piece of software I often notice additional
+dependencies based on what configure tells me. This then causes me to
+install additional dev-packages / libraries before continuing
+compilation. If we simply cut down the dependencies I'd probably
+notice a missing feature much later, e.g. while debugging connection
+problems...
 
+The usual
+
+  $ ./configure
+  $ make
+  $ make install
+
+... should hold as few surprises as possible, IMHO.
+
+Cheers
+Fabian
 
