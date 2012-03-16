@@ -1,13 +1,17 @@
-Message-ID: <4F63679F.1050108@...1114...>
-Date: Fri, 16 Mar 2012 17:17:35 +0100
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
+Sender: fabian@...1547...
+In-Reply-To: <CAOazyz2ESjg4vbYRqaCcT4PGdnQKw3Y77kS9UsTi2OD+_mXoSw@...278...>
 References: <1330546342-17794-1-git-send-email-alon.barlev@...277...>
-	<1330546342-17794-31-git-send-email-alon.barlev@...277...>
-	<4F632BEB.80504@...515...>
-In-Reply-To: <4F632BEB.80504@...515...>
-Subject: Re: [Openvpn-devel] [PATCH 30/52] build: add libtool + windows
- resources for executables
+	<1330546342-17794-36-git-send-email-alon.barlev@...277...>
+	<4F588784.300@...515...>
+	<CAOazyz3OzNYscLd01QY_wopFkH9zctixQNhJr-PyoPmTBvrwTw@...278...>
+	<CAP+U6tJx_xNbEHfhENcJKEpgE1WMf-03ez=nKo2zEwUQEEe7Xw@...278...>
+	<CAOazyz2ESjg4vbYRqaCcT4PGdnQKw3Y77kS9UsTi2OD+_mXoSw@...278...>
+From: Fabian Knittel <fabian.knittel@...1547...>
+Date: Fri, 16 Mar 2012 17:29:02 +0100
+Message-ID: <CAP+U6tJ-f9NHPCYU3H08ub2uiNhy2=ubkFXmP=fcoq0B8EptLQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 35/52] build: proper selinux detection
+	and usage
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,74 +22,47 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
-Cc: Alon Bar-Lev <alon.barlev@...277...>, "Openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: "Openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi Alon,
 
-On 16/03/12 13:02, Samuli Sepp=C3=A4nen wrote:
-> Hi,
->=20
-> This patch was ACKed in the IRC meeting on 15th Mar 2012:
->=20
-> <http://thread.gmane.org/gmane.network.openvpn.devel/5992>
->=20
-> However some of the lines in "src/openvpn/openvpn_win32_resources.rc"=20
-> may need to be fixed:
->=20
-> VALUE "CompanyName", "OpenVPN.net" VALUE "LegalCopyright", "Copyright
-> =EF=BF=BD OpenVPN Project"
->=20
-> Quoting=20
-> http://msdn.microsoft.com/en-us/library/windows/desktop/aa381058%28v=3Dvs=
-.85%29.aspx
+>> AC_CHECK_LIB([selinux], [setcon], [SELINUX_LIBS=3D"-lselinux"])
+>>
+>> versus
+>>
+>> AC_CHECK_HEADER([selinux/selinux.h], [
+>> =C2=A0 =C2=A0AC_CHECK_LIB([selinux], [setcon], [SELINUX_LIBS=3D"-lselinu=
+x"],
+>> =C2=A0 =C2=A0 =C2=A0 =C2=A0[AC_MSG_RESULT([SELinux library not found.])]
+>> =C2=A0 =C2=A0)], =C2=A0[AC_MSG_ERROR([SELinux headers not found.])]
+>> )
+>>
+>> doesn't really qualify as "very complex" to me.
 >
->  "CompanyName    Company that produced the file, for example,
-> "Microsoft Corporation" or "Standard Microsystems Corporation, Inc."
-> This string is required."
->=20
-> "LegalCopyright    Copyright notices that apply to the file. This
-> should include the full text of all notices, legal symbols, copyright
-> dates, and so on. This string is optional."
->=20
-> I think we could use the same entity name (e.g. "OpenVPN project") in=20
-> both fields. I also think that the choice of wording revolves around=20
-> copyright ownership... in 2.1.x series James Yonan/OpenVPN
-> Technologies, Inc. owned _most_ of the copyrights to the codebase.
-> However, in this post-2.3-alpha1 age, copyrights to very large parts
-> of the codebase belong to community developers. So, attributing
-> copyright to "OpenVPN Technologies, Inc. and contributors" would
-> probably not be proper.
->=20
-> So, what should we call this "entity" that owns the copyrights to the=20
-> codebase?
+> This is untrue.
+> As most features needs custom CFLAGs as well, it looks like:
+>
+> old_CFLAGS=3D"${CFLAGS}"
+> CFLAGS=3D"${CFLAGS} ${SOME_CFLAGS}"
+> AC_CHECK_HEADER([...])
+> CFLAGS=3D"${old_CFLAGS}"
 
-I would even go back to OpenVPN 2.2-beta1.  Which includes over 150
-patches from the community.  But that's nit-picking.
+I can see where this would be necessary if you wanted to "search
+additional non-standard paths for the libraries and headers" (see my
+last email), but it wouldn't be necessary for the simple case, where
+you want to make sure that library and header are available and
+compilable with the flags the user provided.
 
-I really think attributing the *project* is the better.  The company
-itself does not really own the copyright to the contributed code.
-However the community and the company are both heavily involved in the
-project.
+So it sounds as if we're actually somewhat in agreement! You don't
+want complex, automatic detection of non-standard situations and I
+agree wholeheartedly.
+But I _do_ want basic checking to achieve clear error messages at
+configuration time, not obscure build errors far later in the build
+process. Rule of thumb: If "make" fails due to missing or wrong
+dependencies, it's a bug in configure, because it didn't detect the
+problem beforehand.
 
-Just an idea ... what about to see how other open source projects solve
-this in Windows builds?  Not sure about anything concrete, but maybe
-virtio drivers for Windows is a place worth checking out?  (virtio
-drivers in Windows are used for paravirt enabling when running as guest
-on a KVM host; I believe these drivers are developed with a community
-project these days)
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk9jZ5wACgkQDC186MBRfrogqgCeMA+4shPIDUvIMpHw2uYsSi3H
-lLAAnAsqw5C4+Hli+PwqejYHkaGoavcN
-=3D+TP5
------END PGP SIGNATURE-----
+Cheers
+Fabian
 
