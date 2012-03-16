@@ -1,12 +1,12 @@
-Message-ID: <4F6332EE.6070102@...515...>
-Date: Fri, 16 Mar 2012 14:32:46 +0200
+Message-ID: <4F633524.1060602@...515...>
+Date: Fri, 16 Mar 2012 14:42:12 +0200
 From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
 References: <1330547702-18756-1-git-send-email-alon.barlev@...277...>
-	<1330547854-18889-1-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1330547854-18889-1-git-send-email-alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [tap-windows 03/11] cleanup: remove warnings of
- redefinition of macros
+	<1330547854-18889-3-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1330547854-18889-3-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [tap-windows 05/11] build: set default to newer
+ ddk
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,7 +20,13 @@ Content-Transfer-Encoding: quoted-printable
 To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "Openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-ACK.
+I think we can drop WinDDK <=3D 5600 support entirely. If I'm not
+mistaken, this means supporting Visual Studio 2008 and later only, which
+is fine. Afaik the only "reason" to support Visual Studio 2005 and older
+is Win2k support, which we don't need. OpenVPN 2.1.3 was the last
+version with Win2k support anyways.
+
+Besides that, it's an ACK.
 
 --=20
 Samuli Sepp=E4nen
@@ -29,27 +35,53 @@ OpenVPN Technologies, Inc
 
 irc freenode net: mattock
 
+
 > Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 > ---
->  src/resource.rc |    5 +++++
->  1 files changed, 5 insertions(+), 0 deletions(-)
+>  src/prototypes.h |    2 +-
+>  src/tapdrvr.c    |    5 +----
+>  2 files changed, 2 insertions(+), 5 deletions(-)
 >
-> diff --git a/src/resource.rc b/src/resource.rc
-> index 84884cf..8b2d2f6 100755
-> --- a/src/resource.rc
-> +++ b/src/resource.rc
-> @@ -4,6 +4,11 @@
->  /* get VERSION */
->  #include "common.h"
+> diff --git a/src/prototypes.h b/src/prototypes.h
+> index 55454d5..18c566f 100755
+> --- a/src/prototypes.h
+> +++ b/src/prototypes.h
+> @@ -202,7 +202,7 @@ VOID HookDispatchFunctions();
 >=20=20
-> +#undef VER_PRODUCTVERSION
-> +#undef VER_PRODUCTVERSION_STR
-> +#undef VER_COMPANYNAME_STR
-> +#undef VER_PRODUCTNAME_STR
-> +
->  /* VER_FILETYPE, VER_FILESUBTYPE, VER_FILEDESCRIPTION_STR
->   * and VER_INTERNALNAME_STR must be defined before including COMMON.VER
->   * The strings don't need a '\0', since common.ver has them.
-
+>  #if ENABLE_NONADMIN
+>=20=20
+> -#if DDKVER_MAJOR < 5600
+> +#if defined(DDKVER_MAJOR) && DDKVER_MAJOR < 5600
+>  /*
+>   * Better solution for use on Vista DDK, but possibly not compatible with
+>   * earlier DDKs:
+> diff --git a/src/tapdrvr.c b/src/tapdrvr.c
+> index 0df076a..0f75b77 100755
+> --- a/src/tapdrvr.c
+> +++ b/src/tapdrvr.c
+> @@ -36,9 +36,6 @@
+>  //=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D
+>=20=20
+>  #include "common.h"
+> -#ifndef DDKVER_MAJOR
+> -#error DDKVER_MAJOR must be defined as the major number of the DDK Versi=
+on
+> -#endif
+>=20=20
+>  #define NDIS_MINIPORT_DRIVER
+>  #define BINARY_COMPATIBLE 0
+> @@ -66,7 +63,7 @@
+>  //=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D
+>  #define ENABLE_NONADMIN 1
+>=20=20
+> -#if DDKVER_MAJOR < 5600
+> +#if defined(DDKVER_MAJOR) && DDKVER_MAJOR < 5600
+>  #include <ndis.h>
+>  #include <ntstrsafe.h>
+>  #include <ntddk.h>
 
 
