@@ -1,9 +1,11 @@
-Date: Fri, 16 Mar 2012 12:47:48 +0100
-From: Alberto Gonzalez Iniesta <agi@...64...>
-Message-ID: <20120316114747.GV6615@...1330...>
-References: <4F632647.30603@...515...>
 MIME-Version: 1.0
-In-Reply-To: <4F632647.30603@...515...>
+In-Reply-To: <CAOazyz16oWSR9KUMUpdcM5TgNDG0iLr0=oN_GcFRp6yK8t-YAA@...278...>
+References: <4F632647.30603@...515...>
+	<CAOazyz1+mcBLnt7Uqd5_h75VmcLvWjXz1==u_-FW6wNOzcW+mQ@...278...>
+	<CAOazyz16oWSR9KUMUpdcM5TgNDG0iLr0=oN_GcFRp6yK8t-YAA@...278...>
+Date: Fri, 16 Mar 2012 14:06:20 +0200
+Message-ID: <CAOazyz3ENttMCpr8R0jHdz0vzpL49n65h3COhkQTR3b5KAS+jw@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
 Subject: Re: [Openvpn-devel] New generic buildsystem: lzo enabled or
  disabled by default?
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -14,42 +16,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Fri, Mar 16, 2012 at 01:38:47PM +0200, Samuli Sepp=E4nen wrote:
-> Hi all,
->=20
-> In yesterday's meeting we reviewed this patch
->=20
-> PATCH 39/52 build: proper lzo detection and usage
->  URL: http://thread.gmane.org/gmane.network.openvpn.devel/5772/focus=3D58=
-11
->=20
-> The patch was ACKed, but there was disagreement whether LZO should be ena=
-bled or disabled by default. Whichever the case, it will only affect people=
- building OpenVPN, not the end-users. Official builds will continue to have=
- LZO support.
->=20
-> Opinions?
->=20
+Or:
+[1] http://permalink.gmane.org/gmane.network.openvpn.devel/5535
 
-I'll still build Debian packages with LZO support (if I don't forget to
-set the option when upgrading to the new version).
-
-Since support for LZO is enabled/disabled in runtime configuration, I
-don't see why disabling it on built time, thus limiting its use later.
-
-Regards,
-
-Alberto
-
---=20
-Alberto Gonzalez Iniesta    | Formaci=F3n, consultor=EDa y soporte t=E9cnico
-agi@(inittab.org|debian.org)| en GNU/Linux y software libre
-Encrypted mail preferred    | http://inittab.com
-
-Key fingerprint =3D 9782 04E7 2B75 405C F5E9  0C81 C514 AF8E 4BA4 01C3
+2012/3/16 Alon Bar-Lev <alon.barlev@...277...>:
+> Sorry...
+> [1] http://thread.gmane.org/gmane.network.openvpn.devel/5772/focus=3D5947
+>
+> 2012/3/16 Alon Bar-Lev <alon.barlev@...277...>:
+>> Hello,
+>>
+>> Part of the reasoning was discussed here[1].
+>>
+>> If we do not want to do auto detection, enabling optional components
+>> may lead to configure failure, and force the user to explicitly
+>> disable this feature.
+>>
+>> It is possible, and I don't mind so much, however, I prefer configure
+>> to use the minimum absolutely needed components by default, and in
+>> majority of valid cases succeed.
+>>
+>> Disabling by default does not effect users nor building via build
+>> script nor building via package management (rpmbuild, deb). It only
+>> effects people who build manually from sources. These people should
+>> not only consider the lzo enable/disable but many more configure
+>> options so lzo is no exception.
+>>
+>> Alon.
+>>
+>> [1] http://thread.gmane.org/gmane.network.openvpn.devel/5772/focus=3D5811
+>>
+>> 2012/3/16 Samuli Sepp=C3=A4nen <samuli@...515...>:
+>>> Hi all,
+>>>
+>>> In yesterday's meeting we reviewed this patch
+>>>
+>>> PATCH 39/52 build: proper lzo detection and usage
+>>> =C2=A0URL: http://thread.gmane.org/gmane.network.openvpn.devel/5772/foc=
+us=3D5811
+>>>
+>>> The patch was ACKed, but there was disagreement whether LZO should be e=
+nabled or disabled by default. Whichever the case, it will only affect peop=
+le building OpenVPN, not the end-users. Official builds will continue to ha=
+ve LZO support.
+>>>
+>>> Opinions?
+>>>
+>>> --
+>>> Samuli Sepp=C3=A4nen
+>>> Community Manager
+>>> OpenVPN Technologies, Inc
+>>>
+>>> irc freenode net: mattock
+>>>
+>>>
+>>> -----------------------------------------------------------------------=
+-------
+>>> This SF email is sponsosred by:
+>>> Try Windows Azure free for 90 days Click Here
+>>> http://p.sf.net/sfu/sfd2d-msazure
+>>> _______________________________________________
+>>> Openvpn-devel mailing list
+>>> Openvpn-devel@lists.sourceforge.net
+>>> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
