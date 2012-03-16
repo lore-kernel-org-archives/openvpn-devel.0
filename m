@@ -1,12 +1,13 @@
-Message-ID: <4F633524.1060602@...515...>
-Date: Fri, 16 Mar 2012 14:42:12 +0200
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <4F633670.1000807@...1114...>
+Date: Fri, 16 Mar 2012 13:47:44 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1330547702-18756-1-git-send-email-alon.barlev@...277...>
-	<1330547854-18889-3-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1330547854-18889-3-git-send-email-alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [tap-windows 05/11] build: set default to newer
- ddk
+References: <4F632647.30603@...515...>
+	<20120316114747.GV6615@...1330...>
+	<CAOazyz2K4s3V3Yq6W8f9Q2us+vk9ArLT1UX3gKCS4Zxr245o+g@...278...>
+In-Reply-To: <CAOazyz2K4s3V3Yq6W8f9Q2us+vk9ArLT1UX3gKCS4Zxr245o+g@...278...>
+Subject: Re: [Openvpn-devel] New generic buildsystem: lzo enabled or
+ disabled by default?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,73 +16,78 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: "Openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel@lists.sourceforge.net
 
-I think we can drop WinDDK <=3D 5600 support entirely. If I'm not
-mistaken, this means supporting Visual Studio 2008 and later only, which
-is fine. Afaik the only "reason" to support Visual Studio 2005 and older
-is Win2k support, which we don't need. OpenVPN 2.1.3 was the last
-version with Win2k support anyways.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Besides that, it's an ACK.
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
+On 16/03/12 13:09, Alon Bar-Lev wrote:
+> On Fri, Mar 16, 2012 at 1:47 PM, Alberto Gonzalez Iniesta 
+> <agi@...64...> wrote:
+>> Since support for LZO is enabled/disabled in runtime configuration,
+>> I don't see why disabling it on built time, thus limiting its use
+>> later.
+> 
+> We are talking about the build. Runtime is irrelevant.
 
 
-> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-> ---
->  src/prototypes.h |    2 +-
->  src/tapdrvr.c    |    5 +----
->  2 files changed, 2 insertions(+), 5 deletions(-)
->
-> diff --git a/src/prototypes.h b/src/prototypes.h
-> index 55454d5..18c566f 100755
-> --- a/src/prototypes.h
-> +++ b/src/prototypes.h
-> @@ -202,7 +202,7 @@ VOID HookDispatchFunctions();
->=20=20
->  #if ENABLE_NONADMIN
->=20=20
-> -#if DDKVER_MAJOR < 5600
-> +#if defined(DDKVER_MAJOR) && DDKVER_MAJOR < 5600
->  /*
->   * Better solution for use on Vista DDK, but possibly not compatible with
->   * earlier DDKs:
-> diff --git a/src/tapdrvr.c b/src/tapdrvr.c
-> index 0df076a..0f75b77 100755
-> --- a/src/tapdrvr.c
-> +++ b/src/tapdrvr.c
-> @@ -36,9 +36,6 @@
->  //=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D
->=20=20
->  #include "common.h"
-> -#ifndef DDKVER_MAJOR
-> -#error DDKVER_MAJOR must be defined as the major number of the DDK Versi=
-on
-> -#endif
->=20=20
->  #define NDIS_MINIPORT_DRIVER
->  #define BINARY_COMPATIBLE 0
-> @@ -66,7 +63,7 @@
->  //=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D
->  #define ENABLE_NONADMIN 1
->=20=20
-> -#if DDKVER_MAJOR < 5600
-> +#if defined(DDKVER_MAJOR) && DDKVER_MAJOR < 5600
->  #include <ndis.h>
->  #include <ntstrsafe.h>
->  #include <ntddk.h>
+Correct.  However, this may indirectly have an impact on end users, if
+the packager is not aware of this change.  And as 'enabled' has been the
+standard so far, forcing you to explicit disable LZO, this change may
+cause some compatibility issues.
 
+The impact on this change mainly hits packagers on the Linux, *BSD and
+Solaris packagers platforms - and those who do their own Windows builds.
+ The official Windows builds we control and can make sure this feature is
+enabled.
+
+
+But let me redirect this discussion slightly.  What is the *benefit* of
+disabling LZO by default?
+
+The argument I see why we should keep it enabled, is that this has been
+the default since almost the very beginning - it is kind of expected in
+most environments that LZO support is available.
+
+The benefit I see from disabling it, is that less default dependencies
+are needed to build it.  But it requires awareness to remember to enable
+this feature when building, to stay compliant with what most end-users
+expect.
+
+
+If I could be sure we would not get a rush of "OpenVPN 2.3 doesn't work
+anymore!"-complaints, I couldn't really care less.  But as I fear that
+many builds *may* break the end-users expectations, I'm more doubtful.
+Of course, it all depends on the awareness of the packagers.  But I'm not
+really convinced this is the most clever step we do.
+
+Well, I'm torn into both directions, really.  And considering LZO
+compression is in most cases a very useful feature, I'm beginning to lean
+towards 'enabled as default'.  Unless I hear some really compelling
+reasons why that's a bad idea - except of enforcing builders to make sure
+lzo libs are installed or they should use --enable-lzo if they want this
+feature. After all, the LZO feature has been enabled as default at least
+since the OpenVPN 2.0 era.
+
+
+Anyhow ... the patch which disables it by default, will be included as it
+is.  If we decide to go back to 'enabled by default' we'll add that as an
+patch on top of Alon's work.  So this is the current situation.
+
+
+
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk9jNm0ACgkQDC186MBRfrru9wCfY0VBkGpuxlkQYgTRm8XUwY0V
+/CIAnjDzRMAMZuJUghW/e+KSfGk6JgRO
+=l3kb
+-----END PGP SIGNATURE-----
 
