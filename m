@@ -1,5 +1,5 @@
 MIME-Version: 1.0
-In-Reply-To: <CABT9mj-bm7LkBep9k38b5SdoNc-3bXrFy+hCXzUMb2wruYXa_A@...278...>
+In-Reply-To: <CAOazyz3LboK0ywfi_gsrsrs9BBYm9C90jpR9k32Ar-V+VLPhFA@...278...>
 References: <CAOBzU4PN6qDxf39+s4noXEiW8hNbDy-hkQWGSauBd3hX0pu2hw@...278...>
 	<CAOazyz1DE7Y-P9HFK3LN8-HeoGbHzYeqofX3RiEuK0C-zcxnug@...278...>
 	<CAOazyz0nV8P8Age_wyFCvu1J4g1MECA7YdTAAL4of7TTVctXow@...278...>
@@ -34,9 +34,11 @@ References: <CAOBzU4PN6qDxf39+s4noXEiW8hNbDy-hkQWGSauBd3hX0pu2hw@...278...>
 	<CAOazyz2h2qZ7x19AD-P=J+Vp3TXfh6isEUpLvKQZ92+CFUtWJg@...278...>
 	<CAOazyz2pagOr=KhKOcsR59aG130gUN1j_juzp4H9Za+1xs+j+g@...278...>
 	<CABT9mj-bm7LkBep9k38b5SdoNc-3bXrFy+hCXzUMb2wruYXa_A@...278...>
-Date: Sat, 17 Mar 2012 22:43:42 +0200
-Message-ID: <CAOazyz3LboK0ywfi_gsrsrs9BBYm9C90jpR9k32Ar-V+VLPhFA@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+	<CAOazyz3LboK0ywfi_gsrsrs9BBYm9C90jpR9k32Ar-V+VLPhFA@...278...>
+Date: Sun, 18 Mar 2012 02:31:15 +0200
+Message-ID: <CABT9mj-qjErJ0LusnsEzBFJTkx7zgOVTBpb+RE_-=02NZLDidg@...278...>
+From: Athanasios Douitsis <aduitsis@...277...>
+Content-Type: multipart/alternative; boundary=0015174c0f3a4670c704bb798f10
 Subject: Re: [Openvpn-devel] [PATCH 00/35] build revolution
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -46,49 +48,129 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Athanasios Douitsis <aduitsis@...277...>
+To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-On Sat, Mar 17, 2012 at 3:20 PM, Athanasios Douitsis <aduitsis@...277...> wrote:
-> Indeed, now working for me too with those values. Thanks!
+--0015174c0f3a4670c704bb798f10
+Content-Type: text/plain; charset=ISO-8859-1
+
+On Sat, Mar 17, 2012 at 10:43 PM, Alon Bar-Lev <alon.barlev@...277...>wrote:
+
+> On Sat, Mar 17, 2012 at 3:20 PM, Athanasios Douitsis <aduitsis@...277...>
+> wrote:
+> > Indeed, now working for me too with those values. Thanks!
+> >
+> > Maybe add that command to the README file?
 >
-> Maybe add that command to the README file?
+> I already did after you asked the question... :)
+>
+> > Also, the gentoo-derived script should be yielding these values
+> > automatically, right?
+>
+> Not correct... the gentoo script is for openssl configuration only
+> which does not use support standard cross compile triple.
+>
+> > Because when I issue a
+> > plain ./build I suspect that it does not.
+>
+> plain ./build is for native build, it works... try this on any other
+> platform other than cygwin or windows.
+> What probably confuses you is that building under cygwin windows
+> native binaries is actually doing cross compile, there is no
+> difference between this and building windows native binaries under
+> Linux.
+> So ./build will never work under cygwin as openvpn does not support
+> cygwin environment.
+>
+> > So the build breaks very early in
+> > the process (in the openssl configuring phase if memory serves). Invoking
+> > the gentoo script directly prints nothing too.
+>
+> I hope the reason is clear now.
+>
+> > Additionally, you may want to add an option to wget to accept
+> certificates
+> > that it doesn't know. I understand this may be bad security-wise, but
+> out of
+> > the box it cannot download packages from github https. Apart from that,
+> wget
+> > works just as well.
+>
+> You can do this, just set WGET_OPTS=--no-check-certificate environment
+> before executing the script.
+>
+> Alon.
+>
 
-I already did after you asked the question... :)
+Hi,
 
-> Also, the gentoo-derived script should be yielding these values
-> automatically, right?
+That's exactly what I did to download the files correctly with wget. As for
+the rest, thanks a lot for the explanation.
 
-Not correct... the gentoo script is for openssl configuration only
-which does not use support standard cross compile triple.
 
-> Because when I issue a
-> plain ./build I suspect that it does not.
+-- 
+Athanasios Douitsis
 
-plain ./build is for native build, it works... try this on any other
-platform other than cygwin or windows.
-What probably confuses you is that building under cygwin windows
-native binaries is actually doing cross compile, there is no
-difference between this and building windows native binaries under
-Linux.
-So ./build will never work under cygwin as openvpn does not support
-cygwin environment.
+--0015174c0f3a4670c704bb798f10
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-> So the build breaks very early in
-> the process (in the openssl configuring phase if memory serves). Invoking
-> the gentoo script directly prints nothing too.
+<br><br><div class=3D"gmail_quote">On Sat, Mar 17, 2012 at 10:43 PM, Alon B=
+ar-Lev <span dir=3D"ltr">&lt;<a href=3D"mailto:alon.barlev@...277...">alon.=
+barlev@...277...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote"=
+ style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
+<div class=3D"im">On Sat, Mar 17, 2012 at 3:20 PM, Athanasios Douitsis &lt;=
+<a href=3D"mailto:aduitsis@...277...">aduitsis@...277...</a>&gt; wrote:<br>
+&gt; Indeed, now working for me too with those values. Thanks!<br>
+&gt;<br>
+&gt; Maybe add that command to the README file?<br>
+<br>
+</div>I already did after you asked the question... :)<br>
+<div class=3D"im"><br>
+&gt; Also, the gentoo-derived script should be yielding these values<br>
+&gt; automatically, right?<br>
+<br>
+</div>Not correct... the gentoo script is for openssl configuration only<br>
+which does not use support standard cross compile triple.<br>
+<div class=3D"im"><br>
+&gt; Because when I issue a<br>
+&gt; plain ./build I suspect that it does not.<br>
+<br>
+</div>plain ./build is for native build, it works... try this on any other<=
+br>
+platform other than cygwin or windows.<br>
+What probably confuses you is that building under cygwin windows<br>
+native binaries is actually doing cross compile, there is no<br>
+difference between this and building windows native binaries under<br>
+Linux.<br>
+So ./build will never work under cygwin as openvpn does not support<br>
+cygwin environment.<br>
+<div class=3D"im"><br>
+&gt; So the build breaks very early in<br>
+&gt; the process (in the openssl configuring phase if memory serves). Invok=
+ing<br>
+&gt; the gentoo script directly prints nothing too.<br>
+<br>
+</div>I hope the reason is clear now.<br>
+<div class=3D"im"><br>
+&gt; Additionally, you may want to add an option to wget to accept certific=
+ates<br>
+&gt; that it doesn&#39;t know. I understand this may be bad security-wise, =
+but out of<br>
+&gt; the box it cannot download packages from github https. Apart from that=
+, wget<br>
+&gt; works just as well.<br>
+<br>
+</div>You can do this, just set WGET_OPTS=3D--no-check-certificate environm=
+ent<br>
+before executing the script.<br>
+<span class=3D"HOEnZb"><font color=3D"#888888"><br>
+Alon.<br>
+</font></span></blockquote></div><br>Hi,<br><br>That&#39;s exactly what I d=
+id to download the files correctly with wget. As for the rest, thanks a lot=
+ for the explanation. <br><br clear=3D"all"><br>-- <br>Athanasios Douitsis<=
+br>
+<br><br><br>
 
-I hope the reason is clear now.
-
-> Additionally, you may want to add an option to wget to accept certificates
-> that it doesn't know. I understand this may be bad security-wise, but out of
-> the box it cannot download packages from github https. Apart from that, wget
-> works just as well.
-
-You can do this, just set WGET_OPTS=--no-check-certificate environment
-before executing the script.
-
-Alon.
+--0015174c0f3a4670c704bb798f10--
 
