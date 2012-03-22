@@ -1,7 +1,5 @@
-Message-ID: <4F6B10DC.1080306@...1114...>
-Date: Thu, 22 Mar 2012 12:45:32 +0100
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
+In-Reply-To: <4F6B10DC.1080306@...1114...>
 References: <4F632647.30603@...515...>
 	<20120316114747.GV6615@...1330...>
 	<CAOazyz2K4s3V3Yq6W8f9Q2us+vk9ArLT1UX3gKCS4Zxr245o+g@...278...>
@@ -14,7 +12,10 @@ References: <4F632647.30603@...515...>
 	<20120319094235.GM1359@...1296...>
 	<4F6700E1.60201@...1114...>
 	<CAOazyz1aPWoiWWg=T7Ykw0YUL0S_wdAE-T6Gg=djpc=iwF9YXg@...278...>
-In-Reply-To: <CAOazyz1aPWoiWWg=T7Ykw0YUL0S_wdAE-T6Gg=djpc=iwF9YXg@...278...>
+	<4F6B10DC.1080306@...1114...>
+Date: Thu, 22 Mar 2012 13:47:36 +0200
+Message-ID: <CAOazyz1d2xRaX6QCqOE3kqNCdSEu+Uj4sf2NVxf-Lxxb4x_nEw@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
 Subject: Re: [Openvpn-devel] New generic buildsystem: lzo enabled or
  disabled by default?
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -25,40 +26,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Alon Bar-Lev <alon.barlev@...277...>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: David Sommerseth <openvpn.list@...1114...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+On Thu, Mar 22, 2012 at 1:45 PM, David Sommerseth
+<openvpn.list@...1114...> wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+>
+> On 19/03/12 16:16, Alon Bar-Lev wrote:
+>> The only component that is in question is lzo. I still think this is
+>> packager responsibility, not sure why this is an exception. But if it
+>> will make people happy, I will enable lzo by default. All the other
+>> components are optional by they nature, and again it is up to packager
+>> to decide what good for his configuration.
+>
+> Hi Alon,
+>
+> Okay, based on the discussion on this thread, it makes sense to then flip
+> LZO to be enabled by default.
+>
+> No need to hurry with any patches, as I can add such a patch on top of
+> everything when the merging is completed. =C2=A0The patch will be submitt=
+ed to
+> the mailing list when it's ready to be implemented.
+>
 
-On 19/03/12 16:16, Alon Bar-Lev wrote:
-> The only component that is in question is lzo. I still think this is
-> packager responsibility, not sure why this is an exception. But if it
-> will make people happy, I will enable lzo by default. All the other
-> components are optional by they nature, and again it is up to packager
-> to decide what good for his configuration.
+OK, great.
+I will modify the branch with this (rebase) so it won't create additional n=
+oise.
+So you be able to do a clean pull with complete feature set.
 
-Hi Alon,
-
-Okay, based on the discussion on this thread, it makes sense to then flip
-LZO to be enabled by default.
-
-No need to hurry with any patches, as I can add such a patch on top of
-everything when the merging is completed.  The patch will be submitted to
-the mailing list when it's ready to be implemented.
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk9rENoACgkQDC186MBRfrrgQACeMmxtZpfPSMciYENjW/RFhwFW
-94AAniByWa9kksRL+VCPi6LBGwPiFxah
-=DpZp
------END PGP SIGNATURE-----
+Alon.
 
