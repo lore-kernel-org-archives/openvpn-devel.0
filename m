@@ -1,10 +1,10 @@
+Message-ID: <4F6C9EB5.9090602@...1147...>
+Date: Fri, 23 Mar 2012 17:03:01 +0100
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-In-Reply-To: <20120323153206.GD1181@...1296...>
-References: <20120323153206.GD1181@...1296...>
-Date: Fri, 23 Mar 2012 17:43:09 +0200
-Message-ID: <CAOazyz19CCi=EZ7Wqp1LOUcPw2DfAdS0H8XnGe-0uL3fQOkDbA@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] discussion: get rid of useless HAVE_* tests
+References: <4F6BEA34.5020602@...1030...>
+In-Reply-To: <4F6BEA34.5020602@...1030...>
+Subject: Re: [Openvpn-devel] two tls-auth questions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,94 +13,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Mr Dash Four <mr.dash.four@...1030...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hello Gert,
+Mr Dash Four wrote:
+> Is there a way to generate a symmetric ta.key without using "openvpn --genkey --secret ta.key"? 
+>   
+yep, just use any freeform key that has enough entropy. For example, 
+this ta.key file is good enough
 
-There are a lot of extra cleanups to do in code.
+]# cat mykey
+garble warble we need lots of entropy
 
-I left this as-is as I have some thoughts of further work on
-platform.c, like splitting it into its own library.
+when openvpn starts you'll see something
 
-The problem is to support the loggings, need to allocate some time to
-properly integrate that.
+Control Channel Authentication: using '/etc/openvpn/cookbook/mykey' as a 
+free-form passphrase file
 
-So please wait with this one.
+It is NOT possible to use the direction parameter for this
 
-Thanks,
-Alon.
+> Is it possible to embed the contents of the above file in my openvpn config file in a similar fashion as it is done with the <key></key> tag for example? If so, what tag should I use for this?
+>   
 
-On Fri, Mar 23, 2012 at 5:32 PM, Gert Doering <gert@...1296...> wrote:
-> Hi,
->
-> reviewing some of the build patches, I found tests like
->
-> #ifdef HAVE_CHDIR
->
-> or
->
-> #ifdef HAVE_GETPID
->
-> ... which is craziness. =C2=A0All platforms OpenVPN runs on (except for W=
-IN32)
-> are fully POSIX compliant, and those are all required to have these
-> functions - so testing for them, and having special #ifdef in the code
-> for them, and then doing things like this:
->
-> int
-> platform_chdir (const char* dir)
-> {
-> #ifdef HAVE_CHDIR
-> #ifdef WIN32
-> =C2=A0int res;
-> =C2=A0struct gc_arena gc =3D gc_new ();
-> =C2=A0res =3D _wchdir (wide_string (dir, &gc));
-> =C2=A0gc_free (&gc);
-> =C2=A0return res;
-> #else
-> =C2=A0return chdir (dir);
-> #endif
-> #else
-> =C2=A0return -1; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<<<< yea=
-h, how much good will that do?
-> #endif
->
-> is just extra code in various places that serves no purpose than to
-> make "look, we can test for it!" autotools maniacs happy.
->
->
-> So I propose that after Alon's build patches have been merged, I go
-> through the HAVE_* defines and rip out everything that is part of
-> POSIX and is not use on #ifdef WIN32 anyway (like "getpid()").
->
-> We're not going to port this to a non-posix OS any time soon.
->
->
-> Comments?
->
-> gert
->
-> --
-> USENET is *not* the non-clickable part of WWW!
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 //www.muc.de/~gert/
-> Gert Doering - Munich, Germany =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 gert@...1296...
-> fax: +49-89-35655025 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0gert@...1297...
->
-> -------------------------------------------------------------------------=
------
-> This SF email is sponsosred by:
-> Try Windows Azure free for 90 days Click Here
-> http://p.sf.net/sfu/sfd2d-msazure
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+in theory you co do this using
+
+tls-auth [inline]
+
+<tls-auth>
+....
+</tls-auth>
+
+but this seems to work only for --genkey keys ; so it's either a 
+freeform key or an inline , not both. I think you actually may have 
+found a (minor) bug.
+
+cheers,
+
+JJK
+
 
