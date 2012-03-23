@@ -1,11 +1,11 @@
-Message-ID: <4F6C9753.1080002@...1702...>
-Date: Fri, 23 Mar 2012 16:31:31 +0100
-From: Samuel CUELLA <samuel.cuella@...1702...>
-MIME-Version: 1.0
-References: <4F6C68AE.60003@...1702...> <4F6C89F4.9000806@...1114...>
-In-Reply-To: <4F6C89F4.9000806@...1114...>
-Subject: Re: [Openvpn-devel] [openvpn-devel] OpenVPN 2.1.4/Linux:
- route-gatewy not working
+Date: Fri, 23 Mar 2012 16:32:41 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120323153206.GD1181@...1296...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="brEuL7wsLY8+TuWz"
+Content-Disposition: inline
+Subject: [Openvpn-devel] discussion: get rid of useless HAVE_* tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,61 +14,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On 03/23/2012 03:34 PM, David Sommerseth wrote:
-> 
-> Hi Samuel,
-> 
-> Interesting finding you've found here.  However, we're not developing the
-> 2.1 branch any more.  So if you could try the latest git master branch
-> [1], that'd be great ... And if that still fails, try to apply your patch
-> to see if that improves it.
-> 
-> There has been some fixes to the whole routing part in 2.2 and 2.3, so we
-> need to be sure we're not fixing something which is fixed in a different way.
-> 
-I've just tested with the git master: same problem with the exact same
-cause.
+--brEuL7wsLY8+TuWz
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-My patch just create an empty route list and set appropriate flags, just
-like "redirect-gateway". I've also noted that
-redirect_default_route_to_vpn() will only apply the pushed default route
-if a default route already exist on the client.
+Hi,
 
-If there is no default route, the pushed default route won't be applied.
-Is that an expected/desired behavior ?
+reviewing some of the build patches, I found tests like
 
-Here is the patch against the latest git master:
-----
-Author: Samuel CUELLA <samuel.cuella@...1702...>
+#ifdef HAVE_CHDIR
 
-Fix the route-gateway option behavior.
+or=20
 
-Signed-off-by: Samuel CUELLA <samuel.cuella@...1702...>
-----
-diff -Nur openvpn-git-orig/options.c openvpn-git/options.c
---- openvpn-git-orig/options.c  2012-03-23 15:59:29.000000000 +0100
-+++ openvpn-git/options.c   2012-03-23 17:29:33.000000000 +0100
-@@ -5218,6 +5218,7 @@
-   else if (streq (p[0], "route-gateway") && p[1])
-     {
-       VERIFY_PERMISSION (OPT_P_ROUTE_EXTRAS);
-+      rol_check_alloc (options);
-       if (streq (p[1], "dhcp"))
-    {
-      options->route_gateway_via_dhcp = true;
-@@ -5227,6 +5228,7 @@
-      if (ip_or_dns_addr_safe (p[1], options->allow_pull_fqdn) ||
-is_special_addr (p[1])) /* FQDN -- may be DNS name */
-        {
-          options->route_default_gateway = p[1];
-+         options->routes->flags |= (RG_ENABLE|RG_REROUTE_GW);
-        }
-      else
-        {
+#ifdef HAVE_GETPID
 
+... which is craziness.  All platforms OpenVPN runs on (except for WIN32)
+are fully POSIX compliant, and those are all required to have these
+functions - so testing for them, and having special #ifdef in the code
+for them, and then doing things like this:
+
+int
+platform_chdir (const char* dir)
+{
+#ifdef HAVE_CHDIR
+#ifdef WIN32
+  int res;
+  struct gc_arena gc =3D gc_new ();
+  res =3D _wchdir (wide_string (dir, &gc));
+  gc_free (&gc);
+  return res;
+#else
+  return chdir (dir);
+#endif
+#else
+  return -1;              <<<< yeah, how much good will that do?
+#endif
+
+is just extra code in various places that serves no purpose than to
+make "look, we can test for it!" autotools maniacs happy.
+
+
+So I propose that after Alon's build patches have been merged, I go
+through the HAVE_* defines and rip out everything that is part of
+POSIX and is not use on #ifdef WIN32 anyway (like "getpid()").
+
+We're not going to port this to a non-posix OS any time soon.
+
+
+Comments?
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--brEuL7wsLY8+TuWz
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBT2yXmKkuBuNlUUl1AQLWxAP+Oqjmo8ofg3TOn6xkjgsi7BqCAIHb/BP9
+TD7oh+QD6zwfUJ8oHJ8Q6e2NzUFd+5rjs/qoXgv1nSP5k2kxkZ0ZM6blqOdzb5az
+nbkPN4tJr+9XLeIjP7GkCjI5gApdJUDQDYZaWqzvd3clPiRhZa2mkyGJ3kdvT9+1
+nZF/EcnUtrE=
+=y9Ej
+-----END PGP SIGNATURE-----
+
+--brEuL7wsLY8+TuWz--
 
