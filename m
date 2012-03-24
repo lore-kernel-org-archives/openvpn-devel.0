@@ -1,10 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <1332616557-15727-1-git-send-email-alon.barlev@...277...>
-References: <1332616557-15727-1-git-send-email-alon.barlev@...277...>
-Date: Sat, 24 Mar 2012 21:21:56 +0200
-Message-ID: <CAOazyz3p-pZ=Sbmomnr2b9431hFxsxjte_P7ucSCAA4gJBpC_Q@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] build: rename bool->obool
+Date: Sat, 24 Mar 2012 22:31:10 +0200
+Message-Id: <1332621070-28464-1-git-send-email-alon.barlev@...277...>
+In-Reply-To: <CAOazyz15xpgFxzqQFaotZSmS2=-gSmUsMMwy=SZay6bi3EEMAg@...278...>
+References: <CAOazyz15xpgFxzqQFaotZSmS2=-gSmUsMMwy=SZay6bi3EEMAg@...278...>
+Subject: [Openvpn-devel] [PATCH] cleanup: windows: convert argv (UCS-2 to
+	UTF-8) at earliest
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,129 +13,193 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-To: Openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 Cc: Alon Bar-Lev <alon.barlev@...277...>
 
-T24gU2F0LCBNYXIgMjQsIDIwMTIgYXQgOToxNSBQTSwgQWxvbiBCYXItTGV2IDxhbG9uLmJhcmxl
-dkAuLi4yNzcuLi4+IHdyb3RlOgo+IFBQQyBhcmNoaXRlY3R1cmVzIGFuZCBjb25mbGljdCB3aXRo
-IHN0ZGJvb2wuaC4KPgo+IGJhc2ljLmggZGVmaW5lcyBhIHR5cGUgJ2Jvb2wnIHRoYXQgY29uZmxp
-Y3RzIHdpdGggdGhlIGFsdGl2ZWMKPiBrZXl3b3JkIGJvb2wgd2hpY2ggaGFzIHRvIGJlIGZpeGVk
-IHVwc3RyZWFtLCBzZWUgYnVnc1sxXVsyXS4KPgo+IFsxXSBodHRwczovL2J1Z3MuZ2VudG9vLm9y
-Zy9zaG93X2J1Zy5jZ2k/aWQ9MjkzODQwCj4gWzJdIGh0dHBzOi8vYnVncy5nZW50b28ub3JnL3No
-b3dfYnVnLmNnaT9pZD0yOTc4NTQKPgo+IFNpZ25lZC1vZmYtYnk6IEFsb24gQmFyLUxldiA8YWxv
-bi5iYXJsZXZALi4uMjc3Li4uPgo+IC0tLQo+IMKgc3JjL29wZW52cG4vYmFzaWMuaCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoHwgwqAgwqA2ICstCj4gwqBzcmMvb3BlbnZwbi9idWZmZXIuYyDCoCDCoCDC
-oCDCoCDCoCDCoCB8IMKgIDM4ICsrKystLS0tCj4gwqBzcmMvb3BlbnZwbi9idWZmZXIuaCDCoCDC
-oCDCoCDCoCDCoCDCoCB8IMKgIDgwICsrKysrKysrLS0tLS0tLS0KPiDCoHNyYy9vcGVudnBuL2Ns
-aW5hdC5jIMKgIMKgIMKgIMKgIMKgIMKgIHwgwqAgwqA0ICstCj4gwqBzcmMvb3BlbnZwbi9jb25z
-b2xlLmMgwqAgwqAgwqAgwqAgwqAgwqB8IMKgIDIyICsrLS0KPiDCoHNyYy9vcGVudnBuL2NvbnNv
-bGUuaCDCoCDCoCDCoCDCoCDCoCDCoHwgwqAgwqA0ICstCj4gwqBzcmMvb3BlbnZwbi9jcnlwdG8u
-YyDCoCDCoCDCoCDCoCDCoCDCoCB8IMKgIDM0ICsrKystLS0tCj4gwqBzcmMvb3BlbnZwbi9jcnlw
-dG8uaCDCoCDCoCDCoCDCoCDCoCDCoCB8IMKgIDMwICsrKy0tLQo+IMKgc3JjL29wZW52cG4vY3J5
-cHRvX2JhY2tlbmQuaCDCoCDCoCB8IMKgIMKgMiArLQo+IMKgc3JjL29wZW52cG4vY3J5cHRvX29w
-ZW5zc2wuYyDCoCDCoCB8IMKgIMKgNiArLQo+IMKgc3JjL29wZW52cG4vY3J5cHRvX3BvbGFyc3Ns
-LmMgwqAgwqB8IMKgIMKgNCArLQo+IMKgc3JjL29wZW52cG4vZXJyb3IuYyDCoCDCoCDCoCDCoCDC
-oCDCoCDCoHwgwqAgMjQgKysrLS0tCj4gwqBzcmMvb3BlbnZwbi9lcnJvci5oIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgfCDCoCAxNiArKy0tCj4gwqBzcmMvb3BlbnZwbi9ldmVudC5jIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgfCDCoCAxNiArKy0tCj4gwqBzcmMvb3BlbnZwbi9mZG1pc2MuYyDCoCDCoCDCoCDC
-oCDCoCDCoCB8IMKgIMKgNCArLQo+IMKgc3JjL29wZW52cG4vZmRtaXNjLmggwqAgwqAgwqAgwqAg
-wqAgwqAgfCDCoCDCoDQgKy0KPiDCoHNyYy9vcGVudnBuL2ZvcndhcmQuYyDCoCDCoCDCoCDCoCDC
-oCDCoHwgwqAgMTAgKy0KPiDCoHNyYy9vcGVudnBuL2ZvcndhcmQuaCDCoCDCoCDCoCDCoCDCoCDC
-oHwgwqAgwqA0ICstCj4gwqBzcmMvb3BlbnZwbi9mcmFnbWVudC5jIMKgIMKgIMKgIMKgIMKgIHwg
-wqAgwqAyICstCj4gwqBzcmMvb3BlbnZwbi9mcmFnbWVudC5oIMKgIMKgIMKgIMKgIMKgIHwgwqAg
-wqA4ICstCj4gwqBzcmMvb3BlbnZwbi9ncmVtbGluLmMgwqAgwqAgwqAgwqAgwqAgwqB8IMKgIMKg
-OCArLQo+IMKgc3JjL29wZW52cG4vZ3JlbWxpbi5oIMKgIMKgIMKgIMKgIMKgIMKgfCDCoCDCoDIg
-Ky0KPiDCoHNyYy9vcGVudnBuL2hlbHBlci5jIMKgIMKgIMKgIMKgIMKgIMKgIHwgwqAgwqAyICst
-Cj4gwqBzcmMvb3BlbnZwbi9pbml0LmMgwqAgwqAgwqAgwqAgwqAgwqAgwqAgfCDCoCA3MCArKysr
-KysrLS0tLS0tLQo+IMKgc3JjL29wZW52cG4vaW5pdC5oIMKgIMKgIMKgIMKgIMKgIMKgIMKgIHwg
-wqAgMTYgKystLQo+IMKgc3JjL29wZW52cG4vaW50ZXJ2YWwuYyDCoCDCoCDCoCDCoCDCoCB8IMKg
-IMKgNCArLQo+IMKgc3JjL29wZW52cG4vaW50ZXJ2YWwuaCDCoCDCoCDCoCDCoCDCoCB8IMKgIDEy
-ICstCj4gwqBzcmMvb3BlbnZwbi9saXN0LmMgwqAgwqAgwqAgwqAgwqAgwqAgwqAgfCDCoCAxNCAr
-Ky0tCj4gwqBzcmMvb3BlbnZwbi9saXN0LmggwqAgwqAgwqAgwqAgwqAgwqAgwqAgfCDCoCAxNiAr
-Ky0tCj4gwqBzcmMvb3BlbnZwbi9sem8uYyDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoHwgwqAgwqA4
-ICstCj4gwqBzcmMvb3BlbnZwbi9sem8uaCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoHwgwqAgwqA2
-ICstCj4gwqBzcmMvb3BlbnZwbi9tYW5hZ2UuYyDCoCDCoCDCoCDCoCDCoCDCoCB8IMKgIDg2ICsr
-KysrKysrKy0tLS0tLS0tLQo+IMKgc3JjL29wZW52cG4vbWFuYWdlLmggwqAgwqAgwqAgwqAgwqAg
-wqAgfCDCoCA1NiArKysrKystLS0tLS0KPiDCoHNyYy9vcGVudnBuL21idWYuYyDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCB8IMKgIMKgNCArLQo+IMKgc3JjL29wZW52cG4vbWJ1Zi5oIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIHwgwqAgwqA2ICstCj4gwqBzcmMvb3BlbnZwbi9taXNjLmMgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgfCDCoCA1NCArKysrKystLS0tLS0KPiDCoHNyYy9vcGVudnBuL21pc2MuaCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCB8IMKgIDMwICsrKy0tLQo+IMKgc3JjL29wZW52cG4vbXJvdXRlLmMg
-wqAgwqAgwqAgwqAgwqAgwqAgfCDCoCAyNCArKystLS0KPiDCoHNyYy9vcGVudnBuL21yb3V0ZS5o
-IMKgIMKgIMKgIMKgIMKgIMKgIHwgwqAgMTAgKy0KPiDCoHNyYy9vcGVudnBuL210Y3AuYyDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCB8IMKgIDE4ICsrLS0KPiDCoHNyYy9vcGVudnBuL210Y3AuaCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCB8IMKgIMKgMiArLQo+IMKgc3JjL29wZW52cG4vbXR1LmMgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqB8IMKgIMKgNiArLQo+IMKgc3JjL29wZW52cG4vbXR1LmggwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqB8IMKgIMKgOCArLQo+IMKgc3JjL29wZW52cG4vbXVsdGkuYyDCoCDC
-oCDCoCDCoCDCoCDCoCDCoHwgwqAgNjAgKysrKysrLS0tLS0tCj4gwqBzcmMvb3BlbnZwbi9tdWx0
-aS5oIMKgIMKgIMKgIMKgIMKgIMKgIMKgfCDCoCA1NCArKysrKystLS0tLS0KPiDCoHNyYy9vcGVu
-dnBuL250bG0uYyDCoCDCoCDCoCDCoCDCoCDCoCDCoCB8IMKgIMKgMiArLQo+IMKgc3JjL29wZW52
-cG4vb2NjLmMgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqB8IMKgIMKgMiArLQo+IMKgc3JjL29wZW52
-cG4vb2NjLmggwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqB8IMKgIMKgMiArLQo+IMKgc3JjL29wZW52
-cG4vb3BlbnZwbi5jIMKgIMKgIMKgIMKgIMKgIMKgfCDCoCDCoDIgKy0KPiDCoHNyYy9vcGVudnBu
-L29wZW52cG4uaCDCoCDCoCDCoCDCoCDCoCDCoHwgwqAgNDggKysrKystLS0tLQo+IMKgc3JjL29w
-ZW52cG4vb3B0aW9ucy5jIMKgIMKgIMKgIMKgIMKgIMKgfCDCoCA4NCArKysrKysrKystLS0tLS0t
-LS0KPiDCoHNyYy9vcGVudnBuL29wdGlvbnMuaCDCoCDCoCDCoCDCoCDCoCDCoHwgwqAxOTAgKysr
-KysrKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0tLS0tLS0KPiDCoHNyYy9vcGVudnBuL290aW1l
-LmMgwqAgwqAgwqAgwqAgwqAgwqAgwqB8IMKgIMKgNiArLQo+IMKgc3JjL29wZW52cG4vb3RpbWUu
-aCDCoCDCoCDCoCDCoCDCoCDCoCDCoHwgwqAgMTggKystLQo+IMKgc3JjL29wZW52cG4vcGFja2V0
-X2lkLmMgwqAgwqAgwqAgwqAgwqB8IMKgIDIyICsrLS0KPiDCoHNyYy9vcGVudnBuL3BhY2tldF9p
-ZC5oIMKgIMKgIMKgIMKgIMKgfCDCoCAyMiArKy0tCj4gwqBzcmMvb3BlbnZwbi9wZi1pbmxpbmUu
-aCDCoCDCoCDCoCDCoCDCoHwgwqAgMTAgKy0KPiDCoHNyYy9vcGVudnBuL3BmLmMgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgfCDCoCAzMiArKystLS0KPiDCoHNyYy9vcGVudnBuL3BmLmggwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgfCDCoCAxNCArKy0tCj4gwqBzcmMvb3BlbnZwbi9waW5nLmggwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgfCDCoCDCoDIgKy0KPiDCoHNyYy9vcGVudnBuL3BrY3MxMS5jIMKg
-IMKgIMKgIMKgIMKgIMKgIHwgwqAgMjIgKystLQo+IMKgc3JjL29wZW52cG4vcGtjczExLmggwqAg
-wqAgwqAgwqAgwqAgwqAgfCDCoCAxNiArKy0tCj4gwqBzcmMvb3BlbnZwbi9wbGF0Zm9ybS5jIMKg
-IMKgIMKgIMKgIMKgIHwgwqAgMTYgKystLQo+IMKgc3JjL29wZW52cG4vcGxhdGZvcm0uaCDCoCDC
-oCDCoCDCoCDCoCB8IMKgIDEyICstCj4gwqBzcmMvb3BlbnZwbi9wbHVnaW4uYyDCoCDCoCDCoCDC
-oCDCoCDCoCB8IMKgIDE2ICsrLS0KPiDCoHNyYy9vcGVudnBuL3BsdWdpbi5oIMKgIMKgIMKgIMKg
-IMKgIMKgIHwgwqAgMTIgKy0KPiDCoHNyYy9vcGVudnBuL3Bvb2wuYyDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCB8IMKgIDIyICsrLS0KPiDCoHNyYy9vcGVudnBuL3Bvb2wuaCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCB8IMKgIDE4ICsrLS0KPiDCoHNyYy9vcGVudnBuL3Byb3RvLmMgwqAgwqAgwqAgwqAgwqAg
-wqAgwqB8IMKgIMKgMiArLQo+IMKgc3JjL29wZW52cG4vcHJvdG8uaCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoHwgwqAgwqAyICstCj4gwqBzcmMvb3BlbnZwbi9wcm94eS5jIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgfCDCoCAyNiArKystLS0KPiDCoHNyYy9vcGVudnBuL3Byb3h5LmggwqAgwqAgwqAgwqAgwqAg
-wqAgwqB8IMKgIMKgOCArLQo+IMKgc3JjL29wZW52cG4vcHMuYyDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCB8IMKgIDEyICstCj4gwqBzcmMvb3BlbnZwbi9wcy5oIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIHwgwqAgwqAyICstCj4gwqBzcmMvb3BlbnZwbi9wdXNoLmMgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgfCDCoCAyNiArKystLS0KPiDCoHNyYy9vcGVudnBuL3B1c2guaCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCB8IMKgIMKgOCArLQo+IMKgc3JjL29wZW52cG4vcHVzaGxpc3QuaCDCoCDCoCDCoCDCoCDC
-oCB8IMKgIMKgMiArLQo+IMKgc3JjL29wZW52cG4vcmVsaWFibGUuYyDCoCDCoCDCoCDCoCDCoCB8
-IMKgIDM2ICsrKystLS0tCj4gwqBzcmMvb3BlbnZwbi9yZWxpYWJsZS5oIMKgIMKgIMKgIMKgIMKg
-IHwgwqAgMzIgKysrLS0tCj4gwqBzcmMvb3BlbnZwbi9yb3V0ZS5jIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgfCDCoCA2OCArKysrKysrLS0tLS0tLQo+IMKgc3JjL29wZW52cG4vcm91dGUuaCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoHwgwqAgMzIgKysrLS0tCj4gwqBzcmMvb3BlbnZwbi9zZXNzaW9uX2lkLmgg
-wqAgwqAgwqAgwqAgfCDCoCAxMCArLQo+IMKgc3JjL29wZW52cG4vc2hhcGVyLmMgwqAgwqAgwqAg
-wqAgwqAgwqAgfCDCoCDCoDQgKy0KPiDCoHNyYy9vcGVudnBuL3NoYXBlci5oIMKgIMKgIMKgIMKg
-IMKgIMKgIHwgwqAgwqA0ICstCj4gwqBzcmMvb3BlbnZwbi9zaWcuYyDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoHwgwqAgMTAgKy0KPiDCoHNyYy9vcGVudnBuL3NpZy5oIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgfCDCoCDCoDYgKy0KPiDCoHNyYy9vcGVudnBuL3NvY2tldC5jIMKgIMKgIMKgIMKgIMKg
-IMKgIHwgwqAgOTQgKysrKysrKysrKy0tLS0tLS0tLS0KPiDCoHNyYy9vcGVudnBuL3NvY2tldC5o
-IMKgIMKgIMKgIMKgIMKgIMKgIHwgwqAgOTggKysrKysrKysrKy0tLS0tLS0tLS0KPiDCoHNyYy9v
-cGVudnBuL3NvY2tzLmMgwqAgwqAgwqAgwqAgwqAgwqAgwqB8IMKgIMKgOCArLQo+IMKgc3JjL29w
-ZW52cG4vc29ja3MuaCDCoCDCoCDCoCDCoCDCoCDCoCDCoHwgwqAgwqA2ICstCj4gwqBzcmMvb3Bl
-bnZwbi9zc2wuYyDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoHwgwqAgODggKysrKysrKysrLS0tLS0t
-LS0tCj4gwqBzcmMvb3BlbnZwbi9zc2wuaCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoHwgwqAgMTYg
-KystLQo+IMKgc3JjL29wZW52cG4vc3NsX2JhY2tlbmQuaCDCoCDCoCDCoCDCoHwgwqAgwqA4ICst
-Cj4gwqBzcmMvb3BlbnZwbi9zc2xfY29tbW9uLmggwqAgwqAgwqAgwqAgfCDCoCAyNiArKystLS0K
-PiDCoHNyYy9vcGVudnBuL3NzbF9vcGVuc3NsLmMgwqAgwqAgwqAgwqB8IMKgIDEyICstCj4gwqBz
-cmMvb3BlbnZwbi9zc2xfcG9sYXJzc2wuYyDCoCDCoCDCoCB8IMKgIMKgOCArLQo+IMKgc3JjL29w
-ZW52cG4vc3NsX3BvbGFyc3NsLmggwqAgwqAgwqAgfCDCoCDCoDIgKy0KPiDCoHNyYy9vcGVudnBu
-L3NzbF92ZXJpZnkuYyDCoCDCoCDCoCDCoCB8IMKgIDI2ICsrKy0tLQo+IMKgc3JjL29wZW52cG4v
-c3NsX3ZlcmlmeS5oIMKgIMKgIMKgIMKgIHwgwqAgMTAgKy0KPiDCoHNyYy9vcGVudnBuL3NzbF92
-ZXJpZnlfb3BlbnNzbC5jIHwgwqAgwqA0ICstCj4gwqBzcmMvb3BlbnZwbi9zdGF0dXMuYyDCoCDC
-oCDCoCDCoCDCoCDCoCB8IMKgIDEyICstCj4gwqBzcmMvb3BlbnZwbi9zdGF0dXMuaCDCoCDCoCDC
-oCDCoCDCoCDCoCB8IMKgIDEwICstCj4gwqBzcmMvb3BlbnZwbi90dW4uYyDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoHwgwqAxMDQgKysrKysrKysrKy0tLS0tLS0tLS0KPiDCoHNyYy9vcGVudnBuL3R1
-bi5oIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgfCDCoCA1MiArKysrKy0tLS0tCj4gwqBzcmMvb3Bl
-bnZwbi93aW4zMi5jIMKgIMKgIMKgIMKgIMKgIMKgIMKgfCDCoCAyOCArKystLS0KPiDCoHNyYy9v
-cGVudnBuL3dpbjMyLmggwqAgwqAgwqAgwqAgwqAgwqAgwqB8IMKgIDI2ICsrKy0tLQo+IMKgc3Jj
-L3BsdWdpbnMvZGVmZXIvc2ltcGxlLmMgwqAgwqAgwqAgfCDCoCDCoDkgKy0tCj4gwqAxMDcgZmls
-ZXMgY2hhbmdlZCwgMTIwOCBpbnNlcnRpb25zKCspLCAxMjEzIGRlbGV0aW9ucygtKQoKV2VsbCwK
-CkFzIHVzdWFsLApNYWlsaW5nIGxpc3QgbGltaXRhdGlvbiBmb3IgbGFyZ2UvY29tcGxleCBwYXRj
-aGVzIGluaGliaXQgcHJvcGVyIGNvbW11bmljYXRpb24uCgpQYXRjaCBjYW4gYmUgZm91bmQvcHVs
-bGVkIGZyb20gZ2l0aHViWzFdLgoKWzFdIGh0dHBzOi8vZ2l0aHViLmNvbS9hbG9uYmwvb3BlbnZw
-bi9jb21taXQvYmVjMjdlNzNmNTM0ZTk3YzNkMjRkNjM2ODBhMGRmZTY4MjRhZWYyYQo=
+Discussed at [1].
+
+Use wmain under windows, drop the custom parsing and shell32 linkage.
+
+There is no need for gc magic as this allocation is static.
+
+[1] http://permalink.gmane.org/gmane.network.openvpn.devel/5433
+
+Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+---
+ src/openvpn/Makefile.am     |    6 +++++-
+ src/openvpn/openvpn.c       |   37 ++++++++++++++++++++++++++++++++++++-
+ src/openvpn/openvpn.vcxproj |   10 ++++++----
+ src/openvpn/options.c       |   27 ---------------------------
+ 4 files changed, 47 insertions(+), 33 deletions(-)
+ mode change 100644 => 100755 src/openvpn/openvpn.vcxproj
+
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index 4e485e7..0506b11 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -27,6 +27,10 @@ AM_CFLAGS = \
+ 	$(OPTIONAL_CRYPTO_CFLAGS) \
+ 	$(OPTIONAL_LZO_CFLAGS) \
+ 	$(OPTIONAL_PKCS11_HELPER_CFLAGS)
++if WIN32
++# we want unicode entry point but not the macro
++AM_CFLAGS += -municode -UUNICODE
++endif
+ 
+ sbin_PROGRAMS = openvpn
+ 
+@@ -118,5 +122,5 @@ openvpn_LDADD = \
+ 	$(OPTIONAL_DL_LIBS)
+ if WIN32
+ openvpn_SOURCES += openvpn_win32_resources.rc
+-openvpn_LDADD += -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm -lshell32
++openvpn_LDADD += -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm
+ endif
+diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
+index 3db1b86..6e70a58 100644
+--- a/src/openvpn/openvpn.c
++++ b/src/openvpn/openvpn.c
+@@ -127,8 +127,9 @@ tunnel_point_to_point (struct context *c)
+  * @param argc - Commandline argument count.
+  * @param argv - Commandline argument values.
+  */
++static
+ int
+-main (int argc, char *argv[])
++openvpn_main (int argc, char *argv[])
+ {
+   struct context c;
+ 
+@@ -289,3 +290,37 @@ main (int argc, char *argv[])
+   openvpn_exit (OPENVPN_EXIT_STATUS_GOOD);  /* exit point */
+   return 0;			            /* NOTREACHED */
+ }
++
++#ifdef WIN32
++int
++wmain (int argc, wchar_t *wargv[]) {
++  char **argv;
++  int ret;
++  int i;
++
++  if ((argv = calloc(argc+1, sizeof(char*))) == NULL)
++    return 1;
++
++  for (i = 0; i < argc; i++)
++    {
++      int n = WideCharToMultiByte (CP_UTF8, 0, wargv[i], -1, NULL, 0, NULL, NULL);
++      argv[i] = malloc (n);
++      WideCharToMultiByte (CP_UTF8, 0, wargv[i], -1, argv[i], n, NULL, NULL);
++    }
++
++  ret = openvpn_main(argc, argv);
++
++  for (i=0; i < argc; i++ )
++    {
++      free (argv[i]);
++    }
++  free(argv);
++
++  return ret;
++}
++#else
++int
++main (int argc, char *argv[]) {
++	return openvpn_main(argc, argv);
++}
++#endif
+diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
+old mode 100644
+new mode 100755
+index 51e19af..452876f
+--- a/src/openvpn/openvpn.vcxproj
++++ b/src/openvpn/openvpn.vcxproj
+@@ -18,12 +18,12 @@
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+-    <CharacterSet>MultiByte</CharacterSet>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
++    <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+-    <CharacterSet>MultiByte</CharacterSet>
++    <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+   <ImportGroup Label="ExtensionSettings">
+@@ -56,12 +56,13 @@
+       </PrecompiledHeader>
+       <WarningLevel>Level3</WarningLevel>
+       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
++      <UndefinePreprocessorDefinitions>UNICODE</UndefinePreprocessorDefinitions>
+     </ClCompile>
+     <ResourceCompile>
+       <AdditionalIncludeDirectories>$(SOURCEBASE);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+     </ResourceCompile>
+     <Link>
+-      <AdditionalDependencies>libeay32.lib;ssleay32.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
++      <AdditionalDependencies>libeay32.lib;ssleay32.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+       <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/lib;$(PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+       <GenerateDebugInformation>true</GenerateDebugInformation>
+       <SubSystem>Console</SubSystem>
+@@ -80,12 +81,13 @@
+       </PrecompiledHeader>
+       <WarningLevel>Level3</WarningLevel>
+       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
++      <UndefinePreprocessorDefinitions>UNICODE</UndefinePreprocessorDefinitions>
+     </ClCompile>
+     <ResourceCompile>
+       <AdditionalIncludeDirectories>$(SOURCEBASE);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+     </ResourceCompile>
+     <Link>
+-      <AdditionalDependencies>libeay32.lib;ssleay32.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
++      <AdditionalDependencies>libeay32.lib;ssleay32.lib;lzo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+       <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/lib;$(PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+       <GenerateDebugInformation>true</GenerateDebugInformation>
+       <SubSystem>Console</SubSystem>
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 25786f6..66241b4 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3832,33 +3832,6 @@ parse_argv (struct options *options,
+ {
+   int i, j;
+ 
+-#ifdef WIN32
+-  /*
+-   * Windows replaces Unicode characters in argv[] that are not present
+-   * in the current codepage with '?'. Get the wide char command line and
+-   * convert it to UTF-8 ourselves.
+-   */
+-  int wargc;
+-  WCHAR **wargv;
+-  char **uargv;
+-
+-  wargv = CommandLineToArgvW (GetCommandLineW (), &wargc);
+-  if (wargv == NULL || wargc != argc)
+-    usage ();
+-
+-  uargv = gc_malloc (wargc * sizeof (*uargv), false, &options->gc);
+-
+-  for (i = 0; i < wargc; i++)
+-    {
+-      int n = WideCharToMultiByte (CP_UTF8, 0, wargv[i], -1, NULL, 0, NULL, NULL);
+-      uargv[i] = gc_malloc (n, false, &options->gc);
+-      WideCharToMultiByte (CP_UTF8, 0, wargv[i], -1, uargv[i], n, NULL, NULL);
+-    }
+-
+-  LocalFree (wargv);
+-  argv = uargv;
+-#endif
+-
+   /* usage message */
+   if (argc <= 1)
+     usage ();
+-- 
+1.7.3.4
+
+
