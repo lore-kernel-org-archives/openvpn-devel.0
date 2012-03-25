@@ -1,13 +1,8 @@
-Date: Sun, 25 Mar 2012 13:40:22 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120325114022.GJ1359@...1296...>
-References: <1332674822-10508-1-git-send-email-alon.barlev@...277...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="OtZJUqNUNrB9XA/T"
-Content-Disposition: inline
-In-Reply-To: <1332674822-10508-1-git-send-email-alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] cleanup: flags should not be bool
+Message-ID: <4F6F58F0.4080809@...1030...>
+Date: Sun, 25 Mar 2012 18:42:08 +0100
+From: Mr Dash Four <mr.dash.four@...1030...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] certificate key usage in openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,53 +11,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: Openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---OtZJUqNUNrB9XA/T
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Looking at the openvpn manual, the predefined certificate key usage for 
+clients is "digitalSignature and/or keyAgreement" (or "80 08 88"). The 
+same for the server is "digitalSignature and ( keyEncipherment or 
+keyAgreement )" - "a0 88".
 
-Hi,
+According to Section 4.2.1.3 of RFC3280, the certificate key usage is 
+defined as follows:
 
-On Sun, Mar 25, 2012 at 01:27:02PM +0200, Alon Bar-Lev wrote:
-> Discussed at [1][2][3].
->=20
-> [1] https://bugs.gentoo.org/show_bug.cgi?id=3D297854#c2
-> [2] https://297854.bugs.gentoo.org/attachment.cgi?id=3D214304
-> [3] http://sourceforge.net/mailarchive/forum.php?thread_name=3D2012032511=
-1517.GI1359%40greenie.muc.de&forum_name=3Dopenvpn-devel
->=20
-> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-> ---
->  src/openvpn/socket.c |    6 +++---
->  src/openvpn/socket.h |    6 +++---
->  2 files changed, 6 insertions(+), 6 deletions(-)
+KeyUsage ::= BIT STRING {
+digitalSignature (0),
+nonRepudiation (1),
+keyEncipherment (2),
+dataEncipherment (3),
+keyAgreement (4),
+keyCertSign (5),
+cRLSign (6),
+encipherOnly (7),
+decipherOnly (8) }
 
-ACK!
+In other words, the values of digitalSignature (bit 0) and/or 
+keyAgreement (bit 4), when OR-ed should give me numbers 0x01 (00000001 
+binary) and 0x10 (0001 0000), so the certificate key usage should be 
+0x01 (0000 0001), 0x10 (0001 0000) or 0x11 (0001 0001), not 0x80 (1000 
+0000) 0x08 (0000 1000) or 0x88 (1000 1000).
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---OtZJUqNUNrB9XA/T
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
-
-iQCVAwUBT28EJqkuBuNlUUl1AQKCZgP/ajk2S1epWiJb82HidFsWc1iIICttzKTD
-cDayUqRcUaM4suGizKoQagIiRhJBf2WTz1cEQuDqzucfP/KZm1W0Crc+MFqWQeRm
-F8mNY39L7MjZhv4csBIfYqxQk3gcKHzL03aaCf5zuawsvKBLOqMhxdwXnwPNMTxC
-gOEWqec9LSU=
-=RKAB
------END PGP SIGNATURE-----
-
---OtZJUqNUNrB9XA/T--
+Similar for the server: bit 0 and (bit 2 or bit 4) makes this as 0x5 
+(0000 0101) or 0x11 (0001 0001), not 0xa0 (1010 0000) or 0x88 (1000 
+1000). Am I missing something obvious?
 
