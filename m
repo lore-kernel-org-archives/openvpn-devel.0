@@ -1,17 +1,14 @@
-Date: Mon, 26 Mar 2012 13:23:00 +0200
+Date: Mon, 26 Mar 2012 13:52:16 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20120326112300.GT1359@...1296...>
-References: <CAOazyz1yULF1jkPRGOQriuetsdiUo5PbNVJybSURWPAKgQZMNA@...278...>
-	<1332758047-30774-1-git-send-email-alon.barlev@...277...>
-	<20120326110015.GS1359@...1296...>
-	<CAOazyz0S4obu2XWtEFWXJiJGMJS9fk-ULdUNoXWkBriQ45vK7w@...278...>
+Message-ID: <20120326115216.GU1359@...1296...>
+References: <4F6D06C5.3030408@...1114...>
+	<1332575918-3384-6-git-send-email-alon.barlev@...277...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="wiP8eU6Yj5r7oh2+"
+	protocol="application/pgp-signature"; boundary="hkJ/XfKuQcNFcQvU"
 Content-Disposition: inline
-In-Reply-To: <CAOazyz0S4obu2XWtEFWXJiJGMJS9fk-ULdUNoXWkBriQ45vK7w@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] build: assume dlfcn is available on all
-	supported platforms
+In-Reply-To: <1332575918-3384-6-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 5/6] build: enable lzo by default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,56 +20,55 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: Openvpn-devel@lists.sourceforge.net
 
---wiP8eU6Yj5r7oh2+
+--hkJ/XfKuQcNFcQvU
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Mon, Mar 26, 2012 at 01:02:13PM +0200, Alon Bar-Lev wrote:
-> > Tested on FreeBSD 7.4 -> configure works fine now, make builds, resulti=
-ng
-> > binary exists...
-> >
-> > gert@...1703...:/home/gert/alon/test$ ./src/openvpn/openvpn --version
-> > OpenVPN 2.3_alpha1 amd64-unknown-freebsd7.4 [SSL (OpenSSL)] [eurephia] =
-[MH] [PF_INET6] [IPv6 payload 20110522-1 (2.2.0)] built on Mar 26 2012
-> >
-> > (no further tests done, but this is good enough improvement to *ACK* th=
-is).
->=20
-> Hmmm....
-> This --version is very short.... is it the full output?
-> I expecting something similar to:
-
-The complete output is similar to what you pasted, but to "just show succes=
-s",
-I didn't want to paste all of it.
-
-Here's the long one:
-
-OpenVPN 2.3_alpha1 amd64-unknown-freebsd7.4 [SSL (OpenSSL)] [eurephia] [MH]=
- [PF_INET6] [IPv6 payload 20110522-1 (2.2.0)] built on Mar 26 2012
-Originally developed by James Yonan
-Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-Compile time defines: enable_crypto=3Dyes enable_debug=3Dyes enable_def_aut=
-h=3Dyes enable_dlopen=3Dunknown enable_dlopen_self=3Dunknown enable_dlopen_=
-self_static=3Dunknown enable_eurephia=3Dyes enable_fast_install=3Dneedless =
-enable_fragment=3Dyes enable_http_proxy=3Dyes enable_iproute2=3Dno enable_l=
-ibtool_lock=3Dyes enable_lzo=3Dno enable_lzo_stub=3Dno enable_management=3D=
-yes enable_multi=3Dyes enable_multihome=3Dyes enable_pedantic=3Dno enable_p=
-f=3Dyes enable_pkcs11=3Dno enable_plugins=3Dyes enable_port_share=3Dyes ena=
-ble_selinux=3Dno enable_server=3Dyes enable_shared=3Dyes enable_shared_with=
-_static_runtimes=3Dno enable_small=3Dno enable_socks=3Dyes enable_ssl=3Dyes=
- enable_static=3Dyes enable_strict=3Dno enable_strict_options=3Dno enable_s=
-ystemd=3Dno enable_win32_dll=3Dyes enable_x509_alt_username=3Dno with_crypt=
-o_library=3Dopenssl with_gnu_ld=3Dyes with_mem_check=3Dno
-
-
-thanks.
+ACK, as per the discussion and majority of voices.
 
 gert
+
+On Sat, Mar 24, 2012 at 09:58:37AM +0200, Alon Bar-Lev wrote:
+> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+> ---
+>  configure.ac |    4 ++--
+>  1 files changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/configure.ac b/configure.ac
+> index 9a6ff29..bd84c0f 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -41,9 +41,9 @@ AC_USE_SYSTEM_EXTENSIONS
+>=20=20
+>  AC_ARG_ENABLE(
+>  	[lzo],
+> -	[AS_HELP_STRING([--enable-lzo], [enable LZO compression support @<:@def=
+ault=3Dno@:>@])],
+> +	[AS_HELP_STRING([--disable-lzo], [disable LZO compression support @<:@d=
+efault=3Dyes@:>@])],
+>  	,
+> -	[enable_lzo=3D"no"]
+> +	[enable_lzo=3D"yes"]
+>  )
+>=20=20
+>  AC_ARG_ENABLE(
+> --=20
+> 1.7.3.4
+>=20
+>=20
+> -------------------------------------------------------------------------=
+-----
+> This SF email is sponsosred by:
+> Try Windows Azure free for 90 days Click Here=20
+> http://p.sf.net/sfu/sfd2d-msazure
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>=20
 
 --=20
 USENET is *not* the non-clickable part of WWW!
@@ -81,19 +77,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---wiP8eU6Yj5r7oh2+
+--hkJ/XfKuQcNFcQvU
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (NetBSD)
 
-iQCVAwUBT3BRk6kuBuNlUUl1AQKOcwP/bk7hTlrchbV4KsZRpgPRiMGju3uf2VnP
-gXHgPtt2gYk/4H/GsTOyRGvlcM1vXsv3cWK9M8hiBE2pbWOa0kRbcbC1fjgXL/0n
-CIQnWXXbO9dOCAdxkKNLUKsp9MikVFsEiNBJUpz22GTVuE2dr8g6XtWV3k7hgORh
-Hu7aNTyz96k=
-=WhMz
+iQCVAwUBT3BYb6kuBuNlUUl1AQIa+AP/Xf44JUoFuKO6hFz3d3QyFxbbmYPfmPkY
+NuXY/+uuUIfy7lCRCqD/4DbTzOD63cltKSkQGZxLEU0Uqg8DNC5iV8tWhw3+UaIx
+Y30wo1M1z272vFV2ffD3iymigFcn6+etq6qeT64Q6BjHznihW5IMjcY8W4LLuVGX
+u5WIH65JUqo=
+=KfMs
 -----END PGP SIGNATURE-----
 
---wiP8eU6Yj5r7oh2+--
+--hkJ/XfKuQcNFcQvU--
 
