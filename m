@@ -1,12 +1,8 @@
-Message-ID: <4F706582.9030909@...1114...>
-Date: Mon, 26 Mar 2012 14:48:02 +0200
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <CAOazyz1yULF1jkPRGOQriuetsdiUo5PbNVJybSURWPAKgQZMNA@...278...>
-	<1332758047-30774-1-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1332758047-30774-1-git-send-email-alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] build: assume dlfcn is available on all
- supported platforms
+Date: Mon, 26 Mar 2012 15:31:35 +0200
+Message-ID: <CAOazyz065tGCsmMkqCy57+jHcBLFCuOTBfbtFaeiQYBg5Ye15w@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: [Openvpn-devel] [DISCUSS] OpenVPN public repositories at github.com
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,39 +11,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hello All,
 
-On 26/03/12 12:34, Alon Bar-Lev wrote:
-> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...> --- configure.ac |
-> 1 - 1 files changed, 0 insertions(+), 1 deletions(-)
-> 
+github.com provides a great service for open source project.
 
-ACK!  Applied to master branches on -testing and stable trees.
+It allows to create organizations that may be maintained by several
+people, allowing to easily create/delete repositories, and manage per
+repository permissions.
 
-commit 020cbe3f7a64279af2bd14e615422f058050e513
-Author: Alon Bar-Lev <alon.barlev@...277...>
-Date:   Mon Mar 26 12:34:07 2012 +0200
+It allows access repository via git, ssh, HTTP protocols (sourceforge
+does not allow HTTP).
+Its availability is much better than sourceforge, it sometime takes
+about ~50 attempts for successful connection to sourceforge.
 
-    Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-    Tested-by: Gert Doering <gert@...1296...>
-    Acked-by: David Sommerseth <davids@...1347...>
-    Signed-off-by: David Sommerseth <davids@...1347...>
+github provides great interface for viewing repositories, branches and diffs.
 
+A basic ticketing system is also provided, not sure it is that far
+from trac features... not a must.
 
-kind regards,
+It wiki is better than track as people can subscribe for changes,
+hence cooperate much better than current state.
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+It also provides the ability to cooperate using repository fork, and
+pull requests, not that it should be used, but much easier to
+cooperate if we support pull process.
 
-iEYEARECAAYFAk9wZYAACgkQDC186MBRfrqOLQCfUMV2NcC3risMgBS5lc6RDDtc
-ELcAoJgd5UDFtPYhRsdr9wFO1luOSuTT
-=71TJ
------END PGP SIGNATURE-----
+Each push to repository can be configured to send diff to mailing
+list, so people can keep track on changes.
+
+What do you think of moving the repositories to github.com?
+
+We don't need to use all features, but at least move the repositories.
+
+Keep in mind that we now have at least three repositories:
+
+1. OpenVPN.
+2. Easy-RSA.
+3. TAP-Windows.
+
+Regards,
+Alon.
 
