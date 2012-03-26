@@ -1,9 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <20120326160546.GV1359@...1296...>
+Date: Mon, 26 Mar 2012 19:55:43 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120326175543.GX1359@...1296...>
 References: <20120326160546.GV1359@...1296...>
-Date: Mon, 26 Mar 2012 19:51:01 +0200
-Message-ID: <CAOazyz1W7ZcVEhDwq0DWCOjQ_DetcjP6yDg1MhOPiMYqu2Sr6w@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+	<CAOazyz1W7ZcVEhDwq0DWCOjQ_DetcjP6yDg1MhOPiMYqu2Sr6w@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="4oXbDkBXUa6Hvs/m"
+Content-Disposition: inline
+In-Reply-To: <CAOazyz1W7ZcVEhDwq0DWCOjQ_DetcjP6yDg1MhOPiMYqu2Sr6w@...278...>
 Subject: Re: [Openvpn-devel] [DISCUSS] much more complicated gcc invocations
 	now
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -14,52 +18,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
+To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Mon, Mar 26, 2012 at 6:05 PM, Gert Doering <gert@...1296...> wrote:
-> Hi,
->
-> one of the things the new build system brought is us is *this*:
->
-> if gcc -DHAVE_CONFIG_H -I. -I. -I../.. -I../../include =C2=A0-I../../src/=
-compat =C2=A0 =C2=A0 =C2=A0-I/usr/include -I/usr/include =C2=A0 =C2=A0 -g -=
-O2 -MT ssl_verify_polarssl.o -MD -MP -MF ".deps/ssl_verify_polarssl.Tpo" -c=
- -o ssl_verify_polarssl.o ssl_verify_polarssl.c; =C2=A0then mv -f ".deps/ss=
-l_verify_polarssl.Tpo" ".deps/ssl_verify_polarssl.Po"; else rm -f ".deps/ss=
-l_verify_polarssl.Tpo"; exit 1; fi
-> if gcc -DHAVE_CONFIG_H -I. -I. -I../.. -I../../include =C2=A0-I../../src/=
-compat =C2=A0 =C2=A0 =C2=A0-I/usr/include -I/usr/include =C2=A0 =C2=A0 -g -=
-O2 -MT status.o -MD -MP -MF ".deps/status.Tpo" -c -o status.o status.c; =C2=
-=A0then mv -f ".deps/status.Tpo" ".deps/status.Po"; else rm -f ".deps/statu=
-s.Tpo"; exit 1; fi
-> if gcc -DHAVE_CONFIG_H -I. -I. -I../.. -I../../include =C2=A0-I../../src/=
-compat =C2=A0 =C2=A0 =C2=A0-I/usr/include -I/usr/include =C2=A0 =C2=A0 -g -=
-O2 -MT tun.o -MD -MP -MF ".deps/tun.Tpo" -c -o tun.o tun.c; =C2=A0then mv -=
-f ".deps/tun.Tpo" ".deps/tun.Po"; else rm -f ".deps/tun.Tpo"; exit 1; fi
->
-> ... instead of straightforward "gcc" invocations.
->
-> ... and I wonder what the benefit is? =C2=A0I find it much harder to see =
-what
-> "make" is doing here (my eyes hurt when I look at this!), and unless there
-> is a clear benefit, I don't like adding convolutions...
+--4oXbDkBXUa6Hvs/m
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-The benefit is to divide the code into libraries and core which is
-easier to maintain and reuse.
+Hi,
 
-Anyway, new automake does support silent rules, try the following[1]
-patch and see if it makes you happier.
+On Mon, Mar 26, 2012 at 07:51:01PM +0200, Alon Bar-Lev wrote:
+> The benefit is to divide the code into libraries and core which is
+> easier to maintain and reuse.
 
-Again, this demonstrate how current merge procedure is inappropriate,
-as instead of single build system rewrite merge we have aftershocks.
-Branch should be tested and  reviewed, and tested and reviewed until
-no known issues found, and all happy of its quality.
+I'm not sure I understand what's so hard about "compile stuff, use
+'ar' to pack into libopenvpn.a" that stuff needs more convolutions.
 
-Alon.
+We're not building a shared library - which I agree is major pains unless
+handled by libtool.  But static libraries are easy on about everything
+(except Windows, can't speak about that).
 
-[1] https://github.com/alonbl/openvpn/commit/c35c118767d4867303e43c4472720d=
-d94187aae5
+> Anyway, new automake does support silent rules, try the following[1]
+> patch and see if it makes you happier.
+
+This is missing the point: I think what automake/autoconf is doing now
+is much too complicated.  I *like* to see what it's doing, and hiding
+complexity by just not showing it is a step into the wrong direction.
+
+> Again, this demonstrate how current merge procedure is inappropriate,
+> as instead of single build system rewrite merge we have aftershocks.
+> Branch should be tested and  reviewed, and tested and reviewed until
+> no known issues found, and all happy of its quality.
+
+We're doing that now: branch is called "master".
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--4oXbDkBXUa6Hvs/m
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBT3Ctn6kuBuNlUUl1AQJkIAP/csQZqibMlCVU6sR3B8/JLymepWGUaYjT
+c0UPWOEhpQj+wX3n51i16dfw+ZdLBeuL1OAjIrTZn5Avb9qHq+sM8GQqnmrkQdP1
+PbgNBfSpUa/pytj0PqgcqYmzvzqXmpYbuohAR73BQKWf9me1HNn1f6A5v7vWgNKl
+BpxxWE8Tg48=
+=puXO
+-----END PGP SIGNATURE-----
+
+--4oXbDkBXUa6Hvs/m--
 
