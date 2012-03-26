@@ -1,15 +1,12 @@
-Date: Mon, 26 Mar 2012 12:23:07 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120326102307.GP1359@...1296...>
-References: <20120326093629.GN1359@...1296...>
-	<20120326095049.GO1359@...1296...>
-	<CAOazyz2YYdfVYekhQEZu_sFXwXa7nRx5s3M=M2NhdHegZqt8Bw@...278...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="GcuyunM1iFaMYZNm"
-Content-Disposition: inline
-In-Reply-To: <CAOazyz2YYdfVYekhQEZu_sFXwXa7nRx5s3M=M2NhdHegZqt8Bw@...278...>
-Subject: Re: [Openvpn-devel] build problems on FreeBSD of latest openvpn git
+MIME-Version: 1.0
+In-Reply-To: <4F703565.3070008@...1114...>
+References: <4F6D06C5.3030408@...1114...>
+	<1332575918-3384-4-git-send-email-alon.barlev@...277...>
+	<4F703565.3070008@...1114...>
+Date: Mon, 26 Mar 2012 12:25:25 +0200
+Message-ID: <CAOazyz2Zt98TKwfr1zyALc-6fgOeDEgCW4Br4rOM0PT290_kFw@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 3/6] tree: ChangeLog: add ident attribute
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,78 +15,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---GcuyunM1iFaMYZNm
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: Openvpn-devel@lists.sourceforge.net
 
-Hi,
-
-(on-list)
-
-On Mon, Mar 26, 2012 at 12:15:06PM +0200, Alon Bar-Lev wrote:
-> >> configure.ac:328: error: possibly undefined macro: AC_LIBTOOL_WIN32_DLL
-> >> =A0 =A0 =A0 If this token and others are legitimate, please use m4_pat=
-tern_allow.
-> >> =A0 =A0 =A0 See the Autoconf documentation.
-> >> configure.ac:329: error: possibly undefined macro: AC_LIBTOOL_RC
-> >> configure.ac:330: error: possibly undefined macro: AC_PROG_LIBTOOL
-> >> autoreconf-2.68: /usr/local/bin/autoconf-2.68 failed with exit status:=
- 1
+On Mon, Mar 26, 2012 at 11:22 AM, David Sommerseth
+<openvpn.list@...1114...> wrote:
+>
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+>
+> On 24/03/12 08:58, Alon Bar-Lev wrote:
+> > --- .gitattributes | =C2=A0 =C2=A01 + ChangeLog =C2=A0 =C2=A0 =C2=A0| =
+=C2=A0 =C2=A02 ++ 2 files changed,
+> > 3 insertions(+), 0 deletions(-) create mode 100644 .gitattributes
 > >
-> > OK, David had an idea: this machine did not have libtool installed
-> > ("because we didn't need it before").
->=20
-> Right.
-> Usually you do autoreconf -ivf && ./configure && make dist at
-> development machine or central build server and send the tarball to
-> build machines, this way you don't need to install the autotools
-> components on all build machines.
-
-Yep.  Can we improve the error message here, so people running buildbot
-or doing development can see that they are missing libtool?
-
-> > I have now installed libtool 2.2.10, and with that, "autoreconf -vi"
-> > does not return an error anymore.
+> > diff --git a/.gitattributes b/.gitattributes new file mode 100644
+> > index 0000000..9cf9e1f --- /dev/null +++ b/.gitattributes @@ -0,0 +1
+> > @@ +ChangeLog ident diff --git a/ChangeLog b/ChangeLog index
+> > d498344..d7cc77c 100644 --- a/ChangeLog +++ b/ChangeLog @@ -1,6 +1,8
+> > @@ OpenVPN Change Log Copyright (C) 2002-2011 OpenVPN Technologies,
+> > Inc. <sales@...515...>
 > >
-> >
-> > "configure" still fails looking for "libdl", though.
->=20
-> Yes, this results of strange development procedure, merge first then test=
-... :)
+> > +$Id$ +
+>
+> What is the purpose of this change?
 
-Well, we did test, but not on all platforms yet - that's what we have
-the buildbot armada for, and they need the merge first :-)
+Oh...
+I remembered that this was in tree long ago[1], thought that it was
+dropped out when moving to git not intentionally.
 
-> Can you please send me the config.log?
-> I will fix that.
+If otherwise, ignore this patch.
 
-I'll send the config.log off-list.
+It is nice to see the revision of the changelog as most probably it is
+the last revision before release. So if one forget to tag or something
+the data is available.
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Alon.
 
---GcuyunM1iFaMYZNm
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
-
-iQCVAwUBT3BDi6kuBuNlUUl1AQLqEwP+O9lia0t+yJTrM5HGvwKDAH4Nm/fGjM5M
-xpsol9VgL8dwqahLiVUUujLYuTOG23OL2O1oKmWyq/wJip6IubuNV3qd6rykK/rt
-GzRyGzQ9wXN0+N6NQRHcvO/9IuWtKxjX548Vq3SSef0l6HclGsgHwD+mN7zbgUnb
-mnu6GStXrcE=
-=YhDu
------END PGP SIGNATURE-----
-
---GcuyunM1iFaMYZNm--
+[1] http://svn.openvpn.net/projects/openvpn/branches/2.0/openvpn/ChangeLog
 
