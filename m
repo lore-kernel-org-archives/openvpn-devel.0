@@ -1,11 +1,11 @@
-Date: Mon, 26 Mar 2012 18:05:46 +0200
+Date: Mon, 26 Mar 2012 18:19:43 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20120326160546.GV1359@...1296...>
+Message-ID: <20120326161943.GW1359@...1296...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="/9R6240woFu/reHS"
+	protocol="application/pgp-signature"; boundary="vSzmLLrdioqyxIBH"
 Content-Disposition: inline
-Subject: [Openvpn-devel] [DISCUSS] much more complicated gcc invocations now
+Subject: [Openvpn-devel] build failure on OpenBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,37 +16,109 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
---/9R6240woFu/reHS
+--vSzmLLrdioqyxIBH
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-one of the things the new build system brought is us is *this*:
+we currently fail on OpenBSD (4.9) with this error message:
 
-if gcc -DHAVE_CONFIG_H -I. -I. -I../.. -I../../include  -I../../src/compat =
-     -I/usr/include -I/usr/include     -g -O2 -MT ssl_verify_polarssl.o -MD=
- -MP -MF ".deps/ssl_verify_polarssl.Tpo" -c -o ssl_verify_polarssl.o ssl_ve=
-rify_polarssl.c;  then mv -f ".deps/ssl_verify_polarssl.Tpo" ".deps/ssl_ver=
-ify_polarssl.Po"; else rm -f ".deps/ssl_verify_polarssl.Tpo"; exit 1; fi
-if gcc -DHAVE_CONFIG_H -I. -I. -I../.. -I../../include  -I../../src/compat =
-     -I/usr/include -I/usr/include     -g -O2 -MT status.o -MD -MP -MF ".de=
-ps/status.Tpo" -c -o status.o status.c;  then mv -f ".deps/status.Tpo" ".de=
-ps/status.Po"; else rm -f ".deps/status.Tpo"; exit 1; fi
 if gcc -DHAVE_CONFIG_H -I. -I. -I../.. -I../../include  -I../../src/compat =
      -I/usr/include -I/usr/include     -g -O2 -MT tun.o -MD -MP -MF ".deps/=
 tun.Tpo" -c -o tun.o tun.c;  then mv -f ".deps/tun.Tpo" ".deps/tun.Po"; els=
 e rm -f ".deps/tun.Tpo"; exit 1; fi
+tun.c: In function 'write_tun':
+tun.c:2070: error: dereferencing pointer to incomplete type
+*** Error code 1
 
-... instead of straightforward "gcc" invocations.
+which looks like
 
-... and I wonder what the benefit is?  I find it much harder to see what
-"make" is doing here (my eyes hurt when I look at this!), and unless there=
-=20
-is a clear benefit, I don't like adding convolutions...
+------------------------------------------
+      struct ip *iph;
+
+      iph =3D (struct ip *) buf;
+
+      if (tt->ipv6 && iph->ip_v =3D=3D 6)   <<< here
+------------------------------------------
+
+"struct ip" is defined in <netinet/ip.h>, which "syshead.h" includes
+in weird ways - "syshead.h" has 5 different
+
+#ifdef HAVE_NETINET_IP_H
+#include <netinet/ip.h>
+#endif
+
+stanzas, always inside #ifdef TARGET_SOMETHING blocks.  It does have such
+a block for TARGET_OPENBSD, but configure doesn't find it:
+
+checking for net/if.h... yes
+checking for netinet/ip.h... no
+checking for netinet/if_ether.h... no
+
+The relevant section from config.log is here:
+
+---------------------------- snip ---------------------------------
+configure:21681: checking for netinet/ip.h
+configure:21681: gcc -c -g -O2  conftest.c >&5
+In file included from conftest.c:170:
+/usr//include/netinet/ip.h:178: error: expected specifier-qualifier-list be=
+fore
+'n_time'
+configure:21681: $? =3D 1
+configure: failed program was:
+---------------------------- snip ---------------------------------
+
+which is defined in <netinet/in_systm.h> - which syshead.h already includes.
+
+the full config log can be found on=20
+  http://public.greenie.net/gert/openvpn/config-obsd49-20120326.log
+
+
+I'd promise instead of trying to fix configure here, and since these
+are inside well-understood #ifdef TARGET_<foo> things already, just=20
+assume that "if it's *BSD, it will always have <netinet/ip.h>" and=20
+don't bother running fragile tests from configure.
+
+So that would turn syshead.h
+
+#ifdef TARGET_OPENBSD
+
+#ifdef HAVE_SYS_UIO_H
+#include <sys/uio.h>
+#endif
+
+#ifdef HAVE_NETINET_IN_SYSTM_H
+#include <netinet/in_systm.h>
+#endif
+
+#ifdef HAVE_NETINET_IP_H
+#include <netinet/ip.h>
+#endif
+
+#ifdef HAVE_NET_IF_TUN_H
+#include <net/if_tun.h>
+#endif
+
+#endif /* TARGET_OPENBSD */
+
+
+into
+
+#ifdef TARGET_OPENBSD
+
+#include <sys/uio.h>
+#include <netinet/in_systm.h>
+#include <netinet/ip.h>
+#include <net/if_tun.h>
+
+#endif /* TARGET_OPENBSD */
+
+... which is to the point, and works.
 
 gert
+
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -54,19 +126,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---/9R6240woFu/reHS
+--vSzmLLrdioqyxIBH
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (NetBSD)
 
-iQCVAwUBT3CT2qkuBuNlUUl1AQLr0wP/WSTJS7fc5W8ckI0+puBc9reSMFjzdF5D
-8xe0afbOKp+Aoamr8QrY6x6gU8cEfV2i/JPFulKCdmRaXGY5PEaw93FXPwVbopYE
-ftsNeOLDci1bXvKnF+GIJgVQ9UJ83KvAG5Qy7FXP+J/Nk0382GjJy9v6pFgU8UA7
-+V4V4pLWkPE=
-=VNDz
+iQCVAwUBT3CXH6kuBuNlUUl1AQJPgQP/flendn/K1T1p3Q4WOK74Duy/xer+lJSv
+DTVU+Onf08SbCGuVDVpjt+Z1J2rgZgtKgWNTBus2njjQC6QSWKhHn6Pd6eyvcJcY
+2pZ7z0W6COU0ZqXwxsbFw/9PQclMKy3CXLwczRHyqynOI6i7wvIspvS64qBppbqG
+WWru7zTvpCM=
+=HcNZ
 -----END PGP SIGNATURE-----
 
---/9R6240woFu/reHS--
+--vSzmLLrdioqyxIBH--
 
