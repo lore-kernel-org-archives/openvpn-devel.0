@@ -1,10 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <20120326161943.GW1359@...1296...>
-References: <20120326161943.GW1359@...1296...>
-Date: Mon, 26 Mar 2012 19:58:02 +0200
-Message-ID: <CAOazyz0Tbdn8+W9g1UmtLzGmbHbGNagRsN6KVZnVvqr_c2Hm6g@...278...>
+In-Reply-To: <20120326175543.GX1359@...1296...>
+References: <20120326160546.GV1359@...1296...>
+	<CAOazyz1W7ZcVEhDwq0DWCOjQ_DetcjP6yDg1MhOPiMYqu2Sr6w@...278...>
+	<20120326175543.GX1359@...1296...>
+Date: Mon, 26 Mar 2012 20:02:33 +0200
+Message-ID: <CAOazyz2OxeRdL1+SfzrCw6YDnLnY5Yg-PCq9K6041Dgvs_W2hg@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] build failure on OpenBSD
+Subject: Re: [Openvpn-devel] [DISCUSS] much more complicated gcc invocations
+	now
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,118 +21,46 @@ Content-Transfer-Encoding: quoted-printable
 To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Mon, Mar 26, 2012 at 6:19 PM, Gert Doering <gert@...1296...> wrote:
+On Mon, Mar 26, 2012 at 7:55 PM, Gert Doering <gert@...1296...> wrote:
 > Hi,
 >
-> we currently fail on OpenBSD (4.9) with this error message:
+> On Mon, Mar 26, 2012 at 07:51:01PM +0200, Alon Bar-Lev wrote:
+>> The benefit is to divide the code into libraries and core which is
+>> easier to maintain and reuse.
 >
-> if gcc -DHAVE_CONFIG_H -I. -I. -I../.. -I../../include =C2=A0-I../../src/=
-compat =C2=A0 =C2=A0 =C2=A0-I/usr/include -I/usr/include =C2=A0 =C2=A0 -g -=
-O2 -MT tun.o -MD -MP -MF ".deps/tun.Tpo" -c -o tun.o tun.c; =C2=A0then mv -=
-f ".deps/tun.Tpo" ".deps/tun.Po"; else rm -f ".deps/tun.Tpo"; exit 1; fi
-> tun.c: In function 'write_tun':
-> tun.c:2070: error: dereferencing pointer to incomplete type
-> *** Error code 1
+> I'm not sure I understand what's so hard about "compile stuff, use
+> 'ar' to pack into libopenvpn.a" that stuff needs more convolutions.
 >
-> which looks like
->
-> ------------------------------------------
-> =C2=A0 =C2=A0 =C2=A0struct ip *iph;
->
-> =C2=A0 =C2=A0 =C2=A0iph =3D (struct ip *) buf;
->
-> =C2=A0 =C2=A0 =C2=A0if (tt->ipv6 && iph->ip_v =3D=3D 6) =C2=A0 <<< here
-> ------------------------------------------
->
-> "struct ip" is defined in <netinet/ip.h>, which "syshead.h" includes
-> in weird ways - "syshead.h" has 5 different
->
-> #ifdef HAVE_NETINET_IP_H
-> #include <netinet/ip.h>
-> #endif
->
-> stanzas, always inside #ifdef TARGET_SOMETHING blocks. =C2=A0It does have=
- such
-> a block for TARGET_OPENBSD, but configure doesn't find it:
->
-> checking for net/if.h... yes
-> checking for netinet/ip.h... no
-> checking for netinet/if_ether.h... no
->
-> The relevant section from config.log is here:
->
-> ---------------------------- snip ---------------------------------
-> configure:21681: checking for netinet/ip.h
-> configure:21681: gcc -c -g -O2 =C2=A0conftest.c >&5
-> In file included from conftest.c:170:
-> /usr//include/netinet/ip.h:178: error: expected specifier-qualifier-list =
-before
-> 'n_time'
-> configure:21681: $? =3D 1
-> configure: failed program was:
-> ---------------------------- snip ---------------------------------
->
-> which is defined in <netinet/in_systm.h> - which syshead.h already includ=
-es.
->
-> the full config log can be found on
-> =C2=A0http://public.greenie.net/gert/openvpn/config-obsd49-20120326.log
->
->
-> I'd promise instead of trying to fix configure here, and since these
-> are inside well-understood #ifdef TARGET_<foo> things already, just
-> assume that "if it's *BSD, it will always have <netinet/ip.h>" and
-> don't bother running fragile tests from configure.
->
-> So that would turn syshead.h
->
-> #ifdef TARGET_OPENBSD
->
-> #ifdef HAVE_SYS_UIO_H
-> #include <sys/uio.h>
-> #endif
->
-> #ifdef HAVE_NETINET_IN_SYSTM_H
-> #include <netinet/in_systm.h>
-> #endif
->
-> #ifdef HAVE_NETINET_IP_H
-> #include <netinet/ip.h>
-> #endif
->
-> #ifdef HAVE_NET_IF_TUN_H
-> #include <net/if_tun.h>
-> #endif
->
-> #endif /* TARGET_OPENBSD */
->
->
-> into
->
-> #ifdef TARGET_OPENBSD
->
-> #include <sys/uio.h>
-> #include <netinet/in_systm.h>
-> #include <netinet/ip.h>
-> #include <net/if_tun.h>
->
-> #endif /* TARGET_OPENBSD */
->
-> ... which is to the point, and works.
->
-> gert
+> We're not building a shared library - which I agree is major pains unless
+> handled by libtool. =C2=A0But static libraries are easy on about everythi=
+ng
+> (except Windows, can't speak about that).
 
-Thanks!
+libtool has the advantage of making it very simple as far as build is
+maintenance is, in all platforms in exact same way.
+It also will enable us to build the plugins properly in future.
+Even if you do what you suggested (ar), the gcc command-line will be
+long as we need to add the additional CPPFLAGS, LDFLAGS.
 
-The problem is the use of the TARGET_XXXX not the use of HAVE.
-As I wrote before next stage is to get rid of the syshead.h and its complex=
-ity.
-There is no sense to check for platform, just if header exists.
+>> Anyway, new automake does support silent rules, try the following[1]
+>> patch and see if it makes you happier.
+>
+> This is missing the point: I think what automake/autoconf is doing now
+> is much too complicated. =C2=A0I *like* to see what it's doing, and hiding
+> complexity by just not showing it is a step into the wrong direction.
 
-In the mean time please try the following[1] patch.
+When you like, use "make V=3D1", or --disable-silent-rules to configure.
 
-Alon
+>
+>> Again, this demonstrate how current merge procedure is inappropriate,
+>> as instead of single build system rewrite merge we have aftershocks.
+>> Branch should be tested and =C2=A0reviewed, and tested and reviewed until
+>> no known issues found, and all happy of its quality.
+>
+> We're doing that now: branch is called "master".
 
-[1] https://github.com/alonbl/openvpn/commit/b0f45ae19909b33723faebe7f8fb00=
-3f82900ff4
+Nope, this is not the rule of "master" branch.
+"master" =3D as much stable as possible, not playground.
+
+Alon.
 
