@@ -1,11 +1,11 @@
-Date: Mon, 26 Mar 2012 18:19:43 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120326161943.GW1359@...1296...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="vSzmLLrdioqyxIBH"
-Content-Disposition: inline
-Subject: [Openvpn-devel] build failure on OpenBSD
+MIME-Version: 1.0
+In-Reply-To: <20120326160546.GV1359@...1296...>
+References: <20120326160546.GV1359@...1296...>
+Date: Mon, 26 Mar 2012 19:51:01 +0200
+Message-ID: <CAOazyz1W7ZcVEhDwq0DWCOjQ_DetcjP6yDg1MhOPiMYqu2Sr6w@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [DISCUSS] much more complicated gcc invocations
+	now
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,131 +14,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
---vSzmLLrdioqyxIBH
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+On Mon, Mar 26, 2012 at 6:05 PM, Gert Doering <gert@...1296...> wrote:
+> Hi,
+>
+> one of the things the new build system brought is us is *this*:
+>
+> if gcc -DHAVE_CONFIG_H -I. -I. -I../.. -I../../include =C2=A0-I../../src/=
+compat =C2=A0 =C2=A0 =C2=A0-I/usr/include -I/usr/include =C2=A0 =C2=A0 -g -=
+O2 -MT ssl_verify_polarssl.o -MD -MP -MF ".deps/ssl_verify_polarssl.Tpo" -c=
+ -o ssl_verify_polarssl.o ssl_verify_polarssl.c; =C2=A0then mv -f ".deps/ss=
+l_verify_polarssl.Tpo" ".deps/ssl_verify_polarssl.Po"; else rm -f ".deps/ss=
+l_verify_polarssl.Tpo"; exit 1; fi
+> if gcc -DHAVE_CONFIG_H -I. -I. -I../.. -I../../include =C2=A0-I../../src/=
+compat =C2=A0 =C2=A0 =C2=A0-I/usr/include -I/usr/include =C2=A0 =C2=A0 -g -=
+O2 -MT status.o -MD -MP -MF ".deps/status.Tpo" -c -o status.o status.c; =C2=
+=A0then mv -f ".deps/status.Tpo" ".deps/status.Po"; else rm -f ".deps/statu=
+s.Tpo"; exit 1; fi
+> if gcc -DHAVE_CONFIG_H -I. -I. -I../.. -I../../include =C2=A0-I../../src/=
+compat =C2=A0 =C2=A0 =C2=A0-I/usr/include -I/usr/include =C2=A0 =C2=A0 -g -=
+O2 -MT tun.o -MD -MP -MF ".deps/tun.Tpo" -c -o tun.o tun.c; =C2=A0then mv -=
+f ".deps/tun.Tpo" ".deps/tun.Po"; else rm -f ".deps/tun.Tpo"; exit 1; fi
+>
+> ... instead of straightforward "gcc" invocations.
+>
+> ... and I wonder what the benefit is? =C2=A0I find it much harder to see =
+what
+> "make" is doing here (my eyes hurt when I look at this!), and unless there
+> is a clear benefit, I don't like adding convolutions...
 
-we currently fail on OpenBSD (4.9) with this error message:
+The benefit is to divide the code into libraries and core which is
+easier to maintain and reuse.
 
-if gcc -DHAVE_CONFIG_H -I. -I. -I../.. -I../../include  -I../../src/compat =
-     -I/usr/include -I/usr/include     -g -O2 -MT tun.o -MD -MP -MF ".deps/=
-tun.Tpo" -c -o tun.o tun.c;  then mv -f ".deps/tun.Tpo" ".deps/tun.Po"; els=
-e rm -f ".deps/tun.Tpo"; exit 1; fi
-tun.c: In function 'write_tun':
-tun.c:2070: error: dereferencing pointer to incomplete type
-*** Error code 1
+Anyway, new automake does support silent rules, try the following[1]
+patch and see if it makes you happier.
 
-which looks like
+Again, this demonstrate how current merge procedure is inappropriate,
+as instead of single build system rewrite merge we have aftershocks.
+Branch should be tested and  reviewed, and tested and reviewed until
+no known issues found, and all happy of its quality.
 
-------------------------------------------
-      struct ip *iph;
+Alon.
 
-      iph =3D (struct ip *) buf;
-
-      if (tt->ipv6 && iph->ip_v =3D=3D 6)   <<< here
-------------------------------------------
-
-"struct ip" is defined in <netinet/ip.h>, which "syshead.h" includes
-in weird ways - "syshead.h" has 5 different
-
-#ifdef HAVE_NETINET_IP_H
-#include <netinet/ip.h>
-#endif
-
-stanzas, always inside #ifdef TARGET_SOMETHING blocks.  It does have such
-a block for TARGET_OPENBSD, but configure doesn't find it:
-
-checking for net/if.h... yes
-checking for netinet/ip.h... no
-checking for netinet/if_ether.h... no
-
-The relevant section from config.log is here:
-
----------------------------- snip ---------------------------------
-configure:21681: checking for netinet/ip.h
-configure:21681: gcc -c -g -O2  conftest.c >&5
-In file included from conftest.c:170:
-/usr//include/netinet/ip.h:178: error: expected specifier-qualifier-list be=
-fore
-'n_time'
-configure:21681: $? =3D 1
-configure: failed program was:
----------------------------- snip ---------------------------------
-
-which is defined in <netinet/in_systm.h> - which syshead.h already includes.
-
-the full config log can be found on=20
-  http://public.greenie.net/gert/openvpn/config-obsd49-20120326.log
-
-
-I'd promise instead of trying to fix configure here, and since these
-are inside well-understood #ifdef TARGET_<foo> things already, just=20
-assume that "if it's *BSD, it will always have <netinet/ip.h>" and=20
-don't bother running fragile tests from configure.
-
-So that would turn syshead.h
-
-#ifdef TARGET_OPENBSD
-
-#ifdef HAVE_SYS_UIO_H
-#include <sys/uio.h>
-#endif
-
-#ifdef HAVE_NETINET_IN_SYSTM_H
-#include <netinet/in_systm.h>
-#endif
-
-#ifdef HAVE_NETINET_IP_H
-#include <netinet/ip.h>
-#endif
-
-#ifdef HAVE_NET_IF_TUN_H
-#include <net/if_tun.h>
-#endif
-
-#endif /* TARGET_OPENBSD */
-
-
-into
-
-#ifdef TARGET_OPENBSD
-
-#include <sys/uio.h>
-#include <netinet/in_systm.h>
-#include <netinet/ip.h>
-#include <net/if_tun.h>
-
-#endif /* TARGET_OPENBSD */
-
-... which is to the point, and works.
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---vSzmLLrdioqyxIBH
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
-
-iQCVAwUBT3CXH6kuBuNlUUl1AQJPgQP/flendn/K1T1p3Q4WOK74Duy/xer+lJSv
-DTVU+Onf08SbCGuVDVpjt+Z1J2rgZgtKgWNTBus2njjQC6QSWKhHn6Pd6eyvcJcY
-2pZ7z0W6COU0ZqXwxsbFw/9PQclMKy3CXLwczRHyqynOI6i7wvIspvS64qBppbqG
-WWru7zTvpCM=
-=HcNZ
------END PGP SIGNATURE-----
-
---vSzmLLrdioqyxIBH--
+[1] https://github.com/alonbl/openvpn/commit/c35c118767d4867303e43c4472720d=
+d94187aae5
 
