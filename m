@@ -1,11 +1,12 @@
-Message-ID: <4F7062F7.2040800@...1114...>
-Date: Mon, 26 Mar 2012 14:37:11 +0200
+Message-ID: <4F70632D.80304@...1114...>
+Date: Mon, 26 Mar 2012 14:38:05 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
 References: <4F6D06C5.3030408@...1114...>
-	<1332575918-3384-3-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1332575918-3384-3-git-send-email-alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 2/6] build: autoconf: misc sockets fixups
+	<1332575918-3384-7-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1332575918-3384-7-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 6/6] build: windows: set vendor to
+ openvpn project + cleanups
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,20 +23,23 @@ To: openvpn-devel@lists.sourceforge.net
 Hash: SHA1
 
 On 24/03/12 08:58, Alon Bar-Lev wrote:
-> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...> --- configure.ac |
-> 53 ++++++++++++++++++++++++++++------------------------- 1 files
-> changed, 28 insertions(+), 25 deletions(-)
+> *NOTICE* This is Latin code page file, beware of conversion.
+> 
+> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...> --- 
+> src/openvpn/openvpn_win32_resources.rc   |    6 +++--- 
+> src/openvpnserv/openvpnserv_resources.rc |    4 ++-- 2 files changed,
+> 5 insertions(+), 5 deletions(-)
+> 
 
 ACK!  Applied to master branches on -testing and -stable trees.
 
-commit aee7428c53483ada74ecbea70316bbaf0c461f11
+commit 405f338783aee035c28209a8eeb203069e177b71
 Author: Alon Bar-Lev <alon.barlev@...277...>
-Date:   Sat Mar 24 09:58:34 2012 +0200
+Date:   Sat Mar 24 08:43:50 2012 +0200
 
     Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
     Acked-by: David Sommerseth <davids@...1347...>
     Signed-off-by: David Sommerseth <davids@...1347...>
-
 
 
 kind regards,
@@ -47,8 +51,8 @@ David Sommerseth
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk9wYvcACgkQDC186MBRfrp6/ACfaN9jemvJvFa6CU+0v9KiqgJm
-04wAn33hLB0akTmeu58jKShZjIFthrq/
-=Btpy
+iEYEARECAAYFAk9wYy0ACgkQDC186MBRfrpEwQCeIZYmYg1pDKkdwzHghGPEX+PF
+rcAAnjMZhkFWUHuEo/69eBvAqD4jYRHF
+=tKfX
 -----END PGP SIGNATURE-----
 
