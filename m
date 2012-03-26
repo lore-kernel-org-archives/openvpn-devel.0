@@ -1,18 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <20120326184719.GA1359@...1296...>
-References: <20120326160546.GV1359@...1296...>
-	<CAOazyz1W7ZcVEhDwq0DWCOjQ_DetcjP6yDg1MhOPiMYqu2Sr6w@...278...>
-	<20120326175543.GX1359@...1296...>
-	<CAOazyz2OxeRdL1+SfzrCw6YDnLnY5Yg-PCq9K6041Dgvs_W2hg@...278...>
-	<CAOazyz3gFfBT-xniAiziy36kiDcqL=0mVQvKc0KHYEjt_vPh8A@...278...>
-	<20120326182231.GZ1359@...1296...>
-	<CAOazyz0qSzNnGAZj4t43EcKn+nLCGpet0oTXkTQOfQuZ4pfb4A@...278...>
-	<20120326184719.GA1359@...1296...>
-Date: Mon, 26 Mar 2012 20:50:06 +0200
-Message-ID: <CAOazyz2KhywpoB=fsetWLwO9dor_1UDi6xWwos_tkF3qb7YcVw@...278...>
+In-Reply-To: <4F70BA6C.1090007@...384...>
+References: <20120326093629.GN1359@...1296...>
+	<20120326095049.GO1359@...1296...>
+	<CAOazyz1S_As1M7RkKw7BFt3fNwM5VOz3f7qwBdDk+h+KDVM9-A@...278...>
+	<4F70BA6C.1090007@...384...>
+Date: Mon, 26 Mar 2012 20:52:34 +0200
+Message-ID: <CAOazyz0SKESDUYTVNzaKDBDPc7J=BjFuNeRGz8crKZAwCL3OsA@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [DISCUSS] much more complicated gcc invocations
-	now
+Subject: Re: [Openvpn-devel] build problems on FreeBSD of latest openvpn git
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,22 +16,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: David Sommerseth <dazo@...384...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Mon, Mar 26, 2012 at 8:47 PM, Gert Doering <gert@...1296...> wrote:
-> (Just as a side note - why is it including "-I/usr/kerberos/include" *twice*
-> for you?)
+On Mon, Mar 26, 2012 at 8:50 PM, David Sommerseth
+<dazo@...384...> wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+>
+> On 26/03/12 20:38, Alon Bar-Lev wrote:
+>> On Mon, Mar 26, 2012 at 11:50 AM, Gert Doering
+>> <gert@...1296...> wrote:
+>>> I have now installed libtool 2.2.10, and with that, "autoreconf
+>>> -vi" does not return an error anymore.
+>>
+>> Gentoo stable libtool is sys-devel/libtool-2.4, it contains some
+>> fixes for mingw which I use. Why did you chose 2.2.10?
+>
+> Remember we need to support the RHEL5 platform. =C2=A0That ships with
+> libtool-1.5.22. =C2=A0EL6 ships with 2.2.10.
 
-As we use both libcrypto and libssl we get this twice...
----
-$ pkg-config --cflags libcrypto
--I/usr/kerberos/include
-$ pkg-config --cflags libssl
--I/usr/kerberos/include
----
+I remember, it will work (please test).
+Just to know that if you install, why not the latest... :)
+
+Just keep in mind that formal source tarballs should be provided using
+libtool-2.4, to avoid Windows build issues.
 
 Alon.
 
