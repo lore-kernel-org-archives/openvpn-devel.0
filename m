@@ -1,9 +1,10 @@
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Mon, 26 Mar 2012 23:26:36 +0200
-Message-Id: <1332797200-9295-3-git-send-email-alon.barlev@...277...>
+Date: Mon, 26 Mar 2012 23:26:37 +0200
+Message-Id: <1332797200-9295-4-git-send-email-alon.barlev@...277...>
 In-Reply-To: <CAOazyz06swLVgdoE1GPt2m9EEO7cvB2S8nBstn-a1ktDYtgH-Q@...278...>
 References: <CAOazyz06swLVgdoE1GPt2m9EEO7cvB2S8nBstn-a1ktDYtgH-Q@...278...>
-Subject: [Openvpn-devel] [PATCH 2/6] build: tap: search for tap header
+Subject: [Openvpn-devel] [PATCH 3/6] cleanup: warnings at
+	src/openvpn/httpdigest.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,89 +18,89 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Alon Bar-Lev <alon.barlev@...277...>
 
-Windows and solaris has something in common, in both
-the tap header is external. So make the Windows tap-windows.h
-search common to all platform.
-
-Display an error if we cannot find tap header.
-
 Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 ---
- configure.ac            |   32 ++++++++++++++++----------------
- src/openvpn/Makefile.am |    2 +-
- 2 files changed, 17 insertions(+), 17 deletions(-)
+ src/openvpn/httpdigest.c |   44 ++++++++++++++++++++++----------------------
+ 1 files changed, 22 insertions(+), 22 deletions(-)
 
-diff --git a/configure.ac b/configure.ac
-index b0dcdb7..d217343 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -365,11 +365,9 @@ AC_CHECK_HEADERS([ \
- AC_CHECK_HEADERS([ \
- 	sys/time.h sys/un.h sys/ioctl.h sys/stat.h \
- 	sys/mman.h sys/file.h \
--	unistd.h signal.h libgen.h \
-+	unistd.h signal.h libgen.h stropts.h \
- 	syslog.h pwd.h grp.h \
--	net/if_tun.h net/tun/if_tun.h stropts.h \
--	sys/sockio.h \
--	sys/uio.h linux/if_tun.h linux/sockios.h \
-+	sys/sockio.h sys/uio.h linux/sockios.h \
- 	linux/types.h sys/poll.h sys/epoll.h err.h \
- ])
+diff --git a/src/openvpn/httpdigest.c b/src/openvpn/httpdigest.c
+index 78b8344..a011e56 100644
+--- a/src/openvpn/httpdigest.c
++++ b/src/openvpn/httpdigest.c
+@@ -76,20 +76,20 @@ DigestCalcHA1(
+   const md_kt_t *md5_kt = md_kt_get("MD5");
  
-@@ -586,6 +584,20 @@ else
- fi
- LIBS="${old_LIBS}"
+   md_ctx_init(&md5_ctx, md5_kt);
+-  md_ctx_update(&md5_ctx, pszUserName, strlen(pszUserName));
+-  md_ctx_update(&md5_ctx, ":", 1);
+-  md_ctx_update(&md5_ctx, pszRealm, strlen(pszRealm));
+-  md_ctx_update(&md5_ctx, ":", 1);
+-  md_ctx_update(&md5_ctx, pszPassword, strlen(pszPassword));
++  md_ctx_update(&md5_ctx, (uint8_t *)pszUserName, strlen(pszUserName));
++  md_ctx_update(&md5_ctx, (uint8_t *)":", 1);
++  md_ctx_update(&md5_ctx, (uint8_t *)pszRealm, strlen(pszRealm));
++  md_ctx_update(&md5_ctx, (uint8_t *)":", 1);
++  md_ctx_update(&md5_ctx, (uint8_t *)pszPassword, strlen(pszPassword));
+   md_ctx_final(&md5_ctx, HA1);
+   if (pszAlg && strcasecmp(pszAlg, "md5-sess") == 0)
+     {
+       md_ctx_init(&md5_ctx, md5_kt);
+       md_ctx_update(&md5_ctx, HA1, HASHLEN);
+-      md_ctx_update(&md5_ctx, ":", 1);
+-      md_ctx_update(&md5_ctx, pszNonce, strlen(pszNonce));
+-      md_ctx_update(&md5_ctx, ":", 1);
+-      md_ctx_update(&md5_ctx, pszCNonce, strlen(pszCNonce));
++      md_ctx_update(&md5_ctx, (uint8_t *)":", 1);
++      md_ctx_update(&md5_ctx, (uint8_t *)pszNonce, strlen(pszNonce));
++      md_ctx_update(&md5_ctx, (uint8_t *)":", 1);
++      md_ctx_update(&md5_ctx, (uint8_t *)pszCNonce, strlen(pszCNonce));
+       md_ctx_final(&md5_ctx, HA1);
+     };
+   md_ctx_cleanup(&md5_ctx);
+@@ -119,12 +119,12 @@ DigestCalcResponse(
  
-+AC_ARG_VAR([TAP_CFLAGS], [C compiler flags for tap])
-+old_CFLAGS="${CFLAGS}"
-+CFLAGS="${CFLAGS} ${TAP_CFLAGS}"
-+AC_CHECK_HEADERS(
-+	[ \
-+		net/if_tun.h net/tun/if_tun.h \
-+		linux/if_tun.h \
-+		tap-windows.h \
-+	],
-+	[have_tap_header="yes"]
-+)
-+CFLAGS="${old_CFLAGS}"
-+test "${have_tap_header}" = "yes" || AC_MSG_ERROR([no tap header could be found])
-+
- AC_CHECK_LIB(
- 	[selinux],
- 	[setcon],
-@@ -672,18 +684,6 @@ PKG_CHECK_MODULES(
- 	)]
- )
- 
--AC_ARG_VAR([TAP_WINDOWS_CFLAGS], [C compiler flags for TAP-Windows])
--if test "${WIN32}" = "yes"; then
--	old_CFLAGS="${CFLAGS}"
--	CFLAGS="${CFLAGS} ${TAP_WINDOWS_CFLAGS}"
--	AC_CHECK_HEADERS(
--		[tap-windows.h],
--		,
--		[AC_MSG_ERROR([tap-windows.h is required but missing])]
--	)
--	CFLAGS="${old_CFLAGS}"
--fi
--
- if test "${have_openssl_crypto}" = "yes"; then
- 	saved_CFLAGS="${CFLAGS}"
- 	saved_LIBS="${LIBS}"
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index 1410021..01ff732 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -22,7 +22,7 @@ INCLUDES = \
- 	-I$(top_srcdir)/src/compat
- 
- AM_CFLAGS = \
--	$(TAP_WINDOWS_CFLAGS) \
-+	$(TAP_CFLAGS) \
- 	$(OPTIONAL_CRYPTO_CFLAGS) \
- 	$(OPTIONAL_LZO_CFLAGS) \
- 	$(OPTIONAL_PKCS11_HELPER_CFLAGS)
+   /* calculate H(A2) */
+   md_ctx_init(&md5_ctx, md5_kt);
+-  md_ctx_update(&md5_ctx, pszMethod, strlen(pszMethod));
+-  md_ctx_update(&md5_ctx, ":", 1);
+-  md_ctx_update(&md5_ctx, pszDigestUri, strlen(pszDigestUri));
++  md_ctx_update(&md5_ctx, (uint8_t *)pszMethod, strlen(pszMethod));
++  md_ctx_update(&md5_ctx, (uint8_t *)":", 1);
++  md_ctx_update(&md5_ctx, (uint8_t *)pszDigestUri, strlen(pszDigestUri));
+   if (strcasecmp(pszQop, "auth-int") == 0)
+     {
+-      md_ctx_update(&md5_ctx, ":", 1);
++      md_ctx_update(&md5_ctx, (uint8_t *)":", 1);
+       md_ctx_update(&md5_ctx, HEntity, HASHHEXLEN);
+     };
+   md_ctx_final(&md5_ctx, HA2);
+@@ -133,17 +133,17 @@ DigestCalcResponse(
+   /* calculate response */
+   md_ctx_init(&md5_ctx, md5_kt);
+   md_ctx_update(&md5_ctx, HA1, HASHHEXLEN);
+-  md_ctx_update(&md5_ctx, ":", 1);
+-  md_ctx_update(&md5_ctx, pszNonce, strlen(pszNonce));
+-  md_ctx_update(&md5_ctx, ":", 1);
++  md_ctx_update(&md5_ctx, (uint8_t *)":", 1);
++  md_ctx_update(&md5_ctx, (uint8_t *)pszNonce, strlen(pszNonce));
++  md_ctx_update(&md5_ctx, (uint8_t *)":", 1);
+   if (*pszQop)
+     {
+-      md_ctx_update(&md5_ctx, pszNonceCount, strlen(pszNonceCount));
+-      md_ctx_update(&md5_ctx, ":", 1);
+-      md_ctx_update(&md5_ctx, pszCNonce, strlen(pszCNonce));
+-      md_ctx_update(&md5_ctx, ":", 1);
+-      md_ctx_update(&md5_ctx, pszQop, strlen(pszQop));
+-      md_ctx_update(&md5_ctx, ":", 1);
++      md_ctx_update(&md5_ctx, (uint8_t *)pszNonceCount, strlen(pszNonceCount));
++      md_ctx_update(&md5_ctx, (uint8_t *)":", 1);
++      md_ctx_update(&md5_ctx, (uint8_t *)pszCNonce, strlen(pszCNonce));
++      md_ctx_update(&md5_ctx, (uint8_t *)":", 1);
++      md_ctx_update(&md5_ctx, (uint8_t *)pszQop, strlen(pszQop));
++      md_ctx_update(&md5_ctx, (uint8_t *)":", 1);
+     };
+   md_ctx_update(&md5_ctx, HA2Hex, HASHHEXLEN);
+   md_ctx_final(&md5_ctx, RespHash);
 -- 
 1.7.3.4
 
