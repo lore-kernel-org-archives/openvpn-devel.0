@@ -1,13 +1,14 @@
-MIME-Version: 1.0
-In-Reply-To: <20120326175543.GX1359@...1296...>
-References: <20120326160546.GV1359@...1296...>
-	<CAOazyz1W7ZcVEhDwq0DWCOjQ_DetcjP6yDg1MhOPiMYqu2Sr6w@...278...>
-	<20120326175543.GX1359@...1296...>
-Date: Mon, 26 Mar 2012 20:02:33 +0200
-Message-ID: <CAOazyz2OxeRdL1+SfzrCw6YDnLnY5Yg-PCq9K6041Dgvs_W2hg@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [DISCUSS] much more complicated gcc invocations
-	now
+Date: Mon, 26 Mar 2012 20:11:19 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120326181118.GY1359@...1296...>
+References: <20120326161943.GW1359@...1296...>
+	<CAOazyz0Tbdn8+W9g1UmtLzGmbHbGNagRsN6KVZnVvqr_c2Hm6g@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="CjJSuxoe2P5GDFE9"
+Content-Disposition: inline
+In-Reply-To: <CAOazyz0Tbdn8+W9g1UmtLzGmbHbGNagRsN6KVZnVvqr_c2Hm6g@...278...>
+Subject: Re: [Openvpn-devel] build failure on OpenBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,51 +17,105 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
+To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Mon, Mar 26, 2012 at 7:55 PM, Gert Doering <gert@...1296...> wrote:
-> Hi,
->
-> On Mon, Mar 26, 2012 at 07:51:01PM +0200, Alon Bar-Lev wrote:
->> The benefit is to divide the code into libraries and core which is
->> easier to maintain and reuse.
->
-> I'm not sure I understand what's so hard about "compile stuff, use
-> 'ar' to pack into libopenvpn.a" that stuff needs more convolutions.
->
-> We're not building a shared library - which I agree is major pains unless
-> handled by libtool. =C2=A0But static libraries are easy on about everythi=
-ng
-> (except Windows, can't speak about that).
+--CjJSuxoe2P5GDFE9
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-libtool has the advantage of making it very simple as far as build is
-maintenance is, in all platforms in exact same way.
-It also will enable us to build the plugins properly in future.
-Even if you do what you suggested (ar), the gcc command-line will be
-long as we need to add the additional CPPFLAGS, LDFLAGS.
+Hi,
 
->> Anyway, new automake does support silent rules, try the following[1]
->> patch and see if it makes you happier.
->
-> This is missing the point: I think what automake/autoconf is doing now
-> is much too complicated. =C2=A0I *like* to see what it's doing, and hiding
-> complexity by just not showing it is a step into the wrong direction.
+On Mon, Mar 26, 2012 at 07:58:02PM +0200, Alon Bar-Lev wrote:
+> The problem is the use of the TARGET_XXXX not the use of HAVE.
+> As I wrote before next stage is to get rid of the syshead.h and its compl=
+exity.
+> There is no sense to check for platform, just if header exists.
 
-When you like, use "make V=3D1", or --disable-silent-rules to configure.
+Check for header is too fragile, obviously - it checks for header, but
+fails, because header needs other headers.
 
->
->> Again, this demonstrate how current merge procedure is inappropriate,
->> as instead of single build system rewrite merge we have aftershocks.
->> Branch should be tested and =C2=A0reviewed, and tested and reviewed until
->> no known issues found, and all happy of its quality.
->
-> We're doing that now: branch is called "master".
+We need the TARGET_XXX stuff anyway, because tun.c and route.c need
+them - stuff like "how is the /bin/route syntax for IPv6 on xxxBSD"
+can not be detected by configure.=20=20
 
-Nope, this is not the rule of "master" branch.
-"master" =3D as much stable as possible, not playground.
+So I'm much more in favour of actually keeping what we have: knowledge
+about every platform.  We *know* which headers are there on FreeBSD,
+NetBSD, OpenBSD - and the way OpenVPN needs to tie into the system=20
+for ifconfig and route means "porting to a yet-unknown operating system
+by just running 'configure ; make' is a pipe dream, no more".
 
-Alon.
+This might work for stuff that's sufficiently far away from the system
+innards, and using pkg-config libraries for the nitty gritty details,
+but it won't for OpenVPN.=20=20
+
+> In the mean time please try the following[1] patch.
+>=20
+> Alon
+>=20
+> [1] https://github.com/alonbl/openvpn/commit/b0f45ae19909b33723faebe7f8fb=
+003f82900ff4
+
+That patch makes configure detect <netinet/in.h> (as such: thanks, it
+helps), but it makes configure even more complicated, which means=20
+"config.log is even longer and harder to read".
+
+<rant>
+All this crap in configure really needs to go away...
+
+checking stdio.h usability... yes
+checking stdio.h presence... yes
+checking for stdio.h... yes
+...
+checking errno.h usability... yes
+checking errno.h presence... yes
+checking for errno.h... yes
+...
+checking whether SIGHUP is declared... yes
+checking whether SIGINT is declared... yes
+checking whether SIGUSR1 is declared... yes
+checking whether SIGUSR2 is declared... yes
+checking whether SIGTERM is declared... yes
+...
+checking for socket... yes
+checking for recv... yes
+checking for recvfrom... yes
+checking for send... yes
+checking for sendto... yes
+checking for listen... yes
+checking for accept... yes
+checking for connect... yes
+checking for bind... yes
+checking for select... yes
+checking for gethostbyname... yes
+
+... all of these are on any operating that has any chance of running
+OpenVPN.  So testing for it is a pure waste of code lines and cpu=20
+cycles.
+</rant>
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--CjJSuxoe2P5GDFE9
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBT3CxRqkuBuNlUUl1AQIeswP/fa0iRCmJh5CtkSefypkfZkEXgM2pSpVi
+vUBBPSJMbz6l9CRzk5crhA7lzSX4x+J3mVvEuMfFxsk2IIKUH+p19aEGsOy8Vvm0
+4kxG/z+ucEfGhqDYPW3h3eSh+/GuTL0j3Ty13HaHtEa37Fjo9pPoPtlZMLUlt7X1
+UswBd+NFGDw=
+=iZbS
+-----END PGP SIGNATURE-----
+
+--CjJSuxoe2P5GDFE9--
 
