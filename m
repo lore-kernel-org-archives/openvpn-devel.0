@@ -1,10 +1,11 @@
+Message-ID: <4F72DD9F.3030300@...1114...>
+Date: Wed, 28 Mar 2012 11:45:03 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-In-Reply-To: <CAOazyz3p-pZ=Sbmomnr2b9431hFxsxjte_P7ucSCAA4gJBpC_Q@...278...>
 References: <1332616557-15727-1-git-send-email-alon.barlev@...277...>
 	<CAOazyz3p-pZ=Sbmomnr2b9431hFxsxjte_P7ucSCAA4gJBpC_Q@...278...>
-Date: Wed, 28 Mar 2012 11:32:56 +0200
-Message-ID: <CAOazyz02u3u-_Bsb9yPKb2LJ5RyvnN6jwYQLRA68VHMO8DAvHQ@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+	<CAOazyz02u3u-_Bsb9yPKb2LJ5RyvnN6jwYQLRA68VHMO8DAvHQ@...278...>
+In-Reply-To: <CAOazyz02u3u-_Bsb9yPKb2LJ5RyvnN6jwYQLRA68VHMO8DAvHQ@...278...>
 Subject: Re: [Openvpn-devel] [PATCH] build: rename bool->obool
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,134 +15,153 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-To: Openvpn-devel@lists.sourceforge.net
-Cc: Alon Bar-Lev <alon.barlev@...277...>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: Openvpn-devel@lists.sourceforge.net
 
-T24gU2F0LCBNYXIgMjQsIDIwMTIgYXQgOToyMSBQTSwgQWxvbiBCYXItTGV2IDxhbG9uLmJhcmxl
-dkAuLi4yNzcuLi4+IHdyb3RlOgo+IE9uIFNhdCwgTWFyIDI0LCAyMDEyIGF0IDk6MTUgUE0sIEFs
-b24gQmFyLUxldiA8YWxvbi5iYXJsZXZALi4uMjc3Li4uPiB3cm90ZToKPj4gUFBDIGFyY2hpdGVj
-dHVyZXMgYW5kIGNvbmZsaWN0IHdpdGggc3RkYm9vbC5oLgo+Pgo+PiBiYXNpYy5oIGRlZmluZXMg
-YSB0eXBlICdib29sJyB0aGF0IGNvbmZsaWN0cyB3aXRoIHRoZSBhbHRpdmVjCj4+IGtleXdvcmQg
-Ym9vbCB3aGljaCBoYXMgdG8gYmUgZml4ZWQgdXBzdHJlYW0sIHNlZSBidWdzWzFdWzJdLgo+Pgo+
-PiBbMV0gaHR0cHM6Ly9idWdzLmdlbnRvby5vcmcvc2hvd19idWcuY2dpP2lkPTI5Mzg0MAo+PiBb
-Ml0gaHR0cHM6Ly9idWdzLmdlbnRvby5vcmcvc2hvd19idWcuY2dpP2lkPTI5Nzg1NAo+Pgo+PiBT
-aWduZWQtb2ZmLWJ5OiBBbG9uIEJhci1MZXYgPGFsb24uYmFybGV2QC4uLjI3Ny4uLj4KPj4gLS0t
-Cj4+IMKgc3JjL29wZW52cG4vYmFzaWMuaCDCoCDCoCDCoCDCoCDCoCDCoCDCoHwgwqAgwqA2ICst
-Cj4+IMKgc3JjL29wZW52cG4vYnVmZmVyLmMgwqAgwqAgwqAgwqAgwqAgwqAgfCDCoCAzOCArKysr
-LS0tLQo+PiDCoHNyYy9vcGVudnBuL2J1ZmZlci5oIMKgIMKgIMKgIMKgIMKgIMKgIHwgwqAgODAg
-KysrKysrKystLS0tLS0tLQo+PiDCoHNyYy9vcGVudnBuL2NsaW5hdC5jIMKgIMKgIMKgIMKgIMKg
-IMKgIHwgwqAgwqA0ICstCj4+IMKgc3JjL29wZW52cG4vY29uc29sZS5jIMKgIMKgIMKgIMKgIMKg
-IMKgfCDCoCAyMiArKy0tCj4+IMKgc3JjL29wZW52cG4vY29uc29sZS5oIMKgIMKgIMKgIMKgIMKg
-IMKgfCDCoCDCoDQgKy0KPj4gwqBzcmMvb3BlbnZwbi9jcnlwdG8uYyDCoCDCoCDCoCDCoCDCoCDC
-oCB8IMKgIDM0ICsrKystLS0tCj4+IMKgc3JjL29wZW52cG4vY3J5cHRvLmggwqAgwqAgwqAgwqAg
-wqAgwqAgfCDCoCAzMCArKystLS0KPj4gwqBzcmMvb3BlbnZwbi9jcnlwdG9fYmFja2VuZC5oIMKg
-IMKgIHwgwqAgwqAyICstCj4+IMKgc3JjL29wZW52cG4vY3J5cHRvX29wZW5zc2wuYyDCoCDCoCB8
-IMKgIMKgNiArLQo+PiDCoHNyYy9vcGVudnBuL2NyeXB0b19wb2xhcnNzbC5jIMKgIMKgfCDCoCDC
-oDQgKy0KPj4gwqBzcmMvb3BlbnZwbi9lcnJvci5jIMKgIMKgIMKgIMKgIMKgIMKgIMKgfCDCoCAy
-NCArKystLS0KPj4gwqBzcmMvb3BlbnZwbi9lcnJvci5oIMKgIMKgIMKgIMKgIMKgIMKgIMKgfCDC
-oCAxNiArKy0tCj4+IMKgc3JjL29wZW52cG4vZXZlbnQuYyDCoCDCoCDCoCDCoCDCoCDCoCDCoHwg
-wqAgMTYgKystLQo+PiDCoHNyYy9vcGVudnBuL2ZkbWlzYy5jIMKgIMKgIMKgIMKgIMKgIMKgIHwg
-wqAgwqA0ICstCj4+IMKgc3JjL29wZW52cG4vZmRtaXNjLmggwqAgwqAgwqAgwqAgwqAgwqAgfCDC
-oCDCoDQgKy0KPj4gwqBzcmMvb3BlbnZwbi9mb3J3YXJkLmMgwqAgwqAgwqAgwqAgwqAgwqB8IMKg
-IDEwICstCj4+IMKgc3JjL29wZW52cG4vZm9yd2FyZC5oIMKgIMKgIMKgIMKgIMKgIMKgfCDCoCDC
-oDQgKy0KPj4gwqBzcmMvb3BlbnZwbi9mcmFnbWVudC5jIMKgIMKgIMKgIMKgIMKgIHwgwqAgwqAy
-ICstCj4+IMKgc3JjL29wZW52cG4vZnJhZ21lbnQuaCDCoCDCoCDCoCDCoCDCoCB8IMKgIMKgOCAr
-LQo+PiDCoHNyYy9vcGVudnBuL2dyZW1saW4uYyDCoCDCoCDCoCDCoCDCoCDCoHwgwqAgwqA4ICst
-Cj4+IMKgc3JjL29wZW52cG4vZ3JlbWxpbi5oIMKgIMKgIMKgIMKgIMKgIMKgfCDCoCDCoDIgKy0K
-Pj4gwqBzcmMvb3BlbnZwbi9oZWxwZXIuYyDCoCDCoCDCoCDCoCDCoCDCoCB8IMKgIMKgMiArLQo+
-PiDCoHNyYy9vcGVudnBuL2luaXQuYyDCoCDCoCDCoCDCoCDCoCDCoCDCoCB8IMKgIDcwICsrKysr
-KystLS0tLS0tCj4+IMKgc3JjL29wZW52cG4vaW5pdC5oIMKgIMKgIMKgIMKgIMKgIMKgIMKgIHwg
-wqAgMTYgKystLQo+PiDCoHNyYy9vcGVudnBuL2ludGVydmFsLmMgwqAgwqAgwqAgwqAgwqAgfCDC
-oCDCoDQgKy0KPj4gwqBzcmMvb3BlbnZwbi9pbnRlcnZhbC5oIMKgIMKgIMKgIMKgIMKgIHwgwqAg
-MTIgKy0KPj4gwqBzcmMvb3BlbnZwbi9saXN0LmMgwqAgwqAgwqAgwqAgwqAgwqAgwqAgfCDCoCAx
-NCArKy0tCj4+IMKgc3JjL29wZW52cG4vbGlzdC5oIMKgIMKgIMKgIMKgIMKgIMKgIMKgIHwgwqAg
-MTYgKystLQo+PiDCoHNyYy9vcGVudnBuL2x6by5jIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgfCDC
-oCDCoDggKy0KPj4gwqBzcmMvb3BlbnZwbi9sem8uaCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoHwg
-wqAgwqA2ICstCj4+IMKgc3JjL29wZW52cG4vbWFuYWdlLmMgwqAgwqAgwqAgwqAgwqAgwqAgfCDC
-oCA4NiArKysrKysrKystLS0tLS0tLS0KPj4gwqBzcmMvb3BlbnZwbi9tYW5hZ2UuaCDCoCDCoCDC
-oCDCoCDCoCDCoCB8IMKgIDU2ICsrKysrKy0tLS0tLQo+PiDCoHNyYy9vcGVudnBuL21idWYuYyDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCB8IMKgIMKgNCArLQo+PiDCoHNyYy9vcGVudnBuL21idWYuaCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCB8IMKgIMKgNiArLQo+PiDCoHNyYy9vcGVudnBuL21pc2MuYyDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCB8IMKgIDU0ICsrKysrKy0tLS0tLQo+PiDCoHNyYy9vcGVudnBu
-L21pc2MuaCDCoCDCoCDCoCDCoCDCoCDCoCDCoCB8IMKgIDMwICsrKy0tLQo+PiDCoHNyYy9vcGVu
-dnBuL21yb3V0ZS5jIMKgIMKgIMKgIMKgIMKgIMKgIHwgwqAgMjQgKysrLS0tCj4+IMKgc3JjL29w
-ZW52cG4vbXJvdXRlLmggwqAgwqAgwqAgwqAgwqAgwqAgfCDCoCAxMCArLQo+PiDCoHNyYy9vcGVu
-dnBuL210Y3AuYyDCoCDCoCDCoCDCoCDCoCDCoCDCoCB8IMKgIDE4ICsrLS0KPj4gwqBzcmMvb3Bl
-bnZwbi9tdGNwLmggwqAgwqAgwqAgwqAgwqAgwqAgwqAgfCDCoCDCoDIgKy0KPj4gwqBzcmMvb3Bl
-bnZwbi9tdHUuYyDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoHwgwqAgwqA2ICstCj4+IMKgc3JjL29w
-ZW52cG4vbXR1LmggwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqB8IMKgIMKgOCArLQo+PiDCoHNyYy9v
-cGVudnBuL211bHRpLmMgwqAgwqAgwqAgwqAgwqAgwqAgwqB8IMKgIDYwICsrKysrKy0tLS0tLQo+
-PiDCoHNyYy9vcGVudnBuL211bHRpLmggwqAgwqAgwqAgwqAgwqAgwqAgwqB8IMKgIDU0ICsrKysr
-Ky0tLS0tLQo+PiDCoHNyYy9vcGVudnBuL250bG0uYyDCoCDCoCDCoCDCoCDCoCDCoCDCoCB8IMKg
-IMKgMiArLQo+PiDCoHNyYy9vcGVudnBuL29jYy5jIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgfCDC
-oCDCoDIgKy0KPj4gwqBzcmMvb3BlbnZwbi9vY2MuaCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoHwg
-wqAgwqAyICstCj4+IMKgc3JjL29wZW52cG4vb3BlbnZwbi5jIMKgIMKgIMKgIMKgIMKgIMKgfCDC
-oCDCoDIgKy0KPj4gwqBzcmMvb3BlbnZwbi9vcGVudnBuLmggwqAgwqAgwqAgwqAgwqAgwqB8IMKg
-IDQ4ICsrKysrLS0tLS0KPj4gwqBzcmMvb3BlbnZwbi9vcHRpb25zLmMgwqAgwqAgwqAgwqAgwqAg
-wqB8IMKgIDg0ICsrKysrKysrKy0tLS0tLS0tLQo+PiDCoHNyYy9vcGVudnBuL29wdGlvbnMuaCDC
-oCDCoCDCoCDCoCDCoCDCoHwgwqAxOTAgKysrKysrKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0t
-LS0tLS0KPj4gwqBzcmMvb3BlbnZwbi9vdGltZS5jIMKgIMKgIMKgIMKgIMKgIMKgIMKgfCDCoCDC
-oDYgKy0KPj4gwqBzcmMvb3BlbnZwbi9vdGltZS5oIMKgIMKgIMKgIMKgIMKgIMKgIMKgfCDCoCAx
-OCArKy0tCj4+IMKgc3JjL29wZW52cG4vcGFja2V0X2lkLmMgwqAgwqAgwqAgwqAgwqB8IMKgIDIy
-ICsrLS0KPj4gwqBzcmMvb3BlbnZwbi9wYWNrZXRfaWQuaCDCoCDCoCDCoCDCoCDCoHwgwqAgMjIg
-KystLQo+PiDCoHNyYy9vcGVudnBuL3BmLWlubGluZS5oIMKgIMKgIMKgIMKgIMKgfCDCoCAxMCAr
-LQo+PiDCoHNyYy9vcGVudnBuL3BmLmMgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgfCDCoCAzMiAr
-KystLS0KPj4gwqBzcmMvb3BlbnZwbi9wZi5oIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIHwgwqAg
-MTQgKystLQo+PiDCoHNyYy9vcGVudnBuL3BpbmcuaCDCoCDCoCDCoCDCoCDCoCDCoCDCoCB8IMKg
-IMKgMiArLQo+PiDCoHNyYy9vcGVudnBuL3BrY3MxMS5jIMKgIMKgIMKgIMKgIMKgIMKgIHwgwqAg
-MjIgKystLQo+PiDCoHNyYy9vcGVudnBuL3BrY3MxMS5oIMKgIMKgIMKgIMKgIMKgIMKgIHwgwqAg
-MTYgKystLQo+PiDCoHNyYy9vcGVudnBuL3BsYXRmb3JtLmMgwqAgwqAgwqAgwqAgwqAgfCDCoCAx
-NiArKy0tCj4+IMKgc3JjL29wZW52cG4vcGxhdGZvcm0uaCDCoCDCoCDCoCDCoCDCoCB8IMKgIDEy
-ICstCj4+IMKgc3JjL29wZW52cG4vcGx1Z2luLmMgwqAgwqAgwqAgwqAgwqAgwqAgfCDCoCAxNiAr
-Ky0tCj4+IMKgc3JjL29wZW52cG4vcGx1Z2luLmggwqAgwqAgwqAgwqAgwqAgwqAgfCDCoCAxMiAr
-LQo+PiDCoHNyYy9vcGVudnBuL3Bvb2wuYyDCoCDCoCDCoCDCoCDCoCDCoCDCoCB8IMKgIDIyICsr
-LS0KPj4gwqBzcmMvb3BlbnZwbi9wb29sLmggwqAgwqAgwqAgwqAgwqAgwqAgwqAgfCDCoCAxOCAr
-Ky0tCj4+IMKgc3JjL29wZW52cG4vcHJvdG8uYyDCoCDCoCDCoCDCoCDCoCDCoCDCoHwgwqAgwqAy
-ICstCj4+IMKgc3JjL29wZW52cG4vcHJvdG8uaCDCoCDCoCDCoCDCoCDCoCDCoCDCoHwgwqAgwqAy
-ICstCj4+IMKgc3JjL29wZW52cG4vcHJveHkuYyDCoCDCoCDCoCDCoCDCoCDCoCDCoHwgwqAgMjYg
-KysrLS0tCj4+IMKgc3JjL29wZW52cG4vcHJveHkuaCDCoCDCoCDCoCDCoCDCoCDCoCDCoHwgwqAg
-wqA4ICstCj4+IMKgc3JjL29wZW52cG4vcHMuYyDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCB8IMKg
-IDEyICstCj4+IMKgc3JjL29wZW52cG4vcHMuaCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCB8IMKg
-IMKgMiArLQo+PiDCoHNyYy9vcGVudnBuL3B1c2guYyDCoCDCoCDCoCDCoCDCoCDCoCDCoCB8IMKg
-IDI2ICsrKy0tLQo+PiDCoHNyYy9vcGVudnBuL3B1c2guaCDCoCDCoCDCoCDCoCDCoCDCoCDCoCB8
-IMKgIMKgOCArLQo+PiDCoHNyYy9vcGVudnBuL3B1c2hsaXN0LmggwqAgwqAgwqAgwqAgwqAgfCDC
-oCDCoDIgKy0KPj4gwqBzcmMvb3BlbnZwbi9yZWxpYWJsZS5jIMKgIMKgIMKgIMKgIMKgIHwgwqAg
-MzYgKysrKy0tLS0KPj4gwqBzcmMvb3BlbnZwbi9yZWxpYWJsZS5oIMKgIMKgIMKgIMKgIMKgIHwg
-wqAgMzIgKysrLS0tCj4+IMKgc3JjL29wZW52cG4vcm91dGUuYyDCoCDCoCDCoCDCoCDCoCDCoCDC
-oHwgwqAgNjggKysrKysrKy0tLS0tLS0KPj4gwqBzcmMvb3BlbnZwbi9yb3V0ZS5oIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgfCDCoCAzMiArKystLS0KPj4gwqBzcmMvb3BlbnZwbi9zZXNzaW9uX2lkLmgg
-wqAgwqAgwqAgwqAgfCDCoCAxMCArLQo+PiDCoHNyYy9vcGVudnBuL3NoYXBlci5jIMKgIMKgIMKg
-IMKgIMKgIMKgIHwgwqAgwqA0ICstCj4+IMKgc3JjL29wZW52cG4vc2hhcGVyLmggwqAgwqAgwqAg
-wqAgwqAgwqAgfCDCoCDCoDQgKy0KPj4gwqBzcmMvb3BlbnZwbi9zaWcuYyDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoHwgwqAgMTAgKy0KPj4gwqBzcmMvb3BlbnZwbi9zaWcuaCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoHwgwqAgwqA2ICstCj4+IMKgc3JjL29wZW52cG4vc29ja2V0LmMgwqAgwqAgwqAg
-wqAgwqAgwqAgfCDCoCA5NCArKysrKysrKysrLS0tLS0tLS0tLQo+PiDCoHNyYy9vcGVudnBuL3Nv
-Y2tldC5oIMKgIMKgIMKgIMKgIMKgIMKgIHwgwqAgOTggKysrKysrKysrKy0tLS0tLS0tLS0KPj4g
-wqBzcmMvb3BlbnZwbi9zb2Nrcy5jIMKgIMKgIMKgIMKgIMKgIMKgIMKgfCDCoCDCoDggKy0KPj4g
-wqBzcmMvb3BlbnZwbi9zb2Nrcy5oIMKgIMKgIMKgIMKgIMKgIMKgIMKgfCDCoCDCoDYgKy0KPj4g
-wqBzcmMvb3BlbnZwbi9zc2wuYyDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoHwgwqAgODggKysrKysr
-KysrLS0tLS0tLS0tCj4+IMKgc3JjL29wZW52cG4vc3NsLmggwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqB8IMKgIDE2ICsrLS0KPj4gwqBzcmMvb3BlbnZwbi9zc2xfYmFja2VuZC5oIMKgIMKgIMKgIMKg
-fCDCoCDCoDggKy0KPj4gwqBzcmMvb3BlbnZwbi9zc2xfY29tbW9uLmggwqAgwqAgwqAgwqAgfCDC
-oCAyNiArKystLS0KPj4gwqBzcmMvb3BlbnZwbi9zc2xfb3BlbnNzbC5jIMKgIMKgIMKgIMKgfCDC
-oCAxMiArLQo+PiDCoHNyYy9vcGVudnBuL3NzbF9wb2xhcnNzbC5jIMKgIMKgIMKgIHwgwqAgwqA4
-ICstCj4+IMKgc3JjL29wZW52cG4vc3NsX3BvbGFyc3NsLmggwqAgwqAgwqAgfCDCoCDCoDIgKy0K
-Pj4gwqBzcmMvb3BlbnZwbi9zc2xfdmVyaWZ5LmMgwqAgwqAgwqAgwqAgfCDCoCAyNiArKystLS0K
-Pj4gwqBzcmMvb3BlbnZwbi9zc2xfdmVyaWZ5LmggwqAgwqAgwqAgwqAgfCDCoCAxMCArLQo+PiDC
-oHNyYy9vcGVudnBuL3NzbF92ZXJpZnlfb3BlbnNzbC5jIHwgwqAgwqA0ICstCj4+IMKgc3JjL29w
-ZW52cG4vc3RhdHVzLmMgwqAgwqAgwqAgwqAgwqAgwqAgfCDCoCAxMiArLQo+PiDCoHNyYy9vcGVu
-dnBuL3N0YXR1cy5oIMKgIMKgIMKgIMKgIMKgIMKgIHwgwqAgMTAgKy0KPj4gwqBzcmMvb3BlbnZw
-bi90dW4uYyDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoHwgwqAxMDQgKysrKysrKysrKy0tLS0tLS0t
-LS0KPj4gwqBzcmMvb3BlbnZwbi90dW4uaCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoHwgwqAgNTIg
-KysrKystLS0tLQo+PiDCoHNyYy9vcGVudnBuL3dpbjMyLmMgwqAgwqAgwqAgwqAgwqAgwqAgwqB8
-IMKgIDI4ICsrKy0tLQo+PiDCoHNyYy9vcGVudnBuL3dpbjMyLmggwqAgwqAgwqAgwqAgwqAgwqAg
-wqB8IMKgIDI2ICsrKy0tLQo+PiDCoHNyYy9wbHVnaW5zL2RlZmVyL3NpbXBsZS5jIMKgIMKgIMKg
-IHwgwqAgwqA5ICstLQo+PiDCoDEwNyBmaWxlcyBjaGFuZ2VkLCAxMjA4IGluc2VydGlvbnMoKyks
-IDEyMTMgZGVsZXRpb25zKC0pCj4KPiBXZWxsLAo+Cj4gQXMgdXN1YWwsCj4gTWFpbGluZyBsaXN0
-IGxpbWl0YXRpb24gZm9yIGxhcmdlL2NvbXBsZXggcGF0Y2hlcyBpbmhpYml0IHByb3BlciBjb21t
-dW5pY2F0aW9uLgo+Cj4gUGF0Y2ggY2FuIGJlIGZvdW5kL3B1bGxlZCBmcm9tIGdpdGh1YlsxXS4K
-Pgo+IFsxXSBodHRwczovL2dpdGh1Yi5jb20vYWxvbmJsL29wZW52cG4vY29tbWl0L2JlYzI3ZTcz
-ZjUzNGU5N2MzZDI0ZDYzNjgwYTBkZmU2ODI0YWVmMmEKCkRhdmlkLAoKWW91ciBvcGluaW9uIHJl
-Z2FyZGluZyB0aGlzIG9uZT8KCkFsb24uCg==
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 28/03/12 11:32, Alon Bar-Lev wrote:
+> On Sat, Mar 24, 2012 at 9:21 PM, Alon Bar-Lev <alon.barlev@...277...>
+> wrote:
+>> On Sat, Mar 24, 2012 at 9:15 PM, Alon Bar-Lev
+>> <alon.barlev@...277...> wrote:
+>>> PPC architectures and conflict with stdbool.h.
+>>> 
+>>> basic.h defines a type 'bool' that conflicts with the altivec 
+>>> keyword bool which has to be fixed upstream, see bugs[1][2].
+>>> 
+>>> [1] https://bugs.gentoo.org/show_bug.cgi?id=293840 [2]
+>>> https://bugs.gentoo.org/show_bug.cgi?id=297854
+>>> 
+>>> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...> --- 
+>>> src/openvpn/basic.h              |    6 +- src/openvpn/buffer.c
+>>> |   38 ++++---- src/openvpn/buffer.h             |   80
+>>> ++++++++-------- src/openvpn/clinat.c             |    4 +- 
+>>> src/openvpn/console.c            |   22 ++-- src/openvpn/console.h
+>>> |    4 +- src/openvpn/crypto.c             |   34 ++++---- 
+>>> src/openvpn/crypto.h             |   30 +++--- 
+>>> src/openvpn/crypto_backend.h     |    2 +- 
+>>> src/openvpn/crypto_openssl.c     |    6 +- 
+>>> src/openvpn/crypto_polarssl.c    |    4 +- src/openvpn/error.c
+>>> |   24 +++--- src/openvpn/error.h              |   16 ++-- 
+>>> src/openvpn/event.c              |   16 ++-- src/openvpn/fdmisc.c
+>>> |    4 +- src/openvpn/fdmisc.h             |    4 +- 
+>>> src/openvpn/forward.c            |   10 +- src/openvpn/forward.h
+>>> |    4 +- src/openvpn/fragment.c           |    2 +- 
+>>> src/openvpn/fragment.h           |    8 +- src/openvpn/gremlin.c
+>>> |    8 +- src/openvpn/gremlin.h            |    2 +- 
+>>> src/openvpn/helper.c             |    2 +- src/openvpn/init.c
+>>> |   70 +++++++------- src/openvpn/init.h               |   16
+>>> ++-- src/openvpn/interval.c           |    4 +- 
+>>> src/openvpn/interval.h           |   12 +- src/openvpn/list.c
+>>> |   14 ++-- src/openvpn/list.h               |   16 ++-- 
+>>> src/openvpn/lzo.c                |    8 +- src/openvpn/lzo.h
+>>> |    6 +- src/openvpn/manage.c             |   86
+>>> +++++++++--------- src/openvpn/manage.h             |   56
+>>> ++++++------ src/openvpn/mbuf.c               |    4 +- 
+>>> src/openvpn/mbuf.h               |    6 +- src/openvpn/misc.c
+>>> |   54 ++++++------ src/openvpn/misc.h               |   30
+>>> +++--- src/openvpn/mroute.c             |   24 +++--- 
+>>> src/openvpn/mroute.h             |   10 +- src/openvpn/mtcp.c
+>>> |   18 ++-- src/openvpn/mtcp.h               |    2 +- 
+>>> src/openvpn/mtu.c                |    6 +- src/openvpn/mtu.h
+>>> |    8 +- src/openvpn/multi.c              |   60 ++++++------ 
+>>> src/openvpn/multi.h              |   54 ++++++------ 
+>>> src/openvpn/ntlm.c               |    2 +- src/openvpn/occ.c
+>>> |    2 +- src/openvpn/occ.h                |    2 +- 
+>>> src/openvpn/openvpn.c            |    2 +- src/openvpn/openvpn.h
+>>> |   48 +++++----- src/openvpn/options.c            |   84
+>>> +++++++++--------- src/openvpn/options.h            |  190
+>>> +++++++++++++++++++------------------- src/openvpn/otime.c
+>>> |    6 +- src/openvpn/otime.h              |   18 ++-- 
+>>> src/openvpn/packet_id.c          |   22 ++-- 
+>>> src/openvpn/packet_id.h          |   22 ++-- 
+>>> src/openvpn/pf-inline.h          |   10 +- src/openvpn/pf.c
+>>> |   32 +++--- src/openvpn/pf.h                 |   14 ++-- 
+>>> src/openvpn/ping.h               |    2 +- src/openvpn/pkcs11.c
+>>> |   22 ++-- src/openvpn/pkcs11.h             |   16 ++-- 
+>>> src/openvpn/platform.c           |   16 ++-- 
+>>> src/openvpn/platform.h           |   12 +- src/openvpn/plugin.c
+>>> |   16 ++-- src/openvpn/plugin.h             |   12 +- 
+>>> src/openvpn/pool.c               |   22 ++-- src/openvpn/pool.h
+>>> |   18 ++-- src/openvpn/proto.c              |    2 +- 
+>>> src/openvpn/proto.h              |    2 +- src/openvpn/proxy.c
+>>> |   26 +++--- src/openvpn/proxy.h              |    8 +- 
+>>> src/openvpn/ps.c                 |   12 +- src/openvpn/ps.h
+>>> |    2 +- src/openvpn/push.c               |   26 +++--- 
+>>> src/openvpn/push.h               |    8 +- src/openvpn/pushlist.h
+>>> |    2 +- src/openvpn/reliable.c           |   36 ++++---- 
+>>> src/openvpn/reliable.h           |   32 +++--- src/openvpn/route.c
+>>> |   68 +++++++------- src/openvpn/route.h              |   32
+>>> +++--- src/openvpn/session_id.h         |   10 +- 
+>>> src/openvpn/shaper.c             |    4 +- src/openvpn/shaper.h
+>>> |    4 +- src/openvpn/sig.c                |   10 +- 
+>>> src/openvpn/sig.h                |    6 +- src/openvpn/socket.c
+>>> |   94 ++++++++++---------- src/openvpn/socket.h             |
+>>> 98 ++++++++++---------- src/openvpn/socks.c              |    8
+>>> +- src/openvpn/socks.h              |    6 +- src/openvpn/ssl.c
+>>> |   88 +++++++++--------- src/openvpn/ssl.h                |   16
+>>> ++-- src/openvpn/ssl_backend.h        |    8 +- 
+>>> src/openvpn/ssl_common.h         |   26 +++--- 
+>>> src/openvpn/ssl_openssl.c        |   12 +- 
+>>> src/openvpn/ssl_polarssl.c       |    8 +- 
+>>> src/openvpn/ssl_polarssl.h       |    2 +- 
+>>> src/openvpn/ssl_verify.c         |   26 +++--- 
+>>> src/openvpn/ssl_verify.h         |   10 +- 
+>>> src/openvpn/ssl_verify_openssl.c |    4 +- src/openvpn/status.c
+>>> |   12 +- src/openvpn/status.h             |   10 +- 
+>>> src/openvpn/tun.c                |  104 ++++++++++---------- 
+>>> src/openvpn/tun.h                |   52 +++++----- 
+>>> src/openvpn/win32.c              |   28 +++--- src/openvpn/win32.h
+>>> |   26 +++--- src/plugins/defer/simple.c       |    9 +-- 107
+>>> files changed, 1208 insertions(+), 1213 deletions(-)
+>> 
+>> Well,
+>> 
+>> As usual, Mailing list limitation for large/complex patches inhibit
+>> proper communication.
+>> 
+>> Patch can be found/pulled from github[1].
+>> 
+>> [1]
+>> https://github.com/alonbl/openvpn/commit/bec27e73f534e97c3d24d63680a0dfe6824aef2a
+>
+>> 
+> David,
+> 
+> Your opinion regarding this one?
+
+I'm in the process of reviewing all bool usage in OpenVPN.  I've gone
+through ~60% of the source code where bool variables are used.
+
+The reason for that review is that I'm not convinced adding our own
+boolean type is the way to go.  I'd much rather see us using stdbool.h
+and keep using the bool for pure boolean purposes.  Where flags needs to
+be used, it makes much more sense to either use a uint type, or maybe
+even typedef a flag_t type.
+
+So far I've only seen bool being abused for flags in setenv_sockaddr(),
+setenv_in_addr_t() and setenv_link_socket_actual().
+
+
+So bottom line is, please hold a bit more until I manage to complete
+reviewing the boolean usage properly.
+
+
+kind regards,
+
+David Sommerseth
+
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk9y3Z0ACgkQDC186MBRfrr7nwCgjdjh6qKk3M0XRIMTTAdugCa7
+LicAn3A8lqKEEpIxtGdAd9fj5kwXa99P
+=uAB7
+-----END PGP SIGNATURE-----
+
