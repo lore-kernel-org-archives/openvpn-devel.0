@@ -1,12 +1,10 @@
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Wed, 28 Mar 2012 13:13:47 +0200
+Message-ID: <2923473.VmpqgqZo5Q@...1526...>
+In-Reply-To: <1330546942-18250-1-git-send-email-alon.barlev@...277...>
+References: <1330546942-18250-1-git-send-email-alon.barlev@...277...>
 MIME-Version: 1.0
-In-Reply-To: <4F72EF52.8060301@...515...>
-References: <CAOazyz065tGCsmMkqCy57+jHcBLFCuOTBfbtFaeiQYBg5Ye15w@...278...>
-	<4F72EF52.8060301@...515...>
-Date: Wed, 28 Mar 2012 13:04:11 +0200
-Message-ID: <CAOazyz1X6SXHJVAkioLueT+Y_5v7s=kx4PBVze=aQcoFvkCfyA@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [DISCUSS] OpenVPN public repositories at
-	github.com
+Subject: Re: [Openvpn-devel] [openvpn-gui 0/8] build rewrite
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,41 +13,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
+Cc: Alon Bar-Lev <alon.barlev@...277...>, "Openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-2012/3/28 Samuli Sepp=C3=A4nen <samuli@...515...>:
->> A basic ticketing system is also provided, not sure it is that far
->> from trac features... not a must.
->> It wiki is better than track as people can subscribe for changes,
->> hence cooperate much better than current state.
-> A few years ago, when I started setting up the community services I
-> discussed the option of using external, hosted services (e.g. SF.net)
-> internally and our CEO strongly disagreed[*] with that approach. I don't
-> think anything has changed on that front since... and there are
-> advantages in the approach we have now, e.g. being able to use the same
-> authentication backend for all of our random services.
->
-> That said, the code itself is hosted externally on SF.net, so we have
-> the _option_ of using GitHub for that part. I'd first look at the big
-> picture of how we want to enhance our development processes and then
-> move on to the tools. I hope to have the review of the ACK system ready
-> by next Monday, maybe sooner. That'll give us some hard data which we
-> can use as a basis for further discussion...
+Hi Alon.
 
-OK. I will wait. I think that sourceforge stayed behind.... the won't
-be able to close the gap.
+Thanks for the contributions. I just pushed the changes, some of them=20
+modified. See below for comments.
 
-> [*] As in "We will have the community services on our own servers. Period=
-."
+> Alon Bar-Lev (8):
+>   cleanup: resolve unused parameter warnings
 
-I don't understand this argument...
+Changed this to use gcc attributes like in other places.
 
-Anyway, if you keep services like wiki on your host, please make sure
-change notification is possible, as cooperation without notification
-is invalid.
+>   cleanup: dos2unix res/openvpn-gui-res-fi.rc
+>   cleanup: dos2unix res/openvpn-gui-res-jp.rc
+>   cleanup: dos2unix OpenVPN GUI ReadMe.txt
 
-Alon.
+Merged into one commit that also converts all source files to \n line endin=
+gs.
+
+>   build: rework build
+
+Removed use of libtool and the implicit automake rule for .rc files. Instea=
+d=20
+add a manual rule for the resource object to Makefile.am.
+
+Regards
+Heiko
+--=20
+Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
+Astaro a Sophos Company | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germ=
+any
+Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
+=20
+Represented by the General Partner Astaro Verwaltungs GmbH
+Amalienbadstra=DFe 41 Bau 52 | 76227 Karlsruhe | Germany=20
+Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
+Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
+
 
