@@ -1,16 +1,12 @@
 MIME-Version: 1.0
-Sender: fabian@...1547...
-In-Reply-To: <CAEsd45Rzo14YeaYAWnMi65i__z3TuvqwQwzjTSdMRy8JMkWHMQ@...278...>
-References: <CAEsd45TVCJKRrag9FRKnXhTVhOWO=pjMq3wXkz_bd43_mwhWAA@...278...>
-	<4F576C3B.9090308@...1114...>
-	<CAEsd45TaK6gpOivakP85Lb2ndb9LE8s59NmJ1_=z3Ggzj4EDDA@...278...>
-	<20120323141815.GC1359@...1296...>
-	<CAEsd45Rzo14YeaYAWnMi65i__z3TuvqwQwzjTSdMRy8JMkWHMQ@...278...>
-From: Fabian Knittel <fabian.knittel@...1547...>
-Date: Wed, 28 Mar 2012 15:57:22 +0200
-Message-ID: <CAP+U6tJhzN+cJbSTqtHSwSAZoPm_7OnyOp=VYAUT99NvfdfRyg@...278...>
-Subject: Re: [Openvpn-devel] 2.3alpha1 fails on OS X when the --up argument
- contains more than an execution path
+In-Reply-To: <1332575918-3384-5-git-send-email-alon.barlev@...277...>
+References: <4F6D06C5.3030408@...1114...>
+	<1332575918-3384-5-git-send-email-alon.barlev@...277...>
+Date: Wed, 28 Mar 2012 17:07:43 +0200
+Message-ID: <CAOazyz1VT-z7R=SXwTttVn1YrQW7Y0x=k5J+X384XZYbyNVHPA@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 4/6] build: msvc: upgrade to Visual
+	Studio 2010 + fixups
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,39 +16,49 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: "Jonathan K. Bullard" <jkbullard@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Transfer-Encoding: base64
+To: Openvpn-devel@lists.sourceforge.net
 
-Hi Jonathan,
-
-2012/3/28 Jonathan K. Bullard <jkbullard@...277...>:
-> There is one part of=C2=A0check_cmd_access()=C2=A0which I took from code =
-in
-> run_up_down() and I am not sure about -- the three lines:
-> =C2=A0 gc_arena gc;
-> and
-> =C2=A0 gc =3D gc_new ();
-> and
-> =C2=A0 gc_free (&gc);
->
-> Are they needed? I put them in because I assume that they set up and tear
-> down a global garbage-collection area where allocations are made, and that
-> that area is used by argv_new() and whatever eventually allocates the argv
-> structure's components when they are created by argv_printf() and/or
-> parse_line().
-
-gc_arena instances are used by explicitly passing a pointer to it. So,
-unless one of the functions takes an instance of gc_arena as a
-parameter, you don't need to prepare one. As many functions in OpenVPN
-take one, there's some dead code scattered about that needlessly
-creates and frees gc arenas (probably because uses have come and gone
-over time). So you can drop gc because it's not used.
-
-The argv family of functions apparently has its own memory management
-and therefore argv_new() should be paired with an argv_reset().
-Otherwise the memory allocated by argv_printf() is leaked.
-
-Cheers
-Fabian
-
+T24gU2F0LCBNYXIgMjQsIDIwMTIgYXQgOTo1OCBBTSwgQWxvbiBCYXItTGV2IDxhbG9uLmJhcmxl
+dkAuLi4yNzcuLi4+IHdyb3RlOgo+Cj4gU2lnbmVkLW9mZi1ieTogQWxvbiBCYXItTGV2IDxhbG9u
+LmJhcmxldkAuLi4yNzcuLi4+Cj4gLS0tCj4gwqAuZ2l0aWdub3JlIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIHwgwqAgwqAyICsKPiDCoGJ1aWxk
+L21zdmMvbXN2Yy1nZW5lcmF0ZS9NYWtlZmlsZS5hbSDCoCDCoCDCoCDCoCDCoCB8IMKgIMKgMiAr
+LQo+IMKgYnVpbGQvbXN2Yy9tc3ZjLWdlbmVyYXRlL21zdmMtZ2VuZXJhdGUudmNwcm9qIMKgfCDC
+oCA3NCAtLS0KPiDCoGJ1aWxkL21zdmMvbXN2Yy1nZW5lcmF0ZS9tc3ZjLWdlbmVyYXRlLnZjeHBy
+b2ogfCDCoCA2OSArKysKPiDCoG1zdmMtYnVpbGQuYmF0IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIHwgwqAgMjcgKy0KPiDCoG1zdmMtZGV2LmJhdCDCoCDC
+oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCB8IMKgIDE5ICst
+Cj4gwqBtc3ZjLWVudi5iYXQgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgfCDCoCDCoDcgKy0KPiDCoG9wZW52cG4uc2xuIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgfCDCoCA5MCArKy0tCj4gwqBzcmMv
+Y29tcGF0L01ha2VmaWxlLmFtIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIHwg
+wqAgwqAzICstCj4gwqBzcmMvY29tcGF0L2NvbXBhdC52Y3Byb2ogwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgfCDCoDE5NyAtLS0tLS0KPiDCoHNyYy9jb21wYXQvY29tcGF0LnZjeHBy
+b2ogwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqB8IMKgIDg3ICsrKwo+IMKgc3JjL2Nv
+bXBhdC9jb21wYXQudmN4cHJvai5maWx0ZXJzIMKgIMKgIMKgIMKgIMKgIMKgIMKgfCDCoCA0MiAr
+Kwo+IMKgc3JjL29wZW52cG4vTWFrZWZpbGUuYW0gwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqB8IMKgIMKgMyArLQo+IMKgc3JjL29wZW52cG4vb3BlbnZwbi52Y3Byb2ogwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgfCDCoDc3Nwo+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LQo+IMKgc3JjL29wZW52cG4vb3BlbnZwbi52Y3hwcm9qIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgfCDCoDI2MSArKysrKysrKwo+IMKgc3JjL29wZW52cG4vb3BlbnZwbi52Y3hwcm9qLmZp
+bHRlcnMgwqAgwqAgwqAgwqAgwqAgwqB8IMKgNDU4ICsrKysrKysrKysrKysrCj4gwqBzcmMvb3Bl
+bnZwbnNlcnYvTWFrZWZpbGUuYW0gwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqB8IMKgIMKg
+MyArLQo+IMKgc3JjL29wZW52cG5zZXJ2L29wZW52cG5zZXJ2LnZjcHJvaiDCoCDCoCDCoCDCoCDC
+oCDCoCB8IMKgMjA5IC0tLS0tLS0KPiDCoHNyYy9vcGVudnBuc2Vydi9vcGVudnBuc2Vydi52Y3hw
+cm9qIMKgIMKgIMKgIMKgIMKgIMKgfCDCoDExMiArKysrCj4gwqBzcmMvb3BlbnZwbnNlcnYvb3Bl
+bnZwbnNlcnYudmN4cHJvai5maWx0ZXJzIMKgIMKgfCDCoCAzNSArKwo+IMKgMjAgZmlsZXMgY2hh
+bmdlZCwgMTE1MyBpbnNlcnRpb25zKCspLCAxMzI0IGRlbGV0aW9ucygtKQo+IMKgZGVsZXRlIG1v
+ZGUgMTAwNjQ0IGJ1aWxkL21zdmMvbXN2Yy1nZW5lcmF0ZS9tc3ZjLWdlbmVyYXRlLnZjcHJvago+
+IMKgY3JlYXRlIG1vZGUgMTAwNjQ0IGJ1aWxkL21zdmMvbXN2Yy1nZW5lcmF0ZS9tc3ZjLWdlbmVy
+YXRlLnZjeHByb2oKPiDCoGRlbGV0ZSBtb2RlIDEwMDY0NCBzcmMvY29tcGF0L2NvbXBhdC52Y3By
+b2oKPiDCoGNyZWF0ZSBtb2RlIDEwMDY0NCBzcmMvY29tcGF0L2NvbXBhdC52Y3hwcm9qCj4gwqBj
+cmVhdGUgbW9kZSAxMDA2NDQgc3JjL2NvbXBhdC9jb21wYXQudmN4cHJvai5maWx0ZXJzCj4gwqBk
+ZWxldGUgbW9kZSAxMDA2NDQgc3JjL29wZW52cG4vb3BlbnZwbi52Y3Byb2oKPiDCoGNyZWF0ZSBt
+b2RlIDEwMDY0NCBzcmMvb3BlbnZwbi9vcGVudnBuLnZjeHByb2oKPiDCoGNyZWF0ZSBtb2RlIDEw
+MDY0NCBzcmMvb3BlbnZwbi9vcGVudnBuLnZjeHByb2ouZmlsdGVycwo+IMKgZGVsZXRlIG1vZGUg
+MTAwNjQ0IHNyYy9vcGVudnBuc2Vydi9vcGVudnBuc2Vydi52Y3Byb2oKPiDCoGNyZWF0ZSBtb2Rl
+IDEwMDY0NCBzcmMvb3BlbnZwbnNlcnYvb3BlbnZwbnNlcnYudmN4cHJvago+IMKgY3JlYXRlIG1v
+ZGUgMTAwNjQ0IHNyYy9vcGVudnBuc2Vydi9vcGVudnBuc2Vydi52Y3hwcm9qLmZpbHRlcnMKCgpE
+YXZpZCwKV2hhdCB3aXRoIHRoaXMgb25lPwpObyBwb2ludCBpbiBzdXBwb3J0aW5nIHZpc3VhbCBz
+dHVkaW8gMjAwOCBhdCAyMDEyLi4uLgoKQWxvbi4K
