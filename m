@@ -1,13 +1,15 @@
-Message-ID: <4F734AB5.9010609@...1114...>
-Date: Wed, 28 Mar 2012 19:30:29 +0200
+Message-ID: <4F73545A.8020303@...1114...>
+Date: Wed, 28 Mar 2012 20:11:38 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4F6D06C5.3030408@...1114...>
-	<1332575918-3384-5-git-send-email-alon.barlev@...277...>
-	<CAOazyz1VT-z7R=SXwTttVn1YrQW7Y0x=k5J+X384XZYbyNVHPA@...278...>
-In-Reply-To: <CAOazyz1VT-z7R=SXwTttVn1YrQW7Y0x=k5J+X384XZYbyNVHPA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 4/6] build: msvc: upgrade to Visual
- Studio 2010 + fixups
+References: <CAEsd45TVCJKRrag9FRKnXhTVhOWO=pjMq3wXkz_bd43_mwhWAA@...278...>
+	<4F576C3B.9090308@...1114...>
+	<CAEsd45TaK6gpOivakP85Lb2ndb9LE8s59NmJ1_=z3Ggzj4EDDA@...278...>
+	<20120323141815.GC1359@...1296...>
+	<CAEsd45Rzo14YeaYAWnMi65i__z3TuvqwQwzjTSdMRy8JMkWHMQ@...278...>
+In-Reply-To: <CAEsd45Rzo14YeaYAWnMi65i__z3TuvqwQwzjTSdMRy8JMkWHMQ@...278...>
+Subject: Re: [Openvpn-devel] 2.3alpha1 fails on OS X when the --up argument
+ contains more than an execution path
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,58 +18,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: Openvpn-devel@lists.sourceforge.net
+To: "Jonathan K. Bullard" <jkbullard@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 28/03/12 17:07, Alon Bar-Lev wrote:
-> On Sat, Mar 24, 2012 at 9:58 AM, Alon Bar-Lev <alon.barlev@...277...>
-> wrote:
->> 
->> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...> --- .gitignore
->> |    2 + build/msvc/msvc-generate/Makefile.am           |    2 +- 
->> build/msvc/msvc-generate/msvc-generate.vcproj  |   74 --- 
->> build/msvc/msvc-generate/msvc-generate.vcxproj |   69 +++ 
->> msvc-build.bat                                 |   27 +- 
->> msvc-dev.bat                                   |   19 +- 
->> msvc-env.bat                                   |    7 +- openvpn.sln
->> |   90 ++-- src/compat/Makefile.am                         |    3
->> +- src/compat/compat.vcproj                       |  197 ------ 
->> src/compat/compat.vcxproj                      |   87 +++ 
->> src/compat/compat.vcxproj.filters              |   42 ++ 
->> src/openvpn/Makefile.am                        |    3 +- 
->> src/openvpn/openvpn.vcproj                     |  777 
->> ------------------------ src/openvpn/openvpn.vcxproj
->> |  261 ++++++++ src/openvpn/openvpn.vcxproj.filters            |
->> 458 ++++++++++++++ src/openvpnserv/Makefile.am                    |
->> 3 +- src/openvpnserv/openvpnserv.vcproj             |  209 ------- 
->> src/openvpnserv/openvpnserv.vcxproj            |  112 ++++ 
->> src/openvpnserv/openvpnserv.vcxproj.filters    |   35 ++ 20 files
->> changed, 1153 insertions(+), 1324 deletions(-) delete mode 100644
->> build/msvc/msvc-generate/msvc-generate.vcproj create mode 100644
->> build/msvc/msvc-generate/msvc-generate.vcxproj delete mode 100644
->> src/compat/compat.vcproj create mode 100644
->> src/compat/compat.vcxproj create mode 100644
->> src/compat/compat.vcxproj.filters delete mode 100644
->> src/openvpn/openvpn.vcproj create mode 100644
->> src/openvpn/openvpn.vcxproj create mode 100644
->> src/openvpn/openvpn.vcxproj.filters delete mode 100644
->> src/openvpnserv/openvpnserv.vcproj create mode 100644
->> src/openvpnserv/openvpnserv.vcxproj create mode 100644
->> src/openvpnserv/openvpnserv.vcxproj.filters
+On 28/03/12 15:03, Jonathan K. Bullard wrote:
+> On Fri, Mar 23, 2012 at 10:18 AM, Gert Doering <gert@...1296... 
+> <mailto:gert@...1296...>> wrote:
 > 
+> Hi,
 > 
-> David, What with this one? No point in supporting visual studio 2008
-> at 2012....
+> <snip>
+> 
+> Thank you, Gert, for your detailed comments on my first attempt at
+> this patch.
+> 
+> The patch is meant to fix problems in the new-in-2.3 checking of
+> options before trying to create the connection. Options that accept a
+> command parameter instead of a path parameter fail if the command
+> parameter includes spaces or more than just a command path. The
+> following options are affected: --tls-verify, --up, --down,
+> --ipchange, --route-up, --route-pre-down, and --learn-address.
+> 
+> I've looked into this a bit more, and have found that where the
+> options are actually used, argv_printf() is called to parse the
+> command line into an argv structure. argv_printf uses parse_line() to
+> do the actual parsing, and parse_line() processes single- and
+> double-quotes and backslashes. I think that when options.c __checks__
+> an options command arguments, it should accept exactly the same input
+> as the part of OpenVPN that __uses__ the option's commands.
+> 
+> Attached is a heavily revised version of my original patch. It uses 
+> argv_printf() to __check__ an option's commands, so it accepts exactly
+> the same input as the parts of OpenVPN that __use__ the options'
+> commands. It also makes all the relevant changes suggested by Gert
+> except having the argument following --iproute checked. The --iproute
+> code is handled differently than the other options, and I think it is
+> OK that we don't do checking in 2.3 on something that wasn't checked
+> in 2.2 and (apparently) might go away sometime soon.
 
-I don't have access to Visual Studio environments, so I'd rather see
-someone else ack this patch.  But unless it doesn't get any NACKs within
-the next week, I'll pull it using the lazy-consensus
-approach.
+Thanks a lot!  I have one more comment to what Gert and Fabian has
+already covered.
+Instead of adding  wrapper function, check_cmd_access(), would it be
+possible to
+integrate this with check_file_access() and add another type flag, f.ex:
+
+#define CHKACC_EXEC (1<<5)  /** Filename is an executable, ignore exec
+args */
+
+Then you can just flip the type flag from CHKACC_FILE to CHKACC_EXEC.  If
+this
+type is checked for, enforcing an X_OK mode check in addition is probably
+reasonable
+too.
 
 
 kind regards,
@@ -77,8 +84,8 @@ David Sommerseth
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk9zSrIACgkQDC186MBRfrrAjQCgkUjV2GUgso6PZPZMDaY3N0rl
-ONcAnixWsChRoFOjW/qkXpu1pnnQ2y2p
-=FdA0
+iEYEARECAAYFAk9zVFcACgkQDC186MBRfrpH4ACfQ/9ySeXkOnuxI/jaEpgKmpXG
+c6kAnRVnqYIvQ6dH1rfXjyj5IUpBMh6+
+=bTBw
 -----END PGP SIGNATURE-----
 
