@@ -1,17 +1,18 @@
-Date: Wed, 28 Mar 2012 19:16:11 +0200
+Date: Wed, 28 Mar 2012 19:20:24 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20120328171611.GH1359@...1296...>
-References: <CAOazyz06swLVgdoE1GPt2m9EEO7cvB2S8nBstn-a1ktDYtgH-Q@...278...>
-	<1332797200-9295-7-git-send-email-alon.barlev@...277...>
-	<4F72CE7E.90704@...1114...>
-	<CAOazyz1+EhRwVUhjm5SSQ9_s8+=5MxMT3ptkt89Pv+jmvY4RZg@...278...>
+Message-ID: <20120328172024.GI1359@...1296...>
+References: <CAEsd45TVCJKRrag9FRKnXhTVhOWO=pjMq3wXkz_bd43_mwhWAA@...278...>
+	<4F576C3B.9090308@...1114...>
+	<CAEsd45TaK6gpOivakP85Lb2ndb9LE8s59NmJ1_=z3Ggzj4EDDA@...278...>
+	<20120323141815.GC1359@...1296...>
+	<CAEsd45Rzo14YeaYAWnMi65i__z3TuvqwQwzjTSdMRy8JMkWHMQ@...278...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="fGgPh72jpYMjtj0O"
+	protocol="application/pgp-signature"; boundary="QL7GpiDjsJ+k4pJB"
 Content-Disposition: inline
-In-Reply-To: <CAOazyz1+EhRwVUhjm5SSQ9_s8+=5MxMT3ptkt89Pv+jmvY4RZg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 6/6] cleanup: ~0 is too large for 32bit
-	ipv4 address
+In-Reply-To: <CAEsd45Rzo14YeaYAWnMi65i__z3TuvqwQwzjTSdMRy8JMkWHMQ@...278...>
+Subject: Re: [Openvpn-devel] 2.3alpha1 fails on OS X when the --up argument
+	contains more than an execution path
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,39 +21,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: "Jonathan K. Bullard" <jkbullard@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---fGgPh72jpYMjtj0O
+--QL7GpiDjsJ+k4pJB
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Wed, Mar 28, 2012 at 11:03:43AM +0200, Alon Bar-Lev wrote:
-> 0xffffffff as-is is valid ipv4 address/netmask...
->=20
-> I found only this warning, if there are more places, I guess these
-> needs to be fixed as well. So if you agree to the above, I will find
-> the other places.
+On Wed, Mar 28, 2012 at 09:03:44AM -0400, Jonathan K. Bullard wrote:
+> I've looked into this a bit more, and have found that where the options a=
+re
+> actually used, argv_printf() is called to parse the command line into an
+> argv structure. argv_printf uses parse_line() to do the actual parsing, a=
+nd
+> parse_line() processes single- and double-quotes and backslashes. I
+> think that when options.c __checks__ an options command arguments, it
+> should accept exactly the same input as the part of OpenVPN that __uses__
+> the option's commands.
 
-I'd opt for having a well-understandable define, like
+Cool :-) - thanks for investigation, I have learned something new today
+(I have copy-paste used the argv_sprintf() stuff, but not fully investigated
+what it does).
 
-#define IPV4_NETMASK_HOSTONLY 0xffffffffU
+> Attached is a heavily revised version of my original patch. It uses
+> argv_printf() to __check__ an option's commands, so it accepts exactly the
+> same input as the parts of OpenVPN that __use__ the options' commands.=20
 
-(note the "U", that will make sure all compilers know "hey, unsigned!")
-and use that constant in places that use ~0 today in this very specific
-meaning.
+As already noted by Fabian, the "gc" stuff is not needed, and you need
+an argv_reset() call - but other than that, this looks close to inclusion,
+I'd say :-)
 
-A quick grep turned up places in pf.c, route.c (where some places actually
-seem to mean "-1", like in windows-route_find_if_index()?!?), tun.c
+> It
+> also makes all the relevant changes suggested by Gert except having the
+> argument following --iproute checked. The --iproute code is handled
+> differently than the other options, and I think it is OK that we don't do
+> checking in 2.3 on something that wasn't checked in 2.2 and (apparently)
+> might go away sometime soon.
 
-I'd rather not tackle "those other places" in this go, just the "this is
-a host-only netmask!" bits.
+Makes sense.
 
 gert
-
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -60,19 +71,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---fGgPh72jpYMjtj0O
+--QL7GpiDjsJ+k4pJB
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (NetBSD)
 
-iQCVAwUBT3NHW6kuBuNlUUl1AQJdQwQAqoFeabJEYPx4RI4wBR3W9BB45kqSEWDw
-2tTuBWSckf56/rVwF8bsksLPP1whIlw3xBJIfwvGr5kLSfFb8tpJ+g2fkmxXTNS8
-/MGfn7EdtFxgpGoyr8lA6GfYlSjqK+jX58SEbmsRyjuyJHvCIK3UvTTYDDd/EiUG
-wxo8GcXxxwM=
-=M4lE
+iQCVAwUBT3NIWKkuBuNlUUl1AQLszgP+OeTnXM0OokIZKgaF4/DIUCiHi5CzEIcN
+jr53MJZoWPhWW6cZbgp1eiXtZbjMb01HA9UkMPoVj5YBQwwukwYOvNOObDPsymAN
++gZkc/l14LkYwoH8i7nH3+bDuKBgf7DHGr2lHQHSGrbyL/HdIMFTIbDPR48DQUWV
+756W9PvtwP0=
+=jKh2
 -----END PGP SIGNATURE-----
 
---fGgPh72jpYMjtj0O--
+--QL7GpiDjsJ+k4pJB--
 
