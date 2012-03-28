@@ -1,15 +1,12 @@
-Date: Tue, 27 Mar 2012 16:24:18 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120327142418.GE1359@...1296...>
+Message-ID: <4F72CE7E.90704@...1114...>
+Date: Wed, 28 Mar 2012 10:40:30 +0200
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
 References: <CAOazyz06swLVgdoE1GPt2m9EEO7cvB2S8nBstn-a1ktDYtgH-Q@...278...>
-	<1332797200-9295-2-git-send-email-alon.barlev@...277...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="hKnd/qOzIOdPs36Y"
-Content-Disposition: inline
-In-Reply-To: <1332797200-9295-2-git-send-email-alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 1/6] build: openbsd: detect netinet/ip.h
-	correctly
+	<1332797200-9295-7-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1332797200-9295-7-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 6/6] cleanup: ~0 is too large for 32bit
+ ipv4 address
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,62 +15,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---hKnd/qOzIOdPs36Y
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Hi,
+On 26/03/12 23:26, Alon Bar-Lev wrote:
+> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...> --- 
+> src/openvpn/route.c |    2 +- 1 files changed, 1 insertions(+), 1
+> deletions(-)
+> 
+> diff --git a/src/openvpn/route.c b/src/openvpn/route.c index
+> bf7af63..608403b 100644 --- a/src/openvpn/route.c +++
+> b/src/openvpn/route.c @@ -268,7 +268,7 @@ init_route (struct route
+> *r, const struct route_option *ro, const struct route_list *rl) { -
+> const in_addr_t default_netmask = ~0; +  const in_addr_t
+> default_netmask = 0xffffffff;
 
-On Mon, Mar 26, 2012 at 11:26:35PM +0200, Alon Bar-Lev wrote:
-> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-> ---
->  configure.ac |    3 +++
->  1 files changed, 3 insertions(+), 0 deletions(-)
->=20
-> diff --git a/configure.ac b/configure.ac
-> index a30e873..b0dcdb7 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -395,6 +395,9 @@ SOCKET_INCLUDES=3D"
->  #ifdef HAVE_WS2TCPIP_H
->  #include <ws2tcpip.h>
->  #endif
-> +#ifdef HAVE_NETINET_IN_SYSTM_H
-> +#include <netinet/in_systm.h>
-> +#endif
->  "
+Please can you explain more in detail why this change is needed?  In my
+perspective, using ~0 is safer as it will always set all bits - no matter
+the size of default_netmask.
 
-ACK.
+And there are many more places in in source code where ~0 is used to
+provide that netmask.  I would like to see some consistency, rather to
+just fix warnings which appears on some platform(s).
 
-(It gets the job done, and is consistent with what we have right now.=20=20
-Wether or not I think we could do with "less stuff done in configure"
-is a separate discussion and needs not affect *this* patch).
+In general, if you can provide a more verbose description why the patch
+is written in the commit messages, it will also help the review process.
+ Most of us are not that skilled in reading others mind ;-)
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
 
---hKnd/qOzIOdPs36Y
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+kind regards,
 
+David Sommerseth
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iQCVAwUBT3HNkqkuBuNlUUl1AQI64wQAo+PW0Le89mCxpyuQDaOU4qjFt49Jfr5H
-yPURyq6dfjHjEIGMw6EGHps7hzGhCn58Pr94B7GQgJ2ufzcQfbiYTGIzFuxzhbCf
-ant3xiM/++A6I0nQnjWMfYOrdlkC146mZV7tJUGA4GGGsPCEyaUBHaoGZC8huP/7
-fBl2iVL4ynE=
-=SbuP
+iEYEARECAAYFAk9yznwACgkQDC186MBRfrrt9ACfbubdsMWzvKQnav6pQxyOXYwM
+8XoAn1jCoLOQO6PS4TfBE+1YiNGeCm+U
+=ABwa
 -----END PGP SIGNATURE-----
-
---hKnd/qOzIOdPs36Y--
 
