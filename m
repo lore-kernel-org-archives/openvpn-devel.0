@@ -1,9 +1,10 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Wed, 28 Mar 2012 13:13:47 +0200
-Message-ID: <2923473.VmpqgqZo5Q@...1526...>
-In-Reply-To: <1330546942-18250-1-git-send-email-alon.barlev@...277...>
-References: <1330546942-18250-1-git-send-email-alon.barlev@...277...>
 MIME-Version: 1.0
+In-Reply-To: <2923473.VmpqgqZo5Q@...1526...>
+References: <1330546942-18250-1-git-send-email-alon.barlev@...277...>
+	<2923473.VmpqgqZo5Q@...1526...>
+Date: Wed, 28 Mar 2012 13:55:01 +0200
+Message-ID: <CAOazyz35uT3nK=93mLzVewNO8q9p_uDtsQcGVbeLT3R3zg+W3w@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
 Subject: Re: [Openvpn-devel] [openvpn-gui 0/8] build rewrite
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,45 +14,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
-Cc: Alon Bar-Lev <alon.barlev@...277...>, "Openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi Alon.
+On Wed, Mar 28, 2012 at 1:13 PM, Heiko Hund <heiko.hund@...1489...> wrote:
+> Hi Alon.
 
-Thanks for the contributions. I just pushed the changes, some of them=20
-modified. See below for comments.
+Hello,
 
-> Alon Bar-Lev (8):
->   cleanup: resolve unused parameter warnings
+>> =C2=A0 build: rework build
+>
+> Removed use of libtool and the implicit automake rule for .rc files. Inst=
+ead
+> add a manual rule for the resource object to Makefile.am.
 
-Changed this to use gcc attributes like in other places.
+Not sure why you guys have issues with libtool.
+There are people out there that invest time, resources and knowledge
+to make things work, without us need to worry about the implications
+or implementation.
+libtool supports windows resources build in proper way easy to use,
+the price is just having libtool around.
+I really do not understand why not to use it.
 
->   cleanup: dos2unix res/openvpn-gui-res-fi.rc
->   cleanup: dos2unix res/openvpn-gui-res-jp.rc
->   cleanup: dos2unix OpenVPN GUI ReadMe.txt
+Anyway, I had some more cleanups in my branch and fixups to the latest
+changes, I am submitting it now.
 
-Merged into one commit that also converts all source files to \n line endin=
-gs.
-
->   build: rework build
-
-Removed use of libtool and the implicit automake rule for .rc files. Instea=
-d=20
-add a manual rule for the resource object to Makefile.am.
-
-Regards
-Heiko
---=20
-Heiko Hund | Software Engineer | Phone +49-721-25516-237 | Fax -200
-Astaro a Sophos Company | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germ=
-any
-Commercial Register: Mannheim HRA 702710 | Headquarter Location: Karlsruhe
-=20
-Represented by the General Partner Astaro Verwaltungs GmbH
-Amalienbadstra=DFe 41 Bau 52 | 76227 Karlsruhe | Germany=20
-Commercial Register: Mannheim HRB 708248 | Executive Board: Gert Hansen,
-Markus Hennig, Jan Hichert, G=FCnter Junk, Dr. Frank Nellissen
-
+Alon.
 
