@@ -1,13 +1,11 @@
+Message-ID: <4F72EF52.8060301@...515...>
+Date: Wed, 28 Mar 2012 14:00:34 +0300
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <4F72DD9F.3030300@...1114...>
-References: <1332616557-15727-1-git-send-email-alon.barlev@...277...>
-	<CAOazyz3p-pZ=Sbmomnr2b9431hFxsxjte_P7ucSCAA4gJBpC_Q@...278...>
-	<CAOazyz02u3u-_Bsb9yPKb2LJ5RyvnN6jwYQLRA68VHMO8DAvHQ@...278...>
-	<4F72DD9F.3030300@...1114...>
-Date: Wed, 28 Mar 2012 11:48:15 +0200
-Message-ID: <CAOazyz02OcvCdJJ-JHBZWcxB-99nEBOXUcCHE6fkN4eGUkyCgQ@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] build: rename bool->obool
+References: <CAOazyz065tGCsmMkqCy57+jHcBLFCuOTBfbtFaeiQYBg5Ye15w@...278...>
+In-Reply-To: <CAOazyz065tGCsmMkqCy57+jHcBLFCuOTBfbtFaeiQYBg5Ye15w@...278...>
+Subject: Re: [Openvpn-devel] [DISCUSS] OpenVPN public repositories at
+	github.com
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,26 +14,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: Openvpn-devel@lists.sourceforge.net
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-On Wed, Mar 28, 2012 at 11:45 AM, David Sommerseth
-<openvpn.list@...1114...> wrote:
-> The reason for that review is that I'm not convinced adding our own
-> boolean type is the way to go. =C2=A0I'd much rather see us using stdbool=
-.h
-> and keep using the bool for pure boolean purposes. =C2=A0Where flags need=
-s to
-> be used, it makes much more sense to either use a uint type, or maybe
-> even typedef a flag_t type.
+> A basic ticketing system is also provided, not sure it is that far
+> from trac features... not a must.
+> It wiki is better than track as people can subscribe for changes,
+> hence cooperate much better than current state.
+A few years ago, when I started setting up the community services I
+discussed the option of using external, hosted services (e.g. SF.net)
+internally and our CEO strongly disagreed[*] with that approach. I don't
+think anything has changed on that front since... and there are
+advantages in the approach we have now, e.g. being able to use the same
+authentication backend for all of our random services.
 
-I usually try to avoid as much as possible the stdbool in C.
-It does not worth the effort, and people tend to misuse it in various
-of ways, for example storing structure with bool as a member.
-As bool is not properly defined, I recommend of own bool type that
-will behave the same in all platforms.
+That said, the code itself is hosted externally on SF.net, so we have
+the _option_ of using GitHub for that part. I'd first look at the big
+picture of how we want to enhance our development processes and then
+move on to the tools. I hope to have the review of the ACK system ready
+by next Monday, maybe sooner. That'll give us some hard data which we
+can use as a basis for further discussion...
 
-Alon.
+[*] As in "We will have the community services on our own servers. Period."
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
 
