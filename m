@@ -1,10 +1,18 @@
-From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Thu, 29 Mar 2012 19:19:12 +0200
-Message-Id: <1333041552-6752-1-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1333027734-31653-1-git-send-email-alon.barlev@...277...>
-References: <1333027734-31653-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [PATCH] cleanup: add .gitattributes to control eol
-	style explicitly
+MIME-Version: 1.0
+Date: Thu, 29 Mar 2012 19:26:58 +0200
+From: michael-dev <michael-dev@...1528...>
+In-Reply-To: <CAOazyz1ygPjKiwp=xpOFHbiquD-=L4sLmdE_OoPBrYYpKSQX1w@...278...>
+References: <4F6D06C5.3030408@...1114...>
+	<1332575918-3384-5-git-send-email-alon.barlev@...277...>
+	<4F743D70.1090704@...1114...>
+	<CAOazyz03pDXURcMLY_RgvEQcXHn-ftj0HHi-nG3H81tX2JadnA@...278...>
+	<4F745CE6.5070608@...1114...>
+	<CAOazyz01p7zCGvxxh0Un1c63mdF+zcgZSD24Lp8kF=NdpPmfSg@...278...>
+	<4F746C32.2070106@...1114...>
+	<CAOazyz1ygPjKiwp=xpOFHbiquD-=L4sLmdE_OoPBrYYpKSQX1w@...278...>
+Message-ID: <1d265066de7b45fc4de8906d65b2e6d2@...1528...>
+Subject: Re: [Openvpn-devel] [PATCH 4/6] build: msvc: upgrade to Visual
+ Studio 2010 + fixups
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,65 +21,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Openvpn-devel@lists.sourceforge.net
-Cc: Alon Bar-Lev <alon.barlev@...277...>
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-Having the text auto detection is a risk, as the detection may detect
-text files that are not text and vise versa.
+Hi,
 
-Having global setting will create confusion and differentiate between
-users. So this patch also move this to local repository.
+On Thu, 29 Mar 2012 18:10:24 +0200, Alon Bar-Lev wrote:
+> For example...
+>
+> at your end:
+> ---
+> ./configure
+> make
+> make dist
+> ---
+>
+> at other people end:
+> ---
+> tar -xf <tarball>
+> cp -a openvpn* openvpn*.org
+> cd openvpn*
+> msvc-dev
+> <add a file to project>
+> <save all>
+> <quit>
+> cd ..
+> diff -urNp openvp* openvpn*.org
+> ---
+>
+> will result in a complete change of all microsoft specific files
+> because of the new line issue.
+> is this enough problem?
 
-Having git to check out files differently in different OS is also
-a not correct, as checkouts may be used in shares or in *NIX emulation
-environments, so it have no effect.
+so why don't use --strip-trailing-cr (diffutils) or something similar 
+to avoid this?
 
-Another issue is packaging, if we change out the tree differently
-in several OSes, we may have different package content, which is
-something that should be avoided.
+So as long as msvc-dev does accept eol=lf input files, storing them as 
+eol=lf files is without issue?
 
-Currently any editor of MS supports LF end of lines, so there is no
-need to convert source files while checking out.
-
-The visual studio files should be stored as CRLF as they are generated
-by visual studio every save, in a way that CRLF are added.
-
-I handled only the files that may be touch by MS users.
-
-Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
----
- .gitattributes |    6 ++++++
- Makefile.am    |    1 +
- 2 files changed, 7 insertions(+), 0 deletions(-)
- create mode 100644 .gitattributes
-
-diff --git a/.gitattributes b/.gitattributes
-new file mode 100644
-index 0000000..7d779c7
---- /dev/null
-+++ b/.gitattributes
-@@ -0,0 +1,6 @@
-+*.c eol=lf
-+*.h eol=lf
-+*.rc eol=lf
-+*.txt eol=lf
-+*.vc*proj* eol=crlf
-+*.sln eol=crlf
-diff --git a/Makefile.am b/Makefile.am
-index 68aa0a8..ab3e3d2 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -52,6 +52,7 @@ dist_doc_DATA = \
- 
- dist_noinst_DATA = \
- 	.gitignore \
-+	.gitattributes \
- 	PORTS \
- 	README.IPv6 TODO.IPv6 \
- 	README.polarssl \
--- 
-1.7.3.4
+Regards,
+  M. Braun
+--
+[1] http://stackoverflow.com/questions/1889559/git-diff-to-ignore-m
 
 
