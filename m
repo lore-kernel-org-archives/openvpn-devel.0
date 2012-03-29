@@ -1,12 +1,14 @@
-Message-ID: <4F743D70.1090704@...1114...>
-Date: Thu, 29 Mar 2012 12:46:08 +0200
+Message-ID: <4F74591C.40100@...1114...>
+Date: Thu, 29 Mar 2012 14:44:12 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4F6D06C5.3030408@...1114...>
-	<1332575918-3384-5-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1332575918-3384-5-git-send-email-alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 4/6] build: msvc: upgrade to Visual
- Studio 2010 + fixups
+References: <4F4BE238.502@...1550...>
+	<CAOazyz19-bfVtb+o2tt86S5txE3iofBhAz+JR5hw7-qHmfoVeQ@...278...>
+	<4F4C6C14.9030303@...1550...> <4F4CAEF1.9070001@...1114...>
+	<4F4CB771.5060004@...1550...>
+In-Reply-To: <4F4CB771.5060004@...1550...>
+Subject: Re: [Openvpn-devel] [PATCH 02/02] Remove calls to OpenSSL when
+ building with --disable-ssl
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,55 +17,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Igor Novgorodov <igor@...1550...>
+Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 24/03/12 08:58, Alon Bar-Lev wrote:
-> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...> --- .gitignore
-> |    2 + build/msvc/msvc-generate/Makefile.am           |    2 +-=20
-> build/msvc/msvc-generate/msvc-generate.vcproj  |   74 ---=20
-> build/msvc/msvc-generate/msvc-generate.vcxproj |   69 +++=20
-> msvc-build.bat                                 |   27 +- msvc-dev.bat
-> |   19 +- msvc-env.bat                                   |    7 +-=20
-> openvpn.sln                                    |   90 ++--=20
-> src/compat/Makefile.am                         |    3 +-=20
-> src/compat/compat.vcproj                       |  197 ------=20
-> src/compat/compat.vcxproj                      |   87 +++=20
-> src/compat/compat.vcxproj.filters              |   42 ++=20
-> src/openvpn/Makefile.am                        |    3 +-=20
-> src/openvpn/openvpn.vcproj                     |  777
-> ------------------------ src/openvpn/openvpn.vcxproj
-> |  261 ++++++++ src/openvpn/openvpn.vcxproj.filters            |  458
-> ++++++++++++++ src/openvpnserv/Makefile.am                    |    3
-> +- src/openvpnserv/openvpnserv.vcproj             |  209 -------=20
-> src/openvpnserv/openvpnserv.vcxproj            |  112 ++++=20
-> src/openvpnserv/openvpnserv.vcxproj.filters    |   35 ++ 20 files
-> changed, 1153 insertions(+), 1324 deletions(-) delete mode 100644
-> build/msvc/msvc-generate/msvc-generate.vcproj create mode 100644
-> build/msvc/msvc-generate/msvc-generate.vcxproj delete mode 100644
-> src/compat/compat.vcproj create mode 100644 src/compat/compat.vcxproj=20
-> create mode 100644 src/compat/compat.vcxproj.filters delete mode
-> 100644 src/openvpn/openvpn.vcproj create mode 100644
-> src/openvpn/openvpn.vcxproj create mode 100644
-> src/openvpn/openvpn.vcxproj.filters delete mode 100644
-> src/openvpnserv/openvpnserv.vcproj create mode 100644
-> src/openvpnserv/openvpnserv.vcxproj create mode 100644
-> src/openvpnserv/openvpnserv.vcxproj.filters
+On 28/02/12 12:16, Igor Novgorodov wrote:
+>> On 28/02/12 06:54, Igor Novgorodov wrote:
+>>> Then maybe we should move these calls to crypto_openssl.c into 
+>>> crypto_init_lib() function to make crypto.c
+>>> library-independent? And why OpenSSL_add_all_algorithms() and
+>>> stuff is called only when USE_SSL is not defined?
+>>> 
+>>> And if these calls are for 0.9.8, maybe add a check for
+>>> OpenSSL version?
+>> Remember that OpenSSL covers two parts.  One part is the SSL
+>> stuff, the other part is the crypto layer.  So even if the SSL
+>> stuff isn't used, the crypto stuff most likely is.  In the crypto
+>> stuff, also all the hashing algorithms are included.  However,
+>> using SSL without crypto doesn't make sense.  If it's not needed
+>> any more by OpenSSL 1.0.0, then make it version dependent.  Can
+>> probably be done at compile time.
+> Well, i'm no expert in OpenSSL programming, but looking through 
+> internet, i haven't found an evidence that this stuff should not be
+> called during initialization in OpenSSL 1.0.x
+> 
+> So, just to make OpenVPN possible to build with --ssl-type=polarssl
+> and --disable-ssl, i propose the attached patch that moves calls to
+> these functions into crypto_openssl.c
+> 
+>> Removing the ERR_load_crypto_strings() call will most likely
+>> break the error logging too, which is used by the msg() function.
+>> It will not make the crypto/SSL errors more understandable, how I
+>> understand it.
+>> 
+>> May I suggest that both ERR_load_crypto_strings() and 
+>> SSL_load_error_strings() (gotta love the consistency of function
+>> naming) is loaded by default, unless ENABLE_SMALL is defined?
+> I agree, added the check for ENABLE_SMALL in ssl_openssl.c and 
+> crypto_openssl.c to the attached patch.
+> 
+>> Right now, this patch makes me really concerned and scared.  For
+>> this to be accepted, a lot of testing must be done - and most
+>> likely by people understanding the darker sides of crypto far
+>> better than I.  We can't risk that we're regressing on a well
+>> proved and tested encryption layer. There are people located in
+>> not so democratic countries who use OpenVPN to access a
+>> not-restricted/censored Internet - and their safety may rely on
+>> the security OpenVPN provides.
+> 
+> I agree fully. So if we just move these calls into
+> crypto_openssl.c, no regression would occur i think.
 
-Applied to master branches on -testing and -stable trees.
+Your patch has now been applied to the master branches on the -stable
+and -testing git trees.
 
+commit 39b54baa36e8625fd29d0a1ed6482f83fa78d322
+Author: Igor Novgorodov <igor@...1550...>
+Date:   Tue Feb 28 15:16:01 2012 +0400
 
-commit 3c1971de878bb3658c38b0504f314d38b6b765d2
-Author: Alon Bar-Lev <alon.barlev@...277...>
-Date:   Sat Mar 24 09:58:36 2012 +0200
+    Remove calls to OpenSSL when building with --disable-ssl
 
-    Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-    Acked-by: Samuli Sepp=C3=A4nen <samuli@...515...>
+    Move OpenSSL calls out from the generic crypto layer and into the
+    OpenSSL specific layer.  Also don't load all algortihms if SSL
+    isn't enabled.
+
+    Error strings will also not be loaded into memory if ENABLE_SMALL
+    is configured.
+
+    Signed-off-by: Igor Novgorodov <igor@...1550...>
+    Acked-by: Adriaan de Jong <dejong@...1435...>
+    Acked-by: David Sommerseth <davids@...1347...>
     Signed-off-by: David Sommerseth <davids@...1347...>
+
+
+Thank you very much for you contribution!
 
 
 kind regards,
@@ -73,8 +104,8 @@ David Sommerseth
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk90PW0ACgkQDC186MBRfroUVwCeLLO68J69XstVm9+0pm+I0PVc
-zysAnAgYqMa+Jp6UFQGa1H+vGQj98pxQ
-=3DZYPY
+iEYEARECAAYFAk90WRoACgkQDC186MBRfrqcawCeOudeBqhCzBH7PPXcE3J6otAJ
+dTQAnjccy239NSzTJodNHrCFtNnH25/E
+=CtJw
 -----END PGP SIGNATURE-----
 
