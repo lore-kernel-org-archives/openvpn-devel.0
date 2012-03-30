@@ -1,16 +1,10 @@
 MIME-Version: 1.0
-In-Reply-To: <4F759C75.2070103@...515...>
-References: <CAOazyz065tGCsmMkqCy57+jHcBLFCuOTBfbtFaeiQYBg5Ye15w@...278...>
-	<4F72EF52.8060301@...515...>
-	<CAOazyz1X6SXHJVAkioLueT+Y_5v7s=kx4PBVze=aQcoFvkCfyA@...278...>
-	<4F759366.3050503@...515...>
-	<CAP+U6tLRkq1ELDiX_99ys+SQo8i8nh+JRvg7SJYJEvUoCPOfng@...278...>
-	<4F759C75.2070103@...515...>
-Date: Fri, 30 Mar 2012 19:34:21 +0300
-Message-ID: <CAOazyz0oOqse7tydLb9n19UJc=UVjRZ5pB6Pn4THkt_SK8XrBg@...278...>
+In-Reply-To: <4F75D7D6.5030107@...515...>
+References: <4F75D7D6.5030107@...515...>
+Date: Fri, 30 Mar 2012 19:48:35 +0300
+Message-ID: <CAOazyz3GpGMB0cYQK2EpbRLV42_c1tzOMBfNFjfOs-vZB2xgCw@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [DISCUSS] OpenVPN public repositories at
-	github.com
+Subject: Re: [Openvpn-devel] Buildbot build flags
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,29 +16,62 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+Safest is to go with all combinations...
+Or at least:
+--disable-lzo --enable-lzo
+--enable-pkcs11 --disable-pkcs11
+--enable-selinux --disable-selinux
+--enable-iproute2 --disable-iproute2
+--disable-server
+--enable-small
+--disable-plugins
+--disable-management
+
+--disable-crypto --disable-ssl
+--with-crypto-library=3Dopenssl  --enable-crypo --enable-ssl
+--with-crypto-library=3Dopenssl  --enable-crypo --disable-ssl
+--with-crypto-library=3Dpolarssl  --enable-crypo --enable-ssl
+--with-crypto-library=3Dpolarssl  --enable-crypo --disable-ssl
+
+
+And... for windows, you can use the build-complete script to produce a
+complete installer on Linux, if that's work you are good.
+
+Anyway... I want to question [again] these options... I think openvpn
+provides more flexibility than it should... there is no point to
+disable plugins nor management, cryptoless operation is also somewhat
+always required... It can make the code much simpler!
 
 2012/3/30 Samuli Sepp=C3=A4nen <samuli@...515...>:
+> Hi all,
 >
->> Hi,
->>
->> 2012/3/30 Samuli Sepp=C3=A4nen <samuli@...515...>:
->>>>> [*] As in "We will have the community services on our own servers. Pe=
-riod."
->> BTW: If you like self-hosting, we're experimenting with Gerrit for
->> code review (also provides Git repo hosting as a by-product) and it's
->> looking quite promising. Would formalise the ACK / NACK workflow and
->> allow build bots to verify a patch / patch-set before merging.
->>
-> In fact, "Setup Gerrit" is on my TODO. The plan was to set it up after
-> the final 2.3 release. We'll see how all this turns out in the end.
-
-Well, I must say it does not work well in OpenSC.
-I guess I mean you should wait before jumping into this.
-This did not made code review easier, on the contrary much more complex.
-
-github interface is simple and productive... I think we should try
-this one in addition to the mailing list first.
-
-Alon.
+> Before Alon's buildsystem overhaul our buildbot farm tested building
+> with all unique combinations of the following build flags:
+>
+> --disable-lzo --disable-ssl, --disable-crypto, --disable-management
+>
+> In addition, each commit triggerer a build which used no build flags
+> (i.e. just ran "./configure").
+>
+> What build flags should we test now?
+>
+> --
+> Samuli Sepp=C3=A4nen
+> Community Manager
+> OpenVPN Technologies, Inc
+>
+> irc freenode net: mattock
+>
+>
+> -------------------------------------------------------------------------=
+-----
+> This SF email is sponsosred by:
+> Try Windows Azure free for 90 days Click Here
+> http://p.sf.net/sfu/sfd2d-msazure
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
