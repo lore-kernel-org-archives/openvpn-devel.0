@@ -1,13 +1,12 @@
-Message-ID: <4F7623B2.7040908@...1114...>
-Date: Fri, 30 Mar 2012 23:20:50 +0200
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1332674822-10508-1-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1332674822-10508-1-git-send-email-alon.barlev@...277...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig9150C17B730E1CCA40DC9E6B"
-Subject: Re: [Openvpn-devel] [PATCH] cleanup: flags should not be bool
+In-Reply-To: <4F761FEC.1000502@...1114...>
+References: <1329214286-9179-1-git-send-email-dejong@...1435...>
+	<4F761FEC.1000502@...1114...>
+Date: Sat, 31 Mar 2012 01:51:04 +0300
+Message-ID: <CAOazyz1OjVKEq5+0BcAgS9PVPcs77oJemG+kD3S7ZZUv+TiAEg@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 0/3] Use the garbage collector when
+ retrieving x509 fields
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,60 +15,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig9150C17B730E1CCA40DC9E6B
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 25/03/12 13:27, Alon Bar-Lev wrote:
-> Discussed at [1][2][3].
->=20
-> [1] https://bugs.gentoo.org/show_bug.cgi?id=3D297854#c2
-> [2] https://297854.bugs.gentoo.org/attachment.cgi?id=3D214304
-> [3] http://sourceforge.net/mailarchive/forum.php?thread_name=3D2012032511=
-1517.GI1359%40greenie.muc.de&forum_name=3Dopenvpn-devel
->=20
-> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-> ---
->  src/openvpn/socket.c |    6 +++---
->  src/openvpn/socket.h |    6 +++---
->  2 files changed, 6 insertions(+), 6 deletions(-)
->=20
+Hm.... I missed that one.
 
-Applied to master branches on -testing and -stable trees.
+I don't like this patch...
 
-commit 5cfe3d4c1897785b32565dbb59c914fac62b0ed9
-Author: Alon Bar-Lev <alon.barlev@...277...>
-Date:   Sun Mar 25 13:27:02 2012 +0200
+the gc_new() and gc_free() should be called once per function at
+prolog and epilog. This is the whole point of gc, otherwise there is
+no difference between it and simple malloc.
 
-    cleanup: flags should not be bool
+So:
+1. in pkcs11.c it should be moved out of the loop.
+2. In verify_cert, verify_callback we should add cleanup label.
 
-    Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-    Acked-by: Gert Doering <gert@...1296...>
-    Signed-off-by: David Sommerseth <davids@...1347...>
+Alon.
 
-
-kind regards,
-
-David Sommerseth
-
-
-
---------------enig9150C17B730E1CCA40DC9E6B
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk92I7IACgkQDC186MBRfrpC+ACfQib69GGSkYWx8Bema4l3PLP/
-CTcAn1jOhbyMuxnM5TVu7fb7Ng/QibIw
-=OnQX
------END PGP SIGNATURE-----
-
---------------enig9150C17B730E1CCA40DC9E6B--
+On Sat, Mar 31, 2012 at 12:04 AM, David Sommerseth
+<openvpn.list@...1114...> wrote:
+> On 14/02/12 11:11, Adriaan de Jong wrote:
+>> A number of the x509 functions allocated memory directly, instead of
+>> using the default OpenVPN convention: the garbage collector. This is
+>> fixed in this series of patches.
+>>
+>> Adriaan
+>
+> These patches got ACKed by James and me at the developers meeting
+> yesterday. =C2=A0They are now applied to the master branch on -testing and
+> -stable trees.
+>
+>
+> commit 8e5613c2a8545a67cab2734569a8f088100d731b
+> Author: Adriaan de Jong <dejong@...1435...>
+> Date: =C2=A0 Tue Feb 14 11:11:26 2012 +0100
+>
+> =C2=A0 =C2=A0Migrated x509_get_sha1_hash to use the garbage collector
+>
+> =C2=A0 =C2=A0Signed-off-by: Adriaan de Jong <dejong@...1435...>
+> =C2=A0 =C2=A0Acked-by: James Yonan <james@...515...>
+> =C2=A0 =C2=A0Acked-by: David Sommerseth <davids@...1347...>
+> =C2=A0 =C2=A0Signed-off-by: David Sommerseth <davids@...1347...>
+>
+> commit 025f30d7c6434aaf0ab4af3744f76aaf8c0b71d6
+> Author: Adriaan de Jong <dejong@...1435...>
+> Date: =C2=A0 Tue Feb 14 11:11:25 2012 +0100
+>
+> =C2=A0 =C2=A0Migrated x509_get_serial to use the garbage collector
+>
+> =C2=A0 =C2=A0Signed-off-by: Adriaan de Jong <dejong@...1435...>
+> =C2=A0 =C2=A0Acked-by: James Yonan <james@...515...>
+> =C2=A0 =C2=A0Acked-by: David Sommerseth <davids@...1347...>
+> =C2=A0 =C2=A0Signed-off-by: David Sommerseth <davids@...1347...>
+>
+> commit 00b973f8af85c3ea8fa3cef80eec55e8dc139b27
+> Author: Adriaan de Jong <dejong@...1435...>
+> Date: =C2=A0 Tue Feb 14 11:11:24 2012 +0100
+>
+> =C2=A0 =C2=A0Migrated x509_get_subject to use of the garbage collector
+>
+> =C2=A0 =C2=A0This also cleans up a messy call in pkcs11.c to
+> _openssl_get_subject, as discussed at FOSDEM.
+>
+> =C2=A0 =C2=A0Signed-off-by: Adriaan de Jong <dejong@...1435...>
+> =C2=A0 =C2=A0Acked-by: James Yonan <james@...515...>
+> =C2=A0 =C2=A0Acked-by: David Sommerseth <davids@...1347...>
+> =C2=A0 =C2=A0Signed-off-by: David Sommerseth <davids@...1347...>
+>
+>
+> kind regards,
+>
+> David Sommerseth
+>
+>
+> -------------------------------------------------------------------------=
+-----
+> This SF email is sponsosred by:
+> Try Windows Azure free for 90 days Click Here
+> http://p.sf.net/sfu/sfd2d-msazure
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
 
