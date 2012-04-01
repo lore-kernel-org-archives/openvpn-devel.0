@@ -1,13 +1,20 @@
 MIME-Version: 1.0
-In-Reply-To: <CAOazyz1OjVKEq5+0BcAgS9PVPcs77oJemG+kD3S7ZZUv+TiAEg@...278...>
-References: <1329214286-9179-1-git-send-email-dejong@...1435...>
-	<4F761FEC.1000502@...1114...>
-	<CAOazyz1OjVKEq5+0BcAgS9PVPcs77oJemG+kD3S7ZZUv+TiAEg@...278...>
-Date: Sun, 1 Apr 2012 16:47:52 +0300
-Message-ID: <CAOazyz04ByDHiug6-dVqoP5aO78jimUiKiNgHNb6OW2WLTJjeA@...278...>
+In-Reply-To: <CAOazyz0qpBm0s7HW8igXwMgRywGPbkcknDvHFQBxsrEUQbc=5Q@...278...>
+References: <4F6D06C5.3030408@...1114...>
+	<1332575918-3384-5-git-send-email-alon.barlev@...277...>
+	<4F743D70.1090704@...1114...>
+	<CAOazyz03pDXURcMLY_RgvEQcXHn-ftj0HHi-nG3H81tX2JadnA@...278...>
+	<4F745CE6.5070608@...1114...>
+	<CAOazyz01p7zCGvxxh0Un1c63mdF+zcgZSD24Lp8kF=NdpPmfSg@...278...>
+	<4F746C32.2070106@...1114...>
+	<CAOazyz1ygPjKiwp=xpOFHbiquD-=L4sLmdE_OoPBrYYpKSQX1w@...278...>
+	<1d265066de7b45fc4de8906d65b2e6d2@...1528...>
+	<CAOazyz0qpBm0s7HW8igXwMgRywGPbkcknDvHFQBxsrEUQbc=5Q@...278...>
+Date: Sun, 1 Apr 2012 16:49:59 +0300
+Message-ID: <CAOazyz13xR-=Omezw3uAjsyVf7m9TOG-oFr9yD1z-NJFLZ+NHg@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 0/3] Use the garbage collector when
- retrieving x509 fields
+Subject: Re: [Openvpn-devel] [PATCH 4/6] build: msvc: upgrade to Visual
+ Studio 2010 + fixups
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,93 +23,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: David Sommerseth <openvpn.list@...1114...>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: michael-dev <michael-dev@...1528...>, David Sommerseth <openvpn.list@...1114...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I sent candidate. Please review.
+Maybe it will be easier for you to treat the Microsoft generated files
+as binary blobs... these should remain as-is in all platforms, just
+like any other binary blob.
+The gitattributes patch I submitted does exactly that, without
+interfering with the global setting if it you find this configuration
+helpful.
 
-On Sat, Mar 31, 2012 at 1:51 AM, Alon Bar-Lev <alon.barlev@...277...> wrote:
-> Hm.... I missed that one.
+On Thu, Mar 29, 2012 at 7:37 PM, Alon Bar-Lev <alon.barlev@...277...> wrote:
+> On Thu, Mar 29, 2012 at 7:26 PM, michael-dev <michael-dev@...1528...> wrote:
+>> Hi,
+>>
+>> On Thu, 29 Mar 2012 18:10:24 +0200, Alon Bar-Lev wrote:
+>>> For example...
+>>>
+>>> at your end:
+>>> ---
+>>> ./configure
+>>> make
+>>> make dist
+>>> ---
+>>>
+>>> at other people end:
+>>> ---
+>>> tar -xf <tarball>
+>>> cp -a openvpn* openvpn*.org
+>>> cd openvpn*
+>>> msvc-dev
+>>> <add a file to project>
+>>> <save all>
+>>> <quit>
+>>> cd ..
+>>> diff -urNp openvp* openvpn*.org
+>>> ---
+>>>
+>>> will result in a complete change of all microsoft specific files
+>>> because of the new line issue.
+>>> is this enough problem?
+>>
+>> so why don't use --strip-trailing-cr (diffutils) or something similar
+>> to avoid this?
+>>
+>> So as long as msvc-dev does accept eol=lf input files, storing them as
+>> eol=lf files is without issue?
 >
-> I don't like this patch...
+> Hi,
 >
-> the gc_new() and gc_free() should be called once per function at
-> prolog and epilog. This is the whole point of gc, otherwise there is
-> no difference between it and simple malloc.
+> Because I believe that file format should be as-is and these diff/git
+> magic should be done only when forced, when invalid action was taken.
 >
-> So:
-> 1. in pkcs11.c it should be moved out of the loop.
-> 2. In verify_cert, verify_callback we should add cleanup label.
+> Of course all had been better if Microsoft supported keeping the line
+> format, but this is not the case.
+>
+> I want to see a "make dist" containing file format as it should be,
+> and Microsoft solution and project files should be CRLFed.
+>
+> I truly don't understand... there is a simple solution of git to
+> explicit set eol style on specific files, why not use it?
+>
+> And... also avoid using global setting of git, which is invalid anyway
+> as we maintain several projects which should be independent.
 >
 > Alon.
->
-> On Sat, Mar 31, 2012 at 12:04 AM, David Sommerseth
-> <openvpn.list@...1114...> wrote:
->> On 14/02/12 11:11, Adriaan de Jong wrote:
->>> A number of the x509 functions allocated memory directly, instead of
->>> using the default OpenVPN convention: the garbage collector. This is
->>> fixed in this series of patches.
->>>
->>> Adriaan
->>
->> These patches got ACKed by James and me at the developers meeting
->> yesterday. =C2=A0They are now applied to the master branch on -testing a=
-nd
->> -stable trees.
->>
->>
->> commit 8e5613c2a8545a67cab2734569a8f088100d731b
->> Author: Adriaan de Jong <dejong@...1435...>
->> Date: =C2=A0 Tue Feb 14 11:11:26 2012 +0100
->>
->> =C2=A0 =C2=A0Migrated x509_get_sha1_hash to use the garbage collector
->>
->> =C2=A0 =C2=A0Signed-off-by: Adriaan de Jong <dejong@...1435...>
->> =C2=A0 =C2=A0Acked-by: James Yonan <james@...515...>
->> =C2=A0 =C2=A0Acked-by: David Sommerseth <davids@...1347...>
->> =C2=A0 =C2=A0Signed-off-by: David Sommerseth <davids@...1347...>
->>
->> commit 025f30d7c6434aaf0ab4af3744f76aaf8c0b71d6
->> Author: Adriaan de Jong <dejong@...1435...>
->> Date: =C2=A0 Tue Feb 14 11:11:25 2012 +0100
->>
->> =C2=A0 =C2=A0Migrated x509_get_serial to use the garbage collector
->>
->> =C2=A0 =C2=A0Signed-off-by: Adriaan de Jong <dejong@...1435...>
->> =C2=A0 =C2=A0Acked-by: James Yonan <james@...515...>
->> =C2=A0 =C2=A0Acked-by: David Sommerseth <davids@...1347...>
->> =C2=A0 =C2=A0Signed-off-by: David Sommerseth <davids@...1347...>
->>
->> commit 00b973f8af85c3ea8fa3cef80eec55e8dc139b27
->> Author: Adriaan de Jong <dejong@...1435...>
->> Date: =C2=A0 Tue Feb 14 11:11:24 2012 +0100
->>
->> =C2=A0 =C2=A0Migrated x509_get_subject to use of the garbage collector
->>
->> =C2=A0 =C2=A0This also cleans up a messy call in pkcs11.c to
->> _openssl_get_subject, as discussed at FOSDEM.
->>
->> =C2=A0 =C2=A0Signed-off-by: Adriaan de Jong <dejong@...1435...>
->> =C2=A0 =C2=A0Acked-by: James Yonan <james@...515...>
->> =C2=A0 =C2=A0Acked-by: David Sommerseth <davids@...1347...>
->> =C2=A0 =C2=A0Signed-off-by: David Sommerseth <davids@...1347...>
->>
->>
->> kind regards,
->>
->> David Sommerseth
->>
->>
->> ------------------------------------------------------------------------=
-------
->> This SF email is sponsosred by:
->> Try Windows Azure free for 90 days Click Here
->> http://p.sf.net/sfu/sfd2d-msazure
->> _______________________________________________
->> Openvpn-devel mailing list
->> Openvpn-devel@lists.sourceforge.net
->> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->>
 
