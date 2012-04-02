@@ -1,16 +1,14 @@
+Message-ID: <4F798D6E.5050906@...1114...>
+Date: Mon, 02 Apr 2012 13:28:46 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-In-Reply-To: <4F7981C4.80409@...1114...>
-References: <1333351687-3732-1-git-send-email-dejong@...1435...>
-	<CAOazyz0MDBg75y+CRdYNEOdYBE83B_pYfZ3pz+JLyUdAyF6xgQ@...278...>
-	<CAP+U6tK3UHd=KR1th0vxdLnRUsZm47qKgk=BeNgzSmvYUFMdvw@...278...>
-	<4F797A66.8050502@...1114...>
-	<CAOazyz0uhi_ao2SN3Moi+tXRVhaJPd-O1eam0tqLo_6rehVREg@...278...>
-	<4F7981C4.80409@...1114...>
-Date: Mon, 2 Apr 2012 13:42:12 +0300
-Message-ID: <CAOazyz1eV7V7aB9WFr0LwJM-dyegeK1wyeLXJQAoDTB+J02E3A@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 1/6] Added support for new PolarSSL 1.1
-	RNG
+References: <CAOazyz1OjVKEq5+0BcAgS9PVPcs77oJemG+kD3S7ZZUv+TiAEg@...278...>
+	<1333287988-25921-1-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1333287988-25921-1-git-send-email-alon.barlev@...277...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig182EF64B77D3FF30AB194AE8"
+Subject: Re: [Openvpn-devel] [PATCH] cleanup: gc usage
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,67 +17,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+To: openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig182EF64B77D3FF30AB194AE8
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: openvpn-devel@lists.sourceforge.net
 
-On Mon, Apr 2, 2012 at 1:39 PM, David Sommerseth
-<openvpn.list@...1114...> wrote:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
->
-> On 02/04/12 12:25, Alon Bar-Lev wrote:
->> No no no.... I did not imply that this will be dynamic interface.
->> Nor that there is a use case.
->>
->> The current state of the code (even before the merge of polarssl)
->> was very complex. Now it is even more complex, with none
->> clean/strict separation between the common crypto code and the
->> library specific crypto code... Yes, I know these resides in
->> different sources, but it is more similar to what we call
->> "spaghetti" programming.
->>
->> What I suggest of doing is to create static callback structure
->> which is the interface of crypto library used by openvpn. This is
->> *STATIC* linkage.
->>
->> For example: typedef struct { result_t (*x509_get_username) (char
->> *cn, int cn_len, char *x509_username_field, x509_cert *cert) ... }
->> openvpn_crypto_enigne_t;
->>
->> I guess you understand how this struct will look like.
->>
->> Now, a nice side effect would be the ability to have both
->> libraries linked against openvpn, while choosing the engine at
->> configuration... Of course there is no real world use for this,
->> except for build (one build checks both libraries) and test (we can
->> use test one build for both).
->>
->> The main mission is to clean up the code, reducing the complexity,
->> making sure we can follow each crypto call to either common,
->> crypto-library-atom, or openvpn specific.
->>
->> Is that more clear?
->
-> Ahh, yeah! =C2=A0That makes more sense.
->
-> But I just need to be sure we're having the right focus. =C2=A0Are we
-> getting done with the autotools clean-up? =C2=A0If not, what's missing? =
-=C2=A0I
-> see more and more clean-up patches touching the C code now, so I just
-> want to be sure we're basically done with autotools. =C2=A0Otherwise,
-> getting rid of syshead.h is probably one of the next bigger steps.
+On 01/04/12 15:46, Alon Bar-Lev wrote:
+> Cleanup of "Use the garbage collector when retrieving x509 fields"
+> patch series.
+>=20
+> Discussed at [1].
+>=20
+> There should be an effort to produce common function prologue
+> and epilogue, so that cleanups will be done at single point.
+>=20
+> [1] http://comments.gmane.org/gmane.network.openvpn.devel/5401
+>=20
+> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+> ---
+>  src/openvpn/pkcs11.c              |    5 +--
+>  src/openvpn/pkcs11_polarssl.c     |    8 ++---
+>  src/openvpn/ssl_verify.c          |   53 +++++++++++++++++++++----------=
+------
+>  src/openvpn/ssl_verify_openssl.c  |   15 ++++++----
+>  src/openvpn/ssl_verify_polarssl.c |   18 +++++++-----
+>  5 files changed, 55 insertions(+), 44 deletions(-)
 
-Right.
-Next stage is getting rid of syshead.h... The following is to cleanup
-the crypto, I though that if someone can work on this in parallel we
-will do this twice as fast :)
+Applied to master branches on -testing and -stable trees
 
-But before we continue we need to stabilize the project again,
-creating the missing repositories, deciding about the
-github/sourceforge is needed. Deciding about the way to review and
-merge large changes.
+commit 75b49e406430299b187964744f82e50a9035a0d3
+Author: Alon Bar-Lev <alon.barlev@...277...>
+Date:   Sun Apr 1 16:46:28 2012 +0300
 
-Alon.
+    Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+    Acked-by: Adriaan de Jong <dejong@...1435...>
+    Signed-off-by: David Sommerseth <davids@...1347...>
+
+
+kind regards,
+
+David Sommerseth
+
+
+--------------enig182EF64B77D3FF30AB194AE8
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk95jXAACgkQDC186MBRfrp4dgCdGyefmsYUi1KqkD3OF40xGC4+
+E4AAoJEPntcDZzkhK5hhj82I+epVoL6G
+=Tdnp
+-----END PGP SIGNATURE-----
+
+--------------enig182EF64B77D3FF30AB194AE8--
 
