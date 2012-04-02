@@ -1,14 +1,14 @@
-Message-ID: <4F798D84.1070709@...1114...>
-Date: Mon, 02 Apr 2012 13:29:08 +0200
+Message-ID: <4F798D80.8000201@...1114...>
+Date: Mon, 02 Apr 2012 13:29:04 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <0004-cleanup-avoid-using-0-windows.patch>
-	<1333282357-2882-1-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1333282357-2882-1-git-send-email-alon.barlev@...277...>
+References: <CAOazyz0xh540Gk3j3T_O0B3ix9htz12dm0VMuKmB16FOQAAQoA@...278...>
+	<1333012602-5419-4-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1333012602-5419-4-git-send-email-alon.barlev@...277...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigD484A2FBA7A45BCA31E685C5"
-Subject: Re: [Openvpn-devel] [PATCH 4/4] cleanup: avoid using ~0 - windows
+	boundary="------------enig867A708A50B960DA80E14CEC"
+Subject: Re: [Openvpn-devel] [PATCH 3/4] cleanup: avoid using ~0 - netmask
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,30 +20,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD484A2FBA7A45BCA31E685C5
+--------------enig867A708A50B960DA80E14CEC
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-On 01/04/12 14:12, Alon Bar-Lev wrote:
-> Use the following constants:
-> - METRIC_NOT_USED
-> - TUN_ADAPTER_INDEX_INVALID
->=20
-> Modified: Use MAXDWORD for route loop.
+On 29/03/12 11:16, Alon Bar-Lev wrote:
+> Use IPV4_NETMASK_HOST constant.
 >=20
 > Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 > ---
->  src/openvpn/route.c |   30 +++++++++++++++++-------------
->  src/openvpn/tun.c   |   46 +++++++++++++++++++++++-----------------------
->  src/openvpn/tun.h   |    2 ++
->  3 files changed, 42 insertions(+), 36 deletions(-)
+>  src/openvpn/basic.h  |    2 ++
+>  src/openvpn/mroute.c |    2 +-
+>  src/openvpn/pf.c     |    2 +-
+>  src/openvpn/route.c  |   12 ++++++------
+>  src/openvpn/route.h  |    2 +-
+>  src/openvpn/tun.c    |    2 +-
+>  6 files changed, 12 insertions(+), 10 deletions(-)
 >=20
 
 Applied to master branches on -testing and -stable trees
 
-commit 12e46092bad76b88bb7439e1c1666e987669cfb1
+commit 32e576d270834636e8e8667fcb7e91cdac03b4a4
 Author: Alon Bar-Lev <alon.barlev@...277...>
-Date:   Sun Apr 1 15:12:37 2012 +0300
+Date:   Thu Mar 29 11:16:41 2012 +0200
 
     Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
     Acked-by: Gert Doering <gert@...1296...>
@@ -55,7 +54,8 @@ kind regards,
 David Sommerseth
 
 
---------------enigD484A2FBA7A45BCA31E685C5
+
+--------------enig867A708A50B960DA80E14CEC
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -64,10 +64,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk95jYQACgkQDC186MBRfrrg5gCgoBM0IjDXv7n/gkin1nyilmU4
-tmoAn24QDoeFbrVrdrRi/OytBmUgyPT7
-=VU6a
+iEYEARECAAYFAk95jYAACgkQDC186MBRfrr3/gCfWN1mmCK1aK44Cq8TwpHuoLO1
+nQgAoJRUsygEtc1pfgc5hv4CHUW8lemA
+=GG1W
 -----END PGP SIGNATURE-----
 
---------------enigD484A2FBA7A45BCA31E685C5--
+--------------enig867A708A50B960DA80E14CEC--
 
