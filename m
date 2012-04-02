@@ -1,20 +1,11 @@
+Message-ID: <4F79500E.6060005@...1435...>
+Date: Mon, 2 Apr 2012 09:06:54 +0200
+From: Adriaan de Jong <dejong@...1435...>
 MIME-Version: 1.0
-In-Reply-To: <CAOazyz0qpBm0s7HW8igXwMgRywGPbkcknDvHFQBxsrEUQbc=5Q@...278...>
-References: <4F6D06C5.3030408@...1114...>
-	<1332575918-3384-5-git-send-email-alon.barlev@...277...>
-	<4F743D70.1090704@...1114...>
-	<CAOazyz03pDXURcMLY_RgvEQcXHn-ftj0HHi-nG3H81tX2JadnA@...278...>
-	<4F745CE6.5070608@...1114...>
-	<CAOazyz01p7zCGvxxh0Un1c63mdF+zcgZSD24Lp8kF=NdpPmfSg@...278...>
-	<4F746C32.2070106@...1114...>
-	<CAOazyz1ygPjKiwp=xpOFHbiquD-=L4sLmdE_OoPBrYYpKSQX1w@...278...>
-	<1d265066de7b45fc4de8906d65b2e6d2@...1528...>
-	<CAOazyz0qpBm0s7HW8igXwMgRywGPbkcknDvHFQBxsrEUQbc=5Q@...278...>
-Date: Sun, 1 Apr 2012 16:49:59 +0300
-Message-ID: <CAOazyz13xR-=Omezw3uAjsyVf7m9TOG-oFr9yD1z-NJFLZ+NHg@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 4/6] build: msvc: upgrade to Visual
- Studio 2010 + fixups
+References: <CAOazyz1OjVKEq5+0BcAgS9PVPcs77oJemG+kD3S7ZZUv+TiAEg@...278...>
+	<1333287988-25921-1-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1333287988-25921-1-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] cleanup: gc usage
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,71 +14,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: michael-dev <michael-dev@...1528...>, David Sommerseth <openvpn.list@...1114...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Maybe it will be easier for you to treat the Microsoft generated files
-as binary blobs... these should remain as-is in all platforms, just
-like any other binary blob.
-The gitattributes patch I submitted does exactly that, without
-interfering with the global setting if it you find this configuration
-helpful.
+On 04/01/2012 03:46 PM, Alon Bar-Lev wrote:
+> Cleanup of "Use the garbage collector when retrieving x509 fields"
+> patch series.
+>
+> Discussed at [1].
+>
+> There should be an effort to produce common function prologue
+> and epilogue, so that cleanups will be done at single point.
+>
+> [1] http://comments.gmane.org/gmane.network.openvpn.devel/5401
+>
+> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+> ---
+>  
+>  int
+> diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+> index 5783528..30fb05d 100644
+> --- a/src/openvpn/ssl_verify.c
+> +++ b/src/openvpn/ssl_verify.c
+> @@ -538,8 +538,9 @@ verify_cert_call_command(const char *verify_command, struct env_set *es,
+>  static result_t
+>  verify_check_crl_dir(const char *crl_dir, openvpn_x509_cert_t *cert)
+>  {
+> +  result_t ret = FAILURE;
+>    char fn[256];
+> -  int fd;
+> +  int fd = -1;
+>    struct gc_arena gc = gc_new();
+>  
+>    char *serial = x509_get_serial(cert, &gc);
+> @@ -547,26 +548,29 @@ verify_check_crl_dir(const char *crl_dir, openvpn_x509_cert_t *cert)
+>    if (!openvpn_snprintf(fn, sizeof(fn), "%s%c%s", crl_dir, OS_SPECIFIC_DIRSEP, serial))
+>      {
+>        msg (D_HANDSHAKE, "VERIFY CRL: filename overflow");
+> -      gc_free(&gc);
+> -      return FAILURE;
+> +      goto cleanup;
+>      }
+>    fd = platform_open (fn, O_RDONLY, 0);
+>    if (fd >= 0)
+>      {
+>        msg (D_HANDSHAKE, "VERIFY CRL: certificate serial number %s is revoked", serial);
+> -      close(fd);
+> -      gc_free(&gc);
+> -      return FAILURE;
+> +      goto cleanup;
+>      }
+>  
+> -  gc_free(&gc);
+> +  ret = SUCCESS;
+>  
+> -  return SUCCESS;
+> +cleanup:
+> +
+> +  if (fd != -1)
+> +    close(fd);
+> +  gc_free(&gc);
+> +  return ret;
+>  }
+>  
+Thanks, looks good. Does platform_open return -1 on failure on all
+platforms? If so, ack, otherwise change that to < 0.
 
-On Thu, Mar 29, 2012 at 7:37 PM, Alon Bar-Lev <alon.barlev@...277...> wrote:
-> On Thu, Mar 29, 2012 at 7:26 PM, michael-dev <michael-dev@...1528...> wrote:
->> Hi,
->>
->> On Thu, 29 Mar 2012 18:10:24 +0200, Alon Bar-Lev wrote:
->>> For example...
->>>
->>> at your end:
->>> ---
->>> ./configure
->>> make
->>> make dist
->>> ---
->>>
->>> at other people end:
->>> ---
->>> tar -xf <tarball>
->>> cp -a openvpn* openvpn*.org
->>> cd openvpn*
->>> msvc-dev
->>> <add a file to project>
->>> <save all>
->>> <quit>
->>> cd ..
->>> diff -urNp openvp* openvpn*.org
->>> ---
->>>
->>> will result in a complete change of all microsoft specific files
->>> because of the new line issue.
->>> is this enough problem?
->>
->> so why don't use --strip-trailing-cr (diffutils) or something similar
->> to avoid this?
->>
->> So as long as msvc-dev does accept eol=lf input files, storing them as
->> eol=lf files is without issue?
->
-> Hi,
->
-> Because I believe that file format should be as-is and these diff/git
-> magic should be done only when forced, when invalid action was taken.
->
-> Of course all had been better if Microsoft supported keeping the line
-> format, but this is not the case.
->
-> I want to see a "make dist" containing file format as it should be,
-> and Microsoft solution and project files should be CRLFed.
->
-> I truly don't understand... there is a simple solution of git to
-> explicit set eol style on specific files, why not use it?
->
-> And... also avoid using global setting of git, which is invalid anyway
-> as we maintain several projects which should be independent.
->
-> Alon.
+Adriaan
 
