@@ -1,4 +1,4 @@
-Message-ID: <4F797A66.8050502@...1114...>
+Message-ID: <4F797A66.80001@...1114...>
 Date: Mon, 02 Apr 2012 12:07:34 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
@@ -53,8 +53,8 @@ David Sommerseth
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk95elsACgkQDC186MBRfrpVfACdEJgl6vYDeGH3DxL1foYET118
-u5gAn2mA6Zy5TIhtqYnV8qCP2XTJiyyr
-=K25q
+iEYEARECAAYFAk95el4ACgkQDC186MBRfrq+FQCghLkCxKyMxiERcbYeChKmtmKu
+WyIAn3t51ek+uM68tEPij5dO89GpRWHO
+=HQCn
 -----END PGP SIGNATURE-----
 
