@@ -1,12 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <4F79500E.6060005@...1435...>
-References: <CAOazyz1OjVKEq5+0BcAgS9PVPcs77oJemG+kD3S7ZZUv+TiAEg@...278...>
-	<1333287988-25921-1-git-send-email-alon.barlev@...277...>
-	<4F79500E.6060005@...1435...>
-Date: Mon, 2 Apr 2012 12:25:24 +0300
-Message-ID: <CAOazyz1ytO+Tx5nTKeX54=QbDE6G9kOVRo8fC4tSDy3_JeXVkA@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] cleanup: gc usage
+Sender: fabian@...1547...
+In-Reply-To: <CAOazyz0MDBg75y+CRdYNEOdYBE83B_pYfZ3pz+JLyUdAyF6xgQ@...278...>
+References: <1333351687-3732-1-git-send-email-dejong@...1435...>
+	<CAOazyz0MDBg75y+CRdYNEOdYBE83B_pYfZ3pz+JLyUdAyF6xgQ@...278...>
+From: Fabian Knittel <fabian.knittel@...1547...>
+Date: Mon, 2 Apr 2012 11:55:18 +0200
+Message-ID: <CAP+U6tK3UHd=KR1th0vxdLnRUsZm47qKgk=BeNgzSmvYUFMdvw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 1/6] Added support for new PolarSSL 1.1
+	RNG
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,15 +18,24 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To: Adriaan de Jong <dejong@...1435...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Mon, Apr 2, 2012 at 10:06 AM, Adriaan de Jong <dejong@...1435...> wrote:
-> Thanks, looks good. Does platform_open return -1 on failure on all
-> platforms? If so, ack, otherwise change that to < 0.
+Hi Alon,
 
-As far as I know, yes.
+2012/4/2 Alon Bar-Lev <alon.barlev@...277...>:
+> I also intend to work and cleanup the whole PolarSSL/OpenSSL mess...
+>
+> Design will be to introduce crypto engine callback structure,
+> registering openssl and polarssl, in a way that code is using the
+> callback structure while using runtime configuration one can select
+> which engine to use (if both are available).
 
-"""open() and creat() return the new file descriptor, or -1 if  an
-error  occurred."""
+What would be the use-case for switching crypto libraries at runtime?
+Would this be an important step towards the OpenVPN 3.0 concept?
+(Otherwise this sounds like quite a bit of work and potentially more
+processing overhead...)
+
+Cheers
+Fabian
 
