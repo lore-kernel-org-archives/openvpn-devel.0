@@ -1,12 +1,12 @@
-From: Adriaan de Jong <dejong@...1435...>
-Date: Mon, 2 Apr 2012 19:42:50 +0200
-Message-ID: <1CED409804E2164C8104F9E623B08B9012CB842339@...1436...>
+MIME-Version: 1.0
+In-Reply-To: <1CED409804E2164C8104F9E623B08B9012CB842339@...1436...>
 References: <1333351687-3732-1-git-send-email-dejong@...1435...>
 	<1333351687-3732-2-git-send-email-dejong@...1435...>
 	<CAOazyz1qqY0NzL0eFnAjqcqPzgs-V8=meTOKnULqdpvvYvO0Zg@...278...>
-In-Reply-To: <CAOazyz1qqY0NzL0eFnAjqcqPzgs-V8=meTOKnULqdpvvYvO0Zg@...278...>
-Content-Language: en-US
-MIME-Version: 1.0
+	<1CED409804E2164C8104F9E623B08B9012CB842339@...1436...>
+Date: Mon, 2 Apr 2012 20:50:43 +0300
+Message-ID: <CAOazyz26LUdDhZk48P6nAa3pWf4asi4RxGkAh9_Y4AJH3OCSPw@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
 Subject: Re: [Openvpn-devel] [PATCH 2/6] Added a configuration option to
  enable prediction resistance in the PolarSSL random number generator.
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,152 +17,247 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Alon Bar-Lev <alon.barlev@...277...>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Adriaan de Jong <dejong@...1435...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-UHJlZGljdGlvbiByZXNpc3RhbmNlIGlzIGEgdXNlZnVsIGZlYXR1cmUgdG8gaGF2ZSBpbiBzb21l
-IGNpcmNsZXMuIEl0J3MgZGVmaW5pdGVseSBhbiBvcHRpb24gdGhhdCdzIHVzZWZ1bCBmb3IgT3Bl
-blZQTi1OTCwgd2hpY2ggaXMgd2h5IEkgcG9ydGVkIGl0IHRvIHRoZSBtYWlubGluZS4gSWYgdGhl
-cmUgaXMgbm8gaW50ZXJlc3QsIGNvdWxkIHdlIGluY2x1ZGUgaXQgaW4gYSBjb250cmliIGRpcmVj
-dG9yeSBvciBzb21ldGhpbmcgYWxvbmcgdGhvc2UgbGluZXM/DQoNCkFkcmlhYW4NCg0KPiAtLS0t
-LU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBbG9uIEJhci1MZXYgW21haWx0bzphbG9u
-LmJhcmxldkAuLi4yNzcuLi5dDQo+IFNlbnQ6IG1hYW5kYWcgMiBhcHJpbCAyMDEyIDExOjE5DQo+
-IFRvOiBBZHJpYWFuIGRlIEpvbmcNCj4gQ2M6IG9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9y
-Z2UubmV0DQo+IFN1YmplY3Q6IFJlOiBbT3BlbnZwbi1kZXZlbF0gW1BBVENIIDIvNl0gQWRkZWQg
-YSBjb25maWd1cmF0aW9uIG9wdGlvbg0KPiB0byBlbmFibGUgcHJlZGljdGlvbiByZXNpc3RhbmNl
-IGluIHRoZSBQb2xhclNTTCByYW5kb20gbnVtYmVyDQo+IGdlbmVyYXRvci4NCj4gDQo+IEhlbGxv
-LA0KPiBJIHRoaW5rIHRoYXQgd2Ugc2hvdWxkIG5vdCBoYXZlIHRoZXNlIG9wdGlvbnMgc3BlY2lm
-aWMgdG8gb25lIGNyeXB0bw0KPiBsaWJyYXJ5Lg0KPiBBbG9uLg0KPiANCj4gT24gTW9uLCBBcHIg
-MiwgMjAxMiBhdCAxMDoyOCBBTSwgQWRyaWFhbiBkZSBKb25nIDxkZWpvbmdALi4uMTQzNS4uLj4N
-Cj4gd3JvdGU6DQo+ID4gU2lnbmVkLW9mZi1ieTogRWVsc2UtamFuIFN0dXR2b2V0IDxzdHV0dm9l
-dEAuLi4xNDM1Li4uPg0KPiA+IFNpZ25lZC1vZmYtYnk6IEFkcmlhYW4gZGUgSm9uZyA8ZGVqb25n
-QC4uLjE0MzUuLi4+DQo+ID4gLS0tDQo+ID4gwqBkb2Mvb3BlbnZwbi44IMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIHwgwqAgMTQgKysrKysrKysrKysrKysNCj4gPiDCoHNyYy9vcGVudnBuL2NyeXB0
-b19wb2xhcnNzbC5jIHwgwqAgwqA5ICsrKysrKysrKw0KPiA+IMKgc3JjL29wZW52cG4vY3J5cHRv
-X3BvbGFyc3NsLmggfCDCoCDCoDcgKysrKysrKw0KPiA+IMKgc3JjL29wZW52cG4vaW5pdC5jIMKg
-IMKgIMKgIMKgIMKgIMKgfCDCoCDCoDYgKysrKysrDQo+ID4gwqBzcmMvb3BlbnZwbi9vcHRpb25z
-LmMgwqAgwqAgwqAgwqAgfCDCoCAyMiArKysrKysrKysrKysrKysrKysrKysrDQo+ID4gwqBzcmMv
-b3BlbnZwbi9vcHRpb25zLmggwqAgwqAgwqAgwqAgfCDCoCDCoDMgKysrDQo+ID4gwqBzcmMvb3Bl
-bnZwbi9zeXNoZWFkLmggwqAgwqAgwqAgwqAgfCDCoCDCoDggKysrKysrKysNCj4gPiDCoDcgZmls
-ZXMgY2hhbmdlZCwgNjkgaW5zZXJ0aW9ucygrKSwgMCBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRp
-ZmYgLS1naXQgYS9kb2Mvb3BlbnZwbi44IGIvZG9jL29wZW52cG4uOCBpbmRleCA1M2Q2YmRiLi5l
-ZTQ2ZGU2DQo+ID4gMTAwNjQ0DQo+ID4gLS0tIGEvZG9jL29wZW52cG4uOA0KPiA+ICsrKyBiL2Rv
-Yy9vcGVudnBuLjgNCj4gPiBAQCAtMzg0Niw2ICszODQ2LDIwIEBAIHNwYWNlLXNhdmluZyBvcHRp
-bWl6YXRpb24gdGhhdCB1c2VzIHRoZSB1bmlxdWUNCj4gPiBpZGVudGlmaWVyIGZvcg0KPiA+IMKg
-ZGF0YWdyYW0gcmVwbGF5IHByb3RlY3Rpb24gYXMgdGhlIElWLg0KPiA+IMKgLlwiKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqDQo+ID4gwqAu
-VFANCj4gPiArLkIgXC1cLXVzZS1wcmVkaWN0aW9uLXJlc2lzdGFuY2UNCj4gPiArRW5hYmxlIHBy
-ZWRpY3Rpb24gcmVzaXN0YW5jZSBvbiBQb2xhclNTTCdzIFJORy4NCj4gPiArDQo+ID4gK0VuYWJs
-aW5nIHByZWRpY3Rpb24gcmVzaXN0YW5jZSBjYXVzZXMgdGhlIFJORyB0byByZXNlZWQgaW4gZWFj
-aCBjYWxsDQo+ID4gK2ZvciByYW5kb20uIFJlc2VlZGluZyB0aGlzIG9mdGVuIGNhbiBxdWlja2x5
-IGRlcGxldGUgdGhlIGtlcm5lbA0KPiA+ICtlbnRyb3B5IHBvb2wuDQo+ID4gKw0KPiA+ICtJZiB5
-b3UgbmVlZCB0aGlzIG9wdGlvbiwgcGxlYXNlIGNvbnNpZGVyIHJ1bm5pbmcgYSBkYWVtb24gdGhh
-dCBhZGRzDQo+ID4gK2VudHJvcHkgdG8gdGhlIGtlcm5lbCBwb29sLg0KPiA+ICsNCj4gPiArTm90
-ZSB0aGF0IHRoaXMgb3B0aW9uIG9ubHkgd29ya3Mgd2l0aCBQb2xhclNTTCB2ZXJzaW9ucyBncmVh
-dGVyIHRoYW4NCj4gPiArMS4xLg0KPiA+ICsuXCIqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioNCj4gPiArLlRQDQo+ID4gwqAuQiBcLVwtdGVz
-dC1jcnlwdG8NCj4gPiDCoERvIGEgc2VsZi10ZXN0IG9mIE9wZW5WUE4ncyBjcnlwdG8gb3B0aW9u
-cyBieSBlbmNyeXB0aW5nIGFuZA0KPiA+IMKgZGVjcnlwdGluZyB0ZXN0IHBhY2tldHMgdXNpbmcg
-dGhlIGRhdGEgY2hhbm5lbCBlbmNyeXB0aW9uIG9wdGlvbnMNCj4gPiBkaWZmIC0tZ2l0IGEvc3Jj
-L29wZW52cG4vY3J5cHRvX3BvbGFyc3NsLmMNCj4gPiBiL3NyYy9vcGVudnBuL2NyeXB0b19wb2xh
-cnNzbC5jIGluZGV4IDE1OGNjZmMuLjk2ZDQxYjcgMTAwNjQ0DQo+ID4gLS0tIGEvc3JjL29wZW52
-cG4vY3J5cHRvX3BvbGFyc3NsLmMNCj4gPiArKysgYi9zcmMvb3BlbnZwbi9jcnlwdG9fcG9sYXJz
-c2wuYw0KPiA+IEBAIC0yMTksNiArMjE5LDE1IEBAIGhhdmVnZV9zdGF0ZSAqIHJhbmRfY3R4X2dl
-dCgpDQo+ID4NCj4gPiDCoCNlbmRpZiAvKiAoUE9MQVJTU0xfVkVSU0lPTl9OVU1CRVIgPj0gMHgw
-MTAxMDAwMCkgKi8NCj4gPg0KPiA+ICsjaWZkZWYgRU5BQkxFX1BSRURJQ1RJT05fUkVTSVNUQU5D
-RQ0KPiA+ICt2b2lkIHJhbmRfY3R4X2VuYWJsZV9wcmVkaWN0aW9uX3Jlc2lzdGFuY2UoKQ0KPiA+
-ICt7DQo+ID4gKyDCoGN0cl9kcmJnX2NvbnRleHQgKmNkX2N0eCA9IHJhbmRfY3R4X2dldCgpOw0K
-PiA+ICsNCj4gPiArIMKgY3RyX2RyYmdfc2V0X3ByZWRpY3Rpb25fcmVzaXN0YW5jZShjZF9jdHgs
-IDEpOyB9ICNlbmRpZiAvKg0KPiA+ICtFTkFCTEVfUFJFRElDVElPTl9SRVNJU1RBTkNFICovDQo+
-ID4gKw0KPiA+IMKgaW50DQo+ID4gwqByYW5kX2J5dGVzICh1aW50OF90ICpvdXRwdXQsIGludCBs
-ZW4pDQo+ID4gwqB7DQo+ID4gZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL2NyeXB0b19wb2xhcnNz
-bC5oDQo+ID4gYi9zcmMvb3BlbnZwbi9jcnlwdG9fcG9sYXJzc2wuaCBpbmRleCAyZjMwM2RiLi42
-MTUyODc4IDEwMDY0NA0KPiA+IC0tLSBhL3NyYy9vcGVudnBuL2NyeXB0b19wb2xhcnNzbC5oDQo+
-ID4gKysrIGIvc3JjL29wZW52cG4vY3J5cHRvX3BvbGFyc3NsLmgNCj4gPiBAQCAtOTYsNCArOTYs
-MTEgQEAgY3RyX2RyYmdfY29udGV4dCAqIHJhbmRfY3R4X2dldCgpOw0KPiA+IMKgaGF2ZWdlX3N0
-YXRlICogcmFuZF9jdHhfZ2V0KCk7DQo+ID4gwqAjZW5kaWYNCj4gPg0KPiA+ICsjaWZkZWYgRU5B
-QkxFX1BSRURJQ1RJT05fUkVTSVNUQU5DRQ0KPiA+ICsvKioNCj4gPiArICogRW5hYmxlIHByZWRp
-Y3Rpb24gcmVzaXN0YW5jZSBvbiB0aGUgcmFuZG9tIG51bWJlciBnZW5lcmF0b3IuDQo+ID4gKyAq
-Lw0KPiA+ICt2b2lkIHJhbmRfY3R4X2VuYWJsZV9wcmVkaWN0aW9uX3Jlc2lzdGFuY2UoKTsNCj4g
-PiArI2VuZGlmDQo+ID4gKw0KPiA+IMKgI2VuZGlmIC8qIENSWVBUT19QT0xBUlNTTF9IXyAqLw0K
-PiA+IGRpZmYgLS1naXQgYS9zcmMvb3BlbnZwbi9pbml0LmMgYi9zcmMvb3BlbnZwbi9pbml0LmMg
-aW5kZXgNCj4gPiBiYzc3MThlLi4wNWEwN2ZhIDEwMDY0NA0KPiA+IC0tLSBhL3NyYy9vcGVudnBu
-L2luaXQuYw0KPiA+ICsrKyBiL3NyYy9vcGVudnBuL2luaXQuYw0KPiA+IEBAIC0yMDA4LDYgKzIw
-MDgsMTIgQEAgaW5pdF9jcnlwdG9fcHJlIChzdHJ1Y3QgY29udGV4dCAqYywgY29uc3QNCj4gPiB1
-bnNpZ25lZCBpbnQgZmxhZ3MpDQo+ID4NCj4gPiDCoCBpZiAoYy0+b3B0aW9ucy5tdXRlX3JlcGxh
-eV93YXJuaW5ncykNCj4gPiDCoCDCoCBjLT5jMi5jcnlwdG9fb3B0aW9ucy5mbGFncyB8PSBDT19N
-VVRFX1JFUExBWV9XQVJOSU5HUzsNCj4gPiArDQo+ID4gKyNpZmRlZiBFTkFCTEVfUFJFRElDVElP
-Tl9SRVNJU1RBTkNFDQo+ID4gKyDCoGlmIChjLT5vcHRpb25zLnVzZV9wcmVkaWN0aW9uX3Jlc2lz
-dGFuY2UpDQo+ID4gKyDCoCDCoHJhbmRfY3R4X2VuYWJsZV9wcmVkaWN0aW9uX3Jlc2lzdGFuY2Uo
-KTsNCj4gPiArI2VuZGlmDQo+ID4gKw0KPiA+IMKgfQ0KPiA+DQo+ID4gwqAvKg0KPiA+IGRpZmYg
-LS1naXQgYS9zcmMvb3BlbnZwbi9vcHRpb25zLmMgYi9zcmMvb3BlbnZwbi9vcHRpb25zLmMgaW5k
-ZXgNCj4gPiBiZDgzODQzLi41YjUyZWQwIDEwMDY0NA0KPiA+IC0tLSBhL3NyYy9vcGVudnBuL29w
-dGlvbnMuYw0KPiA+ICsrKyBiL3NyYy9vcGVudnBuL29wdGlvbnMuYw0KPiA+IEBAIC01NDUsNiAr
-NTQ1LDEwIEBAIHN0YXRpYyBjb25zdCBjaGFyIHVzYWdlX21lc3NhZ2VbXSA9DQo+ID4gwqAgIiDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoHVzaW5nIGZpbGUuXG4iDQo+ID4gwqAgIi0tdGVzdC1j
-cnlwdG8gwqAgOiBSdW4gYSBzZWxmLXRlc3Qgb2YgY3J5cHRvIGZlYXR1cmVzIGVuYWJsZWQuXG4i
-DQo+ID4gwqAgIiDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoEZvciBkZWJ1Z2dpbmcgb25seS5c
-biINCj4gPiArI2lmZGVmIEVOQUJMRV9QUkVESUNUSU9OX1JFU0lTVEFOQ0UNCj4gPiArIMKgIi0t
-dXNlLXByZWRpY3Rpb24tcmVzaXN0YW5jZTogRW5hYmxlIHByZWRpY3Rpb24gcmVzaXN0YW5jZSBv
-biB0aGUNCj4gcmFuZG9tXG4iDQo+ID4gKyDCoCIgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgbnVtYmVyIGdlbmVyYXRvci5cbiINCj4gPiArI2VuZGlmDQo+ID4gwqAj
-aWZkZWYgRU5BQkxFX1NTTA0KPiA+IMKgICJcbiINCj4gPiDCoCAiVExTIEtleSBOZWdvdGlhdGlv
-biBPcHRpb25zOlxuIg0KPiA+IEBAIC04MzcsNiArODQxLDkgQEAgaW5pdF9vcHRpb25zIChzdHJ1
-Y3Qgb3B0aW9ucyAqbywgY29uc3QgYm9vbA0KPiA+IGluaXRfZ2MpDQo+ID4gwqAgby0+cmVwbGF5
-X3RpbWUgPSBERUZBVUxUX1RJTUVfQkFDS1RSQUNLOw0KPiA+IMKgIG8tPnVzZV9pdiA9IHRydWU7
-DQo+ID4gwqAgby0+a2V5X2RpcmVjdGlvbiA9IEtFWV9ESVJFQ1RJT05fQklESVJFQ1RJT05BTDsN
-Cj4gPiArI2lmZGVmIEVOQUJMRV9QUkVESUNUSU9OX1JFU0lTVEFOQ0UNCj4gPiArIMKgby0+dXNl
-X3ByZWRpY3Rpb25fcmVzaXN0YW5jZSA9IGZhbHNlOyAjZW5kaWYNCj4gPiDCoCNpZmRlZiBFTkFC
-TEVfU1NMDQo+ID4gwqAgby0+a2V5X21ldGhvZCA9IDI7DQo+ID4gwqAgby0+dGxzX3RpbWVvdXQg
-PSAyOw0KPiA+IEBAIC0xNTgxLDYgKzE1ODgsOSBAQCBzaG93X3NldHRpbmdzIChjb25zdCBzdHJ1
-Y3Qgb3B0aW9ucyAqbykNCj4gPiDCoCBTSE9XX1NUUiAocGFja2V0X2lkX2ZpbGUpOw0KPiA+IMKg
-IFNIT1dfQk9PTCAodXNlX2l2KTsNCj4gPiDCoCBTSE9XX0JPT0wgKHRlc3RfY3J5cHRvKTsNCj4g
-PiArI2lmZGVmIEVOQUJMRV9QUkVESUNUSU9OX1JFU0lTVEFOQ0UNCj4gPiArIMKgU0hPV19CT09M
-ICh1c2VfcHJlZGljdGlvbl9yZXNpc3RhbmNlKTsgI2VuZGlmDQo+ID4NCj4gPiDCoCNpZmRlZiBF
-TkFCTEVfU1NMDQo+ID4gwqAgU0hPV19CT09MICh0bHNfc2VydmVyKTsNCj4gPiBAQCAtMzAxOCw2
-ICszMDI4LDExIEBAIG9wdGlvbnNfc3RyaW5nIChjb25zdCBzdHJ1Y3Qgb3B0aW9ucyAqbywNCj4g
-PiDCoCDCoCDCoCDCoCDCoGJ1Zl9wcmludGYgKCZvdXQsICIsbm8tcmVwbGF5Iik7DQo+ID4gwqAg
-wqAgwqAgwqBpZiAoIW8tPnVzZV9pdikNCj4gPiDCoCDCoCDCoCDCoCDCoGJ1Zl9wcmludGYgKCZv
-dXQsICIsbm8taXYiKTsNCj4gPiArDQo+ID4gKyNpZmRlZiBFTkFCTEVfUFJFRElDVElPTl9SRVNJ
-U1RBTkNFDQo+ID4gKyDCoCDCoCDCoCDCoGlmIChvLT51c2VfcHJlZGljdGlvbl9yZXNpc3RhbmNl
-KQ0KPiA+ICsgwqAgwqAgwqAgwqAgwqBidWZfcHJpbnRmICgmb3V0LCAiLHVzZS1wcmVkaWN0aW9u
-LXJlc2lzdGFuY2UiKTsgI2VuZGlmDQo+ID4gwqAgwqAgwqAgfQ0KPiA+DQo+ID4gwqAjaWZkZWYg
-RU5BQkxFX1NTTA0KPiA+IEBAIC02NDE2LDYgKzY0MzEsMTMgQEAgYWRkX29wdGlvbiAoc3RydWN0
-IG9wdGlvbnMgKm9wdGlvbnMsDQo+ID4gwqAgwqAgwqAgb3B0aW9ucy0+a2V5c2l6ZSA9IGtleXNp
-emU7DQo+ID4gwqAgwqAgfQ0KPiA+IMKgI2VuZGlmDQo+ID4gKyNpZmRlZiBFTkFCTEVfUFJFRElD
-VElPTl9SRVNJU1RBTkNFDQo+ID4gKyDCoGVsc2UgaWYgKHN0cmVxIChwWzBdLCAidXNlLXByZWRp
-Y3Rpb24tcmVzaXN0YW5jZSIpKQ0KPiA+ICsgwqAgwqB7DQo+ID4gKyDCoCDCoCDCoFZFUklGWV9Q
-RVJNSVNTSU9OIChPUFRfUF9HRU5FUkFMKTsNCj4gPiArIMKgIMKgIMKgb3B0aW9ucy0+dXNlX3By
-ZWRpY3Rpb25fcmVzaXN0YW5jZSA9IHRydWU7DQo+ID4gKyDCoCDCoH0NCj4gPiArI2VuZGlmDQo+
-ID4gwqAjaWZkZWYgRU5BQkxFX1NTTA0KPiA+IMKgIGVsc2UgaWYgKHN0cmVxIChwWzBdLCAic2hv
-dy10bHMiKSkNCj4gPiDCoCDCoCB7DQo+ID4gZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL29wdGlv
-bnMuaCBiL3NyYy9vcGVudnBuL29wdGlvbnMuaCBpbmRleA0KPiA+IDllNzhkMDAuLjFiZTNkZmEg
-MTAwNjQ0DQo+ID4gLS0tIGEvc3JjL29wZW52cG4vb3B0aW9ucy5oDQo+ID4gKysrIGIvc3JjL29w
-ZW52cG4vb3B0aW9ucy5oDQo+ID4gQEAgLTUyMCw2ICs1MjAsOSBAQCBzdHJ1Y3Qgb3B0aW9ucw0K
-PiA+IMKgIGNvbnN0IGNoYXIgKnBhY2tldF9pZF9maWxlOw0KPiA+IMKgIGJvb2wgdXNlX2l2Ow0K
-PiA+IMKgIGJvb2wgdGVzdF9jcnlwdG87DQo+ID4gKyNpZmRlZiBFTkFCTEVfUFJFRElDVElPTl9S
-RVNJU1RBTkNFDQo+ID4gKyDCoGJvb2wgdXNlX3ByZWRpY3Rpb25fcmVzaXN0YW5jZTsNCj4gPiAr
-I2VuZGlmDQo+ID4NCj4gPiDCoCNpZmRlZiBFTkFCTEVfU1NMDQo+ID4gwqAgLyogVExTIChjb250
-cm9sIGNoYW5uZWwpIHBhcm1zICovDQo+ID4gZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL3N5c2hl
-YWQuaCBiL3NyYy9vcGVudnBuL3N5c2hlYWQuaCBpbmRleA0KPiA+IGU2MGRjNDQuLmIxNGQ1MGQg
-MTAwNjQ0DQo+ID4gLS0tIGEvc3JjL29wZW52cG4vc3lzaGVhZC5oDQo+ID4gKysrIGIvc3JjL29w
-ZW52cG4vc3lzaGVhZC5oDQo+ID4gQEAgLTUzNCw2ICs1MzQsMTQgQEAgc29ja2V0X2RlZmluZWQg
-KGNvbnN0IHNvY2tldF9kZXNjcmlwdG9yX3Qgc2QpDQo+ID4gwqAjZGVmaW5lIE1BTkFHTUVOVF9F
-WFRFUk5BTF9LRVkNCj4gPiDCoCNlbmRpZg0KPiA+DQo+ID4gKy8qIEVuYWJsZSBQb2xhclNTTCBS
-TkcgcHJlZGljdGlvbiByZXNpc3RhbmNlIHN1cHBvcnQgKi8gI2lmZGVmDQo+ID4gK0VOQUJMRV9D
-UllQVE9fUE9MQVJTU0wgI2luY2x1ZGUgPHBvbGFyc3NsL3ZlcnNpb24uaD4gI2lmDQo+ID4gK1BP
-TEFSU1NMX1ZFUlNJT05fTlVNQkVSID49IDB4MDEwMTAwMDAgI2RlZmluZQ0KPiA+ICtFTkFCTEVf
-UFJFRElDVElPTl9SRVNJU1RBTkNFICNlbmRpZiAjZW5kaWYgLyogRU5BQkxFX0NSWVBUT19QT0xB
-UlNTTA0KPiA+ICsqLw0KPiA+ICsNCj4gPiDCoC8qDQo+ID4gwqAqIE1BTkFHRU1FTlRfSU5fRVhU
-UkEgYWxsb3dzIHRoZSBtYW5hZ2VtZW50IGludGVyZmFjZSB0bw0KPiA+IMKgKiByZWFkIG11bHRp
-LWxpbmUgaW5wdXRzIGZyb20gY2xpZW50cy4NCj4gPiAtLQ0KPiA+IDEuNy41LjQNCj4gPg0KPiA+
-DQo+ID4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tDQo+IC0NCj4gPiAtLS0tLS0tLQ0KPiA+IFRoaXMgU0YgZW1haWwg
-aXMgc3BvbnNvc3JlZCBieToNCj4gPiBUcnkgV2luZG93cyBBenVyZSBmcmVlIGZvciA5MCBkYXlz
-IENsaWNrIEhlcmUNCj4gPiBodHRwOi8vcC5zZi5uZXQvc2Z1L3NmZDJkLW1zYXp1cmUNCj4gPiBf
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KPiA+IE9wZW52
-cG4tZGV2ZWwgbWFpbGluZyBsaXN0DQo+ID4gT3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3Jn
-ZS5uZXQNCj4gPiBodHRwczovL2xpc3RzLnNvdXJjZWZvcmdlLm5ldC9saXN0cy9saXN0aW5mby9v
-cGVudnBuLWRldmVsDQo=
+Just that porting to OpenVPN needs to be consistent.
+There is no sense in supporting a feature using one cryptographic
+library, while this one is also the one that least use...
+So I suggest either you port this to openssl as well, or drop this.
+I know there are some other abnormalities in crypto, I will dig them
+out when I cleanup this code as well.
+
+On Mon, Apr 2, 2012 at 8:42 PM, Adriaan de Jong <dejong@...1435...> wrote:
+> Prediction resistance is a useful feature to have in some circles. It's d=
+efinitely an option that's useful for OpenVPN-NL, which is why I ported it =
+to the mainline. If there is no interest, could we include it in a contrib =
+directory or something along those lines?
+>
+> Adriaan
+>
+>> -----Original Message-----
+>> From: Alon Bar-Lev [mailto:alon.barlev@...277...]
+>> Sent: maandag 2 april 2012 11:19
+>> To: Adriaan de Jong
+>> Cc: openvpn-devel@lists.sourceforge.net
+>> Subject: Re: [Openvpn-devel] [PATCH 2/6] Added a configuration option
+>> to enable prediction resistance in the PolarSSL random number
+>> generator.
+>>
+>> Hello,
+>> I think that we should not have these options specific to one crypto
+>> library.
+>> Alon.
+>>
+>> On Mon, Apr 2, 2012 at 10:28 AM, Adriaan de Jong <dejong@...1435...>
+>> wrote:
+>> > Signed-off-by: Eelse-jan Stutvoet <stutvoet@...1435...>
+>> > Signed-off-by: Adriaan de Jong <dejong@...1435...>
+>> > ---
+>> > =C2=A0doc/openvpn.8 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 | =C2=A0 14 ++++++++++++++
+>> > =C2=A0src/openvpn/crypto_polarssl.c | =C2=A0 =C2=A09 +++++++++
+>> > =C2=A0src/openvpn/crypto_polarssl.h | =C2=A0 =C2=A07 +++++++
+>> > =C2=A0src/openvpn/init.c =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0| =
+=C2=A0 =C2=A06 ++++++
+>> > =C2=A0src/openvpn/options.c =C2=A0 =C2=A0 =C2=A0 =C2=A0 | =C2=A0 22 ++=
+++++++++++++++++++++
+>> > =C2=A0src/openvpn/options.h =C2=A0 =C2=A0 =C2=A0 =C2=A0 | =C2=A0 =C2=
+=A03 +++
+>> > =C2=A0src/openvpn/syshead.h =C2=A0 =C2=A0 =C2=A0 =C2=A0 | =C2=A0 =C2=
+=A08 ++++++++
+>> > =C2=A07 files changed, 69 insertions(+), 0 deletions(-)
+>> >
+>> > diff --git a/doc/openvpn.8 b/doc/openvpn.8 index 53d6bdb..ee46de6
+>> > 100644
+>> > --- a/doc/openvpn.8
+>> > +++ b/doc/openvpn.8
+>> > @@ -3846,6 +3846,20 @@ space-saving optimization that uses the unique
+>> > identifier for
+>> > =C2=A0datagram replay protection as the IV.
+>> > =C2=A0.\"*********************************************************
+>> > =C2=A0.TP
+>> > +.B \-\-use-prediction-resistance
+>> > +Enable prediction resistance on PolarSSL's RNG.
+>> > +
+>> > +Enabling prediction resistance causes the RNG to reseed in each call
+>> > +for random. Reseeding this often can quickly deplete the kernel
+>> > +entropy pool.
+>> > +
+>> > +If you need this option, please consider running a daemon that adds
+>> > +entropy to the kernel pool.
+>> > +
+>> > +Note that this option only works with PolarSSL versions greater than
+>> > +1.1.
+>> > +.\"*********************************************************
+>> > +.TP
+>> > =C2=A0.B \-\-test-crypto
+>> > =C2=A0Do a self-test of OpenVPN's crypto options by encrypting and
+>> > =C2=A0decrypting test packets using the data channel encryption options
+>> > diff --git a/src/openvpn/crypto_polarssl.c
+>> > b/src/openvpn/crypto_polarssl.c index 158ccfc..96d41b7 100644
+>> > --- a/src/openvpn/crypto_polarssl.c
+>> > +++ b/src/openvpn/crypto_polarssl.c
+>> > @@ -219,6 +219,15 @@ havege_state * rand_ctx_get()
+>> >
+>> > =C2=A0#endif /* (POLARSSL_VERSION_NUMBER >=3D 0x01010000) */
+>> >
+>> > +#ifdef ENABLE_PREDICTION_RESISTANCE
+>> > +void rand_ctx_enable_prediction_resistance()
+>> > +{
+>> > + =C2=A0ctr_drbg_context *cd_ctx =3D rand_ctx_get();
+>> > +
+>> > + =C2=A0ctr_drbg_set_prediction_resistance(cd_ctx, 1); } #endif /*
+>> > +ENABLE_PREDICTION_RESISTANCE */
+>> > +
+>> > =C2=A0int
+>> > =C2=A0rand_bytes (uint8_t *output, int len)
+>> > =C2=A0{
+>> > diff --git a/src/openvpn/crypto_polarssl.h
+>> > b/src/openvpn/crypto_polarssl.h index 2f303db..6152878 100644
+>> > --- a/src/openvpn/crypto_polarssl.h
+>> > +++ b/src/openvpn/crypto_polarssl.h
+>> > @@ -96,4 +96,11 @@ ctr_drbg_context * rand_ctx_get();
+>> > =C2=A0havege_state * rand_ctx_get();
+>> > =C2=A0#endif
+>> >
+>> > +#ifdef ENABLE_PREDICTION_RESISTANCE
+>> > +/**
+>> > + * Enable prediction resistance on the random number generator.
+>> > + */
+>> > +void rand_ctx_enable_prediction_resistance();
+>> > +#endif
+>> > +
+>> > =C2=A0#endif /* CRYPTO_POLARSSL_H_ */
+>> > diff --git a/src/openvpn/init.c b/src/openvpn/init.c index
+>> > bc7718e..05a07fa 100644
+>> > --- a/src/openvpn/init.c
+>> > +++ b/src/openvpn/init.c
+>> > @@ -2008,6 +2008,12 @@ init_crypto_pre (struct context *c, const
+>> > unsigned int flags)
+>> >
+>> > =C2=A0 if (c->options.mute_replay_warnings)
+>> > =C2=A0 =C2=A0 c->c2.crypto_options.flags |=3D CO_MUTE_REPLAY_WARNINGS;
+>> > +
+>> > +#ifdef ENABLE_PREDICTION_RESISTANCE
+>> > + =C2=A0if (c->options.use_prediction_resistance)
+>> > + =C2=A0 =C2=A0rand_ctx_enable_prediction_resistance();
+>> > +#endif
+>> > +
+>> > =C2=A0}
+>> >
+>> > =C2=A0/*
+>> > diff --git a/src/openvpn/options.c b/src/openvpn/options.c index
+>> > bd83843..5b52ed0 100644
+>> > --- a/src/openvpn/options.c
+>> > +++ b/src/openvpn/options.c
+>> > @@ -545,6 +545,10 @@ static const char usage_message[] =3D
+>> > =C2=A0 " =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0using file.\n"
+>> > =C2=A0 "--test-crypto =C2=A0 : Run a self-test of crypto features enab=
+led.\n"
+>> > =C2=A0 " =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0For debugging only.\n"
+>> > +#ifdef ENABLE_PREDICTION_RESISTANCE
+>> > + =C2=A0"--use-prediction-resistance: Enable prediction resistance on =
+the
+>> random\n"
+>> > + =C2=A0" =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 number generator.\n"
+>> > +#endif
+>> > =C2=A0#ifdef ENABLE_SSL
+>> > =C2=A0 "\n"
+>> > =C2=A0 "TLS Key Negotiation Options:\n"
+>> > @@ -837,6 +841,9 @@ init_options (struct options *o, const bool
+>> > init_gc)
+>> > =C2=A0 o->replay_time =3D DEFAULT_TIME_BACKTRACK;
+>> > =C2=A0 o->use_iv =3D true;
+>> > =C2=A0 o->key_direction =3D KEY_DIRECTION_BIDIRECTIONAL;
+>> > +#ifdef ENABLE_PREDICTION_RESISTANCE
+>> > + =C2=A0o->use_prediction_resistance =3D false; #endif
+>> > =C2=A0#ifdef ENABLE_SSL
+>> > =C2=A0 o->key_method =3D 2;
+>> > =C2=A0 o->tls_timeout =3D 2;
+>> > @@ -1581,6 +1588,9 @@ show_settings (const struct options *o)
+>> > =C2=A0 SHOW_STR (packet_id_file);
+>> > =C2=A0 SHOW_BOOL (use_iv);
+>> > =C2=A0 SHOW_BOOL (test_crypto);
+>> > +#ifdef ENABLE_PREDICTION_RESISTANCE
+>> > + =C2=A0SHOW_BOOL (use_prediction_resistance); #endif
+>> >
+>> > =C2=A0#ifdef ENABLE_SSL
+>> > =C2=A0 SHOW_BOOL (tls_server);
+>> > @@ -3018,6 +3028,11 @@ options_string (const struct options *o,
+>> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0buf_printf (&out, ",no-replay");
+>> > =C2=A0 =C2=A0 =C2=A0 =C2=A0if (!o->use_iv)
+>> > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0buf_printf (&out, ",no-iv");
+>> > +
+>> > +#ifdef ENABLE_PREDICTION_RESISTANCE
+>> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0if (o->use_prediction_resistance)
+>> > + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0buf_printf (&out, ",use-prediction=
+-resistance"); #endif
+>> > =C2=A0 =C2=A0 =C2=A0 }
+>> >
+>> > =C2=A0#ifdef ENABLE_SSL
+>> > @@ -6416,6 +6431,13 @@ add_option (struct options *options,
+>> > =C2=A0 =C2=A0 =C2=A0 options->keysize =3D keysize;
+>> > =C2=A0 =C2=A0 }
+>> > =C2=A0#endif
+>> > +#ifdef ENABLE_PREDICTION_RESISTANCE
+>> > + =C2=A0else if (streq (p[0], "use-prediction-resistance"))
+>> > + =C2=A0 =C2=A0{
+>> > + =C2=A0 =C2=A0 =C2=A0VERIFY_PERMISSION (OPT_P_GENERAL);
+>> > + =C2=A0 =C2=A0 =C2=A0options->use_prediction_resistance =3D true;
+>> > + =C2=A0 =C2=A0}
+>> > +#endif
+>> > =C2=A0#ifdef ENABLE_SSL
+>> > =C2=A0 else if (streq (p[0], "show-tls"))
+>> > =C2=A0 =C2=A0 {
+>> > diff --git a/src/openvpn/options.h b/src/openvpn/options.h index
+>> > 9e78d00..1be3dfa 100644
+>> > --- a/src/openvpn/options.h
+>> > +++ b/src/openvpn/options.h
+>> > @@ -520,6 +520,9 @@ struct options
+>> > =C2=A0 const char *packet_id_file;
+>> > =C2=A0 bool use_iv;
+>> > =C2=A0 bool test_crypto;
+>> > +#ifdef ENABLE_PREDICTION_RESISTANCE
+>> > + =C2=A0bool use_prediction_resistance;
+>> > +#endif
+>> >
+>> > =C2=A0#ifdef ENABLE_SSL
+>> > =C2=A0 /* TLS (control channel) parms */
+>> > diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h index
+>> > e60dc44..b14d50d 100644
+>> > --- a/src/openvpn/syshead.h
+>> > +++ b/src/openvpn/syshead.h
+>> > @@ -534,6 +534,14 @@ socket_defined (const socket_descriptor_t sd)
+>> > =C2=A0#define MANAGMENT_EXTERNAL_KEY
+>> > =C2=A0#endif
+>> >
+>> > +/* Enable PolarSSL RNG prediction resistance support */ #ifdef
+>> > +ENABLE_CRYPTO_POLARSSL #include <polarssl/version.h> #if
+>> > +POLARSSL_VERSION_NUMBER >=3D 0x01010000 #define
+>> > +ENABLE_PREDICTION_RESISTANCE #endif #endif /* ENABLE_CRYPTO_POLARSSL
+>> > +*/
+>> > +
+>> > =C2=A0/*
+>> > =C2=A0* MANAGEMENT_IN_EXTRA allows the management interface to
+>> > =C2=A0* read multi-line inputs from clients.
+>> > --
+>> > 1.7.5.4
+>> >
+>> >
+>> > ---------------------------------------------------------------------
+>> -
+>> > --------
+>> > This SF email is sponsosred by:
+>> > Try Windows Azure free for 90 days Click Here
+>> > http://p.sf.net/sfu/sfd2d-msazure
+>> > _______________________________________________
+>> > Openvpn-devel mailing list
+>> > Openvpn-devel@lists.sourceforge.net
+>> > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
