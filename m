@@ -1,12 +1,18 @@
+From: Adriaan de Jong <dejong@...1435...>
+Date: Mon, 2 Apr 2012 19:31:56 +0200
+Message-ID: <1CED409804E2164C8104F9E623B08B9012CB842337@...1436...>
+References: <1333351687-3732-1-git-send-email-dejong@...1435...>
+	<CAOazyz0MDBg75y+CRdYNEOdYBE83B_pYfZ3pz+JLyUdAyF6xgQ@...278...>
+	<CAP+U6tK3UHd=KR1th0vxdLnRUsZm47qKgk=BeNgzSmvYUFMdvw@...278...>
+	<4F797A66.8050502@...1114...>
+	<CAOazyz0uhi_ao2SN3Moi+tXRVhaJPd-O1eam0tqLo_6rehVREg@...278...>
+	<4F7981C4.80409@...1114...>
+	<CAOazyz1eV7V7aB9WFr0LwJM-dyegeK1wyeLXJQAoDTB+J02E3A@...278...>
+In-Reply-To: <CAOazyz1eV7V7aB9WFr0LwJM-dyegeK1wyeLXJQAoDTB+J02E3A@...278...>
+Content-Language: en-US
 MIME-Version: 1.0
-In-Reply-To: <1332621070-28464-1-git-send-email-alon.barlev@...277...>
-References: <CAOazyz15xpgFxzqQFaotZSmS2=-gSmUsMMwy=SZay6bi3EEMAg@...278...>
-	<1332621070-28464-1-git-send-email-alon.barlev@...277...>
-Date: Mon, 2 Apr 2012 14:39:04 +0300
-Message-ID: <CAOazyz1_8+ViUgPs5ECD2MroH33Zmp0Y0Q3VMEyBvhhVHE5Jcw@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] cleanup: windows: convert argv (UCS-2
-	to UTF-8) at earliest
+Subject: Re: [Openvpn-devel] [PATCH 1/6] Added support for new PolarSSL
+	1.1	RNG
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,232 +21,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Alon Bar-Lev <alon.barlev@...277...>, David Sommerseth <openvpn.list@...1114...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Please review/test.
-
-On Sat, Mar 24, 2012 at 10:31 PM, Alon Bar-Lev <alon.barlev@...277...> wrot=
-e:
-> Discussed at [1].
->
-> Use wmain under windows, drop the custom parsing and shell32 linkage.
->
-> There is no need for gc magic as this allocation is static.
->
-> [1] http://permalink.gmane.org/gmane.network.openvpn.devel/5433
->
-> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-> ---
-> =C2=A0src/openvpn/Makefile.am =C2=A0 =C2=A0 | =C2=A0 =C2=A06 +++++-
-> =C2=A0src/openvpn/openvpn.c =C2=A0 =C2=A0 =C2=A0 | =C2=A0 37 ++++++++++++=
-++++++++++++++++++++++++-
-> =C2=A0src/openvpn/openvpn.vcxproj | =C2=A0 10 ++++++----
-> =C2=A0src/openvpn/options.c =C2=A0 =C2=A0 =C2=A0 | =C2=A0 27 ------------=
----------------
-> =C2=A04 files changed, 47 insertions(+), 33 deletions(-)
-> =C2=A0mode change 100644 =3D> 100755 src/openvpn/openvpn.vcxproj
->
-> diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-> index 4e485e7..0506b11 100644
-> --- a/src/openvpn/Makefile.am
-> +++ b/src/openvpn/Makefile.am
-> @@ -27,6 +27,10 @@ AM_CFLAGS =3D \
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0$(OPTIONAL_CRYPTO_CFLAGS) \
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0$(OPTIONAL_LZO_CFLAGS) \
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0$(OPTIONAL_PKCS11_HELPER_CFLAGS)
-> +if WIN32
-> +# we want unicode entry point but not the macro
-> +AM_CFLAGS +=3D -municode -UUNICODE
-> +endif
->
-> =C2=A0sbin_PROGRAMS =3D openvpn
->
-> @@ -118,5 +122,5 @@ openvpn_LDADD =3D \
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0$(OPTIONAL_DL_LIBS)
-> =C2=A0if WIN32
-> =C2=A0openvpn_SOURCES +=3D openvpn_win32_resources.rc
-> -openvpn_LDADD +=3D -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwin=
-mm -lshell32
-> +openvpn_LDADD +=3D -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwin=
-mm
-> =C2=A0endif
-> diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
-> index 3db1b86..6e70a58 100644
-> --- a/src/openvpn/openvpn.c
-> +++ b/src/openvpn/openvpn.c
-> @@ -127,8 +127,9 @@ tunnel_point_to_point (struct context *c)
-> =C2=A0* @param argc - Commandline argument count.
-> =C2=A0* @param argv - Commandline argument values.
-> =C2=A0*/
-> +static
-> =C2=A0int
-> -main (int argc, char *argv[])
-> +openvpn_main (int argc, char *argv[])
-> =C2=A0{
-> =C2=A0 struct context c;
->
-> @@ -289,3 +290,37 @@ main (int argc, char *argv[])
-> =C2=A0 openvpn_exit (OPENVPN_EXIT_STATUS_GOOD); =C2=A0/* exit point */
-> =C2=A0 return 0; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0/* NOTREACHED */
-> =C2=A0}
-> +
-> +#ifdef WIN32
-> +int
-> +wmain (int argc, wchar_t *wargv[]) {
-> + =C2=A0char **argv;
-> + =C2=A0int ret;
-> + =C2=A0int i;
-> +
-> + =C2=A0if ((argv =3D calloc(argc+1, sizeof(char*))) =3D=3D NULL)
-> + =C2=A0 =C2=A0return 1;
-> +
-> + =C2=A0for (i =3D 0; i < argc; i++)
-> + =C2=A0 =C2=A0{
-> + =C2=A0 =C2=A0 =C2=A0int n =3D WideCharToMultiByte (CP_UTF8, 0, wargv[i]=
-, -1, NULL, 0, NULL, NULL);
-> + =C2=A0 =C2=A0 =C2=A0argv[i] =3D malloc (n);
-> + =C2=A0 =C2=A0 =C2=A0WideCharToMultiByte (CP_UTF8, 0, wargv[i], -1, argv=
-[i], n, NULL, NULL);
-> + =C2=A0 =C2=A0}
-> +
-> + =C2=A0ret =3D openvpn_main(argc, argv);
-> +
-> + =C2=A0for (i=3D0; i < argc; i++ )
-> + =C2=A0 =C2=A0{
-> + =C2=A0 =C2=A0 =C2=A0free (argv[i]);
-> + =C2=A0 =C2=A0}
-> + =C2=A0free(argv);
-> +
-> + =C2=A0return ret;
-> +}
-> +#else
-> +int
-> +main (int argc, char *argv[]) {
-> + =C2=A0 =C2=A0 =C2=A0 return openvpn_main(argc, argv);
-> +}
-> +#endif
-> diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-> old mode 100644
-> new mode 100755
-> index 51e19af..452876f
-> --- a/src/openvpn/openvpn.vcxproj
-> +++ b/src/openvpn/openvpn.vcxproj
-> @@ -18,12 +18,12 @@
-> =C2=A0 <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-> =C2=A0 <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'R=
-elease|Win32'" Label=3D"Configuration">
-> =C2=A0 =C2=A0 <ConfigurationType>Application</ConfigurationType>
-> - =C2=A0 =C2=A0<CharacterSet>MultiByte</CharacterSet>
-> =C2=A0 =C2=A0 <WholeProgramOptimization>true</WholeProgramOptimization>
-> + =C2=A0 =C2=A0<CharacterSet>Unicode</CharacterSet>
-> =C2=A0 </PropertyGroup>
-> =C2=A0 <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'D=
-ebug|Win32'" Label=3D"Configuration">
-> =C2=A0 =C2=A0 <ConfigurationType>Application</ConfigurationType>
-> - =C2=A0 =C2=A0<CharacterSet>MultiByte</CharacterSet>
-> + =C2=A0 =C2=A0<CharacterSet>Unicode</CharacterSet>
-> =C2=A0 </PropertyGroup>
-> =C2=A0 <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.props" />
-> =C2=A0 <ImportGroup Label=3D"ExtensionSettings">
-> @@ -56,12 +56,13 @@
-> =C2=A0 =C2=A0 =C2=A0 </PrecompiledHeader>
-> =C2=A0 =C2=A0 =C2=A0 <WarningLevel>Level3</WarningLevel>
-> =C2=A0 =C2=A0 =C2=A0 <DebugInformationFormat>EditAndContinue</DebugInform=
-ationFormat>
-> + =C2=A0 =C2=A0 =C2=A0<UndefinePreprocessorDefinitions>UNICODE</UndefineP=
-reprocessorDefinitions>
-> =C2=A0 =C2=A0 </ClCompile>
-> =C2=A0 =C2=A0 <ResourceCompile>
-> =C2=A0 =C2=A0 =C2=A0 <AdditionalIncludeDirectories>$(SOURCEBASE);%(Additi=
-onalIncludeDirectories)</AdditionalIncludeDirectories>
-> =C2=A0 =C2=A0 </ResourceCompile>
-> =C2=A0 =C2=A0 <Link>
-> - =C2=A0 =C2=A0 =C2=A0<AdditionalDependencies>libeay32.lib;ssleay32.lib;l=
-zo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;=
-iphlpapi.lib;winmm.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDep=
-endencies>
-> + =C2=A0 =C2=A0 =C2=A0<AdditionalDependencies>libeay32.lib;ssleay32.lib;l=
-zo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;=
-iphlpapi.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-> =C2=A0 =C2=A0 =C2=A0 <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(=
-LZO_HOME)/lib;$(PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</Addition=
-alLibraryDirectories>
-> =C2=A0 =C2=A0 =C2=A0 <GenerateDebugInformation>true</GenerateDebugInforma=
-tion>
-> =C2=A0 =C2=A0 =C2=A0 <SubSystem>Console</SubSystem>
-> @@ -80,12 +81,13 @@
-> =C2=A0 =C2=A0 =C2=A0 </PrecompiledHeader>
-> =C2=A0 =C2=A0 =C2=A0 <WarningLevel>Level3</WarningLevel>
-> =C2=A0 =C2=A0 =C2=A0 <DebugInformationFormat>ProgramDatabase</DebugInform=
-ationFormat>
-> + =C2=A0 =C2=A0 =C2=A0<UndefinePreprocessorDefinitions>UNICODE</UndefineP=
-reprocessorDefinitions>
-> =C2=A0 =C2=A0 </ClCompile>
-> =C2=A0 =C2=A0 <ResourceCompile>
-> =C2=A0 =C2=A0 =C2=A0 <AdditionalIncludeDirectories>$(SOURCEBASE);%(Additi=
-onalIncludeDirectories)</AdditionalIncludeDirectories>
-> =C2=A0 =C2=A0 </ResourceCompile>
-> =C2=A0 =C2=A0 <Link>
-> - =C2=A0 =C2=A0 =C2=A0<AdditionalDependencies>libeay32.lib;ssleay32.lib;l=
-zo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;=
-iphlpapi.lib;winmm.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDep=
-endencies>
-> + =C2=A0 =C2=A0 =C2=A0<AdditionalDependencies>libeay32.lib;ssleay32.lib;l=
-zo2.lib;pkcs11-helper.dll.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;=
-iphlpapi.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-> =C2=A0 =C2=A0 =C2=A0 <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(=
-LZO_HOME)/lib;$(PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</Addition=
-alLibraryDirectories>
-> =C2=A0 =C2=A0 =C2=A0 <GenerateDebugInformation>true</GenerateDebugInforma=
-tion>
-> =C2=A0 =C2=A0 =C2=A0 <SubSystem>Console</SubSystem>
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index 25786f6..66241b4 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -3832,33 +3832,6 @@ parse_argv (struct options *options,
-> =C2=A0{
-> =C2=A0 int i, j;
->
-> -#ifdef WIN32
-> - =C2=A0/*
-> - =C2=A0 * Windows replaces Unicode characters in argv[] that are not pre=
-sent
-> - =C2=A0 * in the current codepage with '?'. Get the wide char command li=
-ne and
-> - =C2=A0 * convert it to UTF-8 ourselves.
-> - =C2=A0 */
-> - =C2=A0int wargc;
-> - =C2=A0WCHAR **wargv;
-> - =C2=A0char **uargv;
-> -
-> - =C2=A0wargv =3D CommandLineToArgvW (GetCommandLineW (), &wargc);
-> - =C2=A0if (wargv =3D=3D NULL || wargc !=3D argc)
-> - =C2=A0 =C2=A0usage ();
-> -
-> - =C2=A0uargv =3D gc_malloc (wargc * sizeof (*uargv), false, &options->gc=
-);
-> -
-> - =C2=A0for (i =3D 0; i < wargc; i++)
-> - =C2=A0 =C2=A0{
-> - =C2=A0 =C2=A0 =C2=A0int n =3D WideCharToMultiByte (CP_UTF8, 0, wargv[i]=
-, -1, NULL, 0, NULL, NULL);
-> - =C2=A0 =C2=A0 =C2=A0uargv[i] =3D gc_malloc (n, false, &options->gc);
-> - =C2=A0 =C2=A0 =C2=A0WideCharToMultiByte (CP_UTF8, 0, wargv[i], -1, uarg=
-v[i], n, NULL, NULL);
-> - =C2=A0 =C2=A0}
-> -
-> - =C2=A0LocalFree (wargv);
-> - =C2=A0argv =3D uargv;
-> -#endif
-> -
-> =C2=A0 /* usage message */
-> =C2=A0 if (argc <=3D 1)
-> =C2=A0 =C2=A0 usage ();
-> --
-> 1.7.3.4
->
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBbG9uIEJhci1MZXYgW21haWx0
+bzphbG9uLmJhcmxldkAuLi4yNzcuLi5dDQo+IFNlbnQ6IG1hYW5kYWcgMiBhcHJpbCAyMDEyIDEy
+OjQyDQo+IFRvOiBEYXZpZCBTb21tZXJzZXRoDQo+IENjOiBvcGVudnBuLWRldmVsQGxpc3RzLnNv
+dXJjZWZvcmdlLm5ldA0KPiBTdWJqZWN0OiBSZTogW09wZW52cG4tZGV2ZWxdIFtQQVRDSCAxLzZd
+IEFkZGVkIHN1cHBvcnQgZm9yIG5ldyBQb2xhclNTTA0KPiAxLjEgUk5HDQo+IA0KPiBPbiBNb24s
+IEFwciAyLCAyMDEyIGF0IDE6MzkgUE0sIERhdmlkIFNvbW1lcnNldGgNCj4gPG9wZW52cG4ubGlz
+dEAuLi4xMTE0Li4uPiB3cm90ZToNCj4gPiAtLS0tLUJFR0lOIFBHUCBTSUdORUQgTUVTU0FHRS0t
+LS0tDQo+ID4gSGFzaDogU0hBMQ0KPiA+DQo+ID4gT24gMDIvMDQvMTIgMTI6MjUsIEFsb24gQmFy
+LUxldiB3cm90ZToNCj4gPj4gTm8gbm8gbm8uLi4uIEkgZGlkIG5vdCBpbXBseSB0aGF0IHRoaXMg
+d2lsbCBiZSBkeW5hbWljIGludGVyZmFjZS4NCj4gPj4gTm9yIHRoYXQgdGhlcmUgaXMgYSB1c2Ug
+Y2FzZS4NCj4gPj4NCj4gPj4gVGhlIGN1cnJlbnQgc3RhdGUgb2YgdGhlIGNvZGUgKGV2ZW4gYmVm
+b3JlIHRoZSBtZXJnZSBvZiBwb2xhcnNzbCkNCj4gd2FzDQo+ID4+IHZlcnkgY29tcGxleC4gTm93
+IGl0IGlzIGV2ZW4gbW9yZSBjb21wbGV4LCB3aXRoIG5vbmUgY2xlYW4vc3RyaWN0DQo+ID4+IHNl
+cGFyYXRpb24gYmV0d2VlbiB0aGUgY29tbW9uIGNyeXB0byBjb2RlIGFuZCB0aGUgbGlicmFyeSBz
+cGVjaWZpYw0KPiA+PiBjcnlwdG8gY29kZS4uLiBZZXMsIEkga25vdyB0aGVzZSByZXNpZGVzIGlu
+IGRpZmZlcmVudCBzb3VyY2VzLCBidXQNCj4gaXQNCj4gPj4gaXMgbW9yZSBzaW1pbGFyIHRvIHdo
+YXQgd2UgY2FsbCAic3BhZ2hldHRpIiBwcm9ncmFtbWluZy4NCj4gPj4NCj4gPj4gV2hhdCBJIHN1
+Z2dlc3Qgb2YgZG9pbmcgaXMgdG8gY3JlYXRlIHN0YXRpYyBjYWxsYmFjayBzdHJ1Y3R1cmUgd2hp
+Y2gNCj4gPj4gaXMgdGhlIGludGVyZmFjZSBvZiBjcnlwdG8gbGlicmFyeSB1c2VkIGJ5IG9wZW52
+cG4uIFRoaXMgaXMNCj4gPj4gKlNUQVRJQyogbGlua2FnZS4NCj4gPj4NCj4gPj4gRm9yIGV4YW1w
+bGU6IHR5cGVkZWYgc3RydWN0IHsgcmVzdWx0X3QgKCp4NTA5X2dldF91c2VybmFtZSkgKGNoYXIN
+Cj4gPj4gKmNuLCBpbnQgY25fbGVuLCBjaGFyICp4NTA5X3VzZXJuYW1lX2ZpZWxkLCB4NTA5X2Nl
+cnQgKmNlcnQpIC4uLiB9DQo+ID4+IG9wZW52cG5fY3J5cHRvX2VuaWduZV90Ow0KPiA+Pg0KPiA+
+PiBJIGd1ZXNzIHlvdSB1bmRlcnN0YW5kIGhvdyB0aGlzIHN0cnVjdCB3aWxsIGxvb2sgbGlrZS4N
+Cj4gPj4NCj4gPj4gTm93LCBhIG5pY2Ugc2lkZSBlZmZlY3Qgd291bGQgYmUgdGhlIGFiaWxpdHkg
+dG8gaGF2ZSBib3RoIGxpYnJhcmllcw0KPiA+PiBsaW5rZWQgYWdhaW5zdCBvcGVudnBuLCB3aGls
+ZSBjaG9vc2luZyB0aGUgZW5naW5lIGF0DQo+IGNvbmZpZ3VyYXRpb24uLi4NCj4gPj4gT2YgY291
+cnNlIHRoZXJlIGlzIG5vIHJlYWwgd29ybGQgdXNlIGZvciB0aGlzLCBleGNlcHQgZm9yIGJ1aWxk
+IChvbmUNCj4gPj4gYnVpbGQgY2hlY2tzIGJvdGggbGlicmFyaWVzKSBhbmQgdGVzdCAod2UgY2Fu
+IHVzZSB0ZXN0IG9uZSBidWlsZCBmb3INCj4gPj4gYm90aCkuDQo+ID4+DQo+ID4+IFRoZSBtYWlu
+IG1pc3Npb24gaXMgdG8gY2xlYW4gdXAgdGhlIGNvZGUsIHJlZHVjaW5nIHRoZSBjb21wbGV4aXR5
+LA0KPiA+PiBtYWtpbmcgc3VyZSB3ZSBjYW4gZm9sbG93IGVhY2ggY3J5cHRvIGNhbGwgdG8gZWl0
+aGVyIGNvbW1vbiwNCj4gPj4gY3J5cHRvLWxpYnJhcnktYXRvbSwgb3Igb3BlbnZwbiBzcGVjaWZp
+Yy4NCj4gPj4NCj4gPj4gSXMgdGhhdCBtb3JlIGNsZWFyPw0KPiA+DQo+ID4gQWhoLCB5ZWFoISDC
+oFRoYXQgbWFrZXMgbW9yZSBzZW5zZS4NCj4gPg0KPiA+IEJ1dCBJIGp1c3QgbmVlZCB0byBiZSBz
+dXJlIHdlJ3JlIGhhdmluZyB0aGUgcmlnaHQgZm9jdXMuIMKgQXJlIHdlDQo+ID4gZ2V0dGluZyBk
+b25lIHdpdGggdGhlIGF1dG90b29scyBjbGVhbi11cD8gwqBJZiBub3QsIHdoYXQncyBtaXNzaW5n
+PyDCoEkNCj4gPiBzZWUgbW9yZSBhbmQgbW9yZSBjbGVhbi11cCBwYXRjaGVzIHRvdWNoaW5nIHRo
+ZSBDIGNvZGUgbm93LCBzbyBJIGp1c3QNCj4gPiB3YW50IHRvIGJlIHN1cmUgd2UncmUgYmFzaWNh
+bGx5IGRvbmUgd2l0aCBhdXRvdG9vbHMuIMKgT3RoZXJ3aXNlLA0KPiA+IGdldHRpbmcgcmlkIG9m
+IHN5c2hlYWQuaCBpcyBwcm9iYWJseSBvbmUgb2YgdGhlIG5leHQgYmlnZ2VyIHN0ZXBzLg0KPiAN
+Cj4gUmlnaHQuDQo+IE5leHQgc3RhZ2UgaXMgZ2V0dGluZyByaWQgb2Ygc3lzaGVhZC5oLi4uIFRo
+ZSBmb2xsb3dpbmcgaXMgdG8gY2xlYW51cA0KPiB0aGUgY3J5cHRvLCBJIHRob3VnaCB0aGF0IGlm
+IHNvbWVvbmUgY2FuIHdvcmsgb24gdGhpcyBpbiBwYXJhbGxlbCB3ZQ0KPiB3aWxsIGRvIHRoaXMg
+dHdpY2UgYXMgZmFzdCA6KQ0KPiANCj4gQnV0IGJlZm9yZSB3ZSBjb250aW51ZSB3ZSBuZWVkIHRv
+IHN0YWJpbGl6ZSB0aGUgcHJvamVjdCBhZ2FpbiwgY3JlYXRpbmcNCj4gdGhlIG1pc3NpbmcgcmVw
+b3NpdG9yaWVzLCBkZWNpZGluZyBhYm91dCB0aGUgZ2l0aHViL3NvdXJjZWZvcmdlIGlzDQo+IG5l
+ZWRlZC4gRGVjaWRpbmcgYWJvdXQgdGhlIHdheSB0byByZXZpZXcgYW5kIG1lcmdlIGxhcmdlIGNo
+YW5nZXMuDQo+IA0KDQpJJ2QgcHJlZmVyIHRvIGxlYXZlIGZ1cnRoZXIgbW9kdWxhcmlzYXRpb24g
+Zm9yIDIuNC4gV2UgY291bGQgZXZlbiBtYWtlIHRoYXQgYSBtb3JlIGdlbmVyYWwgZ29hbCBmb3Ig
+Mi40LCBtb2R1bGFyaXNpbmcgbm90IGp1c3QgY3J5cHRvL1NTTCwgYnV0IGFsc28gYXV0aGVudGlj
+YXRpb24sIGFuZCBtYXliZSBldmVuIHNvbWUgb2YgdGhlIG5ldHdvcmsgc3R1ZmYuIEl0IHdvdWxk
+IGJlIG5pY2UgdG8gbGVhdmUgYSBmZXcgdGFyZ2V0cyBmb3IgMi40IDopLg0KDQpJIGRvbid0IHNl
+ZSB0aGUgbmVlZCB0byBmdXJ0aGVyIGRlbGF5IDIuMyBmb3IgdGhpcywgYXMgaXQgaXMgbm90IGEg
+YnVnIGZpeC4gT3RoZXJzIG1pZ2h0IGRpc2FncmVlIGhlcmUsIGFuZCB0aGUgdG9waWMgaXMgb3Bl
+biBmb3IgZGViYXRlIDopLiBJbiBnZW5lcmFsLCBpdCBtaWdodCBiZSBhIGdvb2QgaWRlYSB0byBm
+cmVlemUgZGV2ZWxvcG1lbnQgb2YgMi4zIGF0IHNvbWUgcG9pbnQgdG8gcHJldmVudCBlbmRsZXNz
+IGFscGhhIHN5bmRyb21lLg0KDQpBZHJpYWFuDQoNCg==
