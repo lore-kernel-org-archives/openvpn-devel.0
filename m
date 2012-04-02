@@ -1,11 +1,11 @@
-From: Adriaan de Jong <dejong@...1435...>
-Date: Mon, 2 Apr 2012 09:28:07 +0200
-Message-ID: <1333351687-3732-6-git-send-email-dejong@...1435...>
-In-Reply-To: <1333351687-3732-1-git-send-email-dejong@...1435...>
-References: <1333351687-3732-1-git-send-email-dejong@...1435...>
+Message-ID: <4F79554D.20708@...515...>
+Date: Mon, 02 Apr 2012 10:29:17 +0300
+From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 6/6] Updated README.polarssl with build
-	system changes.
+References: <4F75D7D6.5030107@...515...>
+	<CAOazyz3GpGMB0cYQK2EpbRLV42_c1tzOMBfNFjfOs-vZB2xgCw@...278...>
+In-Reply-To: <CAOazyz3GpGMB0cYQK2EpbRLV42_c1tzOMBfNFjfOs-vZB2xgCw@...278...>
+Subject: Re: [Openvpn-devel] Buildbot build flags
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,34 +14,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Signed-off-by: Adriaan de Jong <dejong@...1435...>
----
- README.polarssl |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+Hi Alon,
+> Safest is to go with all combinations...
+Testing all combinations would be best, but there are a _lot_ of them...
+then you need to multiply that with the number of buildslaves (atm ~10) :).
+> Or at least:
+> --disable-lzo --enable-lzo
+> --enable-pkcs11 --disable-pkcs11
+> --enable-selinux --disable-selinux
+> --enable-iproute2 --disable-iproute2
+> --disable-server
+> --enable-small
+> --disable-plugins
+> --disable-management
+>
+> --disable-crypto --disable-ssl
+> --with-crypto-library=openssl  --enable-crypo --enable-ssl
+> --with-crypto-library=openssl  --enable-crypo --disable-ssl
+> --with-crypto-library=polarssl  --enable-crypo --enable-ssl
+> --with-crypto-library=polarssl  --enable-crypo --disable-ssl
+Sounds good to me. Any additions / opinions from somebody else?
 
-diff --git a/README.polarssl b/README.polarssl
-index 77a9575..ab7c2d7 100644
---- a/README.polarssl
-+++ b/README.polarssl
-@@ -3,11 +3,11 @@ instructions:
- 
- To Build and Install,
- 
--	./configure --with-ssl-type=polarssl
-+	./configure --with-crypto-library=polarssl
- 	make
- 	make install
- 
--This version depends on at least PolarSSL v0.99.
-+This version depends on at least PolarSSL v1.1.
- 
- *************************************************************************
- 
--- 
-1.7.5.4
+> And... for windows, you can use the build-complete script to produce a
+> complete installer on Linux, if that's work you are good.
+Buildbot 0.8.5 (current version) supports Windows buildslaves, so that's
+on my TODO... might take a while, though. With cross-compiling on *NIX
+for Windows working properly, I could perhaps repurpose the Windows
+build computer as a buildslave.
+
+Samuli
 
 
