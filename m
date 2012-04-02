@@ -1,4 +1,4 @@
-Message-ID: <4F797A66.9050606@...1114...>
+Message-ID: <4F797A66.5020301@...1114...>
 Date: Mon, 02 Apr 2012 12:07:34 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
@@ -25,21 +25,7 @@ Cc: openvpn-devel@lists.sourceforge.net
 Hash: SHA1
 
 On 02/04/12 11:55, Fabian Knittel wrote:
-> Hi Alon,
-> 
-> 2012/4/2 Alon Bar-Lev <alon.barlev@...277...>:
->> I also intend to work and cleanup the whole PolarSSL/OpenSSL 
->> mess...
->> 
->> Design will be to introduce crypto engine callback structure, 
->> registering openssl and polarssl, in a way that code is using
->> the callback structure while using runtime configuration one can
->>  select which engine to use (if both are available).
-> 
-> What would be the use-case for switching crypto libraries at 
-> runtime? Would this be an important step towards the OpenVPN 3.0 
-> concept? (Otherwise this sounds like quite a bit of work and 
-> potentially more processing overhead...)
+
 
 The only advantage I see at runtime switching, is that it's easier for
 distributors to support both SSL/crypto library platforms.  Except of
@@ -67,8 +53,8 @@ David Sommerseth
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk95emAACgkQDC186MBRfrqdJACdHeabhSc1PBWO4kgholprGneY
-J70An1zG5DyOXWM3nRrkLh7FI72NNua/
-=SJw7
+iEYEARECAAYFAk95elcACgkQDC186MBRfrqJWQCgo1obHw0suslCzzJ0Yz74JyvG
+EeIAnArJVfrE9eG4PozBxCfIYlkP3BDo
+=bPiA
 -----END PGP SIGNATURE-----
 
