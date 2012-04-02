@@ -1,11 +1,12 @@
 MIME-Version: 1.0
-In-Reply-To: <1333351687-3732-4-git-send-email-dejong@...1435...>
+In-Reply-To: <1333351687-3732-2-git-send-email-dejong@...1435...>
 References: <1333351687-3732-1-git-send-email-dejong@...1435...>
-	<1333351687-3732-4-git-send-email-dejong@...1435...>
-Date: Mon, 2 Apr 2012 12:17:41 +0300
-Message-ID: <CAOazyz2+Y70tQF6vo=9N1J+CF7nEGt5wzU5ZWQQOaT0-9GtZjA@...278...>
+	<1333351687-3732-2-git-send-email-dejong@...1435...>
+Date: Mon, 2 Apr 2012 12:19:09 +0300
+Message-ID: <CAOazyz1qqY0NzL0eFnAjqcqPzgs-V8=meTOKnULqdpvvYvO0Zg@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 4/6] Removed support for PolarSSL < 1.1
+Subject: Re: [Openvpn-devel] [PATCH 2/6] Added a configuration option to
+ enable prediction resistance in the PolarSSL random number generator.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,207 +20,209 @@ Content-Transfer-Encoding: quoted-printable
 To: Adriaan de Jong <dejong@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Oh!!!
-You did removed old support.
-Great.
-
-But we should do this in autoconf as well.
-Testing POLARSSL_VERSION_NUMBER >=3D 0x01010000 is enough?
-Which header to include?
+Hello,
+I think that we should not have these options specific to one crypto librar=
+y.
+Alon.
 
 On Mon, Apr 2, 2012 at 10:28 AM, Adriaan de Jong <dejong@...1435...> wrote:
-> PolarSSL 1.0 and earlier use only the Havege RNG. Havege is based on timi=
-ng certain operations, using the RDTSC instruction. Although this is fine o=
-n bare metal PCs, the RDTSC instruction is virtualised on some virtual mach=
-ine implementations. This can result in issues on those virtual machines. P=
-olarSSL fixes this potential issue by also using platform entropy.
->
-> To ensure that OpenVPN is always built against a decent RNG, PolarSSL <1.=
-1 is therefore no longer supported.
->
+> Signed-off-by: Eelse-jan Stutvoet <stutvoet@...1435...>
 > Signed-off-by: Adriaan de Jong <dejong@...1435...>
 > ---
-> =C2=A0src/openvpn/crypto_polarssl.c | =C2=A0 34 -------------------------=
----------
-> =C2=A0src/openvpn/crypto_polarssl.h | =C2=A0 13 +------------
-> =C2=A0src/openvpn/ssl_polarssl.c =C2=A0 =C2=A0| =C2=A0 =C2=A06 ------
-> =C2=A0src/openvpn/syshead.h =C2=A0 =C2=A0 =C2=A0 =C2=A0 | =C2=A0 =C2=A03 =
----
-> =C2=A04 files changed, 1 insertions(+), 55 deletions(-)
+> =C2=A0doc/openvpn.8 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 | =C2=A0 14 ++++++++++++++
+> =C2=A0src/openvpn/crypto_polarssl.c | =C2=A0 =C2=A09 +++++++++
+> =C2=A0src/openvpn/crypto_polarssl.h | =C2=A0 =C2=A07 +++++++
+> =C2=A0src/openvpn/init.c =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0| =C2=
+=A0 =C2=A06 ++++++
+> =C2=A0src/openvpn/options.c =C2=A0 =C2=A0 =C2=A0 =C2=A0 | =C2=A0 22 +++++=
++++++++++++++++++
+> =C2=A0src/openvpn/options.h =C2=A0 =C2=A0 =C2=A0 =C2=A0 | =C2=A0 =C2=A03 =
++++
+> =C2=A0src/openvpn/syshead.h =C2=A0 =C2=A0 =C2=A0 =C2=A0 | =C2=A0 =C2=A08 =
+++++++++
+> =C2=A07 files changed, 69 insertions(+), 0 deletions(-)
 >
+> diff --git a/doc/openvpn.8 b/doc/openvpn.8
+> index 53d6bdb..ee46de6 100644
+> --- a/doc/openvpn.8
+> +++ b/doc/openvpn.8
+> @@ -3846,6 +3846,20 @@ space-saving optimization that uses the unique ide=
+ntifier for
+> =C2=A0datagram replay protection as the IV.
+> =C2=A0.\"*********************************************************
+> =C2=A0.TP
+> +.B \-\-use-prediction-resistance
+> +Enable prediction resistance on PolarSSL's RNG.
+> +
+> +Enabling prediction resistance causes the RNG to reseed in each
+> +call for random. Reseeding this often can quickly deplete the kernel
+> +entropy pool.
+> +
+> +If you need this option, please consider running a daemon that adds
+> +entropy to the kernel pool.
+> +
+> +Note that this option only works with PolarSSL versions greater
+> +than 1.1.
+> +.\"*********************************************************
+> +.TP
+> =C2=A0.B \-\-test-crypto
+> =C2=A0Do a self-test of OpenVPN's crypto options by encrypting and
+> =C2=A0decrypting test packets using the data channel encryption options
 > diff --git a/src/openvpn/crypto_polarssl.c b/src/openvpn/crypto_polarssl.c
-> index 96d41b7..3978a3c 100644
+> index 158ccfc..96d41b7 100644
 > --- a/src/openvpn/crypto_polarssl.c
 > +++ b/src/openvpn/crypto_polarssl.c
-> @@ -50,9 +50,7 @@
-> =C2=A0#include <polarssl/cipher.h>
-> =C2=A0#include <polarssl/havege.h>
+> @@ -219,6 +219,15 @@ havege_state * rand_ctx_get()
 >
-> -#if (POLARSSL_VERSION_NUMBER >=3D 0x01010000)
-> =C2=A0#include <polarssl/entropy.h>
-> -#endif
+> =C2=A0#endif /* (POLARSSL_VERSION_NUMBER >=3D 0x01010000) */
 >
-> =C2=A0/*
-> =C2=A0*
-> @@ -168,7 +166,6 @@ show_available_engines ()
-> =C2=A0* Initialise the given ctr_drbg context, using a personalisation st=
-ring and an
-> =C2=A0* entropy gathering function.
-> =C2=A0*/
-> -#if (POLARSSL_VERSION_NUMBER >=3D 0x01010000)
-> =C2=A0ctr_drbg_context * rand_ctx_get()
-> =C2=A0{
-> =C2=A0 static entropy_context ec =3D {0};
-> @@ -200,25 +197,6 @@ ctr_drbg_context * rand_ctx_get()
-> =C2=A0 return &cd_ctx;
-> =C2=A0}
->
-> -#else /* (POLARSSL_VERSION_NUMBER < 0x01010000) */
-> -
-> -havege_state * rand_ctx_get()
-> -{
-> - =C2=A0static havege_state hs =3D {0};
-> - =C2=A0static bool rand_initialised =3D false;
-> -
-> - =C2=A0if (!rand_initialised)
-> - =C2=A0 =C2=A0{
-> - =C2=A0 =C2=A0 =C2=A0/* Initialise PolarSSL RNG */
-> - =C2=A0 =C2=A0 =C2=A0havege_init(&hs);
-> - =C2=A0 =C2=A0 =C2=A0rand_initialised =3D true;
-> - =C2=A0 =C2=A0}
-> -
-> - =C2=A0return &hs;
-> -}
-> -
-> -#endif /* (POLARSSL_VERSION_NUMBER >=3D 0x01010000) */
-> -
-> =C2=A0#ifdef ENABLE_PREDICTION_RESISTANCE
-> =C2=A0void rand_ctx_enable_prediction_resistance()
-> =C2=A0{
-> @@ -231,26 +209,14 @@ void rand_ctx_enable_prediction_resistance()
+> +#ifdef ENABLE_PREDICTION_RESISTANCE
+> +void rand_ctx_enable_prediction_resistance()
+> +{
+> + =C2=A0ctr_drbg_context *cd_ctx =3D rand_ctx_get();
+> +
+> + =C2=A0ctr_drbg_set_prediction_resistance(cd_ctx, 1);
+> +}
+> +#endif /* ENABLE_PREDICTION_RESISTANCE */
+> +
 > =C2=A0int
 > =C2=A0rand_bytes (uint8_t *output, int len)
 > =C2=A0{
-> -#if (POLARSSL_VERSION_NUMBER >=3D 0x01010000)
-> =C2=A0 ctr_drbg_context *rng_ctx =3D rand_ctx_get();
-> -#else /* (POLARSSL_VERSION_NUMBER >=3D 0x01010000) */
-> - =C2=A0havege_state *rng_ctx =3D rand_ctx_get();
-> -#endif /* (POLARSSL_VERSION_NUMBER >=3D 0x01010000) */
->
-> =C2=A0 while (len > 0)
-> =C2=A0 =C2=A0 {
-> -#if (POLARSSL_VERSION_NUMBER >=3D 0x01010000)
-> =C2=A0 =C2=A0 =C2=A0 const size_t blen =3D min_int (len, CTR_DRBG_MAX_REQ=
-UEST);
-> =C2=A0 =C2=A0 =C2=A0 if (0 !=3D ctr_drbg_random(rng_ctx, output, blen))
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0return 0;
->
-> -#else /* (POLARSSL_VERSION_NUMBER >=3D 0x01010000) */
-> - =C2=A0 =C2=A0 =C2=A0const size_t blen =3D min_int (len, sizeof(int));
-> - =C2=A0 =C2=A0 =C2=A0const int rand_int =3D havege_rand(rng_ctx);
-> - =C2=A0 =C2=A0 =C2=A0memcpy (output, &rand_int, blen);
-> -
-> -#endif /* (POLARSSL_VERSION_NUMBER >=3D 0x01010000) */
-> -
-> =C2=A0 =C2=A0 =C2=A0 output +=3D blen;
-> =C2=A0 =C2=A0 =C2=A0 len -=3D blen;
-> =C2=A0 =C2=A0 }
 > diff --git a/src/openvpn/crypto_polarssl.h b/src/openvpn/crypto_polarssl.h
-> index 6152878..bfabb91 100644
+> index 2f303db..6152878 100644
 > --- a/src/openvpn/crypto_polarssl.h
 > +++ b/src/openvpn/crypto_polarssl.h
-> @@ -33,12 +33,7 @@
-> =C2=A0#include <polarssl/version.h>
-> =C2=A0#include <polarssl/cipher.h>
-> =C2=A0#include <polarssl/md.h>
-> -
-> -#if (POLARSSL_VERSION_NUMBER >=3D 0x01010000)
-> -# =C2=A0include <polarssl/ctr_drbg.h>
-> -#else
-> -# =C2=A0include <polarssl/havege.h>
-> -#endif
-> +#include <polarssl/ctr_drbg.h>
+> @@ -96,4 +96,11 @@ ctr_drbg_context * rand_ctx_get();
+> =C2=A0havege_state * rand_ctx_get();
+> =C2=A0#endif
 >
-> =C2=A0/** Generic cipher key type %context. */
-> =C2=A0typedef cipher_info_t cipher_kt_t;
-> @@ -81,8 +76,6 @@ typedef md_context_t hmac_ctx_t;
-> =C2=A0/**
-> =C2=A0* Returns a singleton instance of the PolarSSL random number genera=
-tor.
-> =C2=A0*
-> - * For PolarSSL 1.0, this is the HAVEGE random number generator.
-> - *
-> =C2=A0* For PolarSSL 1.1+, this is the CTR_DRBG random number generator. =
-If it
-> =C2=A0* hasn't been initialised yet, the RNG will be initialised using th=
-e default
-> =C2=A0* entropy sources. Aside from the default platform entropy sources,=
- an
-> @@ -90,11 +83,7 @@ typedef md_context_t hmac_ctx_t;
-> =C2=A0* added. During initialisation, a personalisation string will be ad=
-ded based
-> =C2=A0* on the time, the PID, and a pointer to the random context.
-> =C2=A0*/
-> -#if (POLARSSL_VERSION_NUMBER >=3D 0x01010000)
-> =C2=A0ctr_drbg_context * rand_ctx_get();
-> -#else
-> -havege_state * rand_ctx_get();
-> -#endif
+> +#ifdef ENABLE_PREDICTION_RESISTANCE
+> +/**
+> + * Enable prediction resistance on the random number generator.
+> + */
+> +void rand_ctx_enable_prediction_resistance();
+> +#endif
+> +
+> =C2=A0#endif /* CRYPTO_POLARSSL_H_ */
+> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+> index bc7718e..05a07fa 100644
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -2008,6 +2008,12 @@ init_crypto_pre (struct context *c, const unsigned=
+ int flags)
 >
-> =C2=A0#ifdef ENABLE_PREDICTION_RESISTANCE
-> =C2=A0/**
-> diff --git a/src/openvpn/ssl_polarssl.c b/src/openvpn/ssl_polarssl.c
-> index 8f35608..fc8fa6e 100644
-> --- a/src/openvpn/ssl_polarssl.c
-> +++ b/src/openvpn/ssl_polarssl.c
-> @@ -503,7 +503,6 @@ static void my_debug( void *ctx, int level, const cha=
-r *str )
-> =C2=A0*/
-> =C2=A0void tls_ctx_personalise_random(struct tls_root_ctx *ctx)
-> =C2=A0{
-> -#if (POLARSSL_VERSION_NUMBER >=3D 0x01010000)
-> =C2=A0 static char old_sha256_hash[32] =3D {0};
-> =C2=A0 char sha256_hash[32] =3D {0};
-> =C2=A0 ctr_drbg_context *cd_ctx =3D rand_ctx_get();
-> @@ -519,7 +518,6 @@ void tls_ctx_personalise_random(struct tls_root_ctx *=
-ctx)
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0memcpy(old_sha256_hash, sha256_hash, si=
-zeof(old_sha256_hash));
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0}
-> =C2=A0 =C2=A0 }
-> -#endif /* POLARSSL_VERSION_NUMBER >=3D 0x01010000 */
+> =C2=A0 if (c->options.mute_replay_warnings)
+> =C2=A0 =C2=A0 c->c2.crypto_options.flags |=3D CO_MUTE_REPLAY_WARNINGS;
+> +
+> +#ifdef ENABLE_PREDICTION_RESISTANCE
+> + =C2=A0if (c->options.use_prediction_resistance)
+> + =C2=A0 =C2=A0rand_ctx_enable_prediction_resistance();
+> +#endif
+> +
 > =C2=A0}
 >
-> =C2=A0void key_state_ssl_init(struct key_state_ssl *ks_ssl,
-> @@ -536,11 +534,7 @@ void key_state_ssl_init(struct key_state_ssl *ks_ssl,
-> =C2=A0 =C2=A0 =C2=A0 ssl_set_dbg (ks_ssl->ctx, my_debug, NULL);
-> =C2=A0 =C2=A0 =C2=A0 ssl_set_endpoint (ks_ssl->ctx, ssl_ctx->endpoint);
+> =C2=A0/*
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index bd83843..5b52ed0 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -545,6 +545,10 @@ static const char usage_message[] =3D
+> =C2=A0 " =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0us=
+ing file.\n"
+> =C2=A0 "--test-crypto =C2=A0 : Run a self-test of crypto features enabled=
+.\n"
+> =C2=A0 " =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Fo=
+r debugging only.\n"
+> +#ifdef ENABLE_PREDICTION_RESISTANCE
+> + =C2=A0"--use-prediction-resistance: Enable prediction resistance on the=
+ random\n"
+> + =C2=A0" =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 number generator.\n"
+> +#endif
+> =C2=A0#ifdef ENABLE_SSL
+> =C2=A0 "\n"
+> =C2=A0 "TLS Key Negotiation Options:\n"
+> @@ -837,6 +841,9 @@ init_options (struct options *o, const bool init_gc)
+> =C2=A0 o->replay_time =3D DEFAULT_TIME_BACKTRACK;
+> =C2=A0 o->use_iv =3D true;
+> =C2=A0 o->key_direction =3D KEY_DIRECTION_BIDIRECTIONAL;
+> +#ifdef ENABLE_PREDICTION_RESISTANCE
+> + =C2=A0o->use_prediction_resistance =3D false;
+> +#endif
+> =C2=A0#ifdef ENABLE_SSL
+> =C2=A0 o->key_method =3D 2;
+> =C2=A0 o->tls_timeout =3D 2;
+> @@ -1581,6 +1588,9 @@ show_settings (const struct options *o)
+> =C2=A0 SHOW_STR (packet_id_file);
+> =C2=A0 SHOW_BOOL (use_iv);
+> =C2=A0 SHOW_BOOL (test_crypto);
+> +#ifdef ENABLE_PREDICTION_RESISTANCE
+> + =C2=A0SHOW_BOOL (use_prediction_resistance);
+> +#endif
 >
-> -#if (POLARSSL_VERSION_NUMBER >=3D 0x01010000)
-> =C2=A0 =C2=A0 =C2=A0 ssl_set_rng (ks_ssl->ctx, ctr_drbg_random, rand_ctx_=
-get());
-> -#else /* POLARSSL_VERSION_NUMBER >=3D 0x01010000 */
-> - =C2=A0 =C2=A0 =C2=A0ssl_set_rng (ks_ssl->ctx, havege_rand, rand_ctx_get=
-());
-> -#endif /* POLARSSL_VERSION_NUMBER >=3D 0x01010000 */
+> =C2=A0#ifdef ENABLE_SSL
+> =C2=A0 SHOW_BOOL (tls_server);
+> @@ -3018,6 +3028,11 @@ options_string (const struct options *o,
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0buf_printf (&out, ",no-replay");
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0if (!o->use_iv)
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0buf_printf (&out, ",no-iv");
+> +
+> +#ifdef ENABLE_PREDICTION_RESISTANCE
+> + =C2=A0 =C2=A0 =C2=A0 =C2=A0if (o->use_prediction_resistance)
+> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0buf_printf (&out, ",use-prediction-re=
+sistance");
+> +#endif
+> =C2=A0 =C2=A0 =C2=A0 }
 >
-> =C2=A0 =C2=A0 =C2=A0 ALLOC_OBJ_CLEAR (ks_ssl->ssn, ssl_session);
-> =C2=A0 =C2=A0 =C2=A0 ssl_set_session (ks_ssl->ctx, 0, 0, ks_ssl->ssn );
+> =C2=A0#ifdef ENABLE_SSL
+> @@ -6416,6 +6431,13 @@ add_option (struct options *options,
+> =C2=A0 =C2=A0 =C2=A0 options->keysize =3D keysize;
+> =C2=A0 =C2=A0 }
+> =C2=A0#endif
+> +#ifdef ENABLE_PREDICTION_RESISTANCE
+> + =C2=A0else if (streq (p[0], "use-prediction-resistance"))
+> + =C2=A0 =C2=A0{
+> + =C2=A0 =C2=A0 =C2=A0VERIFY_PERMISSION (OPT_P_GENERAL);
+> + =C2=A0 =C2=A0 =C2=A0options->use_prediction_resistance =3D true;
+> + =C2=A0 =C2=A0}
+> +#endif
+> =C2=A0#ifdef ENABLE_SSL
+> =C2=A0 else if (streq (p[0], "show-tls"))
+> =C2=A0 =C2=A0 {
+> diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+> index 9e78d00..1be3dfa 100644
+> --- a/src/openvpn/options.h
+> +++ b/src/openvpn/options.h
+> @@ -520,6 +520,9 @@ struct options
+> =C2=A0 const char *packet_id_file;
+> =C2=A0 bool use_iv;
+> =C2=A0 bool test_crypto;
+> +#ifdef ENABLE_PREDICTION_RESISTANCE
+> + =C2=A0bool use_prediction_resistance;
+> +#endif
+>
+> =C2=A0#ifdef ENABLE_SSL
+> =C2=A0 /* TLS (control channel) parms */
 > diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-> index b14d50d..79a401b 100644
+> index e60dc44..b14d50d 100644
 > --- a/src/openvpn/syshead.h
 > +++ b/src/openvpn/syshead.h
-> @@ -536,10 +536,7 @@ socket_defined (const socket_descriptor_t sd)
+> @@ -534,6 +534,14 @@ socket_defined (const socket_descriptor_t sd)
+> =C2=A0#define MANAGMENT_EXTERNAL_KEY
+> =C2=A0#endif
 >
-> =C2=A0/* Enable PolarSSL RNG prediction resistance support */
-> =C2=A0#ifdef ENABLE_CRYPTO_POLARSSL
-> -#include <polarssl/version.h>
-> -#if POLARSSL_VERSION_NUMBER >=3D 0x01010000
-> =C2=A0#define ENABLE_PREDICTION_RESISTANCE
-> -#endif
-> =C2=A0#endif /* ENABLE_CRYPTO_POLARSSL */
->
+> +/* Enable PolarSSL RNG prediction resistance support */
+> +#ifdef ENABLE_CRYPTO_POLARSSL
+> +#include <polarssl/version.h>
+> +#if POLARSSL_VERSION_NUMBER >=3D 0x01010000
+> +#define ENABLE_PREDICTION_RESISTANCE
+> +#endif
+> +#endif /* ENABLE_CRYPTO_POLARSSL */
+> +
 > =C2=A0/*
+> =C2=A0* MANAGEMENT_IN_EXTRA allows the management interface to
+> =C2=A0* read multi-line inputs from clients.
 > --
 > 1.7.5.4
 >
