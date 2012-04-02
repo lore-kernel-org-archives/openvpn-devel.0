@@ -1,12 +1,12 @@
 MIME-Version: 1.0
-In-Reply-To: <1333351687-3732-3-git-send-email-dejong@...1435...>
+In-Reply-To: <1333351687-3732-6-git-send-email-dejong@...1435...>
 References: <1333351687-3732-1-git-send-email-dejong@...1435...>
-	<1333351687-3732-3-git-send-email-dejong@...1435...>
-Date: Mon, 2 Apr 2012 12:14:14 +0300
-Message-ID: <CAOazyz34dbH+tm+D2s5g0g0jC9Zin5yvT7a7eXzJpYqewwKi7w@...278...>
+	<1333351687-3732-6-git-send-email-dejong@...1435...>
+Date: Mon, 2 Apr 2012 12:15:32 +0300
+Message-ID: <CAOazyz3_WZk6xcEUr208fGUrE4QKr29d=4UgYTLpgWmCE=aHOA@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 3/6] Use POLARSSL_CFLAGS instead of
- POLARSSL_CRYPTO_CFLAGS in configure.ac
+Subject: Re: [Openvpn-devel] [PATCH 6/6] Updated README.polarssl with build
+ system changes.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,37 +20,34 @@ Content-Transfer-Encoding: quoted-printable
 To: Adriaan de Jong <dejong@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Right.
-Sorry for this typo!
+I think this should be merged into the README.
+No need for these satellite README.*.
 
 On Mon, Apr 2, 2012 at 10:28 AM, Adriaan de Jong <dejong@...1435...> wrote:
-> Ensured that the used variable name actually matches the one advertised b=
-y configure.
->
 > Signed-off-by: Adriaan de Jong <dejong@...1435...>
 > ---
-> =C2=A0configure.ac | =C2=A0 =C2=A02 +-
-> =C2=A01 files changed, 1 insertions(+), 1 deletions(-)
+> =C2=A0README.polarssl | =C2=A0 =C2=A04 ++--
+> =C2=A01 files changed, 2 insertions(+), 2 deletions(-)
 >
-> diff --git a/configure.ac b/configure.ac
-> index ef34697..70c51e7 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -821,7 +821,7 @@ case "${with_crypto_library}" in
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0polarssl)
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0have_crypto_crypto=
-=3D"${have_polarssl_crypto}"
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0have_crypto_ssl=3D=
-"${have_polarssl_ssl}"
-> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 CRYPTO_CRYPTO_CFLAGS=
-=3D"${POLARSSL_CRYPTO_CFLAGS}"
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 CRYPTO_CRYPTO_CFLAGS=
-=3D"${POLARSSL_CFLAGS}"
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0CRYPTO_CRYPTO_LIBS=
-=3D"${POLARSSL_LIBS}"
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0AC_DEFINE([ENABLE_=
-CRYPTO_POLARSSL], [1], [Use PolarSSL library])
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0;;
+> diff --git a/README.polarssl b/README.polarssl
+> index 77a9575..ab7c2d7 100644
+> --- a/README.polarssl
+> +++ b/README.polarssl
+> @@ -3,11 +3,11 @@ instructions:
+>
+> =C2=A0To Build and Install,
+>
+> - =C2=A0 =C2=A0 =C2=A0 ./configure --with-ssl-type=3Dpolarssl
+> + =C2=A0 =C2=A0 =C2=A0 ./configure --with-crypto-library=3Dpolarssl
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0make
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0make install
+>
+> -This version depends on at least PolarSSL v0.99.
+> +This version depends on at least PolarSSL v1.1.
+>
+> =C2=A0*******************************************************************=
+******
+>
 > --
 > 1.7.5.4
 >
