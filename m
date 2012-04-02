@@ -1,14 +1,10 @@
-Message-ID: <4F798D80.8000201@...1114...>
-Date: Mon, 02 Apr 2012 13:29:04 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <CAOazyz0xh540Gk3j3T_O0B3ix9htz12dm0VMuKmB16FOQAAQoA@...278...>
-	<1333012602-5419-4-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1333012602-5419-4-git-send-email-alon.barlev@...277...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig867A708A50B960DA80E14CEC"
-Subject: Re: [Openvpn-devel] [PATCH 3/4] cleanup: avoid using ~0 - netmask
+From: Alon Bar-Lev <alon.barlev@...277...>
+Date: Mon,  2 Apr 2012 14:37:41 +0300
+Message-Id: <1333366661-6711-1-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1333041552-6752-1-git-send-email-alon.barlev@...277...>
+References: <1333041552-6752-1-git-send-email-alon.barlev@...277...>
+Subject: [Openvpn-devel] [PATCH] cleanup: add .gitattributes to control eol
+	style explicitly
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,57 +13,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Openvpn-devel@lists.sourceforge.net
+Cc: Alon Bar-Lev <alon.barlev@...277...>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig867A708A50B960DA80E14CEC
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Having the text auto detection is a risk, as the detection may detect
+text files that are not text and vise versa.
 
-On 29/03/12 11:16, Alon Bar-Lev wrote:
-> Use IPV4_NETMASK_HOST constant.
->=20
-> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-> ---
->  src/openvpn/basic.h  |    2 ++
->  src/openvpn/mroute.c |    2 +-
->  src/openvpn/pf.c     |    2 +-
->  src/openvpn/route.c  |   12 ++++++------
->  src/openvpn/route.h  |    2 +-
->  src/openvpn/tun.c    |    2 +-
->  6 files changed, 12 insertions(+), 10 deletions(-)
->=20
+Having global setting will create confusion and differentiate between
+users. So this patch also move this to local repository.
 
-Applied to master branches on -testing and -stable trees
+Having git to check out files differently in different OS is also
+a not correct, as checkouts may be used in shares or in *NIX emulation
+environments, so it have no effect.
 
-commit 32e576d270834636e8e8667fcb7e91cdac03b4a4
-Author: Alon Bar-Lev <alon.barlev@...277...>
-Date:   Thu Mar 29 11:16:41 2012 +0200
+Another issue is packaging, if we change out the tree differently
+in several OSes, we may have different package content, which is
+something that should be avoided.
 
-    Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-    Acked-by: Gert Doering <gert@...1296...>
-    Signed-off-by: David Sommerseth <davids@...1347...>
+Currently any editor of MS supports LF end of lines, so there is no
+need to convert source files while checking out.
 
+The visual studio files should be stored as CRLF as they are generated
+by visual studio every save, in a way that CRLF are added.
 
-kind regards,
+I handled only the files that may be touch by MS users.
 
-David Sommerseth
+Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+---
+ .gitattributes |    7 +++++++
+ Makefile.am    |    1 +
+ 2 files changed, 8 insertions(+), 0 deletions(-)
+ create mode 100644 .gitattributes
 
+diff --git a/.gitattributes b/.gitattributes
+new file mode 100644
+index 0000000..34463f9
+--- /dev/null
++++ b/.gitattributes
+@@ -0,0 +1,7 @@
++*.c eol=lf
++*.h eol=lf
++*.rc eol=lf
++*.txt eol=lf
++*.bat eol=lf
++*.vc*proj* eol=crlf
++*.sln eol=crlf
+diff --git a/Makefile.am b/Makefile.am
+index 68aa0a8..ab3e3d2 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -52,6 +52,7 @@ dist_doc_DATA = \
+ 
+ dist_noinst_DATA = \
+ 	.gitignore \
++	.gitattributes \
+ 	PORTS \
+ 	README.IPv6 TODO.IPv6 \
+ 	README.polarssl \
+-- 
+1.7.3.4
 
-
---------------enig867A708A50B960DA80E14CEC
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk95jYAACgkQDC186MBRfrr3/gCfWN1mmCK1aK44Cq8TwpHuoLO1
-nQgAoJRUsygEtc1pfgc5hv4CHUW8lemA
-=GG1W
------END PGP SIGNATURE-----
-
---------------enig867A708A50B960DA80E14CEC--
 
