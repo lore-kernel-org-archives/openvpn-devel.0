@@ -1,14 +1,14 @@
-Message-ID: <4F798D6E.5050906@...1114...>
-Date: Mon, 02 Apr 2012 13:28:46 +0200
+Message-ID: <4F798D75.2010100@...1114...>
+Date: Mon, 02 Apr 2012 13:28:53 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <CAOazyz1OjVKEq5+0BcAgS9PVPcs77oJemG+kD3S7ZZUv+TiAEg@...278...>
-	<1333287988-25921-1-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1333287988-25921-1-git-send-email-alon.barlev@...277...>
+References: <CAOazyz0xh540Gk3j3T_O0B3ix9htz12dm0VMuKmB16FOQAAQoA@...278...>
+	<1333012602-5419-2-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1333012602-5419-2-git-send-email-alon.barlev@...277...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig182EF64B77D3FF30AB194AE8"
-Subject: Re: [Openvpn-devel] [PATCH] cleanup: gc usage
+	boundary="------------enigBD8D6038C6F62820A7532166"
+Subject: Re: [Openvpn-devel] [PATCH 1/4] cleanup: avoid using ~0 - generic
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,40 +20,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig182EF64B77D3FF30AB194AE8
+--------------enigBD8D6038C6F62820A7532166
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-On 01/04/12 15:46, Alon Bar-Lev wrote:
-> Cleanup of "Use the garbage collector when retrieving x509 fields"
-> patch series.
->=20
-> Discussed at [1].
->=20
-> There should be an effort to produce common function prologue
-> and epilogue, so that cleanups will be done at single point.
->=20
-> [1] http://comments.gmane.org/gmane.network.openvpn.devel/5401
+On 29/03/12 11:16, Alon Bar-Lev wrote:
+> Use limits.h for maximum value.
 >=20
 > Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 > ---
->  src/openvpn/pkcs11.c              |    5 +--
->  src/openvpn/pkcs11_polarssl.c     |    8 ++---
->  src/openvpn/ssl_verify.c          |   53 +++++++++++++++++++++----------=
-------
->  src/openvpn/ssl_verify_openssl.c  |   15 ++++++----
->  src/openvpn/ssl_verify_polarssl.c |   18 +++++++-----
->  5 files changed, 55 insertions(+), 44 deletions(-)
+>  config-msvc.h         |    1 +
+>  configure.ac          |    2 +-
+>  src/openvpn/route.c   |    2 +-
+>  src/openvpn/syshead.h |    4 ++++
+>  4 files changed, 7 insertions(+), 2 deletions(-)
+>=20
 
 Applied to master branches on -testing and -stable trees
 
-commit 75b49e406430299b187964744f82e50a9035a0d3
+commit 112731fcc39535ba425ac717cb0d5bd1a2a11c61
 Author: Alon Bar-Lev <alon.barlev@...277...>
-Date:   Sun Apr 1 16:46:28 2012 +0300
+Date:   Thu Mar 29 11:16:39 2012 +0200
 
     Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-    Acked-by: Adriaan de Jong <dejong@...1435...>
+    Acked-by: Gert Doering <gert@...1296...>
     Signed-off-by: David Sommerseth <davids@...1347...>
+
 
 
 kind regards,
@@ -61,7 +53,8 @@ kind regards,
 David Sommerseth
 
 
---------------enig182EF64B77D3FF30AB194AE8
+
+--------------enigBD8D6038C6F62820A7532166
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -70,10 +63,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk95jXAACgkQDC186MBRfrp4dgCdGyefmsYUi1KqkD3OF40xGC4+
-E4AAoJEPntcDZzkhK5hhj82I+epVoL6G
-=Tdnp
+iEYEARECAAYFAk95jXUACgkQDC186MBRfrr2pwCgqLbDuC6fNpP2T4LEM2rQMMh/
+2UoAoIURCL/US/mY/UbQXaHH4xML+Cae
+=6pFE
 -----END PGP SIGNATURE-----
 
---------------enig182EF64B77D3FF30AB194AE8--
+--------------enigBD8D6038C6F62820A7532166--
 
