@@ -1,21 +1,9 @@
-From: Adriaan de Jong <dejong@...1435...>
-Date: Tue, 3 Apr 2012 17:25:53 +0200
-Message-ID: <1CED409804E2164C8104F9E623B08B9012CBD3FD9F@...1436...>
-References: <1333351687-3732-1-git-send-email-dejong@...1435...>
-	<CAOazyz0MDBg75y+CRdYNEOdYBE83B_pYfZ3pz+JLyUdAyF6xgQ@...278...>
-	<CAP+U6tK3UHd=KR1th0vxdLnRUsZm47qKgk=BeNgzSmvYUFMdvw@...278...>
-	<4F797A66.8050502@...1114...>
-	<CAOazyz0uhi_ao2SN3Moi+tXRVhaJPd-O1eam0tqLo_6rehVREg@...278...>
-	<4F7981C4.80409@...1114...>
-	<CAOazyz1eV7V7aB9WFr0LwJM-dyegeK1wyeLXJQAoDTB+J02E3A@...278...>
-	<1CED409804E2164C8104F9E623B08B9012CB842337@...1436...>
-	<CAOazyz21wp6-w5hC4tm9+gRm5gLqJWMow4b0fdsyroMGMA143A@...278...>
-	<4F7A18A7.1080703@...1114...>
-In-Reply-To: <4F7A18A7.1080703@...1114...>
-Content-Language: en-US
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 1/6] Added support for new PolarSSL 1.1
- RNG
+From: Kenni Lund <kenni@...1704...>
+Date: Wed, 4 Apr 2012 18:32:40 +0200
+Message-ID: <CAAd_vpS_7o=LBBCMrodWt4Jg4QWa9YrGDG_OheCsgh5uLMgQKA@...278...>
+Subject: [Openvpn-devel] [PATCH] OpenVPN GUI: Corrections to the Danish
+	translation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,59 +12,23 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: David Sommerseth <openvpn.list@...1114...>, Alon Bar-Lev <alon.barlev@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogRGF2aWQgU29tbWVyc2V0
-aCBbbWFpbHRvOm9wZW52cG4ubGlzdEAuLi4xMTE0Li4uXQ0KPiBPbiAwMi8wNC8xMiAyMDo1MCwg
-QWxvbiBCYXItTGV2IHdyb3RlOg0KPiA+IE9uIE1vbiwgQXByIDIsIDIwMTIgYXQgODozMSBQTSwg
-QWRyaWFhbiBkZSBKb25nIDxkZWpvbmdALi4uMTQzNS4uLj4NCj4gPiB3cm90ZToNCj4gPj4+IC0t
-LS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tIEZyb206IEFsb24gQmFyLUxldg0KPiA+Pj4gW21haWx0
-bzphbG9uLmJhcmxldkAuLi4yNzcuLi5dIFNlbnQ6IG1hYW5kYWcgMiBhcHJpbCAyMDEyDQo+ID4+
-PiAxMjo0MiBUbzogRGF2aWQgU29tbWVyc2V0aCBDYzoNCg0KLi4uDQoNCj4gPj4+DQo+ID4+PiBS
-aWdodC4gTmV4dCBzdGFnZSBpcyBnZXR0aW5nIHJpZCBvZiBzeXNoZWFkLmguLi4gVGhlIGZvbGxv
-d2luZyBpcw0KPiB0bw0KPiA+Pj4gY2xlYW51cCB0aGUgY3J5cHRvLCBJIHRob3VnaCB0aGF0IGlm
-IHNvbWVvbmUgY2FuIHdvcmsgb24gdGhpcyBpbg0KPiA+Pj4gcGFyYWxsZWwgd2Ugd2lsbCBkbyB0
-aGlzIHR3aWNlIGFzIGZhc3QgOikNCj4gPj4+DQo+ID4+PiBCdXQgYmVmb3JlIHdlIGNvbnRpbnVl
-IHdlIG5lZWQgdG8gc3RhYmlsaXplIHRoZSBwcm9qZWN0IGFnYWluLA0KPiA+Pj4gY3JlYXRpbmcg
-dGhlIG1pc3NpbmcgcmVwb3NpdG9yaWVzLCBkZWNpZGluZyBhYm91dCB0aGUNCj4gPj4+IGdpdGh1
-Yi9zb3VyY2Vmb3JnZSBpcyBuZWVkZWQuIERlY2lkaW5nIGFib3V0IHRoZSB3YXkgdG8gcmV2aWV3
-IGFuZA0KPiA+Pj4gbWVyZ2UgbGFyZ2UgY2hhbmdlcy4NCj4gPj4+DQo+ID4+DQo+ID4+IEknZCBw
-cmVmZXIgdG8gbGVhdmUgZnVydGhlciBtb2R1bGFyaXNhdGlvbiBmb3IgMi40LiBXZSBjb3VsZCBl
-dmVuDQo+ID4+IG1ha2UgdGhhdCBhIG1vcmUgZ2VuZXJhbCBnb2FsIGZvciAyLjQsIG1vZHVsYXJp
-c2luZyBub3QganVzdA0KPiA+PiBjcnlwdG8vU1NMLCBidXQgYWxzbyBhdXRoZW50aWNhdGlvbiwg
-YW5kIG1heWJlIGV2ZW4gc29tZSBvZiB0aGUNCj4gPj4gbmV0d29yayBzdHVmZi4gSXQgd291bGQg
-YmUgbmljZSB0byBsZWF2ZSBhIGZldyB0YXJnZXRzIGZvciAyLjQgOikuDQo+ID4+DQo+ID4+IEkg
-ZG9uJ3Qgc2VlIHRoZSBuZWVkIHRvIGZ1cnRoZXIgZGVsYXkgMi4zIGZvciB0aGlzLCBhcyBpdCBp
-cyBub3QgYQ0KPiA+PiBidWcgZml4LiBPdGhlcnMgbWlnaHQgZGlzYWdyZWUgaGVyZSwgYW5kIHRo
-ZSB0b3BpYyBpcyBvcGVuIGZvcg0KPiBkZWJhdGUNCj4gPj4gOikuIEluIGdlbmVyYWwsIGl0IG1p
-Z2h0IGJlIGEgZ29vZCBpZGVhIHRvIGZyZWV6ZSBkZXZlbG9wbWVudCBvZiAyLjMNCj4gPj4gYXQg
-c29tZSBwb2ludCB0byBwcmV2ZW50IGVuZGxlc3MgYWxwaGEgc3luZHJvbWUuDQo+ID4+DQo+ID4+
-IEFkcmlhYW4NCj4gPj4NCj4gPg0KPiA+IFdlbGwsIEkgZG9uJ3QgY2FyZSBhYm91dCB2ZXJzaW9u
-IG51bWJlcnMuLi4gdGhleSBhcmUganVzdCBzbmFwc2hvdHMNCj4gaW4NCj4gPiB0aW1lLiBXZSBu
-ZWVkIGEgYnJhbmNoIHdpdGggdGhpcyBvbmUgd2F5IG9yIHRoZSBvdGhlci4uLiBJZiB0aGF0DQo+
-ID4gYnJhbmNoIGlzIGdvb2QsIGl0IGNhbiBlbnRlciB0aGUgbmV4dCB2ZXJzaW9uIHdoYXRldmVy
-IGl0IG1heSBiZS4uLg0KPiANCj4gQWRyaWFhbiBnb3QgYSBnb29kIHBvaW50LCBhbmQgd2UndmUg
-a2luZCBvZiBzZXR0bGVkIG9uIHRoZSBmZWF0dXJlcw0KPiB3ZSd2ZSBraWNrZWQgaW50byB0aGUg
-Y29taW5nIDIuMyByZWxlYXNlLiAgSSBob3BlIHRoYXQgd2UgY2FuIHB1c2ggb3V0DQo+IGFuIGFs
-cGhhLTIgcmVsZWFzZSB3aGVuIHRoaW5ncyBoYXZlIGJlZ3VuIHRvIHN0YWJpbGlzZSBvbiBtYXN0
-ZXIgYWdhaW4uDQo+IA0KPiBJdCB3b3VsZCBiZSBnb29kIHRvIGhhdmUgYSBiZXRhIHJlbGVhc2Ug
-b3V0IGJlZm9yZSB0aGUgc3VtbWVyIGFuZCBhbiBSQw0KPiByZWxlYXNlIGR1cmluZyB0aGUgYXV0
-dW1uLiAgQWltaW5nIGZvciBhIDIuMyByZWxlYXNlIHRvd2FyZHMgdGhlIGVuZCBvZg0KPiB0aGUg
-eWVhci4gIFRoaXMgaXMgbm90IGEgcGxhbiBjYXJ2ZWQgaW50byBzdG9uZSwgYW5kIGlmIHdlJ3Jl
-IGFibGUgdG8NCj4gbW92ZSBmYXN0ZXI7IEknZCBhcHByZWNpYXRlIHRoYXQgdmVyeSBtdWNoLiAg
-QnV0IHRoaXMgaXMgdGhlIGdlbmVyYWwNCj4gaWRlYSB3aGljaCBoYXMgYmVlbiBkaXNjdXNzZWQv
-c3VnZ2VzdGVkIGEgY291cGxlIG9mIHRpbWVzIG9uIElSQy4NCj4gSG93ZXZlciwgSSdtIHRyeWlu
-ZyB0byBiZSByZWFsaXN0aWMgYXMgd2VsbC4gIFNvIHRoZXJlJ3Mgcm9vbSBmb3IgMi0zDQo+IHJl
-bGVhc2VzIGluIGVhY2ggc3RhZ2UgYmVmb3JlIHRoZSBmaW5hbCByZWxlYXNlLiAgQW5kIHdlJ2xs
-IHNlZSBob3cNCj4gbWFueSB3ZSBlbmQgdXAgd2l0aCBpbiB0aGUgZW5kLg0KPiANCj4gQnV0IEkg
-YWdyZWUgdGhhdCBhZGRpdGlvbmFsIGZlYXR1cmVzIHdlIGRvbid0IHdhbnQgaW50byAyLjMgY291
-bGQgZ28NCj4gaW50byB0aGUgZXhwZXJpbWVudGFsIGJyYW5jaCBpbiBvcGVudnBuLXRlc3Rpbmcu
-Z2l0LiAgVGhhdCdzIG1vc3RseSBhDQo+IGNvcHkgb2YgJ21hc3RlcicgKEkndmUgYmVlbiBsYXp5
-IHRvIHVwZGF0ZSBpdCBsYXRlbHksIGJ1dCBwdXNoZWQgb3V0IGFuDQo+IHVwZGF0ZSBhZ2FpbiBu
-b3cpLCB0aGF0J3MgdGhlIHB1cnBvc2Ugb2YgdGhpcyBicmFuY2guDQo+IA0KDQpQZXJoYXBzIGl0
-J3MgdGltZSB0byBkZXRlcm1pbmUgYSBmcmVlemluZyBwb2ludCBmb3IgT3BlblZQTiAyLjM/IExl
-dCdzIHNheSBhZnRlciB0aGUgbmV3IGJ1aWxkIHN5c3RlbSBpcyBpbiwgYnV0IGJlZm9yZSBhbnkg
-ZnVydGhlciBtb2R1bGFyaXNhdGlvbj8NCg0KQWRyaWFhbg0KDQo=
+Hi list
+
+I created a ticket over at the OpenVPN GUI SourceForge project with a
+patch attached - and now I've just noticed the wiki-page about
+translations, which indicates that it should have been sent here
+instead for visibility.
+
+I can resend the patch inline to this list if you want me to,
+otherwise the patch is available from the bugtracker at:
+http://sourceforge.net/tracker/?func=detail&aid=3514470&group_id=248281&atid=1327094
+
+Thanks! :)
+
+Best regards
+Kenni
+
