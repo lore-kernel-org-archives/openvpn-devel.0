@@ -1,8 +1,7 @@
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Sat,  7 Apr 2012 20:39:26 +0300
-Message-Id: <1333820366-9480-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [PATCH] build: fix some statement left from
-	conversion
+Date: Sat,  7 Apr 2012 20:40:40 +0300
+Message-Id: <1333820440-9573-1-git-send-email-alon.barlev@...277...>
+Subject: [Openvpn-devel] [PATCH] cleanup: plugin: support C++ plugin
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,57 +17,33 @@ Cc: Alon Bar-Lev <alon.barlev@...277...>
 
 Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 ---
- configure.ac |   12 ++++++------
- 1 files changed, 6 insertions(+), 6 deletions(-)
+ include/openvpn-plugin.h |    8 ++++++++
+ 1 files changed, 8 insertions(+), 0 deletions(-)
 
-diff --git a/configure.ac b/configure.ac
-index e962323..0f1ca99 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -413,37 +413,37 @@ AC_CHECK_TYPES(
- )
- AC_CHECK_TYPE(
- 	[struct tun_pi],
--	[AC_DEFINE(HAVE_TUN_PI, 1, [struct tun_pi needed for IPv6 support])],
-+	[AC_DEFINE([HAVE_TUN_PI], [1], [struct tun_pi needed for IPv6 support])],
- 	,
- 	[[${SOCKET_INCLUDES}]]
- )
- AC_CHECK_TYPE(
- 	[struct iphdr],
--	[AC_DEFINE(HAVE_IPHDR, 1, [struct iphdr needed for IPv6 support])],
-+	[AC_DEFINE([HAVE_IPHDR], [1], [struct iphdr needed for IPv6 support])],
- 	,
- 	[[${SOCKET_INCLUDES}]]
- )
- AC_CHECK_TYPE(
- 	[struct sock_extended_err],
--	[AC_DEFINE(HAVE_SOCK_EXTENDED_ERR, 1, [struct sock_extended_err needed for extended socket error support])],
-+	[AC_DEFINE([HAVE_SOCK_EXTENDED_ERR], [1], [struct sock_extended_err needed for extended socket error support])],
- 	,
- 	[[${SOCKET_INCLUDES}]]
- )
- AC_CHECK_TYPE(
- 	[struct msghdr],
--	[AC_DEFINE(HAVE_MSGHDR, 1, [struct msghdr needed for extended socket error support])],
-+	[AC_DEFINE([HAVE_MSGHDR], [1], [struct msghdr needed for extended socket error support])],
- 	,
- 	[[${SOCKET_INCLUDES}]]
- )
- AC_CHECK_TYPE(
- 	[struct cmsghdr],
--	[AC_DEFINE(HAVE_CMSGHDR, 1, [struct cmsghdr needed for extended socket error support])],
-+	[AC_DEFINE([HAVE_CMSGHDR], [1], [struct cmsghdr needed for extended socket error support])],
- 	,
- 	[[${SOCKET_INCLUDES}]]
- )
- AC_CHECK_TYPE(
- 	[struct in_pktinfo],
--	[AC_DEFINE(HAVE_IN_PKTINFO, 1, [struct in_pktinfo needed for IP_PKTINFO support])],
-+	[AC_DEFINE([HAVE_IN_PKTINFO], [1], [struct in_pktinfo needed for IP_PKTINFO support])],
- 	,
- 	[[${SOCKET_INCLUDES}]]
- )
+diff --git a/include/openvpn-plugin.h b/include/openvpn-plugin.h
+index f82f61f..1c80eec 100644
+--- a/include/openvpn-plugin.h
++++ b/include/openvpn-plugin.h
+@@ -43,6 +43,10 @@ typedef X509 openvpn_x509_cert_t;
+ #endif
+ #endif
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++
+ /*
+  * Plug-in types.  These types correspond to the set of script callbacks
+  * supported by OpenVPN.
+@@ -724,4 +728,8 @@ OPENVPN_PLUGIN_DEF openvpn_plugin_handle_t OPENVPN_PLUGIN_FUNC(openvpn_plugin_op
+ OPENVPN_PLUGIN_DEF int OPENVPN_PLUGIN_FUNC(openvpn_plugin_func_v1)
+      (openvpn_plugin_handle_t handle, const int type, const char *argv[], const char *envp[]);
+ 
++#ifdef __cplusplus
++}
++#endif
++
+ #endif /* OPENVPN_PLUGIN_H_ */
 -- 
 1.7.3.4
 
