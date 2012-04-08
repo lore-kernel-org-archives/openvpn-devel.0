@@ -1,9 +1,8 @@
+MIME-Version: 1.0
+Date: Sun, 8 Apr 2012 13:43:12 +0300
+Message-ID: <CAOazyz1Uy_SxZCjdQ5oA1SAS+yjNC3i23BgMPDBr_gSFD+h_Rg@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Sun,  8 Apr 2012 13:04:45 +0300
-Message-Id: <1333879485-2417-1-git-send-email-alon.barlev@...277...>
-In-Reply-To: <CAOazyz0nDj78COr6sd4FAMPz3sML0+-5ZNOx7s_62qtk12tnag@...278...>
-References: <CAOazyz0nDj78COr6sd4FAMPz3sML0+-5ZNOx7s_62qtk12tnag@...278...>
-Subject: [Openvpn-devel] [PATCH] crash: packet_id_debug_print: sl may be null
+Subject: [Openvpn-devel] [RFC] tun cleanups
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,65 +11,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Alon Bar-Lev <alon.barlev@...277...>
+To: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-Program received signal SIGSEGV, Segmentation fault.
-packet_id_debug_print (msglevel=1174405255, p=0xa36bd0718,
-pin=0x3de5feec1b0,
-message=0xa330dde80 "PID_TEST", value=0) at
-../../../src/openvpn/packet_id.c:504
-504       for (i = 0; i < sl->x_size; ++i)
+Hello,
 
-(gdb) print sl
-$2 = (const struct seq_list *) 0x0
+I started to work on the syshead cleanups, then found my-self
+evaluating the tun.c complexity, and prioritize it.
 
-Reported in the past[1].
+So basically we have two branches:
+https://github.com/alonbl/openvpn/compare/master...syshead
+https://github.com/alonbl/openvpn/compare/master...tun
 
-[1] http://thread.gmane.org/gmane.network.openvpn.devel/5466
+The tun branch is based on the syshead branch.
 
-Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 ---
- src/openvpn/packet_id.c |   16 ++++++++++------
- 1 files changed, 10 insertions(+), 6 deletions(-)
+    cleanup: tun: tun_engine interface
 
-diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_id.c
-index 0102129..baa4966 100644
---- a/src/openvpn/packet_id.c
-+++ b/src/openvpn/packet_id.c
-@@ -501,7 +501,7 @@ packet_id_debug_print (int msglevel,
- 
-   buf_printf (&out, "%s [%d]", message, value);
-   buf_printf (&out, " [%s-%d] [", p->name, p->unit);
--  for (i = 0; i < sl->x_size; ++i)
-+  for (i = 0; sl != NULL && i < sl->x_size; ++i)
-     {
-       char c;
-       time_t v;
-@@ -538,11 +538,15 @@ packet_id_debug_print (int msglevel,
- 	      p->time_backtrack,
- 	      p->max_backtrack_stat,
- 	      (int)p->initialized);
--  buf_printf (&out, " sl=[%d,%d,%d,%d]",
--	      sl->x_head,
--	      sl->x_size,
--	      sl->x_cap,
--	      sl->x_sizeof);
-+  if (sl != NULL)
-+    {
-+	  buf_printf (&out, " sl=[%d,%d,%d,%d]",
-+		      sl->x_head,
-+		      sl->x_size,
-+		      sl->x_cap,
-+		      sl->x_sizeof);
-+    }
-+
- 
-   msg (msglevel, "%s", BSTR(&out));
-   gc_free (&gc);
--- 
-1.7.3.4
+    Platform independent interface for tun provider.
 
+    Split the long tun.c into platform specific files using
+    tun_engine interface.
+
+    There is more to be done in order to clean up the code,
+    however this is a good starting point.
+
+    Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+---
+
+What I am asking is for people that wishes to work with me on this
+(not the ACK/NACK approach) to allow perfecting this *BEFORE* merge.
+
+Even if you build and test on various of platforms and report back the
+result it would be great, of course, code review will be welcome, it
+is a huge change, so review this as a whole would be simpler.
+
+You can see the majority of the work in tun.h, tun.c, tun-engine*.
+
+Is anyone interested in helping?
+Alon.
 
