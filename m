@@ -1,8 +1,9 @@
-Message-ID: <4F881610.5010304@...515...>
-Date: Fri, 13 Apr 2012 15:03:28 +0300
+Message-ID: <4F882970.4080302@...515...>
+Date: Fri, 13 Apr 2012 16:26:08 +0300
 From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] MSVC build tests on Git "master"
+Subject: [Openvpn-devel] Build tests using "generic" buildsystem and Git
+	"master"!
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,31 +18,36 @@ To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 Hi all,
 
-I did a number of MSVC build tests using Visual Studio 2010 Express. I
-tried both Git "master"[1] and Alon's openvpn-build repo[2].
+I also ran some build tests with the "generic" buildsystem[1], OpenVPN
+Git "master"[2] and an Ubuntu 11.10 amd64 workstation. As the Git
+"master" does not yet seem to include the "generic" buildsystem, I
+downloaded it separately[3] and pointed it to a tarball[4] assembled
+from latest Git "master" code. Building the obsolete OpenVPN-GUI 1.0.3
+for Windows seemed to fail, so I disabled it by editing the build script
+(generic/build). Anyways, here are the results of the tests...
 
-I encountered a number of issues with [1]. First, unlike in [2],
-dependency fetching is not automatic - not sure if that's intentional,
-but it is/was a really nice feature. Due to this, "master"[1] did not
-build at all[3] without copying the build dependencies to a directory
-manually, and adding a "msvc-build-env-local.bat" to point the build to
-those:
+Building a native binary worked:
 
-set OPENVPN_DEPROOT=c:\Users\Samuli\openvpn-build\build-deps-alon
-set OPENSSL_HOME=%OPENVPN_DEPROOT%\openssl-1.0.0g
-set LZO_HOME=%OPENVPN_DEPROOT%\lzo-2.06
-set PKCS11H_HOME=%OPENVPN_DEPROOT%\pkcs11-helper-1.10
-set TAP_WINDOWS_HOME=%OPENVPN_DEPROOT%\tap-windows-9.9
+$ IMAGEROOT=`pwd`/image-native ./build)
 
-This allowed the build to proceed, but then I got tons of errors. Those
-seem to be caused by Visual Studio 2010 peculiarities; see [4] for a
-partial log. The full error log is 1396k in size - If you need it just
-let me know.
+Building a Windows 32bit binary on Linux 64bit worked:
+
+$ IMAGEROOT=`pwd`/image-win32 CHOST=i686-w64-mingw32
+\ CBUILD=x86_64-pc-linux-gnu ./build
+
+Building a Windows 64bit binary on Linux 64bit worked:
+
+$ IMAGEROOT=`pwd`/image-win64 CHOST=x86_64-w64-mingw32
+\ CBUILD=x86_64-pc-linux-gnu ./build
+
+I could not test building for Arm, as the my workstation was missing the
+required tools.
 
 Samuli
 
-[1]  <git://openvpn.git.sourceforge.net/gitroot/openvpn/openvpn.git>
-[2] <https://github.com/alonbl/openvpn-build.git>
-[3] <http://pastie.org/3780063>
-[4] <http://pastie.org/3780024>
+[1]
+<https://community.openvpn.net/openvpn/wiki/BuildingUsingGenericBuildsystem#Genericbuildmethod>
+[2] <git://openvpn.git.sourceforge.net/gitroot/openvpn/openvpn.git>
+[3] <https://github.com/alonbl/openvpn-build.git>
+[4] <http://build.openvpn.net/downloads/snapshots/openvpn-2.3_alpha1.tar.gz>
 
