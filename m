@@ -1,12 +1,8 @@
-Message-ID: <4F86D1CB.4050602@...515...>
-Date: Thu, 12 Apr 2012 15:59:55 +0300
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <4F881610.5010304@...515...>
+Date: Fri, 13 Apr 2012 15:03:28 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <7790c56a8b75e.4f862f6b@...1707...>
-	<76d08f528b8d9.4f862fa7@...1707...>	<76d0f2b389cbc.4f86bc51@...1707...>
-	<2830016.EneD4hFqTN@...1526...>
-In-Reply-To: <2830016.EneD4hFqTN@...1526...>
-Subject: Re: [Openvpn-devel] [Translation Question] Traditional Chinese
+Subject: [Openvpn-devel] MSVC build tests on Git "master"
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,40 +11,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: Heiko Hund <heiko.hund@...1489...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Il 12.04.2012 10:54, Heiko Hund ha scritto:
-> Hi YiWen
->
-> On Thursday 12 April 2012 02:28:17 Yi-Wen Cheng wrote:
->> I want to translate openvpn into Traditional Chinese.
->> Could anybody assist me what should I do to start the work?
-> Great, thank you! I suppose you want to translate the Openvpn GUI for Win=
-dows.=20
-> If so, just fetch the English resource file from the repository at [1],=20
-> translate the strings in it and make sure you save it UTF-8 encoded. Then=
- send=20
-> it to this list or open an issue about it at [2]. Please also change the=
-=20
-> language constants to "LANG_CHINESE | SUBLANG_CHINESE_TRADITIONAL" (this =
-will=20
-> make a bit more sense after you looked at [1]).
->
-> Heiko
-Look here for additional instructions:
+Hi all,
 
-<https://community.openvpn.net/openvpn/wiki/Translations>
+I did a number of MSVC build tests using Visual Studio 2010 Express. I
+tried both Git "master"[1] and Alon's openvpn-build repo[2].
 
-All the best,
+I encountered a number of issues with [1]. First, unlike in [2],
+dependency fetching is not automatic - not sure if that's intentional,
+but it is/was a really nice feature. Due to this, "master"[1] did not
+build at all[3] without copying the build dependencies to a directory
+manually, and adding a "msvc-build-env-local.bat" to point the build to
+those:
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+set OPENVPN_DEPROOT=c:\Users\Samuli\openvpn-build\build-deps-alon
+set OPENSSL_HOME=%OPENVPN_DEPROOT%\openssl-1.0.0g
+set LZO_HOME=%OPENVPN_DEPROOT%\lzo-2.06
+set PKCS11H_HOME=%OPENVPN_DEPROOT%\pkcs11-helper-1.10
+set TAP_WINDOWS_HOME=%OPENVPN_DEPROOT%\tap-windows-9.9
 
-irc freenode net: mattock
+This allowed the build to proceed, but then I got tons of errors. Those
+seem to be caused by Visual Studio 2010 peculiarities; see [4] for a
+partial log. The full error log is 1396k in size - If you need it just
+let me know.
 
+Samuli
+
+[1]  <git://openvpn.git.sourceforge.net/gitroot/openvpn/openvpn.git>
+[2] <https://github.com/alonbl/openvpn-build.git>
+[3] <http://pastie.org/3780063>
+[4] <http://pastie.org/3780024>
 
