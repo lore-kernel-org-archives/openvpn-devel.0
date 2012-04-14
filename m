@@ -1,11 +1,10 @@
 MIME-Version: 1.0
-In-Reply-To: <4F882970.4080302@...515...>
-References: <4F882970.4080302@...515...>
-Date: Sat, 14 Apr 2012 19:44:40 +0300
-Message-ID: <CAOazyz2G_6FugO43_Vsc5GLW4oZpEkGDRkujsOAbw9Qdd3ftfQ@...278...>
+In-Reply-To: <4F883775.6020809@...515...>
+References: <4F883775.6020809@...515...>
+Date: Sat, 14 Apr 2012 19:52:28 +0300
+Message-ID: <CAOazyz282i5iosXdnFoX65C-HGPMKEeNEouxn7T0KUzb1QxnPg@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] Build tests using "generic" buildsystem and Git
-	"master"!
+Subject: Re: [Openvpn-devel] Build failure on "master" when using PolarSSL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,49 +18,44 @@ Content-Transfer-Encoding: quoted-printable
 To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
+Something was changed in recent polarssl patches.
+There is havege_random but not havege_rand, and with different prototype.
+
 2012/4/13 Samuli Sepp=C3=A4nen <samuli@...515...>:
-> Hi all,
+> HI,
 >
-> I also ran some build tests with the "generic" buildsystem[1], OpenVPN
-> Git "master"[2] and an Ubuntu 11.10 amd64 workstation. As the Git
-> "master" does not yet seem to include the "generic" buildsystem,
-
-I don't understand what you mean... please explain what is "include"...?
-
-> I downloaded it separately[3] and pointed it to a tarball[4] assembled
-> from latest Git "master" code. Building the obsolete OpenVPN-GUI 1.0.3
-> for Windows seemed to fail, so I disabled it by editing the build script
-> (generic/build). Anyways, here are the results of the tests...
-
-I updated the openvpn-gui to meet the build system... patch is pending.
-
+> I tested building OpenVPN with PolarSSL support on our buildslaves
 >
-> Building a native binary worked:
+> - Debian 6 i386 (PolarSSL 1.1.1)
+> - CentOS 6 amd64 (PolarSSL 1.1.1)
+> - Ubuntu 10.04 amd64 (PolarSSL 1.1.0)
 >
-> $ IMAGEROOT=3D`pwd`/image-native ./build)
+> All used the following build flags:
 >
-> Building a Windows 32bit binary on Linux 64bit worked:
+> --with-crypto-library=3Dpolarssl --enable-crypto --enable-ssl
 >
-> $ IMAGEROOT=3D`pwd`/image-win32 CHOST=3Di686-w64-mingw32
-> \ CBUILD=3Dx86_64-pc-linux-gnu ./build
+> All gave the same error:
 >
-> Building a Windows 64bit binary on Linux 64bit worked:
+> gcc -DHAVE_CONFIG_H -I. -I../.. -I../../include -I../../src/compat =C2=A0=
+ =C2=A0 =C2=A0 -g -O2 -MT ssl_polarssl.o -MD -MP -MF .deps/ssl_polarssl.Tpo=
+ -c -o ssl_polarssl.o ssl_polarssl.c
+> ssl_polarssl.c: In function 'key_state_ssl_init':
+> ssl_polarssl.c:520: error: 'havege_rand' undeclared (first use in this fu=
+nction)
+> ssl_polarssl.c:520: error: (Each undeclared identifier is reported only o=
+nce
+> ssl_polarssl.c:520: error: for each function it appears in.)
 >
-> $ IMAGEROOT=3D`pwd`/image-win64 CHOST=3Dx86_64-w64-mingw32
-> \ CBUILD=3Dx86_64-pc-linux-gnu ./build
+> Any clues? There were no traces of earlier PolarSSL installations on any
+> of the buildslaves.
 >
-> I could not test building for Arm, as the my workstation was missing the
-> required tools.
+> --
+> Samuli Sepp=C3=A4nen
+> Community Manager
+> OpenVPN Technologies, Inc
 >
-> Samuli
+> irc freenode net: mattock
 >
-> [1]
-> <https://community.openvpn.net/openvpn/wiki/BuildingUsingGenericBuildsyst=
-em#Genericbuildmethod>
-> [2] <git://openvpn.git.sourceforge.net/gitroot/openvpn/openvpn.git>
-> [3] <https://github.com/alonbl/openvpn-build.git>
-> [4] <http://build.openvpn.net/downloads/snapshots/openvpn-2.3_alpha1.tar.=
-gz>
 >
 > -------------------------------------------------------------------------=
 -----
