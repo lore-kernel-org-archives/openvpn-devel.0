@@ -1,10 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <4F881610.5010304@...515...>
-References: <4F881610.5010304@...515...>
-Date: Sat, 14 Apr 2012 19:39:24 +0300
-Message-ID: <CAOazyz3RcTS4b8Gc-_ort0T0Zw-hEbUMz-NYab21Ww4pZ4Bxkw@...278...>
+In-Reply-To: <4F882970.4080302@...515...>
+References: <4F882970.4080302@...515...>
+Date: Sat, 14 Apr 2012 19:44:40 +0300
+Message-ID: <CAOazyz2G_6FugO43_Vsc5GLW4oZpEkGDRkujsOAbw9Qdd3ftfQ@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] MSVC build tests on Git "master"
+Subject: Re: [Openvpn-devel] Build tests using "generic" buildsystem and Git
+	"master"!
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,55 +19,58 @@ Content-Transfer-Encoding: quoted-printable
 To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hello Samuli,
-
-I was out, reducing my backlog.
-
-2012/4/13 Samuli Sepp=C3=A4nen <samuli@...515...>
->
+2012/4/13 Samuli Sepp=C3=A4nen <samuli@...515...>:
 > Hi all,
 >
-> I did a number of MSVC build tests using Visual Studio 2010 Express. I
-> tried both Git "master"[1] and Alon's openvpn-build repo[2].
+> I also ran some build tests with the "generic" buildsystem[1], OpenVPN
+> Git "master"[2] and an Ubuntu 11.10 amd64 workstation. As the Git
+> "master" does not yet seem to include the "generic" buildsystem,
+
+I don't understand what you mean... please explain what is "include"...?
+
+> I downloaded it separately[3] and pointed it to a tarball[4] assembled
+> from latest Git "master" code. Building the obsolete OpenVPN-GUI 1.0.3
+> for Windows seemed to fail, so I disabled it by editing the build script
+> (generic/build). Anyways, here are the results of the tests...
+
+I updated the openvpn-gui to meet the build system... patch is pending.
+
 >
-> I encountered a number of issues with [1]. First, unlike in [2],
-> dependency fetching is not automatic - not sure if that's intentional,
-
-Sure, this is intentional.
-The openvpn repository builds openvpn using autotools or vc, there is
-no difference between the two, both do  not build dependencies.
-
-> but it is/was a really nice feature. Due to this, "master"[1] did not
-> build at all[3] without copying the build dependencies to a directory
-> manually, and adding a "msvc-build-env-local.bat" to point the build to
-> those:
-
-Master can be built using correct environment... use first the
-openvpn-build/msvc to build dependencies only using set DO_ONLY_DEPS=3D1
-
-> set OPENVPN_DEPROOT=3Dc:\Users\Samuli\openvpn-build\build-deps-alon
-
-This should be sufficient... the default location of the dependencies would=
- be:
-c:\Users\Samuli\openvpn-build\image
-
-> This allowed the build to proceed, but then I got tons of errors. Those
-> seem to be caused by Visual Studio 2010 peculiarities; see [4] for a
-> partial log. The full error log is 1396k in size - If you need it just
-> let me know.
-
-I don't quite understand who you tried to build this... manually or
-using the openvpn-build/msvc.
-If you try to build manually, please send me the exact commands you used.
-
+> Building a native binary worked:
+>
+> $ IMAGEROOT=3D`pwd`/image-native ./build)
+>
+> Building a Windows 32bit binary on Linux 64bit worked:
+>
+> $ IMAGEROOT=3D`pwd`/image-win32 CHOST=3Di686-w64-mingw32
+> \ CBUILD=3Dx86_64-pc-linux-gnu ./build
+>
+> Building a Windows 64bit binary on Linux 64bit worked:
+>
+> $ IMAGEROOT=3D`pwd`/image-win64 CHOST=3Dx86_64-w64-mingw32
+> \ CBUILD=3Dx86_64-pc-linux-gnu ./build
+>
+> I could not test building for Arm, as the my workstation was missing the
+> required tools.
 >
 > Samuli
 >
-> [1] =C2=A0<git://openvpn.git.sourceforge.net/gitroot/openvpn/openvpn.git>
-> [2] <https://github.com/alonbl/openvpn-build.git>
-> [3] <http://pastie.org/3780063>
-> [4] <http://pastie.org/3780024>
-
-Thanks!
-Alon.
+> [1]
+> <https://community.openvpn.net/openvpn/wiki/BuildingUsingGenericBuildsyst=
+em#Genericbuildmethod>
+> [2] <git://openvpn.git.sourceforge.net/gitroot/openvpn/openvpn.git>
+> [3] <https://github.com/alonbl/openvpn-build.git>
+> [4] <http://build.openvpn.net/downloads/snapshots/openvpn-2.3_alpha1.tar.=
+gz>
+>
+> -------------------------------------------------------------------------=
+-----
+> For Developers, A Lot Can Happen In A Second.
+> Boundary is the first to Know...and Tell You.
+> Monitor Your Applications in Ultra-Fine Resolution. Try it FREE!
+> http://p.sf.net/sfu/Boundary-d2dvs2
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
