@@ -1,10 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <4F883775.6020809@...515...>
-References: <4F883775.6020809@...515...>
-Date: Sat, 14 Apr 2012 19:52:28 +0300
-Message-ID: <CAOazyz282i5iosXdnFoX65C-HGPMKEeNEouxn7T0KUzb1QxnPg@...278...>
+In-Reply-To: <1334213412-10048-1-git-send-email-dejong@...1435...>
+References: <1334213412-10048-1-git-send-email-dejong@...1435...>
+Date: Sat, 14 Apr 2012 19:58:01 +0300
+Message-ID: <CAOazyz105_ph-aVMxjowhwn6d7012w7F9HL0N95=npF3Viv6pg@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] Build failure on "master" when using PolarSSL
+Subject: Re: [Openvpn-devel] [PATCH] Ensure sys/un.h autoconf detection
+ includes sys/socket.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,46 +16,47 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Adriaan de Jong <dejong@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Something was changed in recent polarssl patches.
-There is havege_random but not havege_rand, and with different prototype.
+This is strange!
+As there is nothing in this file that needs dependency.
+Can you please send me config.log and the un.h file for me to learn?
 
-2012/4/13 Samuli Sepp=C3=A4nen <samuli@...515...>:
-> HI,
+On Thu, Apr 12, 2012 at 9:50 AM, Adriaan de Jong <dejong@...1435...> wrote:
+> This is required to build an Android binary.
 >
-> I tested building OpenVPN with PolarSSL support on our buildslaves
+> Signed-off-by: Adriaan de Jong <dejong@...1435...>
+> ---
+> =C2=A0configure.ac | =C2=A0 =C2=A04 ++--
+> =C2=A01 files changed, 2 insertions(+), 2 deletions(-)
 >
-> - Debian 6 i386 (PolarSSL 1.1.1)
-> - CentOS 6 amd64 (PolarSSL 1.1.1)
-> - Ubuntu 10.04 amd64 (PolarSSL 1.1.0)
+> diff --git a/configure.ac b/configure.ac
+> index 70c51e7..dc5bb43 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -363,7 +363,7 @@ AC_CHECK_HEADERS([ \
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0windows.h winsock2.h ws2tcpip.h \
+> =C2=A0])
+> =C2=A0AC_CHECK_HEADERS([ \
+> - =C2=A0 =C2=A0 =C2=A0 sys/time.h sys/un.h sys/ioctl.h sys/stat.h \
+> + =C2=A0 =C2=A0 =C2=A0 sys/time.h sys/ioctl.h sys/stat.h \
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0sys/mman.h sys/file.h \
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0unistd.h signal.h libgen.h stropts.h \
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0syslog.h pwd.h grp.h \
+> @@ -399,7 +399,7 @@ SOCKET_INCLUDES=3D"
+> =C2=A0"
 >
-> All used the following build flags:
->
-> --with-crypto-library=3Dpolarssl --enable-crypto --enable-ssl
->
-> All gave the same error:
->
-> gcc -DHAVE_CONFIG_H -I. -I../.. -I../../include -I../../src/compat =C2=A0=
- =C2=A0 =C2=A0 -g -O2 -MT ssl_polarssl.o -MD -MP -MF .deps/ssl_polarssl.Tpo=
- -c -o ssl_polarssl.o ssl_polarssl.c
-> ssl_polarssl.c: In function 'key_state_ssl_init':
-> ssl_polarssl.c:520: error: 'havege_rand' undeclared (first use in this fu=
-nction)
-> ssl_polarssl.c:520: error: (Each undeclared identifier is reported only o=
-nce
-> ssl_polarssl.c:520: error: for each function it appears in.)
->
-> Any clues? There were no traces of earlier PolarSSL installations on any
-> of the buildslaves.
->
+> =C2=A0AC_CHECK_HEADERS(
+> - =C2=A0 =C2=A0 =C2=A0 [net/if.h netinet/ip.h netinet/if_ether.h resolv.h=
+],
+> + =C2=A0 =C2=A0 =C2=A0 [net/if.h netinet/ip.h netinet/if_ether.h resolv.h=
+ sys/un.h],
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0,
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0,
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0[[${SOCKET_INCLUDES}]]
 > --
-> Samuli Sepp=C3=A4nen
-> Community Manager
-> OpenVPN Technologies, Inc
->
-> irc freenode net: mattock
+> 1.7.5.4
 >
 >
 > -------------------------------------------------------------------------=
