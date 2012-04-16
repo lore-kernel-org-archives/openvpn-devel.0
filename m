@@ -1,12 +1,13 @@
-Date: Sun, 15 Apr 2012 23:08:18 +0200
-From: =?utf-8?Q?Carsten_Kr=C3=BCger?= <C.Krueger@...448...>
-Message-ID: <1223119348.20120415230818@...449...>
-In-Reply-To: <CAOazyz1U=yJQyWFPPgaiJSbd96+d-DFME0FRWpE1TXZxTda9ZA@...278...>
-References: <105880166.20120410231624@...449...>
-	<CAOazyz1U=yJQyWFPPgaiJSbd96+d-DFME0FRWpE1TXZxTda9ZA@...278...>
+From: Adriaan de Jong <dejong@...1435...>
+Date: Mon, 16 Apr 2012 09:02:06 +0200
+Message-ID: <1CED409804E2164C8104F9E623B08B9012CBF29E49@...1436...>
+References: <1334213412-10048-1-git-send-email-dejong@...1435...>
+	<CAOazyz105_ph-aVMxjowhwn6d7012w7F9HL0N95=npF3Viv6pg@...278...>
+In-Reply-To: <CAOazyz105_ph-aVMxjowhwn6d7012w7F9HL0N95=npF3Viv6pg@...278...>
+Content-Language: en-US
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] FYI: OpenVPN client for Windows that is working
-	non-admin - securepoint client
+Subject: Re: [Openvpn-devel] [PATCH] Ensure sys/un.h autoconf detection
+ includes sys/socket.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,33 +17,47 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: base64
+To: 'Alon Bar-Lev' <alon.barlev@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hello Alon,
-
-ABL> 2012/4/11 Carsten Krüger <C.Krueger@...448...>:
->> I don't know if this is well known:
->> http://sourceforge.net/projects/securepoint/
-
-ABL> No,  I did not know it.
-ABL> And it is dutch documentation...
-
-It's german :-)
-
-If you have need for translation - please ask, I'm german.
-
-ABL> From what I understand it uses IPC to run openvpn in privilege account.
-ABL> And it uses Qt for UI, which is great.
-
-ABL> It does not handle privilege separation any better than running
-ABL> openvpn as privileged service and using the management interface to
-ABL> access it.
-
-ACK
-
-greetings
-Carsten
-
-
+VGhlcmUgaXMgb24gQW5kcm9pZDoNCg0KIC0gc3lzL3VuLmggaW5jbHVkZXMgbGludXgvdW4uaA0K
+IC0gbGludXgvdW4uaCB1c2VzIHNhX2ZhbWlseV90DQogLSBzYV9mYW1pbHlfdCBpcyBkZWZpbmVk
+IGluIGxpbnV4L3NvY2tldC5oDQogLSB3aGljaCBpcyBpbmNsdWRlZCBmcm9tIHN5cy9zb2NrZXQu
+aA0KDQpUaGVyZWZvcmUsIHN5cy9zb2NrZXQuaCBpcyByZXF1aXJlZCBmb3IgbGludXgvdW4uaC4u
+Lg0KDQpIb3BlIHRoYXQgY2xhcmlmaWVzIHRoaW5ncywNCkFkcmlhYW4NCg0KLS0tLS1PcmlnaW5h
+bCBNZXNzYWdlLS0tLS0NCkZyb206IEFsb24gQmFyLUxldiBbbWFpbHRvOmFsb24uYmFybGV2QC4u
+LjI3Ny4uLl0gDQpTZW50OiB6YXRlcmRhZyAxNCBhcHJpbCAyMDEyIDE4OjU4DQpUbzogQWRyaWFh
+biBkZSBKb25nDQpDYzogb3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQNClN1Ympl
+Y3Q6IFJlOiBbT3BlbnZwbi1kZXZlbF0gW1BBVENIXSBFbnN1cmUgc3lzL3VuLmggYXV0b2NvbmYg
+ZGV0ZWN0aW9uIGluY2x1ZGVzIHN5cy9zb2NrZXQuaA0KDQpUaGlzIGlzIHN0cmFuZ2UhDQpBcyB0
+aGVyZSBpcyBub3RoaW5nIGluIHRoaXMgZmlsZSB0aGF0IG5lZWRzIGRlcGVuZGVuY3kuDQpDYW4g
+eW91IHBsZWFzZSBzZW5kIG1lIGNvbmZpZy5sb2cgYW5kIHRoZSB1bi5oIGZpbGUgZm9yIG1lIHRv
+IGxlYXJuPw0KDQpPbiBUaHUsIEFwciAxMiwgMjAxMiBhdCA5OjUwIEFNLCBBZHJpYWFuIGRlIEpv
+bmcgPGRlam9uZ0AuLi4xNDM1Li4uPiB3cm90ZToNCj4gVGhpcyBpcyByZXF1aXJlZCB0byBidWls
+ZCBhbiBBbmRyb2lkIGJpbmFyeS4NCj4NCj4gU2lnbmVkLW9mZi1ieTogQWRyaWFhbiBkZSBKb25n
+IDxkZWpvbmdALi4uMTQzNS4uLj4NCj4gLS0tDQo+IMKgY29uZmlndXJlLmFjIHwgwqAgwqA0ICsr
+LS0NCj4gwqAxIGZpbGVzIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkN
+Cj4NCj4gZGlmZiAtLWdpdCBhL2NvbmZpZ3VyZS5hYyBiL2NvbmZpZ3VyZS5hYyBpbmRleCA3MGM1
+MWU3Li5kYzViYjQzIDEwMDY0NA0KPiAtLS0gYS9jb25maWd1cmUuYWMNCj4gKysrIGIvY29uZmln
+dXJlLmFjDQo+IEBAIC0zNjMsNyArMzYzLDcgQEAgQUNfQ0hFQ0tfSEVBREVSUyhbIFwNCj4gwqAg
+wqAgwqAgwqB3aW5kb3dzLmggd2luc29jazIuaCB3czJ0Y3BpcC5oIFwNCj4gwqBdKQ0KPiDCoEFD
+X0NIRUNLX0hFQURFUlMoWyBcDQo+IC0gwqAgwqAgwqAgc3lzL3RpbWUuaCBzeXMvdW4uaCBzeXMv
+aW9jdGwuaCBzeXMvc3RhdC5oIFwNCj4gKyDCoCDCoCDCoCBzeXMvdGltZS5oIHN5cy9pb2N0bC5o
+IHN5cy9zdGF0LmggXA0KPiDCoCDCoCDCoCDCoHN5cy9tbWFuLmggc3lzL2ZpbGUuaCBcDQo+IMKg
+IMKgIMKgIMKgdW5pc3RkLmggc2lnbmFsLmggbGliZ2VuLmggc3Ryb3B0cy5oIFwNCj4gwqAgwqAg
+wqAgwqBzeXNsb2cuaCBwd2QuaCBncnAuaCBcDQo+IEBAIC0zOTksNyArMzk5LDcgQEAgU09DS0VU
+X0lOQ0xVREVTPSINCj4gwqAiDQo+DQo+IMKgQUNfQ0hFQ0tfSEVBREVSUygNCj4gLSDCoCDCoCDC
+oCBbbmV0L2lmLmggbmV0aW5ldC9pcC5oIG5ldGluZXQvaWZfZXRoZXIuaCByZXNvbHYuaF0sDQo+
+ICsgwqAgwqAgwqAgW25ldC9pZi5oIG5ldGluZXQvaXAuaCBuZXRpbmV0L2lmX2V0aGVyLmggcmVz
+b2x2Lmggc3lzL3VuLmhdLA0KPiDCoCDCoCDCoCDCoCwNCj4gwqAgwqAgwqAgwqAsDQo+IMKgIMKg
+IMKgIMKgW1ske1NPQ0tFVF9JTkNMVURFU31dXQ0KPiAtLQ0KPiAxLjcuNS40DQo+DQo+DQo+IC0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0NCj4gLS0tLS0tLS0gRm9yIERldmVsb3BlcnMsIEEgTG90IENhbiBIYXBwZW4g
+SW4gQSBTZWNvbmQuDQo+IEJvdW5kYXJ5IGlzIHRoZSBmaXJzdCB0byBLbm93Li4uYW5kIFRlbGwg
+WW91Lg0KPiBNb25pdG9yIFlvdXIgQXBwbGljYXRpb25zIGluIFVsdHJhLUZpbmUgUmVzb2x1dGlv
+bi4gVHJ5IGl0IEZSRUUhDQo+IGh0dHA6Ly9wLnNmLm5ldC9zZnUvQm91bmRhcnktZDJkdnMyDQo+
+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo+IE9wZW52
+cG4tZGV2ZWwgbWFpbGluZyBsaXN0DQo+IE9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2Uu
+bmV0DQo+IGh0dHBzOi8vbGlzdHMuc291cmNlZm9yZ2UubmV0L2xpc3RzL2xpc3RpbmZvL29wZW52
+cG4tZGV2ZWwNCg==
