@@ -1,12 +1,13 @@
-From: Adriaan de Jong <dejong@...1435...>
-Date: Mon, 16 Apr 2012 09:18:44 +0200
-Message-ID: <1CED409804E2164C8104F9E623B08B9012CBF29E4A@...1436...>
-References: <4F883775.6020809@...515...>
-	<CAOazyz282i5iosXdnFoX65C-HGPMKEeNEouxn7T0KUzb1QxnPg@...278...>
-In-Reply-To: <CAOazyz282i5iosXdnFoX65C-HGPMKEeNEouxn7T0KUzb1QxnPg@...278...>
-Content-Language: en-US
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Build failure on "master" when using PolarSSL
+In-Reply-To: <1CED409804E2164C8104F9E623B08B9012CBF29E49@...1436...>
+References: <1334213412-10048-1-git-send-email-dejong@...1435...>
+	<CAOazyz105_ph-aVMxjowhwn6d7012w7F9HL0N95=npF3Viv6pg@...278...>
+	<1CED409804E2164C8104F9E623B08B9012CBF29E49@...1436...>
+Date: Mon, 16 Apr 2012 13:17:41 +0300
+Message-ID: <CAOazyz3XDZuW+2CgFjAayeQxjk1cEcu8odcdbbN-YGgJiTOgLw@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Ensure sys/un.h autoconf detection
+ includes sys/socket.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,54 +16,83 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: 'Alon Bar-Lev' <alon.barlev@...277...>, =?utf-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Adriaan de Jong <dejong@...1435...>, David Sommerseth <openvpn.list@...1114...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-VGhlIGZ1bmN0aW9uIGNoYW5nZWQgdG8gYWxsb3cgbW9yZSB0aGFuIDQgYnl0ZXMgb2YgcmFuZG9t
-IHRvIGJlIHJldHJpZXZlZC4gVGhlIG5ldyBwYXRjaGVzIHNob3VsZG4ndCBoYXZlIHRoYXQgcHJv
-YmxlbSBhbnl3YXksIHRoZXkgdXNlIHRoZSBuZXcgUG9sYXJTU0wgMS4xIERSQkcgaW5zdGVhZCBv
-ZiBhIGRpcmVjdCBjYWxsIHRvIEhhdmVnZS4NCg0KQWRyaWFhbg0KDQotLS0tLU9yaWdpbmFsIE1l
-c3NhZ2UtLS0tLQ0KRnJvbTogQWxvbiBCYXItTGV2IFttYWlsdG86YWxvbi5iYXJsZXZALi4uMjc3
-Li4uXSANClNlbnQ6IHphdGVyZGFnIDE0IGFwcmlsIDIwMTIgMTg6NTINClRvOiBTYW11bGkgU2Vw
-cMOkbmVuDQpDYzogb3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQNClN1YmplY3Q6
-IFJlOiBbT3BlbnZwbi1kZXZlbF0gQnVpbGQgZmFpbHVyZSBvbiAibWFzdGVyIiB3aGVuIHVzaW5n
-IFBvbGFyU1NMDQoNClNvbWV0aGluZyB3YXMgY2hhbmdlZCBpbiByZWNlbnQgcG9sYXJzc2wgcGF0
-Y2hlcy4NClRoZXJlIGlzIGhhdmVnZV9yYW5kb20gYnV0IG5vdCBoYXZlZ2VfcmFuZCwgYW5kIHdp
-dGggZGlmZmVyZW50IHByb3RvdHlwZS4NCg0KMjAxMi80LzEzIFNhbXVsaSBTZXBww6RuZW4gPHNh
-bXVsaUAuLi41MTUuLi4+Og0KPiBISSwNCj4NCj4gSSB0ZXN0ZWQgYnVpbGRpbmcgT3BlblZQTiB3
-aXRoIFBvbGFyU1NMIHN1cHBvcnQgb24gb3VyIGJ1aWxkc2xhdmVzDQo+DQo+IC0gRGViaWFuIDYg
-aTM4NiAoUG9sYXJTU0wgMS4xLjEpDQo+IC0gQ2VudE9TIDYgYW1kNjQgKFBvbGFyU1NMIDEuMS4x
-KQ0KPiAtIFVidW50dSAxMC4wNCBhbWQ2NCAoUG9sYXJTU0wgMS4xLjApDQo+DQo+IEFsbCB1c2Vk
-IHRoZSBmb2xsb3dpbmcgYnVpbGQgZmxhZ3M6DQo+DQo+IC0td2l0aC1jcnlwdG8tbGlicmFyeT1w
-b2xhcnNzbCAtLWVuYWJsZS1jcnlwdG8gLS1lbmFibGUtc3NsDQo+DQo+IEFsbCBnYXZlIHRoZSBz
-YW1lIGVycm9yOg0KPg0KPiBnY2MgLURIQVZFX0NPTkZJR19IIC1JLiAtSS4uLy4uIC1JLi4vLi4v
-aW5jbHVkZSAtSS4uLy4uL3NyYy9jb21wYXQgwqAgwqAgwqAgDQo+IC1nIC1PMiAtTVQgc3NsX3Bv
-bGFyc3NsLm8gLU1EIC1NUCAtTUYgLmRlcHMvc3NsX3BvbGFyc3NsLlRwbyAtYyAtbyANCj4gc3Ns
-X3BvbGFyc3NsLm8gc3NsX3BvbGFyc3NsLmMNCj4gc3NsX3BvbGFyc3NsLmM6IEluIGZ1bmN0aW9u
-ICdrZXlfc3RhdGVfc3NsX2luaXQnOg0KPiBzc2xfcG9sYXJzc2wuYzo1MjA6IGVycm9yOiAnaGF2
-ZWdlX3JhbmQnIHVuZGVjbGFyZWQgKGZpcnN0IHVzZSBpbiB0aGlzIA0KPiBmdW5jdGlvbikNCj4g
-c3NsX3BvbGFyc3NsLmM6NTIwOiBlcnJvcjogKEVhY2ggdW5kZWNsYXJlZCBpZGVudGlmaWVyIGlz
-IHJlcG9ydGVkIA0KPiBvbmx5IG9uY2UNCj4gc3NsX3BvbGFyc3NsLmM6NTIwOiBlcnJvcjogZm9y
-IGVhY2ggZnVuY3Rpb24gaXQgYXBwZWFycyBpbi4pDQo+DQo+IEFueSBjbHVlcz8gVGhlcmUgd2Vy
-ZSBubyB0cmFjZXMgb2YgZWFybGllciBQb2xhclNTTCBpbnN0YWxsYXRpb25zIG9uIA0KPiBhbnkg
-b2YgdGhlIGJ1aWxkc2xhdmVzLg0KPg0KPiAtLQ0KPiBTYW11bGkgU2VwcMOkbmVuDQo+IENvbW11
-bml0eSBNYW5hZ2VyDQo+IE9wZW5WUE4gVGVjaG5vbG9naWVzLCBJbmMNCj4NCj4gaXJjIGZyZWVu
-b2RlIG5ldDogbWF0dG9jaw0KPg0KPg0KPiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+IC0tLS0tLS0tIEZvciBE
-ZXZlbG9wZXJzLCBBIExvdCBDYW4gSGFwcGVuIEluIEEgU2Vjb25kLg0KPiBCb3VuZGFyeSBpcyB0
-aGUgZmlyc3QgdG8gS25vdy4uLmFuZCBUZWxsIFlvdS4NCj4gTW9uaXRvciBZb3VyIEFwcGxpY2F0
-aW9ucyBpbiBVbHRyYS1GaW5lIFJlc29sdXRpb24uIFRyeSBpdCBGUkVFIQ0KPiBodHRwOi8vcC5z
-Zi5uZXQvc2Z1L0JvdW5kYXJ5LWQyZHZzMg0KPiBfX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fXw0KPiBPcGVudnBuLWRldmVsIG1haWxpbmcgbGlzdA0KPiBPcGVu
-dnBuLWRldmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldA0KPiBodHRwczovL2xpc3RzLnNvdXJjZWZv
-cmdlLm5ldC9saXN0cy9saXN0aW5mby9vcGVudnBuLWRldmVsDQoNCi0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLQ0KRm9yIERldmVsb3BlcnMsIEEgTG90IENhbiBIYXBwZW4gSW4gQSBTZWNvbmQuDQpCb3Vu
-ZGFyeSBpcyB0aGUgZmlyc3QgdG8gS25vdy4uLmFuZCBUZWxsIFlvdS4NCk1vbml0b3IgWW91ciBB
-cHBsaWNhdGlvbnMgaW4gVWx0cmEtRmluZSBSZXNvbHV0aW9uLiBUcnkgaXQgRlJFRSENCmh0dHA6
-Ly9wLnNmLm5ldC9zZnUvQm91bmRhcnktZDJkdnMyDQpfX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fXw0KT3BlbnZwbi1kZXZlbCBtYWlsaW5nIGxpc3QNCk9wZW52
-cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0DQpodHRwczovL2xpc3RzLnNvdXJjZWZvcmdl
-Lm5ldC9saXN0cy9saXN0aW5mby9vcGVudnBuLWRldmVsDQo=
+Thanks for explanation.
+David, please apply.
+
+On Mon, Apr 16, 2012 at 10:02 AM, Adriaan de Jong <dejong@...1435...> wrote:
+>
+> There is on Android:
+>
+> =C2=A0- sys/un.h includes linux/un.h
+> =C2=A0- linux/un.h uses sa_family_t
+> =C2=A0- sa_family_t is defined in linux/socket.h
+> =C2=A0- which is included from sys/socket.h
+>
+> Therefore, sys/socket.h is required for linux/un.h...
+>
+> Hope that clarifies things,
+> Adriaan
+>
+> -----Original Message-----
+> From: Alon Bar-Lev [mailto:alon.barlev@...277...]
+> Sent: zaterdag 14 april 2012 18:58
+> To: Adriaan de Jong
+> Cc: openvpn-devel@lists.sourceforge.net
+> Subject: Re: [Openvpn-devel] [PATCH] Ensure sys/un.h autoconf detection i=
+ncludes sys/socket.h
+>
+> This is strange!
+> As there is nothing in this file that needs dependency.
+> Can you please send me config.log and the un.h file for me to learn?
+>
+> On Thu, Apr 12, 2012 at 9:50 AM, Adriaan de Jong <dejong@...1435...> wrot=
+e:
+> > This is required to build an Android binary.
+> >
+> > Signed-off-by: Adriaan de Jong <dejong@...1435...>
+> > ---
+> > =C2=A0configure.ac | =C2=A0 =C2=A04 ++--
+> > =C2=A01 files changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/configure.ac b/configure.ac index 70c51e7..dc5bb43 100644
+> > --- a/configure.ac
+> > +++ b/configure.ac
+> > @@ -363,7 +363,7 @@ AC_CHECK_HEADERS([ \
+> > =C2=A0 =C2=A0 =C2=A0 =C2=A0windows.h winsock2.h ws2tcpip.h \
+> > =C2=A0])
+> > =C2=A0AC_CHECK_HEADERS([ \
+> > - =C2=A0 =C2=A0 =C2=A0 sys/time.h sys/un.h sys/ioctl.h sys/stat.h \
+> > + =C2=A0 =C2=A0 =C2=A0 sys/time.h sys/ioctl.h sys/stat.h \
+> > =C2=A0 =C2=A0 =C2=A0 =C2=A0sys/mman.h sys/file.h \
+> > =C2=A0 =C2=A0 =C2=A0 =C2=A0unistd.h signal.h libgen.h stropts.h \
+> > =C2=A0 =C2=A0 =C2=A0 =C2=A0syslog.h pwd.h grp.h \
+> > @@ -399,7 +399,7 @@ SOCKET_INCLUDES=3D"
+> > =C2=A0"
+> >
+> > =C2=A0AC_CHECK_HEADERS(
+> > - =C2=A0 =C2=A0 =C2=A0 [net/if.h netinet/ip.h netinet/if_ether.h resolv=
+.h],
+> > + =C2=A0 =C2=A0 =C2=A0 [net/if.h netinet/ip.h netinet/if_ether.h resolv=
+.h sys/un.h],
+> > =C2=A0 =C2=A0 =C2=A0 =C2=A0,
+> > =C2=A0 =C2=A0 =C2=A0 =C2=A0,
+> > =C2=A0 =C2=A0 =C2=A0 =C2=A0[[${SOCKET_INCLUDES}]]
+> > --
+> > 1.7.5.4
+> >
+> >
+> > ----------------------------------------------------------------------
+> > -------- For Developers, A Lot Can Happen In A Second.
+> > Boundary is the first to Know...and Tell You.
+> > Monitor Your Applications in Ultra-Fine Resolution. Try it FREE!
+> > http://p.sf.net/sfu/Boundary-d2dvs2
+> > _______________________________________________
+> > Openvpn-devel mailing list
+> > Openvpn-devel@lists.sourceforge.net
+> > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
