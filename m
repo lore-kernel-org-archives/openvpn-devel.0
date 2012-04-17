@@ -1,13 +1,16 @@
 MIME-Version: 1.0
-In-Reply-To: <CAOazyz3u1qHqVOBh0ZDUobg17be5SAjVctVC7icqnkAvHjGHNw@...278...>
-References: <4F881610.5010304@...515...>
-	<CAOazyz3RcTS4b8Gc-_ort0T0Zw-hEbUMz-NYab21Ww4pZ4Bxkw@...278...>
-	<4F8D1282.1020803@...515...>
-	<CAOazyz3u1qHqVOBh0ZDUobg17be5SAjVctVC7icqnkAvHjGHNw@...278...>
-Date: Tue, 17 Apr 2012 12:14:30 +0300
-Message-ID: <CAOazyz3+WvJ1Ln=Vc76+k4mskcBSUOpw5z074kRFdJHrNkoEJg@...278...>
+In-Reply-To: <4F8D2C40.2060609@...515...>
+References: <4F7DA7EF.1010709@...515...>
+	<CAOazyz2K0RDYv-zgVt+FUb9Egwykj0Aft9KvxUuQoF0WEf=xKw@...278...>
+	<CAHyOtRmSpUxdtGeFYbu=CQ-erZMS54hXG9zxOC=cDO9vXnBn0A@...278...>
+	<CAOazyz0WbwVO4QGDomZWycfwhmb_eHHVZpyQqpD0FDOqpt+1Xg@...278...>
+	<4F84562E.3020208@...1114...>
+	<CAOazyz1oxqCt-4UVyc71YhMq04bQY9+TrTJyGqa4Sjfe0-sykQ@...278...>
+	<4F8D2C40.2060609@...515...>
+Date: Tue, 17 Apr 2012 14:47:29 +0300
+Message-ID: <CAOazyz1ms=FOvXLLjKo+fYQa0JMTWi2i+C9cgY_uzaU9=L1hxw@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] MSVC build tests on Git "master"
+Subject: Re: [Openvpn-devel] ACK system review finished
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,49 +22,48 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-2012/4/17 Alon Bar-Lev <alon.barlev@...277...>:
-> 2012/4/17 Samuli Sepp=C3=A4nen <samuli@...515...>
->>
->> Hi Alon,
->> >
->> >> This allowed the build to proceed, but then I got tons of errors. Tho=
-se
->> >> seem to be caused by Visual Studio 2010 peculiarities; see [4] for a
->> >> partial log. The full error log is 1396k in size - If you need it just
->> >> let me know.
->> > I don't quite understand who you tried to build this... manually or
->> > using the openvpn-build/msvc.
->> > If you try to build manually, please send me the exact commands you
->> > used.
->> I used the "msvc-build.bat" (renamed "build.bat" from Git "master") with
->> no parameters.
+2012/4/17 Samuli Sepp=C3=A4nen <samuli@...515...>
 >
-> Hmmm.... I still don't follow, sorry.
+> Hi Alon,
+> >
+> > Current active developers are interested in specific features which
+> > are never complete.
+> >
+> > For example Gert cares about the IPv6 implementation, but did not take
+> > all the routing and tun handling on him self as a whole.
+> >
+> > Adriaan added the PolarSSL support, but did not take all the crypto
+> > interfaces of OpenVPN.
+> >
+> > Heiko took the MSVC build + unicode support, bit did not take the
+> > windows (non-tun none-routing) subsystem.
+> I think having subsystem maintainers would make sense. Current
+> feature-based development will probably work for a few years, but as you
+> say, it can result in problems down the road. That said, there are a few
+> practical obstacles if we take the subsystem maintainer approach:
 >
-> What is renamed? I see that in git master we have msvc-build.bat....
-> Or you mean you used this one, which is OK.
-> But then probably the dependencies setup are wrong.
->
-> Please first try to complete build from the openvpn-build project[1].
->
-> Use:
->> cd msvc
->> build
->
-> If that's working, then it will be easy to trace problems in your environ=
-ment.
-> If that's not working, it will be easy to trace differences from my envir=
-onment.
->
-> Thanks!
->
-> [1] https://github.com/alonbl/openvpn-build
+> 1) Do the developers have the (extra?) time to commit to the project
 
-Just tried that again in my VM, and it builds successfully using the
-openvpn-build/msvc.
-So once you have results for this, I will try to figure out how to help.
+If not, the large feature should not be merged at all, as they can
+disappear at any time.
+This is why project progressed so slowly when only James was core developer.
+It is wise to do so.
+
+> 2) Do the developers have enough knowledge to take over a subsystem? If
+> not, go to 1).
+
+They should, as large patch like IPv6 or PolarSSL are complex enough
+to touch the whole subsystem, if they do not have enough knowledge so
+their patch and maintenance will be low quality.
+
+> What would the core tasks for subsystem maintainers be, in your view?
+
+I don't exactly understand the question...
+Maybe you ask what is core subsystem I refer to?
+The initialization, termination, the interfaces (if we create them) to
+sub modules, protocol, configuration, communications.
 
 Alon.
 
