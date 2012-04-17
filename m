@@ -1,13 +1,11 @@
-Date: Tue, 17 Apr 2012 16:16:12 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120417141612.GF1359@...1296...>
-References: <4F8D6C6F.3080403@...1698...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="qcmJb3WyrQSdDnng"
-Content-Disposition: inline
-In-Reply-To: <4F8D6C6F.3080403@...1698...>
-Subject: Re: [Openvpn-devel] adding ipv6 routes wrong for tap
+MIME-Version: 1.0
+Sender: oksteev@...277...
+Date: Tue, 17 Apr 2012 22:55:21 +0700
+Message-ID: <CAHQHjk+Rc1sqpA8_ODdLB0L2iWJ3+UDA12aogNXSbfAc-X2KvA@...278...>
+From: steve <coderrr.contact@...277...>
+Subject: [Openvpn-devel] [PATCH] standalone management loop hangs forever
+ during non blocking TCP connect
+Reply-To: coderrr.contact@...277...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,47 +14,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Sergey Matveychuk <sem@...1698...>
-Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---qcmJb3WyrQSdDnng
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+I caught a bug which seems to occur when a nonblocking connect() is
+interrupted by a connection to the management port which causes the
+standalone management event loop to be called via openvpn_sleep().
+When polling the management port for connection status at an interval
+of less than a second the management loop never exited and hung
+forever.  This patch fixes it.  It didn't seem to cause any other
+issues.  Does this patch look ok?
 
-Hi,
+From 8f19f1088be171336840110cdd4365e18ea59d7c Mon Sep 17 00:00:00 2001
+From: coderrr <coderrr.contact@...277...>
+Date: Tue, 17 Apr 2012 22:12:24 +0700
+Subject: [PATCH] don't stay in management event loop forever
 
-On Tue, Apr 17, 2012 at 05:13:19PM +0400, Sergey Matveychuk wrote:
-> I see openvpn adds ipv6 routes always for interface not addresses. I=20
-> think it should be like in add_route(): something like is_on_link() to=20
-> determ if interface should be added or address.
+---
+ src/openvpn/manage.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
-IPv6 routes on TAP doesn't work yet, yes.  This is a documented shortcoming
-and I'll fix it as soon as possible (which might not be as soon as you=20
-hope for).  TUN works, or setting the routes manually from an "up" script.
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 1dddd41..574b111 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -2871,7 +2871,8 @@ management_event_loop_n_seconds (struct
+management *man, int sec)
+            man_check_for_signals (&signal_received);
+          if (signal_received)
+            return;
+-       } while (expire);
++          update_time();
++       } while (now >= expire);
 
-gert
+       /* revert state */
+       man->persist.standalone_disabled = standalone_disabled_save;
+-- 
+1.7.4.1
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---qcmJb3WyrQSdDnng
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
-
-iQCVAwUBT417LKkuBuNlUUl1AQJ+GQP/QWjzThYLNciI4Un/Y6MVq4PHTeJ/1Nbb
-2QrXEvtCR0nK2sBiKejCz/dwH5HjMNIlWJRPChFiQsVrMrev2LAZEkZlwhcdTo2x
-HgYO5FGwcWImNm7l4yCA3FIY6VB14p7PqcJHSIgnO5mr+G+s7IUlbE7sUhpsi3Dk
-oQ3H8x0mIH0=
-=iSvm
------END PGP SIGNATURE-----
-
---qcmJb3WyrQSdDnng--
+- coderrr
+https://www.privateinternetaccess.com
 
