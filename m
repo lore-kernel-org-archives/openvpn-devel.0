@@ -1,12 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <4F8D1282.1020803@...515...>
-References: <4F881610.5010304@...515...>
-	<CAOazyz3RcTS4b8Gc-_ort0T0Zw-hEbUMz-NYab21Ww4pZ4Bxkw@...278...>
-	<4F8D1282.1020803@...515...>
-Date: Tue, 17 Apr 2012 11:47:44 +0300
-Message-ID: <CAOazyz3u1qHqVOBh0ZDUobg17be5SAjVctVC7icqnkAvHjGHNw@...278...>
+In-Reply-To: <4F8D149D.4010808@...515...>
+References: <4F882970.4080302@...515...>
+	<CAOazyz2G_6FugO43_Vsc5GLW4oZpEkGDRkujsOAbw9Qdd3ftfQ@...278...>
+	<4F8D149D.4010808@...515...>
+Date: Tue, 17 Apr 2012 12:00:38 +0300
+Message-ID: <CAOazyz0Boe=o0fU534zsc3dBLhFfao_o-ejJkhDE1RZXestYLQ@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] MSVC build tests on Git "master"
+Subject: Re: [Openvpn-devel] Build tests using "generic" buildsystem and Git
+	"master"!
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,39 +21,51 @@ Content-Transfer-Encoding: quoted-printable
 To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-2012/4/17 Samuli Sepp=C3=A4nen <samuli@...515...>
+2012/4/17 Samuli Sepp=C3=A4nen <samuli@...515...>:
 >
-> Hi Alon,
-> >
-> >> This allowed the build to proceed, but then I got tons of errors. Those
-> >> seem to be caused by Visual Studio 2010 peculiarities; see [4] for a
-> >> partial log. The full error log is 1396k in size - If you need it just
-> >> let me know.
-> > I don't quite understand who you tried to build this... manually or
-> > using the openvpn-build/msvc.
-> > If you try to build manually, please send me the exact commands you
-> > used.
-> I used the "msvc-build.bat" (renamed "build.bat" from Git "master") with
-> no parameters.
+>> 2012/4/13 Samuli Sepp=C3=A4nen <samuli@...515...>:
+>>> Hi all,
+>>>
+>>> I also ran some build tests with the "generic" buildsystem[1], OpenVPN
+>>> Git "master"[2] and an Ubuntu 11.10 amd64 workstation. As the Git
+>>> "master" does not yet seem to include the "generic" buildsystem,
+>> I don't understand what you mean... please explain what is "include"...?
+> Hi,
+>
+> It means I could not find "build" or "build.vars" from official
+> openvpn.git. Are those not needed for cross-compilation?
+>
 
-Hmmm.... I still don't follow, sorry.
+There is some confusion.... :)
 
-What is renamed? I see that in git master we have msvc-build.bat....
-Or you mean you used this one, which is OK.
-But then probably the dependencies setup are wrong.
+We have two separate projects:
 
-Please first try to complete build from the openvpn-build project[1].
+openvpn - standard open source project, autotool based build system,
+like any other project its build system only builds it-self.
 
-Use:
-> cd msvc
-> build
+openvpn-build - a separate project to build openvpn in various of
+configurations. This project is divided into the following components:
 
-If that's working, then it will be easy to trace problems in your environme=
-nt.
-If that's not working, it will be easy to trace differences from my environ=
-ment.
+- generic - a generic build using cross compiler, included the
+complete dependencies.
 
-Thanks!
+- msvc - a MSVC build using Microsoft specific msbuild system, I hope
+this will die eventually.
 
-[1] https://github.com/alonbl/openvpn-build
+- windows-nsis - the windows installer generator, it uses the generic
+component to build using mingw cross compiler, then package the output
+using nsis.
+
+The separation between these project is healthy as a change in openssl
+version due to security issue at windows installer should not modify
+openvpn version, same for a change in windows installer, or tap
+version or any other change that is not directly related to openvpn
+code base.
+
+It also allows a separate maintainer to maintain these various of
+build environments.
+
+Does it answer your question?
+
+Alon
 
