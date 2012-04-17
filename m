@@ -1,11 +1,10 @@
+Message-ID: <4F8DA6C8.60809@...1698...>
+Date: Tue, 17 Apr 2012 21:22:16 +0400
+From: Sergey Matveychuk <sem@...1698...>
 MIME-Version: 1.0
-Sender: oksteev@...277...
-Date: Tue, 17 Apr 2012 22:55:21 +0700
-Message-ID: <CAHQHjk+Rc1sqpA8_ODdLB0L2iWJ3+UDA12aogNXSbfAc-X2KvA@...278...>
-From: steve <coderrr.contact@...277...>
-Subject: [Openvpn-devel] [PATCH] standalone management loop hangs forever
- during non blocking TCP connect
-Reply-To: coderrr.contact@...277...
+References: <4F8D6C6F.3080403@...1698...> <20120417141612.GF1359@...1296...>
+In-Reply-To: <20120417141612.GF1359@...1296...>
+Subject: Re: [Openvpn-devel] adding ipv6 routes wrong for tap
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,45 +13,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-I caught a bug which seems to occur when a nonblocking connect() is
-interrupted by a connection to the management port which causes the
-standalone management event loop to be called via openvpn_sleep().
-When polling the management port for connection status at an interval
-of less than a second the management loop never exited and hung
-forever.  This patch fixes it.  It didn't seem to cause any other
-issues.  Does this patch look ok?
+17.04.2012 18:16, Gert Doering wrote:
+> Hi,
+>
+> On Tue, Apr 17, 2012 at 05:13:19PM +0400, Sergey Matveychuk wrote:
+>> I see openvpn adds ipv6 routes always for interface not addresses. I
+>> think it should be like in add_route(): something like is_on_link() to
+>> determ if interface should be added or address.
+>
+> IPv6 routes on TAP doesn't work yet, yes.  This is a documented shortcoming
+> and I'll fix it as soon as possible (which might not be as soon as you
+> hope for).  TUN works, or setting the routes manually from an "up" script.
+>
 
-From 8f19f1088be171336840110cdd4365e18ea59d7c Mon Sep 17 00:00:00 2001
-From: coderrr <coderrr.contact@...277...>
-Date: Tue, 17 Apr 2012 22:12:24 +0700
-Subject: [PATCH] don't stay in management event loop forever
+Rough changing route command works for me:
 
----
- src/openvpn/manage.c |    3 ++-
- 1 files changed, 2 insertions(+), 1 deletions(-)
+argv_printf (&argv, "%s add -inet6 %s/%d %s",
+		ROUTE_PATH,
+	        network,
+	        r6->netbits,
+	        gateway );
 
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 1dddd41..574b111 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -2871,7 +2871,8 @@ management_event_loop_n_seconds (struct
-management *man, int sec)
-            man_check_for_signals (&signal_received);
-          if (signal_received)
-            return;
--       } while (expire);
-+          update_time();
-+       } while (now >= expire);
-
-       /* revert state */
-       man->persist.standalone_disabled = standalone_disabled_save;
--- 
-1.7.4.1
-
-- coderrr
-https://www.privateinternetaccess.com
+But I understand it should be done correctly.
 
