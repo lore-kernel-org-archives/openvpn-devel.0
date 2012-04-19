@@ -1,13 +1,14 @@
+Message-ID: <4F8FEDD7.5060107@...515...>
+Date: Thu, 19 Apr 2012 13:49:59 +0300
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <CAOazyz07czVjhpA-FXS6ELBpLoRp6z4YzsEdzt7HdotCnoxCUw@...278...>
-References: <CAOazyz35uT3nK=93mLzVewNO8q9p_uDtsQcGVbeLT3R3zg+W3w@...278...>
-	<1332935990-26510-1-git-send-email-alon.barlev@...277...>
-	<CAOazyz2xgNeb-hxuMzcMzg5HEPpoPkx=b6nhtQ06C6jLuX75QQ@...278...>
-	<CAOazyz07czVjhpA-FXS6ELBpLoRp6z4YzsEdzt7HdotCnoxCUw@...278...>
-Date: Thu, 19 Apr 2012 10:18:27 +0300
-Message-ID: <CAOazyz2TBMRdKcNfYij9bNTfbmsRbREm1Sftg1Mz+EHCbWe9Zw@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] build: automake fixups
+References: <4F882970.4080302@...515...>
+	<CAOazyz2G_6FugO43_Vsc5GLW4oZpEkGDRkujsOAbw9Qdd3ftfQ@...278...>
+	<4F8D149D.4010808@...515...>
+	<CAOazyz0Boe=o0fU534zsc3dBLhFfao_o-ejJkhDE1RZXestYLQ@...278...>
+In-Reply-To: <CAOazyz0Boe=o0fU534zsc3dBLhFfao_o-ejJkhDE1RZXestYLQ@...278...>
+Subject: Re: [Openvpn-devel] Build tests using "generic" buildsystem and Git
+ "master"!
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,243 +17,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net, Heiko Hund <heiko.hund@...1489...>
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hello Heiko,
 
-Can you please comment this[1] patch?
-
-Unlike what you committed without libtool, It makes the building of
-resources correctly with automake without libtool.
-
-If you have any rejects I be glad to explain/modify, please don't
-ignore, my intention is to help.
-
-Regards,
-Alon.
-
-[1] https://github.com/alonbl/openvpn-gui/compare/master...build
-
-On Thu, Apr 5, 2012 at 9:10 AM, Alon Bar-Lev <alon.barlev@...277...> wrote:
-> Hello Heiko,
+> 2012/4/17 Samuli Sepp=E4nen <samuli@...515...>:
+>>> 2012/4/13 Samuli Sepp=E4nen <samuli@...515...>:
+>>>> Hi all,
+>>>>
+>>>> I also ran some build tests with the "generic" buildsystem[1], OpenVPN
+>>>> Git "master"[2] and an Ubuntu 11.10 amd64 workstation. As the Git
+>>>> "master" does not yet seem to include the "generic" buildsystem,
+>>> I don't understand what you mean... please explain what is "include"...?
+>> Hi,
+>>
+>> It means I could not find "build" or "build.vars" from official
+>> openvpn.git. Are those not needed for cross-compilation?
+>>
+> There is some confusion.... :)
 >
-> I really like to finish this build modification stage.
-> Can you please review and apply?
+> We have two separate projects:
 >
-> Thanks,
-> Alon.
+> openvpn - standard open source project, autotool based build system,
+> like any other project its build system only builds it-self.
 >
-> On Wed, Mar 28, 2012 at 2:05 PM, Alon Bar-Lev <alon.barlev@...277...> wro=
-te:
->>
->> On Wed, Mar 28, 2012 at 1:59 PM, Alon Bar-Lev <alon.barlev@...277...>
->> wrote:
->> > 1. Rename resource includes to rch, see[1].
->> > 2. Use implicit rule for resources.
->> > 3. Fixup resources build using automake conventions.
->> > 4. Misc cleanups
->> >
->> > [1] http://comments.gmane.org/gmane.comp.gnu.binutils/56459
->> >
->> > Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
->> > ---
->> > =C2=A0Makefile.am =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0| =C2=A0 51 ++++---
->> > =C2=A0res/openvpn-gui-res-de.rc =C2=A0| =C2=A0343
->> > ------------------------------------------
->> > =C2=A0res/openvpn-gui-res-de.rch | =C2=A0343
->> > ++++++++++++++++++++++++++++++++++++++++++
->> > =C2=A0res/openvpn-gui-res-dk.rc =C2=A0| =C2=A0342
->> > ------------------------------------------
->> > =C2=A0res/openvpn-gui-res-dk.rch | =C2=A0342
->> > ++++++++++++++++++++++++++++++++++++++++++
->> > =C2=A0res/openvpn-gui-res-en.rc =C2=A0| =C2=A0340
->> > -----------------------------------------
->> > =C2=A0res/openvpn-gui-res-en.rch | =C2=A0340
->> > +++++++++++++++++++++++++++++++++++++++++
->> > =C2=A0res/openvpn-gui-res-es.rc =C2=A0| =C2=A0339
->> > -----------------------------------------
->> > =C2=A0res/openvpn-gui-res-es.rch | =C2=A0339
->> > +++++++++++++++++++++++++++++++++++++++++
->> > =C2=A0res/openvpn-gui-res-fi.rc =C2=A0| =C2=A0357
->> > --------------------------------------------
->> > =C2=A0res/openvpn-gui-res-fi.rch | =C2=A0357
->> > ++++++++++++++++++++++++++++++++++++++++++++
->> > =C2=A0res/openvpn-gui-res-fr.rc =C2=A0| =C2=A0339
->> > -----------------------------------------
->> > =C2=A0res/openvpn-gui-res-fr.rch | =C2=A0339
->> > +++++++++++++++++++++++++++++++++++++++++
->> > =C2=A0res/openvpn-gui-res-it.rc =C2=A0| =C2=A0338
->> > -----------------------------------------
->> > =C2=A0res/openvpn-gui-res-it.rch | =C2=A0338
->> > +++++++++++++++++++++++++++++++++++++++++
->> > =C2=A0res/openvpn-gui-res-jp.rc =C2=A0| =C2=A0341
->> > ------------------------------------------
->> > =C2=A0res/openvpn-gui-res-jp.rch | =C2=A0341
->> > ++++++++++++++++++++++++++++++++++++++++++
->> > =C2=A0res/openvpn-gui-res-nl.rc =C2=A0| =C2=A0339
->> > -----------------------------------------
->> > =C2=A0res/openvpn-gui-res-nl.rch | =C2=A0339
->> > +++++++++++++++++++++++++++++++++++++++++
->> > =C2=A0res/openvpn-gui-res-no.rc =C2=A0| =C2=A0325
->> > ----------------------------------------
->> > =C2=A0res/openvpn-gui-res-no.rch | =C2=A0325
->> > ++++++++++++++++++++++++++++++++++++++++
->> > =C2=A0res/openvpn-gui-res-pl.rc =C2=A0| =C2=A0342
->> > ------------------------------------------
->> > =C2=A0res/openvpn-gui-res-pl.rch | =C2=A0342
->> > ++++++++++++++++++++++++++++++++++++++++++
->> > =C2=A0res/openvpn-gui-res-pt.rc =C2=A0| =C2=A0327
->> > ----------------------------------------
->> > =C2=A0res/openvpn-gui-res-pt.rch | =C2=A0327
->> > ++++++++++++++++++++++++++++++++++++++++
->> > =C2=A0res/openvpn-gui-res-se.rc =C2=A0| =C2=A0336
->> > -----------------------------------------
->> > =C2=A0res/openvpn-gui-res-se.rch | =C2=A0336
->> > +++++++++++++++++++++++++++++++++++++++++
->> > =C2=A0res/openvpn-gui-res-tr.rc =C2=A0| =C2=A0341
->> > ------------------------------------------
->> > =C2=A0res/openvpn-gui-res-tr.rch | =C2=A0341
->> > ++++++++++++++++++++++++++++++++++++++++++
->> > =C2=A0res/openvpn-gui-res.rc =C2=A0 =C2=A0 | =C2=A0 28 ++--
->> > =C2=A030 files changed, 4791 insertions(+), 4786 deletions(-)
->> > =C2=A0create mode 100644 m4/.keep
->> > =C2=A0delete mode 100644 res/openvpn-gui-res-de.rc
->> > =C2=A0create mode 100644 res/openvpn-gui-res-de.rch
->> > =C2=A0delete mode 100644 res/openvpn-gui-res-dk.rc
->> > =C2=A0create mode 100644 res/openvpn-gui-res-dk.rch
->> > =C2=A0delete mode 100644 res/openvpn-gui-res-en.rc
->> > =C2=A0create mode 100644 res/openvpn-gui-res-en.rch
->> > =C2=A0delete mode 100644 res/openvpn-gui-res-es.rc
->> > =C2=A0create mode 100644 res/openvpn-gui-res-es.rch
->> > =C2=A0delete mode 100644 res/openvpn-gui-res-fi.rc
->> > =C2=A0create mode 100644 res/openvpn-gui-res-fi.rch
->> > =C2=A0delete mode 100644 res/openvpn-gui-res-fr.rc
->> > =C2=A0create mode 100644 res/openvpn-gui-res-fr.rch
->> > =C2=A0delete mode 100644 res/openvpn-gui-res-it.rc
->> > =C2=A0create mode 100644 res/openvpn-gui-res-it.rch
->> > =C2=A0delete mode 100644 res/openvpn-gui-res-jp.rc
->> > =C2=A0create mode 100644 res/openvpn-gui-res-jp.rch
->> > =C2=A0delete mode 100644 res/openvpn-gui-res-nl.rc
->> > =C2=A0create mode 100644 res/openvpn-gui-res-nl.rch
->> > =C2=A0delete mode 100644 res/openvpn-gui-res-no.rc
->> > =C2=A0create mode 100644 res/openvpn-gui-res-no.rch
->> > =C2=A0delete mode 100644 res/openvpn-gui-res-pl.rc
->> > =C2=A0create mode 100644 res/openvpn-gui-res-pl.rch
->> > =C2=A0delete mode 100644 res/openvpn-gui-res-pt.rc
->> > =C2=A0create mode 100644 res/openvpn-gui-res-pt.rch
->> > =C2=A0delete mode 100644 res/openvpn-gui-res-se.rc
->> > =C2=A0create mode 100644 res/openvpn-gui-res-se.rch
->> > =C2=A0delete mode 100644 res/openvpn-gui-res-tr.rc
->> > =C2=A0create mode 100644 res/openvpn-gui-res-tr.rch
->> >
->> > diff --git a/Makefile.am b/Makefile.am
->> > index c1753e0..349db19 100644
->> > --- a/Makefile.am
->> > +++ b/Makefile.am
->> > @@ -18,8 +18,7 @@
->> > =C2=A0# =C2=A0distribution); if not, write to the Free Software Founda=
-tion, Inc.,
->> > =C2=A0# =C2=A059 Temple Place, Suite 330, Boston, MA =C2=A002111-1307 =
-=C2=A0USA
->> >
->> > -RCCOMPILE =3D $(WINDRES) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
->> > - =C2=A0 =C2=A0$(AM_CPPFLAGS) $(CPPFLAGS)
->> > +SUFFIXES =3D .rc
->> >
->> > =C2=A0AUTOMAKE_OPTIONS =3D foreign 1.9
->> >
->> > @@ -31,6 +30,8 @@ MAINTAINERCLEANFILES =3D \
->> > =C2=A0 =C2=A0 =C2=A0 =C2=A0$(srcdir)/depcomp $(srcdir)/aclocal.m4 \
->> > =C2=A0 =C2=A0 =C2=A0 =C2=A0$(srcdir)/config.guess $(srcdir)/config.sub
->> >
->> > +EXTRA_DIST =3D .gitignore
->> > +
->> > =C2=A0bin_PROGRAMS =3D openvpn-gui
->> >
->> > =C2=A0dist_doc_DATA =3D \
->> > @@ -42,21 +43,20 @@ AM_CPPFLAGS =3D -D_UNICODE
->> > =C2=A0AM_CFLAGS =3D -municode
->> >
->> > =C2=A0openvpn_gui_RESOURCES =3D \
->> > - =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res.rc \
->> > - =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-de.rc \
->> > - =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-dk.rc \
->> > - =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-en.rc \
->> > - =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-es.rc \
->> > - =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-fi.rc \
->> > - =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-fr.rc \
->> > - =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-it.rc \
->> > - =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-jp.rc \
->> > - =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-nl.rc \
->> > - =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-no.rc \
->> > - =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-pl.rc \
->> > - =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-pt.rc \
->> > - =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-se.rc \
->> > - =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-tr.rc \
->> > + =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-de.rch \
->> > + =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-dk.rch \
->> > + =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-en.rch \
->> > + =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-es.rch \
->> > + =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-fi.rch \
->> > + =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-fr.rch \
->> > + =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-it.rch \
->> > + =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-jp.rch \
->> > + =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-nl.rch \
->> > + =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-no.rch \
->> > + =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-pl.rch \
->> > + =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-pt.rch \
->> > + =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-se.rch \
->> > + =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res-tr.rch \
->> > =C2=A0 =C2=A0 =C2=A0 =C2=A0res/connected.ico \
->> > =C2=A0 =C2=A0 =C2=A0 =C2=A0res/connecting.ico \
->> > =C2=A0 =C2=A0 =C2=A0 =C2=A0res/disconnected.ico \
->> > @@ -64,8 +64,6 @@ openvpn_gui_RESOURCES =3D \
->> > =C2=A0 =C2=A0 =C2=A0 =C2=A0res/reconnecting.ico \
->> > =C2=A0 =C2=A0 =C2=A0 =C2=A0res/openvpn-gui.manifest
->> >
->> > -EXTRA_DIST =3D $(openvpn_gui_RESOURCES)
->> > -
->> > =C2=A0openvpn_gui_SOURCES =3D \
->> > =C2=A0 =C2=A0 =C2=A0 =C2=A0main.c main.h \
->> > =C2=A0 =C2=A0 =C2=A0 =C2=A0openvpn.c openvpn.h \
->> > @@ -82,14 +80,21 @@ openvpn_gui_SOURCES =3D \
->> > =C2=A0 =C2=A0 =C2=A0 =C2=A0openvpn_config.c \
->> > =C2=A0 =C2=A0 =C2=A0 =C2=A0openvpn_config.h \
->> > =C2=A0 =C2=A0 =C2=A0 =C2=A0chartable.h \
->> > - =C2=A0 =C2=A0 =C2=A0 openvpn-gui-res.h
->> > + =C2=A0 =C2=A0 =C2=A0 openvpn-gui-res.h \
->> > + =C2=A0 =C2=A0 =C2=A0 res/openvpn-gui-res.rc \
->> > + =C2=A0 =C2=A0 =C2=A0 $(openvpn_gui_RESOURCES)
->> >
->> > -openvpn_gui_LDFLAGS =3D -mwindows
->> > =C2=A0openvpn_gui_LDADD =3D \
->> > - =C2=A0 =C2=A0 =C2=A0 openvpn-gui-res.o \
->> > =C2=A0 =C2=A0 =C2=A0 =C2=A0$(OPENSSL_CRYPTO_LIBS) \
->> > =C2=A0 =C2=A0 =C2=A0 =C2=A0-lws2_32 \
->> > =C2=A0 =C2=A0 =C2=A0 =C2=A0-lcomctl32
->> > +openvpn_gui_LDFLAGS =3D \
->> > + =C2=A0 =C2=A0 =C2=A0 -mwindows
->> > +
->> > +$(srcdir)/res/openvpn-gui-res.rc: $(openvpn_gui_RESOURCES)
->> > $(srcdir)/openvpn-gui-res.h
->> > + =C2=A0 =C2=A0 =C2=A0 touch "$(srcdir)/res/openvpn-gui-res.rc"
->> >
->> > -openvpn-gui-res.o: $(openvpn_gui_RESOURCES) $(srcdir)/openvpn-gui-res=
-.h
->> > +RCCOMPILE =3D $(WINDRES) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
->> > + =C2=A0 =C2=A0 =C2=A0 $(AM_CPPFLAGS) $(CPPFLAGS)
->> > +.rc.o:
->> > =C2=A0 =C2=A0 =C2=A0 =C2=A0$(RCCOMPILE) -i $< -o $@
->>
->> OK, too large for mailing list again...
->> Full patch is at[1].
->>
->> Alon
->>
->> [1]
->> https://github.com/alonbl/openvpn-gui/commit/8ceead092ca498906f289042ae2=
-3991fb651ebe1
+> openvpn-build - a separate project to build openvpn in various of
+> configurations. This project is divided into the following components:
+I thought this might be the case, was not sure where the line was drawn.
+
+> - generic - a generic build using cross compiler, included the
+> complete dependencies.
+>
+> - msvc - a MSVC build using Microsoft specific msbuild system, I hope
+> this will die eventually.
+Amen to that :).
+
+> - windows-nsis - the windows installer generator, it uses the generic
+> component to build using mingw cross compiler, then package the output
+> using nsis.
+>
+> The separation between these project is healthy as a change in openssl
+> version due to security issue at windows installer should not modify
+> openvpn version, same for a change in windows installer, or tap
+> version or any other change that is not directly related to openvpn
+> code base.
+>
+> It also allows a separate maintainer to maintain these various of
+> build environments.
+>
+> Does it answer your question?
+>
+> Alon
+Yes, thanks!
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
 
