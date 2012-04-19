@@ -1,11 +1,10 @@
-From: Adriaan de Jong <dejong@...1435...>
-Date: Thu, 19 Apr 2012 16:35:30 +0200
-Message-ID: <1CED409804E2164C8104F9E623B08B9012CBF71221@...1436...>
-References: <4F901987.9080009@...1147...>
-In-Reply-To: <4F901987.9080009@...1147...>
-Content-Language: en-US
+Message-ID: <4F909AC3.9090103@...1708...>
+Date: Fri, 20 Apr 2012 01:07:47 +0200
+From: Oliver <oliver@...1708...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] openssl ouch
+Content-Type: multipart/signed; protocol="application/pkcs7-signature";
+	micalg=sha1; boundary="------------ms020706000909060803090202"
+Subject: [Openvpn-devel] Windows: Route fails on certain configurations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,31 +13,104 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+To: openvpn-devel@lists.sourceforge.net
+
+Dies ist eine kryptografisch unterzeichnete Nachricht im MIME-Format.
+
+--------------ms020706000909060803090202
+Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
-To: Jan Just Keijser <janjust@...1147...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-> -----Original Message-----
-> From: Jan Just Keijser [mailto:janjust@...1147...]
-> Sent: donderdag 19 april 2012 15:56
-> To: openvpn-devel@lists.sourceforge.net
-> Subject: [Openvpn-devel] openssl ouch
->=20
-> ouch:
->   http://www.openssl.org/news/secadv_20120419.txt
->=20
-> we need to investigate whether and how openvpn is affected.
->=20
+Hi,
 
-Good catch!
+in the source code of win32.c, there is a static path.
 
-OpenVPN does use a number of these functions when loading PKCS#12 files in =
-ssl_openssl.c.=20
+    fp =3D fopen ("c:\\windows\\system32\\route.exe", "rb");
 
-I'm not entirely sure what the impact is yet, as these files should be gene=
-rated by the same user that actually uses the connection (they contain the =
-user's private key). If the user hasn't generated these files themselves (w=
-hich I wouldn't recommend), they might be affected.
+If the windows path is different, e. g. c:\WinNT or c:\WinXP this will
+fail. I'm no C programmer (and no windows user), but I think it is
+annoying enough to report. Maybe someone can fix this. :-)
 
-Adriaan
+regards
+
+
+--------------ms020706000909060803090202
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Kryptografische Unterschrift
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIILHTCC
+BT0wggQloAMCAQICDwCoTwABAAL+e2LXQ8bXeTANBgkqhkiG9w0BAQUFADB8MQswCQYDVQQG
+EwJERTEcMBoGA1UEChMTVEMgVHJ1c3RDZW50ZXIgR21iSDElMCMGA1UECxMcVEMgVHJ1c3RD
+ZW50ZXIgQ2xhc3MgMSBMMSBDQTEoMCYGA1UEAxMfVEMgVHJ1c3RDZW50ZXIgQ2xhc3MgMSBM
+MSBDQSBJWDAeFw0xMTExMzAwMDI5NDZaFw0xMjExMzAwMDI5NDZaMCUxCzAJBgNVBAYTAkRF
+MRYwFAYDVQQDEw1PbGl2ZXIgU3BlcmtlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEA0/dmOXMWmj2igPJIcfcCedMnKKDBop3EoZSBKYkHf5B7mKnIbG8AZZ+wjeddYt0lUVCK
+uh+vHHghPTUjGzaRyv2DlYTcE0/uWGXV4+6jXMxnpAbkmyi4+kJ+/+tLXCe5Z7+TvUSIogov
+x2zZSXeBADvL3yCZYM5latsJ9xxytZ7NIPu6W6xKn1HHJO5IN0xrB3uZdCJpkqeVg3+84uea
+FI6I8QR4NxtJmsoNBCVrk5ktqt1FbDB03CZPMY1i99V/GHFDYnBAUGMy0mjrqsH06Yc5wdg6
+Zq4bP6/E/jNtqg9LWz6lb0MHnPEbTJ1jmY/Smvfe4vs+D4GIeX+UTPgYzQIDAQABo4ICETCC
+Ag0wgaUGCCsGAQUFBwEBBIGYMIGVMFEGCCsGAQUFBzAChkVodHRwOi8vd3d3LnRydXN0Y2Vu
+dGVyLmRlL2NlcnRzZXJ2aWNlcy9jYWNlcnRzL3RjX2NsYXNzMV9MMV9DQV9JWC5jcnQwQAYI
+KwYBBQUHMAGGNGh0dHA6Ly9vY3NwLml4LnRjY2xhc3MxLnRjdW5pdmVyc2FsLWkudHJ1c3Rj
+ZW50ZXIuZGUwHwYDVR0jBBgwFoAU6bgoHUbP/M34TpvF7ktg69g7P9EwDAYDVR0TAQH/BAIw
+ADBKBgNVHSAEQzBBMD8GCSqCFAAsAQEBATAyMDAGCCsGAQUFBwIBFiRodHRwOi8vd3d3LnRy
+dXN0Y2VudGVyLmRlL2d1aWRlbGluZXMwDgYDVR0PAQH/BAQDAgTwMB0GA1UdDgQWBBRTdlV9
+LUBNWsItYOodTu0ZJu1BrDBiBgNVHR8EWzBZMFegVaBThlFodHRwOi8vY3JsLml4LnRjY2xh
+c3MxLnRjdW5pdmVyc2FsLWkudHJ1c3RjZW50ZXIuZGUvY3JsL3YyL3RjX0NsYXNzMV9MMV9D
+QV9JWC5jcmwwMwYDVR0lBCwwKgYIKwYBBQUHAwIGCCsGAQUFBwMEBggrBgEFBQcDBwYKKwYB
+BAGCNxQCAjAgBgNVHREEGTAXgRVvbGl2ZXJAYW5vbnNwaGVyZS5jb20wDQYJKoZIhvcNAQEF
+BQADggEBAAqNBvu/qR//vRq9RFdaxSTsVrqN4CayRWcu7dz5FbrnmZtNj8yRQbTg5Ai9pRT5
+49Zg8avQ8tVbyXZpoD4xqjpp4NFVvgO7IWaXDNwFPQ5yK8uLPgUJmvO+4ABHz+rp43TJTylG
+m3SG6hloYMtvglhNby3FLFoX0iKYYmx7gZGjehrF17QeQJuIkJDdut+jgexLTPUp1JOrg6cf
+gk6JW6j7IAgrDNOwFG+whA1Gw6cV5IThwIj8AurNzCej8bh6QXKPnoeuHZR7nzIPJZpVrDoW
+TrpP7sIWmkM1XwNsJ1ABckQG+ywF/PfekdSoKA7HbvoCVLG3PBI5vWJe+jsRvf8wggXYMIIE
+wKADAgECAg4G6AABAAJKli0kDP7FyTANBgkqhkiG9w0BAQUFADB5MQswCQYDVQQGEwJERTEc
+MBoGA1UEChMTVEMgVHJ1c3RDZW50ZXIgR21iSDEkMCIGA1UECxMbVEMgVHJ1c3RDZW50ZXIg
+VW5pdmVyc2FsIENBMSYwJAYDVQQDEx1UQyBUcnVzdENlbnRlciBVbml2ZXJzYWwgQ0EgSTAe
+Fw0wOTExMDMxNDA4MTlaFw0yNTEyMzEyMTU5NTlaMHwxCzAJBgNVBAYTAkRFMRwwGgYDVQQK
+ExNUQyBUcnVzdENlbnRlciBHbWJIMSUwIwYDVQQLExxUQyBUcnVzdENlbnRlciBDbGFzcyAx
+IEwxIENBMSgwJgYDVQQDEx9UQyBUcnVzdENlbnRlciBDbGFzcyAxIEwxIENBIElYMIIBIjAN
+BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu+aQbs9i6ekLqrYQ1UflfF0rJ3GaaM1VbeSi
+7+T+8npjEcJXish9z45mH2VFS+uAYmm9Ro6LxW5alRgq3qfxH3UaJ6ttMlPj+01YYiz/GeXH
+oA2aLSGIWYTNHfHDyIo+sOXeCCTP/EAsukEjlLuAEok1SLaGBOABT4y6qZj8HIntH4qhx4aY
+Jh5yZWv+z2XZDGRLGgn1QxFgZibjM1aayT0+NGp4xuVQS8jNiOQ5bFAmnkAstjt8N7Kn9d3c
+s1HL9NyCArjXOt7aMFwN9ULdE2lTVOmAJkIzHqXXzG7KZgmfhvA9vsaKYRDz0f9b5LLbLbJl
+DKl9F6y6J01CXM4JTwIDAQABo4ICWTCCAlUwgZoGCCsGAQUFBwEBBIGNMIGKMFIGCCsGAQUF
+BzAChkZodHRwOi8vd3d3LnRydXN0Y2VudGVyLmRlL2NlcnRzZXJ2aWNlcy9jYWNlcnRzL3Rj
+X3VuaXZlcnNhbF9yb290X0kuY3J0MDQGCCsGAQUFBzABhihodHRwOi8vb2NzcC50Y3VuaXZl
+cnNhbC1JLnRydXN0Y2VudGVyLmRlMB8GA1UdIwQYMBaAFJKkdSyknr6BROt5/IrFlaXrEHVz
+MBIGA1UdEwEB/wQIMAYBAf8CAQAwUgYDVR0gBEswSTAGBgRVHSAAMD8GCSqCFAAsAQEBATAy
+MDAGCCsGAQUFBwIBFiRodHRwOi8vd3d3LnRydXN0Y2VudGVyLmRlL2d1aWRlbGluZXMwDgYD
+VR0PAQH/BAQDAgEGMB0GA1UdDgQWBBTpuCgdRs/8zfhOm8XuS2Dr2Ds/0TCB/QYDVR0fBIH1
+MIHyMIHvoIHsoIHphkZodHRwOi8vY3JsLnRjdW5pdmVyc2FsLUkudHJ1c3RjZW50ZXIuZGUv
+Y3JsL3YyL3RjX3VuaXZlcnNhbF9yb290X0kuY3JshoGebGRhcDovL3d3dy50cnVzdGNlbnRl
+ci5kZS9DTj1UQyUyMFRydXN0Q2VudGVyJTIwVW5pdmVyc2FsJTIwQ0ElMjBJLE89VEMlMjBU
+cnVzdENlbnRlciUyMEdtYkgsT1U9cm9vdGNlcnRzLERDPXRydXN0Y2VudGVyLERDPWRlP2Nl
+cnRpZmljYXRlUmV2b2NhdGlvbkxpc3Q/YmFzZT8wDQYJKoZIhvcNAQEFBQADggEBADnIxJvu
+vpjuSHJvjedxtg6QjNOywRUhqEaQaF9KBPE6yWiEIdil5gR1XZ/S1PJLd0My3JXLYL8CVdCs
+HLDFFJebZQrDD6Ud7NhJOZW1qb769B6rVuem5QEIiDVfZwXdRCRQEiJEY3nxm1dpzqvWM1FP
+jfBwO46tUToXfzWWa2hoY7YcCsn43x1ezysRpWPtzNDG0yBvqvxoSH5tHrg6RaoShvPHvQC1
+6/7qEp9zM3jnKDlo06Vt2nbRTuFVlYCm4Bu4zaxW70VZR5hS2zpuJrIxOWl1sS4k8KSdl4he
+MynGtbwHQDoMPbrPdIxLTnoh+hs4zcRDL2+033jumZLnOhwxggPBMIIDvQIBATCBjzB8MQsw
+CQYDVQQGEwJERTEcMBoGA1UEChMTVEMgVHJ1c3RDZW50ZXIgR21iSDElMCMGA1UECxMcVEMg
+VHJ1c3RDZW50ZXIgQ2xhc3MgMSBMMSBDQTEoMCYGA1UEAxMfVEMgVHJ1c3RDZW50ZXIgQ2xh
+c3MgMSBMMSBDQSBJWAIPAKhPAAEAAv57YtdDxtd5MAkGBSsOAwIaBQCgggIGMBgGCSqGSIb3
+DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTEyMDQxOTIzMDc0N1owIwYJKoZI
+hvcNAQkEMRYEFCG3t61T+RZ1MEjrukFaToEL9oMxMF8GCSqGSIb3DQEJDzFSMFAwCwYJYIZI
+AWUDBAECMAoGCCqGSIb3DQMHMA4GCCqGSIb3DQMCAgIAgDANBggqhkiG9w0DAgIBQDAHBgUr
+DgMCBzANBggqhkiG9w0DAgIBKDCBoAYJKwYBBAGCNxAEMYGSMIGPMHwxCzAJBgNVBAYTAkRF
+MRwwGgYDVQQKExNUQyBUcnVzdENlbnRlciBHbWJIMSUwIwYDVQQLExxUQyBUcnVzdENlbnRl
+ciBDbGFzcyAxIEwxIENBMSgwJgYDVQQDEx9UQyBUcnVzdENlbnRlciBDbGFzcyAxIEwxIENB
+IElYAg8AqE8AAQAC/nti10PG13kwgaIGCyqGSIb3DQEJEAILMYGSoIGPMHwxCzAJBgNVBAYT
+AkRFMRwwGgYDVQQKExNUQyBUcnVzdENlbnRlciBHbWJIMSUwIwYDVQQLExxUQyBUcnVzdENl
+bnRlciBDbGFzcyAxIEwxIENBMSgwJgYDVQQDEx9UQyBUcnVzdENlbnRlciBDbGFzcyAxIEwx
+IENBIElYAg8AqE8AAQAC/nti10PG13kwDQYJKoZIhvcNAQEBBQAEggEAr71tPiYpPPrcYQBr
+pC75ar4PLIqs2iwbRMhGq/QKUdEK4s3Lqzy0dl6JLT02HUYWEuRzxS2FFjr51uNpRumfq73W
+wPsKhBdekVkC5TdtQ2u4o9mFDiv3Wqts0p4te8IgAvxfSOXB7F5uZFDsK1xGDbJZXl6fTvee
+laORcDJFaipS/S2pv4x8zbMXN9TB0kZ8SGYUnntfSQkUbfL11vMkdF9ADg9Mzg/rCr6ItiTE
+E4ke/XxV648CJH7Zv+52wfAmGzMygni+gl9hx86rZU8xYtcmooDwqI0s/Vg65MhrBAbm4kOw
+8EKL4AqYuSgvSixVpEACB7oyVfZWXMCV+Q5VtwAAAAAAAA==
+--------------ms020706000909060803090202--
 
