@@ -1,11 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <CAP+U6tKxU2OjMjeVUuR07dGBh+gdyvB4370+wq3k66=qPfxrPw@...278...>
-References: <1333820547-9672-1-git-send-email-alon.barlev@...277...>
-	<CAP+U6tKxU2OjMjeVUuR07dGBh+gdyvB4370+wq3k66=qPfxrPw@...278...>
-Date: Thu, 26 Apr 2012 19:06:36 +0300
-Message-ID: <CAOazyz2Cg78qGwU1izJYihcfQvDsQkgP0cDi2Nif4yQQ2gt5Xw@...278...>
+In-Reply-To: <CAP+U6t+A2X1xtEt-ZGZfByjJ=Cipx0LwBYRupY9NdXiiCUbK6w@...278...>
+References: <1333041552-6752-1-git-send-email-alon.barlev@...277...>
+	<1333366661-6711-1-git-send-email-alon.barlev@...277...>
+	<CAP+U6t+A2X1xtEt-ZGZfByjJ=Cipx0LwBYRupY9NdXiiCUbK6w@...278...>
+Date: Thu, 26 Apr 2012 19:08:52 +0300
+Message-ID: <CAOazyz0aA-RSHnSLo3STqJAS+xUK8warVS0oK3gs7g7x52=hkw@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] cleanup: remove C++ comments
+Subject: Re: [Openvpn-devel] [PATCH] cleanup: add .gitattributes to control
+ eol style explicitly
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,59 +16,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 To: Fabian Knittel <fabian.knittel@...1547...>
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: Openvpn-devel@lists.sourceforge.net
 
-On Thu, Apr 26, 2012 at 3:33 PM, Fabian Knittel
+On Thu, Apr 26, 2012 at 3:45 PM, Fabian Knittel
 <fabian.knittel@...1547...> wrote:
 > Hi Alon,
 >
-> 2012/4/7 Alon Bar-Lev <alon.barlev@...277...>:
->> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
->> ---
->> =C2=A0src/openvpnserv/openvpnserv.c | =C2=A0 =C2=A06 +++---
->> =C2=A01 files changed, 3 insertions(+), 3 deletions(-)
+> 2012/4/2 Alon Bar-Lev <alon.barlev@...277...>:
+>> Having the text auto detection is a risk, as the detection may detect
+>> text files that are not text and vise versa.
 >>
->> diff --git a/src/openvpnserv/openvpnserv.c b/src/openvpnserv/openvpnserv=
-.c
->> index a9a9441..56f5a02 100755
->> --- a/src/openvpnserv/openvpnserv.c
->> +++ b/src/openvpnserv/openvpnserv.c
->> @@ -87,9 +87,9 @@ static HANDLE exit_event =3D NULL;
->> =C2=A0/*
->> =C2=A0* Message handling
->> =C2=A0*/
->> -#define M_INFO =C2=A0 =C2=A0(0) =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0// informational
->> -#define M_SYSERR =C2=A0(MSG_FLAGS_ERROR|MSG_FLAGS_SYS_CODE) // error + =
-system code
->> -#define M_ERR =C2=A0 =C2=A0 (MSG_FLAGS_ERROR) =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0// error
->> +#define M_INFO =C2=A0 =C2=A0(0) =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0/* informational */
->> +#define M_SYSERR =C2=A0(MSG_FLAGS_ERROR|MSG_FLAGS_SYS_CODE) /* error + =
-system code */
->> +#define M_ERR =C2=A0 =C2=A0 (MSG_FLAGS_ERROR) =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0/* error */
->>
->> =C2=A0/* write error to event log */
->> =C2=A0#define MSG(flags, ...) \
+>> Having global setting will create confusion and differentiate between
+>> users. So this patch also move this to local repository.
 >
-> ACK. Doesn't hurt to be consistent. Are those the only remaining
-> C++-style comments?
+> IMHO, this is a real benefit. Reduces the number of steps necessary to
+> contribute and avoids line-ending mistakes for new contributions.
+>
+>> Having git to check out files differently in different OS is also
+>> a not correct, as checkouts may be used in shares or in *NIX emulation
+>> environments, so it have no effect.
+>>
+>> Another issue is packaging, if we change out the tree differently
+>> in several OSes, we may have different package content, which is
+>> something that should be avoided.
+>>
+>> Currently any editor of MS supports LF end of lines, so there is no
+>> need to convert source files while checking out.
+>>
+>> The visual studio files should be stored as CRLF as they are generated
+>> by visual studio every save, in a way that CRLF are added.
+>>
+>> I handled only the files that may be touch by MS users.
+>
+> The rest I generally agree with, but don't have strong feelings about them.
+>
+>> diff --git a/.gitattributes b/.gitattributes
+>> new file mode 100644
+>> index 0000000..34463f9
+>> --- /dev/null
+>> +++ b/.gitattributes
+>> @@ -0,0 +1,7 @@
+>> +*.c eol=lf
+>> +*.h eol=lf
+>> +*.rc eol=lf
+>> +*.txt eol=lf
+>> +*.bat eol=lf
+>> +*.vc*proj* eol=crlf
+>> +*.sln eol=crlf
+>
+> Why not .rc and .bat as crlf too?
 
-there is one more place I chose to ignore, the service implementation
-is taken from Microsoft SDK sample, and has C++ comments... to remain
-close to the original I left this intact.
+These sources are valid as LF only, unlike the .vc*, .sln they are not
+re-generated in different format every time saved, so keeping them in
+"UNIX" style will make it easier to maintain.
 
-> (Does someone know what C standard we aim at? "C++ comments" would be
-> just fine for C99.)
-
-Currently openvpn should support C89 based on supported configurations.
-
-Alon.
+>
+> Apart from that, ACK.
+>
+> Cheers
+> Fabian
 
