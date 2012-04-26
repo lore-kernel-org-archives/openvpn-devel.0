@@ -1,11 +1,13 @@
 MIME-Version: 1.0
 Sender: fabian@...1547...
-In-Reply-To: <1333820440-9573-1-git-send-email-alon.barlev@...277...>
-References: <1333820440-9573-1-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1333366661-6711-1-git-send-email-alon.barlev@...277...>
+References: <1333041552-6752-1-git-send-email-alon.barlev@...277...>
+	<1333366661-6711-1-git-send-email-alon.barlev@...277...>
 From: Fabian Knittel <fabian.knittel@...1547...>
-Date: Thu, 26 Apr 2012 14:39:44 +0200
-Message-ID: <CAP+U6tLODQB+38V-6cy+p9XUMX4MXkpTWUgj=yhyJ+XK5W4HHA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] cleanup: plugin: support C++ plugin
+Date: Thu, 26 Apr 2012 14:45:35 +0200
+Message-ID: <CAP+U6t+A2X1xtEt-ZGZfByjJ=Cipx0LwBYRupY9NdXiiCUbK6w@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] cleanup: add .gitattributes to control
+ eol style explicitly
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,49 +16,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: Openvpn-devel@lists.sourceforge.net
 
 Hi Alon,
 
-2012/4/7 Alon Bar-Lev <alon.barlev@...277...>:
-> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-> ---
-> =C2=A0include/openvpn-plugin.h | =C2=A0 =C2=A08 ++++++++
-> =C2=A01 files changed, 8 insertions(+), 0 deletions(-)
+2012/4/2 Alon Bar-Lev <alon.barlev@...277...>:
+> Having the text auto detection is a risk, as the detection may detect
+> text files that are not text and vise versa.
 >
-> diff --git a/include/openvpn-plugin.h b/include/openvpn-plugin.h
-> index f82f61f..1c80eec 100644
-> --- a/include/openvpn-plugin.h
-> +++ b/include/openvpn-plugin.h
-> @@ -43,6 +43,10 @@ typedef X509 openvpn_x509_cert_t;
-> =C2=A0#endif
-> =C2=A0#endif
->
-> +#ifdef __cplusplus
-> +extern "C" {
-> +#endif
-> +
-> =C2=A0/*
-> =C2=A0* Plug-in types. =C2=A0These types correspond to the set of script =
-callbacks
-> =C2=A0* supported by OpenVPN.
-> @@ -724,4 +728,8 @@ OPENVPN_PLUGIN_DEF openvpn_plugin_handle_t OPENVPN_PL=
-UGIN_FUNC(openvpn_plugin_op
-> =C2=A0OPENVPN_PLUGIN_DEF int OPENVPN_PLUGIN_FUNC(openvpn_plugin_func_v1)
-> =C2=A0 =C2=A0 =C2=A0(openvpn_plugin_handle_t handle, const int type, cons=
-t char *argv[], const char *envp[]);
->
-> +#ifdef __cplusplus
-> +}
-> +#endif
-> +
-> =C2=A0#endif /* OPENVPN_PLUGIN_H_ */
+> Having global setting will create confusion and differentiate between
+> users. So this patch also move this to local repository.
 
-ACK. (Although I haven't tried compiling a C++ plugin, the change looks fin=
-e.)
+IMHO, this is a real benefit. Reduces the number of steps necessary to
+contribute and avoids line-ending mistakes for new contributions.
+
+> Having git to check out files differently in different OS is also
+> a not correct, as checkouts may be used in shares or in *NIX emulation
+> environments, so it have no effect.
+>
+> Another issue is packaging, if we change out the tree differently
+> in several OSes, we may have different package content, which is
+> something that should be avoided.
+>
+> Currently any editor of MS supports LF end of lines, so there is no
+> need to convert source files while checking out.
+>
+> The visual studio files should be stored as CRLF as they are generated
+> by visual studio every save, in a way that CRLF are added.
+>
+> I handled only the files that may be touch by MS users.
+
+The rest I generally agree with, but don't have strong feelings about them.
+
+> diff --git a/.gitattributes b/.gitattributes
+> new file mode 100644
+> index 0000000..34463f9
+> --- /dev/null
+> +++ b/.gitattributes
+> @@ -0,0 +1,7 @@
+> +*.c eol=lf
+> +*.h eol=lf
+> +*.rc eol=lf
+> +*.txt eol=lf
+> +*.bat eol=lf
+> +*.vc*proj* eol=crlf
+> +*.sln eol=crlf
+
+Why not .rc and .bat as crlf too?
+
+Apart from that, ACK.
 
 Cheers
 Fabian
