@@ -1,13 +1,8 @@
-Date: Sat, 21 Apr 2012 22:34:04 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120421203402.GW1359@...1296...>
-References: <4F909AC3.9090103@...1708...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="xNzB6LhEaj9ZrCy/"
-Content-Disposition: inline
-In-Reply-To: <4F909AC3.9090103@...1708...>
-Subject: Re: [Openvpn-devel] Windows: Route fails on certain configurations
+Message-ID: <4F991387.5060608@...515...>
+Date: Thu, 26 Apr 2012 12:21:11 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Topics for today's meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,51 +11,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Oliver <oliver@...1708...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---xNzB6LhEaj9ZrCy/
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Fri, Apr 20, 2012 at 01:07:47AM +0200, Oliver wrote:
-> in the source code of win32.c, there is a static path.
->=20
->     fp =3D fopen ("c:\\windows\\system32\\route.exe", "rb");
->=20
-> If the windows path is different, e. g. c:\WinNT or c:\WinXP this will
-> fail. I'm no C programmer (and no windows user), but I think it is
-> annoying enough to report. Maybe someone can fix this. :-)
+We're having an IRC meeting today, starting at 18:00 UTC on
+#openvpn-devel@...1422... Current topic list is here:
 
-Indeed, that code is "strange", but not for the reason you think it is.
+<https://community.openvpn.net/openvpn/wiki/Topics-2012-04-26>
 
-(win32.c, configure_win_path() )
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
 
-gert
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting. Whenever possible, we'll also respond to existing,
+related email threads.
+
+NOTE: It's required to use a registered Freenode IRC nickname to join
+#openvpn-devel - look here for details:
+
+<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
+
+NOTE: there's already a lot to discuss, so please don't add any major
+topics to this week's agenda.
 
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
---xNzB6LhEaj9ZrCy/
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
-
-iQCVAwUBT5MZuqkuBuNlUUl1AQK9xQQAumwtK04C6jo39fewvU0+4pVsHGPWpY85
-htwFrwP/NkCbOzAK9YlaetAO7k72cFR4G34xCkHW0Z2fsUrqMB+lkb7WoIZoQHio
-Steu3D+YfZ4JaVE1Vvb1MZy/egjoM0UMWfMOTiu+NBdK7cquYJcVj2wZJoevvaqk
-TW1DS+c65Kc=
-=h5tI
------END PGP SIGNATURE-----
-
---xNzB6LhEaj9ZrCy/--
+irc freenode net: mattock
 
