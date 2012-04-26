@@ -1,5 +1,6 @@
-MIME-Version: 1.0
-In-Reply-To: <20120426181708.GX1359@...1296...>
+Date: Thu, 26 Apr 2012 20:22:43 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120426182243.GY1359@...1296...>
 References: <1335441085-18186-1-git-send-email-davids@...1347...>
 	<CAOazyz3-f2YkXE_vV2Oum+p4exQTUis=Q9RTOrvZ7WC0WEZymg@...278...>
 	<20120426172410.GT1359@...1296...>
@@ -8,11 +9,14 @@ References: <1335441085-18186-1-git-send-email-davids@...1347...>
 	<20120426180156.GU1359@...1296...>
 	<CAOazyz3NsxGOaG97DXaksx6zfAXGBSvM-1YCbB=wkFKY5fmm-w@...278...>
 	<20120426181708.GX1359@...1296...>
-Date: Thu, 26 Apr 2012 21:20:14 +0300
-Message-ID: <CAOazyz1RxYe4Q08YBoCyM8wAv82c92WNK+t4=DZk3S6u8ytZ3g@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+	<CAOazyz1RxYe4Q08YBoCyM8wAv82c92WNK+t4=DZk3S6u8ytZ3g@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="sxO2T/NGoDV4otS4"
+Content-Disposition: inline
+In-Reply-To: <CAOazyz1RxYe4Q08YBoCyM8wAv82c92WNK+t4=DZk3S6u8ytZ3g@...278...>
 Subject: Re: [Openvpn-devel] [PATCH] Presume that Linux is always IPv6
- capable at build time
+	capable at build time
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,36 +25,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
+To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Thu, Apr 26, 2012 at 9:17 PM, Gert Doering <gert@...1296...> wrote:
-> Hi,
->
-> On Thu, Apr 26, 2012 at 09:06:19PM +0300, Alon Bar-Lev wrote:
->> Right, the ipv6 was added indeed differently, without this conditionals.
->
-> You missed the part that JJO's IPv6 code *was* added with conditionals,
-> and that caused problems. =C2=A0We *removed* the conditionals, and the re=
-sulting
-> code is easier to maintain now.
->
->> Because of this I did not perform this task as part of the major build
->> cleanup, and left this for the next phase.
->> Most of the lowlevel network code already has #ifdefs, I will try my
->> best to find a way to do the conditional without much changes.
->
-> I don't think that this is a useful way to spend your time.
->
-> Nobody has ever asked for it, and I don't see anybody volunteering to
-> maintain the resulting extra complications.
->
-> We want to *reduce* the number of #ifdef in the code.
+--sxO2T/NGoDV4otS4
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Not necessary, I would like to make it compatible with other well
-behaved projects out there.
+Hi,
 
-Alon.
+On Thu, Apr 26, 2012 at 09:20:14PM +0300, Alon Bar-Lev wrote:
+> > We want to *reduce* the number of #ifdef in the code.
+>=20
+> Not necessary, I would like to make it compatible with other well
+> behaved projects out there.
+
+You are young, and will learn.
+
+"Well behaved projects" are not those that have too many build options.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--sxO2T/NGoDV4otS4
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBT5mSc6kuBuNlUUl1AQL8ggP/emJZ8zohtu4Q5EABaOYWOU5vJ26GaDxP
+jbfYS50ihrzonxAVuivK8mUkxFgoSSgW9unEcsKixT1r1aNuUqty1VedMqqT71Yp
+qz6b5J9uBXvom1pAgMfN8fPZyYAjfvFuCb4CAvIWgJ84R1jiVgrR+Roqx2U7sPI8
+m51Q46RPFT4=
+=b2eU
+-----END PGP SIGNATURE-----
+
+--sxO2T/NGoDV4otS4--
 
