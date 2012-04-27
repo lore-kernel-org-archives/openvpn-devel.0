@@ -1,14 +1,13 @@
-Message-ID: <4F9A847F.1040803@...515...>
-Date: Fri, 27 Apr 2012 14:35:27 +0300
-From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
+Message-ID: <4F9A8928.9080703@...515...>
+Date: Fri, 27 Apr 2012 14:55:20 +0300
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <CAOazyz3Z3Mr=wBnjZ=PmRV8cMWezzqv6ZgJrNXcxkfj73jUyvA@...278...>
-	<4F9A501E.4000409@...515...>
-	<CAOazyz17=zbrB91E87p0W4UrrsBRme0wDAsvbBvmiFzXxhG=_A@...278...>
-	<4F9A7EEC.5030404@...515...>
-	<CAOazyz1BmhOThN6f+yc_BqPMeO942iSNydym6ZRzDeSr-KJZLQ@...278...>
-In-Reply-To: <CAOazyz1BmhOThN6f+yc_BqPMeO942iSNydym6ZRzDeSr-KJZLQ@...278...>
-Subject: Re: [Openvpn-devel] tap-windows - release
+References: <CAOazyz15xpgFxzqQFaotZSmS2=-gSmUsMMwy=SZay6bi3EEMAg@...278...>
+	<1332621070-28464-1-git-send-email-alon.barlev@...277...>
+	<4F9A5EB7.902@...515...> <2620278.PZKTmmtf1E@...1526...>
+In-Reply-To: <2620278.PZKTmmtf1E@...1526...>
+Subject: Re: [Openvpn-devel] [PATCH] cleanup: windows: convert argv (UCS-2
+ to UTF-8) at earliest
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,42 +16,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
+Il 27.04.2012 12:18, Heiko Hund ha scritto:
+> On Friday 27 April 2012 09:54:15 Samuli Sepp=E4nen wrote:
+>> Anyways, I cross-compiled latest "master" with this patch applied and
+>> "bin" and "lib" directories on top of an existing openvpn-2.3-alpha1
+>> install. The old "bin" directory was renamed to make sure none of it was
+>> used. I then renamed "openvpn.ovpn" to "=E4=E4li=F6.ovpn" and "ta.key" to
+>> "=E4=E4li=F6.key" using Windows Explorer. Then I updated the configurati=
+on
+>> file to point to these files using Notepad (and later Wordpad).
+> Notepad saves UTF-8 files with BOM, which is very uncommon. Maybe that wa=
+s the=20
+> problem. I ran into that when I was testing my patch. You might want to t=
+ry=20
+> using Notepad++ and save it as UTF-8 without BOM.
+>
+> HTH
+> Heiko
+Saved the configuration file to UTF-8 without BOM - after this I got no
+complaints from OpenVPN-GUI. Launching OpenVPN from the command prompt
+also worked... tls-auth was undefined in the config, and openvpn called
+like this:
 
-> 2012/4/27 Samuli Sepp=C3=A4nen <samuli@...515...>:
->>>> James has built and signed our TAP-drivers so far, and I don't have the
->>>> signing keys. I'll forward this to him.
->>> Great.
->>> BTW: Apart from me, I don't think anyone actually tried to use the new
->>> tap-windows installer...
->> Notified James about the driver building/signing. I'll probably build
->> the "official" drivers and James then signs them. Unless James feels
->> adventurous and does everything :).
->>
->> I'll test the tap-windows installers soon, as it's needed for official
->> Windows releases anyways.
-> Hmmm... we need to sign the driver and sign the installer.
-> The build system already doing this.
-> So it is not that you can split the build from the signing.
-> Unless you wish to split the build:
-> 1. build driver binaries, put these in zip.
-> 2. sign binaries and put these in new zip.
-> 3. build installer out of this new zip.
-> 4. sign installer.
->
-> Can't you simply have access to the signing key and perform the whole
-> automotive process I created?
->
-> Alon.
-Me having the signing keys would be optimal. I'll ask James again if
-he's ok with it.
+> openvpn --config =E4=E4li=F6.ovpn --tls-auth =E4=E4li=F6.key 1
+
+Only minor issue was that the command prompt displayed funky characters
+instead of the proper ones:
+
+<http://users.utu.fi/sjsepp/cmd2.png>
+
+Thanks for the tip, Heiko!
 
 --=20
-Samuli Sepp=C3=A4nen
+Samuli Sepp=E4nen
 Community Manager
 OpenVPN Technologies, Inc
 
