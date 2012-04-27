@@ -1,11 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <4F9A501E.4000409@...515...>
-References: <CAOazyz3Z3Mr=wBnjZ=PmRV8cMWezzqv6ZgJrNXcxkfj73jUyvA@...278...>
-	<4F9A501E.4000409@...515...>
-Date: Fri, 27 Apr 2012 11:06:50 +0300
-Message-ID: <CAOazyz17=zbrB91E87p0W4UrrsBRme0wDAsvbBvmiFzXxhG=_A@...278...>
+Date: Fri, 27 Apr 2012 01:18:11 -0700
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] tap-windows - release
+Message-ID: <4f9a56438f60_37f416f0ae41997fc@...1709...>
+Mime-Version: 1.0
+Content-Type: multipart/mixed;
+	boundary="--==_mimepart_4f9a56436e24_37f416f0ae41995b1";
+	charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: [Openvpn-devel] [OpenVPN/test] 3dc70e: email test
+Reply-To: Alon Bar-Lev <alon.barlev@...277...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,46 +16,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-2012/4/27 Samuli Sepp=C3=A4nen <samuli@...515...>:
->
->> Hello Samuli,
->>
->> The tap-windows project unlikely to be changed, I think we should releas=
-e it.
-> Yep, that probably makes sense.
->
->> I already created public repository[1], completed the separate build,
->> signing and packaging.
->>
->> All we need is a signed build.
->>
->> Something like:
->> set CODESIGN_PKCS12=3D<key location in PKCS#12 format>
->> set CODESIGN_PASS=3D>password>
->> configure
->> build
-> James has built and signed our TAP-drivers so far, and I don't have the
-> signing keys. I'll forward this to him.
 
-Great.
-BTW: Apart from me, I don't think anyone actually tried to use the new
-tap-windows installer...
 
->
->> I had only software signing certificate (not driver), so I could not
->> test this all the way. But it should be OK.
->>
->> If you need help converting the Microsoft proprietary format into
->> standard PKCS#12 format, please tell me.
->>
->> Alon.
->>
->> [1] https://github.com/OpenVPN/tap-windows
-> Samuli
->
+----==_mimepart_4f9a56436e24_37f416f0ae41995b1
+Date: Fri, 27 Apr 2012 01:18:11 -0700
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Content-ID: <4f9a564380ef_37f416f0ae41996e4@...1709...>
+
+  Branch: refs/heads/master
+  Home:   https://github.com/OpenVPN/test
+  Commit: 3dc70e4b2a7fdceff71e5b4caa955824b1d4eda7
+      https://github.com/OpenVPN/test/commit/3dc70e4b2a7fdceff71e5b4caa955824b1d4eda7
+  Author: Alon Bar-Lev <alon.barlev@...277...>
+  Date:   2012-04-27 (Fri, 27 Apr 2012)
+
+  Changed paths:
+    M test.txt
+
+  Log Message:
+  -----------
+  email test
+
+
+diff --git a/test.txt b/test.txt
+index ce01362..a042389 100644
+--- a/test.txt
++++ b/test.txt
+@@ -1 +1 @@
+-hello
++hello world!
+
+
+================================================================
+
+
+----==_mimepart_4f9a56436e24_37f416f0ae41995b1--
 
