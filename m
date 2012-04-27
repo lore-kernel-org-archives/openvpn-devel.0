@@ -1,9 +1,11 @@
-From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Fri, 27 Apr 2012 15:09:15 +0300
-Message-Id: <1335528555-13225-1-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1335479238-26420-1-git-send-email-alon.barlev@...277...>
+MIME-Version: 1.0
+In-Reply-To: <1335528555-13225-1-git-send-email-alon.barlev@...277...>
 References: <1335479238-26420-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [PATCH] build: use stdbool.h if available
+	<1335528555-13225-1-git-send-email-alon.barlev@...277...>
+Date: Fri, 27 Apr 2012 15:10:14 +0300
+Message-ID: <CAOazyz35dcMKfqLq4Q9NNU_3bZs8dxrDs5Hmm-oXUDPiFWC4OQ@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] build: use stdbool.h if available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,110 +14,24 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 Cc: Alon Bar-Lev <alon.barlev@...277...>
 
-If stdbool.h is available use it, otherwise create emulation.
+On Fri, Apr 27, 2012 at 3:09 PM, Alon Bar-Lev <alon.barlev@...277...> wrote:
+> --- a/src/compat/Makefile.am
+> +++ b/src/compat/Makefile.am
+> @@ -20,6 +20,7 @@ noinst_LTLIBRARIES =3D libcompat.la
+>
+> =C2=A0libcompat_la_SOURCES =3D \
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0compat.h \
+> + =C2=A0 =C2=A0 =C2=A0 compat-stdbool.h \
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0compat-dirname.c \
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0compat-basename.c \
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0compat-gettimeofday.c \
 
-basic.h defines a type 'bool' that conflicts with
-the altivec keyword bool which has to be fixed upstream, see
-bugs[1][2].
+The above hunk was missing.
 
-[1] https://bugs.gentoo.org/show_bug.cgi?id=293840
-[2] https://bugs.gentoo.org/show_bug.cgi?id=297854
-
-Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
----
- configure.ac                |    2 +-
- src/compat/Makefile.am      |    1 +
- src/compat/compat-stdbool.h |   12 ++++++++++++
- src/openvpn/basic.h         |   13 -------------
- src/openvpn/syshead.h       |    1 +
- 5 files changed, 15 insertions(+), 14 deletions(-)
- create mode 100644 src/compat/compat-stdbool.h
-
-diff --git a/configure.ac b/configure.ac
-index 8ac5ac4..1a284c7 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -354,7 +354,7 @@ AX_EMPTY_ARRAY
- AC_CHECK_SIZEOF([unsigned int])
- AC_CHECK_SIZEOF([unsigned long])
- AC_CHECK_HEADERS([ \
--	stdio.h stdarg.h limits.h \
-+	stdio.h stdarg.h stdbool.h limits.h \
- 	time.h errno.h fcntl.h io.h direct.h \
- 	ctype.h sys/types.h sys/socket.h \
- 	signal.h unistd.h dlfcn.h \
-diff --git a/src/compat/Makefile.am b/src/compat/Makefile.am
-index 5ee35f7..7ad4452 100644
---- a/src/compat/Makefile.am
-+++ b/src/compat/Makefile.am
-@@ -20,6 +20,7 @@ noinst_LTLIBRARIES = libcompat.la
- 
- libcompat_la_SOURCES = \
- 	compat.h \
-+	compat-stdbool.h \
- 	compat-dirname.c \
- 	compat-basename.c \
- 	compat-gettimeofday.c \
-diff --git a/src/compat/compat-stdbool.h b/src/compat/compat-stdbool.h
-new file mode 100644
-index 0000000..9941218
---- /dev/null
-+++ b/src/compat/compat-stdbool.h
-@@ -0,0 +1,12 @@
-+#ifndef __COMPAT_STDBOOL_H
-+#define __COMPAT_STDBOOL_H
-+
-+#ifdef HAVE_STDBOOL_H
-+#include <stdbool.h>
-+#else
-+typedef int bool;
-+#define false 0
-+#define true 1
-+#endif
-+
-+#endif
-diff --git a/src/openvpn/basic.h b/src/openvpn/basic.h
-index 7c13e22..298cf10 100644
---- a/src/openvpn/basic.h
-+++ b/src/openvpn/basic.h
-@@ -25,19 +25,6 @@
- #ifndef BASIC_H
- #define BASIC_H
- 
--/* bool definitions */
--#ifndef bool
--#define bool int
--#endif
--
--#ifndef true
--#define true 1
--#endif
--
--#ifndef false
--#define false 0
--#endif
--
- #define BOOL_CAST(x) ((x) ? (true) : (false))
- 
- /* size of an array */
-diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index 0595b67..8bc4a0f 100644
---- a/src/openvpn/syshead.h
-+++ b/src/openvpn/syshead.h
-@@ -26,6 +26,7 @@
- #define SYSHEAD_H
- 
- #include "compat.h"
-+#include "compat-stdbool.h"
- 
- /* branch prediction hints */
- #if defined(__GNUC__)
--- 
-1.7.3.4
-
+Alon.
 
