@@ -1,11 +1,12 @@
-Message-ID: <4F9B1C1E.20302@...1114...>
-Date: Sat, 28 Apr 2012 00:22:22 +0200
+Message-ID: <4F9B1C7C.6090508@...1114...>
+Date: Sat, 28 Apr 2012 00:23:56 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1335479238-26420-1-git-send-email-alon.barlev@...277...>
-	<1335528555-13225-1-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1335528555-13225-1-git-send-email-alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] build: use stdbool.h if available
+References: <CAOazyz28aDw=eyLbQRBXU1KaaXom937adipzcAh_UW0rvuB7XQ@...278...>
+	<1335534054-14895-1-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1335534054-14895-1-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] build: fix typo in
+	--enable-save-password
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,37 +22,25 @@ To: openvpn-devel@lists.sourceforge.net
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 27/04/12 14:09, Alon Bar-Lev wrote:
-> If stdbool.h is available use it, otherwise create emulation.
-> 
-> basic.h defines a type 'bool' that conflicts with the altivec
-> keyword bool which has to be fixed upstream, see bugs[1][2].
-> 
-> [1] https://bugs.gentoo.org/show_bug.cgi?id=293840 [2]
-> https://bugs.gentoo.org/show_bug.cgi?id=297854
-> 
+On 27/04/12 15:40, Alon Bar-Lev wrote:
 > Signed-off-by: Alon Bar-Lev <alon.barlev@...277...> --- 
-> configure.ac                |    2 +- src/compat/Makefile.am      |
-> 1 + src/compat/compat-stdbool.h |   12 ++++++++++++ 
-> src/openvpn/basic.h         |   13 ------------- 
-> src/openvpn/syshead.h       |    1 + 5 files changed, 15
-> insertions(+), 14 deletions(-) create mode 100644
-> src/compat/compat-stdbool.h
+> configure.ac |    1 + 1 files changed, 1 insertions(+), 0
+> deletions(-)
 > 
 
 ACK.  Applied to master branch on -testing and -stable trees.
 
 
-commit 4029971240b6274b9b30e76ff74c7f689d7d9750
+commit 8993847de727cf503bec58b41fbf0f71b9c617e7
 Author: Alon Bar-Lev <alon.barlev@...277...>
-Date:   Fri Apr 27 15:09:15 2012 +0300
+Date:   Fri Apr 27 16:40:54 2012 +0300
 
-    build: use stdbool.h if available
+    build: fix typo in --enable-save-password
 
     Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
     Acked-by: David Sommerseth <davids@...1347...>
-    Message-Id: 1335528555-13225-1-git-send-email-alon.barlev@...277...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/6363
+    Message-Id: 1335534054-14895-1-git-send-email-alon.barlev@...277...
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/6371
     Signed-off-by: David Sommerseth <davids@...1347...>
 
 
@@ -62,8 +51,8 @@ David Sommerseth
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk+bHB0ACgkQDC186MBRfrrK5gCgnGCVKFuPrqdWw2gRcqb89StD
-tqEAnjkgJfTNK3chQiVDjc1y0OHxa43H
-=J1ML
+iEYEARECAAYFAk+bHHwACgkQDC186MBRfrpu/gCeM+nwqkIQM3An8CyoyhKE02JL
+E/sAnjLWlrofSdIbSR+GsBnfy/V4gDlK
+=Vn1H
 -----END PGP SIGNATURE-----
 
