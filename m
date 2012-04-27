@@ -1,13 +1,12 @@
-Message-ID: <4F9A7FCF.6040101@...515...>
-Date: Fri, 27 Apr 2012 14:15:27 +0300
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <4F9A80E5.8030707@...1114...>
+Date: Fri, 27 Apr 2012 13:20:05 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <CAOazyz15xpgFxzqQFaotZSmS2=-gSmUsMMwy=SZay6bi3EEMAg@...278...>
-	<1332621070-28464-1-git-send-email-alon.barlev@...277...>
-	<4F9A5EB7.902@...515...> <2620278.PZKTmmtf1E@...1526...>
-In-Reply-To: <2620278.PZKTmmtf1E@...1526...>
-Subject: Re: [Openvpn-devel] [PATCH] cleanup: windows: convert argv (UCS-2
- to UTF-8) at earliest
+References: <CAOazyz0nDj78COr6sd4FAMPz3sML0+-5ZNOx7s_62qtk12tnag@...278...>
+	<1333879485-2417-1-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1333879485-2417-1-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] crash: packet_id_debug_print: sl may be
+ null
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,29 +15,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: Heiko Hund <heiko.hund@...1489...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 08/04/12 12:04, Alon Bar-Lev wrote:
+> Program received signal SIGSEGV, Segmentation fault. 
+> packet_id_debug_print (msglevel=1174405255, p=0xa36bd0718, 
+> pin=0x3de5feec1b0, message=0xa330dde80 "PID_TEST", value=0) at 
+> ../../../src/openvpn/packet_id.c:504 504       for (i = 0; i <
+> sl->x_size; ++i)
+> 
+> (gdb) print sl $2 = (const struct seq_list *) 0x0
+> 
+> Reported in the past[1].
+> 
+> [1] http://thread.gmane.org/gmane.network.openvpn.devel/5466
+> 
+> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...> --- 
+> src/openvpn/packet_id.c |   16 ++++++++++------ 1 files changed, 10
+> insertions(+), 6 deletions(-)
+
+Applied to master branch on -testing and -stable trees.
 
 
-> On Friday 27 April 2012 09:54:15 Samuli Sepp=E4nen wrote:
->> Anyways, I cross-compiled latest "master" with this patch applied and
->> "bin" and "lib" directories on top of an existing openvpn-2.3-alpha1
->> install. The old "bin" directory was renamed to make sure none of it was
->> used. I then renamed "openvpn.ovpn" to "=E4=E4li=F6.ovpn" and "ta.key" to
->> "=E4=E4li=F6.key" using Windows Explorer. Then I updated the configurati=
-on
->> file to point to these files using Notepad (and later Wordpad).
-> Notepad saves UTF-8 files with BOM, which is very uncommon. Maybe that wa=
-s the=20
-> problem. I ran into that when I was testing my patch. You might want to t=
-ry=20
-> using Notepad++ and save it as UTF-8 without BOM.
->
-> HTH
-> Heiko
-I'll give Notepad++ a try, thanks!
+commit 4e846b39a35b5f9501e4283be0af620d7c9c8b5c
+Author: Alon Bar-Lev <alon.barlev@...277...>
+Date:   Sun Apr 8 13:04:45 2012 +0300
 
-Samuli
+    crash: packet_id_debug_print: sl may be null
+
+    Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+    Acked-by: James Yonan <james@...515...>
+
+
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk+agOMACgkQDC186MBRfroQyQCfTE02eg99CsUB3Ced4A+iKZGW
+7sUAn19wsDC5soQ1n6krB8slxztICHxM
+=beGW
+-----END PGP SIGNATURE-----
 
