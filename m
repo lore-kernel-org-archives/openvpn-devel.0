@@ -1,9 +1,10 @@
+Message-ID: <4F9A9EEE.4010101@...515...>
+Date: Fri, 27 Apr 2012 16:28:14 +0300
+From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <4F9A9B06.8080105@...515...>
 References: <4F9A9B06.8080105@...515...>
-Date: Fri, 27 Apr 2012 16:20:22 +0300
-Message-ID: <CAOazyz12EN3XN0Yq_F4x6yAtOexuZ559R38ZPYwg3VenPowghw@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+	<CAOazyz12EN3XN0Yq_F4x6yAtOexuZ559R38ZPYwg3VenPowghw@...278...>
+In-Reply-To: <CAOazyz12EN3XN0Yq_F4x6yAtOexuZ559R38ZPYwg3VenPowghw@...278...>
 Subject: Re: [Openvpn-devel] Passing custom configure flags to "generic"
 	buildsystem?
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,22 +17,45 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-2012/4/27 Samuli Sepp=C3=A4nen <samuli@...515...>:
-> Hi,
+
+> 2012/4/27 Samuli Sepp=C3=A4nen <samuli@...515...>:
+>> Hi,
+>>
+>> What is the recommended way of passing configure flags to the "generic"
+>> buildsystem? I'd like to cross-compile for win64 on Linux and have some
+>> features turned on.
+>>
+>> Samuli
+> Hello,
 >
-> What is the recommended way of passing configure flags to the "generic"
-> buildsystem? I'd like to cross-compile for win64 on Linux and have some
-> features turned on.
+> Just define the EXTRA_OPENVPN_CONFIG environment variable.
+> Or I don't understand your question....
 >
-> Samuli
+> Alon.
+Ok, so I assumed. Tried that already, and from build output it looks as
+if it's working:
 
-Hello,
+--- snip ---
+running CONFIG_SHELL=3D/bin/bash /bin/bash ./configure --prefix=3D/
+--libdir=3D//lib --host=3Dx86_64-w64-mingw32 --target=3D
+--build=3Dx86_64-pc-linux-gnu --program-prefix=3D'' --sbindir=3D/bin
+--enable-password-save
+--- snip ---
 
-Just define the EXTRA_OPENVPN_CONFIG environment variable.
-Or I don't understand your question....
+However, the resulting binary gives "enable_password_save=3Dfalse", and
+actually using a credentials file fails. I tried this a number of times,
+deleting "image-win64" directory each time.
 
-Alon.
+Any ideas what could cause this?
+
+--=20
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
 
