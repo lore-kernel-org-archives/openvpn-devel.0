@@ -1,12 +1,12 @@
-Message-ID: <4F9A80E5.8030707@...1114...>
-Date: Fri, 27 Apr 2012 13:20:05 +0200
+Message-ID: <4F9A812B.8080709@...1114...>
+Date: Fri, 27 Apr 2012 13:21:15 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <CAOazyz0nDj78COr6sd4FAMPz3sML0+-5ZNOx7s_62qtk12tnag@...278...>
-	<1333879485-2417-1-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1333879485-2417-1-git-send-email-alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] crash: packet_id_debug_print: sl may be
- null
+References: <1335441085-18186-1-git-send-email-davids@...1347...>
+	<1335521425-23391-1-git-send-email-davids@...1347...>
+In-Reply-To: <1335521425-23391-1-git-send-email-davids@...1347...>
+Subject: Re: [Openvpn-devel] [PATCH] Clean-up: Presume that Linux is always
+ IPv6 capable at build time
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,45 +22,51 @@ To: openvpn-devel@lists.sourceforge.net
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 08/04/12 12:04, Alon Bar-Lev wrote:
-> Program received signal SIGSEGV, Segmentation fault. 
-> packet_id_debug_print (msglevel=1174405255, p=0xa36bd0718, 
-> pin=0x3de5feec1b0, message=0xa330dde80 "PID_TEST", value=0) at 
-> ../../../src/openvpn/packet_id.c:504 504       for (i = 0; i <
-> sl->x_size; ++i)
+On 27/04/12 12:10, David Sommerseth wrote:
+> These days it is highly unlikely that OpenVPN will be built in a
+> non-IPv6 capable Linux environment.  So remove compile-time related
+> macros identifying that.
 > 
-> (gdb) print sl $2 = (const struct seq_list *) 0x0
+> This also solves an issue which was introduced in commit
+> 51bd56f46f55177cf0f8b where HAVE_TUN_PI is no longer detected.  The
+> tun_pi struct is defined in linux/if_tun.h, which will be checked
+> for later on.  As this struct has history in linux/if_tun.h all
+> back to the beginning of the kernel git tree (2.6.12-rc2, April
+> 2005), it is considered not needed to check for this struct
+> explicit.
 > 
-> Reported in the past[1].
+> [ v2: Commit 7c0a2b5f2b4409 modifies some of the checks this patch
+> touches.  This patch just adopts to those changes ]
 > 
-> [1] http://thread.gmane.org/gmane.network.openvpn.devel/5466
+> Signed-off-by: David Sommerseth <davids@...1347...> --- 
+> configure.ac      |    6 ------ src/openvpn/tun.c |   19
+> ------------------- 2 files changed, 0 insertions(+), 25
+> deletions(-)
 > 
-> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...> --- 
-> src/openvpn/packet_id.c |   16 ++++++++++------ 1 files changed, 10
-> insertions(+), 6 deletions(-)
 
-Applied to master branch on -testing and -stable trees.
+Applied to master on -testing and -stable trees.
 
+commit bff413d5c47645b525988a66c138abf7d198e228
+Author: David Sommerseth <davids@...1347...>
+Date:   Fri Apr 27 12:10:25 2012 +0200
 
-commit 4e846b39a35b5f9501e4283be0af620d7c9c8b5c
-Author: Alon Bar-Lev <alon.barlev@...277...>
-Date:   Sun Apr 8 13:04:45 2012 +0300
+    Clean-up: Presume that Linux is always IPv6 capable at build time
 
-    crash: packet_id_debug_print: sl may be null
-
-    Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-    Acked-by: James Yonan <james@...515...>
+    Signed-off-by: David Sommerseth <davids@...1347...>
+    Acked-by: Gert Doering <gert@...1296...>
+    Acked-by: Alon Bar-Lev <alon.barlev@...277...>
 
 
 kind regards,
 
 David Sommerseth
+
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk+agOMACgkQDC186MBRfroQyQCfTE02eg99CsUB3Ced4A+iKZGW
-7sUAn19wsDC5soQ1n6krB8slxztICHxM
-=beGW
+iEYEARECAAYFAk+agSsACgkQDC186MBRfrqVtgCggr0fDHbXxEdIC0lYMlMWYXWm
+jpsAniboqsuuFVwmrf8EA4C2tfl1q7op
+=a0V/
 -----END PGP SIGNATURE-----
 
