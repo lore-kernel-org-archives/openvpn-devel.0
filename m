@@ -1,11 +1,14 @@
 MIME-Version: 1.0
-In-Reply-To: <1335528555-13225-1-git-send-email-alon.barlev@...277...>
-References: <1335479238-26420-1-git-send-email-alon.barlev@...277...>
-	<1335528555-13225-1-git-send-email-alon.barlev@...277...>
-Date: Fri, 27 Apr 2012 15:10:14 +0300
-Message-ID: <CAOazyz35dcMKfqLq4Q9NNU_3bZs8dxrDs5Hmm-oXUDPiFWC4OQ@...278...>
+In-Reply-To: <4F9A8928.9080703@...515...>
+References: <CAOazyz15xpgFxzqQFaotZSmS2=-gSmUsMMwy=SZay6bi3EEMAg@...278...>
+	<1332621070-28464-1-git-send-email-alon.barlev@...277...>
+	<4F9A5EB7.902@...515...> <2620278.PZKTmmtf1E@...1526...>
+	<4F9A8928.9080703@...515...>
+Date: Fri, 27 Apr 2012 15:15:53 +0300
+Message-ID: <CAOazyz0MOwBnqm5_wpN-Db_ZCbd-p31Gqy4Czm=GNZS8yfN3ZQ@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] build: use stdbool.h if available
+Subject: Re: [Openvpn-devel] [PATCH] cleanup: windows: convert argv (UCS-2
+ to UTF-8) at earliest
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,22 +19,46 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
-Cc: Alon Bar-Lev <alon.barlev@...277...>
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Fri, Apr 27, 2012 at 3:09 PM, Alon Bar-Lev <alon.barlev@...277...> wrote:
-> --- a/src/compat/Makefile.am
-> +++ b/src/compat/Makefile.am
-> @@ -20,6 +20,7 @@ noinst_LTLIBRARIES =3D libcompat.la
+2012/4/27 Samuli Sepp=C3=A4nen <samuli@...515...>:
+> Il 27.04.2012 12:18, Heiko Hund ha scritto:
+>> On Friday 27 April 2012 09:54:15 Samuli Sepp=C3=A4nen wrote:
+>>> Anyways, I cross-compiled latest "master" with this patch applied and
+>>> "bin" and "lib" directories on top of an existing openvpn-2.3-alpha1
+>>> install. The old "bin" directory was renamed to make sure none of it was
+>>> used. I then renamed "openvpn.ovpn" to "=C3=A4=C3=A4li=C3=B6.ovpn" and =
+"ta.key" to
+>>> "=C3=A4=C3=A4li=C3=B6.key" using Windows Explorer. Then I updated the c=
+onfiguration
+>>> file to point to these files using Notepad (and later Wordpad).
+>> Notepad saves UTF-8 files with BOM, which is very uncommon. Maybe that w=
+as the
+>> problem. I ran into that when I was testing my patch. You might want to =
+try
+>> using Notepad++ and save it as UTF-8 without BOM.
+>>
+>> HTH
+>> Heiko
+> Saved the configuration file to UTF-8 without BOM - after this I got no
+> complaints from OpenVPN-GUI. Launching OpenVPN from the command prompt
+> also worked... tls-auth was undefined in the config, and openvpn called
+> like this:
+
+if bom is a problem we should handle it properly in options.c, as we
+cannot expect users to understand bom issues.
+
 >
-> =C2=A0libcompat_la_SOURCES =3D \
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0compat.h \
-> + =C2=A0 =C2=A0 =C2=A0 compat-stdbool.h \
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0compat-dirname.c \
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0compat-basename.c \
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0compat-gettimeofday.c \
+>> openvpn --config =C3=A4=C3=A4li=C3=B6.ovpn --tls-auth =C3=A4=C3=A4li=C3=
+=B6.key 1
+>
+> Only minor issue was that the command prompt displayed funky characters
+> instead of the proper ones:
+>
+> <http://users.utu.fi/sjsepp/cmd2.png>
 
-The above hunk was missing.
+Yes. this is OK.
 
 Alon.
 
