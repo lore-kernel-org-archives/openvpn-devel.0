@@ -1,8 +1,11 @@
-From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Sat, 28 Apr 2012 21:51:58 +0300
-Message-Id: <1335639118-16671-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [PATCH] build: msvc: chdir with change drive to
-	script location
+Message-ID: <4F9C4CF3.1040201@...1114...>
+Date: Sat, 28 Apr 2012 22:02:59 +0200
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <1335637741-15721-1-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1335637741-15721-1-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] build: windows: convert resources to
+ UTF-8
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,56 +14,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Alon Bar-Lev <alon.barlev@...277...>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Cc: Alon Bar-Lev <alon.barlev@...277...>, openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
----
- msvc-build.bat |    1 +
- msvc-dev.bat   |    2 +-
- msvc-env.bat   |    2 --
- 3 files changed, 2 insertions(+), 3 deletions(-)
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-diff --git a/msvc-build.bat b/msvc-build.bat
-index 01417d1..fd6d558 100644
---- a/msvc-build.bat
-+++ b/msvc-build.bat
-@@ -4,6 +4,7 @@ rem Copyright (C) 2008-2012 Alon Bar-Lev <alon.barlev@...277...>
- @rem this stupid command needed for SetEnv.cmd to operate
- setlocal ENABLEDELAYEDEXPANSION
- 
-+cd /d %0\..
- call msvc-env.bat
- 
- set PLATFORMS=Win32
-diff --git a/msvc-dev.bat b/msvc-dev.bat
-index 4dac172..dbd7be0 100644
---- a/msvc-dev.bat
-+++ b/msvc-dev.bat
-@@ -1,7 +1,7 @@
- @echo off
- 
- setlocal
--cd %0\..
-+cd /d %0\..
- call msvc-env.bat
- 
- if exist "%VSHOME%\Common7\IDE\VCExpress.exe" (
-diff --git a/msvc-env.bat b/msvc-env.bat
-index 3c9eb5b..2dd0f00 100644
---- a/msvc-env.bat
-+++ b/msvc-env.bat
-@@ -1,7 +1,5 @@
- @echo off
- 
--cd %0\..
--
- rem Put your own settings at msvc-env-local.bat
- if exist msvc-env-local.bat call msvc-env-local.bat
- 
--- 
-1.7.3.4
+On 28/04/12 20:29, Alon Bar-Lev wrote:
+> Visual Studio 2010 editor supports UTF-8 files, we can store files
+> in standard encoding.
+> 
+> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...> --- 
+> src/openvpn/openvpn_win32_resources.rc   |    4 +++- 
+> src/openvpnserv/openvpnserv_resources.rc |    4 +++- 2 files
+> changed, 6 insertions(+), 2 deletions(-)
 
+I'm not giving it a NACK, just thinking aloud.  Would it make the
+world simpler and easier if we just skipped this fancy copyright
+symbol with '(C)'?  Unless there are other characters "outside 7 bit
+ASCII" table in these files, maybe that would be just as good?
+
+Just a thought.
+
+
+kind regards,
+
+David Sommerseth
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk+cTO8ACgkQDC186MBRfrpIywCeMiq07E+i6P18ghguRQqpLP5j
++HIAnicYeKF7iuEUjLjtG7+s4+9bwkLa
+=5c8o
+-----END PGP SIGNATURE-----
 
