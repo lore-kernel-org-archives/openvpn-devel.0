@@ -1,15 +1,15 @@
-Date: Sat, 28 Apr 2012 10:05:08 +0200
+Date: Sat, 28 Apr 2012 10:10:18 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20120428080508.GG1359@...1296...>
-References: <CAOazyz02OcvCdJJ-JHBZWcxB-99nEBOXUcCHE6fkN4eGUkyCgQ@...278...>
-	<1335479238-26420-1-git-send-email-alon.barlev@...277...>
-	<CAOazyz26b+W+_5_Sb4xhnWWXgAV5ENAxPTyNqyDAUYMbhUoucw@...278...>
+Message-ID: <20120428081018.GH1359@...1296...>
+References: <1333351687-3732-1-git-send-email-dejong@...1435...>
+	<4F9B1BBD.9010905@...1114...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="SB3YF6DP/s+9nxGh"
+	protocol="application/pgp-signature"; boundary="qBOV/12gVmFoc0GF"
 Content-Disposition: inline
-In-Reply-To: <CAOazyz26b+W+_5_Sb4xhnWWXgAV5ENAxPTyNqyDAUYMbhUoucw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] build: use stdbool.h if available
+In-Reply-To: <4F9B1BBD.9010905@...1114...>
+Subject: Re: [Openvpn-devel] [PATCH 1/6] Added support for new PolarSSL 1.1
+	RNG
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,25 +18,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Alon Bar-Lev <alon.barlev@...277...>
+To: David Sommerseth <openvpn.list@...1114...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---SB3YF6DP/s+9nxGh
+--qBOV/12gVmFoc0GF
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Apr 27, 2012 at 01:28:31AM +0300, Alon Bar-Lev wrote:
-> On Fri, Apr 27, 2012 at 1:27 AM, Alon Bar-Lev <alon.barlev@...277...> wro=
-te:
-> > If stdbool.h is available use it, otherwise create emulation.
-[..]
-> I took the easy approach.
-> I think this is the simplest it can be.
+On Sat, Apr 28, 2012 at 12:20:45AM +0200, David Sommerseth wrote:
+> This is a summary of all the 6 applied patches.  All patches were applied=
+ to
+> the master branch and pushed out to -stable and -testing trees.
 
-Even if David has already committed it - thanks, this looks good.
+JFTR, the FreeBSD 9.0 buildslave now has PolarSSL 1.1.2 installed, and=20
+building with it worked fine.  So thanks for that :-)
+
+Right now I'm installing PolarSSL on the other *BSD buildslaves, and then
+we should be back to "all green" regarding the buildbot setup \o/
+
+Next thing: add client tests with both OpenSSL and PolarSSL...
 
 gert
 --=20
@@ -46,19 +49,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---SB3YF6DP/s+9nxGh
+--qBOV/12gVmFoc0GF
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (NetBSD)
 
-iQCVAwUBT5uks6kuBuNlUUl1AQIYeQP/QOtEc7wjj61mLRulPULXQpQp5wz0KnfR
-e/L5y3ELzHdPFlwcJM5JuZzXhl5SXJukN2cTAe+xdM8zSQ4XQBg2oywOSMFNL892
-MWC3FqX3XHquqF4Bz/JKO0wJxWDlaxLbv9LyAULewN45/irDaALYxlaOFgeKxv02
-4Be11LkR2z0=
-=Lp86
+iQCVAwUBT5ul6qkuBuNlUUl1AQKC2wP+OdpC7/nveGzTeZ6dKX/+O75rdFi89rN3
+tGX6xWS5ga94v53l9q4kk5I3/woJXJ5a0jjbweuoMS1ljWIC59SEIK216XeCOnH2
+7Xk3BGImgBFYGfr2Mz+H2is3gEgI2nl86hvhHB1UHkrYgtxr4QELvWaGhQTR3GtK
+usGfyF8XFh4=
+=gugW
 -----END PGP SIGNATURE-----
 
---SB3YF6DP/s+9nxGh--
+--qBOV/12gVmFoc0GF--
 
