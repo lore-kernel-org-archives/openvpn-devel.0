@@ -1,11 +1,9 @@
-MIME-Version: 1.0
-In-Reply-To: <1335636013-7717-1-git-send-email-alon.barlev@...277...>
-References: <1335636013-7717-1-git-send-email-alon.barlev@...277...>
-Date: Sat, 28 Apr 2012 21:03:04 +0300
-Message-ID: <CAOazyz3nLQ1zO3sBMdVm=qbu2Yw54kys=qMUty_fTgeCe7QaEA@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] build: add git revision to --version
- output if build from git repository
+Date: Sat, 28 Apr 2012 21:29:01 +0300
+Message-Id: <1335637741-15721-1-git-send-email-alon.barlev@...277...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] =?utf-8?q?=5BPATCH=5D_build=3A_windows=3A_convert?=
+	=?utf-8?q?_resources_to_UTF-8?=
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,29 +12,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net, David Sommerseth <openvpn.list@...1114...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Alon Bar-Lev <alon.barlev@...277...>
 
-On Sat, Apr 28, 2012 at 9:00 PM, Alon Bar-Lev <alon.barlev@...277...> wrote:
-> If configure is located at git repository, acquire branch and revision
-> of head to be printed at --version output.
->
-> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-> ---
-> =C2=A0configure.ac =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0| =C2=A0 11 ++++++++=
-+++
-> =C2=A0src/openvpn/options.c | =C2=A0 =C2=A03 +++
-> =C2=A02 files changed, 14 insertions(+), 0 deletions(-)
+Visual Studio 2010 editor supports UTF-8 files, we can store files in
+standard encoding.
 
-David,
+Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+---
+ src/openvpn/openvpn_win32_resources.rc   |    4 +++-
+ src/openvpnserv/openvpnserv_resources.rc |    4 +++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
 
-Check if this meets your requirement.
-It won't survive make dist, but if compiled directly from repository
-the HEAD will be visible.
-Surviving make dist is doable if some file is generated, but this file
-will stay the same even if there are local modifications... So I don't
-think it worth both the effort and the confusion.
+diff --git a/src/openvpn/openvpn_win32_resources.rc b/src/openvpn/openvpn_win32_resources.rc
+index e1cd959..d092e21 100644
+--- a/src/openvpn/openvpn_win32_resources.rc
++++ b/src/openvpn/openvpn_win32_resources.rc
+@@ -5,6 +5,8 @@
+ #endif
+ #include <winresrc.h>
+ 
++#pragma code_page(65001) /* UTF8 */
++
+ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+ 
+ VS_VERSION_INFO VERSIONINFO
+@@ -28,7 +30,7 @@ BEGIN
+             VALUE "FileDescription", "OpenVPN Daemon"
+             VALUE "FileVersion", PACKAGE_VERSION ".0"
+             VALUE "InternalName", "OpenVPN"
+-            VALUE "LegalCopyright", "Copyright � The OpenVPN Project" 
++            VALUE "LegalCopyright", "Copyright © The OpenVPN Project" 
+             VALUE "OriginalFilename", "openvpn.exe"
+             VALUE "ProductName", "OpenVPN"
+             VALUE "ProductVersion", PACKAGE_VERSION ".0"
+diff --git a/src/openvpnserv/openvpnserv_resources.rc b/src/openvpnserv/openvpnserv_resources.rc
+index 9b79cb7..7980193 100644
+--- a/src/openvpnserv/openvpnserv_resources.rc
++++ b/src/openvpnserv/openvpnserv_resources.rc
+@@ -5,6 +5,8 @@
+ #endif
+ #include <winresrc.h>
+ 
++#pragma code_page(65001) /* UTF8 */
++
+ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+ 
+ VS_VERSION_INFO VERSIONINFO
+@@ -28,7 +30,7 @@ BEGIN
+             VALUE "FileDescription", "OpenVPN Service"
+             VALUE "FileVersion", PACKAGE_VERSION ".0"
+             VALUE "InternalName", "OpenVPN"
+-            VALUE "LegalCopyright", "Copyright � The OpenVPN Project" 
++            VALUE "LegalCopyright", "Copyright © The OpenVPN Project" 
+             VALUE "OriginalFilename", "openvpnserv.exe"
+             VALUE "ProductName", "OpenVPN"
+             VALUE "ProductVersion", PACKAGE_VERSION ".0"
+-- 
+1.7.3.4
 
-Alon.
 
