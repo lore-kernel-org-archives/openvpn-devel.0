@@ -1,15 +1,8 @@
-Date: Sat, 28 Apr 2012 10:10:18 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120428081018.GH1359@...1296...>
-References: <1333351687-3732-1-git-send-email-dejong@...1435...>
-	<4F9B1BBD.9010905@...1114...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="qBOV/12gVmFoc0GF"
-Content-Disposition: inline
-In-Reply-To: <4F9B1BBD.9010905@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH 1/6] Added support for new PolarSSL 1.1
-	RNG
+From: Alon Bar-Lev <alon.barlev@...277...>
+Date: Sat, 28 Apr 2012 21:00:13 +0300
+Message-Id: <1335636013-7717-1-git-send-email-alon.barlev@...277...>
+Subject: [Openvpn-devel] [PATCH] build: add git revision to --version output
+	if build from git repository
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,50 +11,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Alon Bar-Lev <alon.barlev@...277...>
 
---qBOV/12gVmFoc0GF
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+If configure is located at git repository, acquire branch and revision
+of head to be printed at --version output.
 
-Hi,
+Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+---
+ configure.ac          |   11 +++++++++++
+ src/openvpn/options.c |    3 +++
+ 2 files changed, 14 insertions(+), 0 deletions(-)
 
-On Sat, Apr 28, 2012 at 12:20:45AM +0200, David Sommerseth wrote:
-> This is a summary of all the 6 applied patches.  All patches were applied=
- to
-> the master branch and pushed out to -stable and -testing trees.
+diff --git a/configure.ac b/configure.ac
+index 399b4e7..812d336 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -307,11 +307,13 @@ AC_ARG_VAR([ROUTE], [full path to route utility])
+ AC_ARG_VAR([IPROUTE], [full path to ip utility])
+ AC_ARG_VAR([NETSTAT], [path to netstat utility]) # tests
+ AC_ARG_VAR([MAN2HTML], [path to man2html utility])
++AC_ARG_VAR([GIT], [path to git utility])
+ AC_PATH_PROGS([IFCONFIG], [ifconfig],, [$PATH:/usr/local/sbin:/usr/sbin:/sbin])
+ AC_PATH_PROGS([ROUTE], [route],, [$PATH:/usr/local/sbin:/usr/sbin:/sbin])
+ AC_PATH_PROGS([IPROUTE], [ip],, [$PATH:/usr/local/sbin:/usr/sbin:/sbin])
+ AC_CHECK_PROGS([NETSTAT], [netstat], [netstat], [$PATH:/usr/local/sbin:/usr/sbin:/sbin:/etc]) # tests
+ AC_CHECK_PROGS([MAN2HTML], [man2html])
++AC_CHECK_PROGS([GIT], [git]) # optional
+ AC_DEFINE_UNQUOTED([IFCONFIG_PATH], ["$IFCONFIG"], [Path to ifconfig tool])
+ AC_DEFINE_UNQUOTED([IPROUTE_PATH], ["$IPROUTE"], [Path to iproute tool])
+ AC_DEFINE_UNQUOTED([ROUTE_PATH], ["$ROUTE"], [Path to route tool])
+@@ -781,6 +783,15 @@ PKG_CHECK_MODULES(
+ 	[]
+ )
+ 
++AC_MSG_CHECKING([git checkout])
++if test -n "${GIT}" -a -d "${srcdir}/.git"; then
++	PACKAGE_VERSION_EXTRA_GIT_REVISION="`GIT_DIR=\"${srcdir}/.git\" git rev-parse --symbolic-full-name HEAD`/`GIT_DIR=\"${srcdir}/.git\" git rev-parse --short HEAD`"
++	AC_MSG_RESULT([${PACKAGE_VERSION_EXTRA_GIT_REVISION}])
++	AC_DEFINE_UNQUOTED([PACKAGE_VERSION_EXTRA_GIT_REVISION], ["${PACKAGE_VERSION_EXTRA_GIT_REVISION}"], [Git checkout revision])
++else
++	AC_MSG_RESULT([no])
++fi
++
+ if test -n "${SP_PLATFORM_WINDOWS}"; then
+ 	AC_DEFINE_UNQUOTED([PATH_SEPARATOR], ['\\\\'], [Path separator]) #"
+ 	AC_DEFINE_UNQUOTED([PATH_SEPARATOR_STR], ["\\\\"], [Path separator]) #"
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 019be57..c1aedfb 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3430,6 +3430,9 @@ usage_version (void)
+ #ifdef CONFIGURE_DEFINES
+   msg (M_INFO|M_NOPREFIX, "Compile time defines: %s", CONFIGURE_DEFINES);
+ #endif
++#ifdef PACKAGE_VERSION_EXTRA_GIT_REVISION
++  msg (M_INFO|M_NOPREFIX, "git revision: %s", PACKAGE_VERSION_EXTRA_GIT_REVISION);
++#endif
+ #endif
+   openvpn_exit (OPENVPN_EXIT_STATUS_USAGE); /* exit point */
+ }
+-- 
+1.7.3.4
 
-JFTR, the FreeBSD 9.0 buildslave now has PolarSSL 1.1.2 installed, and=20
-building with it worked fine.  So thanks for that :-)
-
-Right now I'm installing PolarSSL on the other *BSD buildslaves, and then
-we should be back to "all green" regarding the buildbot setup \o/
-
-Next thing: add client tests with both OpenSSL and PolarSSL...
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---qBOV/12gVmFoc0GF
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
-
-iQCVAwUBT5ul6qkuBuNlUUl1AQKC2wP+OdpC7/nveGzTeZ6dKX/+O75rdFi89rN3
-tGX6xWS5ga94v53l9q4kk5I3/woJXJ5a0jjbweuoMS1ljWIC59SEIK216XeCOnH2
-7Xk3BGImgBFYGfr2Mz+H2is3gEgI2nl86hvhHB1UHkrYgtxr4QELvWaGhQTR3GtK
-usGfyF8XFh4=
-=gugW
------END PGP SIGNATURE-----
-
---qBOV/12gVmFoc0GF--
 
