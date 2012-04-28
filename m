@@ -1,14 +1,8 @@
-Date: Sat, 28 Apr 2012 11:40:02 -0700
 From: Alon Bar-Lev <alon.barlev@...277...>
-Message-ID: <4f9c3982826e1_1206198fae8102818@...1710...>
-Mime-Version: 1.0
-Content-Type: multipart/mixed;
-	boundary="--==_mimepart_4f9c39827ff12_1206198fae8102642";
-	charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: [Openvpn-devel] [OpenVPN/openvpn-build] d0f061: build.bat: chdir
- with change drive to script locat...
-Reply-To: Alon Bar-Lev <alon.barlev@...277...>
+Date: Sat, 28 Apr 2012 21:51:58 +0300
+Message-Id: <1335639118-16671-1-git-send-email-alon.barlev@...277...>
+Subject: [Openvpn-devel] [PATCH] build: msvc: chdir with change drive to
+	script location
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,83 +11,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-
-
-
-----==_mimepart_4f9c39827ff12_1206198fae8102642
-Date: Sat, 28 Apr 2012 11:40:02 -0700
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Content-ID: <4f9c3982816a2_1206198fae81027eb@...1710...>
-
-  Branch: refs/heads/master
-  Home:   https://github.com/OpenVPN/openvpn-build
-  Commit: d0f06178a3dcd3d9ffad713233b6ec2f39c66b78
-      https://github.com/OpenVPN/openvpn-build/commit/d0f06178a3dcd3d9ffad713233b6ec2f39c66b78
-  Author: Alon Bar-Lev <alon.barlev@...277...>
-  Date:   2012-04-28 (Sat, 28 Apr 2012)
-
-  Changed paths:
-    M msvc/build.bat
-
-  Log Message:
-  -----------
-  build.bat: chdir with change drive to script location
+Cc: Alon Bar-Lev <alon.barlev@...277...>
 
 Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+---
+ msvc-build.bat |    1 +
+ msvc-dev.bat   |    2 +-
+ msvc-env.bat   |    2 --
+ 3 files changed, 2 insertions(+), 3 deletions(-)
 
-
-diff --git a/msvc/build.bat b/msvc/build.bat
-index 716f560..a4d987a 100644
---- a/msvc/build.bat
-+++ b/msvc/build.bat
-@@ -27,7 +27,7 @@ rem
- 
+diff --git a/msvc-build.bat b/msvc-build.bat
+index 01417d1..fd6d558 100644
+--- a/msvc-build.bat
++++ b/msvc-build.bat
+@@ -4,6 +4,7 @@ rem Copyright (C) 2008-2012 Alon Bar-Lev <alon.barlev@...277...>
+ @rem this stupid command needed for SetEnv.cmd to operate
  setlocal ENABLEDELAYEDEXPANSION
  
++cd /d %0\..
+ call msvc-env.bat
+ 
+ set PLATFORMS=Win32
+diff --git a/msvc-dev.bat b/msvc-dev.bat
+index 4dac172..dbd7be0 100644
+--- a/msvc-dev.bat
++++ b/msvc-dev.bat
+@@ -1,7 +1,7 @@
+ @echo off
+ 
+ setlocal
 -cd %0\..
 +cd /d %0\..
- SET ROOT=%CD%
+ call msvc-env.bat
  
- call build-env.bat
-
-
-================================================================
-  Commit: af4852a58a759dda3b20ce9d515cda6dbff168b3
-      https://github.com/OpenVPN/openvpn-build/commit/af4852a58a759dda3b20ce9d515cda6dbff168b3
-  Author: Alon Bar-Lev <alon.barlev@...277...>
-  Date:   2012-04-28 (Sat, 28 Apr 2012)
-
-  Changed paths:
-    M msvc/build.bat
-
-  Log Message:
-  -----------
-  Merge pull request #1 from alonbl/master
-
-build.bat: chdir with change drive to script location
-
-
-diff --git a/msvc/build.bat b/msvc/build.bat
-index 716f560..a4d987a 100644
---- a/msvc/build.bat
-+++ b/msvc/build.bat
-@@ -27,7 +27,7 @@ rem
- 
- setlocal ENABLEDELAYEDEXPANSION
+ if exist "%VSHOME%\Common7\IDE\VCExpress.exe" (
+diff --git a/msvc-env.bat b/msvc-env.bat
+index 3c9eb5b..2dd0f00 100644
+--- a/msvc-env.bat
++++ b/msvc-env.bat
+@@ -1,7 +1,5 @@
+ @echo off
  
 -cd %0\..
-+cd /d %0\..
- SET ROOT=%CD%
+-
+ rem Put your own settings at msvc-env-local.bat
+ if exist msvc-env-local.bat call msvc-env-local.bat
  
- call build-env.bat
+-- 
+1.7.3.4
 
-
-================================================================
-Compare: https://github.com/OpenVPN/openvpn-build/compare/cf91c13...af4852a
-
-----==_mimepart_4f9c39827ff12_1206198fae8102642--
 
