@@ -1,11 +1,10 @@
-Message-ID: <4FA23577.6090406@...1114...>
-Date: Thu, 03 May 2012 09:36:23 +0200
+Message-ID: <4FA235B8.6010901@...1114...>
+Date: Thu, 03 May 2012 09:37:28 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1335637741-15721-1-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1335637741-15721-1-git-send-email-alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] build: windows: convert resources to
- UTF-8
+References: <1335981252-7390-1-git-send-email-davids@...1347...>
+In-Reply-To: <1335981252-7390-1-git-send-email-davids@...1347...>
+Subject: Re: [Openvpn-devel] [PATCH] Simplify check_cmd_access() function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,43 +20,50 @@ To: openvpn-devel@lists.sourceforge.net
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 28/04/12 20:29, Alon Bar-Lev wrote:
-> Visual Studio 2010 editor supports UTF-8 files, we can store files
-> in standard encoding.
+On 02/05/12 19:54, David Sommerseth wrote:
+> To avoid confusion between check_file_access() and
+> check_cmd_access() in the future, remove unneeded arguments from
+> check_cmd_access()
 > 
-> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...> --- 
-> src/openvpn/openvpn_win32_resources.rc   |    4 +++- 
-> src/openvpnserv/openvpnserv_resources.rc |    4 +++- 2 files
-> changed, 6 insertions(+), 2 deletions(-)
+> As a command will always be a file, it should always check for
+> CHKACC_FILE and nothing else.  And as the commands always will need
+> X_OK, check only for that.
 > 
+> One change from earlier behaviour is that R_OK is not checked for.
+> The reason is that only scripts require R_OK to work.  However, a
+> system might be installed with binaries with only X_OK set.  If a
+> script is missing R_OK, then the execution will fail due to lacking
+> permissions.
+> 
+> Signed-off-by: David Sommerseth <davids@...1347...> --- 
+> src/openvpn/options.c |   48
+> ++++++++++++++++++++++++++---------------------- 1 files changed,
+> 26 insertions(+), 22 deletions(-)
 
-ACK, based on discussion.  Applied to master branches on -testing and
-- -stable trees.
+Applied to master branches on -testing and -stable trees.
 
-commit a0e8911bf3ce72178e72784f744556bef20727b3
-Author: Alon Bar-Lev <alon.barlev@...277...>
-Date:   Sat Apr 28 21:29:01 2012 +0300
 
-    build: windows: convert resources to UTF-8
+commit 0576a9f2f8c8a7cf2d50579e6762df6c86b388c5
+Author: David Sommerseth <davids@...1347...>
+Date:   Wed May 2 19:54:12 2012 +0200
 
-    Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-    Acked-by: David Sommerseth <davids@...1347...>
-    Message-Id: 1335637741-15721-1-git-send-email-alon.barlev@...277...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/6380
+    Simplify check_cmd_access() function
+
     Signed-off-by: David Sommerseth <davids@...1347...>
-
+    Acked-by: Alon Bar-Lev <alon.barlev@...277...>
+    Message-Id: 1335981252-7390-1-git-send-email-davids@...1347...
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/6391
 
 
 kind regards,
 
 David Sommerseth
-
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk+iNXcACgkQDC186MBRfrreGQCgpWfny+sCr9B/9wHc7wb+qB+w
-UvUAn1XCQx+hN6S5q1EGmpDV7uTZ22Ed
-=aq4f
+iEYEARECAAYFAk+iNbgACgkQDC186MBRfrqS+QCgjAEP5G6I4ZuPIENYMZXSxMoo
+3UQAn2jZpM5ufBNPimZLvd/XV5ahbKeI
+=Xyxv
 -----END PGP SIGNATURE-----
 
