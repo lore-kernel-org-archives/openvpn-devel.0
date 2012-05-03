@@ -1,11 +1,16 @@
-Message-ID: <4FA24D39.7050308@...1114...>
-Date: Thu, 03 May 2012 11:17:45 +0200
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1335981252-7390-1-git-send-email-davids@...1347...>
-	<CAOazyz2_BbFgKYPJkyKNVTuwYo-DdbJp__NZGqs_8Ckym36hVw@...278...>
-In-Reply-To: <CAOazyz2_BbFgKYPJkyKNVTuwYo-DdbJp__NZGqs_8Ckym36hVw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Simplify check_cmd_access() function
+In-Reply-To: <20120503071459.GM1359@...1296...>
+References: <CAAhp1KAp8DDJvgE9CTDST8HEGO4HTiMDmv88sTMpNxtWptyX+g@...278...>
+	<CAOazyz35GLCBFFBfZe8KfXZerozZt3ULYD03mFtbhkS6ruxWDg@...278...>
+	<CAAhp1KAyH3MkeAn7YS_E1474mUbjzTMeqztFNmc-RKD6JZgTyw@...278...>
+	<CAAhp1KCJBqZfjKTRC28wk6g5Bkj=-8cP_oe--cY+cJ82-paNsw@...278...>
+	<20120503071459.GM1359@...1296...>
+Date: Thu, 3 May 2012 15:51:27 +0530
+Message-ID: <CAAhp1KCovS4w-+tvPeaHA8xW8v4+KKmCD+Nt2XVjmkKdSuJG4g@...278...>
+From: Gauri Bhave <gaurib123@...277...>
+Content-Type: multipart/alternative; boundary=14dae9399833a8dd8b04bf1f2ad1
+Subject: Re: [Openvpn-devel] Does OpenVPN Support Unicode Username and
+	Password
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,149 +19,95 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Cc: Alon Bar-Lev <alon.barlev@...277...>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--14dae9399833a8dd8b04bf1f2ad1
+Content-Type: text/plain; charset=ISO-8859-1
 
-On 02/05/12 20:16, Alon Bar-Lev wrote:
-> Looks good. If you testing this one, please ensure symbolic links 
-> also works properly... :)
+Well that's the legacy that i got from the previous developer. So just
+wanted to know if it supports UTF8. And it will really help if you can
+point out the exact version's of OpenVPN access server and OpenVPN connect
+client which support UTF8 username's and Passwords.
 
-Just to confirm, as I forgot to mention that in the 'applied' message
-earlier on.  This was tested with symlinks on Linux.  Both with a
-symlink pointing to a non-existing file and to a file which does
-exist.  It all behaved as expected - wrong symlink gave a "no such
-file" error, otherwise the proper script was executed.
+Thanks
+Gauri Bhave
 
+On Thu, May 3, 2012 at 12:44 PM, Gert Doering <gert@...1296...> wrote:
 
-kind regards,
-
-David Sommerseth
-
-
-
-> On Wed, May 2, 2012 at 8:54 PM, David Sommerseth 
-> <davids@...1347...> wrote:
->> To avoid confusion between check_file_access() and 
->> check_cmd_access() in the future, remove unneeded arguments from 
->> check_cmd_access()
->> 
->> As a command will always be a file, it should always check for 
->> CHKACC_FILE and nothing else.  And as the commands always will 
->> need X_OK, check only for that.
->> 
->> One change from earlier behaviour is that R_OK is not checked 
->> for.  The reason is that only scripts require R_OK to work. 
->> However, a system might be installed with binaries with only
->> X_OK set.  If a script is missing R_OK, then the execution will
->> fail due to lacking permissions.
->> 
->> Signed-off-by: David Sommerseth <davids@...1347...> --- 
->> src/openvpn/options.c |   48 
->> ++++++++++++++++++++++++++---------------------- 1 files
->> changed, 26 insertions(+), 22 deletions(-)
->> 
->> diff --git a/src/openvpn/options.c b/src/openvpn/options.c index 
->> 5da2eb6..7769625 100644 --- a/src/openvpn/options.c +++ 
->> b/src/openvpn/options.c @@ -2690,7 +2690,7 @@ 
->> check_file_access(const int type, const char *file, const int 
->> mode, const char * * check_file_access() arguments. */ static 
->> bool -check_cmd_access(const int type, const char *command,
->> const int mode, const char *opt) +check_cmd_access(const char
->> *command, const char *opt) { struct argv argv; bool return_code;
->> @@ -2705,7 +2705,11 @@ check_cmd_access(const int type, const
->> char *command, const int mode, const char
->> 
->> /* if an executable is specified then check it; otherwise, 
->> complain */ if (argv.argv[0]) -      return_code = 
->> check_file_access(type, argv.argv[0], mode, opt); +    /*
->> Scripts requires R_OK as well, but that might fail on binaries
->> which + * only requires X_OK to function on Unix - a scenario
->> not unlikely to +     * be seen on suid binaries. +     */ + 
->> return_code = check_file_access(CHKACC_FILE, argv.argv[0], X_OK, 
->> opt); else { msg (M_NOPREFIX|M_OPTERR, "%s fails with '%s': No 
->> path to executable.", @@ -2797,26 +2801,26 @@ 
->> options_postprocess_filechecks (struct options *options)
->> 
->> /* ** Script hooks that accept an optionally quoted and/or 
->> escaped executable path, ** */ /* ** optionally followed by 
->> arguments ** */ -  errs |= check_cmd_access (CHKACC_FILE, 
->> options->auth_user_pass_verify_script, - R_OK|X_OK,
->> "--auth-user-pass-verify script"); -  errs |= check_cmd_access
->> (CHKACC_FILE, options->client_connect_script, - R_OK|X_OK,
->> "--client-connect script"); -  errs |= check_cmd_access
->> (CHKACC_FILE, options->client_disconnect_script, - R_OK|X_OK,
->> "--client-disconnect script"); -  errs |= check_cmd_access
->> (CHKACC_FILE, options->tls_verify, - R_OK|X_OK, "--tls-verify
->> script"); -  errs |= check_cmd_access (CHKACC_FILE,
->> options->up_script, - R_OK|X_OK, "--up script"); -  errs |=
->> check_cmd_access (CHKACC_FILE, options->down_script, - R_OK|X_OK,
->> "--down script"); -  errs |= check_cmd_access (CHKACC_FILE,
->> options->ipchange, - R_OK|X_OK, "--ipchange script"); -  errs |=
->> check_cmd_access (CHKACC_FILE, options->route_script, - 
->> R_OK|X_OK, "--route-up script"); -  errs |= check_cmd_access 
->> (CHKACC_FILE, options->route_predown_script, - R_OK|X_OK,
->> "--route-pre-down script"); -  errs |= check_cmd_access
->> (CHKACC_FILE, options->learn_address_script, - R_OK|X_OK,
->> "--learn-address script"); +  errs |= check_cmd_access 
->> (options->auth_user_pass_verify_script, + 
->> "--auth-user-pass-verify script"); +  errs |= check_cmd_access 
->> (options->client_connect_script, + "--client-connect script"); +
->> errs |= check_cmd_access (options->client_disconnect_script, + 
->> "--client-disconnect script"); +  errs |= check_cmd_access 
->> (options->tls_verify, +                            "--tls-verify 
->> script"); +  errs |= check_cmd_access (options->up_script, + 
->> "--up script"); +  errs |= check_cmd_access 
->> (options->down_script, +                            "--down 
->> script"); +  errs |= check_cmd_access (options->ipchange, + 
->> "--ipchange script"); +  errs |= check_cmd_access 
->> (options->route_script, +                            "--route-up 
->> script"); +  errs |= check_cmd_access 
->> (options->route_predown_script, + "--route-pre-down script"); +
->> errs |= check_cmd_access (options->learn_address_script, + 
->> "--learn-address script"); #endif /* P2MP_SERVER */
->> 
->> if (errs) -- 1.7.4.4
->> 
->> 
->> ------------------------------------------------------------------------------
->>
->>
->> 
-Live Security Virtual Conference
->> Exclusive live event will cover all the ways today's security and
->> threat landscape has changed and how IT managers can respond. 
->> Discussions will include endpoint security, mobile security and 
->> the latest in malware threats. 
->> http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/ 
->> _______________________________________________ Openvpn-devel 
->> mailing list Openvpn-devel@lists.sourceforge.net 
->> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> 
-> ------------------------------------------------------------------------------
+> Hi,
 >
+> On Thu, May 03, 2012 at 12:14:28PM +0530, Gauri Bhave wrote:
+> > Can you tell me which version of openvpn started supporting utf8. I am
+> > using openvpn-2.1_rc15 but all my utf8 characters get converted to '_'
+> > (underscores), when i see the log on the server side and AD gives me an
+> > error authentication failed.
 >
-> 
-Live Security Virtual Conference
-> Exclusive live event will cover all the ways today's security and 
-> threat landscape has changed and how IT managers can respond. 
-> Discussions will include endpoint security, mobile security and
-> the latest in malware threats. 
-> http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/ 
-> _______________________________________________ Openvpn-devel 
-> mailing list Openvpn-devel@lists.sourceforge.net 
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> 
+> 2.3_alpha1
+>
+> (Just as a side remark - I don't understand why anyone would want to use
+> a release *candidate* of something that has been properly released over
+> 3 years(!) ago - and the 2.1 train is now up to 2.1.4, and there is
+> 2.2.2 as well...)
+>
+> gert
+>
+> --
+> USENET is *not* the non-clickable part of WWW!
+>                                                           //
+> www.muc.de/~gert/ <http://www.muc.de/%7Egert/>
+> Gert Doering - Munich, Germany
+> gert@...1296...
+> fax: +49-89-35655025
+> gert@...1297...
+>
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+--14dae9399833a8dd8b04bf1f2ad1
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-iEYEARECAAYFAk+iTTcACgkQDC186MBRfrrHowCePfFeXrX1XrvZ1kgWHyHxeUn/
-6n0Ani5Wc4jzQYPq68VswxbeN3LPBBfY
-=GQ81
------END PGP SIGNATURE-----
+Well that&#39;s the legacy that i got from the previous developer. So just =
+wanted to know if it supports UTF8. And it will really help if you can poin=
+t out the exact version&#39;s of OpenVPN access server and OpenVPN connect =
+client which support UTF8 username&#39;s and Passwords.<br>
+
+<br>Thanks<br>Gauri Bhave<br><br><div class=3D"gmail_quote">On Thu, May 3, =
+2012 at 12:44 PM, Gert Doering <span dir=3D"ltr">&lt;<a href=3D"mailto:gert=
+@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</span> wrote:<br>
+
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex">Hi,<br>
+<div><br>
+On Thu, May 03, 2012 at 12:14:28PM +0530, Gauri Bhave wrote:<br>
+&gt; Can you tell me which version of openvpn started supporting utf8. I am=
+<br>
+&gt; using openvpn-2.1_rc15 but all my utf8 characters get converted to &#3=
+9;_&#39;<br>
+&gt; (underscores), when i see the log on the server side and AD gives me a=
+n<br>
+&gt; error authentication failed.<br>
+<br>
+</div>2.3_alpha1<br>
+<br>
+(Just as a side remark - I don&#39;t understand why anyone would want to us=
+e<br>
+a release *candidate* of something that has been properly released over<br>
+3 years(!) ago - and the 2.1 train is now up to 2.1.4, and there is<br>
+2.2.2 as well...)<br>
+<span><font color=3D"#888888"><br>
+gert<br>
+<br>
+--<br>
+USENET is *not* the non-clickable part of WWW!<br>
+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 //<a href=3D"http://www.muc.de/=
+%7Egert/" target=3D"_blank">www.muc.de/~gert/</a><br>
+Gert Doering - Munich, Germany =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 <a href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1711...=
+96...</a><br>
+fax: +49-89-35655025 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0<a href=
+=3D"mailto:gert@...1297..." target=3D"_blank">gert@...1297...</a><br>
+</font></span></blockquote></div><br>
+
+--14dae9399833a8dd8b04bf1f2ad1--
 
