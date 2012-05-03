@@ -1,17 +1,15 @@
-Date: Thu, 3 May 2012 09:14:59 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120503071459.GM1359@...1296...>
-References: <CAAhp1KAp8DDJvgE9CTDST8HEGO4HTiMDmv88sTMpNxtWptyX+g@...278...>
-	<CAOazyz35GLCBFFBfZe8KfXZerozZt3ULYD03mFtbhkS6ruxWDg@...278...>
-	<CAAhp1KAyH3MkeAn7YS_E1474mUbjzTMeqztFNmc-RKD6JZgTyw@...278...>
-	<CAAhp1KCJBqZfjKTRC28wk6g5Bkj=-8cP_oe--cY+cJ82-paNsw@...278...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="y61B9Soq2CKPg3jQ"
-Content-Disposition: inline
-In-Reply-To: <CAAhp1KCJBqZfjKTRC28wk6g5Bkj=-8cP_oe--cY+cJ82-paNsw@...278...>
-Subject: Re: [Openvpn-devel] Does OpenVPN Support Unicode Username and
-	Password
+Message-ID: <4FA23334.7030406@...1114...>
+Date: Thu, 03 May 2012 09:26:44 +0200
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <CAOazyz15xpgFxzqQFaotZSmS2=-gSmUsMMwy=SZay6bi3EEMAg@...278...>
+	<1332621070-28464-1-git-send-email-alon.barlev@...277...>
+	<4F9A5EB7.902@...515...> <2620278.PZKTmmtf1E@...1526...>
+	<4F9A8928.9080703@...515...>
+	<CAOazyz0MOwBnqm5_wpN-Db_ZCbd-p31Gqy4Czm=GNZS8yfN3ZQ@...278...>
+In-Reply-To: <CAOazyz0MOwBnqm5_wpN-Db_ZCbd-p31Gqy4Czm=GNZS8yfN3ZQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] cleanup: windows: convert argv (UCS-2
+ to UTF-8) at earliest
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,51 +18,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gauri Bhave <gaurib123@...277...>
-Cc: Alon Bar-Lev <alon.barlev@...277...>, openvpn-devel@lists.sourceforge.net
-
---y61B9Soq2CKPg3jQ
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-On Thu, May 03, 2012 at 12:14:28PM +0530, Gauri Bhave wrote:
-> Can you tell me which version of openvpn started supporting utf8. I am
-> using openvpn-2.1_rc15 but all my utf8 characters get converted to '_'
-> (underscores), when i see the log on the server side and AD gives me an
-> error authentication failed.
+On 27/04/12 14:15, Alon Bar-Lev wrote:
+> 2012/4/27 Samuli Sepp=C3=A4nen <samuli@...515...>:
+>> Il 27.04.2012 12:18, Heiko Hund ha scritto:
+>>> On Friday 27 April 2012 09:54:15 Samuli Sepp=C3=A4nen wrote:
+>>>> Anyways, I cross-compiled latest "master" with this patch
+>>>> applied and "bin" and "lib" directories on top of an existing
+>>>> openvpn-2.3-alpha1 install. The old "bin" directory was
+>>>> renamed to make sure none of it was used. I then renamed
+>>>> "openvpn.ovpn" to "=C3=A4=C3=A4li=C3=B6.ovpn" and "ta.key" to "=C3=A4=
+=C3=A4li=C3=B6.key"
+>>>> using Windows Explorer. Then I updated the configuration file
+>>>> to point to these files using Notepad (and later Wordpad).
+>>> Notepad saves UTF-8 files with BOM, which is very uncommon.
+>>> Maybe that was the problem. I ran into that when I was testing
+>>> my patch. You might want to try using Notepad++ and save it as
+>>> UTF-8 without BOM.
+>>>=20
+>>> HTH Heiko
+>> Saved the configuration file to UTF-8 without BOM - after this I
+>> got no complaints from OpenVPN-GUI. Launching OpenVPN from the
+>> command prompt also worked... tls-auth was undefined in the
+>> config, and openvpn called like this:
+>=20
+> if bom is a problem we should handle it properly in options.c, as
+> we cannot expect users to understand bom issues.
+>=20
+>>=20
+>>> openvpn --config =C3=A4=C3=A4li=C3=B6.ovpn --tls-auth =C3=A4=C3=A4li=C3=
+=B6.key 1
+>>=20
+>> Only minor issue was that the command prompt displayed funky
+>> characters instead of the proper ones:
+>>=20
+>> <http://users.utu.fi/sjsepp/cmd2.png>
+>=20
+> Yes. this is OK.
 
-2.3_alpha1
+Just so that I understand this more properly.  The reason this is
+okay, is that because cmd.exe is not UTF-8 capable when displaying the
+log data?
 
-(Just as a side remark - I don't understand why anyone would want to use=20
-a release *candidate* of something that has been properly released over=20
-3 years(!) ago - and the 2.1 train is now up to 2.1.4, and there is=20
-2.2.2 as well...)
 
-gert
+kind regards,
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---y61B9Soq2CKPg3jQ
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
+David Sommerseth
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (NetBSD)
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iQCVAwUBT6Iwc6kuBuNlUUl1AQIapAP/SAY7FD1kbkMhijhxQbSrrgDGnwepfCQ0
-yhhU+VS3N3cmQC45nfyxEvwSCpRXLB9qn8k9c1rDr0jL9qFcaH4KAqtPKZm+0U+G
-b7UMduTl8oJ4EU8MCmMiFuqeECdRKmTdHg7Kpf2+wcbOEWQGyCzxCyhJY9Bw8Mro
-GcWQjN8irWQ=
-=YHwk
+iEUEARECAAYFAk+iMy8ACgkQDC186MBRfrp8LACeNRzTrcdd8JWyzTEJ3B5Kv1ye
+iFsAmNM0T3LgxrlJeg3I+7F1aoMSqpw=3D
+=3DPhBy
 -----END PGP SIGNATURE-----
-
---y61B9Soq2CKPg3jQ--
 
