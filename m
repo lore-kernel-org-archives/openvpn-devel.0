@@ -1,16 +1,11 @@
+Message-ID: <4FA239AB.4080308@...1114...>
+Date: Thu, 03 May 2012 09:54:19 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-In-Reply-To: <4FA23334.7030406@...1114...>
-References: <CAOazyz15xpgFxzqQFaotZSmS2=-gSmUsMMwy=SZay6bi3EEMAg@...278...>
-	<1332621070-28464-1-git-send-email-alon.barlev@...277...>
-	<4F9A5EB7.902@...515...> <2620278.PZKTmmtf1E@...1526...>
-	<4F9A8928.9080703@...515...>
-	<CAOazyz0MOwBnqm5_wpN-Db_ZCbd-p31Gqy4Czm=GNZS8yfN3ZQ@...278...>
-	<4FA23334.7030406@...1114...>
-Date: Thu, 3 May 2012 10:41:46 +0300
-Message-ID: <CAOazyz3cAmjfHFbXqo80RfSbPeRMZ=QAb1UVDHaSRSR3xE4Seg@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] cleanup: windows: convert argv (UCS-2
- to UTF-8) at earliest
+References: <1335636013-7717-1-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1335636013-7717-1-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] build: add git revision to --version
+ output if build from git repository
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,61 +14,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Thu, May 3, 2012 at 10:26 AM, David Sommerseth
-<openvpn.list@...1114...> wrote:
->
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
->
-> On 27/04/12 14:15, Alon Bar-Lev wrote:
-> > 2012/4/27 Samuli Sepp=C3=A4nen <samuli@...515...>:
-> >> Il 27.04.2012 12:18, Heiko Hund ha scritto:
-> >>> On Friday 27 April 2012 09:54:15 Samuli Sepp=C3=A4nen wrote:
-> >>>> Anyways, I cross-compiled latest "master" with this patch
-> >>>> applied and "bin" and "lib" directories on top of an existing
-> >>>> openvpn-2.3-alpha1 install. The old "bin" directory was
-> >>>> renamed to make sure none of it was used. I then renamed
-> >>>> "openvpn.ovpn" to "=C3=A4=C3=A4li=C3=B6.ovpn" and "ta.key" to "=C3=
-=A4=C3=A4li=C3=B6.key"
-> >>>> using Windows Explorer. Then I updated the configuration file
-> >>>> to point to these files using Notepad (and later Wordpad).
-> >>> Notepad saves UTF-8 files with BOM, which is very uncommon.
-> >>> Maybe that was the problem. I ran into that when I was testing
-> >>> my patch. You might want to try using Notepad++ and save it as
-> >>> UTF-8 without BOM.
-> >>>
-> >>> HTH Heiko
-> >> Saved the configuration file to UTF-8 without BOM - after this I
-> >> got no complaints from OpenVPN-GUI. Launching OpenVPN from the
-> >> command prompt also worked... tls-auth was undefined in the
-> >> config, and openvpn called like this:
-> >
-> > if bom is a problem we should handle it properly in options.c, as
-> > we cannot expect users to understand bom issues.
-> >
-> >>
-> >>> openvpn --config =C3=A4=C3=A4li=C3=B6.ovpn --tls-auth =C3=A4=C3=A4li=
-=C3=B6.key 1
-> >>
-> >> Only minor issue was that the command prompt displayed funky
-> >> characters instead of the proper ones:
-> >>
-> >> <http://users.utu.fi/sjsepp/cmd2.png>
-> >
-> > Yes. this is OK.
->
-> Just so that I understand this more properly. =C2=A0The reason this is
-> okay, is that because cmd.exe is not UTF-8 capable when displaying the
-> log data?
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Yes.
-The cmd uses the plain old DOS code page, and needs special fonts.
-If you add --log parameter you will see this correctly.
+On 28/04/12 20:00, Alon Bar-Lev wrote:
+> If configure is located at git repository, acquire branch and
+> revision of head to be printed at --version output.
+> 
+> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...> --- 
+> configure.ac          |   11 +++++++++++ src/openvpn/options.c |
+> 3 +++ 2 files changed, 14 insertions(+), 0 deletions(-)
 
-Alon.
+This is definitely a step in the right direction.  However, it depends
+on ./configure being run to get the updated git revision set.  When
+developing and testing out changes, you don't always need to run
+./configure for each build.  Thus this may provide a false reference.
+
+Let me explain more carefully:
+
+  $ ./configure
+  $ make
+  (test src/openvpn/openvpn)
+  (hack more on source files in src/openvpn)
+  $ make
+  (test src/openvpn/openvpn)
+  $ src/openvpn/openvpn src/openvpn/openvpn-test1
+  (hack more on source files in src/openvpn)
+  $ make
+  (test src/openvpn/openvpn and compare against openvpn-test1)
+
+If doing such an iteration over a day or two or maybe weeks (which is
+not uncommon for me, as I don't have time to dig into OpenVPN every
+day), the git revision reference provided with your patch will not
+help me much.  And as I also work across several branches, testing
+different approaches for the same issue, I would need far better
+overview over what's git HEAD of 'make' and not the 'configure' run.
+
+What I would like to see is something more like what's found in TOR
+projects' obfsproxy, where the Makefile generates a micro-version.i,
+which is included.  As this file is forced to be (re-)created each
+time, it will always be accurate.
+
+I don't say that obfsproxy have done the implementation correct, but
+it can at least be a seed for inspiration:
+
+Makefile.am part:
+<https://gitweb.torproject.org/obfsproxy.git/blob/94ebc4c3edf1e3e5f313444e59981ac557578df5:/Makefile.am#l106>
+
+main.c parts:
+<https://gitweb.torproject.org/obfsproxy.git/blob/94ebc4c3edf1e3e5f313444e59981ac557578df5:/src/main.c#l38>
+<https://gitweb.torproject.org/obfsproxy.git/blob/94ebc4c3edf1e3e5f313444e59981ac557578df5:/src/main.c#l57>
+
+Otherwise, that this git revision is not available when doing
+'make dist' is no problem.  In fact, that's fairly reasonable, as
+an official release is far easier to track back to a concrete commit.
+
+
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk+iOakACgkQDC186MBRfrp1ZQCfZwJ740HBH2wGOEK5lAEt2681
+W/gAoKHlGzxG124aj+CrK6uqsjCEcqvc
+=lCZv
+-----END PGP SIGNATURE-----
 
