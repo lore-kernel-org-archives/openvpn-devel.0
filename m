@@ -1,6 +1,6 @@
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Thu,  3 May 2012 20:36:52 +0300
-Message-Id: <1336066612-17740-1-git-send-email-alon.barlev@...277...>
+Date: Thu,  3 May 2012 21:49:44 +0300
+Message-Id: <1336070984-20803-1-git-send-email-alon.barlev@...277...>
 In-Reply-To: <4FA239AB.4080308@...1114...>
 References: <4FA239AB.4080308@...1114...>
 Subject: [Openvpn-devel] [PATCH] build: add git revision to --version output
