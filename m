@@ -1,12 +1,12 @@
+Message-ID: <4FA827CF.20109@...68...>
+Date: Mon, 07 May 2012 21:51:43 +0200
+From: Matthias Andree <matthias.andree@...68...>
 MIME-Version: 1.0
-Date: Mon, 07 May 2012 17:11:33 +0300
-From: Adrien Bustany <adrien@...1716...>
-In-Reply-To: <CAOazyz2ZO7VMzrNBMFO6Eczi858+Y0FnmrGVUmKbw=9-nrN0LA@...278...>
-References: <c0aca6be1ae29a0fe176829a83dd827f@...1717...>
-	<CAOazyz2ZO7VMzrNBMFO6Eczi858+Y0FnmrGVUmKbw=9-nrN0LA@...278...>
-Message-ID: <7635bcaa0673518cf86ba939bcf7f9cb@...1717...>
-Subject: Re: [Openvpn-devel] A few questions related to the management
- interface
+References: <1333820547-9672-1-git-send-email-alon.barlev@...277...>
+	<CAP+U6tKxU2OjMjeVUuR07dGBh+gdyvB4370+wq3k66=qPfxrPw@...278...>
+	<CAOazyz2Cg78qGwU1izJYihcfQvDsQkgP0cDi2Nif4yQQ2gt5Xw@...278...>
+In-Reply-To: <CAOazyz2Cg78qGwU1izJYihcfQvDsQkgP0cDi2Nif4yQQ2gt5Xw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] cleanup: remove C++ comments
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,68 +15,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-Le 2012-05-07 16:51, Alon Bar-Lev a =C3=A9crit=C2=A0:
-> On Mon, May 7, 2012 at 2:58 PM, Adrien Bustany <adrien@...1716...>=20
-> wrote:
->> Hi,
+Am 26.04.2012 18:06, schrieb Alon Bar-Lev:
+> On Thu, Apr 26, 2012 at 3:33 PM, Fabian Knittel
+> <fabian.knittel@...1547...> wrote:
+>> Hi Alon,
 >>
->> I was toying with the management interface of openvpn (on server=20
->> side),
->> to monitor the connections/disconnections of my clients. The clients
->> are authenticated with TLS certificates, without a password. I=20
->> needed to
->> patch two things in order to get things working as I wanted, but=20
->> since
->> I'm new to the code base, I'm not sure at all that those patches=20
->> make
->> sense, especially the second one. I still attach them to this email,
->> in the hope that people here will point where I'm wrong :)
+>> 2012/4/7 Alon Bar-Lev <alon.barlev@...277...>:
+>>> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+>>> ---
+>>>  src/openvpnserv/openvpnserv.c |    6 +++---
+>>>  1 files changed, 3 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/src/openvpnserv/openvpnserv.c b/src/openvpnserv/openvpnserv.c
+>>> index a9a9441..56f5a02 100755
+>>> --- a/src/openvpnserv/openvpnserv.c
+>>> +++ b/src/openvpnserv/openvpnserv.c
+>>> @@ -87,9 +87,9 @@ static HANDLE exit_event = NULL;
+>>>  /*
+>>>  * Message handling
+>>>  */
+>>> -#define M_INFO    (0)                                  // informational
+>>> -#define M_SYSERR  (MSG_FLAGS_ERROR|MSG_FLAGS_SYS_CODE) // error + system code
+>>> -#define M_ERR     (MSG_FLAGS_ERROR)                    // error
+>>> +#define M_INFO    (0)                                  /* informational */
+>>> +#define M_SYSERR  (MSG_FLAGS_ERROR|MSG_FLAGS_SYS_CODE) /* error + system code */
+>>> +#define M_ERR     (MSG_FLAGS_ERROR)                    /* error */
+>>>
+>>>  /* write error to event log */
+>>>  #define MSG(flags, ...) \
 >>
->> Cheers
->>
->> Adrien
->>
->
-> Hello,
->
-> Yes, they are making sense.
-> But please next time submit them using git send-email and separately,
-> so we can discuss each.
+>> ACK. Doesn't hurt to be consistent. Are those the only remaining
+>> C++-style comments?
+> 
+> there is one more place I chose to ignore, the service implementation
+> is taken from Microsoft SDK sample, and has C++ comments... to remain
+> close to the original I left this intact.
+> 
+>> (Does someone know what C standard we aim at? "C++ comments" would be
+>> just fine for C99.)
+> 
+> Currently openvpn should support C89 based on supported configurations.
 
-Sure, I could have done that even though those patches were not meant
-to be merged as-is. I'll do that next time.
+Uh, if you rely on recent POSIX revisions you'll need C99 anyways
+(Solaris 10 used to enforce that, but I've quit looking at Solaris now
+that Oracle locked it up.)
 
->
-> Regarding 001 - As far as I can see, the code does exactly that... if
-> not DAF_CONNECTION_CLOSED, issue disconnect message and turn
-> DAF_CONNECTION_CLOSED, otherwise do nothing. So what is the problem?
->
-
-Hmm you're right, it does not matter if the method is called twice
-since the second time it'll return early and won't send anything. So
-that patch is useless.
-
-> Regarding 002 - I think this is correct, but then we need to modify
-> management_learn_addr as well, no? Or the mdac->cid is not=20
-> initialized
-> all the time and the flag marks that this is client session... Did=20
-> not
-> test.
->
-
-That sounds right, I haven't tested this "learn" feature either, but
-I'll have a more thorough review of the use of DAF_INITIAL_AUTH across
-the file, and will do a real patch submission.
-
-> Alon.
-
-Thanks for the comments
-
-Adrien
 
 
