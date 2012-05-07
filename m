@@ -1,10 +1,11 @@
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="=_47bbcd7cff4678b096eb93f848d25f48"
-Date: Mon, 07 May 2012 14:58:37 +0300
-From: Adrien Bustany <adrien@...1716...>
-Message-ID: <c0aca6be1ae29a0fe176829a83dd827f@...1717...>
-Subject: [Openvpn-devel] A few questions related to the management interface
+In-Reply-To: <c0aca6be1ae29a0fe176829a83dd827f@...1717...>
+References: <c0aca6be1ae29a0fe176829a83dd827f@...1717...>
+Date: Mon, 7 May 2012 16:51:56 +0300
+Message-ID: <CAOazyz2ZO7VMzrNBMFO6Eczi858+Y0FnmrGVUmKbw=9-nrN0LA@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] A few questions related to the management
+	interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,80 +14,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Adrien Bustany <adrien@...1716...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---=_47bbcd7cff4678b096eb93f848d25f48
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 7bit
+On Mon, May 7, 2012 at 2:58 PM, Adrien Bustany <adrien@...1716...> wrote:
+> Hi,
+>
+> I was toying with the management interface of openvpn (on server side),
+> to monitor the connections/disconnections of my clients. The clients
+> are authenticated with TLS certificates, without a password. I needed to
+> patch two things in order to get things working as I wanted, but since
+> I'm new to the code base, I'm not sure at all that those patches make
+> sense, especially the second one. I still attach them to this email,
+> in the hope that people here will point where I'm wrong :)
+>
+> Cheers
+>
+> Adrien
+>
 
-Hi,
+Hello,
 
-I was toying with the management interface of openvpn (on server side),
-to monitor the connections/disconnections of my clients. The clients
-are authenticated with TLS certificates, without a password. I needed 
-to
-patch two things in order to get things working as I wanted, but since
-I'm new to the code base, I'm not sure at all that those patches make
-sense, especially the second one. I still attach them to this email,
-in the hope that people here will point where I'm wrong :)
+Yes, they are making sense.
+But please next time submit them using git send-email and separately,
+so we can discuss each.
 
-Cheers
+Regarding 001 - As far as I can see, the code does exactly that... if
+not DAF_CONNECTION_CLOSED, issue disconnect message and turn
+DAF_CONNECTION_CLOSED, otherwise do nothing. So what is the problem?
 
-Adrien
+Regarding 002 - I think this is correct, but then we need to modify
+management_learn_addr as well, no? Or the mdac->cid is not initialized
+all the time and the flag marks that this is client session... Did not
+test.
 
---=_47bbcd7cff4678b096eb93f848d25f48
-Content-Transfer-Encoding: base64
-Content-Type: text/x-c++;
-	name=0001-Don-t-call-management_notify_client_close-twice-for-.patch
-Content-Disposition: attachment;
-	filename=0001-Don-t-call-management_notify_client_close-twice-for-.patch
-
-RnJvbSBiM2Y3YTFiYzliMGQ2NTEwZjIwYjdlMjdkMjM4NWY3MTY1OTBkNmZiIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBBZHJpZW4gQnVzdGFueSA8YWRyaWVuLmJ1c3RhbnlAbm9raWEu
-Y29tPgpEYXRlOiBNb24sIDcgTWF5IDIwMTIgMTQ6MjY6NTkgKzAzMDAKU3ViamVjdDogW1BBVENI
-IDEvMl0gRG9uJ3QgY2FsbCBtYW5hZ2VtZW50X25vdGlmeV9jbGllbnRfY2xvc2UgdHdpY2UgZm9y
-CiBtdWx0aSBjbGllbnRzCgptYW5hZ2VtZW50X25vdGlmeV9jbGllbnRfY2xvc2UgaXMgYWxyZWFk
-eSBjYWxsZWQgaW4KbXVsdGlfY2xpZW50X2Rpc2Nvbm5lY3Rfc2NyaXB0IGZvciB0aG9zZS4KLS0t
-CiBzcmMvb3BlbnZwbi9pbml0LmMgfCAgICA0ICsrKy0KIDEgZmlsZXMgY2hhbmdlZCwgMyBpbnNl
-cnRpb25zKCspLCAxIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL2luaXQu
-YyBiL3NyYy9vcGVudnBuL2luaXQuYwppbmRleCA2MWNlZDVkLi4xNTlkNjdkIDEwMDY0NAotLS0g
-YS9zcmMvb3BlbnZwbi9pbml0LmMKKysrIGIvc3JjL29wZW52cG4vaW5pdC5jCkBAIC0zNTY5LDcg
-KzM1NjksOSBAQCBjbG9zZV9pbnN0YW5jZSAoc3RydWN0IGNvbnRleHQgKmMpCiAJZG9fY2xvc2Vf
-dHVuIChjLCBmYWxzZSk7CiAKICNpZmRlZiBNQU5BR0VNRU5UX0RFRl9BVVRICi0JaWYgKG1hbmFn
-ZW1lbnQpCisJLy8gRm9yIGNoaWxkIGNvbnRleHRzLCB3ZSBhbHJlYWR5IGNhbGxlZCBtYW5hZ2Vt
-ZW50X25vdGlmeV9jbGllbnRfY2xvc2UKKwkvLyBpbiBtdWx0aV9jbGllbnRfZGlzY29ubmVjdF9z
-Y3JpcHQKKwlpZiAobWFuYWdlbWVudCAmJiBjLT5tb2RlICE9IENNX0NISUxEX1VEUCAmJiBjLT5t
-b2RlICE9IENNX0NISUxEX1RDUCkKIAkgIG1hbmFnZW1lbnRfbm90aWZ5X2NsaWVudF9jbG9zZSAo
-bWFuYWdlbWVudCwgJmMtPmMyLm1kYV9jb250ZXh0LCBOVUxMKTsKICNlbmRpZgogCi0tIAoxLjcu
-OC4xCgo=
---=_47bbcd7cff4678b096eb93f848d25f48
-Content-Transfer-Encoding: base64
-Content-Type: text/x-c;
-	name=0002-management-Don-t-require-DAF_INITIAL_AUTH-to-send-DI.patch
-Content-Disposition: attachment;
-	filename=0002-management-Don-t-require-DAF_INITIAL_AUTH-to-send-DI.patch
-
-RnJvbSBkNjM2NGRlMTRiYTYyOWJiNjAwMGM3MjUyOTI5MDUwZjk2MjVkNWNjIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBBZHJpZW4gQnVzdGFueSA8YWRyaWVuLmJ1c3RhbnlAbm9raWEu
-Y29tPgpEYXRlOiBNb24sIDcgTWF5IDIwMTIgMTQ6NDI6MDcgKzAzMDAKU3ViamVjdDogW1BBVENI
-IDIvMl0gbWFuYWdlbWVudDogRG9uJ3QgcmVxdWlyZSBEQUZfSU5JVElBTF9BVVRIIHRvIHNlbmQK
-IERJU0NPTk5FQ1QgbWVzc2FnZQoKREFGX0lOSVRJQUxfQVVUSCB3aWxsIG9ubHkgYmUgc2V0IGlm
-IGEgcGFzc3dvcmQgd2FzIG5lZWRlZCBmb3IgY2xpZW50CmF1dGhlbnRpY2F0aW9uLiBUaGlzIG1l
-YW5zIHRoYXQgZm9yIHBhc3N3b3JkLWxlc3MgY2VydGlmaWNhdGUKYXV0aGVudGljYXRpb24sIG5v
-IERJU0NPTk5FQ1QgbWVzc2FnZSB3b3VsZCBiZSBzZW50LgotLS0KIHNyYy9vcGVudnBuL21hbmFn
-ZS5jIHwgICAgMiArLQogMSBmaWxlcyBjaGFuZ2VkLCAxIGluc2VydGlvbnMoKyksIDEgZGVsZXRp
-b25zKC0pCgpkaWZmIC0tZ2l0IGEvc3JjL29wZW52cG4vbWFuYWdlLmMgYi9zcmMvb3BlbnZwbi9t
-YW5hZ2UuYwppbmRleCAxZGRkZDQxLi41MWY0MWJiIDEwMDY0NAotLS0gYS9zcmMvb3BlbnZwbi9t
-YW5hZ2UuYworKysgYi9zcmMvb3BlbnZwbi9tYW5hZ2UuYwpAQCAtMjQ3NCw3ICsyNDc0LDcgQEAg
-bWFuYWdlbWVudF9ub3RpZnlfY2xpZW50X2Nsb3NlIChzdHJ1Y3QgbWFuYWdlbWVudCAqbWFuYWdl
-bWVudCwKIAkJCQlzdHJ1Y3QgbWFuX2RlZl9hdXRoX2NvbnRleHQgKm1kYWMsCiAJCQkJY29uc3Qg
-c3RydWN0IGVudl9zZXQgKmVzKQogewotICBpZiAoKG1kYWMtPmZsYWdzICYgREFGX0lOSVRJQUxf
-QVVUSCkgJiYgIShtZGFjLT5mbGFncyAmIERBRl9DT05ORUNUSU9OX0NMT1NFRCkpCisgIGlmICgh
-KG1kYWMtPmZsYWdzICYgREFGX0NPTk5FQ1RJT05fQ0xPU0VEKSkKICAgICB7CiAgICAgICBtc2cg
-KE1fQ0xJRU5ULCAiPkNMSUVOVDpESVNDT05ORUNULCVsdSIsIG1kYWMtPmNpZCk7CiAgICAgICBt
-YW5fb3V0cHV0X2VudiAoZXMsIHRydWUsIG1hbmFnZW1lbnQtPmNvbm5lY3Rpb24uZW52X2ZpbHRl
-cl9sZXZlbCwgIkNMSUVOVCIpOwotLSAKMS43LjguMQoK
---=_47bbcd7cff4678b096eb93f848d25f48--
-
+Alon.
 
