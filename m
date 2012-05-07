@@ -1,11 +1,10 @@
 MIME-Version: 1.0
-In-Reply-To: <4FA77AB9.7090001@...1114...>
-References: <CAOazyz2FzRu8y6FR1xiygh=KCBB=q-N5HrjLLzn5q1_AgL_3ig@...278...>
-	<4FA77AB9.7090001@...1114...>
-Date: Mon, 7 May 2012 11:04:17 +0300
-Message-ID: <CAOazyz3QDHLxY51u0Ya9PscD8Q5+VqqrSn6M6=XpVUiFJY_ENw@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [RFC] Split plugins into their own repositories
+Content-Type: multipart/mixed;
+ boundary="=_47bbcd7cff4678b096eb93f848d25f48"
+Date: Mon, 07 May 2012 14:58:37 +0300
+From: Adrien Bustany <adrien@...1716...>
+Message-ID: <c0aca6be1ae29a0fe176829a83dd827f@...1717...>
+Subject: [Openvpn-devel] A few questions related to the management interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,101 +13,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hello David,
+--=_47bbcd7cff4678b096eb93f848d25f48
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, May 7, 2012 at 10:33 AM, David Sommerseth
-<openvpn.list@...1114...> wrote:
+Hi,
 
-<snip>
+I was toying with the management interface of openvpn (on server side),
+to monitor the connections/disconnections of my clients. The clients
+are authenticated with TLS certificates, without a password. I needed 
+to
+patch two things in order to get things working as I wanted, but since
+I'm new to the code base, I'm not sure at all that those patches make
+sense, especially the second one. I still attach them to this email,
+in the hope that people here will point where I'm wrong :)
 
-> The reason I don't see the benefit of splitting out the plug-ins as
-> much is that they all depend on OpenVPN. =C2=A0You can not make much use =
-of
-> these plug-ins without having OpenVPN. =C2=A0But with Windows TAP driver
-> and easy-rsa, they can be completely used independently.
->
-> Another point is that the plug-ins we have in the source tree, is
-> officially supported plug-ins. =C2=A0And especially auth-pam and down-root
-> are plug-ins which are very useful and we should encourage packagers
-> to always package those.
->
-> Then the example/ and defer/ plug-ins, which are examples. =C2=A0Maybe it
-> would rather make sense to merge them somehow?
+Cheers
 
-There are a lot of plugins out there, think about chrome extension or
-firefox extension, but also network manager plugins or similar, they
-are all depend on the core product, but extend its functionality, and
-have their own repositories.
+Adrien
 
-Plugins should be installed as separate package, aka rpm.
+--=_47bbcd7cff4678b096eb93f848d25f48
+Content-Transfer-Encoding: base64
+Content-Type: text/x-c++;
+	name=0001-Don-t-call-management_notify_client_close-twice-for-.patch
+Content-Disposition: attachment;
+	filename=0001-Don-t-call-management_notify_client_close-twice-for-.patch
 
-So if administrator wants openvpn he does:
-# yum install openvpn
+RnJvbSBiM2Y3YTFiYzliMGQ2NTEwZjIwYjdlMjdkMjM4NWY3MTY1OTBkNmZiIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBBZHJpZW4gQnVzdGFueSA8YWRyaWVuLmJ1c3RhbnlAbm9raWEu
+Y29tPgpEYXRlOiBNb24sIDcgTWF5IDIwMTIgMTQ6MjY6NTkgKzAzMDAKU3ViamVjdDogW1BBVENI
+IDEvMl0gRG9uJ3QgY2FsbCBtYW5hZ2VtZW50X25vdGlmeV9jbGllbnRfY2xvc2UgdHdpY2UgZm9y
+CiBtdWx0aSBjbGllbnRzCgptYW5hZ2VtZW50X25vdGlmeV9jbGllbnRfY2xvc2UgaXMgYWxyZWFk
+eSBjYWxsZWQgaW4KbXVsdGlfY2xpZW50X2Rpc2Nvbm5lY3Rfc2NyaXB0IGZvciB0aG9zZS4KLS0t
+CiBzcmMvb3BlbnZwbi9pbml0LmMgfCAgICA0ICsrKy0KIDEgZmlsZXMgY2hhbmdlZCwgMyBpbnNl
+cnRpb25zKCspLCAxIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL2luaXQu
+YyBiL3NyYy9vcGVudnBuL2luaXQuYwppbmRleCA2MWNlZDVkLi4xNTlkNjdkIDEwMDY0NAotLS0g
+YS9zcmMvb3BlbnZwbi9pbml0LmMKKysrIGIvc3JjL29wZW52cG4vaW5pdC5jCkBAIC0zNTY5LDcg
+KzM1NjksOSBAQCBjbG9zZV9pbnN0YW5jZSAoc3RydWN0IGNvbnRleHQgKmMpCiAJZG9fY2xvc2Vf
+dHVuIChjLCBmYWxzZSk7CiAKICNpZmRlZiBNQU5BR0VNRU5UX0RFRl9BVVRICi0JaWYgKG1hbmFn
+ZW1lbnQpCisJLy8gRm9yIGNoaWxkIGNvbnRleHRzLCB3ZSBhbHJlYWR5IGNhbGxlZCBtYW5hZ2Vt
+ZW50X25vdGlmeV9jbGllbnRfY2xvc2UKKwkvLyBpbiBtdWx0aV9jbGllbnRfZGlzY29ubmVjdF9z
+Y3JpcHQKKwlpZiAobWFuYWdlbWVudCAmJiBjLT5tb2RlICE9IENNX0NISUxEX1VEUCAmJiBjLT5t
+b2RlICE9IENNX0NISUxEX1RDUCkKIAkgIG1hbmFnZW1lbnRfbm90aWZ5X2NsaWVudF9jbG9zZSAo
+bWFuYWdlbWVudCwgJmMtPmMyLm1kYV9jb250ZXh0LCBOVUxMKTsKICNlbmRpZgogCi0tIAoxLjcu
+OC4xCgo=
+--=_47bbcd7cff4678b096eb93f848d25f48
+Content-Transfer-Encoding: base64
+Content-Type: text/x-c;
+	name=0002-management-Don-t-require-DAF_INITIAL_AUTH-to-send-DI.patch
+Content-Disposition: attachment;
+	filename=0002-management-Don-t-require-DAF_INITIAL_AUTH-to-send-DI.patch
 
-Now, if administrator wants auth-pam, he should do:
-# yum install openvpn-plugin-auth-pam
+RnJvbSBkNjM2NGRlMTRiYTYyOWJiNjAwMGM3MjUyOTI5MDUwZjk2MjVkNWNjIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBBZHJpZW4gQnVzdGFueSA8YWRyaWVuLmJ1c3RhbnlAbm9raWEu
+Y29tPgpEYXRlOiBNb24sIDcgTWF5IDIwMTIgMTQ6NDI6MDcgKzAzMDAKU3ViamVjdDogW1BBVENI
+IDIvMl0gbWFuYWdlbWVudDogRG9uJ3QgcmVxdWlyZSBEQUZfSU5JVElBTF9BVVRIIHRvIHNlbmQK
+IERJU0NPTk5FQ1QgbWVzc2FnZQoKREFGX0lOSVRJQUxfQVVUSCB3aWxsIG9ubHkgYmUgc2V0IGlm
+IGEgcGFzc3dvcmQgd2FzIG5lZWRlZCBmb3IgY2xpZW50CmF1dGhlbnRpY2F0aW9uLiBUaGlzIG1l
+YW5zIHRoYXQgZm9yIHBhc3N3b3JkLWxlc3MgY2VydGlmaWNhdGUKYXV0aGVudGljYXRpb24sIG5v
+IERJU0NPTk5FQ1QgbWVzc2FnZSB3b3VsZCBiZSBzZW50LgotLS0KIHNyYy9vcGVudnBuL21hbmFn
+ZS5jIHwgICAgMiArLQogMSBmaWxlcyBjaGFuZ2VkLCAxIGluc2VydGlvbnMoKyksIDEgZGVsZXRp
+b25zKC0pCgpkaWZmIC0tZ2l0IGEvc3JjL29wZW52cG4vbWFuYWdlLmMgYi9zcmMvb3BlbnZwbi9t
+YW5hZ2UuYwppbmRleCAxZGRkZDQxLi41MWY0MWJiIDEwMDY0NAotLS0gYS9zcmMvb3BlbnZwbi9t
+YW5hZ2UuYworKysgYi9zcmMvb3BlbnZwbi9tYW5hZ2UuYwpAQCAtMjQ3NCw3ICsyNDc0LDcgQEAg
+bWFuYWdlbWVudF9ub3RpZnlfY2xpZW50X2Nsb3NlIChzdHJ1Y3QgbWFuYWdlbWVudCAqbWFuYWdl
+bWVudCwKIAkJCQlzdHJ1Y3QgbWFuX2RlZl9hdXRoX2NvbnRleHQgKm1kYWMsCiAJCQkJY29uc3Qg
+c3RydWN0IGVudl9zZXQgKmVzKQogewotICBpZiAoKG1kYWMtPmZsYWdzICYgREFGX0lOSVRJQUxf
+QVVUSCkgJiYgIShtZGFjLT5mbGFncyAmIERBRl9DT05ORUNUSU9OX0NMT1NFRCkpCisgIGlmICgh
+KG1kYWMtPmZsYWdzICYgREFGX0NPTk5FQ1RJT05fQ0xPU0VEKSkKICAgICB7CiAgICAgICBtc2cg
+KE1fQ0xJRU5ULCAiPkNMSUVOVDpESVNDT05ORUNULCVsdSIsIG1kYWMtPmNpZCk7CiAgICAgICBt
+YW5fb3V0cHV0X2VudiAoZXMsIHRydWUsIG1hbmFnZW1lbnQtPmNvbm5lY3Rpb24uZW52X2ZpbHRl
+cl9sZXZlbCwgIkNMSUVOVCIpOwotLSAKMS43LjguMQoK
+--=_47bbcd7cff4678b096eb93f848d25f48--
 
-As there is no sense in keeping the auth-pam plugin in system if it is
-unused nor to have pam dependency of the openvpn core package.
-
-I would not encourage packages to always have them, it is also not the
-correct approach for plugins. Plugins should be optional in nature.
-
-All the above does not imply separate repository as in both cases we
-can either provide one .spec file that generate both rpms or two
-separate spec files.
-
-The real question is how do we provide proper build for this
-components. Currently it has poor-man-build, which I fixed to meet
-some level of quality, instead of ./configure&&make install, packager
-should go and figure own what else needs to be built in tree.
-
-So either these are officially supported and should be build properly
-using main build system, example:
----
-$ ./configure --enable-plugin-auth-pam PAM_CFLAGS=3D... PAM_LIBS=3D...
----
-
-Or have plugins as separate components with its own release cycle and
-should have their proper own build system and release cycle.
-
-I think that if we have proper interface (openvpn-plugin.h), there is
-no sense in providing the plugins within the tree, as it has its own
-release cycle.
-
-I also would like to discuss the "official" argument....
-A project can have several repositories all at equal "official" level,
-why on earth people think that having more than one repository around
-damage their "official" state? "officially supported plug-ins", can be
-official in the openvpn repository and can be official in their own
-repository, there is absolutely no difference between the two
-approaches in this regards.
-
-However, splitting the repositories, allow helping distro packaging in
-determine what needed to be packaged and provided to users, it also
-allow separate release cycle (new openvpn release does not force new
-plugin release), and can even help in maintenance as a plugin can have
-its own maintainer (commit access).
-
-If also has more advantage as now in github we can encourage people to
-host and maintain their plugin within the OpenVPN organization,
-attracting more skills.
-
-So bottom line:
-
-1. Either we add the plugins to core build system, with its disadvantages.
-
-2. Split plugins into their own repository, release cycle, packaging.
-
-I am for (2), as I don't afraid of the "official" argument nor do I
-afraid to commit to more than one repository, and the modular nature
-of the plugin interface allows optional components to be installed
-separately along with their own dependencies.
-
-Alon
 
