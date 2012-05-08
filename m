@@ -1,11 +1,11 @@
+Message-ID: <4FA92976.6090000@...1114...>
+Date: Tue, 08 May 2012 16:11:02 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-In-Reply-To: <4FA8F1E2.6080604@...1114...>
 References: <CAArKS8hPVLQSNrX4HtB+6UA+UU-63PmyN0BNmFuPdu4W0ZFEMw@...278...>
 	<4FA8F1E2.6080604@...1114...>
-From: Tom Kent <lists@...1718...>
-Date: Tue, 8 May 2012 09:50:12 -0400
-Message-ID: <CAArKS8hNQ+xE-o90wKNLO9LPk3kQbz8EGhrVJATeY7HjpO9s=w@...278...>
-Content-Type: multipart/alternative; boundary=0015175889c29f46f304bf86abdc
+	<CAArKS8hNQ+xE-o90wKNLO9LPk3kQbz8EGhrVJATeY7HjpO9s=w@...278...>
+In-Reply-To: <CAArKS8hNQ+xE-o90wKNLO9LPk3kQbz8EGhrVJATeY7HjpO9s=w@...278...>
 Subject: Re: [Openvpn-devel] OpenVPN in the Hypervisor
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,64 +15,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
---0015175889c29f46f304bf86abdc
 Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Tom Kent <lists@...1718...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-> But... I don't think that OpenVPN is the right approach as it is not peer-to-peer
-solution.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-I agree that this is not the optimal solution, especially for large/high
-bandwith setups. I was just looking for something that I could get going
-with what I have today. My ideal setup would be a central arbiter that
-hands out routing and encryption info each for each p2p connection that is
-desired, but I don't know of anything that does this currently.
+On 08/05/12 15:50, Tom Kent wrote:
+>> But... I don't think that OpenVPN is the right approach as it is
+> not peer-to-peer solution.
+> 
+> I agree that this is not the optimal solution, especially for
+> large/high bandwith setups. I was just looking for something that I
+> could get going with what I have today. My ideal setup would be a
+> central arbiter that hands out routing and encryption info each for
+> each p2p connection that is desired, but I don't know of anything
+> that does this currently.
+> 
+>> If your hypervisor uses a tap interface, you can just have
+>> openvpn use
+> that tap interface "right away".
+> 
+> I guess I need to read up a bit more on how tap interfaces work. I
+> guess I assumed that the hypervisor was controlling that, so there
+> wouldn't be room for openvpn to jump on it. But assuming it is as
+> you say, that seems very promising, and much easier to get going
+> than I though.
 
-> If your hypervisor uses a tap interface, you can just have openvpn use
-that tap interface "right away".
+Think of tap devices as a software based NIC, where a physical NIC
+would have the Ethernet cable a TAP device have a socket where you can
+read/write data from/to in an application instead.  TAP devices are
+layer 2 capable, so it transports Ethernet frames between the TAP
+device and the application socket.
 
-I guess I need to read up a bit more on how tap interfaces work. I guess I
-assumed that the hypervisor was controlling that, so there wouldn't be room
-for openvpn to jump on it. But assuming it is as you say, that seems very
-promising, and much easier to get going than I though.
+TUN devices are almost the same, except they function on the IP layer,
+not the Ethernet layer.  So instead of Ethernet frames, you get IP
+packets instead in the application.
 
-I think I'm going to try this out here in the next few days, and see how
-easily I can get something setup. If I have luck I'll put up a blog post
-about it.
+To use virtual devices in a bridge you need TAP devices, as bridges
+depends on Ethernet frames.
 
-Thanks for the input,
-Tom
+> I think I'm going to try this out here in the next few days, and
+> see how easily I can get something setup. If I have luck I'll put
+> up a blog post about it.
 
---0015175889c29f46f304bf86abdc
-Content-Type: text/html; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-
-&gt;=A0<span>But... I don&#39;t think that OpenVPN is the right approach as=
- it is not=A0</span><span>peer-to-peer solution.</span><div><span><br></spa=
-n></div><div><span>I agree that this is not the optimal solution, especiall=
-y for large/high bandwith setups. I was just looking for something that I c=
-ould get going with what I have today. My ideal setup would be a central ar=
-biter that hands out routing and encryption info each for each p2p connecti=
-on that is desired, but I don&#39;t know of anything that does this current=
-ly.=A0</span></div>
+Cool!  Thanks a lot!
 
 
-<div><span><br></span></div><div><span>&gt;=A0</span><span>If your hypervis=
-or uses a tap interface, you can just have openvpn use</span></div><span>th=
-at tap interface &quot;right away&quot;.</span><div>
-<span><br></span></div><div><span>I guess I need to read up a bit more on h=
-ow tap interfaces work. I guess I assumed that the hypervisor was controlli=
-ng that, so there wouldn&#39;t be room for openvpn to jump on it. But assum=
-ing it is as you say, that seems very promising, and much easier to get goi=
-ng than I though. =A0</span></div>
+kind regards,
 
-<div><span><br></span></div><div><span>I think I&#39;m going to try this ou=
-t here in the next few days, and see how easily I can get something setup. =
-If I have luck I&#39;ll put up a blog post about it.</span></div><div>
-<span><br>
-</span></div><div><span>Thanks for the input,</span></div><div><span>Tom</s=
-pan></div>
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
---0015175889c29f46f304bf86abdc--
+iEYEARECAAYFAk+pKXIACgkQDC186MBRfro5ZQCcDzKzbq84/f4zrI/UeJyLQcdR
+kAcAoK1agIgeyPrVinpQgXITa2fNYiVb
+=odIc
+-----END PGP SIGNATURE-----
 
