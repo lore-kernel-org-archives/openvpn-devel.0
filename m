@@ -1,10 +1,12 @@
-From: Adrien Bustany <adrien@...1716...>
-Date: Tue,  8 May 2012 10:30:03 +0300
-Message-Id: <1336462203-20226-2-git-send-email-adrien@...1716...>
-In-Reply-To: <1336462203-20226-1-git-send-email-adrien@...1716...>
-References: <1336462203-20226-1-git-send-email-adrien@...1716...>
-Subject: [Openvpn-devel] [PATCH] management: Don't require DAF_INITIAL_AUTH
-	to send ADDRESS/DISCONNECT messages
+MIME-Version: 1.0
+In-Reply-To: <4FA8F1E2.6080604@...1114...>
+References: <CAArKS8hPVLQSNrX4HtB+6UA+UU-63PmyN0BNmFuPdu4W0ZFEMw@...278...>
+	<4FA8F1E2.6080604@...1114...>
+From: Tom Kent <lists@...1718...>
+Date: Tue, 8 May 2012 09:50:12 -0400
+Message-ID: <CAArKS8hNQ+xE-o90wKNLO9LPk3kQbz8EGhrVJATeY7HjpO9s=w@...278...>
+Content-Type: multipart/alternative; boundary=0015175889c29f46f304bf86abdc
+Subject: Re: [Openvpn-devel] OpenVPN in the Hypervisor
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,43 +15,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Adrien Bustany <adrien.bustany@...1719...>
 
-From: Adrien Bustany <adrien.bustany@...1719...>
+--0015175889c29f46f304bf86abdc
+Content-Type: text/plain; charset=ISO-8859-1
 
-DAF_INITIAL_AUTH will only be set if a password was needed for client
-authentication. This means that for password-less certificate
-authentication, no DISCONNECT/ADDRESS messages would be sent.
----
- src/openvpn/manage.c |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+> But... I don't think that OpenVPN is the right approach as it is not peer-to-peer
+solution.
 
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 1dddd41..4148f7c 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -2474,7 +2474,7 @@ management_notify_client_close (struct management *management,
- 				struct man_def_auth_context *mdac,
- 				const struct env_set *es)
- {
--  if ((mdac->flags & DAF_INITIAL_AUTH) && !(mdac->flags & DAF_CONNECTION_CLOSED))
-+  if (!(mdac->flags & DAF_CONNECTION_CLOSED))
-     {
-       msg (M_CLIENT, ">CLIENT:DISCONNECT,%lu", mdac->cid);
-       man_output_env (es, true, management->connection.env_filter_level, "CLIENT");
-@@ -2489,7 +2489,7 @@ management_learn_addr (struct management *management,
- 		       const bool primary)
- {
-   struct gc_arena gc = gc_new ();
--  if ((mdac->flags & DAF_INITIAL_AUTH) && !(mdac->flags & DAF_CONNECTION_CLOSED))
-+  if (!(mdac->flags & DAF_CONNECTION_CLOSED))
-     {
-       msg (M_CLIENT, ">CLIENT:ADDRESS,%lu,%s,%d",
- 	   mdac->cid,
--- 
-1.7.8.1
+I agree that this is not the optimal solution, especially for large/high
+bandwith setups. I was just looking for something that I could get going
+with what I have today. My ideal setup would be a central arbiter that
+hands out routing and encryption info each for each p2p connection that is
+desired, but I don't know of anything that does this currently.
 
+> If your hypervisor uses a tap interface, you can just have openvpn use
+that tap interface "right away".
+
+I guess I need to read up a bit more on how tap interfaces work. I guess I
+assumed that the hypervisor was controlling that, so there wouldn't be room
+for openvpn to jump on it. But assuming it is as you say, that seems very
+promising, and much easier to get going than I though.
+
+I think I'm going to try this out here in the next few days, and see how
+easily I can get something setup. If I have luck I'll put up a blog post
+about it.
+
+Thanks for the input,
+Tom
+
+--0015175889c29f46f304bf86abdc
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+&gt;=A0<span>But... I don&#39;t think that OpenVPN is the right approach as=
+ it is not=A0</span><span>peer-to-peer solution.</span><div><span><br></spa=
+n></div><div><span>I agree that this is not the optimal solution, especiall=
+y for large/high bandwith setups. I was just looking for something that I c=
+ould get going with what I have today. My ideal setup would be a central ar=
+biter that hands out routing and encryption info each for each p2p connecti=
+on that is desired, but I don&#39;t know of anything that does this current=
+ly.=A0</span></div>
+
+
+<div><span><br></span></div><div><span>&gt;=A0</span><span>If your hypervis=
+or uses a tap interface, you can just have openvpn use</span></div><span>th=
+at tap interface &quot;right away&quot;.</span><div>
+<span><br></span></div><div><span>I guess I need to read up a bit more on h=
+ow tap interfaces work. I guess I assumed that the hypervisor was controlli=
+ng that, so there wouldn&#39;t be room for openvpn to jump on it. But assum=
+ing it is as you say, that seems very promising, and much easier to get goi=
+ng than I though. =A0</span></div>
+
+<div><span><br></span></div><div><span>I think I&#39;m going to try this ou=
+t here in the next few days, and see how easily I can get something setup. =
+If I have luck I&#39;ll put up a blog post about it.</span></div><div>
+<span><br>
+</span></div><div><span>Thanks for the input,</span></div><div><span>Tom</s=
+pan></div>
+
+--0015175889c29f46f304bf86abdc--
 
