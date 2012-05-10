@@ -1,17 +1,26 @@
+Message-ID: <4FABB7CD.8060109@...515...>
+Date: Thu, 10 May 2012 15:42:53 +0300
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <4FABB71B.4040603@...1114...>
-References: <CAOazyz2FzRu8y6FR1xiygh=KCBB=q-N5HrjLLzn5q1_AgL_3ig@...278...>
-	<4FA77AB9.7090001@...1114...>
-	<CAOazyz3QDHLxY51u0Ya9PscD8Q5+VqqrSn6M6=XpVUiFJY_ENw@...278...>
-	<4FA8D931.70107@...515...>
-	<CAOazyz2N744s+VJekGJNK4sqHCONLCzMtsiJyRTkgrpO4RWHzw@...278...>
-	<4FAB80AC.1020702@...515...>
-	<CAOazyz2ZE0Wz2=QfkQtAvvXQ35mdu5eNm5RvKJar7P_m+-uCnQ@...278...>
-	<4FABB71B.4040603@...1114...>
-Date: Thu, 10 May 2012 15:42:54 +0300
-Message-ID: <CAOazyz2MVC3SgyWbxen0LS1W66bYYPw-aOEXM-garay-pWpF2g@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [RFC] Split plugins into their own repositories
+References: <4FAAE0A1.2080808@...1227...>
+	<CAOazyz2wZ3n-70Pk8W_Z3OE_4_4th1PXWUOZUjOjNXetPkxc7g@...278...>
+	<4FAAF152.7070508@...1227...>
+	<CAOazyz35bB=q1hpdzjj_aHZ7K_0koT8pcw0csham2AOwMqGrfg@...278...>
+	<4FAAF945.8070005@...1227...>
+	<CAOazyz12Rw0kOSS+siU7tLP4eXO5XkhexjVLn+uC97s4K1Z8EQ@...278...>
+	<4FAAFCB4.8040606@...1227...>
+	<CAOazyz2wP2ms7HC31LPp3VzFRBu+S3zURZm1ozz0MzjmhQv07g@...278...>
+	<4FAB0556.50903@...1227...>
+	<CAOazyz2pdJysuaEhoDL8O=S=CdEfW8XCuB6n8YrnKjOBqstTPA@...278...>
+	<1CED409804E2164C8104F9E623B08B9012D1CF8A98@...1436...>
+	<CAOazyz0Qb8xa-FUqQcMDX=w+=Vb3J8sQ2R8GAxNtfWxT-4DNkw@...278...>
+	<1CED409804E2164C8104F9E623B08B9012D1CF8AB9@...1436...>
+	<CAOazyz3xObLvBubo4E6vSmepj-8AkGd6P4k-6VXYpvsSm-vs3A@...278...>
+	<1CED409804E2164C8104F9E623B08B9012D1CF8AD6@...1436...>
+	<4FAB8EEE.8020607@...1114...>
+	<1CED409804E2164C8104F9E623B08B9012D1CF8BB0@...1436...>
+In-Reply-To: <1CED409804E2164C8104F9E623B08B9012D1CF8BB0@...1436...>
+Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,262 +29,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+To: Adriaan de Jong <dejong@...1435...>
+Cc: Alon Bar-Lev <alon.barlev@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Thu, May 10, 2012 at 3:39 PM, David Sommerseth
-<openvpn.list@...1114...> wrote:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
+
 >
-> On 10/05/12 14:33, Alon Bar-Lev wrote:
->> On Thu, May 10, 2012 at 11:47 AM, Samuli Sepp=C3=A4nen
->> <samuli@...515...> wrote:
->>>
->>>> On Tue, May 8, 2012 at 11:28 AM, Samuli Sepp=C3=A4nen
->>>> <samuli@...515...> wrote:
->>>>>> Hello David,
->>>>>>
->>>>>> On Mon, May 7, 2012 at 10:33 AM, David Sommerseth
->>>>>> <openvpn.list@...1114...> wrote:
->>>>>>
->>>>>> <snip>
->>>>>>
->>>>>>> The reason I don't see the benefit of splitting out the
->>>>>>> plug-ins as much is that they all depend on OpenVPN. =C2=A0You
->>>>>>> can not make much use of these plug-ins without having
->>>>>>> OpenVPN. =C2=A0But with Windows TAP driver and easy-rsa, they
->>>>>>> can be completely used independently.
->>>>>>>
->>>>>>> Another point is that the plug-ins we have in the source
->>>>>>> tree, is officially supported plug-ins. =C2=A0And especially
->>>>>>> auth-pam and down-root are plug-ins which are very useful
->>>>>>> and we should encourage packagers to always package
->>>>>>> those.
->>>>>>>
->>>>>>> Then the example/ and defer/ plug-ins, which are
->>>>>>> examples. =C2=A0Maybe it would rather make sense to merge them
->>>>>>> somehow?
->>>>>> There are a lot of plugins out there, think about chrome
->>>>>> extension or firefox extension, but also network manager
->>>>>> plugins or similar, they are all depend on the core
->>>>>> product, but extend its functionality, and have their own
->>>>>> repositories.
->>>>>>
->>>>>> Plugins should be installed as separate package, aka rpm.
->>>>>>
->>>>>> So if administrator wants openvpn he does: # yum install
->>>>>> openvpn
->>>>>>
->>>>>> Now, if administrator wants auth-pam, he should do: # yum
->>>>>> install openvpn-plugin-auth-pam
->>>>>>
->>>>>> As there is no sense in keeping the auth-pam plugin in
->>>>>> system if it is unused nor to have pam dependency of the
->>>>>> openvpn core package.
->>>>>>
->>>>>> I would not encourage packages to always have them, it is
->>>>>> also not the correct approach for plugins. Plugins should
->>>>>> be optional in nature.
->>>>>>
->>>>>> All the above does not imply separate repository as in both
->>>>>> cases we can either provide one .spec file that generate
->>>>>> both rpms or two separate spec files.
->>>>>>
->>>>>> The real question is how do we provide proper build for
->>>>>> this components. Currently it has poor-man-build, which I
->>>>>> fixed to meet some level of quality, instead of
->>>>>> ./configure&&make install, packager should go and figure
->>>>>> own what else needs to be built in tree.
->>>>>>
->>>>>> So either these are officially supported and should be
->>>>>> build properly using main build system, example: --- $
->>>>>> ./configure --enable-plugin-auth-pam PAM_CFLAGS=3D...
->>>>>> PAM_LIBS=3D... ---
->>>>>>
->>>>>> Or have plugins as separate components with its own release
->>>>>> cycle and should have their proper own build system and
->>>>>> release cycle.
->>>>>>
->>>>>> I think that if we have proper interface
->>>>>> (openvpn-plugin.h), there is no sense in providing the
->>>>>> plugins within the tree, as it has its own release cycle.
->>>>>>
->>>>>> I also would like to discuss the "official" argument.... A
->>>>>> project can have several repositories all at equal
->>>>>> "official" level, why on earth people think that having
->>>>>> more than one repository around damage their "official"
->>>>>> state? "officially supported plug-ins", can be official in
->>>>>> the openvpn repository and can be official in their own
->>>>>> repository, there is absolutely no difference between the
->>>>>> two approaches in this regards.
->>>>>>
->>>>>> However, splitting the repositories, allow helping distro
->>>>>> packaging in determine what needed to be packaged and
->>>>>> provided to users, it also allow separate release cycle
->>>>>> (new openvpn release does not force new plugin release),
->>>>>> and can even help in maintenance as a plugin can have its
->>>>>> own maintainer (commit access).
->>>>>>
->>>>>> If also has more advantage as now in github we can
->>>>>> encourage people to host and maintain their plugin within
->>>>>> the OpenVPN organization, attracting more skills. So bottom
->>>>>> line:
->>>>>>
->>>>>> 1. Either we add the plugins to core build system, with its
->>>>>> disadvantages.
->>>>>>
->>>>>> 2. Split plugins into their own repository, release cycle,
->>>>>> packaging.
->>>>>>
->>>>>> I am for (2), as I don't afraid of the "official" argument
->>>>>> nor do I afraid to commit to more than one repository, and
->>>>>> the modular nature of the plugin interface allows optional
->>>>>> components to be installed separately along with their own
->>>>>> dependencies.
->>>>>>
->>>>>> Alon
->>>>> I think there's some very good argumentation here. In my
->>>>> view, separating plugins into their own repositories would
->>>>> have some important advantages; excuse me for repeating some
->>>>> of Alon's arguments here:
->>>>>
->>>>> 1) Delegating maintenance tasks easily to (new) developers:
->>>>> this is now trivial with GitHub 2) Avoid having to make an
->>>>> OpenVPN release due to an important fix in a plugin used by
->>>>> few. This also helps distro packagers, provided they didn't
->>>>> bundle the plugins in their core "openvpn" package
->>>>>
->>>>> Afaik none of the official plugins are needed to create the
->>>>> official Windows installers, so that platform is entirely
->>>>> unaffected. On *NIX side we only release source code. If we
->>>>> don't want to force people to fetch official plugin code
->>>>> using Git, providing tarballs would be trivial.
->>>>>
->>>>> I tend to agree that packagers should take care of packaging
->>>>> the plugins as they see fit and making sure they're
->>>>> compatible with their version of OpenVPN. For example, on
->>>>> Debian/Ubuntu the OpenVPN package includes "down-root" and
->>>>> "pam" plugins by default. However, I've never used those, and
->>>>> I know many others who don't either. Having the plugins in
->>>>> separate repositories would steer packagers to the (in my
->>>>> opinion) right direction of packaging optional functionality
->>>>> as optional packages. They already do this for some of the
->>>>> off-tree plugins:
->>>>>
->>>>> <https://community.openvpn.net/openvpn/wiki/RelatedProjects>
->>>>>
->>>>> I believe the primary reason why the "pam" and "down-root"
->>>>> plugins are in OpenVPN repository is that they seem to come
->>>>> from James, who has a use-case for them. Personally, I would
->>>>> rather see the plugins in their own repositories, even if
->>>>> only to see if it fosters collaboration.
->>>>>
->>>>> I guess that was my 5 cents :).
->>>>>
->>>>> -- Samuli Sepp=C3=A4nen Community Manager OpenVPN Technologies,
->>>>> Inc
->>>>>
->>>>> irc freenode net: mattock
->>>>>
->>>> Hello,
->>>>
->>>> In order to break the fear I just went ahead and did this...
->>>> maybe this will relax some of the concerns...
->>>>
->>>> A plugin in own repository, own build system, own rpm packaging
->>>> of auth-pam[1] and down-root[2], even ebuilds[3][4]!
->>>>
->>>> Now we have the following packages for rpm based system:
->>>>
->>>> - openvpn - openvpn-devel (openvpn-plugin.h) -
->>>> openvpn-plugin-auth-pam (introduces the pam dependency) -
->>>> openvpn-plugin-down-root
->>>>
->>>> I've prepared a openvpn branch[5] to support this migration, I
->>>> think that the best example is to see how the rpm spec file
->>>> was simplified[6], no none standard statement, simple configure
->>>> and make process, less dependencies for core package.
->>>>
->>>> I think that in the Gentoo ebuild[7] we can see more verbose
->>>> example, especially the following statement that is about to be
->>>> removed: --- if ! use minimal ; then cd src/plugins for i in *;
->>>> do [[ ${i} =3D=3D "README" || ${i} =3D=3D "examples" || ${i} =3D=3D "d=
-efer"
->>>> ]] && continue [[ ${i} =3D=3D "auth-pam" ]] && ! use pam &&
->>>> continue einfo "Building ${i} plugin" emake -C "${i}"
->>>> CC=3D"$(tc-getCC)" CFLAGS=3D"${CFLAGS}" LDFLAGS=3D"${LDFLAGS}" done
->>>> cd .. ---
->>>>
->>>> I truly hope you see the advantage in building and packaging
->>>> each independent component by its own, the simplicity it
->>>> introduces in term of code maintenance and system
->>>> administration. Again, there is no impact of the official level
->>>> of the components.
->>>>
->>>> Best Regards, Alon Bar-Lev.
->>>>
->>>> [1] https://github.com/OpenVPN/openvpn-plugin-auth-pam [2]
->>>> https://github.com/OpenVPN/openvpn-plugin-down-root [3]
->>>> https://github.com/alonbl/alon-barlev-overlay/blob/master/net-misc/ope=
-nvpn-plugin-auth-pam/openvpn-plugin-auth-pam-9999.ebuild
->>>>
->>>>
-> [4]
-> https://github.com/alonbl/alon-barlev-overlay/blob/master/net-misc/openvp=
-n-plugin-down-root/openvpn-plugin-down-root-9999.ebuild
->>>> [5] https://github.com/alonbl/openvpn/compare/master...plugins
->>>> [6]
->>>> https://github.com/alonbl/openvpn/commit/0a9a1e1f234dcc81d4ed9ece5f894=
-cfe5ec02d01#diff-0
->>>>
->>>>
-> [7[
-> https://github.com/alonbl/alon-barlev-overlay/blob/master/net-misc/openvp=
-n/openvpn-9999.ebuild
->>>
->>> Hi Alon,
->>>
->>> Ok, so this is kind of a preview, which I think is fine. We
->>> should definitely look at these plugin repositories and see how
->>> it all fits together. I only got one minor nitpick... I think
->>> your own ("alonbl") GitHub repos would have been a more
->>> appropriate place for these plugin repositories for now, as
->>> they're not "officially" approved yet.
->>>
->>> -- Samuli Sepp=C3=A4nen Community Manager OpenVPN Technologies, Inc
->>>
->>> irc freenode net: mattock
->>>
+>> -----Original Message-----
+>> From: David Sommerseth [mailto:openvpn.list@...1114...]
+>> Sent: donderdag 10 mei 2012 11:49
+>> To: Alon Bar-Lev
+>> Cc: Adriaan de Jong; openvpn-devel@lists.sourceforge.net
+>> Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
 >>
->> Well, among others, the mission was to create a community around
->> openvpn with extras, so that people will find VPN resources at one
->> place...
+>> -----BEGIN PGP SIGNED MESSAGE-----
+>> Hash: SHA1
+>>
+>> On 10/05/12 09:28, Adriaan de Jong wrote:
+>>> I still prefer using the management interface. It keeps the interface
+>>> to the Java stuff very clean (socket-based). Further you potentially
+>>> allow other systems, such as Apple or Windows Phone to do the same.
+>> It
+>>> avoids messy JNI stuff, and fits into the spirit of the management
+>>> interface. It's the simplest solution.
+>> I agree.  The plug-in approach seems a bit overkill to me.  The
+>> approach using the management API makes it far simpler.
+>>
+>> Bear in mind that Windows Phone 7 support will probably be asked for at
+>> some point - we have no idea how that will really work out now.  We
+>> have users wanting support for iPhone/iPad.  The plug-in approach means
+>> to write both a suitable plug-in for the platform and the front-end
+>> app.  Using just the management API, you just need to write the GUI
+>> which does all the needed gluing on the native platforms in that app,
+>> just how it wants it.
+>>
+>>
+> In fact, it's theoretically even a way to remove the need for root rights=
+ for the OpenVPN executable, and moving them towards a different, simpler a=
+pp.
 >
-> Agreed.
 >
->> What official or not, who is the maintainer of what, what level of
->> release and what the level of support should be documented in the
->> wiki or other place.
->
-> We have not reached any agreement on splitting out the plug-ins or
-> not. =C2=A0So putting them in an area which can be understood as a offici=
-al
-> repository is not okay.
->
->> If you want, I can remove these, no problem, but I needed to raise
->> these arguments.
->
-> Please put them in your own repository, and what we put under the
-> OpenVPN organisation part will be what we have as official repositories.
->
+Speaking of Windows Phone 7 and iPhone/iPad.... afaik[1] their
+respective application stores prohibit apps with reciprocal licenses
+(e.g. GPLv2). Is there any way to work around this arbitrary limitations
+without a complete rewrite? Having to root one's iPhone/iPad/Windows
+Phone to use OpenVPN sounds silly.
 
-I will.
-But how can you agree the above... :)
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-Anyway, I would like to get your updated response on this split...
+irc freenode net: mattock
 
-Alon.
+
+[1]
+<http://arstechnica.com/information-technology/2011/02/windows-phone-market=
+place-bans-the-gpl-and-the-app-store-should-too>
+
 
