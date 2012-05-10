@@ -1,10 +1,10 @@
-Message-ID: <4FAB80BA.9070500@...1147...>
-Date: Thu, 10 May 2012 10:47:54 +0200
-From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <4FAB8134.6000103@...515...>
+Date: Thu, 10 May 2012 11:49:56 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <1336639383.83791.YahooMailNeo@...1721...>
-In-Reply-To: <1336639383.83791.YahooMailNeo@...1721...>
-Subject: Re: [Openvpn-devel] openvpn question
+References: <4FAAE0A1.2080808@...1227...>
+In-Reply-To: <4FAAE0A1.2080808@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,38 +13,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Raj Kumar <raj_kumar_sh@...109...>
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: Arne Schwabe <arne@...1227...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi Raj,
 
-Raj Kumar wrote:
+> Hello,
 >
-> Hi all,
+> I have developed the port of openvpn for Android 4.0:
+> https://play.google.com/store/apps/details?id=3Dde.blinkt.openvpn and
+> http://code.google.com/p/ics-openvpn/
 >
-> I am new to openvpn. I am using openvpn on my  linux machine.
+> The API of Android 4.0 requires that openvpn runs as completely
+> unprivileged process. There all opening of tun, adding of routes,
+> ifconfig etc. has to be done by another process.
 >
-> I have a basic question about openvpn. 
+> This patch implements an API to allow pushing routes, dns, tun over the
+> management interface (unix socket). Also on Android 4.0 the connection
+> for the control has to be protect via an API call from the Java GUI.
+>=20=20
+> Basically I am using the needok feature of the management protocol to
+> push all relevant information to the GUI or to request information. I
+> have not split the patch into multiple small patches because it should
+> be first discussed if this is right architectural way.
 >
-> How openvpn process the incoming packets ?
 >
-> Is it processing incoming packets one by one, means receive one packet 
-> from the kernel, decrypt it and send it back to the kernel then next 
-> packet ?
-> or
-> whenever a packet comes, openvpn receives  and queues it while doing 
-> decryption of already received packet ?
->
->  
-openvpn processes the incoming packets one by one , both from the VPN 
-side (the encrypted packets) , and the packets coming in via the tun/tap 
-interface. This is one of the main reasons why openvpn speeds top off at 
-around ~ 300 Mbps.
+> Arne
+Hi Arne,
 
-HTH,
+This is very neat, thanks! I wish I had an Android phone to test with
+this...
 
-JJK
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
 
