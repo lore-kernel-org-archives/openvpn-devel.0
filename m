@@ -1,6 +1,5 @@
-From: Adriaan de Jong <dejong@...1435...>
-Date: Thu, 10 May 2012 09:00:05 +0200
-Message-ID: <1CED409804E2164C8104F9E623B08B9012D1CF8AB9@...1436...>
+MIME-Version: 1.0
+In-Reply-To: <1CED409804E2164C8104F9E623B08B9012D1CF8AB9@...1436...>
 References: <4FAAE0A1.2080808@...1227...>
 	<CAOazyz2wZ3n-70Pk8W_Z3OE_4_4th1PXWUOZUjOjNXetPkxc7g@...278...>
 	<4FAAF152.7070508@...1227...>
@@ -13,9 +12,10 @@ References: <4FAAE0A1.2080808@...1227...>
 	<CAOazyz2pdJysuaEhoDL8O=S=CdEfW8XCuB6n8YrnKjOBqstTPA@...278...>
 	<1CED409804E2164C8104F9E623B08B9012D1CF8A98@...1436...>
 	<CAOazyz0Qb8xa-FUqQcMDX=w+=Vb3J8sQ2R8GAxNtfWxT-4DNkw@...278...>
-In-Reply-To: <CAOazyz0Qb8xa-FUqQcMDX=w+=Vb3J8sQ2R8GAxNtfWxT-4DNkw@...278...>
-Content-Language: en-US
-MIME-Version: 1.0
+	<1CED409804E2164C8104F9E623B08B9012D1CF8AB9@...1436...>
+Date: Thu, 10 May 2012 10:17:22 +0300
+Message-ID: <CAOazyz3xObLvBubo4E6vSmepj-8AkGd6P4k-6VXYpvsSm-vs3A@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
 Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -25,105 +25,211 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Alon Bar-Lev <alon.barlev@...277...>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Adriaan de Jong <dejong@...1435...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-VGhhdCB3b3VsZCBiZSBhbm90aGVyIG9wdGlvbi4gSW4gdGhlIG1vZGVsIHdlIHdlcmUgdXNpbmcg
-KHdoaWNoIG1pZ2h0IGJlIGRpZmZlcmVudCksIHRoZSBvcmRlciBpcyBhcyBmb2xsb3dzOg0KDQox
-LiBvcGVudnBuIGlzIHN0YXJ0ZWQNCjIuIG9wZW52cG4gb3BlbnMgYSBzb2NrZXQgdG8gdGhlIHJl
-bW90ZSBob3N0DQoyLiBvcGVudnBuIGVzdGFibGlzaGVzIHRoZSBjb250cm9sIGNoYW5uZWwgYWNy
-b3NzIHRoaXMgc29ja2V0DQozLiBvcGVudnBuIHBhc3NlcyBzb2NrZXQgYW5kIGNvbnRyb2wgY2hh
-bm5lbCBkYXRhIChJUCwgcm91dGluZywgRE5TLCBldGMpIHRocm91Z2ggdGhlIG1hbmFnZW1lbnQg
-aW50ZXJmYWNlIHRvIHRoZSBhbmRyb2lkIGFwcA0KNC4gYW5kcm9pZCBhcHAgcGFzc2VzIHRoZXNl
-IHRvIHRoZSBWUE5TZXJ2aWNlIGFuZCByZWNlaXZlcyBhbiBvcGVuZWQgdHVuIA0KNS4gYW5kcm9p
-ZCBhcHAgcGFzc2VzIHRoZSB0dW4gdG8gb3BlbnZwbg0KNi4gb3BlbnZwbiBwcm9jZWVkcyBhcyB1
-c3VhbA0KDQpUbyBhbnN3ZXIgeW91ciBmb2xsb3cgdXA6DQpUaGVyZSdzIG5vIG5lZWQgZm9yIHRo
-ZSBleHRyYSBjb21wbGV4aXR5IG9mIGEgcGx1Z2luIGhlcmUuIFRoZSBtYW5hZ2VtZW50IGludGVy
-ZmFjZSBpcyBhIGdyZWF0IHRvb2wsIGNvbXBsZXRlbHkgc2VwYXJhdGluZyBPcGVuVlBOIGZyb20g
-aXRzIG1hbmFnZW1lbnQgaW50ZXJmYWNlLg0KDQpBZHJpYWFuDQoNCj4gLS0tLS1PcmlnaW5hbCBN
-ZXNzYWdlLS0tLS0NCj4gRnJvbTogQWxvbiBCYXItTGV2IFttYWlsdG86YWxvbi5iYXJsZXZALi4u
-Mjc3Li4uXQ0KPiBTZW50OiBkb25kZXJkYWcgMTAgbWVpIDIwMTIgODo0OQ0KPiBUbzogQWRyaWFh
-biBkZSBKb25nDQo+IENjOiBBcm5lIFNjaHdhYmU7IG9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNl
-Zm9yZ2UubmV0DQo+IFN1YmplY3Q6IFJlOiBbT3BlbnZwbi1kZXZlbF0gW1BBVENIXSBPcGVudnBu
-IGZvciBBbmRyb2lkIDQuMCBDaGFuZ2VzZXQNCj4gDQo+IE9uIFRodSwgTWF5IDEwLCAyMDEyIGF0
-IDk6MzUgQU0sIEFkcmlhYW4gZGUgSm9uZyA8ZGVqb25nQC4uLjE0MzUuLi4+DQo+IHdyb3RlOg0K
-PiA+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiA+PiBGcm9tOiBBbG9uIEJhci1MZXYg
-W21haWx0bzphbG9uLmJhcmxldkAuLi4yNzcuLi5dDQo+ID4+IFNlbnQ6IGRvbmRlcmRhZyAxMCBt
-ZWkgMjAxMiAyOjEwDQo+ID4+IFRvOiBBcm5lIFNjaHdhYmUNCj4gPj4gQ2M6IG9wZW52cG4tZGV2
-ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0DQo+ID4+IFN1YmplY3Q6IFJlOiBbT3BlbnZwbi1kZXZl
-bF0gW1BBVENIXSBPcGVudnBuIGZvciBBbmRyb2lkIDQuMA0KPiA+PiBDaGFuZ2VzZXQNCj4gPj4N
-Cj4gPj4gT24gVGh1LCBNYXkgMTAsIDIwMTIgYXQgMzowMSBBTSwgQXJuZSBTY2h3YWJlIDxhcm5l
-QC4uLjEyMjcuLi4+DQo+IHdyb3RlOg0KPiA+PiA+IEFtIDEwLjA1LjEyIDAxOjM5LCBzY2hyaWVi
-IEFsb24gQmFyLUxldjoNCj4gPj4gPj4gT24gVGh1LCBNYXkgMTAsIDIwMTIgYXQgMjoyNCBBTSwg
-QXJuZSBTY2h3YWJlIDxhcm5lQC4uLjEyMjcuLi4+DQo+ID4+IHdyb3RlOg0KPiA+PiA+Pj4+IEkg
-bmVlZCBhIGJldHRlciBkZXNjcmlwdGlvbiBvZiB0aGUgdHVuIHByb2Nlc3MuLi4gc28gZmFyIEkg
-ZGlkDQo+ID4+ID4+Pj4gbm90IHVuZGVyc3RhbmQgd2h5IHlvdSBjYW5ub3QgdXNlIHN0YW5kYXJk
-IGFwcHJvYWNoIG9mIGNyZWF0aW5nDQo+ID4+ID4+Pj4gcGVyc2lzdGVudCB0dW4gd2l0aCBub24g
-cm9vdCBhY2Nlc3MgYW5kIHRoZW4gdXNlIHRoZSBpcHJvdXRlMg0KPiA+PiA+Pj4+IHdyYXBwZXIg
-d2l0aCBzdWlkIG9yIHN1ZG8gdG8gc2V0dXAgaXRzIGNvbmZpZ3VyYXRpb24uDQo+ID4+ID4+Pj4N
-Cj4gPj4gPj4+PiBBbG9uLg0KPiA+PiA+Pj4gSSBoYXZlIG5vIHJvb3QgYWNjZXNzIG9uIHRoZSB0
-ZWxlcGhvbmUuIEJ1dCBBbmRyb2lkIDQuMCBwcm92aWRlcw0KPiA+PiA+Pj4gYW4gQVBJIGZvciBW
-UE5zDQo+ID4+ID4+Pg0KPiA+Pg0KPiAoaHR0cDovL2RldmVsb3Blci5hbmRyb2lkLmNvbS9yZWZl
-cmVuY2UvYW5kcm9pZC9uZXQvVnBuU2VydmljZS5odG1sKS4NCj4gPj4gPj4+IExvb2tpbmcgYXQg
-bXkgbWV0aG9kIGF0IHRoZSBtZXRob2QgdGhhdCBvcGVucyB0aGUgdHVuIGRldmljZSB0bw0KPiA+
-PiA+Pj4gcGFzc2VkIG92ZXIgbWFuYWdtZW50IHNvY2tldCBtaWdodCBhbHNvIGdpdmUgYW4gaWRl
-YSBob3cgaXQgaXMNCj4gPj4gPj4+IGRvbmUNCj4gPj4gaW4gQW5kcm9pZDoNCj4gPj4gPj4+IGh0
-dHA6Ly9jb2RlLmdvb2dsZS5jb20vcC9pY3MtDQo+ID4+IG9wZW52cG4vc291cmNlL2Jyb3dzZS9z
-cmMvZGUvYmxpbmt0L29wZQ0KPiA+PiA+Pj4gbnZwbi9PcGVuVnBuU2VydmljZS5qYXZhIzIyMA0K
-PiA+PiA+Pj4NCj4gPj4gPj4+IEFybmUNCj4gPj4gPj4gSSB1bmRlcnN0YW5kLg0KPiA+PiA+Pg0K
-PiA+PiA+PiBCdXQuLi4gbGV0J3MgZGlzY3VzcyBhbm90aGVyIGFwcHJvYWNoLi4uDQo+ID4+ID4+
-DQo+ID4+ID4+IEltcGxlbWVudCBhbmRyb2lkLWlwIHByb2dyYW0gdGhhdCB1c2VzIHRoZSBBbmRy
-b2lkIEFQSSwgYW5kIHB1dA0KPiA+PiA+PiAiaXByb3V0ZTIgYW5kcm9pZC1pcCIgaW4gY29uZmln
-dXJhdGlvbi4NCj4gPj4gPj4NCj4gPj4gPj4gTm93LCB0aGUgaW50ZXJmYWNlIG9mIHRoZSBwcm9n
-cmFtIGlzIHNpbWlsYXIgdG8gd2hhdCBpcHJvdXRlIGlzDQo+ID4+ID4+IHJlY2VpdmluZywgYnV0
-IGluc3RlYWQgb2YgbmV0bGluayBpdCBkb2VzIGFuZHJvaWQgQVBJLg0KPiA+PiA+Pg0KPiA+PiA+
-PiBTbyBhY3R1YWxseSB5b3UgY2FuIHJlY2VpdmUgcmVxdWVzdHMgZnJvbSBvcGVudnBuIHZpYSB0
-aGlzDQo+ID4+ID4+IGludGVyZmFjZSB3aXRob3V0IG1vZGlmeWluZyBvcGVudnBuLi4uDQo+ID4+
-ID4+DQo+ID4+ID4+IE1heWJlIEkgYW0gbWlzc2luZyBzb21ldGhpbmcsIHBsZWFzZSBiZWFyIHdp
-dGggbWUuDQo+ID4+ID4+DQo+ID4+ID4gVGhlIGFuZHJvaWQgQVBJIGluIHRoaXMgY2FzZSBpcyBK
-YXZhLiDCoFRoZXJlIGlzIG5vIEMgQVBJIHRoYXQgY2FuDQo+ID4+ID4gYmUgdXNlZC4gT3Blbmlu
-ZyB0aGUgdHVuIGRldmljZSByZXF1aXJlcyBwYXNzaW5nIHRoZSBmZCBvZiB0aGUgdHVuDQo+ID4+
-IGRldmljZQ0KPiA+PiA+IHRvIG9wZW52cG4uIEFsc28gdGhlIGZvciBzb2NrZXRzIHRoYXQgc2hv
-dWxkIG5vdCBiZSByb3V0ZWQgb3Zlcg0KPiB0aGUNCj4gPj4gPiB0dW4gZGV2aWNlIHRoZSBKYXZh
-IEFQSSBwcm92aWRlcyBhIHByb3RlY3QoaW50IGZkKSBBUEkuIFRoYXQgbWVhbnMNCj4gPj4gdGhl
-DQo+ID4+ID4gc29ja2V0IGZyb20gb3BlbnZwbiBuZWVkcyB0byBwYXNzZWQgdG8gdGhlIEphdmEg
-R1VJIHRvIGNhbGwgdGhlDQo+ID4+ID4gcHJvdGVjdCBtZXRob2QuDQo+ID4+ID4NCj4gPj4gPiBJ
-IHNlZSAyIHdheSB0byBhY2NvbXBsaXNoIHRoaXM6DQo+ID4+ID4NCj4gPj4gPiAtIFVzaW5nIHRo
-ZSB0aGUgamF2YSBuYXRpdmUgaW50ZXJmYWNlIHRvIGRpcmVjdGx5IGNhbGwgaW50byBqYXZhDQo+
-ID4+ID4gZnJvbSBjIGFuZCB2aWNlIHZlcnNhLiBUaGlzIHdvcmtlZCBidXQgc2luY2Ugb3BlbnZw
-biB3YXMgbm90DQo+IHJlYWxseQ0KPiA+PiA+IHVzYWJsZSBhcyBhIGxpYnJhcnkgSSBnb3Qgb3Ro
-ZXIgcHJvYmxlbSAodGhlIGdvb2dsZSBjb2RlDQo+IHJlcG9zaXRvcnkNCj4gPj4gPiBoYXMgZWFy
-bGllciB2ZXJzaW9uIG9mIHRoZSBjb2RlIHdoaWNoIHVzZXMgdGhpcy4pDQo+ID4+ID4gLSBLZWVw
-IG9wZW52cG4gYXMgc2VwZXJhdGUgcHJvY2VzcyBhbmQgcGFzcyB0aGUgZmQgb3ZlciBhIHVuaXgN
-Cj4gPj4gc29ja2V0Lg0KPiA+PiA+IChPbmUgb2YgdGhlIG1vcmUgb2JzY3VyZSBVbml4IGFwaXMp
-DQo+ID4+ID4NCj4gPj4gPiBUaGUgcmVxdWlyZW1lbnQgdGhhdCBhbGwgaW5mb3JtYXRpb24gYXMg
-aXAgYWRkcmVzc2VzLCBkbnMgYW5kDQo+ID4+ID4gcm91dGVzIG11c3QgYmUgYXZhaWxhYmxlIG1l
-YW5zIHRoYXQgdGhlIHBlcnNpc3QtdHVuIGRldmljZSBjYW5ub3QNCj4gPj4gPiBiZSB1c2VkIGlm
-IEkgYWxzbyB3YW50IHRvIGJlIHRvIHVzZSBwdWxsLg0KPiA+PiA+DQo+ID4+ID4gQ2FsbGluZyBh
-biBleHRlcm5hbCBwcm9ncmFtcyBjb3VsZCBlbGltaW5hdGUgdGhlICJST1VURSIgLCAiRE5TIiwN
-Cj4gPj4gPiAiRE9NQUlOIiAsICJJRkNPTkZJRyIgbWFuYWdlbWVudCBjb21tYW5kcyBJIGhhdmUg
-aW50cm9kdWNlZC4gQnV0DQo+ID4+ID4gdGhlIHBhdGNoZWQgaW1wbGVtZW50cyBhbHNvIHR3byBm
-ZCBwYXNzaW5nIG1hbmFnbWVudCBjb21tYW5kcw0KPiA+PiA+ICJQUk9URUNULQ0KPiA+PiBGRCIN
-Cj4gPj4gPiAocGFzc2VzIGZkIGZyb20gb3BlbnZwbiB0byBHVUkpIGFuZCAiT1BFTlRVTiIgKHBh
-c3NlcyBmZCBmcm9tIEdVSQ0KPiA+PiA+IHRvIG9wZW52cG4pLg0KPiA+PiA+DQo+ID4+ID4gQXJu
-ZQ0KPiA+PiA+DQo+ID4+DQo+ID4+IEdyZWF0LCBzbyB3ZSBjYW4gZmlyc3Qgc2hyaW5rIHRoZSBw
-YXRjaCENCj4gPj4NCj4gPj4gU28gdHdvIGZlYXR1cmVzIHlvdSBpbXBsaWVkLi4uDQo+ID4+DQo+
-ID4+IDEuIHBhc3MgcHJlLW9wZW5lZCB0dW4gZGV2aWNlDQo+ID4+DQo+ID4+IGFyZSB5b3Ugc3Vy
-ZSB0aGVyZSBhcmUgbm8gYWx0ZXJuYXRpdmVzIHRvIHRoaXM/IGhvdyBkb2VzIHRoZSBqYXZhDQo+
-IGFwaQ0KPiA+PiByZWNlaXZlcyB0aGUgaGFuZGxlIGFueXdheT8NCj4gPj4NCj4gPg0KPiA+IEkg
-YWdyZWUgd2l0aCBBcm5lJ3MgYXBwcm9hY2ggb2YgbGV0dGluZyB0aGUgdHVuIGRyaXZlciBiZSBw
-YXNzZWQNCj4gdGhyb3VnaCB0aGUgbWFuYWdlbWVudCBpbnRlcmZhY2UuIFRoaXMgaXMgdGhlIHdh
-eSB0aGluZ3Mgd29yayBpbg0KPiBBbmRyb2lkIFZQTlNlcnZpY2UgbGFuZC4gSSBzdGlsbCBuZWVk
-IHRvIGdvIHRocm91Z2ggdGhlIGNvZGUgdGhvdWdoLg0KPiA+DQo+ID4+IDIuIHRoZSAicHJvdGVj
-dCIgQVBJLg0KPiA+Pg0KPiA+PiBDYW4geW91IHBsZWFzZSBleHBsYWluIG1vcmUgYWJvdXQgdGhl
-IGZ1bmN0aW9uYWxpdHkgb2YgdGhlICJwcm90ZWN0Ig0KPiA+PiBBUEk/IHdoeSBpcyB0aGlzIGFj
-dHVhbGx5IHJlcXVpcmVkPyBtYXliZSB0aGVyZSBhcmUgYWx0ZXJuYXRpdmVzLg0KPiA+Pg0KPiA+
-DQo+ID4gQWJvdXQgdGhlIHByb3RlY3QgQVBJOiBUaGUgVlBOU2VydmljZSBBUEkgcm91dGVzIGFs
-bCB0cmFmZmljIHRocm91Z2gNCj4gdGhlIFZQTiBieSBkZWZhdWx0LiBUaGUgc29ja2V0IHVzZWQg
-YnkgT3BlblZQTiBuZWVkcyB0byBiZSAicHJvdGVjdGVkIg0KPiBmcm9tIHRoaXMsIHVzaW5nIGEg
-c3BlY2lhbCBmdW5jdGlvbiBjYWxsLiBUaGVyZWZvcmUsIEFuZHJvaWQgSmF2YSBuZWVkcw0KPiB0
-aGlzIGNhbGwuDQo+IA0KPiBUaGFua3MhDQo+IA0KPiBTbyB3aHkgY2FuJ3Qgd2Ugc2ltcGx5IG9w
-ZW4gdGhlIHNvY2tldCBhdCB0aGUgVUkgYXMgd2VsbD8gc2ltaWxhciB0bw0KPiB0aGUgdHVuPw0K
-PiANCj4gQWxvbi4NCg==
+Thank you,
+
+Yes, I understand.
+
+If I narrow this to "feature requests", basically we say that:
+1. we want direct tun management to the management interface.
+2. we want to have some logic when openvpn socket is opened.
+3. Pass pre opened tun.
+
+(1)  - direct tun management to the management interface
+
+Until now I thought it should go to the plugin interface as in any
+privilege separation model, the user will not be able to do any change
+in networking.
+
+But... I think it will be fairly simple to do so, with the new tun
+interface[1] I am working of.
+
+It introduces a tun engine, with a standard interface, it will be easy
+to support several tun engines at same time selecting one by
+configuration.
+
+So we can have tun-engine-management.c to delegate all to the
+management interface. It can be used if management interface is tcp as
+well...
+
+For example the linux tune engine[2] is very simple.
+
+A management engine can be stacked overriding the tun_ifconfig, tun_init*.
+
+BUT: I still think that currently it will be much simpler to do this
+using iproute2 wrapper that uses the android API.
+
+For (2) - custom socket creation
+
+I still think that the plugin API is the right approach, you simply
+implement openvpn-plugin-android, that opens the socket for the
+openvpn process. It is not more complex than passing this via the
+management interface, and can be used if management interface is not
+unix domain socket...
+
+(3) pre opened tun
+
+This should be simple, as fd can be created and inherited by the
+openvpn process.
+
+What do you think?
+
+Alon
+
+
+[1] https://github.com/alonbl/openvpn/tree/tun
+[2] https://github.com/alonbl/openvpn/blob/0205f085e8b77c6a6d49c38f20f9e49f=
+41154f61/src/openvpn/tun-engine-linux.c
+
+On Thu, May 10, 2012 at 10:00 AM, Adriaan de Jong <dejong@...1435...> wrote:
+> That would be another option. In the model we were using (which might be =
+different), the order is as follows:
+>
+> 1. openvpn is started
+> 2. openvpn opens a socket to the remote host
+> 2. openvpn establishes the control channel across this socket
+> 3. openvpn passes socket and control channel data (IP, routing, DNS, etc)=
+ through the management interface to the android app
+> 4. android app passes these to the VPNService and receives an opened tun
+> 5. android app passes the tun to openvpn
+> 6. openvpn proceeds as usual
+>
+> To answer your follow up:
+> There's no need for the extra complexity of a plugin here. The management=
+ interface is a great tool, completely separating OpenVPN from its manageme=
+nt interface.
+>
+> Adriaan
+>
+>> -----Original Message-----
+>> From: Alon Bar-Lev [mailto:alon.barlev@...277...]
+>> Sent: donderdag 10 mei 2012 8:49
+>> To: Adriaan de Jong
+>> Cc: Arne Schwabe; openvpn-devel@lists.sourceforge.net
+>> Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
+>>
+>> On Thu, May 10, 2012 at 9:35 AM, Adriaan de Jong <dejong@...1435...>
+>> wrote:
+>> >> -----Original Message-----
+>> >> From: Alon Bar-Lev [mailto:alon.barlev@...277...]
+>> >> Sent: donderdag 10 mei 2012 2:10
+>> >> To: Arne Schwabe
+>> >> Cc: openvpn-devel@lists.sourceforge.net
+>> >> Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0
+>> >> Changeset
+>> >>
+>> >> On Thu, May 10, 2012 at 3:01 AM, Arne Schwabe <arne@...1227...>
+>> wrote:
+>> >> > Am 10.05.12 01:39, schrieb Alon Bar-Lev:
+>> >> >> On Thu, May 10, 2012 at 2:24 AM, Arne Schwabe <arne@...1227...>
+>> >> wrote:
+>> >> >>>> I need a better description of the tun process... so far I did
+>> >> >>>> not understand why you cannot use standard approach of creating
+>> >> >>>> persistent tun with non root access and then use the iproute2
+>> >> >>>> wrapper with suid or sudo to setup its configuration.
+>> >> >>>>
+>> >> >>>> Alon.
+>> >> >>> I have no root access on the telephone. But Android 4.0 provides
+>> >> >>> an API for VPNs
+>> >> >>>
+>> >>
+>> (http://developer.android.com/reference/android/net/VpnService.html).
+>> >> >>> Looking at my method at the method that opens the tun device to
+>> >> >>> passed over managment socket might also give an idea how it is
+>> >> >>> done
+>> >> in Android:
+>> >> >>> http://code.google.com/p/ics-
+>> >> openvpn/source/browse/src/de/blinkt/ope
+>> >> >>> nvpn/OpenVpnService.java#220
+>> >> >>>
+>> >> >>> Arne
+>> >> >> I understand.
+>> >> >>
+>> >> >> But... let's discuss another approach...
+>> >> >>
+>> >> >> Implement android-ip program that uses the Android API, and put
+>> >> >> "iproute2 android-ip" in configuration.
+>> >> >>
+>> >> >> Now, the interface of the program is similar to what iproute is
+>> >> >> receiving, but instead of netlink it does android API.
+>> >> >>
+>> >> >> So actually you can receive requests from openvpn via this
+>> >> >> interface without modifying openvpn...
+>> >> >>
+>> >> >> Maybe I am missing something, please bear with me.
+>> >> >>
+>> >> > The android API in this case is Java. =C2=A0There is no C API that =
+can
+>> >> > be used. Opening the tun device requires passing the fd of the tun
+>> >> device
+>> >> > to openvpn. Also the for sockets that should not be routed over
+>> the
+>> >> > tun device the Java API provides a protect(int fd) API. That means
+>> >> the
+>> >> > socket from openvpn needs to passed to the Java GUI to call the
+>> >> > protect method.
+>> >> >
+>> >> > I see 2 way to accomplish this:
+>> >> >
+>> >> > - Using the the java native interface to directly call into java
+>> >> > from c and vice versa. This worked but since openvpn was not
+>> really
+>> >> > usable as a library I got other problem (the google code
+>> repository
+>> >> > has earlier version of the code which uses this.)
+>> >> > - Keep openvpn as seperate process and pass the fd over a unix
+>> >> socket.
+>> >> > (One of the more obscure Unix apis)
+>> >> >
+>> >> > The requirement that all information as ip addresses, dns and
+>> >> > routes must be available means that the persist-tun device cannot
+>> >> > be used if I also want to be to use pull.
+>> >> >
+>> >> > Calling an external programs could eliminate the "ROUTE" , "DNS",
+>> >> > "DOMAIN" , "IFCONFIG" management commands I have introduced. But
+>> >> > the patched implements also two fd passing managment commands
+>> >> > "PROTECT-
+>> >> FD"
+>> >> > (passes fd from openvpn to GUI) and "OPENTUN" (passes fd from GUI
+>> >> > to openvpn).
+>> >> >
+>> >> > Arne
+>> >> >
+>> >>
+>> >> Great, so we can first shrink the patch!
+>> >>
+>> >> So two features you implied...
+>> >>
+>> >> 1. pass pre-opened tun device
+>> >>
+>> >> are you sure there are no alternatives to this? how does the java
+>> api
+>> >> receives the handle anyway?
+>> >>
+>> >
+>> > I agree with Arne's approach of letting the tun driver be passed
+>> through the management interface. This is the way things work in
+>> Android VPNService land. I still need to go through the code though.
+>> >
+>> >> 2. the "protect" API.
+>> >>
+>> >> Can you please explain more about the functionality of the "protect"
+>> >> API? why is this actually required? maybe there are alternatives.
+>> >>
+>> >
+>> > About the protect API: The VPNService API routes all traffic through
+>> the VPN by default. The socket used by OpenVPN needs to be "protected"
+>> from this, using a special function call. Therefore, Android Java needs
+>> this call.
+>>
+>> Thanks!
+>>
+>> So why can't we simply open the socket at the UI as well? similar to
+>> the tun?
+>>
+>> Alon.
+
