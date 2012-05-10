@@ -1,5 +1,5 @@
 MIME-Version: 1.0
-In-Reply-To: <1CED409804E2164C8104F9E623B08B9012D1CF8A98@...1436...>
+In-Reply-To: <CAOazyz0Qb8xa-FUqQcMDX=w+=Vb3J8sQ2R8GAxNtfWxT-4DNkw@...278...>
 References: <4FAAE0A1.2080808@...1227...>
 	<CAOazyz2wZ3n-70Pk8W_Z3OE_4_4th1PXWUOZUjOjNXetPkxc7g@...278...>
 	<4FAAF152.7070508@...1227...>
@@ -11,8 +11,9 @@ References: <4FAAE0A1.2080808@...1227...>
 	<4FAB0556.50903@...1227...>
 	<CAOazyz2pdJysuaEhoDL8O=S=CdEfW8XCuB6n8YrnKjOBqstTPA@...278...>
 	<1CED409804E2164C8104F9E623B08B9012D1CF8A98@...1436...>
-Date: Thu, 10 May 2012 09:49:28 +0300
-Message-ID: <CAOazyz0Qb8xa-FUqQcMDX=w+=Vb3J8sQ2R8GAxNtfWxT-4DNkw@...278...>
+	<CAOazyz0Qb8xa-FUqQcMDX=w+=Vb3J8sQ2R8GAxNtfWxT-4DNkw@...278...>
+Date: Thu, 10 May 2012 09:55:45 +0300
+Message-ID: <CAOazyz2tNKxAVzWdfUF9+GMLXHXjyDwhDf=HK3xb_uzmmrqTWA@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
 Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -28,113 +29,119 @@ Content-Transfer-Encoding: quoted-printable
 To: Adriaan de Jong <dejong@...1435...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Thu, May 10, 2012 at 9:35 AM, Adriaan de Jong <dejong@...1435...> wrote:
->> -----Original Message-----
->> From: Alon Bar-Lev [mailto:alon.barlev@...277...]
->> Sent: donderdag 10 mei 2012 2:10
->> To: Arne Schwabe
->> Cc: openvpn-devel@lists.sourceforge.net
->> Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
+On Thu, May 10, 2012 at 9:49 AM, Alon Bar-Lev <alon.barlev@...277...> wrote:
+> On Thu, May 10, 2012 at 9:35 AM, Adriaan de Jong <dejong@...1435...> wrot=
+e:
+>>> -----Original Message-----
+>>> From: Alon Bar-Lev [mailto:alon.barlev@...277...]
+>>> Sent: donderdag 10 mei 2012 2:10
+>>> To: Arne Schwabe
+>>> Cc: openvpn-devel@lists.sourceforge.net
+>>> Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
+>>>
+>>> On Thu, May 10, 2012 at 3:01 AM, Arne Schwabe <arne@...1227...> wrote:
+>>> > Am 10.05.12 01:39, schrieb Alon Bar-Lev:
+>>> >> On Thu, May 10, 2012 at 2:24 AM, Arne Schwabe <arne@...1227...>
+>>> wrote:
+>>> >>>> I need a better description of the tun process... so far I did not
+>>> >>>> understand why you cannot use standard approach of creating
+>>> >>>> persistent tun with non root access and then use the iproute2
+>>> >>>> wrapper with suid or sudo to setup its configuration.
+>>> >>>>
+>>> >>>> Alon.
+>>> >>> I have no root access on the telephone. But Android 4.0 provides an
+>>> >>> API for VPNs
+>>> >>>
+>>> (http://developer.android.com/reference/android/net/VpnService.html).
+>>> >>> Looking at my method at the method that opens the tun device to
+>>> >>> passed over managment socket might also give an idea how it is done
+>>> in Android:
+>>> >>> http://code.google.com/p/ics-
+>>> openvpn/source/browse/src/de/blinkt/ope
+>>> >>> nvpn/OpenVpnService.java#220
+>>> >>>
+>>> >>> Arne
+>>> >> I understand.
+>>> >>
+>>> >> But... let's discuss another approach...
+>>> >>
+>>> >> Implement android-ip program that uses the Android API, and put
+>>> >> "iproute2 android-ip" in configuration.
+>>> >>
+>>> >> Now, the interface of the program is similar to what iproute is
+>>> >> receiving, but instead of netlink it does android API.
+>>> >>
+>>> >> So actually you can receive requests from openvpn via this interface
+>>> >> without modifying openvpn...
+>>> >>
+>>> >> Maybe I am missing something, please bear with me.
+>>> >>
+>>> > The android API in this case is Java. =C2=A0There is no C API that ca=
+n be
+>>> > used. Opening the tun device requires passing the fd of the tun
+>>> device
+>>> > to openvpn. Also the for sockets that should not be routed over the
+>>> > tun device the Java API provides a protect(int fd) API. That means
+>>> the
+>>> > socket from openvpn needs to passed to the Java GUI to call the
+>>> > protect method.
+>>> >
+>>> > I see 2 way to accomplish this:
+>>> >
+>>> > - Using the the java native interface to directly call into java from
+>>> > c and vice versa. This worked but since openvpn was not really usable
+>>> > as a library I got other problem (the google code repository has
+>>> > earlier version of the code which uses this.)
+>>> > - Keep openvpn as seperate process and pass the fd over a unix
+>>> socket.
+>>> > (One of the more obscure Unix apis)
+>>> >
+>>> > The requirement that all information as ip addresses, dns and routes
+>>> > must be available means that the persist-tun device cannot be used if
+>>> > I also want to be to use pull.
+>>> >
+>>> > Calling an external programs could eliminate the "ROUTE" , "DNS",
+>>> > "DOMAIN" , "IFCONFIG" management commands I have introduced. But the
+>>> > patched implements also two fd passing managment commands "PROTECT-
+>>> FD"
+>>> > (passes fd from openvpn to GUI) and "OPENTUN" (passes fd from GUI to
+>>> > openvpn).
+>>> >
+>>> > Arne
+>>> >
+>>>
+>>> Great, so we can first shrink the patch!
+>>>
+>>> So two features you implied...
+>>>
+>>> 1. pass pre-opened tun device
+>>>
+>>> are you sure there are no alternatives to this? how does the java api
+>>> receives the handle anyway?
+>>>
 >>
->> On Thu, May 10, 2012 at 3:01 AM, Arne Schwabe <arne@...1227...> wrote:
->> > Am 10.05.12 01:39, schrieb Alon Bar-Lev:
->> >> On Thu, May 10, 2012 at 2:24 AM, Arne Schwabe <arne@...1227...>
->> wrote:
->> >>>> I need a better description of the tun process... so far I did not
->> >>>> understand why you cannot use standard approach of creating
->> >>>> persistent tun with non root access and then use the iproute2
->> >>>> wrapper with suid or sudo to setup its configuration.
->> >>>>
->> >>>> Alon.
->> >>> I have no root access on the telephone. But Android 4.0 provides an
->> >>> API for VPNs
->> >>>
->> (http://developer.android.com/reference/android/net/VpnService.html).
->> >>> Looking at my method at the method that opens the tun device to
->> >>> passed over managment socket might also give an idea how it is done
->> in Android:
->> >>> http://code.google.com/p/ics-
->> openvpn/source/browse/src/de/blinkt/ope
->> >>> nvpn/OpenVpnService.java#220
->> >>>
->> >>> Arne
->> >> I understand.
->> >>
->> >> But... let's discuss another approach...
->> >>
->> >> Implement android-ip program that uses the Android API, and put
->> >> "iproute2 android-ip" in configuration.
->> >>
->> >> Now, the interface of the program is similar to what iproute is
->> >> receiving, but instead of netlink it does android API.
->> >>
->> >> So actually you can receive requests from openvpn via this interface
->> >> without modifying openvpn...
->> >>
->> >> Maybe I am missing something, please bear with me.
->> >>
->> > The android API in this case is Java. =C2=A0There is no C API that can=
- be
->> > used. Opening the tun device requires passing the fd of the tun
->> device
->> > to openvpn. Also the for sockets that should not be routed over the
->> > tun device the Java API provides a protect(int fd) API. That means
->> the
->> > socket from openvpn needs to passed to the Java GUI to call the
->> > protect method.
->> >
->> > I see 2 way to accomplish this:
->> >
->> > - Using the the java native interface to directly call into java from
->> > c and vice versa. This worked but since openvpn was not really usable
->> > as a library I got other problem (the google code repository has
->> > earlier version of the code which uses this.)
->> > - Keep openvpn as seperate process and pass the fd over a unix
->> socket.
->> > (One of the more obscure Unix apis)
->> >
->> > The requirement that all information as ip addresses, dns and routes
->> > must be available means that the persist-tun device cannot be used if
->> > I also want to be to use pull.
->> >
->> > Calling an external programs could eliminate the "ROUTE" , "DNS",
->> > "DOMAIN" , "IFCONFIG" management commands I have introduced. But the
->> > patched implements also two fd passing managment commands "PROTECT-
->> FD"
->> > (passes fd from openvpn to GUI) and "OPENTUN" (passes fd from GUI to
->> > openvpn).
->> >
->> > Arne
->> >
+>> I agree with Arne's approach of letting the tun driver be passed through=
+ the management interface. This is the way things work in Android VPNServic=
+e land. I still need to go through the code though.
 >>
->> Great, so we can first shrink the patch!
+>>> 2. the "protect" API.
+>>>
+>>> Can you please explain more about the functionality of the "protect"
+>>> API? why is this actually required? maybe there are alternatives.
+>>>
 >>
->> So two features you implied...
->>
->> 1. pass pre-opened tun device
->>
->> are you sure there are no alternatives to this? how does the java api
->> receives the handle anyway?
->>
+>> About the protect API: The VPNService API routes all traffic through the=
+ VPN by default. The socket used by OpenVPN needs to be "protected" from th=
+is, using a special function call. Therefore, Android Java needs this call.
 >
-> I agree with Arne's approach of letting the tun driver be passed through =
-the management interface. This is the way things work in Android VPNService=
- land. I still need to go through the code though.
+> Thanks!
 >
->> 2. the "protect" API.
->>
->> Can you please explain more about the functionality of the "protect"
->> API? why is this actually required? maybe there are alternatives.
->>
+> So why can't we simply open the socket at the UI as well? similar to the =
+tun?
 >
-> About the protect API: The VPNService API routes all traffic through the =
-VPN by default. The socket used by OpenVPN needs to be "protected" from thi=
-s, using a special function call. Therefore, Android Java needs this call.
+> Alon.
 
-Thanks!
-
-So why can't we simply open the socket at the UI as well? similar to the tu=
-n?
+Or add this functionality to plugin interface?
 
 Alon.
 
