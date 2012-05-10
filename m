@@ -1,10 +1,12 @@
 MIME-Version: 1.0
-In-Reply-To: <4FABB063.8090704@...515...>
-References: <4FABB063.8090704@...515...>
-Date: Thu, 10 May 2012 15:36:23 +0300
-Message-ID: <CAOazyz1eHU3T+89E0rEy0zrFnPb5BQQiRLw07bgz23J+wkTHQQ@...278...>
+In-Reply-To: <4FAB8501.2020009@...1114...>
+References: <4FAAE0A1.2080808@...1227...>
+	<CAOazyz2wZ3n-70Pk8W_Z3OE_4_4th1PXWUOZUjOjNXetPkxc7g@...278...>
+	<4FAAF152.7070508@...1227...> <4FAB8501.2020009@...1114...>
+Date: Thu, 10 May 2012 15:37:28 +0300
+Message-ID: <CAOazyz362bHc2q4LY6bOGpc+XVGr47j1JWfqxdnmsZsn3NyMTA@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] Some issues with openvpn-build/windows-nsis
+Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,45 +17,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Thu, May 10, 2012 at 3:11 PM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
-ote:
-> Hi,
+On Thu, May 10, 2012 at 12:06 PM, David Sommerseth
+<openvpn.list@...1114...> wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
 >
-> I tried to generate a Windows installer on Ubuntu 11.10 amd64, but ran
-> into some issues:
+> On 10/05/12 00:36, Arne Schwabe wrote:
 >
-> $ cd openvpn-build/windows-nsis
-> $ ./build-snapshot
-> --- snip ---
+>>> I suggest you clone the repository at github, create a branch
+>>> and order your changes.
+>>
+>>
+>> that would mean to revert all changes, making the changes in small
+>> steps and commiting each step? (I am still trying to learn how to
+>> work with git)
 >
-> make[3]: Leaving directory
-> `/home/samuli/opt/openvpn-build/windows-nsis/tmp/build-i686/pkcs11-helper=
--1.10'
-> make[2]: Leaving directory
-> `/home/samuli/opt/openvpn-build/windows-nsis/tmp/build-i686/pkcs11-helper=
--1.10'
-> make[1]: Leaving directory
-> `/home/samuli/opt/openvpn-build/windows-nsis/tmp/build-i686/pkcs11-helper=
--1.10'
-> tap-windows
-> Fixup libtool files
-> Restore libtool files
-> ls: cannot access tmp/image-i686/openvpn-i686-*-bin.*: No such file or
-> directory
->
-> The error message seems clear enough, but I'm wondering why the binaries
-> are not where it looks for them:
->
-> $ ls tmp/image-i686
-> openvpn
-> $ ls tmp/image-i686/openvpn
-> bin =C2=A0etc =C2=A0include =C2=A0lib =C2=A0share
+> Using github is no requirement. =C2=A0From what I see, all your patches w=
+as
+> gathered into a single file. =C2=A0For this initial review, I see no issu=
+es
+> with that. =C2=A0And the changeset isn't really that big.
 
-This is strange, as you referred to dash, which I never tested, I will
-try and see if that is the problem.
+I only asked for, and indeed it was easier to review than original offering.
 
 Alon.
 
