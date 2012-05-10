@@ -1,18 +1,26 @@
+From: Mendelt Siebenga <mendelt.siebenga@...1435...>
+Date: Thu, 10 May 2012 16:03:49 +0200
+Message-ID: <1CED409804E2164C8104F9E623B08B9012D1CF8D08@...1436...>
+References: <4FAAE0A1.2080808@...1227...>
+	<CAOazyz2wZ3n-70Pk8W_Z3OE_4_4th1PXWUOZUjOjNXetPkxc7g@...278...>
+	<4FAAF152.7070508@...1227...>
+	<CAOazyz35bB=q1hpdzjj_aHZ7K_0koT8pcw0csham2AOwMqGrfg@...278...>
+	<4FAAF945.8070005@...1227...>
+	<CAOazyz12Rw0kOSS+siU7tLP4eXO5XkhexjVLn+uC97s4K1Z8EQ@...278...>
+	<4FAAFCB4.8040606@...1227...>
+	<CAOazyz2wP2ms7HC31LPp3VzFRBu+S3zURZm1ozz0MzjmhQv07g@...278...>
+	<4FAB0556.50903@...1227...>
+	<CAOazyz2pdJysuaEhoDL8O=S=CdEfW8XCuB6n8YrnKjOBqstTPA@...278...>
+	<1CED409804E2164C8104F9E623B08B9012D1CF8A98@...1436...>
+	<CAOazyz0Qb8xa-FUqQcMDX=w+=Vb3J8sQ2R8GAxNtfWxT-4DNkw@...278...>
+	<1CED409804E2164C8104F9E623B08B9012D1CF8AB9@...1436...>
+	<CAOazyz3xObLvBubo4E6vSmepj-8AkGd6P4k-6VXYpvsSm-vs3A@...278...>
+	<1CED409804E2164C8104F9E623B08B9012D1CF8AD6@...1436...>
+	<4FAB8EEE.8020607@...1114...>
+In-Reply-To: <4FAB8EEE.8020607@...1114...>
+Content-Language: en-US
 MIME-Version: 1.0
-In-Reply-To: <CAOazyz2MVC3SgyWbxen0LS1W66bYYPw-aOEXM-garay-pWpF2g@...278...>
-References: <CAOazyz2FzRu8y6FR1xiygh=KCBB=q-N5HrjLLzn5q1_AgL_3ig@...278...>
-	<4FA77AB9.7090001@...1114...>
-	<CAOazyz3QDHLxY51u0Ya9PscD8Q5+VqqrSn6M6=XpVUiFJY_ENw@...278...>
-	<4FA8D931.70107@...515...>
-	<CAOazyz2N744s+VJekGJNK4sqHCONLCzMtsiJyRTkgrpO4RWHzw@...278...>
-	<4FAB80AC.1020702@...515...>
-	<CAOazyz2ZE0Wz2=QfkQtAvvXQ35mdu5eNm5RvKJar7P_m+-uCnQ@...278...>
-	<4FABB71B.4040603@...1114...>
-	<CAOazyz2MVC3SgyWbxen0LS1W66bYYPw-aOEXM-garay-pWpF2g@...278...>
-Date: Thu, 10 May 2012 16:48:08 +0300
-Message-ID: <CAOazyz3eW8GBok5FEqpC4XPYVDLGx6r1OQhyVP6DD5b20sxRTQ@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [RFC] Split plugins into their own repositories
+Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,274 +29,379 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Thu, May 10, 2012 at 3:42 PM, Alon Bar-Lev <alon.barlev@...277...> wrote:
-> On Thu, May 10, 2012 at 3:39 PM, David Sommerseth
-> <openvpn.list@...1114...> wrote:
->> -----BEGIN PGP SIGNED MESSAGE-----
->> Hash: SHA1
+Let me introduce myself first as this is my first post to this mailing list.
+
+I'm Mendelt Siebenga, a new colleague of Adriaan de Jong. I started working=
+ for Fox IT a couple of weeks ago. I've been working on something similar t=
+o what Arne has been doing but my background is more in higher level Java-y=
+ coding so getting familiar with the OpenVPN code has taken me a lot of tim=
+e. I'm impressed by the progress Arne has made. I'd like to jump in and add=
+ some suggestions and hopefully clarify some technical aspects. Adriaan and=
+ me arrived at a very similar solution as Arne for getting OpenVPN to work =
+on Android 4 so maybe it's helpful if we clarify how we got to the decision=
+s we made.
+
+Android has a lot of limitations on how you can get access to a TUN device =
+without rooting your phone. Basically what you need to do is:
+- Pass a file descriptor of the socket used by OpenVPN to a system call to =
+protect it. This prevents traffic to this socket being routed over the vpn =
+itself.
+- Pass all routing information, dns servers etc. To a system call. This cal=
+l sets up routing and returns a file descriptor to the TUN device.
+Both of these system calls are Java only.
+
+So in order to get this to work with OpenVPN you need to be able to:
+- Get a file descriptor for the socket OpenVPN uses
+- Prevent OpenVPN from adding routes itself and get routing information to =
+pass to the Android API
+- Pass an opened TUN device to OpenVPN.
+
+We considered two ways of doing this:
+- Modify OpenVPN to make it possible to use JNI to call into OpenVPN direct=
+ly from Java code.
+- Modify OpenVPN to add the needed functionality to the management interfac=
+e like Arne did.
+
+The first option is probably easier to implement on the Java side but it re=
+quires a lot of changes in the OpenVPN code. The second option needs a coup=
+le of relatively simple changes in OpenVPN and makes it possible for these =
+changes to be reused in other contexts. Being able to get routing informati=
+on and pass TUN devices to OpenVPN might be useful for some of the GUI proj=
+ects too.
+
+One thing we did differently is that we don't use JNI at all. We use the ex=
+isting build system to cross compile OpenVpn as a normal arm-linux executab=
+le, package it inside the android apk, write it to flash when it is needed =
+and then execute it from the apk as a separate process. After this we were =
+planning to use the management interface in the same way Arne has implement=
+ed.
+
+In order to make Arne's changes more reusable I would suggest a couple of s=
+mall changes:
+
+- Split the changes up into three features: 1. send socket on the managemen=
+t interface. 2. Send routing info on management interface 3. Receive the TU=
+N device on the management interface
+
+- Use command line options or options in the configuration file to enable t=
+hese features instead of relying on #ifdef TARGET_ANDROID
+
+- Add some checks to warn about nonsensical settings. For example using the=
+se features without a management interface or with a management interface o=
+n a tcp/ip socket or on an OS that doesn't support sending filedescriptors =
+over domain sockets should result in an error message.
+
+
+I'm not really sure about putting these changes off into a separate plugin.=
+ I personally like to modularize code as much as possible, but my guess is =
+that in this case adding the hooks to the plugin interface that are necessa=
+ry to allow this functionality to be implemented as a plugin will add more =
+clutter to OpenVPN than just adding them to the core. I'm not sure what the=
+ plans are for the plugin interface but I can imagine that if it becomes mo=
+re powerful over time we might be able to spin off these changes as a separ=
+ate plugin later.
+
+Kind regards,
+Mendelt Siebenga
+
+-----Original Message-----
+From: David Sommerseth [mailto:openvpn.list@...1114...]
+Sent: donderdag 10 mei 2012 11:49
+To: Alon Bar-Lev
+Cc: openvpn-devel@lists.sourceforge.net
+Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 10/05/12 09:28, Adriaan de Jong wrote:
+> I still prefer using the management interface. It keeps the interface
+> to the Java stuff very clean (socket-based). Further you potentially
+> allow other systems, such as Apple or Windows Phone to do the same. It
+> avoids messy JNI stuff, and fits into the spirit of the management
+> interface. It's the simplest solution.
+
+I agree.  The plug-in approach seems a bit overkill to me.  The approach us=
+ing the management API makes it far simpler.
+
+Bear in mind that Windows Phone 7 support will probably be asked for at som=
+e point - we have no idea how that will really work out now.  We have users=
+ wanting support for iPhone/iPad.  The plug-in approach means to write both=
+ a suitable plug-in for the platform and the front-end app.  Using just the=
+ management API, you just need to write the GUI which does all the needed g=
+luing on the native platforms in that app, just how it wants it.
+
+
+kind regards,
+
+David Sommerseth
+
+
+
+>> -----Original Message----- From: Alon Bar-Lev
+>> [mailto:alon.barlev@...277...] Sent: donderdag 10 mei 2012 9:17
+>> To: Adriaan de Jong Cc: Arne Schwabe;
+>> openvpn-devel@lists.sourceforge.net Subject: Re: [Openvpn-devel]
+>> [PATCH] Openvpn for Android 4.0 Changeset
 >>
->> On 10/05/12 14:33, Alon Bar-Lev wrote:
->>> On Thu, May 10, 2012 at 11:47 AM, Samuli Sepp=C3=A4nen
->>> <samuli@...515...> wrote:
->>>>
->>>>> On Tue, May 8, 2012 at 11:28 AM, Samuli Sepp=C3=A4nen
->>>>> <samuli@...515...> wrote:
->>>>>>> Hello David,
->>>>>>>
->>>>>>> On Mon, May 7, 2012 at 10:33 AM, David Sommerseth
->>>>>>> <openvpn.list@...1114...> wrote:
->>>>>>>
->>>>>>> <snip>
->>>>>>>
->>>>>>>> The reason I don't see the benefit of splitting out the
->>>>>>>> plug-ins as much is that they all depend on OpenVPN. =C2=A0You
->>>>>>>> can not make much use of these plug-ins without having
->>>>>>>> OpenVPN. =C2=A0But with Windows TAP driver and easy-rsa, they
->>>>>>>> can be completely used independently.
->>>>>>>>
->>>>>>>> Another point is that the plug-ins we have in the source
->>>>>>>> tree, is officially supported plug-ins. =C2=A0And especially
->>>>>>>> auth-pam and down-root are plug-ins which are very useful
->>>>>>>> and we should encourage packagers to always package
->>>>>>>> those.
->>>>>>>>
->>>>>>>> Then the example/ and defer/ plug-ins, which are
->>>>>>>> examples. =C2=A0Maybe it would rather make sense to merge them
->>>>>>>> somehow?
->>>>>>> There are a lot of plugins out there, think about chrome
->>>>>>> extension or firefox extension, but also network manager
->>>>>>> plugins or similar, they are all depend on the core
->>>>>>> product, but extend its functionality, and have their own
->>>>>>> repositories.
->>>>>>>
->>>>>>> Plugins should be installed as separate package, aka rpm.
->>>>>>>
->>>>>>> So if administrator wants openvpn he does: # yum install
->>>>>>> openvpn
->>>>>>>
->>>>>>> Now, if administrator wants auth-pam, he should do: # yum
->>>>>>> install openvpn-plugin-auth-pam
->>>>>>>
->>>>>>> As there is no sense in keeping the auth-pam plugin in
->>>>>>> system if it is unused nor to have pam dependency of the
->>>>>>> openvpn core package.
->>>>>>>
->>>>>>> I would not encourage packages to always have them, it is
->>>>>>> also not the correct approach for plugins. Plugins should
->>>>>>> be optional in nature.
->>>>>>>
->>>>>>> All the above does not imply separate repository as in both
->>>>>>> cases we can either provide one .spec file that generate
->>>>>>> both rpms or two separate spec files.
->>>>>>>
->>>>>>> The real question is how do we provide proper build for
->>>>>>> this components. Currently it has poor-man-build, which I
->>>>>>> fixed to meet some level of quality, instead of
->>>>>>> ./configure&&make install, packager should go and figure
->>>>>>> own what else needs to be built in tree.
->>>>>>>
->>>>>>> So either these are officially supported and should be
->>>>>>> build properly using main build system, example: --- $
->>>>>>> ./configure --enable-plugin-auth-pam PAM_CFLAGS=3D...
->>>>>>> PAM_LIBS=3D... ---
->>>>>>>
->>>>>>> Or have plugins as separate components with its own release
->>>>>>> cycle and should have their proper own build system and
->>>>>>> release cycle.
->>>>>>>
->>>>>>> I think that if we have proper interface
->>>>>>> (openvpn-plugin.h), there is no sense in providing the
->>>>>>> plugins within the tree, as it has its own release cycle.
->>>>>>>
->>>>>>> I also would like to discuss the "official" argument.... A
->>>>>>> project can have several repositories all at equal
->>>>>>> "official" level, why on earth people think that having
->>>>>>> more than one repository around damage their "official"
->>>>>>> state? "officially supported plug-ins", can be official in
->>>>>>> the openvpn repository and can be official in their own
->>>>>>> repository, there is absolutely no difference between the
->>>>>>> two approaches in this regards.
->>>>>>>
->>>>>>> However, splitting the repositories, allow helping distro
->>>>>>> packaging in determine what needed to be packaged and
->>>>>>> provided to users, it also allow separate release cycle
->>>>>>> (new openvpn release does not force new plugin release),
->>>>>>> and can even help in maintenance as a plugin can have its
->>>>>>> own maintainer (commit access).
->>>>>>>
->>>>>>> If also has more advantage as now in github we can
->>>>>>> encourage people to host and maintain their plugin within
->>>>>>> the OpenVPN organization, attracting more skills. So bottom
->>>>>>> line:
->>>>>>>
->>>>>>> 1. Either we add the plugins to core build system, with its
->>>>>>> disadvantages.
->>>>>>>
->>>>>>> 2. Split plugins into their own repository, release cycle,
->>>>>>> packaging.
->>>>>>>
->>>>>>> I am for (2), as I don't afraid of the "official" argument
->>>>>>> nor do I afraid to commit to more than one repository, and
->>>>>>> the modular nature of the plugin interface allows optional
->>>>>>> components to be installed separately along with their own
->>>>>>> dependencies.
->>>>>>>
->>>>>>> Alon
->>>>>> I think there's some very good argumentation here. In my
->>>>>> view, separating plugins into their own repositories would
->>>>>> have some important advantages; excuse me for repeating some
->>>>>> of Alon's arguments here:
->>>>>>
->>>>>> 1) Delegating maintenance tasks easily to (new) developers:
->>>>>> this is now trivial with GitHub 2) Avoid having to make an
->>>>>> OpenVPN release due to an important fix in a plugin used by
->>>>>> few. This also helps distro packagers, provided they didn't
->>>>>> bundle the plugins in their core "openvpn" package
->>>>>>
->>>>>> Afaik none of the official plugins are needed to create the
->>>>>> official Windows installers, so that platform is entirely
->>>>>> unaffected. On *NIX side we only release source code. If we
->>>>>> don't want to force people to fetch official plugin code
->>>>>> using Git, providing tarballs would be trivial.
->>>>>>
->>>>>> I tend to agree that packagers should take care of packaging
->>>>>> the plugins as they see fit and making sure they're
->>>>>> compatible with their version of OpenVPN. For example, on
->>>>>> Debian/Ubuntu the OpenVPN package includes "down-root" and
->>>>>> "pam" plugins by default. However, I've never used those, and
->>>>>> I know many others who don't either. Having the plugins in
->>>>>> separate repositories would steer packagers to the (in my
->>>>>> opinion) right direction of packaging optional functionality
->>>>>> as optional packages. They already do this for some of the
->>>>>> off-tree plugins:
->>>>>>
->>>>>> <https://community.openvpn.net/openvpn/wiki/RelatedProjects>
->>>>>>
->>>>>> I believe the primary reason why the "pam" and "down-root"
->>>>>> plugins are in OpenVPN repository is that they seem to come
->>>>>> from James, who has a use-case for them. Personally, I would
->>>>>> rather see the plugins in their own repositories, even if
->>>>>> only to see if it fosters collaboration.
->>>>>>
->>>>>> I guess that was my 5 cents :).
->>>>>>
->>>>>> -- Samuli Sepp=C3=A4nen Community Manager OpenVPN Technologies,
->>>>>> Inc
->>>>>>
->>>>>> irc freenode net: mattock
->>>>>>
->>>>> Hello,
->>>>>
->>>>> In order to break the fear I just went ahead and did this...
->>>>> maybe this will relax some of the concerns...
->>>>>
->>>>> A plugin in own repository, own build system, own rpm packaging
->>>>> of auth-pam[1] and down-root[2], even ebuilds[3][4]!
->>>>>
->>>>> Now we have the following packages for rpm based system:
->>>>>
->>>>> - openvpn - openvpn-devel (openvpn-plugin.h) -
->>>>> openvpn-plugin-auth-pam (introduces the pam dependency) -
->>>>> openvpn-plugin-down-root
->>>>>
->>>>> I've prepared a openvpn branch[5] to support this migration, I
->>>>> think that the best example is to see how the rpm spec file
->>>>> was simplified[6], no none standard statement, simple configure
->>>>> and make process, less dependencies for core package.
->>>>>
->>>>> I think that in the Gentoo ebuild[7] we can see more verbose
->>>>> example, especially the following statement that is about to be
->>>>> removed: --- if ! use minimal ; then cd src/plugins for i in *;
->>>>> do [[ ${i} =3D=3D "README" || ${i} =3D=3D "examples" || ${i} =3D=3D "=
-defer"
->>>>> ]] && continue [[ ${i} =3D=3D "auth-pam" ]] && ! use pam &&
->>>>> continue einfo "Building ${i} plugin" emake -C "${i}"
->>>>> CC=3D"$(tc-getCC)" CFLAGS=3D"${CFLAGS}" LDFLAGS=3D"${LDFLAGS}" done
->>>>> cd .. ---
->>>>>
->>>>> I truly hope you see the advantage in building and packaging
->>>>> each independent component by its own, the simplicity it
->>>>> introduces in term of code maintenance and system
->>>>> administration. Again, there is no impact of the official level
->>>>> of the components.
->>>>>
->>>>> Best Regards, Alon Bar-Lev.
->>>>>
->>>>> [1] https://github.com/OpenVPN/openvpn-plugin-auth-pam [2]
->>>>> https://github.com/OpenVPN/openvpn-plugin-down-root [3]
->>>>> https://github.com/alonbl/alon-barlev-overlay/blob/master/net-misc/op=
-envpn-plugin-auth-pam/openvpn-plugin-auth-pam-9999.ebuild
->>>>>
->>>>>
->> [4]
->> https://github.com/alonbl/alon-barlev-overlay/blob/master/net-misc/openv=
-pn-plugin-down-root/openvpn-plugin-down-root-9999.ebuild
->>>>> [5] https://github.com/alonbl/openvpn/compare/master...plugins
->>>>> [6]
->>>>> https://github.com/alonbl/openvpn/commit/0a9a1e1f234dcc81d4ed9ece5f89=
-4cfe5ec02d01#diff-0
->>>>>
->>>>>
->> [7[
->> https://github.com/alonbl/alon-barlev-overlay/blob/master/net-misc/openv=
-pn/openvpn-9999.ebuild
->>>>
->>>> Hi Alon,
->>>>
->>>> Ok, so this is kind of a preview, which I think is fine. We
->>>> should definitely look at these plugin repositories and see how
->>>> it all fits together. I only got one minor nitpick... I think
->>>> your own ("alonbl") GitHub repos would have been a more
->>>> appropriate place for these plugin repositories for now, as
->>>> they're not "officially" approved yet.
->>>>
->>>> -- Samuli Sepp=C3=A4nen Community Manager OpenVPN Technologies, Inc
->>>>
->>>> irc freenode net: mattock
->>>>
+>> Thank you,
+>>
+>> Yes, I understand.
+>>
+>> If I narrow this to "feature requests", basically we say that: 1.
+>> we want direct tun management to the management interface. 2. we want
+>> to have some logic when openvpn socket is opened. 3. Pass pre opened
+>> tun.
+>>
+>> (1)  - direct tun management to the management interface
+>>
+>> Until now I thought it should go to the plugin interface as in any
+>> privilege separation model, the user will not be able to do any
+>> change in networking.
+>>
+>> But... I think it will be fairly simple to do so, with the new tun
+>> interface[1] I am working of.
+>>
+>> It introduces a tun engine, with a standard interface, it will be
+>> easy to support several tun engines at same time selecting one by
+>> configuration.
+>>
+>> So we can have tun-engine-management.c to delegate all to the
+>> management interface. It can be used if management interface is tcp
+>> as well...
+>>
+>> For example the linux tune engine[2] is very simple.
+>>
+>> A management engine can be stacked overriding the tun_ifconfig,
+>> tun_init*.
+>>
+>> BUT: I still think that currently it will be much simpler to do this
+>> using iproute2 wrapper that uses the android API.
+>>
+>> For (2) - custom socket creation
+>>
+>> I still think that the plugin API is the right approach, you simply
+>> implement openvpn-plugin-android, that opens the socket for the
+>> openvpn process. It is not more complex than passing this via the
+>> management interface, and can be used if management interface is not
+>> unix domain socket...
+>>
+>> (3) pre opened tun
+>>
+>> This should be simple, as fd can be created and inherited by the
+>> openvpn process.
+>>
+>> What do you think?
+>>
+>> Alon
+>>
+>>
+>> [1] https://github.com/alonbl/openvpn/tree/tun [2]
+>> https://github.com/alonbl/openvpn/blob/0205f085e8b77c6a6d49c38f20f9e4
+>> 9f
+>>
+>>
+41154f61/src/openvpn/tun-engine-linux.c
+>>
+>> On Thu, May 10, 2012 at 10:00 AM, Adriaan de Jong <dejong@...1435...>
+>> wrote:
+>>> That would be another option. In the model we were using (which
+>>> might
+>> be different), the order is as follows:
 >>>
->>> Well, among others, the mission was to create a community around
->>> openvpn with extras, so that people will find VPN resources at one
->>> place...
+>>> 1. openvpn is started 2. openvpn opens a socket to the remote host
+>>> 2. openvpn establishes the control channel across this socket 3.
+>>> openvpn passes socket and control channel data (IP, routing, DNS,
+>>> etc) through the management interface to the android app 4. android
+>>> app passes these to the VPNService and receives an opened tun 5.
+>>> android app passes the tun
+>> to
+>>> openvpn 6. openvpn proceeds as usual
+>>>
+>>> To answer your follow up: There's no need for the extra complexity
+>>> of a plugin here. The
+>> management interface is a great tool, completely separating OpenVPN
+>> from its management interface.
+>>>
+>>> Adriaan
+>>>
+>>>> -----Original Message----- From: Alon Bar-Lev
+>>>> [mailto:alon.barlev@...277...] Sent: donderdag 10 mei 2012
+>>>> 8:49 To: Adriaan de Jong Cc: Arne Schwabe;
+>>>> openvpn-devel@lists.sourceforge.net Subject: Re:
+>>>> [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
+>>>>
+>>>> On Thu, May 10, 2012 at 9:35 AM, Adriaan de Jong
+>>>> <dejong@...1435...> wrote:
+>>>>>> -----Original Message----- From: Alon Bar-Lev
+>>>>>> [mailto:alon.barlev@...277...] Sent: donderdag 10 mei
+>>>>>> 2012 2:10 To: Arne Schwabe Cc:
+>>>>>> openvpn-devel@lists.sourceforge.net Subject: Re:
+>>>>>> [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
+>>>>>>
+>>>>>> On Thu, May 10, 2012 at 3:01 AM, Arne Schwabe <arne@...1227...>
+>>>> wrote:
+>>>>>>> Am 10.05.12 01:39, schrieb Alon Bar-Lev:
+>>>>>>>> On Thu, May 10, 2012 at 2:24 AM, Arne Schwabe
+>>>>>>>> <arne@...1227...>
+>>>>>> wrote:
+>>>>>>>>>> I need a better description of the tun process...
+>>>>>>>>>> so far I did not understand why you cannot use standard
+>>>>>>>>>> approach of creating persistent tun with non root access and
+>>>>>>>>>> then use
+>> the
+>>>>>>>>>> iproute2 wrapper with suid or sudo to setup its
+>> configuration.
+>>>>>>>>>>
+>>>>>>>>>> Alon.
+>>>>>>>>> I have no root access on the telephone. But Android
+>>>>>>>>> 4.0 provides an API for VPNs
+>>>>>>>>>
+>>>>>>
+>>>>
+>> (http://developer.android.com/reference/android/net/VpnService.html).
+>>>>>>>>>
 >>
->> Agreed.
->>
->>> What official or not, who is the maintainer of what, what level of
->>> release and what the level of support should be documented in the
->>> wiki or other place.
->>
->> We have not reached any agreement on splitting out the plug-ins or
->> not. =C2=A0So putting them in an area which can be understood as a offic=
-ial
->> repository is not okay.
->>
->>> If you want, I can remove these, no problem, but I needed to raise
->>> these arguments.
->>
->> Please put them in your own repository, and what we put under the
->> OpenVPN organisation part will be what we have as official repositories.
->>
+Looking at my method at the method that opens the tun device
+>>>>>>>>> to passed over managment socket might also give an idea how
+>> it
+>>>>>>>>> is done
+>>>>>> in Android:
+>>>>>>>>> http://code.google.com/p/ics-
+>>>>>> openvpn/source/browse/src/de/blinkt/ope
+>>>>>>>>> nvpn/OpenVpnService.java#220
+>>>>>>>>>
+>>>>>>>>> Arne
+>>>>>>>> I understand.
+>>>>>>>>
+>>>>>>>> But... let's discuss another approach...
+>>>>>>>>
+>>>>>>>> Implement android-ip program that uses the Android API, and
+>> put
+>>>>>>>> "iproute2 android-ip" in configuration.
+>>>>>>>>
+>>>>>>>> Now, the interface of the program is similar to what iproute
+>> is
+>>>>>>>> receiving, but instead of netlink it does android API.
+>>>>>>>>
+>>>>>>>> So actually you can receive requests from openvpn via this
+>>>>>>>> interface without modifying openvpn...
+>>>>>>>>
+>>>>>>>> Maybe I am missing something, please bear with me.
+>>>>>>>>
+>>>>>>> The android API in this case is Java.  There is no C API that
+>>>>>>> can be used. Opening the tun device requires passing the fd of
+>>>>>>> the tun
+>>>>>> device
+>>>>>>> to openvpn. Also the for sockets that should not be routed over
+>>>> the
+>>>>>>> tun device the Java API provides a protect(int fd) API.
+>>>>>>> That means
+>>>>>> the
+>>>>>>> socket from openvpn needs to passed to the Java GUI to call the
+>>>>>>> protect method.
+>>>>>>>
+>>>>>>> I see 2 way to accomplish this:
+>>>>>>>
+>>>>>>> - Using the the java native interface to directly call into
+>> java
+>>>>>>> from c and vice versa. This worked but since openvpn was not
+>>>> really
+>>>>>>> usable as a library I got other problem (the google code
+>>>> repository
+>>>>>>> has earlier version of the code which uses this.) - Keep openvpn
+>>>>>>> as seperate process and pass the fd over a unix
+>>>>>> socket.
+>>>>>>> (One of the more obscure Unix apis)
+>>>>>>>
+>>>>>>> The requirement that all information as ip addresses, dns and
+>>>>>>> routes must be available means that the persist-tun device
+>>>>>>> cannot be used if I also want to be to use pull.
+>>>>>>>
+>>>>>>> Calling an external programs could eliminate the "ROUTE" ,
+>>>>>>> "DNS", "DOMAIN" , "IFCONFIG" management commands I have
+>>>>>>> introduced. But the patched implements also two fd passing
+>>>>>>> managment commands "PROTECT-
+>>>>>> FD"
+>>>>>>> (passes fd from openvpn to GUI) and "OPENTUN" (passes fd from
+>>>>>>> GUI to openvpn).
+>>>>>>>
+>>>>>>> Arne
+>>>>>>>
+>>>>>>
+>>>>>> Great, so we can first shrink the patch!
+>>>>>>
+>>>>>> So two features you implied...
+>>>>>>
+>>>>>> 1. pass pre-opened tun device
+>>>>>>
+>>>>>> are you sure there are no alternatives to this? how does the java
+>>>> api
+>>>>>> receives the handle anyway?
+>>>>>>
+>>>>>
+>>>>> I agree with Arne's approach of letting the tun driver be passed
+>>>> through the management interface. This is the way things work in
+>>>> Android VPNService land. I still need to go through the code
+>>>> though.
+>>>>>
+>>>>>> 2. the "protect" API.
+>>>>>>
+>>>>>> Can you please explain more about the functionality of the
+>> "protect"
+>>>>>> API? why is this actually required? maybe there are alternatives.
+>>>>>>
+>>>>>
+>>>>> About the protect API: The VPNService API routes all
+>>>>> traffic through
+>>>> the VPN by default. The socket used by OpenVPN needs to be
+>> "protected"
+>>>> from this, using a special function call. Therefore, Android
+>>>> Java needs this call.
+>>>>
+>>>> Thanks!
+>>>>
+>>>> So why can't we simply open the socket at the UI as well?
+>>>> similar to the tun?
+>>>>
+>>>> Alon.
+> -------------------------------------------------------------------------=
+-----
 >
-> I will.
-> But how can you agree the above... :)
 >
-> Anyway, I would like to get your updated response on this split...
+Live Security Virtual Conference
+> Exclusive live event will cover all the ways today's security and
+> threat landscape has changed and how IT managers can respond.
+> Discussions will include endpoint security, mobile security and the
+> latest in malware threats.
+> http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/
+> _______________________________________________ Openvpn-devel
+> mailing list Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 >
-> Alon.
 
-Done, repositories are now at:
-https://github.com/alonbl/openvpn-plugin-auth-pam-private
-https://github.com/alonbl/openvpn-plugin-auth-pam-private
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-I added -private suffix to reduce people sensitivity or fear that this
-is already done thing.
-Although I still waiting for some stronger arguments against.
+iEYEARECAAYFAk+rjuwACgkQDC186MBRfrqP6gCgmgwzFDG8bgpB62JcjZgAv+sf
+ezMAn03te751+mCr67qjhwkWEq6bYTno
+=3D5IVP
+-----END PGP SIGNATURE-----
 
-Regards,
-Alon
+---------------------------------------------------------------------------=
+---
+Live Security Virtual Conference
+Exclusive live event will cover all the ways today's security and
+threat landscape has changed and how IT managers can respond. Discussions
+will include endpoint security, mobile security and the latest in malware
+threats. http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/
+_______________________________________________
+Openvpn-devel mailing list
+Openvpn-devel@lists.sourceforge.net
+https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
