@@ -1,25 +1,11 @@
+Message-ID: <4FABBA2D.9010206@...515...>
+Date: Thu, 10 May 2012 15:53:01 +0300
+From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <4FAB8EEE.8020607@...1114...>
-References: <4FAAE0A1.2080808@...1227...>
-	<CAOazyz2wZ3n-70Pk8W_Z3OE_4_4th1PXWUOZUjOjNXetPkxc7g@...278...>
-	<4FAAF152.7070508@...1227...>
-	<CAOazyz35bB=q1hpdzjj_aHZ7K_0koT8pcw0csham2AOwMqGrfg@...278...>
-	<4FAAF945.8070005@...1227...>
-	<CAOazyz12Rw0kOSS+siU7tLP4eXO5XkhexjVLn+uC97s4K1Z8EQ@...278...>
-	<4FAAFCB4.8040606@...1227...>
-	<CAOazyz2wP2ms7HC31LPp3VzFRBu+S3zURZm1ozz0MzjmhQv07g@...278...>
-	<4FAB0556.50903@...1227...>
-	<CAOazyz2pdJysuaEhoDL8O=S=CdEfW8XCuB6n8YrnKjOBqstTPA@...278...>
-	<1CED409804E2164C8104F9E623B08B9012D1CF8A98@...1436...>
-	<CAOazyz0Qb8xa-FUqQcMDX=w+=Vb3J8sQ2R8GAxNtfWxT-4DNkw@...278...>
-	<1CED409804E2164C8104F9E623B08B9012D1CF8AB9@...1436...>
-	<CAOazyz3xObLvBubo4E6vSmepj-8AkGd6P4k-6VXYpvsSm-vs3A@...278...>
-	<1CED409804E2164C8104F9E623B08B9012D1CF8AD6@...1436...>
-	<4FAB8EEE.8020607@...1114...>
-Date: Thu, 10 May 2012 15:46:06 +0300
-Message-ID: <CAOazyz25ecuVkwYM7OM9wUWqQYSFt-XzeA7PKdv=0-o2C+aHoA@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
+References: <4FABB063.8090704@...515...>
+	<CAOazyz1eHU3T+89E0rEy0zrFnPb5BQQiRLw07bgz23J+wkTHQQ@...278...>
+In-Reply-To: <CAOazyz1eHU3T+89E0rEy0zrFnPb5BQQiRLw07bgz23J+wkTHQQ@...278...>
+Subject: Re: [Openvpn-devel] Some issues with openvpn-build/windows-nsis
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -30,43 +16,61 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: David Sommerseth <openvpn.list@...1114...>
+To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Thu, May 10, 2012 at 12:48 PM, David Sommerseth
-<openvpn.list@...1114...> wrote:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
+
+> On Thu, May 10, 2012 at 3:11 PM, Samuli Sepp=C3=A4nen <samuli@...515...> =
+wrote:
+>> Hi,
+>>
+>> I tried to generate a Windows installer on Ubuntu 11.10 amd64, but ran
+>> into some issues:
+>>
+>> $ cd openvpn-build/windows-nsis
+>> $ ./build-snapshot
+>> --- snip ---
+>>
+>> make[3]: Leaving directory
+>> `/home/samuli/opt/openvpn-build/windows-nsis/tmp/build-i686/pkcs11-helpe=
+r-1.10'
+>> make[2]: Leaving directory
+>> `/home/samuli/opt/openvpn-build/windows-nsis/tmp/build-i686/pkcs11-helpe=
+r-1.10'
+>> make[1]: Leaving directory
+>> `/home/samuli/opt/openvpn-build/windows-nsis/tmp/build-i686/pkcs11-helpe=
+r-1.10'
+>> tap-windows
+>> Fixup libtool files
+>> Restore libtool files
+>> ls: cannot access tmp/image-i686/openvpn-i686-*-bin.*: No such file or
+>> directory
+>>
+>> The error message seems clear enough, but I'm wondering why the binaries
+>> are not where it looks for them:
+>>
+>> $ ls tmp/image-i686
+>> openvpn
+>> $ ls tmp/image-i686/openvpn
+>> bin  etc  include  lib  share
+> This is strange, as you referred to dash, which I never tested, I will
+> try and see if that is the problem.
 >
-> On 10/05/12 09:28, Adriaan de Jong wrote:
->> I still prefer using the management interface. It keeps the
->> interface to the Java stuff very clean (socket-based). Further you
->> potentially allow other systems, such as Apple or Windows Phone to
->> do the same. It avoids messy JNI stuff, and fits into the spirit of
->> the management interface. It's the simplest solution.
->
-> I agree. =C2=A0The plug-in approach seems a bit overkill to me. =C2=A0The
-> approach using the management API makes it far simpler.
+> Alon.
+What I know is that if I work around this problem, I get a shell syntax
+error later on... and if I switch #!/bin/sh to #!/bin/bash in
+"build-snapshot", that syntax error goes away. To be more precise, the
+error occurs at openvpn-build/windows-nsis/build:5, which is
 
-It can be either management interface or socket between UI and plugin.
+   ROOT=3D"${ROOT:-tmp}"
 
-The issue is monolithic vs modular.
+I don't have full logs at hand right now, unfortunately.
 
-OpenVPN is already exploded in feature that are needed by specific
-installations.
+--=20
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-For every new feature was need to add we should ask our-selves if it
-can be added using modular approach and what is missing in the public
-interfaces in order to do the task.
+irc freenode net: mattock
 
-Of course adding features as #ifdefs is simpler at first, but later on
-they tend to be complex to maintain and untested, moving to modular
-components can delegate the maintenance and making the core product
-quality higher.
-
-If we need to allow directing custom commands to specific plugin via
-the management - this I can understand.
-But patching the core for these tasks is something I think we should avoid.
-
-Alon.
 
