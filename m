@@ -1,12 +1,26 @@
 MIME-Version: 1.0
-In-Reply-To: <4FABBA2D.9010206@...515...>
-References: <4FABB063.8090704@...515...>
-	<CAOazyz1eHU3T+89E0rEy0zrFnPb5BQQiRLw07bgz23J+wkTHQQ@...278...>
-	<4FABBA2D.9010206@...515...>
-Date: Thu, 10 May 2012 18:18:04 +0300
-Message-ID: <CAOazyz3LokL2uizvW-6WpAJD=7G4i2qfczKSTrUwpwQ_uBxuLQ@...278...>
+In-Reply-To: <4FABDBF7.406@...1114...>
+References: <4FAAE0A1.2080808@...1227...> <4FAAF945.8070005@...1227...>
+	<CAOazyz12Rw0kOSS+siU7tLP4eXO5XkhexjVLn+uC97s4K1Z8EQ@...278...>
+	<4FAAFCB4.8040606@...1227...>
+	<CAOazyz2wP2ms7HC31LPp3VzFRBu+S3zURZm1ozz0MzjmhQv07g@...278...>
+	<4FAB0556.50903@...1227...>
+	<CAOazyz2pdJysuaEhoDL8O=S=CdEfW8XCuB6n8YrnKjOBqstTPA@...278...>
+	<1CED409804E2164C8104F9E623B08B9012D1CF8A98@...1436...>
+	<CAOazyz0Qb8xa-FUqQcMDX=w+=Vb3J8sQ2R8GAxNtfWxT-4DNkw@...278...>
+	<1CED409804E2164C8104F9E623B08B9012D1CF8AB9@...1436...>
+	<CAOazyz3xObLvBubo4E6vSmepj-8AkGd6P4k-6VXYpvsSm-vs3A@...278...>
+	<1CED409804E2164C8104F9E623B08B9012D1CF8AD6@...1436...>
+	<4FAB8EEE.8020607@...1114...>
+	<1CED409804E2164C8104F9E623B08B9012D1CF8D08@...1436...>
+	<CAOazyz1u-WhMYD5VykW2nzLyJzWr8-8wJ3pqwCMBwqggkpbLiA@...278...>
+	<1CED409804E2164C8104F9E623B08B9012D1CF8D3E@...1436...>
+	<CAOazyz30FaAPsha7hyD9cAwvRWkq_4i9Cme0mFJDpX0VdSb7=w@...278...>
+	<4FABDBF7.406@...1114...>
+Date: Thu, 10 May 2012 18:20:39 +0300
+Message-ID: <CAOazyz1mna6mXUfpEU0FZ7ORVouEFYPW_JJj18ag86b+-SzARg@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] Some issues with openvpn-build/windows-nsis
+Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,63 +31,20 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+To: David Sommerseth <openvpn.list@...1114...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Thu, May 10, 2012 at 3:53 PM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
-ote:
->
->> On Thu, May 10, 2012 at 3:11 PM, Samuli Sepp=C3=A4nen <samuli@...515...>=
- wrote:
->>> Hi,
->>>
->>> I tried to generate a Windows installer on Ubuntu 11.10 amd64, but ran
->>> into some issues:
->>>
->>> $ cd openvpn-build/windows-nsis
->>> $ ./build-snapshot
->>> --- snip ---
->>>
->>> make[3]: Leaving directory
->>> `/home/samuli/opt/openvpn-build/windows-nsis/tmp/build-i686/pkcs11-help=
-er-1.10'
->>> make[2]: Leaving directory
->>> `/home/samuli/opt/openvpn-build/windows-nsis/tmp/build-i686/pkcs11-help=
-er-1.10'
->>> make[1]: Leaving directory
->>> `/home/samuli/opt/openvpn-build/windows-nsis/tmp/build-i686/pkcs11-help=
-er-1.10'
->>> tap-windows
->>> Fixup libtool files
->>> Restore libtool files
->>> ls: cannot access tmp/image-i686/openvpn-i686-*-bin.*: No such file or
->>> directory
->>>
->>> The error message seems clear enough, but I'm wondering why the binaries
->>> are not where it looks for them:
->>>
->>> $ ls tmp/image-i686
->>> openvpn
->>> $ ls tmp/image-i686/openvpn
->>> bin =C2=A0etc =C2=A0include =C2=A0lib =C2=A0share
->> This is strange, as you referred to dash, which I never tested, I will
->> try and see if that is the problem.
->>
->> Alon.
-> What I know is that if I work around this problem, I get a shell syntax
-> error later on... and if I switch #!/bin/sh to #!/bin/bash in
-> "build-snapshot", that syntax error goes away. To be more precise, the
-> error occurs at openvpn-build/windows-nsis/build:5, which is
->
-> =C2=A0 ROOT=3D"${ROOT:-tmp}"
->
-> I don't have full logs at hand right now, unfortunately.
+On Thu, May 10, 2012 at 6:17 PM, David Sommerseth
+<openvpn.list@...1114...> wrote:
+> Development is all about iterations. =C2=A0Let's see what we can do NOW to
+> get Arne's approach reviewed properly, see if there are things which
+> can be do to simplify the future somewhat ... but don't make this
+> depend on a complete modularisation of OpenVPN first.
 
-No the problem was in much later phase... dash does not support ${XXX//} sy=
-ntax.
-Fixed now.
-Can you please try again?
+There is nothing wrong in maintaining external patches until upstream
+properly merged the change.
+I've been maintaining such patches for years, with user base that was happy.
+What's the rush? if users wants a solution they have it ready.
 
-Thanks!
 Alon.
 
