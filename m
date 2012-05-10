@@ -1,25 +1,12 @@
-Message-ID: <4FABDBF7.406@...1114...>
-Date: Thu, 10 May 2012 17:17:11 +0200
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4FAAE0A1.2080808@...1227...> <4FAAF945.8070005@...1227...>
-	<CAOazyz12Rw0kOSS+siU7tLP4eXO5XkhexjVLn+uC97s4K1Z8EQ@...278...>
-	<4FAAFCB4.8040606@...1227...>
-	<CAOazyz2wP2ms7HC31LPp3VzFRBu+S3zURZm1ozz0MzjmhQv07g@...278...>
-	<4FAB0556.50903@...1227...>
-	<CAOazyz2pdJysuaEhoDL8O=S=CdEfW8XCuB6n8YrnKjOBqstTPA@...278...>
-	<1CED409804E2164C8104F9E623B08B9012D1CF8A98@...1436...>
-	<CAOazyz0Qb8xa-FUqQcMDX=w+=Vb3J8sQ2R8GAxNtfWxT-4DNkw@...278...>
-	<1CED409804E2164C8104F9E623B08B9012D1CF8AB9@...1436...>
-	<CAOazyz3xObLvBubo4E6vSmepj-8AkGd6P4k-6VXYpvsSm-vs3A@...278...>
-	<1CED409804E2164C8104F9E623B08B9012D1CF8AD6@...1436...>
-	<4FAB8EEE.8020607@...1114...>
-	<1CED409804E2164C8104F9E623B08B9012D1CF8D08@...1436...>
-	<CAOazyz1u-WhMYD5VykW2nzLyJzWr8-8wJ3pqwCMBwqggkpbLiA@...278...>
-	<1CED409804E2164C8104F9E623B08B9012D1CF8D3E@...1436...>
-	<CAOazyz30FaAPsha7hyD9cAwvRWkq_4i9Cme0mFJDpX0VdSb7=w@...278...>
-In-Reply-To: <CAOazyz30FaAPsha7hyD9cAwvRWkq_4i9Cme0mFJDpX0VdSb7=w@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
+In-Reply-To: <4FABBA2D.9010206@...515...>
+References: <4FABB063.8090704@...515...>
+	<CAOazyz1eHU3T+89E0rEy0zrFnPb5BQQiRLw07bgz23J+wkTHQQ@...278...>
+	<4FABBA2D.9010206@...515...>
+Date: Thu, 10 May 2012 18:18:04 +0300
+Message-ID: <CAOazyz3LokL2uizvW-6WpAJD=7G4i2qfczKSTrUwpwQ_uBxuLQ@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] Some issues with openvpn-build/windows-nsis
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -28,172 +15,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Alon Bar-Lev <alon.barlev@...277...>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+On Thu, May 10, 2012 at 3:53 PM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
+ote:
+>
+>> On Thu, May 10, 2012 at 3:11 PM, Samuli Sepp=C3=A4nen <samuli@...515...>=
+ wrote:
+>>> Hi,
+>>>
+>>> I tried to generate a Windows installer on Ubuntu 11.10 amd64, but ran
+>>> into some issues:
+>>>
+>>> $ cd openvpn-build/windows-nsis
+>>> $ ./build-snapshot
+>>> --- snip ---
+>>>
+>>> make[3]: Leaving directory
+>>> `/home/samuli/opt/openvpn-build/windows-nsis/tmp/build-i686/pkcs11-help=
+er-1.10'
+>>> make[2]: Leaving directory
+>>> `/home/samuli/opt/openvpn-build/windows-nsis/tmp/build-i686/pkcs11-help=
+er-1.10'
+>>> make[1]: Leaving directory
+>>> `/home/samuli/opt/openvpn-build/windows-nsis/tmp/build-i686/pkcs11-help=
+er-1.10'
+>>> tap-windows
+>>> Fixup libtool files
+>>> Restore libtool files
+>>> ls: cannot access tmp/image-i686/openvpn-i686-*-bin.*: No such file or
+>>> directory
+>>>
+>>> The error message seems clear enough, but I'm wondering why the binaries
+>>> are not where it looks for them:
+>>>
+>>> $ ls tmp/image-i686
+>>> openvpn
+>>> $ ls tmp/image-i686/openvpn
+>>> bin =C2=A0etc =C2=A0include =C2=A0lib =C2=A0share
+>> This is strange, as you referred to dash, which I never tested, I will
+>> try and see if that is the problem.
+>>
+>> Alon.
+> What I know is that if I work around this problem, I get a shell syntax
+> error later on... and if I switch #!/bin/sh to #!/bin/bash in
+> "build-snapshot", that syntax error goes away. To be more precise, the
+> error occurs at openvpn-build/windows-nsis/build:5, which is
+>
+> =C2=A0 ROOT=3D"${ROOT:-tmp}"
+>
+> I don't have full logs at hand right now, unfortunately.
 
-On 10/05/12 16:50, Alon Bar-Lev wrote:
-> On Thu, May 10, 2012 at 5:43 PM, Adriaan de Jong
-> <dejong@...1435...> wrote:
->>> -----Original Message----- From: Alon Bar-Lev
->>> [mailto:alon.barlev@...277...] Sent: donderdag 10 mei 2012
->>> 16:33 To: Mendelt Siebenga Cc:
->>> openvpn-devel@lists.sourceforge.net Subject: Re:
->>> [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
->>> 
->>> Hello Mendelt,
->>> 
->>> Thank you for taking the time to explain the process, now at
->>> least I can comment better.
->>> 
->>> On Thu, May 10, 2012 at 5:03 PM, Mendelt Siebenga 
->>> <mendelt.siebenga@...1435...> wrote: <snip>
->>> 
->>>> Android has a lot of limitations on how you can get access to
->>>> a TUN
->>> device without rooting your phone. Basically what you need to
->>> do is:
->>>> - Pass a file descriptor of the socket used by OpenVPN to a
->>>> system
->>> call to protect it. This prevents traffic to this socket being
->>> routed over the vpn itself.
->>>> - Pass all routing information, dns servers etc. To a system
->>>> call.
->>> This call sets up routing and returns a file descriptor to the
->>> TUN device.
->>> 
->>> This is new! So you need the complete IP and routing settings
->>> *BEFORE* you open the tun, this was not clear from the
->>> discussion.
->>> 
->>> <snip>
->>> 
->>>> I'm not really sure about putting these changes off into a
->>>> separate
->>> plugin. I personally like to modularize code as much as
->>> possible, but my guess is that in this case adding the hooks to
->>> the plugin interface that are necessary to allow this
->>> functionality to be implemented as a plugin will add more
->>> clutter to OpenVPN than just adding them to the core. I'm not
->>> sure what the plans are for the plugin interface but I can
->>> imagine that if it becomes more powerful over time we might be
->>> able to spin off these changes as a separate plugin later.
->>> 
->>> This is exactly what I am afraid of, merge now monolithic code
->>> in a hope that in future someone will clean up the mess. To be
->>> able to provide a solution now to users an external patch may
->>> be used, nothing wrong with this.
->>> 
->>> I prefer to work a little harder and implement the modular 
->>> infrastructure required to support this scenario and other that
->>> may exist, this without breaking assumptions, such as
->>> management interface can be TCP connection.
->>> 
->>> So what I recommend extending the tun engine interface I
->>> recently implemented[1] for 2.4, and add an engine to delegate
->>> calls to the openvpn plugin framework, the tun engine interface
->>> already supports opening the tun, configuring the tun etc...
->>> maybe minor changes are required, I will be happy to work on
->>> this.
->>> 
->>> We also add an option for a plugin to use the management
->>> interface and expose something like: plugin <id> command.
->>> 
->>> Then [[[JUST A SUGGESTION]] the UI (java) will open unix domain
->>> socket in addition to the management interface and put its
->>> number in environment ANDROID_CONTROL_FD=XXX.
->>> 
->>> A special android plugin will be loaded which register to the
->>> tun engine notifications, it will be able to interact with the
->>> UI via the management interface, but for two special tasks it
->>> will use the custom unix domain control fd in addition, for
->>> example via the management interface it will forward the
->>> network details, then ask for tun fd, and will get the fd via
->>> the control channel.
->>> 
->>> This way you will be able to maintain the android custom code
->>> as a whole, while the openvpn project will benefit from the
->>> ability to expose all plugins via the management interface for
->>> any task and be able to perform routing and networking setting
->>> via plugin (which was also discussed for privilege separation
->>> model).
->>> 
->>> Alon.
->>> 
->>> [1] https://github.com/alonbl/openvpn/compare/master...tun
->>> 
->> 
->> Basically, what you're asking is that a reasonably simple patch
->> is extended into a revamp of the management system. While I agree
->> that more modularisation is important for OpenVPN, stopping all
->> progress and killing off a useful feature is not the way to
->> achieve that. Shall we agree to discuss the technical merits of
->> the patch, and not the grand vision of how OpenVPN should look?
->> Don't throw out the good for the perfect :).
-> 
-> I wrote that I will help to make it true, and already shown the
-> major work done in this direction.
-> 
-> Anyway your argument may be heard from everyone who try to add any 
-> change to any software, yes, I need just this simple change...
-> this probably not wise, as sooner or later you have unmaintainable 
-> software, which is lose-lose solution.
-> 
->> Modularisation work is planned for 2.4, and adding a
->> management-interface controlled tun module would be a great idea
->> there. I still disagree on using the plugin interface for that. A
->> modularised system is fine there.
-> 
-> Why? plugin is adding a custom logic, and you need custom logic. As
-> I wrote it does not imply that you implement your JNI there.
+No the problem was in much later phase... dash does not support ${XXX//} sy=
+ntax.
+Fixed now.
+Can you please try again?
 
-Okay ... fine ... there are plenty of big visions for a future version
-of OpenVPN, and it will become more modular, yes.  I think we all
-agree there.
-
-What is far more important now is the review the *current* patch, this
-review process have so far derailed completely.  Lets put this current
-discussion aside.  Later on we will discuss this how to modularise
-OpenVPN anyway.
-
-Let's give the other aspects of this patch a fair review, please.  If
-there are approaches to get consider modularisation go smoother in the
-future, fine.  But this review should not be about modularisation
-itself.  And if this patch is fine in the other aspects, for this
-patch inclusion should be a no-brainer.  Getting a new platform
-support in less than 30KB is a great achievement.
-
-And the reason I'm stressing this review is that we have OpenVPN Tech
-having a closed Android implementation, there's Arne's approach,
-Fox-IT has been working on it and there's even one more closed-source
-implementation (I forgot the name now).  Let's gather around Arne's
-and Fox-ITs efforts and get that in shape so we can get a pure Open
-Source solution on the table before we're loosing users to these other
-implementations.  Those users won't wait around until we have
-modularised OpenVPN, as they couldn't really care less - even though
-we developers might think they do care about such things.  And Android
-users are asking for OpenVPN more and more often these days.  We need
-to stay relevant for those users.
-
-Development is all about iterations.  Let's see what we can do NOW to
-get Arne's approach reviewed properly, see if there are things which
-can be do to simplify the future somewhat ... but don't make this
-depend on a complete modularisation of OpenVPN first.
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEUEARECAAYFAk+r2/UACgkQDC186MBRfrr1mwCY1kTyko04YWPtUjVWAdl5zlOQ
-KwCeOmbmvbTi4yHNtn6P5LVhHuyzGc8=
-=JtHp
------END PGP SIGNATURE-----
+Thanks!
+Alon.
 
