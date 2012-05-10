@@ -1,12 +1,14 @@
-Message-ID: <4FAB8501.2020009@...1114...>
-Date: Thu, 10 May 2012 11:06:09 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+References: <1336639383.83791.YahooMailNeo@...1721...>
+	<4FAB80BA.9070500@...1147...>
+Message-ID: <1336641729.38936.YahooMailNeo@...1723...>
+Date: Thu, 10 May 2012 02:22:09 -0700 (PDT)
+From: Raj Kumar <raj_kumar_sh@...109...>
+In-Reply-To: <4FAB80BA.9070500@...1147...>
 MIME-Version: 1.0
-References: <4FAAE0A1.2080808@...1227...>
-	<CAOazyz2wZ3n-70Pk8W_Z3OE_4_4th1PXWUOZUjOjNXetPkxc7g@...278...>
-	<4FAAF152.7070508@...1227...>
-In-Reply-To: <4FAAF152.7070508@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
+Content-Type: multipart/alternative;
+	boundary="-876459695-1998136064-1336641729=:38936"
+Subject: Re: [Openvpn-devel] openvpn question
+Reply-To: Raj Kumar <raj_kumar_sh@...109...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,76 +17,95 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Jan Just Keijser <janjust@...1147...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+---876459695-1998136064-1336641729=:38936
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-On 10/05/12 00:36, Arne Schwabe wrote:
+Hi JJK,
 
->> I suggest you clone the repository at github, create a branch
->> and order your changes.
-> 
-> 
-> that would mean to revert all changes, making the changes in small
-> steps and commiting each step? (I am still trying to learn how to
-> work with git)
-
-Using github is no requirement.  From what I see, all your patches was
-gathered into a single file.  For this initial review, I see no issues
-with that.  And the changeset isn't really that big.
-
-Having that said, it's a good approach to have many smaller changesets
-which have well defined changes which "belongs" together.  When
-debugging later on, there's a neat feature in git which is called 'git
-bisect', which can help you find out which commit causes the trouble.
- Smaller changes gives then a better idea how to fix it, than bigger
-changes.  But of course, it makes no sense to have each line change as
-a separate commit.  See the build/cleanup commits from Alon or the
-PolarSSL commits (git log 0a18017..be960aa)
-
-For the future, you may also find it easier to configure 'git
-send-email' when submitting your patches, see our quick crash course
-on how to do that.  Basically, if I have five commits you want to send
-to the mailing list - all I do is:
-
-    $ git send-email HEAD~5
-
-And then patches are formatted and sent via SMTP.  If you want to have
-a "cover letter", then do:
-
-   $ git format-patch --cover HEAD~5
-   (you may review 000{1..5}-*.patch)
-   (edit 0000-cover-letter.patch)
-   $ git send-email 0000-cover-letter.patch HEAD~5
-   *or*
-   $ git send-email 0000-cover-letter.patch 000[12345]-*.patch
-
-This makes sure all your mails are nicely threaded.
-
-git crash course:
-<https://community.openvpn.net/openvpn/wiki/GitCrashCourse#Preparingforsendingpatchesviamail>
-
-There's also other nice tweaks you can do with git there.
+Thanks a lot for quick responds.=A0 your answer really helped me.
 
 
-And that's all I want to say about git/github or anything like that in
-this thread.  The rest of this thread will be about the patch contents
-itself from my side.
 
 
-kind regards,
+Regards
+Raj=20
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk+rhP8ACgkQDC186MBRfrrGWgCgqe1emSRs8LXAwE33SS9eUDs4
-0ggAnjqUxh1gXYPLX2iqEpvfA4FIxfdX
-=g4z8
------END PGP SIGNATURE-----
+
+________________________________
+ From: Jan Just Keijser <janjust@...1147...>
+To: Raj Kumar <raj_kumar_sh@...109...>=20
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@...290...=
+net>=20
+Sent: Thursday, May 10, 2012 2:17 PM
+Subject: Re: [Openvpn-devel] openvpn question
+=20
+Hi Raj,
+
+Raj Kumar wrote:
+>=20
+> Hi all,
+>=20
+> I am new to openvpn. I am using openvpn on my=A0 linux machine.
+>=20
+> I have a basic question about openvpn.=20
+> How openvpn process the incoming packets ?
+>=20
+> Is it processing incoming packets one by one, means receive one packet fr=
+om the kernel, decrypt it and send it back to the kernel then next packet ?
+> or
+> whenever a packet comes, openvpn receives=A0 and queues it while doing de=
+cryption of already received packet ?
+>=20
+>=A0=20
+openvpn processes the incoming packets one by one , both from the VPN side =
+(the encrypted packets) , and the packets coming in via the tun/tap interfa=
+ce. This is one of the main reasons why openvpn speeds top off at around ~ =
+300 Mbps.
+
+HTH,
+
+JJK=
+
+---876459695-1998136064-1336641729=:38936
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<html><body><div style=3D"color:#000; background-color:#fff; font-family:ve=
+rdana, helvetica, sans-serif;font-size:10pt"><div><span>Hi JJK,</span></div>
+<div><span><br>
+  </span></div>
+<div><span>Thanks a lot for quick responds.&nbsp; your answer really helped=
+ me.<br></span></div><div><br></div><div><br></div><div><br></div><div><spa=
+n>Regards</span></div><div><span>Raj <br></span></div><div><br></div>  <div=
+ style=3D"font-family: verdana, helvetica, sans-serif; font-size: 10pt;"> <=
+div style=3D"font-family: times new roman, new york, times, serif; font-siz=
+e: 12pt;"> <div dir=3D"ltr"> <font face=3D"Arial" size=3D"2"> <hr size=3D"1=
+">  <b><span style=3D"font-weight:bold;">From:</span></b> Jan Just Keijser =
+&lt;janjust@...1147...&gt;<br> <b><span style=3D"font-weight: bold;">To:</s=
+pan></b> Raj Kumar &lt;raj_kumar_sh@...109...&gt; <br><b><span style=3D"fon=
+t-weight: bold;">Cc:</span></b> "openvpn-devel@lists.sourceforge.net" &lt;o=
+penvpn-devel@lists.sourceforge.net&gt; <br> <b><span style=3D"font-weight: =
+bold;">Sent:</span></b> Thursday, May 10, 2012 2:17 PM<br> <b><span style=
+=3D"font-weight: bold;">Subject:</span></b> Re: [Openvpn-devel] openvpn que=
+stion<br> </font>
+ </div> <br>
+Hi Raj,<br><br>Raj Kumar wrote:<br>&gt; <br>&gt; Hi all,<br>&gt; <br>&gt; I=
+ am new to openvpn. I am using openvpn on my&nbsp; linux machine.<br>&gt; <=
+br>&gt; I have a basic question about openvpn. <br>&gt; How openvpn process=
+ the incoming packets ?<br>&gt; <br>&gt; Is it processing incoming packets =
+one by one, means receive one packet from the kernel, decrypt it and send i=
+t back to the kernel then next packet ?<br>&gt; or<br>&gt; whenever a packe=
+t comes, openvpn receives&nbsp; and queues it while doing decryption of alr=
+eady received packet ?<br>&gt; <br>&gt;&nbsp; <br>openvpn processes the inc=
+oming packets one by one , both from the VPN side (the encrypted packets) ,=
+ and the packets coming in via the tun/tap interface. This is one of the ma=
+in reasons why openvpn speeds top off at around ~ 300 Mbps.<br><br>HTH,<br>=
+<br>JJK<br><br><br><br> </div> </div>  </div></body></html>=
+
+---876459695-1998136064-1336641729=:38936--
 
