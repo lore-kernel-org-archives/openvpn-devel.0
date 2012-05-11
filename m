@@ -1,12 +1,22 @@
-MIME-Version: 1.0
-In-Reply-To: <CAOazyz2CTnp1po+kzFqVZ53StC6dbbjDOAOfNyU17R7r01QajA@...278...>
-References: <4FAD2F8C.6000709@...515...>
-	<CAOazyz2CTnp1po+kzFqVZ53StC6dbbjDOAOfNyU17R7r01QajA@...278...>
-Date: Fri, 11 May 2012 19:06:33 +0300
-Message-ID: <CAOazyz1FVQVf6QZQYmLEMngeJJP0MuhkTuTFncwyEir+BRLsEQ@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] First partially-working snapshot build for
- Windows now available
+Date: Fri, 11 May 2012 20:56:41 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120511185641.GZ1359@...1296...>
+References: <CAOazyz35bB=q1hpdzjj_aHZ7K_0koT8pcw0csham2AOwMqGrfg@...278...>
+	<4FAAF945.8070005@...1227...>
+	<CAOazyz12Rw0kOSS+siU7tLP4eXO5XkhexjVLn+uC97s4K1Z8EQ@...278...>
+	<4FAAFCB4.8040606@...1227...>
+	<CAOazyz2wP2ms7HC31LPp3VzFRBu+S3zURZm1ozz0MzjmhQv07g@...278...>
+	<4FAB0556.50903@...1227...>
+	<CAOazyz2pdJysuaEhoDL8O=S=CdEfW8XCuB6n8YrnKjOBqstTPA@...278...>
+	<1CED409804E2164C8104F9E623B08B9012D1CF8A98@...1436...>
+	<CAOazyz0Qb8xa-FUqQcMDX=w+=Vb3J8sQ2R8GAxNtfWxT-4DNkw@...278...>
+	<1CED409804E2164C8104F9E623B08B9012D1CF8AB9@...1436...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="NHt+8aug4e70lOou"
+Content-Disposition: inline
+In-Reply-To: <1CED409804E2164C8104F9E623B08B9012D1CF8AB9@...1436...>
+Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,74 +25,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+To: Adriaan de Jong <dejong@...1435...>
+Cc: Alon Bar-Lev <alon.barlev@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--NHt+8aug4e70lOou
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
-BTW:
-You should also publish the tap-windows installer and zip.
-Make sure that you use the TAP_WINDOWS_URL environment to embed your
-built tap-windows and not the github.com project download.
-In future when we release signed tap-windows installer, it will be
-just any 3rd party dependency.
+Hi,
 
-On Fri, May 11, 2012 at 6:33 PM, Alon Bar-Lev <alon.barlev@...277...> wrote:
-> Hello Samuli,
->
-> This is great!
-> I don't have any issue with building the openvpn-gui... can you please
-> send me what wrong with that?
-> I use that[1] patched one that should be downloaded during build process.
->
-> Alon.
->
-> [1] https://github.com/alonbl/openvpn-gui/downloads
->
-> On Fri, May 11, 2012 at 6:26 PM, Samuli Sepp=C3=A4nen <samuli@...515...> =
-wrote:
->> Hi all,
->>
->> I finally managed to generate fairly crude OpenVPN Windows installers
->> using Alon's new openvpn-build buildsystem. Due to a build issue
->> "openvpn-gui" is not included, and the tap-driver is seems to be
->> unsigned. Regardless, here are the results nevertheless:
->>
->> <http://build.openvpn.net/downloads/snapshots/openvpn-install-2.3_master=
--I000_master-i686.exe>
->> <http://build.openvpn.net/downloads/snapshots/openvpn-install-2.3_master=
--I000_master-x86_64.exe>
->>
->> All of the libraries and executables have been signed with a self-signed
->> test key. This includes openssl libraries and such. If you want Windows
->> to trust these executables, you need to download this certificate:
->>
->> <http://build.openvpn.net/downloads/openvpntestca-cert.cer>
->>
->> Then you need to import it to your "Trusted CA" key store, e.g. with
->>
->>> certutil -user -addstore Root openvpntestca-cert.cer
->>
->> After this Windows should not complain about an unknown publisher. I'll
->> try to come up with really usable installer next week.
->>
->> --
->> Samuli Sepp=C3=A4nen
->> Community Manager
->> OpenVPN Technologies, Inc
->>
->> irc freenode net: mattock
->>
->>
->> ------------------------------------------------------------------------=
-------
->> Live Security Virtual Conference
->> Exclusive live event will cover all the ways today's security and
->> threat landscape has changed and how IT managers can respond. Discussions
->> will include endpoint security, mobile security and the latest in malware
->> threats. http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/
->> _______________________________________________
->> Openvpn-devel mailing list
->> Openvpn-devel@lists.sourceforge.net
->> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+On Thu, May 10, 2012 at 09:00:05AM +0200, Adriaan de Jong wrote:
+> That would be another option. In the model we were using (which might be =
+different), the order is as follows:
+>=20
+> 1. openvpn is started
+> 2. openvpn opens a socket to the remote host
+> 2. openvpn establishes the control channel across this socket
+> 3. openvpn passes socket and control channel data (IP, routing, DNS, etc)=
+ through the management interface to the android app
+> 4. android app passes these to the VPNService and receives an opened tun=
+=20
+> 5. android app passes the tun to openvpn
+> 6. openvpn proceeds as usual
+
+This looks very reasonable to me.
+
+(As for the patch itself, I had no time to go through it yet, sorry)
+
+Changing the build environment to build a shared library out of openvpn
+is something I do not fully understand yet, though - and don't view
+a particular useful goal right now.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--NHt+8aug4e70lOou
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBT61g6akuBuNlUUl1AQI81gP/UPwwIjFaqqJxjtbiXWhO4wwcFMcKNmHV
+39d9dy2jpAvFPJ/1nyHqrbQAhl0deP833QJly1ieIv2GnQbzFjFBT8tvHEDNh7xo
+nLnoDSBRoF3xTCCDguqucR1SAQg8gc78PX0YF8Ub1QR5vAFupWyciGU4JhCRPhZy
+dk3gt/OAV14=
+=oDFZ
+-----END PGP SIGNATURE-----
+
+--NHt+8aug4e70lOou--
 
