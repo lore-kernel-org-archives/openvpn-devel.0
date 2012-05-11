@@ -1,27 +1,15 @@
-MIME-Version: 1.0
-In-Reply-To: <CAP+U6tK5a-QFW1+=B-6AOTa3nqHheETs9mSuLMGmUQ5WS+c3vw@...278...>
-References: <4FAAE0A1.2080808@...1227...> <4FAAF945.8070005@...1227...>
-	<CAOazyz12Rw0kOSS+siU7tLP4eXO5XkhexjVLn+uC97s4K1Z8EQ@...278...>
-	<4FAAFCB4.8040606@...1227...>
-	<CAOazyz2wP2ms7HC31LPp3VzFRBu+S3zURZm1ozz0MzjmhQv07g@...278...>
-	<4FAB0556.50903@...1227...>
-	<CAOazyz2pdJysuaEhoDL8O=S=CdEfW8XCuB6n8YrnKjOBqstTPA@...278...>
-	<1CED409804E2164C8104F9E623B08B9012D1CF8A98@...1436...>
-	<CAOazyz0Qb8xa-FUqQcMDX=w+=Vb3J8sQ2R8GAxNtfWxT-4DNkw@...278...>
-	<1CED409804E2164C8104F9E623B08B9012D1CF8AB9@...1436...>
-	<CAOazyz3xObLvBubo4E6vSmepj-8AkGd6P4k-6VXYpvsSm-vs3A@...278...>
-	<1CED409804E2164C8104F9E623B08B9012D1CF8AD6@...1436...>
-	<4FAB8EEE.8020607@...1114...>
-	<1CED409804E2164C8104F9E623B08B9012D1CF8D08@...1436...>
-	<CAOazyz1u-WhMYD5VykW2nzLyJzWr8-8wJ3pqwCMBwqggkpbLiA@...278...>
-	<1CED409804E2164C8104F9E623B08B9012D1CF8D3E@...1436...>
-	<CAOazyz30FaAPsha7hyD9cAwvRWkq_4i9Cme0mFJDpX0VdSb7=w@...278...>
-	<4FABDBF7.406@...1114...>
-	<CAP+U6tK5a-QFW1+=B-6AOTa3nqHheETs9mSuLMGmUQ5WS+c3vw@...278...>
-Date: Fri, 11 May 2012 07:05:14 +0300
-Message-ID: <CAOazyz0QghwU6hswGqhQ-8L4CY74xwPSNwdXBn_AzHTEtOREHQ@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
+Date: Fri, 11 May 2012 08:41:10 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120511064110.GU1359@...1296...>
+References: <CAArKS8hPVLQSNrX4HtB+6UA+UU-63PmyN0BNmFuPdu4W0ZFEMw@...278...>
+	<20120508073716.GM1359@...1296...>
+	<CAArKS8gibawt-LNQws_7iiewyhAkH6TborXMiamsn1WqbLSr4g@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="uFSSoCA2+0++ptqO"
+Content-Disposition: inline
+In-Reply-To: <CAArKS8gibawt-LNQws_7iiewyhAkH6TborXMiamsn1WqbLSr4g@...278...>
+Subject: Re: [Openvpn-devel] OpenVPN in the Hypervisor
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -30,73 +18,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+To: Tom Kent <lists@...1718...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--uFSSoCA2+0++ptqO
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: Fabian Knittel <fabian.knittel@...1547...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
-On Fri, May 11, 2012 at 12:11 AM, Fabian Knittel
-<fabian.knittel@...1547...> wrote:
-> Hi,
->
-> 2012/5/10 David Sommerseth <openvpn.list@...1114...>:
->> On 10/05/12 16:50, Alon Bar-Lev wrote:
->>> Why? plugin is adding a custom logic, and you need custom logic. As
->>> I wrote it does not imply that you implement your JNI there.
->>
->> Okay ... fine ... there are plenty of big visions for a future version
->> of OpenVPN, and it will become more modular, yes. =C2=A0I think we all
->> agree there.
->>
->> What is far more important now is the review the *current* patch, this
->> review process have so far derailed completely. =C2=A0Lets put this curr=
-ent
->> discussion aside. =C2=A0Later on we will discuss this how to modularise
->> OpenVPN anyway.
->
-> To allow OpenVPN to be properly refactored afterwards, the important
-> part is probably to get the external interfaces correct (which never
-> works in practice, but it would be nice to get close...).
->
-> The main undecided points regarding the interface side of things appear t=
-o be:
-> * How to pass the fds back and forth: Special-case the management
-> =C2=A0interface for unix domain sockets or use a dedicated unix domain
-> =C2=A0socket for special operations. Could this potentially be the same
-> =C2=A0interface that was discussed for some of the windows privilege
-> =C2=A0separation approaches?
+Hi,
 
-Again, this is not the case of privileged separation as the process
-*IS* privileged to do the networking setup.
-People, don't get confused between running under root or not with privilege=
-s!
-Regular user can have privileges like creating tun and modify network
-setting without being root, as in this case, this is not privilege
-separation!
+On Thu, May 10, 2012 at 08:45:04PM -0400, Tom Kent wrote:
+> The other thing I tried was to have openvpn up and running, then to attach
+> the VM to the tap0 device that it created...that ended with this error:
+> libvirtError: internal error Failed to add tap interface to bridge. tap0 =
+is
+> not a bridge device
 
-And again, these UI specific issues should should be modularize and
-not go into mainline as-is.
+Try what David suggested: creating a bridge device.
 
-> * How to call OpenVPN from Java. Via thin JNI wrapper or as a regular
-> =C2=A0executable.
+Start OpenVPN with "tap0", then run=20
 
-Again, this is not the question.
-The question is do we want to make a library out of VPN with some
-interface such as openvpn_main() or not, the JNI question is totally
-unrelated to the mainline project.
+  "brctl addbr br0"
+  "brctl addif br0 tap0"
 
-> * The precise names of the newly introduced management commands.
+and then have libvirt attach to br0.
 
-If we provide plugin interface to management interface this can be a
-contract between the UI and the plugin, so that mainline should not be
-changed every time there is a special UI need.
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-If we provide tun engine implementation that supports the management
-interface, all platforms can benefit from this change.
+--uFSSoCA2+0++ptqO
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
->
-> Anything else?
->
-> Cheers
-> Fabian
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBT6y0hqkuBuNlUUl1AQJO/QQAqIWBvI27rmF7ppAWfDRubkIG2IV2OIjy
+nIYMttnPZURZFI36pUW7pr4YCKfkwBLKQNAPfTqrrEo/G8+S/gXdLhjxeMFzZuxt
+0//e9ACAXkjnXCa/Y9vB16JP/w5ieD/4h1KQqbVlfl7ttTpCFzcC+SIPakiQT9G7
+Xs4Y4Br9/Q0=
+=USz+
+-----END PGP SIGNATURE-----
+
+--uFSSoCA2+0++ptqO--
 
