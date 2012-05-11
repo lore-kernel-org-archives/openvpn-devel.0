@@ -1,13 +1,9 @@
-Message-ID: <4FAD1FDF.2040207@...515...>
-Date: Fri, 11 May 2012 17:19:11 +0300
-From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
+Message-ID: <4FAD2F8C.6000709@...515...>
+Date: Fri, 11 May 2012 18:26:04 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <4FABB063.8090704@...515...>
-	<CAOazyz1eHU3T+89E0rEy0zrFnPb5BQQiRLw07bgz23J+wkTHQQ@...278...>
-	<4FABBA2D.9010206@...515...>
-	<CAOazyz3LokL2uizvW-6WpAJD=7G4i2qfczKSTrUwpwQ_uBxuLQ@...278...>
-In-Reply-To: <CAOazyz3LokL2uizvW-6WpAJD=7G4i2qfczKSTrUwpwQ_uBxuLQ@...278...>
-Subject: Re: [Openvpn-devel] Some issues with openvpn-build/windows-nsis
+Subject: [Openvpn-devel] First partially-working snapshot build for Windows
+	now available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,68 +12,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Il 10.05.2012 18:18, Alon Bar-Lev ha scritto:
-> On Thu, May 10, 2012 at 3:53 PM, Samuli Sepp=C3=A4nen <samuli@...515...> =
-wrote:
->>> On Thu, May 10, 2012 at 3:11 PM, Samuli Sepp=C3=A4nen <samuli@...515...=
-> wrote:
->>>> Hi,
->>>>
->>>> I tried to generate a Windows installer on Ubuntu 11.10 amd64, but ran
->>>> into some issues:
->>>>
->>>> $ cd openvpn-build/windows-nsis
->>>> $ ./build-snapshot
->>>> --- snip ---
->>>>
->>>> make[3]: Leaving directory
->>>> `/home/samuli/opt/openvpn-build/windows-nsis/tmp/build-i686/pkcs11-hel=
-per-1.10'
->>>> make[2]: Leaving directory
->>>> `/home/samuli/opt/openvpn-build/windows-nsis/tmp/build-i686/pkcs11-hel=
-per-1.10'
->>>> make[1]: Leaving directory
->>>> `/home/samuli/opt/openvpn-build/windows-nsis/tmp/build-i686/pkcs11-hel=
-per-1.10'
->>>> tap-windows
->>>> Fixup libtool files
->>>> Restore libtool files
->>>> ls: cannot access tmp/image-i686/openvpn-i686-*-bin.*: No such file or
->>>> directory
->>>>
->>>> The error message seems clear enough, but I'm wondering why the binari=
-es
->>>> are not where it looks for them:
->>>>
->>>> $ ls tmp/image-i686
->>>> openvpn
->>>> $ ls tmp/image-i686/openvpn
->>>> bin  etc  include  lib  share
->>> This is strange, as you referred to dash, which I never tested, I will
->>> try and see if that is the problem.
->>>
->>> Alon.
->> What I know is that if I work around this problem, I get a shell syntax
->> error later on... and if I switch #!/bin/sh to #!/bin/bash in
->> "build-snapshot", that syntax error goes away. To be more precise, the
->> error occurs at openvpn-build/windows-nsis/build:5, which is
->>
->>   ROOT=3D"${ROOT:-tmp}"
->>
->> I don't have full logs at hand right now, unfortunately.
-> No the problem was in much later phase... dash does not support ${XXX//} =
-syntax.
-> Fixed now.
-> Can you please try again?
->
-> Thanks!
-> Alon.
-Yeah, will do.
+Hi all,
 
-Samuli
+I finally managed to generate fairly crude OpenVPN Windows installers
+using Alon's new openvpn-build buildsystem. Due to a build issue
+"openvpn-gui" is not included, and the tap-driver is seems to be
+unsigned. Regardless, here are the results nevertheless:
+
+<http://build.openvpn.net/downloads/snapshots/openvpn-install-2.3_master-I0=
+00_master-i686.exe>
+<http://build.openvpn.net/downloads/snapshots/openvpn-install-2.3_master-I0=
+00_master-x86_64.exe>
+
+All of the libraries and executables have been signed with a self-signed
+test key. This includes openssl libraries and such. If you want Windows
+to trust these executables, you need to download this certificate:
+
+<http://build.openvpn.net/downloads/openvpntestca-cert.cer>
+
+Then you need to import it to your "Trusted CA" key store, e.g. with
+
+> certutil -user -addstore Root openvpntestca-cert.cer
+
+After this Windows should not complain about an unknown publisher. I'll
+try to come up with really usable installer next week.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
 
