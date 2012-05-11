@@ -1,20 +1,15 @@
-Message-ID: <4FAD8DC5.9040606@...1227...>
-Date: Sat, 12 May 2012 00:08:05 +0200
-From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
-References: <CAOazyz35bB=q1hpdzjj_aHZ7K_0koT8pcw0csham2AOwMqGrfg@...278...>
-	<4FAAF945.8070005@...1227...>
-	<CAOazyz12Rw0kOSS+siU7tLP4eXO5XkhexjVLn+uC97s4K1Z8EQ@...278...>
-	<4FAAFCB4.8040606@...1227...>
-	<CAOazyz2wP2ms7HC31LPp3VzFRBu+S3zURZm1ozz0MzjmhQv07g@...278...>
-	<4FAB0556.50903@...1227...>
-	<CAOazyz2pdJysuaEhoDL8O=S=CdEfW8XCuB6n8YrnKjOBqstTPA@...278...>
-	<1CED409804E2164C8104F9E623B08B9012D1CF8A98@...1436...>
-	<CAOazyz0Qb8xa-FUqQcMDX=w+=Vb3J8sQ2R8GAxNtfWxT-4DNkw@...278...>
-	<1CED409804E2164C8104F9E623B08B9012D1CF8AB9@...1436...>
-	<20120511185641.GZ1359@...1296...>
-In-Reply-To: <20120511185641.GZ1359@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
+In-Reply-To: <CAArKS8iRLu+01e9LSs44VSy5VTBC9eBTAqf7C-+vaNRmhgD+Yg@...278...>
+References: <CAArKS8hPVLQSNrX4HtB+6UA+UU-63PmyN0BNmFuPdu4W0ZFEMw@...278...>
+	<20120508073716.GM1359@...1296...>
+	<CAArKS8gibawt-LNQws_7iiewyhAkH6TborXMiamsn1WqbLSr4g@...278...>
+	<20120511064110.GU1359@...1296...>
+	<CAArKS8iRLu+01e9LSs44VSy5VTBC9eBTAqf7C-+vaNRmhgD+Yg@...278...>
+From: Tom Kent <lists@...1718...>
+Date: Fri, 11 May 2012 18:11:42 -0400
+Message-ID: <CAArKS8jgPq4+KJ+trPmJO390zr5ELQAW34UpC9OnsBAKuPJCtg@...278...>
+Content-Type: multipart/alternative; boundary=0015173fe5c8a5216604bfca06ce
+Subject: Re: [Openvpn-devel] OpenVPN in the Hypervisor
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,30 +18,128 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: openvpn-devel@lists.sourceforge.net
+
+--0015173fe5c8a5216604bfca06ce
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: Alon Bar-Lev <alon.barlev@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Am 11.05.12 20:56, schrieb Gert Doering:
-> Changing the build environment to build a shared library out of openvpn
-> is something I do not fully understand yet, though - and don't view
-> a particular useful goal right now.
-The shared library is not used as real shared library. I build
-libopenvpn as complete library and then build a miniature executable
-that calls the main method of the shared library and therefore exactly
-behaves like openvpn as executable.
+A little help please.
 
-The reason for this is that libraries are managed by the android package
-system. For executables I have to carry them as data files and write
-them to a cache partition. By putting the main  code into the library I
-can minimise the amount of data that is written twice to the /data
-parition on Android.
+I just accidently deleted the wiki from my server. If anyone still has that
+page open in their web browse, please copy-paste the text and e-mail it to
+me.
 
-The building as library and using android build system should seen as
-something that is useful for my particular Android application and not
-as a general thing or requirement.
+On Fri, May 11, 2012 at 4:29 PM, Tom Kent <lists@...1718...> wrote:
 
-Arne
+> Thanks for making that clear, it worked great...not sure why I was
+> confused about it in the other message.
+>
+> I was able to get everything up and running. I've documented my adventures
+> here:
+> http://teeks99.com/sys/doku.php?id=openvpn_vm_segregated_net
+>
+> Thanks for all the input,
+> Tom
+>
+>
+> On Fri, May 11, 2012 at 2:41 AM, Gert Doering <gert@...1296...> wrote:
+>
+>> Hi,
+>>
+>> On Thu, May 10, 2012 at 08:45:04PM -0400, Tom Kent wrote:
+>> > The other thing I tried was to have openvpn up and running, then to
+>> attach
+>> > the VM to the tap0 device that it created...that ended with this error:
+>> > libvirtError: internal error Failed to add tap interface to bridge.
+>> tap0 is
+>> > not a bridge device
+>>
+>> Try what David suggested: creating a bridge device.
+>>
+>> Start OpenVPN with "tap0", then run
+>>
+>>  "brctl addbr br0"
+>>  "brctl addif br0 tap0"
+>>
+>> and then have libvirt attach to br0.
+>>
+>> gert
+>> --
+>> USENET is *not* the non-clickable part of WWW!
+>>                                                           //
+>> www.muc.de/~gert/
+>> Gert Doering - Munich, Germany
+>> gert@...1296...
+>> fax: +49-89-35655025
+>> gert@...1297...
+>>
+>
+>
 
+--0015173fe5c8a5216604bfca06ce
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+A little help please.<div><br></div><div>I just accidently deleted the wiki=
+ from my server. If anyone still has that page open in their web browse, pl=
+ease copy-paste the text and e-mail it to me.<br><br><div class=3D"gmail_qu=
+ote">
+
+On Fri, May 11, 2012 at 4:29 PM, Tom Kent <span dir=3D"ltr">&lt;<a href=3D"=
+mailto:lists@...1718..." target=3D"_blank">lists@...1718...</a>&gt;</span> =
+wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bord=
+er-left:1px #ccc solid;padding-left:1ex">
+
+Thanks for making that clear, it worked great...not sure why I was confused=
+ about it in the other message.<div><br></div><div>I was able to get everyt=
+hing up and running. I&#39;ve documented my adventures here:</div><div>
+
+<a href=3D"http://teeks99.com/sys/doku.php?id=3Dopenvpn_vm_segregated_net" =
+target=3D"_blank">http://teeks99.com/sys/doku.php?id=3Dopenvpn_vm_segregate=
+d_net</a></div>
+<div><br></div><div>Thanks for all the input,</div><div>Tom<div><div class=
+=3D"h5"><br><br><div class=3D"gmail_quote">On Fri, May 11, 2012 at 2:41 AM,=
+ Gert Doering <span dir=3D"ltr">&lt;<a href=3D"mailto:gert@...1296..." targ=
+et=3D"_blank">gert@...1296...</a>&gt;</span> wrote:<br>
+
+
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex">Hi,<br>
+<div><br>
+On Thu, May 10, 2012 at 08:45:04PM -0400, Tom Kent wrote:<br>
+&gt; The other thing I tried was to have openvpn up and running, then to at=
+tach<br>
+&gt; the VM to the tap0 device that it created...that ended with this error=
+:<br>
+&gt; libvirtError: internal error Failed to add tap interface to bridge. ta=
+p0 is<br>
+&gt; not a bridge device<br>
+<br>
+</div>Try what David suggested: creating a bridge device.<br>
+<br>
+Start OpenVPN with &quot;tap0&quot;, then run<br>
+<br>
+ =A0&quot;brctl addbr br0&quot;<br>
+ =A0&quot;brctl addif br0 tap0&quot;<br>
+<br>
+and then have libvirt attach to br0.<br>
+<div><div><br>
+gert<br>
+--<br>
+USENET is *not* the non-clickable part of WWW!<br>
+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 //<a href=3D"http://www.muc.de/=
+~gert/" target=3D"_blank">www.muc.de/~gert/</a><br>
+Gert Doering - Munich, Germany =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 <a href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1711...=
+96...</a><br>
+fax: <a href=3D"tel:%2B49-89-35655025" value=3D"+498935655025" target=3D"_b=
+lank">+49-89-35655025</a> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0<a=
+ href=3D"mailto:gert@...1297..." target=3D"_blank">gert@...1297...</a><br>
+
+
+</div></div></blockquote></div><br></div></div></div>
+</blockquote></div><br></div>
+
+--0015173fe5c8a5216604bfca06ce--
 
