@@ -1,12 +1,27 @@
 MIME-Version: 1.0
-In-Reply-To: <20120508073716.GM1359@...1296...>
-References: <CAArKS8hPVLQSNrX4HtB+6UA+UU-63PmyN0BNmFuPdu4W0ZFEMw@...278...>
-	<20120508073716.GM1359@...1296...>
-From: Tom Kent <lists@...1718...>
-Date: Thu, 10 May 2012 20:45:04 -0400
-Message-ID: <CAArKS8gibawt-LNQws_7iiewyhAkH6TborXMiamsn1WqbLSr4g@...278...>
-Content-Type: multipart/alternative; boundary=0015173fe5c844492a04bfb80d09
-Subject: Re: [Openvpn-devel] OpenVPN in the Hypervisor
+In-Reply-To: <CAP+U6tK5a-QFW1+=B-6AOTa3nqHheETs9mSuLMGmUQ5WS+c3vw@...278...>
+References: <4FAAE0A1.2080808@...1227...> <4FAAF945.8070005@...1227...>
+	<CAOazyz12Rw0kOSS+siU7tLP4eXO5XkhexjVLn+uC97s4K1Z8EQ@...278...>
+	<4FAAFCB4.8040606@...1227...>
+	<CAOazyz2wP2ms7HC31LPp3VzFRBu+S3zURZm1ozz0MzjmhQv07g@...278...>
+	<4FAB0556.50903@...1227...>
+	<CAOazyz2pdJysuaEhoDL8O=S=CdEfW8XCuB6n8YrnKjOBqstTPA@...278...>
+	<1CED409804E2164C8104F9E623B08B9012D1CF8A98@...1436...>
+	<CAOazyz0Qb8xa-FUqQcMDX=w+=Vb3J8sQ2R8GAxNtfWxT-4DNkw@...278...>
+	<1CED409804E2164C8104F9E623B08B9012D1CF8AB9@...1436...>
+	<CAOazyz3xObLvBubo4E6vSmepj-8AkGd6P4k-6VXYpvsSm-vs3A@...278...>
+	<1CED409804E2164C8104F9E623B08B9012D1CF8AD6@...1436...>
+	<4FAB8EEE.8020607@...1114...>
+	<1CED409804E2164C8104F9E623B08B9012D1CF8D08@...1436...>
+	<CAOazyz1u-WhMYD5VykW2nzLyJzWr8-8wJ3pqwCMBwqggkpbLiA@...278...>
+	<1CED409804E2164C8104F9E623B08B9012D1CF8D3E@...1436...>
+	<CAOazyz30FaAPsha7hyD9cAwvRWkq_4i9Cme0mFJDpX0VdSb7=w@...278...>
+	<4FABDBF7.406@...1114...>
+	<CAP+U6tK5a-QFW1+=B-6AOTa3nqHheETs9mSuLMGmUQ5WS+c3vw@...278...>
+Date: Fri, 11 May 2012 07:05:14 +0300
+Message-ID: <CAOazyz0QghwU6hswGqhQ-8L4CY74xwPSNwdXBn_AzHTEtOREHQ@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,140 +30,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Fabian Knittel <fabian.knittel@...1547...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---0015173fe5c844492a04bfb80d09
-Content-Type: text/plain; charset=ISO-8859-1
-
-Hmm, that wasn't very successful. I guess I'm not sure what you mean when
-you say to have open vpn use the tap interface right away.
-
-My VM has a couple tap (I assume) interfaces vibr0 vibr1 (I can make more),
-which say "br" in the name, but aren't actually bridged to anything
-physical, they are just "virtual" networks, local to the machine.  I tried
-to specify the name of one of those in the openvpn config file (in place of
-tap0), but it didn't seem to work.
-
-The other thing I tried was to have openvpn up and running, then to attach
-the VM to the tap0 device that it created...that ended with this error:
-libvirtError: internal error Failed to add tap interface to bridge. tap0 is
-not a bridge device
-
-Neither of these surprised me, this was how I thought the tap stuff worked,
-but it sounded from your message like you knew of something else.  Could
-you please clarify the idea you had on how to get openvpn connected to the
-hypervisor?
-
-On Tue, May 8, 2012 at 3:37 AM, Gert Doering <gert@...1296...> wrote:
-
+On Fri, May 11, 2012 at 12:11 AM, Fabian Knittel
+<fabian.knittel@...1547...> wrote:
 > Hi,
 >
-> On Mon, May 07, 2012 at 09:03:17PM -0400, Tom Kent wrote:
-> > The idea I had, and wanted to run by, was if it would be possible to
-> > integrate an openvpn client into the hypervisor's virtual network card.
-> > This would make it so that from the moment the VM boots up, it is only
-> > connected to the private LAN served by the OpenVPN server. The VM would
-> see
-> > just another NIC, but instead of routing the data directly to the
-> > Hypervisor's NIC (tap) or NATing it or whatever, it would go to an
-> OpenVPN
-> > client library (that wouldn't need a tun/tap device on the hypervisor)
-> > which sends the data to the server over the udp connection.
+> 2012/5/10 David Sommerseth <openvpn.list@...1114...>:
+>> On 10/05/12 16:50, Alon Bar-Lev wrote:
+>>> Why? plugin is adding a custom logic, and you need custom logic. As
+>>> I wrote it does not imply that you implement your JNI there.
+>>
+>> Okay ... fine ... there are plenty of big visions for a future version
+>> of OpenVPN, and it will become more modular, yes. =C2=A0I think we all
+>> agree there.
+>>
+>> What is far more important now is the review the *current* patch, this
+>> review process have so far derailed completely. =C2=A0Lets put this curr=
+ent
+>> discussion aside. =C2=A0Later on we will discuss this how to modularise
+>> OpenVPN anyway.
 >
-> If your hypervisor uses a tap interface, you can just have openvpn use
-> that tap interface "right away".  So don't bridge tap0 to eth0 on the
-> Hypervisor, but just have tap0 available for the VMs, and run OpenVPN
-> with "--dev tap0".
+> To allow OpenVPN to be properly refactored afterwards, the important
+> part is probably to get the external interfaces correct (which never
+> works in practice, but it would be nice to get close...).
 >
-> This might be somewhat more expensive performance-wise - but it will
-> be much cheaper programmer-time-wise, as all you need is already there
-> and well-tested :-)
+> The main undecided points regarding the interface side of things appear t=
+o be:
+> * How to pass the fds back and forth: Special-case the management
+> =C2=A0interface for unix domain sockets or use a dedicated unix domain
+> =C2=A0socket for special operations. Could this potentially be the same
+> =C2=A0interface that was discussed for some of the windows privilege
+> =C2=A0separation approaches?
+
+Again, this is not the case of privileged separation as the process
+*IS* privileged to do the networking setup.
+People, don't get confused between running under root or not with privilege=
+s!
+Regular user can have privileges like creating tun and modify network
+setting without being root, as in this case, this is not privilege
+separation!
+
+And again, these UI specific issues should should be modularize and
+not go into mainline as-is.
+
+> * How to call OpenVPN from Java. Via thin JNI wrapper or as a regular
+> =C2=A0executable.
+
+Again, this is not the question.
+The question is do we want to make a library out of VPN with some
+interface such as openvpn_main() or not, the JNI question is totally
+unrelated to the mainline project.
+
+> * The precise names of the newly introduced management commands.
+
+If we provide plugin interface to management interface this can be a
+contract between the UI and the plugin, so that mainline should not be
+changed every time there is a special UI need.
+
+If we provide tun engine implementation that supports the management
+interface, all platforms can benefit from this change.
+
 >
-> gert
+> Anything else?
 >
-> --
-> USENET is *not* the non-clickable part of WWW!
->                                                           //
-> www.muc.de/~gert/
-> Gert Doering - Munich, Germany
-> gert@...1296...
-> fax: +49-89-35655025
-> gert@...1297...
->
-
---0015173fe5c844492a04bfb80d09
-Content-Type: text/html; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-
-<div>Hmm, that wasn&#39;t very successful. I guess I&#39;m not sure what yo=
-u mean when you say to have open vpn use the tap interface right away. =A0<=
-/div><div><br></div><div>My VM has a couple=A0tap=A0(I assume) interfaces v=
-ibr0 vibr1 (I can make more), which say &quot;br&quot; in the name, but are=
-n&#39;t actually bridged to anything physical, they are just &quot;virtual&=
-quot; networks, local to the machine. =A0I tried to specify the name of one=
- of those in the openvpn config file (in place of tap0), but it didn&#39;t =
-seem to work.</div>
-
-<div><br></div><div>The other thing I tried was to have openvpn up and runn=
-ing, then to attach the VM to the tap0 device that it created...that ended =
-with this error:</div>libvirtError: internal error Failed to add tap interf=
-ace to bridge. tap0 is not a bridge device<div>
-
-<br></div><div>Neither of these=A0surprised=A0me, this was how I thought th=
-e tap stuff worked, but it sounded from your message like you knew of somet=
-hing else. =A0Could you please clarify the idea you had on how to get openv=
-pn connected to the hypervisor?<br>
-
-<br><div class=3D"gmail_quote">On Tue, May 8, 2012 at 3:37 AM, Gert Doering=
- <span dir=3D"ltr">&lt;<a href=3D"mailto:gert@...1296..." target=3D"_blank"=
->gert@...1296...</a>&gt;</span> wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex">Hi,<br>
-<div><br>
-On Mon, May 07, 2012 at 09:03:17PM -0400, Tom Kent wrote:<br>
-&gt; The idea I had, and wanted to run by, was if it would be possible to<b=
-r>
-&gt; integrate an openvpn client into the hypervisor&#39;s virtual network =
-card.<br>
-&gt; This would make it so that from the moment the VM boots up, it is only=
-<br>
-&gt; connected to the private LAN served by the OpenVPN server. The VM woul=
-d see<br>
-&gt; just another NIC, but instead of routing the data directly to the<br>
-&gt; Hypervisor&#39;s NIC (tap) or NATing it or whatever, it would go to an=
- OpenVPN<br>
-&gt; client library (that wouldn&#39;t need a tun/tap device on the hypervi=
-sor)<br>
-&gt; which sends the data to the server over the udp connection.<br>
-<br>
-</div>If your hypervisor uses a tap interface, you can just have openvpn us=
-e<br>
-that tap interface &quot;right away&quot;. =A0So don&#39;t bridge tap0 to e=
-th0 on the<br>
-Hypervisor, but just have tap0 available for the VMs, and run OpenVPN<br>
-with &quot;--dev tap0&quot;.<br>
-<br>
-This might be somewhat more expensive performance-wise - but it will<br>
-be much cheaper programmer-time-wise, as all you need is already there<br>
-and well-tested :-)<br>
-<span><font color=3D"#888888"><br>
-gert<br>
-<br>
---<br>
-USENET is *not* the non-clickable part of WWW!<br>
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 //<a href=3D"http://www.muc.de/=
-~gert/" target=3D"_blank">www.muc.de/~gert/</a><br>
-Gert Doering - Munich, Germany =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 <a href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1711...=
-96...</a><br>
-fax: <a href=3D"tel:%2B49-89-35655025" value=3D"+498935655025" target=3D"_b=
-lank">+49-89-35655025</a> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0<a=
- href=3D"mailto:gert@...1297..." target=3D"_blank">gert@...1297...</a><br>
-
-
-</font></span></blockquote></div><br>
-</div>
-
---0015173fe5c844492a04bfb80d09--
+> Cheers
+> Fabian
 
