@@ -1,10 +1,12 @@
 MIME-Version: 1.0
-In-Reply-To: <4FAD3230.70603@...515...>
-References: <4FAD3230.70603@...515...>
-Date: Fri, 11 May 2012 18:56:27 +0300
-Message-ID: <CAOazyz0yHxcSU_c82nYWNBfOj-a=DzSrAfTkfLOhkHZR5T-4=A@...278...>
+In-Reply-To: <CAOazyz2CTnp1po+kzFqVZ53StC6dbbjDOAOfNyU17R7r01QajA@...278...>
+References: <4FAD2F8C.6000709@...515...>
+	<CAOazyz2CTnp1po+kzFqVZ53StC6dbbjDOAOfNyU17R7r01QajA@...278...>
+Date: Fri, 11 May 2012 19:06:33 +0300
+Message-ID: <CAOazyz1FVQVf6QZQYmLEMngeJJP0MuhkTuTFncwyEir+BRLsEQ@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] Some openvpn-build issues
+Subject: Re: [Openvpn-devel] First partially-working snapshot build for
+ Windows now available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,90 +20,69 @@ Content-Transfer-Encoding: quoted-printable
 To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Fri, May 11, 2012 at 6:37 PM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
-ote:
-> Hi (Alon),
+BTW:
+You should also publish the tap-windows installer and zip.
+Make sure that you use the TAP_WINDOWS_URL environment to embed your
+built tap-windows and not the github.com project download.
+In future when we release signed tap-windows installer, it will be
+just any 3rd party dependency.
+
+On Fri, May 11, 2012 at 6:33 PM, Alon Bar-Lev <alon.barlev@...277...> wrote:
+> Hello Samuli,
 >
-> Just a quick overview of the build issues I ran into while building with
+> This is great!
+> I don't have any issue with building the openvpn-gui... can you please
+> send me what wrong with that?
+> I use that[1] patched one that should be downloaded during build process.
 >
-> $ cd openvpn-build/windows-nsis
-> $ ./build-snapshot <signing options>
+> Alon.
 >
-> First, the build_openvpn_gui() fails with
+> [1] https://github.com/alonbl/openvpn-gui/downloads
 >
-> i686-w64-mingw32-gcc -std=3Dgnu99 -municode -pedantic -Wall -Wextra
-> -mwindows -o openvpn-gui.exe main.o openvpn.o localization.o tray.o
-> viewlog.o service.o options.o passphrase.o proxy.o registry.o scripts.o
-> manage.o openvpn_config.o res/openvpn-gui-res.o
-> -L/home/samuli/opt/openvpn-build/windows-nsis/tmp/image-i686/openvpn/lib
-> -lcrypto -lws2_32 -lcomctl32
-> /usr/lib/gcc/i686-w64-mingw32/4.6.1/../../../../i686-w64-mingw32/lib/../l=
-ib/libmingwex.a(lib32_libmingwex_a-_wctime32.o):
-> In function `_wctime32':
-> /build/buildd/mingw-w64-1.0+20110523/mingw-w64-crt/misc/_wctime32.c:15:
-> undefined reference to `__imp__wctime'
-> collect2: ld returned 1
-> make[1]: *** [openvpn-gui.exe] Error 1
-> make[1]: leaving directory
-> "/home/samuli/opt/openvpn-build/windows-nsis/tmp/build-i686/openvpn-gui-1=
-.0.3"
-> make: *** [install-strip] Error 2
-> FATAL: make openvpn-gui
-> FATAL: build i686 >&2
->
-> I circumvented this by commenting out openvpn-gui building in
-> openvpn-build/generic/build main() method:
-
-This is due to old mingw runtime libs.
-Known issue with mingw.
-
->
-> build_openvpn
-> #[ -n "${BUILD_FOR_WINDOWS}" ] && build_openvpn_gui
-> copy_docs
->
-> I also had to fix openvpn.nsi or it failed, not finding openvpn-gui.exe
-
-Please upgrade mingw.... :)
-
-> Next "openvpn-build/windows-nsis/build" failed:
->
-> unix2dos: converting file tmp/installer/easy-rsa/Windows/init-config.bat
-> to DOS format ...
-> unix2dos: converting file tmp/installer/easy-rsa/Windows/revoke-full.bat
-> to DOS format ...
-> unix2dos: converting file tmp/installer/easy-rsa/Windows/serial.start to
-> DOS format ...
-> unix2dos: converting file tmp/installer/easy-rsa/Windows/vars.bat.sample
-> to DOS format ...
-> ./build: 5: Bad substitution
-> FATAL: pack i686 >&2
->
-> This was a Dash shell issue, which you apparently fixed. I just didn't
-> have time yet to test your fix. Switching to /bin/bash helped get around
-> this.
-
-Yes, fixed that already.
-
-> I also noticed that there's a dependency to osslsigncode 1.4+ due to
-> missing pkcs12 options in older versions. While it would fairly easy to
-> adapt the codesign() method to support 1.3 and earlier, I think the 1.4
-> dependency is fine: not that many people build Windows installers.
-
-It is fine... I rewrote its build system and added the PKCS#12 support :)
-
-> I added some comments to the scripts as I went through them. I'll send
-> in patches next week that clarify how they work, i.e. make them seem
-> less "magical" :D.
-
-OK.
-
->
-> Alon: thanks for work well done! This is way better than what we had
-> earlier!
-
-I am happy to get rid of the old python none standard build... :)
-Now people may actually produce their own installers....
-
-Alon.
+> On Fri, May 11, 2012 at 6:26 PM, Samuli Sepp=C3=A4nen <samuli@...515...> =
+wrote:
+>> Hi all,
+>>
+>> I finally managed to generate fairly crude OpenVPN Windows installers
+>> using Alon's new openvpn-build buildsystem. Due to a build issue
+>> "openvpn-gui" is not included, and the tap-driver is seems to be
+>> unsigned. Regardless, here are the results nevertheless:
+>>
+>> <http://build.openvpn.net/downloads/snapshots/openvpn-install-2.3_master=
+-I000_master-i686.exe>
+>> <http://build.openvpn.net/downloads/snapshots/openvpn-install-2.3_master=
+-I000_master-x86_64.exe>
+>>
+>> All of the libraries and executables have been signed with a self-signed
+>> test key. This includes openssl libraries and such. If you want Windows
+>> to trust these executables, you need to download this certificate:
+>>
+>> <http://build.openvpn.net/downloads/openvpntestca-cert.cer>
+>>
+>> Then you need to import it to your "Trusted CA" key store, e.g. with
+>>
+>>> certutil -user -addstore Root openvpntestca-cert.cer
+>>
+>> After this Windows should not complain about an unknown publisher. I'll
+>> try to come up with really usable installer next week.
+>>
+>> --
+>> Samuli Sepp=C3=A4nen
+>> Community Manager
+>> OpenVPN Technologies, Inc
+>>
+>> irc freenode net: mattock
+>>
+>>
+>> ------------------------------------------------------------------------=
+------
+>> Live Security Virtual Conference
+>> Exclusive live event will cover all the ways today's security and
+>> threat landscape has changed and how IT managers can respond. Discussions
+>> will include endpoint security, mobile security and the latest in malware
+>> threats. http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/
+>> _______________________________________________
+>> Openvpn-devel mailing list
+>> Openvpn-devel@lists.sourceforge.net
+>> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
