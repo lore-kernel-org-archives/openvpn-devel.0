@@ -1,5 +1,5 @@
 MIME-Version: 1.0
-In-Reply-To: <4FAD8A16.6020303@...1400...>
+In-Reply-To: <CAOazyz1dkfwNsAzSF4OXcoMyYezdiJAzH+RMUiqVrAYi7e-ftg@...278...>
 References: <CAOazyz35bB=q1hpdzjj_aHZ7K_0koT8pcw0csham2AOwMqGrfg@...278...>
 	<4FAAF945.8070005@...1227...>
 	<CAOazyz12Rw0kOSS+siU7tLP4eXO5XkhexjVLn+uC97s4K1Z8EQ@...278...>
@@ -12,8 +12,9 @@ References: <CAOazyz35bB=q1hpdzjj_aHZ7K_0koT8pcw0csham2AOwMqGrfg@...278...>
 	<1CED409804E2164C8104F9E623B08B9012D1CF8AB9@...1436...>
 	<20120511185641.GZ1359@...1296...>
 	<4FAD8A16.6020303@...1400...>
-Date: Sat, 12 May 2012 00:56:04 +0300
-Message-ID: <CAOazyz1dkfwNsAzSF4OXcoMyYezdiJAzH+RMUiqVrAYi7e-ftg@...278...>
+	<CAOazyz1dkfwNsAzSF4OXcoMyYezdiJAzH+RMUiqVrAYi7e-ftg@...278...>
+Date: Sat, 12 May 2012 00:58:36 +0300
+Message-ID: <CAOazyz0NUJvpq=Kt6Pq_gi77-+W4-4aCv9Ox9i+ao70a9CPZoQ@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
 Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -29,46 +30,57 @@ Content-Transfer-Encoding: quoted-printable
 To: Arne Schwabe <schwabe@...1400...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Sat, May 12, 2012 at 12:52 AM, Arne Schwabe <schwabe@...1400...> wrote:
-> Am 11.05.12 20:56, schrieb Gert Doering:
->> Changing the build environment to build a shared library out of openvpn
->> is something I do not fully understand yet, though - and don't view
->> a particular useful goal right now.
-> The shared library is not used as real shared library. I build
-> libopenvpn as complete library and then build a miniature executable
-> that calls the main method of the shared library and therefore exactly
-> behaves like openvpn as executable.
+On Sat, May 12, 2012 at 12:56 AM, Alon Bar-Lev <alon.barlev@...277...> wrot=
+e:
+> On Sat, May 12, 2012 at 12:52 AM, Arne Schwabe <schwabe@...1400...> wrote:
+>> Am 11.05.12 20:56, schrieb Gert Doering:
+>>> Changing the build environment to build a shared library out of openvpn
+>>> is something I do not fully understand yet, though - and don't view
+>>> a particular useful goal right now.
+>> The shared library is not used as real shared library. I build
+>> libopenvpn as complete library and then build a miniature executable
+>> that calls the main method of the shared library and therefore exactly
+>> behaves like openvpn as executable.
+>>
+>> The reason for this is that libraries are managed by the android package
+>> system. For executables I have to carry them as data files and write
+>> them to a cache partition. By putting the main =C2=A0code into the libra=
+ry I
+>> can minimise the amount of data that is written twice to the /data
+>> parition on Android.
+>>
+>> The building as library and using android build system should seen as
+>> something that is useful for my particular Android application and not
+>> as a general thing or requirement.
+>>
+>> Arne
+>>
 >
-> The reason for this is that libraries are managed by the android package
-> system. For executables I have to carry them as data files and write
-> them to a cache partition. By putting the main =C2=A0code into the librar=
-y I
-> can minimise the amount of data that is written twice to the /data
-> parition on Android.
+> I would like you to try to do so using libtool...
 >
-> The building as library and using android build system should seen as
-> something that is useful for my particular Android application and not
-> as a general thing or requirement.
+> Just replace:
+> ---
+> sbin_PROGRAMS =3D openvpn
+> openvpn_SOURCES =3D ....
+> ---
+> with:
+> ---
+> lib_LTLIBRARIES =3D openvpn.la
+> openvpn_la_SOURCES =3D ...
+> openvpn_la_LDFLAGS =3D \
+> =C2=A0 =C2=A0-module -shared -avoid-version -no-undefined
+> ---
 >
-> Arne
+> And add -Dmain=3Dopenvpn_main to AM_CFLAGS.
 >
+> Alon.
 
-I would like you to try to do so using libtool...
-
-Just replace:
+You should also change:
 ---
-sbin_PROGRAMS =3D openvpn
-openvpn_SOURCES =3D ....
+openvpn_LDADD =3D ...
 ---
-with:
+to:
 ---
-lib_LTLIBRARIES =3D openvpn.la
-openvpn_la_SOURCES =3D ...
-openvpn_la_LDFLAGS =3D \
-    -module -shared -avoid-version -no-undefined
+openvpn_la_LDADD =3D ...
 ---
-
-And add -Dmain=3Dopenvpn_main to AM_CFLAGS.
-
-Alon.
 
