@@ -1,10 +1,7 @@
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Sat, 12 May 2012 22:19:49 +0300
-Message-Id: <1336850389-23719-17-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1336850389-23719-1-git-send-email-alon.barlev@...277...>
-References: <1336850389-23719-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [PATCH 16/16] clenaup: syshead: reworder/cleanup
-	includes
+Date: Sat, 12 May 2012 22:31:41 +0300
+Message-Id: <1336851105-24172-1-git-send-email-alon.barlev@...277...>
+Subject: [Openvpn-devel] [V2.4 0/4] tun cleanups
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,259 +15,91 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net, openvpn.list@...1114..., openvpn-devel@lists.sourceforge.net, openvpn.list@...1114...
 Cc: Alon Bar-Lev <alon.barlev@...277...>
 
-Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
----
- configure.ac          |    2 +-
- src/openvpn/syshead.h |  146 ++++++++++++-------------------------------------
- 2 files changed, 36 insertions(+), 112 deletions(-)
+Platform independent interface for tun provider.
 
-diff --git a/configure.ac b/configure.ac
-index cca9508..97eb5f0 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -643,7 +643,7 @@ old_CFLAGS="${CFLAGS}"
- CFLAGS="${CFLAGS} ${TAP_CFLAGS}"
- AC_CHECK_HEADERS(
- 	[ \
--		net/if_tun.h net/tun/if_tun.h \
-+		net/if_tun.h net/tun/if_tun.h net/if_tap.h \
- 		linux/if_tun.h \
- 		tap-windows.h \
- 	],
-diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index d5a9af1..1b9cbe0 100644
---- a/src/openvpn/syshead.h
-+++ b/src/openvpn/syshead.h
-@@ -31,6 +31,10 @@
- #ifdef WIN32
- #include <windows.h>
- #include <winsock2.h>
-+#include <ws2tcpip.h>
-+#include <iphlpapi.h>
-+#include <ntddndis.h>
-+#include <wininet.h>
- #endif
- 
- #ifdef HAVE_SYS_TYPES_H
-@@ -135,18 +139,6 @@
- #include <grp.h>
- #endif
- 
--#ifdef HAVE_NETDB_H
--#include <netdb.h>
--#endif
--
--#ifdef HAVE_NETINET_IN_H
--#include <netinet/in.h>
--#endif
--
--#ifdef HAVE_RESOLV_H
--#include <resolv.h>
--#endif
--
- #ifdef HAVE_SYS_POLL_H
- #include <sys/poll.h>
- #endif
-@@ -155,6 +147,10 @@
- #include <sys/epoll.h>
- #endif
- 
-+#ifdef HAVE_SYS_MMAN_H
-+#include <sys/mman.h>
-+#endif
-+
- #ifdef ENABLE_SELINUX
- #include <selinux/selinux.h>
- #endif
-@@ -163,29 +159,47 @@
- #include <libgen.h>
- #endif
- 
--#ifdef TARGET_SOLARIS
- #ifdef HAVE_STRINGS_H
- #include <strings.h>
- #endif
--#else
-+
- #ifdef HAVE_STRING_H
- #include <string.h>
- #endif
-+
-+#ifdef HAVE_STROPTS_H
-+#include <stropts.h>
-+#endif
-+
-+#ifdef HAVE_NETDB_H
-+#include <netdb.h>
- #endif
- 
- #ifdef HAVE_ARPA_INET_H
- #include <arpa/inet.h>
- #endif
- 
-+#ifdef HAVE_NETINET_IN_H
-+#include <netinet/in.h>
-+#endif
-+
-+#ifdef HAVE_NETINET_IP_H
-+#include <netinet/ip.h>
-+#endif
-+
-+#ifdef HAVE_NETINET_TCP_H
-+#include <netinet/tcp.h>
-+#endif
-+
- #ifdef HAVE_NET_IF_H
- #include <net/if.h>
- #endif
- 
--#ifdef TARGET_NETBSD
--#include <net/if_tap.h>
-+#ifdef HAVE_RESOLV_H
-+#include <resolv.h>
- #endif
- 
--#ifdef TARGET_LINUX
-+#if defined(TARGET_LINUX)
- 
- #if defined(HAVE_NETINET_IF_ETHER_H)
- #include <netinet/if_ether.h>
-@@ -195,10 +209,6 @@
- #include <linux/if_tun.h>
- #endif
- 
--#ifdef HAVE_NETINET_IP_H
--#include <netinet/ip.h>
--#endif
--
- #ifdef HAVE_LINUX_SOCKIOS_H
- #include <linux/sockios.h>
- #endif
-@@ -211,17 +221,7 @@
- #include <linux/errqueue.h>
- #endif
- 
--#ifdef HAVE_NETINET_TCP_H
--#include <netinet/tcp.h>
--#endif
--
--#endif /* TARGET_LINUX */
--
--#ifdef TARGET_SOLARIS
--
--#ifdef HAVE_STROPTS_H
--#include <stropts.h>
--#endif
-+#elif defined(TARGET_SOLARIS)
- 
- #ifdef HAVE_NET_IF_TUN_H
- #include <net/if_tun.h>
-@@ -231,41 +231,7 @@
- #include <sys/sockio.h>
- #endif
- 
--#ifdef HAVE_NETINET_IN_SYSTM_H
--#include <netinet/in_systm.h>
--#endif
--
--#ifdef HAVE_NETINET_IP_H
--#include <netinet/ip.h>
--#endif
--
--#ifdef HAVE_NETINET_TCP_H
--#include <netinet/tcp.h>
--#endif
--
--#endif /* TARGET_SOLARIS */
--
--#ifdef TARGET_OPENBSD
--
--#ifdef HAVE_SYS_UIO_H
--#include <sys/uio.h>
--#endif
--
--#ifdef HAVE_NETINET_IN_SYSTM_H
--#include <netinet/in_systm.h>
--#endif
--
--#ifdef HAVE_NETINET_IP_H
--#include <netinet/ip.h>
--#endif
--
--#ifdef HAVE_NET_IF_TUN_H
--#include <net/if_tun.h>
--#endif
--
--#endif /* TARGET_OPENBSD */
--
--#ifdef TARGET_FREEBSD
-+#elif defined(TARGET_OPENBSD) || defined(TARGET_FREEBSD) || defined(TARGET_NETBSD) || defined(TARGET_DRAGONFLY)
- 
- #ifdef HAVE_SYS_UIO_H
- #include <sys/uio.h>
-@@ -275,60 +241,18 @@
- #include <netinet/in_systm.h>
- #endif
- 
--#ifdef HAVE_NETINET_IP_H
--#include <netinet/ip.h>
--#endif
--
- #ifdef HAVE_NET_IF_TUN_H
- #include <net/if_tun.h>
- #endif
- 
--#endif /* TARGET_FREEBSD */
--
--#ifdef TARGET_NETBSD
--
--#ifdef HAVE_NET_IF_TUN_H
--#include <net/if_tun.h>
--#endif
--
--#ifdef HAVE_NETINET_TCP_H
--#include <netinet/tcp.h>
--#endif
--
--#endif /* TARGET_NETBSD */
--
--#ifdef TARGET_DRAGONFLY
--
--#ifdef HAVE_SYS_UIO_H
--#include <sys/uio.h>
--#endif
--
--#ifdef HAVE_NETINET_IN_SYSTM_H
--#include <netinet/in_systm.h>
--#endif
--
--#ifdef HAVE_NETINET_IP_H
--#include <netinet/ip.h>
--#endif
--
- #ifdef HAVE_NET_TUN_IF_TUN_H
- #include <net/tun/if_tun.h>
- #endif
- 
--#endif /* TARGET_DRAGONFLY */
--
--#ifdef WIN32
--#include <iphlpapi.h>
--#include <ntddndis.h>
--#include <wininet.h>
--#include <shellapi.h>
--/* The following two headers are needed of PF_INET6 */
--#include <winsock2.h>
--#include <ws2tcpip.h>
-+#ifdef HAVE_NET_IF_TAP_H
-+#include <net/if_tap.h>
- #endif
- 
--#ifdef HAVE_SYS_MMAN_H
--#include <sys/mman.h>
- #endif
- 
- /*
+Split the long tun.c into platform specific files using
+tun_engine interface.
+
+Functionality is the same.
+
+Maintenance will be much easier! new options, like stacking
+several interfaces and delegate partial control to plugin.
+
+There is more to be done in order to clean up the code,
+however this is a good starting point.
+
+Some more minor cleanups.
+
+Tested on Linux, FreeBSD, Windows.
+
+Branch should be merge after syshead[1].
+Most probably patch exceeds list limitation, review is available[2].
+
+This is for 2.4, please review quickly this so won't need to rebase.
+
+Special thanks to Eric Crist for his FreeBSD help.
+
+[1] https://github.com/alonbl/openvpn/compare/build...syshead
+[2] https://github.com/alonbl/openvpn/compare/syshead...tun
+
+Alon Bar-Lev (4):
+  cleanup: remove check_subnet_conflict
+  cleanup: move warn_on_use_of_common_subnets to init.c
+  cleanup: remove tun_adjust_frame_parameters
+  cleanup: tun: tun_engine interface
+
+ configure.ac                             |    6 +
+ src/openvpn/Makefile.am                  |   12 +
+ src/openvpn/error.c                      |    2 +-
+ src/openvpn/forward.c                    |   28 +-
+ src/openvpn/helper.c                     |    2 +-
+ src/openvpn/init.c                       |   61 +-
+ src/openvpn/multi.c                      |    2 +-
+ src/openvpn/options.c                    |   20 +-
+ src/openvpn/options.h                    |    5 +-
+ src/openvpn/route.c                      |    2 +-
+ src/openvpn/sig.c                        |    4 +-
+ src/openvpn/syshead.h                    |   56 -
+ src/openvpn/tun-engine-common-bsd.c      |  103 +
+ src/openvpn/tun-engine-common-bsd.h      |   34 +
+ src/openvpn/tun-engine-common.c          |  518 +++
+ src/openvpn/tun-engine-common.h          |   85 +
+ src/openvpn/tun-engine-darwin.c          |  226 ++
+ src/openvpn/tun-engine-dragonfly.c       |  193 ++
+ src/openvpn/tun-engine-freebsd.c         |  229 ++
+ src/openvpn/tun-engine-generic.c         |   97 +
+ src/openvpn/tun-engine-linux-options.h   |   37 +
+ src/openvpn/tun-engine-linux.c           |  515 +++
+ src/openvpn/tun-engine-netbsd.c          |  318 ++
+ src/openvpn/tun-engine-openbsd.c         |  259 ++
+ src/openvpn/tun-engine-options.h         |   37 +
+ src/openvpn/tun-engine-solaris.c         |  491 +++
+ src/openvpn/tun-engine-windows-options.h |   92 +
+ src/openvpn/tun-engine-windows-util.h    |   83 +
+ src/openvpn/tun-engine-windows.c         | 2757 ++++++++++++++++
+ src/openvpn/tun-engine.h                 |   95 +
+ src/openvpn/tun.c                        | 5053 ++----------------------------
+ src/openvpn/tun.h                        |  469 +---
+ 32 files changed, 6548 insertions(+), 5343 deletions(-)
+ create mode 100644 src/openvpn/tun-engine-common-bsd.c
+ create mode 100644 src/openvpn/tun-engine-common-bsd.h
+ create mode 100644 src/openvpn/tun-engine-common.c
+ create mode 100644 src/openvpn/tun-engine-common.h
+ create mode 100644 src/openvpn/tun-engine-darwin.c
+ create mode 100644 src/openvpn/tun-engine-dragonfly.c
+ create mode 100644 src/openvpn/tun-engine-freebsd.c
+ create mode 100644 src/openvpn/tun-engine-generic.c
+ create mode 100644 src/openvpn/tun-engine-linux-options.h
+ create mode 100644 src/openvpn/tun-engine-linux.c
+ create mode 100644 src/openvpn/tun-engine-netbsd.c
+ create mode 100644 src/openvpn/tun-engine-openbsd.c
+ create mode 100644 src/openvpn/tun-engine-options.h
+ create mode 100644 src/openvpn/tun-engine-solaris.c
+ create mode 100644 src/openvpn/tun-engine-windows-options.h
+ create mode 100644 src/openvpn/tun-engine-windows-util.h
+ create mode 100644 src/openvpn/tun-engine-windows.c
+ create mode 100644 src/openvpn/tun-engine.h
+
 -- 
 1.7.3.4
 
