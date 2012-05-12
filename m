@@ -1,10 +1,10 @@
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Sat, 12 May 2012 22:19:40 +0300
-Message-Id: <1336850389-23719-8-git-send-email-alon.barlev@...277...>
+Date: Sat, 12 May 2012 22:19:37 +0300
+Message-Id: <1336850389-23719-5-git-send-email-alon.barlev@...277...>
 In-Reply-To: <1336850389-23719-1-git-send-email-alon.barlev@...277...>
 References: <1336850389-23719-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [PATCH 07/16] cleanup: syshead: move likely,
-	unlikely to basic.h
+Subject: [Openvpn-devel] [PATCH 04/16] cleanup: syshead: remove useless
+	constant USE_64_BIT_COUNTERS
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,48 +20,51 @@ Cc: Alon Bar-Lev <alon.barlev@...277...>
 
 Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 ---
- src/openvpn/basic.h   |    9 +++++++++
- src/openvpn/syshead.h |    9 ---------
- 2 files changed, 9 insertions(+), 9 deletions(-)
+ src/openvpn/common.h  |   13 ++++---------
+ src/openvpn/syshead.h |    5 -----
+ 2 files changed, 4 insertions(+), 14 deletions(-)
 
-diff --git a/src/openvpn/basic.h b/src/openvpn/basic.h
-index 298cf10..f2d5041 100644
---- a/src/openvpn/basic.h
-+++ b/src/openvpn/basic.h
-@@ -35,4 +35,13 @@
- 
- #define IPV4_NETMASK_HOST 0xffffffffU
- 
-+/* branch prediction hints */
-+#if defined(__GNUC__)
-+# define likely(x)       __builtin_expect((x),1)
-+# define unlikely(x)     __builtin_expect((x),0)
-+#else
-+# define likely(x)      (x)
-+# define unlikely(x)    (x)
-+#endif
-+
+diff --git a/src/openvpn/common.h b/src/openvpn/common.h
+index de2d609..845faee 100644
+--- a/src/openvpn/common.h
++++ b/src/openvpn/common.h
+@@ -28,16 +28,11 @@
+ /*
+  * Statistics counters and associated printf formats.
+  */
+-#ifdef USE_64_BIT_COUNTERS
+-  typedef unsigned long long int counter_type;
+-# ifdef WIN32
+-#  define counter_format  "%I64u"
+-# else
+-#  define counter_format  "%llu"
+-# endif
++typedef unsigned long long int counter_type;
++#ifdef WIN32
++# define counter_format  "%I64u"
+ #else
+-  typedef unsigned int counter_type;
+-# define counter_format   "%u"
++# define counter_format  "%llu"
  #endif
+ 
+ /*
 diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index 3e64936..98d6023 100644
+index 99a6674..ccd78af 100644
 --- a/src/openvpn/syshead.h
 +++ b/src/openvpn/syshead.h
-@@ -28,15 +28,6 @@
- #include "compat.h"
- #include "compat-stdbool.h"
+@@ -456,11 +456,6 @@ socket_defined (const socket_descriptor_t sd)
+ }
  
--/* branch prediction hints */
--#if defined(__GNUC__)
--# define likely(x)       __builtin_expect((x),1)
--# define unlikely(x)     __builtin_expect((x),0)
--#else
--# define likely(x)      (x)
--# define unlikely(x)    (x)
--#endif
+ /*
+- * Should statistics counters be 64 bits?
+- */
+-#define USE_64_BIT_COUNTERS
 -
- #ifdef WIN32
- #include <windows.h>
- #include <winsock2.h>
+-/*
+  * Should we enable the use of execve() for calling subprocesses,
+  * instead of system()?
+  */
 -- 
 1.7.3.4
 
