@@ -1,11 +1,8 @@
-MIME-Version: 1.0
-In-Reply-To: <4FAE87C1.6000509@...277...>
-References: <4FAE87C1.6000509@...277...>
-Date: Sat, 12 May 2012 21:29:17 +0300
-Message-ID: <CAOazyz3pJ6xy_wVnsT13ZuMJipG0kK77EF-C5tK9dWKn4XwxDw@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Properly detect OpenSSL version strings
- with numbers only
+Date: Sat, 12 May 2012 22:03:53 +0300
+Message-Id: <1336849433-23066-1-git-send-email-alon.barlev@...277...>
+Subject: [Openvpn-devel] [PATCH] build: insall README* document using build
+	system
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,74 +11,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Simon Deziel <simon.deziel@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Alon Bar-Lev <alon.barlev@...277...>
 
-ACK, the revision letter is indeed optional.
+Purpose: make distro packager task simpler, more flexible to provide
+more documentation without changing the packaging script.
 
-David,
-Repository is at github...
+Remove installation related documents from rpm as package already
+installed when viewed.
 
-On Sat, May 12, 2012 at 6:54 PM, Simon Deziel <simon.deziel@...277...> wrot=
-e:
-> whichopensslcnf failed to return the right cnf for:
->
-> $ openssl version
-> OpenSSL 1.0.1 14 Mar 2012
->
-> Signed-off-by: Simon Deziel <simon.deziel@...277...>
-> ---
-> =C2=A0easy-rsa/2.0/whichopensslcnf | =C2=A0 =C2=A06 +++---
-> =C2=A01 files changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/easy-rsa/2.0/whichopensslcnf b/easy-rsa/2.0/whichopensslcnf
-> index 2226a8e..ccdaf50 100755
-> --- a/easy-rsa/2.0/whichopensslcnf
-> +++ b/easy-rsa/2.0/whichopensslcnf
-> @@ -3,11 +3,11 @@
-> =C2=A0cnf=3D"$1/openssl.cnf"
->
-> =C2=A0if [ "$OPENSSL" ]; then
-> - =C2=A0 =C2=A0 =C2=A0 if $OPENSSL version | grep -E "0\.9\.6[[:alnum:]]"=
- > /dev/null; then
-> + =C2=A0 =C2=A0 =C2=A0 if $OPENSSL version | grep -E "0\.9\.6[[:alnum:]]?=
-" > /dev/null;
-> then
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0cnf=3D"$1/openssl-=
-0.9.6.cnf"
-> - =C2=A0 =C2=A0 =C2=A0 elif $OPENSSL version | grep -E "0\.9\.8[[:alnum:]=
-]" >
-> /dev/null; then
-> + =C2=A0 =C2=A0 =C2=A0 elif $OPENSSL version | grep -E "0\.9\.8[[:alnum:]=
-]?" >
-> /dev/null; then
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0cnf=3D"$1/openssl-=
-0.9.8.cnf"
-> - =C2=A0 =C2=A0 =C2=A0 elif $OPENSSL version | grep -E "1\.0\.([[:digit:]=
-][[:alnum:]])"
->> /dev/null; then
-> + =C2=A0 =C2=A0 =C2=A0 elif $OPENSSL version | grep -E "1\.0\.[[:digit:]]=
-[[:alnum:]]?"
->> /dev/null; then
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 cnf=3D"$1/openssl=
--1.0.0.cnf"
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0else
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0cnf=3D"$1/openssl.=
-cnf"
-> --
-> 1.7.5.4
->
-> -------------------------------------------------------------------------=
------
-> Live Security Virtual Conference
-> Exclusive live event will cover all the ways today's security and
-> threat landscape has changed and how IT managers can respond. Discussions
-> will include endpoint security, mobile security and the latest in malware
-> threats. http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
++Workaround rpm bug[1].
+
+[1] http://rpm.org/ticket/836
+
+Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+---
+ Makefile.am                |    3 +++
+ distro/rpm/openvpn.spec.in |   11 +++++++----
+ 2 files changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index 33dfcd6..c580579 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -57,6 +57,9 @@ endif
+ SUBDIRS = build distro include src sample doc tests
+ 
+ dist_doc_DATA = \
++	README \
++	README.IPv6 \
++	README.polarssl \
+ 	COPYRIGHT.GPL \
+ 	COPYING
+ 
+diff --git a/distro/rpm/openvpn.spec.in b/distro/rpm/openvpn.spec.in
+index d9158c1..a6f31bd 100644
+--- a/distro/rpm/openvpn.spec.in
++++ b/distro/rpm/openvpn.spec.in
+@@ -164,6 +164,10 @@ done
+ 
+ %__mv -f src/plugins/README src/plugins/README.plugins
+ 
++# Install extra %doc stuff
++cp -r AUTHORS ChangeLog NEWS contrib/ sample/ src/plugins/README.* \
++	"%{buildroot}/%{_docdir}/%{name}-%{version}"
++
+ #
+ # Clean section
+ #
+@@ -207,13 +211,15 @@ fi
+ #
+ # Files section
+ #
++# don't use %doc as old rpmbuild removes it[1].
++# [1] http://rpm.org/ticket/836
+ 
+ %files
+ %defattr(-,root,root)
+-%doc AUTHORS ChangeLog COPYING COPYRIGHT.GPL INSTALL NEWS PORTS README 
+ %{_mandir}
+ %{_sbindir}/%{name}
+ %{_datadir}/%{name}
++%{_docdir}/%{name}-%{version}
+ %dir /etc/%{name}
+ %if "%{VENDOR}" == "SuSE"
+ /etc/init.d/%{name}
+@@ -221,9 +227,6 @@ fi
+ /etc/rc.d/init.d/%{name}
+ %endif
+ 
+-# Install extra %doc stuff
+-%doc contrib/ sample/ src/plugins/README.*
+-
+ %files devel
+ %defattr(-,root,root)
+ %{_includedir}/*
+-- 
+1.7.3.4
+
 
