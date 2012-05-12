@@ -1,9 +1,10 @@
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Sat, 12 May 2012 22:19:46 +0300
-Message-Id: <1336850389-23719-14-git-send-email-alon.barlev@...277...>
+Date: Sat, 12 May 2012 22:19:47 +0300
+Message-Id: <1336850389-23719-15-git-send-email-alon.barlev@...277...>
 In-Reply-To: <1336850389-23719-1-git-send-email-alon.barlev@...277...>
 References: <1336850389-23719-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [PATCH 13/16] cleanup: syshead: remove dead code
+Subject: [Openvpn-devel] [PATCH 14/16] cleanup: syshead: move SOL_IP
+	emulation to autoconf
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,41 +20,51 @@ Cc: Alon Bar-Lev <alon.barlev@...277...>
 
 Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 ---
- src/openvpn/syshead.h |   14 --------------
- 1 files changed, 0 insertions(+), 14 deletions(-)
+ configure.ac          |   11 +++++++++++
+ src/openvpn/syshead.h |    8 --------
+ 2 files changed, 11 insertions(+), 8 deletions(-)
 
+diff --git a/configure.ac b/configure.ac
+index 2c80ef4..193d287 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -490,6 +490,17 @@ AC_CHECK_DECLS(
+ 	,
+ 	[[${SOCKET_INCLUDES}]]
+ )
++AC_CHECK_DECLS(
++	[SOL_IP],
++	,
++	[AC_CHECK_DECLS(
++		[IPPROTO_IP],
++		[AC_DEFINE_UNQUOTED([SOL_IP], [IPPROTO_IP], [SOL_IP emulation])],
++		[AC_MSG_ERROR([cannot find SOL_IP or IPPROTO_IP])],
++		[[${SOCKET_INCLUDES}]]
++	)],
++	[[${SOCKET_INCLUDES}]]
++)
+ 
+ dnl We emulate signals in Windows
+ AC_CHECK_DECLS(
 diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index 657c884..f908752 100644
+index f908752..c4dfd0b 100644
 --- a/src/openvpn/syshead.h
 +++ b/src/openvpn/syshead.h
-@@ -375,14 +375,6 @@
+@@ -367,14 +367,6 @@
  #endif
  
  /*
-- * Disable ESEC
+- * Does this platform define SOL_IP
+- * or only bsd-style IPPROTO_IP ?
 - */
--#if 0
--#undef EXTENDED_SOCKET_ERROR_CAPABILITY
--#define EXTENDED_SOCKET_ERROR_CAPABILITY 0
+-#ifndef SOL_IP
+-#define SOL_IP IPPROTO_IP
 -#endif
 -
 -/*
   * Do we have a syslog capability?
   */
  #if defined(HAVE_OPENLOG) && defined(HAVE_SYSLOG)
-@@ -548,12 +540,6 @@
- #define EPOLL 0
- #endif
- 
--/* Disable EPOLL */
--#if 0
--#undef EPOLL
--#define EPOLL 0
--#endif
--
- /*
-  * Should we allow ca/cert/key files to be
-  * included inline, in the configuration file?
 -- 
 1.7.3.4
 
