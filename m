@@ -1,20 +1,7 @@
-MIME-Version: 1.0
-In-Reply-To: <20120512081025.GC1359@...1296...>
-References: <CAOazyz12Rw0kOSS+siU7tLP4eXO5XkhexjVLn+uC97s4K1Z8EQ@...278...>
-	<4FAAFCB4.8040606@...1227...>
-	<CAOazyz2wP2ms7HC31LPp3VzFRBu+S3zURZm1ozz0MzjmhQv07g@...278...>
-	<4FAB0556.50903@...1227...>
-	<CAOazyz2pdJysuaEhoDL8O=S=CdEfW8XCuB6n8YrnKjOBqstTPA@...278...>
-	<1CED409804E2164C8104F9E623B08B9012D1CF8A98@...1436...>
-	<CAOazyz0Qb8xa-FUqQcMDX=w+=Vb3J8sQ2R8GAxNtfWxT-4DNkw@...278...>
-	<1CED409804E2164C8104F9E623B08B9012D1CF8AB9@...1436...>
-	<20120511185641.GZ1359@...1296...>
-	<4FAD8A16.6020303@...1400...>
-	<20120512081025.GC1359@...1296...>
-Date: Sat, 12 May 2012 11:18:45 +0300
-Message-ID: <CAOazyz3JEjxmBEobs6x_zdb+3CQo-Ectgux7LAb-LgzNkBC=Xg@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
+Date: Sat, 12 May 2012 12:02:18 +0300
+Message-Id: <1336813338-9219-1-git-send-email-alon.barlev@...277...>
+Subject: [Openvpn-devel] [PATCH] build: detect sys/wait.h required for *bsd
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,45 +10,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Arne Schwabe <schwabe@...1400...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Alon Bar-Lev <alon.barlev@...277...>
 
-On Sat, May 12, 2012 at 11:10 AM, Gert Doering <gert@...1296...> wrote:
-> Hi,
->
-> On Fri, May 11, 2012 at 11:52:22PM +0200, Arne Schwabe wrote:
->> Am 11.05.12 20:56, schrieb Gert Doering:
->> > Changing the build environment to build a shared library out of openvpn
->> > is something I do not fully understand yet, though - and don't view
->> > a particular useful goal right now.
->> The shared library is not used as real shared library. I build
->> libopenvpn as complete library and then build a miniature executable
->> that calls the main method of the shared library and therefore exactly
->> behaves like openvpn as executable.
->>
->> The reason for this is that libraries are managed by the android package
->> system. For executables I have to carry them as data files and write
->> them to a cache partition. By putting the main =C2=A0code into the libra=
-ry I
->> can minimise the amount of data that is written twice to the /data
->> parition on Android.
->
-> I'm still not sure I fully understand what Android is doing there - but
-> I don't need to :-) - so that explanation is good enough for me.
->
-> gert
+Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+---
+ configure.ac |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-Gert, even if we don't understand the android details, it is obvious
-that either:
+diff --git a/configure.ac b/configure.ac
+index 901a916..4592727 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -374,7 +374,7 @@ AC_CHECK_HEADERS([ \
+ ])
+ AC_CHECK_HEADERS([ \
+ 	sys/time.h sys/ioctl.h sys/stat.h \
+-	sys/mman.h sys/file.h \
++	sys/mman.h sys/file.h sys/wait.h \
+ 	unistd.h signal.h libgen.h stropts.h \
+ 	syslog.h pwd.h grp.h \
+ 	sys/sockio.h sys/uio.h linux/sockios.h \
+-- 
+1.7.3.4
 
-a. upstream should merge and maintain yet another parallel build system.
-
-b. downstream should maintain another parallel build.
-
-This should be absolutely avoided if there are alternatives before
-accepting any explanation.
-
-Alon.
 
