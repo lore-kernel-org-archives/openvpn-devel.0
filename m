@@ -1,10 +1,7 @@
-Message-ID: <4FAD9053.90006@...1227...>
-Date: Sat, 12 May 2012 00:18:59 +0200
-From: Arne Schwabe <arne@...1227...>
-MIME-Version: 1.0
-References: <CAOazyz35bB=q1hpdzjj_aHZ7K_0koT8pcw0csham2AOwMqGrfg@...278...>
-	<4FAAF945.8070005@...1227...>
-	<CAOazyz12Rw0kOSS+siU7tLP4eXO5XkhexjVLn+uC97s4K1Z8EQ@...278...>
+Date: Sat, 12 May 2012 10:10:25 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120512081025.GC1359@...1296...>
+References: <CAOazyz12Rw0kOSS+siU7tLP4eXO5XkhexjVLn+uC97s4K1Z8EQ@...278...>
 	<4FAAFCB4.8040606@...1227...>
 	<CAOazyz2wP2ms7HC31LPp3VzFRBu+S3zURZm1ozz0MzjmhQv07g@...278...>
 	<4FAB0556.50903@...1227...>
@@ -14,9 +11,11 @@ References: <CAOazyz35bB=q1hpdzjj_aHZ7K_0koT8pcw0csham2AOwMqGrfg@...278...>
 	<1CED409804E2164C8104F9E623B08B9012D1CF8AB9@...1436...>
 	<20120511185641.GZ1359@...1296...>
 	<4FAD8A16.6020303@...1400...>
-	<CAOazyz1dkfwNsAzSF4OXcoMyYezdiJAzH+RMUiqVrAYi7e-ftg@...278...>
-	<CAOazyz0NUJvpq=Kt6Pq_gi77-+W4-4aCv9Ox9i+ao70a9CPZoQ@...278...>
-In-Reply-To: <CAOazyz0NUJvpq=Kt6Pq_gi77-+W4-4aCv9Ox9i+ao70a9CPZoQ@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="sERRIhpDjaMjVTrQ"
+Content-Disposition: inline
+In-Reply-To: <4FAD8A16.6020303@...1400...>
 Subject: Re: [Openvpn-devel] [PATCH] Openvpn for Android 4.0 Changeset
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -26,40 +25,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Arne Schwabe <schwabe@...1400...>
+Cc: Alon Bar-Lev <alon.barlev@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
->> I would like you to try to do so using libtool...
->>
->> Just replace:
->> ---
->> sbin_PROGRAMS = openvpn
->> openvpn_SOURCES = ....
->> ---
->> with:
->> ---
->> lib_LTLIBRARIES = openvpn.la
->> openvpn_la_SOURCES = ...
->> openvpn_la_LDFLAGS = \
->>    -module -shared -avoid-version -no-undefined
->> ---
->>
->> And add -Dmain=openvpn_main to AM_CFLAGS.
->>
->> Alon.
-> You should also change:
-> ---
-> openvpn_LDADD = ...
-> ---
-> to:
-> ---
-> openvpn_la_LDADD = ...
-> ---
-I can try this sometime later but for the moment I happy with building
-the openvpn with the android ndk build system as there a other things
-that I prefer to tweaking the build system.
+--sERRIhpDjaMjVTrQ
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Arne
+Hi,
+
+On Fri, May 11, 2012 at 11:52:22PM +0200, Arne Schwabe wrote:
+> Am 11.05.12 20:56, schrieb Gert Doering:
+> > Changing the build environment to build a shared library out of openvpn
+> > is something I do not fully understand yet, though - and don't view
+> > a particular useful goal right now.
+> The shared library is not used as real shared library. I build
+> libopenvpn as complete library and then build a miniature executable
+> that calls the main method of the shared library and therefore exactly
+> behaves like openvpn as executable.
+>=20
+> The reason for this is that libraries are managed by the android package
+> system. For executables I have to carry them as data files and write
+> them to a cache partition. By putting the main  code into the library I
+> can minimise the amount of data that is written twice to the /data
+> parition on Android.
+
+I'm still not sure I fully understand what Android is doing there - but
+I don't need to :-) - so that explanation is good enough for me.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--sERRIhpDjaMjVTrQ
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBT64a8KkuBuNlUUl1AQLafwQAiapAfTvpw0JXTbVQwwXZBQpqLXFMKqbp
+RcPbmLxmDACmwEkgdUU4r9CAN/2yOjnS37T1sDu0qJIMkNQhCS7nqovxko39daKv
+PcCsQgjNh0DPDWDYBm4cZAh2dzjmNv6i9H2aVRkP9/hc3M/VQSORnYRaiGzsYftx
+/2JOUVDbvqw=
+=ZIbh
+-----END PGP SIGNATURE-----
+
+--sERRIhpDjaMjVTrQ--
 
