@@ -1,9 +1,10 @@
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Sat, 12 May 2012 22:31:42 +0300
-Message-Id: <1336851105-24172-2-git-send-email-alon.barlev@...277...>
+Date: Sat, 12 May 2012 22:31:43 +0300
+Message-Id: <1336851105-24172-3-git-send-email-alon.barlev@...277...>
 In-Reply-To: <1336851105-24172-1-git-send-email-alon.barlev@...277...>
 References: <1336851105-24172-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [V2.4 1/4] cleanup: remove check_subnet_conflict
+Subject: [Openvpn-devel] [V2.4 2/4] cleanup: move
+	warn_on_use_of_common_subnets to init.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,103 +18,85 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net, openvpn.list@...1114..., openvpn-devel@lists.sourceforge.net, openvpn.list@...1114...
 Cc: Alon Bar-Lev <alon.barlev@...277...>
 
-Commeted out as "too many false positives".
+No dependencies and init.c is the only user.
 
 Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 ---
- src/openvpn/route.c |    1 -
- src/openvpn/tun.c   |   43 -------------------------------------------
- src/openvpn/tun.h   |    4 ----
- 3 files changed, 0 insertions(+), 48 deletions(-)
+ src/openvpn/init.c |   18 ++++++++++++++++++
+ src/openvpn/tun.c  |   17 -----------------
+ src/openvpn/tun.h  |    2 --
+ 3 files changed, 18 insertions(+), 19 deletions(-)
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 7c25c77..f36c324 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -1030,7 +1030,6 @@ add_routes (struct route_list *rl, struct route_ipv6_list *rl6, const struct tun
-       for (i = 0; i < rl->n; ++i)
- 	{
- 	  struct route *r = &rl->routes[i];
--	  check_subnet_conflict (r->network, r->netmask, "route");
- 	  if (flags & ROUTE_DELETE_FIRST)
- 	    delete_route (r, tt, flags, &rl->rgi, es);
- 	  add_route (r, tt, flags, &rl->rgi, es);
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 61ced5d..eb4c5df 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -59,6 +59,24 @@ static struct context *static_context; /* GLOBAL */
+ 
+ static void do_init_first_time (struct context *c);
+ 
++static
++void
++warn_on_use_of_common_subnets (void)
++{
++  struct gc_arena gc = gc_new ();
++  struct route_gateway_info rgi;
++  const int needed = (RGI_ADDR_DEFINED|RGI_NETMASK_DEFINED);
++
++  get_default_gateway (&rgi);
++  if ((rgi.flags & needed) == needed)
++    {
++      const in_addr_t lan_network = rgi.gateway.addr & rgi.gateway.netmask;
++      if (lan_network == 0xC0A80000 || lan_network == 0xC0A80100)
++	msg (M_WARN, "NOTE: your local LAN uses the extremely common subnet address 192.168.0.x or 192.168.1.x.  Be aware that this might create routing conflicts if you connect to the VPN server from public locations such as internet cafes that use the same subnet.");
++    }
++  gc_free (&gc);
++}
++
+ void
+ context_clear (struct context *c)
+ {
 diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 71abbf3..033c1e2 100644
+index 033c1e2..31684f4 100644
 --- a/src/openvpn/tun.c
 +++ b/src/openvpn/tun.c
-@@ -242,44 +242,6 @@ check_addr_clash (const char *name,
+@@ -242,23 +242,6 @@ check_addr_clash (const char *name,
    gc_free (&gc);
  }
  
--/*
-- * Issue a warning if ip/netmask (on the virtual IP network) conflicts with
-- * the settings on the local LAN.  This is designed to flag issues where
-- * (for example) the OpenVPN server LAN is running on 192.168.1.x, but then
-- * an OpenVPN client tries to connect from a public location that is also running
-- * off of a router set to 192.168.1.x.
-- */
 -void
--check_subnet_conflict (const in_addr_t ip,
--		       const in_addr_t netmask,
--		       const char *prefix)
+-warn_on_use_of_common_subnets (void)
 -{
--#if 0 /* too many false positives */
 -  struct gc_arena gc = gc_new ();
--  in_addr_t lan_gw = 0;
--  in_addr_t lan_netmask = 0;
+-  struct route_gateway_info rgi;
+-  const int needed = (RGI_ADDR_DEFINED|RGI_NETMASK_DEFINED);
 -
--  if (get_default_gateway (&lan_gw, &lan_netmask) && lan_netmask)
+-  get_default_gateway (&rgi);
+-  if ((rgi.flags & needed) == needed)
 -    {
--      const in_addr_t lan_network = lan_gw & lan_netmask; 
--      const in_addr_t network = ip & netmask;
--
--      /* do the two subnets defined by network/netmask and lan_network/lan_netmask intersect? */
--      if ((network & lan_netmask) == lan_network
--	  || (lan_network & netmask) == network)
--	{
--	  msg (M_WARN, "WARNING: potential %s subnet conflict between local LAN [%s/%s] and remote VPN [%s/%s]",
--	       prefix,
--	       print_in_addr_t (lan_network, 0, &gc),
--	       print_in_addr_t (lan_netmask, 0, &gc),
--	       print_in_addr_t (network, 0, &gc),
--	       print_in_addr_t (netmask, 0, &gc));
--	}
+-      const in_addr_t lan_network = rgi.gateway.addr & rgi.gateway.netmask;
+-      if (lan_network == 0xC0A80000 || lan_network == 0xC0A80100)
+-	msg (M_WARN, "NOTE: your local LAN uses the extremely common subnet address 192.168.0.x or 192.168.1.x.  Be aware that this might create routing conflicts if you connect to the VPN server from public locations such as internet cafes that use the same subnet.");
 -    }
 -  gc_free (&gc);
--#endif
 -}
 -
- void
- warn_on_use_of_common_subnets (void)
- {
-@@ -485,11 +447,6 @@ init_tun (const char *dev,       /* --dev option */
- 			    remote_public,
- 			    tt->local,
- 			    tt->remote_netmask);
--
--	  if (tt->type == DEV_TYPE_TAP || (tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET))
--	    check_subnet_conflict (tt->local, tt->remote_netmask, "TUN/TAP adapter");
--	  else if (tt->type == DEV_TYPE_TUN)
--	    check_subnet_conflict (tt->local, IPV4_NETMASK_HOST, "TUN/TAP adapter");
- 	}
- 
-       /*
+ /*
+  * Complain if --dev tap and --ifconfig is used on an OS for which
+  * we don't have a custom tap ifconfig template below.
 diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index 9bd990f..bea1554 100644
+index bea1554..7a8e769 100644
 --- a/src/openvpn/tun.h
 +++ b/src/openvpn/tun.h
-@@ -251,10 +251,6 @@ const char *ifconfig_options_string (const struct tuntap* tt, bool remote, bool
+@@ -251,8 +251,6 @@ const char *ifconfig_options_string (const struct tuntap* tt, bool remote, bool
  
  bool is_tun_p2p (const struct tuntap *tt);
  
--void check_subnet_conflict (const in_addr_t ip,
--			    const in_addr_t netmask,
--			    const char *prefix);
+-void warn_on_use_of_common_subnets (void);
 -
- void warn_on_use_of_common_subnets (void);
- 
  /*
+  * Inline functions
+  */
 -- 
 1.7.3.4
 
