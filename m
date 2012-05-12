@@ -1,10 +1,10 @@
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Sat, 12 May 2012 22:19:44 +0300
-Message-Id: <1336850389-23719-12-git-send-email-alon.barlev@...277...>
+Date: Sat, 12 May 2012 22:19:45 +0300
+Message-Id: <1336850389-23719-13-git-send-email-alon.barlev@...277...>
 In-Reply-To: <1336850389-23719-1-git-send-email-alon.barlev@...277...>
 References: <1336850389-23719-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [PATCH 11/16] cleanup: syshead: move
-	_P1003_1B_VISIBLE to autoconf
+Subject: [Openvpn-devel] [PATCH 12/16] cleanup: syshead: move socket compat
+	into basic.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,39 +18,68 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net, openvpn.list@...1114..., openvpn-devel@lists.sourceforge.net, openvpn.list@...1114...
 Cc: Alon Bar-Lev <alon.barlev@...277...>
 
+Probably not the best place, however, better than syshead.
+
 Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 ---
- configure.ac          |    2 +-
- src/openvpn/syshead.h |    3 ---
- 2 files changed, 1 insertions(+), 4 deletions(-)
+ src/openvpn/basic.h   |   17 +++++++++++++++++
+ src/openvpn/syshead.h |   17 -----------------
+ 2 files changed, 17 insertions(+), 17 deletions(-)
 
-diff --git a/configure.ac b/configure.ac
-index 078e46f..2c80ef4 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -291,7 +291,7 @@ case "$host" in
- 		AC_DEFINE([TARGET_DARWIN], [1], [Are we running on Mac OS X?])
- 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["M"], [Target prefix])
- 		dnl some Mac OS X tendering (we use vararg macros...)
--		CPPFLAGS="$CPPFLAGS -no-cpp-precomp"
-+		CPPFLAGS="$CPPFLAGS -no-cpp-precomp -D_P1003_1B_VISIBLE"
- 		;;
- 	*-mingw*)
- 		AC_DEFINE([TARGET_WIN32], [1], [Are we running WIN32?])
+diff --git a/src/openvpn/basic.h b/src/openvpn/basic.h
+index 9746315..ac325e1 100644
+--- a/src/openvpn/basic.h
++++ b/src/openvpn/basic.h
+@@ -58,4 +58,21 @@
+ # endif
+ #endif
+ 
++/*
++ * Our socket descriptor type.
++ */
++#ifdef WIN32
++#define SOCKET_UNDEFINED (INVALID_SOCKET)
++typedef SOCKET socket_descriptor_t;
++#else
++#define SOCKET_UNDEFINED (-1)
++typedef int socket_descriptor_t;
++#endif
++
++static inline int
++socket_defined (const socket_descriptor_t sd)
++{
++  return sd != SOCKET_UNDEFINED;
++}
++
+ #endif
 diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index e522876..3fd955d 100644
+index 3fd955d..657c884 100644
 --- a/src/openvpn/syshead.h
 +++ b/src/openvpn/syshead.h
-@@ -328,9 +328,6 @@
+@@ -392,23 +392,6 @@
  #endif
  
- #ifdef HAVE_SYS_MMAN_H
--#ifdef TARGET_DARWIN
--#define _P1003_1B_VISIBLE
--#endif /* TARGET_DARWIN */
- #include <sys/mman.h>
- #endif
- 
+ /*
+- * Our socket descriptor type.
+- */
+-#ifdef WIN32
+-#define SOCKET_UNDEFINED (INVALID_SOCKET)
+-typedef SOCKET socket_descriptor_t;
+-#else
+-#define SOCKET_UNDEFINED (-1)
+-typedef int socket_descriptor_t;
+-#endif
+-
+-static inline int
+-socket_defined (const socket_descriptor_t sd)
+-{
+-  return sd != SOCKET_UNDEFINED;
+-}
+-
+-/*
+  * Should we enable the use of execve() for calling subprocesses,
+  * instead of system()?
+  */
 -- 
 1.7.3.4
 
