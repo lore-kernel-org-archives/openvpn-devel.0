@@ -1,8 +1,7 @@
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Sat, 12 May 2012 22:03:53 +0300
-Message-Id: <1336849433-23066-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [PATCH] build: insall README* document using build
-	system
+Date: Sat, 12 May 2012 22:19:33 +0300
+Message-Id: <1336850389-23719-1-git-send-email-alon.barlev@...277...>
+Subject: [Openvpn-devel] [PATCH 00/16] syshead: cleanups
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,81 +12,56 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net, openvpn.list@...1114..., openvpn-devel@lists.sourceforge.net, openvpn.list@...1114...
 Cc: Alon Bar-Lev <alon.barlev@...277...>
 
-Purpose: make distro packager task simpler, more flexible to provide
-more documentation without changing the packaging script.
+Hello,
 
-Remove installation related documents from rpm as package already
-installed when viewed.
+This series include some minor syshead.h cleanups, most moved to
+build system.
 
-+Workaround rpm bug[1].
+I think these are simple enough to go into 2.3, the risk is minimal
+but I don't care if we truly freeze 2.3 and switch master to 2.4
+and apply this for 2.4.
 
-[1] http://rpm.org/ticket/836
+This series is on top of my build branch[1], about to merge it too.
 
-Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
----
- Makefile.am                |    3 +++
- distro/rpm/openvpn.spec.in |   11 +++++++----
- 2 files changed, 10 insertions(+), 4 deletions(-)
+[1] https://github.com/alonbl/openvpn/compare/build
 
-diff --git a/Makefile.am b/Makefile.am
-index 33dfcd6..c580579 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -57,6 +57,9 @@ endif
- SUBDIRS = build distro include src sample doc tests
- 
- dist_doc_DATA = \
-+	README \
-+	README.IPv6 \
-+	README.polarssl \
- 	COPYRIGHT.GPL \
- 	COPYING
- 
-diff --git a/distro/rpm/openvpn.spec.in b/distro/rpm/openvpn.spec.in
-index d9158c1..a6f31bd 100644
---- a/distro/rpm/openvpn.spec.in
-+++ b/distro/rpm/openvpn.spec.in
-@@ -164,6 +164,10 @@ done
- 
- %__mv -f src/plugins/README src/plugins/README.plugins
- 
-+# Install extra %doc stuff
-+cp -r AUTHORS ChangeLog NEWS contrib/ sample/ src/plugins/README.* \
-+	"%{buildroot}/%{_docdir}/%{name}-%{version}"
-+
- #
- # Clean section
- #
-@@ -207,13 +211,15 @@ fi
- #
- # Files section
- #
-+# don't use %doc as old rpmbuild removes it[1].
-+# [1] http://rpm.org/ticket/836
- 
- %files
- %defattr(-,root,root)
--%doc AUTHORS ChangeLog COPYING COPYRIGHT.GPL INSTALL NEWS PORTS README 
- %{_mandir}
- %{_sbindir}/%{name}
- %{_datadir}/%{name}
-+%{_docdir}/%{name}-%{version}
- %dir /etc/%{name}
- %if "%{VENDOR}" == "SuSE"
- /etc/init.d/%{name}
-@@ -221,9 +227,6 @@ fi
- /etc/rc.d/init.d/%{name}
- %endif
- 
--# Install extra %doc stuff
--%doc contrib/ sample/ src/plugins/README.*
--
- %files devel
- %defattr(-,root,root)
- %{_includedir}/*
+Alon Bar-Lev (16):
+  cleanup: syshead: remove OS_SPECIFIC_DIRSEP in favor of autoconf
+    PATH_SEPARATOR
+  cleanup: syshead: move O_BINARY detection to autoconf
+  cleanup: syshead: remove useless WIN32_0_1
+  cleanup: syshead: remove useless constant USE_64_BIT_COUNTERS
+  cleanup: syshead: move apple specific CPPFLAGS out of syshead
+  clenaup: syshead: remove wait macros wrappers
+  cleanup: syshead: move likely,unlikely to basic.h
+  cleanup: syshead: move sleep,random,syshead.h emulation to compat
+  cleanup: syshead: rename S_ERROR->S_ERRORS to avoid conflict with
+    stropts.h
+  cleanup: syshead: split pedantic into pedantic, lint
+  cleanup: syshead: move _P1003_1B_VISIBLE to autoconf
+  cleanup: syshead: move socket compat into basic.h
+  cleanup: syshead: remove dead code
+  cleanup: syshead: move SOL_IP emulation to autoconf
+  cleanup: syshead: move ENABLE_MEMSTATS to autoconf
+  clenaup: syshead: reworder/cleanup includes
+
+ configure.ac             |   63 ++++++++++-
+ src/compat/compat.h      |    6 +
+ src/openvpn/basic.h      |   40 +++++++
+ src/openvpn/common.h     |   13 +--
+ src/openvpn/error.h      |    2 +-
+ src/openvpn/misc.c       |    6 +-
+ src/openvpn/openvpn.c    |    2 +-
+ src/openvpn/ssl.c        |   16 ++--
+ src/openvpn/ssl_common.h |    2 +-
+ src/openvpn/ssl_verify.c |    2 +-
+ src/openvpn/syshead.h    |  270 ++++++----------------------------------------
+ src/openvpn/tun.c        |   12 --
+ 12 files changed, 157 insertions(+), 277 deletions(-)
+
 -- 
 1.7.3.4
 
