@@ -1,7 +1,9 @@
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Sat, 12 May 2012 22:31:41 +0300
-Message-Id: <1336851105-24172-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [V2.4 0/4] tun cleanups
+Date: Sat, 12 May 2012 22:31:42 +0300
+Message-Id: <1336851105-24172-2-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1336851105-24172-1-git-send-email-alon.barlev@...277...>
+References: <1336851105-24172-1-git-send-email-alon.barlev@...277...>
+Subject: [Openvpn-devel] [V2.4 1/4] cleanup: remove check_subnet_conflict
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,91 +17,103 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net, openvpn.list@...1114..., openvpn-devel@lists.sourceforge.net, openvpn.list@...1114...
 Cc: Alon Bar-Lev <alon.barlev@...277...>
 
-Platform independent interface for tun provider.
+Commeted out as "too many false positives".
 
-Split the long tun.c into platform specific files using
-tun_engine interface.
+Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+---
+ src/openvpn/route.c |    1 -
+ src/openvpn/tun.c   |   43 -------------------------------------------
+ src/openvpn/tun.h   |    4 ----
+ 3 files changed, 0 insertions(+), 48 deletions(-)
 
-Functionality is the same.
-
-Maintenance will be much easier! new options, like stacking
-several interfaces and delegate partial control to plugin.
-
-There is more to be done in order to clean up the code,
-however this is a good starting point.
-
-Some more minor cleanups.
-
-Tested on Linux, FreeBSD, Windows.
-
-Branch should be merge after syshead[1].
-Most probably patch exceeds list limitation, review is available[2].
-
-This is for 2.4, please review quickly this so won't need to rebase.
-
-Special thanks to Eric Crist for his FreeBSD help.
-
-[1] https://github.com/alonbl/openvpn/compare/build...syshead
-[2] https://github.com/alonbl/openvpn/compare/syshead...tun
-
-Alon Bar-Lev (4):
-  cleanup: remove check_subnet_conflict
-  cleanup: move warn_on_use_of_common_subnets to init.c
-  cleanup: remove tun_adjust_frame_parameters
-  cleanup: tun: tun_engine interface
-
- configure.ac                             |    6 +
- src/openvpn/Makefile.am                  |   12 +
- src/openvpn/error.c                      |    2 +-
- src/openvpn/forward.c                    |   28 +-
- src/openvpn/helper.c                     |    2 +-
- src/openvpn/init.c                       |   61 +-
- src/openvpn/multi.c                      |    2 +-
- src/openvpn/options.c                    |   20 +-
- src/openvpn/options.h                    |    5 +-
- src/openvpn/route.c                      |    2 +-
- src/openvpn/sig.c                        |    4 +-
- src/openvpn/syshead.h                    |   56 -
- src/openvpn/tun-engine-common-bsd.c      |  103 +
- src/openvpn/tun-engine-common-bsd.h      |   34 +
- src/openvpn/tun-engine-common.c          |  518 +++
- src/openvpn/tun-engine-common.h          |   85 +
- src/openvpn/tun-engine-darwin.c          |  226 ++
- src/openvpn/tun-engine-dragonfly.c       |  193 ++
- src/openvpn/tun-engine-freebsd.c         |  229 ++
- src/openvpn/tun-engine-generic.c         |   97 +
- src/openvpn/tun-engine-linux-options.h   |   37 +
- src/openvpn/tun-engine-linux.c           |  515 +++
- src/openvpn/tun-engine-netbsd.c          |  318 ++
- src/openvpn/tun-engine-openbsd.c         |  259 ++
- src/openvpn/tun-engine-options.h         |   37 +
- src/openvpn/tun-engine-solaris.c         |  491 +++
- src/openvpn/tun-engine-windows-options.h |   92 +
- src/openvpn/tun-engine-windows-util.h    |   83 +
- src/openvpn/tun-engine-windows.c         | 2757 ++++++++++++++++
- src/openvpn/tun-engine.h                 |   95 +
- src/openvpn/tun.c                        | 5053 ++----------------------------
- src/openvpn/tun.h                        |  469 +---
- 32 files changed, 6548 insertions(+), 5343 deletions(-)
- create mode 100644 src/openvpn/tun-engine-common-bsd.c
- create mode 100644 src/openvpn/tun-engine-common-bsd.h
- create mode 100644 src/openvpn/tun-engine-common.c
- create mode 100644 src/openvpn/tun-engine-common.h
- create mode 100644 src/openvpn/tun-engine-darwin.c
- create mode 100644 src/openvpn/tun-engine-dragonfly.c
- create mode 100644 src/openvpn/tun-engine-freebsd.c
- create mode 100644 src/openvpn/tun-engine-generic.c
- create mode 100644 src/openvpn/tun-engine-linux-options.h
- create mode 100644 src/openvpn/tun-engine-linux.c
- create mode 100644 src/openvpn/tun-engine-netbsd.c
- create mode 100644 src/openvpn/tun-engine-openbsd.c
- create mode 100644 src/openvpn/tun-engine-options.h
- create mode 100644 src/openvpn/tun-engine-solaris.c
- create mode 100644 src/openvpn/tun-engine-windows-options.h
- create mode 100644 src/openvpn/tun-engine-windows-util.h
- create mode 100644 src/openvpn/tun-engine-windows.c
- create mode 100644 src/openvpn/tun-engine.h
-
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 7c25c77..f36c324 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -1030,7 +1030,6 @@ add_routes (struct route_list *rl, struct route_ipv6_list *rl6, const struct tun
+       for (i = 0; i < rl->n; ++i)
+ 	{
+ 	  struct route *r = &rl->routes[i];
+-	  check_subnet_conflict (r->network, r->netmask, "route");
+ 	  if (flags & ROUTE_DELETE_FIRST)
+ 	    delete_route (r, tt, flags, &rl->rgi, es);
+ 	  add_route (r, tt, flags, &rl->rgi, es);
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 71abbf3..033c1e2 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -242,44 +242,6 @@ check_addr_clash (const char *name,
+   gc_free (&gc);
+ }
+ 
+-/*
+- * Issue a warning if ip/netmask (on the virtual IP network) conflicts with
+- * the settings on the local LAN.  This is designed to flag issues where
+- * (for example) the OpenVPN server LAN is running on 192.168.1.x, but then
+- * an OpenVPN client tries to connect from a public location that is also running
+- * off of a router set to 192.168.1.x.
+- */
+-void
+-check_subnet_conflict (const in_addr_t ip,
+-		       const in_addr_t netmask,
+-		       const char *prefix)
+-{
+-#if 0 /* too many false positives */
+-  struct gc_arena gc = gc_new ();
+-  in_addr_t lan_gw = 0;
+-  in_addr_t lan_netmask = 0;
+-
+-  if (get_default_gateway (&lan_gw, &lan_netmask) && lan_netmask)
+-    {
+-      const in_addr_t lan_network = lan_gw & lan_netmask; 
+-      const in_addr_t network = ip & netmask;
+-
+-      /* do the two subnets defined by network/netmask and lan_network/lan_netmask intersect? */
+-      if ((network & lan_netmask) == lan_network
+-	  || (lan_network & netmask) == network)
+-	{
+-	  msg (M_WARN, "WARNING: potential %s subnet conflict between local LAN [%s/%s] and remote VPN [%s/%s]",
+-	       prefix,
+-	       print_in_addr_t (lan_network, 0, &gc),
+-	       print_in_addr_t (lan_netmask, 0, &gc),
+-	       print_in_addr_t (network, 0, &gc),
+-	       print_in_addr_t (netmask, 0, &gc));
+-	}
+-    }
+-  gc_free (&gc);
+-#endif
+-}
+-
+ void
+ warn_on_use_of_common_subnets (void)
+ {
+@@ -485,11 +447,6 @@ init_tun (const char *dev,       /* --dev option */
+ 			    remote_public,
+ 			    tt->local,
+ 			    tt->remote_netmask);
+-
+-	  if (tt->type == DEV_TYPE_TAP || (tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET))
+-	    check_subnet_conflict (tt->local, tt->remote_netmask, "TUN/TAP adapter");
+-	  else if (tt->type == DEV_TYPE_TUN)
+-	    check_subnet_conflict (tt->local, IPV4_NETMASK_HOST, "TUN/TAP adapter");
+ 	}
+ 
+       /*
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index 9bd990f..bea1554 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -251,10 +251,6 @@ const char *ifconfig_options_string (const struct tuntap* tt, bool remote, bool
+ 
+ bool is_tun_p2p (const struct tuntap *tt);
+ 
+-void check_subnet_conflict (const in_addr_t ip,
+-			    const in_addr_t netmask,
+-			    const char *prefix);
+-
+ void warn_on_use_of_common_subnets (void);
+ 
+ /*
 -- 
 1.7.3.4
 
