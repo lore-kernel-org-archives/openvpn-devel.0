@@ -1,9 +1,7 @@
-MIME-Version: 1.0
-Sender: fabian@...1547...
-In-Reply-To: <CAOazyz2NzD76kqdM4v+fPK4uuvCd6E-oh79EpGv5p1K=ZZTucw@...278...>
-References: <20120513092355.GH1359@...1296...>
-	<CAOazyz0=+ZE6+n-KqyzZSJhbweHb236LjwefvV6BtMvfbh37mQ@...278...>
-	<20120513093551.GI1359@...1296...>
+Date: Sun, 13 May 2012 22:39:11 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120513203911.GR1359@...1296...>
+References: <20120513093551.GI1359@...1296...>
 	<CAOazyz0bEZMBYcKGvKTux=+7XE43=-4Aw02HGVCNHPoO35wAWg@...278...>
 	<20120513111240.GK1359@...1296...>
 	<CAOazyz1keZzQjqeUoUSQ88UzVn3=BMz1FWRp0KiB+gS6-43HhQ@...278...>
@@ -13,9 +11,11 @@ References: <20120513092355.GH1359@...1296...>
 	<CAOazyz1hA7EGOhoOtOgNgAcH91Y4crs1TrTzgDbC6_MbgA8reQ@...278...>
 	<20120513181038.GP1359@...1296...>
 	<CAOazyz2NzD76kqdM4v+fPK4uuvCd6E-oh79EpGv5p1K=ZZTucw@...278...>
-From: Fabian Knittel <fabian.knittel@...1547...>
-Date: Sun, 13 May 2012 21:52:39 +0200
-Message-ID: <CAP+U6tJ51hoEZOAQ_7R58HHtJcVB48JkzOH1_7jYGRnXEWptgQ@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="ZlEdUFxvOsanRnDp"
+Content-Disposition: inline
+In-Reply-To: <CAOazyz2NzD76kqdM4v+fPK4uuvCd6E-oh79EpGv5p1K=ZZTucw@...278...>
 Subject: Re: [Openvpn-devel] [RFC] Split plugins into their own repositories
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -25,62 +25,145 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-Hi Alon,
+--ZlEdUFxvOsanRnDp
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-2012/5/13 Alon Bar-Lev <alon.barlev@...277...>:
-> On Sun, May 13, 2012 at 9:10 PM, Gert Doering <gert@...1296...> wrote:
->> Huh? =C2=A0You're the master of Autoconf, and I'm sure you will be able =
-to
->> produce a working PAM detection for those platforms that have it.
->
+Hi,
+
+On Sun, May 13, 2012 at 09:23:04PM +0300, Alon Bar-Lev wrote:
+> > Huh? =A0You're the master of Autoconf, and I'm sure you will be able to
+> > produce a working PAM detection for those platforms that have it.
+>=20
 > Yes, and as such I tell you that automatic detection is something that
 > leads to package breakage.
+> We already discussed that in the lzo subject.
 
-How does PAM detection relate to the question whether to split out the
-plugin? Wouldn't the plugin's configure also need to detect PAM? As
-already discussed previously, I much prefer configure to notice a
-missing development package than to run into a failing "make" run.
+We're not talking about extra libraries that might or might not be there -
+on all systems I named, PAM is part of the basic operating system, as
+is "libc" or one of the zillion header files that you're currently testing
+for.
 
-And why would automatic pam detection lead to package breakage? Have
-an option for enabling / disabling plugins. If a plugin is enabled and
-needs PAM, check for the existence of PAM. If PAM isn't found, exit
-configure and tell the user to pass the proper paths for pam headers
-and libraries.
+> I know you are fundamentally against any change, but I think I proved
+> very well that I actually know what I am doing.
 
->>> >> These plugins should be optional I don't see any value in enforcing
->>> >> them and their dependencies.
->>> >
->>> > If these plugins are useful for a large number of users, there is no
->>> > point in not installing them by default.
->>>
->>> They are not.
->>
->> Unfounded claim.
->
+Now you are the one who is opposing change.  You asked what we want, and
+if the plugins should not be split, how the build system should be adapted.
+
+This is what I answered: if we want to adapt the build system for the
+plugins, compile them by default, and install them.  And now you're finding
+reasons why this is bad.
+
+Fine, leave it at that - there's quite obviously not much support for the
+split, and since you do not want to compile & install by default, nobody
+can force you to implement that.
+
+
+> >> >> These plugins should be optional I don't see any value in enforcing
+> >> >> them and their dependencies.
+> >> >
+> >> > If these plugins are useful for a large number of users, there is no
+> >> > point in not installing them by default.
+> >>
+> >> They are not.
+> >
+> > Unfounded claim.
+>=20
 > I know one or two installations, and I am tracking this project more
 > than 6 years.
 > Come on! most of installations are plain public key without any of
 > these plugins.
+
+All our corporate servers *do* use auth-pam.  Which is crucial if you
+want to do things like OTP passwords that are handled by PAM - many
+vendor solutions provide PAM modules, and it's quite nice to be able
+to use those without any extra hoops.
+
+For the record, these servers user FreeBSD with the default port, which
+*does* install both plugins, and I find that tremendously useful.
+
+ovsrv1$ pkg_info -W /usr/local/lib/openvpn-auth-pam.so
+/usr/local/lib/openvpn-auth-pam.so was installed by package openvpn-devel-2=
+01034
+
+
 > There is no need for these if you configure your server.
+
+How do you know what I need for my servers?  I *do* need them for my
+server, and I'm very happy that the FreeBSD port saves me from having
+to worry about the plugins manually every time I install a new OpenVPN
+version.
+
 > I simply don't understand your attitude... sorry, I simply don't.
 
-As already mentioned elsewhere in this thread, the currently included
-plugins aren't a huge burden to maintain. So even if we were to agree
-that most people don't need them by default, I would suggest to change
-the build default, not throw them out of the repository.
+My attitude is very simple.  I'm a sysadmin and network admin, do IPv6=20
+deployments, and regularily have to fight open source software that comes
+with non-useful defaults.
 
-I can see where the purity of the split-out would appeal to you, but
-the increased number of separate repositories, releases, packages,
-etc. to maintain forms a strong counter-point in my opinion. So I'm
-against splitting out the plugins for now. (Just saw Eric's
-openvpn-contrib proposal. Might serve as a compromise, but then we'd
-still lose the purity advantage ...)
+Everything that creates extra work for sysadmins is bad.
 
-Cheers
-Fabian
+Everything that brings in religion and delays software releases for=20
+"purity" reasons, while people are waiting for features to be delivered
+(and have to live with patched packages, instead of using upstream sources
+directly) is bad.
+
+Too-complex software is *bad*.  Stuff that looks nice while in computer
+science class, but that will bring in more complex failure modes - because
+that will inevitably one day bite an overworked sysadmin, and they do not
+like that.
+
+
+> >> BTW: Packager of what platform are you?
+> >
+> > openwrt. =A0Not that this is of any relevance.
+>=20
+> Exactly, so I think I am more experienced distro maintainer,=20
+
+Which OpenVPN package are you maintaining, please remind me again?
+
+(I am also going to win any dick size war, of course, but that's also
+non relevant as I'm already married)
+
+> please
+> understand that I am taking from first hand experience, and I would
+> like to help, plain positive help... I really don't understand why you
+> are trying to force your opinion if you have theoretical knowledge.
+
+*cough*
+
+> BTW: openwrt is a good example of a platform that does not need these
+> plugins right?
+
+Indeed.  So, yes, you have won.  Don't enable them in the build system.
+
+Remind me again why I am bothering?
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--ZlEdUFxvOsanRnDp
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBT7Ab7qkuBuNlUUl1AQLN3AP+P1qh97JrdglAF53Yfw8tUUgPhfCiq2DM
+QvRGA1C90tzlgMg3yVLhSIC5kM2TYW2fh84pZIAsAFFH3hYDhFl8dIarrZHyfJKx
+Pdc9ITcxRX1kT61vqYcL+jK3wk9FGEF+A4jfjJDTr+31vkxGtoqsubdhJUuN7xxb
+fynIZcGWVHs=
+=1GgD
+-----END PGP SIGNATURE-----
+
+--ZlEdUFxvOsanRnDp--
 
