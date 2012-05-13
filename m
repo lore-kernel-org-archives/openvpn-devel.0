@@ -1,8 +1,7 @@
-MIME-Version: 1.0
-In-Reply-To: <20120513121906.GL1359@...1296...>
-References: <CAOazyz2N744s+VJekGJNK4sqHCONLCzMtsiJyRTkgrpO4RWHzw@...278...>
-	<363B57F6-F3E8-4C7D-A19D-0E08541233BD@...1286...>
-	<20120513090153.GG1359@...1296...>
+Date: Sun, 13 May 2012 15:07:50 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120513130750.GN1359@...1296...>
+References: <20120513090153.GG1359@...1296...>
 	<CAOazyz1FB+JU7QRmeMuxMX7-6fAN28VH1-6ApJnOu7eHDq9jUA@...278...>
 	<20120513092355.GH1359@...1296...>
 	<CAOazyz0=+ZE6+n-KqyzZSJhbweHb236LjwefvV6BtMvfbh37mQ@...278...>
@@ -11,9 +10,12 @@ References: <CAOazyz2N744s+VJekGJNK4sqHCONLCzMtsiJyRTkgrpO4RWHzw@...278...>
 	<20120513111240.GK1359@...1296...>
 	<CAOazyz1keZzQjqeUoUSQ88UzVn3=BMz1FWRp0KiB+gS6-43HhQ@...278...>
 	<20120513121906.GL1359@...1296...>
-Date: Sun, 13 May 2012 15:24:59 +0300
-Message-ID: <CAOazyz3WetA0vHpm965krjKm=OiFovT1JRi39T9kOY2sf7-khA@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+	<CAOazyz3WetA0vHpm965krjKm=OiFovT1JRi39T9kOY2sf7-khA@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="RpmpUzIBLeukSLnl"
+Content-Disposition: inline
+In-Reply-To: <CAOazyz3WetA0vHpm965krjKm=OiFovT1JRi39T9kOY2sf7-khA@...278...>
 Subject: Re: [Openvpn-devel] [RFC] Split plugins into their own repositories
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -23,30 +25,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
+To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-On Sun, May 13, 2012 at 3:19 PM, Gert Doering <gert@...1296...> wrote:
-> Hi,
->
-> On Sun, May 13, 2012 at 02:26:05PM +0300, Alon Bar-Lev wrote:
->> OK... now you are talking... so you say that like apache we need to
->> integrate the plugins to main build system, this was the other
->> alternative.
->
-> This would make more sense to me. =C2=A0Either have them as optional
-> "configure" components, or just build and install all of them all
-> the time.
->
-> If we ignore the examples, we really only have "auth-pam" and "down-root"
-> in the main distribution today, and those are useful in many cases - so
-> I'd go for "always build and install them".
+--RpmpUzIBLeukSLnl
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-And always have pam dependency for this example?
-These plugins should be optional I don't see any value in enforcing
-them and their dependencies.
+Hi,
 
-Alon.
+On Sun, May 13, 2012 at 03:24:59PM +0300, Alon Bar-Lev wrote:
+> > If we ignore the examples, we really only have "auth-pam" and "down-roo=
+t"
+> > in the main distribution today, and those are useful in many cases - so
+> > I'd go for "always build and install them".
+>=20
+> And always have pam dependency for this example?
+
+FreeBSD, NetBSD, all Linuxes and Solaris have PAM anyway.
+
+So make this "if pam libraries + headers are detected, install auth-pam,=20
+otherwise, not".
+
+> These plugins should be optional I don't see any value in enforcing
+> them and their dependencies.
+
+If these plugins are useful for a large number of users, there is no
+point in not installing them by default.
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--RpmpUzIBLeukSLnl
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (NetBSD)
+
+iQCVAwUBT6+yJqkuBuNlUUl1AQIOOwP/fHGsQcDdWogJp87qgz0l+I5Wb0ui7wcm
+yUcV9D1Lahnp1zuzUbN+WCvJjf28+/5VTQa9uor55Wa+RlPFtXDCn0XlRefYCn6b
+JSAVovbyB5yPqoShXcbH1jqtv0w2KEEsddsJRtn4qgUDVrFX0GagTr1QUl+rXLL0
+ZwBV5FLKGa4=
+=FIur
+-----END PGP SIGNATURE-----
+
+--RpmpUzIBLeukSLnl--
 
