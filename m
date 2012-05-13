@@ -1,24 +1,21 @@
-From: Eric Crist <ecrist@...1286...>
-Mime-Version: 1.0 (Apple Message framework v1257)
-Content-Type: multipart/signed;
-	boundary="Apple-Mail=_E68BA853-BF31-4DCC-B488-4DE8A9753336";
-	protocol="application/pgp-signature"; micalg=pgp-sha1
-Date: Sun, 13 May 2012 15:49:57 -0400
-In-Reply-To: <7D1E078E-186D-449E-9B07-E7DA464F4246@...1286...>
-References: <CAOazyz3QDHLxY51u0Ya9PscD8Q5+VqqrSn6M6=XpVUiFJY_ENw@...278...>
-	<4FA8D931.70107@...515...>
-	<CAOazyz2N744s+VJekGJNK4sqHCONLCzMtsiJyRTkgrpO4RWHzw@...278...>
-	<363B57F6-F3E8-4C7D-A19D-0E08541233BD@...1286...>
-	<20120513090153.GG1359@...1296...>
-	<CAOazyz1FB+JU7QRmeMuxMX7-6fAN28VH1-6ApJnOu7eHDq9jUA@...278...>
-	<20120513092355.GH1359@...1296...>
+MIME-Version: 1.0
+Sender: fabian@...1547...
+In-Reply-To: <CAOazyz2NzD76kqdM4v+fPK4uuvCd6E-oh79EpGv5p1K=ZZTucw@...278...>
+References: <20120513092355.GH1359@...1296...>
 	<CAOazyz0=+ZE6+n-KqyzZSJhbweHb236LjwefvV6BtMvfbh37mQ@...278...>
 	<20120513093551.GI1359@...1296...>
 	<CAOazyz0bEZMBYcKGvKTux=+7XE43=-4Aw02HGVCNHPoO35wAWg@...278...>
 	<20120513111240.GK1359@...1296...>
-	<65AA0B7D-D286-4DF3-94BA-F2EC1ED7413B@...1458...>
-	<7D1E078E-186D-449E-9B07-E7DA464F4246@...1286...>
-Message-Id: <B45A15F1-D91C-4EA4-900A-1B55D9A4A3D4@...1286...>
+	<CAOazyz1keZzQjqeUoUSQ88UzVn3=BMz1FWRp0KiB+gS6-43HhQ@...278...>
+	<20120513121906.GL1359@...1296...>
+	<CAOazyz3WetA0vHpm965krjKm=OiFovT1JRi39T9kOY2sf7-khA@...278...>
+	<20120513130750.GN1359@...1296...>
+	<CAOazyz1hA7EGOhoOtOgNgAcH91Y4crs1TrTzgDbC6_MbgA8reQ@...278...>
+	<20120513181038.GP1359@...1296...>
+	<CAOazyz2NzD76kqdM4v+fPK4uuvCd6E-oh79EpGv5p1K=ZZTucw@...278...>
+From: Fabian Knittel <fabian.knittel@...1547...>
+Date: Sun, 13 May 2012 21:52:39 +0200
+Message-ID: <CAP+U6tJ51hoEZOAQ_7R58HHtJcVB48JkzOH1_7jYGRnXEWptgQ@...278...>
 Subject: Re: [Openvpn-devel] [RFC] Split plugins into their own repositories
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -28,194 +25,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
-
---Apple-Mail=_E68BA853-BF31-4DCC-B488-4DE8A9753336
-X-Eric-Conspiracy: There is no conspiracy.
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-David,
+Hi Alon,
 
-You misrepresent my opinion.  I do NOT want a split, but will deal with one=
- (as a packager) if it becomes necessary.  I would much prefer there to nev=
-er be a split, and for everything to be handled with configure args or ifde=
-fs in the make file.
+2012/5/13 Alon Bar-Lev <alon.barlev@...277...>:
+> On Sun, May 13, 2012 at 9:10 PM, Gert Doering <gert@...1296...> wrote:
+>> Huh? =C2=A0You're the master of Autoconf, and I'm sure you will be able =
+to
+>> produce a working PAM detection for those platforms that have it.
+>
+> Yes, and as such I tell you that automatic detection is something that
+> leads to package breakage.
 
------
-Eric F Crist
+How does PAM detection relate to the question whether to split out the
+plugin? Wouldn't the plugin's configure also need to detect PAM? As
+already discussed previously, I much prefer configure to notice a
+missing development package than to run into a failing "make" run.
 
+And why would automatic pam detection lead to package breakage? Have
+an option for enabling / disabling plugins. If a plugin is enabled and
+needs PAM, check for the existence of PAM. If PAM isn't found, exit
+configure and tell the user to pass the proper paths for pam headers
+and libraries.
 
+>>> >> These plugins should be optional I don't see any value in enforcing
+>>> >> them and their dependencies.
+>>> >
+>>> > If these plugins are useful for a large number of users, there is no
+>>> > point in not installing them by default.
+>>>
+>>> They are not.
+>>
+>> Unfounded claim.
+>
+> I know one or two installations, and I am tracking this project more
+> than 6 years.
+> Come on! most of installations are plain public key without any of
+> these plugins.
+> There is no need for these if you configure your server.
+> I simply don't understand your attitude... sorry, I simply don't.
 
-On May 13, 2012, at 15:42:10, Eric Crist wrote:
+As already mentioned elsewhere in this thread, the currently included
+plugins aren't a huge burden to maintain. So even if we were to agree
+that most people don't need them by default, I would suggest to change
+the build default, not throw them out of the repository.
 
-> What I had mentioned might be a good alternative in IRC was to have an op=
-envpn package, and an openvpn-contrib.  Two isn't hard, 17 or 500 is.  This=
-, still, didn't seem to be liked by Alon (not calling you out, per se, but =
-stating fact).
->=20
-> Not sure where we should go from here other than to stay where we are.  N=
-o point in moving until we're all ready to move in the same direction.  If =
-need be, we can enforce a dev-team sack race when we next get together. ;)
->=20
-> -----
-> Eric F Crist
->=20
->=20
->=20
-> On May 13, 2012, at 07:40:07, Seth Mos wrote:
->=20
->> Chiming in here,
->>=20
->> Although pfSense is basically a giant tarbal, it has the benefit of bein=
-g sure that all parts of it fit together. We also have installable packages=
- and we frequently see issues with that. We are trying to solve some of the=
-m using PBI packages just so that each "package" always has it's dependenci=
-es in check.
->>=20
->> Although we are just a "consumer", we'd rather have a single FreeBSD por=
-t that we build then 5 ports we need to update, with all the required depen=
-dencies.
->>=20
->> Our github repo is split into one for packages, tools and pfSense. But e=
-ach is really a standalone thing, because there is no overlap. Which probab=
-ly my point, the plugin is useless without the main.
->>=20
->> The one git repo for pfSense is pretty manageable, even more so through =
-git with Pull requests. The single biggest jump in commits and patches from=
- the community is moving to GitHub. It makes contributions so much easier. =
-That said, even for us the amount of simultaneous active coders is about 5,=
- although we do see small patches and pull requests from about 30 or so peo=
-ple a year.
->>=20
->> I see nagios using nagios-plugins, that has seperate releases from the m=
-ain nagios. So there's that too.
->>=20
->> Just a few thoughts from the other end.
->>=20
->> Really, really, _really_ looking forward to Viscosity and Tunnelblick sh=
-ipping Ipv6 enabled clients. Pretty please.
->>=20
->> Cheers,
->>=20
->> Seth
->> pfSense developer
->>=20
->> Op 13 mei 2012, om 13:12 heeft Gert Doering het volgende geschreven:
->>=20
->>> Hi,
->>>=20
->>> On Sun, May 13, 2012 at 02:00:32PM +0300, Alon Bar-Lev wrote:
->>>>>> Can't we progress?
->>>>>=20
->>>>> Why is that progress?
->>>>>=20
->>>>> Change always has drawbacks.  If the plus sides outweighs the drawbac=
-ks,
->>>>> change is good.  Change for change's sake, "just because you can chan=
-ge
->>>>> it", is not.
->>>>=20
->>>> Yes, but still from your responses I don't see any drawback... maybe I
->>>> am slow learner...
->>>=20
->>> Drawback to maintainers and sysadmins has already been mentioned by
->>> ecrist and me.  Try being a sysadmin for a few weeks and figure out
->>> which bits of xorg you need to download to install xinit, assuming
->>> you have a system without any X libraries and headers yet (in the xorg
->>> example: splitting off "xinit" might actually make sense, but splitting
->>> the basic infrastructure to build anything into about 50 different
->>> "xyz-library" and "xyz-headers" packages is crazyness).
->>>=20
->>> But the onus is not particularily on me: you have not put forward=20
->>> convincing arguments why splitting off a very small number of files=20
->>> that only make use in the context of OpenVPN into their own repository=
-=20
->>> has any *advantage*.
->>>=20
->>> The handwavy argument "it will attract more users!" can be countered by
->>> similarily handwaving "I, as a user, hate to download multiple packages
->>> to figure out how to start contributing, and so it will scare *away*
->>> users".
->>>=20
->>>=20
->>> As a counterexample, look at Apache.  They have heaps of modules in
->>> the main tarball, and have no issues with frequent release and with
->>> attracting developers.  And still, modules maintained by non-apache
->>> developers can be developed externally, without having to splitt off
->>> all existing modules beforehand.
->>>=20
->>> gert
->>> --=20
->>> USENET is *not* the non-clickable part of WWW!
->>>                                                         //www.muc.de/~g=
-ert/
->>> Gert Doering - Munich, Germany                             gert@...1726...=
-...
->>> fax: +49-89-35655025                        gert@...1297...
->>> -----------------------------------------------------------------------=
--------
->>> Live Security Virtual Conference
->>> Exclusive live event will cover all the ways today's security and=20
->>> threat landscape has changed and how IT managers can respond. Discussio=
-ns=20
->>> will include endpoint security, mobile security and the latest in malwa=
-re=20
->>> threats. http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/_____=
-__________________________________________
->>> Openvpn-devel mailing list
->>> Openvpn-devel@lists.sourceforge.net
->>> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->>=20
->>=20
->> ------------------------------------------------------------------------=
-------
->> Live Security Virtual Conference
->> Exclusive live event will cover all the ways today's security and=20
->> threat landscape has changed and how IT managers can respond. Discussion=
-s=20
->> will include endpoint security, mobile security and the latest in malwar=
-e=20
->> threats. http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/
->> _______________________________________________
->> Openvpn-devel mailing list
->> Openvpn-devel@lists.sourceforge.net
->> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->=20
-> -------------------------------------------------------------------------=
------
-> Live Security Virtual Conference
-> Exclusive live event will cover all the ways today's security and=20
-> threat landscape has changed and how IT managers can respond. Discussions=
-=20
-> will include endpoint security, mobile security and the latest in malware=
-=20
-> threats. http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/_______=
-________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+I can see where the purity of the split-out would appeal to you, but
+the increased number of separate repositories, releases, packages,
+etc. to maintain forms a strong counter-point in my opinion. So I'm
+against splitting out the plugins for now. (Just saw Eric's
+openvpn-contrib proposal. Might serve as a compromise, but then we'd
+still lose the purity advantage ...)
 
-
---Apple-Mail=_E68BA853-BF31-4DCC-B488-4DE8A9753336
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
-	filename=signature.asc
-X-Eric-Conspiracy: There is no conspiracy.
-Content-Type: application/pgp-signature;
-	name=signature.asc
-Content-Description: Message signed with OpenPGP using GPGMail
-
------BEGIN PGP SIGNATURE-----
-
-iQEcBAEBAgAGBQJPsBBlAAoJEHKWQhk5DQ0OkxYIALhShyDdfdMQpGXIkYB6q10C
-Ym4rsJ47tq7HrYkQTtLYzLydOWWW1CkA+ej2SuuTX5+2HAG1dIhBddl1DxRVuxxW
-0KH69EsyPbAvLz1e80+G/HWjRg/s8W7QSfURy0pDufLwKE4mtyCNVODQOfdR4o49
-VNKE3HeZc7kCDxtoIITuDNIC2dXOIjFVTWTEWieoLhernm3KdpeGgh3+aWD1rcqt
-TzhkKGI9k4jVmeZ+N+wtMu4ONbrM2NkbWGBbfg7unaoRPafU2QngRJDTrmhKnmbc
-7PpQknXO1bA7nphkIHPxwK20Xsxr3WTVHBrmqyxjWfwYvfF1H1AiuyprjFdpVGA=
-=wwnO
------END PGP SIGNATURE-----
-
---Apple-Mail=_E68BA853-BF31-4DCC-B488-4DE8A9753336--
+Cheers
+Fabian
 
