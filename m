@@ -1,14 +1,20 @@
-Message-ID: <4FB20474.9070200@...515...>
-Date: Tue, 15 May 2012 10:23:32 +0300
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <4FB20713.30804@...1458...>
+Date: Tue, 15 May 2012 09:34:43 +0200
+From: Seth Mos <seth.mos@...1458...>
 MIME-Version: 1.0
-References: <CAOazyz2FzRu8y6FR1xiygh=KCBB=q-N5HrjLLzn5q1_AgL_3ig@...278...>
-	<4FA77AB9.7090001@...1114...>
-	<CAOazyz3QDHLxY51u0Ya9PscD8Q5+VqqrSn6M6=XpVUiFJY_ENw@...278...>
-	<4FA8D931.70107@...515...>
-	<CAOazyz2N744s+VJekGJNK4sqHCONLCzMtsiJyRTkgrpO4RWHzw@...278...>
-	<363B57F6-F3E8-4C7D-A19D-0E08541233BD@...1286...>
-In-Reply-To: <363B57F6-F3E8-4C7D-A19D-0E08541233BD@...1286...>
+References: <20120513092355.GH1359@...1296...>
+	<CAOazyz0=+ZE6+n-KqyzZSJhbweHb236LjwefvV6BtMvfbh37mQ@...278...>
+	<20120513093551.GI1359@...1296...>
+	<CAOazyz0bEZMBYcKGvKTux=+7XE43=-4Aw02HGVCNHPoO35wAWg@...278...>
+	<20120513111240.GK1359@...1296...>
+	<CAOazyz1keZzQjqeUoUSQ88UzVn3=BMz1FWRp0KiB+gS6-43HhQ@...278...>
+	<20120513121906.GL1359@...1296...>
+	<CAOazyz3WetA0vHpm965krjKm=OiFovT1JRi39T9kOY2sf7-khA@...278...>
+	<20120513130750.GN1359@...1296...>
+	<CAOazyz1hA7EGOhoOtOgNgAcH91Y4crs1TrTzgDbC6_MbgA8reQ@...278...>
+	<20120513181038.GP1359@...1296...>
+	<CAOazyz2NzD76kqdM4v+fPK4uuvCd6E-oh79EpGv5p1K=ZZTucw@...278...>
+In-Reply-To: <CAOazyz2NzD76kqdM4v+fPK4uuvCd6E-oh79EpGv5p1K=ZZTucw@...278...>
 Subject: Re: [Openvpn-devel] [RFC] Split plugins into their own repositories
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,18 +24,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Eric Crist <ecrist@...1286...>
-Cc: Alon Bar-Lev <alon.barlev@...277...>, "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
+Op 13-5-2012 20:23, Alon Bar-Lev schreef:
+> On Sun, May 13, 2012 at 9:10 PM, Gert Doering<gert@...1296...>  wrote:
 
-> My two cents on this is as follows:
->
-> As a package maintainer, I think this is going to prove to be a lot of work.  It means there are more packages to maintain, over the one I need to now.  HOWEVER, from the OpenVPN development process, I think it's best to split 
-Yes, unless we can move the plugin packaging tasks to other people. That
-would be easier with separated plugins, but still a big "if". Perhaps I
-should ask if somebody's willing to take over this challenge...
+> Come on! most of installations are plain public key without any of
+> these plugins.
+> There is no need for these if you configure your server.
+> I simply don't understand your attitude... sorry, I simply don't.
 
-Samuli
+Please note that we include OpenVPN in the pfSense product, and we 
+pretty much provide access to a huge number of options in the UI.
+
+There are quite a lot of installs out there that use OpenVPN with 
+certificates and Radius authentication.
+
+Regardless, we need to ship with pretty much all options enabled. We are 
+not going to ship 15 images to get all the options. And letting users 
+install other "packages" to get the features seems silly.
+
+We're not a OpenWRT where the small memory footprint is limiting what 
+you can do.
+
+So just because most users don't use the other features that makes it a 
+valid argument? Ehm. not sure on that.
+
+Cheers,
+
+Seth
 
