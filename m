@@ -1,20 +1,11 @@
-Message-ID: <4FB3CE6A.7090900@...1114...>
-Date: Wed, 16 May 2012 17:57:30 +0200
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <CAOazyz0V=cE7R=nTefCbP4Z1=+WoYnxhPfNuWasEZjf1EUSOHA@...278...>
-	<4FB3810A.4050209@...1114...>
-	<CAOazyz11iQ6wuNJ_tp=2U5gH5=jeLkLHL6EG_8+yrDjXtEbFUA@...278...>
-	<4FB38570.90902@...1114...>
-	<CAOazyz29iYJ2rDPBZzk0Otac543AcYFf_gbHgRgaFo+qcVLpTQ@...278...>
-	<4FB39166.9050906@...1114...>
-	<CAOazyz2puY6DiXcDKiDy2QaUmHqEtSaTsdgZS6dj=D2RT73mzw@...278...>
-	<4FB39E94.1070202@...1114...>
-	<CAOazyz3SFQ9Wm070nvvhfn4E0bnpbwsfGc48rnhSMRLwpP_Y9A@...278...>
-	<4FB3BA1D.8060608@...1114...>
-	<CAOazyz0Y9iH+cvDuU3KzYwqcZKN7ZX+MpyDDCqpKdifzDey1kg@...278...>
-In-Reply-To: <CAOazyz0Y9iH+cvDuU3KzYwqcZKN7ZX+MpyDDCqpKdifzDey1kg@...278...>
-Subject: Re: [Openvpn-devel] eurephia plugin
+In-Reply-To: <4FB3A183.1080508@...515...>
+References: <4FB38F35.20103@...515...>
+	<4FB3A183.1080508@...515...>
+Date: Wed, 16 May 2012 22:11:35 +0300
+Message-ID: <CAOazyz104K4bHX8QvVrn7ZKH7MeQ3yhFqzLZYvovEYsW0TRE-g@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] Pre-2.3-alpha2 Windows installers now available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,66 +14,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hello All,
 
-On 16/05/12 16:39, Alon Bar-Lev wrote:
-[...snip...]
-> 
-> I am for announcing the removal have the time for all plugins
-> authors which may use this feature to modify their code. There is
-> enough time to do so, we are talking about ~5 months.
+I want to emphasis the request to test as:
 
-Just to clarify, as Alon and I have had an IRC discussion today.
-We've agreed that we will keep this code snippet enabled by default in
-v2.3.  In v2.4 we will flip it to disabled by default.  And in v2.5,
-it will go away.
+1. The installer was fully re-written almost nothing remained from the
+original one.
 
-The reason is also that code from James have arrived into the v2.3
-code base which provides pretty much the same information as
-'tls_digest_%d' does, using a new feature: --x509-track
+2. We now provide both 32bit and 64bit binaries, so far only 32bit
+binaries were provided.
 
-See commit 9356bae859938c and commit 5cdb5e0111df7b3d for more
-information about that.
+3. All userspace binaries are compiled using mingw-w64 compiler, this
+is also a change from previous releases.
 
-> I am not sure that anyone knows this one even exists as was unique
-> to David's need. So most probably only the eurephia should be
-> modified.
+4. The tap-windows driver has its own installer which is embedded
+as-is within the openvpn installer.
 
-I will take care of modifying eurephia and it's documentation.
+Any input will be much appreciated!
 
-> Samuli, I think it is simple enough... in the 2.3_alpha2
-> announcement, announce that the tls_digest_* environment is
-> obsolete and until 2.3 release all plugins authors must modify
-> their plugins to use the V3 interface to extract this information
-> (if needed).
+Alon.
 
-Plug-ins can use the plug-in API v3 indeed.  Scripts however need to
-use the new --x509-track feature instead and be rewritten to extract
-the information from a different environment variable.  Both are new
-features in the coming OpenVPN v2.3.  So we do need a transition
-period before pulling this feature.
-
-So, leave it as is in v2.3, flip to disabled by default in v2.4
-(--disable-eurephia changes to --enable-eurephia) and remove it
-completely in v2.5.  And add clear and informative release notes for
-all of these versions.
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk+zzmkACgkQDC186MBRfrqBlACggTOMyC8L75Ctpbaxhl3KQ7bu
-yCEAnjFI60k7C0In0Bjp98Zo+WipYSlB
-=BMvf
------END PGP SIGNATURE-----
+On Wed, May 16, 2012 at 3:45 PM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
+ote:
+> Forgot to mention... If you're interested in testing just the TAP-driver
+> installer, it's available here:
+>
+> <http://build.openvpn.net/downloads/snapshots/tap-windows-9.9.0_master.ex=
+e>
+>
+> Best regards,
+>
+> Samuli
+>
+>
+>> Hi all,
+>>
+>> Here are the first fully-functional Windows installers built (by me)
+>> with Alon's new cross-compilation environment (a.k.a. "generic"
+>> buildsystem):
+>>
+>> <http://build.openvpn.net/downloads/snapshots/openvpn-install-2.3_master=
+-I000_master-i686.exe>
+>> <http://build.openvpn.net/downloads/snapshots/openvpn-install-2.3_master=
+-I000_master-x86_64.exe>
+>>
+>> The installers and executables and libraries in them have been signed
+>> with a self-signed test certificate. This means that Windows Vista/7
+>> 64-bit will refuse to install the (self-signed) TAP-drivers, unless this
+>> CA certificate is in the system keystore:
+>>
+>> <http://build.openvpn.net/downloads/openvpntestca-cert.cer>
+>>
+>> This certificate can be imported using Microsoft management console
+>> (mmc.exe):
+>>
+>> - Add =C2=A0the "Certificates" snap-in
+>> - Go to "Trusted root certificates"
+>> - Right-click "Certificates"
+>> - Select "All tasks" -> "Import"
+>>
+>> After this you can run the OpenVPN installer and it should just work. A
+>> version of OpenVPN signed with paid-for certificate is coming soonish.
+>> That one will work on any supported Windows version without jumping
+>> through these hoops.
+>>
+>> Have fun (and please report back any issues you find),
+>
+>
+> -------------------------------------------------------------------------=
+-----
+> Live Security Virtual Conference
+> Exclusive live event will cover all the ways today's security and
+> threat landscape has changed and how IT managers can respond. Discussions
+> will include endpoint security, mobile security and the latest in malware
+> threats. http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
