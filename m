@@ -1,5 +1,7 @@
+Message-ID: <4FB3CE6A.7090900@...1114...>
+Date: Wed, 16 May 2012 17:57:30 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-In-Reply-To: <4FB3BA1D.8060608@...1114...>
 References: <CAOazyz0V=cE7R=nTefCbP4Z1=+WoYnxhPfNuWasEZjf1EUSOHA@...278...>
 	<4FB3810A.4050209@...1114...>
 	<CAOazyz11iQ6wuNJ_tp=2U5gH5=jeLkLHL6EG_8+yrDjXtEbFUA@...278...>
@@ -10,9 +12,8 @@ References: <CAOazyz0V=cE7R=nTefCbP4Z1=+WoYnxhPfNuWasEZjf1EUSOHA@...278...>
 	<4FB39E94.1070202@...1114...>
 	<CAOazyz3SFQ9Wm070nvvhfn4E0bnpbwsfGc48rnhSMRLwpP_Y9A@...278...>
 	<4FB3BA1D.8060608@...1114...>
-Date: Wed, 16 May 2012 17:39:13 +0300
-Message-ID: <CAOazyz0Y9iH+cvDuU3KzYwqcZKN7ZX+MpyDDCqpKdifzDey1kg@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+	<CAOazyz0Y9iH+cvDuU3KzYwqcZKN7ZX+MpyDDCqpKdifzDey1kg@...278...>
+In-Reply-To: <CAOazyz0Y9iH+cvDuU3KzYwqcZKN7ZX+MpyDDCqpKdifzDey1kg@...278...>
 Subject: Re: [Openvpn-devel] eurephia plugin
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -22,42 +23,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: David Sommerseth <openvpn.list@...1114...>, =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-On Wed, May 16, 2012 at 5:30 PM, David Sommerseth
-<openvpn.list@...1114...> wrote:
->> But now that you describe you can do this using the plugin API,
->> why not modify the plugin to perform this and just remove this?
->
-> I don't know if I'm the only user of this information or not. =C2=A0If I'm
-> not, then we will break things for others as well. =C2=A0That I don't lik=
-e,
-> especially when the current implementation covers both plug-ins and
-> scripts.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Well, this is exactly my point in rejecting these kind of merges into
-the code, examples: Android case, Windows privilege separation case.
-A great example!
+On 16/05/12 16:39, Alon Bar-Lev wrote:
+[...snip...]
+> 
+> I am for announcing the removal have the time for all plugins
+> authors which may use this feature to modify their code. There is
+> enough time to do so, we are talking about ~5 months.
 
-There are no temporary merges, only maintenance costs and code complexity.
-This why features should be maintained outside of tree until properly
-merged with proper design.
-This process it is not unique to this project.
+Just to clarify, as Alon and I have had an IRC discussion today.
+We've agreed that we will keep this code snippet enabled by default in
+v2.3.  In v2.4 we will flip it to disabled by default.  And in v2.5,
+it will go away.
 
-I am for announcing the removal have the time for all plugins authors
-which may use this feature to modify their code. There is enough time
-to do so, we are talking about ~5 months.
+The reason is also that code from James have arrived into the v2.3
+code base which provides pretty much the same information as
+'tls_digest_%d' does, using a new feature: --x509-track
 
-I am not sure that anyone knows this one even exists as was unique to
-David's need. So most probably only the eurephia should be modified.
+See commit 9356bae859938c and commit 5cdb5e0111df7b3d for more
+information about that.
 
-Samuli, I think it is simple enough... in the 2.3_alpha2 announcement,
-announce that the tls_digest_* environment is obsolete and until 2.3
-release all plugins authors must modify their plugins to use the V3
-interface to extract this information (if needed).
+> I am not sure that anyone knows this one even exists as was unique
+> to David's need. So most probably only the eurephia should be
+> modified.
 
-Alon.
+I will take care of modifying eurephia and it's documentation.
+
+> Samuli, I think it is simple enough... in the 2.3_alpha2
+> announcement, announce that the tls_digest_* environment is
+> obsolete and until 2.3 release all plugins authors must modify
+> their plugins to use the V3 interface to extract this information
+> (if needed).
+
+Plug-ins can use the plug-in API v3 indeed.  Scripts however need to
+use the new --x509-track feature instead and be rewritten to extract
+the information from a different environment variable.  Both are new
+features in the coming OpenVPN v2.3.  So we do need a transition
+period before pulling this feature.
+
+So, leave it as is in v2.3, flip to disabled by default in v2.4
+(--disable-eurephia changes to --enable-eurephia) and remove it
+completely in v2.5.  And add clear and informative release notes for
+all of these versions.
+
+
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk+zzmkACgkQDC186MBRfrqBlACggTOMyC8L75Ctpbaxhl3KQ7bu
+yCEAnjFI60k7C0In0Bjp98Zo+WipYSlB
+=BMvf
+-----END PGP SIGNATURE-----
 
