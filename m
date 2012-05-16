@@ -1,7 +1,8 @@
+MIME-Version: 1.0
+Date: Wed, 16 May 2012 10:17:11 +0300
+Message-ID: <CAOazyz0V=cE7R=nTefCbP4Z1=+WoYnxhPfNuWasEZjf1EUSOHA@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Wed, 16 May 2012 01:21:15 +0300
-Message-Id: <1337120475-3959-1-git-send-email-alon.barlev@...277...>
-Subject: [Openvpn-devel] [PATCH] cleanup: update .gitignore
+Subject: [Openvpn-devel] eurephia plugin
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,35 +11,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Alon Bar-Lev <alon.barlev@...277...>
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+Hello David,
+
+I guess this is yours:
 ---
- .gitignore |    2 ++
- 1 files changed, 2 insertions(+), 0 deletions(-)
+ *  Additions for eurephia plugin done by:
+ *         David Sommerseth <dazo@...384...> Copyright (C) 2009
+---
 
-diff --git a/.gitignore b/.gitignore
-index 9f546a3..f762089 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -1,4 +1,5 @@
- *.[oa]
-+*.l[oa]
- *.dll
- *.exe
- *.exe.*
-@@ -17,6 +18,7 @@ Release
- Debug
- Win32-Output
- .deps
-+.libs
- Makefile
- Makefile.in
- aclocal.m4
--- 
-1.7.3.4
+Looking at the code the eurephia plugin only do the following:
+---
+#ifdef ENABLE_PLUGIN_EUREPHIA
+  /* export X509 cert SHA1 fingerprint */
+  {
+    unsigned char *sha1_hash = x509_get_sha1_hash(peer_cert, &gc);
 
+    openvpn_snprintf (envname, sizeof(envname), "tls_digest_%d", cert_depth);
+    setenv_str (es, envname, format_hex_ex(sha1_hash, SHA_DIGEST_LENGTH, 0, 1,
+                                          ":", &gc));
+  }
+#endif
+---
+
+Can you please explain what this plugin is and why just remove the conditional?
+
+Thanks,
+Alon.
 
