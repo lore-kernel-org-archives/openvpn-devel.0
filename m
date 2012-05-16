@@ -1,14 +1,15 @@
+Message-ID: <4FB39E94.1070202@...1114...>
+Date: Wed, 16 May 2012 14:33:24 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-In-Reply-To: <4FB39166.9050906@...1114...>
 References: <CAOazyz0V=cE7R=nTefCbP4Z1=+WoYnxhPfNuWasEZjf1EUSOHA@...278...>
 	<4FB3810A.4050209@...1114...>
 	<CAOazyz11iQ6wuNJ_tp=2U5gH5=jeLkLHL6EG_8+yrDjXtEbFUA@...278...>
 	<4FB38570.90902@...1114...>
 	<CAOazyz29iYJ2rDPBZzk0Otac543AcYFf_gbHgRgaFo+qcVLpTQ@...278...>
 	<4FB39166.9050906@...1114...>
-Date: Wed, 16 May 2012 15:03:44 +0300
-Message-ID: <CAOazyz2puY6DiXcDKiDy2QaUmHqEtSaTsdgZS6dj=D2RT73mzw@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+	<CAOazyz2puY6DiXcDKiDy2QaUmHqEtSaTsdgZS6dj=D2RT73mzw@...278...>
+In-Reply-To: <CAOazyz2puY6DiXcDKiDy2QaUmHqEtSaTsdgZS6dj=D2RT73mzw@...278...>
 Subject: Re: [Openvpn-devel] eurephia plugin
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,91 +19,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: David Sommerseth <openvpn.list@...1114...>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-On Wed, May 16, 2012 at 2:37 PM, David Sommerseth
-<openvpn.list@...1114...> wrote:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
->
-> On 16/05/12 12:55, Alon Bar-Lev wrote:
->> On Wed, May 16, 2012 at 1:46 PM, David Sommerseth
->> <openvpn.list@...1114...> wrote:
->>> On 16/05/12 12:37, Alon Bar-Lev wrote:
->>>> On Wed, May 16, 2012 at 1:27 PM, David Sommerseth
->>>> <openvpn.list@...1114...> wrote:
->>>>> On 16/05/12 09:17, Alon Bar-Lev wrote:
->>>>>> Hello David,
-> [...snip...]
->>>>>> Can you please explain what this plugin is and why just
->>>>>> remove the conditional?
->>>>>
->>>>> You can find more info about the plug-in here:
->>>>> http://www.eurephia.net/
->>>>>
->>>>> Basically, it's a username/password authentication plug-in
->>>>> which also matches a user account up against a certificate
->>>>> too (plus some extra features too as well). =C2=A0The
->>>>> 'tls_digest_%d' environment variable is used to get better
->>>>> data when matching certificates information against the
->>>>> database.
-> [...snip...]
->>
->> hmmm... why not to digest only end certificate? this what you
->> actually need right?
->
-> For the most common setup where you only have a single CA and the
-> client cert, the tls_digest_0 env. variable is the important factor.
->
-> But some users might do some tricks with certificate chains, using CA
-> and sub-CA(s), which a plug-in/script then can better validate if it
-> has all the levels.
->
-> For example, the firewall profiles for each user can be different
-> based on which kind of device you're connecting from (workstation,
-> laptop, tablet, etc) - and each group of devices can have certificates
-> issued by different sub-CAs. =C2=A0But the end-user have only one
-> username/password to care about (the certificates/keys are distributed
-> by the enterprise in their preferred way to their devices), and based
-> on the certificate chain, the network access changes.
->
-> This way, if one sub-CA is removed/disabled from the eurephia
-> database, you can easily remove access from a complete group. =C2=A0Maybe
-> that's something you only want to do temporarily, so issuing a CRL for
-> a sub-CA would be too extreme. =C2=A0Such setups are more interesting for
-> enterprises, though. =C2=A0But key point is to have a fine-grained control
-> of all the VPN accesses.
->
-> The thoughts behind eurephia has been to provide a runtime modularity
-> and being as flexible as possible; not locking the users towards only
-> a limited kind of setups.
->
-> Granted, all the certificate-chain support isn't implemented in
-> eurephia yet, but it's on the TODO list.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-OK, I am starting to understand.
-Had I needed to implement this I would have done this differently...
-As PKI already establish trust, usually all you need is the subject
-name and/or issuer name to differentiate between certificates.
+On 16/05/12 14:03, Alon Bar-Lev wrote:
+[...snip...]
+> But if I get this right, a new configuration option is needed, not 
+> compile time directive, something like:
+> 
+> --setenv-data [-]<data>, ...
+> 
+> data :: cert-digest-sha1
+> 
+> This way, only users which require this functionality may enable
+> it and perform hash of the chain. No stability issues in this
+> mode.
 
-But if I get this right, a new configuration option is needed, not
-compile time directive, something like:
+I think when James is concerned about stability issues, it is more the
+situation of the code changing than growing the environment list too
+long.  However, a too big environment list may cause stability issues
+as well (overflow situations, etc).  So you have a good argument as well.
 
---setenv-data [-]<data>, ...
+(In my case with the eurephia support, I added the #ifdef to make it
+more likely that it would be accepted by James.)
 
-data :: cert-digest-sha1
+> In this scheme we can add more data types if required, and assign
+> data types for existing functionality, allowing to disable using
+> "-", example is cert-serial or cert-subject or certh-depth.
+> 
+> What do you think?
 
-This way, only users which require this functionality may enable it
-and perform hash of the chain. No stability issues in this mode.
+I like this idea.  However, the plug-in v3 API is probably solving
+some of these things as well, as that provides access to the whole
+X509 structure.  That doesn't solve it for scripts, though, but for
+plug-ins that will provide all the information ever needed directly.
 
-In this scheme we can add more data types if required, and assign data
-types for existing functionality, allowing to disable using "-",
-example is cert-serial or cert-subject or certh-depth.
+But if I see it from a security perspective, reducing the amount of
+environment variables and only providing the information requested for
+makes a lot of sense - and this would affect both plug-ins and scripts
+too.  So from a 'need to know' basis, I like this approach.  But if we
+add a revolution here, it's probably better suited for a v3.0 scope.
+However, if we provide a way of backwards compatibility, we can scope
+it for v2.x.
 
-What do you think?
+What I'm actually thinking, in regards to backwards compatibility, is
+that there is a default environment variable list which consists of
+the variables we provide today.  If --setenv-data is used, this list
+is reset.  So if you use --setenv-data, you need to also include those
+variables which was there before - if you really need them.  It will
+naturally require more thinking when this is being configured by the
+users.
 
-Alon.
+Of course, it's possible to add a keyword 'default' to re-enable the
+default list as well.  But that will only allow mindless
+configurations, where people just add this keyword instead of really
+evaluating the variables they need  (We already have a lot of mindless
+configuration questions on IRC, haven't checked the forum carefully
+enough; but we don't need more of these requests).  And if they end up
+listing all, something else is most likely wrong in the config as well.
+
+
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk+znpMACgkQDC186MBRfrpZ2ACeLpcDSPtUodxgh3QKYG0rcPFs
+h2kAn0AnO8LYCTTyiEZl/5h+7I7TaUMq
+=D6NW
+-----END PGP SIGNATURE-----
 
