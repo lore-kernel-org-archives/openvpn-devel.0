@@ -1,8 +1,14 @@
-Message-ID: <4FB38F35.20103@...515...>
-Date: Wed, 16 May 2012 14:27:49 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <4FB39166.9050906@...1114...>
+Date: Wed, 16 May 2012 13:37:10 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Pre-2.3-alpha2 Windows installers now available
+References: <CAOazyz0V=cE7R=nTefCbP4Z1=+WoYnxhPfNuWasEZjf1EUSOHA@...278...>
+	<4FB3810A.4050209@...1114...>
+	<CAOazyz11iQ6wuNJ_tp=2U5gH5=jeLkLHL6EG_8+yrDjXtEbFUA@...278...>
+	<4FB38570.90902@...1114...>
+	<CAOazyz29iYJ2rDPBZzk0Otac543AcYFf_gbHgRgaFo+qcVLpTQ@...278...>
+In-Reply-To: <CAOazyz29iYJ2rDPBZzk0Otac543AcYFf_gbHgRgaFo+qcVLpTQ@...278...>
+Subject: Re: [Openvpn-devel] eurephia plugin
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,48 +17,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-Hi all,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Here are the first fully-functional Windows installers built (by me)
-with Alon's new cross-compilation environment (a.k.a. "generic"
-buildsystem):
+On 16/05/12 12:55, Alon Bar-Lev wrote:
+> On Wed, May 16, 2012 at 1:46 PM, David Sommerseth
+> <openvpn.list@...1114...> wrote:
+>> On 16/05/12 12:37, Alon Bar-Lev wrote:
+>>> On Wed, May 16, 2012 at 1:27 PM, David Sommerseth
+>>> <openvpn.list@...1114...> wrote:
+>>>> On 16/05/12 09:17, Alon Bar-Lev wrote:
+>>>>> Hello David,
+[...snip...]
+>>>>> Can you please explain what this plugin is and why just
+>>>>> remove the conditional?
+>>>> 
+>>>> You can find more info about the plug-in here: 
+>>>> http://www.eurephia.net/
+>>>> 
+>>>> Basically, it's a username/password authentication plug-in
+>>>> which also matches a user account up against a certificate
+>>>> too (plus some extra features too as well).  The
+>>>> 'tls_digest_%d' environment variable is used to get better
+>>>> data when matching certificates information against the
+>>>> database.
+[...snip...]
+> 
+> hmmm... why not to digest only end certificate? this what you
+> actually need right?
 
-<http://build.openvpn.net/downloads/snapshots/openvpn-install-2.3_master-I0=
-00_master-i686.exe>
-<http://build.openvpn.net/downloads/snapshots/openvpn-install-2.3_master-I0=
-00_master-x86_64.exe>
+For the most common setup where you only have a single CA and the
+client cert, the tls_digest_0 env. variable is the important factor.
 
-The installers and executables and libraries in them have been signed
-with a self-signed test certificate. This means that Windows Vista/7
-64-bit will refuse to install the (self-signed) TAP-drivers, unless this
-CA certificate is in the system keystore:
+But some users might do some tricks with certificate chains, using CA
+and sub-CA(s), which a plug-in/script then can better validate if it
+has all the levels.
 
-<http://build.openvpn.net/downloads/openvpntestca-cert.cer>
+For example, the firewall profiles for each user can be different
+based on which kind of device you're connecting from (workstation,
+laptop, tablet, etc) - and each group of devices can have certificates
+issued by different sub-CAs.  But the end-user have only one
+username/password to care about (the certificates/keys are distributed
+by the enterprise in their preferred way to their devices), and based
+on the certificate chain, the network access changes.
 
-This certificate can be imported using Microsoft management console
-(mmc.exe):
+This way, if one sub-CA is removed/disabled from the eurephia
+database, you can easily remove access from a complete group.  Maybe
+that's something you only want to do temporarily, so issuing a CRL for
+a sub-CA would be too extreme.  Such setups are more interesting for
+enterprises, though.  But key point is to have a fine-grained control
+of all the VPN accesses.
 
-- Add  the "Certificates" snap-in
-- Go to "Trusted root certificates"
-- Right-click "Certificates"
-- Select "All tasks" -> "Import"
+The thoughts behind eurephia has been to provide a runtime modularity
+and being as flexible as possible; not locking the users towards only
+a limited kind of setups.
 
-After this you can run the OpenVPN installer and it should just work. A
-version of OpenVPN signed with paid-for certificate is coming soonish.
-That one will work on any supported Windows version without jumping
-through these hoops.
+Granted, all the certificate-chain support isn't implemented in
+eurephia yet, but it's on the TODO list.
 
-Have fun (and please report back any issues you find),
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+kind regards,
 
-irc freenode net: mattock
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
+iEYEARECAAYFAk+zkWQACgkQDC186MBRfrr2iQCgjkAJX4l0KNkrZjcChAws6+Dc
+5mAAn0Wki7i0ZiMcsNL6W6npWtw7kqW5
+=Gomp
+-----END PGP SIGNATURE-----
 
