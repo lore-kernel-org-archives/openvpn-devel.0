@@ -1,9 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <20120527202737.GV1161@...1296...>
+Date: Mon, 28 May 2012 09:52:12 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120528075212.GW1161@...1296...>
 References: <20120527202737.GV1161@...1296...>
-Date: Sun, 27 May 2012 23:36:57 +0300
-Message-ID: <CAOazyz0LD6ykOFcxcRTvu95Sjkzcsg2+FxT7514Ki3+QW9Dbsw@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+	<CAOazyz0LD6ykOFcxcRTvu95Sjkzcsg2+FxT7514Ki3+QW9Dbsw@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="TdMwOTenGjBWB1uY"
+Content-Disposition: inline
+In-Reply-To: <CAOazyz0LD6ykOFcxcRTvu95Sjkzcsg2+FxT7514Ki3+QW9Dbsw@...278...>
 Subject: Re: [Openvpn-devel] build revolution lost t_client test?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,54 +17,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
+To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-t_client.sh requires root/sudo privileges.
-"make check" should not assume any special privilege.
-Because of this it is removed from "make check".
-You can still run this by hand or we can add special target such as
-"make root-check" or similar.
+--TdMwOTenGjBWB1uY
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On Sun, May 27, 2012 at 11:27 PM, Gert Doering <gert@...1296...> wrote:
-> Hi,
->
-> working on the test server, I noticed that t_client.sh was no longer run
-> from "make check", and that it lost "read t_client.rc from build dir"
-> (which is needed when building different clients from a common source
-> dir, and wanting to run t_client with different option sets).
->
-> The attached patch restores lost functionality, and adds one extra
-> feature, optionally waiting longer for OpenVPN startup (if the server
-> has a high RTT, 10 seconds is not always enough).
->
-> David, this has been tested on FreeBSD 7.4 (so far) and is essential
-> for the buildbot client tests :-) - more platform tests will follow
-> as soon as I have all the server stanzas up and running.
->
-> gert
-> --
-> USENET is *not* the non-clickable part of WWW!
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 //www.muc.de/~gert/
-> Gert Doering - Munich, Germany =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 gert@...1296...
-> fax: +49-89-35655025 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0gert@...1297...
->
-> -------------------------------------------------------------------------=
------
-> Live Security Virtual Conference
-> Exclusive live event will cover all the ways today's security and
-> threat landscape has changed and how IT managers can respond. Discussions
-> will include endpoint security, mobile security and the latest in malware
-> threats. http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+Hi
+
+On Sun, May 27, 2012 at 11:36:57PM +0300, Alon Bar-Lev wrote:
+> t_client.sh requires root/sudo privileges.
+> "make check" should not assume any special privilege.
+> Because of this it is removed from "make check".
+> You can still run this by hand or we can add special target such as
+> "make root-check" or similar.
+
+There was agreement by the developers to *have* this, and no explicit
+agreement to *remove* it - you got an ACK for the patch, but I'm fairly
+sure that it was not made clear that you removed t_client.sh functionality
+while moving stuff around, because otherwise you would have seen NAKs.
+
+If someone wants to run it as non-root, RUN_SUDO can be defined in=20
+t_client.rc, and for someone having no provileges at all, you can just
+leave off t_client.rc, and it will skip these tests with no adverse
+effects.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--TdMwOTenGjBWB1uY
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
+
+iQCVAwUBT8MurKkuBuNlUUl1AQI+IgP/fZtTuGNqbggr/+wOpPPgO+wZ37JUSKU5
+wSqfVxu2xRaE/Bmlc2Ttg6FAO7ZzG6vI/DlxlFnAmSJc8D/qY+ToaeDVtktB/RXM
+dRW3wRflPcZtQID4wmwElmjt7rWXHwSHJu2rOTC47wgOQIGraDvMsm/0lDESUHil
+bGHABN1Quzo=
+=nO0f
+-----END PGP SIGNATURE-----
+
+--TdMwOTenGjBWB1uY--
 
