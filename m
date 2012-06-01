@@ -1,8 +1,11 @@
-Message-ID: <4FC8C034.6030609@...1114...>
-Date: Fri, 01 Jun 2012 15:14:28 +0200
+Message-ID: <4FC8C08A.2060707@...1114...>
+Date: Fri, 01 Jun 2012 15:15:54 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [easy-rsa] New official git repository
+References: <4FAE87C1.6000509@...277...>
+In-Reply-To: <4FAE87C1.6000509@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Properly detect OpenSSL version strings
+ with numbers only
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,37 +14,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Simon Deziel <simon.deziel@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
+On 12/05/12 17:54, Simon Deziel wrote:
+> whichopensslcnf failed to return the right cnf for:
+> 
+> $ openssl version OpenSSL 1.0.1 14 Mar 2012
+> 
+> Signed-off-by: Simon Deziel <simon.deziel@...277...> --- 
+> easy-rsa/2.0/whichopensslcnf |    6 +++--- 1 files changed, 3
+> insertions(+), 3 deletions(-)
+> 
 
-Hi all,
-
-On behalf of the OpenVPN community developers, I have the pleasure to
-announce a new git repository for easy-rsa.  It is based on the last
-commit from openvpn.git/openvpn-testing.git before we started to
-really restructure those git trees completely.
-
-You can find them on both sourceforge.net and GitHub
-
-* sourceforge.net
-git clone git://openvpn.git.sourceforge.net/gitroot/openvpn/easy-rsa.git
-
-Web view:
-<http://openvpn.git.sourceforge.net/git/gitweb.cgi?p=openvpn/easy-rsa.git;a=summary>
+Thank you very much for your contribution.  Your patch has been
+applied to the brand new easy-rsa.git repository.
 
 
-* GitHub
-git clone git://github.com/OpenVPN/easy-rsa.git
+commit a812fed7fbc39d4936c348d4a1a9c0e07e6d65f6
+Author: Simon Deziel <simon.deziel@...277...>
+Date:   Sat May 12 11:54:41 2012 -0400
 
-Web view: <https://github.com/OpenVPN/easy-rsa/>
+    Properly detect OpenSSL version strings with numbers only
 
+    Signed-off-by: Simon Deziel <simon.deziel@...277...>
+    Acked-by: Alon Bar-Lev <alon.barlev@...277...>
+    Message-Id: 4FAE87C1.6000509@...277...
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/6534
+    Signed-off-by: David Sommerseth <davids@...1347...>
 
-Both repositories will be kept in sync.
 
 
 kind regards,
@@ -51,8 +57,8 @@ David Sommerseth
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk/IwDEACgkQDC186MBRfrrC+wCfQGz23V4pFF6ZcJP3tzaMTVPR
-NqoAoKY4QFdzhFDKhzfYAxm6jHg99q1R
-=AbDK
+iEYEARECAAYFAk/IwIkACgkQDC186MBRfrqHQQCeP5K4OkTAuGaZb6L9z5IMVVAT
+p3MAoKT2EHHsidSbY2sAMH8ZfeN/Qp+u
+=8HSr
 -----END PGP SIGNATURE-----
 
