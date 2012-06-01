@@ -1,13 +1,13 @@
-Message-ID: <4FC8E5A2.9080702@...1114...>
-Date: Fri, 01 Jun 2012 17:54:10 +0200
+Message-ID: <4FC934FF.1060307@...1114...>
+Date: Fri, 01 Jun 2012 23:32:47 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <20120601151507.GE400@...1296...>
-In-Reply-To: <20120601151507.GE400@...1296...>
+References: <1336036240-23838-1-git-send-email-dazo@...384...>
+In-Reply-To: <1336036240-23838-1-git-send-email-dazo@...384...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigA1D9E4E9095017D7AE7847A1"
-Subject: Re: [Openvpn-devel] t_client.sh iproute2 fixes
+	boundary="------------enig938327EB977927B2C591CF59"
+Subject: Re: [Openvpn-devel] [PATCH] Remove two unused functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,48 +16,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigA1D9E4E9095017D7AE7847A1
+--------------enig938327EB977927B2C591CF59
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-On 01/06/12 17:15, Gert Doering wrote:
-> Hi,
+On 03/05/12 11:10, David Sommerseth wrote:
+> From: David Sommerseth <davids@...1347...>
 >=20
-> testing with David on Linux today uncovered differences between "ip
-> -6 route show" on Gentoo (only shows the active routing table) and
-> FC14 (also shows the ipv6 route cache).  The route cache is not=20
-> interesting, but distorts our tests, as it depends on what else
-> was going on on the machine instead of "explicit route/ifconfig
-> settings by OpenVPN".  So work around this.
+> Both is_persist_option() and is_stateful_restart() functions where never
+> used anywhere in the code.  Remove them.
 >=20
-> Also, include the proposed change from Alon to test for iproute2=20
-> existance with "-n".  More clean that way is.
+> Signed-off-by: David Sommerseth <davids@...1347...>
+> ---
+>  src/openvpn/options.c |   16 ----------------
+>  src/openvpn/options.h |    3 ---
+>  2 files changed, 0 insertions(+), 19 deletions(-)
+
+ACKed by Gert in IRC during the meeting on Thursday.  Applied to master bra=
+nch.
 
 
-ACK.  Applied to master branch.
+commit e8298885350131ce453da54a1b07495253ee1508
+Author: David Sommerseth <davids@...1347...>
+Date:   Thu May 3 11:10:40 2012 +0200
 
-
-commit 722027a2798b46cab8be69a830eff1b4ba678739
-Author: Gert Doering <gert@...1296...>
-Date:   Fri Jun 1 18:13:09 2012 +0300
-
-    t_client.sh iproute2 script fixes
-
-    Test for existance of "iproute2" with "-n" (Alon)
-
-    Work around "ip -6 route show" behaviour on FC14 where some parts of
-    the IPv6 route cache would be displayed, which has no relevance to
-    OpenVPN but breaks before/after comparison.
-
-    Signed-off-by: Gert Doering <gert@...1296...>
-    Acked-by: David Sommerseth <davids@...1347...>
-    Message-Id: 20120601151507.GE400@...1296...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/6637
+    Remove two unused functions
+=20=20=20=20
     Signed-off-by: David Sommerseth <davids@...1347...>
+    Acked-by: Gert Doering <gert@...1296...>
+    Message-Id: 1336036240-23838-1-git-send-email-dazo@...384...
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/6402
 
 
 kind regards,
@@ -65,7 +56,7 @@ kind regards,
 David Sommerseth
 
 
---------------enigA1D9E4E9095017D7AE7847A1
+--------------enig938327EB977927B2C591CF59
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -74,10 +65,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk/I5aIACgkQDC186MBRfrofMgCeKVCxAyE8qMRg5GReqZsAiz4A
-st4Anin8AoNMW8OSe01HHSgDbExvHWzh
-=NWP4
+iEYEARECAAYFAk/JNQAACgkQDC186MBRfrop0QCfUJ+z/IVPVOW/IwwWKjtrR5ee
+qpoAn3hXVhA2M8FSjAnn+OHI5mXKoreF
+=0QGS
 -----END PGP SIGNATURE-----
 
---------------enigA1D9E4E9095017D7AE7847A1--
+--------------enig938327EB977927B2C591CF59--
 
