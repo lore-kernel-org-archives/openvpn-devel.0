@@ -1,15 +1,11 @@
-Message-ID: <4FC8C6B1.3070505@...1114...>
-Date: Fri, 01 Jun 2012 15:42:09 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <CAOazyz2X_E=ODTGZ2mu-1Q1NkF4DaM=jLPoiKsDXmJ9KN3tZ6Q@...278...>
-	<1336199983-9916-1-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1336199983-9916-1-git-send-email-alon.barlev@...277...>
+Date: Fri, 1 Jun 2012 17:15:07 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120601151507.GE400@...1296...>
+Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig2A816D7AE080F73C31804634"
-Subject: Re: [Openvpn-devel] [PATCH 1/2] build: add git revision to
- --version output if build from git repository
+	protocol="application/pgp-signature"; boundary="f+W+jCU1fRNres8c"
+Content-Disposition: inline
+Subject: [Openvpn-devel] t_client.sh iproute2 fixes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,62 +16,96 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig2A816D7AE080F73C31804634
-Content-Type: text/plain; charset="UTF-8"
+--f+W+jCU1fRNres8c
+Content-Type: multipart/mixed; boundary="H+4ONPRPur6+Ovig"
+Content-Disposition: inline
+
+--H+4ONPRPur6+Ovig
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+Hi,
+
+testing with David on Linux today uncovered differences between
+"ip -6 route show" on Gentoo (only shows the active routing table)
+and FC14 (also shows the ipv6 route cache).  The route cache is not
+interesting, but distorts our tests, as it depends on what else was
+going on on the machine instead of "explicit route/ifconfig settings
+by OpenVPN".  So work around this.
+
+Also, include the proposed change from Alon to test for iproute2=20
+existance with "-n".  More clean that way is.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--H+4ONPRPur6+Ovig
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment;
+	filename="0001-t_client.sh-iproute2-script-fixes.patch"
 Content-Transfer-Encoding: quoted-printable
 
-On 05/05/12 08:39, Alon Bar-Lev wrote:
-> If source is located at git repository, acquire branch and revision
-> of head to be printed at --version output.
->=20
-> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-> ---
->  .gitignore            |    1 +
->  Makefile.am           |   21 +++++++++++++++++++++
->  compat.m4             |    5 +++++
->  config-version.h.in   |    1 +
->  configure.ac          |   12 ++++++++++++
->  src/openvpn/options.c |    6 ++++++
->  6 files changed, 46 insertions(+), 0 deletions(-)
->  create mode 100644 config-version.h.in
+=46rom 0f3819a1fa53a32531aa37ea33caef77d8ca7d59 Mon Sep 17 00:00:00 2001
+From: Gert Doering <gert@...1296...>
+Date: Fri, 1 Jun 2012 18:13:09 +0300
+Subject: [PATCH] t_client.sh iproute2 script fixes
 
-ACK.  Applied to master branch.
+Test for existance of "iproute2" with "-n" (Alon)
 
-commit 7046ff20f93eca1d850df43fe716922e6d105c1c
-Author: Alon Bar-Lev <alon.barlev@...277...>
-Date:   Sat May 5 09:39:42 2012 +0300
+Work around "ip -6 route show" behaviour on FC14 where some parts of
+the IPv6 route cache would be displayed, which has no relevance to
+OpenVPN but breaks before/after comparison.
 
-    build: add git revision to --version output if build from git repository
-=20=20=20=20
-    If source is located at git repository, acquire branch and revision
-    of head to be printed at --version output.
-=20=20=20=20
-    Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-    Acked-by: David Sommerseth <davids@...1347...>
-    Message-Id: 1336199983-9916-1-git-send-email-alon.barlev@...277...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/6431
-    Signed-off-by: David Sommerseth <davids@...1347...>
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ tests/t_client.sh.in |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in
+index 92e4d2e..d58b821 100755
+--- a/tests/t_client.sh.in
++++ b/tests/t_client.sh.in
+@@ -86,12 +86,12 @@ fail()
+ get_ifconfig_route()
+ {
+     # linux / iproute2? (-> if configure got a path)
+-    if [ "@IPROUTE@" !=3D "" ]
++    if [ -n "@IPROUTE@" ]
+     then
+ 	echo "-- linux iproute2 --"
+ 	@IPROUTE@ addr show     | grep -v valid_lft
+ 	@IPROUTE@ route show
+-	@IPROUTE@ -6 route show | sed -e 's/expires [0-9]*sec //'
++	@IPROUTE@ -o -6 route show | grep -v ' cache' | sed -e 's/expires [0-9]*s=
+ec //'
+ 	return
+     fi
+=20
+--=20
+1.7.3.5
 
 
-kind regards,
+--H+4ONPRPur6+Ovig--
 
-David Sommerseth
-
-
---------------enig2A816D7AE080F73C31804634
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--f+W+jCU1fRNres8c
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+Version: GnuPG v1.4.12 (NetBSD)
 
-iEYEARECAAYFAk/IxrEACgkQDC186MBRfrrlWQCgj1AtuIMCMIeeNgZFm9t0LD0c
-ivYAoIc1ibM74NO9r2zMVUcMt9sAHQ85
-=9Nhj
+iQCVAwUBT8jceqkuBuNlUUl1AQJeKgP/fxYDlDgGL1jHHX5wTHxwAiu99bca/e0R
+JVCKWsZtBylyNeIna5WJombmQP5OpmjlL3HTkWSfHcrhZHWCIWtWyvVzu4T3fHfJ
+HVT+Zwwp4+05t398G2RDdPpdJ6zl7qtElT4H4zGIQ1BW3PpwOnrIxV3+6GoPTfnf
+2a46RPGQEmo=
+=Hk/Z
 -----END PGP SIGNATURE-----
 
---------------enig2A816D7AE080F73C31804634--
+--f+W+jCU1fRNres8c--
 
