@@ -1,13 +1,13 @@
-Message-ID: <4FCA433B.4070502@...1227...>
-Date: Sat, 02 Jun 2012 18:45:47 +0200
+Message-ID: <4FCA4403.7070702@...1227...>
+Date: Sat, 02 Jun 2012 18:49:07 +0200
 From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
 References: <1338642223-20324-1-git-send-email-arne@...1227...>
-	<1338642223-20324-7-git-send-email-arne@...1227...>
-	<4FCA40E3.8000205@...1114...>
-In-Reply-To: <4FCA40E3.8000205@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH 6/8] Allow routes to be set before
- opening tun, similar to ifconfig before opening tun
+	<1338642223-20324-2-git-send-email-arne@...1227...>
+	<4FCA3E23.9010805@...1114...>
+In-Reply-To: <4FCA3E23.9010805@...1114...>
+Subject: Re: [Openvpn-devel] [PATCH 1/8] Silence Port is now 1194 IANA
+ warning if remote option with port is used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -25,76 +25,40 @@ Cc: openvpn-devel@lists.sourceforge.net
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-Am 02.06.12 18:35, schrieb David Sommerseth:
+Am 02.06.12 18:24, schrieb David Sommerseth:
 >
-> See comments below.
+> First of all, thank you very much for your work on this patch set!
+> And you have a lot of good things here.
+>
+> So to this patch ...
 >
 > On 02/06/12 15:03, Arne Schwabe wrote:
 >
 > > Signed-off-by: Arne Schwabe <arne@...1227...> ---
-> > src/openvpn/init.c | 11 +++++++++-- src/openvpn/tun.h | 11
-> > +++++++++++ 2 files changed, 20 insertions(+), 2 deletions(-)
+> > src/openvpn/options.c | 1 + 1 files changed, 1 insertions(+), 0
+> > deletions(-)
 >
-> > diff --git a/src/openvpn/init.c b/src/openvpn/init.c index
-> > 61ced5d..a25de5d 100644 --- a/src/openvpn/init.c +++
-> > b/src/openvpn/init.c @@ -1478,6 +1478,13 @@ do_open_tun (struct
-> > context *c) do_ifconfig (c->c1.tuntap, guess, TUN_MTU_SIZE
-> > (&c->c2.frame), c->c2.es); }
+> > diff --git a/src/openvpn/options.c b/src/openvpn/options.c index
+> > 08f9cb2..8e5d3b9 100644 --- a/src/openvpn/options.c +++
+> > b/src/openvpn/options.c @@ -4506,6 +4506,7 @@ add_option (struct
+> > options *options, goto err; } re.remote_port = port; +
+> > options->ce.port_option_used = true;
 >
-> > + /* possibly add routes */ + if(ifconfig_order() ==
-> > ROUTE_BEFORE_TUN) { + /* Ignore route_delay, would cause
-> > ROUTE_BEFORE_TUN to be ignored */ + do_route (&c->options,
-> > c->c1.route_list, c->c1.route_ipv6_list, + c->c1.tuntap,
-> > c->plugins, c->c2.es); + } + /* open the tun device */ open_tun
-> > (c->options.dev, c->options.dev_type, c->options.dev_node,
-> > c->c1.tuntap); @@ -1509,7 +1516,7 @@ do_open_tun (struct context
-> > *c) c->c2.es);
->
-> > /* possibly add routes */ - if
-> > (!c->options.route_delay_defined) + if ((ifconfig_order() ==
-> > ROUTE_AFTER_TUN) && (!c->options.route_delay_defined)) do_route
-> > (&c->options, c->c1.route_list, c->c1.route_ipv6_list,
-> > c->c1.tuntap, c->plugins, c->c2.es);
->
-> > @@ -1717,7 +1724,7 @@ do_up (struct context *c, bool
-> > pulled_options, unsigned int option_types_found) #endif
->
-> > /* if --route-delay was specified, start timer */ - if
-> > (c->options.route_delay_defined) + if ((ifconfig_order() ==
-> > ROUTE_AFTER_TUN) && c->options.route_delay_defined) {
-> > event_timeout_init (&c->c2.route_wakeup, c->options.route_delay,
-> > now); event_timeout_init (&c->c2.route_wakeup_expire,
-> > c->options.route_delay + c->options.route_delay_window, now); diff
-> > --git a/src/openvpn/tun.h b/src/openvpn/tun.h index
-> > 9bd990f..60d75c8 100644 --- a/src/openvpn/tun.h +++
-> > b/src/openvpn/tun.h @@ -297,6 +297,17 @@ ifconfig_order(void)
-> > #endif }
->
-> > +#define ROUTE_BEFORE_TUN 0 +#define ROUTE_AFTER_TUN 1 +#define
-> > ROUTE_ORDER_DEFAULT ROUTE_AFTER_TUN + +static inline int
-> > +route_order(void) +{ + return ROUTE_ORDER_DEFAULT; +}
->
-> Is there any reason why it is an advantage of calling a function
-> returning a macro value, instead of just redefine the
-> ROUTE_ORDER_DEFAULT macro for those platforms who need ROUTE_AFTER_TUN
-> and use the ROUTE_ORDER_DEFAULT macro directly where needed?
->
-> And for type-safety, would it be better to use an typedef enum instead?
-I just followed the IFCONFIG_AFTER_TUN/BEFORE_TUN which already is in
-place. Just using the defines is fine for me too but it should be
-consistend for both options.
+> Instead of this change, wouldn't it rather make sense to just remove
+> the whole "#if 1 /* JYFIXME -- port warning */" block in init.c:2470
+> instead? This "new" port number was introduced in November 2004, so
+> I'd say this warning has been laying around long enough.
+I did not realise that the warning is around that long. It is probably
+more confusing than helping now.
 
 Arne
-
-
-
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (Darwin)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk/KQzsACgkQe8+cMNS4zRdNcQCdGJrXIhLQUvLmYb2/2leTqgCg
-9+UAoKGiz47XWzyDOPQR2ZfJBUJDeaJ7
-=lqyN
+iEYEARECAAYFAk/KRAMACgkQe8+cMNS4zRceugCfRbJ/CdSV7/fSCkJXQhFsablz
+ycYAoJB9dUw8w3Va1Hz3U6WNxjK2XuVP
+=dSi/
 -----END PGP SIGNATURE-----
 
 
