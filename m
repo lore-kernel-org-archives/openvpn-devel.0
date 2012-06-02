@@ -1,10 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sat,  2 Jun 2012 15:03:36 +0200
-Message-Id: <1338642223-20324-2-git-send-email-arne@...1227...>
+Date: Sat,  2 Jun 2012 15:03:42 +0200
+Message-Id: <1338642223-20324-8-git-send-email-arne@...1227...>
 In-Reply-To: <1338642223-20324-1-git-send-email-arne@...1227...>
 References: <1338642223-20324-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 1/8] Silence Port is now 1194 IANA warning
-	if remote option with port is used
+Subject: [Openvpn-devel] [PATCH 7/8] add ability to send/receive file
+	descriptors via management interface,
+	only used in android so. For now under #ifdef ANDROID
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,21 +21,139 @@ To: openvpn-devel@lists.sourceforge.net
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/options.c |    1 +
- 1 files changed, 1 insertions(+), 0 deletions(-)
+ src/openvpn/manage.c |   88 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/openvpn/manage.h |    4 ++
+ 2 files changed, 92 insertions(+), 0 deletions(-)
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 08f9cb2..8e5d3b9 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -4506,6 +4506,7 @@ add_option (struct options *options,
- 	      goto err;
- 	    }
- 	  re.remote_port = port;
-+      options->ce.port_option_used = true;
- 	  if (p[3])
- 	    {
- 	      const int proto = ascii2proto (p[3]);
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 1dddd41..cc22208 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -1805,6 +1805,79 @@ man_io_error (struct management *man, const char *prefix)
+     return false;
+ }
+ 
++#ifdef TARGET_ANDROID
++static ssize_t write_fd (int fd, void *ptr, size_t nbytes, int flags, int sendfd)
++{
++    struct msghdr msg;
++    struct iovec iov[1];
++    
++    union {
++        struct cmsghdr cm;
++        char    control[CMSG_SPACE(sizeof(int))];
++    } control_un;
++    struct cmsghdr *cmptr;
++    
++    msg.msg_control = control_un.control;
++    msg.msg_controllen = sizeof(control_un.control);
++    
++    cmptr = CMSG_FIRSTHDR(&msg);
++    cmptr->cmsg_len = CMSG_LEN(sizeof(int));
++    cmptr->cmsg_level = SOL_SOCKET;
++    cmptr->cmsg_type = SCM_RIGHTS;
++    *((int *) CMSG_DATA(cmptr)) = sendfd;
++    
++    msg.msg_name = NULL;
++    msg.msg_namelen = 0;
++    
++    iov[0].iov_base = ptr;
++    iov[0].iov_len = nbytes;
++    msg.msg_iov = iov;
++    msg.msg_iovlen = 1;
++    
++    return (sendmsg(fd, &msg, flags));
++}
++
++static ssize_t read_fd(int fd, void *ptr, size_t nbytes, int flags, int *recvfd)
++{
++    struct msghdr msghdr;
++    struct iovec iov[1];
++    ssize_t n;
++    
++    union {
++        struct cmsghdr cm;
++        char     control[CMSG_SPACE(sizeof (int))];
++    } control_un;
++    struct cmsghdr  *cmptr;
++    
++    msghdr.msg_control  = control_un.control;
++    msghdr.msg_controllen = sizeof(control_un.control);
++    
++    msghdr.msg_name = NULL;
++    msghdr.msg_namelen = 0;
++    
++    iov[0].iov_base = ptr;
++    iov[0].iov_len = nbytes;
++    msghdr.msg_iov = iov;
++    msghdr.msg_iovlen = 1;
++    
++    if ( (n = recvmsg(fd, &msghdr, flags)) <= 0)
++        return (n);
++    
++    if ( (cmptr = CMSG_FIRSTHDR(&msghdr)) != NULL &&
++        cmptr->cmsg_len == CMSG_LEN(sizeof(int))) {
++        if (cmptr->cmsg_level != SOL_SOCKET)
++            msg (M_ERR, "control level != SOL_SOCKET");
++        if (cmptr->cmsg_type != SCM_RIGHTS)
++            msg (M_ERR, "control type != SCM_RIGHTS");
++        *recvfd = *((int *) CMSG_DATA(cmptr));
++    } else
++        *recvfd = -1;           /* descriptor was not passed */
++    
++    return (n);
++}
++#endif
++
++
+ static int
+ man_read (struct management *man)
+ {
+@@ -1814,7 +1887,15 @@ man_read (struct management *man)
+   unsigned char buf[256];
+   int len = 0;
+ 
++#ifdef TARGET_ANDROID
++  int fd;
++  len = read_fd (man->connection.sd_cli, buf, sizeof (buf), MSG_NOSIGNAL, &fd);
++  if(fd >= 0) 
++     man->connection.lastfdreceived = fd;
++#else
+   len = recv (man->connection.sd_cli, buf, sizeof (buf), MSG_NOSIGNAL);
++#endif
++
+   if (len == 0)
+     {
+       man_reset_client_socket (man, false);
+@@ -1891,6 +1972,13 @@ man_write (struct management *man)
+   if (buf && BLEN (buf))
+     {
+       const int len = min_int (size_hint, BLEN (buf));
++#ifdef TARGET_ANDROID
++      if (man->connection.fdtosend > 0) 
++        {
++         sent = write_fd (man->connection.sd_cli, BPTR (buf), len, MSG_NOSIGNAL,man->connection.fdtosend);
++            man->connection.fdtosend = -1;
++        } else
++#endif
+       sent = send (man->connection.sd_cli, BPTR (buf), len, MSG_NOSIGNAL);
+       if (sent >= 0)
+ 	{
+diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
+index f681f8d..991b489 100644
+--- a/src/openvpn/manage.h
++++ b/src/openvpn/manage.h
+@@ -303,6 +303,10 @@ struct man_connection {
+ #ifdef MANAGMENT_EXTERNAL_KEY
+   struct buffer_list *rsa_sig;
+ #endif
++#ifdef TARGET_ANDROID
++    int fdtosend;
++    int lastfdreceived;
++#endif
+ };
+ 
+ struct management
 -- 
 1.7.7.5 (Apple Git-26)
 
