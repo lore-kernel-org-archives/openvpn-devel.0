@@ -1,11 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sat,  2 Jun 2012 15:03:42 +0200
-Message-Id: <1338642223-20324-8-git-send-email-arne@...1227...>
+Date: Sat,  2 Jun 2012 15:03:41 +0200
+Message-Id: <1338642223-20324-7-git-send-email-arne@...1227...>
 In-Reply-To: <1338642223-20324-1-git-send-email-arne@...1227...>
 References: <1338642223-20324-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 7/8] add ability to send/receive file
-	descriptors via management interface,
-	only used in android so. For now under #ifdef ANDROID
+Subject: [Openvpn-devel] [PATCH 6/8] Allow routes to be set before opening
+	tun, similar to ifconfig before opening tun
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,139 +20,68 @@ To: openvpn-devel@lists.sourceforge.net
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/manage.c |   88 ++++++++++++++++++++++++++++++++++++++++++++++++++
- src/openvpn/manage.h |    4 ++
- 2 files changed, 92 insertions(+), 0 deletions(-)
+ src/openvpn/init.c |   11 +++++++++--
+ src/openvpn/tun.h  |   11 +++++++++++
+ 2 files changed, 20 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 1dddd41..cc22208 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -1805,6 +1805,79 @@ man_io_error (struct management *man, const char *prefix)
-     return false;
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 61ced5d..a25de5d 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1478,6 +1478,13 @@ do_open_tun (struct context *c)
+ 	  do_ifconfig (c->c1.tuntap, guess, TUN_MTU_SIZE (&c->c2.frame), c->c2.es);
+ 	}
+ 
++      /* possibly add routes */
++      if(ifconfig_order() == ROUTE_BEFORE_TUN) {
++		  /* Ignore route_delay, would cause ROUTE_BEFORE_TUN to be ignored */
++		  do_route (&c->options, c->c1.route_list, c->c1.route_ipv6_list,
++					c->c1.tuntap, c->plugins, c->c2.es);
++    }
++
+       /* open the tun device */
+       open_tun (c->options.dev, c->options.dev_type, c->options.dev_node,
+ 		c->c1.tuntap);
+@@ -1509,7 +1516,7 @@ do_open_tun (struct context *c)
+ 		   c->c2.es);
+ 
+       /* possibly add routes */
+-      if (!c->options.route_delay_defined)
++      if ((ifconfig_order() == ROUTE_AFTER_TUN) && (!c->options.route_delay_defined))
+ 	do_route (&c->options, c->c1.route_list, c->c1.route_ipv6_list,
+ 		  c->c1.tuntap, c->plugins, c->c2.es);
+ 
+@@ -1717,7 +1724,7 @@ do_up (struct context *c, bool pulled_options, unsigned int option_types_found)
+ #endif
+ 
+ 	  /* if --route-delay was specified, start timer */
+-	  if (c->options.route_delay_defined)
++	  if ((ifconfig_order() == ROUTE_AFTER_TUN) && c->options.route_delay_defined)
+ 	    {
+ 	      event_timeout_init (&c->c2.route_wakeup, c->options.route_delay, now);
+ 	      event_timeout_init (&c->c2.route_wakeup_expire, c->options.route_delay + c->options.route_delay_window, now);
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index 9bd990f..60d75c8 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -297,6 +297,17 @@ ifconfig_order(void)
+ #endif
  }
  
-+#ifdef TARGET_ANDROID
-+static ssize_t write_fd (int fd, void *ptr, size_t nbytes, int flags, int sendfd)
++#define ROUTE_BEFORE_TUN 0
++#define ROUTE_AFTER_TUN 1
++#define ROUTE_ORDER_DEFAULT ROUTE_AFTER_TUN
++
++static inline int
++route_order(void)
 +{
-+    struct msghdr msg;
-+    struct iovec iov[1];
-+    
-+    union {
-+        struct cmsghdr cm;
-+        char    control[CMSG_SPACE(sizeof(int))];
-+    } control_un;
-+    struct cmsghdr *cmptr;
-+    
-+    msg.msg_control = control_un.control;
-+    msg.msg_controllen = sizeof(control_un.control);
-+    
-+    cmptr = CMSG_FIRSTHDR(&msg);
-+    cmptr->cmsg_len = CMSG_LEN(sizeof(int));
-+    cmptr->cmsg_level = SOL_SOCKET;
-+    cmptr->cmsg_type = SCM_RIGHTS;
-+    *((int *) CMSG_DATA(cmptr)) = sendfd;
-+    
-+    msg.msg_name = NULL;
-+    msg.msg_namelen = 0;
-+    
-+    iov[0].iov_base = ptr;
-+    iov[0].iov_len = nbytes;
-+    msg.msg_iov = iov;
-+    msg.msg_iovlen = 1;
-+    
-+    return (sendmsg(fd, &msg, flags));
++    return ROUTE_ORDER_DEFAULT;
 +}
 +
-+static ssize_t read_fd(int fd, void *ptr, size_t nbytes, int flags, int *recvfd)
-+{
-+    struct msghdr msghdr;
-+    struct iovec iov[1];
-+    ssize_t n;
-+    
-+    union {
-+        struct cmsghdr cm;
-+        char     control[CMSG_SPACE(sizeof (int))];
-+    } control_un;
-+    struct cmsghdr  *cmptr;
-+    
-+    msghdr.msg_control  = control_un.control;
-+    msghdr.msg_controllen = sizeof(control_un.control);
-+    
-+    msghdr.msg_name = NULL;
-+    msghdr.msg_namelen = 0;
-+    
-+    iov[0].iov_base = ptr;
-+    iov[0].iov_len = nbytes;
-+    msghdr.msg_iov = iov;
-+    msghdr.msg_iovlen = 1;
-+    
-+    if ( (n = recvmsg(fd, &msghdr, flags)) <= 0)
-+        return (n);
-+    
-+    if ( (cmptr = CMSG_FIRSTHDR(&msghdr)) != NULL &&
-+        cmptr->cmsg_len == CMSG_LEN(sizeof(int))) {
-+        if (cmptr->cmsg_level != SOL_SOCKET)
-+            msg (M_ERR, "control level != SOL_SOCKET");
-+        if (cmptr->cmsg_type != SCM_RIGHTS)
-+            msg (M_ERR, "control type != SCM_RIGHTS");
-+        *recvfd = *((int *) CMSG_DATA(cmptr));
-+    } else
-+        *recvfd = -1;           /* descriptor was not passed */
-+    
-+    return (n);
-+}
-+#endif
 +
-+
- static int
- man_read (struct management *man)
- {
-@@ -1814,7 +1887,15 @@ man_read (struct management *man)
-   unsigned char buf[256];
-   int len = 0;
+ #ifdef WIN32
  
-+#ifdef TARGET_ANDROID
-+  int fd;
-+  len = read_fd (man->connection.sd_cli, buf, sizeof (buf), MSG_NOSIGNAL, &fd);
-+  if(fd >= 0) 
-+     man->connection.lastfdreceived = fd;
-+#else
-   len = recv (man->connection.sd_cli, buf, sizeof (buf), MSG_NOSIGNAL);
-+#endif
-+
-   if (len == 0)
-     {
-       man_reset_client_socket (man, false);
-@@ -1891,6 +1972,13 @@ man_write (struct management *man)
-   if (buf && BLEN (buf))
-     {
-       const int len = min_int (size_hint, BLEN (buf));
-+#ifdef TARGET_ANDROID
-+      if (man->connection.fdtosend > 0) 
-+        {
-+         sent = write_fd (man->connection.sd_cli, BPTR (buf), len, MSG_NOSIGNAL,man->connection.fdtosend);
-+            man->connection.fdtosend = -1;
-+        } else
-+#endif
-       sent = send (man->connection.sd_cli, BPTR (buf), len, MSG_NOSIGNAL);
-       if (sent >= 0)
- 	{
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index f681f8d..991b489 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -303,6 +303,10 @@ struct man_connection {
- #ifdef MANAGMENT_EXTERNAL_KEY
-   struct buffer_list *rsa_sig;
- #endif
-+#ifdef TARGET_ANDROID
-+    int fdtosend;
-+    int lastfdreceived;
-+#endif
- };
- 
- struct management
+ #define TUN_PASS_BUFFER
 -- 
 1.7.7.5 (Apple Git-26)
 
