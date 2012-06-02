@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sat,  2 Jun 2012 15:03:41 +0200
-Message-Id: <1338642223-20324-7-git-send-email-arne@...1227...>
+Date: Sat,  2 Jun 2012 15:03:40 +0200
+Message-Id: <1338642223-20324-6-git-send-email-arne@...1227...>
 In-Reply-To: <1338642223-20324-1-git-send-email-arne@...1227...>
 References: <1338642223-20324-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 6/8] Allow routes to be set before opening
-	tun, similar to ifconfig before opening tun
+Subject: [Openvpn-devel] [PATCH 5/8] Add the name of the context where
+	option is not allowed to the error message.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,71 +17,45 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+Changes
+
+Options error: option 'dhcp-option' cannot be used in this context
+
+to
+
+P:Options error: option 'dhcp-option' cannot be used in this context ([PUSH-OPTIONS])
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/init.c |   11 +++++++++--
- src/openvpn/tun.h  |   11 +++++++++++
- 2 files changed, 20 insertions(+), 2 deletions(-)
+ src/openvpn/options.c |    5 +++--
+ 1 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 61ced5d..a25de5d 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1478,6 +1478,13 @@ do_open_tun (struct context *c)
- 	  do_ifconfig (c->c1.tuntap, guess, TUN_MTU_SIZE (&c->c2.frame), c->c2.es);
- 	}
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 1d5a75b..9ed4ff5 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -4021,10 +4021,11 @@ void options_string_import (struct options *options,
  
-+      /* possibly add routes */
-+      if(ifconfig_order() == ROUTE_BEFORE_TUN) {
-+		  /* Ignore route_delay, would cause ROUTE_BEFORE_TUN to be ignored */
-+		  do_route (&c->options, c->c1.route_list, c->c1.route_ipv6_list,
-+					c->c1.tuntap, c->plugins, c->c2.es);
-+    }
-+
-       /* open the tun device */
-       open_tun (c->options.dev, c->options.dev_type, c->options.dev_node,
- 		c->c1.tuntap);
-@@ -1509,7 +1516,7 @@ do_open_tun (struct context *c)
- 		   c->c2.es);
+ #if P2MP
  
-       /* possibly add routes */
--      if (!c->options.route_delay_defined)
-+      if ((ifconfig_order() == ROUTE_AFTER_TUN) && (!c->options.route_delay_defined))
- 	do_route (&c->options, c->c1.route_list, c->c1.route_ipv6_list,
- 		  c->c1.tuntap, c->plugins, c->c2.es);
+-#define VERIFY_PERMISSION(mask) { if (!verify_permission(p[0], (mask), permission_mask, option_types_found, msglevel)) goto err; }
++#define VERIFY_PERMISSION(mask) { if (!verify_permission(p[0], file, (mask), permission_mask, option_types_found, msglevel)) goto err; }
  
-@@ -1717,7 +1724,7 @@ do_up (struct context *c, bool pulled_options, unsigned int option_types_found)
- #endif
- 
- 	  /* if --route-delay was specified, start timer */
--	  if (c->options.route_delay_defined)
-+	  if ((ifconfig_order() == ROUTE_AFTER_TUN) && c->options.route_delay_defined)
- 	    {
- 	      event_timeout_init (&c->c2.route_wakeup, c->options.route_delay, now);
- 	      event_timeout_init (&c->c2.route_wakeup_expire, c->options.route_delay + c->options.route_delay_window, now);
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index 9bd990f..60d75c8 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -297,6 +297,17 @@ ifconfig_order(void)
- #endif
- }
- 
-+#define ROUTE_BEFORE_TUN 0
-+#define ROUTE_AFTER_TUN 1
-+#define ROUTE_ORDER_DEFAULT ROUTE_AFTER_TUN
-+
-+static inline int
-+route_order(void)
-+{
-+    return ROUTE_ORDER_DEFAULT;
-+}
-+
-+
- #ifdef WIN32
- 
- #define TUN_PASS_BUFFER
+ static bool
+ verify_permission (const char *name,
++		   const char* file,
+ 		   const unsigned int type,
+ 		   const unsigned int allowed,
+ 		   unsigned int *found,
+@@ -4032,7 +4033,7 @@ verify_permission (const char *name,
+ {
+   if (!(type & allowed))
+     {
+-      msg (msglevel, "option '%s' cannot be used in this context", name);
++      msg (msglevel, "option '%s' cannot be used in this context (%s)", name, file);
+       return false;
+     }
+   else
 -- 
 1.7.7.5 (Apple Git-26)
 
