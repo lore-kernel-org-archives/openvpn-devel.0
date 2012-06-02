@@ -1,10 +1,12 @@
-From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Sat,  2 Jun 2012 18:31:49 +0300
-Message-Id: <1338651109-15806-1-git-send-email-alon.barlev@...277...>
-In-Reply-To: <CAOazyz0aMBvtfzHRU1RUKWtAwKirGJ-U5__yf4uQO4s0XM2FYQ@...278...>
-References: <CAOazyz0aMBvtfzHRU1RUKWtAwKirGJ-U5__yf4uQO4s0XM2FYQ@...278...>
-Subject: [Openvpn-devel] [PATCH] build: support platforms that does not need
-	explicit tun headers
+Message-ID: <4FCA3E23.9010805@...1114...>
+Date: Sat, 02 Jun 2012 18:24:03 +0200
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <1338642223-20324-1-git-send-email-arne@...1227...>
+	<1338642223-20324-2-git-send-email-arne@...1227...>
+In-Reply-To: <1338642223-20324-2-git-send-email-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 1/8] Silence Port is now 1194 IANA
+ warning if remote option with port is used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,42 +15,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Alon Bar-Lev <alon.barlev@...277...>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Both "generic" and Darwin have no special headers to use tap.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Fixes commit 7cacdfd4b7.
 
-Reported-by: Arne Schwabe <arne@...1227...>
-Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
----
- configure.ac |    2 ++
- 1 files changed, 2 insertions(+), 0 deletions(-)
+First of all, thank you very much for your work on this patch set!
+And you have a lot of good things here.
 
-diff --git a/configure.ac b/configure.ac
-index 5ace128..339164f 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -283,6 +283,7 @@ case "$host" in
- 	*-*-darwin*)
- 		AC_DEFINE([TARGET_DARWIN], [1], [Are we running on Mac OS X?])
- 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["M"], [Target prefix])
-+		have_tap_header="yes"
- 		dnl some Mac OS X tendering (we use vararg macros...)
- 		CPPFLAGS="$CPPFLAGS -no-cpp-precomp"
- 		;;
-@@ -299,6 +300,7 @@ case "$host" in
- 		;;
- 	*)
- 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["X"], [Target prefix])
-+		have_tap_header="yes"
- 		;;
- esac
- 
--- 
-1.7.3.4
+So to this patch ...
 
+On 02/06/12 15:03, Arne Schwabe wrote:
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...> --- 
+> src/openvpn/options.c |    1 + 1 files changed, 1 insertions(+), 0
+> deletions(-)
+> 
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c index
+> 08f9cb2..8e5d3b9 100644 --- a/src/openvpn/options.c +++
+> b/src/openvpn/options.c @@ -4506,6 +4506,7 @@ add_option (struct
+> options *options, goto err; } re.remote_port = port; +
+> options->ce.port_option_used = true;
+
+Instead of this change, wouldn't it rather make sense to just remove
+the whole "#if 1 /* JYFIXME -- port warning */" block in init.c:2470
+instead?  This "new" port number was introduced in November 2004, so
+I'd say this warning has been laying around long enough.
+
+When doing that, we can also get rid of the port_option_used member
+completely too.  If you do:
+
+   $ git grep -n port_option_used
+
+in the source tree, you see where this is used, and it's not many
+places at all.
+
+
+kind regards,
+
+David Sommerseth
+
+
+> if (p[3]) { const int proto = ascii2proto (p[3]);
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk/KPiAACgkQDC186MBRfrouAACgmv1F0CiIM0HyrhNYAFltqpPv
+szEAnj8O/j/vqx8884KDjZlNrLhLOfyh
+=fMoA
+-----END PGP SIGNATURE-----
 
