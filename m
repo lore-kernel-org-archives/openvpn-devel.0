@@ -1,12 +1,12 @@
-Message-ID: <4FCA3F35.5020800@...1114...>
-Date: Sat, 02 Jun 2012 18:28:37 +0200
+Message-ID: <4FCA40E3.8000205@...1114...>
+Date: Sat, 02 Jun 2012 18:35:47 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
 References: <1338642223-20324-1-git-send-email-arne@...1227...>
-	<1338642223-20324-4-git-send-email-arne@...1227...>
-In-Reply-To: <1338642223-20324-4-git-send-email-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 3/8] Only use tmpdir if tmp_dir is
- really used.
+	<1338642223-20324-7-git-send-email-arne@...1227...>
+In-Reply-To: <1338642223-20324-7-git-send-email-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 6/8] Allow routes to be set before
+ opening tun, similar to ifconfig before opening tun
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -27,68 +27,56 @@ Hash: SHA1
 See comments below.
 
 On 02/06/12 15:03, Arne Schwabe wrote:
-> This fixes starting openvpn compiled as client only version of
-> systems that have no /tmp (Android). --tmp-dir could only be set if
-> P2MP_SERVER has been enabled too.
 > 
 > Signed-off-by: Arne Schwabe <arne@...1227...> --- 
-> src/openvpn/options.c |   12 ++++++++---- src/openvpn/options.h |
-> 2 ++ src/openvpn/syshead.h |    1 + 3 files changed, 11
-> insertions(+), 4 deletions(-)
+> src/openvpn/init.c |   11 +++++++++-- src/openvpn/tun.h  |   11
+> +++++++++++ 2 files changed, 20 insertions(+), 2 deletions(-)
 > 
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c index
-> 8e5d3b9..71d43b7 100644 --- a/src/openvpn/options.c +++
-> b/src/openvpn/options.c @@ -862,6 +862,7 @@ init_options (struct
-> options *o, const bool init_gc) o->pkcs11_pin_cache_period = -1; 
-> #endif			/* ENABLE_PKCS11 */
+> diff --git a/src/openvpn/init.c b/src/openvpn/init.c index
+> 61ced5d..a25de5d 100644 --- a/src/openvpn/init.c +++
+> b/src/openvpn/init.c @@ -1478,6 +1478,13 @@ do_open_tun (struct
+> context *c) do_ifconfig (c->c1.tuntap, guess, TUN_MTU_SIZE
+> (&c->c2.frame), c->c2.es); }
 > 
-> +#ifdef ENABLE_TMPDIR /* Set default --tmp-dir */ #ifdef WIN32 /*
-> On Windows, find temp dir via enviroment variables */ @@ -873,6
-> +874,7 @@ init_options (struct options *o, const bool init_gc) 
-> o->tmp_dir = "/tmp"; } #endif /* WIN32 */ +#endif /* ENABLE_TMPDIR
-> */ }
+> +      /* possibly add routes */ +      if(ifconfig_order() ==
+> ROUTE_BEFORE_TUN) { +		  /* Ignore route_delay, would cause
+> ROUTE_BEFORE_TUN to be ignored */ +		  do_route (&c->options,
+> c->c1.route_list, c->c1.route_ipv6_list, +					c->c1.tuntap,
+> c->plugins, c->c2.es); +    } + /* open the tun device */ open_tun
+> (c->options.dev, c->options.dev_type, c->options.dev_node, 
+> c->c1.tuntap); @@ -1509,7 +1516,7 @@ do_open_tun (struct context
+> *c) c->c2.es);
 > 
-> void @@ -2759,19 +2761,21 @@ options_postprocess_filechecks (struct
-> options *options) options->management_user_pass, R_OK, 
-> "--management user/password file"); #endif /* ENABLE_MANAGEMENT */ 
-> -#if P2MP +#if ENABLE_TMPDIR errs |= check_file_access
-> (CHKACC_FILE|CHKACC_ACPTSTDIN, options->auth_user_pass_file, R_OK, 
-> "--auth-user-pass"); -#endif /* P2MP */ + +  errs |=
-> check_file_access (CHKACC_FILE, options->tmp_dir, +
-> R_OK|W_OK|X_OK, "Temporary directory (--tmp-dir)"); + +#endif /*
-> ENABLE_TMPDIR */
+> /* possibly add routes */ -      if
+> (!c->options.route_delay_defined) +      if ((ifconfig_order() ==
+> ROUTE_AFTER_TUN) && (!c->options.route_delay_defined)) do_route
+> (&c->options, c->c1.route_list, c->c1.route_ipv6_list, 
+> c->c1.tuntap, c->plugins, c->c2.es);
 > 
-> /* ** System related ** */ errs |= check_file_access (CHKACC_FILE,
-> options->chroot_dir, R_OK|X_OK, "--chroot directory"); errs |=
-> check_file_access (CHKACC_DIRPATH|CHKACC_FILEXSTWR,
-> options->writepid, R_OK|W_OK, "--writepid"); -  errs |=
-> check_file_access (CHKACC_FILE, options->tmp_dir, -
-> R_OK|W_OK|X_OK, "Temporary directory (--tmp-dir)");
+> @@ -1717,7 +1724,7 @@ do_up (struct context *c, bool
+> pulled_options, unsigned int option_types_found) #endif
 > 
-> /* ** Log related ** */ errs |= check_file_access
-> (CHKACC_DIRPATH|CHKACC_FILEXSTWR, options->status_file, diff --git
-> a/src/openvpn/options.h b/src/openvpn/options.h index
-> cc3e47a..50d42fb 100644 --- a/src/openvpn/options.h +++
-> b/src/openvpn/options.h @@ -403,7 +403,9 @@ struct options struct
-> plugin_option_list *plugin_list; #endif
+> /* if --route-delay was specified, start timer */ -	  if
+> (c->options.route_delay_defined) +	  if ((ifconfig_order() ==
+> ROUTE_AFTER_TUN) && c->options.route_delay_defined) { 
+> event_timeout_init (&c->c2.route_wakeup, c->options.route_delay,
+> now); event_timeout_init (&c->c2.route_wakeup_expire,
+> c->options.route_delay + c->options.route_delay_window, now); diff
+> --git a/src/openvpn/tun.h b/src/openvpn/tun.h index
+> 9bd990f..60d75c8 100644 --- a/src/openvpn/tun.h +++
+> b/src/openvpn/tun.h @@ -297,6 +297,17 @@ ifconfig_order(void) 
+> #endif }
 > 
-> +#ifdef ENABLE_TMPDIR const char *tmp_dir; +#endif
-> 
-> #if P2MP
-> 
-> diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h index
-> 3337764..f5c8774 100644 --- a/src/openvpn/syshead.h +++
-> b/src/openvpn/syshead.h @@ -506,6 +506,7 @@ socket_defined (const
-> socket_descriptor_t sd)
-> 
-> #if P2MP && !defined(ENABLE_CLIENT_ONLY) #define P2MP_SERVER 1 
-> +#define ENABLE_TMPDIR 1 #else #define P2MP_SERVER 0 #endif
+> +#define ROUTE_BEFORE_TUN 0 +#define ROUTE_AFTER_TUN 1 +#define
+> ROUTE_ORDER_DEFAULT ROUTE_AFTER_TUN + +static inline int 
+> +route_order(void) +{ +    return ROUTE_ORDER_DEFAULT; +}
 
-As we're trying to kill off syshead.h in v2.4, it might rather make
-sense to try to avoid extending syshead.h.  I see the benefit from
-code clarity point of view.  But I'd probably just recommend to check
-for P2MP_SERVER, with a comment that --tmp-dir is only used in the
-P2MP_SERVER code; instead of adding the ENABLE_TMPDIR macro.
+Is there any reason why it is an advantage of calling a function
+returning a macro value, instead of just redefine the
+ROUTE_ORDER_DEFAULT macro for those platforms who need ROUTE_AFTER_TUN
+and use the ROUTE_ORDER_DEFAULT macro directly where needed?
+
+And for type-safety, would it be better to use an typedef enum instead?
 
 
 kind regards,
@@ -96,12 +84,13 @@ kind regards,
 David Sommerseth
 
 
+
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk/KPzUACgkQDC186MBRfroO2QCfbF5BTeUTrjiTuxSrwmhkw7OV
-qe4AoINCDLN4Vd9CLF3kP3LJ0D+C+HIt
-=kC7H
+iEYEARECAAYFAk/KQOMACgkQDC186MBRfrr7vgCdGqn+OtLv5A0pI6bghIX+IQSQ
+8RcAn0zxo+W13KLq0Y8wkHuTsQUZ8eh6
+=nlce
 -----END PGP SIGNATURE-----
 
