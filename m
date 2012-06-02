@@ -1,12 +1,12 @@
-Message-ID: <4FCA41C6.7090100@...1114...>
-Date: Sat, 02 Jun 2012 18:39:34 +0200
+Message-ID: <4FCA4236.801@...1114...>
+Date: Sat, 02 Jun 2012 18:41:26 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
 References: <1338642223-20324-1-git-send-email-arne@...1227...>
-	<1338642223-20324-3-git-send-email-arne@...1227...>
-In-Reply-To: <1338642223-20324-3-git-send-email-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 2/8] Add the query to the error message.
- Makes the diagnose what went wrong from logs easier.
+	<1338642223-20324-5-git-send-email-arne@...1227...>
+In-Reply-To: <1338642223-20324-5-git-send-email-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 4/8] Explain that route-nopull also
+ causes the client to ignore dhcp options.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -25,13 +25,12 @@ Hash: SHA1
 
 On 02/06/12 15:03, Arne Schwabe wrote:
 > 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  src/openvpn/console.c |    2 +-
->  1 files changed, 1 insertions(+), 1 deletions(-)
+> Signed-off-by: Arne Schwabe <arne@...1227...> --- doc/openvpn.8
+> |    3 ++- src/openvpn/options.c |    2 +- 2 files changed, 3
+> insertions(+), 2 deletions(-)
 > 
 
-ACK. Will apply this soonish, unless somebody objects during next week.
+ACK.  Will apply this soonish, unless somebody objects during next week.
 
 
 kind regards,
@@ -42,8 +41,8 @@ David Sommerseth
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk/KQcQACgkQDC186MBRfrpPbACfVDp8U2iLQX30eEwqxXJ2+bw5
-+7MAn2y9Y9XWkrxz0PdQUp6ds2zrD11O
-=SZT1
+iEYEARECAAYFAk/KQjYACgkQDC186MBRfrpXjwCgoVxqsPeeJFD3LFpPwj1qcdUI
+2b0AnA1DPg8fuQM517AWYe1wLeaFdDSs
+=mPGy
 -----END PGP SIGNATURE-----
 
