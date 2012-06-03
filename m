@@ -1,10 +1,16 @@
-MIME-Version: 1.0
-In-Reply-To: <4FC8C034.6030609@...1114...>
-References: <4FC8C034.6030609@...1114...>
-Date: Sat, 2 Jun 2012 22:12:14 +0300
-Message-ID: <CAOazyz2M61H0Y_o_6Zapkkb0OnYNg7YtCcDG8Qd781rOrfEZOg@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [easy-rsa] New official git repository
+Date: Sun, 3 Jun 2012 11:57:33 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120603095733.GJ400@...1296...>
+References: <1338642223-20324-1-git-send-email-arne@...1227...>
+	<1338642223-20324-2-git-send-email-arne@...1227...>
+	<4FCA3E23.9010805@...1114...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="tMbDGjvJuJijemkf"
+Content-Disposition: inline
+In-Reply-To: <4FCA3E23.9010805@...1114...>
+Subject: Re: [Openvpn-devel] [PATCH 1/8] Silence Port is now 1194 IANA
+	warning if remote option with port is used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,68 +19,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 To: David Sommerseth <openvpn.list@...1114...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Well,
-You removed all my work.
-I guess you do this your-self now.
+--tMbDGjvJuJijemkf
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On Fri, Jun 1, 2012 at 4:14 PM, David Sommerseth
-<openvpn.list@...1114...> wrote:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
->
->
-> Hi all,
->
-> On behalf of the OpenVPN community developers, I have the pleasure to
-> announce a new git repository for easy-rsa. =C2=A0It is based on the last
-> commit from openvpn.git/openvpn-testing.git before we started to
-> really restructure those git trees completely.
->
-> You can find them on both sourceforge.net and GitHub
->
-> * sourceforge.net
-> git clone git://openvpn.git.sourceforge.net/gitroot/openvpn/easy-rsa.git
->
-> Web view:
-> <http://openvpn.git.sourceforge.net/git/gitweb.cgi?p=3Dopenvpn/easy-rsa.g=
-it;a=3Dsummary>
->
->
-> * GitHub
-> git clone git://github.com/OpenVPN/easy-rsa.git
->
-> Web view: <https://github.com/OpenVPN/easy-rsa/>
->
->
-> Both repositories will be kept in sync.
->
->
-> kind regards,
->
-> David Sommerseth
-> -----BEGIN PGP SIGNATURE-----
-> Version: GnuPG v1.4.11 (GNU/Linux)
-> Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
->
-> iEYEARECAAYFAk/IwDEACgkQDC186MBRfrrC+wCfQGz23V4pFF6ZcJP3tzaMTVPR
-> NqoAoKY4QFdzhFDKhzfYAxm6jHg99q1R
-> =3DAbDK
-> -----END PGP SIGNATURE-----
->
-> -------------------------------------------------------------------------=
------
-> Live Security Virtual Conference
-> Exclusive live event will cover all the ways today's security and
-> threat landscape has changed and how IT managers can respond. Discussions
-> will include endpoint security, mobile security and the latest in malware
-> threats. http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+HI,
+
+On Sat, Jun 02, 2012 at 06:24:03PM +0200, David Sommerseth wrote:
+> Instead of this change, wouldn't it rather make sense to just remove
+> the whole "#if 1 /* JYFIXME -- port warning */" block in init.c:2470
+> instead?  This "new" port number was introduced in November 2004, so
+> I'd say this warning has been laying around long enough.
+>=20
+> When doing that, we can also get rid of the port_option_used member
+> completely too.  If you do:
+>=20
+>    $ git grep -n port_option_used
+>=20
+> in the source tree, you see where this is used, and it's not many
+> places at all.
+
+Sounds good to me.  Feature-ACK on removing the warning block and
+port_option_used.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--tMbDGjvJuJijemkf
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
+
+iQCVAwUBT8s1DakuBuNlUUl1AQKjcwP+IvLxCbGbfHchKjOz+iT5JTqwQCEyeSz5
+je3c5iGM0R8GI2oOnkPfVh692KcLV6x5EAU5RyJ8ynUcW0jtNaRXhTK0y3kgY20d
+VtIvgLXcCnMT+3Sx87uWdKJ5XHXxGkBP471D8fXmLTLOGVbGg8fwxOdHjxClmBeE
+YYqulJLNV/0=
+=JWBu
+-----END PGP SIGNATURE-----
+
+--tMbDGjvJuJijemkf--
 
