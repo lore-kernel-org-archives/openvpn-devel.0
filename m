@@ -1,14 +1,16 @@
-MIME-Version: 1.0
-In-Reply-To: <20120603101127.GL400@...1296...>
-References: <1338642223-20324-1-git-send-email-arne@...1227...>
-	<1338642223-20324-7-git-send-email-arne@...1227...>
-	<4FCA40E3.8000205@...1114...> <4FCA433B.4070502@...1227...>
-	<20120603101127.GL400@...1296...>
-Date: Sun, 3 Jun 2012 14:34:01 +0300
-Message-ID: <CAOazyz0LO7Dbe5Rq5JAJKoXN+STbxsE2mkiLhtjNcjMAvaPCrw@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 6/8] Allow routes to be set before
- opening tun, similar to ifconfig before opening tun
+Date: Sun, 3 Jun 2012 13:42:10 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120603114210.GN400@...1296...>
+References: <1338649101-12636-1-git-send-email-alon.barlev@...277...>
+	<1338651015-15724-1-git-send-email-alon.barlev@...277...>
+	<20120603101944.GM400@...1296...>
+	<CAOazyz10-qHBsw=NyXhAwYDyf8yKRpLG2QJCYfTt=C9URdWT=A@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="dCSxeJc5W8HZXZrD"
+Content-Disposition: inline
+In-Reply-To: <CAOazyz10-qHBsw=NyXhAwYDyf8yKRpLG2QJCYfTt=C9URdWT=A@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] build: update INSTALL to recent changes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,78 +19,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
+To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Gert,
-You can see the tun branch[1].
-I changed this per platform.
-Alon.
+--dCSxeJc5W8HZXZrD
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-[1] https://github.com/alonbl/openvpn/commits/tun
-[2] https://github.com/alonbl/openvpn/commit/4d2fc1f21e6c5cba163ec481119370=
-235c736672
+Hi,
 
-On Sun, Jun 3, 2012 at 1:11 PM, Gert Doering <gert@...1296...> wrote:
-> Hi,
->
-> On Sat, Jun 02, 2012 at 06:45:47PM +0200, Arne Schwabe wrote:
->> > returning a macro value, instead of just redefine the
->> > ROUTE_ORDER_DEFAULT macro for those platforms who need ROUTE_AFTER_TUN
->> > and use the ROUTE_ORDER_DEFAULT macro directly where needed?
->> >
->> > And for type-safety, would it be better to use an typedef enum instead?
->> I just followed the IFCONFIG_AFTER_TUN/BEFORE_TUN which already is in
->> place. Just using the defines is fine for me too but it should be
->> consistend for both options.
->
-> I've always wondered why IFCONFIG_AFTER_TUN has been done that way, as
-> it seemed confusing - it sort of looks like it was done with the option
-> to change it at run-time later, but I don't really see where this would
-> make sense. =C2=A0Today all unix platforms have one variant, Windows has =
-the
-> other one, and reversing order for either isn't going to work...
->
-> So I would opt for "no function for ROUTE_ORDER_DEFAULT", and put
-> cleaning up the IFCONFIG_AFTER_TUN stuff on someones TODO list :-) - but
-> we could check that one with James...
->
-> (JFTR, OpenBSD used to have IFCONFIG_BEFORE_TUN as the single exception
-> besides Windows - but that looked like "the one who did the port not
-> understanding how tun(4) works on OpenBSD" - I changed it to
-> IFCONFIG_AFTER_TUN and that cleaned up quite a bit of special cases
-> in the code, and it works better than ever before :-) )
->
->
-> What I'm also not really happy in the current implementation of both
-> options is that all order variants get compiled-in, instead of just
-> having what the platform in question needs. =C2=A0But that's more intrust=
-ive
-> surgery...
->
-> gert
-> --
-> USENET is *not* the non-clickable part of WWW!
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 //www.muc.de/~gert/
-> Gert Doering - Munich, Germany =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 gert@...1296...
-> fax: +49-89-35655025 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0gert@...1297...
->
-> -------------------------------------------------------------------------=
------
-> Live Security Virtual Conference
-> Exclusive live event will cover all the ways today's security and
-> threat landscape has changed and how IT managers can respond. Discussions
-> will include endpoint security, mobile security and the latest in malware
-> threats. http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+On Sun, Jun 03, 2012 at 02:32:34PM +0300, Alon Bar-Lev wrote:
+> >> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+> >> ---
+> >> =A0INSTALL | =A0144 +++++++++++++++++++++++++++++++++++++-------------=
+-------------
+[..]
+> I think that most of this file is obsolete...=20
+
+That might very well be...=20
+
+> maybe someone with better English than mine should attend to it...
+
+I'm not a native speaker either, so I doubt my English better than=20
+yours.  Maybe ecrist could be volunteered? :-)
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--dCSxeJc5W8HZXZrD
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
+
+iQCVAwUBT8tNkqkuBuNlUUl1AQLsWgP/TAFk3y/MlsQ3rPF9S9isVsNUF4RWX1BB
+5spbaKTqcJi/CAhA+EIuXk70qItAa2WY4RMOpIjnwh5fXc/supZpGz/cRv801EfZ
+LAVYK2bGwy+NOd0zlmbMxZhYKb+BoQ8R6Gk2fzSRiZYvCaITNGlCo14daiSCNVRz
+/XQ2EWq3Jjc=
+=k3tv
+-----END PGP SIGNATURE-----
+
+--dCSxeJc5W8HZXZrD--
 
