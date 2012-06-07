@@ -1,10 +1,12 @@
-Message-ID: <4FD07A2F.6090202@...515...>
-Date: Thu, 07 Jun 2012 12:53:51 +0300
-From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
-MIME-Version: 1.0
+From: Adriaan de Jong <dejong@...1435...>
+Date: Thu, 7 Jun 2012 11:56:44 +0200
+Message-ID: <1CED409804E2164C8104F9E623B08B9012D498A82C@...1436...>
 References: <CAOazyz3gNKF8OmTjm+rb_8-Wi0pzuihwh5u_85X-3sgsb3Bqfw@...278...>
 	<1339061824-16542-1-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1339061824-16542-1-git-send-email-alon.barlev@...277...>
+	<4FD07A2F.6090202@...515...>
+In-Reply-To: <4FD07A2F.6090202@...515...>
+Content-Language: en-US
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] [PATCH] build: support =polarssl-1.1.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,40 +16,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Alon Bar-Lev <alon.barlev@...277...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: =?utf-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>, Alon Bar-Lev <alon.barlev@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Il 07.06.2012 12:37, Alon Bar-Lev ha scritto:
-> Repoted-by: Samuli Sepp=C3=A4nen <samuli@...515...>
-> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-> ---
->  configure.ac |    2 +-
->  1 files changed, 1 insertions(+), 1 deletions(-)
->
-> diff --git a/configure.ac b/configure.ac
-> index 339164f..9511317 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -755,7 +755,7 @@ if test "${with_crypto_library}" =3D "polarssl" ; then
->  #include <polarssl/version.h>
->  			]],
->  			[[
-> -#if POLARSSL_VERSION_NUMBER <=3D 0x01010000
-> +#if POLARSSL_VERSION_NUMBER < 0x01010000
->  #error invalid version
->  #endif
->  			]]
-Fixes the reported issue, tested on Ubuntu 10.04.
-
-ACK.
-
---=20
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
-
+QWgsIGl0IHdhcyBhbiBvZmYtYnktb25lLCB0aGF0J3Mgd2h5IEkgbWlzc2VkIGl0LiANCg0KQWNr
+IQ0KDQpBZHJpYWFuDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogU2Ft
+dWxpIFNlcHDDpG5lbiBbbWFpbHRvOnNhbXVsaUAuLi41MTUuLi5dDQo+IFNlbnQ6IGRvbmRlcmRh
+ZyA3IGp1bmkgMjAxMiAxMTo1NA0KPiBUbzogQWxvbiBCYXItTGV2DQo+IENjOiBvcGVudnBuLWRl
+dmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldA0KPiBTdWJqZWN0OiBSZTogW09wZW52cG4tZGV2ZWxd
+IFtQQVRDSF0gYnVpbGQ6IHN1cHBvcnQgPXBvbGFyc3NsLTEuMS4wDQo+IA0KPiBJbCAwNy4wNi4y
+MDEyIDEyOjM3LCBBbG9uIEJhci1MZXYgaGEgc2NyaXR0bzoNCj4gPiBSZXBvdGVkLWJ5OiBTYW11
+bGkgU2VwcMOkbmVuIDxzYW11bGlALi4uNTE1Li4uPg0KPiA+IFNpZ25lZC1vZmYtYnk6IEFsb24g
+QmFyLUxldiA8YWxvbi5iYXJsZXZALi4uMjc3Li4uPg0KPiA+IC0tLQ0KPiA+ICBjb25maWd1cmUu
+YWMgfCAgICAyICstDQo+ID4gIDEgZmlsZXMgY2hhbmdlZCwgMSBpbnNlcnRpb25zKCspLCAxIGRl
+bGV0aW9ucygtKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL2NvbmZpZ3VyZS5hYyBiL2NvbmZpZ3Vy
+ZS5hYyBpbmRleCAzMzkxNjRmLi45NTExMzE3DQo+IDEwMDY0NA0KPiA+IC0tLSBhL2NvbmZpZ3Vy
+ZS5hYw0KPiA+ICsrKyBiL2NvbmZpZ3VyZS5hYw0KPiA+IEBAIC03NTUsNyArNzU1LDcgQEAgaWYg
+dGVzdCAiJHt3aXRoX2NyeXB0b19saWJyYXJ5fSIgPSAicG9sYXJzc2wiIDsNCj4gPiB0aGVuICAj
+aW5jbHVkZSA8cG9sYXJzc2wvdmVyc2lvbi5oPg0KPiA+ICAJCQldXSwNCj4gPiAgCQkJW1sNCj4g
+PiAtI2lmIFBPTEFSU1NMX1ZFUlNJT05fTlVNQkVSIDw9IDB4MDEwMTAwMDANCj4gPiArI2lmIFBP
+TEFSU1NMX1ZFUlNJT05fTlVNQkVSIDwgMHgwMTAxMDAwMA0KPiA+ICAjZXJyb3IgaW52YWxpZCB2
+ZXJzaW9uDQo+ID4gICNlbmRpZg0KPiA+ICAJCQldXQ0KPiBGaXhlcyB0aGUgcmVwb3J0ZWQgaXNz
+dWUsIHRlc3RlZCBvbiBVYnVudHUgMTAuMDQuDQo+IA0KPiBBQ0suDQo+IA0KPiAtLQ0KPiBTYW11
+bGkgU2VwcMOkbmVuDQo+IENvbW11bml0eSBNYW5hZ2VyDQo+IE9wZW5WUE4gVGVjaG5vbG9naWVz
+LCBJbmMNCj4gDQo+IGlyYyBmcmVlbm9kZSBuZXQ6IG1hdHRvY2sNCj4gDQo+IA0KPiAtLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLQ0KPiAtLS0tLS0tDQo+IExpdmUgU2VjdXJpdHkgVmlydHVhbCBDb25mZXJlbmNlDQo+
+IEV4Y2x1c2l2ZSBsaXZlIGV2ZW50IHdpbGwgY292ZXIgYWxsIHRoZSB3YXlzIHRvZGF5J3Mgc2Vj
+dXJpdHkgYW5kDQo+IHRocmVhdCBsYW5kc2NhcGUgaGFzIGNoYW5nZWQgYW5kIGhvdyBJVCBtYW5h
+Z2VycyBjYW4gcmVzcG9uZC4NCj4gRGlzY3Vzc2lvbnMgd2lsbCBpbmNsdWRlIGVuZHBvaW50IHNl
+Y3VyaXR5LCBtb2JpbGUgc2VjdXJpdHkgYW5kIHRoZQ0KPiBsYXRlc3QgaW4gbWFsd2FyZSB0aHJl
+YXRzLg0KPiBodHRwOi8vd3d3LmFjY2VsYWNvbW0uY29tL2phdy9zZnJubDA0MjQyMDEyLzExNC81
+MDEyMjI2My8NCj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18NCj4gT3BlbnZwbi1kZXZlbCBtYWlsaW5nIGxpc3QNCj4gT3BlbnZwbi1kZXZlbEBsaXN0cy5z
+b3VyY2Vmb3JnZS5uZXQNCj4gaHR0cHM6Ly9saXN0cy5zb3VyY2Vmb3JnZS5uZXQvbGlzdHMvbGlz
+dGluZm8vb3BlbnZwbi1kZXZlbA0K
