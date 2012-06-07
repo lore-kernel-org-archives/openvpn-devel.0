@@ -1,13 +1,13 @@
-From: Adriaan de Jong <dejong@...1435...>
-Date: Thu, 7 Jun 2012 11:56:44 +0200
-Message-ID: <1CED409804E2164C8104F9E623B08B9012D498A82C@...1436...>
-References: <CAOazyz3gNKF8OmTjm+rb_8-Wi0pzuihwh5u_85X-3sgsb3Bqfw@...278...>
-	<1339061824-16542-1-git-send-email-alon.barlev@...277...>
-	<4FD07A2F.6090202@...515...>
-In-Reply-To: <4FD07A2F.6090202@...515...>
-Content-Language: en-US
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] build: support =polarssl-1.1.0
+Date: Thu, 7 Jun 2012 12:02:51 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120607100251.GP1059@...1296...>
+References: <4FD0735C.7090902@...515...> <CBF6422A.24DA%brabander@...1435...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="61jdw2sOBCFtR2d/"
+Content-Disposition: inline
+In-Reply-To: <CBF6422A.24DA%brabander@...1435...>
+Subject: Re: [Openvpn-devel] PolarSSL 1.1.0 support?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,40 +16,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: =?utf-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>, Alon Bar-Lev <alon.barlev@...277...>
+To: Frank de Brabander <brabander@...1435...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-QWgsIGl0IHdhcyBhbiBvZmYtYnktb25lLCB0aGF0J3Mgd2h5IEkgbWlzc2VkIGl0LiANCg0KQWNr
-IQ0KDQpBZHJpYWFuDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogU2Ft
-dWxpIFNlcHDDpG5lbiBbbWFpbHRvOnNhbXVsaUAuLi41MTUuLi5dDQo+IFNlbnQ6IGRvbmRlcmRh
-ZyA3IGp1bmkgMjAxMiAxMTo1NA0KPiBUbzogQWxvbiBCYXItTGV2DQo+IENjOiBvcGVudnBuLWRl
-dmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldA0KPiBTdWJqZWN0OiBSZTogW09wZW52cG4tZGV2ZWxd
-IFtQQVRDSF0gYnVpbGQ6IHN1cHBvcnQgPXBvbGFyc3NsLTEuMS4wDQo+IA0KPiBJbCAwNy4wNi4y
-MDEyIDEyOjM3LCBBbG9uIEJhci1MZXYgaGEgc2NyaXR0bzoNCj4gPiBSZXBvdGVkLWJ5OiBTYW11
-bGkgU2VwcMOkbmVuIDxzYW11bGlALi4uNTE1Li4uPg0KPiA+IFNpZ25lZC1vZmYtYnk6IEFsb24g
-QmFyLUxldiA8YWxvbi5iYXJsZXZALi4uMjc3Li4uPg0KPiA+IC0tLQ0KPiA+ICBjb25maWd1cmUu
-YWMgfCAgICAyICstDQo+ID4gIDEgZmlsZXMgY2hhbmdlZCwgMSBpbnNlcnRpb25zKCspLCAxIGRl
-bGV0aW9ucygtKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL2NvbmZpZ3VyZS5hYyBiL2NvbmZpZ3Vy
-ZS5hYyBpbmRleCAzMzkxNjRmLi45NTExMzE3DQo+IDEwMDY0NA0KPiA+IC0tLSBhL2NvbmZpZ3Vy
-ZS5hYw0KPiA+ICsrKyBiL2NvbmZpZ3VyZS5hYw0KPiA+IEBAIC03NTUsNyArNzU1LDcgQEAgaWYg
-dGVzdCAiJHt3aXRoX2NyeXB0b19saWJyYXJ5fSIgPSAicG9sYXJzc2wiIDsNCj4gPiB0aGVuICAj
-aW5jbHVkZSA8cG9sYXJzc2wvdmVyc2lvbi5oPg0KPiA+ICAJCQldXSwNCj4gPiAgCQkJW1sNCj4g
-PiAtI2lmIFBPTEFSU1NMX1ZFUlNJT05fTlVNQkVSIDw9IDB4MDEwMTAwMDANCj4gPiArI2lmIFBP
-TEFSU1NMX1ZFUlNJT05fTlVNQkVSIDwgMHgwMTAxMDAwMA0KPiA+ICAjZXJyb3IgaW52YWxpZCB2
-ZXJzaW9uDQo+ID4gICNlbmRpZg0KPiA+ICAJCQldXQ0KPiBGaXhlcyB0aGUgcmVwb3J0ZWQgaXNz
-dWUsIHRlc3RlZCBvbiBVYnVudHUgMTAuMDQuDQo+IA0KPiBBQ0suDQo+IA0KPiAtLQ0KPiBTYW11
-bGkgU2VwcMOkbmVuDQo+IENvbW11bml0eSBNYW5hZ2VyDQo+IE9wZW5WUE4gVGVjaG5vbG9naWVz
-LCBJbmMNCj4gDQo+IGlyYyBmcmVlbm9kZSBuZXQ6IG1hdHRvY2sNCj4gDQo+IA0KPiAtLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLQ0KPiAtLS0tLS0tDQo+IExpdmUgU2VjdXJpdHkgVmlydHVhbCBDb25mZXJlbmNlDQo+
-IEV4Y2x1c2l2ZSBsaXZlIGV2ZW50IHdpbGwgY292ZXIgYWxsIHRoZSB3YXlzIHRvZGF5J3Mgc2Vj
-dXJpdHkgYW5kDQo+IHRocmVhdCBsYW5kc2NhcGUgaGFzIGNoYW5nZWQgYW5kIGhvdyBJVCBtYW5h
-Z2VycyBjYW4gcmVzcG9uZC4NCj4gRGlzY3Vzc2lvbnMgd2lsbCBpbmNsdWRlIGVuZHBvaW50IHNl
-Y3VyaXR5LCBtb2JpbGUgc2VjdXJpdHkgYW5kIHRoZQ0KPiBsYXRlc3QgaW4gbWFsd2FyZSB0aHJl
-YXRzLg0KPiBodHRwOi8vd3d3LmFjY2VsYWNvbW0uY29tL2phdy9zZnJubDA0MjQyMDEyLzExNC81
-MDEyMjI2My8NCj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18NCj4gT3BlbnZwbi1kZXZlbCBtYWlsaW5nIGxpc3QNCj4gT3BlbnZwbi1kZXZlbEBsaXN0cy5z
-b3VyY2Vmb3JnZS5uZXQNCj4gaHR0cHM6Ly9saXN0cy5zb3VyY2Vmb3JnZS5uZXQvbGlzdHMvbGlz
-dGluZm8vb3BlbnZwbi1kZXZlbA0K
+--61jdw2sOBCFtR2d/
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+Hi,
+
+On Thu, Jun 07, 2012 at 11:35:58AM +0200, Frank de Brabander wrote:
+> Maybe this should actually be changed to >=3D 1.1.2, since there is a
+> security issue with versions from 0.99-pre4 up to and including PolarSSL
+> 1.1.1.
+
+If the PolarSSL author says so, we should follow :-)
+
+> >I noticed that my Ubuntu 10.04 and 12.04 buildslaves which had PolarSSL
+> >1.1.0 failed build during the configure phase:
+> >
+> >checking polarssl version... configure: error: invalid polarssl version
+
+It might be good to improve the error message - while at it - to print
+what we require.  Like:
+
+checking polarssl version...=20
+configure: error: polarssl version too old, minimum required version 1.1.2
+
+(or so)
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--61jdw2sOBCFtR2d/
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
+
+iQCVAwUBT9B8S6kuBuNlUUl1AQI9KQQAtTr0PUQlqOypGACV44hoK8qxN1FU02yt
+Rm3hd4NdfAmyVDkJGxt/jYhF5iXljUKMNnWr4s+l+Tv8oX/2s+Pwdgql54P2Hdd+
+GOkO1nP2Qx7pZiw5T1lxPo1volupHTVwRCvcZ+aNuJjylzuwFmBpRkT1Ms4HLmEz
+8cZVuLQmC8Q=
+=FQ6p
+-----END PGP SIGNATURE-----
+
+--61jdw2sOBCFtR2d/--
+
