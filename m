@@ -1,11 +1,17 @@
-Message-ID: <4FD090F7.3010506@...1114...>
-Date: Thu, 07 Jun 2012 13:31:03 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <CAOazyz3gNKF8OmTjm+rb_8-Wi0pzuihwh5u_85X-3sgsb3Bqfw@...278...>
-	<1339061824-16542-1-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1339061824-16542-1-git-send-email-alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] build: support =polarssl-1.1.0
+Date: Thu, 7 Jun 2012 13:30:26 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120607113025.GS1059@...1296...>
+References: <4FD0735C.7090902@...515...> <CBF6422A.24DA%brabander@...1435...>
+	<1CED409804E2164C8104F9E623B08B9012D498A813@...1436...>
+	<4FD078F5.7060903@...1543...>
+	<20120607102517.GR1059@...1296...>
+	<4FD08443.1060307@...1543...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="gDGSpKKIBgtShtf+"
+Content-Disposition: inline
+In-Reply-To: <4FD08443.1060307@...1543...>
+Subject: Re: [Openvpn-devel] PolarSSL 1.1.0 support?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,48 +20,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Alon Bar-Lev <alon.barlev@...277...>
+To: Paul Bakker <p.j.bakker@...1543...>
 Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--gDGSpKKIBgtShtf+
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 07/06/12 11:37, Alon Bar-Lev wrote:
-> Repoted-by: Samuli Sepp=C3=A4nen <samuli@...515...> Signed-off-by:
-> Alon Bar-Lev <alon.barlev@...277...> --- configure.ac |    2 +- 1
-> files changed, 1 insertions(+), 1 deletions(-)
->=20
+Hi,
 
-Applied to the master branch.  I fixed a typo in the commit message
-and made the the subject clearer.
+On Thu, Jun 07, 2012 at 12:36:51PM +0200, Paul Bakker wrote:
+> On 7-6-2012 12:25, Gert Doering wrote:
+> > So what...? 1.1.4 or "1.1.0, and put the responsibility on the distro"?
+> 1.1.0 and put the respsonsibility on the distro!
 
+Ok - so I'll ACK the patch Alon has posted as well.  Thanks.
 
-commit 9eb058556d3e550e9b811a3ddc30be66635d4221
-Author: Alon Bar-Lev <alon.barlev@...277...>
-Date:   Thu Jun 7 12:37:04 2012 +0300
+> > (How's the work on blowfish going? Only semi-joking, as I'd really like
+> > to run cross-ssl-library client tests on the buildslaves, without forci=
+ng
+> > the OpenSSL servers to non-default crypto settings)
+> WIP. Currently being worked on by one of my developers. So: Yes, we are
+> actually coding for it now :)
 
-    build: do not support <polarssl-1.1.0
+Great news!  (Even if it means we might have to update that check again...)
 
-    Reported-by: Samuli Sepp=C3=A4nen <samuli@...515...>
-    Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-    Acked-by: Samuli Sepp=C3=A4nen <samuli@...515...>
-    Acked-by: Adriaan de Jong <dejong@...1435...>
-    Message-Id: 1339061824-16542-1-git-send-email-alon.barlev@...277...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/6686
-    Signed-off-by: David Sommerseth <davids@...1347...>
+gert
 
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-kind regards,
+--gDGSpKKIBgtShtf+
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-David Sommerseth
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+Version: GnuPG v1.4.12 (NetBSD)
 
-iEYEARECAAYFAk/QkPQACgkQDC186MBRfrpiJACgsXg16hYEmH8D/npFrTem7dGT
-SYcAmwZKgwMHB/nfxpUA//SbFs9ZTzCW
-=3Dg5eZ
+iQCVAwUBT9CQ0akuBuNlUUl1AQIvOgP7BYqoVR54r250tDRjWf+0pXgdxJLUVIPV
+VecSVhJdwRhI1OXUe72+rV0xd1r7l1oiW245KnBK5d6XmlKRLb6zaIC+JiXrvEfg
+r/12EoHCc18+GkTjWX5cGEns5U+WhbFYWUgNqjy7oK2QlniC8PpGP2RD6IM1bWn8
+cMrPS5MdaSA=
+=bW3L
 -----END PGP SIGNATURE-----
+
+--gDGSpKKIBgtShtf+--
 
