@@ -1,7 +1,9 @@
-From: Frank de Brabander <brabander@...1435...>
-Date: Thu, 7 Jun 2012 11:35:58 +0200
-Message-ID: <CBF6422A.24DA%brabander@...1435...>
-In-Reply-To: <4FD0735C.7090902@...515...>
+From: Adriaan de Jong <dejong@...1435...>
+Date: Thu, 7 Jun 2012 11:36:40 +0200
+Message-ID: <1CED409804E2164C8104F9E623B08B9012D498A806@...1436...>
+References: <4FD0735C.7090902@...515...>
+	<CAOazyz3gNKF8OmTjm+rb_8-Wi0pzuihwh5u_85X-3sgsb3Bqfw@...278...>
+In-Reply-To: <CAOazyz3gNKF8OmTjm+rb_8-Wi0pzuihwh5u_85X-3sgsb3Bqfw@...278...>
 Content-Language: en-US
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] PolarSSL 1.1.0 support?
@@ -13,48 +15,24 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: =?iso-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Alon Bar-Lev <alon.barlev@...277...>, =?utf-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Maybe this should actually be changed to >=3D 1.1.2, since there is a
-security issue with versions from 0.99-pre4 up to and including PolarSSL
-1.1.1.
-
-On 07-06-12 11:24, "Samuli Sepp=E4nen" <samuli@...515...> wrote:
-
->Hi,
->
->I noticed that my Ubuntu 10.04 and 12.04 buildslaves which had PolarSSL
->1.1.0 failed build during the configure phase:
->
->checking polarssl version... configure: error: invalid polarssl version
->
->Updating to PolarSSL 1.1.1 or later solves this issue. However, commit
->1d92d06dca5ac says "Removed support for PolarSSL < 1.1", so 1.1.0 should
->work, right?
->
->--=20
->Samuli Sepp=E4nen
->Community Manager
->OpenVPN Technologies, Inc
->
->irc freenode net: mattock
->
->
->
->
->
->--------------------------------------------------------------------------
->----
->Live Security Virtual Conference
->Exclusive live event will cover all the ways today's security and
->threat landscape has changed and how IT managers can respond. Discussions
->will include endpoint security, mobile security and the latest in malware
->threats. http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/
->_______________________________________________
->Openvpn-devel mailing list
->Openvpn-devel@lists.sourceforge.net
->https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBbG9uIEJhci1MZXYgW21haWx0
+bzphbG9uLmJhcmxldkAuLi4yNzcuLi5dDQo+IFNlbnQ6IGRvbmRlcmRhZyA3IGp1bmkgMjAxMiAx
+MTozMw0KPiBUbzogU2FtdWxpIFNlcHDDpG5lbg0KPiBDYzogb3BlbnZwbi1kZXZlbEBsaXN0cy5z
+b3VyY2Vmb3JnZS5uZXQNCj4gU3ViamVjdDogUmU6IFtPcGVudnBuLWRldmVsXSBQb2xhclNTTCAx
+LjEuMCBzdXBwb3J0Pw0KPiANCj4gT24gVGh1LCBKdW4gNywgMjAxMiBhdCAxMjoyNCBQTSwgU2Ft
+dWxpIFNlcHDDpG5lbiA8c2FtdWxpQC4uLjUxNS4uLj4NCj4gd3JvdGU6DQo+ID4gSGksDQo+ID4N
+Cj4gPiBJIG5vdGljZWQgdGhhdCBteSBVYnVudHUgMTAuMDQgYW5kIDEyLjA0IGJ1aWxkc2xhdmVz
+IHdoaWNoIGhhZA0KPiA+IFBvbGFyU1NMDQo+ID4gMS4xLjAgZmFpbGVkIGJ1aWxkIGR1cmluZyB0
+aGUgY29uZmlndXJlIHBoYXNlOg0KPiA+DQo+ID4gY2hlY2tpbmcgcG9sYXJzc2wgdmVyc2lvbi4u
+LiBjb25maWd1cmU6IGVycm9yOiBpbnZhbGlkIHBvbGFyc3NsDQo+ID4gdmVyc2lvbg0KPiA+DQo+
+ID4gVXBkYXRpbmcgdG8gUG9sYXJTU0wgMS4xLjEgb3IgbGF0ZXIgc29sdmVzIHRoaXMgaXNzdWUu
+IEhvd2V2ZXIsDQo+IGNvbW1pdA0KPiA+IDFkOTJkMDZkY2E1YWMgc2F5cyAiUmVtb3ZlZCBzdXBw
+b3J0IGZvciBQb2xhclNTTCA8IDEuMSIsIHNvIDEuMS4wDQo+ID4gc2hvdWxkIHdvcmssIHJpZ2h0
+Pw0KPiANCj4gSWYgMS4xLjAgc2hvdWxkIGJlIHN1cHBvcnRlZCB0aGFuIEkgcHJlcGFyZSBhIHBh
+dGNoLg0KDQpIbW0sIHN0cmFuZ2UsIEkgdGhvdWdodCB0aGF0IHdhcyBpbiB0aGUgcGF0Y2g/IEkg
+YWdyZWUgdGhhdCAxLjEgc2hvdWxkIGJlIHN1cHBvcnRlZCB0aGVyZS4NCg0KQWRyaWFhbg0K
