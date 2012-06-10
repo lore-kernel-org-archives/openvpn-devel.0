@@ -1,17 +1,10 @@
-Date: Sat, 9 Jun 2012 23:00:00 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20120609210000.GA1059@...1296...>
-References: <4F438CF2.1060305@...515...>
-	<CAEsd45Rw5nYYuMMq_Qy_5tQYagZh+EMHM+2Nugod1_1s-BHthA@...278...>
-	<4F44F7F8.4090604@...1114...>
-	<eb2837a3-ce55-4f52-b2fe-f822efc661f7@...1662...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="aqWxf8ydqYKP8htK"
-Content-Disposition: inline
-In-Reply-To: <eb2837a3-ce55-4f52-b2fe-f822efc661f7@...1662...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.3-alpha1 preview 1 installer now
-	available
+Date: Sun, 10 Jun 2012 17:41:27 +0200
+Message-Id: <1339342891-28443-2-git-send-email-gert@...1296...>
+In-Reply-To: <1339342891-28443-1-git-send-email-gert@...1296...>
+References: <1339342891-28443-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH 1/5] cleanup and redefine metric handling
+	for IPv6 routes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,98 +13,105 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: debrabander <debrabander@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---aqWxf8ydqYKP8htK
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+"no metric set" is now stored as "-1"
+"metric 0" means "on-link route" (what the BSDs do)
+properly initialize metric value to "0" for on-link IPv6 net on BSDs
 
-Hi,
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/init.c  |    2 +-
+ src/openvpn/route.c |    9 ++++-----
+ src/openvpn/tun.c   |    4 ++++
+ 3 files changed, 9 insertions(+), 6 deletions(-)
 
-coming back to this after quite some time, trying to build on OSX 10.5...
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 61ced5d..b726b93 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1251,7 +1251,7 @@ do_init_route_ipv6_list (const struct options *options,
+ {
+   const char *gw = NULL;
+   int dev = dev_type_enum (options->dev, options->dev_type);
+-  int metric = 0;
++  int metric = -1;		/* no metric set */
+ 
+   if (dev != DEV_TYPE_TUN )
+     msg( M_WARN, "IPv6 routes on TAP devices are going to fail on some platforms (need gateway spec)" );	/* TODO-GERT */
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 7c25c77..aadbacc 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -383,7 +383,6 @@ init_route_ipv6 (struct route_ipv6 *r6,
+ 	         const struct route_ipv6_option *r6o,
+ 	         const struct route_ipv6_list *rl6 )
+ {
+-  r6->option = r6o;
+   r6->defined = false;
+ 
+   if ( !get_ipv6_addr( r6o->prefix, &r6->network, &r6->netbits, NULL, M_WARN ))
+@@ -410,7 +409,7 @@ init_route_ipv6 (struct route_ipv6 *r6,
+   /* metric */
+ 
+   r6->metric_defined = false;
+-  r6->metric = 0;
++  r6->metric = -1;
+   if (is_route_parm_defined (r6o->metric))
+     {
+       r6->metric = atoi (r6o->metric);
+@@ -700,7 +699,7 @@ init_route_ipv6_list (struct route_ipv6_list *rl6,
+ 
+   rl6->flags = opt6->flags;
+ 
+-  if (default_metric)
++  if (default_metric >= 0 )
+     {
+       rl6->default_metric = default_metric;
+       rl6->default_metric_defined = true;
+@@ -1582,7 +1581,7 @@ add_route_ipv6 (struct route_ipv6 *r6, const struct tuntap *tt, unsigned int fla
+ 	      network,
+ 	      r6->netbits,
+ 	      device);
+-  if (r6->metric_defined)
++  if (r6->metric_defined && r6->metric > 0 )
+     argv_printf_cat (&argv, " metric %d", r6->metric);
+ 
+ #else
+@@ -1591,7 +1590,7 @@ add_route_ipv6 (struct route_ipv6 *r6, const struct tuntap *tt, unsigned int fla
+ 	      network,
+ 	      r6->netbits,
+ 	      device);
+-  if (r6->metric_defined)
++  if (r6->metric_defined && r6->metric > 0 )
+     argv_printf_cat (&argv, " metric %d", r6->metric);
+ #endif  /*ENABLE_IPROUTE*/
+   argv_msg (D_ROUTE, &argv);
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 633150f..460684f 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -600,6 +600,8 @@ void add_route_connected_v6_net(struct tuntap * tt,
+     r6.network = tt->local_ipv6;
+     r6.netbits = tt->netbits_ipv6;
+     r6.gateway = tt->local_ipv6;
++    r6.metric  = 0;			/* connected route */
++    r6.metric_defined = true;
+     add_route_ipv6 (&r6, tt, 0, es);
+ }
+ 
+@@ -612,6 +614,8 @@ void delete_route_connected_v6_net(struct tuntap * tt,
+     r6.network = tt->local_ipv6;
+     r6.netbits = tt->netbits_ipv6;
+     r6.gateway = tt->local_ipv6;
++    r6.metric  = 0;			/* connected route */
++    r6.metric_defined = true;
+     delete_route_ipv6 (&r6, tt, 0, es);
+ }
+ #endif
+-- 
+1.7.3.4
 
-On Wed, Feb 22, 2012 at 11:49:15AM -0800, debrabander wrote:
-> This is not the a problem when building using the latest Mac OS X SDK.
-> I've did a quick search and it seems to be a more common issue on some
-> (old) Darwin platforms. Please try building again after applying the
-> patch below.
->=20
->=20
-> Signed-off-by: Frank de Brabander <debrabander@...277...>
-> ---
->  socket.c |    5 +++++
->  1 files changed, 5 insertions(+), 0 deletions(-)
->=20
-> diff --git a/socket.c b/socket.c
-> index 1a772af..6337900 100644
-> --- a/socket.c
-> +++ b/socket.c
-> @@ -893,8 +893,13 @@ create_socket_udp6 (const unsigned int flags)
->    else if (flags & SF_USE_IP_PKTINFO)
->      {
->        int pad =3D 1;
-> +#ifndef IPV6_RECVPKTINFO /* Some older Darwin platforms require this
-> */
-> +      if (setsockopt (sd, IPPROTO_IPV6, IPV6_PKTINFO,
-> +		      (void*)&pad, sizeof(pad)) < 0)
-> +#else
->        if (setsockopt (sd, IPPROTO_IPV6, IPV6_RECVPKTINFO,
->  		      (void*)&pad, sizeof(pad)) < 0)
-> +#endif
->  	msg(M_SOCKERR, "UDP: failed setsockopt for IPV6_RECVPKTINFO");
->      }
->  #endif
-> --
-> 1.7.5.4
-
-I think the patch is fine, and I now understand why :-)
-
-IPV6_PKTINFO is part of the "extended socket API" defined in RFC2292.
-That RFC used IPV6_PKTINFO both for receiving the destination IPv6 address
-in UDP packets, and for setting the source address for outgoing packets.
-
-RFC2292 was updated by RFC3542, which renamed the "receive" function to
-IPV6_RECVPKTINFO, leaving the "sending" function as IPV6_PKTINFO - and,
-subsequently, in FreeBSD they have different "setsockopt()" opcodes.
-
-So, on a system that has *both*, we need to use IPV6_RECVPKTINFO for
-receving (turning it on with setsockopt) to make --multihome work, and
-IPV6_PKTINFO for sending (which we don't actually do).=20=20
-
-On a system that only has IPV6_PKTINFO, because it's API only implements
-2292 (MacOS up until 10.6), use IPV6_PKTINFO for setsockopt().
-
-
-Now, the interesting question is whether a 10.5-compiled openvpn.exe
-will behave correctly under 10.7 if --multihome is active...
-
-Regarding the patch: I hereby ACK, and would ask David to include
-a reference to RFC2292 and RFC3542 in the commit log, so others can
-find this information more easily.
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---aqWxf8ydqYKP8htK
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (NetBSD)
-
-iQCVAwUBT9O5UKkuBuNlUUl1AQIl7gP+MhCQZe/Qk4tHXn3Z4Ia+kg3TsWk3OwDD
-PsEf9SEWnakznFhyinDpZpKCMVYJQ5fWA7GJK+sACogYJnpEcaCMzpGc6rRD/HG1
-g8gmh+lbR7+isMNZbNIYihdpgxuL2wGFHY/qOmzaHNVfhofrM+hTCAA7ZuEAd+Hb
-u5A89QZFph0=
-=MA9+
------END PGP SIGNATURE-----
-
---aqWxf8ydqYKP8htK--
 
