@@ -1,10 +1,9 @@
 From: Gert Doering <gert@...1296...>
-Date: Sun, 10 Jun 2012 17:41:27 +0200
-Message-Id: <1339342891-28443-2-git-send-email-gert@...1296...>
+Date: Sun, 10 Jun 2012 17:41:31 +0200
+Message-Id: <1339342891-28443-6-git-send-email-gert@...1296...>
 In-Reply-To: <1339342891-28443-1-git-send-email-gert@...1296...>
 References: <1339342891-28443-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH 1/5] cleanup and redefine metric handling
-	for IPv6 routes
+Subject: [Openvpn-devel] [PATCH 5/5] Update TODO.IPv6 list
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,100 +16,139 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-"no metric set" is now stored as "-1"
-"metric 0" means "on-link route" (what the BSDs do)
-properly initialize metric value to "0" for on-link IPv6 net on BSDs
+Clarify status of each already-done item for "IPv6 payload" TODOs.
+
+Remove TODOs from "IPv6 transport" list that have been solved in
+"IPv6 payload" work.
 
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
- src/openvpn/init.c  |    2 +-
- src/openvpn/route.c |    9 ++++-----
- src/openvpn/tun.c   |    4 ++++
- 3 files changed, 9 insertions(+), 6 deletions(-)
+ TODO.IPv6 |   35 ++++++++++++++++++++++++++++-------
+ 1 files changed, 28 insertions(+), 7 deletions(-)
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 61ced5d..b726b93 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1251,7 +1251,7 @@ do_init_route_ipv6_list (const struct options *options,
- {
-   const char *gw = NULL;
-   int dev = dev_type_enum (options->dev, options->dev_type);
--  int metric = 0;
-+  int metric = -1;		/* no metric set */
+diff --git a/TODO.IPv6 b/TODO.IPv6
+index f23cce0..29d7554 100644
+--- a/TODO.IPv6
++++ b/TODO.IPv6
+@@ -5,6 +5,8 @@ TODO for IPv6 payload support
+     (verified for FreeBSD server, Linux/ifconfig client, problems 
+     with ICMP6 neighbor solicitations from BSD not being answered by Linux)
  
-   if (dev != DEV_TYPE_TUN )
-     msg( M_WARN, "IPv6 routes on TAP devices are going to fail on some platforms (need gateway spec)" );	/* TODO-GERT */
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 7c25c77..aadbacc 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -383,7 +383,6 @@ init_route_ipv6 (struct route_ipv6 *r6,
- 	         const struct route_ipv6_option *r6o,
- 	         const struct route_ipv6_list *rl6 )
- {
--  r6->option = r6o;
-   r6->defined = false;
++    * 2012-01-22 fixed in platform cleanup, commit 62c613d46dc495d74
++
+ 2.) NetBSD IPv6 support doesn't work
+     ("connected" route is not auto-created, "route-ipv6" adding fails)
  
-   if ( !get_ipv6_addr( r6o->prefix, &r6->network, &r6->netbits, NULL, M_WARN ))
-@@ -410,7 +409,7 @@ init_route_ipv6 (struct route_ipv6 *r6,
-   /* metric */
+@@ -15,6 +17,8 @@ TODO for IPv6 payload support
+     * fixed for configured routes, 3.1.10 *
+     * missing for manual-ifconfig-connected (NetBSD, Darwin, Win32)
  
-   r6->metric_defined = false;
--  r6->metric = 0;
-+  r6->metric = -1;
-   if (is_route_parm_defined (r6o->metric))
-     {
-       r6->metric = atoi (r6o->metric);
-@@ -700,7 +699,7 @@ init_route_ipv6_list (struct route_ipv6_list *rl6,
++    * 2012-06-10 - fixed somewhere in 2010
++
+ 4.) do "ifconfig tun0 inet6 unplumb"  or "ifconfig tun0 destroy" for
+     Solaris, *BSD, ... at program termination time, to clean up leftovers
+     (unless tunnel persistance is desired).
+@@ -22,6 +26,8 @@ TODO for IPv6 payload support
+     For Solaris, only the "ipv6 tun0" is affected, for the *BSDs all tun0
+     stay around.
  
-   rl6->flags = opt6->flags;
++    * 2012-06-10 - fixed in individual platform cleanups early-2012
++
+ 4a.) deconfigure IPv6 on tun interface on session termination, otherwise
+     one could end up with something like this (on NetBSD):
  
--  if (default_metric)
-+  if (default_metric >= 0 )
-     {
-       rl6->default_metric = default_metric;
-       rl6->default_metric_defined = true;
-@@ -1582,7 +1581,7 @@ add_route_ipv6 (struct route_ipv6 *r6, const struct tuntap *tt, unsigned int fla
- 	      network,
- 	      r6->netbits,
- 	      device);
--  if (r6->metric_defined)
-+  if (r6->metric_defined && r6->metric > 0 )
-     argv_printf_cat (&argv, " metric %d", r6->metric);
+@@ -36,11 +42,15 @@ tun0: flags=8051<UP,POINTOPOINT,RUNNING,MULTICAST> mtu 1500
+     * semi-fixed for NetBSD, 28.2.10, always do tun0 destroy / tun0 create
+       before actual ifconfig -- tunnel still lingers after OpenVPN quits
  
- #else
-@@ -1591,7 +1590,7 @@ add_route_ipv6 (struct route_ipv6 *r6, const struct tuntap *tt, unsigned int fla
- 	      network,
- 	      r6->netbits,
- 	      device);
--  if (r6->metric_defined)
-+  if (r6->metric_defined && r6->metric > 0 )
-     argv_printf_cat (&argv, " metric %d", r6->metric);
- #endif  /*ENABLE_IPROUTE*/
-   argv_msg (D_ROUTE, &argv);
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 633150f..460684f 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -600,6 +600,8 @@ void add_route_connected_v6_net(struct tuntap * tt,
-     r6.network = tt->local_ipv6;
-     r6.netbits = tt->netbits_ipv6;
-     r6.gateway = tt->local_ipv6;
-+    r6.metric  = 0;			/* connected route */
-+    r6.metric_defined = true;
-     add_route_ipv6 (&r6, tt, 0, es);
- }
++    * 2011-09-16 fixed in platform cleanup, commit 8ca19c014c149cf69
++
+ 4b.) verify this - on FreeBSD, tun0 is auto-destroyed if created by
+      opening /dev/tun (and lingers if created by "ifconfig tun0 create")
  
-@@ -612,6 +614,8 @@ void delete_route_connected_v6_net(struct tuntap * tt,
-     r6.network = tt->local_ipv6;
-     r6.netbits = tt->netbits_ipv6;
-     r6.gateway = tt->local_ipv6;
-+    r6.metric  = 0;			/* connected route */
-+    r6.metric_defined = true;
-     delete_route_ipv6 (&r6, tt, 0, es);
- }
- #endif
+      -> use for persistant tunnels on not-linux?
+ 
++    * 2012-06-10 tun interface behaviour is documented in "man tun(4)"
++
+ 5.) add new option "ifconfig-ipv6-push"
+     (per-client static IPv6 assignment, -> radiusplugin, etc)
+ 
+@@ -48,12 +58,17 @@ tun0: flags=8051<UP,POINTOPOINT,RUNNING,MULTICAST> mtu 1500
+ 
+ 6.) add new option "route-ipv6-gateway"
+ 
++    * 2012-06-09 - decided there is no current need (but fairly trivial)
++
+ 7.) add "full" gateway handling for IPv6 in route.c 
+     (right now, the routes are just sent down the tun interface, if the
+     operating system in questions supports that, without care for the
+     gateway address - which does not work for gateways that are supposed
+     to point elsewhere.  Also, it doesn't work for TAP interfaces.
+ 
++    * 2012-06-09 use "dev tun" for tun devices, "via $gateway" for tap
++		 (and purposely do not support off-link routes)
++
+ 8.) full IPv6 support for TAP interfaces 
+     (main issue should be routes+gateway - and testing :-) )
+ 
+@@ -62,8 +77,16 @@ tun0: flags=8051<UP,POINTOPOINT,RUNNING,MULTICAST> mtu 1500
+ 
+ 17:51:14.075412 fe:ab:6e:c5:53:71 > 33:33:ff:00:00:01, ethertype IPv6 (0x86dd), length 86: 2001:608:4:a053::1:0 > ff02::1:ff00:1: ICMP6, neighbor solicitation, who has 2001:608:4:a001::1, length 32
+ 
++    * 2012-06-09 missing gateway support implemented
++
++8a.)
+     how is iroute-via-tap supposed to work??
+ 
++    * 2012-06-10 - answer: not at all, OpenVPN doesn't do "iroute" in
++    tap mode - set up "route-ipv6" with gateway address = individual
++    client's tap0 address to get the per-client routes
++
++
+ 9.) verify that iroute-ipv6 and route-ipv6 interact in the same way as
+     documented for iroute/route:
+ 
+@@ -113,6 +136,8 @@ tun0: flags=8051<UP,POINTOPOINT,RUNNING,MULTICAST> mtu 1500
+ 	  (openvpn-devel, Subject: OpenBSD)
+ 	- test
+ 
++    * 2012-02-05 platform cleanup, commit 82d4e12068774b0a6ca
++
+ 17.) client-option (Elwood)
+ 	- ignore-v6-push-options yes/no
+ 	- ignore-v6-route-push  ("as for IPv4 routes")
+@@ -150,13 +175,15 @@ tun0: flags=8051<UP,POINTOPOINT,RUNNING,MULTICAST> mtu 1500
+ 
+     (problem + workaround applies both to tun and tap style devices)
+ 
++    * 2012-06-09 - this got fixed in one of the platform cleanups
++
+ 
+ 
+ 
+ TODO for IPv6 transport support
+ -------------------------------
+ 
+-[ Last updated: 11-Nov-2009. ]
++[ Last updated: 10-Jun-2012. ]
+ 
+ * All platforms:
+   o mgmt console: as currently passes straight in_addr_t bits around
+@@ -175,14 +202,8 @@ TODO for IPv6 transport support
+     listening IPv6 must permit incoming streams from allowed IPv4 peer,
+     currently you need to pass eg:  --remote ffff::1.2.3.4
+ 
+-  o do something with multi mode learn routes, for now just ignoring
+-    ipv6 addresses seems the most sensible thing to do, because there's
+-    no support for intra-tunnel ipv6 stuff.
+ 
+ * win32:
+   o find out about mapped addresses, as I can't make it work
+     with bound at ::1 and connect to 127.0.0.1
+ 
+-* N/A:
+-  o this is ipv6 *endpoint* support, so don't expect "ifconfig6"-like
+-    support in this patch
 -- 
 1.7.3.4
 
