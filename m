@@ -1,13 +1,13 @@
-Message-ID: <4FD72D0F.706@...1114...>
-Date: Tue, 12 Jun 2012 13:50:39 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <1338642223-20324-1-git-send-email-arne@...1227...>
-	<1338642223-20324-9-git-send-email-arne@...1227...>
-	<CAHyOtRkFiz0aKO=FPLPsFXQg1EcxBMRwytVXt=6jfaP8jkgcrQ@...278...>
-	<4FD237E3.2030605@...1227...>
-In-Reply-To: <4FD237E3.2030605@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 8/8] Android platform specific changes.
+Date: Tue, 12 Jun 2012 15:29:23 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120612132923.GD1059@...1296...>
+References: <4F333427.70808@...1388...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="uWbmMdDzzl2TXAgx"
+Content-Disposition: inline
+In-Reply-To: <4F333427.70808@...1388...>
+Subject: Re: [Openvpn-devel] route-ipv6 parameters & route prefixes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,66 +16,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>
-Cc: Adriaan de Jong <adriaan@...1475...>, openvpn-devel@lists.sourceforge.net
+To: Michal Ludvig <mludvig@...1388...>
+Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--uWbmMdDzzl2TXAgx
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 08/06/12 19:35, Arne Schwabe wrote:
-> Am 07.06.12 18:44, schrieb Adriaan de Jong:
->> Hi Arne,
->> 
->> Could you please split this patch up a little further? As it is,
->> it performs a number of functions, which, although related to
->> Android would be easier to ack if they were separate.
->> 
->> Am I correct in noting that you use  management_query_user_pass()
->> to send queries across the management interface? If so, that begs
->> an open question to the community: is there a better way of
->> communicating across the management interface?
->> 
-> Yes. At the moment almost all information is passed with 
-> management_query_user_pass, I have no split up the patch further
-> since we should first discussed the best way to pass information
-> around. (See also the lengthy discussion when I first submitted an
-> Android patch)
+Hi,
 
-Your splitting in this round has been very good.  But it would be good
-if patch 8 and maybe some of 7 could be split up a bit more.  Small
-contained changes are far easier to review.  And it might be easier to
-do modifications later on, if needed too.
+On Thu, Feb 09, 2012 at 03:49:11PM +1300, Michal Ludvig wrote:
+> I'm used to pushing route options to the clients with explicit metrics.=20
+> That works good for IPv4 with e.g.:
+> push "route 192.168.128.0 255.255.240.0 vpn_gateway 200"
+>=20
+> However route-ipv6 doesn't accept the 'vpn_gateway' keyword and=20
+> therefore I can't easily set a metric.=20
 
-One thing though, which I don't like so much is that you "abuse"
-management_query_user_pass() for passing other types of data.  That
-makes it harder to understand what you are doing and why.  When
-reviewing I wondered for a little while why you where doing so much
-management user/pass stuff on the client - until I saw what you
-populated the user_pass structs with.
+If all your clients are Linux or Windows, you can "sort of" do that=20
+today already with 'push "route-ipv6"', specifying an arbitrary (but=20
+valid) IPv6 address as gateway address:
 
-Would it be possible to rework the management_query_* stuff to have a
-more generic API?  Where you could pass over the information you need
-to pass and then keep the management_query_user_pass() for
-username/password stuff.  This will help understanding the overall
-code far better.  The management_query_user_pass() may surely use a
-more flexible/generic backend, to avoid having code duplication.
+  push "route-ipv6 2001:db8::/48 2001::1 200"
 
-I haven't been able to completely comprehend all you do in your patch
-yet, so it might be more things too.  But this is at least a starter
-of some feedback.
+This is a side effect of the way we currently install IPv6 routes on
+platforms that can do "route to interface" - the route always points
+to the "tun" interface, and the gateway spec is not used.
 
+"metric" for IPv6 routes is currently implemented and tested on Linux,
+but not on any other platform yet.
 
-kind regards,
+What client platforms do you need this for?
 
-David Sommerseth
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--uWbmMdDzzl2TXAgx
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+Version: GnuPG v1.4.12 (NetBSD)
 
-iEYEARECAAYFAk/XLQ0ACgkQDC186MBRfrp8fgCgg0mTKsbYpghVPB8Msiqv8Hhr
-vn0AnA9COKbvR3EGOaL5NRmbEUdVryNP
-=rtwU
+iQCVAwUBT9dEM6kuBuNlUUl1AQLROwP/cNJ7t3xkQqrtILiGixSgdZ+ok51+BzTS
+VrjMEeIn+w20kOpkHoB71Iu+b/QqmRjnY+AEg+IeJkePjNrMY7J66UxVu8lbi9Ly
+wbVV+zZQWuQef9OvHZmzuS4fpPKLXsbLDEusoqfP9JSFUMy+7WtzBEpfRLz2QEuo
+O9MF32DTjew=
+=d7Bz
 -----END PGP SIGNATURE-----
+
+--uWbmMdDzzl2TXAgx--
 
