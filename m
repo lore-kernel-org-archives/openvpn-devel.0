@@ -1,14 +1,13 @@
-Message-ID: <4FD856F0.60409@...1114...>
-Date: Wed, 13 Jun 2012 11:01:36 +0200
+Message-ID: <4FD86BB6.4050307@...1114...>
+Date: Wed, 13 Jun 2012 12:30:14 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1328446029-30523-1-git-send-email-heiko.hund@...1489...>
-In-Reply-To: <1328446029-30523-1-git-send-email-heiko.hund@...1489...>
+References: <20120607174255.GV1059@...1296...>
+In-Reply-To: <20120607174255.GV1059@...1296...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig1ADD5A4AA479A4B7E5E6F6D5"
-Subject: Re: [Openvpn-devel] [PATCH] remove the --auto-proxy option from
-	openvpn
+	boundary="------------enig7C7181E24285E70B22BB7BB9"
+Subject: Re: [Openvpn-devel] another t_client.sh patch...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,47 +19,39 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1ADD5A4AA479A4B7E5E6F6D5
+--------------enig7C7181E24285E70B22BB7BB9
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-On 05/02/12 13:47, Heiko Hund wrote:
-> During discussion on FOSDEM 2012 it was decided that proxy auto detection
-> is best done in the GUI as it's highly platform specific and shouldn't be
-> handled in openvpn itself for every supported platform in openvpn itself.
+On 07/06/12 19:42, Gert Doering wrote:
 >=20
-> This removes --auto-proxy from openvpn.
+> From b5b301591ef0804084bd661d090d36aa44100101 Mon Sep 17 00:00:00 2001
+> From: Gert Doering <gert@...1296...>
+> Date: Thu, 7 Jun 2012 17:35:53 +0200
+> Subject: [PATCH] t_client.sh - fix for iproute2, print summary line
 >=20
-> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+> Yet another postprocess-output fix for iproute2 (sometimes there was
+> no whitespace in the output, so substituting away expiry time failed).
+>=20
+> Print summary line of succeeded and failed test sets at the very end.
+>=20
+> Signed-off-by: Gert Doering <gert@...1296...>
 > ---
->  init.c    |   10 +--
->  openvpn.8 |   12 ---
->  options.c |   40 +----------
->  options.h |    4 -
->  proxy.c   |  242 +------------------------------------------------------=
-------
->  proxy.h   |   27 +-------
->  socks.c   |   15 +----
->  socks.h   |    3 +-
->  8 files changed, 11 insertions(+), 342 deletions(-)
+>  tests/t_client.sh.in |   12 +++++++++++-
+>  1 files changed, 11 insertions(+), 1 deletions(-)
 
-This one has been lingering around for quite some months without any
-comments.  And since no one have NACKed this, I decided to pull it in
-after Gert and Heiko pinging me about it again.
+ACK.  Applied to master.
 
-As the patch is even straightforward, I even dared to give it an
-explicit ACK too.
+commit 64a6bdf73cd624939a8f597fc5330b946f6bf1f1
+Author: Gert Doering <gert@...1296...>
+Date:   Thu Jun 7 17:35:53 2012 +0200
 
-commit 8e1975b046dcf821eaf03098677dc5e34cd3a1a5
-Author: Heiko Hund <heiko.hund@...1489...>
-Date:   Sun Feb 5 13:47:09 2012 +0100
+    t_client.sh - fix for iproute2, print summary line
 
-    remove the --auto-proxy option from openvpn
-
-    Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+    Signed-off-by: Gert Doering <gert@...1296...>
     Acked-by: David Sommerseth <davids@...1347...>
-    Message-Id: 1328446029-30523-1-git-send-email-heiko.hund@...1489...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/5333
+    Message-Id: 20120607174255.GV1059@...1296...
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/6704
     Signed-off-by: David Sommerseth <davids@...1347...>
 
 
@@ -69,7 +60,7 @@ kind regards,
 David Sommerseth
 
 
---------------enig1ADD5A4AA479A4B7E5E6F6D5
+--------------enig7C7181E24285E70B22BB7BB9
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -78,10 +69,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk/YVvIACgkQDC186MBRfrqtywCeIJ2QruwVmHBwc6TiBYUh8zCc
-BekAn1FAJO2iLypVK6xXAStcEtasEQTc
-=J/5r
+iEYEARECAAYFAk/Ya7YACgkQDC186MBRfrr+cACeNRbwtBM1vKOuiWrruEIkOWee
+tfAAn2OZTurnl0dtVg3wN8JdsIPzTtrc
+=2J3B
 -----END PGP SIGNATURE-----
 
---------------enig1ADD5A4AA479A4B7E5E6F6D5--
+--------------enig7C7181E24285E70B22BB7BB9--
 
