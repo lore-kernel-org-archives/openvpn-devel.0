@@ -1,13 +1,14 @@
-Date: Tue, 12 Jun 2012 15:29:23 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120612132923.GD1059@...1296...>
-References: <4F333427.70808@...1388...>
-Mime-Version: 1.0
+Message-ID: <4FD856F0.60409@...1114...>
+Date: Wed, 13 Jun 2012 11:01:36 +0200
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <1328446029-30523-1-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <1328446029-30523-1-git-send-email-heiko.hund@...1489...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="uWbmMdDzzl2TXAgx"
-Content-Disposition: inline
-In-Reply-To: <4F333427.70808@...1388...>
-Subject: Re: [Openvpn-devel] route-ipv6 parameters & route prefixes
+	protocol="application/pgp-signature";
+	boundary="------------enig1ADD5A4AA479A4B7E5E6F6D5"
+Subject: Re: [Openvpn-devel] [PATCH] remove the --auto-proxy option from
+	openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,60 +17,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Michal Ludvig <mludvig@...1388...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
---uWbmMdDzzl2TXAgx
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig1ADD5A4AA479A4B7E5E6F6D5
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
-
-On Thu, Feb 09, 2012 at 03:49:11PM +1300, Michal Ludvig wrote:
-> I'm used to pushing route options to the clients with explicit metrics.=20
-> That works good for IPv4 with e.g.:
-> push "route 192.168.128.0 255.255.240.0 vpn_gateway 200"
+On 05/02/12 13:47, Heiko Hund wrote:
+> During discussion on FOSDEM 2012 it was decided that proxy auto detection
+> is best done in the GUI as it's highly platform specific and shouldn't be
+> handled in openvpn itself for every supported platform in openvpn itself.
 >=20
-> However route-ipv6 doesn't accept the 'vpn_gateway' keyword and=20
-> therefore I can't easily set a metric.=20
+> This removes --auto-proxy from openvpn.
+>=20
+> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+> ---
+>  init.c    |   10 +--
+>  openvpn.8 |   12 ---
+>  options.c |   40 +----------
+>  options.h |    4 -
+>  proxy.c   |  242 +------------------------------------------------------=
+------
+>  proxy.h   |   27 +-------
+>  socks.c   |   15 +----
+>  socks.h   |    3 +-
+>  8 files changed, 11 insertions(+), 342 deletions(-)
 
-If all your clients are Linux or Windows, you can "sort of" do that=20
-today already with 'push "route-ipv6"', specifying an arbitrary (but=20
-valid) IPv6 address as gateway address:
+This one has been lingering around for quite some months without any
+comments.  And since no one have NACKed this, I decided to pull it in
+after Gert and Heiko pinging me about it again.
 
-  push "route-ipv6 2001:db8::/48 2001::1 200"
+As the patch is even straightforward, I even dared to give it an
+explicit ACK too.
 
-This is a side effect of the way we currently install IPv6 routes on
-platforms that can do "route to interface" - the route always points
-to the "tun" interface, and the gateway spec is not used.
+commit 8e1975b046dcf821eaf03098677dc5e34cd3a1a5
+Author: Heiko Hund <heiko.hund@...1489...>
+Date:   Sun Feb 5 13:47:09 2012 +0100
 
-"metric" for IPv6 routes is currently implemented and tested on Linux,
-but not on any other platform yet.
+    remove the --auto-proxy option from openvpn
 
-What client platforms do you need this for?
+    Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+    Acked-by: David Sommerseth <davids@...1347...>
+    Message-Id: 1328446029-30523-1-git-send-email-heiko.hund@...1489...
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/5333
+    Signed-off-by: David Sommerseth <davids@...1347...>
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
 
---uWbmMdDzzl2TXAgx
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+kind regards,
+
+David Sommerseth
+
+
+--------------enig1ADD5A4AA479A4B7E5E6F6D5
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (NetBSD)
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iQCVAwUBT9dEM6kuBuNlUUl1AQLROwP/cNJ7t3xkQqrtILiGixSgdZ+ok51+BzTS
-VrjMEeIn+w20kOpkHoB71Iu+b/QqmRjnY+AEg+IeJkePjNrMY7J66UxVu8lbi9Ly
-wbVV+zZQWuQef9OvHZmzuS4fpPKLXsbLDEusoqfP9JSFUMy+7WtzBEpfRLz2QEuo
-O9MF32DTjew=
-=d7Bz
+iEYEARECAAYFAk/YVvIACgkQDC186MBRfrqtywCeIJ2QruwVmHBwc6TiBYUh8zCc
+BekAn1FAJO2iLypVK6xXAStcEtasEQTc
+=J/5r
 -----END PGP SIGNATURE-----
 
---uWbmMdDzzl2TXAgx--
+--------------enig1ADD5A4AA479A4B7E5E6F6D5--
 
