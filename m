@@ -1,14 +1,10 @@
-Message-ID: <4FD86BBA.2080802@...1114...>
-Date: Wed, 13 Jun 2012 12:30:18 +0200
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <20120607174638.GW1059@...1296...>
-In-Reply-To: <20120607174638.GW1059@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig947FC5EC77BE86F49E2B9439"
-Subject: Re: [Openvpn-devel] implement dynamic search for first-free tun/tap
- on Solaris
+From: George Alexander <george.alexander@...1730...>
+Date: Thu, 14 Jun 2012 18:23:23 -0500
+Message-ID: <CAB0ctLqzb8RY=MaTDLi=wx4kXrO3sgRVE2h9hHGwH7v8DBucSg@...278...>
+Content-Type: multipart/alternative; boundary=f46d043c07d6c9001404c276fe8a
+Subject: [Openvpn-devel] RHEL's rpmbuild needs slight modification to build
+	from tarball from openvpn-2.3-alpha1.tar.gz
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,73 +15,59 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig947FC5EC77BE86F49E2B9439
-Content-Type: text/plain; charset="ISO-8859-1"
+--f46d043c07d6c9001404c276fe8a
+Content-Type: text/plain; charset=ISO-8859-1
+
+Hi everyone, I was building an rpm the other day of the latest release (it
+looks great, can't wait to try it out) and noticed a lil problem: It
+doesn't like "-" in version names...
+
+[root@...185... ~]# rpmbuild -tb openvpn-2.3-alpha1.tar.gz
+error: line 19: Illegal char '-' in version: Version:        2.3-alpha1
+
+Solution is simple -- untar, change directory name, change version in .spec
+file, re-tar/gz, re-run rpmbuild:
+[root@...185... ~]# tar zxf openvpn-2.3-alpha1.tar.gz
+[root@...185... ~]# mv openvpn-2.3-alpha1 openvpn-2.3_alpha1
+[root@...185... ~]# sed -i "s/2\.3-alpha/2\.3_alpha/"
+openvpn-2.3_alpha1/openvpn.spec
+[root@...185... ~]# tar czf openvpn-2.3_alpha1.tar.gz openvpn-2.3_alpha1/
+[root@...185... ~]# rpmbuild -tb openvpn-2.3_alpha1.tar.gz
+
+Now it's good to go for the rpmbuild -tb.  I guess I'm the only one
+building this for CentOS -- I didn't see anything on google about anyone
+else having this problem.  Anyway I think it'd be nice for 2.3_alpha2 to
+not have a dash, if that fits with your dispositions :)
+-George
+
+--f46d043c07d6c9001404c276fe8a
+Content-Type: text/html; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-On 07/06/12 19:46, Gert Doering wrote:
-> Hi,
->=20
-> Solaris buildslave failed to test, because "--dev tun" did not work
-> if tun0 was already in use (didn't hunt to tun1).
->=20
-> Fixed, tested on OpenSolaris 10 / i386 - but the code is straightforward,=
-=20
-> so it should work on "standard Solaris" and "sparc" as well.  Managed to
-> get it to hunt to tun2 just fine, and then ran out of possible OpenVPN
-> targets :-) but if it works for tun0, tun1, tun2 there is no reason why
-> it shouldn't work for tun63.=20
->=20
-> The moving around of the open() calls is purely cosmetic - I wanted to
-> have all code that relates to tun device unit number in one block, not
-> "first parse device name, then open unrelated stuff, then try to use
-> that just-parsed device and the resulting 'ptr' variable".
+<div>Hi everyone, I was building an rpm the other day of the latest release=
+ (it looks great, can&#39;t wait to try it out) and noticed a lil problem: =
+It doesn&#39;t like &quot;-&quot; in version names...</div><div><br></div>
 
-ACK.  Applied to master branch.
+<div>[root@...185... ~]# rpmbuild -tb openvpn-2.3-alpha1.tar.gz</div><div>e=
+rror: line 19: Illegal char &#39;-&#39; in version: Version: =A0 =A0 =A0 =
+=A02.3-alpha1</div><div><br></div><div>Solution is simple -- untar, change =
+directory name, change version in .spec file, re-tar/gz, re-run rpmbuild:</=
+div>
 
-commit 21ae2ec2b963e33e1b48b6cf9069e774b3f656b1
-Author: Gert Doering <gert@...1296...>
-Date:   Thu Jun 7 17:38:17 2012 +0200
+<div>[root@...185... ~]# tar zxf openvpn-2.3-alpha1.tar.gz</div><div>[root@=
+...185... ~]# mv openvpn-2.3-alpha1 openvpn-2.3_alpha1</div><div>[root@...1386...=
+85... ~]# sed -i &quot;s/2\.3-alpha/2\.3_alpha/&quot; openvpn-2.3_alpha1/op=
+envpn.spec</div>
 
-    Implement search for "first free" tun/tap device on Solaris
-=20=20=20=20
-    Without this patch, Solaris will do "--dev tun3" just fine, but "--dev =
-tun"
-    will either use "tun0" if that is available, or fail.  With the patch, =
-the
-    first available device is searched if "--dev tun" or "--dev tap" (witho=
-ut
-    a number) is specified.
-=20=20=20=20
-    Signed-off-by: Gert Doering <gert@...1296...>
-    Acked-by: David Sommerseth <davids@...1347...>
-    Message-Id: 20120607174638.GW1059@...1296...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/6705
-    Signed-off-by: David Sommerseth <davids@...1347...>
+<div>[root@...185... ~]# tar czf openvpn-2.3_alpha1.tar.gz openvpn-2.3_alph=
+a1/<br>[root@...185... ~]# rpmbuild -tb openvpn-2.3_alpha1.tar.gz</div><div=
+><br></div><div>Now it&#39;s good to go for the rpmbuild -tb. =A0I guess I&=
+#39;m the only one building this for CentOS -- I didn&#39;t see anything on=
+ google about anyone else having this problem. =A0Anyway I think it&#39;d b=
+e nice for 2.3_alpha2 to not have a dash, if that fits with your dispositio=
+ns :)</div>
 
- src/openvpn/tun.c |   40 ++++++++++++++++++++++++++++++++--------
- 1 files changed, 32 insertions(+), 8 deletions(-)
+<div>-George</div><div><br></div>
 
-
-kind regards,
-
-David Sommerseth
-
-
---------------enig947FC5EC77BE86F49E2B9439
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk/Ya7oACgkQDC186MBRfro0egCgpWdjwlJtE/PPWay68VTgqGTs
-QMcAn3k3hsU4QplG1YXGTGUGHhf9Ae4S
-=Bndg
------END PGP SIGNATURE-----
-
---------------enig947FC5EC77BE86F49E2B9439--
+--f46d043c07d6c9001404c276fe8a--
 
