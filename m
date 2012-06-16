@@ -1,13 +1,9 @@
-Message-ID: <4FDB16D3.7080309@...1114...>
-Date: Fri, 15 Jun 2012 13:04:51 +0200
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <20120614144454.GX1059@...1296...>
-In-Reply-To: <20120614144454.GX1059@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigB13442BA50863F5681E03A36"
-Subject: Re: [Openvpn-devel] ENABLE_PF and config.h breakage
+From: Thomas Habets <thomas@...1731...>
+Date: Sun, 17 Jun 2012 00:50:59 +0100
+Message-ID: <CA+kHd+cXMJoy3yc=Z=8SM=gf75FDUXVuTWDUMiVZ9WAuA3bjyA@...278...>
+Content-Type: multipart/mixed; boundary=f46d043c8132fd3f4204c29f9bb0
+Subject: [Openvpn-devel] PATCH: SSL Engine support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,137 +14,196 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigB13442BA50863F5681E03A36
-Content-Type: text/plain; charset="ISO-8859-1"
+--f46d043c8132fd3f4204c29f9bb0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 14/06/12 16:44, Gert Doering wrote:
-> Hi,
->=20
-> openvpn-devel in the current openwrt tree is broken, due to upstream-
-> breakage.
->=20
-> For the record, it's built like this:
->=20
->   $ ./configure --target=3Dmips-openwrt-linux --host=3Dmips-openwrt-linux=
- --build=3Di686-pc-linux-gnu --program-prefix=3D --program-suffix=3D --pref=
-ix=3D/usr --exec-prefix=3D/usr --bindir=3D/usr/bin --sbindir=3D/usr/sbin --=
-libexecdir=3D/usr/lib --sysconfdir=3D/etc --datadir=3D/usr/share --localsta=
-tedir=3D/var --mandir=3D/usr/man --infodir=3D/usr/info --disable-nls --enab=
-le-small --disable-selinux --disable-systemd --disable-plugins --disable-de=
-bug --disable-eurephia --disable-pkcs11 --enable-lzo --disable-crypto disab=
-le-x509-alt-username-ssl --enable-server --disable-management --enable-sock=
-s --enable-http --enable-fragment --enable-multihome --disable-iproute2 --e=
-nable-def-auth --enable-pf --enable-ssl --enable-crypto --with-crypto-libra=
-ry=3Dpolarssl
->=20
-> ... and the real breakage is the combination of --enable-pf,
-> --disable-plugins, --disable-management and --with-crypto-library=3Dpolar=
-ssl.
->=20
-> What this will do is:
->=20
->  - config.h defines ENABLE_PF
->=20
-> /* Enable internal packet filter */
-> #define ENABLE_PF 1
->=20
->  - syshead.h turns it off again
->=20
-> #if defined(ENABLE_DEF_AUTH) && P2MP_SERVER && defined(ENABLE_MANAGEMENT)
-> #define MANAGEMENT_DEF_AUTH
-> #endif
-> ...
-> /*
->  * Enable packet filter?
->  */
-> #if defined(ENABLE_PF) && P2MP_SERVER && defined(ENABLE_PLUGIN) && define=
-d(HAVE_STAT)
-> #define PLUGIN_PF
-> #endif
-> #if defined(ENABLE_PF) && P2MP_SERVER && defined(MANAGEMENT_DEF_AUTH)
-> #define MANAGEMENT_PF
-> #endif
-> #if !defined(PLUGIN_PF) && !defined(MANAGEMENT_PF)
-> #undef ENABLE_PF
-> #endif
->=20
->  - so pf.c gets compiled into an empty pf.o module (all ok)
->=20
->  - now, init.c does more interesting things
->=20
->     - include "config.h" -> #define ENABLE_PF 1
->     - include "syshead.h" -> #undef ENABLE_PF
->     - include "init.h"
->         include "openvpn.h"
-> 	   include "ssl.h"
-> 	      include "ssl_backend.h"
-> 		 include "ssl_polarssl.h"
-> 		    include "config.h"  --> #define ENABLE_PF 1
->=20
->  - so init.c and multi.c get compiled with the function calls towards
->    pf.c, but pf.o is empty -> linker fails
->=20
-> This cannot be triggered with --disable-pf, or OpenSSL (because ssl_opens=
-sl.h
-> does not include config.h), or if either plugins or management are enable=
-d.
->=20
->=20
-> The quick fix is "remove config.h from ssl_polarssl.h" - because all .c
-> modules right now include this anyway, as the first thing, including all=
-=20
-> SSL modules.  I would propose to do that right away (patch attached), but
-> would like confirmation from Adriaan that I'm not overlooking anything.
->=20
-> The "right" fix is manyfold (and I think I'll agree with Alon here)
->=20
->  - stop calling our own include files many layers deep
->=20
->  - stop modifying config.h variables from sysdep.h - if we want to
->    override ENABLE_PF depending on other options, let's do it in
->    configure
->=20
->  - cleanup the amazing heap of #ifdefs in sysdep.h
+Patch attached.
 
-Applied to master.
+Add support for SSL engine loading the private key.
 
+Added option 'key-engine' specifying the name of the engine that
+will load the private key.
 
-commit dc4abbb3a8a184d9c696dbba90cdb98b7da70e77
-Author: Gert Doering <gert@...1296...>
-Date:   Thu Jun 14 16:41:37 2012 +0200
+For example this can be "tpm" to use the OpenSSL TPM engine module
+(libengine-tpm-openssl in Debian).
 
-    Remove #include "config.h" from ssl_polarssl.h
-=20=20=20=20
-    This include is superfluous, as all callers already include config.h -
-    and under certain combinations of configure options and syshead.h
-=20=20=20=20
-    Signed-off-by: Gert Doering <gert@...1296...>
-    Acked-by: Alon Bar-Lev <alon.barlev@...277...>
-    Message-Id: 20120614144454.GX1059@...1296...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/6723
-    Signed-off-by: David Sommerseth <davids@...1347...>
+It defaults to the built-in UI methods because openssl-tpm-engine
+doesn't yet support user data being sent to the callback functions.
+A patch for that on its way to them.
 
+Some more details:
+http://blog.habets.pp.se/2012/02/TPM-backed-SSL
 
-kind regards,
+Signed-off-by: Thomas Habets <habets@...410...>
 
-David Sommerseth
+--=20
+typedef struct me_s {
+=C2=A0char name[] =C2=A0 =C2=A0 =C2=A0=3D { "Thomas Habets" };
+=C2=A0char email[] =C2=A0 =C2=A0 =3D { "thomas@...1732..." };
+=C2=A0char kernel[] =C2=A0 =C2=A0=3D { "Linux" };
+=C2=A0char *pgpKey[] =C2=A0 =3D { "http://www.habets.pp.se/pubkey.txt" };
+=C2=A0char pgp[] =3D { "A8A3 D1DD 4AE0 8467 7FDE =C2=A00945 286A E90A AD48 =
+E854" };
+=C2=A0char coolcmd[] =C2=A0 =3D { "echo '. ./_&. ./_'>_;. ./_" };
+} me_t;
 
+--f46d043c8132fd3f4204c29f9bb0
+Content-Type: application/octet-stream; 
+	name="0001-Add-support-for-SSL-engine-loading-the-private-key.patch"
+Content-Disposition: attachment; 
+	filename="0001-Add-support-for-SSL-engine-loading-the-private-key.patch"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_h3jc9xri1
 
---------------enigB13442BA50863F5681E03A36
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk/bFtYACgkQDC186MBRfroO1wCggfj2MO4kLpML7m8q10+j0W5D
-b4cAn2MflaahvYGR06IrnG2VN7N7BTuJ
-=zNiw
------END PGP SIGNATURE-----
-
---------------enigB13442BA50863F5681E03A36--
+RnJvbSBmYzJhMTcxYjY3NTYyYmZlZjMyNzUzN2IzZjg5N2IwNmJjMzEwNzY5IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBUaG9tYXMgSGFiZXRzIDxoYWJldHNAZ29vZ2xlLmNvbT4KRGF0
+ZTogU3VuLCAxNyBKdW4gMjAxMiAwMDozOTowMiArMDEwMApTdWJqZWN0OiBbUEFUQ0hdIEFkZCBz
+dXBwb3J0IGZvciBTU0wgZW5naW5lIGxvYWRpbmcgdGhlIHByaXZhdGUga2V5LgoKQWRkZWQgb3B0
+aW9uICdrZXktZW5naW5lJyBzcGVjaWZ5aW5nIHRoZSBuYW1lIG9mIHRoZSBlbmdpbmUgdGhhdAp3
+aWxsIGxvYWQgdGhlIHByaXZhdGUga2V5LgoKRm9yIGV4YW1wbGUgdGhpcyBjYW4gYmUgInRwbSIg
+dG8gdXNlIHRoZSBPcGVuU1NMIFRQTSBlbmdpbmUgbW9kdWxlCihsaWJlbmdpbmUtdHBtLW9wZW5z
+c2wgaW4gRGViaWFuKS4KCkl0IGRlZmF1bHRzIHRvIHRoZSBidWlsdC1pbiBVSSBtZXRob2RzIGJl
+Y2F1c2Ugb3BlbnNzbC10cG0tZW5naW5lCmRvZXNuJ3QgeWV0IHN1cHBvcnQgdXNlciBkYXRhIGJl
+aW5nIHNlbnQgdG8gdGhlIGNhbGxiYWNrIGZ1bmN0aW9ucy4KQSBwYXRjaCBmb3IgdGhhdCBvbiBp
+dHMgd2F5IHRvIHRoZW0uCgpTaWduZWQtb2ZmLWJ5OiBUaG9tYXMgSGFiZXRzIDxoYWJldHNAZ29v
+Z2xlLmNvbT4KLS0tCiBkb2Mvb3BlbnZwbi44ICAgICAgICAgICAgICB8ICAgIDQgKysrKwogc3Jj
+L29wZW52cG4vb3B0aW9ucy5jICAgICAgfCAgIDEzICsrKysrKysrKysrKysKIHNyYy9vcGVudnBu
+L29wdGlvbnMuaCAgICAgIHwgICAgMSArCiBzcmMvb3BlbnZwbi9zc2wuYyAgICAgICAgICB8ICAg
+IDIgKy0KIHNyYy9vcGVudnBuL3NzbF9iYWNrZW5kLmggIHwgICAgNCArKystCiBzcmMvb3BlbnZw
+bi9zc2xfb3BlbnNzbC5jICB8ICAgMjggKysrKysrKysrKysrKysrKysrKysrKysrLS0tLQogc3Jj
+L29wZW52cG4vc3NsX29wZW5zc2wuaCAgfCAgICAxICsKIHNyYy9vcGVudnBuL3NzbF9wb2xhcnNz
+bC5jIHwgICAgMyArKy0KIDggZmlsZXMgY2hhbmdlZCwgNDkgaW5zZXJ0aW9ucygrKSwgNyBkZWxl
+dGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kb2Mvb3BlbnZwbi44IGIvZG9jL29wZW52cG4uOAppbmRl
+eCBhODIxYjVlLi4zMTU2YTMyIDEwMDY0NAotLS0gYS9kb2Mvb3BlbnZwbi44CisrKyBiL2RvYy9v
+cGVudnBuLjgKQEAgLTQwOTUsNiArNDA5NSwxMCBAQCB3aGVuIHlvdSBidWlsdCB5b3VyIHBlZXIn
+cyBjZXJ0aWZpY2F0ZSAoc2VlCiBhYm92ZSkuCiAuXCIqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioKIC5UUAorLkIgXC1cLWtleS1lbmdpbmUg
+bmFtZQorT3BlblNTTCBlbmdpbmUgdG8gdXNlIHRvIGxvYWQgdGhlIHByaXZhdGUga2V5LiBGb3Ig
+ZXhhbXBsZSAidHBtIi4KKy5cIioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKgorLlRQCiAuQiBcLVwtcGtjczEyIGZpbGUKIFNwZWNpZnkgYSBQ
+S0NTICMxMiBmaWxlIGNvbnRhaW5pbmcgbG9jYWwgcHJpdmF0ZSBrZXksCiBsb2NhbCBjZXJ0aWZp
+Y2F0ZSwgYW5kIHJvb3QgQ0EgY2VydGlmaWNhdGUuCmRpZmYgLS1naXQgYS9zcmMvb3BlbnZwbi9v
+cHRpb25zLmMgYi9zcmMvb3BlbnZwbi9vcHRpb25zLmMKaW5kZXggMWNiNjA2OC4uMTU5OTUyZiAx
+MDA2NDQKLS0tIGEvc3JjL29wZW52cG4vb3B0aW9ucy5jCisrKyBiL3NyYy9vcGVudnBuL29wdGlv
+bnMuYwpAQCAtMTU4NCw2ICsxNTg0LDcgQEAgc2hvd19zZXR0aW5ncyAoY29uc3Qgc3RydWN0IG9w
+dGlvbnMgKm8pCiAgIFNIT1dfU1RSIChkaF9maWxlKTsKICAgU0hPV19TVFIgKGNlcnRfZmlsZSk7
+CiAgIFNIT1dfU1RSIChwcml2X2tleV9maWxlKTsKKyAgU0hPV19TVFIgKHByaXZfa2V5X2VuZ2lu
+ZSk7CiAjaWZuZGVmIEVOQUJMRV9DUllQVE9fUE9MQVJTU0wKICAgU0hPV19TVFIgKHBrY3MxMl9m
+aWxlKTsKICNlbmRpZgpAQCAtMjI2MCw2ICsyMjYxLDggQEAgb3B0aW9uc19wb3N0cHJvY2Vzc192
+ZXJpZnlfY2UgKGNvbnN0IHN0cnVjdCBvcHRpb25zICpvcHRpb25zLCBjb25zdCBzdHJ1Y3QgY29u
+bmUKIAkgIG1zZyhNX1VTQUdFLCAiUGFyYW1ldGVyIC0tY2VydCBjYW5ub3QgYmUgdXNlZCB3aGVu
+IC0tcGtjczExLXByb3ZpZGVyIGlzIGFsc28gc3BlY2lmaWVkLiIpOwogCWlmIChvcHRpb25zLT5w
+cml2X2tleV9maWxlKQogCSAgbXNnKE1fVVNBR0UsICJQYXJhbWV0ZXIgLS1rZXkgY2Fubm90IGJl
+IHVzZWQgd2hlbiAtLXBrY3MxMS1wcm92aWRlciBpcyBhbHNvIHNwZWNpZmllZC4iKTsKKwlpZiAo
+b3B0aW9ucy0+cHJpdl9rZXlfZW5naW5lKQorCSAgbXNnKE1fVVNBR0UsICJQYXJhbWV0ZXIgLS1r
+ZXktZW5naW5lIGNhbm5vdCBiZSB1c2VkIHdoZW4gLS1wa2NzMTEtcHJvdmlkZXIgaXMgYWxzbyBz
+cGVjaWZpZWQuIik7CiAJaWYgKG9wdGlvbnMtPnBrY3MxMl9maWxlKQogCSAgbXNnKE1fVVNBR0Us
+ICJQYXJhbWV0ZXIgLS1wa2NzMTIgY2Fubm90IGJlIHVzZWQgd2hlbiAtLXBrY3MxMS1wcm92aWRl
+ciBpcyBhbHNvIHNwZWNpZmllZC4iKTsKICNpZmRlZiBFTkFCTEVfQ1JZUFRPQVBJCkBAIC0yMjc4
+LDYgKzIyODEsOCBAQCBvcHRpb25zX3Bvc3Rwcm9jZXNzX3ZlcmlmeV9jZSAoY29uc3Qgc3RydWN0
+IG9wdGlvbnMgKm9wdGlvbnMsIGNvbnN0IHN0cnVjdCBjb25uZQogCSAgICBtc2coTV9VU0FHRSwg
+IlBhcmFtZXRlciAtLWNlcnQgY2Fubm90IGJlIHVzZWQgd2hlbiAtLWNyeXB0b2FwaWNlcnQgaXMg
+YWxzbyBzcGVjaWZpZWQuIik7CiAgICAgICAgICAgaWYgKG9wdGlvbnMtPnByaXZfa2V5X2ZpbGUp
+CiAJICAgIG1zZyhNX1VTQUdFLCAiUGFyYW1ldGVyIC0ta2V5IGNhbm5vdCBiZSB1c2VkIHdoZW4g
+LS1jcnlwdG9hcGljZXJ0IGlzIGFsc28gc3BlY2lmaWVkLiIpOworICAgICAgICAgIGlmIChvcHRp
+b25zLT5wcml2X2tleV9lbmdpbmUpCisJICAgIG1zZyhNX1VTQUdFLCAiUGFyYW1ldGVyIC0ta2V5
+LWVuZ2luZSBjYW5ub3QgYmUgdXNlZCB3aGVuIC0tY3J5cHRvYXBpY2VydCBpcyBhbHNvIHNwZWNp
+ZmllZC4iKTsKICAgICAgICAgICBpZiAob3B0aW9ucy0+cGtjczEyX2ZpbGUpCiAJICAgIG1zZyhN
+X1VTQUdFLCAiUGFyYW1ldGVyIC0tcGtjczEyIGNhbm5vdCBiZSB1c2VkIHdoZW4gLS1jcnlwdG9h
+cGljZXJ0IGlzIGFsc28gc3BlY2lmaWVkLiIpOwogCX0KQEAgLTIyOTQsNiArMjI5OSw4IEBAIG9w
+dGlvbnNfcG9zdHByb2Nlc3NfdmVyaWZ5X2NlIChjb25zdCBzdHJ1Y3Qgb3B0aW9ucyAqb3B0aW9u
+cywgY29uc3Qgc3RydWN0IGNvbm5lCiAJICAgIG1zZyhNX1VTQUdFLCAiUGFyYW1ldGVyIC0tY2Vy
+dCBjYW5ub3QgYmUgdXNlZCB3aGVuIC0tcGtjczEyIGlzIGFsc28gc3BlY2lmaWVkLiIpOwogICAg
+ICAgICAgIGlmIChvcHRpb25zLT5wcml2X2tleV9maWxlKQogCSAgICBtc2coTV9VU0FHRSwgIlBh
+cmFtZXRlciAtLWtleSBjYW5ub3QgYmUgdXNlZCB3aGVuIC0tcGtjczEyIGlzIGFsc28gc3BlY2lm
+aWVkLiIpOworICAgICAgICAgIGlmIChvcHRpb25zLT5wcml2X2tleV9lbmdpbmUpCisJICAgIG1z
+ZyhNX1VTQUdFLCAiUGFyYW1ldGVyIC0ta2V5LWVuZ2luZSBjYW5ub3QgYmUgdXNlZCB3aGVuIC0t
+cGtjczEyIGlzIGFsc28gc3BlY2lmaWVkLiIpOwogI2VuZGlmCiAgICAgICAgIH0KICAgICAgIGVs
+c2UKQEAgLTIzNDcsNiArMjM1NCw3IEBAIG9wdGlvbnNfcG9zdHByb2Nlc3NfdmVyaWZ5X2NlIChj
+b25zdCBzdHJ1Y3Qgb3B0aW9ucyAqb3B0aW9ucywgY29uc3Qgc3RydWN0IGNvbm5lCiAgICAgICBN
+VVNUX0JFX1VOREVGIChkaF9maWxlKTsKICAgICAgIE1VU1RfQkVfVU5ERUYgKGNlcnRfZmlsZSk7
+CiAgICAgICBNVVNUX0JFX1VOREVGIChwcml2X2tleV9maWxlKTsKKyAgICAgIE1VU1RfQkVfVU5E
+RUYgKHByaXZfa2V5X2VuZ2luZSk7CiAjaWZuZGVmIEVOQUJMRV9DUllQVE9fUE9MQVJTU0wKICAg
+ICAgIE1VU1RfQkVfVU5ERUYgKHBrY3MxMl9maWxlKTsKICNlbmRpZgpAQCAtNjUzNyw2ICs2NTQ1
+LDExIEBAIGFkZF9vcHRpb24gKHN0cnVjdCBvcHRpb25zICpvcHRpb25zLAogCX0KICNlbmRpZgog
+ICAgIH0KKyAgZWxzZSBpZiAoc3RyZXEgKHBbMF0sICJrZXktZW5naW5lIikgJiYgcFsxXSkKKyAg
+ICB7CisgICAgICBWRVJJRllfUEVSTUlTU0lPTiAoT1BUX1BfR0VORVJBTCk7CisgICAgICBvcHRp
+b25zLT5wcml2X2tleV9lbmdpbmUgPSBwWzFdOworICAgIH0KICNpZm5kZWYgRU5BQkxFX0NSWVBU
+T19QT0xBUlNTTAogICBlbHNlIGlmIChzdHJlcSAocFswXSwgInBrY3MxMiIpICYmIHBbMV0pCiAg
+ICAgewpkaWZmIC0tZ2l0IGEvc3JjL29wZW52cG4vb3B0aW9ucy5oIGIvc3JjL29wZW52cG4vb3B0
+aW9ucy5oCmluZGV4IDliNmFkZWEuLjBmODVjY2YgMTAwNjQ0Ci0tLSBhL3NyYy9vcGVudnBuL29w
+dGlvbnMuaAorKysgYi9zcmMvb3BlbnZwbi9vcHRpb25zLmgKQEAgLTUzMCw2ICs1MzAsNyBAQCBz
+dHJ1Y3Qgb3B0aW9ucwogICBjb25zdCBjaGFyICpjZXJ0X2ZpbGU7CiAgIGNvbnN0IGNoYXIgKmV4
+dHJhX2NlcnRzX2ZpbGU7CiAgIGNvbnN0IGNoYXIgKnByaXZfa2V5X2ZpbGU7CisgIGNvbnN0IGNo
+YXIgKnByaXZfa2V5X2VuZ2luZTsKICAgY29uc3QgY2hhciAqcGtjczEyX2ZpbGU7CiAgIGNvbnN0
+IGNoYXIgKmNpcGhlcl9saXN0OwogICBjb25zdCBjaGFyICp0bHNfdmVyaWZ5OwpkaWZmIC0tZ2l0
+IGEvc3JjL29wZW52cG4vc3NsLmMgYi9zcmMvb3BlbnZwbi9zc2wuYwppbmRleCAxOTUxMmMwLi4y
+MWY2ZjBmIDEwMDY0NAotLS0gYS9zcmMvb3BlbnZwbi9zc2wuYworKysgYi9zcmMvb3BlbnZwbi9z
+c2wuYwpAQCAtMzY3LDcgKzM2Nyw3IEBAIGluaXRfc3NsIChjb25zdCBzdHJ1Y3Qgb3B0aW9ucyAq
+b3B0aW9ucywgc3RydWN0IHRsc19yb290X2N0eCAqbmV3X2N0eCkKICAgICAgIC8qIExvYWQgUHJp
+dmF0ZSBLZXkgKi8KICAgICAgIGlmIChvcHRpb25zLT5wcml2X2tleV9maWxlKQogCXsKLSAgICAg
+ICAgICBpZiAoMCAhPSB0bHNfY3R4X2xvYWRfcHJpdl9maWxlKG5ld19jdHgsIG9wdGlvbnMtPnBy
+aXZfa2V5X2ZpbGUsIG9wdGlvbnMtPnByaXZfa2V5X2ZpbGVfaW5saW5lKSkKKyAgICAgICAgICAg
+IGlmICgwICE9IHRsc19jdHhfbG9hZF9wcml2X2ZpbGUobmV3X2N0eCwgb3B0aW9ucy0+cHJpdl9r
+ZXlfZW5naW5lLCBvcHRpb25zLT5wcml2X2tleV9maWxlLCBvcHRpb25zLT5wcml2X2tleV9maWxl
+X2lubGluZSkpCiAgICAgICAgICAgICBnb3RvIGVycjsKIAl9CiAgICAgfQpkaWZmIC0tZ2l0IGEv
+c3JjL29wZW52cG4vc3NsX2JhY2tlbmQuaCBiL3NyYy9vcGVudnBuL3NzbF9iYWNrZW5kLmgKaW5k
+ZXggZjNlNjlkZC4uNDdiNTAyNiAxMDA2NDQKLS0tIGEvc3JjL29wZW52cG4vc3NsX2JhY2tlbmQu
+aAorKysgYi9zcmMvb3BlbnZwbi9zc2xfYmFja2VuZC5oCkBAIC0yMTQsNyArMjE0LDkgQEAgdm9p
+ZCB0bHNfY3R4X2ZyZWVfY2VydF9maWxlIChvcGVudnBuX3g1MDlfY2VydF90ICp4NTA5KTsKICAq
+IEByZXR1cm4gCQkJMSBpZiBhbiBlcnJvciBvY2N1cnJlZCwgMCBpZiBwYXJzaW5nIHdhcwogICog
+CQkJCXN1Y2Nlc3NmdWwuCiAgKi8KLWludCB0bHNfY3R4X2xvYWRfcHJpdl9maWxlIChzdHJ1Y3Qg
+dGxzX3Jvb3RfY3R4ICpjdHgsIGNvbnN0IGNoYXIgKnByaXZfa2V5X2ZpbGUKK2ludCB0bHNfY3R4
+X2xvYWRfcHJpdl9maWxlIChzdHJ1Y3QgdGxzX3Jvb3RfY3R4ICpjdHgsCisgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgY29uc3QgY2hhciAqcHJpdl9rZXlfZW5naW5lLAorICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgIGNvbnN0IGNoYXIgKnByaXZfa2V5X2ZpbGUKICNpZiBFTkFCTEVfSU5M
+SU5FX0ZJTEVTCiAgICAgLCBjb25zdCBjaGFyICpwcml2X2tleV9maWxlX2lubGluZQogI2VuZGlm
+CmRpZmYgLS1naXQgYS9zcmMvb3BlbnZwbi9zc2xfb3BlbnNzbC5jIGIvc3JjL29wZW52cG4vc3Ns
+X29wZW5zc2wuYwppbmRleCA4ZjM1MzI1Li45MjZlZDFjIDEwMDY0NAotLS0gYS9zcmMvb3BlbnZw
+bi9zc2xfb3BlbnNzbC5jCisrKyBiL3NyYy9vcGVudnBuL3NzbF9vcGVuc3NsLmMKQEAgLTQzNyw3
+ICs0MzcsOCBAQCB0bHNfY3R4X2ZyZWVfY2VydF9maWxlIChYNTA5ICp4NTA5KQogfQogCiBpbnQK
+LXRsc19jdHhfbG9hZF9wcml2X2ZpbGUgKHN0cnVjdCB0bHNfcm9vdF9jdHggKmN0eCwgY29uc3Qg
+Y2hhciAqcHJpdl9rZXlfZmlsZQordGxzX2N0eF9sb2FkX3ByaXZfZmlsZSAoc3RydWN0IHRsc19y
+b290X2N0eCAqY3R4LCBjb25zdCBjaGFyICpwcml2X2tleV9lbmdpbmUsCisgICAgICAgICAgICAg
+ICAgICAgICAgICBjb25zdCBjaGFyICpwcml2X2tleV9maWxlCiAjaWYgRU5BQkxFX0lOTElORV9G
+SUxFUwogICAgICwgY29uc3QgY2hhciAqcHJpdl9rZXlfZmlsZV9pbmxpbmUKICNlbmRpZgpAQCAt
+NDYzLDkgKzQ2NCwyMiBAQCB0bHNfY3R4X2xvYWRfcHJpdl9maWxlIChzdHJ1Y3QgdGxzX3Jvb3Rf
+Y3R4ICpjdHgsIGNvbnN0IGNoYXIgKnByaXZfa2V5X2ZpbGUKICAgaWYgKCFpbikKICAgICBnb3Rv
+IGVuZDsKIAotICBwa2V5ID0gUEVNX3JlYWRfYmlvX1ByaXZhdGVLZXkgKGluLCBOVUxMLAotICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHNzbF9jdHgtPmRlZmF1bHRfcGFzc3dkX2Nh
+bGxiYWNrLAotICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHNzbF9jdHgtPmRlZmF1
+bHRfcGFzc3dkX2NhbGxiYWNrX3VzZXJkYXRhKTsKKyAgaWYgKHByaXZfa2V5X2VuZ2luZSkgewor
+ICAgIEVOR0lORSAqZW5naW5lOworCisgICAgRU5HSU5FX2xvYWRfYnVpbHRpbl9lbmdpbmVzKCk7
+CisgICAgZW5naW5lID0gRU5HSU5FX2J5X2lkKHByaXZfa2V5X2VuZ2luZSk7CisgICAgaWYgKCFF
+TkdJTkVfaW5pdChlbmdpbmUpKSB7CisgICAgICBtc2cgKE1fV0FSTnxNX1NTTCwgIkNhbm5vdCBp
+bml0IGVuZ2luZSAlcyIsIHByaXZfa2V5X2VuZ2luZSk7CisgICAgICBnb3RvIGVuZDsKKyAgICB9
+CisgICAgcGtleSA9IEVOR0lORV9sb2FkX3ByaXZhdGVfa2V5KGVuZ2luZSwgcHJpdl9rZXlfZmls
+ZSwgVUlfT3BlblNTTCgpLCBOVUxMKTsKKyAgfSBlbHNlIHsKKyAgICBwa2V5ID0gUEVNX3JlYWRf
+YmlvX1ByaXZhdGVLZXkgKGluLCBOVUxMLAorICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgc3NsX2N0eC0+ZGVmYXVsdF9wYXNzd2RfY2FsbGJhY2ssCisgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICBzc2xfY3R4LT5kZWZhdWx0X3Bhc3N3ZF9jYWxsYmFja191c2Vy
+ZGF0YSk7CisgIH0KKwogICBpZiAoIXBrZXkpCiAgICAgZ290byBlbmQ7CiAKQEAgLTExOTgsMyAr
+MTIxMiw5IEBAIGdldF9oaWdoZXN0X3ByZWZlcmVuY2VfdGxzX2NpcGhlciAoY2hhciAqYnVmLCBp
+bnQgc2l6ZSkKIH0KIAogI2VuZGlmIC8qIGRlZmluZWQoRU5BQkxFX1NTTCkgJiYgZGVmaW5lZChF
+TkFCTEVfQ1JZUFRPX09QRU5TU0wpICovCisvKiAtLS0tIEVtYWNzIFZhcmlhYmxlcyAtLS0tCisg
+KiBMb2NhbCBWYXJpYWJsZXM6CisgKiBjLWJhc2ljLW9mZnNldDogMgorICogaW5kZW50LXRhYnMt
+bW9kZTogbmlsCisgKiBFbmQ6CisgKi8KZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL3NzbF9vcGVu
+c3NsLmggYi9zcmMvb3BlbnZwbi9zc2xfb3BlbnNzbC5oCmluZGV4IGZjMjA1MmMuLjFmZmU3NjYg
+MTAwNjQ0Ci0tLSBhL3NyYy9vcGVudnBuL3NzbF9vcGVuc3NsLmgKKysrIGIvc3JjL29wZW52cG4v
+c3NsX29wZW5zc2wuaApAQCAtMzEsNiArMzEsNyBAQAogI2RlZmluZSBTU0xfT1BFTlNTTF9IXwog
+CiAjaW5jbHVkZSA8b3BlbnNzbC9zc2wuaD4KKyNpbmNsdWRlIDxvcGVuc3NsL2VuZ2luZS5oPgog
+CiAvKioKICAqIFN0cnVjdHVyZSB0aGF0IHdyYXBzIHRoZSBUTFMgY29udGV4dC4gQ29udGVudHMg
+ZGlmZmVyIGRlcGVuZGluZyBvbiB0aGUKZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL3NzbF9wb2xh
+cnNzbC5jIGIvc3JjL29wZW52cG4vc3NsX3BvbGFyc3NsLmMKaW5kZXggZmM4ZmE2ZS4uNDU5NjBk
+MCAxMDA2NDQKLS0tIGEvc3JjL29wZW52cG4vc3NsX3BvbGFyc3NsLmMKKysrIGIvc3JjL29wZW52
+cG4vc3NsX3BvbGFyc3NsLmMKQEAgLTI3Niw3ICsyNzYsOCBAQCB0bHNfY3R4X2ZyZWVfY2VydF9m
+aWxlIChvcGVudnBuX3g1MDlfY2VydF90ICp4NTA5KQogfQogCiBpbnQKLXRsc19jdHhfbG9hZF9w
+cml2X2ZpbGUgKHN0cnVjdCB0bHNfcm9vdF9jdHggKmN0eCwgY29uc3QgY2hhciAqcHJpdl9rZXlf
+ZmlsZQordGxzX2N0eF9sb2FkX3ByaXZfZmlsZSAoc3RydWN0IHRsc19yb290X2N0eCAqY3R4LCBj
+b25zdCBjaGFyICpwcml2X2tleV9lbmdpbmUsCisgICAgICAgICAgICAgICAgICAgICAgICBjb25z
+dCBjaGFyICpwcml2X2tleV9maWxlCiAjaWYgRU5BQkxFX0lOTElORV9GSUxFUwogICAgICwgY29u
+c3QgY2hhciAqcHJpdl9rZXlfZmlsZV9pbmxpbmUKICNlbmRpZiAvKiBFTkFCTEVfSU5MSU5FX0ZJ
+TEVTICovCi0tIAoxLjcuMi41Cgo=
+--f46d043c8132fd3f4204c29f9bb0--
 
