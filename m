@@ -1,7 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 18 Jun 2012 20:39:03 +0200
-Message-Id: <1340044749-10694-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 0/6] misc cleanup patches
+Date: Mon, 18 Jun 2012 20:39:04 +0200
+Message-Id: <1340044749-10694-2-git-send-email-arne@...1227...>
+In-Reply-To: <1340044749-10694-1-git-send-email-arne@...1227...>
+References: <1340044749-10694-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH 1/6] Only use tmpdir if tmp_dir is really
+	used.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,41 +17,72 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-A few clean up patches that I have local. Some of these might be useful in a 2.3 release.
+This fixes starting openvpn compiled as client only version of systems that have no /tmp (Android). --tmp-dir could only be set if P2MP_SERVER has been enabled too.
 
-Arne Schwabe (6):
-  Only use tmpdir if tmp_dir is really used.
-  Completely remove ancient IANA port warning.
-  Remove ENABLE_INLINE_FILES conditionals, this code is always enabled
-    and removing the #ifdef make the code a little bit clearer
-  Remove ENABLE_CONNECTIONS ifdefs, connections were always on for a
-    long time.     Not that ENABLE_MAMAGEMENT_REMOTE was only depending
-    on ENABLE_CONNECTIONS and is removed as well
-  Fix most of the clang warnings, mostly unused variables and
-    comparisons which were always true
-  Fix clang warnings for conversion from unsigned<->signed
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/options.c |    7 +++++--
+ src/openvpn/options.h |    4 +++-
+ 2 files changed, 8 insertions(+), 3 deletions(-)
 
- src/openvpn/common.h             |    2 -
- src/openvpn/crypto.c             |    8 -----
- src/openvpn/httpdigest.c         |   44 ++++++++++++++--------------
- src/openvpn/init.c               |   22 --------------
- src/openvpn/manage.c             |    8 -----
- src/openvpn/manage.h             |    6 ----
- src/openvpn/misc.c               |    6 ----
- src/openvpn/mroute.c             |   28 +++++++----------
- src/openvpn/multi.c              |    7 +----
- src/openvpn/ntlm.c               |    8 ++--
- src/openvpn/options.c            |   60 +++----------------------------------
- src/openvpn/options.h            |   30 ++-----------------
- src/openvpn/route.c              |    1 -
- src/openvpn/ssl.c                |    4 --
- src/openvpn/ssl_backend.h        |   36 ++++++----------------
- src/openvpn/ssl_openssl.c        |   40 ++++---------------------
- src/openvpn/ssl_polarssl.c       |   34 ++++-----------------
- src/openvpn/ssl_verify_openssl.c |    2 +-
- src/openvpn/syshead.h            |   24 +--------------
- 19 files changed, 72 insertions(+), 298 deletions(-)
-
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 1cb6068..5d6ff85 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -858,6 +858,8 @@ init_options (struct options *o, const bool init_gc)
+   o->pkcs11_pin_cache_period = -1;
+ #endif			/* ENABLE_PKCS11 */
+ 
++/* tmp is only used in P2MP server context */    
++#if P2MP_SERVER
+   /* Set default --tmp-dir */
+ #ifdef WIN32
+   /* On Windows, find temp dir via enviroment variables */
+@@ -869,6 +871,7 @@ init_options (struct options *o, const bool init_gc)
+           o->tmp_dir = "/tmp";
+   }
+ #endif /* WIN32 */
++#endif /* P2MP_SERVER */
+ }
+ 
+ void
+@@ -2766,8 +2769,6 @@ options_postprocess_filechecks (struct options *options)
+                              R_OK|X_OK, "--chroot directory");
+   errs |= check_file_access (CHKACC_DIRPATH|CHKACC_FILEXSTWR, options->writepid,
+                              R_OK|W_OK, "--writepid");
+-  errs |= check_file_access (CHKACC_FILE, options->tmp_dir,
+-                             R_OK|W_OK|X_OK, "Temporary directory (--tmp-dir)");
+ 
+   /* ** Log related ** */
+   errs |= check_file_access (CHKACC_DIRPATH|CHKACC_FILEXSTWR, options->status_file,
+@@ -2781,6 +2782,8 @@ options_postprocess_filechecks (struct options *options)
+ #if P2MP_SERVER
+   errs |= check_file_access (CHKACC_FILE, options->client_config_dir,
+                              R_OK|X_OK, "--client-config-dir");
++  errs |= check_file_access (CHKACC_FILE, options->tmp_dir,
++                             R_OK|W_OK|X_OK, "Temporary directory (--tmp-dir)");
+ 
+   /* ** Script hooks that accept an optionally quoted and/or escaped executable path, ** */
+   /* ** optionally followed by arguments ** */
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 9b6adea..ee0c69d 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -399,11 +399,13 @@ struct options
+   struct plugin_option_list *plugin_list;
+ #endif
+ 
+-  const char *tmp_dir;
++
+ 
+ #if P2MP
+ 
+ #if P2MP_SERVER
++  /* the tmp dir is for now only used in the P2P server context */
++  const char *tmp_dir;
+   bool server_defined;
+   in_addr_t server_network;
+   in_addr_t server_netmask;
 -- 
 1.7.7.5 (Apple Git-26)
 
