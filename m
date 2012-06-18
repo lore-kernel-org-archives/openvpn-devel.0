@@ -1,10 +1,7 @@
-Message-ID: <4FDF71C5.7090103@...1227...>
-Date: Mon, 18 Jun 2012 20:21:57 +0200
 From: Arne Schwabe <arne@...1227...>
-MIME-Version: 1.0
-References: <1336851105-24172-1-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1336851105-24172-1-git-send-email-alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [V2.4 0/4] tun cleanups
+Date: Mon, 18 Jun 2012 20:39:03 +0200
+Message-Id: <1340044749-10694-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH 0/6] misc cleanup patches
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,40 +10,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Am 12.05.12 21:31, schrieb Alon Bar-Lev:
-> Platform independent interface for tun provider.
->
-> Split the long tun.c into platform specific files using
-> tun_engine interface.
->
-> Functionality is the same.
->
-> Maintenance will be much easier! new options, like stacking
-> several interfaces and delegate partial control to plugin.
->
-I have looked at your patchset. It going in the right direction I think.
+A few clean up patches that I have local. Some of these might be useful in a 2.3 release.
 
-For "my platform" I would like to have/implement a persisent tun which
-works as follows:
+Arne Schwabe (6):
+  Only use tmpdir if tmp_dir is really used.
+  Completely remove ancient IANA port warning.
+  Remove ENABLE_INLINE_FILES conditionals, this code is always enabled
+    and removing the #ifdef make the code a little bit clearer
+  Remove ENABLE_CONNECTIONS ifdefs, connections were always on for a
+    long time.     Not that ENABLE_MAMAGEMENT_REMOTE was only depending
+    on ENABLE_CONNECTIONS and is removed as well
+  Fix most of the clang warnings, mostly unused variables and
+    comparisons which were always true
+  Fix clang warnings for conversion from unsigned<->signed
 
-- proivde tun configuration including routes and ifconfig
-- open tun with the information
-- keep tun open
-- on reconect: compare new configuration with old configuration.
-  - if nothing has changed keep the old tun
-  - otherwise first open the new tun then close the old tun
+ src/openvpn/common.h             |    2 -
+ src/openvpn/crypto.c             |    8 -----
+ src/openvpn/httpdigest.c         |   44 ++++++++++++++--------------
+ src/openvpn/init.c               |   22 --------------
+ src/openvpn/manage.c             |    8 -----
+ src/openvpn/manage.h             |    6 ----
+ src/openvpn/misc.c               |    6 ----
+ src/openvpn/mroute.c             |   28 +++++++----------
+ src/openvpn/multi.c              |    7 +----
+ src/openvpn/ntlm.c               |    8 ++--
+ src/openvpn/options.c            |   60 +++----------------------------------
+ src/openvpn/options.h            |   30 ++-----------------
+ src/openvpn/route.c              |    1 -
+ src/openvpn/ssl.c                |    4 --
+ src/openvpn/ssl_backend.h        |   36 ++++++----------------
+ src/openvpn/ssl_openssl.c        |   40 ++++---------------------
+ src/openvpn/ssl_polarssl.c       |   34 ++++-----------------
+ src/openvpn/ssl_verify_openssl.c |    2 +-
+ src/openvpn/syshead.h            |   24 +--------------
+ 19 files changed, 72 insertions(+), 298 deletions(-)
 
-If we redesign the tun interface I would like to support this as well.
-Having this interface would also make implementing platform specific
-redirect-gateway and so easier. Also the redirect variant used by
-Android (binding a socket to an interface) could be implemented as a
-alternative.
-
-Arne
+-- 
+1.7.7.5 (Apple Git-26)
 
 
