@@ -1,15 +1,15 @@
-Date: Tue, 19 Jun 2012 13:00:42 +0200
+Date: Tue, 19 Jun 2012 13:02:02 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20120619110042.GV1059@...1296...>
+Message-ID: <20120619110202.GW1059@...1296...>
 References: <1340044749-10694-1-git-send-email-arne@...1227...>
-	<1340044749-10694-2-git-send-email-arne@...1227...>
+	<1340044749-10694-3-git-send-email-arne@...1227...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="yUw0eFUXHKnFujKq"
+	protocol="application/pgp-signature"; boundary="p8BcnzLwh3ipgLRM"
 Content-Disposition: inline
-In-Reply-To: <1340044749-10694-2-git-send-email-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 1/6] Only use tmpdir if tmp_dir is
-	really used.
+In-Reply-To: <1340044749-10694-3-git-send-email-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 2/6] Completely remove ancient IANA port
+	warning.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,19 +21,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---yUw0eFUXHKnFujKq
+--p8BcnzLwh3ipgLRM
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Mon, Jun 18, 2012 at 08:39:04PM +0200, Arne Schwabe wrote:
-> This fixes starting openvpn compiled as client only version of systems th=
-at have no /tmp (Android). --tmp-dir could only be set if P2MP_SERVER has b=
-een enabled too.
+On Mon, Jun 18, 2012 at 08:39:05PM +0200, Arne Schwabe wrote:
+> @@ -2462,12 +2462,6 @@ do_option_warnings (struct context *c)
+>  {
+>    const struct options *o =3D &c->options;
+>=20=20
+> -#if 1 /* JYFIXME -- port warning */
+> -  if (!o->ce.port_option_used && (o->ce.local_port =3D=3D OPENVPN_PORT &=
+& o->ce.remote_port =3D=3D OPENVPN_PORT))
+> -    msg (M_WARN, "IMPORTANT: OpenVPN's default port number is now %d, ba=
+sed on an official port number assignment by IANA.  OpenVPN 2.0-beta16 and =
+earlier used 5000 as the default port.",
+> -	 OPENVPN_PORT);
+> -#endif
+> -
 
-ACK - as previously discussed on the list and IRC.
+ACK.  As discussed previously.  This is a "legacy warning", and whoever=20
+needs to see the warning should have upgraded from OpenVPN 1.x loooong ago.
 
 gert
 --=20
@@ -43,19 +54,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---yUw0eFUXHKnFujKq
+--p8BcnzLwh3ipgLRM
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.12 (NetBSD)
 
-iQCVAwUBT+Bb2akuBuNlUUl1AQI9XQQAjB0j0BQwXIK35CuogtL59GfpYCyBc+Co
-xOUx+8y5SweKiIZGyklxq1ZDlgyrhxS4GzdYNQwfxEbFjQtRnt4Vlc5JUj2hNUPs
-Uhne4hoBa+Aho9Iw1sXMEivR/YFB/IJA0bh3+Q++cHz/kZnQMCtngJ65oCa+QhXt
-baH+ujG40Hc=
-=vewf
+iQCVAwUBT+BcKqkuBuNlUUl1AQI/awP+MtvfIVWxjw2hYyygJbUGyWrPJFC9dJ16
+T1hZcChIIqPTm/JppqLjVS2CBqAcQO2PTqTsI0nquzSm3+bUMfjRATePLTo3ztRs
+NvrDcTIUNuRfO8Mb4spjGQYhbLFJZvlD8TjUb00h+fcz4lPNoeyc9eqvgFGDWY8L
+4t5kv8/XGco=
+=egSd
 -----END PGP SIGNATURE-----
 
---yUw0eFUXHKnFujKq--
+--p8BcnzLwh3ipgLRM--
 
