@@ -1,8 +1,8 @@
+Message-ID: <4FE1B7B7.7020204@...515...>
+Date: Wed, 20 Jun 2012 14:44:55 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-From: Igor Lopez Orbe <igorlor@...277...>
-Date: Tue, 19 Jun 2012 16:29:25 +0200
-Message-ID: <CAExtMO-9CcQu5=iJ5OB8xTRroFiVTmMh-a8PBcN=GF1prhOVpQ@...278...>
-Subject: [Openvpn-devel] key exchange using a different physical channel
+Subject: [Openvpn-devel] Topics for tomorrow's meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,21 +11,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hello everyone!
+Hi,
 
-I would like to know if is there any "simple" way to do the key
-exchange using our own method (which will use different physical
-channel) in order to use the TLS control channel.
-I have taken a look to the code of OpenVPN and the possible option i
-found is to create key_method_3_write() and key_method_3_read() where
-those functions will use my own way to get/set keys.
-Could be a possible way or am i completely wrong about how to do that?
+We're having an IRC meeting tomorrow, starting at 18:00 UTC on
+#openvpn-devel@...1422... Current topic list is here:
 
-thanks in advance,
+<https://community.openvpn.net/openvpn/wiki/Topics-2012-06-21>
 
-Igor
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
+
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting. Whenever possible, we'll also respond to existing,
+related email threads.
+
+NOTE: It's required to use a registered Freenode IRC nickname to join
+#openvpn-devel - look here for details:
+
+<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
