@@ -1,15 +1,11 @@
-Message-ID: <4FE4501C.1020206@...1114...>
-Date: Fri, 22 Jun 2012 12:59:40 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <4FE4A29E.8070000@...1737...>
+Date: Fri, 22 Jun 2012 17:51:42 +0100
+From: Ed W <lists@...1737...>
 MIME-Version: 1.0
-References: <1340044749-10694-1-git-send-email-arne@...1227...>
-	<1340044749-10694-5-git-send-email-arne@...1227...>
-	<4FE445E2.4070509@...1114...>
-In-Reply-To: <4FE445E2.4070509@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH 4/6] Remove ENABLE_CONNECTIONS ifdefs,
- connections were always on for a long time. Not that
- ENABLE_MAMAGEMENT_REMOTE was only depending on ENABLE_CONNECTIONS and is
- removed as well
+References: <CALb=60Z=zh1dWx5B1oum9D7GBgGhEXi0v1S1fFCD8DhtAyw6WA@...278...>
+	<4FE447A5.4010604@...515...>
+In-Reply-To: <4FE447A5.4010604@...515...>
+Subject: Re: [Openvpn-devel] [PATCH] OCC ping
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,81 +14,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+On 22/06/2012 11:23, Samuli Sepp=E4nen wrote:
+> First, is the primary purpose of the patch to save power on the mobile
+> clients? If so, wouldn't it be simpler to just have the client
+> disconnect when it notices that the connection is not being used and
+> reconnect dynamically when there's usage?
 
-On 22/06/12 12:16, David Sommerseth wrote:
-> On 18/06/12 20:39, Arne Schwabe wrote:
->> 
->> Signed-off-by: Arne Schwabe <arne@...1227...> --- 
->> src/openvpn/init.c    |   12 ------------ src/openvpn/manage.c  |
->> 8 -------- src/openvpn/manage.h  |    6 ------ 
->> src/openvpn/options.c |   24 ------------------------ 
->> src/openvpn/options.h |   19 ------------------- 
->> src/openvpn/syshead.h |   16 +--------------- 6 files changed, 1
->> insertions(+), 84 deletions(-)
->> 
-> 
-> Applied to master.
+That appears to stop you sending stuff from the server to the client and=20
+also breaks long running connections?
 
-The ACK for this patch can be found here:
-<http://mid.gmane.org/4FE44882.3090706@...515...>
+eg client connects to IMAP server, issues IDLE and waits for the mail=20
+server to tell it that some new message has arrived in some folder.  If=20
+the connection isn't there then you can't hear a "new mail" response.=20=20
+Equally if there is no new mail for 30 mins then you want to keep the=20
+radio idle for as much time as possible
 
 
-kind regards,
+Just for reference turning on the radio in a mobile device is a=20
+massively power hungry step.  You can go from hours of battery life to=20
+days of battery life if you can move from rapid wake ups (60s or less),=20
+to less rapid wakeups (5-30 mins)
 
-David Sommerseth
+However, note to implementors.  Most NAT devices close down UDP mappings=20
+in 90s or less.  Most TCP NAT mappings are kept open for much longer -=20
+don't have the numbers in front of me, but I will guess at 10-30 mins=20
+being a lower bound for most setups (many firewalls being massively=20
+longer than that, eg 60min+).  Therefore with a UDP VPN you will likely=20
+need 60sec (worst case 90secs) keep alive packets to keep NAT pin holes=20
+open.  Keeping these packets tiny (\r\n) and not responding=20
+unnecessarily is helpful... (halves the bandwidth)
+
+Cheers
+
+Ed W
 
 
-> commit f8488d16400888b5c5f599cc2eb6e383bf9dd589 Author: Arne
-> Schwabe <arne@...1227...> Date:   Mon Jun 18 20:39:07 2012 +0200
-> 
-> Remove ENABLE_CONNECTIONS ifdefs
-> 
-> Connections were always on for a long time. Note that
-> ENABLE_MAMAGEMENT_REMOTE was only depending on ENABLE_CONNECTIONS
-> and is removed as well
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...> Acked-by: James
-> Yonan <james@...515...> Message-Id:
-> 1340044749-10694-5-git-send-email-arne@...1227... URL:
-> http://article.gmane.org/gmane.network.openvpn.devel/6744 
-> Signed-off-by: David Sommerseth <davids@...1347...>
-> 
-> 
-> kind regards,
-> 
-> David Sommerseth
-> 
-> 
-> 
-> 
-> ------------------------------------------------------------------------------
->
-> 
-Live Security Virtual Conference
-> Exclusive live event will cover all the ways today's security and 
-> threat landscape has changed and how IT managers can respond.
-> Discussions will include endpoint security, mobile security and the
-> latest in malware threats.
-> http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/
-> 
-> 
-> 
-> _______________________________________________ Openvpn-devel
-> mailing list Openvpn-devel@lists.sourceforge.net 
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk/kUBwACgkQDC186MBRfrrjUACfeAtQVy83K07YdOPrfDVLdJMi
-9A0AoJMSQcQ4Q4/VdQZcr9KsLOFltpFs
-=GrWY
------END PGP SIGNATURE-----
 
