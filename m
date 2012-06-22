@@ -1,8 +1,15 @@
-Message-ID: <4FE1B7B7.7020204@...515...>
-Date: Wed, 20 Jun 2012 14:44:55 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <4FE445DF.4030500@...1114...>
+Date: Fri, 22 Jun 2012 12:15:59 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Topics for tomorrow's meeting
+References: <1340044749-10694-1-git-send-email-arne@...1227...>
+	<1340044749-10694-3-git-send-email-arne@...1227...>
+In-Reply-To: <1340044749-10694-3-git-send-email-arne@...1227...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig03C016F1EC6D30BAE0E85D87"
+Subject: Re: [Openvpn-devel] [PATCH 2/6] Completely remove ancient IANA port
+ warning.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,34 +18,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig03C016F1EC6D30BAE0E85D87
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+On 18/06/12 20:39, Arne Schwabe wrote:
+>=20
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> ---
+>  src/openvpn/init.c    |    6 ------
+>  src/openvpn/options.c |    3 ---
+>  src/openvpn/options.h |    1 -
+>  3 files changed, 0 insertions(+), 10 deletions(-)
 
-We're having an IRC meeting tomorrow, starting at 18:00 UTC on
-#openvpn-devel@...1422... Current topic list is here:
+Applied to master.
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2012-06-21>
+commit 53c48f41b19331594205f2dd2215d46054eac210
+Author: Arne Schwabe <arne@...1227...>
+Date:   Mon Jun 18 20:39:05 2012 +0200
 
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
+    Completely remove ancient IANA port warning.
+=20=20=20=20
+    Signed-off-by: Arne Schwabe <arne@...1227...>
+    Acked-by: Gert Doering <gert@...1296...>
+    Message-Id: 1340044749-10694-3-git-send-email-arne@...1227...
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/6742
+    Signed-off-by: David Sommerseth <davids@...1347...>
 
-In case you can't attend the meeting, please feel free to make comments
-on the topics by responding to this email or to the summary email sent
-after the meeting. Whenever possible, we'll also respond to existing,
-related email threads.
 
-NOTE: It's required to use a registered Freenode IRC nickname to join
-#openvpn-devel - look here for details:
+kind regards,
 
-<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
+David Sommerseth
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
 
-irc freenode net: mattock
+--------------enig03C016F1EC6D30BAE0E85D87
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk/kRd8ACgkQDC186MBRfrqbywCghNSAfI+r2nGF5TjtlQqNrQ0p
+x+cAoI/vSdFep2LF70HBmz7awEXsxpL3
+=BOx1
+-----END PGP SIGNATURE-----
+
+--------------enig03C016F1EC6D30BAE0E85D87--
 
