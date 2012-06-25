@@ -1,11 +1,14 @@
-Message-ID: <4FE5C2FD.3070604@...1114...>
-Date: Sat, 23 Jun 2012 15:22:05 +0200
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <CALb=60Z=zh1dWx5B1oum9D7GBgGhEXi0v1S1fFCD8DhtAyw6WA@...278...>
-	<4FE447A5.4010604@...515...> <4FE4A29E.8070000@...1737...>
-In-Reply-To: <4FE4A29E.8070000@...1737...>
-Subject: Re: [Openvpn-devel] [PATCH] OCC ping
+Date: Mon, 25 Jun 2012 14:54:00 +0300
+From: Adrien Bustany <adrien@...1716...>
+In-Reply-To: <4FE447BF.1040004@...515...>
+References: <1336462203-20226-1-git-send-email-adrien@...1716...>
+	<1336462203-20226-2-git-send-email-adrien@...1716...>
+	<4FE447BF.1040004@...515...>
+Message-ID: <dce8517881cd57596b704ba7bd9489fc@...1717...>
+Subject: Re: [Openvpn-devel]
+ =?utf-8?q?=5BPATCH=5D_management=3A_Don=27t_requi?=
+ =?utf-8?q?re_DAF=5FINITIAL=5FAUTH_to_send_ADDRESS/DISCONNECT_messages?=
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,48 +17,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-To: Ed W <lists@...1737...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: Adrien Bustany <adrien.bustany@...1719...>, openvpn-devel@lists.sourceforge.net
 
-On 06/22/2012 06:51 PM, Ed W wrote:
-> On 22/06/2012 11:23, Samuli Sepp=E4nen wrote:
->> First, is the primary purpose of the patch to save power on the mobile
->> clients? If so, wouldn't it be simpler to just have the client
->> disconnect when it notices that the connection is not being used and
->> reconnect dynamically when there's usage?
+Le 2012-06-22 13:23, Samuli Sepp=C3=A4nen a =C3=A9crit=C2=A0:
+>> From: Adrien Bustany <adrien.bustany@...1719...>
+>>
+>> DAF_INITIAL_AUTH will only be set if a password was needed for=20
+>> client
+>> authentication. This means that for password-less certificate
+>> authentication, no DISCONNECT/ADDRESS messages would be sent.
+>> ---
+>>  src/openvpn/manage.c |    4 ++--
+>>  1 files changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+>> index 1dddd41..4148f7c 100644
+>> --- a/src/openvpn/manage.c
+>> +++ b/src/openvpn/manage.c
+>> @@ -2474,7 +2474,7 @@ management_notify_client_close (struct=20
+>> management *management,
+>>  				struct man_def_auth_context *mdac,
+>>  				const struct env_set *es)
+>>  {
+>> -  if ((mdac->flags & DAF_INITIAL_AUTH) && !(mdac->flags &=20
+>> DAF_CONNECTION_CLOSED))
+>> +  if (!(mdac->flags & DAF_CONNECTION_CLOSED))
+>>      {
+>>        msg (M_CLIENT, ">CLIENT:DISCONNECT,%lu", mdac->cid);
+>>        man_output_env (es, true,=20
+>> management->connection.env_filter_level, "CLIENT");
+>> @@ -2489,7 +2489,7 @@ management_learn_addr (struct management=20
+>> *management,
+>>  		       const bool primary)
+>>  {
+>>    struct gc_arena gc =3D gc_new ();
+>> -  if ((mdac->flags & DAF_INITIAL_AUTH) && !(mdac->flags &=20
+>> DAF_CONNECTION_CLOSED))
+>> +  if (!(mdac->flags & DAF_CONNECTION_CLOSED))
+>>      {
+>>        msg (M_CLIENT, ">CLIENT:ADDRESS,%lu,%s,%d",
+>>  	   mdac->cid,
+> Hi Adrien,
 >
-> That appears to stop you sending stuff from the server to the client and
-> also breaks long running connections?
+> We discussed this patch in our IRC meeting yesterday, and couple of
+> questions popped up... First, what is the benefit of this patch? Is=20
+> it
+> just to see if the clients connect even if they're not using password
+> authentication? Second, what's the impact on existing management
+> interface clients, i.e. can this patch break compatibility?
 >
-> eg client connects to IMAP server, issues IDLE and waits for the mail
-> server to tell it that some new message has arrived in some folder.  If
-> the connection isn't there then you can't hear a "new mail" response.
-> Equally if there is no new mail for 30 mins then you want to keep the
-> radio idle for as much time as possible
->
->
-> Just for reference turning on the radio in a mobile device is a
-> massively power hungry step.  You can go from hours of battery life to
-> days of battery life if you can move from rapid wake ups (60s or less),
-> to less rapid wakeups (5-30 mins)
->
-> However, note to implementors.  Most NAT devices close down UDP mappings
-> in 90s or less.  Most TCP NAT mappings are kept open for much longer -
-> don't have the numbers in front of me, but I will guess at 10-30 mins
-> being a lower bound for most setups (many firewalls being massively
-> longer than that, eg 60min+).  Therefore with a UDP VPN you will likely
-> need 60sec (worst case 90secs) keep alive packets to keep NAT pin holes
-> open.  Keeping these packets tiny (\r\n) and not responding
-> unnecessarily is helpful... (halves the bandwidth)
+> Best regards,
 
-But how does the OCC ping approach improve the situation over the currently=
-=20
-implemented --ping feature?
+Hi Samuli
 
+thanks for reviewing the patch. What this patch does is as you said=20
+enable a program monitoring the management interface of an openvpn=20
+daemon to get connection events for clients authenticating with a=20
+password-less TLS certificate. We found it useful, since in our case=20
+that's what clients use and we still wanted to monitor who was connected=20
+and with what IP.
+I can't vouch at a 100% for backwards compatibility, mainly since I=20
+don't have a windows machine to test the existing management interface.=20
+Is there another way to test that? Any unit tests?
 
-kind regards,
+Cheers
 
-David Sommerseth
+Adrien
 
