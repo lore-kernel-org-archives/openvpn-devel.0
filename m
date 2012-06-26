@@ -1,12 +1,18 @@
-MIME-Version: 1.0
-In-Reply-To: <1340719406-12157-1-git-send-email-alon.barlev@...277...>
-References: <CAOazyz3e6j+t5BPqpUa6iTErsVzm9Nof4EtP+atx9vvBKNsobw@...278...>
-	<1340719406-12157-1-git-send-email-alon.barlev@...277...>
-Date: Tue, 26 Jun 2012 17:03:56 +0300
-Message-ID: <CAOazyz1ArCcSZGj110b9Y1KT50TqYBqMLUOC78ZORmtoNN-4EQ@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] build: plugins: set defaults using a
-	complex logic
+Date: Tue, 26 Jun 2012 16:06:29 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120626140629.GT22125@...1296...>
+References: <1340715726-14670-1-git-send-email-alon.barlev@...277...>
+	<20120626133532.GK22125@...1296...>
+	<CAOazyz1A5mo9hKXi-KXUsoAUeNp1ELtA784xgYOzGT+e7BFu=Q@...278...>
+	<20120626135004.GM22125@...1296...>
+	<CAOazyz1PEDLF6ADscuGHRJ_XeAg--nSfiZHcffsyPzkvz_HmGA@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="FLPM4o+7JoHGki3m"
+Content-Disposition: inline
+In-Reply-To: <CAOazyz1PEDLF6ADscuGHRJ_XeAg--nSfiZHcffsyPzkvz_HmGA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] build: plugins: set default to no in
+	Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,68 +21,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--FLPM4o+7JoHGki3m
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
-Cc: Alon Bar-Lev <alon.barlev@...277...>
+Content-Disposition: inline
 
-This removes the Linux from the help string.
+Hi,
 
-On Tue, Jun 26, 2012 at 5:03 PM, Alon Bar-Lev <alon.barlev@...277...> wrote:
-> pam cannot be compiled on OpenBSD and Windows.
-> down-root cannot be compiled on Windows.
->
-> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-> ---
-> =C2=A0configure.ac | =C2=A0 21 ++++++++++++++++-----
-> =C2=A01 files changed, 16 insertions(+), 5 deletions(-)
->
-> diff --git a/configure.ac b/configure.ac
-> index db19d4a..d3d974d 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -195,16 +195,27 @@ AC_ARG_ENABLE(
->
-> =C2=A0AC_ARG_ENABLE(
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0[plugin-auth-pam],
-> - =C2=A0 =C2=A0 =C2=A0 [AS_HELP_STRING([--disable-plugin-auth-pam], [disa=
-ble auth-pam plugin @<:@default=3Dyes@:>@])],
-> + =C2=A0 =C2=A0 =C2=A0 [AS_HELP_STRING([--disable-plugin-auth-pam], [disa=
-ble auth-pam plugin @<:@default=3Dplatform specific@:>@])],
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0,
-> - =C2=A0 =C2=A0 =C2=A0 [enable_plugin_auth_pam=3D"yes"]
-> + =C2=A0 =C2=A0 =C2=A0 [
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 case "$host" in
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 *-*-openbsd*) enable_plugin_auth_pam=3D"no";;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 *-mingw*) enable_plugin_auth_pam=3D"no";;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 *) enable_plugin_auth_pam=3D"yes";;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 esac
-> + =C2=A0 =C2=A0 =C2=A0 ]
-> =C2=A0)
->
-> =C2=A0AC_ARG_ENABLE(
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0[plugin-down-root],
-> - =C2=A0 =C2=A0 =C2=A0 [AS_HELP_STRING([--disable-plugin-down-root], [dis=
-able down-root plugin @<:@default=3Dyes@:>@])],
-> + =C2=A0 =C2=A0 =C2=A0 [AS_HELP_STRING([--disable-plugin-down-root], [dis=
-able down-root plugin @<:@default=3Dplatform specific@:>@])],
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0,
-> - =C2=A0 =C2=A0 =C2=A0 [enable_plugin_down_root=3D"yes"]
-> + =C2=A0 =C2=A0 =C2=A0 [
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 case "$host" in
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 *-mingw*) enable_plugin_down_root=3D"no";;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 *) enable_plugin_down_root=3D"yes";;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 esac
-> + =C2=A0 =C2=A0 =C2=A0 ]
-> =C2=A0)
->
-> =C2=A0AC_ARG_ENABLE(
-> --
-> 1.7.3.4
->
+On Tue, Jun 26, 2012 at 04:56:54PM +0300, Alon Bar-Lev wrote:
+> You are more than welcome to maintain the build system and do whatever yo=
+u like.
+
+I'm not exactly sure what I did wrong this time - I particularily did=20
+*not* want to start a fight.
+
+You offered to rewrite the build system, so please accept feedback if
+something is not working the way people envision it to work - and please
+accept if the majority of developers agree about a certain way how=20
+configure should behave, even if it's not the way you would have done it.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--FLPM4o+7JoHGki3m
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
+
+iQCVAwUBT+nB5KkuBuNlUUl1AQLwIQP/eNp6lUISmIMdceAMgJEukw7pk3Putqqc
+nGQgHEiCxXB+gBeKddhTJALQzqaa4Wmruj3bs81CQs4/HCc+gWLvnP0ZcHKdkUYo
+FLLJkOnPYPXVurvGsdFLjJ8/OWTI2edh2NQp2ilWdCs94UmpwfEZlieF0WtjMGKd
+ctA0RhlijCg=
+=BYah
+-----END PGP SIGNATURE-----
+
+--FLPM4o+7JoHGki3m--
 
