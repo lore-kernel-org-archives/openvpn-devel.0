@@ -1,11 +1,8 @@
+Message-ID: <4FE99C02.6070004@...515...>
+Date: Tue, 26 Jun 2012 14:24:50 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <1335639118-16671-1-git-send-email-alon.barlev@...277...>
-References: <1335639118-16671-1-git-send-email-alon.barlev@...277...>
-Date: Tue, 26 Jun 2012 13:21:15 +0300
-Message-ID: <CAOazyz3kUyktfQmM9DHyaAVvrdeDLj4ygD9hkHuVfy+3FS0L+g@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] build: msvc: chdir with change drive to
-	script location
+Subject: [Openvpn-devel] Tap-windows release and version numbering
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,62 +11,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net, David Sommerseth <openvpn.list@...1114...>, =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: Alon Bar-Lev <alon.barlev@...277...>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Please apply.
-https://github.com/alonbl/openvpn/commit/692c35a3cce6226dd36bbc6b9138a353d1=
-d14634
+Hi all,
 
-On Sat, Apr 28, 2012 at 9:51 PM, Alon Bar-Lev <alon.barlev@...277...> wrote:
-> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-> ---
-> =C2=A0msvc-build.bat | =C2=A0 =C2=A01 +
-> =C2=A0msvc-dev.bat =C2=A0 | =C2=A0 =C2=A02 +-
-> =C2=A0msvc-env.bat =C2=A0 | =C2=A0 =C2=A02 --
-> =C2=A03 files changed, 2 insertions(+), 3 deletions(-)
->
-> diff --git a/msvc-build.bat b/msvc-build.bat
-> index 01417d1..fd6d558 100644
-> --- a/msvc-build.bat
-> +++ b/msvc-build.bat
-> @@ -4,6 +4,7 @@ rem Copyright (C) 2008-2012 Alon Bar-Lev <alon.barlev@...493...=
-277...>
-> =C2=A0@...1738... this stupid command needed for SetEnv.cmd to operate
-> =C2=A0setlocal ENABLEDELAYEDEXPANSION
->
-> +cd /d %0\..
-> =C2=A0call msvc-env.bat
->
-> =C2=A0set PLATFORMS=3DWin32
-> diff --git a/msvc-dev.bat b/msvc-dev.bat
-> index 4dac172..dbd7be0 100644
-> --- a/msvc-dev.bat
-> +++ b/msvc-dev.bat
-> @@ -1,7 +1,7 @@
-> =C2=A0@...1657... off
->
-> =C2=A0setlocal
-> -cd %0\..
-> +cd /d %0\..
-> =C2=A0call msvc-env.bat
->
-> =C2=A0if exist "%VSHOME%\Common7\IDE\VCExpress.exe" (
-> diff --git a/msvc-env.bat b/msvc-env.bat
-> index 3c9eb5b..2dd0f00 100644
-> --- a/msvc-env.bat
-> +++ b/msvc-env.bat
-> @@ -1,7 +1,5 @@
-> =C2=A0@...1657... off
->
-> -cd %0\..
-> -
-> =C2=A0rem Put your own settings at msvc-env-local.bat
-> =C2=A0if exist msvc-env-local.bat call msvc-env-local.bat
->
-> --
-> 1.7.3.4
->
+I'm preparing a (signed) release of tap-windows[1] so that we can bundle
+it with OpenVPN 2.3-alpha2, instead of using some arbitrary tap-windows
+package built from Git sources.
+
+Anyways, I was wondering if we should bump the version number in
+tap-windows/version.m4 [2]? Would that force Windows to upgrade the
+driver instead of using an older one with the same version number (e.g.
+from openvpn-2.3-alpha1)?
+
+Any ideas?
+
+[1] <https://github.com/OpenVPN/tap-windows>
+[2] <https://github.com/OpenVPN/tap-windows/blob/master/version.m4>
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+
+
 
