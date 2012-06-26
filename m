@@ -1,18 +1,15 @@
-Date: Tue, 26 Jun 2012 16:06:29 +0200
+Date: Tue, 26 Jun 2012 16:09:15 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20120626140629.GT22125@...1296...>
-References: <1340715726-14670-1-git-send-email-alon.barlev@...277...>
-	<20120626133532.GK22125@...1296...>
-	<CAOazyz1A5mo9hKXi-KXUsoAUeNp1ELtA784xgYOzGT+e7BFu=Q@...278...>
-	<20120626135004.GM22125@...1296...>
-	<CAOazyz1PEDLF6ADscuGHRJ_XeAg--nSfiZHcffsyPzkvz_HmGA@...278...>
+Message-ID: <20120626140915.GU22125@...1296...>
+References: <CAOazyz3e6j+t5BPqpUa6iTErsVzm9Nof4EtP+atx9vvBKNsobw@...278...>
+	<1340719406-12157-1-git-send-email-alon.barlev@...277...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="FLPM4o+7JoHGki3m"
+	protocol="application/pgp-signature"; boundary="wjoFZxbW4tu+iR6v"
 Content-Disposition: inline
-In-Reply-To: <CAOazyz1PEDLF6ADscuGHRJ_XeAg--nSfiZHcffsyPzkvz_HmGA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] build: plugins: set default to no in
-	Windows
+In-Reply-To: <1340719406-12157-1-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] build: plugins: set defaults using a
+	complex logic
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,24 +21,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---FLPM4o+7JoHGki3m
+--wjoFZxbW4tu+iR6v
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Tue, Jun 26, 2012 at 04:56:54PM +0300, Alon Bar-Lev wrote:
-> You are more than welcome to maintain the build system and do whatever yo=
-u like.
+On Tue, Jun 26, 2012 at 05:03:26PM +0300, Alon Bar-Lev wrote:
+> pam cannot be compiled on OpenBSD and Windows.
+> down-root cannot be compiled on Windows.
+>=20
+> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+> ---
+>  configure.ac |   21 ++++++++++++++++-----
+>  1 files changed, 16 insertions(+), 5 deletions(-)
+>=20
+> diff --git a/configure.ac b/configure.ac
+> index db19d4a..d3d974d 100644
 
-I'm not exactly sure what I did wrong this time - I particularily did=20
-*not* want to start a fight.
+Thanks, this looks good to me.  (Yes, it's complex, but since my much=20
+simpler proposal of "if you can't find libpam, don't build the plugin"=20
+is unacceptable to you, this is how it will have to be)
 
-You offered to rewrite the build system, so please accept feedback if
-something is not working the way people envision it to work - and please
-accept if the majority of developers agree about a certain way how=20
-configure should behave, even if it's not the way you would have done it.
+ACK for OpenBSD, but Samuli, please test for Windows.
 
 gert
 --=20
@@ -51,19 +54,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---FLPM4o+7JoHGki3m
+--wjoFZxbW4tu+iR6v
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.12 (NetBSD)
 
-iQCVAwUBT+nB5KkuBuNlUUl1AQLwIQP/eNp6lUISmIMdceAMgJEukw7pk3Putqqc
-nGQgHEiCxXB+gBeKddhTJALQzqaa4Wmruj3bs81CQs4/HCc+gWLvnP0ZcHKdkUYo
-FLLJkOnPYPXVurvGsdFLjJ8/OWTI2edh2NQp2ilWdCs94UmpwfEZlieF0WtjMGKd
-ctA0RhlijCg=
-=BYah
+iQCVAwUBT+nCi6kuBuNlUUl1AQKEEAQAgAFkfxaJWj0M9Wyohm/6kDnVZi5jX2BK
+170RHOq2Y5HYpfxtvk2Q5hXLv0Qpdj7jI5G4oxAH218x7Y2iGTS9gYo4Sp/db18J
+Eif/b5wb4s3TtCv0T+PpRPtlE1nmqqgEes2Zh+W71TiudRfPL+95A3vTAMDk24f9
+Ea6NYT3itIE=
+=IVKw
 -----END PGP SIGNATURE-----
 
---FLPM4o+7JoHGki3m--
+--wjoFZxbW4tu+iR6v--
 
