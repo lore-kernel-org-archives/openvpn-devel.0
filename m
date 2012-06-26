@@ -1,14 +1,10 @@
-Date: Tue, 26 Jun 2012 16:02:52 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120626140251.GS22125@...1296...>
-References: <1340701335-8874-1-git-send-email-samuli@...515...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="DNUSDXU7R7AVVM8C"
-Content-Disposition: inline
-In-Reply-To: <1340701335-8874-1-git-send-email-samuli@...515...>
-Subject: Re: [Openvpn-devel] [PATCH] Added notes about upgrading from
-	2.3-alpha1 and earlier to INSTALL-win32.txt
+From: Alon Bar-Lev <alon.barlev@...277...>
+Date: Tue, 26 Jun 2012 17:03:26 +0300
+Message-Id: <1340719406-12157-1-git-send-email-alon.barlev@...277...>
+In-Reply-To: <CAOazyz3e6j+t5BPqpUa6iTErsVzm9Nof4EtP+atx9vvBKNsobw@...278...>
+References: <CAOazyz3e6j+t5BPqpUa6iTErsVzm9Nof4EtP+atx9vvBKNsobw@...278...>
+Subject: [Openvpn-devel] [PATCH] build: plugins: set defaults using a
+	complex logic
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,47 +13,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: samuli@...515...
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Alon Bar-Lev <alon.barlev@...277...>
 
---DNUSDXU7R7AVVM8C
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+pam cannot be compiled on OpenBSD and Windows.
+down-root cannot be compiled on Windows.
 
-Hi,
+Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+---
+ configure.ac |   21 ++++++++++++++++-----
+ 1 files changed, 16 insertions(+), 5 deletions(-)
 
-On Tue, Jun 26, 2012 at 12:02:15PM +0300, samuli@...515... wrote:
-> From: Samuli Sepp=E4nen <samuli@...515...>
->=20
-> Signed-off-by: Samuli Sepp=E4nen <samuli@...515...>
-> ---
->  INSTALL-win32.txt |   24 ++++++++++++++++++++++++
->  1 files changed, 24 insertions(+), 0 deletions(-)
+diff --git a/configure.ac b/configure.ac
+index db19d4a..d3d974d 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -195,16 +195,27 @@ AC_ARG_ENABLE(
+ 
+ AC_ARG_ENABLE(
+ 	[plugin-auth-pam],
+-	[AS_HELP_STRING([--disable-plugin-auth-pam], [disable auth-pam plugin @<:@default=yes@:>@])],
++	[AS_HELP_STRING([--disable-plugin-auth-pam], [disable auth-pam plugin @<:@default=platform specific@:>@])],
+ 	,
+-	[enable_plugin_auth_pam="yes"]
++	[
++		case "$host" in
++			*-*-openbsd*) enable_plugin_auth_pam="no";;
++			*-mingw*) enable_plugin_auth_pam="no";;
++			*) enable_plugin_auth_pam="yes";;
++		esac
++	]
+ )
+ 
+ AC_ARG_ENABLE(
+ 	[plugin-down-root],
+-	[AS_HELP_STRING([--disable-plugin-down-root], [disable down-root plugin @<:@default=yes@:>@])],
++	[AS_HELP_STRING([--disable-plugin-down-root], [disable down-root plugin @<:@default=platform specific@:>@])],
+ 	,
+-	[enable_plugin_down_root="yes"]
++	[
++		case "$host" in
++			*-mingw*) enable_plugin_down_root="no";;
++			*) enable_plugin_down_root="yes";;
++		esac
++	]
+ )
+ 
+ AC_ARG_ENABLE(
+-- 
+1.7.3.4
 
-Sounds good to me.  ACK.
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---DNUSDXU7R7AVVM8C
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (NetBSD)
-
-iQCVAwUBT+nBC6kuBuNlUUl1AQLiJgP/dmrHUiT8hvY72+byvbiPPA53i1WVta7z
-U7euORbQnoWeO0mAgzJLXKiLuvsarjsngmKAdI1je7HTM2K8WPeQrF+Y3VMKQYQy
-PfjIDVyl/UZzXruHFw5158JaB1hwLDQ7cKcLXSlH1n5KBnrn4rAxR6leVZjUXNhW
-egRaohSIsoM=
-=YqUX
------END PGP SIGNATURE-----
-
---DNUSDXU7R7AVVM8C--
 
