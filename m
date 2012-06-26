@@ -1,12 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <20120626133532.GK22125@...1296...>
-References: <1340715726-14670-1-git-send-email-alon.barlev@...277...>
-	<20120626133532.GK22125@...1296...>
-Date: Tue, 26 Jun 2012 16:41:49 +0300
-Message-ID: <CAOazyz1A5mo9hKXi-KXUsoAUeNp1ELtA784xgYOzGT+e7BFu=Q@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] build: plugins: set default to no in
-	Windows
+Date: Tue, 26 Jun 2012 16:45:55 +0300
+Message-Id: <1340718355-18542-1-git-send-email-alon.barlev@...277...>
+In-Reply-To: <CAOazyz1A5mo9hKXi-KXUsoAUeNp1ELtA784xgYOzGT+e7BFu=Q@...278...>
+References: <CAOazyz1A5mo9hKXi-KXUsoAUeNp1ELtA784xgYOzGT+e7BFu=Q@...278...>
+Subject: [Openvpn-devel] [PATCH] build: plugins: set defaults using a
+	complex logic
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,40 +13,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Alon Bar-Lev <alon.barlev@...277...>
 
-This is exactly the reason why *ALL* plugins should be disabled by default.
-We are left with only Linux enabled... and distro maintainer can take
-care of that anyway.
-But again... my opinion is not matter, right... sending a new patch.
+pam cannot be compiled on *BSD and Windows.
+down-root cannot be compiled on Windows.
 
-On Tue, Jun 26, 2012 at 4:35 PM, Gert Doering <gert@...1296...> wrote:
-> Hi,
->
-> On Tue, Jun 26, 2012 at 04:02:06PM +0300, Alon Bar-Lev wrote:
->> Both plugins cannot be compiled on Windows anyway.
->
-> Can you auto-disable plugin-auth-pam for OpenBSD as well, please?
->
-> We ran into this on the OpenBSD buildslave today - OpenBSD has no PAM
-> whatsoever, so it would be nice to not have to care.
->
-> (Leaving the ACK on the windows patch to Samuli - looks good to me, but
-> I can't test right now)
->
-> thanks.
->
-> gert
-> --
-> USENET is *not* the non-clickable part of WWW!
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 //www.muc.de/~gert/
-> Gert Doering - Munich, Germany =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 gert@...1296...
-> fax: +49-89-35655025 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0gert@...1297...
+Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+---
+ configure.ac |   20 +++++++++++++++-----
+ 1 files changed, 15 insertions(+), 5 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index db19d4a..9fb24ad 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -195,16 +195,26 @@ AC_ARG_ENABLE(
+ 
+ AC_ARG_ENABLE(
+ 	[plugin-auth-pam],
+-	[AS_HELP_STRING([--disable-plugin-auth-pam], [disable auth-pam plugin @<:@default=yes@:>@])],
++	[AS_HELP_STRING([--disable-plugin-auth-pam], [disable auth-pam plugin @<:@default=yes for Linux@:>@])],
+ 	,
+-	[enable_plugin_auth_pam="yes"]
++	[
++		case "$host" in
++			*-*-linux*) enable_plugin_auth_pam="yes";;
++			*) enable_plugin_auth_pam="no";;
++		esac
++	]
+ )
+ 
+ AC_ARG_ENABLE(
+ 	[plugin-down-root],
+-	[AS_HELP_STRING([--disable-plugin-down-root], [disable down-root plugin @<:@default=yes@:>@])],
++	[AS_HELP_STRING([--disable-plugin-down-root], [disable down-root plugin @<:@default=yes for POSIX@:>@])],
+ 	,
+-	[enable_plugin_down_root="yes"]
++	[
++		case "$host" in
++			*-mingw*) enable_plugin_down_root="no";;
++			*) enable_plugin_down_root="yes";;
++		esac
++	]
+ )
+ 
+ AC_ARG_ENABLE(
+-- 
+1.7.3.4
+
 
