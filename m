@@ -1,12 +1,14 @@
 MIME-Version: 1.0
-In-Reply-To: <1340718907-32278-1-git-send-email-alon.barlev@...277...>
-References: <20120626135028.GN22125@...1296...>
-	<1340718907-32278-1-git-send-email-alon.barlev@...277...>
-Date: Tue, 26 Jun 2012 16:56:10 +0300
-Message-ID: <CAOazyz3e6j+t5BPqpUa6iTErsVzm9Nof4EtP+atx9vvBKNsobw@...278...>
+In-Reply-To: <20120626135004.GM22125@...1296...>
+References: <1340715726-14670-1-git-send-email-alon.barlev@...277...>
+	<20120626133532.GK22125@...1296...>
+	<CAOazyz1A5mo9hKXi-KXUsoAUeNp1ELtA784xgYOzGT+e7BFu=Q@...278...>
+	<20120626135004.GM22125@...1296...>
+Date: Tue, 26 Jun 2012 16:56:54 +0300
+Message-ID: <CAOazyz1PEDLF6ADscuGHRJ_XeAg--nSfiZHcffsyPzkvz_HmGA@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] build: plugins: set defaults using a
-	complex logic
+Subject: Re: [Openvpn-devel] [PATCH] build: plugins: set default to no in
+	Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,71 +17,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
-Cc: Alon Bar-Lev <alon.barlev@...277...>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-If anyone here is opened minded - still.
-This shows that default should be "no" for all plugins.
-Distro maintainer should decide what to switch on.
-Anyway, this is my recommendation.
+On Tue, Jun 26, 2012 at 4:50 PM, Gert Doering <gert@...1296...> wrote:
+> Hi,
+>
+> On Tue, Jun 26, 2012 at 04:41:49PM +0300, Alon Bar-Lev wrote:
+>> This is exactly the reason why *ALL* plugins should be disabled by default.
+>> We are left with only Linux enabled... and distro maintainer can take
+>> care of that anyway.
+>> But again... my opinion is not matter, right... sending a new patch.
+>
+> FreeBSD, NetBSD and OpenSolaris have PAM and build just fine, it's just
+> OpenBSD that does not.
+>
+> (*My* opinion wasn't taken into account either - I proposed to auto-build
+> if possible, and if libraries are not found, just don't make a fuzz and
+> do not build the corresponding plugin, instead of erroring out - but I'm
+> not feeling strongly about this, so I'll accept what's there, and not
+> enter a lengthy discussion)
+>
 
-On Tue, Jun 26, 2012 at 4:55 PM, Alon Bar-Lev <alon.barlev@...277...> wrote:
-> pam cannot be compiled on OpenBSD and Windows.
-> down-root cannot be compiled on Windows.
->
-> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-> ---
-> =C2=A0configure.ac | =C2=A0 21 ++++++++++++++++-----
-> =C2=A01 files changed, 16 insertions(+), 5 deletions(-)
->
-> diff --git a/configure.ac b/configure.ac
-> index db19d4a..b1140f8 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -195,16 +195,27 @@ AC_ARG_ENABLE(
->
-> =C2=A0AC_ARG_ENABLE(
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0[plugin-auth-pam],
-> - =C2=A0 =C2=A0 =C2=A0 [AS_HELP_STRING([--disable-plugin-auth-pam], [disa=
-ble auth-pam plugin @<:@default=3Dyes@:>@])],
-> + =C2=A0 =C2=A0 =C2=A0 [AS_HELP_STRING([--disable-plugin-auth-pam], [disa=
-ble auth-pam plugin @<:@default=3Dyes for Linux@:>@])],
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0,
-> - =C2=A0 =C2=A0 =C2=A0 [enable_plugin_auth_pam=3D"yes"]
-> + =C2=A0 =C2=A0 =C2=A0 [
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 case "$host" in
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 *-*-openbsd*) enable_plugin_auth_pam=3D"no";;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 *-mingw*) enable_plugin_auth_pam=3D"no";;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 *) enable_plugin_auth_pam=3D"yes";;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 esac
-> + =C2=A0 =C2=A0 =C2=A0 ]
-> =C2=A0)
->
-> =C2=A0AC_ARG_ENABLE(
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0[plugin-down-root],
-> - =C2=A0 =C2=A0 =C2=A0 [AS_HELP_STRING([--disable-plugin-down-root], [dis=
-able down-root plugin @<:@default=3Dyes@:>@])],
-> + =C2=A0 =C2=A0 =C2=A0 [AS_HELP_STRING([--disable-plugin-down-root], [dis=
-able down-root plugin @<:@default=3Dyes for POSIX@:>@])],
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0,
-> - =C2=A0 =C2=A0 =C2=A0 [enable_plugin_down_root=3D"yes"]
-> + =C2=A0 =C2=A0 =C2=A0 [
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 case "$host" in
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 *-mingw*) enable_plugin_down_root=3D"no";;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 *) enable_plugin_down_root=3D"yes";;
-> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 esac
-> + =C2=A0 =C2=A0 =C2=A0 ]
-> =C2=A0)
->
-> =C2=A0AC_ARG_ENABLE(
-> --
-> 1.7.3.4
->
+You are more than welcome to maintain the build system and do whatever you like.
+
+Alon.
 
