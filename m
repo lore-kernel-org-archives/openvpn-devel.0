@@ -1,17 +1,7 @@
-Message-ID: <4FE9E7DA.7080901@...1114...>
-Date: Tue, 26 Jun 2012 18:48:26 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <1340715726-14670-1-git-send-email-alon.barlev@...277...>
-	<20120626133532.GK22125@...1296...>
-	<CAOazyz1A5mo9hKXi-KXUsoAUeNp1ELtA784xgYOzGT+e7BFu=Q@...278...>
-	<20120626135004.GM22125@...1296...>
-	<CAOazyz1PEDLF6ADscuGHRJ_XeAg--nSfiZHcffsyPzkvz_HmGA@...278...>
-	<20120626140629.GT22125@...1296...>
-	<CAOazyz39WpaLD0UjAD7rKmOksy+oTAiMNpvMqDCKfkKxs2agdg@...278...>
-In-Reply-To: <CAOazyz39WpaLD0UjAD7rKmOksy+oTAiMNpvMqDCKfkKxs2agdg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] build: plugins: set default to no in
- Windows
+From: Alon Bar-Lev <alon.barlev@...277...>
+Date: Tue, 26 Jun 2012 20:05:02 +0300
+Message-Id: <1340730302-3077-1-git-send-email-alon.barlev@...277...>
+Subject: [Openvpn-devel] [PATCH] plugin: load plugin relative to plugindir
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,67 +10,188 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Alon Bar-Lev <alon.barlev@...277...>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Currently openvpn requires/endorses specifying full path in plugin
+parameter. As build system already aware of plugin location, it is
+possible to load plugin relative to this directory, so full path is not
+required nor more secured.
 
-On 26/06/12 16:11, Alon Bar-Lev wrote:
-> On Tue, Jun 26, 2012 at 5:06 PM, Gert Doering <gert@...1296...>
-> wrote:
->> Hi,
->> 
->> On Tue, Jun 26, 2012 at 04:56:54PM +0300, Alon Bar-Lev wrote:
->>> You are more than welcome to maintain the build system and do
->>> whatever you like.
->> 
->> I'm not exactly sure what I did wrong this time - I particularily
->> did *not* want to start a fight.
->> 
->> You offered to rewrite the build system, so please accept
->> feedback if something is not working the way people envision it
->> to work - and please accept if the majority of developers agree
->> about a certain way how configure should behave, even if it's not
->> the way you would have done it.
-> 
-> Yes. You get this wrong.
+Windows is a little more complex as user may change installation
+directory at install time, so we read plugindir location from the
+registry, installer will set this value.
 
-"Whoever undertakes to set himself up as a judge of Truth and
-Knowledge is shipwrecked by the laughter of the gods."   (Albert Einstein)
+This replaces the old unused logic of the PLUGIN_LIBDIR macro.
 
-> Majority != wisdom. Maintainer = credit.
+The old unused logic of  ENABLE_PLUGIN_SEARCH is also removed as plugins
+are relative to the plugindir.
 
-"Try not to become a man of success, but rather try to become a man of
-value."  (Albert Einstein)
+Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+---
+ src/openvpn/Makefile.am |    1 +
+ src/openvpn/options.c   |    3 +
+ src/openvpn/plugin.c    |  102 +++++++++++++++++++++++++++++++----------------
+ 3 files changed, 72 insertions(+), 34 deletions(-)
 
-- ---
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index d090d67..a2af0d4 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -23,6 +23,7 @@ INCLUDES = \
+ 	-I$(top_srcdir)/src/compat
+ 
+ AM_CFLAGS = \
++	-DOPENVPN_PLUGINDIR="\"$(plugindir)\"" \
+ 	$(TAP_CFLAGS) \
+ 	$(OPTIONAL_CRYPTO_CFLAGS) \
+ 	$(OPTIONAL_LZO_CFLAGS) \
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 367c1bc..d2e8e51 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3458,6 +3458,9 @@ usage_version (void)
+   msg (M_INFO|M_NOPREFIX, "git revision: %s", CONFIGURE_GIT_REVISION);
+ #endif
+ #endif
++#ifdef OPENVPN_PLUGINDIR
++  msg (M_INFO|M_NOPREFIX, "build plugindir: %s", OPENVPN_PLUGINDIR);
++#endif
+   openvpn_exit (OPENVPN_EXIT_STATUS_USAGE); /* exit point */
+ }
+ 
+diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
+index 7ce2f5e..9cdf982 100644
+--- a/src/openvpn/plugin.c
++++ b/src/openvpn/plugin.c
+@@ -196,46 +196,83 @@ static void
+ plugin_init_item (struct plugin *p, const struct plugin_option *o)
+ {
+   struct gc_arena gc = gc_new ();
+-  bool rel = false;
+ 
+   p->so_pathname = o->so_pathname;
+   p->plugin_type_mask = plugin_supported_types ();
+ 
+ #ifndef WIN32
+-
+-  p->handle = NULL;
+-#if defined(PLUGIN_LIBDIR)
+-  if (!absolute_pathname (p->so_pathname))
+-    {
+-      char full[PATH_MAX];
+-
+-      openvpn_snprintf (full, sizeof(full), "%s/%s", PLUGIN_LIBDIR, p->so_pathname);
+-      p->handle = dlopen (full, RTLD_NOW);
+-#if defined(ENABLE_PLUGIN_SEARCH)
+-      if (!p->handle)
+-	{
+-	  rel = true;
+-	  p->handle = dlopen (p->so_pathname, RTLD_NOW);
+-	}
+-#endif
+-    }
+-  else
+-#endif
+-    {
+-      rel = !absolute_pathname (p->so_pathname);
+-      p->handle = dlopen (p->so_pathname, RTLD_NOW);
+-    }
+-  if (!p->handle)
+-    msg (M_ERR, "PLUGIN_INIT: could not load plugin shared object %s: %s", p->so_pathname, dlerror());
++  {
++    char _abs_so_pathname[PATH_MAX];
++    const char *abs_so_pathname;
++
++    if (absolute_pathname (p->so_pathname))
++      abs_so_pathname = p->so_pathname;
++    else
++      {
++      	openvpn_snprintf(_abs_so_pathname, SIZE(_abs_so_pathname), "%s%c%s", OPENVPN_PLUGINDIR, OS_SPECIFIC_DIRSEP, p->so_pathname);
++        abs_so_pathname = _abs_so_pathname;
++      }
++
++    p->handle = dlopen (abs_so_pathname, RTLD_NOW);
++    if (!p->handle)
++      msg (M_ERR, "PLUGIN_INIT: could not load plugin shared object '%s': %s", abs_so_pathname, dlerror());
+ 
+ # define PLUGIN_SYM(var, name, flags) libdl_resolve_symbol (p->handle, (void*)&p->var, name, p->so_pathname, flags)
+ 
++  }
+ #else
+-
+-  rel = !absolute_pathname (p->so_pathname);
+-  p->module = LoadLibraryW (wide_string (p->so_pathname, &gc));
+-  if (!p->module)
+-    msg (M_ERR, "PLUGIN_INIT: could not load plugin DLL: %s", p->so_pathname);
++  {
++    WCHAR _abs_so_pathname[PATH_MAX];
++    WCHAR *abs_so_pathname;
++
++    if (absolute_pathname (p->so_pathname))
++      abs_so_pathname = wide_string(p->so_pathname, &gc);
++    else
++      {
++         WCHAR _plugindir[PATH_MAX];
++         WCHAR _plugindir_expanded[PATH_MAX];
++         WCHAR *plugindir = NULL;
++         HKEY key;
++
++         if (RegOpenKeyExW(
++             HKEY_LOCAL_MACHINE,
++             L"SOFTWARE\\OpenVPN",
++             0,
++             KEY_READ,
++             &key
++           ) == ERROR_SUCCESS)
++           {
++             DWORD len = sizeof (_plugindir);
++             DWORD data_type;
++
++             if (RegQueryValueExW(
++                 key,
++                 L"plugindir",
++                 NULL,
++                 &data_type,
++                 (PBYTE)_plugindir,
++                 &len) == ERROR_SUCCESS &&
++                 data_type == REG_SZ)
++               {
++                 plugindir = _plugindir;
++               }
++           }
++
++         if (plugindir == NULL)
++           plugindir = wide_string (OPENVPN_PLUGINDIR, &gc);
++
++         if (ExpandEnvironmentStringsW(plugindir, _plugindir_expanded, SIZE(_plugindir_expanded)) != 0)
++	   plugindir = _plugindir_expanded;
++
++	 _snwprintf(_abs_so_pathname, SIZE(_abs_so_pathname), L"%s%C%s", plugindir, OS_SPECIFIC_DIRSEP, wide_string(p->so_pathname, &gc));
++	 abs_so_pathname = _abs_so_pathname;
++      }
++
++    p->module = LoadLibraryW (abs_so_pathname);
++
++    if (!p->module)
++      msg (M_ERR, "PLUGIN_INIT: could not load plugin DLL: '%S'", abs_so_pathname);
++  }
+ 
+ # define PLUGIN_SYM(var, name, flags) dll_resolve_symbol (p->module, (void*)&p->var, name, p->so_pathname, flags)
+ 
+@@ -278,9 +315,6 @@ plugin_init_item (struct plugin *p, const struct plugin_option *o)
+   else
+     p->requested_initialization_point = OPENVPN_PLUGIN_INIT_PRE_DAEMON;
+ 
+-  if (rel)
+-    msg (M_WARN, "WARNING: plugin '%s' specified by a relative pathname -- using an absolute pathname would be more secure", p->so_pathname);
+-
+   p->initialized = true;
+ 
+   gc_free (&gc);
+-- 
+1.7.3.4
 
-Seriously.  This kind of argumentation is really not going to be
-productive.  Can we please discuss *why* something is wrong instead of
-just *blaming* people for being wrong?  Then we can all learn
-something.  Throwing crap at each other will just be make things
-messier.  Having a humble attitude will always open up doors, while
-being arrogant closes them.
-
-I have higher expectations of this community than what such responses
-contains.  Most of us here is not here to receive credits.  We are
-here because we want to make things better - through co-operation!
-And to co-operate, we need to show each other respect.  Then we, as a
-group, can get wiser and the result will be better.
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk/p59UACgkQDC186MBRfroxhACfd9hJI0MXTbnX/O3+WYlry4UG
-tXIAnjXS8bREAiks8TNQ7gFyAainRwLs
-=2ieZ
------END PGP SIGNATURE-----
 
