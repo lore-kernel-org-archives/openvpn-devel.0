@@ -1,9 +1,14 @@
-From: Alon Bar-Lev <alon.barlev@...277...>
-Date: Tue, 26 Jun 2012 16:45:55 +0300
-Message-Id: <1340718355-18542-1-git-send-email-alon.barlev@...277...>
-In-Reply-To: <CAOazyz1A5mo9hKXi-KXUsoAUeNp1ELtA784xgYOzGT+e7BFu=Q@...278...>
+Date: Tue, 26 Jun 2012 15:50:28 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120626135028.GN22125@...1296...>
 References: <CAOazyz1A5mo9hKXi-KXUsoAUeNp1ELtA784xgYOzGT+e7BFu=Q@...278...>
-Subject: [Openvpn-devel] [PATCH] build: plugins: set defaults using a
+	<1340718355-18542-1-git-send-email-alon.barlev@...277...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="RhUH2Ysw6aD5utA4"
+Content-Disposition: inline
+In-Reply-To: <1340718355-18542-1-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] build: plugins: set defaults using a
 	complex logic
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,55 +18,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Alon Bar-Lev <alon.barlev@...277...>
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-pam cannot be compiled on *BSD and Windows.
-down-root cannot be compiled on Windows.
+--RhUH2Ysw6aD5utA4
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
----
- configure.ac |   20 +++++++++++++++-----
- 1 files changed, 15 insertions(+), 5 deletions(-)
+Hi,
 
-diff --git a/configure.ac b/configure.ac
-index db19d4a..9fb24ad 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -195,16 +195,26 @@ AC_ARG_ENABLE(
- 
- AC_ARG_ENABLE(
- 	[plugin-auth-pam],
--	[AS_HELP_STRING([--disable-plugin-auth-pam], [disable auth-pam plugin @<:@default=yes@:>@])],
-+	[AS_HELP_STRING([--disable-plugin-auth-pam], [disable auth-pam plugin @<:@default=yes for Linux@:>@])],
- 	,
--	[enable_plugin_auth_pam="yes"]
-+	[
-+		case "$host" in
-+			*-*-linux*) enable_plugin_auth_pam="yes";;
-+			*) enable_plugin_auth_pam="no";;
-+		esac
-+	]
- )
- 
- AC_ARG_ENABLE(
- 	[plugin-down-root],
--	[AS_HELP_STRING([--disable-plugin-down-root], [disable down-root plugin @<:@default=yes@:>@])],
-+	[AS_HELP_STRING([--disable-plugin-down-root], [disable down-root plugin @<:@default=yes for POSIX@:>@])],
- 	,
--	[enable_plugin_down_root="yes"]
-+	[
-+		case "$host" in
-+			*-mingw*) enable_plugin_down_root="no";;
-+			*) enable_plugin_down_root="yes";;
-+		esac
-+	]
- )
- 
- AC_ARG_ENABLE(
--- 
-1.7.3.4
+On Tue, Jun 26, 2012 at 04:45:55PM +0300, Alon Bar-Lev wrote:
+> pam cannot be compiled on *BSD and Windows.
 
+*Open*BSD.  Not *BSD.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--RhUH2Ysw6aD5utA4
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
+
+iQCVAwUBT+m+JKkuBuNlUUl1AQKyRQP/coPFuGUQjUwF2JnGB/KhjIQOxRuf/zf+
+jo7v2ITW2MIXDmu19qXCpJPADUUoQGL0svy5u0OCQmIuzL1L7h4clp7WYazRopvr
+RyhOhGvCiwPm1e3uedLGaWCsaSIPltYKShvWf/wWtLg1JVBrJVFHldD5NJvgQ4Pu
+QsTUiALpSsc=
+=NeRa
+-----END PGP SIGNATURE-----
+
+--RhUH2Ysw6aD5utA4--
 
