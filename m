@@ -1,14 +1,14 @@
-MIME-Version: 1.0
-In-Reply-To: <20120626135004.GM22125@...1296...>
-References: <1340715726-14670-1-git-send-email-alon.barlev@...277...>
-	<20120626133532.GK22125@...1296...>
-	<CAOazyz1A5mo9hKXi-KXUsoAUeNp1ELtA784xgYOzGT+e7BFu=Q@...278...>
-	<20120626135004.GM22125@...1296...>
-Date: Tue, 26 Jun 2012 16:56:54 +0300
-Message-ID: <CAOazyz1PEDLF6ADscuGHRJ_XeAg--nSfiZHcffsyPzkvz_HmGA@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] build: plugins: set default to no in
-	Windows
+Date: Tue, 26 Jun 2012 16:02:52 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120626140251.GS22125@...1296...>
+References: <1340701335-8874-1-git-send-email-samuli@...515...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="DNUSDXU7R7AVVM8C"
+Content-Disposition: inline
+In-Reply-To: <1340701335-8874-1-git-send-email-samuli@...515...>
+Subject: Re: [Openvpn-devel] [PATCH] Added notes about upgrading from
+	2.3-alpha1 and earlier to INSTALL-win32.txt
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,31 +17,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: samuli@...515...
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Tue, Jun 26, 2012 at 4:50 PM, Gert Doering <gert@...1296...> wrote:
-> Hi,
->
-> On Tue, Jun 26, 2012 at 04:41:49PM +0300, Alon Bar-Lev wrote:
->> This is exactly the reason why *ALL* plugins should be disabled by default.
->> We are left with only Linux enabled... and distro maintainer can take
->> care of that anyway.
->> But again... my opinion is not matter, right... sending a new patch.
->
-> FreeBSD, NetBSD and OpenSolaris have PAM and build just fine, it's just
-> OpenBSD that does not.
->
-> (*My* opinion wasn't taken into account either - I proposed to auto-build
-> if possible, and if libraries are not found, just don't make a fuzz and
-> do not build the corresponding plugin, instead of erroring out - but I'm
-> not feeling strongly about this, so I'll accept what's there, and not
-> enter a lengthy discussion)
->
+--DNUSDXU7R7AVVM8C
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-You are more than welcome to maintain the build system and do whatever you like.
+Hi,
 
-Alon.
+On Tue, Jun 26, 2012 at 12:02:15PM +0300, samuli@...515... wrote:
+> From: Samuli Sepp=E4nen <samuli@...515...>
+>=20
+> Signed-off-by: Samuli Sepp=E4nen <samuli@...515...>
+> ---
+>  INSTALL-win32.txt |   24 ++++++++++++++++++++++++
+>  1 files changed, 24 insertions(+), 0 deletions(-)
+
+Sounds good to me.  ACK.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--DNUSDXU7R7AVVM8C
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
+
+iQCVAwUBT+nBC6kuBuNlUUl1AQLiJgP/dmrHUiT8hvY72+byvbiPPA53i1WVta7z
+U7euORbQnoWeO0mAgzJLXKiLuvsarjsngmKAdI1je7HTM2K8WPeQrF+Y3VMKQYQy
+PfjIDVyl/UZzXruHFw5158JaB1hwLDQ7cKcLXSlH1n5KBnrn4rAxR6leVZjUXNhW
+egRaohSIsoM=
+=YqUX
+-----END PGP SIGNATURE-----
+
+--DNUSDXU7R7AVVM8C--
 
