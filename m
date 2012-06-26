@@ -1,12 +1,9 @@
-Message-ID: <4FE97362.709@...515...>
-Date: Tue, 26 Jun 2012 11:31:30 +0300
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+From: samuli@...515...
+Date: Tue, 26 Jun 2012 12:02:15 +0300
+Message-Id: <1340701335-8874-1-git-send-email-samuli@...515...>
 MIME-Version: 1.0
-References: <CAAhp1KBzkQyGqFPWqT5N0kKXsGvBLj8KLsZY_C9wWnuwFAQHdQ@...278...>
-	<20120626063546.GQ1059@...1296...>
-In-Reply-To: <20120626063546.GQ1059@...1296...>
-Subject: Re: [Openvpn-devel] After compiling openVPN 2.3 alpha. I get R6034
- error on execution
+Subject: [Openvpn-devel] [PATCH] Added notes about upgrading from 2.3-alpha1
+	and earlier to INSTALL-win32.txt
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,45 +12,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
+From: Samuli Sepp=C3=A4nen <samuli@...515...>
 
-> Hi,
->
-> On Tue, Jun 26, 2012 at 11:16:31AM +0530, Gauri Bhave wrote:
->> I downloaded the openvpn-2.3-alpha1.zip from openvpn.net and successfully
->> compiled it for windows using the Python build system. But when I run the
->> application I get following runtime error for openvpn.exe. R6034 An
->> application has made an attempt to load the c runtime library incorrectl=
-y.
->> Please contact application support team for more information.
-> Any specific reason you're not using Samuli's pre-built windows binary?
->
-> To answer your question: no idea whether the Python build system currently
-> works or not - it's not the preferred build system for 2.3, that is
-> "cross building with MinGW64 from linux", or building with cygwin/mingw
-> on windows.  Samuli knows more details.
->
-> gert
-Unless you have specific reason not to, I'd try the new "openvpn-build"
-buildsystem:
+Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
+---
+ INSTALL-win32.txt |   24 ++++++++++++++++++++++++
+ 1 files changed, 24 insertions(+), 0 deletions(-)
 
-<https://community.openvpn.net/openvpn/wiki/BuildingUsingGenericBuildsystem>
-
-It's possible to build using Visual Studio 2010 (Express) or later, but
-I prefer cross-compiling on *NIX. You need to fetch sources from Git
-until we get 2.3-alpha2 out later this week:
-
-<https://github.com/OpenVPN>
-
+diff --git a/INSTALL-win32.txt b/INSTALL-win32.txt
+index 5a0f3a9..4afef32 100644
+--- a/INSTALL-win32.txt
++++ b/INSTALL-win32.txt
+@@ -1,3 +1,27 @@
++UPGRADING FROM 2.3-ALPHA1 AND EARLIER
++
++OpenVPN Windows installer went through major changes in=20
++2.3-alpha2. To avoid any unexpected behavior, it is strongly=20
++suggested to upgrade as follows.
++
++First backup configuration files and certificates from your=20
++current installation; by default they're in
++
++    C:\Program Files\OpenVPN\config (32-bit Windows)
++    C:\Program Files (x86)\OpenVPN\config (64-bit Windows)
++
++After this, stop the openvpn-gui or the openvpn service=20
++wrapper, if either of them is running and uninstall OpenVPN.=20
++Finally, remove the OpenVPN install directory entirely (e.g.=20
++using Windows Explorer as administrator).
++
++Finally, install the new version of OpenVPN and copy over=20
++your configuration files and certificates, which now go to
++
++    C:\Program Files\OpenVPN\config
++
++regardless of whether you're using 32-bit or 64-bit Windows.
++
+ IMPORTANT NOTE FOR WINDOWS VISTA/7 USERS
+=20
+ Note that on Windows Vista, you will need to run the OpenVPN
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
+1.7.5.4
 
 
