@@ -1,9 +1,10 @@
-Message-ID: <4FE87245.9030207@...515...>
-Date: Mon, 25 Jun 2012 17:14:29 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 2.3-alpha2 preview Windows installers ready
-	for testing
+Date: Tue, 26 Jun 2012 11:16:31 +0530
+Message-ID: <CAAhp1KBzkQyGqFPWqT5N0kKXsGvBLj8KLsZY_C9wWnuwFAQHdQ@...278...>
+From: Gauri Bhave <gaurib123@...277...>
+Content-Type: multipart/alternative; boundary=14dae93b5b26dfcfe104c3599e76
+Subject: [Openvpn-devel] After compiling openVPN 2.3 alpha. I get R6034
+	error on execution
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,38 +13,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+
+--14dae93b5b26dfcfe104c3599e76
+Content-Type: text/plain; charset=ISO-8859-1
 
 Hi,
 
-We've reached a point where the openvpn codebase is ready for 2.3-alpha2
-release. As biggest changes are in the build/packaging parts, it'd be
-great if you could test these Windows installers and report back how
-they work for you:
+I downloaded the openvpn-2.3-alpha1.zip from openvpn.net and successfully
+compiled it for windows using the Python build system. But when I run the
+application I get following runtime error for openvpn.exe. R6034 An
+application has made an attempt to load the c runtime library incorrectly.
+Please contact application support team for more information.
 
-<http://build.openvpn.net/downloads/releases/openvpn-install-2.3_master-I00=
-0_master-i686.exe>
-<http://build.openvpn.net/downloads/releases/openvpn-install-2.3_master-I00=
-0_master-x86_64.exe>
+Can some one help me?
 
-Use the first for 32-bit and the latter on 64-bit Windows. Both
-installers and all of the included components have been signed with a
-paid-for software publisher certificate (SPC) so they should work on any
-supported version of Windows. I've personally smoketested the installers
-on Windows 7 64-bit and Windows XP 32-bit.
+Thanks
+Gauri
 
-If you're upgrading from 2.3-alpha1 or earlier, please read this first:
+--14dae93b5b26dfcfe104c3599e76
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-<https://github.com/mattock/openvpn/blob/4039ec7cd4cd0bf595289ed31df8955f37=
-4a1705/INSTALL-win32.txt>
+Hi,<br><br>I downloaded the openvpn-2.3-alpha1.zip from <a href=3D"http://o=
+penvpn.net">openvpn.net</a> and successfully compiled it for windows using =
+the Python build system. But when I run the application I get following run=
+time error for openvpn.exe. R6034 An application has made an attempt to loa=
+d the c runtime library incorrectly. Please contact application support tea=
+m for more information.<br>
+<br>Can some one help me?<br><br>Thanks<br>Gauri<br>
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
+--14dae93b5b26dfcfe104c3599e76--
 
