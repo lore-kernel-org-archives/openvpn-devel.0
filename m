@@ -1,9 +1,9 @@
 From: samuli@...515...
-Date: Tue, 26 Jun 2012 12:02:15 +0300
-Message-Id: <1340701335-8874-1-git-send-email-samuli@...515...>
+Date: Tue, 26 Jun 2012 12:33:01 +0300
+Message-Id: <1340703181-9185-1-git-send-email-samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Added notes about upgrading from 2.3-alpha1
-	and earlier to INSTALL-win32.txt
+Subject: [Openvpn-devel] [PATCH v2] Added notes about upgrading from
+	2.3-alpha1 and earlier to INSTALL-win32.txt
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,14 +20,14 @@ From: Samuli Sepp=C3=A4nen <samuli@...515...>
 
 Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
 ---
- INSTALL-win32.txt |   24 ++++++++++++++++++++++++
- 1 files changed, 24 insertions(+), 0 deletions(-)
+ INSTALL-win32.txt |   25 +++++++++++++++++++++++++
+ 1 files changed, 25 insertions(+), 0 deletions(-)
 
 diff --git a/INSTALL-win32.txt b/INSTALL-win32.txt
-index 5a0f3a9..4afef32 100644
+index 5a0f3a9..571d618 100644
 --- a/INSTALL-win32.txt
 +++ b/INSTALL-win32.txt
-@@ -1,3 +1,27 @@
+@@ -1,3 +1,28 @@
 +UPGRADING FROM 2.3-ALPHA1 AND EARLIER
 +
 +OpenVPN Windows installer went through major changes in=20
@@ -50,7 +50,8 @@ index 5a0f3a9..4afef32 100644
 +
 +    C:\Program Files\OpenVPN\config
 +
-+regardless of whether you're using 32-bit or 64-bit Windows.
++provided you did not install the 32-bit version on 64-bit=20
++Windows.
 +
  IMPORTANT NOTE FOR WINDOWS VISTA/7 USERS
 =20
