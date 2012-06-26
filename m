@@ -1,8 +1,14 @@
-Message-ID: <4FE9B68E.5080902@...515...>
-Date: Tue, 26 Jun 2012 16:18:06 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Configure options for the Windows builds
+Date: Tue, 26 Jun 2012 15:35:32 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120626133532.GK22125@...1296...>
+References: <1340715726-14670-1-git-send-email-alon.barlev@...277...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="5/uDoXvLw7AC5HRs"
+Content-Disposition: inline
+In-Reply-To: <1340715726-14670-1-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] build: plugins: set default to no in
+	Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,61 +17,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--5/uDoXvLw7AC5HRs
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
-Hi all,
+Hi,
 
-Do these configure options look ok for the 2.3-alpha2 Windows builds?
+On Tue, Jun 26, 2012 at 04:02:06PM +0300, Alon Bar-Lev wrote:
+> Both plugins cannot be compiled on Windows anyway.
 
-enable_crypto=3Dyes
-enable_debug=3Dno
-enable_def_auth=3Dyes
-enable_dlopen=3Dunknown
-enable_dlopen_self=3Dunknown
-enable_dlopen_self_static=3Dunknown
-enable_eurephia=3Dyes
-enable_fast_install=3Dneedless
-enable_fragment=3Dyes
-enable_http_proxy=3Dyes
-enable_iproute2=3Dno
-enable_libtool_lock=3Dyes
-enable_lzo=3Dyes
-enable_lzo_stub=3Dno
-enable_management=3Dyes
-enable_multi=3Dyes
-enable_multihome=3Dyes
-enable_password_save=3Dyes
-enable_pedantic=3Dno
-enable_pf=3Dyes
-enable_pkcs11=3Dyes
-enable_plugins=3Dyes
-enable_port_share=3Dyes
-enable_selinux=3Dno
-enable_server=3Dyes
-enable_shared=3Dyes
-enable_shared_with_static_runtimes=3Dyes
-enable_small=3Dno
-enable_socks=3Dyes
-enable_ssl=3Dyes
-enable_static=3Dyes
-enable_strict=3Dno
-enable_strict_options=3Dno
-enable_systemd=3Dno
-enable_win32_dll=3Dyes
-enable_x509_alt_username=3Dno
-with_crypto_library=3Dopenssl
-with_gnu_ld=3Dyes
-with_mem_check=3Dno
+Can you auto-disable plugin-auth-pam for OpenBSD as well, please?=20=20
 
-If nobody complains, I'll use these :).
+We ran into this on the OpenBSD buildslave today - OpenBSD has no PAM
+whatsoever, so it would be nice to not have to care.
 
+(Leaving the ACK on the windows patch to Samuli - looks good to me, but
+I can't test right now)
+
+thanks.
+
+gert
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-irc freenode net: mattock
+--5/uDoXvLw7AC5HRs
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
+
+iQCVAwUBT+m6pKkuBuNlUUl1AQJ7XwP+PBElXoTuRbSeBAfHkdpK1yurL9v0pjEU
+jmm6FMHyVaksq0ct+MtOyiLSL9Uku5v5kzO1joWUlMu0CMKDmXuS+zJ5IycXBatr
+q8mXnh2LZl9uEzUMd7lNditG1vToBmNLMjIWghwr/OlS1rPXOyAnWQn5ukE67OV8
+CCNCTlQCKHE=
+=7w9d
+-----END PGP SIGNATURE-----
+
+--5/uDoXvLw7AC5HRs--
 
