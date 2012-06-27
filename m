@@ -1,15 +1,14 @@
-Message-ID: <4FEB22BC.4010701@...1114...>
-Date: Wed, 27 Jun 2012 17:11:56 +0200
+Message-ID: <4FEB230A.1050605@...1114...>
+Date: Wed, 27 Jun 2012 17:13:14 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <CAOazyz3e6j+t5BPqpUa6iTErsVzm9Nof4EtP+atx9vvBKNsobw@...278...>
-	<1340719406-12157-1-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1340719406-12157-1-git-send-email-alon.barlev@...277...>
+References: <1340701335-8874-1-git-send-email-samuli@...515...>
+In-Reply-To: <1340701335-8874-1-git-send-email-samuli@...515...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigC317DE1EEE4351354B99622D"
-Subject: Re: [Openvpn-devel] [PATCH] build: plugins: set defaults using a
- complex logic
+	boundary="------------enig6678163ABCF0804F5611D4A4"
+Subject: Re: [Openvpn-devel] [PATCH] Added notes about upgrading from
+ 2.3-alpha1 and earlier to INSTALL-win32.txt
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,38 +20,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC317DE1EEE4351354B99622D
-Content-Type: text/plain; charset="ISO-8859-1"
+--------------enig6678163ABCF0804F5611D4A4
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 26/06/12 16:03, Alon Bar-Lev wrote:
-> pam cannot be compiled on OpenBSD and Windows.
-> down-root cannot be compiled on Windows.
+On 26/06/12 11:02, samuli@...515... wrote:
+> From: Samuli Sepp=C3=A4nen <samuli@...515...>
 >=20
-> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+> Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
 > ---
->  configure.ac |   21 ++++++++++++++++-----
->  1 files changed, 16 insertions(+), 5 deletions(-)
->=20
+>  INSTALL-win32.txt |   24 ++++++++++++++++++++++++
+>  1 files changed, 24 insertions(+), 0 deletions(-)
 
 Applied to master.
 
 
-commit 5a57e201223f7265af0a56859b00aOn 26/06/12 16:03, Alon Bar-Lev wrote:
-594b0d98f5b
-Author: Alon Bar-Lev <alon.barlev@...277...>
-Date:   Tue Jun 26 17:03:26 2012 +0300
+commit 0e77af9e2e3c66150fc26760bdee1172d888f911
+Author: Samuli Sepp=C3=A4nen <samuli@...515...>
+Date:   Tue Jun 26 12:33:01 2012 +0300
 
-    build: plugins: set defaults based on platform
+    Added notes about upgrading from 2.3-alpha1 and earlier to INSTALL-win3=
+2.txt
 =20=20=20=20
-    pam cannot be compiled on OpenBSD and Windows.
-    down-root cannot be compiled on Windows.
-=20=20=20=20
-    Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+    Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
     Acked-by: Gert Doering <gert@...1296...>
-    Acked-by: Samuli Sepp=E4nen <samuli@...515...>
-    Message-Id: 1340719406-12157-1-git-send-email-alon.barlev@...277...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/6795
+    Message-Id: 1340703181-9185-1-git-send-email-samuli@...515...
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/6779
     Signed-off-by: David Sommerseth <davids@...1347...>
 
 
@@ -61,7 +54,7 @@ kind regards,
 David Sommerseth
 
 
---------------enigC317DE1EEE4351354B99622D
+--------------enig6678163ABCF0804F5611D4A4
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -70,10 +63,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk/rIr8ACgkQDC186MBRfroXywCaAtIsGCLFsUNLQtfDCXX3hB6U
-YxUAn0GM82o5yxPRo2aNll57KJCrOHoa
-=Vpig
+iEYEARECAAYFAk/rIwoACgkQDC186MBRfro5jACeNZNIbA4+gqG9KRS7D21fznCs
+rtYAn3ncVoX/PfY4EMM16bQgXZfdG7tS
+=5XOh
 -----END PGP SIGNATURE-----
 
---------------enigC317DE1EEE4351354B99622D--
+--------------enig6678163ABCF0804F5611D4A4--
 
