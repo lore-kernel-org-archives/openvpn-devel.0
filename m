@@ -1,10 +1,11 @@
-Message-ID: <4FEC9C56.20708@...1227...>
-Date: Thu, 28 Jun 2012 20:03:02 +0200
-From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
+In-Reply-To: <4FEC9C56.20708@...1227...>
 References: <4FEC9804.2070805@...1227...>
 	<CAOazyz2XQwSOM5HomPcrv=H0gx_wMCXtqONgz86n=ZKaZ9F0kw@...278...>
-In-Reply-To: <CAOazyz2XQwSOM5HomPcrv=H0gx_wMCXtqONgz86n=ZKaZ9F0kw@...278...>
+	<4FEC9C56.20708@...1227...>
+Date: Thu, 28 Jun 2012 21:03:55 +0300
+Message-ID: <CAOazyz2L9B_ORQCiGwqMicWMSZLUPrqS=1m-QnrKmbMC24K8dg@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
 Subject: Re: [Openvpn-devel] [PATCH] Fix --management-external-key in
 	2.3alpha
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,18 +17,21 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Alon Bar-Lev <alon.barlev@...277...>
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Am 28.06.12 19:58, schrieb Alon Bar-Lev:
-> Hmmm.... I discussed this before in list... the whole external key
-> should be modified... the management should be able to support
-> certificate + key, and key should probably not be limited to RSA only.
-> I had plans to clean this one as well.
->
-Sure. But at the moment fixing a regression is important than adding new
-features.
+On Thu, Jun 28, 2012 at 9:03 PM, Arne Schwabe <arne@...1227...> wrote:
+> Am 28.06.12 19:58, schrieb Alon Bar-Lev:
+>> Hmmm.... I discussed this before in list... the whole external key
+>> should be modified... the management should be able to support
+>> certificate + key, and key should probably not be limited to RSA only.
+>> I had plans to clean this one as well.
+>>
+> Sure. But at the moment fixing a regression is important than adding new
+> features.
 
-Arne
+Right. I did not reject this... :)
+
+Alon
 
