@@ -1,14 +1,9 @@
-Message-ID: <4FEB230A.1050605@...1114...>
-Date: Wed, 27 Jun 2012 17:13:14 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <4FEC9804.2070805@...1227...>
+Date: Thu, 28 Jun 2012 19:44:36 +0200
+From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
-References: <1340701335-8874-1-git-send-email-samuli@...515...>
-In-Reply-To: <1340701335-8874-1-git-send-email-samuli@...515...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig6678163ABCF0804F5611D4A4"
-Subject: Re: [Openvpn-devel] [PATCH] Added notes about upgrading from
- 2.3-alpha1 and earlier to INSTALL-win32.txt
+Content-Type: multipart/mixed; boundary="------------040004070800000403010209"
+Subject: [Openvpn-devel] [PATCH] Fix --management-external-key in 2.3alpha
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,56 +12,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6678163ABCF0804F5611D4A4
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On 26/06/12 11:02, samuli@...515... wrote:
-> From: Samuli Sepp=C3=A4nen <samuli@...515...>
->=20
-> Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
-> ---
->  INSTALL-win32.txt |   24 ++++++++++++++++++++++++
->  1 files changed, 24 insertions(+), 0 deletions(-)
-
-Applied to master.
+This is a multi-part message in MIME format.
+--------------040004070800000403010209
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 
 
-commit 0e77af9e2e3c66150fc26760bdee1172d888f911
-Author: Samuli Sepp=C3=A4nen <samuli@...515...>
-Date:   Tue Jun 26 12:33:01 2012 +0300
+Just a quick patch which fixes  --management-external-key, which I need
+for a cleaner way to access Android key store.
 
-    Added notes about upgrading from 2.3-alpha1 and earlier to INSTALL-win3=
-2.txt
-=20=20=20=20
-    Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
-    Acked-by: Gert Doering <gert@...1296...>
-    Message-Id: 1340703181-9185-1-git-send-email-samuli@...515...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/6779
-    Signed-off-by: David Sommerseth <davids@...1347...>
+Arne
+
+--------------040004070800000403010209
+Content-Type: text/plain; charset=UTF-8; x-mac-type="0"; x-mac-creator="0";
+	name="0001-If-management-external-key-is-used-do-not-check-for-.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename*0="0001-If-management-external-key-is-used-do-not-check-for-.pa";
+	filename*1="tch"
+
+From 53c5018f953764221c0aa51daa8bfa74f146900f Mon Sep 17 00:00:00 2001
+From: Arne Schwabe <arne@...1227...>
+Date: Thu, 28 Jun 2012 19:41:09 +0200
+Subject: [PATCH] If --management-external-key is used do not check for
+ private key file existence
+
+Fixes error:  --key fails with EXTERNAL_PRIVATE_KEY: No such file or directory if  --management-external-key is used
+
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/options.c |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 367c1bc..a5f323d 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2709,6 +2709,9 @@ options_postprocess_filechecks (struct options *options)
+   errs |= check_file_access (CHKACC_FILE|CHKACC_INLINE, options->cert_file, R_OK, "--cert");
+   errs |= check_file_access (CHKACC_FILE|CHKACC_INLINE, options->extra_certs_file, R_OK,
+                              "--extra-certs");
++#ifdef MANAGMENT_EXTERNAL_KEY
++	if(!(options->management_flags | MF_EXTERNAL_KEY))
++#endif
+   errs |= check_file_access (CHKACC_FILE|CHKACC_INLINE, options->priv_key_file, R_OK,
+                              "--key");
+   errs |= check_file_access (CHKACC_FILE|CHKACC_INLINE, options->pkcs12_file, R_OK,
+-- 
+1.7.7.5 (Apple Git-26)
 
 
-kind regards,
-
-David Sommerseth
-
-
---------------enig6678163ABCF0804F5611D4A4
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk/rIwoACgkQDC186MBRfro5jACeNZNIbA4+gqG9KRS7D21fznCs
-rtYAn3ncVoX/PfY4EMM16bQgXZfdG7tS
-=5XOh
------END PGP SIGNATURE-----
-
---------------enig6678163ABCF0804F5611D4A4--
+--------------040004070800000403010209--
 
