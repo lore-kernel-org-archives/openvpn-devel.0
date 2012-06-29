@@ -1,15 +1,11 @@
-Message-ID: <4FED6322.6040503@...1114...>
-Date: Fri, 29 Jun 2012 10:11:14 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <4FED650F.9090404@...515...>
+Date: Fri, 29 Jun 2012 11:19:27 +0300
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <CAOazyz15xpgFxzqQFaotZSmS2=-gSmUsMMwy=SZay6bi3EEMAg@...278...>
-	<1332621070-28464-1-git-send-email-alon.barlev@...277...>
-In-Reply-To: <1332621070-28464-1-git-send-email-alon.barlev@...277...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig8AC089D2823A468E0938BF62"
-Subject: Re: [Openvpn-devel] [PATCH] cleanup: windows: convert argv (UCS-2
- to UTF-8) at earliest
+References: <1335639118-16671-1-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1335639118-16671-1-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] build: msvc: chdir with change drive to
+ script location
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,69 +14,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Alon Bar-Lev <alon.barlev@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig8AC089D2823A468E0938BF62
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+I tested building with "openvpn-build\msvc" with this patch applied, and
+it still worked. I don't see any reason not to apply this, so it's an ACK.
 
-On 24/03/12 21:31, Alon Bar-Lev wrote:
-> Discussed at [1].
->=20
-> Use wmain under windows, drop the custom parsing and shell32 linkage.
->=20
-> There is no need for gc magic as this allocation is static.
->=20
-> [1] http://permalink.gmane.org/gmane.network.openvpn.devel/5433
->=20
+The "cd /d %0\.." magic is very interesting... "cd %0\.." seems to work
+exactly the same: both switch to the directory where msvc-build.bat is
+located (i.e. openvpn build root).
+If I understood correctly, the /d switch allows changing to a directory
+on an another drive, right?
+
+Samuli
+
 > Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
 > ---
->  src/openvpn/Makefile.am     |    6 +++++-
->  src/openvpn/openvpn.c       |   37 ++++++++++++++++++++++++++++++++++++-
->  src/openvpn/openvpn.vcxproj |   10 ++++++----
->  src/openvpn/options.c       |   27 ---------------------------
->  4 files changed, 47 insertions(+), 33 deletions(-)
->  mode change 100644 =3D> 100755 src/openvpn/openvpn.vcxproj
-
-This patch has been applied to master through lazy consensus.=20=20
-
-The patch has been tested and seems to work perfectly fine, and it have
-been discussed in a developers meeting as a reasonable patch to include.=20
-Thus no reason to delay inclusion any longer.
-
-
-commit 74370aa89df9285a95084616e9c2d3c8464760b9
-Author: Alon Bar-Lev <alon.barlev@...277...>
-Date:   Sat Mar 24 22:31:10 2012 +0200
-
-    cleanup: windows: convert argv (UCS-2 to UTF-8) at earliest
-=20=20=20=20=20=20
-    Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
-    Message-Id: 1332621070-28464-1-git-send-email-alon.barlev@...277...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/6063
-    Tested-by: Samuli Sepp=E4nen <samuli@...515...>
-    Signed-off-by: David Sommerseth <davids@...1347...>
-
-
-kind regards,
-
-David Sommerseth
-
-
---------------enig8AC089D2823A468E0938BF62
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk/tYyQACgkQDC186MBRfrrAggCgpGRwWk0k3ET4IZHdMsgUwB0U
-tOAAmwY+gPPJWbgOcmo4zWtMYAFWGGAH
-=0WmF
------END PGP SIGNATURE-----
-
---------------enig8AC089D2823A468E0938BF62--
+>  msvc-build.bat |    1 +
+>  msvc-dev.bat   |    2 +-
+>  msvc-env.bat   |    2 --
+>  3 files changed, 2 insertions(+), 3 deletions(-)
+>
+> diff --git a/msvc-build.bat b/msvc-build.bat
+> index 01417d1..fd6d558 100644
+> --- a/msvc-build.bat
+> +++ b/msvc-build.bat
+> @@ -4,6 +4,7 @@ rem Copyright (C) 2008-2012 Alon Bar-Lev <alon.barlev@...277...>
+>  @rem this stupid command needed for SetEnv.cmd to operate
+>  setlocal ENABLEDELAYEDEXPANSION
+>  
+> +cd /d %0\..
+>  call msvc-env.bat
+>  
+>  set PLATFORMS=Win32
+> diff --git a/msvc-dev.bat b/msvc-dev.bat
+> index 4dac172..dbd7be0 100644
+> --- a/msvc-dev.bat
+> +++ b/msvc-dev.bat
+> @@ -1,7 +1,7 @@
+>  @echo off
+>  
+>  setlocal
+> -cd %0\..
+> +cd /d %0\..
+>  call msvc-env.bat
+>  
+>  if exist "%VSHOME%\Common7\IDE\VCExpress.exe" (
+> diff --git a/msvc-env.bat b/msvc-env.bat
+> index 3c9eb5b..2dd0f00 100644
+> --- a/msvc-env.bat
+> +++ b/msvc-env.bat
+> @@ -1,7 +1,5 @@
+>  @echo off
+>  
+> -cd %0\..
+> -
+>  rem Put your own settings at msvc-env-local.bat
+>  if exist msvc-env-local.bat call msvc-env-local.bat
+>  
 
