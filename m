@@ -1,11 +1,14 @@
-Message-ID: <4FF161E3.8090802@...1114...>
-Date: Mon, 02 Jul 2012 10:54:59 +0200
+Message-ID: <4FF169AA.4050106@...1114...>
+Date: Mon, 02 Jul 2012 11:28:10 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <4FF1546D.4090907@...1114...>
-	<CAOazyz1zbfAQ2Z=vz5+03KcN0rTpn4Ca9Rs1kdag+6=1RtoY_A@...278...>
-In-Reply-To: <CAOazyz1zbfAQ2Z=vz5+03KcN0rTpn4Ca9Rs1kdag+6=1RtoY_A@...278...>
-Subject: Re: [Openvpn-devel] Build issues on ScientificLinux 6.2
+References: <1341089443-2287-1-git-send-email-gert@...1296...>
+In-Reply-To: <1341089443-2287-1-git-send-email-gert@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig2DDDCE80C9F0641498C45837"
+Subject: Re: [Openvpn-devel] [PATCH] Repair "tap server" mode brokenness
+ caused by <stdbool.h> fallout
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,19 +17,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig2DDDCE80C9F0641498C45837
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-On 02/07/12 10:45, Alon Bar-Lev wrote:
-> Libtool version please. Thanks
+On 30/06/12 22:50, Gert Doering wrote:
+> Operator/Cast precedence wrong: casting mac[0] to (bool) first - giving
+> "1" for "any mac address that does not start with 00:" - and only then
+> bit-anding with "1" - thus always returning "true".  Which, in turn,
+> leads to "reject all incoming packets with 'bad source address'".
+>=20
+> OpenVPN bug #216.
+>=20
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>  src/openvpn/mroute.c |    2 +-
+>  1 files changed, 1 insertions(+), 1 deletions(-)
+>=20
 
-As I noticed a few minutes ago, I didn't have libtool installed.  All
-builds fine when installing libtool-2.2.6-15.5.el6.x86_64.
+Applied to master.
+
+commit 8df08de6f84d224c6a79ab6c74ba73c33a47735d
+Author: Gert Doering <gert@...1296...>
+Date:   Sat Jun 30 22:50:43 2012 +0200
+
+    Repair "tap server" mode brokenness caused by <stdbool.h> fallout
+
+    Signed-off-by: Gert Doering <gert@...1296...>
+    Acked-by: Fabian Knittel <fabian.knittel@...1547...>
+    Message-Id: 1341089443-2287-1-git-send-email-gert@...1296...
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/6817
+    Signed-off-by: David Sommerseth <dazo@...384...>
 
 
 kind regards,
@@ -34,43 +58,19 @@ kind regards,
 David Sommerseth
 
 
-
-> On 7/2/12, David Sommerseth <openvpn.list@...1114...> wrote:
-> 
-> Hi Alon & al,
-> 
-> Just tried to do a scratch build on SL6.2 from the git tree.
-> 
-> ------------------------------------------------------------- $
-> autoreconf -vi autoreconf: Entering directory `.' autoreconf:
-> configure.ac: not using Gettext autoreconf: running: aclocal -I m4 
-> autoreconf: configure.ac: tracing autoreconf: configure.ac: not
-> using Libtool autoreconf: running: /usr/bin/autoconf 
-> configure.ac:380: error: possibly undefined macro:
-> AC_LIBTOOL_WIN32_DLL If this token and others are legitimate,
-> please use m4_pattern_allow. See the Autoconf documentation. 
-> configure.ac:381: error: possibly undefined macro: AC_LIBTOOL_RC 
-> configure.ac:382: error: possibly undefined macro: AC_PROG_LIBTOOL 
-> autoreconf: /usr/bin/autoconf failed with exit status: 1 $ 
-> -------------------------------------------------------------
-> 
-> autoconf-2.63-5.1.el6.noarch automake-1.11.1-1.2.el6.noarch
-> 
-> Can we please fix this?  The workaround currently is to do 'make
-> dist' on box where autoreconf can complete.
-> 
-> 
-> kind regards,
-> 
-> David Sommerseth
->> 
+--------------enig2DDDCE80C9F0641498C45837
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk/xYeMACgkQDC186MBRfrppPgCbBpCmPw6TYof77BctR5P5E5FM
-vnAAnjMQSqZKM6goTYjqJvh/JFB/5jbC
-=p5M2
+iEYEARECAAYFAk/xaawACgkQDC186MBRfrqfNgCdFuuqtlw72Syiq8OH0ENvVAdR
+ejMAoKpjxD0cIEuCMf5jFOtssAeNlXM5
+=P8MD
 -----END PGP SIGNATURE-----
+
+--------------enig2DDDCE80C9F0641498C45837--
 
