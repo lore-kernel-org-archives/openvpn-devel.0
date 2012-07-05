@@ -1,13 +1,8 @@
-Message-ID: <4FF5ABA8.8060708@...1114...>
-Date: Thu, 05 Jul 2012 16:58:48 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <1341479835-12963-1-git-send-email-arne@...1227...>
-In-Reply-To: <1341479835-12963-1-git-send-email-arne@...1227...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigEC9EB2C1AAC58D7757AD9E9D"
-Subject: Re: [Openvpn-devel] [PATCH] Fix compiling with --disable-management
+From: Russell Morris <openvpn@...1315...>
+Date: Thu, 05 Jul 2012 17:18:13 -0500
+Message-id: <1341526693716731500@...1315...>
+MIME-version: 1.0
+Subject: [Openvpn-devel] Connection Bug / Issue
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,55 +11,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigEC9EB2C1AAC58D7757AD9E9D
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
+Content-disposition: inline
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On 05/07/12 11:17, Arne Schwabe wrote:
-> Some of the  MANAGEMENT_QUERY_REMOTE were actually needed. Put #ifdef ENA=
-BLE_MANAGMENT in their place
->=20
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  src/openvpn/init.c |    7 ++++++-
->  1 files changed, 6 insertions(+), 1 deletions(-)
+Hi,
 
-ACK.  Applied to master.
+I have an issue running OpenVPN 2.3 (occurs with both Alpha 1 and 2, but li=
+kely earlier versions I'm guessing). I can connect to a Linux server just f=
+ine, but when I try to connect to OpenVPN embedded in my router (Tomato fir=
+mware, using OpenVPN 2.2.2), the client (on Windows) crashes (and the appli=
+cation exits) on connect. Here is what happens in the log right before the =
+client aborts and crashes,
 
-commit cf93f0e0a65d66ed57f24efb7fbd96dc455b3732
-Author: Arne Schwabe <arne@...1227...>
-Date:   Thu Jul 5 11:17:15 2012 +0200
+Thu Jul 05 17:13:49 2012 MANAGEMENT: >STATE:1341526429,GET_CONFIG,,,
+Thu Jul 05 17:13:51 2012 SENT CONTROL [server]: 'PUSH_REQUEST' (status=3D1)
+Thu Jul 05 17:13:51 2012 PUSH: Received control message: 'PUSH_REPLY,route-=
+gateway dhcp,ping 15,ping-restart 60'
+Thu Jul 05 17:13:51 2012 OPTIONS IMPORT: timers and/or timeouts modified
+Thu Jul 05 17:13:51 2012 OPTIONS IMPORT: route-related options modified
+Thu Jul 05 17:13:51 2012 open_tun, tt->ipv6=3D0
+Thu Jul 05 17:13:51 2012 TAP-WIN32 device [Local Area Connection 2] opened:=
+ \\.\Global\{47E4A2F0-3A09-454C-A5A0-A5327B8D843E}.tap
+Thu Jul 05 17:13:51 2012 TAP-Windows Driver Version 9.9=20
+Thu Jul 05 17:13:51 2012 Successful ARP Flush on interface [21] {47E4A2F0-3=
+A09-454C-A5A0-A5327B8D843E}
 
-    Fix compiling with --disable-management
-=20=20=20=20=20=20=20=20
-    Signed-off-by: Arne Schwabe <arne@...1227...>
-    Acked-by: David Sommerseth <davids@...1347...>
-    Message-Id: 1341479835-12963-1-git-send-email-arne@...1227...
-    Signed-off-by: David Sommerseth <dazo@...384...>
+BTW, if I don't run the Windows GUI as Administrator, here is what happens,
 
+Thu Jul 05 17:19:19 2012 MANAGEMENT: >STATE:1341526759,GET_CONFIG,,,
+Thu Jul 05 17:19:20 2012 SENT CONTROL [server]: 'PUSH_REQUEST' (status=3D1)
+Thu Jul 05 17:19:20 2012 PUSH: Received control message: 'PUSH_REPLY,route-=
+gateway dhcp,ping 15,ping-restart 60'
+Thu Jul 05 17:19:20 2012 OPTIONS IMPORT: timers and/or timeouts modified
+Thu Jul 05 17:19:20 2012 OPTIONS IMPORT: route-related options modified
+Thu Jul 05 17:19:20 2012 open_tun, tt->ipv6=3D0
+Thu Jul 05 17:19:20 2012 TAP-WIN32 device [Local Area Connection 2] opened:=
+ \\.\Global\{47E4A2F0-3A09-454C-A5A0-A5327B8D843E}.tap
+Thu Jul 05 17:19:20 2012 TAP-Windows Driver Version 9.9=20
+Thu Jul 05 17:19:20 2012 NOTE: FlushIpNetTable failed on interface [21] {47=
+E4A2F0-3A09-454C-A5A0-A5327B8D843E} (status=3D5) : Access is denied.=20=20
 
-kind regards,
+Thoughts?
 
-David Sommerseth
+Thanks!
 
-
---------------enigEC9EB2C1AAC58D7757AD9E9D
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk/1q6oACgkQDC186MBRfrpKBgCePPpXRixtCwDTBPIe7h6N5Pc8
-n2YAn0hzKIKAk0mPmPUe3yvGe7KQ8keG
-=RdL3
------END PGP SIGNATURE-----
-
---------------enigEC9EB2C1AAC58D7757AD9E9D--
+... Russell
 
