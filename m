@@ -1,8 +1,10 @@
 MIME-Version: 1.0
-In-Reply-To: <CAEsd45RxJ4Q6kvofngZwkEUBbV3P3fNWTEMc9KksKPOdpB870Q@...278...>
+In-Reply-To: <CAEsd45Q2VTHKu8aE0adSPCNRsRTCUCUzfPqj_tWsLQe6XHk1TQ@...278...>
 References: <CAEsd45RxJ4Q6kvofngZwkEUBbV3P3fNWTEMc9KksKPOdpB870Q@...278...>
-Date: Sat, 7 Jul 2012 17:31:07 +0300
-Message-ID: <CAOazyz3AqvSu05xSDQn=0MX-4QV-mFB1SPNh8SSVL_y3=O5R+g@...278...>
+	<CAOazyz3AqvSu05xSDQn=0MX-4QV-mFB1SPNh8SSVL_y3=O5R+g@...278...>
+	<CAEsd45Q2VTHKu8aE0adSPCNRsRTCUCUzfPqj_tWsLQe6XHk1TQ@...278...>
+Date: Sat, 7 Jul 2012 17:44:20 +0300
+Message-ID: <CAOazyz29f5yG19ygoY4y0yTf2GdYTfKsW_bHTkOib2RCQqgKvQ@...278...>
 From: Alon Bar-Lev <alon.barlev@...277...>
 Subject: Re: [Openvpn-devel] OpenVPN 3.3_alpha2 build problem
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,73 +18,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 To: "Jonathan K. Bullard" <jkbullard@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-Hello,
+On Sat, Jul 7, 2012 at 5:39 PM, Jonathan K. Bullard <jkbullard@...277...> wrote:
+>> Were does the lzo libraries and includes located?
+>> If these are not located at default search path of your compiler you
+>> should probably add: CFLAGS="-I<location>" LDFLAGS="-L<location>" to
+>> configure.
+>
+>
+> Thanks. So the CFLAGS
+>
+> --with-lzo-headers=../../../$(LZO_DIR)/staging/include
+>
+> and
+>
+> --with-lzo-lib=../../../$(LZO_DIR)/staging/lib
+>
+>
+> aren't used by the new build process?
+>
 
-Were does the lzo libraries and includes located?
-If these are not located at default search path of your compiler you
-should probably add: CFLAGS="-I<location>" LDFLAGS="-L<location>" to
-configure.
+Right.
+These were none standard, specific to openvpn.
+Currently, if you want to specify flags for package you use the
+pkg-config format, in this case LZO_CFLAGS and LZO_LIBS.
+But there is no reason to do so if you have all dependencies at
+/usr/local/*, you can use the CFLAGS and LDFLAGS to modify search
+path.
 
 Alon.
-
-On Sat, Jul 7, 2012 at 5:21 PM, Jonathan K. Bullard <jkbullard@...277...> wrote:
-> I'm trying to include OpenVPN 3.3_alpha2 in Tunnelblick (OS X GUI for
-> OpenVPN), but get the following error when compiling OpenVPN on OS X:
->
->> configure: error: lzo enabled but missing
->
->
-> I am not familiar with the new OpenVPN build process, but I assume this is
-> because it is trying to build lzo itself. However, lzo has already been
-> built by the Tunnelblick build script (as have openssl and pkcs11-helper).
->
-> How can I tell the build process that I don't want it to do this? And how
-> can I do the same for openssl and pkcs11-helper?
->
-> The complete OpenVPN build log is attached.
->
-> The Tunnelblick build process makes PPC and Intel versions of lzo, openssl,
-> pkcs11-helper, and OpenVPN. Then it uses lipo to create a "Universal binary"
-> for OS X that runs on PPC or Intel processors.
->
-> Here's the script that builds OpenVPN (after building lzo, openssl, and
-> pkcs11-helper separately).
->
->> for a in ppc i386; do \
->> cd openvpn/$$openvpndir/openvpn; \
->> $(MAKE) clean; \
->> autoreconf -i -v; \
->> CC=$(CC) CFLAGS="$(CFLAGS) -arch $$a" ./configure
->> --with-lzo-headers=../../../$(LZO_DIR)/staging/include
->> --with-lzo-lib=../../../$(LZO_DIR)/staging/lib
->> --with-pkcs11-helper-headers=../../../$(PKCS11_DIR)/staging/include
->> --with-pkcs11-helper-lib=../../../$(PKCS11_DIR)/staging/lib
->> --with-ssl-headers=$(OPENSSL_DEST_DIR)/include/$$a
->> --with-ssl-lib=$(OPENSSL_DEST_DIR)/lib --disable-dependency-tracking; \
->> $(MAKE) LIBS="$(OPENSSL_TARGET_FILES) -lpkcs11-helper -llzo2 -lz"; \
->> mv openvpn openvpn_tblk_$$a; \
->> cd ../../../; \
->> done; \
->> $(MAKE) -C openvpn/$$openvpndir/openvpn/plugin/down-root; \
->> lipo openvpn/$$openvpndir/openvpn/openvpn_tblk_* -create -output
->> openvpn/$$openvpndir/openvpn/openvpn; \
->
->
-> (Note: the "cd openvpn/$$openvpndir/openvpn;" changes to the folder that
-> contains the OpenVPN source. Tunnelblick typically includes binaries of two
-> or three versions of OpenVPN, to facilitate testing.)
->
-> ------------------------------------------------------------------------------
-> Live Security Virtual Conference
-> Exclusive live event will cover all the ways today's security and
-> threat landscape has changed and how IT managers can respond. Discussions
-> will include endpoint security, mobile security and the latest in malware
-> threats. http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
 
