@@ -1,12 +1,11 @@
-Date: Fri, 13 Jul 2012 15:23:02 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120713132302.GG22125@...1296...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Dex7YdYhTh9daYX7"
-Content-Disposition: inline
-Subject: Re: [Openvpn-devel] [OpenVPN Community] #97: OpenVPN produces DCHP
-	NAK bomb on Win 7 64bit
+MIME-Version: 1.0
+In-Reply-To: <1342173317-8542-1-git-send-email-heiko.hund@...1489...>
+References: <1342173317-8542-1-git-send-email-heiko.hund@...1489...>
+Date: Fri, 13 Jul 2012 20:00:49 +0300
+Message-ID: <CAOazyz31T1pEoCGLs-Raq=MgYsuYmiPBtW+8d0VDD7k12Az+uA@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] make non-blocking connect work on
+	Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,95 +14,83 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---Dex7YdYhTh9daYX7
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hello,
 
-Hi,
+In my projects I always compare to the two values EWOULDBLOCK and
+EINPROGRESS and it works without much conditionals.
 
-forwarding something from a Trac ticket so "someone with time at his
-hands" (and understanding of the code) could look into this...
+So simply do:
+---
+  if (status == EINPROGRESS || status == EWOULDBLOCK)
+---
 
-gert
+Alon.
 
------ Forwarded message from OpenVPN Trac instance <trac@...1739...> -----
-
-#97: OpenVPN produces DCHP NAK bomb on Win 7 64bit
---------------------------------------------------+-------------------------
- Reporter:  janjust                               |        Owner:=20=20=20=
-=20=20=20=20=20=20=20=20=20=20=20=20
-     Type:  Bug / Defect                          |       Status:  closed=
-=20=20=20=20=20=20=20
- Priority:  major                                 |    Milestone:  release =
-2.2.2
-Component:  Networking                            |      Version:  2.1.4=20=
-=20=20=20=20=20=20=20
- Severity:  Not set (if unsure, select this one)  |   Resolution:  fixed=20=
-=20=20=20=20=20=20=20
- Keywords:  win7 tap-win32 dhcpnak                |=20=20
---------------------------------------------------+-------------------------
-
-Comment(by ert):
-
- Seems to be a bug in the TAP driver. It's happening after you try to
- refresh the DHCP lease 3 times (after resume from hibernation, Windows
- tries to acquire a DHCP lease too).
- I think the reason for this is a programming error in dhcp.c in function
- ProcessDHCP:
-
-
-   // Is this a bad DHCPREQUEST?
-   if (msg_type =3D=3D DHCPREQUEST && dhcp->ciaddr !=3D p_Adapter->m_dhcp_a=
-ddr)
-     ++p_Adapter->m_dhcp_bad_requests;
-
-
- should be:
-
-   if (dhcp->ciaddr && msg_type =3D=3D DHCPREQUEST && dhcp->ciaddr !=3D
- p_Adapter->m_dhcp_addr)
-     ++p_Adapter->m_dhcp_bad_requests;
-
- as the win32 DHCP client always requests with all fields set to 0, so this
- increases the error counter even though it isn't a bad request and as
- BAD_DHCPREQUEST_NAK_THRESHOLD is 3, it fails after the third renew
- attempt.
- Could someone please fix this in the TAP driver and provide a signed copy?
- We need the driver for production use...
-
- Regards.
-
---=20
-Ticket URL: <https://community.openvpn.net/openvpn/ticket/97#comment:8>
-OpenVPN Community <http://openvpn.net>
-OpenVPN is a layer 2/3 SSL VPN
-
-
------ End forwarded message -----
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---Dex7YdYhTh9daYX7
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (NetBSD)
-
-iQCVAwUBUAAhNakuBuNlUUl1AQLOZwP9EIN8quKkIndb2Jm8zB77NObe+3JqUg5O
-1EgZ9ofJYMzkCY1mzoxPOJhcF6Tj4r3j+MVmM2awvdfnAOx7e5i2Ru+SnPiyv/eV
-TmVfDWeP4ZgLz7Rt8w6dpzn8wf68u+HBCoeXkTo2ZqVc+hnMFgUdDQPkGDGaOrSN
-DII7vBEtHis=
-=OIOf
------END PGP SIGNATURE-----
-
---Dex7YdYhTh9daYX7--
+On Fri, Jul 13, 2012 at 12:55 PM, Heiko Hund <heiko.hund@...1489...> wrote:
+>
+> Instead of EINPROGRESS WinSock2 returns WSAEWOULDBLOCK if a non-blocking
+> connect(2) cannot be completed immediately.
+>
+> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+> ---
+>  configure.ac         |    2 ++
+>  src/openvpn/socket.c |    2 +-
+>  2 files changed, 3 insertions(+), 1 deletion(-)
+>
+> diff --git a/configure.ac b/configure.ac
+> index d3d974d..ba5dce1 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -617,6 +617,7 @@ m4_define(
+>         [setsockopt getsockopt getsockname poll]dnl
+>  )
+>  if test "${WIN32}" = "yes"; then
+> +       AC_DEFINE([CONNECT_IN_PROGRESS], [WSAEWOULDBLOCK], [errno for
+> incomplete non-blocking connect(2)])
+>         m4_foreach(
+>                 [F],
+>                 m4_split(SOCKET_FUNCS SOCKET_OPT_FUNCS),
+> @@ -624,6 +625,7 @@ if test "${WIN32}" = "yes"; then
+>                         AC_DEFINE([UF], [1], [Win32 builtin])
+>         )
+>  else
+> +       AC_DEFINE([CONNECT_IN_PROGRESS], [EINPROGRESS], [errno for
+> incomplete non-blocking connect(2)])
+>         AC_CHECK_FUNCS(
+>                 SOCKET_FUNCS,
+>                 ,
+> diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+> index 54ebce7..b2d6bba 100644
+> --- a/src/openvpn/socket.c
+> +++ b/src/openvpn/socket.c
+> @@ -1165,7 +1165,7 @@ openvpn_connect (socket_descriptor_t sd,
+>    status = connect (sd, &remote->addr.sa,
+> af_addr_size(remote->addr.sa.sa_family));
+>    if (status)
+>      status = openvpn_errno_socket ();
+> -  if (status == EINPROGRESS)
+> +  if (status == CONNECT_IN_PROGRESS)
+>      {
+>        while (true)
+>         {
+> --
+> 1.7.9.5
+>
+>
+>
+> ------------------------------------------------------------------------------
+> Live Security Virtual Conference
+> Exclusive live event will cover all the ways today's security and
+> threat landscape has changed and how IT managers can respond. Discussions
+> will include endpoint security, mobile security and the latest in malware
+> threats. http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
