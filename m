@@ -1,8 +1,9 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Fri, 13 Jul 2012 11:55:17 +0200
-Message-ID: <1342173317-8542-1-git-send-email-heiko.hund@...1489...>
+Message-ID: <500012F6.9030108@...515...>
+Date: Fri, 13 Jul 2012 15:22:14 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] make non-blocking connect work on Windows
+Subject: [Openvpn-devel] Openvpn-2.3_alpha2 and easy-rsa-2.2.0_master
+ packages and packaging files published
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,53 +12,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Instead of EINPROGRESS WinSock2 returns WSAEWOULDBLOCK if a non-blocking
-connect(2) cannot be completed immediately.
+Hi all,
 
-Signed-off-by: Heiko Hund <heiko.hund@...1489...>
----
- configure.ac         |    2 ++
- src/openvpn/socket.c |    2 +-
- 2 files changed, 3 insertions(+), 1 deletion(-)
+I've just finished packaging openvpn-2.3_alpha2 for Debian/Ubuntu and
+Fedora/EL. As the packaging files required significant changes on both
+Debian and RPM front, I've put them here for others to use/improve:
 
-diff --git a/configure.ac b/configure.ac
-index d3d974d..ba5dce1 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -617,6 +617,7 @@ m4_define(
- 	[setsockopt getsockopt getsockname poll]dnl
- )
- if test "${WIN32}" = "yes"; then
-+	AC_DEFINE([CONNECT_IN_PROGRESS], [WSAEWOULDBLOCK], [errno for incomplete non-blocking connect(2)])
- 	m4_foreach(
- 		[F],
- 		m4_split(SOCKET_FUNCS SOCKET_OPT_FUNCS),
-@@ -624,6 +625,7 @@ if test "${WIN32}" = "yes"; then
- 			AC_DEFINE([UF], [1], [Win32 builtin])
- 	)
- else
-+	AC_DEFINE([CONNECT_IN_PROGRESS], [EINPROGRESS], [errno for incomplete non-blocking connect(2)])
- 	AC_CHECK_FUNCS(
- 		SOCKET_FUNCS,
- 		,
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 54ebce7..b2d6bba 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -1165,7 +1165,7 @@ openvpn_connect (socket_descriptor_t sd,
-   status = connect (sd, &remote->addr.sa, af_addr_size(remote->addr.sa.sa_family));
-   if (status)
-     status = openvpn_errno_socket ();
--  if (status == EINPROGRESS)
-+  if (status == CONNECT_IN_PROGRESS)
-     {
-       while (true)
- 	{
--- 
-1.7.9.5
+<http://build.openvpn.net/downloads/packaging>
 
+The packaging highlights for the 2.3_alpha2 are:
+
+- easy-rsa split into it's own architecture-independent package
+- packages for Ubuntu 12.04
+- debian packaging files made as generic as possible, only Ubuntu 12.04
+files having required minor changes
+
+CentOS/EL6 is still missing the new packages as I don't have direct
+access to the CentOS build computers until next Monday. All other
+packages are already in their respective ("-snapshot") repositories.
+
+For details on how to use our software repositories, please look here:
+
+<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos>
+
+If you encounter any issues with the packages, please let me know! Also,
+any suggestions on where to host these files in the long run are most
+appreciated! Perhaps "openvpn-build" repository would be the least bad
+place?
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
