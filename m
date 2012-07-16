@@ -1,14 +1,16 @@
-Date: Mon, 16 Jul 2012 22:20:25 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120716202025.GO22125@...1296...>
-References: <CAEsd45Rh9zu=FC_Qdt4KiUfGayMqRzshF4OpxsHcszVH+8vBHw@...278...>
-	<CAOazyz1+Px-wFYd3DVdm-1Sxponr0xsp2w4m8Mum+HTDyMtovg@...278...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="R9b51G30WkD62Ue3"
-Content-Disposition: inline
-In-Reply-To: <CAOazyz1+Px-wFYd3DVdm-1Sxponr0xsp2w4m8Mum+HTDyMtovg@...278...>
-Subject: Re: [Openvpn-devel] New build system questions
+MIME-Version: 1.0
+In-Reply-To: <CAOazyz2VF2DYrpqVmE4TWi8TD5Wy1MXdgJ+zaMC9CAjVvfO3QQ@...278...>
+References: <CAEsd45RxJ4Q6kvofngZwkEUBbV3P3fNWTEMc9KksKPOdpB870Q@...278...>
+	<CAOazyz3AqvSu05xSDQn=0MX-4QV-mFB1SPNh8SSVL_y3=O5R+g@...278...>
+	<CAEsd45Q2VTHKu8aE0adSPCNRsRTCUCUzfPqj_tWsLQe6XHk1TQ@...278...>
+	<CAOazyz29f5yG19ygoY4y0yTf2GdYTfKsW_bHTkOib2RCQqgKvQ@...278...>
+	<CAEsd45SyHA=ukYxhvSCAmMRYwg6QuaqT_1eW6dFv-p078_EPZQ@...278...>
+	<CAOazyz2VF2DYrpqVmE4TWi8TD5Wy1MXdgJ+zaMC9CAjVvfO3QQ@...278...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Mon, 16 Jul 2012 16:24:05 -0400
+Message-ID: <CAEsd45SSA-Etr00DAuJvfdGL+hbhQPWMR_B2BC0Jyy7RboabpQ@...278...>
+Content-Type: multipart/alternative; boundary=f46d044786e779734a04c4f8380b
+Subject: Re: [Openvpn-devel] OpenVPN 3.3_alpha2 build problem
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,61 +20,94 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>, Arne Schwabe <arne@...1740...>
 
---R9b51G30WkD62Ue3
-Content-Type: text/plain; charset="us-ascii"
+--f46d044786e779734a04c4f8380b
+Content-Type: text/plain; charset=UTF-8
+
+>
+> Please try:
+>
+> ./configure CFLAGS="-Ixxx" LDFLAGS="-Lyyy"
+>
+> Should be simpler.
+>
+
+Thanks. Although
+
+LDFLAGS="-Lxxx -Lyyy -Lzzz"
+
+builds, but it causes config to output "checking for PKCS11_HELPER... no".
+I assume that if it isn't finding pkcs11-helper, then it might not
+configure the build to support it. (Otherwise, what's the point of checking
+for it?)
+
+LZO_LIBS="-Lxxx" OPENSSL_LIBS="-Lyyy" PKCS11_HELPER_LIBS="-Lzzz"
+
+builds and shows "checking for PKCS11_HELPER... yes".
+
+LIBS="-Lxxx -Lyyy -Lzzz"
+
+doesn't build. It gets "ld: library not found for -llzo2".
+
+On Mon, Jul 16, 2012 at 7:24 PM, Jonathan K. Bullard
+> <jkbullard@...277...> wrote:
+> > Thank you, Arne and Alon -- I finally managed to get Tunnelblick
+> > more-or-less built using the new build system in 2.3_alpha2.
+> >
+> > For the record, I had to use xxx_LIBS="-Lyyy" (not xxx_LDFLAGS) before
+> > ./configure, to get it working.
+> >
+>
+
+--f46d044786e779734a04c4f8380b
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+<div class=3D"gmail_quote"><blockquote class=3D"gmail_quote" style=3D"margi=
+n:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Please try:<br>
+<br>
+./configure CFLAGS=3D&quot;-Ixxx&quot; LDFLAGS=3D&quot;-Lyyy&quot;<br>
+<br>
+Should be simpler.<br></blockquote><div><br></div><div>Thanks. Although</di=
+v></div><blockquote style=3D"margin:0 0 0 40px;border:none;padding:0px"><di=
+v class=3D"gmail_quote"><div>
+LDFLAGS=3D&quot;-Lxxx -Lyyy -Lzzz&quot;</div></div></blockquote><div class=
+=3D"gmail_quote"><div>builds, but it causes config to output &quot;checking=
+ for PKCS11_HELPER... no&quot;. I assume that if it isn&#39;t finding pkcs1=
+1-helper, then it might not configure the build to support it. (Otherwise, =
+what&#39;s the point of checking for it?)</div>
 
-On Mon, Jul 16, 2012 at 07:45:03PM +0300, Alon Bar-Lev wrote:
-> > (3) I want to build "compat" as a static library. How can I do that?
-> >
-> > I've tried adding the following arguments after "./configure":
-> >
-> > --enable-static --disable-shared
-[..]
->=20
-> You don't need the above... just add LDFLAGS=3D"-static", I guess.
+<div><br></div></div><blockquote style=3D"margin:0 0 0 40px;border:none;pad=
+ding:0px"><div class=3D"gmail_quote"><div><div class=3D"gmail_quote"><div>L=
+ZO_LIBS=3D&quot;-Lxxx&quot; OPENSSL_LIBS=3D&quot;-Lyyy&quot; PKCS11_HELPER_=
+LIBS=3D&quot;-Lzzz&quot;</div>
 
-Should libcompat.* ever be built dynamically?  I just checked on Linux
-and FreeBSD, and our configure/make only builds libcompat.a (hidden
-in src/libcompat/.libs/).
+</div></div></div></blockquote><div class=3D"gmail_quote"><div class=3D"gma=
+il_quote"></div></div>builds and shows &quot;checking for PKCS11_HELPER... =
+yes&quot;.<div><br></div><div><blockquote style=3D"margin:0 0 0 40px;border=
+:none;padding:0px">
 
-To make sure I'm not getting misunderstood: I think a static library is
-the right way to go here, so I'm surprised about the question from
-Jonathan.
+<div class=3D"gmail_quote"><div class=3D"gmail_quote"><div>LIBS=3D&quot;-Lx=
+xx=C2=A0-Lyyy -Lzzz&quot;</div></div></div></blockquote><div class=3D"gmail=
+_quote"><div>doesn&#39;t build. It gets &quot;ld: library not found for -ll=
+zo2&quot;.</div>
 
-> > *** Warning: Linking the shared library libcompat.la against the
+</div><div class=3D"gmail_quote"><div class=3D"gmail_quote"><div><br></div>=
+</div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-l=
+eft:1px #ccc solid;padding-left:1ex">
+<div><div>On Mon, Jul 16, 2012 at 7:24 PM, Jonathan K. Bullard<br>
+&lt;<a href=3D"mailto:jkbullard@...277..." target=3D"_blank">jkbullard@...1665...=
+77...</a>&gt; wrote:<br>
+&gt; Thank you, Arne and Alon -- I finally managed to get Tunnelblick<br>
+&gt; more-or-less built using the new build system in 2.3_alpha2.<br>
+&gt;<br>
+&gt; For the record, I had to use xxx_LIBS=3D&quot;-Lyyy&quot; (not xxx_LDF=
+LAGS) before<br>
+&gt; ./configure, to get it working.<br>
+&gt;<br>
+</div></div></blockquote></div><br>
+</div>
 
-... OTOH, libcompat.la is not really a shared library here, just a=20
-ld config file pointing to the static libcompat.a, so maybe this is
-just a warning that can be safely ignored.
-
-gert=20
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---R9b51G30WkD62Ue3
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (NetBSD)
-
-iQCVAwUBUAR3iKkuBuNlUUl1AQJIwgQAkf+1mJ/w6HW17TeZwmUklPFwybT7LPk3
-2LZcb89Kr7N67rhN0fsOraFpyw9mj39HS/2HRjjeQFcMs9vllKaNoz0JnTbFPrzK
-ky3JFDldb3/XhcwdfkDXU8uZi9QvF263ckNHqk7hQQWF7mQFoPdw6oV8QGqiLB1e
-FjEuv5suuCo=
-=hw4P
------END PGP SIGNATURE-----
-
---R9b51G30WkD62Ue3--
+--f46d044786e779734a04c4f8380b--
 
