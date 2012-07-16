@@ -1,9 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <CAEsd45Rh9zu=FC_Qdt4KiUfGayMqRzshF4OpxsHcszVH+8vBHw@...278...>
+Date: Mon, 16 Jul 2012 22:20:25 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120716202025.GO22125@...1296...>
 References: <CAEsd45Rh9zu=FC_Qdt4KiUfGayMqRzshF4OpxsHcszVH+8vBHw@...278...>
-Date: Mon, 16 Jul 2012 19:45:03 +0300
-Message-ID: <CAOazyz1+Px-wFYd3DVdm-1Sxponr0xsp2w4m8Mum+HTDyMtovg@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+	<CAOazyz1+Px-wFYd3DVdm-1Sxponr0xsp2w4m8Mum+HTDyMtovg@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="R9b51G30WkD62Ue3"
+Content-Disposition: inline
+In-Reply-To: <CAOazyz1+Px-wFYd3DVdm-1Sxponr0xsp2w4m8Mum+HTDyMtovg@...278...>
 Subject: Re: [Openvpn-devel] New build system questions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,89 +17,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: "Jonathan K. Bullard" <jkbullard@...277...>
+To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
-On Mon, Jul 16, 2012 at 7:24 PM, Jonathan K. Bullard
-<jkbullard@...277...> wrote:
-> I'm in the process of trying to build 2.3_alpha2 into Tunnelblick. It's slow
-> going because of my unfamiliarity with make/automake, etc. I have several
-> questions:
->
-> (1) Is there a way to disable building "openvpnserv" and the "auth-pam"
-> plugin? (Other than modifying src/Makefile.am and src/plugins/Makefile.am,
-> of course.) I'm thinking of something along the lines of
-> "ENABLE_OPENVPNSERV=no" or "DISABLE-AUTH-PAM".
+--R9b51G30WkD62Ue3
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
---disable-plugin-auth-pam
+Hi,
 
-Do you build for windows? if not, please send me the compile error and
-config.log.
-The windows service should not be built on none windows.
+On Mon, Jul 16, 2012 at 07:45:03PM +0300, Alon Bar-Lev wrote:
+> > (3) I want to build "compat" as a static library. How can I do that?
+> >
+> > I've tried adding the following arguments after "./configure":
+> >
+> > --enable-static --disable-shared
+[..]
+>=20
+> You don't need the above... just add LDFLAGS=3D"-static", I guess.
 
->
-> (2) Should I be concerned about the following warnings?
->
-> checking lzo/lzoutil.h presence... no
-> configure: WARNING: lzo/lzoutil.h: accepted by the compiler, rejected by the
-> preprocessor!
-> configure: WARNING: lzo/lzoutil.h: proceeding with the compiler's result
-> checking for lzo/lzoutil.h... yes
-> checking lzo/lzo1x.h usability... yes
-> checking lzo/lzo1x.h presence... no
-> configure: WARNING: lzo/lzo1x.h: accepted by the compiler, rejected by the
-> preprocessor!
-> configure: WARNING: lzo/lzo1x.h: proceeding with the compiler's result
->
+Should libcompat.* ever be built dynamically?  I just checked on Linux
+and FreeBSD, and our configure/make only builds libcompat.a (hidden
+in src/libcompat/.libs/).
 
-No.
+To make sure I'm not getting misunderstood: I think a static library is
+the right way to go here, so I'm surprised about the question from
+Jonathan.
 
->
->
-> (3) I want to build "compat" as a static library. How can I do that?
->
-> I've tried adding the following arguments after "./configure":
->
-> --enable-static --disable-shared
->
->
-> And I've tried prefixing ./configure with the following:
->
-> COMPAT_CFLAGS=-static  LIBCOMPAT_CFLAGS=-static  LIBCOMPAT_LA_CFLAGS=-static
-> compat_CFLAGS=-static  libcompat_CFLAGS=-static  libcompat_la_CFLAGS=-static
-> COMPAT_LDFLAGS=-static  LIBCOMPAT_LDFLAGS=-static
-> LIBCOMPAT_LA_LDFLAGS=-static compat_LDFLAGS=-static
-> libcompat_LDFLAGS=-static  libcompat_la_LDFLAGS=-static
-> COMPAT_LIBTOOLFLAGS=-static  LIBCOMPAT_LIBTOOLFLAGS=-static
-> LIBCOMPAT_LA_LIBTOOLFLAGS=-static compat_LIBTOOLFLAGS=-static
-> libcompat_LIBTOOLFLAGS=-static libcompat_la_LIBTOOLFLAGS=-static
->
+> > *** Warning: Linking the shared library libcompat.la against the
 
-You don't need the above... just add LDFLAGS="-static", I guess.
+... OTOH, libcompat.la is not really a shared library here, just a=20
+ld config file pointing to the static libcompat.a, so maybe this is
+just a warning that can be safely ignored.
 
+gert=20
 
-> But it still seems to be building a "shared" library for compat -- I get the
-> following warning:
->
-> *** Warning: Linking the shared library libcompat.la against the
->
-> *** static library [path to] libcrypto.a is not portable!
->
-> along with the same warning about libssl.a, liblzo2.a, and
-> libpkcs11-helper.a.
->
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-To compile static, you need to build openvpn without plugins
-(--disable-plugins) and all dependencies such as openssl the same.
+--R9b51G30WkD62Ue3
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-In openvpn-build[1] project you have a script to build all as static:
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
 
-Try it out:
-DO_STATIC=1 DO_REALLY_STATIC=1 ./generic/build
+iQCVAwUBUAR3iKkuBuNlUUl1AQJIwgQAkf+1mJ/w6HW17TeZwmUklPFwybT7LPk3
+2LZcb89Kr7N67rhN0fsOraFpyw9mj39HS/2HRjjeQFcMs9vllKaNoz0JnTbFPrzK
+ky3JFDldb3/XhcwdfkDXU8uZi9QvF263ckNHqk7hQQWF7mQFoPdw6oV8QGqiLB1e
+FjEuv5suuCo=
+=hw4P
+-----END PGP SIGNATURE-----
 
-Alon.
-
-[1] https://github.com/OpenVPN/openvpn-build
+--R9b51G30WkD62Ue3--
 
