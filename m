@@ -1,14 +1,11 @@
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Tue, 17 Jul 2012 17:40:51 +0200
+Message-ID: <2558565.UxQt4QKoI1@...1526...>
+In-Reply-To: <1403139.dzVK3VN5gj@...1526...>
+References: <4e6f25371d6bd0.07599718@...1498...> <1403139.dzVK3VN5gj@...1526...>
 MIME-Version: 1.0
-In-Reply-To: <2989627.j049xi4nqB@...1526...>
-References: <1342533472-30873-1-git-send-email-heiko.hund@...1489...>
-	<21316332.O9di4uRdZn@...1526...>
-	<CAOazyz1eUXu-a=k9q+AvbD25swq=iBD7Okc18jBp0gZeRxojkA@...278...>
-	<2989627.j049xi4nqB@...1526...>
-Date: Tue, 17 Jul 2012 18:22:59 +0300
-Message-ID: <CAOazyz3oV0JBZPZFhgwtUUX4oO3OSQMa+GhpErad7cM3ochotA@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] don't treat socket related errors
-	special anymore
+Subject: Re: [Openvpn-devel] [PATCH 0/3] better --auto-proxy support for
+	Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,32 +14,22 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Heiko Hund <heiko.hund@...1489...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Krashan Brahmanjara <krokodylowy3@...1498...>
 
-On Tue, Jul 17, 2012 at 6:15 PM, Heiko Hund <heiko.hund@...1489...> wrote:
-> On Tuesday 17 July 2012 18:11:25 Alon Bar-Lev wrote:
->> #define EWOULDBLOCK WSAWOULDBLOCK
->
-> EWOULDBLOCK is already defined in errno.h (also in Windows) and shouldn't be
-> redefined in my opinion.
+On Monday 16 July 2012 16:43:52 Heiko Hund wrote:
+> I'll do some tests tomorrow to see how the major browsers behave regarding
+> proxy settings detection and will follow in their footsteps.
 
-So if this is in one place, better a simple #ifdef
----
-if (
-#ifdef WIN32
-    status == WSAEWOULDBLOCK
-#else
-    status == EINPROGRESS
-#endif
-) {
-}
----
+Seems neither IE 9, Firefox 14 nor Chrome 20 takes care about the WinHTTP 
+default proxy settings added with netsh/proxycfg. So, I'll ignore that setting 
+as well for now.
 
-I don't think we are using errno.h values in windows, have no time to
-check it now. If not, simplest is to #define WSA* as E*.
+Heiko
+-- 
+Heiko Hund | Sr. Software Engineer | Tel +49-721-25516-237 | Fax -200
+SOPHOS NSG | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germany
 
-Alon.
 
