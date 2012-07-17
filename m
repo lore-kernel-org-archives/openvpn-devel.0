@@ -1,11 +1,11 @@
-MIME-Version: 1.0
-In-Reply-To: <21316332.O9di4uRdZn@...1526...>
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Tue, 17 Jul 2012 17:15:21 +0200
+Message-ID: <2989627.j049xi4nqB@...1526...>
+In-Reply-To: <CAOazyz1eUXu-a=k9q+AvbD25swq=iBD7Okc18jBp0gZeRxojkA@...278...>
 References: <1342533472-30873-1-git-send-email-heiko.hund@...1489...>
-	<CAOazyz0wc=ZGhJnLfvd=AK6_Y=vTfebccmV29Fc5z2DGpJ8EWQ@...278...>
 	<21316332.O9di4uRdZn@...1526...>
-Date: Tue, 17 Jul 2012 18:11:25 +0300
-Message-ID: <CAOazyz1eUXu-a=k9q+AvbD25swq=iBD7Okc18jBp0gZeRxojkA@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
+	<CAOazyz1eUXu-a=k9q+AvbD25swq=iBD7Okc18jBp0gZeRxojkA@...278...>
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] [PATCH] don't treat socket related errors
 	special anymore
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,39 +16,20 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Heiko Hund <heiko.hund@...1489...>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Tue, Jul 17, 2012 at 6:09 PM, Heiko Hund <heiko.hund@...1489...> wrote:
-> On Tuesday 17 July 2012 17:25:25 Alon Bar-Lev wrote:
->> Just I don't like the CONNECT_IN_PROGRESS.
->> I think it is better to rebase first and then submit the
->> CONNECT_IN_PROGRESS afterwards, I think it would be simpler to just
->> compare to the two statuses.
->
-> That would result in either something like
->
->   if (status == EINPROGRESS
->   #ifdef WIN32
->     || status == WSAEWOULDBLOCK
->   #endif
->   )
->
-> or slightly less disturbing
->
->   #ifndef WSAEWOULDBLOCK
->   #define WSAEWOULDBLOCK 10035L
->   #endif
->
-> I do prefer the suggested approach resolving this with configure over these.
-> Or did you have something more attractive in mind?
->
+On Tuesday 17 July 2012 18:11:25 Alon Bar-Lev wrote:
+> #define EWOULDBLOCK WSAWOULDBLOCK
 
-or:
----
-#define EWOULDBLOCK WSAWOULDBLOCK
----
-in configure.ac
+EWOULDBLOCK is already defined in errno.h (also in Windows) and shouldn't be 
+redefined in my opinion.
+
+Heiko
+-- 
+Heiko Hund | Sr. Software Engineer | Tel +49-721-25516-237 | Fax -200
+SOPHOS NSG | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germany
+
 
