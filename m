@@ -1,12 +1,14 @@
-Date: Tue, 17 Jul 2012 17:55:41 +0200
+Date: Tue, 17 Jul 2012 18:00:57 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20120717155541.GW22125@...1296...>
+Message-ID: <20120717160057.GX22125@...1296...>
 References: <1342533472-30873-1-git-send-email-heiko.hund@...1489...>
+	<CAOazyz0wc=ZGhJnLfvd=AK6_Y=vTfebccmV29Fc5z2DGpJ8EWQ@...278...>
+	<21316332.O9di4uRdZn@...1526...> <20120717154628.GV22125@...1296...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="EUYUPHVNfBVWjsvu"
+	protocol="application/pgp-signature"; boundary="rtqL2qczZrjpIe/F"
 Content-Disposition: inline
-In-Reply-To: <1342533472-30873-1-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <20120717154628.GV22125@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH] don't treat socket related errors
 	special anymore
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,25 +20,36 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Heiko Hund <heiko.hund@...1489...>
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: Alon Bar-Lev <alon.barlev@...277...>, openvpn-devel@lists.sourceforge.net
 
---EUYUPHVNfBVWjsvu
+--rtqL2qczZrjpIe/F
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Tue, Jul 17, 2012 at 03:57:52PM +0200, Heiko Hund wrote:
-> WSAGetLastError() is just a wrapper for GetLastError(). So, there's
-> no need to differentiate between socket related and other errors.
+On Tue, Jul 17, 2012 at 05:46:28PM +0200, Gert Doering wrote:
+> On Tue, Jul 17, 2012 at 05:09:34PM +0200, Heiko Hund wrote:
+> >   if (status =3D=3D EINPROGRESS
+> >   #ifdef WIN32
+> >     || status =3D=3D WSAEWOULDBLOCK
+> >   #endif
+> >   )
+>=20
+> Please let's not do that.
 
-ACK.
+Uh.  Correcting myself.  In *this* scenario, with this only showing up
+in a single place, it might be less complicated to figure out than
+having an extra #define which is just #define'ed to EINPROGRESS for
+most platforms anyway.
 
-Earlier versions of Windows handled winsock stuff differently, but
-Heiko checked WinXP for me, and that also has a wrapper - so we only
-lose platforms that we do not support anymore anyway in 2.3, and=20
-if it cleans up our code, that is good.
+So while I dislike #ifdef's, I don't like magic #defines that are only
+used in a single place any better...
+
+But in the end it's just a matter of coding style, and who does the work
+has to do some decisions - and we don't have a particular style guide for
+such platform stuff.
 
 gert
 --=20
@@ -46,19 +59,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---EUYUPHVNfBVWjsvu
+--rtqL2qczZrjpIe/F
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.12 (NetBSD)
 
-iQCVAwUBUAWK/KkuBuNlUUl1AQJx2wQAvZz6/fTKsW73gxQHLcNMMmn1Q5BNiKCc
-ftwxgWW6zEXH/EbUv1CWvCJknOJARhinVzKYVO02JECp7IICfMN419pxROSZh4dt
-geTfU9AE6FRYJvqU0pHyfT7a/L/nIhzB8qpHWT5bJwlaJsmZ4VSY8n7Mxoy7wYHX
-eEibJ+pYqOA=
-=lrqW
+iQCVAwUBUAWMOakuBuNlUUl1AQKZBgQAj60gP4i/5JNzPZZc+3cHf5/uudgfa0Jf
+yWnRxp9YuvSj/pQUZLBwiPSheVXvlOEwvYVuIVLpfzzoamkO26RnPa+d+bwXgtBc
+6ermGNMCIIlia681l2VTUOVxPOsWr+agVEW/AEQhZlJ262bT7fuJ6voVUCN2c1Sb
+W5X4AVR6CQ0=
+=KMN8
 -----END PGP SIGNATURE-----
 
---EUYUPHVNfBVWjsvu--
+--rtqL2qczZrjpIe/F--
 
