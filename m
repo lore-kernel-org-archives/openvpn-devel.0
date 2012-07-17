@@ -1,13 +1,14 @@
-Message-ID: <500589E5.20104@...1114...>
-Date: Tue, 17 Jul 2012 17:51:01 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
+Date: Tue, 17 Jul 2012 17:55:41 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120717155541.GW22125@...1296...>
 References: <1342533472-30873-1-git-send-email-heiko.hund@...1489...>
-	<CAOazyz0wc=ZGhJnLfvd=AK6_Y=vTfebccmV29Fc5z2DGpJ8EWQ@...278...>
-	<21316332.O9di4uRdZn@...1526...> <20120717154628.GV22125@...1296...>
-In-Reply-To: <20120717154628.GV22125@...1296...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="EUYUPHVNfBVWjsvu"
+Content-Disposition: inline
+In-Reply-To: <1342533472-30873-1-git-send-email-heiko.hund@...1489...>
 Subject: Re: [Openvpn-devel] [PATCH] don't treat socket related errors
- special anymore
+	special anymore
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,52 +17,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: Alon Bar-Lev <alon.barlev@...277...>, openvpn-devel@lists.sourceforge.net
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--EUYUPHVNfBVWjsvu
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 17/07/12 17:46, Gert Doering wrote:
-> Hi,
-> 
-> On Tue, Jul 17, 2012 at 05:09:34PM +0200, Heiko Hund wrote:
->> if (status == EINPROGRESS #ifdef WIN32 || status ==
->> WSAEWOULDBLOCK #endif )
-> 
-> Please let's not do that.
-> 
->> or slightly less disturbing
->> 
->> #ifndef WSAEWOULDBLOCK #define WSAEWOULDBLOCK 10035L #endif
-> 
-> Something like that (possibly autoconf-magick'ed) and then
-> 
-> if (status == EINPROGRESS || status == WSAEWOULDBLOCK )
-> 
-> or even
-> 
-> if (status == EINPROGRESS || status == EWOULDBLOCK )
-> 
-> (WSAEWOULDBLOCK mapped to EWOULDBLOCK, as I've seen that error code
-> on some unix platforms as well) would be my favourite,
-> code-readability wise.
+Hi,
 
+On Tue, Jul 17, 2012 at 03:57:52PM +0200, Heiko Hund wrote:
+> WSAGetLastError() is just a wrapper for GetLastError(). So, there's
+> no need to differentiate between socket related and other errors.
 
-+1
+ACK.
 
+Earlier versions of Windows handled winsock stuff differently, but
+Heiko checked WinXP for me, and that also has a wrapper - so we only
+lose platforms that we do not support anymore anyway in 2.3, and=20
+if it cleans up our code, that is good.
 
-kind regards,
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-David Sommerseth
+--EUYUPHVNfBVWjsvu
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+Version: GnuPG v1.4.12 (NetBSD)
 
-iEYEARECAAYFAlAFieMACgkQDC186MBRfrqiXgCfZ0GhPBuXV58WX0nSOTIOGeOC
-aN8An3+0TsHfXdOANg/xbIHAVxeGfEea
-=m1mq
+iQCVAwUBUAWK/KkuBuNlUUl1AQJx2wQAvZz6/fTKsW73gxQHLcNMMmn1Q5BNiKCc
+ftwxgWW6zEXH/EbUv1CWvCJknOJARhinVzKYVO02JECp7IICfMN419pxROSZh4dt
+geTfU9AE6FRYJvqU0pHyfT7a/L/nIhzB8qpHWT5bJwlaJsmZ4VSY8n7Mxoy7wYHX
+eEibJ+pYqOA=
+=lrqW
 -----END PGP SIGNATURE-----
+
+--EUYUPHVNfBVWjsvu--
 
