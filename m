@@ -1,12 +1,10 @@
+Message-ID: <5006C3D5.8000508@...1114...>
+Date: Wed, 18 Jul 2012 16:10:29 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-In-Reply-To: <CAOazyz15sK3xpvvRu3i86o8BXZ4hk09faxNAQJ_CHsYzdsL7kw@...278...>
 References: <1340730302-3077-1-git-send-email-alon.barlev@...277...>
 	<CAEsd45QsjHX19m8kFsTEixyk1O9VB7gn25rj7aarSe9vuvahXw@...278...>
-	<CAOazyz15sK3xpvvRu3i86o8BXZ4hk09faxNAQJ_CHsYzdsL7kw@...278...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Wed, 18 Jul 2012 09:47:37 -0400
-Message-ID: <CAEsd45Sqta=kOegU9ugRz63-hzORVsqj3uu5q8sZsdtR=ngGNA@...278...>
-Content-Type: multipart/alternative; boundary=bcaec54fb0424ffd5404c51aeaff
+In-Reply-To: <CAEsd45QsjHX19m8kFsTEixyk1O9VB7gn25rj7aarSe9vuvahXw@...278...>
 Subject: Re: [Openvpn-devel] [PATCH] plugin: load plugin relative to
 	plugindir
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,67 +15,110 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
---bcaec54fb0424ffd5404c51aeaff
-Content-Type: text/plain; charset=UTF-8
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-On Wed, Jul 18, 2012 at 9:37 AM, Alon Bar-Lev <alon.barlev@...277...> wrote:
+On 18/07/12 14:44, Jonathan K. Bullard wrote:
+> On Tue, Jun 26, 2012 at 1:05 PM, Alon Bar-Lev
+> <alon.barlev@...277... <mailto:alon.barlev@...277...>> wrote:
+> 
+> Currently openvpn requires/endorses specifying full path in plugin 
+> parameter. As build system already aware of plugin location, it is 
+> possible to load plugin relative to this directory, so full path is
+> not required nor more secured.
+> 
+> Windows is a little more complex as user may change installation 
+> directory at install time, so we read plugindir location from the 
+> registry, installer will set this value.
+> 
+> 
+> (Sorry Alon, I must have overlooked this when it was first
+> posted.)
+> 
+> I do not understand the privilege escalation risk:
+> 
+> * A protected (not writable by an unprivileged user) part of 
+> Tunnelblick controls the options sent to any instance of OpenVPN 
+> that runs as a privileged user, so it sends only acceptable paths. 
+> (A computer administrator is the only one who can modify a 
+> configuration file, which is the other means of specifying a
+> plugin path.) * If a user runs an instance of OpenVPN from the
+> OpenVPN binary inside of Tunnelblick, it runs as the user. So it's
+> not very different form running it from the command line.
+> 
+> Aren't other installations of OpenVPN similarly protected? Or are
+> you trying to protect against poorly-protected installations?
+> 
+> Or can the server "push" a plugin path? If allowed (I don't think
+> it should be) that is a much bigger problem.
 
-> Nobody disables the absolute path use.
-> This patch permits relative use.
->
+I was about to write about how this can slightly enhance the security
+on a system, avoiding random plug-ins to abuse the plug-in interface
+to gain control over a system ... until I realised, we already ship
+code which can do that.  All you need to do is to have
+openvpn-down-root.so available and a shell script which it can use.
 
-I'm sorry, I misunderstood. So a relative path will now be interpreted as
-relative to the plugins directory specified a build time, rather than
-whatever it is relative to now (current working directory?)
+So the attack vector is:
 
-So please consider my response to have been responding to Heiko's post:
+* A unprivileged user writes a little script which requires root access
+* The computer is configured to allow OpenVPN to run without root
+  password
+* Configuration file is modified (or command line executing openvpn is
+  extended) to add --plugin openvpn-down-root.so with a pointer to his
+  script
+* This external plug-in openvpn_plugin_open_v*() function in
+  openvpn-down-root.so  will be executed with root privileges when
+  openvpn is started.
+* OpenVPN is closed
+* Script runs with root privileges
 
-On Wed, Jul 18, 2012 at 7:44 AM, Heiko Hund <heiko.hund@...1489...> wrote:
+What the down-root plug-in does, is to fork out a process while
+openvpn is still running as root, and wait until the OpenVPN is
+closing down loaded plug-ins.  At this point the code script will be
+run, with root privileges.  Which makes it a perfectly good jail-break
+approach.
 
-> Specifying a custom full path is probably something we need to ban in the
-> (near) future, as it imposes an attack vector for privilege escalation by
-> code
-> injection when openvpn is not running as another user or has access to
-> privilege escalation by other means (like the yet to be submitted Windows
-> interactive service).
->
+This is possible as OpenVPN normally needs root privileges to
+configure the network, like TUN/TAP adapter and modifying the routing
+table.
 
---bcaec54fb0424ffd5404c51aeaff
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+A I see to avoid this is to completely run OpenVPN unprivileged and
+use OS dependent APIs.
 
-<div class=3D"gmail_quote">On Wed, Jul 18, 2012 at 9:37 AM, Alon Bar-Lev <s=
-pan dir=3D"ltr">&lt;<a href=3D"mailto:alon.barlev@...277..." target=3D"_bla=
-nk">alon.barlev@...277...</a>&gt;</span> wrote:<br><blockquote class=3D"gma=
-il_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-lef=
-t:1ex">
+ - Linux:
+   NetworkManager has a DBUS interface useful to configure the network,
+   or you can use sudo together with iproute2 wrapper scripts.
 
-Nobody disables the absolute path use.<br>
-This patch permits relative use.<br></blockquote><div><br></div><div>I&#39;=
-m sorry, I misunderstood. So a relative path will now be interpreted as rel=
-ative to the plugins directory specified a build time, rather than whatever=
- it is relative to now (current working directory?)</div>
+ - Android have a special API which must be used to get access to a
+   tun device and to configure the network
 
-<div><br></div><div>So please consider my response to have been responding =
-to Heiko&#39;s post:</div><div><br></div><div>On Wed, Jul 18, 2012 at 7:44 =
-AM, Heiko Hund=C2=A0<span dir=3D"ltr">&lt;<a href=3D"mailto:heiko.hund@...1386...=
-489..." target=3D"_blank">heiko.hund@...1489...</a>&gt;</span>=C2=A0wrote:<=
-br>
+ - A Windows solution is in the works, which tries to provide a
+   privilege separation possibility
 
-<blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-=
-left-width:1px;border-left-color:rgb(204,204,204);border-left-style:solid;p=
-adding-left:1ex">Specifying a custom full path is probably something we nee=
-d to ban in the<br>
+But I don't know what possibilities *BSDs or OSX may provide, except
+the sudo approach.
 
-(near) future, as it imposes an attack vector for privilege escalation by c=
-ode<br>injection when openvpn is not running as another user or has access =
-to<br>privilege escalation by other means (like the yet to be submitted Win=
-dows<br>
+With an improved privilege separation solutions in place, the need for
+the down-root plugin goes away too, which often is used to restore
+/etc/resolv.conf changes on *nix platforms.
 
-interactive service).<br></blockquote></div><div>=C2=A0</div></div>
 
---bcaec54fb0424ffd5404c51aeaff--
+Okay, enough ramblings for now ...
+
+
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAlAGw9MACgkQDC186MBRfrrTGwCeNvIZ7+5ICsiM++JuAhzaC+Fg
+jwoAn2HNMoPPNcrumiOci+MN21FwnWMo
+=Znxo
+-----END PGP SIGNATURE-----
 
