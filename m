@@ -1,12 +1,10 @@
+Message-ID: <5006B1FA.7070706@...1741...>
+Date: Wed, 18 Jul 2012 14:54:18 +0200
+From: Kai <kai2@...1741...>
 MIME-Version: 1.0
-In-Reply-To: <1340730302-3077-1-git-send-email-alon.barlev@...277...>
-References: <1340730302-3077-1-git-send-email-alon.barlev@...277...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Wed, 18 Jul 2012 08:44:04 -0400
-Message-ID: <CAEsd45QsjHX19m8kFsTEixyk1O9VB7gn25rj7aarSe9vuvahXw@...278...>
-Content-Type: multipart/alternative; boundary=20cf307d045418d2ed04c51a07ec
-Subject: Re: [Openvpn-devel] [PATCH] plugin: load plugin relative to
-	plugindir
+References: <1f69c81878808ec20acd5bf8c1ae05c0@...23...>
+In-Reply-To: <1f69c81878808ec20acd5bf8c1ae05c0@...23...>
+Subject: Re: [Openvpn-devel] ps.c and function is_openvpn_protocol
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,133 +13,103 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
---20cf307d045418d2ed04c51a07ec
-Content-Type: text/plain; charset=UTF-8
+Hello all,
 
-On Tue, Jun 26, 2012 at 1:05 PM, Alon Bar-Lev <alon.barlev@...277...> wrote:
+May one please tell me where a good resource is to understand the 
+OpenVPN message structure?
 
-> Currently openvpn requires/endorses specifying full path in plugin
-> parameter. As build system already aware of plugin location, it is
-> possible to load plugin relative to this directory, so full path is not
-> required nor more secured.
+I can than try to answer my questions myself.
+
+Many thanks,
+Kai
+
+Am 17.07.2012 01:16, schrieb Kai:
+>   Hello all,
 >
-> Windows is a little more complex as user may change installation
-> directory at install time, so we read plugindir location from the
-> registry, installer will set this value.
+>   While using SSLH ( www.rutschle.net/tech/sslh.shtml ) which tries to
+>   use function is_openvpn_protocol from the OpenVPN implementation as much
+>   as possible to detect OpenVPN connections (with only one difference), I
+>   found that I can not detect OpenVPN connections when they are
+>   established via shared secret (via option 'secret
+>   /etc/openvpn/somStaticKey.key'). The point is that for shared secret
+>   exchanges byte 3 of the initial message is ignored and hence filled by
+>   the client with rand data. This leads to randomly having connections
+>   even when using shared secrets and if being unlucky it can take up to 20
+>   minutes of retries until I can connect.
+>
+>   After researching, I have the following questions to understand this
+>   behavior:
+>
+>   ____________________________
+>   /*
+>    * Given either the first 2 or 3 bytes of an initial client -> server
+>    * data payload, return true if the protocol is that of an OpenVPN
+>    * client attempting to connect with an OpenVPN server.
+>    */
+>   bool
+>   is_openvpn_protocol (const struct buffer *buf)
+>   {
+>     const unsigned char *p = (const unsigned char *) BSTR (buf);
+>     const int len = BLEN (buf);
+>     if (len >= 3)
+>       {
+>         return p[0] == 0
+>           && p[1] >= 14
+>           && p[2] == (P_CONTROL_HARD_RESET_CLIENT_V2<<P_OPCODE_SHIFT);
+>       }
+>     else if (len >= 2)
+>       {
+>         return p[0] == 0 && p[1] >= 14;
+>       }
+>     else
+>       return true; // SSLH returns 0 at that point
+>   }
+>   ____________________________
+>
+>
+>   1. Because byte 1 + 2 define the message length, shouldn't be the
+>   following check better than 'p[0] == 0 && p[1] >= 14;'?
+>
+>    int packet_len = (p[0]<<8) + (p[1]);
+>    if(len - 2 == packet_len) ...
+>
+>   This worked well in one of my tests. I only tried with shared secret
+>   but even in case of the shared secret, the packet_len is set properly.
+>
+>   2. Why only checking for P_CONTROL_HARD_RESET_CLIENT_V2 but not for
+>   P_CONTROL_HARD_RESET_CLIENT_V1 here as well?
+>
+>   3. Check 2 is only executed if the len is exactly 2. Which kind of
+>   empty OpenVPN message does set the message length field to a value that
+>   does not fit the message length?
+>
+>   4. The last 'else' block is only called and says "this is a OpenVPN
+>   message" if the message has a length of 0 or 1 independent of which
+>   value byte 1 has. I also did not find which kind of initial OpenVPN
+>   messages look like this.
+>
+>   5. Finally, I'm seeking for a good criteria to identify OpenVPN initial
+>   messages if a shared secret is used. What would be a good probe for
+>   that? Is there any other in addition to 'if(len - 2 == packet_len)' as
+>   described in point 1?
+>
+>   Many thanks for all input
+>   /Kai
+>
+> ------------------------------------------------------------------------------
+> Live Security Virtual Conference
+> Exclusive live event will cover all the ways today's security and
+> threat landscape has changed and how IT managers can respond. Discussions
+> will include endpoint security, mobile security and the latest in malware
+> threats. http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 >
 
-(Sorry Alon, I must have overlooked this when it was first posted.)
-
-I do not understand the privilege escalation risk:
-
-   - A protected (not writable by an unprivileged user) part of Tunnelblick
-   controls the options sent to any instance of OpenVPN that runs as a
-   privileged user, so it sends only acceptable paths. (A computer
-   administrator is the only one who can modify a configuration file, which is
-   the other means of specifying a plugin path.)
-   - If a user runs an instance of OpenVPN from the OpenVPN binary inside
-   of Tunnelblick, it runs as the user. So it's not very different form
-   running it from the command line.
-
-Aren't other installations of OpenVPN similarly protected? Or are you
-trying to protect against poorly-protected installations?
-
-Or can the server "push" a plugin path? If allowed (I don't think it should
-be) that is a much bigger problem.
-
-Disallowing absolute paths complicates things enormously for Tunnelblick
-(OpenVPN GUI for OS X) for two reasons:
-
-   - You can have multiple, different copies of Tunnelblick (it is
-   self-contained), and
-   - Each copy of Tunnelblick contains multiple versions of OpenVPN, each
-   with its own copy of the down-root plugin.
-
-Currently, Tunnelblick just sends a plugin path which points to the
-appropriate plugin file inside the application itself (an OS X application
-like Tunnelblick is basically a folder with stuff inside it).
-
-If absolute paths are not allowed, Tunnelblick will apparently have to
-start "installing" plugins in a system-wide directory, and track separate
-copies of the down-root plugin by their source (i.e., the specific copy of
-Tunnelblick, and the specific version of OpenVPN the down-root plugin comes
-from. It would also be impossible to deal with a user moving the
-Tunnelblick application somewhere else in the file hierarchy (Most OS X
-applications, including Tunnelblick can be moved around as the user
-pleases.)
-
-That seems like so much trouble (and has a risk of creating a DLL-hell
-equivalent) that I will probably drop support for the down-root plugin from
-Tunnelblick. I don't think that's a big problem, but it will be for some
-users, and they won't be able to script their way around it.
-
---20cf307d045418d2ed04c51a07ec
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div class=3D"gmail_quote">On Tue, Jun 26, 2012 at 1:05 PM, Alon Bar-Lev <s=
-pan dir=3D"ltr">&lt;<a href=3D"mailto:alon.barlev@...277..." target=3D"_bla=
-nk">alon.barlev@...277...</a>&gt;</span> wrote:<br><blockquote class=3D"gma=
-il_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-lef=
-t:1ex">
-
-
-Currently openvpn requires/endorses specifying full path in plugin<br>
-parameter. As build system already aware of plugin location, it is<br>
-possible to load plugin relative to this directory, so full path is not<br>
-required nor more secured.<br>
-<br>
-Windows is a little more complex as user may change installation<br>
-directory at install time, so we read plugindir location from the<br>
-registry, installer will set this value.<br></blockquote><div><br></div><di=
-v>(Sorry Alon, I must have overlooked this when it was first posted.)</div>=
-<div><br class=3D"Apple-interchange-newline">I do not understand the privil=
-ege escalation risk:</div>
-
-<div><ul><li>A protected (not writable by an unprivileged user) part of Tun=
-nelblick controls the options sent to any instance of OpenVPN that runs as =
-a privileged user, so it sends only acceptable paths. (A computer administr=
-ator is the only one who can modify a configuration file, which is the othe=
-r means of specifying a plugin path.)</li>
-
-<li>If a user runs an instance of OpenVPN from the OpenVPN binary inside of=
- Tunnelblick, it runs as the user. So it&#39;s not very different form runn=
-ing it from the command line.</li></ul>Aren&#39;t other installations of Op=
-enVPN similarly protected? Or are you trying to protect against poorly-prot=
-ected installations?</div>
-
-<div><br></div><div>Or can the server &quot;push&quot; a plugin path? If al=
-lowed (I don&#39;t think it should be) that is a much bigger problem.</div>=
-<div><br></div><div>Disallowing absolute paths complicates things enormousl=
-y for Tunnelblick (OpenVPN GUI for OS X) for two reasons:</div>
-
-<div><ul><li>You can have multiple, different copies of Tunnelblick (it is =
-self-contained), and</li>
-<li>Each copy of Tunnelblick contains multiple versions of OpenVPN, each wi=
-th its own copy of the down-root plugin.</li></ul><div>Currently, Tunnelbli=
-ck just sends a plugin path which points to the appropriate plugin file ins=
-ide the application itself (an OS X application like Tunnelblick is basical=
-ly a folder with stuff inside it).</div>
-
-<div><br></div><div>If absolute paths are not allowed, Tunnelblick will app=
-arently have to start &quot;installing&quot; plugins in a system-wide direc=
-tory, and track separate copies of the down-root plugin by their source (i.=
-e., the specific copy of Tunnelblick, and the specific version of OpenVPN t=
-he down-root plugin comes from. It would also be impossible to deal with a =
-user moving the Tunnelblick application somewhere else in the file hierarch=
-y (Most OS X applications, including Tunnelblick can be moved around as the=
- user pleases.)</div>
-
-</div><div><br></div><div>That seems like so much trouble (and has a risk o=
-f creating a DLL-hell equivalent) that I will probably drop support for the=
- down-root plugin from Tunnelblick. I don&#39;t think that&#39;s a big prob=
-lem, but it will be for some users, and they won&#39;t be able to script th=
-eir way around it.</div>
-
-<div><br></div></div>
-
---20cf307d045418d2ed04c51a07ec--
 
