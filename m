@@ -1,11 +1,11 @@
+Message-ID: <5006B987.2060305@...1114...>
+Date: Wed, 18 Jul 2012 15:26:31 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-In-Reply-To: <CAOazyz1+Px-wFYd3DVdm-1Sxponr0xsp2w4m8Mum+HTDyMtovg@...278...>
 References: <CAEsd45Rh9zu=FC_Qdt4KiUfGayMqRzshF4OpxsHcszVH+8vBHw@...278...>
 	<CAOazyz1+Px-wFYd3DVdm-1Sxponr0xsp2w4m8Mum+HTDyMtovg@...278...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Wed, 18 Jul 2012 09:00:02 -0400
-Message-ID: <CAEsd45R3Or3izDGLamLOoft=xSNBNH8Qq8ztWb+N5Um4nitdJg@...278...>
-Content-Type: multipart/alternative; boundary=20cf3071c6642597d404c51a40c9
+	<CAEsd45R3Or3izDGLamLOoft=xSNBNH8Qq8ztWb+N5Um4nitdJg@...278...>
+In-Reply-To: <CAEsd45R3Or3izDGLamLOoft=xSNBNH8Qq8ztWb+N5Um4nitdJg@...278...>
 Subject: Re: [Openvpn-devel] New build system questions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,185 +15,120 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: "Jonathan K. Bullard" <jkbullard@...277...>
+Cc: Alon Bar-Lev <alon.barlev@...277...>, "openvpn-devel@lists.sourceforge.net" <Openvpn-devel@lists.sourceforge.net>
 
---20cf3071c6642597d404c51a40c9
-Content-Type: text/plain; charset=UTF-8
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-On Mon, Jul 16, 2012 at 12:45 PM, Alon Bar-Lev <alon.barlev@...277...>wrote:
+On 18/07/12 15:00, Jonathan K. Bullard wrote:
+> On Mon, Jul 16, 2012 at 12:45 PM, Alon Bar-Lev
+> <alon.barlev@...277...> wrote:
+>> (3) I want to build "compat" as a static library. How can I do
+>> that? <snip> You don't need the above... just add
+>> LDFLAGS="-static", I guess.
+> 
+> That doesn't work -- it doesn't make compat static. I still get the
+> same "Warning: Linking the shared library libcompat.la" message,
+> and no libcompat.a is produced.
 
-> > (1) Is there a way to disable building "openvpnserv" and the "auth-pam"
-> > plugin?
-> --disable-plugin-auth-pam
->
+Which compiler tool chain are you using?  And do you have a recent
+enough libtool installed?
 
-Thanks. I have found the configure documentation. However, I can't get it
-to do what I want it to do: I want to build a single openvpn binary that
-includes (is statically linked to) lzo, openssl, and pkcs11-helper) and a
-separate openvpn-down-root.so that can be used by the binary. (I now
-understand that pkcs11 shouldn't be statically linked, but right now I'm
-just trying to duplicate the openvpn setup that Tunnelblick has used for
-years.)
+> I've fiddled around and haven't been able to get it to build as
+> static, so I'll just move compat/*.* into src/openvpn and not have
+> a compat library at all. compat seems to be needed only by openvpn
+> and openvpnserv, apparently, but not by the down-root plugin. Since
+> I'm not using openvpnserv, I don't need it as a separate library.
 
+Okay, here's some confusion about the libcompat.a ... It built as a
+static library (hence the .a).  But the linker will extract the needed
+bits and pieces from those static libraries when it bundles and
+prepares the final openvpn executable.  It even means the linker will
+only extract the functions needed, even if one of the source files
+contains many other functions as well.
 
-Do you build for windows? if not, please send me the compile error and
-> config.log.
-> The windows service should not be built on none windows.
->
+This is pure linker magic, and should end up with exactly the same
+result as you're doing by copying C files into src/openvpn and such.
+In fact, libcompat.a is statically linked also when not compiling as
+static.
 
-No. On OS X, for OS X. And you're right, it does not build the service.
-Sorry for my confusion.
+So I would expect this to be related to the compiler tool chain,
+especially since this works on our buildslaves - which builds on
+several Linux distros, FreeBSD, OpenBSD, NetBSD and some Solaris
+flavour.  But I presume the common thing on these boxes are that
+they're using the GNU GCC compiler chain with GNU libtool.
 
+>> To compile static, you need to build openvpn without plugins 
+>> (--disable-plugins) and all dependencies such as openssl the
+>> same.
+> 
+> This seems like an unnecessary restriction and breaks what can be
+> done now. The plugins should always be dynamic, but there is no
+> reason I shouldn't be able to static-link OpenVPN with OpenSSL and
+> LZO. I do that now, and OpenVPN builds with plugin support. Then I
+> build the plugin separately. It all works.
 
- > (3) I want to build "compat" as a static library. How can I do that?
-> <snip>
-> You don't need the above... just add LDFLAGS="-static", I guess.
->
+Agreed, this sounds like a feature regression.
 
-That doesn't work -- it doesn't make compat static. I still get the same
-"Warning: Linking the shared library libcompat.la" message, and no
-libcompat.a is produced.
+Dynamic loading requires dlopen() and such (provided by libdl) and
+when compiled non-static, all this dlopen() stuff happens
+automatically, as the linker have instructed the binary what to load
+and which symbols to prepare for.
 
-I've fiddled around and haven't been able to get it to build as static,
-so I'll just move compat/*.* into src/openvpn and not have a compat library
-at all. compat seems to be needed only by openvpn and openvpnserv,
-apparently, but not by the down-root plugin. Since I'm not using
-openvpnserv, I don't need it as a separate library.
+However, when building statically, I presume you need to explicit link
+in libdl, to get those support functions - all the symbol lookup
+anyway needs to be tackled by the application.  But static builds
+should not exclude the plug-in feature.
 
+> (I had been hoping to be able to use something like 
+> xxx_LIBTOOLSFLAGS="-static" for libraries I want to be static,
+> letting the other(s) default to shared. That way one build would
+> generate an OpenVPN binary with everything statically linked into
+> it and a down-root plugin as a shared library. That's was my goal
+> until another comment mentioned that pkcs11-helper can't be static.
+> It's been static for years in Tunnelblick, but that's a whole other
+> issue that I will have to address.)
 
-To compile static, you need to build openvpn without plugins
-> (--disable-plugins) and all dependencies such as openssl the same.
->
+Alon is deeply involved in the pkcs11-helper, so I trust his knowledge
+here.
 
-This seems like an unnecessary restriction and breaks what can be done now.
-The plugins should always be dynamic, but there is no reason I shouldn't be
-able to static-link OpenVPN with OpenSSL and LZO. I do that now, and
-OpenVPN builds with plugin support. Then I build the plugin separately. It
-all works.
+> All this plugin stuff is moot if plugin paths can no longer be
+> absolute paths, so I'll wait and if that ends up being the case
+> (and it looks like it will), I will drop plugin support from
+> Tunnelblick.
 
-(I had been hoping to be able to use something like
-xxx_LIBTOOLSFLAGS="-static" for libraries I want to be static, letting the
-other(s) default to shared. That way one build would generate an OpenVPN
-binary with everything statically linked into it and a down-root plugin as
-a shared library. That's was my goal until another comment mentioned that
-pkcs11-helper can't be static. It's been static for years in Tunnelblick,
-but that's a whole other issue that I will have to address.)
+There are quite some ways how this can be abused to run code with
+escalated privileges.  I see you've replied to Alon's patch [1] where
+we're looking into tightening this further, so I will respond to
+potential issues there
 
-All this plugin stuff is moot if plugin paths can no longer be absolute
-paths, so I'll wait and if that ends up being the case (and it looks like
-it will), I will drop plugin support from Tunnelblick.
+> However, the same problem apparently exists for pkcs11-helper -- it
+> must be shared. So I may drop support for that in Tunnelblick as
+> well, although I'll probably leave it in for earlier versions of
+> OpenVPN. (Tunnelblick contains multiple versions of OpenVPN and
+> lets the user select which one to use.)
 
-However, the same problem apparently exists for pkcs11-helper -- it must be
-shared. So I may drop support for that in Tunnelblick as well, although
-I'll probably leave it in for earlier versions of OpenVPN. (Tunnelblick
-contains multiple versions of OpenVPN and lets the user select which one to
-use.)
-
-Again, thanks for your help.
-
---20cf3071c6642597d404c51a40c9
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div class=3D"gmail_quote">On Mon, Jul 16, 2012 at 12:45 PM, Alon Bar-Lev <=
-span dir=3D"ltr">&lt;<a href=3D"mailto:alon.barlev@...277..." target=3D"_bl=
-ank">alon.barlev@...277...</a>&gt;</span> wrote:<br><blockquote class=3D"gm=
-ail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-le=
-ft:1ex">
-
-
-
-
-
-<div>&gt; (1) Is there a way to disable building &quot;openvpnserv&quot; an=
-d the &quot;auth-pam&quot;<br>
-&gt; plugin?<br>
-</div>--disable-plugin-auth-pam<br></blockquote><div><br></div><div>Thanks.=
- I have found the configure documentation. However, I can&#39;t get it to d=
-o what I want it to do: I want to build a single openvpn binary that includ=
-es (is statically linked to) lzo, openssl, and pkcs11-helper) and a separat=
-e openvpn-down-root.so that can be used by the binary.=C2=A0(I now understa=
-nd that pkcs11 shouldn&#39;t be statically linked, but right now I&#39;m ju=
-st trying to duplicate the openvpn setup that Tunnelblick has used for year=
-s.)</div>
+Is there a reason you cannot package and ship pkcs11-helper as part of
+OpenVPN?
 
 
+kind regards,
 
-
-<div><br></div><div><br></div></div><div><div class=3D"gmail_quote"><blockq=
-uote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc =
-solid;padding-left:1ex">
-
-Do you build for windows? if not, please send me the compile error and<br>
-config.log.<br>
-The windows service should not be built on none windows.<br></blockquote><d=
-iv><br></div><div>No. On OS X, for OS X. And you&#39;re right, it does not =
-build the service. Sorry for my confusion.</div><div><br></div><div><br>
+David Sommerseth
 
 
 
 
-</div>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex">
-<div>&gt; (3) I want to build &quot;compat&quot; as a static library. How c=
-an I do that?</div><div>&lt;snip&gt;
-</div>You don&#39;t need the above... just add LDFLAGS=3D&quot;-static&quot=
-;, I guess.<br></blockquote><div><br></div><div>That doesn&#39;t work -- it=
- doesn&#39;t make compat static. I still get the same &quot;Warning: Linkin=
-g the shared library <a href=3D"http://libcompat.la" target=3D"_blank">libc=
-ompat.la</a>&quot; message, and no libcompat.a is produced.</div>
+[1] <http://thread.gmane.org/gmane.network.openvpn.devel/6801>
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-
-
-<div><br></div><div>I&#39;ve fiddled around and haven&#39;t been able to ge=
-t it to build as static, so=C2=A0I&#39;ll just move compat/*.* into src/ope=
-nvpn and not have a compat library at all. compat seems to be needed only b=
-y openvpn and openvpnserv, apparently, but not by the down-root plugin. Sin=
-ce I&#39;m not using openvpnserv, I don&#39;t need it as a separate library=
-.</div>
-
-
-
-
-<div><br></div><div><br></div><blockquote class=3D"gmail_quote" style=3D"ma=
-rgin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
-<div>To compile static, you need to build openvpn without plugins</div>
-(--disable-plugins) and all dependencies such as openssl the same.<br></blo=
-ckquote><div><br></div><div>This seems like an unnecessary restriction and =
-breaks what can be done now. The plugins should always be dynamic, but ther=
-e is no reason I shouldn&#39;t be able to static-link OpenVPN with OpenSSL =
-and LZO. I do that now, and OpenVPN builds with plugin support. Then I buil=
-d the plugin separately. It all works.</div>
-
-<div><br></div><div>(I had been hoping to be able to use something like xxx=
-_LIBTOOLSFLAGS=3D&quot;-static&quot; for libraries I want to be static, let=
-ting the other(s) default to shared. That way one build would generate an O=
-penVPN binary with everything statically linked into it and a down-root plu=
-gin as a shared library. That&#39;s was my goal until another comment menti=
-oned that pkcs11-helper can&#39;t be static. It&#39;s been static for years=
- in Tunnelblick, but that&#39;s a whole other issue that I will have to add=
-ress.)</div>
-
-
-
-
-<div><br></div><div>All this plugin stuff is moot if plugin paths can no lo=
-nger be absolute paths, so I&#39;ll wait and if that ends up being the case=
- (and it looks like it will), I will drop plugin support from Tunnelblick.<=
-/div>
-
-<div><br></div><div>However, the same problem apparently exists for pkcs11-=
-helper -- it must be shared. So I may drop support for that in Tunnelblick =
-as well, although I&#39;ll probably leave it in for earlier versions of Ope=
-nVPN. (Tunnelblick contains multiple versions of OpenVPN and lets the user =
-select which one to use.)</div>
-
-<div><br></div><div>Again, thanks for your help.</div>
-
-</div>
-</div>
-
---20cf3071c6642597d404c51a40c9--
+iEYEARECAAYFAlAGuYUACgkQDC186MBRfrp4NgCdHn77A3WVfK74WEXXbXAtecTM
+7OEAn2H4/c2Jodqao+0jt+MxOvo5hswN
+=ibZB
+-----END PGP SIGNATURE-----
 
