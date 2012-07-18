@@ -1,14 +1,12 @@
 MIME-Version: 1.0
-In-Reply-To: <5006C3D5.8000508@...1114...>
-References: <1340730302-3077-1-git-send-email-alon.barlev@...277...>
-	<CAEsd45QsjHX19m8kFsTEixyk1O9VB7gn25rj7aarSe9vuvahXw@...278...>
-	<5006C3D5.8000508@...1114...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Wed, 18 Jul 2012 11:09:54 -0400
-Message-ID: <CAEsd45RKiq+pcieNQen2gO8eSf1rbVv-60Hn+aZE=1ZLQBzu7A@...278...>
-Content-Type: multipart/alternative; boundary=bcaec51b17c9aa74e104c51c108b
-Subject: Re: [Openvpn-devel] [PATCH] plugin: load plugin relative to
-	plugindir
+In-Reply-To: <CAOazyz0w1knsaZ3X3RhSQJU+CgaNDf6y5_CZOR6YMXtauU_m2g@...278...>
+References: <1342541993-32462-1-git-send-email-heiko.hund@...1489...>
+	<CAOazyz0w1knsaZ3X3RhSQJU+CgaNDf6y5_CZOR6YMXtauU_m2g@...278...>
+Date: Wed, 18 Jul 2012 21:21:47 +0300
+Message-ID: <CAOazyz37QkDiT0OnQFSBzezyt5WTPoP+F=vwLtjZqs=bqV9cbg@...278...>
+From: Alon Bar-Lev <alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCHv2 1/2] make non-blocking connect work on
+	Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,95 +15,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn.list@...1114...>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Heiko Hund <heiko.hund@...1489...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---bcaec51b17c9aa74e104c51c108b
-Content-Type: text/plain; charset=UTF-8
+I had time to look at the code, what I don't understand is how come we
+work none blocking and do not test for EWOULDBLOCK at other places...
+If I get it right, at least after send() we can get EWOULDBLOCK even
+if select() returned we have free buffers.
 
-On Wed, Jul 18, 2012 at 10:10 AM, David Sommerseth <
-openvpn.list@...1114...> wrote:
-
-> * The computer is configured to allow OpenVPN to run without root
->   password
+On Wed, Jul 18, 2012 at 7:20 AM, Alon Bar-Lev <alon.barlev@...277...> wrote:
 >
-
-Yes. The vulnerability requires configuring the computer to allow *the
-user*to start OpenVPN
-*as root* without entering the root password.
-
-However, since configuration file paths and script paths can also be
-arbitrary paths, they can be used to escalate privileges in this computer
-configuration, too. (The configuration file could contain an "up" to an
-attack script, or an attack script could be used as the argument to --up.)
-
-So "closing" this plugin vulnerability isn't much help because there are
-other similar attack vectors.
-
-If at some time OpenVPN is modified to disallow absolute paths to scripts
-and/or the configuration file, that would be a major problem for
-Tunnelblick for the reasons outlined earlier. It's one thing to not be able
-to use down-root, especially if it becomes unnecessary, but OpenVPN can't
-be used at all without scripts and configuration files!
-
-Instead of disallowing absolute paths, how about verifying at execution
-time that the plugin (or configuration file, or script) cannot be modified
-except by a privileged user? That is, instead of restricting the location
-of script/plugin/configuration files to an arbitrary protected place or
-places, instead making sure that the files themselves are protected.
-
-(Note: Tunnelblick doesn't contain the vulnerability because it doesn't
-allow the user to start OpenVPN as root. Instead, a suid "helper" program
-is used to launch OpenVPN as root. That helper program controls the options
-(including the path to the configuration file and scripts) that OpenVPN is
-started with, and the configuration file and scripts cannot be modified by
-an unprivileged user.)
-
---bcaec51b17c9aa74e104c51c108b
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div class=3D"gmail_quote">On Wed, Jul 18, 2012 at 10:10 AM, David Sommerse=
-th <span dir=3D"ltr">&lt;<a href=3D"mailto:openvpn.list@...1114..." target=
-=3D"_blank">openvpn.list@...1114...</a>&gt;</span> wrote:<br><blockquote cl=
-ass=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;p=
-adding-left:1ex">
-
-* The computer is configured to allow OpenVPN to run without root<br>
-=C2=A0 password<br></blockquote><div><br></div><div>Yes. The vulnerability =
-requires configuring the computer to allow=C2=A0<b><i>the user</i></b> to s=
-tart OpenVPN=C2=A0<i><b>as root</b></i> without entering the root password.=
-</div><div>
-
-<br></div><div>However, since configuration file paths and script paths can=
- also be arbitrary paths, they can be used to escalate privileges in this c=
-omputer configuration, too. (The configuration file could contain an &quot;=
-up&quot; to an attack script, or an attack script could be used as the argu=
-ment to --up.)</div>
-
-<div><br></div><div>So &quot;closing&quot; this plugin vulnerability isn&#3=
-9;t much help because there are other similar attack vectors.</div><div><br=
-></div><div>If at some time OpenVPN is modified to disallow absolute paths =
-to scripts and/or the configuration file, that would be a major problem for=
- Tunnelblick for the reasons outlined earlier. It&#39;s one thing to not be=
- able to use down-root, especially if it becomes unnecessary, but OpenVPN c=
-an&#39;t be used at all without scripts and configuration files!</div>
-
-<div><br></div><div>Instead of disallowing absolute paths, how about verify=
-ing at execution time that the plugin (or configuration file, or script) ca=
-nnot be modified except by a privileged user? That is, instead of restricti=
-ng the location of script/plugin/configuration files to an arbitrary protec=
-ted place or places, instead making sure that the files themselves are prot=
-ected.</div>
-
-<div><br><div>(Note: Tunnelblick doesn&#39;t contain the vulnerability beca=
-use it doesn&#39;t allow the user to start OpenVPN as root.=C2=A0Instead, a=
- suid &quot;helper&quot; program is used to launch OpenVPN as root. That he=
-lper program controls the options (including the path to the configuration =
-file and scripts) that OpenVPN is started with, and the configuration file =
-and scripts cannot be modified by an unprivileged user.)</div>
-
-</div><div><br></div></div>
-
---bcaec51b17c9aa74e104c51c108b--
+> Thanks.
+> I think this is the simplest solution to this issue.
+>
+> On Tue, Jul 17, 2012 at 7:19 PM, Heiko Hund <heiko.hund@...1489...> wrote:
+> > Instead of EINPROGRESS WinSock2 returns WSAEWOULDBLOCK if a non-blocking
+> > connect(2) cannot be completed immediately.
+> >
+> > Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+> > ---
+> >  src/openvpn/socket.c |    8 +++++++-
+> >  1 files changed, 7 insertions(+), 1 deletions(-)
+> >
+> > diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+> > index 54ebce7..02e2768 100644
+> > --- a/src/openvpn/socket.c
+> > +++ b/src/openvpn/socket.c
+> > @@ -1165,7 +1165,13 @@ openvpn_connect (socket_descriptor_t sd,
+> >    status = connect (sd, &remote->addr.sa,
+> > af_addr_size(remote->addr.sa.sa_family));
+> >    if (status)
+> >      status = openvpn_errno_socket ();
+> > -  if (status == EINPROGRESS)
+> > +  if (
+> > +#ifdef WIN32
+> > +    status == WSAEWOULDBLOCK
+> > +#else
+> > +    status == EINPROGRESS
+> > +#endif
+> > +  )
+> >      {
+> >        while (true)
+> >         {
+> > --
+> > 1.7.9
+> >
+> >
+> >
+> > ------------------------------------------------------------------------------
+> > Live Security Virtual Conference
+> > Exclusive live event will cover all the ways today's security and
+> > threat landscape has changed and how IT managers can respond.
+> > Discussions
+> > will include endpoint security, mobile security and the latest in
+> > malware
+> > threats. http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/
+> > _______________________________________________
+> > Openvpn-devel mailing list
+> > Openvpn-devel@lists.sourceforge.net
+> > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
