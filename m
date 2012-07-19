@@ -1,12 +1,13 @@
+Message-ID: <5008669B.9070408@...1114...>
+Date: Thu, 19 Jul 2012 21:57:15 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-In-Reply-To: <CAOazyz0w1knsaZ3X3RhSQJU+CgaNDf6y5_CZOR6YMXtauU_m2g@...278...>
-References: <1342541993-32462-1-git-send-email-heiko.hund@...1489...>
-	<CAOazyz0w1knsaZ3X3RhSQJU+CgaNDf6y5_CZOR6YMXtauU_m2g@...278...>
-Date: Wed, 18 Jul 2012 21:21:47 +0300
-Message-ID: <CAOazyz37QkDiT0OnQFSBzezyt5WTPoP+F=vwLtjZqs=bqV9cbg@...278...>
-From: Alon Bar-Lev <alon.barlev@...277...>
-Subject: Re: [Openvpn-devel] [PATCHv2 1/2] make non-blocking connect work on
-	Windows
+References: <1342009010-9735-1-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <1342009010-9735-1-git-send-email-heiko.hund@...1489...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig04466F05E6CC3F77D70007B1"
+Subject: Re: [Openvpn-devel] [PATCH] add option --management-query-proxy
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,65 +16,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Heiko Hund <heiko.hund@...1489...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-I had time to look at the code, what I don't understand is how come we
-work none blocking and do not test for EWOULDBLOCK at other places...
-If I get it right, at least after send() we can get EWOULDBLOCK even
-if select() returned we have free buffers.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig04466F05E6CC3F77D70007B1
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jul 18, 2012 at 7:20 AM, Alon Bar-Lev <alon.barlev@...277...> wrote:
->
-> Thanks.
-> I think this is the simplest solution to this issue.
->
-> On Tue, Jul 17, 2012 at 7:19 PM, Heiko Hund <heiko.hund@...1489...> wrote:
-> > Instead of EINPROGRESS WinSock2 returns WSAEWOULDBLOCK if a non-blocking
-> > connect(2) cannot be completed immediately.
-> >
-> > Signed-off-by: Heiko Hund <heiko.hund@...1489...>
-> > ---
-> >  src/openvpn/socket.c |    8 +++++++-
-> >  1 files changed, 7 insertions(+), 1 deletions(-)
-> >
-> > diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-> > index 54ebce7..02e2768 100644
-> > --- a/src/openvpn/socket.c
-> > +++ b/src/openvpn/socket.c
-> > @@ -1165,7 +1165,13 @@ openvpn_connect (socket_descriptor_t sd,
-> >    status = connect (sd, &remote->addr.sa,
-> > af_addr_size(remote->addr.sa.sa_family));
-> >    if (status)
-> >      status = openvpn_errno_socket ();
-> > -  if (status == EINPROGRESS)
-> > +  if (
-> > +#ifdef WIN32
-> > +    status == WSAEWOULDBLOCK
-> > +#else
-> > +    status == EINPROGRESS
-> > +#endif
-> > +  )
-> >      {
-> >        while (true)
-> >         {
-> > --
-> > 1.7.9
-> >
-> >
-> >
-> > ------------------------------------------------------------------------------
-> > Live Security Virtual Conference
-> > Exclusive live event will cover all the ways today's security and
-> > threat landscape has changed and how IT managers can respond.
-> > Discussions
-> > will include endpoint security, mobile security and the latest in
-> > malware
-> > threats. http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/
-> > _______________________________________________
-> > Openvpn-devel mailing list
-> > Openvpn-devel@lists.sourceforge.net
-> > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+On 11/07/12 14:16, Heiko Hund wrote:
+> Make openvpn query for proxy information through the
+> management interface. This allows GUIs to provide (automatically
+> detected) proxy information on a per connection basis.
+>=20
+> This new option supersedes the undocumented --http-proxy-fallback
+> option and puts the responsibilty for HTTP proxy fallback handling
+> to the GUI caring for such.
+>=20
+> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+> ---
+>  doc/management-notes.txt |   31 ++++++++
+>  doc/openvpn.8            |    6 ++
+>  src/openvpn/init.c       |  185 +++++++++++++++++++++-------------------=
+------
+>  src/openvpn/manage.c     |   52 +++----------
+>  src/openvpn/manage.h     |   17 ++---
+>  src/openvpn/options.c    |  112 ++++------------------------
+>  src/openvpn/options.h    |   28 +------
+>  src/openvpn/proxy.c      |   15 ++++
+>  src/openvpn/proxy.h      |    3 +
+>  src/openvpn/syshead.h    |    6 +-
+>  10 files changed, 178 insertions(+), 277 deletions(-)
+>=20
+
+This patch got reviewed by James Yonan, but he never responded publicly to
+this list.  But it's applied to the master branch, as James said this made
+sense if it makes writing the GUI easier.
+
+commit af1bf85aee836f2b729c38990028c035b6c69152
+Author: Heiko Hund <heiko.hund@...1489...>
+Date:   Wed Jul 11 14:16:50 2012 +0200
+
+    add option --management-query-proxy
+
+    Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+    Reviewed-by: James Yonan <james@...515...>
+    Message-Id: 1342009010-9735-1-git-send-email-heiko.hund@...1489...
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/6841
+    Signed-off-by: David Sommerseth <dazo@...384...>
+
+
+kind regards,
+
+David Sommerseth
+
+
+--------------enig04466F05E6CC3F77D70007B1
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAlAIZp4ACgkQDC186MBRfrpcPQCeMNXqBcc4+Jm+M+kbgTAwm5UN
+ytAAoIxhCwu3NP/D7hXB5k0sS9DJZvfq
+=oa1+
+-----END PGP SIGNATURE-----
+
+--------------enig04466F05E6CC3F77D70007B1--
 
