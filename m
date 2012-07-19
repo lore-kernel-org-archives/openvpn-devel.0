@@ -1,14 +1,15 @@
-Message-ID: <500866AE.1060603@...1114...>
-Date: Thu, 19 Jul 2012 21:57:34 +0200
+Message-ID: <500866B5.301@...1114...>
+Date: Thu, 19 Jul 2012 21:57:41 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
 References: <1342541993-32462-1-git-send-email-heiko.hund@...1489...>
-In-Reply-To: <1342541993-32462-1-git-send-email-heiko.hund@...1489...>
+	<1342542316-32563-1-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <1342542316-32563-1-git-send-email-heiko.hund@...1489...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigF7B25456904D1BFA6B552854"
-Subject: Re: [Openvpn-devel] [PATCHv2 1/2] make non-blocking connect work on
- Windows
+	boundary="------------enigF6F0486E432D8F9D6672F760"
+Subject: Re: [Openvpn-devel] [PATCHv2 2/2] don't treat socket related errors
+ special anymore
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,33 +21,45 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF7B25456904D1BFA6B552854
+--------------enigF6F0486E432D8F9D6672F760
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-On 17/07/12 18:19, Heiko Hund wrote:
-> Instead of EINPROGRESS WinSock2 returns WSAEWOULDBLOCK if a non-blocking
-> connect(2) cannot be completed immediately.
+On 17/07/12 18:25, Heiko Hund wrote:
+> WSAGetLastError() is just a wrapper for GetLastError(). So, there's
+> no need to differentiate between socket related and other errors.
+>=20
+> This patch removes all special handling of socket errors in favor
+> of simplifying the codebase somewhat.
 >=20
 > Signed-off-by: Heiko Hund <heiko.hund@...1489...>
 > ---
->  src/openvpn/socket.c |    8 +++++++-
->  1 files changed, 7 insertions(+), 1 deletions(-)
+>  src/openvpn/error.c  |    9 ++-----
+>  src/openvpn/error.h  |    4 ---
+>  src/openvpn/fdmisc.c |    2 +-
+>  src/openvpn/manage.c |    4 +-
+>  src/openvpn/proxy.c  |   10 ++++----
+>  src/openvpn/ps.c     |    6 ++--
+>  src/openvpn/socket.c |   56 +++++++++++++++++++++++++-------------------=
+------
+>  src/openvpn/socket.h |    2 +-
+>  src/openvpn/socks.c  |   26 +++++++++++-----------
+>  src/openvpn/win32.c  |    6 ++--
+>  10 files changed, 59 insertions(+), 66 deletions(-)
 >=20
 
 Applied to master.
 
-
-commit 9081e0ad4c496a0334a21fc4e8e4f1f73a470b5a
+commit 910675de28956cf8d028aed727486b64747362fb
 Author: Heiko Hund <heiko.hund@...1489...>
-Date:   Tue Jul 17 18:19:53 2012 +0200
+Date:   Tue Jul 17 18:25:16 2012 +0200
 
-    make non-blocking connect work on Windows
+    don't treat socket related errors special anymore
 =20=20=20=20
     Signed-off-by: Heiko Hund <heiko.hund@...1489...>
     Acked-by: Gert Doering <gert@...1296...>
-    Message-Id: 1342541993-32462-1-git-send-email-heiko.hund@...1489...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/6875
+    Message-Id: 1342542316-32563-1-git-send-email-heiko.hund@...1489...
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/6876
     Signed-off-by: David Sommerseth <dazo@...384...>
 
 
@@ -55,7 +68,7 @@ kind regards,
 David Sommerseth
 
 
---------------enigF7B25456904D1BFA6B552854
+--------------enigF6F0486E432D8F9D6672F760
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -64,10 +77,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEUEARECAAYFAlAIZq4ACgkQDC186MBRfrpUUQCgpMEqdlrUTRE4FGVEqcKTqyW2
-9bQAl1qUNKiyT29lS/ljerz5ES8igmI=
-=ojzD
+iEYEARECAAYFAlAIZrUACgkQDC186MBRfrqW8gCgjRq0lh/b69nGVh1/vrapyGll
+tbIAnjgAyPW/G3pzDURQM/9zqSNGuC2O
+=hMOh
 -----END PGP SIGNATURE-----
 
---------------enigF7B25456904D1BFA6B552854--
+--------------enigF6F0486E432D8F9D6672F760--
 
