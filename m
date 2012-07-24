@@ -1,8 +1,13 @@
-MIME-Version: 1.0
-Date: Tue, 24 Jul 2012 23:50:36 +0800
-Message-ID: <CAO5YuCXYLusXiOcqFXF0Ni77b73Z+XTKsE_JpBrN45bTiMfdHQ@...278...>
-From: jay alco <jproxy22@...277...>
-Subject: [Openvpn-devel] Windows building error
+Date: Tue, 24 Jul 2012 18:11:37 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120724161137.GC2535@...1296...>
+References: <CAO5YuCXYLusXiOcqFXF0Ni77b73Z+XTKsE_JpBrN45bTiMfdHQ@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="nFreZHaLTZJo0R7j"
+Content-Disposition: inline
+In-Reply-To: <CAO5YuCXYLusXiOcqFXF0Ni77b73Z+XTKsE_JpBrN45bTiMfdHQ@...278...>
+Subject: Re: [Openvpn-devel] Windows building error
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,52 +16,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: jay alco <jproxy22@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-I'm trying to build openvpn on windows with mingw but having trouble.
-I tried building both openvpn 2.1.4 and 2.2.2 from source without
-changing configuration, just executing domake-win and it builds the
-exe perfectly. But when i change configurations in makeopenvpn file i
-cause me the error.
+--nFreZHaLTZJo0R7j
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-I use the following configuration to guild without crypto and ssl. just lzo.
+Hi,
 
-	    --enable-strict \
-	    --prefix=$H/windest \
-	    MAN2HTML=true \
-	    --disable-crypto \
-	    --disable-ssl \
-	    --enable-password-save \
-	    --with-lzo-headers=$H/$LZO_DIR/include \
-	    --with-lzo-lib=$H/$LZO_DIR \
-	    --with-pkcs11-helper-headers=$H/$PKCS11_HELPER_DIR/usr/local/include \
-	    --with-pkcs11-helper-lib=$H/$PKCS11_HELPER_DIR/usr/local/lib
+On Tue, Jul 24, 2012 at 11:50:36PM +0800, jay alco wrote:
+> I'm trying to build openvpn on windows with mingw but having trouble.
+> I tried building both openvpn 2.1.4 and 2.2.2 from source without
+> changing configuration, just executing domake-win and it builds the
+> exe perfectly. But when i change configurations in makeopenvpn file i
+> cause me the error.
 
-but it produce the following error both 2.1.4 and 2.2.2.
-LZO headers were not found
-LZO libraby available from http:\\'' etc.....etc...
-configure: error: Or try ./configure --disable-lzo //I don't wan to disable lzo
-install-win32/makeopenvpn: line 24:
---with-lzo-headers=/c/mingw/msys/1.0/home/administrator/openvpn-2.1.4/../lzo-2.02/inlcude:
-No such file or directory
+2.3_alpha2 contains a completely rewritten build system, which eases
+building windows binary enormously (cross-build on linux using mingw64).
 
-i have the lzo libs in the directory and was able to complete it
-without disabling crypto and ssl. But when i disable SSL and crypto it
-doesn't seem to find the lzo libs.
+gert
 
-then i tried disabling lzo in openvpn 2.2.2 and it created the exe
-file without cryto and ssl but not what i want since i need lzo.
-Problem with openvpn 2.1.4 is even with lzo features disabled it still
-gives me error
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-options.c: In fuction 'parse_http_proxy_fallback':
-options.c:1474:33: error: dereferencing pointer to incomplete type
-options.c:1477:4: error: dereferencing pointer to incomplete type
-options.c:1478:4: error: dereferencing pointer to incomplete type
+--nFreZHaLTZJo0R7j
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-I don't even know what parse_http_proxy_fallback got to do with SSL
-and CRYTO. any one knows what i'm doing wrong except from the fact
-that i disabled ssl?
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
+
+iQCVAwUBUA7JOakuBuNlUUl1AQLlMAP8CYK5gWtGncaoYZEe9FOBqGvsbgsKeu8G
+PDAd0hTtxJnePJi4+gvFJk/V+3xxFmTpaHIoD0Flc05t/S4DrF/uG+KeRjoham3V
+H9nbTFQCiIX6E4tVImmb+1nhnenxegkAFt2DB3znru5zlFrjCmLXnmenobIoD+3J
+L87gZ6uBAPk=
+=fIAI
+-----END PGP SIGNATURE-----
+
+--nFreZHaLTZJo0R7j--
 
