@@ -1,14 +1,15 @@
-Resent-Message-Id: <201207241639.q6OGdMoq008916@...1295...>
-Date: Tue, 24 Jul 2012 18:36:05 +0200
+Date: Tue, 24 Jul 2012 19:03:04 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20120724163605.GD2535@...1296...>
+Message-ID: <20120724170304.GE2535@...1296...>
 References: <CAO5YuCXYLusXiOcqFXF0Ni77b73Z+XTKsE_JpBrN45bTiMfdHQ@...278...>
 	<20120724161137.GC2535@...1296...>
 	<CAO5YuCUnN6mq0MF=jChGKzO2W=uL0Csbqa8Ef_zhQo9i3B=wsQ@...278...>
+	<20120724163605.GD2535@...1296...>
+	<CAO5YuCUY9zLunKd6GaDJ-iVN5J6SVJN38nTqnohGsvOEsTebXA@...278...>
 Mime-Version: 1.0
-In-Reply-To: <CAO5YuCUnN6mq0MF=jChGKzO2W=uL0Csbqa8Ef_zhQo9i3B=wsQ@...278...>
-Resent-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <CAO5YuCUY9zLunKd6GaDJ-iVN5J6SVJN38nTqnohGsvOEsTebXA@...278...>
 Subject: Re: [Openvpn-devel] Windows building error
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -25,14 +26,14 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Wed, Jul 25, 2012 at 12:28:56AM +0800, jay alco wrote:
-> As much as i like to try 2.3_alpha2 i have no idea how to build it on
-> windowns using mingw since i'm just starting with unix commands. how do i
-> build it using mingw both for linux server and windows client?
+On Wed, Jul 25, 2012 at 12:45:18AM +0800, jay alco wrote:
+> XD.. My work station is windows. Anyway. Is there any refference i can use
+> to cross build 2.3alpha2?
 
-You build on Linux.
+Samuli has instructions on http://community.openvpn.net/
 
-Building on Windows is the way to insanity.
+(Incidentially there are also instructions how to build older versions,
+but you *really* do not want that)
 
 gert
 -- 
@@ -40,6 +41,4 @@ USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~gert/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
-
-
 
