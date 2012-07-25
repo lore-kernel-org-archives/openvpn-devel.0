@@ -1,10 +1,10 @@
-Message-ID: <500FB3EB.3060507@...515...>
-Date: Wed, 25 Jul 2012 11:52:59 +0300
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Wed, 25 Jul 2012 11:45:12 +0200
+Message-ID: <1438202.PdG2Mf5RXu@...1526...>
+In-Reply-To: <500FB0B4.4020306@...515...>
+References: <500FB0B4.4020306@...515...>
 MIME-Version: 1.0
-References: <CAO5YuCXYLusXiOcqFXF0Ni77b73Z+XTKsE_JpBrN45bTiMfdHQ@...278...>
-In-Reply-To: <CAO5YuCXYLusXiOcqFXF0Ni77b73Z+XTKsE_JpBrN45bTiMfdHQ@...278...>
-Subject: Re: [Openvpn-devel] Windows building error
+Subject: Re: [Openvpn-devel] OpenVPN 2.3_alpha3 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,63 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: jay alco <jproxy22@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
+Cc: "openvpn-announce@lists.sourceforge.net" <openvpn-announce@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
 
-Hi Jay,
-> I'm trying to build openvpn on windows with mingw but having trouble.
-> I tried building both openvpn 2.1.4 and 2.2.2 from source without
-> changing configuration, just executing domake-win and it builds the
-> exe perfectly. But when i change configurations in makeopenvpn file i
-> cause me the error.
->
-> I use the following configuration to guild without crypto and ssl. just l=
-zo.
->
-> 	    --enable-strict \
-> 	    --prefix=3D$H/windest \
-> 	    MAN2HTML=3Dtrue \
-> 	    --disable-crypto \
-> 	    --disable-ssl \
-> 	    --enable-password-save \
-> 	    --with-lzo-headers=3D$H/$LZO_DIR/include \
-> 	    --with-lzo-lib=3D$H/$LZO_DIR \
-> 	    --with-pkcs11-helper-headers=3D$H/$PKCS11_HELPER_DIR/usr/local/inclu=
-de \
-> 	    --with-pkcs11-helper-lib=3D$H/$PKCS11_HELPER_DIR/usr/local/lib
->
-> but it produce the following error both 2.1.4 and 2.2.2.
-Trust me, trying to build 2.1.4 for Windows is (as Gert said) a way to
-insanity. If you really have to use a s.c. "stable" version of OpenVPN,
-I suggest 2.2.2 which at least has a more or less complete Python-based
-buildsystem which is documented here:
+On Wednesday 25 July 2012 11:39:16 Samuli Sepp=E4nen wrote:
+> This release fixes a major problem in "tap server" mode (Trac #216),
+> adds support for querying proxy information via the management interface
+> and fixes some smaller issues. In addition, the Windows installer comes
+> with tap-windows-9.9.2 (fixes the "DHCP NAK bomb on Windows 7" bug, Trac
+> #97) and  openvpn-gui-1.0.5.
 
-<https://community.openvpn.net/openvpn/wiki/BuildingOnWindows>
+I also want to mention that the GUI is now correctly supplying the HTTPS an=
+d=20
+SOCKS proxy server system settings to openvpn. The info is queried from the=
+=20
+control panel internet settings. If WPAD or a PAC file are configured there=
+,=20
+it uses automatic proxy detection as well.
 
-However, I'd recommend taking the just released openvpn-2.3-alpha3 and
-using the new "openvpn-build" buildsystem to build it:
+I would like to ask people to give this a try and report any shortcomings b=
+ack=20
+to the -devel list.
 
-<https://github.com/OpenVPN/openvpn-build>
-<https://community.openvpn.net/openvpn/wiki/BuildingUsingGenericBuildsystem>
-
-If you want to try building on a Windows using Microsoft Visual Studio
-2010 or later, "openvpn-build" has a separate "msvc" buildsystem for
-that purpose. The "generic" buildsystem, which is a cross-compile
-buildsystem for *NIX environments, is more well tested, and works very
-nicely. Ubuntu 12.04 64-bit is a good build platform, provided you
-install backported mingw-w64 packages:
-
-<https://community.openvpn.net/openvpn/wiki/InstallingMingwW64>
-
-Hope this helps,
-
+Thanks, Heiko
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
+Heiko Hund | Sr. Software Engineer | Tel +49-721-25516-237 | Fax -200
+SOPHOS NSG | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germany
 
 
