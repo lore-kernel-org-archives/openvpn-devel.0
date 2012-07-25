@@ -1,15 +1,9 @@
-Date: Tue, 24 Jul 2012 19:03:04 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120724170304.GE2535@...1296...>
-References: <CAO5YuCXYLusXiOcqFXF0Ni77b73Z+XTKsE_JpBrN45bTiMfdHQ@...278...>
-	<20120724161137.GC2535@...1296...>
-	<CAO5YuCUnN6mq0MF=jChGKzO2W=uL0Csbqa8Ef_zhQo9i3B=wsQ@...278...>
-	<20120724163605.GD2535@...1296...>
-	<CAO5YuCUY9zLunKd6GaDJ-iVN5J6SVJN38nTqnohGsvOEsTebXA@...278...>
-Mime-Version: 1.0
-In-Reply-To: <CAO5YuCUY9zLunKd6GaDJ-iVN5J6SVJN38nTqnohGsvOEsTebXA@...278...>
-Subject: Re: [Openvpn-devel] Windows building error
-Reply-To: openvpn-devel@lists.sourceforge.net
+MIME-Version: 1.0
+Date: Wed, 25 Jul 2012 13:57:20 +0800
+Message-ID: <CAO5YuCUbSojNT5m78QChRjTr=f4JHkiAA-P7+sa62RA5KVyHog@...278...>
+From: jay alco <jproxy22@...277...>
+Content-Type: multipart/alternative; boundary=047d7b10cdf9f2caf504c5a1269c
+Subject: [Openvpn-devel] enable P2MP opentions?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,27 +12,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: jay alco <jproxy22@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+--047d7b10cdf9f2caf504c5a1269c
+Content-Type: text/plain; charset=ISO-8859-1
 
-On Wed, Jul 25, 2012 at 12:45:18AM +0800, jay alco wrote:
-> XD.. My work station is windows. Anyway. Is there any refference i can use
-> to cross build 2.3alpha2?
+Hi, i build openvpn from source with the following featured disabled SSL,
+CRYPTO. I have successfully build openpn without this option but during the
+test running the server configuration it gives me error
 
-Samuli has instructions on http://community.openvpn.net/
+Options error: Unrecognized option or missing parameter(s) in
+config.ovpn:6: client-cert-not-required (2.2.2)
 
-(Incidentially there are also instructions how to build older versions,
-but you *really* do not want that)
+i user the following options.
 
-gert
--- 
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~gert/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+local xxx.xxx.xxx.xxx
+port 800
+proto tcp
+dev tun
+
+client-cert-not-required
+script-security 2
+username-as-common-name
+plugin /usr/share/openvpn/plugin/lib/openvpn-auth-pam.so /etc/pam.d/login
+server 10.10.0.0 255.255.255.0
+persist-key
+persist-tun
+
+
+It looks like all options under P2MP and P2MP_SERVER are disable when i
+disable SSL, CRYPTO. and for that i can not use client-cert-not-required,
+username-as-common-name, server X X, etc.. and cannot run the server. How
+do i eneable P2MP and P2MP_SERVER during build?
+
+--047d7b10cdf9f2caf504c5a1269c
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Hi, i build openvpn from source with the following featured disabled SSL, C=
+RYPTO. I have successfully build openpn without this option but during the =
+test running the server configuration it gives me error<br><br>Options erro=
+r: Unrecognized option or missing parameter(s) in config.ovpn:6: client-cer=
+t-not-required (2.2.2)<br>
+<br>i user the following options.<br><br>local xxx.xxx.xxx.xxx<br>port 800<=
+br>proto tcp<br>dev tun<br><br>client-cert-not-required<br>script-security =
+2<br>username-as-common-name<br>plugin /usr/share/openvpn/plugin/lib/openvp=
+n-auth-pam.so /etc/pam.d/login<br>
+server 10.10.0.0 255.255.255.0<br>persist-key<br>persist-tun<br><br><br>It =
+looks like all options under P2MP and P2MP_SERVER are disable when i disabl=
+e SSL, CRYPTO. and for that i can not use client-cert-not-required, usernam=
+e-as-common-name, server X X, etc.. and cannot run the server. How do i ene=
+able P2MP and P2MP_SERVER during build?<br>
+
+--047d7b10cdf9f2caf504c5a1269c--
 
