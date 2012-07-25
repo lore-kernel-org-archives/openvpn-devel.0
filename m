@@ -1,10 +1,9 @@
-Message-ID: <500FA9E4.7000404@...1114...>
-Date: Wed, 25 Jul 2012 10:10:12 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <500FB0B4.4020306@...515...>
+Date: Wed, 25 Jul 2012 11:39:16 +0300
+From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
 MIME-Version: 1.0
-References: <CAO5YuCUbSojNT5m78QChRjTr=f4JHkiAA-P7+sa62RA5KVyHog@...278...>
-In-Reply-To: <CAO5YuCUbSojNT5m78QChRjTr=f4JHkiAA-P7+sa62RA5KVyHog@...278...>
-Subject: Re: [Openvpn-devel] enable P2MP opentions?
+Content-Type: multipart/mixed; boundary="------------070106000608080104090303"
+Subject: [Openvpn-devel] OpenVPN 2.3_alpha3 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,54 +12,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: jay alco <jproxy22@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, "openvpn-announce@lists.sourceforge.net" <openvpn-announce@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+This is a multi-part message in MIME format.
+--------------070106000608080104090303
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 25/07/12 07:57, jay alco wrote:
-[...snip...]
-> It looks like all options under P2MP and P2MP_SERVER are disable
-> when i disable SSL, CRYPTO. and for that i can not use 
-> client-cert-not-required, username-as-common-name, server X X,
-> etc.. and cannot run the server. How do i eneable P2MP and
-> P2MP_SERVER during build?
+The OpenVPN community project team is proud to release OpenVPN
+2.3_alpha3. It can be downloaded from here:
 
-OpenVPN does not support P2MP mode without PKI (certificates/keys).
-So what you're trying to do is not possible.  And even though you want
-to use --client-cert-not-required, the server-side would still need
-both a key and a certificate.  And the client would still need the CA
-certificate which issued the server certificate.
+<http://openvpn.net/index.php/open-source/downloads.html>
 
-In addition common name is used in the code paths which are related to
-X509 verifications.  These code paths are also disabled when
-SSL/CRYPTO features are disabled.  Which again would remove the
-- --username-as-common-name feature.
+This release fixes a major problem in "tap server" mode (Trac #216),
+adds support for querying proxy information via the management interface
+and fixes some smaller issues. In addition, the Windows installer comes
+with tap-windows-9.9.2 (fixes the "DHCP NAK bomb on Windows 7" bug, Trac
+#97) and  openvpn-gui-1.0.5.
 
-Compiling without SSL/CRYPTO will only make it possible to use P2P
-mode, which means you need a single OpenVPN process using a dedicated
-port for each client.
+A full list of new features and the changelog are available here:
 
-Further, if you want to use --secret instead of SSL/TLS certificates,
-that would be really a weak solution in a P2MP setup, as all clients
-would be able to decrypt the traffic from all other clients.  Using
-SSL/TLS certificates, each client have an individual encryption so it
-would be much harder for other clients to eavesdrop other connected
-clients communication.
+<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn23>
+
+The changelog is also attached to this email.
+
+For generic help use these support channels:
+
+- Official documentation:
+<http://openvpn.net/index.php/open-source/documentation/howto.html>
+- Wiki: <https://community.openvpn.net>
+- Forums: <https://forums.openvpn.net>
+- User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+- User IRC channel: #openvpn at irc.freenode.net
+
+Please report bugs and ask development questions here:
+
+- Bug tracker and Wiki: <https://community.openvpn.net>
+- Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+- Developer IRC channel: #openvpn-devel at irc.freenode.net (requires
+  Freenode registration)
+
+--=20
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
 
-kind regards,
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+--------------070106000608080104090303
+Content-Type: text/plain; charset=UTF-8;
+	name="openvpn-2.3_alpha3-changelog.txt"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="openvpn-2.3_alpha3-changelog.txt"
 
-iEYEARECAAYFAlAPqeEACgkQDC186MBRfro0DgCgg2eckszK19J/6WFzj4zajQmn
-3GMAn2KfoqiYWdJ/ygTV8GW21apBLOkA
-=vsQE
------END PGP SIGNATURE-----
+MjAxMi4wNy4yMCAtLSBWZXJzaW9uIDIuM19hbHBoYTMKQXJuZSBTY2h3YWJlICgxKToKICAg
+ICAgRml4IGNvbXBpbGluZyB3aXRoIC0tZGlzYWJsZS1tYW5hZ2VtZW50CgpHZXJ0IERvZXJp
+bmcgKDEpOgogICAgICBSZXBhaXIgInRhcCBzZXJ2ZXIiIG1vZGUgYnJva2VubmVzcyBjYXVz
+ZWQgYnkgPHN0ZGJvb2wuaD4gZmFsbG91dAoKSGVpa28gSHVuZCAoNCk6CiAgICAgIG1ha2Ug
+bm9uLWJsb2NraW5nIGNvbm5lY3Qgd29yayBvbiBXaW5kb3dzCiAgICAgIGRvbid0IHRyZWF0
+IHNvY2tldCByZWxhdGVkIGVycm9ycyBzcGVjaWFsIGFueW1vcmUKICAgICAgcmVtb3ZlIHVu
+dXNlZCBzaG93X2Nvbm5lY3Rpb25fbGlzdCBkZWJ1ZyBmdW5jdGlvbgogICAgICBhZGQgb3B0
+aW9uIC0tbWFuYWdlbWVudC1xdWVyeS1wcm94eQo=
+--------------070106000608080104090303--
 
