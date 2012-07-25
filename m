@@ -1,9 +1,10 @@
+Message-ID: <500FA9E4.7000404@...1114...>
+Date: Wed, 25 Jul 2012 10:10:12 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-Date: Wed, 25 Jul 2012 13:57:20 +0800
-Message-ID: <CAO5YuCUbSojNT5m78QChRjTr=f4JHkiAA-P7+sa62RA5KVyHog@...278...>
-From: jay alco <jproxy22@...277...>
-Content-Type: multipart/alternative; boundary=047d7b10cdf9f2caf504c5a1269c
-Subject: [Openvpn-devel] enable P2MP opentions?
+References: <CAO5YuCUbSojNT5m78QChRjTr=f4JHkiAA-P7+sa62RA5KVyHog@...278...>
+In-Reply-To: <CAO5YuCUbSojNT5m78QChRjTr=f4JHkiAA-P7+sa62RA5KVyHog@...278...>
+Subject: Re: [Openvpn-devel] enable P2MP opentions?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,57 +13,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
---047d7b10cdf9f2caf504c5a1269c
 Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: jay alco <jproxy22@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi, i build openvpn from source with the following featured disabled SSL,
-CRYPTO. I have successfully build openpn without this option but during the
-test running the server configuration it gives me error
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Options error: Unrecognized option or missing parameter(s) in
-config.ovpn:6: client-cert-not-required (2.2.2)
+On 25/07/12 07:57, jay alco wrote:
+[...snip...]
+> It looks like all options under P2MP and P2MP_SERVER are disable
+> when i disable SSL, CRYPTO. and for that i can not use 
+> client-cert-not-required, username-as-common-name, server X X,
+> etc.. and cannot run the server. How do i eneable P2MP and
+> P2MP_SERVER during build?
 
-i user the following options.
+OpenVPN does not support P2MP mode without PKI (certificates/keys).
+So what you're trying to do is not possible.  And even though you want
+to use --client-cert-not-required, the server-side would still need
+both a key and a certificate.  And the client would still need the CA
+certificate which issued the server certificate.
 
-local xxx.xxx.xxx.xxx
-port 800
-proto tcp
-dev tun
+In addition common name is used in the code paths which are related to
+X509 verifications.  These code paths are also disabled when
+SSL/CRYPTO features are disabled.  Which again would remove the
+- --username-as-common-name feature.
 
-client-cert-not-required
-script-security 2
-username-as-common-name
-plugin /usr/share/openvpn/plugin/lib/openvpn-auth-pam.so /etc/pam.d/login
-server 10.10.0.0 255.255.255.0
-persist-key
-persist-tun
+Compiling without SSL/CRYPTO will only make it possible to use P2P
+mode, which means you need a single OpenVPN process using a dedicated
+port for each client.
+
+Further, if you want to use --secret instead of SSL/TLS certificates,
+that would be really a weak solution in a P2MP setup, as all clients
+would be able to decrypt the traffic from all other clients.  Using
+SSL/TLS certificates, each client have an individual encryption so it
+would be much harder for other clients to eavesdrop other connected
+clients communication.
 
 
-It looks like all options under P2MP and P2MP_SERVER are disable when i
-disable SSL, CRYPTO. and for that i can not use client-cert-not-required,
-username-as-common-name, server X X, etc.. and cannot run the server. How
-do i eneable P2MP and P2MP_SERVER during build?
+kind regards,
 
---047d7b10cdf9f2caf504c5a1269c
-Content-Type: text/html; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-Hi, i build openvpn from source with the following featured disabled SSL, C=
-RYPTO. I have successfully build openpn without this option but during the =
-test running the server configuration it gives me error<br><br>Options erro=
-r: Unrecognized option or missing parameter(s) in config.ovpn:6: client-cer=
-t-not-required (2.2.2)<br>
-<br>i user the following options.<br><br>local xxx.xxx.xxx.xxx<br>port 800<=
-br>proto tcp<br>dev tun<br><br>client-cert-not-required<br>script-security =
-2<br>username-as-common-name<br>plugin /usr/share/openvpn/plugin/lib/openvp=
-n-auth-pam.so /etc/pam.d/login<br>
-server 10.10.0.0 255.255.255.0<br>persist-key<br>persist-tun<br><br><br>It =
-looks like all options under P2MP and P2MP_SERVER are disable when i disabl=
-e SSL, CRYPTO. and for that i can not use client-cert-not-required, usernam=
-e-as-common-name, server X X, etc.. and cannot run the server. How do i ene=
-able P2MP and P2MP_SERVER during build?<br>
-
---047d7b10cdf9f2caf504c5a1269c--
+iEYEARECAAYFAlAPqeEACgkQDC186MBRfro0DgCgg2eckszK19J/6WFzj4zajQmn
+3GMAn2KfoqiYWdJ/ygTV8GW21apBLOkA
+=vsQE
+-----END PGP SIGNATURE-----
 
