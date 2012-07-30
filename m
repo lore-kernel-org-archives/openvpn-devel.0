@@ -1,11 +1,9 @@
-Message-ID: <50169195.5050302@...1114...>
-Date: Mon, 30 Jul 2012 15:52:21 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Mon, 30 Jul 2012 18:35:21 +0200
+Message-ID: <1343666121-19765-1-git-send-email-heiko.hund@...1489...>
 MIME-Version: 1.0
-References: <1343639122-8658-1-git-send-email-heiko.hund@...1489...>
-In-Reply-To: <1343639122-8658-1-git-send-email-heiko.hund@...1489...>
-Subject: Re: [Openvpn-devel] [PATCH] fix regression with --http-proxy[-*]
- options
+Subject: [Openvpn-devel] [RFC] give plugins a method to pass log lines to
+	openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,50 +12,163 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Some plugins want to add messages to the openvpn log file.
 
-On 30/07/12 11:05, Heiko Hund wrote:
-> Commit af1bf85a introducing the --management-query-proxy option 
-> broke the initialization of HTTP proxy options by not assigning the
-> allocated object to the options element in the function 
-> init_http_proxy_options_once().
-> 
-> Signed-off-by: Heiko Hund <heiko.hund@...1489...> --- 
-> src/openvpn/init.c    |    3 +-- src/openvpn/options.c |    8
-> ++++---- src/openvpn/proxy.c   |   12 ++++++------ 
-> src/openvpn/proxy.h   |    2 +- 4 files changed, 12 insertions(+),
-> 13 deletions(-)
-> 
+V3 plugins can indirectly write to the log by specifying one or
+more openvpn_plugin_log_list structs and returning them in the
+provided openvpn_plugin_args_{open,func}_return struct.
 
-Applied to master.
+The openvpn plugin backend will log the provided information
+upon reception.
 
-commit 4f879daeb9b1b709c80d01e4872b30e23747c4a8
-Author: Heiko Hund <heiko.hund@...1489...>
-Date:   Mon Jul 30 11:05:22 2012 +0200
+Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+---
+ include/openvpn-plugin.h |   39 ++++++++++++++++++++++++++++++++++++++-
+ src/openvpn/plugin.c     |   37 +++++++++++++++++++++++++++++++++++++
+ 2 files changed, 75 insertions(+), 1 deletion(-)
 
-    fix regression with --http-proxy[-*] options
+diff --git a/include/openvpn-plugin.h b/include/openvpn-plugin.h
+index 1c80eec..08db7b2 100644
+--- a/include/openvpn-plugin.h
++++ b/include/openvpn-plugin.h
+@@ -201,8 +201,39 @@ struct openvpn_plugin_string_list
+  *    1      Initial plugin v3 structures providing the same API as
+  *           the v2 plugin interface + X509 certificate information.
+  *
++ *    2      Add log_list to openvpn_plugin_args_{open,func}_return
++ *           structs. The log_list struct is evaluated by openvpn and
++ *           enables plugins to add information to the openvpn log
++ *           output.
++ *
++ */
++#define OPENVPN_PLUGINv3_STRUCTVER 2
++
++
++typedef enum
++{
++  PLOG_ERR       = (1 << 0),  /* Error condition message */
++  PLOG_WARN      = (1 << 1),  /* General warning message */
++  PLOG_NOTE      = (1 << 2),  /* Informational message */
++  PLOG_DEBUG     = (1 << 3),  /* Debug message, displayed if verb >= 7 */
++
++  PLOG_NOMUTE    = (1 << 8),  /* Mute setting does not apply for message */
++  PLOG_NOIPREFIX = (1 << 9)   /* No instance prefix for this message */
++
++} openvpn_plugin_log_flags_t;
++
++/**
++ * Struct to transport log lines from the plugin to openvpn.
++ * The plugin should allocate all structure instances and msg strings
++ * with malloc, since OpenVPN will free them after logging took place.
+  */
+-#define OPENVPN_PLUGINv3_STRUCTVER 1
++struct openvpn_plugin_log_list
++{
++  struct openvpn_plugin_log_list *next;
++  const openvpn_plugin_log_flags_t flags;
++  const char *msg;
++};
++
+ 
+ /**
+  * Arguments used to transport variables to the plug-in.
+@@ -250,12 +281,15 @@ struct openvpn_plugin_args_open_in
+  *
+  * return_list : used to return data back to OpenVPN.
+  *
++ * log_list : used to return log lines back to OpenVPN.
++ *
+  */
+ struct openvpn_plugin_args_open_return
+ {
+   int  type_mask;
+   openvpn_plugin_handle_t *handle;
+   struct openvpn_plugin_string_list **return_list;
++  struct openvpn_plugin_log_list *log_list;
+ };
+ 
+ /**
+@@ -313,10 +347,13 @@ struct openvpn_plugin_args_func_in
+  * return_list : used to return data back to OpenVPN for further processing/usage by
+  *               the OpenVPN executable.
+  *
++ * log_list : used to return log lines back to OpenVPN.
++ *
+  */
+ struct openvpn_plugin_args_func_return
+ {
+   struct openvpn_plugin_string_list **return_list;
++  struct openvpn_plugin_log_list *log_list;
+ };
+ 
+ /*
+diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
+index 7ce2f5e..f4833df 100644
+--- a/src/openvpn/plugin.c
++++ b/src/openvpn/plugin.c
+@@ -286,6 +286,41 @@ plugin_init_item (struct plugin *p, const struct plugin_option *o)
+   gc_free (&gc);
+ }
+ 
++
++static void
++plugin_do_log_list (struct openvpn_plugin_log_list *log_list)
++{
++  while (log_list)
++    {
++      struct openvpn_plugin_log_list *this = log_list;
++      if (log_list->msg)
++        {
++          unsigned int flags;
++
++          if (log_list->flags & PLOG_ERR)
++            flags = M_INFO | M_NONFATAL;
++          else if (log_list->flags & PLOG_WARN)
++            flags = M_INFO | M_WARN;
++          else if (log_list->flags & PLOG_NOTE)
++            flags = M_INFO;
++          else if (log_list->flags & PLOG_DEBUG)
++            flags = D_PLUGIN_DEBUG | M_DEBUG;
++
++          if (log_list->flags & PLOG_NOMUTE)
++            flags |= M_NOMUTE;
++          if (log_list->flags & PLOG_NOIPREFIX)
++            flags |= M_NOIPREFIX;
++
++          msg (flags, log_list->msg);
++          free (log_list->msg);
++        }
++
++      log_list = log_list->next;
++      free (this);
++    }
++}
++
++
+ static void
+ plugin_open_item (struct plugin *p,
+ 		  const struct plugin_option *o,
+@@ -317,6 +352,7 @@ plugin_open_item (struct plugin *p,
+ 
+         CLEAR(retargs);
+         if ((*p->open3)(OPENVPN_PLUGINv3_STRUCTVER, &args, &retargs) == OPENVPN_PLUGIN_FUNC_SUCCESS) {
++          plugin_do_log_list(retargs.log_list);
+           p->plugin_type_mask = retargs.type_mask;
+           p->plugin_handle = retargs.handle;
+           retlist = retargs.return_list;
+@@ -399,6 +435,7 @@ plugin_call_item (const struct plugin *p,
+ 
+         CLEAR(retargs);
+         status = (*p->func3)(OPENVPN_PLUGINv3_STRUCTVER, &args, &retargs);
++        plugin_do_log_list(retargs.log_list);
+         retlist = retargs.return_list;
+       } else if (p->func2)
+ 	status = (*p->func2)(p->plugin_handle, type, (const char **)a.argv, envp, per_client_context, retlist);
+-- 
+1.7.10.4
 
-    Signed-off-by: Heiko Hund <heiko.hund@...1489...>
-    Acked-by: Arne Schwabe <arne@...1227...>
-    Message-Id: 1343639122-8658-1-git-send-email-heiko.hund@...1489...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/6913
-    Signed-off-by: David Sommerseth <dazo@...384...>
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAlAWkZMACgkQDC186MBRfroVPQCfUbhvHxx9O+TqdCJ7suLK5c5f
-3ZgAnjlNdrw9oxJPN5AtEoBTcUtC+ZCD
-=rKlw
------END PGP SIGNATURE-----
 
