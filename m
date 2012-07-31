@@ -1,12 +1,8 @@
-Message-ID: <5017CC12.9000709@...1114...>
-Date: Tue, 31 Jul 2012 14:14:10 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Tue, 31 Jul 2012 15:32:46 +0200
+Message-ID: <1343741566-30911-1-git-send-email-heiko.hund@...1489...>
 MIME-Version: 1.0
-References: <1343666121-19765-1-git-send-email-heiko.hund@...1489...>
-	<5016BEFA.8030901@...1114...> <1738242.yJcaVCkhX0@...1526...>
-In-Reply-To: <1738242.yJcaVCkhX0@...1526...>
-Subject: Re: [Openvpn-devel] [RFC] give plugins a method to pass log lines
- to openvpn
+Subject: [Openvpn-devel] [PATCH] add plugin_log() API to write to openvpn log
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,53 +11,143 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Heiko Hund <heiko.hund@...1516...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Some plugins want to add messages to the openvpn log file. The
+plugin_log() API provides a way for them to do so.
 
-On 31/07/12 13:31, Heiko Hund wrote:
->> But it should also prefix these log lines as coming from a
->> plug-in (preferably with the plug-in name included)...
-> 
-> I don't think enforcing something like this makes much sense, as
-> evil plugins, trying to forge log lines to appear originating from
-> the core process, will just call x_msg() directly then.
+Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+---
+ include/openvpn-plugin.h |   20 ++++++++++++++++++++
+ src/openvpn/error.c      |   11 ++++++++---
+ src/openvpn/error.h      |    2 ++
+ src/openvpn/plugin.c     |   35 +++++++++++++++++++++++++++++++++++
+ 4 files changed, 65 insertions(+), 3 deletions(-)
 
-Agreed, the intention wasn't to nail evil plug-ins, it was more a
-convenience - as the plug-in itself doesn't need to "identify" itself.
- The plug-in cares for what it wants to add to the log, and the rest
-is automatic and will also be "tagged" consistently among all plug-ins.
+diff --git a/include/openvpn-plugin.h b/include/openvpn-plugin.h
+index 1c80eec..e966baf 100644
+--- a/include/openvpn-plugin.h
++++ b/include/openvpn-plugin.h
+@@ -47,6 +47,26 @@ typedef X509 openvpn_x509_cert_t;
+ extern "C" {
+ #endif
+ 
++/**
++ * Struct to transport log lines from the plugin to openvpn.
++ * The plugin should allocate all structure instances and msg strings
++ * with malloc, since OpenVPN will free them after logging took place.
++ */
++typedef enum
++{
++  PLOG_ERR       = (1 << 0),  /* Error condition message */
++  PLOG_WARN      = (1 << 1),  /* General warning message */
++  PLOG_NOTE      = (1 << 2),  /* Informational message */
++  PLOG_DEBUG     = (1 << 3),  /* Debug message, displayed if verb >= 7 */
++
++  PLOG_ERRNO     = (1 <<  8), /* Add error description to message */
++  PLOG_NOMUTE    = (1 <<  9), /* Mute setting does not apply for message */
++  PLOG_NOIPREFIX = (1 << 10)  /* No instance prefix for this message */
++
++} openvpn_plugin_log_flags_t;
++
++void plugin_log (openvpn_plugin_log_flags_t flags, const char *fmt, ...);
++
+ /*
+  * Plug-in types.  These types correspond to the set of script callbacks
+  * supported by OpenVPN.
+diff --git a/src/openvpn/error.c b/src/openvpn/error.c
+index 8396fe0..6848425 100644
+--- a/src/openvpn/error.c
++++ b/src/openvpn/error.c
+@@ -201,8 +201,15 @@ int x_msg_line_num; /* GLOBAL */
+ 
+ void x_msg (const unsigned int flags, const char *format, ...)
+ {
+-  struct gc_arena gc;
+   va_list arglist;
++  va_start (arglist, format);
++  x_msg_va (flags, format, arglist);
++  va_end (arglist);
++}
++
++void x_msg_va (const unsigned int flags, const char *format, va_list arglist)
++{
++  struct gc_arena gc;
+ #if SYSLOG_CAPABILITY
+   int level;
+ #endif
+@@ -237,9 +244,7 @@ void x_msg (const unsigned int flags, const char *format, ...)
+   m1 = (char *) gc_malloc (ERR_BUF_SIZE, false, &gc);
+   m2 = (char *) gc_malloc (ERR_BUF_SIZE, false, &gc);
+ 
+-  va_start (arglist, format);
+   vsnprintf (m1, ERR_BUF_SIZE, format, arglist);
+-  va_end (arglist);
+   m1[ERR_BUF_SIZE - 1] = 0; /* windows vsnprintf needs this */
+ 
+   if ((flags & M_ERRNO) && e)
+diff --git a/src/openvpn/error.h b/src/openvpn/error.h
+index aedb7c3..27c48b6 100644
+--- a/src/openvpn/error.h
++++ b/src/openvpn/error.h
+@@ -182,6 +182,8 @@ void x_msg (const unsigned int flags, const char *format, ...)
+ #endif
+     ; /* should be called via msg above */
+ 
++void x_msg_va (const unsigned int flags, const char *format, va_list arglist);
++
+ /*
+  * Function prototypes
+  */
+diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
+index 7ce2f5e..cbad76b 100644
+--- a/src/openvpn/plugin.c
++++ b/src/openvpn/plugin.c
+@@ -286,6 +286,41 @@ plugin_init_item (struct plugin *p, const struct plugin_option *o)
+   gc_free (&gc);
+ }
+ 
++
++void
++plugin_log (openvpn_plugin_log_flags_t plog_flags, const char *format, ...)
++{
++  unsigned int msg_flags;
++  va_list arglist;
++
++  if (format == NULL)
++    return;
++
++  if (plog_flags & PLOG_ERR)
++    msg_flags = M_INFO | M_NONFATAL;
++  else if (plog_flags & PLOG_WARN)
++    msg_flags = M_INFO | M_WARN;
++  else if (plog_flags & PLOG_NOTE)
++    msg_flags = M_INFO;
++  else if (plog_flags & PLOG_DEBUG)
++    msg_flags = D_PLUGIN_DEBUG;
++
++  if (plog_flags & PLOG_ERRNO)
++    msg_flags |= M_ERRNO;
++  if (plog_flags & PLOG_NOMUTE)
++    msg_flags |= M_NOMUTE;
++  if (plog_flags & PLOG_NOIPREFIX)
++    msg_flags |= M_NOIPREFIX;
++
++  if (MSG_TEST (msg_flags))
++    {
++      va_start (arglist, format);
++      x_msg_va (msg_flags, format, arglist);
++      va_end (arglist);
++    }
++}
++
++
+ static void
+ plugin_open_item (struct plugin *p,
+ 		  const struct plugin_option *o,
+-- 
+1.7.9.5
 
-- From another point of view, an evil plug-in would have to know/figure
-out the address to x_msg() ... so that would require a bit more work,
-at least to work against different distro/compiler/linker
-combinations, as it's not given the address will be the same.
-However, it's not necessarily hard to figure it out, but requires more
-work.  And an evil plug-in would anyway need to first be installed
-somehow too.  So I consider this attack vector less attractive.
-
-And, AFAIK, you can't use dlsym() without a handle to a shared lib
-opened with dlopen().  And I don't think you can't export the log
-function in the openvpn-plugin.h file as an external function, as the
-plug-in would fail to link (I would expect the linker wouldn't find
-the required symbol) ... which then brings us back to the point where
-you need to send a pointer to the log function to the plug-in ...
-That's basically how I came to this conclusion.
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAlAXzBAACgkQDC186MBRfrrDDgCfdGlu8GK4oD4aELiskzgqmoXm
-yoIAni0vANC55rDK3AtV9BqIlaTtx0gj
-=ezeg
------END PGP SIGNATURE-----
 
