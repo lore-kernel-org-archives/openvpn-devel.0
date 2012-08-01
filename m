@@ -1,7 +1,15 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed,  1 Aug 2012 18:11:06 +0200
-Message-Id: <1343837470-3923-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 0/4] Cleanup patches
+Date: Wed, 1 Aug 2012 22:38:32 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120801203832.GK2535@...1296...>
+References: <1343837470-3923-1-git-send-email-arne@...1227...>
+	<1343837470-3923-4-git-send-email-arne@...1227...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="GUPx2O/K0ibUojHx"
+Content-Disposition: inline
+In-Reply-To: <1343837470-3923-4-git-send-email-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 3/4] Merge almost identical
+	create_socket_tcp and create_socket_tcp6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,31 +18,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-The first patch is a corrected (read working) version of the patch I posted a while ago.
+--GUPx2O/K0ibUojHx
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-For the last three patches. I am in the progress of looking through the socket.c code. 
-The ultimate goal is to simplify the code and have good way of dealing with ipv4/ipv6 
-dual stack. These first patches don't change any functionality but clean up the code.
+Hi,
 
-Arne Schwabe (4):
-  Fixes error:  --key fails with EXTERNAL_PRIVATE_KEY: No such file or
-    directory if  --management-external-key is used
-  Merge getaddr_multi and getaddr6 into one function
-  Merge almost identical create_socket_tcp and create_socket_tcp6
-  Simplify print_sockaddr_ex function, merge duplicate ipv4/ipv6 logic
+On Wed, Aug 01, 2012 at 06:11:09PM +0200, Arne Schwabe wrote:
+> @@ -1099,15 +1068,7 @@ socket_connect (socket_descriptor_t *sd,
+>        if (*signal_received)
+>  	goto done;
+>=20=20
+> -      switch(local->addr.sa.sa_family)
+> -	{
+> -	case PF_INET6:
+> -	  *sd =3D create_socket_tcp6 ();
+> -	  break;
+> -	case PF_INET:
+> -	  *sd =3D create_socket_tcp ();
+> -	  break;
+> -	}
+> +	create_socket_tcp(local->addr.sa.sa_family);
 
- src/openvpn/manage.c  |    4 +-
- src/openvpn/options.c |   18 +-
- src/openvpn/route.c   |   50 ++--
- src/openvpn/socket.c  |  724 ++++++++++++++++---------------------------------
- src/openvpn/socket.h  |   19 +-
- 5 files changed, 280 insertions(+), 535 deletions(-)
+I might be overlooking something, but shouldn't that be
 
--- 
-1.7.9.6 (Apple Git-31.1)
++	*sd =3D create_socket_tcp(local->addr.sa.sa_family);
 
+?
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--GUPx2O/K0ibUojHx
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
+
+iQCVAwUBUBmTyKkuBuNlUUl1AQLcZwQAkT71KrJNC3AxKCDTgo5B9/Nq1yGdBsfL
+u2YD5sy4f2K3hNLV4dU+12erRpqvPr2CV7rwT4XEVDzj1QGB0MfYiOIQ21WvuCRX
+eyckzOv7jjlXJAawI/yDUMQGlWYpUMLq3DhrvJMg3vw+fTG1YtUVM8YyEj8T1KdO
+x6rSrl1ZVMM=
+=pQmK
+-----END PGP SIGNATURE-----
+
+--GUPx2O/K0ibUojHx--
 
