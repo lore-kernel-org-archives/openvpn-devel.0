@@ -1,10 +1,10 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Wed, 1 Aug 2012 13:37:38 +0200
-Message-ID: <1343821058-11456-3-git-send-email-heiko.hund@...1489...>
-In-Reply-To: <1343821058-11456-1-git-send-email-heiko.hund@...1489...>
-References: <1343821058-11456-1-git-send-email-heiko.hund@...1489...>
+Date: Wed, 1 Aug 2012 13:57:02 +0200
+Message-ID: <1343822222-11978-1-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <1343821058-11456-3-git-send-email-heiko.hund@...1489...>
+References: <1343821058-11456-3-git-send-email-heiko.hund@...1489...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/2] add plugin_log() API to write to
+Subject: [Openvpn-devel] [PATCH 2/2 fixed] add plugin_log() API to write to
 	openvpn log
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -28,7 +28,7 @@ Signed-off-by: Heiko Hund <heiko.hund@...1489...>
  2 files changed, 74 insertions(+)
 
 diff --git a/include/openvpn-plugin.h b/include/openvpn-plugin.h
-index 1c80eec..8f09e61 100644
+index 1c80eec..aaa0a7f 100644
 --- a/include/openvpn-plugin.h
 +++ b/include/openvpn-plugin.h
 @@ -47,6 +47,29 @@ typedef X509 openvpn_x509_cert_t;
@@ -55,14 +55,14 @@ index 1c80eec..8f09e61 100644
 +
 +} openvpn_plugin_log_flags_t;
 +
-+plugin_log (openvpn_plugin_log_flags_t flags, const char *plugin_name, const char *format, ...);
++void plugin_log (openvpn_plugin_log_flags_t flags, const char *plugin_name, const char *format, ...);
 +
 +
  /*
   * Plug-in types.  These types correspond to the set of script callbacks
   * supported by OpenVPN.
 diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
-index 7ce2f5e..6224d85 100644
+index 7ce2f5e..0d33b55 100644
 --- a/src/openvpn/plugin.c
 +++ b/src/openvpn/plugin.c
 @@ -286,6 +286,57 @@ plugin_init_item (struct plugin *p, const struct plugin_option *o)
@@ -115,7 +115,7 @@ index 7ce2f5e..6224d85 100644
 +      x_msg_va (msg_flags, msg_fmt, arglist);
 +      va_end (arglist);
 +
-+      gc_free (&gc)
++      gc_free (&gc);
 +    }
 +}
 +
