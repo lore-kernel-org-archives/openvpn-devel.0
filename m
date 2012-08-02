@@ -1,10 +1,10 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Thu, 2 Aug 2012 11:53:40 +0200
-Message-ID: <1343901220-25458-1-git-send-email-heiko.hund@...1489...>
+Date: Thu, 2 Aug 2012 11:53:59 +0200
+Message-ID: <1343901239-25526-1-git-send-email-heiko.hund@...1489...>
 In-Reply-To: <1343821058-11456-1-git-send-email-heiko.hund@...1489...>
 References: <1343821058-11456-1-git-send-email-heiko.hund@...1489...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/2 v2.1] add plugin_log() API to write to
+Subject: [Openvpn-devel] [PATCH 2/2 v2.2] add plugin_log() API to write to
 	openvpn log
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -24,41 +24,47 @@ plugin_log() API provides a way for them to do so.
 Signed-off-by: Heiko Hund <heiko.hund@...1489...>
 ---
 
-This is the first variant of PATCH 2/2 that deals with the fact that
+This is the second variant of PATCH 2/2 that deals with the fact that
 the original plugin_log() approach was not working on Windows.
 
-It uses an inline function on Windows which explicitly resolves the
-symbol needed to log from plug-ins, as the dynamic linker fails to do so.
-OpenVPN exports the plugin_log_va() function for use by plug-ins.
+It passes the function pointer of plugin_log() to the plug-in's open_v3 hook.
 
 Pros:
-  + simple to use, just call plugin_log() in you plug-in code
-  + available to any plug-in regradless of its API version
+  + cleaner, more standard approach; less magic
+  + no special treatment of Windows necessary
 
 Cons:
-  - looks a bit messy with all the preprocessor stuff in place
-  - multiple symbol look-ups when including openvpn-plugin.h in two+ files
+  - only works for plugins supporting the open_v3 API
+  - bit harder to use as the callback is only available inside open_v3 at first
 
- include/openvpn-plugin.h |   48 ++++++++++++++++++++++++++++++++++++++-
- src/openvpn/plugin.c     |   56 ++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 103 insertions(+), 1 deletion(-)
+ include/openvpn-plugin.h |   25 +++++++++++++++++++++-
+ src/openvpn/plugin.c     |   52 +++++++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 75 insertions(+), 2 deletions(-)
 
 diff --git a/include/openvpn-plugin.h b/include/openvpn-plugin.h
-index 1c80eec..eaf9e7c 100644
+index 1c80eec..ea0d84e 100644
 --- a/include/openvpn-plugin.h
 +++ b/include/openvpn-plugin.h
-@@ -47,6 +47,52 @@ typedef X509 openvpn_x509_cert_t;
- extern "C" {
- #endif
- 
-+/**
-+ * plugin_log() - plug-in log function.
+@@ -145,7 +145,7 @@ typedef void *openvpn_plugin_handle_t;
+ /*
+  * For Windows (needs to be modified for MSVC)
+  */
+-#if defined(__MINGW32_VERSION) && !defined(OPENVPN_PLUGIN_H)
++#if defined(WIN32) && !defined(OPENVPN_PLUGIN_H)
+ # define OPENVPN_EXPORT __declspec(dllexport)
+ #else
+ # define OPENVPN_EXPORT
+@@ -221,12 +221,35 @@ struct openvpn_plugin_string_list
+  *        variables in "name=value" format.  Note that for security reasons,
+  *        these variables are not actually written to the "official"
+  *        environmental variable store of the process.
 + *
-+ * Use this function to add information to the OpenVPN log file.
-+ * Messages will only be displayed if the plugin_name parameter is set.
-+ * Debug messages will only be displayed with plug-in debug log verbosity.
-+ *
-+ */
++ * plugin_log : a pointer to the plugin logging function.
++ *              Use this function to add information to the OpenVPN log file.
++ *              Messages will only be displayed if the plugin_name parameter
++ *              is set. Debug messages will only be displayed with plug-in
++ *              debug log verbosity.
+  */
 +typedef enum
 +{
 +  PLOG_ERR    = (1 << 0),  /* Error condition message */
@@ -71,54 +77,28 @@ index 1c80eec..eaf9e7c 100644
 +
 +} openvpn_plugin_log_flags_t;
 +
-+#if defined(WIN32)
-+#include <windows.h>
-+#include <stdarg.h>
++typedef void (*plugin_log_t) (openvpn_plugin_log_flags_t flags,
++                              const char *plugin_name,
++                              const char *format, ...);
 +
-+static inline void
-+plugin_log (openvpn_plugin_log_flags_t flags, const char *plugin_name, const char *format, ...)
-+{
-+  typedef void (*log_fn_t)(openvpn_plugin_log_flags_t, const char *, const char *, va_list);
-+  static log_fn_t log = NULL;
-+  if (log == NULL)
-+    {
-+      log = (log_fn_t) GetProcAddress (GetModuleHandle (NULL), "plugin_log_va");
-+      if (log == NULL)
-+        return;
-+    }
-+
-+  va_list arglist;
-+  va_start(arglist, format);
-+  log(flags, plugin_name, format, arglist);
-+  va_end(arglist);
-+}
-+#else
-+void plugin_log (openvpn_plugin_log_flags_t flags, const char *plugin_name, const char *format, ...);
-+#endif
-+
-+
- /*
-  * Plug-in types.  These types correspond to the set of script callbacks
-  * supported by OpenVPN.
-@@ -145,7 +191,7 @@ typedef void *openvpn_plugin_handle_t;
- /*
-  * For Windows (needs to be modified for MSVC)
-  */
--#if defined(__MINGW32_VERSION) && !defined(OPENVPN_PLUGIN_H)
-+#if defined(WIN32)
- # define OPENVPN_EXPORT __declspec(dllexport)
- #else
- # define OPENVPN_EXPORT
+ struct openvpn_plugin_args_open_in
+ {
+   const int type_mask;
+   const char ** const argv;
+   const char ** const envp;
++  plugin_log_t plugin_log;
+ };
+ 
+ 
 diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
-index 7ce2f5e..b146a52 100644
+index 7ce2f5e..59fb8a0 100644
 --- a/src/openvpn/plugin.c
 +++ b/src/openvpn/plugin.c
-@@ -286,6 +286,62 @@ plugin_init_item (struct plugin *p, const struct plugin_option *o)
-   gc_free (&gc);
+@@ -287,6 +287,55 @@ plugin_init_item (struct plugin *p, const struct plugin_option *o)
  }
  
-+OPENVPN_EXPORT void
-+plugin_log_va (openvpn_plugin_log_flags_t flags, const char *name, const char *format, va_list arglist)
+ static void
++plugin_log (openvpn_plugin_log_flags_t flags, const char *name, const char *format, ...)
 +{
 +  unsigned int msg_flags;
 +
@@ -148,6 +128,7 @@ index 7ce2f5e..b146a52 100644
 +  if (MSG_TEST (msg_flags))
 +    {
 +      struct gc_arena gc;
++      va_list arglist;
 +      char* msg_fmt;
 +
 +      /* Never add instance prefix; not thread safe */
@@ -156,26 +137,29 @@ index 7ce2f5e..b146a52 100644
 +      gc_init (&gc);
 +      msg_fmt = gc_malloc (ERR_BUF_SIZE, false, &gc);
 +      openvpn_snprintf (msg_fmt, ERR_BUF_SIZE, "PLUGIN %s: %s", name, format);
++
++      va_start (arglist, format);
 +      x_msg_va (msg_flags, msg_fmt, arglist);
++      va_end (arglist);
 +
 +      gc_free (&gc);
 +    }
 +}
 +
-+#if !defined(WIN32)
-+void
-+plugin_log (openvpn_plugin_log_flags_t flags, const char *name, const char *format, ...)
-+{
-+  va_list arglist;
-+  va_start (arglist, format);
-+  plugin_log_va (flags, name, format, arglist);
-+  va_end (arglist);
-+}
-+#endif
-+
- static void
++static void
  plugin_open_item (struct plugin *p,
  		  const struct plugin_option *o,
+ 		  struct openvpn_plugin_string_list **retlist,
+@@ -312,7 +361,8 @@ plugin_open_item (struct plugin *p,
+       if (p->open3) {
+         struct openvpn_plugin_args_open_in args = { p->plugin_type_mask,
+                                                     (const char ** const) o->argv,
+-                                                    (const char ** const) envp };
++                                                    (const char ** const) envp,
++                                                    plugin_log };
+         struct openvpn_plugin_args_open_return retargs;
+ 
+         CLEAR(retargs);
 -- 
 1.7.10.4
 
