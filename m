@@ -1,15 +1,16 @@
-Date: Thu, 2 Aug 2012 15:45:16 +0200
+Date: Thu, 2 Aug 2012 15:46:31 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20120802134516.GM2535@...1296...>
-References: <20120801203832.GK2535@...1296...>
-	<1343914619-10576-1-git-send-email-arne@...1227...>
+Message-ID: <20120802134631.GN2535@...1296...>
+References: <1343837470-3923-2-git-send-email-arne@...1227...>
+	<1343914668-10696-1-git-send-email-arne@...1227...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ISKrrfpKsPiF35CV"
+	protocol="application/pgp-signature"; boundary="zqjkMoGlbUJ91oFe"
 Content-Disposition: inline
-In-Reply-To: <1343914619-10576-1-git-send-email-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 3/4] Merge almost identical
-	create_socket_tcp and create_socket_tcp6
+In-Reply-To: <1343914668-10696-1-git-send-email-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 1/4] Fixes error: --key fails with
+	EXTERNAL_PRIVATE_KEY: No such file or directory if
+	--management-external-key is used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,26 +22,19 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---ISKrrfpKsPiF35CV
+--zqjkMoGlbUJ91oFe
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Thu, Aug 02, 2012 at 03:36:59PM +0200, Arne Schwabe wrote:
+On Thu, Aug 02, 2012 at 03:37:48PM +0200, Arne Schwabe wrote:
+> Warn if both options are used at the same time.
+>=20
 > Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  src/openvpn/manage.c |    4 ++--
->  src/openvpn/socket.c |   53 +++++++-------------------------------------=
-------
->  src/openvpn/socket.h |    2 +-
->  3 files changed, 10 insertions(+), 49 deletions(-)
 
-ACK on v2 of 3/4.
-
-I think this can go into 2.3 as well, it's basic cleanup (and in addition,
-it's cleanup of new 2.3 functionality, so doubly welcome).
+ACK on v2 of 1/4.  Same effect, less complications.
 
 gert
 --=20
@@ -50,19 +44,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---ISKrrfpKsPiF35CV
+--zqjkMoGlbUJ91oFe
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.12 (NetBSD)
 
-iQCVAwUBUBqEbKkuBuNlUUl1AQIKzwP/UJJ0LU3krIHpg2zWXLXL9461QFElA85e
-5Bqq5C2syZ0GUPi1yJ0SQ7yPO0XTGi+rpGPNHxbvJ6GqwSqvS++kNaijXUKvEf8O
-P5twnL/3aR4KUY4lyNEDIZXlLa3ClB8rtJIRCMhH3GITIc7C+GUChJIwcl0CR+uq
-DJmdn0pTZKg=
-=PQTV
+iQCVAwUBUBqEtqkuBuNlUUl1AQJK5wP+NYNijk96t+YnXbMUWrxRvjKq19RyxSR6
+f5p+OeVwoJv8PT5BuKnC5FNQnTIG9uSVwSEDunRoJg/dlKHkJcmVg52vPMddHOP1
+NdJEEa2Vmhr5vWC1nDZE4E04KK9NzhtYjHLJXdnoReuROj1WzXipKpxaQQCLbBg4
+p+zQ2xsMmWw=
+=8iFz
 -----END PGP SIGNATURE-----
 
---ISKrrfpKsPiF35CV--
+--zqjkMoGlbUJ91oFe--
 
