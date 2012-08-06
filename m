@@ -1,14 +1,16 @@
-Message-ID: <501FBA61.6030705@...1114...>
-Date: Mon, 06 Aug 2012 14:36:49 +0200
+Message-ID: <501FBA69.4010102@...1114...>
+Date: Mon, 06 Aug 2012 14:36:57 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1343821058-11456-1-git-send-email-heiko.hund@...1489...>
-	<1343821058-11456-2-git-send-email-heiko.hund@...1489...>
-In-Reply-To: <1343821058-11456-2-git-send-email-heiko.hund@...1489...>
+References: <1343837470-3923-2-git-send-email-arne@...1227...>
+	<1343914668-10696-1-git-send-email-arne@...1227...>
+In-Reply-To: <1343914668-10696-1-git-send-email-arne@...1227...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigED1B661A37CE86C3BC796047"
-Subject: Re: [Openvpn-devel] [PATCH 1/2] add x_msg_va() log function
+	boundary="------------enig89E6EA23F8D02324EDF1D7CD"
+Subject: Re: [Openvpn-devel] [PATCH 1/4] Fixes error: --key fails with
+ EXTERNAL_PRIVATE_KEY: No such file or directory if
+ --management-external-key is used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,37 +19,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigED1B661A37CE86C3BC796047
+--------------enig89E6EA23F8D02324EDF1D7CD
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-On 01/08/12 13:37, Heiko Hund wrote:
-> This change allows other functions to access the functionality in x_msg().
-> Needed for the plug-in logging API.
+On 02/08/12 15:37, Arne Schwabe wrote:
+> Warn if both options are used at the same time.
 >=20
-> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 > ---
->  src/openvpn/error.c |   11 ++++++++---
->  src/openvpn/error.h |    2 ++
->  2 files changed, 10 insertions(+), 3 deletions(-)
+>  src/openvpn/options.c |   17 +++++++++++++++--
+>  1 file changed, 15 insertions(+), 2 deletions(-)
 >=20
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 9f4ddbb..39dceb8 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -1581,6 +1581,12 @@ show_settings (const struct options *o)
+>    SHOW_STR (ca_path);
+>    SHOW_STR (dh_file);
+>    SHOW_STR (cert_file);
+> +
+> +#ifdef MANAGMENT_EXTERNAL_KEY
+> +  if((options->management_flags & MF_EXTERNAL_KEY))
+> +	SHOW_PARM ("priv_key_file","EXTERNAL_PRIVATE_KEY","%s");
+> +  else=20
+> +#endif
 
-ACK.  Applied to master.
+Please test compile without any special ./configure settings too before sub=
+mitting patches ;-)  The piece of code above won't compile.  Look at the fu=
+nction declaration, it's not 'options' but 'o' which needs to be used.  Thi=
+s time I fixed it before pushing out the patch, just because it was too sim=
+ple fix to insist on another patch.
 
-commit 004ca97c9427841cc240f954d7594416cd249187
-Author: Heiko Hund <heiko.hund@...1489...>
-Date:   Wed Aug 1 13:37:37 2012 +0200
+So, applied to master - with a minor fix :)
 
-    add x_msg_va() log function
-=20=20=20=20
-    Signed-off-by: Heiko Hund <heiko.hund@...1489...>
-    Acked-by: David Sommerseth <davids@...1347...>
-    Message-Id: 1343821058-11456-2-git-send-email-heiko.hund@...1489...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/6923
-    Signed-off-by: David Sommerseth <dazo@...384...>
+
+commit 4806cc102655f1a829d656f6deb83e5953c5eab2
+Author: Arne Schwabe <arne@...1227...>
+Date:   Thu Aug 2 15:37:48 2012 +0200
+
+    Fixes error: --key fails with EXTERNAL_PRIVATE_KEY: No such file or dir=
+ectory if --management-external-key is used
+=20=20=20=20=20=20=20=20
+    Signed-off-by: Arne Schwabe <arne@...1227...>
+    Acked-by: Gert Doering <gert@...1296...>
+    Message-Id: 1343914668-10696-1-git-send-email-arne@...1227...
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/6943
 
 
 kind regards,
@@ -55,7 +77,7 @@ kind regards,
 David Sommerseth
 
 
---------------enigED1B661A37CE86C3BC796047
+--------------enig89E6EA23F8D02324EDF1D7CD
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -64,10 +86,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAlAfumMACgkQDC186MBRfroUuwCcCud9RB2c2GfYdFAx/f7B453c
-TYMAmwWHNR8zyj5SKqg8zYU/SYoXaoCA
-=GEgo
+iEYEARECAAYFAlAfumkACgkQDC186MBRfrqU3gCfdBYPUlZ23qYv3VXkqI/NnFIZ
+27cAoJ7H4Ygyy2QNtnbx0eiH74Oazino
+=7QOm
 -----END PGP SIGNATURE-----
 
---------------enigED1B661A37CE86C3BC796047--
+--------------enig89E6EA23F8D02324EDF1D7CD--
 
