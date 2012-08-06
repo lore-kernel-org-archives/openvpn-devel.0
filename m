@@ -1,13 +1,14 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Fri, 3 Aug 2012 09:45:22 +0200
-Message-ID: <3004840.HQRGjKhztB@...1526...>
-In-Reply-To: <CAOazyz3A8UDfdPmU5DgLSnkjR_LnTj0ctRunFDfYeh3PUh4S9Q@...278...>
-References: <1343821058-11456-1-git-send-email-heiko.hund@...1489...>
-	<1343920822-29161-1-git-send-email-heiko.hund@...1489...>
-	<CAOazyz3A8UDfdPmU5DgLSnkjR_LnTj0ctRunFDfYeh3PUh4S9Q@...278...>
+Message-ID: <501FBA61.6030705@...1114...>
+Date: Mon, 06 Aug 2012 14:36:49 +0200
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 2/2 v4] add API for plug-ins to write to
-	openvpn log
+References: <1343821058-11456-1-git-send-email-heiko.hund@...1489...>
+	<1343821058-11456-2-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <1343821058-11456-2-git-send-email-heiko.hund@...1489...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigED1B661A37CE86C3BC796047"
+Subject: Re: [Openvpn-devel] [PATCH 1/2] add x_msg_va() log function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,31 +17,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Alon Bar-Lev <alon.barlev@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Hi Alon
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigED1B661A37CE86C3BC796047
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-On Thursday 02 August 2012 20:20:45 Alon Bar-Lev wrote:
-> Thanks, although I think the extra macro is not required.
+On 01/08/12 13:37, Heiko Hund wrote:
+> This change allows other functions to access the functionality in x_msg().
+> Needed for the plug-in logging API.
+>=20
+> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+> ---
+>  src/openvpn/error.c |   11 ++++++++---
+>  src/openvpn/error.h |    2 ++
+>  2 files changed, 10 insertions(+), 3 deletions(-)
+>=20
 
-It looked messy without it. That's why we have it.
+ACK.  Applied to master.
 
-> Last thing I see is that you need to #include <stdarg.h> as va_list is used.
+commit 004ca97c9427841cc240f954d7594416cd249187
+Author: Heiko Hund <heiko.hund@...1489...>
+Date:   Wed Aug 1 13:37:37 2012 +0200
 
-It's included already.
+    add x_msg_va() log function
+=20=20=20=20
+    Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+    Acked-by: David Sommerseth <davids@...1347...>
+    Message-Id: 1343821058-11456-2-git-send-email-heiko.hund@...1489...
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/6923
+    Signed-off-by: David Sommerseth <dazo@...384...>
 
-> And last style comment, I don't think use of enum for bit fields is
-> common, better to simply #define the constants.
 
-I try to prefer enums over the preprocessor whenever I can. I like that there 
-is a type that you can look up, even if it's not worth much besides that.
+kind regards,
 
-Heiko
--- 
-Heiko Hund | Sr. Software Engineer | Tel +49-721-25516-237 | Fax -200
-SOPHOS NSG | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germany
+David Sommerseth
 
+
+--------------enigED1B661A37CE86C3BC796047
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAlAfumMACgkQDC186MBRfroUuwCcCud9RB2c2GfYdFAx/f7B453c
+TYMAmwWHNR8zyj5SKqg8zYU/SYoXaoCA
+=GEgo
+-----END PGP SIGNATURE-----
+
+--------------enigED1B661A37CE86C3BC796047--
 
