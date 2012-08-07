@@ -1,9 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue,  7 Aug 2012 10:26:45 +0200
-Message-Id: <1344328005-30256-1-git-send-email-arne@...1227...>
+Date: Tue,  7 Aug 2012 10:33:16 +0200
+Message-Id: <1344328396-32121-1-git-send-email-arne@...1227...>
 In-Reply-To: <20120806202605.GI2535@...1296...>
 References: <20120806202605.GI2535@...1296...>
-Subject: [Openvpn-devel] [Version 2:] Merge getaddr_multi and getaddr6 into
+Subject: [Openvpn-devel] [Version 3] Merge getaddr_multi and getaddr6 into
 	one function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -24,9 +24,9 @@ This functions also returns a standard struct addrinfo* so our resolve interface
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
  src/openvpn/route.c  |   50 ++---
- src/openvpn/socket.c |  579 ++++++++++++++++----------------------------------
+ src/openvpn/socket.c |  596 ++++++++++++++++----------------------------------
  src/openvpn/socket.h |   17 +-
- 3 files changed, 212 insertions(+), 434 deletions(-)
+ 3 files changed, 221 insertions(+), 442 deletions(-)
 
 diff --git a/src/openvpn/route.c b/src/openvpn/route.c
 index d967d4f..a1064fe 100644
@@ -127,7 +127,7 @@ index d967d4f..a1064fe 100644
        }
      rl->n = j;
 diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index a34e78c..e4feefe 100644
+index a34e78c..d6a0ce6 100644
 --- a/src/openvpn/socket.c
 +++ b/src/openvpn/socket.c
 @@ -93,390 +93,186 @@ h_errno_msg(int h_errno_err)
@@ -577,7 +577,9 @@ index a34e78c..e4feefe 100644
 +		  openvpn_sleep (fail_wait_interval);
  		}
 -	    }
--
++		
++	  ASSERT(res);
+ 
 -	  /* success? */
 -	  if (0 == err)
 -	    break;
@@ -588,9 +590,7 @@ index a34e78c..e4feefe 100644
 -	  level = msglevel;
 -	  if (resolve_retries > 0)
 -	    level = D_RESOLVE_ERRORS;
-+		
-+	  ASSERT(res);
- 
+-
 -	  msg (level,
 -	       fmt,
 -	       hostname,
@@ -602,7 +602,7 @@ index a34e78c..e4feefe 100644
 -	  openvpn_sleep (fail_wait_interval);
 +	  /* hostname resolve succeeded */
 +		
-+	  /* Do not chose an IP Addresse by radnom or change the order *
++	  /* Do not chose an IP Addresse by random or change the order *
 +	   * of IP addresses, doing so will break RFC 3484 address selection *
 +	   */
  	}
@@ -709,7 +709,7 @@ index a34e78c..e4feefe 100644
              }
          }
        break;
-@@ -1355,25 +1150,26 @@ resolve_bind_local (struct link_socket *sock)
+@@ -1355,25 +1150,27 @@ resolve_bind_local (struct link_socket *sock)
  	  break;
  	case AF_INET6:
  	    {
@@ -729,9 +729,10 @@ index a34e78c..e4feefe 100644
 +		  
 +		  status = openvpn_getaddrinfo(GETADDR_RESOLVE | GETADDR_WARN_ON_SIGNAL | GETADDR_FATAL,
 +									   sock->local_host, 0, NULL, AF_INET6, &ai);
-+		  if(status ==0)
-+			sock->info.lsa->local.addr.sa = *(ai->ai_addr);
-+			
++		  if(status ==0) {
++			  sock->info.lsa->local.addr.in6 = *((struct sockaddr_in6*)(ai->ai_addr));
++			  freeaddrinfo(ai);
++		  }
  		}
  	      else
  		{
@@ -745,7 +746,7 @@ index a34e78c..e4feefe 100644
  		{
  		  msg (M_FATAL, "getaddr6() failed for local \"%s\": %s",
  		       sock->local_host,
-@@ -1430,7 +1226,7 @@ resolve_remote (struct link_socket *sock,
+@@ -1430,7 +1227,7 @@ resolve_remote (struct link_socket *sock,
  	    {
  	      unsigned int flags = sf2gaf(GETADDR_RESOLVE|GETADDR_UPDATE_MANAGEMENT_STATE, sock->sockflags);
  	      int retry = 0;
@@ -754,7 +755,7 @@ index a34e78c..e4feefe 100644
  
  	      if (sock->connection_profiles_defined && sock->resolve_retry_seconds == RESOLV_RETRY_INFINITE)
  		{
-@@ -1467,26 +1263,13 @@ resolve_remote (struct link_socket *sock,
+@@ -1467,40 +1264,27 @@ resolve_remote (struct link_socket *sock,
  		  ASSERT (0);
  		}
  
@@ -778,17 +779,31 @@ index a34e78c..e4feefe 100644
 -                        &sock->info.lsa->remote.addr.in6);
 -                    break;
 -                }
+-
+-	      dmsg (D_SOCKET_DEBUG, "RESOLVE_REMOTE flags=0x%04x phase=%d rrs=%d sig=%d status=%d",
+-		   flags,
+-		   phase,
+-		   retry,
+-		   signal_received ? *signal_received : -1,
+-		   status);
+-
 +		  struct addrinfo* ai;		
 +		  /* Temporary fix, this need to be changed for dual stack */
 +		  status = openvpn_getaddrinfo(flags, sock->remote_host, retry,
 +											  signal_received, af, &ai);
-+					  
-+		  sock->info.lsa->remote.addr.sa = *(ai->ai_addr);
-+          freeaddrinfo(ai);
- 
- 	      dmsg (D_SOCKET_DEBUG, "RESOLVE_REMOTE flags=0x%04x phase=%d rrs=%d sig=%d status=%d",
- 		   flags,
-@@ -1500,7 +1283,7 @@ resolve_remote (struct link_socket *sock,
++		  if(status == 0) {
++			  sock->info.lsa->remote.addr.in6 = *((struct sockaddr_in6*)(ai->ai_addr));
++			  freeaddrinfo(ai);
++		  
++			  dmsg (D_SOCKET_DEBUG, "RESOLVE_REMOTE flags=0x%04x phase=%d rrs=%d sig=%d status=%d",
++					flags,
++					phase,
++					retry,
++					signal_received ? *signal_received : -1,
++					status);
++		  }
+ 	      if (signal_received)
+ 		{
  		  if (*signal_received)
  		    goto done;
  		}
