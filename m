@@ -1,8 +1,8 @@
-Message-ID: <BLU153-W36CBC6A3A797490FFA43AEA8B00@...512...>
+Message-ID: <BLU153-W11CE1AC6FCE5C153224C10A8B00@...512...>
 Content-Type: multipart/alternative;
-	boundary="_b0653182-f050-4803-885f-d138245cdade_"
+	boundary="_0cc8ddd1-1855-42a9-83e8-6c0dab046e64_"
 From: jassim almaamary <al_mam_ry@...160...>
-Date: Mon, 13 Aug 2012 22:12:05 +0400
+Date: Mon, 13 Aug 2012 22:30:55 +0400
 In-Reply-To: <201208131755.q7DHt98A017722@...1742...>
 References: <201208131755.q7DHt98A017722@...1742...>
 MIME-Version: 1.0
@@ -15,15 +15,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net, openvpn-devel-request@lists.sourceforge.net
 
---_b0653182-f050-4803-885f-d138245cdade_
+--_0cc8ddd1-1855-42a9-83e8-6c0dab046e64_
 Content-Type: text/plain; charset="windows-1256"
 Content-Transfer-Encoding: 8bit
 
 
-it is still not working 
-it should be 5 files in zip not 3 as you send 
+please cancel my account as i am still facing same problem 
+please stop invoicing me 
 
 Date: Mon, 13 Aug 2012 10:55:09 -0700
 To: al_mam_ry@...160...
@@ -145,7 +145,7 @@ Reliablehosting.com / StrongVPN.com Accounting Department
     
   
  		 	   		  
---_b0653182-f050-4803-885f-d138245cdade_
+--_0cc8ddd1-1855-42a9-83e8-6c0dab046e64_
 Content-Type: text/html; charset="windows-1256"
 Content-Transfer-Encoding: 8bit
 
@@ -164,7 +164,7 @@ font-family:Tahoma
 }
 --></style></head>
 <body class='hmmessage'><div dir='ltr'>
-it is still not working <br>it should be 5 files in zip not 3 as you send <br><br><div><div id="SkyDrivePlaceholder"></div><hr id="stopSpelling">Date: Mon, 13 Aug 2012 10:55:09 -0700<br>To: al_mam_ry@...160...<br>From: do_not_reply@...1742...<br>Subject: StrongVPN.com - Account config<br><br>
+please cancel my account as i am still facing same problem <br>please stop invoicing me <br><br><div><div id="SkyDrivePlaceholder"></div><hr id="stopSpelling">Date: Mon, 13 Aug 2012 10:55:09 -0700<br>To: al_mam_ry@...160...<br>From: do_not_reply@...1742...<br>Subject: StrongVPN.com - Account config<br><br>
 
 
 
@@ -250,5 +250,5 @@ Reliablehosting.com / StrongVPN.com Accounting Department
   </tr>
 </tbody></table></div> 		 	   		  </div></body>
 </html>
---_b0653182-f050-4803-885f-d138245cdade_--
+--_0cc8ddd1-1855-42a9-83e8-6c0dab046e64_--
 
