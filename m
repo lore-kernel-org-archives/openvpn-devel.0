@@ -1,10 +1,11 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Thu, 16 Aug 2012 10:38:17 +0200
-Message-ID: <1345106302-22850-3-git-send-email-heiko.hund@...1489...>
+Date: Thu, 16 Aug 2012 10:38:18 +0200
+Message-ID: <1345106302-22850-4-git-send-email-heiko.hund@...1489...>
 In-Reply-To: <1345106302-22850-1-git-send-email-heiko.hund@...1489...>
 References: <1345106302-22850-1-git-send-email-heiko.hund@...1489...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/7] init crypto engine before SSL library
+Subject: [Openvpn-devel] [PATCH 3/7] remove API for crypto engine
+	initialization
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,183 +18,184 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Since GOST in OpenSSL is implemented in an engine, the engine must
-be loaded before the SSL library is initialized for the algorithms
-to become available for SSL/TLS.
+Since the crypto library and the crypto engine initialization are now
+happening at the same time, there's no apparent need for two distinct
+APIs the init them anymore.
 
-This delays the initialization of the ssl lib until after the options
-are parsed, so a possibly configured engine can be loaded before.
+The crypto engine is now initialized within the crypto library init
+function, which makes to code look a bit cleaner.
 
 Signed-off-by: Heiko Hund <heiko.hund@...1489...>
 ---
- src/openvpn/init.c    |   65 +++++++++++++++++--------------------------------
- src/openvpn/init.h    |    1 +
- src/openvpn/openvpn.c |   22 +++++++++++++++++
- 3 files changed, 45 insertions(+), 43 deletions(-)
+ src/openvpn/crypto.c          |    4 ++--
+ src/openvpn/crypto.h          |    2 +-
+ src/openvpn/crypto_backend.h  |    7 +------
+ src/openvpn/crypto_openssl.c  |    7 +++++--
+ src/openvpn/crypto_polarssl.c |   18 ++++--------------
+ src/openvpn/openvpn.c         |    4 +---
+ src/openvpn/ssl.c             |    5 ++---
+ src/openvpn/ssl.h             |    2 +-
+ 8 files changed, 17 insertions(+), 32 deletions(-)
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 270ee6a..564621d 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -589,10 +589,6 @@ init_static (void)
- {
-   /* configure_path (); */
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 2f67e5e..b95865e 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -1376,9 +1376,9 @@ get_random()
+ #ifndef ENABLE_SSL
  
--#if defined(ENABLE_CRYPTO) && defined(DMALLOC)
--  crypto_init_dmalloc();
--#endif
--
-   init_random_seed ();		/* init random() function, only used as
- 				   source for weak random numbers */
-   error_reset ();		/* initialize error.c */
-@@ -612,15 +608,6 @@ init_static (void)
- 
-   update_time ();
- 
--#ifdef ENABLE_CRYPTO
--  init_ssl_lib ();
--
--  /* init PRNG used for IV generation */
--  /* When forking, copy this to more places in the code to avoid fork
--     random-state predictability */
--  prng_init (NULL, 0);
--#endif
--
- #ifdef PID_TEST
-   packet_id_interactive_test ();	/* test the sequence number code */
-   return false;
-@@ -699,29 +686,6 @@ init_static (void)
-   }
- #endif
- 
--#ifdef PRNG_TEST
--  {
--    struct gc_arena gc = gc_new ();
--    uint8_t rndbuf[8];
--    int i;
--    prng_init ("sha1", 16);
--    /*prng_init (NULL, 0);*/
--    const int factor = 1;
--    for (i = 0; i < factor * 8; ++i)
--      {
--#if 1
--	prng_bytes (rndbuf, sizeof (rndbuf));
--#else
--	ASSERT(rand_bytes (rndbuf, sizeof (rndbuf)));
--#endif
--	printf ("[%d] %s\n", i, format_hex (rndbuf, sizeof (rndbuf), 0, &gc));
--      }
--    gc_free (&gc);
--    prng_uninit ();
--    return false;
--  }
--#endif
--
- #ifdef BUFFER_LIST_AGGREGATE_TEST
-   /* test buffer_list_aggregate function */
-   {
-@@ -798,10 +762,6 @@ init_static (void)
  void
- uninit_static (void)
+-init_ssl_lib (void)
++init_ssl_lib (const char *engine_name)
  {
--#ifdef ENABLE_CRYPTO
--  free_ssl_lib ();
--#endif
--
- #ifdef ENABLE_PKCS11
-   pkcs11_terminate ();
- #endif
-@@ -1942,9 +1902,6 @@ key_schedule_free (struct key_schedule *ks, bool free_ssl_ctx)
- static void
- init_crypto_pre (struct context *c, const unsigned int flags)
- {
--  if (c->options.engine)
--    crypto_init_lib_engine (c->options.engine);
--
-   if (flags & CF_LOAD_PERSISTED_PACKET_ID)
-     {
-       /* load a persisted packet-id for cross-session replay-protection */
-@@ -3715,6 +3672,28 @@ test_crypto_thread (void *arg)
- #endif
+-  crypto_init_lib ();
++  crypto_init_lib (engine_name);
+ }
  
- bool
-+do_test_prng ()
-+{
-+#ifdef PRNG_TEST
-+  struct gc_arena gc = gc_new ();
-+  uint8_t rndbuf[8];
-+  int i;
-+  prng_init ("sha1", 16);
-+  const int factor = 1;
-+  for (i = 0; i < factor * 8; ++i)
-+    {
-+      prng_bytes (rndbuf, sizeof (rndbuf));
-+      printf ("[%d] %s\n", i, format_hex (rndbuf, sizeof (rndbuf), 0, &gc));
-+    }
-+  gc_free (&gc);
-+  prng_uninit ();
-+  return true;
-+#else
-+  return false;
-+#endif
-+}
+ void
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index 3b4b88e..cd08cf3 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -358,7 +358,7 @@ void get_tls_handshake_key (const struct key_type *key_type,
+ 
+ #else
+ 
+-void init_ssl_lib (void);
++void init_ssl_lib (const char *engine_name);
+ void free_ssl_lib (void);
+ 
+ #endif /* ENABLE_SSL */
+diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
+index 1eac611..9727a92 100644
+--- a/src/openvpn/crypto_backend.h
++++ b/src/openvpn/crypto_backend.h
+@@ -43,17 +43,12 @@
+  * This routine should have additional OpenSSL crypto library initialisations
+  * used by both crypto and ssl components of OpenVPN.
+  */
+-void crypto_init_lib (void);
++void crypto_init_lib (const char *engine_name);
+ 
+ void crypto_uninit_lib (void);
+ 
+ void crypto_clear_error (void);
+ 
+-/*
+- * Initialise the given named crypto engine.
+- */
+-void crypto_init_lib_engine (const char *engine_name);
+-
+ #ifdef DMALLOC
+ /*
+  * OpenSSL memory debugging.  If dmalloc debugging is enabled, tell
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 5342502..a7ee168 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -169,7 +169,7 @@ setup_engine (const char *engine)
+ 
+ #endif /* HAVE_OPENSSL_ENGINE */
+ 
+-void
++static void
+ crypto_init_lib_engine (const char *engine_name)
+ {
+ #if HAVE_OPENSSL_ENGINE
+@@ -192,8 +192,11 @@ crypto_init_lib_engine (const char *engine_name)
+  */
+ 
+ void
+-crypto_init_lib (void)
++crypto_init_lib (const char *engine_name)
+ {
++  if (engine_name)
++    crypto_init_lib_engine (engine_name);
 +
-+bool
- do_test_crypto (const struct options *o)
+ #ifndef USE_SSL
+ #ifndef ENABLE_SMALL
+   ERR_load_crypto_strings ();
+diff --git a/src/openvpn/crypto_polarssl.c b/src/openvpn/crypto_polarssl.c
+index 3978a3c..b7f13e3 100644
+--- a/src/openvpn/crypto_polarssl.c
++++ b/src/openvpn/crypto_polarssl.c
+@@ -54,26 +54,16 @@
+ 
+ /*
+  *
+- * Hardware engine support. Allows loading/unloading of engines.
+- *
+- */
+-
+-void
+-crypto_init_lib_engine (const char *engine_name)
+-{
+-  msg (M_WARN, "Note: PolarSSL hardware crypto engine functionality is not "
+-      "available");
+-}
+-
+-/*
+- *
+  * Functions related to the core crypto library
+  *
+  */
+ 
+ void
+-crypto_init_lib (void)
++crypto_init_lib (const char *engine_name)
  {
- #ifdef ENABLE_CRYPTO
-diff --git a/src/openvpn/init.h b/src/openvpn/init.h
-index 5a1d1dc..ed95f85 100644
---- a/src/openvpn/init.h
-+++ b/src/openvpn/init.h
-@@ -70,6 +70,7 @@ void do_route (const struct options *options,
++  if (engine_name)
++    msg (M_WARN, "Note: PolarSSL hardware crypto engine functionality is not "
++        "available");
+ }
  
- void close_instance (struct context *c);
- 
-+bool do_test_prng ();
- bool do_test_crypto (const struct options *o);
- 
- void context_gc_free (struct context *c);
+ void
 diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
-index 104c9e9..170abe1 100644
+index 170abe1..65f43c3 100644
 --- a/src/openvpn/openvpn.c
 +++ b/src/openvpn/openvpn.c
-@@ -187,6 +187,25 @@ openvpn_main (int argc, char *argv[])
- 	  /* parse command line options, and read configuration file */
- 	  parse_argv (&c.options, argc, argv, M_USAGE, OPT_P_DEFAULT, NULL, c.es);
+@@ -192,9 +192,7 @@ openvpn_main (int argc, char *argv[])
+           crypto_init_dmalloc ();
+ #endif
+           /* initialize crypto and ssl/tls libraries */
+-          if (c.options.engine)
+-            crypto_init_lib_engine (c.options.engine);
+-          init_ssl_lib ();
++          init_ssl_lib (c.options.engine);
  
-+#ifdef ENABLE_CRYPTO
-+#ifdef DMALLOC
-+          crypto_init_dmalloc ();
-+#endif
-+          /* initialize crypto and ssl/tls libraries */
-+          if (c.options.engine)
-+            crypto_init_lib_engine (c.options.engine);
-+          init_ssl_lib ();
-+
-+          /*
-+           * init PRNG used for IV generation
-+           * when forking, copy this to more places in the code to avoid fork
-+           * random-state predictability
-+           */
-+          prng_init (NULL, 0);
-+          if (do_test_prng ())
-+            break;
-+#endif
-+
- #ifdef ENABLE_PLUGIN
- 	  /* plugins may contribute options configuration */
- 	  init_verb_mute (&c, IVM_LEVEL_1);
-@@ -269,6 +288,9 @@ openvpn_main (int argc, char *argv[])
- 	    }
- 	  while (c.sig->signal_received == SIGUSR1);
+           /*
+            * init PRNG used for IV generation
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 19512c0..e9a7d0a 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -153,11 +153,10 @@ tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame
+ }
  
-+#ifdef ENABLE_CRYPTO
-+          free_ssl_lib ();
-+#endif
- 	  uninit_options (&c.options);
- 	  gc_reset (&c.gc);
- 	}
+ void
+-init_ssl_lib ()
++init_ssl_lib (const char *engine_name)
+ {
++  crypto_init_lib (engine_name);
+   tls_init_lib ();
+-
+-  crypto_init_lib ();
+ }
+ 
+ void
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index cd7cae2..daa654c 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -144,7 +144,7 @@ struct tls_auth_standalone
+ /*
+  * Prepare the SSL library for use
+  */
+-void init_ssl_lib (void);
++void init_ssl_lib (const char *engine_name);
+ 
+ /*
+  * Free any internal state that the SSL library might have
 -- 
 1.7.9.5
 
