@@ -1,10 +1,11 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Thu, 16 Aug 2012 10:38:19 +0200
-Message-ID: <1345106302-22850-5-git-send-email-heiko.hund@...1489...>
+Date: Thu, 16 Aug 2012 10:38:20 +0200
+Message-ID: <1345106302-22850-6-git-send-email-heiko.hund@...1489...>
 In-Reply-To: <1345106302-22850-1-git-send-email-heiko.hund@...1489...>
 References: <1345106302-22850-1-git-send-email-heiko.hund@...1489...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 4/7] support crypto engine options
+Subject: [Openvpn-devel] [PATCH 5/7] have crypto backends report the MAC key
+	length
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,313 +18,262 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-OpenVPN supports using OpenSSL engines by loading them with the
---engine configuration option. Some of those engines require
-configuration options themself.
-
-This patch extends the --engine option so that engine-options can be
-specified as well.
+This is in preparation for GOST MAC support. GOST MAC takes a 256 bit key
+and produces a 32 bit signature. Hence there needs to be an API for
+querying the key length as well.
 
 Signed-off-by: Heiko Hund <heiko.hund@...1489...>
 ---
- doc/openvpn.8                 |   11 ++++++-----
- src/openvpn/crypto.c          |    4 ++--
- src/openvpn/crypto.h          |    2 +-
- src/openvpn/crypto_backend.h  |   17 ++++++++++++++++-
- src/openvpn/crypto_openssl.c  |   33 +++++++++++++++++++++------------
- src/openvpn/crypto_polarssl.c |    4 ++--
- src/openvpn/options.c         |   32 +++++++++++++++++++++++++++-----
- src/openvpn/options.h         |    3 ++-
- src/openvpn/ssl.c             |    4 ++--
- src/openvpn/ssl.h             |    2 +-
- 10 files changed, 80 insertions(+), 32 deletions(-)
+ src/openvpn/crypto.c          |   45 +++++++++++++++++++++--------------------
+ src/openvpn/crypto.h          |    1 +
+ src/openvpn/crypto_backend.h  |    9 +++++++++
+ src/openvpn/crypto_openssl.c  |    7 +++++++
+ src/openvpn/crypto_polarssl.c |    8 ++++++++
+ src/openvpn/openvpn.h         |    2 +-
+ 6 files changed, 49 insertions(+), 23 deletions(-)
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 56be29e..d967ebd 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -3704,13 +3704,14 @@ to disable the PRNG and use the OpenSSL RAND_bytes function
- instead for all of OpenVPN's pseudo-random number needs.
- .\"*********************************************************
- .TP
--.B \-\-engine [engine-name]
--Enable OpenSSL hardware-based crypto engine functionality.
--
-+.B \-\-engine [engine-name [engine-option ...]]
-+Enable OpenSSL crypto engine functionality.
- If
- .B engine-name
--is specified,
--use a specific crypto engine.  Use the
-+is specified, use a specific crypto engine.
-+.B engine-options
-+must be given as name=value pairs.
-+Use the
- .B \-\-show-engines
- standalone option to list the crypto engines which are
- supported by OpenSSL.
 diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index b95865e..7fdbb95 100644
+index 7fdbb95..f86c83a 100644
 --- a/src/openvpn/crypto.c
 +++ b/src/openvpn/crypto.c
-@@ -1376,9 +1376,9 @@ get_random()
- #ifndef ENABLE_SSL
+@@ -430,6 +430,7 @@ init_key_type (struct key_type *kt, const char *ciphername,
+     {
+       kt->digest = md_kt_get (authname);
+       kt->hmac_length = md_kt_size (kt->digest);
++      kt->hmac_key_length = hmac_key_size (kt->digest);
+     }
+   else
+     {
+@@ -465,17 +466,17 @@ init_key_ctx (struct key_ctx *ctx, struct key *key,
+           cipher_kt_block_size(kt->cipher),
+           cipher_kt_iv_size(kt->cipher));
+     }
+-  if (kt->digest && kt->hmac_length > 0)
++  if (kt->digest && kt->hmac_key_length > 0)
+     {
+       ALLOC_OBJ(ctx->hmac, hmac_ctx_t);
+-      hmac_ctx_init (ctx->hmac, key->hmac, kt->hmac_length, kt->digest);
++      hmac_ctx_init (ctx->hmac, key->hmac, kt->hmac_key_length, kt->digest);
  
- void
--init_ssl_lib (const char *engine_name)
-+init_ssl_lib (const struct crypto_engine *engine)
+       msg (D_HANDSHAKE,
+       "%s: Using %d bit message hash '%s' for HMAC authentication",
+       prefix, md_kt_size(kt->digest) * 8, md_kt_name(kt->digest));
+ 
+       dmsg (D_SHOW_KEYS, "%s: HMAC KEY: %s", prefix,
+-	  format_hex (key->hmac, kt->hmac_length, 0, &gc));
++	  format_hex (key->hmac, kt->hmac_key_length, 0, &gc));
+ 
+       dmsg (D_CRYPTO_DEBUG, "%s: HMAC size=%d block_size=%d",
+ 	prefix,
+@@ -610,7 +611,7 @@ void
+ generate_key_random (struct key *key, const struct key_type *kt)
  {
--  crypto_init_lib (engine_name);
-+  crypto_init_lib (engine);
+   int cipher_len = MAX_CIPHER_KEY_LENGTH;
+-  int hmac_len = MAX_HMAC_KEY_LENGTH;
++  int hmac_key_len = MAX_HMAC_KEY_LENGTH;
+ 
+   struct gc_arena gc = gc_new ();
+ 
+@@ -621,15 +622,15 @@ generate_key_random (struct key *key, const struct key_type *kt)
+ 	if (kt->cipher && kt->cipher_length > 0 && kt->cipher_length <= cipher_len)
+ 	  cipher_len = kt->cipher_length;
+ 
+-	if (kt->digest && kt->hmac_length > 0 && kt->hmac_length <= hmac_len)
+-	  hmac_len = kt->hmac_length;
++	if (kt->digest && kt->hmac_key_length > 0 && kt->hmac_key_length <= hmac_key_len)
++	  hmac_key_len = kt->hmac_key_length;
+       }
+     if (!rand_bytes (key->cipher, cipher_len)
+-	|| !rand_bytes (key->hmac, hmac_len))
++	|| !rand_bytes (key->hmac, hmac_key_len))
+       msg (M_FATAL, "ERROR: Random number generator cannot obtain entropy for key generation");
+ 
+     dmsg (D_SHOW_KEY_SOURCE, "Cipher source entropy: %s", format_hex (key->cipher, cipher_len, 0, &gc));
+-    dmsg (D_SHOW_KEY_SOURCE, "HMAC source entropy: %s", format_hex (key->hmac, hmac_len, 0, &gc));
++    dmsg (D_SHOW_KEY_SOURCE, "HMAC source entropy: %s", format_hex (key->hmac, hmac_key_len, 0, &gc));
+ 
+     if (kt)
+       fixup_key (key, kt);
+@@ -654,13 +655,13 @@ key2_print (const struct key2* k,
+        format_hex (k->keys[0].cipher, kt->cipher_length, 0, &gc));
+   dmsg (D_SHOW_KEY_SOURCE, "%s (hmac): %s",
+        prefix0,
+-       format_hex (k->keys[0].hmac, kt->hmac_length, 0, &gc));
++       format_hex (k->keys[0].hmac, kt->hmac_key_length, 0, &gc));
+   dmsg (D_SHOW_KEY_SOURCE, "%s (cipher): %s",
+        prefix1,
+        format_hex (k->keys[1].cipher, kt->cipher_length, 0, &gc));
+   dmsg (D_SHOW_KEY_SOURCE, "%s (hmac): %s",
+        prefix1,
+-       format_hex (k->keys[1].hmac, kt->hmac_length, 0, &gc));
++       format_hex (k->keys[1].hmac, kt->hmac_key_length, 0, &gc));
+   gc_free (&gc);
  }
  
- void
+@@ -727,7 +728,7 @@ get_tls_handshake_key (const struct key_type *key_type,
+ 		       const int key_direction,
+ 		       const unsigned int flags)
+ {
+-  if (passphrase_file && key_type->hmac_length)
++  if (passphrase_file && key_type->hmac_key_length)
+     {
+       struct key2 key2;
+       struct key_type kt = *key_type;
+@@ -762,16 +763,16 @@ get_tls_handshake_key (const struct key_type *key_type,
+ 	  }
+ 	else
+ 	  {
+-	    int hash_size;
++	    int hash_key_size;
+ 
+ 	    CLEAR (key2);
+ 
+ 	    /* failed, now try to get hash from a freeform file */
+-	    hash_size = read_passphrase_hash (passphrase_file,
++	    hash_key_size = read_passphrase_hash (passphrase_file,
+ 					      kt.digest,
+ 					      key2.keys[0].hmac,
+ 					      MAX_HMAC_KEY_LENGTH);
+-	    ASSERT (hash_size == kt.hmac_length);
++	    ASSERT (hash_key_size == kt.hmac_key_length);
+ 
+ 	    /* suceeded */
+ 	    key2.n = 1;
+@@ -1223,15 +1224,15 @@ write_key (const struct key *key, const struct key_type *kt,
+ 	   struct buffer *buf)
+ {
+   ASSERT (kt->cipher_length <= MAX_CIPHER_KEY_LENGTH
+-	  && kt->hmac_length <= MAX_HMAC_KEY_LENGTH);
++	  && kt->hmac_key_length <= MAX_HMAC_KEY_LENGTH);
+ 
+   if (!buf_write (buf, &kt->cipher_length, 1))
+     return false;
+-  if (!buf_write (buf, &kt->hmac_length, 1))
++  if (!buf_write (buf, &kt->hmac_key_length, 1))
+     return false;
+   if (!buf_write (buf, key->cipher, kt->cipher_length))
+     return false;
+-  if (!buf_write (buf, key->hmac, kt->hmac_length))
++  if (!buf_write (buf, key->hmac, kt->hmac_key_length))
+     return false;
+ 
+   return true;
+@@ -1247,20 +1248,20 @@ int
+ read_key (struct key *key, const struct key_type *kt, struct buffer *buf)
+ {
+   uint8_t cipher_length;
+-  uint8_t hmac_length;
++  uint8_t hmac_key_length;
+ 
+   CLEAR (*key);
+   if (!buf_read (buf, &cipher_length, 1))
+     goto read_err;
+-  if (!buf_read (buf, &hmac_length, 1))
++  if (!buf_read (buf, &hmac_key_length, 1))
+     goto read_err;
+ 
+   if (!buf_read (buf, key->cipher, cipher_length))
+     goto read_err;
+-  if (!buf_read (buf, key->hmac, hmac_length))
++  if (!buf_read (buf, key->hmac, hmac_key_length))
+     goto read_err;
+ 
+-  if (cipher_length != kt->cipher_length || hmac_length != kt->hmac_length)
++  if (cipher_length != kt->cipher_length || hmac_key_length != kt->hmac_key_length)
+     goto key_len_err;
+ 
+   return 1;
+@@ -1272,7 +1273,7 @@ read_err:
+ key_len_err:
+   msg (D_TLS_ERRORS,
+        "TLS Error: key length mismatch, local cipher/hmac %d/%d, remote cipher/hmac %d/%d",
+-       kt->cipher_length, kt->hmac_length, cipher_length, hmac_length);
++       kt->cipher_length, kt->hmac_key_length, cipher_length, hmac_key_length);
+   return 0;
+ }
+ 
 diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-index cd08cf3..5c34597 100644
+index 5c34597..6f91b6f 100644
 --- a/src/openvpn/crypto.h
 +++ b/src/openvpn/crypto.h
-@@ -358,7 +358,7 @@ void get_tls_handshake_key (const struct key_type *key_type,
- 
- #else
- 
--void init_ssl_lib (const char *engine_name);
-+void init_ssl_lib (const struct crypto_engine *engine);
- void free_ssl_lib (void);
- 
- #endif /* ENABLE_SSL */
+@@ -47,6 +47,7 @@ struct key_type
+ {
+   uint8_t cipher_length; 	/**< Cipher length, in bytes */
+   uint8_t hmac_length;		/**< HMAC length, in bytes */
++  uint8_t hmac_key_length;      /**< HMAC key length, in bytes */
+   const cipher_kt_t *cipher;	/**< Cipher static parameters */
+   const md_kt_t *digest;	/**< Message digest static parameters */
+ };
 diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-index 9727a92..4b68687 100644
+index 4b68687..deff011 100644
 --- a/src/openvpn/crypto_backend.h
 +++ b/src/openvpn/crypto_backend.h
-@@ -40,10 +40,25 @@
- 
+@@ -443,6 +443,15 @@ void md_ctx_final (md_ctx_t *ctx, uint8_t *dst);
+  */
  
  /*
-+ * Structures for crypto library engine configuration.
++ * Returns the size of the HMAC key by the given message digest.
++ *
++ * @param ctx           Message digest context. May not be NULL.
++ *
++ * @return              Size of the HMAC key in bytes.
 + */
-+struct crypto_engine_option
-+{
-+  struct crypto_engine_option *next;
-+  const char *name;
-+  const char *value;
-+};
-+struct crypto_engine
-+{
-+  const char *name;
-+  struct crypto_engine_option *options;
-+};
++int hmac_key_size (const md_kt_t *ctx);
 +
 +/*
-  * This routine should have additional OpenSSL crypto library initialisations
-  * used by both crypto and ssl components of OpenVPN.
-  */
--void crypto_init_lib (const char *engine_name);
-+void crypto_init_lib (const struct crypto_engine *engine);
- 
- void crypto_uninit_lib (void);
- 
+  * Initialises the given HMAC context, using the given digest
+  * and key.
+  *
 diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index a7ee168..deaf0ca 100644
+index deaf0ca..5665e29 100644
 --- a/src/openvpn/crypto_openssl.c
 +++ b/src/openvpn/crypto_openssl.c
-@@ -135,7 +135,7 @@ try_load_engine (const char *engine)
- }
- 
- static ENGINE *
--setup_engine (const char *engine)
-+setup_engine (const struct crypto_engine *engine)
- {
-   ENGINE *e = NULL;
- 
-@@ -143,24 +143,33 @@ setup_engine (const char *engine)
- 
-   if (engine)
-     {
--      if (strcmp (engine, "auto") == 0)
-+      struct crypto_engine_option *o;
-+      
-+      if (strcmp (engine->name, "auto") == 0)
- 	{
- 	  msg (M_INFO, "Initializing OpenSSL auto engine support");
- 	  ENGINE_register_all_complete ();
- 	  return NULL;
- 	}
--      if ((e = ENGINE_by_id (engine)) == NULL
--	 && (e = try_load_engine (engine)) == NULL)
-+      if ((e = ENGINE_by_id (engine->name)) == NULL
-+	 && (e = try_load_engine (engine->name)) == NULL)
- 	{
--	  msg (M_FATAL, "OpenSSL error: cannot load engine '%s'", engine);
-+	  msg (M_FATAL, "OpenSSL error: cannot load engine '%s'", engine->name);
- 	}
- 
-       if (!ENGINE_set_default (e, ENGINE_METHOD_ALL))
- 	{
- 	  msg (M_FATAL, "OpenSSL error: ENGINE_set_default failed on engine '%s'",
--	       engine);
-+	       engine->name);
- 	}
- 
-+      for (o = engine->options; o; o = o->next)
-+        {
-+          if (!ENGINE_ctrl_cmd_string (e, o->name, o->value, 0))
-+            msg (M_FATAL, "OpenSSL error: ENGINE_ctrl_cmd_string failed on engine '%s'",
-+                engine->name);
-+        }
-+
-       msg (M_INFO, "Initializing OpenSSL support for engine '%s'",
- 	   ENGINE_get_id (e));
-     }
-@@ -170,14 +179,14 @@ setup_engine (const char *engine)
- #endif /* HAVE_OPENSSL_ENGINE */
- 
- static void
--crypto_init_lib_engine (const char *engine_name)
-+crypto_init_lib_engine (const struct crypto_engine *engine)
- {
- #if HAVE_OPENSSL_ENGINE
-   if (!engine_initialized)
-     {
--      ASSERT (engine_name);
-+      ASSERT (engine->name);
-       ASSERT (!engine_persist);
--      engine_persist = setup_engine (engine_name);
-+      engine_persist = setup_engine (engine);
-       engine_initialized = true;
-     }
- #else
-@@ -192,10 +201,10 @@ crypto_init_lib_engine (const char *engine_name)
+@@ -714,6 +714,13 @@ md_ctx_final (EVP_MD_CTX *ctx, uint8_t *dst)
+  *
   */
  
- void
--crypto_init_lib (const char *engine_name)
-+crypto_init_lib (const struct crypto_engine *engine)
- {
--  if (engine_name)
--    crypto_init_lib_engine (engine_name);
-+  if (engine)
-+    crypto_init_lib_engine (engine);
++int
++hmac_key_size (const EVP_MD *kt)
++{
++  if (NULL == kt)
++    return 0;
++  return md_kt_size (kt);
++}
  
- #ifndef USE_SSL
- #ifndef ENABLE_SMALL
+ void
+ hmac_ctx_init (HMAC_CTX *ctx, const uint8_t *key, int key_len,
 diff --git a/src/openvpn/crypto_polarssl.c b/src/openvpn/crypto_polarssl.c
-index b7f13e3..6b1193a 100644
+index 6b1193a..b44ea12 100644
 --- a/src/openvpn/crypto_polarssl.c
 +++ b/src/openvpn/crypto_polarssl.c
-@@ -59,9 +59,9 @@
+@@ -546,6 +546,14 @@ md_ctx_final (md_context_t *ctx, uint8_t *dst)
+ /*
+  * TODO: re-enable dmsg for crypto debug
   */
- 
++int
++hmac_key_size (const md_info_t *kt)
++{
++  if (NULL == kt)
++    return 0;
++  return md_get_size (kt);
++}
++
  void
--crypto_init_lib (const char *engine_name)
-+crypto_init_lib (const struct crypto_engine *engine)
+ hmac_ctx_init (md_context_t *ctx, const uint8_t *key, int key_len, const md_info_t *kt)
  {
--  if (engine_name)
-+  if (engine)
-     msg (M_WARN, "Note: PolarSSL hardware crypto engine functionality is not "
-         "available");
- }
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 19690e1..b78ff15 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -531,7 +531,7 @@ static const char usage_message[] =
-   "                  If unspecified, defaults to cipher-specific default.\n"
- #endif
- #ifndef ENABLE_CRYPTO_POLARSSL
--  "--engine [name] : Enable OpenSSL hardware crypto engine functionality.\n"
-+  "--engine [name [opts]] : Enable OpenSSL crypto engine functionality.\n"
- #endif
-   "--no-replay     : Disable replay protection.\n"
-   "--mute-replay-warnings : Silence the output of replay warnings to log file.\n"
-@@ -6287,12 +6287,34 @@ add_option (struct options *options,
-   else if (streq (p[0], "engine"))
-     {
-       VERIFY_PERMISSION (OPT_P_GENERAL);
-+      ALLOC_OBJ_CLEAR_GC (options->engine, struct crypto_engine, &options->gc);
-+      
-       if (p[1])
--	{
--	  options->engine = p[1];
--	}
-+        {
-+          int i;
-+
-+          options->engine->name = p[1];
-+
-+          for (i = 2; p[i]; i++)
-+            {
-+              struct crypto_engine_option *next_option;
-+              char *eq = strchr (p[i], '=');
-+              if (eq == NULL)
-+                {
-+                  msg (msglevel, "Bad option for engine %s: %s", p[1], p[i]);
-+                  goto err;
-+                }
-+              *eq = '\0';
-+
-+              next_option = options->engine->options;
-+              ALLOC_OBJ_GC (options->engine->options, struct crypto_engine_option, &options->gc);
-+              options->engine->options->next = next_option;
-+              options->engine->options->name = p[i];
-+              options->engine->options->value = eq + 1;
-+            }
-+        }
-       else
--	options->engine = "auto";
-+        options->engine->name = "auto";
-     }  
- #endif /* ENABLE_CRYPTO_POLARSSL */
- #ifdef HAVE_EVP_CIPHER_CTX_SET_KEY_LENGTH
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 306520b..36eab25 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -42,6 +42,7 @@
- #include "lzo.h"
- #include "pushlist.h"
- #include "clinat.h"
-+#include "crypto.h"
- 
- /*
-  * Maximum number of parameters associated with an option,
-@@ -481,7 +482,7 @@ struct options
-   int keysize;
-   const char *prng_hash;
-   int prng_nonce_secret_len;
--  const char *engine;
-+  struct crypto_engine *engine;
-   bool replay;
-   bool mute_replay_warnings;
-   int replay_window;
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index e9a7d0a..a1a0628 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -153,9 +153,9 @@ tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame
- }
- 
- void
--init_ssl_lib (const char *engine_name)
-+init_ssl_lib (const struct crypto_engine *engine)
- {
--  crypto_init_lib (engine_name);
-+  crypto_init_lib (engine);
-   tls_init_lib ();
- }
- 
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index daa654c..001e4fd 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -144,7 +144,7 @@ struct tls_auth_standalone
- /*
-  * Prepare the SSL library for use
-  */
--void init_ssl_lib (const char *engine_name);
-+void init_ssl_lib (const struct crypto_engine *engine);
- 
- /*
-  * Free any internal state that the SSL library might have
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index 0732d0f..3ff5470 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -572,7 +572,7 @@ struct context
+ #define PROTO_DUMP(buf, gc) protocol_dump((buf), \
+ 				      PROTO_DUMP_FLAGS | \
+ 				      (c->c2.tls_multi ? PD_TLS : 0) | \
+-				      (c->options.tls_auth_file ? c->c1.ks.key_type.hmac_length : 0), \
++				      (c->options.tls_auth_file ? c->c1.ks.key_type.hmac_key_length : 0), \
+ 				      gc)
+ #else
+ #define TLS_MODE(c) (false)
 -- 
 1.7.9.5
 
