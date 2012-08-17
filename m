@@ -1,8 +1,9 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Fri, 17 Aug 2012 11:51:53 +0200
-Message-ID: <1345197113-24636-1-git-send-email-heiko.hund@...1489...>
+Date: Fri, 17 Aug 2012 11:52:16 +0200
+Message-ID: <1345197136-24708-1-git-send-email-heiko.hund@...1489...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] remove unused flag SSLF_NO_NAME_REMAPPING
+Subject: [Openvpn-devel] [PATCH] remove stale _openssl_get_subject()
+	prototype
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +16,26 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The flag was used with the --no-name-remapping option that was removed
-in commit 5e86fd93779482b90a191f929edebe414cd78a4f.
+The _openssl_get_subject() function was removed in commit
+00b973f8af85c3ea8fa3cef80eec55e8dc139b27. The functionality
+moved to x509_get_subject().
 
 Signed-off-by: Heiko Hund <heiko.hund@...1489...>
 ---
- src/openvpn/ssl_common.h |    1 -
- 1 file changed, 1 deletion(-)
+ src/openvpn/ssl_verify_openssl.h |    2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index f3f43be..cb259a9 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -288,7 +288,6 @@ struct tls_options
- # define SSLF_CLIENT_CERT_NOT_REQUIRED (1<<0)
- # define SSLF_USERNAME_AS_COMMON_NAME  (1<<1)
- # define SSLF_AUTH_USER_PASS_OPTIONAL  (1<<2)
--# define SSLF_NO_NAME_REMAPPING        (1<<3)
- # define SSLF_OPT_VERIFY               (1<<4)
- # define SSLF_CRL_VERIFY_DIR           (1<<5)
-   unsigned int ssl_flags;
+diff --git a/src/openvpn/ssl_verify_openssl.h b/src/openvpn/ssl_verify_openssl.h
+index afd6110..5a7e0a1 100644
+--- a/src/openvpn/ssl_verify_openssl.h
++++ b/src/openvpn/ssl_verify_openssl.h
+@@ -73,6 +73,4 @@ int verify_callback (int preverify_ok, X509_STORE_CTX * ctx);
+ 
+ /** @} name Function for authenticating a new connection from a remote OpenVPN peer */
+ 
+-char *_openssl_get_subject (X509 *cert, char *buf, int size);
+-
+ #endif /* SSL_VERIFY_OPENSSL_H_ */
 -- 
 1.7.9.5
 
