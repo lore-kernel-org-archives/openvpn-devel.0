@@ -1,10 +1,8 @@
-From: Gert Doering <gert@...1296...>
-Date: Thu, 16 Aug 2012 20:31:23 +0200
-Message-Id: <1345141883-9889-3-git-send-email-gert@...1296...>
-In-Reply-To: <1345141883-9889-1-git-send-email-gert@...1296...>
-References: <1345141883-9889-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH 2/2] Reduce --version string detail about
-	IPv6 to just "[IPv6]".
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Fri, 17 Aug 2012 11:51:53 +0200
+Message-ID: <1345197113-24636-1-git-send-email-heiko.hund@...1489...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] remove unused flag SSLF_NO_NAME_REMAPPING
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,30 +15,27 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-For 2.3 release, we do not need to have more details, as there is no
-separate patch set anymore, and both IPv6 transport and IPv6 payload
-(PF_INET6) have been fully integrated.
+The flag was used with the --no-name-remapping option that was removed
+in commit 5e86fd93779482b90a191f929edebe414cd78a4f.
 
-Signed-off-by: Gert Doering <gert@...1296...>
+Signed-off-by: Heiko Hund <heiko.hund@...1489...>
 ---
- src/openvpn/options.c |    3 +--
- 1 files changed, 1 insertions(+), 2 deletions(-)
+ src/openvpn/ssl_common.h |    1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 19690e1..d25bbea 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -106,8 +106,7 @@ const char title_string[] =
- #if ENABLE_IP_PKTINFO
-   " [MH]"
- #endif
--  " [PF_INET6]"
--  " [IPv6 payload 20110522-1 (2.2.0)]"
-+  " [IPv6]"
-   " built on " __DATE__
- ;
- 
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index f3f43be..cb259a9 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -288,7 +288,6 @@ struct tls_options
+ # define SSLF_CLIENT_CERT_NOT_REQUIRED (1<<0)
+ # define SSLF_USERNAME_AS_COMMON_NAME  (1<<1)
+ # define SSLF_AUTH_USER_PASS_OPTIONAL  (1<<2)
+-# define SSLF_NO_NAME_REMAPPING        (1<<3)
+ # define SSLF_OPT_VERIFY               (1<<4)
+ # define SSLF_CRL_VERIFY_DIR           (1<<5)
+   unsigned int ssl_flags;
 -- 
-1.7.3.5
+1.7.9.5
 
 
