@@ -1,14 +1,8 @@
-Message-ID: <50364F38.9040008@...1114...>
-Date: Thu, 23 Aug 2012 17:41:44 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <1345727389.42365.YahooMailNeo@...1744...>
-	<3026659.dQ0z7Nl7Cc@...1745...>
-	<1345733114.69457.YahooMailNeo@...1747...>
-	<4D629B87-3EE4-471D-8A58-4C8D28EE2C2E@...1286...>
-	<1345735851.47115.YahooMailNeo@...1744...>
-In-Reply-To: <1345735851.47115.YahooMailNeo@...1744...>
-Subject: Re: [Openvpn-devel] patch for 2.2.2 to include --script-dir
+From: Arne Schwabe <arne@...1227...>
+Date: Thu, 23 Aug 2012 23:21:00 +0200
+Message-Id: <1345756860-2044-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Document the inlining of files in openvpn
+	and document key-direction
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,51 +11,78 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Amm Vpn <ammdispose-vpn@...109...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+This patch documents the usage of inline files in OpenVPN. Hackish ways of inline files are deliberately left out. For tls-auth and
+secret the key-direction option is right way of specifying the direction and not by using two tls-auth/secret lines where the first sets the direction and has a dummy file name and the second sets the inline file data but does not reset the direction parameter.
 
-On 23/08/12 17:30, Amm Vpn wrote:
-> 
-> Currently openvpn BLINDLY runs any script which in my opinion is
-> too dangerous. One breach and intruder can simply erase your whole
-> harddisk.
+Also pkcs12 [[INLINE]] base64encoded_data works but is a quirk of how the config parser works
 
-Agreed.
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ doc/openvpn.8 |   39 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 39 insertions(+)
 
-> My idea of script-dir is taken from sendmail concept of smrsh. 
-> http://www.faqs.org/docs/securing/chap22sec182.html
-> 
-> In my case person does not have direct access to machine. But only
-> to config file. Now if I make sure that he cant change script-dir,
-> it secures my whole machine.
-> 
-> Otherwise there is noway I can give access to config file to him
-> without worrying about him running "rm -rf /"
-> 
-> Hope I am able to convey my idea. Just trying to patch a flaw in
-> openvpn, in my opinion
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index a821b5e..49348e4 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -3615,6 +3615,14 @@ would see nothing
+ but random-looking data.
+ .\"*********************************************************
+ .TP
++.B \-\-key-direction
++Alternative way of specifying the optional direction parameter for the
++.B \-\-tls-auth
++and
++.B \-\-secret
++options. Useful when using inline files (See section on inline files).
++.\"*********************************************************
++.TP
+ .B \-\-auth alg
+ Authenticate packets with HMAC using message
+ digest algorithm
+@@ -5895,6 +5903,37 @@ X509_1_C=KG
+ .ft
+ .fi
+ .\"*********************************************************
++.SH INLINE FILE SUPPORT
++OpenVPN allows including files in the main configuration for the 
++.B \-\-ca, \-\-cert, \-\-dh, \-\-extra-certs, \-\-key, \-\-pkcs12, \-\-secret
++and
++.B \-\-tls-auth 
++options. 
++
++Each inline file started by the line 
++.B <option>
++and ended by the line
++.B </option>
++
++Here is an example of an inline file usage
++
++.nf
++.ft 3
++.in +4
++<cert>
++-----BEGIN CERTIFICATE-----
++[...]
++-----END CERTIFICATE-----
++</cert>
++.in -4
++.ft
++.fi
++
++When using the inline file feature with 
++.B \-\-pkcs12 
++the inline file has to be base64 encoded. Encoding of a .p12 file into base64 can be done for example with OpenSSL by running
++.B openssl base64 -in input.p12 
++
+ .SH SIGNALS
+ .TP
+ .B SIGHUP
+-- 
+1.7.9.5
 
-But you forget one detail.  OpenVPN options can be overridden by just
-appending an extra --script-dir at the command line, due to the nature
-of the option parser.  Which is the same situation for
-- --script-security as well.  Your patch has the same flaw as
-- --script-security.
-
-
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAlA2TzgACgkQDC186MBRfrrWwgCeOHVUDUWVfSPVoFSSet1BlBU8
-fQMAn0Pw9ia3cKkW1wXe3R65brcjHmIV
-=ZBlP
------END PGP SIGNATURE-----
 
