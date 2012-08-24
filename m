@@ -1,14 +1,13 @@
-Date: Thu, 23 Aug 2012 23:55:47 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20120823215547.GJ18296@...1296...>
-References: <1345756860-2044-1-git-send-email-arne@...1227...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="nzri8VXeXB/g5ayr"
-Content-Disposition: inline
-In-Reply-To: <1345756860-2044-1-git-send-email-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Document the inlining of files in
-	openvpn and document key-direction
+References: <1345727389.42365.YahooMailNeo@...1744...>
+	<50364E1E.7000109@...1114...> 
+Message-ID: <1345828643.55420.YahooMailNeo@...1750...>
+Date: Sat, 25 Aug 2012 01:17:23 +0800 (SGT)
+From: Amm Vpn <ammdispose-vpn@...109...>
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+	boundary="-697551913-2125623339-1345828643=:55420"
+Subject: Re: [Openvpn-devel] patch for 2.2.2 to include --script-dir
+Reply-To: Amm Vpn <ammdispose-vpn@...109...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,46 +16,245 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---nzri8VXeXB/g5ayr
-Content-Type: text/plain; charset="us-ascii"
+---697551913-2125623339-1345828643=:55420
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Hello all,
 
-On Thu, Aug 23, 2012 at 11:21:00PM +0200, Arne Schwabe wrote:
-> This patch documents the usage of inline files in OpenVPN. Hackish ways o=
-f inline files are deliberately left out. For tls-auth and
+I am attaching a new patch which takes care of few things discussed yesterd=
+ay.
 
-ACK.
+Summary of patch:
+1) Add new option --script-dir which restricts any user defined script to r=
+un only from specific directory
 
-(This is far too useful to be left undocumented :-) )
+2) Backward compatible. If script-dir is not specified then it allows scrip=
+t from any directory.
 
-gert
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+3) Adds compile time configure option --with-script-dir=3D/some/path/
+If this option is used then script-dir becomes hard-coded and CAN NOT be ch=
+anged from config file or command line.
 
---nzri8VXeXB/g5ayr
-Content-Type: application/pgp-signature
-Content-Disposition: inline
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (NetBSD)
+This allows flexibility to anyone (people like me) who wants to compile the=
+ code on their own making sure that script-dir can not be changed at all.
 
-iQCVAwUBUDam46kuBuNlUUl1AQLGuAQAkRe6UijLZGwuXR2zeNCYwcypBej+vHhl
-QmCpIX73rqcd+CRquqodtD46sJF2d8E7n/FfDCYNC6L+/fCoZ4TVnAO76glZyMJJ
-GVwZYcpDCFxEsALrsKMb2jroa7osh8+kZAXsMwzRmgA648Vv4KSJIo5e96lGZQfI
-T9BuqScrvs8=
-=7b6N
------END PGP SIGNATURE-----
 
---nzri8VXeXB/g5ayr--
+4) If it is not enabled at compile time then first script-dir has preferenc=
+e.
+a) if script-dir is specified on command line, it is given the priority
+
+b) if script-dir is specified twice (either in same config file or included=
+ config file) then only 1st occurrence is accepted and warning is logged fo=
+r the rest of the occurrences.
+
+
+This allows, easy binary distribution (by not hard-coding the script-dir) a=
+nd then user can decide on their own script-dir.
+
+Root user can then call OpenVPN with script-dir either on command line or i=
+nside parent config file. Parent config file can then call child config (co=
+nfig child.conf). And then "freely" give access to child.conf to other lowe=
+r admins without worrying about them running any random script.
+
+Even if lower admins specify script-dir, it will be ignored.
+
+
+
+Hope that this patch now satisfy everyone in devel group and makes much mor=
+e sense to be implemented.
+
+Security in my opinion should be prime concern especially when we know that=
+ there is a way to run any random script. And hence atleast for such insecu=
+re options, sanity checks has to be there in program itself instead of trus=
+ting the frontend.
+
+
+
+
+Patch is clean and simple and just about 25 lines of real code addition.
+
+Patch eliminates danger of openvpn running any script blindly.
+
+So please review it and consider to merge in source tree.
+
+Thank you
+
+AMM.
+
+---697551913-2125623339-1345828643=:55420
+Content-Type: text/x-patch; name="openvpn-2.2.2-scriptdir.patch"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="openvpn-2.2.2-scriptdir.patch"
+
+LS0tIG9wZW52cG4tMi4yLjIub2xkL2NvbmZpZy5oLmluCTIwMTEtMTItMTQg
+MTY6NTE6NDkuMDAwMDAwMDAwICswNTMwCisrKyBvcGVudnBuLTIuMi4yL2Nv
+bmZpZy5oLmluCTIwMTItMDgtMjQgMjE6MzI6MDEuODQzNzM4MjM4ICswNTMw
+CkBAIC00NjgsNiArNDY4LDkgQEAKIC8qIFBhdGggdG8gcm91dGUgdG9vbCAq
+LwogI3VuZGVmIFJPVVRFX1BBVEgKIAorLyogUGF0aCB0byBzY3JpcHQgZGly
+ZWN0b3J5ICovCisjdW5kZWYgU0NSSVBURElSX1BBVEgKKwogLyogVGhlIHNp
+emUgb2YgYHVuc2lnbmVkIGludCcsIGFzIGNvbXB1dGVkIGJ5IHNpemVvZi4g
+Ki8KICN1bmRlZiBTSVpFT0ZfVU5TSUdORURfSU5UCiAKLS0tIG9wZW52cG4t
+Mi4yLjIub2xkL2NvbmZpZ3VyZQkyMDExLTEyLTE0IDE2OjUxOjExLjAwMDAw
+MDAwMCArMDUzMAorKysgb3BlbnZwbi0yLjIuMi9jb25maWd1cmUJMjAxMi0w
+OC0yNCAyMTozMjowMS44NDY3MzgzMDcgKzA1MzAKQEAgLTczNCw2ICs3MzQs
+NyBAQAogd2l0aF9wa2NzMTFfaGVscGVyX2hlYWRlcnMKIHdpdGhfcGtjczEx
+X2hlbHBlcl9saWIKIHdpdGhfaWZjb25maWdfcGF0aAord2l0aF9zY3JpcHRf
+ZGlyCiB3aXRoX2lwcm91dGVfcGF0aAogd2l0aF9yb3V0ZV9wYXRoCiB3aXRo
+X25ldHN0YXRfcGF0aApAQCAtMTQwOSw2ICsxNDEwLDcgQEAKICAgLS13aXRo
+LXBrY3MxMS1oZWxwZXItaGVhZGVycz1ESVIgcGtjczExLWhlbHBlciBJbmNs
+dWRlIGZpbGVzIGxvY2F0aW9uCiAgIC0td2l0aC1wa2NzMTEtaGVscGVyLWxp
+Yj1ESVIgICAgIHBrY3MxMS1oZWxwZXIgTGlicmFyeSBsb2NhdGlvbgogICAt
+LXdpdGgtaWZjb25maWctcGF0aD1QQVRIICAgUGF0aCB0byBpZmNvbmZpZyB0
+b29sCisgIC0td2l0aC1zY3JpcHQtZGlyPVBBVEggICAgICBQYXRoIHRvIHNj
+cmlwdCBkaXIKICAgLS13aXRoLWlwcm91dGUtcGF0aD1QQVRIICAgIFBhdGgg
+dG8gaXByb3V0ZSB0b29sCiAgIC0td2l0aC1yb3V0ZS1wYXRoPVBBVEggIFBh
+dGggdG8gcm91dGUgdG9vbAogICAtLXdpdGgtbmV0c3RhdC1wYXRoPVBBVEgg
+IFBhdGggdG8gbmV0c3RhdCB0b29sCkBAIC0zNDAwLDYgKzM0MDIsMTggQEAK
+IAogCiAKKyMgQ2hlY2sgd2hldGhlciAtLXdpdGgtc2NyaXB0LWRpciB3YXMg
+Z2l2ZW4uCitpZiB0ZXN0ICIke3dpdGhfc2NyaXB0X2RpcitzZXR9IiA9IHNl
+dDsgdGhlbiA6CisgIHdpdGh2YWw9JHdpdGhfc2NyaXB0X2RpcjsgdGVzdCAt
+biAkd2l0aHZhbCAmJgorY2F0ID4+Y29uZmRlZnMuaCA8PF9BQ0VPRgorI2Rl
+ZmluZSBTQ1JJUFRESVJfUEFUSCAiJHdpdGh2YWwiCitfQUNFT0YKKworCitm
+aQorCisKKwogIyBDaGVjayB3aGV0aGVyIC0td2l0aC1pcHJvdXRlLXBhdGgg
+d2FzIGdpdmVuLgogaWYgdGVzdCAiJHt3aXRoX2lwcm91dGVfcGF0aCtzZXR9
+IiA9IHNldDsgdGhlbiA6CiAgIHdpdGh2YWw9JHdpdGhfaXByb3V0ZV9wYXRo
+OyBJUFJPVVRFPSIkd2l0aHZhbCIKLS0tIG9wZW52cG4tMi4yLjIub2xkL2Nv
+bmZpZ3VyZS5hYwkyMDExLTEyLTEzIDIyOjI4OjU2LjAwMDAwMDAwMCArMDUz
+MAorKysgb3BlbnZwbi0yLjIuMi9jb25maWd1cmUuYWMJMjAxMi0wOC0yNCAy
+MTozMjowMi4wMjc3NDIzODcgKzA1MzAKQEAgLTI1Nyw2ICsyNTcsMTEgQEAK
+ICkKIEFDX0RFRklORV9VTlFVT1RFRChJRkNPTkZJR19QQVRILCAiJElGQ09O
+RklHIiwgW1BhdGggdG8gaWZjb25maWcgdG9vbF0pCiAKK0FDX0FSR19XSVRI
+KHNjcmlwdC1kaXIsCisgICBbICAtLXdpdGgtc2NyaXB0LWRpcj1QQVRIICAg
+ICAgUGF0aCB0byBzY3JpcHQgZGlyXSwKKyAgIHRlc3QgLW4gJHdpdGh2YWwg
+JiYgQUNfREVGSU5FX1VOUVVPVEVEKFNDUklQVERJUl9QQVRILCAiJHdpdGh2
+YWwiLCBbUGF0aCB0byBzY3JpcHQgZGlyZWN0b3J5XSkKKykKKwogQUNfQVJH
+X1dJVEgoaXByb3V0ZS1wYXRoLAogICAgWyAgLS13aXRoLWlwcm91dGUtcGF0
+aD1QQVRIICAgIFBhdGggdG8gaXByb3V0ZSB0b29sXSwKICAgIFtJUFJPVVRF
+PSIkd2l0aHZhbCJdLAotLS0gb3BlbnZwbi0yLjIuMi5vbGQvaW5pdC5jCTIw
+MTEtMTItMTMgMjI6Mjg6NTYuMDAwMDAwMDAwICswNTMwCisrKyBvcGVudnBu
+LTIuMi4yL2luaXQuYwkyMDEyLTA4LTI0IDIxOjMyOjAyLjAyODc0MjQxMCAr
+MDUzMApAQCAtMjI5MSw5ICsyMjkxLDE0IEBACiAjZW5kaWYKIAogICBpZiAo
+c2NyaXB0X3NlY3VyaXR5ID49IFNTRUNfU0NSSVBUUykKLSAgICBtc2cgKE1f
+V0FSTiwgIk5PVEU6IHRoZSBjdXJyZW50IC0tc2NyaXB0LXNlY3VyaXR5IHNl
+dHRpbmcgbWF5IGFsbG93IHRoaXMgY29uZmlndXJhdGlvbiB0byBjYWxsIHVz
+ZXItZGVmaW5lZCBzY3JpcHRzIik7Ci0gIGVsc2UgaWYgKHNjcmlwdF9zZWN1
+cml0eSA+PSBTU0VDX1BXX0VOVikKLSAgICBtc2cgKE1fV0FSTiwgIldBUk5J
+Tkc6IHRoZSBjdXJyZW50IC0tc2NyaXB0LXNlY3VyaXR5IHNldHRpbmcgbWF5
+IGFsbG93IHBhc3N3b3JkcyB0byBiZSBwYXNzZWQgdG8gc2NyaXB0cyB2aWEg
+ZW52aXJvbm1lbnRhbCB2YXJpYWJsZXMiKTsKKyAgICB7CisgICAgICBtc2cg
+KE1fV0FSTiwgIk5PVEU6IHRoZSBjdXJyZW50IC0tc2NyaXB0LXNlY3VyaXR5
+IHNldHRpbmcgbWF5IGFsbG93IHRoaXMgY29uZmlndXJhdGlvbiB0byBjYWxs
+IHVzZXItZGVmaW5lZCBzY3JpcHRzIik7CisgICAgICBpZiAoc2NyaXB0X3Nl
+Y3VyaXR5ID49IFNTRUNfUFdfRU5WKQorICAgICAgICBtc2cgKE1fV0FSTiwg
+IldBUk5JTkc6IHRoZSBjdXJyZW50IC0tc2NyaXB0LXNlY3VyaXR5IHNldHRp
+bmcgbWF5IGFsbG93IHBhc3N3b3JkcyB0byBiZSBwYXNzZWQgdG8gc2NyaXB0
+cyB2aWEgZW52aXJvbm1lbnRhbCB2YXJpYWJsZXMiKTsKKyAgICAgIGlmIChz
+Y3JpcHRfZGlyID09IE5VTEwpCisgICAgICAgIG1zZyAoTV9XQVJOLCAiV0FS
+TklORzogc2V0dGluZyAtLXNjcmlwdC1kaXIgaXMgcmVjb21tZW5kZWQgZm9y
+IGhpZ2hlciBzZWN1cml0eSIpOworICAgICAgZWxzZSBtc2cgKE1fV0FSTiwg
+Ik5PVEU6IHVzZXItZGVmaW5lZCBzY3JpcHRzIHdpbGwgYmUgcnVuIG9ubHkg
+ZnJvbSAlcyIsIHNjcmlwdF9kaXIpOworICAgIH0KICAgZWxzZQogICAgIG1z
+ZyAoTV9XQVJOLCAiTk9URTogIiBQQUNLQUdFX05BTUUgIiAyLjEgcmVxdWly
+ZXMgJy0tc2NyaXB0LXNlY3VyaXR5IDInIG9yIGhpZ2hlciB0byBjYWxsIHVz
+ZXItZGVmaW5lZCBzY3JpcHRzIG9yIGV4ZWN1dGFibGVzIik7CiAKLS0tIG9w
+ZW52cG4tMi4yLjIub2xkL21pc2MuYwkyMDExLTEyLTEzIDIyOjI4OjU2LjAw
+MDAwMDAwMCArMDUzMAorKysgb3BlbnZwbi0yLjIuMi9taXNjLmMJMjAxMi0w
+OC0yNCAyMTozMjowMi4wMjk3NDI0MzMgKzA1MzAKQEAgLTQ1LDYgKzQ1LDEy
+IEBACiAKIC8qIGNvbnRhaW5zIGFuIFNTRUNfeCB2YWx1ZSBkZWZpbmVkIGlu
+IG1pc2MuaCAqLwogaW50IHNjcmlwdF9zZWN1cml0eSA9IFNTRUNfQlVJTFRf
+SU47IC8qIEdMT0JBTCAqLworI2lmZGVmIFNDUklQVERJUl9QQVRICitjb25z
+dCBjaGFyICpzY3JpcHRfZGlyID0gU0NSSVBURElSX1BBVEg7IC8qIEdMT0JB
+TCAqLworI2Vsc2UKKyN3YXJuaW5nIHVzZSBvZiAtLXdpdGgtc2NyaXB0LWRp
+cj1QQVRIIGlzIHJlY29tbWVuZGVkCitjb25zdCBjaGFyICpzY3JpcHRfZGly
+ID0gTlVMTDsgLyogR0xPQkFMICovCisjZW5kaWYKIAogLyogY29udGFpbnMg
+U01feCB2YWx1ZSBkZWZpbmVkIGluIG1pc2MuaCAqLwogaW50IHNjcmlwdF9t
+ZXRob2QgPSBTTV9FWEVDVkU7IC8qIEdMT0JBTCAqLwpAQCAtNDg0LDEwICs0
+OTAsMTQgQEAKIH0KIAogYm9vbAotb3BlbnZwbl9leGVjdmVfYWxsb3dlZCAo
+Y29uc3QgdW5zaWduZWQgaW50IGZsYWdzKQorb3BlbnZwbl9leGVjdmVfYWxs
+b3dlZCAoY29uc3QgY2hhciAqY21kLCBjb25zdCB1bnNpZ25lZCBpbnQgZmxh
+Z3MpCiB7CiAgIGlmIChmbGFncyAmIFNfU0NSSVBUKQotICAgIHJldHVybiBz
+Y3JpcHRfc2VjdXJpdHkgPj0gU1NFQ19TQ1JJUFRTOworICAgIHsKKyAgICAg
+IGlmIChzY3JpcHRfZGlyICYmIHNjcmlwdF9kaXJbMF0gJiYgc3RybmNtcChz
+Y3JpcHRfZGlyLCBjbWQsIHN0cmxlbihzY3JpcHRfZGlyKSkpCisJcmV0dXJu
+IGZhbHNlOworICAgICAgcmV0dXJuIHNjcmlwdF9zZWN1cml0eSA+PSBTU0VD
+X1NDUklQVFM7CisgICAgfQogICBlbHNlCiAgICAgcmV0dXJuIHNjcmlwdF9z
+ZWN1cml0eSA+PSBTU0VDX0JVSUxUX0lOOwogfQpAQCAtNTA5LDExICs1MTks
+MTEgQEAKICAgaWYgKGEgJiYgYS0+YXJndlswXSkKICAgICB7CiAjaWYgZGVm
+aW5lZChFTkFCTEVfRVhFQ1ZFKQotICAgICAgaWYgKG9wZW52cG5fZXhlY3Zl
+X2FsbG93ZWQgKGZsYWdzKSkKKyAgICAgIGNvbnN0IGNoYXIgKmNtZCA9IGEt
+PmFyZ3ZbMF07CisgICAgICBpZiAob3BlbnZwbl9leGVjdmVfYWxsb3dlZCAo
+Y21kLCBmbGFncykpCiAJewogCSAgaWYgKHNjcmlwdF9tZXRob2QgPT0gU01f
+RVhFQ1ZFKQogCSAgICB7Ci0JICAgICAgY29uc3QgY2hhciAqY21kID0gYS0+
+YXJndlswXTsKIAkgICAgICBjaGFyICpjb25zdCAqYXJndiA9IGEtPmFyZ3Y7
+CiAJICAgICAgY2hhciAqY29uc3QgKmVudnAgPSAoY2hhciAqY29uc3QgKilt
+YWtlX2Vudl9hcnJheSAoZXMsIHRydWUsICZnYyk7CiAJICAgICAgcGlkX3Qg
+cGlkOwotLS0gb3BlbnZwbi0yLjIuMi5vbGQvbWlzYy5oCTIwMTEtMTItMTMg
+MjI6Mjg6NTYuMDAwMDAwMDAwICswNTMwCisrKyBvcGVudnBuLTIuMi4yL21p
+c2MuaAkyMDEyLTA4LTI0IDIxOjMyOjAyLjAzMDc0MjQ1NSArMDUzMApAQCAt
+MTMzLDcgKzEzMyw3IEBACiAvKiB3cmFwcGVyIGFyb3VuZCB0aGUgZXhlY3Zl
+KCkgY2FsbCAqLwogaW50IG9wZW52cG5fZXhlY3ZlIChjb25zdCBzdHJ1Y3Qg
+YXJndiAqYSwgY29uc3Qgc3RydWN0IGVudl9zZXQgKmVzLCBjb25zdCB1bnNp
+Z25lZCBpbnQgZmxhZ3MpOwogYm9vbCBvcGVudnBuX2V4ZWN2ZV9jaGVjayAo
+Y29uc3Qgc3RydWN0IGFyZ3YgKmEsIGNvbnN0IHN0cnVjdCBlbnZfc2V0ICpl
+cywgY29uc3QgdW5zaWduZWQgaW50IGZsYWdzLCBjb25zdCBjaGFyICplcnJv
+cl9tZXNzYWdlKTsKLWJvb2wgb3BlbnZwbl9leGVjdmVfYWxsb3dlZCAoY29u
+c3QgdW5zaWduZWQgaW50IGZsYWdzKTsKK2Jvb2wgb3BlbnZwbl9leGVjdmVf
+YWxsb3dlZCAoY29uc3QgY2hhciAqY21kLCBjb25zdCB1bnNpZ25lZCBpbnQg
+ZmxhZ3MpOwogaW50IG9wZW52cG5fc3lzdGVtIChjb25zdCBjaGFyICpjb21t
+YW5kLCBjb25zdCBzdHJ1Y3QgZW52X3NldCAqZXMsIHVuc2lnbmVkIGludCBm
+bGFncyk7CiAKIHN0YXRpYyBpbmxpbmUgYm9vbApAQCAtMzUzLDYgKzM1Myw3
+IEBACiAjZGVmaW5lIFNTRUNfU0NSSVBUUyAgIDIgLyogYWxsb3cgY2FsbGlu
+ZyBvZiBidWlsdC1pbiBwcm9ncmFtcyBhbmQgdXNlci1kZWZpbmVkIHNjcmlw
+dHMgKi8KICNkZWZpbmUgU1NFQ19QV19FTlYgICAgMyAvKiBhbGxvdyBjYWxs
+aW5nIG9mIGJ1aWx0LWluIHByb2dyYW1zIGFuZCB1c2VyLWRlZmluZWQgc2Ny
+aXB0cyB0aGF0IG1heSByZWNlaXZlIGEgcGFzc3dvcmQgYXMgYW4gZW52aXJv
+bm1lbnRhbCB2YXJpYWJsZSAqLwogZXh0ZXJuIGludCBzY3JpcHRfc2VjdXJp
+dHk7IC8qIEdMT0JBTCAqLworZXh0ZXJuIGNvbnN0IGNoYXIgKnNjcmlwdF9k
+aXI7IC8qIEdMT0JBTCAqLwogCiAjZGVmaW5lIFNNX0VYRUNWRSAwICAgICAg
+LyogY2FsbCBleHRlcm5hbCBwcm9ncmFtcyB3aXRoIGV4ZWN2ZSgpIG9yIENy
+ZWF0ZVByb2Nlc3MoKSAqLwogI2RlZmluZSBTTV9TWVNURU0gMSAgICAgIC8q
+IGNhbGwgZXh0ZXJuYWwgcHJvZ3JhbXMgd2l0aCBzeXN0ZW0oKSAqLwotLS0g
+b3BlbnZwbi0yLjIuMi5vbGQvb3B0aW9ucy5jCTIwMTEtMTItMTMgMjI6Mjg6
+NTYuMDAwMDAwMDAwICswNTMwCisrKyBvcGVudnBuLTIuMi4yL29wdGlvbnMu
+YwkyMDEyLTA4LTI0IDIxOjQ3OjQyLjA2ODkzMTE1NSArMDUzMApAQCAtMjE4
+LDYgKzIxOCw3IEBACiAgICIgICAgICAgICAgICAgICAgICAxIC0tIChkZWZh
+dWx0KSBvbmx5IGNhbGwgYnVpbHQtaW5zIHN1Y2ggYXMgaWZjb25maWdcbiIK
+ICAgIiAgICAgICAgICAgICAgICAgIDIgLS0gYWxsb3cgY2FsbGluZyBvZiBi
+dWlsdC1pbnMgYW5kIHNjcmlwdHNcbiIKICAgIiAgICAgICAgICAgICAgICAg
+IDMgLS0gYWxsb3cgcGFzc3dvcmQgdG8gYmUgcGFzc2VkIHRvIHNjcmlwdHMg
+dmlhIGVudlxuIgorICAiLS1zY3JpcHQtZGlyIGRpcjogT25seSBydW4gdXNl
+ci1kZWZpbmVkIHNjcmlwdCBpZiBpdCByZXNpZGVzIGluIHRoaXMgZGlyZWN0
+b3J5XG4iCiAgICItLXNoYXBlciBuICAgICAgOiBSZXN0cmljdCBvdXRwdXQg
+dG8gcGVlciB0byBuIGJ5dGVzIHBlciBzZWNvbmQuXG4iCiAgICItLWtlZXBh
+bGl2ZSBuIG0gOiBIZWxwZXIgb3B0aW9uIGZvciBzZXR0aW5nIHRpbWVvdXRz
+IGluIHNlcnZlciBtb2RlLiAgU2VuZFxuIgogICAiICAgICAgICAgICAgICAg
+ICAgcGluZyBvbmNlIGV2ZXJ5IG4gc2Vjb25kcywgcmVzdGFydCBpZiBwaW5n
+IG5vdCByZWNlaXZlZFxuIgpAQCAtNDc0OCw2ICs0NzQ5LDE0IEBACiAgICAg
+ICBlbHNlCiAJc2NyaXB0X21ldGhvZCA9IFNNX0VYRUNWRTsKICAgICB9Cisg
+IGVsc2UgaWYgKHN0cmVxIChwWzBdLCAic2NyaXB0LWRpciIpICYmIHBbMV0p
+CisgICAgeworICAgICAgVkVSSUZZX1BFUk1JU1NJT04gKE9QVF9QX0dFTkVS
+QUwpOworICAgICAgaWYgKHNjcmlwdF9kaXIpCisJbXNnIChNX1dBUk4sICIt
+LXNjcmlwdC1kaXIgYWxyZWFkeSBzZXQsIGlnbm9yaW5nIG5ldyB2YWx1ZTog
+JXMiLCBwWzFdKTsKKyAgICAgIGVsc2UKKwlzY3JpcHRfZGlyID0gcFsxXTsK
+KyAgICB9CiAgIGVsc2UgaWYgKHN0cmVxIChwWzBdLCAibXNzZml4IikpCiAg
+ICAgewogICAgICAgVkVSSUZZX1BFUk1JU1NJT04gKE9QVF9QX0dFTkVSQUwp
+OwotLS0gb3BlbnZwbi0yLjIuMi5vbGQvd2luMzIuYwkyMDExLTEyLTEzIDIy
+OjI4OjU2LjAwMDAwMDAwMCArMDUzMAorKysgb3BlbnZwbi0yLjIuMi93aW4z
+Mi5jCTIwMTItMDgtMjQgMjE6MzI6MDIuMDM0NzQyNTQ0ICswNTMwCkBAIC05
+NTYsNyArOTU2LDggQEAKIAogICBpZiAoYSAmJiBhLT5hcmd2WzBdKQogICAg
+IHsKLSAgICAgIGlmIChvcGVudnBuX2V4ZWN2ZV9hbGxvd2VkIChmbGFncykp
+CisgICAgICBjaGFyICpjbWQgPSBhLT5hcmd2WzBdOworICAgICAgaWYgKG9w
+ZW52cG5fZXhlY3ZlX2FsbG93ZWQgKGNtZCwgZmxhZ3MpKQogCXsKIAkgIGlm
+IChzY3JpcHRfbWV0aG9kID09IFNNX0VYRUNWRSkKIAkgICAgewpAQCAtOTY1
+LDcgKzk2Niw2IEBACiAKIAkgICAgICBjaGFyICplbnYgPSBlbnZfYmxvY2sg
+KGVzKTsKIAkgICAgICBjaGFyICpjbCA9IGNtZF9saW5lIChhKTsKLQkgICAg
+ICBjaGFyICpjbWQgPSBhLT5hcmd2WzBdOwogCiAJICAgICAgQ0xFQVIgKHN0
+YXJ0X2luZm8pOwogCSAgICAgIENMRUFSIChwcm9jX2luZm8pOwo=
+
+---697551913-2125623339-1345828643=:55420--
 
