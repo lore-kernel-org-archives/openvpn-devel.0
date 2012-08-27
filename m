@@ -1,15 +1,13 @@
+Message-ID: <503B48EB.5090406@...1114...>
+Date: Mon, 27 Aug 2012 12:16:11 +0200
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
 References: <1345727389.42365.YahooMailNeo@...1744...>
 	<50364E1E.7000109@...1114...>
 	<1345828643.55420.YahooMailNeo@...1750...>
 	<503A8633.5090308@...1114...>
 	<1346030651.69898.YahooMailNeo@...1752...>
 In-Reply-To: <1346030651.69898.YahooMailNeo@...1752...>
-MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----5JVB2C2WQJ5PS7UJCGXSXIV4SGZB6N"
-From: Eric F Crist <ecrist@...1286...>
-Date: Sun, 26 Aug 2012 20:58:24 -0500
-Message-ID: <94588dbd-f523-40eb-b70c-8140d257a72d@...1753...>
 Subject: Re: [Openvpn-devel] patch for 2.2.2 to include --script-dir
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -19,168 +17,98 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Amm Vpn <ammdispose-vpn@...109...>, David Sommerseth <openvpn.list@...1114...>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Amm Vpn <ammdispose-vpn@...109...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-------5JVB2C2WQJ5PS7UJCGXSXIV4SGZB6N
-X-Eric-Conspiracy: There is no conspiracy.
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-There are a few decision makers who have sent NAKs regarding your patch. Th=
-is isn't going to be considered further.=20
---=20
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+On 27/08/12 03:24, Amm Vpn wrote:
+> Hi,
+> 
+> First I just wanted to know if you are the decision maker for
+> OpenVPN?
 
-Amm Vpn <ammdispose-vpn@...109...> wrote:
+I am one of more.  But I'm kind of the main community gatekeeper for
+the public git trees.  Patches go through me.  But I listen to the
+majority of the trusted community members.  Eric is one of them, Heiko
+is another one.  But feel free to approach OpenVPN technology people
+directly, if you prefer that.
 
-Hi,
+> Because, the reasons/scenarios you are giving do not make sense to
+> me. You are not at all considering the real danger (a what-if
+> case)
+> 
+> (Do not take it in offensive way please)
 
-First I just wanted to know if you are the decision maker for OpenVPN?
+No problem.  But I thought I already did that, even though not
+explicitly.  But from what I understand your clients are Linux or BSD
+based.  And I still do not see your approach as useful.
 
+a) The user can after having established a connection do a 'ps' and
+list all openvpn processes and it's arguments.  Save this and disconnect.
 
-Because, the reasons/scenarios you are giving do not make sense to me.
-You are not at all considering the real danger (a what-if case)
+b) Download it's own source code of OpenVPN, and compile it.  Either
+on the same box (if all needed tools are needed) or another one with
+same libraries and copy over the new executable.
 
-(Do not take it in offensive way please)
+c) Modify the $PATH variable ... or try different approaches to run
+its own compiled OpenVPN binary with a modified configuration file
+(without --script-dir).
 
-I just wanted to make sure I am posting the patch at right place and to
-right person.
+And if that doesn't work ... the user can boot the box into
+single-user mode, or with a rescue disk ... and forcefully replace
+your openvpn binary on the filesystem.
 
+And how does --script-dir change anything in regards to security in here?
 
-I am talking about two users here, one the root user who has access to
-system and other a plain admin who has access to config file only.
-This is a real world scenario in most of cases where assistant just has
-access to frontend and IT head has root access.
+A more sane approach to avoid users from execute random scripts as
+root is to:
 
+  1. have openvpn somewhere on the disk where only root can access and
+     execute the binary.
 
+  2. Save configs in a directory where only root can read/write and do
+     not allow the user to even read these config files at all.
 
------ Original Message -----
-> From: David Sommerseth <openvpn.list@...1114...>
-=20
-> Having this as a runtime configuration does not add any restriction in=20
-> reality.  You must presume the user have the possibility to tweak the con=
-fig=20
-> somehow.  And the user is fully capable of discovering a way how to execu=
-te=20
-> your configs directly, skipping the --scripts-dir.  So you cannot trust t=
-he=20
-> client config.  So the front-end must protect the OpenVPN executable so i=
-t is=20
-> the only one who can start an OpenVPN connection.
+  3. Have a "kick-off" service running, which just takes a reference
+     to a configuration file, which can start the openvpn process
+     with the appropriate config - and nothing more.  This needs to be
+     run with root privileges.
 
-Can you tell me how user can skip script-dir in my new patch? With example
-config? In my opinion I have already taken care of it, if not then I am rea=
-dy to
-patch that as well.
+  4. Have a front-end which the user runs completely unprivileged, which
+     contacts the "kick-off" service with info about which config to
+     start.
 
+Point 3 and 4 is outside the core part of OpenVPN.
 
-> Another scenario, if your front-end does not protect the OpenVPN binary, =
-a=20
-> user can also download an earlier OpenVPN and circumvent this behaviour w=
-ith=20
-> your own front-end.  So the OpenVPN executable must be protected no matte=
-r=20
-> what, and your front-end is the only thing which the user should be able =
-to=20
-> use.  And then this front-end is the only one which truly can protect you=
-, by=20
-> sanitising the config *before* the OpenVPN executable is started - where =
-your=20
-> front-end is the only binary which should have access to the OpenVPN bina=
-ry.
+This is the only way you can be sure the configurations can't be
+modified by the user *except* if the user boots the box using a rescue
+tool or similar, where it gains root access to the file system.  Then
+the game is lost.
 
-Isnt that true for any software?? That user can install unpatched binary an=
-d do
-whatever?? Its like saying, "Hey there is another way a thief can enter the=
- house,
-so why not let all the doors open?"
+Bottom line is, you need to ensure that your configuration files are
+to be trusted.  Telling OpenVPN to bailout if one of the paths in the
+config file is wrong, won't add much to improve this situation.  That's
+more an annoyance than anything else.
 
-And again in my case (infact in most case where root and frontend is handled
-by different people) this would again not be case. As frontend guy has no r=
-oot
-access, so cant install unpatched version.
-
-Thanks and regards,
-
-AMM
+In general, you can't trust any clients.  Security needs to be tackled
+on the places you fully control and where the clients have no
+possibility to gain root access.  In the moment the user can get root
+access somehow, you're out of control.
 
 
-_____________________________________________
+kind regards,
 
-Live Security Virtual Conference
-Exclusive live event will cover all the ways today's security and=20
-threat landscape has changed and how IT managers can respond. Discussions=20
-will include endpoint security, mobile security and the latest in malware=20
-threats. http://www.accelacomm.com/jaw/sfrnl04242012/114/50122263/
-_____________________________________________
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-Openvpn-devel mailing list
-Openvpn-devel@lists.sourceforge.net
-https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
-
-------5JVB2C2WQJ5PS7UJCGXSXIV4SGZB6N
-X-Eric-Conspiracy: There is no conspiracy.
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-
-<html><head></head><body>There are a few decision makers who have sent NAKs=
- regarding your patch. This isn&#39;t going to be considered further. <br>
--- <br>
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.<br><br>=
-<div class=3D"gmail_quote">Amm Vpn &lt;ammdispose-vpn@...109...&gt; wrote:<=
-blockquote class=3D"gmail_quote" style=3D"margin: 0pt 0pt 0pt 0.8ex; border=
--left: 1px solid rgb(204, 204, 204); padding-left: 1ex;">
-<pre style=3D"white-space: pre-wrap; word-wrap:break-word; font-family: san=
-s-serif">Hi,<br /><br />First I just wanted to know if you are the decision=
- maker for OpenVPN?<br /><br /><br />Because, the reasons/scenarios you are=
- giving do not make sense to me.<br />You are not at all considering the re=
-al danger (a what-if case)<br /><br />(Do not take it in offensive way plea=
-se)<br /><br />I just wanted to make sure I am posting the patch at right p=
-lace and to<br />right person.<br /><br /><br />I am talking about two user=
-s here, one the root user who has access to<br />system and other a plain a=
-dmin who has access to config file only.<br />This is a real world scenario=
- in most of cases where assistant just has<br />access to frontend and IT h=
-ead has root access.<br /><br /><br /><br />----- Original Message -----<br=
- />&gt; From: David Sommerseth &lt;openvpn.list@...1114...&gt;<br />=C2=A0<=
-br />&gt; Having this as a runtime configuration does not add any restricti=
-on in <br />&gt;
-reality.=C2=A0 You must presume the user have the possibility to tweak the =
-config <br />&gt; somehow.=C2=A0 And the user is fully capable of discoveri=
-ng a way how to execute <br />&gt; your configs directly, skipping the --sc=
-ripts-dir.=C2=A0 So you cannot trust the <br />&gt; client config.=C2=A0 So=
- the front-end must protect the OpenVPN executable so it is <br />&gt; the =
-only one who can start an OpenVPN connection.<br /><br />Can you tell me ho=
-w user can skip script-dir in my new patch? With example<br />config? In my=
- opinion I have already taken care of it, if not then I am ready to<br />pa=
-tch that as well.<br /><br /><br />&gt; Another scenario, if your front-end=
- does not protect the OpenVPN binary, a <br />&gt; user can also download a=
-n earlier OpenVPN and circumvent this behaviour with <br />&gt; your own fr=
-ont-end.=C2=A0 So the OpenVPN executable must be protected no matter <br />=
-&gt; what, and your front-end is the only thing which the user should be ab=
-le to <br />&gt; use.=C2=A0 And then this
-front-end is the only one which truly can protect you, by <br />&gt; saniti=
-sing the config *before* the OpenVPN executable is started - where your <br=
- />&gt; front-end is the only binary which should have access to the OpenVP=
-N binary.<br /><br />Isnt that true for any software?? That user can instal=
-l unpatched binary and do<br />whatever?? Its like saying, "Hey there is an=
-other way a thief can enter the house,<br />so why not let all the doors op=
-en?"<br /><br />And again in my case (infact in most case where root and fr=
-ontend is handled<br />by different people) this would again not be case. A=
-s frontend guy has no root<br />access, so cant install unpatched version.<=
-br /><br />Thanks and regards,<br /><br />AMM<br /><br /><br /><hr /><br />=
-Live Security Virtual Conference<br />Exclusive live event will cover all t=
-he ways today's security and <br />threat landscape has changed and how IT =
-managers can respond. Discussions <br />will include endpoint security, mob=
-ile security and the
-latest in malware <br />threats. <a href=3D"http://www.accelacomm.com/jaw/s=
-frnl04242012/114/50122263">http://www.accelacomm.com/jaw/sfrnl04242012/114/=
-50122263</a>/<br /><hr /><br />Openvpn-devel mailing list<br />Openvpn-deve=
-l@lists.sourceforge.net<br /><a href=3D"https://lists.sourceforge.net/lists=
-/listinfo/openvpn-devel">https://lists.sourceforge.net/lists/listinfo/openv=
-pn-devel</a><br /></pre></blockquote></div></body></html>=
-
-------5JVB2C2WQJ5PS7UJCGXSXIV4SGZB6N--
-
+iEYEARECAAYFAlA7SOgACgkQDC186MBRfrpX7wCfdEUvdSUtnj2svgJKE4WswAYO
+bnQAoJU1QyBLtC+6/4dNJDB+oX3ZHB2i
+=ApYy
+-----END PGP SIGNATURE-----
 
