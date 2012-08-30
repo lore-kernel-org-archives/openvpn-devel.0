@@ -1,18 +1,14 @@
-References: <1345727389.42365.YahooMailNeo@...1744...>
-	<50364E1E.7000109@...1114...>
-	<1345828643.55420.YahooMailNeo@...1750...>
-	<503A8633.5090308@...1114...>
-	<1346030651.69898.YahooMailNeo@...1752...>
-	<503B48EB.5090406@...1114...>
-	<1346073113.9302.YahooMailNeo@...1755...>
-	<274A2328-1B81-4BC7-863A-3825D70FA56B@...1286...>
-Message-ID: <1346075202.86757.YahooMailNeo@...1750...>
-Date: Mon, 27 Aug 2012 21:46:42 +0800 (SGT)
-From: Amm Vpn <ammdispose-vpn@...109...>
-In-Reply-To: <274A2328-1B81-4BC7-863A-3825D70FA56B@...1286...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] patch for 2.2.2 to include --script-dir
-Reply-To: Amm Vpn <ammdispose-vpn@...109...>
+Date: Thu, 30 Aug 2012 22:41:55 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20120830204155.GC18296@...1296...>
+References: <1344938249-5885-1-git-send-email-dazo@...384...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="DheUW4aQn8WJk6WR"
+Content-Disposition: inline
+In-Reply-To: <1344938249-5885-1-git-send-email-dazo@...384...>
+Subject: Re: [Openvpn-devel] [PATCH] [RFC] Add a warning if
+	--client-config-dir related config file cannot be opened
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,23 +17,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
+To: David Sommerseth <dazo@...384...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--DheUW4aQn8WJk6WR
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
+
+Hi,
+
+On Tue, Aug 14, 2012 at 11:57:29AM +0200, David Sommerseth wrote:
+> From: David Sommerseth <davids@...1347...>
+>=20
+> This will cause a warning in the log file if --client-config-dir
+> is configured but OpenVPN could not find or open the config file
+> for the connecting client.
+>=20
+> OpenVPN will also look for a file named 'DEFAULT' if a file named
+> as the client's TLS Common Name cannot be found.  To hide this
+> warning above, create an empty 'DEFAULT' file inside the
+>  --client-config-dir.
+
+I'm not sure I'm happy with that...
+
+> +              else
+> +                {
+> +                  msg (M_WARN, "[CCD] Failed to import client config for=
+ '%s'",
+> +                       tls_common_name (mi->context.c2.tls_multi, false)=
+);
+> +                }
+
+I find the actual message confusing - what does "fail to *import*" mean?
+
+Naive interpretation is "the file could be found, but there's something
+broken with it, like 'syntax errors' or such, but we won't tell you!".
+
+So the message should be more along the lines of:
+
+    msg (M_WARN, "[CCD] client config file for '%s' not found (or unreadabl=
+e), and no DEFAULT file either",
 
 
+(while it would be even more nice to show *why* it fails, I can see that
+this is a bit tricky to get done without quite some extra code to remember
+test results, etc.)
 
------ Original Message -----
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-> From: Eric Crist <ecrist@...1286...>
+--DheUW4aQn8WJk6WR
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-> All of this can be solved with sed.=A0 No need for an OpenVPN patch that =
-simply=20
-> makes your life a little easier.=A0 This hasn't been requested by=20
-> 'many' users, like you claim.=A0 It's only been requested by you.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
 
-Ok. No issues. However, I dont think sed solves this.
+iQCUAwUBUD/QE6kuBuNlUUl1AQIXOgP4sXXTvSmQdsA9bYWlbDU+E6iMhfkUQFHQ
+98PMKBtvZpzkq3HmSQOjtw+5Iy+uayXb2BFk9Ca+7HD7JFnHPPKnF3aaNl35ZfQ6
+nzzYFqyFMvPOfsbAXks1Q62F1pn3rN5MfrgKu1XkreshyFEb/VB5pUcrrtY83cXM
+N0k87VxTyw==
+=abOY
+-----END PGP SIGNATURE-----
 
-AMM
-
+--DheUW4aQn8WJk6WR--
 
