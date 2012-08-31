@@ -1,14 +1,10 @@
-Message-ID: <5040C27C.5010006@...1227...>
-Date: Fri, 31 Aug 2012 15:56:12 +0200
 From: Arne Schwabe <arne@...1227...>
-MIME-Version: 1.0
-References: <1267361435-11982-1-git-send-email-openvpn.list@...1114...>
-	<20100228142856.GL9556@...1296...>
-	<4B8A8C69.7090801@...384...>
-	<20100228164634.GQ9556@...1296...>
-In-Reply-To: <20100228164634.GQ9556@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Add CID to the management status
-	overview
+Date: Fri, 31 Aug 2012 16:19:13 +0200
+Message-Id: <1346422753-19520-1-git-send-email-arne@...1227...>
+In-Reply-To: <5040C27C.5010006@...1227...>
+References: <5040C27C.5010006@...1227...>
+Subject: [Openvpn-devel] [PATCH] Add the client id (CID) to the output of
+	the status command
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,37 +13,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: David Sommerseth <dazo@...384...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Am 28.02.10 17:46, schrieb Gert Doering:
-> Hi,
->
-> On Sun, Feb 28, 2010 at 04:31:53PM +0100, David Sommerseth wrote:
->>> In the grand scheme of things, small whitespace changes might later on 
->>> lead to a merge conflict with another patch in this line (like "introduce 
->>> version 4" or so), and so I'd avoid changes that are purely cosmetic in 
->>> a "feature" patch.
->> Dang!  This one slipped through.  I spotted it, fixed it, but for some
->> reason I recreated the patch file and forgot I had fixed it.  Gert, I
->> completely agree with you!
-> :)
->
->> I'll promise to fix this one when merging it into the git tree, is that
->> good enough for you, Gert?
-> Yes, I'm fine with that.
-This patch is very old but since someone asked for this feature on IRC I
-am bringing this patch up again.
+This add adds CID which is needed by a few other management commands to the status output. This will change the output of status in the same way commit ca18a638aa7cf316611f893127ba44131e57083c did.
 
-I think it is good to have a stateless way (without being connected to
-the managament console all the time) to query the CID (client id).
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/multi.c |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-Is it better to
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 9876b80..e5df432 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -807,8 +807,8 @@ multi_print_status (struct multi_context *m, struct status_output *so, const int
+ 	   */
+ 	  status_printf (so, "TITLE%c%s", sep, title_string);
+ 	  status_printf (so, "TIME%c%s%c%u", sep, time_string (now, 0, false, &gc_top), sep, (unsigned int)now);
+-	  status_printf (so, "HEADER%cCLIENT_LIST%cCommon Name%cReal Address%cVirtual Address%cBytes Received%cBytes Sent%cConnected Since%cConnected Since (time_t)%cUsername",
+-			 sep, sep, sep, sep, sep, sep, sep, sep, sep);
++	  status_printf (so, "HEADER%cCLIENT_LIST%cCommon Name%cReal Address%cVirtual Address%cBytes Received%cBytes Sent%cConnected Since%cConnected Since (time_t)%cUsername%cClient ID",
++			 sep, sep, sep, sep, sep, sep, sep, sep, sep, sep);
+ 	  hash_iterator_init (m->hash, &hi);
+ 	  while ((he = hash_iterator_next (&hi)))
+ 	    {
+@@ -817,7 +817,7 @@ multi_print_status (struct multi_context *m, struct status_output *so, const int
+ 
+ 	      if (!mi->halt)
+ 		{
+-		  status_printf (so, "CLIENT_LIST%c%s%c%s%c%s%c" counter_format "%c" counter_format "%c%s%c%u%c%s",
++		  status_printf (so, "CLIENT_LIST%c%s%c%s%c%s%c" counter_format "%c" counter_format "%c%s%c%u%c%s%c%u",
+ 				 sep, tls_common_name (mi->context.c2.tls_multi, false),
+ 				 sep, mroute_addr_print (&mi->real, &gc),
+ 				 sep, print_in_addr_t (mi->reporting_addr, IA_EMPTY_IF_UNDEF, &gc),
+@@ -825,7 +825,8 @@ multi_print_status (struct multi_context *m, struct status_output *so, const int
+ 				 sep, mi->context.c2.link_write_bytes,
+ 				 sep, time_string (mi->created, 0, false, &gc),
+ 				 sep, (unsigned int)mi->created,
+-				 sep, tls_username (mi->context.c2.tls_multi, false));
++				 sep, tls_username (mi->context.c2.tls_multi, false),
++                 sep, mi->context.c2.mda_context.cid);
+ 		}
+ 	      gc_free (&gc);
+ 	    }
+-- 
+1.7.9.6 (Apple Git-31.1)
 
-a) break bad parsers when upgrading to 2.3
-b) introduce a v4 format which only
-
-Arne
 
