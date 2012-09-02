@@ -1,14 +1,15 @@
-Message-ID: <5043B800.6000703@...1114...>
-Date: Sun, 02 Sep 2012 21:48:16 +0200
+Message-ID: <5043B802.3000808@...1114...>
+Date: Sun, 02 Sep 2012 21:48:18 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1345197113-24636-1-git-send-email-heiko.hund@...1489...>
-In-Reply-To: <1345197113-24636-1-git-send-email-heiko.hund@...1489...>
+References: <5DDA5487-D6B2-4EF2-8F20-D4324FBEB843@...1286...>
+	<1345140549-29256-1-git-send-email-gert@...1296...>
+In-Reply-To: <1345140549-29256-1-git-send-email-gert@...1296...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigAF949119DFD2C39A9DD8166F"
-Subject: Re: [Openvpn-devel] [PATCH] remove unused flag
-	SSLF_NO_NAME_REMAPPING
+	boundary="------------enig07E33108EE1EE7595F6AE239"
+Subject: Re: [Openvpn-devel] [PATCH] Keep pre-existing tun/tap devices
+ around on *BSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,31 +21,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigAF949119DFD2C39A9DD8166F
+--------------enig07E33108EE1EE7595F6AE239
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-On 17/08/12 11:51, Heiko Hund wrote:
-> The flag was used with the --no-name-remapping option that was removed
-> in commit 5e86fd93779482b90a191f929edebe414cd78a4f.
+On 16/08/12 20:09, Gert Doering wrote:
+> This amends commit 62c613d46dc49 to check whether a named tun/tap
+> device ("--dev tunX" instead of "--dev tun") exists before OpenVPN
+> started - if yes, keep around at program end.  If no, destroy.
 >=20
-> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+> Also has a spelling fix, and changes clear_tuntap() to be "static"
+> (only ever called from within tun.c).
+>=20
+> Tested on FreeBSD 7.4, FreeBSD 9.0, NetBSD 5.1, OpenBSD 4.9
+>=20
+> Signed-off-by: Gert Doering <gert@...1296...>
+> Acked-by: Eric Crist <ecrist@...1286...>
 > ---
->  src/openvpn/ssl_common.h |    1 -
->  1 file changed, 1 deletion(-)
+>  src/openvpn/tun.c |   22 +++++++++++++++++-----
+>  src/openvpn/tun.h |    4 +++-
+>  2 files changed, 20 insertions(+), 6 deletions(-)
 
 Applied to master.
 
-commit 7f696549251d853a9f40a373501b86cc6e5301e3
-Author: Heiko Hund <heiko.hund@...1489...>
-Date:   Fri Aug 17 11:51:53 2012 +0200
+commit 3630a7a50099874d55bf8e212ad4a97d6e70966f
+Author: Gert Doering <gert@...1296...>
+Date:   Thu Aug 16 20:09:09 2012 +0200
 
-    remove unused flag SSLF_NO_NAME_REMAPPING
-
-    Signed-off-by: Heiko Hund <heiko.hund@...1489...>
-    Acked-by: David Sommerseth <davids@...1347...>
-    Message-Id: 1345197113-24636-1-git-send-email-heiko.hund@...1489...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/6986
+    Keep pre-existing tun/tap devices around on *BSD
+=20=20=20=20=20=20=20=20
+    Signed-off-by: Gert Doering <gert@...1296...>
+    Acked-by: Eric Crist <ecrist@...1286...>
     Signed-off-by: David Sommerseth <davids@...1347...>
 
 
@@ -53,7 +60,7 @@ kind regards,
 David Sommerseth
 
 
---------------enigAF949119DFD2C39A9DD8166F
+--------------enig07E33108EE1EE7595F6AE239
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -62,10 +69,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAlBDuAAACgkQDC186MBRfro6+ACdEJ3Q1Zw6unTaE+knIJl4ikqk
-ohwAnRqQFgzF5d2C4UvPMbekD14kX4dc
-=aAe6
+iEYEARECAAYFAlBDuAIACgkQDC186MBRfroS3QCdEf4sW44AoGI8stEwxpwLDjyv
+iwQAoJKZQ3yEoe3EdO9xNDUVVmNkhft3
+=Ozfe
 -----END PGP SIGNATURE-----
 
---------------enigAF949119DFD2C39A9DD8166F--
+--------------enig07E33108EE1EE7595F6AE239--
 
