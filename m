@@ -1,13 +1,9 @@
-Message-ID: <50445D74.9020500@...515...>
-Date: Mon, 03 Sep 2012 10:34:12 +0300
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-References: <20120807093930.GK2535@...1296...>
-	<1344333837-22076-1-git-send-email-arne@...1227...>
-	<20120902184240.GI18296@...1296...>
-In-Reply-To: <20120902184240.GI18296@...1296...>
-Subject: Re: [Openvpn-devel] [Version 4] Merge getaddr_multi and getaddr6
- into one function
+From: Arne Schwabe <arne@...1227...>
+Date: Mon,  3 Sep 2012 13:57:22 +0200
+Message-Id: <1346673442-12049-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH 2/2] Document that keep alive will double
+	the second value in server mode and give a short explanation
+	why the value is chosen.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,36 +12,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
+---
+ doc/openvpn.8 |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-> I ACK this, but please remember to tell your editor to use 8-character ta=
-bs,
-> as that is "what the rest of the code uses" - some of the new code looks
-> quite weird with ":set ts=3D8", and there's more diffs in there due to=20
-> whitespace changes (4 spaces getting converted into a single tab, like
-> before 'hostname =3D "::"').  We do not need a v5 re-spin, as David said
-> he'll take care of these.
->
-> (Samuli: we need a style guide in the wiki...)
->
-> gert
-+1.
-
-Anyone who knows what the current "standard" formatting please add
-instructions here:
-
-<https://community.openvpn.net/openvpn/wiki/DeveloperDocumentation#Formatti=
-ng>
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index f586744..bfc8c25 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -1582,7 +1582,11 @@ A helper directive designed to simplify the expression of
+ .B \-\-ping
+ and
+ .B \-\-ping-restart
+-in server mode configurations.
++in server mode configurations. 
++
++The server timeout is set twice the value of the second argument. 
++This ensures that a timeout is dectected on client side before the
++before server side drops the connection.
+ 
+ For example,
+ .B \-\-keepalive 10 60
+-- 
+1.7.9.6 (Apple Git-31.1)
 
 
