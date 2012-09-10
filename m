@@ -1,13 +1,9 @@
-Message-ID: <504E0902.4090708@...1114...>
-Date: Mon, 10 Sep 2012 17:36:34 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <29D21832-CC91-4783-A015-D8AE7C7D0E9D@...1028...>
-	<504DFDE7.3030405@...1114...>
-	<3158B8BB-F0EB-40BD-A66C-10E6C37DA57A@...1028...>
-In-Reply-To: <3158B8BB-F0EB-40BD-A66C-10E6C37DA57A@...1028...>
-Subject: Re: [Openvpn-devel] [PATCH] Add 1:1 network mapping option
-	(--netmap)
+From: David Sommerseth <dazo@...384...>
+Date: Mon, 10 Sep 2012 18:48:54 +0200
+Message-Id: <1347295734-8920-1-git-send-email-dazo@...384...>
+In-Reply-To: <1345211355-26513-1-git-send-email-heiko.hund@...1489...>
+References: <1345211355-26513-1-git-send-email-heiko.hund@...1489...>
+Subject: [Openvpn-devel] [PATCH] Add --compat-names option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,93 +12,320 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-To: Andrea Bonomi <a.bonomi@...1028...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+From: Heiko Hund <heiko.hund@...1489...>
 
-On 10/09/12 17:24, Andrea Bonomi wrote:
-> There no difference, it's exactly the same feature. The next time I
-> promise to check better before implementing something that already
-> exist. Sorry,
+With this option, users can basically undo the changes of the UTF-8
+support commit 5e86fd93779482b90a191f929edebe414cd78a4f. It's here for
+short term compatibility and should be removed again as soon as possible.
 
-No worries, I'm just sorry for you spending time on implementing this
-feature too.  But good to know we know have the feature you need :)
+When OpenSSL is used, the subject strings will be in the proprietary
+format again. Generally username, X.509 CN, and X.509 subject will
+again be subject to '_' replacemant, unless the "no-remapping" flag is
+also specified. That flag ensures compatibility with setups using
+the --no-name-remapping option, that has been removed in 2.3.
 
-Feel free to come back with other improvements whenever you have
-something up your sleeve.  But to avoid such issues in the future, you
-may also try to get in touch with us on #openvpn-devel on FreeNode
-(IRC).  There are often people there having enough overview to give a
-good recommendation to further progress.
+[v2: More comments related to compat_flags() added by DS plus using
+     COMPAT_FLAG_QUERY expclit]
 
+Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+Signed-off-by: David Sommerseth <davids@...1347...>
+---
+I have reviewed this patch and suggest these minor changes, to make
+the usage of compat_flags() clearer.  The remapping code itself looks
+good to me, so that gets an ACK from me.  But let's add another ACK
+review so other can weight in too.
 
-kind regards,
+ doc/openvpn.8                    |   22 ++++++++++++++++
+ src/openvpn/misc.c               |   21 +++++++++++++++
+ src/openvpn/misc.h               |    6 +++++
+ src/openvpn/options.c            |   10 +++++++
+ src/openvpn/ssl_verify.c         |   54 +++++++++++++++++++++++++++++++-------
+ src/openvpn/ssl_verify_openssl.c |   12 +++++++++
+ 6 files changed, 116 insertions(+), 9 deletions(-)
 
-David Sommerseth
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index f586744..cd039e8 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -3399,6 +3399,28 @@ the authenticated username as the common name,
+ rather than the common name from the client cert.
+ .\"*********************************************************
+ .TP
++.B \-\-compat-names [no-remapping]
++Format usernames, X.509 Common Name and Subject as versions before OpenVPN 2.3
++did.  This option will be removed again in the future and exists solely to
++ease the transition from the proprietary OpenSSL format, in which OpenVPN
++additionally replaced some octets with underscores, to the naming scheme
++complying to RFC 2253.
++
++With this option, OpenVPN will remap any character other than alphanumeric,
++underacore ('_'), dash ('-'), dot ('.'), and slash ('/') to underscore ('_').
++The X509 Subject string as returned by the
++.B tls_id
++environmental variable, can additionally contain colon (':') or equal ('=').
++
++In
++.B no-remapping
++mode the Common Name, Subject, and username strings are allowed to include
++any printable character including space, but excluding control characters
++such as tab, newline, and carriage-return. It ensures compatibility with the
++.B \-\-no-name-remapping
++option of previous versions.
++.\"*********************************************************
++.TP
+ .B \-\-port-share host port [dir]
+ When run in TCP server mode, share the OpenVPN port with
+ another application, such as an HTTPS server.  If OpenVPN
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index 7f72939..d2882d8 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -2120,3 +2120,24 @@ sanitize_control_message(const char *src, struct gc_arena *gc)
+   *dest = '\0';
+   return ret;
+ }
++
++/**
++ * Will set or query for a global compat flag.  To modify the compat flags
++ * the COMPAT_FLAG_SET must be bitwise ORed together with the flag to set.
++ * If no "operator" flag is given it defaults to COMPAT_FLAG_QUERY,
++ * which returns the flag state.
++ *
++ * @param  flag  Flag to be set/queried for bitwise ORed with the operator flag
++ * @return Returns 0 if the flag is not set, otherwise the 'flag' value is returned
++ */
++bool
++compat_flag (unsigned int flag)
++{
++  static unsigned int compat_flags = 0;
++
++  if (flag & COMPAT_FLAG_SET)
++    compat_flags |= (flag >> 1);
++
++  return (compat_flags & (flag >> 1));
++
++}
+diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+index d4c8e33..b6da3f4 100644
+--- a/src/openvpn/misc.h
++++ b/src/openvpn/misc.h
+@@ -368,4 +368,10 @@ void argv_printf_cat (struct argv *a, const char *format, ...)
+ #endif
+   ;
+ 
++#define COMPAT_FLAG_QUERY         0       /** compat_flags operator: Query for a flag */
++#define COMPAT_FLAG_SET           (1<<0)  /** compat_flags operator: Set a compat flag */
++#define COMPAT_NAMES              (1<<1)  /** compat flag: --compat-names set */
++#define COMPAT_NO_NAME_REMAPPING  (1<<2)  /** compat flag: --compat-names without char remapping */
++bool compat_flag (unsigned int flag);
++
+ #endif
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index d25bbea..8133942 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2130,6 +2130,9 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
+ 
+       if (options->stale_routes_check_interval)
+         msg (M_USAGE, "--stale-routes-check requires --mode server");
++
++      if (compat_flag (COMPAT_FLAG_QUERY | COMPAT_NO_NAME_REMAPPING))
++        msg (M_USAGE, "--compat-x509-names no-remapping requires --mode server");
+     }
+ #endif /* P2MP_SERVER */
+ 
+@@ -5525,6 +5528,13 @@ add_option (struct options *options,
+       VERIFY_PERMISSION (OPT_P_GENERAL);
+       options->ssl_flags |= SSLF_AUTH_USER_PASS_OPTIONAL;
+     }
++  else if (streq (p[0], "compat-names"))
++    {
++      VERIFY_PERMISSION (OPT_P_GENERAL);
++      compat_flag (COMPAT_FLAG_SET | COMPAT_NAMES);
++      if (p[1] && streq (p[1], "no-remapping"))
++        compat_flag (COMPAT_FLAG_SET | COMPAT_NO_NAME_REMAPPING);
++    }
+   else if (streq (p[0], "opt-verify"))
+     {
+       VERIFY_PERMISSION (OPT_P_GENERAL);
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 30fb05d..cac46e9 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -49,6 +49,22 @@
+ /** Maximum length of common name */
+ #define TLS_USERNAME_LEN 64
+ 
++/** Legal characters in an X509 name with --compat-names */
++#define X509_NAME_CHAR_CLASS   (CC_ALNUM|CC_UNDERBAR|CC_DASH|CC_DOT|CC_AT|CC_SLASH|CC_COLON|CC_EQUAL)
++
++/** Legal characters in a common name with --compat-names */
++#define COMMON_NAME_CHAR_CLASS (CC_ALNUM|CC_UNDERBAR|CC_DASH|CC_DOT|CC_AT|CC_SLASH)
++
++static void
++string_mod_remap_name (char *str, const unsigned int restrictive_flags)
++{
++  if (compat_flag (COMPAT_FLAG_QUERY | COMPAT_NAMES)
++      && !compat_flag (COMPAT_FLAG_QUERY | COMPAT_NO_NAME_REMAPPING))
++    string_mod (str, restrictive_flags, 0, '_');
++  else
++    string_mod (str, CC_PRINT, CC_CRLF, '_');
++}
++
+ /*
+  * Export the untrusted IP address and port to the environment
+  */
+@@ -591,7 +607,7 @@ verify_cert(struct tls_session *session, openvpn_x509_cert_t *cert, int cert_dep
+     }
+ 
+   /* enforce character class restrictions in X509 name */
+-  string_mod (subject, CC_PRINT, CC_CRLF, '_');
++  string_mod_remap_name (subject, X509_NAME_CHAR_CLASS);
+   string_replace_leading (subject, '-', '_');
+ 
+   /* extract the username (default is CN) */
+@@ -611,7 +627,7 @@ verify_cert(struct tls_session *session, openvpn_x509_cert_t *cert, int cert_dep
+     }
+ 
+   /* enforce character class restrictions in common name */
+-  string_mod (common_name, CC_PRINT, CC_CRLF, '_');
++  string_mod_remap_name (common_name, COMMON_NAME_CHAR_CLASS);
+ 
+   /* warn if cert chain is too deep */
+   if (cert_depth >= MAX_CERT_DEPTH)
+@@ -1003,7 +1019,7 @@ verify_user_pass_script (struct tls_session *session, const struct user_pass *up
+  * Verify the username and password using a plugin
+  */
+ static int
+-verify_user_pass_plugin (struct tls_session *session, const struct user_pass *up)
++verify_user_pass_plugin (struct tls_session *session, const struct user_pass *up, const char *raw_username)
+ {
+   int retval = OPENVPN_PLUGIN_FUNC_ERROR;
+   struct key_state *ks = &session->key[KS_PRIMARY]; 	   /* primary key */
+@@ -1012,7 +1028,7 @@ verify_user_pass_plugin (struct tls_session *session, const struct user_pass *up
+   if ((session->opt->ssl_flags & SSLF_AUTH_USER_PASS_OPTIONAL) || strlen (up->username))
+     {
+       /* set username/password in private env space */
+-      setenv_str (session->opt->es, "username", up->username);
++      setenv_str (session->opt->es, "username", (raw_username ? raw_username : up->username));
+       setenv_str (session->opt->es, "password", up->password);
+ 
+       /* setenv incoming cert common name for script */
+@@ -1036,6 +1052,8 @@ verify_user_pass_plugin (struct tls_session *session, const struct user_pass *up
+ #endif
+ 
+       setenv_del (session->opt->es, "password");
++      if (raw_username)
++        setenv_str (session->opt->es, "username", up->username);
+     }
+   else
+     {
+@@ -1056,7 +1074,7 @@ verify_user_pass_plugin (struct tls_session *session, const struct user_pass *up
+ #define KMDA_DEF     3
+ 
+ static int
+-verify_user_pass_management (struct tls_session *session, const struct user_pass *up)
++verify_user_pass_management (struct tls_session *session, const struct user_pass *up, const char *raw_username)
+ {
+   int retval = KMDA_ERROR;
+   struct key_state *ks = &session->key[KS_PRIMARY]; 	   /* primary key */
+@@ -1065,7 +1083,7 @@ verify_user_pass_management (struct tls_session *session, const struct user_pass
+   if ((session->opt->ssl_flags & SSLF_AUTH_USER_PASS_OPTIONAL) || strlen (up->username))
+     {
+       /* set username/password in private env space */
+-      setenv_str (session->opt->es, "username", up->username);
++      setenv_str (session->opt->es, "username", (raw_username ? raw_username : up->username));
+       setenv_str (session->opt->es, "password", up->password);
+ 
+       /* setenv incoming cert common name for script */
+@@ -1078,6 +1096,8 @@ verify_user_pass_management (struct tls_session *session, const struct user_pass
+ 	management_notify_client_needing_auth (management, ks->mda_key_id, session->opt->mda_context, session->opt->es);
+ 
+       setenv_del (session->opt->es, "password");
++      if (raw_username)
++        setenv_str (session->opt->es, "username", up->username);
+ 
+       retval = KMDA_SUCCESS;
+     }
+@@ -1101,6 +1121,9 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+   bool s2 = true;
+   struct key_state *ks = &session->key[KS_PRIMARY]; 	   /* primary key */
+ 
++  struct gc_arena gc = gc_new ();
++  char *raw_username = NULL;
++
+ #ifdef MANAGEMENT_DEF_AUTH
+   int man_def_auth = KMDA_UNDEF;
+ 
+@@ -1108,17 +1131,28 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+     man_def_auth = KMDA_DEF;
+ #endif
+ 
++  /*
++   * Preserve the raw username before string_mod remapping, for plugins
++   * and management clients when in --compat-names mode
++   */
++  if (compat_flag (COMPAT_FLAG_QUERY | COMPAT_NAMES))
++    {
++      ALLOC_ARRAY_CLEAR_GC (raw_username, char, USER_PASS_LEN, &gc);
++      strcpy (raw_username, up->username);
++      string_mod (raw_username, CC_PRINT, CC_CRLF, '_');
++    }
++
+   /* enforce character class restrictions in username/password */
+-  string_mod (up->username, CC_PRINT, CC_CRLF, '_');
++  string_mod_remap_name (up->username, COMMON_NAME_CHAR_CLASS);
+   string_mod (up->password, CC_PRINT, CC_CRLF, '_');
+ 
+   /* call plugin(s) and/or script */
+ #ifdef MANAGEMENT_DEF_AUTH
+   if (man_def_auth == KMDA_DEF)
+-    man_def_auth = verify_user_pass_management (session, up);
++    man_def_auth = verify_user_pass_management (session, up, raw_username);
+ #endif
+   if (plugin_defined (session->opt->plugins, OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY))
+-    s1 = verify_user_pass_plugin (session, up);
++    s1 = verify_user_pass_plugin (session, up, raw_username);
+   if (session->opt->auth_user_pass_verify_script)
+     s2 = verify_user_pass_script (session, up);
+ 
+@@ -1167,6 +1201,8 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+     {
+       msg (D_TLS_ERRORS, "TLS Auth Error: Auth Username/Password verification failed for peer");
+     }
++
++  gc_free (&gc);
+ }
+ 
+ void
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
+index f5dce0d..658f5f3 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -254,6 +254,18 @@ x509_get_subject (X509 *cert, struct gc_arena *gc)
+   char *subject = NULL;
+   int maxlen = 0;
+ 
++  /*
++   * Generate the subject string in OpenSSL proprietary format,
++   * when in --compat-names mode
++   */
++  if (compat_flag (COMPAT_FLAG_QUERY | COMPAT_NAMES))
++    {
++      subject = gc_malloc (256, false, gc);
++      X509_NAME_oneline (X509_get_subject_name (cert), subject, 256);
++      subject[255] = '\0';
++      return subject;
++    }
++
+   subject_bio = BIO_new (BIO_s_mem ());
+   if (subject_bio == NULL)
+     goto err;
+-- 
+1.7.10.2
 
-
-> On 10/set/2012, at 16:49, David Sommerseth wrote:
->=20
-> On 10/09/12 15:38, Andrea Bonomi wrote:
->>>> Dear Developers, I developed a patch for implementing 1:1
->>>> NAT (something similar to the iptables NETMAP target). This
->>>> is useful in situations when you have the same (private)
->>>> network address behind clients. For example, consider the
->>>> following scenario:
->>>>=20
->>>> -lan1--192.168.0.0/24--      -lan2--192.168.0.0/24-- | | gw1
->>>> 192.168.0.1              gw2 192.168.0.1 | |
->>>> [tunnel]-----OpenVPN server---[tunnel] | [tunnel] | clients=85
->>>>=20
->>>> The clients have to access to both the machines in lan1 and
->>>> lan2, This patch allow to map all the address of a network,
->>>> e.g. [to g1] push "netmap 172.16.1.0/24 192.168.0.0/24" [to
->>>> g2] push "netmap 172.16.2.0/24 192.168.0.0/24" The clients
->>>> can access to, e.g. 192.168.0.79 on lan1 using the IP
->>>> 172.16.1.79.
->=20
-> Hi Andrea,
->=20
-> First of all, thanks a lot for your efforts here!  I just have one=20
-> question ... how does this differ from the --client-nat feature in
-> the code base for OpenVPN v2.3?  (git master or alpha releases)
->=20
-> - From the man page:
->=20
-> --client-nat snat|dnat network netmask alias This pushable client
-> option sets up  a  stateless one-to-one  NAT  rule  on  packet
-> addresses (not ports), and is useful in cases  where  routes  or=20
-> ifconfig settings pushed to the client would cre? ate an IP
-> numbering conflict.
->=20
-> network/netmask           (for            example=20
-> 192.168.0.0/255.255.0.0)  defines  the local view of a resource
-> from the client perspective,  while alias/netmask (for example
-> 10.64.0.0/255.255.0.0) defines the remote view from the server
-> perspec? tive.
->=20
-> Use  snat (source NAT) for resources owned by the client and  dnat
-> (destination  NAT)  for  remote resources.
->=20
-> Set  --verb  6  for  debugging  info  showing the transformation of
-> src/dest addresses in packets.
->=20
->=20
-> kind regards,
->=20
-> David Sommerseth
->=20
->=20
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAlBOCQAACgkQDC186MBRfrrlkACfQVEFhJLJk4w6LSLGfDSjk+Pn
-OSAAnAq1VVMM5Fj6mm1C40clBFEvRRIT
-=3D8Gqh
------END PGP SIGNATURE-----
 
