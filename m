@@ -1,14 +1,14 @@
-Message-ID: <504F7E10.6010201@...1114...>
-Date: Tue, 11 Sep 2012 20:08:16 +0200
+Message-ID: <504F7E14.8080600@...1114...>
+Date: Tue, 11 Sep 2012 20:08:20 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1347364615-26878-1-git-send-email-gert@...1296...>
-In-Reply-To: <1347364615-26878-1-git-send-email-gert@...1296...>
+References: <1347154246-20143-1-git-send-email-dazo@...384...>
+In-Reply-To: <1347154246-20143-1-git-send-email-dazo@...384...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigF61885E091B76204B08EB0B4"
-Subject: Re: [Openvpn-devel] [PATCH] make "ipv6 ifconfig" on linux
- compatible with busybox ifconfig
+	boundary="------------enig8A77E3B6E1A91E196546FFA7"
+Subject: Re: [Openvpn-devel] [PATCH] Fix reconnect issues when --push and
+ UDP is used on the server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,36 +20,69 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF61885E091B76204B08EB0B4
+--------------enig8A77E3B6E1A91E196546FFA7
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-On 11/09/12 13:56, Gert Doering wrote:
-> We used to call "ifconfig tun0 inet6 add...".  The "inet6" part is option=
-al,
-> and not understood by busybox.  So now we call "ifconfig tun0 add ...",
-> which works on all supported Linux variants.
+On 09/09/12 03:30, David Sommerseth wrote:
+> From: David Sommerseth <davids@...1347...>
 >=20
-> Tested on Gentoo, RHEL5+, Debian Lenny & up.
+> When the server is configured with UDP and --push statements, reconnecting
+> often fails by the client never receiving PUSH_REPLY.  The client sends
+> PUSH_REQUEST and the server logs these requests but does not send them.
 >=20
-> Signed-off-by: Gert Doering <gert@...1296...>
+> This bug got introduced in commit ff65da3a230b658b2c1d52dc1a48612e80a2eb42
+> which tries to avoid sending duplicated PUSH messages if the client/server
+> connection is slow.
+>=20
+> This patch keeps this behaviour, but instead of a session wide PUSH_REPLY
+> block it sets an expiry time for the PUSH_REPLY block.  The expiry time
+> is set to 30 seconds.
+>=20
+> Signed-off-by: David Sommerseth <davids@...1347...>
+> Cc: James Yonan <james@...515...>
 > ---
->  src/openvpn/tun.c |    2 +-
->  1 files changed, 1 insertions(+), 1 deletions(-)
+> The solution here probably isn't the optimal fix, as the PUSH_REPLY block
+> should be reset when the client confirms the connection is established.
+> However, resetting the context's sent_push_reply variable turned out to
+> be tricky, as it already was set to  '0' on places it would be natural
+> to reset it.  However, it was always '1' in process_incoming_push_msg().
+>=20
+> Going for the timeout solution is a quick-fix as we need to have this
+> issue solved before the 2.3 beta releases.  If anyone have a better=20
+> solution, please submit a patch and we can drop this one.
+>=20
+> To trigger this bug and to test this fix, configure a UDP enabled server
+> with PKI (--tls-{client,server}, --key, --cert, --ca, etc) and with add
+> some --push statements as well.  When the initial connection has been
+> established, stop the openvpn client and reconnect.  The bug will result
+> in server receiving and ignoring PUSH_REQUEST and the client will send
+> these requests until stopped.  The result is that the connection cannot
+> be re-established.  Two workarounds have been identified for this
+> behaviour.  A) Add --explicit-exit-notify to the client config,
+> or B) switch from UDP to TCP.  I did not manage to reproduce this on
+> a single computer running both client and server, but running on separate
+> computers over the Internet made it possible to trigger this issue.
+>=20
+>  src/openvpn/openvpn.h |    2 +-
+>  src/openvpn/push.c    |    7 +++++--
+>  2 files changed, 6 insertions(+), 3 deletions(-)
 
-ACK.  Applied to master.
+Applied to master.
 
-commit cae102ae0c2ff934c456cd584cbf87a33cd95206
-Author: Gert Doering <gert@...1296...>
-Date:   Tue Sep 11 13:56:55 2012 +0200
+commit 5d4f5435a421299ed047485d8d99bdf9a0d22fd1
+Author: David Sommerseth <davids@...1347...>
+Date:   Sun Sep 9 03:30:46 2012 +0200
 
-    make "ipv6 ifconfig" on linux compatible with busybox ifconfig
-=20=20=20=20=20=20=20=20
-    Signed-off-by: Gert Doering <gert@...1296...>
-    Acked-by: David Sommerseth <davids@...1347...>
-    Message-Id: 1347364615-26878-1-git-send-email-gert@...1296...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/7052
+    Fix reconnect issues when --push and UDP is used on the server
+=20=20=20=20=20=20=20
     Signed-off-by: David Sommerseth <davids@...1347...>
+    Cc: James Yonan <james@...515...>
+    Acked-by: Gert Doering <gert@...1296...>
+    Acked-by: James Yonan <james@...515...>
+    Message-Id: 1347154246-20143-1-git-send-email-dazo@...384...
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/7044
+
 
 
 kind regards,
@@ -57,7 +90,7 @@ kind regards,
 David Sommerseth
 
 
---------------enigF61885E091B76204B08EB0B4
+--------------enig8A77E3B6E1A91E196546FFA7
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -66,10 +99,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAlBPfhAACgkQDC186MBRfrq4IACfVkr+YFiFtEbaVyFj7D1b/vok
-XYQAnRLuVl8s+hyW2OIHJOU/tcTD70qq
-=W69E
+iEYEARECAAYFAlBPfhQACgkQDC186MBRfrqzZwCeI6pFb0VOS6zYQGZc78K4/u7H
+GIUAn0E/9dhKvLf2yEnr9+ucGT26U5s+
+=pwdx
 -----END PGP SIGNATURE-----
 
---------------enigF61885E091B76204B08EB0B4--
+--------------enig8A77E3B6E1A91E196546FFA7--
 
