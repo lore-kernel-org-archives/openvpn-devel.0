@@ -1,15 +1,13 @@
-Message-ID: <504F7E03.9070906@...1114...>
-Date: Tue, 11 Sep 2012 20:08:03 +0200
+Message-ID: <504F7E0B.6090603@...1114...>
+Date: Tue, 11 Sep 2012 20:08:11 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1346674564-17260-1-git-send-email-arne@...1227...>
-In-Reply-To: <1346674564-17260-1-git-send-email-arne@...1227...>
+References: <1347287973-12398-1-git-send-email-arne@...1227...>
+In-Reply-To: <1347287973-12398-1-git-send-email-arne@...1227...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig334AD44B4333FB78FFE282AF"
-Subject: Re: [Openvpn-devel] [PATCH v2] Document that keep alive will double
- the second value in server mode and give a short explanation why the value
- is chosen.
+	boundary="------------enigEE5BAC9DBDD369AE6B0DC215"
+Subject: Re: [Openvpn-devel] [PATCH] Add checks for external-key-managements
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,27 +19,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig334AD44B4333FB78FFE282AF
+--------------enigEE5BAC9DBDD369AE6B0DC215
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-On 03/09/12 14:16, Arne Schwabe wrote:
+On 10/09/12 16:39, Arne Schwabe wrote:
+> Commit 4806cc102655f1a829d656f6deb83e5953c5eab2 fixed only part of
+> the problem. Since it removed the filename either the magic filename
+> has to be resurrected or all checks against priv_key_file need to
+> take to check for MF_EXTERNAL_KEY as well. This patch implements the
+> extra checks
+>=20
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 > ---
->  doc/openvpn.8 |    4 ++++
->  1 file changed, 4 insertions(+)
+>  src/openvpn/options.c |   25 ++++++++++++++++++++++++-
+>  1 file changed, 24 insertions(+), 1 deletion(-)
 
-Applied to master.
+ACK.  Applied to master.
 
-commit 341e6bb67f072731d75769ce875633e544544062
+commit 6dad4f8e924086333d32122432f316a17ae67987
 Author: Arne Schwabe <arne@...1227...>
-Date:   Mon Sep 3 14:16:04 2012 +0200
+Date:   Mon Sep 10 16:39:33 2012 +0200
 
-    Document that keep alive will double the second value in server mode an=
-d give a short explanation why the value is chosen.
-=20=20=20=20
-    Acked-by: Gert Doering <gert@...1296...>
-    Message-Id: 1346674564-17260-1-git-send-email-arne@...1227...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/7041=20=20
+    Add checks for external-key-managements
+=20=20=20=20=20=20
+    Signed-off-by: Arne Schwabe <arne@...1227...>
+    Acked-by: David Sommerseth <davids@...1347...>
+    Message-Id: 1347287973-12398-1-git-send-email-arne@...1227...
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/7046
     Signed-off-by: David Sommerseth <davids@...1347...>
 
 
@@ -50,7 +55,7 @@ kind regards,
 David Sommerseth
 
 
---------------enig334AD44B4333FB78FFE282AF
+--------------enigEE5BAC9DBDD369AE6B0DC215
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -59,10 +64,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAlBPfgYACgkQDC186MBRfrrXTwCfTTozQlRnzV342vHJmfR9PEwX
-v+8AnAoNVffLkqezdOoVKUaax15O57u+
-=H/Yl
+iEYEARECAAYFAlBPfgsACgkQDC186MBRfroO0gCfQSDbCfsvlIKUZg4EFahL0ikJ
+E9oAnAu3/Mp7m1Ig1jYe0cnS2OMLLTqP
+=JGo5
 -----END PGP SIGNATURE-----
 
---------------enig334AD44B4333FB78FFE282AF--
+--------------enigEE5BAC9DBDD369AE6B0DC215--
 
