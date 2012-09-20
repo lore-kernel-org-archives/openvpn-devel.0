@@ -1,12 +1,11 @@
-Message-ID: <50586F7E.80201@...1114...>
-Date: Tue, 18 Sep 2012 14:56:30 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <1348153254.3326.YahooMailNeo@...1763...>
+Date: Thu, 20 Sep 2012 08:00:54 -0700 (PDT)
+From: vijayakumar palaniappan <vijayakumarpl@...109...>
 MIME-Version: 1.0
-References: <009101cd9591$aec40190$0c4c04b0$@ciglb.com>
-	<50586944.6090307@...1114...>
-	<009f01cd959b$0f2b0700$2d811500$@ciglb.com>
-In-Reply-To: <009f01cd959b$0f2b0700$2d811500$@ciglb.com>
-Subject: Re: [Openvpn-devel] [Openvpn-users] site to site vpn
+Content-Type: multipart/alternative;
+	boundary="1831474865-1880787094-1348153254=:3326"
+Subject: [Openvpn-devel] Using TUN driver in Windows
+Reply-To: vijayakumar palaniappan <vijayakumarpl@...109...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,125 +14,102 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: "C.I.G IT SUPPORT" <itsupport@...1761...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
-
-On 18/09/12 14:42, C.I.G IT SUPPORT wrote:
-> Hello David,
+--1831474865-1880787094-1348153254=:3326
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
 Hi,
+I have installed the TAP-WIN32 Adapter V9 on my windows 7 machine. I want t=
+o use
+TUN to read the IP packets out of the interface. I followed the C# sample f=
+rom
+http://www.varsanofiev.com/inside/using_tuntap_under_windows.htm=A0
 
-First of all, support goes in the public.  No private posting,
-otherwise other people can't learn and it looks like nobody gets help
-on the mailing list.
+i modified the code like below
 
-> What does it mean ?
+IntPtr ptun =3D Marshal.AllocHGlobal(8);=A0 =A0 =A0 =A0=A0
+Marshal.WriteInt32(ptun, 0, 0x0a030001);
+Marshal.WriteInt32(ptun, 4, unchecked((int)0x00ffffFF));
+bool val =3D DeviceIoControl (ptr, TAP_CONTROL_CODE (5, METHOD_BUFFERED) /*=
+POINT
+TO POINT */, ptun, 8,ptun, 8, out len, IntPtr.Zero);
 
-It means: read the documentation
+However i still don't seem to get IP Packets. I ran tcpdump on the other en=
+d and
+it complains "Wrong link layer encapsulation".
 
-> Listen dude, I'll explain you more about my Network
-> infrastructure..
-> 
-> Server side: LAN ---> ISA Server----> router----> WAN. LAN:
-> 192.168.0.x ISA: internal NIC 192.168.0.8, External NIC
-> 192.168.2.50 Router: 192.168.2.100
+Is this the correct way of trying to get IP Packets out of TUN interface?.
 
-> Client Side: LAN ---> ISA Server----> router----> WAN. LAN:
-> 192.168.0.x ISA: internal NIC 192.168.0.7, External NIC
-> 192.168.1.250 Router: 192.168.1.100
+-Vijay=A0=
 
-I presume you have the OpenVPN client and servers on the LAN side, as
-you didn't say anything else.  The client or server side LAN needs to
-change IP addresses to a separate segment.  F.ex. client side to
-become 192.168.10.0/24 ... this is to avoid routing issues later on.
+--1831474865-1880787094-1348153254=:3326
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-Then configure a OpenVPN client/server setup, with a a separate
-segment (say, 10.8.0.0/24) ... and then you add routes for
-192.168.0.0/24 and 192.168.100.0/24 in the OpenVPN configs.  And
-that's it.
+<html><body><div style=3D"color:#000; background-color:#fff; font-family:ti=
+mes new roman, new york, times, serif;font-size:12pt"><div><span><span styl=
+e=3D"color: rgb(69, 69, 69); font-family: Arial, Helvetica, sans-serif; fon=
+t-size: 12px; ">Hi,</span><br style=3D"color: rgb(69, 69, 69); font-family:=
+ Arial, Helvetica, sans-serif; font-size: 12px; "><span style=3D"color: rgb=
+(69, 69, 69); font-family: Arial, Helvetica, sans-serif; font-size: 12px; "=
+>I have installed the TAP-WIN32 Adapter V9 on my windows 7 machine. I want =
+to use</span><br style=3D"color: rgb(69, 69, 69); font-family: Arial, Helve=
+tica, sans-serif; font-size: 12px; "><span style=3D"color: rgb(69, 69, 69);=
+ font-family: Arial, Helvetica, sans-serif; font-size: 12px; ">TUN to read =
+the IP packets out of the interface. I followed the C# sample from</span><b=
+r style=3D"color: rgb(69, 69, 69); font-family: Arial, Helvetica, sans-seri=
+f; font-size: 12px; "><a
+ href=3D"http://www.varsanofiev.com/inside/using_tuntap_under_windows.htm" =
+target=3D"_blank" style=3D"color: rgb(35, 71, 134); outline: 0px; font-fami=
+ly: Arial, Helvetica, sans-serif; font-size: 12px; ">http://www.varsanofiev=
+.com/inside/using_tuntap_under_windows.htm</a><span style=3D"color: rgb(69,=
+ 69, 69); font-family: Arial, Helvetica, sans-serif; font-size: 12px; ">&nb=
+sp;</span><br style=3D"color: rgb(69, 69, 69); font-family: Arial, Helvetic=
+a, sans-serif; font-size: 12px; "><br style=3D"color: rgb(69, 69, 69); font=
+-family: Arial, Helvetica, sans-serif; font-size: 12px; "><span style=3D"co=
+lor: rgb(69, 69, 69); font-family: Arial, Helvetica, sans-serif; font-size:=
+ 12px; ">i modified the code like below</span><br style=3D"color: rgb(69, 6=
+9, 69); font-family: Arial, Helvetica, sans-serif; font-size: 12px; "><br s=
+tyle=3D"color: rgb(69, 69, 69); font-family: Arial, Helvetica, sans-serif; =
+font-size: 12px; "><span style=3D"color: rgb(69, 69, 69); font-family: Aria=
+l, Helvetica,
+ sans-serif; font-size: 12px; ">IntPtr ptun =3D Marshal.AllocHGlobal(8);&nb=
+sp; &nbsp; &nbsp; &nbsp;&nbsp;</span><br style=3D"color: rgb(69, 69, 69); f=
+ont-family: Arial, Helvetica, sans-serif; font-size: 12px; "><span style=3D=
+"color: rgb(69, 69, 69); font-family: Arial, Helvetica, sans-serif; font-si=
+ze: 12px; ">Marshal.WriteInt32(ptun, 0, 0x0a030001);</span><br style=3D"col=
+or: rgb(69, 69, 69); font-family: Arial, Helvetica, sans-serif; font-size: =
+12px; "><span style=3D"color: rgb(69, 69, 69); font-family: Arial, Helvetic=
+a, sans-serif; font-size: 12px; ">Marshal.WriteInt32(ptun, 4, unchecked((in=
+t)0x00ffffFF));</span><br style=3D"color: rgb(69, 69, 69); font-family: Ari=
+al, Helvetica, sans-serif; font-size: 12px; "><span style=3D"color: rgb(69,=
+ 69, 69); font-family: Arial, Helvetica, sans-serif; font-size: 12px; ">boo=
+l val =3D DeviceIoControl (ptr, TAP_CONTROL_CODE (5, METHOD_BUFFERED) /*POI=
+NT</span><br style=3D"color: rgb(69, 69, 69); font-family: Arial, Helvetica,
+ sans-serif; font-size: 12px; "><span style=3D"color: rgb(69, 69, 69); font=
+-family: Arial, Helvetica, sans-serif; font-size: 12px; ">TO POINT */, ptun=
+, 8,ptun, 8, out len, IntPtr.Zero);</span><br style=3D"color: rgb(69, 69, 6=
+9); font-family: Arial, Helvetica, sans-serif; font-size: 12px; "><br style=
+=3D"color: rgb(69, 69, 69); font-family: Arial, Helvetica, sans-serif; font=
+-size: 12px; "><span style=3D"color: rgb(69, 69, 69); font-family: Arial, H=
+elvetica, sans-serif; font-size: 12px; ">However i still don't seem to get =
+IP Packets. I ran tcpdump on the other end and</span><br style=3D"color: rg=
+b(69, 69, 69); font-family: Arial, Helvetica, sans-serif; font-size: 12px; =
+"><span style=3D"color: rgb(69, 69, 69); font-family: Arial, Helvetica, san=
+s-serif; font-size: 12px; ">it complains "Wrong link layer encapsulation".<=
+/span><br style=3D"color: rgb(69, 69, 69); font-family: Arial, Helvetica, s=
+ans-serif; font-size: 12px; "><br style=3D"color: rgb(69, 69, 69); font-fam=
+ily:
+ Arial, Helvetica, sans-serif; font-size: 12px; "><span style=3D"color: rgb=
+(69, 69, 69); font-family: Arial, Helvetica, sans-serif; font-size: 12px; "=
+>Is this the correct way of trying to get IP Packets out of TUN interface?.=
+</span><br style=3D"color: rgb(69, 69, 69); font-family: Arial, Helvetica, =
+sans-serif; font-size: 12px; "><br style=3D"color: rgb(69, 69, 69); font-fa=
+mily: Arial, Helvetica, sans-serif; font-size: 12px; "><span style=3D"color=
+: rgb(69, 69, 69); font-family: Arial, Helvetica, sans-serif; font-size: 12=
+px; ">-Vijay</span>&nbsp;</span></div><div><br></div></div></body></html>=
 
-> Please refer to me if am doing anything wrong.. am able to connect
-> client to server but not Network to Network.
-
-You most likely are missing proper routes, network segment conflicts
-(192.168.0.0/24 on both client and server side LAN), firewalling
-issues on the OpenVPN servers (not allowing traffic to be forwarded
-between LAN and VPN) or that IP forwarding in general haven't been
-enabled (in Linux or BSD: sysctl net.ipv4._ip_forward).
-
-You might also find this info relevant:
-
-<https://community.openvpn.net/openvpn/wiki/BridgingAndRouting#Usingrouting>
-
-
-kind regards,
-
-David Sommerseth
-
-
-
-> -----Original Message----- From: David Sommerseth
-> [mailto:openvpn.list@...1114...] Sent: Tuesday, September 18,
-> 2012 3:30 PM To: C.I.G IT SUPPORT Cc:
-> openvpn-users@lists.sourceforge.net Subject: Re: [Openvpn-users]
-> site to site vpn
-> 
-> On 18/09/12 13:35, C.I.G IT SUPPORT wrote:
->> Hello Everybody,
-> 
-> 
-> 
->> Can anybody assist me to create a site to site ovpn..
-> 
-> 
-> You got a pretty good starting point when you asked last time:
-> 
-> <http://thread.gmane.org/gmane.network.openvpn.user/33533>
-> 
-> It's pretty much the same approach.  Other than that, learning how
-> to configure OpenVPN will pretty much save you a lot of time later
-> on. Start here:
-> 
-> 
-> <http://openvpn.net/index.php/open-source/documentation/miscellaneous/static
->
-> 
-- -key-mini-howto.html>
-> 
-> And then continue here to add PKI (SSL certificates)
-> 
-> <http://openvpn.net/index.php/open-source/documentation/howto.html#pki>
->
->  And read the man page, which is also available here:
-> 
-> <http://openvpn.net/index.php/open-source/documentation/manuals/>
-> 
-> It describes quite well most of the options you need to set up a 
-> site-to-site tunnel.
-> 
-> Other than that ... try to make use of TUN devices (not TAP) and
-> UDP for transport,  that will give you the best performance on the
-> tunnel.
-> 
-> 
-> 
-> kind regards,
-> 
-> David Sommerseth
-> 
-> 
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAlBYb3YACgkQDC186MBRfrruvQCfaK+fUKzsprtQJzKNcPDgh8Ih
-vBgAoIV7m4JePrHTauAMhlUMp+R+HDnJ
-=dNT+
------END PGP SIGNATURE-----
+--1831474865-1880787094-1348153254=:3326--
 
