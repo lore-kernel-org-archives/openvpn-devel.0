@@ -1,14 +1,7 @@
-Date: Mon, 1 Oct 2012 10:39:15 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20121001083914.GS742@...1296...>
-References: <12904-1349074708-498972@...1775...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="+9kyDs7IugQ0lHaC"
-Content-Disposition: inline
-In-Reply-To: <12904-1349074708-498972@...1775...>
-Subject: Re: [Openvpn-devel] Ability to send variable data from client to
-	server
+From: Arne Schwabe <arne@...1227...>
+Date: Mon,  1 Oct 2012 11:05:18 +0200
+Message-Id: <1349082318-985-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Document man agent-external-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,54 +10,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: f7n4ahbmp6@...1774...
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---+9kyDs7IugQ0lHaC
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Adapt commit message from cf69617bbea45a15423c4188daa9386debcbe1ec for man page and management documentation.
 
-Hi,
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ doc/management-notes.txt |   28 ++++++++++++++++++++++++++++
+ doc/openvpn.8            |    5 +++++
+ 2 files changed, 33 insertions(+)
 
-On Mon, Oct 01, 2012 at 06:58:28AM +0000, f7n4ahbmp6@...1774... wrote:
-> I believe there is ongoing development to allow a variable to be set in t=
-he client config which can be used by the client-connect or route-up script=
-s on the server. Specifically I need to add a custom route for each client =
-depending on a value set in their config file.=20
->=20
-> Can anyone point me to a thread where this is being tracked or the person=
- to whom this feature has been assigned as I would like to assist in develo=
-pment if possible.
+diff --git a/doc/management-notes.txt b/doc/management-notes.txt
+index a07a514..0d718e7 100644
+--- a/doc/management-notes.txt
++++ b/doc/management-notes.txt
+@@ -750,6 +750,34 @@ To accept connecting to the host and port directly, use this command:
+ 
+   proxy NONE
+ 
++COMMAND -- rsa-sig (OpenVPN 2.3 or higher)
++------------------------------------------
++Provides support for external storage of the private key. Requires the
++--management-external-key option. This option can be used instead of "key"
++in client mode, and allows the client to run without the need to load the
++actual private key. When the SSL protocol needs to perform an RSA sign 
++operation, the data to be signed will be sent to the management interface 
++via a notification as follows:
++
++>RSA_SIGN:[BASE64_DATA]
++
++The management interface client should then sign BASE64_DATA
++using the private key and return the SSL signature as follows:
++
++rsa-sig
++[BASE64_SIG_LINE]
++.
++.
++.
++END
++
++Base64 encoded output of RSA_sign(NID_md5_sha1,... will provide a 
++correct signature.
++
++This capability is intended to allow the use of arbitrarycryptographic 
++service providers with OpenVPN via the management interface.
++
++
+ OUTPUT FORMAT
+ -------------
+ 
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index da1c0f9..6a408ed 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -2464,6 +2464,11 @@ Allow management interface to override
+ .B \-\-remote
+ directives (client-only).
+ .\"*********************************************************
++.B \-\-management-external-key
++Allows usage for external private key file instead of 
++.B \-\-key
++option (client-only).
++.\"*********************************************************
+ .TP
+ .B \-\-management-forget-disconnect
+ Make OpenVPN forget passwords when management session
+-- 
+1.7.9.5
 
-I'm not aware of such a development going on (doesn't mean nobody is=20
-working on it, but it wasn't discussed recently on #openvpn-devel or this
-list)
-
-Can't you use the client's common-name or username for that?  That's what=20
-everybody else seems to be doing...
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---+9kyDs7IugQ0lHaC
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (NetBSD)
-
-iQCVAwUBUGlWsqkuBuNlUUl1AQKLPwQArioYAoqrcAyZ3IXV3zNdvNMl6kgGlpE9
-dveOwAnYpMjdmO2bZ+t8QEfLSj5JxJ3D/LycHWp2ZJcSDARDpSmsbXNBAD4xXiV5
-uJNC4pI9P8LwXBZritdCt1PMLDg2eic62WmnZQ39XO0+JH6ScXyDyWj1ahzO0WQ/
-ZSwYf42jpbs=
-=+lHf
------END PGP SIGNATURE-----
-
---+9kyDs7IugQ0lHaC--
 
