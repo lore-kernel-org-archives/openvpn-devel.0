@@ -1,13 +1,14 @@
-Message-ID: <507C4131.70803@...1114...>
-Date: Mon, 15 Oct 2012 19:00:33 +0200
+Message-ID: <507C4138.1020100@...1114...>
+Date: Mon, 15 Oct 2012 19:00:40 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1349082318-985-1-git-send-email-arne@...1227...>
-In-Reply-To: <1349082318-985-1-git-send-email-arne@...1227...>
+References: <CAAUdgR8VZjaO0-thFPVoQkbZ1DNG3rx+gtYYLqyfocp3yns==w@...278...>
+In-Reply-To: <CAAUdgR8VZjaO0-thFPVoQkbZ1DNG3rx+gtYYLqyfocp3yns==w@...278...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig4AD1480256C7F8F7FF9F4C91"
-Subject: Re: [Openvpn-devel] [PATCH] Document man agent-external-key
+	boundary="------------enig9C1A4E634C5FB86B44D51087"
+Subject: Re: [Openvpn-devel] [PATCH] Fix v3 plugins to support returning
+ values back to OpenVPN.
 Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -20,33 +21,43 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig4AD1480256C7F8F7FF9F4C91
+--------------enig9C1A4E634C5FB86B44D51087
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-On 01/10/12 11:05, Arne Schwabe wrote:
-> Adapt commit message from cf69617bbea45a15423c4188daa9386debcbe1ec for ma=
-n page and management documentation.
+On 01/10/12 20:47, Kenneth Rose wrote:
+> There's a small implementation issue with the V3 plugin API
+> implementation.  V3 plugins cannot return data back to OpenVPN using
+> openvpn_plugin_args_func_return since
+> openvpn_plugin_args_func_return.return_list is always NULL.
 >=20
-> Signed-off-by: Arne Schwabe <arne@...1227...>
+> This patch makes the behaviour identical to the V2 API (return_list is
+> again a proper out parameter).
+>=20
+> Signed-off-by: Kenneth Rose <ken+openvpn@...1776...>
 > ---
->  doc/management-notes.txt |   28 ++++++++++++++++++++++++++++
->  doc/openvpn.8            |    5 +++++
->  2 files changed, 33 insertions(+)
+>  src/openvpn/plugin.c |    4 ++--
+>  1 files changed, 2 insertions(+), 2 deletions(-)
+>=20
+
+Thanks a lot for catching this one!  I've ran some test code to verify this=
+ fix as well, and it looks good so ...
 
 ACK.  Applied to master and beta/2.3 branches.
 
-commit 75b6f4bd84302d225a301f4ed87e2bb27908b972 (master)
-commit 7ab52ad0011f7ff3502d30abc718a9257d5f3916 (beta/2.3)
-Author: Arne Schwabe <arne@...1227...>
-Date:   Mon Oct 1 11:05:18 2012 +0200
 
-    Document man agent-external-key
+commit e92255f58bcfaec157c3ef59e01c40cbd04b1d43 (master)
+commit aa1a1d91ca1266342762460f86427a577b51908f (beta/2.3)
+Author: Kenneth Rose <ken+openvpn@...1776...>
+Date:   Mon Oct 1 14:47:02 2012 -0400
 
-    Signed-off-by: Arne Schwabe <arne@...1227...>
+    Fix v3 plugins to support returning values back to OpenVPN.
+=20=20=20=20=20=20=20=20
+    Signed-off-by: Kenneth Rose <ken+openvpn@...1776...>
     Acked-by: David Sommerseth <davids@...1347...>
-    Message-Id: 1349082318-985-1-git-send-email-arne@...1227...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/7081
+    Message-Id: CAAUdgR8VZjaO0-thFPVoQkbZ1DNG3rx+gtYYLqyfocp3yns=3D=3Dw@...493...=
+278...
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/7083
     Signed-off-by: David Sommerseth <davids@...1347...>
 
 
@@ -55,7 +66,7 @@ kind regards,
 David Sommerseth
 
 
---------------enig4AD1480256C7F8F7FF9F4C91
+--------------enig9C1A4E634C5FB86B44D51087
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -64,10 +75,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAlB8QTMACgkQDC186MBRfrqwmQCeKjXOxcckReijWrDk9yMYitqw
-R/8AoINgDBgl7CtpdraaabAPdD2sGHgX
-=Xlit
+iEYEARECAAYFAlB8QTgACgkQDC186MBRfro6LwCeM5/LAv+eG3N10GaU6TRZtEZp
+X8sAn3suLzSHh9whEbXdRuSb41xZ/Erp
+=UQ0W
 -----END PGP SIGNATURE-----
 
---------------enig4AD1480256C7F8F7FF9F4C91--
+--------------enig9C1A4E634C5FB86B44D51087--
 
