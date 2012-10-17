@@ -1,15 +1,8 @@
-Message-ID: <507E85AE.3070102@...1114...>
-Date: Wed, 17 Oct 2012 12:17:18 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <1350466765-23301-1-git-send-email-dejong@...1435...>
-In-Reply-To: <1350466765-23301-1-git-send-email-dejong@...1435...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig6C56A9E1C6D314FA53FE79DF"
-Subject: Re: [Openvpn-devel] [PATCH] Fixed a bug where PolarSSL gave an
- error when using an inline file tag.
-Reply-To: openvpn-devel@lists.sourceforge.net
+From: Arne Schwabe <arne@...1227...>
+Date: Wed, 17 Oct 2012 12:46:14 +0200
+Message-Id: <1350470774-12511-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Options parsing demands unnecessary
+	configuration if PKCS11 is used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,53 +11,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6C56A9E1C6D314FA53FE79DF
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+In the old patch the if incorrectly closed the outer if condition.  (closes ticket #231)
+---
+ src/openvpn/options.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-On 17/10/12 11:39, Adriaan de Jong wrote:
-> Signed-off-by: Adriaan de Jong <dejong@...1435...>
-> ---
->  src/openvpn/ssl_polarssl.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 05a0f54..8717b89 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2192,13 +2192,15 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
+        }
+       else
+ #endif
+-#ifdef ENABLE_CRYPTOAPI
+ #ifdef MANAGMENT_EXTERNAL_KEY
+ 	 if((options->management_flags & MF_EXTERNAL_KEY) && options->priv_key_file)
+-		msg (M_USAGE, "--key and --management-external-key are mutually exclusive");
++	   {
++		 msg (M_USAGE, "--key and --management-external-key are mutually exclusive");
++	   } 
++	 else 
+ #endif
+-
+-      if (options->cryptoapi_cert)
++#ifdef ENABLE_CRYPTOAPI
++     if (options->cryptoapi_cert)
+ 	{
+ 	  if ((!(options->ca_file)) && (!(options->ca_path)))
+ 	    msg(M_USAGE, "You must define CA file (--ca) or CA path (--capath)");
+-- 
+1.7.9.5
 
-ACK.  Applied to master and beta/2.3.
-
-commit 2ebbe4c0b4f0f0b15b4c32180e906a545446c376 (master)
-commit a4b99628d19d6130a4f53e0ed84d9d0b2fd28dc0 (beta/2.3)
-Author: Adriaan de Jong <dejong@...1435...>
-Date:   Wed Oct 17 11:39:25 2012 +0200
-
-    Fixed a bug where PolarSSL gave an error when using an inline file tag.
-=20=20=20=20
-    Signed-off-by: Adriaan de Jong <dejong@...1435...>
-    Acked-by: David Sommerseth <davids@...1347...>
-    Message-Id: 1350466765-23301-1-git-send-email-dejong@...1435...
-    Signed-off-by: David Sommerseth <davids@...1347...>
-
-
-kind regards,
-
-David Sommerseth
-
-
---------------enig6C56A9E1C6D314FA53FE79DF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAlB+ha4ACgkQDC186MBRfrpxPQCfVIUZTmZBiArT5Y0ohCAN9Y3z
-ra8An0nbrwbznwE9aMaAD1+a2ZSTcRxo
-=7fcU
------END PGP SIGNATURE-----
-
---------------enig6C56A9E1C6D314FA53FE79DF--
 
