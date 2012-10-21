@@ -1,8 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed, 17 Oct 2012 12:46:14 +0200
-Message-Id: <1350470774-12511-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Options parsing demands unnecessary
-	configuration if PKCS11 is used
+MIME-Version: 1.0
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Sun, 21 Oct 2012 18:40:08 -0400
+Message-ID: <CAEsd45Q6PbNZoutzKMXVP7xPSEmb0C3A3jQEQYidcTRGJaXTmQ@...278...>
+Content-Type: multipart/alternative; boundary=047d7b671efaad2b1e04cc996d46
+Subject: [Openvpn-devel] Bug in program, bug in documentation,
+	or something else?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,40 +13,78 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-In the old patch the if incorrectly closed the outer if condition.  (closes ticket #231)
----
- src/openvpn/options.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+--047d7b671efaad2b1e04cc996d46
+Content-Type: text/plain; charset=UTF-8
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 05a0f54..8717b89 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2192,13 +2192,15 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
-        }
-       else
- #endif
--#ifdef ENABLE_CRYPTOAPI
- #ifdef MANAGMENT_EXTERNAL_KEY
- 	 if((options->management_flags & MF_EXTERNAL_KEY) && options->priv_key_file)
--		msg (M_USAGE, "--key and --management-external-key are mutually exclusive");
-+	   {
-+		 msg (M_USAGE, "--key and --management-external-key are mutually exclusive");
-+	   } 
-+	 else 
- #endif
--
--      if (options->cryptoapi_cert)
-+#ifdef ENABLE_CRYPTOAPI
-+     if (options->cryptoapi_cert)
- 	{
- 	  if ((!(options->ca_file)) && (!(options->ca_path)))
- 	    msg(M_USAGE, "You must define CA file (--ca) or CA path (--capath)");
--- 
-1.7.9.5
+A Tunnelblick user has reported odd behavior with name resolution failures.
+I can't tell if it is a bug in OpenVPN, a bug in the documentation, or
+something else. The behavior is apparently the same in OpenVPN 2.2.1 and
+2.3alpha1.
 
+The 2.3 man page says:
+
+> --resolv-retry n
+>      If hostname resolve fails for --remote, retry resolve for n seconds
+> before failing.
+>      Set n to "infinite" to retry indefinitely.
+>      By default, --resolv-retry infinite is enabled.  You can disable by
+> setting n=0.
+
+
+But the behavior seems very different:
+
+If a name resolution failure (caused, for example, by losing the network
+connection) occurs
+and --resolv-retry is:
+
+1, the first resolution failure terminates the connection;
+5, resolution attempts are made dozens of times per second, seemingly
+forever; or
+10, resolution attempts are made every five seconds, seemingly forever.
+
+
+Any ideas if this is a program bug, a documentation bug, or something else,
+for example, a problem that only occurs on OS X?
+
+--047d7b671efaad2b1e04cc996d46
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+A Tunnelblick user has reported odd behavior with name resolution failures.=
+ I can&#39;t tell if it is a bug in OpenVPN, a bug in the documentation, or=
+ something else. The behavior is apparently the same in OpenVPN 2.2.1 and 2=
+.3alpha1.<div>
+
+
+<br></div><div>The 2.3 man page says:</div><div><blockquote class=3D"gmail_=
+quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;border-left-=
+color:rgb(204,204,204);border-left-style:solid;padding-left:1ex">--resolv-r=
+etry n<br>
+
+
+=C2=A0 =C2=A0 =C2=A0If hostname resolve fails for --remote, retry resolve f=
+or n seconds before failing.<br>=C2=A0 =C2=A0 =C2=A0Set n to &quot;infinite=
+&quot; to retry indefinitely.<br>=C2=A0 =C2=A0 =C2=A0By default, --resolv-r=
+etry infinite is enabled. =C2=A0You can disable by setting n=3D0.</blockquo=
+te>
+
+
+</div><div><br></div><div>But the behavior seems very different:</div><div>=
+<br></div><div>If a name resolution failure (caused, for example, by losing=
+ the network connection) occurs</div><div>and --resolv-retry is:</div>
+
+<div>
+<blockquote style=3D"margin:0px 0px 0px 40px;border:none;padding:0px">1, th=
+e first resolution failure terminates the connection;<br>5, resolution atte=
+mpts are made dozens of times per second, seemingly forever; or<br>10, reso=
+lution attempts are made every five seconds, seemingly forever.<br>
+
+
+</blockquote><div><br></div><div>Any ideas if this is a program bug, a docu=
+mentation bug, or something else, for example, a problem that only occurs o=
+n OS X?</div></div>
+
+--047d7b671efaad2b1e04cc996d46--
 
