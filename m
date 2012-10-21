@@ -1,11 +1,13 @@
-Mime-Version: 1.0 (Mac OS X Mail 6.1 \(1498\))
-From: Eric Crist <ecrist@...1286...>
-In-Reply-To: <CAEsd45Q6PbNZoutzKMXVP7xPSEmb0C3A3jQEQYidcTRGJaXTmQ@...278...>
-Date: Sun, 21 Oct 2012 18:03:38 -0500
-Message-Id: <98D66839-416A-4E66-9C88-418A0B1384E8@...1286...>
+MIME-Version: 1.0
+In-Reply-To: <98D66839-416A-4E66-9C88-418A0B1384E8@...1286...>
 References: <CAEsd45Q6PbNZoutzKMXVP7xPSEmb0C3A3jQEQYidcTRGJaXTmQ@...278...>
+	<98D66839-416A-4E66-9C88-418A0B1384E8@...1286...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Sun, 21 Oct 2012 19:21:51 -0400
+Message-ID: <CAEsd45TBY35zPbFLbLiDh+TrnupcnAK8SB_suV9X+-odqa4AUQ@...278...>
+Content-Type: multipart/alternative; boundary=bcaec52d5873d3ca7004cc9a0257
 Subject: Re: [Openvpn-devel] Bug in program, bug in documentation,
-	or something else?
+ or something else?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,57 +16,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: "Jonathan K. Bullard" <jkbullard@...277...>
+To: Eric Crist <ecrist@...1286...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-This sounds like a Tunnelblick failure.  I'd suggest checking with them fir=
-st, they do all sorts of things with scripts and such.
+--bcaec52d5873d3ca7004cc9a0257
+Content-Type: text/plain; charset=UTF-8
 
-Cheers
------
-Eric F Crist
+On Sun, Oct 21, 2012 at 7:03 PM, Eric Crist wrote:
 
+> This sounds like a Tunnelblick failure.  I'd suggest checking with them
+> first, they do all sorts of things with scripts and such.
+>
 
+Thanks, but *I'm* the current Tunnelblick developer!
 
-On Oct 21, 2012, at 17:40:08, Jonathan K. Bullard <jkbullard@...277...> wro=
-te:
+You're correct that Tunnelblick does a lot in its scripts, but as far as I
+can tell, this behavior has nothing to do with the scripts or Tunnelblick.
 
-> A Tunnelblick user has reported odd behavior with name resolution failure=
-s. I can't tell if it is a bug in OpenVPN, a bug in the documentation, or s=
-omething else. The behavior is apparently the same in OpenVPN 2.2.1 and 2.3=
-alpha1.
->=20
-> The 2.3 man page says:
-> --resolv-retry n
->      If hostname resolve fails for --remote, retry resolve for n seconds =
-before failing.
->      Set n to "infinite" to retry indefinitely.
->      By default, --resolv-retry infinite is enabled.  You can disable by =
-setting n=3D0.
->=20
-> But the behavior seems very different:
->=20
-> If a name resolution failure (caused, for example, by losing the network =
-connection) occurs
-> and --resolv-retry is:
-> 1, the first resolution failure terminates the connection;
-> 5, resolution attempts are made dozens of times per second, seemingly for=
-ever; or
-> 10, resolution attempts are made every five seconds, seemingly forever.
->=20
-> Any ideas if this is a program bug, a documentation bug, or something els=
-e, for example, a problem that only occurs on OS X?
-> -------------------------------------------------------------------------=
------
-> Everyone hates slow websites. So do we.
-> Make your web apps faster with AppDynamics
-> Download AppDynamics Lite for free today:
-> http://p.sf.net/sfu/appdyn_sfd2d_oct_____________________________________=
-__________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+It has to do with what OpenVPN does -- the Tunnelblick scripts are not
+involved. The behavior takes place completely within OpenVPN.
 
+--bcaec52d5873d3ca7004cc9a0257
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+On Sun, Oct 21, 2012 at 7:03 PM, Eric Crist=C2=A0wrote:<br><div class=3D"gm=
+ail_quote"><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bor=
+der-left:1px #ccc solid;padding-left:1ex">This sounds like a Tunnelblick fa=
+ilure. =C2=A0I&#39;d suggest checking with them first, they do all sorts of=
+ things with scripts and such.<br>
+
+</blockquote><div><br></div><div>Thanks, but <i>I&#39;m</i> the current Tun=
+nelblick developer!</div><div><br></div><div>You&#39;re correct that Tunnel=
+blick does a lot in its scripts, but as far as I can tell, this behavior=C2=
+=A0has nothing to do with the scripts or Tunnelblick.</div>
+
+<div><br></div><div>It has to do with what OpenVPN does -- the Tunnelblick =
+scripts are not involved. The behavior takes place completely within OpenVP=
+N.</div><div><br></div></div>
+
+--bcaec52d5873d3ca7004cc9a0257--
 
