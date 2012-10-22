@@ -1,11 +1,12 @@
-Message-ID: <50851A9A.5090902@...1227...>
-Date: Mon, 22 Oct 2012 12:06:18 +0200
-From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
+In-Reply-To: <50851BE0.3020907@...1114...>
 References: <CAEsd45Q6PbNZoutzKMXVP7xPSEmb0C3A3jQEQYidcTRGJaXTmQ@...278...>
-In-Reply-To: <CAEsd45Q6PbNZoutzKMXVP7xPSEmb0C3A3jQEQYidcTRGJaXTmQ@...278...>
-Content-Type: multipart/alternative;
-	boundary="------------020000050701030105050409"
+	<20121022084853.GF742@...1296...>
+	<50851BE0.3020907@...1114...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Mon, 22 Oct 2012 08:11:41 -0400
+Message-ID: <CAEsd45Tz-m76XHD0SE4JsDpom2sGbRh_YsZwV9QJvJzZYHwM1g@...278...>
+Content-Type: multipart/alternative; boundary=bcaec54b46c4f8d71304cca4c36a
 Subject: Re: [Openvpn-devel] Bug in program, bug in documentation,
  or something else?
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,136 +17,139 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "Jonathan K. Bullard" <jkbullard@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net, ecrist@...1286..., gert@...1296..., schwabe@...1400..., arne@...1227..., openvpn.list@...1114...
 
-This is a multi-part message in MIME format.
---------------020000050701030105050409
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+--bcaec54b46c4f8d71304cca4c36a
+Content-Type: text/plain; charset=UTF-8
 
-Am 22.10.12 00:40, schrieb Jonathan K. Bullard:
-> A Tunnelblick user has reported odd behavior with name resolution
-> failures. I can't tell if it is a bug in OpenVPN, a bug in the
-> documentation, or something else. The behavior is apparently the same
-> in OpenVPN 2.2.1 and 2.3alpha1.
+Thanks to all of you for your replies.
+
+The consensus seems to be that the documentation is correct, and that if
+OpenVPN behaves differently then that is a bug.
+
+I'll try to get the user's configs/logs, or try to generate some test cases
+that show this myself (and include a 2.1... test case to see if this
+behavior was introduced in 2.2) and post them on this thread.
+
+On Mon, Oct 22, 2012 at 6:11 AM, David Sommerseth <
+openvpn.list@...1114...> wrote:
+
+> On 22/10/12 10:48, Gert Doering wrote:
+> > Hi Jonathan,
+> >
+> > On Sun, Oct 21, 2012 at 06:40:08PM -0400, Jonathan K. Bullard wrote:
+> >> A Tunnelblick user has reported odd behavior with name resolution
+> failures.
+> >> I can't tell if it is a bug in OpenVPN, a bug in the documentation, or
+> >> something else. The behavior is apparently the same in OpenVPN 2.2.1 and
+> >> 2.3alpha1.
+> > [..]
+> >> Any ideas if this is a program bug, a documentation bug, or something
+> else,
+> >> for example, a problem that only occurs on OS X?
+> >
+> > "One of those" :-) - I don't know yet, and haven't looked into the code
+> yet
+> > (will do ASAP).
+> >
+> > The resolver code has been changed for 2.2 (getting rid of the old
+> > randomization stuff), so it might be a bug introduced there, or a much
+> > older bug that nobody ever noticed.
+> >
+> > Do you have an OpenVPN log that shows this behaviour?  Might help in
+> > digging down to it...
 >
-> The 2.3 man page says:
+> A client config file would help in addition.  I'm also wondering if
+> connection profiles are used ... that is, more --remote options or
+> <connection> blocks.
 >
->     --resolv-retry n
->          If hostname resolve fails for --remote, retry resolve for n
->     seconds before failing.
->          Set n to "infinite" to retry indefinitely.
->          By default, --resolv-retry infinite is enabled.  You can
->     disable by setting n=0.
+> Otherwise, I would not be surprised if there are some corner case here
+> appearing, which surfaced more easily when the resolving code was
+> re-written (as Gert mentioned).
 >
->
-> But the behavior seems very different:
->
-> If a name resolution failure (caused, for example, by losing the
-> network connection) occurs
-> and --resolv-retry is:
->
->     1, the first resolution failure terminates the connection;
->     5, resolution attempts are made dozens of times per second,
->     seemingly forever; or
->     10, resolution attempts are made every five seconds, seemingly
->     forever.
+> This resolver_retry_second option is only used in socket.c AFAICT, which
+> most of us try to avoid looking too hard on, to avoid eye cancer and/or
+> loosing our sanity ;-)  But there's work in progress on cleaning up that
+> one, unfortunately that will take some time.  But we'll try to hunt down
+> this which looks like an openvpn bug to me.
 >
 >
-> Any ideas if this is a program bug, a documentation bug, or something
-> else, for example, a problem that only occurs on OS X?
-I guess a programming bug.
+> kind regards,
+>
+> David Sommerseth
+>
+>
 
-The number of retries for a resolv is defined as (fail_wait_interval is
-fixed to 5):
-      int resolve_retries = (flags & GETADDR_TRY_ONCE) ? 1 :
-(resolve_retry_seconds / fail_wait_interval);
+--bcaec54b46c4f8d71304cca4c36a
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-so if resolv-retry < 5 resolve_retries is set to 0 giving you a direct
-failure. Without trying you should then see a USR1 and openvpn will
-directly do the next connection attempt without waiting the 5s delay.
+Thanks to all of you for your replies.<div><br></div><div>The consensus see=
+ms to be that the documentation is correct, and that if OpenVPN behaves dif=
+ferently then that is a bug.<br><div><br></div><div>I&#39;ll try to get the=
+ user&#39;s configs/logs, or try to generate some test cases that show this=
+ myself (and include a 2.1... test case to see if this behavior was introdu=
+ced in 2.2) and post them on this thread.<br>
 
-On a quick glance I cannot see a way to tell openvpn to have a fixed
-number of connection retries after it quits.
+<br><div class=3D"gmail_quote">On Mon, Oct 22, 2012 at 6:11 AM, David Somme=
+rseth <span dir=3D"ltr">&lt;<a href=3D"mailto:openvpn.list@...1114..." targ=
+et=3D"_blank">openvpn.list@...1114...</a>&gt;</span> wrote:<br><blockquote =
+class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid=
+;padding-left:1ex">
 
-Arne
+<div class=3D"im">On 22/10/12 10:48, Gert Doering wrote:<br>
+&gt; Hi Jonathan,<br>
+&gt;<br>
+&gt; On Sun, Oct 21, 2012 at 06:40:08PM -0400, Jonathan K. Bullard wrote:<b=
+r>
+&gt;&gt; A Tunnelblick user has reported odd behavior with name resolution =
+failures.<br>
+&gt;&gt; I can&#39;t tell if it is a bug in OpenVPN, a bug in the documenta=
+tion, or<br>
+&gt;&gt; something else. The behavior is apparently the same in OpenVPN 2.2=
+.1 and<br>
+&gt;&gt; 2.3alpha1.<br>
+&gt; [..]<br>
+&gt;&gt; Any ideas if this is a program bug, a documentation bug, or someth=
+ing else,<br>
+&gt;&gt; for example, a problem that only occurs on OS X?<br>
+&gt;<br>
+&gt; &quot;One of those&quot; :-) - I don&#39;t know yet, and haven&#39;t l=
+ooked into the code yet<br>
+&gt; (will do ASAP).<br>
+&gt;<br>
+&gt; The resolver code has been changed for 2.2 (getting rid of the old<br>
+&gt; randomization stuff), so it might be a bug introduced there, or a much=
+<br>
+&gt; older bug that nobody ever noticed.<br>
+&gt;<br>
+&gt; Do you have an OpenVPN log that shows this behaviour? =C2=A0Might help=
+ in<br>
+&gt; digging down to it...<br>
+<br>
+</div>A client config file would help in addition. =C2=A0I&#39;m also wonde=
+ring if<br>
+connection profiles are used ... that is, more --remote options or<br>
+&lt;connection&gt; blocks.<br>
+<br>
+Otherwise, I would not be surprised if there are some corner case here<br>
+appearing, which surfaced more easily when the resolving code was<br>
+re-written (as Gert mentioned).<br>
+<br>
+This resolver_retry_second option is only used in socket.c AFAICT, which<br>
+most of us try to avoid looking too hard on, to avoid eye cancer and/or<br>
+loosing our sanity ;-) =C2=A0But there&#39;s work in progress on cleaning u=
+p that<br>
+one, unfortunately that will take some time. =C2=A0But we&#39;ll try to hun=
+t down<br>
+this which looks like an openvpn bug to me.<br>
+<br>
+<br>
+kind regards,<br>
+<br>
+David Sommerseth<br>
+<br>
+</blockquote></div><br></div></div>
 
---------------020000050701030105050409
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-
-<html>
-  <head>
-    <meta content="text/html; charset=ISO-8859-1"
-      http-equiv="Content-Type">
-  </head>
-  <body bgcolor="#FFFFFF" text="#000000">
-    <div class="moz-cite-prefix">Am 22.10.12 00:40, schrieb Jonathan K.
-      Bullard:<br>
-    </div>
-    <blockquote
-cite="mid:CAEsd45Q6PbNZoutzKMXVP7xPSEmb0C3A3jQEQYidcTRGJaXTmQ@...278..."
-      type="cite">A Tunnelblick user has reported odd behavior with name
-      resolution failures. I can't tell if it is a bug in OpenVPN, a bug
-      in the documentation, or something else. The behavior is
-      apparently the same in OpenVPN 2.2.1 and 2.3alpha1.
-      <div> <br>
-      </div>
-      <div>The 2.3 man page says:</div>
-      <div>
-        <blockquote class="gmail_quote" style="margin:0px 0px 0px
-0.8ex;border-left-width:1px;border-left-color:rgb(204,204,204);border-left-style:solid;padding-left:1ex">--resolv-retry
-
-          n<br>
-          &nbsp; &nbsp; &nbsp;If hostname resolve fails for --remote, retry resolve for
-          n seconds before failing.<br>
-          &nbsp; &nbsp; &nbsp;Set n to "infinite" to retry indefinitely.<br>
-          &nbsp; &nbsp; &nbsp;By default, --resolv-retry infinite is enabled. &nbsp;You can
-          disable by setting n=0.</blockquote>
-      </div>
-      <div><br>
-      </div>
-      <div>But the behavior seems very different:</div>
-      <div><br>
-      </div>
-      <div>If a name resolution failure (caused, for example, by losing
-        the network connection) occurs</div>
-      <div>and --resolv-retry is:</div>
-      <div>
-        <blockquote style="margin:0px 0px 0px
-          40px;border:none;padding:0px">1, the first resolution failure
-          terminates the connection;<br>
-          5, resolution attempts are made dozens of times per second,
-          seemingly forever; or<br>
-          10, resolution attempts are made every five seconds, seemingly
-          forever.<br>
-        </blockquote>
-        <div><br>
-        </div>
-        <div>Any ideas if this is a program bug, a documentation bug, or
-          something else, for example, a problem that only occurs on OS
-          X?</div>
-      </div>
-    </blockquote>
-    I guess a programming bug.<br>
-    <br>
-    The number of retries for a resolv is defined as (fail_wait_interval
-    is fixed to 5):<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int resolve_retries = (flags &amp; GETADDR_TRY_ONCE) ? 1 :
-    (resolve_retry_seconds / fail_wait_interval);<br>
-    <br>
-    so if resolv-retry &lt; 5 resolve_retries is set to 0 giving you a
-    direct failure. Without trying you should then see a USR1 and
-    openvpn will directly do the next connection attempt without waiting
-    the 5s delay.<br>
-    <br>
-    On a quick glance I cannot see a way to tell openvpn to have a fixed
-    number of connection retries after it quits.<br>
-    <br>
-    Arne<br>
-  </body>
-</html>
-
---------------020000050701030105050409--
+--bcaec54b46c4f8d71304cca4c36a--
 
