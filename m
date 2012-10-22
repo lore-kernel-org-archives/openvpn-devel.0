@@ -1,16 +1,13 @@
-Message-ID: <50851BE0.3020907@...1114...>
-Date: Mon, 22 Oct 2012 12:11:44 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <50851A9A.5090902@...1227...>
+Date: Mon, 22 Oct 2012 12:06:18 +0200
+From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
 References: <CAEsd45Q6PbNZoutzKMXVP7xPSEmb0C3A3jQEQYidcTRGJaXTmQ@...278...>
-	<20121022084853.GF742@...1296...>
-In-Reply-To: <20121022084853.GF742@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig0CCCE35CACA9CAD2EA70AC47"
+In-Reply-To: <CAEsd45Q6PbNZoutzKMXVP7xPSEmb0C3A3jQEQYidcTRGJaXTmQ@...278...>
+Content-Type: multipart/alternative;
+	boundary="------------020000050701030105050409"
 Subject: Re: [Openvpn-devel] Bug in program, bug in documentation,
  or something else?
-Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,69 +19,133 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: "Jonathan K. Bullard" <jkbullard@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig0CCCE35CACA9CAD2EA70AC47
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------020000050701030105050409
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-On 22/10/12 10:48, Gert Doering wrote:
-> Hi Jonathan,
->=20
-> On Sun, Oct 21, 2012 at 06:40:08PM -0400, Jonathan K. Bullard wrote:
->> A Tunnelblick user has reported odd behavior with name resolution failur=
-es.
->> I can't tell if it is a bug in OpenVPN, a bug in the documentation, or
->> something else. The behavior is apparently the same in OpenVPN 2.2.1 and
->> 2.3alpha1.
-> [..]
->> Any ideas if this is a program bug, a documentation bug, or something el=
-se,
->> for example, a problem that only occurs on OS X?
->=20
-> "One of those" :-) - I don't know yet, and haven't looked into the code y=
-et
-> (will do ASAP).
->=20
-> The resolver code has been changed for 2.2 (getting rid of the old
-> randomization stuff), so it might be a bug introduced there, or a much
-> older bug that nobody ever noticed.
->=20
-> Do you have an OpenVPN log that shows this behaviour?  Might help in
-> digging down to it...
+Am 22.10.12 00:40, schrieb Jonathan K. Bullard:
+> A Tunnelblick user has reported odd behavior with name resolution
+> failures. I can't tell if it is a bug in OpenVPN, a bug in the
+> documentation, or something else. The behavior is apparently the same
+> in OpenVPN 2.2.1 and 2.3alpha1.
+>
+> The 2.3 man page says:
+>
+>     --resolv-retry n
+>          If hostname resolve fails for --remote, retry resolve for n
+>     seconds before failing.
+>          Set n to "infinite" to retry indefinitely.
+>          By default, --resolv-retry infinite is enabled.  You can
+>     disable by setting n=0.
+>
+>
+> But the behavior seems very different:
+>
+> If a name resolution failure (caused, for example, by losing the
+> network connection) occurs
+> and --resolv-retry is:
+>
+>     1, the first resolution failure terminates the connection;
+>     5, resolution attempts are made dozens of times per second,
+>     seemingly forever; or
+>     10, resolution attempts are made every five seconds, seemingly
+>     forever.
+>
+>
+> Any ideas if this is a program bug, a documentation bug, or something
+> else, for example, a problem that only occurs on OS X?
+I guess a programming bug.
 
-A client config file would help in addition.  I'm also wondering if
-connection profiles are used ... that is, more --remote options or
-<connection> blocks.
+The number of retries for a resolv is defined as (fail_wait_interval is
+fixed to 5):
+      int resolve_retries = (flags & GETADDR_TRY_ONCE) ? 1 :
+(resolve_retry_seconds / fail_wait_interval);
 
-Otherwise, I would not be surprised if there are some corner case here
-appearing, which surfaced more easily when the resolving code was
-re-written (as Gert mentioned).
+so if resolv-retry < 5 resolve_retries is set to 0 giving you a direct
+failure. Without trying you should then see a USR1 and openvpn will
+directly do the next connection attempt without waiting the 5s delay.
 
-This resolver_retry_second option is only used in socket.c AFAICT, which
-most of us try to avoid looking too hard on, to avoid eye cancer and/or
-loosing our sanity ;-)  But there's work in progress on cleaning up that
-one, unfortunately that will take some time.  But we'll try to hunt down
-this which looks like an openvpn bug to me.
+On a quick glance I cannot see a way to tell openvpn to have a fixed
+number of connection retries after it quits.
 
+Arne
 
-kind regards,
+--------------020000050701030105050409
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-David Sommerseth
+<html>
+  <head>
+    <meta content="text/html; charset=ISO-8859-1"
+      http-equiv="Content-Type">
+  </head>
+  <body bgcolor="#FFFFFF" text="#000000">
+    <div class="moz-cite-prefix">Am 22.10.12 00:40, schrieb Jonathan K.
+      Bullard:<br>
+    </div>
+    <blockquote
+cite="mid:CAEsd45Q6PbNZoutzKMXVP7xPSEmb0C3A3jQEQYidcTRGJaXTmQ@...278..."
+      type="cite">A Tunnelblick user has reported odd behavior with name
+      resolution failures. I can't tell if it is a bug in OpenVPN, a bug
+      in the documentation, or something else. The behavior is
+      apparently the same in OpenVPN 2.2.1 and 2.3alpha1.
+      <div> <br>
+      </div>
+      <div>The 2.3 man page says:</div>
+      <div>
+        <blockquote class="gmail_quote" style="margin:0px 0px 0px
+0.8ex;border-left-width:1px;border-left-color:rgb(204,204,204);border-left-style:solid;padding-left:1ex">--resolv-retry
 
+          n<br>
+          &nbsp; &nbsp; &nbsp;If hostname resolve fails for --remote, retry resolve for
+          n seconds before failing.<br>
+          &nbsp; &nbsp; &nbsp;Set n to "infinite" to retry indefinitely.<br>
+          &nbsp; &nbsp; &nbsp;By default, --resolv-retry infinite is enabled. &nbsp;You can
+          disable by setting n=0.</blockquote>
+      </div>
+      <div><br>
+      </div>
+      <div>But the behavior seems very different:</div>
+      <div><br>
+      </div>
+      <div>If a name resolution failure (caused, for example, by losing
+        the network connection) occurs</div>
+      <div>and --resolv-retry is:</div>
+      <div>
+        <blockquote style="margin:0px 0px 0px
+          40px;border:none;padding:0px">1, the first resolution failure
+          terminates the connection;<br>
+          5, resolution attempts are made dozens of times per second,
+          seemingly forever; or<br>
+          10, resolution attempts are made every five seconds, seemingly
+          forever.<br>
+        </blockquote>
+        <div><br>
+        </div>
+        <div>Any ideas if this is a program bug, a documentation bug, or
+          something else, for example, a problem that only occurs on OS
+          X?</div>
+      </div>
+    </blockquote>
+    I guess a programming bug.<br>
+    <br>
+    The number of retries for a resolv is defined as (fail_wait_interval
+    is fixed to 5):<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int resolve_retries = (flags &amp; GETADDR_TRY_ONCE) ? 1 :
+    (resolve_retry_seconds / fail_wait_interval);<br>
+    <br>
+    so if resolv-retry &lt; 5 resolve_retries is set to 0 giving you a
+    direct failure. Without trying you should then see a USR1 and
+    openvpn will directly do the next connection attempt without waiting
+    the 5s delay.<br>
+    <br>
+    On a quick glance I cannot see a way to tell openvpn to have a fixed
+    number of connection retries after it quits.<br>
+    <br>
+    Arne<br>
+  </body>
+</html>
 
---------------enig0CCCE35CACA9CAD2EA70AC47
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAlCFG+MACgkQDC186MBRfrpOmwCaAkB3Ro1+hGGwE4Gf2TAFEw2U
-WT4AnijiIUymlki5DzPxk4mKtDKyWWLy
-=Yp6H
------END PGP SIGNATURE-----
-
---------------enig0CCCE35CACA9CAD2EA70AC47--
+--------------020000050701030105050409--
 
