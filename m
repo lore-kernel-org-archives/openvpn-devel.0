@@ -1,15 +1,9 @@
-Message-ID: <50912E04.7000504@...1114...>
-Date: Wed, 31 Oct 2012 14:56:20 +0100
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <509153FA.2070009@...515...>
+Date: Wed, 31 Oct 2012 18:38:18 +0200
+From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
 MIME-Version: 1.0
-References: <1351539352-17371-1-git-send-email-dazo@...384...>
-In-Reply-To: <1351539352-17371-1-git-send-email-dazo@...384...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig1A626C28870B944CE9E9DE18"
-Subject: Re: [Openvpn-devel] [PATCH] Remove the support for using system()
- when executing external programs or scripts
-Reply-To: openvpn-devel@lists.sourceforge.net
+Content-Type: multipart/mixed; boundary="------------090708020908050603010106"
+Subject: [Openvpn-devel] OpenVPN 2.3_rc1 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,105 +12,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, "openvpn-announce@lists.sourceforge.net" <openvpn-announce@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1A626C28870B944CE9E9DE18
-Content-Type: text/plain; charset="ISO-8859-1"
+This is a multi-part message in MIME format.
+--------------090708020908050603010106
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 29/10/12 20:35, David Sommerseth wrote:
-> From: David Sommerseth <davids@...1347...>
->=20
-> This patch removes the support for the system() call, and enforces the us=
-age of execve()
-> on the *nix platform and CreateProcessW() on Windows.  This is to enhance=
- the overall
-> security when calling external scripts.  Using system() is prone to shell=
- expansions,
-> which may lead to security breaches.  Which is also why the execve() appr=
-oach has
-> been the default since commit a82813527551f0e79c6d6ed5a9c1162e3c171bcf wh=
-ich
-> re-introduced the system() in Nov. 2008.
->=20
-> After having asked on the mailing list and checked around on the IRC chan=
-nels, the
-> genereal consensus is that very few uses system() these days.
->=20
-> The only annoyance I've been made aware of is that this will now require =
-adding a full
-> path to the script interpreter together with the script, and not just put=
- in the
-> script name alone.  But to just use the script name in Windows, you had t=
-o configure
-> --script-security with the 'system' flag earlier too.  So my conclusion i=
-s that it's
-> better to add a full path to the script interpreter in Windows and raise =
-the overal
-> security with OpenVPN, than to continue to have a possible potentially ri=
-sky
-> OpenVPN configuration just to make life "easier" for Windows script users.
->=20
-> Removal of the system() call, also solves a nasty bug related to the usag=
-e of putenv()
-> on the *nix platforms.
->=20
-> For more information please see:
-> http://thread.gmane.org/gmane.network.openvpn.devel/7090
-> https://community.openvpn.net/openvpn/ticket/228
->=20
-> Trac-ticket: 228
-> Signed-off-by: David Sommerseth <davids@...1347...>
-> ---
->  doc/openvpn.8          |   48 ++++++++++++------
->  src/openvpn/init.c     |    3 --
->  src/openvpn/misc.c     |   98 ++++++++-----------------------------
->  src/openvpn/misc.h     |    5 --
->  src/openvpn/options.c  |   16 +-----
->  src/openvpn/platform.c |   27 +---------
->  src/openvpn/platform.h |    4 +-
->  src/openvpn/win32.c    |  127 +++++++++++++-----------------------------=
-------
->  8 files changed, 89 insertions(+), 239 deletions(-)
->=20
+The OpenVPN community project team is proud to release OpenVPN
+2.3_rc1. It can be downloaded from here:
 
-Applied to master and beta/2.3
+<http://openvpn.net/index.php/open-source/downloads.html>
 
-commit 0563473601abfbf2142bfa0ca5b863c5aa7953a2 (master)
-commit 3cb9f1a62b4a84dbf4acd1957c900a5b06fd6ac2 (beta/2.3)
-Author: David Sommerseth <davids@...1347...>
-Date:   Thu Oct 25 14:22:30 2012 +0200
+This release fixes a number of small issues. It also removes support for
+the "system" method for the "script-security" option, which requires
+changes to OpenVPN configuration in some cases; for details, look here:
 
-    Remove the support for using system() when executing external programs =
-or scripts
+<https://community.openvpn.net/openvpn/ticket/228>
 
-    Trac-ticket: 228
-    Signed-off-by: David Sommerseth <davids@...1347...>
-    Acked-by: Gert Doering <gert@...1296...>
-    Message-Id: <1351539352-17371-1-git-send-email-dazo@...384...>
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/7114
-    (cherry picked from commit 0563473601abfbf2142bfa0ca5b863c5aa7953a2)
+In addition, an updated GUI is included in the Windows installer.
+
+<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn23>
+
+A full list of new features and the changelog are available here:
+
+<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn23>
+
+The changelog is also attached to this email.
+
+For generic help use these support channels:
+
+- Official documentation:
+<http://openvpn.net/index.php/open-source/documentation/howto.html>
+- Wiki: <https://community.openvpn.net>
+- Forums: <https://forums.openvpn.net>
+- User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+- User IRC channel: #openvpn at irc.freenode.net
+
+Please report bugs and ask development questions here:
+
+- Bug tracker and Wiki: <https://community.openvpn.net>
+- Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+- Developer IRC channel: #openvpn-devel at irc.freenode.net (requires
+  Freenode registration)
+
+--=20
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
 
-kind regards,
-
-David Sommerseth
 
 
---------------enig1A626C28870B944CE9E9DE18
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+--------------090708020908050603010106
+Content-Type: text/plain; charset=UTF-8; name="openvpn-2.3_rc1-changelog.txt"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="openvpn-2.3_rc1-changelog.txt"
 
-iEYEARECAAYFAlCRLgYACgkQDC186MBRfrqvBACfUBcB1S0UBN5FS31Q31liLph5
-vw8An2CB7yfmNU4Z6D8ODrd/Usi1cnj/
-=RzMq
------END PGP SIGNATURE-----
-
---------------enig1A626C28870B944CE9E9DE18--
+QWRyaWFhbiBkZSBKb25nICgxKToKICAgICAgRml4ZWQgYSBidWcgd2hlcmUgUG9sYXJTU0wg
+Z2F2ZSBhbiBlcnJvciB3aGVuIHVzaW5nIGFuIGlubGluZSBmaWxlIHRhZy4KCkFybmUgU2No
+d2FiZSAoMik6CiAgICAgIERvY3VtZW50IG1hbiBhZ2VudC1leHRlcm5hbC1rZXkKICAgICAg
+T3B0aW9ucyBwYXJzaW5nIGRlbWFuZHMgdW5uZWNlc3NhcnkgY29uZmlndXJhdGlvbiBpZiBQ
+S0NTMTEgaXMgdXNlZAoKRGF2aWQgU29tbWVyc2V0aCAoMyk6CiAgICAgIE1ha2UgZ2l0IGln
+bm9yZSBzb21lIG1vcmUgZmlsZXMKICAgICAgUmVtb3ZlIHRoZSBzdXBwb3J0IGZvciB1c2lu
+ZyBzeXN0ZW0oKSB3aGVuIGV4ZWN1dGluZyBleHRlcm5hbCBwcm9ncmFtcyBvciBzY3JpcHRz
+CiAgICAgIFByZXBhcmluZyBmb3IgdjIuM19yYzEKCkhlaWtvIEh1bmQgKDIpOgogICAgICBG
+aXggZGlzcGxheSBvZiBwbHVnaW4gaG9vayB0eXBlcwogICAgICBTdXBwb3J0IFVURi04IC0t
+Y2xpZW50LWNvbmZpZy1kaXIKCktlbm5ldGggUm9zZSAoMSk6CiAgICAgIEZpeCB2MyBwbHVn
+aW5zIHRvIHN1cHBvcnQgcmV0dXJuaW5nIHZhbHVlcyBiYWNrIHRvIE9wZW5WUE4uCgo=
+--------------090708020908050603010106--
 
