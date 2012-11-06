@@ -1,14 +1,12 @@
-Message-ID: <5098ECA9.5060600@...1114...>
-Date: Tue, 06 Nov 2012 11:55:37 +0100
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <5098F411.8090402@...515...>
+Date: Tue, 06 Nov 2012 13:27:13 +0200
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <1352196216-11560-1-git-send-email-dazo@...384...>
-In-Reply-To: <1352196216-11560-1-git-send-email-dazo@...384...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigEE41335B59C2AF0B6411643C"
-Subject: Re: [Openvpn-devel] [PATCH] Fix double-free issue in
-	pf_destroy_context()
+References: <20121009185233.GS48053@...1777...> <3225194.uqCr5OXhPF@...1526...>
+	<5097DE86.7070103@...1777...> <5098C44B.3080806@...515...>
+In-Reply-To: <5098C44B.3080806@...515...>
+Subject: Re: [Openvpn-devel] Backslash in user/pass breaks OpenVPN-GUI
+ management authentication
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,69 +15,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-Cc: cuzz <cuzz@...1781...>
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigEE41335B59C2AF0B6411643C
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-
-On 06/11/12 11:03, David Sommerseth wrote:
-> From: David Sommerseth <davids@...1347...>
->=20
-> In commit dc7be6d078ba106f9b0de12f3e879c3561c3c537 the string_alloc() call
-> in pf_init_context() was modified to use the gc_arena object for memory
-> allocation.  What was not taken into consideration was that pf_destroy_co=
-ntext()
-> was also freeing memory allocated by string_alloc(), and when pf_init_con=
-text()
-> is calling gc_free() a double-free situation showed up.
->=20
-> Lets remove the explict free, and let gc_free take care of all the memory=
- handling.
->=20
-> Reported-by: cuzz@...1781...
-> Signed-off-by: David Sommerseth <davids@...1347...>
-> ---
->  src/openvpn/pf.c |    1 -
->  1 file changed, 1 deletion(-)
+To: Adam McDougall <mcdouga9@...1777...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 
-Applied to master and beta/2.3 branches.
+>> On 10/10/12 04:13, Heiko Hund wrote:
+>>> Hi Adam
+>>>
+>>> On Tuesday 09 October 2012 14:52:33 Adam McDougall wrote:
+>>>> This report concerns the OpenVPN-GUI application included with
+>>>> 2.3-alpha3 and 2.3_beta1.  I am excited to see native support for the
+>>>> Management Interface which I will ultimately need if I start deploying
+>>>> the Windows client, but I discovered username/password authentication
+>>>> chokes if either contain a backslash: \
+>>> Thanks for the report. Currently "special" characters in username and p=
+assword
+>>> are not quoted. I've had a report about a double quote breaking auth as
+>>> well... and forgot about fixing it. =3D) Expect this to be fixed in the=
+ next
+>>> beta release. And again, thanks for testing!
+>>>
+>>> Heiko
+>>>
+>> I tested the recent rc1 build but it was not fixed, did it go in?  Thank=
+s.
+>>
+> I checked the Windows installer and indeed, it was using an older
+> version of openvpn-gui. The build computer is atm building a new
+> installer based on latest Git commit. This seems to include the backlash
+> fix.
+>
+> I'll release the fixed build later today.
+>
 
-commit 1f300fe94f1bd521966bb05dea40edc1fae82b84 (master)
-commit 03dfcd95b29eda81aee117bf9d28c001f2521e15 (beta/2.3)
-Author: David Sommerseth <davids@...1347...>
-Date:   Tue Nov 6 10:59:01 2012 +0100
+Fixed installers (version 003) are downloadable. If you look at
+"Properties -> Details/Version" of the bundled openvpn-gui.exe it should
+say "File version: 1.0.7".
 
-    Fix double-free issue in pf_destroy_context()
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-    Reported-by: cuzz@...1781...
-    Signed-off-by: David Sommerseth <davids@...1347...>
-    Acked-by: Gert Doering <gert@...1296...>
-    Message-Id: 1352196216-11560-1-git-send-email-dazo@...384...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/7124
+irc freenode net: mattock
 
-
-kind regards,
-
-David Sommerseth
-
-
---------------enigEE41335B59C2AF0B6411643C
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAlCY7KsACgkQDC186MBRfro/CACfdkuLcZAhqrF1U9RAkzSzrwqL
-XcgAn0YTDcJhzszauVq8oex3vhUZbLtO
-=0ElA
------END PGP SIGNATURE-----
-
---------------enigEE41335B59C2AF0B6411643C--
 
