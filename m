@@ -1,9 +1,8 @@
-From: Adriaan de Jong <dejong@...1435...>
-Date: Wed, 14 Nov 2012 10:03:12 +0100
-Message-ID: <1CED409804E2164C8104F9E623B08B901323A48384@...1436...>
-Content-Language: en-US
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix --show-pkcs11-ids
+From: David Sommerseth <dazo@...384...>
+Date: Fri, 16 Nov 2012 12:02:06 +0100
+Message-Id: <1353063726-25113-1-git-send-email-dazo@...384...>
+Subject: [Openvpn-devel] [PATCH] Avoid recursion in
+	virtual_output_callback_func()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,33 +11,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-[PATCH] Fix --show-pkcs11-ids (Bug #239)
+From: David Sommerseth <davids@...1347...>
 
-Broken by 75b49e406430299b187964744f82e50a9035a0d3.
+This solves a SEGV situation when using the management API while OpenVPN
+is closing down.
 
-Signed-off-by: Joachim Schipper <joachim.schipper@...1435...>
+The situation happens when the management socket has closed and OpenVPN
+tries to write an error about this to the management socket.  What happens
+is that
+
+ virtual_output_callback_func() is called, which then calls
+ -> man_output_list_push_finalize()
+    -> man_output_standalone()
+       -> man_write()  <-- this does the socket write
+          -> man_io_error()
+             -> x_msg()
+                -> virtual_output_print()
+                   -> virtual_output_callback_func() (recursion start)
+
+virtual_output_callback_func() do have a mechanism to avoid recursion,
+but that did not keep the recurse counter when man_output_list_push_finalize()
+is called.
+
+This patch just reorganise the recursion block to also keep the counter while
+calling the other functions from virtual_output_callback_func()
+
+Signed-off-by: David Sommerseth <davids@...1347...>
 ---
- src/openvpn/pkcs11.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ src/openvpn/manage.c |   15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
-diff --git a/src/openvpn/pkcs11.c b/src/openvpn/pkcs11.c index 645f1f4..3a1=
-5ef6 100644
---- a/src/openvpn/pkcs11.c
-+++ b/src/openvpn/pkcs11.c
-@@ -887,7 +887,7 @@ show_pkcs11_ids (
- 		      (dn =3D pkcs11_certificate_dn (
- 				certificate,
- 				&gc
--		      ))
-+		      )) =3D=3D NULL
- 		) {
- 			goto cleanup1;
- 		}
---
-1.7.9.5
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index d0bb416..0a4542a 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -287,13 +287,13 @@ virtual_output_callback_func (void *arg, const unsigned int flags, const char *s
+ 
+ # define AF_DID_PUSH  (1<<0)
+ # define AF_DID_RESET (1<<1)
+-  unsigned int action_flags = 0;
+ 
+   if (!recursive_level) /* don't allow recursion */
+     {
+       struct gc_arena gc = gc_new ();
+       struct log_entry e;
+       const char *out = NULL;
++      unsigned int action_flags = 0;
+ 
+       ++recursive_level;
+ 
+@@ -334,14 +334,15 @@ virtual_output_callback_func (void *arg, const unsigned int flags, const char *s
+ 	    }
+ 	}
+ 
+-      --recursive_level;
+       gc_free (&gc);
+-    }
+ 
+-  if (action_flags & AF_DID_PUSH)
+-    man_output_list_push_finalize (man);
+-  if (action_flags & AF_DID_RESET)
+-    man_reset_client_socket (man, true);
++      if (action_flags & AF_DID_PUSH)
++        man_output_list_push_finalize (man);
++      if (action_flags & AF_DID_RESET)
++        man_reset_client_socket (man, true);
++
++      --recursive_level;
++    }
+ }
+ 
+ /*
+-- 
+1.7.10.2
 
 
