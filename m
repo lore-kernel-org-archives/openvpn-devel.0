@@ -1,8 +1,7 @@
-From: David Sommerseth <dazo@...384...>
-Date: Fri, 16 Nov 2012 12:02:06 +0100
-Message-Id: <1353063726-25113-1-git-send-email-dazo@...384...>
-Subject: [Openvpn-devel] [PATCH] Avoid recursion in
-	virtual_output_callback_func()
+From: Arne Schwabe <arne@...1227...>
+Date: Mon, 19 Nov 2012 19:12:17 +0100
+Message-Id: <1353348737-21920-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Error message if max-routes used incorrectly
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,78 +14,30 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: David Sommerseth <davids@...1347...>
+the route/route-ipv6/redirect-gateway options allocate the route structe with max_routes number of routes. A max-routes after any of this commands has no effect. This can be problematic (http://code.google.com/p/ics-openvpn/issues/detail?id=101)
 
-This solves a SEGV situation when using the management API while OpenVPN
-is closing down.
-
-The situation happens when the management socket has closed and OpenVPN
-tries to write an error about this to the management socket.  What happens
-is that
-
- virtual_output_callback_func() is called, which then calls
- -> man_output_list_push_finalize()
-    -> man_output_standalone()
-       -> man_write()  <-- this does the socket write
-          -> man_io_error()
-             -> x_msg()
-                -> virtual_output_print()
-                   -> virtual_output_callback_func() (recursion start)
-
-virtual_output_callback_func() do have a mechanism to avoid recursion,
-but that did not keep the recurse counter when man_output_list_push_finalize()
-is called.
-
-This patch just reorganise the recursion block to also keep the counter while
-calling the other functions from virtual_output_callback_func()
-
-Signed-off-by: David Sommerseth <davids@...1347...>
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/manage.c |   15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ src/openvpn/options.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index d0bb416..0a4542a 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -287,13 +287,13 @@ virtual_output_callback_func (void *arg, const unsigned int flags, const char *s
- 
- # define AF_DID_PUSH  (1<<0)
- # define AF_DID_RESET (1<<1)
--  unsigned int action_flags = 0;
- 
-   if (!recursive_level) /* don't allow recursion */
-     {
-       struct gc_arena gc = gc_new ();
-       struct log_entry e;
-       const char *out = NULL;
-+      unsigned int action_flags = 0;
- 
-       ++recursive_level;
- 
-@@ -334,14 +334,15 @@ virtual_output_callback_func (void *arg, const unsigned int flags, const char *s
- 	    }
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 9baa4ff..5f19c27 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -5141,6 +5141,11 @@ add_option (struct options *options,
+ 	  msg (msglevel, "--max-routes parameter is out of range");
+ 	  goto err;
  	}
- 
--      --recursive_level;
-       gc_free (&gc);
--    }
- 
--  if (action_flags & AF_DID_PUSH)
--    man_output_list_push_finalize (man);
--  if (action_flags & AF_DID_RESET)
--    man_reset_client_socket (man, true);
-+      if (action_flags & AF_DID_PUSH)
-+        man_output_list_push_finalize (man);
-+      if (action_flags & AF_DID_RESET)
-+        man_reset_client_socket (man, true);
-+
-+      --recursive_level;
-+    }
- }
- 
- /*
++      if (options->routes || options->routes_ipv6)
++	{
++		msg (msglevel, "--max-routes must to be specifed before any route/route-ipv6/redirect-gateway option");
++	  goto err;
++	}
+       options->max_routes = max_routes;
+     }
+   else if (streq (p[0], "route-gateway") && p[1])
 -- 
-1.7.10.2
+1.7.9.5
 
 
