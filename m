@@ -1,7 +1,14 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Mon, 19 Nov 2012 19:12:17 +0100
-Message-Id: <1353348737-21920-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Error message if max-routes used incorrectly
+Date: Mon, 19 Nov 2012 19:21:28 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20121119182128.GM22465@...1296...>
+References: <1353348737-21920-1-git-send-email-arne@...1227...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="1sNVjLsmu1MXqwQ/"
+Content-Disposition: inline
+In-Reply-To: <1353348737-21920-1-git-send-email-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Error message if max-routes used
+	incorrectly
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,34 +17,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-the route/route-ipv6/redirect-gateway options allocate the route structe with max_routes number of routes. A max-routes after any of this commands has no effect. This can be problematic (http://code.google.com/p/ics-openvpn/issues/detail?id=101)
+--1sNVjLsmu1MXqwQ/
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/options.c |    5 +++++
- 1 file changed, 5 insertions(+)
+Hi,
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 9baa4ff..5f19c27 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -5141,6 +5141,11 @@ add_option (struct options *options,
- 	  msg (msglevel, "--max-routes parameter is out of range");
- 	  goto err;
- 	}
-+      if (options->routes || options->routes_ipv6)
-+	{
-+		msg (msglevel, "--max-routes must to be specifed before any route/route-ipv6/redirect-gateway option");
-+	  goto err;
-+	}
-       options->max_routes = max_routes;
-     }
-   else if (streq (p[0], "route-gateway") && p[1])
--- 
-1.7.9.5
+On Mon, Nov 19, 2012 at 07:12:17PM +0100, Arne Schwabe wrote:
+> the route/route-ipv6/redirect-gateway options allocate the route structe =
+with max_routes number of routes. A max-routes after any of this commands h=
+as no effect. This can be problematic (http://code.google.com/p/ics-openvpn=
+/issues/detail?id=3D101)
 
+ACK, for 2.3.  Makes sense.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--1sNVjLsmu1MXqwQ/
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
+
+iQCVAwUBUKp4qKkuBuNlUUl1AQKWVQP8DKnR6iMkpqBPSH9iirEiRYaz25O5onVZ
+8zWV6BCUibTbfNnCOXLNVjdu9uQpZ3EslnRZxZyNS37jXcp2Uy0ZRtEYDaozMw12
+k6FvWBvIpRnu6zYVQNQssxDmVhHdRmsa4DOOy0bLEFru/OjhQR3wu94AbYO+1GK9
+EGWOt7QV+Rg=
+=1/Ab
+-----END PGP SIGNATURE-----
+
+--1sNVjLsmu1MXqwQ/--
 
