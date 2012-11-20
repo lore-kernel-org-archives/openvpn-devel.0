@@ -1,14 +1,12 @@
-Message-ID: <50AB4AFB.9030908@...1114...>
-Date: Tue, 20 Nov 2012 10:18:51 +0100
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
+From: Joachim Schipper <joachim.schipper@...1435...>
+Date: Tue, 20 Nov 2012 11:10:22 +0100
+Message-ID: <1CED409804E2164C8104F9E623B08B901323AF01D4@...1436...>
 References: <1CED409804E2164C8104F9E623B08B901323A48384@...1436...>
-In-Reply-To: <1CED409804E2164C8104F9E623B08B901323A48384@...1436...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig8E9C417D9D6EB5F47367C6F0"
+	<50AB4AFB.9030908@...1114...>
+In-Reply-To: <50AB4AFB.9030908@...1114...>
+Content-Language: en-US
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] [PATCH] Fix --show-pkcs11-ids
-Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,13 +15,20 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Joachim Schipper <joachim.schipper@...1435...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig8E9C417D9D6EB5F47367C6F0
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+Yes, that seems to be correct. Sorry!
+
+		Joachim
+
+-----Original Message-----
+From: David Sommerseth [mailto:openvpn.list@...1114...]=20
+Sent: dinsdag 20 november 2012 10:19
+To: Joachim Schipper
+Cc: openvpn-devel@lists.sourceforge.net; Adriaan de Jong
+Subject: Re: [Openvpn-devel] [PATCH] Fix --show-pkcs11-ids
 
 On 14/11/12 10:03, Adriaan de Jong wrote:
 > [PATCH] Fix --show-pkcs11-ids (Bug #239)
@@ -37,8 +42,8 @@ On 14/11/12 10:03, Adriaan de Jong wrote:
 
 Hi Joachim,
 
-Thanks a lot for you fix!  Just a little question.  You mention this
-commit as being the offending commit:
+Thanks a lot for you fix!  Just a little question.  You mention this commit=
+ as being the offending commit:
 
 commit 75b49e406430299b187964744f82e50a9035a0d3
 Author: Alon Bar-Lev <alon.barlev@...277...>
@@ -61,34 +66,18 @@ Date:   Sun Apr 1 16:46:28 2012 +0300
     Signed-off-by: David Sommerseth <davids@...1347...>
 
 
-I'm just wondering how this could be related to you fix.  As I see it,
-the syntax of the if() statement you change didn't change, neither the
-behaviour of pkcs11_certificate_dn().
+I'm just wondering how this could be related to you fix.  As I see it, the =
+syntax of the if() statement you change didn't change, neither the behaviou=
+r of pkcs11_certificate_dn().
 
-I see that commit 00b973f8af85c3ea8fa3cef80eec55e8dc139b27 changes the
-behaviour of pkcs11_certificate_dn() in both the OpenSSL and PolarSSL
-implementation.  So I'm suspecting you referenced the wrong commit.  Right?
+I see that commit 00b973f8af85c3ea8fa3cef80eec55e8dc139b27 changes the beha=
+viour of pkcs11_certificate_dn() in both the OpenSSL and PolarSSL implement=
+ation.  So I'm suspecting you referenced the wrong commit.  Right?
 
 
---=20
+--
 kind regards,
 
 David Sommerseth
 
-
---------------enig8E9C417D9D6EB5F47367C6F0
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAlCrSwAACgkQDC186MBRfrp79gCfVTZrBKHc5sEHrPlGoX+4BIW+
-ahQAoI7njktoixyoN3Tg90TNbmNNmYh5
-=2Hva
------END PGP SIGNATURE-----
-
---------------enig8E9C417D9D6EB5F47367C6F0--
 
