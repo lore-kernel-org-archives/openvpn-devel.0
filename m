@@ -1,14 +1,14 @@
-Date: Mon, 19 Nov 2012 19:21:28 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20121119182128.GM22465@...1296...>
-References: <1353348737-21920-1-git-send-email-arne@...1227...>
-Mime-Version: 1.0
+Message-ID: <50AB4AFB.9030908@...1114...>
+Date: Tue, 20 Nov 2012 10:18:51 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <1CED409804E2164C8104F9E623B08B901323A48384@...1436...>
+In-Reply-To: <1CED409804E2164C8104F9E623B08B901323A48384@...1436...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="1sNVjLsmu1MXqwQ/"
-Content-Disposition: inline
-In-Reply-To: <1353348737-21920-1-git-send-email-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Error message if max-routes used
-	incorrectly
+	protocol="application/pgp-signature";
+	boundary="------------enig8E9C417D9D6EB5F47367C6F0"
+Subject: Re: [Openvpn-devel] [PATCH] Fix --show-pkcs11-ids
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,45 +17,78 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
+To: Joachim Schipper <joachim.schipper@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---1sNVjLsmu1MXqwQ/
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig8E9C417D9D6EB5F47367C6F0
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+On 14/11/12 10:03, Adriaan de Jong wrote:
+> [PATCH] Fix --show-pkcs11-ids (Bug #239)
+>=20
+> Broken by 75b49e406430299b187964744f82e50a9035a0d3.
+>=20
+> Signed-off-by: Joachim Schipper <joachim.schipper@...1435...>
+> ---
+>  src/openvpn/pkcs11.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Mon, Nov 19, 2012 at 07:12:17PM +0100, Arne Schwabe wrote:
-> the route/route-ipv6/redirect-gateway options allocate the route structe =
-with max_routes number of routes. A max-routes after any of this commands h=
-as no effect. This can be problematic (http://code.google.com/p/ics-openvpn=
-/issues/detail?id=3D101)
+Hi Joachim,
 
-ACK, for 2.3.  Makes sense.
+Thanks a lot for you fix!  Just a little question.  You mention this
+commit as being the offending commit:
 
-gert
+commit 75b49e406430299b187964744f82e50a9035a0d3
+Author: Alon Bar-Lev <alon.barlev@...277...>
+Date:   Sun Apr 1 16:46:28 2012 +0300
+
+    cleanup: gc usage
+
+    Cleanup of "Use the garbage collector when retrieving x509 fields"
+    patch series.
+
+    Discussed at [1].
+
+    There should be an effort to produce common function prologue
+    and epilogue, so that cleanups will be done at single point.
+
+    [1] http://comments.gmane.org/gmane.network.openvpn.devel/5401
+
+    Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+    Acked-by: Adriaan de Jong <dejong@...1435...>
+    Signed-off-by: David Sommerseth <davids@...1347...>
+
+
+I'm just wondering how this could be related to you fix.  As I see it,
+the syntax of the if() statement you change didn't change, neither the
+behaviour of pkcs11_certificate_dn().
+
+I see that commit 00b973f8af85c3ea8fa3cef80eec55e8dc139b27 changes the
+behaviour of pkcs11_certificate_dn() in both the OpenSSL and PolarSSL
+implementation.  So I'm suspecting you referenced the wrong commit.  Right?
+
+
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+kind regards,
 
---1sNVjLsmu1MXqwQ/
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+David Sommerseth
+
+
+--------------enig8E9C417D9D6EB5F47367C6F0
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (NetBSD)
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iQCVAwUBUKp4qKkuBuNlUUl1AQKWVQP8DKnR6iMkpqBPSH9iirEiRYaz25O5onVZ
-8zWV6BCUibTbfNnCOXLNVjdu9uQpZ3EslnRZxZyNS37jXcp2Uy0ZRtEYDaozMw12
-k6FvWBvIpRnu6zYVQNQssxDmVhHdRmsa4DOOy0bLEFru/OjhQR3wu94AbYO+1GK9
-EGWOt7QV+Rg=
-=1/Ab
+iEYEARECAAYFAlCrSwAACgkQDC186MBRfrp79gCfVTZrBKHc5sEHrPlGoX+4BIW+
+ahQAoI7njktoixyoN3Tg90TNbmNNmYh5
+=2Hva
 -----END PGP SIGNATURE-----
 
---1sNVjLsmu1MXqwQ/--
+--------------enig8E9C417D9D6EB5F47367C6F0--
 
