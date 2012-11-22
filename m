@@ -1,14 +1,12 @@
-Message-ID: <50AE0394.3080504@...1114...>
-Date: Thu, 22 Nov 2012 11:51:00 +0100
+Message-ID: <50AE039A.8080205@...1114...>
+Date: Thu, 22 Nov 2012 11:51:06 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1CED409804E2164C8104F9E623B08B901323A48384@...1436...>
-In-Reply-To: <1CED409804E2164C8104F9E623B08B901323A48384@...1436...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig1442E0668D91B25B7BEF0571"
-Subject: Re: [Openvpn-devel] [PATCH] Fix --show-pkcs11-ids
-Reply-To: openvpn-devel@lists.sourceforge.net
+References: <1353348737-21920-1-git-send-email-arne@...1227...>
+In-Reply-To: <1353348737-21920-1-git-send-email-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Error message if max-routes used
+	incorrectly
+Reply-To: openvpn-users@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,60 +15,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1442E0668D91B25B7BEF0571
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-On 14/11/12 10:03, Adriaan de Jong wrote:
-> [PATCH] Fix --show-pkcs11-ids (Bug #239)
->=20
-> Broken by 75b49e406430299b187964744f82e50a9035a0d3.
->=20
-> Signed-off-by: Joachim Schipper <joachim.schipper@...1435...>
-> ---
->  src/openvpn/pkcs11.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+On 19/11/12 19:12, Arne Schwabe wrote:
+> the route/route-ipv6/redirect-gateway options allocate the route
+> structe with max_routes number of routes. A max-routes after any of
+> this commands has no effect. This can be problematic
+> (http://code.google.com/p/ics-openvpn/issues/detail?id=101)
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...> --- 
+> src/openvpn/options.c |    5 +++++ 1 file changed, 5 insertions(+)
 
-ACK.  Applied to master and beta/2.3 branches.
+Applied to master and beta/2.3 branches.
 
+commit f83ccec6525179968b68696acb6ccf22182fc6de (master)
+commit cb8c4efde0d7c26c2e2cd71bc419169ffb14f935 (beta/2.3)
+Author: Arne Schwabe <arne@...1227...>
+Date:   Mon Nov 19 19:12:17 2012 +0100
 
-commit 5fd3e56430678bee3e6e3a3cf8dfd6db7e105676 (master)
-commit fd02ae905df21e1119fb63521e7ff773d6f812dc (beta/2.3)
-Author: Adriaan de Jong <dejong@...1435...>
-Date:   Wed Nov 14 10:03:12 2012 +0100
+    Error message if max-routes used incorrectly
 
-    Fix --show-pkcs11-ids (Bug #239)
-=20=20=20=20=20=20=20=20
-    Signed-off-by: Joachim Schipper <joachim.schipper@...1435...>
-    Acked-by: David Sommerseth <davids@...1347...>
-    Trac-ticket: 239
-    Message-Id: 1CED409804E2164C8104F9E623B08B901323A48384@...1436...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/7129
+    Signed-off-by: Arne Schwabe <arne@...1227...>
+    Acked-by: Gert Doering <gert@...1296...>
+    Message-Id: 1353348737-21920-1-git-send-email-arne@...1227...
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/7131
     Signed-off-by: David Sommerseth <davids@...1347...>
 
 
---=20
+- -- 
 kind regards,
 
 David Sommerseth
-
-
---------------enig1442E0668D91B25B7BEF0571
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAlCuA5gACgkQDC186MBRfrpUAgCePrqxYLh2EnO3l8FuUo8vR2XG
-0iIAniwQzrDmDuB+l8s2QFt4AjX0ZH3P
-=LVum
+iEYEARECAAYFAlCuA5oACgkQDC186MBRfrqbYgCeJkTKA10X9ifnTg8tDrFxBZig
+Ef8An00qW7PQk93CBvAAABkly8g+WyzH
+=xGnv
 -----END PGP SIGNATURE-----
-
---------------enig1442E0668D91B25B7BEF0571--
 
