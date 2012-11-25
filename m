@@ -1,12 +1,9 @@
-Message-ID: <50AE039A.8080205@...1114...>
-Date: Thu, 22 Nov 2012 11:51:06 +0100
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1353348737-21920-1-git-send-email-arne@...1227...>
-In-Reply-To: <1353348737-21920-1-git-send-email-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Error message if max-routes used
-	incorrectly
-Reply-To: openvpn-users@lists.sourceforge.net
+From: Selva Nair <selva.nair@...277...>
+Date: Sun, 25 Nov 2012 18:51:09 -0500
+Message-ID: <CAKuzo_gp71_rgRa6gMjQHsFb+T8Zkfqp44u+oMm_Zt=EB5Ej9Q@...278...>
+Content-Type: multipart/alternative; boundary=bcaec554d8e4e08e3404cf5a7e00
+Subject: [Openvpn-devel] private key from management-interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,48 +12,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--bcaec554d8e4e08e3404cf5a7e00
+Content-Type: text/plain; charset=UTF-8
 
-On 19/11/12 19:12, Arne Schwabe wrote:
-> the route/route-ipv6/redirect-gateway options allocate the route
-> structe with max_routes number of routes. A max-routes after any of
-> this commands has no effect. This can be problematic
-> (http://code.google.com/p/ics-openvpn/issues/detail?id=101)
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...> --- 
-> src/openvpn/options.c |    5 +++++ 1 file changed, 5 insertions(+)
+Hi,
 
-Applied to master and beta/2.3 branches.
+I am implementing a VPN setup using OpenVPN for a few users most of who use
+Windows and the server also has to run on Windows. I can't have users
+running openvpn with root privilege so I've settled on using the service
+option with a management-interface client running with limited user rights.
 
-commit f83ccec6525179968b68696acb6ccf22182fc6de (master)
-commit cb8c4efde0d7c26c2e2cd71bc419169ffb14f935 (beta/2.3)
-Author: Arne Schwabe <arne@...1227...>
-Date:   Mon Nov 19 19:12:17 2012 +0100
+I would prefer client keys and certificates handled at the user level with
+no need for admin privilege to store and replace certificates.
+Cryptoapicert option works only if the certificate/key are in the system
+store (not user store). So I am thinking of using the
+management-external-key option available on 2.3. It currently supports only
+getting the private key from the MI which is kind of limiting so I have
+added code to take certificate as well through the MI (patches available if
+its of interest to others/developers).
 
-    Error message if max-routes used incorrectly
+So here is my question: is there any issues that I should be aware of when
+the certificate and key (actually not key, only rsa-signature) are provided
+from the UI? AFAICS TLS erros are not reported back to the management so
+users using wrong certificates or keys could lead to some flakiness of the
+whole setup?
 
-    Signed-off-by: Arne Schwabe <arne@...1227...>
-    Acked-by: Gert Doering <gert@...1296...>
-    Message-Id: 1353348737-21920-1-git-send-email-arne@...1227...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/7131
-    Signed-off-by: David Sommerseth <davids@...1347...>
+I use a patched version of OpenVPN MI GUI with certificate and key stored
+in windows certificate store (under user) and accessed by cryptoapi calls
+from the UI. One nice thing about this is hardware tokens also would work
+which is otherwise hard/impossible with OpenVPN running as a service.
+
+Any comments would be greatly appreciated.
+
+Selva
+
+--bcaec554d8e4e08e3404cf5a7e00
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Hi,<br><br>I am implementing a VPN setup using OpenVPN for a few users most=
+ of who use Windows and the server also has to run on Windows. I can&#39;t =
+have users running openvpn with root privilege so I&#39;ve settled on using=
+ the service option with a management-interface client running with limited=
+ user rights.<br>
 
 
-- -- 
-kind regards,
+<br>I would prefer client keys and certificates handled at the user level w=
+ith no need for admin privilege to store and replace certificates. Cryptoap=
+icert option works only if the certificate/key are in the system store (not=
+ user store). So I am thinking of using the management-external-key option =
+available on 2.3. It currently supports only getting the private key from t=
+he MI which is kind of limiting so I have added code to take certificate as=
+ well through the MI (patches available if its of interest to others/develo=
+pers).<br>
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAlCuA5oACgkQDC186MBRfrqbYgCeJkTKA10X9ifnTg8tDrFxBZig
-Ef8An00qW7PQk93CBvAAABkly8g+WyzH
-=xGnv
------END PGP SIGNATURE-----
+<br>So here is my question: is there any issues that I should be aware of w=
+hen the certificate and key (actually not key, only rsa-signature) are prov=
+ided from the UI? AFAICS TLS erros are not reported back to the management =
+so users using wrong certificates or keys could lead to some flakiness of t=
+he whole setup?<br>
+
+
+<br>I use a patched version of OpenVPN MI GUI with certificate and key stor=
+ed in windows certificate store (under user) and accessed by cryptoapi call=
+s from the UI. One nice thing about this is hardware tokens also would work=
+ which is otherwise hard/impossible with OpenVPN running as a service.<br>
+
+
+<br>Any comments would be greatly appreciated.<br><br>Selva<br>=C2=A0<br>
+
+--bcaec554d8e4e08e3404cf5a7e00--
 
