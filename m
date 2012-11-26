@@ -1,10 +1,13 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Mon, 26 Nov 2012 15:33:09 +0100
-Message-Id: <1353940389-31075-1-git-send-email-arne@...1227...>
-In-Reply-To: <1CED409804E2164C8104F9E623B08B901323D0B158@...1436...>
-References: <1CED409804E2164C8104F9E623B08B901323D0B158@...1436...>
-Subject: [Openvpn-devel] [PATCH] Properly require --key even if
-	defined(MANAGMENT_EXTERNAL_KEY)
+Date: Mon, 26 Nov 2012 15:54:55 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20121126145454.GP22465@...1296...>
+References: <1CED409804E2164C8104F9E623B08B901323D0B184@...1436...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="68uOmRXIw+u8y5pO"
+Content-Disposition: inline
+In-Reply-To: <1CED409804E2164C8104F9E623B08B901323D0B184@...1436...>
+Subject: Re: [Openvpn-devel] [PATCH] doc/management-notes.txt: fix typo
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,45 +16,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Joachim Schipper <joachim.schipper@...1435...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-When specifying --tls-client --cert ... without a --key (or --pkcs11) option,
-OpenVPN should complain: "You must define private key file (--key)...". Ensure
-that this works even when compiling with MANAGMENT_EXTERNAL_KEY.
+--68uOmRXIw+u8y5pO
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Also fix the other instance where this logic is broken
+Hi,
 
-Orginal-Patch-by: Found by Joachim Schipper <joachim.schipper@...1435...>
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/options.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On Mon, Nov 26, 2012 at 03:31:45PM +0100, Joachim Schipper wrote:
+> Signed-off-by: Joachim Schipper <joachim.schipper@...1435...>
+> ---
+>  doc/management-notes.txt |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/doc/management-notes.txt b/doc/management-notes.txt
+> index 79e71ad..ef39b85 100644
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 5f19c27..a8843ed 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2274,7 +2274,7 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
- 	    {
- 	      notnull (options->cert_file, "certificate file (--cert) or PKCS#12 file (--pkcs12)");
- #ifdef MANAGMENT_EXTERNAL_KEY
--          if (!options->management_flags & MF_EXTERNAL_KEY)
-+          if (!(options->management_flags & MF_EXTERNAL_KEY))
- #endif
- 	      notnull (options->priv_key_file, "private key file (--key) or PKCS#12 file (--pkcs12)");
- 	    }
-@@ -2666,7 +2666,7 @@ options_postprocess_filechecks (struct options *options)
-   errs |= check_file_access (CHKACC_FILE|CHKACC_INLINE, options->extra_certs_file, R_OK,
-                              "--extra-certs");
- #ifdef MANAGMENT_EXTERNAL_KEY
--  if(!options->management_flags & MF_EXTERNAL_KEY)
-+  if(!(options->management_flags & MF_EXTERNAL_KEY))
- #endif
-      errs |= check_file_access (CHKACC_FILE|CHKACC_INLINE, options->priv_key_file, R_OK,
-                              "--key");
--- 
-1.7.9.5
+ACK, that one is nicely trivial :-)
 
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--68uOmRXIw+u8y5pO
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
+
+iQCVAwUBULOCvqkuBuNlUUl1AQKzhgP/fTxAfzHaYXJ7u5bHC7QLwrdIWYXbHsun
+iGsZBEIsNAlCva/tU7lL3Z5aWWeJRnMpV31xl1mf92PpDh/6kebpikzFr8B/8m9n
+izVV+N1fxGlNtT99t52EZO0VSeSS6oU+Fn9VjX3G/o7EXXcoW0DgcdW82/2PQb6g
+F8w2+NRkLFY=
+=PfLV
+-----END PGP SIGNATURE-----
+
+--68uOmRXIw+u8y5pO--
 
