@@ -1,13 +1,14 @@
-Date: Mon, 26 Nov 2012 15:55:39 +0100
+Date: Mon, 26 Nov 2012 19:39:42 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20121126145539.GQ22465@...1296...>
-References: <1CED409804E2164C8104F9E623B08B901323D0B186@...1436...>
+Message-ID: <20121126183941.GY22465@...1296...>
+References: <1353063726-25113-1-git-send-email-dazo@...384...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="YolNsh7G+K7zsfIR"
+	protocol="application/pgp-signature"; boundary="aTHdXM4WpLndGb15"
 Content-Disposition: inline
-In-Reply-To: <1CED409804E2164C8104F9E623B08B901323D0B186@...1436...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix typo in ./configure message
+In-Reply-To: <1353063726-25113-1-git-send-email-dazo@...384...>
+Subject: Re: [Openvpn-devel] [PATCH] Avoid recursion in
+	virtual_output_callback_func()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,26 +17,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Joachim Schipper <joachim.schipper@...1435...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: David Sommerseth <dazo@...384...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---YolNsh7G+K7zsfIR
+--aTHdXM4WpLndGb15
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Mon, Nov 26, 2012 at 03:32:21PM +0100, Joachim Schipper wrote:
-> Signed-off-by: Joachim Schipper <joachim.schipper@...1435...>
-> ---
->  configure.ac |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+On Fri, Nov 16, 2012 at 12:02:06PM +0100, David Sommerseth wrote:
+> From: David Sommerseth <davids@...1347...>
 >=20
-> diff --git a/configure.ac b/configure.ac
-> index d3d974d..2f780b7 100644
+> This solves a SEGV situation when using the management API while OpenVPN
+> is closing down.
 
-ACK, again quite trivial.
+ACK.
+
+Basically, what it does is "*any* activity of virtual_output_callback_func()
+only takes place if not in-recursion".  So in normal circumstances,=20
+nothing changes, and in the recursion case, nothing at all(!) is attempted
+- which sounds like a sane thing to do.
 
 gert
 --=20
@@ -45,19 +48,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---YolNsh7G+K7zsfIR
+--aTHdXM4WpLndGb15
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.12 (NetBSD)
 
-iQCVAwUBULOC66kuBuNlUUl1AQI97wP9Gr4BiyPvEXie98Np/e2LRjCPvrGmWvHy
-8F+Zcw7yL/HAmTWndLCIo240ga1coMsZbmO5F4Z4VX3aNNDjV4UQKuwtACTypiT5
-6vsiNa7MKRj65N2i1Q8pvfl3feIXtLN5oRTLmX+F6RInW8RpJaYW75aZdsqd6duR
-JmL3oX8KN1E=
-=95nf
+iQCVAwUBULO3bakuBuNlUUl1AQL2+gP+JecfTfOu5mdrJLKmoyZzStu94QDBoJJF
+1x7JtDZik3VNya95Cr1nk3C2l0iqfUwFciUzwTm9MwNXMC1SjYOy88Ysx2N4J23R
+1Yg/2pMVp6ScWEECZxzmwZ0nZL0Ka7V68BL1+Ke5kq27BBD4jBHIlvSCIDIyKgDP
+/0Ft5NMQa0g=
+=exBP
 -----END PGP SIGNATURE-----
 
---YolNsh7G+K7zsfIR--
+--aTHdXM4WpLndGb15--
 
