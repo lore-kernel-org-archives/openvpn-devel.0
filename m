@@ -1,14 +1,14 @@
-Date: Thu, 29 Nov 2012 14:52:17 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20121129135217.GB22465@...1296...>
-References: <1354194972-5388-1-git-send-email-dazo@...384...>
-Mime-Version: 1.0
+Message-ID: <50B7D0BD.3030401@...1114...>
+Date: Thu, 29 Nov 2012 22:16:45 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <1CED409804E2164C8104F9E623B08B901323D0B186@...1436...>
+In-Reply-To: <1CED409804E2164C8104F9E623B08B901323D0B186@...1436...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="tGYciKv+SE5JumYf"
-Content-Disposition: inline
-In-Reply-To: <1354194972-5388-1-git-send-email-dazo@...384...>
-Subject: Re: [Openvpn-devel] [PATCH] The get_default_gateway() function uses
-	warn() instead of msg()
+	protocol="application/pgp-signature";
+	boundary="------------enigB0537F46EA04EFF8DAD412CC"
+Subject: Re: [Openvpn-devel] [PATCH] Fix typo in ./configure message
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,45 +17,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <dazo@...384...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
---tGYciKv+SE5JumYf
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigB0537F46EA04EFF8DAD412CC
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+On 26/11/12 15:32, Joachim Schipper wrote:
+> Signed-off-by: Joachim Schipper <joachim.schipper@...1435...>
+> ---
+>  configure.ac |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Thu, Nov 29, 2012 at 02:16:12PM +0100, David Sommerseth wrote:
-> From: David Sommerseth <davids@...1347...>
->=20
-> A report on #openvpn pointed out that in his setup three warnings
-> appeard on the console when starting up.
+Applied to master and beta/2.3 branches.
 
-ACK.
+commit 038f0aca3077807f3fc60077e2aacffef5ba2f45 (master)
+commit 9e6b85797214187f7fb2c4255f2678f2ba74168a (beta/2.3)
+Author: Joachim Schipper <joachim.schipper@...1435...>
+Date:   Mon Nov 26 15:32:21 2012 +0100
 
-gert
+    Fix typo in ./configure message
+=20=20=20=20
+    Signed-off-by: Joachim Schipper <joachim.schipper@...1435...>
+    Acked-by: Gert Doering <gert@...1296...>
+    Message-Id: 1CED409804E2164C8104F9E623B08B901323D0B186@...1436...
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/7142
+    Signed-off-by: David Sommerseth <davids@...1347...>
+
+
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+kind regards,
 
---tGYciKv+SE5JumYf
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+David Sommerseth
+
+
+--------------enigB0537F46EA04EFF8DAD412CC
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (NetBSD)
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iQCVAwUBULdokakuBuNlUUl1AQLMBwQAjSgigH0uhyuuRGa+tlz85ooKkKZ5TSOd
-3HMaJsff3lLkECVShjm8RGkmH9ed5EM75ggbEr7/rbveJKvJU6rv8c5jdFUO8GcV
-VMBatzPR/nirS4GBoM4uNYt7bsbJRZzEKYA3FrtCR0Ehb05Bz8ibUi0j9yQgsiJu
-0bfzBwQVo4I=
-=4pVy
+iEYEARECAAYFAlC30MAACgkQDC186MBRfrrHHwCfSnaxI6ZZ5BMcnVWts2atTteq
+QjoAn372yITyIpkOKy7t79/oC66V0Qgf
+=u9r0
 -----END PGP SIGNATURE-----
 
---tGYciKv+SE5JumYf--
+--------------enigB0537F46EA04EFF8DAD412CC--
 
