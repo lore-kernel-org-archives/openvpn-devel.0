@@ -1,13 +1,14 @@
-Message-ID: <50B7D0CD.7070607@...1114...>
-Date: Thu, 29 Nov 2012 22:17:01 +0100
+Message-ID: <50B7D0D1.1090403@...1114...>
+Date: Thu, 29 Nov 2012 22:17:05 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1CED409804E2164C8104F9E623B08B901323D0B184@...1436...>
-In-Reply-To: <1CED409804E2164C8104F9E623B08B901323D0B184@...1436...>
+References: <1354194972-5388-1-git-send-email-dazo@...384...>
+In-Reply-To: <1354194972-5388-1-git-send-email-dazo@...384...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig863286E603615D69D4FD5085"
-Subject: Re: [Openvpn-devel] [PATCH] doc/management-notes.txt: fix typo
+	boundary="------------enig0FEC673803A0BDA14EE5DFBE"
+Subject: Re: [Openvpn-devel] [PATCH] The get_default_gateway() function uses
+ warn() instead of msg()
 Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -20,30 +21,59 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig863286E603615D69D4FD5085
+--------------enig0FEC673803A0BDA14EE5DFBE
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-On 26/11/12 15:31, Joachim Schipper wrote:
-> Signed-off-by: Joachim Schipper <joachim.schipper@...1435...>
+On 29/11/12 14:16, David Sommerseth wrote:
+> From: David Sommerseth <davids@...1347...>
+>=20
+> A report on #openvpn pointed out that in his setup three warnings
+> appeard on the console when starting up.
+>=20
+>     $ sudo /usr/local/etc/rc.d/openvpn restart
+>     Stopping openvpn.
+>     Waiting for PIDS: 33031.
+>     Starting openvpn.
+>     openvpn: writing to routing socket: No such process
+>     openvpn: writing to routing socket: No such process
+>     openvpn: writing to routing socket: No such process
+>     $
+>=20
+> This setup is on FreeBSD using jails with strict access to the
+> routing table.
+>=20
+> After looking at the code path, this error was found in the BSD
+> sections for get_default_gateway().  But it was using the warn()
+> call instead of msg(M_WARN|M_ERRNO, ...) which causes these
+> warnings to go to stderr instead of the log file.
+>=20
+> The warning string is also slightly modified to better explain
+> what fails.
+>=20
+> Reported-by: Thomas Steen Rasmussen <thomas@...1782...>
+> Tested-by: Thomas Steen Rasmussen <thomas@...1782...>
+> Signed-off-by: David Sommerseth <davids@...1347...>
 > ---
->  doc/management-notes.txt |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  src/openvpn/route.c |    4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
 
-Thanks!  Applied to master and beta/2.3 branches
+Applied to master and beta/2.3 branches
 
-commit 5dfdb7c010c5a32a0ec51d9266748c641cd24dba (master)
-commit 376e1432b3ce0c5fc715cfc0f9a9ea7b733b4cc0 (beta/2.3)
-Author: Joachim Schipper <joachim.schipper@...1435...>
-Date:   Mon Nov 26 15:31:45 2012 +0100
+commit b3f19cc4bec6978a128f5af3ab22d8cfa954b064 (master)
+commit 28d9e57638d66fde792a53a3eb6391ddb8bb426f (beta/2.3)
+Author: David Sommerseth <davids@...1347...>
+Date:   Thu Nov 29 14:16:12 2012 +0100
 
-    doc/management-notes.txt: fix typo
+    The get_default_gateway() function uses warn() instead of msg()
 =20=20=20=20
-    Signed-off-by: Joachim Schipper <joachim.schipper@...1435...>
-    Acked-by: Gert Doering <gert@...1296...>
-    Message-Id: 1CED409804E2164C8104F9E623B08B901323D0B184@...1436...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/7141
+    Reported-by: Thomas Steen Rasmussen <thomas@...1782...>
+    Tested-by: Thomas Steen Rasmussen <thomas@...1782...>
     Signed-off-by: David Sommerseth <davids@...1347...>
+    Acked-by: Gert Doering <gert@...1296...>
+    Message-Id: 1354194972-5388-1-git-send-email-dazo@...384...
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/7149
 
 
 --=20
@@ -52,7 +82,7 @@ kind regards,
 David Sommerseth
 
 
---------------enig863286E603615D69D4FD5085
+--------------enig0FEC673803A0BDA14EE5DFBE
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -61,10 +91,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAlC30M0ACgkQDC186MBRfrpgHwCgo33uuqfGq2gIGbQsNMA/REeD
-sP8AnRV47V2qpl95o9LkHJ4zsFTvtb4V
-=fKUz
+iEYEARECAAYFAlC30NEACgkQDC186MBRfrpdagCdHAeq5iEvGH/Ju6l6/0XvrjXT
+DAIAnR2vVexcNSpkw1zpKYRDZaDl63WO
+=ftHR
 -----END PGP SIGNATURE-----
 
---------------enig863286E603615D69D4FD5085--
+--------------enig0FEC673803A0BDA14EE5DFBE--
 
