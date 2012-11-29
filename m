@@ -1,14 +1,15 @@
-Message-ID: <50B7D0C6.60503@...1114...>
-Date: Thu, 29 Nov 2012 22:16:54 +0100
+Message-ID: <50B7D0C9.5070909@...1114...>
+Date: Thu, 29 Nov 2012 22:16:57 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1353063726-25113-1-git-send-email-dazo@...384...>
-In-Reply-To: <1353063726-25113-1-git-send-email-dazo@...384...>
+References: <1CED409804E2164C8104F9E623B08B901323D0B158@...1436...>
+	<1353940389-31075-1-git-send-email-arne@...1227...>
+In-Reply-To: <1353940389-31075-1-git-send-email-arne@...1227...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig57353116F03C7EC3B03D030B"
-Subject: Re: [Openvpn-devel] [PATCH] Avoid recursion in
-	virtual_output_callback_func()
+	boundary="------------enig6917959729803EEC2667FA20"
+Subject: Re: [Openvpn-devel] [PATCH] Properly require --key even if
+	defined(MANAGMENT_EXTERNAL_KEY)
 Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -21,56 +22,41 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig57353116F03C7EC3B03D030B
+--------------enig6917959729803EEC2667FA20
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-On 16/11/12 12:02, David Sommerseth wrote:
-> From: David Sommerseth <davids@...1347...>
+On 26/11/12 15:33, Arne Schwabe wrote:
+> When specifying --tls-client --cert ... without a --key (or --pkcs11) opt=
+ion,
+> OpenVPN should complain: "You must define private key file (--key)...". E=
+nsure
+> that this works even when compiling with MANAGMENT_EXTERNAL_KEY.
 >=20
-> This solves a SEGV situation when using the management API while OpenVPN
-> is closing down.
+> Also fix the other instance where this logic is broken
 >=20
-> The situation happens when the management socket has closed and OpenVPN
-> tries to write an error about this to the management socket.  What happens
-> is that
->=20
->  virtual_output_callback_func() is called, which then calls
->  -> man_output_list_push_finalize()
->     -> man_output_standalone()
->        -> man_write()  <-- this does the socket write
->           -> man_io_error()
->              -> x_msg()
->                 -> virtual_output_print()
->                    -> virtual_output_callback_func() (recursion start)
->=20
-> virtual_output_callback_func() do have a mechanism to avoid recursion,
-> but that did not keep the recurse counter when man_output_list_push_final=
-ize()
-> is called.
->=20
-> This patch just reorganise the recursion block to also keep the counter w=
-hile
-> calling the other functions from virtual_output_callback_func()
->=20
-> Signed-off-by: David Sommerseth <davids@...1347...>
+> Orginal-Patch-by: Found by Joachim Schipper <joachim.schipper@...1435...>
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 > ---
->  src/openvpn/manage.c |   15 ++++++++-------
->  1 file changed, 8 insertions(+), 7 deletions(-)
+>  src/openvpn/options.c |    4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Applied to master and beta/2.3 branches
+Applied to master and beta/2.3
 
-commit b2b66179f6dcc37de9582d5c3044f0357dda3df3 (master)
-commit 5541ea21691b5b39adc4bd3e1ff1af86a050c71d (beta/2.3)
-Author: David Sommerseth <davids@...1347...>
-Date:   Fri Nov 16 12:02:06 2012 +0100
+commit feca0900dd00577779ab02f2e52b41eb3dab935f (master)
+commit 9447858c38c5cf51265c7eab3445d7d5fb4f7bba (beta/2.3)
+Author: Arne Schwabe <arne@...1227...>
+Date:   Mon Nov 26 15:33:09 2012 +0100
 
-    Avoid recursion in virtual_output_callback_func()
+    Properly require --key even if defined(MANAGMENT_EXTERNAL_KEY)
 =20=20=20=20
-    Signed-off-by: David Sommerseth <davids@...1347...>
+    Orginal-Patch-by: Found by Joachim Schipper <joachim.schipper@...1783...=
+.>
+    Signed-off-by: Arne Schwabe <arne@...1227...>
     Acked-by: Gert Doering <gert@...1296...>
-    Message-Id: 1353063726-25113-1-git-send-email-dazo@...384...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/7130
+    Message-Id: 1353940389-31075-1-git-send-email-arne@...1227...
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/7143
+    Signed-off-by: David Sommerseth <davids@...1347...>
 
 
 --=20
@@ -79,7 +65,7 @@ kind regards,
 David Sommerseth
 
 
---------------enig57353116F03C7EC3B03D030B
+--------------enig6917959729803EEC2667FA20
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -88,10 +74,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAlC30MYACgkQDC186MBRfrpmOgCfdh75fQGhoA/07Yku8mLUfaWT
-ub8AoJJsAi9zU/lSe5durSEDpjW5/mbc
-=2Xnu
+iEYEARECAAYFAlC30MkACgkQDC186MBRfrrRggCglnQndtoD5nWo+qKLuyteB5TL
+4SwAoJi5/rEl0BMf3ujl/KFQ/O3TF4ao
+=LQ1Z
 -----END PGP SIGNATURE-----
 
---------------enig57353116F03C7EC3B03D030B--
+--------------enig6917959729803EEC2667FA20--
 
