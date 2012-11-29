@@ -1,8 +1,8 @@
-Message-ID: <50B616F0.8010000@...515...>
-Date: Wed, 28 Nov 2012 15:51:44 +0200
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Topics for tomorrow's company/community meeting
+From: David Sommerseth <dazo@...384...>
+Date: Thu, 29 Nov 2012 14:16:12 +0100
+Message-Id: <1354194972-5388-1-git-send-email-dazo@...384...>
+Subject: [Openvpn-devel] [PATCH] The get_default_gateway() function uses
+	warn() instead of msg()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,34 +11,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+From: David Sommerseth <davids@...1347...>
 
-We're having an IRC meeting tomorrow, starting at 18:00 UTC on
-#openvpn-devel@...1422... Current topic list is here:
+A report on #openvpn pointed out that in his setup three warnings
+appeard on the console when starting up.
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2012-11-29>
+    $ sudo /usr/local/etc/rc.d/openvpn restart
+    Stopping openvpn.
+    Waiting for PIDS: 33031.
+    Starting openvpn.
+    openvpn: writing to routing socket: No such process
+    openvpn: writing to routing socket: No such process
+    openvpn: writing to routing socket: No such process
+    $
 
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
+This setup is on FreeBSD using jails with strict access to the
+routing table.
 
-In case you can't attend the meeting, please feel free to make comments
-on the topics by responding to this email or to the summary email sent
-after the meeting. Whenever possible, we'll also respond to existing,
-related email threads.
+After looking at the code path, this error was found in the BSD
+sections for get_default_gateway().  But it was using the warn()
+call instead of msg(M_WARN|M_ERRNO, ...) which causes these
+warnings to go to stderr instead of the log file.
 
-NOTE: It's required to use a registered Freenode IRC nickname to join
-#openvpn-devel - look here for details:
+The warning string is also slightly modified to better explain
+what fails.
 
-<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
+Reported-by: Thomas Steen Rasmussen <thomas@...1782...>
+Tested-by: Thomas Steen Rasmussen <thomas@...1782...>
+Signed-off-by: David Sommerseth <davids@...1347...>
+---
+ src/openvpn/route.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 8c3d0dc..dd69d8e 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -2701,7 +2701,7 @@ get_default_gateway (struct route_gateway_info *rgi)
+ 
+   if (write(s, (char *)&m_rtmsg, l) < 0)
+     {
+-      warn("writing to routing socket");
++      msg(M_WARN|M_ERRNO, "Could not retrieve default gateway from route socket:");
+       gc_free (&gc);
+       close(s);
+       return;
+@@ -3067,7 +3067,7 @@ get_default_gateway (struct route_gateway_info *rgi)
+ 
+   if (write(s, (char *)&m_rtmsg, l) < 0)
+     {
+-      warn("writing to routing socket");
++      msg(M_WARN|M_ERRNO, "Could not retrieve default gateway from route socket:");
+       gc_free (&gc);
+       close(s);
+       return;
+-- 
+1.7.10.2
 
-irc freenode net: mattock
 
