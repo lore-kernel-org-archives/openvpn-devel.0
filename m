@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 30 Nov 2012 20:17:55 +0100
-Message-Id: <1354303076-13606-9-git-send-email-arne@...1227...>
+Date: Fri, 30 Nov 2012 20:17:52 +0100
+Message-Id: <1354303076-13606-6-git-send-email-arne@...1227...>
 In-Reply-To: <1354303076-13606-1-git-send-email-arne@...1227...>
 References: <1354303076-13606-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 09/10] When resolving fails print the error
-	message from socket layer
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH 06/10] Remove the ip-remote-hint option.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,34 +17,112 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
----
- src/openvpn/socket.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+The ip-remote-hint option overrides the remote hostname of every remote/connection entry unless management-query-remote is also defined and the management interfaces overrides the option with remote MOD … The remote name is even overridden when when management interface issues remote ACCEPT after being presented with the non overridden remote.
 
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index b4d7ea7..7b4a4fb 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -186,15 +186,15 @@ openvpn_getaddrinfo (unsigned int flags,
-       const char *fmt;
-       int level = 0;
-       
--      fmt = "RESOLVE: Cannot resolve host address: %s: %s";
-+      fmt = "RESOLVE: Cannot resolve host address: %s:%s (%s)";
-       if ((flags & GETADDR_MENTION_RESOLVE_RETRY)
-           && !resolve_retry_seconds)
--        fmt = "RESOLVE: Cannot resolve host address: %s: %s (I would have retried this name query if you had specified the --resolv-retry option.)";
-+        fmt = "RESOLVE: Cannot resolve host address: %s:%s (%s) (I would have retried this name query if you had specified the --resolv-retry option.)";
+Overriding all remote options can also be done by  management-query-remote  and issuing remote MOD or by changing alll remote statements in the configuration.
+
+Also: remove unused variable newcycle
+
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/init.c    |   17 ++---------------
+ src/openvpn/options.c |    5 -----
+ src/openvpn/options.h |    1 -
+ 3 files changed, 2 insertions(+), 21 deletions(-)
+
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 9cfb618..864ff3b 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -243,7 +243,7 @@ management_callback_remote_cmd (void *arg, const char **p)
+ }
  
-       if (!(flags & GETADDR_RESOLVE) || status == EAI_FAIL)
-         {
--          msg (msglevel, "RESOLVE: Cannot parse IP address: %s:%s",
--               print_hostname,print_servname);
-+          msg (msglevel, "RESOLVE: Cannot parse IP address: %s:%s (%s)",
-+               print_hostname,print_servname, gai_strerror(status));
-           goto done;
-         }
+ static bool
+-ce_management_query_remote (struct context *c, const char *remote_ip_hint)
++ce_management_query_remote (struct context *c)
+ {
+   struct gc_arena gc = gc_new ();
+   volatile struct connection_entry *ce = &c->options.ce;
+@@ -268,8 +268,6 @@ ce_management_query_remote (struct context *c, const char *remote_ip_hint)
+     }
+   {
+     const int flags = ((ce->flags>>CE_MAN_QUERY_REMOTE_SHIFT) & CE_MAN_QUERY_REMOTE_MASK);
+-    if (flags == CE_MAN_QUERY_REMOTE_ACCEPT && remote_ip_hint)
+-      ce->remote = remote_ip_hint;
+     ret = (flags != CE_MAN_QUERY_REMOTE_SKIP);
+   }
+   gc_free (&gc);
+@@ -319,9 +317,6 @@ next_connection_entry (struct context *c)
+       int n_cycles = 0;
  
+       do {
+-	const char *remote_ip_hint = NULL;
+-	bool newcycle = false;
+-
+ 	ce_defined = true;
+ 	if (l->no_advance && l->current >= 0)
+ 	  {
+@@ -336,16 +331,10 @@ next_connection_entry (struct context *c)
+ 		if (++n_cycles >= 2)
+ 		  msg (M_FATAL, "No usable connection profiles are present");
+ 	      }
+-
+-	    if (l->current == 0)
+-	      newcycle = true;
+ 	  }
+ 
+ 	ce = l->array[l->current];
+ 
+-	if (c->options.remote_ip_hint && !l->n_cycles)
+-	  remote_ip_hint = c->options.remote_ip_hint;
+-
+ 	if (ce->flags & CE_DISABLED)
+ 	  ce_defined = false;
+ 
+@@ -354,14 +343,12 @@ next_connection_entry (struct context *c)
+ 	if (ce_defined && management && management_query_remote_enabled(management))
+ 	  {
+ 	    /* allow management interface to override connection entry details */
+-	    ce_defined = ce_management_query_remote(c, remote_ip_hint);
++	    ce_defined = ce_management_query_remote(c);
+ 	    if (IS_SIG (c))
+ 	      break;
+ 	  }
+         else
+ #endif
+-	if (remote_ip_hint)
+-	  c->options.ce.remote = remote_ip_hint;
+ 
+ #ifdef ENABLE_MANAGEMENT
+         if (ce_defined && management && management_query_proxy_enabled (management))
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 56fee68..2dd8c9d 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -4354,11 +4354,6 @@ add_option (struct options *options,
+ 	  uninit_options (&sub);
+ 	}
+     }
+-  else if (streq (p[0], "remote-ip-hint") && p[1])
+-    {
+-      VERIFY_PERMISSION (OPT_P_GENERAL);
+-      options->remote_ip_hint = p[1];
+-    }
+ #if HTTP_PROXY_OVERRIDE
+   else if (streq (p[0], "http-proxy-override") && p[1] && p[2])
+     {
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index c16d509..fde6468 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -208,7 +208,6 @@ struct options
+ 
+   /* Networking parms */
+   struct connection_entry ce;
+-  char *remote_ip_hint;
+   struct connection_list *connection_list;
+   struct remote_list *remote_list;
+   bool force_connection_list;
 -- 
 1.7.9.5
 
