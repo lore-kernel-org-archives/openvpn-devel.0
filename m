@@ -1,15 +1,14 @@
-Message-ID: <50C9FA21.2080904@...1114...>
-Date: Thu, 13 Dec 2012 16:54:09 +0100
+Message-ID: <50C9FA2E.60906@...1114...>
+Date: Thu, 13 Dec 2012 16:54:22 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1354482672-16136-1-git-send-email-gert@...1296...>
-	<1354482672-16136-2-git-send-email-gert@...1296...>
-In-Reply-To: <1354482672-16136-2-git-send-email-gert@...1296...>
+References: <1354650174-25601-1-git-send-email-arne@...1227...>
+In-Reply-To: <1354650174-25601-1-git-send-email-arne@...1227...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig4E826C65F3C5620D9C5ECF65"
-Subject: Re: [Openvpn-devel] [PATCH] Implement --mssfix handling for IPv6
- packets.
+	boundary="------------enig3F4AAFA76BE66FEA6086EB46"
+Subject: Re: [Openvpn-devel] [PATCH] Fix the proto is used inconsistently
+ warning
 Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -22,47 +21,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig4E826C65F3C5620D9C5ECF65
+--------------enig3F4AAFA76BE66FEA6086EB46
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-On 02/12/12 22:11, Gert Doering wrote:
-> Rename process_ipv4_header() to process_ip_header() and PIPV4_MSSFIX
-> flag to PIP_MSSFIX, to make visible that it's no longer IPv4-only.
+On 04/12/12 20:42, Arne Schwabe wrote:
+> Fix the "WARNING: 'proto' is used inconsistently, local=3D'proto UDP', re=
+mote=3D'proto UDPv6'." message.
 >=20
-> Inside process_ip_header(), call out to mss_fixup_ipv6() if --mssfix
-> is active and IPv6 packet seen.
+> Note that the on wire strings are now always TCPv4 and UDPv4 to be compat=
+ible to pre2.3
 >=20
-> Rename mss_fixup() to mss_fixup_ipv4(), implement mss_fixup_ipv6().
->=20
-> Signed-off-by: Gert Doering <gert@...1296...>
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 > ---
->  src/openvpn/forward.c |   26 +++++++++++++--------
->  src/openvpn/forward.h |    4 +-
->  src/openvpn/mss.c     |   57 +++++++++++++++++++++++++++++++++++++++++++=
-+++++-
->  src/openvpn/mss.h     |    3 +-
->  src/openvpn/multi.c   |    6 ++--
->  src/openvpn/proto.c   |   19 +++++++++++++--
->  src/openvpn/proto.h   |    3 +-
->  7 files changed, 97 insertions(+), 21 deletions(-)
+>  src/openvpn/socket.c |   22 ++++++++++++++++++----
+>  1 file changed, 18 insertions(+), 4 deletions(-)
 
-Applied in master and beta/2.3
+Applied to master and beta/2.3
 
+commit 38727e09df35245ba0cfe335e23e6b43c817ce58 (master)
+commit 34bc52d611deec62e7fe56622771b58921d52176 (beta/2.3)
+Author: Arne Schwabe <arne@...1227...>
+Date:   Tue Dec 4 20:42:54 2012 +0100
 
-commit f0e8997a874a89b3fe1f82109c443232e8967b01 (master)
-commit 729c8464021ff7c41a7fbb03501465eca55909a3 (beta/2.3)
-Author: Gert Doering <gert@...1296...>
-Date:   Sun Dec 2 22:11:12 2012 +0100
+    Fix the proto is used inconsistently warning
 
-    Implement --mssfix handling for IPv6 packets.
-
-    Signed-off-by: Gert Doering <gert@...1296...>
-    Acked-by: Arne Schwabe <arne@...1227...>
-    Message-Id: 1354482672-16136-2-git-send-email-gert@...1296...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/7173
+    Signed-off-by: Arne Schwabe <arne@...1227...>
+    Acked-by: Gert Doering <gert@...1296...>
+    Message-Id: 1354650174-25601-1-git-send-email-arne@...1227...
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/7175
     Signed-off-by: David Sommerseth <davids@...1347...>
-
 
 
 --=20
@@ -71,7 +59,7 @@ kind regards,
 David Sommerseth
 
 
---------------enig4E826C65F3C5620D9C5ECF65
+--------------enig3F4AAFA76BE66FEA6086EB46
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -80,10 +68,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAlDJ+iEACgkQDC186MBRfrqbYACfaOTEzJvR+jv9biSOZVeNUrz2
-G4kAnRTsS+HBsdoNQDjHuo/MhGuxkVIN
-=xmeu
+iEYEARECAAYFAlDJ+i4ACgkQDC186MBRfroY0gCfRLqg7au2gF065AYXJ/EPj0T+
+eGEAnjdWYoFGMnPik5URCnejSLLERfJc
+=rUnQ
 -----END PGP SIGNATURE-----
 
---------------enig4E826C65F3C5620D9C5ECF65--
+--------------enig3F4AAFA76BE66FEA6086EB46--
 
