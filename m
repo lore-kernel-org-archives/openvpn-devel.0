@@ -1,12 +1,11 @@
-Message-ID: <50CB5027.8030102@...515...>
-Date: Fri, 14 Dec 2012 18:13:27 +0200
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-References: <1355497849.53643.YahooMailNeo@...1789...>
-	<D669B5E7-C8E5-4A7F-94AA-314D9CED5200@...1286...>
-In-Reply-To: <D669B5E7-C8E5-4A7F-94AA-314D9CED5200@...1286...>
-Subject: Re: [Openvpn-devel] Looking to hire consultant - help us disguise
- OpenVPN traffic from Chinese firewall
+Date: Fri, 14 Dec 2012 19:14:27 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20121214181427.GP22465@...1296...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="sFNR5OHn/l1pSZHT"
+Content-Disposition: inline
+Subject: [Openvpn-devel] coverity issue 1 - MF_EXTERNAL_KEY
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,69 +14,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+To: openvpn-devel@lists.sourceforge.net
+
+--sFNR5OHn/l1pSZHT
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: Eric Crist <ecrist@...1286...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
-Also take a look here:
+Hi,
 
-<https://community.openvpn.net/openvpn/wiki/TrafficObfuscation>
+coverity scanned our source tree, found 201 false positives (they do not
+like msg(M_ERR, ...), msg(M_WARN, ...) or msg(M_FATAL, ...)), and 3
+actual code confusions.
+
+I'm now going to post them here, to elicit comments on whether we want=20
+to fix 'em, just ignore 'em, or throw out all the source and go drink
+a beer.
+
+Issue #1:  "logical dead code", in options.c, line 2277:
+
+          else
+            {
+              notnull (options->cert_file, "certificate file (--cert) or PK=
+CS#12 file (--pkcs12)");
+#ifdef MANAGMENT_EXTERNAL_KEY
+          if (!options->management_flags & MF_EXTERNAL_KEY)
+#endif
+              notnull (options->priv_key_file, "private key file (--key) or=
+ PKCS#12 file (--pkcs12)");
+            }
+
+... if I read this right, this is "operator precedence again", and there
+need to be brackets=20
+
+#ifdef MANAGMENT_EXTERNAL_KEY
+          if (! (options->management_flags & MF_EXTERNAL_KEY) )
+#endif
+
+
+... Arne?
+
+gert
 
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-irc freenode net: mattock
+--sFNR5OHn/l1pSZHT
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
 
-> This isn't really the correct list for this.  You should have posted to -=
-users, instead.  Check out obfsproxy: https://www.torproject.org/projects/o=
-bfsproxy.html.en
->
-> Cheers
-> -----
-> Eric F Crist
->
->
->
-> On Dec 14, 2012, at 09:10:49, Ben <bennewman1978@...109...> wrote:
->
->> To whom it may concern,
->>
->> I am running a VPN service and have customers located in China who canno=
-t connect via OpenVPN due to recent changes in their firewall. We are looki=
-ng for solutions to disguise the traffic so the connections won't be reset =
-by the Chinese firewall.
->> If you are interested in working with us as a consultant on this project=
-, please reply to this email.
->>
->> Thanks
->> Ben
->> ------------------------------------------------------------------------=
-------
->> LogMeIn Rescue: Anywhere, Anytime Remote support for IT. Free Trial
->> Remotely access PCs and mobile devices and provide instant support
->> Improve your efficiency, and focus on delivering more value-add services
->> Discover what IT Professionals Know. Rescue delivers
->> http://p.sf.net/sfu/logmein_12329d2d____________________________________=
-___________
->> Openvpn-devel mailing list
->> Openvpn-devel@lists.sourceforge.net
->> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
-> -------------------------------------------------------------------------=
------
-> LogMeIn Rescue: Anywhere, Anytime Remote support for IT. Free Trial
-> Remotely access PCs and mobile devices and provide instant support
-> Improve your efficiency, and focus on delivering more value-add services
-> Discover what IT Professionals Know. Rescue delivers
-> http://p.sf.net/sfu/logmein_12329d2d
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+iQCVAwUBUMtsg6kuBuNlUUl1AQI7xAQAvRayrQsa05T53DtAanigcC3WIVMesHUk
++Wo5RmHnpDRV2V5u3jDBASoLqUCwB25RlEeEgnTN9smfOo5C4pEaI6U6mCPZrNM0
+JnreZdZqM+9VwTjrHQAL8368KQusdh+RFZg3hkerNRh9OZeovdpd1zH5zq8nNYMv
+Hht8NqHyXr0=
+=YPuX
+-----END PGP SIGNATURE-----
 
-
+--sFNR5OHn/l1pSZHT--
 
