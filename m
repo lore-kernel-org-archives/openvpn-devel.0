@@ -1,16 +1,13 @@
-Date: Sat, 15 Dec 2012 13:09:24 +0100
+Date: Sun, 16 Dec 2012 19:57:52 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20121215120924.GU22465@...1296...>
-References: <1354303076-13606-1-git-send-email-arne@...1227...>
-	<1354303076-13606-10-git-send-email-arne@...1227...>
-	<50CC4FB8.8040005@...1790...>
+Message-ID: <20121216185752.GC22465@...1296...>
+References: <20121214181427.GP22465@...1296...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="D9qdZDjLhFh4Fk+E"
+	protocol="application/pgp-signature"; boundary="mRZWcJq1s+H2FWyQ"
 Content-Disposition: inline
-In-Reply-To: <50CC4FB8.8040005@...1790...>
-Subject: Re: [Openvpn-devel] [PATCH 10/10] Implement dual stack client
-	support for OpenVPN
+In-Reply-To: <20121214181427.GP22465@...1296...>
+Subject: Re: [Openvpn-devel] coverity issue 1 - MF_EXTERNAL_KEY
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,35 +16,24 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Tore Anderson <tore@...1790...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
---D9qdZDjLhFh4Fk+E
+--mRZWcJq1s+H2FWyQ
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Sat, Dec 15, 2012 at 11:23:52AM +0100, Tore Anderson wrote:
-> * Arne Schwabe
->=20
-> > This patch contains a number of changes. I did not further spit this
-> > since some changes make only sense being changed together.
-[..]
->=20
-> ACK, I tested several different fail-over scenarios and all worked fine.
-> Also all my pre-existing VPNs (maintained by GNOME NetworkManager)
-> worked just fine.
+On Fri, Dec 14, 2012 at 07:14:27PM +0100, Gert Doering wrote:
+> Issue #1:  "logical dead code", in options.c, line 2277:
 
-Thanks for testing.
+This has already been fixed, I just hit the gap between "fix, ack, forget",
+"coverity checks" and "david pushes the fix".
 
-Nevertheless, as this is a HUGE change (and needs patch 02/10...09/10 as
-prerequisites), I'd put this in 2.4 - so we can release 2.3 "real soon now"=
-,=20
-without an even longer test/beta/RC phase.
+commit feca0900dd005777
 
-(And yes, this is important work!)
+-> issue solved.  Easy.
 
 gert
 --=20
@@ -57,19 +43,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---D9qdZDjLhFh4Fk+E
+--mRZWcJq1s+H2FWyQ
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.12 (NetBSD)
 
-iQCVAwUBUMxodKkuBuNlUUl1AQJ06QQAuqrxcUaN8qt8zK7W1a/kAFjas4KEhN72
-iaPJ5/IULQ6N1s7lWvvKFMtFauNmVYLI5nc+gjbBzlc9RAcqvKijw50B+3Mlwz2G
-mKy8phaD86ftN4q5NWugCpFL/Ewy0OKUXpsAEGfuVkMPoI/t9Ag+aUn4CFcMieBL
-MDSpetdoyn4=
-=3Csn
+iQCVAwUBUM4Zr6kuBuNlUUl1AQJi3AP+J/FcGeefixve0dX7l++iVP20XimBtJdi
+fFsHMpE60nBeyZ6F5tc5TIZsRREwQYYjRi2nS6yEEaQsLy/loD2sc8dsk54khEQx
+iK9kTNw9u7VNcVaFB8meN9vAnaYo4ZwsIlnRNygwNC6dNsjc1VEcwYoHrQkou5Ns
+rbEWlUu58W4=
+=lP+Z
 -----END PGP SIGNATURE-----
 
---D9qdZDjLhFh4Fk+E--
+--mRZWcJq1s+H2FWyQ--
 
