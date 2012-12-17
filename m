@@ -1,16 +1,13 @@
-Message-ID: <50CEEA1C.9000906@...1114...>
-Date: Mon, 17 Dec 2012 10:47:08 +0100
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <20121204203156.GH22465@...1296...>
-	<1355692520-24362-1-git-send-email-gert@...1296...>
-In-Reply-To: <1355692520-24362-1-git-send-email-gert@...1296...>
+Date: Mon, 17 Dec 2012 10:50:57 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20121217095056.GH22465@...1296...>
+References: <1355733093.65651.YahooMailNeo@...1779...>
+Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigC6E7E8E21B0437422BAB1A1A"
-Subject: Re: [Openvpn-devel] [PATCH] Fix option inconsistency warnings about
- "proto" and "tun-ipv6"
-Reply-To: openvpn-devel@lists.sourceforge.net
+	protocol="application/pgp-signature"; boundary="3McLx17X1dD5aQEg"
+Content-Disposition: inline
+In-Reply-To: <1355733093.65651.YahooMailNeo@...1779...>
+Subject: Re: [Openvpn-devel] multiple OpenVPN instances on a single tun
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,65 +16,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: ehsan enayati <ehsan_en85@...109...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC6E7E8E21B0437422BAB1A1A
-Content-Type: text/plain; charset="ISO-8859-1"
+--3McLx17X1dD5aQEg
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 16/12/12 22:15, Gert Doering wrote:
-> "tun-ipv6" is only sent in option string if running in point-to-point
-> mode (=3D not --server and not --client or --pull), because in those
-> scenarios it's usually pushed by the server, and the client does not
-> yet have it when comparing options -> needless warning.
->=20
-> Completely ignore "proto" values when comparing option strings - this
-> is in preparation for removing proto from the option string in a future
-> release, and to avoid warnings when 2.3 talks to this future release.
->=20
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
->  src/openvpn/options.c |   12 +++++++++++-
->  1 files changed, 11 insertions(+), 1 deletions(-)
+Hi,
 
-ACK.  Applied to master and beta/2.3
+On Mon, Dec 17, 2012 at 12:31:33AM -0800, ehsan enayati wrote:
+> I need to run multiple instances of OpenVPN server on just one tun device=
+ driver (say tun0) all on same subnets. I tried editing the open_tun functi=
+on in tun.c file, first instance goes well and creates tun0 but when the se=
+cond one comes along it cannot use tun0 and I get the error "ioctl(TUNSETIF=
+F):
+> Device or resource busy ". I really need this functionality. Please give =
+me some hints.
 
+There is no way to do this, as the tun device is exclusive-open - only
+a single process can open it (in theory, you might be able to open() it
+and then fork, sharing the file descriptor between all childs, but then
+you have the problem of ensuring that the "right" process gets the packets
+sent from the kernel to tun0, and there is no way to influence that).
 
-commit 3b860cf27b9374f6ebe67ff21011661f8ec391c6 (master)
-commit f21410729e68b553f391dc036c0372fd3690714e (beta/2.3)
-Author: Gert Doering <gert@...1296...>
-Date:   Sun Dec 16 22:15:20 2012 +0100
+Maybe you can explain to us what you want to achieve, and then we can=20
+see how it can be done (if at all).
 
-    Fix option inconsistency warnings about "proto" and "tun-ipv6"
-
-    Signed-off-by: Gert Doering <gert@...1296...>
-    Acked-by: David Sommerseth <davids@...1347...>
-    Message-Id: 1355692520-24362-1-git-send-email-gert@...1296...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/7194
-    Signed-off-by: David Sommerseth <davids@...1347...>
-
+gert
 
 
 --=20
-kind regards,
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-David Sommerseth
-
-
---------------enigC6E7E8E21B0437422BAB1A1A
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--3McLx17X1dD5aQEg
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+Version: GnuPG v1.4.12 (NetBSD)
 
-iEYEARECAAYFAlDO6h0ACgkQDC186MBRfrqhDwCfRfzCk9G24Zo4T6C/CLnSLE3U
-COMAnA33wQ7NRe5B94f0NwXPLslvg7W3
-=gYf8
+iQCVAwUBUM7rAKkuBuNlUUl1AQIuEwP+LSAuTDaIDlqwWxPyoLWievpNQL2Z3zxA
+HWnACyUXhUEvBNVM3vf1sSwZKMJkXgE6CUg1A/LOcyNCOHRt9BtuZT6/RhJuZlQ9
+ktD/uhtUuMnKjpJ24fwgTJbZGrcC/r4n4FQVAJ5rhXk24SSWHMNhKU+O4yy5Rpdx
+6paLlMSMqjk=
+=7Rmw
 -----END PGP SIGNATURE-----
 
---------------enigC6E7E8E21B0437422BAB1A1A--
+--3McLx17X1dD5aQEg--
 
