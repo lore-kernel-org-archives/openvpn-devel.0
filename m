@@ -1,15 +1,8 @@
-Date: Mon, 17 Dec 2012 15:06:54 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20121217140654.GR22465@...1296...>
-References: <1355733093.65651.YahooMailNeo@...1779...>
-	<50CEDEA3.7040408@...1114...>
-	<1355752871.55418.YahooMailNeo@...1767...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="g20lGaaXt4HS1Wo3"
-Content-Disposition: inline
-In-Reply-To: <1355752871.55418.YahooMailNeo@...1767...>
-Subject: Re: [Openvpn-devel] multiple OpenVPN instances on a single tun
+Date: Mon, 17 Dec 2012 23:03:55 +0100
+From: Jeremie Le Hen <jeremie@...1793...>
+Message-ID: <20121217220355.GB23292@...1794...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Fixing "passtos" on !Linux
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,45 +11,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ehsan enayati <ehsan_en85@...109...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---g20lGaaXt4HS1Wo3
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Hi!
 
-On Mon, Dec 17, 2012 at 06:01:11AM -0800, ehsan enayati wrote:
-> Thanks for your replies. I just checked OpenVPN access server
-> and saw that in "server network setting" and in protocol selection
-> you can select Multi-Daemon mode. I thinks that's what exactly I
-> need. Is it implemented via tun + routing?
+On non-Linux systems (that is I checked on FreeBSD, NetBSD, OpenBSD,
+DragonflyBSD, Darwin, Solaris and IllumOS), setsockopt(2) with the
+IP_TOS option expects a pointer to a int rather than a char.  Therefore
+this doesn't work on little-endian systems (x86 is the main victim).
 
-No idea about AS -> ask your support contacts.
+The problem is well understood, a fix has been posted by Torsten Vielhak
+on the bug tracker nearly 2 years ago but the problem has remained
+ignored, probably because the author didn't bring it to your attention.
+The patch only handled FreeBSD though.  See ticket/135.
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+I thereby kindly ask you to bring this patch in the source tree.  I
+don't know about your release procedure, but it would be really nice if
+it could hit the tree before 2.3 is released.
 
---g20lGaaXt4HS1Wo3
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+Relevant manpages:
+http://www.freebsd.org/cgi/man.cgi?query=ip&format=html
+http://netbsd.gw.com/cgi-bin/man-cgi?ip
+http://www.openbsd.org/cgi-bin/man.cgi?query=ip&format=html
+http://leaf.dragonflybsd.org/cgi/web-man?command=ip&section=ANY
+https://developer.apple.com/library/mac/#documentation/Darwin/Reference/ManPages/man4/ip.4.html
+http://docs.oracle.com/cd/E19082-01/819-2254/ip-7p/index.html
+http://illumos.org/man/7p/ip
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (NetBSD)
 
-iQCVAwUBUM8m/qkuBuNlUUl1AQJBWgP9HEKVlHNzly/aLzlvOEaZidm/4C1y3E2x
-qnLSe3XSxtzZjlTS/ll95j3nDNvjutq1FwqdizGGMPkKdjJnpSoQBeEAgaciFzob
-JDdTGLfrX2/CvHF2R5PYTWPAIJHERc23AJ7v/LaHW2R8IMoEXl4hx3PCgJmLiOdr
-0TTh1jchv8A=
-=p9gj
------END PGP SIGNATURE-----
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index 9cb01fa..07224c4 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -237,7 +237,21 @@ struct link_socket
+ 
+ #if PASSTOS_CAPABILITY
+   /* used to get/set TOS. */
++#if defined(TARGET_LINUX)
+   uint8_t ptos;
++#elif defined(TARGET_SOLARIS)
++  int ptos;
++#elif defined(TARGET_OPENBSD)
++  int ptos;
++#elif defined(TARGET_NETBSD)
++  int ptos;
++#elif defined(TARGET_FREEBSD)
++  int ptos;
++#elif defined(TARGET_DRAGONFLY)
++  int ptos;
++#elif defined(TARGET_DARWIN)
++  int ptos;
++#endif
+   bool ptos_defined;
+ #endif
 
---g20lGaaXt4HS1Wo3--
+ 
+Cheers,
+-- 
+Jeremie Le Hen                        jeremie.le-hen.org jlh.freebsd.org
+                              (emails above use SOA record-style format)
+Scientists say the world is made up of Protons, Neutrons and Electrons.
+They forgot to mention Morons.
 
