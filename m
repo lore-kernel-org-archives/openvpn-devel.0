@@ -1,15 +1,15 @@
-Message-ID: <50D2D610.5080406@...1114...>
-Date: Thu, 20 Dec 2012 10:10:40 +0100
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <20121214181815.GQ22465@...1296...>
-In-Reply-To: <20121214181815.GQ22465@...1296...>
+Date: Thu, 20 Dec 2012 12:03:47 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20121220110347.GQ22465@...1296...>
+References: <20121217220355.GB23292@...1794...>
+	<20121219212619.GN22465@...1296...>
+	<20121219221305.GS23292@...1794...>
+Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig7932DB821D5BD0B502E947F6"
-Subject: Re: [Openvpn-devel] coverity issue 2 - dead default / code cleanup
- in mtcp.c
-Reply-To: openvpn-devel@lists.sourceforge.net
+	protocol="application/pgp-signature"; boundary="7TMozD3Tun2T/vWz"
+Content-Disposition: inline
+In-Reply-To: <20121219221305.GS23292@...1794...>
+Subject: Re: [Openvpn-devel] Fixing "passtos" on !Linux
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,94 +18,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
+To: Jeremie Le Hen <jeremie@...1793...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig7932DB821D5BD0B502E947F6
-Content-Type: text/plain; charset="ISO-8859-1"
+--7TMozD3Tun2T/vWz
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 14/12/12 19:18, Gert Doering wrote:
-> Hi,
->=20
-> next one: mtcp.c, about line 470:
->=20
->   unsigned int flags =3D MTP_NONE;
->=20
->   if (TUN_OUT(c))
->     flags |=3D MTP_TUN_OUT;
->   if (LINK_OUT(c))
->     flags |=3D MTP_LINK_OUT;
->=20
->   switch (flags)
->     {
->     case MTP_TUN_OUT|MTP_LINK_OUT:
->     case MTP_TUN_OUT:
->       newaction =3D TA_TUN_WRITE;
->       break;
->     case MTP_LINK_OUT:
->       newaction =3D TA_SOCKET_WRITE;
->       break;
->     case MTP_NONE:
->       if (mi && socket_read_residual (c->c2.link_socket))
->         newaction =3D TA_SOCKET_READ_RESIDUAL;
->       else
->         multi_tcp_set_global_rw_flags (m, mi);
->       break;
->     default:
->       {
->         struct gc_arena gc =3D gc_new ();
->         msg (M_FATAL, "MULTI TCP: multi_tcp_post bad state, mi=3D%s flags=
-=3D%d",
->              multi_instance_string (mi, false, &gc),
->              flags);
->         gc_free (&gc);
->         break;
->       }
->     }
->=20
->=20
->=20
-> coverity is complaining that the "default:" clause can never be reached,
-> as all the possible values for "flags" are covered - and it's obviously
-> right.  It's not something critical, more a "code cleanup" thing.
->=20
-> (The whole usage of switch/case here reeks a bit, given that I think the=
-=20
-> code would be simpler by directly setting "newaction" depending on
-> "if (TUN_OUT(c))" etc., not bothering with "flags" in the first place)
->=20
-> Cleanup in 2.4?
+Hi,
 
-Does it hurt to have this "dead code"?  Agreed, if all the flags are
-covered, we'll never see 'default' in action.  But is it possible that
-these flags can be extended at some point in the future, which we need
-to account for?  I somehow find confidence in having this "trap" with
-msg(M_FATAL,...) for future scenarios.  Not because I strongly believe
-it will be needed, but more like a precaution (as in "Yes, we have
-thought about this")
+On Wed, Dec 19, 2012 at 11:13:05PM +0100, Jeremie Le Hen wrote:
+> > so I'd propose to #ifdef it differently, patch appended.
+>=20
+> Your patch looks fine to me.  I went that way because I grep'ed the
+> source for TARGET_ and saw similar occurences of what I did, though each
+> part contained more lines :).
 
+Yeah, some of the existing bits are seriously ugly... :)
 
+gert
 --=20
-kind regards,
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-David Sommerseth
-
-
---------------enig7932DB821D5BD0B502E947F6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--7TMozD3Tun2T/vWz
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+Version: GnuPG v1.4.12 (NetBSD)
 
-iEYEARECAAYFAlDS1hEACgkQDC186MBRfrrKaQCdEwL8DrCH2anp55vkHfxVI0jC
-VR0AniRrQnn9ajWP/snI8obb4GgNF5rz
-=8zX2
+iQCVAwUBUNLwk6kuBuNlUUl1AQLyfAQAlePfDayakqYrhfcl1wZ4GaG8dOUevnrv
+IgMx44d6PHfgAGu/mhbd7i6s0hE5IpTCBcAENTNx8GUZdVV6Nqkp0/dnlvY7X/Mu
+ipBUMcXouvsnU8yNABNTottc4hV4khimw7cwq267ly0UUCKSPgHtufi+wPHdmpuO
+6llHMSVVb/o=
+=8EPg
 -----END PGP SIGNATURE-----
 
---------------enig7932DB821D5BD0B502E947F6--
+--7TMozD3Tun2T/vWz--
 
