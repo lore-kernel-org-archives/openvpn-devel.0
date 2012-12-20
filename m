@@ -1,14 +1,14 @@
-Message-ID: <50D2D3E3.9090208@...1114...>
-Date: Thu, 20 Dec 2012 10:01:23 +0100
+Message-ID: <50D2D610.5080406@...1114...>
+Date: Thu, 20 Dec 2012 10:10:40 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <20121217220355.GB23292@...1794...>
-	<20121219212619.GN22465@...1296...>
-In-Reply-To: <20121219212619.GN22465@...1296...>
+References: <20121214181815.GQ22465@...1296...>
+In-Reply-To: <20121214181815.GQ22465@...1296...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigF4E1E7D1207789E148D95AFE"
-Subject: Re: [Openvpn-devel] Fixing "passtos" on !Linux
+	boundary="------------enig7932DB821D5BD0B502E947F6"
+Subject: Re: [Openvpn-devel] coverity issue 2 - dead default / code cleanup
+ in mtcp.c
 Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,66 +18,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF4E1E7D1207789E148D95AFE
+--------------enig7932DB821D5BD0B502E947F6
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-On 19/12/12 22:26, Gert Doering wrote:
+On 14/12/12 19:18, Gert Doering wrote:
 > Hi,
 >=20
-> On Mon, Dec 17, 2012 at 11:03:55PM +0100, Jeremie Le Hen wrote:
->> I thereby kindly ask you to bring this patch in the source tree.  I
->> don't know about your release procedure, but it would be really nice if
->> it could hit the tree before 2.3 is released.
+> next one: mtcp.c, about line 470:
 >=20
-> Thanks for the excessive links to documentation - it helps verifying
-> things.  I agree that this is a useful last-minute correction and should
-> go in (feature-ACK).
+>   unsigned int flags =3D MTP_NONE;
 >=20
-> I don't particularily like the way your patch is coded, though, as it's
-> "all of them but Linux" that have "int" here (except Windows, which uses
-> DWORD, but the docs say "use QoS API instead") - too many #ifdefs.
+>   if (TUN_OUT(c))
+>     flags |=3D MTP_TUN_OUT;
+>   if (LINK_OUT(c))
+>     flags |=3D MTP_LINK_OUT;
 >=20
-> http://msdn.microsoft.com/en-us/library/windows/desktop/ms738586(v=3Dvs.8=
-5).aspx
+>   switch (flags)
+>     {
+>     case MTP_TUN_OUT|MTP_LINK_OUT:
+>     case MTP_TUN_OUT:
+>       newaction =3D TA_TUN_WRITE;
+>       break;
+>     case MTP_LINK_OUT:
+>       newaction =3D TA_SOCKET_WRITE;
+>       break;
+>     case MTP_NONE:
+>       if (mi && socket_read_residual (c->c2.link_socket))
+>         newaction =3D TA_SOCKET_READ_RESIDUAL;
+>       else
+>         multi_tcp_set_global_rw_flags (m, mi);
+>       break;
+>     default:
+>       {
+>         struct gc_arena gc =3D gc_new ();
+>         msg (M_FATAL, "MULTI TCP: multi_tcp_post bad state, mi=3D%s flags=
+=3D%d",
+>              multi_instance_string (mi, false, &gc),
+>              flags);
+>         gc_free (&gc);
+>         break;
+>       }
+>     }
 >=20
-> so I'd propose to #ifdef it differently, patch appended.
 >=20
+>=20
+> coverity is complaining that the "default:" clause can never be reached,
+> as all the possible values for "flags" are covered - and it's obviously
+> right.  It's not something critical, more a "code cleanup" thing.
+>=20
+> (The whole usage of switch/case here reeks a bit, given that I think the=
+=20
+> code would be simpler by directly setting "newaction" depending on
+> "if (TUN_OUT(c))" etc., not bothering with "flags" in the first place)
+>=20
+> Cleanup in 2.4?
 
-> From b6e0f27b4e6965de14cf0ec3e901a52d256cc88a Mon Sep 17 00:00:00 2001
-> From: Gert Doering <gert@...1296...>
-> Date: Wed, 19 Dec 2012 22:12:41 +0100
-> Subject: [PATCH] Fix parameter type for IP_TOS setsockopt on non-Linux
->  systems.
->=20
-> Linux uses uint8_t, all BSD based stacks and Solaris use "int"  (Windows
-> documentation says "DWORD" and "do not use, use QoS API instead").
->=20
-> Bug reported and fix provided by Torsten Vielhak and Jeremie Le Hen.
->=20
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
->  src/openvpn/socket.h |    4 ++++
->  1 files changed, 4 insertions(+), 0 deletions(-)
-
-ACK.  Applied to master and beta/2.3
-
-
-commit d39f31d96378aa5eeade74670ffd9e08bf4c7234 (master)
-commit a28048a20f46f718c3df3af95e230ab72234f915 (beta/2.3)
-Author: Gert Doering <gert@...1296...>
-Date:   Wed Dec 19 22:12:41 2012 +0100
-
-    Fix parameter type for IP_TOS setsockopt on non-Linux systems.
-=20=20=20=20
-    Signed-off-by: Gert Doering <gert@...1296...>
-    Acked-by: David Sommerseth <davids@...1347...>
-    Message-Id: 20121219212619.GN22465@...1296...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/7207
-    Signed-off-by: David Sommerseth <davids@...1347...>
+Does it hurt to have this "dead code"?  Agreed, if all the flags are
+covered, we'll never see 'default' in action.  But is it possible that
+these flags can be extended at some point in the future, which we need
+to account for?  I somehow find confidence in having this "trap" with
+msg(M_FATAL,...) for future scenarios.  Not because I strongly believe
+it will be needed, but more like a precaution (as in "Yes, we have
+thought about this")
 
 
 --=20
@@ -86,7 +93,7 @@ kind regards,
 David Sommerseth
 
 
---------------enigF4E1E7D1207789E148D95AFE
+--------------enig7932DB821D5BD0B502E947F6
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -95,10 +102,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAlDS0+UACgkQDC186MBRfroWCQCgsXa2n6uiD2TvujGkxbMYpFBm
-nZYAoIgYC2mkIpFPxdAkR4FI26Tp7vFo
-=AU9n
+iEYEARECAAYFAlDS1hEACgkQDC186MBRfrrKaQCdEwL8DrCH2anp55vkHfxVI0jC
+VR0AniRrQnn9ajWP/snI8obb4GgNF5rz
+=8zX2
 -----END PGP SIGNATURE-----
 
---------------enigF4E1E7D1207789E148D95AFE--
+--------------enig7932DB821D5BD0B502E947F6--
 
