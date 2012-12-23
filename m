@@ -1,15 +1,10 @@
-Date: Fri, 21 Dec 2012 11:25:58 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20121221102558.GC22465@...1296...>
-References: <20121214181815.GQ22465@...1296...>
-	<50D2D610.5080406@...1114...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="kOwL1JAUlCcfd5RC"
-Content-Disposition: inline
-In-Reply-To: <50D2D610.5080406@...1114...>
-Subject: Re: [Openvpn-devel] coverity issue 2 - dead default / code cleanup
-	in mtcp.c
+Resent-To: openvpn-devel@lists.sourceforge.net
+Resent-Message-Id: <50D78118.1010400@...1400...>
+Message-ID: <50D6F4EA.6050504@...1227...>
+Date: Sun, 23 Dec 2012 13:11:22 +0100
+From: Arne Schwabe <arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Crash on duplicate PUSH_CONTROL message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,58 +13,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
---kOwL1JAUlCcfd5RC
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hello,
 
-Hi,
+I fear we may have to delay the final release. While debugging a problem 
+with a user of my app I found a nasty bug which causes OpenVPN to crash 
+if two PUSH_CONTROL messages are received.
 
-On Thu, Dec 20, 2012 at 10:10:40AM +0100, David Sommerseth wrote:
-> > Cleanup in 2.4?
->=20
-> Does it hurt to have this "dead code"?  Agreed, if all the flags are
-> covered, we'll never see 'default' in action.  But is it possible that
-> these flags can be extended at some point in the future, which we need
-> to account for?  I somehow find confidence in having this "trap" with
-> msg(M_FATAL,...) for future scenarios.  Not because I strongly believe
-> it will be needed, but more like a precaution (as in "Yes, we have
-> thought about this")
+from push.c:
 
-Well, I'd completely get rid of the switch/case here - we only have=20
-4 different cases, 2 of which are handled in the same subcase, so
-"setting up flags and then switch(flags), plus default: handler" seems=20
-to add more confusion than just handling possible cases directly in
-the if() statements...
+       if (!c->c2.did_pre_pull_restore)
+         {
+           pre_pull_restore (&c->options);
+           md5_state_init (&c->c2.pulled_options_state);
+           c->c2.did_pre_pull_restore = true;
+         }
 
-In general, having a "must not happen" handler to validate assumptions
-is a good thing, but if those preconditions are set by code 5 lines up,
-it's a bit over the top...
+This is executed on the first push message and initializes the md5 
+state. On further push messages (continuation or new) this is not 
+executed again.
 
-gert
+       if (apply_push_options (&c->options,
+                   &buf,
+                   permission_mask,
+                   option_types_found,
+                   c->c2.es))
+         switch (c->options.push_continuation)
+           {
+           case 0:
+           case 1:
+         md5_state_update (&c->c2.pulled_options_state, BPTR(&buf_orig), 
+BLEN(&buf_orig));
+         md5_state_final (&c->c2.pulled_options_state, 
+&c->c2.pulled_options_digest);
+         ret = PUSH_MSG_REPLY;
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+This finalizes the md5 state. leaving pulled_options_state in a 
+uninitialized or at least undefined state. If a second push message 
+after a final message is received md5_state_update will use this 
+undefined context
 
---kOwL1JAUlCcfd5RC
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+         break;
+           case 2:
+         md5_state_update (&c->c2.pulled_options_state, BPTR(&buf_orig), 
+BLEN(&buf_orig));
+         ret = PUSH_MSG_CONTINUATION;
+         break;
+           }
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (NetBSD)
+To trigger this issue there have multiple things.
 
-iQCVAwUBUNQ5NakuBuNlUUl1AQKKBwQAsqxNA8Pw3pKMVc/91sLoeDWRaaSI5XRe
-svloOC8PnxRs2S4lmKqpko4kG5fsbfjK2vENpf9Og19+3mr/+69m6sk+wYCl+U1V
-nW6EOhDOqGF3bo2gBuMYXZ7lLp1L11ffM6l5acZ4Gg38lUmeLTPak3uycBmTkCDr
-sIEcAEnQY9Y=
-=Tsmy
------END PGP SIGNATURE-----
+* A OpenVPN 2.3 server (commit 5d4f5435a421299ed047485d8d99bdf9a0d22fd1 
+allows duplicate sending of this message), you can also simply duplicate 
+the send_push_something method call to trigger this bug on clients
+* A bit flaky connection. The GSM/UMTS networks are great for this. They 
+sometimes wait a very long time to deliver the packet (like 30s) without 
+dropping packets
 
---kOwL1JAUlCcfd5RC--
+I think the bug also exists in 2.2 clients but I have not done extensive 
+checks.  Since push_control messages have no sequence number or such it 
+is difficult to determine how to only apply the push messages only once.
+
+A quick&dirty hack is to simply md5_state_init the state after the 
+md5_state_final.
+
+Arne
 
