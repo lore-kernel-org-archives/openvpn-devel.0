@@ -1,14 +1,9 @@
-Date: Tue, 8 Jan 2013 09:52:01 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20130108085201.GM22465@...1296...>
-References: <00D1D856-A942-490E-957C-1BBD71ADE4B6@...1286...>
-	<E1TsJSY-0007jC-0R@...1797...>
+Date: Tue, 8 Jan 2013 09:39:12 +0100
+From: Christian Hesse <list@...1798...>
+Message-ID: <20130108093912.7ae7c6f8@...1799...>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="brIPaX2gw1r/QD7O"
-Content-Disposition: inline
-In-Reply-To: <E1TsJSY-0007jC-0R@...1797...>
-Subject: Re: [Openvpn-devel] Correct Man Page: client-to-client
+Content-Type: multipart/mixed; boundary="MP_/Kl53sUyX8RlzBUNjL6dS7ah"
+Subject: [Openvpn-devel] fix build with automake 1.13(.1)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,46 +12,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Davide Brini <dave_br@...1278...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
---brIPaX2gw1r/QD7O
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+--MP_/Kl53sUyX8RlzBUNjL6dS7ah
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
-Hi,
+Hello everybody,
 
-On Mon, Jan 07, 2013 at 09:38:02PM +0100, Davide Brini wrote:
-> The current documentation looks correct to me. When using client-to-clien=
-t,
-> traffic is not exposed on the tun interface; when not using
-> client-to-client, traffic shows up on the tun interface and can be
-> firewalled (eg with iptales).
+AM_CONFIG_HEADER has been deprecated for some time, finally it is removed on
+automake 1.13. The attached patch replaces it with AC_CONFIG_HEADERS and
+fixes build process with latest automake. Please apply.
+-- 
+main(a){char*c=/*    Schoene Gruesse                         */"B?IJj;MEH"
+"CX:;",b;for(a/*    Chris           get my mail address:    */=0;b=c[a++];)
+putchar(b-1/(/*               gcc -o sig sig.c && ./sig    */b/42*2-3)*42);}
 
-+1
+--MP_/Kl53sUyX8RlzBUNjL6dS7ah
+Content-Type: text/x-patch
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename=openvpn_automake.patch
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+diff --git a/configure.ac b/configure.ac
+index 2f780b7..ddd322c 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -32,7 +32,7 @@ m4_include(compat.m4)
+ AC_DEFINE([OPENVPN_VERSION_RESOURCE], [PRODUCT_VERSION_RESOURCE], [Version in windows resource format])
+ 
+ AC_CONFIG_AUX_DIR([.])
+-AM_CONFIG_HEADER([config.h])
++AC_CONFIG_HEADERS([config.h])
+ AC_CONFIG_SRCDIR([src/openvpn/syshead.h])
+ AC_CONFIG_MACRO_DIR([m4])
+ AM_INIT_AUTOMAKE
 
---brIPaX2gw1r/QD7O
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (NetBSD)
-
-iQCVAwUBUOveMakuBuNlUUl1AQJA9QQAkh7fSZO8yum8s10rzL0j+GJRkz0xAEc5
-Gl1HaddAM0gU8f+VQgBH++ocj82LpjEEmKfQa/jr5GyXHx9PRCuwBpY4qyFhZk2I
-CNmnhrIdingkBm5g4LtvjlDg98gbXvXwFzPWC36yAQ8TofRoRnzpAfHImUgGjLBn
-Wv/CUhtp9Pw=
-=fqT/
------END PGP SIGNATURE-----
-
---brIPaX2gw1r/QD7O--
+--MP_/Kl53sUyX8RlzBUNjL6dS7ah--
 
