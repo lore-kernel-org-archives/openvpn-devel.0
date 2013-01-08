@@ -1,12 +1,9 @@
-Mime-Version: 1.0 (Mac OS X Mail 6.2 \(1499\))
-From: Eric Crist <ecrist@...1286...>
-In-Reply-To: <20130108085201.GM22465@...1296...>
-Date: Tue, 8 Jan 2013 07:41:59 -0600
-Message-Id: <6726F5E5-673E-4B7F-87F8-70DB881FECB6@...1286...>
-References: <00D1D856-A942-490E-957C-1BBD71ADE4B6@...1286...>
-	<E1TsJSY-0007jC-0R@...1797...>
-	<20130108085201.GM22465@...1296...>
-Subject: Re: [Openvpn-devel] Correct Man Page: client-to-client
+Message-ID: <50EC29D9.2070405@...515...>
+Date: Tue, 08 Jan 2013 16:14:49 +0200
+From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="------------060500050401090202000307"
+Subject: [Openvpn-devel] OpenVPN 2.3.0 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,51 +12,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, "openvpn-announce@lists.sourceforge.net" <openvpn-announce@lists.sourceforge.net>
+
+This is a multi-part message in MIME format.
+--------------060500050401090202000307
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
 
-I'm certain this is the behavior for TAP, but I'll do some due-dilligence a=
-nd generate a few different scenarios and verify.  It's entirely possible t=
-his behavior is only present with the TAP adapter.  I'll post my findings l=
-ater this week.
-=20
------
-Eric F Crist
+The OpenVPN community project team is proud to release OpenVPN
+2.3.0. It can be downloaded from here:
+
+<http://openvpn.net/index.php/open-source/downloads.html>
+
+This release includes two bug fixes. A full list of changes is available
+here:
+
+<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn23>
+
+The changelog is also attached to this email.
+
+For generic help use these support channels:
+
+- Official documentation:
+<http://openvpn.net/index.php/open-source/documentation/howto.html>
+- Wiki: <https://community.openvpn.net>
+- Forums: <https://forums.openvpn.net>
+- User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+- User IRC channel: #openvpn at irc.freenode.net
+
+Please report bugs and ask development questions here:
+
+- Bug tracker and Wiki: <https://community.openvpn.net>
+- Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+- Developer IRC channel: #openvpn-devel at irc.freenode.net (requires
+  Freenode registration)
+
+--=20
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
 
 
-On Jan 8, 2013, at 02:52:01, Gert Doering <gert@...1296...> wrote:
 
-> Hi,
->=20
-> On Mon, Jan 07, 2013 at 09:38:02PM +0100, Davide Brini wrote:
->> The current documentation looks correct to me. When using client-to-clie=
-nt,
->> traffic is not exposed on the tun interface; when not using
->> client-to-client, traffic shows up on the tun interface and can be
->> firewalled (eg with iptales).
->=20
-> +1
->=20
-> gert
-> --=20
-> USENET is *not* the non-clickable part of WWW!
->                                                           //www.muc.de/~g=
-ert/
-> Gert Doering - Munich, Germany                             gert@...1296...
-> fax: +49-89-35655025                        gert@...1297...
-> -------------------------------------------------------------------------=
------
-> Master SQL Server Development, Administration, T-SQL, SSAS, SSIS, SSRS
-> and more. Get SQL Server skills now (including 2012) with LearnDevNow -
-> 200+ hours of step-by-step video tutorials by Microsoft MVPs and experts.
-> SALE $99.99 this month only - learn more at:
-> http://p.sf.net/sfu/learnmore_122512_____________________________________=
-__________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+--------------060500050401090202000307
+Content-Type: text/plain; charset=UTF-8;
+ name="openvpn-2.3.0-changelog.txt"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="openvpn-2.3.0-changelog.txt"
 
+RGF2aWQgU29tbWVyc2V0aCAoMSk6CiAgICAgIFByZXBhcmluZyBmb3IgdjIuMy4wCgpHZXJ0
+IERvZXJpbmcgKDIpOgogICAgICBGaXggcGFyYW1ldGVyIHR5cGUgZm9yIElQX1RPUyBzZXRz
+b2Nrb3B0IG9uIG5vbi1MaW51eCBzeXN0ZW1zLgogICAgICBGaXggY2xpZW50IGNyYXNoIG9u
+IGRvdWJsZSBQVVNIX1JFUExZLgoK
+--------------060500050401090202000307--
 
