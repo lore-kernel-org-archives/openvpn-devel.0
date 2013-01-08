@@ -1,8 +1,14 @@
-From: Eric Crist <ecrist@...1286...>
-Message-Id: <00D1D856-A942-490E-957C-1BBD71ADE4B6@...1286...>
-Date: Mon, 7 Jan 2013 14:30:01 -0600
-Mime-Version: 1.0 (Mac OS X Mail 6.2 \(1499\))
-Subject: [Openvpn-devel] Correct Man Page: client-to-client
+Date: Tue, 8 Jan 2013 09:52:01 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20130108085201.GM22465@...1296...>
+References: <00D1D856-A942-490E-957C-1BBD71ADE4B6@...1286...>
+	<E1TsJSY-0007jC-0R@...1797...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="brIPaX2gw1r/QD7O"
+Content-Disposition: inline
+In-Reply-To: <E1TsJSY-0007jC-0R@...1797...>
+Subject: Re: [Openvpn-devel] Correct Man Page: client-to-client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,75 +17,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Davide Brini <dave_br@...1278...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--brIPaX2gw1r/QD7O
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
-This is something I've been meaning to address for quite some time, since t=
-he documentation is very, very wrong.  I'm not very good at reading the cod=
-e (yet), so please correct me if I'm wrong.  This update is based on behavi=
-or I've seen and not as much on my ability to read our source.
+Hi,
 
-The human-readable difference:
+On Mon, Jan 07, 2013 at 09:38:02PM +0100, Davide Brini wrote:
+> The current documentation looks correct to me. When using client-to-clien=
+t,
+> traffic is not exposed on the tun interface; when not using
+> client-to-client, traffic shows up on the tun interface and can be
+> firewalled (eg with iptales).
 
-=3D=3D=3D OLD =3D=3D=3D
-Because the OpenVPN server mode handles mutliple clients
-through a single tun or tap interface, it is effectively
-a router.  The --client-to-client flag tells OpenVPN
-to internally route client-to-client traffic rather than
-pushing all client-originating traffic to the TUN/TAP interface.
++1
 
-When this options is used, each client with "see" the other=20
-clients which are currently connected.  Otherwise, each client
-will only see the server.  Don't use this option if you want
-to firewall tunnel traffic using custom, per-client rules.
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-=3D=3D=3D NEW =3D=3D=3D
-Because the OpenVPN server mode handles mutliple clients
-through a single tun or tap interface, it is effectively
-a router.  The --client-to-client flag tells OpenVPN
-to allow traffic between clients connected to the VPN.  This
-also exposes the traffic between client to the TUN/TAP
-interface, allow for firewalling on a per-client basis.
+--brIPaX2gw1r/QD7O
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-When this options is used, each client with "see" the other=20
-clients which are currently connected.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
 
+iQCVAwUBUOveMakuBuNlUUl1AQJA9QQAkh7fSZO8yum8s10rzL0j+GJRkz0xAEc5
+Gl1HaddAM0gU8f+VQgBH++ocj82LpjEEmKfQa/jr5GyXHx9PRCuwBpY4qyFhZk2I
+CNmnhrIdingkBm5g4LtvjlDg98gbXvXwFzPWC36yAQ8TofRoRnzpAfHImUgGjLBn
+Wv/CUhtp9Pw=
+=fqT/
+-----END PGP SIGNATURE-----
 
-
-
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 2ed5201..009aeda 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -2987,15 +2987,13 @@ Because the OpenVPN server mode handles multiple cl=
-ients
- through a single tun or tap interface, it is effectively
- a router.  The
- .B \-\-client-to-client
--flag tells OpenVPN to internally route client-to-client
--traffic rather than pushing all client-originating traffic
--to the TUN/TAP interface.
-+flag tells OpenVPN to allow traffic between clients
-+connected to the VPN.  This also exposes the traffic between
-+clients to the TUN/TAP inteface, allowing for firewalling
-+on a per-client basis.
-=20
- When this option is used, each client will "see" the other
--clients which are currently connected.  Otherwise, each
--client will only see the server.  Don't use this option
--if you want to firewall tunnel traffic using
--custom, per-client rules.
-+clients which are currently connected.=20=20
- .\"*********************************************************
- .TP
- .B \-\-duplicate-cn
-
-
-
------
-Eric F Crist
-
-
-
+--brIPaX2gw1r/QD7O--
 
