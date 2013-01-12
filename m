@@ -1,14 +1,14 @@
-Date: Sat, 12 Jan 2013 21:13:32 +0100
+Date: Sat, 12 Jan 2013 21:33:06 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20130112201331.GH22465@...1296...>
-References: <1357994477-29981-1-git-send-email-matthias.andree@...68...>
+Message-ID: <20130112203306.GJ22465@...1296...>
+References: <CAKHO4So1G23DrZZjC33b-PqtPWXG_TXtnkCyjoXQ_oRPLtfRjw@...278...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="SJLyQBEGuwGzzkni"
+	protocol="application/pgp-signature"; boundary="r4GoM5TwEVtHIBfo"
 Content-Disposition: inline
-In-Reply-To: <1357994477-29981-1-git-send-email-matthias.andree@...68...>
-Subject: Re: [Openvpn-devel] [PATCH] Enable TCP_NODELAY configuration on
-	FreeBSD.
+In-Reply-To: <CAKHO4So1G23DrZZjC33b-PqtPWXG_TXtnkCyjoXQ_oRPLtfRjw@...278...>
+Subject: Re: [Openvpn-devel] Design or Architectural documentation of
+	openvpn client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,37 +17,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Matthias Andree <matthias.andree@...68...>
+To: Ganesh Kumar <gana.san@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---SJLyQBEGuwGzzkni
+--r4GoM5TwEVtHIBfo
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Sat, Jan 12, 2013 at 01:41:17PM +0100, Matthias Andree wrote:
-> The missing #include <netinet/tcp.h> causes a defined(TCP_NODELAY) to
-> fail.  I have added the patch to the FreeBSD ports OpenVPN 2.2.2 and
-> 2.3.0, and confirmed (with strings ... | grep) that the TCP_NODELAY code
-> is now part of the executable on amd64, and results in this log output:
+On Sat, Jan 12, 2013 at 01:44:59PM +0530, Ganesh Kumar wrote:
+>      I am very new to this group. I would like to understand how open VPN
+> client  works (code level).
+>     But i couldn't get any design document for the same. :-(
 >=20
-> Sat Jan 12 13:39:18 2013 Listening for incoming TCP connection on [undef]
-> Sat Jan 12 13:39:18 2013 Socket flags: TCP_NODELAY=3D1 succeeded
->=20
-> Obtained from: https://community.openvpn.net/openvpn/ticket/158
-> Credits to: M. Nottebrock
->=20
-> Signed-off-by: Matthias Andree <matthias.andree@...68...>
+>    If no Design or Architectural doc is available ....can you please
+> provide me steps on how to setup development env.....so that  i can setup=
+ a
+> client  and server ....on my machines and ....debug the flow ....so that i
+> can find answers to my questions
 
-ACK, "obviously logical" - needs a build test across all other platforms
-to check whether some obscure OS (like "Linux" or "Solaris" or "MinGW")
-chokes if that header is included now, but I don't expect issues.
+https://community.openvpn.net/openvpn/wiki/CodeRepositories
 
-2.3.1 and master, I'd say :-)
+If you have specific questions, feel free to just ask here or in=20
+#openvpn-devel on irc.freenode.net.
 
 gert
+
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -55,19 +52,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---SJLyQBEGuwGzzkni
+--r4GoM5TwEVtHIBfo
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.12 (NetBSD)
 
-iQCVAwUBUPHD66kuBuNlUUl1AQKEGQP9Gv+nLAFJssYZU3DMGh7ZFIK3shaFy4LI
-O7kinW+fGhW9z4AX37dzMuDgbwYxIBizaG5JW61RJFXExneKcXNMDsA4LjaQVZEf
-E0YE00s3GzE7ETqzcwswv68AxiTVMhOX1ChTCHUpAfRS91AIXQ6V6kApQMB6pfOn
-+2MGawjQU8w=
-=U2S3
+iQCVAwUBUPHIgqkuBuNlUUl1AQLDigQAo7bcoyuFfcRD1VwnkNI9xxBc+NeFQxFG
+Ak2LJa44B2P1nsaKOmh832z+2S7pu7yO3sC6MErISa+spaVzpF4rI+9gocM02qPz
+NpK3Fuh6Sz0SrKFhT5z77tDerNZxM8XyyxNs1s6pt6oIdPf+1dVh84IsH3vjs5My
+OgMftMJnmfk=
+=5eI3
 -----END PGP SIGNATURE-----
 
---SJLyQBEGuwGzzkni--
+--r4GoM5TwEVtHIBfo--
 
