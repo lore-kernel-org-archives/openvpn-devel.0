@@ -1,14 +1,15 @@
-Date: Sat, 12 Jan 2013 21:33:06 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20130112203306.GJ22465@...1296...>
-References: <CAKHO4So1G23DrZZjC33b-PqtPWXG_TXtnkCyjoXQ_oRPLtfRjw@...278...>
-Mime-Version: 1.0
+Message-ID: <50F21EB9.4080401@...68...>
+Date: Sun, 13 Jan 2013 03:40:57 +0100
+From: Matthias Andree <matthias.andree@...68...>
+MIME-Version: 1.0
+References: <1357994477-29981-1-git-send-email-matthias.andree@...68...>
+	<20130112201331.GH22465@...1296...>
+In-Reply-To: <20130112201331.GH22465@...1296...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="r4GoM5TwEVtHIBfo"
-Content-Disposition: inline
-In-Reply-To: <CAKHO4So1G23DrZZjC33b-PqtPWXG_TXtnkCyjoXQ_oRPLtfRjw@...278...>
-Subject: Re: [Openvpn-devel] Design or Architectural documentation of
-	openvpn client
+	protocol="application/pgp-signature";
+	boundary="------------enigC062EA0A0106ED5768CCD775"
+Subject: Re: [Openvpn-devel] [PATCH] Enable TCP_NODELAY configuration on
+	FreeBSD.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,54 +18,85 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Ganesh Kumar <gana.san@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
---r4GoM5TwEVtHIBfo
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigC062EA0A0106ED5768CCD775
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
-
-On Sat, Jan 12, 2013 at 01:44:59PM +0530, Ganesh Kumar wrote:
->      I am very new to this group. I would like to understand how open VPN
-> client  works (code level).
->     But i couldn't get any design document for the same. :-(
+Am 12.01.2013 21:13, schrieb Gert Doering:
+> Hi,
 >=20
->    If no Design or Architectural doc is available ....can you please
-> provide me steps on how to setup development env.....so that  i can setup=
- a
-> client  and server ....on my machines and ....debug the flow ....so that i
-> can find answers to my questions
+> On Sat, Jan 12, 2013 at 01:41:17PM +0100, Matthias Andree wrote:
+>> The missing #include <netinet/tcp.h> causes a defined(TCP_NODELAY) to
+>> fail.  I have added the patch to the FreeBSD ports OpenVPN 2.2.2 and
+>> 2.3.0, and confirmed (with strings ... | grep) that the TCP_NODELAY code
+>> is now part of the executable on amd64, and results in this log output:
+>>
+>> Sat Jan 12 13:39:18 2013 Listening for incoming TCP connection on [undef]
+>> Sat Jan 12 13:39:18 2013 Socket flags: TCP_NODELAY=3D1 succeeded
+>>
+>> Obtained from: https://community.openvpn.net/openvpn/ticket/158
+>> Credits to: M. Nottebrock
+>>
+>> Signed-off-by: Matthias Andree <matthias.andree@...68...>
+>=20
+> ACK, "obviously logical" - needs a build test across all other platforms
+> to check whether some obscure OS (like "Linux" or "Solaris" or "MinGW")
+> chokes if that header is included now, but I don't expect issues.
 
-https://community.openvpn.net/openvpn/wiki/CodeRepositories
+No need for non-FreeBSD build tests, this is the wider context
+- M. Nottebrock who added the patch to Trac had added the #include in
+the "#ifdef TARGET_FREEBSD" section so it is invisible to other systems.
 
-If you have specific questions, feel free to just ask here or in=20
-#openvpn-devel on irc.freenode.net.
+Other BSDs already include this header, I presume it was an oversight to
+omit this from FreeBSD builds, once upon a time.
 
-gert
+ #ifdef TARGET_FREEBSD
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+ #ifdef HAVE_SYS_UIO_H
+ #include <sys/uio.h>
+ #endif
 
---r4GoM5TwEVtHIBfo
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+ #ifdef HAVE_NETINET_IN_SYSTM_H
+ #include <netinet/in_systm.h>
+ #endif
+
+ #ifdef HAVE_NETINET_IP_H
+ #include <netinet/ip.h>
+ #endif
+
++#ifdef HAVE_NETINET_TCP_H
++#include <netinet/tcp.h>
++#endif
++
+ #ifdef HAVE_NET_IF_TUN_H
+ #include <net/if_tun.h>
+ #endif
+
+ #endif /* TARGET_FREEBSD */
+
+> 2.3.1 and master, I'd say :-)
+
+And 2.2.3 if that branch is still maintained.
+
+
+
+
+--------------enigC062EA0A0106ED5768CCD775
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (NetBSD)
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with undefined - http://www.enigmail.net/
 
-iQCVAwUBUPHIgqkuBuNlUUl1AQLDigQAo7bcoyuFfcRD1VwnkNI9xxBc+NeFQxFG
-Ak2LJa44B2P1nsaKOmh832z+2S7pu7yO3sC6MErISa+spaVzpF4rI+9gocM02qPz
-NpK3Fuh6Sz0SrKFhT5z77tDerNZxM8XyyxNs1s6pt6oIdPf+1dVh84IsH3vjs5My
-OgMftMJnmfk=
-=5eI3
+iEYEARECAAYFAlDyHr0ACgkQvmGDOQUufZW7pQCggIRnjqz0ODq858Ro5w0IRKdr
+W1UAn1lz9xZ+SEODgn5V1NFJba13c0kS
+=7O1I
 -----END PGP SIGNATURE-----
 
---r4GoM5TwEVtHIBfo--
+--------------enigC062EA0A0106ED5768CCD775--
 
