@@ -1,11 +1,9 @@
-Message-ID: <50F6C33F.1070405@...1227...>
-Date: Wed, 16 Jan 2013 16:11:59 +0100
-From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
-References: <CADaK0BzLjzS8x82+pqKfNH02Hde9pNVneGY5sv6W8y0qcYMDVw@...278...>
-In-Reply-To: <CADaK0BzLjzS8x82+pqKfNH02Hde9pNVneGY5sv6W8y0qcYMDVw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] OpenVpn For Android 4.0: Passing OVPN
- configuration to application through 3rd party app via Intent
+Date: Wed, 16 Jan 2013 19:54:01 +0200
+Message-ID: <CABT9mj-mg=ZOZof1kYGS9SFrt+QRC-X2Q+XA4OoLYHPZ6y-Tuw@...278...>
+From: Athanasios Douitsis <aduitsis@...277...>
+Content-Type: multipart/alternative; boundary=20cf3074d22242cc4804d36b90bc
+Subject: [Openvpn-devel] nsi file for 2.3
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,32 +12,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: openvpn-devel@lists.sourceforge.net
+
+--20cf3074d22242cc4804d36b90bc
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Alok Kulkarni <kulsuhas@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
 
-Am 16.01.13 15:32, schrieb Alok Kulkarni:
-> Hi,I am writing an Android application which needs to Connect to
-> OpenVpn server using OpnVpn for Android.
-> I need to pass OVPN configuration to OpenVpn For Android app through
-> my application.
-> I can pass the Ovpn file path(Stored on SDcard) to
-> de.blinkt.openvpn.ConfigConverter.java class through Intent , but i
-> need a more secure way as i do not want to store the configuration
-> file on SDcard. I can create the OVPN file through my application and
-> pass it to ConfigConverter class as a String using Intent
->
-> I am inserting the code changes to onStart() method in
-> ConfigConverter.java class below as well as attaching the entire java
-> file with this mail.
-Thanks for the code. While I have no doubt that this code will work I
-don't think that it is feasible to include the current form into the
-application. The code uses no authentication or validity checking which
-can lead to the confused deputy problem. I am working on more secure
-solution but cannot give you an ETA when it is done. Not that in current
-you can trigger the config import by using an application/ovpn intent
-and start the profile if you know the name.
+Hi,
 
-Arne
+Is https://github.com/OpenVPN/openvpn-build/tree/master/windows-nsis the
+correct and up-to-date nsis configuration that was used to assemble the
+"official" 2.3 windows install package ? If not, could someone please point
+me to the right repo?
+
+Best regards,
+-- 
+Athanasios Douitsis
+
+--20cf3074d22242cc4804d36b90bc
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Hi,<br><br>Is <a href=3D"https://github.com/OpenVPN/openvpn-build/tree/mast=
+er/windows-nsis">https://github.com/OpenVPN/openvpn-build/tree/master/windo=
+ws-nsis</a> the correct and up-to-date nsis configuration that was used to =
+assemble the &quot;official&quot; 2.3 windows install package ? If not, cou=
+ld someone please point me to the right repo? <br clear=3D"all">
+<br>Best regards,<br>-- <br>Athanasios Douitsis<br><br><br>
+
+--20cf3074d22242cc4804d36b90bc--
 
