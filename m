@@ -1,8 +1,8 @@
-Message-ID: <50F78297.2030801@...515...>
-Date: Wed, 16 Jan 2013 21:48:23 -0700
-From: James Yonan <james@...515...>
+From: <steffan.karger@...1435...>
+Date: Thu, 17 Jan 2013 09:23:26 +0100
+Message-ID: <1358411009-2350-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN client released for iOS
+Subject: [Openvpn-devel] PolarSSL 1.2 support for OpenVPN 2.3
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,31 +11,22 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Just wanted to let everyone know that the OpenVPN Connect client for iOS 
-has just been released and is now available in the app store.
+Hi,
 
-This is an official Apple-sanctioned OpenVPN client developed by OpenVPN 
-Technologies in collaboration with Apple.
+From PolarSSL 1.1 to 1.2 the cipher names have changed and the API changed a bit. This causes the 2.3 release of OpenVPN to be in- compatible with PolarSSL 1.2.
 
-The client is based on the new C++ OpenVPN core that is also used in the 
-OpenVPN Connect client for Android.  The C++ core is a portable, 
-lightweight class library for building OpenVPN clients and is 100% 
-protocol-compatible with the 2.x branch.
+We've prepared three patches to add support for PolarSSL 1.2 to OpenVPN 2.3. The first two patches just improve error reporting, the third patch adds the actual PolarSSL 1.2 support.
 
-The current plan is to open-source the C++ core within the coming weeks. 
-  We won't be able to open source the full iOS client because portions 
-of it use Apple-proprietary APIs to integrate with the iOS VPN 
-framework.  But we will be open-sourcing the core itself, which contains 
-all of the code for building an OpenVPN client on Linux or Mac.
+Version 1.2.0 to 1.2.2 of PolarSSL contained several issues that caused it to be unfit for use with OpenVPN. I added checks in the configure file to report an error when someone is trying to build OpenVPN against one of these PolarSSL versions.
 
-BTW, I'm going to be at FOSDEM in early February, so I look forward to 
-meeting some of you there.
+This should also close ticket #250.
 
-Enjoy,
+Kind regards,
+Steffan Karger
+Fox-IT
 
-James
 
