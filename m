@@ -1,14 +1,13 @@
-Date: Thu, 17 Jan 2013 22:34:31 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20130117213431.GN22465@...1296...>
-References: <1CED409804E2164C8104F9E623B08B901323A48384@...1436...>
-	<50F7257C.9010404@...1800...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="BB5Gmd4dKzFH7LVg"
-Content-Disposition: inline
-In-Reply-To: <50F7257C.9010404@...1800...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix --show-pkcs11-ids
+References: <CABT9mj_oAJ6sRy0_TKrWBVdN5OeTBVwC+-GmAkHbUPmpi=j5HQ@...278...>
+	<20130116101123.GU22465@...1296...>
+	<CABT9mj_MjH3Bo9tq0ahpnnA8rWh+a3UOaTH9DPgATq+ZJ_6YDQ@...278...>
+	<50F80441.6060407@...515...>
+In-Reply-To: <50F80441.6060407@...515...>
+Mime-Version: 1.0 (1.0)
+Message-Id: <994BD26D-4B6E-427E-AD47-BEA12119EDEC@...277...>
+From: Athanasios Douitsis <aduitsis@...277...>
+Date: Fri, 18 Jan 2013 00:10:41 +0200
+Subject: Re: [Openvpn-devel] compiling with visual studio
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,54 +16,106 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Mike Tancsa <mike@...1800...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+To: =?utf-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---BB5Gmd4dKzFH7LVg
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+
+
+17 =CE=99=CE=B1=CE=BD 2013, 4:01 =CE=BC.=CE=BC., =CE=BF/=CE=B7 Samuli Sepp=
+=C3=A4nen <samuli@...515...> =CE=AD=CE=B3=CF=81=CE=B1=CF=88=CE=B5:
+
+> Hi Athanasios,
+>=20
+>> Right, so this is because c99 and VS don't mix. Thanks very much Gert.
+>>=20
+>> To explain why I'm trying to do this: Our institution uses OpenVPN to
+>> provide remote access (e.g. access to electronic libraries, etc) to
+>> its users. So we used to build openvpn and package it very very
+>> similarly to the official release (we were using msys and nsis) along
+>> with a couple of our conf files. However, domake-win has been removed
+>> in 2.3 so I am trying to figure out the best way to do it. What would
+>> be ideal would be the thing that tunnelblick does with deployed mode
+>> (http://code.google.com/p/tunnelblick/wiki/cCusDeployed). The admin
+>> does not have to build anything, just open the package and drop a
+>> deploy folder to the appropriate location. Sadly the windows package
+>> does not include something similar, so lots of work need to be done to
+>> build a customized package.
+>>=20
+> I'll look into current status of openvpn-build/msvc and setup a Windows
+> buildslave to ensure it stays in working order. I really haven't touched
+> that buildsystem after doing the initial testing way back when.
+>=20
+> The official Windows packages have been cross-compiled on Ubuntu 12.04
+> 64-bit. As you used "domake-win" earlier, I'd suggest you set up a
+> cross-compilation box, too:
+>=20
+> <https://community.openvpn.net/openvpn/wiki/BuildingUsingGenericBuildsyst=
+em#Cross-compilingonNIXgenericsubdir>
+> <https://community.openvpn.net/openvpn/wiki/BuildingUsingGenericBuildsyst=
+em#CreatingaNSISinstallerwindows-nsissubdir>
+>=20
+> After the build environment has been setup, you will need to customize
+> two files:
+>=20
+> - openvpn-build/windows-nsis/build-complete.vars
+> - openvpn-build/generic/build.vars
+>=20
+> Alternatively, you can override the values in them using environment
+> variables. Most of the dependencies for openvpn-build are available here:
+>=20
+> <http://build.openvpn.net/downloads/releases>
+>=20
+> You can modify openvpn-build/windows-nsis/openvpn.nsi to install custom
+> files/directories using "File /r":
+>=20
+> <http://nsis.sourceforge.net/Docs/Chapter4.html#4.9.1.5>
+>=20
+> If you have any issues setting up a cross-compilation box, just let me kn=
+ow.
+>=20
+>> BTW, if you are referring to
+>>=20
+>> https://community.openvpn.net/openvpn/wiki/BuildingUsingGenericBuildsyst=
+em#BuildingnativelyonWindowsusingtheMSVCtoolchainmsvcsubdir
+>>=20
+>> I am sorry to say that the info on this page outdated, one has to do
+>> quite a few things differently to proceed. The biggest gripe is that
+>> the scripts that are mentioned try to download stuff directly from
+>> github but github has changed the way it exposes its files. In
+>> addition, it tries to download some files from Alon's repo and not
+>> from the official openvpn repo. And now that I mention it, I think
+>> that the github repo is not synced to the official git so 2.3 is not
+>> really available there.
+>=20
+> The build configuration can and should be changed. That said, I think
+> openvpn-build default values should make sense, i.e. work out of the
+> box. I'll send a patch that fixes this.
 
 Hi,
 
-On Wed, Jan 16, 2013 at 05:11:08PM -0500, Mike Tancsa wrote:
-> 	I have been following the steps to build OpenVPN from the sources and
-> was scratching my head as to why the prebuilt binary would work, but my
-> build from the sources would bork on --show-pkcs11-ids ?!?!   Searching
-> through the mailling list archives shows the patch below, which fixes my
-> problem.  It seems that this patch is not in the generic sources?
+First of thanks for taking the time to write a very comprehensive response,=
+ much appreciated.=20
 
-Reading through the git log for 2.3.0, it most certainly is
-(5fd3e56430678bee).
+Although I have already succeeded with the msvc build, the idea of having a=
+ dedicated vm doing building and packaging seems very agreeable. I'll be su=
+re to get back to you if there are any questions.=20
 
-> I was following the directions at
-> https://community.openvpn.net/openvpn/wiki/BuildingUsingGenericBuildsyste=
-m#Checkingoutopenvpn-buildrepository
+Best regards and thanks,
+Athanasios=20
 
-On what platform did you build, and for which target?  Which git repository
-was checked out, and which branch?
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
 
---BB5Gmd4dKzFH7LVg
-Content-Type: application/pgp-signature
-Content-Disposition: inline
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (NetBSD)
-
-iQCVAwUBUPhuZ6kuBuNlUUl1AQL1KwP/WT3qpU3ezock/bQ7E6gxxxZvMWZU8CST
-CIQoXyUmELR0UBAtdTYi2nLz5zqO1pRq+RbXEdY/1WKL/ZV4tAzDDted5DvKWwUB
-9PfgYd3kcdbDjD5CCWgVA5NxeD8CgkAAqUhSd8tS9tAg2q++HzdOF4ut5gZrJq5I
-xoBjqbu4qQU=
-=XTCN
------END PGP SIGNATURE-----
-
---BB5Gmd4dKzFH7LVg--
+>=20
+> Best regards,
+>=20
+> --=20
+> Samuli Sepp=C3=A4nen
+> Community Manager
+> OpenVPN Technologies, Inc
+>=20
+> irc freenode net: mattock
+>=20
 
