@@ -1,12 +1,14 @@
-Message-ID: <50F95EC1.7080305@...1800...>
-Date: Fri, 18 Jan 2013 09:40:01 -0500
-From: Mike Tancsa <mike@...1800...>
-MIME-Version: 1.0
-References: <1CED409804E2164C8104F9E623B08B901323A48384@...1436...>
-	<50F7257C.9010404@...1800...>
-	<20130117213431.GN22465@...1296...>
-In-Reply-To: <20130117213431.GN22465@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix --show-pkcs11-ids
+Date: Fri, 18 Jan 2013 22:22:33 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20130118212232.GZ22465@...1296...>
+References: <1358411009-2350-1-git-send-email-steffan.karger@...1435...>
+	<1358411009-2350-4-git-send-email-steffan.karger@...1435...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="MzBafMtx5eI/BDwD"
+Content-Disposition: inline
+In-Reply-To: <1358411009-2350-4-git-send-email-steffan.karger@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH 3/3] PolarSSL-1.2 support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,68 +17,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: steffan.karger@...1435...
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 1/17/2013 4:34 PM, Gert Doering wrote:
-> 
->> I was following the directions at 
->> https://community.openvpn.net/openvpn/wiki/BuildingUsingGenericBuildsystem#Checkingoutopenvpn-buildrepository
->
->> 
-> On what platform did you build, and for which target?  Which git
-> repository was checked out, and which branch?
+--MzBafMtx5eI/BDwD
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-I think the issue is that the source codes that is downloaded in the
-above URL through the git clone, does not grab 2.3, but a snapshot
-from 6 months ago.  I am cross building on Fedora, AMD64.
+Hi,
 
-%git clone https://github.com/OpenVPN/openvpn-build.git
-% cd openvpn-build/generic
-% IMAGEROOT=`pwd`/image-win32 CHOST=i686-w64-mingw32 \
-    CBUILD=x86_64-pc-linux-gnu ./build
+On Thu, Jan 17, 2013 at 09:23:29AM +0100, steffan.karger@...1435... wrote:
+>  /** Cipher is in CFB mode */
+> +#if POLARSSL_VERSION_NUMBER < 0x01020000
+>  #define OPENVPN_MODE_CFB 	POLARSSL_MODE_CFB128
+> +#else
+> +#define OPENVPN_MODE_CFB 	POLARSSL_MODE_CFB
+> +#endif
 
-Will build just fine, but the older version.
+I don't like this approach - we have way too many #ifdef's already.
 
-There also needs some manual fetching of files as URLs are out of date
-for pkcs
-FATAL: Cannot download
-https://github.com/downloads/alonbl/pkcs11-helper/pkcs11-helper-1.10.tar.bz2
-FATAL: Cannot download
-https://github.com/downloads/OpenVPN/tap-windows/tap-windows-9.9.0_master.zip
+Is there any benefit in keeping support for PolarSSL 1.1, given that
+it's not interoperable with OpenVPN's default crypto settings (blowfish)?
 
 
-If I make the following changes, I get the newer version built.
-manually fetch
-http://swupdate.openvpn.org/community/releases/openvpn-2.3.0.tar.gz
-into the openvpn-build/generic/sources
-Get rid of the 2.3_master.tar.gz file
-change the build.vars
---- build.vars.prev     2013-01-17 16:56:06.356577031 -0500
-+++ build.vars  2013-01-17 16:56:21.970578237 -0500
-@@ -5,7 +5,7 @@
- PKCS11_HELPER_VERSION="${PKCS11_HELPER_VERSION:-1.10}"
- LZO_VERSION="${LZO_VERSION:-2.05}"
- TAP_WINDOWS_VERSION="${TAP_WINDOWS_VERSION:-9.9.0_master}"
--OPENVPN_VERSION="${OPENVPN_VERSION:-2.3_master}"
-+OPENVPN_VERSION="${OPENVPN_VERSION:-2.3.0}"
- OPENVPN_GUI_VERSION="${OPENVPN_GUI_VERSION:-1.0.3}"
+So unless there are strong reasons to support both 1.1 and 1.2, I'd
+just move over to 1.2, document the requirement "anything before 1.2.3
+is not supported, period" and declare 1.1 historic...
 
- OPENSSL_URL="${OPENSSL_URL:-http://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz}"
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-and that builds the latest release.
+--MzBafMtx5eI/BDwD
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-	---Mike
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
 
+iQCVAwUBUPm9GKkuBuNlUUl1AQIqagP/TfpIhPs+jujKqYSDmzjoZIs/+aEnm3Dj
+H3ihmjbTUPNmX7tUXSyVRB2PqonGgvIamcbmlx92lcj398sGIuw9h1VmmY+TsyC9
+U3eTdnlu8kC8vFuSOXtC60TElpK7mXYY2WhrRLzTfjVqDmfilr1cqEEjCHmu8iix
+n4zh4HzOR2w=
+=kl30
+-----END PGP SIGNATURE-----
 
-
-
--- 
--------------------
-Mike Tancsa, tel +1 519 651 3400
-Sentex Communications, mike@...1800...
-Providing Internet services since 1994 www.sentex.net
-Cambridge, Ontario Canada   http://www.tancsa.com/
+--MzBafMtx5eI/BDwD--
 
