@@ -1,14 +1,10 @@
-Date: Fri, 18 Jan 2013 22:22:33 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20130118212232.GZ22465@...1296...>
-References: <1358411009-2350-1-git-send-email-steffan.karger@...1435...>
-	<1358411009-2350-4-git-send-email-steffan.karger@...1435...>
+Date: Fri, 18 Jan 2013 23:31:40 +0100
+From: Marcel =?ISO-8859-1?Q?Pennewi=DF?= <mailinglists@...1145...>
+Message-ID: <20130118233140.0e5f2742@...1801...>
+In-Reply-To: <50F78297.2030801@...515...>
+References: <50F78297.2030801@...515...>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="MzBafMtx5eI/BDwD"
-Content-Disposition: inline
-In-Reply-To: <1358411009-2350-4-git-send-email-steffan.karger@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH 3/3] PolarSSL-1.2 support
+Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN client released for iOS
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,55 +13,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: steffan.karger@...1435...
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
---MzBafMtx5eI/BDwD
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+On Wed, 16 Jan 2013 21:48:23 -0700
+James Yonan <james@...515...> wrote:
 
-Hi,
+> The client is based on the new C++ OpenVPN core that is also used in
+> the OpenVPN Connect client for Android.  The C++ core is a portable, 
+> lightweight class library for building OpenVPN clients and is 100% 
+> protocol-compatible with the 2.x branch.
 
-On Thu, Jan 17, 2013 at 09:23:29AM +0100, steffan.karger@...1435... wrote:
->  /** Cipher is in CFB mode */
-> +#if POLARSSL_VERSION_NUMBER < 0x01020000
->  #define OPENVPN_MODE_CFB 	POLARSSL_MODE_CFB128
-> +#else
-> +#define OPENVPN_MODE_CFB 	POLARSSL_MODE_CFB
-> +#endif
+It seems, that the client does not support net_gateway in pushed routes:
 
-I don't like this approach - we have way too many #ifdef's already.
+2013-01-17 16:55:59 EVENT: ASSIGN_IP
+2013-01-17 16:55:59 TUN Error: tun_builder_error: error parsing IPv4
+route: [route] [141.24.xxx.xxx] [255.255.255.255] [net_gateway] :
+tun_builder_route_error: only tunnel routes supported
+2013-01-17 16:55:59 EVENT: TUN_SETUP_FAILED tun_builder_error: error
+parsing IPv4 route: [route] [141.24.xxx.xxx] [255.255.255.255]
+[net_gateway] : tun_builder_route_error: only tunnel routes supported
+[ERR]
+2013-01-17 16:55:59 EVENT: DISCONNECTED  
 
-Is there any benefit in keeping support for PolarSSL 1.1, given that
-it's not interoperable with OpenVPN's default crypto settings (blowfish)?
+This works as expected on Win, Linux and Android 4 (reported by user
+that there are no connection issues).
 
+Will net_gateway be available in iOS-Client in future?
 
-So unless there are strong reasons to support both 1.1 and 1.2, I'd
-just move over to 1.2, document the requirement "anything before 1.2.3
-is not supported, period" and declare 1.1 historic...
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---MzBafMtx5eI/BDwD
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (NetBSD)
-
-iQCVAwUBUPm9GKkuBuNlUUl1AQIqagP/TfpIhPs+jujKqYSDmzjoZIs/+aEnm3Dj
-H3ihmjbTUPNmX7tUXSyVRB2PqonGgvIamcbmlx92lcj398sGIuw9h1VmmY+TsyC9
-U3eTdnlu8kC8vFuSOXtC60TElpK7mXYY2WhrRLzTfjVqDmfilr1cqEEjCHmu8iix
-n4zh4HzOR2w=
-=kl30
------END PGP SIGNATURE-----
-
---MzBafMtx5eI/BDwD--
+Best regards,
+Marcel
 
