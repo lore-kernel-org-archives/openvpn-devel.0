@@ -1,16 +1,12 @@
+Message-ID: <50F95EC1.7080305@...1800...>
+Date: Fri, 18 Jan 2013 09:40:01 -0500
+From: Mike Tancsa <mike@...1800...>
 MIME-Version: 1.0
-In-Reply-To: <50F9055C.8000908@...515...>
-References: <CABT9mj_oAJ6sRy0_TKrWBVdN5OeTBVwC+-GmAkHbUPmpi=j5HQ@...278...>
-	<20130116101123.GU22465@...1296...>
-	<CABT9mj_MjH3Bo9tq0ahpnnA8rWh+a3UOaTH9DPgATq+ZJ_6YDQ@...278...>
-	<50F80441.6060407@...515...>
-	<994BD26D-4B6E-427E-AD47-BEA12119EDEC@...277...>
-	<50F9055C.8000908@...515...>
-Date: Fri, 18 Jan 2013 15:05:35 +0200
-Message-ID: <CABT9mj_ruNxGR_XUSfepu3NUgfBJjXY_rWHLvBi58ovZpTGkNg@...278...>
-From: Athanasios Douitsis <aduitsis@...277...>
-Content-Type: multipart/alternative; boundary=047d7b6774d05e68ee04d38fc4e1
-Subject: Re: [Openvpn-devel] compiling with visual studio
+References: <1CED409804E2164C8104F9E623B08B901323A48384@...1436...>
+	<50F7257C.9010404@...1800...>
+	<20130117213431.GN22465@...1296...>
+In-Reply-To: <20130117213431.GN22465@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix --show-pkcs11-ids
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,139 +15,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---047d7b6774d05e68ee04d38fc4e1
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Jan 18, 2013 at 10:18 AM, Samuli Sepp=E4nen <samuli@...515...>wrote:
-
+On 1/17/2013 4:34 PM, Gert Doering wrote:
+> 
+>> I was following the directions at 
+>> https://community.openvpn.net/openvpn/wiki/BuildingUsingGenericBuildsystem#Checkingoutopenvpn-buildrepository
 >
->
-> > Hi,
-> >
-> > First of thanks for taking the time to write a very comprehensive
-> response, much appreciated.
-> >
-> > Although I have already succeeded with the msvc build, the idea of
-> having a dedicated vm doing building and packaging seems very agreeable.
-> I'll be sure to get back to you if there are any questions.
-> >
-> > Best regards and thanks,
-> > Athanasios
-> >
->
-> Hi Athanasios,
->
-> Good to hear you got msvc builds to work! Now, you mentioned that the
-> documentation about msvc building was obsolete. Could you update the
-> documentation on the Wiki or let us know which steps you needed to take
-> to get the build working?
->
+>> 
+> On what platform did you build, and for which target?  Which git
+> repository was checked out, and which branch?
+
+I think the issue is that the source codes that is downloaded in the
+above URL through the git clone, does not grab 2.3, but a snapshot
+from 6 months ago.  I am cross building on Fedora, AMD64.
+
+%git clone https://github.com/OpenVPN/openvpn-build.git
+% cd openvpn-build/generic
+% IMAGEROOT=`pwd`/image-win32 CHOST=i686-w64-mingw32 \
+    CBUILD=x86_64-pc-linux-gnu ./build
+
+Will build just fine, but the older version.
+
+There also needs some manual fetching of files as URLs are out of date
+for pkcs
+FATAL: Cannot download
+https://github.com/downloads/alonbl/pkcs11-helper/pkcs11-helper-1.10.tar.bz2
+FATAL: Cannot download
+https://github.com/downloads/OpenVPN/tap-windows/tap-windows-9.9.0_master.zip
 
 
-It was somewhat of a mess, actually. Some download URLs are invalid, so
-appropriate replacements must be found. With pkcs11-helper, I had to copy
-an older zip from an older build of mine. Trying to get the current zip
-file from alon's or opensc repo on github yields the error:
+If I make the following changes, I get the newer version built.
+manually fetch
+http://swupdate.openvpn.org/community/releases/openvpn-2.3.0.tar.gz
+into the openvpn-build/generic/sources
+Get rid of the 2.3_master.tar.gz file
+change the build.vars
+--- build.vars.prev     2013-01-17 16:56:06.356577031 -0500
++++ build.vars  2013-01-17 16:56:21.970578237 -0500
+@@ -5,7 +5,7 @@
+ PKCS11_HELPER_VERSION="${PKCS11_HELPER_VERSION:-1.10}"
+ LZO_VERSION="${LZO_VERSION:-2.05}"
+ TAP_WINDOWS_VERSION="${TAP_WINDOWS_VERSION:-9.9.0_master}"
+-OPENVPN_VERSION="${OPENVPN_VERSION:-2.3_master}"
++OPENVPN_VERSION="${OPENVPN_VERSION:-2.3.0}"
+ OPENVPN_GUI_VERSION="${OPENVPN_GUI_VERSION:-1.0.3}"
 
-NMAKE : fatal error U1073: don't know how to make 'versioninfo.res'
+ OPENSSL_URL="${OPENSSL_URL:-http://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz}"
 
-Correct me if I'm wrong, but to produce the versioninfo.res file one would
-need the versioninfo.rc file. But unfortunately the versioninfo.rc file is
-not here:
+and that builds the latest release.
 
-https://github.com/alonbl/pkcs11-helper/tree/pkcs11-helper-1.09/lib
-
-There is the versioninfo.rc.in file in the same place, but the build
-requirements are Perl and VS10, so automake is not going to be available
-right?
-
-After that it should be smooth sailing from there, apart form the fact that
-the source for openvpn 2.3 contains 2 places where c99-ish C is used. But
-you already know that.
-
-
-Kind regards,
-Athanasios
+	---Mike
 
 
 
 
->
-> --
-> Samuli Sepp=E4nen
-> Community Manager
-> OpenVPN Technologies, Inc
->
-> irc freenode net: mattock
->
->
-
-
---=20
-Athanasios Douitsis
-
---047d7b6774d05e68ee04d38fc4e1
-Content-Type: text/html; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-
-<br><br><div class=3D"gmail_quote">On Fri, Jan 18, 2013 at 10:18 AM, Samuli=
- Sepp=E4nen <span dir=3D"ltr">&lt;<a href=3D"mailto:samuli@...515..." targe=
-t=3D"_blank">samuli@...515...</a>&gt;</span> wrote:<br><blockquote class=3D=
-"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding=
--left:1ex">
-<div class=3D"im"><br>
-<br>
-&gt; Hi,<br>
-&gt;<br>
-&gt; First of thanks for taking the time to write a very comprehensive resp=
-onse, much appreciated.<br>
-&gt;<br>
-&gt; Although I have already succeeded with the msvc build, the idea of hav=
-ing a dedicated vm doing building and packaging seems very agreeable. I&#39=
-;ll be sure to get back to you if there are any questions.<br>
-&gt;<br>
-&gt; Best regards and thanks,<br>
-&gt; Athanasios<br>
-&gt;<br>
-<br>
-</div>Hi Athanasios,<br>
-<br>
-Good to hear you got msvc builds to work! Now, you mentioned that the<br>
-documentation about msvc building was obsolete. Could you update the<br>
-documentation on the Wiki or let us know which steps you needed to take<br>
-to get the build working?<br></blockquote><div><br><br>It was somewhat of a=
- mess, actually. Some download URLs are invalid, so appropriate replacement=
-s must be found. With pkcs11-helper, I had to copy an older zip from an old=
-er build of mine. Trying to get the current zip file from alon&#39;s or ope=
-nsc repo on github yields the error:<br>
-<br>NMAKE : fatal error U1073: don&#39;t know how to make &#39;versioninfo.=
-res&#39;<br><br>Correct me if I&#39;m wrong, but to produce the versioninfo=
-.res file one would need the versioninfo.rc file. But unfortunately the ver=
-sioninfo.rc file is not here:<br>
-<br><a href=3D"https://github.com/alonbl/pkcs11-helper/tree/pkcs11-helper-1=
-.09/lib">https://github.com/alonbl/pkcs11-helper/tree/pkcs11-helper-1.09/li=
-b</a><br><br>There is the <a href=3D"http://versioninfo.rc.in">versioninfo.=
-rc.in</a> file in the same place, but the build requirements are Perl and V=
-S10, so automake is not going to be available right? <br>
-<br>After that it should be smooth sailing from there, apart form the fact =
-that the source for openvpn 2.3 contains 2 places where c99-ish C is used. =
-But you already know that.<br><br><br>Kind regards,<br>Athanasios<br><br>
-<br>=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;b=
-order-left:1px #ccc solid;padding-left:1ex">
-<div class=3D"HOEnZb"><div class=3D"h5"><br>
---<br>
-Samuli Sepp=E4nen<br>
-Community Manager<br>
-OpenVPN Technologies, Inc<br>
-<br>
-irc freenode net: mattock<br>
-<br>
-</div></div></blockquote></div><br><br clear=3D"all"><br>-- <br>Athanasios =
-Douitsis<br><br><br>
-
---047d7b6774d05e68ee04d38fc4e1--
+-- 
+-------------------
+Mike Tancsa, tel +1 519 651 3400
+Sentex Communications, mike@...1800...
+Providing Internet services since 1994 www.sentex.net
+Cambridge, Ontario Canada   http://www.tancsa.com/
 
