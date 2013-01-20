@@ -1,11 +1,14 @@
-Message-ID: <50FBEC82.2050503@...68...>
-Date: Sun, 20 Jan 2013 14:09:22 +0100
-From: Matthias Andree <matthias.andree@...68...>
-MIME-Version: 1.0
-References: <1358411009-2350-1-git-send-email-steffan.karger@...1435...>
-	<1358411009-2350-4-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <1358411009-2350-4-git-send-email-steffan.karger@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH 3/3] PolarSSL-1.2 support
+Date: Sun, 20 Jan 2013 16:49:51 +0100
+From: Marcel =?ISO-8859-1?Q?Pennewi=DF?= <mailinglists@...1145...>
+Message-ID: <20130120164951.2d335b30@...1801...>
+In-Reply-To: <20120203084426.GA24955@...1296...>
+References: <20120203084426.GA24955@...1296...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=PGP-SHA1;
+	boundary="Sig_/Mddd89DsQWEG.YSmEFe6.wp";
+	protocol="application/pgp-signature"
+Subject: Re: [Openvpn-devel] IPv6 enhancement: non-/64 prefix lengths for
+ IPv6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,25 +17,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Is there any important system where requiring PolarSSL >= 1.2.3 is not
-an option, besides "admin is too lazy or can't convince his manager that
-he needs to upgrade"?
+--Sig_/Mddd89DsQWEG.YSmEFe6.wp
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
 
-This #ifdef stuff makes the whole story a bit inconcise.  It might be
-suitable for 2.3.X, but not to base 2.4 or newer releases on.
+On Fri, 3 Feb 2012 09:44:26 +0100
+Gert Doering <gert@...1296...> wrote:
 
-Barring that, I'd suggest to add stuff to fail the build with older
-PolarSSL versions and kill the PolarSSL < 1.2.3 code.  It would seem
-from the changelogs that PolarSSL 1.2.N (with N highest available) does
-away with certain design issues in earlier versions, so there is a
-compelling reason to upgrade.
+> Hi,
+>=20
+> in time for 2.3, one of the remaining open itches for the IPv6 code=20
+> is now fixed :-)  (and the changes needed turned out to be fairly
+> trivial).
 
-(I was irritated anyways that the newest released OpenVPN version would
-not work with the newest stable PolarSSL version, and am foregoing the
-PolarSSL option on the FreeBSD port - we do have an up-to-date PolarSSL,
-so it wouldn't build.)
+Using ifconfig-ipv6-pool instead of server-ipv6(-macro) does not allow
+non-/64 prefix (in current 2.3). Bug or Feature?
+
+Best regards,
+Marcel
+
+--Sig_/Mddd89DsQWEG.YSmEFe6.wp
+Content-Type: application/pgp-signature; name=signature.asc
+Content-Disposition: attachment; filename=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.19 (GNU/Linux)
+
+iEYEARECAAYFAlD8Eh8ACgkQtVaAebOoqJdGUgCggwe7Efe0ticSm9R9Fw2Ww2Jb
+Ai0An0DEJmGOBnX1i5mT/YuiU/13bPmD
+=xsDD
+-----END PGP SIGNATURE-----
+
+--Sig_/Mddd89DsQWEG.YSmEFe6.wp--
 
