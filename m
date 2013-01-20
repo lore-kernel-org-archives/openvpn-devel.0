@@ -1,12 +1,11 @@
-Date: Sun, 20 Jan 2013 12:47:59 +0100
-From: Marcel =?ISO-8859-1?Q?Pennewi=DF?= <mailinglists@...1145...>
-Message-ID: <20130120124759.292dd233@...1801...>
-In-Reply-To: <50FB897F.2090003@...515...>
-References: <50F78297.2030801@...515...>
-	<20130118233140.0e5f2742@...1801...>
-	<50FB897F.2090003@...515...>
-Mime-Version: 1.0
-Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN client released for iOS
+Message-ID: <50FBEC82.2050503@...68...>
+Date: Sun, 20 Jan 2013 14:09:22 +0100
+From: Matthias Andree <matthias.andree@...68...>
+MIME-Version: 1.0
+References: <1358411009-2350-1-git-send-email-steffan.karger@...1435...>
+	<1358411009-2350-4-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1358411009-2350-4-git-send-email-steffan.karger@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH 3/3] PolarSSL-1.2 support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +14,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-On Sat, 19 Jan 2013 23:06:55 -0700
-James Yonan <james@...515...> wrote:
+Is there any important system where requiring PolarSSL >= 1.2.3 is not
+an option, besides "admin is too lazy or can't convince his manager that
+he needs to upgrade"?
 
-> Also... You mentioned Android 4 --
+This #ifdef stuff makes the whole story a bit inconcise.  It might be
+suitable for 2.3.X, but not to base 2.4 or newer releases on.
 
-A user tested it and told me, that VPN works well. Our VPN-Server is
-inside a /16 which is routed over VPN. So without the hostroute the
-connection will die and VPN works well.
+Barring that, I'd suggest to add stuff to fail the build with older
+PolarSSL versions and kill the PolarSSL < 1.2.3 code.  It would seem
+from the changelogs that PolarSSL 1.2.N (with N highest available) does
+away with certain design issues in earlier versions, so there is a
+compelling reason to upgrade.
 
-> I don't think the Android 4 VPN
-> API has the capability to support net_gateway.  OpenVPN Connect for
-> Android definitely doesn't support it.  And looking at Arne Schwabe's
-> FAQ for ics-openvpn, in the Routing/Interface Configuration, it
-> specifically mentions net_gateway as not being supported.  I think
-> that VpnService.Builder would have to add an excludeRoute method to
-> make this possible.
-
-FAQ says, that VPNService API will create a hostroute itsself and
-OpenVPN on ICS ignores net_gateway-routes. I neither own a Android 4
-nor a iOS device to test this ;) So maybe this will work on iOS as well?
-
-Best regards,
-Marcel
+(I was irritated anyways that the newest released OpenVPN version would
+not work with the newest stable PolarSSL version, and am foregoing the
+PolarSSL option on the FreeBSD port - we do have an up-to-date PolarSSL,
+so it wouldn't build.)
 
