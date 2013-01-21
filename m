@@ -1,14 +1,18 @@
-From: <p.j.bakker@...1543...>
-Sender: "Paul Bakker" <p.j.bakker@...1548...>
-References: <1358411009-2350-1-git-send-email-steffan.karger@...1435...>	<1358411009-2350-2-git-send-email-steffan.karger@...1435...>
-	<20130121122301.GY22465@...1296...>
-In-Reply-To: <20130121122301.GY22465@...1296...>
-Date: Mon, 21 Jan 2013 14:09:14 +0100
-Message-ID: <019201cdf7d8$85d185b0$91749110$@polarssl.org>
+Message-ID: <50FD833A.3000607@...68...>
+Date: Mon, 21 Jan 2013 19:04:42 +0100
+From: Matthias Andree <matthias.andree@...68...>
 MIME-Version: 1.0
-Content-Language: nl
-Subject: Re: [Openvpn-devel] [PATCH 1/3] Improve
-	PolarSSL	key_state_read_{cipher, plain}text messages
+References: <1358411009-2350-1-git-send-email-steffan.karger@...1435...>
+	<1358411009-2350-4-git-send-email-steffan.karger@...1435...>
+	<50FBEC82.2050503@...68...>
+	<1CED409804E2164C8104F9E623B08B90133FB458E5@...1436...>
+	<20130121102317.GV22465@...1296...>
+	<20130121132330.GA22465@...1296...>
+In-Reply-To: <20130121132330.GA22465@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigF6CFAAA0027588B570A9A1DF"
+Subject: Re: [Openvpn-devel] [PATCH 3/3] PolarSSL-1.2 support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,29 +21,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: 'Gert Doering' <gert@...1296...>, steffan.karger@...1435...
-Cc: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi Gert,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigF6CFAAA0027588B570A9A1DF
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-> (Even though the design decision to call a library-specific error
-reporting
-> function "error_strerror()" is not something I find particularily well
-chosen...
-> what's wrong with "polar_strerror()"???)
+Am 21.01.2013 14:23, schrieb Gert Doering:
+> Hi,
+>=20
+> just for the sake of those not following the discussion on IRC...
+>=20
+> On Mon, Jan 21, 2013 at 11:23:17AM +0100, Gert Doering wrote:
+>> I'm more concernced about maintainability of the OpenVPN code base, and
+>> having more #ifdef in there is not the way forward.
+>=20
+> ... we have now come to some sort of conclusion on this:
+>=20
+>  - 2.3.x will support PolarSSL 1.1 and 1.2, to help people building OpenV=
+PN
+>          with PolarSSL on distributions that ship 1.1
+>=20
+>  - 2.4.x will drop support for PolarSSL 1.1, to simplify the code
 
-Nothing is wrong with that. It's PolarSSL coding standard compliant
-(https://polarssl.org/kb/development/polarssl-coding-standards)
-The PolarSSL SSL library function naming standard is 'MODULE_FUNCTION_NAME'.
-That is the cause of the current naming convention.
+Thank you.  This is a very reasonable approach - and exactly what I was
+proposing, perhaps not spelt out clearly enough.
 
-If this proves to be an issue with other implementation we will reconsider
-of course ;)
+BTW I wouldn't bother too much about distributions shipping outdated
+stuff either; if people run Debian with outdated PolarSSL, they are
+bound to also use whatever OpenVPN version Debian has packaged.
 
-Regards,
-Paul
 
+--------------enigF6CFAAA0027588B570A9A1DF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with undefined - http://www.enigmail.net/
+
+iEYEARECAAYFAlD9gzoACgkQvmGDOQUufZV2LwCgy7gAUHbrrEOkLSNQvl6rjW4F
+EroAn2knCJeFEblnzJiWdoT9Kb9TC3z+
+=NsNg
+-----END PGP SIGNATURE-----
+
+--------------enigF6CFAAA0027588B570A9A1DF--
 
