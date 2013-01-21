@@ -1,16 +1,15 @@
-Date: Mon, 21 Jan 2013 11:23:17 +0100
+Date: Mon, 21 Jan 2013 13:23:01 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20130121102317.GV22465@...1296...>
+Message-ID: <20130121122301.GY22465@...1296...>
 References: <1358411009-2350-1-git-send-email-steffan.karger@...1435...>
-	<1358411009-2350-4-git-send-email-steffan.karger@...1435...>
-	<50FBEC82.2050503@...68...>
-	<1CED409804E2164C8104F9E623B08B90133FB458E5@...1436...>
+	<1358411009-2350-2-git-send-email-steffan.karger@...1435...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ss/DXkSMw0UR6JNy"
+	protocol="application/pgp-signature"; boundary="ZM8KhnpE6nnHs8oN"
 Content-Disposition: inline
-In-Reply-To: <1CED409804E2164C8104F9E623B08B90133FB458E5@...1436...>
-Subject: Re: [Openvpn-devel] [PATCH 3/3] PolarSSL-1.2 support
+In-Reply-To: <1358411009-2350-2-git-send-email-steffan.karger@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH 1/3] Improve PolarSSL
+	key_state_read_{cipher, plain}text messages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,45 +18,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Adriaan de Jong <dejong@...1435...>
-Cc: Matthias Andree <matthias.andree@...68...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: steffan.karger@...1435...
+Cc: openvpn-devel@lists.sourceforge.net
 
---ss/DXkSMw0UR6JNy
+--ZM8KhnpE6nnHs8oN
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Mon, Jan 21, 2013 at 10:54:26AM +0100, Adriaan de Jong wrote:
-> > Barring that, I'd suggest to add stuff to fail the build with older
-> > PolarSSL versions and kill the PolarSSL < 1.2.3 code.  It would seem
-> > from the changelogs that PolarSSL 1.2.N (with N highest available) does
-> > away with certain design issues in earlier versions, so there is a
-> > compelling reason to upgrade.
+On Thu, Jan 17, 2013 at 09:23:27AM +0100, steffan.karger@...1435... wrote:
+> From: Steffan Karger <steffan.karger@...1435...>
 >=20
-> I agree that it's annoying, but I wouldn't remove support for an
-> existing, still secure version of PolarSSL in a dot-release. We
-> could mark 1.1 as deprecated, and remove it in 2.4? For the moment,
-> recent versions Debian (sid/wheezy) and Ubuntu (precise+) still
-> contain 1.1, meaning that it's a nice service for them to keep
-> support for a while.
+> Instead of logging the fact that an error occured, log the error string o=
+r (if
+> the PolarSSL build does not include this feature) the error code.
+>=20
+> Signed-off-by: Joachim Schipper <joachim.schipper@...1435...>
 
-I don't particularily care about distributions that ship old stuff - they
-can always compile with OpenSSL if they do not want to upgrade Polar to
-1.2 (not that Debian contains OpenVPN 2.3.x anyway).
+This looks good to me - ACK.
 
-I'm more concernced about maintainability of the OpenVPN code base, and
-having more #ifdef in there is not the way forward.
+Description of error_strerror() is here:
 
-> Unfortunately getting PolarSSL to work wasn't trivial due to some
-> (necessary) PolarSSL changes. We're still working on getting support
-> patches for a number of the new features ready. Adding these patches
-> to 2.3 during the RC phase would have caused to large a disruption
-> for an RC.
+https://github.com/polarssl/polarssl/blob/master/include/polarssl/error.h#L=
+91
 
-Understood, and appreciated.  OTOH, the changes are not *that* large,
-if you get rid of the #ifdefs...
+(Even though the design decision to call a library-specific error reporting
+function "error_strerror()" is not something I find particularily well
+chosen... what's wrong with "polar_strerror()"???)
 
 gert
 --=20
@@ -67,19 +56,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---ss/DXkSMw0UR6JNy
+--ZM8KhnpE6nnHs8oN
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.12 (NetBSD)
 
-iQCVAwUBUP0XFakuBuNlUUl1AQIwNQP/TCvfwfP5RsCTGlmaRs0rTqQaKjKyUAuQ
-cGNUh4WA5lEop6uVpiVdi8zaVY/nacz7AzqO5oTsV1qiqc4QzfUN2lnkjSDQZzhB
-3jl/e7gIdFk64OuKvyIycN632hkzDGTVc++OwNNt2xR5nRINtNLyQQK2mCJPH5fa
-TfWtrxatwI4=
-=NJPh
+iQCVAwUBUP0zJakuBuNlUUl1AQKLQgP/T7tUf+PAlOvLNemMTm0vDGArohQJNpnT
+/LWi+xJjmK9R4rO1clFySdNmuiAy/MVEjr/rrZ1htQe/cHzfoL22asRiR4F8t2Es
+UI6/GcvRWdYwqREm5xY6lIyq7bQ1rRrzgP0pgvqNYDE4WYbaY0P56TcLolB1rdzW
+mwdOgw9HAgc=
+=wng3
 -----END PGP SIGNATURE-----
 
---ss/DXkSMw0UR6JNy--
+--ZM8KhnpE6nnHs8oN--
 
