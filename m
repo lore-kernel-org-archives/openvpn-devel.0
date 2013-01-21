@@ -1,10 +1,17 @@
-From: <steffan.karger@...1435...>
-Date: Mon, 21 Jan 2013 14:13:27 +0100
-Message-ID: <1358774007-4881-4-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <1358774007-4881-1-git-send-email-steffan.karger@...1435...>
-References: <1358774007-4881-1-git-send-email-steffan.karger@...1435...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 3/3] Improve verify_callback messages
+Date: Mon, 21 Jan 2013 14:23:31 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20130121132330.GA22465@...1296...>
+References: <1358411009-2350-1-git-send-email-steffan.karger@...1435...>
+	<1358411009-2350-4-git-send-email-steffan.karger@...1435...>
+	<50FBEC82.2050503@...68...>
+	<1CED409804E2164C8104F9E623B08B90133FB458E5@...1436...>
+	<20130121102317.GV22465@...1296...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Ne8SEKon5qflbTg/"
+Content-Disposition: inline
+In-Reply-To: <20130121102317.GV22465@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH 3/3] PolarSSL-1.2 support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,39 +20,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Adriaan de Jong <dejong@...1435...>
+Cc: Matthias Andree <matthias.andree@...68...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-From: Steffan Karger <steffan.karger@...1435...>
+--Ne8SEKon5qflbTg/
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Print the *flags argument, which - for PolarSSL-1.2 - contains the reasons that
-the certificate failed (pre-)verification.
+Hi,
 
-Signed-off-by: Joachim Schipper <joachim.schipper@...1435...>
----
- src/openvpn/ssl_verify_polarssl.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+just for the sake of those not following the discussion on IRC...
 
-diff --git a/src/openvpn/ssl_verify_polarssl.c b/src/openvpn/ssl_verify_polarssl.c
-index 653248f..e07f2b3 100644
---- a/src/openvpn/ssl_verify_polarssl.c
-+++ b/src/openvpn/ssl_verify_polarssl.c
-@@ -63,10 +63,10 @@ verify_callback (void *session_obj, x509_cert *cert, int cert_depth,
-       char *subject = x509_get_subject(cert, &gc);
- 
-       if (subject)
--	msg (D_TLS_ERRORS, "VERIFY ERROR: depth=%d, %s", cert_depth, subject);
-+	msg (D_TLS_ERRORS, "VERIFY ERROR: depth=%d, flags=%0x, %s", cert_depth, *flags, subject);
-       else
--	msg (D_TLS_ERRORS, "VERIFY ERROR: depth=%d, could not extract X509 "
--	      "subject string from certificate", cert_depth);
-+	msg (D_TLS_ERRORS, "VERIFY ERROR: depth=%d, flags=%0x, could not extract X509 "
-+	      "subject string from certificate", *flags, cert_depth);
- 
-       /* Leave flags set to non-zero to indicate that the cert is not ok */
-     }
--- 
-1.7.9.5
+On Mon, Jan 21, 2013 at 11:23:17AM +0100, Gert Doering wrote:
+> I'm more concernced about maintainability of the OpenVPN code base, and
+> having more #ifdef in there is not the way forward.
 
+... we have now come to some sort of conclusion on this:
+
+ - 2.3.x will support PolarSSL 1.1 and 1.2, to help people building OpenVPN
+         with PolarSSL on distributions that ship 1.1
+
+ - 2.4.x will drop support for PolarSSL 1.1, to simplify the code
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--Ne8SEKon5qflbTg/
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
+
+iQCVAwUBUP1BUqkuBuNlUUl1AQKhLgQAhK0adbo12SBQbV1JKo8Njr+/MiAsTx7F
+I8qJiBKDEcquIsA0h5YA82+X64sif/t96vW+5f7+a8jDyhkb39y0+DPG91pQtAQM
+m59GnohrBdutKyJHwvwc2vFhARauBEwxbwNBBYnVTQWPh/X4Y6sAL3RT/0QwbPSD
+LoSiMJdBLms=
+=i17t
+-----END PGP SIGNATURE-----
+
+--Ne8SEKon5qflbTg/--
 
