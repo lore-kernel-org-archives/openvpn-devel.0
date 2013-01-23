@@ -1,8 +1,9 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Tue, 22 Jan 2013 12:36:53 +0100
-Message-ID: <1358854613-7150-1-git-send-email-heiko.hund@...1489...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] ignore UTF-8 byte order mark
+From: 77 77 <siren1117@...277...>
+Date: Wed, 23 Jan 2013 18:21:53 +0800
+Message-ID: <CAM2vnFOwy-1=5VzUYFnssAMavmGgFYiqO7=GiEUNs2n+EpC-BQ@...278...>
+Content-Type: multipart/mixed; boundary=14dae9cfc84a708fd604d3f21135
+Subject: [Openvpn-devel] [PATCH] OpenVPN Obfuscation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,49 +12,184 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Currently openvpn exits when reading configuration from a file
-that has an UTF-8 byte order mark (EF BB BF) at its start.
+--14dae9cfc84a708fd604d3f21135
+Content-Type: multipart/alternative; boundary=14dae9cfc84a708fd104d3f21133
 
-While it is useless to put a BOM into UTF-8 encoded files, the
-Unicode standard [1] permits it (on page 36):
+--14dae9cfc84a708fd104d3f21133
+Content-Type: text/plain; charset=UTF-8
 
-  "Use of a BOM is neither required nor recommended for UTF-8,
-  but may be encountered in contexts where UTF-8 data is converted
-  from other encoding forms that use a BOM or where the BOM is
-  used as a UTF-8 signature."
+Hi all,
 
-Notepad.exe, the default text editor on Windows, always puts the BOM
-into UTF-8 encoded files when saving them. Others may do as well.
+I wrote a patch to obfuscate OpenVPN's traffic to avoid protocol
+identification. Compared with other traffic obfuscation methods like using
+static keys or obfsproxy, it only adds one more config parameter, and
+supports both TCP and UDP. If OpenVPN releases support this, lots of
+devices will benefit from traffic obfuscation without installing additional
+softwares -- for exsample, the newly released OpenVPN Connect for iOS or
+Openvpn for Android.
 
-Just ignoring the UTF-8 BOM will make config files with UTF-8 BOM
-readable.
+The patch is based on openvpn-2.2.1, but works fine with openvpn-2.2.2.
 
-[1] http://www.unicode.org/versions/Unicode5.0.0/ch02.pdf
+-- siren1117
 
-Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+--14dae9cfc84a708fd104d3f21133
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
----
- src/openvpn/options.c |    3 +++
- 1 file changed, 3 insertions(+)
+<div dir=3D"ltr">Hi all,<div><br></div><div style>I wrote a patch to obfusc=
+ate OpenVPN&#39;s traffic to avoid protocol identification. Compared with o=
+ther traffic obfuscation methods like using static keys or obfsproxy, it on=
+ly adds one more config parameter, and supports both TCP and UDP. If OpenVP=
+N releases support this, lots of devices will benefit from traffic obfuscat=
+ion without installing additional softwares -- for exsample, the newly rele=
+ased OpenVPN Connect for iOS or Openvpn for Android.</div>
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 99f70ad..46f6f26 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3773,6 +3773,9 @@ read_config_file (struct options *options,
- 	    {
- 	      CLEAR (p);
- 	      ++line_num;
-+              /* Ignore UTF-8 BOM at start of stream */
-+              if (line_num == 1 && strncmp (line, "\xEF\xBB\xBF", 3) == 0)
-+                memmove (line, line + 3, strlen (line) - 2);
- 	      if (parse_line (line, p, SIZE (p), file, line_num, msglevel, &options->gc))
- 		{
- 		  bypass_doubledash (&p[0]);
--- 
-tg: (77fb72e..) t/0005/ignore_utf8_bom (depends on: t/0004/utf8_compatibility)
+<div style><br></div><div style>The patch is based on openvpn-2.2.1, but wo=
+rks fine with openvpn-2.2.2.</div><div style><br></div><div style>-- siren1=
+117</div></div>
+
+--14dae9cfc84a708fd104d3f21133--
+
+--14dae9cfc84a708fd604d3f21135
+Content-Type: application/octet-stream; name="openvpn-2.2.1-obfuscation.diff"
+Content-Disposition: attachment; filename="openvpn-2.2.1-obfuscation.diff"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_hcabp9d30
+
+ZGlmZiAtdXJOIG9wZW52cG4tMi4yLjEub3JpZy9jb25maWd1cmUuYWMgb3BlbnZwbi0yLjIuMS9j
+b25maWd1cmUuYWMKLS0tIG9wZW52cG4tMi4yLjEub3JpZy9jb25maWd1cmUuYWMJMjAxMi0xMC0y
+OSAxMTowODo0Ny4wMDAwMDAwMDAgKzA4MDAKKysrIG9wZW52cG4tMi4yLjEvY29uZmlndXJlLmFj
+CTIwMTMtMDEtMjMgMTU6Mjg6MTEuMDAwMDAwMDAwICswODAwCkBAIC03NzEsNiArNzcxLDcgQEAK
+ICAgICAgIGZpCiAKICAgICAgIEFDX0RFRklORShVU0VfU1NMLCAxLCBbVXNlIE9wZW5TU0wgU1NM
+IGxpYnJhcnldKQorICAgICAgQUNfREVGSU5FKFVTRV9PQkZVU0NBVElPTiwgMSwgW1VzZSBPYmZ1
+c2NhdGlvbl0pCiAgICBmaQogZmkKIApkaWZmIC11ck4gb3BlbnZwbi0yLjIuMS5vcmlnL2Zvcndh
+cmQuYyBvcGVudnBuLTIuMi4xL2ZvcndhcmQuYwotLS0gb3BlbnZwbi0yLjIuMS5vcmlnL2Zvcndh
+cmQuYwkyMDEyLTEwLTI5IDExOjA4OjQ3LjAwMDAwMDAwMCArMDgwMAorKysgb3BlbnZwbi0yLjIu
+MS9mb3J3YXJkLmMJMjAxMi0xMi0yOSAxNTo0MjozOC4wMDAwMDAwMDAgKzA4MDAKQEAgLTYwMiw2
+ICs2MDIsMjIgQEAKICAgICB0dl9hZGQgKCZjLT5jMi50aW1ldmFsLCAmYy0+YzIudGltZW91dF9y
+YW5kb21fY29tcG9uZW50KTsKIH0KIAorI2lmZGVmIFVTRV9PQkZVU0NBVElPTgorCitzdGF0aWMg
+aW5saW5lIHZvaWQKK29iZnVzY2F0aW9uX3Bvc3Rwcm9jZXNzX2luY29taW5nX2xpbmsoc3RydWN0
+IGNvbnRleHQgKmMpCit7CisgIG9iZnVzY2F0aW9uX3Byb2Nlc3NfaW5jb21pbmcgKGMpOworfQor
+CitzdGF0aWMgaW5saW5lIHZvaWQKK29iZnVzY2F0aW9uX3ByZXByb2Nlc3Nfb3V0Z29pbmdfbGlu
+ayAoc3RydWN0IGNvbnRleHQgKmMpCit7CisgIG9iZnVzY2F0aW9uX3Byb2Nlc3Nfb3V0Z29pbmcg
+KGMpOworfQorCisjZW5kaWYgLyogVVNFX09CRlVTQ0FUSU9OICovCisKICNpZmRlZiBFTkFCTEVf
+U09DS1MKIAogLyoKQEAgLTcxOCw2ICs3MzQsMTAgQEAKICAgc29ja3NfcG9zdHByb2Nlc3NfaW5j
+b21pbmdfbGluayAoYyk7CiAjZW5kaWYKIAorI2lmZGVmIFVTRV9PQkZVU0NBVElPTgorICBvYmZ1
+c2NhdGlvbl9wb3N0cHJvY2Vzc19pbmNvbWluZ19saW5rIChjKTsKKyNlbmRpZgorCiAgIHBlcmZf
+cG9wICgpOwogfQogCkBAIC0xMTA2LDYgKzExMjYsMTAgQEAKIAkgICAgICAgcHJpbnRfbGlua19z
+b2NrZXRfYWN0dWFsIChjLT5jMi50b19saW5rX2FkZHIsICZnYyksCiAJICAgICAgIFBST1RPX0RV
+TVAgKCZjLT5jMi50b19saW5rLCAmZ2MpKTsKIAorI2lmZGVmIFVTRV9PQkZVU0NBVElPTgorICAg
+ICAgb2JmdXNjYXRpb25fcHJlcHJvY2Vzc19vdXRnb2luZ19saW5rIChjKTsKKyNlbmRpZgorCiAJ
+ICAvKiBQYWNrZXQgc2VuZCBjb21wbGV4aWZpZWQgYnkgcG9zc2libGUgU29ja3M1IHVzYWdlICov
+CiAJICB7CiAJICAgIHN0cnVjdCBsaW5rX3NvY2tldF9hY3R1YWwgKnRvX2FkZHIgPSBjLT5jMi50
+b19saW5rX2FkZHI7CmRpZmYgLXVyTiBvcGVudnBuLTIuMi4xLm9yaWcvTWFrZWZpbGUuYW0gb3Bl
+bnZwbi0yLjIuMS9NYWtlZmlsZS5hbQotLS0gb3BlbnZwbi0yLjIuMS5vcmlnL01ha2VmaWxlLmFt
+CTIwMTEtMDYtMjQgMTQ6MTM6MzguMDAwMDAwMDAwICswODAwCisrKyBvcGVudnBuLTIuMi4xL01h
+a2VmaWxlLmFtCTIwMTItMTItMjkgMTU6MjA6MjQuMDAwMDAwMDAwICswODAwCkBAIC0xNDIsNyAr
+MTQyLDggQEAKIAlzeXNoZWFkLmggXAogCXR1bi5jIHR1bi5oIFwKIAl3aW4zMi5oIHdpbjMyLmMg
+XAotCWNyeXB0b2FwaS5oIGNyeXB0b2FwaS5jCisJY3J5cHRvYXBpLmggY3J5cHRvYXBpLmMgXAor
+CW9iZnVzY2F0aW9uLmMgb2JmdXNjYXRpb24uaAogCiBub2Rpc3Rfb3BlbnZwbl9TT1VSQ0VTID0g
+Y29uZmlndXJlLmgKIG9wdGlvbnMuJChPQkpFWFQpOiBjb25maWd1cmUuaApkaWZmIC11ck4gb3Bl
+bnZwbi0yLjIuMS5vcmlnL29iZnVzY2F0aW9uLmMgb3BlbnZwbi0yLjIuMS9vYmZ1c2NhdGlvbi5j
+Ci0tLSBvcGVudnBuLTIuMi4xLm9yaWcvb2JmdXNjYXRpb24uYwkxOTcwLTAxLTAxIDA4OjAwOjAw
+LjAwMDAwMDAwMCArMDgwMAorKysgb3BlbnZwbi0yLjIuMS9vYmZ1c2NhdGlvbi5jCTIwMTMtMDEt
+MjMgMTM6MDg6MjguMDAwMDAwMDAwICswODAwCkBAIC0wLDAgKzEsNjYgQEAKKy8qCisgKiAgT3Bl
+blZQTiAtLSBBbiBhcHBsaWNhdGlvbiB0byBzZWN1cmVseSB0dW5uZWwgSVAgbmV0d29ya3MKKyAq
+ICAgICAgICAgICAgIG92ZXIgYSBzaW5nbGUgVENQL1VEUCBwb3J0LCB3aXRoIHN1cHBvcnQgZm9y
+IFNTTC9UTFMtYmFzZWQKKyAqICAgICAgICAgICAgIHNlc3Npb24gYXV0aGVudGljYXRpb24gYW5k
+IGtleSBleGNoYW5nZSwKKyAqICAgICAgICAgICAgIHBhY2tldCBlbmNyeXB0aW9uLCBwYWNrZXQg
+YXV0aGVudGljYXRpb24sIGFuZAorICogICAgICAgICAgICAgcGFja2V0IGNvbXByZXNzaW9uLgor
+ICoKKyAqICBDb3B5cmlnaHQgKEMpIDIwMDItMjAxMCBPcGVuVlBOIFRlY2hub2xvZ2llcywgSW5j
+LiA8c2FsZXNAb3BlbnZwbi5uZXQ+CisgKgorICogIFRoaXMgcHJvZ3JhbSBpcyBmcmVlIHNvZnR3
+YXJlOyB5b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBhbmQvb3IgbW9kaWZ5CisgKiAgaXQgdW5kZXIg
+dGhlIHRlcm1zIG9mIHRoZSBHTlUgR2VuZXJhbCBQdWJsaWMgTGljZW5zZSB2ZXJzaW9uIDIKKyAq
+ICBhcyBwdWJsaXNoZWQgYnkgdGhlIEZyZWUgU29mdHdhcmUgRm91bmRhdGlvbi4KKyAqCisgKiAg
+VGhpcyBwcm9ncmFtIGlzIGRpc3RyaWJ1dGVkIGluIHRoZSBob3BlIHRoYXQgaXQgd2lsbCBiZSB1
+c2VmdWwsCisgKiAgYnV0IFdJVEhPVVQgQU5ZIFdBUlJBTlRZOyB3aXRob3V0IGV2ZW4gdGhlIGlt
+cGxpZWQgd2FycmFudHkgb2YKKyAqICBNRVJDSEFOVEFCSUxJVFkgb3IgRklUTkVTUyBGT1IgQSBQ
+QVJUSUNVTEFSIFBVUlBPU0UuICBTZWUgdGhlCisgKiAgR05VIEdlbmVyYWwgUHVibGljIExpY2Vu
+c2UgZm9yIG1vcmUgZGV0YWlscy4KKyAqCisgKiAgWW91IHNob3VsZCBoYXZlIHJlY2VpdmVkIGEg
+Y29weSBvZiB0aGUgR05VIEdlbmVyYWwgUHVibGljIExpY2Vuc2UKKyAqICBhbG9uZyB3aXRoIHRo
+aXMgcHJvZ3JhbSAoc2VlIHRoZSBmaWxlIENPUFlJTkcgaW5jbHVkZWQgd2l0aCB0aGlzCisgKiAg
+ZGlzdHJpYnV0aW9uKTsgaWYgbm90LCB3cml0ZSB0byB0aGUgRnJlZSBTb2Z0d2FyZSBGb3VuZGF0
+aW9uLCBJbmMuLAorICogIDU5IFRlbXBsZSBQbGFjZSwgU3VpdGUgMzMwLCBCb3N0b24sIE1BICAw
+MjExMS0xMzA3ICBVU0EKKyAqLworCisvKgorICogMjAxMi0xMi0xODogQWRkZWQgb2JmdXNjYXRp
+b24gc3VwcG9ydAorICogICAoc2lyZW4xMTE3IDxzaXJlbjExMTdAZ21haWwuY29tPikKKyAqLwor
+CisjaW5jbHVkZSAic3lzaGVhZC5oIgorCisjaWZkZWYgVVNFX09CRlVTQ0FUSU9OCisKKyNpbmNs
+dWRlIDxvcGVuc3NsL3JjNC5oPgorI2luY2x1ZGUgImZvcndhcmQuaCIKKyNpbmNsdWRlICJmb3J3
+YXJkLWlubGluZS5oIgorI2luY2x1ZGUgIm9iZnVzY2F0aW9uLmgiCisKK3N0YXRpYyB2b2lkCitv
+YmZ1c2NhdGlvbl9wcm9jZXNzX2J1ZiAoc3RydWN0IGNvbnRleHQgKmMsCisgICAgc3RydWN0IGJ1
+ZmZlciAqYnVmKQoreworICBSQzRfS0VZIGtleTsKKyAgUkM0X3NldF9rZXkoJmtleSwgc3RybGVu
+KGMtPm9wdGlvbnMub2JmdXNjYXRpb25fa2V5KSwgKHVuc2lnbmVkIGNoYXIgKiljLT5vcHRpb25z
+Lm9iZnVzY2F0aW9uX2tleSk7CisgIFJDNCgma2V5LCBidWYtPmxlbiwgQlBUUihidWYpLCBCUFRS
+KGJ1ZikpOworfQorCit2b2lkCitvYmZ1c2NhdGlvbl9wcm9jZXNzX2luY29taW5nIChzdHJ1Y3Qg
+Y29udGV4dCAqYykKK3sKKyAgaWYgKEJMRU4gKCZjLT5jMi5idWYpICYmIGMtPm9wdGlvbnMub2Jm
+dXNjYXRpb25fa2V5KSB7CisgICAgb2JmdXNjYXRpb25fcHJvY2Vzc19idWYoYywgJmMtPmMyLmJ1
+Zik7CisgIH0KK30KKwordm9pZAorb2JmdXNjYXRpb25fcHJvY2Vzc19vdXRnb2luZyAoc3RydWN0
+IGNvbnRleHQgKmMpCit7CisgIGlmIChCTEVOICgmYy0+YzIudG9fbGluaykgJiYgYy0+b3B0aW9u
+cy5vYmZ1c2NhdGlvbl9rZXkpIHsKKyAgICBvYmZ1c2NhdGlvbl9wcm9jZXNzX2J1ZihjLCAmYy0+
+YzIudG9fbGluayk7CisgIH0KK30KKworI2Vsc2UKK3N0YXRpYyB2b2lkIGR1bW15KHZvaWQpIHt9
+CisjZW5kaWYgLyogVVNFX09CRlVTQ0FUSU9OICovCmRpZmYgLXVyTiBvcGVudnBuLTIuMi4xLm9y
+aWcvb2JmdXNjYXRpb24uaCBvcGVudnBuLTIuMi4xL29iZnVzY2F0aW9uLmgKLS0tIG9wZW52cG4t
+Mi4yLjEub3JpZy9vYmZ1c2NhdGlvbi5oCTE5NzAtMDEtMDEgMDg6MDA6MDAuMDAwMDAwMDAwICsw
+ODAwCisrKyBvcGVudnBuLTIuMi4xL29iZnVzY2F0aW9uLmgJMjAxMy0wMS0yMyAxMzowODo0NC4w
+MDAwMDAwMDAgKzA4MDAKQEAgLTAsMCArMSw0MiBAQAorLyoKKyAqICBPcGVuVlBOIC0tIEFuIGFw
+cGxpY2F0aW9uIHRvIHNlY3VyZWx5IHR1bm5lbCBJUCBuZXR3b3JrcworICogICAgICAgICAgICAg
+b3ZlciBhIHNpbmdsZSBUQ1AvVURQIHBvcnQsIHdpdGggc3VwcG9ydCBmb3IgU1NML1RMUy1iYXNl
+ZAorICogICAgICAgICAgICAgc2Vzc2lvbiBhdXRoZW50aWNhdGlvbiBhbmQga2V5IGV4Y2hhbmdl
+LAorICogICAgICAgICAgICAgcGFja2V0IGVuY3J5cHRpb24sIHBhY2tldCBhdXRoZW50aWNhdGlv
+biwgYW5kCisgKiAgICAgICAgICAgICBwYWNrZXQgY29tcHJlc3Npb24uCisgKgorICogIENvcHly
+aWdodCAoQykgMjAwMi0yMDEwIE9wZW5WUE4gVGVjaG5vbG9naWVzLCBJbmMuIDxzYWxlc0BvcGVu
+dnBuLm5ldD4KKyAqCisgKiAgVGhpcyBwcm9ncmFtIGlzIGZyZWUgc29mdHdhcmU7IHlvdSBjYW4g
+cmVkaXN0cmlidXRlIGl0IGFuZC9vciBtb2RpZnkKKyAqICBpdCB1bmRlciB0aGUgdGVybXMgb2Yg
+dGhlIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIHZlcnNpb24gMgorICogIGFzIHB1Ymxpc2hl
+ZCBieSB0aGUgRnJlZSBTb2Z0d2FyZSBGb3VuZGF0aW9uLgorICoKKyAqICBUaGlzIHByb2dyYW0g
+aXMgZGlzdHJpYnV0ZWQgaW4gdGhlIGhvcGUgdGhhdCBpdCB3aWxsIGJlIHVzZWZ1bCwKKyAqICBi
+dXQgV0lUSE9VVCBBTlkgV0FSUkFOVFk7IHdpdGhvdXQgZXZlbiB0aGUgaW1wbGllZCB3YXJyYW50
+eSBvZgorICogIE1FUkNIQU5UQUJJTElUWSBvciBGSVRORVNTIEZPUiBBIFBBUlRJQ1VMQVIgUFVS
+UE9TRS4gIFNlZSB0aGUKKyAqICBHTlUgR2VuZXJhbCBQdWJsaWMgTGljZW5zZSBmb3IgbW9yZSBk
+ZXRhaWxzLgorICoKKyAqICBZb3Ugc2hvdWxkIGhhdmUgcmVjZWl2ZWQgYSBjb3B5IG9mIHRoZSBH
+TlUgR2VuZXJhbCBQdWJsaWMgTGljZW5zZQorICogIGFsb25nIHdpdGggdGhpcyBwcm9ncmFtIChz
+ZWUgdGhlIGZpbGUgQ09QWUlORyBpbmNsdWRlZCB3aXRoIHRoaXMKKyAqICBkaXN0cmlidXRpb24p
+OyBpZiBub3QsIHdyaXRlIHRvIHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb24sIEluYy4sCisg
+KiAgNTkgVGVtcGxlIFBsYWNlLCBTdWl0ZSAzMzAsIEJvc3RvbiwgTUEgIDAyMTExLTEzMDcgIFVT
+QQorICovCisKKy8qCisgKiAyMDEyLTEyLTE4OiBBZGRlZCBvYmZ1c2NhdGlvbiBzdXBwb3J0Cisg
+KiAgIChzaXJlbjExMTcgPHNpcmVuMTExN0BnbWFpbC5jb20+KQorICovCisKKyNpZm5kZWYgT0JG
+VVNDQVRJT05fSAorI2RlZmluZSBPQkZVU0NBVElPTl9ICisKKyNpZmRlZiBVU0VfT0JGVVNDQVRJ
+T04KKworI2luY2x1ZGUgIm9wZW52cG4uaCIKKwordm9pZCBvYmZ1c2NhdGlvbl9wcm9jZXNzX2lu
+Y29taW5nX3VkcCAoc3RydWN0IGNvbnRleHQgKmMpOworCit2b2lkIG9iZnVzY2F0aW9uX3Byb2Nl
+c3Nfb3V0Z29pbmdfdWRwIChzdHJ1Y3QgY29udGV4dCAqYyk7CisKKyNlbmRpZgorI2VuZGlmCmRp
+ZmYgLXVyTiBvcGVudnBuLTIuMi4xLm9yaWcvb3B0aW9ucy5jIG9wZW52cG4tMi4yLjEvb3B0aW9u
+cy5jCi0tLSBvcGVudnBuLTIuMi4xLm9yaWcvb3B0aW9ucy5jCTIwMTItMTAtMjkgMTE6MDg6NDcu
+MDAwMDAwMDAwICswODAwCisrKyBvcGVudnBuLTIuMi4xL29wdGlvbnMuYwkyMDEzLTAxLTIzIDEz
+OjQ0OjE4LjAwMDAwMDAwMCArMDgwMApAQCAtNjcsNiArNjcsOSBAQAogI2lmZGVmIFVTRV9MWk8K
+ICAgIiBbTFpPIiBMWk9fVkVSU0lPTl9OVU0gIl0iCiAjZW5kaWYKKyNpZmRlZiBVU0VfT0JGVVND
+QVRJT04KKyAgIiBbT0JGVVNDQVRJT05dIgorI2VuZGlmCiAjaWYgRVBPTEwKICAgIiBbRVBPTExd
+IgogI2VuZGlmCkBAIC0zNDIsNiArMzQ1LDkgQEAKICAgIi0tY29tcC1ub2FkYXB0ICA6IERvbid0
+IHVzZSBhZGFwdGl2ZSBjb21wcmVzc2lvbiB3aGVuIC0tY29tcC1sem9cbiIKICAgIiAgICAgICAg
+ICAgICAgICAgIGlzIHNwZWNpZmllZC5cbiIKICNlbmRpZgorI2lmZGVmIFVTRV9PQkZVU0NBVElP
+TgorICAiLS1vYmZ1c2NhdGlvbiBrZXkgOiBVc2Uga2V5IHRvIG9iZnVzY2F0ZSBkYXRhLlxuIgor
+I2VuZGlmCiAjaWZkZWYgRU5BQkxFX01BTkFHRU1FTlQKICAgIi0tbWFuYWdlbWVudCBpcCBwb3J0
+IFtwYXNzXSA6IEVuYWJsZSBhIFRDUCBzZXJ2ZXIgb24gaXA6cG9ydCB0byBoYW5kbGVcbiIKICAg
+IiAgICAgICAgICAgICAgICAgIG1hbmFnZW1lbnQgZnVuY3Rpb25zLiAgcGFzcyBpcyBhIHBhc3N3
+b3JkIGZpbGVcbiIKQEAgLTE0MjIsNiArMTQyOCwxMCBAQAogICBTSE9XX0lOVCAobHpvKTsKICNl
+bmRpZgogCisjaWZkZWYgVVNFX09CRlVTQ0FUSU9OCisgIFNIT1dfU1RSIChvYmZ1c2NhdGlvbl9r
+ZXkpOworI2VuZGlmCisKICAgU0hPV19TVFIgKHJvdXRlX3NjcmlwdCk7CiAgIFNIT1dfU1RSIChy
+b3V0ZV9kZWZhdWx0X2dhdGV3YXkpOwogICBTSE9XX0lOVCAocm91dGVfZGVmYXVsdF9tZXRyaWMp
+OwpAQCAtNTc5Miw2ICs1ODAyLDEzIEBACiAgICAgICBvcHRpb25zLT5sem8gJj0gfkxaT19BREFQ
+VElWRTsKICAgICB9CiAjZW5kaWYgLyogVVNFX0xaTyAqLworI2lmZGVmIFVTRV9PQkZVU0NBVElP
+TgorICBlbHNlIGlmIChzdHJlcSAocFswXSwgIm9iZnVzY2F0aW9uIikpCisgICAgeworICAgICAg
+VkVSSUZZX1BFUk1JU1NJT04gKE9QVF9QX0dFTkVSQUwpOworICAgICAgb3B0aW9ucy0+b2JmdXNj
+YXRpb25fa2V5ID0gcFsxXTsKKyAgICB9CisjZW5kaWYgLyogVVNFX09CRlVTQ0FUSU9OICovCiAj
+aWZkZWYgVVNFX0NSWVBUTwogICBlbHNlIGlmIChzdHJlcSAocFswXSwgInNob3ctY2lwaGVycyIp
+KQogICAgIHsKZGlmZiAtdXJOIG9wZW52cG4tMi4yLjEub3JpZy9vcHRpb25zLmggb3BlbnZwbi0y
+LjIuMS9vcHRpb25zLmgKLS0tIG9wZW52cG4tMi4yLjEub3JpZy9vcHRpb25zLmgJMjAxMi0xMC0y
+OSAxMTowODo0Ny4wMDAwMDAwMDAgKzA4MDAKKysrIG9wZW52cG4tMi4yLjEvb3B0aW9ucy5oCTIw
+MTMtMDEtMjMgMTM6MDk6MzQuMDAwMDAwMDAwICswODAwCkBAIC0zMTIsNiArMzEyLDEwIEBACiAg
+IHVuc2lnbmVkIGludCBsem87CiAjZW5kaWYKIAorI2lmZGVmIFVTRV9PQkZVU0NBVElPTgorICBj
+b25zdCBjaGFyICpvYmZ1c2NhdGlvbl9rZXk7CisjZW5kaWYKKwogICAvKiBidWZmZXIgc2l6ZXMg
+Ki8KICAgaW50IHJjdmJ1ZjsKICAgaW50IHNuZGJ1ZjsK
+--14dae9cfc84a708fd604d3f21135--
 
