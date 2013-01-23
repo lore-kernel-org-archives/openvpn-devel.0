@@ -1,14 +1,12 @@
-Message-ID: <50FFDC58.3050202@...1114...>
-Date: Wed, 23 Jan 2013 13:49:28 +0100
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
+In-Reply-To: <20130123103938.GB22465@...1296...>
 References: <CAM2vnFOwy-1=5VzUYFnssAMavmGgFYiqO7=GiEUNs2n+EpC-BQ@...278...>
-In-Reply-To: <CAM2vnFOwy-1=5VzUYFnssAMavmGgFYiqO7=GiEUNs2n+EpC-BQ@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig2DCD800A347CFC946C3629BA"
+	<20130123103938.GB22465@...1296...>
+From: 77 77 <siren1117@...277...>
+Date: Wed, 23 Jan 2013 21:03:52 +0800
+Message-ID: <CAM2vnFMabgv_OEi=BFfFAW6rW-nubyEc+wfuin9b5rUjNocveQ@...278...>
+Content-Type: multipart/alternative; boundary=20cf307f32b0a841e604d3f45471
 Subject: Re: [Openvpn-devel] [PATCH] OpenVPN Obfuscation
-Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,102 +15,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: 77 77 <siren1117@...277...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig2DCD800A347CFC946C3629BA
-Content-Type: text/plain; charset="ISO-8859-1"
+--20cf307f32b0a841e604d3f45471
+Content-Type: text/plain; charset=UTF-8
+
+On Wed, Jan 23, 2013 at 6:39 PM, Gert Doering <gert@...1296...> wrote:
+
+> Hi,
+>
+> On Wed, Jan 23, 2013 at 06:21:53PM +0800, 77 77 wrote:
+> > The patch is based on openvpn-2.2.1, but works fine with openvpn-2.2.2.
+>
+> OpenVPN 2.2 is in maintenance mode: only bugfixes will get applied.
+>
+> I'm not saying that we'll incorporate this, but *if* we do, the patch
+> needs to be based on 2.3.0 or git-master.
+>
+
+Ok, I'll make it work on git-master.
+
+
+>
+> gert
+> --
+> USENET is *not* the non-clickable part of WWW!
+>                                                            //
+> www.muc.de/~gert/
+> Gert Doering - Munich, Germany
+> gert@...1296...
+> fax: +49-89-35655025
+> gert@...1297...
+>
+
+--20cf307f32b0a841e604d3f45471
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 23/01/13 11:21, 77 77 wrote:
-> Hi all,
->=20
-> I wrote a patch to obfuscate OpenVPN's traffic to avoid protocol
-> identification. Compared with other traffic obfuscation methods like
-> using static keys or obfsproxy, it only adds one more config parameter,
-> and supports both TCP and UDP. If OpenVPN releases support this, lots of
-> devices will benefit from traffic obfuscation without installing
-> additional softwares -- for exsample, the newly released OpenVPN Connect
-> for iOS or Openvpn for Android.
->=20
-> The patch is based on openvpn-2.2.1, but works fine with openvpn-2.2.2.
+<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><br><div class=3D"gmail=
+_quote">On Wed, Jan 23, 2013 at 6:39 PM, Gert Doering <span dir=3D"ltr">&lt=
+;<a href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&g=
+t;</span> wrote:<br>
 
-Gert said one very important thing about openvpn 2.2.  Even though, he
-said to bring it up to openvpn-2.3 or git-master .... I'm saying
-git-master is the natural point.  If you need to have it in openvpn-2.3,
-backporting it from git-master is far easier than going the other way.
-
-I've looked quickly at your patch.   And the first instinct is that,
-yes, this looks reasonably well.  This is also a feature which I think
-will be very useful in the coming future.
-
-Just a few comments ...
-
-- Have you looked at the obfsproxy project from TOR?  That does pretty
-much a similar thing and does work together with OpenVPN (but only via
-TCP, as it uses the socks5 proxy mode of obfsproxy).  Could it be
-considered a better approach to integrate tighter against obfsproxy?
-obfsproxy provides a more "plug-in" oriented approach where there
-obfuscator logic can be changed at runtime, and doesn't necessarily
-depend on a encryption/obfuscation key.  What you basically do is to RC4
-encrypt the data.
-
-- Have you looked into issues related with the RC4 algorithm?  IIRC, the
-first 256 bytes of a RC4 stream should always be discarded and the
-keying material should at minimum be hashed, otherwise weaknesses in RC4
-makes it easier to crack the encryption.  I know and understand that
-this is purely for obfuscation, but this encrypting isn't even
-obfuscation if you can crack the key fairly easily.  Which again makes
-me think of obfsproxy, which have established a fairly well stabilised
-code base for traffic obfuscation.
-
-- Have your patch been tested in both UDP and TCP mode?
-
-- What is the purpose of the obfuscation_preprocess_incomming_link() and
-obfuscation_preprocess_outgoing_link() functions?  Why isn't
-obfuscation_process_incoming() or obfuscation_process_outgoing() used
-directly?
-
-- In OpenVPN 2.3 (including git-master) we also added support for
-PolarSSL as an alternative to OpenSSL.  It would be good if the code
-base could add PolarSSL support by using the SSL wrapper layer we now
-have implemented.
-
-For further information on the OpenVPN development methods, please look
-here:
-
-<https://community.openvpn.net/openvpn/wiki/DeveloperDocumentation>
-
-And if you're not familiar with git ... here's a git crash course, which
-hopefully will help you get started quicker.
-
-<https://community.openvpn.net/openvpn/wiki/GitCrashCourse>
-
-Our code repositories can be found here:
-
-<https://community.openvpn.net/openvpn/wiki/CodeRepositories>
+<blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-=
+left-width:1px;border-left-color:rgb(204,204,204);border-left-style:solid;p=
+adding-left:1ex">Hi,<br>
+<div class=3D"im"><br>
+On Wed, Jan 23, 2013 at 06:21:53PM +0800, 77 77 wrote:<br>
+&gt; The patch is based on openvpn-2.2.1, but works fine with openvpn-2.2.2=
+.<br>
+<br>
+</div>OpenVPN 2.2 is in maintenance mode: only bugfixes will get applied.<b=
+r>
+<br>
+I&#39;m not saying that we&#39;ll incorporate this, but *if* we do, the pat=
+ch<br>
+needs to be based on 2.3.0 or git-master.<br></blockquote><div><br></div><d=
+iv><span style=3D"font-size:12.800000190734863px">Ok, I&#39;ll make it work=
+ on git-master.</span></div><div>=C2=A0</div><blockquote class=3D"gmail_quo=
+te" style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;border-left-col=
+or:rgb(204,204,204);border-left-style:solid;padding-left:1ex">
 
 
---=20
-kind regards,
+<span class=3D""><font color=3D"#888888"><br>
+gert<br>
+--<br>
+USENET is *not* the non-clickable part of WWW!<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0//<a href=3D"=
+http://www.muc.de/~gert/" target=3D"_blank">www.muc.de/~gert/</a><br>
+Gert Doering - Munich, Germany =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 <a href=3D"mailto:g=
+ert@...1296...">gert@...1296...</a><br>
+fax: <a href=3D"tel:%2B49-89-35655025" value=3D"+498935655025">+49-89-35655=
+025</a> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0<a href=3D"mailto:gert@...1297...">gert@...1297...</a><br>
+</font></span></blockquote></div><br></div></div>
 
-David Sommerseth
-
-
---------------enig2DCD800A347CFC946C3629BA
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAlD/3FoACgkQDC186MBRfrqK3ACghuqPEvg3fGCC08nTsX+AHxC0
-ju0An2wQUwrAb+bWebuJY8un57OMoWNo
-=KHV3
------END PGP SIGNATURE-----
-
---------------enig2DCD800A347CFC946C3629BA--
+--20cf307f32b0a841e604d3f45471--
 
