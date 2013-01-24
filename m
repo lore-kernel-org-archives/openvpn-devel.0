@@ -1,8 +1,16 @@
-Date: Wed, 23 Jan 2013 08:38:08 -0600
-From: "Josh Cepek" <josh.cepek@...1085...>
-Mime-Version: 1.0
-Message-ID: <047Rawoli0656S06.1358951888@...1802...>
-Subject: [Openvpn-devel] Windows 2.3 builds lack TAP driver utilities
+Message-ID: <510133EC.6000408@...1114...>
+Date: Thu, 24 Jan 2013 14:15:24 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <CAM2vnFOwy-1=5VzUYFnssAMavmGgFYiqO7=GiEUNs2n+EpC-BQ@...278...>
+	<50FFDC58.3050202@...1114...>
+	<CAM2vnFP-S62qf0OQ5YSdJm_tH+zkcz6gYUapvt==Le0OjciFvw@...278...>
+In-Reply-To: <CAM2vnFP-S62qf0OQ5YSdJm_tH+zkcz6gYUapvt==Le0OjciFvw@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig07AB1035083452E354300379"
+Subject: Re: [Openvpn-devel] [PATCH] OpenVPN Obfuscation
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,58 +19,125 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: 77 77 <siren1117@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig07AB1035083452E354300379
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
 
-The Windows installer for 2.3 (both 32 and 64-bit versions) no longer insta=
-lls
-the TAP-Win32 utility scripts by default (addtap.bat & deltapall.bat.) These
-scripts are required for end-users to manage TAP adapters, and specifically=
- to
-install more than 1 adapter if use of multiple VPNs is required.
+On 23/01/13 14:42, 77 77 wrote:
+> On Wed, Jan 23, 2013 at 8:49 PM, David Sommerseth
+> <openvpn.list@...1114... <mailto:openvpn.list@...1114...>>
+> wrote:
+>=20
+>     On 23/01/13 11:21, 77 77 wrote:
+>     > Hi all,
+>     >
+>     > I wrote a patch to obfuscate OpenVPN's traffic to avoid protocol
+>     > identification. Compared with other traffic obfuscation methods like
+>     > using static keys or obfsproxy, it only adds one more config
+>     parameter,
+>     > and supports both TCP and UDP. If OpenVPN releases support this,
+>     lots of
+>     > devices will benefit from traffic obfuscation without installing
+>     > additional softwares -- for exsample, the newly released OpenVPN
+>     Connect
+>     > for iOS or Openvpn for Android.
+>     >
+>     > The patch is based on openvpn-2.2.1, but works fine with
+>     openvpn-2.2.2.
+>=20
+>     Gert said one very important thing about openvpn 2.2.  Even though, he
+>     said to bring it up to openvpn-2.3 or git-master .... I'm saying
+>     git-master is the natural point.  If you need to have it in openvpn-2=
+.3,
+>     backporting it from git-master is far easier than going the other way.
+>=20
+>     I've looked quickly at your patch.   And the first instinct is that,
+>     yes, this looks reasonably well.  This is also a feature which I think
+>     will be very useful in the coming future.
+>=20
+>=20
+> I hope OpenVPN be more connectively from every place, every device. My
+> friends and I have been using this patch for a while.
+>=20=20
+>=20
+>=20
+>     Just a few comments ...
+>=20
+>     - Have you looked at the obfsproxy project from TOR?  That does pretty
+>     much a similar thing and does work together with OpenVPN (but only via
+>     TCP, as it uses the socks5 proxy mode of obfsproxy).  Could it be
+>     considered a better approach to integrate tighter against obfsproxy?
+>     obfsproxy provides a more "plug-in" oriented approach where there
+>     obfuscator logic can be changed at runtime, and doesn't necessarily
+>     depend on a encryption/obfuscation key.  What you basically do is to =
+RC4
+>     encrypt the data.
+>=20
+>=20
+> The shortcome of obfsproxy is that you have to run the proxy along with
+> OpenVPN. If people want to use OpenVPN on mobile devices, it's easier to
+> use if we have in-place obfuscation ability. For example, OpenVPN
+> Connect is avaliable on iOS, but failed to connect from some
+> countries.
 
-These scripts used to be installed under the .\bin\ path in <=3D2.2.2. In 2=
-.3.0
-this appears to have been logically split into a separate installer,
-tap-windows.exe, which has its own installation directory. By default, this
-installer does not install the optional "Utilities" feature, which causes
-these 2 batch files to be missing. As this tap-windows component installati=
-on
-is performed silently during OpenVPN installation, this option is never
-presented to the user.
+Just to make one thing clear.  The OpenVPN Connect for iOS and Android
+are not using the same code base as the OpenVPN version you patched.
+Those use a completely new code base which has not been open sourced yet.
 
-According to the NSIS source[1], this flag should be passed to the embedded
-tap-windows installer in recent versions of the build script. Looking at the
-way the program call is made using Process Explorer (PE) using the 2.3.0
-release, the indicated line in the NSIS source doesn't match the 2.3.0 rele=
-ase
-package. Compare that line with what PE shows during installation:
-"C:\DOCUME~1\TestUser\LOCALS~1\Temp\tap-windows.exe" /S
+> /In such circumstances obfsproxy can't help, but in-place
+> obfuscation would work./
 
-The source changes for the tap-windows project's own NSIS file[2] also appe=
-ar
-to have been changed recently enough (similar timeline to the openvpn-build
-NSIS changes) that it may also need to be built from a recent source copy to
-get the correct macro (SelectByParameter) support required to support the
-/SELECT_UTILITIES feature flag.
+I don't necessarily think that obfsproxy should be used with the socks
+approach as it is possible to do now.  But rather look more into details
+how TOR integrates more tightly with obfsproxy.  Or maybe contribute to
+obfsproxy so that it can be used as a library, linked into openvpn.
 
-Unless I've missed something in the sources, it would appear the 2.3.0 build
-lacks a recent enough version of the openvpn.nsis script. The solution shou=
-ld
-be to re-package both installers with recent versions of the NSIS sources.
-Expected results are both TAP-Win32 utility batch files installed by default
-during a silent installation of tap-windows.
+> Currently, this patch *JUST* works. And I agree that a "plug-in" system
+> for obfuscation is more robust and easier to extend.
 
-[1]
-https://github.com/OpenVPN/openvpn-build/blob/master/windows-nsis/openvpn.n=
-si#L243
+And in the future, flexibility in obfuscation will be highly needed.  It
+all depends on how many will make use of this feature and whom that will
+annoy most.  But what you have done so far is a great Proof of Concept.
+ It shows very well how to hook obfuscation into OpenVPN.  That is
+highly appreciated work!
 
-[2]
-https://github.com/OpenVPN/tap-windows/blob/master/installer/tap-windows.ns=
-i#L168
+I strongly believe in re-using as much code as possible, including not
+increasing the code maintenance.  The OpenVPN developer's team isn't
+big, so we need to have code which will be easy to maintain many years
+into the future - including extending the obfuscation and security
+related issues.  So depending on a more active project like obfsproxy is
+a big plus, IMHO.
 
---
-Josh
+Please misunderstand me correctly ... I do like the idea of obfuscation
+in OpenVPN.  And there have been several requests on such features
+already.  However, when we implement this officially, it needs to be
+code which can live and be easily maintained in OpenVPN for many years.
+ So that's why I'm taking the stance I'm taking.
 
+
+--=20
+kind regards,
+
+David Sommerseth
+
+
+--------------enig07AB1035083452E354300379
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAlEBM+8ACgkQDC186MBRfrreZQCffYFOsHbPPpNvy7GvRvMxlW4M
+hpUAoInuBt441AJ6jX+1OjVN3zMmLo+g
+=r3SR
+-----END PGP SIGNATURE-----
+
+--------------enig07AB1035083452E354300379--
 
