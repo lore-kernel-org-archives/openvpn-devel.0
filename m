@@ -1,14 +1,14 @@
-Date: Fri, 25 Jan 2013 09:58:39 +0100
+Date: Fri, 25 Jan 2013 10:00:42 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20130125085839.GL22465@...1296...>
+Message-ID: <20130125090042.GM22465@...1296...>
 References: <1359101540-976-1-git-send-email-samuli@...515...>
-	<1359101540-976-4-git-send-email-samuli@...515...>
+	<1359101540-976-5-git-send-email-samuli@...515...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="4jP6nrBBjIjUXupb"
+	protocol="application/pgp-signature"; boundary="OO26Ec7kKr0HQ07l"
 Content-Disposition: inline
-In-Reply-To: <1359101540-976-4-git-send-email-samuli@...515...>
-Subject: Re: [Openvpn-devel] [PATCH 3/4] Updated README
+In-Reply-To: <1359101540-976-5-git-send-email-samuli@...515...>
+Subject: Re: [Openvpn-devel] [PATCH 4/4] Cleaned up and updated INSTALL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,25 +20,44 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: samuli@...515...
 Cc: openvpn-devel@lists.sourceforge.net
 
---4jP6nrBBjIjUXupb
+--OO26Ec7kKr0HQ07l
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Jan 25, 2013 at 10:12:19AM +0200, samuli@...515... wrote:
+On Fri, Jan 25, 2013 at 10:12:20AM +0200, samuli@...515... wrote:
 > From: Samuli Sepp=E4nen <samuli@...515...>
 >=20
-> Added links to easy-rsa, tap-windows and openvpn-build and fixes some pat=
-hs
->=20
-> Signed-off-by: Samuli Sepp=E4nen <samuli@...515...>
-> ---
->  README |   35 ++++++++++++++++-------------------
->  1 file changed, 16 insertions(+), 19 deletions(-)
+> - Changed "Supported platforms" to reflect current support status of the
+>   mentioned operatingsystems
+> - Removed mentions of the obsolete Python and domake-win buildsystems
+> - Added mention of official Debian/RPM packages
+> - Added links to the Wiki
+> - Added mention of the new openvpn-build cross-compile environment
+> - Added PolarSSL to and removed pthreads from the "Optional" section
+> - Added mention of t_client.sh test framework
+> - Removed some very old (pre-2005) nuggets of (obsolete) information
+> - Other minor cleanups
+> - Some reorganization
 
-ACK, looks good.
+Mostly ACK, except for a small imission:
+
+> +* Windows XP/2003/Vista/7:
+>=20=20
+> - See the man page for more information, usage examples, and
+> - information on firewall configuration.
+> +  OpenVPN on Windows needs a TUN/TAP kernel driver to work. OpenVPN inst=
+allers
+> +  include this driver, so installing it separately is not usually requir=
+ed.=20
+> +  The driver source code is available here:
+>=20=20
+>  *************************************************************************
+
+... the info about the driver source was lost, it seems - it says=20
+"is available here:" and then the section ends...
 
 gert
 --=20
@@ -48,19 +67,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---4jP6nrBBjIjUXupb
+--OO26Ec7kKr0HQ07l
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.12 (NetBSD)
 
-iQCVAwUBUQJJP6kuBuNlUUl1AQJoqAQAgbt7hi8vtAMfdD44lbzeMhXFDd1seG6h
-Qm3joinW56XDC1eRGDbv1sYjY0HTesxa8P/EvvMFfv6WD9ZcS9huP0pJjoqhSD5b
-9Vc56t4fmpX5lPoQAJoDp9GtM7R0bdt8UMiFSAPY0HH486MzB5fuohLS0w3L8v9a
-wWnVirZm+cY=
-=WIHr
+iQCVAwUBUQJJuqkuBuNlUUl1AQIxaAP/ap9JJs339Aug+stWUTlLbh5xfSzSokyD
+QxfUMT+q2B4OYybUw7xXckLDGpG2WUdfAHxRawJYCvcVGFHLGb243qaAZE9pQ1WR
+U3YJk4acGjK70xdXezVZQEZndP9Sv8OPSpp9BSHmAHLnwkuklJmuE0LDToqhgTvX
+yGkAx1j/bH0=
+=aCd5
 -----END PGP SIGNATURE-----
 
---4jP6nrBBjIjUXupb--
+--OO26Ec7kKr0HQ07l--
 
