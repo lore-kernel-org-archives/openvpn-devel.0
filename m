@@ -1,7 +1,10 @@
-From: Gert Doering <gert@...1296...>
-Date: Fri, 25 Jan 2013 12:39:14 +0100
-Message-Id: <1359113954-25768-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH] Update README.IPv6 to match what is in 2.3.0
+Message-ID: <51028EBC.9090802@...515...>
+Date: Fri, 25 Jan 2013 15:55:08 +0200
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+MIME-Version: 1.0
+References: <047Rawoli0656S06.1358951888@...1802...>
+In-Reply-To: <047Rawoli0656S06.1358951888@...1802...>
+Subject: Re: [Openvpn-devel] Windows 2.3 builds lack TAP driver utilities
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,175 +13,103 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: Josh Cepek <josh.cepek@...1085...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-IPv6 is no longer provided by external patches - all has been
-integrated.  Document that fact, point at the new configuration options,
-and at potential caveats.
----
- README.IPv6 |  140 +++++++++++++++++++++++------------------------------------
- 1 files changed, 55 insertions(+), 85 deletions(-)
+Hi Josh,
 
-diff --git a/README.IPv6 b/README.IPv6
-index d504f4f..5f77088 100644
---- a/README.IPv6
-+++ b/README.IPv6
-@@ -1,97 +1,67 @@
-+Since 2.3.0, OpenVPN officially supports IPv6, and all widely used
-+patches floating around for older versions have been integrated.
-+
- IPv6 payload support
- --------------------
- 
--Latest IPv6 payload support code and documentation can be found from here:
-+This is for "IPv6 inside OpenVPN", with server-pushed IPv6 configuration
-+on the client, and support for IPv6 configuration on the tun/tap interface
-+from within the openvpn config.
-+
-+The code in 2.3.0 supersedes the IPv6 payload patches from Gert Doering, 
-+formerly located at http://www.greenie.net/ipv6/openvpn.html
- 
--  http://www.greenie.net/ipv6/openvpn.html
- 
--For TODO list, see TODO.IPv6.
-+The following options have been added to handle IPv6 configuration, 
-+analogous to their IPv4 counterparts (--server <-> --server-ipv6, etc.)
- 
--Gert Doering, 31.12.2009
-+     - server-ipv6
-+     - ifconfig-ipv6
-+     - ifconfig-ipv6-pool
-+     - ifconfig-ipv6-push
-+     - route-ipv6
-+     - iroute-ipv6
-+
-+see "man openvpn" for details how they are used.
- 
- 
- 
- IPv6 transport support
- ----------------------
- 
--[ Last updated: 25-Mar-2011. ]
--
--OpenVPN-2.1 over UDP6/TCP6 README for ipv6-0.4.x patch releases:
--( --udp6 and --tcp6-{client,server} )
--
--* Availability
--  Source code under GPLv2 from http://github.com/jjo/openvpn-ipv6
--
--  Distro ready repos/packages:
--  o Debian sid official repo, by Alberto Gonzalez Iniesta,
--    starting from openvpn_2.1~rc20-2
--  o Gentoo official portage tree, by Marcel Pennewiss:
--    - https://bugs.gentoo.org/show_bug.cgi?id=287896
--  o Ubuntu package, by Bernhard Schmidt:
--    - https://launchpad.net/~berni/+archive/ipv6/+packages
--  o Freetz.org, milestone freetz-1.2
--    - http://trac.freetz.org/milestone/freetz-1.2
--
--* Status:
--  o OK:
--    - upd6,tcp6: GNU/Linux, win32, openbsd-4.7, freebsd-8.1
--    - udp4->upd6,tcp4->tcp6 (ipv4/6 mapped): GNU/Linux
--      (gives a warning on local!=remote proto matching)
--  o NOT:
--    - win32: tcp4->tcp6 (ipv4/6 mapped) fails w/connection refused
--  o NOT tested:
--    - mgmt console
--
--* Build setup:
--  ./configure --enable-ipv6        (by default)
--
--* Usage:
--  For IPv6 just specify "-p upd6" an proper IPv6 hostnames, adapting the example
--  from man page ...
--
--  On may:
--    openvpn --proto udp6 --remote <june_IPv6_addr> --dev tun1 \
--      --ifconfig 10.4.0.1 10.4.0.2 --verb 5 --secret key
--
--  On june:
--    openvpn --proto udp6 --remote <may_IPv6_addr>  --dev tun1 \
--      --ifconfig 10.4.0.2 10.4.0.1 --verb 5 --secret key
--
--  Same for --proto tcp6-client, tcp6-server.
--
--* Main code changes summary:
--  - socket.h: New struct openvpn_sockaddr type that holds sockaddrs and pktinfo,
--    (here I omitted #ifdef USE_PF_xxxx, see socket.h )
--
--    struct openvpn_sockaddr {
--	union {
--		struct sockaddr sa;
--		struct sockaddr_in in;
--		struct sockaddr_in6 in6;
--	} addr;
--    };
--
--    struct link_socket_addr
--    {
--            struct openvpn_sockaddr local;
--            struct openvpn_sockaddr remote;
--            struct openvpn_sockaddr actual;
--    };
--
--    PRO: allows simple type overloading: local.addr.sa, local.addr.in, local.addr.in6 ... etc
--    (also local.pi.in and local.pi.in6)
--
--  - several function prototypes moved from sockaddr_in to openvpn_sockaddr
--  - several new sockaddr functions needed to "generalize" AF_xxxx operations:
--    addr_copy(), addr_zero(), ...etc
--    proto_is_udp(), proto_is_dgram(), proto_is_net()
--
--* For TODO list, see TODO.IPv6
--
----
--JuanJo Ciarlante   jjo () google () com ............................
--:                                                                  :
--.                                         Linux IP Aliasing author .
--.   Modular algo (AES et all) support for FreeSWAN/OpenSWAN author .
--.                                        OpenVPN over IPv6 support .
--:......     plus other scattered free software bits in the wild ...:
-+This is to enable OpenVPN peers or client/servers to talk to each other
-+over an IPv6 network ("OpenVPN over IPv6").
-+
-+The code in 2.3.0 supersedes the IPv6 transport patches from JuanJo Ciarlante,
-+formerly located at http://github.com/jjo/openvpn-ipv6
-+
-+
-+Use the following options to select IPv6 transport:
-+
-+  --proto udp6
-+  --proto tcp6-client
-+  --proto tcp6-server
-+  --proto tcp6 --client / --proto tcp6 --server
-+
-+On systems that permit IPv4 connections on IPv6 sockets (Linux by
-+default, FreeBSD and NetBSD if you turn off the "v6only" sysctl by
-+running "sysctl -w net.inet6.ip6.v6only=0"), an OpenVPN server can
-+handle IPv4 connections on the IPv6 socket as well, making it a true 
-+dual-stacked server.  
-+
-+On other systems, as of 2.3.0, you need to run separate server instances 
-+for IPv4 and IPv6.
-+
-+The client side code is not really "dual-stacked" yet, as it does not
-+automatically try both address families when connecting to a dual-stacked 
-+server.  For now, you can achieve this with <connection> stanzas in your
-+openvpn config:
-+
-+  <connection>
-+     remote my.dual.stack.server 1194 udp6
-+  </connection>
-+  <connection>
-+     remote my.dual.stack.server 1194 udp
-+  </connection>
-+
-+
--- 
-1.7.8.6
+Thanks for reporting this! I added a bug report here:
+
+<https://community.openvpn.net/openvpn/ticket/255>
+
+I got some other NSI fixes[1] in the queue, and will take care of this
+one also.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+
+[1]
+
+<https://community.openvpn.net/openvpn/ticket/249>
+<https://community.openvpn.net/openvpn/ticket/252>
+
+> The Windows installer for 2.3 (both 32 and 64-bit versions) no longer ins=
+talls
+> the TAP-Win32 utility scripts by default (addtap.bat & deltapall.bat.) Th=
+ese
+> scripts are required for end-users to manage TAP adapters, and specifical=
+ly to
+> install more than 1 adapter if use of multiple VPNs is required.
+>
+> These scripts used to be installed under the .\bin\ path in <=3D2.2.2. In=
+ 2.3.0
+> this appears to have been logically split into a separate installer,
+> tap-windows.exe, which has its own installation directory. By default, th=
+is
+> installer does not install the optional "Utilities" feature, which causes
+> these 2 batch files to be missing. As this tap-windows component installa=
+tion
+> is performed silently during OpenVPN installation, this option is never
+> presented to the user.
+>
+> According to the NSIS source[1], this flag should be passed to the embedd=
+ed
+> tap-windows installer in recent versions of the build script. Looking at =
+the
+> way the program call is made using Process Explorer (PE) using the 2.3.0
+> release, the indicated line in the NSIS source doesn't match the 2.3.0 re=
+lease
+> package. Compare that line with what PE shows during installation:
+> "C:\DOCUME~1\TestUser\LOCALS~1\Temp\tap-windows.exe" /S
+>
+> The source changes for the tap-windows project's own NSIS file[2] also ap=
+pear
+> to have been changed recently enough (similar timeline to the openvpn-bui=
+ld
+> NSIS changes) that it may also need to be built from a recent source copy=
+ to
+> get the correct macro (SelectByParameter) support required to support the
+> /SELECT_UTILITIES feature flag.
+>
+> Unless I've missed something in the sources, it would appear the 2.3.0 bu=
+ild
+> lacks a recent enough version of the openvpn.nsis script. The solution sh=
+ould
+> be to re-package both installers with recent versions of the NSIS sources.
+> Expected results are both TAP-Win32 utility batch files installed by defa=
+ult
+> during a silent installation of tap-windows.
+>
+> [1]
+> https://github.com/OpenVPN/openvpn-build/blob/master/windows-nsis/openvpn=
+.nsi#L243
+>
+> [2]
+> https://github.com/OpenVPN/tap-windows/blob/master/installer/tap-windows.=
+nsi#L168
+>
+> --
+> Josh
+>
+>
+> -------------------------------------------------------------------------=
+-----
+> Master Visual Studio, SharePoint, SQL, ASP.NET, C# 2012, HTML5, CSS,
+> MVC, Windows 8 Apps, JavaScript and much more. Keep your skills current
+> with LearnDevNow - 3,200 step-by-step video tutorials by Microsoft
+> MVPs and experts. ON SALE this month only -- learn more at:
+> http://p.sf.net/sfu/learnnow-d2d
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
 
 
