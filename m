@@ -1,12 +1,7 @@
-Message-ID: <5109B1DA.2050001@...1114...>
-Date: Thu, 31 Jan 2013 00:50:50 +0100
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <20130130130717.GB19096@...1805...>
-In-Reply-To: <20130130130717.GB19096@...1805...>
-Subject: Re: [Openvpn-devel] [PATCH] x509 validity for tls-verify
-Reply-To: "openvpn-devel@lists.sourceforge.net"
-	<openvpn-devel@lists.sourceforge.net>
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Fri,  1 Feb 2013 15:19:14 +0100
+Message-Id: <1359728354-9405-1-git-send-email-heiko.hund@...1489...>
+Subject: [Openvpn-devel] [PATCH] close more file descriptors on exec
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,38 +10,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Emmanuel Dreyfus <manu@...1031...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-On 30/01/13 14:07, Emmanuel Dreyfus wrote:
-> Hi
->
-> Please consider the attached patch that makes x509 xertificate validity
-> (notBeofre and notAfter) available in environement for the tls-verify
-> script.
->
-> I use it to monitor OpenVPN certificate expirations in Nagios. I can
-> share the Nagios bits with whoever is interested.
+Don't inherit the --status and --ifconfig-pool-persist, and on Linux
+the epoll(7), file descriptors to scripts and other processes that
+may be forked by plugins.
 
-Thank you very much for your patch.  Just a few comments.  Gert already 
-covered the PolarSSL part.  I think we should have PolarSSL support included 
-as well when pulling in new code which depends on this.  Simply to avoid those 
-to implementation to divert too much.
+Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+---
+ src/openvpn/event.c  |    3 +++
+ src/openvpn/status.c |    2 ++
+ 2 files changed, 5 insertions(+)
 
-Another thing is that we are exporting quite a large set of environment 
-variables already and we should probably rather reduce that footprint than 
-increasing it further.  In addition, considering that the v3 plug-in API 
-already exports the complete certificate in a native format used by SSL 
-library, wouldn't it make more sense to rather put this functionality into a 
-plugin directly?
-
-For a simple example, have a look at sample/sample-plugins/log/log_v3.c
-
-
+diff --git a/src/openvpn/event.c b/src/openvpn/event.c
+index 2a13e1c..34a3c45 100644
+--- a/src/openvpn/event.c
++++ b/src/openvpn/event.c
+@@ -34,6 +34,7 @@
+ #include "error.h"
+ #include "integer.h"
+ #include "event.h"
++#include "fdmisc.h"
+ 
+ #include "memdbg.h"
+ 
+@@ -582,6 +583,8 @@ ep_init (int *maxevents, unsigned int flags)
+   if (fd < 0)
+     return NULL;
+ 
++  set_cloexec (fd);
++
+   ALLOC_OBJ_CLEAR (eps, struct ep_set);
+ 
+   /* set dispatch functions */
+diff --git a/src/openvpn/status.c b/src/openvpn/status.c
+index 5f9ab9e..8773f3d 100644
+--- a/src/openvpn/status.c
++++ b/src/openvpn/status.c
+@@ -33,6 +33,7 @@
+ #include "status.h"
+ #include "perf.h"
+ #include "misc.h"
++#include "fdmisc.h"
+ 
+ #include "memdbg.h"
+ 
+@@ -98,6 +99,7 @@ status_open (const char *filename,
+ 	  if (so->fd >= 0)
+ 	    {
+ 	      so->filename = string_alloc (filename, NULL);
++              set_cloexec (so->fd);
+ 
+ 	      /* allocate read buffer */
+ 	      if (so->flags & STATUS_OUTPUT_READ)
 -- 
-kind regards,
+1.7.9.5
 
-David Sommerseth
 
