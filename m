@@ -1,7 +1,12 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Fri,  1 Feb 2013 15:19:14 +0100
-Message-Id: <1359728354-9405-1-git-send-email-heiko.hund@...1489...>
-Subject: [Openvpn-devel] [PATCH] close more file descriptors on exec
+Message-ID: <510D0687.1030503@...1227...>
+Date: Sat, 02 Feb 2013 13:28:55 +0100
+From: Arne Schwabe <arne@...1227...>
+MIME-Version: 1.0
+References: <1345106302-22850-1-git-send-email-heiko.hund@...1489...>
+	<1345106302-22850-2-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <1345106302-22850-2-git-send-email-heiko.hund@...1489...>
+Subject: Re: [Openvpn-devel] [PATCH 1/7] refine assertion to allow other
+ modes than CBC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,62 +15,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Don't inherit the --status and --ifconfig-pool-persist, and on Linux
-the epoll(7), file descriptors to scripts and other processes that
-may be forked by plugins.
+Am 16.08.12 10:38, schrieb Heiko Hund:
+> cipher_ctx_final() only returns an outlen in CBC mode. If CFB or OFB
+> are used the assertion outlen == iv_len is always false.
+>
+> There's no CBC mode defined for the GOST 28147-89 block cipher. Hence
+> this patch is needed for it to work. It's needed for other ciphers like
+> BF-CFB as well, though.
+>
+> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+> ---
+>  src/openvpn/crypto.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+> index ac2eecd..2f67e5e 100644
+> --- a/src/openvpn/crypto.c
+> +++ b/src/openvpn/crypto.c
+> @@ -153,7 +153,7 @@ openvpn_encrypt (struct buffer *buf, struct buffer work,
+>  	  /* Flush the encryption buffer */
+>  	  ASSERT(cipher_ctx_final(ctx->cipher, BPTR (&work) + outlen, &outlen));
+>  	  work.len += outlen;
+> -	  ASSERT (outlen == iv_size);
+> +	  ASSERT (mode != OPENVPN_MODE_CBC || outlen == iv_size);
+>  
+>  	  /* prepend the IV to the ciphertext */
+>  	  if (opt->flags & CO_USE_IV)
 
-Signed-off-by: Heiko Hund <heiko.hund@...1489...>
----
- src/openvpn/event.c  |    3 +++
- src/openvpn/status.c |    2 ++
- 2 files changed, 5 insertions(+)
+I have a user of my app that also tripped over this asssert line:
 
-diff --git a/src/openvpn/event.c b/src/openvpn/event.c
-index 2a13e1c..34a3c45 100644
---- a/src/openvpn/event.c
-+++ b/src/openvpn/event.c
-@@ -34,6 +34,7 @@
- #include "error.h"
- #include "integer.h"
- #include "event.h"
-+#include "fdmisc.h"
- 
- #include "memdbg.h"
- 
-@@ -582,6 +583,8 @@ ep_init (int *maxevents, unsigned int flags)
-   if (fd < 0)
-     return NULL;
- 
-+  set_cloexec (fd);
-+
-   ALLOC_OBJ_CLEAR (eps, struct ep_set);
- 
-   /* set dispatch functions */
-diff --git a/src/openvpn/status.c b/src/openvpn/status.c
-index 5f9ab9e..8773f3d 100644
---- a/src/openvpn/status.c
-+++ b/src/openvpn/status.c
-@@ -33,6 +33,7 @@
- #include "status.h"
- #include "perf.h"
- #include "misc.h"
-+#include "fdmisc.h"
- 
- #include "memdbg.h"
- 
-@@ -98,6 +99,7 @@ status_open (const char *filename,
- 	  if (so->fd >= 0)
- 	    {
- 	      so->filename = string_alloc (filename, NULL);
-+              set_cloexec (so->fd);
- 
- 	      /* allocate read buffer */
- 	      if (so->flags & STATUS_OUTPUT_READ)
--- 
-1.7.9.5
+> Here is the log that pointed it to me from the server side.
+>
+> Wed Jan 30 14:47:56 2013 208.54.86.158:52876 WARNING: 'cipher' is used
+> inconsistently, local='cipher AES-128-CBC', remote='cipher AES-128-CFB'
+>
+> Before that I had used cipher AES-256-CFB8, but I had forgotten the 8 on the
+> Android.
+
 
 
