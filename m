@@ -1,14 +1,13 @@
-Message-ID: <510D3B74.3060007@...1114...>
-Date: Sat, 02 Feb 2013 17:14:44 +0100
+Message-ID: <510D432C.1060107@...1114...>
+Date: Sat, 02 Feb 2013 17:47:40 +0100
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1359815797-23262-1-git-send-email-arne@...1227...>
-	<20130202154307.GK953@...1296...>
-In-Reply-To: <20130202154307.GK953@...1296...>
+References: <1358854613-7150-1-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <1358854613-7150-1-git-send-email-heiko.hund@...1489...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigC203B60979A9B5BC240AEA3C"
-Subject: Re: [Openvpn-devel] [PATCH] Fix assertion if environment es is null
+	boundary="------------enig983D4758CC0601B4CCF6118A"
+Subject: Re: [Openvpn-devel] [PATCH] ignore UTF-8 byte order mark
 Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,67 +17,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
+To: Heiko Hund <heiko.hund@...1489...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC203B60979A9B5BC240AEA3C
+--------------enig983D4758CC0601B4CCF6118A
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-On 02/02/13 16:43, Gert Doering wrote:
-> Hi,
+On 22/01/13 12:36, Heiko Hund wrote:
+> Currently openvpn exits when reading configuration from a file
+> that has an UTF-8 byte order mark (EF BB BF) at its start.
 >=20
-> On Sat, Feb 02, 2013 at 03:36:37PM +0100, Arne Schwabe wrote:
->> The construct_name_value eventually call gc_malloc with NULL as gc which=
- will trigger an assertion
-> [..]
->> -      char *str =3D construct_name_value (name_tmp, val_tmp, NULL);
->> +      char *str =3D construct_name_value (name_tmp, val_tmp, &gc);
->>        if (platform_putenv(str))
->>        {
->>          msg (M_WARN | M_ERRNO, "putenv('%s') failed", str);
+> While it is useless to put a BOM into UTF-8 encoded files, the
+> Unicode standard [1] permits it (on page 36):
 >=20
-> NAK!
+>   "Use of a BOM is neither required nor recommended for UTF-8,
+>   but may be encountered in contexts where UTF-8 data is converted
+>   from other encoding forms that use a BOM or where the BOM is
+>   used as a UTF-8 signature."
 >=20
-> platform_putenv() calls putenv() on non-windows platforms, and that one
-> will just add a pointer to the string passed to it to envp[] (at least
-> that's how I read the manpage: "The string pointed to by string becomes=20
-> part of the environment, so altering the string changes the environment").
-
-Correct ... Please see this thread for more info (including
-proof-of-concept code)
-
-<http://thread.gmane.org/gmane.network.openvpn.devel/7090>
-
-> So your environment now points to a garbage buffer, which is then=20
-> destroyed again.
+> Notepad.exe, the default text editor on Windows, always puts the BOM
+> into UTF-8 encoded files when saving them. Others may do as well.
 >=20
-> I think there needs to be a strdup() here...
+> Just ignoring the UTF-8 BOM will make config files with UTF-8 BOM
+> readable.
+>=20
+> [1] http://www.unicode.org/versions/Unicode5.0.0/ch02.pdf
+>=20
+> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+>=20
+> ---
+>  src/openvpn/options.c |    3 +++
+>  1 file changed, 3 insertions(+)
+>=20
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 99f70ad..46f6f26 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -3773,6 +3773,9 @@ read_config_file (struct options *options,
+>  	    {
+>  	      CLEAR (p);
+>  	      ++line_num;
+> +              /* Ignore UTF-8 BOM at start of stream */
+> +              if (line_num =3D=3D 1 && strncmp (line, "\xEF\xBB\xBF", 3)=
+ =3D=3D 0)
+> +                memmove (line, line + 3, strlen (line) - 2);
+>  	      if (parse_line (line, p, SIZE (p), file, line_num, msglevel, &opt=
+ions->gc))
 
-Yeah, but that would be prone to leak memory again ...
+Wouldn't this approach solve it in an easier way?
 
-> (And I seem to remember that "some of the buffer functions" did exactly
-> this when &gc was NULL, but maybe we threw this out last year... David?)
+       int offset =3D 0;
+       if (line_num =3D=3D 1 && strncmp (line, "\xEF\xBB\xBF", 3) =3D=3D 0)
+          offset =3D 3
 
-I think the commit you think about is this one:
+       if (parse_line (line+offset, p, SIZE (p), file, line_num ....
 
-commit bee92b479414d12035b0422f81ac5fcfe14fa645
-Author: Adriaan de Jong <dejong@...1435...>
-Date:   Sun Feb 5 12:51:25 2012 +0100
-
-    Removed support for calling gc_malloc with a NULL gc_arena struct
-
-    Signed-off-by: Adriaan de Jong <dejong@...1435...>
-    Acked-by: David Sommerseth <davids@...1347...>
-    Signed-off-by: David Sommerseth <davids@...1347...>
-
-That basically impacted all calls ending up in gc_malloc().  But this
-was prone to leak memory when called with NULL as the gc_arena pointer.
- After a discussion, we ended up agreeing to solve issues this patch
-would flush open - instead of trying to fix those leaking areas
-instantly; then it would just have been a temporary fix until it would
-be abused again.
+Should be safer as you don't need care about proper NULL termination of
+the buffer.
 
 
 --=20
@@ -87,7 +84,7 @@ kind regards,
 David Sommerseth
 
 
---------------enigC203B60979A9B5BC240AEA3C
+--------------enig983D4758CC0601B4CCF6118A
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -96,10 +93,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAlENO3QACgkQDC186MBRfroxAgCfZCwY7Xs8bCRLNqZVif/RqjqO
-gq0An3Klf0I3hP0gN7chB2HGZcjCFO36
-=XiY3
+iEYEARECAAYFAlENQywACgkQDC186MBRfrouAgCglcE3t5rpjNHAjaYVeyjr14y3
+3IsAoLAcmJUdVYhaYa3U4s1A2P18KTwD
+=/if8
 -----END PGP SIGNATURE-----
 
---------------enigC203B60979A9B5BC240AEA3C--
+--------------enig983D4758CC0601B4CCF6118A--
 
