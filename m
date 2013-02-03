@@ -1,9 +1,13 @@
-Date: Sun, 3 Feb 2013 14:56:41 +0100
-Message-Id: <201302031356.r13DuffM009936@...1729...>
+Date: Sun, 3 Feb 2013 15:04:12 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: 1359107974-1481-1-git-send-email-samuli@...515...
-References: 1359107974-1481-1-git-send-email-samuli@...515...
-Subject: [Openvpn-devel] [PATCH applied] Re: Cleaned up and updated INSTALL
+Message-ID: <20130203140412.GQ953@...1296...>
+References: <201302031355.r13DtcDe009859@...1729...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="t4apE7yKrX2dGgJC"
+Content-Disposition: inline
+In-Reply-To: <201302031355.r13DtcDe009859@...1729...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Removed ChangeLog.IPv6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,31 +16,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: samuli@...515...
+To: Samuli =?iso-8859-1?B?U2VwcMOkbmVu?= <samuli@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.3 branch.
+--t4apE7yKrX2dGgJC
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-commit 607a678d371c56d368319b0a7a1bb147008d5822 (master)
-commit 901f647ddbd771086814b9ca050e166182fb3371 (release/2.3)
+Hi,
 
-Author: Samuli SeppÃ¤nen
-Date:   Fri Jan 25 11:59:34 2013 +0200
+On Sun, Feb 03, 2013 at 02:55:38PM +0100, Gert Doering wrote:
+> Your patch has been applied to the master and release/2.3 branch.
+>=20
+> commit a93ed2e64cd57a63ca5e9a393cee9bc58ef32378 (master)
+> commit 5a1c16e7d0fe28666000928479e5b4c0702a9e30 (release/2.3)
+>=20
+> Author: Samuli Sepp=C3=A4nen
 
-     Cleaned up and updated INSTALL
+As a side note: sorry for not noticing the broken In-Reply-To: headers
+before sending 10 ACK mails...  David has fixed the script I'm using
+now, so the next mails should be fine.
 
-     Signed-off-by: Samuli SeppÃ¤nen <samuli@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: 1359107974-1481-1-git-send-email-samuli@...515...
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/7303
-     Signed-off-by: Gert Doering <gert@...1296...>
+(Unless there is demand, I'm not re-sending the mails with fixed
+In-Reply-To: headers, to avoid extra noise on the list - it should not=20
+be *that* hard to attribute the mails)
 
+gert
 
---
-kind regards,
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Gert Doering
+--t4apE7yKrX2dGgJC
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
+
+iQCVAwUBUQ5uXKkuBuNlUUl1AQLfWgQAsUUC2iJKnQnRDr2wKVyzLFMyf+vO0uTK
+otdNpfzPQNMR8LdH3MscFVXJEbPpyQwsvYt0HKS3c6Yq0Juy951s2KVkO87KQ+dL
+AsCuw2M05Xn66Po1kWb2YPRv3RrcgOW+EzsULMV/Avp1AscbF6qeqch6VmNiErRf
+sOqjjY04/CQ=
+=jQt/
+-----END PGP SIGNATURE-----
+
+--t4apE7yKrX2dGgJC--
 
