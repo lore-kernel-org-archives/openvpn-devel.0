@@ -1,10 +1,13 @@
-Date: Sun, 3 Feb 2013 13:05:16 +0100
-Message-Id: <201302031205.r13C5Gg9002442@...1729...>
+Date: Sun, 3 Feb 2013 13:41:04 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: 1359889951-3369-1-git-send-email-arne@...1227...
-References: 1359889951-3369-1-git-send-email-arne@...1227...
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove dead code path and
-	putenv functionality
+Message-ID: <20130203124104.GO953@...1296...>
+References: <510E4344.6010608@...1147...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="NQTVMVnDVuULnIzU"
+Content-Disposition: inline
+In-Reply-To: <510E4344.6010608@...1147...>
+Subject: Re: [Openvpn-devel] man page patch for missing options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +16,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: Jan Just Keijser <janjust@...1147...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Your patch has been applied to the master and release/2.3 branch.
+--NQTVMVnDVuULnIzU
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-commit 4d0fb44754d91504b84092eb2197bc635740d540 (master)
-commit d84002f419abd3ac18fe906fa58d03c1a648a3fb (release/2.3)
+Hi,
 
-Author: Arne Schwabe
-Date:   Sun Feb 3 12:12:31 2013 +0100
+On Sun, Feb 03, 2013 at 12:00:20PM +0100, Jan Just Keijser wrote:
+> attached is a man page patch to include the options that were made=20
+> connection-entry specific (by a patch of mine, which is included in 2.3.0=
+).
 
-     Remove dead code path and putenv functionality
+ACK.  Thanks for the update, 2.3.0 was indeed lacking a bit in the=20
+documentation department :-)
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: David Sommerseth <davids@...1347...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: 1359889951-3369-1-git-send-email-arne@...1227...
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/7323
-     Signed-off-by: Gert Doering <gert@...1296...>
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
+--NQTVMVnDVuULnIzU
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
---
-kind regards,
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
 
-Gert Doering
+iQCVAwUBUQ5a36kuBuNlUUl1AQKHJQQAtp9LRMyv1CuE82sa56w+BOb1LQtlLyoH
+CaH1Dq6lnqqFPFs3xIXuJTAVi9y0IgzNw280VQDcF/K49LN7yhn5YUQxnqxkdtDr
+ntB9yPl5UPRt9kLvjZfTWj2denHN+b0tpj3QQ2p6ezMvOuY5iU7VnSlWlDVG6dHF
+ZyQbptUc/R0=
+=4Ysr
+-----END PGP SIGNATURE-----
 
+--NQTVMVnDVuULnIzU--
 
