@@ -1,10 +1,10 @@
-Date: Sun, 3 Feb 2013 13:51:52 +0100
-Message-Id: <201302031251.r13CpqVB005523@...1729...>
+Date: Sun, 3 Feb 2013 14:26:41 +0100
+Message-Id: <201302031326.r13DQfAX007673@...1729...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: 510E4344.6010608@...1147...
-References: 510E4344.6010608@...1147...
-Subject: [Openvpn-devel] [PATCH applied] Re: man page patch for missing
-	options
+In-Reply-To: 1357994477-29981-1-git-send-email-matthias.andree@...68...
+References: 1357994477-29981-1-git-send-email-matthias.andree@...68...
+Subject: [Openvpn-devel] [PATCH applied] Re: Enable TCP_NODELAY
+	configuration on FreeBSD.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,20 +15,22 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Jan Just Keijser <janjust@...1147...>, openvpn-devel@lists.sourceforge.net
+To: Matthias Andree <matthias.andree@...68...>, openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master and release/2.3 branch.
 
-commit d94873f6cc2c24e29964e4483b0bc02653860deb (master)
-commit 967c5d8ea5bf6d5ad72adab5c1b76249f7f2b9d3 (release/2.3)
+commit 3e86f688757529f8b33f9e6b49e31ba8d8564c5e (master)
+commit 0a700901a3bbc97e51a6319580129a131f202889 (release/2.3)
 
-Author: Jan Just Keijser
-Date: Sun, 03 Feb 2013 12:00:20 +0100
+Author: Matthias Andree
+Date:   Sat Jan 12 13:41:17 2013 +0100
 
-     man page patch for missing options
+     Enable TCP_NODELAY configuration on FreeBSD.
 
+     Signed-off-by: Matthias Andree <matthias.andree@...68...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-ID: 510E4344.6010608@...1147...
+     Message-Id: 1357994477-29981-1-git-send-email-matthias.andree@...68...
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/7230
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
@@ -36,4 +38,5 @@ Date: Sun, 03 Feb 2013 12:00:20 +0100
 kind regards,
 
 Gert Doering
+
 
