@@ -1,12 +1,9 @@
-Message-ID: <510E6C5D.4080008@...1147...>
-Date: Sun, 03 Feb 2013 14:55:41 +0100
-From: Jan Just Keijser <janjust@...1147...>
-MIME-Version: 1.0
-References: <1345106302-22850-1-git-send-email-heiko.hund@...1489...>	<1345106302-22850-2-git-send-email-heiko.hund@...1489...>
-	<510D0687.1030503@...1227...>
-In-Reply-To: <510D0687.1030503@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 1/7] refine assertion to allow other
- modes than CBC
+Date: Sun, 3 Feb 2013 14:55:38 +0100
+Message-Id: <201302031355.r13DtcDe009859@...1729...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: 1359101540-976-2-git-send-email-samuli@...515...
+References: 1359101540-976-2-git-send-email-samuli@...515...
+Subject: [Openvpn-devel] [PATCH applied] Re: Removed ChangeLog.IPv6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,52 +12,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: samuli@...515...
 Cc: openvpn-devel@lists.sourceforge.net
 
-Arne Schwabe wrote:
-> Am 16.08.12 10:38, schrieb Heiko Hund:
->   
->> cipher_ctx_final() only returns an outlen in CBC mode. If CFB or OFB
->> are used the assertion outlen == iv_len is always false.
->>
->> There's no CBC mode defined for the GOST 28147-89 block cipher. Hence
->> this patch is needed for it to work. It's needed for other ciphers like
->> BF-CFB as well, though.
->>
->> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
->> ---
->>  src/openvpn/crypto.c |    2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
->> index ac2eecd..2f67e5e 100644
->> --- a/src/openvpn/crypto.c
->> +++ b/src/openvpn/crypto.c
->> @@ -153,7 +153,7 @@ openvpn_encrypt (struct buffer *buf, struct buffer work,
->>  	  /* Flush the encryption buffer */
->>  	  ASSERT(cipher_ctx_final(ctx->cipher, BPTR (&work) + outlen, &outlen));
->>  	  work.len += outlen;
->> -	  ASSERT (outlen == iv_size);
->> +	  ASSERT (mode != OPENVPN_MODE_CBC || outlen == iv_size);
->>  
->>  	  /* prepend the IV to the ciphertext */
->>  	  if (opt->flags & CO_USE_IV)
->>     
->
-> I have a user of my app that also tripped over this asssert line:
->
->   
-eeeehhh - removing the assert is nice, but do the other ciphers actually 
-*WORK* after that? does the test
-  openvpn --test-crypto
-pass after that? I remember commenting out the assert for a few elliptic 
-curve ciphers, but openvpn was still not able to encrypt/decrypt  
-traffic successfully.
+Your patch has been applied to the master and release/2.3 branch.
+
+commit a93ed2e64cd57a63ca5e9a393cee9bc58ef32378 (master)
+commit 5a1c16e7d0fe28666000928479e5b4c0702a9e30 (release/2.3)
+
+Author: Samuli SeppÃ¤nen
+Date:   Fri Jan 25 10:12:17 2013 +0200
+
+     Removed ChangeLog.IPv6
+
+     Acked-by: Gert Doering <gert@...1296...>
+     Signed-off-by: Samuli SeppÃ¤nen <samuli@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: 1359101540-976-2-git-send-email-samuli@...515...
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/7297
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-JJK
+--
+kind regards,
+
+Gert Doering
 
 
