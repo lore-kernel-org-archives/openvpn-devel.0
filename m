@@ -1,12 +1,12 @@
-Message-ID: <510E6F51.6000106@...1227...>
-Date: Sun, 03 Feb 2013 15:08:17 +0100
-From: Arne Schwabe <arne@...1227...>
+Message-ID: <510E77F3.4090603@...1114...>
+Date: Sun, 03 Feb 2013 15:45:07 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1345106302-22850-1-git-send-email-heiko.hund@...1489...>	<1345106302-22850-2-git-send-email-heiko.hund@...1489...>
-	<510D0687.1030503@...1227...> <510E6C5D.4080008@...1147...>
-In-Reply-To: <510E6C5D.4080008@...1147...>
-Subject: Re: [Openvpn-devel] [PATCH 1/7] refine assertion to allow other
- modes than CBC
+References: <1358854613-7150-1-git-send-email-heiko.hund@...1489...>
+	<1359895812-13871-1-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <1359895812-13871-1-git-send-email-heiko.hund@...1489...>
+Subject: Re: [Openvpn-devel] [PATCHv2] ignore UTF-8 byte order mark
+Reply-To: openvpn-users@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,55 +17,58 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-To: Jan Just Keijser <janjust@...1147...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net, Heiko Hund <heiko.hund@...1489...>
 
-Am 03.02.13 14:55, schrieb Jan Just Keijser:
-> Arne Schwabe wrote:
->> Am 16.08.12 10:38, schrieb Heiko Hund:
->>  
->>> cipher_ctx_final() only returns an outlen in CBC mode. If CFB or OFB
->>> are used the assertion outlen == iv_len is always false.
->>>
->>> There's no CBC mode defined for the GOST 28147-89 block cipher. Hence
->>> this patch is needed for it to work. It's needed for other ciphers like
->>> BF-CFB as well, though.
->>>
->>> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
->>> ---
->>>  src/openvpn/crypto.c |    2 +-
->>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
->>> index ac2eecd..2f67e5e 100644
->>> --- a/src/openvpn/crypto.c
->>> +++ b/src/openvpn/crypto.c
->>> @@ -153,7 +153,7 @@ openvpn_encrypt (struct buffer *buf, struct
->>> buffer work,
->>>        /* Flush the encryption buffer */
->>>        ASSERT(cipher_ctx_final(ctx->cipher, BPTR (&work) + outlen,
->>> &outlen));
->>>        work.len += outlen;
->>> -      ASSERT (outlen == iv_size);
->>> +      ASSERT (mode != OPENVPN_MODE_CBC || outlen == iv_size);
->>>  
->>>        /* prepend the IV to the ciphertext */
->>>        if (opt->flags & CO_USE_IV)
->>>     
->>
->> I have a user of my app that also tripped over this asssert line:
->>
->>   
-> eeeehhh - removing the assert is nice, but do the other ciphers
-> actually *WORK* after that? does the test
->  openvpn --test-crypto
-> pass after that? I remember commenting out the assert for a few
-> elliptic curve ciphers, but openvpn was still not able to
-> encrypt/decrypt  traffic successfully
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-I have no idea of the crypto involved. But if there is a known class of
-cryptos that fails in this "obscure" way we should exit with error much
-earlier.
+On 03/02/13 13:50, Heiko Hund wrote:
+> Currently openvpn exits when reading configuration from a file that
+> has an UTF-8 byte order mark (EF BB BF) at its start.
+> 
+> While it is useless to put a BOM into UTF-8 encoded files, the 
+> Unicode standard [1] permits it (on page 36):
+> 
+> "Use of a BOM is neither required nor recommended for UTF-8, but
+> may be encountered in contexts where UTF-8 data is converted from
+> other encoding forms that use a BOM or where the BOM is used as a
+> UTF-8 signature."
+> 
+> Notepad.exe, the default text editor on Windows, always puts the
+> BOM into UTF-8 encoded files when saving them. Others may do as
+> well.
+> 
+> Just ignoring the UTF-8 BOM will make config files with UTF-8 BOM 
+> readable.
+> 
+> [1] http://www.unicode.org/versions/Unicode5.0.0/ch02.pdf
+> 
+> Signed-off-by: Heiko Hund <heiko.hund@...1489...> --- 
+> src/openvpn/options.c |    6 +++++- 1 file changed, 5
+> insertions(+), 1 deletion(-)
+> 
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c index
+> 8ca41a3..c52b699 100644 --- a/src/openvpn/options.c +++
+> b/src/openvpn/options.c @@ -3773,7 +3773,11 @@ read_config_file
+> (struct options *options, { CLEAR (p); ++line_num; -	      if
+> (parse_line (line, p, SIZE (p), file, line_num, msglevel,
+> &options->gc)) +              /* Ignore UTF-8 BOM at start of
+> stream */ +              int offset = 0;
 
-Arne
+Some compilers will complain with int being declared here.  Moving it
+up to before the CLEAR (p); line is probably going to work better ...
+
+
+- -- 
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAlEOd/EACgkQDC186MBRfrr9+wCghuv++EJkTlCAb3p0YoLzSkGv
+b1YAn3PKYmvfaIZzaYsu3NAXl6m2Dutz
+=Fyps
+-----END PGP SIGNATURE-----
 
