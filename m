@@ -1,13 +1,12 @@
-Date: Sun, 3 Feb 2013 15:04:12 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20130203140412.GQ953@...1296...>
-References: <201302031355.r13DtcDe009859@...1729...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="t4apE7yKrX2dGgJC"
-Content-Disposition: inline
-In-Reply-To: <201302031355.r13DtcDe009859@...1729...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Removed ChangeLog.IPv6
+Message-ID: <510E6F51.6000106@...1227...>
+Date: Sun, 03 Feb 2013 15:08:17 +0100
+From: Arne Schwabe <arne@...1227...>
+MIME-Version: 1.0
+References: <1345106302-22850-1-git-send-email-heiko.hund@...1489...>	<1345106302-22850-2-git-send-email-heiko.hund@...1489...>
+	<510D0687.1030503@...1227...> <510E6C5D.4080008@...1147...>
+In-Reply-To: <510E6C5D.4080008@...1147...>
+Subject: Re: [Openvpn-devel] [PATCH 1/7] refine assertion to allow other
+ modes than CBC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,54 +15,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Samuli =?iso-8859-1?B?U2VwcMOkbmVu?= <samuli@...515...>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Jan Just Keijser <janjust@...1147...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---t4apE7yKrX2dGgJC
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Am 03.02.13 14:55, schrieb Jan Just Keijser:
+> Arne Schwabe wrote:
+>> Am 16.08.12 10:38, schrieb Heiko Hund:
+>>  
+>>> cipher_ctx_final() only returns an outlen in CBC mode. If CFB or OFB
+>>> are used the assertion outlen == iv_len is always false.
+>>>
+>>> There's no CBC mode defined for the GOST 28147-89 block cipher. Hence
+>>> this patch is needed for it to work. It's needed for other ciphers like
+>>> BF-CFB as well, though.
+>>>
+>>> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+>>> ---
+>>>  src/openvpn/crypto.c |    2 +-
+>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+>>> index ac2eecd..2f67e5e 100644
+>>> --- a/src/openvpn/crypto.c
+>>> +++ b/src/openvpn/crypto.c
+>>> @@ -153,7 +153,7 @@ openvpn_encrypt (struct buffer *buf, struct
+>>> buffer work,
+>>>        /* Flush the encryption buffer */
+>>>        ASSERT(cipher_ctx_final(ctx->cipher, BPTR (&work) + outlen,
+>>> &outlen));
+>>>        work.len += outlen;
+>>> -      ASSERT (outlen == iv_size);
+>>> +      ASSERT (mode != OPENVPN_MODE_CBC || outlen == iv_size);
+>>>  
+>>>        /* prepend the IV to the ciphertext */
+>>>        if (opt->flags & CO_USE_IV)
+>>>     
+>>
+>> I have a user of my app that also tripped over this asssert line:
+>>
+>>   
+> eeeehhh - removing the assert is nice, but do the other ciphers
+> actually *WORK* after that? does the test
+>  openvpn --test-crypto
+> pass after that? I remember commenting out the assert for a few
+> elliptic curve ciphers, but openvpn was still not able to
+> encrypt/decrypt  traffic successfully
 
-Hi,
+I have no idea of the crypto involved. But if there is a known class of
+cryptos that fails in this "obscure" way we should exit with error much
+earlier.
 
-On Sun, Feb 03, 2013 at 02:55:38PM +0100, Gert Doering wrote:
-> Your patch has been applied to the master and release/2.3 branch.
->=20
-> commit a93ed2e64cd57a63ca5e9a393cee9bc58ef32378 (master)
-> commit 5a1c16e7d0fe28666000928479e5b4c0702a9e30 (release/2.3)
->=20
-> Author: Samuli Sepp=C3=A4nen
-
-As a side note: sorry for not noticing the broken In-Reply-To: headers
-before sending 10 ACK mails...  David has fixed the script I'm using
-now, so the next mails should be fine.
-
-(Unless there is demand, I'm not re-sending the mails with fixed
-In-Reply-To: headers, to avoid extra noise on the list - it should not=20
-be *that* hard to attribute the mails)
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---t4apE7yKrX2dGgJC
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (NetBSD)
-
-iQCVAwUBUQ5uXKkuBuNlUUl1AQLfWgQAsUUC2iJKnQnRDr2wKVyzLFMyf+vO0uTK
-otdNpfzPQNMR8LdH3MscFVXJEbPpyQwsvYt0HKS3c6Yq0Juy951s2KVkO87KQ+dL
-AsCuw2M05Xn66Po1kWb2YPRv3RrcgOW+EzsULMV/Avp1AscbF6qeqch6VmNiErRf
-sOqjjY04/CQ=
-=jQt/
------END PGP SIGNATURE-----
-
---t4apE7yKrX2dGgJC--
+Arne
 
