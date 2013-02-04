@@ -1,11 +1,10 @@
-From: Adriaan de Jong <dejong@...1435...>
-Date: Mon, 4 Feb 2013 08:43:10 +0100
-Message-ID: <1CED409804E2164C8104F9E623B08B901349CFBA40@...1436...>
-References: <510E43DE.20008@...1147...> <510E7997.8040909@...1114...>
-In-Reply-To: <510E7997.8040909@...1114...>
-Content-Language: en-US
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Mon, 4 Feb 2013 11:39:25 +0000
+Message-ID: <1359977966-31724-1-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <1358854613-7150-1-git-send-email-heiko.hund@...1489...>
+References: <1358854613-7150-1-git-send-email-heiko.hund@...1489...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] option --crl-verify PATH dir
+Subject: [Openvpn-devel] [PATCHv3] ignore UTF-8 byte order mark
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,46 +13,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Jan Just Keijser <janjust@...1147...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-> -----Original Message-----
-> From: David Sommerseth [mailto:openvpn.list@...1114...]
-> Sent: zondag 3 februari 2013 15:52
-> To: Jan Just Keijser
-> Cc: openvpn-devel@lists.sourceforge.net
-> Subject: Re: [Openvpn-devel] option --crl-verify PATH dir
->=20
-> On 03/02/13 12:02, Jan Just Keijser wrote:
-> > hi,
-> >
-> > what is the second option to '--crl-verify' supposed to do? in
-> > options.c it sets a flag SSLF_CRL_VERIFY_DIR which then triggers the
-> > function 'verify_check_crl_dir'. However, this function does not seem
-> > to do anything....
->=20
-> Quickly looked at the code ... with the 'dir' flag (which sets
-> SSLF_CRL_VERIFY_DIR), it's no longer a typical CRL file validation.  If
-> you create (touch) a file in the defined directory with the file name
-> matching a particular client's serial number; the connection will be
-> denied.
->=20
+Currently openvpn exits when reading configuration from a file
+that has an UTF-8 byte order mark (EF BB BF) at its start.
 
-Confirmed, with the footnote that this is a weird way of going about things=
-.=20
+While it is useless to put a BOM into UTF-8 encoded files, the
+Unicode standard [1] permits it (on page 36):
 
-I would like to suggest deprecating this option from 2.4 (or 2.3.1?) onward=
-s, and forcing people to either:
+  "Use of a BOM is neither required nor recommended for UTF-8,
+  but may be encountered in contexts where UTF-8 data is converted
+  from other encoding forms that use a BOM or where the BOM is
+  used as a UTF-8 signature."
 
- - Create an actual CRL file. This is not difficult. In general, people usi=
-ng OpenVPN should be managing their own CA in the OpenVPN world.
- - Failing that, create a custom script to do this.
+Notepad.exe, the default text editor on Windows, always puts the BOM
+into UTF-8 encoded files when saving them. Others may do as well.
 
-I'm always open for discussion, but imho this should not be core functional=
-ity in OpenVPN.
+Just ignoring the UTF-8 BOM will make config files with UTF-8 BOM
+readable.
 
-Kind regards,
-Adriaan
+[1] http://www.unicode.org/versions/Unicode5.0.0/ch02.pdf
+
+Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+---
+ src/openvpn/options.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 8ca41a3..ac05a29 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3771,9 +3771,13 @@ read_config_file (struct options *options,
+ 	  line_num = 0;
+ 	  while (fgets(line, sizeof (line), fp))
+ 	    {
++              int offset = 0;
+ 	      CLEAR (p);
+ 	      ++line_num;
+-	      if (parse_line (line, p, SIZE (p), file, line_num, msglevel, &options->gc))
++              /* Ignore UTF-8 BOM at start of stream */
++              if (line_num == 1 && strncmp (line, "\xEF\xBB\xBF", 3) == 0)
++                offset = 3;
++	      if (parse_line (line + offset, p, SIZE (p), file, line_num, msglevel, &options->gc))
+ 		{
+ 		  bypass_doubledash (&p[0]);
+ 		  check_inline_file_via_fp (fp, p, &options->gc);
+-- 
+1.7.10.4
 
 
