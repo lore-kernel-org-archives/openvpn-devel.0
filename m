@@ -1,13 +1,8 @@
-Message-ID: <5112AB30.50008@...1114...>
-Date: Wed, 06 Feb 2013 20:12:48 +0100
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <511B5D2E.5090602@...515...>
+Date: Wed, 13 Feb 2013 11:30:22 +0200
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <1358854613-7150-1-git-send-email-heiko.hund@...1489...>
-	<1359977966-31724-1-git-send-email-heiko.hund@...1489...>
-	<5112A93E.3040609@...1114...>
-In-Reply-To: <5112A93E.3040609@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: ignore UTF-8 byte order mark
-Reply-To: openvpn-users@lists.sourceforge.net
+Subject: [Openvpn-devel] Updated OpenVPN 2.3.0 Windows installer for testing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,42 +11,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi all,
 
-Forgot to add this was also applied to release/2.3
-commit a8fe779b04cc5bf698a1bf5bed4b0189126c3a38
+Here are updated Windows installers for 2.3.0:
 
+<http://build.openvpn.net/downloads/temp/openvpn-install-2.3.0-I000_master-=
+i686.exe>
+<http://build.openvpn.net/downloads/temp/openvpn-install-2.3.0-I000_master-=
+x86_64.exe>
 
-On 06/02/13 20:04, David Sommerseth wrote:
-> Your patch has been applied to the master branch.
-> 
-> commit 6e6f55f4ba5deda5649679a13e4e323e07b3e661 Author: Heiko Hund 
-> Date:   Mon Feb 4 11:39:25 2013 +0000
-> 
-> Ignore UTF-8 byte order mark
-> 
-> Signed-off-by: Heiko Hund <heiko.hund@...1489...> Acked-by: David
-> Sommerseth <davids@...1347...> Message-Id:
-> 1359977966-31724-1-git-send-email-heiko.hund@...1489... URL:
-> http://article.gmane.org/gmane.network.openvpn.devel/7342 
-> Signed-off-by: David Sommerseth <davids@...1347...>
-> 
+These installers fix two bugs:
 
-- -- 
-kind regards,
+<https://community.openvpn.net/openvpn/ticket/249>
+<https://community.openvpn.net/openvpn/ticket/255>
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+I've tested the installers on WinXP 32-bit and Win7 64-bit and the
+problems seem to be gone. Please test so that we can push out another
+2.3.0 Windows build a.s.a.p.
 
-iEYEARECAAYFAlESqzAACgkQDC186MBRfrrKygCfTqg7qDJDo/f0rlKln8Qi4bbJ
-2yIAoJeuU9Wt2GSrKGDHgbi0FFIZ2TZQ
-=PUer
------END PGP SIGNATURE-----
+Thanks,
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+PS. I got one further tapinstall.exe fix in the queue:
+
+<https://community.openvpn.net/openvpn/ticket/153>
 
