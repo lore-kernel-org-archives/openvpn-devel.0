@@ -1,8 +1,11 @@
-Message-ID: <511E0706.9020203@...515...>
-Date: Fri, 15 Feb 2013 11:59:34 +0200
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Fri, 15 Feb 2013 18:39:11 +0100
+Message-ID: <2485195.ksrFaVsMX6@...1526...>
+In-Reply-To: <511CC1F1.6010409@...1114...>
+References: <511CC1F1.6010409@...1114...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 2.3.0 Windows build I004 released
+Subject: Re: [Openvpn-devel] RFC - Usefulness of the --tls-remote semantic
+	warning
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,31 +14,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, "openvpn-announce@lists.sourceforge.net" <openvpn-announce@lists.sourceforge.net>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-OpenVPN 2.3.0 Windows installer version I004 has been released. It
-includes a number of fixes compared to the previous one (I001):
+Hi,
 
-- Uses OpenSSL 1.0.1e that includes a proper fix for CVE-2013-0169[1]
-- Fixes broken silent installations[2]
-- Installs TAP utilities by default[3]
-- Fixes broken man-page link in the Start menu
-- Adds and updates other Start menu documentation links
+On Thursday 14 February 2013 11:52:33 David Sommerseth wrote:
+> This is just a minor issue which has been annoying me a little bit.
+> I've attached a patch which ensures that the --tls-remote semantic
+> warning is only printed once.
+> 
+> However, I wonder how useful that warning really is these days.  Do
+> we really need that warning?  The warning comes from this commit [1]:
 
-You can download the new installer from here:
+I just removed this warning while working on the --tls-remote compat / 
+depreciation patchset. So, don't bother sending a patch of your own. I'll post 
+the patchset next week after some testing.
 
-<http://openvpn.net/index.php/download/community-downloads.html>
+Heiko
+-- 
+Heiko Hund | Sr. Software Engineer | Tel +49-721-25516-237 | Fax -200
+SOPHOS NSG | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germany
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
-[1] <http://web.nvd.nist.gov/view/vuln/detail?vulnId=3DCVE-2013-0169>
-[2] <https://community.openvpn.net/openvpn/ticket/249>
-[3] <https://community.openvpn.net/openvpn/ticket/255>
 
