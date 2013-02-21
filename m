@@ -1,8 +1,11 @@
-From: Chris J Arges <chris.j.arges@...1808...>
-Date: Wed, 20 Feb 2013 16:12:07 -0600
-Message-Id: <1361398327-26258-1-git-send-email-chris.j.arges@...1808...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Add auto value to pkcs11-id parameter
+Date: Thu, 21 Feb 2013 10:53:46 -0600
+From: "Josh Cepek" <josh.cepek@...1085...>
+Mime-Version: 1.0
+Message-ID: <437RBuq1U8032S07.1361465626@...1810...>
+Content-Type: multipart/mixed;
+	boundary="----NetAddressPart-00--=_uq1U8032S07699fc268"
+Subject: [Openvpn-devel] [PATCH] Fix parameter listing in non-debug builds
+	at verb 4
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,76 +14,153 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: o.dumschat@...1809...
 
-This patch allows one to specify --pkcs11-id auto to automatically
-select the first certificate on a pkcs11 device. This simplifies
-scripts and usage in environments where clients may only use a single
-certificate for connecting to a VPN.
-Based on a patch by Oliver Dumschat-Hötte.
+This is a multi-part message in MIME format.
 
-Reported-by: Oliver Dumschat-Hötte <o.dumschat@...1809...>
-Signed-off-by: Chris J Arges <chris.j.arges@...1808...>
----
- src/openvpn/pkcs11.c |   41 +++++++++++++++++++++++++++++++++--------
- 1 file changed, 33 insertions(+), 8 deletions(-)
+------NetAddressPart-00--=_uq1U8032S07699fc268
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/src/openvpn/pkcs11.c b/src/openvpn/pkcs11.c
-index 3a15ef6..11d5e8f 100644
---- a/src/openvpn/pkcs11.c
-+++ b/src/openvpn/pkcs11.c
-@@ -669,14 +669,39 @@ tls_ctx_use_pkcs11 (
- 		}
- 	}
- 	else {
--		if (
--			(rv = pkcs11h_certificate_deserializeCertificateId (
--				&certificate_id,
--				pkcs11_id
--			)) != CKR_OK
--		) {
--			msg (M_WARN, "PKCS#11: Cannot deserialize id %ld-'%s'", rv, pkcs11h_getMessage (rv));
--			goto cleanup;
-+		if ( strcmp(pkcs11_id, "auto") == 0 ) {
-+			char *pkcs11_id_read = NULL;
-+			char *base64 = NULL;
-+			if ( !pkcs11_management_id_get(
-+			       0,
-+			       &pkcs11_id_read,
-+			       &base64
-+			   )
-+			) {
-+				msg (M_WARN, "PKCS#11: pkcs11_management_id_get 0 failed");
-+				goto cleanup;
-+			}
-+			if (
-+				(rv = pkcs11h_certificate_deserializeCertificateId (
-+					&certificate_id,
-+					pkcs11_id_read
-+				)) != CKR_OK
-+			) {
-+				msg (M_WARN, "PKCS#11: Cannot deserialize auto id %ld-'%s'", rv,
-+				     pkcs11h_getMessage (rv));
-+				goto cleanup;
-+			}
-+		} else {
-+			if (
-+				(rv = pkcs11h_certificate_deserializeCertificateId (
-+					&certificate_id,
-+					pkcs11_id
-+				)) != CKR_OK
-+			) {
-+				msg (M_WARN, "PKCS#11: Cannot deserialize id %ld-'%s'", rv,
-+				     pkcs11h_getMessage (rv));
-+				goto cleanup;
-+			}
- 		}
- 	}
- 
--- 
-1.7.9.5
+The patch is attached; a summary, and mitigating build suggestion follows:
 
+The current official Windows builds of 2.3.0 up to I004 are built
+enable_debug=3Dno; I'm not sure about the repo builds since I build from so=
+urce
+on my non-Windows systems, but the same issue is present when lacking debug
+support on Linux/Unix. This causes such builds to lack parameter printing at
+--verb 4 which conflicts with the help output and configure text for
+enable_small. This is a particular issue for binary installations (Windows,=
+ or
+binary *nix distros.)
+
+Until this change makes its way into the release repo branches, I'd suggest
+all official builds be built with enable_debug=3Dyes. Without this build op=
+tion,
+end-users will be unable to make use of increased verbosity/troubleshooting
+provided at verb 4.
+
+
+Commit/code reasoning for the patch: (also present in attached patch for
+convenience.) This patch applies to either the v2.3.0 tag, or current HEAD.
+
+When built with enable_debug=3Dno, the parameter output expected at --verb =
+4 is
+not printed due to use of #ifdef ENABLE_DEBUG in the responsible code
+sections. This appears to be a mistake when looking at the configure help t=
+ext
+for enable_small and enable_debug.
+
+This change keys the relevant code off of enable_small instead, including t=
+he
+parameter listing when enale_small=3Dno (the configure-script default.) Mos=
+t of
+this code is in options.c, with some callers present in plugin.c/h and
+route.c/h. No function code is changed, just the #ifdef values to use the
+small feature instead of debug.
+
+This means builds no longer need enable_debug=3Dyes in order to get the exp=
+ected
+log output at verb 4.
+
+--
+Josh
+
+
+------NetAddressPart-00--=_uq1U8032S07699fc268
+Content-Type: application/octet-stream;
+	name="0001-Fix-verb4-with-non-debug.patch"
+Content-Transfer-Encoding: base64
+Content-Disposition: inline; filename="0001-Fix-verb4-with-non-debug.patch"
+
+RnJvbSBjNmY2YmZhMGNjNmIwMzEzODcyZWIyYzUxNDljMzY0YmY5MzkwNDJhIE1vbiBTZXAg
+MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBKb3NoIENlcGVrIDxqb3NoLmNlcGVrQHVzYS5uZXQ+
+CkRhdGU6IFRodSwgMjEgRmViIDIwMTMgMDk6NTA6MzggLTA2MDAKU3ViamVjdDogW1BBVENI
+XSBGaXggcGFyYW1ldGVyIGxpc3RpbmcgaW4gbm9uLWRlYnVnIGJ1aWxkcyBhdCB2ZXJiIDQK
+CldoZW4gYnVpbHQgd2l0aCBlbmFibGVfZGVidWc9bm8sIHRoZSBwYXJhbWV0ZXIgb3V0cHV0
+IGV4cGVjdGVkIGF0IC0tdmVyYgo0IGlzIG5vdCBwcmludGVkIGR1ZSB0byB1c2Ugb2YgI2lm
+ZGVmIEVOQUJMRV9ERUJVRyBpbiB0aGUgcmVzcG9uc2libGUKY29kZSBzZWN0aW9ucy4gVGhp
+cyBhcHBlYXJzIHRvIGJlIGEgbWlzdGFrZSB3aGVuIGxvb2tpbmcgYXQgdGhlCmNvbmZpZ3Vy
+ZSBoZWxwIHRleHQgZm9yIGVuYWJsZV9zbWFsbCBhbmQgZW5hYmxlX2RlYnVnLgoKVGhpcyBj
+aGFuZ2Uga2V5cyB0aGUgcmVsZXZhbnQgY29kZSBvZmYgb2YgZW5hYmxlX3NtYWxsIGluc3Rl
+YWQsCmluY2x1ZGluZyB0aGUgcGFyYW1ldGVyIGxpc3Rpbmcgd2hlbiBlbmFsZV9zbWFsbD1u
+byAodGhlCmNvbmZpZ3VyZS1zY3JpcHQgZGVmYXVsdC4pIE1vc3Qgb2YgdGhpcyBjb2RlIGlz
+IGluIG9wdGlvbnMuYywgd2l0aCBzb21lCmNhbGxlcnMgcHJlc2VudCBpbiBwbHVnaW4uYy9o
+IGFuZCByb3V0ZS5jL2guIE5vIGZ1bmN0aW9uIGNvZGUgaXMKY2hhbmdlZCwganVzdCB0aGUg
+I2lmZGVmIHZhbHVlcyB0byB1c2UgdGhlIHNtYWxsIGZlYXR1cmUgaW5zdGVhZCBvZgpkZWJ1
+Zy4KClRoaXMgbWVhbnMgYnVpbGRzIG5vIGxvbmdlciBuZWVkIGVuYWJsZV9kZWJ1Zz15ZXMg
+aW4gb3JkZXIgdG8gZ2V0IHRoZQpleHBlY3RlZCBsb2cgb3V0cHV0IGF0IHZlcmIgNC4KClNp
+Z25lZC1vZmYtYnk6IEpvc2ggQ2VwZWsgPGpvc2guY2VwZWtAdXNhLm5ldD4KLS0tCiBzcmMv
+b3BlbnZwbi9vcHRpb25zLmMgfCAxNCArKysrKysrLS0tLS0tLQogc3JjL29wZW52cG4vcGx1
+Z2luLmMgIHwgIDIgKy0KIHNyYy9vcGVudnBuL3BsdWdpbi5oICB8ICAyICstCiBzcmMvb3Bl
+bnZwbi9yb3V0ZS5jICAgfCAgMiArLQogc3JjL29wZW52cG4vcm91dGUuaCAgIHwgIDIgKy0K
+IDUgZmlsZXMgY2hhbmdlZCwgMTEgaW5zZXJ0aW9ucygrKSwgMTEgZGVsZXRpb25zKC0pCgpk
+aWZmIC0tZ2l0IGEvc3JjL29wZW52cG4vb3B0aW9ucy5jIGIvc3JjL29wZW52cG4vb3B0aW9u
+cy5jCmluZGV4IDhjYTQxYTMuLmFlMGUxZTcgMTAwNjQ0Ci0tLSBhL3NyYy9vcGVudnBuL29w
+dGlvbnMuYworKysgYi9zcmMvb3BlbnZwbi9vcHRpb25zLmMKQEAgLTg4MSw3ICs4ODEsNyBA
+QCB1bmluaXRfb3B0aW9ucyAoc3RydWN0IG9wdGlvbnMgKm8pCiAgICAgfQogfQogCi0jaWZk
+ZWYgRU5BQkxFX0RFQlVHCisjaWZuZGVmIEVOQUJMRV9TTUFMTAogCiAjZGVmaW5lIFNIT1df
+UEFSTShuYW1lLCB2YWx1ZSwgZm9ybWF0KSBtc2coRF9TSE9XX1BBUk1TLCAiICAiICNuYW1l
+ICIgPSAiIGZvcm1hdCwgKHZhbHVlKSkKICNkZWZpbmUgU0hPV19TVFIodmFyKSAgICAgICBT
+SE9XX1BBUk0odmFyLCAoby0+dmFyID8gby0+dmFyIDogIltVTkRFRl0iKSwgIiclcyciKQpA
+QCAtMTA4MSw3ICsxMDgxLDcgQEAgcGFyc2VfaGFzaF9maW5nZXJwcmludChjb25zdCBjaGFy
+ICpzdHIsIGludCBuYnl0ZXMsIGludCBtc2dsZXZlbCwgc3RydWN0IGdjX2FyZW4KIAogI2lm
+ZGVmIFdJTjMyCiAKLSNpZmRlZiBFTkFCTEVfREVCVUcKKyNpZm5kZWYgRU5BQkxFX1NNQUxM
+CiAKIHN0YXRpYyB2b2lkCiBzaG93X2RoY3Bfb3B0aW9uX2FkZHJzIChjb25zdCBjaGFyICpu
+YW1lLCBjb25zdCBpbl9hZGRyX3QgKmFycmF5LCBpbnQgbGVuKQpAQCAtMTE1Myw3ICsxMTUz
+LDcgQEAgZGhjcF9vcHRpb25fYWRkcmVzc19wYXJzZSAoY29uc3QgY2hhciAqbmFtZSwgY29u
+c3QgY2hhciAqcGFybSwgaW5fYWRkcl90ICphcnJheSwKIAogI2lmIFAyTVAKIAotI2lmZGVm
+IEVOQUJMRV9ERUJVRworI2lmbmRlZiBFTkFCTEVfU01BTEwKIAogc3RhdGljIHZvaWQKIHNo
+b3dfcDJtcF9wYXJtcyAoY29uc3Qgc3RydWN0IG9wdGlvbnMgKm8pCkBAIC0xMjI1LDcgKzEy
+MjUsNyBAQCBzaG93X3AybXBfcGFybXMgKGNvbnN0IHN0cnVjdCBvcHRpb25zICpvKQogICBn
+Y19mcmVlICgmZ2MpOwogfQogCi0jZW5kaWYgLyogRU5BQkxFX0RFQlVHICovCisjZW5kaWYg
+LyogISBFTkFCTEVfU01BTEwgKi8KIAogI2lmIFAyTVBfU0VSVkVSCiAKQEAgLTEyNzksNyAr
+MTI3OSw3IEBAIG9wdGlvbl9pcm91dGVfaXB2NiAoc3RydWN0IG9wdGlvbnMgKm8sCiAjZW5k
+aWYgLyogUDJNUF9TRVJWRVIgKi8KICNlbmRpZiAvKiBQMk1QICovCiAKLSNpZiBkZWZpbmVk
+KEVOQUJMRV9IVFRQX1BST1hZKSAmJiBkZWZpbmVkKEVOQUJMRV9ERUJVRykKKyNpZiBkZWZp
+bmVkKEVOQUJMRV9IVFRQX1BST1hZKSAmJiAhZGVmaW5lZChFTkFCTEVfU01BTEwpCiBzdGF0
+aWMgdm9pZAogc2hvd19odHRwX3Byb3h5X29wdGlvbnMgKGNvbnN0IHN0cnVjdCBodHRwX3By
+b3h5X29wdGlvbnMgKm8pCiB7CkBAIC0xMzMyLDcgKzEzMzIsNyBAQCBjbm9sX2NoZWNrX2Fs
+bG9jIChzdHJ1Y3Qgb3B0aW9ucyAqb3B0aW9ucykKIH0KICNlbmRpZgogCi0jaWZkZWYgRU5B
+QkxFX0RFQlVHCisjaWZuZGVmIEVOQUJMRV9TTUFMTAogc3RhdGljIHZvaWQKIHNob3dfY29u
+bmVjdGlvbl9lbnRyeSAoY29uc3Qgc3RydWN0IGNvbm5lY3Rpb25fZW50cnkgKm8pCiB7CkBA
+IC0xNDAwLDcgKzE0MDAsNyBAQCBzaG93X2Nvbm5lY3Rpb25fZW50cmllcyAoY29uc3Qgc3Ry
+dWN0IG9wdGlvbnMgKm8pCiB2b2lkCiBzaG93X3NldHRpbmdzIChjb25zdCBzdHJ1Y3Qgb3B0
+aW9ucyAqbykKIHsKLSNpZmRlZiBFTkFCTEVfREVCVUcKKyNpZm5kZWYgRU5BQkxFX1NNQUxM
+CiAgIG1zZyAoRF9TSE9XX1BBUk1TLCAiQ3VycmVudCBQYXJhbWV0ZXIgU2V0dGluZ3M6Iik7
+CiAKICAgU0hPV19TVFIgKGNvbmZpZyk7CmRpZmYgLS1naXQgYS9zcmMvb3BlbnZwbi9wbHVn
+aW4uYyBiL3NyYy9vcGVudnBuL3BsdWdpbi5jCmluZGV4IDgzZjc5ZTQuLmM5NmMxMjEgMTAw
+NjQ0Ci0tLSBhL3NyYy9vcGVudnBuL3BsdWdpbi5jCisrKyBiL3NyYy9vcGVudnBuL3BsdWdp
+bi5jCkBAIC0xNTUsNyArMTU1LDcgQEAgcGx1Z2luX29wdGlvbl9saXN0X2FkZCAoc3RydWN0
+IHBsdWdpbl9vcHRpb25fbGlzdCAqbGlzdCwgY2hhciAqKnAsIHN0cnVjdCBnY19hcmUKICAg
+ICByZXR1cm4gZmFsc2U7CiB9CiAKLSNpZmRlZiBFTkFCTEVfREVCVUcKKyNpZm5kZWYgRU5B
+QkxFX1NNQUxMCiB2b2lkCiBwbHVnaW5fb3B0aW9uX2xpc3RfcHJpbnQgKGNvbnN0IHN0cnVj
+dCBwbHVnaW5fb3B0aW9uX2xpc3QgKmxpc3QsIGludCBtc2dsZXZlbCkKIHsKZGlmZiAtLWdp
+dCBhL3NyYy9vcGVudnBuL3BsdWdpbi5oIGIvc3JjL29wZW52cG4vcGx1Z2luLmgKaW5kZXgg
+NGJhMTUwZC4uMmY4NDE2YiAxMDA2NDQKLS0tIGEvc3JjL29wZW52cG4vcGx1Z2luLmgKKysr
+IGIvc3JjL29wZW52cG4vcGx1Z2luLmgKQEAgLTEwOCw3ICsxMDgsNyBAQCBzdHJ1Y3QgcGx1
+Z2luX3JldHVybgogc3RydWN0IHBsdWdpbl9vcHRpb25fbGlzdCAqcGx1Z2luX29wdGlvbl9s
+aXN0X25ldyAoc3RydWN0IGdjX2FyZW5hICpnYyk7CiBib29sIHBsdWdpbl9vcHRpb25fbGlz
+dF9hZGQgKHN0cnVjdCBwbHVnaW5fb3B0aW9uX2xpc3QgKmxpc3QsIGNoYXIgKipwLCBzdHJ1
+Y3QgZ2NfYXJlbmEgKmdjKTsKIAotI2lmZGVmIEVOQUJMRV9ERUJVRworI2lmbmRlZiBFTkFC
+TEVfU01BTEwKIHZvaWQgcGx1Z2luX29wdGlvbl9saXN0X3ByaW50IChjb25zdCBzdHJ1Y3Qg
+cGx1Z2luX29wdGlvbl9saXN0ICpsaXN0LCBpbnQgbXNnbGV2ZWwpOwogI2VuZGlmCiAKZGlm
+ZiAtLWdpdCBhL3NyYy9vcGVudnBuL3JvdXRlLmMgYi9zcmMvb3BlbnZwbi9yb3V0ZS5jCmlu
+ZGV4IGRkNjlkOGUuLjEzNGVkNTggMTAwNjQ0Ci0tLSBhL3NyYy9vcGVudnBuL3JvdXRlLmMK
+KysrIGIvc3JjL29wZW52cG4vcm91dGUuYwpAQCAtMTA4OSw3ICsxMDg5LDcgQEAgZGVsZXRl
+X3JvdXRlcyAoc3RydWN0IHJvdXRlX2xpc3QgKnJsLCBzdHJ1Y3Qgcm91dGVfaXB2Nl9saXN0
+ICpybDYsCiAgICAgfQogfQogCi0jaWZkZWYgRU5BQkxFX0RFQlVHCisjaWZuZGVmIEVOQUJM
+RV9TTUFMTAogCiBzdGF0aWMgY29uc3QgY2hhciAqCiBzaG93X29wdCAoY29uc3QgY2hhciAq
+b3B0aW9uKQpkaWZmIC0tZ2l0IGEvc3JjL29wZW52cG4vcm91dGUuaCBiL3NyYy9vcGVudnBu
+L3JvdXRlLmgKaW5kZXggZTYzZGI1OS4uYTQwZGUzMiAxMDA2NDQKLS0tIGEvc3JjL29wZW52
+cG4vcm91dGUuaAorKysgYi9zcmMvb3BlbnZwbi9yb3V0ZS5oCkBAIC0yOTAsNyArMjkwLDcg
+QEAgdm9pZCBwcmludF9kZWZhdWx0X2dhdGV3YXkoY29uc3QgaW50IG1zZ2xldmVsLCBjb25z
+dCBzdHJ1Y3Qgcm91dGVfZ2F0ZXdheV9pbmZvICoKICNkZWZpbmUgVExBX0xPQ0FMICAgICAg
+ICAgICAyCiBpbnQgdGVzdF9sb2NhbF9hZGRyIChjb25zdCBpbl9hZGRyX3QgYWRkciwgY29u
+c3Qgc3RydWN0IHJvdXRlX2dhdGV3YXlfaW5mbyAqcmdpKTsKIAotI2lmZGVmIEVOQUJMRV9E
+RUJVRworI2lmbmRlZiBFTkFCTEVfU01BTEwKIHZvaWQgcHJpbnRfcm91dGVfb3B0aW9ucyAo
+Y29uc3Qgc3RydWN0IHJvdXRlX29wdGlvbl9saXN0ICpyb2wsCiAJCQkgIGludCBsZXZlbCk7
+CiAjZW5kaWYKLS0gCjEuNy4xMi40Cgo=
+
+------NetAddressPart-00--=_uq1U8032S07699fc268--
 
