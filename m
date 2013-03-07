@@ -1,10 +1,13 @@
-Date: Thu, 7 Mar 2013 20:39:35 +0100
-Message-Id: <201303071939.r27JdZkw021782@...1729...>
+Date: Thu, 7 Mar 2013 20:40:33 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1362670601-18660-1-git-send-email-heiko.hund@...1489...>
-References: <1362670601-18660-1-git-send-email-heiko.hund@...1489...>
-Subject: [Openvpn-devel] [PATCH applied] Re: add new option for X.509 name
-	verification
+Message-ID: <20130307194033.GH953@...1296...>
+References: <1361526263-1740-1-git-send-email-heiko.hund@...1489...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="ewIlFbbLnYFKahON"
+Content-Disposition: inline
+In-Reply-To: <1361526263-1740-1-git-send-email-heiko.hund@...1489...>
+Subject: Re: [Openvpn-devel] [PATCH] revamp X.509 name verification option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +16,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Heiko Hund <heiko.hund@...1489...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.3 branch.
+--ewIlFbbLnYFKahON
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-commit 9f0fc745664fd0fc6a1c6785e101bf912088db16 (master)
-commit f6e12862cefd054eb1a44c18ea1dfb4cba7d007a (release/2.3)
+Hi,
 
-Author: Heiko Hund
-Date:   Thu Mar 7 16:36:41 2013 +0100
+On Fri, Feb 22, 2013 at 10:44:19AM +0100, Heiko Hund wrote:
+> This patch set tries to do X.509 name verification right. As discussed
+> during FOSDEM 2013, changing --tls-remote to support RFC 2253 style
+> subject DNs only was too radical as it broke more configurations than
+> expected.
 
-     add new option for X.509 name verification
+Acked by Arne, now all committed and pushed.
 
-     Signed-off-by: Heiko Hund <heiko.hund@...1489...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: 1362670601-18660-1-git-send-email-heiko.hund@...1489...
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/7376
-     Signed-off-by: Gert Doering <gert@...1296...>
+(I have reviewed the code as well, and even test compiled the trees
+before pushing them :-) - so not just relying on the ACK)
 
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
---
-kind regards,
+--ewIlFbbLnYFKahON
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-Gert Doering
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
 
+iQCVAwUBUTjtMakuBuNlUUl1AQJy7wP9FZ6PI96DnaPzWp0oHO2LTGHnjC2Lr1EV
+yjGf58XHvkoIIrVl2l6xR9PYSVFqGpsUT45aLOsM2/RLRD+DFbezPDKxr/4166ME
+EaLCP0tyjsG2asvOMQP7pFeGrFGcOxSqbB7nlPmMFUkS/pnP+zTCz0TuIubxbhrZ
+qmPgUGxQ/oQ=
+=D/uO
+-----END PGP SIGNATURE-----
+
+--ewIlFbbLnYFKahON--
 
