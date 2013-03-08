@@ -1,13 +1,11 @@
-Date: Thu, 7 Mar 2013 20:40:33 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20130307194033.GH953@...1296...>
-References: <1361526263-1740-1-git-send-email-heiko.hund@...1489...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ewIlFbbLnYFKahON"
-Content-Disposition: inline
-In-Reply-To: <1361526263-1740-1-git-send-email-heiko.hund@...1489...>
-Subject: Re: [Openvpn-devel] [PATCH] revamp X.509 name verification option
+From: Mikko Vainikainen <mikko.vainikainen@...1813...>
+Date: Fri, 8 Mar 2013 10:49:51 +0000
+Message-ID: <E4029AEA85D4DB438D6DF8A00A242A08120C1843@...1814...>
+Content-Language: en-US
+Content-Type: multipart/mixed;
+	boundary="_004_E4029AEA85D4DB438D6DF8A00A242A08120C1843DBXPRD0410MB382_"
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Fix for bug #49 for openvpn 2.2.2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,48 +14,190 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Heiko Hund <heiko.hund@...1489...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---ewIlFbbLnYFKahON
-Content-Type: text/plain; charset="us-ascii"
+--_004_E4029AEA85D4DB438D6DF8A00A242A08120C1843DBXPRD0410MB382_
+Content-Type: multipart/alternative;
+	boundary="_000_E4029AEA85D4DB438D6DF8A00A242A08120C1843DBXPRD0410MB382_"
+
+--_000_E4029AEA85D4DB438D6DF8A00A242A08120C1843DBXPRD0410MB382_
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
 Hi,
 
-On Fri, Feb 22, 2013 at 10:44:19AM +0100, Heiko Hund wrote:
-> This patch set tries to do X.509 name verification right. As discussed
-> during FOSDEM 2013, changing --tls-remote to support RFC 2253 style
-> subject DNs only was too radical as it broke more configurations than
-> expected.
+our setup needs openvpn UDP/TLS tunnels with dynamic client IP addresses, s=
+o I implemented a fix for the bug #49 that has been open for over two years.
 
-Acked by Arne, now all committed and pushed.
+The patch is for version 2.2.2 as I had trouble compiling the 2.3.x tarball=
+ from openvpn.net. As the solution is rather simple (just two small utility=
+ functions in mudp.c) I'd guess it could be comfortambly migrated to 2.3.x.
 
-(I have reviewed the code as well, and even test compiled the trees
-before pushing them :-) - so not just relying on the ACK)
+Basically what the fix does is the following: incoming data channel UDP pac=
+kets from an unknown IP are matched against existing UDP/TLS sessions, and =
+if the packet passes the HMAC authentication against an existing TLS contex=
+t we know the client IP has changed and the session state will be instantly=
+ updated accordingly.
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+I have tested this fix to some extent, and the IP handover works impressive=
+ly smoothly in my test setup where I randomly switch between two routes fro=
+m client to server.
 
---ewIlFbbLnYFKahON
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+Dynamic client IP's are enabled/disabled with --float in the server side.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (NetBSD)
+Please feel free to contact me for any questions etc.
 
-iQCVAwUBUTjtMakuBuNlUUl1AQJy7wP9FZ6PI96DnaPzWp0oHO2LTGHnjC2Lr1EV
-yjGf58XHvkoIIrVl2l6xR9PYSVFqGpsUT45aLOsM2/RLRD+DFbezPDKxr/4166ME
-EaLCP0tyjsG2asvOMQP7pFeGrFGcOxSqbB7nlPmMFUkS/pnP+zTCz0TuIubxbhrZ
-qmPgUGxQ/oQ=
-=D/uO
------END PGP SIGNATURE-----
+Best regards,
+Mikko Vainikainen <mikko.vainikainen@...1813...>
 
---ewIlFbbLnYFKahON--
+
+--_000_E4029AEA85D4DB438D6DF8A00A242A08120C1843DBXPRD0410MB382_
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<html dir=3D"ltr">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Diso-8859-=
+1">
+<style id=3D"owaParaStyle" type=3D"text/css"><!--P {margin-top:0;margin-bot=
+tom:0;}--></style>
+</head>
+<body ocsi=3D"0" fpstyle=3D"1">
+<div style=3D"direction: ltr;font-family: Tahoma;color: #000000;font-size: =
+10pt;">Hi,<br>
+<br>
+our setup needs openvpn UDP/TLS tunnels with dynamic client IP addresses, s=
+o I implemented a fix for the bug #49 that has been open for over two years.
+<br>
+<br>
+The patch is for version 2.2.2 as I had trouble compiling the 2.3.x tarball=
+ from openvpn.net. As the solution is rather simple (just two small utility=
+ functions in mudp.c) I'd guess it could be comfortambly migrated to 2.3.x.=
+<br>
+<br>
+Basically what the fix does is the following: incoming data channel UDP pac=
+kets from an unknown IP are matched against existing UDP/TLS sessions, and =
+if the packet passes the HMAC authentication against an existing TLS contex=
+t we know the client IP has changed
+ and the session state will be instantly updated accordingly.<br>
+<br>
+I have tested this fix to some extent, and the IP handover works impressive=
+ly smoothly in my test setup where I randomly switch between two routes fro=
+m client to server.<br>
+<br>
+Dynamic client IP's are enabled/disabled with --float in the server side.<b=
+r>
+<br>
+Please feel free to contact me for any questions etc.<br>
+<br>
+Best regards,<br>
+Mikko Vainikainen &lt;mikko.vainikainen@...1813...&gt;<br>
+<br>
+</div>
+</body>
+</html>
+
+--_000_E4029AEA85D4DB438D6DF8A00A242A08120C1843DBXPRD0410MB382_--
+
+--_004_E4029AEA85D4DB438D6DF8A00A242A08120C1843DBXPRD0410MB382_
+Content-Type: text/x-patch;
+	name="0001-Fixes-bug-49-support-for-dynamic-client-IP-over-UDP-.patch"
+Content-Description: 0001-Fixes-bug-49-support-for-dynamic-client-IP-over-UDP-.patch
+Content-Disposition: attachment;
+	filename="0001-Fixes-bug-49-support-for-dynamic-client-IP-over-UDP-.patch";
+	size=5062; creation-date="Fri, 08 Mar 2013 10:15:12 GMT";
+	modification-date="Fri, 08 Mar 2013 10:15:12 GMT"
+Content-Transfer-Encoding: base64
+
+RnJvbSBjMDAzODFmMWI1M2M1MTY5ZGJhMWIyZTRiZjIyYmI2ZTUwZTRlYWVhIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBNaWtrbyBWYWluaWthaW5lbiA8bWlra28udmFpbmlrYWluZW5A
+a29uZWNyYW5lcy5jb20+CkRhdGU6IEZyaSwgOCBNYXIgMjAxMyAxMjowMDo1MiArMDIwMApTdWJq
+ZWN0OiBbUEFUQ0hdIEZpeGVzIGJ1ZyAjNDksIHN1cHBvcnQgZm9yIGR5bmFtaWMgY2xpZW50IElQ
+IG92ZXIgVURQL1RMUy4KCi0tLQogbXVkcC5jIHwgIDE2NiArKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrCiAxIGZpbGUgY2hhbmdl
+ZCwgMTY2IGluc2VydGlvbnMoKykKCmRpZmYgLS1naXQgYS9tdWRwLmMgYi9tdWRwLmMKaW5kZXgg
+YTQ3OGIyOS4uZWY1YmIzYyAxMDA2NDQKLS0tIGEvbXVkcC5jCisrKyBiL211ZHAuYwpAQCAtMzAs
+NiArMzAsMTYxIEBACiAjaW5jbHVkZSAiZm9yd2FyZC1pbmxpbmUuaCIKIAogI2luY2x1ZGUgIm1l
+bWRiZy5oIgorI2luY2x1ZGUgInNvY2tldC5oIgorCisKKy8qCisgKiBIZWxwZXIgZnVuY3Rpb24g
+Zm9yIGF1dGhlbnRpY2F0aW5nIHBhY2tldHMgYWdhaW5zdCBleGlzdGluZyBUTFMgY29udGV4dC4K
+KyAqLworCitpbnQgYXV0aGVudGljYXRlX3Rsc19wYWNrZXQoc3RydWN0IG11bHRpX2NvbnRleHQq
+IG0sCisgICAgICAgICAgICAgICAgICAgICAgICAgICAgc3RydWN0IGNvbnRleHQqIGN0eCwKKyAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICBzdHJ1Y3QgYnVmZmVyKiBidWYsCisgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgc3RydWN0IHRsc19tdWx0aSogbXVsdGkpCit7CisgIGludCBpOwor
+ICBpbnQgb3A7CisgIGludCBrZXlfaWQ7CisgIGludCBzdGF0dXM7CisgIHN0cnVjdCBsaW5rX3Nv
+Y2tldF9hY3R1YWwqIGZyb20gID0gJm0tPnRvcC5jMi5mcm9tOworICAKKyAgaWYgKGJ1Zi0+IGxl
+biA8PSAwKSByZXR1cm4gMDsKKyAgCisgIHsKKyAgICB1aW50OF90IGMgPSAqQlBUUihidWYpOwor
+ICAgIG9wID0gYyA+PiBQX09QQ09ERV9TSElGVDsKKyAgICBrZXlfaWQgPSBjICYgUF9LRVlfSURf
+TUFTSzsKKyAgfQorICAKKyAgLyoKKyAgICogd2UgYXJlIG9ubHkgaW50ZXJlc3RlZCBpbiBkYXRh
+IGNoYW5uZWwgcGFja2V0cworICAgKi8KKyAgCisgIGlmIChvcCAhPSBQX0RBVEFfVjEpIHJldHVy
+biAwOworICAKKyAgZm9yIChpID0gMDsgaSA8IEtFWV9TQ0FOX1NJWkU7ICsraSkKKyAgICB7Cisg
+ICAgICAKKyAgICAgIHN0cnVjdCBrZXlfc3RhdGUqIGtzID0gbXVsdGktPmtleV9zY2FuW2ldOwor
+ICAgICAgc3RydWN0IGtleV9jdHgqIGtjID0gJmtzLT5rZXkuZGVjcnlwdDsKKyAgICAgIGludCBo
+bWFjX2xlbjsKKyAgICAgIGludCBpbl9obWFjX2xlbjsKKyAgICAgIHVpbnQ4X3QgbG9jYWxfaG1h
+Y1tNQVhfSE1BQ19LRVlfTEVOR1RIXTsKKyAgICAgIAorICAgICAgaWYgKCFERUNSWVBUX0tFWV9F
+TkFCTEVEKG11bHRpLCBrcykgfHwKKyAgICAgICAgICBrZXlfaWQgIT0ga3MtPmtleV9pZCB8fAor
+ICAgICAgICAgICFrcy0+YXV0aGVudGljYXRlZCkKKyAgICAgICAgeworICAgICAgICAgIHJldHVy
+biAwOworICAgICAgICB9CisgICAgICAKKyNpZmRlZiBFTkFCTEVfREVGX0FVVEgKKyAgICAgIAor
+ICAgICAgaWYgKGtzLT5hdXRoX2RlZmVycmVkKSByZXR1cm4gMDsKKworI2VuZGlmCisgICAgICAK
+KyAgICAgIGlmICgha2MtPmhtYWMpIHJldHVybiAwOworICAgICAgCisgICAgICAvKgorICAgICAg
+ICogYXV0aGVudGljYXRlIHRoZSBwYWNrZXQgd2l0aCBITUFDCisgICAgICAgKi8KKyAgICAgIAor
+ICAgICAgSE1BQ19Jbml0X2V4KGtjLT5obWFjLCBOVUxMLCAwLCBOVUxMLCBOVUxMKTsKKyAgICAg
+IGhtYWNfbGVuID0gSE1BQ19zaXplKGtjLT5obWFjKTsKKyAgICAgIGlmIChidWYtPmxlbiAtIDEg
+PCBobWFjX2xlbikgcmV0dXJuIDA7CisgICAgICBITUFDX1VwZGF0ZShrYy0+aG1hYywgQlBUUihi
+dWYpICsgaG1hY19sZW4gKyAxLCBCTEVOKGJ1ZikgLSBobWFjX2xlbiAtIDEpOworICAgICAgSE1B
+Q19GaW5hbChrYy0+aG1hYywgbG9jYWxfaG1hYywgKHVuc2lnbmVkIGludCopJmluX2htYWNfbGVu
+KTsKKyAgICAgIGlmIChobWFjX2xlbiAhPSBpbl9obWFjX2xlbikgcmV0dXJuIDA7CisgICAgICBp
+ZiAobWVtY21wKGxvY2FsX2htYWMsIEJQVFIoYnVmKSArIDEsIGhtYWNfbGVuKSkgIHJldHVybiAw
+OworICAgICAgCisgICAgICAvKgorICAgICAgICogSE1BQyBhdXRoZW50aWNhdGlvbiBzdWNjZXNz
+ZnVsLCBjaGFuZ2UgdGhlIElQIGF0CisgICAgICAgKiBUTFMgbGF5ZXIKKyAgICAgICAqLworICAg
+ICAgCisgICAgICB7CisgICAgICAgIHN0cnVjdCBnY19hcmVuYSBnYyA9IGdjX25ldygpOworICAg
+ICAgICBtc2coRF9UTFNfREVCVUdfTE9XLCAiJXMvJXMgSVAgY2hhbmdlZDogJXMiLAorICAgICAg
+ICAgICAgdGxzX2NvbW1vbl9uYW1lKG11bHRpLCAwKSwKKyAgICAgICAgICAgIHByaW50X2xpbmtf
+c29ja2V0X2FjdHVhbCgma3MtPnJlbW90ZV9hZGRyLCAmZ2MpLAorICAgICAgICAgICAgcHJpbnRf
+bGlua19zb2NrZXRfYWN0dWFsKGZyb20sICZnYykpOworICAgICAgICBtZW1jcHkoJmtzLT5yZW1v
+dGVfYWRkciwgZnJvbSwgc2l6ZW9mKCpmcm9tKSk7CisgICAgICAgIGdjX2ZyZWUoJmdjKTsKKyAg
+ICAgIH0KKyAgICAgIHJldHVybiAxOworICAgICAgCisgICAgfQorICAKKyAgcmV0dXJuIDA7Cit9
+CisKKworLyoKKyAqIFV0aWxpdHkgZnVuY3Rpb24gZm9yIGZpbmRpbmcgYW4gZXhpc3RpbmcgVExT
+IHNlc3Npb24gCisgKiB3aXRoIGRpZmZlcmVudCBJUAorICovCisKK3N0cnVjdCBoYXNoX2VsZW1l
+bnQqIGRldGVjdF9pcF9jaGFuZ2Uoc3RydWN0IG11bHRpX2NvbnRleHQqIG0sCisgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN0cnVjdCBoYXNoKiBoYXNoLAorICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzdHJ1Y3QgaGFzaF9idWNrZXQqIGJ1Y2tldCwK
+KyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdWludDMyX3QgaHYsCisgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN0cnVjdCBtcm91dGVfYWRkciogcmVh
+bCkKK3sKKyAgc3RydWN0IGhhc2hfaXRlcmF0b3IgaXQ7CisgIHN0cnVjdCBoYXNoX2VsZW1lbnQq
+IHBlOworICBzdHJ1Y3QgaGFzaF9lbGVtZW50KiByZXR2YWwgPSBOVUxMOworICBzdHJ1Y3QgYnVm
+ZmVyKiBidWYgPSAmbS0+dG9wLmMyLmJ1ZjsKKworICAvKgorICAgKiBtYXRjaCB0aGUgaW5jb21p
+bmcgcGFja2V0IGFnYWluc3QgYWxsIGV4aXN0aW5nIHNlc3Npb25zIAorICAgKi8KKworICBoYXNo
+X2l0ZXJhdG9yX2luaXQoaGFzaCwgJml0KTsKKyAgd2hpbGUgKChwZSA9IGhhc2hfaXRlcmF0b3Jf
+bmV4dCgmaXQpKSAhPSBOVUxMKQorICAgIHsKKyAgICAgIAorICAgICAgLyoKKyAgICAgICAqIGdl
+dCBUTFMgY29udGV4dCBmb3IgY3VycmVudCBpdGVtIAorICAgICAgICovCisgICAgICAKKyAgICAg
+IHN0cnVjdCBtdWx0aV9pbnN0YW5jZSogbWkgPSBwZS0+dmFsdWU7CisgICAgICBzdHJ1Y3QgY29u
+dGV4dCogY3R4ID0gJm1pLT5jb250ZXh0OworICAgICAgc3RydWN0IHRsc19tdWx0aSogbXVsdGkg
+PSBjdHgtPmMyLnRsc19tdWx0aTsKKyAgICAgIAorICAgICAgLyoKKyAgICAgICAqIHdlIGFyZSBv
+bmx5IGludGVyZXN0ZWQgaW4gVFVOIGRldmljZXMKKyAgICAgICAqLworICAgICAgCisgICAgICBp
+ZiAoY3R4LT5jMS50dW50YXAtPnR5cGUgIT0gREVWX1RZUEVfVFVOKSBjb250aW51ZTsKKyAgICAg
+IAorICAgICAgLyoKKyAgICAgICAqIGF1dGhlbnRpY2F0ZSB0aGUgcGFja2V0LCBhbmQgY29udGlu
+dWUgc2VhcmNoIGlmIHVuc3VjY2Vzc2Z1bAorICAgICAgICovCisKKyAgICAgIGlmICghYXV0aGVu
+dGljYXRlX3Rsc19wYWNrZXQobSwgY3R4LCBidWYsIG11bHRpKSkgY29udGludWU7CisgICAgICAK
+KyAgICAgIC8qCisgICAgICAgKiBmb3VuZCBhIG1hdGNoLCB1cGRhdGUgdGhlIElQIGF0IFVEUCBs
+YXllcgorICAgICAgICovCisgICAgICAKKyAgICAgIGhhc2hfcmVtb3ZlKGhhc2gsICZtaS0+cmVh
+bCk7CisgICAgICBpZiAobWktPmRpZF9pdGVyKSBoYXNoX3JlbW92ZShtLT5pdGVyLCAmbWktPnJl
+YWwpOworICAgICAgbWVtY3B5KCZtaS0+cmVhbCwgcmVhbCwgc2l6ZW9mKCpyZWFsKSk7CisgICAg
+ICBoYXNoX2FkZF9mYXN0KGhhc2gsIGJ1Y2tldCwgJm1pLT5yZWFsLCBodiwgbWkpOworICAgICAg
+aWYgKG1pLT5kaWRfaXRlcikgaGFzaF9hZGQobS0+aXRlciwgJm1pLT5yZWFsLCBtaSwgZmFsc2Up
+OworICAgICAgCisgICAgICAvKgorICAgICAgICogcmV0dXJuIHRoZSBtYXRjaCBmb3VuZAorICAg
+ICAgICovCisgICAgICAKKyAgICAgIHJldHZhbCA9IHBlOworICAgICAgYnJlYWs7CisgICAgfQor
+ICBoYXNoX2l0ZXJhdG9yX2ZyZWUoJml0KTsKKyAgcmV0dXJuIHJldHZhbDsKK30KKwogCiAvKgog
+ICogR2V0IGEgY2xpZW50IGluc3RhbmNlIGJhc2VkIG9uIHJlYWwgYWRkcmVzcy4gIElmCkBAIC01
+Myw2ICsyMDgsMTcgQEAgbXVsdGlfZ2V0X2NyZWF0ZV9pbnN0YW5jZV91ZHAgKHN0cnVjdCBtdWx0
+aV9jb250ZXh0ICptKQogICAKICAgICAgIGhlID0gaGFzaF9sb29rdXBfZmFzdCAoaGFzaCwgYnVj
+a2V0LCAmcmVhbCwgaHYpOwogCisgICAgICAvKgorICAgICAgICogaWYgLS1mbG9hdCB3YXMgc3Bl
+Y2lmaWVkIHNlYXJjaCBmb3IgYW4gZXhpc3Rpbmcgc2Vzc2lvbiAKKyAgICAgICAqIHdpdGggZGlm
+ZmVyZW50IElQIAorICAgICAgICovCisKKyAgICAgIGlmICghaGUgJiYgbS0+dG9wLm9wdGlvbnMu
+Y2UucmVtb3RlX2Zsb2F0KSBoZSA9IGRldGVjdF9pcF9jaGFuZ2UobSwgCisJCQkJCQkJCSAgICAg
+ICBoYXNoLCAKKwkJCQkJCQkJICAgICAgIGJ1Y2tldCwgCisJCQkJCQkJCSAgICAgICBodiwgCisJ
+CQkJCQkJCSAgICAgICAmcmVhbCk7CisKICAgICAgIGlmIChoZSkKIAl7CiAJICBtaSA9IChzdHJ1
+Y3QgbXVsdGlfaW5zdGFuY2UgKikgaGUtPnZhbHVlOwotLSAKMS43LjEwLjQKCg==
+
+--_004_E4029AEA85D4DB438D6DF8A00A242A08120C1843DBXPRD0410MB382_--
 
