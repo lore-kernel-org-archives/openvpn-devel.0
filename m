@@ -1,16 +1,15 @@
-From: Peter Caprioli <petercap@...530...>
-Date: Tue, 12 Mar 2013 11:08:29 +0000
-Message-ID: <C673F57BE2DD3148AC2DD4AF464686F901BEBFC7@...1815...>
-References: <C673F57BE2DD3148AC2DD4AF464686F901BBDB56@...1815...>
-	<1363032625-23311-1-git-send-email-gert@...1296...>
-	<513E4DEB.7000403@...1227...>
-	<1CED409804E2164C8104F9E623B08B9013B8D6EDA6@...1436...>,
-	<20130312100706.GN953@...1296...>
-In-Reply-To: <20130312100706.GN953@...1296...>
-Content-Language: sv-SE
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH v2] Repair "tcp server queue
-	overflow"	brokenness, more <stdbool.h> fallout.
+Date: Tue, 12 Mar 2013 12:09:25 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20130312110925.GP953@...1296...>
+References: <1363032651-23934-1-git-send-email-arne@...1227...>
+	<1363032651-23934-2-git-send-email-arne@...1227...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="oVY0WsfUWmN/0W08"
+Content-Disposition: inline
+In-Reply-To: <1363032651-23934-2-git-send-email-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 2/4] Use casts when assigning void*
+	variables.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,35 +18,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-I'll ACK the bool -> int patch, it resolves the issue in ticket 263.
-________________________________________
-Fr=E5n: Gert Doering [gert@...1296...]
-Skickat: den 12 mars 2013 11:07
-Till: Steffan Karger
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
-=C4mne: Re: [Openvpn-devel] [PATCH v2] Repair "tcp server queue overflow" b=
-rokenness, more <stdbool.h> fallout.
+
+--oVY0WsfUWmN/0W08
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On Tue, Mar 12, 2013 at 09:32:36AM +0100, Steffan Karger wrote:
-> Shouldn't the return type be size_t or at least unsigned int, as mbuf->le=
-n is also of type unsigned int?
+On Mon, Mar 11, 2013 at 09:10:49PM +0100, Arne Schwabe wrote:
+> Clang in c mode warns about these. In C++ mode these are forbidden.
 
-Well, unsigned int, as ->len is not a size_t.
+I'm not so sure about this chunk of changes.  I can see why you want this,
+but OTOH, this is all perfectly correct C (freely converting pointers to
+and from "void *" without(!) warnings), and some of these...
 
-Not that it makes any real difference as we're talking about a range
-between "0" and "65" here.  But anyway.  Patch v2 is below.
+> -  char *p =3D gc_malloc (OPTION_PARM_SIZE, false, &gc);
+> +  char *p =3D (char *) gc_malloc (OPTION_PARM_SIZE, false, &gc);
+
+> -	      p[ret] =3D gc_malloc (parm_len + 1, true, gc);
+> +	      p[ret] =3D (char *) gc_malloc (parm_len + 1, true, gc);
+
+> -  struct route_option_list *ret =3D gc_malloc (rl_size, false, a);
+> +  struct route_option_list *ret =3D (struct route_option_list *) gc_mall=
+oc (rl_size, false, a);
+
+... do not really improve readability, more to the contrary.
+
+(Some of the other casts make the code more clear, so I'm not objecting
+to all of it, just wondering... mostly about the gc_malloc() stuff...=20
+this really should be "malloc() return can be assigned to any pointer")
+
+But I'm not strongly objecting.  If you (for some vague "you") feel
+strongly about having the casts, I'll accept that.
 
 gert
---
+--=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
 rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
+
+--oVY0WsfUWmN/0W08
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
+
+iQCVAwUBUT8M5akuBuNlUUl1AQI28AQAu6Zqma2dqzQdotk0zQ7jUDVHqH6Ehd01
+QMAnk10qcM/4DpZMrzIpCwM4Gyw5XukYQRw8OLyIaCgR0n/59T/RHe4uqaorVVeP
+pmEaSBCoNI08GV5Rfyw8Q6p7GFtRJa/e5p+azw83ZD7vi6nw7BC42i0GTpbOKuRt
+9+luzE6tek0=
+=JI48
+-----END PGP SIGNATURE-----
+
+--oVY0WsfUWmN/0W08--
 
