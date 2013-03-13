@@ -1,12 +1,11 @@
-Date: Tue, 12 Mar 2013 22:14:32 +0200
-From: Pasi =?iso-8859-1?Q?K=E4rkk=E4inen?= <pasik@...124...>
-Message-ID: <20130312201432.GM8912@...1281...>
-References: <20110713163816.GT32373@...1281...> <4E1DF85D.4010705@...515...>
-	<1CED409804E2164C8104F9E623B08B90126C7D2F75@...1436...>
+Message-ID: <514055A3.5070808@...1227...>
+Date: Wed, 13 Mar 2013 11:32:03 +0100
+From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <1CED409804E2164C8104F9E623B08B90126C7D2F75@...1436...>
-Subject: Re: [Openvpn-devel] openvpn support for challenge-response	otp
- (user+pass+otp)
+References: <437RBuq1U8032S07.1361465626@...1810...>
+In-Reply-To: <437RBuq1U8032S07.1361465626@...1810...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix parameter listing in non-debug
+ builds at verb 4
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,46 +14,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Adriaan de Jong <dejong@...1435...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Josh Cepek <josh.cepek@...1085...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Thu, Jul 14, 2011 at 08:18:56AM +0200, Adriaan de Jong wrote:
-> > -----Original Message-----
-> > From: Samuli Sepp=E4nen [mailto:samuli@...515...]
-> >=20
-> > There's some support for challenge-response authentication in OpenVPN:
-> >=20
-> > <http://openvpn.git.sourceforge.net/git/gitweb.cgi?p=3Dopenvpn/openvpn-
-> > testing.git;a=3Dcommit;h=3D3cf9dd88fd84108eccfcce0ebf44e00f9481cd82>
-> >=20
-> > This code is in the "master" branch. Look here for instructions on how
-> > to fetch the sources:
-> >=20
-> > <https://community.openvpn.net/openvpn/wiki/DeveloperDocumentation#Main
-> > developmentrepositorygit>
-> >=20
->=20
-> Note that this code was refactored quite heavily, and now lives in its ow=
-n verification module.=20
->=20
-> It lives here at the moment: https://github.com/andj/openvpn-ssl-refactor=
-ing/blob/master/ssl_verify.c . The verification code is called from key_met=
-hod_2_write and key_method_2_read, in ssl.c (https://github.com/andj/openvp=
-n-ssl-refactoring/blob/master/ssl.c).=20
->=20
+Am 21.02.13 17:53, schrieb Josh Cepek:
+> The patch is attached; a summary, and mitigating build suggestion follows:
+>
+> The current official Windows builds of 2.3.0 up to I004 are built
+> enable_debug=3Dno; I'm not sure about the repo builds since I build from =
+source
+> on my non-Windows systems, but the same issue is present when lacking deb=
+ug
+> support on Linux/Unix. This causes such builds to lack parameter printing=
+ at
+> --verb 4 which conflicts with the help output and configure text for
+> enable_small. This is a particular issue for binary installations (Window=
+s, or
+> binary *nix distros.)
+>
+> Until this change makes its way into the release repo branches, I'd sugge=
+st
+> all official builds be built with enable_debug=3Dyes. Without this build =
+option,
+> end-users will be unable to make use of increased verbosity/troubleshooti=
+ng
+> provided at verb 4.
+>
+>
+> Commit/code reasoning for the patch: (also present in attached patch for
+> convenience.) This patch applies to either the v2.3.0 tag, or current HEA=
+D.
+>
+> When built with enable_debug=3Dno, the parameter output expected at --ver=
+b 4 is
+> not printed due to use of #ifdef ENABLE_DEBUG in the responsible code
+> sections. This appears to be a mistake when looking at the configure help=
+ text
+> for enable_small and enable_debug.
+>
+> This change keys the relevant code off of enable_small instead, including=
+ the
+> parameter listing when enale_small=3Dno (the configure-script default.) M=
+ost of
+> this code is in options.c, with some callers present in plugin.c/h and
+> route.c/h. No function code is changed, just the #ifdef values to use the
+> small feature instead of debug.
+>
+> This means builds no longer need enable_debug=3Dyes in order to get the e=
+xpected
+> log output at verb 4.
+>
+Ack to the patch. I think it is reseanable to show the parameters in
+higher debug output but enable_debug also enables *a lot* of other
+output. Can you add a second patch or modify this patch to print a
+warning at verb 7 (after a quick look all dmsg output are >=3D verb 7)
+that debug is not enabled and messages from the output might be missing?
 
-Hello!
-
-What's the current status of OpenVPN challenge/response support?=20
-
-I got busy with other projects and didn't test/investigate this yet,
-but I'll probably get to it in the near future..
-
-Thanks!
-
--- Pasi
+Arne
 
 
