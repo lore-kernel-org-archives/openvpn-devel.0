@@ -1,11 +1,11 @@
 From: <steffan.karger@...1435...>
-Date: Mon, 18 Mar 2013 17:37:31 +0100
-Message-ID: <1363624652-7001-5-git-send-email-steffan.karger@...1435...>
+Date: Mon, 18 Mar 2013 17:37:29 +0100
+Message-ID: <1363624652-7001-3-git-send-email-steffan.karger@...1435...>
 In-Reply-To: <1363624652-7001-1-git-send-email-steffan.karger@...1435...>
 References: <1363624652-7001-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 4/5] Config compatibility patch. Added
-	translate_cipher_name.
+Subject: [Openvpn-devel] [PATCH 2/5] Improve PolarSSL key_state_read_{cipher,
+	plain}text messages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,104 +20,54 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Steffan Karger <steffan.karger@...1435...>
 
-Added translate_cipher name to crypto_openssl.c and crypto_polarssl.c
-to translate between OpenVPN(/OpenSSL) and PolarSSL data channel
-cipher algorithm names. OpenSSL does not require any translating,
-PolarSSL does for a small number of algorithms. This improves on
-config file compatibility between the OpenSSL and PolarSSL builds.
+Instead of logging the fact that an error occured, log the error code and
+description (when available in the PolarSSL build).
 
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+Signed-off-by: Joachim Schipper <joachim.schipper@...1435...>
 ---
- src/openvpn/crypto_backend.h  |    6 ++++++
- src/openvpn/crypto_openssl.c  |    6 ++++++
- src/openvpn/crypto_polarssl.c |   26 ++++++++++++++++++++++++++
- src/openvpn/options.c         |    2 +-
- 4 files changed, 39 insertions(+), 1 deletion(-)
+ src/openvpn/ssl_polarssl.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-index 1eac611..8a91a57 100644
---- a/src/openvpn/crypto_backend.h
-+++ b/src/openvpn/crypto_backend.h
-@@ -63,6 +63,12 @@ void crypto_init_lib_engine (const char *engine_name);
- void crypto_init_dmalloc (void);
- #endif /* DMALLOC */
- 
-+/**
-+ * Translate a data channel cipher name from the OpenVPN config file
-+ * 'language' to the crypto library specific name.
-+ */
-+const char * translate_cipher_name (const char *cipher_name);
-+
- void show_available_ciphers (void);
- 
- void show_available_digests (void);
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 5342502..809c184 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -281,6 +281,12 @@ crypto_init_dmalloc (void)
- }
- #endif /* DMALLOC */
- 
-+const char *
-+translate_cipher_name (const char *cipher_name) {
-+  // OpenSSL doesn't require any translation
-+  return cipher_name;
-+}
-+
- void
- show_available_ciphers ()
+diff --git a/src/openvpn/ssl_polarssl.c b/src/openvpn/ssl_polarssl.c
+index 4d00ad6..c787374 100644
+--- a/src/openvpn/ssl_polarssl.c
++++ b/src/openvpn/ssl_polarssl.c
+@@ -643,6 +643,7 @@ key_state_read_ciphertext (struct key_state_ssl *ks, struct buffer *buf,
  {
-diff --git a/src/openvpn/crypto_polarssl.c b/src/openvpn/crypto_polarssl.c
-index 3978a3c..15f7773 100644
---- a/src/openvpn/crypto_polarssl.c
-+++ b/src/openvpn/crypto_polarssl.c
-@@ -94,6 +94,32 @@ crypto_init_dmalloc (void)
- }
- #endif /* DMALLOC */
+   int retval = 0;
+   int len = 0;
++  char error_message[1024];
  
-+typedef struct { const char * openvpn_name; const char * polarssl_name; } cipher_name_pair;
-+cipher_name_pair cipher_name_translation_table[] = {
-+    { "BF-CBC", "BLOWFISH-CBC" },
-+    { "BF-CFB", "BLOWFISH-CFB64" },
-+    { "CAMELLIA-128-CFB", "CAMELLIA-128-CFB128" },
-+    { "CAMELLIA-192-CFB", "CAMELLIA-192-CFB128" },
-+    { "CAMELLIA-256-CFB", "CAMELLIA-256-CFB128" }
-+};
-+
-+const char *
-+translate_cipher_name (const char *cipher_name) {
-+  cipher_name_pair pair;
-+  size_t i = 0;
-+
-+  /* Search for a cipher name translation */
-+  for (; i < sizeof (cipher_name_translation_table) / sizeof (*cipher_name_translation_table); i++)
-+    {
-+      pair = cipher_name_translation_table[i];
-+      if (0 == strcmp (cipher_name, pair.openvpn_name))
-+	  return pair.polarssl_name; /* Translation found, return polarssl name */
-+    }
-+
-+  /* No translation found, return original */
-+  return cipher_name;
-+}
-+
- void
- show_available_ciphers ()
+   perf_push (PERF_BIO_READ_CIPHERTEXT);
+ 
+@@ -668,7 +669,8 @@ key_state_read_ciphertext (struct key_state_ssl *ks, struct buffer *buf,
+       perf_pop ();
+       if (POLARSSL_ERR_NET_WANT_WRITE == retval || POLARSSL_ERR_NET_WANT_READ == retval)
+ 	return 0;
+-      msg (D_TLS_ERRORS, "TLS_ERROR: read tls_read_plaintext error");
++      error_strerror(retval, error_message, sizeof(error_message));
++      msg (D_TLS_ERRORS, "TLS_ERROR: read tls_read_ciphertext error: %d %s", retval, error_message);
+       buf->len = 0;
+       return -1;
+     }
+@@ -740,6 +742,7 @@ key_state_read_plaintext (struct key_state_ssl *ks, struct buffer *buf,
  {
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 9766742..33496ff 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -6223,7 +6223,7 @@ add_option (struct options *options,
+   int retval = 0;
+   int len = 0;
++  char error_message[1024];
+ 
+   perf_push (PERF_BIO_READ_PLAINTEXT);
+ 
+@@ -764,7 +767,8 @@ key_state_read_plaintext (struct key_state_ssl *ks, struct buffer *buf,
      {
-       VERIFY_PERMISSION (OPT_P_CRYPTO);
-       options->ciphername_defined = true;
--      options->ciphername = p[1];
-+      options->ciphername = translate_cipher_name(p[1]);
-       if (streq (options->ciphername, "none"))
- 	{
- 	  options->ciphername_defined = false;
+       if (POLARSSL_ERR_NET_WANT_WRITE == retval || POLARSSL_ERR_NET_WANT_READ == retval)
+ 	return 0;
+-      msg (D_TLS_ERRORS, "TLS_ERROR: read tls_read_plaintext error");
++      error_strerror(retval, error_message, sizeof(error_message));
++      msg (D_TLS_ERRORS, "TLS_ERROR: read tls_read_plaintext error: %d %s", retval, error_message);
+       buf->len = 0;
+       perf_pop ();
+       return -1;
 -- 
 1.7.9.5
 
