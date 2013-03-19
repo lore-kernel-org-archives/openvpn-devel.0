@@ -1,12 +1,11 @@
-From: Adriaan de Jong <dejong@...1435...>
-Date: Tue, 19 Mar 2013 11:08:10 +0100
-Message-ID: <1CED409804E2164C8104F9E623B08B9013B8F53193@...1436...>
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Tue, 19 Mar 2013 11:27:15 +0100
+Message-ID: <3973366.5Qu7FHKKCl@...1526...>
+In-Reply-To: <1363624652-7001-2-git-send-email-steffan.karger@...1435...>
 References: <1363624652-7001-1-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <1363624652-7001-1-git-send-email-steffan.karger@...1435...>
-Content-Language: en-US
+	<1363624652-7001-2-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] PolarSSL 1.2 support,
- while keeping config file compatibility
+Subject: Re: [Openvpn-devel] [PATCH 1/5] PolarSSL-1.2 support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,46 +15,32 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: Steffan Karger <steffan.karger@...1435...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-Ack on patches 1-5!
+On Monday 18 March 2013 17:37:28 steffan.karger@...1435... wrote:
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 8592955..9766742 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -827,7 +827,11 @@ init_options (struct options *o, const bool init_gc)
+>    o->server_poll_timeout = 0;
+>  #endif
+>  #ifdef ENABLE_CRYPTO
+> +#ifdef ENABLE_CRYPTO_POLARSSL
+> +  o->ciphername = "BLOWFISH-CBC";
+> +#else
+>    o->ciphername = "BF-CBC";
+> +#endif
+>    o->ciphername_defined = true;
+>    o->authname = "SHA1";
+>    o->authname_defined = true;
 
-> -----Original Message-----
-> From: steffan.karger@...1435... [mailto:steffan.karger@...1435...]
-> Sent: maandag 18 maart 2013 17:37
-> To: openvpn-devel@lists.sourceforge.net
-> Subject: [Openvpn-devel] PolarSSL 1.2 support, while keeping config
-> file compatibility
->=20
-> Hi Everyone,
->=20
-> The attached patches add PolarSSL 1.2 support to OpenVPN 2.3, while
-> maintaining OpenVPN configuration file compatibility between the
-> OpenSSL and PolarSSL builds.
->=20
-> Patches 1-3 upgrade the supported PolarSSL versions to 1.2.5 or newer.
->=20
-> Patch 4 adds data channel cipher name compatibility.
->=20
-> Patch 5 adds TLS control channel cipher suite name compatibility as
-> discussed at FOSDEM. It makes the IANA (IETF) cipher suite naming that
-> PolarSSL uses since 1.2 the preferred format, but still accepts OpenSSL
-> names. It attempts to tranlate cipher names in both directions whenever
-> required.
->=20
-> Regards,
-> -Steffan
->=20
->=20
-> -----------------------------------------------------------------------
-> -------
-> Everyone hates slow websites. So do we.
-> Make your web apps faster with AppDynamics Download AppDynamics Lite
-> for free today:
-> http://p.sf.net/sfu/appdyn_d2d_mar
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+Couldn't this be done better with the functionality in 4/5?
+
+Heiko
+-- 
+Heiko Hund | Sr. Software Engineer | Tel +49-721-25516-237 | Fax -200
+SOPHOS NSG | Amalienbadstr. 41 Bau 52 | 76227 Karlsruhe | Germany
+
 
