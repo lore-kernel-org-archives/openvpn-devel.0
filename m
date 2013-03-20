@@ -1,15 +1,14 @@
-From: Steffan Karger <steffan.karger@...1435...>
-Date: Wed, 20 Mar 2013 19:52:47 +0100
-Message-ID: <1CED409804E2164C8104F9E623B08B9013B904FFD9@...1436...>
-References: <1363624652-7001-1-git-send-email-steffan.karger@...1435...>
-	<1363624652-7001-2-git-send-email-steffan.karger@...1435...>
-	<20130319142655.GX953@...1296...>
-In-Reply-To: <20130319142655.GX953@...1296...>
-Content-Language: en-US
-Content-Type: multipart/mixed;
-	boundary="_002_1CED409804E2164C8104F9E623B08B9013B904FFD9FOXDFT02FOXlo_"
+Message-ID: <514A0AD3.1050800@...1227...>
+Date: Wed, 20 Mar 2013 20:15:31 +0100
+From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 1/5] PolarSSL-1.2 support
+References: <kicobf$9m7$1@...1062...> <5149E6F3.8020807@...1227...>
+	<kicup2$gfv$1@...1062...>
+In-Reply-To: <kicup2$gfv$1@...1062...>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature";
+	micalg=sha1; boundary="------------ms070504060304060207020405"
+Subject: Re: [Openvpn-devel] (updated) [PATCH] Warn when using verb levels
+ >=7 without debug
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,128 +17,139 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Josh Cepek <josh.cepek@...1085...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---_002_1CED409804E2164C8104F9E623B08B9013B904FFD9FOXDFT02FOXlo_
-Content-Type: text/plain; charset="us-ascii"
+Dies ist eine kryptografisch unterzeichnete Nachricht im MIME-Format.
+
+--------------ms070504060304060207020405
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Am 20.03.13 19:22, schrieb Josh Cepek:
+> On 3/20/2013 11:42, Arne Schwabe wrote:
+>
+>> ACK. But I would change "debug verb" to "debug verbosity" and I think
+>> there should be no comma before "but"
+> This text change makes sense: I've adjusted it to read "NOTE: debug
+> verbosity..." and saved another byte removing the comma.
+>
+> Updated patch attached.
+>
+>
+ACK to that patch.
 
-Attached a patch for the second point you make. It was a pre-existing bug w=
-here the autoconf script was not equipped to detect incorrectly compiled po=
-larssl builds, e.g. without pkcs11 support.
+Arne
 
-I'm still working on the first (polarssl-blowfish) point, need to do some m=
-ore testing first on that one.
 
-Regards,
--Steffan
-
------Original Message-----
-From: Gert Doering [mailto:gert@...1296...]=20
-Sent: dinsdag 19 maart 2013 15:27
-To: Steffan Karger
-Cc: openvpn-devel@lists.sourceforge.net
-Subject: Re: [Openvpn-devel] [PATCH 1/5] PolarSSL-1.2 support
-
-Hi,
-
-On Mon, Mar 18, 2013 at 05:37:28PM +0100, steffan.karger@...1435... wrote:
-> From: Steffan Karger <steffan.karger@...1435...>
->=20
-> Add support for PolarSSL-1.2, which has changed the API in several places.
-> This is a minimal port, new features have not been enabled. Only=20
-> PolarSSL
-> 1.2.5 and newer are accepted, as earlier versions contain unresolved
-> (security) issues.
-
-NAK, actually, for two reasons:=20=20
-
- - there is "something wrong" with the blowfish support - patching=20
-   release/2.3 in git with these 5 patches and compiling with polar 1.2.5
-   creates a binary that is not interoperating with openssl-compiled
-   openvpn (cipher blowfish-cbc on the polar side, bf-cbc on openssl) - it=
-=20
-   negotiates just fine, but data packets cannot be decrypted
-
-14:23 <@dazo> Tue Mar 19 14:16:08 2013 Authenticate/Decrypt packet error:=20
-              cipher final failed
-
- - when configuring with --enable-pkcs11, compilation fails
-
-14:17 <@dazo> ssl_polarssl.h:69:5: error: expected specifier-qualifier-list=
-=20
-              before \u2018pkcs11_context\u2019
-
-(I'm just relaying, David did the actual testing... my buildbot box is stil=
-l busy trying to compile polar 1.2.6...)
-
-gert
---
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---_002_1CED409804E2164C8104F9E623B08B9013B904FFD9FOXDFT02FOXlo_
-Content-Type: application/octet-stream;
-	name="0001-Fixed-autoconf-script-to-properly-detect-missing-pkc.patch"
-Content-Description: 0001-Fixed-autoconf-script-to-properly-detect-missing-pkc.patch
-Content-Disposition: attachment;
-	filename="0001-Fixed-autoconf-script-to-properly-detect-missing-pkc.patch";
-	size=2616; creation-date="Wed, 20 Mar 2013 18:52:13 GMT";
-	modification-date="Wed, 20 Mar 2013 18:42:06 GMT"
+--------------ms070504060304060207020405
+Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Kryptografische Unterschrift
 
-RnJvbSA5Y2M3NGFlMDg2YjMxNTJhNjVlMzI1MDY4MjIxMDgzNTZiZTcwNzcxIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBTdGVmZmFuIEthcmdlciA8c3RlZmZhbi5rYXJnZXJAZm94LWl0
-LmNvbT4KRGF0ZTogV2VkLCAyMCBNYXIgMjAxMyAxOTo0MToyOSArMDEwMApTdWJqZWN0OiBbUEFU
-Q0hdIEZpeGVkIGF1dG9jb25mIHNjcmlwdCB0byBwcm9wZXJseSBkZXRlY3QgbWlzc2luZyBwa2Nz
-MTEgd2l0aAogcG9sYXJzc2wuCgpXaGVuIHBvbGFyc3NsIGlzIGNvbXBpbGVkIHdpdGhvdXQgcGtj
-czExIHN1cHBvcnQsIG9yIGEgcmVxdWlyZWQKcGtjczExLWhlbHBlciBsaWJyYXJ5IGlzIG1pc3Np
-bmcsIGNvbmZpZ3VyZSB3aWxsIG5vdyBpc3N1ZSBhbiBlcnJvci4KClNpZ25lZC1vZmYtYnk6IFN0
-ZWZmYW4gS2FyZ2VyIDxzdGVmZmFuLmthcmdlckBmb3gtaXQuY29tPgotLS0KIGNvbmZpZ3VyZS5h
-YyB8ICAgNTQgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0t
-LS0tLS0tCiAxIGZpbGUgY2hhbmdlZCwgNDMgaW5zZXJ0aW9ucygrKSwgMTEgZGVsZXRpb25zKC0p
-CgpkaWZmIC0tZ2l0IGEvY29uZmlndXJlLmFjIGIvY29uZmlndXJlLmFjCmluZGV4IDc4NWZjNGUu
-LjU1ZTE0OTQgMTAwNjQ0Ci0tLSBhL2NvbmZpZ3VyZS5hYworKysgYi9jb25maWd1cmUuYWMKQEAg
-LTcyNiw2ICs3MjYsMTMgQEAgY2FzZSAiJHt3aXRoX21lbV9jaGVja30iIGluCiBlc2FjCiAKIFBL
-R19DSEVDS19NT0RVTEVTKAorCVtQS0NTMTFfSEVMUEVSXSwKKwlbbGlicGtjczExLWhlbHBlci0x
-ID49IDEuMDJdLAorCVtoYXZlX3BrY3MxMV9oZWxwZXI9InllcyJdLAorCVtdCispCisKK1BLR19D
-SEVDS19NT0RVTEVTKAogCVtPUEVOU1NMX0NSWVBUT10sCiAJW2xpYmNyeXB0byA+PSAwLjkuNl0s
-CiAJW2hhdmVfb3BlbnNzbF9jcnlwdG89InllcyJdLApAQCAtNzg5LDkgKzc5NiwxMSBAQCBpZiB0
-ZXN0IC16ICIke1BPTEFSU1NMX0xJQlN9IjsgdGhlbgogCQkJCVtwb2xhcnNzbF0sCiAJCQkJW2Fl
-c19jcnlwdF9jYmNdLAogCQkJCSwKLQkJCQlbaGF2ZV9wb2xhcnNzbF9jcnlwdG89Im5vIl0KKwkJ
-CQlbaGF2ZV9wb2xhcnNzbF9jcnlwdG89Im5vIl0sCisJCQkJWyR7UEtDUzExX0hFTFBFUl9MSUJT
-fV0KIAkJCSkKLQkJXQorCQldLAorCQlbJHtQS0NTMTFfSEVMUEVSX0xJQlN9XQogCSkKIGZpCiAK
-QEAgLTgwNiwxNCArODE1LDQ0IEBAIGlmIHRlc3QgIiR7d2l0aF9jcnlwdG9fbGlicmFyeX0iID0g
-InBvbGFyc3NsIiA7IHRoZW4KIAkJCV1dLAogCQkJW1sKICNpZiBQT0xBUlNTTF9WRVJTSU9OX05V
-TUJFUiA8IDB4MDEwMjA1MDAKLSNlcnJvciBpbnZhbGlkIHZlcnNpb24gUG9sYXJTU0wtMS4yLjUg
-b3IgbmV3ZXIgcmVxdWlyZWQKKyNlcnJvciBpbnZhbGlkIHZlcnNpb24KICNlbmRpZgogCQkJXV0K
-IAkJKV0sCiAJCVtBQ19NU0dfUkVTVUxUKFtva10pXSwKLQkJW0FDX01TR19FUlJPUihbaW52YWxp
-ZCBwb2xhcnNzbCB2ZXJzaW9uXSldCisJCVtBQ19NU0dfRVJST1IoW1BvbGFyU1NMIDEuMi41IG9y
-IG5ld2VyIHJlcXVpcmVkXSldCiAJKQogCUNGTEFHUz0iJHtvbGRfQ0ZMQUdTfSIKKworCXBvbGFy
-c3NsX3dpdGhfcGtjczExPSJubyIKKwlBQ19DT01QSUxFX0lGRUxTRSgKKwkJW0FDX0xBTkdfUFJP
-R1JBTSgKKwkJCVtbCisjaW5jbHVkZSA8cG9sYXJzc2wvY29uZmlnLmg+CisJCQldXSwKKwkJCVtb
-CisjaWZuZGVmIFBPTEFSU1NMX1BLQ1MxMV9DCisjZXJyb3IgcGtjczExIHdyYXBwZXIgbWlzc2lu
-ZworI2VuZGlmCisJCQldXQorCQkpXSwKKwkJcG9sYXJzc2xfd2l0aF9wa2NzMTE9InllcyIpCisK
-KwlBQ19NU0dfQ0hFQ0tJTkcoW3BvbGFyc3NsIHBrY3MxMSBzdXBwb3J0XSkKKwlpZiB0ZXN0ICIk
-e2VuYWJsZV9wa2NzMTF9IiA9ICJ5ZXMiOyB0aGVuCisJCWlmIHRlc3QgIiR7cG9sYXJzc2xfd2l0
-aF9wa2NzMTF9IiA9ICJ5ZXMiOyB0aGVuCisJCQlBQ19NU0dfUkVTVUxUKFtva10pCisJCWVsc2UK
-KwkJCUFDX01TR19FUlJPUihbcG9sYXJzc2wgaGFzIG5vIHBrY3MxMSB3cmFwcGVyIGNvbXBpbGVk
-IGluXSkKKwkJZmkKKwllbHNlCisJCWlmIHRlc3QgIiR7cG9sYXJzc2xfd2l0aF9wa2NzMTF9IiAh
-PSAieWVzIjsgdGhlbgorCQkJQUNfTVNHX1JFU1VMVChbb2tdKQorCQllbHNlCisJCQlBQ19NU0df
-RVJST1IoW1BvbGFyU1NMIGNvbXBpbGVkIHdpdGggUEtDUzExLCB3aGlsZSBPcGVuVlBOIGlzIG5v
-dF0pCisJCWZpCisJZmkKKwogZmkKIAogQUNfQVJHX1ZBUihbTFpPX0NGTEFHU10sIFtDIGNvbXBp
-bGVyIGZsYWdzIGZvciBsem9dKQpAQCAtODU2LDEzICs4OTUsNiBAQCBpZiB0ZXN0ICIke2hhdmVf
-bHpvfSIgPSAieWVzIjsgdGhlbgogCUNGTEFHUz0iJHtzYXZlZF9DRkxBR1N9IgogZmkKIAotUEtH
-X0NIRUNLX01PRFVMRVMoCi0JW1BLQ1MxMV9IRUxQRVJdLAotCVtsaWJwa2NzMTEtaGVscGVyLTEg
-Pj0gMS4wMl0sCi0JW2hhdmVfcGtjczExX2hlbHBlcj0ieWVzIl0sCi0JW10KLSkKLQogQUNfTVNH
-X0NIRUNLSU5HKFtnaXQgY2hlY2tvdXRdKQogR0lUX0NIRUNLT1VUPSJubyIKIGlmIHRlc3QgLW4g
-IiR7R0lUfSIgLWEgLWQgIiR7c3JjZGlyfS8uZ2l0IjsgdGhlbgotLSAKMS43LjkuNQoK
-
---_002_1CED409804E2164C8104F9E623B08B9013B904FFD9FOXDFT02FOXlo_--
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIP5DCC
+BCEwggMJoAMCAQICAgDHMA0GCSqGSIb3DQEBBQUAMHExCzAJBgNVBAYTAkRFMRwwGgYDVQQK
+ExNEZXV0c2NoZSBUZWxla29tIEFHMR8wHQYDVQQLExZULVRlbGVTZWMgVHJ1c3QgQ2VudGVy
+MSMwIQYDVQQDExpEZXV0c2NoZSBUZWxla29tIFJvb3QgQ0EgMjAeFw0wNjEyMTkxMDI5MDBa
+Fw0xOTA2MzAyMzU5MDBaMFoxCzAJBgNVBAYTAkRFMRMwEQYDVQQKEwpERk4tVmVyZWluMRAw
+DgYDVQQLEwdERk4tUEtJMSQwIgYDVQQDExtERk4tVmVyZWluIFBDQSBHbG9iYWwgLSBHMDEw
+ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDpm8NnhfkNrvWNVMOWUDU9YuluTO2U
+1wBblSJ01CDrNI/W7MAxBAuZgeKmFNJSoCgjhIt0iQReW+DieMF4yxbLKDU5ey2QRdDtoAB6
+fL9KDhsAw4bpXCsxEXsM84IkQ4wcOItqaACa7txPeKvSxhObdq3u3ibo7wGvdA/BCaL2a869
+080UME/15eOkyGKbghoDJzANAmVgTe3RCSMqljVYJ9N2xnG2kB3E7f81hn1vM7PbD8URwoqD
+oZRdQWvY0hD1TP3KUazZve+Sg7va64sWVlZDz+HVEz2mHycwzUlU28kTNJpxdcVs6qcLmPkh
+nSevPqM5OUhqjK3JmfvDEvK9AgMBAAGjgdkwgdYwcAYDVR0fBGkwZzBloGOgYYZfaHR0cDov
+L3BraS50ZWxlc2VjLmRlL2NnaS1iaW4vc2VydmljZS9hZl9Eb3dubG9hZEFSTC5jcmw/LWNy
+bF9mb3JtYXQ9WF81MDkmLWlzc3Vlcj1EVF9ST09UX0NBXzIwHQYDVR0OBBYEFEm3xs/oPR9/
+6kR7Eyn38QpwPt5kMB8GA1UdIwQYMBaAFDHDeRu69VPXF+CJei0XbAqzK50zMA4GA1UdDwEB
+/wQEAwIBBjASBgNVHRMBAf8ECDAGAQH/AgECMA0GCSqGSIb3DQEBBQUAA4IBAQA74Vp3wEgX
+3KkY7IGvWonwvSiSpspZGBJw7Cjy565/lizn8l0ZMfYTK3S9vYCyufdnyTmieTvhERHua3iR
+M347XyYndVNljjNj7s9zw7CSI0khUHUjoR8Y4pSFPT8z6XcgjaK95qGFKUD2P3MyWA0Ja6ba
+hWzAP7uNZmRWJE6uDT8yNQFb6YyC2XJZT7GGhfF0hVblw/hc843uR7NTBXDn5U2KaYMo4RMJ
+hp5eyOpYHgwf+aTUWgRo/Sg+iwK2WLX2oSw3VwBnqyNojWOl75lrXP1LVvarQIc01BGSbOyH
+xQoLBzNytG8MHVQs2FHHzL8w00Ny8TK/jM5JY6gA9/IcMIIFTjCCBDagAwIBAgIEC4nvvjAN
+BgkqhkiG9w0BAQUFADBaMQswCQYDVQQGEwJERTETMBEGA1UEChMKREZOLVZlcmVpbjEQMA4G
+A1UECxMHREZOLVBLSTEkMCIGA1UEAxMbREZOLVZlcmVpbiBQQ0EgR2xvYmFsIC0gRzAxMB4X
+DTA3MTIyMDEzNDYyNFoXDTE5MDYzMDAwMDAwMFowgb4xCzAJBgNVBAYTAkRFMR8wHQYDVQQK
+ExZVbml2ZXJzaXRhZXQgUGFkZXJib3JuMUAwPgYDVQQLEzdJTVQgKFplbnRydW0gZnVlciBJ
+bmZvcm1hdGlvbnMtIHVuZCBNZWRpZW50ZWNobm9sb2dpZW4pMSgwJgYDVQQDEx9Vbml2ZXJz
+aXRhZXQgUGFkZXJib3JuIENBIC0gRzAxMSIwIAYJKoZIhvcNAQkBFhNjYUB1bmktcGFkZXJi
+b3JuLmRlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApyEfhJPUiCaLTtclTNlw
+rHd4MT4ygOzcUD7zDRElXdILoAEQeUs9qpMZDpPXLeSK6DNukMnURrCRUIr+lYX/kmT6ompB
+GMJgDepewHa97XS3uvE46NW2V8OdIiNddYIoDa8ZRd9lwIsnVWl9QaM9f7l5dhrSQT6ogboy
+byOqJcmb+hlxgQcMWdLzZsOXRkldl5YXUCvC6zbulszlqMt5hPjsQmbQu0nInJmNwUrYCw9c
+ctS2i0m9LaVwZxSov16/eQAJOM7bDV9CpZicgCkHACP5paKvlukP9glkvfNdS54grkPmGFNp
+uIc13W6pL1+8nTp03AlyW/GU2zsnX5pWdwIDAQABo4IBtTCCAbEwEgYDVR0TAQH/BAgwBgEB
+/wIBATALBgNVHQ8EBAMCAQYwHQYDVR0OBBYEFIHPTJq8rw/LvuzgIidOKe+uMMUeMB8GA1Ud
+IwQYMBaAFEm3xs/oPR9/6kR7Eyn38QpwPt5kMB4GA1UdEQQXMBWBE2NhQHVuaS1wYWRlcmJv
+cm4uZGUwgYgGA1UdHwSBgDB+MD2gO6A5hjdodHRwOi8vY2RwMS5wY2EuZGZuLmRlL2dsb2Jh
+bC1yb290LWNhL3B1Yi9jcmwvY2FjcmwuY3JsMD2gO6A5hjdodHRwOi8vY2RwMi5wY2EuZGZu
+LmRlL2dsb2JhbC1yb290LWNhL3B1Yi9jcmwvY2FjcmwuY3JsMIGiBggrBgEFBQcBAQSBlTCB
+kjBHBggrBgEFBQcwAoY7aHR0cDovL2NkcDEucGNhLmRmbi5kZS9nbG9iYWwtcm9vdC1jYS9w
+dWIvY2FjZXJ0L2NhY2VydC5jcnQwRwYIKwYBBQUHMAKGO2h0dHA6Ly9jZHAyLnBjYS5kZm4u
+ZGUvZ2xvYmFsLXJvb3QtY2EvcHViL2NhY2VydC9jYWNlcnQuY3J0MA0GCSqGSIb3DQEBBQUA
+A4IBAQAaomheE7QGeiZFxhmjRI97H/eQUUjp2RL2N4BQmulz56nwTFfgGN1v9kJmBuM2se7F
+TSfQ0ZsKYJhZYwZYCb4Ob57h5zpsyMtZhWqz6n5+ewT/Wl7jc6sLGl3zquMZRfS1N3nIOWsN
+rAZz4lxpjcOJwQHQevWpJT2NxTHHtHKA83QWLFAFs65ZIVAVxqYlRd9Yrr/ljK42ZzEaZgg8
+vSqDzHOwvWX5m3apWe3ZW+2eqjDGZxwfWnWBMSGYN0QIFdaZLR1JbILLfYYHyAUixHUFA+76
+2E9gufC2CySlXhNSPRTwqwPQIDTFDi2VIsafaivs7kVKPaKSq1Dh6SDfV2raMIIGaTCCBVGg
+AwIBAgIEES7tRDANBgkqhkiG9w0BAQUFADCBvjELMAkGA1UEBhMCREUxHzAdBgNVBAoTFlVu
+aXZlcnNpdGFldCBQYWRlcmJvcm4xQDA+BgNVBAsTN0lNVCAoWmVudHJ1bSBmdWVyIEluZm9y
+bWF0aW9ucy0gdW5kIE1lZGllbnRlY2hub2xvZ2llbikxKDAmBgNVBAMTH1VuaXZlcnNpdGFl
+dCBQYWRlcmJvcm4gQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2NhQHVuaS1wYWRlcmJvcm4u
+ZGUwHhcNMTAxMjIwMTUwMTA5WhcNMTMxMjE5MTUwMTA5WjBFMQswCQYDVQQGEwJERTEfMB0G
+A1UEChMWVW5pdmVyc2l0YWV0IFBhZGVyYm9ybjEVMBMGA1UEAxMMQXJuZSBTY2h3YWJlMIIC
+IjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAnPJmVFDViSIHhAokNLoZ4oFd0W4hFiC4
+KopjqHhHEBynYMD56GYnxXm5ie4ngil1e69r02M6eyB1VIhRPFRSqD3ejVHRdNLKnEzWgAbT
+o0Kkr2s7P1iPe8Cj55mSuOxplxcsxL8jU0U/ENtIaIEaI7sVlmYBmCT0fGfrpUcRj21ucDx9
+zw1CJN6VEUmlLtvDzscJg3bUvttbxA+IMUDMTd0nUgLy5lNAg17f3QUc7SrXj8QItjPGjOU3
+EnIka1D2ak+FT12j2GWVpbqkV2Pfow6fePda19xcjFs1A3MsfU4ouTfJ5Xx6OBM1/BRwB0Sg
+79LcmCRtWjGkN7boXmxi5MUXMl96l7UzGEy49O39Ct41N96T4bJDqRKFaUcZVVvW7pBX+rVd
+JrXXstiJ1HYGKU2yOgiqoLNIbhn1i3JoFP1SRSEYJb1okeL9Ewr0SoyM/suVuGg5YnMLHOjn
+oH3XzMM0vRdEk7F1KaJvcvPDe/5fAAaOokjOIdOFwwhJkvOF/P1oS1RzvmTzwXTvojBbWZnr
++eL+zwTUVpOwJ+rfLdJzw+ER18RbpH/TPzOszvAAuTxZAQdEE+SOlk2aDIHs+eFYsk6QBh1b
+jqOMDhlmElVROTv+w260iVGfcq4fTt1C8vzMcRx95y5rR5+GVQpGJb5WlZlbo3o/FCxClvt7
+3SUCAwEAAaOCAeUwggHhMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgXgMCkGA1UdJQQiMCAGCCsG
+AQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAjAdBgNVHQ4EFgQUWh2256whSHo0mgJ5hvYj
+UacnOekwHwYDVR0jBBgwFoAUgc9MmryvD8u+7OAiJ04p764wxR4wIwYDVR0RBBwwGoEYc2No
+d2FiZUB1bmktcGFkZXJib3JuLmRlMIGNBgNVHR8EgYUwgYIwP6A9oDuGOWh0dHA6Ly9jZHAx
+LnBjYS5kZm4uZGUvdW5pLXBhZGVyYm9ybi1jYS9wdWIvY3JsL2NhY3JsLmNybDA/oD2gO4Y5
+aHR0cDovL2NkcDIucGNhLmRmbi5kZS91bmktcGFkZXJib3JuLWNhL3B1Yi9jcmwvY2Fjcmwu
+Y3JsMIGmBggrBgEFBQcBAQSBmTCBljBJBggrBgEFBQcwAoY9aHR0cDovL2NkcDEucGNhLmRm
+bi5kZS91bmktcGFkZXJib3JuLWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDBJBggrBgEFBQcw
+AoY9aHR0cDovL2NkcDIucGNhLmRmbi5kZS91bmktcGFkZXJib3JuLWNhL3B1Yi9jYWNlcnQv
+Y2FjZXJ0LmNydDANBgkqhkiG9w0BAQUFAAOCAQEAgaSs5nrXX49tNOF1ISWT4U4yEpbkiXBu
+1YmhBUz+zLFWvh8uNlfllgMZqVV94ftgyizWOesc+vxL0ulNmdXhOAB+zSyT2qgQ9vv9GSV8
+cgkEGMrwMpyJQksI/UvdZ1+SyUxpW2mSMm/N6y3QVefv6HajWju63tGXAXX1ohsxfisWQC7h
+51dnhLVwTf5yVEbl0uoLv236V0IlhoPcVMaNiLv9W5P13vwYLMRxhzvgQPAB8GwyQ4X2k9tS
+naLB/AXfOZpvPx0XvpW5+dY9Lyo7EJFYMl+S0WMsD4XEj18VJWmTrvIO7ZGhU1En8+9OEwjZ
+NlrBHSSoHZ8AtjaqRf+DwTGCBXYwggVyAgEBMIHHMIG+MQswCQYDVQQGEwJERTEfMB0GA1UE
+ChMWVW5pdmVyc2l0YWV0IFBhZGVyYm9ybjFAMD4GA1UECxM3SU1UIChaZW50cnVtIGZ1ZXIg
+SW5mb3JtYXRpb25zLSB1bmQgTWVkaWVudGVjaG5vbG9naWVuKTEoMCYGA1UEAxMfVW5pdmVy
+c2l0YWV0IFBhZGVyYm9ybiBDQSAtIEcwMTEiMCAGCSqGSIb3DQEJARYTY2FAdW5pLXBhZGVy
+Ym9ybi5kZQIEES7tRDAJBgUrDgMCGgUAoIICgzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
+MBwGCSqGSIb3DQEJBTEPFw0xMzAzMjAxOTE1MzFaMCMGCSqGSIb3DQEJBDEWBBQs1TR+xigT
+DGY3lWERX8OvIwxgYzBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQME
+AQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIH
+MA0GCCqGSIb3DQMCAgEoMIHYBgkrBgEEAYI3EAQxgcowgccwgb4xCzAJBgNVBAYTAkRFMR8w
+HQYDVQQKExZVbml2ZXJzaXRhZXQgUGFkZXJib3JuMUAwPgYDVQQLEzdJTVQgKFplbnRydW0g
+ZnVlciBJbmZvcm1hdGlvbnMtIHVuZCBNZWRpZW50ZWNobm9sb2dpZW4pMSgwJgYDVQQDEx9V
+bml2ZXJzaXRhZXQgUGFkZXJib3JuIENBIC0gRzAxMSIwIAYJKoZIhvcNAQkBFhNjYUB1bmkt
+cGFkZXJib3JuLmRlAgQRLu1EMIHaBgsqhkiG9w0BCRACCzGByqCBxzCBvjELMAkGA1UEBhMC
+REUxHzAdBgNVBAoTFlVuaXZlcnNpdGFldCBQYWRlcmJvcm4xQDA+BgNVBAsTN0lNVCAoWmVu
+dHJ1bSBmdWVyIEluZm9ybWF0aW9ucy0gdW5kIE1lZGllbnRlY2hub2xvZ2llbikxKDAmBgNV
+BAMTH1VuaXZlcnNpdGFldCBQYWRlcmJvcm4gQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2Nh
+QHVuaS1wYWRlcmJvcm4uZGUCBBEu7UQwDQYJKoZIhvcNAQEBBQAEggIAlr6gS8Cgb+mwLhXU
+8DpY48TfRiazb1hxaAOVcG5DjZnTyvK8a0K+0w6tS0VN2cRInoqBhakK0od/7dxeI0eDzJcx
+kOPCSqghTyRhpJGHC57FcubVRmsodRtv1cppXGDTuPQNRA6F4cwlUZJBCXhiSTrco/Z15phI
+p4dV3n0XDHISxLD7G3gP4iz+vN1ZjvKTXqzokyvFREwFlWOF3AZB9TLwGKYmRDadR6w9as32
+FcnUaDGBNApbMpRx/hhWMNmvMOHgLFKsfNCUlhdQiVeXvCSZapLgtgU5Vnlu6NuCZ3ZivExF
+fQqqcxgcQUNdTCbl2DkK7PeTtesGwJnGI57k3LJ8LA1iZxkzWnLgnmV0RP2vEUkD9sxffafp
+7QQkZOi6+HJ0oU0+Q4eQNrb3aWAtSr0lCXaKbbuZL6r3+StKN59KWTLRheMmyfkYBwmydZbk
+jPmtpAbhQZ9pvzybdNIAXqedYxnv7mkCKc0UMo4tzTcYjMZtYqtSKgj5QxmKbUo4hHazaH4b
+tdZb8jKtscqg3I8U5OgUht+gHCbFiYPXkxi6M9nAEUKrVhRaxidlsBUMQAfXpdbEpjd63JA4
+Yec4N8Q7kHZU+tJd8Af9BDfamDERsXpJlNYGNN1Wq9ya3vcMDWqhp3vnVDTo1vIyCIaaU4Pg
+q2seAOlVvl5/lKdhdRcAAAAAAAA=
+--------------ms070504060304060207020405--
 
