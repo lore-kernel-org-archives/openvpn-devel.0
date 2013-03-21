@@ -1,12 +1,13 @@
-From: Adriaan de Jong <dejong@...1435...>
-Date: Thu, 21 Mar 2013 08:16:14 +0100
-Message-ID: <1CED409804E2164C8104F9E623B08B9013B9050044@...1436...>
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Thu, 21 Mar 2013 18:37:37 +0100
+Message-ID: <1CED409804E2164C8104F9E623B08B9013B9050664@...1436...>
 References: <1363624652-7001-1-git-send-email-steffan.karger@...1435...>
 	<1363624652-7001-2-git-send-email-steffan.karger@...1435...>
 	<20130319142655.GX953@...1296...>
-	<1CED409804E2164C8104F9E623B08B9013B904FFD9@...1436...>
-In-Reply-To: <1CED409804E2164C8104F9E623B08B9013B904FFD9@...1436...>
+In-Reply-To: <20130319142655.GX953@...1296...>
 Content-Language: en-US
+Content-Type: multipart/mixed;
+	boundary="_002_1CED409804E2164C8104F9E623B08B9013B9050664FOXDFT02FOXlo_"
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] [PATCH 1/5] PolarSSL-1.2 support
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,82 +18,249 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: Steffan Karger <steffan.karger@...1435...>, Gert Doering <gert@...1296...>
+To: Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Ack, I think this solves the PolarSSL with/without PKCS11-helper problem.
+--_002_1CED409804E2164C8104F9E623B08B9013B9050664FOXDFT02FOXlo_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-> -----Original Message-----
-> From: Steffan Karger [mailto:steffan.karger@...1435...]
-> Sent: woensdag 20 maart 2013 19:53
-> To: Gert Doering
-> Cc: openvpn-devel@lists.sourceforge.net
-> Subject: Re: [Openvpn-devel] [PATCH 1/5] PolarSSL-1.2 support
+Hi,
+
+Attached a new version of the patch. It partly resolves the first issue, as=
+ it overrides the 32-bit default blowfish keysize with a sane 128 bit value=
+. However, the options strings between openssl and polarssl still differ. T=
+hat is fixed in an updated patch 4/5 which I will send shortly.
+
+-Steffan
+
+-----Original Message-----
+From: Gert Doering [mailto:gert@...1296...]=20
+Sent: dinsdag 19 maart 2013 15:27
+To: Steffan Karger
+Cc: openvpn-devel@lists.sourceforge.net
+Subject: Re: [Openvpn-devel] [PATCH 1/5] PolarSSL-1.2 support
+
+Hi,
+
+On Mon, Mar 18, 2013 at 05:37:28PM +0100, steffan.karger@...1435... wrote:
+> From: Steffan Karger <steffan.karger@...1435...>
 >=20
-> Hi,
->=20
-> Attached a patch for the second point you make. It was a pre-existing
-> bug where the autoconf script was not equipped to detect incorrectly
-> compiled polarssl builds, e.g. without pkcs11 support.
->=20
-> I'm still working on the first (polarssl-blowfish) point, need to do
-> some more testing first on that one.
->=20
-> Regards,
-> -Steffan
->=20
-> -----Original Message-----
-> From: Gert Doering [mailto:gert@...1296...]
-> Sent: dinsdag 19 maart 2013 15:27
-> To: Steffan Karger
-> Cc: openvpn-devel@lists.sourceforge.net
-> Subject: Re: [Openvpn-devel] [PATCH 1/5] PolarSSL-1.2 support
->=20
-> Hi,
->=20
-> On Mon, Mar 18, 2013 at 05:37:28PM +0100, steffan.karger@...1435...
-> wrote:
-> > From: Steffan Karger <steffan.karger@...1435...>
-> >
-> > Add support for PolarSSL-1.2, which has changed the API in several
-> places.
-> > This is a minimal port, new features have not been enabled. Only
-> > PolarSSL
-> > 1.2.5 and newer are accepted, as earlier versions contain unresolved
-> > (security) issues.
->=20
-> NAK, actually, for two reasons:
->=20
->  - there is "something wrong" with the blowfish support - patching
->    release/2.3 in git with these 5 patches and compiling with polar
-> 1.2.5
->    creates a binary that is not interoperating with openssl-compiled
->    openvpn (cipher blowfish-cbc on the polar side, bf-cbc on openssl) -
-> it
->    negotiates just fine, but data packets cannot be decrypted
->=20
-> 14:23 <@dazo> Tue Mar 19 14:16:08 2013 Authenticate/Decrypt packet
-> error:
->               cipher final failed
->=20
->  - when configuring with --enable-pkcs11, compilation fails
->=20
-> 14:17 <@dazo> ssl_polarssl.h:69:5: error: expected specifier-qualifier-
-> list
->               before \u2018pkcs11_context\u2019
->=20
-> (I'm just relaying, David did the actual testing... my buildbot box is
-> still busy trying to compile polar 1.2.6...)
->=20
-> gert
-> --
-> USENET is *not* the non-clickable part of WWW!
->=20
-> //www.muc.de/~gert/
-> Gert Doering - Munich, Germany
-> gert@...1296...
-> fax: +49-89-35655025                        gert@...1816...
-> muenchen.de
+> Add support for PolarSSL-1.2, which has changed the API in several places.
+> This is a minimal port, new features have not been enabled. Only=20
+> PolarSSL
+> 1.2.5 and newer are accepted, as earlier versions contain unresolved
+> (security) issues.
+
+NAK, actually, for two reasons:=20=20
+
+ - there is "something wrong" with the blowfish support - patching=20
+   release/2.3 in git with these 5 patches and compiling with polar 1.2.5
+   creates a binary that is not interoperating with openssl-compiled
+   openvpn (cipher blowfish-cbc on the polar side, bf-cbc on openssl) - it=
+=20
+   negotiates just fine, but data packets cannot be decrypted
+
+14:23 <@dazo> Tue Mar 19 14:16:08 2013 Authenticate/Decrypt packet error:=20
+              cipher final failed
+
+ - when configuring with --enable-pkcs11, compilation fails
+
+14:17 <@dazo> ssl_polarssl.h:69:5: error: expected specifier-qualifier-list=
+=20
+              before \u2018pkcs11_context\u2019
+
+(I'm just relaying, David did the actual testing... my buildbot box is stil=
+l busy trying to compile polar 1.2.6...)
+
+gert
+--
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--_002_1CED409804E2164C8104F9E623B08B9013B9050664FOXDFT02FOXlo_
+Content-Type: application/octet-stream; name="0001-PolarSSL-1.2-support.patch"
+Content-Description: 0001-PolarSSL-1.2-support.patch
+Content-Disposition: attachment; filename="0001-PolarSSL-1.2-support.patch";
+	size=9797; creation-date="Thu, 21 Mar 2013 17:31:52 GMT";
+	modification-date="Thu, 21 Mar 2013 17:29:37 GMT"
+Content-Transfer-Encoding: base64
+
+RnJvbSA3NjRkZmM1MmU1OWFmMWRlMjgzYTFkNzAyOTA0ZGJhN2NhYTU4YTI2IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBTdGVmZmFuIEthcmdlciA8c3RlZmZhbi5rYXJnZXJAZm94LWl0
+LmNvbT4KRGF0ZTogVGh1LCAyMSBNYXIgMjAxMyAxMToxNjoyOSArMDEwMApTdWJqZWN0OiBbUEFU
+Q0ggMS82XSBQb2xhclNTTC0xLjIgc3VwcG9ydAoKQWRkIHN1cHBvcnQgZm9yIFBvbGFyU1NMLTEu
+Miwgd2hpY2ggaGFzIGNoYW5nZWQgdGhlIEFQSSBpbiBzZXZlcmFsIHBsYWNlcy4KVGhpcyBpcyBh
+IG1pbmltYWwgcG9ydCwgbmV3IGZlYXR1cmVzIGhhdmUgbm90IGJlZW4gZW5hYmxlZC4gT25seSBQ
+b2xhclNTTAoxLjIuNSBhbmQgbmV3ZXIgYXJlIGFjY2VwdGVkLCBhcyBlYXJsaWVyIHZlcnNpb25z
+IGNvbnRhaW4gdW5yZXNvbHZlZAooc2VjdXJpdHkpIGlzc3Vlcy4KClNpZ25lZC1vZmYtYnk6IEpv
+YWNoaW0gU2NoaXBwZXIgPGpvYWNoaW0uc2NoaXBwZXJAZm94LWl0LmNvbT4KU2lnbmVkLW9mZi1i
+eTogU3RlZmZhbiBLYXJnZXIgPHN0ZWZmYW4ua2FyZ2VyQGZveC1pdC5jb20+Ci0tLQogY29uZmln
+dXJlLmFjICAgICAgICAgICAgICAgICAgICAgIHwgICAgNCArKy0tCiBzcmMvb3BlbnZwbi9jcnlw
+dG9fcG9sYXJzc2wuYyAgICAgfCAgICA1ICsrKystCiBzcmMvb3BlbnZwbi9jcnlwdG9fcG9sYXJz
+c2wuaCAgICAgfCAgICAzICstLQogc3JjL29wZW52cG4vc3NsX3BvbGFyc3NsLmMgICAgICAgIHwg
+ICAzMyArKysrKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIHNyYy9vcGVudnBuL3NzbF9w
+b2xhcnNzbC5oICAgICAgICB8ICAgIDEgLQogc3JjL29wZW52cG4vc3NsX3ZlcmlmeV9wb2xhcnNz
+bC5jIHwgICAyMSArKysrKysrKystLS0tLS0tLS0tLS0KIHNyYy9vcGVudnBuL3NzbF92ZXJpZnlf
+cG9sYXJzc2wuaCB8ICAgMjIgKysrKysrKysrKy0tLS0tLS0tLS0tLQogNyBmaWxlcyBjaGFuZ2Vk
+LCAzMSBpbnNlcnRpb25zKCspLCA1OCBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9jb25maWd1
+cmUuYWMgYi9jb25maWd1cmUuYWMKaW5kZXggZGRkMzIyYy4uNzg1ZmM0ZSAxMDA2NDQKLS0tIGEv
+Y29uZmlndXJlLmFjCisrKyBiL2NvbmZpZ3VyZS5hYwpAQCAtODA1LDggKzgwNSw4IEBAIGlmIHRl
+c3QgIiR7d2l0aF9jcnlwdG9fbGlicmFyeX0iID0gInBvbGFyc3NsIiA7IHRoZW4KICNpbmNsdWRl
+IDxwb2xhcnNzbC92ZXJzaW9uLmg+CiAJCQldXSwKIAkJCVtbCi0jaWYgUE9MQVJTU0xfVkVSU0lP
+Tl9OVU1CRVIgPCAweDAxMDEwMDAwCi0jZXJyb3IgaW52YWxpZCB2ZXJzaW9uCisjaWYgUE9MQVJT
+U0xfVkVSU0lPTl9OVU1CRVIgPCAweDAxMDIwNTAwCisjZXJyb3IgaW52YWxpZCB2ZXJzaW9uIFBv
+bGFyU1NMLTEuMi41IG9yIG5ld2VyIHJlcXVpcmVkCiAjZW5kaWYKIAkJCV1dCiAJCSldLApkaWZm
+IC0tZ2l0IGEvc3JjL29wZW52cG4vY3J5cHRvX3BvbGFyc3NsLmMgYi9zcmMvb3BlbnZwbi9jcnlw
+dG9fcG9sYXJzc2wuYwppbmRleCAzOTc4YTNjLi5lZDlkYjUzIDEwMDY0NAotLS0gYS9zcmMvb3Bl
+bnZwbi9jcnlwdG9fcG9sYXJzc2wuYworKysgYi9zcmMvb3BlbnZwbi9jcnlwdG9fcG9sYXJzc2wu
+YwpAQCAtMTE0LDcgKzExNCw3IEBAIHNob3dfYXZhaWxhYmxlX2NpcGhlcnMgKCkKIAogICAgICAg
+aWYgKGluZm8gJiYgaW5mby0+bW9kZSA9PSBQT0xBUlNTTF9NT0RFX0NCQykKIAlwcmludGYgKCIl
+cyAlZCBiaXQgZGVmYXVsdCBrZXlcbiIsCi0JCWluZm8tPm5hbWUsIGluZm8tPmtleV9sZW5ndGgp
+OworCQlpbmZvLT5uYW1lLCBjaXBoZXJfa3Rfa2V5X3NpemUoaW5mbykgKiA4KTsKIAogICAgICAg
+Y2lwaGVycysrOwogICAgIH0KQEAgLTMzOSw2ICszMzksOSBAQCBjaXBoZXJfa3Rfa2V5X3NpemUg
+KGNvbnN0IGNpcGhlcl9pbmZvX3QgKmNpcGhlcl9rdCkKIHsKICAgaWYgKE5VTEwgPT0gY2lwaGVy
+X2t0KQogICAgIHJldHVybiAwOworICBpZiAoUE9MQVJTU0xfQ0lQSEVSX0lEX0JMT1dGSVNIID09
+IGNpcGhlcl9rdC0+YmFzZS0+Y2lwaGVyKQorICAgIHJldHVybiAxMjgvODsgLyogT3ZlcnJpZGUg
+UG9sYXJTU0wgMzIgYml0IGRlZmF1bHQga2V5IHNpemUgd2l0aCBzYW5lIDEyOCBiaXQgZGVmYXVs
+dCAqLworCiAgIHJldHVybiBjaXBoZXJfa3QtPmtleV9sZW5ndGgvODsKIH0KIApkaWZmIC0tZ2l0
+IGEvc3JjL29wZW52cG4vY3J5cHRvX3BvbGFyc3NsLmggYi9zcmMvb3BlbnZwbi9jcnlwdG9fcG9s
+YXJzc2wuaAppbmRleCBiZmFiYjkxLi5iNmRhNDM2IDEwMDY0NAotLS0gYS9zcmMvb3BlbnZwbi9j
+cnlwdG9fcG9sYXJzc2wuaAorKysgYi9zcmMvb3BlbnZwbi9jcnlwdG9fcG9sYXJzc2wuaApAQCAt
+MzAsNyArMzAsNiBAQAogI2lmbmRlZiBDUllQVE9fUE9MQVJTU0xfSF8KICNkZWZpbmUgQ1JZUFRP
+X1BPTEFSU1NMX0hfCiAKLSNpbmNsdWRlIDxwb2xhcnNzbC92ZXJzaW9uLmg+CiAjaW5jbHVkZSA8
+cG9sYXJzc2wvY2lwaGVyLmg+CiAjaW5jbHVkZSA8cG9sYXJzc2wvbWQuaD4KICNpbmNsdWRlIDxw
+b2xhcnNzbC9jdHJfZHJiZy5oPgpAQCAtNjAsNyArNTksNyBAQCB0eXBlZGVmIG1kX2NvbnRleHRf
+dCBobWFjX2N0eF90OwogI2RlZmluZSBPUEVOVlBOX01PREVfT0ZCIAlQT0xBUlNTTF9NT0RFX09G
+QgogCiAvKiogQ2lwaGVyIGlzIGluIENGQiBtb2RlICovCi0jZGVmaW5lIE9QRU5WUE5fTU9ERV9D
+RkIgCVBPTEFSU1NMX01PREVfQ0ZCMTI4CisjZGVmaW5lIE9QRU5WUE5fTU9ERV9DRkIgCVBPTEFS
+U1NMX01PREVfQ0ZCCiAKIC8qKiBDaXBoZXIgc2hvdWxkIGVuY3J5cHQgKi8KICNkZWZpbmUgT1BF
+TlZQTl9PUF9FTkNSWVBUIAlQT0xBUlNTTF9FTkNSWVBUCmRpZmYgLS1naXQgYS9zcmMvb3BlbnZw
+bi9zc2xfcG9sYXJzc2wuYyBiL3NyYy9vcGVudnBuL3NzbF9wb2xhcnNzbC5jCmluZGV4IDEyMzE4
+YjMuLjRkMDBhZDYgMTAwNjQ0Ci0tLSBhL3NyYy9vcGVudnBuL3NzbF9wb2xhcnNzbC5jCisrKyBi
+L3NyYy9vcGVudnBuL3NzbF9wb2xhcnNzbC5jCkBAIC02NSwyMyArNjUsNiBAQCB0bHNfY2xlYXJf
+ZXJyb3IoKQogewogfQogCi1zdGF0aWMgaW50IGRlZmF1bHRfY2lwaGVyc3VpdGVzW10gPQotewot
+ICAgIFNTTF9FREhfUlNBX0FFU18yNTZfU0hBLAotICAgIFNTTF9FREhfUlNBX0NBTUVMTElBXzI1
+Nl9TSEEsCi0gICAgU1NMX0VESF9SU0FfQUVTXzEyOF9TSEEsCi0gICAgU1NMX0VESF9SU0FfQ0FN
+RUxMSUFfMTI4X1NIQSwKLSAgICBTU0xfRURIX1JTQV9ERVNfMTY4X1NIQSwKLSAgICBTU0xfUlNB
+X0FFU18yNTZfU0hBLAotICAgIFNTTF9SU0FfQ0FNRUxMSUFfMjU2X1NIQSwKLSAgICBTU0xfUlNB
+X0FFU18xMjhfU0hBLAotICAgIFNTTF9SU0FfQ0FNRUxMSUFfMTI4X1NIQSwKLSAgICBTU0xfUlNB
+X0RFU18xNjhfU0hBLAotICAgIFNTTF9SU0FfUkM0XzEyOF9TSEEsCi0gICAgU1NMX1JTQV9SQzRf
+MTI4X01ENSwKLSAgICAwCi19OwotCiB2b2lkCiB0bHNfY3R4X3NlcnZlcl9uZXcoc3RydWN0IHRs
+c19yb290X2N0eCAqY3R4KQogewpAQCAtNTE0LDIwICs0OTcsMTcgQEAgdm9pZCBrZXlfc3RhdGVf
+c3NsX2luaXQoc3RydWN0IGtleV9zdGF0ZV9zc2wgKmtzX3NzbCwKIAogICAgICAgc3NsX3NldF9y
+bmcgKGtzX3NzbC0+Y3R4LCBjdHJfZHJiZ19yYW5kb20sIHJhbmRfY3R4X2dldCgpKTsKIAotICAg
+ICAgQUxMT0NfT0JKX0NMRUFSIChrc19zc2wtPnNzbiwgc3NsX3Nlc3Npb24pOwotICAgICAgc3Ns
+X3NldF9zZXNzaW9uIChrc19zc2wtPmN0eCwgMCwgMCwga3Nfc3NsLT5zc24gKTsKICAgICAgIGlm
+IChzc2xfY3R4LT5hbGxvd2VkX2NpcGhlcnMpCiAJc3NsX3NldF9jaXBoZXJzdWl0ZXMgKGtzX3Nz
+bC0+Y3R4LCBzc2xfY3R4LT5hbGxvd2VkX2NpcGhlcnMpOwotICAgICAgZWxzZQotCXNzbF9zZXRf
+Y2lwaGVyc3VpdGVzIChrc19zc2wtPmN0eCwgZGVmYXVsdF9jaXBoZXJzdWl0ZXMpOwogCiAgICAg
+ICAvKiBJbml0aWFsaXNlIGF1dGhlbnRpY2F0aW9uIGluZm9ybWF0aW9uICovCiAgICAgICBpZiAo
+aXNfc2VydmVyKQogCXNzbF9zZXRfZGhfcGFyYW1fY3R4IChrc19zc2wtPmN0eCwgc3NsX2N0eC0+
+ZGhtX2N0eCApOwogI2lmIGRlZmluZWQoRU5BQkxFX1BLQ1MxMSkKICAgICAgIGlmIChzc2xfY3R4
+LT5wcml2X2tleV9wa2NzMTEgIT0gTlVMTCkKLQlzc2xfc2V0X293bl9jZXJ0X3BrY3MxMSgga3Nf
+c3NsLT5jdHgsIHNzbF9jdHgtPmNydF9jaGFpbiwKLQkgICAgc3NsX2N0eC0+cHJpdl9rZXlfcGtj
+czExICk7CisJc3NsX3NldF9vd25fY2VydF9hbHQoIGtzX3NzbC0+Y3R4LCBzc2xfY3R4LT5jcnRf
+Y2hhaW4sCisJICAgIHNzbF9jdHgtPnByaXZfa2V5X3BrY3MxMSwgc3NsX3BrY3MxMV9kZWNyeXB0
+LCBzc2xfcGtjczExX3NpZ24sCisJICAgIHNzbF9wa2NzMTFfa2V5X2xlbiApOwogICAgICAgZWxz
+ZQogI2VuZGlmCiAJc3NsX3NldF9vd25fY2VydCgga3Nfc3NsLT5jdHgsIHNzbF9jdHgtPmNydF9j
+aGFpbiwgc3NsX2N0eC0+cHJpdl9rZXkgKTsKQEAgLTU0Myw3ICs1MjMsNiBAQCB2b2lkIGtleV9z
+dGF0ZV9zc2xfaW5pdChzdHJ1Y3Qga2V5X3N0YXRlX3NzbCAqa3Nfc3NsLAogICAgICAgQUxMT0Nf
+T0JKX0NMRUFSIChrc19zc2wtPmN0X291dCwgZW5kbGVzc19idWZmZXIpOwogICAgICAgc3NsX3Nl
+dF9iaW8gKGtzX3NzbC0+Y3R4LCBlbmRsZXNzX2J1Zl9yZWFkLCBrc19zc2wtPmN0X2luLAogCSAg
+ZW5kbGVzc19idWZfd3JpdGUsIGtzX3NzbC0+Y3Rfb3V0KTsKLQogICAgIH0KIH0KIApAQCAtNTU2
+LDggKzUzNSw2IEBAIGtleV9zdGF0ZV9zc2xfZnJlZShzdHJ1Y3Qga2V5X3N0YXRlX3NzbCAqa3Nf
+c3NsKQogCSAgc3NsX2ZyZWUoa3Nfc3NsLT5jdHgpOwogCSAgZnJlZShrc19zc2wtPmN0eCk7CiAJ
+fQotICAgICAgaWYgKGtzX3NzbC0+c3NuKQotCWZyZWUoa3Nfc3NsLT5zc24pOwogICAgICAgaWYg
+KGtzX3NzbC0+Y3RfaW4pIHsKIAlidWZfZnJlZV9lbnRyaWVzKGtzX3NzbC0+Y3RfaW4pOwogCWZy
+ZWUoa3Nfc3NsLT5jdF9pbik7CkBAIC04MTgsNyArNzk1LDcgQEAga2V5X3N0YXRlX3JlYWRfcGxh
+aW50ZXh0IChzdHJ1Y3Qga2V5X3N0YXRlX3NzbCAqa3MsIHN0cnVjdCBidWZmZXIgKmJ1ZiwKIHZv
+aWQKIHByaW50X2RldGFpbHMgKHN0cnVjdCBrZXlfc3RhdGVfc3NsICoga3Nfc3NsLCBjb25zdCBj
+aGFyICpwcmVmaXgpCiB7Ci0gIHg1MDlfY2VydCAqY2VydDsKKyAgY29uc3QgeDUwOV9jZXJ0ICpj
+ZXJ0OwogICBjaGFyIHMxWzI1Nl07CiAgIGNoYXIgczJbMjU2XTsKIApAQCAtODI4LDcgKzgwNSw3
+IEBAIHByaW50X2RldGFpbHMgKHN0cnVjdCBrZXlfc3RhdGVfc3NsICoga3Nfc3NsLCBjb25zdCBj
+aGFyICpwcmVmaXgpCiAJCSAgICBzc2xfZ2V0X3ZlcnNpb24gKGtzX3NzbC0+Y3R4KSwKIAkJICAg
+IHNzbF9nZXRfY2lwaGVyc3VpdGUoa3Nfc3NsLT5jdHgpKTsKIAotICBjZXJ0ID0ga3Nfc3NsLT5j
+dHgtPnBlZXJfY2VydDsKKyAgY2VydCA9IHNzbF9nZXRfcGVlcl9jZXJ0KGtzX3NzbC0+Y3R4KTsK
+ICAgaWYgKGNlcnQgIT0gTlVMTCkKICAgICB7CiAgICAgICBvcGVudnBuX3NucHJpbnRmIChzMiwg
+c2l6ZW9mIChzMiksICIsICIgY291bnRlcl9mb3JtYXQgIiBiaXQgUlNBIiwgKGNvdW50ZXJfdHlw
+ZSkgY2VydC0+cnNhLmxlbiAqIDgpOwpkaWZmIC0tZ2l0IGEvc3JjL29wZW52cG4vc3NsX3BvbGFy
+c3NsLmggYi9zcmMvb3BlbnZwbi9zc2xfcG9sYXJzc2wuaAppbmRleCA0NTY1NzNmLi5kYTkzNjk5
+IDEwMDY0NAotLS0gYS9zcmMvb3BlbnZwbi9zc2xfcG9sYXJzc2wuaAorKysgYi9zcmMvb3BlbnZw
+bi9zc2xfcG9sYXJzc2wuaApAQCAtNzMsNyArNzMsNiBAQCBzdHJ1Y3QgdGxzX3Jvb3RfY3R4IHsK
+IAogc3RydWN0IGtleV9zdGF0ZV9zc2wgewogICAgICAgICBzc2xfY29udGV4dCAqY3R4OwotICAg
+ICAgICBzc2xfc2Vzc2lvbiAqc3NuOwogICAgICAgICBlbmRsZXNzX2J1ZmZlciAqY3RfaW47CiAg
+ICAgICAgIGVuZGxlc3NfYnVmZmVyICpjdF9vdXQ7CiB9OwpkaWZmIC0tZ2l0IGEvc3JjL29wZW52
+cG4vc3NsX3ZlcmlmeV9wb2xhcnNzbC5jIGIvc3JjL29wZW52cG4vc3NsX3ZlcmlmeV9wb2xhcnNz
+bC5jCmluZGV4IGEzMmRiOGQuLjY1MzI0OGYgMTAwNjQ0Ci0tLSBhL3NyYy9vcGVudnBuL3NzbF92
+ZXJpZnlfcG9sYXJzc2wuYworKysgYi9zcmMvb3BlbnZwbi9zc2xfdmVyaWZ5X3BvbGFyc3NsLmMK
+QEAgLTQ0LDExICs0NCwxMCBAQAogCiBpbnQKIHZlcmlmeV9jYWxsYmFjayAodm9pZCAqc2Vzc2lv
+bl9vYmosIHg1MDlfY2VydCAqY2VydCwgaW50IGNlcnRfZGVwdGgsCi0gICAgaW50IHByZXZlcmlm
+eV9vaykKKyAgICBpbnQgKmZsYWdzKQogewogICBzdHJ1Y3QgdGxzX3Nlc3Npb24gKnNlc3Npb24g
+PSAoc3RydWN0IHRsc19zZXNzaW9uICopIHNlc3Npb25fb2JqOwogICBzdHJ1Y3QgZ2NfYXJlbmEg
+Z2MgPSBnY19uZXcoKTsKLSAgaW50IHJldCA9IDE7CiAKICAgQVNTRVJUIChjZXJ0KTsKICAgQVNT
+RVJUIChzZXNzaW9uKTsKQEAgLTU5LDcgKzU4LDcgQEAgdmVyaWZ5X2NhbGxiYWNrICh2b2lkICpz
+ZXNzaW9uX29iaiwgeDUwOV9jZXJ0ICpjZXJ0LCBpbnQgY2VydF9kZXB0aCwKICAgY2VydF9oYXNo
+X3JlbWVtYmVyIChzZXNzaW9uLCBjZXJ0X2RlcHRoLCB4NTA5X2dldF9zaGExX2hhc2goY2VydCwg
+JmdjKSk7CiAKICAgLyogZGlkIHBlZXIgcHJlc2VudCBjZXJ0IHdoaWNoIHdhcyBzaWduZWQgYnkg
+b3VyIHJvb3QgY2VydD8gKi8KLSAgaWYgKCFwcmV2ZXJpZnlfb2spCisgIGlmICgqZmxhZ3MgIT0g
+MCkKICAgICB7CiAgICAgICBjaGFyICpzdWJqZWN0ID0geDUwOV9nZXRfc3ViamVjdChjZXJ0LCAm
+Z2MpOwogCkBAIC02OSwyMSArNjgsMTkgQEAgdmVyaWZ5X2NhbGxiYWNrICh2b2lkICpzZXNzaW9u
+X29iaiwgeDUwOV9jZXJ0ICpjZXJ0LCBpbnQgY2VydF9kZXB0aCwKIAltc2cgKERfVExTX0VSUk9S
+UywgIlZFUklGWSBFUlJPUjogZGVwdGg9JWQsIGNvdWxkIG5vdCBleHRyYWN0IFg1MDkgIgogCSAg
+ICAgICJzdWJqZWN0IHN0cmluZyBmcm9tIGNlcnRpZmljYXRlIiwgY2VydF9kZXB0aCk7CiAKLSAg
+ICAgIGdvdG8gY2xlYW51cDsKKyAgICAgIC8qIExlYXZlIGZsYWdzIHNldCB0byBub24temVybyB0
+byBpbmRpY2F0ZSB0aGF0IHRoZSBjZXJ0IGlzIG5vdCBvayAqLworICAgIH0KKyAgZWxzZSBpZiAo
+U1VDQ0VTUyAhPSB2ZXJpZnlfY2VydChzZXNzaW9uLCBjZXJ0LCBjZXJ0X2RlcHRoKSkKKyAgICB7
+CisgICAgICAqZmxhZ3MgfD0gQkFEQ0VSVF9PVEhFUjsKICAgICB9CiAKLSAgaWYgKFNVQ0NFU1Mg
+IT0gdmVyaWZ5X2NlcnQoc2Vzc2lvbiwgY2VydCwgY2VydF9kZXB0aCkpCi0gICAgZ290byBjbGVh
+bnVwOwotCi0gIHJldCA9IDA7Ci0KLWNsZWFudXA6CiAgIGdjX2ZyZWUoJmdjKTsKIAogICAvKgot
+ICAgKiBQb2xhclNTTCBleHBlY3RzIDEgb24gZmFpbHVyZSwgMCBvbiBzdWNjZXNzCisgICAqIFBv
+bGFyU1NMLTEuMi4wKyBleHBlY3RzIDAgb24gYW55dGhpbmcgZXhjZXB0IGZhdGFsIGVycm9ycy4K
+ICAgICovCi0gIHJldHVybiByZXQ7CisgIHJldHVybiAwOwogfQogCiAjaWZkZWYgRU5BQkxFX1g1
+MDlBTFRVU0VSTkFNRQpkaWZmIC0tZ2l0IGEvc3JjL29wZW52cG4vc3NsX3ZlcmlmeV9wb2xhcnNz
+bC5oIGIvc3JjL29wZW52cG4vc3NsX3ZlcmlmeV9wb2xhcnNzbC5oCmluZGV4IGZjZWVlNjYuLmIy
+NTkwODEgMTAwNjQ0Ci0tLSBhL3NyYy9vcGVudnBuL3NzbF92ZXJpZnlfcG9sYXJzc2wuaAorKysg
+Yi9zcmMvb3BlbnZwbi9zc2xfdmVyaWZ5X3BvbGFyc3NsLmgKQEAgLTU1LDI3ICs1NSwyNSBAQCB0
+eXBlZGVmIHg1MDlfY2VydCBvcGVudnBuX3g1MDlfY2VydF90OwogICogY2FsbHMgdGhlIFBvbGFy
+U1NMIGxpYnJhcnkncyBcYyBzc2xfc2V0X3ZlcmlmeV9jYWxsYmFjaygpIGZ1bmN0aW9uIHdpdGgg
+XGMKICAqIHZlcmlmeV9jYWxsYmFjaygpIGFzIGl0cyBjYWxsYmFjayBhcmd1bWVudC4KICAqCi0g
+KiBJdCBjaGVja3MgcHJldmVyaWZ5X29rLCBhbmQgcmVnaXN0ZXJzIHRoZSBjZXJ0aWZpY2F0ZSBo
+YXNoLiBJZiB0aGVzZSBzdGVwcwotICogc3VjY2VlZCwgaXQgY2FsbHMgdGhlIFxjIHZlcmlmeV9j
+ZXJ0KCkgZnVuY3Rpb24sIHdoaWNoIHBlcmZvcm1zCi0gKiBPcGVuVlBOLXNwZWNpZmljIHZlcmlm
+aWNhdGlvbi4KKyAqIEl0IGNoZWNrcyAqZmxhZ3MgYW5kIHJlZ2lzdGVycyB0aGUgY2VydGlmaWNh
+dGUgaGFzaC4gSWYgdGhlc2Ugc3RlcHMgc3VjY2VlZCwKKyAqIGl0IGNhbGxzIHRoZSBcYyB2ZXJp
+ZnlfY2VydCgpIGZ1bmN0aW9uLCB3aGljaCBwZXJmb3JtcyBPcGVuVlBOLXNwZWNpZmljCisgKiB2
+ZXJpZmljYXRpb24uCiAgKgogICogQHBhcmFtIHNlc3Npb25fb2JqICAtIFRoZSBPcGVuVlBOIFxj
+IHRsc19zZXNzaW9uIGFzc29jaWF0ZWQgd2l0aCB0aGlzIG9iamVjdCwKICAqICAgICAgICAgICAg
+ICAgICAgICAgICBhcyBzZXQgZHVyaW5nIFNTTCBzZXNzaW9uIHNldHVwLgogICogQHBhcmFtIGNl
+cnQgICAgICAgICAtIFRoZSBjZXJ0aWZpY2F0ZSB1c2VkIGJ5IFBvbGFyU1NMLgogICogQHBhcmFt
+IGNlcnRfZGVwdGggICAtIFRoZSBkZXB0aCBvZiB0aGUgY3VycmVudCBjZXJ0aWZpY2F0ZSBpbiB0
+aGUgY2hhaW4sIHdpdGgKICAqICAgICAgICAgICAgICAgICAgICAgICAwIGJlaW5nIHRoZSBhY3R1
+YWwgY2VydGlmaWNhdGUuCi0gKiBAcGFyYW0gcHJldmVyaWZ5X29rIC0gV2hldGhlciB0aGUgcmVt
+b3RlIE9wZW5WUE4gcGVlcidzIGNlcnRpZmljYXRlCi0gKiAgICAgICAgICAgICAgICAgICAgICAg
+cGFzdCB2ZXJpZmljYXRpb24uICBBIHZhbHVlIG9mIDEgbWVhbnMgaXQKLSAqICAgICAgICAgICAg
+ICAgICAgICAgICB2ZXJpZmllZCBzdWNjZXNzZnVsbHksIDAgbWVhbnMgaXQgZmFpbGVkLgorICog
+QHBhcmFtIGZsYWdzICAgICAgICAtIFdoZXRoZXIgdGhlIHJlbW90ZSBPcGVuVlBOIHBlZXIncyBj
+ZXJ0aWZpY2F0ZQorICogICAgICAgICAgICAgICAgICAgICAgIHBhc3NlZCB2ZXJpZmljYXRpb24u
+ICBBIHZhbHVlIG9mIDAgbWVhbnMgaXQKKyAqICAgICAgICAgICAgICAgICAgICAgICB2ZXJpZmll
+ZCBzdWNjZXNzZnVsbHksIGFueSBvdGhlciB2YWx1ZSBtZWFucyBpdAorICogICAgICAgICAgICAg
+ICAgICAgICAgIGZhaWxlZC4gXGMgdmVyaWZ5X2NhbGxiYWNrKCkgaXMgY29uc2lkZXJlZCB0byBo
+YXZlCisgKiAgICAgICAgICAgICAgICAgICAgICAgb2snZWQgdGhpcyBjZXJ0aWZpY2F0ZSBpZiBm
+bGFncyBpcyAwIHdoZW4gaXQgcmV0dXJucy4KICAqCi0gKiBAcmV0dXJuIFRoZSByZXR1cm4gdmFs
+dWUgaW5kaWNhdGVzIHdoZXRoZXIgdGhlIHN1cHBsaWVkIGNlcnRpZmljYXRlIGlzCi0gKiAgICAg
+YWxsb3dlZCB0byBzZXQgdXAgYSBWUE4gdHVubmVsLiAgVGhlIGZvbGxvd2luZyB2YWx1ZXMgY2Fu
+IGJlCi0gKiAgICAgcmV0dXJuZWQ6Ci0gKiAgICAgIC0gXGMgMDogZmFpbHVyZSwgdGhpcyBjZXJ0
+aWZpY2F0ZSBpcyBub3QgYWxsb3dlZCB0byBjb25uZWN0LgotICogICAgICAtIFxjIDE6IHN1Y2Nl
+c3MsIHRoaXMgY2VydGlmaWNhdGUgaXMgYWxsb3dlZCB0byBjb25uZWN0LgorICogQHJldHVybiBU
+aGUgcmV0dXJuIHZhbHVlIGlzIDAgdW5sZXNzIGEgZmF0YWwgZXJyb3Igb2NjdXJyZWQuCiAgKi8K
+IGludCB2ZXJpZnlfY2FsbGJhY2sgKHZvaWQgKnNlc3Npb25fb2JqLCB4NTA5X2NlcnQgKmNlcnQs
+IGludCBjZXJ0X2RlcHRoLAotICAgIGludCBwcmV2ZXJpZnlfb2spOworICAgIGludCAqZmxhZ3Mp
+OwogCiAvKiogQH0gbmFtZSBGdW5jdGlvbiBmb3IgYXV0aGVudGljYXRpbmcgYSBuZXcgY29ubmVj
+dGlvbiBmcm9tIGEgcmVtb3RlIE9wZW5WUE4gcGVlciAqLwogCi0tIAoxLjcuOS41Cgo=
+
+--_002_1CED409804E2164C8104F9E623B08B9013B9050664FOXDFT02FOXlo_--
 
