@@ -1,10 +1,10 @@
-Date: Fri, 22 Mar 2013 17:14:18 +0100 (CET)
-Message-Id: <201303221614.r2MGEIju024244@...1295...>
+Date: Fri, 22 Mar 2013 17:14:29 +0100 (CET)
+Message-Id: <201303221614.r2MGES40023765@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1363942465-3251-6-git-send-email-steffan.karger@...1435...>
-References: <1363942465-3251-6-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Switch to IANA names for TLS
-	ciphers.
+In-Reply-To: <1363942465-3251-7-git-send-email-steffan.karger@...1435...>
+References: <1363942465-3251-7-git-send-email-steffan.karger@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fixed autoconf script to
+	properly detect missing pkcs11 with polarssl.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,21 +18,21 @@ Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan.karger@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.30 branch.
+Your patch has been applied to the master and release/2.3 branch.
 
-commit 3b23b18dddb8f8f4a6ac6959b844b63356b59e87 (master)
-commit 030c7b05d01b5a9a4db5bfc2169ce9e80737656a (release/2.3)
+commit 9a3f670248d6f519a399e65a7232e2196b5115db (master)
+commit 9a3f670248d6f519a399e65a7232e2196b5115db (release/2.3)
 
 Author: Steffan Karger
-Date:   Fri Mar 22 09:54:24 2013 +0100
+Date:   Fri Mar 22 09:54:25 2013 +0100
 
-     Switch to IANA names for TLS ciphers.
+     Fixed autoconf script to properly detect missing pkcs11 with polarssl.
 
      Signed-off-by: Steffan Karger <steffan.karger@...1435...>
      Acked-by: Adriaan de Jong <dejong@...1435...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1363942465-3251-6-git-send-email-steffan.karger@...1435...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/7439
+     Message-Id: <1363942465-3251-7-git-send-email-steffan.karger@...1435...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/7441
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
