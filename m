@@ -1,17 +1,10 @@
-Date: Thu, 21 Mar 2013 22:17:28 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20130321211728.GF17727@...1296...>
-References: <1363624652-7001-1-git-send-email-steffan.karger@...1435...>
-	<1363624652-7001-5-git-send-email-steffan.karger@...1435...>
-	<20130320085250.GA953@...1296...>
-	<1CED409804E2164C8104F9E623B08B9013B9050666@...1436...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="w7PDEPdKQumQfZlR"
-Content-Disposition: inline
-In-Reply-To: <1CED409804E2164C8104F9E623B08B9013B9050666@...1436...>
-Subject: Re: [Openvpn-devel] [PATCH 4/5] Config compatibility patch. Added
-	translate_cipher_name.
+From: <steffan.karger@...1435...>
+Date: Fri, 22 Mar 2013 09:54:20 +0100
+Message-ID: <1363942465-3251-2-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1363942465-3251-1-git-send-email-steffan.karger@...1435...>
+References: <1363942465-3251-1-git-send-email-steffan.karger@...1435...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH 1/6] PolarSSL-1.2 support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,67 +13,285 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan.karger@...1435...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---w7PDEPdKQumQfZlR
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: Steffan Karger <steffan.karger@...1435...>
 
-Hi,
+Add support for PolarSSL-1.2, which has changed the API in several places.
+This is a minimal port, new features have not been enabled. Only PolarSSL
+1.2.5 and newer are accepted, as earlier versions contain unresolved
+(security) issues.
 
-On Thu, Mar 21, 2013 at 06:41:04PM +0100, Steffan Karger wrote:
-> Attached an updated version of the patch, which should resolve the issue.=
- It passes t_client tests.
+Signed-off-by: Joachim Schipper <joachim.schipper@...1435...>
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+ configure.ac                      |    4 ++--
+ src/openvpn/crypto_polarssl.c     |    5 ++++-
+ src/openvpn/crypto_polarssl.h     |    3 +--
+ src/openvpn/ssl_polarssl.c        |   33 +++++----------------------------
+ src/openvpn/ssl_polarssl.h        |    1 -
+ src/openvpn/ssl_verify_polarssl.c |   21 +++++++++------------
+ src/openvpn/ssl_verify_polarssl.h |   22 ++++++++++------------
+ 7 files changed, 31 insertions(+), 58 deletions(-)
 
-It does!  OCC is happy now, keysize defaults to 128 bits now, so I am
-happy to report that
+diff --git a/configure.ac b/configure.ac
+index ddd322c..785fc4e 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -805,8 +805,8 @@ if test "${with_crypto_library}" = "polarssl" ; then
+ #include <polarssl/version.h>
+ 			]],
+ 			[[
+-#if POLARSSL_VERSION_NUMBER < 0x01010000
+-#error invalid version
++#if POLARSSL_VERSION_NUMBER < 0x01020500
++#error invalid version PolarSSL-1.2.5 or newer required
+ #endif
+ 			]]
+ 		)],
+diff --git a/src/openvpn/crypto_polarssl.c b/src/openvpn/crypto_polarssl.c
+index 3978a3c..ed9db53 100644
+--- a/src/openvpn/crypto_polarssl.c
++++ b/src/openvpn/crypto_polarssl.c
+@@ -114,7 +114,7 @@ show_available_ciphers ()
+ 
+       if (info && info->mode == POLARSSL_MODE_CBC)
+ 	printf ("%s %d bit default key\n",
+-		info->name, info->key_length);
++		info->name, cipher_kt_key_size(info) * 8);
+ 
+       ciphers++;
+     }
+@@ -339,6 +339,9 @@ cipher_kt_key_size (const cipher_info_t *cipher_kt)
+ {
+   if (NULL == cipher_kt)
+     return 0;
++  if (POLARSSL_CIPHER_ID_BLOWFISH == cipher_kt->base->cipher)
++    return 128/8; /* Override PolarSSL 32 bit default key size with sane 128 bit default */
++
+   return cipher_kt->key_length/8;
+ }
+ 
+diff --git a/src/openvpn/crypto_polarssl.h b/src/openvpn/crypto_polarssl.h
+index bfabb91..b6da436 100644
+--- a/src/openvpn/crypto_polarssl.h
++++ b/src/openvpn/crypto_polarssl.h
+@@ -30,7 +30,6 @@
+ #ifndef CRYPTO_POLARSSL_H_
+ #define CRYPTO_POLARSSL_H_
+ 
+-#include <polarssl/version.h>
+ #include <polarssl/cipher.h>
+ #include <polarssl/md.h>
+ #include <polarssl/ctr_drbg.h>
+@@ -60,7 +59,7 @@ typedef md_context_t hmac_ctx_t;
+ #define OPENVPN_MODE_OFB 	POLARSSL_MODE_OFB
+ 
+ /** Cipher is in CFB mode */
+-#define OPENVPN_MODE_CFB 	POLARSSL_MODE_CFB128
++#define OPENVPN_MODE_CFB 	POLARSSL_MODE_CFB
+ 
+ /** Cipher should encrypt */
+ #define OPENVPN_OP_ENCRYPT 	POLARSSL_ENCRYPT
+diff --git a/src/openvpn/ssl_polarssl.c b/src/openvpn/ssl_polarssl.c
+index 12318b3..4d00ad6 100644
+--- a/src/openvpn/ssl_polarssl.c
++++ b/src/openvpn/ssl_polarssl.c
+@@ -65,23 +65,6 @@ tls_clear_error()
+ {
+ }
+ 
+-static int default_ciphersuites[] =
+-{
+-    SSL_EDH_RSA_AES_256_SHA,
+-    SSL_EDH_RSA_CAMELLIA_256_SHA,
+-    SSL_EDH_RSA_AES_128_SHA,
+-    SSL_EDH_RSA_CAMELLIA_128_SHA,
+-    SSL_EDH_RSA_DES_168_SHA,
+-    SSL_RSA_AES_256_SHA,
+-    SSL_RSA_CAMELLIA_256_SHA,
+-    SSL_RSA_AES_128_SHA,
+-    SSL_RSA_CAMELLIA_128_SHA,
+-    SSL_RSA_DES_168_SHA,
+-    SSL_RSA_RC4_128_SHA,
+-    SSL_RSA_RC4_128_MD5,
+-    0
+-};
+-
+ void
+ tls_ctx_server_new(struct tls_root_ctx *ctx)
+ {
+@@ -514,20 +497,17 @@ void key_state_ssl_init(struct key_state_ssl *ks_ssl,
+ 
+       ssl_set_rng (ks_ssl->ctx, ctr_drbg_random, rand_ctx_get());
+ 
+-      ALLOC_OBJ_CLEAR (ks_ssl->ssn, ssl_session);
+-      ssl_set_session (ks_ssl->ctx, 0, 0, ks_ssl->ssn );
+       if (ssl_ctx->allowed_ciphers)
+ 	ssl_set_ciphersuites (ks_ssl->ctx, ssl_ctx->allowed_ciphers);
+-      else
+-	ssl_set_ciphersuites (ks_ssl->ctx, default_ciphersuites);
+ 
+       /* Initialise authentication information */
+       if (is_server)
+ 	ssl_set_dh_param_ctx (ks_ssl->ctx, ssl_ctx->dhm_ctx );
+ #if defined(ENABLE_PKCS11)
+       if (ssl_ctx->priv_key_pkcs11 != NULL)
+-	ssl_set_own_cert_pkcs11( ks_ssl->ctx, ssl_ctx->crt_chain,
+-	    ssl_ctx->priv_key_pkcs11 );
++	ssl_set_own_cert_alt( ks_ssl->ctx, ssl_ctx->crt_chain,
++	    ssl_ctx->priv_key_pkcs11, ssl_pkcs11_decrypt, ssl_pkcs11_sign,
++	    ssl_pkcs11_key_len );
+       else
+ #endif
+ 	ssl_set_own_cert( ks_ssl->ctx, ssl_ctx->crt_chain, ssl_ctx->priv_key );
+@@ -543,7 +523,6 @@ void key_state_ssl_init(struct key_state_ssl *ks_ssl,
+       ALLOC_OBJ_CLEAR (ks_ssl->ct_out, endless_buffer);
+       ssl_set_bio (ks_ssl->ctx, endless_buf_read, ks_ssl->ct_in,
+ 	  endless_buf_write, ks_ssl->ct_out);
+-
+     }
+ }
+ 
+@@ -556,8 +535,6 @@ key_state_ssl_free(struct key_state_ssl *ks_ssl)
+ 	  ssl_free(ks_ssl->ctx);
+ 	  free(ks_ssl->ctx);
+ 	}
+-      if (ks_ssl->ssn)
+-	free(ks_ssl->ssn);
+       if (ks_ssl->ct_in) {
+ 	buf_free_entries(ks_ssl->ct_in);
+ 	free(ks_ssl->ct_in);
+@@ -818,7 +795,7 @@ key_state_read_plaintext (struct key_state_ssl *ks, struct buffer *buf,
+ void
+ print_details (struct key_state_ssl * ks_ssl, const char *prefix)
+ {
+-  x509_cert *cert;
++  const x509_cert *cert;
+   char s1[256];
+   char s2[256];
+ 
+@@ -828,7 +805,7 @@ print_details (struct key_state_ssl * ks_ssl, const char *prefix)
+ 		    ssl_get_version (ks_ssl->ctx),
+ 		    ssl_get_ciphersuite(ks_ssl->ctx));
+ 
+-  cert = ks_ssl->ctx->peer_cert;
++  cert = ssl_get_peer_cert(ks_ssl->ctx);
+   if (cert != NULL)
+     {
+       openvpn_snprintf (s2, sizeof (s2), ", " counter_format " bit RSA", (counter_type) cert->rsa.len * 8);
+diff --git a/src/openvpn/ssl_polarssl.h b/src/openvpn/ssl_polarssl.h
+index 456573f..da93699 100644
+--- a/src/openvpn/ssl_polarssl.h
++++ b/src/openvpn/ssl_polarssl.h
+@@ -73,7 +73,6 @@ struct tls_root_ctx {
+ 
+ struct key_state_ssl {
+         ssl_context *ctx;
+-        ssl_session *ssn;
+         endless_buffer *ct_in;
+         endless_buffer *ct_out;
+ };
+diff --git a/src/openvpn/ssl_verify_polarssl.c b/src/openvpn/ssl_verify_polarssl.c
+index a32db8d..653248f 100644
+--- a/src/openvpn/ssl_verify_polarssl.c
++++ b/src/openvpn/ssl_verify_polarssl.c
+@@ -44,11 +44,10 @@
+ 
+ int
+ verify_callback (void *session_obj, x509_cert *cert, int cert_depth,
+-    int preverify_ok)
++    int *flags)
+ {
+   struct tls_session *session = (struct tls_session *) session_obj;
+   struct gc_arena gc = gc_new();
+-  int ret = 1;
+ 
+   ASSERT (cert);
+   ASSERT (session);
+@@ -59,7 +58,7 @@ verify_callback (void *session_obj, x509_cert *cert, int cert_depth,
+   cert_hash_remember (session, cert_depth, x509_get_sha1_hash(cert, &gc));
+ 
+   /* did peer present cert which was signed by our root cert? */
+-  if (!preverify_ok)
++  if (*flags != 0)
+     {
+       char *subject = x509_get_subject(cert, &gc);
+ 
+@@ -69,21 +68,19 @@ verify_callback (void *session_obj, x509_cert *cert, int cert_depth,
+ 	msg (D_TLS_ERRORS, "VERIFY ERROR: depth=%d, could not extract X509 "
+ 	      "subject string from certificate", cert_depth);
+ 
+-      goto cleanup;
++      /* Leave flags set to non-zero to indicate that the cert is not ok */
++    }
++  else if (SUCCESS != verify_cert(session, cert, cert_depth))
++    {
++      *flags |= BADCERT_OTHER;
+     }
+ 
+-  if (SUCCESS != verify_cert(session, cert, cert_depth))
+-    goto cleanup;
+-
+-  ret = 0;
+-
+-cleanup:
+   gc_free(&gc);
+ 
+   /*
+-   * PolarSSL expects 1 on failure, 0 on success
++   * PolarSSL-1.2.0+ expects 0 on anything except fatal errors.
+    */
+-  return ret;
++  return 0;
+ }
+ 
+ #ifdef ENABLE_X509ALTUSERNAME
+diff --git a/src/openvpn/ssl_verify_polarssl.h b/src/openvpn/ssl_verify_polarssl.h
+index fceee66..b259081 100644
+--- a/src/openvpn/ssl_verify_polarssl.h
++++ b/src/openvpn/ssl_verify_polarssl.h
+@@ -55,27 +55,25 @@ typedef x509_cert openvpn_x509_cert_t;
+  * calls the PolarSSL library's \c ssl_set_verify_callback() function with \c
+  * verify_callback() as its callback argument.
+  *
+- * It checks preverify_ok, and registers the certificate hash. If these steps
+- * succeed, it calls the \c verify_cert() function, which performs
+- * OpenVPN-specific verification.
++ * It checks *flags and registers the certificate hash. If these steps succeed,
++ * it calls the \c verify_cert() function, which performs OpenVPN-specific
++ * verification.
+  *
+  * @param session_obj  - The OpenVPN \c tls_session associated with this object,
+  *                       as set during SSL session setup.
+  * @param cert         - The certificate used by PolarSSL.
+  * @param cert_depth   - The depth of the current certificate in the chain, with
+  *                       0 being the actual certificate.
+- * @param preverify_ok - Whether the remote OpenVPN peer's certificate
+- *                       past verification.  A value of 1 means it
+- *                       verified successfully, 0 means it failed.
++ * @param flags        - Whether the remote OpenVPN peer's certificate
++ *                       passed verification.  A value of 0 means it
++ *                       verified successfully, any other value means it
++ *                       failed. \c verify_callback() is considered to have
++ *                       ok'ed this certificate if flags is 0 when it returns.
+  *
+- * @return The return value indicates whether the supplied certificate is
+- *     allowed to set up a VPN tunnel.  The following values can be
+- *     returned:
+- *      - \c 0: failure, this certificate is not allowed to connect.
+- *      - \c 1: success, this certificate is allowed to connect.
++ * @return The return value is 0 unless a fatal error occurred.
+  */
+ int verify_callback (void *session_obj, x509_cert *cert, int cert_depth,
+-    int preverify_ok);
++    int *flags);
+ 
+ /** @} name Function for authenticating a new connection from a remote OpenVPN peer */
+ 
+-- 
+1.7.9.5
 
-  "release/2.3 plus your most recent patches 1-6"
-
-will a) compile with polar 1.2.6 (on FreeBSD), and b) pass all my t_client
-tests as well with all cipher/crypto related options "at default", talking
-to an openssl-openvpn server, also "all options at default":
-
-   Test sets succeded: 1 1a 2 2a 2b 3 4 4a 5.
-   Test sets failed: none.
-
-So there's an ACK from me as well (tested and stared at the code).
-
-Now, due to adding a "patch 6/5" to the series afterwards, and sending
-new versions of patch 1 and patch 4, the whole mail thread is a bit=20
-confusing now.  Since we're aiming for maximum transparency regarding
-"which bits go in the tree and why", may I ask you to "git send-email"
-these 6 patches in their most recent version in one new thread again
-(and Adriaan to ACK *those* as well)?
-
-That way we'll have a definite patch set in one single thread, and I
-can merge that with less chance of accident.
-
-thanks in advance, and for the work done this week!
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---w7PDEPdKQumQfZlR
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (NetBSD)
-
-iQCVAwUBUUt46KkuBuNlUUl1AQKlagP/Ulw6KCPQHgxBJPGmLirjXlAG4MjoBB2Y
-pFyRu5MhtCzn/588wVQJrlQISWEZvzHyMsGrbWE/duk54vCNBEVFJVzlm2mZRFro
-AjRIxPjQu9cG5MKW3NbA3Cs0g5Zq/V9ZtX5sYm5XX9bONWuwl0CwBbozb6NrzGGb
-jhp9yN4EanI=
-=ibu9
------END PGP SIGNATURE-----
-
---w7PDEPdKQumQfZlR--
 
