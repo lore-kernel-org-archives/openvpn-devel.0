@@ -1,10 +1,11 @@
-Date: Fri, 22 Mar 2013 17:14:29 +0100 (CET)
-Message-Id: <201303221614.r2MGES40023765@...1295...>
+Date: Sat, 23 Mar 2013 12:22:34 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1363942465-3251-7-git-send-email-steffan.karger@...1435...>
-References: <1363942465-3251-7-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fixed autoconf script to
-	properly detect missing pkcs11 with polarssl.
+Message-ID: <20130323112234.GM17727@...1296...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="iBwuxWUsK/REspAd"
+Content-Disposition: inline
+Subject: [Openvpn-devel] MIN() compatibility patch
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,32 +14,18 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan.karger@...1435...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.3 branch.
+--iBwuxWUsK/REspAd
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-commit 9a3f670248d6f519a399e65a7232e2196b5115db (master)
-commit 9a3f670248d6f519a399e65a7232e2196b5115db (release/2.3)
+Hi,
 
-Author: Steffan Karger
-Date:   Fri Mar 22 09:54:25 2013 +0100
+MIN() fix for on OpenSolaris 10, fixes build there.  Should fix building
+on Android, too.
 
-     Fixed autoconf script to properly detect missing pkcs11 with polarssl.
+gert
 
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Adriaan de Jong <dejong@...1435...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1363942465-3251-7-git-send-email-steffan.karger@...1435...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/7441
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
-
+--iBwuxWUsK/REspAd--
