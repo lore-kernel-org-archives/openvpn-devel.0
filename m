@@ -1,10 +1,14 @@
-Message-ID: <515019FC.7020703@...1435...>
-Date: Mon, 25 Mar 2013 10:33:48 +0100
-From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <515040F4.4010905@...1114...>
+Date: Mon, 25 Mar 2013 13:20:04 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <CAHQBeznzF4k-Bx_VSBwAwuy8FYKny3Zcf=6knJwZG8=W4kgVBg@...278...>
-In-Reply-To: <CAHQBeznzF4k-Bx_VSBwAwuy8FYKny3Zcf=6knJwZG8=W4kgVBg@...278...>
-Subject: Re: [Openvpn-devel] PolarSSL-1.2 support
+References: <CAM2vnFNeWvOfRqVM2nnhkFYqEq4V4GXCKi7x5h6SU_tBZB2A_w@...278...>
+In-Reply-To: <CAM2vnFNeWvOfRqVM2nnhkFYqEq4V4GXCKi7x5h6SU_tBZB2A_w@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="----enig2TEDQTLGUCTOXKJECGFLB"
+Subject: Re: [Openvpn-devel] [PATCH] OpenVPN Obfuscation for git-master
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,40 +17,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Siren 1117 <siren1117@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+------enig2TEDQTLGUCTOXKJECGFLB
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-Gert has already covered the first part of your mail, but I too would like to thank you for your efforts.
- 
+On 20/03/13 16:49, Siren 1117 wrote:
+> Hi all,
+>=20
+> I modified the obfuscation patch to work with git-master. And I also put
+> it on Github: https://github.com/siren1117/openvpn-obfuscation-release .
+>=20
+> Hope it could help someone.
 
-> To the PolarSSL-1.2 support itself: I must confess I didn't test it
-> but I believe the new implementation of verify_callback in
-> ssl_verify_callback.c is incorrect
-> (https://github.com/OpenVPN/openvpn/blob/master/src/openvpn/ssl_verify_polarssl.c#L46).
-> It always returns 0. The error is signaled just by setting *flags to
-> non-zero value. The flags variable is then reused by PolarSSL for the
-> next certificate in the chain. So it might be that the incorrect
-> certificate chain won't get accepted but from reading the code it
-> seems that non-zero flags coupled with zero return value might result
-> in spurious verify error messages for other certificates in the chain.
-> Please correct me if I'm wrong.
+Your patch still have not changed *anything* commented in this e-mail:
+<http://thread.gmane.org/gmane.network.openvpn.devel/7285/focus=3D7293>
 
-First of all, we really appreciate everyone who reviews our code and
-shares any doubts, so thank you. What you describe is indeed the
-behaviour of this code, but I believe this is correct behaviour.
+I am in particular worried that you have not put any concern into the
+RC4 comments.  To seed you more on this topic, please read this one
+(especially the "So what's wrong with RC4" paragraph):
+<http://blog.cryptographyengineering.com/2013/03/attack-of-week-rc4-is-kind=
+-of-broken-in.html>
 
-PolarSSL states about the verification callback in x509.h "The function
-should return 0 for anything but a fatal error". A fatal error would be
-when the function execution fails. When verification itself fails,
-errors should be communicated by setting *flags.
+In addition, you have more in-depth info here:
+<http://blog.cryptographyengineering.com/2011/12/whats-deal-with-rc4.html>
 
-Polar does collect errors in *flags while walking through the
-certificate chain, but that behaviour is by-design and seems correct to
-me. After all, it's the entire chain that fails verification.
+Why am I concerned about this weakness when RC4 is only used for
+obfuscation?  Because if the encryption key is easily recovered, the
+obfuscation doesn't really work.  Any blocking firewalls of certain
+sizes can easily add checks on for extracting this RC4 data and try to
+retrieve the keys.  This way they can detect the obfuscated OpenVPN
+traffic, and decide to block it.  You can of course change the key
+again, but it's just a matter of time until the new key is retrieved and
+your back at start needing to change the key even once more.  And when
+this is needed to be done in 10-15 minutes intervals, people will start
+complaining about OpenVPN's non-functional obfuscation.  This is a no-go!
 
--Steffan
+So please!  Before submitting any more patches of this "RC4 obfuscation"
+approach, come up with a better and improved solution - at least don't
+ignore the weaknesses in RC4.
 
+And as I already said: The TOR project already have written good
+obfuscation methods (obfsproxy) - learn from them! Then doing something
+similar will make far more sense to include into OpenVPN.  Reusing the
+obfsproxy source code will even reduce the risk of errors and lessen the
+maintenance of the OpenVPN code as well.
+
+
+--=20
+kind regards,
+
+David Sommerseth
+
+
+------enig2TEDQTLGUCTOXKJECGFLB
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+
+iEYEARECAAYFAlFQQPgACgkQDC186MBRfroh+gCgjfLcOWxxqDKP7PK8kMsn3otS
+waoAn06afjsoyrcZ+nw91sGv/JJ3BeYJ
+=9bvp
+-----END PGP SIGNATURE-----
+
+------enig2TEDQTLGUCTOXKJECGFLB--
 
