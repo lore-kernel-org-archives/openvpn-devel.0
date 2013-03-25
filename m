@@ -1,9 +1,13 @@
-MIME-Version: 1.0
-Date: Mon, 25 Mar 2013 00:35:12 +0100
-Message-ID: <CAHQBeznzF4k-Bx_VSBwAwuy8FYKny3Zcf=6knJwZG8=W4kgVBg@...278...>
-From: Eugene Rudoy <gene.devel@...277...>
-Content-Type: multipart/alternative; boundary=bcaec5523b26c995c604d8b4232a
-Subject: [Openvpn-devel] PolarSSL-1.2 support
+Date: Mon, 25 Mar 2013 09:38:20 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20130325083820.GR17727@...1296...>
+References: <CAHQBeznzF4k-Bx_VSBwAwuy8FYKny3Zcf=6knJwZG8=W4kgVBg@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Cp3Cp8fzgozWLBWL"
+Content-Disposition: inline
+In-Reply-To: <CAHQBeznzF4k-Bx_VSBwAwuy8FYKny3Zcf=6knJwZG8=W4kgVBg@...278...>
+Subject: Re: [Openvpn-devel] PolarSSL-1.2 support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,82 +16,88 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Eugene Rudoy <gene.devel@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---bcaec5523b26c995c604d8b4232a
-Content-Type: text/plain; charset=UTF-8
-
-Dear openvpn-developers,
-
-I'm wondering what is the best way to submit patches to the openvpn
-project. The patch I (er13) added more than a month ago to this ticket
-https://community.openvpn.net/openvpn/ticket/250 has been completely
-ignored. Instead the patch submitted directly to this list has been
-accepted and committed. It's not that my patch is better (btw. I'm not the
-only author of it, my patch is based on MaxMuster's one), it just it seems
-that you don't pay enough attention to your own bug-tracking system and
-some of the patches submitted there simply get lost. I would appreciate it
-if you could improve yourself in this regard so that the people investing
-their time don't get disappointed ;-) Thanks!
-
-To the PolarSSL-1.2 support itself: I must confess I didn't test it but I
-believe the new implementation of verify_callback in ssl_verify_callback.c
-is incorrect (
-https://github.com/OpenVPN/openvpn/blob/master/src/openvpn/ssl_verify_polarssl.c#L46).
-It always returns 0. The error is signaled just by setting *flags to
-non-zero value. The flags variable is then reused by PolarSSL for the next
-certificate in the chain. So it might be that the incorrect certificate
-chain won't get accepted but from reading the code it seems that non-zero
-flags coupled with zero return value might result in spurious verify error
-messages for other certificates in the chain. Please correct me if I'm
-wrong.
-
-Best,
-Gene
-
---bcaec5523b26c995c604d8b4232a
-Content-Type: text/html; charset="UTF-8"
+--Cp3Cp8fzgozWLBWL
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-<span style=3D"color:rgb(34,34,34);font-family:arial,sans-serif;font-size:1=
-3px;background-color:rgb(255,255,255)">Dear openvpn-developers,</span><div =
-style=3D"color:rgb(34,34,34);font-family:arial,sans-serif;font-size:13px;ba=
-ckground-color:rgb(255,255,255)">
-<br></div><div style=3D"color:rgb(34,34,34);font-family:arial,sans-serif;fo=
-nt-size:13px;background-color:rgb(255,255,255)">I&#39;m wondering what is t=
-he best way to submit patches to the openvpn project. The patch I (er13) ad=
-ded more than a month ago to this ticket=C2=A0<a href=3D"https://community.=
-openvpn.net/openvpn/ticket/250" target=3D"_blank" style=3D"color:rgb(17,85,=
-204)">https://community.openvpn.net/openvpn/ticket/250</a>=C2=A0has been co=
-mpletely ignored. Instead the patch submitted directly to this list has bee=
-n accepted and committed. It&#39;s not that my patch is better (btw. I&#39;=
-m not the only author of it, my patch is based on MaxMuster&#39;s one), it =
-just it seems that you don&#39;t pay enough attention to your own bug-track=
-ing system and some of the patches submitted there simply get lost. I would=
- appreciate it if you could improve yourself in this regard so that the peo=
-ple investing their time don&#39;t get disappointed ;-) Thanks!</div>
-<div style=3D"color:rgb(34,34,34);font-family:arial,sans-serif;font-size:13=
-px;background-color:rgb(255,255,255)"><br></div><div style=3D"color:rgb(34,=
-34,34);font-family:arial,sans-serif;font-size:13px;background-color:rgb(255=
-,255,255)">
-To the PolarSSL-1.2 support itself: I must confess I didn&#39;t test it but=
- I believe the new implementation of verify_callback in ssl_verify_callback=
-.c is incorrect (<a href=3D"https://github.com/OpenVPN/openvpn/blob/master/=
-src/openvpn/ssl_verify_polarssl.c#L46" target=3D"_blank" style=3D"color:rgb=
-(17,85,204)">https://github.com/OpenVPN/openvpn/blob/master/src/openvpn/ssl=
-_verify_polarssl.c#L46</a>). It always returns 0. The error is signaled jus=
-t by setting *flags to non-zero value. The flags variable is then reused by=
- PolarSSL for the next certificate in the chain. So it might be that the in=
-correct certificate chain won&#39;t get accepted but from reading the code =
-it seems that non-zero flags coupled with zero return value might result in=
- spurious verify error messages for other certificates in the chain. Please=
- correct me if I&#39;m wrong.</div>
-<div style=3D"color:rgb(34,34,34);font-family:arial,sans-serif;font-size:13=
-px;background-color:rgb(255,255,255)"><br></div><div style=3D"color:rgb(34,=
-34,34);font-family:arial,sans-serif;font-size:13px;background-color:rgb(255=
-,255,255)">
-Best,</div><div style=3D"color:rgb(34,34,34);font-family:arial,sans-serif;f=
-ont-size:13px;background-color:rgb(255,255,255)">Gene</div>
+Hi,
 
---bcaec5523b26c995c604d8b4232a--
+On Mon, Mar 25, 2013 at 12:35:12AM +0100, Eugene Rudoy wrote:
+> Dear openvpn-developers,
+>=20
+> I'm wondering what is the best way to submit patches to the openvpn
+> project.=20
+
+Send the patches to the openvpn-devel list, and if you don't hear from us,=
+=20
+keep nagging on the list and in #openvpn-devel on freenode.
+
+> The patch I (er13) added more than a month ago to this ticket
+> https://community.openvpn.net/openvpn/ticket/250 has been completely
+> ignored. Instead the patch submitted directly to this list has been
+> accepted and committed. It's not that my patch is better (btw. I'm not the
+> only author of it, my patch is based on MaxMuster's one), it just it seems
+> that you don't pay enough attention to your own bug-tracking system and
+> some of the patches submitted there simply get lost. I would appreciate it
+> if you could improve yourself in this regard so that the people investing
+> their time don't get disappointed ;-) Thanks!
+
+Actually, the PolarSSL 1.2 integration was a bit difficult due to=20
+constraints voiced by James Yonan ("no user visible changes"), so=20
+the initial set of PolarSSL patches that have been sent to the list=20
+in January got rejected at FOSDEM.
+
+Indeed, we have not been that good at following up on trac-reported
+issues - not due to bad will, but due to lack of time.  Sorry for that,
+we're working on improving things (and as said above: if we lose track
+of something, please remind us on the list and/or the IRC channel).
+
+(In this particular case, it would have helped of the Freetz people=20
+would have talked to the fox-it people somewhat earlier, before duplicating
+the effort...)
+
+
+> To the PolarSSL-1.2 support itself: I must confess I didn't test it but I
+> believe the new implementation of verify_callback in ssl_verify_callback.c
+> is incorrect (
+> https://github.com/OpenVPN/openvpn/blob/master/src/openvpn/ssl_verify_pol=
+arssl.c#L46).
+> It always returns 0. The error is signaled just by setting *flags to
+> non-zero value. The flags variable is then reused by PolarSSL for the next
+> certificate in the chain. So it might be that the incorrect certificate
+> chain won't get accepted but from reading the code it seems that non-zero
+> flags coupled with zero return value might result in spurious verify error
+> messages for other certificates in the chain. Please correct me if I'm
+> wrong.
+
+I can't particularily comment on that - Adriaan, Steffan, could you
+check this, please?
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--Cp3Cp8fzgozWLBWL
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.12 (NetBSD)
+
+iQCVAwUBUVAM/KkuBuNlUUl1AQKrfQQAhnzML+Rn8+H2K6Di3w+0UJ8IiZII4gRw
+2eu9VK8+53w7M3FzILx4Jfep46paH1lcAHtW8rVDiFYkZtfcPYV2E9O7LTgMbvJK
+rKeI7qevvZcM8mPUUs3URCQJSRtUZbDzjSvj4He5aurlISeQEmEU2CbhDqDSIxMi
+aU68XSodP+0=
+=+RpQ
+-----END PGP SIGNATURE-----
+
+--Cp3Cp8fzgozWLBWL--
 
