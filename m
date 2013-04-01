@@ -1,14 +1,17 @@
+Message-ID: <5159A262.9010206@...1227...>
+Date: Mon, 01 Apr 2013 17:06:10 +0200
+From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <515999BB.6040201@...1227...>
 References: <1364762609-30320-1-git-send-email-arne@...1227...>
 	<20130401111231.GD428@...1296...>
 	<CAEsd45RW-ueAjEJS5PkecX=MuxLdBXA3uJceyVL6=wrvE9xoeA@...278...>
 	<515999BB.6040201@...1227...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Mon, 1 Apr 2013 10:43:59 -0400
-Message-ID: <CAEsd45SdeLB1RyVEWjnbMQiSa8ekHciv=KjJFF6QiGn9pYxuvw@...278...>
+	<CAEsd45SdeLB1RyVEWjnbMQiSa8ekHciv=KjJFF6QiGn9pYxuvw@...278...>
+In-Reply-To: <CAEsd45SdeLB1RyVEWjnbMQiSa8ekHciv=KjJFF6QiGn9pYxuvw@...278...>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature";
+	micalg=sha1; boundary="------------ms030102040009050808040303"
 Subject: Re: [Openvpn-devel] [PATCH] Add support of utun devices under Mac
-	OS X
+ OS X
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,72 +20,157 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: "Jonathan K. Bullard" <jkbullard@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Mon, Apr 1, 2013 at 10:29 AM, Arne Schwabe <arne@...1227...> wrote:
->
-> Am 01.04.13 15:26, schrieb Jonathan K. Bullard:
->
->> On Mon, Apr 1, 2013 at 7:12 AM, Gert Doering <gert@...1296...> wrote:
->>>
->>> Hi,
->>>
->>> On Sun, Mar 31, 2013 at 10:43:29PM +0200, Arne Schwabe wrote:
->>>>
->>>> Mac OS X 10.7+ natively supports tun devices (called utun). The
->>>> "standard" utun.ko driver is sometimes problematic (e.g. VmWare Fusion 5 and
->>>> tun.ko do not work together).
->>>>
->>>> When OpenVPN is compiled with utun support it will if no dev-node is
->>>> given first try to use utun and if that is not available will try the
->>>> traditional tun devices
->>
->>
->> The "utun" stuff is new to me; all I can find is the source code for
->> it. Is this one of the "hidden features" of iOS that that OpenVPN for
->> iOS app uses, and that is also in OS X 10.7 and up?
->
-> Basically yes.
->
->> Most configuration files I've seen do not include a dev-node option.
->> Does a "dev tun" option in the file imply, for this purpose, "dev-type
->> tun"?
->>
->> If I understand this correctly, a user who updates to 10.7+ will be
->> using utun instead of tun. That may be problematic (I don't know).
->>
->> Wouldn't it be better to use the legacy tun if it exists, and if not,
->> then use the utun? That would be backward-compatible with such
->> configuration files.
->
->
-> Currently the patch tries to open utun first and if that fails it will try
-> to open tun. If you specify something like dev-node tun17 or dev-node utun23
-> it will only try to open that specific kind of tun node.
+Dies ist eine kryptografisch unterzeichnete Nachricht im MIME-Format.
 
-Yes. The point I was trying to make was that most configuration files
-that I've seen don't have 'dev-node' options, so they will try utun
-first and only if that fails will they try try to open tun. So when
-they update to 10.7+, OpenVPN will start to use utun instead of tun
-(since it will be available in 10.7+), and that may break backward
-compatibility if the utun doesn't work exactly the same way that tun
-works, which I gather from the comment that
+--------------ms030102040009050808040303
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
->>>> The "standard" utun.ko driver is sometimes problematic (e.g. VmWare Fusion 5 and tun.ko do not work together).
 
-If it is the other way around (use tun if it is available and if not,
-try utun) then anybody who has loaded tun will continue to work with
-that tun, and anybody who hasn't loaded tun will get utun if it is
-available. So nothing breaks.
+>>>>> The "standard" utun.ko driver is sometimes problematic (e.g. VmWare F=
+usion 5 and tun.ko do not work together).
+> If it is the other way around (use tun if it is available and if not,
+> try utun) then anybody who has loaded tun will continue to work with
+> that tun, and anybody who hasn't loaded tun will get utun if it is
+> available. So nothing breaks.
+>
+> It's hard for a GUI like Tunnelblick that doesn't parse the
+> configuration file to detect the situation (no dev-type option) to add
+> a "dev-type tun" to force the use of tun.
+>
+> But if we know that utun works for OpenVPN, then I don't have any
+> problem with the patch. But that utun "is sometimes problematic" makes
+> me worried that this may not be the case.
+The short history behind the patch: I was investing why Tunnelblick was=20
+not working on a collegues Macbook and as it turned out that you can=20
+have tun.ko loaded or the VmWare Fusion network driver (at least on his=20
+Macbook). Otherwise you get errors on loading the module. But I=20
+remembered something about the utun stuff, found the example code again=20
+and come up with the patch. The setence from the commit should have been:
 
-It's hard for a GUI like Tunnelblick that doesn't parse the
-configuration file to detect the situation (no dev-type option) to add
-a "dev-type tun" to force the use of tun.
+The "standard" tun.ko driver is sometimes problematic (e.g. VmWare Fusion 5=
+ and tun.ko do not work together).
 
-But if we know that utun works for OpenVPN, then I don't have any
-problem with the patch. But that utun "is sometimes problematic" makes
-me worried that this may not be the case.
+The utun driver not be fully compatbile with behaviour of the standard=20
+tun.ko driver but all my tests (IPv6, IPv4) worked so far. For 2.3.x I=20
+fine with try utun first or try tun first behaviour but for -master/2.4=20
+I would like to have try utun first so more people actually use utun so=20
+we get to know if it is really 100% compatible/working.
+
+Arne
+
+
+--------------ms030102040009050808040303
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Kryptografische Unterschrift
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIP5DCC
+BCEwggMJoAMCAQICAgDHMA0GCSqGSIb3DQEBBQUAMHExCzAJBgNVBAYTAkRFMRwwGgYDVQQK
+ExNEZXV0c2NoZSBUZWxla29tIEFHMR8wHQYDVQQLExZULVRlbGVTZWMgVHJ1c3QgQ2VudGVy
+MSMwIQYDVQQDExpEZXV0c2NoZSBUZWxla29tIFJvb3QgQ0EgMjAeFw0wNjEyMTkxMDI5MDBa
+Fw0xOTA2MzAyMzU5MDBaMFoxCzAJBgNVBAYTAkRFMRMwEQYDVQQKEwpERk4tVmVyZWluMRAw
+DgYDVQQLEwdERk4tUEtJMSQwIgYDVQQDExtERk4tVmVyZWluIFBDQSBHbG9iYWwgLSBHMDEw
+ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDpm8NnhfkNrvWNVMOWUDU9YuluTO2U
+1wBblSJ01CDrNI/W7MAxBAuZgeKmFNJSoCgjhIt0iQReW+DieMF4yxbLKDU5ey2QRdDtoAB6
+fL9KDhsAw4bpXCsxEXsM84IkQ4wcOItqaACa7txPeKvSxhObdq3u3ibo7wGvdA/BCaL2a869
+080UME/15eOkyGKbghoDJzANAmVgTe3RCSMqljVYJ9N2xnG2kB3E7f81hn1vM7PbD8URwoqD
+oZRdQWvY0hD1TP3KUazZve+Sg7va64sWVlZDz+HVEz2mHycwzUlU28kTNJpxdcVs6qcLmPkh
+nSevPqM5OUhqjK3JmfvDEvK9AgMBAAGjgdkwgdYwcAYDVR0fBGkwZzBloGOgYYZfaHR0cDov
+L3BraS50ZWxlc2VjLmRlL2NnaS1iaW4vc2VydmljZS9hZl9Eb3dubG9hZEFSTC5jcmw/LWNy
+bF9mb3JtYXQ9WF81MDkmLWlzc3Vlcj1EVF9ST09UX0NBXzIwHQYDVR0OBBYEFEm3xs/oPR9/
+6kR7Eyn38QpwPt5kMB8GA1UdIwQYMBaAFDHDeRu69VPXF+CJei0XbAqzK50zMA4GA1UdDwEB
+/wQEAwIBBjASBgNVHRMBAf8ECDAGAQH/AgECMA0GCSqGSIb3DQEBBQUAA4IBAQA74Vp3wEgX
+3KkY7IGvWonwvSiSpspZGBJw7Cjy565/lizn8l0ZMfYTK3S9vYCyufdnyTmieTvhERHua3iR
+M347XyYndVNljjNj7s9zw7CSI0khUHUjoR8Y4pSFPT8z6XcgjaK95qGFKUD2P3MyWA0Ja6ba
+hWzAP7uNZmRWJE6uDT8yNQFb6YyC2XJZT7GGhfF0hVblw/hc843uR7NTBXDn5U2KaYMo4RMJ
+hp5eyOpYHgwf+aTUWgRo/Sg+iwK2WLX2oSw3VwBnqyNojWOl75lrXP1LVvarQIc01BGSbOyH
+xQoLBzNytG8MHVQs2FHHzL8w00Ny8TK/jM5JY6gA9/IcMIIFTjCCBDagAwIBAgIEC4nvvjAN
+BgkqhkiG9w0BAQUFADBaMQswCQYDVQQGEwJERTETMBEGA1UEChMKREZOLVZlcmVpbjEQMA4G
+A1UECxMHREZOLVBLSTEkMCIGA1UEAxMbREZOLVZlcmVpbiBQQ0EgR2xvYmFsIC0gRzAxMB4X
+DTA3MTIyMDEzNDYyNFoXDTE5MDYzMDAwMDAwMFowgb4xCzAJBgNVBAYTAkRFMR8wHQYDVQQK
+ExZVbml2ZXJzaXRhZXQgUGFkZXJib3JuMUAwPgYDVQQLEzdJTVQgKFplbnRydW0gZnVlciBJ
+bmZvcm1hdGlvbnMtIHVuZCBNZWRpZW50ZWNobm9sb2dpZW4pMSgwJgYDVQQDEx9Vbml2ZXJz
+aXRhZXQgUGFkZXJib3JuIENBIC0gRzAxMSIwIAYJKoZIhvcNAQkBFhNjYUB1bmktcGFkZXJi
+b3JuLmRlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApyEfhJPUiCaLTtclTNlw
+rHd4MT4ygOzcUD7zDRElXdILoAEQeUs9qpMZDpPXLeSK6DNukMnURrCRUIr+lYX/kmT6ompB
+GMJgDepewHa97XS3uvE46NW2V8OdIiNddYIoDa8ZRd9lwIsnVWl9QaM9f7l5dhrSQT6ogboy
+byOqJcmb+hlxgQcMWdLzZsOXRkldl5YXUCvC6zbulszlqMt5hPjsQmbQu0nInJmNwUrYCw9c
+ctS2i0m9LaVwZxSov16/eQAJOM7bDV9CpZicgCkHACP5paKvlukP9glkvfNdS54grkPmGFNp
+uIc13W6pL1+8nTp03AlyW/GU2zsnX5pWdwIDAQABo4IBtTCCAbEwEgYDVR0TAQH/BAgwBgEB
+/wIBATALBgNVHQ8EBAMCAQYwHQYDVR0OBBYEFIHPTJq8rw/LvuzgIidOKe+uMMUeMB8GA1Ud
+IwQYMBaAFEm3xs/oPR9/6kR7Eyn38QpwPt5kMB4GA1UdEQQXMBWBE2NhQHVuaS1wYWRlcmJv
+cm4uZGUwgYgGA1UdHwSBgDB+MD2gO6A5hjdodHRwOi8vY2RwMS5wY2EuZGZuLmRlL2dsb2Jh
+bC1yb290LWNhL3B1Yi9jcmwvY2FjcmwuY3JsMD2gO6A5hjdodHRwOi8vY2RwMi5wY2EuZGZu
+LmRlL2dsb2JhbC1yb290LWNhL3B1Yi9jcmwvY2FjcmwuY3JsMIGiBggrBgEFBQcBAQSBlTCB
+kjBHBggrBgEFBQcwAoY7aHR0cDovL2NkcDEucGNhLmRmbi5kZS9nbG9iYWwtcm9vdC1jYS9w
+dWIvY2FjZXJ0L2NhY2VydC5jcnQwRwYIKwYBBQUHMAKGO2h0dHA6Ly9jZHAyLnBjYS5kZm4u
+ZGUvZ2xvYmFsLXJvb3QtY2EvcHViL2NhY2VydC9jYWNlcnQuY3J0MA0GCSqGSIb3DQEBBQUA
+A4IBAQAaomheE7QGeiZFxhmjRI97H/eQUUjp2RL2N4BQmulz56nwTFfgGN1v9kJmBuM2se7F
+TSfQ0ZsKYJhZYwZYCb4Ob57h5zpsyMtZhWqz6n5+ewT/Wl7jc6sLGl3zquMZRfS1N3nIOWsN
+rAZz4lxpjcOJwQHQevWpJT2NxTHHtHKA83QWLFAFs65ZIVAVxqYlRd9Yrr/ljK42ZzEaZgg8
+vSqDzHOwvWX5m3apWe3ZW+2eqjDGZxwfWnWBMSGYN0QIFdaZLR1JbILLfYYHyAUixHUFA+76
+2E9gufC2CySlXhNSPRTwqwPQIDTFDi2VIsafaivs7kVKPaKSq1Dh6SDfV2raMIIGaTCCBVGg
+AwIBAgIEES7tRDANBgkqhkiG9w0BAQUFADCBvjELMAkGA1UEBhMCREUxHzAdBgNVBAoTFlVu
+aXZlcnNpdGFldCBQYWRlcmJvcm4xQDA+BgNVBAsTN0lNVCAoWmVudHJ1bSBmdWVyIEluZm9y
+bWF0aW9ucy0gdW5kIE1lZGllbnRlY2hub2xvZ2llbikxKDAmBgNVBAMTH1VuaXZlcnNpdGFl
+dCBQYWRlcmJvcm4gQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2NhQHVuaS1wYWRlcmJvcm4u
+ZGUwHhcNMTAxMjIwMTUwMTA5WhcNMTMxMjE5MTUwMTA5WjBFMQswCQYDVQQGEwJERTEfMB0G
+A1UEChMWVW5pdmVyc2l0YWV0IFBhZGVyYm9ybjEVMBMGA1UEAxMMQXJuZSBTY2h3YWJlMIIC
+IjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAnPJmVFDViSIHhAokNLoZ4oFd0W4hFiC4
+KopjqHhHEBynYMD56GYnxXm5ie4ngil1e69r02M6eyB1VIhRPFRSqD3ejVHRdNLKnEzWgAbT
+o0Kkr2s7P1iPe8Cj55mSuOxplxcsxL8jU0U/ENtIaIEaI7sVlmYBmCT0fGfrpUcRj21ucDx9
+zw1CJN6VEUmlLtvDzscJg3bUvttbxA+IMUDMTd0nUgLy5lNAg17f3QUc7SrXj8QItjPGjOU3
+EnIka1D2ak+FT12j2GWVpbqkV2Pfow6fePda19xcjFs1A3MsfU4ouTfJ5Xx6OBM1/BRwB0Sg
+79LcmCRtWjGkN7boXmxi5MUXMl96l7UzGEy49O39Ct41N96T4bJDqRKFaUcZVVvW7pBX+rVd
+JrXXstiJ1HYGKU2yOgiqoLNIbhn1i3JoFP1SRSEYJb1okeL9Ewr0SoyM/suVuGg5YnMLHOjn
+oH3XzMM0vRdEk7F1KaJvcvPDe/5fAAaOokjOIdOFwwhJkvOF/P1oS1RzvmTzwXTvojBbWZnr
++eL+zwTUVpOwJ+rfLdJzw+ER18RbpH/TPzOszvAAuTxZAQdEE+SOlk2aDIHs+eFYsk6QBh1b
+jqOMDhlmElVROTv+w260iVGfcq4fTt1C8vzMcRx95y5rR5+GVQpGJb5WlZlbo3o/FCxClvt7
+3SUCAwEAAaOCAeUwggHhMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgXgMCkGA1UdJQQiMCAGCCsG
+AQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAjAdBgNVHQ4EFgQUWh2256whSHo0mgJ5hvYj
+UacnOekwHwYDVR0jBBgwFoAUgc9MmryvD8u+7OAiJ04p764wxR4wIwYDVR0RBBwwGoEYc2No
+d2FiZUB1bmktcGFkZXJib3JuLmRlMIGNBgNVHR8EgYUwgYIwP6A9oDuGOWh0dHA6Ly9jZHAx
+LnBjYS5kZm4uZGUvdW5pLXBhZGVyYm9ybi1jYS9wdWIvY3JsL2NhY3JsLmNybDA/oD2gO4Y5
+aHR0cDovL2NkcDIucGNhLmRmbi5kZS91bmktcGFkZXJib3JuLWNhL3B1Yi9jcmwvY2Fjcmwu
+Y3JsMIGmBggrBgEFBQcBAQSBmTCBljBJBggrBgEFBQcwAoY9aHR0cDovL2NkcDEucGNhLmRm
+bi5kZS91bmktcGFkZXJib3JuLWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDBJBggrBgEFBQcw
+AoY9aHR0cDovL2NkcDIucGNhLmRmbi5kZS91bmktcGFkZXJib3JuLWNhL3B1Yi9jYWNlcnQv
+Y2FjZXJ0LmNydDANBgkqhkiG9w0BAQUFAAOCAQEAgaSs5nrXX49tNOF1ISWT4U4yEpbkiXBu
+1YmhBUz+zLFWvh8uNlfllgMZqVV94ftgyizWOesc+vxL0ulNmdXhOAB+zSyT2qgQ9vv9GSV8
+cgkEGMrwMpyJQksI/UvdZ1+SyUxpW2mSMm/N6y3QVefv6HajWju63tGXAXX1ohsxfisWQC7h
+51dnhLVwTf5yVEbl0uoLv236V0IlhoPcVMaNiLv9W5P13vwYLMRxhzvgQPAB8GwyQ4X2k9tS
+naLB/AXfOZpvPx0XvpW5+dY9Lyo7EJFYMl+S0WMsD4XEj18VJWmTrvIO7ZGhU1En8+9OEwjZ
+NlrBHSSoHZ8AtjaqRf+DwTGCBXYwggVyAgEBMIHHMIG+MQswCQYDVQQGEwJERTEfMB0GA1UE
+ChMWVW5pdmVyc2l0YWV0IFBhZGVyYm9ybjFAMD4GA1UECxM3SU1UIChaZW50cnVtIGZ1ZXIg
+SW5mb3JtYXRpb25zLSB1bmQgTWVkaWVudGVjaG5vbG9naWVuKTEoMCYGA1UEAxMfVW5pdmVy
+c2l0YWV0IFBhZGVyYm9ybiBDQSAtIEcwMTEiMCAGCSqGSIb3DQEJARYTY2FAdW5pLXBhZGVy
+Ym9ybi5kZQIEES7tRDAJBgUrDgMCGgUAoIICgzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
+MBwGCSqGSIb3DQEJBTEPFw0xMzA0MDExNTA2MTBaMCMGCSqGSIb3DQEJBDEWBBRYpd8LecfH
+BWXI8eJLikMvT8srozBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQME
+AQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIH
+MA0GCCqGSIb3DQMCAgEoMIHYBgkrBgEEAYI3EAQxgcowgccwgb4xCzAJBgNVBAYTAkRFMR8w
+HQYDVQQKExZVbml2ZXJzaXRhZXQgUGFkZXJib3JuMUAwPgYDVQQLEzdJTVQgKFplbnRydW0g
+ZnVlciBJbmZvcm1hdGlvbnMtIHVuZCBNZWRpZW50ZWNobm9sb2dpZW4pMSgwJgYDVQQDEx9V
+bml2ZXJzaXRhZXQgUGFkZXJib3JuIENBIC0gRzAxMSIwIAYJKoZIhvcNAQkBFhNjYUB1bmkt
+cGFkZXJib3JuLmRlAgQRLu1EMIHaBgsqhkiG9w0BCRACCzGByqCBxzCBvjELMAkGA1UEBhMC
+REUxHzAdBgNVBAoTFlVuaXZlcnNpdGFldCBQYWRlcmJvcm4xQDA+BgNVBAsTN0lNVCAoWmVu
+dHJ1bSBmdWVyIEluZm9ybWF0aW9ucy0gdW5kIE1lZGllbnRlY2hub2xvZ2llbikxKDAmBgNV
+BAMTH1VuaXZlcnNpdGFldCBQYWRlcmJvcm4gQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2Nh
+QHVuaS1wYWRlcmJvcm4uZGUCBBEu7UQwDQYJKoZIhvcNAQEBBQAEggIAhhpLn+Z4QCvt7Mab
+cpP41YHkeMiVXPPNzcMEa21YK9h39Xie8cKklG0ArsSuRK/uVqR8rPeZvcP8GRlinAKYXIrE
++frgzIy1iQbEbyk0CBvm09H5OjJiMq9zfFQ9KUISsUzVQhvLxWlzCWFwt8VLef3ldlN/Ml//
+jj8EF5uqDsEqbDlifsFfCseBM8j66pf6ilslHH8xxf1WsscyOSrWjnqrkeo8JwnXCih/xu5N
+Zonf47YJzuH2wRIx1cbmukda/NJyBrHpBj6y8qHHBpsa5d8zc24xSC5kh2Kot0e3B7GrNHPN
+V4rb5roHrlaym1UiEVfldnPKyNTUQ5LQ68rhegWxm6dJWjADfNwRq+ZL4Vqjuy5waB/Ps9vw
+R6RlFLM0ZMAC9wVQj3ZwyO19m1Z6s5Z8Rh5GQHWqR6gDkkB+N6nGtAwqUudejcfXU4axZ0I9
+HFrfCE1rOXACV5EW/XjKUVadYeAnZnDDWx6ikfsmXpNGy191vV1efrFl0uGTD/j2THkM6JrC
+dWv8aTya82BkdYahTY22G4rmlgvG8kI1Xbqw65jlzpURAXE0LUlH7OlJEhVyP7bwdGpcL/5U
+I1pcwHfULXyF01k4Z9/OWyxOGUhDMTtULNk31FJFF+urFjn2J5/ik4WF9PoI35ZXzP9fLoeF
+lIkYnAezRLFAfAd6+w0AAAAAAAA=
+--------------ms030102040009050808040303--
 
