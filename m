@@ -1,17 +1,15 @@
-Message-ID: <5166C1ED.9040209@...1114...>
-Date: Thu, 11 Apr 2013 16:00:13 +0200
+Message-ID: <5166C2B1.8050707@...1114...>
+Date: Thu, 11 Apr 2013 16:03:29 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
 References: <1346422753-19520-1-git-send-email-arne@...1227...>
 	<201304110933.r3B9XwPT011987@...1729...>
 	<20130411105202.GA26778@...1296...>
 	<5166B459.9020801@...515...>
-	<20130411131748.GR569@...1296...> <5166B9BE.80201@...515...>
-	<20130411132757.GV569@...1296...>
-In-Reply-To: <20130411132757.GV569@...1296...>
+In-Reply-To: <5166B459.9020801@...515...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="----enig2JXPVFMVUAUHFABLJNIMG"
+	boundary="----enig2RXKCWIHDXFSNJXIRHVKA"
 Subject: Re: [Openvpn-devel] [PATCH applied] Re: Add the client id (CID) to
  the output of the status command
 Reply-To: openvpn-devel@lists.sourceforge.net
@@ -23,52 +21,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
+To: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
-------enig2JXPVFMVUAUHFABLJNIMG
+------enig2RXKCWIHDXFSNJXIRHVKA
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-On 11/04/13 15:27, Gert Doering wrote:
-> Hi,
+On 11/04/13 15:02, Samuli Sepp=E4nen wrote:
 >=20
-> On Thu, Apr 11, 2013 at 04:25:18PM +0300, Samuli Sepp=E4nen wrote:
->> As long as nobody is actually using the staging repo rewriting history
->> should not be an issue. Perhaps one could just do
+>> Hi,
 >>
->> $ git reset --hard HEAD^1
->> $ git push origin master
->>
->> and be done with it?
+>> On Thu, Apr 11, 2013 at 11:33:58AM +0200, Gert Doering wrote:
+>>> Your patch has been applied to the master branch (ACK by me).=20=20
+>>>
+>>> I'm not sure whether we need this in release/2.3, but if people see the=
+=20
+>>> need, please speak up and I'll cherry-pick :-)
+>>>
+>>> commit 662ce6acc065bddf6490b3494725b8b3987b7def (master)
+>> ... unfortunately, it breaks --disable-managemnt builds :-( - good that
+>> we have buildbots, stupid me for not noticing it before ACK-and-push.
+> I wonder if using a "staging" repo would be too much trouble? Buildbots
+> could track it, and only after all builds have succeeded, the changes
+> would be pushed to master.
 
-Do not ever do that without fully understanding what it does.  Basically
-it rewrites the git history, and others who have cloned this repo will
-get ugly warnings from git on the next git-fetch.  Whenever such
-warnings appears, it can indicate that the git tree has been
-compromised.  And if you have some merges involved and do this on a
-merge commit ... well, things gets even more complicated.
+Tempting thought.  But I'd say it will be more maintenance than real
+benefit in the long run.
 
-This operation should only be done when no other alternatives will work.
- It is the last resort of a git fix.
+Using git-revert will actually document better what we tried and why we
+didn't like that patch after all.  We don't need to try hide our
+mistakes that well :)
 
-By all means, use git-reset, but avoid it once you've pushed out a
-commit you want to remove.  If you use git-reset on a local un-pushed
-tree, that's all fine.  That's called cleaning up before you push.  But
-once pushed, rather clean it up differently.
-
-> Will that un-push already-pushed commits?  Or just have "one commit less
-> than $remote" in your local repo?
-
-Yes, and it will make users of such a git tree become suspicious.
-
-I rather recommend using 'git revert' instead.  Which simply reverts the
-commit, you add a reason why it was reverted ... and it's all logged as
-a new separate commit.  Much cleaner, and it documents what we've tried
-and why we didn't use the patch after all.  We don't need to be ashamed
-of pushing out things which breaks, as long as we fix it.
-
+Rather have a policy ... if a patch breaks something, fix it within
+24-48 hours, if not use git-revert.
 
 --=20
 kind regards,
@@ -76,7 +63,7 @@ kind regards,
 David Sommerseth
 
 
-------enig2JXPVFMVUAUHFABLJNIMG
+------enig2RXKCWIHDXFSNJXIRHVKA
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -85,10 +72,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
 
-iEYEARECAAYFAlFmwe8ACgkQDC186MBRfromJACfYBTsAU0cIqbzUm5x0YtqrdcS
-UsQAoIN5LV15kQqXBgHcxGhYyv4nc4hu
-=38zu
+iEYEARECAAYFAlFmwrEACgkQDC186MBRfrqJ1QCfTrsuMmNAVVW7/2EjR4Wpf/oQ
+qGkAnj0Knavt/GPB2XvEip6PCEWeB5Ui
+=QZoO
 -----END PGP SIGNATURE-----
 
-------enig2JXPVFMVUAUHFABLJNIMG--
+------enig2RXKCWIHDXFSNJXIRHVKA--
 
