@@ -1,15 +1,10 @@
-Date: Thu, 11 Apr 2013 12:52:02 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20130411105202.GA26778@...1296...>
-References: <1346422753-19520-1-git-send-email-arne@...1227...>
-	<201304110933.r3B9XwPT011987@...1729...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="17pEHd4RhPHOinZp"
-Content-Disposition: inline
+From: Arne Schwabe <arne@...1227...>
+Date: Thu, 11 Apr 2013 13:17:14 +0200
+Message-Id: <1365679034-1402-1-git-send-email-arne@...1227...>
 In-Reply-To: <201304110933.r3B9XwPT011987@...1729...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Add the client id (CID) to
-	the output of the status command
+References: <201304110933.r3B9XwPT011987@...1729...>
+Subject: [Openvpn-devel] [PATCH] Print client id only if compiled with man
+	agent support. Otherwise print an empty string.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,53 +13,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---17pEHd4RhPHOinZp
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Also use %lu instead of %u for printing unsigned long int
 
-Hi,
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/multi.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-On Thu, Apr 11, 2013 at 11:33:58AM +0200, Gert Doering wrote:
-> Your patch has been applied to the master branch (ACK by me).=20=20
->=20
-> I'm not sure whether we need this in release/2.3, but if people see the=20
-> need, please speak up and I'll cherry-pick :-)
->=20
-> commit 662ce6acc065bddf6490b3494725b8b3987b7def (master)
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 1dbdb7f..a2a18c9 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -817,7 +817,7 @@ multi_print_status (struct multi_context *m, struct status_output *so, const int
+ 
+ 	      if (!mi->halt)
+ 		{
+-		  status_printf (so, "CLIENT_LIST%c%s%c%s%c%s%c" counter_format "%c" counter_format "%c%s%c%u%c%s%c%u",
++		  status_printf (so, "CLIENT_LIST%c%s%c%s%c%s%c" counter_format "%c" counter_format "%c%s%c%u%c%s%c%lu",
+ 				 sep, tls_common_name (mi->context.c2.tls_multi, false),
+ 				 sep, mroute_addr_print (&mi->real, &gc),
+ 				 sep, print_in_addr_t (mi->reporting_addr, IA_EMPTY_IF_UNDEF, &gc),
+@@ -826,7 +826,11 @@ multi_print_status (struct multi_context *m, struct status_output *so, const int
+ 				 sep, time_string (mi->created, 0, false, &gc),
+ 				 sep, (unsigned int)mi->created,
+ 				 sep, tls_username (mi->context.c2.tls_multi, false),
+-                 sep, mi->context.c2.mda_context.cid);
++#ifdef MANAGEMENT_DEF_AUTH
++				 sep, mi->context.c2.mda_context.cid);
++#else
++				 sep, "");
++#endif
+ 		}
+ 	      gc_free (&gc);
+ 	    }
+-- 
+1.7.9.5
 
-... unfortunately, it breaks --disable-managemnt builds :-( - good that
-we have buildbots, stupid me for not noticing it before ACK-and-push.
-
-Arne, could you send a post-patch, please, to #ifdef ENABLE_MANAGEMENT the
-problematic line?
-
-thanks,
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---17pEHd4RhPHOinZp
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
-
-iQCVAwUBUWaV0qkuBuNlUUl1AQJFmAQAtcbhExeghddlsDm3w35vB0d6GDV9d8Iq
-SZWnb0+0x922bpAYwyyvndwdmp4VOkmJ4I5x6mSjGowymPQX+xFEt1lajNqNh8UU
-3IJ+pNIkx+YQ0FStQcswx/ZgfKbQLi+5L4HXACbaNXXMgloMkoSa2xlmG7yzAqiY
-q5JNTkgJNUY=
-=RVJl
------END PGP SIGNATURE-----
-
---17pEHd4RhPHOinZp--
 
