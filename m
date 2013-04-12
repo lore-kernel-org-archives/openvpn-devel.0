@@ -1,15 +1,10 @@
-Message-ID: <5166D50A.1020904@...1227...>
-Date: Thu, 11 Apr 2013 17:21:46 +0200
-From: Arne Schwabe <arne@...1227...>
-MIME-Version: 1.0
-References: <20130411083001.GI569@...1296...>
-	<20130411102046.GM569@...1296...>
-	<20130411150918.GW569@...1296...>
+Date: Fri, 12 Apr 2013 13:09:02 +0200
+Message-Id: <201304121109.r3CB92ru027043@...1729...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20130411150918.GW569@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="----enig2KJRQIAXEHHXMBNROFHGD"
-Subject: Re: [Openvpn-devel] users of the OpenVPN management interface?
+References: <20130411150918.GW569@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Print "Virtual IPv6 Address" on
+	management interface queries [v4]
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,45 +13,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
-------enig2KJRQIAXEHHXMBNROFHGD
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Patch has been applied to the master branch.
 
-Am 11.04.13 17:09, schrieb Gert Doering:
-> Hi,
->
-> On Thu, Apr 11, 2013 at 12:20:46PM +0200, Gert Doering wrote:
->> Arne pointed me to an older patch from him that also adds columns, and
->> when applying that one, it (of course) caused conflicts.  So here's a
->> new version of the "virtual IPv6 address" patch rebased on current maste=
-r.
-> And after Arne's #ifdef frenzy, my patch of course doesn't apply anymore.=
-..
->
-> v4 below :-)
->
-That patch looks good.
+commit b5df9faad34a18375c0f4ef88f9fd0faf54e42a1 (master)
 
-Arne
+Author: Gert Doering <gert@...1296...>
+Date:   Wed Apr 10 20:55:37 2013 +0200
 
+     Print "Virtual IPv6 Address" on management interface queries [v4]
 
-------enig2KJRQIAXEHHXMBNROFHGD
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20130411150918.GW569@...1296...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/7503
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (Darwin)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+--
+kind regards,
 
-iEYEARECAAYFAlFm1Q8ACgkQe8+cMNS4zReZBgCgqQLBD9Ap9jyxyDiZbaXWL2ip
-A1MAoIdCmx4NAdAY4BoWo+d4EhWuqMxj
-=41Lv
------END PGP SIGNATURE-----
+Gert Doering
 
-------enig2KJRQIAXEHHXMBNROFHGD--
 
