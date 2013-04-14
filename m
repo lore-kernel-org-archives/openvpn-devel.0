@@ -1,10 +1,11 @@
-Date: Fri, 12 Apr 2013 13:09:02 +0200
-Message-Id: <201304121109.r3CB92ru027043@...1729...>
+Date: Sun, 14 Apr 2013 12:07:33 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20130411150918.GW569@...1296...>
-References: <20130411150918.GW569@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Print "Virtual IPv6 Address" on
-	management interface queries [v4]
+Message-ID: <20130414100733.GL569@...1296...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="QVzQgM+zdZ3YWXqn"
+Content-Disposition: inline
+Subject: [Openvpn-devel] stray USE_SSL in crypto_openssl.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,27 +14,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master branch.
+--QVzQgM+zdZ3YWXqn
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-commit b5df9faad34a18375c0f4ef88f9fd0faf54e42a1 (master)
+Hi,
 
-Author: Gert Doering <gert@...1296...>
-Date:   Wed Apr 10 20:55:37 2013 +0200
+this is something for Adriaan or Steffan, I think...  in crypto_openssl.c,
+we have two stray uses of #ifdef USE_SSL...
 
-     Print "Virtual IPv6 Address" on management interface queries [v4]
+void
+crypto_init_lib (void)
+{
+#ifndef USE_SSL
+#ifndef ENABLE_SMALL
+  ERR_load_crypto_strings ();
+#endif
+  OpenSSL_add_all_algorithms ();
+#endif
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20130411150918.GW569@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/7503
+...
+void
+crypto_uninit_lib (void)
+{
+#ifndef USE_SSL
+  EVP_cleanup ();
+#ifndef ENABLE_SMALL
+  ERR_free_strings ();
+#endif
+#endif
 
---
-kind regards,
 
-Gert Doering
+... should this be ENABLE_SSL?  Or not be there at all?
 
+I won't claim to understand the code, but I can say for sure that we
+do not have a "USE_SSL" conditional anymore :-) - this is now ENABLE_SSL.
+
+Please check and send patch :-)
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--QVzQgM+zdZ3YWXqn
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBUWp/5akuBuNlUUl1AQLjlQP/RW4MfgdTvINDnWGo3x21o10/UsBjX2oZ
+GtK3/aUUIn8Hr6Zs7e2tjxz7LDUUysznJSKjBDrnKamTOdu/IJBQAp2wpNTGfngi
+9nK2RbT2xHXXt5K9OsBHfdyNsl6s5p7xdM+tNE2cZjxxWpcSAtG6z+pNEzPApbpo
+zs4RZ71IMA8=
+=yDDB
+-----END PGP SIGNATURE-----
+
+--QVzQgM+zdZ3YWXqn--
 
