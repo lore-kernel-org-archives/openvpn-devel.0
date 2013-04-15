@@ -1,11 +1,10 @@
-Message-ID: <516BCEA2.6000608@...1435...>
-Date: Mon, 15 Apr 2013 11:55:46 +0200
-From: Steffan Karger <steffan.karger@...1435...>
-MIME-Version: 1.0
-References: <20130414100733.GL569@...1296...>
-In-Reply-To: <20130414100733.GL569@...1296...>
-Content-Type: multipart/mixed; boundary="------------010507060700060505030103"
-Subject: Re: [Openvpn-devel] stray USE_SSL in crypto_openssl.c
+Date: Mon, 15 Apr 2013 19:03:19 +0200 (CEST)
+Message-Id: <201304151703.r3FH3JNQ026255@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <516BCEA2.6000608@...1435...>
+References: <516BCEA2.6000608@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fixed usage of stale define
+	USE_SSL to ENABLE_SSL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,111 +13,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan.karger@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---------------010507060700060505030103
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+ACK (since this matches what I assumed it should be :-) - thanks for
+the extra explanation).
 
-Hi Gert,
+Your patch has been applied to the master and release/2.3 branches.
 
-On 04/14/2013 12:07 PM, Gert Doering wrote:
-> this is something for Adriaan or Steffan, I think...  in crypto_openssl.c,
-> we have two stray uses of #ifdef USE_SSL...
->
-> void
-> crypto_init_lib (void)
-> {
-> #ifndef USE_SSL
-> #ifndef ENABLE_SMALL
->   ERR_load_crypto_strings ();
-> #endif
->   OpenSSL_add_all_algorithms ();
-> #endif
->
-> ...
-> void
-> crypto_uninit_lib (void)
-> {
-> #ifndef USE_SSL
->   EVP_cleanup ();
-> #ifndef ENABLE_SMALL
->   ERR_free_strings ();
-> #endif
-> #endif
->
->
-> ... should this be ENABLE_SSL?  Or not be there at all?
+commit 1d561d4eaebe8652768270b6373023177b8d706d (master)
+commit eb16a92894b3d93c69b6f56a5b852c5089a5304f (master)
 
-It should indeed be ENABLE_SSL. The #ifndef confused me at first, so I
-also added some comments to clarify.
-> I won't claim to understand the code, but I can say for sure that we
-> do not have a "USE_SSL" conditional anymore :-) - this is now ENABLE_SSL.
->
-> Please check and send patch :-)
+Author: Steffan Karger
+Date:   Mon Apr 15 10:45:28 2013 +0200
 
-Yes sir ;) I attached the patch.
+     Fixed usage of stale define USE_SSL to ENABLE_SSL
 
--Steffan
-
---------------010507060700060505030103
-Content-Type: text/x-patch;
-	name="0001-Fixed-usage-of-stale-define-USE_SSL-to-ENABLE_SSL.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename="0001-Fixed-usage-of-stale-define-USE_SSL-to-ENABLE_SSL.patch"
-
-From a4d045dd3acd78999371db8d87c320aa0d0669e5 Mon Sep 17 00:00:00 2001
-From: Steffan Karger <steffan.karger@...1435...>
-Date: Mon, 15 Apr 2013 10:45:28 +0200
-Subject: [PATCH] Fixed usage of stale define USE_SSL to ENABLE_SSL
-
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
----
- doc/doxygen/openvpn.doxyfile |    2 +-
- src/openvpn/crypto_openssl.c |    6 ++++--
- 2 files changed, 5 insertions(+), 3 deletions(-)
-
-diff --git a/doc/doxygen/openvpn.doxyfile b/doc/doxygen/openvpn.doxyfile
-index 5d87172..cf26c42 100644
---- a/doc/doxygen/openvpn.doxyfile
-+++ b/doc/doxygen/openvpn.doxyfile
-@@ -235,7 +235,7 @@ EXPAND_ONLY_PREDEF     = NO
- SEARCH_INCLUDES        = YES
- INCLUDE_PATH           =
- INCLUDE_FILE_PATTERNS  =
--PREDEFINED             = WIN32 NTLM USE_LZO ENABLE_FRAGMENT P2MP P2MP_SERVER USE_CRYPTO USE_SSL ENABLE_PLUGIN ENABLE_MANAGEMENT ENABLE_OCC HAVE_GETTIMEOFDAY
-+PREDEFINED             = WIN32 NTLM USE_LZO ENABLE_FRAGMENT P2MP P2MP_SERVER ENABLE_CRYPTO ENABLE_CRYPTO_OPENSSL ENABLE_SSL ENABLE_PLUGIN ENABLE_MANAGEMENT ENABLE_OCC HAVE_GETTIMEOFDAY
- EXPAND_AS_DEFINED      =
- SKIP_FUNCTION_MACROS   = YES
- #---------------------------------------------------------------------------
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 21d1762..1501bc8 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -194,7 +194,8 @@ crypto_init_lib_engine (const char *engine_name)
- void
- crypto_init_lib (void)
- {
--#ifndef USE_SSL
-+#ifndef ENABLE_SSL
-+  /* If SSL is enabled init is taken care of in ssl_openssl.c */
- #ifndef ENABLE_SMALL
-   ERR_load_crypto_strings ();
- #endif
-@@ -215,7 +216,8 @@ crypto_init_lib (void)
- void
- crypto_uninit_lib (void)
- {
--#ifndef USE_SSL
-+#ifndef ENABLE_SSL
-+  /* If SSL is enabled cleanup is taken care of in ssl_openssl.c */
-   EVP_cleanup ();
- #ifndef ENABLE_SMALL
-   ERR_free_strings ();
--- 
-1.7.9.5
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <516BCEA2.6000608@...1435...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/7509
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
---------------010507060700060505030103--
+--
+kind regards,
+
+Gert Doering
+
 
