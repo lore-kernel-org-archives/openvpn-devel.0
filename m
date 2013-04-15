@@ -1,10 +1,11 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Sun, 14 Apr 2013 13:09:20 +0200
-Message-Id: <1365937760-17910-1-git-send-email-arne@...1227...>
-In-Reply-To: <1365679916-5484-1-git-send-email-arne@...1227...>
-References: <1365679916-5484-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Remove unused variables or put them to the
-	defines they are being used in
+Message-ID: <516BCEA2.6000608@...1435...>
+Date: Mon, 15 Apr 2013 11:55:46 +0200
+From: Steffan Karger <steffan.karger@...1435...>
+MIME-Version: 1.0
+References: <20130414100733.GL569@...1296...>
+In-Reply-To: <20130414100733.GL569@...1296...>
+Content-Type: multipart/mixed; boundary="------------010507060700060505030103"
+Subject: Re: [Openvpn-devel] stray USE_SSL in crypto_openssl.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,206 +14,111 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
----
- src/openvpn/crypto.c      |    2 --
- src/openvpn/init.c        |    1 -
- src/openvpn/misc.c        |    8 --------
- src/openvpn/options.c     |   26 +++++++++++++-------------
- src/openvpn/proxy.c       |    1 -
- src/openvpn/route.c       |    1 -
- src/openvpn/ssl.c         |    4 ----
- src/openvpn/ssl_openssl.c |    2 --
- src/openvpn/ssl_verify.c  |    2 ++
- 9 files changed, 15 insertions(+), 32 deletions(-)
+--------------010507060700060505030103
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
 
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index d9adf5b..c4c356d 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -1028,7 +1028,6 @@ read_passphrase_hash (const char *passphrase_file,
- 		      uint8_t *output,
- 		      int len)
- {
--  unsigned int outlen = 0;
-   md_ctx_t md;
- 
-   ASSERT (len >= md_kt_size(digest));
-@@ -1361,7 +1360,6 @@ prng_bytes (uint8_t *output, int len)
-       const int md_size = md_kt_size (nonce_md);
-       while (len > 0)
- 	{
--	  unsigned int outlen = 0;
- 	  const int blen = min_int (len, md_size);
- 	  md_full(nonce_md, nonce_data, md_size + nonce_secret_len, nonce_data);
- 	  memcpy (output, nonce_data, blen);
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 979ba23..15a584e 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1204,7 +1204,6 @@ do_init_route_ipv6_list (const struct options *options,
- 		    struct env_set *es)
- {
-   const char *gw = NULL;
--  int dev = dev_type_enum (options->dev, options->dev_type);
-   int metric = -1;		/* no metric set */
- 
-   gw = options->ifconfig_ipv6_remote;		/* default GW = remote end */
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index fa327f8..1120adc 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -701,14 +701,6 @@ env_set_remove_from_environment (const struct env_set *es)
-     }
- }
- 
--#ifdef HAVE_PUTENV
--
--/* companion functions to putenv */
--
--static struct env_item *global_env = NULL; /* GLOBAL */
--
--#endif
--
- /* add/modify/delete environmental strings */
- 
+Hi Gert,
+
+On 04/14/2013 12:07 PM, Gert Doering wrote:
+> this is something for Adriaan or Steffan, I think...  in crypto_openssl.c,
+> we have two stray uses of #ifdef USE_SSL...
+>
+> void
+> crypto_init_lib (void)
+> {
+> #ifndef USE_SSL
+> #ifndef ENABLE_SMALL
+>   ERR_load_crypto_strings ();
+> #endif
+>   OpenSSL_add_all_algorithms ();
+> #endif
+>
+> ...
+> void
+> crypto_uninit_lib (void)
+> {
+> #ifndef USE_SSL
+>   EVP_cleanup ();
+> #ifndef ENABLE_SMALL
+>   ERR_free_strings ();
+> #endif
+> #endif
+>
+>
+> ... should this be ENABLE_SSL?  Or not be there at all?
+
+It should indeed be ENABLE_SSL. The #ifndef confused me at first, so I
+also added some comments to clarify.
+> I won't claim to understand the code, but I can say for sure that we
+> do not have a "USE_SSL" conditional anymore :-) - this is now ENABLE_SSL.
+>
+> Please check and send patch :-)
+
+Yes sir ;) I attached the patch.
+
+-Steffan
+
+--------------010507060700060505030103
+Content-Type: text/x-patch;
+	name="0001-Fixed-usage-of-stale-define-USE_SSL-to-ENABLE_SSL.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="0001-Fixed-usage-of-stale-define-USE_SSL-to-ENABLE_SSL.patch"
+
+From a4d045dd3acd78999371db8d87c320aa0d0669e5 Mon Sep 17 00:00:00 2001
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Mon, 15 Apr 2013 10:45:28 +0200
+Subject: [PATCH] Fixed usage of stale define USE_SSL to ENABLE_SSL
+
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+ doc/doxygen/openvpn.doxyfile |    2 +-
+ src/openvpn/crypto_openssl.c |    6 ++++--
+ 2 files changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/doc/doxygen/openvpn.doxyfile b/doc/doxygen/openvpn.doxyfile
+index 5d87172..cf26c42 100644
+--- a/doc/doxygen/openvpn.doxyfile
++++ b/doc/doxygen/openvpn.doxyfile
+@@ -235,7 +235,7 @@ EXPAND_ONLY_PREDEF     = NO
+ SEARCH_INCLUDES        = YES
+ INCLUDE_PATH           =
+ INCLUDE_FILE_PATTERNS  =
+-PREDEFINED             = WIN32 NTLM USE_LZO ENABLE_FRAGMENT P2MP P2MP_SERVER USE_CRYPTO USE_SSL ENABLE_PLUGIN ENABLE_MANAGEMENT ENABLE_OCC HAVE_GETTIMEOFDAY
++PREDEFINED             = WIN32 NTLM USE_LZO ENABLE_FRAGMENT P2MP P2MP_SERVER ENABLE_CRYPTO ENABLE_CRYPTO_OPENSSL ENABLE_SSL ENABLE_PLUGIN ENABLE_MANAGEMENT ENABLE_OCC HAVE_GETTIMEOFDAY
+ EXPAND_AS_DEFINED      =
+ SKIP_FUNCTION_MACROS   = YES
+ #---------------------------------------------------------------------------
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 21d1762..1501bc8 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -194,7 +194,8 @@ crypto_init_lib_engine (const char *engine_name)
  void
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index ec39212..1358968 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2423,20 +2423,20 @@ options_postprocess_mutate_invariant (struct options *options)
-     options->ifconfig_noexec = true;
- 
- #ifdef WIN32
--  if ((dev == DEV_TYPE_TUN || dev == DEV_TYPE_TAP) && !options->route_delay_defined)
--    {
--      if (options->mode == MODE_POINT_TO_POINT)
--	{
--	  options->route_delay_defined = true;
--	  options->route_delay = 5; /* Vista sometimes has a race without this */
--	}
--    }
-+    if ((dev == DEV_TYPE_TUN || dev == DEV_TYPE_TAP) && !options->route_delay_defined)
-+      {
-+        if (options->mode == MODE_POINT_TO_POINT)
-+          {
-+            options->route_delay_defined = true;
-+            options->route_delay = 5; /* Vista sometimes has a race without this */
-+          }
-+      }
- 
--  if (options->ifconfig_noexec)
--    {
--      options->tuntap_options.ip_win32_type = IPW32_SET_MANUAL;
--      options->ifconfig_noexec = false;
--    }
-+    if (options->ifconfig_noexec)
-+      {
-+        options->tuntap_options.ip_win32_type = IPW32_SET_MANUAL;
-+        options->ifconfig_noexec = false;
-+      }
+ crypto_init_lib (void)
+ {
+-#ifndef USE_SSL
++#ifndef ENABLE_SSL
++  /* If SSL is enabled init is taken care of in ssl_openssl.c */
+ #ifndef ENABLE_SMALL
+   ERR_load_crypto_strings ();
  #endif
- 
- #if P2MP_SERVER
-diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
-index 95d7153..04ed421 100644
---- a/src/openvpn/proxy.c
-+++ b/src/openvpn/proxy.c
-@@ -439,7 +439,6 @@ struct http_proxy_info *
- http_proxy_new (const struct http_proxy_options *o)
+@@ -215,7 +216,8 @@ crypto_init_lib (void)
+ void
+ crypto_uninit_lib (void)
  {
-   struct http_proxy_info *p;
--  struct http_proxy_options opt;
- 
-   if (!o || !o->server)
-     msg (M_FATAL, "HTTP_PROXY: server not specified");
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 4c1e14e..ba1f3f1 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -2866,7 +2866,6 @@ get_default_gateway (struct route_gateway_info *rgi)
- 	{
- 	  /* get interface name */
- 	  const struct sockaddr_dl *adl = (struct sockaddr_dl *) ifp;
--	  int len = adl->sdl_nlen;
- 	  if (adl->sdl_nlen && adl->sdl_nlen < sizeof(rgi->iface))
- 	    {
- 	      memcpy (rgi->iface, adl->sdl_data, adl->sdl_nlen);
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 43b3980..f79c29c 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1732,7 +1732,6 @@ key_method_1_write (struct buffer *buf, struct tls_session *session)
- {
-   struct key key;
-   struct key_state *ks = &session->key[KS_PRIMARY]; 	   /* primary key */
--  struct key_state *ks_lame = &session->key[KS_LAME_DUCK]; /* retiring key */
- 
-   ASSERT (session->opt->key_method == 1);
-   ASSERT (buf_init (buf, 0));
-@@ -1844,7 +1843,6 @@ static bool
- key_method_2_write (struct buffer *buf, struct tls_session *session)
- {
-   struct key_state *ks = &session->key[KS_PRIMARY]; 	   /* primary key */
--  struct key_state *ks_lame = &session->key[KS_LAME_DUCK]; /* retiring key */
- 
-   ASSERT (session->opt->key_method == 2);
-   ASSERT (buf_init (buf, 0));
-@@ -1928,7 +1926,6 @@ key_method_1_read (struct buffer *buf, struct tls_session *session)
-   int status;
-   struct key key;
-   struct key_state *ks = &session->key[KS_PRIMARY]; 	   /* primary key */
--  struct key_state *ks_lame = &session->key[KS_LAME_DUCK]; /* retiring key */
- 
-   ASSERT (session->opt->key_method == 1);
- 
-@@ -1987,7 +1984,6 @@ static bool
- key_method_2_read (struct buffer *buf, struct tls_multi *multi, struct tls_session *session)
- {
-   struct key_state *ks = &session->key[KS_PRIMARY]; 	   /* primary key */
--  struct key_state *ks_lame = &session->key[KS_LAME_DUCK]; /* retiring key */
- 
-   int key_method_flags;
-   bool username_status, password_status;
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 79cc056..574e1ca 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -490,7 +490,6 @@ tls_ctx_load_priv_file (struct tls_root_ctx *ctx, const char *priv_key_file,
-     const char *priv_key_file_inline
-     )
- {
--  int status;
-   SSL_CTX *ssl_ctx = NULL;
-   BIO *in = NULL;
-   EVP_PKEY *pkey = NULL;
-@@ -1193,7 +1192,6 @@ show_available_tls_ciphers ()
-   SSL_CTX *ctx;
-   SSL *ssl;
-   const char *cipher_name;
--  const char *print_name;
-   const tls_cipher_name_pair *pair;
-   int priority = 0;
- 
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index e651a8e..b1bbc96 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -1027,7 +1027,9 @@ static int
- verify_user_pass_plugin (struct tls_session *session, const struct user_pass *up, const char *raw_username)
- {
-   int retval = OPENVPN_PLUGIN_FUNC_ERROR;
-+#ifdef PLUGIN_DEF_AUTH
-   struct key_state *ks = &session->key[KS_PRIMARY]; 	   /* primary key */
-+#endif
- 
-   /* Is username defined? */
-   if ((session->opt->ssl_flags & SSLF_AUTH_USER_PASS_OPTIONAL) || strlen (up->username))
+-#ifndef USE_SSL
++#ifndef ENABLE_SSL
++  /* If SSL is enabled cleanup is taken care of in ssl_openssl.c */
+   EVP_cleanup ();
+ #ifndef ENABLE_SMALL
+   ERR_free_strings ();
 -- 
 1.7.9.5
 
+
+--------------010507060700060505030103--
 
