@@ -1,10 +1,8 @@
-Mime-Version: 1.0 (Mac OS X Mail 6.3 \(1503\))
-From: Eric Crist <ecrist@...1286...>
-In-Reply-To: <516F9A44.8010409@...68...>
-Date: Thu, 18 Apr 2013 07:08:06 -0500
-Message-Id: <D8D151DE-BCF9-4DAB-BBE6-0793F350BB3A@...1286...>
-References: <5165515E.9030004@...515...> <516F9A44.8010409@...68...>
-Subject: Re: [Openvpn-devel] Topics for next weeks meeting
+Message-ID: <5170496A.6000000@...1737...>
+Date: Thu, 18 Apr 2013 20:28:42 +0100
+From: Ed W <lists@...1737...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Support for libsodium?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,46 +11,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: Matthias Andree <matthias.andree@...68...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-1800UTC
+Hi, given the new abstractions to support PolarSSL, what 
+interest/resistance would there be to supporting libsodium?
+     https://github.com/jedisct1/libsodium
 
------
-Eric F Crist
+For reference, the NaCL library comes from Daniel Bernstein, and is a 
+reference implementation of some crypto primitives in a kind of high 
+level library format.  The crypto support is deliberately constrained 
+(elliptic curves, poly1305, salsa20), but the library is in turn quite 
+high level which it is hoped reduces the possibility for coding and 
+implementation errors. All of the choices are currently sensible and 
+sane and the algorithms are peer reviewed
 
+Libsodium is an attempt to take the NaCL library and make it generally 
+available across a wide range of architectures.
 
+Of particular interest is the use of curve25519 as public key algorithm, 
+it has extremely short signatures/keys, no known patent issues, decent 
+speed and of course elliptic curves have shown greater resistance to 
+cryptanalysis over the last few decades.
 
-On Apr 18, 2013, at 02:01:24, Matthias Andree <matthias.andree@...68...> wr=
-ote:
+The motivation would be an even simpler and easier to peer review crypto 
+library than PolarSSL (plus it's fast and easy to code with, and I 
+particularly like the very short public keys/sigs)
 
-> Am 10.04.2013 13:47, schrieb Samuli Sepp=E4nen:
->> Hi all,
->>=20
->> After a fairly long pause, the community meetings are starting again.
->> Next one is on Thursday 18th Apr 2013. The preliminary agenda is here:
->>=20
->> <https://community.openvpn.net/openvpn/wiki/Topics-2013-04-18>
->>=20
->> Best regards,
->>=20
->=20
-> Would you care to send the exact time of the meeting?
-> The generic Wiki page is ambiguous, mentioning two distinct points in
-> time. <https://community.openvpn.net/openvpn/wiki/IrcMeetings>
->=20
-> -------------------------------------------------------------------------=
------
-> Precog is a next-generation analytics platform capable of advanced
-> analytics on semi-structured data. The platform includes APIs for building
-> apps and a phenomenal toolset for data science. Developers can use
-> our toolset for easy data analysis & visualization. Get a free account!
-> http://www2.precog.com/precogplatform/slashdotnewsletter
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+Thanks for your thoughts
 
+Ed W
 
