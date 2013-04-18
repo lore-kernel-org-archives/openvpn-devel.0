@@ -1,8 +1,13 @@
-Message-ID: <5170496A.6000000@...1737...>
-Date: Thu, 18 Apr 2013 20:28:42 +0100
-From: Ed W <lists@...1737...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Support for libsodium?
+Date: Thu, 18 Apr 2013 22:44:55 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20130418204455.GW29506@...1296...>
+References: <5170496A.6000000@...1737...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="cQXOx3fnlpmgJsTP"
+Content-Disposition: inline
+In-Reply-To: <5170496A.6000000@...1737...>
+Subject: Re: [Openvpn-devel] Support for libsodium?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,35 +16,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Ed W <lists@...1737...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi, given the new abstractions to support PolarSSL, what 
-interest/resistance would there be to supporting libsodium?
-     https://github.com/jedisct1/libsodium
+--cQXOx3fnlpmgJsTP
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-For reference, the NaCL library comes from Daniel Bernstein, and is a 
-reference implementation of some crypto primitives in a kind of high 
-level library format.  The crypto support is deliberately constrained 
-(elliptic curves, poly1305, salsa20), but the library is in turn quite 
-high level which it is hoped reduces the possibility for coding and 
-implementation errors. All of the choices are currently sensible and 
-sane and the algorithms are peer reviewed
+Hi,
 
-Libsodium is an attempt to take the NaCL library and make it generally 
-available across a wide range of architectures.
+On Thu, Apr 18, 2013 at 08:28:42PM +0100, Ed W wrote:
+> Hi, given the new abstractions to support PolarSSL, what=20
+> interest/resistance would there be to supporting libsodium?
+>      https://github.com/jedisct1/libsodium
 
-Of particular interest is the use of curve25519 as public key algorithm, 
-it has extremely short signatures/keys, no known patent issues, decent 
-speed and of course elliptic curves have shown greater resistance to 
-cryptanalysis over the last few decades.
+It took us quite some effort to reach the point where a polarssl-compiled
+openvpn would be able to talk to a (default-configured) openssl-openvpn,
+and I don't really see us using a crypto library that has none of the
+algorithms that we need for interoperability.
 
-The motivation would be an even simpler and easier to peer review crypto 
-library than PolarSSL (plus it's fast and easy to code with, and I 
-particularly like the very short public keys/sigs)
+But then, I'm not the crypto geek here, I'm just the janitor...
 
-Thanks for your thoughts
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Ed W
+--cQXOx3fnlpmgJsTP
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBUXBbR6kuBuNlUUl1AQIkTAP/e/lTZoLXdpxRzlTl745Ep+gFTzXAuC5b
+T6d1WWRezsE9KvP/CpWL1V189ppnTO6Rg4DkK9m06NQdtCu2Pp85RiwFz9+QiqrE
+Um1pWscbUKLTH1bSsfanShDY+DBi/BcUFyC5fmdmcF2ReOEra17TJo1D8IdctYPP
+xnx60gkaCnc=
+=0EV6
+-----END PGP SIGNATURE-----
+
+--cQXOx3fnlpmgJsTP--
 
