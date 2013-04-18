@@ -1,10 +1,8 @@
-Message-ID: <516F9A44.8010409@...68...>
-Date: Thu, 18 Apr 2013 09:01:24 +0200
-From: Matthias Andree <matthias.andree@...68...>
+Message-ID: <516FA785.3020606@...515...>
+Date: Thu, 18 Apr 2013 10:57:57 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <5165515E.9030004@...515...>
-In-Reply-To: <5165515E.9030004@...515...>
-Subject: Re: [Openvpn-devel] Topics for next weeks meeting
+Subject: [Openvpn-devel] Topics for today's community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,22 +11,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"
+Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Am 10.04.2013 13:47, schrieb Samuli Sepp=E4nen:
-> Hi all,
->=20
-> After a fairly long pause, the community meetings are starting again.
-> Next one is on Thursday 18th Apr 2013. The preliminary agenda is here:
->=20
-> <https://community.openvpn.net/openvpn/wiki/Topics-2013-04-18>
->=20
-> Best regards,
->=20
+Hi,
 
-Would you care to send the exact time of the meeting?
-The generic Wiki page is ambiguous, mentioning two distinct points in
-time. <https://community.openvpn.net/openvpn/wiki/IrcMeetings>
+We're having an IRC meeting today, starting at 18:00 UTC on
+#openvpn-devel@...1422... Current topic list is here:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2013-04-18>
+
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
+
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting. Whenever possible, we'll also respond to existing,
+related email threads.
+
+NOTE: It's required to use a registered Freenode IRC nickname to join
+#openvpn-devel - look here for details:
+
+<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
