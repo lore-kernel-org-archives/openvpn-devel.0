@@ -1,7 +1,13 @@
-From: David Sommerseth <dazo@...384...>
-Date: Fri, 19 Apr 2013 14:40:12 +0200
-Message-Id: <1366375212-14886-1-git-send-email-dazo@...384...>
-Subject: [Openvpn-devel] [PATCH] Improve the git revision tracking
+Date: Fri, 19 Apr 2013 14:45:24 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20130419124524.GC29506@...1296...>
+References: <1366375212-14886-1-git-send-email-dazo@...384...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="O8XZ+2Hy8Kj8wLPZ"
+Content-Disposition: inline
+In-Reply-To: <1366375212-14886-1-git-send-email-dazo@...384...>
+Subject: Re: [Openvpn-devel] [PATCH] Improve the git revision tracking
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,105 +16,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <dazo@...384...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: David Sommerseth <davids@...1347...>
+--O8XZ+2Hy8Kj8wLPZ
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-This removes the single 'git revision' line from the --version screen and
-moves this information on the top, together with the OpenVPN version.
+Hi,
 
-In addition this patch adds two git flags after the git committish.  If
-there exists changed but unstaged files when the build was done, a '+' is
-appended after the committish.  If there exists staged files (files which
-have been added with 'git add') a '*' will be appended.  These flags are
-not exclusive.
+On Fri, Apr 19, 2013 at 02:40:12PM +0200, David Sommerseth wrote:
+> From: David Sommerseth <davids@...1347...>
+>=20
+> This removes the single 'git revision' line from the --version screen and
+> moves this information on the top, together with the OpenVPN version.
 
-This also simplifies the config-version.h generation by not using
-sed parsing a template.  It's just two lines which are generated, so
-no need to complicate things more than needed.
+ACK!
 
-Signed-off-by: David Sommerseth <davids@...1347...>
----
- Makefile.am           |    9 ++++++---
- config-version.h.in   |    1 -
- src/openvpn/options.c |    6 +++---
- version.m4            |    2 +-
- 4 files changed, 10 insertions(+), 8 deletions(-)
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-diff --git a/Makefile.am b/Makefile.am
-index c580579..1a30aa5 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -66,7 +66,6 @@ dist_doc_DATA = \
- dist_noinst_DATA = \
- 	.gitignore \
- 	.gitattributes \
--	config-version.h.in \
- 	PORTS \
- 	README.IPv6 TODO.IPv6 \
- 	README.polarssl \
-@@ -91,8 +90,12 @@ root_DATA = version.sh
- endif
- 
- config-version.h:
--	@CONFIGURE_GIT_REVISION="`GIT_DIR=\"$(top_srcdir)/.git\" $(GIT) rev-parse --symbolic-full-name HEAD`/`GIT_DIR=\"$(top_srcdir)/.git\" $(GIT) rev-parse --short=16 HEAD`"; \
--		$(SED) "s#@CONFIGURE_GIT_REVISION[@]#$${CONFIGURE_GIT_REVISION}#g" "$(srcdir)/config-version.h.in" > config-version.h.tmp
-+	@CONFIGURE_GIT_CHFILES="`GIT_DIR=\"$(top_srcdir)/.git\" $(GIT) diff-files --name-status -r --ignore-submodules --quiet -- || echo \"+\"`"; \
-+	CONFIGURE_GIT_UNCOMMITTED="`GIT_DIR=\"$(top_srcdir)/.git\" $(GIT) diff-index --cached  --quiet --ignore-submodules HEAD || echo \"*\"`"; \
-+	CONFIGURE_GIT_REVISION="`GIT_DIR=\"$(top_srcdir)/.git\" $(GIT) rev-parse --symbolic-full-name HEAD | cut -d/ -f3-`/`GIT_DIR=\"$(top_srcdir)/.git\" $(GIT) rev-parse --short=16 HEAD`"; \
-+	echo "#define CONFIGURE_GIT_REVISION \"$${CONFIGURE_GIT_REVISION}\"" > config-version.h.tmp; \
-+	echo "#define CONFIGURE_GIT_FLAGS \"$${CONFIGURE_GIT_CHFILES}$${CONFIGURE_GIT_UNCOMMITTED}\"" >> config-version.h.tmp
-+
- 	@if ! [ -f config-version.h ] || ! cmp -s config-version.h.tmp config-version.h; then \
- 		echo "replacing config-version.h"; \
- 		mv config-version.h.tmp config-version.h; \
-diff --git a/config-version.h.in b/config-version.h.in
-deleted file mode 100644
-index 27ee36a..0000000
---- a/config-version.h.in
-+++ /dev/null
-@@ -1 +0,0 @@
--#define CONFIGURE_GIT_REVISION "@CONFIGURE_GIT_REVISION@"
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index ec39212..05c6da2 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -64,6 +64,9 @@
- 
- const char title_string[] =
-   PACKAGE_STRING
-+#ifdef CONFIGURE_GIT_REVISION
-+        " [git:" CONFIGURE_GIT_REVISION CONFIGURE_GIT_FLAGS "]"
-+#endif
-   " " TARGET_ALIAS
- #ifdef ENABLE_CRYPTO
- #ifdef ENABLE_SSL
-@@ -3426,9 +3429,6 @@ usage_version (void)
- #ifdef CONFIGURE_SPECIAL_BUILD
-   msg (M_INFO|M_NOPREFIX, "special build: %s", CONFIGURE_SPECIAL_BUILD);
- #endif
--#ifdef CONFIGURE_GIT_REVISION
--  msg (M_INFO|M_NOPREFIX, "git revision: %s", CONFIGURE_GIT_REVISION);
--#endif
- #endif
-   openvpn_exit (OPENVPN_EXIT_STATUS_USAGE); /* exit point */
- }
-diff --git a/version.m4 b/version.m4
-index 1ea1c32..376661f 100644
---- a/version.m4
-+++ b/version.m4
-@@ -1,7 +1,7 @@
- dnl define the OpenVPN version
- define([PRODUCT_NAME], [OpenVPN])
- define([PRODUCT_TARNAME], [openvpn])
--define([PRODUCT_VERSION], [2.3_master])
-+define([PRODUCT_VERSION], [2.3_git])
- define([PRODUCT_BUGREPORT], [openvpn-users@lists.sourceforge.net])
- define([PRODUCT_VERSION_RESOURCE], [2,3,0,0])
- dnl define the TAP version
--- 
-1.7.10.2
+--O8XZ+2Hy8Kj8wLPZ
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBUXE8Y6kuBuNlUUl1AQK8gAP/YPmO1VWNu8OzQu2FR1iKNfAtsPll/EC5
+if/hfRK0m6f03WajEk4x2cbP81xduSTkCAFMw4p3a54qPDTqveDN8vgfb0pVTjFt
+PecY/NHm0LCsGc7bcOV78fhZIh/awf4dSexxf8VhHYQWROgaNTISaL6/jTVzahkN
+hQ5hECNHjn0=
+=Gfn1
+-----END PGP SIGNATURE-----
+
+--O8XZ+2Hy8Kj8wLPZ--
 
