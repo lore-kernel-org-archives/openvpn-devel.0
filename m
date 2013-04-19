@@ -1,7 +1,9 @@
 From: Gert Doering <gert@...1296...>
-Date: Fri, 19 Apr 2013 19:41:03 +0200
-Message-Id: <1366393268-27392-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] forward-port of all outstanding 2.1 SVN patches
+Date: Fri, 19 Apr 2013 19:41:04 +0200
+Message-Id: <1366393268-27392-2-git-send-email-gert@...1296...>
+In-Reply-To: <1366393268-27392-1-git-send-email-gert@...1296...>
+References: <1366393268-27392-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH 1/5] Added remote-override option.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,25 +15,57 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: James Yonan <james@...515...>
 
-Hi folks,
+From: James Yonan <james@...515...>
 
-here's a patch series that brings all not-yet-ported changes from James'
-SVN 2.1 tree to the current git master tree (plus one of mine, 5/5 is
-a bugfix for 2/5 - I decided to have it as extra patch so it's clear 
-that this is deviating from "just take what is in SVN").
+OpenVPN SVN r8126 (2.1.20)
 
-This is necessary groundwork to run OpenVPN AS with the 2.3 core, and 
-thus bring development work of "community openvpn" and "AS" a bit more
-closely together again.
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/options.c | 7 ++++++-
+ src/openvpn/options.h | 2 ++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
 
-Patches have been tested on Linux, FreeBSD and MacOS 10.5, for
-standalone OpenVPN (client and p2pm server) and inside AS, and I'm 
-fairly confident that the stuff works and nothing crashes :-)
-
-(Don't ask me what 1/5 is for.  It came from SVN, it was straightforward
-to port and test, and "something in the AS context" wants it)
-
-gert
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index ec39212..88ed88a 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -4410,6 +4410,11 @@ add_option (struct options *options,
+       options->force_connection_list = true;
+     }
+ #endif
++  else if (streq (p[0], "remote-override") && p[1])
++    {
++      VERIFY_PERMISSION (OPT_P_GENERAL);
++      options->remote_override = p[1];
++    }
+   else if (streq (p[0], "remote") && p[1])
+     {
+       struct remote_entry re;
+@@ -4417,7 +4422,7 @@ add_option (struct options *options,
+       re.remote_port = re.proto = -1;
+ 
+       VERIFY_PERMISSION (OPT_P_GENERAL|OPT_P_CONNECTION);
+-      re.remote = p[1];
++      re.remote = options->remote_override ? options->remote_override : p[1];
+       if (p[2])
+ 	{
+ 	  const int port = atoi (p[2]);
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index d2ad94c..db1d3f7 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -215,6 +215,8 @@ struct options
+ 
+   struct remote_host_store *rh_store;
+ 
++  const char *remote_override;
++
+   bool remote_random;
+   const char *ipchange;
+   const char *dev;
+-- 
+1.8.1.5
 
 
