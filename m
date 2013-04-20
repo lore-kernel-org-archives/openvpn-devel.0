@@ -1,13 +1,14 @@
-Message-ID: <517269DC.9090903@...1227...>
-Date: Sat, 20 Apr 2013 12:11:40 +0200
+Message-ID: <51726D65.8010405@...1227...>
+Date: Sat, 20 Apr 2013 12:26:45 +0200
 From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
 References: <1366393268-27392-1-git-send-email-gert@...1296...>
-	<1366393268-27392-2-git-send-email-gert@...1296...>
-In-Reply-To: <1366393268-27392-2-git-send-email-gert@...1296...>
+	<1366393268-27392-4-git-send-email-gert@...1296...>
+In-Reply-To: <1366393268-27392-4-git-send-email-gert@...1296...>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature";
-	micalg=sha1; boundary="------------ms050005050104000105080808"
-Subject: Re: [Openvpn-devel] [PATCH 1/5] Added remote-override option.
+	micalg=sha1; boundary="------------ms040502090100090106060107"
+Subject: Re: [Openvpn-devel] [PATCH 3/5] Minor fix to process_ipv4_header so
+ that any combination of options can be defined.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,20 +22,67 @@ Cc: James Yonan <james@...515...>, openvpn-devel@lists.sourceforge.net
 
 Dies ist eine kryptografisch unterzeichnete Nachricht im MIME-Format.
 
---------------ms050005050104000105080808
+--------------ms040502090100090106060107
 Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: quoted-printable
 
 Am 19.04.13 19:41, schrieb Gert Doering:
 > From: James Yonan <james@...515...>
 >
-> OpenVPN SVN r8126 (2.1.20)
+> OpenVPN SVN r8219, slightly adapted for conflicts brought in by
+> commit f0e8997a874a89b3 (IPv6 MSSFIX implementation).
+I don't think this patch is a good idea. If PASSTOS_CAPABILITY is not=20
+defined the if will always be true since PIPV4_PASSTOS is always=20
+included in flags. See my patch from today too.
+
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>   src/openvpn/forward.c | 6 +-----
+>   src/openvpn/forward.h | 4 +++-
+>   2 files changed, 4 insertions(+), 6 deletions(-)
 >
-I am not sure I like these remote-override but the patch is small enough=20
-to include it if OpenVPN AS really needs it.
+> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+> index 447b86d..8f1f1e5 100644
+> --- a/src/openvpn/forward.c
+> +++ b/src/openvpn/forward.c
+> @@ -1026,11 +1026,7 @@ process_ip_header (struct context *c, unsigned int=
+ flags, struct buffer *buf)
+>          * The --passtos and --mssfix options require
+>          * us to examine the IPv4 header.
+>          */
+> -#if PASSTOS_CAPABILITY
+> -      if (flags & (PIPV4_PASSTOS|PIP_MSSFIX))
+> -#else
+> -      if (flags & PIP_MSSFIX)
+> -#endif
+> +      if (flags & PIP_OPT_MASK)
+>   	{
+>   	  struct buffer ipbuf =3D *buf;
+>   	  if (is_ipv4 (TUNNEL_TYPE (c->c1.tuntap), &ipbuf))
+> diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
+> index 1830a00..0ece01e 100644
+> --- a/src/openvpn/forward.h
+> +++ b/src/openvpn/forward.h
+> @@ -229,9 +229,11 @@ bool send_control_channel_string (struct context *c,=
+ const char *str, int msglev
+>=20=20=20
+>   #define PIPV4_PASSTOS         (1<<0)
+>   #define PIP_MSSFIX            (1<<1)         /* v4 and v6 */
+> -#define PIPV4_OUTGOING        (1<<2)
+>   #define PIPV4_EXTRACT_DHCP_ROUTER (1<<3)
+>   #define PIPV4_CLIENT_NAT      (1<<4)
+> +#define PIP_OPT_MASK          0xFFFF         /* all possible options for=
+ */
+> +                                             /* process_ip_header() */
+> +#define PIPV4_OUTGOING        (1<<16)
+>=20=20=20
+>   void process_ip_header (struct context *c, unsigned int flags, struct b=
+uffer *buf);
+>=20=20=20
 
 
---------------ms050005050104000105080808
+
+--------------ms040502090100090106060107
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -121,8 +169,8 @@ ChMWVW5pdmVyc2l0YWV0IFBhZGVyYm9ybjFAMD4GA1UECxM3SU1UIChaZW50cnVtIGZ1ZXIg
 SW5mb3JtYXRpb25zLSB1bmQgTWVkaWVudGVjaG5vbG9naWVuKTEoMCYGA1UEAxMfVW5pdmVy
 c2l0YWV0IFBhZGVyYm9ybiBDQSAtIEcwMTEiMCAGCSqGSIb3DQEJARYTY2FAdW5pLXBhZGVy
 Ym9ybi5kZQIEES7tRDAJBgUrDgMCGgUAoIICgzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
-MBwGCSqGSIb3DQEJBTEPFw0xMzA0MjAxMDExNDBaMCMGCSqGSIb3DQEJBDEWBBQTwNAxq3PD
-EVVWUICkX2dg2EMhNTBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQME
+MBwGCSqGSIb3DQEJBTEPFw0xMzA0MjAxMDI2NDVaMCMGCSqGSIb3DQEJBDEWBBSKhkCD6gjI
+gxNKlTo5RLPxJiu6sDBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQME
 AQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIH
 MA0GCCqGSIb3DQMCAgEoMIHYBgkrBgEEAYI3EAQxgcowgccwgb4xCzAJBgNVBAYTAkRFMR8w
 HQYDVQQKExZVbml2ZXJzaXRhZXQgUGFkZXJib3JuMUAwPgYDVQQLEzdJTVQgKFplbnRydW0g
@@ -132,16 +180,16 @@ cGFkZXJib3JuLmRlAgQRLu1EMIHaBgsqhkiG9w0BCRACCzGByqCBxzCBvjELMAkGA1UEBhMC
 REUxHzAdBgNVBAoTFlVuaXZlcnNpdGFldCBQYWRlcmJvcm4xQDA+BgNVBAsTN0lNVCAoWmVu
 dHJ1bSBmdWVyIEluZm9ybWF0aW9ucy0gdW5kIE1lZGllbnRlY2hub2xvZ2llbikxKDAmBgNV
 BAMTH1VuaXZlcnNpdGFldCBQYWRlcmJvcm4gQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2Nh
-QHVuaS1wYWRlcmJvcm4uZGUCBBEu7UQwDQYJKoZIhvcNAQEBBQAEggIAl37qYu+2PoMoH//E
-qUi9IKL0ej/79JmOWTI/73x2HUMHbnwHIri5C7rXRHOUWSJpvjMDKtsoqLc2krRo/XsWZ/Mi
-kL7eRvqJZhhtnZFY8pbahSCsFnAgVqt4EyPHiOgfcsRfAKoWNCgZM07ZRL4fO/niqyV+rLUO
-SVzKnOoPKdBgz2qsFi5LAusS4He665pHpHJ3HuzRuWYRu2Ip9ZawKnhGR9fkwsB2rwamHJMA
-wo8WaxoW5lkaMs8LLNrF0F5zDkZUkSoO09LsVKageqHvdxACyjtpnR7e1L8Yiw72/fJw1e2G
-a6yRShg+hpR9S/IT89ElqievP35Q5TTzZSJsl10wk+JkBiN3wswb5mxg4Q3LICaErv07CUF3
-hthP0e6au5koBVMY/VQwFZzQoJycbgfcSuswL/ux91bspBF4gLFHIrl9iXpKqp/LJz8+4iI2
-20RcwOBp59B6pIE1GqSN377EY3lcQ9enMusFwtLFbqEQ6ySImYTybys8+a9OONFpRuabxEev
-0h1NXWgF2NBZY6AnVvu5qs8ZSHvBcHkZ4La4GMNfJqTzPe6AGM2a9g/eBt1qTRLgWXyfV2rI
-nVd8+frMifQl/KeMtfZCyCwwpOouNdDWCh1Qh0RkFXbsluXjbn2WyYNjlf8ytnsGuOq8Im5E
-WTTmYN0M1ZRYtpAi+8EAAAAAAAA=
---------------ms050005050104000105080808--
+QHVuaS1wYWRlcmJvcm4uZGUCBBEu7UQwDQYJKoZIhvcNAQEBBQAEggIAZJm5Oz8ef0o8+4nV
+ViB8++uz1DETxnOTAuwvU5j9CioPfiCC36w7lU2KT2fINZ/xyb1ouTR4tVxs3sFVCiYL/o5e
+yEGsgMfI5JjzhJuAzaT+yFqBvmilzXQ4zP5FHeHOPMvleUe6LA5XfCAFAxSnLga/M6pXuwY0
+5Jwgdd4moPZVkXOqWLcpXrGhKD8RtpiQ8np5FopbCf8ntv+ec1Q0FvYifQUFptkcFy8O43jq
+9kpsF9V7eZHpGjgQkOwoXvZt2mKa1J3kTazav/ekDnbwapUN4tU02rFRliPvDmDlXqy6cGAh
+Am3biQplE8470CBmu9M2KrBRuW5UzQx/SciQFr2hQtpxPYxnHELDh7D1bwkcKRNI9+oIycnk
+OBZNvEa4Klhqu3WHY7HgDfsO1F3AkMavU3I5boUdFqcDi5CCrOZUzRWR1OOCY7AQA2IYQfkl
+bXz06JnY9QhSq6oELxekgt0Xe25fMOkG4isXpucrYvJAN9LgYyl08uztmcmh+jNF05LeabJ7
+oo+vjSIja7rPt8LAt1W2SyEbRj/1dW4aXQRCqlpa7JiIMYO+ZDce5H3oBaTrbIySdGQfuqK2
+b9maFYcO3hrtIAYqBp6hpftgxmx9YnxxyaAZl2KydpZj1MMTEOnxu/WvftB2vuApt5fWLFuv
+0stfNZ816qyF1TudOv8AAAAAAAA=
+--------------ms040502090100090106060107--
 
