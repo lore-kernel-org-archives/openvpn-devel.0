@@ -1,9 +1,8 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Sat, 20 Apr 2013 16:22:47 +0200
-Message-Id: <1366467768-16260-4-git-send-email-arne@...1227...>
-In-Reply-To: <1366467768-16260-1-git-send-email-arne@...1227...>
-References: <1366467768-16260-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 4/5] Android platform specific changes.
+From: Gert Doering <gert@...1296...>
+Date: Sat, 20 Apr 2013 20:42:51 +0200
+Message-Id: <1366483371-5202-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Make push-peer-info visible in "normal"
+	per-instance environment.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,313 +15,253 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-On Android 4.0 (TARGET_ANDROID) the real opening of the tun is handled by the (Java) application controlling OpenVPN. Instead of calling ifconfig/route call the management to do the work. When running openvpn as root openvpn should be compiled as TARGET_LINUX
----
- src/openvpn/options.c |    6 ++++
- src/openvpn/route.c   |   25 ++++++++++++--
- src/openvpn/socket.c  |   10 ++++++
- src/openvpn/ssl.c     |    2 ++
- src/openvpn/syshead.h |    2 +-
- src/openvpn/tun.c     |   92 ++++++++++++++++++++++++++++++++++++++++++++++++-
- src/openvpn/tun.h     |    8 ++++-
- 7 files changed, 140 insertions(+), 5 deletions(-)
+Without this patch, peer-info pushed by clients in the TLS handshake
+is only visible on the management interface, and only if
+--management-client-auth is enabled.
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 05c6da2..9fdfd88 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -1125,7 +1125,9 @@ show_tuntap_options (const struct tuntap_options *o)
- }
+With this patch, received records are sanitized and put into the normal
+"multi instance" environment, where it can be evaluated by --client-connect
+or --auth-user-pass-verify scripts and plugins, etc.  Only records matching
+a fairly strict "name=value" format are accepted, and only names starting
+with IV_ or UV_ are exported, to avoid clients sending funny stuff and
+playing havoc with script/plugin environments on the server.
+
+The change is somewhat invasive as reception of the peer_info string was
+only done when username+password are expected from the client, but the
+data is always there (if the client sends no username/password, it will
+send 0-length strings, so always extracting 3 strings is safe).  Also,
+the sanitation function validate_peer_info_line() and the opts->peer_info
+field were only compiled in #ifdef MANGEMENT_DEF_AUTH...
+
+Remaining drawback: now this data is sent *twice* on the management
+interface, so this needs to be fixed.  Patch v1 just to collect feedback.
+
+Signed-off-by: Gert Doering <gert@...1296...>
+(cherry picked from commit c1d911431c9f1d17fb5382a30337a3b4d9e19679)
+---
+ src/openvpn/manage.c     |   27 ------------------------
+ src/openvpn/multi.c      |   50 ++++++++++++++++++++++++++++++++++++++++++++++
+ src/openvpn/multi.h      |    3 ++
+ src/openvpn/ssl.c        |   35 ++++++++++++++++++++------------
+ src/openvpn/ssl_common.h |    8 ++++--
+ 5 files changed, 80 insertions(+), 43 deletions(-)
+
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 0a4542a..5c61876 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -2361,33 +2361,6 @@ management_notify_generic (struct management *man, const char *str)
  
- #endif
-+#endif
+ #ifdef MANAGEMENT_DEF_AUTH
  
-+#if defined(WIN32) || defined(TARGET_ANDROID) 
- static void
- dhcp_option_address_parse (const char *name, const char *parm, in_addr_t *array, int *len, int msglevel)
- {
-@@ -5935,6 +5937,8 @@ add_option (struct options *options,
-       to->ip_win32_type = index;
-       to->ip_win32_defined = true; 
-     }
-+#endif
-+#if defined(WIN32) || defined(TARGET_ANDROID)
-   else if (streq (p[0], "dhcp-option") && p[1])
-     {
-       struct tuntap_options *o = &options->tuntap_options;
-@@ -5986,6 +5990,8 @@ add_option (struct options *options,
- 	}
-       o->dhcp_options = true;
-     }
-+#endif
-+#ifdef WIN32
-   else if (streq (p[0], "show-adapters"))
-     {
-       VERIFY_PERMISSION (OPT_P_GENERAL);
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 4c1e14e..f32c1fe 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -1342,6 +1342,17 @@ add_route (struct route *r,
-   argv_msg (D_ROUTE, &argv);
-   status = openvpn_execve_check (&argv, es, 0, "ERROR: Linux route add command failed");
- 
-+#elif defined (TARGET_ANDROID)
-+
-+    struct user_pass up;    
-+    struct buffer out = alloc_buf_gc (64, &gc);
-+
-+    buf_printf (&out, "%s %s", network, netmask);
-+
-+    strcpy(up.username, buf_bptr(&out));
-+    management_query_user_pass(management, &up , "ROUTE", GET_USER_PASS_NEED_OK,(void*) 0);
-+
-+
- #elif defined (WIN32)
-   {
-     DWORD ai = TUN_ADAPTER_INDEX_INVALID;
-@@ -1616,6 +1627,15 @@ add_route_ipv6 (struct route_ipv6 *r6, const struct tuntap *tt, unsigned int fla
-   argv_msg (D_ROUTE, &argv);
-   status = openvpn_execve_check (&argv, es, 0, "ERROR: Linux route -6/-A inet6 add command failed");
- 
-+#elif defined (TARGET_ANDROID)
-+    struct user_pass up;    
-+    struct buffer out = alloc_buf_gc (64, &gc);
-+    
-+    buf_printf (&out, "%s/%d", network, r6->netbits);
-+    
-+    strcpy(up.username, buf_bptr(&out));
-+    management_query_user_pass(management, &up , "ROUTE6", GET_USER_PASS_NEED_OK,(void*) 0);
-+
- #elif defined (WIN32)
- 
-   /* netsh interface ipv6 add route 2001:db8::/32 MyTunDevice */
-@@ -1875,7 +1895,8 @@ delete_route (struct route *r,
- 
-   argv_msg (D_ROUTE, &argv);
-   openvpn_execve_check (&argv, es, 0, "ERROR: OpenBSD/NetBSD route delete command failed");
+-static bool
+-validate_peer_info_line(const char *line)
+-{
+-  uint8_t c;
+-  int state = 0;
+-  while ((c=*line++))
+-    {
+-      switch (state)
+-	{
+-	case 0:
+-	case 1:
+-	  if (c == '=' && state == 1)
+-	    state = 2;
+-	  else if (isalnum(c) || c == '_')
+-	    state = 1;
+-	  else
+-	    return false;
+-	case 2:
+-	  if (isprint(c))
+-	    ;
+-	  else
+-	    return false;
+-	}
+-    }
+-  return (state == 2);
+-}
 -
-+#elif defined(TARGET_ANDROID)
-+  msg (M_NONFATAL, "Sorry, deleting routes on Android is not possible. The VpnService API allows routes to be set on connect only.");
- #else
-   msg (M_FATAL, "Sorry, but I don't know how to do 'route' commands on this operating system.  Try putting your routes in a --route-up script");
+ static void
+ man_output_peer_info_env (struct management *man, struct man_def_auth_context *mdac)
+ {
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index f016b14..b4d4a94 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -1562,6 +1562,56 @@ multi_client_connect_mda (struct multi_context *m,
+ 
  #endif
-@@ -2425,7 +2446,7 @@ show_routes (int msglev)
-   gc_free (&gc);
- }
  
--#elif defined(TARGET_LINUX)
-+#elif defined(TARGET_LINUX) || defined(TARGET_ANDROID)
- 
- void
- get_default_gateway (struct route_gateway_info *rgi)
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 8eb112b..483a04d 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -38,6 +38,7 @@
- #include "ps.h"
- #include "manage.h"
- #include "misc.h"
-+#include "manage.h"
- 
- #include "memdbg.h"
- 
-@@ -725,6 +726,15 @@ create_socket (struct link_socket *sock)
-     {
-       ASSERT (0);
-     }
-+#ifdef TARGET_ANDROID
-+    struct user_pass up;
-+    strcpy(up.username ,__func__);
-+    management->connection.fdtosend = sock->sd;
-+    management_query_user_pass(management, &up , "PROTECTFD", GET_USER_PASS_NEED_OK,(void*) 0);
++/* helper to parse peer_info received from multi client, validate
++ * (this is untrusted data) and put into environment
++ */
++bool
++validate_peer_info_line(const char *line)
++{
++  uint8_t c;
++  int state = 0;
++  while ((c=*line++))
++    {
++      switch (state)
++	{
++	case 0:
++	case 1:
++	  if (c == '=' && state == 1)
++	    state = 2;
++	  else if (isalnum(c) || c == '_')
++	    state = 1;
++	  else
++	    return false;
++	case 2:
++	  if (isprint(c))
++	    ;
++	  else
++	    return false;
++	}
++    }
++  return (state == 2);
++}
 +
++void
++multi_output_peer_info_env (struct env_set *es, const char * peer_info)
++{
++  char line[256];
++  struct buffer buf;
++  buf_set_read (&buf, (const uint8_t *) peer_info, strlen(peer_info));
++  while (buf_parse (&buf, '\n', line, sizeof (line)))
++    {
++      chomp (line);
++      if (validate_peer_info_line(line) &&
++            (strncmp(line, "IV_", 3) == 0 || strncmp(line, "UV_", 3) == 0) )
++	{
++	  msg (M_INFO, "peer info: %s", line);
++	  env_set_add(es, line);
++	}
++      else
++	msg (M_WARN, "validation failed on peer_info line received from client");
++    }
++}
 +
-+#endif
-+    
- }
+ static void
+ multi_client_connect_setenv (struct multi_context *m,
+ 			     struct multi_instance *mi)
+diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+index fc2ffb2..5a25092 100644
+--- a/src/openvpn/multi.h
++++ b/src/openvpn/multi.h
+@@ -312,6 +312,9 @@ void multi_close_instance_on_signal (struct multi_context *m, struct multi_insta
+ void init_management_callback_multi (struct multi_context *m);
+ void uninit_management_callback_multi (struct multi_context *m);
  
++bool validate_peer_info_line(const char *line);
++void multi_output_peer_info_env (struct env_set *es, const char * peer_info);
++
  /*
+  * Return true if our output queue is not full
+  */
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 43b3980..b367386 100644
+index 43b3980..aa75507 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -1797,6 +1797,8 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
-       buf_printf (&out, "IV_PLAT=netbsd\n");
- #elif defined(TARGET_FREEBSD)
-       buf_printf (&out, "IV_PLAT=freebsd\n");
-+#elif defined(TARGET_ANDROID)
-+      buf_printf(&out, "IV_PLAT=android\n");
- #elif defined(WIN32)
-       buf_printf (&out, "IV_PLAT=win\n");
- #endif
-diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index 4db29cc..0c3e4ee 100644
---- a/src/openvpn/syshead.h
-+++ b/src/openvpn/syshead.h
-@@ -212,7 +212,7 @@
- #include <net/if_tap.h>
- #endif
+@@ -1106,6 +1106,8 @@ tls_multi_free (struct tls_multi *multi, bool clear)
+ #ifdef MANAGEMENT_DEF_AUTH
+   man_def_auth_set_client_reason(multi, NULL);  
  
--#ifdef TARGET_LINUX
-+#if defined(TARGET_LINUX) || defined (TARGET_ANDROID)
- 
- #if defined(HAVE_NETINET_IF_ETHER_H)
- #include <netinet/if_ether.h>
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index a361233..3deaba3 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -48,6 +48,7 @@
- #include "win32.h"
- 
- #include "memdbg.h"
-+#include <string.h>
- 
- #ifdef WIN32
- 
-@@ -764,6 +765,40 @@ do_ifconfig (struct tuntap *tt,
-       tt->did_ifconfig = true;
- 
- #endif /*ENABLE_IPROUTE*/
-+#elif defined(TARGET_ANDROID)
-+        
-+        
-+        if (do_ipv6) {
-+            struct user_pass up6;    
-+            struct buffer out6 = alloc_buf_gc (64, &gc);
-+            buf_printf (&out6, "%s/%d", ifconfig_ipv6_local,tt->netbits_ipv6);
-+            strcpy(up6.username, buf_bptr(&out6));
-+            management_query_user_pass(management, &up6 , "IFCONFIG6", GET_USER_PASS_NEED_OK,(void*) 0);
-+        }
-+
-+        struct user_pass up;    
-+        struct buffer out = alloc_buf_gc (64, &gc);
-+        char* top;
-+        switch(tt->topology) {
-+            case TOP_NET30:
-+                top = "net30";
-+                break;
-+            case TOP_P2P:
-+                top="p2p";
-+                break;
-+            case TOP_SUBNET:
-+                top="subnet";
-+                break;
-+            default:
-+                top="undef";
-+        }
-+        
-+        buf_printf (&out, "%s %s %d %s", ifconfig_local, ifconfig_remote_netmask, tun_mtu,top);
-+        strcpy(up.username, buf_bptr(&out));
-+        management_query_user_pass(management, &up , "IFCONFIG", GET_USER_PASS_NEED_OK,(void*) 0);
-+
-+
-+        
- #elif defined(TARGET_SOLARIS)
- 
-       /* Solaris 2.6 (and 7?) cannot set all parameters in one go...
-@@ -1368,8 +1403,63 @@ close_tun_generic (struct tuntap *tt)
- 
- #endif
- 
--#if defined(TARGET_LINUX)
-+#if defined (TARGET_ANDROID)
-+void
-+open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
-+{
-+#define ANDROID_TUNNAME "vpnservice-tun"
-+    int i;
-+    struct user_pass up;
-+    struct gc_arena gc = gc_new ();
-+    
-+    for (i = 0; i < tt->options.dns_len; ++i) {
-+        strcpy(up.username, print_in_addr_t(tt->options.dns[i], 0, &gc));
-+        management_query_user_pass(management, &up , "DNSSERVER", GET_USER_PASS_NEED_OK,(void*) 0);
-+    }
-+
-+    if(tt->options.domain) {
-+        strcpy(up.username , tt->options.domain);
-+        management_query_user_pass(management, &up , "DNSDOMAIN", GET_USER_PASS_NEED_OK,(void*) 0);
-+    }
-+    
-+    strcpy(up.username , dev);
-+    management_query_user_pass(management, &up , "OPENTUN", GET_USER_PASS_NEED_OK,(void*) 0);
-+
-+    tt->fd = management->connection.lastfdreceived;
-+    management->connection.lastfdreceived=-1;
-+    
-+    if( (tt->fd < 0) || ! (strcmp("ok",up.password)==0)) {
-+        msg (M_ERR, "ERROR: Cannot open TUN");
-+    }
-+    /* Set the actual name to a dummy name to enable scripts */
-+    tt->actual_name = malloc(sizeof(ANDROID_TUNNAME));
-+    strcpy(tt->actual_name, ANDROID_TUNNAME);
-+    gc_free (&gc);
-+}
-+
-+void
-+close_tun (struct tuntap *tt)
-+{
-+    if (tt)
-+    {
-+        close_tun_generic (tt);
-+        free (tt);
-+    }
-+}
-+
-+int
-+write_tun (struct tuntap* tt, uint8_t *buf, int len)
-+{
-+    return write (tt->fd, buf, len);
-+}
-+
-+int
-+read_tun (struct tuntap* tt, uint8_t *buf, int len)
-+{
-+    return read (tt->fd, buf, len);
-+}
- 
-+#elif defined(TARGET_LINUX)
- #ifdef HAVE_LINUX_IF_TUN_H	/* New driver support */
- 
- #ifndef HAVE_LINUX_SOCKIOS_H
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index 63e4b5c..956ad8d 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -38,7 +38,7 @@
- #include "proto.h"
- #include "misc.h"
- 
--#ifdef WIN32
-+#if defined(WIN32) || defined(TARGET_ANDROID)
- 
- #define TUN_ADAPTER_INDEX_INVALID ((DWORD)-1)
- 
-@@ -292,6 +292,8 @@ ifconfig_order(void)
-   return IFCONFIG_AFTER_TUN_OPEN;
- #elif defined(WIN32)
-   return IFCONFIG_BEFORE_TUN_OPEN;
-+#elif defined(TARGET_ANDROID)
-+  return IFCONFIG_BEFORE_TUN_OPEN;
- #else
-   return IFCONFIG_DEFAULT;
- #endif
-@@ -304,7 +306,11 @@ ifconfig_order(void)
- static inline int
- route_order(void)
- {
-+#if defined(TARGET_ANDROID)
-+    return ROUTE_BEFORE_TUN;
-+#else
-     return ROUTE_ORDER_DEFAULT;
 +#endif
- }
++#ifdef P2MP_SERVER
+   free (multi->peer_info);
+ #endif
  
+@@ -1994,6 +1996,7 @@ key_method_2_read (struct buffer *buf, struct tls_multi *multi, struct tls_sessi
  
+   struct gc_arena gc = gc_new ();
+   char *options;
++  struct user_pass *up;
+ 
+   /* allocate temporary objects */
+   ALLOC_ARRAY_CLEAR_GC (options, char, TLS_OPTIONS_LEN, &gc);
+@@ -2029,15 +2032,25 @@ key_method_2_read (struct buffer *buf, struct tls_multi *multi, struct tls_sessi
+ 
+   ks->authenticated = false;
+ 
++  /* always extract username + password fields from buf, even if not
++   * authenticating for it, because otherwise we can't get at the
++   * peer_info data which follows behind
++   */
++  ALLOC_OBJ_CLEAR_GC (up, struct user_pass, &gc);
++  username_status = read_string (buf, up->username, USER_PASS_LEN);
++  password_status = read_string (buf, up->password, USER_PASS_LEN);
++
++#ifdef P2MP_SERVER
++  /* get peer info from control channel */
++  free (multi->peer_info);
++  multi->peer_info = read_string_alloc (buf);
++  if ( multi->peer_info )
++      multi_output_peer_info_env (session->opt->es, multi->peer_info);
++#endif
++
+   if (verify_user_pass_enabled(session))
+     {
+       /* Perform username/password authentication */
+-      struct user_pass *up;
+-
+-      ALLOC_OBJ_CLEAR_GC (up, struct user_pass, &gc);
+-      username_status = read_string (buf, up->username, USER_PASS_LEN);
+-      password_status = read_string (buf, up->password, USER_PASS_LEN);
+-
+       if (!username_status || !password_status)
+ 	{
+ 	  CLEAR (*up);
+@@ -2048,14 +2061,7 @@ key_method_2_read (struct buffer *buf, struct tls_multi *multi, struct tls_sessi
+ 	    }
+ 	}
+ 
+-#ifdef MANAGEMENT_DEF_AUTH
+-      /* get peer info from control channel */
+-      free (multi->peer_info);
+-      multi->peer_info = read_string_alloc (buf);
+-#endif
+-
+       verify_user_pass(up, multi, session);
+-      CLEAR (*up);
+     }
+   else
+     {
+@@ -2069,6 +2075,9 @@ key_method_2_read (struct buffer *buf, struct tls_multi *multi, struct tls_sessi
+       ks->authenticated = true;
+     }
+ 
++  /* clear username and password from memory */
++  CLEAR (*up);
++
+   /* Perform final authentication checks */
+   if (ks->authenticated)
+     {
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index c62294f..f388052 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -476,14 +476,16 @@ struct tls_multi
+    */
+   char *client_reason;
+ 
++  /* Time of last call to tls_authentication_status */
++  time_t tas_last;
++#endif
++
++#ifdef P2MP_SERVER
+   /*
+    * A multi-line string of general-purpose info received from peer
+    * over control channel.
+    */
+   char *peer_info;
+-
+-  /* Time of last call to tls_authentication_status */
+-  time_t tas_last;
+ #endif
+ 
+   /*
 -- 
-1.7.9.5
+1.7.8.6
 
 
