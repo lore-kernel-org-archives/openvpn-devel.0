@@ -1,6 +1,6 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 22 Apr 2013 19:41:31 +0200
-Message-Id: <1366652491-25921-1-git-send-email-arne@...1227...>
+Date: Mon, 22 Apr 2013 19:59:05 +0200
+Message-Id: <1366653545-31162-1-git-send-email-arne@...1227...>
 In-Reply-To: <5174EA59.7030900@...1435...>
 References: <5174EA59.7030900@...1435...>
 Subject: [Openvpn-devel] [PATCH] Allow routes to be set before opening tun,
@@ -23,7 +23,7 @@ To: openvpn-devel@lists.sourceforge.net
  2 files changed, 20 insertions(+), 2 deletions(-)
 
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index b7f71c3..a70d3c5 100644
+index b7f71c3..626683f 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
 @@ -1429,6 +1429,13 @@ do_open_tun (struct context *c)
@@ -45,7 +45,7 @@ index b7f71c3..a70d3c5 100644
  
        /* possibly add routes */
 -      if (!c->options.route_delay_defined)
-+      if ((ifconfig_order() == ROUTE_AFTER_TUN) && (!c->options.route_delay_defined))
++      if ((route_order() == ROUTE_AFTER_TUN) && (!c->options.route_delay_defined))
  	do_route (&c->options, c->c1.route_list, c->c1.route_ipv6_list,
  		  c->c1.tuntap, c->plugins, c->c2.es);
  
@@ -54,7 +54,7 @@ index b7f71c3..a70d3c5 100644
  
  	  /* if --route-delay was specified, start timer */
 -	  if (c->options.route_delay_defined)
-+	  if ((ifconfig_order() == ROUTE_AFTER_TUN) && c->options.route_delay_defined)
++	  if ((route_order() == ROUTE_AFTER_TUN) && c->options.route_delay_defined)
  	    {
  	      event_timeout_init (&c->c2.route_wakeup, c->options.route_delay, now);
  	      event_timeout_init (&c->c2.route_wakeup_expire, c->options.route_delay + c->options.route_delay_window, now);
