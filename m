@@ -1,12 +1,9 @@
-Message-ID: <5174EA59.7030900@...1435...>
-Date: Mon, 22 Apr 2013 09:44:25 +0200
-From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <51751550.5020102@...1147...>
+Date: Mon, 22 Apr 2013 12:47:44 +0200
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-References: <1366467768-16260-2-git-send-email-arne@...1227...>
-	<1366543606-2200-1-git-send-email-arne@...1227...>
-In-Reply-To: <1366543606-2200-1-git-send-email-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Allow routes to be set before opening
- tun, similar to ifconfig before opening tun
+Subject: [Openvpn-devel] forum topic12703: cross compile problem with
+	crypto-library=polarssl
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,87 +12,18 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "dejong@...1435... >> Adriaan de Jong" <dejong@...1435...>
 
-Hi Arne,
+hi *, particularly Adriaan,
 
-For the context, this ROUTE_BEFORE_TUN is required for the Android VPN
-API, right? Might be useful to put in the commit message. Furthermore
-two comments on the patch, which I've put inline:
+can someone take a look at
+  https://forums.openvpn.net/topic12703.html
+subject: cross compile problem with crypto-library=polarssl
 
-On 04/21/2013 01:26 PM, Arne Schwabe wrote:
-> ---
->  src/openvpn/init.c |   11 +++++++++--
->  src/openvpn/tun.h  |   11 +++++++++++
->  2 files changed, 20 insertions(+), 2 deletions(-)
->
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index b7f71c3..a70d3c5 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -1429,6 +1429,13 @@ do_open_tun (struct context *c)
->  	  do_ifconfig (c->c1.tuntap, guess, TUN_MTU_SIZE (&c->c2.frame), c->c2.es);
->  	}
->  
-> +      /* possibly add routes */
-> +      if (route_order() == ROUTE_BEFORE_TUN) {
-> +		  /* Ignore route_delay, would cause ROUTE_BEFORE_TUN to be ignored */
-> +		  do_route (&c->options, c->c1.route_list, c->c1.route_ipv6_list,
-> +					c->c1.tuntap, c->plugins, c->c2.es);
-> +    }
-> +
->        /* open the tun device */
->        open_tun (c->options.dev, c->options.dev_type, c->options.dev_node,
->  		c->c1.tuntap);
-> @@ -1460,7 +1467,7 @@ do_open_tun (struct context *c)
->  		   c->c2.es);
->  
->        /* possibly add routes */
-> -      if (!c->options.route_delay_defined)
-> +      if ((ifconfig_order() == ROUTE_AFTER_TUN) && (!c->options.route_delay_defined))
+thx,
 
-Shouldn't this be route_order() ?
+JJK
 
->  	do_route (&c->options, c->c1.route_list, c->c1.route_ipv6_list,
->  		  c->c1.tuntap, c->plugins, c->c2.es);
->  
-> @@ -1668,7 +1675,7 @@ do_up (struct context *c, bool pulled_options, unsigned int option_types_found)
->  #endif
->  
->  	  /* if --route-delay was specified, start timer */
-> -	  if (c->options.route_delay_defined)
-> +	  if ((ifconfig_order() == ROUTE_AFTER_TUN) && c->options.route_delay_defined)
-
-Same goes here, I guess your mean route_order().
-
->  	    {
->  	      event_timeout_init (&c->c2.route_wakeup, c->options.route_delay, now);
->  	      event_timeout_init (&c->c2.route_wakeup_expire, c->options.route_delay + c->options.route_delay_window, now);
-> diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-> index c3fc62e..63e4b5c 100644
-> --- a/src/openvpn/tun.h
-> +++ b/src/openvpn/tun.h
-> @@ -297,6 +297,17 @@ ifconfig_order(void)
->  #endif
->  }
->  
-> +#define ROUTE_BEFORE_TUN 0
-> +#define ROUTE_AFTER_TUN 1
-> +#define ROUTE_ORDER_DEFAULT ROUTE_AFTER_TUN
-> +
-> +static inline int
-> +route_order(void)
-> +{
-> +    return ROUTE_ORDER_DEFAULT;
-> +}
-> +
-> +
->  #ifdef WIN32
->  
->  #define TUN_PASS_BUFFER
-
-Regards,
--Steffan
 
