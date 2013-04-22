@@ -1,16 +1,12 @@
-From: Adriaan de Jong <dejong@...1435...>
-Date: Mon, 22 Apr 2013 09:17:52 +0200
-Message-ID: <1CED409804E2164C8104F9E623B08B9013BC631017@...1436...>
-References: <5170496A.6000000@...1737...>
-	<20130418204455.GW29506@...1296...>
-	<1CED409804E2164C8104F9E623B08B9013BC630BF0@...1436...>
-	<51711363.4070802@...1737...>
-	<1CED409804E2164C8104F9E623B08B9013BC630D62@...1436...>
-	<51711DD4.5080803@...1737...>
-In-Reply-To: <51711DD4.5080803@...1737...>
-Content-Language: en-US
+Message-ID: <5174EA59.7030900@...1435...>
+Date: Mon, 22 Apr 2013 09:44:25 +0200
+From: Steffan Karger <steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Support for libsodium?
+References: <1366467768-16260-2-git-send-email-arne@...1227...>
+	<1366543606-2200-1-git-send-email-arne@...1227...>
+In-Reply-To: <1366543606-2200-1-git-send-email-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Allow routes to be set before opening
+ tun, similar to ifconfig before opening tun
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,63 +15,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Ed W <lists@...1737...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogRWQgVyBbbWFpbHRvOmxp
-c3RzQC4uLjE3MzcuLi5dDQo+IFNlbnQ6IHZyaWpkYWcgMTkgYXByaWwgMjAxMyAxMjozNQ0KPiBU
-bzogQWRyaWFhbiBkZSBKb25nDQo+IENjOiBHZXJ0IERvZXJpbmc7IG9wZW52cG4tZGV2ZWxAbGlz
-dHMuc291cmNlZm9yZ2UubmV0DQo+IFN1YmplY3Q6IFJlOiBbT3BlbnZwbi1kZXZlbF0gU3VwcG9y
-dCBmb3IgbGlic29kaXVtPw0KPiANCj4gT24gMTkvMDQvMjAxMyAxMToxMywgQWRyaWFhbiBkZSBK
-b25nIHdyb3RlOg0KPiANCj4gPiBJIG1pc3VuZGVyc3Rvb2QgeW91ciB3aXNoIHRvIGNvbXBsZXRl
-bHkgZ2V0IHJpZCBvZiBUTFMuIFRoYXQgd291bGQNCj4gcmVxdWlyZSBhIG1ham9yIG92ZXJoYXVs
-IGluIHRoZSB3YXkgdGhlIGNvbnRyb2wgY2hhbm5lbCBpbiBPcGVuVlBOIGlzDQo+IGhhbmRsZWQu
-IE9wZW5WUE4gaXMgY29tcGxldGVseSBjZW50ZXJlZCBhcm91bmQgdGhlIGlkZWEgb2YgYSBUTFMN
-Cj4gY29udHJvbCBjaGFubmVsIGFjcm9zcyB3aGljaCBkYXRhIGNoYW5uZWwga2V5cyBhcmUgbmVn
-b3RpYXRlZC4gQWx0aG91Z2gNCj4gSSdkIGxvdmUgdG8gc2VlIHRoYXQga2luZCBvZiBmbGV4aWJp
-bGl0eSBpbiBPcGVuVlBOLCB0aGUgY29kZSBiYXNlIGlzDQo+IG5vd2hlcmUgbmVhciByZWFkeSBm
-b3IgdGhhdC4gSXQncyBhIG5pY2UgY2hhbGxlbmdlIHRob3VnaCA6KS4NCj4gPg0KPiA+IEFub3Ro
-ZXIsIG1vcmUgcGhpbG9zb3BoaWNhbCwgcXVlc3Rpb24gaXMgd2hldGhlciB0aGUgcHJvZHVjdCBp
-cyBzdGlsbA0KPiBPcGVuVlBOIGFmdGVyIHN1Y2ggYSBjaGFuZ2UuIEl0J3MgY2VydGFpbmx5IG5v
-dCBsaW5lLWNvbXBhdGlibGUgd2l0aA0KPiBPcGVuVlBOLg0KPiANCj4gSG1tLCBjYW4geW91IGdp
-dmUgbWUgYSBwb2ludGVyIHRvIHJlbGV2YW50IGNvZGUgc28gdGhhdCBJIGNhbiBnZXQgbXkNCj4g
-aGFuZHMgZGlydHk/DQo+IA0KDQpGb3IgZG9jdW1lbnRhdGlvbiwgeW91IGNhbiBnZW5lcmF0ZSB0
-aGUgZG94eWdlbiBkb2N1bWVudGF0aW9uLiBJdCdzIHF1aXRlIGV4dGVuc2l2ZSwgYW5kIHNob3Vs
-ZCBzaG93IHlvdSBob3cgdGhpbmdzIGFyZSBoYW5kbGVkLiANCg0KQXQgYSB2ZXJ5IGhpZ2ggbGV2
-ZWwsIE9wZW5WUE4gaGFzIGFuIGV4dGVybmFsIG11bHRpcGxleGVyIHRoYXQgc3BsaXRzIGluY29t
-aW5nIHBhY2tldHMgaW50byBhIGNvbnRyb2wgY2hhbm5lbCBhbmQgZGF0YSBjaGFubmVsIHN0cmVh
-bS4gVGhlIGNvbnRyb2wgY2hhbm5lbCBpcyB1c2VkIHRvIGdlbmVyYXRlIGtleXMsIG5lZ290aWF0
-ZSBzZXNzaW9ucywgYW5kIGV4Y2hhbmdlIHBhcmFtZXRlcnMgZm9yIHRoZSBkYXRhIGNoYW5uZWwu
-IEl0IGhhcyBhIHJlbGlhYmlsaXR5IGxheWVyIHRoYXQgZW5zdXJlcyB0aGF0IHBhY2tldHMgYXJy
-aXZlLCBldmVuIGFjcm9zcyBhIFVEUCBjb25uZWN0aW9uLiBUaGUgZGF0YSBjaGFubmVsIGNvbnRh
-aW5zIHRoZSBhY3R1YWwgbmV0d29yayBwYWNrZXRzLg0KDQpGb3IgdGhlIGRhdGEgY2hhbm5lbCwg
-aGF2ZSBhIGxvb2sgYXQgdGhlIGNyeXB0b18qIGZpbGVzLiBjcnlwdG9fYmFja2VuZC5oIGRlZmlu
-ZXMgdGhlIGludGVyZmFjZSB0aGF0IGlzIGV4cGVjdGVkIGZyb20gYSBjcnlwdG8gbGlicmFyeS4g
-Y3J5cHRvX3BvbGFyc3NsLiogaW1wbGVtZW50cyB0aGUgcG9sYXIgdmVyc2lvbiBvZiB0aGlzLiBZ
-b3UnbGwgbmVlZCB0byBhZGQgZGV0ZWN0aW9uIGFuZCBjb25maWd1cmF0aW9uIG9wdGlvbnMgZm9y
-IGxpYnNvZGl1bSB0byBjb25maWd1cmUuYWMgdG9vLg0KDQpGb3IgdGhlIGNvbnRyb2wgY2hhbm5l
-bCwgeW91ciBzdGFydGluZyBwb2ludCB3b3VsZCBiZSB0aGUgc3NsLmggYW5kIHNzbF9iYWNrZW5k
-LmggZmlsZXMuIEkgZG9uJ3Qga25vdyBob3cgY2xvc2VseSB0aGVzZSBtYXRjaCB1cCB0byB0aGUg
-Y3J5cHRvYm94IEFQSS4uLiBJZiB3ZSdyZSBsdWNreSwgeW91IG1pZ2h0IGJlIGFibGUgdG8gZG8g
-c29tZXRoaW5nIHRoZXJlLiBJZiBub3QsIGhhdmUgYSBsb29rIGF0IHRoZSAoZXh0ZXJuYWwpIG11
-bHRpcGxleGVyIGNvZGUsIGFuZCBzZWUgd2hldGhlciB0aGF0IGNhbiBiZSByZWZhY3RvcmVkIHRv
-IHlvdXIgcHVycG9zZXMuDQoNCj4gSSdtIHN0aWxsIGEgYml0IHVuc3VyZSB3aGF0IHlvdSBtZWFu
-IGJ5ICJUTFMiIHRob3VnaD8gIFRvIG15IG1pbmQgaXQncw0KPiBhIHByb3RvY29sIGZvciBuZWdv
-dGlhdGluZyBwYXJhbWV0ZXJzIGFuZCBpbXBsZW1lbnRpbmcgY3J5cHRvLiBIb3dldmVyLA0KPiBJ
-DQo+ICp0aGluayogdGhhdCB3aGF0IHlvdSBtaWdodCBtZWFuIGlzIHRoYXQgaXQncyAiYW4gQVBJ
-IHdoaWNoIGhhbmRsZXMNCj4gY2xpZW50IHNlc3Npb24gc3RhdGUsIHRpbWVvdXRzIGFuZCBjcmVh
-dGluZyBwYWNrZXRzIHRvIHB1dCBvbiB0aGUNCj4gbmV0d29yayI/DQo+IA0KDQpJdCdzIHVzZWQg
-YXMgdGhlIGZvcm1lciBpbiBPcGVuVlBOLCBhcyBPcGVuVlBOIGRvZXMgcGFja2V0IGhhbmRsaW5n
-LCBzZXNzaW9uIHN0YXRlIGFuZCB0aW1lb3V0cyBpdHNlbGYuIEkgaGF2ZSBubyBpZGVhIGhvdyBj
-bG9zZWx5IHRoZSB3aG9sZSBBUEkgdXNlZCBpbiBPcGVuVlBOIG1hdGNoZXMgdGhlIGNyeXB0b2Jv
-eCBBUEksIGJ1dCBpdCBjZXJ0YWlubHkgaXNuJ3Qgd3JpdHRlbiBmb3IgaXQuIA0KDQo+IFBlcmhh
-cHMgSSBuZWVkIHRvIGdldCBteSBoYW5kcyBkaXJ0eSBoZXJlLi4uIFNvdW5kcyBsaWtlIHdlIHdv
-dWxkIG5lZWQNCj4gdG8gaW50cm9kdWNlIGFuIGFic3RyYWN0aW9uIGZvciB0aGUgVExTIHNlc3Np
-b24gaGFuZGxpbmcgc28gdGhhdCB0aGlzDQo+IGZlZWxzIGNsZWFuPw0KPiANCj4gTm90ZSwgSSBo
-YXZlIGEgbG9uZ2VyIHRlcm0gaW50ZXJlc3QgaGVyZSBpbiBtdWx0aS1ob21pbmcuDQo+IA0KDQpU
-aGF0J3MgaW1wb3J0YW50LCBhcyBhbGwgY29kZSBpbiBPcGVuVlBOIG5lZWRzIHRvIGJlIGFjdGl2
-ZWx5IG1haW50YWluZWQsIGFuZCB0aGVyZSdzIG9ubHkgYSBzbWFsbCBncm91cCBvZiBkZXZlbG9w
-ZXJzIHdvcmtpbmcgb24gdGhlIHByb2plY3QuDQoNCkhvcGUgdGhhdCBoZWxwcyENCkFkcmlhYW4N
-Cg==
+Hi Arne,
+
+For the context, this ROUTE_BEFORE_TUN is required for the Android VPN
+API, right? Might be useful to put in the commit message. Furthermore
+two comments on the patch, which I've put inline:
+
+On 04/21/2013 01:26 PM, Arne Schwabe wrote:
+> ---
+>  src/openvpn/init.c |   11 +++++++++--
+>  src/openvpn/tun.h  |   11 +++++++++++
+>  2 files changed, 20 insertions(+), 2 deletions(-)
+>
+> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+> index b7f71c3..a70d3c5 100644
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -1429,6 +1429,13 @@ do_open_tun (struct context *c)
+>  	  do_ifconfig (c->c1.tuntap, guess, TUN_MTU_SIZE (&c->c2.frame), c->c2.es);
+>  	}
+>  
+> +      /* possibly add routes */
+> +      if (route_order() == ROUTE_BEFORE_TUN) {
+> +		  /* Ignore route_delay, would cause ROUTE_BEFORE_TUN to be ignored */
+> +		  do_route (&c->options, c->c1.route_list, c->c1.route_ipv6_list,
+> +					c->c1.tuntap, c->plugins, c->c2.es);
+> +    }
+> +
+>        /* open the tun device */
+>        open_tun (c->options.dev, c->options.dev_type, c->options.dev_node,
+>  		c->c1.tuntap);
+> @@ -1460,7 +1467,7 @@ do_open_tun (struct context *c)
+>  		   c->c2.es);
+>  
+>        /* possibly add routes */
+> -      if (!c->options.route_delay_defined)
+> +      if ((ifconfig_order() == ROUTE_AFTER_TUN) && (!c->options.route_delay_defined))
+
+Shouldn't this be route_order() ?
+
+>  	do_route (&c->options, c->c1.route_list, c->c1.route_ipv6_list,
+>  		  c->c1.tuntap, c->plugins, c->c2.es);
+>  
+> @@ -1668,7 +1675,7 @@ do_up (struct context *c, bool pulled_options, unsigned int option_types_found)
+>  #endif
+>  
+>  	  /* if --route-delay was specified, start timer */
+> -	  if (c->options.route_delay_defined)
+> +	  if ((ifconfig_order() == ROUTE_AFTER_TUN) && c->options.route_delay_defined)
+
+Same goes here, I guess your mean route_order().
+
+>  	    {
+>  	      event_timeout_init (&c->c2.route_wakeup, c->options.route_delay, now);
+>  	      event_timeout_init (&c->c2.route_wakeup_expire, c->options.route_delay + c->options.route_delay_window, now);
+> diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+> index c3fc62e..63e4b5c 100644
+> --- a/src/openvpn/tun.h
+> +++ b/src/openvpn/tun.h
+> @@ -297,6 +297,17 @@ ifconfig_order(void)
+>  #endif
+>  }
+>  
+> +#define ROUTE_BEFORE_TUN 0
+> +#define ROUTE_AFTER_TUN 1
+> +#define ROUTE_ORDER_DEFAULT ROUTE_AFTER_TUN
+> +
+> +static inline int
+> +route_order(void)
+> +{
+> +    return ROUTE_ORDER_DEFAULT;
+> +}
+> +
+> +
+>  #ifdef WIN32
+>  
+>  #define TUN_PASS_BUFFER
+
+Regards,
+-Steffan
+
