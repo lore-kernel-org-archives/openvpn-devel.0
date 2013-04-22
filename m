@@ -1,9 +1,12 @@
-Message-ID: <51751550.5020102@...1147...>
-Date: Mon, 22 Apr 2013 12:47:44 +0200
-From: Jan Just Keijser <janjust@...1147...>
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Mon, 22 Apr 2013 14:36:39 +0200
+Message-ID: <1CED409804E2164C8104F9E623B08B9013BC73CB2F@...1436...>
+References: <51751550.5020102@...1147...>
+In-Reply-To: <51751550.5020102@...1147...>
+Content-Language: en-US
 MIME-Version: 1.0
-Subject: [Openvpn-devel] forum topic12703: cross compile problem with
-	crypto-library=polarssl
+Subject: Re: [Openvpn-devel] forum topic12703: cross compile problem
+	with	crypto-library=polarssl
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,18 +15,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "dejong@...1435... >> Adriaan de Jong" <dejong@...1435...>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+To: Jan Just Keijser <janjust@...1147...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-hi *, particularly Adriaan,
+Hi JJK,
 
-can someone take a look at
-  https://forums.openvpn.net/topic12703.html
-subject: cross compile problem with crypto-library=polarssl
+> -----Original Message-----
+> From: Jan Just Keijser [mailto:janjust@...1147...]
+> Sent: maandag 22 april 2013 12:48
+> To: openvpn-devel@lists.sourceforge.net; Adriaan de Jong
+> Subject: [Openvpn-devel] forum topic12703: cross compile problem with
+> crypto-library=3Dpolarssl
+>=20
+> hi *, particularly Adriaan,
+>=20
+> can someone take a look at
+>   https://forums.openvpn.net/topic12703.html
+> subject: cross compile problem with crypto-library=3Dpolarssl
+>=20
 
-thx,
+I replied in the topic with the settings that work for me.
 
-JJK
+-Steffan
 
 
