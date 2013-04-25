@@ -1,14 +1,14 @@
-Message-ID: <51799ABD.5030309@...1227...>
-Date: Thu, 25 Apr 2013 23:06:05 +0200
+Message-ID: <51799D32.7010900@...1227...>
+Date: Thu, 25 Apr 2013 23:16:34 +0200
 From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
 References: <1366467768-16260-1-git-send-email-arne@...1227...>
-	<1366467768-16260-5-git-send-email-arne@...1227...>
-	<20130425185813.GB20843@...1296...>
-In-Reply-To: <20130425185813.GB20843@...1296...>
+	<1366467768-16260-4-git-send-email-arne@...1227...>
+	<20130425185601.GA20843@...1296...>
+In-Reply-To: <20130425185601.GA20843@...1296...>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature";
-	micalg=sha1; boundary="------------ms080809010606020903050709"
-Subject: Re: [Openvpn-devel] [PATCH 5/5] Emulate persist-tun on Android
+	micalg=sha1; boundary="------------ms070906070705020200000105"
+Subject: Re: [Openvpn-devel] [PATCH 4/5] Android platform specific changes.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,40 +22,92 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Dies ist eine kryptografisch unterzeichnete Nachricht im MIME-Format.
 
---------------ms080809010606020903050709
+--------------ms070906070705020200000105
 Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: quoted-printable
 
-Am 25.04.13 20:58, schrieb Gert Doering:
+Am 25.04.13 20:56, schrieb Gert Doering:
 > Hi,
 >
-> On Sat, Apr 20, 2013 at 04:22:48PM +0200, Arne Schwabe wrote:
->> On Android changing the configuration of tun is not possible. So instead=
- of reconfiguring the tun device, open a new tun device and close the old o=
-ne if needed
-> I'm not sure I like this patch.  Wouldn't it be easier to tackle this
-> in options.c with an
+> On Sat, Apr 20, 2013 at 04:22:47PM +0200, Arne Schwabe wrote:
+>> index 05c6da2..9fdfd88 100644
+>> --- a/src/openvpn/options.c
+>> +++ b/src/openvpn/options.c
+>> @@ -1125,7 +1125,9 @@ show_tuntap_options (const struct tuntap_options *=
+o)
+>>   }
+>>=20=20=20
+>>   #endif
+>> +#endif
+>>=20=20=20
+>> +#if defined(WIN32) || defined(TARGET_ANDROID)
+>>   static void
+>>   dhcp_option_address_parse (const char *name, const char *parm, in_addr=
+_t *array, int *len, int msglevel)
+> I'm not sure if I understand these bits, will have to look at the patched
+> result.  It looks a bit confusing why there would be anything you need
+> to have "on WIN32 and Android, and nowhere else".
+The dhcp-options are only parsed currently if OpenVPN is compiled for=20
+windows. Since I want to support dhcp-options dns I need to enable these=20
+options. The  tt->options.domain and tt->dns options which are used to=20
+pass DNS/Domain via management interface are only available when these=20
+options are parsed.
 >
-> #ifdef TARGET_ANDROID
->      msg(M_WARN, "notice: android cannot do --persist-tun, ignoring state=
-ment");
-> #else
->      ... old code here
-> #endif
+>> +#elif defined (TARGET_ANDROID)
+>> +
+>> +    struct user_pass up;
+>> +    struct buffer out =3D alloc_buf_gc (64, &gc);
+>> +
+>> +    buf_printf (&out, "%s %s", network, netmask);
+>> +
+>> +    strcpy(up.username, buf_bptr(&out));
+>> +    management_query_user_pass(management, &up , "ROUTE", GET_USER_PASS=
+_NEED_OK,(void*) 0);
+>> +
+>> +
+> But this is what I want to comment on.  I can see what you're doing, and
+> I'm fine with that - but I strongly don't like the resulting code - what
+> do you think about hiding this behind a wrapper
 >
-> (if you have to reopen the tun anyway) - or does persist-tun have other
-> side effects that I'm overlooking?
->=20=20=20
-Yes. Without persist-tun openvpn will close on disconnect and open tun=20
-on reconnect, i.e. allowing traffic to pass over the unecrypted channel.=20
-With persist-tun tun will be kept open and not allowing traffic to pass.=20
-Reconfiguring the interface on Android has be done by the close/open tun=20
-dance this patch does.
+>    management_android_control( management, buf_bptr(&out), "ROUTE" );
+>
+> or such, which takes a "char *" or a "struct buffer *", and does the
+> same thing internally?  Having "struct user_pass" all over the code,
+> using it as a generic "transport this string to the management interface"
+> container will mightily confuse people looking for "ok, so what is this
+> code doing, and what does it have to do with username and password
+> queries on the management interface"?
+That is a good idea. I will update the patch with that.
+>> +#elif defined(TARGET_ANDROID)
+>> +  msg (M_NONFATAL, "Sorry, deleting routes on Android is not possible. =
+The VpnService API allows routes to be set on connect only.");
+> For this message, I'm wondering how useful it is.  Isn't this printed on
+> *every* disconnect?
+>
+> [..]
+Hm I could go for a better warning message. But this message not shown=20
+that often iirc. Have to check the code again. It over one year since I=20
+wrote that part :)
+>> +    if(tt->options.domain) {
+>> +        strcpy(up.username , tt->options.domain);
+>> +        management_query_user_pass(management, &up , "DNSDOMAIN", GET_U=
+SER_PASS_NEED_OK,(void*) 0);
+>> +    }
+> The wrapper mentioned above could even have a check for "if the pointer
+> is NULL, silently don't do anything", so this would collapse to
+>
+>    management_android_control( management, tt->options.domain, "DNSDOMAIN=
+" );
+>
+> "just sayin'" :-)
+>
+>
+I will look into it.
 
 Arne
 
 
---------------ms080809010606020903050709
+--------------ms070906070705020200000105
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -142,8 +194,8 @@ ChMWVW5pdmVyc2l0YWV0IFBhZGVyYm9ybjFAMD4GA1UECxM3SU1UIChaZW50cnVtIGZ1ZXIg
 SW5mb3JtYXRpb25zLSB1bmQgTWVkaWVudGVjaG5vbG9naWVuKTEoMCYGA1UEAxMfVW5pdmVy
 c2l0YWV0IFBhZGVyYm9ybiBDQSAtIEcwMTEiMCAGCSqGSIb3DQEJARYTY2FAdW5pLXBhZGVy
 Ym9ybi5kZQIEES7tRDAJBgUrDgMCGgUAoIICgzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
-MBwGCSqGSIb3DQEJBTEPFw0xMzA0MjUyMTA2MDVaMCMGCSqGSIb3DQEJBDEWBBQKJ1LjIx6n
-xkmd0AB4v6kfjN0NsjBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQME
+MBwGCSqGSIb3DQEJBTEPFw0xMzA0MjUyMTE2MzRaMCMGCSqGSIb3DQEJBDEWBBSmrc5Nk3nR
+XkzB6TJ/qdNTqz/cIzBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQME
 AQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIH
 MA0GCCqGSIb3DQMCAgEoMIHYBgkrBgEEAYI3EAQxgcowgccwgb4xCzAJBgNVBAYTAkRFMR8w
 HQYDVQQKExZVbml2ZXJzaXRhZXQgUGFkZXJib3JuMUAwPgYDVQQLEzdJTVQgKFplbnRydW0g
@@ -153,16 +205,16 @@ cGFkZXJib3JuLmRlAgQRLu1EMIHaBgsqhkiG9w0BCRACCzGByqCBxzCBvjELMAkGA1UEBhMC
 REUxHzAdBgNVBAoTFlVuaXZlcnNpdGFldCBQYWRlcmJvcm4xQDA+BgNVBAsTN0lNVCAoWmVu
 dHJ1bSBmdWVyIEluZm9ybWF0aW9ucy0gdW5kIE1lZGllbnRlY2hub2xvZ2llbikxKDAmBgNV
 BAMTH1VuaXZlcnNpdGFldCBQYWRlcmJvcm4gQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2Nh
-QHVuaS1wYWRlcmJvcm4uZGUCBBEu7UQwDQYJKoZIhvcNAQEBBQAEggIAmSfqbvh06RPVF+wx
-1vaTjlC8L7FVH2ir9tZ1A54YuFDbNVSmL4TyhK2x8eMTyusYBnoZSEh4emOuylsaxU9qiNXl
-+qJbMr4e6WVEKemXc+RR1PKolMIGTU2X3dSJZ0yzjTpea8bHQbqkfgCKQa+QhgkzlfoBVkvG
-JgPjb0ShsIqN9Dj+rVeQ02o25a6xuwJiLuLIypNQD9b+BX0ldYuR/vEapDfwV3ROQEb5JDAT
-6fYwEewG5tWnAIwZ+nlvo0bbyaUXcLi4Akqly0/9s21oUpMQY7FfBcqk0qeQNxXM6xLyLrbQ
-FAEPNdaxqLvojmb6bJbnJlv7DjqQbQuwkB7EG1uIguvLdmWJhT0BjaMdgG9+JpT7u1lBeNns
-OsLu+jsYv8Kw/j4Zqa+WgqUOfsjoM3HBKqd2ieapIXH06zduOsPem8+9/n2tF+MQavfcIqJq
-Kq0HgVRadoegqogXN16H0C8OLG1URVDLyfV5sGu04CIL1HChbi2OqKtSOG9/t57AOZwkrb59
-eVe9v8KyqHn+WCe+zWHifFbXYmVyZoNVZYiWFQ9TEvJPWOWiK7OPYhquCTmf1UHNoBh01LwM
-F0YFWlDveBogtli8pff6lIPrpYmI5JouWvNG/hSEaBP5xN2rufqghegv1o8X0G5YW+hbH7nm
-Yx1L2qyUTpBqV+S1GhgAAAAAAAA=
---------------ms080809010606020903050709--
+QHVuaS1wYWRlcmJvcm4uZGUCBBEu7UQwDQYJKoZIhvcNAQEBBQAEggIAXHbdNvH1+ab5etU2
+fR7R5rvBA3FxU49fXMqI2+EjAoH0Xm15kRPN+Ceps95tuoung7JpmGeTy6dI7L2CONsAgEz8
+e3XZf2uHyCjo1w/+K0oIIvdycfSAlrNBgUGTuXxJfaKbkUipOYzOywvnJE7Z1Gz3D3zVtAeJ
+qPTgaqf9T84iEGJn9JLLXMlhNIZq2y0tyA6ZtHL1QNoezUuVx8UwINKHsw2kxj6sr4Jpjamp
+Z36s45FeaEj9nLNBlw5bPMW4chJzjkL6uhxlwLaSZ7KCkui6Czxcn4o7dwXFG8mI7xtehxgD
+hgBjUWYyquYipa+Z0yF21wiFT8pvvrLiSv4iXqsimOS0EfYIe8uuvJ94arNsh3BbjtH6eYNb
+3/aApJHbsFuiOgbVI7sfAkwNhVv5OYKmukhjGEvtL53jGPdZpvmR8yBOGGChdqtz3wNxjOxO
+aEJsc0OafV7VFAmGIbEAeJ8vc7KuGg4Qn4cIcYB+SbbOMx+c6eZOKO5O3fGziFTPg4qJCozW
+uooyTm0DvYNJxq0EERnmgBLZUMlRSn5kxYnKPo1G1Ag9I0nlbr3eNozxZ3uiDbeD/NM3NIvj
+vTbG2UY24Hi25I3LS8AAEZ1hjtBSDDZ1fplUZQ0XZx8dYhiFuWzg1TXlOGes1sTxDed8A+iV
+Je44WsEKUrqOtyEH6G4AAAAAAAA=
+--------------ms070906070705020200000105--
 
