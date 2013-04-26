@@ -1,14 +1,11 @@
-Message-ID: <51799D32.7010900@...1227...>
-Date: Thu, 25 Apr 2013 23:16:34 +0200
 From: Arne Schwabe <arne@...1227...>
-MIME-Version: 1.0
-References: <1366467768-16260-1-git-send-email-arne@...1227...>
-	<1366467768-16260-4-git-send-email-arne@...1227...>
-	<20130425185601.GA20843@...1296...>
-In-Reply-To: <20130425185601.GA20843@...1296...>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature";
-	micalg=sha1; boundary="------------ms070906070705020200000105"
-Subject: Re: [Openvpn-devel] [PATCH 4/5] Android platform specific changes.
+Date: Fri, 26 Apr 2013 21:54:04 +0200
+Message-Id: <1367006045-13576-2-git-send-email-arne@...1227...>
+In-Reply-To: <1367006045-13576-1-git-send-email-arne@...1227...>
+References: <1367006045-13576-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [[Patch v3] 2/3] add ability to send/receive file
+	descriptors via management interface,
+	only used in android so. For now under #ifdef ANDROID
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,204 +14,144 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Dies ist eine kryptografisch unterzeichnete Nachricht im MIME-Format.
+---
+ src/openvpn/manage.c |   87 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/openvpn/manage.h |    4 +++
+ 2 files changed, 91 insertions(+)
 
---------------ms070906070705020200000105
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: quoted-printable
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 0a4542a..80c469e 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -1779,6 +1779,78 @@ man_io_error (struct management *man, const char *prefix)
+     return false;
+ }
+ 
++#ifdef TARGET_ANDROID
++static ssize_t man_send_with_fd (int fd, void *ptr, size_t nbytes, int flags, int sendfd)
++{
++  struct msghdr msg;
++  struct iovec iov[1];
++    
++  union {
++    struct cmsghdr cm;
++    char    control[CMSG_SPACE(sizeof(int))];
++  } control_un;
++  struct cmsghdr *cmptr;
++    
++  msg.msg_control = control_un.control;
++  msg.msg_controllen = sizeof(control_un.control);
++    
++  cmptr = CMSG_FIRSTHDR(&msg);
++  cmptr->cmsg_len = CMSG_LEN(sizeof(int));
++  cmptr->cmsg_level = SOL_SOCKET;
++  cmptr->cmsg_type = SCM_RIGHTS;
++  *((int *) CMSG_DATA(cmptr)) = sendfd;
++    
++  msg.msg_name = NULL;
++  msg.msg_namelen = 0;
++    
++  iov[0].iov_base = ptr;
++  iov[0].iov_len = nbytes;
++  msg.msg_iov = iov;
++  msg.msg_iovlen = 1;
++    
++  return (sendmsg(fd, &msg, flags));
++}
++
++static ssize_t man_recv_with_fd (int fd, void *ptr, size_t nbytes, int flags, int *recvfd)
++{
++  struct msghdr msghdr;
++  struct iovec iov[1];
++  ssize_t n;
++    
++  union {
++    struct cmsghdr cm;
++    char     control[CMSG_SPACE(sizeof (int))];
++  } control_un;
++  struct cmsghdr  *cmptr;
++    
++  msghdr.msg_control  = control_un.control;
++  msghdr.msg_controllen = sizeof(control_un.control);
++    
++  msghdr.msg_name = NULL;
++  msghdr.msg_namelen = 0;
++    
++  iov[0].iov_base = ptr;
++  iov[0].iov_len = nbytes;
++  msghdr.msg_iov = iov;
++  msghdr.msg_iovlen = 1;
++    
++  if ( (n = recvmsg(fd, &msghdr, flags)) <= 0)
++    return (n);
++    
++  if ( (cmptr = CMSG_FIRSTHDR(&msghdr)) != NULL &&
++       cmptr->cmsg_len == CMSG_LEN(sizeof(int))) {
++    if (cmptr->cmsg_level != SOL_SOCKET)
++      msg (M_ERR, "control level != SOL_SOCKET");
++    if (cmptr->cmsg_type != SCM_RIGHTS)
++      msg (M_ERR, "control type != SCM_RIGHTS");
++    *recvfd = *((int *) CMSG_DATA(cmptr));
++  } else
++    *recvfd = -1;           /* descriptor was not passed */
++    
++  return (n);
++}
++#endif
++
+ static int
+ man_read (struct management *man)
+ {
+@@ -1788,7 +1860,15 @@ man_read (struct management *man)
+   unsigned char buf[256];
+   int len = 0;
+ 
++#ifdef TARGET_ANDROID
++  int fd;
++  len = man_recv_with_fd (man->connection.sd_cli, buf, sizeof (buf), MSG_NOSIGNAL, &fd);
++  if(fd >= 0) 
++     man->connection.lastfdreceived = fd;
++#else
+   len = recv (man->connection.sd_cli, buf, sizeof (buf), MSG_NOSIGNAL);
++#endif
++
+   if (len == 0)
+     {
+       man_reset_client_socket (man, false);
+@@ -1865,6 +1945,13 @@ man_write (struct management *man)
+   if (buf && BLEN (buf))
+     {
+       const int len = min_int (size_hint, BLEN (buf));
++#ifdef TARGET_ANDROID
++      if (man->connection.fdtosend > 0) 
++        {
++         sent = man_send_with_fd (man->connection.sd_cli, BPTR (buf), len, MSG_NOSIGNAL,man->connection.fdtosend);
++            man->connection.fdtosend = -1;
++        } else
++#endif
+       sent = send (man->connection.sd_cli, BPTR (buf), len, MSG_NOSIGNAL);
+       if (sent >= 0)
+ 	{
+diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
+index 28da69f..f5d776e 100644
+--- a/src/openvpn/manage.h
++++ b/src/openvpn/manage.h
+@@ -299,6 +299,10 @@ struct man_connection {
+ #ifdef MANAGMENT_EXTERNAL_KEY
+   struct buffer_list *rsa_sig;
+ #endif
++#ifdef TARGET_ANDROID
++  int fdtosend;
++  int lastfdreceived;
++#endif
+ };
+ 
+ struct management
+-- 
+1.7.9.5
 
-Am 25.04.13 20:56, schrieb Gert Doering:
-> Hi,
->
-> On Sat, Apr 20, 2013 at 04:22:47PM +0200, Arne Schwabe wrote:
->> index 05c6da2..9fdfd88 100644
->> --- a/src/openvpn/options.c
->> +++ b/src/openvpn/options.c
->> @@ -1125,7 +1125,9 @@ show_tuntap_options (const struct tuntap_options *=
-o)
->>   }
->>=20=20=20
->>   #endif
->> +#endif
->>=20=20=20
->> +#if defined(WIN32) || defined(TARGET_ANDROID)
->>   static void
->>   dhcp_option_address_parse (const char *name, const char *parm, in_addr=
-_t *array, int *len, int msglevel)
-> I'm not sure if I understand these bits, will have to look at the patched
-> result.  It looks a bit confusing why there would be anything you need
-> to have "on WIN32 and Android, and nowhere else".
-The dhcp-options are only parsed currently if OpenVPN is compiled for=20
-windows. Since I want to support dhcp-options dns I need to enable these=20
-options. The  tt->options.domain and tt->dns options which are used to=20
-pass DNS/Domain via management interface are only available when these=20
-options are parsed.
->
->> +#elif defined (TARGET_ANDROID)
->> +
->> +    struct user_pass up;
->> +    struct buffer out =3D alloc_buf_gc (64, &gc);
->> +
->> +    buf_printf (&out, "%s %s", network, netmask);
->> +
->> +    strcpy(up.username, buf_bptr(&out));
->> +    management_query_user_pass(management, &up , "ROUTE", GET_USER_PASS=
-_NEED_OK,(void*) 0);
->> +
->> +
-> But this is what I want to comment on.  I can see what you're doing, and
-> I'm fine with that - but I strongly don't like the resulting code - what
-> do you think about hiding this behind a wrapper
->
->    management_android_control( management, buf_bptr(&out), "ROUTE" );
->
-> or such, which takes a "char *" or a "struct buffer *", and does the
-> same thing internally?  Having "struct user_pass" all over the code,
-> using it as a generic "transport this string to the management interface"
-> container will mightily confuse people looking for "ok, so what is this
-> code doing, and what does it have to do with username and password
-> queries on the management interface"?
-That is a good idea. I will update the patch with that.
->> +#elif defined(TARGET_ANDROID)
->> +  msg (M_NONFATAL, "Sorry, deleting routes on Android is not possible. =
-The VpnService API allows routes to be set on connect only.");
-> For this message, I'm wondering how useful it is.  Isn't this printed on
-> *every* disconnect?
->
-> [..]
-Hm I could go for a better warning message. But this message not shown=20
-that often iirc. Have to check the code again. It over one year since I=20
-wrote that part :)
->> +    if(tt->options.domain) {
->> +        strcpy(up.username , tt->options.domain);
->> +        management_query_user_pass(management, &up , "DNSDOMAIN", GET_U=
-SER_PASS_NEED_OK,(void*) 0);
->> +    }
-> The wrapper mentioned above could even have a check for "if the pointer
-> is NULL, silently don't do anything", so this would collapse to
->
->    management_android_control( management, tt->options.domain, "DNSDOMAIN=
-" );
->
-> "just sayin'" :-)
->
->
-I will look into it.
-
-Arne
-
-
---------------ms070906070705020200000105
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Kryptografische Unterschrift
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIP5DCC
-BCEwggMJoAMCAQICAgDHMA0GCSqGSIb3DQEBBQUAMHExCzAJBgNVBAYTAkRFMRwwGgYDVQQK
-ExNEZXV0c2NoZSBUZWxla29tIEFHMR8wHQYDVQQLExZULVRlbGVTZWMgVHJ1c3QgQ2VudGVy
-MSMwIQYDVQQDExpEZXV0c2NoZSBUZWxla29tIFJvb3QgQ0EgMjAeFw0wNjEyMTkxMDI5MDBa
-Fw0xOTA2MzAyMzU5MDBaMFoxCzAJBgNVBAYTAkRFMRMwEQYDVQQKEwpERk4tVmVyZWluMRAw
-DgYDVQQLEwdERk4tUEtJMSQwIgYDVQQDExtERk4tVmVyZWluIFBDQSBHbG9iYWwgLSBHMDEw
-ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDpm8NnhfkNrvWNVMOWUDU9YuluTO2U
-1wBblSJ01CDrNI/W7MAxBAuZgeKmFNJSoCgjhIt0iQReW+DieMF4yxbLKDU5ey2QRdDtoAB6
-fL9KDhsAw4bpXCsxEXsM84IkQ4wcOItqaACa7txPeKvSxhObdq3u3ibo7wGvdA/BCaL2a869
-080UME/15eOkyGKbghoDJzANAmVgTe3RCSMqljVYJ9N2xnG2kB3E7f81hn1vM7PbD8URwoqD
-oZRdQWvY0hD1TP3KUazZve+Sg7va64sWVlZDz+HVEz2mHycwzUlU28kTNJpxdcVs6qcLmPkh
-nSevPqM5OUhqjK3JmfvDEvK9AgMBAAGjgdkwgdYwcAYDVR0fBGkwZzBloGOgYYZfaHR0cDov
-L3BraS50ZWxlc2VjLmRlL2NnaS1iaW4vc2VydmljZS9hZl9Eb3dubG9hZEFSTC5jcmw/LWNy
-bF9mb3JtYXQ9WF81MDkmLWlzc3Vlcj1EVF9ST09UX0NBXzIwHQYDVR0OBBYEFEm3xs/oPR9/
-6kR7Eyn38QpwPt5kMB8GA1UdIwQYMBaAFDHDeRu69VPXF+CJei0XbAqzK50zMA4GA1UdDwEB
-/wQEAwIBBjASBgNVHRMBAf8ECDAGAQH/AgECMA0GCSqGSIb3DQEBBQUAA4IBAQA74Vp3wEgX
-3KkY7IGvWonwvSiSpspZGBJw7Cjy565/lizn8l0ZMfYTK3S9vYCyufdnyTmieTvhERHua3iR
-M347XyYndVNljjNj7s9zw7CSI0khUHUjoR8Y4pSFPT8z6XcgjaK95qGFKUD2P3MyWA0Ja6ba
-hWzAP7uNZmRWJE6uDT8yNQFb6YyC2XJZT7GGhfF0hVblw/hc843uR7NTBXDn5U2KaYMo4RMJ
-hp5eyOpYHgwf+aTUWgRo/Sg+iwK2WLX2oSw3VwBnqyNojWOl75lrXP1LVvarQIc01BGSbOyH
-xQoLBzNytG8MHVQs2FHHzL8w00Ny8TK/jM5JY6gA9/IcMIIFTjCCBDagAwIBAgIEC4nvvjAN
-BgkqhkiG9w0BAQUFADBaMQswCQYDVQQGEwJERTETMBEGA1UEChMKREZOLVZlcmVpbjEQMA4G
-A1UECxMHREZOLVBLSTEkMCIGA1UEAxMbREZOLVZlcmVpbiBQQ0EgR2xvYmFsIC0gRzAxMB4X
-DTA3MTIyMDEzNDYyNFoXDTE5MDYzMDAwMDAwMFowgb4xCzAJBgNVBAYTAkRFMR8wHQYDVQQK
-ExZVbml2ZXJzaXRhZXQgUGFkZXJib3JuMUAwPgYDVQQLEzdJTVQgKFplbnRydW0gZnVlciBJ
-bmZvcm1hdGlvbnMtIHVuZCBNZWRpZW50ZWNobm9sb2dpZW4pMSgwJgYDVQQDEx9Vbml2ZXJz
-aXRhZXQgUGFkZXJib3JuIENBIC0gRzAxMSIwIAYJKoZIhvcNAQkBFhNjYUB1bmktcGFkZXJi
-b3JuLmRlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApyEfhJPUiCaLTtclTNlw
-rHd4MT4ygOzcUD7zDRElXdILoAEQeUs9qpMZDpPXLeSK6DNukMnURrCRUIr+lYX/kmT6ompB
-GMJgDepewHa97XS3uvE46NW2V8OdIiNddYIoDa8ZRd9lwIsnVWl9QaM9f7l5dhrSQT6ogboy
-byOqJcmb+hlxgQcMWdLzZsOXRkldl5YXUCvC6zbulszlqMt5hPjsQmbQu0nInJmNwUrYCw9c
-ctS2i0m9LaVwZxSov16/eQAJOM7bDV9CpZicgCkHACP5paKvlukP9glkvfNdS54grkPmGFNp
-uIc13W6pL1+8nTp03AlyW/GU2zsnX5pWdwIDAQABo4IBtTCCAbEwEgYDVR0TAQH/BAgwBgEB
-/wIBATALBgNVHQ8EBAMCAQYwHQYDVR0OBBYEFIHPTJq8rw/LvuzgIidOKe+uMMUeMB8GA1Ud
-IwQYMBaAFEm3xs/oPR9/6kR7Eyn38QpwPt5kMB4GA1UdEQQXMBWBE2NhQHVuaS1wYWRlcmJv
-cm4uZGUwgYgGA1UdHwSBgDB+MD2gO6A5hjdodHRwOi8vY2RwMS5wY2EuZGZuLmRlL2dsb2Jh
-bC1yb290LWNhL3B1Yi9jcmwvY2FjcmwuY3JsMD2gO6A5hjdodHRwOi8vY2RwMi5wY2EuZGZu
-LmRlL2dsb2JhbC1yb290LWNhL3B1Yi9jcmwvY2FjcmwuY3JsMIGiBggrBgEFBQcBAQSBlTCB
-kjBHBggrBgEFBQcwAoY7aHR0cDovL2NkcDEucGNhLmRmbi5kZS9nbG9iYWwtcm9vdC1jYS9w
-dWIvY2FjZXJ0L2NhY2VydC5jcnQwRwYIKwYBBQUHMAKGO2h0dHA6Ly9jZHAyLnBjYS5kZm4u
-ZGUvZ2xvYmFsLXJvb3QtY2EvcHViL2NhY2VydC9jYWNlcnQuY3J0MA0GCSqGSIb3DQEBBQUA
-A4IBAQAaomheE7QGeiZFxhmjRI97H/eQUUjp2RL2N4BQmulz56nwTFfgGN1v9kJmBuM2se7F
-TSfQ0ZsKYJhZYwZYCb4Ob57h5zpsyMtZhWqz6n5+ewT/Wl7jc6sLGl3zquMZRfS1N3nIOWsN
-rAZz4lxpjcOJwQHQevWpJT2NxTHHtHKA83QWLFAFs65ZIVAVxqYlRd9Yrr/ljK42ZzEaZgg8
-vSqDzHOwvWX5m3apWe3ZW+2eqjDGZxwfWnWBMSGYN0QIFdaZLR1JbILLfYYHyAUixHUFA+76
-2E9gufC2CySlXhNSPRTwqwPQIDTFDi2VIsafaivs7kVKPaKSq1Dh6SDfV2raMIIGaTCCBVGg
-AwIBAgIEES7tRDANBgkqhkiG9w0BAQUFADCBvjELMAkGA1UEBhMCREUxHzAdBgNVBAoTFlVu
-aXZlcnNpdGFldCBQYWRlcmJvcm4xQDA+BgNVBAsTN0lNVCAoWmVudHJ1bSBmdWVyIEluZm9y
-bWF0aW9ucy0gdW5kIE1lZGllbnRlY2hub2xvZ2llbikxKDAmBgNVBAMTH1VuaXZlcnNpdGFl
-dCBQYWRlcmJvcm4gQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2NhQHVuaS1wYWRlcmJvcm4u
-ZGUwHhcNMTAxMjIwMTUwMTA5WhcNMTMxMjE5MTUwMTA5WjBFMQswCQYDVQQGEwJERTEfMB0G
-A1UEChMWVW5pdmVyc2l0YWV0IFBhZGVyYm9ybjEVMBMGA1UEAxMMQXJuZSBTY2h3YWJlMIIC
-IjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAnPJmVFDViSIHhAokNLoZ4oFd0W4hFiC4
-KopjqHhHEBynYMD56GYnxXm5ie4ngil1e69r02M6eyB1VIhRPFRSqD3ejVHRdNLKnEzWgAbT
-o0Kkr2s7P1iPe8Cj55mSuOxplxcsxL8jU0U/ENtIaIEaI7sVlmYBmCT0fGfrpUcRj21ucDx9
-zw1CJN6VEUmlLtvDzscJg3bUvttbxA+IMUDMTd0nUgLy5lNAg17f3QUc7SrXj8QItjPGjOU3
-EnIka1D2ak+FT12j2GWVpbqkV2Pfow6fePda19xcjFs1A3MsfU4ouTfJ5Xx6OBM1/BRwB0Sg
-79LcmCRtWjGkN7boXmxi5MUXMl96l7UzGEy49O39Ct41N96T4bJDqRKFaUcZVVvW7pBX+rVd
-JrXXstiJ1HYGKU2yOgiqoLNIbhn1i3JoFP1SRSEYJb1okeL9Ewr0SoyM/suVuGg5YnMLHOjn
-oH3XzMM0vRdEk7F1KaJvcvPDe/5fAAaOokjOIdOFwwhJkvOF/P1oS1RzvmTzwXTvojBbWZnr
-+eL+zwTUVpOwJ+rfLdJzw+ER18RbpH/TPzOszvAAuTxZAQdEE+SOlk2aDIHs+eFYsk6QBh1b
-jqOMDhlmElVROTv+w260iVGfcq4fTt1C8vzMcRx95y5rR5+GVQpGJb5WlZlbo3o/FCxClvt7
-3SUCAwEAAaOCAeUwggHhMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgXgMCkGA1UdJQQiMCAGCCsG
-AQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAjAdBgNVHQ4EFgQUWh2256whSHo0mgJ5hvYj
-UacnOekwHwYDVR0jBBgwFoAUgc9MmryvD8u+7OAiJ04p764wxR4wIwYDVR0RBBwwGoEYc2No
-d2FiZUB1bmktcGFkZXJib3JuLmRlMIGNBgNVHR8EgYUwgYIwP6A9oDuGOWh0dHA6Ly9jZHAx
-LnBjYS5kZm4uZGUvdW5pLXBhZGVyYm9ybi1jYS9wdWIvY3JsL2NhY3JsLmNybDA/oD2gO4Y5
-aHR0cDovL2NkcDIucGNhLmRmbi5kZS91bmktcGFkZXJib3JuLWNhL3B1Yi9jcmwvY2Fjcmwu
-Y3JsMIGmBggrBgEFBQcBAQSBmTCBljBJBggrBgEFBQcwAoY9aHR0cDovL2NkcDEucGNhLmRm
-bi5kZS91bmktcGFkZXJib3JuLWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDBJBggrBgEFBQcw
-AoY9aHR0cDovL2NkcDIucGNhLmRmbi5kZS91bmktcGFkZXJib3JuLWNhL3B1Yi9jYWNlcnQv
-Y2FjZXJ0LmNydDANBgkqhkiG9w0BAQUFAAOCAQEAgaSs5nrXX49tNOF1ISWT4U4yEpbkiXBu
-1YmhBUz+zLFWvh8uNlfllgMZqVV94ftgyizWOesc+vxL0ulNmdXhOAB+zSyT2qgQ9vv9GSV8
-cgkEGMrwMpyJQksI/UvdZ1+SyUxpW2mSMm/N6y3QVefv6HajWju63tGXAXX1ohsxfisWQC7h
-51dnhLVwTf5yVEbl0uoLv236V0IlhoPcVMaNiLv9W5P13vwYLMRxhzvgQPAB8GwyQ4X2k9tS
-naLB/AXfOZpvPx0XvpW5+dY9Lyo7EJFYMl+S0WMsD4XEj18VJWmTrvIO7ZGhU1En8+9OEwjZ
-NlrBHSSoHZ8AtjaqRf+DwTGCBXYwggVyAgEBMIHHMIG+MQswCQYDVQQGEwJERTEfMB0GA1UE
-ChMWVW5pdmVyc2l0YWV0IFBhZGVyYm9ybjFAMD4GA1UECxM3SU1UIChaZW50cnVtIGZ1ZXIg
-SW5mb3JtYXRpb25zLSB1bmQgTWVkaWVudGVjaG5vbG9naWVuKTEoMCYGA1UEAxMfVW5pdmVy
-c2l0YWV0IFBhZGVyYm9ybiBDQSAtIEcwMTEiMCAGCSqGSIb3DQEJARYTY2FAdW5pLXBhZGVy
-Ym9ybi5kZQIEES7tRDAJBgUrDgMCGgUAoIICgzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
-MBwGCSqGSIb3DQEJBTEPFw0xMzA0MjUyMTE2MzRaMCMGCSqGSIb3DQEJBDEWBBSmrc5Nk3nR
-XkzB6TJ/qdNTqz/cIzBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQME
-AQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIH
-MA0GCCqGSIb3DQMCAgEoMIHYBgkrBgEEAYI3EAQxgcowgccwgb4xCzAJBgNVBAYTAkRFMR8w
-HQYDVQQKExZVbml2ZXJzaXRhZXQgUGFkZXJib3JuMUAwPgYDVQQLEzdJTVQgKFplbnRydW0g
-ZnVlciBJbmZvcm1hdGlvbnMtIHVuZCBNZWRpZW50ZWNobm9sb2dpZW4pMSgwJgYDVQQDEx9V
-bml2ZXJzaXRhZXQgUGFkZXJib3JuIENBIC0gRzAxMSIwIAYJKoZIhvcNAQkBFhNjYUB1bmkt
-cGFkZXJib3JuLmRlAgQRLu1EMIHaBgsqhkiG9w0BCRACCzGByqCBxzCBvjELMAkGA1UEBhMC
-REUxHzAdBgNVBAoTFlVuaXZlcnNpdGFldCBQYWRlcmJvcm4xQDA+BgNVBAsTN0lNVCAoWmVu
-dHJ1bSBmdWVyIEluZm9ybWF0aW9ucy0gdW5kIE1lZGllbnRlY2hub2xvZ2llbikxKDAmBgNV
-BAMTH1VuaXZlcnNpdGFldCBQYWRlcmJvcm4gQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2Nh
-QHVuaS1wYWRlcmJvcm4uZGUCBBEu7UQwDQYJKoZIhvcNAQEBBQAEggIAXHbdNvH1+ab5etU2
-fR7R5rvBA3FxU49fXMqI2+EjAoH0Xm15kRPN+Ceps95tuoung7JpmGeTy6dI7L2CONsAgEz8
-e3XZf2uHyCjo1w/+K0oIIvdycfSAlrNBgUGTuXxJfaKbkUipOYzOywvnJE7Z1Gz3D3zVtAeJ
-qPTgaqf9T84iEGJn9JLLXMlhNIZq2y0tyA6ZtHL1QNoezUuVx8UwINKHsw2kxj6sr4Jpjamp
-Z36s45FeaEj9nLNBlw5bPMW4chJzjkL6uhxlwLaSZ7KCkui6Czxcn4o7dwXFG8mI7xtehxgD
-hgBjUWYyquYipa+Z0yF21wiFT8pvvrLiSv4iXqsimOS0EfYIe8uuvJ94arNsh3BbjtH6eYNb
-3/aApJHbsFuiOgbVI7sfAkwNhVv5OYKmukhjGEvtL53jGPdZpvmR8yBOGGChdqtz3wNxjOxO
-aEJsc0OafV7VFAmGIbEAeJ8vc7KuGg4Qn4cIcYB+SbbOMx+c6eZOKO5O3fGziFTPg4qJCozW
-uooyTm0DvYNJxq0EERnmgBLZUMlRSn5kxYnKPo1G1Ag9I0nlbr3eNozxZ3uiDbeD/NM3NIvj
-vTbG2UY24Hi25I3LS8AAEZ1hjtBSDDZ1fplUZQ0XZx8dYhiFuWzg1TXlOGes1sTxDed8A+iV
-Je44WsEKUrqOtyEH6G4AAAAAAAA=
---------------ms070906070705020200000105--
 
