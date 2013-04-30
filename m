@@ -1,15 +1,14 @@
-Message-ID: <5180085E.5000005@...1114...>
-Date: Tue, 30 Apr 2013 20:07:26 +0200
+Message-ID: <518009BA.4010407@...1114...>
+Date: Tue, 30 Apr 2013 20:13:14 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <20130428113548.GP20843@...1296...>
-	<1367159509-22556-1-git-send-email-arne@...1227...>
-In-Reply-To: <1367159509-22556-1-git-send-email-arne@...1227...>
+References: <1367006045-13576-1-git-send-email-arne@...1227...>
+	<1367006372-14815-1-git-send-email-arne@...1227...>
+In-Reply-To: <1367006372-14815-1-git-send-email-arne@...1227...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="----enig2KBDNIQMRSMADOUQPURFT"
-Subject: Re: [Openvpn-devel] [Patch v4 3/4] Android platform specific
-	changes.
+	boundary="----enig2LIIFEOXSWBQESGDPNNSU"
+Subject: Re: [Openvpn-devel] [[Patch v3] 4/4] Emulate persist-tun on Android
 Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -23,90 +22,90 @@ To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
-------enig2KBDNIQMRSMADOUQPURFT
+------enig2LIIFEOXSWBQESGDPNNSU
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-On 28/04/13 16:31, Arne Schwabe wrote:
-> On Android 4.0 (TARGET_ANDROID) the real opening of the tun is
-> handled by the (Java) application controlling OpenVPN. Instead of calling
-> ifconfig/route call the management to do the work. When running openvpn
-> as root openvpn should be compiled as TARGET_LINUX
->=20
-> Signed-off-by: Arne Schwabe <arne@...1227...>
+On 26/04/13 21:59, Arne Schwabe wrote:
+> On Android changing the configuration of tun is not possible. So instead =
+of reconfiguring the tun device, open a new tun device and close the old on=
+e if needed
 > ---
->  src/openvpn/manage.c  |   14 ++++++++
->  src/openvpn/manage.h  |    4 +++
->  src/openvpn/options.c |    6 ++++
->  src/openvpn/route.c   |   18 ++++++++--
->  src/openvpn/socket.c  |   10 ++++++
->  src/openvpn/ssl.c     |    2 ++
->  src/openvpn/syshead.h |    2 +-
->  src/openvpn/tun.c     |   87 +++++++++++++++++++++++++++++++++++++++++++=
-++++--
->  src/openvpn/tun.h     |    8 ++++-
->  9 files changed, 145 insertions(+), 6 deletions(-)
-
-[...snip...]
-
-> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-> index a361233..ac8b544 100644
-> --- a/src/openvpn/tun.c
-> +++ b/src/openvpn/tun.c
-[...snip...]
-> @@ -1368,8 +1397,62 @@ close_tun_generic (struct tuntap *tt)
+>  src/openvpn/init.c |   18 +++++++++++++++++-
+>  1 file changed, 17 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+> index f08583b..9ff6600 100644
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -1402,8 +1402,19 @@ do_open_tun (struct context *c)
+>    c->c2.ipv4_tun =3D (!c->options.tun_ipv6
+>  		    && is_dev_type (c->options.dev, c->options.dev_type, "tun"));
 >=20=20
->  #endif
+> +#ifndef TARGET_ANDROID
+>    if (!c->c1.tuntap)
+>      {
+> +#endif
+> +=20=20=20=20=20=20
+> +#ifdef TARGET_ANDROID
+> +      /* If we emulate persist-tun on android we still have to open a ne=
+w tun and
+> +         then close the old */
+> +      int oldtunfd=3D-1;
+> +      if(c->c1.tuntap)
+> +          oldtunfd =3D c->c1.tuntap->fd;
+> +#endif
+> +=20=20=20=20=20=20=20=20
+>        /* initialize (but do not open) tun/tap object */
+>        do_init_tun (c);
 >=20=20
-> -#if defined(TARGET_LINUX)
-> +#if defined (TARGET_ANDROID)
-> +void
-> +open_tun (const char *dev, const char *dev_type, const char *dev_node, s=
-truct tuntap *tt)
-> +{
-> +#define ANDROID_TUNNAME "vpnservice-tun"
-> +  int i;
-> +  struct user_pass up;
-> +  struct gc_arena gc =3D gc_new ();
-> +  bool opentun;
-> +=20=20
-> +  for (i =3D 0; i < tt->options.dns_len; ++i) {
-> +    management_android_control (management, "DNSSERVER",
-> +                                print_in_addr_t(tt->options.dns[i], 0, &=
-gc));
-> +  }
-> +
-> +  if(tt->options.domain)=20
-> +    management_android_control (management, "DNSDOMAIN", tt->options.dom=
-ain);
-> +=20=20=20=20
-> +  opentun =3D management_android_control (management, "OPENTUN", dev);
-> +
-> +  /* Pick up the fd from management interface after calling the OPENTUN =
-command */
-> +  tt->fd =3D management->connection.lastfdreceived;
-> +  management->connection.lastfdreceived=3D-1;
-> +=20=20=20=20
-> +  /* Set the actual name to a dummy name */
-> +  tt->actual_name =3D strdup (ANDROID_TUNNAME);
-
-Just nit-picking ... anything wrong with string_alloc() which is used in
-similar places?  And which can make use of gc (if that is available
-here, didn't check that) and it will do the proper malloc() checks too.
-
-Otherwise, code looks find.  I don't fully understand all the tun magic
-needed on Android, but OpenVPN on Android have been well tested, so I
-would say that should count as well.
+> @@ -1439,7 +1450,10 @@ do_open_tun (struct context *c)
+>        /* open the tun device */
+>        open_tun (c->options.dev, c->options.dev_type, c->options.dev_node,
+>  		c->c1.tuntap);
+> -
+> +#ifdef TARGET_ANDROID
+> +      if(oldtunfd>=3D0)
+> +        close(oldtunfd);
+> +#endif
+>        /* set the hardware address */
+>        if (c->options.lladdr)
+>  	  set_lladdr(c->c1.tuntap->actual_name, c->options.lladdr, c->c2.es);
+> @@ -1481,6 +1495,7 @@ do_open_tun (struct context *c)
+>=20=20
+>        ret =3D true;
+>        static_context =3D c;
+> +#ifndef TARGET_ANDROID
+>      }
+>    else
+>      {
+> @@ -1503,6 +1518,7 @@ do_open_tun (struct context *c)
+>  		     "up",
+>  		     c->c2.es);
+>      }
+> +#endif
+>    gc_free (&gc);
+>    return ret;
+>  }
 
 
---
+There are a few stylish details I could nit-pick on, such as
+
+    if(bool) -> if (bool)
+
+but that's so minor I don't even convinced this makes sense to fix up
+before applying.
+
+So, looks good, code wise.  Not compile tested, only patch review.
+
+
+--=20
 kind regards,
 
 David Sommerseth
 
 
-
-------enig2KBDNIQMRSMADOUQPURFT
+------enig2LIIFEOXSWBQESGDPNNSU
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -115,10 +114,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
 
-iEYEARECAAYFAlGACH4ACgkQDC186MBRfrpHvwCeJDmp+PSwLP5laPGVv6H+BNrP
-sm4AoIDurdT2nNXDrQiRF0Zrz37xgfsE
-=HdVb
+iEYEARECAAYFAlGACboACgkQDC186MBRfrrhaQCgoCoVj3KtM0dbY8fEcqJ49S19
+rBoAoIw7VS17xs64Yqr84WWiZGRVNOJJ
+=6QLr
 -----END PGP SIGNATURE-----
 
-------enig2KBDNIQMRSMADOUQPURFT--
+------enig2LIIFEOXSWBQESGDPNNSU--
 
