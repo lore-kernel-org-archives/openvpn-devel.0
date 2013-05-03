@@ -1,14 +1,10 @@
-Date: Fri, 3 May 2013 11:58:32 +0200
+Date: Fri, 3 May 2013 17:11:07 +0200
+Message-Id: <201305031511.r43FB7xZ032608@...1729...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20130503095831.GV20843@...1296...>
-References: <klul5d$8ta$1@...1062...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="iJXiJc/TAIT2rh2r"
-Content-Disposition: inline
 In-Reply-To: <klul5d$8ta$1@...1062...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix proto tcp6 for server & non-P2MP
-	modes
+References: <klul5d$8ta$1@...1062...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix proto tcp6 for server &
+	non-P2MP modes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,45 +13,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: Josh Cepek <josh.cepek@...1085...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---iJXiJc/TAIT2rh2r
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Your patch has been applied to the master and release/2.3 branch.
 
-Hi,
+commit d0ccb982e1714c8dfefd6eacf0c6f899eb71b582 (master)
+commit 4b22e86d1b7efb6778f169d10f0987485e70549d (release/2.3)
 
-On Thu, May 02, 2013 at 04:17:37PM -0500, Josh Cepek wrote:
-> This fix adds support for using tcp6 as a proto in server or non-P2MP
-> modes, resolving a failed ASSERT in such cases.
+Author: Josh Cepek
+Date:   Thu May 2 16:17:37 2013 -0500
 
-ACK, thanks for the patch.  Will apply to master and 2.3 branch ASAP
-(with the understanding that the master/2.4 branch will eventually get
-Arne's dual-stack patches, which make this whole mess moot).
+     Fix proto tcp6 for server & non-P2MP modes
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+     Signed-off-by: Josh Cepek <josh.cepek@...1085...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <klul5d$8ta$1@...1062...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/7578
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---iJXiJc/TAIT2rh2r
-Content-Type: application/pgp-signature
-Content-Disposition: inline
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
+--
+kind regards,
 
-iQCVAwUBUYOKR6kuBuNlUUl1AQJRGAQAqJ3PZ7LTNl/stAGw+WvifMNK16XNkEC6
-Z8ilFqW8Bqa8eltMhm/+qDsz7NVcukSlDgewso3T3FhKow4C1mzmT+3n/Ei1xKMI
-28krfBtXxX29+vdUf90I8VCfvAFuV1TYrIeRW3wHu1E8TgaE+k8FUyMHwSzo6Yv7
-Psqgvu6kr/4=
-=Upr2
------END PGP SIGNATURE-----
+Gert Doering
 
---iJXiJc/TAIT2rh2r--
 
