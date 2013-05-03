@@ -1,8 +1,14 @@
-From: Josh Cepek <josh.cepek@...1085...>
-Date: Thu, 02 May 2013 16:17:37 -0500
-Message-ID: <klul5d$8ta$1@...1062...>
+Date: Fri, 3 May 2013 11:58:32 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20130503095831.GV20843@...1296...>
+References: <klul5d$8ta$1@...1062...>
 Mime-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix proto tcp6 for server & non-P2MP modes
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="iJXiJc/TAIT2rh2r"
+Content-Disposition: inline
+In-Reply-To: <klul5d$8ta$1@...1062...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix proto tcp6 for server & non-P2MP
+	modes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,41 +17,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Josh Cepek <josh.cepek@...1085...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This fix adds support for using tcp6 as a proto in server or non-P2MP
-modes, resolving a failed ASSERT in such cases.
+--iJXiJc/TAIT2rh2r
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Signed-off-by: Josh Cepek <josh.cepek@...1085...>
----
- src/openvpn/options.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Hi,
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 05c6da2..c86f795 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -1833,6 +1833,8 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
-    */
-   if (ce->proto == PROTO_TCPv4)
-     msg (M_USAGE, "--proto tcp is ambiguous in this context.  Please specify --proto tcp-server or --proto tcp-client");
-+  if (ce->proto == PROTO_TCPv6)
-+    msg (M_USAGE, "--proto tcp6 is ambiguous in this context.  Please specify --proto tcp6-server or --proto tcp6-client");
+On Thu, May 02, 2013 at 04:17:37PM -0500, Josh Cepek wrote:
+> This fix adds support for using tcp6 as a proto in server or non-P2MP
+> modes, resolving a failed ASSERT in such cases.
 
-   /*
-    * Sanity check on daemon/inetd modes
-@@ -2355,6 +2357,8 @@ options_postprocess_mutate_ce (struct options *o, struct connection_entry *ce)
-     {
-       if (ce->proto == PROTO_TCPv4)
-        ce->proto = PROTO_TCPv4_SERVER;
-+      else if (ce->proto == PROTO_TCPv6)
-+       ce->proto = PROTO_TCPv6_SERVER;
-     }
- #endif
- #if P2MP
---
-1.8.1.5
+ACK, thanks for the patch.  Will apply to master and 2.3 branch ASAP
+(with the understanding that the master/2.4 branch will eventually get
+Arne's dual-stack patches, which make this whole mess moot).
 
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--iJXiJc/TAIT2rh2r
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBUYOKR6kuBuNlUUl1AQJRGAQAqJ3PZ7LTNl/stAGw+WvifMNK16XNkEC6
+Z8ilFqW8Bqa8eltMhm/+qDsz7NVcukSlDgewso3T3FhKow4C1mzmT+3n/Ei1xKMI
+28krfBtXxX29+vdUf90I8VCfvAFuV1TYrIeRW3wHu1E8TgaE+k8FUyMHwSzo6Yv7
+Psqgvu6kr/4=
+=Upr2
+-----END PGP SIGNATURE-----
+
+--iJXiJc/TAIT2rh2r--
 
