@@ -1,16 +1,14 @@
-Message-ID: <5188CDD1.1010305@...1114...>
-Date: Tue, 07 May 2013 11:48:01 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <518BA5C9.9030001@...1227...>
+Date: Thu, 09 May 2013 15:34:01 +0200
+From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
-References: <1367759408-16770-1-git-send-email-gert@...1296...>
-	<1367826941-22412-1-git-send-email-gert@...1296...>
-In-Reply-To: <1367826941-22412-1-git-send-email-gert@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="----enig2QIDXFGCLGAVCFISNVFIL"
-Subject: [Openvpn-devel] [PATCH applied] Re: Use constrain_int() instead of
- MIN()+syshead.c compat definition - v2.
-Reply-To: openvpn-users@lists.sourceforge.net
+References: <1366393268-27392-1-git-send-email-gert@...1296...>
+	<1366393268-27392-3-git-send-email-gert@...1296...>
+In-Reply-To: <1366393268-27392-3-git-send-email-gert@...1296...>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature";
+	micalg=sha1; boundary="------------ms010109030204000006060409"
+Subject: Re: [Openvpn-devel] [PATCH 2/5] Added support for the Snappy
+ compression algorithm
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,48 +17,169 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: James Yonan <james@...515...>, openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
-------enig2QIDXFGCLGAVCFISNVFIL
-Content-Type: text/plain; charset="ISO-8859-1"
+Dies ist eine kryptografisch unterzeichnete Nachricht im MIME-Format.
+
+--------------ms010109030204000006060409
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: quoted-printable
 
+Am 19.04.13 19:41, schrieb Gert Doering:
+> From: James Yonan <james@...515...>
+>
+> Added support for the Snappy compression algorithm which has shown to
+> have considerably better compression speed than LZO at a comparable
+> compression ratio.
+>
+> To enable Snappy add:
+>
+>    compress snappy
+>
+> to both client and server config files.
+>
+> Alternatively, enable compression framing on the client:
+>
+>    compress
+>
+> and have the server selectively push "compress snappy" to the client.
+>
+> This change also extends the client capability handshake to include
+> IV_SNAPPY so the server can be aware that a connecting client supports
+> Snappy.
+>
+> Note that the Snappy implementation also includes an improved framing
+> approach where the first byte of the compressed payload is replaced by
+> the compression control byte (the first payload byte is moved to the end
+> of the packet).  This solves off-by-one alignment issues, which improves
+> performance on ARM.
+>
+> By default, the configure script will try to build with Snappy support.
+> To disable, use the --disable-snappy option.
+>
+> The --enable-lzo-stub configure directive is now --enable-comp-stub
+> (because it's not actually "lzo" but "compression-enabled packet framing")
+>
+> Add compression overhead to extra buffer unconditionally, as long
+> as USE_COMP is defined.
 
-Your patch has been applied to the master branch.
+I looked through the patch. I looks reasonable good. I wonder what the=20
+overhead for always enabling USE_COMP is. That way every client would be=20
+able to understand at least the compression framing.
 
-commit bd25aa66b76b82f335abbb7377c278a44da194ac
-Author: Gert Doering
-Date:   Mon May 6 09:55:41 2013 +0200
-
-     Use constrain_int() instead of MIN()+syshead.c compat definition - v2.
-
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: David Sommerseth <davids@...1347...>
-     Message-Id: 1367826941-22412-1-git-send-email-gert@...1296...
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/7586
-     Signed-off-by: David Sommerseth <davids@...1347...>
+Arne
 
 
---=20
-kind regards,
 
-David Sommerseth
+--------------ms010109030204000006060409
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Kryptografische Unterschrift
 
-
-------enig2QIDXFGCLGAVCFISNVFIL
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
-
-iEYEARECAAYFAlGIzdEACgkQDC186MBRfrodHACcDuYnhFWcT9LEsKtSGzp8CDFH
-dY8AnRLYVPDFODsErzlg5Qx4aTRpghol
-=JHXJ
------END PGP SIGNATURE-----
-
-------enig2QIDXFGCLGAVCFISNVFIL--
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIP5DCC
+BCEwggMJoAMCAQICAgDHMA0GCSqGSIb3DQEBBQUAMHExCzAJBgNVBAYTAkRFMRwwGgYDVQQK
+ExNEZXV0c2NoZSBUZWxla29tIEFHMR8wHQYDVQQLExZULVRlbGVTZWMgVHJ1c3QgQ2VudGVy
+MSMwIQYDVQQDExpEZXV0c2NoZSBUZWxla29tIFJvb3QgQ0EgMjAeFw0wNjEyMTkxMDI5MDBa
+Fw0xOTA2MzAyMzU5MDBaMFoxCzAJBgNVBAYTAkRFMRMwEQYDVQQKEwpERk4tVmVyZWluMRAw
+DgYDVQQLEwdERk4tUEtJMSQwIgYDVQQDExtERk4tVmVyZWluIFBDQSBHbG9iYWwgLSBHMDEw
+ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDpm8NnhfkNrvWNVMOWUDU9YuluTO2U
+1wBblSJ01CDrNI/W7MAxBAuZgeKmFNJSoCgjhIt0iQReW+DieMF4yxbLKDU5ey2QRdDtoAB6
+fL9KDhsAw4bpXCsxEXsM84IkQ4wcOItqaACa7txPeKvSxhObdq3u3ibo7wGvdA/BCaL2a869
+080UME/15eOkyGKbghoDJzANAmVgTe3RCSMqljVYJ9N2xnG2kB3E7f81hn1vM7PbD8URwoqD
+oZRdQWvY0hD1TP3KUazZve+Sg7va64sWVlZDz+HVEz2mHycwzUlU28kTNJpxdcVs6qcLmPkh
+nSevPqM5OUhqjK3JmfvDEvK9AgMBAAGjgdkwgdYwcAYDVR0fBGkwZzBloGOgYYZfaHR0cDov
+L3BraS50ZWxlc2VjLmRlL2NnaS1iaW4vc2VydmljZS9hZl9Eb3dubG9hZEFSTC5jcmw/LWNy
+bF9mb3JtYXQ9WF81MDkmLWlzc3Vlcj1EVF9ST09UX0NBXzIwHQYDVR0OBBYEFEm3xs/oPR9/
+6kR7Eyn38QpwPt5kMB8GA1UdIwQYMBaAFDHDeRu69VPXF+CJei0XbAqzK50zMA4GA1UdDwEB
+/wQEAwIBBjASBgNVHRMBAf8ECDAGAQH/AgECMA0GCSqGSIb3DQEBBQUAA4IBAQA74Vp3wEgX
+3KkY7IGvWonwvSiSpspZGBJw7Cjy565/lizn8l0ZMfYTK3S9vYCyufdnyTmieTvhERHua3iR
+M347XyYndVNljjNj7s9zw7CSI0khUHUjoR8Y4pSFPT8z6XcgjaK95qGFKUD2P3MyWA0Ja6ba
+hWzAP7uNZmRWJE6uDT8yNQFb6YyC2XJZT7GGhfF0hVblw/hc843uR7NTBXDn5U2KaYMo4RMJ
+hp5eyOpYHgwf+aTUWgRo/Sg+iwK2WLX2oSw3VwBnqyNojWOl75lrXP1LVvarQIc01BGSbOyH
+xQoLBzNytG8MHVQs2FHHzL8w00Ny8TK/jM5JY6gA9/IcMIIFTjCCBDagAwIBAgIEC4nvvjAN
+BgkqhkiG9w0BAQUFADBaMQswCQYDVQQGEwJERTETMBEGA1UEChMKREZOLVZlcmVpbjEQMA4G
+A1UECxMHREZOLVBLSTEkMCIGA1UEAxMbREZOLVZlcmVpbiBQQ0EgR2xvYmFsIC0gRzAxMB4X
+DTA3MTIyMDEzNDYyNFoXDTE5MDYzMDAwMDAwMFowgb4xCzAJBgNVBAYTAkRFMR8wHQYDVQQK
+ExZVbml2ZXJzaXRhZXQgUGFkZXJib3JuMUAwPgYDVQQLEzdJTVQgKFplbnRydW0gZnVlciBJ
+bmZvcm1hdGlvbnMtIHVuZCBNZWRpZW50ZWNobm9sb2dpZW4pMSgwJgYDVQQDEx9Vbml2ZXJz
+aXRhZXQgUGFkZXJib3JuIENBIC0gRzAxMSIwIAYJKoZIhvcNAQkBFhNjYUB1bmktcGFkZXJi
+b3JuLmRlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApyEfhJPUiCaLTtclTNlw
+rHd4MT4ygOzcUD7zDRElXdILoAEQeUs9qpMZDpPXLeSK6DNukMnURrCRUIr+lYX/kmT6ompB
+GMJgDepewHa97XS3uvE46NW2V8OdIiNddYIoDa8ZRd9lwIsnVWl9QaM9f7l5dhrSQT6ogboy
+byOqJcmb+hlxgQcMWdLzZsOXRkldl5YXUCvC6zbulszlqMt5hPjsQmbQu0nInJmNwUrYCw9c
+ctS2i0m9LaVwZxSov16/eQAJOM7bDV9CpZicgCkHACP5paKvlukP9glkvfNdS54grkPmGFNp
+uIc13W6pL1+8nTp03AlyW/GU2zsnX5pWdwIDAQABo4IBtTCCAbEwEgYDVR0TAQH/BAgwBgEB
+/wIBATALBgNVHQ8EBAMCAQYwHQYDVR0OBBYEFIHPTJq8rw/LvuzgIidOKe+uMMUeMB8GA1Ud
+IwQYMBaAFEm3xs/oPR9/6kR7Eyn38QpwPt5kMB4GA1UdEQQXMBWBE2NhQHVuaS1wYWRlcmJv
+cm4uZGUwgYgGA1UdHwSBgDB+MD2gO6A5hjdodHRwOi8vY2RwMS5wY2EuZGZuLmRlL2dsb2Jh
+bC1yb290LWNhL3B1Yi9jcmwvY2FjcmwuY3JsMD2gO6A5hjdodHRwOi8vY2RwMi5wY2EuZGZu
+LmRlL2dsb2JhbC1yb290LWNhL3B1Yi9jcmwvY2FjcmwuY3JsMIGiBggrBgEFBQcBAQSBlTCB
+kjBHBggrBgEFBQcwAoY7aHR0cDovL2NkcDEucGNhLmRmbi5kZS9nbG9iYWwtcm9vdC1jYS9w
+dWIvY2FjZXJ0L2NhY2VydC5jcnQwRwYIKwYBBQUHMAKGO2h0dHA6Ly9jZHAyLnBjYS5kZm4u
+ZGUvZ2xvYmFsLXJvb3QtY2EvcHViL2NhY2VydC9jYWNlcnQuY3J0MA0GCSqGSIb3DQEBBQUA
+A4IBAQAaomheE7QGeiZFxhmjRI97H/eQUUjp2RL2N4BQmulz56nwTFfgGN1v9kJmBuM2se7F
+TSfQ0ZsKYJhZYwZYCb4Ob57h5zpsyMtZhWqz6n5+ewT/Wl7jc6sLGl3zquMZRfS1N3nIOWsN
+rAZz4lxpjcOJwQHQevWpJT2NxTHHtHKA83QWLFAFs65ZIVAVxqYlRd9Yrr/ljK42ZzEaZgg8
+vSqDzHOwvWX5m3apWe3ZW+2eqjDGZxwfWnWBMSGYN0QIFdaZLR1JbILLfYYHyAUixHUFA+76
+2E9gufC2CySlXhNSPRTwqwPQIDTFDi2VIsafaivs7kVKPaKSq1Dh6SDfV2raMIIGaTCCBVGg
+AwIBAgIEES7tRDANBgkqhkiG9w0BAQUFADCBvjELMAkGA1UEBhMCREUxHzAdBgNVBAoTFlVu
+aXZlcnNpdGFldCBQYWRlcmJvcm4xQDA+BgNVBAsTN0lNVCAoWmVudHJ1bSBmdWVyIEluZm9y
+bWF0aW9ucy0gdW5kIE1lZGllbnRlY2hub2xvZ2llbikxKDAmBgNVBAMTH1VuaXZlcnNpdGFl
+dCBQYWRlcmJvcm4gQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2NhQHVuaS1wYWRlcmJvcm4u
+ZGUwHhcNMTAxMjIwMTUwMTA5WhcNMTMxMjE5MTUwMTA5WjBFMQswCQYDVQQGEwJERTEfMB0G
+A1UEChMWVW5pdmVyc2l0YWV0IFBhZGVyYm9ybjEVMBMGA1UEAxMMQXJuZSBTY2h3YWJlMIIC
+IjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAnPJmVFDViSIHhAokNLoZ4oFd0W4hFiC4
+KopjqHhHEBynYMD56GYnxXm5ie4ngil1e69r02M6eyB1VIhRPFRSqD3ejVHRdNLKnEzWgAbT
+o0Kkr2s7P1iPe8Cj55mSuOxplxcsxL8jU0U/ENtIaIEaI7sVlmYBmCT0fGfrpUcRj21ucDx9
+zw1CJN6VEUmlLtvDzscJg3bUvttbxA+IMUDMTd0nUgLy5lNAg17f3QUc7SrXj8QItjPGjOU3
+EnIka1D2ak+FT12j2GWVpbqkV2Pfow6fePda19xcjFs1A3MsfU4ouTfJ5Xx6OBM1/BRwB0Sg
+79LcmCRtWjGkN7boXmxi5MUXMl96l7UzGEy49O39Ct41N96T4bJDqRKFaUcZVVvW7pBX+rVd
+JrXXstiJ1HYGKU2yOgiqoLNIbhn1i3JoFP1SRSEYJb1okeL9Ewr0SoyM/suVuGg5YnMLHOjn
+oH3XzMM0vRdEk7F1KaJvcvPDe/5fAAaOokjOIdOFwwhJkvOF/P1oS1RzvmTzwXTvojBbWZnr
++eL+zwTUVpOwJ+rfLdJzw+ER18RbpH/TPzOszvAAuTxZAQdEE+SOlk2aDIHs+eFYsk6QBh1b
+jqOMDhlmElVROTv+w260iVGfcq4fTt1C8vzMcRx95y5rR5+GVQpGJb5WlZlbo3o/FCxClvt7
+3SUCAwEAAaOCAeUwggHhMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgXgMCkGA1UdJQQiMCAGCCsG
+AQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAjAdBgNVHQ4EFgQUWh2256whSHo0mgJ5hvYj
+UacnOekwHwYDVR0jBBgwFoAUgc9MmryvD8u+7OAiJ04p764wxR4wIwYDVR0RBBwwGoEYc2No
+d2FiZUB1bmktcGFkZXJib3JuLmRlMIGNBgNVHR8EgYUwgYIwP6A9oDuGOWh0dHA6Ly9jZHAx
+LnBjYS5kZm4uZGUvdW5pLXBhZGVyYm9ybi1jYS9wdWIvY3JsL2NhY3JsLmNybDA/oD2gO4Y5
+aHR0cDovL2NkcDIucGNhLmRmbi5kZS91bmktcGFkZXJib3JuLWNhL3B1Yi9jcmwvY2Fjcmwu
+Y3JsMIGmBggrBgEFBQcBAQSBmTCBljBJBggrBgEFBQcwAoY9aHR0cDovL2NkcDEucGNhLmRm
+bi5kZS91bmktcGFkZXJib3JuLWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDBJBggrBgEFBQcw
+AoY9aHR0cDovL2NkcDIucGNhLmRmbi5kZS91bmktcGFkZXJib3JuLWNhL3B1Yi9jYWNlcnQv
+Y2FjZXJ0LmNydDANBgkqhkiG9w0BAQUFAAOCAQEAgaSs5nrXX49tNOF1ISWT4U4yEpbkiXBu
+1YmhBUz+zLFWvh8uNlfllgMZqVV94ftgyizWOesc+vxL0ulNmdXhOAB+zSyT2qgQ9vv9GSV8
+cgkEGMrwMpyJQksI/UvdZ1+SyUxpW2mSMm/N6y3QVefv6HajWju63tGXAXX1ohsxfisWQC7h
+51dnhLVwTf5yVEbl0uoLv236V0IlhoPcVMaNiLv9W5P13vwYLMRxhzvgQPAB8GwyQ4X2k9tS
+naLB/AXfOZpvPx0XvpW5+dY9Lyo7EJFYMl+S0WMsD4XEj18VJWmTrvIO7ZGhU1En8+9OEwjZ
+NlrBHSSoHZ8AtjaqRf+DwTGCBXYwggVyAgEBMIHHMIG+MQswCQYDVQQGEwJERTEfMB0GA1UE
+ChMWVW5pdmVyc2l0YWV0IFBhZGVyYm9ybjFAMD4GA1UECxM3SU1UIChaZW50cnVtIGZ1ZXIg
+SW5mb3JtYXRpb25zLSB1bmQgTWVkaWVudGVjaG5vbG9naWVuKTEoMCYGA1UEAxMfVW5pdmVy
+c2l0YWV0IFBhZGVyYm9ybiBDQSAtIEcwMTEiMCAGCSqGSIb3DQEJARYTY2FAdW5pLXBhZGVy
+Ym9ybi5kZQIEES7tRDAJBgUrDgMCGgUAoIICgzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
+MBwGCSqGSIb3DQEJBTEPFw0xMzA1MDkxMzM0MDFaMCMGCSqGSIb3DQEJBDEWBBSGg6uToiTh
+Eu4UFezC9TFncH7b+jBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQME
+AQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIH
+MA0GCCqGSIb3DQMCAgEoMIHYBgkrBgEEAYI3EAQxgcowgccwgb4xCzAJBgNVBAYTAkRFMR8w
+HQYDVQQKExZVbml2ZXJzaXRhZXQgUGFkZXJib3JuMUAwPgYDVQQLEzdJTVQgKFplbnRydW0g
+ZnVlciBJbmZvcm1hdGlvbnMtIHVuZCBNZWRpZW50ZWNobm9sb2dpZW4pMSgwJgYDVQQDEx9V
+bml2ZXJzaXRhZXQgUGFkZXJib3JuIENBIC0gRzAxMSIwIAYJKoZIhvcNAQkBFhNjYUB1bmkt
+cGFkZXJib3JuLmRlAgQRLu1EMIHaBgsqhkiG9w0BCRACCzGByqCBxzCBvjELMAkGA1UEBhMC
+REUxHzAdBgNVBAoTFlVuaXZlcnNpdGFldCBQYWRlcmJvcm4xQDA+BgNVBAsTN0lNVCAoWmVu
+dHJ1bSBmdWVyIEluZm9ybWF0aW9ucy0gdW5kIE1lZGllbnRlY2hub2xvZ2llbikxKDAmBgNV
+BAMTH1VuaXZlcnNpdGFldCBQYWRlcmJvcm4gQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2Nh
+QHVuaS1wYWRlcmJvcm4uZGUCBBEu7UQwDQYJKoZIhvcNAQEBBQAEggIAk3kNT70Y3rJvrY3m
+rd3TcBuIY6tVxowV9ycHrRGUK1r915QRDM31lWNC8iav3ZiBB20NxU3HgfTq6yyhFtGUaDpt
+gwn/+dwLtahxIDBmQKaUGX9rCtAQLloznMeHrXjw4nZ1NPOLyEqyMh4IqDzvQq4JoygjCRPy
+CjI7iJwkR6EoGNayyNbXQltqSs1c1fI7cujASDPja7frGzn4pbaJHsgQYEslNdhEcGYP2dv3
+p0p5ksRXdbusVJKLVz2oH3klZM6O7A0+lOdkf/TlU8ouTb3hWfzImomrP6oQdw8KBGFvU0zN
+MR4eZAe/0LKhZfocvxzwpvj94Z/RST0mnURsrBkRfZDvYU1fDpCr4hkTC5gunCtOFVMvq4JD
+T1lPRQMvVL6CND163OzsGQbLgDmKUpH7LEmwv34kVA8GYOuNMajr+EFcrFIncgW5rQzABL4R
+v2vIoMfqO4hl1UE8NCCP93v7/9xNv4hbq5beHqNWU3gSlEq+cB1kb2bv4vcBELov2dzh49Fi
+blffmbKgELMRrtA504KMSq3ZCcAoBkgnwWf6RNqI2F5eeTnGfKzdcyKwos9ivICf8p2u8/rs
+YfFCwI56jfzt5jtvri/ifMVn1yr/A4iW5oF/Odm68lbZMxkG0z1+kF9PXkXWAYAOEDJio65N
+gZlhSeau2njsvncD6ToAAAAAAAA=
+--------------ms010109030204000006060409--
 
