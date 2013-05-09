@@ -1,14 +1,14 @@
-Message-ID: <518BA5C9.9030001@...1227...>
-Date: Thu, 09 May 2013 15:34:01 +0200
+Message-ID: <518BA5FB.2060303@...1227...>
+Date: Thu, 09 May 2013 15:34:51 +0200
 From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
 References: <1366393268-27392-1-git-send-email-gert@...1296...>
-	<1366393268-27392-3-git-send-email-gert@...1296...>
-In-Reply-To: <1366393268-27392-3-git-send-email-gert@...1296...>
+	<1366393268-27392-6-git-send-email-gert@...1296...>
+In-Reply-To: <1366393268-27392-6-git-send-email-gert@...1296...>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature";
-	micalg=sha1; boundary="------------ms010109030204000006060409"
-Subject: Re: [Openvpn-devel] [PATCH 2/5] Added support for the Snappy
- compression algorithm
+	micalg=sha1; boundary="------------ms000406040404040605050302"
+Subject: Re: [Openvpn-devel] [PATCH 5/5] Fix usage of "compression ..." from
+ global config.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,61 +18,28 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Gert Doering <gert@...1296...>
-Cc: James Yonan <james@...515...>, openvpn-devel@lists.sourceforge.net
+Cc: openvpn-devel@lists.sourceforge.net
 
 Dies ist eine kryptografisch unterzeichnete Nachricht im MIME-Format.
 
---------------ms010109030204000006060409
+--------------ms000406040404040605050302
 Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: quoted-printable
 
 Am 19.04.13 19:41, schrieb Gert Doering:
-> From: James Yonan <james@...515...>
+> The new compression framework introduced by SVN r8206 only works for
+> a P2MP server if the compression settings are re-installed for each
+> client via management interface, ccd/ file or client-connect script,
+> but the "global" settings get lost due to (needlessly) clearing the
+> c2.comp_context in the per-client instance.  Fixed.  (also trac#273)
 >
-> Added support for the Snappy compression algorithm which has shown to
-> have considerably better compression speed than LZO at a comparable
-> compression ratio.
 >
-> To enable Snappy add:
->
->    compress snappy
->
-> to both client and server config files.
->
-> Alternatively, enable compression framing on the client:
->
->    compress
->
-> and have the server selectively push "compress snappy" to the client.
->
-> This change also extends the client capability handshake to include
-> IV_SNAPPY so the server can be aware that a connecting client supports
-> Snappy.
->
-> Note that the Snappy implementation also includes an improved framing
-> approach where the first byte of the compressed payload is replaced by
-> the compression control byte (the first payload byte is moved to the end
-> of the packet).  This solves off-by-one alignment issues, which improves
-> performance on ARM.
->
-> By default, the configure script will try to build with Snappy support.
-> To disable, use the --disable-snappy option.
->
-> The --enable-lzo-stub configure directive is now --enable-comp-stub
-> (because it's not actually "lzo" but "compression-enabled packet framing")
->
-> Add compression overhead to extra buffer unconditionally, as long
-> as USE_COMP is defined.
-
-I looked through the patch. I looks reasonable good. I wonder what the=20
-overhead for always enabling USE_COMP is. That way every client would be=20
-able to understand at least the compression framing.
+ACK.
 
 Arne
 
 
-
---------------ms010109030204000006060409
+--------------ms000406040404040605050302
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -159,8 +126,8 @@ ChMWVW5pdmVyc2l0YWV0IFBhZGVyYm9ybjFAMD4GA1UECxM3SU1UIChaZW50cnVtIGZ1ZXIg
 SW5mb3JtYXRpb25zLSB1bmQgTWVkaWVudGVjaG5vbG9naWVuKTEoMCYGA1UEAxMfVW5pdmVy
 c2l0YWV0IFBhZGVyYm9ybiBDQSAtIEcwMTEiMCAGCSqGSIb3DQEJARYTY2FAdW5pLXBhZGVy
 Ym9ybi5kZQIEES7tRDAJBgUrDgMCGgUAoIICgzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
-MBwGCSqGSIb3DQEJBTEPFw0xMzA1MDkxMzM0MDFaMCMGCSqGSIb3DQEJBDEWBBSGg6uToiTh
-Eu4UFezC9TFncH7b+jBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQME
+MBwGCSqGSIb3DQEJBTEPFw0xMzA1MDkxMzM0NTFaMCMGCSqGSIb3DQEJBDEWBBQBdZFuPRyH
+U42qC53U5D/FlbO4xDBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQME
 AQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIH
 MA0GCCqGSIb3DQMCAgEoMIHYBgkrBgEEAYI3EAQxgcowgccwgb4xCzAJBgNVBAYTAkRFMR8w
 HQYDVQQKExZVbml2ZXJzaXRhZXQgUGFkZXJib3JuMUAwPgYDVQQLEzdJTVQgKFplbnRydW0g
@@ -170,16 +137,16 @@ cGFkZXJib3JuLmRlAgQRLu1EMIHaBgsqhkiG9w0BCRACCzGByqCBxzCBvjELMAkGA1UEBhMC
 REUxHzAdBgNVBAoTFlVuaXZlcnNpdGFldCBQYWRlcmJvcm4xQDA+BgNVBAsTN0lNVCAoWmVu
 dHJ1bSBmdWVyIEluZm9ybWF0aW9ucy0gdW5kIE1lZGllbnRlY2hub2xvZ2llbikxKDAmBgNV
 BAMTH1VuaXZlcnNpdGFldCBQYWRlcmJvcm4gQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2Nh
-QHVuaS1wYWRlcmJvcm4uZGUCBBEu7UQwDQYJKoZIhvcNAQEBBQAEggIAk3kNT70Y3rJvrY3m
-rd3TcBuIY6tVxowV9ycHrRGUK1r915QRDM31lWNC8iav3ZiBB20NxU3HgfTq6yyhFtGUaDpt
-gwn/+dwLtahxIDBmQKaUGX9rCtAQLloznMeHrXjw4nZ1NPOLyEqyMh4IqDzvQq4JoygjCRPy
-CjI7iJwkR6EoGNayyNbXQltqSs1c1fI7cujASDPja7frGzn4pbaJHsgQYEslNdhEcGYP2dv3
-p0p5ksRXdbusVJKLVz2oH3klZM6O7A0+lOdkf/TlU8ouTb3hWfzImomrP6oQdw8KBGFvU0zN
-MR4eZAe/0LKhZfocvxzwpvj94Z/RST0mnURsrBkRfZDvYU1fDpCr4hkTC5gunCtOFVMvq4JD
-T1lPRQMvVL6CND163OzsGQbLgDmKUpH7LEmwv34kVA8GYOuNMajr+EFcrFIncgW5rQzABL4R
-v2vIoMfqO4hl1UE8NCCP93v7/9xNv4hbq5beHqNWU3gSlEq+cB1kb2bv4vcBELov2dzh49Fi
-blffmbKgELMRrtA504KMSq3ZCcAoBkgnwWf6RNqI2F5eeTnGfKzdcyKwos9ivICf8p2u8/rs
-YfFCwI56jfzt5jtvri/ifMVn1yr/A4iW5oF/Odm68lbZMxkG0z1+kF9PXkXWAYAOEDJio65N
-gZlhSeau2njsvncD6ToAAAAAAAA=
---------------ms010109030204000006060409--
+QHVuaS1wYWRlcmJvcm4uZGUCBBEu7UQwDQYJKoZIhvcNAQEBBQAEggIAS+G05emL6m1aT5at
+STVZqr2oY7gjdWdORSmAQ2ArNUBqFXU43ZVMwMJOqkGIRmgnaNaFtCejylAVEWuocDPaL+HU
+zB9PbAzBqLTW/fp7ra7KEacsiSxPC+U/WEGUmTGSTeFeEY7v7ZlGPRuMAQDu0OnUDgTxg1w9
+cTGPJTnLEQTGc2v+EYh46AvoourGsSckypjIx+UQ0lEasfq2OlRciZqtgFNK9KkreI9Ckfo1
+zHQzGrKWEarqogOAKkyeQ357/qBzhLkV1nR3Y3wt2wc6LWUJxMBEIQ9rwPmnF//6K6R5ZYsP
+7annZoe/rQ99Uhu260fHdP1WS34+0ggWBX/9SuRGi1k6Y2fkXGlnUx4xxSUk+h/Roll6gLyN
+Q0JSKt/wPs/elLSzSukLVrWE8+n0rXn33vpcI/bADTAfafVfG1WtUcxXsZVQkOpa/Te+gXlw
+D1+i1N59tjKqmTMaVQ2xEnbkGe0CFxXdNcwC2UFEC8pw1kPmV1P/owNz1Hi0rMkFRpL74xFM
+WPgqWUcm8wfQU2NaAyeD9R2YHct9D8DAsLn/b0cMmHkgSnHWQFBMC201pbfSxmOvUvORg7pg
+Zk1KmNiZxAqydI2mRLV99lxsBd3U7vz4JPHaeZE2WCLB9nqlPsnLgGNcDVIJu4aBQ0NcZ+sZ
+kuK0QDyyizH7gC5Be20AAAAAAAA=
+--------------ms000406040404040605050302--
 
