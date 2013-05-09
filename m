@@ -1,14 +1,14 @@
-Message-ID: <518BA5FB.2060303@...1227...>
-Date: Thu, 09 May 2013 15:34:51 +0200
+Message-ID: <518BB22A.6000303@...1227...>
+Date: Thu, 09 May 2013 16:26:50 +0200
 From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
-References: <1366393268-27392-1-git-send-email-gert@...1296...>
-	<1366393268-27392-6-git-send-email-gert@...1296...>
-In-Reply-To: <1366393268-27392-6-git-send-email-gert@...1296...>
+References: <1366483371-5202-1-git-send-email-gert@...1296...>
+	<1367757373-31637-1-git-send-email-gert@...1296...>
+In-Reply-To: <1367757373-31637-1-git-send-email-gert@...1296...>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature";
-	micalg=sha1; boundary="------------ms000406040404040605050302"
-Subject: Re: [Openvpn-devel] [PATCH 5/5] Fix usage of "compression ..." from
- global config.
+	micalg=sha1; boundary="------------ms050606000508070902050301"
+Subject: Re: [Openvpn-devel] [PATCH v3] Make push-peer-info visible in
+ "normal" per-instance environment.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,24 +22,44 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Dies ist eine kryptografisch unterzeichnete Nachricht im MIME-Format.
 
---------------ms000406040404040605050302
+--------------ms050606000508070902050301
 Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: quoted-printable
 
-Am 19.04.13 19:41, schrieb Gert Doering:
-> The new compression framework introduced by SVN r8206 only works for
-> a P2MP server if the compression settings are re-installed for each
-> client via management interface, ccd/ file or client-connect script,
-> but the "global" settings get lost due to (needlessly) clearing the
-> c2.comp_context in the per-client instance.  Fixed.  (also trac#273)
+Am 05.05.13 14:36, schrieb Gert Doering:
+> Without this patch, peer-info pushed by clients in the TLS handshake
+> is only visible on the management interface, and only if
+> --management-client-auth is enabled.
+>
+> With this patch, received records are sanitized and put into the normal
+> "multi instance" environment, where it can be evaluated by --client-conne=
+ct
+> or --auth-user-pass-verify scripts and plugins, etc.  Only records matchi=
+ng
+> a fairly strict "name=3Dvalue" format are accepted, and only names starti=
+ng
+> with IV_ or UV_ are exported, to avoid clients sending funny stuff and
+> playing havoc with script/plugin environments on the server.  In the
+> "value" part, spaces, non-printable characters and shell metacharacters
+> are replaced by '_'.
+>
+> The change is somewhat invasive as reception of the peer_info string was
+> only done when username+password are expected from the client, but the
+> data is always there (if the client sends no username/password, it will
+> send 0-length strings, so always extracting 3 strings is safe).  Also,
+> the sanitation function validate_peer_info_line() and the opts->peer_info
+> field were only compiled in #ifdef MANGEMENT_DEF_AUTH...
+>
+> Patch v3: do not call the old man_output_peer_info_env() anymore, unless
+> a management env-filter has been set (=3D ensure IV_ and UV_ stuff is sent
+> at most *once*, and exactly the way OpenVPN AS expects it).  Add
+> substituting of "bad" characters in the environment values.
 >
 >
-ACK.
-
-Arne
+ACK
 
 
---------------ms000406040404040605050302
+--------------ms050606000508070902050301
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -126,8 +146,8 @@ ChMWVW5pdmVyc2l0YWV0IFBhZGVyYm9ybjFAMD4GA1UECxM3SU1UIChaZW50cnVtIGZ1ZXIg
 SW5mb3JtYXRpb25zLSB1bmQgTWVkaWVudGVjaG5vbG9naWVuKTEoMCYGA1UEAxMfVW5pdmVy
 c2l0YWV0IFBhZGVyYm9ybiBDQSAtIEcwMTEiMCAGCSqGSIb3DQEJARYTY2FAdW5pLXBhZGVy
 Ym9ybi5kZQIEES7tRDAJBgUrDgMCGgUAoIICgzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
-MBwGCSqGSIb3DQEJBTEPFw0xMzA1MDkxMzM0NTFaMCMGCSqGSIb3DQEJBDEWBBQBdZFuPRyH
-U42qC53U5D/FlbO4xDBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQME
+MBwGCSqGSIb3DQEJBTEPFw0xMzA1MDkxNDI2NTBaMCMGCSqGSIb3DQEJBDEWBBTZFDvYa3Sb
+IsIN9tyIb57bJ2+f0jBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQME
 AQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIH
 MA0GCCqGSIb3DQMCAgEoMIHYBgkrBgEEAYI3EAQxgcowgccwgb4xCzAJBgNVBAYTAkRFMR8w
 HQYDVQQKExZVbml2ZXJzaXRhZXQgUGFkZXJib3JuMUAwPgYDVQQLEzdJTVQgKFplbnRydW0g
@@ -137,16 +157,16 @@ cGFkZXJib3JuLmRlAgQRLu1EMIHaBgsqhkiG9w0BCRACCzGByqCBxzCBvjELMAkGA1UEBhMC
 REUxHzAdBgNVBAoTFlVuaXZlcnNpdGFldCBQYWRlcmJvcm4xQDA+BgNVBAsTN0lNVCAoWmVu
 dHJ1bSBmdWVyIEluZm9ybWF0aW9ucy0gdW5kIE1lZGllbnRlY2hub2xvZ2llbikxKDAmBgNV
 BAMTH1VuaXZlcnNpdGFldCBQYWRlcmJvcm4gQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2Nh
-QHVuaS1wYWRlcmJvcm4uZGUCBBEu7UQwDQYJKoZIhvcNAQEBBQAEggIAS+G05emL6m1aT5at
-STVZqr2oY7gjdWdORSmAQ2ArNUBqFXU43ZVMwMJOqkGIRmgnaNaFtCejylAVEWuocDPaL+HU
-zB9PbAzBqLTW/fp7ra7KEacsiSxPC+U/WEGUmTGSTeFeEY7v7ZlGPRuMAQDu0OnUDgTxg1w9
-cTGPJTnLEQTGc2v+EYh46AvoourGsSckypjIx+UQ0lEasfq2OlRciZqtgFNK9KkreI9Ckfo1
-zHQzGrKWEarqogOAKkyeQ357/qBzhLkV1nR3Y3wt2wc6LWUJxMBEIQ9rwPmnF//6K6R5ZYsP
-7annZoe/rQ99Uhu260fHdP1WS34+0ggWBX/9SuRGi1k6Y2fkXGlnUx4xxSUk+h/Roll6gLyN
-Q0JSKt/wPs/elLSzSukLVrWE8+n0rXn33vpcI/bADTAfafVfG1WtUcxXsZVQkOpa/Te+gXlw
-D1+i1N59tjKqmTMaVQ2xEnbkGe0CFxXdNcwC2UFEC8pw1kPmV1P/owNz1Hi0rMkFRpL74xFM
-WPgqWUcm8wfQU2NaAyeD9R2YHct9D8DAsLn/b0cMmHkgSnHWQFBMC201pbfSxmOvUvORg7pg
-Zk1KmNiZxAqydI2mRLV99lxsBd3U7vz4JPHaeZE2WCLB9nqlPsnLgGNcDVIJu4aBQ0NcZ+sZ
-kuK0QDyyizH7gC5Be20AAAAAAAA=
---------------ms000406040404040605050302--
+QHVuaS1wYWRlcmJvcm4uZGUCBBEu7UQwDQYJKoZIhvcNAQEBBQAEggIAFPkb11aDvAeK6Mt3
+FQIsHrqBC8w1P60Ym+ZLKl8GVFUQsgnOvyAtMkz67/7eS588uOWU3WP+hhlojut6qx47pDhm
+D35NxOAvaMm8NEU3IgtJWnsp5LjYcgH01w3ZCR+kvv3/bDOEMty4HQOlwXum1HdR75w424L2
+M3+FY4N4NhRqzkM3cJ/H0O5PaisKmVtIRb5DM2pd8ry9plW4S+Gese9yYm6xKff7MhMkHj77
+JYBKVIHy5d5MNNdjeyhuS/KnYhOdtNYaCLc4t+sIIbWOvBRRt8m4DX6QIHaFjnHHV2BODA1E
+pjBWPv+0kZGsDWGzy88g2rjN7LO9bOfoA2IvlBcvgJyDJei5YHg0sDTK8tHCep0qSBIlObSa
+a1GOAWymaoQG8O7Hs0QKssu3F0+OKVxTgbxXENnUpeB6+38DPIiXQppl10Zufoj7V+xzKE+Q
+YPCOEQp2dLUcF8lqFFCfGTC4BgT+p0dfUEmLC5gKTubjHT/rj9fZcKbZbwnv5vRUnEjPlEgt
+xO8V6dlUAYBY/iF0LBJe9DAPqIG2FvJ8cjjConS5UQXj8x+wreMeKsqGuHcKazai0iyBaqBI
+GBfuKDd3v91LBHL2nIwSllyT4MFN9k5csmpWUw66W1ODS5YoFHaO/BlNcEnG8YnHyKCy19m5
+MBv8lrx29j21KFHDAUwAAAAAAAA=
+--------------ms050606000508070902050301--
 
