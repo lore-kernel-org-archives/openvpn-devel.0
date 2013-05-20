@@ -1,9 +1,9 @@
 From: Gert Doering <gert@...1296...>
-Date: Mon, 20 May 2013 12:02:28 +0200
-Message-Id: <1369044148-7425-1-git-send-email-gert@...1296...>
+Date: Mon, 20 May 2013 12:13:21 +0200
+Message-Id: <1369044801-7594-1-git-send-email-gert@...1296...>
 In-Reply-To: <1366393268-27392-1-git-send-email-gert@...1296...>
 References: <1366393268-27392-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH 4/5 v2] Always push basic set of peer info
+Subject: [Openvpn-devel] [PATCH 4/5 v3] Always push basic set of peer info
 	values to server.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -37,12 +37,14 @@ v2: distinguish 3 levels of peer-info detail
   --pull           specified --> send basic set, as per r8225
   default                    --> send nothing (do not leak from server)
 
+v3: undo extra whitespace changes in v1 and v2
+
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
  src/openvpn/init.c       |  7 ++++++-
- src/openvpn/ssl.c        | 43 ++++++++++++++++++++++---------------------
+ src/openvpn/ssl.c        | 31 ++++++++++++++++---------------
  src/openvpn/ssl_common.h |  2 +-
- 3 files changed, 29 insertions(+), 23 deletions(-)
+ 3 files changed, 23 insertions(+), 17 deletions(-)
 
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
 index e700cd6..2a0ba85 100644
@@ -63,7 +65,7 @@ index e700cd6..2a0ba85 100644
  
    /* should we not xmit any packets until we get an initial
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 9ca409f..85d8db2 100644
+index 9ca409f..1026ad4 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
 @@ -1775,7 +1775,7 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
@@ -75,7 +77,7 @@ index 9ca409f..85d8db2 100644
      {
        struct env_set *es = session->opt->es;
        struct env_item *e;
-@@ -1803,38 +1803,39 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+@@ -1803,26 +1803,27 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
        buf_printf (&out, "IV_PLAT=win\n");
  #endif
  
@@ -117,24 +119,6 @@ index 9ca409f..85d8db2 100644
  	    }
  	}
  
--      if (!write_string(buf, BSTR(&out), -1))
--	goto error;
-+	if (!write_string(buf, BSTR(&out), -1))
-+	  goto error;
-     }
-   else
- #endif
--    {
--      if (!write_empty_string (buf)) /* no peer info */
--	goto error;
--    }
-+  {
-+    if (!write_empty_string (buf)) /* no peer info */
-+      goto error;
-+  }
-   ret = true;
- 
-  error:
 diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
 index 47dbefb..0e97487 100644
 --- a/src/openvpn/ssl_common.h
