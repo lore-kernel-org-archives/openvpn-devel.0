@@ -1,10 +1,11 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon, 20 May 2013 12:13:21 +0200
-Message-Id: <1369044801-7594-1-git-send-email-gert@...1296...>
-In-Reply-To: <1366393268-27392-1-git-send-email-gert@...1296...>
-References: <1366393268-27392-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH 4/5 v3] Always push basic set of peer info
-	values to server.
+Message-ID: <519F5ED0.4070109@...1147...>
+Date: Fri, 24 May 2013 14:36:32 +0200
+From: Jan Just Keijser <janjust@...1147...>
+MIME-Version: 1.0
+References: <519F04FA.5050303@...1823...>
+	<20130524092300.GL20843@...1296...>
+In-Reply-To: <20130524092300.GL20843@...1296...>
+Subject: [Openvpn-devel] [PATCH] make "explicit-exit-notify" pullable again
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,126 +14,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: Dmitry Melekhov <dm@...1823...>
 
-From: James Yonan <james@...515...>
-
-On the client, allow certain peer info fields to be pushed even if
-push-peer-info isn't specified in the config.
-
-This is needed to allow the compression handshake to work correctly
-(i.e. where the client indicates its support for LZO and/or Snappy).
-
-Fields that have privacy implications such as Mac Address and UV_*
-environment variables will not be pushed to the server as before unless
-push-peer-info is specified by client config.
-
-v1: equivalent to OpenVPN SVN r8225 (2.1.21c)
-
-v2: distinguish 3 levels of peer-info detail
-
-  --push-peer-info specified --> send all we have
-  --pull           specified --> send basic set, as per r8225
-  default                    --> send nothing (do not leak from server)
-
-v3: undo extra whitespace changes in v1 and v2
-
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/init.c       |  7 ++++++-
- src/openvpn/ssl.c        | 31 ++++++++++++++++---------------
- src/openvpn/ssl_common.h |  2 +-
- 3 files changed, 23 insertions(+), 17 deletions(-)
-
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index e700cd6..2a0ba85 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2213,7 +2213,12 @@ do_init_crypto_tls (struct context *c, const unsigned int flags)
-   to.renegotiate_seconds = options->renegotiate_seconds;
-   to.single_session = options->single_session;
- #ifdef ENABLE_PUSH_PEER_INFO
--  to.push_peer_info = options->push_peer_info;
-+  if (options->push_peer_info)		/* all there is */
-+    to.push_peer_info_detail = 2;
-+  else if (options->pull)		/* pull clients send some details */
-+    to.push_peer_info_detail = 1;
-+  else					/* default: no peer-info at all */
-+    to.push_peer_info_detail = 0;
- #endif
- 
-   /* should we not xmit any packets until we get an initial
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 9ca409f..1026ad4 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1775,7 +1775,7 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
-   bool ret = false;
- 
- #ifdef ENABLE_PUSH_PEER_INFO
--  if (session->opt->push_peer_info) /* write peer info */
-+  if (session->opt->push_peer_info_detail > 0)
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index d44f835..47df4cb 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -5084,8 +5084,7 @@ add_option (struct options *options,
+ #ifdef ENABLE_OCC
+   else if (streq (p[0], "explicit-exit-notify"))
      {
-       struct env_set *es = session->opt->es;
-       struct env_item *e;
-@@ -1803,26 +1803,27 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
-       buf_printf (&out, "IV_PLAT=win\n");
- #endif
- 
--      /* push mac addr */
--      {
--	struct route_gateway_info rgi;
--	get_default_gateway (&rgi);
--	if (rgi.flags & RGI_HWADDR_DEFINED)
--	  buf_printf (&out, "IV_HWADDR=%s\n", format_hex_ex (rgi.hwaddr, 6, 0, 1, ":", &gc));
--      }
--
-       /* push compression status */
- #ifdef USE_COMP
-       comp_generate_peer_info_string(&session->opt->comp_options, &out);
- #endif
- 
--      /* push env vars that begin with UV_ */
--      for (e=es->list; e != NULL; e=e->next)
--	{
--	  if (e->string)
-+      if (session->opt->push_peer_info_detail >= 2)
-+        {
-+	  /* push mac addr */
-+	  struct route_gateway_info rgi;
-+	  get_default_gateway (&rgi);
-+	  if (rgi.flags & RGI_HWADDR_DEFINED)
-+	    buf_printf (&out, "IV_HWADDR=%s\n", format_hex_ex (rgi.hwaddr, 6, 0, 1, ":", &gc));
-+
-+	  /* push env vars that begin with UV_ */
-+	  for (e=es->list; e != NULL; e=e->next)
- 	    {
--	      if (!strncmp(e->string, "UV_", 3) && buf_safe(&out, strlen(e->string)+1))
--		buf_printf (&out, "%s\n", e->string);
-+	      if (e->string)
-+		{
-+		  if (!strncmp(e->string, "UV_", 3) && buf_safe(&out, strlen(e->string)+1))
-+		    buf_printf (&out, "%s\n", e->string);
-+		}
- 	    }
- 	}
- 
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 47dbefb..0e97487 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -233,7 +233,7 @@ struct tls_options
-   bool disable_occ;
- #endif
- #ifdef ENABLE_PUSH_PEER_INFO
--  bool push_peer_info;
-+  int push_peer_info_detail;
- #endif
-   int transition_window;
-   int handshake_window;
--- 
-1.8.1.5
+-      VERIFY_PERMISSION (OPT_P_GENERAL|OPT_P_CONNECTION);
+-/*      VERIFY_PERMISSION (OPT_P_EXPLICIT_NOTIFY); */
++      VERIFY_PERMISSION 
+(OPT_P_GENERAL|OPT_P_CONNECTION|OPT_P_EXPLICIT_NOTIFY);
+       if (p[1])
+        {
+          options->ce.explicit_exit_notification = positive_atoi (p[1]);
+
+
+share and enjoy,
+
+JJK
+
+
+
+
+Gert Doering wrote:
+> Hi,
+>
+> On Fri, May 24, 2013 at 10:13:14AM +0400, Dmitry Melekhov wrote:
+>   
+>> Posted the same on forum :-)
+>>     
+>
+> I'm not sure why that is *funny* - in general, I'd frown upon putting
+> the same question in multiple places at the same time, as it causes
+> extra work for other people who might not see both questions, so I might
+> answer here and someone else might spend the time answering in the 
+> forum.
+>
+>   
+>> But today I installed update to 2.3.1 and I now I see:
+>>
+>> Options error: option 'explicit-exit-notify' cannot be used in this 
+>> context ([PUSH-OPTIONS])
+>>
+>> Why? How can I revert to previous behavior?
+>>     
+>
+> That is, indeed, a good question.  "git blame" points to...
+>
+> commit 76809cae0eae07817160b423d3f9551df1a1d68e
+> Author: Jan Just Keijser <janjust@...1147...>
+> Date:   Tue Feb 7 16:29:47 2012 +0100
+>
+>     Made some options connection-entry specific
+>     Acked-by: David Sommerseth <davids@...1347...>
+>
+> ... which has lots of changes we thought we understand, plus:
+>
+> @@ -5106,14 +5108,15 @@ add_option (struct options *options,
+>  #ifdef ENABLE_OCC
+>    else if (streq (p[0], "explicit-exit-notify"))
+>      {
+> -      VERIFY_PERMISSION (OPT_P_EXPLICIT_NOTIFY);
+> +      VERIFY_PERMISSION (OPT_P_GENERAL|OPT_P_CONNECTION);
+> +//      VERIFY_PERMISSION (OPT_P_EXPLICIT_NOTIFY);
+>
+>
+> ... but since JJK is reading this list, he might have an answer, and a
+> suggested fix for 2.3.2 :-)
+>
+> gert
+>
+>   
+
 
 
