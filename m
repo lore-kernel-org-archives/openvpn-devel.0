@@ -1,8 +1,13 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Mon, 27 May 2013 14:28:03 +0200
-Message-Id: <1369657683-11489-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Add reporting of UI version to basic
-	push-peer-info set.
+Date: Mon, 27 May 2013 22:05:19 +0200
+From: Samuel Thibault <samuel.thibault@...1817...>
+Message-ID: <20130527200519.GD5918@...1818...>
+References: <20130524215902.GM5874@...1818...>
+	<20130525115819.GS20843@...1296...>
+	<20130526223639.GK26337@...1818...>
+	<20130527072512.GY20843@...1296...>
+MIME-Version: 1.0
+In-Reply-To: <20130527072512.GY20843@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] openvpn ipv6 pool env variables
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,57 +16,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-If a GUIs sets IV_OPENVPN_GUI_VERSION the version will be pushed to the server.
+Gert Doering, le Mon 27 May 2013 09:25:12 +0200, a =E9crit :
+> On Mon, May 27, 2013 at 12:36:39AM +0200, Samuel Thibault wrote:
+> > Gert Doering, le Sat 25 May 2013 13:58:19 +0200, a =E9crit :
+> > > > To make it short: yes, the ipv6 pool environment variables are usef=
+ul,
+> > > > for user-defined scripts to be run at connection for instance to
+> > > > propagate routes, do accounting, etc.  The patch below adds them.
+> > >=20
+> > > You keep claiming that "yes it's useful".  The lack of feedback on the
+> > > list is partly due to the "To make it short" part of your mail...
+> >=20
+> > Ok. I was simply wondering whether it had perhaps got somehow dropped
+> > without reason.
+> >=20
+> > As I mentioned too briefly, the reason we need it is the same as for the
+> > IPv4 case: to announce the route to our bird daemon on connection, and
+> > drop it on disconnection.
+>=20
+> Mmmmh.  Trying to understand this: so you're not using a common /64 for
+> the tun addresses (=3D the ifconfig-ipv6-pool),
 
-Also fix implicit declaration of function 'multi_output_peer_info_env'  by including multi.h into ssl.c
+We are, but,
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/ssl.c |   17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+> which is then announced on-demand by bird?
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 12da365..75b81fc 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -67,6 +67,7 @@
- #include "ssl.h"
- #include "ssl_verify.h"
- #include "ssl_backend.h"
-+#include "multi.h"
- 
- #include "memdbg.h"
- 
-@@ -1817,15 +1818,17 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
- 	  get_default_gateway (&rgi);
- 	  if (rgi.flags & RGI_HWADDR_DEFINED)
- 	    buf_printf (&out, "IV_HWADDR=%s\n", format_hex_ex (rgi.hwaddr, 6, 0, 1, ":", &gc));
-+        }
- 
--	  /* push env vars that begin with UV_ */
--	  for (e=es->list; e != NULL; e=e->next)
-+      /* push env vars that begin with UV_ and IV_OPENVPN_GUI_VERSION*/
-+      for (e=es->list; e != NULL; e=e->next)
-+	{
-+	  if (e->string)
- 	    {
--	      if (e->string)
--		{
--		  if (!strncmp(e->string, "UV_", 3) && buf_safe(&out, strlen(e->string)+1))
--		    buf_printf (&out, "%s\n", e->string);
--		}
-+	      if (((strncmp(e->string, "UV_", 3)==0 && session->opt->push_peer_info_detail >= 2)
-+		   || (strcmp(e->string,"IV_OPENVPN_GUI_VERSION")==0))
-+		  && buf_safe(&out, strlen(e->string)+1))
-+		buf_printf (&out, "%s\n", e->string);
- 	    }
- 	}
- 
--- 
-1.7.9.5
+we need to announce it on-demand by bird, because we plan to possibly
+have several servers. Actually we also add the routes because we already
+have several openvpn daemons, because we have to let people connect
+through either udp and tcp, depending on the wild area they happen to
+have landed on. So we need to tell the kernel which tun (i.e. which
+openvpn daemon) to push paquets to.
 
+> Have you looked at the learn-address script?  I use something similar
+> at a customer (adding and removing proxy-arp entries on client connect)
+> and learn-address does all I need just fine...
+
+That could do it yes, however,
+
+> Well, learn-address is run on disconnect, but not "right away" - true,
+> so having it in disconnect is useful.
+
+yes. The rather random delay hurts by preventing from reconnecting
+immediately (either to the same daemon, or to another one or even
+another server), which is a pain when trying to set up the VPN in a wild
+area :)
+
+> I wonder whether we should also export iroute-ipv6 settings, as that would
+> enable on-demand routing of more than a single IPv6 address.
+
+Actually in our case iroute is fed by radiusplugin, which happens to
+also already add the route for us, so we didn't have to add that one.
+But it could be better to have radiusplugin just pass iroute to openvpn,
+and let the userscript add the route if needed.
+
+Samuel
 
