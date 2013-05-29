@@ -1,13 +1,9 @@
-Date: Mon, 27 May 2013 22:05:19 +0200
-From: Samuel Thibault <samuel.thibault@...1817...>
-Message-ID: <20130527200519.GD5918@...1818...>
-References: <20130524215902.GM5874@...1818...>
-	<20130525115819.GS20843@...1296...>
-	<20130526223639.GK26337@...1818...>
-	<20130527072512.GY20843@...1296...>
 MIME-Version: 1.0
-In-Reply-To: <20130527072512.GY20843@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] openvpn ipv6 pool env variables
+Date: Wed, 29 May 2013 08:24:43 -0400
+Message-ID: <CAMaBZnHDPHTpPmFoLbyDHxKnBwm7PdPDouZi99bgQzrA9=eXDw@...278...>
+From: Praetorian <praetoriancode@...277...>
+Content-Type: multipart/alternative; boundary=089e01161b5c6da15b04ddda7736
+Subject: [Openvpn-devel] Repos for Debian Wheezy?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,65 +12,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--089e01161b5c6da15b04ddda7736
+Content-Type: text/plain; charset=ISO-8859-1
+
+With the stable release of Wheezy is there a time frame that there might be
+a openvpn repo for Wheezy?  I have a multisite setup that I would like to
+update to Wheezy that could take advantage of some of the advancements in
+Wheezy. Sadly ver 2.2 is what is in the Debian repo for Wheezy currently.
+ The setup currently runs off the 2.3 version for some of the ipv6 needs.
+
+Thanks.
+Wayne
+
+--089e01161b5c6da15b04ddda7736
+Content-Type: text/html; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
 
-Gert Doering, le Mon 27 May 2013 09:25:12 +0200, a =E9crit :
-> On Mon, May 27, 2013 at 12:36:39AM +0200, Samuel Thibault wrote:
-> > Gert Doering, le Sat 25 May 2013 13:58:19 +0200, a =E9crit :
-> > > > To make it short: yes, the ipv6 pool environment variables are usef=
-ul,
-> > > > for user-defined scripts to be run at connection for instance to
-> > > > propagate routes, do accounting, etc.  The patch below adds them.
-> > >=20
-> > > You keep claiming that "yes it's useful".  The lack of feedback on the
-> > > list is partly due to the "To make it short" part of your mail...
-> >=20
-> > Ok. I was simply wondering whether it had perhaps got somehow dropped
-> > without reason.
-> >=20
-> > As I mentioned too briefly, the reason we need it is the same as for the
-> > IPv4 case: to announce the route to our bird daemon on connection, and
-> > drop it on disconnection.
->=20
-> Mmmmh.  Trying to understand this: so you're not using a common /64 for
-> the tun addresses (=3D the ifconfig-ipv6-pool),
+<div dir=3D"ltr">With the stable release of Wheezy is there a time frame th=
+at there might be a openvpn repo for Wheezy? =A0I have a multisite setup th=
+at I would like to update to Wheezy that could take advantage of some of th=
+e advancements in Wheezy. Sadly ver 2.2 is what is in the Debian repo for W=
+heezy currently. =A0The setup currently runs off the 2.3 version for some o=
+f the ipv6 needs.<div>
+<br></div><div style>Thanks.</div><div style>Wayne =A0=A0</div></div>
 
-We are, but,
-
-> which is then announced on-demand by bird?
-
-we need to announce it on-demand by bird, because we plan to possibly
-have several servers. Actually we also add the routes because we already
-have several openvpn daemons, because we have to let people connect
-through either udp and tcp, depending on the wild area they happen to
-have landed on. So we need to tell the kernel which tun (i.e. which
-openvpn daemon) to push paquets to.
-
-> Have you looked at the learn-address script?  I use something similar
-> at a customer (adding and removing proxy-arp entries on client connect)
-> and learn-address does all I need just fine...
-
-That could do it yes, however,
-
-> Well, learn-address is run on disconnect, but not "right away" - true,
-> so having it in disconnect is useful.
-
-yes. The rather random delay hurts by preventing from reconnecting
-immediately (either to the same daemon, or to another one or even
-another server), which is a pain when trying to set up the VPN in a wild
-area :)
-
-> I wonder whether we should also export iroute-ipv6 settings, as that would
-> enable on-demand routing of more than a single IPv6 address.
-
-Actually in our case iroute is fed by radiusplugin, which happens to
-also already add the route for us, so we didn't have to add that one.
-But it could be better to have radiusplugin just pass iroute to openvpn,
-and let the userscript add the route if needed.
-
-Samuel
+--089e01161b5c6da15b04ddda7736--
 
