@@ -1,7 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu, 30 May 2013 23:27:34 +0200
-Message-Id: <1369949255-7302-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Fix #ifdefs for P2MP_SERVER
+Date: Thu, 30 May 2013 23:34:40 +0200
+Message-Id: <1369949680-9499-1-git-send-email-arne@...1227...>
+In-Reply-To: <1369949255-7302-1-git-send-email-arne@...1227...>
+References: <1369949255-7302-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [Patch v2] Fix #ifdefs for P2MP_SERVER
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
