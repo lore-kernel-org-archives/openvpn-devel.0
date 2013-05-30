@@ -1,13 +1,10 @@
-Date: Thu, 30 May 2013 21:04:37 +0200
+Date: Thu, 30 May 2013 21:37:49 +0200 (CEST)
+Message-Id: <201305301937.r4UJbn3S026071@...1295...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20130530190437.GR20843@...1296...>
-References: <0LzcMG-1ULZ4T0Fuc-014gq9@...1825...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="t3wCcZxwnWQbJWrM"
-Content-Disposition: inline
-In-Reply-To: <0LzcMG-1ULZ4T0Fuc-014gq9@...1825...>
-Subject: Re: [Openvpn-devel] Provide more accurate warning message
+In-Reply-To: <1369920428-11350-1-git-send-email-arne@...1227...>
+References: <1369920428-11350-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Only print script warnings when
+	a script is used. Remove stray mention of script-security system.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,47 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Davide Brini <dave_br@...1278...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---t3wCcZxwnWQbJWrM
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Your patch has been applied to the master and release/2.3 branches.
 
-Hi,
+commit 8476edbb1748e11de0e4fda8989c9e470285926b (master)
+commit 567bfc06d051b60e9cdca1f5bb468631b899682a (release/2.3)
 
-On Thu, May 30, 2013 at 04:20:55PM +0200, Davide Brini wrote:
-> +    msg (M_WARN, "NOTE: starting with " PACKAGE_NAME " 2.1, '--script-se=
-curity 2' or higher is required to call user-defined scripts or executables=
-");
+Author: Arne Schwabe
+Date:   Thu May 30 15:27:08 2013 +0200
 
-ACK, this text is even clearer than what Arne proposed.=20=20
+     Only print script warnings when a script is used. Remove stray mention of script-security system.
 
-I'll see how I can get this to apply, as the patch itself won't fit on
-top of the other one changing the same line...
+     Acked-by: Jan Just Keijser <janjust@...1147...>
+     Message-Id: <1369920428-11350-1-git-send-email-arne@...1227...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/7625
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
 
---t3wCcZxwnWQbJWrM
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+--
+kind regards,
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
+Gert Doering
 
-iQCVAwUBUaeixKkuBuNlUUl1AQK9KAQAvBFNWsCQcrCN6M/kjOhQHzZw/zDdCF9z
-1/hJaeR7edUzWO2hoIz0H2zb3LKMNXNwgTqBvuy82Z1MWTktUL5ycnvJNWenljJ1
-MC6YMZOS4vMYxZYax5UV1ED0tjGhwqDc2xoaPE7f+WyEVkgv10aLkZ/sD1P5PjGh
-veVAmGC8zLc=
-=8IJG
------END PGP SIGNATURE-----
-
---t3wCcZxwnWQbJWrM--
 
