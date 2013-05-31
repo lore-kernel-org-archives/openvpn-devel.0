@@ -1,10 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 31 May 2013 14:59:35 +0200
-Message-Id: <1370005175-14871-1-git-send-email-arne@...1227...>
+Date: Fri, 31 May 2013 17:26:32 +0200
+Message-Id: <1370013992-18592-1-git-send-email-arne@...1227...>
 In-Reply-To: <20130531073813.GU20843@...1296...>
 References: <20130531073813.GU20843@...1296...>
-Subject: [Openvpn-devel] [PATCH] Add reporting of UI version to basic
-	push-peer-info set.
+Subject: [Openvpn-devel] [PATCH] Fix another #ifdef/#if P2MP_SERVER
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,51 +16,22 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-If a GUIs sets IV_OPENVPN_GUI_VERSION the version will be pushed to the server.
-
-Also fix implicit declaration of function 'multi_output_peer_info_env'  by including multi.h into ssl.c
-
-Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/ssl.c |   17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ src/openvpn/ssl.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 088eea8..8790675 100644
+index 088eea8..d9076f3 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -67,6 +67,7 @@
- #include "ssl.h"
- #include "ssl_verify.h"
- #include "ssl_backend.h"
-+#include "multi.h"
+@@ -1107,7 +1107,7 @@ tls_multi_free (struct tls_multi *multi, bool clear)
+   man_def_auth_set_client_reason(multi, NULL);  
  
- #include "memdbg.h"
- 
-@@ -1817,15 +1818,17 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
- 	  get_default_gateway (&rgi);
- 	  if (rgi.flags & RGI_HWADDR_DEFINED)
- 	    buf_printf (&out, "IV_HWADDR=%s\n", format_hex_ex (rgi.hwaddr, 6, 0, 1, ":", &gc));
-+        }
- 
--	  /* push env vars that begin with UV_ */
--	  for (e=es->list; e != NULL; e=e->next)
-+      /* push env vars that begin with UV_ and IV_OPENVPN_GUI_VERSION*/
-+      for (e=es->list; e != NULL; e=e->next)
-+	{
-+	  if (e->string)
- 	    {
--	      if (e->string)
--		{
--		  if (!strncmp(e->string, "UV_", 3) && buf_safe(&out, strlen(e->string)+1))
--		    buf_printf (&out, "%s\n", e->string);
--		}
-+	      if (((strncmp(e->string, "UV_", 3)==0 && session->opt->push_peer_info_detail >= 2)
-+		   || (strncmp(e->string,"IV_OPENVPN_GUI_VERSION=",sizeof("IV_OPENVPN_GUI_VERSION=")-1)==0))
-+		  && buf_safe(&out, strlen(e->string)+1))
-+		buf_printf (&out, "%s\n", e->string);
- 	    }
- 	}
+ #endif
+-#ifdef P2MP_SERVER
++#if P2MP_SERVER
+   free (multi->peer_info);
+ #endif
  
 -- 
 1.7.9.5
