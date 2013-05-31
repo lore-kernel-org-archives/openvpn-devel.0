@@ -1,14 +1,19 @@
-Date: Fri, 31 May 2013 09:38:14 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20130531073813.GU20843@...1296...>
-References: <1369949255-7302-1-git-send-email-arne@...1227...>
-	<1369949680-9499-1-git-send-email-arne@...1227...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="1o9jrj+SkgBpwUj4"
-Content-Disposition: inline
-In-Reply-To: <1369949680-9499-1-git-send-email-arne@...1227...>
-Subject: Re: [Openvpn-devel] [Patch v2] Fix #ifdefs for P2MP_SERVER
+Message-ID: <51A855E2.1040201@...515...>
+Date: Fri, 31 May 2013 10:48:50 +0300
+From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
+MIME-Version: 1.0
+References: <CAMaBZnHDPHTpPmFoLbyDHxKnBwm7PdPDouZi99bgQzrA9=eXDw@...278...>
+	<20130529122956.GH20843@...1296...>
+	<20130529133817.GG6942@...1330...>
+	<CAMaBZnFwr4iMVTg4QSkosMYsqnpq5-_rt9eny-O9fCSLFLoiqg@...278...>
+	<20130529185003.GJ20843@...1296...>
+	<CAMaBZnFVPuyUDRwKu0qiOLRdZwhmJXiho=29keGvft=fvBA6Sw@...278...>
+	<51A75F21.4060200@...515...>
+	<C1340C42-3C88-415C-A51D-3ECC16DFE1B8@...277...>
+In-Reply-To: <C1340C42-3C88-415C-A51D-3ECC16DFE1B8@...277...>
+Content-Type: multipart/alternative;
+	boundary="------------010703050809050209090009"
+Subject: Re: [Openvpn-devel] Repos for Debian Wheezy?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,50 +22,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Wayne <praetoriancode@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---1o9jrj+SkgBpwUj4
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+This is a multi-part message in MIME format.
+--------------010703050809050209090009
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi,
 
-On Thu, May 30, 2013 at 11:34:40PM +0200, Arne Schwabe wrote:
-> -#ifdef P2MP_SERVER
-> +#if P2MP_SERVER
+> Does that mean you will be building packages against libssl1.0.0?
+>
+Yes. Wheezy does not seem to have libssl0.9.8 available, which is
+probably the primary/only reason why my snapshot packages for Squeeze
+don't work on Wheezy.
 
-ACK.  Sorry for overlooking that.
+Samuli
 
-(For the rest of the audience: P2MP_SERVER is one of the #define-s that is
-always #define'd - it's either "#define P2MP_SERVER 1" or "... 0", so
-with #ifdef, it will always be matched)
+--------------010703050809050209090009
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Will commit ASAP.
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+  </head>
+  <body text="#000000" bgcolor="#FFFFFF">
+    <div class="moz-cite-prefix"><br>
+    </div>
+    <blockquote
+      cite="mid:C1340C42-3C88-415C-A51D-3ECC16DFE1B8@...277..."
+      type="cite">
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      <div>Does that mean you will be building packages against
+        libssl1.0.0?<br>
+        <br>
+      </div>
+    </blockquote>
+    Yes. Wheezy does not seem to have libssl0.9.8 available, which is
+    probably the primary/only reason why my snapshot packages for
+    Squeeze don't work on Wheezy.<br>
+    <br>
+    Samuli<br>
+  </body>
+</html>
 
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---1o9jrj+SkgBpwUj4
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
-
-iQCVAwUBUahTZakuBuNlUUl1AQL1/AQAvsq4xy0WrozIkriiqUgMSXS0dUMNQ+pQ
-J4nVDQRWC5g/0RHKW05qwVtUAbUgdwkQuv1h5m72pHa/zwNXSZ+/FXKpkNE8a/q5
-mbCmtLFpSFFJeqwvbRXPkvwyWlKIQYEI7z8v4ZeHl/V+ba/Pw5ftq9OpMb7b74L+
-u+RbXYzIN3E=
-=x9Cd
------END PGP SIGNATURE-----
-
---1o9jrj+SkgBpwUj4--
+--------------010703050809050209090009--
 
