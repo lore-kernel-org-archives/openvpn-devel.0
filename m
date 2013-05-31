@@ -1,9 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Fri, 31 May 2013 17:26:32 +0200
-Message-Id: <1370013992-18592-1-git-send-email-arne@...1227...>
-In-Reply-To: <20130531073813.GU20843@...1296...>
-References: <20130531073813.GU20843@...1296...>
-Subject: [Openvpn-devel] [PATCH] Fix another #ifdef/#if P2MP_SERVER
+Message-ID: <51A8D993.4050309@...1030...>
+Date: Fri, 31 May 2013 18:10:43 +0100
+From: Dash Four <mr.dash.four@...1030...>
+MIME-Version: 1.0
+References: <51A244FC.5050700@...1030...>
+In-Reply-To: <51A244FC.5050700@...1030...>
+Subject: Re: [Openvpn-devel] key-method <m> parameter
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,28 +13,23 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
----
- src/openvpn/ssl.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Anyone care to clarify this?
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 088eea8..d9076f3 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1107,7 +1107,7 @@ tls_multi_free (struct tls_multi *multi, bool clear)
-   man_def_auth_set_client_reason(multi, NULL);  
- 
- #endif
--#ifdef P2MP_SERVER
-+#if P2MP_SERVER
-   free (multi->peer_info);
- #endif
- 
--- 
-1.7.9.5
-
+Dash Four wrote:
+> In the manual pages, this parameter is described to have 2 different
+> values - 1 (default for OpenVPN 1.x) and 2 (default for OpenVPN 2.0),
+> but it is not clear:
+>
+> 1. What are the other possibilities for this parameter value, if any
+> exist; and
+> 2. What is the default value of this parameter in the current OpenVPN
+> version (v2.3)
+>
+>
+> So any help in that respect (and properly updated man pages describing
+> this) would be appreciated, thanks.
 
