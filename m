@@ -1,8 +1,13 @@
-Date: Tue, 4 Jun 2013 08:19:21 +0200 (CEST)
-From: Gerhard Wiesinger <lists@...390...>
-Message-ID: <alpine.LFD.2.02.1306040815590.28059@...391...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN and NAT source Port change on firewall
+Date: Tue, 4 Jun 2013 10:31:41 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20130604083141.GM20843@...1296...>
+References: <alpine.LFD.2.02.1306040815590.28059@...391...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Wn92C1cCKTtqXJ4h"
+Content-Disposition: inline
+In-Reply-To: <alpine.LFD.2.02.1306040815590.28059@...391...>
+Subject: Re: [Openvpn-devel] OpenVPN and NAT source Port change on firewall
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,53 +16,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: TEXT/PLAIN; format=flowed; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
+To: Gerhard Wiesinger <lists@...390...>
+Cc: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+
+--Wn92C1cCKTtqXJ4h
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-I've a usecase with OpenVPN and NAT with UDP where the commercial firewall 
-changes NAT binding. Keep alive is 30s, so short enough. Also float option 
-doesn't help because it accepts packets but doesn't do the source port 
-change. Details find below. This behaviour is reproduceable on different 
-installations with this firewall.
+On Tue, Jun 04, 2013 at 08:19:21AM +0200, Gerhard Wiesinger wrote:
+> I've a usecase with OpenVPN and NAT with UDP where the commercial firewal=
+l=20
+> changes NAT binding. Keep alive is 30s, so short enough. Also float optio=
+n=20
+> doesn't help because it accepts packets but doesn't do the source port=20
+> change. Details find below. This behaviour is reproduceable on different=
+=20
+> installations with this firewall.
 
-Client:
-IPClient..IP address client
-SPoClient..Source port client
+Use a different firewall?  Use "ping 10 30" on the client to keep the
+NAT state alive?
 
-NAT:
-IPNAT..IP address NAT
-SPoNAT1..Source port NAT (before change)
-SPoNAT2..Source port NAT (after change)
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Server:
-IPServer..IP address OpenVPN server
+--Wn92C1cCKTtqXJ4h
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-Client                              | NAT                            | Server
-# From client                       |                                |
-IPClient:SPoClient => IPServer:1194 | IPNAT:SPoNAT1 => IPServer:1194 | IPNAT:SPoNAT1 => IPServer:1194
-# Answer from server                |                                |
-IPClient:SPoClient <= IPServer:1194 | IPNAT:SPoNAT1 <= IPServer:1194 | IPNAT:SPoNAT1 <= IPServer:1194
-# NAT changes source port NATing!!! |                                |
-IPClient:SPoClient => IPServer:1194 | IPNAT:SPoNAT2 => IPServer:1194 | IPNAT:SPoNAT2 => IPServer:1194
-# Answer from server to original source port!!!                      |
-----BLOCKED BY NAT----              | ----BLOCKED BY NAT----         | IPNAT:SPoNAT1 <= IPServer:1194
-# Suggested behaviour: On authenticated source port change remember  |
-# the change, answer to new source port from NAT/client              |
-IPClient:SPoClient <= IPServer:1194 | IPNAT:SPoNAT2 <= IPServer:1194 | IPNAT:SPoNAT2 <= IPServer:1194
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
 
-Can the suggested behaviour be easily implemented (should be easily done 
-in socket.c)?
+iQCVAwUBUa2l7akuBuNlUUl1AQId0gQAtY2e2ZdvACUpPrbqbSBv7sfYu8Ge6WVB
+kje6lfLPd3McBqy46ljFV0KHKDrz+Og5r6XwPgDUeK69eWxX20GJwCh3ad5HMNCQ
+X68fWAkyD0slr5FSc9WNw+YJG0p4cusqzk0VIwK6gQzsjKExf8KAxeH8zq2udajO
+3TsjwY9XC0c=
+=pKOT
+-----END PGP SIGNATURE-----
 
-I can try a patch if you want.
-
-Thank you.
-
-Ciao,
-Gerhard
-
---
-http://www.wiesinger.com/
+--Wn92C1cCKTtqXJ4h--
 
