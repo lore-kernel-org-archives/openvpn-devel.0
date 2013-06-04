@@ -1,9 +1,8 @@
+Date: Tue, 4 Jun 2013 08:19:21 +0200 (CEST)
+From: Gerhard Wiesinger <lists@...390...>
+Message-ID: <alpine.LFD.2.02.1306040815590.28059@...391...>
 MIME-Version: 1.0
-From: Kenny Root <kenny@...1827...>
-Date: Mon, 3 Jun 2013 17:14:32 -0700
-Message-ID: <CALkG1NxZC7DT+SZHuSYemyyaH8dVsx_0PAm-7pTYY9EYMbZBgQ@...278...>
-Subject: [Openvpn-devel] Adding support for AEAD cipher modes (AES-GCM,
-	et al.)
+Subject: [Openvpn-devel] OpenVPN and NAT source Port change on firewall
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,19 +11,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: TEXT/PLAIN; format=flowed; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-I wrote a patch to add AEAD cipher modes to OpenVPN. This is one of
-NIST's recommended modes and newer Intel chips supporting the AES-NI
-(with PCLMULQDQ) have excellent support for acceleration in this mode.
-I posted the initial version at
-https://community.openvpn.net/openvpn/ticket/301 and that ticket has
-some of the performance numbers on an Ivy Bridge class chip.
+Hi,
 
-It also doesn't appear PolarSSL has added AES-GCM to their main crypto API yet.
+I've a usecase with OpenVPN and NAT with UDP where the commercial firewall 
+changes NAT binding. Keep alive is 30s, so short enough. Also float option 
+doesn't help because it accepts packets but doesn't do the source port 
+change. Details find below. This behaviour is reproduceable on different 
+installations with this firewall.
 
-(You can also comment at Github at
-https://github.com/kruton/openvpn/commit/a8c6701c8b47429c32da5c01f4398f9e0b293c01)
+Client:
+IPClient..IP address client
+SPoClient..Source port client
+
+NAT:
+IPNAT..IP address NAT
+SPoNAT1..Source port NAT (before change)
+SPoNAT2..Source port NAT (after change)
+
+Server:
+IPServer..IP address OpenVPN server
+
+Client                              | NAT                            | Server
+# From client                       |                                |
+IPClient:SPoClient => IPServer:1194 | IPNAT:SPoNAT1 => IPServer:1194 | IPNAT:SPoNAT1 => IPServer:1194
+# Answer from server                |                                |
+IPClient:SPoClient <= IPServer:1194 | IPNAT:SPoNAT1 <= IPServer:1194 | IPNAT:SPoNAT1 <= IPServer:1194
+# NAT changes source port NATing!!! |                                |
+IPClient:SPoClient => IPServer:1194 | IPNAT:SPoNAT2 => IPServer:1194 | IPNAT:SPoNAT2 => IPServer:1194
+# Answer from server to original source port!!!                      |
+----BLOCKED BY NAT----              | ----BLOCKED BY NAT----         | IPNAT:SPoNAT1 <= IPServer:1194
+# Suggested behaviour: On authenticated source port change remember  |
+# the change, answer to new source port from NAT/client              |
+IPClient:SPoClient <= IPServer:1194 | IPNAT:SPoNAT2 <= IPServer:1194 | IPNAT:SPoNAT2 <= IPServer:1194
+
+Can the suggested behaviour be easily implemented (should be easily done 
+in socket.c)?
+
+I can try a patch if you want.
+
+Thank you.
+
+Ciao,
+Gerhard
+
+--
+http://www.wiesinger.com/
 
