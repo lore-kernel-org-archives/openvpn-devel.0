@@ -1,10 +1,8 @@
-From: David Sommerseth <dazo@...384...>
-Date: Wed, 12 Jun 2013 12:18:36 +0200
-Message-Id: <1371032316-18281-1-git-send-email-dazo@...384...>
-In-Reply-To: <1370605779-712-1-git-send-email-dazo@...384...>
-References: <1370605779-712-1-git-send-email-dazo@...384...>
-Subject: [Openvpn-devel] [PATCH v2] plugin: Extend the plug-in v3 API to
-	identify the SSL implementation used
+Message-ID: <51B8CE21.6080203@...515...>
+Date: Wed, 12 Jun 2013 13:38:09 -0600
+From: James Yonan <james@...515...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] OpenVPN Versioning
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,166 +11,247 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: David Sommerseth <davids@...1347...>
+I'm going to present some ideas and patches to make OpenVPN more solid 
+in the area of versioning.  The overall goal is to make OpenVPN more 
+robust with respect to differences between client and server in OpenVPN 
+version, TLS version, protocol capabilities, and config file grammar.
 
-OpenVPN would segfault unexpectedly if it would be compiled against PolarSSL
-and the plug-in would expect OpenSSL, or vice-versa.  This segfault would
-not appear before the plug-in would try to access functions which would
-be available if the plug-in and OpenVPN uses the same SSL implementation.
+Specifically:
 
-This patch adds a member to the plug-in initialisation function, which
-identifies the SSL implementation.
+1. Allow one OpenVPN config file to be universally used by different 
+clients on different platforms, even if some of the directives target 
+capabilities only available in newer OpenVPN versions or specific kinds 
+of platforms (i.e. mobile).
 
-The log_v3 plug-in is updated accordingly + a simple fix to make it
-buildable again using the ./build script.
+2. Allow TLS versions higher than 1.0 to be negotiated when both client 
+and server support them.
 
-A minor documentation error in the openvpn-plugin.h was also
-corrected, where it mentioned OPENVPN_PLUGIN_VERSION instead of
-OPENVPN_PLUGINv3_STRUCTVER.
+3. Improve the flexibility of the OpenVPN protocol negotiation so that 
+parameters such as cipher and HMAC digest can be dynamically negotiated.
 
- v2 - add const ovpnSSLAPI ssl_api at the end of
-      struct openvpn_plugin_args_open_in and not in the "middle"
+Versioning robustness is also a practical security feature, because it 
+allows gradual rollout of updated security parameters in a large network 
+without loss of service.  Security parameters might include minimum TLS 
+version, allowed TLS ciphersuites, and OpenVPN cipher and HMAC digests.
 
-Signed-off-by: David Sommerseth <davids@...1347...>
----
- include/openvpn-plugin.h           |   24 +++++++++++++++++++++---
- sample/sample-plugins/log/build    |    2 +-
- sample/sample-plugins/log/log_v3.c |    5 +++++
- src/openvpn/plugin.c               |    3 ++-
- src/openvpn/ssl_backend.h          |    2 ++
- 5 files changed, 31 insertions(+), 5 deletions(-)
 
-diff --git a/include/openvpn-plugin.h b/include/openvpn-plugin.h
-index 0879f49..36e3240 100644
---- a/include/openvpn-plugin.h
-+++ b/include/openvpn-plugin.h
-@@ -201,10 +201,15 @@ struct openvpn_plugin_string_list
-  *
-  * Version   Comment
-  *    1      Initial plugin v3 structures providing the same API as
-- *           the v2 plugin interface + X509 certificate information.
-+ *           the v2 plugin interface, X509 certificate information +
-+ *           a logging API for plug-ins.
-+ *
-+ *    2      Added ssl_api member in struct openvpn_plugin_args_open_in
-+ *           which identifies the SSL implementation OpenVPN is compiled
-+ *           against.
-  *
-  */
--#define OPENVPN_PLUGINv3_STRUCTVER 1
-+#define OPENVPN_PLUGINv3_STRUCTVER 2
- 
- /**
-  * Definitions needed for the plug-in callback functions.
-@@ -260,6 +265,17 @@ struct openvpn_plugin_callbacks
- };
- 
- /**
-+ * Used by the openvpn_plugin_open_v3() function to indicate to the
-+ * plug-in what kind of SSL implementation OpenVPN uses.  This is
-+ * to avoid SEGV issues when OpenVPN is complied against PolarSSL
-+ * and the plug-in against OpenSSL.
-+ */
-+typedef enum {
-+  SSLAPI_OPENSSL,
-+  SSLAPI_POLARSSL
-+} ovpnSSLAPI;
-+
-+/**
-  * Arguments used to transport variables to the plug-in.
-  * The struct openvpn_plugin_args_open_in is only used
-  * by the openvpn_plugin_open_v3() function.
-@@ -286,6 +302,7 @@ struct openvpn_plugin_args_open_in
-   const char ** const argv;
-   const char ** const envp;
-   struct openvpn_plugin_callbacks *callbacks;
-+  const ovpnSSLAPI ssl_api;
- };
- 
- 
-@@ -557,7 +574,8 @@ OPENVPN_PLUGIN_DEF int OPENVPN_PLUGIN_FUNC(openvpn_plugin_func_v2)
-  * ARGUMENTS
-  *
-  * version : fixed value, defines the API version of the OpenVPN plug-in API.  The plug-in
-- *	     should validate that this value is matching the OPENVPN_PLUGIN_VERSION value.
-+ *	     should validate that this value is matching the OPENVPN_PLUGINv3_STRUCTVER
-+ *	     value.
-  *
-  * arguments : Structure with all arguments available to the plug-in.
-  *
-diff --git a/sample/sample-plugins/log/build b/sample/sample-plugins/log/build
-index bbb05f7..c07ec40 100755
---- a/sample/sample-plugins/log/build
-+++ b/sample/sample-plugins/log/build
-@@ -6,7 +6,7 @@
- #
- 
- # This directory is where we will look for openvpn-plugin.h
--CPPFLAGS="${CPPFLAGS:--I../../..}"
-+CPPFLAGS="${CPPFLAGS:--I../../../include}"
- 
- CC="${CC:-gcc}"
- CFLAGS="${CFLAGS:--O2 -Wall -g}"
-diff --git a/sample/sample-plugins/log/log_v3.c b/sample/sample-plugins/log/log_v3.c
-index 742c756..4d3af91 100644
---- a/sample/sample-plugins/log/log_v3.c
-+++ b/sample/sample-plugins/log/log_v3.c
-@@ -85,6 +85,11 @@ openvpn_plugin_open_v3 (const int v3structver,
-     return OPENVPN_PLUGIN_FUNC_ERROR;
-   }
- 
-+  if( args->ssl_api != SSLAPI_OPENSSL ) {
-+    printf("This plug-in can only be used against OpenVPN with OpenSSL\n");
-+    return OPENVPN_PLUGIN_FUNC_ERROR;
-+  }
-+
-   /*  Which callbacks to intercept.  */
-   ret->type_mask =
-     OPENVPN_PLUGIN_MASK (OPENVPN_PLUGIN_UP) |
-diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
-index c96c121..55680d1 100644
---- a/src/openvpn/plugin.c
-+++ b/src/openvpn/plugin.c
-@@ -40,8 +40,8 @@
- #include "error.h"
- #include "misc.h"
- #include "plugin.h"
-+#include "ssl_backend.h"
- #include "win32.h"
--
- #include "memdbg.h"
- 
- #define PLUGIN_SYMBOL_REQUIRED (1<<0)
-@@ -372,6 +372,7 @@ plugin_open_item (struct plugin *p,
-        */
-       if (p->open3) {
-         struct openvpn_plugin_args_open_in args = { p->plugin_type_mask,
-+                                                    SSLAPI,
-                                                     (const char ** const) o->argv,
-                                                     (const char ** const) envp,
-                                                     &callbacks };
-diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
-index 72235ae..413e4d4 100644
---- a/src/openvpn/ssl_backend.h
-+++ b/src/openvpn/ssl_backend.h
-@@ -36,10 +36,12 @@
- #ifdef ENABLE_CRYPTO_OPENSSL
- #include "ssl_openssl.h"
- #include "ssl_verify_openssl.h"
-+#define SSLAPI SSLAPI_OPENSSL
- #endif
- #ifdef ENABLE_CRYPTO_POLARSSL
- #include "ssl_polarssl.h"
- #include "ssl_verify_polarssl.h"
-+#define SSLAPI SSLAPI_POLARSSL
- #endif
- 
- /**
--- 
-1.7.10.2
+Specific use case examples
+--------------------------
 
+(1) OpenVPN protocol negotiation: You are managing an OpenVPN server 
+configured with the BF-128-CBC cipher.  You want to upgrade to 
+AES-128-CBC to take advantage of hardware AES acceleration on the 
+server, but not all clients in the field support AES yet.  With cipher 
+negotiation, you could set up a mechanism where the server would 
+negotiate AES-128-CBC with clients that support it, but downgrade to 
+BF-128-CBC on clients that don't support either AES or the cipher 
+negotiation capability itself.
+
+(2) TLS version negotiation: You are managing an OpenVPN network and 
+want to migrate to TLS 1.2 but still allow older clients to connect with 
+TLS 1.0 for some period of time until it is phased out.
+
+(3) Config file grammar: You are a developer and want to add a new 
+OpenVPN config file directive, but don't want older clients to abort 
+because they don't understand the directive.
+
+Within these use cases are three areas where versioning is an issue, and 
+I'll discuss each of them separately:
+
+TLS Protocol
+------------
+
+Since day 1, OpenVPN has used TLS 1.0 as a control channel and key 
+exchange mechanism.  But now we have TLS 1.1 and 1.2, each of which 
+addresses significant shortcomings in its predecessor.  Fortunately, 
+SSL/TLS already includes dynamic version negotiation.  So I've put 
+together a patch that leverages on this, by allowing OpenVPN client and 
+server to negotiate the TLS version and use the highest version 
+supported by both peers.  The patch also adds a new directive 
+"tls-version-min" that allows either client or server to specify a 
+minimum required TLS version from the peer.
+
+https://github.com/jamesyonan/openvpn/commit/6ee8faade224cc346d67a7f1716df4012782999a
+
+OpenVPN Protocol
+----------------
+
+The OpenVPN protocol did not originally support handshaking, i.e. having 
+the client and server mutually communicate their capabilities and use 
+this info to dynamically select protocol parameters such as cipher, HMAC 
+digest, compression algorithm, etc.
+
+Instead of handshaking, we would manually add compatible directives to 
+both client and server configs.  But this approach is not very flexible, 
+because in the absence of a handshaked protocol negotiation, every time 
+a configuration change is made on the server that affects the protocol 
+(such as cipher type), all of the client configs must also be upgraded 
+or they will fail to connect.
+
+To improve flexibility, we've gradually increased the amount of 
+handshaking that occurs in the OpenVPN protocol.  For example, with the 
+recent addition of the Snappy compression algorithm, we now have a 
+mechanism where the compression algorithm can be dynamically negotiated 
+between client and server.
+
+The basic mechanism for how this works is as follows:
+
+After the TLS negotiation has succeeded but before the tunnel is active, 
+the client communicates its capabilities to the server using a list of 
+key/value pairs sent over the TLS control channel.  We will call this 
+the Client Capabilities List (which itself was introduced in OpenVPN 2.1 
+and was added to the OpenVPN protocol in a way that older clients would 
+ignore it).
+
+For example, running an OpenVPN 3.0 client on my mac, the following 
+key/value pairs are sent to the server.
+
+   IV_VER=3.0
+   IV_PLAT=mac
+   IV_SNAPPY=1
+   IV_LZO=1
+
+This tells the server that the client supports both Snappy and LZO 
+compression protocols.  Now that the server knows this, it can choose a 
+protocol that it also supports, and communicate this back to the client 
+via a pushed directive:
+
+   compress snappy
+
+With this model, the client suggests a list of capabilities that it is 
+willing to support, and the server makes the final selection from that 
+list.  But this also gives the client some discretion, as it can choose 
+to veto certain capabilities by not including them in the list sent to 
+the server.  For example, suppose the client end-user chooses to disable 
+compression.  In this case, the client will simply tell the server that 
+it doesn't support compression, i.e.
+
+   IV_VER=3.0
+   IV_PLAT=mac
+   IV_LZO_STUB=1
+   IV_COMP_STUB=1
+
+The "STUB" parameters indicate support for null compression algorithms 
+that include the compression framing byte, but don't actually compress 
+any data.
+
+So this basic model of the client sending a key/value list of protocol 
+capabilities to the server, and the server responding with push 
+directives to select the actual protocol feature can be a basic building 
+block for adding additional negotiated features to the OpenVPN protocol.
+
+For example, this model could be used to negotiate other protocol 
+capabilities such as cipher and HMAC digest:
+
+   IV_CIPHER=BF-CBC,AES-128-CBC
+   IV_AUTH=SHA1,SHA256,SHA512
+
+After receiving this info from the client, the server could choose a 
+cipher and auth parameter and push it back to the client.  Among other 
+things, this requires that the client supports pushed "cipher" and 
+"auth" directives (currently only the 3.0 core supports this).  There is 
+also the issue of the size of the Client Capabilities List.  The 
+IV_CIPHER and IV_AUTH lists might grow to be quite long, and the current 
+Client Capabilities List is limited in size to 2048 bytes based on the 
+TLS_CHANNEL_BUF_SIZE constant in common.h.  To reduce the size, we might 
+consider:
+
+(a) use a single character designation for ciphers and HMAC digests, 
+such as:
+
+Cipher Codes:
+  A : BF-CBC
+  B : AES-128-CBC
+  . . .
+
+Then communicate IV_CIPHER using the cipher codes:
+
+   IV_CIPHER=AB
+
+This would require that the OpenVPN Project standardize on set of codes 
+for ciphers and HMAC digests.
+
+(b) remove the 2048 byte limitation on the Client Capabilities List. 
+The limitation arises because of the packetization of messages over the 
+OpenVPN control channel.  One way to resolve this would be to 
+standardize on a continuation marker that tells the peer that another 
+packet of Client Capabilities List data is forthcoming.  This would be 
+similar to how the same problem was solved with the pushed directives 
+list using continuations.
+
+Rather than choosing either (a) or (b) I would suggest implementing them 
+both.  The number of ciphers and digests is always increasing and using 
+a one or two-character code to denote a cipher or digest will make the 
+Client Capabilities List smaller and faster to pass over the wire.  It 
+would also be good to fix (b) since it seems like an arbitrary 
+limitation that could cause issues as the Client Capabilities List grows.
+
+Config file grammar
+-------------------
+
+Originally, OpenVPN was strict about config file directives that it 
+didn't recognize -- it was a fatal error to specify an unrecognized 
+directive.
+
+In many cases this is beneficial for security in the sense that a 
+directive such as ns-cert-type or tls-remote, if not understood by the 
+client and ignored, could render the connection much less secure than 
+intended.
+
+But it also reduces flexibility because it makes adding new directives 
+unnecessarily difficult if the new directive crashes an older client 
+that doesn't yet recognize it.
+
+One solution that was introduced in OpenVPN 2.1 added a new directive 
+that would cause any unrecognized directive to be ignored.
+
+   setenv FORWARD_COMPATIBLE 1
+
+In hindsight, this is probably too broad.  It would be better to allow 
+individual directives to specify whether older clients that don't 
+recognize them should ignore them or abort.
+
+I've put together a new (and very small) patch that I believe solves the 
+problem in a better way.
+
+https://github.com/jamesyonan/openvpn/commit/037690df22a4604a556c9b470d1f5e891991834b
+
+This patch defines a new directive prefix "setenv opt" that if prepended 
+to an existing directive, will cause it to be ignored by clients that 
+don't understand it (starting the directive with "setenv" is useful 
+because OpenVPN clients going back to 2.0 don't really care what comes 
+after the "setenv", so older clients should simply ignore the prefix).
+
+To look at an example, the TLS versioning patch above adds a new 
+directive "tls-version-min" to set the minimum allowed TLS version used 
+by the peer.  Example client usage might be:
+
+   tls-version-min 1.2
+
+Suppose I want to put this directive in the config files I distribute to 
+clients, but have it be ignored by older clients that don't recognize 
+it.  I could do this as follows on the client:
+
+   setenv opt tls-version-min 1.2
+
+Suppose I also want to handle the case where some clients understand the 
+tls-version-min directive but are not linked with an SSL library that 
+supports TLS 1.2.  To allow these clients to gracefully degrade to the 
+highest TLS version they can support, a variation of the directive could 
+be used on the client:
+
+   setenv opt tls-version-min 1.2 or-highest
+
+Now suppose that after some upgrade period, we now want to require that 
+all clients connect at TLS 1.2 or higher, and that 1.1 and 1.0 are no 
+longer allowed.  This can be done by limiting TLS to 1.2 or higher on 
+the server:
+
+   tls-version-min 1.2
+
+James
 
