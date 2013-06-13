@@ -1,8 +1,8 @@
+Message-ID: <51B9B6EE.60007@...193...>
+Date: Thu, 13 Jun 2013 14:11:26 +0200
+From: Farkas Levente <lfarkas@...193...>
 MIME-Version: 1.0
-Date: Wed, 12 Jun 2013 22:33:15 -0400
-Message-ID: <CAPJLeQ9nXbSyBhwHQWM9CbNvhE5cU=2GU_M3QFRfoiqCjZvAsQ@...278...>
-From: Mark Goldman <bitshifter@...277...>
-Subject: [Openvpn-devel] Apple VPN API
+Subject: [Openvpn-devel] how to report bug
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,19 +12,15 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hello everybody,
-
-I've been asked to look in to porting a custom VPN solution to an iOS
-device.  I've looked everywhere for who to contact at Apple to try and
-gain access to their VPN API and have not had any luck.  Does anyone
-here know who to talk to at Apple, or maybe could point me in a
-direction to figure it out?  Thanks,
-
--mdg
+hi,
+what is the current prefered way to report bug in openvpn?
+trac? eg is there any chance to this will be fixed?
+https://community.openvpn.net/openvpn/ticket/225
+regards.
 
 -- 
-Our problems are mostly behind us, now all we have to do is fight the solutions.
+  Levente                               "Si vis pacem para bellum!"
 
