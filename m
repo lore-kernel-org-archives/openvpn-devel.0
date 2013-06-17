@@ -1,14 +1,16 @@
-MIME-Version: 1.0
-In-Reply-To: <51BE2AA0.7060908@...1227...>
-References: <5C629764-6A77-4E0D-8B27-AF0AE8B29025@...1829...>
-	<51BCF5D1.6070407@...1227...>
-	<BC613B74-D9A7-48B9-94B3-2AFF99BF8847@...1829...>
-	<51BE2AA0.7060908@...1227...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Mon, 17 Jun 2013 11:33:54 -0400
-Message-ID: <CAEsd45QVPywukuUO=h8f+PddGs1EPX2MCRC=ir=iBWEqdKx6zA@...278...>
-Content-Type: multipart/alternative; boundary=bcaec501638b6c8ed304df5b55ed
-Subject: Re: [Openvpn-devel] Native OS X tunnels
+Date: Mon, 17 Jun 2013 17:36:23 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20130617153623.GS20843@...1296...>
+References: <20130617110003.GX4767@...1330...>
+	<20130617115112.GQ20843@...1296...>
+	<20130617140518.GB3750@...1330...>
+	<20130617143644.GA6399@...1330...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="T3gMhG0dRUMlbdt/"
+Content-Disposition: inline
+In-Reply-To: <20130617143644.GA6399@...1330...>
+Subject: Re: [Openvpn-devel] Fix for CVE-2013-2061 breaks multihome?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,99 +19,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---bcaec501638b6c8ed304df5b55ed
-Content-Type: text/plain; charset=UTF-8
-
-On Sun, Jun 16, 2013 at 5:14 PM, Arne Schwabe <arne@...1227...> wrote:
-
->
-> I think using utun as default at least for -master and 2.4rc candidates is
-> a good way to get the feature tested. I hope there is time in the next
-> OpenVPN developer IRC meeting to decide if my or your patch should be
-> included.
-
-
-I won't be in the IRC chat, so here are my comments on Arne's patch vs.
-Peter's patch from a feature perspective:
-
-The behavior difference between the two patches seems to be that Arne's
-patch defaults to using utun, whereas Peter's patch defaults to tun.
-
-From what I understand, utun seems to work and even works in some
-situations where the standard tuntaposx tun doesn't and is the
-Apple-supported standard. So I think users should transition to using it.
-To help them along, I think defaulting to utun is a good idea.
-
-I intend to add 2.4rc builds to Tunnelblick when they are available and to
-support utun on 10.7+ systems. (Tunnelblick lets users choose which OpenVPN
-version they use; usually I allow two or three choices, so it's easy to add
-new versions of OpenVPN for testing.)
-
-Whichever patch is included, I think Tunnelblick's default will be to use
-utun, and give the user a way to override that and use tun. It looks like I
-can easily use tun with Arne's patch by specifying "--dev-type tun" to
-revert to using tun, and easily use utun with Peter's patch by
-specifying "--dev-impl-osx
-utun".
-
-I have a slight preference forArne's patch, which doesn't introduce yet
-another new OpenVPN option.
-
-I am not expressing an opinion on the code in the patches, but only on
-their default behaviors.
-
---bcaec501638b6c8ed304df5b55ed
-Content-Type: text/html; charset="UTF-8"
+--T3gMhG0dRUMlbdt/
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-<div dir=3D"ltr">On Sun, Jun 16, 2013 at 5:14 PM, Arne Schwabe <span dir=3D=
-"ltr">&lt;<a href=3D"mailto:arne@...1227..." target=3D"_blank">arne@...1830...=
-...</a>&gt;</span> wrote:<br><div class=3D"gmail_extra"><div class=3D"gmail=
-_quote">
+Hi,
 
+On Mon, Jun 17, 2013 at 04:36:44PM +0200, Alberto Gonzalez Iniesta wrote:
+> Seems like "cmsg_len" went nuts...
 
-<blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-=
-left-width:1px;border-left-color:rgb(204,204,204);border-left-style:solid;p=
-adding-left:1ex"><div><br></div>
-I think using utun as default at least for -master and 2.4rc candidates is =
-a good way to get the feature tested. I hope there is time in the next Open=
-VPN developer IRC meeting to decide if my or your patch should be included.=
-</blockquote>
+Seems your compiler grew too much smarts and optimized that bug to death :-)
 
+> Again, only happens with multihome, if that helps...
 
-<div><br></div><div style>I won&#39;t be in the IRC chat, so here are my co=
-mments on Arne&#39;s patch vs. Peter&#39;s patch from a feature perspective=
-:</div><div style><br></div><div style>The behavior difference between the =
-two patches seems to be that Arne&#39;s patch defaults to using utun, where=
-as Peter&#39;s patch defaults to tun.</div>
+That code path is only used for multihome.  Bugfix is here (if it's indeed
+*that* problem):
 
-<div style><br></div><div style>From what I understand, utun seems to work =
-and even works in some situations where the standard tuntaposx tun doesn&#3=
-9;t and is the Apple-supported standard. So I think users should transition=
- to using it. To help them along, I think defaulting to utun is a good idea=
-.</div>
+commit 8c431f960357d776cfd0961192214ad1b0942bfb
+Author: Gert Doering <gert@...1296...>
+Date:   Thu May 30 13:31:24 2013 +0200
 
-<div><br></div><div>I intend to add 2.4rc builds to Tunnelblick when they a=
-re available and to support utun on 10.7+ systems. (Tunnelblick lets users =
-choose which OpenVPN version they use; usually I allow two or three choices=
-, so it&#39;s easy to add new versions of OpenVPN for testing.)</div>
+    Fix problem with UDP tunneling due to mishandled pktinfo structures.
+=20=20=20=20
+    In link_socket_write_udp_posix_sendmsg(), pktinfo structures for ipv4 a=
+nd
+    ipv6 are going out of scope before actually calling sendmsg(), so depen=
+ding
+    on compiler optimization, garbage is passed to sendmsg() - fix by using
+    "union openvpn_pktinfo" and having that in scope all the time.
+=20=20=20=20
+    Problem reported and patch provided by "danta" in trac#297
+=20=20=20=20
+    Signed-off-by: Gert Doering <gert@...1296...>
+    Acked-by: Gert Doering <gert@...1296...>
+    Acked-by: Arne Schwabe <arne@...1227...>
+    URL: https://community.openvpn.net/openvpn/ticket/297
+    Message-ID: <20130530184427.GP20843@...1296...>
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/7629
 
-<div><br></div><div style>Whichever patch is included, I think Tunnelblick&=
-#39;s default will be to use utun, and give the user a way to override that=
- and use tun. It looks like I can easily use tun with Arne&#39;s patch by s=
-pecifying &quot;--dev-type tun&quot; to revert to using tun, and easily use=
- utun with Peter&#39;s patch by specifying &quot;<span style=3D"font-family=
-:arial,sans-serif;font-size:13px">--dev-impl-osx utun&quot;.</span></div>
+gert
 
-<div style><br></div><div>I have a slight preference forArne&#39;s patch, w=
-hich doesn&#39;t introduce yet another new OpenVPN option.</div><div><br></=
-div><div>I am not expressing an opinion on the code in the patches, but onl=
-y on their default behaviors.<br>
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-</div></div></div></div>
+--T3gMhG0dRUMlbdt/
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
---bcaec501638b6c8ed304df5b55ed--
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBUb8s96kuBuNlUUl1AQLE8gQAoBfKJXNSluyTHwAxX1nhodffd3feApo8
+Ki5hyxLeR8QTaFtliobiGFUepQWVvPMMOpSQX7LLqvNUji9/SPzK+7oB2Jpk2kyL
+2kqWUvWs72pxY5hu/rq0fZLF5YpE97m8NQ38Lh5A6xRIf8wsOq17fwjBCZssU5dX
+gFM1VifB3v8=
+=BTPN
+-----END PGP SIGNATURE-----
+
+--T3gMhG0dRUMlbdt/--
 
