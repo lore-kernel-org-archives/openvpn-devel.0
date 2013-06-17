@@ -1,12 +1,8 @@
-Message-ID: <51BEC19F.7040305@...1435...>
-Date: Mon, 17 Jun 2013 09:58:23 +0200
-From: Steffan Karger <steffan.karger@...1435...>
+Date: Mon, 17 Jun 2013 13:00:03 +0200
+From: Alberto Gonzalez Iniesta <agi@...64...>
+Message-ID: <20130617110003.GX4767@...1330...>
 MIME-Version: 1.0
-References: <51B8CE21.6080203@...515...>
-	<1CED409804E2164C8104F9E623B08B9014555DB21A@...1436...>
-	<51BB74B2.9020809@...515...>
-In-Reply-To: <51BB74B2.9020809@...515...>
-Subject: Re: [Openvpn-devel] OpenVPN Versioning
+Subject: [Openvpn-devel] Fix for CVE-2013-2061 breaks multihome?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,35 +11,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
+Cc: 712414@...40...
 
-On 06/14/2013 09:53 PM, James Yonan wrote:
-> To get the adaptive versioning behavior in OpenSSL, you have to use 
-> SSLv23_server_method() or SSLv23_client_method() and then explicitly 
-> disable the versions you don't want to consider, i.e. SSL_OP_NO_SSLv2, 
-> SSL_OP_NO_SSLv3, SSL_OP_NO_TLSv1, SSL_OP_NO_TLSv1_1, etc.
-> 
-Wow, so SSLv23_{client,server}_method() is the 'wildcard' you need to
-dynamically negotiate the version. Yet it sounds like something
-completely broken that should be avoided at all cost. OpenSSL keeps
-amazing me.
+Hi,
 
->> Does the change to key_state_ssl_init() do anything?
-> 
-> I had to add ssl_flags (containing tls-version-min parameter) to 
-> key_state_ssl_init because that seems like the most appropriate place to 
-> configure tls-version-min for PolarSSL.
-> 
-> For OpenSSL, tls_ctx_set_options is the right place to configure 
-> tls-version-min.
-> 
-The ssl_flags are already available through the tls session that is
-passed as the fourth parameter. To make this a bit more clear, commit
-b97e2c3 changed the type of session to struct tls session* (see
-https://github.com/OpenVPN/openvpn/commit/b97e2c3c90afdbb1a24bc1357ec6b94d626defcd).
+I applied the fix for CVE-2013-2061 [0] to Debian's stable version of
+openvpn (2.2.1) [1]. When the new package was sent to the mirrors I got
+a couple of reports of broken VPNs [2]. After some testing I think the
+problem arises with the use of "multihome" option. The server daemon
+starts to log lots of these:
+Jun 17 12:43:52 srv ovpn-srv[31073]: write UDPv4 []: Invalid argument (code=
+=3D22)
+Jun 17 12:43:53 srv ovpn-srv[31073]: write UDPv4 []: Invalid argument (code=
+=3D22)
 
--Steffan
+If the "multihome" option is removed, the VPN comes back to live.
 
+Could a patch to fix this be made or should we go back to 2.2.1 without
+the patch to fix CVE-2013-2061?
+
+Thanks,
+
+Alberto
+
+
+
+[0] https://github.com/OpenVPN/openvpn/commit/11d21349a4e7e38a025849479b36a=
+ce7c2eec2ee
+[1] http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D707329
+[2] http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D712414
+--=20
+Alberto Gonzalez Iniesta    | Formaci=F3n, consultor=EDa y soporte t=E9cnico
+agi@(inittab.org|debian.org)| en GNU/Linux y software libre
+Encrypted mail preferred    | http://inittab.com
+
+Key fingerprint =3D 5347 CBD8 3E30 A9EB 4D7D  4BF2 009B 3375 6B9A AA55
 
