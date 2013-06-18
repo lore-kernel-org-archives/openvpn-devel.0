@@ -1,13 +1,19 @@
-From: Joachim Schipper <joachim.schipper@...1435...>
-Date: Tue, 18 Jun 2013 09:23:33 +0200
-Message-ID: <1CED409804E2164C8104F9E623B08B901455BF71F4@...1436...>
-References: <CALkG1NxZC7DT+SZHuSYemyyaH8dVsx_0PAm-7pTYY9EYMbZBgQ@...278...>
-	<1CED409804E2164C8104F9E623B08B901455BF6C4F@...1436...>
-In-Reply-To: <1CED409804E2164C8104F9E623B08B901455BF6C4F@...1436...>
-Content-Language: en-US
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Adding support for AEAD cipher modes (AES-GCM,
-	et al.)
+Date: Tue, 18 Jun 2013 09:31:14 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20130618073114.GW20843@...1296...>
+References: <5C629764-6A77-4E0D-8B27-AF0AE8B29025@...1829...>
+	<51BCF5D1.6070407@...1227...>
+	<BC613B74-D9A7-48B9-94B3-2AFF99BF8847@...1829...>
+	<51BE2AA0.7060908@...1227...>
+	<CAEsd45QVPywukuUO=h8f+PddGs1EPX2MCRC=ir=iBWEqdKx6zA@...278...>
+	<20130617173949.GT20843@...1296...>
+	<8B6DA5B7-E5EF-434A-89C5-F9C89D8A8451@...1829...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="MoTbte+PTqanp4Nm"
+Content-Disposition: inline
+In-Reply-To: <8B6DA5B7-E5EF-434A-89C5-F9C89D8A8451@...1829...>
+Subject: Re: [Openvpn-devel] Native OS X tunnels
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,54 +22,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Peter Sagerson <psagers@...1829...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--MoTbte+PTqanp4Nm
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: Kenny Root <kenny@...1827...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
-Joachim Schipper wrote [I'm continuing my own message here]:
-> > -----Original Message-----
-> > From: Kenny Root [mailto:kenny@...1827...]
-> > Sent: dinsdag 4 juni 2013 2:15
-> > To: openvpn-devel@lists.sourceforge.net
-> > Subject: [Openvpn-devel] Adding support for AEAD cipher modes
-> > (AES-GCM, et al.)
-> >
-> > I wrote a patch to add AEAD cipher modes to OpenVPN.
-> >
-> > It also doesn't appear PolarSSL has added AES-GCM to their main crypto
-> > API yet.
-> >
->
-> Cool to see support for GCM in the data channel!
->
-> PolarSSL does support GCM (since 1.2, see include/polarssl/gcm.h), and
-> indeed OpenVPN-NL exclusively uses a GCM SSL ciphersuite in the control
-> channel. However, it would be very neat to also have it in the data
-> channel, so I looked at your patch with great interest. It's really
-> neat, but I do have some comments.
+Hi,
 
-> The prng_bytes() on src/openvpn/crypto.c:144 seems odd in various ways.
-> I'll continue reviewing tonight and tomorrow morning, and I'll take a
-> good look at this chunk of code then. (Sorry for the slow review; life
-> and spotty internet in the train got in the way.)
+On Mon, Jun 17, 2013 at 11:51:53AM -0700, Peter Sagerson wrote:
+> Just a recommendation, but I wouldn't necessarily consider the two=20
+> proposals alternatives.=20
 
-Continuing this train of thought, both GCM and CCM need non-repeating (but
-possibly predictable) IVs. As long as net_time and net_id are unique to the
-current packet, your code works fine; and you should still have 32 bits of
-randomness left to guard against Bad Things happening to the clock. So this
-code is just fine.
+I agree - the basic functionality is the same, just some of the surrounding
+details are different.  As I said, I need to closely look at both patches
+to form an educated opinion for the discussion on Thursday :-)
 
-> I don't understand src/openvpn/crypto.c:194 either, but I'll take
-> another look tonight.
+Still, anything that adds #ifdef to options.c is something I prefer to
+solve in different ways...
 
-After another reading, I understand just fine. Consider adding "else
-ASSERT(outlen =3D=3D 0)", but ok.
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-> Again, thanks for the patch! I'm no contributor, but I do think it's
-> really cool.
+--MoTbte+PTqanp4Nm
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-Let me reiterate: thanks! I've just taken a quick look, but it looks quite
-nice.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
 
-                Joachim
+iQCVAwUBUcAMwqkuBuNlUUl1AQLpSgQAv7M4IkJKB7m0KBHKeeClIv4oMVtIzk3t
+u5pfvkCE0+RNlDuhpobV387mw/SdPDO1CqCjhrcERvOuf4thyT3eTOnLjWmwGxOP
+9N0dgoXumROrtm8k2LTmjqYYXrtXtVM2qVVPjuz0JbwuTG392KVWx6tHnkojQ5QR
+15EdErrzMOc=
+=C3ua
+-----END PGP SIGNATURE-----
+
+--MoTbte+PTqanp4Nm--
 
