@@ -1,19 +1,13 @@
-Date: Tue, 18 Jun 2013 09:31:14 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20130618073114.GW20843@...1296...>
-References: <5C629764-6A77-4E0D-8B27-AF0AE8B29025@...1829...>
-	<51BCF5D1.6070407@...1227...>
-	<BC613B74-D9A7-48B9-94B3-2AFF99BF8847@...1829...>
-	<51BE2AA0.7060908@...1227...>
-	<CAEsd45QVPywukuUO=h8f+PddGs1EPX2MCRC=ir=iBWEqdKx6zA@...278...>
-	<20130617173949.GT20843@...1296...>
-	<8B6DA5B7-E5EF-434A-89C5-F9C89D8A8451@...1829...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="MoTbte+PTqanp4Nm"
-Content-Disposition: inline
-In-Reply-To: <8B6DA5B7-E5EF-434A-89C5-F9C89D8A8451@...1829...>
-Subject: Re: [Openvpn-devel] Native OS X tunnels
+From: Joachim Schipper <joachim.schipper@...1435...>
+Date: Tue, 18 Jun 2013 09:41:28 +0200
+Message-ID: <1CED409804E2164C8104F9E623B08B901455BF7221@...1436...>
+References: <51B8CE21.6080203@...515...>
+	<1CED409804E2164C8104F9E623B08B9014555DB21A@...1436...>
+	<51BB74B2.9020809@...515...>
+In-Reply-To: <51BB74B2.9020809@...515...>
+Content-Language: en-US
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] OpenVPN Versioning
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,48 +16,96 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Peter Sagerson <psagers@...1829...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---MoTbte+PTqanp4Nm
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: James Yonan <james@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+From: James Yonan <james@...515...>:
+> On 14/06/2013 02:47, Joachim Schipper wrote:
+> >>From James Yonan <james@...515...>:
+> >> TLS Protocol
+> >> ------------
+> >>
+> >> Since day 1, OpenVPN has used TLS 1.0 as a control channel and key
+> >> exchange mechanism.  But now we have TLS 1.1 and 1.2, each of which
+> >> addresses significant shortcomings in its predecessor.  Fortunately,
+> >> SSL/TLS already includes dynamic version negotiation.  So I've put
+> >> together a patch that leverages on this, by allowing OpenVPN client
+> >> and server to negotiate the TLS version and use the highest version
+> >> supported by both peers.  The patch also adds a new directive "tls-
+> >> version-min" that allows either client or server to specify a
+> minimum
+> >> required TLS version from the peer.
+> >>
+> >>
+> https://github.com/jamesyonan/openvpn/commit/6ee8faade224cc346d67a7f1
+> >> 7
+> >> 1
+> >> 6df4012782999a
 
-On Mon, Jun 17, 2013 at 11:51:53AM -0700, Peter Sagerson wrote:
-> Just a recommendation, but I wouldn't necessarily consider the two=20
-> proposals alternatives.=20
+[snip: SSL negotiation. Thanks for the explanation; I agree that speaking
+the highest supported protocol is good.]
 
-I agree - the basic functionality is the same, just some of the surrounding
-details are different.  As I said, I need to closely look at both patches
-to form an educated opinion for the discussion on Thursday :-)
+> > I'm not sure what purpose the "or-highest" serves. Clients already
+> connect with the newest protocol supported by both client and server;
+> if you want to run a TLSv1.2-only network, just set min-version to 1.2
+> on the server. (...)
+>
+> Suppose a server admin wants to upgrade to TLS 1.2 over some transition
+> period, to allow time to upgrade existing clients in the field.
 
-Still, anything that adds #ifdef to options.c is something I prefer to
-solve in different ways...
+> The overall goal here is to provide tools that allow a controlled
+> rollout of TLS 1.2 that doesn't break any clients during the rollout
+> period, and to upgrade to 1.2 in a way that doesn't create the
+> potential for MiTM version rollback attacks.
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+But no modern SSL protocol allows version rollback attacks: modern
+implementations will always speak the highest supported/configured protocol
+version between each other. (Only) SSLv2 allows rollback attacks, which is
+why the only sane way to deal with SSLv2 in 2013 is to unconditionally
+disable support.
 
---MoTbte+PTqanp4Nm
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+> > The switch(tls_version_min) needs a default case, just compile the
+> first case/default: unconditionally.
+>
+> There is a default case already -- it's right under "case
+> TLS_VER_1_0:".
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
+Yes, but that's #ifdef'ed. I'd be happier if the default case remained
+present even if PolarSSL foolishly decides to drop TLSv1 support.
 
-iQCVAwUBUcAMwqkuBuNlUUl1AQLpSgQAv7M4IkJKB7m0KBHKeeClIv4oMVtIzk3t
-u5pfvkCE0+RNlDuhpobV387mw/SdPDO1CqCjhrcERvOuf4thyT3eTOnLjWmwGxOP
-9N0dgoXumROrtm8k2LTmjqYYXrtXtVM2qVVPjuz0JbwuTG392KVWx6tHnkojQ5QR
-15EdErrzMOc=
-=C3ua
------END PGP SIGNATURE-----
+[snip: ciphersuites]
+> > Negotiating ciphers might be fatal in some configurations that were a
+> > bad idea to begin with. E.g. if you use OpenVPN with a static key and
+> > --auth none (which is a bad idea!), adding this negotation could
+> allow
+> > an attacker to set the cipher to none or, more dangerously, to a very
+> > weak cipher like DES (provided it is mutually supported). An attacker
+> > could then bruteforce the key and use his knowledge of 56 bits of the
+> > key to attack stronger protocols like AES or 3DES. (Or do we only
+> > negotiate in SSL mode? I must admit to being fuzzy on the non-SSL
+> > mode.)
+>
+> Static key mode has no negotiation.
+>
+> Agreed that any negotiation model must have constraints placed on the
+> security of the negotiated cipher and HMAC digest.  You would probably
+> want to disable "cipher none" or "auth none" on the presumption that
+> users who want a cleartext tunnel would explicitly configure the client
+> and server for this.
 
---MoTbte+PTqanp4Nm--
+Sure. Just disabling negotiations unless you have an SSL'd control channel
+works fine against this.
+
+> One thing to keep in mind is that OpenVPN protocol negotiation occurs
+> over the already-negotiated TLS session, so it is immune to being
+> tampered with by a MiTM.  This is in contrast to SSL/TLS where a MiTM
+> can affect the negotiation.
+
+As above, MiTM attackers cannot effect the negotiation step in SSL/TLS
+protocols after SSLv2, except trivially (by causing the negotiation to fail=
+, possibly a couple of protocol steps later, e.g. by dropping all packets.)
+
+                Joachim
 
