@@ -1,13 +1,9 @@
-Message-ID: <51C113CE.90809@...515...>
-Date: Tue, 18 Jun 2013 20:13:34 -0600
-From: James Yonan <james@...515...>
 MIME-Version: 1.0
-References: <51B8CE21.6080203@...515...>
-	<1CED409804E2164C8104F9E623B08B9014555DB21A@...1436...>
-	<51BB74B2.9020809@...515...>
-	<1CED409804E2164C8104F9E623B08B901455BF7221@...1436...>
-In-Reply-To: <1CED409804E2164C8104F9E623B08B901455BF7221@...1436...>
-Subject: Re: [Openvpn-devel] OpenVPN Versioning
+Date: Wed, 19 Jun 2013 18:00:27 +0300
+Message-ID: <CABT9mj_BMkwO9rZ9T847GBaYrGbXdwCB76zyPDqnNKNr0nk5Dw@...278...>
+From: Athanasios Douitsis <aduitsis@...277...>
+Content-Type: multipart/alternative; boundary=047d7bd6be120fff3304df83174a
+Subject: [Openvpn-devel] push route-ipv6 and metric
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,112 +12,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Joachim Schipper <joachim.schipper@...1435...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On 18/06/2013 01:41, Joachim Schipper wrote:
-> From: James Yonan <james@...515...>:
->> On 14/06/2013 02:47, Joachim Schipper wrote:
->>> >From James Yonan <james@...515...>:
->>>> TLS Protocol
->>>> ------------
->>>>
->>>> Since day 1, OpenVPN has used TLS 1.0 as a control channel and key
->>>> exchange mechanism.  But now we have TLS 1.1 and 1.2, each of which
->>>> addresses significant shortcomings in its predecessor.  Fortunately,
->>>> SSL/TLS already includes dynamic version negotiation.  So I've put
->>>> together a patch that leverages on this, by allowing OpenVPN client
->>>> and server to negotiate the TLS version and use the highest version
->>>> supported by both peers.  The patch also adds a new directive "tls-
->>>> version-min" that allows either client or server to specify a
->> minimum
->>>> required TLS version from the peer.
->>>>
->>>>
->> https://github.com/jamesyonan/openvpn/commit/6ee8faade224cc346d67a7f1
->>>> 7
->>>> 1
->>>> 6df4012782999a
->
-> [snip: SSL negotiation. Thanks for the explanation; I agree that speaking
-> the highest supported protocol is good.]
->
->>> I'm not sure what purpose the "or-highest" serves. Clients already
->> connect with the newest protocol supported by both client and server;
->> if you want to run a TLSv1.2-only network, just set min-version to 1.2
->> on the server. (...)
->>
->> Suppose a server admin wants to upgrade to TLS 1.2 over some transition
->> period, to allow time to upgrade existing clients in the field.
->
->> The overall goal here is to provide tools that allow a controlled
->> rollout of TLS 1.2 that doesn't break any clients during the rollout
->> period, and to upgrade to 1.2 in a way that doesn't create the
->> potential for MiTM version rollback attacks.
->
-> But no modern SSL protocol allows version rollback attacks: modern
-> implementations will always speak the highest supported/configured protocol
-> version between each other. (Only) SSLv2 allows rollback attacks, which is
-> why the only sane way to deal with SSLv2 in 2013 is to unconditionally
-> disable support.
+--047d7bd6be120fff3304df83174a
+Content-Type: text/plain; charset=ISO-8859-1
 
-Right, and the patch is able to unconditionally disable support for SSL 
-2 and 3 since these were never supported by even the earliest versions 
-of OpenVPN.
+Hello,
 
->>> The switch(tls_version_min) needs a default case, just compile the
->> first case/default: unconditionally.
->>
->> There is a default case already -- it's right under "case
->> TLS_VER_1_0:".
->
-> Yes, but that's #ifdef'ed. I'd be happier if the default case remained
-> present even if PolarSSL foolishly decides to drop TLSv1 support.
+I noticed that issuing the following command in the server config:
 
-Agreed -- there shouldn't be any implicit assumption
-that SSL lib might not implement TLS 1.0.
+push "route-ipv6 ::/0 2001:648:2000:ffae::1 15"
 
-https://github.com/jamesyonan/openvpn/commit/d23005413b0e0f28a3c48a6342f494763d5c9b40
+does indeed make a windows client install that route, but it ignores the
+metric:
 
-> [snip: ciphersuites]
->>> Negotiating ciphers might be fatal in some configurations that were a
->>> bad idea to begin with. E.g. if you use OpenVPN with a static key and
->>> --auth none (which is a bad idea!), adding this negotation could
->> allow
->>> an attacker to set the cipher to none or, more dangerously, to a very
->>> weak cipher like DES (provided it is mutually supported). An attacker
->>> could then bruteforce the key and use his knowledge of 56 bits of the
->>> key to attack stronger protocols like AES or 3DES. (Or do we only
->>> negotiate in SSL mode? I must admit to being fuzzy on the non-SSL
->>> mode.)
->>
->> Static key mode has no negotiation.
->>
->> Agreed that any negotiation model must have constraints placed on the
->> security of the negotiated cipher and HMAC digest.  You would probably
->> want to disable "cipher none" or "auth none" on the presumption that
->> users who want a cleartext tunnel would explicitly configure the client
->> and server for this.
->
-> Sure. Just disabling negotiations unless you have an SSL'd control channel
-> works fine against this.
->
->> One thing to keep in mind is that OpenVPN protocol negotiation occurs
->> over the already-negotiated TLS session, so it is immune to being
->> tampered with by a MiTM.  This is in contrast to SSL/TLS where a MiTM
->> can affect the negotiation.
->
-> As above, MiTM attackers cannot effect the negotiation step in SSL/TLS
-> protocols after SSLv2, except trivially (by causing the negotiation to fail, possibly a couple of protocol steps later, e.g. by dropping all packets.)
+add_route_ipv6(::/0 -> 2001:648:2000:ffae::1 metric 15) dev Local Area
+Connection 3
+C:\Windows\system32\netsh.exe interface ipv6 add route ::/0 Local Area
+Connection 3 fe80::8 store=active
 
-Aha, that's good to know.  Apparently browsers are still vulnerable to 
-version rollback attacks due to compatibility fallback mechanisms, but 
-that's great that SSL/TLS protocols are immune above SSL 3.  There's a 
-good writeup on the subject here:
+Issuing route print client-side confirms that suspicion.
 
-http://www.carbonwind.net/blog/post/Random-SSLTLS-101%E2%80%93SSLTLS-version-rollbacks-and-browsers.aspx
+ 13     26    ::/0                     fe80::208:7cff:fe63:e400
+ 14    286   ::/0                     fe80::8
 
-James
+(13 is my lan, 14 is the tun device. As you can see, metric is 286)
+
+I suppose most people on this list should be aware of the problem. If you
+desire so, I'd gladly file a bug request.
+
+Fwiw, I was able to workaround this problem by pushing two /1 routes,
+exactly like def1 does for IPv4. Like this:
+
+push "route-ipv6 ::/1 2001:648:2000:ffae::1"
+push "route-ipv6 8000::/1 2001:648:2000:ffae::1"
+
+Apologies if this has been discussed before.
+
+Kind regards to all,
+-- 
+Athanasios Douitsis
+
+--047d7bd6be120fff3304df83174a
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div><div><div><div><div>Hello,<br><br></div>I noticed tha=
+t issuing the following command in the server config:<br><br>push &quot;rou=
+te-ipv6 ::/0 2001:648:2000:ffae::1 15&quot;<br><br></div>does indeed make a=
+ windows client install that route, but it ignores the metric: <br>
+<br>add_route_ipv6(::/0 -&gt; 2001:648:2000:ffae::1 metric 15) dev Local Ar=
+ea Connection 3<br>C:\Windows\system32\netsh.exe interface ipv6 add route :=
+:/0 Local Area Connection 3 fe80::8 store=3Dactive<br><br></div><div>Issuin=
+g route print client-side confirms that suspicion. <br>
+<br>=A013=A0=A0=A0=A0 26 =A0=A0 ::/0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0 fe80::208:7cff:fe63:e400<br>=A014=A0=A0=A0 286 =A0 ::=
+/0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 fe80::8<br><=
+br></div><div>(13 is my lan, 14 is the tun device. As you can see, metric i=
+s 286)<br></div><div><br>
+</div>I suppose most people on this list should be aware of the problem. If=
+ you desire so, I&#39;d gladly file a bug request. <br><br></div>Fwiw, I wa=
+s able to workaround this problem by pushing two /1 routes, exactly like de=
+f1 does for IPv4. Like this:<br>
+<br>push &quot;route-ipv6 ::/1 2001:648:2000:ffae::1&quot;<br>push &quot;ro=
+ute-ipv6 8000::/1 2001:648:2000:ffae::1&quot;<br><br></div>Apologies if thi=
+s has been discussed before. <br><br><div><div><div><div><div><div><div>
+<div>Kind regards to all,<br></div><div>-- <br>Athanasios Douitsis<br><br><=
+br>
+</div></div></div></div></div></div></div></div></div>
+
+--047d7bd6be120fff3304df83174a--
 
