@@ -1,11 +1,12 @@
-Message-ID: <51C109A2.1080609@...515...>
-Date: Tue, 18 Jun 2013 19:30:10 -0600
+Message-ID: <51C113CE.90809@...515...>
+Date: Tue, 18 Jun 2013 20:13:34 -0600
 From: James Yonan <james@...515...>
 MIME-Version: 1.0
 References: <51B8CE21.6080203@...515...>
 	<1CED409804E2164C8104F9E623B08B9014555DB21A@...1436...>
-	<51BB74B2.9020809@...515...> <51BEC19F.7040305@...1435...>
-In-Reply-To: <51BEC19F.7040305@...1435...>
+	<51BB74B2.9020809@...515...>
+	<1CED409804E2164C8104F9E623B08B901455BF7221@...1436...>
+In-Reply-To: <1CED409804E2164C8104F9E623B08B901455BF7221@...1436...>
 Subject: Re: [Openvpn-devel] OpenVPN Versioning
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,47 +18,110 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Joachim Schipper <joachim.schipper@...1435...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On 17/06/2013 01:58, Steffan Karger wrote:
-> On 06/14/2013 09:53 PM, James Yonan wrote:
->> To get the adaptive versioning behavior in OpenSSL, you have to use
->> SSLv23_server_method() or SSLv23_client_method() and then explicitly
->> disable the versions you don't want to consider, i.e. SSL_OP_NO_SSLv2,
->> SSL_OP_NO_SSLv3, SSL_OP_NO_TLSv1, SSL_OP_NO_TLSv1_1, etc.
+On 18/06/2013 01:41, Joachim Schipper wrote:
+> From: James Yonan <james@...515...>:
+>> On 14/06/2013 02:47, Joachim Schipper wrote:
+>>> >From James Yonan <james@...515...>:
+>>>> TLS Protocol
+>>>> ------------
+>>>>
+>>>> Since day 1, OpenVPN has used TLS 1.0 as a control channel and key
+>>>> exchange mechanism.  But now we have TLS 1.1 and 1.2, each of which
+>>>> addresses significant shortcomings in its predecessor.  Fortunately,
+>>>> SSL/TLS already includes dynamic version negotiation.  So I've put
+>>>> together a patch that leverages on this, by allowing OpenVPN client
+>>>> and server to negotiate the TLS version and use the highest version
+>>>> supported by both peers.  The patch also adds a new directive "tls-
+>>>> version-min" that allows either client or server to specify a
+>> minimum
+>>>> required TLS version from the peer.
+>>>>
+>>>>
+>> https://github.com/jamesyonan/openvpn/commit/6ee8faade224cc346d67a7f1
+>>>> 7
+>>>> 1
+>>>> 6df4012782999a
+>
+> [snip: SSL negotiation. Thanks for the explanation; I agree that speaking
+> the highest supported protocol is good.]
+>
+>>> I'm not sure what purpose the "or-highest" serves. Clients already
+>> connect with the newest protocol supported by both client and server;
+>> if you want to run a TLSv1.2-only network, just set min-version to 1.2
+>> on the server. (...)
 >>
-> Wow, so SSLv23_{client,server}_method() is the 'wildcard' you need to
-> dynamically negotiate the version. Yet it sounds like something
-> completely broken that should be avoided at all cost. OpenSSL keeps
-> amazing me.
+>> Suppose a server admin wants to upgrade to TLS 1.2 over some transition
+>> period, to allow time to upgrade existing clients in the field.
+>
+>> The overall goal here is to provide tools that allow a controlled
+>> rollout of TLS 1.2 that doesn't break any clients during the rollout
+>> period, and to upgrade to 1.2 in a way that doesn't create the
+>> potential for MiTM version rollback attacks.
+>
+> But no modern SSL protocol allows version rollback attacks: modern
+> implementations will always speak the highest supported/configured protocol
+> version between each other. (Only) SSLv2 allows rollback attacks, which is
+> why the only sane way to deal with SSLv2 in 2013 is to unconditionally
+> disable support.
 
-It really shows OpenSSL's age, doesn't it?  But aside from the 
-cruftiness, I wouldn't say that it's broken.  It's arguably a more 
-flexible mechanism than PolarSSL because it allows you to cherry-pick 
-the SSL/TLS versions you want to support, rather than just give a 
-min/max range.
+Right, and the patch is able to unconditionally disable support for SSL 
+2 and 3 since these were never supported by even the earliest versions 
+of OpenVPN.
 
->>> Does the change to key_state_ssl_init() do anything?
+>>> The switch(tls_version_min) needs a default case, just compile the
+>> first case/default: unconditionally.
 >>
->> I had to add ssl_flags (containing tls-version-min parameter) to
->> key_state_ssl_init because that seems like the most appropriate place to
->> configure tls-version-min for PolarSSL.
+>> There is a default case already -- it's right under "case
+>> TLS_VER_1_0:".
+>
+> Yes, but that's #ifdef'ed. I'd be happier if the default case remained
+> present even if PolarSSL foolishly decides to drop TLSv1 support.
+
+Agreed -- there shouldn't be any implicit assumption
+that SSL lib might not implement TLS 1.0.
+
+https://github.com/jamesyonan/openvpn/commit/d23005413b0e0f28a3c48a6342f494763d5c9b40
+
+> [snip: ciphersuites]
+>>> Negotiating ciphers might be fatal in some configurations that were a
+>>> bad idea to begin with. E.g. if you use OpenVPN with a static key and
+>>> --auth none (which is a bad idea!), adding this negotation could
+>> allow
+>>> an attacker to set the cipher to none or, more dangerously, to a very
+>>> weak cipher like DES (provided it is mutually supported). An attacker
+>>> could then bruteforce the key and use his knowledge of 56 bits of the
+>>> key to attack stronger protocols like AES or 3DES. (Or do we only
+>>> negotiate in SSL mode? I must admit to being fuzzy on the non-SSL
+>>> mode.)
 >>
->> For OpenSSL, tls_ctx_set_options is the right place to configure
->> tls-version-min.
+>> Static key mode has no negotiation.
 >>
-> The ssl_flags are already available through the tls session that is
-> passed as the fourth parameter. To make this a bit more clear, commit
-> b97e2c3 changed the type of session to struct tls session* (see
-> https://github.com/OpenVPN/openvpn/commit/b97e2c3c90afdbb1a24bc1357ec6b94d626defcd).
+>> Agreed that any negotiation model must have constraints placed on the
+>> security of the negotiated cipher and HMAC digest.  You would probably
+>> want to disable "cipher none" or "auth none" on the presumption that
+>> users who want a cleartext tunnel would explicitly configure the client
+>> and server for this.
+>
+> Sure. Just disabling negotiations unless you have an SSL'd control channel
+> works fine against this.
+>
+>> One thing to keep in mind is that OpenVPN protocol negotiation occurs
+>> over the already-negotiated TLS session, so it is immune to being
+>> tampered with by a MiTM.  This is in contrast to SSL/TLS where a MiTM
+>> can affect the negotiation.
+>
+> As above, MiTM attackers cannot effect the negotiation step in SSL/TLS
+> protocols after SSLv2, except trivially (by causing the negotiation to fail, possibly a couple of protocol steps later, e.g. by dropping all packets.)
 
-Right, I've rebased the patch against master and now use 
-session->opt->ssl_flags
+Aha, that's good to know.  Apparently browsers are still vulnerable to 
+version rollback attacks due to compatibility fallback mechanisms, but 
+that's great that SSL/TLS protocols are immune above SSL 3.  There's a 
+good writeup on the subject here:
 
-This simplifies the patch because now it's no longer necessary to pass 
-ssl_flags to key_state_ssl_init
-
-https://github.com/jamesyonan/openvpn/commit/03a5599202bdc3ba07983dc4efdae387fb8fb436
+http://www.carbonwind.net/blog/post/Random-SSLTLS-101%E2%80%93SSLTLS-version-rollbacks-and-browsers.aspx
 
 James
 
