@@ -1,9 +1,13 @@
-MIME-Version: 1.0
-Date: Wed, 19 Jun 2013 18:00:27 +0300
-Message-ID: <CABT9mj_BMkwO9rZ9T847GBaYrGbXdwCB76zyPDqnNKNr0nk5Dw@...278...>
-From: Athanasios Douitsis <aduitsis@...277...>
-Content-Type: multipart/alternative; boundary=047d7bd6be120fff3304df83174a
-Subject: [Openvpn-devel] push route-ipv6 and metric
+Date: Wed, 19 Jun 2013 22:04:51 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20130619200450.GL20843@...1296...>
+References: <CABT9mj_BMkwO9rZ9T847GBaYrGbXdwCB76zyPDqnNKNr0nk5Dw@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="dPU/T1tN7XLa/WIG"
+Content-Disposition: inline
+In-Reply-To: <CABT9mj_BMkwO9rZ9T847GBaYrGbXdwCB76zyPDqnNKNr0nk5Dw@...278...>
+Subject: Re: [Openvpn-devel] push route-ipv6 and metric
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,74 +16,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Athanasios Douitsis <aduitsis@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---047d7bd6be120fff3304df83174a
-Content-Type: text/plain; charset=ISO-8859-1
-
-Hello,
-
-I noticed that issuing the following command in the server config:
-
-push "route-ipv6 ::/0 2001:648:2000:ffae::1 15"
-
-does indeed make a windows client install that route, but it ignores the
-metric:
-
-add_route_ipv6(::/0 -> 2001:648:2000:ffae::1 metric 15) dev Local Area
-Connection 3
-C:\Windows\system32\netsh.exe interface ipv6 add route ::/0 Local Area
-Connection 3 fe80::8 store=active
-
-Issuing route print client-side confirms that suspicion.
-
- 13     26    ::/0                     fe80::208:7cff:fe63:e400
- 14    286   ::/0                     fe80::8
-
-(13 is my lan, 14 is the tun device. As you can see, metric is 286)
-
-I suppose most people on this list should be aware of the problem. If you
-desire so, I'd gladly file a bug request.
-
-Fwiw, I was able to workaround this problem by pushing two /1 routes,
-exactly like def1 does for IPv4. Like this:
-
-push "route-ipv6 ::/1 2001:648:2000:ffae::1"
-push "route-ipv6 8000::/1 2001:648:2000:ffae::1"
-
-Apologies if this has been discussed before.
-
-Kind regards to all,
--- 
-Athanasios Douitsis
-
---047d7bd6be120fff3304df83174a
-Content-Type: text/html; charset="ISO-8859-1"
+--dPU/T1tN7XLa/WIG
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-<div dir=3D"ltr"><div><div><div><div><div>Hello,<br><br></div>I noticed tha=
-t issuing the following command in the server config:<br><br>push &quot;rou=
-te-ipv6 ::/0 2001:648:2000:ffae::1 15&quot;<br><br></div>does indeed make a=
- windows client install that route, but it ignores the metric: <br>
-<br>add_route_ipv6(::/0 -&gt; 2001:648:2000:ffae::1 metric 15) dev Local Ar=
-ea Connection 3<br>C:\Windows\system32\netsh.exe interface ipv6 add route :=
-:/0 Local Area Connection 3 fe80::8 store=3Dactive<br><br></div><div>Issuin=
-g route print client-side confirms that suspicion. <br>
-<br>=A013=A0=A0=A0=A0 26 =A0=A0 ::/0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0=A0=A0=A0=A0 fe80::208:7cff:fe63:e400<br>=A014=A0=A0=A0 286 =A0 ::=
-/0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 fe80::8<br><=
-br></div><div>(13 is my lan, 14 is the tun device. As you can see, metric i=
-s 286)<br></div><div><br>
-</div>I suppose most people on this list should be aware of the problem. If=
- you desire so, I&#39;d gladly file a bug request. <br><br></div>Fwiw, I wa=
-s able to workaround this problem by pushing two /1 routes, exactly like de=
-f1 does for IPv4. Like this:<br>
-<br>push &quot;route-ipv6 ::/1 2001:648:2000:ffae::1&quot;<br>push &quot;ro=
-ute-ipv6 8000::/1 2001:648:2000:ffae::1&quot;<br><br></div>Apologies if thi=
-s has been discussed before. <br><br><div><div><div><div><div><div><div>
-<div>Kind regards to all,<br></div><div>-- <br>Athanasios Douitsis<br><br><=
-br>
-</div></div></div></div></div></div></div></div></div>
+Hi,
 
---047d7bd6be120fff3304df83174a--
+On Wed, Jun 19, 2013 at 06:00:27PM +0300, Athanasios Douitsis wrote:
+> I noticed that issuing the following command in the server config:
+>=20
+> push "route-ipv6 ::/0 2001:648:2000:ffae::1 15"
+>=20
+> does indeed make a windows client install that route, but it ignores the
+> metric:
+
+True.  There is no metric support for IPv6 routes today - half of it is
+"because most operating systems don't actually support route metrics"
+and the other half is "because I'm lazy and haven't found a problem
+that needed metrics, and couldn't be tackled in a more robust way".
+
+> Fwiw, I was able to workaround this problem by pushing two /1 routes,
+> exactly like def1 does for IPv4. Like this:
+>=20
+> push "route-ipv6 ::/1 2001:648:2000:ffae::1"
+> push "route-ipv6 8000::/1 2001:648:2000:ffae::1"
+
+routing 2000::/3 is usually sufficient, as all globally routable IPv6
+space is in there.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--dPU/T1tN7XLa/WIG
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBUcIO4qkuBuNlUUl1AQL+5QP+N5nQjGwZYCzPh5Gd+Wloi1+q0VkaCEos
+qQKjGNthPFsAXZfAC3U2FXaHzPVT4L1X9KsBSXN2TLccN1uVnh9WQ6cOz5vS5a50
+mu9zoYNAh1FAQBXkTtgzTlCGQXS8WEFSeZWQpVioUGWqXjG6W9oob4chdlFldTrl
+dZo5jO+1PHE=
+=8wIj
+-----END PGP SIGNATURE-----
+
+--dPU/T1tN7XLa/WIG--
 
