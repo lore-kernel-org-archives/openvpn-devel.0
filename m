@@ -1,13 +1,15 @@
-Date: Thu, 20 Jun 2013 19:56:33 +0200
+Date: Thu, 20 Jun 2013 20:02:44 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20130620175633.GU20843@...1296...>
-References: <1370600130-6075-1-git-send-email-dazo@...384...>
+Message-ID: <20130620180244.GV20843@...1296...>
+References: <1370605779-712-1-git-send-email-dazo@...384...>
+	<1371032316-18281-1-git-send-email-dazo@...384...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="+OXQCtB1ffO4fety"
+	protocol="application/pgp-signature"; boundary="LXXtuus8Blsk4XO4"
 Content-Disposition: inline
-In-Reply-To: <1370600130-6075-1-git-send-email-dazo@...384...>
-Subject: Re: [Openvpn-devel] [PATCH 3/3] autoconf: Fix typo
+In-Reply-To: <1371032316-18281-1-git-send-email-dazo@...384...>
+Subject: Re: [Openvpn-devel] [PATCH v2] plugin: Extend the plug-in v3 API to
+	identify the SSL implementation used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,29 +21,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: David Sommerseth <dazo@...384...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---+OXQCtB1ffO4fety
+--LXXtuus8Blsk4XO4
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Jun 07, 2013 at 12:15:30PM +0200, David Sommerseth wrote:
-> From: David Sommerseth <davids@...1347...>
->=20
-> In config.h, it would state:
->=20
->       /* Enable systemd support */
->       #define ENABLE_PLUGIN 1
->=20
-> instead of
->=20
->       /* Enable plug-in support */
->       #define ENABLE_PLUGIN 1
+On Wed, Jun 12, 2013 at 12:18:36PM +0200, David Sommerseth wrote:
+>  v2 - add const ovpnSSLAPI ssl_api at the end of
+>       struct openvpn_plugin_args_open_in and not in the "middle"
 
-Wherever that came from :-)
+NAK, because:
 
-ACK for 2.3 and 2.4
+> @@ -372,6 +372,7 @@ plugin_open_item (struct plugin *p,
+>         */
+>        if (p->open3) {
+>          struct openvpn_plugin_args_open_in args =3D { p->plugin_type_mas=
+k,
+> +                                                    SSLAPI,
+>                                                      (const char ** const=
+) o->argv,
+>                                                      (const char ** const=
+) envp,
+>                                                      &callbacks };
+
+... it's still sitting in the middle in the init function...
 
 gert
 --=20
@@ -51,19 +56,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---+OXQCtB1ffO4fety
+--LXXtuus8Blsk4XO4
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.13 (NetBSD)
 
-iQCVAwUBUcNCUakuBuNlUUl1AQK8lwP/UXJMDVi0YvwwAWCGPUESVnI8KkrE1OFo
-D2HmCoEOOO8npiRDoI0ZrrpHwDCGLMIZcy+JxRK49BpTUK/NUG1paD2JrRZMlOy0
-B/z14SKgC55SUck312g8+L2A9twdQhRWH+wTceVW5F/9b/0YZi9/85ugyCzFNbvW
-kQzN549QSMY=
-=hYEe
+iQCVAwUBUcNDxKkuBuNlUUl1AQI/6AP/Y8Iutq19gfP1QXmzuOx/C3xLlnNXuprE
+uI/aF6ZEGjwtVmla8UTgP/Zw4vkCQxcLOmZEADnG9jB5VP9ioXPWyCh2BizA5WJt
+M1vHfAeSM9o2pHhq+oEOLE1UZ4vATwMvMuvRH4do3nOXQ7PdVPrezZtIvorJgOkI
+e1g2zuOai4s=
+=65Ii
 -----END PGP SIGNATURE-----
 
---+OXQCtB1ffO4fety--
+--LXXtuus8Blsk4XO4--
 
