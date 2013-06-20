@@ -1,10 +1,15 @@
-Date: Thu, 20 Jun 2013 20:55:26 +0200 (CEST)
-Message-Id: <201306201855.r5KItQZT014998@...1295...>
+Date: Thu, 20 Jun 2013 21:23:48 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1366059999-31731-1-git-send-email-arne@...1227...>
-References: <1366059999-31731-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: PATCHv3 Remove unused variables
-	or put them to the defines they are being used in
+Message-ID: <20130620192348.GW20843@...1296...>
+References: <1371738121-30540-1-git-send-email-arne@...1227...>
+	<1371739123-2747-1-git-send-email-arne@...1227...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="oeBCTU8dS3Egdm61"
+Content-Disposition: inline
+In-Reply-To: <1371739123-2747-1-git-send-email-arne@...1227...>
+Subject: Re: [Openvpn-devel] [Patch v6] Add support of utun devices under
+	Mac OS X
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,33 +18,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.  Lightly compile-tested with default options on Linux, but except
-for the last chunk, nothing seems to depend on #ifdefs, so if it indeed
-breaks some weird combination of options, buildbot will tell...
+--oeBCTU8dS3Egdm61
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Patch has been applied to the master branch.
+Hi,
 
-commit d0c4c442a44f85c18903b4edba9c1d726f6983c0 (master)
+On Thu, Jun 20, 2013 at 04:38:43PM +0200, Arne Schwabe wrote:
+> Mac OS X 10.7+ natively supports tun devices (called utun). The "standard=
+" utun.ko driver is sometimes problematic (e.g. VmWare Fusion 5 and tun.ko =
+do not work together).
 
-Author: Arne Schwabe
-Date:   Mon Apr 15 23:06:39 2013 +0200
+James brought up a "we need a v7 here"...
 
-     PATCHv3 Remove unused variables or put them to the defines they are being used in
+If you call "openvpn --dev tap --dev-node utun0", I think the current
+code will open an utun device, but the rest of OpenVPN will expect it
+to be tappish...
 
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1366059999-31731-1-git-send-email-arne@...1227...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/7511
-     Signed-off-by: Gert Doering <gert@...1296...>
+21:18 <@jamesyonan> if utun doesn't support tap, then we need to make sure =
+that=20
+                    code will fall back to tuntap driver for tap tunnels
 
+... so, two options
 
---
-kind regards,
+ a) utun can do TAP - in that case we need to add the necessary magic bits
+    to convert the newly created utun into an utap
 
-Gert Doering
+ b) it can not do TAP (which I'd expect, tbh), so we should never open
+    an utun device if the user wants a tap.
 
+Arne, your call :-)
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--oeBCTU8dS3Egdm61
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBUcNWxKkuBuNlUUl1AQLkLgP+Pg/NMQce/AGPaLhwnZfz5goRjVEBv2rL
+Re4mY6G0UZjMNZ+eG5qZD/DIm49VfPOlIPuVQkO4uWZRckHH+lbZFcvx28sEQ6GE
+/I3y6JyG88yzZq8ArHN5u3ztgQcWCUyydcgha/Sekm0pBlQx7Id8CtCGVr5jjLrX
+ccAsdbTctc8=
+=Uw6+
+-----END PGP SIGNATURE-----
+
+--oeBCTU8dS3Egdm61--
 
