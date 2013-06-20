@@ -1,12 +1,12 @@
-From: Adriaan de Jong <dejong@...1435...>
-Date: Thu, 20 Jun 2013 14:33:05 +0200
-Message-ID: <1CED409804E2164C8104F9E623B08B901455DE1EFA@...1436...>
-References: <alpine.DEB.2.02.1306201400320.10116@...1831...>
-In-Reply-To: <alpine.DEB.2.02.1306201400320.10116@...1831...>
-Content-Language: en-US
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] Always load intermediate certificates
- from	a PKCS#12 file
+In-Reply-To: <1371719106-17292-1-git-send-email-arne@...1227...>
+References: <1371718217-12974-1-git-send-email-arne@...1227...>
+	<1371719106-17292-1-git-send-email-arne@...1227...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Thu, 20 Jun 2013 09:32:55 -0400
+Message-ID: <CAEsd45TXXa_X8=k91K9-wwYEdXWYnkJrzCg3dSx=v-dnbONZcw@...278...>
+Subject: Re: [Openvpn-devel] [Patch v3.1] Add support of utun devices under
+ Mac OS X
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,120 +15,78 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: Heikki Hannikainen <hessu@...1822...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi Heikki,
+On Thu, Jun 20, 2013 at 4:58 AM, Arne Schwabe <arne@...1227...> wrote:
+> I have a OS X 10.6 VM with Xcode 3.2.6 installed and this VM has the
+> if/utun.h header. I probably was added somewhere between 10.6.0 and 10.6.8.
 
-I haven't run the patch, or tried to compile it as I haven't got my dev-set=
-up handy. It looks good though. Featurewise it gets an ack from me, as send=
-ing intermediate certs is encouraged in the TLS standard.
-
-One minor nit-picky point: there's a bit of whitespace fixing in there with=
- an extra newline, not sure whether that should be in a separate patch.
-
-Adriaan
-
------Original Message-----
-From: Heikki Hannikainen [mailto:hessu@...1822...]=20
-Sent: donderdag 20 juni 2013 13:06
-To: openvpn-devel@lists.sourceforge.net
-Subject: [Openvpn-devel] [PATCH] Always load intermediate certificates from=
- a PKCS#12 file
+Ah. Thanks for mentioning this. That makes sense.
 
 
-Hi,
+> I changed the M_ERR to M_WARN. It should now work on 10.5.x but without
+> a 10.5 to test on it is difficult to say...
 
-This one supersedes my previous patch
-(http://thread.gmane.org/gmane.network.openvpn.devel/7599) which added an e=
-xtra option to load trusted CA certs from both PKCS#12 and the --ca PEM fil=
-e. This new patch enables loading of extra intermediate certs from
-PKCS#12 even when --ca is set, while not making those certs trusted. Does n=
-ot add any extra options.
+OK, thanks; now I better understand how the error handling works.
 
 
-From cec65ff199443c7f95101a7bf4a75644516d7810 Mon Sep 17 00:00:00 2001
-From: Heikki Hannikainen <hessu@...1822...>
-Date: Thu, 20 Jun 2013 13:49:44 +0300
-Subject: [PATCH] Load intermediate certificates from a PKCS#12 file and pla=
-ce
-  them in the extra certs chain, when trusted CA certs are
-  loaded from an external PEM file with the --ca option, and
-  the CA certs in PKCS#12 are not to be trusted.
+On Thu, Jun 20, 2013 at 5:05 AM, Arne Schwabe <arne@...1227...> wrote:
+> Mac OS X 10.7+ natively supports tun devices (called utun). The "standard" utun.ko driver is sometimes problematic (e.g. VmWare Fusion 5 and tun.ko do not work together).
+>
+> When OpenVPN is compiled with utun support it will if no dev-node is given first try to use utun and if that is not available will try the traditional tun devices
+>
+> Parts of the patches are inspired from Peter Sagerson's <psagers@...1829...> utun patch
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-Required when client PKCS#12 file is provided by a different CA than the se=
-rver CA, the PKCS#12 file contains intermediate certificates required for c=
-lient auth, but the server CA is not in the PKCS#12 file.
 
-When --ca is set, the PKCS#12 provided CA certs are not trusted. Without th=
-is patch, they were ignored completely - with this patch, they're loaded in=
- the extra certs chain which makes them available for chain verification bu=
-t still does not make them trusted if --ca is set. Unless when, of course, =
-a trusted root is found from the --ca file.
----
-  src/openvpn/ssl_openssl.c |   20 +++++++++++++++++++-
-  1 file changed, 19 insertions(+), 1 deletion(-)
+First, I should mention that the most recent version of this patch (in
+your Thu, Jun 20, 2013 at 5:05 AM email) seems to make some other,
+major changes, too, at least when compared to the earlier version (in
+your  email of Tue, Jun 18, 2013 at 1:23 AM). I have ignored those
+changes (I don't really understand them), and I have just made the
+changes that I mentioned, plus one typo that you caught that I missed,
+and the M_ERR to M_WARN changes.
 
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c index 2e=
-5933d..dff4897 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -380,16 +380,34 @@ tls_ctx_load_pkcs12(struct tls_root_ctx *ctx, const c=
-har *pkcs12_file,
-    /* Set Certificate Verification chain */
-    if (load_ca_file)
+Unfortunately, this patch still fails if the utun code is included and
+executed on 10.5.
+
+A minor problem is that for each of the 255 attempts to get a utun
+device (device #0 through device #254), it generates the following
+warning message:
+     Opening utun (ioctl(CTLIOCGINFO)): No such file or directory
+It's ugly, but cosmetic. Perhaps it could be displayed only at verb=4
+and higher? (I don't know how to do that.)
+
+The larger problem is that it still fails to connect, with the error message:
+     Error retrieving utun interface name: Bad file descriptor (errno=9)
+
+I think this is because open_darwin_utun ignores the error (fd == -1)
+returned from utun_open_helper.
+
+If so, it can be fixed by changing open_darwin_utun as follows:
+
+     else
      {
-+     /* Add CAs from PKCS12 to the cert store and mark them as trusted.=20
-+      * They're also used to fill in the chain of intermediate certs as
-+      * necessary.
-+      */
-       if (ca && sk_X509_num(ca))
-        {
-  	for (i =3D 0; i < sk_X509_num(ca); i++)
-  	  {
--	      if (!X509_STORE_add_cert(ctx->ctx->cert_store,sk_X509_value(ca, i)))
-+	    if (!X509_STORE_add_cert(ctx->ctx->cert_store,sk_X509_value(ca,=20
-+i)))
-  	      msg (M_SSLERR, "Cannot add certificate to certificate chain (X509_=
-STORE_add_cert)");
-  	    if (!SSL_CTX_add_client_CA(ctx->ctx, sk_X509_value(ca, i)))
-  	      msg (M_SSLERR, "Cannot add certificate to client CA list (SSL_CTX_=
-add_client_CA)");
-  	  }
-        }
-+   } else {
-+     /* If trusted CA certs were loaded from a PEM file, and we ignore the
-+      * ones in PKCS12, do load PKCS12-provided certs to the client extra
-+      * certs chain just in case they include intermediate CAs needed to
-+      * prove my identity to the other end. This does not make them truste=
-d.
-+      */
-+     if (ca && sk_X509_num(ca))
-+      {
-+	for (i =3D 0; i < sk_X509_num(ca); i++)
-+	  {
-+	    if (!SSL_CTX_add_extra_chain_cert(ctx->ctx,sk_X509_value(ca, i)))
-+	      msg (M_SSLERR, "Cannot add extra certificate to chain (SSL_CTX_add_=
-extra_chain_cert)");
-+	  }
-+      }
+         fd = utun_open_helper (ctlInfo, utunnum);
      }
-    return 0;
-  }
---
-1.7.10.2 (Apple Git-33)
 
++    if (fd==-1)
++       tt->is_utun = false;
++       return;
++
+     /* Retrieve the assigned interface name. */
+     if (getsockopt (fd, SYSPROTO_CONTROL, UTUN_OPT_IFNAME, utunname,
+&utunname_len))
+         msg (M_ERR | M_ERRNO, "Error retrieving utun interface name");
 
----------------------------------------------------------------------------=
----
-This SF.net email is sponsored by Windows:
+     tt->actual_name = string_alloc (utunname, NULL);
 
-Build for Windows Store.
+(I added the " tt->is_utun = false;" just to be sure; I'm not clear on
+the initialization of tt->is_utun, and it is used in the test that
+follows the call to open_darwin_utun to test for success/failure.)
 
-http://p.sf.net/sfu/windows-dev2dev
-_______________________________________________
-Openvpn-devel mailing list
-Openvpn-devel@lists.sourceforge.net
-https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+After making that change, it works on OS X 10.5.8 and 10.4.11.
 
