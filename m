@@ -1,9 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu, 20 Jun 2013 16:22:01 +0200
-Message-Id: <1371738121-30540-1-git-send-email-arne@...1227...>
-In-Reply-To: <1371736800-25015-1-git-send-email-arne@...1227...>
-References: <1371736800-25015-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [Patch v5] Add support of utun devices under Mac OS
+Date: Thu, 20 Jun 2013 16:38:43 +0200
+Message-Id: <1371739123-2747-1-git-send-email-arne@...1227...>
+In-Reply-To: <1371738121-30540-1-git-send-email-arne@...1227...>
+References: <1371738121-30540-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [Patch v6] Add support of utun devices under Mac OS
 	X
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -21,6 +21,11 @@ Mac OS X 10.7+ natively supports tun devices (called utun). The "standard" utun.
 
 When OpenVPN is compiled with utun support it will if no dev-node is given first try to use utun and if that is not available will try the traditional tun devices
 
+v2: Fixed tap support, get device name via ioctl, add manage
+v3.1: Fix compiling without if/utun.h, fix manage errors
+v4/v5: Don't try open to dynamically open utun0 -255 when early utun initialization fails, fix fallback to tun, give fatal error message when utun fails but no tun fallback should be done
+v6: add commit message change log, replace strstr with strncmp, move #includes to the top of the file
+
 A lot good input on earlier patches by Jonathan K. Bullard <jkbullard@...277...>
 
 Parts of the patches are inspired from Peter Sagerson's <psagers@...1829...> utun patch
@@ -28,9 +33,9 @@ Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
  configure.ac      |    2 +-
  doc/openvpn.8     |   11 ++
- src/openvpn/tun.c |  330 ++++++++++++++++++++++++++++++++++++++++++-----------
+ src/openvpn/tun.c |  333 ++++++++++++++++++++++++++++++++++++++++++-----------
  src/openvpn/tun.h |    3 +
- 4 files changed, 278 insertions(+), 68 deletions(-)
+ 4 files changed, 281 insertions(+), 68 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
 index 5da5772..854cfbb 100644
@@ -68,10 +73,23 @@ index 397e2bf..1877294 100644
  is named
  .B node
 diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index f7443b4..80a75b4 100644
+index f7443b4..3316bc6 100644
 --- a/src/openvpn/tun.c
 +++ b/src/openvpn/tun.c
-@@ -1277,6 +1277,87 @@ open_null (struct tuntap *tt)
+@@ -74,6 +74,12 @@ static void solaris_error_close (struct tuntap *tt, const struct env_set *es, co
+ #include <stropts.h>
+ #endif
+ 
++#if defined(TARGET_DARWIN) && HAVE_NET_IF_UTUN_H
++#include <sys/kern_control.h>
++#include <net/if_utun.h>
++#include <sys/sys_domain.h>
++#endif
++
+ static void clear_tuntap (struct tuntap *tuntap);
+ 
+ bool
+@@ -1277,6 +1283,87 @@ open_null (struct tuntap *tt)
    tt->actual_name = string_alloc ("null", NULL);
  }
  
@@ -159,7 +177,7 @@ index f7443b4..80a75b4 100644
  #ifndef WIN32
  static void
  open_tun_generic (const char *dev, const char *dev_type, const char *dev_node,
-@@ -2055,23 +2136,6 @@ read_tun (struct tuntap* tt, uint8_t *buf, int len)
+@@ -2055,23 +2142,6 @@ read_tun (struct tuntap* tt, uint8_t *buf, int len)
  
  #elif defined(TARGET_OPENBSD)
  
@@ -183,7 +201,7 @@ index f7443b4..80a75b4 100644
  void
  open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
  {
-@@ -2138,59 +2202,16 @@ close_tun (struct tuntap* tt)
+@@ -2138,59 +2208,16 @@ close_tun (struct tuntap* tt)
      }
  }
  
@@ -247,7 +265,7 @@ index f7443b4..80a75b4 100644
  }
  
  #elif defined(TARGET_NETBSD)
-@@ -2550,10 +2571,175 @@ read_tun (struct tuntap* tt, uint8_t *buf, int len)
+@@ -2550,10 +2577,172 @@ read_tun (struct tuntap* tt, uint8_t *buf, int len)
   * pointing to lo0.  Need to unconfigure...  (observed on 10.5)
   */
  
@@ -259,9 +277,6 @@ index f7443b4..80a75b4 100644
 + */
 +
 +#ifdef HAVE_NET_IF_UTUN_H
-+#include <sys/kern_control.h>
-+#include <net/if_utun.h>
-+#include <sys/sys_domain.h>
 +
 +/* Helper functions that tries to open utun device 
 +   return -2 on early initialization failures (utun not supported
@@ -385,7 +400,7 @@ index f7443b4..80a75b4 100644
 +#ifdef HAVE_NET_IF_UTUN_H
 +  /* If dev_node does not start start with utun assume regular tun/tap */
 +  if ((!dev_node && strcmp (dev, "tun")==0) ||
-+      (dev_node && (strstr (dev_node, "utun") == dev_node)))
++      (dev_node && !strncmp (dev_node, "utun", 4)))
 +    {
 +      /* Try utun first and fall back to normal tun if utun fails
 +         and dev_node is not specified */
@@ -424,7 +439,7 @@ index f7443b4..80a75b4 100644
  }
  
  void
-@@ -2586,13 +2772,23 @@ close_tun (struct tuntap* tt)
+@@ -2586,13 +2775,23 @@ close_tun (struct tuntap* tt)
  int
  write_tun (struct tuntap* tt, uint8_t *buf, int len)
  {
