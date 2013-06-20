@@ -1,9 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu, 20 Jun 2013 16:00:00 +0200
-Message-Id: <1371736800-25015-1-git-send-email-arne@...1227...>
-In-Reply-To: <CAEsd45TXXa_X8=k91K9-wwYEdXWYnkJrzCg3dSx=v-dnbONZcw@...278...>
-References: <CAEsd45TXXa_X8=k91K9-wwYEdXWYnkJrzCg3dSx=v-dnbONZcw@...278...>
-Subject: [Openvpn-devel] [Patch v4] Add support of utun devices under Mac OS
+Date: Thu, 20 Jun 2013 16:22:01 +0200
+Message-Id: <1371738121-30540-1-git-send-email-arne@...1227...>
+In-Reply-To: <1371736800-25015-1-git-send-email-arne@...1227...>
+References: <1371736800-25015-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [Patch v5] Add support of utun devices under Mac OS
 	X
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -28,9 +28,9 @@ Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
  configure.ac      |    2 +-
  doc/openvpn.8     |   11 ++
- src/openvpn/tun.c |  326 ++++++++++++++++++++++++++++++++++++++++++-----------
+ src/openvpn/tun.c |  330 ++++++++++++++++++++++++++++++++++++++++++-----------
  src/openvpn/tun.h |    3 +
- 4 files changed, 274 insertions(+), 68 deletions(-)
+ 4 files changed, 278 insertions(+), 68 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
 index 5da5772..854cfbb 100644
@@ -68,7 +68,7 @@ index 397e2bf..1877294 100644
  is named
  .B node
 diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index f7443b4..39482d5 100644
+index f7443b4..80a75b4 100644
 --- a/src/openvpn/tun.c
 +++ b/src/openvpn/tun.c
 @@ -1277,6 +1277,87 @@ open_null (struct tuntap *tt)
@@ -247,7 +247,7 @@ index f7443b4..39482d5 100644
  }
  
  #elif defined(TARGET_NETBSD)
-@@ -2550,10 +2571,171 @@ read_tun (struct tuntap* tt, uint8_t *buf, int len)
+@@ -2550,10 +2571,175 @@ read_tun (struct tuntap* tt, uint8_t *buf, int len)
   * pointing to lo0.  Need to unconfigure...  (observed on 10.5)
   */
  
@@ -277,7 +277,7 @@ index f7443b4..39482d5 100644
 +
 +  if (fd < 0)
 +    {
-+      msg (M_WARN, "Opening utun (%s): %s", "socket(SYSPROTO_CONTROL)",
++      msg (M_INFO, "Opening utun (%s): %s", "socket(SYSPROTO_CONTROL)",
 +           strerror (errno));
 +      return -2;
 +    }
@@ -285,7 +285,7 @@ index f7443b4..39482d5 100644
 +  if (ioctl(fd, CTLIOCGINFO, &ctlInfo) == -1)
 +    {
 +      close (fd);
-+      msg (M_WARN, "Opening utun (%s): %s", "ioctl(CTLIOCGINFO)",
++      msg (M_INFO, "Opening utun (%s): %s", "ioctl(CTLIOCGINFO)",
 +           strerror (errno));
 +      return -2;
 +    }
@@ -391,17 +391,21 @@ index f7443b4..39482d5 100644
 +         and dev_node is not specified */
 +      open_darwin_utun(dev, dev_type, dev_node, tt);
 +
-+      /* No explicit utun and utun failed, try the generic way) */
-+      if (!dev_node && !tt->is_utun)
++
++      if (!tt->is_utun)
 +        {
-+          msg (M_INFO, "Failed to open utun device. Falling back to /dev/tun device");
-+          open_tun_generic (dev, dev_type, NULL, true, true, tt);
-+        } 
-+      else 
-+        {
-+          /* Specific utun device or generic utun request failed, 
-+             consider this a fatal failure */
-+		  msg (M_FATAL, "Cannot open utun device");
++          if (!dev_node) 
++            {
++              /* No explicit utun and utun failed, try the generic way) */
++              msg (M_INFO, "Failed to open utun device. Falling back to /dev/tun device");
++              open_tun_generic (dev, dev_type, NULL, true, true, tt);
++            }
++          else
++            {
++              /* Specific utun device or generic utun request failed, 
++                 consider this a fatal failure */
++              msg (M_FATAL, "Cannot open utun device");
++            }
 +        }
 +    }
 +  else
@@ -420,7 +424,7 @@ index f7443b4..39482d5 100644
  }
  
  void
-@@ -2586,13 +2768,23 @@ close_tun (struct tuntap* tt)
+@@ -2586,13 +2772,23 @@ close_tun (struct tuntap* tt)
  int
  write_tun (struct tuntap* tt, uint8_t *buf, int len)
  {
