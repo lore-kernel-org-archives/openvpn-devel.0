@@ -1,16 +1,9 @@
-Message-ID: <51C7573F.3030100@...1227...>
-Date: Sun, 23 Jun 2013 22:14:55 +0200
-From: Arne Schwabe <arne@...1227...>
+Message-ID: <51C77F12.1090802@...515...>
+Date: Sun, 23 Jun 2013 17:04:50 -0600
+From: James Yonan <james@...515...>
 MIME-Version: 1.0
-References: <1354303076-13606-1-git-send-email-arne@...1227...>
-	<1354303076-13606-10-git-send-email-arne@...1227...>
-	<50CC4FB8.8040005@...1790...> <20121215120924.GU22465@...1296...>
-	<50CEDE97.6020808@...515...> <51C580F4.8040804@...1790...>
-In-Reply-To: <51C580F4.8040804@...1790...>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature";
-	micalg=sha1; boundary="------------ms000208040907020305010902"
-Subject: Re: [Openvpn-devel] [PATCH 10/10] Implement dual stack client
- support for OpenVPN
+Content-Type: multipart/mixed; boundary="------------050302040500000804000701"
+Subject: [Openvpn-devel] [PATCH] TLS versioning
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,153 +12,299 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Tore Anderson <tore@...1790...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Dies ist eine kryptografisch unterzeichnete Nachricht im MIME-Format.
+This is a multi-part message in MIME format.
+--------------050302040500000804000701
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
---------------ms000208040907020305010902
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: quoted-printable
+This is the TLS versioning patch as discussed in last Thursday's IRC 
+meeting.
 
-Am 22.06.13 12:48, schrieb Tore Anderson:
-> It's been half a year, so I was wondering if this patch has been
-> forgotten about? I don't see it in either the master branch of either
-> the openvpn or openvpn-testing git repo.
->
-> FWIW, I'd like to push the GNOME NetworkManager folks some more to
-> implement IPv6 support in their OpenVPN plugin, which is currently IPv4
-> only. This patch breaks one of the assumptions made there, in particular
-> that IPv4 transport will always be used when OpenVPN is started
-> "--remote <dns-hostname> --proto [tcp|udp]". I'm hoping that when
-> dealing with that, which they'll have to do anyway, they'll seize the
-> opportunity to implement IPv6 payload support as well.
->
-> However in order to do so it would be very nice to have a 2.4-alpha1 or
-> at least a git master commit that I could point to, that could be used
-> for testing interoperability with the new behaviour.
-Not really forgotten about. The dual stack patches are rather large.=20
-There has been lack of time of the OpenVPN core team member to review=20
-the patches.
+It combines these two patches:
 
-I still maintain the dualstack patches for my client:=20
-https://github.com/schwabe/openvpn/commits/ds10
-The branch name sometimes changes when I rebase the patches.
+https://github.com/jamesyonan/openvpn/commit/03a5599202bdc3ba07983dc4efdae387fb8fb436
 
-If someone steps up and has time to review the patches I can send=20
-another patch set.
+https://github.com/jamesyonan/openvpn/commit/d23005413b0e0f28a3c48a6342f494763d5c9b40
 
-Arne
+James
 
+--------------050302040500000804000701
+Content-Type: text/plain; charset=UTF-8; x-mac-type="0"; x-mac-creator="0";
+	name="tls-version.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="tls-version.patch"
 
---------------ms000208040907020305010902
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Kryptografische Unterschrift
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 174fd6d..d3fb468 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -4235,6 +4235,15 @@ when you built your peer's certificate (see
+ above).
+ .\"*********************************************************
+ .TP
++.B \-\-tls-version-min version ['or-highest']
++Sets the minimum
++TLS version we will accept from the peer (default is "1.0").
++Examples for version
++include "1.0", "1.1", or "1.2".  If 'or-highest' is specified
++and version is not recognized, we will only accept the highest TLS
++version supported by the local SSL implementation.
++.\"*********************************************************
++.TP
+ .B \-\-pkcs12 file
+ Specify a PKCS #12 file containing local private key,
+ local certificate, and root CA certificate.
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 883136f..ba5bb1f 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -582,6 +582,9 @@ static const char usage_message[] =
+   "                  by a Certificate Authority in --ca file.\n"
+   "--extra-certs file : one or more PEM certs that complete the cert chain.\n"
+   "--key file      : Local private key in .pem format.\n"
++  "--tls-version-min <version> ['or-highest'] : sets the minimum TLS version we\n"
++  "    will accept from the peer.  If version is unrecognized and 'or-highest'\n"
++  "    is specified, require max TLS version supported by SSL implementation.\n"
+ #ifndef ENABLE_CRYPTO_POLARSSL
+   "--pkcs12 file   : PKCS#12 file containing local private key, local certificate\n"
+   "                  and optionally the root CA certificate.\n"
+@@ -6506,6 +6509,19 @@ add_option (struct options *options,
+ 	  options->priv_key_file_inline = p[2];
+ 	}
+     }
++  else if (streq (p[0], "tls-version-min") && p[1])
++    {
++      int ver;
++      VERIFY_PERMISSION (OPT_P_GENERAL);
++      ver = tls_version_min_parse(p[1], p[2]);
++      if (ver == TLS_VER_BAD)
++	{
++	  msg (msglevel, "unknown tls-version-min parameter: %s", p[1]);
++          goto err;
++	}
++      options->ssl_flags &= ~(SSLF_TLS_VERSION_MASK << SSLF_TLS_VERSION_SHIFT);
++      options->ssl_flags |= (ver << SSLF_TLS_VERSION_SHIFT);
++    }
+ #ifndef ENABLE_CRYPTO_POLARSSL
+   else if (streq (p[0], "pkcs12") && p[1])
+     {
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 736dfc9..a8b5d3d 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -447,6 +447,27 @@ ssl_put_auth_challenge (const char *cr_str)
+ #endif
+ 
+ /*
++ * Parse a TLS version string, returning a TLS_VER_x constant.
++ * If version string is not recognized and extra == "or-highest",
++ * return tls_version_max().
++ */
++int
++tls_version_min_parse(const char *vstr, const char *extra)
++{
++  const int max_version = tls_version_max();
++  if (!strcmp(vstr, "1.0") && TLS_VER_1_0 <= max_version)
++    return TLS_VER_1_0;
++  else if (!strcmp(vstr, "1.1") && TLS_VER_1_1 <= max_version)
++    return TLS_VER_1_1;
++  else if (!strcmp(vstr, "1.2") && TLS_VER_1_2 <= max_version)
++    return TLS_VER_1_2;
++  else if (extra && !strcmp(extra, "or-highest"))
++    return max_version;
++  else
++    return TLS_VER_BAD;
++}
++
++/*
+  * Initialize SSL context.
+  * All files are in PEM format.
+  */
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index 72235ae..4516897 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -94,6 +94,29 @@ void tls_free_lib();
+ void tls_clear_error();
+ 
+ /**
++ * Parse a TLS version specifier
++ *
++ * @param vstr		The TLS version string
++ * @param extra	        An optional extra parameter, may be NULL
++ *
++ * @return 		One of the TLS_VER_x constants or TLS_VER_BAD
++ *                      if a parse error should be flagged.
++ */
++#define TLS_VER_BAD   -1
++#define TLS_VER_1_0    0 /* default */
++#define TLS_VER_1_1    1
++#define TLS_VER_1_2    2
++int tls_version_min_parse(const char *vstr, const char *extra);
++
++/**
++ * Return the maximum TLS version (as a TLS_VER_x constant)
++ * supported by current SSL implementation
++ *
++ * @return 		One of the TLS_VER_x constants (but not TLS_VER_BAD).
++ */
++int tls_version_max(void);
++
++/**
+  * Initialise a library-specific TLS context for a server.
+  *
+  * @param ctx		TLS context to initialise
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 7e52f9a..04ba789 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -290,12 +290,14 @@ struct tls_options
+   struct compress_options comp_options;
+ #endif
+ 
+-  /* configuration file boolean options */
++  /* configuration file SSL-related boolean and low-permutation options */
+ # define SSLF_CLIENT_CERT_NOT_REQUIRED (1<<0)
+ # define SSLF_USERNAME_AS_COMMON_NAME  (1<<1)
+ # define SSLF_AUTH_USER_PASS_OPTIONAL  (1<<2)
+ # define SSLF_OPT_VERIFY               (1<<4)
+ # define SSLF_CRL_VERIFY_DIR           (1<<5)
++# define SSLF_TLS_VERSION_SHIFT        6
++# define SSLF_TLS_VERSION_MASK         0xF /* (uses bit positions 6 to 9) */
+   unsigned int ssl_flags;
+ 
+ #ifdef MANAGEMENT_DEF_AUTH
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 5db717d..12c725d 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -114,7 +114,7 @@ tls_ctx_server_new(struct tls_root_ctx *ctx)
+ {
+   ASSERT(NULL != ctx);
+ 
+-  ctx->ctx = SSL_CTX_new (TLSv1_server_method ());
++  ctx->ctx = SSL_CTX_new (SSLv23_server_method ());
+ 
+   if (ctx->ctx == NULL)
+     msg (M_SSLERR, "SSL_CTX_new TLSv1_server_method");
+@@ -127,7 +127,7 @@ tls_ctx_client_new(struct tls_root_ctx *ctx)
+ {
+   ASSERT(NULL != ctx);
+ 
+-  ctx->ctx = SSL_CTX_new (TLSv1_client_method ());
++  ctx->ctx = SSL_CTX_new (SSLv23_client_method ());
+ 
+   if (ctx->ctx == NULL)
+     msg (M_SSLERR, "SSL_CTX_new TLSv1_client_method");
+@@ -174,13 +174,46 @@ info_callback (INFO_CALLBACK_SSL_CONST SSL * s, int where, int ret)
+     }
+ }
+ 
++/*
++ * Return maximum TLS version supported by local OpenSSL library.
++ * Assume that presence of SSL_OP_NO_TLSvX macro indicates that
++ * TLSvX is supported.
++ */
++int
++tls_version_max(void)
++{
++#if defined(SSL_OP_NO_TLSv1_2)
++  return TLS_VER_1_2;
++#elif defined(SSL_OP_NO_TLSv1_1)
++  return TLS_VER_1_1;
++#else
++  return TLS_VER_1_0;
++#endif
++}
++
+ void
+ tls_ctx_set_options (struct tls_root_ctx *ctx, unsigned int ssl_flags)
+ {
+   ASSERT(NULL != ctx);
+ 
++  /* process SSL options including minimum TLS version we will accept from peer */
++  {
++    long sslopt = SSL_OP_SINGLE_DH_USE | SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3;
++    const int tls_version_min = (ssl_flags >> SSLF_TLS_VERSION_SHIFT) & SSLF_TLS_VERSION_MASK;
++    if (tls_version_min > TLS_VER_1_0)
++      sslopt |= SSL_OP_NO_TLSv1;
++#ifdef SSL_OP_NO_TLSv1_1
++    if (tls_version_min > TLS_VER_1_1)
++      sslopt |= SSL_OP_NO_TLSv1_1;
++#endif
++#ifdef SSL_OP_NO_TLSv1_2
++    if (tls_version_min > TLS_VER_1_2)
++      sslopt |= SSL_OP_NO_TLSv1_2;
++#endif
++    SSL_CTX_set_options (ctx->ctx, sslopt);
++  }
++
+   SSL_CTX_set_session_cache_mode (ctx->ctx, SSL_SESS_CACHE_OFF);
+-  SSL_CTX_set_options (ctx->ctx, SSL_OP_SINGLE_DH_USE);
+   SSL_CTX_set_default_passwd_cb (ctx->ctx, pem_password_callback);
+ 
+   /* Require peer certificate verification */
+diff --git a/src/openvpn/ssl_polarssl.c b/src/openvpn/ssl_polarssl.c
+index 8a917b3..fb73225 100644
+--- a/src/openvpn/ssl_polarssl.c
++++ b/src/openvpn/ssl_polarssl.c
+@@ -501,6 +501,18 @@ void tls_ctx_personalise_random(struct tls_root_ctx *ctx)
+     }
+ }
+ 
++int
++tls_version_max(void)
++{
++#if defined(SSL_MAJOR_VERSION_3) && defined(SSL_MINOR_VERSION_3)
++  return TLS_VER_1_2;
++#elif defined(SSL_MAJOR_VERSION_3) && defined(SSL_MINOR_VERSION_2)
++  return TLS_VER_1_1;
++#else
++  return TLS_VER_1_0;
++#endif
++}
++
+ void key_state_ssl_init(struct key_state_ssl *ks_ssl,
+     const struct tls_root_ctx *ssl_ctx, bool is_server, struct tls_session *session)
+ {
+@@ -550,6 +562,34 @@ void key_state_ssl_init(struct key_state_ssl *ks_ssl,
+       /* TODO: PolarSSL does not currently support sending the CA chain to the client */
+       ssl_set_ca_chain (ks_ssl->ctx, ssl_ctx->ca_chain, NULL, NULL );
+ 
++      /* Initialize minimum TLS version */
++      {
++	const int tls_version_min = (session->opt->ssl_flags >> SSLF_TLS_VERSION_SHIFT) & SSLF_TLS_VERSION_MASK;
++	int polar_major;
++	int polar_minor;
++	switch (tls_version_min)
++	  {
++	  case TLS_VER_1_0:
++	  default:
++	    polar_major = SSL_MAJOR_VERSION_3;
++	    polar_minor = SSL_MINOR_VERSION_1;
++	    break;
++#if defined(SSL_MAJOR_VERSION_3) && defined(SSL_MINOR_VERSION_2)
++	  case TLS_VER_1_1:
++	    polar_major = SSL_MAJOR_VERSION_3;
++	    polar_minor = SSL_MINOR_VERSION_2;
++	    break;
++#endif
++#if defined(SSL_MAJOR_VERSION_3) && defined(SSL_MINOR_VERSION_3)
++	  case TLS_VER_1_2:
++	    polar_major = SSL_MAJOR_VERSION_3;
++	    polar_minor = SSL_MINOR_VERSION_3;
++	    break;
++#endif
++	  }
++	ssl_set_min_version(ks_ssl->ctx, polar_major, polar_minor);
++      }
++
+       /* Initialise BIOs */
+       ALLOC_OBJ_CLEAR (ks_ssl->ct_in, endless_buffer);
+       ALLOC_OBJ_CLEAR (ks_ssl->ct_out, endless_buffer);
 
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIP5DCC
-BCEwggMJoAMCAQICAgDHMA0GCSqGSIb3DQEBBQUAMHExCzAJBgNVBAYTAkRFMRwwGgYDVQQK
-ExNEZXV0c2NoZSBUZWxla29tIEFHMR8wHQYDVQQLExZULVRlbGVTZWMgVHJ1c3QgQ2VudGVy
-MSMwIQYDVQQDExpEZXV0c2NoZSBUZWxla29tIFJvb3QgQ0EgMjAeFw0wNjEyMTkxMDI5MDBa
-Fw0xOTA2MzAyMzU5MDBaMFoxCzAJBgNVBAYTAkRFMRMwEQYDVQQKEwpERk4tVmVyZWluMRAw
-DgYDVQQLEwdERk4tUEtJMSQwIgYDVQQDExtERk4tVmVyZWluIFBDQSBHbG9iYWwgLSBHMDEw
-ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDpm8NnhfkNrvWNVMOWUDU9YuluTO2U
-1wBblSJ01CDrNI/W7MAxBAuZgeKmFNJSoCgjhIt0iQReW+DieMF4yxbLKDU5ey2QRdDtoAB6
-fL9KDhsAw4bpXCsxEXsM84IkQ4wcOItqaACa7txPeKvSxhObdq3u3ibo7wGvdA/BCaL2a869
-080UME/15eOkyGKbghoDJzANAmVgTe3RCSMqljVYJ9N2xnG2kB3E7f81hn1vM7PbD8URwoqD
-oZRdQWvY0hD1TP3KUazZve+Sg7va64sWVlZDz+HVEz2mHycwzUlU28kTNJpxdcVs6qcLmPkh
-nSevPqM5OUhqjK3JmfvDEvK9AgMBAAGjgdkwgdYwcAYDVR0fBGkwZzBloGOgYYZfaHR0cDov
-L3BraS50ZWxlc2VjLmRlL2NnaS1iaW4vc2VydmljZS9hZl9Eb3dubG9hZEFSTC5jcmw/LWNy
-bF9mb3JtYXQ9WF81MDkmLWlzc3Vlcj1EVF9ST09UX0NBXzIwHQYDVR0OBBYEFEm3xs/oPR9/
-6kR7Eyn38QpwPt5kMB8GA1UdIwQYMBaAFDHDeRu69VPXF+CJei0XbAqzK50zMA4GA1UdDwEB
-/wQEAwIBBjASBgNVHRMBAf8ECDAGAQH/AgECMA0GCSqGSIb3DQEBBQUAA4IBAQA74Vp3wEgX
-3KkY7IGvWonwvSiSpspZGBJw7Cjy565/lizn8l0ZMfYTK3S9vYCyufdnyTmieTvhERHua3iR
-M347XyYndVNljjNj7s9zw7CSI0khUHUjoR8Y4pSFPT8z6XcgjaK95qGFKUD2P3MyWA0Ja6ba
-hWzAP7uNZmRWJE6uDT8yNQFb6YyC2XJZT7GGhfF0hVblw/hc843uR7NTBXDn5U2KaYMo4RMJ
-hp5eyOpYHgwf+aTUWgRo/Sg+iwK2WLX2oSw3VwBnqyNojWOl75lrXP1LVvarQIc01BGSbOyH
-xQoLBzNytG8MHVQs2FHHzL8w00Ny8TK/jM5JY6gA9/IcMIIFTjCCBDagAwIBAgIEC4nvvjAN
-BgkqhkiG9w0BAQUFADBaMQswCQYDVQQGEwJERTETMBEGA1UEChMKREZOLVZlcmVpbjEQMA4G
-A1UECxMHREZOLVBLSTEkMCIGA1UEAxMbREZOLVZlcmVpbiBQQ0EgR2xvYmFsIC0gRzAxMB4X
-DTA3MTIyMDEzNDYyNFoXDTE5MDYzMDAwMDAwMFowgb4xCzAJBgNVBAYTAkRFMR8wHQYDVQQK
-ExZVbml2ZXJzaXRhZXQgUGFkZXJib3JuMUAwPgYDVQQLEzdJTVQgKFplbnRydW0gZnVlciBJ
-bmZvcm1hdGlvbnMtIHVuZCBNZWRpZW50ZWNobm9sb2dpZW4pMSgwJgYDVQQDEx9Vbml2ZXJz
-aXRhZXQgUGFkZXJib3JuIENBIC0gRzAxMSIwIAYJKoZIhvcNAQkBFhNjYUB1bmktcGFkZXJi
-b3JuLmRlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApyEfhJPUiCaLTtclTNlw
-rHd4MT4ygOzcUD7zDRElXdILoAEQeUs9qpMZDpPXLeSK6DNukMnURrCRUIr+lYX/kmT6ompB
-GMJgDepewHa97XS3uvE46NW2V8OdIiNddYIoDa8ZRd9lwIsnVWl9QaM9f7l5dhrSQT6ogboy
-byOqJcmb+hlxgQcMWdLzZsOXRkldl5YXUCvC6zbulszlqMt5hPjsQmbQu0nInJmNwUrYCw9c
-ctS2i0m9LaVwZxSov16/eQAJOM7bDV9CpZicgCkHACP5paKvlukP9glkvfNdS54grkPmGFNp
-uIc13W6pL1+8nTp03AlyW/GU2zsnX5pWdwIDAQABo4IBtTCCAbEwEgYDVR0TAQH/BAgwBgEB
-/wIBATALBgNVHQ8EBAMCAQYwHQYDVR0OBBYEFIHPTJq8rw/LvuzgIidOKe+uMMUeMB8GA1Ud
-IwQYMBaAFEm3xs/oPR9/6kR7Eyn38QpwPt5kMB4GA1UdEQQXMBWBE2NhQHVuaS1wYWRlcmJv
-cm4uZGUwgYgGA1UdHwSBgDB+MD2gO6A5hjdodHRwOi8vY2RwMS5wY2EuZGZuLmRlL2dsb2Jh
-bC1yb290LWNhL3B1Yi9jcmwvY2FjcmwuY3JsMD2gO6A5hjdodHRwOi8vY2RwMi5wY2EuZGZu
-LmRlL2dsb2JhbC1yb290LWNhL3B1Yi9jcmwvY2FjcmwuY3JsMIGiBggrBgEFBQcBAQSBlTCB
-kjBHBggrBgEFBQcwAoY7aHR0cDovL2NkcDEucGNhLmRmbi5kZS9nbG9iYWwtcm9vdC1jYS9w
-dWIvY2FjZXJ0L2NhY2VydC5jcnQwRwYIKwYBBQUHMAKGO2h0dHA6Ly9jZHAyLnBjYS5kZm4u
-ZGUvZ2xvYmFsLXJvb3QtY2EvcHViL2NhY2VydC9jYWNlcnQuY3J0MA0GCSqGSIb3DQEBBQUA
-A4IBAQAaomheE7QGeiZFxhmjRI97H/eQUUjp2RL2N4BQmulz56nwTFfgGN1v9kJmBuM2se7F
-TSfQ0ZsKYJhZYwZYCb4Ob57h5zpsyMtZhWqz6n5+ewT/Wl7jc6sLGl3zquMZRfS1N3nIOWsN
-rAZz4lxpjcOJwQHQevWpJT2NxTHHtHKA83QWLFAFs65ZIVAVxqYlRd9Yrr/ljK42ZzEaZgg8
-vSqDzHOwvWX5m3apWe3ZW+2eqjDGZxwfWnWBMSGYN0QIFdaZLR1JbILLfYYHyAUixHUFA+76
-2E9gufC2CySlXhNSPRTwqwPQIDTFDi2VIsafaivs7kVKPaKSq1Dh6SDfV2raMIIGaTCCBVGg
-AwIBAgIEES7tRDANBgkqhkiG9w0BAQUFADCBvjELMAkGA1UEBhMCREUxHzAdBgNVBAoTFlVu
-aXZlcnNpdGFldCBQYWRlcmJvcm4xQDA+BgNVBAsTN0lNVCAoWmVudHJ1bSBmdWVyIEluZm9y
-bWF0aW9ucy0gdW5kIE1lZGllbnRlY2hub2xvZ2llbikxKDAmBgNVBAMTH1VuaXZlcnNpdGFl
-dCBQYWRlcmJvcm4gQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2NhQHVuaS1wYWRlcmJvcm4u
-ZGUwHhcNMTAxMjIwMTUwMTA5WhcNMTMxMjE5MTUwMTA5WjBFMQswCQYDVQQGEwJERTEfMB0G
-A1UEChMWVW5pdmVyc2l0YWV0IFBhZGVyYm9ybjEVMBMGA1UEAxMMQXJuZSBTY2h3YWJlMIIC
-IjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAnPJmVFDViSIHhAokNLoZ4oFd0W4hFiC4
-KopjqHhHEBynYMD56GYnxXm5ie4ngil1e69r02M6eyB1VIhRPFRSqD3ejVHRdNLKnEzWgAbT
-o0Kkr2s7P1iPe8Cj55mSuOxplxcsxL8jU0U/ENtIaIEaI7sVlmYBmCT0fGfrpUcRj21ucDx9
-zw1CJN6VEUmlLtvDzscJg3bUvttbxA+IMUDMTd0nUgLy5lNAg17f3QUc7SrXj8QItjPGjOU3
-EnIka1D2ak+FT12j2GWVpbqkV2Pfow6fePda19xcjFs1A3MsfU4ouTfJ5Xx6OBM1/BRwB0Sg
-79LcmCRtWjGkN7boXmxi5MUXMl96l7UzGEy49O39Ct41N96T4bJDqRKFaUcZVVvW7pBX+rVd
-JrXXstiJ1HYGKU2yOgiqoLNIbhn1i3JoFP1SRSEYJb1okeL9Ewr0SoyM/suVuGg5YnMLHOjn
-oH3XzMM0vRdEk7F1KaJvcvPDe/5fAAaOokjOIdOFwwhJkvOF/P1oS1RzvmTzwXTvojBbWZnr
-+eL+zwTUVpOwJ+rfLdJzw+ER18RbpH/TPzOszvAAuTxZAQdEE+SOlk2aDIHs+eFYsk6QBh1b
-jqOMDhlmElVROTv+w260iVGfcq4fTt1C8vzMcRx95y5rR5+GVQpGJb5WlZlbo3o/FCxClvt7
-3SUCAwEAAaOCAeUwggHhMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgXgMCkGA1UdJQQiMCAGCCsG
-AQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAjAdBgNVHQ4EFgQUWh2256whSHo0mgJ5hvYj
-UacnOekwHwYDVR0jBBgwFoAUgc9MmryvD8u+7OAiJ04p764wxR4wIwYDVR0RBBwwGoEYc2No
-d2FiZUB1bmktcGFkZXJib3JuLmRlMIGNBgNVHR8EgYUwgYIwP6A9oDuGOWh0dHA6Ly9jZHAx
-LnBjYS5kZm4uZGUvdW5pLXBhZGVyYm9ybi1jYS9wdWIvY3JsL2NhY3JsLmNybDA/oD2gO4Y5
-aHR0cDovL2NkcDIucGNhLmRmbi5kZS91bmktcGFkZXJib3JuLWNhL3B1Yi9jcmwvY2Fjcmwu
-Y3JsMIGmBggrBgEFBQcBAQSBmTCBljBJBggrBgEFBQcwAoY9aHR0cDovL2NkcDEucGNhLmRm
-bi5kZS91bmktcGFkZXJib3JuLWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDBJBggrBgEFBQcw
-AoY9aHR0cDovL2NkcDIucGNhLmRmbi5kZS91bmktcGFkZXJib3JuLWNhL3B1Yi9jYWNlcnQv
-Y2FjZXJ0LmNydDANBgkqhkiG9w0BAQUFAAOCAQEAgaSs5nrXX49tNOF1ISWT4U4yEpbkiXBu
-1YmhBUz+zLFWvh8uNlfllgMZqVV94ftgyizWOesc+vxL0ulNmdXhOAB+zSyT2qgQ9vv9GSV8
-cgkEGMrwMpyJQksI/UvdZ1+SyUxpW2mSMm/N6y3QVefv6HajWju63tGXAXX1ohsxfisWQC7h
-51dnhLVwTf5yVEbl0uoLv236V0IlhoPcVMaNiLv9W5P13vwYLMRxhzvgQPAB8GwyQ4X2k9tS
-naLB/AXfOZpvPx0XvpW5+dY9Lyo7EJFYMl+S0WMsD4XEj18VJWmTrvIO7ZGhU1En8+9OEwjZ
-NlrBHSSoHZ8AtjaqRf+DwTGCBXYwggVyAgEBMIHHMIG+MQswCQYDVQQGEwJERTEfMB0GA1UE
-ChMWVW5pdmVyc2l0YWV0IFBhZGVyYm9ybjFAMD4GA1UECxM3SU1UIChaZW50cnVtIGZ1ZXIg
-SW5mb3JtYXRpb25zLSB1bmQgTWVkaWVudGVjaG5vbG9naWVuKTEoMCYGA1UEAxMfVW5pdmVy
-c2l0YWV0IFBhZGVyYm9ybiBDQSAtIEcwMTEiMCAGCSqGSIb3DQEJARYTY2FAdW5pLXBhZGVy
-Ym9ybi5kZQIEES7tRDAJBgUrDgMCGgUAoIICgzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
-MBwGCSqGSIb3DQEJBTEPFw0xMzA2MjMyMDE0NTVaMCMGCSqGSIb3DQEJBDEWBBS1jDtOhm0l
-gfK1jDCKTEfQm/GCsjBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQME
-AQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIH
-MA0GCCqGSIb3DQMCAgEoMIHYBgkrBgEEAYI3EAQxgcowgccwgb4xCzAJBgNVBAYTAkRFMR8w
-HQYDVQQKExZVbml2ZXJzaXRhZXQgUGFkZXJib3JuMUAwPgYDVQQLEzdJTVQgKFplbnRydW0g
-ZnVlciBJbmZvcm1hdGlvbnMtIHVuZCBNZWRpZW50ZWNobm9sb2dpZW4pMSgwJgYDVQQDEx9V
-bml2ZXJzaXRhZXQgUGFkZXJib3JuIENBIC0gRzAxMSIwIAYJKoZIhvcNAQkBFhNjYUB1bmkt
-cGFkZXJib3JuLmRlAgQRLu1EMIHaBgsqhkiG9w0BCRACCzGByqCBxzCBvjELMAkGA1UEBhMC
-REUxHzAdBgNVBAoTFlVuaXZlcnNpdGFldCBQYWRlcmJvcm4xQDA+BgNVBAsTN0lNVCAoWmVu
-dHJ1bSBmdWVyIEluZm9ybWF0aW9ucy0gdW5kIE1lZGllbnRlY2hub2xvZ2llbikxKDAmBgNV
-BAMTH1VuaXZlcnNpdGFldCBQYWRlcmJvcm4gQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2Nh
-QHVuaS1wYWRlcmJvcm4uZGUCBBEu7UQwDQYJKoZIhvcNAQEBBQAEggIAfwVXmi9Khi3Olkv9
-Hg68dPKoljRHL7XQeUHMyotAdt/ktvasZpi9jEuv8NBjKPcwVOzR6H1PZCV6Vt+tNjljHsyg
-BxsjsEeGHpcSxWijq1CPNpwC3ZnpXt9bNVrzJQlEMrioneLA1FgGyIvW+dW6+142KZFwZKi0
-b+tAaXYe4QhRpc6xQFCYudPcIzICd/O2u4YPoewSgYX7HrUpAACShvmTG1uyGGBmztHMgOPh
-ENse3bzI4KMDreRo/nmkocJKJfssbtkujrsqVS3v7zI8GhLxBJPqCic5GPSi4T8kH3CcoCOR
-WuFJlULVtUw2WwLmQT8cNIlkNw8g972dIp9CEWg6gPypjkAit/etsYBDBTMm6OE2ehWXlZHA
-YdCSn1ZYoWq7vCBDPyFuKKfCerxe5EaxDeEQ+7HzIuNnbxJfWsXPCjyGy4Rh+k6fSJVOPaO6
-dAngdrNG5nuT+0TJc20CfbbfGW3sTviy2IcPOBvR0mEen4Ly7i0RulvT3QsS938KS1ISouik
-mt4C4ccVTHrxCQMIxcSXY643diZEYzfpTgYWsxL1045YZQyq5872HqTYciZSLkdnQ/DwlZ49
-fh/1ZpR7YIaVUiuXWL1juM+S3ve5PJRW9Y3mVRnr9V/HAZVV2B7+OzZBpIH3bG7nXA85ja1+
-pvC/rfLtS0UPKajeOfMAAAAAAAA=
---------------ms000208040907020305010902--
+--------------050302040500000804000701--
 
