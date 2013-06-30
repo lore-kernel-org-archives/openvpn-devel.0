@@ -1,11 +1,8 @@
-From: Joachim Schipper <joachim.schipper@...1435...>
-Date: Thu, 27 Jun 2013 08:38:44 +0200
-Message-ID: <1CED409804E2164C8104F9E623B08B901458921E9E@...1436...>
-References: <51C77F12.1090802@...515...>
-In-Reply-To: <51C77F12.1090802@...515...>
-Content-Language: en-US
+Message-ID: <51D07247.9060900@...1832...>
+Date: Sun, 30 Jun 2013 20:00:39 +0200
+From: Max Muster <Max.Muster@...1832...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] TLS versioning
+Subject: [Openvpn-devel] Bug Handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,25 +11,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: James Yonan <james@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-From James Yonan <james@...515...>:
-> This is the TLS versioning patch as discussed in last Thursday's IRC
-> meeting.
->=20
-> It combines these two patches:
->=20
-> https://github.com/jamesyonan/openvpn/commit/03a5599202bdc3ba07983dc4ef
-> dae387fb8fb436
->=20
-> https://github.com/jamesyonan/openvpn/commit/d23005413b0e0f28a3c48a6342
-> f494763d5c9b40
+Hi all,
 
-For completeness: looks good to me, I have no comments that have not alread=
-y been seen on this list.
+please forgive me if I'm wrong, but there seems quite "little activity"
+on bug tracking page from the developers.
+E.g. one month ago I opened a bug report for a (suspected) bug present
+in file checking (bug #299) which is still "new" and even not commented.
 
-		Joachim
+I don't want to be rude, but I think this is somewhat discouraging for
+someone trying to give some feedback.
+
+Even if in you opinion a ticket is a complete waste of (your) time, it
+would be kind to react and point out your point of view.
+
+
+
+Thanks for your great work and kind regards
+
+
+Joerg
 
