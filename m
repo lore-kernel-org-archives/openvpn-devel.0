@@ -1,15 +1,10 @@
-Date: Sun, 30 Jun 2013 22:44:32 +0200
+Date: Wed, 3 Jul 2013 20:49:10 +0200 (CEST)
+Message-Id: <201307031849.r63InAbx029631@...1295...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20130630204432.GH2778@...1296...>
-References: <51D07247.9060900@...1832...>
-	<20130630185524.GF2778@...1296...>
-	<51D095DF.3010909@...1832...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="o/5eNASeIIpuMggS"
-Content-Disposition: inline
-In-Reply-To: <51D095DF.3010909@...1832...>
-Subject: Re: [Openvpn-devel] Bug Handling
+In-Reply-To: <1371811708-8528-1-git-send-email-arne@...1227...>
+References: <1371811708-8528-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add support of utun devices
+	under Mac OS X
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,48 +13,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Max Muster <Max.Muster@...1832...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---o/5eNASeIIpuMggS
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+ACK (based on discussion on the patch, feature-ack, and code testing from
+Jonathan).
 
-Hi,
+Patch has been applied to the master and release/2.3 branches, with
+the usual whitespace fixing :-)
 
-On Sun, Jun 30, 2013 at 10:32:31PM +0200, Max Muster wrote:
-> So maybe it would be a simple idea to think of a switch in "bug
-> handling". Why not simply use this list as "#1 input" for bug reports.
+commit fbc04bedbcce02fc625357b7475ddbc7164cabbf (master)
+commit bdfd4ee4c0e3bcd46222b8425cea87a4c83bb37c (release/2.3)
 
-This list isn't always working better or quicker...  it really comes down
-to whoever has time to go through open issues.  (We *do* have plans to
-improve the ticket handling...)
+Author: Arne Schwabe
+Date:   Fri Jun 21 12:48:28 2013 +0200
 
-So - as I said before, things have improved as far as community involvement
-and feedback goes, but still have quite a way to go.  Working on it.
+     Add support of utun devices under Mac OS X
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Tested-by: Jonathan K. Bullard <jkbullard@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1371811708-8528-1-git-send-email-arne@...1227...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/7739
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---o/5eNASeIIpuMggS
-Content-Type: application/pgp-signature
-Content-Disposition: inline
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
+--
+kind regards,
 
-iQCVAwUBUdCYsKkuBuNlUUl1AQLt2AP/UOiYDNUTokYqOPZs/NBxyrACaE1YVCT/
-tsvNe8U5G9b9TmSfLtXdy0fiZU2X9iiFadMAqOBkiN67R3E6AUW1SUQPVYxIQtul
-5n7E0o9TcleVTHF3CuM+nKZ91WNz8cJvYMHlXxARDJY7kdrjaWXYW61chk19XnQJ
-8nUWbc2KI6k=
-=/gJd
------END PGP SIGNATURE-----
+Gert Doering
 
---o/5eNASeIIpuMggS--
 
