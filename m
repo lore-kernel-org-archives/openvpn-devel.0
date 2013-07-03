@@ -1,15 +1,10 @@
-Date: Wed, 3 Jul 2013 21:05:46 +0200
+Date: Wed, 3 Jul 2013 21:10:03 +0200 (CEST)
+Message-Id: <201307031910.r63JA3lR011473@...1295...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20130703190546.GO2778@...1296...>
-References: <20130620180244.GV20843@...1296...>
-	<1371753560-23939-1-git-send-email-dazo@...384...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="QOa9dl9wYIBIim/b"
-Content-Disposition: inline
-In-Reply-To: <1371753560-23939-1-git-send-email-dazo@...384...>
-Subject: Re: [Openvpn-devel] [PATCH v3] plugin: Extend the plug-in v3 API to
-	identify the SSL implementation used
+In-Reply-To: <1370600111-5983-1-git-send-email-dazo@...384...>
+References: <1370600111-5983-1-git-send-email-dazo@...384...>
+Subject: [Openvpn-devel] [PATCH applied] Re: man page: Update man page about
+	the tls_digest_{n} environment variable
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,58 +13,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <dazo@...384...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: David Sommerseth <davids@...1347...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---QOa9dl9wYIBIim/b
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Your patch has been applied to the master and release/2.3 branches.
 
-Hi,
-On Thu, Jun 20, 2013 at 08:39:20PM +0200, David Sommerseth wrote:
-> From: David Sommerseth <davids@...1347...>
->=20
-> OpenVPN would segfault unexpectedly if it would be compiled against Polar=
-SSL
-> and the plug-in would expect OpenSSL, or vice-versa.  This segfault would
-> not appear before the plug-in would try to access functions which would
-> be available if the plug-in and OpenVPN uses the same SSL implementation.
->=20
-> This patch adds a member to the plug-in initialisation function, which
-> identifies the SSL implementation.
+commit ace54e9b3c26c4d13fd278fac2d2dc37138270e4 (master)
+commit 8141daa218dc3534c76604ad6b55fb5adcf9a260 (release/2.3)
 
-I already ACKed that, but merging & testing, I found that when you
-compile with --disable-ssl, the plugin functions would be passed "0"
-as SSLAPI, by pure coincidence (macro not being defined at all, which
-seems to be legal in a struct init and maps to 0).
+Author: David Sommerseth
+Date:   Fri Jun 7 12:15:11 2013 +0200
 
-So could you do a v4 that has SSLAPI_NONE in the ovpnSSLAPI and sets that
-if neither OpenSSL nor PolarSSL is active?
+     man page: Update man page about the tls_digest_{n} environment variable
 
-thanks :-)
+     Signed-off-by: David Sommerseth <davids@...1347...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1370600111-5983-1-git-send-email-dazo@...384...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/7659
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
 
---QOa9dl9wYIBIim/b
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+--
+kind regards,
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
+Gert Doering
 
-iQCVAwUBUdR2CqkuBuNlUUl1AQLRogQAsLDyVtx9tcsEhLOaHP5hKbwetFNB7e6e
-/Fgk3Wwq5Wf8MjiXsyPUE/YfUhCtOeD3rKypXIUrvKugoGUEXKd/urj+a05Phnqu
-cCYMuo+ESYVq8+q7fCA93PR6zJP6taHJgXnM4yj17nLRL+TDeEz5Ho/RDJ/sfG0a
-2Bp1D5y0+wU=
-=a8jw
------END PGP SIGNATURE-----
-
---QOa9dl9wYIBIim/b--
 
