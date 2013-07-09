@@ -1,8 +1,8 @@
-Message-ID: <51DBD0C1.5060002@...515...>
-Date: Tue, 09 Jul 2013 11:58:41 +0300
+Message-ID: <51DBD21F.2050700@...515...>
+Date: Tue, 09 Jul 2013 12:04:31 +0300
 From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Patch tracking page in the Wiki
+Subject: [Openvpn-devel] New Trac tickets (week 27, 2013)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,17 +15,12 @@ Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
 To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+Here are the new tickets for week 27:
 
-I setup a page for tracking the status of our patches:
+Enable use of ECDH: <https://community.openvpn.net/openvpn/ticket/307>
 
-<https://community.openvpn.net/openvpn/wiki/PatchTrackingPage>
-
-Hopefully this will help our patch tracking a bit. I will try to keep
-the page updated on a weekly basis.
-
-Feel free to add your own patch(es) there and to fix any errors or
-omissions you may find.
+I will send these mails manually until I get Trac configured to do it
+automatically.
 
 --=20
 Samuli Sepp=E4nen
