@@ -1,13 +1,9 @@
-Date: Thu, 11 Jul 2013 20:24:26 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20130711182425.GG16543@...1296...>
-References: <1371818610-4599-1-git-send-email-arne@...1227...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="CNfT9TXqV7nd4cfk"
-Content-Disposition: inline
-In-Reply-To: <1371818610-4599-1-git-send-email-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Add support to ignore specific options.
+From: David Sommerseth <dazo@...384...>
+Date: Thu, 11 Jul 2013 20:54:15 +0200
+Message-Id: <1373568855-28068-1-git-send-email-dazo@...384...>
+In-Reply-To: < 51C77F12.1090802@...515...>
+References: < 51C77F12.1090802@...515...>
+Subject: Re: [Openvpn-devel] [PATCH applied] TLS version negotiation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,68 +12,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net, James Yonan <james@...515...>
 
---CNfT9TXqV7nd4cfk
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: David Sommerseth <davids@...1347...>
 
-Hi,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-On Fri, Jun 21, 2013 at 02:43:30PM +0200, Arne Schwabe wrote:
-> +.B \-\-ignore-unknown-option opt1 opt2 opt3 ... optN
-> +When one of options=20
 
-Feature-ACK, but the code confuses me a bit...
+Your patch has been applied to the master branch.
 
-> +  else if (streq (p[0], "ignore-unknown-option") && p[1])=20
-> +    {
-> +      int i;
-> +      int j;
-> +      int numignored=3D0;
-> +      const char **ignore;
-> +
-> +      VERIFY_PERMISSION (OPT_P_GENERAL);
-> +      /* Find out how many options to be ignored */
-> +      for (i=3D1;p[i];i++)
-> +        numignored++;
-> +
-> +      numignored=3Di;
+commit 35e5d8c5f05a1821a5ca4384462427b00b871f82
+Author: James Yonan
+Date:   Mon Jun 10 22:59:30 2013 -0600
 
-This...  (I think the "numignored=3Di" bit should just go - while it does
-not harm, it doesn't help, and confuses people :-))
+     TLS version negotiation
 
-> +        {
-> +          const char* opt =3D options->ignore_unknown_option[i];
-> +
-> +          if (streq(p[0], opt))
+     Signed-off-by: James Yonan <james@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     URL: http://thread.gmane.org/gmane.network.openvpn.devel/7743
+     URL: http://thread.gmane.org/gmane.network.openvpn.devel/7744
+     Message-Id: 51C77F12.1090802@...515...
+     Signed-off-by: David Sommerseth <davids@...1347...>
 
-... and I'm not *so* happy about that either - if you only need "opt" once,
-why add an extra variable for that?  Code is technically OK, though.
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+- --
+kind regards,
 
---CNfT9TXqV7nd4cfk
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+David Sommerseth
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
+Version: GnuPG v1.4.11 (GNU/Linux)
 
-iQCVAwUBUd74WakuBuNlUUl1AQIf0gQAmqELMMx9wN740WYttLA46PShaDky/hZP
-rkYLm6XngO4VmyteUZDivbwtXtZhfY3GW1iKzhb0yyJuJr1m8hAU1g/vaVT5tCmP
-YUzK/9NDSyBPr6Fkom2bqS1gMKoaj/RKRYJh3sir7r5tGdu6x3TlwQb5LDPiljah
-rEGspc37VoY=
-=9M/6
+iEYEARECAAYFAlHe/08ACgkQDC186MBRfrqzmgCfZE9K8QB+eXQreHYh6j/Ptb2Q
+U2kAn1UHEX4RZv9aii13vNQV5+H0WIPV
+=HIhP
 -----END PGP SIGNATURE-----
-
---CNfT9TXqV7nd4cfk--
 
