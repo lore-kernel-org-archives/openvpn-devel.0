@@ -1,8 +1,13 @@
-Message-ID: <51DEDC08.8090804@...515...>
-Date: Thu, 11 Jul 2013 19:23:36 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Topics for today's community meeting
+Date: Thu, 11 Jul 2013 20:24:26 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20130711182425.GG16543@...1296...>
+References: <1371818610-4599-1-git-send-email-arne@...1227...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="CNfT9TXqV7nd4cfk"
+Content-Disposition: inline
+In-Reply-To: <1371818610-4599-1-git-send-email-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Add support to ignore specific options.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,34 +16,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--CNfT9TXqV7nd4cfk
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
 Hi,
 
-We're having an IRC meeting today, starting at 18:00 UTC on
-#openvpn-devel@...1422... Current topic list is here:
+On Fri, Jun 21, 2013 at 02:43:30PM +0200, Arne Schwabe wrote:
+> +.B \-\-ignore-unknown-option opt1 opt2 opt3 ... optN
+> +When one of options=20
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2013-07-11>
+Feature-ACK, but the code confuses me a bit...
 
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
+> +  else if (streq (p[0], "ignore-unknown-option") && p[1])=20
+> +    {
+> +      int i;
+> +      int j;
+> +      int numignored=3D0;
+> +      const char **ignore;
+> +
+> +      VERIFY_PERMISSION (OPT_P_GENERAL);
+> +      /* Find out how many options to be ignored */
+> +      for (i=3D1;p[i];i++)
+> +        numignored++;
+> +
+> +      numignored=3Di;
 
-In case you can't attend the meeting, please feel free to make comments
-on the topics by responding to this email or to the summary email sent
-after the meeting. Whenever possible, we'll also respond to existing,
-related email threads.
+This...  (I think the "numignored=3Di" bit should just go - while it does
+not harm, it doesn't help, and confuses people :-))
 
-NOTE: It's required to use a registered Freenode IRC nickname to join
-#openvpn-devel - look here for details:
+> +        {
+> +          const char* opt =3D options->ignore_unknown_option[i];
+> +
+> +          if (streq(p[0], opt))
 
-<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
+... and I'm not *so* happy about that either - if you only need "opt" once,
+why add an extra variable for that?  Code is technically OK, though.
 
+gert
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-irc freenode net: mattock
+--CNfT9TXqV7nd4cfk
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBUd74WakuBuNlUUl1AQIf0gQAmqELMMx9wN740WYttLA46PShaDky/hZP
+rkYLm6XngO4VmyteUZDivbwtXtZhfY3GW1iKzhb0yyJuJr1m8hAU1g/vaVT5tCmP
+YUzK/9NDSyBPr6Fkom2bqS1gMKoaj/RKRYJh3sir7r5tGdu6x3TlwQb5LDPiljah
+rEGspc37VoY=
+=9M/6
+-----END PGP SIGNATURE-----
+
+--CNfT9TXqV7nd4cfk--
 
