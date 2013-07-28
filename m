@@ -1,7 +1,7 @@
-From: Michal Ludvig <mludvig@...1388...>
-Date: Tue, 16 Jul 2013 00:17:06 +1200
-Message-Id: <1373890626-13943-1-git-send-email-mludvig@...1388...>
-Subject: [Openvpn-devel] [PATCH] Support for username-only auth file.
+From: James Yonan <james@...515...>
+Date: Sun, 28 Jul 2013 16:05:35 -0600
+Message-Id: <1375049135-21444-1-git-send-email-james@...515...>
+Subject: [Openvpn-devel] [PATCH] MSVC fixes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,212 +13,334 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: James Yonan <james@...515...>
 
-Make OpenVPN read the username from the auth file
-parameter of --auth-user-pass and prompt for a
-password if it's not in the file.
+Fixes to allow compilation with Microsoft Visual Studio 2008
 
-Rationale: Prior to this change OpenVPN either
-required both username and password present in the
-auth file or prompted for both on the console.
-Unlike passwords usernames usually don't change and
-can therefore be "hardcoded" in the config.
+* Fixed several instances of declarations after statements.
 
-Signed-off-by: Michal Ludvig <mludvig@...1388...>
+* In socket.c, fixed issue where uninitialized value (err)
+  is being passed to to gai_strerror.
+
+* ssl.c is trying to access multi_output_peer_info_env
+  function in multi.c, causing an undefined symbol warning
+  at compile time.  ssl.c is strictly a client of multi.c
+  (but not the other way around), therefore ssl.c does not
+  include multi.h and should not depend on multi.h API.  To
+  fix, moved validate_peer_info_line and multi_output_peer_info_env
+  from multi.c to misc.c.
+
+* MSVC doesn't support %z as a printf format specifier for size_t
+
+* MSVC doesn't support a const variable being used to dimension
+  an array.
+
+* Explicitly cast the third parameter to setsockopt to
+  const void *
 ---
- doc/openvpn.8         |   3 +-
- src/openvpn/misc.c    | 110 ++++++++++++++++++++++++++------------------------
- src/openvpn/options.c |   3 +-
- 3 files changed, 62 insertions(+), 54 deletions(-)
+ src/openvpn/init.c        |   10 ++++----
+ src/openvpn/misc.c        |   56 +++++++++++++++++++++++++++++++++++++++++++++
+ src/openvpn/misc.h        |    7 ++++++
+ src/openvpn/multi.c       |   52 -----------------------------------------
+ src/openvpn/multi.h       |    3 ---
+ src/openvpn/socket.c      |    5 ++--
+ src/openvpn/socket.h      |    2 +-
+ src/openvpn/ssl.c         |    2 +-
+ src/openvpn/ssl_openssl.c |    7 +++---
+ src/openvpn/win32.c       |    6 ++---
+ 10 files changed, 79 insertions(+), 71 deletions(-)
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index f74fe81..7ea204d 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -3601,7 +3601,8 @@ over the client's routing table.
- .B \-\-auth-user-pass [up]
- Authenticate with server using username/password.
- .B up
--is a file containing username/password on 2 lines (Note: OpenVPN
-+is a file containing username/password on 2 lines. If the
-+password line is missing OpenVPN will prompt for one. (Note: OpenVPN
- will only read passwords from a file if it has been built
- with the \-\-enable-password-save configure option, or on Windows
- by defining ENABLE_PASSWORD_SAVE in win/settings.in).
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index fb14726..031fb20 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -183,10 +183,12 @@ ce_management_query_proxy (struct context *c)
+   if (management)
+     {
+       gc = gc_new ();
+-      struct buffer out = alloc_buf_gc (256, &gc);
+-      buf_printf (&out, ">PROXY:%u,%s,%s", (l ? l->current : 0) + 1,
+-                  (proto_is_udp (ce->proto) ? "UDP" : "TCP"), np (ce->remote));
+-      management_notify_generic (management, BSTR (&out));
++      {
++	struct buffer out = alloc_buf_gc (256, &gc);
++	buf_printf (&out, ">PROXY:%u,%s,%s", (l ? l->current : 0) + 1,
++		    (proto_is_udp (ce->proto) ? "UDP" : "TCP"), np (ce->remote));
++	management_notify_generic (management, BSTR (&out));
++      }
+       ce->flags |= CE_MAN_QUERY_PROXY;
+       while (ce->flags & CE_MAN_QUERY_PROXY)
+         {
 diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 1120adc..0362d6c 100644
+index 1120adc..4688444 100644
 --- a/src/openvpn/misc.c
 +++ b/src/openvpn/misc.c
-@@ -1036,7 +1036,9 @@ get_user_pass_cr (struct user_pass *up,
+@@ -2063,3 +2063,59 @@ compat_flag (unsigned int flag)
+   return (compat_flags & (flag >> 1));
  
-   if (!up->defined)
-     {
--      const bool from_stdin = (!auth_file || !strcmp (auth_file, "stdin"));
-+      bool from_authfile = (auth_file && strcmp (auth_file, "stdin") != 0);
-+      bool username_from_stdin = !from_authfile;
-+      bool password_from_stdin = !from_authfile;
- 
-       if (flags & GET_USER_PASS_PREVIOUS_CREDS_FAILED)
- 	msg (M_WARN, "Note: previous '%s' credentials failed", prefix);
-@@ -1046,7 +1048,7 @@ get_user_pass_cr (struct user_pass *up,
-        * Get username/password from management interface?
-        */
-       if (management
--	  && ((auth_file && streq (auth_file, "management")) || (from_stdin && (flags & GET_USER_PASS_MANAGEMENT)))
-+	  && ((auth_file && streq (auth_file, "management")) || (username_from_stdin && (flags & GET_USER_PASS_MANAGEMENT)))
- 	  && management_query_user_pass_enabled (management))
- 	{
- 	  const char *sc = NULL;
-@@ -1083,11 +1085,61 @@ get_user_pass_cr (struct user_pass *up,
- 	  if (!strlen (up->password))
- 	    strcpy (up->password, "ok");
- 	}
--	  
-+      else if (from_authfile)
+ }
++
++#if P2MP_SERVER
++
++/* helper to parse peer_info received from multi client, validate
++ * (this is untrusted data) and put into environment
++ */
++bool
++validate_peer_info_line(char *line)
++{
++  uint8_t c;
++  int state = 0;
++  while (*line)
++    {
++      c = *line;
++      switch (state)
 +	{
-+	  /*
-+	   * Try to get username/password from a file.
-+	   */
-+	  FILE *fp;
-+	  char password_buf[USER_PASS_LEN] = { '\0' };
-+
-+	  warn_if_group_others_accessible (auth_file);
-+
-+	  fp = platform_fopen (auth_file, "r");
-+	  if (!fp)
-+	    msg (M_ERR, "Error opening '%s' auth file: %s", prefix, auth_file);
-+
-+	  if ((flags & GET_USER_PASS_PASSWORD_ONLY) == 0)
-+	    {
-+	      /* Read username first */
-+	      if (fgets (up->username, USER_PASS_LEN, fp) == NULL)
-+		msg (M_FATAL, "Error reading username from %s authfile: %s",
-+		     prefix,
-+		     auth_file);
-+	    }
-+	  chomp (up->username);
-+
-+	  if (fgets (password_buf, USER_PASS_LEN, fp) != NULL)
-+	    {
-+#ifndef ENABLE_PASSWORD_SAVE
-+	      /*
-+	       * Unless ENABLE_PASSWORD_SAVE is defined, don't allow sensitive passwords
-+	       * to be read from a file.
-+	       */
-+	      if (flags & GET_USER_PASS_SENSITIVE)
-+	        msg (M_FATAL, "Sorry, '%s' password cannot be read from a file", prefix);
-+#endif
-+	      chomp (password_buf);
-+	    }
-+
-+	  if (flags & GET_USER_PASS_PASSWORD_ONLY && !password_buf[0])
-+		msg (M_FATAL, "Error reading password from %s authfile: %s", prefix, auth_file);
-+
-+	  if (password_buf[0])
-+	    strncpy(up->password, password_buf, USER_PASS_LEN);
++	case 0:
++	case 1:
++	  if (c == '=' && state == 1)
++	    state = 2;
++	  else if (isalnum(c) || c == '_')
++	    state = 1;
 +	  else
-+	    password_from_stdin = 1;
-+
-+	  fclose (fp);
-+
-+	  if (!(flags & GET_USER_PASS_PASSWORD_ONLY) && strlen (up->username) == 0)
-+	    msg (M_FATAL, "ERROR: username from %s authfile '%s' is empty", prefix, auth_file);
++	    return false;
++	case 2:
++	  /* after the '=', replace non-printable or shell meta with '_' */
++	  if (!isprint(c) || isspace(c) ||
++	       c == '$' || c == '(' || c == '`' )
++	    *line = '_';
 +	}
++      line++;
++    }
++  return (state == 2);
++}
 +
-       /*
-        * Get username/password from standard input?
-        */
--      else if (from_stdin)
-+      if (username_from_stdin || password_from_stdin)
- 	{
- #ifdef ENABLE_CLIENT_CR
- 	  if (auth_challenge && (flags & GET_USER_PASS_DYNAMIC_CHALLENGE))
-@@ -1119,7 +1171,7 @@ get_user_pass_cr (struct user_pass *up,
- 	      buf_printf (&user_prompt, "Enter %s Username:", prefix);
- 	      buf_printf (&pass_prompt, "Enter %s Password:", prefix);
++void
++output_peer_info_env (struct env_set *es, const char * peer_info)
++{
++  char line[256];
++  struct buffer buf;
++  buf_set_read (&buf, (const uint8_t *) peer_info, strlen(peer_info));
++  while (buf_parse (&buf, '\n', line, sizeof (line)))
++    {
++      chomp (line);
++      if (validate_peer_info_line(line) &&
++            (strncmp(line, "IV_", 3) == 0 || strncmp(line, "UV_", 3) == 0) )
++	{
++	  msg (M_INFO, "peer info: %s", line);
++	  env_set_add(es, line);
++	}
++      else
++	msg (M_WARN, "validation failed on peer_info line received from client");
++    }
++}
++
++#endif /* P2MP_SERVER */
+diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+index 183898e..41748bd 100644
+--- a/src/openvpn/misc.h
++++ b/src/openvpn/misc.h
+@@ -369,4 +369,11 @@ void argv_printf_cat (struct argv *a, const char *format, ...)
+ #define COMPAT_NO_NAME_REMAPPING  (1<<2)  /** compat flag: --compat-names without char remapping */
+ bool compat_flag (unsigned int flag);
  
--	      if (!(flags & GET_USER_PASS_PASSWORD_ONLY))
-+	      if (username_from_stdin && !(flags & GET_USER_PASS_PASSWORD_ONLY))
++#if P2MP_SERVER
++/* helper to parse peer_info received from multi client, validate
++ * (this is untrusted data) and put into environment */
++bool validate_peer_info_line(char *line);
++void output_peer_info_env (struct env_set *es, const char * peer_info);
++#endif /* P2MP_SERVER */
++
+ #endif
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 50f398d..f016b14 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -1562,58 +1562,6 @@ multi_client_connect_mda (struct multi_context *m,
+ 
+ #endif
+ 
+-/* helper to parse peer_info received from multi client, validate
+- * (this is untrusted data) and put into environment
+- */
+-bool
+-validate_peer_info_line(char *line)
+-{
+-  uint8_t c;
+-  int state = 0;
+-  while (*line)
+-    {
+-      c = *line;
+-      switch (state)
+-	{
+-	case 0:
+-	case 1:
+-	  if (c == '=' && state == 1)
+-	    state = 2;
+-	  else if (isalnum(c) || c == '_')
+-	    state = 1;
+-	  else
+-	    return false;
+-	case 2:
+-	  /* after the '=', replace non-printable or shell meta with '_' */
+-	  if (!isprint(c) || isspace(c) ||
+-	       c == '$' || c == '(' || c == '`' )
+-	    *line = '_';
+-	}
+-      line++;
+-    }
+-  return (state == 2);
+-}
+-
+-void
+-multi_output_peer_info_env (struct env_set *es, const char * peer_info)
+-{
+-  char line[256];
+-  struct buffer buf;
+-  buf_set_read (&buf, (const uint8_t *) peer_info, strlen(peer_info));
+-  while (buf_parse (&buf, '\n', line, sizeof (line)))
+-    {
+-      chomp (line);
+-      if (validate_peer_info_line(line) &&
+-            (strncmp(line, "IV_", 3) == 0 || strncmp(line, "UV_", 3) == 0) )
+-	{
+-	  msg (M_INFO, "peer info: %s", line);
+-	  env_set_add(es, line);
+-	}
+-      else
+-	msg (M_WARN, "validation failed on peer_info line received from client");
+-    }
+-}
+-
+ static void
+ multi_client_connect_setenv (struct multi_context *m,
+ 			     struct multi_instance *mi)
+diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+index 7b97b0d..fc2ffb2 100644
+--- a/src/openvpn/multi.h
++++ b/src/openvpn/multi.h
+@@ -312,9 +312,6 @@ void multi_close_instance_on_signal (struct multi_context *m, struct multi_insta
+ void init_management_callback_multi (struct multi_context *m);
+ void uninit_management_callback_multi (struct multi_context *m);
+ 
+-bool validate_peer_info_line(char *line);
+-void multi_output_peer_info_env (struct env_set *es, const char * peer_info);
+-
+ /*
+  * Return true if our output queue is not full
+  */
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 40356a0..3c0a379 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -1158,7 +1158,6 @@ resolve_bind_local (struct link_socket *sock)
+ 	case AF_INET6:
+ 	    {
+ 	      int status;
+-	      int err;
+ 	      CLEAR(sock->info.lsa->local.addr.in6);
+ 	      if (sock->local_host)
  		{
- 		  if (!get_console_input (BSTR (&user_prompt), true, up->username, USER_PASS_LEN))
- 		    msg (M_FATAL, "ERROR: could not read %s username from stdin", prefix);
-@@ -1127,7 +1179,7 @@ get_user_pass_cr (struct user_pass *up,
- 		    msg (M_FATAL, "ERROR: %s username is empty", prefix);
+@@ -1181,7 +1180,7 @@ resolve_bind_local (struct link_socket *sock)
+ 		{
+ 		  msg (M_FATAL, "getaddr6() failed for local \"%s\": %s",
+ 		       sock->local_host,
+-		       gai_strerror(err));
++		       gai_strerror(status));
+ 		}
+ 	      sock->info.lsa->local.addr.in6.sin6_port = htons (sock->local_port);
+ 	    }
+@@ -1235,6 +1234,7 @@ resolve_remote (struct link_socket *sock,
+ 	      unsigned int flags = sf2gaf(GETADDR_RESOLVE|GETADDR_UPDATE_MANAGEMENT_STATE, sock->sockflags);
+ 	      int retry = 0;
+ 	      int status = -1;
++	      struct addrinfo* ai;
+ 
+ 	      if (sock->connection_profiles_defined && sock->resolve_retry_seconds == RESOLV_RETRY_INFINITE)
+ 		{
+@@ -1271,7 +1271,6 @@ resolve_remote (struct link_socket *sock,
+ 		  ASSERT (0);
  		}
  
--	      if (!get_console_input (BSTR (&pass_prompt), false, up->password, USER_PASS_LEN))
-+	      if (password_from_stdin && !get_console_input (BSTR (&pass_prompt), false, up->password, USER_PASS_LEN))
- 		msg (M_FATAL, "ERROR: could not not read %s password from stdin", prefix);
+-		  struct addrinfo* ai;
+ 		  /* Temporary fix, this need to be changed for dual stack */
+ 		  status = openvpn_getaddrinfo(flags, sock->remote_host, retry,
+ 											  signal_received, af, &ai);
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index 4e7e7f8..793cd9f 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -1023,7 +1023,7 @@ static inline void
+ link_socket_set_tos (struct link_socket *ls)
+ {
+   if (ls && ls->ptos_defined)
+-    setsockopt (ls->sd, IPPROTO_IP, IP_TOS, &ls->ptos, sizeof (ls->ptos));
++    setsockopt (ls->sd, IPPROTO_IP, IP_TOS, (const void *)&ls->ptos, sizeof (ls->ptos));
+ }
  
- #ifdef ENABLE_CLIENT_CR
-@@ -1153,52 +1205,6 @@ get_user_pass_cr (struct user_pass *up,
  #endif
- 	    }
- 	}
--      else
--	{
--	  /*
--	   * Get username/password from a file.
--	   */
--	  FILE *fp;
--      
--#ifndef ENABLE_PASSWORD_SAVE
--	  /*
--	   * Unless ENABLE_PASSWORD_SAVE is defined, don't allow sensitive passwords
--	   * to be read from a file.
--	   */
--	  if (flags & GET_USER_PASS_SENSITIVE)
--	    msg (M_FATAL, "Sorry, '%s' password cannot be read from a file", prefix);
--#endif
--
--	  warn_if_group_others_accessible (auth_file);
--
--	  fp = platform_fopen (auth_file, "r");
--	  if (!fp)
--	    msg (M_ERR, "Error opening '%s' auth file: %s", prefix, auth_file);
--
--	  if (flags & GET_USER_PASS_PASSWORD_ONLY)
--	    {
--	      if (fgets (up->password, USER_PASS_LEN, fp) == NULL)
--		msg (M_FATAL, "Error reading password from %s authfile: %s",
--		     prefix,
--		     auth_file);
--	    }
--	  else
--	    {
--	      if (fgets (up->username, USER_PASS_LEN, fp) == NULL
--		  || fgets (up->password, USER_PASS_LEN, fp) == NULL)
--		msg (M_FATAL, "Error reading username and password (must be on two consecutive lines) from %s authfile: %s",
--		     prefix,
--		     auth_file);
--	    }
--      
--	  fclose (fp);
--      
--	  chomp (up->username);
--	  chomp (up->password);
--      
--	  if (!(flags & GET_USER_PASS_PASSWORD_ONLY) && strlen (up->username) == 0)
--	    msg (M_FATAL, "ERROR: username from %s authfile '%s' is empty", prefix, auth_file);
--	}
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index e4b802f..69f77f3 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2062,7 +2062,7 @@ key_method_2_read (struct buffer *buf, struct tls_multi *multi, struct tls_sessi
+   free (multi->peer_info);
+   multi->peer_info = read_string_alloc (buf);
+   if ( multi->peer_info )
+-      multi_output_peer_info_env (session->opt->es, multi->peer_info);
++      output_peer_info_env (session->opt->es, multi->peer_info);
+ #endif
  
-       string_mod (up->username, CC_PRINT, CC_CRLF, 0);
-       string_mod (up->password, CC_PRINT, CC_CRLF, 0);
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 2191916..dc445dd 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -495,7 +495,8 @@ static const char usage_message[] =
-   "--client         : Helper option to easily configure client mode.\n"
-   "--auth-user-pass [up] : Authenticate with server using username/password.\n"
-   "                  up is a file containing username/password on 2 lines,\n"
--  "                  or omit to prompt from console.\n"
-+  "                  or provide only username on one line and be prompted\n"
-+  "                  for password or omit to prompt for both from console.\n"
-   "--pull           : Accept certain config file options from the peer as if they\n"
-   "                  were part of the local config file.  Must be specified\n"
-   "                  when connecting to a '--mode server' remote host.\n"
+   if (verify_user_pass_enabled(session))
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 12c725d..ec76b30 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -242,8 +242,7 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+ 
+   const tls_cipher_name_pair *cipher_pair;
+ 
+-  const size_t openssl_ciphers_size = 4096;
+-  char openssl_ciphers[openssl_ciphers_size];
++  char openssl_ciphers[4096];
+   size_t openssl_ciphers_len = 0;
+   openssl_ciphers[0] = '\0';
+ 
+@@ -282,8 +281,8 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+ 	}
+ 
+       // Make sure new cipher name fits in cipher string
+-      if (((openssl_ciphers_size-1) - openssl_ciphers_len) < current_cipher_len) {
+-	msg(M_SSLERR, "Failed to set restricted TLS cipher list, too long (>%zu).", openssl_ciphers_size-1);
++      if (((sizeof(openssl_ciphers)-1) - openssl_ciphers_len) < current_cipher_len) {
++	msg(M_SSLERR, "Failed to set restricted TLS cipher list, too long (>%d).", (int)sizeof(openssl_ciphers)-1);
+       }
+ 
+       // Concatenate cipher name to OpenSSL cipher string
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index 178e2c3..022eec5 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -870,6 +870,9 @@ openvpn_execve (const struct argv *a, const struct env_set *es, const unsigned i
+           WCHAR *cl = wide_cmd_line (a, &gc);
+           WCHAR *cmd = wide_string (a->argv[0], &gc);
+ 
++          /* this allows console programs to run, and is ignored otherwise */
++          DWORD proc_flags = CREATE_NO_WINDOW;
++
+           CLEAR (start_info);
+           CLEAR (proc_info);
+ 
+@@ -879,9 +882,6 @@ openvpn_execve (const struct argv *a, const struct env_set *es, const unsigned i
+           start_info.dwFlags = STARTF_USESHOWWINDOW;
+           start_info.wShowWindow = SW_HIDE;
+ 
+-          /* this allows console programs to run, and is ignored otherwise */
+-          DWORD proc_flags = CREATE_NO_WINDOW;
+-
+           if (CreateProcessW (cmd, cl, NULL, NULL, FALSE, proc_flags, env, NULL, &start_info, &proc_info))
+             {
+               DWORD exit_status = 0;
 -- 
-1.8.1.4
+1.7.9.5
 
 
