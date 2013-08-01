@@ -1,14 +1,14 @@
-Date: Thu, 1 Aug 2013 16:30:58 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20130801143058.GM16543@...1296...>
+Message-ID: <51FA79C6.1020405@...1147...>
+Date: Thu, 01 Aug 2013 17:07:50 +0200
+From: Jan Just Keijser <janjust@...1147...>
+MIME-Version: 1.0
 References: <kt8j7m$c5m$1@...1062...> <20130730145731.GW13127@...1152...>
 	<20130730151406.GQ16543@...1296...>
 	<51FA324F.1090108@...1147...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="VZLKKa0PG5KXlQhV"
-Content-Disposition: inline
-In-Reply-To: <51FA324F.1090108@...1147...>
+	<20130801143058.GM16543@...1296...>
+In-Reply-To: <20130801143058.GM16543@...1296...>
+Content-Type: multipart/alternative;
+	boundary="------------020500050606020107090801"
 Subject: Re: [Openvpn-devel] [Openvpn-users] why doesn't openvpn negotiate
 	settings?
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,53 +19,101 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jan Just Keijser <janjust@...1147...>
+To: Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, openvpn-users@lists.sourceforge.net
 
---VZLKKa0PG5KXlQhV
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+This is a multi-part message in MIME format.
+--------------020500050606020107090801
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi,
+Hi Gert,
+
+Gert Doering wrote:
+> Hi,
+>
+> On Thu, Aug 01, 2013 at 12:02:55PM +0200, Jan Just Keijser wrote:
+>   
+>> It should be possible to add negotiation without completely breaking 
+>> backwards compatibility; right now, when a server pushes an option to 
+>> the client that is unrecognized the client will print a warning but it 
+>> will not abort. This could be used to push a 'negotation request' - if 
+>> the client responds then a negotation phase can start , during which the 
+>> encryption key, hashing cipher, MTU settings etc can be negotiated. If 
+>> the client does not respond the server would need to assume that it's a 
+>> 2.3 or older client.
+>>     
+>
+> Maybe I'm a bit naive, but since the data layer cipher is independent of
+> the TLS cipher anyway, can't we just "push cipher xxx"?
+>
+> Or is push/pull crypted with the data layer cipher?
+>
+>   
+good question and one that I've asked myself as well -  there seems to 
+be something funny going on with the data layer cipher (or auth parm) . 
+I remember that I tried making the cipher and auth settings pushable and 
+failed miserably. The flow of when and how the data cipher (and digest) 
+are set up seems to be complicated and may happen (partially) *before* 
+the options are pushed.
+Perhaps someone else (JamesY?) can comment on this.
+
+cheers,
+
+JJK
+
+
+--------------020500050606020107090801
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+Hi Gert,<br>
+<br>
+Gert Doering wrote:
+<blockquote cite="mid:20130801143058.GM16543@...1296..." type="cite">
+  <pre wrap="">Hi,
 
 On Thu, Aug 01, 2013 at 12:02:55PM +0200, Jan Just Keijser wrote:
-> It should be possible to add negotiation without completely breaking=20
-> backwards compatibility; right now, when a server pushes an option to=20
-> the client that is unrecognized the client will print a warning but it=20
-> will not abort. This could be used to push a 'negotation request' - if=20
-> the client responds then a negotation phase can start , during which the=
-=20
-> encryption key, hashing cipher, MTU settings etc can be negotiated. If=20
-> the client does not respond the server would need to assume that it's a=20
-> 2.3 or older client.
-
+  </pre>
+  <blockquote type="cite">
+    <pre wrap="">It should be possible to add negotiation without completely breaking 
+backwards compatibility; right now, when a server pushes an option to 
+the client that is unrecognized the client will print a warning but it 
+will not abort. This could be used to push a 'negotation request' - if 
+the client responds then a negotation phase can start , during which the 
+encryption key, hashing cipher, MTU settings etc can be negotiated. If 
+the client does not respond the server would need to assume that it's a 
+2.3 or older client.
+    </pre>
+  </blockquote>
+  <pre wrap=""><!---->
 Maybe I'm a bit naive, but since the data layer cipher is independent of
 the TLS cipher anyway, can't we just "push cipher xxx"?
 
 Or is push/pull crypted with the data layer cipher?
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+  </pre>
+</blockquote>
+good question and one that I've asked myself as well -&nbsp; there seems to
+be something funny going on with the data layer cipher (or auth parm) .
+I remember that I tried making the cipher and auth settings pushable
+and failed miserably. The flow of when and how the data cipher (and
+digest) are set up seems to be complicated and may happen (partially)
+*before* the options are pushed.<br>
+Perhaps someone else (JamesY?) can comment on this.<br>
+<br>
+cheers,<br>
+<br>
+JJK<br>
+<br>
+</body>
+</html>
 
---VZLKKa0PG5KXlQhV
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
-
-iQCVAwUBUfpxIqkuBuNlUUl1AQJepwP/RMIJcOjI5gay0+Ay4cV7QulWAEyCy0+e
-Hv4HWIlOS6bkO/XEEovJJjOx5uLhEedvNBP7QYprH5Js/9p4za1RgmyJoL0ZxdkC
-0vOpXsOOht3tEEIxxYVma027uLq0PRJRXS8qSs/FKEFdhmIiyo3xRVxDrmyX+PuQ
-cgUFPJrC7yw=
-=QP1H
------END PGP SIGNATURE-----
-
---VZLKKa0PG5KXlQhV--
+--------------020500050606020107090801--
 
