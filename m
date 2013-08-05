@@ -1,10 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <CAFLxGvxgzpM2n8zLhsm5Ag5BNNMp7GnFEo14d54fkgF=Cv7PPg@...278...>
-References: <CAFLxGvxgzpM2n8zLhsm5Ag5BNNMp7GnFEo14d54fkgF=Cv7PPg@...278...>
-Date: Mon, 5 Aug 2013 16:24:03 +0200
-Message-ID: <CAFLxGvykyE-rtVRjqGvgBhwA4b+syTqFDn5i2hs2_97bMO6zEQ@...278...>
-From: richard -rw- weinberger <richard.weinberger@...277...>
-Subject: Re: [Openvpn-devel] Windows 8 issue: TUN/TAP adapter does not start
+MIME-version: 1.0
+Content-type: multipart/alternative;
+	boundary="Boundary_(ID_/M3TpdvWsWP0nmweBJlpnA)"
+From: Asim Ali <asim.ali@...1835...>
+Date: Mon, 05 Aug 2013 16:30:25 +0000 (GMT)
+Message-id: <0fd116f0-0192-489f-a313-8e7a6cc9a184@...1835...>
+Subject: [Openvpn-devel] TLSv1.2 and Suite B
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,47 +13,121 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8bit
-To: openvpn-users@lists.sourceforge.net, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Cc: david@...1834...
+To: openvpn-devel@lists.sourceforge.net
 
-On Wed, Jul 10, 2013 at 2:25 PM, richard -rw- weinberger
-<richard.weinberger@...277...> wrote:
-> Hi!
->
-> I'm facing a strange issue on Windows 8.
-> It happens very often that the TUN/TAP adapter is not started and
-> OpenVPN is unable to setup IPs and routes.
->
-> openvpn.exe writes over and over "Waiting for TUN/TAP interface to come up...".
-> After ~30 seconds it continues without a proper network configuration.
-> This is very nasty because from the users point of few it looks like
-> the tunnel is up but nothing works.
->
-> On the net I found some halve baked "solutions" for that issue.
-> Like disabling the Windows Firewall, disabling IPv6, setting the
-> DHCP-Client service to autostart, and so on. But nothing helped so far
-> nor really explained the root issue.
->
-> Please see the attached log file.
-> (It is sightly censored to hide my customers name and public IP.)
->
-> I ran also Wireshark on my TUN/TAP device while connecting.
-> When facing the issue zero packets were captured. So, it is not really
-> a networking issue between server and client.
->
-> Can you please help me?
+--Boundary_(ID_/M3TpdvWsWP0nmweBJlpnA)
+Content-type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
-...still facing the issue.
-How can I help you with debugging this issue?
+> I would like to know where OpenVPN stands on having TLS 1.2 working with =
+Suite B cryptography =EF=BB=BF(http://tools.ietf.org/html/rfc6460).
+>
+>
+> My colleagues and I want to use TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384 c=
+iphersuite which is supported by OpenSSL. But cannot get it to work with Op=
+enVPN.
+>
+>
+> The closest we can get to work is TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA whi=
+ch is only TLS 1.0.
+>
+>
+> Our push for Suite B is coming from this... https://media.blackhat.com/us=
+-13/us-13-Stamos-The-Factoring-Dead.pdf
+>
+>
+> Please let me know your thoughts on this matter.
+>
+>
+> Thank you.
+>
+>
+> Asim=
 
-BTW: Dear other list members, there is *zero* reason to mail me
-privately regarding this issue.
-If you see that issue too, post this here and don't send me useless
-private mails.
+--Boundary_(ID_/M3TpdvWsWP0nmweBJlpnA)
+Content-type: multipart/related;
+	boundary="Boundary_(ID_jWhaR+FytURykitJypa7+g)"; type="text/html"
 
--- 
-Thanks,
-//richard
+--Boundary_(ID_jWhaR+FytURykitJypa7+g)
+Content-type: text/html; CHARSET=US-ASCII; charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
+
+<html><body><div><div><blockquote type=3D"cite"><div class=3D"msg-quote"><d=
+iv><p id=3D"yui_3_7_2_38_1375718452659_39"><span style=3D"font-family: cour=
+ier new,monospace; font-size: 13px; color: rgb(0, 0, 0);">I would like to k=
+now where OpenVPN stands on having TLS 1.2 working with Suite B cryptograph=
+y (<a href=3D"mailto:openvpn-devel@lists.sourceforge.net" data-mce-href=3D"=
+mailto:openvpn-devel@lists.sourceforge.net">http://tools.ietf.org/html/rfc6=
+460</a>).</span></p><p id=3D"yui_3_7_2_38_1375718452659_62"><br id=3D"yui_3=
+_7_2_38_1375718452659_67"></p><p id=3D"yui_3_7_2_38_1375718452659_64" style=
+=3D"color: rgb(0, 0, 0); font-size: 16px; font-family: times new roman,new =
+york,times,serif; background-color: transparent; font-style: normal;" data-=
+mce-style=3D"color: #000000; font-size: 16px; font-family: times new roman,=
+new york,times,serif; background-color: transparent; font-style: normal;"><=
+span style=3D"font-family: courier new,monospace; font-size: 13px; color: r=
+gb(0, 0, 0);">My colleagues and I want to use TLS_ECDHE_ECDSA_WITH_AES_256_=
+GCM_SHA384 ciphersuite which is supported by OpenSSL. But cannot get it to =
+work with OpenVPN.</span></p><p id=3D"yui_3_7_2_38_1375718452659_97" style=
+=3D"color: rgb(0, 0, 0); font-size: 16px; font-family: times new roman,new =
+york,times,serif; background-color: transparent; font-style: normal;" data-=
+mce-style=3D"color: #000000; font-size: 16px; font-family: times new roman,=
+new york,times,serif; background-color: transparent; font-style: normal;"><=
+br id=3D"yui_3_7_2_38_1375718452659_102"></p><p id=3D"yui_3_7_2_38_13757184=
+52659_99" style=3D"color: rgb(0, 0, 0); font-size: 16px; font-family: times=
+ new roman,new york,times,serif; background-color: transparent; font-style:=
+ normal;" data-mce-style=3D"color: #000000; font-size: 16px; font-family: t=
+imes new roman,new york,times,serif; background-color: transparent; font-st=
+yle: normal;"><span style=3D"font-family: courier new,monospace; font-size:=
+ 13px; color: rgb(0, 0, 0);">The closest we can get to work is TLS_ECDH_ECD=
+SA_WITH_AES_256_CBC_SHA which is only TLS 1.0.</span></p><p id=3D"yui_3_7_2=
+_38_1375718452659_143" style=3D"color: rgb(0, 0, 0); font-size: 16px; font-=
+family: times new roman,new york,times,serif; background-color: transparent=
+; font-style: normal;" data-mce-style=3D"color: #000000; font-size: 16px; f=
+ont-family: times new roman,new york,times,serif; background-color: transpa=
+rent; font-style: normal;"><br id=3D"yui_3_7_2_38_1375718452659_148"></p><p=
+ id=3D"yui_3_7_2_38_1375718452659_145" style=3D"color: rgb(0, 0, 0); font-s=
+ize: 16px; font-family: times new roman,new york,times,serif; background-co=
+lor: transparent; font-style: normal;" data-mce-style=3D"color: #000000; fo=
+nt-size: 16px; font-family: times new roman,new york,times,serif; backgroun=
+d-color: transparent; font-style: normal;"><span style=3D"font-family: cour=
+ier new,monospace; font-size: 13px; color: rgb(0, 0, 0);">Our push for Suit=
+e B is coming from this... <a href=3D"https://media.blackhat.com/us-13/us-1=
+3-Stamos-The-Factoring-Dead.pdf" data-mce-href=3D"https://media.blackhat.co=
+m/us-13/us-13-Stamos-The-Factoring-Dead.pdf">https://media.blackhat.com/us-=
+13/us-13-Stamos-The-Factoring-Dead.pdf</a></span></p><p id=3D"yui_3_7_2_38_=
+1375718452659_150" style=3D"color: rgb(0, 0, 0); font-size: 16px; font-fami=
+ly: times new roman,new york,times,serif; background-color: transparent; fo=
+nt-style: normal;" data-mce-style=3D"color: #000000; font-size: 16px; font-=
+family: times new roman,new york,times,serif; background-color: transparent=
+; font-style: normal;"><br id=3D"yui_3_7_2_38_1375718452659_155"></p><p id=
+=3D"yui_3_7_2_38_1375718452659_152" style=3D"color: rgb(0, 0, 0); font-size=
+: 16px; font-family: times new roman,new york,times,serif; background-color=
+: transparent; font-style: normal;" data-mce-style=3D"color: #000000; font-=
+size: 16px; font-family: times new roman,new york,times,serif; background-c=
+olor: transparent; font-style: normal;"><span style=3D"font-family: courier=
+ new,monospace; font-size: 13px; color: rgb(0, 0, 0);">Please let me know y=
+our thoughts on this matter.</span></p><p id=3D"yui_3_7_2_38_1375718452659_=
+160" style=3D"color: rgb(0, 0, 0); font-size: 16px; font-family: times new =
+roman,new york,times,serif; background-color: transparent; font-style: norm=
+al;" data-mce-style=3D"color: #000000; font-size: 16px; font-family: times =
+new roman,new york,times,serif; background-color: transparent; font-style: =
+normal;"><br id=3D"yui_3_7_2_38_1375718452659_165"></p><p id=3D"yui_3_7_2_3=
+8_1375718452659_162" style=3D"color: rgb(0, 0, 0); font-size: 16px; font-fa=
+mily: times new roman,new york,times,serif; background-color: transparent; =
+font-style: normal;" data-mce-style=3D"color: #000000; font-size: 16px; fon=
+t-family: times new roman,new york,times,serif; background-color: transpare=
+nt; font-style: normal;"><span style=3D"font-family: courier new,monospace;=
+ font-size: 13px; color: rgb(0, 0, 0);">Thank you.</span></p><p id=3D"yui_3=
+_7_2_38_1375718452659_169" style=3D"color: rgb(0, 0, 0); font-size: 16px; f=
+ont-family: times new roman,new york,times,serif; background-color: transpa=
+rent; font-style: normal;" data-mce-style=3D"color: #000000; font-size: 16p=
+x; font-family: times new roman,new york,times,serif; background-color: tra=
+nsparent; font-style: normal;"><br id=3D"yui_3_7_2_38_1375718452659_174"></=
+p><span style=3D"font-family: courier new,monospace; font-size: 13px; color=
+: rgb(0, 0, 0);">Asim</span></div></div></blockquote></div></div></body></h=
+tml>=
+
+--Boundary_(ID_jWhaR+FytURykitJypa7+g)--
+
+--Boundary_(ID_/M3TpdvWsWP0nmweBJlpnA)--
 
