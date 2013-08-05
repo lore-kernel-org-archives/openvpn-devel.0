@@ -1,15 +1,8 @@
-Message-ID: <51FF19DE.7050806@...1800...>
-Date: Sun, 04 Aug 2013 23:19:58 -0400
-From: Mike Tancsa <mike@...1800...>
+Message-ID: <51FF6E88.6000309@...515...>
+Date: Mon, 05 Aug 2013 12:21:12 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <kt8j7m$c5m$1@...1062...> <20130730145731.GW13127@...1152...>
-	<20130730151406.GQ16543@...1296...>
-	<51FA324F.1090108@...1147...>
-	<20130801143058.GM16543@...1296...>
-	<51FA79C6.1020405@...1147...> <51FEA1BF.9000905@...515...>
-In-Reply-To: <51FEA1BF.9000905@...515...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] why doesn't openvpn negotiate
- settings?
+Subject: [Openvpn-devel] New Trac tickets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,112 +11,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: James Yonan <james@...515...>
-Cc: openvpn-devel@lists.sourceforge.net, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On 8/4/2013 2:47 PM, James Yonan wrote:
-> However, to make cipher/auth negotiation really work, there are a few 
-> more things that are needed.  For one, the client would need to push a 
-> list of supported cipher/auth methods, so the server can choose a 
-> mutually supported combination.  Another possibility is to have OpenVPN 
-> leverage on the preexisting TLS ciphersuite negotiation, so as to use 
-> the same cipher/auth settings as TLS.
-> 
-> Some of this was discussed recently in the TLS versioning thread on 
-> openvpn-devel:
-> 
-> http://sourceforge.net/mailarchive/forum.php?thread_name=1CED409804E2164C8104F9E623B08B901455DE1C69%40FOXDFT02.FOX.local&forum_name=openvpn-devel
+Here are latest tickets posted to Trac (8th July - today):
 
-Speaking of which, some interesting discussions in
+<https://community.openvpn.net/openvpn/query?status=3Daccepted&status=3Dass=
+igned&status=3Dnew&status=3Dreopened&time=3D07%2F08%2F13..08%2F05%2F13&col=
+=3Did&col=3Dsummary&col=3Dstatus&col=3Dtype&col=3Dpriority&col=3Dmilestone&=
+col=3Dcomponent&order=3Dpriority>
 
-http://www.slideshare.net/astamos/bh-slides
+All help in reviewing these is highly appreciated! Here are some easy
+ways to help:
 
-WRT to the current state of crypto technologies and the ability to
-change cryptography in the field when design weaknesses are discovered.
-ECC support and OpenVPN is mentioned as being broken ?
+- weeding out configuration errors
+- determining if the behavior seen by the reporter is actually a bug
+- reproducing the bugs
+- finding the root cause for the reported issue
 
-	---Mike
+The actual fixing of the bug is usually fairly easy (for a developer)
+once all of the above has been done.
 
-> 
-> James
-> 
-> *  The 3.0 branch is currently used by the OpenVPN Connect clients for 
-> Android and iOS.  Source core for the core is available from 
-> http://staging.openvpn.net/openvpn3/
-> 
-> On 01/08/2013 09:07, Jan Just Keijser wrote:
->> Hi Gert,
->>
->> Gert Doering wrote:
->>> Hi,
->>>
->>> On Thu, Aug 01, 2013 at 12:02:55PM +0200, Jan Just Keijser wrote:
->>>
->>>> It should be possible to add negotiation without completely breaking
->>>> backwards compatibility; right now, when a server pushes an option to
->>>> the client that is unrecognized the client will print a warning but it
->>>> will not abort. This could be used to push a 'negotation request' - if
->>>> the client responds then a negotation phase can start , during which the
->>>> encryption key, hashing cipher, MTU settings etc can be negotiated. If
->>>> the client does not respond the server would need to assume that it's a
->>>> 2.3 or older client.
->>>>
->>>
->>> Maybe I'm a bit naive, but since the data layer cipher is independent of
->>> the TLS cipher anyway, can't we just "push cipher xxx"?
->>>
->>> Or is push/pull crypted with the data layer cipher?
->>>
->>>
->> good question and one that I've asked myself as well -  there seems to
->> be something funny going on with the data layer cipher (or auth parm) .
->> I remember that I tried making the cipher and auth settings pushable and
->> failed miserably. The flow of when and how the data cipher (and digest)
->> are set up seems to be complicated and may happen (partially) *before*
->> the options are pushed.
->> Perhaps someone else (JamesY?) can comment on this.
->>
->> cheers,
->>
->> JJK
->>
->>
->>
->> ------------------------------------------------------------------------------
->> Get your SQL database under version control now!
->> Version control is standard for application code, but databases havent
->> caught up. So what steps can you take to put your SQL databases under
->> version control? Why should you start doing it? Read more to find out.
->> http://pubads.g.doubleclick.net/gampad/clk?id=49501711&iu=/4140/ostg.clktrk
->>
->>
->>
->> _______________________________________________
->> Openvpn-devel mailing list
->> Openvpn-devel@lists.sourceforge.net
->> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->>
-> 
-> ------------------------------------------------------------------------------
-> Get your SQL database under version control now!
-> Version control is standard for application code, but databases havent 
-> caught up. So what steps can you take to put your SQL databases under 
-> version control? Why should you start doing it? Read more to find out.
-> http://pubads.g.doubleclick.net/gampad/clk?id=49501711&iu=/4140/ostg.clktrk
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> 
-> 
+As a bonus for helping out you will be immortalized in OpenVPN Git logs :)
 
+Best regards,
 
--- 
--------------------
-Mike Tancsa, tel +1 519 651 3400
-Sentex Communications, mike@...1800...
-Providing Internet services since 1994 www.sentex.net
-Cambridge, Ontario Canada   http://www.tancsa.com/
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
 
