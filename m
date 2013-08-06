@@ -1,14 +1,21 @@
-Message-ID: <5200CB9D.1020101@...1147...>
-Date: Tue, 06 Aug 2013 12:10:37 +0200
-From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <520100E6.8020700@...515...>
+Date: Tue, 06 Aug 2013 16:57:58 +0300
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <kt8j7m$c5m$1@...1062...>
-	<20130730145731.GW13127@...1152...>	<20130730151406.GQ16543@...1296...>	<51FA324F.1090108@...1147...>	<20130801143058.GM16543@...1296...>	<51FA79C6.1020405@...1147...>
-	<51FEA1BF.9000905@...515...>	<A3805A26-5FA4-461D-88C3-45E018208FD7@...277...>
-	<5200C76B.5030008@...1114...>
-In-Reply-To: <5200C76B.5030008@...1114...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] why doesn't openvpn negotiate
- settings?
+References: <CAMaBZnHDPHTpPmFoLbyDHxKnBwm7PdPDouZi99bgQzrA9=eXDw@...278...>
+	<20130529122956.GH20843@...1296...>
+	<20130529133817.GG6942@...1330...>
+	<CAMaBZnFwr4iMVTg4QSkosMYsqnpq5-_rt9eny-O9fCSLFLoiqg@...278...>
+	<20130529185003.GJ20843@...1296...>
+	<CAMaBZnFVPuyUDRwKu0qiOLRdZwhmJXiho=29keGvft=fvBA6Sw@...278...>
+	<51A75F21.4060200@...515...>
+	<C1340C42-3C88-415C-A51D-3ECC16DFE1B8@...277...>
+	<51A855E2.1040201@...515...>
+	<CAMaBZnGKUp6v0UhVQ0SQhO1roXtWZkw7JLeBLkFO9-b-4j4qVg@...278...>
+In-Reply-To: <CAMaBZnGKUp6v0UhVQ0SQhO1roXtWZkw7JLeBLkFO9-b-4j4qVg@...278...>
+Content-Type: multipart/alternative;
+	boundary="------------010505030208060507040502"
+Subject: Re: [Openvpn-devel] Repos for Debian Wheezy?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,179 +24,164 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+To: Praetorian <praetoriancode@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+This is a multi-part message in MIME format.
+--------------010505030208060507040502
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
-Cc: dan farmer <zenfish@...277...>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
 
-Hi David,
+Hi,
 
-nice answer, David, and thanks for promoting the book ;)
+I'm in the process of creating a bunch of chroot environments to replace
+my dedicated build VMs, so that I can more easily package OpenVPN for
+the following operating systems:
 
-Your basic points are correct , of course:
-- networking is hard
-- security is hard
+- Debian Squeeze (6.x)
+- Debian Wheezy (7.x)
+- Ubuntu 10.04
+- Ubuntu 12.04
+- Ubuntu 12.10
+- Ubuntu 13.04
+- Fedora 19
+- CentOS 6
 
-Configuring openvpn can be daunting at first, but it is not nearly as=20
-bad as configuring PPTP , or - GASP! - IPSec+L2TP.
-Documentation can help , of course, but to do things right will always=20
-require work.
-Also, each setup is unique: there are some default setups, of course,=20
-most/some of which are covered in my cookbook, but after answering a lot=20
-of questions on the mailing list and forums I've found that each=20
-networking setup is unique and openvpn needs to be adjusted for it. I've=20
-always found the flexibility of openvpn its true power - but with great=20
-power (flexibility) comes great responsibility (about documenting things).
+All packages will be available in 32-bit and 64-bit versions. The
+packages will be hosted in apt/yum repos, and both stable builds (e.g.
+2.3.2) and testing versions (e.g. 2.4-alpha1) will be available. I can't
+give any exact time when all this - and Debian Wheezy packages - will be
+ready, but I suppose ~3 weeks is a fair guess.
 
-Dan also has a point however: we should watch out for introducing new=20
-features that nobody really understands how to use or why you would use=20
-them - the docs should be kept up to par with the features. My cookbook,=20
-for example, does not cover any of the features found in 2.3 like IPv6 -=20
-I hope I can write an update in the near future.=20
-I was and am hoping that an auto-negotiate feature would improve the=20
-usability of openvpn - if you can negotiate and or push more settings=20
-from the server to the clients then the client configs can be as simple=20
-as possible , which should reduce complexity.
+If you're in a hurry, you should be able to fairly easily built packages
+for Wheezy. All the packaging files used with official packages are
+available here:
 
-JM2CW,
+<https://github.com/mattock/openvpn-build>
 
-JJK
+You basically just need to modify the control files to make OpenVPN
+depend on a later openssl version and rebuild it. There is plenty of
+fairly good documentation available, which should get you started.
+
+Samuli
 
 
-
-David Sommerseth wrote:
-> On 05/08/13 19:52, dan farmer wrote:
->=20=20=20
->> To start with - I really, really appreciate the work that's gone into th=
-e program.
->> I've released stuff myself, and it's not an easy process, especially for=
- something
->> as complex and with so much functionality as openvpn.  I get that.
+> I hate to revive an old email chain, but has there been any progress
+> in creating a snapshot package for Wheezy.
+>
+>
+> Thank you.=20=20=20
+>
+>
+> On Fri, May 31, 2013 at 3:48 AM, Samuli Sepp=E4nen <samuli@...515...
+> <mailto:samuli@...515...>> wrote:
+>
+>
+>>     Does that mean you will be building packages against libssl1.0.0?
 >>
->> But from a user's perspective - anything that can make the horror known =
-as=20
->> openvpn configuration easier would improve openvpn's adoption considerab=
-ly.
->>
->> Here's a true tale.  I'm writing a little thing to use openvpn.  I'd lik=
-e to think I know=20
->> networks a bit - more on the theory at times than implementation, but wh=
-atever.
->>
->> OpenVPN ranks up there with pgp and openssh for the most fucked up and=20
->> mysterious configurations I've ever seen (it is not a coincidence that t=
-hey're
->> all crypto programs, I believe.)  It is legendary among non-openvpn peop=
-le to
->> be ridiculously difficult.   I'm actually pretty sure that if one is an =
-openvpn person
->> who knows you're doing it's not that bad, or even makes some internal se=
-nse.=20=20
->> But I'd wager that high-ninety% of your user base doesn't fall into that=
- camp.=20=20
->> Well, of your potential user base, that is, most don't get that far.
->>
->> I am not saying this to say "everything is fuxx3d up" or something.  I'm=
- telling
->> you because it took me a couple of days to get even the most basic thing=
- really
->> working on a not-terribly-complex setup.  And while I understand the con=
-ceptual
->> matters of your program, honestly, I fear to set it up, and have little =
-faith that even
->> if I get it running it'll do what I want it to.
->>
->> I'm not even complaining for myself - I'm a big guy, I can take care of =
-myself,=20
->> and take it or leave it - but for others=85..
->>=20=20=20=20=20
+>     Yes. Wheezy does not seem to have libssl0.9.8 available, which is
+>     probably the primary/only reason why my snapshot packages for
+>     Squeeze don't work on Wheezy.
 >
-> [...snip...]
->
-> The documentation to OpenVPN might feel daunting, but it really isn't
-> that bad if you just get started on the easy paths.  And if you really
-> want a hand-held guide through setting up OpenVPN ... go grab this book:
->
-> <http://www.packtpub.com/openvpn-2-cookbook/book>
->
-> I'm not aiming this message against you, Dan, so please don't take it as
-> an personal attack of any kind.
->
-> The biggest problem, from my experience, isn't that people don't
-> understand the official docs.  But they use external sources for setting
-> up OpenVPN, like random blog or forum posts on sites not controlled by
-> the OpenVPN community at all.  And really, in 99% of all those posts,
-> they contradict each other or basically recommend completely clueless
-> setups which are just plain wrong.  Why?  Because these writers often
-> don't understand NETWORKING at all.
->
-> First of all, if you want to setup any kind of VPN, you NEED to
-> understand basic networking.  If your network experience is based on
-> setting up a home router and you got it working, then you know NOTHING
-> about networking.  Go read about how TCP/IP functions and at minimum
-> learn the BASIC ROUTING.  Without that, you're going to get lost.
->
-> Next, OpenVPN configurations are basically 2 parts.  It's the security
-> part, which involves setting up security parameters (ciphers, keys, etc)
-> and which host to connect to.  The other part is NETWORK ROUTING.  No
-> matter what kind of VPN setup you configure, you must understand
-> routing.  Then there is the more advanced parts, such as firewalling,
-> MTU, fragmentation, and similar topics.
->
-> Most people I've met on #openvpn, in this mailing lists and those times
-> I've looked at our forum, they struggle with the latter.  Almost
-> everyone manages to set up and configure OpenVPN server and clients and
-> make them connect without much help at all (when having issues, it's
-> mostly related to PKI setups).  They usually show up when their brand
-> new OpenVPN setup doesn't pass traffic through their OpenVPN server or
-> client.  Which really makes me repeat what I've said in the two past
-> paragraphs: To setup VPN you MUST UNDERSTAND BASIC NETWORK ROUTING.  You
-> say "briding"? I'll repeat: NETWORK ROUTING.  Really!
->
-> And many of those who begin to struggle, seek help in various wikis,
-> blogs and whatever else they find.  But the *minority* of these sources
-> explains things correctly.  I think I've seen just a handful of those
-> thousands of blogs which really makes sense.  Unfortunately, I've not
-> indexed the good sources.
->
-> At the end, I'll provide a few pointers which hopefully can help people
-> solving their issues.
->
-> * Learn about TCP/IP networking, read especially chapter 3.1 in this
-> book: <http://www.redbooks.ibm.com/redbooks/pdfs/gg243376.pdf>.  I'll
-> repeat: You MUST know how network traffic travels between hosts and route=
-rs.
->
-> * Then first configure a very simple OpenVPN setup, based on this HOWTO:
-> <http://openvpn.net/index.php/open-source/documentation/miscellaneous/sta=
-tic-key-mini-howto.html>
->
-> Go through this one, step by step.
->
-> * Use the man page as a companion and read about what each option used
-> above does:
-> <https://community.openvpn.net/openvpn/wiki/Openvpn23ManPage>
->
-> * Extend the configuration above with a PKI setup (enhacned security):
-> <http://openvpn.net/index.php/open-source/documentation/howto.html#pki>
->
-> * Set up a reasonable routed network configuration with firewalling,
-> based on this one:
-> <https://community.openvpn.net/openvpn/wiki/BridgingAndRouting#Usingrouti=
-ng>
+>     Samuli
 >
 >
-> By going through these steps, I believe most users should be able to set
-> up a working VPN.
->
-> But it's a lot to learn, if you haven't done this before.  There are no
-> shortcuts into setting up a VPN.  You simply must learn these basic
-> steps.  The cookbook I mentioned in the beginning might make things
-> easier to get started, but you still need to do some learning; at least
-> when things doesn't work as expected.
->
->
->=20=20=20
 
 
+
+--------------010505030208060507040502
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+
+<html>
+  <head>
+    <meta content="text/html; charset=ISO-8859-1"
+      http-equiv="Content-Type">
+  </head>
+  <body bgcolor="#FFFFFF" text="#000000">
+    <div class="moz-cite-prefix">Hi,<br>
+      <br>
+      I'm in the process of creating a bunch of chroot environments to
+      replace my dedicated build VMs, so that I can more easily package
+      OpenVPN for the following operating systems:<br>
+      <br>
+      - Debian Squeeze (6.x)<br>
+      - Debian Wheezy (7.x)<br>
+      - Ubuntu 10.04<br>
+      - Ubuntu 12.04<br>
+      - Ubuntu 12.10<br>
+      - Ubuntu 13.04<br>
+      - Fedora 19<br>
+      - CentOS 6<br>
+      <br>
+      All packages will be available in 32-bit and 64-bit versions. The
+      packages will be hosted in apt/yum repos, and both stable builds
+      (e.g. 2.3.2) and testing versions (e.g. 2.4-alpha1) will be
+      available. I can't give any exact time when all this - and Debian
+      Wheezy packages - will be ready, but I suppose ~3 weeks is a fair
+      guess.<br>
+      <br>
+      If you're in a hurry, you should be able to fairly easily built
+      packages for Wheezy. All the packaging files used with official
+      packages are available here:<br>
+      <br>
+      <a class="moz-txt-link-rfc2396E" href="https://github.com/mattock/openvpn-build">&lt;https://github.com/mattock/openvpn-build&gt;</a><br>
+      <br>
+      You basically just need to modify the control files to make
+      OpenVPN depend on a later openssl version and rebuild it. There is
+      plenty of fairly good documentation available, which should get
+      you started.<br>
+      <br>
+      Samuli<br>
+      <br>
+      <br>
+    </div>
+    <blockquote
+cite="mid:CAMaBZnGKUp6v0UhVQ0SQhO1roXtWZkw7JLeBLkFO9-b-4j4qVg@...278..."
+      type="cite">
+      <div dir="ltr">I hate to revive an old email chain, but has there
+        been any progress in creating a snapshot package for Wheezy.
+        <div><br>
+        </div>
+        <div><br>
+        </div>
+        <div style="">Thank you. &nbsp;&nbsp;</div>
+      </div>
+      <div class="gmail_extra"><br>
+        <br>
+        <div class="gmail_quote">On Fri, May 31, 2013 at 3:48 AM, Samuli
+          Sepp&auml;nen <span dir="ltr">&lt;<a moz-do-not-send="true"
+              href="mailto:samuli@...515..." target="_blank">samuli@...515...</a>&gt;</span>
+          wrote:<br>
+          <blockquote class="gmail_quote" style="margin:0 0 0
+            .8ex;border-left:1px #ccc solid;padding-left:1ex">
+            <div text="#000000" bgcolor="#FFFFFF">
+              <div class="im">
+                <div><br>
+                </div>
+                <blockquote type="cite">
+                  <div>Does that mean you will be building packages
+                    against libssl1.0.0?<br>
+                    <br>
+                  </div>
+                </blockquote>
+              </div>
+              Yes. Wheezy does not seem to have libssl0.9.8 available,
+              which is probably the primary/only reason why my snapshot
+              packages for Squeeze don't work on Wheezy.<span
+                class="HOEnZb"><font color="#888888"><br>
+                  <br>
+                  Samuli<br>
+                </font></span></div>
+          </blockquote>
+        </div>
+        <br>
+      </div>
+    </blockquote>
+    <br>
+    <br>
+  </body>
+</html>
+
+--------------010505030208060507040502--
 
