@@ -1,8 +1,9 @@
-Message-ID: <5203CE10.7080308@...515...>
-Date: Thu, 08 Aug 2013 19:57:52 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Topics for today's community meeting
+Date: Thu, 8 Aug 2013 13:56:38 -0400
+Message-ID: <CANfRfr0GEw0KJT2XpFu6zGmhKpWOQah_PU2hdROD0FDRktZfVQ@...278...>
+From: Jesse Glick <jglick@...1836...>
+Subject: [Openvpn-devel] [PATCH 1/2] Allow use of NetBeans without saving
+	nbproject/ directory.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,36 +12,22 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-(Sorry for the last minute announcement...)
+ .gitignore | 1 +
+ 1 file changed, 1 insertion(+)
 
-Hi,
-
-We're having an IRC meeting today, starting at 18:00 UTC on
-#openvpn-devel@...1422... Current topic list is here:
-
-<https://community.openvpn.net/openvpn/wiki/Topics-2013-08-08>
-
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
-
-In case you can't attend the meeting, please feel free to make comments
-on the topics by responding to this email or to the summary email sent
-after the meeting. Whenever possible, we'll also respond to existing,
-related email threads.
-
-NOTE: It's required to use a registered Freenode IRC nickname to join
-#openvpn-devel - look here for details:
-
-<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
+diff --git a/.gitignore b/.gitignore
+index a04afff..3a2f384
+--- a/.gitignore
++++ b/.gitignore
+@@ -54,3 +54,4 @@ tests/t_client.sh
+ tests/t_client-*-20??????-??????/
+ src/openvpn/openvpn
+ config-version.h
++nbproject
+-- 
+1.8.1.2
 
