@@ -1,14 +1,19 @@
-Date: Fri, 16 Aug 2013 18:59:12 +0200
+Date: Fri, 16 Aug 2013 23:11:21 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20130816165911.GS16543@...1296...>
-References: <alpine.DEB.2.02.1306201400320.10116@...1831...>
+Message-ID: <20130816211121.GV16543@...1296...>
+References: <kt8j7m$c5m$1@...1062...> <20130730145731.GW13127@...1152...>
+	<20130730151406.GQ16543@...1296...>
+	<51FA324F.1090108@...1147...>
+	<20130801143058.GM16543@...1296...>
+	<51FA79C6.1020405@...1147...> <51FEA1BF.9000905@...515...>
+	<A3805A26-5FA4-461D-88C3-45E018208FD7@...277...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="B8Vg9Vt30SMsjSDh"
+	protocol="application/pgp-signature"; boundary="KS5V1uDxmEcBh2BA"
 Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.02.1306201400320.10116@...1831...>
-Subject: Re: [Openvpn-devel] [PATCH] Always load intermediate certificates
-	from a PKCS#12 file
+In-Reply-To: <A3805A26-5FA4-461D-88C3-45E018208FD7@...277...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] why doesn't openvpn negotiate
+	settings?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,66 +22,110 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Heikki Hannikainen <hessu@...1822...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: dan farmer <zenfish@...277...>
+Cc: James Yonan <james@...515...>, openvpn-devel@lists.sourceforge.net, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
 
---B8Vg9Vt30SMsjSDh
+--KS5V1uDxmEcBh2BA
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Thu, Jun 20, 2013 at 02:06:25PM +0300, Heikki Hannikainen wrote:
-> >From cec65ff199443c7f95101a7bf4a75644516d7810 Mon Sep 17 00:00:00 2001
-> From: Heikki Hannikainen <hessu@...1822...>
-> Date: Thu, 20 Jun 2013 13:49:44 +0300
-> Subject: [PATCH] Load intermediate certificates from a PKCS#12 file and p=
-lace
->   them in the extra certs chain, when trusted CA certs are
->   loaded from an external PEM file with the --ca option, and
->   the CA certs in PKCS#12 are not to be trusted.
-[..]
+I'm a bit late to that, but had always planned to respond to this...
 
-Based on the discussion at the meeting and the ACKs given there, patch
-has been applied to the master and release/2.3 branches.
+On Mon, Aug 05, 2013 at 10:52:54AM -0700, dan farmer wrote:
+> But from a user's perspective - anything that can make the horror known a=
+s=20
+> openvpn configuration easier would improve openvpn's adoption considerabl=
+y.
 
-commit 6481f879eb62cafa6ad652801b2b5c45e546ef44 (master)
-commit 09a002b7eba6c192393de7a60b5753173d4f400d (release/2.3)
+The issue here is that VPN is a highly complex matter, *and* that OpenVPN
+is way too flexible :-)
+
+Let me explain.
+
+When you do commercial SSL-VPN products, usually you have a server that is=
+=20
+closed, has a web interface, and you only get to select a few possible
+options, like "authenticate against a radius server" or - if you're lucky -
+what IP range to use.  Then the commercial VPN product will create a=20
+config file that you can then import into the client, and voila, zero-conf
+VPN.
+
+Now, if you want that with OpenVPN, you can use the OpenVPN Advanced Server
+- commercial product, nice web interface (which actually *can* configure
+most of the stuff, but the defaults work), maintenance contract, support,
+and on the click of a button, it will produce a ready-made .ovpn profile
+that you import into the client, with (voila!) zero-config :-)
+
+
+OTOH, using the community OpenVPN, you have all the tools that you can
+imagine to twiddle
+
+  - how you want to connect your networks - network-to-network, client-to-
+    network, bridged client-to-network, fake bridging with proxy-ARP over
+    tun, you-name-it -> whatever networking problem you have, the chance
+    is high that you can solve it with OpenVPN.
+
+  - how you want to authenticate your clients - certificates, user+password,
+    both, external sources (radius, PAM, ...)
+
+  - and potentially even modify the server config for each client on-the-fly
+    with one of the umpteen script hooks
+
+this is cool, but makes server configuration quite difficult indeed, as
+you need to decide what you *want* to achieve - and as David and others have
+mentioned before, most of the time the problems are not "the VPN side" but
+"the IP routing side of things" (I do that for a living, but I know it from
+my colleagues' faces that some of the tricks can be a *bit* hard to grok...=
+).
+
+
+If the server is done, and you know how you want the client side to look
+like, the client config is actually fairly simple in most cases - tell
+it where to look ("remote 1.2.3.4"), what protocol to use ("mode udp")
+and how to authenticate ("ca", "cert", "key").  Most of the rest can be
+pushed by the server...
+
+
+Of course then you're back into crypto lala land - crypto is hard, CAs
+are even harder, and *understanding* how the bits and pieces fit together
+can be a challenge (especially with the lovely openssl command line tools).
+
+
+Now, I'm not sure what the conclusion of that is - maybe "use raw=20
+OpenVPN if you're willing to dig into IP routing and crypto CA stuff,=20
+and want the full control - and use a product with a hide-the-details=20
+GUI like OpenVPN AS otherwise, and accept the choices that the GUI=20
+writer made for you"?
+
+
+OTOH, we *do* ship quite a stack of config files in our tree...
+
+openvpn/sample/sample-config-files$ ls -l
+total 92
+-rw-r--r--  1 gert  users    131 Feb  2  2013 README
+-rw-r--r--  1 gert  users   3426 Feb  2  2013 client.conf
+-rwxr-xr-x  1 gert  users   3562 Feb  2  2013 firewall.sh
+-rwxr-xr-x  1 gert  users     62 Feb  2  2013 home.up
+-rw-r--r--  1 gert  users    639 Feb  2  2013 loopback-client
+-rw-r--r--  1 gert  users    665 Feb  2  2013 loopback-server
+-rwxr-xr-x  1 gert  users     62 Feb  2  2013 office.up
+-rwxr-xr-x  1 gert  users     63 Feb  2  2013 openvpn-shutdown.sh
+-rwxr-xr-x  1 gert  users    776 Feb  2  2013 openvpn-startup.sh
+-rw-r--r--  1 gert  users  10288 Feb  2  2013 server.conf
+-rw-r--r--  1 gert  users   1742 Feb  2  2013 static-home.conf
+-rw-r--r--  1 gert  users   1688 Feb  2  2013 static-office.conf
+-rw-r--r--  1 gert  users   1937 Feb  2  2013 tls-home.conf
+-rw-r--r--  1 gert  users   1948 Feb  2  2013 tls-office.conf
+-rw-r--r--  1 gert  users    199 Feb  2  2013 xinetd-client-config
+-rw-r--r--  1 gert  users    989 Feb  2  2013 xinetd-server-config
+
+... maybe we should do more advertising for these?
 
 gert
 
-
-commit 6481f879eb62cafa6ad652801b2b5c45e546ef44
-Author: Heikki Hannikainen <hessu@...1822...>
-Date:   Thu Jun 20 14:06:25 2013 +0300
-
-    Always load intermediate certificates from a PKCS#12 file
-=20=20=20=20
-    Load intermediate certificates from a PKCS#12 file and place them in the
-    extra certs chain, when trusted CA certs are loaded from an external PEM
-    file with the --ca option, and the CA certs in PKCS#12 are not to be tr=
-usted.
-=20=20=20=20
-    Required when client PKCS#12 file is provided by a different CA
-    than the server CA, the PKCS#12 file contains intermediate certificates
-    required for client auth, but the server CA is not in the PKCS#12 file.
-=20=20=20=20
-    When --ca is set, the PKCS#12 provided CA certs are not trusted. Without
-    this patch, they were ignored completely - with this patch, they're loa=
-ded
-    in the extra certs chain which makes them available for chain verificat=
-ion
-    but still does not make them trusted if --ca is set. Unless when, of
-    course, a trusted root is found from the --ca file.
-=20=20=20=20
-    Acked-by: James Yonan <james@...515...>
-    Acked-by: Arne Schwabe <arne@...1227...>
-    Acked-by: Steffan Karger <steffan.karger@...1435...>
-    Message-Id: <alpine.DEB.2.02.1306201400320.10116@...1831...>
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/7721
-=20=20=20=20
-    Signed-off-by: Gert Doering <gert@...1296...>
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -84,19 +133,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---B8Vg9Vt30SMsjSDh
+--KS5V1uDxmEcBh2BA
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.13 (NetBSD)
 
-iQCVAwUBUg5aX6kuBuNlUUl1AQIDGAP9HCzDKI2u2b068hgtgXRm56N4+i11SCAo
-rB90citnkAbgJC0kLUfFMGky0YqXT5SkWKCD1ReVjGtgSlhTkhfMPyQ4y2J9mblO
-gSlyfSiFusbKcj1RLXrwwPDjbTCGRQBepuYH/AvAhUFrLVRScQyYGZpsa+z0i+n+
-EUqr2Y312fA=
-=dcVR
+iQCVAwUBUg6VeakuBuNlUUl1AQIJwAQAxa++GTV3h58VhPQrnfHk/Fp6YGMHq5Bw
+pbD8FwJQ2Zei50jsetMWBK7LrXze/RN+tyCnA7UhE7RQjJsFynD2rYyS2EKR6I+7
+3oGO5bWV86zVLfSEXqZMrboNZSZuDYn+xWQQHZq63p09gKEN37Rh+hDwC4zw3/Zx
+SRejOeEcPik=
+=ED+C
 -----END PGP SIGNATURE-----
 
---B8Vg9Vt30SMsjSDh--
+--KS5V1uDxmEcBh2BA--
 
