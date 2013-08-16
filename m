@@ -1,10 +1,10 @@
-Message-ID: <5206A56A.1040408@...515...>
-Date: Sat, 10 Aug 2013 14:41:14 -0600
-From: James Yonan <james@...515...>
-MIME-Version: 1.0
-References: <0fd116f0-0192-489f-a313-8e7a6cc9a184@...1835...>
-In-Reply-To: <0fd116f0-0192-489f-a313-8e7a6cc9a184@...1835...>
-Subject: Re: [Openvpn-devel] TLSv1.2 and Suite B
+From: Arne Schwabe <arne@...1227...>
+Date: Fri, 16 Aug 2013 10:11:20 +0200
+Message-Id: <1376640680-26468-1-git-send-email-arne@...1227...>
+In-Reply-To: <1371818610-4599-1-git-send-email-arne@...1227...>
+References: <1371818610-4599-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [Patch v2 2/2] Add a note what setenv opt does for
+	OpenVPN < 2.3.3
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,57 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Interesting paper...  So what are the current blockers for OpenVPN 
-supporting ECC with OpenSSL?
+---
+ doc/openvpn.8 |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-We will certainly consider any patch that addresses these issues.
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 1680ebc..9c3f400 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -1897,6 +1897,10 @@ a fatal error if the directive isn't recognized.  To do this,
+ prepend the following before the directive:
+ .B setenv opt
+ 
++Versions prior to OpenVPN 2.3.3 will always ignore options set with the
++.B setenv opt
++directive.
++
+ See also 
+ .B \-\-ignore-unknown-option
+ .\"*********************************************************
+-- 
+1.7.9.5
 
-James
-
-On 05/08/2013 10:30, Asim Ali wrote:
->> I would like to know where OpenVPN stands on having TLS 1.2 working
->> with Suite B cryptography (http://tools.ietf.org/html/rfc6460
->> <mailto:openvpn-devel@lists.sourceforge.net>).
->>
->>
->> My colleagues and I want to use
->> TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384 ciphersuite which is supported
->> by OpenSSL. But cannot get it to work with OpenVPN.
->>
->>
->> The closest we can get to work is TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA
->> which is only TLS 1.0.
->>
->>
->> Our push for Suite B is coming from this...
->> https://media.blackhat.com/us-13/us-13-Stamos-The-Factoring-Dead.pdf
->>
->>
->> Please let me know your thoughts on this matter.
->>
->>
->> Thank you.
->>
->>
->> Asim
->
->
-> ------------------------------------------------------------------------------
-> Get your SQL database under version control now!
-> Version control is standard for application code, but databases havent
-> caught up. So what steps can you take to put your SQL databases under
-> version control? Why should you start doing it? Read more to find out.
-> http://pubads.g.doubleclick.net/gampad/clk?id=49501711&iu=/4140/ostg.clktrk
->
->
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
 
