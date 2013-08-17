@@ -1,11 +1,12 @@
-Date: Sat, 17 Aug 2013 12:30:07 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20130817103007.GA16543@...1296...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="DcnznOculh5cIxbp"
-Content-Disposition: inline
-Subject: [Openvpn-devel] RFD - block-ipv6
+Message-ID: <520F6ED5.4070801@...1227...>
+Date: Sat, 17 Aug 2013 14:38:45 +0200
+From: Arne Schwabe <arne@...1227...>
+MIME-Version: 1.0
+References: <20130817103007.GA16543@...1296...>
+In-Reply-To: <20130817103007.GA16543@...1296...>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature";
+	micalg=sha1; boundary="------------ms070904000800090408000305"
+Subject: Re: [Openvpn-devel] RFD - block-ipv6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,340 +15,171 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---DcnznOculh5cIxbp
-Content-Type: multipart/mixed; boundary="ZlyDGGI/Hohreivc"
-Content-Disposition: inline
+Dies ist eine kryptografisch unterzeichnete Nachricht im MIME-Format.
 
---ZlyDGGI/Hohreivc
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-Hi,
-
-there's situation where you have a dual-stack IPv4+IPv6 client (like "most=
-=20
-new end user connections in Germany these days"), and an IPv4-only OpenVPN
-setup - for whatever reason, like "running on an commercial system that
-is not using 2.3 yet" or the like.
-
-Trying to access corporate resources in such an environment can be problema=
-tic
-if the resource has IPv4+IPv6, but your tunnel only has IPv4 and your
-client prefers IPv6 - it will try to connect "around" the tunnel, leading
-to a number of undesirable effects.
-
-For the commercial OpenVPN client, I've hacked together something that=20
-mitigates this effect, by effectively breaking IPv6 connectivity while
-OpenVPN is running (so clients fall back to IPv4, which works through the
-tunnel).  The option is called "block-ipv6", and currently works by setting
-up "reject" routes that immediately cause an ICMP unreachable to be sent
-when a client tries to connect to an IPv6 destination.=20=20
-
-This works nicely on Linux, MacOS and Windows, and should work on other=20
-BSDs as well (not implemented yet).  It does not work on Android or iOS,=20
-as you have no control over the real routing table, just the "routes into=20
-the VPN" - while those would prevent IPv6 communication "around" the VPN
-tunnel, it will have the not-so-nice property of causing client *timeouts*,
-instead of fast aborts due to immediate ICMP errors.
-
-So, what I'm hoping to hear from you...
-
- - should we include this in 2.3.3?
-    - if yes, are changes needed?
-
- - should we try to implement something for 2.4/master that will work=20
-   by pointing the IPv6 routes into the tunnel, and then synthesize the
-   IPv6 ICMP errors inside OpenVPN?  That would work on Android and iOS
-   as well, and remove the extra per-platform logic for the "reject" routes
-
- - any clever ideas how to achieve "full" IPv6 blocking (right now, it only
-   kills the default route, but all more specific routes continue working -
-   this is by design to keep the implementation simple, and was considered
-   "good enough" by the end customer asking for it)
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---ZlyDGGI/Hohreivc
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment;
-	filename="0001-Add-block-ipv6-functionality-and-option.patch"
+--------------ms070904000800090408000305
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: quoted-printable
 
-=46rom 124e6c460e1bd42537c3e85753573176b4397d20 Mon Sep 17 00:00:00 2001
-From: Gert Doering <gert@...1296...>
-Date: Fri, 16 Aug 2013 23:47:49 +0200
-Subject: [PATCH] Add block-ipv6 functionality and option.
+Am 17.08.13 12:30, schrieb Gert Doering:
+> Hi,
+>
+> there's situation where you have a dual-stack IPv4+IPv6 client (like "most
+> new end user connections in Germany these days"), and an IPv4-only OpenVPN
+> setup - for whatever reason, like "running on an commercial system that
+> is not using 2.3 yet" or the like.
+>
+> Trying to access corporate resources in such an environment can be proble=
+matic
+> if the resource has IPv4+IPv6, but your tunnel only has IPv4 and your
+> client prefers IPv6 - it will try to connect "around" the tunnel, leading
+> to a number of undesirable effects.
+>
+> For the commercial OpenVPN client, I've hacked together something that
+> mitigates this effect, by effectively breaking IPv6 connectivity while
+> OpenVPN is running (so clients fall back to IPv4, which works through the
+> tunnel).  The option is called "block-ipv6", and currently works by setti=
+ng
+> up "reject" routes that immediately cause an ICMP unreachable to be sent
+> when a client tries to connect to an IPv6 destination.
+>
+> This works nicely on Linux, MacOS and Windows, and should work on other
+> BSDs as well (not implemented yet).  It does not work on Android or iOS,
+> as you have no control over the real routing table, just the "routes into
+> the VPN" - while those would prevent IPv6 communication "around" the VPN
+> tunnel, it will have the not-so-nice property of causing client *timeouts=
+*,
+> instead of fast aborts due to immediate ICMP errors.
+>
+> So, what I'm hoping to hear from you...
+>
+>   - should we include this in 2.3.3?
+>      - if yes, are changes needed?
+>
+>   - should we try to implement something for 2.4/master that will work
+>     by pointing the IPv6 routes into the tunnel, and then synthesize the
+>     IPv6 ICMP errors inside OpenVPN?  That would work on Android and iOS
+>     as well, and remove the extra per-platform logic for the "reject" rou=
+tes
+I am in favour of this. There is also another VPN breakage that could be=20
+adressed by this. Sometimes the apps try use old sockets until they are=20
+getting a timeout. RST/icmp unreable for packets with a wrong source IP=20
+could be handled as well.
 
-Block IPv6 traffic for situations when talking to an IPv4-only
-OpenVPN server, where IPv6 traffic must not "leak around" the
-VPN tunnel.
-
-All we do is install a few more-specific IPv6 routes that
-result in block all "off-site" IPv6 traffic - no attempt
-is made to block LAN-local or link-local traffic or work
-around existing more specific routes.
-
-Routes installed are: 2000::/4, 3000::/4, fc00::/7
-(to cover default routes which might be installed as 2000::/3,
-plus ULA).
-
-To use, simply push "block-ipv6" directive to client.
-
-(Merged from OpenVPN SVN r8410, OpenVPN 2.1.22)
-
-Signed-off-by: Gert Doering <gert@...1296...>
----
- doc/openvpn.8         |   4 ++
- src/openvpn/init.c    |   8 ++++
- src/openvpn/options.c |   6 +++
- src/openvpn/options.h |   1 +
- src/openvpn/route.c   | 101 ++++++++++++++++++++++++++++++++++++++++++++++=
-++++
- src/openvpn/route.h   |   2 +
- 6 files changed, 122 insertions(+)
-
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index a8d1832..eb692f2 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -794,6 +794,10 @@ if no specific IPv6 TUN support for your OS has been c=
-ompiled into OpenVPN.
- See below for further IPv6-related configuration options.
- .\"*********************************************************
- .TP
-+.B \-\-block-ipv6
-+Block IPv6 traffic towards the Internet while VPN is up.
-+.\"*********************************************************
-+.TP
- .B \-\-dev-node node
- Explicitly set the device node rather than using
- /dev/net/tun, /dev/tun, /dev/tap, etc.  If OpenVPN
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 2420216..c3319ab 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1465,6 +1465,10 @@ do_open_tun (struct context *c)
- 	do_route (&c->options, c->c1.route_list, c->c1.route_ipv6_list,
- 		  c->c1.tuntap, c->plugins, c->c2.es);
-=20
-+      /* block IPv6 connectivity not going to the tunnel */
-+      if (c->options.block_ipv6)
-+        route_block_ipv6(c->c2.es);
-+
-       /*
-        * Did tun/tap driver give us an MTU?
-        */
-@@ -1562,6 +1566,10 @@ do_close_tun (struct context *c, bool force)
-                              c->c1.tuntap, ROUTE_OPTION_FLAGS (&c->options=
-), c->c2.es);
-             }
-=20
-+	  /* unblock IPv6 */
-+	  if (c->options.block_ipv6)
-+	    route_unblock_ipv6(c->c2.es);
-+
- 	  /* actually close tun/tap device based on --down-pre flag */
- 	  if (!c->options.down_pre)
- 	    do_close_tun_simple (c);
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index dcf60c6..244fa25 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -1434,6 +1434,7 @@ show_settings (const struct options *o)
-   SHOW_STR (lladdr);
-   SHOW_INT (topology);
-   SHOW_BOOL (tun_ipv6);
-+  SHOW_BOOL (block_ipv6);
-   SHOW_STR (ifconfig_local);
-   SHOW_STR (ifconfig_remote_netmask);
-   SHOW_BOOL (ifconfig_noexec);
-@@ -4310,6 +4311,11 @@ add_option (struct options *options,
-       VERIFY_PERMISSION (OPT_P_UP);
-       options->tun_ipv6 =3D true;
-     }
-+  else if (streq (p[0], "block-ipv6"))
-+    {
-+      VERIFY_PERMISSION (OPT_P_UP);
-+      options->block_ipv6 =3D true;
-+    }
- #ifdef ENABLE_IPROUTE
-   else if (streq (p[0], "iproute") && p[1])
-     {
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index c5f104f..47c0fac 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -257,6 +257,7 @@ struct options
-   int ping_rec_timeout;         /* Expect a TCP/UDP ping from remote at le=
-ast once every n seconds */
-   bool ping_timer_remote;       /* Run ping timer only if we have a remote=
- address */
-   bool tun_ipv6;                /* Build tun dev that supports IPv6 */
-+  bool block_ipv6;		/* block all IPv6 not going to the tun */
-=20
- # define PING_UNDEF   0
- # define PING_EXIT    1
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 044e6ac..37459cd 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -3300,3 +3300,104 @@ test_local_addr (const in_addr_t addr, const struct=
- route_gateway_info *rgi) /*
- }
-=20
- #endif
-+
-+
-+/* block IPv6 traffic
-+ *
-+ * to avoid IPv6 traffic circumventing a VPN when the server is (still)
-+ * IPv4-only, IPv6 might need to be blocked.  All we do is install a few
-+ * more-specific IPv6 routes that result in blocking all "off-site" IPv6
-+ * traffic - no attempt is made to block LAN-local or link-local traffic
-+ * or work around existing more specific routes
-+ *
-+ * Routes installed are: 2000::/4, 3000::/4, fc00::/7
-+ * (to cover default routes which might be installed as 2000::/3, plus ULA)
-+ */
-+struct ipv6_block_entry { char prefix[20]; int len; }
-+       ipv6_block_list[] =3D { { "2000::", 4},
-+			     { "3000::", 4},
-+			     { "fc00::", 7},
-+			     { "", -1 }};
-+void route_block_ipv6(const struct env_set *es)
-+{
-+  struct argv argv;
-+  bool status;
-+  struct ipv6_block_entry * ipv6_block_p =3D ipv6_block_list;
-+
-+  argv_init(&argv);
-+
-+  msg( M_INFO, "blocking IPv6 routing" );
-+  while ( ipv6_block_p->len >=3D 0 )
-+    {
-+#if defined(TARGET_LINUX)
-+#ifdef CONFIG_FEATURE_IPROUTE
-+      argv_printf( &argv, "%s -6 route add unreachable %s/%d",
-+		   iproute_path, ipv6_block_p->prefix, ipv6_block_p->len );
-+#else
-+      argv_printf( &argv, "%s add -6 %s/%d dev lo",
-+		   ROUTE_PATH, ipv6_block_p->prefix, ipv6_block_p->len );
-+#endif
-+      argv_msg(M_INFO, &argv);
-+      status =3D openvpn_execve_check( &argv, es, 0, "ERROR: Linux route a=
-dd command failed" );
-+#elif defined(TARGET_DARWIN)
-+      argv_printf( &argv, "%s add -inet6 %s -prefixlen %d -reject ::1",
-+		   ROUTE_PATH, ipv6_block_p->prefix, ipv6_block_p->len );
-+      argv_msg(M_INFO, &argv);
-+      status =3D openvpn_execve_check( &argv, es, 0, "ERROR: MacOS X route=
- add command failed" );
-+#elif defined(WIN32)
-+      argv_printf (&argv, "%s%sc interface ipv6 add route %s/%d interface=
-=3D1 store=3Dactive",
-+               get_win_sys_path(), NETSH_PATH_SUFFIX,
-+               ipv6_block_p->prefix, ipv6_block_p->len );
-+      argv_msg(M_INFO, &argv);
-+      netcmd_semaphore_lock ();
-+      status =3D openvpn_execve_check( &argv, es, 0, "ERROR: Windows route=
- delete command failed" );
-+      netcmd_semaphore_release ();
-+#else
-+      msg(M_INFO, "can't block IPv6 routing on this platform");
-+#endif
-+      ipv6_block_p++;
-+    }
-+  argv_reset(&argv);
-+}
-+
-+void route_unblock_ipv6(const struct env_set *es)
-+{
-+  struct argv argv;
-+  bool status;
-+  struct ipv6_block_entry * ipv6_block_p =3D ipv6_block_list;
-+
-+  argv_init(&argv);
-+
-+  msg( M_INFO, "unblocking IPv6 routing" );
-+  while ( ipv6_block_p->len >=3D 0 )
-+    {
-+#if defined(TARGET_LINUX)
-+#ifdef CONFIG_FEATURE_IPROUTE
-+      argv_printf( &argv, "%s -6 route del unreachable %s/%d",
-+		   iproute_path, ipv6_block_p->prefix, ipv6_block_p->len );
-+#else
-+      argv_printf( &argv, "%s delete -6 %s/%d dev lo",
-+		   ROUTE_PATH, ipv6_block_p->prefix, ipv6_block_p->len );
-+#endif
-+      argv_msg(M_INFO, &argv);
-+      status =3D openvpn_execve_check( &argv, es, 0, "ERROR: Linux route d=
-elete command failed" );
-+#elif defined(TARGET_DARWIN)
-+      argv_printf( &argv, "%s delete -inet6 %s -prefixlen %d -reject ::1",
-+		   ROUTE_PATH, ipv6_block_p->prefix, ipv6_block_p->len );
-+      argv_msg(M_INFO, &argv);
-+      status =3D openvpn_execve_check( &argv, es, 0, "ERROR: MacOS X route=
- delete command failed" );
-+#elif defined(WIN32)
-+      argv_printf (&argv, "%s%sc interface ipv6 del route %s/%d interface=
-=3D1 store=3Dactive",
-+               get_win_sys_path(), NETSH_PATH_SUFFIX,
-+               ipv6_block_p->prefix, ipv6_block_p->len );
-+      argv_msg(M_INFO, &argv);
-+      netcmd_semaphore_lock ();
-+      status =3D openvpn_execve_check( &argv, es, 0, "ERROR: Windows route=
- delete command failed" );
-+      netcmd_semaphore_release ();
-+#else
-+      msg(M_INFO, "can't unblock IPv6 routing on this platform");
-+#endif
-+      ipv6_block_p++;
-+    }
-+  argv_reset(&argv);
-+}
-diff --git a/src/openvpn/route.h b/src/openvpn/route.h
-index a40de32..4844397 100644
---- a/src/openvpn/route.h
-+++ b/src/openvpn/route.h
-@@ -278,6 +278,8 @@ bool is_special_addr (const char *addr_str);
-=20
- void get_default_gateway (struct route_gateway_info *rgi);
- void print_default_gateway(const int msglevel, const struct route_gateway_=
-info *rgi);
-+void route_block_ipv6(const struct env_set *es);
-+void route_unblock_ipv6(const struct env_set *es);
-=20
- /*
-  * Test if addr is reachable via a local interface (return ILA_LOCAL),
---=20
-1.8.1.5
+Arne
 
 
---ZlyDGGI/Hohreivc--
+--------------ms070904000800090408000305
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Kryptografische Unterschrift
 
---DcnznOculh5cIxbp
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
-
-iQCVAwUBUg9QrqkuBuNlUUl1AQK8FQP/W3fyZaVoEftoeY2QPGdNlE2J10/XQdXh
-SiDJ2FeBUJ1lfPcPf2Mb1E9XMEieLVxPC84LWLsLPEO7RJx7u+xCHCbaOiI6Zyoc
-ekoaOQYwyTKrhFEpGZlrEmZm6J7rC4Iph/4jIazBmOjkGRDOf1GsX0VIQsCbZ+tN
-hrq8jeYRbx0=
-=CEy/
------END PGP SIGNATURE-----
-
---DcnznOculh5cIxbp--
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIP5DCC
+BCEwggMJoAMCAQICAgDHMA0GCSqGSIb3DQEBBQUAMHExCzAJBgNVBAYTAkRFMRwwGgYDVQQK
+ExNEZXV0c2NoZSBUZWxla29tIEFHMR8wHQYDVQQLExZULVRlbGVTZWMgVHJ1c3QgQ2VudGVy
+MSMwIQYDVQQDExpEZXV0c2NoZSBUZWxla29tIFJvb3QgQ0EgMjAeFw0wNjEyMTkxMDI5MDBa
+Fw0xOTA2MzAyMzU5MDBaMFoxCzAJBgNVBAYTAkRFMRMwEQYDVQQKEwpERk4tVmVyZWluMRAw
+DgYDVQQLEwdERk4tUEtJMSQwIgYDVQQDExtERk4tVmVyZWluIFBDQSBHbG9iYWwgLSBHMDEw
+ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDpm8NnhfkNrvWNVMOWUDU9YuluTO2U
+1wBblSJ01CDrNI/W7MAxBAuZgeKmFNJSoCgjhIt0iQReW+DieMF4yxbLKDU5ey2QRdDtoAB6
+fL9KDhsAw4bpXCsxEXsM84IkQ4wcOItqaACa7txPeKvSxhObdq3u3ibo7wGvdA/BCaL2a869
+080UME/15eOkyGKbghoDJzANAmVgTe3RCSMqljVYJ9N2xnG2kB3E7f81hn1vM7PbD8URwoqD
+oZRdQWvY0hD1TP3KUazZve+Sg7va64sWVlZDz+HVEz2mHycwzUlU28kTNJpxdcVs6qcLmPkh
+nSevPqM5OUhqjK3JmfvDEvK9AgMBAAGjgdkwgdYwcAYDVR0fBGkwZzBloGOgYYZfaHR0cDov
+L3BraS50ZWxlc2VjLmRlL2NnaS1iaW4vc2VydmljZS9hZl9Eb3dubG9hZEFSTC5jcmw/LWNy
+bF9mb3JtYXQ9WF81MDkmLWlzc3Vlcj1EVF9ST09UX0NBXzIwHQYDVR0OBBYEFEm3xs/oPR9/
+6kR7Eyn38QpwPt5kMB8GA1UdIwQYMBaAFDHDeRu69VPXF+CJei0XbAqzK50zMA4GA1UdDwEB
+/wQEAwIBBjASBgNVHRMBAf8ECDAGAQH/AgECMA0GCSqGSIb3DQEBBQUAA4IBAQA74Vp3wEgX
+3KkY7IGvWonwvSiSpspZGBJw7Cjy565/lizn8l0ZMfYTK3S9vYCyufdnyTmieTvhERHua3iR
+M347XyYndVNljjNj7s9zw7CSI0khUHUjoR8Y4pSFPT8z6XcgjaK95qGFKUD2P3MyWA0Ja6ba
+hWzAP7uNZmRWJE6uDT8yNQFb6YyC2XJZT7GGhfF0hVblw/hc843uR7NTBXDn5U2KaYMo4RMJ
+hp5eyOpYHgwf+aTUWgRo/Sg+iwK2WLX2oSw3VwBnqyNojWOl75lrXP1LVvarQIc01BGSbOyH
+xQoLBzNytG8MHVQs2FHHzL8w00Ny8TK/jM5JY6gA9/IcMIIFTjCCBDagAwIBAgIEC4nvvjAN
+BgkqhkiG9w0BAQUFADBaMQswCQYDVQQGEwJERTETMBEGA1UEChMKREZOLVZlcmVpbjEQMA4G
+A1UECxMHREZOLVBLSTEkMCIGA1UEAxMbREZOLVZlcmVpbiBQQ0EgR2xvYmFsIC0gRzAxMB4X
+DTA3MTIyMDEzNDYyNFoXDTE5MDYzMDAwMDAwMFowgb4xCzAJBgNVBAYTAkRFMR8wHQYDVQQK
+ExZVbml2ZXJzaXRhZXQgUGFkZXJib3JuMUAwPgYDVQQLEzdJTVQgKFplbnRydW0gZnVlciBJ
+bmZvcm1hdGlvbnMtIHVuZCBNZWRpZW50ZWNobm9sb2dpZW4pMSgwJgYDVQQDEx9Vbml2ZXJz
+aXRhZXQgUGFkZXJib3JuIENBIC0gRzAxMSIwIAYJKoZIhvcNAQkBFhNjYUB1bmktcGFkZXJi
+b3JuLmRlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApyEfhJPUiCaLTtclTNlw
+rHd4MT4ygOzcUD7zDRElXdILoAEQeUs9qpMZDpPXLeSK6DNukMnURrCRUIr+lYX/kmT6ompB
+GMJgDepewHa97XS3uvE46NW2V8OdIiNddYIoDa8ZRd9lwIsnVWl9QaM9f7l5dhrSQT6ogboy
+byOqJcmb+hlxgQcMWdLzZsOXRkldl5YXUCvC6zbulszlqMt5hPjsQmbQu0nInJmNwUrYCw9c
+ctS2i0m9LaVwZxSov16/eQAJOM7bDV9CpZicgCkHACP5paKvlukP9glkvfNdS54grkPmGFNp
+uIc13W6pL1+8nTp03AlyW/GU2zsnX5pWdwIDAQABo4IBtTCCAbEwEgYDVR0TAQH/BAgwBgEB
+/wIBATALBgNVHQ8EBAMCAQYwHQYDVR0OBBYEFIHPTJq8rw/LvuzgIidOKe+uMMUeMB8GA1Ud
+IwQYMBaAFEm3xs/oPR9/6kR7Eyn38QpwPt5kMB4GA1UdEQQXMBWBE2NhQHVuaS1wYWRlcmJv
+cm4uZGUwgYgGA1UdHwSBgDB+MD2gO6A5hjdodHRwOi8vY2RwMS5wY2EuZGZuLmRlL2dsb2Jh
+bC1yb290LWNhL3B1Yi9jcmwvY2FjcmwuY3JsMD2gO6A5hjdodHRwOi8vY2RwMi5wY2EuZGZu
+LmRlL2dsb2JhbC1yb290LWNhL3B1Yi9jcmwvY2FjcmwuY3JsMIGiBggrBgEFBQcBAQSBlTCB
+kjBHBggrBgEFBQcwAoY7aHR0cDovL2NkcDEucGNhLmRmbi5kZS9nbG9iYWwtcm9vdC1jYS9w
+dWIvY2FjZXJ0L2NhY2VydC5jcnQwRwYIKwYBBQUHMAKGO2h0dHA6Ly9jZHAyLnBjYS5kZm4u
+ZGUvZ2xvYmFsLXJvb3QtY2EvcHViL2NhY2VydC9jYWNlcnQuY3J0MA0GCSqGSIb3DQEBBQUA
+A4IBAQAaomheE7QGeiZFxhmjRI97H/eQUUjp2RL2N4BQmulz56nwTFfgGN1v9kJmBuM2se7F
+TSfQ0ZsKYJhZYwZYCb4Ob57h5zpsyMtZhWqz6n5+ewT/Wl7jc6sLGl3zquMZRfS1N3nIOWsN
+rAZz4lxpjcOJwQHQevWpJT2NxTHHtHKA83QWLFAFs65ZIVAVxqYlRd9Yrr/ljK42ZzEaZgg8
+vSqDzHOwvWX5m3apWe3ZW+2eqjDGZxwfWnWBMSGYN0QIFdaZLR1JbILLfYYHyAUixHUFA+76
+2E9gufC2CySlXhNSPRTwqwPQIDTFDi2VIsafaivs7kVKPaKSq1Dh6SDfV2raMIIGaTCCBVGg
+AwIBAgIEES7tRDANBgkqhkiG9w0BAQUFADCBvjELMAkGA1UEBhMCREUxHzAdBgNVBAoTFlVu
+aXZlcnNpdGFldCBQYWRlcmJvcm4xQDA+BgNVBAsTN0lNVCAoWmVudHJ1bSBmdWVyIEluZm9y
+bWF0aW9ucy0gdW5kIE1lZGllbnRlY2hub2xvZ2llbikxKDAmBgNVBAMTH1VuaXZlcnNpdGFl
+dCBQYWRlcmJvcm4gQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2NhQHVuaS1wYWRlcmJvcm4u
+ZGUwHhcNMTAxMjIwMTUwMTA5WhcNMTMxMjE5MTUwMTA5WjBFMQswCQYDVQQGEwJERTEfMB0G
+A1UEChMWVW5pdmVyc2l0YWV0IFBhZGVyYm9ybjEVMBMGA1UEAxMMQXJuZSBTY2h3YWJlMIIC
+IjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAnPJmVFDViSIHhAokNLoZ4oFd0W4hFiC4
+KopjqHhHEBynYMD56GYnxXm5ie4ngil1e69r02M6eyB1VIhRPFRSqD3ejVHRdNLKnEzWgAbT
+o0Kkr2s7P1iPe8Cj55mSuOxplxcsxL8jU0U/ENtIaIEaI7sVlmYBmCT0fGfrpUcRj21ucDx9
+zw1CJN6VEUmlLtvDzscJg3bUvttbxA+IMUDMTd0nUgLy5lNAg17f3QUc7SrXj8QItjPGjOU3
+EnIka1D2ak+FT12j2GWVpbqkV2Pfow6fePda19xcjFs1A3MsfU4ouTfJ5Xx6OBM1/BRwB0Sg
+79LcmCRtWjGkN7boXmxi5MUXMl96l7UzGEy49O39Ct41N96T4bJDqRKFaUcZVVvW7pBX+rVd
+JrXXstiJ1HYGKU2yOgiqoLNIbhn1i3JoFP1SRSEYJb1okeL9Ewr0SoyM/suVuGg5YnMLHOjn
+oH3XzMM0vRdEk7F1KaJvcvPDe/5fAAaOokjOIdOFwwhJkvOF/P1oS1RzvmTzwXTvojBbWZnr
++eL+zwTUVpOwJ+rfLdJzw+ER18RbpH/TPzOszvAAuTxZAQdEE+SOlk2aDIHs+eFYsk6QBh1b
+jqOMDhlmElVROTv+w260iVGfcq4fTt1C8vzMcRx95y5rR5+GVQpGJb5WlZlbo3o/FCxClvt7
+3SUCAwEAAaOCAeUwggHhMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgXgMCkGA1UdJQQiMCAGCCsG
+AQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAjAdBgNVHQ4EFgQUWh2256whSHo0mgJ5hvYj
+UacnOekwHwYDVR0jBBgwFoAUgc9MmryvD8u+7OAiJ04p764wxR4wIwYDVR0RBBwwGoEYc2No
+d2FiZUB1bmktcGFkZXJib3JuLmRlMIGNBgNVHR8EgYUwgYIwP6A9oDuGOWh0dHA6Ly9jZHAx
+LnBjYS5kZm4uZGUvdW5pLXBhZGVyYm9ybi1jYS9wdWIvY3JsL2NhY3JsLmNybDA/oD2gO4Y5
+aHR0cDovL2NkcDIucGNhLmRmbi5kZS91bmktcGFkZXJib3JuLWNhL3B1Yi9jcmwvY2Fjcmwu
+Y3JsMIGmBggrBgEFBQcBAQSBmTCBljBJBggrBgEFBQcwAoY9aHR0cDovL2NkcDEucGNhLmRm
+bi5kZS91bmktcGFkZXJib3JuLWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDBJBggrBgEFBQcw
+AoY9aHR0cDovL2NkcDIucGNhLmRmbi5kZS91bmktcGFkZXJib3JuLWNhL3B1Yi9jYWNlcnQv
+Y2FjZXJ0LmNydDANBgkqhkiG9w0BAQUFAAOCAQEAgaSs5nrXX49tNOF1ISWT4U4yEpbkiXBu
+1YmhBUz+zLFWvh8uNlfllgMZqVV94ftgyizWOesc+vxL0ulNmdXhOAB+zSyT2qgQ9vv9GSV8
+cgkEGMrwMpyJQksI/UvdZ1+SyUxpW2mSMm/N6y3QVefv6HajWju63tGXAXX1ohsxfisWQC7h
+51dnhLVwTf5yVEbl0uoLv236V0IlhoPcVMaNiLv9W5P13vwYLMRxhzvgQPAB8GwyQ4X2k9tS
+naLB/AXfOZpvPx0XvpW5+dY9Lyo7EJFYMl+S0WMsD4XEj18VJWmTrvIO7ZGhU1En8+9OEwjZ
+NlrBHSSoHZ8AtjaqRf+DwTGCBXYwggVyAgEBMIHHMIG+MQswCQYDVQQGEwJERTEfMB0GA1UE
+ChMWVW5pdmVyc2l0YWV0IFBhZGVyYm9ybjFAMD4GA1UECxM3SU1UIChaZW50cnVtIGZ1ZXIg
+SW5mb3JtYXRpb25zLSB1bmQgTWVkaWVudGVjaG5vbG9naWVuKTEoMCYGA1UEAxMfVW5pdmVy
+c2l0YWV0IFBhZGVyYm9ybiBDQSAtIEcwMTEiMCAGCSqGSIb3DQEJARYTY2FAdW5pLXBhZGVy
+Ym9ybi5kZQIEES7tRDAJBgUrDgMCGgUAoIICgzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
+MBwGCSqGSIb3DQEJBTEPFw0xMzA4MTcxMjM4NDVaMCMGCSqGSIb3DQEJBDEWBBQyZVEmd8ae
+T4+iVlBJkqxOusjSRjBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQME
+AQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIH
+MA0GCCqGSIb3DQMCAgEoMIHYBgkrBgEEAYI3EAQxgcowgccwgb4xCzAJBgNVBAYTAkRFMR8w
+HQYDVQQKExZVbml2ZXJzaXRhZXQgUGFkZXJib3JuMUAwPgYDVQQLEzdJTVQgKFplbnRydW0g
+ZnVlciBJbmZvcm1hdGlvbnMtIHVuZCBNZWRpZW50ZWNobm9sb2dpZW4pMSgwJgYDVQQDEx9V
+bml2ZXJzaXRhZXQgUGFkZXJib3JuIENBIC0gRzAxMSIwIAYJKoZIhvcNAQkBFhNjYUB1bmkt
+cGFkZXJib3JuLmRlAgQRLu1EMIHaBgsqhkiG9w0BCRACCzGByqCBxzCBvjELMAkGA1UEBhMC
+REUxHzAdBgNVBAoTFlVuaXZlcnNpdGFldCBQYWRlcmJvcm4xQDA+BgNVBAsTN0lNVCAoWmVu
+dHJ1bSBmdWVyIEluZm9ybWF0aW9ucy0gdW5kIE1lZGllbnRlY2hub2xvZ2llbikxKDAmBgNV
+BAMTH1VuaXZlcnNpdGFldCBQYWRlcmJvcm4gQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2Nh
+QHVuaS1wYWRlcmJvcm4uZGUCBBEu7UQwDQYJKoZIhvcNAQEBBQAEggIAQQi4RSOIAg1G5rfR
+5B0d2ffBdiEpRd34wrU6oNer4EnNAKifXyFBB6J+DUr6rKtl5ZaTeYjeBJ4nUMy0l0TK/yjO
+4idaWd3ngnvLe4U2RKX1neIVIVYbZDmyTTXSWORXAqStEI52P49zcYiZquExVAfTdJPZOBaa
+0GcmAdUlWKmlmbo9V/pKEngg8OJp5v3aaV3VcH420DWGQwiqIV6BYOTXuo0lgUssq/0TWUz0
+axGeALStpZE1Voj4OPjLO/9HIPpsbflQCuvysk/5BkeaRvtFskpUcD1BO7XeCJubbQp/ngia
+gGVo6DhOfWp6UeDXSrcZVRO57Vd0kqFaUoQwQSvKJHk/+dipaasag1DZWHKyd5STW7m7v+qF
+cS3asjToc6rsAhUGuHxsUxnM/0xdMETKbiNmxH3vVerE/iKSedPrZArZOhYVB+YXsnq+jFnO
+cbCy3z9bbBiO341Un9nh9DjD6RpEWo6CTqxpduG8PelPEikY6fdlm/CYAc4GB4WqudeV7xPN
+lfvCsdAj5xdP5MmKPhAq9ZrEctRQWeep5qjermH7XSJcBfrzrnJSk7D2I5aBzDPYmgoSd1hS
+kNNr/W2s77t9HTLcXot0xr4BFDXwqyRsfdokKL3DWCCY1V4cX2Ht1AznGxG6A8v2y2f4maQi
+6NVru0rzNA6YBYNZd1IAAAAAAAA=
+--------------ms070904000800090408000305--
 
