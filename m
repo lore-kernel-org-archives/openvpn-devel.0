@@ -1,13 +1,14 @@
-Message-ID: <5215E945.7080105@...1114...>
-Date: Thu, 22 Aug 2013 12:34:45 +0200
+Message-ID: <5215EB10.9060903@...1114...>
+Date: Thu, 22 Aug 2013 12:42:24 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <5215D0BA.6040009@...515...>
-In-Reply-To: <5215D0BA.6040009@...515...>
+References: <kv4ece$s8s$1@...1062...>
+In-Reply-To: <kv4ece$s8s$1@...1062...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="n6hNFgCGh8IPSNSQMcauA7d0up7e066Vf"
-Subject: Re: [Openvpn-devel] Topics for today's community meeting
+	boundary="atF4suIDmBlpIWcUTriuEp6VjOoTfp8e9"
+Subject: Re: [Openvpn-devel] [PATCH] Correct error text when no Windows TAP
+ device is present
 Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,54 +18,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Josh Cepek <josh.cepek@...1085...>
+Cc: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---n6hNFgCGh8IPSNSQMcauA7d0up7e066Vf
-Content-Type: text/plain; charset="ISO-8859-15"
+--atF4suIDmBlpIWcUTriuEp6VjOoTfp8e9
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-On 22/08/13 10:50, Samuli Sepp=E4nen wrote:
-> Hi,
->=20
-> We're having an IRC meeting today, starting at 18:00 UTC on
-> #openvpn-devel@...1422... Current topic list is here:
->=20
-> <https://community.openvpn.net/openvpn/wiki/Topics-2013-08-22>
+On 22/08/13 09:24, Josh Cepek wrote:
+> Patch/description attached; this resolves bug #320.
 
-I'm not able to attend the meeting today, but just wanted to quickly
-comment on on a couple of the topics.
+ACK to patch 24be21ea2f1d02631685a0a11bf187372cf10fa4 in the attachement.
 
-* --auth-user-pass - "Using a user-file (inline or not) with
-challenge-response "
+> On an unrelated note, I'm trying out OpenPGP/MIME (RFCs 4880 & 3156) in
+> this submission since it appears the only non-broken way to sign
+> patches. Sane clients should eat this fine (Outlook Express may not.) If
+> this poses a particular problem for you or an archiving service (sf.net,
+> gmane, etc) I'd like to know about it.
 
-I think this is by design.  As I understand the purpose of
-challenge-response, it is to avoid static passwords.  If it is possible
-to detect the server uses a challenge-response setup, we should probably
-bail-out with an error if --auth-user-pass is used with files anyway.
-But I think it's how it is now, because detecting that was harder or
-impossible.
+I've had issues without PGP/MIME as well, mostly due to bad wrapping.
+Not sure if that was issues caused by GPG, Engimail or Thunderbird.
+I've used PGP/MIME here for quite some time now without any complaints.
 
-
-* openvpn-build issues + snappy topic.
-
-   "The problem is that snappy pulls in a 8MB library as a dependency,
-    increasing installer size considerably "
-
-Is this really a problem?  It's not a small library, but it could still
-be worse.
-
-Another way to "solve" this (if it is a real problem) could be to have
-have two openvpn binaries shipped in the installer.  And ask at install
-time if the user wants Snappy support or not.  If not, don't install
-this library and use a openvpn compiled without snappy support.  If
-support is wanted, install the library + openvpn binary with snappy
-support.  The installer will be somewhat bigger, but the user has an
-option to opt out of snappy support.
-
-
-Just my 2 cents.
+Other than that, I usually just use 'git send-email' when sending
+patches to the mailing list.  It makes the patch submission easier, and
+you avoid MUAs messing up the content.
 
 
 --=20
@@ -73,7 +52,7 @@ kind regards,
 David Sommerseth
 
 
---n6hNFgCGh8IPSNSQMcauA7d0up7e066Vf
+--atF4suIDmBlpIWcUTriuEp6VjOoTfp8e9
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -82,10 +61,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.11 (GNU/Linux)
 Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
 
-iEYEARECAAYFAlIV6UgACgkQDC186MBRfrqFpQCggqhqlxaGNFuL5ffD5P7A+7HA
-Ir4Anj+8R2oO9DIGuurYKR9XfU3zesns
-=A2O2
+iEYEARECAAYFAlIV6xAACgkQDC186MBRfrpBrACeMBKRhSJ0LmHrbTV/Mb469hHp
+MccAn0ELdoP+svTfSqELkmaGOrFJreF+
+=Zgrc
 -----END PGP SIGNATURE-----
 
---n6hNFgCGh8IPSNSQMcauA7d0up7e066Vf--
+--atF4suIDmBlpIWcUTriuEp6VjOoTfp8e9--
 
