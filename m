@@ -1,12 +1,10 @@
-From: Josh Cepek <josh.cepek@...1085...>
-Date: Thu, 22 Aug 2013 18:08:43 -0500
-Message-ID: <kv65m0$qbs$1@...1062...>
+MIME-Version: 1.0
+In-Reply-To: <kv65m0$qbs$1@...1062...>
 References: <CANfRfr0zuKi5mf0vAFXPvnRtrsyyFx3EtpGpbzNJsCLBnqZxLA@...278...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="f4abEO4U69SnlKi7x4qDgdxMuWRIRN2VC"
-In-Reply-To: <CANfRfr0zuKi5mf0vAFXPvnRtrsyyFx3EtpGpbzNJsCLBnqZxLA@...278...>
+	<kv65m0$qbs$1@...1062...>
+Date: Thu, 22 Aug 2013 19:49:42 -0400
+Message-ID: <CANfRfr02EyQbPJ52pq4-B02hrKdAShn_cbWOE1NYKbosYrd7Qw@...278...>
+From: Jesse Glick <jglick@...1836...>
 Subject: Re: [Openvpn-devel] [PATCH 2/2] When using UDP over SOCKS5,
  send the actual remote hostname (FQDN) to the proxy server in the
  first packet.
@@ -18,116 +16,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---f4abEO4U69SnlKi7x4qDgdxMuWRIRN2VC
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-We discussed this patch briefly in today's IRC developer meeting, and
-wanted some clarification on the intent/goal here. Comments inline (code
-removed since we're trying to wrap our heads around the feature in the
-general sense first.) Once we have a better idea of the intent, it will
-be easier to look at the code itself more in-depth.
+On Thu, Aug 22, 2013 at 7:08 PM, Josh Cepek <josh.cepek@...1085...> wrote:
+>> akin to how HTTP reverse proxies commonly delegate to a physical server
+>> according to the HTTP 1.1 Host header=E2=80=94so that many hostnames can=
+ map
+>> to the same IP of the reverse proxy.
+>
+> There was some issue figuring out what this all means. Do you have an
+> example use-case where this is helpful?
 
-As Arne noted in this thread, detailed code review & a merge strategy
-may well wait until the dual-stack support is in as to not complicate
-his work on that.
+To expand on my explanation as quoted above:
 
-On 08/08/13 12:59, Jesse Glick wrote:
-> Also as: https://github.com/OpenVPN/openvpn/pull/6
->=20
-> I was exploring the possibility of using a SOCKS5 server to multiplex
-> OpenVPN connections based on hostname (in the remote option), akin to
-> how HTTP reverse proxies commonly delegate to a physical server
-> according to the HTTP 1.1 Host header=E2=80=94so that many hostnames can =
-map
-> to the same IP of the reverse proxy.
+For HTTP protocol, if you want to provide a single server with a fixed
+IP address which services multiple sites=E2=80=94either directly, or by act=
+ing
+as a reverse proxy to other servers with variable IPs and ports=E2=80=94it =
+is
+easy: you just have your server inspect the =E2=80=98Host=E2=80=99 header w=
+hich
+represents what DNS name the client intended to connect to. HTTP/1.1
+clients are obliged to send this, so you can safely have them contact
+http://joe.accounts.yourcorp.com/ (where the DNS entry for
+*.accounts.yourcorp.com is that of proxy.yourcorp.com) and when you
+see =E2=80=98Host: joe.accounts.yourcorp.com=E2=80=99 you know where to for=
+ward the
+request.
 
-There was some issue figuring out what this all means. Do you have an
-example use-case where this is helpful?
+Now what if you want to do the same for a different procotol, such as
+OpenVPN? I.e. run hundreds of OpenVPN servers but give clients a
+single public contact point? This protocol does not send the original
+host name that I know of, and to make a reverse proxy directly working
+with the OpenVPN protocol (e.g. inspecting the CN on a client
+certificate) you would have to copy a bunch of OpenVPN C code and then
+start forwarding a half-completed handshake=E2=80=94a daunting task.
 
-I don't understand the bit about multiplexing, since the idea of a SOCKS
-transport is a one-to-one relationship. Since OpenVPN uses a single UDP
-(or TCP) socket to establish remote connections, I'm not sure what there
-is to multiplex.
+My idea was to take advantage of the fact that OpenVPN has built-in
+SOCKS5 support, and use a SOCKS5 =E2=80=9Cproxy=E2=80=9D as a reverse proxy=
+. So the
+client connects to joe.vpns.yourcorp.com:1194 (UDP), but with a SOCKS5
+proxy of vpns.yourcorp.com. Now you just need to write a SOCKS5
+server, which is a much easier task since its protocol is very simple
+(especially when no authentication is sent, as here). For each
+connection made, the server sets up a UDP relay server and blindly
+copies all the packets on to the real OpenVPN server, which might have
+a floating IP address or even be on a private network.
 
-> I found that the SOCKS5 protocol does support DOMAINNAME rather than
-> IP V4 when using the UDP relay server. However, OpenVPN was never
-> using this option; it always sent a preresolved IP (v4) address,
-> giving the proxy server no way of inferring what hostname was
-> originally requested.
->=20
-> This patch amends the socks_process_outgoing_udp method to send
-> DOMAINNAME for the first datagram of the connection, when an FQDN was
-> specified. Thereafter it sends IP V4since this is more compact=E2=80=94and
-> experimentation with the Dante server revealed that it
-> calledcgethostbyname on many, if not all, such datagrams it received,
-> which could be quite expensive. Since in the case of OpenVPN the
-> =E2=80=9Cdesired destination address=E2=80=9D is constant for the life of=
- the tunnel,
-> it should suffice to send the hostname just once.
+All that is needed for this to work is for the SOCKS5 server to
+receive information about the original hostname
+(joe.vpns.yourcorp.com) rather than the singleton IP address it
+resolved to, i.e. the equivalent of the Host header. But alas, OpenVPN
+today does not send it: it resolves the host locally, then sends only
+an IP address to SOCKS5 when creating packets for the UDP relay. My
+patch merely tells the client to follow the option in the SOCKS5
+protocol to send the hostname rather than IP.
 
-This confused us too; what's the advantage of doing the DNS lookup
-remotely? Presumably this is in case the remote end comes up with a
-different IP than the local one, but what's to then stop the local side
-from using the then-miss-matched IPv4 address the _local_ end resolved
-and sending all future datagrams to a different IP than the first?
+(Beware that I have not yet tried to write such a SOCKS5 UDP reverse
+proxy. It is conceivable there would be some subtle problem that
+cannot be worked around even if the original hostname is available. I
+have only confirmed so far that with the current OpenVPN client it is
+*not* possible to write such a proxy, and believe with my patch it
+*should* be possible.)
 
-> socks_adjust_frame_parameters also needed to be changed to allow for
-> the worst-case buffer size, a 255-character hostname (Linux generally
-> only allows 64) plus fixed-length fields (7 bytes). It would be nicer
-> to set this according to the actual hostname length, but I could not
-> see how to obtain that hostname during this early stage of
-> initialization.
->=20
-> Filing this for the purpose of getting feedback. Probably there needs
-> to be a user option to configure this behavior:
->=20
-> =C2=B7 disable (restoring original behavior; perhaps the default)
-> =C2=B7 enable for first packet only (as in the current patch)
-> =C2=B7 enable for all packets, which could be useful in case the reverse
-> proxy is using a single UDP relay server for many clients (since
-> SOCKS5 offers no apparent connection identifier other than the
-> BND.PORT)
->=20
-> Note that the original code probably does not work with IPv6, but I
-> did not attempt to address that in this patch.
+> what's the advantage of doing the DNS lookup remotely?
 
-Since >=3D2.3.0 officially supports IPv6, new features should probably do
-so as well. The code as I see will simply "not offer" this feature when
-info.proto =3D=3D PROTO_UDPv6, but then we need to document the distinction.
+There is no DNS lookup remotely. The =E2=80=98joe.vpns.yourcorp.com=E2=80=
+=99 is merely
+a hint to forward packets to a particular delegate (that associated
+with Joe=E2=80=99s account).
 
-This is probably less important to address now; let's first see if the
-rest of us can figure out what this feature's use-case is.
+Again this is analogous to, say, Apache working as an HTTP reverse
+proxy. If it gets =E2=80=98Host: joe.accounts.yourcorp.com=E2=80=99, it doe=
+s not try
+to resolve that hostname, since the result is known in advance. It
+just uses this information to match against a rule in its
+configuration that tells it how to process that virtual site.
 
-Thanks,
+> Since >=3D2.3.0 officially supports IPv6, new features should probably do=
+ so as well.
 
---
-Josh Cepek
-
-
---f4abEO4U69SnlKi7x4qDgdxMuWRIRN2VC
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.20 (GNU/Linux)
-
-iQGcBAEBAgAGBQJSFpoIAAoJENcx2Xpgb9RjYaoMAJm1QM8wJ5v06ArYqwDllsbZ
-Bc70B4znU1U5LT3Wl7GNVt/fXefHhgfTEnnLFvGXjmDE6r/u1juncYmcjWtF0AK+
-i9ymTH6vTJyGbIcMIFIjAz7pYUcrgpZGpBMzE5YzpEJY8n35adPTDfXOcesrWOB+
-cfqFhEYlzJ+k5hh+4qlpJa8BdsPPzHvUjKOwZsw5RyqG1al4qinviRKvbUdZHRCr
-dC9+D4jte87REeGjIrW21XE5tYyu6yYumuoufp04s3CHU9QXUIbpe5zLpqH9qQ2T
-1n5HhVgZ7jxtFBuRVUTwnIogZkOVeENzHmu524chEpxy6gCMRTWqHaY4rw9vy4RN
-RhqBbl7QPAh+sOzEH/FqAIKraDeqhmUMAQiWby+l++KZREFPMf7ATHU5ELLV8KUh
-Uuz3FRI83YAIlGrplHlR782czj1v6X28AHDYXHfR6Uztj7aLSfVMugLFsG0qfyj9
-S8NVtDnsyf9UusA3YA22skeKq1dNwOT/DOeTP+paPg==
-=yado
------END PGP SIGNATURE-----
-
---f4abEO4U69SnlKi7x4qDgdxMuWRIRN2VC--
-
+Makes sense, though I doubt I am set up to test IPv6 operation.
 
