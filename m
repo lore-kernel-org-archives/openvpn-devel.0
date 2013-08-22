@@ -1,10 +1,9 @@
-Date: Thu, 22 Aug 2013 21:29:13 +0200 (CEST)
-Message-Id: <201308221929.r7MJTDaM022698@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <CANfRfr0GEw0KJT2XpFu6zGmhKpWOQah_PU2hdROD0FDRktZfVQ@...278...>
-References: <CANfRfr0GEw0KJT2XpFu6zGmhKpWOQah_PU2hdROD0FDRktZfVQ@...278...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Allow use of NetBeans without
-	saving nbproject/ directory.
+Message-ID: <521668C9.5070003@...515...>
+Date: Thu, 22 Aug 2013 22:38:49 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Proposed change to allow use of statically linked
+	OpenSSL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,28 +12,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Jesse Glick <jglick@...1836...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Your patch has been applied to the master branch.
+Hi,
 
-commit 550fe1a3a12ad9affbdff6ab1fc3e846f5e8d0b5
-Author: Jesse Glick
-Date:   Thu Aug 8 13:56:38 2013 -0400
+In today's meeting we briefly touched upon this suggested fix to
+configure.ac to allow using statically linked OpenSSL:
 
-     Allow use of NetBeans without saving nbproject/ directory.
+<https://community.openvpn.net/openvpn/ticket/305>
 
-     Acked-by: Samuli SeppÃ¤nen <samuli@...515...>
-     Message-Id: <CANfRfr0GEw0KJT2XpFu6zGmhKpWOQah_PU2hdROD0FDRktZfVQ@...278...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/7794
-     Signed-off-by: Gert Doering <gert@...1296...>
+We couldn't figure out if the proposed change would have negative
+side-effects, so we didn't dare to implement it as-is.
 
+Any suggestions?
 
---
-kind regards,
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-Gert Doering
+irc freenode net: mattock
 
 
