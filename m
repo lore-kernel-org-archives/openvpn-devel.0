@@ -1,13 +1,15 @@
-Date: Thu, 22 Aug 2013 13:51:02 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20130822115102.GL16543@...1296...>
+Message-ID: <521638B2.5080103@...1114...>
+Date: Thu, 22 Aug 2013 18:13:38 +0200
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
 References: <5215D0BA.6040009@...515...> <5215E945.7080105@...1114...>
-Mime-Version: 1.0
+	<20130822115102.GL16543@...1296...>
+In-Reply-To: <20130822115102.GL16543@...1296...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="E9lJRGffXdNhqRfL"
-Content-Disposition: inline
-In-Reply-To: <5215E945.7080105@...1114...>
+	protocol="application/pgp-signature";
+	boundary="gbM2XuM3GSTp7reCk4XmOtT5lSDjNqPTi"
 Subject: Re: [Openvpn-devel] Topics for today's community meeting
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,56 +18,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---E9lJRGffXdNhqRfL
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--gbM2XuM3GSTp7reCk4XmOtT5lSDjNqPTi
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
-
-On Thu, Aug 22, 2013 at 12:34:45PM +0200, David Sommerseth wrote:
-> * openvpn-build issues + snappy topic.
+On 22/08/13 13:51, Gert Doering wrote:
+> Hi,
 >=20
->    "The problem is that snappy pulls in a 8MB library as a dependency,
->     increasing installer size considerably "
+> On Thu, Aug 22, 2013 at 12:34:45PM +0200, David Sommerseth wrote:
+>> * openvpn-build issues + snappy topic.
+>>
+>>    "The problem is that snappy pulls in a 8MB library as a dependency,
+>>     increasing installer size considerably "
+>>
+>> Is this really a problem?  It's not a small library, but it could still
+>> be worse.
 >=20
-> Is this really a problem?  It's not a small library, but it could still
-> be worse.
+> The 8MB library is libstdc++, which can be statically linked if we figure
+> out how (this is on *windows*).  Libsnappy is tiny.
 
-The 8MB library is libstdc++, which can be statically linked if we figure
-out how (this is on *windows*).  Libsnappy is tiny.
+Ahh, that explains things better.  I understood it was libsnappy itself
+which was that massive.  Then it makes sense to figure out how to
+resolve that part.
 
-And yes, this is a relevant difference if the overall installer without
-libstdc++ is just 1.7 Mb sized today
+> And yes, this is a relevant difference if the overall installer without
+> libstdc++ is just 1.7 Mb sized today
+>=20
+>    1723560 Jan 18 2013  openvpn-install-2.3.0-I001-x86_64.exe
+>=20
+> (And no, making the installer even bigger by shipping two binaries
+> *and* the huge library is not a good plan :-))
 
-   1723560 Jan 18 2013  openvpn-install-2.3.0-I001-x86_64.exe
+Fair enough :)
 
-(And no, making the installer even bigger by shipping two binaries
-*and* the huge library is not a good plan :-))
 
-gert
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+kind regards,
 
---E9lJRGffXdNhqRfL
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+David Sommerseth
+
+
+--gbM2XuM3GSTp7reCk4XmOtT5lSDjNqPTi
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
 
-iQCVAwUBUhX7JqkuBuNlUUl1AQImAwP/frDrmCpOANHcEdoq5feBQYTgBv/hvDh1
-+2G5GekSCMkcLATtuTxem68v3Aqg8+le2q0seMvE5v42cDQY/N/h2liahcF4glet
-H+2hZMmLSF36YE9dHeQwzYhP0gDnfI2cXXVjhBQXAwT9QaxIzSZDHvXegsnKhAlc
-GeRKaM7kBbA=
-=2Sqa
+iEYEARECAAYFAlIWOLIACgkQDC186MBRfroM1gCfRxIxIsxHHZTsfXXv7qzSwwxU
+iEMAn3HFOku/jmjjd6oX8oEkY7a8uqop
+=j4Zv
 -----END PGP SIGNATURE-----
 
---E9lJRGffXdNhqRfL--
+--gbM2XuM3GSTp7reCk4XmOtT5lSDjNqPTi--
 
