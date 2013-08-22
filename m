@@ -1,15 +1,13 @@
-Message-ID: <5215EB10.9060903@...1114...>
-Date: Thu, 22 Aug 2013 12:42:24 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <kv4ece$s8s$1@...1062...>
-In-Reply-To: <kv4ece$s8s$1@...1062...>
+Date: Thu, 22 Aug 2013 13:51:02 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20130822115102.GL16543@...1296...>
+References: <5215D0BA.6040009@...515...> <5215E945.7080105@...1114...>
+Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="atF4suIDmBlpIWcUTriuEp6VjOoTfp8e9"
-Subject: Re: [Openvpn-devel] [PATCH] Correct error text when no Windows TAP
- device is present
-Reply-To: openvpn-devel@lists.sourceforge.net
+	protocol="application/pgp-signature"; boundary="E9lJRGffXdNhqRfL"
+Content-Disposition: inline
+In-Reply-To: <5215E945.7080105@...1114...>
+Subject: Re: [Openvpn-devel] Topics for today's community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,53 +16,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Josh Cepek <josh.cepek@...1085...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---atF4suIDmBlpIWcUTriuEp6VjOoTfp8e9
-Content-Type: text/plain; charset="ISO-8859-1"
+--E9lJRGffXdNhqRfL
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 22/08/13 09:24, Josh Cepek wrote:
-> Patch/description attached; this resolves bug #320.
+Hi,
 
-ACK to patch 24be21ea2f1d02631685a0a11bf187372cf10fa4 in the attachement.
+On Thu, Aug 22, 2013 at 12:34:45PM +0200, David Sommerseth wrote:
+> * openvpn-build issues + snappy topic.
+>=20
+>    "The problem is that snappy pulls in a 8MB library as a dependency,
+>     increasing installer size considerably "
+>=20
+> Is this really a problem?  It's not a small library, but it could still
+> be worse.
 
-> On an unrelated note, I'm trying out OpenPGP/MIME (RFCs 4880 & 3156) in
-> this submission since it appears the only non-broken way to sign
-> patches. Sane clients should eat this fine (Outlook Express may not.) If
-> this poses a particular problem for you or an archiving service (sf.net,
-> gmane, etc) I'd like to know about it.
+The 8MB library is libstdc++, which can be statically linked if we figure
+out how (this is on *windows*).  Libsnappy is tiny.
 
-I've had issues without PGP/MIME as well, mostly due to bad wrapping.
-Not sure if that was issues caused by GPG, Engimail or Thunderbird.
-I've used PGP/MIME here for quite some time now without any complaints.
+And yes, this is a relevant difference if the overall installer without
+libstdc++ is just 1.7 Mb sized today
 
-Other than that, I usually just use 'git send-email' when sending
-patches to the mailing list.  It makes the patch submission easier, and
-you avoid MUAs messing up the content.
+   1723560 Jan 18 2013  openvpn-install-2.3.0-I001-x86_64.exe
 
+(And no, making the installer even bigger by shipping two binaries
+*and* the huge library is not a good plan :-))
 
+gert
 --=20
-kind regards,
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-David Sommerseth
-
-
---atF4suIDmBlpIWcUTriuEp6VjOoTfp8e9
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--E9lJRGffXdNhqRfL
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+Version: GnuPG v1.4.13 (NetBSD)
 
-iEYEARECAAYFAlIV6xAACgkQDC186MBRfrpBrACeMBKRhSJ0LmHrbTV/Mb469hHp
-MccAn0ELdoP+svTfSqELkmaGOrFJreF+
-=Zgrc
+iQCVAwUBUhX7JqkuBuNlUUl1AQImAwP/frDrmCpOANHcEdoq5feBQYTgBv/hvDh1
++2G5GekSCMkcLATtuTxem68v3Aqg8+le2q0seMvE5v42cDQY/N/h2liahcF4glet
+H+2hZMmLSF36YE9dHeQwzYhP0gDnfI2cXXVjhBQXAwT9QaxIzSZDHvXegsnKhAlc
+GeRKaM7kBbA=
+=2Sqa
 -----END PGP SIGNATURE-----
 
---atF4suIDmBlpIWcUTriuEp6VjOoTfp8e9--
+--E9lJRGffXdNhqRfL--
 
