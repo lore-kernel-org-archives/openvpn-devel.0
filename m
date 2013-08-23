@@ -1,14 +1,10 @@
-Date: Fri, 23 Aug 2013 11:16:27 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20130823091626.GW16543@...1296...>
-References: <521668C9.5070003@...515...> <3175682.0C6cFygpIW@...1526...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="b1CVx77D595wdcW8"
-Content-Disposition: inline
-In-Reply-To: <3175682.0C6cFygpIW@...1526...>
-Subject: Re: [Openvpn-devel] Proposed change to allow use of statically
-	linked OpenSSL
+Message-ID: <52173B95.6030401@...1227...>
+Date: Fri, 23 Aug 2013 12:38:13 +0200
+From: Arne Schwabe <arne@...1227...>
+MIME-Version: 1.0
+References: <CAMRyNXJVwnk5D8ZK_tN6NQ8BX1+zbn9jWfEWTUDa90g-RNVVDw@...278...>
+In-Reply-To: <CAMRyNXJVwnk5D8ZK_tN6NQ8BX1+zbn9jWfEWTUDa90g-RNVVDw@...278...>
+Subject: Re: [Openvpn-devel] Implementing a Mobile OpenVPN - questions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,47 +13,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Heiko Hund <heiko.hund@...1489...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Abdullah Alshalan <aalshala@...1837...>
+Cc: openvpn-devel-request@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
---b1CVx77D595wdcW8
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Am 23.08.13 02:48, schrieb Abdullah Alshalan:
+> Hi all,
+> I'm not sure if I'm sending this email to the right development group
+> so I apologize if it's not.
+>
+> I'm trying to reach the open vpn development team or anyone who has
+> experience with OpenVPN development.
+> I started working on a project to implement an open-source, true
+> Mobile SSL VPN and I'm finsihed with a detailed framework design. I
+> know OpenVPN has released OpenVPN connect for smart phones but what I
+> want to add is mobility features. Meaning the VPN session survives any
+> network interruptions due tp switching from one network to another,
+> thus getting new IP addresses or during lack of network coverage for
+> some time.
+>
+> My question is how big of a project is this going to be? I mean is it
+> something one person can handle or needs a team of experience network
+> programmers? 
+> Are there any books or any sort of  documentation that helps
+> understand and modify the OpenVPN source code?
+>
+I am not quite what you aiming at. OpenVPN does support changing IP
+addresses when both sides use --float.
 
-Hi,
-
-On Fri, Aug 23, 2013 at 10:00:04AM +0200, Heiko Hund wrote:
-> I see no potential for breakage, so ACK.
-
-committed and pushed to master and release/2.3
-
-commit 30e358e5de352c8de04a955dc89f33e1710e9b97 (master)
-commit 588c5fe795169c6b53e8e61f060714c1334b8e8e (release/2.3)
-
-test-built with a dynamic openssl on Linux (no breakage).
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---b1CVx77D595wdcW8
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
-
-iQCVAwUBUhcoaqkuBuNlUUl1AQIFqwQArNmAGnELsXRjqMqpB+ND+VXILkzl3cUR
-P0e33TVTNi/kPGy+OCrWchNlbOcfTswxw4bD83Rwo+l1WjJ5YOXZNuytlfL+H+tD
-iywUTHHrhmgqYS1+Xc9VGHcdfPt4cf9/oSwLU8wannaclMplkiS7ZCe6N9w9MS8n
-6nYXpQ002Xg=
-=0GsC
------END PGP SIGNATURE-----
-
---b1CVx77D595wdcW8--
+Arne
 
