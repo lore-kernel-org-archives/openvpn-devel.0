@@ -1,9 +1,15 @@
-MIME-Version: 1.0
-Date: Thu, 22 Aug 2013 17:48:42 -0700
-Message-ID: <CAMRyNXJVwnk5D8ZK_tN6NQ8BX1+zbn9jWfEWTUDa90g-RNVVDw@...278...>
-From: Abdullah Alshalan <aalshala@...1837...>
-Content-Type: multipart/alternative; boundary=001a11c309e8ac4fc004e492c484
-Subject: [Openvpn-devel] Implementing a Mobile OpenVPN - questions
+Date: Fri, 23 Aug 2013 09:01:33 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20130823070132.GV16543@...1296...>
+References: <51C77F12.1090802@...515...> <5210B1EB.7000409@...1227...>
+	<20130821072739.GG16543@...1296...>
+	<52147A34.7050406@...1227...> <521684EA.2030202@...1114...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="BldhxuJQ12PvT3+j"
+Content-Disposition: inline
+In-Reply-To: <521684EA.2030202@...1114...>
+Subject: Re: [Openvpn-devel] [PATCH] TLS versioning
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,80 +18,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-Cc: openvpn-devel-request@lists.sourceforge.net
+To: openvpn-users@lists.sourceforge.net
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, James Yonan <james@...515...>
 
---001a11c309e8ac4fc004e492c484
-Content-Type: text/plain; charset=ISO-8859-1
-
-Hi all,
-I'm not sure if I'm sending this email to the right development group so I
-apologize if it's not.
-
-I'm trying to reach the open vpn development team or anyone who has
-experience with OpenVPN development.
-I started working on a project to implement an open-source, true Mobile SSL
-VPN and I'm finsihed with a detailed framework design. I know OpenVPN has
-released OpenVPN connect for smart phones but what I want to add is
-mobility features. Meaning the VPN session survives any network
-interruptions due tp switching from one network to another, thus getting
-new IP addresses or during lack of network coverage for some time.
-
-My question is how big of a project is this going to be? I mean is it
-something one person can handle or needs a team of experience network
-programmers?
-Are there any books or any sort of  documentation that helps understand and
-modify the OpenVPN source code?
-
-Thank you!
-
--- 
-*Abdullah Alshalan*
-Web Application Developer at UITS: Web Integration Team
-PhD Student at SNAC:Secure Networking and Computing Lab
-Computer Science Department
-Arizona State University
-Tempe, AZ 85281
-
---001a11c309e8ac4fc004e492c484
-Content-Type: text/html; charset="ISO-8859-1"
+--BldhxuJQ12PvT3+j
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-<div dir=3D"ltr">Hi all,<div>I&#39;m not sure if I&#39;m sending this email=
- to the right development group so I apologize if it&#39;s not.</div><div><=
-br><div>I&#39;m trying to reach the open vpn development team or anyone who=
- has experience with OpenVPN development.</div>
-<div>I started working on a project to implement an open-source, true Mobil=
-e SSL VPN and I&#39;m finsihed with a detailed framework design. I know Ope=
-nVPN has released OpenVPN connect for smart phones but what I want to add i=
-s mobility features. Meaning the VPN session survives any network interrupt=
-ions due tp switching from one network to another, thus getting new IP addr=
-esses or during lack of network coverage for some time.</div>
-<div><br></div><div>My question is how big of a project is this going to be=
-? I mean is it something one person can handle or needs a team of experienc=
-e network programmers?=A0</div><div>Are there any books or any sort of =A0d=
-ocumentation that helps understand and modify the OpenVPN source code?</div>
-<div><br></div><div>Thank you!<br clear=3D"all"><div><br></div>-- <br><div>=
-<span style=3D"font-family:arial,sans-serif;font-size:13px;border-collapse:=
-collapse"><span style=3D"font-family:arial,sans-serif;font-size:13px;border=
--collapse:collapse"><b>Abdullah Alshalan</b></span></span></div>
-<div><span style=3D"font-family:arial,sans-serif;font-size:13px;border-coll=
-apse:collapse"><span style=3D"font-family:arial,sans-serif;font-size:13px;b=
-order-collapse:collapse">Web Application Developer at UITS: Web Integration=
- Team</span></span></div>
-<div><span style=3D"font-family:arial,sans-serif;font-size:13px;border-coll=
-apse:collapse"><span style=3D"font-family:arial,sans-serif;font-size:13px;b=
-order-collapse:collapse">PhD Student at S</span></span><span style=3D"font-=
-family:arial,sans-serif;font-size:13px;border-collapse:collapse">NAC:Secure=
- Networking and Computing Lab</span></div>
-<div><span style=3D"font-family:arial,sans-serif;font-size:13px;border-coll=
-apse:collapse"><div><div><div><div><span style=3D"font-family:arial,sans-se=
-rif;font-size:13px;border-collapse:collapse">Computer Science Department</s=
-pan><div>
-Arizona State University</div><div><span style=3D"font-family:arial,sans-se=
-rif;font-size:13px;border-collapse:collapse">Tempe, AZ 85281</span></div></=
-div></div></div></div></span></div>
-</div></div></div>
+Hi,
 
---001a11c309e8ac4fc004e492c484--
+On Thu, Aug 22, 2013 at 11:38:50PM +0200, David Sommerseth wrote:
+> However, I understand that some firmware "vendors" doesn't have the same=
+=20
+> "quick" turn-over as RHEL does.  So I think I would rather let these old=
+=20
+> firmwares run OpenVPN 2.0 or 2.1 and let them support their own ancient=20
+> code base on their own.  We need to move forward and not cling to the old=
+=20
+> days forever.
+
+This is not about "our source does not compile with 0.96 anymore" -=20
+it's about "2.3 with the TLS changes does not *talk* to OpenVPN=20
+2.2-compiled-with-0.96 anymore" (so asking the router vendors to
+use OpenVPN 2.1 or 2.0 instead won't exactly improve things as the
+TLS handshake code would be the same).
+
+If this hits two users out of the whole Android user base, I tend to
+"well, bad luck, get your router firmware updated" - if it hits more
+"mainstream" users, we'll need to have a better answer.
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--BldhxuJQ12PvT3+j
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBUhcIzKkuBuNlUUl1AQLswgQAn+Jy3tGvPOpaIE3STMF2WTp1mpD7zNWs
+FNLaeqmcY56PyLIuJQJNaHG56LRE9yK4J02q9oWLoFOokW2e+K0CNBKkIslrAJpH
+6m7wl4ozwmAd2xGw+h2Y13ihFGowtvWG9ptjpar5HsP/9mABPJJ5CZr8jcwI7pYa
+ZkRrAdZIWis=
+=1w3P
+-----END PGP SIGNATURE-----
+
+--BldhxuJQ12PvT3+j--
 
