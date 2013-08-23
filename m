@@ -1,13 +1,9 @@
 MIME-Version: 1.0
-In-Reply-To: <kv65m0$qbs$1@...1062...>
-References: <CANfRfr0zuKi5mf0vAFXPvnRtrsyyFx3EtpGpbzNJsCLBnqZxLA@...278...>
-	<kv65m0$qbs$1@...1062...>
-Date: Thu, 22 Aug 2013 19:49:42 -0400
-Message-ID: <CANfRfr02EyQbPJ52pq4-B02hrKdAShn_cbWOE1NYKbosYrd7Qw@...278...>
-From: Jesse Glick <jglick@...1836...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] When using UDP over SOCKS5,
- send the actual remote hostname (FQDN) to the proxy server in the
- first packet.
+Date: Thu, 22 Aug 2013 17:48:42 -0700
+Message-ID: <CAMRyNXJVwnk5D8ZK_tN6NQ8BX1+zbn9jWfEWTUDa90g-RNVVDw@...278...>
+From: Abdullah Alshalan <aalshala@...1837...>
+Content-Type: multipart/alternative; boundary=001a11c309e8ac4fc004e492c484
+Subject: [Openvpn-devel] Implementing a Mobile OpenVPN - questions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,87 +12,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
+Cc: openvpn-devel-request@lists.sourceforge.net
 
-On Thu, Aug 22, 2013 at 7:08 PM, Josh Cepek <josh.cepek@...1085...> wrote:
->> akin to how HTTP reverse proxies commonly delegate to a physical server
->> according to the HTTP 1.1 Host header=E2=80=94so that many hostnames can=
- map
->> to the same IP of the reverse proxy.
->
-> There was some issue figuring out what this all means. Do you have an
-> example use-case where this is helpful?
+--001a11c309e8ac4fc004e492c484
+Content-Type: text/plain; charset=ISO-8859-1
 
-To expand on my explanation as quoted above:
+Hi all,
+I'm not sure if I'm sending this email to the right development group so I
+apologize if it's not.
 
-For HTTP protocol, if you want to provide a single server with a fixed
-IP address which services multiple sites=E2=80=94either directly, or by act=
-ing
-as a reverse proxy to other servers with variable IPs and ports=E2=80=94it =
-is
-easy: you just have your server inspect the =E2=80=98Host=E2=80=99 header w=
-hich
-represents what DNS name the client intended to connect to. HTTP/1.1
-clients are obliged to send this, so you can safely have them contact
-http://joe.accounts.yourcorp.com/ (where the DNS entry for
-*.accounts.yourcorp.com is that of proxy.yourcorp.com) and when you
-see =E2=80=98Host: joe.accounts.yourcorp.com=E2=80=99 you know where to for=
-ward the
-request.
+I'm trying to reach the open vpn development team or anyone who has
+experience with OpenVPN development.
+I started working on a project to implement an open-source, true Mobile SSL
+VPN and I'm finsihed with a detailed framework design. I know OpenVPN has
+released OpenVPN connect for smart phones but what I want to add is
+mobility features. Meaning the VPN session survives any network
+interruptions due tp switching from one network to another, thus getting
+new IP addresses or during lack of network coverage for some time.
 
-Now what if you want to do the same for a different procotol, such as
-OpenVPN? I.e. run hundreds of OpenVPN servers but give clients a
-single public contact point? This protocol does not send the original
-host name that I know of, and to make a reverse proxy directly working
-with the OpenVPN protocol (e.g. inspecting the CN on a client
-certificate) you would have to copy a bunch of OpenVPN C code and then
-start forwarding a half-completed handshake=E2=80=94a daunting task.
+My question is how big of a project is this going to be? I mean is it
+something one person can handle or needs a team of experience network
+programmers?
+Are there any books or any sort of  documentation that helps understand and
+modify the OpenVPN source code?
 
-My idea was to take advantage of the fact that OpenVPN has built-in
-SOCKS5 support, and use a SOCKS5 =E2=80=9Cproxy=E2=80=9D as a reverse proxy=
-. So the
-client connects to joe.vpns.yourcorp.com:1194 (UDP), but with a SOCKS5
-proxy of vpns.yourcorp.com. Now you just need to write a SOCKS5
-server, which is a much easier task since its protocol is very simple
-(especially when no authentication is sent, as here). For each
-connection made, the server sets up a UDP relay server and blindly
-copies all the packets on to the real OpenVPN server, which might have
-a floating IP address or even be on a private network.
+Thank you!
 
-All that is needed for this to work is for the SOCKS5 server to
-receive information about the original hostname
-(joe.vpns.yourcorp.com) rather than the singleton IP address it
-resolved to, i.e. the equivalent of the Host header. But alas, OpenVPN
-today does not send it: it resolves the host locally, then sends only
-an IP address to SOCKS5 when creating packets for the UDP relay. My
-patch merely tells the client to follow the option in the SOCKS5
-protocol to send the hostname rather than IP.
+-- 
+*Abdullah Alshalan*
+Web Application Developer at UITS: Web Integration Team
+PhD Student at SNAC:Secure Networking and Computing Lab
+Computer Science Department
+Arizona State University
+Tempe, AZ 85281
 
-(Beware that I have not yet tried to write such a SOCKS5 UDP reverse
-proxy. It is conceivable there would be some subtle problem that
-cannot be worked around even if the original hostname is available. I
-have only confirmed so far that with the current OpenVPN client it is
-*not* possible to write such a proxy, and believe with my patch it
-*should* be possible.)
+--001a11c309e8ac4fc004e492c484
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-> what's the advantage of doing the DNS lookup remotely?
+<div dir=3D"ltr">Hi all,<div>I&#39;m not sure if I&#39;m sending this email=
+ to the right development group so I apologize if it&#39;s not.</div><div><=
+br><div>I&#39;m trying to reach the open vpn development team or anyone who=
+ has experience with OpenVPN development.</div>
+<div>I started working on a project to implement an open-source, true Mobil=
+e SSL VPN and I&#39;m finsihed with a detailed framework design. I know Ope=
+nVPN has released OpenVPN connect for smart phones but what I want to add i=
+s mobility features. Meaning the VPN session survives any network interrupt=
+ions due tp switching from one network to another, thus getting new IP addr=
+esses or during lack of network coverage for some time.</div>
+<div><br></div><div>My question is how big of a project is this going to be=
+? I mean is it something one person can handle or needs a team of experienc=
+e network programmers?=A0</div><div>Are there any books or any sort of =A0d=
+ocumentation that helps understand and modify the OpenVPN source code?</div>
+<div><br></div><div>Thank you!<br clear=3D"all"><div><br></div>-- <br><div>=
+<span style=3D"font-family:arial,sans-serif;font-size:13px;border-collapse:=
+collapse"><span style=3D"font-family:arial,sans-serif;font-size:13px;border=
+-collapse:collapse"><b>Abdullah Alshalan</b></span></span></div>
+<div><span style=3D"font-family:arial,sans-serif;font-size:13px;border-coll=
+apse:collapse"><span style=3D"font-family:arial,sans-serif;font-size:13px;b=
+order-collapse:collapse">Web Application Developer at UITS: Web Integration=
+ Team</span></span></div>
+<div><span style=3D"font-family:arial,sans-serif;font-size:13px;border-coll=
+apse:collapse"><span style=3D"font-family:arial,sans-serif;font-size:13px;b=
+order-collapse:collapse">PhD Student at S</span></span><span style=3D"font-=
+family:arial,sans-serif;font-size:13px;border-collapse:collapse">NAC:Secure=
+ Networking and Computing Lab</span></div>
+<div><span style=3D"font-family:arial,sans-serif;font-size:13px;border-coll=
+apse:collapse"><div><div><div><div><span style=3D"font-family:arial,sans-se=
+rif;font-size:13px;border-collapse:collapse">Computer Science Department</s=
+pan><div>
+Arizona State University</div><div><span style=3D"font-family:arial,sans-se=
+rif;font-size:13px;border-collapse:collapse">Tempe, AZ 85281</span></div></=
+div></div></div></div></span></div>
+</div></div></div>
 
-There is no DNS lookup remotely. The =E2=80=98joe.vpns.yourcorp.com=E2=80=
-=99 is merely
-a hint to forward packets to a particular delegate (that associated
-with Joe=E2=80=99s account).
-
-Again this is analogous to, say, Apache working as an HTTP reverse
-proxy. If it gets =E2=80=98Host: joe.accounts.yourcorp.com=E2=80=99, it doe=
-s not try
-to resolve that hostname, since the result is known in advance. It
-just uses this information to match against a rule in its
-configuration that tells it how to process that virtual site.
-
-> Since >=3D2.3.0 officially supports IPv6, new features should probably do=
- so as well.
-
-Makes sense, though I doubt I am set up to test IPv6 operation.
+--001a11c309e8ac4fc004e492c484--
 
