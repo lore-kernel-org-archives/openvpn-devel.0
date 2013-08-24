@@ -1,17 +1,17 @@
-Message-ID: <5217726B.9000304@...1114...>
-Date: Fri, 23 Aug 2013 16:32:11 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <51C77F12.1090802@...515...> <5210B1EB.7000409@...1227...>
-	<20130821072739.GG16543@...1296...>
-	<52147A34.7050406@...1227...> <521684EA.2030202@...1114...>
-	<20130823070132.GV16543@...1296...>
-In-Reply-To: <20130823070132.GV16543@...1296...>
+Date: Sat, 24 Aug 2013 10:35:02 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20130824083502.GZ16543@...1296...>
+References: <CANfRfr0zuKi5mf0vAFXPvnRtrsyyFx3EtpGpbzNJsCLBnqZxLA@...278...>
+	<kv65m0$qbs$1@...1062...>
+	<CANfRfr02EyQbPJ52pq4-B02hrKdAShn_cbWOE1NYKbosYrd7Qw@...278...>
+Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="5IBFlqw99GGSIREUBwLknhTWrwmgknMdr"
-Subject: Re: [Openvpn-devel] [PATCH] TLS versioning
-Reply-To: openvpn-devel@lists.sourceforge.net
+	protocol="application/pgp-signature"; boundary="PE0DJtTPNVbxyIcY"
+Content-Disposition: inline
+In-Reply-To: <CANfRfr02EyQbPJ52pq4-B02hrKdAShn_cbWOE1NYKbosYrd7Qw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 2/2] When using UDP over SOCKS5,
+	send the actual remote hostname (FQDN) to the proxy server in the
+	first packet.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,80 +20,78 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: James Yonan <james@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, openvpn-users@lists.sourceforge.net
+To: Jesse Glick <jglick@...1836...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---5IBFlqw99GGSIREUBwLknhTWrwmgknMdr
-Content-Type: text/plain; charset="ISO-8859-1"
+--PE0DJtTPNVbxyIcY
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 23/08/13 09:01, Gert Doering wrote:
-> Hi,
+Hi,
+
+On Thu, Aug 22, 2013 at 07:49:42PM -0400, Jesse Glick wrote:
+> On Thu, Aug 22, 2013 at 7:08 PM, Josh Cepek <josh.cepek@...1085...> wrote:
+> >> akin to how HTTP reverse proxies commonly delegate to a physical server
+> >> according to the HTTP 1.1 Host header???so that many hostnames can map
+> >> to the same IP of the reverse proxy.
+> >
+> > There was some issue figuring out what this all means. Do you have an
+> > example use-case where this is helpful?
 >=20
-> On Thu, Aug 22, 2013 at 11:38:50PM +0200, David Sommerseth wrote:
->> However, I understand that some firmware "vendors" doesn't have the same=
-=20
->> "quick" turn-over as RHEL does.  So I think I would rather let these old=
-=20
->> firmwares run OpenVPN 2.0 or 2.1 and let them support their own ancient=
-=20
->> code base on their own.  We need to move forward and not cling to the ol=
-d=20
->> days forever.
->=20
-> This is not about "our source does not compile with 0.96 anymore" -=20
-> it's about "2.3 with the TLS changes does not *talk* to OpenVPN=20
-> 2.2-compiled-with-0.96 anymore"
+> To expand on my explanation as quoted above:
 
-Fully understood!
+Thanks for the explanation.
 
-> (so asking the router vendors to
-> use OpenVPN 2.1 or 2.0 instead won't exactly improve things as the
-> TLS handshake code would be the same).
->=20
-> If this hits two users out of the whole Android user base, I tend to
-> "well, bad luck, get your router firmware updated"
+I'm not convinced it makes sense to merge this right now.
 
-Well, that was actually _exactly_ what I meant :)
+Why?  HTTP/1.1 with Host: headers is extremely widespread, because there
+are zillions of "lightweight" web servers that can easily share one
+physical machine + IP address, because they hardly cause any load etc.
 
-> - if it hits more "mainstream" users, we'll need to have a better
-> answer.
+OTOH, I do not really see people sharing multiple OpenVPN services behind
+one single "reverse proxy" - and if you really need that (multiple OpenVPN
+services on a single IP address), you could run multiple OpenVPN services=20
+on different UDP ports already today (either on the same box, or using=20
+some sort of UDP forwarder).
 
-I generally have no bad feelings if we state publicly that OpenVPN
-doesn't support any older OpenSSL libraries than 0.9.8 (or 0.9.7, if
-insisting hard), even if OpenVPN compiles with them.  Running anything
-that old is a security risk (and has been for quite a while [1]).  So I
-see no reason why we should make it easier for anyone in these cases.
-We've ditched Win2k and RHEL4 support for similar convenience reasons as
-well.
+With web browsers, using different ports is a pain.  OTOH, with OpenVPN
+you usually specify the port anyway, it's just part of the .ovpn you
+ship to your clients.
 
 
-[1] Last update to 0.9.6 was in March 2004
-    Last update to 0.9.7 was in Feb 2007.
-    0.9.8 and newer are getting updates.
-    <https://www.openssl.org/source/>
+As you say yourself that there is no such service currently, as the server
+side proxy has not been written yet, balancing "cool feature" vs. "amount
+of special cases in the code we have to maintain" makes me tend to "let's
+postpone this until some real-world experience shows it's really useful".
 
+(OTOH, a patch that is based on Arne's dual-stack work and ensures that
+SOCKS5 works nicely over IPv4 and IPv6, talking to IPv4 or IPv6 servers
+via the proxy, that would be more immediately relevant...  and with IPv6,
+you can run your OpenVPN server farm with "one IP address per OpenVPN
+service" again, so this whole discussion becomes moot anyway :-) )
 
+gert
 --=20
-kind regards,
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-David Sommerseth
-
-
---5IBFlqw99GGSIREUBwLknhTWrwmgknMdr
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--PE0DJtTPNVbxyIcY
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+Version: GnuPG v1.4.13 (NetBSD)
 
-iEYEARECAAYFAlIXcm4ACgkQDC186MBRfrryrwCgpeDt0No/THC+rr+pHXfBs5d2
-J9gAn0WsZ8R9aQZZbm9SenSdl6irYmBp
-=OkHR
+iQCVAwUBUhhwNqkuBuNlUUl1AQL3BQP8CRs2S2hNrcOupTjnNvyxR+wz09eWFu4U
+vPoP8fSnmrP1QAKr1TqmN3FjSaGPoWrbVjCUG71fdLVpZVXA6FZljdM/6WPeUwg7
+Inp297zKYe79lwKYK9mdNS4ajZByKTlrpyBbCzFiuXkS+OhcosfEMfVApYwDKxMN
+z7Csy/ckTPU=
+=gsUB
 -----END PGP SIGNATURE-----
 
---5IBFlqw99GGSIREUBwLknhTWrwmgknMdr--
+--PE0DJtTPNVbxyIcY--
 
