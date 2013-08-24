@@ -1,17 +1,9 @@
-Date: Sat, 24 Aug 2013 10:35:02 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20130824083502.GZ16543@...1296...>
-References: <CANfRfr0zuKi5mf0vAFXPvnRtrsyyFx3EtpGpbzNJsCLBnqZxLA@...278...>
-	<kv65m0$qbs$1@...1062...>
-	<CANfRfr02EyQbPJ52pq4-B02hrKdAShn_cbWOE1NYKbosYrd7Qw@...278...>
+From: Josh Cepek <josh.cepek@...1085...>
+Date: Sat, 24 Aug 2013 14:34:34 -0500
+Message-ID: <kvb1ud$dbt$1@...1062...>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="PE0DJtTPNVbxyIcY"
-Content-Disposition: inline
-In-Reply-To: <CANfRfr02EyQbPJ52pq4-B02hrKdAShn_cbWOE1NYKbosYrd7Qw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] When using UDP over SOCKS5,
-	send the actual remote hostname (FQDN) to the proxy server in the
-	first packet.
+Content-Type: multipart/mixed; boundary="------------020500000006000605080208"
+Subject: [Openvpn-devel] [PATCH] openvpn-build dep cache support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,78 +12,231 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jesse Glick <jglick@...1836...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
---PE0DJtTPNVbxyIcY
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+This is a multi-part message in MIME format.
+--------------020500000006000605080208
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-Hi,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-On Thu, Aug 22, 2013 at 07:49:42PM -0400, Jesse Glick wrote:
-> On Thu, Aug 22, 2013 at 7:08 PM, Josh Cepek <josh.cepek@...1085...> wrote:
-> >> akin to how HTTP reverse proxies commonly delegate to a physical server
-> >> according to the HTTP 1.1 Host header???so that many hostnames can map
-> >> to the same IP of the reverse proxy.
-> >
-> > There was some issue figuring out what this all means. Do you have an
-> > example use-case where this is helpful?
->=20
-> To expand on my explanation as quoted above:
-
-Thanks for the explanation.
-
-I'm not convinced it makes sense to merge this right now.
-
-Why?  HTTP/1.1 with Host: headers is extremely widespread, because there
-are zillions of "lightweight" web servers that can easily share one
-physical machine + IP address, because they hardly cause any load etc.
-
-OTOH, I do not really see people sharing multiple OpenVPN services behind
-one single "reverse proxy" - and if you really need that (multiple OpenVPN
-services on a single IP address), you could run multiple OpenVPN services=20
-on different UDP ports already today (either on the same box, or using=20
-some sort of UDP forwarder).
-
-With web browsers, using different ports is a pain.  OTOH, with OpenVPN
-you usually specify the port anyway, it's just part of the .ovpn you
-ship to your clients.
+The attached patch allows the openvpn-build system to create and use
+cache tarballs for dependencies, preventing them from being built every
+time (even when they haven't changed.) My VM build time went from ~12 to
+under 2 minutes with this feature.
 
 
-As you say yourself that there is no such service currently, as the server
-side proxy has not been written yet, balancing "cool feature" vs. "amount
-of special cases in the code we have to maintain" makes me tend to "let's
-postpone this until some real-world experience shows it's really useful".
-
-(OTOH, a patch that is based on Arne's dual-stack work and ensures that
-SOCKS5 works nicely over IPv4 and IPv6, talking to IPv4 or IPv6 servers
-via the proxy, that would be more immediately relevant...  and with IPv6,
-you can run your OpenVPN server farm with "one IP address per OpenVPN
-service" again, so this whole discussion becomes moot anyway :-) )
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---PE0DJtTPNVbxyIcY
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
+- --
+Josh Cepek
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
+Version: GnuPG v2.0.20 (GNU/Linux)
 
-iQCVAwUBUhhwNqkuBuNlUUl1AQL3BQP8CRs2S2hNrcOupTjnNvyxR+wz09eWFu4U
-vPoP8fSnmrP1QAKr1TqmN3FjSaGPoWrbVjCUG71fdLVpZVXA6FZljdM/6WPeUwg7
-Inp297zKYe79lwKYK9mdNS4ajZByKTlrpyBbCzFiuXkS+OhcosfEMfVApYwDKxMN
-z7Csy/ckTPU=
-=gsUB
+iQGcBAEBAgAGBQJSGQrIAAoJENcx2Xpgb9RjHOEL/jRDeXyguibzmFYP+n+oduA3
+ICjpGrUwhnzTtwp/8i01vfo2YVVwgi1eC8qJmcCs4SOJXkq1ExB5KSPuwRrB0s3E
+w9Fv6yYcvXbNWKbhJtvqgLFxgHPYzYZ1TJLOGO9H37V4viTYxaqdQsb2e1ZFL53S
+fvWXqQThWRwzxRzAQGcCmtt2CyFNJRoI4+Tp3UWezyZxMQlJLqNNb7A7dIiZLXSh
+pg8USPoW5knBG0JomwjUKFPGV19OamBwgAA4s60RstK6v0JP+EnaqPh/KpCGMPeZ
+Hvz63wdtZoCLQRDD0tY/iYhlJESKf1PMDQwBKGZmM+K9gQCc2tUYONwy8PJeKzUY
+saMKsF8me2hEhORzV40i0DdIrLeKscJoP1smJsBS2NYeqkBUcTohTXefo9upei3u
+MuOkGK6NwMZPki+VT2O/NVMOwcgMzOuJeRPCsBFSs5zD1ZDzG31bou2YvD7QgBy4
+Egw9M/Y+1xWoXtzLoOalfeKUpV0g+ki8wsvhCL6s3A==
+=ckGN
 -----END PGP SIGNATURE-----
 
---PE0DJtTPNVbxyIcY--
+--------------020500000006000605080208
+Content-Type: text/x-diff;
+ name="dep-cache-build.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="dep-cache-build.patch"
+
+From 70aae9ead2c016da95977a744b0a246f7ee2f40e Mon Sep 17 00:00:00 2001
+From: Josh Cepek <josh.cepek@...1085...>
+Date: Sat, 24 Aug 2013 11:34:48 -0500
+Subject: [PATCH] Support a dep cache when using the generic/build script
+
+This feature takes the openssl, lzo, and pkcs11-helper dependency builds
+and creates a "depcache" tarball for each dep.
+
+To generate the depcache, set SAVE_DEP_CACHE to a non-empty string.  To
+use the depcache, set USE_DEP_CACHE the same way instead. Without
+either, the current build-all-deps behavior is maintained.
+
+Signed-off-by: Josh Cepek <josh.cepek@...1085...>
+---
+ generic/build | 111 ++++++++++++++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 84 insertions(+), 27 deletions(-)
+
+diff --git a/generic/build b/generic/build
+index 4bc6bb1..cf55cbf 100755
+--- a/generic/build
++++ b/generic/build
+@@ -115,6 +115,10 @@ create_layout() {
+ 	fi
+ 	mkdir -p "${IMAGEROOT}" || die "Cannot create '${IMAGEROOT}'"
+ 	mkdir -p "${BUILDROOT}" || die "Cannot create '${BUILDROOT}'"
++	mkdir -p "${OPENVPN_ROOT}" || die "Cannot create '${OPENVPN_ROOT}'"
++	if [ -n "${USE_DEP_CACHE}${SAVE_DEP_CACHE}" ]; then
++		mkdir -p "${DEPCACHEDIR}" || die "Cannot create '${DEPCACHEDIR}'"
++	fi
+ 
+ 	BUILDROOT="$(get_full_path "${BUILDROOT}")"
+ 	SOURCESROOT="$(get_full_path "${SOURCESROOT}")"
+@@ -165,38 +169,82 @@ extract() {
+ 	done
+ }
+ 
++# Takes a short product name (eg: 'openssl') and extracts the depcache.
++depcache_extract() {
++	local src="${DEPCACHEDIR}/${1}.tar.gz" 
++	[ -f "${src}" ] \
++		|| die "Depcache for '${1}' not found at: '${src}'"
++	tar -xzf "${src}" -C "${OPENVPN_ROOT}" \
++		|| die "Cannot extract depcache '${1}'"
++	[ -z "${2}" ] && echo "Using a depcache tarball for '${1}"
++}
++
++# Takes a short product name (eg: 'openssl') and creates a depcache tarball.
++depcache_save() {
++	local dst="${DEPCACHEDIR}/${1}.tar.gz"
++	(cd "${INSTALL_ROOT}" && tar -czf "${dst}" .) \
++		|| die "Cannot save depcache for '${1}' to: '${dst}'"
++	rm -fr "${INSTALL_ROOT}" \
++		|| die "Cleanup failed for: '${INSTALL_ROOT}'"
++	depcache_extract "${1}" noecho
++}
++
+ build_dep() {
+-	echo "Build openssl"
+-	cd "${BUILDROOT}/openssl"* || die "cd openssl"
+-
+-	./Configure --prefix="/${TARGET_ROOT}" --cross-compile-prefix=${CHOST:+${CHOST}-} \
+-		$(empty_ifelse "${DO_STATIC}" shared no-dso) \
+-		$(CHOST="${VIRTUAL_CHOST}" "${SCRIPTROOT}/gentoo.config-0.9.8") \
+-		${CFLAGS} ${LDFLAGS} \
+-		no-multilib \
+-		no-capieng \
+-		--openssldir=/etc/ssl \
+-		--libdir=/lib \
+-		${EXTRA_OPENSSL_CONFIG} \
+-		|| die "Configure openssl"
+-	[ -n "${BUILD_FOR_WINDOWS}" ] && perl util/mkdef.pl crypto ssl NT update
+-	[ -z "${OPENSSL_SKIP_DEPEND}" ] && ${MAKE} depend
+-	${MAKE} install INSTALL_PREFIX="${OPENVPN_ROOT}" INSTALLTOP="/" MANDIR="/tmp" \
+-		|| die "make openssl"
+-	rm -fr "${OPENVPN_ROOT}/tmp"
++	if [ -z "${SAVE_DEP_CACHE}" ]; then
++		INSTALL_ROOT="${OPENVPN_ROOT}"
++	else
++		INSTALL_ROOT="${DEPCACHEDIR}/fakeroot"
++		mkdir -p "${INSTALL_ROOT}" \
++			|| die "Cannot create depcache install root at: ${INSTALL_ROOT}'"
++	fi
+ 
+-	fixup_la
++	if [ -n "${USE_DEP_CACHE}" ]; then
++		depcache_extract openssl
++	else
++		echo "Build openssl"
++		cd "${BUILDROOT}/openssl"* || die "cd openssl"
++
++		./Configure --prefix="/${TARGET_ROOT}" --cross-compile-prefix=${CHOST:+${CHOST}-} \
++			$(empty_ifelse "${DO_STATIC}" shared no-dso) \
++			$(CHOST="${VIRTUAL_CHOST}" "${SCRIPTROOT}/gentoo.config-0.9.8") \
++			${CFLAGS} ${LDFLAGS} \
++			no-multilib \
++			no-capieng \
++			--openssldir=/etc/ssl \
++			--libdir=/lib \
++			${EXTRA_OPENSSL_CONFIG} \
++			|| die "Configure openssl"
++		[ -n "${BUILD_FOR_WINDOWS}" ] && perl util/mkdef.pl crypto ssl NT update
++		[ -z "${OPENSSL_SKIP_DEPEND}" ] && ${MAKE} depend
++		${MAKE} install INSTALL_PREFIX="${INSTALL_ROOT}" INSTALLTOP="/" MANDIR="/tmp" \
++			|| die "make openssl"
++		rm -fr "${INSTALL_ROOT}/tmp"
++		fixup_la
++
++		[ -n "${SAVE_DEP_CACHE}" ] && depcache_save openssl
++	fi
+ 
+-	echo "Build lzo"
+-	cd "${BUILDROOT}/lzo"* || die "cd lzo"
+-	./configure ${CONFIGOPTS} ${EXTRA_LZO_CONFIG} \
+-		$(empty_ifelse "${DO_STATIC}" --enable-shared --disable-shared) \
+-		|| die "Configure lzo"
+-	${MAKE} ${MAKEOPTS} ${MAKE_AUTOCONF_INSTALL_TARGET} DESTDIR="${OPENVPN_ROOT}" || die "make lzo"
+ 
+-	fixup_la
++	if [ -n "${USE_DEP_CACHE}" ]; then
++		depcache_extract lzo
++	else
++		echo "Build lzo"
++		cd "${BUILDROOT}/lzo"* || die "cd lzo"
++		./configure ${CONFIGOPTS} ${EXTRA_LZO_CONFIG} \
++			$(empty_ifelse "${DO_STATIC}" --enable-shared --disable-shared) \
++			|| die "Configure lzo"
++		${MAKE} ${MAKEOPTS} ${MAKE_AUTOCONF_INSTALL_TARGET} DESTDIR="${INSTALL_ROOT}" \
++			|| die "make lzo"
++
++		fixup_la
++
++		[ -n "${SAVE_DEP_CACHE}" ] && depcache_save lzo
++	fi
+ 
+ 	if [ -z "${DO_STATIC}" ]; then
++	  if [ -n "${USE_DEP_CACHE}" ]; then
++		depcache_extract pkcs11-helper
++	  else
+ 		echo "Build pkcs11-helper"
+ 		cd "${BUILDROOT}/pkcs11-helper"* || die "cd pkcs11-helper"
+ 		./configure ${CONFIGOPTS} ${EXTRA_PKCS11_HELPER_CONFIG} \
+@@ -205,7 +253,11 @@ build_dep() {
+ 			OPENSSL_CFLAGS="${OPENSSL_CRYPTO_CFLAGS}" \
+ 			OPENSSL_LIBS="${OPENSSL_CRYPTO_LIBS}" \
+ 			|| die "Configure pkcs11-helper"
+-		${MAKE} ${MAKEOPTS} ${MAKE_AUTOCONF_INSTALL_TARGET} DESTDIR="${OPENVPN_ROOT}" || die "make pkcs11-helper"
++		${MAKE} ${MAKEOPTS} ${MAKE_AUTOCONF_INSTALL_TARGET} DESTDIR="${INSTALL_ROOT}" \
++			|| die "make pkcs11-helper"
++
++		[ -n "${SAVE_DEP_CACHE}" ] && depcache_save pkcs11-helper
++	  fi
+ 	fi
+ 
+ 	echo "tap-windows"
+@@ -332,6 +384,11 @@ IMAGEROOT="${IMAGEROOT:-${SCRIPTROOT}/image}"
+ BUILDROOT="${BUILDROOT:-${SCRIPTROOT}/tmp}"
+ SOURCESROOT="${SOURCESROOT:-${SCRIPTROOT}/sources}"
+ PATCHDIR="${SCRIPTROOT}/patches"
++DEPCACHEDIR="${SCRIPTROOT}/depcache"
++
++# Cannot both use a depcache and save one:
++[ -n "${USE_DEP_CACHE}" ] && [ -n "${SAVE_DEP_CACHE}" ] \
++	&& die "You cannot both use and save a depcache in the same run"
+ 
+ . "${SCRIPTROOT}/build.vars" || die "Cannot source build.vars"
+ 
+-- 
+1.8.1.2
+
+
+--------------020500000006000605080208
+Content-Type: application/pgp-signature;
+ name="dep-cache-build.patch.sig"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="dep-cache-build.patch.sig"
+
+iQGcBAABAgAGBQJSGQrJAAoJENcx2Xpgb9RjlCAL/2g6HM4OWm/+x0or9TD1y6A3tXWKfkr2
+8PQbVDK0xyE6TpgnipN5ATc7EWRmo9st365uml6Zh/JOCUxykb0z33ktzoFgQXtXJKMwGXzm
+mfzBn4IQLd0784cdbLN0tG60jUoc17+aYn/B9P/3BgWofwVG1hnV1Cxe3boCYaMaN9TBozjz
+OnJJPUgKvcvDJLDSRfvfW2iinWl0uPRHityiEpTYGwQ0ka1i2g+tqBPoWoFa+VF09rJsDIts
+91ZGb6sLaEhTX17EJe/7DpD4eqab3BTqZR2CaSOonKuQXSGB58tCQiyGmzAteuQft1ClfWRc
+7yxcZdhLMb4qRMEYprQyiXBZtzNlSDFV0jsCALfpZnBpcRyEldBNkLCDjyzGPJSU9uKNDPfk
+s1aDqs+63i1rqdHm2IPwIqS7vwIfSBf3GgQ3DDKQmJHEXkFADaVIoiwkBk2xBPuS6Mwu/dV+
+ScSv7xnyHhBon+iI5ARqQJiU6Z5l3hpLtGdbNN6ccrb46/i1AA==
+--------------020500000006000605080208--
+
 
