@@ -1,9 +1,13 @@
-From: Josh Cepek <josh.cepek@...1085...>
-Date: Sat, 24 Aug 2013 14:34:34 -0500
-Message-ID: <kvb1ud$dbt$1@...1062...>
-Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------020500000006000605080208"
-Subject: [Openvpn-devel] [PATCH] openvpn-build dep cache support
+Content-Type: multipart/alternative;
+	boundary="Apple-Mail=_44B17B3F-F7C7-44FA-BE04-2EC1AA5E57E4"
+Mime-Version: 1.0 (Mac OS X Mail 6.5 \(1508\))
+From: Abdullah Alshalan <aalshala@...1837...>
+In-Reply-To: <52173B95.6030401@...1227...>
+Date: Sat, 24 Aug 2013 12:42:19 -0700
+Message-Id: <761CF777-989D-4F3C-9F10-11C77DF1A73E@...1837...>
+References: <CAMRyNXJVwnk5D8ZK_tN6NQ8BX1+zbn9jWfEWTUDa90g-RNVVDw@...278...>
+	<52173B95.6030401@...1227...>
+Subject: Re: [Openvpn-devel] Implementing a Mobile OpenVPN - questions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,231 +16,245 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel-request@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------020500000006000605080208
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+--Apple-Mail=_44B17B3F-F7C7-44FA-BE04-2EC1AA5E57E4
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi Arne and everyone,
+Thank you for your reply.=20
+Ok so first of all I didn't know about this --float option so thank you for=
+ pointing that out.=20
 
-The attached patch allows the openvpn-build system to create and use
-cache tarballs for dependencies, preventing them from being built every
-time (even when they haven't changed.) My VM build time went from ~12 to
-under 2 minutes with this feature.
+Let me explain the problem I'm trying to solve with an example:
 
+User A wants to access an FTP server in his company's private network which=
+ is sitting behind an OpenVPN server.
+User A uses a mobile device with an OpenVPN client and and FTP client.=20
+User A uses OpenVPN client to establish a VPN tunnel with the company's VPN=
+ server. User A get's a private IP from the VPN server.
+User A uses the FTP client to connect to the FTP server establishing an app=
+-to-app channel (socket).
+User A starts download a very large file.
+User A is driving his car and going on a road trip. He loses internet conne=
+ction.
+Here is two scenarios:
+ - User A gets a new internet connection getting new public IP, you're sayi=
+ng with the float option OpenVPN can resume the VPN connection even with th=
+e user A's public IP changed?
+ - What if user A doesn't get his internet connection until after say 2 hou=
+rs,  Normally the VPN connection will timeout and will terminate, hence the=
+ FTP connection will terminate. Right?
+ What I'm trying to do is to find a way to help the FTP client and the FTP =
+server to maintain their app-to-app connection while the VPN tunnel is brok=
+en. When user A (after getting the new internet connection hence new public=
+ IP) establishes a new VPN connection, getting a new private IP from the VP=
+N server, I want the previous VPN session to be resumed taking in considera=
+tion the new public and private IPs of the client.
 
-- --
-Josh Cepek
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.20 (GNU/Linux)
-
-iQGcBAEBAgAGBQJSGQrIAAoJENcx2Xpgb9RjHOEL/jRDeXyguibzmFYP+n+oduA3
-ICjpGrUwhnzTtwp/8i01vfo2YVVwgi1eC8qJmcCs4SOJXkq1ExB5KSPuwRrB0s3E
-w9Fv6yYcvXbNWKbhJtvqgLFxgHPYzYZ1TJLOGO9H37V4viTYxaqdQsb2e1ZFL53S
-fvWXqQThWRwzxRzAQGcCmtt2CyFNJRoI4+Tp3UWezyZxMQlJLqNNb7A7dIiZLXSh
-pg8USPoW5knBG0JomwjUKFPGV19OamBwgAA4s60RstK6v0JP+EnaqPh/KpCGMPeZ
-Hvz63wdtZoCLQRDD0tY/iYhlJESKf1PMDQwBKGZmM+K9gQCc2tUYONwy8PJeKzUY
-saMKsF8me2hEhORzV40i0DdIrLeKscJoP1smJsBS2NYeqkBUcTohTXefo9upei3u
-MuOkGK6NwMZPki+VT2O/NVMOwcgMzOuJeRPCsBFSs5zD1ZDzG31bou2YvD7QgBy4
-Egw9M/Y+1xWoXtzLoOalfeKUpV0g+ki8wsvhCL6s3A==
-=ckGN
------END PGP SIGNATURE-----
-
---------------020500000006000605080208
-Content-Type: text/x-diff;
- name="dep-cache-build.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="dep-cache-build.patch"
-
-From 70aae9ead2c016da95977a744b0a246f7ee2f40e Mon Sep 17 00:00:00 2001
-From: Josh Cepek <josh.cepek@...1085...>
-Date: Sat, 24 Aug 2013 11:34:48 -0500
-Subject: [PATCH] Support a dep cache when using the generic/build script
-
-This feature takes the openssl, lzo, and pkcs11-helper dependency builds
-and creates a "depcache" tarball for each dep.
-
-To generate the depcache, set SAVE_DEP_CACHE to a non-empty string.  To
-use the depcache, set USE_DEP_CACHE the same way instead. Without
-either, the current build-all-deps behavior is maintained.
-
-Signed-off-by: Josh Cepek <josh.cepek@...1085...>
----
- generic/build | 111 ++++++++++++++++++++++++++++++++++++++++++++--------------
- 1 file changed, 84 insertions(+), 27 deletions(-)
-
-diff --git a/generic/build b/generic/build
-index 4bc6bb1..cf55cbf 100755
---- a/generic/build
-+++ b/generic/build
-@@ -115,6 +115,10 @@ create_layout() {
- 	fi
- 	mkdir -p "${IMAGEROOT}" || die "Cannot create '${IMAGEROOT}'"
- 	mkdir -p "${BUILDROOT}" || die "Cannot create '${BUILDROOT}'"
-+	mkdir -p "${OPENVPN_ROOT}" || die "Cannot create '${OPENVPN_ROOT}'"
-+	if [ -n "${USE_DEP_CACHE}${SAVE_DEP_CACHE}" ]; then
-+		mkdir -p "${DEPCACHEDIR}" || die "Cannot create '${DEPCACHEDIR}'"
-+	fi
- 
- 	BUILDROOT="$(get_full_path "${BUILDROOT}")"
- 	SOURCESROOT="$(get_full_path "${SOURCESROOT}")"
-@@ -165,38 +169,82 @@ extract() {
- 	done
- }
- 
-+# Takes a short product name (eg: 'openssl') and extracts the depcache.
-+depcache_extract() {
-+	local src="${DEPCACHEDIR}/${1}.tar.gz" 
-+	[ -f "${src}" ] \
-+		|| die "Depcache for '${1}' not found at: '${src}'"
-+	tar -xzf "${src}" -C "${OPENVPN_ROOT}" \
-+		|| die "Cannot extract depcache '${1}'"
-+	[ -z "${2}" ] && echo "Using a depcache tarball for '${1}"
-+}
-+
-+# Takes a short product name (eg: 'openssl') and creates a depcache tarball.
-+depcache_save() {
-+	local dst="${DEPCACHEDIR}/${1}.tar.gz"
-+	(cd "${INSTALL_ROOT}" && tar -czf "${dst}" .) \
-+		|| die "Cannot save depcache for '${1}' to: '${dst}'"
-+	rm -fr "${INSTALL_ROOT}" \
-+		|| die "Cleanup failed for: '${INSTALL_ROOT}'"
-+	depcache_extract "${1}" noecho
-+}
-+
- build_dep() {
--	echo "Build openssl"
--	cd "${BUILDROOT}/openssl"* || die "cd openssl"
--
--	./Configure --prefix="/${TARGET_ROOT}" --cross-compile-prefix=${CHOST:+${CHOST}-} \
--		$(empty_ifelse "${DO_STATIC}" shared no-dso) \
--		$(CHOST="${VIRTUAL_CHOST}" "${SCRIPTROOT}/gentoo.config-0.9.8") \
--		${CFLAGS} ${LDFLAGS} \
--		no-multilib \
--		no-capieng \
--		--openssldir=/etc/ssl \
--		--libdir=/lib \
--		${EXTRA_OPENSSL_CONFIG} \
--		|| die "Configure openssl"
--	[ -n "${BUILD_FOR_WINDOWS}" ] && perl util/mkdef.pl crypto ssl NT update
--	[ -z "${OPENSSL_SKIP_DEPEND}" ] && ${MAKE} depend
--	${MAKE} install INSTALL_PREFIX="${OPENVPN_ROOT}" INSTALLTOP="/" MANDIR="/tmp" \
--		|| die "make openssl"
--	rm -fr "${OPENVPN_ROOT}/tmp"
-+	if [ -z "${SAVE_DEP_CACHE}" ]; then
-+		INSTALL_ROOT="${OPENVPN_ROOT}"
-+	else
-+		INSTALL_ROOT="${DEPCACHEDIR}/fakeroot"
-+		mkdir -p "${INSTALL_ROOT}" \
-+			|| die "Cannot create depcache install root at: ${INSTALL_ROOT}'"
-+	fi
- 
--	fixup_la
-+	if [ -n "${USE_DEP_CACHE}" ]; then
-+		depcache_extract openssl
-+	else
-+		echo "Build openssl"
-+		cd "${BUILDROOT}/openssl"* || die "cd openssl"
-+
-+		./Configure --prefix="/${TARGET_ROOT}" --cross-compile-prefix=${CHOST:+${CHOST}-} \
-+			$(empty_ifelse "${DO_STATIC}" shared no-dso) \
-+			$(CHOST="${VIRTUAL_CHOST}" "${SCRIPTROOT}/gentoo.config-0.9.8") \
-+			${CFLAGS} ${LDFLAGS} \
-+			no-multilib \
-+			no-capieng \
-+			--openssldir=/etc/ssl \
-+			--libdir=/lib \
-+			${EXTRA_OPENSSL_CONFIG} \
-+			|| die "Configure openssl"
-+		[ -n "${BUILD_FOR_WINDOWS}" ] && perl util/mkdef.pl crypto ssl NT update
-+		[ -z "${OPENSSL_SKIP_DEPEND}" ] && ${MAKE} depend
-+		${MAKE} install INSTALL_PREFIX="${INSTALL_ROOT}" INSTALLTOP="/" MANDIR="/tmp" \
-+			|| die "make openssl"
-+		rm -fr "${INSTALL_ROOT}/tmp"
-+		fixup_la
-+
-+		[ -n "${SAVE_DEP_CACHE}" ] && depcache_save openssl
-+	fi
- 
--	echo "Build lzo"
--	cd "${BUILDROOT}/lzo"* || die "cd lzo"
--	./configure ${CONFIGOPTS} ${EXTRA_LZO_CONFIG} \
--		$(empty_ifelse "${DO_STATIC}" --enable-shared --disable-shared) \
--		|| die "Configure lzo"
--	${MAKE} ${MAKEOPTS} ${MAKE_AUTOCONF_INSTALL_TARGET} DESTDIR="${OPENVPN_ROOT}" || die "make lzo"
- 
--	fixup_la
-+	if [ -n "${USE_DEP_CACHE}" ]; then
-+		depcache_extract lzo
-+	else
-+		echo "Build lzo"
-+		cd "${BUILDROOT}/lzo"* || die "cd lzo"
-+		./configure ${CONFIGOPTS} ${EXTRA_LZO_CONFIG} \
-+			$(empty_ifelse "${DO_STATIC}" --enable-shared --disable-shared) \
-+			|| die "Configure lzo"
-+		${MAKE} ${MAKEOPTS} ${MAKE_AUTOCONF_INSTALL_TARGET} DESTDIR="${INSTALL_ROOT}" \
-+			|| die "make lzo"
-+
-+		fixup_la
-+
-+		[ -n "${SAVE_DEP_CACHE}" ] && depcache_save lzo
-+	fi
- 
- 	if [ -z "${DO_STATIC}" ]; then
-+	  if [ -n "${USE_DEP_CACHE}" ]; then
-+		depcache_extract pkcs11-helper
-+	  else
- 		echo "Build pkcs11-helper"
- 		cd "${BUILDROOT}/pkcs11-helper"* || die "cd pkcs11-helper"
- 		./configure ${CONFIGOPTS} ${EXTRA_PKCS11_HELPER_CONFIG} \
-@@ -205,7 +253,11 @@ build_dep() {
- 			OPENSSL_CFLAGS="${OPENSSL_CRYPTO_CFLAGS}" \
- 			OPENSSL_LIBS="${OPENSSL_CRYPTO_LIBS}" \
- 			|| die "Configure pkcs11-helper"
--		${MAKE} ${MAKEOPTS} ${MAKE_AUTOCONF_INSTALL_TARGET} DESTDIR="${OPENVPN_ROOT}" || die "make pkcs11-helper"
-+		${MAKE} ${MAKEOPTS} ${MAKE_AUTOCONF_INSTALL_TARGET} DESTDIR="${INSTALL_ROOT}" \
-+			|| die "make pkcs11-helper"
-+
-+		[ -n "${SAVE_DEP_CACHE}" ] && depcache_save pkcs11-helper
-+	  fi
- 	fi
- 
- 	echo "tap-windows"
-@@ -332,6 +384,11 @@ IMAGEROOT="${IMAGEROOT:-${SCRIPTROOT}/image}"
- BUILDROOT="${BUILDROOT:-${SCRIPTROOT}/tmp}"
- SOURCESROOT="${SOURCESROOT:-${SCRIPTROOT}/sources}"
- PATCHDIR="${SCRIPTROOT}/patches"
-+DEPCACHEDIR="${SCRIPTROOT}/depcache"
-+
-+# Cannot both use a depcache and save one:
-+[ -n "${USE_DEP_CACHE}" ] && [ -n "${SAVE_DEP_CACHE}" ] \
-+	&& die "You cannot both use and save a depcache in the same run"
- 
- . "${SCRIPTROOT}/build.vars" || die "Cannot source build.vars"
- 
--- 
-1.8.1.2
+So what I'm thinking of doing is to make some changes to OpenVPN behavior b=
+y doing the following:
+* when the ftp client wants to establish a socket with the ftp server. inst=
+ead of having a direct connection between the ftp client and the ftp server=
+ I wanna do the following:
+* we split that TCP connection (FTP) into three ways:
+* when the OpenVPN clients see the TCP connection request. It forwards to t=
+he Open VPN server asking it to establish an FTP connection between the Ope=
+nVPN server and the FTP server.
+* once the OpenVPN server does that, it tells the OpenVPN client that the c=
+onnection is established.
+* notice now the FTP server thinks he's connected to the VPN server so even=
+ if the VPN tunnel breaks that FTP channel between the VPN server and the F=
+TP server is intact.
+* Also the FTP client can always send it's data which OpenVPN client pick f=
+rom the tun module. So this also will remain intact if the VPN tunnel is br=
+oken.
+* Now once the VPN tunnel is broken, both the VPN client and the VPN server=
+ will have a caching module to cache the FTP client's and the FTP server's =
+packets, once the VPN tunnel is recovered the cached packet will be sent to=
+ their destination.
+* The VPN server will have to account for the changes in the client's IPs f=
+or sure.
 
 
---------------020500000006000605080208
-Content-Type: application/pgp-signature;
- name="dep-cache-build.patch.sig"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="dep-cache-build.patch.sig"
+Can you tell me if the current OpenVPN implementation account for that scen=
+ario? and How much changes do I have to make to accomplish such a thing? It=
+ doesn't have to be perfectly functional this is more of a research and I w=
+ant to publish my work to the public in case anyone wants to do further dev=
+elopment.
 
-iQGcBAABAgAGBQJSGQrJAAoJENcx2Xpgb9RjlCAL/2g6HM4OWm/+x0or9TD1y6A3tXWKfkr2
-8PQbVDK0xyE6TpgnipN5ATc7EWRmo9st365uml6Zh/JOCUxykb0z33ktzoFgQXtXJKMwGXzm
-mfzBn4IQLd0784cdbLN0tG60jUoc17+aYn/B9P/3BgWofwVG1hnV1Cxe3boCYaMaN9TBozjz
-OnJJPUgKvcvDJLDSRfvfW2iinWl0uPRHityiEpTYGwQ0ka1i2g+tqBPoWoFa+VF09rJsDIts
-91ZGb6sLaEhTX17EJe/7DpD4eqab3BTqZR2CaSOonKuQXSGB58tCQiyGmzAteuQft1ClfWRc
-7yxcZdhLMb4qRMEYprQyiXBZtzNlSDFV0jsCALfpZnBpcRyEldBNkLCDjyzGPJSU9uKNDPfk
-s1aDqs+63i1rqdHm2IPwIqS7vwIfSBf3GgQ3DDKQmJHEXkFADaVIoiwkBk2xBPuS6Mwu/dV+
-ScSv7xnyHhBon+iI5ARqQJiU6Z5l3hpLtGdbNN6ccrb46/i1AA==
---------------020500000006000605080208--
 
+If my explanation wasn't clear enough please don't hesitate to ask me to cl=
+arify any point. I would really appreciate to hear what you think about thi=
+s problem.
+
+Thank you Arne,
+- Ab
+On Aug 23, 2013, at 3:38 AM, Arne Schwabe <arne@...1227...>
+ wrote:
+
+> Am 23.08.13 02:48, schrieb Abdullah Alshalan:
+>> Hi all,
+>> I'm not sure if I'm sending this email to the right development group
+>> so I apologize if it's not.
+>>=20
+>> I'm trying to reach the open vpn development team or anyone who has
+>> experience with OpenVPN development.
+>> I started working on a project to implement an open-source, true
+>> Mobile SSL VPN and I'm finsihed with a detailed framework design. I
+>> know OpenVPN has released OpenVPN connect for smart phones but what I
+>> want to add is mobility features. Meaning the VPN session survives any
+>> network interruptions due tp switching from one network to another,
+>> thus getting new IP addresses or during lack of network coverage for
+>> some time.
+>>=20
+>> My question is how big of a project is this going to be? I mean is it
+>> something one person can handle or needs a team of experience network
+>> programmers?=20
+>> Are there any books or any sort of  documentation that helps
+>> understand and modify the OpenVPN source code?
+>>=20
+> I am not quite what you aiming at. OpenVPN does support changing IP
+> addresses when both sides use --float.
+>=20
+> Arne
+
+
+--Apple-Mail=_44B17B3F-F7C7-44FA-BE04-2EC1AA5E57E4
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html charset=
+=3Diso-8859-1"></head><body style=3D"word-wrap: break-word; -webkit-nbsp-mo=
+de: space; -webkit-line-break: after-white-space; "><span style=3D"color: r=
+gb(34, 34, 34); font-family: arial, sans-serif; font-size: 13px; background=
+-color: rgb(255, 255, 255); ">Hi Arne and everyone,</span><div style=3D"col=
+or: rgb(34, 34, 34); font-family: arial, sans-serif; font-size: 13px; backg=
+round-color: rgb(255, 255, 255); ">Thank you for your reply.&nbsp;</div><di=
+v style=3D"color: rgb(34, 34, 34); font-family: arial, sans-serif; font-siz=
+e: 13px; background-color: rgb(255, 255, 255); ">Ok so first of all I didn'=
+t know about this --float option so thank you for pointing that out.&nbsp;<=
+/div><div style=3D"color: rgb(34, 34, 34); font-family: arial, sans-serif; =
+font-size: 13px; background-color: rgb(255, 255, 255); "><br></div><div sty=
+le=3D"color: rgb(34, 34, 34); font-family: arial, sans-serif; font-size: 13=
+px; background-color: rgb(255, 255, 255); ">Let me explain the problem I'm =
+trying to solve with an example:</div><div style=3D"color: rgb(34, 34, 34);=
+ font-family: arial, sans-serif; font-size: 13px; background-color: rgb(255=
+, 255, 255); "><br></div><div style=3D"color: rgb(34, 34, 34); font-family:=
+ arial, sans-serif; font-size: 13px; background-color: rgb(255, 255, 255); =
+">User A wants to access an FTP server in his company's private network whi=
+ch is sitting behind an OpenVPN server.</div><div style=3D"color: rgb(34, 3=
+4, 34); font-family: arial, sans-serif; font-size: 13px; background-color: =
+rgb(255, 255, 255); ">User A uses a mobile device with an OpenVPN client an=
+d and FTP client.&nbsp;</div><div style=3D"color: rgb(34, 34, 34); font-fam=
+ily: arial, sans-serif; font-size: 13px; background-color: rgb(255, 255, 25=
+5); ">User A uses OpenVPN client to establish a VPN tunnel with the company=
+'s VPN server. User A get's a private IP from the VPN server.</div><div sty=
+le=3D"color: rgb(34, 34, 34); font-family: arial, sans-serif; font-size: 13=
+px; background-color: rgb(255, 255, 255); ">User A uses the FTP client to c=
+onnect to the FTP server establishing an app-to-app channel (socket).</div>=
+<div style=3D"color: rgb(34, 34, 34); font-family: arial, sans-serif; font-=
+size: 13px; background-color: rgb(255, 255, 255); ">User A starts download =
+a very large file.</div><div style=3D"color: rgb(34, 34, 34); font-family: =
+arial, sans-serif; font-size: 13px; background-color: rgb(255, 255, 255); "=
+>User A is driving his car and going on a road trip. He loses internet conn=
+ection.</div><div style=3D"color: rgb(34, 34, 34); font-family: arial, sans=
+-serif; font-size: 13px; background-color: rgb(255, 255, 255); ">Here is tw=
+o scenarios:</div><div style=3D"color: rgb(34, 34, 34); font-family: arial,=
+ sans-serif; font-size: 13px; background-color: rgb(255, 255, 255); ">&nbsp=
+;- User A gets a new internet connection getting new public IP, you're sayi=
+ng with the float option OpenVPN can resume the VPN connection even with th=
+e user A's public IP changed?</div><div style=3D"color: rgb(34, 34, 34); fo=
+nt-family: arial, sans-serif; font-size: 13px; background-color: rgb(255, 2=
+55, 255); ">&nbsp;- What if user A doesn't get his internet connection unti=
+l after say 2 hours,&nbsp;&nbsp;Normally the VPN connection will timeout an=
+d will terminate, hence the FTP connection will terminate. Right?</div><div=
+ style=3D"color: rgb(34, 34, 34); font-family: arial, sans-serif; font-size=
+: 13px; background-color: rgb(255, 255, 255); ">&nbsp;What I'm trying to do=
+ is to find a way to help the FTP client and the FTP server to maintain the=
+ir app-to-app connection while the VPN tunnel is broken. When user A (after=
+ getting the new internet connection hence new public IP) establishes a new=
+ VPN connection, getting a new private IP from the VPN server, I want the p=
+revious VPN session to be resumed taking in consideration the new public an=
+d private IPs of the client.</div><div style=3D"color: rgb(34, 34, 34); fon=
+t-family: arial, sans-serif; font-size: 13px; background-color: rgb(255, 25=
+5, 255); "><br></div><div style=3D"color: rgb(34, 34, 34); font-family: ari=
+al, sans-serif; font-size: 13px; background-color: rgb(255, 255, 255); ">So=
+ what I'm thinking of doing is to make some changes to OpenVPN behavior by =
+doing the following:</div><div style=3D"color: rgb(34, 34, 34); font-family=
+: arial, sans-serif; font-size: 13px; background-color: rgb(255, 255, 255);=
+ ">* when the ftp client wants to establish a socket with the ftp server. i=
+nstead of having a direct connection between the ftp client and the ftp ser=
+ver I wanna do the following:</div><div style=3D"color: rgb(34, 34, 34); fo=
+nt-family: arial, sans-serif; font-size: 13px; background-color: rgb(255, 2=
+55, 255); ">* we split that TCP connection (FTP) into three ways:</div><div=
+ style=3D"color: rgb(34, 34, 34); font-family: arial, sans-serif; font-size=
+: 13px; background-color: rgb(255, 255, 255); ">* when the OpenVPN clients =
+see the TCP connection request. It forwards to the Open VPN server asking i=
+t to establish an FTP connection between the OpenVPN server and the FTP ser=
+ver.</div><div style=3D"color: rgb(34, 34, 34); font-family: arial, sans-se=
+rif; font-size: 13px; background-color: rgb(255, 255, 255); ">* once the Op=
+enVPN server does that, it tells the OpenVPN client that the connection is =
+established.</div><div style=3D"color: rgb(34, 34, 34); font-family: arial,=
+ sans-serif; font-size: 13px; background-color: rgb(255, 255, 255); ">* not=
+ice now the FTP server thinks he's connected to the VPN server so even if t=
+he VPN tunnel breaks that FTP channel between the VPN server and the FTP se=
+rver is intact.</div><div style=3D"color: rgb(34, 34, 34); font-family: ari=
+al, sans-serif; font-size: 13px; background-color: rgb(255, 255, 255); ">* =
+Also the FTP client can always send it's data which OpenVPN client pick fro=
+m the tun module. So this also will remain intact if the VPN tunnel is brok=
+en.</div><div style=3D"color: rgb(34, 34, 34); font-family: arial, sans-ser=
+if; font-size: 13px; background-color: rgb(255, 255, 255); ">* Now once the=
+ VPN tunnel is broken, both the VPN client and the VPN server will have a c=
+aching module to cache the FTP client's and the FTP server's packets, once =
+the VPN tunnel is recovered the cached packet will be sent to their destina=
+tion.</div><div style=3D"color: rgb(34, 34, 34); font-family: arial, sans-s=
+erif; font-size: 13px; background-color: rgb(255, 255, 255); ">* The VPN se=
+rver will have to account for the changes in the client's IPs for sure.</di=
+v><div style=3D"color: rgb(34, 34, 34); font-family: arial, sans-serif; fon=
+t-size: 13px; background-color: rgb(255, 255, 255); "><br></div><div style=
+=3D"color: rgb(34, 34, 34); font-family: arial, sans-serif; font-size: 13px=
+; background-color: rgb(255, 255, 255); "><br></div><div style=3D"color: rg=
+b(34, 34, 34); font-family: arial, sans-serif; font-size: 13px; background-=
+color: rgb(255, 255, 255); ">Can you tell me if the current OpenVPN impleme=
+ntation account for that scenario? and How much changes do I have to make t=
+o accomplish such a thing? It doesn't have to be perfectly functional this =
+is more of a research and I want to publish my work to the public in case a=
+nyone wants to do further development.</div><div style=3D"color: rgb(34, 34=
+, 34); font-family: arial, sans-serif; font-size: 13px; background-color: r=
+gb(255, 255, 255); "><br></div><div style=3D"color: rgb(34, 34, 34); font-f=
+amily: arial, sans-serif; font-size: 13px; background-color: rgb(255, 255, =
+255); "><br></div><div style=3D"color: rgb(34, 34, 34); font-family: arial,=
+ sans-serif; font-size: 13px; background-color: rgb(255, 255, 255); ">If my=
+ explanation wasn't clear enough please don't hesitate to ask me to clarify=
+ any point. I would really appreciate to hear what you think about this pro=
+blem.</div><div style=3D"color: rgb(34, 34, 34); font-family: arial, sans-s=
+erif; font-size: 13px; background-color: rgb(255, 255, 255); "><br></div><d=
+iv style=3D"color: rgb(34, 34, 34); font-family: arial, sans-serif; font-si=
+ze: 13px; background-color: rgb(255, 255, 255); ">Thank you Arne,</div><div=
+ style=3D"color: rgb(34, 34, 34); font-family: arial, sans-serif; font-size=
+: 13px; background-color: rgb(255, 255, 255); ">- Ab</div><div><div>On Aug =
+23, 2013, at 3:38 AM, Arne Schwabe &lt;<a href=3D"mailto:arne@...1227...">a=
+rne@...1227...</a>&gt;</div><div>&nbsp;wrote:</div><br class=3D"Apple-inter=
+change-newline"><blockquote type=3D"cite">Am 23.08.13 02:48, schrieb Abdull=
+ah Alshalan:<br><blockquote type=3D"cite">Hi all,<br>I'm not sure if I'm se=
+nding this email to the right development group<br>so I apologize if it's n=
+ot.<br><br>I'm trying to reach the open vpn development team or anyone who =
+has<br>experience with OpenVPN development.<br>I started working on a proje=
+ct to implement an open-source, true<br>Mobile SSL VPN and I'm finsihed wit=
+h a detailed framework design. I<br>know OpenVPN has released OpenVPN conne=
+ct for smart phones but what I<br>want to add is mobility features. Meaning=
+ the VPN session survives any<br>network interruptions due tp switching fro=
+m one network to another,<br>thus getting new IP addresses or during lack o=
+f network coverage for<br>some time.<br><br>My question is how big of a pro=
+ject is this going to be? I mean is it<br>something one person can handle o=
+r needs a team of experience network<br>programmers? <br>Are there any book=
+s or any sort of &nbsp;documentation that helps<br>understand and modify th=
+e OpenVPN source code?<br><br></blockquote>I am not quite what you aiming a=
+t. OpenVPN does support changing IP<br>addresses when both sides use --floa=
+t.<br><br>Arne<br></blockquote></div><br></body></html>=
+
+--Apple-Mail=_44B17B3F-F7C7-44FA-BE04-2EC1AA5E57E4--
 
