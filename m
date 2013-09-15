@@ -1,9 +1,8 @@
-MIME-Version: 1.0
-Date: Sun, 15 Sep 2013 03:55:20 -0700
-Message-ID: <CAEWDGHS6oTURJ=9PuG231q4WO5Z3AU8Ln+_96MCvtBg5t9Piow@...278...>
-From: amir ahmadi <amira7998@...277...>
-Content-Type: multipart/alternative; boundary=089e0149d0ae7a46b104e669ec90
-Subject: [Openvpn-devel] openvpn-devel
+Date: Sun, 15 Sep 2013 14:31:49 +0200
+From: Davide Brini <dave_br@...1278...>
+Mime-Version: 1.0
+Message-ID: <0MTjMy-1VU1I42Lo0-00QV4k@...1825...>
+Subject: [Openvpn-devel] [PATCH] Document authfile for socks server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,17 +11,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
---089e0149d0ae7a46b104e669ec90
-Content-Type: text/plain; charset=ISO-8859-1
+It looks like it's possible to specify an optional authfile as third
+argument of the "socks-proxy" directive. This patch updates the man page to
+document that.
 
-openvpn-devel
+Signed-off-by: Davide Brini <dave_br@...1278...>
 
---089e0149d0ae7a46b104e669ec90
-Content-Type: text/html; charset=ISO-8859-1
+---
+ doc/openvpn.8 |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-<p>openvpn-devel</p>
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index c0b209c..ed0fa63 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -554,12 +554,15 @@ Set HTTP "User-Agent" string to
+ .B user-agent.
+ .\"*********************************************************
+ .TP
+-.B \-\-socks-proxy server [port]
++.B \-\-socks-proxy server [port] [authfile]
+ Connect to remote host through a Socks5 proxy at address
+ .B server
+ and port
+ .B port
+ (default=1080).
++.B authfile
++(optional) is a file containing a username and password on 2 lines, or
++"stdin" to prompt from console.
+ .\"*********************************************************
+ .TP
+ .B \-\-socks-proxy-retry
 
---089e0149d0ae7a46b104e669ec90--
+-- 
+D.
 
