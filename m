@@ -1,12 +1,10 @@
-MIME-Version: 1.0
-Message-ID: <trinity-677317c9-7f6a-4cfe-8146-d1805998ba1a-1379324982300@...1841...>
-From: Max.Muster@...1832...
-Date: Mon, 16 Sep 2013 11:49:42 +0200 (CEST)
-In-Reply-To: <trinity-c9f34b33-ad86-499b-a896-dd75d4d61e86-1379323790592@...1840...>
-References: <l142b7$15v$1@...1062...>,
-	<trinity-c9f34b33-ad86-499b-a896-dd75d4d61e86-1379323790592@...1840...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix file access checks when using
- --chroot
+From: Arne Schwabe <arne@...1227...>
+Date: Mon, 16 Sep 2013 12:51:28 +0200
+Message-Id: <1379328688-2282-1-git-send-email-arne@...1227...>
+In-Reply-To: <1378634344-27822-1-git-send-email-arne@...1227...>
+References: <1378634344-27822-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [Patch v2] Implement custom HTTP header for
+	http-proxy, always send user-agent
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,126 +13,236 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/html; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Max.Muster@...1832...
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-<html><head></head><body><div style="font-family: Verdana;font-size: 12.0px;"><div>&nbsp;
-<div>
-<div>Sorry, my fault, didn&#39;t realize bug reports were already &quot;merged&quot;.<br/>
-&nbsp;</div>
+There are some patched OpenVPN versions out there without source code (e.g. NDMVPN) that support adding custom http header.
 
-<div>Joerg</div>
+This patch adds custom header to OpenVPN and supports the syntax that the "in the wild" variants use.
+---
+ doc/openvpn.8         |    7 ++++
+ src/openvpn/options.c |   29 +++++++++++++++
+ src/openvpn/proxy.c   |   97 ++++++++++++++++++++++++++++++++++++++-----------
+ src/openvpn/proxy.h   |    7 ++++
+ 4 files changed, 119 insertions(+), 21 deletions(-)
 
-<div name="quote" style="margin:10px 5px 5px 10px; padding: 10px 0 10px 10px; border-left:2px solid #C3D9E5; word-wrap: break-word; -webkit-nbsp-mode: space; -webkit-line-break: after-white-space;">
-<div style="margin:0 0 10px 0;"><b>Gesendet:</b>&nbsp;Montag, 16. September 2013 um 11:29 Uhr<br/>
-<b>Von:</b>&nbsp;Max.Muster@...1832...<br/>
-<b>An:</b>&nbsp;&quot;Josh Cepek&quot; &lt;josh.cepek@...1085...&gt;<br/>
-<b>Cc:</b>&nbsp;openvpn-devel@lists.sourceforge.net<br/>
-<b>Betreff:</b>&nbsp;Re: [Openvpn-devel] [PATCH] Fix file access checks when using --chroot</div>
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index c0b209c..25576ed 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -552,6 +552,13 @@ Set HTTP version number to
+ .B AGENT user-agent \-\-
+ Set HTTP "User-Agent" string to
+ .B user-agent.
++
++.B CUSTOM\-HEADER name content \-\-
++Adds the custom Header with 
++.B name
++as name and 
++.B content
++as the content of the custom HTTP header.
+ .\"*********************************************************
+ .TP
+ .B \-\-socks-proxy server [port]
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 4d0271f..1ad06f3 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -5061,6 +5061,35 @@ add_option (struct options *options,
+ 	{
+ 	  ho->user_agent = p[2];
+ 	}
++      else if ((streq (p[1], "EXT1") || streq(p[1], "EXT2") || streq(p[1], "CUSTOM-HEADER"))
++	       && p[2])
++	{
++	  /* In the wild patched versions use both EXT1/2 and CUSTOM-HEADER with either two
++	   * argument or one */
++	  struct http_custom_header *custom_header =NULL;
++	  int i;
++	  
++	  
++	  /* Find the first free header */
++	  for (i=0; i < MAX_CUSTOM_HTTP_HEADER; i++) {
++	    if (!ho->custom_headers[i].name) {
++	      custom_header = &ho->custom_headers[i];
++	      break;
++	    }
++	  }
++	  if (!custom_header)
++	    {
++	      msg (msglevel, "Cannot use more than %d http-proxy-option CUSTOM-HEAER : '%s'", MAX_CUSTOM_HTTP_HEADER, p[1]);
++	    }
++	  else
++	    {
++	      /* We will save p[2] and p[3], the proxy code will detect if 
++	       * p[3] is NULL */
++	      custom_header->name = p[2];
++	      custom_header->content = p[3];
++	    }
++	  
++	}
+       else
+ 	{
+ 	  msg (msglevel, "Bad http-proxy-option or missing parameter: '%s'", p[1]);
+diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
+index 04ed421..eab00fe 100644
+--- a/src/openvpn/proxy.c
++++ b/src/openvpn/proxy.c
+@@ -489,6 +489,75 @@ http_proxy_close (struct http_proxy_info *hp)
+ }
+ 
+ bool
++add_proxy_header (struct http_proxy_info *p,
++		  socket_descriptor_t sd, /* already open to proxy */
++		  const char *host,	  /* openvpn server remote */
++		  const char *port	  /* openvpn server port */
++		  )
++{
++  char buf[512];
++  int i;
++  bool hostheadercustom=false;
++  
++  /* Check if any of the custom headers already provides Host: */
++  i=0;
++  while (p->options.custom_headers[i].name)
++    {
++      if(
++	 ((!strcasecmp(p->options.custom_headers[i].name, "Host")) && 
++	  (p->options.custom_headers[i].content))
++	 ||
++	 ((!strncasecmp(p->options.custom_headers[i].name, "Host:", 5)) && 
++	  p->options.custom_headers[i].content == NULL)
++	 )
++	hostheadercustom=true;
++      i++;
++    }
++
++  if (!hostheadercustom) 
++    {
++    openvpn_snprintf (buf, sizeof(buf), "Host: %s", host);
++    msg (D_PROXY, "Send to HTTP proxy: '%s'", buf);
++    if (!send_line_crlf(sd, buf))
++      return false;
++    }
++
++  /* send User-Agent string if provided */
++  if (p->options.user_agent)
++    {
++      openvpn_snprintf (buf, sizeof(buf), "User-Agent: %s",
++			p->options.user_agent);
++      msg (D_PROXY, "Send to HTTP proxy: '%s'", buf);
++      if (!send_line_crlf (sd, buf))
++	return false;
++    }
++
++  /* 
++   * Send custom headers if provided
++   * If content is NULL whole header is in name
++   */
++  i=0;
++  while (p->options.custom_headers[i].name)
++    {
++      if (p->options.custom_headers[i].content)
++	openvpn_snprintf (buf, sizeof(buf), "%s: %s",
++			  p->options.custom_headers[i].name,
++			  p->options.custom_headers[i].content);
++      else
++	openvpn_snprintf (buf, sizeof(buf), "%s",
++			  p->options.custom_headers[i].name);
++
++      msg (D_PROXY, "Send to HTTP proxy: '%s'", buf);
++      if (!send_line_crlf (sd, buf))
++	return false;
++      i++;
++    }
++
++  return true;
++}
++
++
++bool
+ establish_http_proxy_passthru (struct http_proxy_info *p,
+ 			       socket_descriptor_t sd, /* already open to proxy */
+ 			       const char *host,       /* openvpn server remote */
+@@ -530,20 +599,10 @@ establish_http_proxy_passthru (struct http_proxy_info *p,
+       /* send HTTP CONNECT message to proxy */
+       if (!send_line_crlf (sd, buf))
+ 	goto error;
+-
+-      openvpn_snprintf(buf, sizeof(buf), "Host: %s", host);
+-      if (!send_line_crlf(sd, buf))
++      
++      if(!add_proxy_header (p, sd, host, port))
+         goto error;
+ 
+-      /* send User-Agent string if provided */
+-      if (p->options.user_agent)
+-	{
+-	  openvpn_snprintf (buf, sizeof(buf), "User-Agent: %s",
+-			    p->options.user_agent);
+-	  if (!send_line_crlf (sd, buf))
+-	    goto error;
+-	}
+-
+       /* auth specified? */
+       switch (p->auth_method)
+ 	{
+@@ -659,12 +718,10 @@ establish_http_proxy_passthru (struct http_proxy_info *p,
+ 
+           
+           /* send HOST etc, */
+-          openvpn_snprintf (buf, sizeof(buf), "Host: %s", host);
+-          msg (D_PROXY, "Send to HTTP proxy: '%s'", buf);
+-          if (!send_line_crlf (sd, buf))
+-            goto error;
++	  if(!add_proxy_header (p, sd, host, port))
++	    goto error;
+ 
+-          msg (D_PROXY, "Attempting NTLM Proxy-Authorization phase 3");
++	  msg (D_PROXY, "Attempting NTLM Proxy-Authorization phase 3");
+ 	  {
+ 	    const char *np3 = ntlm_phase_3 (p, buf2, &gc);
+ 	    if (!np3)
+@@ -770,10 +827,8 @@ establish_http_proxy_passthru (struct http_proxy_info *p,
+ 		goto error;
+ 
+ 	      /* send HOST etc, */
+-	      openvpn_snprintf (buf, sizeof(buf), "Host: %s", host);
+-	      msg (D_PROXY, "Send to HTTP proxy: '%s'", buf);
+-	      if (!send_line_crlf (sd, buf))
+-		goto error;
++              if(!add_proxy_header (p, sd, host, port))
++                goto error;
+ 
+ 	      /* send digest response */
+ 	      openvpn_snprintf (buf, sizeof(buf), "Proxy-Authorization: Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", qop=%s, nc=%s, cnonce=\"%s\", response=\"%s\"%s",
+diff --git a/src/openvpn/proxy.h b/src/openvpn/proxy.h
+index 5e476f1..b72748f 100644
+--- a/src/openvpn/proxy.h
++++ b/src/openvpn/proxy.h
+@@ -38,6 +38,12 @@
+ #define HTTP_AUTH_NTLM2  4
+ #define HTTP_AUTH_N      5 /* number of HTTP_AUTH methods */
+ 
++struct http_custom_header {
++  const char *name;
++  const char *content;
++};
++
++#define MAX_CUSTOM_HTTP_HEADER 10
+ struct http_proxy_options {
+   const char *server;
+   int port;
+@@ -53,6 +59,7 @@ struct http_proxy_options {
+   const char *auth_file;
+   const char *http_version;
+   const char *user_agent;
++  struct http_custom_header custom_headers[MAX_CUSTOM_HTTP_HEADER];
+ };
+ 
+ struct http_proxy_options_simple {
+-- 
+1.7.9.5
 
-<div name="quoted-content">
-<div style="font-family: Verdana;font-size: 12.0px;">
-<div>
-<div>Did not look into the patch in detail, but it should fix bug #299, too.</div>
-
-<div>&nbsp;</div>
-
-<div>Hopfully this will get some more response than my approach there ;-)</div>
-
-<div>&nbsp;</div>
-
-<div>Regards</div>
-
-<div>&nbsp;</div>
-
-<div>Joerg</div>
-
-<div>&nbsp;</div>
-
-<div>&nbsp;</div>
-
-<div>&nbsp;</div>
-
-<div>&nbsp;
-<div style="margin: 10.0px 5.0px 5.0px 10.0px;padding: 10.0px 0 10.0px 10.0px;border-left: 2.0px solid rgb(195,217,229);">
-<div style="margin: 0 0 10.0px 0;"><b>Gesendet:</b>&nbsp;Sonntag, 15. September 2013 um 11:42 Uhr<br/>
-<b>Von:</b>&nbsp;&quot;Josh Cepek&quot; &lt;josh.cepek@...1085...&gt;<br/>
-<b>An:</b>&nbsp;openvpn-devel@lists.sourceforge.net<br/>
-<b>Betreff:</b>&nbsp;[Openvpn-devel] [PATCH] Fix file access checks when using --chroot</div>
-
-<div>-----BEGIN PGP SIGNED MESSAGE-----<br/>
-Hash: SHA1<br/>
-<br/>
-The attached patch fixes bug #330 which causes a regression from 2.2.x<br/>
-where valid configs won&#39;t work in certain cases when using --chroot. A<br/>
-more terse overview of the change is presented in the patch itself.<br/>
-<br/>
-The additional error checking for files &amp; scripts introduced for 2.3<br/>
-don&#39;t take into account that the file path changes after the chroot<br/>
-operation, preventing options_postprocess_filechecks() from checking the<br/>
-proper paths.<br/>
-<br/>
-The changes in this patch intelligently look at the pre-chroot path when<br/>
-required by appending the &quot;in-chroot&quot; path after the specified chroot<br/>
-dir. To bring in support for dynamic string/memory management and the<br/>
-ability to see if chroot is used, some callers were also modified to<br/>
-pass in pointers to the options struct. Additionally, some bitmask<br/>
-#defines were included even with ENABLE_SMALL as the set_user_script()<br/>
-callers in option_add() need the ability to define if the script in<br/>
-question is accessed from within the chroot or not so the access checks<br/>
-can be made properly.<br/>
-<br/>
-Besides the low-impact #define changes, all the impacted code is not<br/>
-built with ENABLE_SMALL, so this shouldn&#39;t be a problem for embedded<br/>
-systems. I also tried to be helpful with the error messages returned<br/>
-from check_file_access() by informing users if the failing path is<br/>
-pre-chroot since the text won&#39;t match a direct string supplied but a<br/>
-combination of two.<br/>
-<br/>
-On a much smaller note, there seemed to be a mix of indent styles in a<br/>
-few places where apparent alignment was made for tabs expanding to 8<br/>
-spaces; I have aligned this patch assuming a tab is 2 spaces, leaving<br/>
-the issue of whitespace cleanup for a separate patch. All new lines use<br/>
-spaces only.<br/>
-<br/>
-<br/>
-- --<br/>
-Josh<br/>
------BEGIN PGP SIGNATURE-----<br/>
-Version: GnuPG v2.0.20 (GNU/Linux)<br/>
-<br/>
-iQGcBAEBAgAGBQJSNYEZAAoJENcx2Xpgb9Rjm6gL/1epNkDRCWMEjb/GGo86ECk4<br/>
-092oQNmAS8fssD2y0YULJ7xKT5O6JUq+yCIsxjHMIpBpeRBmn+nwVTP33gPdFNFb<br/>
-RYg1eIUb/EL0to56S7tSm+018aW80LH5fp8CyQcpTWHJd5sW1sYwxtLmk1Ho6cAb<br/>
-4bKy709sOZfSIvqhBHe342izqFtPWsO0RV16NrFL7vKbr+ubc3hgGiEEB/f+U3n9<br/>
-S/kbQXbrcBi5OUsjbulNAgOyR641rS3CcE7pde/dxMVo21OBmDiXkzksHFpugLlv<br/>
-xhaa3JqM2KCiJb+x04N7WT9F+h7UPsvyc4P+gyccb/UVPgdE3SR2ERlwv8x2uSqy<br/>
-7/sMrGaT9pwfd+P4bywBGvv+16VOeEwhItrX5sy9rGIsx1I0FiXpt7MROU2FERFB<br/>
-sk/WRcEchXfB+Z9RSBZwtbeRf0w6dF7nCDOEr1NWTrLYGIX1Z+iZ4jXBzt+0qU3v<br/>
-O518OD3QA7apvQqvptDl9ExY3LRu+H6y4WZWeapHwQ==<br/>
-=V6Ck<br/>
------END PGP SIGNATURE-----<br/>
-------------------------------------------------------------------------------<br/>
-LIMITED TIME SALE - Full Year of Microsoft Training For Just &#36;49.99!<br/>
-1,500+ hours of tutorials including VisualStudio 2012, Windows 8, SharePoint<br/>
-2013, SQL 2012, MVC 4, more. BEST VALUE: New Multi-Library Power Pack includes<br/>
-Mobile, Cloud, Java, and UX Design. Lowest price ever! Ends 9/22/13.<br/>
-<a href="http://pubads.g.doubleclick.net/gampad/clk?id=64545871&amp;iu=/4140/ostg.clktrk_______________________________________________" target="_blank">http://pubads.g.doubleclick.net/gampad/clk?id=64545871&amp;iu=/4140/ostg.clktrk_______________________________________________</a><br/>
-Openvpn-devel mailing list<br/>
-Openvpn-devel@lists.sourceforge.net<br/>
-<a href="https://lists.sourceforge.net/lists/listinfo/openvpn-devel" target="_blank">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a></div>
-</div>
-</div>
-</div>
-
-<div>&nbsp;</div>
-
-<div class="signature">&nbsp;</div>
-</div>
-</div>
-</div>
-</div>
-</div></div></body></html>
 
