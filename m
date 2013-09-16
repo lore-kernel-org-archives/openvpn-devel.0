@@ -1,9 +1,10 @@
 MIME-Version: 1.0
-Message-ID: <trinity-c9f34b33-ad86-499b-a896-dd75d4d61e86-1379323790592@...1840...>
+Message-ID: <trinity-677317c9-7f6a-4cfe-8146-d1805998ba1a-1379324982300@...1841...>
 From: Max.Muster@...1832...
-Date: Mon, 16 Sep 2013 11:29:50 +0200 (CEST)
-In-Reply-To: <l142b7$15v$1@...1062...>
-References: <l142b7$15v$1@...1062...>
+Date: Mon, 16 Sep 2013 11:49:42 +0200 (CEST)
+In-Reply-To: <trinity-c9f34b33-ad86-499b-a896-dd75d4d61e86-1379323790592@...1840...>
+References: <l142b7$15v$1@...1062...>,
+	<trinity-c9f34b33-ad86-499b-a896-dd75d4d61e86-1379323790592@...1840...>
 Subject: Re: [Openvpn-devel] [PATCH] Fix file access checks when using
  --chroot
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,10 +17,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To: Josh Cepek <josh.cepek@...1085...>
+To: Max.Muster@...1832...
 Cc: openvpn-devel@lists.sourceforge.net
 
-<html><head></head><body><div style="font-family: Verdana;font-size: 12.0px;"><div>
+<html><head></head><body><div style="font-family: Verdana;font-size: 12.0px;"><div>&nbsp;
+<div>
+<div>Sorry, my fault, didn&#39;t realize bug reports were already &quot;merged&quot;.<br/>
+&nbsp;</div>
+
+<div>Joerg</div>
+
+<div name="quote" style="margin:10px 5px 5px 10px; padding: 10px 0 10px 10px; border-left:2px solid #C3D9E5; word-wrap: break-word; -webkit-nbsp-mode: space; -webkit-line-break: after-white-space;">
+<div style="margin:0 0 10px 0;"><b>Gesendet:</b>&nbsp;Montag, 16. September 2013 um 11:29 Uhr<br/>
+<b>Von:</b>&nbsp;Max.Muster@...1832...<br/>
+<b>An:</b>&nbsp;&quot;Josh Cepek&quot; &lt;josh.cepek@...1085...&gt;<br/>
+<b>Cc:</b>&nbsp;openvpn-devel@lists.sourceforge.net<br/>
+<b>Betreff:</b>&nbsp;Re: [Openvpn-devel] [PATCH] Fix file access checks when using --chroot</div>
+
+<div name="quoted-content">
+<div style="font-family: Verdana;font-size: 12.0px;">
+<div>
 <div>Did not look into the patch in detail, but it should fix bug #299, too.</div>
 
 <div>&nbsp;</div>
@@ -41,13 +58,13 @@ Cc: openvpn-devel@lists.sourceforge.net
 <div>&nbsp;</div>
 
 <div>&nbsp;
-<div name="quote" style="margin:10px 5px 5px 10px; padding: 10px 0 10px 10px; border-left:2px solid #C3D9E5; word-wrap: break-word; -webkit-nbsp-mode: space; -webkit-line-break: after-white-space;">
-<div style="margin:0 0 10px 0;"><b>Gesendet:</b>&nbsp;Sonntag, 15. September 2013 um 11:42 Uhr<br/>
+<div style="margin: 10.0px 5.0px 5.0px 10.0px;padding: 10.0px 0 10.0px 10.0px;border-left: 2.0px solid rgb(195,217,229);">
+<div style="margin: 0 0 10.0px 0;"><b>Gesendet:</b>&nbsp;Sonntag, 15. September 2013 um 11:42 Uhr<br/>
 <b>Von:</b>&nbsp;&quot;Josh Cepek&quot; &lt;josh.cepek@...1085...&gt;<br/>
 <b>An:</b>&nbsp;openvpn-devel@lists.sourceforge.net<br/>
 <b>Betreff:</b>&nbsp;[Openvpn-devel] [PATCH] Fix file access checks when using --chroot</div>
 
-<div name="quoted-content">-----BEGIN PGP SIGNED MESSAGE-----<br/>
+<div>-----BEGIN PGP SIGNED MESSAGE-----<br/>
 Hash: SHA1<br/>
 <br/>
 The attached patch fixes bug #330 which causes a regression from 2.2.x<br/>
@@ -114,5 +131,10 @@ Openvpn-devel@lists.sourceforge.net<br/>
 
 <div>&nbsp;</div>
 
-<div class="signature">&nbsp;</div></div></body></html>
+<div class="signature">&nbsp;</div>
+</div>
+</div>
+</div>
+</div>
+</div></div></body></html>
 
