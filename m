@@ -1,14 +1,14 @@
-Date: Tue, 17 Sep 2013 22:29:17 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20130917202917.GM161@...1296...>
+MIME-Version: 1.0
+In-Reply-To: <20130918110441.GO161@...1296...>
 References: <CAFHpkQEPogSqK9xbkMa4YYdE9yNSO9Lwj9Tqo-jARB4hrgdYbw@...278...>
 	<20130917195350.GL161@...1296...>
 	<CAFHpkQFBF6EXPfXMV=ePhh3QNMRJuXnh5TjG1bCtKJuOi40Utw@...278...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="hl1kWnBARzJiTscN"
-Content-Disposition: inline
-In-Reply-To: <CAFHpkQFBF6EXPfXMV=ePhh3QNMRJuXnh5TjG1bCtKJuOi40Utw@...278...>
+	<20130917202917.GM161@...1296...>
+	<CAFHpkQFFC50keiv_BuUoDFWRGN-pe3Ojhn5wT5Mr9ULSWLhZeg@...278...>
+	<20130918110441.GO161@...1296...>
+Date: Wed, 18 Sep 2013 17:19:21 +0600
+Message-ID: <CAFHpkQGybr=n7mCAbMkn=pizE+Apn-Hw1DHzgo5yyZub9pD1Tw@...278...>
+From: =?KOI8-R?B?6czY0SD7ydDJw8nO?= <chipitsine@...277...>
 Subject: Re: [Openvpn-devel] "unix style line endings" in openvpn-build repo
 	?
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,53 +19,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ???? ??????? <chipitsine@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
---hl1kWnBARzJiTscN
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+2013/9/18 Gert Doering <gert@...1296...>:
+> Hi,
+>
+> On Wed, Sep 18, 2013 at 02:42:22AM +0600, ???? ??????? wrote:
+>> I was very impressed how Cassandra community helps developers:
+>>
+>> http://wiki.apache.org/cassandra/HowToContribute
+>
+> Yeah, this is great.
+>
+>> I spent an hour when I tried to build openvpn under cygwin. I DID
+>> mention that "cygwin's git should be used", I did run git from command
+>> line and I was wonder what went wrong. I simply installed cygwin
+>> without git and windows git was in PATH.
+>
+> Well, what shall I say - building on Windows is always problematic, which
+> is exactly why the official windows binaries get built under *Linux*,
+> using openvpn-build and mingw64 cross-compiler.  This is the official
+> way, documented in the openvpn wiki.
 
-Hi,
+What I'm trying to say "let us do it less problematic" and your point
+is like "ok, it is always been problematic, let us keep it that way"
+why ?
 
-On Wed, Sep 18, 2013 at 01:57:55AM +0600, ???? ??????? wrote:
-> ok, I don't mind about msvc.
-> but I guess you are wrong about unix style endings. If you setup, for
-> example, Jenkins on Windows (which is very natural thing to do), so
-> you want Jenkins to perform git checkout (so called VCS trigger), it
-> will be CR+LF files. I'd bet that notice "guys, please use cygwin's
-> git" shouldn't appear in case if line endings would have been unix
-> style always.
 
-If I do the git checkout on a real platform, it will give me only-LF
-line endings.  That gives?
+>
+> James also builds with msvc, so that "mostly works", but using cygwin
+> is not something any other developer does, so it's not particularily well
+> documented.
 
-I see it as very likely that Jenkins-on-Windows will just convert line=20
-endings to make windows users happy (as you couldn't edit the files
-with notepad otherwise, etc.)
+using cygwin is exactly what any other developer does when he comes to
+an idea "ok, openvpn-gui sucks, I'm going to add a feature to it"
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+first of all, developer comes to conclusion that openvpn-gui is a
+separate tool, which in turn can be built separately.
+ok, let download it and figure out how to compile it.
+hmm, there's even README, great... no luck at all after many hours spent.
 
---hl1kWnBARzJiTscN
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+second, developer comes to an idea that
+https://github.com/openvpn/openvpn-build can be used
+ok, there're 3 ways: msvc, cygwin and linux cross compile. which one to choose ?
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
+I managed to compile using msvc (no luck with x64). Also I managed to
+compile with linux and cygwin.
 
-iQCVAwUBUji7nKkuBuNlUUl1AQJEMAQAhD73ASrjF/L08QUejc7l6vPj+BB/6q0L
-mC8bY/3MwtMOkEugoUZSMSk+6R35x8caRq0dVZZPZiJYwMyqqKJ9Z838dzv6cOQs
-XJyP1VZq+2P8mbsVpBQihj9tMxYE9OMWOT6Pma3kYTn0uqLlFW0hHjJlzp3xKMEO
-AZBhJVsbW44=
-=xJbu
------END PGP SIGNATURE-----
 
---hl1kWnBARzJiTscN--
+
+>
+>
+>> Any reason to puzzle developers ?
+>> Look, people want to contribute, and they have to solve puzzles
+>> instead of doing usefull things.
+>
+> A more useful approach would be to ask first what the recommended way to
+> build Windows binaries is - Samuli would have told you :-)
+
+a more useful approach is to eliminate difficulties.
+ok, we can live with difficulties. but when we can eliminate some of
+them, why not to do so ?
+
+I suggested how to make life easier for cygwin compilation. Why not to
+do so ? Why to keep difficulties ?
+
+>
+> gert
+>
+> --
+> USENET is *not* the non-clickable part of WWW!
+>                                                            //www.muc.de/~gert/
+> Gert Doering - Munich, Germany                             gert@...1296...
+> fax: +49-89-35655025                        gert@...1297...
 
