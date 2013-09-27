@@ -1,10 +1,11 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Sat, 21 Sep 2013 15:39:38 +0200
-Message-Id: <1379770778-21238-1-git-send-email-arne@...1227...>
-In-Reply-To: <1379328688-2282-1-git-send-email-arne@...1227...>
-References: <1379328688-2282-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [Patch v3] Implement custom HTTP header for
-	http-proxy, always send user-agent
+Date: Fri, 27 Sep 2013 10:34:43 +0200 (CEST)
+From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <554440252.59882.1380270883311.JavaMail.zimbra@...1795...>
+In-Reply-To: <CAN_jwOsXhs-qTqOmrqhNk+Jf6-pRSBVVTovShLGgQAKKTZkE4g@...278...>
+References: <CAN_jwOsXhs-qTqOmrqhNk+Jf6-pRSBVVTovShLGgQAKKTZkE4g@...278...>
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] [Openvpn-users] Does openvpn 2.3.2 has memory
+	leak?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,259 +14,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Brad Zhang <hebei5000@...277...>
+Cc: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
-There are some patched OpenVPN versions out there without source code (e.g. NDMVPN) that support adding custom http header.
+----- Original Message ----- 
+> From: "Brad Zhang" <hebei5000@...277...>
+> To: openvpn-users@lists.sourceforge.net
+> Sent: Friday, 27 September, 2013 8:11:56 AM
+> Subject: [Openvpn-users] Does openvpn 2.3.2 has memory leak?
+>
+> Hi all,
+>
+> I tested openvpn 2.3.2 (openssl) with 200 connections. Set the renegotiation
+> value to 600 seconds.
+>
+> initiate: 136M
+> renegotiate 1 259M
 
-This patch adds custom header to OpenVPN and supports the syntax that the "in the wild" variants use.
+This gap from initial to the first renegotiation isn't unexpected.  It's not
+necessarily a leak itself, but most likely memory allocated for each client.
+We've estimated earlier that it's roughly 1MB per client.  Your growth here
+is around 600KB per client, so I'd say that's within the expected limits.
 
-Patch v3 also prints all custom headers with other http options in --verb 5
----
- doc/openvpn.8         |    7 ++++
- src/openvpn/options.c |   37 +++++++++++++++++++
- src/openvpn/proxy.c   |   96 ++++++++++++++++++++++++++++++++++++++-----------
- src/openvpn/proxy.h   |    7 ++++
- 4 files changed, 126 insertions(+), 21 deletions(-)
+> renegotiate 2 262M
+> renegotiate 3 264M
+> renegotiate 4 266M
+> renegotiate 5 267M
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index c0b209c..25576ed 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -552,6 +552,13 @@ Set HTTP version number to
- .B AGENT user-agent \-\-
- Set HTTP "User-Agent" string to
- .B user-agent.
-+
-+.B CUSTOM\-HEADER name content \-\-
-+Adds the custom Header with 
-+.B name
-+as name and 
-+.B content
-+as the content of the custom HTTP header.
- .\"*********************************************************
- .TP
- .B \-\-socks-proxy server [port]
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 4d0271f..7eb3da2 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -1295,6 +1295,7 @@ option_iroute_ipv6 (struct options *o,
- static void
- show_http_proxy_options (const struct http_proxy_options *o)
- {
-+  int i;
-   msg (D_SHOW_PARMS, "BEGIN http_proxy");
-   SHOW_STR (server);
-   SHOW_INT (port);
-@@ -1304,6 +1305,15 @@ show_http_proxy_options (const struct http_proxy_options *o)
-   SHOW_INT (timeout);
-   SHOW_STR (http_version);
-   SHOW_STR (user_agent);
-+  for  (i=0; i < MAX_CUSTOM_HTTP_HEADER && o->custom_headers[i].name;i++)
-+    {
-+      if (o->custom_headers[i].content)
-+	msg (D_SHOW_PARMS, "  custom_header[%d] = %s: %s", i,
-+	       o->custom_headers[i].name, o->custom_headers[i].content);
-+      else
-+	msg (D_SHOW_PARMS, "  custom_header[%d] = %s", i,
-+	     o->custom_headers[i].name);
-+    }
-   msg (D_SHOW_PARMS, "END http_proxy");
- }
- #endif
-@@ -5061,6 +5071,33 @@ add_option (struct options *options,
- 	{
- 	  ho->user_agent = p[2];
- 	}
-+      else if ((streq (p[1], "EXT1") || streq(p[1], "EXT2") || streq(p[1], "CUSTOM-HEADER"))
-+	       && p[2])
-+	{
-+	  /* In the wild patched versions use both EXT1/2 and CUSTOM-HEADER with either two
-+	   * argument or one */
-+
-+	  struct http_custom_header *custom_header =NULL;
-+	  int i;
-+	  /* Find the first free header */
-+	  for (i=0; i < MAX_CUSTOM_HTTP_HEADER; i++) {
-+	    if (!ho->custom_headers[i].name) {
-+	      custom_header = &ho->custom_headers[i];
-+	      break;
-+	    }
-+	  }
-+	  if (!custom_header)
-+	    {
-+	      msg (msglevel, "Cannot use more than %d http-proxy-option CUSTOM-HEAER : '%s'", MAX_CUSTOM_HTTP_HEADER, p[1]);
-+	    }
-+	  else
-+	    {
-+	      /* We will save p[2] and p[3], the proxy code will detect if 
-+	       * p[3] is NULL */
-+	      custom_header->name = p[2];
-+	      custom_header->content = p[3];
-+	    }
-+	}
-       else
- 	{
- 	  msg (msglevel, "Bad http-proxy-option or missing parameter: '%s'", p[1]);
-diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
-index 04ed421..5ff55b7 100644
---- a/src/openvpn/proxy.c
-+++ b/src/openvpn/proxy.c
-@@ -489,6 +489,74 @@ http_proxy_close (struct http_proxy_info *hp)
- }
- 
- bool
-+add_proxy_header (struct http_proxy_info *p,
-+		  socket_descriptor_t sd, /* already open to proxy */
-+		  const char *host,	  /* openvpn server remote */
-+		  const char *port	  /* openvpn server port */
-+		  )
-+{
-+  char buf[512];
-+  int i;
-+  bool hostheadercustom=false;
-+  
-+  /* Check if any of the custom headers already provides Host: */
-+  i=0;
-+  for  (i=0; i < MAX_CUSTOM_HTTP_HEADER && p->options.custom_headers[i].name;i++)
-+    {
-+      if(
-+	 ((!strcasecmp(p->options.custom_headers[i].name, "Host")) && 
-+	  (p->options.custom_headers[i].content))
-+	 ||
-+	 ((!strncasecmp(p->options.custom_headers[i].name, "Host:", 5)) && 
-+	  p->options.custom_headers[i].content == NULL)
-+	 )
-+	hostheadercustom=true;
-+      i++;
-+    }
-+
-+  if (!hostheadercustom) 
-+    {
-+    openvpn_snprintf (buf, sizeof(buf), "Host: %s", host);
-+    msg (D_PROXY, "Send to HTTP proxy: '%s'", buf);
-+    if (!send_line_crlf(sd, buf))
-+      return false;
-+    }
-+
-+  /* send User-Agent string if provided */
-+  if (p->options.user_agent)
-+    {
-+      openvpn_snprintf (buf, sizeof(buf), "User-Agent: %s",
-+			p->options.user_agent);
-+      msg (D_PROXY, "Send to HTTP proxy: '%s'", buf);
-+      if (!send_line_crlf (sd, buf))
-+	return false;
-+    }
-+
-+  /*
-+   * Send custom headers if provided
-+   * If content is NULL whole header is in name
-+   */
-+  for  (i=0; i < MAX_CUSTOM_HTTP_HEADER && p->options.custom_headers[i].name;i++)
-+    {
-+      if (p->options.custom_headers[i].content)
-+	openvpn_snprintf (buf, sizeof(buf), "%s: %s",
-+			  p->options.custom_headers[i].name,
-+			  p->options.custom_headers[i].content);
-+      else
-+	openvpn_snprintf (buf, sizeof(buf), "%s",
-+			  p->options.custom_headers[i].name);
-+
-+      msg (D_PROXY, "Send to HTTP proxy: '%s'", buf);
-+      if (!send_line_crlf (sd, buf))
-+	return false;
-+      i++;
-+    }
-+
-+  return true;
-+}
-+
-+
-+bool
- establish_http_proxy_passthru (struct http_proxy_info *p,
- 			       socket_descriptor_t sd, /* already open to proxy */
- 			       const char *host,       /* openvpn server remote */
-@@ -530,20 +598,10 @@ establish_http_proxy_passthru (struct http_proxy_info *p,
-       /* send HTTP CONNECT message to proxy */
-       if (!send_line_crlf (sd, buf))
- 	goto error;
--
--      openvpn_snprintf(buf, sizeof(buf), "Host: %s", host);
--      if (!send_line_crlf(sd, buf))
-+      
-+      if(!add_proxy_header (p, sd, host, port))
-         goto error;
- 
--      /* send User-Agent string if provided */
--      if (p->options.user_agent)
--	{
--	  openvpn_snprintf (buf, sizeof(buf), "User-Agent: %s",
--			    p->options.user_agent);
--	  if (!send_line_crlf (sd, buf))
--	    goto error;
--	}
--
-       /* auth specified? */
-       switch (p->auth_method)
- 	{
-@@ -659,12 +717,10 @@ establish_http_proxy_passthru (struct http_proxy_info *p,
- 
-           
-           /* send HOST etc, */
--          openvpn_snprintf (buf, sizeof(buf), "Host: %s", host);
--          msg (D_PROXY, "Send to HTTP proxy: '%s'", buf);
--          if (!send_line_crlf (sd, buf))
--            goto error;
-+	  if(!add_proxy_header (p, sd, host, port))
-+	    goto error;
- 
--          msg (D_PROXY, "Attempting NTLM Proxy-Authorization phase 3");
-+	  msg (D_PROXY, "Attempting NTLM Proxy-Authorization phase 3");
- 	  {
- 	    const char *np3 = ntlm_phase_3 (p, buf2, &gc);
- 	    if (!np3)
-@@ -770,10 +826,8 @@ establish_http_proxy_passthru (struct http_proxy_info *p,
- 		goto error;
- 
- 	      /* send HOST etc, */
--	      openvpn_snprintf (buf, sizeof(buf), "Host: %s", host);
--	      msg (D_PROXY, "Send to HTTP proxy: '%s'", buf);
--	      if (!send_line_crlf (sd, buf))
--		goto error;
-+              if(!add_proxy_header (p, sd, host, port))
-+                goto error;
- 
- 	      /* send digest response */
- 	      openvpn_snprintf (buf, sizeof(buf), "Proxy-Authorization: Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", qop=%s, nc=%s, cnonce=\"%s\", response=\"%s\"%s",
-diff --git a/src/openvpn/proxy.h b/src/openvpn/proxy.h
-index 5e476f1..b72748f 100644
---- a/src/openvpn/proxy.h
-+++ b/src/openvpn/proxy.h
-@@ -38,6 +38,12 @@
- #define HTTP_AUTH_NTLM2  4
- #define HTTP_AUTH_N      5 /* number of HTTP_AUTH methods */
- 
-+struct http_custom_header {
-+  const char *name;
-+  const char *content;
-+};
-+
-+#define MAX_CUSTOM_HTTP_HEADER 10
- struct http_proxy_options {
-   const char *server;
-   int port;
-@@ -53,6 +59,7 @@ struct http_proxy_options {
-   const char *auth_file;
-   const char *http_version;
-   const char *user_agent;
-+  struct http_custom_header custom_headers[MAX_CUSTOM_HTTP_HEADER];
- };
- 
- struct http_proxy_options_simple {
--- 
-1.7.9.5
+Here you have incremental steps of 2MB per renegotiation, which means with
+200 clients roughly 10KB per client.  This does however sound like a smaller
+memory leak.
 
+For wow long time did you run this test?  Did you let the clients
+disconnect at then end to see if the memory impact was reduced after OpenVPN
+releases the sessions?  (OpenVPN may keep session data for some time after a
+disconnect in case it was connection drop-out, esp. with UDP.  Look at 
+--explicit-exit-notify in the man page for some more information)
+
+Also, how did you measure OpenVPN's memory usage?
+
+> I have tried the openvpn 2.1 rc4, there is no this issue. I do not know why
+> the memory usage will increase after one time renegotiation. Could someone
+> help me?
+
+To compare against 2.1_rc4 is a bit too big gap.  I'd appreciate if you
+could run your test against 2.2.2.  And if that's still leaking, you would
+need to check against 2.1.4 (the last 2.1 community version)
+
+Could we also see your server config?  Just to see if you use some kind of
+plugins, script hooks or other possible candidates for triggering this issue.
+
+I'm running OpenVPN 2.3 servers a couple of places, but not with 200 clients.
+But I've not noticed any particular issues there.  However, if the leak is 
+~10KB per client, it would most likely have had scheduled maintenance
+reboots happening before noticing a leak.
+
+
+--
+kind regards,
+
+David Sommerseth
 
