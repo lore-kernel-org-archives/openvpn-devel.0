@@ -1,17 +1,11 @@
-Message-ID: <52456F61.3000104@...1114...>
-Date: Fri, 27 Sep 2013 13:43:29 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <52491AFC.2000105@...1420...>
+Date: Mon, 30 Sep 2013 08:32:28 +0200
+From: Christian Rank <christian.rank@...1420...>
 MIME-Version: 1.0
-References: <CAN_jwOsXhs-qTqOmrqhNk+Jf6-pRSBVVTovShLGgQAKKTZkE4g@...278...>
-	<554440252.59882.1380270883311.JavaMail.zimbra@...1795...>
-	<CAN_jwOvixY5Jz7Rheq-=o40saprsoQmxRB9yn3-jdCmFa9VM0A@...278...>
-In-Reply-To: <CAN_jwOvixY5Jz7Rheq-=o40saprsoQmxRB9yn3-jdCmFa9VM0A@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="65OowlmBqDF8uOoWm3KMjKCQwnV6LTxBA"
-Subject: Re: [Openvpn-devel] [Openvpn-users] Does openvpn 2.3.2 has memory
-	leak?
-Reply-To: openvpn-devel@lists.sourceforge.net
+Content-Type: multipart/signed; protocol="application/pkcs7-signature";
+	micalg=sha1; boundary="------------ms000501090307040107060601"
+Subject: [Openvpn-devel] [PATCH] OpenVPN Windows uninstallation does not
+	remove TAP driver
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,194 +14,185 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Brad Zhang <hebei5000@...277...>
-Cc: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---65OowlmBqDF8uOoWm3KMjKCQwnV6LTxBA
+This is a cryptographically signed message in MIME format.
+
+--------------ms000501090307040107060601
+Content-Type: multipart/mixed; boundary="------------060203080907070006010900"
+
+This is a multi-part message in MIME format.
+--------------060203080907070006010900
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-On 27/09/13 11:45, Brad Zhang wrote:
-> Thanks David for your so quickly replying.
->
-> 6.
-> I want to use polarssl, so I upgrade the openvpn from 2.1 rc4 to 2.3.2.
-> Openvpn 2.2.2 does not support polarssl.
-> But openvpn 2.3.2 with polarssl also has memory leak.
-> openvpn2.3.2 + polarssl + 200 connections.
-> initiate                       31M
-> renegotiate 1            44M
-> renegotiate 2            44M
-> renegotiate 3            44M
-> renegotiate 4            45M
+Author: Christian Rank <christian.rank@...1420...>
 
-Okay, but 2.1_rc4 is really too old to compare against.  It's from April
-2007!  And OpenVPN 2.1.4 (released Nov 2010) is not the same as 2.1_rc4.
+32-bit Windows version of OpenVPN installed on a 64-bit Windows does not
+remove TAP driver on uninstallation.
 
-And no releases before 2.3 supports PolarSSL.  So if you're able to test
-2.1_rc4, please compile OpenVPN 2.2.2 (released Dec 2011).  OpenVPN is a
-fairly trivial package to compile and test.  It only provides a single
-binary which you need to copy out and run.  There's no additional files
-or libraries required to run.
+If you install OpenVPN on a 64-bit Windows using the 32-bit installer from
+> http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.2-I003=
+-i686.exe
+the TAP driver gets installed by default (if not deselected during
+installation).
 
-The reason I ask for 2.2.2 testing is that the gap between 2.2.x and
-2.3.x is quite big - especially on the SSL layer side.  In addition, the
-networking code has been modified a lot too, to implement IPv6 support
-in 2.3.  And I don't want to start looking at those changes before I
-know 2.2.2 is not leaking.  Because if 2.2.2 is leaking, then we need to
-look at completely different code changes.
+However, uninstalling the OpenVPN software leaves the TAP driver installed.
 
+Here is patch for the NSIS configuration file which corrects this
+installer issue.
 
-> 7.
-> I do not use plugin or script in openvpn 2.3.2.
-> This is server config:
-> dev tun0
-> dev-type tun
-> mode server
-> tls-server
-> tun-mtu 1500
-> proto tcp-server
-> local 0.0.0.0
-> port 443
-> persist-key
-> persist-tun
-> verb 3
-> mute 20
-> keepalive 10 60
-> cipher DES-EDE3-CBC
-> auth SHA1
-> ca ca.crt
-> cert server.crt
-> key server.pem
-> max-clients 2000
-> dh dh.dh
-> duplicate-cn
-> topology subnet
-> server 192.168.111.0 255.255.255.0
-> push "route 11.11.1.0 255.255.255.0"
-> reneg-sec 600
-> management 127.0.0.1 7505
-> status /tmp/status 30
-> status-version 2
-> client-config-dir /tmp/ccd/
-
-All this looks pretty fine.  It's basically a pretty standard server
-config.  I suspect this leak is happening somewhere around the SSL
-session handling, or the code paths along "multi learn address".  But I
-can't say for sure yet.
-
-
---
-kind regards,
-
-David Sommerseth
-
-
-
-> On Fri, Sep 27, 2013 at 4:34 PM, David Sommerseth
-> <openvpn.list@...1114... <mailto:openvpn.list@...1114...>>
-> wrote:
->=20
->     ----- Original Message -----
->     > From: "Brad Zhang" <hebei5000@...277... <mailto:hebei5000@...277...=
->>
->     > To: openvpn-users@lists.sourceforge.net
->     <mailto:openvpn-users@lists.sourceforge.net>
->     > Sent: Friday, 27 September, 2013 8:11:56 AM
->     > Subject: [Openvpn-users] Does openvpn 2.3.2 has memory leak?
->     >
->     > Hi all,
->     >
->     > I tested openvpn 2.3.2 (openssl) with 200 connections. Set the
->     renegotiation
->     > value to 600 seconds.
->     >
->     > initiate: 136M
->     > renegotiate 1 259M
->=20
->     This gap from initial to the first renegotiation isn't unexpected.
->      It's not
->     necessarily a leak itself, but most likely memory allocated for each
->     client.
->     We've estimated earlier that it's roughly 1MB per client.  Your
->     growth here
->     is around 600KB per client, so I'd say that's within the expected
->     limits.
->=20
->     > renegotiate 2 262M
->     > renegotiate 3 264M
->     > renegotiate 4 266M
->     > renegotiate 5 267M
->=20
->     Here you have incremental steps of 2MB per renegotiation, which
->     means with
->     200 clients roughly 10KB per client.  This does however sound like a
->     smaller
->     memory leak.
->=20
->     For wow long time did you run this test?  Did you let the clients
->     disconnect at then end to see if the memory impact was reduced after
->     OpenVPN
->     releases the sessions?  (OpenVPN may keep session data for some time
->     after a
->     disconnect in case it was connection drop-out, esp. with UDP.  Look at
->     --explicit-exit-notify in the man page for some more information)
->=20
->     Also, how did you measure OpenVPN's memory usage?
->=20
->     > I have tried the openvpn 2.1 rc4, there is no this issue. I do not
->     know why
->     > the memory usage will increase after one time renegotiation. Could
->     someone
->     > help me?
->=20
->     To compare against 2.1_rc4 is a bit too big gap.  I'd appreciate if y=
-ou
->     could run your test against 2.2.2.  And if that's still leaking, you
->     would
->     need to check against 2.1.4 (the last 2.1 community version)
->=20
->     Could we also see your server config?  Just to see if you use some
->     kind of
->     plugins, script hooks or other possible candidates for triggering
->     this issue.
->=20
->     I'm running OpenVPN 2.3 servers a couple of places, but not with 200
->     clients.
->     But I've not noticed any particular issues there.  However, if the
->     leak is
->     ~10KB per client, it would most likely have had scheduled maintenance
->     reboots happening before noticing a leak.
->=20
->=20
->     --
->     kind regards,
->=20
->     David Sommerseth
->=20
->=20
-
+Signed-off-by: Christian Rank <christian.rank@...1420...>
 
 --=20
-kind regards,
+Dr. Christian Rank
+Rechenzentrum Universit=E4t Passau
+Bereich Netzwerk und Telekommunikation
+IT-Sicherheitsbeauftragter der Universit=E4t
+Innstr. 33
+D-94032 Passau
+GERMANY
+Tel.: 0851/509-1838
+Fax:  0851/509-1802
 
-David Sommerseth
+
+--------------060203080907070006010900
+Content-Type: text/x-patch;
+ name="openvpn.nsi.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="openvpn.nsi.patch"
+
+*** openvpn.nsi	2013-09-26 11:19:46.000000000 +0200
+--- openvpn-20130926.nsi	2013-09-26 14:26:16.000000000 +0200
+***************
+*** 509,516 ****
+--- 509,519 ----
+  	Sleep 3000
+ =20
+  	!ifdef USE_TAP_WINDOWS
++                 SetRegView 64
+  		ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninst=
+all\${PACKAGE_NAME}" "tap"
++ 		ReadRegStr $R1 HKLM "SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVe=
+rsion\Uninstall\${PACKAGE_NAME}" "tap"
+  		${If} $R0 =3D=3D "installed"
++ 		${OrIf} $R1 =3D=3D "installed"
+  			ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Unins=
+tall\TAP-Windows" "UninstallString"
+  			${If} $R0 !=3D ""
+  				DetailPrint "TAP UNINSTALL"
+***************
+*** 518,523 ****
+--- 521,527 ----
+  				Pop $R0 # return value/error/timeout
+  			${EndIf}
+  		${EndIf}
++                 SetRegView lastused
+  	!endif
+ =20
+  	${un.EnvVarUpdate} $R0 "PATH" "R" "HKLM" "$INSTDIR\bin"
 
 
---65OowlmBqDF8uOoWm3KMjKCQwnV6LTxBA
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--------------060203080907070006010900--
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.14 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+--------------ms000501090307040107060601
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
-iEYEARECAAYFAlJFb2YACgkQDC186MBRfroO/gCdG6dn48FUt9yuMxi1e8BmAqrd
-aGIAn1hevflchb8nfQ8RvXDNEF+KjrmR
-=NOa6
------END PGP SIGNATURE-----
-
---65OowlmBqDF8uOoWm3KMjKCQwnV6LTxBA--
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIO7TCC
+BCEwggMJoAMCAQICAgDHMA0GCSqGSIb3DQEBBQUAMHExCzAJBgNVBAYTAkRFMRwwGgYDVQQK
+ExNEZXV0c2NoZSBUZWxla29tIEFHMR8wHQYDVQQLExZULVRlbGVTZWMgVHJ1c3QgQ2VudGVy
+MSMwIQYDVQQDExpEZXV0c2NoZSBUZWxla29tIFJvb3QgQ0EgMjAeFw0wNjEyMTkxMDI5MDBa
+Fw0xOTA2MzAyMzU5MDBaMFoxCzAJBgNVBAYTAkRFMRMwEQYDVQQKEwpERk4tVmVyZWluMRAw
+DgYDVQQLEwdERk4tUEtJMSQwIgYDVQQDExtERk4tVmVyZWluIFBDQSBHbG9iYWwgLSBHMDEw
+ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDpm8NnhfkNrvWNVMOWUDU9YuluTO2U
+1wBblSJ01CDrNI/W7MAxBAuZgeKmFNJSoCgjhIt0iQReW+DieMF4yxbLKDU5ey2QRdDtoAB6
+fL9KDhsAw4bpXCsxEXsM84IkQ4wcOItqaACa7txPeKvSxhObdq3u3ibo7wGvdA/BCaL2a869
+080UME/15eOkyGKbghoDJzANAmVgTe3RCSMqljVYJ9N2xnG2kB3E7f81hn1vM7PbD8URwoqD
+oZRdQWvY0hD1TP3KUazZve+Sg7va64sWVlZDz+HVEz2mHycwzUlU28kTNJpxdcVs6qcLmPkh
+nSevPqM5OUhqjK3JmfvDEvK9AgMBAAGjgdkwgdYwcAYDVR0fBGkwZzBloGOgYYZfaHR0cDov
+L3BraS50ZWxlc2VjLmRlL2NnaS1iaW4vc2VydmljZS9hZl9Eb3dubG9hZEFSTC5jcmw/LWNy
+bF9mb3JtYXQ9WF81MDkmLWlzc3Vlcj1EVF9ST09UX0NBXzIwHQYDVR0OBBYEFEm3xs/oPR9/
+6kR7Eyn38QpwPt5kMB8GA1UdIwQYMBaAFDHDeRu69VPXF+CJei0XbAqzK50zMA4GA1UdDwEB
+/wQEAwIBBjASBgNVHRMBAf8ECDAGAQH/AgECMA0GCSqGSIb3DQEBBQUAA4IBAQA74Vp3wEgX
+3KkY7IGvWonwvSiSpspZGBJw7Cjy565/lizn8l0ZMfYTK3S9vYCyufdnyTmieTvhERHua3iR
+M347XyYndVNljjNj7s9zw7CSI0khUHUjoR8Y4pSFPT8z6XcgjaK95qGFKUD2P3MyWA0Ja6ba
+hWzAP7uNZmRWJE6uDT8yNQFb6YyC2XJZT7GGhfF0hVblw/hc843uR7NTBXDn5U2KaYMo4RMJ
+hp5eyOpYHgwf+aTUWgRo/Sg+iwK2WLX2oSw3VwBnqyNojWOl75lrXP1LVvarQIc01BGSbOyH
+xQoLBzNytG8MHVQs2FHHzL8w00Ny8TK/jM5JY6gA9/IcMIIFLDCCBBSgAwIBAgIECfk9uzAN
+BgkqhkiG9w0BAQUFADBaMQswCQYDVQQGEwJERTETMBEGA1UEChMKREZOLVZlcmVpbjEQMA4G
+A1UECxMHREZOLVBLSTEkMCIGA1UEAxMbREZOLVZlcmVpbiBQQ0EgR2xvYmFsIC0gRzAxMB4X
+DTA3MDIxOTE1MjAxMloXDTE5MDIxODAwMDAwMFowgZ8xCzAJBgNVBAYTAkRFMQ8wDQYDVQQH
+EwZQYXNzYXUxHDAaBgNVBAoTE1VuaXZlcnNpdGFldCBQYXNzYXUxFjAUBgNVBAsTDVJlY2hl
+bnplbnRydW0xJTAjBgNVBAMTHFVuaXZlcnNpdGFldCBQYXNzYXUgQ0EgLSBHMDExIjAgBgkq
+hkiG9w0BCQEWE2NhQHJ6LnVuaS1wYXNzYXUuZGUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw
+ggEKAoIBAQCHgNE07AUUNYr1fFuo47bkmM/6R+SPTDHZxa9+glXCbOrBEqZwT/GumzG3Xr2I
+XimOX66uURF5JSZGIxi0B2QoE28g+mFSer03waQPBWshdB76F9FUTCgau/mVJ9DzFNk6x8h9
+goOchMdwbbA2uVPb/UTfnGfzE+qqI9hLDQS/1D750pXNJcu4CpM7ly8fYW0n8GAlq3RFNkL8
+ugPP9kvMxNhOzTVdOFsRhHR3Z+q5jh+zPB08SRmFOyJ4MMwR9wh4AqxwhoGNG5rmc6SqvNLk
+epgidtTfiMVjcC9dD7JniSe8BDVvX8cx3XsObhsJVnlbFnqlbSZbc9ylwyM1JOvPAgMBAAGj
+ggGyMIIBrjAPBgNVHRMBAf8EBTADAQH/MAsGA1UdDwQEAwIBBjAdBgNVHQ4EFgQUCbHfoehh
+XaHNxvSDeTosBgyM7AgwHwYDVR0jBBgwFoAUSbfGz+g9H3/qRHsTKffxCnA+3mQwHgYDVR0R
+BBcwFYETY2FAcnoudW5pLXBhc3NhdS5kZTCBiAYDVR0fBIGAMH4wPaA7oDmGN2h0dHA6Ly9j
+ZHAxLnBjYS5kZm4uZGUvZ2xvYmFsLXJvb3QtY2EvcHViL2NybC9jYWNybC5jcmwwPaA7oDmG
+N2h0dHA6Ly9jZHAyLnBjYS5kZm4uZGUvZ2xvYmFsLXJvb3QtY2EvcHViL2NybC9jYWNybC5j
+cmwwgaIGCCsGAQUFBwEBBIGVMIGSMEcGCCsGAQUFBzAChjtodHRwOi8vY2RwMS5wY2EuZGZu
+LmRlL2dsb2JhbC1yb290LWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDBHBggrBgEFBQcwAoY7
+aHR0cDovL2NkcDIucGNhLmRmbi5kZS9nbG9iYWwtcm9vdC1jYS9wdWIvY2FjZXJ0L2NhY2Vy
+dC5jcnQwDQYJKoZIhvcNAQEFBQADggEBANhmIUVwpozSS3zYWc4IEtC5XNkraTGAWjORLd3i
+nLJ15ps9u0yypoAorDWMZN2VRdh5/YzVli2VWF9sEKQeyzJ70Ds9cVauFoVH94R7vYZvHR8k
+xytLa8DTSWDL8SgEoiI9C5BrA7ek1kFeH/nNVFFrkk+xC6amVgVQbWpyI4Z+5YH/Ku7oHtwb
+ujpa5tibheotJBuz6uSkM2cqEUHyD/s8IJOCnRq8MUBIcYTua2j1u6RYir9djaq4ykUBnH5I
+59Gout3bnhQn7sRZ0KQB/YsuYxQyTJbyPK0uiBQ6MWDwoRAUkwXR6/zduEOY+C6tOv6JgdDg
+R9GdkSpOV6f+CPEwggWUMIIEfKADAgECAgcVtXzOm9uDMA0GCSqGSIb3DQEBBQUAMIGfMQsw
+CQYDVQQGEwJERTEPMA0GA1UEBxMGUGFzc2F1MRwwGgYDVQQKExNVbml2ZXJzaXRhZXQgUGFz
+c2F1MRYwFAYDVQQLEw1SZWNoZW56ZW50cnVtMSUwIwYDVQQDExxVbml2ZXJzaXRhZXQgUGFz
+c2F1IENBIC0gRzAxMSIwIAYJKoZIhvcNAQkBFhNjYUByei51bmktcGFzc2F1LmRlMB4XDTEz
+MDUxNzA5NTgyMloXDTE0MDUxNzA5NTgyMlowcTELMAkGA1UEBhMCREUxDzANBgNVBAcTBlBh
+c3NhdTEcMBoGA1UEChMTVW5pdmVyc2l0YWV0IFBhc3NhdTEWMBQGA1UECxMNUmVjaGVuemVu
+dHJ1bTEbMBkGA1UEAxMSRHIuIENocmlzdGlhbiBSYW5rMIIBIjANBgkqhkiG9w0BAQEFAAOC
+AQ8AMIIBCgKCAQEA8vSpMfUHFtLfsLSIjBmuxt9ZrIsSweqwjDn/rJZGTRjXUf4JR8yQAAum
+SFnqATS2jb6aAwkUW5Db3dz4hYmrUauS6yViKhW6l2TM7lAlTjkUiLYJGAVjEDX5+izK7sDL
++qH4XTxZNzavi/uEUuxY6ovUu9oqyCk74b7Xw0f2IX2gnZ+AyTdb9BvaqMoTylRi3+WLrRDh
+eYC343KIzX5nJ6LNz+zt+8A5aad0NMTMXUBbthmGycMxegH+OHSvqaozDpow1HysXPMA657F
+11tixXArWVYW6CqyDOmJ40A+ot0efARf7w61W7U76uFMl7CfXjLZdGO+z4rNyydMWjpx+QID
+AQABo4ICADCCAfwwLwYDVR0gBCgwJjARBg8rBgEEAYGtIYIsAQEEAwAwEQYPKwYBBAGBrSGC
+LAIBBAMAMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgXgMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggr
+BgEFBQcDBDAdBgNVHQ4EFgQUUyjHXQcCpfyG2WROug3Bdenmhd0wHwYDVR0jBBgwFoAUCbHf
+oehhXaHNxvSDeTosBgyM7AgwJwYDVR0RBCAwHoEcY2hyaXN0aWFuLnJhbmtAdW5pLXBhc3Nh
+dS5kZTCBhQYDVR0fBH4wfDA8oDqgOIY2aHR0cDovL2NkcDEucGNhLmRmbi5kZS91bmktcGFz
+c2F1LWNhL3B1Yi9jcmwvY2FjcmwuY3JsMDygOqA4hjZodHRwOi8vY2RwMi5wY2EuZGZuLmRl
+L3VuaS1wYXNzYXUtY2EvcHViL2NybC9jYWNybC5jcmwwgaAGCCsGAQUFBwEBBIGTMIGQMEYG
+CCsGAQUFBzAChjpodHRwOi8vY2RwMS5wY2EuZGZuLmRlL3VuaS1wYXNzYXUtY2EvcHViL2Nh
+Y2VydC9jYWNlcnQuY3J0MEYGCCsGAQUFBzAChjpodHRwOi8vY2RwMi5wY2EuZGZuLmRlL3Vu
+aS1wYXNzYXUtY2EvcHViL2NhY2VydC9jYWNlcnQuY3J0MA0GCSqGSIb3DQEBBQUAA4IBAQAH
+aNsv/oaVwcWLlu5vU/YSxc64vOiH6s03I3qEIWCXL8O6JsJdhjKiWsUNrtbBkNK+IwMPs5rN
+U6jsS1FLO0xK866VBCgov9+3UN2bjWeWZmvAyMLPYu9dkk0ijRjgwOCmivpYwiyT15UZtRMN
+PQOdIEHkaU2A2RT01rUsdzReerVn0nGxGn9Og6EiJqENdkC77G2D5sdI8IaOzqaOLeG2uFab
+bpbp+HKkVGJtsgsexM79kzUSWS6MFgGRvyL2h7plU1AHJjmTbM39fKxXtwPznam1Y4RMspdr
+wwJT8Vvp+OXv80hSg08bPIB8i1ek1Vk82asQHrbka7GV/rvw+4bxMYIEIjCCBB4CAQEwgasw
+gZ8xCzAJBgNVBAYTAkRFMQ8wDQYDVQQHEwZQYXNzYXUxHDAaBgNVBAoTE1VuaXZlcnNpdGFl
+dCBQYXNzYXUxFjAUBgNVBAsTDVJlY2hlbnplbnRydW0xJTAjBgNVBAMTHFVuaXZlcnNpdGFl
+dCBQYXNzYXUgQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2NhQHJ6LnVuaS1wYXNzYXUuZGUC
+BxW1fM6b24MwCQYFKw4DAhoFAKCCAkswGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkq
+hkiG9w0BCQUxDxcNMTMwOTMwMDYzMjI4WjAjBgkqhkiG9w0BCQQxFgQUdIPCDxYMEQ1hi9lQ
+D+BRn35Kv9cwbAYJKoZIhvcNAQkPMV8wXTALBglghkgBZQMEASowCwYJYIZIAWUDBAECMAoG
+CCqGSIb3DQMHMA4GCCqGSIb3DQMCAgIAgDANBggqhkiG9w0DAgIBQDAHBgUrDgMCBzANBggq
+hkiG9w0DAgIBKDCBvAYJKwYBBAGCNxAEMYGuMIGrMIGfMQswCQYDVQQGEwJERTEPMA0GA1UE
+BxMGUGFzc2F1MRwwGgYDVQQKExNVbml2ZXJzaXRhZXQgUGFzc2F1MRYwFAYDVQQLEw1SZWNo
+ZW56ZW50cnVtMSUwIwYDVQQDExxVbml2ZXJzaXRhZXQgUGFzc2F1IENBIC0gRzAxMSIwIAYJ
+KoZIhvcNAQkBFhNjYUByei51bmktcGFzc2F1LmRlAgcVtXzOm9uDMIG+BgsqhkiG9w0BCRAC
+CzGBrqCBqzCBnzELMAkGA1UEBhMCREUxDzANBgNVBAcTBlBhc3NhdTEcMBoGA1UEChMTVW5p
+dmVyc2l0YWV0IFBhc3NhdTEWMBQGA1UECxMNUmVjaGVuemVudHJ1bTElMCMGA1UEAxMcVW5p
+dmVyc2l0YWV0IFBhc3NhdSBDQSAtIEcwMTEiMCAGCSqGSIb3DQEJARYTY2FAcnoudW5pLXBh
+c3NhdS5kZQIHFbV8zpvbgzANBgkqhkiG9w0BAQEFAASCAQCUDyW/js/khx93R5GJ9l6K5dYQ
+k4lVt4Y2t+wgmE06QhiW9hOo2xJ2howdOervkqQa0sfWmuV7tUoJBbUDDAlkVdliYYBHngFW
+c6RnPtUvch0qs1ZOOWLZfdm75Syf+3B081i1KRpi/L8utYpA48RZiMxjJ7b+YAoR8DCpto0I
+I+jCXCmUTF/sBFe1BUCnfCs2TNkASHeKlvseRT7vNsaYt6QpHlsUkNcdWgtxL1a/Au+vXebk
+6Xuwgiyq+DWx6gy/dxAlxuAGRmsDvjR8YRoEjq6GZ4UBy6PIKxB7wooBY0GD32jagWtSurVW
+Y7X3Q1qCahSzTvZnHBdOSone38VWAAAAAAAA
+--------------ms000501090307040107060601--
 
