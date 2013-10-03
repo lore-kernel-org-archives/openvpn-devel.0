@@ -1,9 +1,11 @@
-Date: Wed, 2 Oct 2013 22:49:46 +0200
+Date: Thu, 3 Oct 2013 10:30:01 +0200
 From: Davide Brini <dave_br@...1278...>
+In-Reply-To: <0MAQ0o-1VYfA02dyM-00BYQL@...1825...>
+References: <0MAQ0o-1VYfA02dyM-00BYQL@...1825...>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="MP_/zFKiEXIsLVrR9YT9Zf/dbJJ"
-Message-ID: <0MAQ0o-1VYfA02dyM-00BYQL@...1825...>
-Subject: [Openvpn-devel] [PATCH] Allow inlining of --auth-user-pass
+Content-Type: multipart/mixed; boundary="MP_/TEbBtur9bv2syF9hi_hk/xr"
+Message-ID: <0MVuuM-1VL5oS2YOm-00X7Ks@...1825...>
+Subject: Re: [Openvpn-devel] [PATCH] Allow inlining of --auth-user-pass
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,10 +16,12 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
---MP_/zFKiEXIsLVrR9YT9Zf/dbJJ
+--MP_/TEbBtur9bv2syF9hi_hk/xr
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
+
+(previous version contained a leftover debug line left by mistake, sorry)
 
 This patch allows inlining of the --auth-user-pass directive, so it is now
 possible to do
@@ -49,28 +53,25 @@ on two lines.
 
 Signed-off-by: Davide Brini <dave_br@...1278...>
 ---
- src/openvpn/init.c    |    9 +++--
+ src/openvpn/init.c    |    6 +--
  src/openvpn/misc.c    |    2 +-
  src/openvpn/options.c |   56 ++++++++++++++++++++++++----
  src/openvpn/options.h |    2 +
  src/openvpn/ssl.c     |   98 +++++++++++++++++++++++++++++++++++++------------
  src/openvpn/ssl.h     |    2 +-
- 6 files changed, 134 insertions(+), 35 deletions(-)
+ 6 files changed, 131 insertions(+), 35 deletions(-)
 
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 031fb20..1ec2d6e 100644
+index 031fb20..b11ae8a 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
-@@ -400,12 +400,15 @@ init_query_passwords (struct context *c)
+@@ -400,12 +400,12 @@ init_query_passwords (struct context *c)
    
  #if P2MP
    /* Auth user/pass input */
 -  if (c->options.auth_user_pass_file)
 +  if (c->options.auth_user_pass_file || c->options.auth_user_pass_file_inline)
      {
-+
-+     printf("---------- init_query_passwords\n");
-+
  #ifdef ENABLE_CLIENT_CR
 -      auth_user_pass_setup (c->options.auth_user_pass_file, &c->options.sc_info);
 +      auth_user_pass_setup (c->options.auth_user_pass_file, c->options.auth_user_pass_file_inline, &c->options.sc_info);
@@ -362,35 +363,32 @@ index cd7cae2..c7554aa 100644
  
  /*
   * Ensure that no caching is performed on authentication information
---
+-- 
 1.7.10.4
---MP_/zFKiEXIsLVrR9YT9Zf/dbJJ
+--MP_/TEbBtur9bv2syF9hi_hk/xr
 Content-Type: text/x-patch
 Content-Transfer-Encoding: 7bit
 Content-Disposition: attachment; filename=inlined_auth_user_pass.patch
 
- src/openvpn/init.c    |    9 +++--
+ src/openvpn/init.c    |    6 +--
  src/openvpn/misc.c    |    2 +-
  src/openvpn/options.c |   56 ++++++++++++++++++++++++----
  src/openvpn/options.h |    2 +
  src/openvpn/ssl.c     |   98 +++++++++++++++++++++++++++++++++++++------------
  src/openvpn/ssl.h     |    2 +-
- 6 files changed, 134 insertions(+), 35 deletions(-)
+ 6 files changed, 131 insertions(+), 35 deletions(-)
 
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 031fb20..1ec2d6e 100644
+index 031fb20..b11ae8a 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
-@@ -400,12 +400,15 @@ init_query_passwords (struct context *c)
+@@ -400,12 +400,12 @@ init_query_passwords (struct context *c)
    
  #if P2MP
    /* Auth user/pass input */
 -  if (c->options.auth_user_pass_file)
 +  if (c->options.auth_user_pass_file || c->options.auth_user_pass_file_inline)
      {
-+
-+     printf("---------- init_query_passwords\n");
-+
  #ifdef ENABLE_CLIENT_CR
 -      auth_user_pass_setup (c->options.auth_user_pass_file, &c->options.sc_info);
 +      auth_user_pass_setup (c->options.auth_user_pass_file, c->options.auth_user_pass_file_inline, &c->options.sc_info);
@@ -683,5 +681,5 @@ index cd7cae2..c7554aa 100644
  /*
   * Ensure that no caching is performed on authentication information
 
---MP_/zFKiEXIsLVrR9YT9Zf/dbJJ--
+--MP_/TEbBtur9bv2syF9hi_hk/xr--
 
