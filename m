@@ -1,11 +1,9 @@
-Message-ID: <5252FB07.3070309@...1832...>
-Date: Mon, 07 Oct 2013 20:18:47 +0200
-From: Max Muster <Max.Muster@...1832...>
 MIME-Version: 1.0
-References: <go9r6cg1wcfh4lpwb9664gdd.1381086064578@...1753...>
-In-Reply-To: <go9r6cg1wcfh4lpwb9664gdd.1381086064578@...1753...>
-Content-Type: multipart/mixed; boundary="------------010107050804060203020906"
-Subject: Re: [Openvpn-devel] [PATCH] Allow inlining of --auth-user-pass
+From: arno.odermatt@...1845...
+Message-ID: <OF79EFD264.3773FA52-ONC1257BFF.0058CA29-C1257BFF.005D17D5@...1846...>
+Date: Wed, 9 Oct 2013 18:56:49 +0200
+Content-Type: multipart/mixed; boundary="=_mixed 005D1755C1257BFF_="
+Subject: [Openvpn-devel] Openvpn 2.3.2 potential memory-leak after 24hours
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,302 +12,561 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Davide Brini <dave_br@...1278...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------010107050804060203020906
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+--=_mixed 005D1755C1257BFF_=
+Content-Type: multipart/alternative;
+	boundary="=_alternative 005D1755C1257BFF_="
 
-Hi Davide,
+--=_alternative 005D1755C1257BFF_=
+Content-Type: text/plain; charset="US-ASCII"
 
-I had some time today, so I did some changes ("improvements", I hope
-;-)) to your code:
+All,
 
-First thing you do in add_option() if inline is used: auth_pass_file is
-set (to "stdin").
-So there is no need to check for both (options->auth_user_pass_file ||
-options->auth_user_pass_file_inline), the "existing" check only for
-"options->auth_user_pass_file" will suffice. That simplifies the patch.
+we are running Openvpn 2.3.2 on Fedora17/64Bit with 8GByte RAM total (EoL, 
+yes we are aware) and seem to run into a memory leak situation, as 
+following:
 
-Fixed terminating the copy of the strings.
+- around 2955 Openvpn session running OK for 23'58"
+- memory allocated 3247mByte, memory reserved 2.5gByte, CPU utilization 
+~1% (see "status-prior-o-vpnrestart-131009.rtf")
+- script-security 2 (in openvpn.conf)
 
-Simplify tests in options_postprocess_verify_ce():
-Fist check if options->auth_user_pass_file is set (as above, it is
-"allways" set in any auth_user_path case), then it is always safe to do
-"streq" on options->auth_user_pass_file, too. 
+After exactly 24hours, allocated and reserved memory of the 
+openvpn-process start to increase in 1-2Mbyte steps, without seeing an 
+increase in the amount of Openvpn sessions and steps up to around 
+3970mByte for the allocated and 3.2gByte for the reserved memory. Then 
+Openvpn crashes! (see bottom "status-prior-o-vpnrestart-131009.rtf")
 
-Use existing file_check for inline files "CHKACC_INLINE" in
-options_postprocess_filechecks()
-
-In auth_user_pass_setup() don't change indents, only add "extra_flags"
+The behavior of this symptom has been recognized in Openvpn 2.2.2-7 and 
+2.3.2 as following:
 
 
-Kind regards
+> Openvpn 2.2.2-7: keeps reporting "external program fork failed"
+ 
+  2.2.2-7 endlessly keeps reporting a fork failed, when the client-connect 
+script should be executed, no new openvpn sessions can be established but 
+the process stays alive.
 
-Joerg
-
-
--------- Original-Nachricht --------
-Betreff: Re: [Openvpn-devel] [PATCH] Allow inlining of --auth-user-pass
-Von: Davide Brini <dave_br@...1278...>
-An: Max.Muster@...1832...
-Kopie (CC): openvpn-devel@lists.sourceforge.net
-Datum: So 06 Okt 2013 21:01:04 CEST
-> Thanks for reporting! I have poor connectivity and little time this week, but I will look at it when I have a chance.
->
-> Sent from mobile
->
-> Max.Muster@...1832... wrote:
-[... snip ...]
+WARNING: Failed running command (--client-connect): external program fork 
+failed
+WARNING: Failed running command (--client-connect): external program fork 
+failed
+WARNING: Failed running command (--client-connect): external program fork 
+failed
 
 
---------------010107050804060203020906
-Content-Type: text/x-patch;
- name="010-inlined_auth_user_pass.patch"
-Content-Transfer-Encoding: 7bit
+
+> Openvpn 2.3.2: exiting due to fatal error (openvpn is killed)
+
+When a certain memory stage from a perspective of allocated and reserved 
+memory is reached, following scenario happens:
+
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: openvpn_execve: unable to 
+fork: Cannot allocate memory (errno=12)
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: Exiting due to fatal error
+Please, can you analyze the issue and send us a feedback about the 
+possible root cause and mitigation?
+
+snip log:
+------------------------------
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: openvpn_execve: unable to 
+fork: Cannot allocate memory (errno=12)
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: Exiting due to fatal error
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: Closing TUN/TAP interface
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: /usr/sbin/ip addr del dev 
+tap1 172.16.0.1/17
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: openvpn_execve: unable to 
+fork: Cannot allocate memory (errno=12)
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: Exiting due to fatal error
+^C[ec2-user@...23... ~]$
+[ec2-user@...23... ~]$ sudo tail -f /var/log/messages
+Oct  9 15:40:27 ip-10-56-61-152 openvpn[25964]: 
+NL-200000134777/109.37.153.117:41299 NOTE: --mute triggered...
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: 
+DE-2024460/139.7.160.82:42187 40 variation(s) on previous 10 message(s) 
+suppressed by --mute
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: 
+DE-2024460/139.7.160.82:42187 Connection reset, restarting [0]
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: 
+DE-2024460/139.7.160.82:42187 SIGUSR1[soft,connection-reset] received, 
+client-instance restarting
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: openvpn_execve: unable to 
+fork: Cannot allocate memory (errno=12)
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: Exiting due to fatal error
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: Closing TUN/TAP interface
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: /usr/sbin/ip addr del dev 
+tap1 172.16.0.1/17
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: openvpn_execve: unable to 
+fork: Cannot allocate memory (errno=12)
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: Exiting due to fatal error
+
+
+thx and regards,
+
+AO
+
+_____________________________________________________________________________________________________________________________________________ 
+
+
+
+
+
+******************************************************
+Notice: The information contained in this message is intended only for use of the individual(s) named above and may contain confidential, proprietary or legally privileged information. No confidentiality or privilege is waived or lost by any mistransmission. If you are not the intended recipient of this message you are hereby notified that you must not use, disseminate , copy it in any form or take any action in reliance of it. If you have received this message in error please delete it and any copies of it and notify the sender immediately.
+*******************************************************
+--=_alternative 005D1755C1257BFF_=
+Content-Type: text/html; charset="US-ASCII"
+
+<font size=2 face="sans-serif">All,</font>
+<br>
+<br><font size=2 face="sans-serif">we are running Openvpn 2.3.2 on Fedora17/64Bit
+with 8GByte RAM total (EoL, yes we are aware) and seem to run into a memory
+leak situation, as following:<br>
+<br>
+- around 2955 Openvpn session running OK for 23'58&quot;<br>
+- memory allocated 3247mByte, memory reserved 2.5gByte, CPU utilization
+~1% (see &quot;status-prior-o-vpnrestart-131009.rtf&quot;)<br>
+- script-security 2 (in openvpn.conf)</font>
+<br>
+<br><font size=2 face="sans-serif">After exactly 24hours, allocated and
+reserved memory of the openvpn-process start to increase in 1-2Mbyte steps,
+without seeing an increase in the amount of Openvpn sessions and steps
+up to around 3970mByte for the allocated and 3.2gByte for the reserved
+memory. Then Openvpn crashes! (see bottom &quot;status-prior-o-vpnrestart-131009.rtf&quot;)<br>
+<br>
+The behavior of this symptom has been recognized in Openvpn 2.2.2-7 and
+2.3.2 as following:<br>
+</font>
+<br>
+<br><font size=2 face="sans-serif">&gt; Openvpn 2.2.2-7: keeps reporting
+&quot;</font><font size=2 face="Calibri">external program fork failed</font><font size=2 face="sans-serif">&quot;<br>
+ &nbsp; <br>
+ &nbsp;2.2.2-7 endlessly keeps reporting a fork failed, when the client-connect
+script should be executed, no new openvpn sessions can be established but
+the process stays alive.</font>
+<br>
+<br><font size=2 face="Calibri">WARNING: Failed running command (--client-connect):
+external program fork failed</font>
+<br><font size=2 face="Calibri">WARNING: Failed running command (--client-connect):
+external program fork failed</font>
+<br><font size=2 face="Calibri">WARNING: Failed running command (--client-connect):
+external program fork failed</font><font size=2 face="sans-serif"><br>
+<br>
+</font>
+<br>
+<br><font size=2 face="sans-serif">&gt; Openvpn 2.3.2: exiting due to fatal
+error (openvpn is killed)</font>
+<br><font size=2 face="sans-serif"><br>
+When a certain memory stage from a perspective of allocated and reserved
+memory is reached, following scenario happens:</font>
+<br><font size=2 face="sans-serif"><br>
+</font><font size=2 color=red face="Calibri">Oct &nbsp;9 15:40:29 ip-10-56-61-152
+openvpn[25964]: openvpn_execve: unable to fork: Cannot allocate memory
+(errno=12)</font>
+<br><font size=2 color=red face="Calibri">Oct &nbsp;9 15:40:29 ip-10-56-61-152
+openvpn[25964]: Exiting due to fatal error</font>
+<p><font size=2 face="sans-serif">Please, can you analyze the issue and
+send us a feedback about the possible root cause and mitigation?<br>
+</font>
+<br><font size=2 face="sans-serif">snip log:</font>
+<br><font size=2 face="sans-serif">------------------------------</font>
+<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
+openvpn[25964]: openvpn_execve: unable to fork: Cannot allocate memory
+(errno=12)</font>
+<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
+openvpn[25964]: Exiting due to fatal error</font>
+<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
+openvpn[25964]: Closing TUN/TAP interface</font>
+<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
+openvpn[25964]: /usr/sbin/ip addr del dev tap1 172.16.0.1/17</font>
+<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
+openvpn[25964]: openvpn_execve: unable to fork: Cannot allocate memory
+(errno=12)</font>
+<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
+openvpn[25964]: Exiting due to fatal error</font>
+<br><font size=2 face="sans-serif">^C[ec2-user@...23... ~]$</font>
+<br><font size=2 face="sans-serif">[ec2-user@...23... ~]$ sudo tail -f
+/var/log/messages</font>
+<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:27 ip-10-56-61-152
+openvpn[25964]: NL-200000134777/109.37.153.117:41299 NOTE: --mute triggered...</font>
+<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
+openvpn[25964]: DE-2024460/139.7.160.82:42187 40 variation(s) on previous
+10 message(s) suppressed by --mute</font>
+<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
+openvpn[25964]: DE-2024460/139.7.160.82:42187 Connection reset, restarting
+[0]</font>
+<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
+openvpn[25964]: DE-2024460/139.7.160.82:42187 SIGUSR1[soft,connection-reset]
+received, client-instance restarting</font>
+<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
+openvpn[25964]: openvpn_execve: unable to fork: Cannot allocate memory
+(errno=12)</font>
+<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
+openvpn[25964]: Exiting due to fatal error</font>
+<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
+openvpn[25964]: Closing TUN/TAP interface</font>
+<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
+openvpn[25964]: /usr/sbin/ip addr del dev tap1 172.16.0.1/17</font>
+<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
+openvpn[25964]: openvpn_execve: unable to fork: Cannot allocate memory
+(errno=12)</font>
+<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
+openvpn[25964]: <b>Exiting due to fatal error<br>
+</b><br>
+</font>
+<br><font size=2 face="sans-serif">thx and regards,</font>
+<br>
+<br><font size=2 face="sans-serif">AO<br>
+</font><font size=1 face="Arial"><br>
+_____________________________________________________________________________________________________________________________________________
+</font><font size=2 face="sans-serif"><br>
+</font><font size=1 color=#5f5f5f face="Arial"><br>
+</font><font size=1 color=#008000 face="Arial"><br>
+</font>
+<br clear="both">
+******************************************************<BR>
+Notice: The information contained in this message is intended only for use of the individual(s) named above and may contain confidential, proprietary or legally privileged information. No confidentiality or privilege is waived or lost by any mistransmission. If you are not the intended recipient of this message you are hereby notified that you must not use, disseminate , copy it in any form or take any action in reliance of it. If you have received this message in error please delete it and any copies of it and notify the sender immediately.<BR>
+*******************************************************<BR>
+
+--=_alternative 005D1755C1257BFF_=--
+
+--=_mixed 005D1755C1257BFF_=
+Content-Type: application/rtf; name="status-prior-o-vpnrestart-131009.rtf"
 Content-Disposition: attachment;
- filename="010-inlined_auth_user_pass.patch"
+	filename="status-prior-o-vpnrestart-131009.rtf"
+Content-Transfer-Encoding: base64
 
---- src/openvpn/init.c
-+++ src/openvpn/init.c
-@@ -401,9 +401,9 @@
-   if (c->options.auth_user_pass_file)
-     {
- #ifdef ENABLE_CLIENT_CR
--      auth_user_pass_setup (c->options.auth_user_pass_file, &c->options.sc_info);
-+      auth_user_pass_setup (c->options.auth_user_pass_file, c->options.auth_user_pass_file_inline, &c->options.sc_info);
- #else
--      auth_user_pass_setup (c->options.auth_user_pass_file, NULL);
-+      auth_user_pass_setup (c->options.auth_user_pass_file, c->options.auth_user_pass_file_inline, NULL);
- #endif
-     }
- #endif
---- src/openvpn/misc.c
-+++ src/openvpn/misc.c
-@@ -1044,7 +1044,7 @@
- 
-   if (!up->defined)
-     {
--      const bool from_stdin = (!auth_file || !strcmp (auth_file, "stdin"));
-+      const bool from_stdin = (!auth_file || streq (auth_file, "stdin"));
- 
-       if (flags & GET_USER_PASS_PREVIOUS_CREDS_FAILED)
- 	msg (M_WARN, "Note: previous '%s' credentials failed", prefix);
---- src/openvpn/options.c
-+++ src/openvpn/options.c
-@@ -1221,6 +1221,7 @@
-   SHOW_BOOL (client);
-   SHOW_BOOL (pull);
-   SHOW_STR (auth_user_pass_file);
-+  SHOW_STR (auth_user_pass_file_inline);
- 
-   gc_free (&gc);
- }
-@@ -2339,6 +2340,42 @@
- #if P2MP
-   if (options->auth_user_pass_file && !options->pull)
-     msg (M_USAGE, "--auth-user-pass requires --pull");
-+  if (options->auth_user_pass_file)  /* no check needed if no auth_pass_file set. It is even set in case of inline (to "stdin") */
-+    {
-+      if ( (!streq(options->auth_user_pass_file, "stdin") || options->auth_user_pass_file_inline) && options->auth_nocache)
-+        msg (M_USAGE, "Cannot use --auth-nocache with credentials from file");
-+#ifdef ENABLE_CLIENT_CR
-+      if ( (!streq(options->auth_user_pass_file, "stdin") || options->auth_user_pass_file_inline) && options->sc_info.challenge_text)
-+        msg (M_USAGE, "Credentials cannot be in a file if using --static-challenge");
-+#endif
-+    }
-+  if (options->auth_user_pass_file_inline)
-+    {
-+      int n_inlined = 0;
-+      const char *pos = options->auth_user_pass_file_inline;
-+      const char *prev = pos;
-+
-+      if ( strlen(pos) == 0 )
-+        msg (M_USAGE, "Invalid format for inlined --auth-user-pass");
-+
-+      while( (pos = strchr(pos, '\n')) != NULL )
-+        {
-+          n_inlined++;
-+
-+          if (n_inlined > 2)
-+            msg (M_USAGE, "Too many lines in inlined --auth-user-pass");
-+
-+          if ( pos - prev > USER_PASS_LEN - 1 )
-+            msg (M_USAGE, "Line too long in inlined --auth-user-pass");
-+
-+          pos++;
-+          prev = pos;
-+        }
-+
-+      if ( (n_inlined == 0) || (*prev != '\0') )
-+        msg (M_USAGE, "Invalid format for inlined --auth-user-pass");
-+
-+    }
- #endif
- 
-   uninit_options (&defaults);
-@@ -2706,7 +2743,7 @@
-                              "--management user/password file");
- #endif /* ENABLE_MANAGEMENT */
- #if P2MP
--  errs |= check_file_access (CHKACC_FILE|CHKACC_ACPTSTDIN,
-+  errs |= check_file_access (CHKACC_FILE|CHKACC_ACPTSTDIN|CHKACC_INLINE,
-                              options->auth_user_pass_file, R_OK,
-                              "--auth-user-pass");
- #endif /* P2MP */
-@@ -5835,7 +5872,12 @@
-       VERIFY_PERMISSION (OPT_P_GENERAL);
-       if (p[1])
- 	{
--	  options->auth_user_pass_file = p[1];
-+          options->auth_user_pass_file = p[1];
-+          if (streq (p[1], INLINE_FILE_TAG) && p[2])
-+            { msg (M_WARN, "options.c \n  !!!SETTING !!! \n_ +5930,12 @@ add_optio"); 
-+              options->auth_user_pass_file = "stdin";
-+              options->auth_user_pass_file_inline = p[2];
-+            }
- 	}
-       else
- 	options->auth_user_pass_file = "stdin";
-@@ -6462,6 +6504,7 @@
-   else if (streq (p[0], "auth-nocache"))
-     {
-       VERIFY_PERMISSION (OPT_P_GENERAL);
-+      options->auth_nocache = true;
-       ssl_set_auth_nocache ();
-     }
-   else if (streq (p[0], "auth-token") && p[1])
---- src/openvpn/options.h
-+++ src/openvpn/options.h
-@@ -290,6 +290,7 @@
-   bool up_delay;
-   bool up_restart;
-   bool daemon;
-+  bool auth_nocache;
- 
-   int remap_sigusr1;
- 
-@@ -459,6 +460,7 @@
-   bool pull; /* client pull of config options from server */
-   int push_continuation;
-   const char *auth_user_pass_file;
-+  const char *auth_user_pass_file_inline;
-   struct options_pre_pull *pre_pull;
- 
-   int server_poll_timeout;
---- src/openvpn/ssl.c
-+++ src/openvpn/ssl.c
-@@ -357,11 +357,57 @@
- #endif
- 
- void
--auth_user_pass_setup (const char *auth_file, const struct static_challenge_info *sci)
-+auth_user_pass_setup (const char *auth_file, const char *auth_file_inline, const struct static_challenge_info *sci)
- {
-+
-+  int extra_flags = 0;
-+  int n_inlined = 0;
-+  char inlined_username[USER_PASS_LEN];
-+  char inlined_password[USER_PASS_LEN];
-+
-   auth_user_pass_enabled = true;
-+
-   if (!auth_user_pass.defined)
-     {
-+      if (auth_file && streq (auth_file, "stdin") && auth_file_inline)
-+        {
-+          /* check how much is inlined. */
-+          const char *pos = auth_file_inline;
-+          const char *prev = pos;
-+
-+          while( (pos = strchr(pos, '\n')) != NULL)
-+            {
-+              n_inlined++;
-+
-+              if (n_inlined == 1)
-+                {
-+                  strncpy(inlined_username, prev, pos - prev);
-+                  inlined_username[pos - prev] = '\0';
-+                  msg (M_INFO, "Using inlined username: %s", inlined_username);
-+                }
-+              else
-+                {
-+                  strncpy(inlined_password, prev, pos - prev);
-+                  inlined_password[pos - prev] = '\0';
-+                  msg (M_INFO, "Using inlined password: ... ");
-+                }
-+
-+              pos++;
-+              prev = pos;
-+            }
-+
-+          if (n_inlined == 1)
-+            extra_flags = GET_USER_PASS_PASSWORD_ONLY;
-+        }
-+
-+      if (n_inlined == 2)
-+        {        
-+          strcpy(auth_user_pass.username, inlined_username);
-+          strcpy(auth_user_pass.password, inlined_password);
-+          auth_user_pass.defined = true;
-+        }
-+      else
-+        {
- #if AUTO_USERID
-       get_user_pass_auto_userid (&auth_user_pass, auth_file);
- #else
-@@ -370,11 +416,11 @@
-        get_user_pass_cr (&auth_user_pass,
-                          auth_file,
-                          UP_TYPE_AUTH,
--                         GET_USER_PASS_MANAGEMENT|GET_USER_PASS_SENSITIVE|GET_USER_PASS_DYNAMIC_CHALLENGE,
-+                         GET_USER_PASS_MANAGEMENT|GET_USER_PASS_SENSITIVE|GET_USER_PASS_DYNAMIC_CHALLENGE|extra_flags,
-                          auth_challenge);
-       else if (sci) /* static challenge response */
-        {
--         int flags = GET_USER_PASS_MANAGEMENT|GET_USER_PASS_SENSITIVE|GET_USER_PASS_STATIC_CHALLENGE;
-+         int flags = GET_USER_PASS_MANAGEMENT|GET_USER_PASS_SENSITIVE|GET_USER_PASS_STATIC_CHALLENGE|extra_flags;
-          if (sci->flags & SC_ECHO)
-            flags |= GET_USER_PASS_STATIC_CHALLENGE_ECHO;
-          get_user_pass_cr (&auth_user_pass,
-@@ -385,8 +431,11 @@
-        }
-       else
- # endif
--       get_user_pass (&auth_user_pass, auth_file, UP_TYPE_AUTH, GET_USER_PASS_MANAGEMENT|GET_USER_PASS_SENSITIVE);
-+       get_user_pass (&auth_user_pass, auth_file, UP_TYPE_AUTH, GET_USER_PASS_MANAGEMENT|GET_USER_PASS_SENSITIVE|extra_flags);
- #endif
-+        }
-+        if (n_inlined == 1)
-+          strcpy(auth_user_pass.username, inlined_username);
-     }
- }
- 
-@@ -1872,9 +1921,9 @@
-   if (auth_user_pass_enabled)
-     {
- #ifdef ENABLE_CLIENT_CR
--      auth_user_pass_setup (NULL, session->opt->sci);
-+      auth_user_pass_setup (NULL, NULL, session->opt->sci);
- #else
--      auth_user_pass_setup (NULL, NULL);
-+      auth_user_pass_setup (NULL, NULL, NULL);
- #endif
-       if (!write_string (buf, auth_user_pass.username, -1))
- 	goto error;
---- src/openvpn/ssl.h
-+++ src/openvpn/ssl.h
-@@ -388,7 +388,7 @@
-  * Setup authentication username and password. If auth_file is given, use the
-  * credentials stored in the file.
-  */
--void auth_user_pass_setup (const char *auth_file, const struct static_challenge_info *sc_info);
-+void auth_user_pass_setup (const char *auth_file, const char *auth_file_inline, const struct static_challenge_info *sc_info);
- 
- /*
-  * Ensure that no caching is performed on authentication information
+e1xydGYxXGFuc2lcYW5zaWNwZzEyNTJcZGVmZjBcZGVmbGFuZzIwNTV7XGZvbnR0Ymx7XGYwXGZu
+aWxcZmNoYXJzZXQwIENhbGlicmk7fX0NCntcY29sb3J0YmwgO1xyZWQwXGdyZWVuNzdcYmx1ZTE4
+NztccmVkMjU1XGdyZWVuMFxibHVlMDt9DQp7XCpcZ2VuZXJhdG9yIE1zZnRlZGl0IDUuNDEuMjEu
+MjUxMDt9XHZpZXdraW5kNFx1YzFccGFyZFxzYTIwMFxzbDI3NlxzbG11bHQxXGNmMVxsYW5nN1xi
+XGYwXGZzMjggT3BlbnZwbiBzdGF0dXMgOS4gMTAgMTMgcHJpb3IgdG8gcmVzdGFydCBvcGVudnBu
+OlxwYXINClxjZjBcYjBcZnMyMiBPcGVuVlBOIDIuMy4yIHg4Nl82NC1yZWRoYXQtbGludXgtZ251
+IFtTU0wgKE9wZW5TU0wpXSBbTFpPXSBbRVBPTExdIFtQS0NTMTFdIFtldXJlcGhpYV0gW01IXSBb
+SVB2Nl0gYnVpbHQgb24gSnVuICAzIDIwMTNccGFyDQpPcmlnaW5hbGx5IGRldmVsb3BlZCBieSBK
+YW1lcyBZb25hblxwYXINCkNvcHlyaWdodCAoQykgMjAwMi0yMDEwIE9wZW5WUE4gVGVjaG5vbG9n
+aWVzLCBJbmMuIDxzYWxlc0BvcGVudnBuLm5ldD5ccGFyDQpDb21waWxlIHRpbWUgZGVmaW5lczog
+ZW5hYmxlX2NyeXB0bz15ZXMgZW5hYmxlX2RlYnVnPXllcyBlbmFibGVfZGVmX2F1dGg9eWVzIGVu
+YWJsZV9kZXBlbmRlbmN5X3RyYWNraW5nPW5vIGVuYWJsZV9kbG9wZW49dW5rbm93biBlbmFibGVf
+ZGxvcGVuX3NlbGY9dW5rbm93biBlbmFibGVfZGxvcGVuX3NlbGZfc3RhdGljPXVua25vd24gZW5h
+YmxlX2V1cmVwaGlhPXllcyBlbmFibGVfZmFzdF9pbnN0YWxsPXllcyBlbmFibGVfZnJhZ21lbnQ9
+eWVzIGVuYWJsZV9odHRwX3Byb3h5PXllcyBlbmFibGVfaXByb3V0ZTI9eWVzIGVuYWJsZV9saWJ0
+b29sX2xvY2s9eWVzIGVuYWJsZV9sem89eWVzIGVuYWJsZV9sem9fc3R1Yj1ubyBlbmFibGVfbWFu
+YWdlbWVudD15ZXMgZW5hYmxlX211bHRpPXllcyBlbmFibGVfbXVsdGlob21lPXllcyBlbmFibGVf
+cGFtX2Rsb3Blbj1ubyBlbmFibGVfcGFzc3dvcmRfc2F2ZT15ZXMgZW5hYmxlX3BlZGFudGljPW5v
+IGVuYWJsZV9wZj15ZXMgZW5hYmxlX3BrY3MxMT15ZXMgZW5hYmxlX3BsdWdpbl9hdXRoX3BhbT15
+ZXMgZW5hYmxlX3BsdWdpbl9kb3duX3Jvb3Q9eWVzIGVuYWJsZV9wbHVnaW5zPXllcyBlbmFibGVf
+cG9ydF9zaGFyZT15ZXMgZW5hYmxlX3B0aHJlYWQ9eWVzIGVuYWJsZV9zZWxpbnV4PW5vIGVuYWJs
+ZV9zZXJ2ZXI9eWVzIGVuYWJsZV9zaGFyZWQ9eWVzIGVuYWJsZV9zaGFyZWRfd2l0aF9zdGF0aWNf
+cnVudGltZXM9bm8gZW5hYmxlX3NtYWxsPW5vIGVuYWJsZV9zb2Nrcz15ZXMgZW5hYmxlX3NzbD15
+ZXMgZW5hYmxlX3N0YXRpYz15ZXMgZW5hYmxlX3N0cmljdD1ubyBlbmFibGVfc3RyaWN0X29wdGlv
+bnM9bm8gZW5hYmxlX3N5c3RlbWQ9bm8gZW5hYmxlX3dpbjMyX2RsbD15ZXMgZW5hYmxlX3g1MDlf
+YWx0X3VzZXJuYW1lPW5vIHdpdGhfY3J5cHRvX2xpYnJhcnk9b3BlbnNzbCB3aXRoX2dudV9sZD15
+ZXMgd2l0aF9pcHJvdXRlX3BhdGg9L3NiaW4vaXAgd2l0aF9tZW1fY2hlY2s9bm8gd2l0aF9wbHVn
+aW5kaXI9JyQobGliZGlyKS9vcGVudnBuL3BsdWdpbnMnIHdpdGhfc3lzcm9vdD1ub1xwYXINClty
+b290QGxvY2FsaG9zdCBvcGVudnBuXSNccGFyDQpccGFyDQpccGFyDQp0b3AgLSAxNDo0ODo0MCB1
+cCAyIGRheXMsIDI3IG1pbiwgIDIgdXNlcnMsICBsb2FkIGF2ZXJhZ2U6IDAuMDksIDAuMDcsIDAu
+MTJccGFyDQpUYXNrczogIDcxIHRvdGFsLCAgIDEgcnVubmluZywgIDcwIHNsZWVwaW5nLCAgIDAg
+c3RvcHBlZCwgICAwIHpvbWJpZVxwYXINCkNwdShzKTogIDAuMyV1cywgIDQuOCVzeSwgIDAuMCVu
+aSwgOTQuOSVpZCwgIDAuMCV3YSwgIDAuMCVoaSwgIDAuMCVzaSwgIDAuMCVzdFxwYXINCk1lbTog
+ICA3NjI5OTIwayB0b3RhbCwgIDMxMDk4MjhrIHVzZWQsICA0NTIwMDkyayBmcmVlLCAgICA4MDAz
+NmsgYnVmZmVyc1xwYXINClN3YXA6ICAgICAgICAwayB0b3RhbCwgICAgICAgIDBrIHVzZWQsICAg
+ICAgICAwayBmcmVlLCAgIDE3NjgxMmsgY2FjaGVkXHBhcg0KXHBhcg0KXHBhcg0KICBQSUQgVVNF
+UiAgICAgIFBSICBOSSAgVklSVCAgUkVTICBTSFIgUyAlQ1BVICVNRU0gICAgVElNRSsgIENPTU1B
+TkRccGFyDQoyNTk2NCByb290ICAgICAgMjAgICAwIDMyNDZtIDIuNWcgMjA0OCBTICAxLjAgMzQu
+OCAxMTU6MDkuNDQgb3BlbnZwblxwYXINCiAgMjMwIHJvb3QgICAgICAyMCAgIDAgNTQ4MzYgMTQz
+MiAxMTY4IFMgIDAuNyAgMC4wICAgMDozNi42NSBzeXN0ZW1kLWpvdXJuYWxccGFyDQoxOTYzMyBy
+b290ICAgICAgMjAgICAwIDE1MjM2IDEyMjggIDkzMiBSICAwLjMgIDAuMCAgIDA6MDAuMDIgdG9w
+XHBhcg0KICAgIDEgcm9vdCAgICAgIDIwICAgMCA2NTkyNCAgMjNtIDIwODggUyAgMC4wICAwLjMg
+ICAwOjAxLjY1IHN5c3RlbWRccGFyDQpccGFyDQogIFBJRCBVU0VSICAgICAgUFIgIE5JICBWSVJU
+ICBSRVMgIFNIUiBTICVDUFUgJU1FTSAgICBUSU1FKyAgQ09NTUFORFxwYXINCjI1OTY0IHJvb3Qg
+ICAgICAyMCAgIDAgMzI0Nm0gMi41ZyAyMDM2IFMgIDEuNyAzNC44IDExMjozNS4zOSBvcGVudnBu
+XHBhcg0KICAgIDEgcm9vdCAgICAgIDIwICAgMCA2NTkyNCAgMjNtIDIwODggUyAgMC4wICAwLjMg
+ICAwOjAxLjY1IHN5c3RlbWRccGFyDQogICAgMiByb290ICAgICAgMjAgICAwICAgICAwICAgIDAg
+ICAgMCBTICAwLjAgIDAuMCAgIDA6MDAuMDAga3RocmVhZGRccGFyDQogICAgMyByb290ICAgICAg
+MjAgICAwICAgICAwICAgIDAgICAgMCBTICAwLjAgIDAuMCAgIDA6MDAuMTMga3NvZnRpcnFkLzBc
+cGFyDQogICAgNSByb290ICAgICAgMjAgICAwICAgICAwICAgIDAgICAgMCBTICAwLjAgIDAuMCAg
+IDA6MDAuMDAga3dvcmtlci91OjBccGFyDQogICAgNiByb290ICAgICAgUlQgICAwICAgICAwICAg
+IDAgICAgMCBTICAwLjAgIDAuMCAgIDA6MDAuMDAgbWlncmF0aW9uLzBccGFyDQogICAgNyByb290
+ICAgICAgUlQgICAwICAgICAwICAgIDAgICAgMCBTICAwLjAgIDAuMCAgIDA6MDAuNTggd2F0Y2hk
+b2cvMFxwYXINCiAgICA4IHJvb3QgICAgICBSVCAgIDAgICAgIDAgICAgMCAgICAwIFMgIDAuMCAg
+MC4wICAgMDowMC4wMCBtaWdyYXRpb24vMVxwYXINCiAgIDEwIHJvb3QgICAgICAyMCAgIDAgICAg
+IDAgICAgMCAgICAwIFMgIDAuMCAgMC4wICAgMDowMC4wMiBrc29mdGlycWQvMVxwYXINCiAgIDEx
+IHJvb3QgICAgICBSVCAgIDAgICAgIDAgICAgMCAgICAwIFMgIDAuMCAgMC4wICAgMDowMC44MCB3
+YXRjaGRvZy8xXHBhcg0KICAgMTIgcm9vdCAgICAgICAwIC0yMCAgICAgMCAgICAwICAgIDAgUyAg
+MC4wICAwLjAgICAwOjAwLjAwIGNwdXNldFxwYXINCiAgIDEzIHJvb3QgICAgICAgMCAtMjAgICAg
+IDAgICAgMCAgICAwIFMgIDAuMCAgMC4wICAgMDowMC4wMCBraGVscGVyXHBhcg0KICAgMTQgcm9v
+dCAgICAgIDIwICAgMCAgICAgMCAgICAwICAgIDAgUyAgMC4wICAwLjAgICAwOjAwLjAwIGtkZXZ0
+bXBmc1xwYXINCiAgIDE1IHJvb3QgICAgICAgMCAtMjAgICAgIDAgICAgMCAgICAwIFMgIDAuMCAg
+MC4wICAgMDowMC4wMCBuZXRuc1xwYXINCiAgIDE2IHJvb3QgICAgICAyMCAgIDAgICAgIDAgICAg
+MCAgICAwIFMgIDAuMCAgMC4wICAgMDowMC4wMCB4ZW53YXRjaFxwYXINCiAgIDE3IHJvb3QgICAg
+ICAyMCAgIDAgICAgIDAgICAgMCAgICAwIFMgIDAuMCAgMC4wICAgMDowMC4wMCB4ZW5idXNccGFy
+DQogICAxOCByb290ICAgICAgMjAgICAwICAgICAwICAgIDAgICAgMCBTICAwLjAgIDAuMCAgIDA6
+MDAuMzkgc3luY19zdXBlcnNccGFyDQogICAxOSByb290ICAgICAgMjAgICAwICAgICAwICAgIDAg
+ICAgMCBTICAwLjAgIDAuMCAgIDA6MDAuMDEgYmRpLWRlZmF1bHRccGFyDQogICAyMCByb290ICAg
+ICAgIDAgLTIwICAgICAwICAgIDAgICAgMCBTICAwLjAgIDAuMCAgIDA6MDAuMDAga2ludGVncml0
+eWRccGFyDQogICAyMSByb290ICAgICAgIDAgLTIwICAgICAwICAgIDAgICAgMCBTICAwLjAgIDAu
+MCAgIDA6MDAuMDAga2Jsb2NrZFxwYXINCiAgIDIzIHJvb3QgICAgICAgMCAtMjAgICAgIDAgICAg
+MCAgICAwIFMgIDAuMCAgMC4wICAgMDowMC4wMCBhdGFfc2ZmXHBhcg0KICAgMjQgcm9vdCAgICAg
+IDIwICAgMCAgICAgMCAgICAwICAgIDAgUyAgMC4wICAwLjAgICAwOjAwLjAwIGtodWJkXHBhcg0K
+ICAgMjUgcm9vdCAgICAgICAwIC0yMCAgICAgMCAgICAwICAgIDAgUyAgMC4wICAwLjAgICAwOjAw
+LjAwIG1kXHBhcg0KICAgMjggcm9vdCAgICAgIDIwICAgMCAgICAgMCAgICAwICAgIDAgUyAgMC4w
+ICAwLjAgICAwOjAwLjAwIGtzd2FwZDBccGFyDQogICAyOSByb290ICAgICAgMjUgICA1ICAgICAw
+ICAgIDAgICAgMCBTICAwLjAgIDAuMCAgIDA6MDAuMDAga3NtZFxwYXINCiAgIDMwIHJvb3QgICAg
+ICAyMCAgIDAgICAgIDAgICAgMCAgICAwIFMgIDAuMCAgMC4wICAgMDowMC4wMCBmc25vdGlmeV9t
+YXJrXHBhcg0KICAgMzEgcm9vdCAgICAgICAwIC0yMCAgICAgMCAgICAwICAgIDAgUyAgMC4wICAw
+LjAgICAwOjAwLjAwIGNyeXB0b1xwYXINCiAgIDM3IHJvb3QgICAgICAgMCAtMjAgICAgIDAgICAg
+MCAgICAwIFMgIDAuMCAgMC4wICAgMDowMC4wMCBrdGhyb3RsZFxwYXINCiAgIDM4IHJvb3QgICAg
+ICAyMCAgIDAgICAgIDAgICAgMCAgICAwIFMgIDAuMCBccGFyDQpccGFyDQpccGFyDQpbcm9vdEBs
+b2NhbGhvc3Qgfl0jIHdjIC1sIC9ldGMvb3BlbnZwbi9jZ3d2cG4vcGVyc2lwb2ZmXHBhcg0KNTUg
+L2V0Yy9vcGVudnBuL2Nnd3Zwbi9wZXJzaXBvZmZccGFyDQpbcm9vdEBsb2NhbGhvc3Qgfl0jIHdj
+IC1sIC9ldGMvb3BlbnZwbi9jZ3d2cG4vcGVyc2lwb25ccGFyDQoyOTU1IC9ldGMvb3BlbnZwbi9j
+Z3d2cG4vcGVyc2lwb25ccGFyDQpbcm9vdEBsb2NhbGhvc3Qgfl0jXHBhcg0KXHBhcg0KXHBhcg0K
+W3Jvb3RAbG9jYWxob3N0IH5dIyBjYXQgL3Byb2MvMjU5NjQvbGltaXRzXHBhcg0KTGltaXQgICAg
+ICAgICAgICAgICAgICAgICBTb2Z0IExpbWl0ICAgICAgICAgICBIYXJkIExpbWl0ICAgICAgICAg
+ICBVbml0c1xwYXINCk1heCBjcHUgdGltZSAgICAgICAgICAgICAgdW5saW1pdGVkICAgICAgICAg
+ICAgdW5saW1pdGVkICAgICAgICAgICAgc2Vjb25kc1xwYXINCk1heCBmaWxlIHNpemUgICAgICAg
+ICAgICAgdW5saW1pdGVkICAgICAgICAgICAgdW5saW1pdGVkICAgICAgICAgICAgYnl0ZXNccGFy
+DQpNYXggZGF0YSBzaXplICAgICAgICAgICAgIHVubGltaXRlZCAgICAgICAgICAgIHVubGltaXRl
+ZCAgICAgICAgICAgIGJ5dGVzXHBhcg0KTWF4IHN0YWNrIHNpemUgICAgICAgICAgICA4Mzg4NjA4
+ICAgICAgICAgICAgICB1bmxpbWl0ZWQgICAgICAgICAgICBieXRlc1xwYXINCk1heCBjb3JlIGZp
+bGUgc2l6ZSAgICAgICAgMCAgICAgICAgICAgICAgICAgICAgdW5saW1pdGVkICAgICAgICAgICAg
+Ynl0ZXNccGFyDQpNYXggcmVzaWRlbnQgc2V0ICAgICAgICAgIHVubGltaXRlZCAgICAgICAgICAg
+IHVubGltaXRlZCAgICAgICAgICAgIGJ5dGVzXHBhcg0KTWF4IHByb2Nlc3NlcyAgICAgICAgICAg
+ICAxMDI0ICAgICAgICAgICAgICAgICB1bmxpbWl0ZWQgICAgICAgICAgICBwcm9jZXNzZXNccGFy
+DQpNYXggb3BlbiBmaWxlcyAgICAgICAgICAgIDY1NTM1MCAgICAgICAgICAgICAgIDY1NTM1MCAg
+ICAgICAgICAgICAgIGZpbGVzXHBhcg0KTWF4IGxvY2tlZCBtZW1vcnkgICAgICAgICA2NTUzNiAg
+ICAgICAgICAgICAgICA2NTUzNiAgICAgICAgICAgICAgICBieXRlc1xwYXINCk1heCBhZGRyZXNz
+IHNwYWNlICAgICAgICAgdW5saW1pdGVkICAgICAgICAgICAgdW5saW1pdGVkICAgICAgICAgICAg
+Ynl0ZXNccGFyDQpNYXggZmlsZSBsb2NrcyAgICAgICAgICAgIHVubGltaXRlZCAgICAgICAgICAg
+IHVubGltaXRlZCAgICAgICAgICAgIGxvY2tzXHBhcg0KTWF4IHBlbmRpbmcgc2lnbmFscyAgICAg
+ICA1OTMwMiAgICAgICAgICAgICAgICA1OTMwMiAgICAgICAgICAgICAgICBzaWduYWxzXHBhcg0K
+TWF4IG1zZ3F1ZXVlIHNpemUgICAgICAgICA4MTkyMDAgICAgICAgICAgICAgICA4MTkyMDAgICAg
+ICAgICAgICAgICBieXRlc1xwYXINCk1heCBuaWNlIHByaW9yaXR5ICAgICAgICAgMCAgICAgICAg
+ICAgICAgICAgICAgMFxwYXINCk1heCByZWFsdGltZSBwcmlvcml0eSAgICAgMCAgICAgICAgICAg
+ICAgICAgICAgMFxwYXINCk1heCByZWFsdGltZSB0aW1lb3V0ICAgICAgdW5saW1pdGVkICAgICAg
+ICAgICAgdW5saW1pdGVkICAgICAgICAgICAgdXNccGFyDQpbcm9vdEBsb2NhbGhvc3Qgfl0jIGNh
+dCAvcHJvYy8yNTk2NC9zdGF0dXNccGFyDQpOYW1lOiAgIG9wZW52cG5ccGFyDQpTdGF0ZTogIFMg
+KHNsZWVwaW5nKVxwYXINClRnaWQ6ICAgMjU5NjRccGFyDQpQaWQ6ICAgIDI1OTY0XHBhcg0KUFBp
+ZDogICAxXHBhcg0KVHJhY2VyUGlkOiAgICAgIDBccGFyDQpVaWQ6ICAgIDAgICAgICAgMCAgICAg
+ICAwICAgICAgIDBccGFyDQpHaWQ6ICAgIDAgICAgICAgMCAgICAgICAwICAgICAgIDBccGFyDQpV
+dHJhY2U6IDBccGFyDQpGRFNpemU6IDQwOTZccGFyDQpHcm91cHM6IDBccGFyDQpWbVBlYWs6ICAz
+MzI0NzU2IGtCXHBhcg0KVm1TaXplOiAgMzMyNDc1MiBrQlxwYXINClZtTGNrOiAgICAgICAgIDAg
+a0JccGFyDQpWbVBpbjogICAgICAgICAwIGtCXHBhcg0KVm1IV006ICAgMjY1MjIyNCBrQlxwYXIN
+ClZtUlNTOiAgIDI2NTIyMjAga0JccGFyDQpWbURhdGE6ICAzMjgxMDAwIGtCXHBhcg0KVm1TdGs6
+ICAgICAgIDEzNiBrQlxwYXINClZtRXhlOiAgICAgICA2MjQga0JccGFyDQpWbUxpYjogICAgICA1
+ODEyIGtCXHBhcg0KVm1QVEU6ICAgICAgNjUxNiBrQlxwYXINClZtU3dhcDogICAgICAgIDAga0Jc
+cGFyDQpUaHJlYWRzOiAgICAgICAgMVxwYXINClNpZ1E6ICAgMC81OTMwMlxwYXINClNpZ1BuZDog
+MDAwMDAwMDAwMDAwMDAwMFxwYXINClNoZFBuZDogMDAwMDAwMDAwMDAwMDAwMFxwYXINClNpZ0Js
+azogMDAwMDAwMDAwMDAwMDAwMFxwYXINClNpZ0lnbjogMDAwMDAwMDAwMDAwMTAwMFxwYXINClNp
+Z0NndDogMDAwMDAwMDE4MDAwNGEwM1xwYXINCkNhcEluaDogMDAwMDAwMDAwMDAwMDAwMFxwYXIN
+CkNhcFBybTogZmZmZmZmZmZmZmZmZmZmZlxwYXINCkNhcEVmZjogZmZmZmZmZmZmZmZmZmZmZlxw
+YXINCkNhcEJuZDogZmZmZmZmZmZmZmZmZmZmZlxwYXINCkNwdXNfYWxsb3dlZDogICAzXHBhcg0K
+Q3B1c19hbGxvd2VkX2xpc3Q6ICAgICAgMC0xXHBhcg0KTWVtc19hbGxvd2VkOiAgIDAwMDAwMDAw
+LDAwMDAwMDAwLDAwMDAwMDAwLDAwMDAwMDAwLDAwMDAwMDAwLDAwMDAwMDAwLDAwMDAwMDAwLDAw
+MDAwMDAwLDAwMDAwMDAwLDAwMDAwMDAwLDAwMDAwMDAwLDAwMDAwMDAwLDAwMDAwMDAwLDAwMDAw
+MDAwLDAwMDAwMDAwLDAwMDAwMDAxXHBhcg0KTWVtc19hbGxvd2VkX2xpc3Q6ICAgICAgMFxwYXIN
+CnZvbHVudGFyeV9jdHh0X3N3aXRjaGVzOiAgICAgICAgNTM0NDcwN1xwYXINCm5vbnZvbHVudGFy
+eV9jdHh0X3N3aXRjaGVzOiAgICAgNjQ4NjQ4XHBhcg0KW3Jvb3RAbG9jYWxob3N0IH5dI1xwYXIN
+ClxwYXINCltyb290QGxvY2FsaG9zdCB+XSMgbHNvZiAtbiB8d2MgLWxccGFyDQo0NjMyXHBhcg0K
+W3Jvb3RAbG9jYWxob3N0IH5dI1xwYXINClxwYXINCl5DW2VjMi11c2VyQGxvY2FsaG9zdCB+XWlw
+IC02IG5laWdoIHNob3cgfCBncmVwIGZlZDAgfCB3YyAtbFxwYXINCjI5NDRccGFyDQpbZWMyLXVz
+ZXJAbG9jYWxob3N0IH5dJFxwYXINClxwYXINCltlYzItdXNlckBsb2NhbGhvc3Qgfl0kIGlwIC02
+IG5laWdoIHNob3cgfCBncmVwIGZlODAgfCB3YyAtbFxwYXINCjIxOVxwYXINCltlYzItdXNlckBs
+b2NhbGhvc3Qgfl0kXHBhcg0KXHBhcg0KW2VjMi11c2VyQGxvY2FsaG9zdCB+XSQgaXAgLTYgbmVp
+Z2ggc2hvdyB8IHdjIC1sXHBhcg0KMzE2NFxwYXINCltlYzItdXNlckBsb2NhbGhvc3Qgfl0kXHBh
+cg0KXHBhcg0KMTc6MTg6XHBhcg0KdG9wIC0gMTU6MTg6MDUgdXAgMiBkYXlzLCA1NiBtaW4sICAz
+IHVzZXJzLCAgbG9hZCBhdmVyYWdlOiAwLjA0LCAwLjA4LCAwLjEwXHBhcg0KVGFza3M6ICA3NyB0
+b3RhbCwgICAxIHJ1bm5pbmcsICA3NiBzbGVlcGluZywgICAwIHN0b3BwZWQsICAgMCB6b21iaWVc
+cGFyDQpDcHUocyk6ICAwLjMldXMsICA4LjElc3ksICAwLjAlbmksIDkxLjQlaWQsICAwLjAld2Es
+ICAwLjAlaGksICAwLjIlc2ksICAwLjAlc3RccGFyDQpNZW06ICAgNzYyOTkyMGsgdG90YWwsICAz
+MTE2OTY4ayB1c2VkLCAgNDUxMjk1MmsgZnJlZSwgICAgODEwNjBrIGJ1ZmZlcnNccGFyDQpTd2Fw
+OiAgICAgICAgMGsgdG90YWwsICAgICAgICAwayB1c2VkLCAgICAgICAgMGsgZnJlZSwgICAxNzc2
+NDBrIGNhY2hlZFxwYXINClxwYXINCltyb290QGxvY2FsaG9zdCBvcGVudnBuXSMgIHRvcFxwYXIN
+CnRvcCAtIDE1OjIyOjIwIHVwIDIgZGF5cywgIDE6MDAsICAzIHVzZXJzLCAgbG9hZCBhdmVyYWdl
+OiAwLjUxLCAwLjIzLCAwLjE1XHBhcg0KVGFza3M6ICA3NyB0b3RhbCwgICAxIHJ1bm5pbmcsICA3
+NiBzbGVlcGluZywgICAwIHN0b3BwZWQsICAgMCB6b21iaWVccGFyDQpDcHUocyk6ICAwLjQldXMs
+IDExLjglc3ksICAwLjAlbmksIDg3LjYlaWQsICAwLjAld2EsICAwLjAlaGksICAwLjElc2ksICAw
+LjAlc3RccGFyDQpNZW06ICAgNzYyOTkyMGsgdG90YWwsICAzMTE4MDcyayB1c2VkLCAgNDUxMTg0
+OGsgZnJlZSwgICAgODEyMjRrIGJ1ZmZlcnNccGFyDQpTd2FwOiAgICAgICAgMGsgdG90YWwsICAg
+ICAgICAwayB1c2VkLCAgICAgICAgMGsgZnJlZSwgICAxNzgxNjhrIGNhY2hlZFxwYXINClxwYXIN
+ClxiXHBhcg0KMTc6MjI6ICgyMyc1OCIgc2luY2UgbGFzdCByZXN0YXJ0IG9mIE9wZW52cG4sIGFs
+bG9jYXRlZCBhbmQgcmVzZXJ2ZWQgbWVtb3J5IHN0YWJsZSBmb3IgaG91cnMpXHBhcg0KXGIwIFty
+b290QGxvY2FsaG9zdCBvcGVudnBuXSMgIHRvcFxwYXINCnRvcCAtIDE1OjIyOjIwIHVwIDIgZGF5
+cywgIDE6MDAsICAzIHVzZXJzLCAgbG9hZCBhdmVyYWdlOiAwLjUxLCAwLjIzLCAwLjE1XHBhcg0K
+VGFza3M6ICA3NyB0b3RhbCwgICAxIHJ1bm5pbmcsICA3NiBzbGVlcGluZywgICAwIHN0b3BwZWQs
+ICAgMCB6b21iaWVccGFyDQpDcHUocyk6ICAwLjQldXMsIDExLjglc3ksICAwLjAlbmksIDg3LjYl
+aWQsICAwLjAld2EsICAwLjAlaGksICAwLjElc2ksICAwLjAlc3RccGFyDQpNZW06ICAgNzYyOTky
+MGsgdG90YWwsICAzMTE4MDcyayB1c2VkLCAgNDUxMTg0OGsgZnJlZSwgICAgODEyMjRrIGJ1ZmZl
+cnNccGFyDQpTd2FwOiAgICAgICAgMGsgdG90YWwsICAgICAgICAwayB1c2VkLCAgICAgICAgMGsg
+ZnJlZSwgICAxNzgxNjhrIGNhY2hlZFxwYXINClxwYXINCiAgUElEIFVTRVIgICAgICBQUiAgTkkg
+IFZJUlQgIFJFUyAgU0hSIFMgJUNQVSAlTUVNICAgIFRJTUUrICBDT01NQU5EXHBhcg0KMjU5NjQg
+cm9vdCAgICAgIDIwICAgMCAzMjQ2bSAyLjVnIDIwNDggUyAgMS43IDM0LjggMTE1OjM4Ljc0IG9w
+ZW52cG5ccGFyDQogIDIzMCByb290ICAgICAgMjAgICAwIDU0ODQwIDE0MzYgMTE3MiBTICAwLjMg
+IDAuMCAgIDA6MzguODggc3lzdGVtZC1qb3VybmFsXHBhcg0KICAgIDEgcm9vdCAgICAgIDIwICAg
+MCA2NTkyNCAgMjNtIDIwODggUyAgMC4wICAwLjMgICAwOjAxLjY1IHN5c3RlbWRccGFyDQogICAg
+MiByb290ICAgICAgMjAgICAwICAgICAwICAgIDAgICAgMCBTICAwLjAgIDAuMCAgIDA6MDAuMDAg
+a3RocmVhZGRccGFyDQpccGFyDQpcY2YxXGJcZnMyOCAxNzoyNjpcY2YwXGIwXHBhcg0KXGZzMjIg
+dG9wIC0gMTU6MjY6MzYgdXAgMiBkYXlzLCAgMTowNSwgIDQgdXNlcnMsICBsb2FkIGF2ZXJhZ2U6
+IDAuMjQsIDAuMjQsIDAuMTdccGFyDQpUYXNrczogIDgwIHRvdGFsLCAgIDEgcnVubmluZywgIDc5
+IHNsZWVwaW5nLCAgIDAgc3RvcHBlZCwgICAwIHpvbWJpZVxwYXINCkNwdShzKTogIDAuNyV1cywg
+MTQuOSVzeSwgIDAuMCVuaSwgODQuMiVpZCwgIDAuMCV3YSwgIDAuMCVoaSwgIDAuMSVzaSwgIDAu
+MCVzdFxwYXINCk1lbTogICA3NjI5OTIwayB0b3RhbCwgIDMzNTAzMTZrIHVzZWQsICA0Mjc5NjA0
+ayBmcmVlLCAgICA4MTQxMmsgYnVmZmVyc1xwYXINClN3YXA6ICAgICAgICAwayB0b3RhbCwgICAg
+ICAgIDBrIHVzZWQsICAgICAgICAwayBmcmVlLCAgIDE3OTE5MmsgY2FjaGVkXHBhcg0KXHBhcg0K
+ICBQSUQgVVNFUiAgICAgIFBSICBOSSAgVklSVCAgUkVTICBTSFIgUyAlQ1BVICVNRU0gICAgVElN
+RSsgIENPTU1BTkRccGFyDQoyNTk2NCByb290ICAgICAgMjAgICAwIDM0NzVtIDIuN2cgMjA0OCBT
+ICAzLjMgMzcuNyAxMTY6MTQuNDIgb3BlbnZwblxwYXINCjI1ODk3IHJvb3QgICAgICAyMCAgIDAg
+NTAxMDQgMzkxNiAxODY0IFMgIDAuMyAgMC4xICAgMDo0OC43NyBvcGVudnBuXHBhcg0KICAgIDEg
+cm9vdCAgICAgIDIwICAgMCA2NTkyNCAgMjNtIDIwODggUyAgMC4wICAwLjMgICAwOjAxLjY1IHN5
+c3RlbWRccGFyDQogICAgMiByb290ICAgICAgMjAgICAwICAgICAwICAgIDAgICAgMCBTICAwLjAg
+IDAuMCAgIDA6MDAuMDAga3RocmVhZGRccGFyDQpccGFyDQpcY2YxXGJcZnMyOCAxNzoyOFxsaW5l
+XGNmMFxiMFxmczIyXGxpbmUgW3Jvb3RAbG9jYWxob3N0IG9wZW52cG5dIyAgdG9wXHBhcg0KdG9w
+IC0gMTU6Mjg6MjIgdXAgMiBkYXlzLCAgMTowNywgIDQgdXNlcnMsICBsb2FkIGF2ZXJhZ2U6IDAu
+MzUsIDAuMjYsIDAuMThccGFyDQpUYXNrczogIDgwIHRvdGFsLCAgIDMgcnVubmluZywgIDc3IHNs
+ZWVwaW5nLCAgIDAgc3RvcHBlZCwgICAwIHpvbWJpZVxwYXINCkNwdShzKTogIDUuNyV1cywgMzIu
+NyVzeSwgIDAuMCVuaSwgMzUuMSVpZCwgIDAuMCV3YSwgMTQuNSVoaSwgIDAuMSVzaSwgMTEuOCVz
+dFxwYXINCk1lbTogICA3NjI5OTIwayB0b3RhbCwgIDM0NDAxOTJrIHVzZWQsICA0MTg5NzI4ayBm
+cmVlLCAgICA4MTQ5NmsgYnVmZmVyc1xwYXINClN3YXA6ICAgICAgICAwayB0b3RhbCwgICAgICAg
+IDBrIHVzZWQsICAgICAgICAwayBmcmVlLCAgIDE3OTY0OGsgY2FjaGVkXHBhcg0KXHBhcg0KICBQ
+SUQgVVNFUiAgICAgIFBSICBOSSAgVklSVCAgUkVTICBTSFIgUyAlQ1BVICVNRU0gICAgVElNRSsg
+IENPTU1BTkRccGFyDQoyNTk2NCByb290ICAgICAgMjAgICAwIDM1NjltIDIuOGcgMjA0OCBSIDM0
+LjkgMzguOSAxMTY6MjcuNzggb3BlbnZwblxwYXINCiAgMjMwIHJvb3QgICAgICAyMCAgIDAgNTQ4
+NDQgMTUzNiAxMjcyIFIgIDMuNyAgMC4wICAgMDo0NC43NCBzeXN0ZW1kLWpvdXJuYWxccGFyDQoy
+MzM1MSBlYzItdXNlciAgMjAgICAwICAxMTFtIDIxMjQgMTYzNiBTICAwLjMgIDAuMCAgIDA6MDAu
+MDQgYmFzaFxwYXINCiAgICAxIHJvb3QgICAgICAyMCAgIDAgNjU5MjQgIDIzbSAyMDg4IFMgIDAu
+MCAgMC4zICAgMDowMS42NSBzeXN0ZW1kXHBhcg0KICAgIDIgcm9vdCAgICAgIDIwICAgMCAgICAg
+MCAgICAwICAgIDAgUyAgMC4wICAwLjAgICAwOjAwLjAwIGt0aHJlYWRkXHBhcg0KICAgIDMgcm9v
+dCAgICAgIDIwICAgMCAgICAgMCAgICAwICAgIDAgUyAgMC4wICAwLjAgICAwOjAwLjEzIGtzb2Z0
+aXJxZC8wXHBhcg0KICAgIDUgcm9vdCAgICAgIDIwICAgMCAgICAgMCAgICAwICAgIDAgUyAgMC4w
+ICAwLjAgICAwOjAwLjAwIGt3b3JrZXIvdTowXHBhcg0KXHBhcg0KXGNmMVxiXGZzMjggMTc6MzBc
+bGluZVxjZjBcYjBcZnMyMlxwYXINCltyb290QGxvY2FsaG9zdCBvcGVudnBuXSMgIHRvcFxwYXIN
+CnRvcCAtIDE1OjI4OjIyIHVwIDIgZGF5cywgIDE6MDcsICA0IHVzZXJzLCAgbG9hZCBhdmVyYWdl
+OiAwLjM1LCAwLjI2LCAwLjE4XHBhcg0KVGFza3M6ICA4MCB0b3RhbCwgICAzIHJ1bm5pbmcsICA3
+NyBzbGVlcGluZywgICAwIHN0b3BwZWQsICAgMCB6b21iaWVccGFyDQpDcHUocyk6ICA1LjcldXMs
+IDMyLjclc3ksICAwLjAlbmksIDM1LjElaWQsICAwLjAld2EsIDE0LjUlaGksICAwLjElc2ksIDEx
+Ljglc3RccGFyDQpNZW06ICAgNzYyOTkyMGsgdG90YWwsICAzNDQwMTkyayB1c2VkLCAgNDE4OTcy
+OGsgZnJlZSwgICAgODE0OTZrIGJ1ZmZlcnNccGFyDQpTd2FwOiAgICAgICAgMGsgdG90YWwsICAg
+ICAgICAwayB1c2VkLCAgICAgICAgMGsgZnJlZSwgICAxNzk2NDhrIGNhY2hlZFxwYXINClxwYXIN
+CiAgUElEIFVTRVIgICAgICBQUiAgTkkgIFZJUlQgIFJFUyAgU0hSIFMgJUNQVSAlTUVNICAgIFRJ
+TUUrICBDT01NQU5EXHBhcg0KMjU5NjQgcm9vdCAgICAgIDIwICAgMCAzNTY5bSAyLjhnIDIwNDgg
+UiAzNC45IDM4LjkgMTE2OjI3Ljc4IG9wZW52cG5ccGFyDQogIDIzMCByb290ICAgICAgMjAgICAw
+IDU0ODQ0IDE1MzYgMTI3MiBSICAzLjcgIDAuMCAgIDA6NDQuNzQgc3lzdGVtZC1qb3VybmFsXHBh
+cg0KMjMzNTEgZWMyLXVzZXIgIDIwICAgMCAgMTExbSAyMTI0IDE2MzYgUyAgMC4zICAwLjAgICAw
+OjAwLjA0IGJhc2hccGFyDQogICAgMSByb290ICAgICAgMjAgICAwIDY1OTI0ICAyM20gMjA4OCBT
+ICAwLjAgIDAuMyAgIDA6MDEuNjUgc3lzdGVtZFxwYXINCiAgICAyIHJvb3QgICAgICAyMCAgIDAg
+ICAgIDAgICAgMCAgICAwIFMgIDAuMCAgMC4wICAgMDowMC4wMCBrdGhyZWFkZFxwYXINCiAgICAz
+IHJvb3QgICAgICAyMCAgIDAgICAgIDAgICAgMCAgICAwIFMgIDAuMCAgMC4wICAgMDowMC4xMyBr
+c29mdGlycWQvMFxwYXINCiAgICA1IHJvb3QgICAgICAyMCAgIDAgICAgIDAgICAgMCAgICAwIFMg
+IDAuMCAgMC4wICAgMDowMC4wMCBrd29ya2VyL3U6MFxwYXINClxwYXINClxjZjFcYlxmczI4IDE3
+OjMyXGxpbmVcY2YwXGIwXGZzMjJccGFyDQpbcm9vdEBsb2NhbGhvc3Qgb3BlbnZwbl0jICB0b3Bc
+cGFyDQp0b3AgLSAxNToyOTo1NiB1cCAyIGRheXMsICAxOjA4LCAgNCB1c2VycywgIGxvYWQgYXZl
+cmFnZTogMC4xNywgMC4yMiwgMC4xN1xwYXINClRhc2tzOiAgODAgdG90YWwsICAgMSBydW5uaW5n
+LCAgNzkgc2xlZXBpbmcsICAgMCBzdG9wcGVkLCAgIDAgem9tYmllXHBhcg0KQ3B1KHMpOiAgMS4w
+JXVzLCAxMS45JXN5LCAgMC4wJW5pLCA4My43JWlkLCAgMC4wJXdhLCAgMS4wJWhpLCAgMC43JXNp
+LCAgMS42JXN0XHBhcg0KTWVtOiAgIDc2Mjk5MjBrIHRvdGFsLCAgMzUyMzM0MGsgdXNlZCwgIDQx
+MDY1ODBrIGZyZWUsICAgIDgxNTQwayBidWZmZXJzXHBhcg0KU3dhcDogICAgICAgIDBrIHRvdGFs
+LCAgICAgICAgMGsgdXNlZCwgICAgICAgIDBrIGZyZWUsICAgMTc5OTQ0ayBjYWNoZWRccGFyDQpc
+cGFyDQogIFBJRCBVU0VSICAgICAgUFIgIE5JICBWSVJUICBSRVMgIFNIUiBTICVDUFUgJU1FTSAg
+ICBUSU1FKyAgQ09NTUFORFxwYXINCjI1OTY0IHJvb3QgICAgICAyMCAgIDAgMzY0N20gMi45ZyAy
+MDQ4IFMgIDQuNyAzOS45IDExNjozNS4yNiBvcGVudnBuXHBhcg0KICAyMzAgcm9vdCAgICAgIDIw
+ICAgMCA1NDgzNiAxNDMyIDExNjggUyAgMi43ICAwLjAgICAwOjQ1Ljg2IHN5c3RlbWQtam91cm5h
+bFxwYXINCjE2MjQ4IHJvb3QgICAgICAyMCAgIDAgIDEwNG0gIDYwMCAgNTEyIFMgIDAuMyAgMC4w
+ICAgMDowMC4xMSB0YWlsXHBhcg0KMjQyOTAgcm9vdCAgICAgIDIwICAgMCAxNTIzNiAxMjI0ICA5
+MzIgUiAgMC4zICAwLjAgICAwOjAwLjA3IHRvcFxwYXINCiAgICAxIHJvb3QgICAgICAyMCAgIDAg
+NjU5MjQgIDIzbSAyMDg4IFMgIDAuMCAgMC4zICAgMDowMS42NSBzeXN0ZW1kXHBhcg0KICAgIDIg
+cm9vdCAgICAgIDIwICAgMCAgICAgMCAgICAwICAgIDAgUyAgMC4wICAwLjAgICAwOjAwLjAwIGt0
+aHJlYWRkXHBhcg0KICAgIDMgcm9vdCAgICAgIDIwICAgMCAgICAgMCAgICAwICAgIDAgUyAgMC4w
+ICAwLjAgICAwOjAwLjEzIGtzb2Z0aXJxZC8wXHBhcg0KXHBhcg0KXGNmMVxiXGZzMjggMTc6MzVc
+bGluZVxjZjBcYjBcZnMyMlxwYXINCltyb290QGxvY2FsaG9zdCBvcGVudnBuXSMgdG9wXHBhcg0K
+dG9wIC0gMTU6MzU6MDQgdXAgMiBkYXlzLCAgMToxMywgIDQgdXNlcnMsICBsb2FkIGF2ZXJhZ2U6
+IDAuNDEsIDAuMzIsIDAuMjNccGFyDQpUYXNrczogIDgxIHRvdGFsLCAgIDEgcnVubmluZywgIDgw
+IHNsZWVwaW5nLCAgIDAgc3RvcHBlZCwgICAwIHpvbWJpZVxwYXINCkNwdShzKTogIDAuNiV1cywg
+IDMuOSVzeSwgIDAuMCVuaSwgOTUuMCVpZCwgIDAuMiV3YSwgIDAuMiVoaSwgIDAuMiVzaSwgIDAu
+MCVzdFxwYXINCk1lbTogICA3NjI5OTIwayB0b3RhbCwgIDM2OTU3ODRrIHVzZWQsICAzOTM0MTM2
+ayBmcmVlLCAgICA4MTczMmsgYnVmZmVyc1xwYXINClN3YXA6ICAgICAgICAwayB0b3RhbCwgICAg
+ICAgIDBrIHVzZWQsICAgICAgICAwayBmcmVlLCAgIDE4MTkzNmsgY2FjaGVkXHBhcg0KXHBhcg0K
+ICBQSUQgVVNFUiAgICAgIFBSICBOSSAgVklSVCAgUkVTICBTSFIgUyAlQ1BVICVNRU0gICAgVElN
+RSsgIENPTU1BTkRccGFyDQoyNTk2NCByb290ICAgICAgMjAgICAwIDM4MjNtIDMuMWcgMjA0OCBT
+ICAyLjAgNDIuMiAxMTc6MjAuMzggb3BlbnZwblxwYXINCjI2MjUzIHJvb3QgICAgICAyMCAgIDAg
+MTUyNDAgMTIzMiAgOTMyIFIgIDAuMyAgMC4wICAgMDowMC4wNyB0b3BccGFyDQogICAgMSByb290
+ICAgICAgMjAgICAwIDY1OTI0ICAyM20gMjA4OCBTICAwLjAgIDAuMyAgIDA6MDEuNjUgc3lzdGVt
+ZFxwYXINCiAgICAyIHJvb3QgICAgICAyMCAgIDAgICAgIDAgICAgMCAgICAwIFMgIDAuMCAgMC4w
+ICAgMDowMC4wMCBrdGhyZWFkZFxwYXINCiAgICAzIHJvb3QgICAgICAyMCAgIDAgICAgIDAgICAg
+MCAgICAwIFMgIDAuMCAgMC4wICAgMDowMC4xMyBrc29mdGlycWQvMFxwYXINCiAgICA1IHJvb3Qg
+ICAgICAyMCAgIDAgICAgIDAgICAgMCAgICAwIFMgIDAuMCAgMC4wICAgMDowMC4wMCBrd29ya2Vy
+L3U6MFxwYXINCiAgICA2IHJvb3QgICAgICBSVCAgIDAgICAgIDAgICAgMCAgICAwIFMgIDAuMCAg
+MC4wICAgMDowMC4wMCBtaWdyYXRpb24vMFxwYXINCiAgICA3IHJvb3QgICAgICBSVCAgIDAgICAg
+IDAgICAgMCAgICAwIFMgIDAuMCAgMC4wICAgMDowMC42MiB3YXRjaGRvZy8wXHBhcg0KXHBhcg0K
+XGNmMVxiXGZzMjggMTc6MzdcbGluZVxjZjBcYjBcZnMyMlxwYXINCltyb290QGxvY2FsaG9zdCBv
+cGVudnBuXSMgdG9wXHBhcg0KdG9wIC0gMTU6MzU6MDQgdXAgMiBkYXlzLCAgMToxMywgIDQgdXNl
+cnMsICBsb2FkIGF2ZXJhZ2U6IDAuNDEsIDAuMzIsIDAuMjNccGFyDQpUYXNrczogIDgxIHRvdGFs
+LCAgIDEgcnVubmluZywgIDgwIHNsZWVwaW5nLCAgIDAgc3RvcHBlZCwgICAwIHpvbWJpZVxwYXIN
+CkNwdShzKTogIDAuNiV1cywgIDMuOSVzeSwgIDAuMCVuaSwgOTUuMCVpZCwgIDAuMiV3YSwgIDAu
+MiVoaSwgIDAuMiVzaSwgIDAuMCVzdFxwYXINCk1lbTogICA3NjI5OTIwayB0b3RhbCwgIDM2OTU3
+ODRrIHVzZWQsICAzOTM0MTM2ayBmcmVlLCAgICA4MTczMmsgYnVmZmVyc1xwYXINClN3YXA6ICAg
+ICAgICAwayB0b3RhbCwgICAgICAgIDBrIHVzZWQsICAgICAgICAwayBmcmVlLCAgIDE4MTkzNmsg
+Y2FjaGVkXHBhcg0KXHBhcg0KICBQSUQgVVNFUiAgICAgIFBSICBOSSAgVklSVCAgUkVTICBTSFIg
+UyAlQ1BVICVNRU0gICAgVElNRSsgIENPTU1BTkRccGFyDQoyNTk2NCByb290ICAgICAgMjAgICAw
+IDM4MjNtIDMuMWcgMjA0OCBTICAyLjAgNDIuMiAxMTc6MjAuMzggb3BlbnZwblxwYXINCjI2MjUz
+IHJvb3QgICAgICAyMCAgIDAgMTUyNDAgMTIzMiAgOTMyIFIgIDAuMyAgMC4wICAgMDowMC4wNyB0
+b3BccGFyDQogICAgMSByb290ICAgICAgMjAgICAwIDY1OTI0ICAyM20gMjA4OCBTICAwLjAgIDAu
+MyAgIDA6MDEuNjUgc3lzdGVtZFxwYXINCiAgICAyIHJvb3QgICAgICAyMCAgIDAgICAgIDAgICAg
+MCAgICAwIFMgIDAuMCAgMC4wICAgMDowMC4wMCBrdGhyZWFkZFxwYXINCiAgICAzIHJvb3QgICAg
+ICAyMCAgIDAgICAgIDAgICAgMCAgICAwIFMgIDAuMCAgMC4wICAgMDowMC4xMyBrc29mdGlycWQv
+MFxwYXINCiAgICA1IHJvb3QgICAgICAyMCAgIDAgICAgIDAgICAgMCAgICAwIFMgIDAuMCAgMC4w
+ICAgMDowMC4wMCBrd29ya2VyL3U6MFxwYXINClxwYXINClxjZjFcYlxmczI4IDE3OjQwXGNmMFxi
+MFxmczIyXHBhcg0KW3Jvb3RAbG9jYWxob3N0IG9wZW52cG5dIyB0b3BccGFyDQp0b3AgLSAxNTo0
+MDowNyB1cCAyIGRheXMsICAxOjE4LCAgNCB1c2VycywgIGxvYWQgYXZlcmFnZTogMC4yNywgMC4z
+NiwgMC4yOFxwYXINClRhc2tzOiAgODEgdG90YWwsICAgMiBydW5uaW5nLCAgNzkgc2xlZXBpbmcs
+ICAgMCBzdG9wcGVkLCAgIDAgem9tYmllXHBhcg0KQ3B1KHMpOiAgMC42JXVzLCAzMC43JXN5LCAg
+MC4wJW5pLCA0Ni4zJWlkLCAgMC4yJXdhLCAxMy4wJWhpLCAgMC4wJXNpLCAgOS4zJXN0XHBhcg0K
+TWVtOiAgIDc2Mjk5MjBrIHRvdGFsLCAgMzg0NDA5NmsgdXNlZCwgIDM3ODU4MjRrIGZyZWUsICAg
+IDgxOTAwayBidWZmZXJzXHBhcg0KU3dhcDogICAgICAgIDBrIHRvdGFsLCAgICAgICAgMGsgdXNl
+ZCwgICAgICAgIDBrIGZyZWUsICAgMTgzMzYwayBjYWNoZWRccGFyDQpccGFyDQogIFBJRCBVU0VS
+ICAgICAgUFIgIE5JICBWSVJUICBSRVMgIFNIUiBTICVDUFUgJU1FTSAgICBUSU1FKyAgQ09NTUFO
+RFxwYXINCjI1OTY0IHJvb3QgICAgICAyMCAgIDAgMzk2OG0gMy4yZyAyMDQ4IFIgNjAuNSA0NC4x
+IDExODoxMC45OCBvcGVudnBuXHBhcg0KICAyMzAgcm9vdCAgICAgIDIwICAgMCA1NDgzNiAxNTMy
+IDEyNjggRCAgMC43ICAwLjAgICAwOjU3LjEzIHN5c3RlbWQtam91cm5hbFxwYXINCjI4MTAxIHJv
+b3QgICAgICAyMCAgIDAgMTUyMzYgMTIyOCAgOTMyIFIgIDAuMyAgMC4wICAgMDowMC4xNCB0b3Bc
+cGFyDQoyOTA2NiBlYzItdXNlciAgMjAgICAwIDE1MjQ0IDEyNDAgIDkzNiBTICAwLjMgIDAuMCAg
+IDA6MDAuMDMgdG9wXHBhcg0KICAgIDEgcm9vdCAgICAgIDIwICAgMCA2NTkyNCAgMjNtIDIwODgg
+UyAgMC4wICAwLjMgICAwOjAxLjY1IHN5c3RlbWRccGFyDQogICAgMiByb290ICAgICAgMjAgICAw
+ICAgICAwICAgIDAgICAgMCBTICAwLjAgIDAuMCAgIDA6MDAuMDAga3RocmVhZGRccGFyDQogICAg
+MyByb290ICAgICAgMjAgICAwICAgICAwICAgIDAgICAgMCBTICAwLjAgIDAuMCAgIDA6MDAuMTMg
+a3NvZnRpcnFkLzBccGFyDQpcY2YxXGJcZnMyOCAxNzo0MVxjZjBcYjBcZnMyMlxwYXINCltyb290
+QGxvY2FsaG9zdCBvcGVudnBuXSMgdG9wXHBhcg0KdG9wIC0gMTU6NDA6MDcgdXAgMiBkYXlzLCAg
+MToxOCwgIDQgdXNlcnMsICBsb2FkIGF2ZXJhZ2U6IDAuMjcsIDAuMzYsIDAuMjhccGFyDQpUYXNr
+czogIDgxIHRvdGFsLCAgIDIgcnVubmluZywgIDc5IHNsZWVwaW5nLCAgIDAgc3RvcHBlZCwgICAw
+IHpvbWJpZVxwYXINCkNwdShzKTogIDAuNiV1cywgMzAuNyVzeSwgIDAuMCVuaSwgNDYuMyVpZCwg
+IDAuMiV3YSwgMTMuMCVoaSwgIDAuMCVzaSwgIDkuMyVzdFxwYXINCk1lbTogICA3NjI5OTIwayB0
+b3RhbCwgIDM4NDQwOTZrIHVzZWQsICAzNzg1ODI0ayBmcmVlLCAgICA4MTkwMGsgYnVmZmVyc1xw
+YXINClN3YXA6ICAgICAgICAwayB0b3RhbCwgICAgICAgIDBrIHVzZWQsICAgICAgICAwayBmcmVl
+LCAgIDE4MzM2MGsgY2FjaGVkXHBhcg0KXHBhcg0KICBQSUQgVVNFUiAgICAgIFBSICBOSSAgVklS
+VCAgUkVTICBTSFIgUyAlQ1BVICVNRU0gICAgVElNRSsgIENPTU1BTkRccGFyDQoyNTk2NCByb290
+ICAgICAgMjAgICAwIFxjZjIgMzk2OG1cY2YwICBcY2YyIDMuMmcgXGNmMCAyMDQ4IFIgNjAuNSA0
+NC4xIDExODoxMC45OCBvcGVudnBuXHBhcg0KICAyMzAgcm9vdCAgICAgIDIwICAgMCA1NDgzNiAx
+NTMyIDEyNjggRCAgMC43ICAwLjAgICAwOjU3LjEzIHN5c3RlbWQtam91cm5hbFxwYXINCjI4MTAx
+IHJvb3QgICAgICAyMCAgIDAgMTUyMzYgMTIyOCAgOTMyIFIgIDAuMyAgMC4wICAgMDowMC4xNCB0
+b3BccGFyDQoyOTA2NiBlYzItdXNlciAgMjAgICAwIDE1MjQ0IDEyNDAgIDkzNiBTICAwLjMgIDAu
+MCAgIDA6MDAuMDMgdG9wXHBhcg0KICAgIDEgcm9vdCAgICAgIDIwICAgMCA2NTkyNCAgMjNtIDIw
+ODggUyAgMC4wICAwLjMgICAwOjAxLjY1IHN5c3RlbWRccGFyDQogICAgMiByb290ICAgICAgMjAg
+ICAwICAgICAwICAgIDAgICAgMCBTICAwLjAgIDAuMCAgIDA6MDAuMDAga3RocmVhZGRccGFyDQog
+ICAgMyByb290ICAgICAgMjAgICAwICAgICAwICAgIDAgICAgMCBTICAwLjAgIDAuMCAgIDA6MDAu
+MTMga3NvZnRpcnFkLzBccGFyDQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09XHBhcg0KXHBhcg0KXGNmMiBPY3QgIDkgMTU6NDA6MjkgaXAtMTAtNTYtNjEtMTUyIG9wZW52
+cG5bMjU5NjRdOiBvcGVudnBuX2V4ZWN2ZTogdW5hYmxlIHRvIGZvcms6IENhbm5vdCBhbGxvY2F0
+ZSBtZW1vcnkgKGVycm5vPTEyKVxwYXINCk9jdCAgOSAxNTo0MDoyOSBpcC0xMC01Ni02MS0xNTIg
+b3BlbnZwblsyNTk2NF06IEV4aXRpbmcgZHVlIHRvIGZhdGFsIGVycm9yXHBhcg0KT2N0ICA5IDE1
+OjQwOjI5IGlwLTEwLTU2LTYxLTE1MiBvcGVudnBuWzI1OTY0XTogQ2xvc2luZyBUVU4vVEFQIGlu
+dGVyZmFjZVxwYXINCk9jdCAgOSAxNTo0MDoyOSBpcC0xMC01Ni02MS0xNTIgb3BlbnZwblsyNTk2
+NF06IC91c3Ivc2Jpbi9pcCBhZGRyIGRlbCBkZXYgdGFwMSAxNzIuMTYuMC4xLzE3XHBhcg0KT2N0
+ICA5IDE1OjQwOjI5IGlwLTEwLTU2LTYxLTE1MiBvcGVudnBuWzI1OTY0XTogb3BlbnZwbl9leGVj
+dmU6IHVuYWJsZSB0byBmb3JrOiBDYW5ub3QgYWxsb2NhdGUgbWVtb3J5IChlcnJubz0xMilccGFy
+DQpPY3QgIDkgMTU6NDA6MjkgaXAtMTAtNTYtNjEtMTUyIG9wZW52cG5bMjU5NjRdOiBFeGl0aW5n
+IGR1ZSB0byBmYXRhbCBlcnJvclxwYXINClxjZjBccGFyDQp9DQoA
 
---------------010107050804060203020906--
+--=_mixed 005D1755C1257BFF_=--
 
