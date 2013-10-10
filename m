@@ -1,9 +1,10 @@
 MIME-Version: 1.0
 From: arno.odermatt@...1845...
-Message-ID: <OF79EFD264.3773FA52-ONC1257BFF.0058CA29-C1257BFF.005D17D5@...1846...>
-Date: Wed, 9 Oct 2013 18:56:49 +0200
-Content-Type: multipart/mixed; boundary="=_mixed 005D1755C1257BFF_="
+Message-ID: <OF84EDADBC.E6A45A95-ONC1257C00.00301BFD-C1257C00.003278C0@...1846...>
+Date: Thu, 10 Oct 2013 11:11:16 +0200
+Content-Type: multipart/mixed; boundary="=_mixed 00327682C1257C00_="
 Subject: [Openvpn-devel] Openvpn 2.3.2 potential memory-leak after 24hours
+	(addendum1)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,14 +15,120 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
---=_mixed 005D1755C1257BFF_=
+--=_mixed 00327682C1257C00_=
 Content-Type: multipart/alternative;
-	boundary="=_alternative 005D1755C1257BFF_="
+	boundary="=_alternative 00327682C1257C00_="
 
---=_alternative 005D1755C1257BFF_=
+--=_alternative 00327682C1257C00_=
 Content-Type: text/plain; charset="US-ASCII"
 
-All,
+Dear all,
+
+we found our certificate renegotiating timer to be set to 86400secs = 24h.
+Therefore, we strongly assume, potentially a memory leak occurs in the 
+renegotiating phase of the keys (passwords) as already earlier described 
+in the mailing-list by "Brad Zhang" (Sept. 27. 2013)  and 
+treated/discussed by David Sommerseth.
+
+
+http://sourceforge.net/mailarchive/forum.php?thread_name=52456F61.3000104%40topphemmelig.net&forum_name=openvpn-devel
+
+
+our server side config-file:
+reneg-sec 86400
+
+
+ more /etc/openvpn/server.cnf 
+
+;log /var/log/openvpn_cgwvpn.log
+
+# Set server mode
+mode server
+float
+management tunnel 7505
+port 443
+proto tcp-server
+max-clients 5000
+
+# Use Ethernet tunnel
+dev tap
+
+# The IPv4 addresses are used to establish the tunnel
+# All traffic is routed using IPv6 addresses
+ifconfig 172.16.0.1 255.255.128.0
+ifconfig-pool 172.16.1.1 172.16.127.254 255.255.128.0
+
+# Server certificate settings
+tls-server
+dh /etc/openvpn/servervpn/keys/dh1024.pem
+ca /etc/openvpn/servervpn/keys/ca.crt
+cert /etc/openvpn/servervpn/keys/CLTVpnSrv.crt
+key /etc/openvpn/servervpn/keys/CLTVpnSrv.key
+
+# Keep tunnel open
+persist-tun
+persist-key
+
+# keep-alive ping
+# -> keepalive 10 60
+# will also be pushed to the client
+# if mode server:
+#   ping 10
+#   ping-restart 120
+#   push "ping 10"
+#   push "ping-restart 60"
+# else
+#   ping 10
+#   ping-restart 60
+keepalive 240 600
+
+# Renegotiate data channel key once per day
+reneg-sec 86400
+
+# optimize timout of slow GPRS connections
+tcp-queue-limit 256
+tcp-nodelay
+tls-timeout 60
+hand-window 120
+sndbuf 262144
+txqueuelen 400
+bcast-buffers 4096
+
+# enable LZO compression
+comp-lzo
+
+# moderate verbosity
+verb 0
+mute 10
+
+#Execute scripts
+script-security 2 system
+up /etc/openvpn/servervpn/vpn-up.sh
+down /etc/openvpn/servervpn/vpn-down.sh
+client-connect /etc/openvpn/servervpn/client-connect.sh
+client-disconnect /etc/openvpn/servervpn/client-disconnect.sh
+tmp-dir /var/tmp
+[root@...23... ~]
+
+Any reply on this and idea for a soonest fix would be appreciated
+
+thx and regards, 
+
+AO
+
+
+
+
+
+From:   arno.odermatt@...1845...
+To:     openvpn-devel@lists.sourceforge.net, 
+Date:   09.10.2013 19:19
+Subject:        [Openvpn-devel] Openvpn 2.3.2 potential memory-leak after 
+24hours
+
+
+
+All, 
 
 we are running Openvpn 2.3.2 on Fedora17/64Bit with 8GByte RAM total (EoL, 
 yes we are aware) and seem to run into a memory leak situation, as 
@@ -30,7 +137,7 @@ following:
 - around 2955 Openvpn session running OK for 23'58"
 - memory allocated 3247mByte, memory reserved 2.5gByte, CPU utilization 
 ~1% (see "status-prior-o-vpnrestart-131009.rtf")
-- script-security 2 (in openvpn.conf)
+- script-security 2 (in openvpn.conf) 
 
 After exactly 24hours, allocated and reserved memory of the 
 openvpn-process start to increase in 1-2Mbyte steps, without seeing an 
@@ -44,65 +151,69 @@ The behavior of this symptom has been recognized in Openvpn 2.2.2-7 and
 
 > Openvpn 2.2.2-7: keeps reporting "external program fork failed"
  
-  2.2.2-7 endlessly keeps reporting a fork failed, when the client-connect 
+ 2.2.2-7 endlessly keeps reporting a fork failed, when the client-connect 
 script should be executed, no new openvpn sessions can be established but 
-the process stays alive.
+the process stays alive. 
 
 WARNING: Failed running command (--client-connect): external program fork 
-failed
+failed 
+WARNING: Failed running command (--client-connect): external program fork 
+failed 
 WARNING: Failed running command (--client-connect): external program fork 
 failed
-WARNING: Failed running command (--client-connect): external program fork 
-failed
 
 
 
-> Openvpn 2.3.2: exiting due to fatal error (openvpn is killed)
+> Openvpn 2.3.2: exiting due to fatal error (openvpn is killed) 
 
 When a certain memory stage from a perspective of allocated and reserved 
-memory is reached, following scenario happens:
+memory is reached, following scenario happens: 
 
 Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: openvpn_execve: unable to 
-fork: Cannot allocate memory (errno=12)
-Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: Exiting due to fatal error
+fork: Cannot allocate memory (errno=12) 
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: Exiting due to fatal error 
+
 Please, can you analyze the issue and send us a feedback about the 
 possible root cause and mitigation?
 
-snip log:
-------------------------------
+snip log: 
+------------------------------ 
 Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: openvpn_execve: unable to 
-fork: Cannot allocate memory (errno=12)
-Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: Exiting due to fatal error
-Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: Closing TUN/TAP interface
+fork: Cannot allocate memory (errno=12) 
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: Exiting due to fatal error 
+
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: Closing TUN/TAP interface 
 Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: /usr/sbin/ip addr del dev 
-tap1 172.16.0.1/17
+tap1 172.16.0.1/17 
 Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: openvpn_execve: unable to 
-fork: Cannot allocate memory (errno=12)
-Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: Exiting due to fatal error
-^C[ec2-user@...23... ~]$
-[ec2-user@...23... ~]$ sudo tail -f /var/log/messages
+fork: Cannot allocate memory (errno=12) 
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: Exiting due to fatal error 
+
+^C[ec2-user@...23... ~]$ 
+[ec2-user@...23... ~]$ sudo tail -f /var/log/messages 
 Oct  9 15:40:27 ip-10-56-61-152 openvpn[25964]: 
-NL-200000134777/109.37.153.117:41299 NOTE: --mute triggered...
+NL-200000134777/109.37.153.117:41299 NOTE: --mute triggered... 
 Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: 
 DE-2024460/139.7.160.82:42187 40 variation(s) on previous 10 message(s) 
-suppressed by --mute
+suppressed by --mute 
 Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: 
-DE-2024460/139.7.160.82:42187 Connection reset, restarting [0]
+DE-2024460/139.7.160.82:42187 Connection reset, restarting [0] 
 Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: 
 DE-2024460/139.7.160.82:42187 SIGUSR1[soft,connection-reset] received, 
-client-instance restarting
+client-instance restarting 
 Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: openvpn_execve: unable to 
-fork: Cannot allocate memory (errno=12)
-Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: Exiting due to fatal error
-Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: Closing TUN/TAP interface
+fork: Cannot allocate memory (errno=12) 
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: Exiting due to fatal error 
+
+Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: Closing TUN/TAP interface 
 Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: /usr/sbin/ip addr del dev 
-tap1 172.16.0.1/17
+tap1 172.16.0.1/17 
 Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: openvpn_execve: unable to 
-fork: Cannot allocate memory (errno=12)
+fork: Cannot allocate memory (errno=12) 
 Oct  9 15:40:29 ip-10-56-61-152 openvpn[25964]: Exiting due to fatal error
 
 
-thx and regards,
+thx and regards, 
 
 AO
 
@@ -111,127 +222,286 @@ ________________________________________________________________________________
 
 
 
+******************************************************
+Notice: The information contained in this message is intended only for use 
+of the individual(s) named above and may contain confidential, proprietary 
+or legally privileged information. No confidentiality or privilege is 
+waived or lost by any mistransmission. If you are not the intended 
+recipient of this message you are hereby notified that you must not use, 
+disseminate , copy it in any form or take any action in reliance of it. If 
+you have received this message in error please delete it and any copies of 
+it and notify the sender immediately.
+*******************************************************
+------------------------------------------------------------------------------
+October Webinars: Code for Performance
+Free Intel webinars can help you accelerate application performance.
+Explore tips for MPI, OpenMP, advanced profiling, and more. Get the most 
+from 
+the latest Intel processors and coprocessors. See abstracts and register >
+http://pubads.g.doubleclick.net/gampad/clk?id=60134071&iu=/4140/ostg.clktrk
+_______________________________________________
+Openvpn-devel mailing list
+Openvpn-devel@lists.sourceforge.net
+https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
 
 ******************************************************
 Notice: The information contained in this message is intended only for use of the individual(s) named above and may contain confidential, proprietary or legally privileged information. No confidentiality or privilege is waived or lost by any mistransmission. If you are not the intended recipient of this message you are hereby notified that you must not use, disseminate , copy it in any form or take any action in reliance of it. If you have received this message in error please delete it and any copies of it and notify the sender immediately.
 *******************************************************
---=_alternative 005D1755C1257BFF_=
+--=_alternative 00327682C1257C00_=
 Content-Type: text/html; charset="US-ASCII"
 
-<font size=2 face="sans-serif">All,</font>
+<font size=2 face="sans-serif">Dear all,</font>
 <br>
-<br><font size=2 face="sans-serif">we are running Openvpn 2.3.2 on Fedora17/64Bit
-with 8GByte RAM total (EoL, yes we are aware) and seem to run into a memory
-leak situation, as following:<br>
+<br><font size=2 face="sans-serif">we found our certificate renegotiating
+timer to be set to 86400secs = 24h.<br>
+Therefore, we strongly assume, potentially a memory leak occurs in the
+renegotiating phase of the keys (passwords) as already earlier described
+in the mailing-list by </font><tt><font size=3>&quot;Brad Zhang&quot; (Sept.
+27. 2013) </font></tt><font size=2 face="sans-serif">&nbsp;and treated/discussed
+by David Sommerseth.</font>
+<table width=100% style="border-collapse:collapse;">
+<tr height=8>
+<td width=100% style="border-style:solid;border-color:#000000;border-width:0px 0px 0px 0px;padding:0px 0px;"><font size=1><br>
+</font>
+<table width=100% style="border-collapse:collapse;">
+<tr height=8>
+<td width=100% style="border-style:solid;border-color:#000000;border-width:0px 0px 0px 0px;padding:1px 1px;"><a href="http://sourceforge.net/mailarchive/forum.php?thread_name=52456F61.3000104%40topphemmelig.net&amp;forum_name=openvpn-devel"><tt><font size=3>http://sourceforge.net/mailarchive/forum.php?thread_name=52456F61.3000104%40topphemmelig.net&amp;forum_name=openvpn-devel</font></tt></a></table>
+<br></table>
+<br>
+<br><font size=2 face="sans-serif">our server side config-file:</font>
+<br><font size=2 face="sans-serif"><b>reneg-sec 86400</b><br>
+<br>
+<br>
+ more /etc/openvpn/server.cnf </font>
+<br>
+<br><font size=2 face="sans-serif">;log /var/log/openvpn_cgwvpn.log</font>
+<br>
+<br><font size=2 face="sans-serif"># Set server mode</font>
+<br><font size=2 face="sans-serif">mode server</font>
+<br><font size=2 face="sans-serif">float</font>
+<br><font size=2 face="sans-serif">management tunnel 7505</font>
+<br><font size=2 face="sans-serif">port 443</font>
+<br><font size=2 face="sans-serif">proto tcp-server</font>
+<br><font size=2 face="sans-serif">max-clients 5000</font>
+<br>
+<br><font size=2 face="sans-serif"># Use Ethernet tunnel</font>
+<br><font size=2 face="sans-serif">dev tap</font>
+<br>
+<br><font size=2 face="sans-serif"># The IPv4 addresses are used to establish
+the tunnel</font>
+<br><font size=2 face="sans-serif"># All traffic is routed using IPv6 addresses</font>
+<br><font size=2 face="sans-serif">ifconfig 172.16.0.1 255.255.128.0</font>
+<br><font size=2 face="sans-serif">ifconfig-pool 172.16.1.1 172.16.127.254
+255.255.128.0</font>
+<br>
+<br><font size=2 face="sans-serif"># Server certificate settings</font>
+<br><font size=2 face="sans-serif">tls-server</font>
+<br><font size=2 face="sans-serif">dh /etc/openvpn/servervpn/keys/dh1024.pem</font>
+<br><font size=2 face="sans-serif">ca /etc/openvpn/servervpn/keys/ca.crt</font>
+<br><font size=2 face="sans-serif">cert /etc/openvpn/servervpn/keys/CLTVpnSrv.crt</font>
+<br><font size=2 face="sans-serif">key /etc/openvpn/servervpn/keys/CLTVpnSrv.key</font>
+<br>
+<br><font size=2 face="sans-serif"># Keep tunnel open</font>
+<br><font size=2 face="sans-serif">persist-tun</font>
+<br><font size=2 face="sans-serif">persist-key</font>
+<br>
+<br><font size=2 face="sans-serif"># keep-alive ping</font>
+<br><font size=2 face="sans-serif"># -&gt; keepalive 10 60</font>
+<br><font size=2 face="sans-serif"># will also be pushed to the client</font>
+<br><font size=2 face="sans-serif"># if mode server:</font>
+<br><font size=2 face="sans-serif"># &nbsp; ping 10</font>
+<br><font size=2 face="sans-serif"># &nbsp; ping-restart 120</font>
+<br><font size=2 face="sans-serif"># &nbsp; push &quot;ping 10&quot;</font>
+<br><font size=2 face="sans-serif"># &nbsp; push &quot;ping-restart 60&quot;</font>
+<br><font size=2 face="sans-serif"># else</font>
+<br><font size=2 face="sans-serif"># &nbsp; ping 10</font>
+<br><font size=2 face="sans-serif"># &nbsp; ping-restart 60</font>
+<br><font size=2 face="sans-serif">keepalive 240 600</font>
+<br>
+<br><font size=2 face="sans-serif"># Renegotiate data channel key once
+per day</font>
+<br><font size=2 face="sans-serif"><b>reneg-sec 86400</b></font>
+<br>
+<br><font size=2 face="sans-serif"># optimize timout of slow GPRS connections</font>
+<br><font size=2 face="sans-serif">tcp-queue-limit 256</font>
+<br><font size=2 face="sans-serif">tcp-nodelay</font>
+<br><font size=2 face="sans-serif">tls-timeout 60</font>
+<br><font size=2 face="sans-serif">hand-window 120</font>
+<br><font size=2 face="sans-serif">sndbuf 262144</font>
+<br><font size=2 face="sans-serif">txqueuelen 400</font>
+<br><font size=2 face="sans-serif">bcast-buffers 4096</font>
+<br>
+<br><font size=2 face="sans-serif"># enable LZO compression</font>
+<br><font size=2 face="sans-serif">comp-lzo</font>
+<br>
+<br><font size=2 face="sans-serif"># moderate verbosity</font>
+<br><font size=2 face="sans-serif">verb 0</font>
+<br><font size=2 face="sans-serif">mute 10</font>
+<br>
+<br><font size=2 face="sans-serif">#Execute scripts</font>
+<br><font size=2 face="sans-serif">script-security 2 system</font>
+<br><font size=2 face="sans-serif">up /etc/openvpn/servervpn/vpn-up.sh</font>
+<br><font size=2 face="sans-serif">down /etc/openvpn/servervpn/vpn-down.sh</font>
+<br><font size=2 face="sans-serif">client-connect /etc/openvpn/servervpn/client-connect.sh</font>
+<br><font size=2 face="sans-serif">client-disconnect /etc/openvpn/servervpn/client-disconnect.sh</font>
+<br><font size=2 face="sans-serif">tmp-dir /var/tmp</font>
+<br><font size=2 face="sans-serif">[root@...23... ~]</font>
+<br>
+<br><font size=2 face="sans-serif">Any reply on this and idea for a soonest
+fix would be appreciated<br>
+</font>
+<br><font size=2 face="sans-serif">thx and regards,</font><font size=3>
+<br>
+</font><font size=2 face="sans-serif"><br>
+AO<br>
+</font><font size=1 color=#5f5f5f face="Arial"><br>
+</font><font size=1 color=#008000 face="Arial"><br>
+</font>
+<br>
+<br>
+<br><font size=1 color=#5f5f5f face="sans-serif">From: &nbsp; &nbsp; &nbsp;
+&nbsp;</font><font size=1 face="sans-serif">arno.odermatt@...1845...</font>
+<br><font size=1 color=#5f5f5f face="sans-serif">To: &nbsp; &nbsp; &nbsp;
+&nbsp;</font><font size=1 face="sans-serif">openvpn-devel@lists.sourceforge.net,
+</font>
+<br><font size=1 color=#5f5f5f face="sans-serif">Date: &nbsp; &nbsp; &nbsp;
+&nbsp;</font><font size=1 face="sans-serif">09.10.2013 19:19</font>
+<br><font size=1 color=#5f5f5f face="sans-serif">Subject: &nbsp; &nbsp;
+&nbsp; &nbsp;</font><font size=1 face="sans-serif">[Openvpn-devel]
+Openvpn 2.3.2 potential memory-leak after 24hours</font>
+<br>
+<hr noshade>
+<br>
+<br>
+<br><font size=2 face="sans-serif">All,</font><font size=3> <br>
+</font><font size=2 face="sans-serif"><br>
+we are running Openvpn 2.3.2 on Fedora17/64Bit with 8GByte RAM total (EoL,
+yes we are aware) and seem to run into a memory leak situation, as following:<br>
 <br>
 - around 2955 Openvpn session running OK for 23'58&quot;<br>
 - memory allocated 3247mByte, memory reserved 2.5gByte, CPU utilization
 ~1% (see &quot;status-prior-o-vpnrestart-131009.rtf&quot;)<br>
-- script-security 2 (in openvpn.conf)</font>
-<br>
-<br><font size=2 face="sans-serif">After exactly 24hours, allocated and
-reserved memory of the openvpn-process start to increase in 1-2Mbyte steps,
-without seeing an increase in the amount of Openvpn sessions and steps
-up to around 3970mByte for the allocated and 3.2gByte for the reserved
-memory. Then Openvpn crashes! (see bottom &quot;status-prior-o-vpnrestart-131009.rtf&quot;)<br>
+- script-security 2 (in openvpn.conf)</font><font size=3> <br>
+</font><font size=2 face="sans-serif"><br>
+After exactly 24hours, allocated and reserved memory of the openvpn-process
+start to increase in 1-2Mbyte steps, without seeing an increase in the
+amount of Openvpn sessions and steps up to around 3970mByte for the allocated
+and 3.2gByte for the reserved memory. Then Openvpn crashes! (see bottom
+&quot;status-prior-o-vpnrestart-131009.rtf&quot;)<br>
 <br>
 The behavior of this symptom has been recognized in Openvpn 2.2.2-7 and
-2.3.2 as following:<br>
-</font>
+2.3.2 as following:</font><font size=3><br>
 <br>
-<br><font size=2 face="sans-serif">&gt; Openvpn 2.2.2-7: keeps reporting
-&quot;</font><font size=2 face="Calibri">external program fork failed</font><font size=2 face="sans-serif">&quot;<br>
- &nbsp; <br>
- &nbsp;2.2.2-7 endlessly keeps reporting a fork failed, when the client-connect
-script should be executed, no new openvpn sessions can be established but
-the process stays alive.</font>
-<br>
-<br><font size=2 face="Calibri">WARNING: Failed running command (--client-connect):
-external program fork failed</font>
-<br><font size=2 face="Calibri">WARNING: Failed running command (--client-connect):
-external program fork failed</font>
-<br><font size=2 face="Calibri">WARNING: Failed running command (--client-connect):
-external program fork failed</font><font size=2 face="sans-serif"><br>
-<br>
-</font>
-<br>
-<br><font size=2 face="sans-serif">&gt; Openvpn 2.3.2: exiting due to fatal
-error (openvpn is killed)</font>
-<br><font size=2 face="sans-serif"><br>
-When a certain memory stage from a perspective of allocated and reserved
-memory is reached, following scenario happens:</font>
-<br><font size=2 face="sans-serif"><br>
-</font><font size=2 color=red face="Calibri">Oct &nbsp;9 15:40:29 ip-10-56-61-152
-openvpn[25964]: openvpn_execve: unable to fork: Cannot allocate memory
-(errno=12)</font>
-<br><font size=2 color=red face="Calibri">Oct &nbsp;9 15:40:29 ip-10-56-61-152
-openvpn[25964]: Exiting due to fatal error</font>
-<p><font size=2 face="sans-serif">Please, can you analyze the issue and
-send us a feedback about the possible root cause and mitigation?<br>
-</font>
-<br><font size=2 face="sans-serif">snip log:</font>
-<br><font size=2 face="sans-serif">------------------------------</font>
-<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
-openvpn[25964]: openvpn_execve: unable to fork: Cannot allocate memory
-(errno=12)</font>
-<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
-openvpn[25964]: Exiting due to fatal error</font>
-<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
-openvpn[25964]: Closing TUN/TAP interface</font>
-<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
-openvpn[25964]: /usr/sbin/ip addr del dev tap1 172.16.0.1/17</font>
-<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
-openvpn[25964]: openvpn_execve: unable to fork: Cannot allocate memory
-(errno=12)</font>
-<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
-openvpn[25964]: Exiting due to fatal error</font>
-<br><font size=2 face="sans-serif">^C[ec2-user@...23... ~]$</font>
-<br><font size=2 face="sans-serif">[ec2-user@...23... ~]$ sudo tail -f
-/var/log/messages</font>
-<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:27 ip-10-56-61-152
-openvpn[25964]: NL-200000134777/109.37.153.117:41299 NOTE: --mute triggered...</font>
-<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
-openvpn[25964]: DE-2024460/139.7.160.82:42187 40 variation(s) on previous
-10 message(s) suppressed by --mute</font>
-<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
-openvpn[25964]: DE-2024460/139.7.160.82:42187 Connection reset, restarting
-[0]</font>
-<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
-openvpn[25964]: DE-2024460/139.7.160.82:42187 SIGUSR1[soft,connection-reset]
-received, client-instance restarting</font>
-<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
-openvpn[25964]: openvpn_execve: unable to fork: Cannot allocate memory
-(errno=12)</font>
-<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
-openvpn[25964]: Exiting due to fatal error</font>
-<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
-openvpn[25964]: Closing TUN/TAP interface</font>
-<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
-openvpn[25964]: /usr/sbin/ip addr del dev tap1 172.16.0.1/17</font>
-<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
-openvpn[25964]: openvpn_execve: unable to fork: Cannot allocate memory
-(errno=12)</font>
-<br><font size=2 face="sans-serif">Oct &nbsp;9 15:40:29 ip-10-56-61-152
-openvpn[25964]: <b>Exiting due to fatal error<br>
-</b><br>
-</font>
-<br><font size=2 face="sans-serif">thx and regards,</font>
-<br>
-<br><font size=2 face="sans-serif">AO<br>
-</font><font size=1 face="Arial"><br>
-_____________________________________________________________________________________________________________________________________________
 </font><font size=2 face="sans-serif"><br>
+&gt; Openvpn 2.2.2-7: keeps reporting &quot;</font><font size=2 face="Calibri">external
+program fork failed</font><font size=2 face="sans-serif">&quot;<br>
+ &nbsp;<br>
+ 2.2.2-7 endlessly keeps reporting a fork failed, when the client-connect
+script should be executed, no new openvpn sessions can be established but
+the process stays alive.</font><font size=3> <br>
+</font><font size=2 face="Calibri"><br>
+WARNING: Failed running command (--client-connect): external program fork
+failed</font><font size=3> </font><font size=2 face="Calibri"><br>
+WARNING: Failed running command (--client-connect): external program fork
+failed</font><font size=3> </font><font size=2 face="Calibri"><br>
+WARNING: Failed running command (--client-connect): external program fork
+failed</font><font size=2 face="sans-serif"><br>
+</font><font size=3><br>
+<br>
+</font><font size=2 face="sans-serif"><br>
+&gt; Openvpn 2.3.2: exiting due to fatal error (openvpn is killed)</font><font size=3>
+</font><font size=2 face="sans-serif"><br>
+<br>
+When a certain memory stage from a perspective of allocated and reserved
+memory is reached, following scenario happens:</font><font size=3> </font><font size=2 face="sans-serif"><br>
+</font><font size=2 color=red face="Calibri"><br>
+Oct &nbsp;9 15:40:29 ip-10-56-61-152 openvpn[25964]: openvpn_execve: unable
+to fork: Cannot allocate memory (errno=12)</font><font size=3> </font><font size=2 color=red face="Calibri"><br>
+Oct &nbsp;9 15:40:29 ip-10-56-61-152 openvpn[25964]: Exiting due to fatal
+error</font><font size=3> </font>
+<p><font size=2 face="sans-serif">Please, can you analyze the issue and
+send us a feedback about the possible root cause and mitigation?</font><font size=3><br>
+</font><font size=2 face="sans-serif"><br>
+snip log:</font><font size=3> </font><font size=2 face="sans-serif"><br>
+------------------------------</font><font size=3> </font><font size=2 face="sans-serif"><br>
+Oct &nbsp;9 15:40:29 ip-10-56-61-152 openvpn[25964]: openvpn_execve: unable
+to fork: Cannot allocate memory (errno=12)</font><font size=3> </font><font size=2 face="sans-serif"><br>
+Oct &nbsp;9 15:40:29 ip-10-56-61-152 openvpn[25964]: Exiting due to fatal
+error</font><font size=3> </font><font size=2 face="sans-serif"><br>
+Oct &nbsp;9 15:40:29 ip-10-56-61-152 openvpn[25964]: Closing TUN/TAP interface</font><font size=3>
+</font><font size=2 face="sans-serif"><br>
+Oct &nbsp;9 15:40:29 ip-10-56-61-152 openvpn[25964]: /usr/sbin/ip addr
+del dev tap1 172.16.0.1/17</font><font size=3> </font><font size=2 face="sans-serif"><br>
+Oct &nbsp;9 15:40:29 ip-10-56-61-152 openvpn[25964]: openvpn_execve: unable
+to fork: Cannot allocate memory (errno=12)</font><font size=3> </font><font size=2 face="sans-serif"><br>
+Oct &nbsp;9 15:40:29 ip-10-56-61-152 openvpn[25964]: Exiting due to fatal
+error</font><font size=3> </font><font size=2 face="sans-serif"><br>
+^C[ec2-user@...23... ~]$</font><font size=3> </font><font size=2 face="sans-serif"><br>
+[ec2-user@...23... ~]$ sudo tail -f /var/log/messages</font><font size=3>
+</font><font size=2 face="sans-serif"><br>
+Oct &nbsp;9 15:40:27 ip-10-56-61-152 openvpn[25964]: NL-200000134777/109.37.153.117:41299
+NOTE: --mute triggered...</font><font size=3> </font><font size=2 face="sans-serif"><br>
+Oct &nbsp;9 15:40:29 ip-10-56-61-152 openvpn[25964]: DE-2024460/139.7.160.82:42187
+40 variation(s) on previous 10 message(s) suppressed by --mute</font><font size=3>
+</font><font size=2 face="sans-serif"><br>
+Oct &nbsp;9 15:40:29 ip-10-56-61-152 openvpn[25964]: DE-2024460/139.7.160.82:42187
+Connection reset, restarting [0]</font><font size=3> </font><font size=2 face="sans-serif"><br>
+Oct &nbsp;9 15:40:29 ip-10-56-61-152 openvpn[25964]: DE-2024460/139.7.160.82:42187
+SIGUSR1[soft,connection-reset] received, client-instance restarting</font><font size=3>
+</font><font size=2 face="sans-serif"><br>
+Oct &nbsp;9 15:40:29 ip-10-56-61-152 openvpn[25964]: openvpn_execve: unable
+to fork: Cannot allocate memory (errno=12)</font><font size=3> </font><font size=2 face="sans-serif"><br>
+Oct &nbsp;9 15:40:29 ip-10-56-61-152 openvpn[25964]: Exiting due to fatal
+error</font><font size=3> </font><font size=2 face="sans-serif"><br>
+Oct &nbsp;9 15:40:29 ip-10-56-61-152 openvpn[25964]: Closing TUN/TAP interface</font><font size=3>
+</font><font size=2 face="sans-serif"><br>
+Oct &nbsp;9 15:40:29 ip-10-56-61-152 openvpn[25964]: /usr/sbin/ip addr
+del dev tap1 172.16.0.1/17</font><font size=3> </font><font size=2 face="sans-serif"><br>
+Oct &nbsp;9 15:40:29 ip-10-56-61-152 openvpn[25964]: openvpn_execve: unable
+to fork: Cannot allocate memory (errno=12)</font><font size=3> </font><font size=2 face="sans-serif"><br>
+Oct &nbsp;9 15:40:29 ip-10-56-61-152 openvpn[25964]: <b>Exiting due to
+fatal error</b><br>
+</font><font size=3><br>
+</font><font size=2 face="sans-serif"><br>
+thx and regards,</font><font size=3> <br>
+</font><font size=2 face="sans-serif"><br>
+AO</font><font size=1 face="Arial"><br>
+<br>
+_____________________________________________________________________________________________________________________________________________
 </font><font size=1 color=#5f5f5f face="Arial"><br>
 </font><font size=1 color=#008000 face="Arial"><br>
-</font>
+</font><font size=3><br>
+<br>
+******************************************************<br>
+Notice: The information contained in this message is intended only for
+use of the individual(s) named above and may contain confidential, proprietary
+or legally privileged information. No confidentiality or privilege is waived
+or lost by any mistransmission. If you are not the intended recipient of
+this message you are hereby notified that you must not use, disseminate
+, copy it in any form or take any action in reliance of it. If you have
+received this message in error please delete it and any copies of it and
+notify the sender immediately.<br>
+*******************************************************</font><tt><font size=2>------------------------------------------------------------------------------<br>
+October Webinars: Code for Performance<br>
+Free Intel webinars can help you accelerate application performance.<br>
+Explore tips for MPI, OpenMP, advanced profiling, and more. Get the most
+from <br>
+the latest Intel processors and coprocessors. See abstracts and register
+&gt;<br>
+</font></tt><a href="http://pubads.g.doubleclick.net/gampad/clk?id=60134071&amp;iu=/4140/ostg.clktrk"><tt><font size=2>http://pubads.g.doubleclick.net/gampad/clk?id=60134071&amp;iu=/4140/ostg.clktrk</font></tt></a><tt><font size=2>_______________________________________________<br>
+Openvpn-devel mailing list<br>
+Openvpn-devel@lists.sourceforge.net<br>
+</font></tt><a href="https://lists.sourceforge.net/lists/listinfo/openvpn-devel"><tt><font size=2>https://lists.sourceforge.net/lists/listinfo/openvpn-devel</font></tt></a><tt><font size=2><br>
+</font></tt>
 <br clear="both">
 ******************************************************<BR>
 Notice: The information contained in this message is intended only for use of the individual(s) named above and may contain confidential, proprietary or legally privileged information. No confidentiality or privilege is waived or lost by any mistransmission. If you are not the intended recipient of this message you are hereby notified that you must not use, disseminate , copy it in any form or take any action in reliance of it. If you have received this message in error please delete it and any copies of it and notify the sender immediately.<BR>
 *******************************************************<BR>
 
---=_alternative 005D1755C1257BFF_=--
+--=_alternative 00327682C1257C00_=--
 
---=_mixed 005D1755C1257BFF_=
+--=_mixed 00327682C1257C00_=
 Content-Type: application/rtf; name="status-prior-o-vpnrestart-131009.rtf"
 Content-Disposition: attachment;
 	filename="status-prior-o-vpnrestart-131009.rtf"
@@ -568,5 +838,5 @@ dmU6IHVuYWJsZSB0byBmb3JrOiBDYW5ub3QgYWxsb2NhdGUgbWVtb3J5IChlcnJubz0xMilccGFy
 DQpPY3QgIDkgMTU6NDA6MjkgaXAtMTAtNTYtNjEtMTUyIG9wZW52cG5bMjU5NjRdOiBFeGl0aW5n
 IGR1ZSB0byBmYXRhbCBlcnJvclxwYXINClxjZjBccGFyDQp9DQoA
 
---=_mixed 005D1755C1257BFF_=--
+--=_mixed 00327682C1257C00_=--
 
