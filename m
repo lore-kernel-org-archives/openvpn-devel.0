@@ -1,9 +1,10 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Tue, 15 Oct 2013 11:23:42 +0200
-Message-ID: <1381829022-15244-1-git-send-email-heiko.hund@...1489...>
+Message-ID: <525EA680.50308@...515...>
+Date: Wed, 16 Oct 2013 17:45:20 +0300
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Support non-ASCII TAP adapter names on
-	Windows
+References: <kvb1ud$dbt$1@...1062...>
+In-Reply-To: <kvb1ud$dbt$1@...1062...>
+Subject: Re: [Openvpn-devel] [PATCH] openvpn-build dep cache support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,71 +13,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: Josh Cepek <josh.cepek@...1085...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Currently the TAP adapter name is fetched as an OEM string, which
-is problematic if it contains non-ASCII characters and is to used
-with netsh. The logfile also contains these non UTF-8 characters.
 
-This patch fetches the name from the registry as UCS-2 and converts
-it right into UTF-8 before it's used.
+> The attached patch allows the openvpn-build system to create and use
+> cache tarballs for dependencies, preventing them from being built every
+> time (even when they haven't changed.) My VM build time went from ~12 to
+> under 2 minutes with this feature.
+>
+>
+Hi Josh,
 
-Signed-off-by: Heiko Hund <heiko.hund@...1489...>
----
- src/openvpn/tun.c |   15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+First of all sorry for the long delay.
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 86a43f2..9f53b23 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -3141,9 +3141,9 @@ get_panel_reg (struct gc_arena *gc)
-       char enum_name[256];
-       char connection_string[256];
-       HKEY connection_key;
--      char name_data[256];
-+      WCHAR name_data[256];
-       DWORD name_type;
--      const char name_string[] = "Name";
-+      const WCHAR name_string[] = L"Name";
- 
-       len = sizeof (enum_name);
-       status = RegEnumKeyEx(
-@@ -3177,12 +3177,12 @@ get_panel_reg (struct gc_arena *gc)
-       else
- 	{
- 	  len = sizeof (name_data);
--	  status = RegQueryValueEx(
-+	  status = RegQueryValueExW(
- 				   connection_key,
- 				   name_string,
- 				   NULL,
- 				   &name_type,
--				   name_data,
-+				   (LPBYTE) name_data,
- 				   &len);
- 
- 	  if (status != ERROR_SUCCESS || name_type != REG_SZ)
-@@ -3190,10 +3190,15 @@ get_panel_reg (struct gc_arena *gc)
- 		 NETWORK_CONNECTIONS_KEY, connection_string, name_string);
- 	  else
- 	    {
-+              int n;
-+              LPSTR name;
- 	      struct panel_reg *reg;
- 
- 	      ALLOC_OBJ_CLEAR_GC (reg, struct panel_reg, gc);
--	      reg->name = string_alloc (name_data, gc);
-+              n = WideCharToMultiByte (CP_UTF8, 0, name_data, -1, NULL, 0, NULL, NULL);
-+              name = gc_malloc (n, false, gc);
-+              WideCharToMultiByte (CP_UTF8, 0, name_data, -1, name, n, NULL, NULL);
-+              reg->name = name;
- 	      reg->guid = string_alloc (enum_name, gc);
- 		      
- 	      /* link into return list */
--- 
-1.7.9.5
+I tested your patch today and encountered a build failure when using the
+dependency cache. The following command seems properly to generate
+dependency cache packages to openvpn-build/generic/depcache:
+
+SAVE_DEP_CACHE=3D1 ./build-complete --sign --sign-pkcs12=3D<pkcs12-file>
+--sign-pkcs12-pass=3D<pkcs12-pass> --sign-timestamp=3D"<timestamp-server>"
+
+However, when I try to use the dependency cache I get a build failure:
+
+USE_DEP_CACHE=3D1 ./build-complete --sign --sign-pkcs12=3D<pkcs12-file>
+--sign-pkcs12-pass=3D<pkcs12-pass> --sign-timestamp=3D"<timestamp-server>"
+--- snip ---
+libtool: link: i686-w64-mingw32-gcc
+-I/home/samuli/openvpn-build/windows-nsis/tmp/image-i686/openvpn/include
+-I/home/samuli/openvpn-build/windows-nsis/tmp/image-i686/openvpn/include
+-I/home/samuli/openvpn-build/windows-nsis/tmp/image-i686/openvpn/include
+-I/home/samuli/openvpn-build/windows-nsis/tmp/image-i686/openvpn/include
+-I/home/samuli/openvpn-build/windows-nsis/tmp/image-i686/openvpn/include
+-municode -UUNICODE -o .libs/openvpn.exe base64.o buffer.o clinat.o
+crypto.o crypto_openssl.o crypto_polarssl.o dhcp.o error.o event.o
+fdmisc.o forward.o fragment.o gremlin.o helper.o httpdigest.o lladdr.o
+init.o interval.o list.o lzo.o manage.o mbuf.o misc.o platform.o
+console.o mroute.o mss.o mstats.o mtcp.o mtu.o mudp.o multi.o ntlm.o
+occ.o pkcs11.o pkcs11_openssl.o pkcs11_polarssl.o openvpn.o options.o
+otime.o packet_id.o perf.o pf.o ping.o plugin.o pool.o proto.o proxy.o
+ps.o push.o reliable.o route.o schedule.o session_id.o shaper.o sig.o
+socket.o socks.o ssl.o ssl_openssl.o ssl_polarssl.o ssl_verify.o
+ssl_verify_openssl.o ssl_verify_polarssl.o status.o tun.o win32.o
+cryptoapi.o openvpn_win32_resources.o=20
+../../src/compat/.libs/libcompat.a
+-L/home/samuli/openvpn-build/windows-nsis/tmp/image-i686/openvpn/lib
+/home/samuli/openvpn-build/windows-nsis/tmp/image-i686/openvpn/lib/liblzo2.=
+dll.a
+/home/samuli/openvpn-build/windows-nsis/tmp/image-i686/openvpn/lib/libpkcs1=
+1-helper.dll.a
+-L/home/samuli/openvpn-build/windows-nsis/tmp/image-x86_64/openvpn/lib
+-lssl -lcrypto -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm
+-L/home/samuli/openvpn-build/windows-nsis/tmp/image-i686/openvpn/lib
+crypto_openssl.o:crypto_openssl.c:(.text+0x160): undefined reference to
+`_EVP_CipherInit'
+crypto_openssl.o:crypto_openssl.c:(.text+0x18f): undefined reference to
+`_EVP_CipherUpdate'
+crypto_openssl.o:crypto_openssl.c:(.text+0x1dc): undefined reference to
+`_ERR_clear_error'
+crypto_openssl.o:crypto_openssl.c:(.text+0x219): undefined reference to
+`_OBJ_nid2sn'
+crypto_openssl.o:crypto_openssl.c:(.text+0x221): undefined reference to
+`_EVP_get_cipherbyname'
+crypto_openssl.o:crypto_openssl.c:(.text+0x239): undefined reference to
+`_OBJ_nid2sn'
+crypto_openssl.o:crypto_openssl.c:(.text+0x250): undefined reference to
+`_EVP_CIPHER_flags'
+crypto_openssl.o:crypto_openssl.c:(.text+0x269): undefined reference to
+`_EVP_CIPHER_flags'
+crypto_openssl.o:crypto_openssl.c:(.text+0x287): undefined reference to
+`_EVP_CIPHER_key_length'
+--- snip ---
+
+If I don't use the dependency cache the build completes succesfully. Am
+I using the cache functionality the way it's supposed to?
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
 
