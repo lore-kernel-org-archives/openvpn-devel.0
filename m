@@ -1,12 +1,16 @@
-Message-ID: <52669036.80805@...1847...>
-Date: Tue, 22 Oct 2013 16:48:22 +0200
-From: =?UTF-8?B?QW5kcsOpIFZhbGVudGlu?= <avalentin@...1847...>
-MIME-Version: 1.0
+Date: Tue, 22 Oct 2013 17:50:27 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20131022155026.GH161@...1296...>
 References: <8c01c399-7f0c-477d-9bbe-dab589231ffc@...1848...>
 	<526636AA.50402@...1847...> <52668B8D.2050908@...1435...>
-In-Reply-To: <52668B8D.2050908@...1435...>
+	<52669036.80805@...1847...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="CMebLzmeJATad/OR"
+Content-Disposition: inline
+In-Reply-To: <52669036.80805@...1847...>
 Subject: Re: [Openvpn-devel] [PATCH] Floating: Add support for floating in
- TLS mode
+	TLS mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,38 +19,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+To: =?iso-8859-1?Q?Andr=E9?= Valentin <avalentin@...1847...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--CMebLzmeJATad/OR
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
 
-Hi Steffan,
+Hi,
 
-at firsts thanks for taking a review!
+On Tue, Oct 22, 2013 at 04:48:22PM +0200, Andr=E9 Valentin wrote:
+> It should, but I will post a fixed patch tonight. Do you want it for mast=
+er
+> or release2.3?
 
+Master, please.  Everything goes into master first, and if we decide it
+goes into 2.3, is cherry-picked master->2.3
 
-On 22.10.2013 16:28, Steffan Karger wrote:
-> Thank you for coding and sharing! I marked your original mail for later
-> processing, just had not gotten to it yet. This is a cool feature, and
-> it has been proposed before on this list (see
-> http://thread.gmane.org/gmane.network.openvpn.devel/7384/focus=3D7395).
-Yepp, I really wondern when I discovered that it is currently missing.
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-> Returning to your patch, I did not fully review the code, but it at
-> least has the same problem: you are using a non-constant time memcmp to
-> compare HMAC's, which would introduce a possible side-channel
-> vulnerability. The solution is simple: use memcmp_constant_time() from
-> crypto.c.
-No problem, I switched to the standard function because I thought it is
-not relevant in this scenario where the time "is added".
+--CMebLzmeJATad/OR
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-> While taking a peak at your patch I tried to apply it on my local
-> codebase, but got conflicts on both the master and release/2.3 branches.
-> On what commit did you base the patch? It would be nice if it would
-> apply clean to at least the master branch.
-It should, but I will post a fixed patch tonight. Do you want it for master
-or release2.3?
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
 
-Kind regards,
+iQCVAwUBUmaewqkuBuNlUUl1AQJj0wQAmm9zOnrM/XaruYCPFBZeeSx63yF5y4rv
+N8OuGe2KCr/WWr8Nla3fGNLtud5zDd1ZtT8AMuIkFrAjax2nuvoEH8oJ+0qaHZSB
+otRGJUw/caCAPQLwXAwxVr3SVKzKNAiP68vtHSt8qQ7bWs/4TCKPlrAuRiheueQt
+CiX1d1U3tOA=
+=ptGy
+-----END PGP SIGNATURE-----
 
-Andr=C3=A9
+--CMebLzmeJATad/OR--
 
