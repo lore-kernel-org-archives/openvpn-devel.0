@@ -1,17 +1,9 @@
-Date: Tue, 22 Oct 2013 14:13:36 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20131022121336.GE161@...1296...>
-References: <OF80C424FD.27405071-ONC1257C07.004692C7-C1257C07.004BC866@...1846...>
-	<20131017141929.GC161@...1296...>
-	<OF103608A1.B8847B78-ONC1257C0B.002E1D46-C1257C0B.002F1965@...1846...>
-	<20131022114017.GD161@...1296...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="2Mhf1+ydQLhYCbMZ"
-Content-Disposition: inline
-In-Reply-To: <20131022114017.GD161@...1296...>
-Subject: Re: [Openvpn-devel] Openvpn 2.3.2 potential memory-leak after
-	24hours (addendum3)
+From: <steffan.karger@...1435...>
+Date: Tue, 22 Oct 2013 14:45:17 +0200
+Message-ID: <1382445917-2974-1-git-send-email-steffan.karger@...1435...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Require polarssl >= 1.2.10 for
+	polarssl-builds, which fixes CVE-2013-5915.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,52 +12,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: arno.odermatt@...1845...
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---2Mhf1+ydQLhYCbMZ
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: Steffan Karger <steffan.karger@...1435...>
 
-Hi,
+PolarSSL 1.2.9 fixes a possible timing attack in PolarSSL's RSA-CRT
+implementation. See CVE-2013-5915 for details. This commit bumps the
+minimum polarssl version required by configure.ac to 1.2.10, because 1.2.9
+also introduced a memory leak, which is fixed in 1.2.10.
 
-On Tue, Oct 22, 2013 at 01:40:18PM +0200, Gert Doering wrote:
-> I could use some ideas on how to debug this further - if valgrind isn't
-> complaining, normally our memory management should be OK, but why is
-> VSZ/RSZ still growing, then...?
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+ configure.ac | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Arne brought up a good point.  If we "lose" the memory inside the gc_*
-functions (as in: use the same gc block for a very long time, like
-"while OpenVPN runs", but *do* free it at the end), valgrind might not
-be able to see it - after all, we nicely cleaned up later - but we'll=20
-still grow out of bounds at runtime.
+diff --git a/configure.ac b/configure.ac
+index e0db333..9e666cd 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -809,13 +809,13 @@ if test "${with_crypto_library}" = "polarssl" ; then
+ #include <polarssl/version.h>
+ 			]],
+ 			[[
+-#if POLARSSL_VERSION_NUMBER < 0x01020500
++#if POLARSSL_VERSION_NUMBER < 0x01020A00
+ #error invalid version
+ #endif
+ 			]]
+ 		)],
+ 		[AC_MSG_RESULT([ok])],
+-		[AC_MSG_ERROR([PolarSSL 1.2.5 or newer required])]
++		[AC_MSG_ERROR([PolarSSL 1.2.10 or newer required])]
+ 	)
+ 
+ 	polarssl_with_pkcs11="no"
+-- 
+1.8.1.2
 
-Now, since 2.1 is supposedly not doing this, but 2.2.2 *is*, and the
-difference between those versions is not all that big, I really wonder
-where and how this got introduced.  Maybe time to do some git bisect...
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---2Mhf1+ydQLhYCbMZ
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
-
-iQCVAwUBUmZr76kuBuNlUUl1AQJY0QQAj7U86aD6rZ9a2PCQo3/S/ErV19MmlDEQ
-fKb8K8reNZDr8VmgoSH3SXA9jSY324J8dwrWlB9BfWlcg3OZBDHaiEWDrMwYIlTU
-WtAxNr0LvYFdL26J1/6HrWi+CVj0EHQkcmL0CDa+5onsT8DNhKrklXZvXcCmz+ql
-+JlfIQjUyq4=
-=K8zy
------END PGP SIGNATURE-----
-
---2Mhf1+ydQLhYCbMZ--
 
