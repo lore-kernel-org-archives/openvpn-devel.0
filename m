@@ -1,16 +1,11 @@
-Date: Tue, 22 Oct 2013 17:50:27 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20131022155026.GH161@...1296...>
-References: <8c01c399-7f0c-477d-9bbe-dab589231ffc@...1848...>
-	<526636AA.50402@...1847...> <52668B8D.2050908@...1435...>
-	<52669036.80805@...1847...>
+From: Josh Cepek <josh.cepek@...1085...>
+Date: Tue, 22 Oct 2013 14:25:52 -0500
+Message-ID: <l46jgo$r7q$1@...1062...>
+References: <1381829022-15244-1-git-send-email-heiko.hund@...1489...>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="CMebLzmeJATad/OR"
-Content-Disposition: inline
-In-Reply-To: <52669036.80805@...1847...>
-Subject: Re: [Openvpn-devel] [PATCH] Floating: Add support for floating in
-	TLS mode
+In-Reply-To: <1381829022-15244-1-git-send-email-heiko.hund@...1489...>
+Subject: Re: [Openvpn-devel] [PATCH] Support non-ASCII TAP adapter names on
+	Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,45 +14,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?iso-8859-1?Q?Andr=E9?= Valentin <avalentin@...1847...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
---CMebLzmeJATad/OR
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Hi,
+ACK on this; a local build checks out with all sorts of creative UTF-8
+device names I threw at it, including ones with spaces too.
 
-On Tue, Oct 22, 2013 at 04:48:22PM +0200, Andr=E9 Valentin wrote:
-> It should, but I will post a fixed patch tonight. Do you want it for mast=
-er
-> or release2.3?
+- --
+Josh Cepek
 
-Master, please.  Everything goes into master first, and if we decide it
-goes into 2.3, is cherry-picked master->2.3
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---CMebLzmeJATad/OR
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
+On 10/15/13 04:23, Heiko Hund wrote:
+> Currently the TAP adapter name is fetched as an OEM string, which
+> is problematic if it contains non-ASCII characters and is to used
+> with netsh. The logfile also contains these non UTF-8 characters.
+> 
+> This patch fetches the name from the registry as UCS-2 and converts
+> it right into UTF-8 before it's used.
+> 
+> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+> ---
+>  src/openvpn/tun.c |   15 ++++++++++-----
+>  1 file changed, 10 insertions(+), 5 deletions(-)
+> 
+> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+> index 86a43f2..9f53b23 100644
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
+Version: GnuPG v2.0.20 (GNU/Linux)
 
-iQCVAwUBUmaewqkuBuNlUUl1AQJj0wQAmm9zOnrM/XaruYCPFBZeeSx63yF5y4rv
-N8OuGe2KCr/WWr8Nla3fGNLtud5zDd1ZtT8AMuIkFrAjax2nuvoEH8oJ+0qaHZSB
-otRGJUw/caCAPQLwXAwxVr3SVKzKNAiP68vtHSt8qQ7bWs/4TCKPlrAuRiheueQt
-CiX1d1U3tOA=
-=ptGy
+iQGcBAEBAgAGBQJSZtFAAAoJENcx2Xpgb9RjWeQL/RbLTXgI5i4cEVR5o3pa76Ov
+xp28gEyhDlmMDWGiMSKGePQknn3GfymzZ7SgtYnJKercZcqSSMvGefHIK71FQ1R0
+D9N17K0KEnEOAEFOLZjBGFITqPVmeDX4mVqLKYh6xOGCeae0BltgpfawOcjUTJ/h
+/M6DsrkrSexizPWGa5mr4+kmxbWOJ0rbxeLNQT5neecibB7FWjQXDEpz74HwVMOU
+x6FxtAOenFU6XYfFhczK3G1xxyWP1NqZhmNPUiSydAjTvXepzLIPvGocZjfozd22
+f/Eyf3MvZuFBF7Xu8QZe1UU+E0kf7ZgMjHwzpNwDhfu4Halc/9NCn4895D8xrAXA
+AyUfv3st1+UKdQNIHhyfXQLKP7vWFZYHS9hC3SN8G+wgeamyEP1WoFp1bimaCqhi
+jHC/n+5piDN2iOCGe5H11RF+kx+UVxgs7+zyY/VT6zNyLQVnmWl0ynynh/i1hiUo
+LsfooT2sRA4KCsGfRzEuEFtsMpqYKhqub+tH3JOYSw==
+=xGRO
 -----END PGP SIGNATURE-----
 
---CMebLzmeJATad/OR--
 
