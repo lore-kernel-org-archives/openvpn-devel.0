@@ -1,18 +1,19 @@
-Date: Wed, 23 Oct 2013 12:56:34 +0200
+Date: Wed, 23 Oct 2013 16:18:29 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20131023105634.GM161@...1296...>
-References: <OF80C424FD.27405071-ONC1257C07.004692C7-C1257C07.004BC866@...1846...>
-	<20131017141929.GC161@...1296...>
-	<OF103608A1.B8847B78-ONC1257C0B.002E1D46-C1257C0B.002F1965@...1846...>
-	<20131022114017.GD161@...1296...>
-	<OFBB1A3798.4E8F6223-ONC1257C0C.00463442-C1257C0C.0048EC64@...1846...>
+Message-ID: <20131023141829.GA13900@...1296...>
+References: <CAN_jwOsXhs-qTqOmrqhNk+Jf6-pRSBVVTovShLGgQAKKTZkE4g@...278...>
+	<554440252.59882.1380270883311.JavaMail.zimbra@...1795...>
+	<CAN_jwOvixY5Jz7Rheq-=o40saprsoQmxRB9yn3-jdCmFa9VM0A@...278...>
+	<52456F61.3000104@...1114...>
+	<CAN_jwOt4kiM09YjZi5=jh6qFgQTpLFgPOSO1opFOF72EY8fyCw@...278...>
+	<CAN_jwOuJcwF-Co0r=pukUHO2z0a0ff5xtERp7_mc2PYot9yv-Q@...278...>
+	<CAN_jwOuQR6rxUTA5Nho9tBkvSBMU75Yzfv=PFpFUHa2Kq8=E2A@...278...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="+9uAEI//NVSmpZEF"
+	protocol="application/pgp-signature"; boundary="wac7ysb48OaltWcw"
 Content-Disposition: inline
-In-Reply-To: <OFBB1A3798.4E8F6223-ONC1257C0C.00463442-C1257C0C.0048EC64@...1846...>
-Subject: Re: [Openvpn-devel] Openvpn 2.3.2 potential memory-leak after
-	24hours (addendum3)
+In-Reply-To: <CAN_jwOuQR6rxUTA5Nho9tBkvSBMU75Yzfv=PFpFUHa2Kq8=E2A@...278...>
+Subject: Re: [Openvpn-devel] Does openvpn 2.3.2 has memory leak?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,46 +22,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: arno.odermatt@...1845...
+To: Brad Zhang <hebei5000@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---+9uAEI//NVSmpZEF
+--wac7ysb48OaltWcw
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Tue, Oct 22, 2013 at 03:16:30PM +0200, arno.odermatt@...1845... wrote:
-> thank you so much.
-> Meanwhile, we can define the substantial memory growth for the phase of=20
-> the first renegotiation cycle.
-> Memory is growing by almost double.
-> Surely, if one had only 50 to 100 concurrent sessions, it is not quit=20
-> hurting anything. But driving the amount of concurrent session as we got=
-=20
-> it in our scenario, memory treatment seems to become key.
+On Sun, Oct 06, 2013 at 09:21:46PM +0800, Brad Zhang wrote:
+> Do you have some idea about this issue?  Looking forward to your reply.
 
-I'm not sure I found everything yet, but what I've seen to far will
-definitely raise memory consumption for long-term connected clients
-(as in: for every renegotiation, memory goes up).  This particular gc=20
-is cleared upon client disconnection, thogh - so maybe that is why it
-wasn't noticed earlier.
+Coming back to *this* thread, after some debugging in the other thread
+with Arno, I think what I can say so far is that we're observing two
+different things:
 
-About your user base: is this more dynamic clients (like "mobile users"),
-or are these very persistent long-term sessions (like "1000s of sensors
-that come online upon reboot, and stay online for weeks at a time")?
+ - the first renegotiation brings a big jump in memory, but this is to
+   be expected, because the new keying material needs extra memory, and
+   the memory for the old key is not released right away (it seems to be
+   released at the next renegotiation, or at client disconnect - I've=20
+   seen VSZ/RSS go down(!) when clients disconnect, so that seems to
+   work right).  This is the "big" jump in memory consumption which is
+   actually killing Arno's setup, because there is not enough virtual
+   memory available to hold all that is needed for 3000 clients (but
+   that can be fixed by increasing max-memory limits if there is enough=20
+   RAM).
 
-I'd like to understand your usage scenaro better to see whether what I'm=20
-tracking can be relevant at all, or not.
+ - each further renegotiation leaks "a few kbyte" of memory per client,
+   which should also be fully returned when the client disconnects - this
+   is the issue I discovered earlier, with the GC handling of the per-client
+   environment set, and I'll send a patch for that "soon" (as soon as I
+   have fully understood the code involved).
 
+Now, what I do not really understand is why the memory consumption on the
+3rd, 4th, 5th renegotiation seems to slow down - there seems to be some
+additional memory fragmentation involved in the 2nd+3rd renegotiation,
+which leads to memory re-use later on.  Or so.
 
-(As an extra question: if I find something and have tested it enough to
-say "this should fix things for you", can you run a test version in=20
-your environment?  Or is this all production and needs to come in form
-of a binary distribution, etc.?)
+Testing this with "reneg-sec 60" is actually quite interesting...  here's
+*disconnect* of a client:
+
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root     19892  0.0  0.0   7052  4304 pts/7    SN+  17:48   0:01 openvpn ..=
+/serv
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root     19892  0.0  0.0   6300  3740 pts/7    SN+  17:48   0:01 openvpn ..=
+/serv
+
+... so you can see that memory is returned to the OS.  (I think this will
+not be visible if many clients are connected as the free()ed memory will
+be "somewhere in the middle" - but disconnecting *all* clients should also
+show memory being returned)
+
+Now going to stare more at the code... :-)
 
 gert
+
+
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -68,19 +88,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---+9uAEI//NVSmpZEF
+--wac7ysb48OaltWcw
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.13 (NetBSD)
 
-iQCVAwUBUmerYqkuBuNlUUl1AQKdfgP/elWgFMF1msctlOm2t+6IGzNWpNdB7PRj
-HQ3LLZJeeRq2bG6KtQbX7epKbtAEqRomcCi/z7gcJO4oer9XeGAl3GlfV0mtf3z0
-RVpHJxh3W/QNN0/2XTyMG6L7WffW7Ej7/x/bPXjgjIwxWRKKY33ZeJAjPIUgZvbE
-pIhbELsPkn0=
-=3zv2
+iQCVAwUBUmfatakuBuNlUUl1AQKSuwP/a6Yihafex9c35StoIZLmbK2tbI0erlrN
+a9VquoNS0ubk33P0/20bd0l8h1v40QWN+W0YtJVl57Ay6v+lEIwE8hrQ5ur7QsLW
+Ud15JS4ymGSBJOZlhcjybblAicma++bD1nCynAINgJ3/t7MgNJNoAuTWi4Nkeq/P
+QKAZUHexx18=
+=FqnU
 -----END PGP SIGNATURE-----
 
---+9uAEI//NVSmpZEF--
+--wac7ysb48OaltWcw--
 
