@@ -1,19 +1,10 @@
-Date: Wed, 23 Oct 2013 16:18:29 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20131023141829.GA13900@...1296...>
-References: <CAN_jwOsXhs-qTqOmrqhNk+Jf6-pRSBVVTovShLGgQAKKTZkE4g@...278...>
-	<554440252.59882.1380270883311.JavaMail.zimbra@...1795...>
-	<CAN_jwOvixY5Jz7Rheq-=o40saprsoQmxRB9yn3-jdCmFa9VM0A@...278...>
-	<52456F61.3000104@...1114...>
-	<CAN_jwOt4kiM09YjZi5=jh6qFgQTpLFgPOSO1opFOF72EY8fyCw@...278...>
-	<CAN_jwOuJcwF-Co0r=pukUHO2z0a0ff5xtERp7_mc2PYot9yv-Q@...278...>
-	<CAN_jwOuQR6rxUTA5Nho9tBkvSBMU75Yzfv=PFpFUHa2Kq8=E2A@...278...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="wac7ysb48OaltWcw"
-Content-Disposition: inline
-In-Reply-To: <CAN_jwOuQR6rxUTA5Nho9tBkvSBMU75Yzfv=PFpFUHa2Kq8=E2A@...278...>
-Subject: Re: [Openvpn-devel] Does openvpn 2.3.2 has memory leak?
+MIME-Version: 1.0
+Date: Wed, 23 Oct 2013 22:50:11 +0800
+Message-ID: <CABDcBMk1BvzgOx+8pexTssmmFLgNNWjxxCYqj2nPxOW+iA8AYg@...278...>
+From: Steve Cook <stevecookhk@...277...>
+Content-Type: multipart/alternative; boundary=047d7bf1656e60040904e969a2d7
+Subject: [Openvpn-devel] Linux client cant connect through socks proxy - any
+	known workaround?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,85 +13,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Brad Zhang <hebei5000@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
---wac7ysb48OaltWcw
-Content-Type: text/plain; charset="us-ascii"
+--047d7bf1656e60040904e969a2d7
+Content-Type: text/plain; charset=ISO-8859-1
+
+I can't get openvpn to connect through my socks proxy server, and searching
+around seem to find other users with the same problem, but no known
+solution.
+
+version:
+OpenVPN 2.2.1 x86_64-linux-gnu [SSL] [LZO2] [EPOLL] [PKCS11] [eurephia]
+[MH] [PF_INET6] [IPv6 payload 20110424-2 (2.2RC2)] built on Feb 27 2013
+
+My config is setup like this:
+client
+dev tun
+proto tcp
+socks-proxy 192.168.147.1 101
+remote ec2-xx-xx-xx-xx.compute-1.amazonaws.com 1194
+ca ca.crt
+cert client1.crt
+key client1.key
+
+Socks proxy works fine with other apps, but with openvpn I get the
+following:
+Oct 23 17:12:46 ovpn-client[1887]: TCP connection established with [AF_INET]
+192.168.147.1:101
+Oct 23 17:12:51 ovpn-client[1887]: socks_handshake: TCP port read timeout
+expired: Operation now in progress (errno=115)
+
+I found an old user list post that suggest this might be due to an issue
+that openvpn has with non-blocking IO?
+http://comments.gmane.org/gmane.network.openvpn.user/26898
+
+But I don't see anything in the openvpn bug tracker or dev mailing list
+archives.
+
+Does this issue ring a bell for anyone? Any known workaround?
+
+thanks
+Steve
+
+--047d7bf1656e60040904e969a2d7
+Content-Type: text/html; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+<div dir=3D"ltr"><div>I can&#39;t get openvpn to connect through my socks p=
+roxy server, and searching around seem to find other users with the same pr=
+oblem, but no known solution.</div><div>=A0</div><div>version:</div><div>Op=
+enVPN 2.2.1 x86_64-linux-gnu [SSL] [LZO2] [EPOLL] [PKCS11] [eurephia] [MH] =
+[PF_INET6] [IPv6 payload 20110424-2 (2.2RC2)] built on Feb 27 2013</div>
+<div>=A0</div><div>My config is setup like this:<br>client<br>dev tun<br>pr=
+oto tcp<br><span style=3D"font-weight:bold">socks-proxy 192.168.147.1 101</=
+span><br>remote <a href=3D"http://ec2-xx-xx-xx-xx.compute-1.amazonaws.com">=
+ec2-xx-xx-xx-xx.compute-1.amazonaws.com</a> 1194<br>
+ca ca.crt<br>cert client1.crt<br>key client1.key</div><div>=A0</div><div>So=
+cks proxy works fine with other apps, but with openvpn I get the following:=
+</div><div>Oct 23 17:12:46 ovpn-client[1887]: TCP connection established wi=
+th [AF_INET]<a href=3D"http://192.168.147.1:101">192.168.147.1:101</a><br>
+Oct 23 17:12:51 ovpn-client[1887]: socks_handshake: TCP port read timeout e=
+xpired: Operation now in progress (errno=3D115)</div><div>=A0</div><div>I f=
+ound an old user list post that suggest this might be due to an issue that =
+openvpn has with non-blocking IO?</div>
+<div><div><a href=3D"http://comments.gmane.org/gmane.network.openvpn.user/2=
+6898">http://comments.gmane.org/gmane.network.openvpn.user/26898</a></div><=
+div>=A0</div></div><div>But I don&#39;t see anything in the openvpn bug tra=
+cker or dev mailing list archives.</div>
+<div>=A0</div><div>Does this issue ring a bell for anyone? Any known workar=
+ound?</div><div>=A0</div><div>thanks</div><div>Steve<br></div></div>
 
-On Sun, Oct 06, 2013 at 09:21:46PM +0800, Brad Zhang wrote:
-> Do you have some idea about this issue?  Looking forward to your reply.
-
-Coming back to *this* thread, after some debugging in the other thread
-with Arno, I think what I can say so far is that we're observing two
-different things:
-
- - the first renegotiation brings a big jump in memory, but this is to
-   be expected, because the new keying material needs extra memory, and
-   the memory for the old key is not released right away (it seems to be
-   released at the next renegotiation, or at client disconnect - I've=20
-   seen VSZ/RSS go down(!) when clients disconnect, so that seems to
-   work right).  This is the "big" jump in memory consumption which is
-   actually killing Arno's setup, because there is not enough virtual
-   memory available to hold all that is needed for 3000 clients (but
-   that can be fixed by increasing max-memory limits if there is enough=20
-   RAM).
-
- - each further renegotiation leaks "a few kbyte" of memory per client,
-   which should also be fully returned when the client disconnects - this
-   is the issue I discovered earlier, with the GC handling of the per-client
-   environment set, and I'll send a patch for that "soon" (as soon as I
-   have fully understood the code involved).
-
-Now, what I do not really understand is why the memory consumption on the
-3rd, 4th, 5th renegotiation seems to slow down - there seems to be some
-additional memory fragmentation involved in the 2nd+3rd renegotiation,
-which leads to memory re-use later on.  Or so.
-
-Testing this with "reneg-sec 60" is actually quite interesting...  here's
-*disconnect* of a client:
-
-USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-root     19892  0.0  0.0   7052  4304 pts/7    SN+  17:48   0:01 openvpn ..=
-/serv
-USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-root     19892  0.0  0.0   6300  3740 pts/7    SN+  17:48   0:01 openvpn ..=
-/serv
-
-... so you can see that memory is returned to the OS.  (I think this will
-not be visible if many clients are connected as the free()ed memory will
-be "somewhere in the middle" - but disconnecting *all* clients should also
-show memory being returned)
-
-Now going to stare more at the code... :-)
-
-gert
-
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---wac7ysb48OaltWcw
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
-
-iQCVAwUBUmfatakuBuNlUUl1AQKSuwP/a6Yihafex9c35StoIZLmbK2tbI0erlrN
-a9VquoNS0ubk33P0/20bd0l8h1v40QWN+W0YtJVl57Ay6v+lEIwE8hrQ5ur7QsLW
-Ud15JS4ymGSBJOZlhcjybblAicma++bD1nCynAINgJ3/t7MgNJNoAuTWi4Nkeq/P
-QKAZUHexx18=
-=FqnU
------END PGP SIGNATURE-----
-
---wac7ysb48OaltWcw--
+--047d7bf1656e60040904e969a2d7--
 
