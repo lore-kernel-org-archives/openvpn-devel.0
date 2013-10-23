@@ -1,16 +1,16 @@
-Date: Wed, 23 Oct 2013 12:48:29 +0200
+Date: Wed, 23 Oct 2013 12:56:34 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20131023104829.GL161@...1296...>
+Message-ID: <20131023105634.GM161@...1296...>
 References: <OF80C424FD.27405071-ONC1257C07.004692C7-C1257C07.004BC866@...1846...>
 	<20131017141929.GC161@...1296...>
 	<OF103608A1.B8847B78-ONC1257C0B.002E1D46-C1257C0B.002F1965@...1846...>
 	<20131022114017.GD161@...1296...>
-	<20131022121336.GE161@...1296...>
+	<OFBB1A3798.4E8F6223-ONC1257C0C.00463442-C1257C0C.0048EC64@...1846...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="N709L9vpgywc1qLv"
+	protocol="application/pgp-signature"; boundary="+9uAEI//NVSmpZEF"
 Content-Disposition: inline
-In-Reply-To: <20131022121336.GE161@...1296...>
+In-Reply-To: <OFBB1A3798.4E8F6223-ONC1257C0C.00463442-C1257C0C.0048EC64@...1846...>
 Subject: Re: [Openvpn-devel] Openvpn 2.3.2 potential memory-leak after
 	24hours (addendum3)
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -24,103 +24,43 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: arno.odermatt@...1845...
 Cc: openvpn-devel@lists.sourceforge.net
 
---N709L9vpgywc1qLv
+--+9uAEI//NVSmpZEF
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Tue, Oct 22, 2013 at 02:13:36PM +0200, Gert Doering wrote:
-> On Tue, Oct 22, 2013 at 01:40:18PM +0200, Gert Doering wrote:
+On Tue, Oct 22, 2013 at 03:16:30PM +0200, arno.odermatt@...1845... wrote:
+> thank you so much.
+> Meanwhile, we can define the substantial memory growth for the phase of=20
+> the first renegotiation cycle.
+> Memory is growing by almost double.
+> Surely, if one had only 50 to 100 concurrent sessions, it is not quit=20
+> hurting anything. But driving the amount of concurrent session as we got=
+=20
+> it in our scenario, memory treatment seems to become key.
 
-(I seem to be talking to myself a lot, lately...)
+I'm not sure I found everything yet, but what I've seen to far will
+definitely raise memory consumption for long-term connected clients
+(as in: for every renegotiation, memory goes up).  This particular gc=20
+is cleared upon client disconnection, thogh - so maybe that is why it
+wasn't noticed earlier.
 
-> > I could use some ideas on how to debug this further - if valgrind isn't
-> > complaining, normally our memory management should be OK, but why is
-> > VSZ/RSZ still growing, then...?
->=20
-> Arne brought up a good point.  If we "lose" the memory inside the gc_*
-> functions (as in: use the same gc block for a very long time, like
-> "while OpenVPN runs", but *do* free it at the end), valgrind might not
-> be able to see it - after all, we nicely cleaned up later - but we'll=20
-> still grow out of bounds at runtime.
+About your user base: is this more dynamic clients (like "mobile users"),
+or are these very persistent long-term sessions (like "1000s of sensors
+that come online upon reboot, and stay online for weeks at a time")?
 
-... and *that* seems to be the issue here.  I've instrumented the gc_arena
-to have a creation time (time_t) and a use_count, and the only one that=20
-shows up at renegotiation time is the gc inside the "environment set",
-with this call chain...  (included for those that are curious :-) ).
-
-#3  0x080714e8 in add_env_item (str=3D0x811287c "untrusted_ip6=3D::ffff:127=
-.0.0.1", do_alloc=3Dtrue, list=3D0x80fc500,=20
-    gc=3D0x810a65c) at ../../../openvpn-testing/src/openvpn/misc.c:553
-#4  0x0807156a in env_set_add_nolock (es=3D0x80fc4fc, str=3D0x811287c "untr=
-usted_ip6=3D::ffff:127.0.0.1")
-    at ../../../openvpn-testing/src/openvpn/misc.c:568
-#5  0x080716b2 in env_set_add (es=3D0x80fc4fc, str=3D0x811287c "untrusted_i=
-p6=3D::ffff:127.0.0.1")
-    at ../../../openvpn-testing/src/openvpn/misc.c:613
-#6  0x08071b96 in setenv_str_ex (es=3D0x80fc4fc, name=3D0xbfffd430 "untrust=
-ed_ip6",=20
-    value=3D0xbfffd3b0 "::ffff:127.0.0.1", name_include=3D32772, name_exclu=
-de=3D0, name_replace=3D0 '\000',=20
-    value_include=3D128, value_exclude=3D0, value_replace=3D0 '\000') at ..=
-/../../openvpn-testing/src/openvpn/misc.c:784
-#7  0x080719d6 in setenv_str (es=3D0x80fc4fc, name=3D0xbfffd430 "untrusted_=
-ip6", value=3D0xbfffd3b0 "::ffff:127.0.0.1")
-    at ../../../openvpn-testing/src/openvpn/misc.c:735
-#8  0x080b1a7a in setenv_sockaddr (es=3D0x80fc4fc, name_prefix=3D0x80e2139 =
-"untrusted", addr=3D0x810b20c, flags=3D1)
-    at ../../../openvpn-testing/src/openvpn/socket.c:2396
-#9  0x080b1b7e in setenv_link_socket_actual (es=3D0x80fc4fc, name_prefix=3D=
-0x80e2139 "untrusted", act=3D0x810b20c,=20
-    flags=3D1) at ../../../openvpn-testing/src/openvpn/socket.c:2426
-#10 0x080bde24 in setenv_untrusted (session=3D0x810b19c) at ../../../openvp=
-n-testing/src/openvpn/ssl_verify.c:74
-#11 0x080bf07a in verify_cert (session=3D0x810b19c, cert=3D0x812fa50, cert_=
-depth=3D0)
-    at ../../../openvpn-testing/src/openvpn/ssl_verify.c:667
-#12 0x080c050e in verify_callback (preverify_ok=3D1, ctx=3D0xbfffd748)
-    at ../../../openvpn-testing/src/openvpn/ssl_verify_openssl.c:84
+I'd like to understand your usage scenaro better to see whether what I'm=20
+tracking can be relevant at all, or not.
 
 
-Preliminary analysis: the problematic code seems to be=20
-
-env_set_add_nolock (struct env_set *es, const char *str)
-{
-  remove_env_item (str, es->gc =3D=3D NULL, &es->list);
-  add_env_item ((char *)str, true, &es->list, es->gc);
-}
-
-... because add_env_item() will (have to) do...
-
-add_env_item (char *str, const bool do_alloc, struct env_item **list, struc=
-t gc_arena *gc)
-{
-...
-  ALLOC_OBJ_GC (item, struct env_item, gc);
-  item->string =3D do_alloc ? string_alloc (str, gc): str;
-  item->next =3D *list;
-  *list =3D item;
-...
-}
-
-
-so while the environment list itself is not growing out of bounds, the
-gc_arena used for storing the local copy of the string is (because these
-are only ever cleaned up if gc_free() is destroying the whole arena,=20
-which for *this* one is only happening at program end).
-
-OTOH, the whole thing looks like it would work perfectly if es->gc
-were just NULL (string_alloc() would then call malloc() instead, and
-remove_env_item() would call free()).  So maybe this can be solved fairly
-easily without rewriting all of this...
-
-(Doing this in a train which will arrive soon -> digging deeper on my
-way back)
+(As an extra question: if I find something and have tested it enough to
+say "this should fix things for you", can you run a test version in=20
+your environment?  Or is this all production and needs to come in form
+of a binary distribution, etc.?)
 
 gert
-
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -128,19 +68,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---N709L9vpgywc1qLv
+--+9uAEI//NVSmpZEF
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.13 (NetBSD)
 
-iQCVAwUBUmepfakuBuNlUUl1AQKUNwQAjWeW/IVj/ia1rq1t63kpaT5uL9XFRBj6
-lybZCTvsrAIdpoe5kAPzqdayQvcgs+YHFSf73YBCVwtF2Urp1HzIj2E81kgtaIc1
-XMfaWpKFHEVUZab27oYxabK2ON606UQ7MaJ++C4KeW/PRWsnCYQsIW45IkXbB0Ma
-Nnuv5GxV7oQ=
-=PiFu
+iQCVAwUBUmerYqkuBuNlUUl1AQKdfgP/elWgFMF1msctlOm2t+6IGzNWpNdB7PRj
+HQ3LLZJeeRq2bG6KtQbX7epKbtAEqRomcCi/z7gcJO4oer9XeGAl3GlfV0mtf3z0
+RVpHJxh3W/QNN0/2XTyMG6L7WffW7Ej7/x/bPXjgjIwxWRKKY33ZeJAjPIUgZvbE
+pIhbELsPkn0=
+=3zv2
 -----END PGP SIGNATURE-----
 
---N709L9vpgywc1qLv--
+--+9uAEI//NVSmpZEF--
 
