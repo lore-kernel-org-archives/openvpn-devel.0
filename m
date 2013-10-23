@@ -1,10 +1,14 @@
-Date: Wed, 23 Oct 2013 19:40:29 +0200 (CEST)
-Message-Id: <201310231740.r9NHeTG1020658@...1295...>
+Date: Wed, 23 Oct 2013 19:49:05 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1381829022-15244-1-git-send-email-heiko.hund@...1489...>
-References: <1381829022-15244-1-git-send-email-heiko.hund@...1489...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Support non-ASCII TAP adapter
-	names on Windows
+Message-ID: <20131023174905.GQ161@...1296...>
+References: <CABDcBMk1BvzgOx+8pexTssmmFLgNNWjxxCYqj2nPxOW+iA8AYg@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="VB8cwN2oRT/o81UX"
+Content-Disposition: inline
+In-Reply-To: <CABDcBMk1BvzgOx+8pexTssmmFLgNNWjxxCYqj2nPxOW+iA8AYg@...278...>
+Subject: Re: [Openvpn-devel] Linux client cant connect through socks proxy -
+	any known workaround?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +17,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Heiko Hund <heiko.hund@...1489...>
+To: Steve Cook <stevecookhk@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Thanks.  Patch has been applied to the master and release/2.3 branch.
+--VB8cwN2oRT/o81UX
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-commit f2e40082349098d3c22981bf1e6d305826f1173f (master)
-commit 8f5a4598662f4b2abe7acfe8f68c90a8b03f2dc8 (release/2.3)
+Hi,
 
-Author: Heiko Hund
-Date:   Tue Oct 15 11:23:42 2013 +0200
+On Wed, Oct 23, 2013 at 10:50:11PM +0800, Steve Cook wrote:
+> I can't get openvpn to connect through my socks proxy server, and searchi=
+ng
+> around seem to find other users with the same problem, but no known
+> solution.
 
-     Support non-ASCII TAP adapter names on Windows
+It "should" work.  Does the Android client work?
 
-     Signed-off-by: Heiko Hund <heiko.hund@...1489...>
-     Acked-by: Josh Cepek <josh.cepek@...1085...>
-     Message-Id: <1381829022-15244-1-git-send-email-heiko.hund@...1489...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/7913
-     Signed-off-by: Gert Doering <gert@...1296...>
+(I'm asking because it's basically "the Linux client" with lots of socket
+fixes that we do want to integrate into git master "ASAP", even though
+"P" has been "not now" for the longest time :-/).
 
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
---
-kind regards,
+--VB8cwN2oRT/o81UX
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-Gert Doering
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
 
+iQCVAwUBUmgMEakuBuNlUUl1AQLelwP9HE9q0veT3TC2Z/Dx8ImQbFZtintfOpSB
+7NdJVMia0TJ9XYCjNAO0cwoofEq/RZeDpbceLS5GwTXr2nd/YPjFXE68CPdXCCDt
+8ozQfeT7yZCru/0nO92o4rFa49PdzGOg+sEyd87Nv920Uqojb+FOA8M89wf2z9v1
+/PMsTy4e87A=
+=RmQA
+-----END PGP SIGNATURE-----
+
+--VB8cwN2oRT/o81UX--
 
