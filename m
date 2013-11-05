@@ -1,11 +1,9 @@
-Message-ID: <5278F994.7020503@...515...>
-Date: Tue, 05 Nov 2013 15:58:44 +0200
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <5279281F.5030607@...1085...>
+Date: Tue, 05 Nov 2013 11:17:19 -0600
+From: Josh Cepek <josh.cepek@...1085...>
 MIME-Version: 1.0
-References: <526E6949.3070803@...515...>
-In-Reply-To: <526E6949.3070803@...515...>
-Subject: Re: [Openvpn-devel] New 2.3.2 Debian packages available in a
- temporary apt testing repository
+Content-Type: multipart/mixed; boundary="------------080401050600000900060500"
+Subject: [Openvpn-devel] [PATCH] Add GUI UAC elevation under Vista and higher
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,96 +12,93 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi all,
+This is a multi-part message in MIME format.
+--------------080401050600000900060500
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-The new apt repositories have now been migrated away from
-build.openvpn.net to their final destination. For instruction on how to
-use the new repos look here:
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos>
+This patch adds automatic UAC elevation prompting for privileged users.
 
-Unfortunately a clean migration from old repos.openvpn.net repos was not
-possible due to an entirely different repository directory structure, so
-editing of the sources.list.d fragment is necessary.
+(signed patch attached)
 
-Let me know if you encounter _any_ issues using these repositories or
-the packages.
+- --
+Josh Cepek
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.20 (GNU/Linux)
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+iQGcBAEBAgAGBQJSeSgfAAoJENcx2Xpgb9Rj/JQL/1uXroXqY02BPv20/TmsZVPn
+6OEKZvoBRkMwtj0Zjb83Vp5GA+Nhf0IWk2Dftk5Uss+ZYFtQD6yG5a8P8yPIm96d
+lD5Xd7/iKcbrb3GsZkUyrwICAKwtwWLBYn3QqOvso1r65kt4OVM13xBKLFnrL0Bn
+Tb8NHuzmRa48bUVACXL4UhF3W4mjIUGNp9P/ChzBRPVQISyZnzRi+6/mCLoRPnVV
+nypYV7CLqhMUsgZRuDoKPXyP2WWgn0vhfZ9WRE7Yh66sTX58lCJCv//l3dgLKsnA
+I7J0UOqB4Fp0Il8x+aLBnS2wezaiu3G29n/iS6EgX5fb263WB4reAyjbpoHoXzDy
+a0GzcXoXnaFbOQnPoxYyYJCv585e3XR2+uJPFuRpceGD8h85Ax9+JpPgUF4eJCW8
+siYFpp5l+/C9q6bgnTJ0WeF9Qbh7NMZSJdA1VJ7zllS/ofseYrd+XmnOtIu/6p4c
+sJrVjYiQVvsgDg53JWhhmpvMlByLtrX2T9QEGgCWBw==
+=63k0
+-----END PGP SIGNATURE-----
 
-irc freenode net: mattock
+--------------080401050600000900060500
+Content-Type: text/x-diff;
+ name="gui-uac.patch"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="gui-uac.patch"
 
+RnJvbSAyZDJhZTdhMzBjMDEzNjMyOTI3YjkzMWM1NDFiZTVjZmEyOWM2NjEwIE1vbiBTZXAg
+MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBKb3NoIENlcGVrIDxqb3NoLmNlcGVrQHVzYS5uZXQ+
+CkRhdGU6IFR1ZSwgNSBOb3YgMjAxMyAxMzowMzowOCAtMDYwMApTdWJqZWN0OiBbUEFUQ0hd
+IEFkZCBHVUkgVUFDIGVsZXZhdGlvbiB1bmRlciBWaXN0YSBhbmQgaGlnaGVyCgpDdXJyZW50
+bHksIG5lYXJseSBhbGwgdXNhZ2Ugb2YgT3BlblZQTiByZXF1aXJlcyBhZG1pbmlzdHJhdGl2
+ZSByaWdodHMKZHVlIHRvIHJvdXRlIGFkZGl0aW9uIG5lZWRzLCB3aGljaCBpbnZvbHZlcyBt
+YW51YWxseSBydW5uaW5nIHRoZSBHVUkKd2l0aCBlbGV2YXRlZCBwZXJtaXNzaW9ucyB0b2Rh
+eS4KClRoaXMgcGF0Y2ggYnVpbGRzIHRoZSBHVUkgcHJvZ3JhbSB3aXRoIGEgbWFuaWZlc3Qg
+dGhhdCBhdXRvbWF0aWNhbGx5CnJlcXVlc3RzIGVsZXZhdGlvbiB0byB0aGUgaGlnaGVzdCBh
+dmFpbGFibGUgcGVybWlzc2lvbiBoZWxkIGJ5IHRoZQpjdXJyZW50IHVzZXIuIFRoZSBiZW5l
+Zml0IGlzIHRoYXQgdXNlcnMgd2hvIGhhdmUgYWRtaW5pc3RyYXRpdmUgcmlnaHRzCmF1dG9t
+YXRpY2FsbHkgZ2V0IHByb21wdGVkIHRvIGVsZXZhdGUgdGhyb3VnaCBVQUMsIHdoaWNoIGlz
+IGdlbmVyYWxseQp0aGUgZXhwZWN0ZWQgYmVoYXZpb3VyLgoKRm9yIHRoZSB1c2UtY2FzZSB0
+aGF0IHNwZWNpZmljYWxseSBpbnZvbHZlcyBydW5uaW5nIHdpdGggcmVkdWNlZApwcml2aWxl
+Z2VzLCB1c2VycyBsYWNraW5nIGFkbWluaXN0cmF0aXZlIGFjY2VzcyB3aWxsIG5vdCBiZSBw
+cm9tcHRlZCB0bwplbGV2YXRlIGFzIHRoZXJlIGlzIG5vIGhpZ2hlciBwcml2aWxlZ2UgYXZh
+aWxhYmxlLiBUaGUgb25seSBsb3NzIG9mCmZ1bmN0aW9uYWxpdHkgd2l0aCB0aGlzIGNoYW5n
+ZSBpcyBhZG1pbmlzdHJhdGl2ZSB1c2VycyBhcmUgbm8gbG9uZ2VyCmFibGUgdG8gcnVuIHdp
+dGhvdXQgYWRtaW4gcmlnaHRzLiBUaGlzIHNob3VsZG4ndCBiZSBhIHByb2JsZW0gYmVjYXVz
+ZQp0aGF0IGtpbmQgb2Ygc2VjdXJpdHkgbmVlZCBnZW5lcmFsbHkgaW52b2x2ZXMgYWNjb3Vu
+dC9yb2xlIHNlcGFyYXRpb24KYW55d2F5LgoKVGhlIGJlbmVmaXQgZm9yIHRoZSB2YXN0IG1h
+am9yaXR5IG9mIHVzZXJzIGlzIHRoYXQgcm91dGUgYWRkaXRpb24gd29uJ3QKZmFpbCBkdWUg
+dG8gbGFja2luZyBwZXJtaXNzaW9uLCBsZWF2aW5nIHRoZSBWUE4gY29ubmVjdGVkIGJ1dCB1
+bmFibGUgdG8Kcm91dGUgZXhwZWN0ZWQgdHJhZmZpYy4KClNpZ25lZC1vZmYtYnk6IEpvc2gg
+Q2VwZWsgPGpvc2guY2VwZWtAdXNhLm5ldD4KLS0tCiByZXMvb3BlbnZwbi1ndWkubWFuaWZl
+c3QgfCAyICstCiAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24o
+LSkKCmRpZmYgLS1naXQgYS9yZXMvb3BlbnZwbi1ndWkubWFuaWZlc3QgYi9yZXMvb3BlbnZw
+bi1ndWkubWFuaWZlc3QKaW5kZXggOTM3MWQ3MS4uNDVjMzRiNSAxMDA2NDQKLS0tIGEvcmVz
+L29wZW52cG4tZ3VpLm1hbmlmZXN0CisrKyBiL3Jlcy9vcGVudnBuLWd1aS5tYW5pZmVzdApA
+QCAtMjEsNyArMjEsNyBAQAogICAgIDxzZWN1cml0eT4NCiAgICAgICAgIDxyZXF1ZXN0ZWRQ
+cml2aWxlZ2VzPg0KICAgICAgICAgICAgIDxyZXF1ZXN0ZWRFeGVjdXRpb25MZXZlbA0KLSAg
+ICAgICAgICAgICAgICBsZXZlbD0iYXNJbnZva2VyIg0KKyAgICAgICAgICAgICAgICBsZXZl
+bD0iaGlnaGVzdEF2YWlsYWJsZSINCiAgICAgICAgICAgICAgICAgdWlBY2Nlc3M9ImZhbHNl
+Ii8+DQogICAgICAgICA8L3JlcXVlc3RlZFByaXZpbGVnZXM+DQogICAgIDwvc2VjdXJpdHk+
+DQotLSAKMS44LjEuNQoK
+--------------080401050600000900060500
+Content-Type: application/pgp-signature;
+ name="gui-uac.patch.sig"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="gui-uac.patch.sig"
 
-
-> Hi,
->
-> OpenVPN 2.3.2 is now available in _temporary_ test repositories for a
-> wider variety of Debian-based operating systems:
->
-> debian squeeze i386
-> debian squeeze amd64
-> debian wheezy i386
-> debian wheezy amd64
-> ubuntu lucid i386
-> ubuntu lucid amd64
-> ubuntu precise i386
-> ubuntu precise amd64
-> ubuntu saucy i386
-> ubuntu saucy amd64
-> ubuntu raring i386
-> ubuntu raring amd64
->
-> The new build/packaging system is based on sbuild[1] which makes adding
-> support for new variants trivial. If your favourite Debian-based
-> distribution is missing from the list shoot me an email. I have
-> personally tested only two of the above packages and they seem to work ok:
->
-> - Ubuntu Raring (13.04) 64-bit
-> - Debian Wheezy (7.x) 64-bit
->
-> Any help with testing the packages and the apt repository is be much
-> appreciated! I will migrate this test repository to it's final
-> destination probably early next week.
->
-> Here are instructions for using these test packages:
->
-> IMPORTING THE PUBLIC GPG KEY
->
-> These Debian packages and associated repository files have been signed wi=
-th GPG.=20
-> Therefore, you need to import proper public key or you get warnings when =
-updating=20
-> software catalogs (e.g. when doing apt-get update):
->
-> $ wget -O - http://swupdate.openvpn.net/repos/repo-public.gpg|apt-key add=
- -
->
->
-> ADDING THE REPOSITORY FILE
->
-> Create a new repository file, e.g. /etc/apt/sources.list.d/testbuild.list=
- with
-> content like this:
->
-> deb http://build.openvpn.net/repos <oscodename> main
->
-> Where <oscodename> is wheezy, raring, or something similar. For a full li=
-st look above.
->
-> INSTALLING PACKAGES
->
-> In most cases, this is as simple as
->
-> $ apt-get update && apt-get install <packagename>
->
->
-
-
+iQGcBAABAgAGBQJSeSfKAAoJENcx2Xpgb9RjwswMAJVdqx7Vbr1IT/ZvI3LBLwwK6nbK9uVr
+V5v1ds5er+hAt+3tjYI7Zl57R3J5GtNJrKg7iHiIwhjYQKamKDeNFx55QB6fucz6GnLdEO5d
+9xTnzlmrcCnwcPN19Nx1CLBUtmfydtkZKiMkE9lqHFTyLAkD20NTXHcoNti3uaF9DDtFnxUw
+NmJ4F1xBMDTfBWRCUX1oRr/ueerVqM3bIhBWdK8UcDQN1ckEZ85DMVxrxyhX6RrjUfizvvsy
+LH/PoxrTRVxuLGjPXr3ftu0UPK0QJjX7+14LWJit/5xTOSdzQicVT01NF1ydFA8A/irH4823
+63UT89JfKkkN6Mf8Jbrcg8FtbWRqhCHR7H9yYJ035bVlTbbb7ArnoHtdREC6nF2lkWnDq/7N
+bSrFVTdGgUsJHNYKtEls9bDzcJ99G44b4xvmHThIxKoT38RpaJnN3uiQxlHWdtjUr2K7E5y+
+hAkW5vVNuNNPzV2d8J2kcuvs0rbd6vPiihmpH2pGldDnEO8F/g==
+--------------080401050600000900060500--
 
