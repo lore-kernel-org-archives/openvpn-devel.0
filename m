@@ -1,14 +1,11 @@
-Date: Sun, 3 Nov 2013 18:18:36 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20131103171836.GI161@...1296...>
-References: <SNT147-W3324E1CEED27F1E45B9437BFF70@...512...>
-	<CD5F698EC4A141AFB06629C35BE55207@...1853...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="tkgHWL40pCDFFyey"
-Content-Disposition: inline
-In-Reply-To: <CD5F698EC4A141AFB06629C35BE55207@...1853...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] Options available for --auth
+Message-ID: <5278F994.7020503@...515...>
+Date: Tue, 05 Nov 2013 15:58:44 +0200
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+MIME-Version: 1.0
+References: <526E6949.3070803@...515...>
+In-Reply-To: <526E6949.3070803@...515...>
+Subject: Re: [Openvpn-devel] New 2.3.2 Debian packages available in a
+ temporary apt testing repository
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,47 +14,96 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: debbie10t@...277...
-Cc: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
-
---tkgHWL40pCDFFyey
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+Hi all,
 
-On Sun, Nov 03, 2013 at 11:54:58AM -0000, debbie10t@...277... wrote:
->        --show-digests
->               (Standalone) Show all message digest algorithms to use with
-> the --auth option.
+The new apt repositories have now been migrated away from
+build.openvpn.net to their final destination. For instruction on how to
+use the new repos look here:
 
-Thanks for that reminder.  I think we might want to have a man page patch
-that links from --auth to --show-digests as well, so the question "ok,=20
-so this is what --auth is for, but what options do I have?" can be more
-easily answered...
+<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos>
 
-gert
+Unfortunately a clean migration from old repos.openvpn.net repos was not
+possible due to an entirely different repository directory structure, so
+editing of the sources.list.d fragment is necessary.
+
+Let me know if you encounter _any_ issues using these repositories or
+the packages.
+
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
---tkgHWL40pCDFFyey
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+irc freenode net: mattock
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
 
-iQCVAwUBUnaFbKkuBuNlUUl1AQIF/AP/SxMaO/1FCHXCTebC5ynTDuJcblXQAgsu
-qLshk5H9rKh84fHwtYRtXQUDZBklAYqnPjnLwCjjEm7D+0Wz5CLlrPQpR0HuLr4F
-iNVr27FMIEVFzWooyBDW7ejHZi9CgRWorQa1QOXFURA6TXdf2nQny+of8JZ2JE6e
-/YCUidmqOBU=
-=ngQR
------END PGP SIGNATURE-----
 
---tkgHWL40pCDFFyey--
+> Hi,
+>
+> OpenVPN 2.3.2 is now available in _temporary_ test repositories for a
+> wider variety of Debian-based operating systems:
+>
+> debian squeeze i386
+> debian squeeze amd64
+> debian wheezy i386
+> debian wheezy amd64
+> ubuntu lucid i386
+> ubuntu lucid amd64
+> ubuntu precise i386
+> ubuntu precise amd64
+> ubuntu saucy i386
+> ubuntu saucy amd64
+> ubuntu raring i386
+> ubuntu raring amd64
+>
+> The new build/packaging system is based on sbuild[1] which makes adding
+> support for new variants trivial. If your favourite Debian-based
+> distribution is missing from the list shoot me an email. I have
+> personally tested only two of the above packages and they seem to work ok:
+>
+> - Ubuntu Raring (13.04) 64-bit
+> - Debian Wheezy (7.x) 64-bit
+>
+> Any help with testing the packages and the apt repository is be much
+> appreciated! I will migrate this test repository to it's final
+> destination probably early next week.
+>
+> Here are instructions for using these test packages:
+>
+> IMPORTING THE PUBLIC GPG KEY
+>
+> These Debian packages and associated repository files have been signed wi=
+th GPG.=20
+> Therefore, you need to import proper public key or you get warnings when =
+updating=20
+> software catalogs (e.g. when doing apt-get update):
+>
+> $ wget -O - http://swupdate.openvpn.net/repos/repo-public.gpg|apt-key add=
+ -
+>
+>
+> ADDING THE REPOSITORY FILE
+>
+> Create a new repository file, e.g. /etc/apt/sources.list.d/testbuild.list=
+ with
+> content like this:
+>
+> deb http://build.openvpn.net/repos <oscodename> main
+>
+> Where <oscodename> is wheezy, raring, or something similar. For a full li=
+st look above.
+>
+> INSTALLING PACKAGES
+>
+> In most cases, this is as simple as
+>
+> $ apt-get update && apt-get install <packagename>
+>
+>
+
+
 
