@@ -1,16 +1,12 @@
-Date: Fri, 15 Nov 2013 16:40:04 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20131115154003.GS161@...1296...>
-References: <1382688143-17247-1-git-send-email-arne@...1227...>
-	<1384526517-6020-1-git-send-email-gert@...1296...>
-	<52863709.7020006@...1227...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="+SjOtuBPz8meD6md"
-Content-Disposition: inline
-In-Reply-To: <52863709.7020006@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix argument type warning introduced by
-	http extra proxy header patch.
+MIME-Version: 1.0
+Sender: heikki.hannikainen@...277...
+In-Reply-To: <1383163946-24298-1-git-send-email-avalentin@...1847...>
+References: <1383163946-24298-1-git-send-email-avalentin@...1847...>
+Date: Fri, 15 Nov 2013 17:49:05 +0200
+Message-ID: <CAHqXQkOePgrgcmdJkknRNhCgQxECibRbCSUWUbhrYTf77TQNBw@...278...>
+From: Heikki Hannikainen <hessu@...1822...>
+Subject: Re: [Openvpn-devel] [PATCH] Floating: Add support for floating in
+ TLS mode (upd.)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,51 +15,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---+SjOtuBPz8meD6md
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+On Wed, Oct 30, 2013 at 10:12 PM, Andr=C3=A9 Valentin <avalentin@...1847...=
+> wrote:
+> Add support for floating in tls mode using the HMAC of a packet. It costs
+> a roundtrip through the clients. Its security comes from a secret key, bo=
+th
+> peers have. This key and the data form the signature used, which is then
+> checked againts existing peer connections. Therefore a good auth algo is
+> recommended.
+>
+> URL: https://community.openvpn.net/openvpn/ticket/49
 
-On Fri, Nov 15, 2013 at 04:00:25PM +0100, Arne Schwabe wrote:
-> Am 15.11.13 15:41, schrieb Gert Doering:
-> > d0cb816cf8be68359617b61a55799f6330901f6a introduced add_proxy_headers(),
-> > passing "port" as "const char *" - but it should be an "int".  As port
-> > is not yet actually used inside add_proxy_headers(), it's just a warnin=
-g.
-> >
-> > Signed-off-by: Gert Doering <gert@...1296...>
-[..]
-> ACK.
+I took a look at this patch, since I am frustrated by the same
+problem, so +1 for the conceptual issue. It seems to work:
 
-committed and pushed, as 16e24daaba4432e0a905478bab23b65f904be135
+Nov 15 15:18:01 gw ovpn-udp[9964]: hessu/85.188.36.24.36:58639 MULTI:
+Detected floating by hmac test, new client address:
+[AF_INET]85.188.36.24.36:58640
+Nov 15 15:18:01 gw ovpn-udp[9964]: hessu/85.188.36.24.36:58640 MULTI:
+Floated with HMAC authentication to a new client address:
+[AF_INET]85.188.36.24.36:58640
 
-gert
+In this case the client's source port changed, because the client is
+behind a NAT device, and the client didn't have traffic within 60
+seconds (the NAT device's UDP session timeout). Without this patch
+--float does not have any effect on the multi-client tls-server setup,
+and after a 60-second break in traffic the session is dead (until
+keepalive ping timeout and reconnection). I'd like to use a large
+keepalive timer, since on mobile devices a 29-second keepalive tends
+to drain the battery.
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+I think, however, there might be a problem with the patch: When a
+packet is received from a srcip-srcport which does not belong to any
+current client, it goes and scans through the whole client list,
+calculating a HMAC for the packet contents using the HMAC key of each
+and every client, effectively looking for a match in HMAC keys. An
+attacker could transmit large packets with random source IP addresses
+to a server which has a large number of clients (think 2000 or
+something? how large client loads are people having, anyway?), and
+cause extra CPU load, maybe enough to DOS the server with a smallish
+packet rate.
 
---+SjOtuBPz8meD6md
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+On the other hand, it is commonly quite easy to DOS servers by sheer
+packet/data volume... but we shouldn't make it any easier with new
+developments.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
+The more elegant way would be to have a session ID in each data
+packet, which would used to look up the client, and then a single HMAC
+calculation would tell if the packet is from that client. No need for
+scanning. That session ID could be used even for every packet instead
+of looking at the client IP address+port at all initially (well, for
+sending any following packets you'd use the peer's latest source
+address).
 
-iQCVAwUBUoZAU6kuBuNlUUl1AQIrbwP8DXXMpbnEM6FkJ8u3j4tdiPZ/ZxvH4TVr
-hVapXnJehGj7+Dd8harDyVbU+WbhjHKJCRO9qGr/iw28YdOvlc8DLlQV+xqBBfpE
-K8k2GhJhW8i5WDEew2Ey372i/oxRzsiUjNVMfZgslztmRqidklLyt0bxcIwPaJJo
-3IqhgjeR4Nk=
-=bMOM
------END PGP SIGNATURE-----
+Putting a session ID in the data packet would require changing the
+on-the-wire data packet format, and make the packets a bit larger. The
+ID doesn't have to be very large, though, since it's not secret or
+used for keying, just an integer large enough to index the maximum
+number of VPN clients on a single server. This would require a new
+protocol version, backward compatibility and all that work.
 
---+SjOtuBPz8meD6md--
+- Hessu
 
