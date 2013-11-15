@@ -1,10 +1,10 @@
-Date: Fri, 15 Nov 2013 15:23:45 +0100 (CET)
-Message-Id: <201311151423.rAFENirN025436@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1370005175-14871-1-git-send-email-arne@...1227...>
-References: <1370005175-14871-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add reporting of UI version to
-	basic push-peer-info set.
+Date: Fri, 15 Nov 2013 15:41:57 +0100
+Message-Id: <1384526517-6020-1-git-send-email-gert@...1296...>
+In-Reply-To: <1382688143-17247-1-git-send-email-arne@...1227...>
+References: <1382688143-17247-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Fix argument type warning introduced by
+	http extra proxy header patch.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,32 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK (by James and me, in one of the IRC Meetings and on the Hackathon).
+d0cb816cf8be68359617b61a55799f6330901f6a introduced add_proxy_headers(),
+passing "port" as "const char *" - but it should be an "int".  As port
+is not yet actually used inside add_proxy_headers(), it's just a warning.
 
-Your patch has been applied to the master and release/2.3 branches.
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/proxy.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit f3a2cd255a3bc73a546a5e2d09fa30a16cce0d7d (master)
-commit ca2c4a9da769ceefd7e79829362ed054f667536b (master)
-
-Author: Arne Schwabe
-Date:   Fri May 31 14:59:35 2013 +0200
-
-     Add reporting of UI version to basic push-peer-info set.
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Acked-by: James Yonan <james@...515...>
-     Message-Id: <1370005175-14871-1-git-send-email-arne@...1227...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/7646
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
+index ed4aedd..c3496e2 100644
+--- a/src/openvpn/proxy.c
++++ b/src/openvpn/proxy.c
+@@ -492,7 +492,7 @@ bool
+ add_proxy_headers (struct http_proxy_info *p,
+ 		  socket_descriptor_t sd, /* already open to proxy */
+ 		  const char *host,	  /* openvpn server remote */
+-		  const char *port	  /* openvpn server port */
++		  const int port	  /* openvpn server port */
+ 		  )
+ {
+   char buf[512];
+-- 
+1.8.1.5
 
 
