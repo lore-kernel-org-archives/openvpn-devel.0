@@ -1,10 +1,10 @@
-Date: Fri, 15 Nov 2013 13:43:24 +0100
-Message-Id: <201311151243.rAFChOor009726@...1729...>
+Date: Fri, 15 Nov 2013 15:23:45 +0100 (CET)
+Message-Id: <201311151423.rAFENirN025436@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1382688143-17247-1-git-send-email-arne@...1227...>
-References: <1382688143-17247-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Implement custom HTTP header
-	for http-proxy, always send user-agent
+In-Reply-To: <1370005175-14871-1-git-send-email-arne@...1227...>
+References: <1370005175-14871-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add reporting of UI version to
+	basic push-peer-info set.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,21 +18,23 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.
+ACK (by James and me, in one of the IRC Meetings and on the Hackathon).
 
-Your patch has been applied to the master branch, with some whitespace
-fixes, and one typo fix in a string in show_http_proxy_options().
+Your patch has been applied to the master and release/2.3 branches.
 
-commit d0cb816cf8be68359617b61a55799f6330901f6a (master)
+commit f3a2cd255a3bc73a546a5e2d09fa30a16cce0d7d (master)
+commit ca2c4a9da769ceefd7e79829362ed054f667536b (master)
 
 Author: Arne Schwabe
-Date:   Fri Oct 25 10:02:23 2013 +0200
+Date:   Fri May 31 14:59:35 2013 +0200
 
-     Implement custom HTTP header for http-proxy, always send user-agent
+     Add reporting of UI version to basic push-peer-info set.
 
+     Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1382688143-17247-1-git-send-email-arne@...1227...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/7946
+     Acked-by: James Yonan <james@...515...>
+     Message-Id: <1370005175-14871-1-git-send-email-arne@...1227...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/7646
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
