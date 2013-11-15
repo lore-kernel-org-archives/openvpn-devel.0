@@ -1,10 +1,10 @@
-Date: Fri, 15 Nov 2013 17:28:30 +0100 (CET)
-Message-Id: <201311151628.rAFGST7R018930@...1295...>
+Date: Fri, 15 Nov 2013 17:58:51 +0100
+Message-Id: <201311151658.rAFGwpo9014531@...1729...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <CAK6ywbLVtSgRZEt4N+02fz+vQ0GNp==5KdsbqWtZ+fgUzrZq+g@...278...>
-References: <CAK6ywbLVtSgRZEt4N+02fz+vQ0GNp==5KdsbqWtZ+fgUzrZq+g@...278...>
-Subject: [Openvpn-devel] [PATCH applied] Re: tls_ctx_load_ca: Improve
-	certificate error messages
+In-Reply-To: <0MTjMy-1VU1I42Lo0-00QV4k@...1825...>
+References: <0MTjMy-1VU1I42Lo0-00QV4k@...1825...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Document authfile for socks
+	server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,22 +15,24 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Klee Dienes <klee@...1854...>
+To: Davide Brini <dave_br@...1278...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master and release/2.3 branches.
 
-commit 9927cdbd929bebbba0d15bb9a6b03453891a485b (master)
-commit 2f3c65f352086b557a5a9dcf2b54eda08a7962f8 (release/2.3)
+commit e0a7471f250e25a384a23dfb9efd2ffef83be913 (master)
+commit a478420a1cba6ee96e2cecbcd5e20a7946c557f0 (release/2.3)
 
-Author: Klee Dienes
-Date:   Sat Jul 6 17:00:02 2013 -0400
+Author: Davide Brini
+Date:   Sun Sep 15 14:31:49 2013 +0200
 
-     tls_ctx_load_ca: Improve certificate error messages
+     Document authfile for socks server
 
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <CAK6ywbLVtSgRZEt4N+02fz+vQ0GNp==5KdsbqWtZ+fgUzrZq+g@...278...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/7837
+     Signed-off-by: Davide Brini <dave_br@...1278...>
+
+     Acked-by: Heiko Hund <heiko.hund@...1489...>
+     Message-Id: <0MTjMy-1VU1I42Lo0-00QV4k@...1825...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/7875
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
