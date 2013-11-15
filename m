@@ -1,9 +1,10 @@
-Date: Thu, 14 Nov 2013 21:33:41 +0100 (CET)
-Message-Id: <201311142033.rAEKXfnI024453@...1295...>
+Date: Fri, 15 Nov 2013 13:43:24 +0100
+Message-Id: <201311151243.rAFChOor009726@...1729...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <5284F32D.3000206@...1085...>
-References: <5284F32D.3000206@...1085...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Require a 1.2.x PolarSSL version
+In-Reply-To: <1382688143-17247-1-git-send-email-arne@...1227...>
+References: <1382688143-17247-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Implement custom HTTP header
+	for http-proxy, always send user-agent
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,23 +15,24 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Josh Cepek <josh.cepek@...1085...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master and release/2.3 branch.
+ACK.
 
-commit 7fc9245f5d97c7d76c635f8a3e38ab55ab27b27b (master)
-commit 941118fba8974464081f88c94b79e6e3c9a2779e (master)
+Your patch has been applied to the master branch, with some whitespace
+fixes, and one typo fix in a string in show_http_proxy_options().
 
-Author: Josh Cepek <josh.cepek@...1085...>
-Date:   Thu Nov 14 12:02:59 2013 -0600
+commit d0cb816cf8be68359617b61a55799f6330901f6a (master)
 
-     Require a 1.2.x PolarSSL version
+Author: Arne Schwabe
+Date:   Fri Oct 25 10:02:23 2013 +0200
 
-     Signed-off-by: Josh Cepek <josh.cepek@...1085...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <5284F32D.3000206@...1085...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/7968
+     Implement custom HTTP header for http-proxy, always send user-agent
+
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1382688143-17247-1-git-send-email-arne@...1227...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/7946
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
