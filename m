@@ -1,7 +1,10 @@
-From: Gert Doering <gert@...1296...>
-Date: Sat, 16 Nov 2013 18:53:21 +0100
-Message-Id: <1384624401-27943-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH] Fix IPv6 examples in t_client.rc-sample
+Message-ID: <5287B192.2080109@...1085...>
+Date: Sat, 16 Nov 2013 11:55:30 -0600
+From: Josh Cepek <josh.cepek@...1085...>
+MIME-Version: 1.0
+References: <1384624401-27943-1-git-send-email-gert@...1296...>
+In-Reply-To: <1384624401-27943-1-git-send-email-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix IPv6 examples in t_client.rc-sample
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,46 +13,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-IPv6 documentation prefix is 2001:db*8*:: (not :dba:), and the second
-test stanza variables need to end in _2, of course...
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- tests/t_client.rc-sample | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ACK. This makes the sample addressing match RFC3849 recommendations.
 
-diff --git a/tests/t_client.rc-sample b/tests/t_client.rc-sample
-index dcb3e4a..6e66607 100644
---- a/tests/t_client.rc-sample
-+++ b/tests/t_client.rc-sample
-@@ -59,18 +59,18 @@ OPENVPN_BASE_P2P="..."
- RUN_TITLE_1="testing tun/udp/ipv4+ipv6"
- OPENVPN_CONF_1="$OPENVPN_BASE_P2MP --dev tun --proto udp --remote $REMOTE --port 51194"
- EXPECT_IFCONFIG4_1="10.100.50.6"
--EXPECT_IFCONFIG6_1="2001:dba:a050::1:0"
-+EXPECT_IFCONFIG6_1="2001:db8:a050::1:0"
- PING4_HOSTS_1="10.100.50.1 10.100.0.1"
--PING6_HOSTS_1="2001:dba::1 2001:dba:a050::1"
-+PING6_HOSTS_1="2001:db8::1 2001:db8:a050::1"
- 
- # Test 2: TCP / p2mp tun
- #
- RUN_TITLE_2="testing tun/tcp/ipv4+ipv6"
- OPENVPN_CONF_2="$OPENVPN_BASE_P2MP --dev tun --proto tcp --remote $REMOTE --port 51194"
- EXPECT_IFCONFIG4_2="10.100.51.6"
--EXPECT_IFCONFIG6_2="2001:dba:a051::1:0"
-+EXPECT_IFCONFIG6_2="2001:db8:a051::1:0"
- PING4_HOSTS_2="10.100.51.1 10.100.0.1"
--PING6_HOSTS_1="2001:dba::1 2001:dba:a051::1"
-+PING6_HOSTS_2="2001:db8::1 2001:db8:a051::1"
- 
- # Test 3: UDP / p2p tun
- # ...
--- 
-1.8.1.5
+- --
+Josh Cepek
 
+On 11/16/13 11:53, Gert Doering wrote:
+> IPv6 documentation prefix is 2001:db*8*:: (not :dba:), and the second
+> test stanza variables need to end in _2, of course...
+> 
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>  tests/t_client.rc-sample | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.20 (GNU/Linux)
+
+iQGcBAEBAgAGBQJSh7GSAAoJENcx2Xpgb9Rjm/EL/RVX+lwBPGoA1lGiGpJ6yvJg
+/Gi6gHbBCXwBugizeVhe0wa1Y8VDmDDZrfs8sdL7U1MVVnCj0G1IisC6z2kW69AV
+pstmWaUlID0G8nt5GfvQNodJzAyEHzF+M8yqxWGCs0Mo5EJAfWlW7tT5H/o/fzt0
+BJeDRLLIqNhkbCG6VWyRlEb1nG9PAA2IW4W1FtPL1kHGpkQNlEkeWMGUbgzxpkNL
+7dmQ5PgzmADBjHM1FlAjH7D4s9qvDsp9ZFV0wMCApIIJJfE080iJczuoJypEVTQ0
+O4lZpxcRZVNyZw08dO2nzoqcu60IzxqB7jUJ8qtFdn1Gccz0PGG5Pjo7sWwGWaE/
+OQgURId998HRr3iAQR9oLSf1BxueNoldTOcMRfTDDn1fa2yCj2ftbBoBc7dW8hJH
+aasIDJq8R96t2jrwn2Cs4MWPp4TZ03IgqoLjVznKNWH017axfuQyZdNoLEdW+owJ
+UDOHF1Wbuv8Cx+dmHfsdQ9Uhtbm28eADTeQEMZGVmg==
+=HHwF
+-----END PGP SIGNATURE-----
 
