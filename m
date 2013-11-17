@@ -1,10 +1,10 @@
-Message-ID: <5287B192.2080109@...1085...>
-Date: Sat, 16 Nov 2013 11:55:30 -0600
-From: Josh Cepek <josh.cepek@...1085...>
-MIME-Version: 1.0
-References: <1384624401-27943-1-git-send-email-gert@...1296...>
+Date: Sun, 17 Nov 2013 10:03:23 +0100
+Message-Id: <201311170903.rAH93Nb7003474@...1729...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <1384624401-27943-1-git-send-email-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix IPv6 examples in t_client.rc-sample
+References: <1384624401-27943-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix IPv6 examples in
+	t_client.rc-sample
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,39 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Patch has been applied to the master and release/2.3 branches.
 
-ACK. This makes the sample addressing match RFC3849 recommendations.
+commit bbc3a6473c84ba7cdb87b359f016cd13773e42ec (master)
+commit 3bdc5d7c6478abe8ef35b5ccfce48194719067f8 (master)
 
-- --
-Josh Cepek
+Author: Gert Doering
+Date:   Sat Nov 16 18:53:21 2013 +0100
 
-On 11/16/13 11:53, Gert Doering wrote:
-> IPv6 documentation prefix is 2001:db*8*:: (not :dba:), and the second
-> test stanza variables need to end in _2, of course...
-> 
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
->  tests/t_client.rc-sample | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+     Fix IPv6 examples in t_client.rc-sample
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.20 (GNU/Linux)
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Josh Cepek <josh.cepek@...1085...>
+     Message-Id: <1384624401-27943-1-git-send-email-gert@...1296...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/7992
 
-iQGcBAEBAgAGBQJSh7GSAAoJENcx2Xpgb9Rjm/EL/RVX+lwBPGoA1lGiGpJ6yvJg
-/Gi6gHbBCXwBugizeVhe0wa1Y8VDmDDZrfs8sdL7U1MVVnCj0G1IisC6z2kW69AV
-pstmWaUlID0G8nt5GfvQNodJzAyEHzF+M8yqxWGCs0Mo5EJAfWlW7tT5H/o/fzt0
-BJeDRLLIqNhkbCG6VWyRlEb1nG9PAA2IW4W1FtPL1kHGpkQNlEkeWMGUbgzxpkNL
-7dmQ5PgzmADBjHM1FlAjH7D4s9qvDsp9ZFV0wMCApIIJJfE080iJczuoJypEVTQ0
-O4lZpxcRZVNyZw08dO2nzoqcu60IzxqB7jUJ8qtFdn1Gccz0PGG5Pjo7sWwGWaE/
-OQgURId998HRr3iAQR9oLSf1BxueNoldTOcMRfTDDn1fa2yCj2ftbBoBc7dW8hJH
-aasIDJq8R96t2jrwn2Cs4MWPp4TZ03IgqoLjVznKNWH017axfuQyZdNoLEdW+owJ
-UDOHF1Wbuv8Cx+dmHfsdQ9Uhtbm28eADTeQEMZGVmg==
-=HHwF
------END PGP SIGNATURE-----
+
+--
+kind regards,
+
+Gert Doering
+
 
