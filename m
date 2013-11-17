@@ -1,15 +1,11 @@
-Message-ID: <528890A7.1020002@...1114...>
-Date: Sun, 17 Nov 2013 10:47:19 +0100
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <CAN_jwOsXhs-qTqOmrqhNk+Jf6-pRSBVVTovShLGgQAKKTZkE4g@...278...>	<554440252.59882.1380270883311.JavaMail.zimbra@...1795...>	<CAN_jwOvixY5Jz7Rheq-=o40saprsoQmxRB9yn3-jdCmFa9VM0A@...278...>	<52456F61.3000104@...1114...>	<CAN_jwOt4kiM09YjZi5=jh6qFgQTpLFgPOSO1opFOF72EY8fyCw@...278...>	<CAN_jwOuJcwF-Co0r=pukUHO2z0a0ff5xtERp7_mc2PYot9yv-Q@...278...>	<CAN_jwOuQR6rxUTA5Nho9tBkvSBMU75Yzfv=PFpFUHa2Kq8=E2A@...278...>	<20131023141829.GA13900@...1296...>
-	<20131023162618.GP161@...1296...>
-In-Reply-To: <20131023162618.GP161@...1296...>
+Date: Sun, 17 Nov 2013 11:40:02 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20131117104002.GA161@...1296...>
+Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="efLCEiaHMkNqkEHdk5VG91Xd7BqiUDgKf"
-Subject: Re: [Openvpn-devel] Does openvpn 2.3.2 has memory leak?
-Reply-To: openvpn-devel@lists.sourceforge.net
+	protocol="application/pgp-signature"; boundary="8ebIqrUoPgLz4PBs"
+Content-Disposition: inline
+Subject: [Openvpn-devel] Windows TAP driver and NDIS 6.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,30 +14,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net, james@...515...
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---efLCEiaHMkNqkEHdk5VG91Xd7BqiUDgKf
-Content-Type: text/plain; charset="ISO-8859-1"
+--8ebIqrUoPgLz4PBs
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 23. okt. 2013 18:26, Gert Doering wrote:
-> Hi,
->=20
-> On Wed, Oct 23, 2013 at 04:18:29PM +0200, Gert Doering wrote:
->>  - each further renegotiation leaks "a few kbyte" of memory per client,
->>    which should also be fully returned when the client disconnects - this
->>    is the issue I discovered earlier, with the GC handling of the per-cl=
-ient
->>    environment set, and I'll send a patch for that "soon" (as soon as I
->>    have fully understood the code involved).
->=20
-> Yeah...  Fosdem 2012 rearing it's ugly head.
->=20
-> Please try the following patch to git master, it should bring back=20
-> 2.1-behaviour here.
+Hi,
 
-ACK on this patch:
------------------------------------------------------------------------
---efLCEiaHMkNqkEHdk5VG91Xd7BqiUDgKf--
+just so it does not get lost: here are the microsoft pages about porting
+NDIS (miniport) drivers to NDIS 6.0
+
+http://msdn.microsoft.com/en-us/library/windows/hardware/ff570025(v=3Dvs.85=
+).aspx
+http://msdn.microsoft.com/en-us/library/windows/hardware/ff570059(v=3Dvs.85=
+).aspx
+
+so, looking for volunteers now :-)
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--8ebIqrUoPgLz4PBs
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBUoidAqkuBuNlUUl1AQLxHgQAiCkR91wGDiLodY0NViEBvavsOSfeka/1
+oZzVl3tBJcRH2b9y8xyPbcy9v+LSIvbTFLVAJyv1xIX+gL6uM/qmOTcnEZG/NEW6
+h8PCJDTXhiOoYjh99oX4Eyvpuc+3sGFOaJj0diYMgqpZlKNWoYGssvXmYHE9rtkh
+mXKV0CuSa0M=
+=vv6J
+-----END PGP SIGNATURE-----
+
+--8ebIqrUoPgLz4PBs--
+
