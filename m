@@ -1,11 +1,14 @@
-Date: Sun, 17 Nov 2013 11:40:02 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20131117104002.GA161@...1296...>
-Mime-Version: 1.0
+Message-ID: <5288B114.8020003@...1114...>
+Date: Sun, 17 Nov 2013 13:05:40 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <20131117104002.GA161@...1296...>
+In-Reply-To: <20131117104002.GA161@...1296...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="8ebIqrUoPgLz4PBs"
-Content-Disposition: inline
-Subject: [Openvpn-devel] Windows TAP driver and NDIS 6.0
+	protocol="application/pgp-signature";
+	boundary="dhj4gpCjKfnwbSvoFKnHIS3vuxkb07RVO"
+Subject: Re: [Openvpn-devel] Windows TAP driver and NDIS 6.0
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,47 +17,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net, james@...515...
+To: openvpn-devel@lists.sourceforge.net
 
---8ebIqrUoPgLz4PBs
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--dhj4gpCjKfnwbSvoFKnHIS3vuxkb07RVO
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+On 17. nov. 2013 11:40, Gert Doering wrote:
+> Hi,
+>=20
+> just so it does not get lost: here are the microsoft pages about porting
+> NDIS (miniport) drivers to NDIS 6.0
+>=20
+> http://msdn.microsoft.com/en-us/library/windows/hardware/ff570025(v=3Dvs.=
+85).aspx
+> http://msdn.microsoft.com/en-us/library/windows/hardware/ff570059(v=3Dvs.=
+85).aspx
+>=20
+> so, looking for volunteers now :-)
 
-just so it does not get lost: here are the microsoft pages about porting
-NDIS (miniport) drivers to NDIS 6.0
+Just to explain a bit further.  WinTAP is currently using the NDIS 5
+API.  If we have understood this correctly, NDIS 5 is on "life support"
+in Vista, Windows 7 and Windows 8 - in the way NDIS 5 drivers are
+running through and emulation layer.   And there is some expectations
+that NDIS 5 support will disappear in Windows 8.2 and later.
 
-http://msdn.microsoft.com/en-us/library/windows/hardware/ff570025(v=3Dvs.85=
-).aspx
-http://msdn.microsoft.com/en-us/library/windows/hardware/ff570059(v=3Dvs.85=
-).aspx
+It would be good if someone can consider to help out here, so we can get
+an NDIS 6 port in place before NDIS 5 disappears from Windows.
+Otherwise we might end up with a non-working Windows version of OpenVPN.
 
-so, looking for volunteers now :-)
-
-gert
 
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+kind regards,
 
---8ebIqrUoPgLz4PBs
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+David Sommerseth
+
+
+--dhj4gpCjKfnwbSvoFKnHIS3vuxkb07RVO
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
+Version: GnuPG v1.4.15 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
 
-iQCVAwUBUoidAqkuBuNlUUl1AQLxHgQAiCkR91wGDiLodY0NViEBvavsOSfeka/1
-oZzVl3tBJcRH2b9y8xyPbcy9v+LSIvbTFLVAJyv1xIX+gL6uM/qmOTcnEZG/NEW6
-h8PCJDTXhiOoYjh99oX4Eyvpuc+3sGFOaJj0diYMgqpZlKNWoYGssvXmYHE9rtkh
-mXKV0CuSa0M=
-=vv6J
+iEYEARECAAYFAlKIsRQACgkQDC186MBRfrrm1wCfRiEbCOBzjsozAWX6sLh+7vaY
+zagAnR3gcv/FY4xbxfrWYnP5T0ABGQvH
+=O36v
 -----END PGP SIGNATURE-----
 
---8ebIqrUoPgLz4PBs--
+--dhj4gpCjKfnwbSvoFKnHIS3vuxkb07RVO--
 
