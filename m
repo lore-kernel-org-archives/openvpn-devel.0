@@ -1,22 +1,10 @@
-Date: Wed, 20 Nov 2013 19:27:33 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20131120182733.GS161@...1296...>
-References: <CAN_jwOuJcwF-Co0r=pukUHO2z0a0ff5xtERp7_mc2PYot9yv-Q@...278...>
-	<CAN_jwOuQR6rxUTA5Nho9tBkvSBMU75Yzfv=PFpFUHa2Kq8=E2A@...278...>
-	<20131023141829.GA13900@...1296...>
-	<20131023162618.GP161@...1296...>
-	<CAN_jwOsnDbhxuR-buwk6JE2ST_JDfmaLuB0ffe=g6dAc4my6bQ@...278...>
-	<20131030083523.GL161@...1296...>
-	<CAN_jwOtJwZN-iJvVyiHhTuzpKnSuYoNqzv5WEEouqk+fQQ2FHQ@...278...>
-	<CAN_jwOtCYq2+dWrb=CZJZxbimP8mE+SKbe4DGrCoYyfyceEhYg@...278...>
-	<20131101183401.GZ161@...1296...>
-	<CAN_jwOvg9rP1TzJQhcLcozMS_-niv764f4OHob29WHuGoYx4fg@...278...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="dWVCIqx4J1bxisq0"
-Content-Disposition: inline
-In-Reply-To: <CAN_jwOvg9rP1TzJQhcLcozMS_-niv764f4OHob29WHuGoYx4fg@...278...>
-Subject: Re: [Openvpn-devel] Does openvpn 2.3.2 has memory leak?
+From: David Sommerseth <dazo@...384...>
+Date: Wed, 20 Nov 2013 22:11:17 +0100
+Message-Id: <1384981877-7479-1-git-send-email-dazo@...384...>
+In-Reply-To: <CAK6ywbLqTT8bkfF54qCt34HrOtueE8WdKacwSwu--nZCtcRXoA@...278...>
+References: <CAK6ywbLqTT8bkfF54qCt34HrOtueE8WdKacwSwu--nZCtcRXoA@...278...>
+Subject: [Openvpn-devel] [PATCH] down-root plugin: Replaced system() calls
+	with execve()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -25,94 +13,282 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Brad Zhang <hebei5000@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---dWVCIqx4J1bxisq0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: David Sommerseth <davids@...1347...>
 
-Hi,
+The system() call is prone to shell expansions and provides far more
+environments variables to the executable run than what is usually
+preferred.  By moving over to exevce() shell expansions are far more
+difficult to achieve and only the OpenVPN provided environment
+variables are available.
 
-to bring this discussion to an end...
+This is a response to the patch submitted to openvpn-devel ML:
+http://article.gmane.org/gmane.network.openvpn.devel/7919
 
-On Thu, Nov 07, 2013 at 06:25:55PM +0800, Brad Zhang wrote:
-> Thank you so much. I am testing Openvpn 2.3.2 with your patch memory usage
-> some days. Here is result:
+Signed-off-by: David Sommerseth <davids@...1347...>
+---
+ src/plugins/down-root/down-root.c | 140 +++++++++++++-------------------------
+ 1 file changed, 48 insertions(+), 92 deletions(-)
 
-Thanks for the exhaustive tests.  This is really good to see, and it's
-impressive how much less memory PolarSSL need!
+diff --git a/src/plugins/down-root/down-root.c b/src/plugins/down-root/down-root.c
+index d51d0e5..e257460 100644
+--- a/src/plugins/down-root/down-root.c
++++ b/src/plugins/down-root/down-root.c
+@@ -5,7 +5,8 @@
+  *             packet encryption, packet authentication, and
+  *             packet compression.
+  *
+- *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
++ *  Copyright (C) 2002-2013 OpenVPN Technologies, Inc. <sales@...515...>
++ *  Copyright (C) 2013      David Sommerseth <davids@...1347...>
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License version 2
+@@ -46,8 +47,8 @@
+ #define DEBUG(verb) ((verb) >= 7)
+ 
+ /* Command codes for foreground -> background communication */
+-#define COMMAND_RUN_SCRIPT 0
+-#define COMMAND_EXIT       1
++#define COMMAND_RUN_SCRIPT 1
++#define COMMAND_EXIT       2
+ 
+ /* Response codes for background -> foreground communication */
+ #define RESPONSE_INIT_SUCCEEDED   10
+@@ -56,7 +57,7 @@
+ #define RESPONSE_SCRIPT_FAILED    13
+ 
+ /* Background process function */
+-static void down_root_server (const int fd, char *command, const char *argv[], const char *envp[], const int verb);
++static void down_root_server (const int fd, char * const * argv, char * const *envp, const int verb);
+ 
+ /*
+  * Plugin state, used by foreground
+@@ -73,7 +74,7 @@ struct down_root_context
+   int verb;
+ 
+   /* down command */
+-  char *command;
++  char **command;
+ };
+ 
+ /*
+@@ -207,72 +208,48 @@ set_signals (void)
+   signal (SIGPIPE, SIG_IGN);
+ }
+ 
+-/*
+- * convert system() return into a success/failure value
+- */
+-int
+-system_ok (int stat)
+-{
+-#ifdef WIN32
+-  return stat == 0;
+-#else
+-  return stat != -1 && WIFEXITED (stat) && WEXITSTATUS (stat) == 0;
+-#endif
+-}
+-
+-static char *
+-build_command_line (const char *argv[])
+-{
+-  int size = 0;
+-  int n = 0;
+-  int i;
+-  char *string;
+-
+-  /* precompute size */
+-  if (argv)
+-    {
+-      for (i = 0; argv[i]; ++i)
+-	{
+-	  size += (strlen (argv[i]) + 1); /* string length plus trailing space */
+-	  ++n;
+-	}
+-    }
+-  ++size;                                 /* for null terminator */
+-
+-  /* allocate memory */
+-  string = (char *) malloc (size);
+-  if (!string)
+-    {
+-      fprintf (stderr, "DOWN-ROOT: out of memory\n");
+-      exit (1);
+-    }
+-  string[0] = '\0';
+-
+-  /* build string */
+-  for (i = 0; i < n; ++i)
+-    {
+-      strcat (string, argv[i]);
+-      if (i + 1 < n)
+-	strcat (string, " ");
+-    }
+-  return string;
+-}
+ 
+ static void
+ free_context (struct down_root_context *context)
+ {
+   if (context)
+     {
+-      if (context->command)
+-	free (context->command);
++      free (context->command);
+       free (context);
+     }
+ }
+ 
++/* Run the script using execve().  As execve() replaces the
++ * current process with the new one, do a fork first before
++ * calling execve()
++ */
++static int
++run_script(char * const *argv, char * const *envp) {
++  pid_t pid;
++  int ret = 0;
++
++  pid = fork();
++  if (pid == (pid_t)0) { /* child side */
++    execve(argv[0], argv, envp);
++    fprintf(stderr, "DOWN-ROOT: Failed execute: %s\n", argv[0]);
++    exit(127);  /* If execve() fails to run, exit child with exit code 127 */
++  } else if (pid < (pid_t)0 ) {
++    fprintf(stderr, "DOWN-ROOT: Failed to fork child to run %s\n", argv[0]);
++    return -1;
++  } else { /* parent side */
++    if( waitpid (pid, &ret, 0) != pid ) {
++      fprintf(stderr, "DOWN-ROOT: waitpid() failed, don't know exit code of child (%s)\n", argv[0]);
++      return -1;
++    }
++  }
++  return ret;
++}
++
+ OPENVPN_EXPORT openvpn_plugin_handle_t
+-openvpn_plugin_open_v1 (unsigned int *type_mask, const char *argv[], const char *envp[])
++openvpn_plugin_open_v1 (unsigned int *type_mask, const char * argv[], const char *envp[])
+ {
+   struct down_root_context *context;
++  int i = 0;
+ 
+   /*
+    * Allocate our context
+@@ -298,9 +275,14 @@ openvpn_plugin_open_v1 (unsigned int *type_mask, const char *argv[], const char
+     }
+ 
+   /*
+-   * Save our argument in context
++   * Save the arguments in our context
+    */
+-  context->command = build_command_line (&argv[1]);
++  context->command = calloc(string_array_len(argv), sizeof(char *));
++  /* Ignore argv[0], as it contians just the plug-in file name */
++  for (i = 1; i < string_array_len(argv); i++)
++    {
++      context->command[i-1] = (char *) argv[i];
++    }
+ 
+   /*
+    * Get verbosity level from environment
+@@ -385,7 +367,7 @@ openvpn_plugin_func_v1 (openvpn_plugin_handle_t handle, const int type, const ch
+ 	  daemonize (envp);
+ 
+ 	  /* execute the event loop */
+-	  down_root_server (fd[1], context->command, argv, envp, context->verb);
++	  down_root_server (fd[1], context->command, (char * const *) envp, context->verb);
+ 
+ 	  close (fd[1]);
+ 	  exit (0);
+@@ -453,18 +435,16 @@ openvpn_plugin_abort_v1 (openvpn_plugin_handle_t handle)
+  * Background process -- runs with privilege.
+  */
+ static void
+-down_root_server (const int fd, char *command, const char *argv[], const char *envp[], const int verb)
++down_root_server (const int fd, char * const *argv, char * const *envp, const int verb)
+ {
+   const char *p[3];
+-  char *command_line = NULL;
+-  char *argv_cat = NULL;
+   int i;
+ 
+   /*
+    * Do initialization
+    */
+   if (DEBUG (verb))
+-    fprintf (stderr, "DOWN-ROOT: BACKGROUND: INIT command='%s'\n", command);
++    fprintf (stderr, "DOWN-ROOT: BACKGROUND: INIT command='%s'\n", argv[0]);
+ 
+   /*
+    * Tell foreground that we initialized successfully
+@@ -476,32 +456,12 @@ down_root_server (const int fd, char *command, const char *argv[], const char *e
+     }
+ 
+   /*
+-   * Build command line
+-   */
+-  if (string_array_len (argv) >= 2)
+-    argv_cat = build_command_line (&argv[1]);
+-  else
+-    argv_cat = build_command_line (NULL);
+-  p[0] = command;
+-  p[1] = argv_cat;
+-  p[2] = NULL;
+-  command_line = build_command_line (p);
+-
+-  /*
+-   * Save envp in environment
+-   */
+-  for (i = 0; envp[i]; ++i)
+-    {
+-      putenv ((char *)envp[i]);
+-    }
+-
+-  /*
+    * Event loop
+    */
+   while (1)
+     {
+       int command_code;
+-      int status;
++      int exit_code = -1;
+ 
+       /* get a command from foreground process */
+       command_code = recv_control (fd);
+@@ -512,8 +472,7 @@ down_root_server (const int fd, char *command, const char *argv[], const char *e
+       switch (command_code)
+ 	{
+ 	case COMMAND_RUN_SCRIPT:
+-	  status = system (command_line);
+-	  if (system_ok (status)) /* Succeeded */
++	  if ( (exit_code = run_script(argv, envp)) == 0 ) /* Succeeded */
+ 	    {
+ 	      if (send_control (fd, RESPONSE_SCRIPT_SUCCEEDED) == -1)
+ 		{
+@@ -523,6 +482,7 @@ down_root_server (const int fd, char *command, const char *argv[], const char *e
+ 	    }
+ 	  else /* Failed */
+ 	    {
++	      fprintf(stderr, "DOWN-ROOT: BACKGROUND: %s exited with exit code %i\n", argv[0], exit_code);
+ 	      if (send_control (fd, RESPONSE_SCRIPT_FAILED) == -1)
+ 		{
+ 		  fprintf (stderr, "DOWN-ROOT: BACKGROUND: write error on response socket [3]\n");
+@@ -546,10 +506,6 @@ down_root_server (const int fd, char *command, const char *argv[], const char *e
+     }
+ 
+  done:
+-  if (argv_cat)
+-    free (argv_cat);
+-  if (command_line)
+-    free (command_line);
+   if (DEBUG (verb))
+     fprintf (stderr, "DOWN-ROOT: BACKGROUND: EXIT\n");
+ 
+-- 
+1.8.3.1
 
-The patch in question has been acked by David, has been pushed to git,
-and will be in 2.3.3 when we release that.
-
-[..]
-> I noticed your mail said if clients are disconnected, the memory will be
-> free, but when I tested openvpn + polarssl (no your patch), the memory did
-> not free completely, for example:
-> Openvpn 2.3.2 + Polarssl
-> 62672  55m 1408 S  0.0  2.8   0:06.91 openvpn  (Have 200 connections)
-> 37864  34m 1412 S  0.0  1.7   0:06.84 openvpn  (disconnect all connection=
-s)
-[..]
-> It is odd that memory do not free completely because I saw all the clients
-> disconnect correctly from Openvpn server logs.
-> I tried to disable the option "persist-key" and "persist-tun", it did not
-> make better when clients disconnected.
-
-Finding the reason for that is not trivial.  What comes into play here is
-how the "malloc()" and "free()" functions works on that particular=20
-operating system - usually, not all malloc() requests fetch memory from the
-kernel directly, but usually malloc() will request a larger block (with
-sbrk() or mmap()), and maintain that locally in the process, saving on=20
-syscall overhead.  free() will also work only locally first, and only if
-the library decides "it's worth returing something to the kernel" it will
-actually do so - so it's not unusual to never see memory usage actually
-go down if your library just keeps the memory chunks around...
-
-So it might be that in this case, there's a memory allocation right in
-the middle of a larger area which is still in use, so the larger area
-cannot be returned (but the memory might be re-used when the clients
-connect again, so is not "lost") - but without very extensive debugging,
-including fully understanding the way the local malloc()/free()=20
-implementations work, this is impossible to give a definite answer to.
-
-What we know, and this is good :-), is that openvpn *does* call free()
-on everything it allocates - this we can learn from valgrind, but it
-will only tell us how the situation is at program end, not how the
-memory layout looks like while it runs (I think it can be told to do
-so, but there are *many* short-lived malloc()/free() uses in OpenVPN,
-so looking at the log files would be a huge amount of work).
-
-Anyway.  I think what we have is "good enough" given the amount of
-work we can invest here, and that there are so many other areas where
-we need to fix bugs...
-
-Thanks for bringing this up, and making us reconsider the buffer changes
-we did in best faith :-)
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---dWVCIqx4J1bxisq0
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
-
-iQCVAwUBUoz/FKkuBuNlUUl1AQL5+QP/WuHAKOCkHJSJCZV7ywLHSgZnTI7BUCpL
-mleNv+mxjzv264JyQy04wbnTRAinu0TBS4wMFmfJOzvyrBRRHHenvEmJHu8JzdyL
-FNfEnr79LiEnBNm67YEXHwLot4uSS+HbSvXiBTrs8AFU0nQKcjy3lEYfZ3AdaWJl
-gSC4oLTXN3o=
-=O7ge
------END PGP SIGNATURE-----
-
---dWVCIqx4J1bxisq0--
 
