@@ -1,8 +1,13 @@
+Message-ID: <528E7A15.8040100@...1227...>
+Date: Thu, 21 Nov 2013 22:24:37 +0100
 From: Arne Schwabe <arne@...1227...>
-Date: Thu, 21 Nov 2013 21:42:26 +0100
-Message-Id: <1385066546-2093-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Implement an easy parsable log output that
-	allows access to flags of the log message
+MIME-Version: 1.0
+References: <1385066546-2093-1-git-send-email-arne@...1227...>
+In-Reply-To: <1385066546-2093-1-git-send-email-arne@...1227...>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature";
+	micalg=sha1; boundary="------------ms060609010007010902020102"
+Subject: Re: [Openvpn-devel] [PATCH] Implement an easy parsable log output
+ that allows access to flags of the log message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,151 +16,132 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
----
- doc/openvpn.8         |    6 ++++++
- src/openvpn/error.c   |   28 +++++++++++++++++++++++++++-
- src/openvpn/error.h   |    2 ++
- src/openvpn/options.c |    8 ++++++++
- src/openvpn/options.h |    1 +
- 5 files changed, 44 insertions(+), 1 deletion(-)
+This is a cryptographically signed message in MIME format.
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 7a87d90..e351fff 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -2273,6 +2273,12 @@ otherwise would be prepended. In particular, this applies to
- log messages sent to stdout.
- .\"*********************************************************
- .TP
-+.B \-\-machine-readable-output
-+Always write timestamps and message flags to log messages, even when they
-+otherwise would not be prefixed. In particular, this applies to
-+log messages sent to stdout.
-+.\"*********************************************************
-+.TP
- .B \-\-writepid file
- Write OpenVPN's main process ID to
- .B file.
-diff --git a/src/openvpn/error.c b/src/openvpn/error.c
-index 98611a1..9fdd78b 100644
---- a/src/openvpn/error.c
-+++ b/src/openvpn/error.c
-@@ -86,6 +86,10 @@ static bool std_redir;      /* GLOBAL */
- /* Should messages be written to the syslog? */
- static bool use_syslog;     /* GLOBAL */
- 
-+/* Should stdout/stderr be be parsable and always be prefixed with time
-+ * and message flags */
-+static bool parsable_output;   /* GLOBAL */
-+
- /* Should timestamps be included on messages to stdout/stderr? */
- static bool suppress_timestamps; /* GLOBAL */
- 
-@@ -159,10 +163,17 @@ set_suppress_timestamps (bool suppressed)
- }
- 
- void
-+set_machine_readable_output (bool parsable)
-+{
-+  machine_readable_output = parsable;
-+}
-+
-+void
- error_reset ()
- {
-   use_syslog = std_redir = false;
-   suppress_timestamps = false;
-+  machine_readable_output = false;
-   x_debug_level = 1;
-   mute_cutoff = 0;
-   mute_count = 0;
-@@ -334,7 +345,22 @@ void x_msg_va (const unsigned int flags, const char *format, va_list arglist)
- 	  FILE *fp = msg_fp(flags);
- 	  const bool show_usec = check_debug_level (DEBUG_LEVEL_USEC_TIME);
- 
--	  if ((flags & M_NOPREFIX) || suppress_timestamps)
-+	  if (machine_readable_output)
-+	    {
-+	      struct timeval tv;
-+	      gettimeofday (&tv, NULL);
-+
-+	      fprintf (fp, "%ld.%06d %x %s%s%s%s",
-+		       tv.tv_sec,
-+		       tv.tv_usec,
-+		       flags,
-+		       prefix,
-+		       prefix_sep,
-+		       m1,
-+		       (flags&M_NOLF) ? "" : "\n");
-+
-+	    }
-+	  else if ((flags & M_NOPREFIX) || suppress_timestamps)
- 	    {
- 	      fprintf (fp, "%s%s%s%s",
- 		       prefix,
-diff --git a/src/openvpn/error.h b/src/openvpn/error.h
-index 27c48b6..5571bfd 100644
---- a/src/openvpn/error.h
-+++ b/src/openvpn/error.h
-@@ -194,6 +194,8 @@ void error_reset (void);
- void errors_to_stderr (void);
- 
- void set_suppress_timestamps (bool suppressed);
-+void set_parsable_output (bool parsable);
-+
- 
- #define SDL_CONSTRAIN (1<<0)
- bool set_debug_level (const int level, const unsigned int flags);
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index ed3b17f..77ccf10 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -342,6 +342,7 @@ static const char usage_message[] =
-   "--log file      : Output log to file which is created/truncated on open.\n"
-   "--log-append file : Append log to file, or create file if nonexistent.\n"
-   "--suppress-timestamps : Don't log timestamps to stdout/stderr.\n"
-+  "--machine-readable-output : Always log timestamp, message flags to stdout/stderr.\n"
-   "--writepid file : Write main process ID to file.\n"
-   "--nice n        : Change process priority (>0 = lower, <0 = higher).\n"
-   "--echo [parms ...] : Echo parameters to log output.\n"
-@@ -1511,6 +1512,7 @@ show_settings (const struct options *o)
-   SHOW_INT (inetd);
-   SHOW_BOOL (log);
-   SHOW_BOOL (suppress_timestamps);
-+  SHOW_BOOL (parsable_output);
-   SHOW_INT (nice);
-   SHOW_INT (verbosity);
-   SHOW_INT (mute);
-@@ -4663,6 +4665,12 @@ add_option (struct options *options,
-       options->suppress_timestamps = true;
-       set_suppress_timestamps(true);
-     }
-+  else if (streq (p[0], "machine-readable-output"))
-+    {
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-+      options->machine_readable_output = true;
-+      set_machine_readable_output(true);
-+    }
-   else if (streq (p[0], "log-append") && p[1])
-     {
-       VERIFY_PERMISSION (OPT_P_GENERAL);
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 95e67df..dda9658 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -305,6 +305,7 @@ struct options
- 
-   bool log;
-   bool suppress_timestamps;
-+  bool machine_readable_output;
-   int nice;
-   int verbosity;
-   int mute;
--- 
-1.7.9.5
+--------------ms060609010007010902020102
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
+Am 21.11.13 21:42, schrieb Arne Schwabe:
+
+[Patch]
+
+Ignore the patch for now. I sent the wrong version of the patch.
+
+Arne
+
+
+
+--------------ms060609010007010902020102
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIP5DCC
+BCEwggMJoAMCAQICAgDHMA0GCSqGSIb3DQEBBQUAMHExCzAJBgNVBAYTAkRFMRwwGgYDVQQK
+ExNEZXV0c2NoZSBUZWxla29tIEFHMR8wHQYDVQQLExZULVRlbGVTZWMgVHJ1c3QgQ2VudGVy
+MSMwIQYDVQQDExpEZXV0c2NoZSBUZWxla29tIFJvb3QgQ0EgMjAeFw0wNjEyMTkxMDI5MDBa
+Fw0xOTA2MzAyMzU5MDBaMFoxCzAJBgNVBAYTAkRFMRMwEQYDVQQKEwpERk4tVmVyZWluMRAw
+DgYDVQQLEwdERk4tUEtJMSQwIgYDVQQDExtERk4tVmVyZWluIFBDQSBHbG9iYWwgLSBHMDEw
+ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDpm8NnhfkNrvWNVMOWUDU9YuluTO2U
+1wBblSJ01CDrNI/W7MAxBAuZgeKmFNJSoCgjhIt0iQReW+DieMF4yxbLKDU5ey2QRdDtoAB6
+fL9KDhsAw4bpXCsxEXsM84IkQ4wcOItqaACa7txPeKvSxhObdq3u3ibo7wGvdA/BCaL2a869
+080UME/15eOkyGKbghoDJzANAmVgTe3RCSMqljVYJ9N2xnG2kB3E7f81hn1vM7PbD8URwoqD
+oZRdQWvY0hD1TP3KUazZve+Sg7va64sWVlZDz+HVEz2mHycwzUlU28kTNJpxdcVs6qcLmPkh
+nSevPqM5OUhqjK3JmfvDEvK9AgMBAAGjgdkwgdYwcAYDVR0fBGkwZzBloGOgYYZfaHR0cDov
+L3BraS50ZWxlc2VjLmRlL2NnaS1iaW4vc2VydmljZS9hZl9Eb3dubG9hZEFSTC5jcmw/LWNy
+bF9mb3JtYXQ9WF81MDkmLWlzc3Vlcj1EVF9ST09UX0NBXzIwHQYDVR0OBBYEFEm3xs/oPR9/
+6kR7Eyn38QpwPt5kMB8GA1UdIwQYMBaAFDHDeRu69VPXF+CJei0XbAqzK50zMA4GA1UdDwEB
+/wQEAwIBBjASBgNVHRMBAf8ECDAGAQH/AgECMA0GCSqGSIb3DQEBBQUAA4IBAQA74Vp3wEgX
+3KkY7IGvWonwvSiSpspZGBJw7Cjy565/lizn8l0ZMfYTK3S9vYCyufdnyTmieTvhERHua3iR
+M347XyYndVNljjNj7s9zw7CSI0khUHUjoR8Y4pSFPT8z6XcgjaK95qGFKUD2P3MyWA0Ja6ba
+hWzAP7uNZmRWJE6uDT8yNQFb6YyC2XJZT7GGhfF0hVblw/hc843uR7NTBXDn5U2KaYMo4RMJ
+hp5eyOpYHgwf+aTUWgRo/Sg+iwK2WLX2oSw3VwBnqyNojWOl75lrXP1LVvarQIc01BGSbOyH
+xQoLBzNytG8MHVQs2FHHzL8w00Ny8TK/jM5JY6gA9/IcMIIFTjCCBDagAwIBAgIEC4nvvjAN
+BgkqhkiG9w0BAQUFADBaMQswCQYDVQQGEwJERTETMBEGA1UEChMKREZOLVZlcmVpbjEQMA4G
+A1UECxMHREZOLVBLSTEkMCIGA1UEAxMbREZOLVZlcmVpbiBQQ0EgR2xvYmFsIC0gRzAxMB4X
+DTA3MTIyMDEzNDYyNFoXDTE5MDYzMDAwMDAwMFowgb4xCzAJBgNVBAYTAkRFMR8wHQYDVQQK
+ExZVbml2ZXJzaXRhZXQgUGFkZXJib3JuMUAwPgYDVQQLEzdJTVQgKFplbnRydW0gZnVlciBJ
+bmZvcm1hdGlvbnMtIHVuZCBNZWRpZW50ZWNobm9sb2dpZW4pMSgwJgYDVQQDEx9Vbml2ZXJz
+aXRhZXQgUGFkZXJib3JuIENBIC0gRzAxMSIwIAYJKoZIhvcNAQkBFhNjYUB1bmktcGFkZXJi
+b3JuLmRlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApyEfhJPUiCaLTtclTNlw
+rHd4MT4ygOzcUD7zDRElXdILoAEQeUs9qpMZDpPXLeSK6DNukMnURrCRUIr+lYX/kmT6ompB
+GMJgDepewHa97XS3uvE46NW2V8OdIiNddYIoDa8ZRd9lwIsnVWl9QaM9f7l5dhrSQT6ogboy
+byOqJcmb+hlxgQcMWdLzZsOXRkldl5YXUCvC6zbulszlqMt5hPjsQmbQu0nInJmNwUrYCw9c
+ctS2i0m9LaVwZxSov16/eQAJOM7bDV9CpZicgCkHACP5paKvlukP9glkvfNdS54grkPmGFNp
+uIc13W6pL1+8nTp03AlyW/GU2zsnX5pWdwIDAQABo4IBtTCCAbEwEgYDVR0TAQH/BAgwBgEB
+/wIBATALBgNVHQ8EBAMCAQYwHQYDVR0OBBYEFIHPTJq8rw/LvuzgIidOKe+uMMUeMB8GA1Ud
+IwQYMBaAFEm3xs/oPR9/6kR7Eyn38QpwPt5kMB4GA1UdEQQXMBWBE2NhQHVuaS1wYWRlcmJv
+cm4uZGUwgYgGA1UdHwSBgDB+MD2gO6A5hjdodHRwOi8vY2RwMS5wY2EuZGZuLmRlL2dsb2Jh
+bC1yb290LWNhL3B1Yi9jcmwvY2FjcmwuY3JsMD2gO6A5hjdodHRwOi8vY2RwMi5wY2EuZGZu
+LmRlL2dsb2JhbC1yb290LWNhL3B1Yi9jcmwvY2FjcmwuY3JsMIGiBggrBgEFBQcBAQSBlTCB
+kjBHBggrBgEFBQcwAoY7aHR0cDovL2NkcDEucGNhLmRmbi5kZS9nbG9iYWwtcm9vdC1jYS9w
+dWIvY2FjZXJ0L2NhY2VydC5jcnQwRwYIKwYBBQUHMAKGO2h0dHA6Ly9jZHAyLnBjYS5kZm4u
+ZGUvZ2xvYmFsLXJvb3QtY2EvcHViL2NhY2VydC9jYWNlcnQuY3J0MA0GCSqGSIb3DQEBBQUA
+A4IBAQAaomheE7QGeiZFxhmjRI97H/eQUUjp2RL2N4BQmulz56nwTFfgGN1v9kJmBuM2se7F
+TSfQ0ZsKYJhZYwZYCb4Ob57h5zpsyMtZhWqz6n5+ewT/Wl7jc6sLGl3zquMZRfS1N3nIOWsN
+rAZz4lxpjcOJwQHQevWpJT2NxTHHtHKA83QWLFAFs65ZIVAVxqYlRd9Yrr/ljK42ZzEaZgg8
+vSqDzHOwvWX5m3apWe3ZW+2eqjDGZxwfWnWBMSGYN0QIFdaZLR1JbILLfYYHyAUixHUFA+76
+2E9gufC2CySlXhNSPRTwqwPQIDTFDi2VIsafaivs7kVKPaKSq1Dh6SDfV2raMIIGaTCCBVGg
+AwIBAgIEES7tRDANBgkqhkiG9w0BAQUFADCBvjELMAkGA1UEBhMCREUxHzAdBgNVBAoTFlVu
+aXZlcnNpdGFldCBQYWRlcmJvcm4xQDA+BgNVBAsTN0lNVCAoWmVudHJ1bSBmdWVyIEluZm9y
+bWF0aW9ucy0gdW5kIE1lZGllbnRlY2hub2xvZ2llbikxKDAmBgNVBAMTH1VuaXZlcnNpdGFl
+dCBQYWRlcmJvcm4gQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2NhQHVuaS1wYWRlcmJvcm4u
+ZGUwHhcNMTAxMjIwMTUwMTA5WhcNMTMxMjE5MTUwMTA5WjBFMQswCQYDVQQGEwJERTEfMB0G
+A1UEChMWVW5pdmVyc2l0YWV0IFBhZGVyYm9ybjEVMBMGA1UEAxMMQXJuZSBTY2h3YWJlMIIC
+IjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAnPJmVFDViSIHhAokNLoZ4oFd0W4hFiC4
+KopjqHhHEBynYMD56GYnxXm5ie4ngil1e69r02M6eyB1VIhRPFRSqD3ejVHRdNLKnEzWgAbT
+o0Kkr2s7P1iPe8Cj55mSuOxplxcsxL8jU0U/ENtIaIEaI7sVlmYBmCT0fGfrpUcRj21ucDx9
+zw1CJN6VEUmlLtvDzscJg3bUvttbxA+IMUDMTd0nUgLy5lNAg17f3QUc7SrXj8QItjPGjOU3
+EnIka1D2ak+FT12j2GWVpbqkV2Pfow6fePda19xcjFs1A3MsfU4ouTfJ5Xx6OBM1/BRwB0Sg
+79LcmCRtWjGkN7boXmxi5MUXMl96l7UzGEy49O39Ct41N96T4bJDqRKFaUcZVVvW7pBX+rVd
+JrXXstiJ1HYGKU2yOgiqoLNIbhn1i3JoFP1SRSEYJb1okeL9Ewr0SoyM/suVuGg5YnMLHOjn
+oH3XzMM0vRdEk7F1KaJvcvPDe/5fAAaOokjOIdOFwwhJkvOF/P1oS1RzvmTzwXTvojBbWZnr
++eL+zwTUVpOwJ+rfLdJzw+ER18RbpH/TPzOszvAAuTxZAQdEE+SOlk2aDIHs+eFYsk6QBh1b
+jqOMDhlmElVROTv+w260iVGfcq4fTt1C8vzMcRx95y5rR5+GVQpGJb5WlZlbo3o/FCxClvt7
+3SUCAwEAAaOCAeUwggHhMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgXgMCkGA1UdJQQiMCAGCCsG
+AQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAjAdBgNVHQ4EFgQUWh2256whSHo0mgJ5hvYj
+UacnOekwHwYDVR0jBBgwFoAUgc9MmryvD8u+7OAiJ04p764wxR4wIwYDVR0RBBwwGoEYc2No
+d2FiZUB1bmktcGFkZXJib3JuLmRlMIGNBgNVHR8EgYUwgYIwP6A9oDuGOWh0dHA6Ly9jZHAx
+LnBjYS5kZm4uZGUvdW5pLXBhZGVyYm9ybi1jYS9wdWIvY3JsL2NhY3JsLmNybDA/oD2gO4Y5
+aHR0cDovL2NkcDIucGNhLmRmbi5kZS91bmktcGFkZXJib3JuLWNhL3B1Yi9jcmwvY2Fjcmwu
+Y3JsMIGmBggrBgEFBQcBAQSBmTCBljBJBggrBgEFBQcwAoY9aHR0cDovL2NkcDEucGNhLmRm
+bi5kZS91bmktcGFkZXJib3JuLWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDBJBggrBgEFBQcw
+AoY9aHR0cDovL2NkcDIucGNhLmRmbi5kZS91bmktcGFkZXJib3JuLWNhL3B1Yi9jYWNlcnQv
+Y2FjZXJ0LmNydDANBgkqhkiG9w0BAQUFAAOCAQEAgaSs5nrXX49tNOF1ISWT4U4yEpbkiXBu
+1YmhBUz+zLFWvh8uNlfllgMZqVV94ftgyizWOesc+vxL0ulNmdXhOAB+zSyT2qgQ9vv9GSV8
+cgkEGMrwMpyJQksI/UvdZ1+SyUxpW2mSMm/N6y3QVefv6HajWju63tGXAXX1ohsxfisWQC7h
+51dnhLVwTf5yVEbl0uoLv236V0IlhoPcVMaNiLv9W5P13vwYLMRxhzvgQPAB8GwyQ4X2k9tS
+naLB/AXfOZpvPx0XvpW5+dY9Lyo7EJFYMl+S0WMsD4XEj18VJWmTrvIO7ZGhU1En8+9OEwjZ
+NlrBHSSoHZ8AtjaqRf+DwTGCBXYwggVyAgEBMIHHMIG+MQswCQYDVQQGEwJERTEfMB0GA1UE
+ChMWVW5pdmVyc2l0YWV0IFBhZGVyYm9ybjFAMD4GA1UECxM3SU1UIChaZW50cnVtIGZ1ZXIg
+SW5mb3JtYXRpb25zLSB1bmQgTWVkaWVudGVjaG5vbG9naWVuKTEoMCYGA1UEAxMfVW5pdmVy
+c2l0YWV0IFBhZGVyYm9ybiBDQSAtIEcwMTEiMCAGCSqGSIb3DQEJARYTY2FAdW5pLXBhZGVy
+Ym9ybi5kZQIEES7tRDAJBgUrDgMCGgUAoIICgzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
+MBwGCSqGSIb3DQEJBTEPFw0xMzExMjEyMTI0MzdaMCMGCSqGSIb3DQEJBDEWBBRcvsd6VS0Z
+P7MYqZ6jM6mgZWmMUjBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQME
+AQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIH
+MA0GCCqGSIb3DQMCAgEoMIHYBgkrBgEEAYI3EAQxgcowgccwgb4xCzAJBgNVBAYTAkRFMR8w
+HQYDVQQKExZVbml2ZXJzaXRhZXQgUGFkZXJib3JuMUAwPgYDVQQLEzdJTVQgKFplbnRydW0g
+ZnVlciBJbmZvcm1hdGlvbnMtIHVuZCBNZWRpZW50ZWNobm9sb2dpZW4pMSgwJgYDVQQDEx9V
+bml2ZXJzaXRhZXQgUGFkZXJib3JuIENBIC0gRzAxMSIwIAYJKoZIhvcNAQkBFhNjYUB1bmkt
+cGFkZXJib3JuLmRlAgQRLu1EMIHaBgsqhkiG9w0BCRACCzGByqCBxzCBvjELMAkGA1UEBhMC
+REUxHzAdBgNVBAoTFlVuaXZlcnNpdGFldCBQYWRlcmJvcm4xQDA+BgNVBAsTN0lNVCAoWmVu
+dHJ1bSBmdWVyIEluZm9ybWF0aW9ucy0gdW5kIE1lZGllbnRlY2hub2xvZ2llbikxKDAmBgNV
+BAMTH1VuaXZlcnNpdGFldCBQYWRlcmJvcm4gQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2Nh
+QHVuaS1wYWRlcmJvcm4uZGUCBBEu7UQwDQYJKoZIhvcNAQEBBQAEggIAWRMxFmwwmzfKaSI8
+2Xv3TGUNflSshMvoAjL1icu9onpATH+A7NfR5whxajnrofHuX0Z88OLsCEJ8EG0HaZV/95Wk
+4amWjEY5GDefJU5Uq2nEDjttThzmcvNTnWWUDBk6y5/ThEeXCSVVJaBFR7uNqQzT7ARKImit
+OS4GWeS2LMh8D/N/acG9p8nVJHjvuhWCEIlDq4cWRZIP92Q/6RgHQXeSQR0++qmlfzyC7Dxa
+1XQ/NhafWEiqXO1PF8FljQ+ahZ/DHXkqpon5g1RUOVwDHz/t4xUJHs1W9oyy4Olc3xatMYI3
+MErCdlvDoau684c5+cwdN+IOusFDAoRwYJnQ2aidrCCwYhmrs9jadELhZ90QqGpHNuGM17Kt
+d7EKpGHNss5z+CLtSUxvE1PBUSkqXMrTCP/3hssE4LopbeTKB0TKDny0YeGTPqiAkJs1yJbw
+XN3dmNtizfHvocMkTTjBBU3TfrR5L+cJiDUKQ8zBjnCAA25wrd7fWk/pTbU8nPPx+vx1xVCd
+IJhvos/1NQSjb6XcKfAnwvRqnD3+33T7tQXqnLEnVZSIOxfRuPw9pUlweFg11Qjr8oRkDhfu
+ksqZrFmZCiDPR1zEPBe7bOBN/8k+b29JUY+QJfhKGvGmasm4Dnp/JUZyUe+vW400WBdsG5PT
+osdjw9ATiBR7A8VNDIMAAAAAAAA=
+--------------ms060609010007010902020102--
 
