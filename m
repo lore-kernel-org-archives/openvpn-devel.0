@@ -1,10 +1,8 @@
 From: David Sommerseth <dazo@...384...>
-Date: Wed, 20 Nov 2013 22:11:17 +0100
-Message-Id: <1384981877-7479-1-git-send-email-dazo@...384...>
-In-Reply-To: <CAK6ywbLqTT8bkfF54qCt34HrOtueE8WdKacwSwu--nZCtcRXoA@...278...>
-References: <CAK6ywbLqTT8bkfF54qCt34HrOtueE8WdKacwSwu--nZCtcRXoA@...278...>
-Subject: [Openvpn-devel] [PATCH] down-root plugin: Replaced system() calls
-	with execve()
+Date: Thu, 21 Nov 2013 18:02:08 +0100
+Message-Id: <1385053332-14533-1-git-send-email-dazo@...384...>
+Subject: [Openvpn-devel] [PATCH 0/4] RFC: Move memory allocations from
+	malloc() to calloc()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,275 +17,94 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: David Sommerseth <davids@...1347...>
 
-The system() call is prone to shell expansions and provides far more
-environments variables to the executable run than what is usually
-preferred.  By moving over to exevce() shell expansions are far more
-difficult to achieve and only the OpenVPN provided environment
-variables are available.
+Hi,
 
-This is a response to the patch submitted to openvpn-devel ML:
-http://article.gmane.org/gmane.network.openvpn.devel/7919
+This might be seen as controversial for some, but my intension here
+is just to clean up and simplify the code base a little bit by reducing
+the memory/buffer allocation API.
 
-Signed-off-by: David Sommerseth <davids@...1347...>
----
- src/plugins/down-root/down-root.c | 140 +++++++++++++-------------------------
- 1 file changed, 48 insertions(+), 92 deletions(-)
+The reason for doing a move from malloc() to calloc() is to first of
+all simplify the memory management (buffer) code somewhat.  As with
+calloc() you will always get a cleared memory region by default, which
+means much of the current API-set for memory management can be somewhat
+reduced.  Currently we have separate functions and macros, one set which
+clears the memory and another one which does not.
 
-diff --git a/src/plugins/down-root/down-root.c b/src/plugins/down-root/down-root.c
-index d51d0e5..e257460 100644
---- a/src/plugins/down-root/down-root.c
-+++ b/src/plugins/down-root/down-root.c
-@@ -5,7 +5,8 @@
-  *             packet encryption, packet authentication, and
-  *             packet compression.
-  *
-- *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-+ *  Copyright (C) 2002-2013 OpenVPN Technologies, Inc. <sales@...515...>
-+ *  Copyright (C) 2013      David Sommerseth <davids@...1347...>
-  *
-  *  This program is free software; you can redistribute it and/or modify
-  *  it under the terms of the GNU General Public License version 2
-@@ -46,8 +47,8 @@
- #define DEBUG(verb) ((verb) >= 7)
- 
- /* Command codes for foreground -> background communication */
--#define COMMAND_RUN_SCRIPT 0
--#define COMMAND_EXIT       1
-+#define COMMAND_RUN_SCRIPT 1
-+#define COMMAND_EXIT       2
- 
- /* Response codes for background -> foreground communication */
- #define RESPONSE_INIT_SUCCEEDED   10
-@@ -56,7 +57,7 @@
- #define RESPONSE_SCRIPT_FAILED    13
- 
- /* Background process function */
--static void down_root_server (const int fd, char *command, const char *argv[], const char *envp[], const int verb);
-+static void down_root_server (const int fd, char * const * argv, char * const *envp, const int verb);
- 
- /*
-  * Plugin state, used by foreground
-@@ -73,7 +74,7 @@ struct down_root_context
-   int verb;
- 
-   /* down command */
--  char *command;
-+  char **command;
- };
- 
- /*
-@@ -207,72 +208,48 @@ set_signals (void)
-   signal (SIGPIPE, SIG_IGN);
- }
- 
--/*
-- * convert system() return into a success/failure value
-- */
--int
--system_ok (int stat)
--{
--#ifdef WIN32
--  return stat == 0;
--#else
--  return stat != -1 && WIFEXITED (stat) && WEXITSTATUS (stat) == 0;
--#endif
--}
--
--static char *
--build_command_line (const char *argv[])
--{
--  int size = 0;
--  int n = 0;
--  int i;
--  char *string;
--
--  /* precompute size */
--  if (argv)
--    {
--      for (i = 0; argv[i]; ++i)
--	{
--	  size += (strlen (argv[i]) + 1); /* string length plus trailing space */
--	  ++n;
--	}
--    }
--  ++size;                                 /* for null terminator */
--
--  /* allocate memory */
--  string = (char *) malloc (size);
--  if (!string)
--    {
--      fprintf (stderr, "DOWN-ROOT: out of memory\n");
--      exit (1);
--    }
--  string[0] = '\0';
--
--  /* build string */
--  for (i = 0; i < n; ++i)
--    {
--      strcat (string, argv[i]);
--      if (i + 1 < n)
--	strcat (string, " ");
--    }
--  return string;
--}
- 
- static void
- free_context (struct down_root_context *context)
- {
-   if (context)
-     {
--      if (context->command)
--	free (context->command);
-+      free (context->command);
-       free (context);
-     }
- }
- 
-+/* Run the script using execve().  As execve() replaces the
-+ * current process with the new one, do a fork first before
-+ * calling execve()
-+ */
-+static int
-+run_script(char * const *argv, char * const *envp) {
-+  pid_t pid;
-+  int ret = 0;
-+
-+  pid = fork();
-+  if (pid == (pid_t)0) { /* child side */
-+    execve(argv[0], argv, envp);
-+    fprintf(stderr, "DOWN-ROOT: Failed execute: %s\n", argv[0]);
-+    exit(127);  /* If execve() fails to run, exit child with exit code 127 */
-+  } else if (pid < (pid_t)0 ) {
-+    fprintf(stderr, "DOWN-ROOT: Failed to fork child to run %s\n", argv[0]);
-+    return -1;
-+  } else { /* parent side */
-+    if( waitpid (pid, &ret, 0) != pid ) {
-+      fprintf(stderr, "DOWN-ROOT: waitpid() failed, don't know exit code of child (%s)\n", argv[0]);
-+      return -1;
-+    }
-+  }
-+  return ret;
-+}
-+
- OPENVPN_EXPORT openvpn_plugin_handle_t
--openvpn_plugin_open_v1 (unsigned int *type_mask, const char *argv[], const char *envp[])
-+openvpn_plugin_open_v1 (unsigned int *type_mask, const char * argv[], const char *envp[])
- {
-   struct down_root_context *context;
-+  int i = 0;
- 
-   /*
-    * Allocate our context
-@@ -298,9 +275,14 @@ openvpn_plugin_open_v1 (unsigned int *type_mask, const char *argv[], const char
-     }
- 
-   /*
--   * Save our argument in context
-+   * Save the arguments in our context
-    */
--  context->command = build_command_line (&argv[1]);
-+  context->command = calloc(string_array_len(argv), sizeof(char *));
-+  /* Ignore argv[0], as it contians just the plug-in file name */
-+  for (i = 1; i < string_array_len(argv); i++)
-+    {
-+      context->command[i-1] = (char *) argv[i];
-+    }
- 
-   /*
-    * Get verbosity level from environment
-@@ -385,7 +367,7 @@ openvpn_plugin_func_v1 (openvpn_plugin_handle_t handle, const int type, const ch
- 	  daemonize (envp);
- 
- 	  /* execute the event loop */
--	  down_root_server (fd[1], context->command, argv, envp, context->verb);
-+	  down_root_server (fd[1], context->command, (char * const *) envp, context->verb);
- 
- 	  close (fd[1]);
- 	  exit (0);
-@@ -453,18 +435,16 @@ openvpn_plugin_abort_v1 (openvpn_plugin_handle_t handle)
-  * Background process -- runs with privilege.
-  */
- static void
--down_root_server (const int fd, char *command, const char *argv[], const char *envp[], const int verb)
-+down_root_server (const int fd, char * const *argv, char * const *envp, const int verb)
- {
-   const char *p[3];
--  char *command_line = NULL;
--  char *argv_cat = NULL;
-   int i;
- 
-   /*
-    * Do initialization
-    */
-   if (DEBUG (verb))
--    fprintf (stderr, "DOWN-ROOT: BACKGROUND: INIT command='%s'\n", command);
-+    fprintf (stderr, "DOWN-ROOT: BACKGROUND: INIT command='%s'\n", argv[0]);
- 
-   /*
-    * Tell foreground that we initialized successfully
-@@ -476,32 +456,12 @@ down_root_server (const int fd, char *command, const char *argv[], const char *e
-     }
- 
-   /*
--   * Build command line
--   */
--  if (string_array_len (argv) >= 2)
--    argv_cat = build_command_line (&argv[1]);
--  else
--    argv_cat = build_command_line (NULL);
--  p[0] = command;
--  p[1] = argv_cat;
--  p[2] = NULL;
--  command_line = build_command_line (p);
--
--  /*
--   * Save envp in environment
--   */
--  for (i = 0; envp[i]; ++i)
--    {
--      putenv ((char *)envp[i]);
--    }
--
--  /*
-    * Event loop
-    */
-   while (1)
-     {
-       int command_code;
--      int status;
-+      int exit_code = -1;
- 
-       /* get a command from foreground process */
-       command_code = recv_control (fd);
-@@ -512,8 +472,7 @@ down_root_server (const int fd, char *command, const char *argv[], const char *e
-       switch (command_code)
- 	{
- 	case COMMAND_RUN_SCRIPT:
--	  status = system (command_line);
--	  if (system_ok (status)) /* Succeeded */
-+	  if ( (exit_code = run_script(argv, envp)) == 0 ) /* Succeeded */
- 	    {
- 	      if (send_control (fd, RESPONSE_SCRIPT_SUCCEEDED) == -1)
- 		{
-@@ -523,6 +482,7 @@ down_root_server (const int fd, char *command, const char *argv[], const char *e
- 	    }
- 	  else /* Failed */
- 	    {
-+	      fprintf(stderr, "DOWN-ROOT: BACKGROUND: %s exited with exit code %i\n", argv[0], exit_code);
- 	      if (send_control (fd, RESPONSE_SCRIPT_FAILED) == -1)
- 		{
- 		  fprintf (stderr, "DOWN-ROOT: BACKGROUND: write error on response socket [3]\n");
-@@ -546,10 +506,6 @@ down_root_server (const int fd, char *command, const char *argv[], const char *e
-     }
- 
-  done:
--  if (argv_cat)
--    free (argv_cat);
--  if (command_line)
--    free (command_line);
-   if (DEBUG (verb))
-     fprintf (stderr, "DOWN-ROOT: BACKGROUND: EXIT\n");
- 
+Some even claim that calloc() has a smaller overhead than doing a malloc()
+call + memset().  If this truly is true, then OpenVPN may even perform
+slightly better.  But this is most likely also tightly connected to how
+the kernel and the libc library handles memory allocations.
+
+And the last reason, probably the most important one in my eyes, is that
+when you work by default on cleared memory regions, buffer overruns are
+harder to accomplish.  As long as you stay inside the allocated memory
+region, you cannot trigger overrun issues due to missing NULL
+termination.  The memory region contains by default only NULLs.
+
+I've split this patch set into several pieces to hopefully eaiser
+see the bigger picture.
+
+These patches needs to be tested a bit more, but it compiles well on
+Fedora 19 (with a compiler which can by default complain a lot).  Also
+basic client testing seems to work fine too.  The overall behaviour is
+not expected to change, excpet perhaps a slight performance boost if
+we're lucky.
+
+
+kind regards,
+
+David Sommerseth
+
+
+David Sommerseth (4):
+  Move over to calloc() in gc_malloc()
+  Change from malloc() to calloc() where it can be beneficial
+  Move ALLOC_OBJ() macro to use calloc()
+  Merge the rest of ALLOC_*_CLEAR*() macros into ALLOC_*()
+
+ src/openvpn/base64.c              |  2 +-
+ src/openvpn/buffer.c              | 34 ++++++++++++++++-----------------
+ src/openvpn/buffer.h              | 40 +++++++++------------------------------
+ src/openvpn/circ_list.h           |  2 +-
+ src/openvpn/clinat.c              |  2 +-
+ src/openvpn/comp.c                |  6 +++---
+ src/openvpn/console.c             |  2 +-
+ src/openvpn/crypto.c              |  2 +-
+ src/openvpn/error.c               |  4 ++--
+ src/openvpn/event.c               | 20 ++++++++++----------
+ src/openvpn/fragment.c            |  2 +-
+ src/openvpn/init.c                |  8 ++++----
+ src/openvpn/list.c                |  2 +-
+ src/openvpn/manage.c              |  8 ++++----
+ src/openvpn/mbuf.c                |  2 +-
+ src/openvpn/misc.c                | 32 +++++++++++++++----------------
+ src/openvpn/mroute.c              |  2 +-
+ src/openvpn/mtcp.c                |  2 +-
+ src/openvpn/mtu.c                 |  2 +-
+ src/openvpn/multi.c               |  2 +-
+ src/openvpn/openvpn.c             |  2 +-
+ src/openvpn/options.c             | 20 ++++++++++----------
+ src/openvpn/pf.c                  |  8 ++++----
+ src/openvpn/plugin.c              | 10 +++++-----
+ src/openvpn/pool.c                | 10 +++++-----
+ src/openvpn/proxy.c               |  6 +++---
+ src/openvpn/ps.c                  | 12 ++++++------
+ src/openvpn/push.c                |  2 +-
+ src/openvpn/route.c               | 16 ++++++++--------
+ src/openvpn/schedule.c            |  4 ++--
+ src/openvpn/socket.c              |  2 +-
+ src/openvpn/socks.c               |  2 +-
+ src/openvpn/ssl.c                 | 20 ++++++++++----------
+ src/openvpn/ssl_openssl.c         |  2 +-
+ src/openvpn/ssl_polarssl.c        | 24 +++++++++++------------
+ src/openvpn/ssl_verify.c          |  6 +++---
+ src/openvpn/ssl_verify_openssl.c  | 12 ++++++------
+ src/openvpn/ssl_verify_polarssl.c |  4 ++--
+ src/openvpn/status.c              |  2 +-
+ src/openvpn/tun.c                 | 14 +++++++-------
+ src/openvpn/win32.c               |  6 +++---
+ 41 files changed, 168 insertions(+), 192 deletions(-)
+
 -- 
 1.8.3.1
 
