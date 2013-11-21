@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu, 21 Nov 2013 21:08:03 +0100
-Message-Id: <1385064495-25877-2-git-send-email-arne@...1227...>
+Date: Thu, 21 Nov 2013 21:08:09 +0100
+Message-Id: <1385064495-25877-8-git-send-email-arne@...1227...>
 In-Reply-To: <1385064495-25877-1-git-send-email-arne@...1227...>
 References: <1385064495-25877-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 02/14] Simplify print_sockaddr_ex function,
-	merge duplicate ipv4/ipv6 logic.
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH 08/14] Remove the ip-remote-hint option.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,223 +17,112 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
----
- src/openvpn/ps.c     |    4 +-
- src/openvpn/socket.c |  110 ++++++++++++++++++++++----------------------------
- src/openvpn/socket.h |   16 +++++++-
- 3 files changed, 65 insertions(+), 65 deletions(-)
+The ip-remote-hint option overrides the remote hostname of every remote/connection entry unless management-query-remote is also defined and the management interfaces overrides the option with remote MOD … The remote name is even overridden when when management interface issues remote ACCEPT after being presented with the non overridden remote.
 
-diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
-index 44eda89..98d6580 100644
---- a/src/openvpn/ps.c
-+++ b/src/openvpn/ps.c
-@@ -330,8 +330,8 @@ journal_add (const char *journal_dir, struct proxy_connection *pc, struct proxy_
-   if (!getpeername (pc->sd, (struct sockaddr *) &from.addr.sa, &slen)
-       && !getsockname (cp->sd, (struct sockaddr *) &to.addr.sa, &dlen))
-     {
--      const char *f = print_sockaddr_ex (&from, ":", PS_SHOW_PORT, &gc);
--      const char *t = print_sockaddr_ex (&to, ":", PS_SHOW_PORT, &gc);
-+      const char *f = print_sockaddr (&from, &gc);
-+      const char *t = print_sockaddr (&to, &gc);
-       fnlen =  strlen(journal_dir) + strlen(t) + 2;
-       jfn = (char *) malloc(fnlen);
-       check_malloc_return (jfn);
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 33ef3f4..5f59168 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -1746,7 +1746,7 @@ link_socket_init_phase2 (struct link_socket *sock,
-       msg (msglevel, "%s link local%s: %s",
- 	   proto2ascii (sock->info.proto, true),
- 	   (sock->bind_local ? " (bound)" : ""),
--	   print_sockaddr_ex (&sock->info.lsa->local, ":", sock->bind_local ? PS_SHOW_PORT : 0, &gc));
-+	   print_openvpn_sockaddr_ex (&sock->info.lsa->local, ":", sock->bind_local ? PS_SHOW_PORT : 0, &gc));
- 
-     /* print active remote address */
-     msg (msglevel, "%s link remote: %s",
-@@ -1831,17 +1831,14 @@ setenv_trusted (struct env_set *es, const struct link_socket_info *info)
- static void
- ipchange_fmt (const bool include_cmd, struct argv *argv, const struct link_socket_info *info, struct gc_arena *gc)
- {
--  const char *ip = print_sockaddr_ex (&info->lsa->actual.dest, NULL, 0, gc);
--  const char *port = print_sockaddr_ex (&info->lsa->actual.dest, NULL, PS_DONT_SHOW_ADDR|PS_SHOW_PORT, gc);
-+  const char *host = print_sockaddr_ex (&info->lsa->actual.dest.addr.sa, " ", PS_SHOW_PORT , gc);
-   if (include_cmd)
--    argv_printf (argv, "%sc %s %s",
-+    argv_printf (argv, "%sc %s",
- 		 info->ipchange_command,
--		 ip,
--		 port);
-+		 host);
-   else
--    argv_printf (argv, "%s %s",
--		 ip,
--		 port);
-+    argv_printf (argv, "%s", host);
-+
+Overriding all remote options can also be done by  management-query-remote  and issuing remote MOD or by changing alll remote statements in the configuration.
+
+Also: remove unused variable newcycle
+
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/init.c    |   17 ++---------------
+ src/openvpn/options.c |    5 -----
+ src/openvpn/options.h |    1 -
+ 3 files changed, 2 insertions(+), 21 deletions(-)
+
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 676a7fe..2076aad 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -245,7 +245,7 @@ management_callback_remote_cmd (void *arg, const char **p)
  }
  
- void
-@@ -2155,67 +2152,58 @@ socket_listen_event_handle (struct link_socket *s)
-  */
- 
- const char *
--print_sockaddr (const struct openvpn_sockaddr *addr, struct gc_arena *gc)
--{
--  return print_sockaddr_ex (addr, ":", PS_SHOW_PORT, gc);
--}
--
--const char *
--print_sockaddr_ex (const struct openvpn_sockaddr *addr,
--		   const char* separator,
--		   const unsigned int flags,
--		   struct gc_arena *gc)
-+print_sockaddr_ex (const struct sockaddr *sa,
-+				   const char* separator,
-+				   const unsigned int flags,
-+				   struct gc_arena *gc)
+ static bool
+-ce_management_query_remote (struct context *c, const char *remote_ip_hint)
++ce_management_query_remote (struct context *c)
  {
-   struct buffer out = alloc_buf_gc (128, gc);
-   bool addr_is_defined;
--  addr_is_defined = addr_defined (addr);
--  if (!addr_is_defined) {
--    return "[undef]";
--  }
--  switch(addr->addr.sa.sa_family)
-+  char hostaddr[NI_MAXHOST] = "";
-+  char servname[NI_MAXSERV] = "";
-+  int status;
-+
-+  socklen_t salen;
-+  switch(sa->sa_family)
-     {
-     case AF_INET:
--	{
--	  const int port= ntohs (addr->addr.in4.sin_port);
--	  buf_puts (&out, "[AF_INET]");
--
--	  if (!(flags & PS_DONT_SHOW_ADDR))
--	    buf_printf (&out, "%s", (addr_defined (addr) ? inet_ntoa (addr->addr.in4.sin_addr) : "[undef]"));
--
--	  if (((flags & PS_SHOW_PORT) || (addr_defined (addr) && (flags & PS_SHOW_PORT_IF_DEFINED)))
--	      && port)
--	    {
--	      if (separator)
--		buf_printf (&out, "%s", separator);
--
--	      buf_printf (&out, "%d", port);
--	    }
--	}
-+      buf_puts (&out, "[AF_INET]");
-+      salen = sizeof (struct sockaddr_in);
-+      addr_is_defined = ((struct sockaddr_in*) sa)->sin_addr.s_addr != 0;
-       break;
-     case AF_INET6:
--	{
--	  const int port= ntohs (addr->addr.in6.sin6_port);
--	  char buf[INET6_ADDRSTRLEN] = "";
--	  buf_puts (&out, "[AF_INET6]");
--	  if (addr_is_defined)
--	    {
--	      getnameinfo(&addr->addr.sa, sizeof (struct sockaddr_in6),
--			  buf, sizeof (buf), NULL, 0, NI_NUMERICHOST);
--	      buf_puts (&out, buf);
--	    }
--	  if (((flags & PS_SHOW_PORT) || (addr_is_defined && (flags & PS_SHOW_PORT_IF_DEFINED)))
--	      && port)
--	    {
--	      if (separator)
--		buf_puts (&out, separator);
--
--	      buf_printf (&out, "%d", port);
--	    }
--	}
-+      buf_puts (&out, "[AF_INET6]");
-+      salen = sizeof (struct sockaddr_in6);
-+      addr_is_defined = IN6_IS_ADDR_UNSPECIFIED(&((struct sockaddr_in6*) sa)->sin6_addr);
-       break;
-     default:
-       ASSERT(0);
+   struct gc_arena gc = gc_new ();
+   volatile struct connection_entry *ce = &c->options.ce;
+@@ -270,8 +270,6 @@ ce_management_query_remote (struct context *c, const char *remote_ip_hint)
      }
-+	
-+  status = getnameinfo(sa, salen, hostaddr, sizeof (hostaddr),
-+              servname, sizeof(servname), NI_NUMERICHOST | NI_NUMERICSERV);
-+
-+  if(status!=0) {
-+      buf_printf(&out,"[nameinfo() err: %s]",gai_strerror(status));
-+      return BSTR(&out);
-+  }
-+
-+  if (!(flags & PS_DONT_SHOW_ADDR))
-+    {
-+      if (addr_is_defined)
-+        buf_puts (&out, hostaddr);
-+      else
-+        buf_puts (&out, "[undef]");
-+    }
-+
-+  if ((flags & PS_SHOW_PORT) || (flags & PS_SHOW_PORT_IF_DEFINED))
-+    {
-+      if (separator)
-+        buf_puts (&out, separator);
-+		
-+      buf_puts (&out, servname);
-+    }
-+	
-   return BSTR (&out);
- }
+   {
+     const int flags = ((ce->flags>>CE_MAN_QUERY_REMOTE_SHIFT) & CE_MAN_QUERY_REMOTE_MASK);
+-    if (flags == CE_MAN_QUERY_REMOTE_ACCEPT && remote_ip_hint)
+-      ce->remote = remote_ip_hint;
+     ret = (flags != CE_MAN_QUERY_REMOTE_SKIP);
+   }
+   gc_free (&gc);
+@@ -321,9 +319,6 @@ next_connection_entry (struct context *c)
+       int n_cycles = 0;
  
-@@ -2239,7 +2227,7 @@ print_link_socket_actual_ex (const struct link_socket_actual *act,
-     {
-       char ifname[IF_NAMESIZE] = "[undef]";
-       struct buffer out = alloc_buf_gc (128, gc);
--      buf_printf (&out, "%s", print_sockaddr_ex (&act->dest, separator, flags, gc));
-+      buf_printf (&out, "%s", print_sockaddr_ex (&act->dest.addr.sa, separator, flags, gc));
- #if ENABLE_IP_PKTINFO
-       if ((flags & PS_SHOW_PKTINFO) && addr_defined_ipi(act))
- 	{
-@@ -2260,7 +2248,7 @@ print_link_socket_actual_ex (const struct link_socket_actual *act,
- #error ENABLE_IP_PKTINFO is set without IP_PKTINFO xor IP_RECVDSTADDR (fix syshead.h)
- #endif
- 		  buf_printf (&out, " (via %s%%%s)",
--			      print_sockaddr_ex (&sa, separator, 0, gc),
-+			      print_sockaddr_ex (&sa.addr.sa, separator, 0, gc),
- 			      ifname);
- 		}
+       do {
+-	const char *remote_ip_hint = NULL;
+-	bool newcycle = false;
+-
+ 	ce_defined = true;
+ 	if (l->no_advance && l->current >= 0)
+ 	  {
+@@ -338,16 +333,10 @@ next_connection_entry (struct context *c)
+ 		if (++n_cycles >= 2)
+ 		  msg (M_FATAL, "No usable connection profiles are present");
+ 	      }
+-
+-	    if (l->current == 0)
+-	      newcycle = true;
+ 	  }
+ 
+ 	ce = l->array[l->current];
+ 
+-	if (c->options.remote_ip_hint && !l->n_cycles)
+-	  remote_ip_hint = c->options.remote_ip_hint;
+-
+ 	if (ce->flags & CE_DISABLED)
+ 	  ce_defined = false;
+ 
+@@ -356,14 +345,12 @@ next_connection_entry (struct context *c)
+ 	if (ce_defined && management && management_query_remote_enabled(management))
+ 	  {
+ 	    /* allow management interface to override connection entry details */
+-	    ce_defined = ce_management_query_remote(c, remote_ip_hint);
++	    ce_defined = ce_management_query_remote(c);
+ 	    if (IS_SIG (c))
  	      break;
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index 549946e..1a8ec0f 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -347,14 +347,26 @@ void sd_close (socket_descriptor_t *sd);
- #define PS_SHOW_PKTINFO         (1<<2)
- #define PS_DONT_SHOW_ADDR       (1<<3)
+ 	  }
+         else
+ #endif
+-	if (remote_ip_hint)
+-	  c->options.ce.remote = remote_ip_hint;
  
--const char *print_sockaddr_ex (const struct openvpn_sockaddr *addr,
-+const char *print_sockaddr_ex (const struct sockaddr *addr,
- 			       const char* separator,
- 			       const unsigned int flags,
- 			       struct gc_arena *gc);
+ #ifdef ENABLE_MANAGEMENT
+         if (ce_defined && management && management_query_proxy_enabled (management))
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 6906ea1..01ccf1a 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -4435,11 +4435,6 @@ add_option (struct options *options,
  
-+static inline
-+const char *print_openvpn_sockaddr_ex (const struct openvpn_sockaddr *addr,
-+			       const char* separator,
-+			       const unsigned int flags,
-+			       struct gc_arena *gc)
-+{
-+    return print_sockaddr_ex(&addr->addr.sa, separator, flags, gc);
-+}
+       options->ignore_unknown_option[i] = NULL;
+     }
+-  else if (streq (p[0], "remote-ip-hint") && p[1])
+-    {
+-      VERIFY_PERMISSION (OPT_P_GENERAL);
+-      options->remote_ip_hint = p[1];
+-    }
+ #if HTTP_PROXY_OVERRIDE
+   else if (streq (p[0], "http-proxy-override") && p[1] && p[2])
+     {
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 659d05b..b320ca1 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -210,7 +210,6 @@ struct options
  
-+static inline
- const char *print_sockaddr (const struct openvpn_sockaddr *addr,
--			    struct gc_arena *gc);
-+			    struct gc_arena *gc)
-+{
-+    return print_sockaddr_ex (&addr->addr.sa, ":", PS_SHOW_PORT, gc);
-+}
- 
- const char *print_link_socket_actual_ex (const struct link_socket_actual *act,
- 					 const char* separator,
+   /* Networking parms */
+   struct connection_entry ce;
+-  char *remote_ip_hint;
+   struct connection_list *connection_list;
+   struct remote_list *remote_list;
+   bool force_connection_list;
 -- 
 1.7.9.5
 
