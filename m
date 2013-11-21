@@ -1,9 +1,9 @@
 From: David Sommerseth <dazo@...384...>
-Date: Thu, 21 Nov 2013 18:02:11 +0100
-Message-Id: <1385053332-14533-4-git-send-email-dazo@...384...>
+Date: Thu, 21 Nov 2013 18:02:09 +0100
+Message-Id: <1385053332-14533-2-git-send-email-dazo@...384...>
 In-Reply-To: <1385053332-14533-1-git-send-email-dazo@...384...>
 References: <1385053332-14533-1-git-send-email-dazo@...384...>
-Subject: [Openvpn-devel] [PATCH 3/4] Move ALLOC_OBJ() macro to use calloc()
+Subject: [Openvpn-devel] [PATCH 1/4] Move over to calloc() in gc_malloc()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,592 +18,498 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: David Sommerseth <davids@...1347...>
 
-This continues the malloc() -> calloc() patch set.
+Instead of using malloc(), use calloc() which will always provide a
+cleared memory region.  Depending on the kernel and libc
+implementation, this can in many cases give a better performance.
 
-This patch also merges ALLOC_OBJ() and ALLOC_OBJ_CLEAR(),
-as ALLOC_OBJ_CLEAR() would just be a straight wrapper around
-ALLOC_OBJ()
+Another advantage of having a cleared memory is that it can in
+many cases prevent buffer overruns, due to improper NULL termination.
+
+In addition, this simplifies the gc_malloc() API by removing an
+argument which is no longer needed.
 
 Signed-off-by: David Sommerseth <davids@...1347...>
 ---
- src/openvpn/buffer.c       |  6 +++---
- src/openvpn/buffer.h       | 10 ++--------
- src/openvpn/comp.c         |  6 +++---
- src/openvpn/event.c        |  8 ++++----
- src/openvpn/fragment.c     |  2 +-
- src/openvpn/init.c         |  2 +-
- src/openvpn/list.c         |  2 +-
- src/openvpn/manage.c       |  4 ++--
- src/openvpn/mbuf.c         |  2 +-
- src/openvpn/mroute.c       |  2 +-
- src/openvpn/mtcp.c         |  2 +-
- src/openvpn/multi.c        |  2 +-
- src/openvpn/pf.c           |  8 ++++----
- src/openvpn/plugin.c       |  6 +++---
- src/openvpn/pool.c         |  4 ++--
- src/openvpn/proxy.c        |  2 +-
- src/openvpn/ps.c           |  6 +++---
- src/openvpn/schedule.c     |  4 ++--
- src/openvpn/socket.c       |  2 +-
- src/openvpn/socks.c        |  2 +-
- src/openvpn/ssl.c          | 10 +++++-----
- src/openvpn/ssl_openssl.c  |  2 +-
- src/openvpn/ssl_polarssl.c | 22 +++++++++++-----------
- src/openvpn/ssl_verify.c   |  4 ++--
- src/openvpn/status.c       |  2 +-
- 25 files changed, 58 insertions(+), 64 deletions(-)
+ src/openvpn/buffer.c              | 22 ++++++++++------------
+ src/openvpn/buffer.h              | 16 ++++++++--------
+ src/openvpn/error.c               |  4 ++--
+ src/openvpn/misc.c                | 10 +++++-----
+ src/openvpn/mtu.c                 |  2 +-
+ src/openvpn/options.c             | 12 ++++++------
+ src/openvpn/plugin.c              |  2 +-
+ src/openvpn/proxy.c               |  2 +-
+ src/openvpn/route.c               |  8 ++++----
+ src/openvpn/ssl.c                 |  2 +-
+ src/openvpn/ssl_verify_openssl.c  |  6 +++---
+ src/openvpn/ssl_verify_polarssl.c |  4 ++--
+ src/openvpn/tun.c                 |  8 ++++----
+ src/openvpn/win32.c               |  4 ++--
+ 14 files changed, 50 insertions(+), 52 deletions(-)
 
 diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-index cd8d397..372eb24 100644
+index fb3b52d..096d1fa 100644
 --- a/src/openvpn/buffer.c
 +++ b/src/openvpn/buffer.c
-@@ -943,7 +943,7 @@ struct buffer_list *
- buffer_list_new (const int max_size)
+@@ -92,9 +92,9 @@ alloc_buf_gc (size_t size, struct gc_arena *gc)
+   buf.offset = 0;
+   buf.len = 0;
+ #ifdef DMALLOC
+-  buf.data = (uint8_t *) gc_malloc_debug (size, false, gc, file, line);
++  buf.data = (uint8_t *) gc_malloc_debug (size, gc, file, line);
+ #else
+-  buf.data = (uint8_t *) gc_malloc (size, false, gc);
++  buf.data = (uint8_t *) gc_malloc (size, gc);
+ #endif
+   if (size)
+     *buf.data = 0;
+@@ -321,9 +321,9 @@ buf_write_string_file (const struct buffer *buf, const char *filename, int fd)
+ 
+ void *
+ #ifdef DMALLOC
+-gc_malloc_debug (size_t size, bool clear, struct gc_arena *a, const char *file, int line)
++gc_malloc_debug (size_t size, struct gc_arena *a, const char *file, int line)
+ #else
+-gc_malloc (size_t size, bool clear, struct gc_arena *a)
++gc_malloc (size_t size, struct gc_arena *a)
+ #endif
  {
-   struct buffer_list *ret;
--  ALLOC_OBJ_CLEAR (ret, struct buffer_list);
-+  ALLOC_OBJ (ret, struct buffer_list);
-   ret->max_size = max_size;
-   ret->size = 0;
-   return ret;
-@@ -998,7 +998,7 @@ buffer_list_push_data (struct buffer_list *ol, const uint8_t *data, size_t size)
-   struct buffer_entry *e = NULL;
-   if (data && (!ol->max_size || ol->size < ol->max_size))
+   void *ret;
+@@ -332,8 +332,9 @@ gc_malloc (size_t size, bool clear, struct gc_arena *a)
+       struct gc_entry *e;
+ #ifdef DMALLOC
+       e = (struct gc_entry *) openvpn_dmalloc (file, line, size + sizeof (struct gc_entry));
++      memset(e, 0, size + sizeof (struct gc_entry));
+ #else
+-      e = (struct gc_entry *) malloc (size + sizeof (struct gc_entry));
++      e = (struct gc_entry *) calloc (1, size + sizeof (struct gc_entry));
+ #endif
+       check_malloc_return (e);
+       ret = (char *) e + sizeof (struct gc_entry);
+@@ -344,15 +345,12 @@ gc_malloc (size_t size, bool clear, struct gc_arena *a)
      {
--      ALLOC_OBJ_CLEAR (e, struct buffer_entry);
-+      ALLOC_OBJ (e, struct buffer_entry);
+ #ifdef DMALLOC
+       ret = openvpn_dmalloc (file, line, size);
++      memset(ret, 0, size + sizeof (struct gc_entry));
+ #else
+-      ret = malloc (size);
++      ret = calloc (1, size);
+ #endif
+       check_malloc_return (ret);
+     }
+-#ifndef ZERO_BUFFER_ON_ALLOC
+-  if (clear)
+-#endif
+-    memset (ret, 0, size);
+   return ret;
+ }
  
-       ++ol->size;
-       if (ol->tail)
-@@ -1047,7 +1047,7 @@ buffer_list_aggregate (struct buffer_list *bl, const size_t max)
- 	  int i;
- 	  struct buffer_entry *e = bl->head, *f;
+@@ -543,9 +541,9 @@ string_alloc (const char *str, struct gc_arena *gc)
  
--	  ALLOC_OBJ_CLEAR (f, struct buffer_entry);
-+	  ALLOC_OBJ (f, struct buffer_entry);
- 	  f->buf.data = calloc (1, size);
- 	  check_malloc_return (f->buf.data);
- 	  f->buf.capacity = size;
+       if (gc) {
+ #ifdef DMALLOC
+-        ret = (char *) gc_malloc_debug (n, false, gc, file, line);
++        ret = (char *) gc_malloc_debug (n, gc, file, line);
+ #else
+-        ret = (char *) gc_malloc (n, false, gc);
++        ret = (char *) gc_malloc (n, gc);
+ #endif
+       } else {
+         /* If there are no garbage collector available, it's expected
 diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
-index bbf715a..81d8fea 100644
+index 93efb09..bbf715a 100644
 --- a/src/openvpn/buffer.h
 +++ b/src/openvpn/buffer.h
-@@ -824,18 +824,12 @@ gc_reset (struct gc_arena *a)
+@@ -141,14 +141,14 @@ void buf_size_error (const size_t size);
+ #define alloc_buf(size)               alloc_buf_debug (size, __FILE__, __LINE__)
+ #define alloc_buf_gc(size, gc)        alloc_buf_gc_debug (size, gc, __FILE__, __LINE__);
+ #define clone_buf(buf)                clone_buf_debug (buf, __FILE__, __LINE__);
+-#define gc_malloc(size, clear, arena) gc_malloc_debug (size, clear, arena, __FILE__, __LINE__)
++#define gc_malloc(size, arena)        gc_malloc_debug (size, arena, __FILE__, __LINE__)
+ #define string_alloc(str, gc)         string_alloc_debug (str, gc, __FILE__, __LINE__)
+ #define string_alloc_buf(str, gc)     string_alloc_buf_debug (str, gc, __FILE__, __LINE__)
  
- #define ALLOC_OBJ(dptr, type) \
- { \
--  check_malloc_return ((dptr) = (type *) malloc (sizeof (type))); \
--}
--
--#define ALLOC_OBJ_CLEAR(dptr, type) \
--{ \
--  ALLOC_OBJ (dptr, type); \
--  memset ((dptr), 0, sizeof(type)); \
-+  check_malloc_return ((dptr) = (type *) calloc (1, sizeof (type)));     \
- }
+ struct buffer alloc_buf_debug (size_t size, const char *file, int line);
+ struct buffer alloc_buf_gc_debug (size_t size, struct gc_arena *gc, const char *file, int line);
+ struct buffer clone_buf_debug (const struct buffer* buf, const char *file, int line);
+-void *gc_malloc_debug (size_t size, bool clear, struct gc_arena *a, const char *file, int line);
++void *gc_malloc_debug (size_t size, struct gc_arena *a, const char *file, int line);
+ char *string_alloc_debug (const char *str, struct gc_arena *gc, const char *file, int line);
+ struct buffer string_alloc_buf_debug (const char *str, struct gc_arena *gc, const char *file, int line);
  
- #define ALLOC_ARRAY(dptr, type, n) \
- { \
--  check_malloc_return ((dptr) = (type *) malloc (array_mult_safe (sizeof (type), (n), 0))); \
-+  check_malloc_return ((dptr) = (type *) calloc (1, array_mult_safe (sizeof (type), (n), 0))); \
- }
+@@ -157,7 +157,7 @@ struct buffer string_alloc_buf_debug (const char *str, struct gc_arena *gc, cons
+ struct buffer alloc_buf (size_t size);
+ struct buffer alloc_buf_gc (size_t size, struct gc_arena *gc); /* allocate buffer with garbage collection */
+ struct buffer clone_buf (const struct buffer* buf);
+-void *gc_malloc (size_t size, bool clear, struct gc_arena *a);
++void *gc_malloc (size_t size, struct gc_arena *a);
+ char *string_alloc (const char *str, struct gc_arena *gc);
+ struct buffer string_alloc_buf (const char *str, struct gc_arena *gc);
+ 
+@@ -840,7 +840,7 @@ gc_reset (struct gc_arena *a)
  
  #define ALLOC_ARRAY_GC(dptr, type, n, gc) \
-diff --git a/src/openvpn/comp.c b/src/openvpn/comp.c
-index 9692257..1507fd2 100644
---- a/src/openvpn/comp.c
-+++ b/src/openvpn/comp.c
-@@ -45,14 +45,14 @@ comp_init(const struct compress_options *opt)
-   switch (opt->alg)
+ { \
+-  (dptr) = (type *) gc_malloc (array_mult_safe (sizeof (type), (n), 0), false, (gc)); \
++  (dptr) = (type *) gc_malloc (array_mult_safe (sizeof (type), (n), 0), (gc)); \
+ }
+ 
+ #define ALLOC_ARRAY_CLEAR(dptr, type, n) \
+@@ -851,22 +851,22 @@ gc_reset (struct gc_arena *a)
+ 
+ #define ALLOC_ARRAY_CLEAR_GC(dptr, type, n, gc) \
+ { \
+-  (dptr) = (type *) gc_malloc (array_mult_safe (sizeof (type), (n), 0), true, (gc)); \
++  (dptr) = (type *) gc_malloc (array_mult_safe (sizeof (type), (n), 0), (gc)); \
+ }
+ 
+ #define ALLOC_VAR_ARRAY_CLEAR_GC(dptr, type, atype, n, gc)	\
+ { \
+-  (dptr) = (type *) gc_malloc (array_mult_safe (sizeof (atype), (n), sizeof (type)), true, (gc)); \
++  (dptr) = (type *) gc_malloc (array_mult_safe (sizeof (atype), (n), sizeof (type)), (gc)); \
+ }
+ 
+ #define ALLOC_OBJ_GC(dptr, type, gc) \
+ { \
+-  (dptr) = (type *) gc_malloc (sizeof (type), false, (gc)); \
++  (dptr) = (type *) gc_malloc (sizeof (type), (gc)); \
+ }
+ 
+ #define ALLOC_OBJ_CLEAR_GC(dptr, type, gc) \
+ { \
+-  (dptr) = (type *) gc_malloc (sizeof (type), true, (gc)); \
++  (dptr) = (type *) gc_malloc (sizeof (type), (gc)); \
+ }
+ 
+ static inline void
+diff --git a/src/openvpn/error.c b/src/openvpn/error.c
+index 6848425..dc9d855 100644
+--- a/src/openvpn/error.c
++++ b/src/openvpn/error.c
+@@ -241,8 +241,8 @@ void x_msg_va (const unsigned int flags, const char *format, va_list arglist)
+ 
+   gc_init (&gc);
+ 
+-  m1 = (char *) gc_malloc (ERR_BUF_SIZE, false, &gc);
+-  m2 = (char *) gc_malloc (ERR_BUF_SIZE, false, &gc);
++  m1 = (char *) gc_malloc (ERR_BUF_SIZE, &gc);
++  m2 = (char *) gc_malloc (ERR_BUF_SIZE, &gc);
+ 
+   vsnprintf (m1, ERR_BUF_SIZE, format, arglist);
+   m1[ERR_BUF_SIZE - 1] = 0; /* windows vsnprintf needs this */
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index 4688444..1175ff4 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -1095,7 +1095,7 @@ get_user_pass_cr (struct user_pass *up,
+ 	      struct auth_challenge_info *ac = get_auth_challenge (auth_challenge, &gc);
+ 	      if (ac)
+ 		{
+-		  char *response = (char *) gc_malloc (USER_PASS_LEN, false, &gc);
++		  char *response = (char *) gc_malloc (USER_PASS_LEN, &gc);
+ 		  struct buffer packed_resp;
+ 
+ 		  buf_set_write (&packed_resp, (uint8_t*)up->password, USER_PASS_LEN);
+@@ -1133,7 +1133,7 @@ get_user_pass_cr (struct user_pass *up,
+ #ifdef ENABLE_CLIENT_CR
+ 	      if (auth_challenge && (flags & GET_USER_PASS_STATIC_CHALLENGE))
+ 		{
+-		  char *response = (char *) gc_malloc (USER_PASS_LEN, false, &gc);
++		  char *response = (char *) gc_malloc (USER_PASS_LEN, &gc);
+ 		  struct buffer packed_resp;
+ 		  char *pw64=NULL, *resp64=NULL;
+ 
+@@ -1228,7 +1228,7 @@ get_auth_challenge (const char *auth_challenge, struct gc_arena *gc)
      {
-     case COMP_ALG_STUB:
--      ALLOC_OBJ_CLEAR (compctx, struct compress_context);
-+      ALLOC_OBJ (compctx, struct compress_context);
-       compctx->flags = opt->flags;
-       compctx->alg = comp_stub_alg;
-       (*compctx->alg.compress_init)(compctx);
-       break;
- #ifdef ENABLE_LZO
-     case COMP_ALG_LZO:
--      ALLOC_OBJ_CLEAR (compctx, struct compress_context);
-+      ALLOC_OBJ (compctx, struct compress_context);
-       compctx->flags = opt->flags;
-       compctx->alg = lzo_alg;
-       (*compctx->alg.compress_init)(compctx);
-@@ -60,7 +60,7 @@ comp_init(const struct compress_options *opt)
- #endif
- #ifdef ENABLE_SNAPPY
-     case COMP_ALG_SNAPPY:
--      ALLOC_OBJ_CLEAR (compctx, struct compress_context);
-+      ALLOC_OBJ (compctx, struct compress_context);
-       compctx->flags = opt->flags;
-       compctx->alg = snappy_alg;
-       (*compctx->alg.compress_init)(compctx);
-diff --git a/src/openvpn/event.c b/src/openvpn/event.c
-index 34a3c45..e8ebbd2 100644
---- a/src/openvpn/event.c
-+++ b/src/openvpn/event.c
-@@ -432,7 +432,7 @@ we_init (int *maxevents, unsigned int flags)
+       struct auth_challenge_info *ac;
+       const int len = strlen (auth_challenge);
+-      char *work = (char *) gc_malloc (len+1, false, gc);
++      char *work = (char *) gc_malloc (len+1, gc);
+       char *cp;
  
-   dmsg (D_EVENT_WAIT, "WE_INIT maxevents=%d flags=0x%08x", *maxevents, flags);
+       struct buffer b;
+@@ -1262,7 +1262,7 @@ get_auth_challenge (const char *auth_challenge, struct gc_arena *gc)
+       /* parse user name */
+       if (!buf_parse(&b, ':', work, len))
+ 	return NULL;
+-      ac->user = (char *) gc_malloc (strlen(work)+1, true, gc);
++      ac->user = (char *) gc_malloc (strlen(work)+1, gc);
+       openvpn_base64_decode(work, (void*)ac->user, -1);
  
--  ALLOC_OBJ_CLEAR (wes, struct we_set);
-+  ALLOC_OBJ (wes, struct we_set);
- 
-   /* set dispatch functions */
-   wes->func.free = we_free;
-@@ -585,7 +585,7 @@ ep_init (int *maxevents, unsigned int flags)
- 
-   set_cloexec (fd);
- 
--  ALLOC_OBJ_CLEAR (eps, struct ep_set);
-+  ALLOC_OBJ (eps, struct ep_set);
- 
-   /* set dispatch functions */
-   eps->func.free = ep_free;
-@@ -774,7 +774,7 @@ po_init (int *maxevents, unsigned int flags)
- 
-   dmsg (D_EVENT_WAIT, "PO_INIT maxevents=%d flags=0x%08x", *maxevents, flags);
- 
--  ALLOC_OBJ_CLEAR (pos, struct po_set);
-+  ALLOC_OBJ (pos, struct po_set);
- 
-   /* set dispatch functions */
-   pos->func.free = po_free;
-@@ -973,7 +973,7 @@ se_init (int *maxevents, unsigned int flags)
- 
-   dmsg (D_EVENT_WAIT, "SE_INIT maxevents=%d flags=0x%08x", *maxevents, flags);
- 
--  ALLOC_OBJ_CLEAR (ses, struct se_set);
-+  ALLOC_OBJ (ses, struct se_set);
- 
-   /* set dispatch functions */
-   ses->func.free = se_free;
-diff --git a/src/openvpn/fragment.c b/src/openvpn/fragment.c
-index 7ad1d61..7da9098 100644
---- a/src/openvpn/fragment.c
-+++ b/src/openvpn/fragment.c
-@@ -88,7 +88,7 @@ fragment_init (struct frame *frame)
- 
-   /* code that initializes other parts of
-      fragment_master assume an initial CLEAR */
--  ALLOC_OBJ_CLEAR (ret, struct fragment_master);
-+  ALLOC_OBJ (ret, struct fragment_master);
- 
-   /* add in the size of our contribution to the expanded frame size */
-   frame_add_to_extra_frame (frame, sizeof(fragment_header_type));
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index ba15fe3..705d50b 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2568,7 +2568,7 @@ init_context_buffers (const struct frame *frame)
+       /* parse challenge text */
+@@ -1999,7 +1999,7 @@ argv_test (void)
+ const char *
+ sanitize_control_message(const char *src, struct gc_arena *gc)
  {
-   struct context_buffers *b;
+-  char *ret = gc_malloc (strlen(src)+1, false, gc);
++  char *ret = gc_malloc (strlen(src)+1, gc);
+   char *dest = ret;
+   bool redact = false;
+   int skip = 0;
+diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
+index 13f3f6c..52854d4 100644
+--- a/src/openvpn/mtu.c
++++ b/src/openvpn/mtu.c
+@@ -206,7 +206,7 @@ format_extended_socket_error (int fd, int *mtu, struct gc_arena *gc)
+   struct sock_extended_err *e;
+   struct sockaddr_in addr;
+   struct buffer out = alloc_buf_gc (256, gc);
+-  char *cbuf = (char *) gc_malloc (256, false, gc);
++  char *cbuf = (char *) gc_malloc (256, gc);
  
--  ALLOC_OBJ_CLEAR (b, struct context_buffers);
-+  ALLOC_OBJ (b, struct context_buffers);
+   *mtu = 0;
  
-   b->read_link_buf = alloc_buf (BUF_SIZE (frame));
-   b->read_tun_buf = alloc_buf (BUF_SIZE (frame));
-diff --git a/src/openvpn/list.c b/src/openvpn/list.c
-index ea6bd74..df13450 100644
---- a/src/openvpn/list.c
-+++ b/src/openvpn/list.c
-@@ -47,7 +47,7 @@ hash_init (const int n_buckets,
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index e925397..81e9a6e 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1040,7 +1040,7 @@ static bool ipv6_addr_safe_hexplusbits( const char * ipv6_prefix_spec )
+ static char *
+ string_substitute (const char *src, int from, int to, struct gc_arena *gc)
+ {
+-  char *ret = (char *) gc_malloc (strlen (src) + 1, true, gc);
++  char *ret = (char *) gc_malloc (strlen (src) + 1, gc);
+   char *dest = ret;
+   char c;
+ 
+@@ -1061,7 +1061,7 @@ parse_hash_fingerprint(const char *str, int nbytes, int msglevel, struct gc_aren
+ {
    int i;
- 
-   ASSERT (n_buckets > 0);
--  ALLOC_OBJ_CLEAR (h, struct hash);
-+  ALLOC_OBJ (h, struct hash);
-   h->n_buckets = (int) adjust_power_of_2 (n_buckets);
-   h->mask = h->n_buckets - 1;
-   h->hash_function = hash_function;
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 9c40fbe..6c4070f 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -2233,7 +2233,7 @@ struct management *
- management_init (void)
+   const char *cp = str;
+-  uint8_t *ret = (uint8_t *) gc_malloc (nbytes, true, gc);
++  uint8_t *ret = (uint8_t *) gc_malloc (nbytes, gc);
+   char term = 1;
+   int byte;
+   char bs[3];
+@@ -3089,7 +3089,7 @@ options_warning_extract_parm1 (const char *option_string,
  {
-   struct management *man;
--  ALLOC_OBJ_CLEAR (man, struct management);
-+  ALLOC_OBJ (man, struct management);
- 
-   man_persist_init (man,
- 		    MANAGEMENT_LOG_HISTORY_INITIAL_SIZE,
-@@ -3204,7 +3204,7 @@ struct command_line *
- command_line_new (const int buf_len)
- {
-   struct command_line *cl;
--  ALLOC_OBJ_CLEAR (cl, struct command_line);
-+  ALLOC_OBJ (cl, struct command_line);
-   cl->buf = alloc_buf (buf_len);
-   cl->residual = alloc_buf (buf_len);
-   return cl;
-diff --git a/src/openvpn/mbuf.c b/src/openvpn/mbuf.c
-index 82f2388..0d0fe56 100644
---- a/src/openvpn/mbuf.c
-+++ b/src/openvpn/mbuf.c
-@@ -43,7 +43,7 @@ struct mbuf_set *
- mbuf_init (unsigned int size)
- {
-   struct mbuf_set *ret;
--  ALLOC_OBJ_CLEAR (ret, struct mbuf_set);
-+  ALLOC_OBJ (ret, struct mbuf_set);
-   ret->capacity = adjust_power_of_2 (size);
-   ALLOC_ARRAY (ret->array, struct mbuf_item, ret->capacity);
-   return ret;
-diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c
-index 850e336..f03a8b7 100644
---- a/src/openvpn/mroute.c
-+++ b/src/openvpn/mroute.c
-@@ -454,7 +454,7 @@ struct mroute_helper *
- mroute_helper_init (int ageable_ttl_secs)
- {
-   struct mroute_helper *mh;
--  ALLOC_OBJ_CLEAR (mh, struct mroute_helper);
-+  ALLOC_OBJ (mh, struct mroute_helper);
-   mh->ageable_ttl_secs = ageable_ttl_secs;
-   return mh;
- }
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index dc15f09..5db7dcf 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -182,7 +182,7 @@ multi_tcp_init (int maxevents, int *maxclients)
-   ASSERT (maxevents >= 1);
-   ASSERT (maxclients);
- 
--  ALLOC_OBJ_CLEAR (mtcp, struct multi_tcp);
-+  ALLOC_OBJ (mtcp, struct multi_tcp);
-   mtcp->maxevents = maxevents + extra_events;
-   mtcp->es = event_set_init (&mtcp->maxevents, 0);
-   wait_signal (mtcp->es, MTCP_SIG);
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index f016b14..2cb37c8 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -653,7 +653,7 @@ multi_create_instance (struct multi_context *m, const struct mroute_addr *real)
- 
-   msg (D_MULTI_MEDIUM, "MULTI: multi_create_instance called");
- 
--  ALLOC_OBJ_CLEAR (mi, struct multi_instance);
-+  ALLOC_OBJ (mi, struct multi_instance);
- 
-   mi->gc = gc_new ();
-   multi_instance_inc_refcount (mi);
-diff --git a/src/openvpn/pf.c b/src/openvpn/pf.c
-index 461beed..8f4ca72 100644
---- a/src/openvpn/pf.c
-+++ b/src/openvpn/pf.c
-@@ -75,7 +75,7 @@ static bool
- add_client (const char *line, const char *prefix, const int line_num, struct pf_cn_elem ***next, const bool exclude)
- {
-   struct pf_cn_elem *e;
--  ALLOC_OBJ_CLEAR (e, struct pf_cn_elem);
-+  ALLOC_OBJ (e, struct pf_cn_elem);
-   e->rule.exclude = exclude;
-   e->rule.cn = string_alloc (line, NULL);
-   **next = e;
-@@ -130,7 +130,7 @@ add_subnet (const char *line, const char *prefix, const int line_num, struct pf_
- 
-   {
-     struct pf_subnet *e;
--    ALLOC_OBJ_CLEAR (e, struct pf_subnet);
-+    ALLOC_OBJ (e, struct pf_subnet);
-     e->rule.exclude = exclude;
-     e->rule.network = ntohl (network.s_addr);
-     e->rule.netmask = netmask;
-@@ -188,7 +188,7 @@ pf_init (const struct buffer_list *bl, const char *prefix, const bool allow_kill
-   struct pf_set *pfs = NULL;
-   char line[PF_MAX_LINE_LEN];
- 
--  ALLOC_OBJ_CLEAR (pfs, struct pf_set);
-+  ALLOC_OBJ (pfs, struct pf_set);
-   if (bl)
-     {
-       struct pf_cn_elem **cl = &pfs->cns.list;
-@@ -300,7 +300,7 @@ pf_init (const struct buffer_list *bl, const char *prefix, const bool allow_kill
+   struct gc_arena gc = gc_new ();
+   struct buffer b = string_alloc_buf (option_string, &gc);
+-  char *p = gc_malloc (OPTION_PARM_SIZE, false, &gc);
++  char *p = gc_malloc (OPTION_PARM_SIZE, &gc);
+   const char *ret;
    
-  kill:
-   pf_destroy (pfs);
--  ALLOC_OBJ_CLEAR (pfs, struct pf_set);
-+  ALLOC_OBJ (pfs, struct pf_set);
-   pfs->kill = true;
-   return pfs;
- }
+   buf_parse (&b, ' ', p, OPTION_PARM_SIZE);
+@@ -3121,7 +3121,7 @@ options_warning_safe_scan2 (const int msglevel,
+       struct gc_arena gc = gc_new ();
+       struct buffer b2 = *b2_src;
+       const char *p1_prefix = options_warning_extract_parm1 (p1, &gc);
+-      char *p2 = gc_malloc (OPTION_PARM_SIZE, false, &gc);
++      char *p2 = gc_malloc (OPTION_PARM_SIZE, &gc);
+ 
+       while (buf_parse (&b2, delim, p2, OPTION_PARM_SIZE))
+ 	{
+@@ -3168,7 +3168,7 @@ options_warning_safe_scan1 (const int msglevel,
+ {
+   struct gc_arena gc = gc_new ();
+   struct buffer b = *b1_src;
+-  char *p = gc_malloc (OPTION_PARM_SIZE, true, &gc);
++  char *p = gc_malloc (OPTION_PARM_SIZE, &gc);
+ 
+   while (buf_parse (&b, delim, p, OPTION_PARM_SIZE))
+       options_warning_safe_scan2 (msglevel, delim, report_inconsistent, p, b2_src, b1_name, b2_name);
+@@ -3566,7 +3566,7 @@ parse_line (const char *line,
+ 	  if (state == STATE_DONE)
+ 	    {
+ 	      /* ASSERT (parm_len > 0); */
+-	      p[ret] = gc_malloc (parm_len + 1, true, gc);
++	      p[ret] = gc_malloc (parm_len + 1, gc);
+ 	      memcpy (p[ret], parm, parm_len);
+ 	      p[ret][parm_len] = '\0';
+ 	      state = STATE_INITIAL;
 diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
-index 71ad0b6..cad98ac 100644
+index 0948f23..71ad0b6 100644
 --- a/src/openvpn/plugin.c
 +++ b/src/openvpn/plugin.c
-@@ -561,7 +561,7 @@ struct plugin_list *
- plugin_list_inherit (const struct plugin_list *src)
- {
-   struct plugin_list *pl;
--  ALLOC_OBJ_CLEAR (pl, struct plugin_list);
-+  ALLOC_OBJ (pl, struct plugin_list);
-   pl->common = src->common;
-   ASSERT (pl->common);
-   plugin_per_client_init (pl->common, &pl->per_client, -1);
-@@ -574,7 +574,7 @@ plugin_common_init (const struct plugin_option_list *list)
-   int i;
-   struct plugin_common *pc;
+@@ -325,7 +325,7 @@ plugin_vlog (openvpn_plugin_log_flags_t flags, const char *name, const char *for
+       msg_flags |= M_NOIPREFIX;
  
--  ALLOC_OBJ_CLEAR (pc, struct plugin_common);
-+  ALLOC_OBJ (pc, struct plugin_common);
+       gc_init (&gc);
+-      msg_fmt = gc_malloc (ERR_BUF_SIZE, false, &gc);
++      msg_fmt = gc_malloc (ERR_BUF_SIZE, &gc);
+       openvpn_snprintf (msg_fmt, ERR_BUF_SIZE, "PLUGIN %s: %s", name, format);
+       x_msg_va (msg_flags, msg_fmt, arglist);
  
-   for (i = 0; i < list->n; ++i)
-     {
-@@ -636,7 +636,7 @@ struct plugin_list *
- plugin_list_init (const struct plugin_option_list *list)
- {
-   struct plugin_list *pl;
--  ALLOC_OBJ_CLEAR (pl, struct plugin_list);
-+  ALLOC_OBJ (pl, struct plugin_list);
-   pl->common = plugin_common_init (list);
-   pl->common_owned = true;
-   return pl;
-diff --git a/src/openvpn/pool.c b/src/openvpn/pool.c
-index 28c26b4..0addda7 100644
---- a/src/openvpn/pool.c
-+++ b/src/openvpn/pool.c
-@@ -147,7 +147,7 @@ ifconfig_pool_init (int type, in_addr_t start, in_addr_t end,
-   struct ifconfig_pool *pool = NULL;
- 
-   ASSERT (start <= end && end - start < IFCONFIG_POOL_MAX);
--  ALLOC_OBJ_CLEAR (pool, struct ifconfig_pool);
-+  ALLOC_OBJ (pool, struct ifconfig_pool);
- 
-   pool->type = type;
-   pool->duplicate_cn = duplicate_cn;
-@@ -406,7 +406,7 @@ ifconfig_pool_persist_init (const char *filename, int refresh_freq)
- 
-   ASSERT (filename);
- 
--  ALLOC_OBJ_CLEAR (ret, struct ifconfig_pool_persist);
-+  ALLOC_OBJ (ret, struct ifconfig_pool_persist);
-   if (refresh_freq > 0)
-     {
-       ret->fixed = false;
 diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
-index 9ef1b8f..58e1338 100644
+index c3496e2..9ef1b8f 100644
 --- a/src/openvpn/proxy.c
 +++ b/src/openvpn/proxy.c
-@@ -445,7 +445,7 @@ http_proxy_new (const struct http_proxy_options *o)
+@@ -784,7 +784,7 @@ establish_http_proxy_passthru (struct http_proxy_info *p,
+ 	      if (opaque)
+ 		{
+ 		  const int len = strlen(opaque)+16;
+-		  opaque_kv = gc_malloc(len, false, &gc);
++		  opaque_kv = gc_malloc(len, &gc);
+ 		  openvpn_snprintf (opaque_kv, len, ", opaque=\"%s\"", opaque);
+ 		}
  
-   ASSERT (legal_ipv4_port (o->port));
- 
--  ALLOC_OBJ_CLEAR (p, struct http_proxy_info);
-+  ALLOC_OBJ (p, struct http_proxy_info);
-   p->options = *o;
- 
-   /* parse authentication method */
-diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
-index f6b5212..d68e47d 100644
---- a/src/openvpn/ps.c
-+++ b/src/openvpn/ps.c
-@@ -435,8 +435,8 @@ proxy_entry_new (struct proxy_connection **list,
-   set_nonblock (sd_server);
- 
-   /* allocate 2 new proxy_connection objects */
--  ALLOC_OBJ_CLEAR (pc, struct proxy_connection);
--  ALLOC_OBJ_CLEAR (cp, struct proxy_connection);
-+  ALLOC_OBJ (pc, struct proxy_connection);
-+  ALLOC_OBJ (cp, struct proxy_connection);
- 
-   /* client object */
-   pc->defined = true;
-@@ -798,7 +798,7 @@ port_share_open (const char *host,
-   in_addr_t hostaddr;
-   struct port_share *ps;
- 
--  ALLOC_OBJ_CLEAR (ps, struct port_share);
-+  ALLOC_OBJ (ps, struct port_share);
-   ps->foreground_fd = -1;
-   ps->background_pid = -1;
- 
-diff --git a/src/openvpn/schedule.c b/src/openvpn/schedule.c
-index 471330f..520992b 100644
---- a/src/openvpn/schedule.c
-+++ b/src/openvpn/schedule.c
-@@ -368,7 +368,7 @@ schedule_init (void)
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 19b4bfe..37ef096 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -113,7 +113,7 @@ struct route_option_list *
+ clone_route_option_list (const struct route_option_list *src, struct gc_arena *a)
  {
-   struct schedule *s;
- 
--  ALLOC_OBJ_CLEAR (s, struct schedule);
-+  ALLOC_OBJ (s, struct schedule);
-   return s;
+   const size_t rl_size = array_mult_safe (sizeof(struct route_option), src->capacity, sizeof(struct route_option_list));
+-  struct route_option_list *ret = gc_malloc (rl_size, false, a);
++  struct route_option_list *ret = gc_malloc (rl_size, a);
+   memcpy (ret, src, rl_size);
+   return ret;
  }
- 
-@@ -605,7 +605,7 @@ schedule_test (void)
- 
-   for (i = 0; i < n; ++i)
+@@ -122,7 +122,7 @@ struct route_ipv6_option_list *
+ clone_route_ipv6_option_list (const struct route_ipv6_option_list *src, struct gc_arena *a)
+ {
+   const size_t rl_size = array_mult_safe (sizeof(struct route_ipv6_option), src->capacity, sizeof(struct route_ipv6_option_list));
+-  struct route_ipv6_option_list *ret = gc_malloc (rl_size, false, a);
++  struct route_ipv6_option_list *ret = gc_malloc (rl_size, a);
+   memcpy (ret, src, rl_size);
+   return ret;
+ }
+@@ -2080,7 +2080,7 @@ get_windows_routing_table (struct gc_arena *gc)
+   status = GetIpForwardTable (NULL, &size, TRUE);
+   if (status == ERROR_INSUFFICIENT_BUFFER)
      {
--      ALLOC_OBJ_CLEAR (array[i], struct schedule_entry);
-+      ALLOC_OBJ (array[i], struct schedule_entry);
-       tv_randomize (&array[i]->tv);
-       /*schedule_print (s);*/
-       /*schedule_verify (s);*/
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 3c0a379..7e44569 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -1335,7 +1335,7 @@ link_socket_new (void)
- {
-   struct link_socket *sock;
+-      rt = (PMIB_IPFORWARDTABLE) gc_malloc (size, false, gc);
++      rt = (PMIB_IPFORWARDTABLE) gc_malloc (size, gc);
+       status = GetIpForwardTable (rt, &size, TRUE);
+       if (status != NO_ERROR)
+ 	{
+@@ -2925,7 +2925,7 @@ get_default_gateway (struct route_gateway_info *rgi)
+       const int bufsize = 4096;
+       char *buffer;
  
--  ALLOC_OBJ_CLEAR (sock, struct link_socket);
-+  ALLOC_OBJ (sock, struct link_socket);
-   sock->sd = SOCKET_UNDEFINED;
- #ifdef ENABLE_SOCKS
-   sock->ctrl_sd = SOCKET_UNDEFINED;
-diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c
-index 235982e..874c95e 100644
---- a/src/openvpn/socks.c
-+++ b/src/openvpn/socks.c
-@@ -67,7 +67,7 @@ socks_proxy_new (const char *server,
- {
-   struct socks_proxy_info *p;
- 
--  ALLOC_OBJ_CLEAR (p, struct socks_proxy_info);
-+  ALLOC_OBJ (p, struct socks_proxy_info);
- 
-   ASSERT (server);
-   ASSERT (legal_ipv4_port (port));
+-      buffer = (char *) gc_malloc (bufsize, true, &gc);
++      buffer = (char *) gc_malloc (bufsize, &gc);
+       sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+       if (sockfd < 0)
+ 	{
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 7ceb79b..1650b27 100644
+index 4203fc5..35e5bfb 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -733,12 +733,12 @@ key_state_init (struct tls_session *session, struct key_state *ks)
-     session->key_id = 1;
+@@ -1429,7 +1429,7 @@ tls1_PRF(uint8_t *label,
+   const uint8_t *S1,*S2;
+   uint8_t *out2;
  
-   /* allocate key source material object */
--  ALLOC_OBJ_CLEAR (ks->key_src, struct key_source2);
-+  ALLOC_OBJ (ks->key_src, struct key_source2);
+-  out2 = (uint8_t *) gc_malloc (olen, false, &gc);
++  out2 = (uint8_t *) gc_malloc (olen, &gc);
  
-   /* allocate reliability objects */
--  ALLOC_OBJ_CLEAR (ks->send_reliable, struct reliable);
--  ALLOC_OBJ_CLEAR (ks->rec_reliable, struct reliable);
--  ALLOC_OBJ_CLEAR (ks->rec_ack, struct reliable_ack);
-+  ALLOC_OBJ (ks->send_reliable, struct reliable);
-+  ALLOC_OBJ (ks->rec_reliable, struct reliable);
-+  ALLOC_OBJ (ks->rec_ack, struct reliable_ack);
- 
-   /* allocate buffers */
-   ks->plaintext_read_buf = alloc_buf (TLS_CHANNEL_BUF_SIZE);
-@@ -1030,7 +1030,7 @@ tls_multi_init (struct tls_options *tls_options)
+   len=slen/2;
+   S1=sec;
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
+index 658f5f3..105329d 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -241,7 +241,7 @@ x509_get_serial (openvpn_x509_cert_t *cert, struct gc_arena *gc)
+ unsigned char *
+ x509_get_sha1_hash (X509 *cert, struct gc_arena *gc)
  {
-   struct tls_multi *ret;
- 
--  ALLOC_OBJ_CLEAR (ret, struct tls_multi);
-+  ALLOC_OBJ (ret, struct tls_multi);
- 
-   /* get command line derived options */
-   ret->opt = *tls_options;
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index e392691..5399f5f 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -675,7 +675,7 @@ tls_ctx_use_external_private_key (struct tls_root_ctx *ctx, X509 *cert)
-   ASSERT (NULL != cert);
- 
-   /* allocate custom RSA method object */
--  ALLOC_OBJ_CLEAR (rsa_meth, RSA_METHOD);
-+  ALLOC_OBJ (rsa_meth, RSA_METHOD);
-   rsa_meth->name = "OpenVPN external private key RSA Method";
-   rsa_meth->rsa_pub_enc = rsa_pub_enc;
-   rsa_meth->rsa_pub_dec = rsa_pub_dec;
-diff --git a/src/openvpn/ssl_polarssl.c b/src/openvpn/ssl_polarssl.c
-index fb73225..83d5ae2 100644
---- a/src/openvpn/ssl_polarssl.c
-+++ b/src/openvpn/ssl_polarssl.c
-@@ -71,11 +71,11 @@ tls_ctx_server_new(struct tls_root_ctx *ctx)
-   ASSERT(NULL != ctx);
-   CLEAR(*ctx);
- 
--  ALLOC_OBJ_CLEAR(ctx->dhm_ctx, dhm_context);
--  ALLOC_OBJ_CLEAR(ctx->priv_key, rsa_context);
-+  ALLOC_OBJ (ctx->dhm_ctx, dhm_context);
-+  ALLOC_OBJ (ctx->priv_key, rsa_context);
- 
--  ALLOC_OBJ_CLEAR(ctx->ca_chain, x509_cert);
--  ALLOC_OBJ_CLEAR(ctx->crt_chain, x509_cert);
-+  ALLOC_OBJ (ctx->ca_chain, x509_cert);
-+  ALLOC_OBJ (ctx->crt_chain, x509_cert);
- 
- 
-   ctx->endpoint = SSL_IS_SERVER;
-@@ -88,11 +88,11 @@ tls_ctx_client_new(struct tls_root_ctx *ctx)
-   ASSERT(NULL != ctx);
-   CLEAR(*ctx);
- 
--  ALLOC_OBJ_CLEAR(ctx->dhm_ctx, dhm_context);
--  ALLOC_OBJ_CLEAR(ctx->priv_key, rsa_context);
-+  ALLOC_OBJ (ctx->dhm_ctx, dhm_context);
-+  ALLOC_OBJ (ctx->priv_key, rsa_context);
- 
--  ALLOC_OBJ_CLEAR(ctx->ca_chain, x509_cert);
--  ALLOC_OBJ_CLEAR(ctx->crt_chain, x509_cert);
-+  ALLOC_OBJ (ctx->ca_chain, x509_cert);
-+  ALLOC_OBJ (ctx->crt_chain, x509_cert);
- 
-   ctx->endpoint = SSL_IS_CLIENT;
-   ctx->initialised = true;
-@@ -520,7 +520,7 @@ void key_state_ssl_init(struct key_state_ssl *ks_ssl,
-   ASSERT(ks_ssl);
-   CLEAR(*ks_ssl);
- 
--  ALLOC_OBJ_CLEAR(ks_ssl->ctx, ssl_context);
-+  ALLOC_OBJ (ks_ssl->ctx, ssl_context);
-   if (0 == ssl_init(ks_ssl->ctx))
+-  char *hash = gc_malloc(SHA_DIGEST_LENGTH, false, gc);
++  char *hash = gc_malloc(SHA_DIGEST_LENGTH, gc);
+   memcpy(hash, cert->sha1_hash, SHA_DIGEST_LENGTH);
+   return hash;
+ }
+@@ -260,7 +260,7 @@ x509_get_subject (X509 *cert, struct gc_arena *gc)
+    */
+   if (compat_flag (COMPAT_FLAG_QUERY | COMPAT_NAMES))
      {
-       /* Initialise SSL context */
-@@ -591,8 +591,8 @@ void key_state_ssl_init(struct key_state_ssl *ks_ssl,
-       }
+-      subject = gc_malloc (256, false, gc);
++      subject = gc_malloc (256, gc);
+       X509_NAME_oneline (X509_get_subject_name (cert), subject, 256);
+       subject[255] = '\0';
+       return subject;
+@@ -280,7 +280,7 @@ x509_get_subject (X509 *cert, struct gc_arena *gc)
+   BIO_get_mem_ptr (subject_bio, &subject_mem);
  
-       /* Initialise BIOs */
--      ALLOC_OBJ_CLEAR (ks_ssl->ct_in, endless_buffer);
--      ALLOC_OBJ_CLEAR (ks_ssl->ct_out, endless_buffer);
-+      ALLOC_OBJ (ks_ssl->ct_in, endless_buffer);
-+      ALLOC_OBJ (ks_ssl->ct_out, endless_buffer);
-       ssl_set_bio (ks_ssl->ctx, endless_buf_read, ks_ssl->ct_in,
- 	  endless_buf_write, ks_ssl->ct_out);
+   maxlen = subject_mem->length + 1;
+-  subject = gc_malloc (maxlen, false, gc);
++  subject = gc_malloc (maxlen, gc);
+ 
+   memcpy (subject, subject_mem->data, maxlen);
+   subject[maxlen - 1] = '\0';
+diff --git a/src/openvpn/ssl_verify_polarssl.c b/src/openvpn/ssl_verify_polarssl.c
+index 5db4f02..e267634 100644
+--- a/src/openvpn/ssl_verify_polarssl.c
++++ b/src/openvpn/ssl_verify_polarssl.c
+@@ -130,7 +130,7 @@ x509_get_serial (x509_cert *cert, struct gc_arena *gc)
+   char *buf = NULL;
+   size_t len = cert->serial.len * 3 + 1;
+ 
+-  buf = gc_malloc(len, true, gc);
++  buf = gc_malloc(len, gc);
+ 
+   if(x509parse_serial_gets(buf, len-1, &cert->serial) < 0)
+     buf = NULL;
+@@ -141,7 +141,7 @@ x509_get_serial (x509_cert *cert, struct gc_arena *gc)
+ unsigned char *
+ x509_get_sha1_hash (x509_cert *cert, struct gc_arena *gc)
+ {
+-  unsigned char *sha1_hash = gc_malloc(SHA_DIGEST_LENGTH, false, gc);
++  unsigned char *sha1_hash = gc_malloc(SHA_DIGEST_LENGTH, gc);
+   sha1(cert->tbs.p, cert->tbs.len, sha1_hash);
+   return sha1_hash;
+ }
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 9f53b23..ea2d102 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -3196,7 +3196,7 @@ get_panel_reg (struct gc_arena *gc)
+ 
+ 	      ALLOC_OBJ_CLEAR_GC (reg, struct panel_reg, gc);
+               n = WideCharToMultiByte (CP_UTF8, 0, name_data, -1, NULL, 0, NULL, NULL);
+-              name = gc_malloc (n, false, gc);
++              name = gc_malloc (n, gc);
+               WideCharToMultiByte (CP_UTF8, 0, name_data, -1, name, n, NULL, NULL);
+               reg->name = name;
+ 	      reg->guid = string_alloc (enum_name, gc);
+@@ -3535,7 +3535,7 @@ get_adapter_info_list (struct gc_arena *gc)
      }
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 4dd3aa2..43579c7 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -196,7 +196,7 @@ cert_hash_remember (struct tls_session *session, const int error_depth, const un
-   if (error_depth >= 0 && error_depth < MAX_CERT_DEPTH)
+   else
      {
-       if (!session->cert_hash_set)
--	ALLOC_OBJ_CLEAR (session->cert_hash_set, struct cert_hash_set);
-+	ALLOC_OBJ (session->cert_hash_set, struct cert_hash_set);
-       if (!session->cert_hash_set->ch[error_depth])
- 	ALLOC_OBJ (session->cert_hash_set->ch[error_depth], struct cert_hash);
-       {
-@@ -271,7 +271,7 @@ cert_hash_copy (const struct cert_hash_set *chs)
-   if (chs)
-     {
-       int i;
--      ALLOC_OBJ_CLEAR (dest, struct cert_hash_set);
-+      ALLOC_OBJ (dest, struct cert_hash_set);
-       for (i = 0; i < MAX_CERT_DEPTH; ++i)
+-      pi = (PIP_ADAPTER_INFO) gc_malloc (size, false, gc);
++      pi = (PIP_ADAPTER_INFO) gc_malloc (size, gc);
+       if ((status = GetAdaptersInfo (pi, &size)) == NO_ERROR)
+ 	return pi;
+       else
+@@ -3565,7 +3565,7 @@ get_per_adapter_info (const DWORD index, struct gc_arena *gc)
+ 	}
+       else
  	{
- 	  const struct cert_hash *ch = chs->ch[i];
-diff --git a/src/openvpn/status.c b/src/openvpn/status.c
-index b7ff484..1f492d5 100644
---- a/src/openvpn/status.c
-+++ b/src/openvpn/status.c
-@@ -67,7 +67,7 @@ status_open (const char *filename,
-   struct status_output *so = NULL;
-   if (filename || msglevel >= 0 || vout)
+-	  pi = (PIP_PER_ADAPTER_INFO) gc_malloc (size, false, gc);
++	  pi = (PIP_PER_ADAPTER_INFO) gc_malloc (size, gc);
+ 	  if ((status = GetPerAdapterInfo ((ULONG)index, pi, &size)) == ERROR_SUCCESS)
+ 	    return pi;
+ 	  else
+@@ -3594,7 +3594,7 @@ get_interface_info_list (struct gc_arena *gc)
+     }
+   else
      {
--      ALLOC_OBJ_CLEAR (so, struct status_output);
-+      ALLOC_OBJ (so, struct status_output);
-       so->flags = flags;
-       so->msglevel = msglevel;
-       so->vout = vout;
+-      ii = (PIP_INTERFACE_INFO) gc_malloc (size, false, gc);
++      ii = (PIP_INTERFACE_INFO) gc_malloc (size, gc);
+       if ((status = GetInterfaceInfo (ii, &size)) == NO_ERROR)
+ 	return ii;
+       else
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index 022eec5..ce23469 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -829,7 +829,7 @@ wide_cmd_line (const struct argv *a, struct gc_arena *gc)
+ 	maxlen = len;
+     }
+ 
+-  work = gc_malloc (maxlen + 1, false, gc);
++  work = gc_malloc (maxlen + 1, gc);
+   check_malloc_return (work);
+   buf = alloc_buf_gc (nchars, gc);
+ 
+@@ -917,7 +917,7 @@ WCHAR *
+ wide_string (const char* utf8, struct gc_arena *gc)
+ {
+   int n = MultiByteToWideChar (CP_UTF8, 0, utf8, -1, NULL, 0);
+-  WCHAR *ucs16 = gc_malloc (n * sizeof (WCHAR), false, gc);
++  WCHAR *ucs16 = gc_malloc (n * sizeof (WCHAR), gc);
+   MultiByteToWideChar (CP_UTF8, 0, utf8, -1, ucs16, n);
+   return ucs16;
+ }
 -- 
 1.8.3.1
 
