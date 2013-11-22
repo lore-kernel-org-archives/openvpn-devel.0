@@ -1,14 +1,14 @@
-Message-ID: <528FB3B2.3010505@...1227...>
-Date: Fri, 22 Nov 2013 20:42:42 +0100
+Message-ID: <528FDC10.5090207@...1227...>
+Date: Fri, 22 Nov 2013 23:34:56 +0100
 From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
 References: <1379587649-25506-1-git-send-email-steffan.karger@...1435...>
-	<1379587649-25506-2-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <1379587649-25506-2-git-send-email-steffan.karger@...1435...>
+	<1379587649-25506-3-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1379587649-25506-3-git-send-email-steffan.karger@...1435...>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature";
-	micalg=sha1; boundary="------------ms030400070408010000000402"
-Subject: Re: [Openvpn-devel] [PATCH 1/3] Refactor
-	tls_ctx_use_external_private_key()
+	micalg=sha1; boundary="------------ms030000080703070405090301"
+Subject: Re: [Openvpn-devel] [PATCH 2/3] --management-external-key for
+	PolarSSL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,41 +21,24 @@ To: steffan.karger@...1435..., openvpn-devel@lists.sourceforge.net
 
 This is a cryptographically signed message in MIME format.
 
---------------ms030400070408010000000402
+--------------ms030000080703070405090301
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
 Am 19.09.13 12:47, schrieb steffan.karger@...1435...:
 > From: Joachim Schipper <joachim.schipper@...1435...>
 >
-> OpenSSL's tls_ctx_load_cert_file() had a parameter in which a copy of the
-> context's certificate chain was stored on return, used by
-> tls_ctx_use_external_private_key() only and free()d immediately thereafte=
-r.
+> Add --management-external-key support, compatible with the OpenSSL
+> implementation. Needs the flexibility of ssl_set_own_cert_alt(), which is=
+ new
+> in PolarSSL-1.2.
 >
-> PolarSSL also supported this output parameter, but returned a pointer to =
-the
-> context's certificate chain (rather than to a copy of the certificate, as
-> OpenSSL does) - which meant that we would have to #ifdef the free().
->
-> PolarSSL cannot make a copy of a certificate chain, and OpenSSL cannot st=
-ore a
-> pointer to (instead of a copy of) the cert.
->
-> So remove the output parameter from tls_ctx_load_cert_file() and incorpor=
-ate
-> the needed functionality directly into tls_ctx_use_external_private_key()
-> (which is straightforward for both OpenSSL and PolarSSL, as long as you d=
-on't
-> try to support both at once.)
->
->
-ACK. This "only" refactoring.
+ACK. Also works on Android :)
 
 Arne
 
 
---------------ms030400070408010000000402
+--------------ms030000080703070405090301
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -142,8 +125,8 @@ ChMWVW5pdmVyc2l0YWV0IFBhZGVyYm9ybjFAMD4GA1UECxM3SU1UIChaZW50cnVtIGZ1ZXIg
 SW5mb3JtYXRpb25zLSB1bmQgTWVkaWVudGVjaG5vbG9naWVuKTEoMCYGA1UEAxMfVW5pdmVy
 c2l0YWV0IFBhZGVyYm9ybiBDQSAtIEcwMTEiMCAGCSqGSIb3DQEJARYTY2FAdW5pLXBhZGVy
 Ym9ybi5kZQIEES7tRDAJBgUrDgMCGgUAoIICgzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
-MBwGCSqGSIb3DQEJBTEPFw0xMzExMjIxOTQyNDJaMCMGCSqGSIb3DQEJBDEWBBS+nMjqUUTl
-8PPGW4A85ZPJWbCWPTBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQME
+MBwGCSqGSIb3DQEJBTEPFw0xMzExMjIyMjM0NTZaMCMGCSqGSIb3DQEJBDEWBBSx42vFqE1r
+yCilkJiYD/HRx0BeRTBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQME
 AQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIH
 MA0GCCqGSIb3DQMCAgEoMIHYBgkrBgEEAYI3EAQxgcowgccwgb4xCzAJBgNVBAYTAkRFMR8w
 HQYDVQQKExZVbml2ZXJzaXRhZXQgUGFkZXJib3JuMUAwPgYDVQQLEzdJTVQgKFplbnRydW0g
@@ -153,16 +136,16 @@ cGFkZXJib3JuLmRlAgQRLu1EMIHaBgsqhkiG9w0BCRACCzGByqCBxzCBvjELMAkGA1UEBhMC
 REUxHzAdBgNVBAoTFlVuaXZlcnNpdGFldCBQYWRlcmJvcm4xQDA+BgNVBAsTN0lNVCAoWmVu
 dHJ1bSBmdWVyIEluZm9ybWF0aW9ucy0gdW5kIE1lZGllbnRlY2hub2xvZ2llbikxKDAmBgNV
 BAMTH1VuaXZlcnNpdGFldCBQYWRlcmJvcm4gQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2Nh
-QHVuaS1wYWRlcmJvcm4uZGUCBBEu7UQwDQYJKoZIhvcNAQEBBQAEggIALAz3CgP1cwGp5JRd
-UUMJu5C7YJUyVSFEH/kWPM3LqbuvvjYfZsKdWHdfrLmnJbefbiDrNIMT3ecJsv+4rwOtdIlO
-J0v1xMP/2olq2RKXlfXdgIDwMfIuyonOd+uo1ygx/tjqGSRPccJWMcXJXqYB8wA8XF+Xx3qK
-qStH4Fj+RNIywJCkHAMqY089BTIZZWyf0bsdWPECF754zAIyG+RXpb3dsZ5yDQiY+vsa2vso
-tw39iuVAtEbnKt54xE4lqxbHQjuSpYACcc6ShRw6pOS/94kiFcQqo4aKrCcDj0csG0+RTzmB
-NMguoGx9It16EQwg8ShXZCmlGUTeCgfuh5wJh6ngumaoidgsNKsQkE5t0f7e/uLQy7e8RRNE
-awFaKhtZp2nx+0rdTC4c45OJQT47Ft8Dw1uRLzXPFRfrsn2kc/fvgI+JIQGmZNcn1b9p63X/
-9BHMY0LBbgNAjlMLOw09hsAlaQyTfpCGqwOOEevlp0e10O2agk68mQdU7bLN7BTXwg/cGOAN
-psWphuO7dBpvYVaV08VQ/XXDn2XJyr9nJd3WRVNowRzP+j9qfbZeJKlGoyQWTDH3qTIFxmqW
-UASUwHAS1sUNGvTSetiKEgKwW6wt4uRJZqhW4cHKA/mrNHd6CcCFVfH++dY70bFleDMuYlPC
-7uJ6B8fJwJ4VzkrIfDsAAAAAAAA=
---------------ms030400070408010000000402--
+QHVuaS1wYWRlcmJvcm4uZGUCBBEu7UQwDQYJKoZIhvcNAQEBBQAEggIAQe/Y0ZMIrgTMhYmT
+41bPe7nTVECPgZoyZqlan0F/1EwO90toj2MQ/WTvOj92OBlhgA2F2zvpVk/BsJVHn3j6/xs9
+Ib0dGR4mX4gnzQyuWKk0pPlPRE1qz6u4MzNWBEkLmWXMkbnYNVSI1mpDiOBHEoO3Vr2ZSuWG
+0ssy5b3DBpEuYTwIYcFhFnV+/uEek1bc0AmriYKx1xWyR3Hu40Y6hy3z4kl2APzEOhv0oF63
+aA30FtOMZ3B2BaocwJX9yTTmAuXi7fMDJ6QkAXP4wmfpakK5ZeeUCqQf+ArRp0I5e/I45DdA
+SFC9JeQy0aO0wSOYpuOGj49pezYuKOTR4IIkr7YnrB7IyqvFc2TH+IACDtrDIfFISOqtHJHj
+wqqushZS+JDtV8Ya0xQmJGQpJO9gtgNw1xASajZR4R+ctoOfOH4UEeuc5Sm5nX/vQgqrSv67
+kwuupoJzlo50FTFA+AOO7l2egQgJ//BI+KQ85smWJUOqIDJ2oYvA5DwMlopT55o699rwpB/Q
+A44tQmahbkZTMrWGtSlBORzSPGKYAv4DgBQplxoY+46Dpprkrpg6xXoz5cQwFIBZM7RoxWPR
+vI7xf4Qe/hbZY1CAfy+77vK1JhJi4BA3PJRy+xnwnQd+0ZpzUkoHPgOVMjuWEd6NepP8n+E6
+Ok3DH8xtLiECovAfL3oAAAAAAAA=
+--------------ms030000080703070405090301--
 
