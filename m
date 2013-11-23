@@ -1,13 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <1385131108-19717-1-git-send-email-dazo@...384...>
-References: <l142b75v@...1062...>
-	<1385131108-19717-1-git-send-email-dazo@...384...>
-From: Steffan Karger <steffan@...1856...>
-Date: Sat, 23 Nov 2013 10:53:05 +0100
-Message-ID: <CAA1AbxJZa2gMBXpHiQuXD2J+8eOZCvQp+ftzrC49fH2HDfNACg@...278...>
-Content-Type: multipart/alternative; boundary=001a11c3e57c18a67904ebd51aa6
-Subject: Re: [Openvpn-devel] [PATCH] Fix file checks when --chroot is being
-	used
+Date: Sat, 23 Nov 2013 12:45:09 +0100
+Message-Id: <201311231145.rANBj9D6012197@...1729...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1379587649-25506-2-git-send-email-steffan.karger@...1435...>
+References: <1379587649-25506-2-git-send-email-steffan.karger@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Refactor
+	tls_ctx_use_external_private_key()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,78 +13,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <dazo@...384...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Joachim Schipper <joachim.schipper@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---001a11c3e57c18a67904ebd51aa6
-Content-Type: text/plain; charset=ISO-8859-1
+Your patch has been applied to the master and release/2.3 branches.
 
-Hi David,
+commit c3b2d487bc5089c8c0cf65df8e6cc2232d84b05b (master)
+commit a1e2e7699ca265e911ea8068eadffe1b5a7d24bf (release/2.3)
 
-This solution looks good. I did not test, but I do have one minor comment
-after glancing at the code:
+Author: Joachim Schipper
+Date:   Thu Sep 19 12:47:27 2013 +0200
 
- @@ -2662,7 +2700,14 @@ check_cmd_access(const char *command, const char
-> *opt)
->       * only requires X_OK to function on Unix - a scenario not unlikely to
->       * be seen on suid binaries.
->       */
-> -    return_code = check_file_access(CHKACC_FILE, argv.argv[0], X_OK, opt);
-> +    if (chroot)
-> +      {
-> +        return_code = check_file_access_chroot(chroot, CHKACC_FILE,
-> argv.argv[0], X_OK, opt);
-> +      }
-> +    else
-> +      {
-> +        return_code = check_file_access(CHKACC_FILE, argv.argv[0], X_OK,
-> opt);
-> +      }
->
+     Refactor tls_ctx_use_external_private_key()
 
-This if seems redundant here, as chroot is checked by
-check_file_access_chroot itself. Furthermore, for the other occurences of
-check_file_access you stick to just replacing it with
-check_file_acess_chroot. I would suggest to do that here too.
-
--Steffan
-
---001a11c3e57c18a67904ebd51aa6
-Content-Type: text/html; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hi David,<br><div class=3D"gmail_extra"><br></div><div cla=
-ss=3D"gmail_extra">This solution looks good. I did not test, but I do have =
-one minor comment after glancing at the code:<br><br><div class=3D"gmail_qu=
-ote">
+     Signed-off-by: Joachim Schipper <joachim.schipper@...1435...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <1379587649-25506-2-git-send-email-steffan.karger@...1435...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/7888
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex">
-@@ -2662,7 +2700,14 @@ check_cmd_access(const char *command, const char *op=
-t)<br>
-=A0 =A0 =A0 * only requires X_OK to function on Unix - a scenario not unlik=
-ely to<br>
-=A0 =A0 =A0 * be seen on suid binaries.<br>
-=A0 =A0 =A0 */<br>
-- =A0 =A0return_code =3D check_file_access(CHKACC_FILE, argv.argv[0], X_OK,=
- opt);<br>
-+ =A0 =A0if (chroot)<br>
-+ =A0 =A0 =A0{<br>
-+ =A0 =A0 =A0 =A0return_code =3D check_file_access_chroot(chroot, CHKACC_FI=
-LE, argv.argv[0], X_OK, opt);<br>
-+ =A0 =A0 =A0}<br>
-+ =A0 =A0else<br>
-+ =A0 =A0 =A0{<br>
-+ =A0 =A0 =A0 =A0return_code =3D check_file_access(CHKACC_FILE, argv.argv[0=
-], X_OK, opt);<br>
-+ =A0 =A0 =A0}<br></blockquote><div><br></div><div>This if seems redundant =
-here, as chroot is checked by check_file_access_chroot itself. Furthermore,=
- for the other occurences of check_file_access you stick to just replacing =
-it with check_file_acess_chroot. I would suggest to do that here too.</div>
+--
+kind regards,
 
+Gert Doering
 
-<div><br></div><div>-Steffan</div></div></div></div>
-
---001a11c3e57c18a67904ebd51aa6--
 
