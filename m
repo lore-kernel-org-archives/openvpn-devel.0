@@ -1,10 +1,10 @@
-Date: Sat, 23 Nov 2013 12:45:09 +0100
-Message-Id: <201311231145.rANBj9D6012197@...1729...>
+Date: Sat, 23 Nov 2013 12:45:21 +0100
+Message-Id: <201311231145.rANBjL2J012199@...1729...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1379587649-25506-2-git-send-email-steffan.karger@...1435...>
-References: <1379587649-25506-2-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Refactor
-	tls_ctx_use_external_private_key()
+In-Reply-To: <1379587649-25506-3-git-send-email-steffan.karger@...1435...>
+References: <1379587649-25506-3-git-send-email-steffan.karger@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re: --management-external-key for
+	PolarSSL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,18 +20,19 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master and release/2.3 branches.
 
-commit c3b2d487bc5089c8c0cf65df8e6cc2232d84b05b (master)
-commit a1e2e7699ca265e911ea8068eadffe1b5a7d24bf (release/2.3)
+commit 38ace48c6820c611e689bc69b0cf5380bf7a8891 (master)
+commit 5269096bde5350d7afb51694b0c38b560c32b5f4 (release/2.3)
 
 Author: Joachim Schipper
-Date:   Thu Sep 19 12:47:27 2013 +0200
+Date:   Thu Sep 19 12:47:28 2013 +0200
 
-     Refactor tls_ctx_use_external_private_key()
+     --management-external-key for PolarSSL
 
      Signed-off-by: Joachim Schipper <joachim.schipper@...1435...>
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
      Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1379587649-25506-2-git-send-email-steffan.karger@...1435...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/7888
+     Message-Id: <1379587649-25506-3-git-send-email-steffan.karger@...1435...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/7886
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
