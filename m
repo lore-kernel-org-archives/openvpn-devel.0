@@ -1,10 +1,10 @@
-Date: Sun, 24 Nov 2013 13:05:20 +0100
-Message-Id: <201311241205.rAOC5KNd016662@...1729...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1385236624-3776-1-git-send-email-arne@...1227...>
-References: <1385236624-3776-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Split the PROTO_UDP_xx options
-	into AF_INET/AF_INET6 and PROTO_TCP/PROTO_UDP part.
+From: Arne Schwabe <arne@...1227...>
+Date: Sun, 24 Nov 2013 13:36:23 +0100
+Message-Id: <1385296583-16664-1-git-send-email-arne@...1227...>
+In-Reply-To: <1385064495-25877-7-git-send-email-arne@...1227...>
+References: <1385064495-25877-7-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Change remote the proto_remote function to
+	return a constant string
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,33 +15,80 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK.
+Instead of using the implicit protocol string that is returned by the proto/af
+to names function return a constant string. The strings have become part of the
+wire protocl and we do not want them to change we the printing of proto/af changes.
+---
+ src/openvpn/options.c |  2 +-
+ src/openvpn/socket.c  | 22 ++++++++++++----------
+ src/openvpn/socket.h  |  2 +-
+ 3 files changed, 14 insertions(+), 12 deletions(-)
 
-I have fixed a few bits of whitespace, and one occurrence of proto2ascii()
-where the second parameter wasn't "proto.af".
-
-Patch with those changes has been applied to the master branch.
-
-commit 30077d1f415b8dc9bd7c8a1ac6a7585136ac6261 (master)
-
-Author: Arne Schwabe
-Date:   Sat Nov 23 20:57:04 2013 +0100
-
-     Split the PROTO_UDP_xx options into AF_INET/AF_INET6 and PROTO_TCP/PROTO_UDP part.
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1385236624-3776-1-git-send-email-arne@...1227...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8043
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index a42bf58..6906ea1 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2905,7 +2905,7 @@ options_string (const struct options *o,
+   buf_printf (&out, ",dev-type %s", dev_type_string (o->dev, o->dev_type));
+   buf_printf (&out, ",link-mtu %d", EXPANDED_SIZE (frame));
+   buf_printf (&out, ",tun-mtu %d", PAYLOAD_SIZE (frame));
+-  buf_printf (&out, ",proto %s", proto2ascii (proto_remote (o->ce.proto, remote),o->ce.af, true));
++  buf_printf (&out, ",proto %s",  proto_remote (o->ce.proto, remote));
+ 
+   /* send tun_ipv6 only in peer2peer mode - in client/server mode, it
+    * is usually pushed by the server, triggering a non-helpful warning
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index d62e418..2edbce2 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -2604,19 +2604,21 @@ addr_family_name (int af)
+  * has always sent UDPv4, TCPv4 over the wire. Keep these
+  * strings for backward compatbility
+  */
+-int
++const char*
+ proto_remote (int proto, bool remote)
+ {
+   ASSERT (proto >= 0 && proto < PROTO_N);
+-  if (remote)
+-    {
+-      switch (proto)
+-      {
+-	case PROTO_TCP_SERVER: return PROTO_TCP_CLIENT;
+-	case PROTO_TCP_CLIENT: return PROTO_TCP_SERVER;
+-      }
+-    }
+-  return proto;
++  if (proto == PROTO_UDP)
++	return "UDPv4";
++
++  if ( (remote && proto == PROTO_TCP_CLIENT) ||
++       (!remote && proto == PROTO_TCP_SERVER))
++	return "TCPv4_SERVER";
++  if ( (remote && proto == PROTO_TCP_SERVER) ||
++       (!remote && proto == PROTO_TCP_CLIENT))
++	return "TCPv4_CLIENT";
++
++  ASSERT (0);
+ }
+ 
+ /*
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index 2ccd4db..4b944b0 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -532,7 +532,7 @@ int ascii2proto (const char* proto_name);
+ sa_family_t ascii2af (const char* proto_name);
+ const char *proto2ascii (int proto, sa_family_t af, bool display_form);
+ const char *proto2ascii_all (struct gc_arena *gc);
+-int proto_remote (int proto, bool remote);
++const char *proto_remote (int proto, bool remote);
+ const char *addr_family_name(int af);
+ 
+ /*
+-- 
+1.8.3.4 (Apple Git-47)
 
 
