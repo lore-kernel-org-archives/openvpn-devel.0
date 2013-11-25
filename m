@@ -1,8 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 25 Nov 2013 13:31:12 +0100
-Message-Id: <1385382680-5912-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [Patch v2 1/9] Split link_socket_init_phase2 into
-	smaller more managable/readable functions. No functional changes
+Date: Mon, 25 Nov 2013 13:31:19 +0100
+Message-Id: <1385382680-5912-8-git-send-email-arne@...1227...>
+In-Reply-To: <1385382680-5912-1-git-send-email-arne@...1227...>
+References: <1385382680-5912-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [Patch v2 8/9] Fix connecting to localhost on
+	Android
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,551 +17,93 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
+Do not protect the link socket when connecting to localhost
 ---
- src/openvpn/socket.c | 468 ++++++++++++++++++++++++++++-----------------------
- 1 file changed, 261 insertions(+), 207 deletions(-)
+ src/openvpn/socket.c | 21 ++++++++++++++++++---
+ src/openvpn/socket.h | 17 +++++++++++++++++
+ 2 files changed, 35 insertions(+), 3 deletions(-)
 
 diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index db711e1..207bb4e 100644
+index 27c967a..54a9f72 100644
 --- a/src/openvpn/socket.c
 +++ b/src/openvpn/socket.c
-@@ -1328,6 +1328,23 @@ link_socket_new (void)
-   return sock;
- }
- 
-+void
-+create_new_socket (struct link_socket* sock, int mark)
-+{
-+  create_socket (sock);
-+    
-+  /* set socket buffers based on --sndbuf and --rcvbuf options */
-+  socket_set_buffers (sock->sd, &sock->socket_buffer_sizes);
-+    
-+  /* set socket to --mark packets with given value */
-+  socket_set_mark (sock->sd, mark);
-+    
-+  if(sock->bind_local)
-+      resolve_bind_local (sock);
-+  resolve_remote (sock, 1, NULL, NULL);
+@@ -690,16 +690,24 @@ create_socket (struct link_socket *sock)
+     /* set socket to --mark packets with given value */
+     socket_set_mark (sock->sd, sock->mark);
+     
 +}
 +
-+
- /* bind socket if necessary */
- void
- link_socket_init_phase1 (struct link_socket *sock,
-@@ -1472,27 +1489,252 @@ link_socket_init_phase1 (struct link_socket *sock,
-     }
-   else if (mode != LS_MODE_TCP_ACCEPT_FROM)
-     {
--      create_socket (sock);
-+      create_new_socket (sock, mark);
-+    }
-+}
-+
-+static
-+void phase2_inetd (struct link_socket* sock, const struct frame *frame,
-+		   const char *remote_dynamic, volatile int *signal_received)
+ #ifdef TARGET_ANDROID
++static void protect_fd_nonlocal (int fd, const struct sockaddr* addr)
 +{
-+  bool remote_changed = false;
-+
-+  if (sock->info.proto == PROTO_TCP_SERVER) {
-+    /* AF_INET as default (and fallback) for inetd */
-+    sock->info.lsa->actual.dest.addr.sa.sa_family = AF_INET;
-+#ifdef HAVE_GETSOCKNAME
-+    {
-+      /* inetd: hint family type for dest = local's */
-+      struct openvpn_sockaddr local_addr;
-+      socklen_t addrlen = sizeof(local_addr);
-+      if (getsockname (sock->sd, (struct sockaddr *)&local_addr, &addrlen) == 0) {
-+	sock->info.lsa->actual.dest.addr.sa.sa_family = local_addr.addr.sa.sa_family;
-+	dmsg (D_SOCKET_DEBUG, "inetd(%s): using sa_family=%d from getsockname(%d)",
-+	      proto2ascii(sock->info.proto, sock->info.af, false), local_addr.addr.sa.sa_family,
-+	      sock->sd);
-+      } else
-+	msg (M_WARN, "inetd(%s): getsockname(%d) failed, using AF_INET",
-+	     proto2ascii(sock->info.proto, sock->info.af, false), sock->sd);
-+    }
-+#else
-+    msg (M_WARN, "inetd(%s): this OS does not provide the getsockname() "
-+	 "function, using AF_INET",
-+	 proto2ascii(sock->info.proto, false));
-+#endif
-+    sock->sd =
-+      socket_listen_accept (sock->sd,
-+			    &sock->info.lsa->actual,
-+			    remote_dynamic,
-+			    &remote_changed,
-+			    &sock->info.lsa->local,
-+			    false,
-+			    sock->inetd == INETD_NOWAIT,
-+			    signal_received);
+   /* pass socket FD to management interface to pass on to VPNService API
+    * as "protected socket" (exempt from being routed into tunnel)
+    */
++  if (addr_local (addr)) {
++    msg(M_DEBUG, "Address is local, not protecting socket fd %d", fd);
++    return;
 +  }
-+  ASSERT (!remote_changed);
-+}
-+
-+static void
-+phase2_set_socket_flags (struct link_socket* sock)
-+{
-+  /* set misc socket parameters */
-+  socket_set_flags (sock->sd, sock->sockflags);
  
--      /* set socket buffers based on --sndbuf and --rcvbuf options */
--      socket_set_buffers (sock->sd, &sock->socket_buffer_sizes);
-+  /* set socket to non-blocking mode */
-+  set_nonblock (sock->sd);
-+
-+  /* set socket file descriptor to not pass across execs, so that
-+     scripts don't have access to it */
-+  set_cloexec (sock->sd);
-+
-+#ifdef ENABLE_SOCKS
-+  if (socket_defined (sock->ctrl_sd))
-+    set_cloexec (sock->ctrl_sd);
-+#endif
- 
--      /* set socket to --mark packets with given value */
--      socket_set_mark (sock->sd, mark);
-+  /* set Path MTU discovery options on the socket */
-+  set_mtu_discover_type (sock->sd, sock->mtu_discover_type);
- 
--      if(sock->bind_local)
--          resolve_bind_local (sock);
--      resolve_remote (sock, 1, NULL, NULL);
-+#if EXTENDED_SOCKET_ERROR_CAPABILITY
-+  /* if the OS supports it, enable extended error passing on the socket */
-+  set_sock_extended_error_passing (sock->sd);
-+#endif
-+}
-+
-+
-+static void
-+linksock_print_addr (struct link_socket *sock)
-+{
-+  struct gc_arena gc = gc_new ();
-+
-+  /* print local address */
-+  {
-+    const int msglevel = (sock->mode == LS_MODE_TCP_ACCEPT_FROM) ? D_INIT_MEDIUM : M_INFO;
-+
-+    if (sock->inetd)
-+      msg (msglevel, "%s link local: [inetd]", proto2ascii (sock->info.proto, sock->info.af, true));
-+    else
-+      msg (msglevel, "%s link local%s: %s",
-+	   proto2ascii (sock->info.proto, sock->info.af, true),
-+	   (sock->bind_local ? " (bound)" : ""),
-+	   print_openvpn_sockaddr_ex (&sock->info.lsa->local, ":", sock->bind_local ? PS_SHOW_PORT : 0, &gc));
-+
-+    /* print active remote address */
-+    msg (msglevel, "%s link remote: %s",
-+	 proto2ascii (sock->info.proto, sock->info.af, true),
-+	 print_link_socket_actual_ex (&sock->info.lsa->actual,
-+				      ":",
-+				      PS_SHOW_PORT_IF_DEFINED,
-+				      &gc));
-+  }
-+  gc_free(&gc);
-+}
-+
-+static void
-+phase2_tcp_server (struct link_socket *sock, bool *remote_changed,
-+		   const char *remote_dynamic, volatile int *signal_received)
-+{
-+  switch (sock->mode)
-+    {
-+    case LS_MODE_DEFAULT:
-+      sock->sd = socket_listen_accept (sock->sd,
-+				       &sock->info.lsa->actual,
-+				       remote_dynamic,
-+				       remote_changed,
-+				       &sock->info.lsa->local,
-+				       true,
-+				       false,
-+				       signal_received);
-+      break;
-+    case LS_MODE_TCP_LISTEN:
-+      socket_do_listen (sock->sd,
-+			&sock->info.lsa->local,
-+			true,
-+			false);
-+      break;
-+    case LS_MODE_TCP_ACCEPT_FROM:
-+      sock->sd = socket_do_accept (sock->sd,
-+				   &sock->info.lsa->actual,
-+				   false);
-+      if (!socket_defined (sock->sd))
-+	{
-+	  *signal_received = SIGTERM;
-+	  return;
-+	}
-+      tcp_connection_established (&sock->info.lsa->actual);
-+      break;
-+    default:
-+      ASSERT (0);
-     }
-+
-+}
-+
-+
-+static void
-+phase2_tcp_client (struct link_socket *sock, bool *remote_changed,
-+		   const char *remote_dynamic, volatile int *signal_received)
-+{
-+#ifdef GENERAL_PROXY_SUPPORT
-+    bool proxy_retry = false;
-+#else
-+    const bool proxy_retry = false;
-+#endif
-+    do {
-+	socket_connect (&sock->sd,
-+			&sock->info.lsa->local,
-+			sock->bind_local,
-+			&sock->info.lsa->actual.dest,
-+			sock->connection_profiles_defined,
-+			remote_dynamic,
-+			remote_changed,
-+			sock->connect_retry_seconds,
-+			sock->connect_timeout,
-+			sock->connect_retry_max,
-+			sock->sockflags,
-+			signal_received);
-+	
-+	if (*signal_received)
-+	    return;
-+	
-+	if (false)
-+	    ;
-+#ifdef ENABLE_HTTP_PROXY
-+	else if (sock->http_proxy)
-+	    {
-+		proxy_retry = establish_http_proxy_passthru (sock->http_proxy,
-+							     sock->sd,
-+							     sock->proxy_dest_host,
-+							     sock->proxy_dest_port,
-+							     &sock->stream_buf.residual,
-+							     signal_received);
-+	    }
-+#endif
-+#ifdef ENABLE_SOCKS
-+	else if (sock->socks_proxy)
-+	    {
-+		establish_socks_proxy_passthru (sock->socks_proxy,
-+						sock->sd,
-+						sock->proxy_dest_host,
-+						sock->proxy_dest_port,
-+						signal_received);
-+	    }
-+#endif
-+	if (proxy_retry)
-+	    {
-+		openvpn_close_socket (sock->sd);
-+		sock->sd = create_socket_tcp (AF_INET);
-+	    }
-+    } while (proxy_retry);
-+
+-  management->connection.fdtosend = sock->sd;
++  msg(M_DEBUG, "Protecting socket fd %d", fd);
++  management->connection.fdtosend = fd;
+   management_android_control (management, "PROTECTFD", __func__);
+-#endif
+-
  }
- 
-+#ifdef ENABLE_SOCKS
-+static void
-+phase2_socks_client (struct link_socket *sock, bool *remote_changed,
-+		      const char *remote_dynamic, volatile int *signal_received)
-+{
-+    socket_connect (&sock->ctrl_sd,
-+		    &sock->info.lsa->local,
-+		    sock->bind_local,
-+		    &sock->info.lsa->actual.dest,
-+		    sock->connection_profiles_defined,
-+		    remote_dynamic,
-+		    remote_changed,
-+		    sock->connect_retry_seconds,
-+		    sock->connect_timeout,
-+		    sock->connect_retry_max,
-+		    sock->sockflags,
-+		    signal_received);
-+
-+    if (*signal_received)
-+	return;
-+
-+    establish_socks_proxy_udpassoc (sock->socks_proxy,
-+				    sock->ctrl_sd,
-+				    sock->sd,
-+				    &sock->socks_relay.dest,
-+				    signal_received);
-+
-+    if (*signal_received)
-+	return;
-+
-+    sock->remote_host = sock->proxy_dest_host;
-+    sock->remote_port = sock->proxy_dest_port;
-+    sock->did_resolve_remote = false;
-+
-+    addr_zero_host(&sock->info.lsa->actual.dest);
-+    addr_zero_host(&sock->info.lsa->remote);
-+
-+    resolve_remote (sock, 1, NULL, signal_received);
-+}
 +#endif
-+
- /* finalize socket initialization */
- void
- link_socket_init_phase2 (struct link_socket *sock,
- 			 const struct frame *frame,
- 			 volatile int *signal_received)
+ 
+ /*
+  * Functions used for establishing a TCP stream connection.
+@@ -933,6 +941,10 @@ openvpn_connect (socket_descriptor_t sd,
  {
--  struct gc_arena gc = gc_new ();
-   const char *remote_dynamic = NULL;
-   bool remote_changed = false;
-   int sig_save = 0;
-@@ -1519,41 +1761,10 @@ link_socket_init_phase2 (struct link_socket *sock,
-   /* were we started by inetd or xinetd? */
-   if (sock->inetd)
-     {
--      if (sock->info.proto == PROTO_TCP_SERVER) {
--	/* AF_INET as default (and fallback) for inetd */
--	sock->info.lsa->actual.dest.addr.sa.sa_family = AF_INET;
--#ifdef HAVE_GETSOCKNAME
--	  {
--	    /* inetd: hint family type for dest = local's */
--	    struct openvpn_sockaddr local_addr;
--	    socklen_t addrlen = sizeof(local_addr);
--	    if (getsockname (sock->sd, (struct sockaddr *)&local_addr, &addrlen) == 0) {
--	      sock->info.lsa->actual.dest.addr.sa.sa_family = local_addr.addr.sa.sa_family;
--	      dmsg (D_SOCKET_DEBUG, "inetd(%s): using sa_family=%d from getsockname(%d)",
--		    proto2ascii(sock->info.proto, sock->info.af, false), local_addr.addr.sa.sa_family,
--		    sock->sd);
--	    } else
--	      msg (M_WARN, "inetd(%s): getsockname(%d) failed, using AF_INET",
--		   proto2ascii(sock->info.proto, sock->info.af, false), sock->sd);
--	  }
--#else
--	msg (M_WARN, "inetd(%s): this OS does not provide the getsockname() "
--	     "function, using AF_INET",
--	     proto2ascii(sock->info.proto, false));
--#endif
--	sock->sd =
--	  socket_listen_accept (sock->sd,
--				&sock->info.lsa->actual,
--				remote_dynamic,
--				&remote_changed,
--				&sock->info.lsa->local,
--				false,
--				sock->inetd == INETD_NOWAIT,
--				signal_received);
--      }
--      ASSERT (!remote_changed);
-+      phase2_inetd (sock, frame, remote_dynamic, signal_received);
-       if (*signal_received)
- 	goto done;
+   int status = 0;
+ 
++#ifdef TARGET_ANDROID
++  protect_fd_nonlocal(sd, remote);
++#endif
 +
-     }
-   else
-     {
-@@ -1562,139 +1773,24 @@ link_socket_init_phase2 (struct link_socket *sock,
-       if (*signal_received)
- 	goto done;
- 
--      /* TCP client/server */
-       if (sock->info.proto == PROTO_TCP_SERVER)
- 	{
--	  switch (sock->mode)
--	    {
--	    case LS_MODE_DEFAULT:
--	      sock->sd = socket_listen_accept (sock->sd,
--					       &sock->info.lsa->actual,
--					       remote_dynamic,
--					       &remote_changed,
--					       &sock->info.lsa->local,
--					       true,
--					       false,
--					       signal_received);
--	      break;
--	    case LS_MODE_TCP_LISTEN:
--	      socket_do_listen (sock->sd,
--				&sock->info.lsa->local,
--				true,
--				false);
--	      break;
--	    case LS_MODE_TCP_ACCEPT_FROM:
--	      sock->sd = socket_do_accept (sock->sd,
--					   &sock->info.lsa->actual,
--					   false);
--	      if (!socket_defined (sock->sd))
--		{
--		  *signal_received = SIGTERM;
--		  goto done;
--		}
--	      tcp_connection_established (&sock->info.lsa->actual);
--	      break;
--	    default:
--	      ASSERT (0);
--	    }
-+	  phase2_tcp_server(sock, &remote_changed, remote_dynamic,
-+			    signal_received);
- 	}
-       else if (sock->info.proto == PROTO_TCP_CLIENT)
- 	{
--
--#ifdef GENERAL_PROXY_SUPPORT
--	  bool proxy_retry = false;
--#else
--	  const bool proxy_retry = false;
--#endif
--	  do {
--	    socket_connect (&sock->sd,
--			    &sock->info.lsa->local,
--			    sock->bind_local,
--			    &sock->info.lsa->actual.dest,
--			    sock->connection_profiles_defined,
--			    remote_dynamic,
--			    &remote_changed,
--			    sock->connect_retry_seconds,
--			    sock->connect_timeout,
--			    sock->connect_retry_max,
--			    sock->sockflags,
-+	  phase2_tcp_client(sock, &remote_changed, remote_dynamic,
- 			    signal_received);
- 
--	    if (*signal_received)
--	      goto done;
--
--	    if (false)
--	      ;
--#ifdef ENABLE_HTTP_PROXY
--	    else if (sock->http_proxy)
--	      {
--		proxy_retry = establish_http_proxy_passthru (sock->http_proxy,
--							     sock->sd,
--							     sock->proxy_dest_host,
--							     sock->proxy_dest_port,
--							     &sock->stream_buf.residual,
--							     signal_received);
--	      }
--#endif
--#ifdef ENABLE_SOCKS
--	    else if (sock->socks_proxy)
--	      {
--		establish_socks_proxy_passthru (sock->socks_proxy,
--						sock->sd,
--						sock->proxy_dest_host,
--						sock->proxy_dest_port,
--						signal_received);
--	      }
--#endif
--	    if (proxy_retry)
--	      {
--		openvpn_close_socket (sock->sd);
--		sock->sd = create_socket_tcp (AF_INET);
--	      }
--	  } while (proxy_retry);
- 	}
- #ifdef ENABLE_SOCKS
-       else if (sock->info.proto == PROTO_UDP && sock->socks_proxy && sock->info.af == AF_INET)
- 	{
--	  socket_connect (&sock->ctrl_sd,
--                          &sock->info.lsa->local,
--                          sock->bind_local,
--			  &sock->info.lsa->actual.dest,
--			  sock->connection_profiles_defined,
--			  remote_dynamic,
--			  &remote_changed,
--			  sock->connect_retry_seconds,
--			  sock->connect_timeout,
--			  sock->connect_retry_max,
--			  sock->sockflags,
--			  signal_received);
--
--	  if (*signal_received)
--	    goto done;
--
--	  establish_socks_proxy_udpassoc (sock->socks_proxy,
--					  sock->ctrl_sd,
--					  sock->sd,
--					  &sock->socks_relay.dest,
--					  signal_received);
--
--	  if (*signal_received)
--	    goto done;
--
--	  sock->remote_host = sock->proxy_dest_host;
--	  sock->remote_port = sock->proxy_dest_port;
--	  sock->did_resolve_remote = false;
--
--	  addr_zero_host(&sock->info.lsa->actual.dest);
--	  addr_zero_host(&sock->info.lsa->remote);
--
--	  resolve_remote (sock, 1, NULL, signal_received);
--
--	  if (*signal_received)
--	    goto done;
--	}
-+	  phase2_socks_client(sock, &remote_changed, remote_dynamic,
-+			      signal_received);
+ #ifdef CONNECT_NONBLOCK
+   set_nonblock (sd);
+   status = connect (sd, remote, af_addr_size(remote->sa_family));
+@@ -1790,6 +1802,9 @@ link_socket_init_phase2 (struct link_socket *sock,
+ 	  phase2_socks_client (sock, sig_info);
  #endif
--
-+	}
-       if (*signal_received)
- 	goto done;
- 
-@@ -1705,49 +1801,8 @@ link_socket_init_phase2 (struct link_socket *sock,
  	}
++#ifdef TARGET_ANDROID
++      protect_fd_nonlocal (sock->sd, &sock->info.lsa->actual.dest.addr.sa);
++#endif
+       if (sig_info && sig_info->signal_received)
+ 	goto done;
      }
- 
--  /* set misc socket parameters */
--  socket_set_flags (sock->sd, sock->sockflags);
--
--  /* set socket to non-blocking mode */
--  set_nonblock (sock->sd);
--
--  /* set socket file descriptor to not pass across execs, so that
--     scripts don't have access to it */
--  set_cloexec (sock->sd);
--
--#ifdef ENABLE_SOCKS
--  if (socket_defined (sock->ctrl_sd))
--    set_cloexec (sock->ctrl_sd);
--#endif
--
--  /* set Path MTU discovery options on the socket */
--  set_mtu_discover_type (sock->sd, sock->mtu_discover_type);
--
--#if EXTENDED_SOCKET_ERROR_CAPABILITY
--  /* if the OS supports it, enable extended error passing on the socket */
--  set_sock_extended_error_passing (sock->sd);
--#endif
--
--  /* print local address */
--  {
--    const int msglevel = (sock->mode == LS_MODE_TCP_ACCEPT_FROM) ? D_INIT_MEDIUM : M_INFO;
--
--    if (sock->inetd)
--      msg (msglevel, "%s link local: [inetd]", proto2ascii (sock->info.proto, sock->info.af, true));
--    else
--      msg (msglevel, "%s link local%s: %s",
--	   proto2ascii (sock->info.proto, sock->info.af, true),
--	   (sock->bind_local ? " (bound)" : ""),
--	   print_openvpn_sockaddr_ex (&sock->info.lsa->local, ":", sock->bind_local ? PS_SHOW_PORT : 0, &gc));
--
--    /* print active remote address */
--    msg (msglevel, "%s link remote: %s",
--	 proto2ascii (sock->info.proto, sock->info.af, true),
--	 print_link_socket_actual_ex (&sock->info.lsa->actual,
--				      ":",
--				      PS_SHOW_PORT_IF_DEFINED,
--				      &gc));
--  }
-+  phase2_set_socket_flags(sock);
-+  linksock_print_addr(sock);
- 
-  done:
-   if (sig_save && signal_received)
-@@ -1755,7 +1810,6 @@ link_socket_init_phase2 (struct link_socket *sock,
-       if (!*signal_received)
- 	*signal_received = sig_save;
-     }
--  gc_free (&gc);
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index c71f801..3f8318f 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -598,6 +598,23 @@ addr_defined (const struct openvpn_sockaddr *addr)
+     default: return 0;
+   }
  }
- 
- void
++
++static inline bool
++addr_local (const struct sockaddr *addr)
++{
++    if (!addr)
++	return false;
++    switch (addr->sa_family) {
++	case AF_INET:
++	    return ((const struct sockaddr_in*)addr)->sin_addr.s_addr == htonl(INADDR_LOOPBACK);
++	case AF_INET6:
++	    return  IN6_IS_ADDR_LOOPBACK(&((const struct sockaddr_in6*)addr)->sin6_addr);
++	default:
++	    return false;
++    }
++}
++
++
+ static inline bool
+ addr_defined_ipi (const struct link_socket_actual *lsa)
+ {
 -- 
 1.8.3.4 (Apple Git-47)
 
