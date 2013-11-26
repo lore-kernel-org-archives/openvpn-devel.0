@@ -1,11 +1,10 @@
-Date: Tue, 26 Nov 2013 15:50:15 +0100
-Message-Id: <201311261450.rAQEoFux025737@...1729...>
+Date: Tue, 26 Nov 2013 15:50:18 +0100
+Message-Id: <201311261450.rAQEoIMV025765@...1729...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1385382680-5912-1-git-send-email-arne@...1227...>
-References: <1385382680-5912-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Split link_socket_init_phase2
-	into smaller more managable/readable functions. No functional
-	changes
+In-Reply-To: <1385382680-5912-2-git-send-email-arne@...1227...>
+References: <1385382680-5912-2-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Change remote the proto_remote
+	function to return a constant string
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,21 +18,21 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.  This really is just moving code bits around without any actual
-change I could spot.  And it passes my test rig :-)
+ACK.  Code and feature.
 
-Patch has been applied to the master branch, with some whitespace fixes.
+Patch has been applied to the master branch, with some textual cleanup
+applied to the commit message.
 
-commit 48f1d41a80b1f2aa9e47b38f645dc880bd7090a4
+commit 34136dd8533510f68a012ba9e6bcd8cf5d1ce80e (master)
 
 Author: Arne Schwabe
-Date:   Mon Nov 25 13:31:12 2013 +0100
+Date:   Mon Nov 25 13:31:13 2013 +0100
 
-     Split link_socket_init_phase2 into smaller more managable/readable functions. No functional changes
+     Change remote the proto_remote function to return a constant string
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1385382680-5912-1-git-send-email-arne@...1227...>
+     Message-Id: <1385382680-5912-2-git-send-email-arne@...1227...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8055
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
