@@ -1,17 +1,11 @@
-Date: Tue, 26 Nov 2013 12:52:29 +0100
+Date: Tue, 26 Nov 2013 15:50:15 +0100
+Message-Id: <201311261450.rAQEoFux025737@...1729...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20131126115229.GX161@...1296...>
-References: <l142b75v@...1062...>
-	<1385131108-19717-1-git-send-email-dazo@...384...>
-	<CAA1AbxJZa2gMBXpHiQuXD2J+8eOZCvQp+ftzrC49fH2HDfNACg@...278...>
-	<529482BD.5050001@...1114...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="j1ugAeR+TeE7406a"
-Content-Disposition: inline
-In-Reply-To: <529482BD.5050001@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix file checks when --chroot is being
-	used
+In-Reply-To: <1385382680-5912-1-git-send-email-arne@...1227...>
+References: <1385382680-5912-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Split link_socket_init_phase2
+	into smaller more managable/readable functions. No functional
+	changes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,44 +14,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---j1ugAeR+TeE7406a
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+ACK.  This really is just moving code bits around without any actual
+change I could spot.  And it passes my test rig :-)
 
-Hi,
+Patch has been applied to the master branch, with some whitespace fixes.
 
-On Tue, Nov 26, 2013 at 12:15:09PM +0100, David Sommerseth wrote:
-> and Gert will apply whatever gets an ACK I presume :)
+commit 48f1d41a80b1f2aa9e47b38f645dc880bd7090a4
 
-ACK! :)
+Author: Arne Schwabe
+Date:   Mon Nov 25 13:31:12 2013 +0100
 
-(On that statement, not on the patch, all my brains are focused on the
-dual-stack patch set)
+     Split link_socket_init_phase2 into smaller more managable/readable functions. No functional changes
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1385382680-5912-1-git-send-email-arne@...1227...>
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---j1ugAeR+TeE7406a
-Content-Type: application/pgp-signature
-Content-Disposition: inline
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
+--
+kind regards,
 
-iQCVAwUBUpSLfakuBuNlUUl1AQJswAQAuefAtorN1OpccSVdFYKBcQ9RuOO55Kfb
-kPesPQA4k7BmVccCESOztZGmRdQK/MjqueJ/Jhwu219+0LHupQq3TEH/zqLVe5c7
-XI4QVB8RqIxbbn9gTDl9/mpaSh9wp/EZGV/SoRForIMvlSWa3XpLNl0PlZxVSmeH
-sQTSEnENPZQ=
-=1xVj
------END PGP SIGNATURE-----
+Gert Doering
 
---j1ugAeR+TeE7406a--
 
