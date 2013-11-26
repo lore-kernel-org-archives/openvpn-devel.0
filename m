@@ -1,16 +1,17 @@
-Message-ID: <529482BD.5050001@...1114...>
-Date: Tue, 26 Nov 2013 12:15:09 +0100
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <l142b75v@...1062...>	<1385131108-19717-1-git-send-email-dazo@...384...>
+Date: Tue, 26 Nov 2013 12:52:29 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20131126115229.GX161@...1296...>
+References: <l142b75v@...1062...>
+	<1385131108-19717-1-git-send-email-dazo@...384...>
 	<CAA1AbxJZa2gMBXpHiQuXD2J+8eOZCvQp+ftzrC49fH2HDfNACg@...278...>
-In-Reply-To: <CAA1AbxJZa2gMBXpHiQuXD2J+8eOZCvQp+ftzrC49fH2HDfNACg@...278...>
+	<529482BD.5050001@...1114...>
+Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="JGo2gSU2Liajm3PgWqt9k0oB04toXJkBt"
+	protocol="application/pgp-signature"; boundary="j1ugAeR+TeE7406a"
+Content-Disposition: inline
+In-Reply-To: <529482BD.5050001@...1114...>
 Subject: Re: [Openvpn-devel] [PATCH] Fix file checks when --chroot is being
- used
-Reply-To: openvpn-devel@lists.sourceforge.net
+	used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,74 +20,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---JGo2gSU2Liajm3PgWqt9k0oB04toXJkBt
-Content-Type: text/plain; charset="ISO-8859-1"
+--j1ugAeR+TeE7406a
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 23. nov. 2013 10:53, Steffan Karger wrote:
-> Hi David,
->
-> This solution looks good. I did not test, but I do have one minor
-> comment after glancing at the code:
->
-> @@ -2662,7 +2700,14 @@ check_cmd_access(const char *command, const
-> char *opt) * only requires X_OK to function on Unix - a scenario
-> not unlikely to * be seen on suid binaries. */ -    return_code =3D
-> check_file_access(CHKACC_FILE, argv.argv[0], X_OK, opt); +    if
-> (chroot) +      { +        return_code =3D
-> check_file_access_chroot(chroot, CHKACC_FILE, argv.argv[0], X_OK,
-> opt); +      } +    else +      { +        return_code =3D
-> check_file_access(CHKACC_FILE, argv.argv[0], X_OK, opt); +      }
->
->
-> This if seems redundant here, as chroot is checked by
-> check_file_access_chroot itself. Furthermore, for the other
-> occurences of check_file_access you stick to just replacing it
-> with check_file_acess_chroot. I would suggest to do that here too.
+Hi,
 
-Thanks a lot for the review, Steffan!
+On Tue, Nov 26, 2013 at 12:15:09PM +0100, David Sommerseth wrote:
+> and Gert will apply whatever gets an ACK I presume :)
 
-Yeah, you're absolutely right.  I have no strong feelings for either
-approaches.  But the initial reason I did it in this explicit way, was
-to be, well, explicit about that we do something different when chroot
-is used - instead of burying it one level deeper down.  On the other
-hand, simplicity can also be just the better approach.
+ACK! :)
 
-I hold no grudges ;-)  I've mailed a v2 version of this patch
-implementing it the way you suggest.  And, surely, this change is even
-slightly less intrusive than my first approach.
+(On that statement, not on the patch, all my brains are focused on the
+dual-stack patch set)
 
-So I'll let it be up to you, Josh and the rest of the ML to decide
-which approach you prefer more ... and Gert will apply whatever gets
-an ACK I presume :)
-
-
-David S.
-
-
+gert
 --=20
-kind regards,
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-David Sommerseth
-
-
---JGo2gSU2Liajm3PgWqt9k0oB04toXJkBt
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--j1ugAeR+TeE7406a
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.15 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+Version: GnuPG v1.4.13 (NetBSD)
 
-iEYEARECAAYFAlKUgr0ACgkQDC186MBRfro9jACfR+ERirMzusd25cHy5G1RRUx9
-chAAn2FBI40XzpM2hXJfldEKL66OWLKc
-=gJas
+iQCVAwUBUpSLfakuBuNlUUl1AQJswAQAuefAtorN1OpccSVdFYKBcQ9RuOO55Kfb
+kPesPQA4k7BmVccCESOztZGmRdQK/MjqueJ/Jhwu219+0LHupQq3TEH/zqLVe5c7
+XI4QVB8RqIxbbn9gTDl9/mpaSh9wp/EZGV/SoRForIMvlSWa3XpLNl0PlZxVSmeH
+sQTSEnENPZQ=
+=1xVj
 -----END PGP SIGNATURE-----
 
---JGo2gSU2Liajm3PgWqt9k0oB04toXJkBt--
+--j1ugAeR+TeE7406a--
 
