@@ -1,16 +1,17 @@
-Message-ID: <5298EF88.20609@...1227...>
-Date: Fri, 29 Nov 2013 20:48:24 +0100
-From: Arne Schwabe <arne@...1227...>
-MIME-Version: 1.0
-References: <1385382680-5912-1-git-send-email-arne@...1227...>
-	<1385382680-5912-6-git-send-email-arne@...1227...>
-	<20131129194258.GL161@...1296...>
-In-Reply-To: <20131129194258.GL161@...1296...>
+Date: Fri, 29 Nov 2013 20:57:13 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20131129195713.GN161@...1296...>
+References: <1354303076-13606-1-git-send-email-arne@...1227...>
+	<1354303076-13606-10-git-send-email-arne@...1227...>
+	<50CC4FB8.8040005@...1790...> <20121215120924.GU22465@...1296...>
+	<50CEDE97.6020808@...515...> <51C580F4.8040804@...1790...>
+Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="XKsiRWmPP48wUraoq41S6Nex4tSpCD4qx"
-Subject: Re: [Openvpn-devel] [Patch v2 6/9] Implement dual stack client
- support for OpenVPN
+	protocol="application/pgp-signature"; boundary="Jd2S1KeUgTREicAB"
+Content-Disposition: inline
+In-Reply-To: <51C580F4.8040804@...1790...>
+Subject: Re: [Openvpn-devel] [PATCH 10/10] Implement dual stack client
+	support for OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,66 +20,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
+To: Tore Anderson <tore@...1790...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---XKsiRWmPP48wUraoq41S6Nex4tSpCD4qx
-Content-Type: text/plain; charset="ISO-8859-1"
+--Jd2S1KeUgTREicAB
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Am 29.11.13 20:42, schrieb Gert Doering:
-> Hi,
->
-> On Mon, Nov 25, 2013 at 01:31:17PM +0100, Arne Schwabe wrote:
->> This patch contains a number of changes. I did not further spit this sin=
-ce some changes make only sense being changed together.
-> ACK, but...
->
->  - some parts of the patch did not apply cleanly due to whitespace issues
->    (most likely I caused them in the previous merges, meh, but some of th=
-em
->    were not my doing...), so I had to apply a few things manually - I=20
->    *think* I got it all right, but hey...
->
->    - while at it, I've cleaned up more whitespace (trailing blanks)
->
->  - as discussed on IRC, I've adapted the complex if() condition in socket=
-.h
->    (link_socket_set_outgoing_addr()
->
->  - I've included the fix to make "openvpn --test-crypto" work again
->
->  - I've changed the patch to tun.c to use "local_public" (I assume this=20
->    was intended and just a copy-paste overlook)
->
->  - I've changed the protocol list to add "tcp4-server", "tcp4-client", and
->    also changed "tcp-server" and "tcp-client" from AF_INET to AF_UNSPEC -
->    and I'm not 100% sure if that is "right" for tcp-server.
->
-> So - amended patch below.  Arne, could you please verify that these chang=
-es
-> are all good and formally ACK again?  Transparency, and such :-)
->
->
-ACK and thanks for doing my work :)
+Hi Tore,
 
+On Sat, Jun 22, 2013 at 12:48:20PM +0200, Tore Anderson wrote:
+> >> On Sat, Dec 15, 2012 at 11:23:52AM +0100, Tore Anderson wrote:
+> >> [..]
+> >>> ACK, I tested several different fail-over scenarios and all worked fi=
+ne.
+> >>> Also all my pre-existing VPNs (maintained by GNOME NetworkManager)
+> >>> worked just fine.
+[..]
+>=20
+> It's been half a year, so I was wondering if this patch has been
+> forgotten about? I don't see it in either the master branch of either
+> the openvpn or openvpn-testing git repo.
 
+Thanks for your patience :-) - indeed, it has been way too long, but
+(insert long list of excuses)...
 
+I have just pushed 23d61c56b9fd218c39ad151b01b7e2d6690e6093 to master,
+which has the "latest generation" of the dual-stack patches - the basic
+stuff is what you have reviewed and tested, but during the intermediate
+year of heavy Android user testing, some more fixes have been found and
+integrated, and when reviewing, I found a few warts of my own...  so it
+should be even better.
 
---XKsiRWmPP48wUraoq41S6Nex4tSpCD4qx
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+> FWIW, I'd like to push the GNOME NetworkManager folks some more to
+> implement IPv6 support in their OpenVPN plugin, which is currently IPv4
+> only. This patch breaks one of the assumptions made there, in particular
+> that IPv4 transport will always be used when OpenVPN is started
+> "--remote <dns-hostname> --proto [tcp|udp]". I'm hoping that when
+> dealing with that, which they'll have to do anyway, they'll seize the
+> opportunity to implement IPv6 payload support as well.
+
+There!  I'll take you up on this now :-)  (thanks!)
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--Jd2S1KeUgTREicAB
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.14 (Darwin)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+Version: GnuPG v1.4.13 (NetBSD)
 
-iEYEARECAAYFAlKY740ACgkQe8+cMNS4zRfdHQCgiXA0D+vXlNuSQlfjNqSRL5Dm
-TNIAn1Dqrzml2IdrQsODZevFpCsoIuuz
-=PAxU
+iQCVAwUBUpjxmakuBuNlUUl1AQIJhQQAkdpd0c5Mv7SVncCIgOcqS8H2xZMNWC8i
+U+pJ1JFKPbrvt8H4dKwsHg9izpJkAAm/96GPbu4Z2y8JsoBEJafGh1VXXsE+/KdM
+FxY5wR7E9ZvcGjt2VnF7WpWLHUwaWNpiIQ0SVmK80ULx3UgrxvTjX9hYUER4anmR
+0CDNBEHKg3Y=
+=TqLp
 -----END PGP SIGNATURE-----
 
---XKsiRWmPP48wUraoq41S6Nex4tSpCD4qx--
+--Jd2S1KeUgTREicAB--
 
