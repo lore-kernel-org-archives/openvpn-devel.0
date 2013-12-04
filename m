@@ -1,11 +1,12 @@
-Message-ID: <529C5691.70507@...515...>
-Date: Mon, 02 Dec 2013 11:44:49 +0200
-From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
 MIME-Version: 1.0
-References: <20131117104002.GA161@...1296...>	<5288B114.8020003@...1114...>	<CAFHpkQGZDFo8ov79dg+YmO46T4tc+wOTocu2P8vnhOAkFR9HSA@...278...>
-	<5299D46A.5020602@...1227...>
-In-Reply-To: <5299D46A.5020602@...1227...>
-Subject: Re: [Openvpn-devel] Windows TAP driver and NDIS 6.0
+In-Reply-To: <1384882574-28242-1-git-send-email-heiko.hund@...1489...>
+References: <528B8225.3040206@...515...>
+	<1384882574-28242-1-git-send-email-heiko.hund@...1489...>
+Date: Wed, 4 Dec 2013 14:19:20 +0600
+Message-ID: <CAFHpkQF2RV_+1GSB69v4rGm7gauuw1=MeiXdEiApyC5urYpm2A@...278...>
+From: =?KOI8-R?B?6czY0SD7ydDJw8nO?= <chipitsine@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Support non-ASCII characters in Windows
+ tmp path
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,39 +15,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Arne Schwabe <arne@...1227...>, =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC4?= =?UTF-8?B?0L0=?= <chipitsine@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: openvpn-devel@lists.sourceforge.net
 
+I confirm such a bug. Patch resolves it.
+still not commited to https://github.com/openvpn/openvpn ?
 
-> Am 30.11.13 12:50, schrieb =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=
-=B8=D1=86=D0=B8=D0=BD:
->> I had look at "NDIS 5.1 to NDIS 6.0 migration guide", looks easy
->> enough, I hope to give a try soon.
->> also, it is possibility to run tap-driver on WinRT, there's still no
->> openvpn for WinRT devices, right ?
->>
->>
-> Nobody has yet looked into what requirement apps/drivers for Windows RT
-> have and If openvpn fulfils the requirement or can be changed to these
-> requirements.
+2013/11/19 Heiko Hund <heiko.hund@...1489...>:
+> Get the temporary path from the system as UCS-2 and convert it to
+> UTF-8 and return that for internal use.
 >
-> Arne
+> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+> ---
+>  src/openvpn/win32.c |   34 +++++++++++++++++++++-------------
+>  1 file changed, 21 insertions(+), 13 deletions(-)
 >
-I probably forgot to mention that James is starting work on the NDIS 5
-to NDIS 6 migration very soon. I will make sure he knows there are
-others who want to participate in that fascinating project :). We will
-also need people who are ok with a few BSODs while they test the
-upcoming alpha/beta -quality NDIS 6 drivers.
-
-In the worst case Microsoft drops NDIS 5 support in Windows 8.2, which
-according to some rumours is to be released January next year.
-
---=20
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
+> diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+> index 022eec5..b27e846 100644
+> --- a/src/openvpn/win32.c
+> +++ b/src/openvpn/win32.c
+> @@ -996,19 +996,27 @@ set_win_sys_path_via_env (struct env_set *es)
+>  const char *
+>  win_get_tempdir()
+>  {
+> -  static char buf[MAX_PATH];
+> -  char *tmpdir = buf;
+> -
+> -  CLEAR(buf);
+> -
+> -  if (!GetTempPath(sizeof(buf),buf)) {
+> -    /* Warn if we can't find a valid temporary directory, which should
+> -     * be unlikely.
+> -     */
+> -    msg (M_WARN, "Could not find a suitable temporary directory."
+> -         " (GetTempPath() failed).  Consider to use --tmp-dir");
+> -    tmpdir = NULL;
+> -  }
+> +  static char tmpdir[MAX_PATH];
+> +  WCHAR wtmpdir[MAX_PATH];
+> +
+> +  if (!GetTempPathW(_countof(wtmpdir), wtmpdir))
+> +    {
+> +      /* Warn if we can't find a valid temporary directory, which should
+> +       * be unlikely.
+> +       */
+> +      msg (M_WARN, "Could not find a suitable temporary directory."
+> +          " (GetTempPath() failed).  Consider to use --tmp-dir");
+> +      return NULL;
+> +    }
+> +
+> +  if (WideCharToMultiByte (CP_UTF8, 0, wtmpdir, -1, NULL, 0, NULL, NULL) > sizeof (tmpdir))
+> +    {
+> +      msg (M_WARN, "Could not get temporary directory. Path is too long."
+> +          "  Consider to use --tmp-dir");
+> +      return NULL;
+> +    }
+> +
+> +  WideCharToMultiByte (CP_UTF8, 0, wtmpdir, -1, tmpdir, sizeof (tmpdir), NULL, NULL);
+>    return tmpdir;
+>  }
+>  #endif
+> --
+> 1.7.9.5
+>
+>
+> ------------------------------------------------------------------------------
+> Shape the Mobile Experience: Free Subscription
+> Software experts and developers: Be at the forefront of tech innovation.
+> Intel(R) Software Adrenaline delivers strategic insight and game-changing
+> conversations that shape the rapidly evolving mobile landscape. Sign up now.
+> http://pubads.g.doubleclick.net/gampad/clk?id=63431311&iu=/4140/ostg.clktrk
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
