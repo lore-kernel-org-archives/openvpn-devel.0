@@ -1,14 +1,8 @@
 MIME-Version: 1.0
-In-Reply-To: <CAEsd45SF1fcVPJfOmhmm6GzB7=WvnBg95k=+nX25aRwKf2X-kQ@...278...>
-References: <528B8225.3040206@...515...>
-	<1384882574-28242-1-git-send-email-heiko.hund@...1489...>
-	<529EF77C.5020603@...68...>
-	<CAEsd45SF1fcVPJfOmhmm6GzB7=WvnBg95k=+nX25aRwKf2X-kQ@...278...>
-Date: Wed, 4 Dec 2013 18:22:04 +0600
-Message-ID: <CAFHpkQFx+3QHie71FTGKk6ieKMwC-7X8M=O58qbtnj8-99MVYA@...278...>
+Date: Wed, 4 Dec 2013 19:12:57 +0600
+Message-ID: <CAFHpkQE_3xeGuVe+Ouydz70WN1cdhm2dwHsibV+e-ysyp2fGpg@...278...>
 From: =?KOI8-R?B?6czY0SD7ydDJw8nO?= <chipitsine@...277...>
-Subject: Re: [Openvpn-devel] English language? Re: [PATCH] Support non-ASCII
- characters in Windows tmp path
+Subject: [Openvpn-devel] uninitialized handle fix (serious issue on Win 8.1)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,44 +13,59 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 8bit
-To: "Jonathan K. Bullard" <jkbullard@...277...>
-Cc: Matthias Andree <matthias.andree@...68...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-I've looked through the code and I do not understand why do we need
-that temporary directory on windows platfrom ?
-anyone can explain idea behind initializing tmp-dir ? especially on
-Windows platform.
+Hello!
 
-2013/12/4 Jonathan K. Bullard <jkbullard@...277...>:
-> On Wed, Dec 4, 2013 at 4:35 AM, Matthias Andree <matthias.andree@...68...>
-> wrote:
->>
->> Am 19.11.2013 18:36, schrieb Heiko Hund:
->> > +      msg (M_WARN, "Could not get temporary directory. Path is too
->> > long."
->> > +          "  Consider to use --tmp-dir");
->>
->> I think when touching the code, we ought to change all occurrences to
->> "Consider using --tmp-dir".
->>
->> Native speakers or linguists correct me, but since most usage references
->> I found were "consider + object" (object often a noun), the -ing form
->> would have to be used here.
->
->
-> As a native English speaker, I agree; "Consider using --tmp-dir" is correct.
->
-> (As an American, I have almost no formal knowledge of grammar or diction, so
-> I can't cite why :-)
->
-> ------------------------------------------------------------------------------
-> Sponsored by Intel(R) XDK
-> Develop, test and display web and hybrid apps with a single code base.
-> Download it for free now!
-> http://pubads.g.doubleclick.net/gampad/clk?id=111408631&iu=/4140/ostg.clktrk
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+I confirm issue described here: https://forums.openvpn.net/topic13246.html
+also, I confirm that it is due to random handle value (which somehow
+was null before Win 8.1 was released)
+
+also, I do not understand why we should check "err" handle on
+INVALID_HANDLE_VALUE, it will fail anyway on WriteFile, that check is
+useless.
+
+I do not insist on being perfect, if someone has better idea how to
+solve https://forums.openvpn.net/topic13246.html - I do not mind.
+
+I can make git pull request from
+https://github.com/chipitsine/openvpn/commit/3987bd0e035b653a5017c5eccbd54eaf22746852
+if it's better.
+
+people encounter problems on Win 8.1 (well, just couple of people
+here, we are running openvpn with tens of customers on Win 8.1), I
+beleive it is serious issue, please consider release of openvpn.
+
+diff --git a/src/openvpn/console.c b/src/openvpn/console.c
+index afda8ca..3ec5758 100644
+--- a/src/openvpn/console.c
++++ b/src/openvpn/console.c
+@@ -62,7 +62,6 @@ get_console_input_win32 (const char *prompt, const
+bool echo, char *input, const
+   err = get_orig_stderr ();
+
+   if (in != INVALID_HANDLE_VALUE
+-      && err != INVALID_HANDLE_VALUE
+       && !win32_service_interrupt (&win32_signal)
+       && WriteFile (err, prompt, strlen (prompt), &len, NULL))
+     {
+diff --git a/src/openvpn/error.c b/src/openvpn/error.c
+index 6848425..acc7977 100644
+--- a/src/openvpn/error.c
++++ b/src/openvpn/error.c
+@@ -454,12 +454,12 @@ close_syslog ()
+
+ #ifdef WIN32
+
+-static HANDLE orig_stderr;
++static HANDLE orig_stderr = INVALID_HANDLE_VALUE;
+
+ HANDLE
+ get_orig_stderr (void)
+ {
+-  if (orig_stderr)
++  if (orig_stderr != INVALID_HANDLE_VALUE)
+     return orig_stderr;
+   else
+     return GetStdHandle (STD_ERROR_HANDLE);
 
