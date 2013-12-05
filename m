@@ -1,11 +1,17 @@
-MIME-Version: 1.0
-In-Reply-To: <CAFHpkQE_3xeGuVe+Ouydz70WN1cdhm2dwHsibV+e-ysyp2fGpg@...278...>
-References: <CAFHpkQE_3xeGuVe+Ouydz70WN1cdhm2dwHsibV+e-ysyp2fGpg@...278...>
-Date: Thu, 5 Dec 2013 16:52:02 +0600
-Message-ID: <CAFHpkQFbHhRPCVSkZ0guiO4ey6ZnqBc0EQCizuB6cV=tBvDtDw@...278...>
-From: =?KOI8-R?B?6czY0SD7ydDJw8nO?= <chipitsine@...277...>
-Subject: [Openvpn-devel] Fwd: uninitialized handle fix (serious issue on Win
-	8.1)
+Date: Thu, 5 Dec 2013 14:34:20 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20131205133420.GS161@...1296...>
+References: <OF05315ED1.21B1F5C0-ONC1257C2B.0035DBF4-C1257C2B.00362669@...1846...>
+	<20131122101521.GZ161@...1296...>
+	<CAN_jwOsZ52oxbv9tRxMbSN3Edbr6adUeWOn0V7D-iaOQsZhU=w@...278...>
+	<OF3A5C5E15.B8A20868-ONC1257C38.002E17F6-C1257C38.004782F3@...1846...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Z8f2J9UTMudV0TfQ"
+Content-Disposition: inline
+In-Reply-To: <OF3A5C5E15.B8A20868-ONC1257C38.002E17F6-C1257C38.004782F3@...1846...>
+Subject: Re: [Openvpn-devel] Does openvpn 2.3.2 has memory leak? (addendum3
+	and 4)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,73 +20,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="KOI8-R"
+To: arno.odermatt@...1845...
+Cc: openvpn-devel@lists.sourceforge.net, Brad Zhang <hebei5000@...277...>
+
+--Z8f2J9UTMudV0TfQ
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
-guys, please pay attention to this message.
-it really resolves issue with openvpn on windows 8.1
+Hi,
 
----------- Forwarded message ----------
-From: =E9=CC=D8=D1 =FB=C9=D0=C9=C3=C9=CE <chipitsine@...277...>
-Date: 2013/12/4
-Subject: uninitialized handle fix (serious issue on Win 8.1)
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@...290...=
-net>
+On Thu, Dec 05, 2013 at 02:01:05PM +0100, arno.odermatt@...1845... wrote:
+> thank you. Yes, it is acceptable.
+> From our point of view, it still seems, memory not to be released=20
+> properly, when a disconnection script has been run.
+> In our environment with O-VPN 2.3.2, when we start to disconnect large=20
+> amounts of client sessions, using the disconnect script, memory seems not=
+=20
+> to become freed, and therefore can not be re-used by other sessions. This=
+=20
+> is a problem, since the app might  run out of memory again.
 
+"Not being free()ed" and "not being returned to the OS" are two different
+things.  So unless you see a memory increase on reconnect, I'd guess it
+is "memory is free()ed, but due to whatever reasons not returned to the
+OS by the malloc library".
 
-Hello!
+(In your case, it might be worthwile to investigate linking with PolarSSL
+instead of OpenSSL, as the memory footprint is *much* smaller, from the
+numbers Brad posted)
 
-I confirm issue described here: https://forums.openvpn.net/topic13246.html
-also, I confirm that it is due to random handle value (which somehow
-was null before Win 8.1 was released)
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-also, I do not understand why we should check "err" handle on
-INVALID_HANDLE_VALUE, it will fail anyway on WriteFile, that check is
-useless.
+--Z8f2J9UTMudV0TfQ
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-I do not insist on being perfect, if someone has better idea how to
-solve https://forums.openvpn.net/topic13246.html - I do not mind.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
 
-I can make git pull request from
-https://github.com/chipitsine/openvpn/commit/3987bd0e035b653a5017c5eccbd54e=
-af22746852
-if it's better.
+iQCVAwUBUqCA3KkuBuNlUUl1AQJIwwQAxmOPhA+Vwve2VyhRRJzitdol1lfQZAmH
+2K2ZFWUWLu2dn4ocKRQYJe3Z/AsDJgWCz6vH9gMzxvcBvmH0+GVUY6S7Amy6XXTs
+WWYRLZO/Imx4TgV5qvEMSyti+jam307zAiTAI4aWeBfp1Rw0D5hNrd2BBcJ0z1mz
+NbjPlL/D9/k=
+=sy+y
+-----END PGP SIGNATURE-----
 
-people encounter problems on Win 8.1 (well, just couple of people
-here, we are running openvpn with tens of customers on Win 8.1), I
-beleive it is serious issue, please consider release of openvpn.
-
-diff --git a/src/openvpn/console.c b/src/openvpn/console.c
-index afda8ca..3ec5758 100644
---- a/src/openvpn/console.c
-+++ b/src/openvpn/console.c
-@@ -62,7 +62,6 @@ get_console_input_win32 (const char *prompt, const
-bool echo, char *input, const
-   err =3D get_orig_stderr ();
-
-   if (in !=3D INVALID_HANDLE_VALUE
--      && err !=3D INVALID_HANDLE_VALUE
-       && !win32_service_interrupt (&win32_signal)
-       && WriteFile (err, prompt, strlen (prompt), &len, NULL))
-     {
-diff --git a/src/openvpn/error.c b/src/openvpn/error.c
-index 6848425..acc7977 100644
---- a/src/openvpn/error.c
-+++ b/src/openvpn/error.c
-@@ -454,12 +454,12 @@ close_syslog ()
-
- #ifdef WIN32
-
--static HANDLE orig_stderr;
-+static HANDLE orig_stderr =3D INVALID_HANDLE_VALUE;
-
- HANDLE
- get_orig_stderr (void)
- {
--  if (orig_stderr)
-+  if (orig_stderr !=3D INVALID_HANDLE_VALUE)
-     return orig_stderr;
-   else
-     return GetStdHandle (STD_ERROR_HANDLE);
+--Z8f2J9UTMudV0TfQ--
 
