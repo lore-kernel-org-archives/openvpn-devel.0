@@ -2,8 +2,8 @@ MIME-Version: 1.0
 In-Reply-To: <52A19700.8030500@...68...>
 References: <CAFHpkQE_3xeGuVe+Ouydz70WN1cdhm2dwHsibV+e-ysyp2fGpg@...278...>
 	<52A19700.8030500@...68...>
-Date: Fri, 6 Dec 2013 16:23:38 +0600
-Message-ID: <CAFHpkQE92DkVKo8x5hT7s-251EANt7zF1kbZFx1Ez8QXLJBsbg@...278...>
+Date: Fri, 6 Dec 2013 18:32:05 +0600
+Message-ID: <CAFHpkQFu0h8xxrrN+H=nd9sr5VaQGUL2j_huv=Sjya=z-A6aAw@...278...>
 From: =?KOI8-R?B?6czY0SD7ydDJw8nO?= <chipitsine@...277...>
 Subject: Re: [Openvpn-devel] NAK on uninitialized handle fix (serious issue
  on Win 8.1)
@@ -19,6 +19,29 @@ Content-Type: text/plain; charset="KOI8-R"
 Content-Transfer-Encoding: quoted-printable
 To: Matthias Andree <matthias.andree@...68...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+ok, if you think that using orig_stderr is bad idea (either NULL or
+INVALID_HANDLE_VALUE are special), maybe we should assign special
+variable which will keep an evidence whether original stderr was
+redirected or not and perform check against that variable ? like
+
+BOOL stderr_was_redirected =3D 0;
+
+....
+
+if(stderr_was_redirected)
+   return orig_stderr;
+  else
+    return GetStdHandle (STD_ERROR_HANDLE);
+
+
+......
+
+      /* save original stderr for password prompts */
+      stderr_was_redirected =3D 1;
+      orig_stderr =3D GetStdHandle (STD_ERROR_HANDLE);
+
+
 
 2013/12/6 Matthias Andree <matthias.andree@...68...>:
 > Am 04.12.2013 14:12, schrieb =E9=CC=D8=D1 =FB=C9=D0=C9=C3=C9=CE:
@@ -62,46 +85,14 @@ ml
 > Ilya, I am sorry to have to veto this for now.
 >
 > NAK from me, this introduces a new bug.  If GetStdError() inside
-
-if GetStdError() inside will fail, it means we do not have proper error han=
-dle.
-we fail in that case, no problem. what else can we do ?
-
 > get_orig_stderr() fails, you will end up with err =3D=3D
 > INVALID_HANDLE_VALUE here, so the check err !=3D INVALID_HANDLE_VALUE must
 > not be removed.
-
-ok, if get_orig_stderr returns INVALID_HANDLE_VALUE, what is difference bet=
-ween
-
-if( err !=3D INVALID_HANDLE_VALUE && !WriteFile(err,....)
-
-and
-
-if(!WriteFile(err,...))
-
-
-?
-
-
 >
 > Similarly, if get_orig_stderr() returns NULL, you must not call
 > WriteFile() either, so how about an additional "&& err !=3D NULL" here?
-
-if you call WriteFile with NULL handle, it will fail, the entire "if"
-will fail, it is not problem
-
 >
 > I don't have Win 8.1 and cannot test that.
-
-be carefull with testing.
-
-here are tens of customers with Win 8.1, however only couple of them
-experience issues with "cannot read management password"
-I was not able to reproduce it myself (but I eyewitness it and I
-confirm that initilizing "orig_stderr" variable with some proper value
-resolves issue)
-
 >
 >> diff --git a/src/openvpn/error.c b/src/openvpn/error.c
 >> index 6848425..acc7977 100644
