@@ -2,8 +2,8 @@ MIME-Version: 1.0
 In-Reply-To: <52A19700.8030500@...68...>
 References: <CAFHpkQE_3xeGuVe+Ouydz70WN1cdhm2dwHsibV+e-ysyp2fGpg@...278...>
 	<52A19700.8030500@...68...>
-Date: Fri, 6 Dec 2013 16:03:29 +0600
-Message-ID: <CAFHpkQHuCvFZ2bMz7UGtVYdZmPZo_s4Oepq=+apGEvKRVJCROQ@...278...>
+Date: Fri, 6 Dec 2013 16:23:38 +0600
+Message-ID: <CAFHpkQE92DkVKo8x5hT7s-251EANt7zF1kbZFx1Ez8QXLJBsbg@...278...>
 From: =?KOI8-R?B?6czY0SD7ydDJw8nO?= <chipitsine@...277...>
 Subject: Re: [Openvpn-devel] NAK on uninitialized handle fix (serious issue
  on Win 8.1)
@@ -62,32 +62,46 @@ ml
 > Ilya, I am sorry to have to veto this for now.
 >
 > NAK from me, this introduces a new bug.  If GetStdError() inside
+
+if GetStdError() inside will fail, it means we do not have proper error han=
+dle.
+we fail in that case, no problem. what else can we do ?
+
 > get_orig_stderr() fails, you will end up with err =3D=3D
-
-
-no.
-
-get_orig_stderr() first tries "if (orig_stderr)" which is ok if
-variable orig_stderr was proper initialized.
-if error redirection is not requested, that check could give
-unpredictable result because orig_stderr was not initialized.
-
-it was ok on windows before win 8.1, I beleive uninitized variabled
-were actually initialized by NULL
-
 > INVALID_HANDLE_VALUE here, so the check err !=3D INVALID_HANDLE_VALUE must
 > not be removed.
+
+ok, if get_orig_stderr returns INVALID_HANDLE_VALUE, what is difference bet=
+ween
+
+if( err !=3D INVALID_HANDLE_VALUE && !WriteFile(err,....)
+
+and
+
+if(!WriteFile(err,...))
+
+
+?
+
+
 >
-
-check (err !=3D INVALID_HANDLE_VALUE) is cosmetic and it is not actually
-related to bugfix.
-the idea is "why to check err againt INVALID_HANDLE_VALUE, if
-WriteFile would fail anyway under such condition"
-
 > Similarly, if get_orig_stderr() returns NULL, you must not call
 > WriteFile() either, so how about an additional "&& err !=3D NULL" here?
+
+if you call WriteFile with NULL handle, it will fail, the entire "if"
+will fail, it is not problem
+
 >
 > I don't have Win 8.1 and cannot test that.
+
+be carefull with testing.
+
+here are tens of customers with Win 8.1, however only couple of them
+experience issues with "cannot read management password"
+I was not able to reproduce it myself (but I eyewitness it and I
+confirm that initilizing "orig_stderr" variable with some proper value
+resolves issue)
+
 >
 >> diff --git a/src/openvpn/error.c b/src/openvpn/error.c
 >> index 6848425..acc7977 100644
