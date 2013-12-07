@@ -1,12 +1,9 @@
 MIME-Version: 1.0
-In-Reply-To: <52A19700.8030500@...68...>
-References: <CAFHpkQE_3xeGuVe+Ouydz70WN1cdhm2dwHsibV+e-ysyp2fGpg@...278...>
-	<52A19700.8030500@...68...>
-Date: Fri, 6 Dec 2013 18:32:05 +0600
-Message-ID: <CAFHpkQFu0h8xxrrN+H=nd9sr5VaQGUL2j_huv=Sjya=z-A6aAw@...278...>
+Date: Sat, 7 Dec 2013 21:01:35 +0600
+Message-ID: <CAFHpkQEdec39CQFOr7M3=+1yDi4myTtoHBdankg9NRnF-ZhzoQ@...278...>
 From: =?KOI8-R?B?6czY0SD7ydDJw8nO?= <chipitsine@...277...>
-Subject: Re: [Openvpn-devel] NAK on uninitialized handle fix (serious issue
- on Win 8.1)
+Subject: [Openvpn-devel] uninitialized handle fix (serious bug on Win 8.1),
+	another attempt
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,129 +12,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="KOI8-R"
-Content-Transfer-Encoding: quoted-printable
-To: Matthias Andree <matthias.andree@...68...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-ok, if you think that using orig_stderr is bad idea (either NULL or
-INVALID_HANDLE_VALUE are special), maybe we should assign special
-variable which will keep an evidence whether original stderr was
-redirected or not and perform check against that variable ? like
+if handle is not initialized, orig_stderr variable could take random
+value, which we observe on Windows 8.1 (bug reported here as well:
+https://forums.openvpn.net/topic13246.html )
 
-BOOL stderr_was_redirected =3D 0;
-
-....
-
-if(stderr_was_redirected)
-   return orig_stderr;
-  else
-    return GetStdHandle (STD_ERROR_HANDLE);
-
-
-......
-
-      /* save original stderr for password prompts */
-      stderr_was_redirected =3D 1;
-      orig_stderr =3D GetStdHandle (STD_ERROR_HANDLE);
-
-
-
-2013/12/6 Matthias Andree <matthias.andree@...68...>:
-> Am 04.12.2013 14:12, schrieb =E9=CC=D8=D1 =FB=C9=D0=C9=C3=C9=CE:
->> Hello!
->>
->> I confirm issue described here: https://forums.openvpn.net/topic13246.ht=
-ml
->> also, I confirm that it is due to random handle value (which somehow
->> was null before Win 8.1 was released)
->>
->> also, I do not understand why we should check "err" handle on
->> INVALID_HANDLE_VALUE, it will fail anyway on WriteFile, that check is
->> useless.
->>
->> I do not insist on being perfect, if someone has better idea how to
->> solve https://forums.openvpn.net/topic13246.html - I do not mind.
->>
->> I can make git pull request from
->> https://github.com/chipitsine/openvpn/commit/3987bd0e035b653a5017c5eccbd=
-54eaf22746852
->> if it's better.
->>
->> people encounter problems on Win 8.1 (well, just couple of people
->> here, we are running openvpn with tens of customers on Win 8.1), I
->> beleive it is serious issue, please consider release of openvpn.
->>
->> diff --git a/src/openvpn/console.c b/src/openvpn/console.c
->> index afda8ca..3ec5758 100644
->> --- a/src/openvpn/console.c
->> +++ b/src/openvpn/console.c
->> @@ -62,7 +62,6 @@ get_console_input_win32 (const char *prompt, const
->> bool echo, char *input, const
->>    err =3D get_orig_stderr ();
->>
->>    if (in !=3D INVALID_HANDLE_VALUE
->> -      && err !=3D INVALID_HANDLE_VALUE
->>        && !win32_service_interrupt (&win32_signal)
->>        && WriteFile (err, prompt, strlen (prompt), &len, NULL))
->>      {
->
-> Ilya, I am sorry to have to veto this for now.
->
-> NAK from me, this introduces a new bug.  If GetStdError() inside
-> get_orig_stderr() fails, you will end up with err =3D=3D
-> INVALID_HANDLE_VALUE here, so the check err !=3D INVALID_HANDLE_VALUE must
-> not be removed.
->
-> Similarly, if get_orig_stderr() returns NULL, you must not call
-> WriteFile() either, so how about an additional "&& err !=3D NULL" here?
->
-> I don't have Win 8.1 and cannot test that.
->
->> diff --git a/src/openvpn/error.c b/src/openvpn/error.c
->> index 6848425..acc7977 100644
->> --- a/src/openvpn/error.c
->> +++ b/src/openvpn/error.c
->> @@ -454,12 +454,12 @@ close_syslog ()
->>
->>  #ifdef WIN32
->>
->> -static HANDLE orig_stderr;
->> +static HANDLE orig_stderr =3D INVALID_HANDLE_VALUE;
->>
->>  HANDLE
->>  get_orig_stderr (void)
->>  {
->> -  if (orig_stderr)
->> +  if (orig_stderr !=3D INVALID_HANDLE_VALUE)
->>      return orig_stderr;
->>    else
->>      return GetStdHandle (STD_ERROR_HANDLE);
->>
->
-> NAK on this, too.  It exchanges one bug for another.
->
-> The STD_ERROR_HANDLE interface has, according to
-> <http://msdn.microsoft.com/en-us/library/windows/desktop/ms683231%28v=3Dv=
-s.85%29.aspx>,
-> two special values, INVALID_HANDLE_VALUE (as error marker) and NULL (as
-> marker for "we don't have a console").
->
-> I think that there needs to be a separate/new "orig_stderr_is_valid"
-> variable, or at least the if (...) else needs to be
->
-> if (orig_stderr !=3D NULL && orig_stderr !=3D INVALID_HANDLE_VALUE)
-> ...
->
-> -------------------------------------------------------------------------=
------
-> Sponsored by Intel(R) XDK
-> Develop, test and display web and hybrid apps with a single code base.
-> Download it for free now!
-> http://pubads.g.doubleclick.net/gampad/clk?id=3D111408631&iu=3D/4140/ostg=
-.clktrk
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+diff --git a/src/openvpn/error.c b/src/openvpn/error.c
+index ebe9a52..b34d209 100644
+--- a/src/openvpn/error.c
++++ b/src/openvpn/error.c
+@@ -459,7 +459,7 @@ static HANDLE orig_stderr;
+ HANDLE
+ get_orig_stderr (void)
+ {
+-  if (orig_stderr)
++  if (std_redir)
+     return orig_stderr;
+   else
+     return GetStdHandle (STD_ERROR_HANDLE);
 
