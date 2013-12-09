@@ -1,14 +1,16 @@
+Message-ID: <52A586E7.4050703@...1114...>
+Date: Mon, 09 Dec 2013 10:01:27 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-In-Reply-To: <20131208080103.GF161@...1296...>
-References: <CAFHpkQEdec39CQFOr7M3=+1yDi4myTtoHBdankg9NRnF-ZhzoQ@...278...>
-	<20131207204434.GE161@...1296...>
-	<CAFHpkQGfAgCNBeiucw=h-6xds6QuBSNNEzyJ-Tf1LRMNd3FkZA@...278...>
-	<20131208080103.GF161@...1296...>
-Date: Sun, 8 Dec 2013 14:49:56 +0600
-Message-ID: <CAFHpkQGh1C39SE2ShuyGLo7bJjYHFfTaCRSqJcAi-HMWLnDWjQ@...278...>
-From: =?KOI8-R?B?6czY0SD7ydDJw8nO?= <chipitsine@...277...>
-Subject: Re: [Openvpn-devel] uninitialized handle fix (serious bug on Win
-	8.1), another attempt
+References: <528B8225.3040206@...515...>	<1384882574-28242-1-git-send-email-heiko.hund@...1489...>	<529EF77C.5020603@...68...>	<CAEsd45SF1fcVPJfOmhmm6GzB7=WvnBg95k=+nX25aRwKf2X-kQ@...278...>
+	<CAFHpkQFx+3QHie71FTGKk6ieKMwC-7X8M=O58qbtnj8-99MVYA@...278...>
+In-Reply-To: <CAFHpkQFx+3QHie71FTGKk6ieKMwC-7X8M=O58qbtnj8-99MVYA@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="whWW1esAIX1QIXuvdE4HLNfqqTMgvxG0u"
+Subject: Re: [Openvpn-devel] English language? Re: [PATCH] Support non-ASCII
+ characters in Windows tmp path
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,37 +19,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-ok, you suggest to initialize orig_stderr.
-initialize with what ?
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--whWW1esAIX1QIXuvdE4HLNfqqTMgvxG0u
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-what value of orig_stderr should mean
+On 04. des. 2013 13:22, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=
+=D1=86=D0=B8=D0=BD wrote:
+> I've looked through the code and I do not understand why do we need
+> that temporary directory on windows platfrom ?
+> anyone can explain idea behind initializing tmp-dir ? especially on
+> Windows platform.
 
-a) "no stderr redirection requested, return GetStdHandle (STD_ERROR_HANDLE)"
-b) "stderr redirection was requested, return orig_stderr"
+The client side most likely won't need --tmp-dir at all.  But if running
+a server on Windows, OpenVPN will create some temporary files upon
+client authentication.
 
-as Matthias Andree said, neither NULL, nor INVALID_HANDLE are good for
-"a)", those might me special cases and mean something different in
-terms of handles
+See commit ca4c6d618d7 for more info.
 
-but if you see better solution, just provide it, I do not mind.
 
-2013/12/8 Gert Doering <gert@...1296...>:
-> Hi,
->
-> On Sun, Dec 08, 2013 at 11:27:50AM +0600, ???? ??????? wrote:
->> Ok, your suggestion?
->
-> "initialize orig_stderr"?
->
-> gert
-> --
-> USENET is *not* the non-clickable part of WWW!
->                                                            //www.muc.de/~gert/
-> Gert Doering - Munich, Germany                             gert@...1296...
-> fax: +49-89-35655025                        gert@...1297...
+--=20
+kind regards,
+
+David Sommerseth
+
+
+--whWW1esAIX1QIXuvdE4HLNfqqTMgvxG0u
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.15 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+
+iEYEARECAAYFAlKlhusACgkQDC186MBRfrrKtwCgpgTuUqOfpQrOoZDV2iGtMsJi
+wpMAn07JgGXvxR+bS3e4x/sNQIQEiH/d
+=LmnF
+-----END PGP SIGNATURE-----
+
+--whWW1esAIX1QIXuvdE4HLNfqqTMgvxG0u--
 
