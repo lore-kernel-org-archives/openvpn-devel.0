@@ -1,16 +1,11 @@
-Message-ID: <52A586E7.4050703@...1114...>
-Date: Mon, 09 Dec 2013 10:01:27 +0100
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <52A87373.3070009@...1227...>
+Date: Wed, 11 Dec 2013 15:15:15 +0100
+From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
-References: <528B8225.3040206@...515...>	<1384882574-28242-1-git-send-email-heiko.hund@...1489...>	<529EF77C.5020603@...68...>	<CAEsd45SF1fcVPJfOmhmm6GzB7=WvnBg95k=+nX25aRwKf2X-kQ@...278...>
-	<CAFHpkQFx+3QHie71FTGKk6ieKMwC-7X8M=O58qbtnj8-99MVYA@...278...>
-In-Reply-To: <CAFHpkQFx+3QHie71FTGKk6ieKMwC-7X8M=O58qbtnj8-99MVYA@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="whWW1esAIX1QIXuvdE4HLNfqqTMgvxG0u"
-Subject: Re: [Openvpn-devel] English language? Re: [PATCH] Support non-ASCII
- characters in Windows tmp path
-Reply-To: openvpn-devel@lists.sourceforge.net
+References: <OpenVPN/openvpn/pull/10@...1714...>
+In-Reply-To: <OpenVPN/openvpn/pull/10@...1714...>
+Subject: Re: [Openvpn-devel] [openvpn] Custom control messages & trigger
+	(#10)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,47 +14,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: OpenVPN/openvpn <reply+i-24049118-7828ec8fed160fb3c79c0b05c2e1b4850bb0819f-1038539@...1858...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---whWW1esAIX1QIXuvdE4HLNfqqTMgvxG0u
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Am 10.12.13 17:59, schrieb andreax79:
+>
+> Hi,
+> I like to share with you this patch.
+> I was searching for a method to notify (e.g. executing a script) a
+> client when something happen on the server.
+> The scenario is the following: then some configuration are changed on
+> the server, the client has to update the
+> firewall rules.
+> In order to achieve the goal I added a new control message "CUSTOM".
+> Then the this message is received, the script specified with
+> "--custom" is executed. All the additional argument specified after
+> CUSTOM are passed to the script as parameters.
+> I added a new command "control" to the management cli to send
+> arbitrary control command to clients (by common name or by address/port).
+>
+> As example, the following command:
+> control 192.168.18.164:45421 CUSTOM test
+> sends the "CUSTOM test" control message to the client at
+> 192.168.18.164:45421.
+> On the client, the "--custom" script is executed with "test" as first
+> parameter.
+>
+I have looked very briefly at the patch. But a few points:
 
-On 04. des. 2013 13:22, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=
-=D1=86=D0=B8=D0=BD wrote:
-> I've looked through the code and I do not understand why do we need
-> that temporary directory on windows platfrom ?
-> anyone can explain idea behind initializing tmp-dir ? especially on
-> Windows platform.
+* sending arbitrary control messages to the client is probably not a
+good idea. Some custom configuration might conflict with future or other
+real control messages.
+* CUSTOM is a terrible name. something like CUSTOMSERVERMESSAGE, or
+async_custom_message or something which actually describes the what the
+control message
+* We are trying to get away from IPv4 specific/only code as much as
+possible. for management command the CID (client id) is better suited to
+identify client connections than IP and port pair.
 
-The client side most likely won't need --tmp-dir at all.  But if running
-a server on Windows, OpenVPN will create some temporary files upon
-client authentication.
+I have not looked at that in details but we already have 'push echo' for
+a very similar use case when a connection is initiated.
 
-See commit ca4c6d618d7 for more info.
+Arne
 
-
---=20
-kind regards,
-
-David Sommerseth
-
-
---whWW1esAIX1QIXuvdE4HLNfqqTMgvxG0u
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.15 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
-
-iEYEARECAAYFAlKlhusACgkQDC186MBRfrrKtwCgpgTuUqOfpQrOoZDV2iGtMsJi
-wpMAn07JgGXvxR+bS3e4x/sNQIQEiH/d
-=LmnF
------END PGP SIGNATURE-----
-
---whWW1esAIX1QIXuvdE4HLNfqqTMgvxG0u--
+P.S.: Main place for discussing/submitting patches is our mailing list.
 
