@@ -1,12 +1,11 @@
-Message-ID: <52A8C611.8030107@...1856...>
-Date: Wed, 11 Dec 2013 21:07:45 +0100
+Message-ID: <52AC8FBD.2010201@...1856...>
+Date: Sat, 14 Dec 2013 18:05:01 +0100
 From: Steffan Karger <steffan@...1856...>
 MIME-Version: 1.0
-References: <CAA1AbxJZa2gMBXpHiQuXD2J+8eOZCvQp+ftzrC49fH2HDfNACg@...278...>
-	<1385382778-4723-1-git-send-email-dazo@...384...>
-In-Reply-To: <1385382778-4723-1-git-send-email-dazo@...384...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix file checks when --chroot is being
-	used
+References: <1384209366-26170-1-git-send-email-alon.barlev@...277...>
+In-Reply-To: <1384209366-26170-1-git-send-email-alon.barlev@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] pkcs11: use generic evp key instead of
+ rsa
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,262 +16,82 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-To: David Sommerseth <dazo@...384...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Sorry for the late response, but better late then never. So, ACK to this
-patch!
+ACK. Code looks good, compiles and passes my local pkcs11-test.
 
 -Steffan
 
-On 25-11-13 13:32, David Sommerseth wrote:
-> From: David Sommerseth <davids@...1347...>
+On 11-11-13 23:36, Alon Bar-Lev wrote:
+> Enables DSA, ECDSA key usages with newer pkcs11-helper.
 > 
-> Commit 0f2bc0dd92f43c9 started to introduce some file sanity
-> checking before OpenVPN started to avoid harder to explain issues
-> due to missing files or directories later on.  But that commit
-> did not consider --chroot at all.  Which would basically cause
-> OpenVPN to complain on non-missing files, because it would not
-> consider that the files where inside a chroot.
-> 
-> This patch is based on the thoughts in a patch by Josh Cepek [1],
-> but trying to simplify it at bit.
-> 
-> [1] <http://thread.gmane.org/gmane.network.openvpn.devel/7873>,
->     (Message-ID: l142b7$15v$1@...1062...)
-> 
-> [v2 - Simplify the changes in check_cmd_access(), let the chroot
->       tackling happen only in check_file_access_chroot() only]
-> 
-> Trac-ticket: 330
-> Signed-off-by: David Sommerseth <davids@...1347...>
+> Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+> Tested-By: Sanaullah <sanaullah82@...277...>
 > ---
->  src/openvpn/options.c | 82 ++++++++++++++++++++++++++++++++++++++-------------
->  1 file changed, 61 insertions(+), 21 deletions(-)
+>  configure.ac                 |  2 +-
+>  src/openvpn/pkcs11_openssl.c | 14 +++++++-------
+>  2 files changed, 8 insertions(+), 8 deletions(-)
 > 
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index e925397..247442f 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -5,7 +5,7 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-> + *  Copyright (C) 2002-2013 OpenVPN Technologies, Inc. <sales@...515...>
->   *  Copyright (C) 2008-2013 David Sommerseth <dazo@...384...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
-> @@ -2626,6 +2626,44 @@ check_file_access(const int type, const char *file, const int mode, const char *
->    return (errcode != 0 ? true : false);
->  }
+> diff --git a/configure.ac b/configure.ac
+> index 5fad0af..0635149 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -725,7 +725,7 @@ esac
 >  
-> +/* A wrapper for check_file_access() which also takes a chroot directory.
-> + * If chroot is NULL, behaviour is exactly the same as calling check_file_access() directly,
-> + * otherwise it will look for the file inside the given chroot directory instead.
-> + */
-> +static bool
-> +check_file_access_chroot(const char *chroot, const int type, const char *file, const int mode, const char *opt)
-> +{
-> +  bool ret = false;
-> +
-> +  /* If no file configured, no errors to look for */
-> +  if (!file)
-> +      return false;
-> +
-> +  /* If chroot is set, look for the file/directory inside the chroot */
-> +  if( chroot )
-> +    {
-> +      struct gc_arena gc = gc_new();
-> +      struct buffer chroot_file;
-> +      int len = 0;
-> +
-> +      /* Build up a new full path including chroot directory */
-> +      len = strlen(chroot) + strlen(PATH_SEPARATOR_STR) + strlen(file) + 1;
-> +      chroot_file = alloc_buf_gc(len, &gc);
-> +      buf_printf(&chroot_file, "%s%s%s", chroot, PATH_SEPARATOR_STR, file);
-> +      ASSERT (chroot_file.len > 0);
-> +
-> +      ret = check_file_access(type, BSTR(&chroot_file), mode, opt);
-> +      gc_free(&gc);
-> +    }
-> +  else
-> +    {
-> +      /* No chroot in play, just call core file check function */
-> +      ret = check_file_access(type, file, mode, opt);
-> +    }
-> +  return ret;
-> +}
-> +
-> +
->  /*
->   * Verifies that the path in the "command" that comes after certain script options (e.g., --up) is a
->   * valid file with appropriate permissions.
-> @@ -2643,7 +2681,7 @@ check_file_access(const int type, const char *file, const int mode, const char *
->   * check_file_access() arguments.
->   */
->  static bool
-> -check_cmd_access(const char *command, const char *opt)
-> +check_cmd_access(const char *command, const char *opt, const char *chroot)
->  {
->    struct argv argv;
->    bool return_code;
-> @@ -2662,7 +2700,7 @@ check_cmd_access(const char *command, const char *opt)
->       * only requires X_OK to function on Unix - a scenario not unlikely to
->       * be seen on suid binaries.
->       */
-> -    return_code = check_file_access(CHKACC_FILE, argv.argv[0], X_OK, opt);
-> +    return_code = check_file_access_chroot(chroot, CHKACC_FILE, argv.argv[0], X_OK, opt);
->    else
->      {
->        msg (M_NOPREFIX|M_OPTERR, "%s fails with '%s': No path to executable.",
-> @@ -2688,7 +2726,7 @@ options_postprocess_filechecks (struct options *options)
->  #ifdef ENABLE_SSL
->    errs |= check_file_access (CHKACC_FILE|CHKACC_INLINE, options->dh_file, R_OK, "--dh");
->    errs |= check_file_access (CHKACC_FILE|CHKACC_INLINE, options->ca_file, R_OK, "--ca");
-> -  errs |= check_file_access (CHKACC_FILE, options->ca_path, R_OK, "--capath");
-> +  errs |= check_file_access_chroot (options->chroot_dir, CHKACC_FILE, options->ca_path, R_OK, "--capath");
->    errs |= check_file_access (CHKACC_FILE|CHKACC_INLINE, options->cert_file, R_OK, "--cert");
->    errs |= check_file_access (CHKACC_FILE|CHKACC_INLINE, options->extra_certs_file, R_OK,
->                               "--extra-certs");
-> @@ -2701,10 +2739,10 @@ options_postprocess_filechecks (struct options *options)
->                               "--pkcs12");
+>  PKG_CHECK_MODULES(
+>  	[PKCS11_HELPER],
+> -	[libpkcs11-helper-1 >= 1.02],
+> +	[libpkcs11-helper-1 >= 1.11],
+>  	[have_pkcs11_helper="yes"],
+>  	[]
+>  )
+> diff --git a/src/openvpn/pkcs11_openssl.c b/src/openvpn/pkcs11_openssl.c
+> index af843b7..87eb166 100644
+> --- a/src/openvpn/pkcs11_openssl.c
+> +++ b/src/openvpn/pkcs11_openssl.c
+> @@ -49,7 +49,7 @@ pkcs11_init_tls_session(pkcs11h_certificate_t certificate,
+>    int ret = 1;
 >  
->    if (options->ssl_flags & SSLF_CRL_VERIFY_DIR)
-> -    errs |= check_file_access (CHKACC_FILE, options->crl_file, R_OK|X_OK,
-> +    errs |= check_file_access_chroot (options->chroot_dir, CHKACC_FILE, options->crl_file, R_OK|X_OK,
->                                 "--crl-verify directory");
->    else
-> -    errs |= check_file_access (CHKACC_FILE, options->crl_file, R_OK,
-> +    errs |= check_file_access_chroot (options->chroot_dir, CHKACC_FILE, options->crl_file, R_OK,
->                                 "--crl-verify");
+>    X509 *x509 = NULL;
+> -  RSA *rsa = NULL;
+> +  EVP_PKEY *evp = NULL;
+>    pkcs11h_openssl_session_t openssl_session = NULL;
 >  
->    errs |= check_file_access (CHKACC_FILE|CHKACC_INLINE, options->tls_auth_file, R_OK,
-> @@ -2746,13 +2784,13 @@ options_postprocess_filechecks (struct options *options)
+>    if ((openssl_session = pkcs11h_openssl_createSession (certificate)) == NULL)
+> @@ -63,9 +63,9 @@ pkcs11_init_tls_session(pkcs11h_certificate_t certificate,
+>     */
+>    certificate = NULL;
 >  
->    /* ** Config related ** */
->  #ifdef ENABLE_SSL
-> -  errs |= check_file_access (CHKACC_FILE, options->tls_export_cert,
-> +  errs |= check_file_access_chroot (options->chroot_dir, CHKACC_FILE, options->tls_export_cert,
->                               R_OK|W_OK|X_OK, "--tls-export-cert");
->  #endif /* ENABLE_SSL */
->  #if P2MP_SERVER
-> -  errs |= check_file_access (CHKACC_FILE, options->client_config_dir,
-> +  errs |= check_file_access_chroot (options->chroot_dir, CHKACC_FILE, options->client_config_dir,
->                               R_OK|X_OK, "--client-config-dir");
-> -  errs |= check_file_access (CHKACC_FILE, options->tmp_dir,
-> +  errs |= check_file_access_chroot (options->chroot_dir, CHKACC_FILE, options->tmp_dir,
->                               R_OK|W_OK|X_OK, "Temporary directory (--tmp-dir)");
+> -  if ((rsa = pkcs11h_openssl_session_getRSA (openssl_session)) == NULL)
+> +  if ((evp = pkcs11h_openssl_session_getEVP (openssl_session)) == NULL)
+>      {
+> -      msg (M_WARN, "PKCS#11: Unable get rsa object");
+> +      msg (M_WARN, "PKCS#11: Unable get evp object");
+>        goto cleanup;
+>      }
 >  
->  #endif /* P2MP_SERVER */
-> @@ -4017,7 +4055,8 @@ static void
->  set_user_script (struct options *options,
->  		 const char **script,
->  		 const char *new_script,
-> -		 const char *type)
-> +		 const char *type,
-> +		 bool in_chroot)
->  {
->    if (*script) {
->      msg (M_WARN, "Multiple --%s scripts defined.  "
-> @@ -4032,8 +4071,9 @@ set_user_script (struct options *options,
->      openvpn_snprintf (script_name, sizeof(script_name),
->                        "--%s script", type);
+> @@ -75,7 +75,7 @@ pkcs11_init_tls_session(pkcs11h_certificate_t certificate,
+>        goto cleanup;
+>      }
 >  
-> -    if (check_cmd_access (*script, script_name))
-> +    if (check_cmd_access (*script, script_name, (in_chroot ? options->chroot_dir : NULL)))
->        msg (M_USAGE, "Please correct this error.");
-> +
->    }
->  #endif
->  }
-> @@ -4551,7 +4591,7 @@ add_option (struct options *options,
->        set_user_script (options,
->  		       &options->ipchange,
->  		       string_substitute (p[1], ',', ' ', &options->gc),
-> -		       "ipchange");
-> +		       "ipchange", true);
->      }
->    else if (streq (p[0], "float"))
+> -  if (!SSL_CTX_use_RSAPrivateKey (ssl_ctx->ctx, rsa))
+> +  if (!SSL_CTX_use_PrivateKey (ssl_ctx->ctx, evp))
 >      {
-> @@ -4597,14 +4637,14 @@ add_option (struct options *options,
->        VERIFY_PERMISSION (OPT_P_SCRIPT);
->        if (!no_more_than_n_args (msglevel, p, 2, NM_QUOTE_HINT))
->  	goto err;
-> -      set_user_script (options, &options->up_script, p[1], "up");
-> +      set_user_script (options, &options->up_script, p[1], "up", false);
+>        msg (M_WARN, "PKCS#11: Cannot set private key for openssl");
+>        goto cleanup;
+> @@ -108,10 +108,10 @@ cleanup:
+>        x509 = NULL;
 >      }
->    else if (streq (p[0], "down") && p[1])
+>  
+> -  if (rsa != NULL)
+> +  if (evp != NULL)
 >      {
->        VERIFY_PERMISSION (OPT_P_SCRIPT);
->        if (!no_more_than_n_args (msglevel, p, 2, NM_QUOTE_HINT))
->  	goto err;
-> -      set_user_script (options, &options->down_script, p[1], "down");
-> +      set_user_script (options, &options->down_script, p[1], "down", true);
+> -      RSA_free (rsa);
+> -      rsa = NULL;
+> +      EVP_PKEY_free (evp);
+> +      evp = NULL;
 >      }
->    else if (streq (p[0], "down-pre"))
->      {
-> @@ -5312,7 +5352,7 @@ add_option (struct options *options,
->        VERIFY_PERMISSION (OPT_P_SCRIPT);
->        if (!no_more_than_n_args (msglevel, p, 2, NM_QUOTE_HINT))
->  	goto err;
-> -      set_user_script (options, &options->route_script, p[1], "route-up");
-> +      set_user_script (options, &options->route_script, p[1], "route-up", false);
->      }
->    else if (streq (p[0], "route-pre-down") && p[1])
->      {
-> @@ -5322,7 +5362,7 @@ add_option (struct options *options,
->        set_user_script (options,
->  		       &options->route_predown_script,
->  		       p[1],
-> -		       "route-pre-down");
-> +		       "route-pre-down", true);
->      }
->    else if (streq (p[0], "route-noexec"))
->      {
-> @@ -5691,7 +5731,7 @@ add_option (struct options *options,
->  	}
->        set_user_script (options,
->  		       &options->auth_user_pass_verify_script,
-> -		       p[1], "auth-user-pass-verify");
-> +		       p[1], "auth-user-pass-verify", true);
->      }
->    else if (streq (p[0], "client-connect") && p[1])
->      {
-> @@ -5699,7 +5739,7 @@ add_option (struct options *options,
->        if (!no_more_than_n_args (msglevel, p, 2, NM_QUOTE_HINT))
->  	goto err;
->        set_user_script (options, &options->client_connect_script,
-> -		       p[1], "client-connect");
-> +		       p[1], "client-connect", true);
->      }
->    else if (streq (p[0], "client-disconnect") && p[1])
->      {
-> @@ -5707,7 +5747,7 @@ add_option (struct options *options,
->        if (!no_more_than_n_args (msglevel, p, 2, NM_QUOTE_HINT))
->  	goto err;
->        set_user_script (options, &options->client_disconnect_script,
-> -		       p[1], "client-disconnect");
-> +		       p[1], "client-disconnect", true);
->      }
->    else if (streq (p[0], "learn-address") && p[1])
->      {
-> @@ -5715,7 +5755,7 @@ add_option (struct options *options,
->        if (!no_more_than_n_args (msglevel, p, 2, NM_QUOTE_HINT))
->  	goto err;
->        set_user_script (options, &options->learn_address_script,
-> -		       p[1], "learn-address");
-> +		       p[1], "learn-address", true);
->      }
->    else if (streq (p[0], "tmp-dir") && p[1])
->      {
-> @@ -6675,7 +6715,7 @@ add_option (struct options *options,
->  	goto err;
->        set_user_script (options, &options->tls_verify,
->  		       string_substitute (p[1], ',', ' ', &options->gc),
-> -		       "tls-verify");
-> +		       "tls-verify", true);
->      }
->  #ifndef ENABLE_CRYPTO_POLARSSL
->    else if (streq (p[0], "tls-export-cert") && p[1])
+>  
+>    if (openssl_session != NULL)
 > 
 
