@@ -1,14 +1,10 @@
-Date: Mon, 16 Dec 2013 08:30:24 +0100
+Date: Mon, 16 Dec 2013 19:02:50 +0100 (CET)
+Message-Id: <201312161802.rBGI2oU6025368@...1295...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20131216073024.GC161@...1296...>
-References: <52ADF633.8040003@...1856...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="BgQJZ2C4CvD3QqKI"
-Content-Disposition: inline
-In-Reply-To: <52ADF633.8040003@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH] Use RSA_generate_key_ex() instead of
-	deprecated, RSA_generate_key()
+In-Reply-To: <1384209366-26170-1-git-send-email-alon.barlev@...277...>
+References: <1384209366-26170-1-git-send-email-alon.barlev@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: pkcs11: use generic evp key
+	instead of rsa
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,65 +13,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---BgQJZ2C4CvD3QqKI
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Your patch has been applied to the master and release/2.3 branch.
 
-Hi,
+(I have not actually tested that it *works* - my gentoo system only
+installs pkcs11-helper 1.10, which isn't sufficient for --enable-pkcs11
+with this patch.  So I just tested that it doesn't break default compiles)
 
-On Sun, Dec 15, 2013 at 07:34:27PM +0100, Steffan Karger wrote:
-> One note on the implementation though; the code generates one ephemeral
-> RSA key that is used during the entire lifetime of an OpenVPN process.
-> If OpenSSL requests a new (ephemeral) key, it will keep on returning the
-> same (usually rather small) key. Not the best solution.
->=20
-> To actually run this code, I had to force usage by selecting the
-> TLS-RSA-EXPORT-WITH-DES40-CBC-SHA tls-cipher. That generated a 512-bit
-> ephemeral RSA key, and uses the outdated DES encryption protocol.
+commit 6575ad483702dd53c0f683093b5f26a87518c6a8 (master)
+commit f8b590d5a6692324a8cb8522ddc598358a215ac5 (release/2.3)
 
-I'm not sure I understand the whole picture here.  What is happening in
-the "normal" scenario, and why is this particular cipher calling a=20
-different code path inside OpenVPN?
+Author: Alon Bar-Lev
+Date:   Tue Nov 12 00:36:06 2013 +0200
 
-> Using this mode could lead to a false sense of security. Then again, one
-> should be using (Ephemeral) Diffie-Hellman anyway, and OpenVPN requires
-> a tls-server to supply dh parameters. A user would need to deliberately
-> choose a weak tls-cipher like TLS-RSA-EXPORT-WITH-DES40-CBC-SHA, which
-> would be aligning a gun with his foot anyway. If one would decide this
-> implementation is not good enough anymore, I'd suggest to just strip out
-> support for this completely.
+     pkcs11: use generic evp key instead of rsa
 
-I'm tempted to agree with this :) - single-DES (and 40 bit to that!)=20
-really isn't what we want to use.
+     Signed-off-by: Alon Bar-Lev <alon.barlev@...277...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <1384209366-26170-1-git-send-email-alon.barlev@...277...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/7960
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-So what would happen if we remove this code, and a user tries to use this
-tls-cipher?
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+--
+kind regards,
 
---BgQJZ2C4CvD3QqKI
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+Gert Doering
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
-
-iQCVAwUBUq6sD6kuBuNlUUl1AQKpUQP+MmAMwyexbm+lv+llmUjQdE5X3HKpo04K
-mwJPux8ceJrwNgWxyL3q+/sf2xTWr/ehiuJnJyYAVEEIobemUV6qim6cS9zWxW2R
-D23O0w9Y5v7s0J5KLCRa2/hUPSbJLQ8ujBGjRlIFsdpI3oOQzgMaoIzTKbI7sN6e
-7ncFUsiqjW0=
-=RDnl
------END PGP SIGNATURE-----
-
---BgQJZ2C4CvD3QqKI--
 
