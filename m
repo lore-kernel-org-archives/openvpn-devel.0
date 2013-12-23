@@ -1,10 +1,15 @@
-Message-ID: <52B8049B.6040407@...1147...>
-Date: Mon, 23 Dec 2013 10:38:35 +0100
-From: Jan Just Keijser <janjust@...1147...>
-MIME-Version: 1.0
-References: <l8qvsn$jif$1@...1062...> <52B79339.2040202@...1800...>
-In-Reply-To: <52B79339.2040202@...1800...>
-Subject: Re: [Openvpn-devel] Easy-RSA v3 release planning
+Date: Mon, 23 Dec 2013 12:32:29 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20131223113229.GB161@...1296...>
+References: <8c01c399-7f0c-477d-9bbe-dab589231ffc@...1848...>
+	<52B75C6B.9080100@...1847...> <52B76494.5010903@...1847...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="88Dt+WjNvgkXZfPO"
+Content-Disposition: inline
+In-Reply-To: <52B76494.5010903@...1847...>
+Subject: Re: [Openvpn-devel] [PATCH v3] Floating: Add support for floating
+	in TLS mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,56 +18,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Mike Tancsa <mike@...1800...>
+To: Andre Valentin <avalentin@...1847...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Hi Mike, *,
+--88Dt+WjNvgkXZfPO
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Mike Tancsa wrote:
-> On 12/17/2013 9:05 PM, Josh Cepek wrote:
->   
->> Here's an update about Easy-RSA v3 in case there were any
->> lingering contributions or ideas. At this point, the notable thing
->> missing compared to the 2.x-series is PKCS#11 support. My thought
->> here is that it should either have universal support for both
->> Windows and *nix platforms or be exposed as distro-centric
->> additions. I'd rather see a pkcs11 frontend script that is targeted
->> to each platform, and envision this as a 3.1 release target 
->> feature.
->>     
->
-> Hi,
-> Its been a while since I tried / checked, but is there any support for
-> generating keys on an actual hardware token in Windows ?
-> Specifically, it would be great if I could do this with the
-> Safenet/Aladin java etoken.
->
-> I can do it on Unix using the older non java version keys, but I never
-> quite figured out how to do it in Windows, and there is no Java etoken
-> support that I have found on FreeBSD as it requires pkcs15 via OpenSC.
->   
-the newer Safenet java etokens require the Safenet driver software (or 
-Aladdin eToken driver v5.0+). If you don't have access to this software 
-then you're out of luck. If you do have access then generating keys on 
-the token is doable (but not supported by easy-rsa at this moment).
-I've written scripts that work in both Windows (cygwin) and Linux to 
-generate and install keys and certs on Aladdin/SafeNet etokens 
-(32K/64K/72K). At one point I documented this for an older version of 
-the eToken driver
-  http://wiki.nikhef.nl/grid/EToken
-esp section
-http://wiki.nikhef.nl/grid/Storing_your_grid_certificate_on_an_Aladdin_eToken
-but the basic principe is the same for the newer driver (use 
-eTPKcs11.dll on Windows)
-If there's any interest we could integrate this into the easy-rsa 
-scripts, but as Eric Crist pointed out, this is VERY hardware and 
-platform dependent.
+Hi,
 
+On Sun, Dec 22, 2013 at 11:15:48PM +0100, Andre Valentin wrote:
+> Just for reference, I got my throughput numbers from:
+> http://thread.gmane.org/gmane.network.openvpn.devel/7384/focus=3D7395
 
-HTH,
+Just so that it has been said :-)
 
-JJK
+We've discussed the patch on the Munich Hackathon, and we intend to do
+it in a different way.  James wants to change the packet format for
+data packets anyway (due to bad alignment in the current packet format),
+and the new format would have the option to send the session ID in the
+data packet as well, like "normally it's not sent, but if we have't heard
+from the server longer than <x> time units, send a session ID so that
+hmac-float will work".
 
+This code has not been written yet, though, and we have no specific=20
+timelines when it will happen.
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--88Dt+WjNvgkXZfPO
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBUrgfTakuBuNlUUl1AQKuFQP/SbwL5sWxbxDEjNfRVlCCg+qkXM4MUsjg
+o4I40FFVKu+kJVlLN12L9Sy2iXFAySifzYXI5NPcUS/f26mH881Ylx3j6Z4BchUk
+FlUPV9RF+puOZ+lfAs0KmOS7CxeE82NnHZunMDNPcJR2U1JVfdXydAWxmXCawU5b
+1AS8xrlxhbQ=
+=ZJTP
+-----END PGP SIGNATURE-----
+
+--88Dt+WjNvgkXZfPO--
 
