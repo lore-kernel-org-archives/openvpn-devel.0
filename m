@@ -1,13 +1,11 @@
-Message-ID: <52B84C1F.8010500@...1847...>
-Date: Mon, 23 Dec 2013 15:43:43 +0100
-From: =?ISO-8859-1?Q?Andr=E9_Valentin?= <avalentin@...1847...>
+Message-ID: <52B8607E.9050202@...1085...>
+Date: Mon, 23 Dec 2013 10:10:38 -0600
+From: Josh Cepek <josh.cepek@...1085...>
 MIME-Version: 1.0
-References: <8c01c399-7f0c-477d-9bbe-dab589231ffc@...1848...>
-	<52B75C6B.9080100@...1847...> <52B76494.5010903@...1847...>
-	<20131223113229.GB161@...1296...>
-In-Reply-To: <20131223113229.GB161@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH v3] Floating: Add support for floating
- in TLS mode
+References: <l8qvsn$jif$1@...1062...> <52B2D210.1090004@...515...>
+In-Reply-To: <52B2D210.1090004@...515...>
+Subject: Re: [Openvpn-devel] Easy-RSA v3 release planning
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,38 +16,53 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi!
+On 12/19/13 05:01, Samuli Sepp=E4nen wrote:
+> Do you think easy-rsa 3.0 would be a drop-in replacement for 2.0 by the
+> time we push out the OpenVPN 2.4 alpha(s)? I believe that'll happen in
+> Q1 next year. I can package easy-rsa 3.0 for deb/rpm distros as well as
+> add it to the NSIS installer for Windows.
 
-On 23.12.2013 12:32, Gert Doering wrote:
-> We've discussed the patch on the Munich Hackathon, and we intend to do
-> it in a different way.  James wants to change the packet format for
-> data packets anyway (due to bad alignment in the current packet format),
-> and the new format would have the option to send the session ID in the
-> data packet as well, like "normally it's not sent, but if we have't heard
-> from the server longer than <x> time units, send a session ID so that
-> hmac-float will work".
-Of course, this is a better idea and should have less problems with scaling.
-But there should be an option for the client to always send the session id,
-so that there are no timeouts if the user decides to do so.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-> This code has not been written yet, though, and we have no specific=20
-> timelines when it will happen.
-So what does this mean for my work and the current format? Is there still
-a possibility that it will be integrated for the 'old packet format'?
+Yes, this is very doable, and an -rc2 is pending shortly to allow
+testing with the recent changes. In particular I have been informed
+Tunnelblick requires the 0.9.8 OpenSSL support, so this will be good to
+release for review at large.
 
-Andr=E9
+The functionality now is a replacement for all v2 features available
+today under Windows since PKCS#11 was targeted to Unix-alikes and
+wouldn't have worked without modification anyway. Some of the features
+like nsCertType extensions are not the default in v3, and updated
+documentation will make upgrade differences very clear.
 
---
-With kind regards,
-Andr=E9 Valentin
-Projektkoordination / Systemadministration
+I toyed a bit with including PKCS#11 support at a basic level for 3.0,
+but simply porting the existing v2 setup won't work well with splitting
+the keypair and request generation (allows new requests from existing
+keypairs) which is a potential goal for 3.1 for improved flexibility.
 
-MarcanT GmbH, Ravensberger Str. 10 G, D - 33602 Bielefeld
-Fon: +49 (521) 95945-0 | Fax -18
-URL: http://www.marcant.net | http://www.global-m2m.com
+In light of the complexity involved with external tokens, I don't think
+PKCS#11 makes sense to ship with 3.0, but as distro-specific additions
+for a 3.1 release. This too will be made clear in the documentation.
 
-Gesch=E4ftsf=FChrer: Thorsten Hojas
-Handelsregister: AG Bielefeld, HRB 35827 USt-ID Nr.: DE 190203238
+- --
+Josh Cepek
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.20 (GNU/Linux)
+
+iQGcBAEBAgAGBQJSuF+DAAoJENcx2Xpgb9Rjh2AMALTiOVvYuNjxoEPFRPDpUC1/
+gyyJ4Om1hn2Q2/CDxl+NPOPdjBJxzcPv1DUE8yn489YtNeXBkKHf7y0OqGrQ0Ltp
+7z+50sXYkQGy3Q5GJkziTbnQMKLyFlZuSurjMr9X9HCx/QMAWzoX+jnor0EYF7Cd
+bVLYDJtyY7OYgyPOQ0Z/nKWh0UY3RSv86+QGHNtaxLqbhQUAPE3/XC09pvQRFxy8
+7SuxbkSkGVoSsx4/09e0ZmTkD3d+ou14px9YQZbGx2sDxvxJSlobr2kUP8ucJsqB
+vn9gArKwspfygRfQY/soDPb9paCGFEEbHDhzECKW6XtvUGmc7g0EJp7z54NaLXlP
+wMv4BkI+i4xXaalKx3opsl8EFlH+CmnIALt3+Yhq59vKDkLeWTX4WkrhCXjeBzmK
+wm4bdmD3SmIo0pKamIV4z1wXFxrjM3cVNcaFKcctzyzKPqb4KQXhBRwCO1vXmma9
+YQW9YIFDZ3BC07pveUemodOrWf8eSQoZFAd3lUg6QA=3D=3D
+=3D4aoX
+-----END PGP SIGNATURE-----
+
 
