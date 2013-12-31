@@ -1,15 +1,10 @@
-Date: Mon, 30 Dec 2013 21:50:33 +0100
+Date: Tue, 31 Dec 2013 12:44:11 +0100
+Message-Id: <201312311144.rBVBiBfk007747@...1729...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20131230205032.GH226@...1296...>
-References: <52ADF633.8040003@...1856...> <20131216073024.GC161@...1296...>
-	<52C0AF83.5010501@...1856...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="CD/aTaZybdUisKIc"
-Content-Disposition: inline
-In-Reply-To: <52C0AF83.5010501@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH] Use RSA_generate_key_ex() instead of
-	deprecated, RSA_generate_key()
+In-Reply-To: <52ADF633.8040003@...1856...>
+References: <52ADF633.8040003@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Use RSA_generate_key_ex()
+	instead of deprecated, RSA_generate_key()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,52 +13,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---CD/aTaZybdUisKIc
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Your patch has been applied to the release/2.3 branch.
 
-Hi,
+commit 8c5c58742c72fd20febace14047fbb0f54c2c421
+Author: Steffan Karger
+Date:   Sun Dec 15 19:34:27 2013 +0100
 
-On Mon, Dec 30, 2013 at 12:25:55AM +0100, Steffan Karger wrote:
-> I've given the stripping out a little more thought and think I'm in
-> favour of stripping this out of 2.4, but keep support in 2.3 to not
-> break anything for minor releases. Removing this cipher mode sounds
-> like a feature to me ;)
+     Use RSA_generate_key_ex() instead of deprecated, RSA_generate_key()
 
-Thanks for your explanation.  Yes, this sounds good to me.
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <52ADF633.8040003@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8110
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-As Arne also ACKed the patch, I'll merge it into 2.3 only ("soonish").
 
-Could I ask you to provide a patch to remove this for 2.4?
+--
+kind regards,
 
-thanks,
+Gert Doering
 
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---CD/aTaZybdUisKIc
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
-
-iQCVAwUBUsHcmKkuBuNlUUl1AQKPWAP9GKXVTz0MvQ5qx+1t4hdrxxfU6VJqlo+4
-IMNCjjxDl3SKwiin6jDjeb6J8GwDR9cscfxCRziKXSy+DMQTKhItGUIJytEBGfNX
-4l7ssRdku6b6pTUd4i4ECD6hOyoTTpXCIgJJhJa3Fk5BnhDCeSyVSQD9h6ZQdHNM
-Jet9AHix7B0=
-=6nsA
------END PGP SIGNATURE-----
-
---CD/aTaZybdUisKIc--
 
