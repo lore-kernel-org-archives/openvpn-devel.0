@@ -1,10 +1,12 @@
-Date: Tue, 31 Dec 2013 12:44:11 +0100
-Message-Id: <201312311144.rBVBiBfk007747@...1729...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <52ADF633.8040003@...1856...>
-References: <52ADF633.8040003@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Use RSA_generate_key_ex()
-	instead of deprecated, RSA_generate_key()
+Message-ID: <52C4754D.8080805@...1856...>
+Date: Wed, 01 Jan 2014 21:06:37 +0100
+From: Steffan Karger <steffan@...1856...>
+MIME-Version: 1.0
+References: <52ADF633.8040003@...1856...> <20131216073024.GC161@...1296...>
+	<52C0AF83.5010501@...1856...> <20131230205032.GH226@...1296...>
+In-Reply-To: <20131230205032.GH226@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Use RSA_generate_key_ex() instead of
+ deprecated, RSA_generate_key()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,28 +15,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the release/2.3 branch.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
 
-commit 8c5c58742c72fd20febace14047fbb0f54c2c421
-Author: Steffan Karger
-Date:   Sun Dec 15 19:34:27 2013 +0100
+Hi,
 
-     Use RSA_generate_key_ex() instead of deprecated, RSA_generate_key()
+On 30-12-13 21:50, Gert Doering wrote:
+> Could I ask you to provide a patch to remove this for 2.4?
 
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <52ADF633.8040003@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8110
-     Signed-off-by: Gert Doering <gert@...1296...>
+Sure. I fixed some extra stuff along the way, I'll send a patch set in
+a minute.
 
+- -Steffan
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.14 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
 
---
-kind regards,
-
-Gert Doering
-
+iQEcBAEBCAAGBQJSxHVEAAoJEJgCyj0AftKIvVMH/12ohgqRLO7K8QwImJdMfRPE
+rt+YIhHOyIxD+II4gRnBoDb1OlDVMLXUyPxpj9mjwq6dh0bBSfsacHCdVB5AyzTn
+uejpbESoCqLCoK0fnoVHZpecIf5vyiIpv9a9wBgwrpN0ZEJn2vHfvw4vILYTT9cU
+SXkgTQdFB3EjoKFatTXNT8om+jgapnkQpHoOZ2GMMkTXnLNWHwmV5C9mzkAYdDVY
+/MN6nrU52LK1b5fZ2Fk3sP7Yk6K9qY80RAw6CVZy9NsTgv8wmKvza1Zz2QewfjLP
+VwzvHjncrelt9J/izgQJlWFLJ5D3W8QmomttDfjpmSzgv4WPtzDaOV7zPKsYbn0=
+=NRPZ
+-----END PGP SIGNATURE-----
 
