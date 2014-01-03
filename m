@@ -1,12 +1,14 @@
-Message-ID: <52C6BF2B.8010809@...1227...>
-Date: Fri, 03 Jan 2014 14:46:19 +0100
-From: Arne Schwabe <arne@...1227...>
+Message-ID: <52C6C264.3090802@...1435...>
+Date: Fri, 3 Jan 2014 15:00:04 +0100
+From: Steffan Karger <steffan.karger@...1435...>
 MIME-Version: 1.0
-References: <20131230205032.GH226@...1296...>	<1388607026-12297-1-git-send-email-steffan@...1856...>
-	<1388607026-12297-5-git-send-email-steffan@...1856...>
-In-Reply-To: <1388607026-12297-5-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH 4/6] Remove OpenSSL tmp_rsa_callback.
- Removes support for ephemeral RSA in TLS.
+References: <20131230205032.GH226@...1296...>
+	<1388607026-12297-1-git-send-email-steffan@...1856...>
+	<1388607026-12297-7-git-send-email-steffan@...1856...>
+	<52C6B86D.6070503@...1227...>
+In-Reply-To: <52C6B86D.6070503@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 6/6] Disable export ciphers by default
+ for OpenSSL builds.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,26 +18,16 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-Am 01.01.14 21:10, schrieb Steffan Karger:
-> This code would not really generate ephemeral keys every time it is calle=
-d,
-> but a single key that would be reused during process lifetime and returned
-> each time the function was called; probably not what users would expect.
->
-> TLS allowes ephemeral keys to be used only when no other key exchange, su=
-ch
-> as (ephemeral) Diffie-Hellman, is performed. The end result is that it was
-> only used by a number of (weak) export ciphers, which could give users a
-> false sense of security.
->
-> So, instead of fixing a weak cipher mode, we'll just remove support for it
-> completely. Plenty of better alternatives are available in TLS.
->
-ACK. (reading SSL_CTX_set_tmp_rsa_callback is scary btw).
+On 01/03/2014 02:17 PM, Arne Schwabe wrote:
+> ACK. But isn't is better to use good to do the !EXP just in case and for
+> consistency for PolarSSL as well.
 
-Arne
+I agree that would be nice for consistency, but since PolarSSL supports
+neither export ciphers nor the 'DEFAULT'/'EXP'/etc cipher-suite group
+names that's not possible.
 
+-Steffan
 
