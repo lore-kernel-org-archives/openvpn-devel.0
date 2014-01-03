@@ -1,14 +1,10 @@
-Message-ID: <52C6C264.3090802@...1435...>
-Date: Fri, 3 Jan 2014 15:00:04 +0100
-From: Steffan Karger <steffan.karger@...1435...>
-MIME-Version: 1.0
-References: <20131230205032.GH226@...1296...>
-	<1388607026-12297-1-git-send-email-steffan@...1856...>
-	<1388607026-12297-7-git-send-email-steffan@...1856...>
-	<52C6B86D.6070503@...1227...>
-In-Reply-To: <52C6B86D.6070503@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 6/6] Disable export ciphers by default
- for OpenSSL builds.
+Date: Fri, 3 Jan 2014 15:14:03 +0100 (CET)
+Message-Id: <201401031414.s03EE3s9011530@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1388607026-12297-4-git-send-email-steffan@...1856...>
+References: <1388607026-12297-4-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: If --tls-cipher is supplied,
+	make --show-tls parse the list.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,17 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 01/03/2014 02:17 PM, Arne Schwabe wrote:
-> ACK. But isn't is better to use good to do the !EXP just in case and for
-> consistency for PolarSSL as well.
+Your patch has been applied to the master and release/2.3 branches.
 
-I agree that would be nice for consistency, but since PolarSSL supports
-neither export ciphers nor the 'DEFAULT'/'EXP'/etc cipher-suite group
-names that's not possible.
+commit cb03dca83e37fd65666bf776f39da902fb10acbc (master)
+commit 5690c525e58769a72fb5dbe63b5f6af78dff92ad (release/2.3)
 
--Steffan
+Author: Steffan Karger
+Date:   Wed Jan 1 21:10:23 2014 +0100
+
+     If --tls-cipher is supplied, make --show-tls parse the list.
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1388607026-12297-4-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8150
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
