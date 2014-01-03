@@ -1,13 +1,12 @@
-From: Lev Stipakov <lstipakov+openvpn.devel@...277...>
-Date: Fri, 3 Jan 2014 11:58:25 +0000 (UTC)
-Message-ID: <loom.20140103T122843-610@...171...>
-References: <8c01c399-7f0c-477d-9bbe-dab589231ffc@...1848...>	<52B75C6B.9080100@...1847...>
-	<52B76494.5010903@...1847...>	<20131223113229.GB161@...1296...>	<52B84C1F.8010500@...1847...>
-	<CAHqXQkMpp9ayVdfgnyvvFjUy-HcmS0BYO--N_SDEbOUDUE9zbw@...278...>
+Message-ID: <52C6AECC.9040204@...1847...>
+Date: Fri, 03 Jan 2014 13:36:28 +0100
+From: Andre Valentin <avalentin@...1847...>
+MIME-Version: 1.0
+References: <8c01c399-7f0c-477d-9bbe-dab589231ffc@...1848...>	<52B75C6B.9080100@...1847...>	<52B76494.5010903@...1847...>	<20131223113229.GB161@...1296...>	<52B84C1F.8010500@...1847...>	<CAHqXQkMpp9ayVdfgnyvvFjUy-HcmS0BYO--N_SDEbOUDUE9zbw@...278...>
 	<52C1ADF7.2050702@...1227...>
-Mime-Version: 1.0
+In-Reply-To: <52C1ADF7.2050702@...1227...>
 Subject: Re: [Openvpn-devel] [PATCH v3] Floating: Add support for floating
-	in TLS mode
+ in TLS mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,29 +15,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-Hi Arne,
+Hi!
 
-I am researching how "session id" can be added to packet. Could you please 
-clarify the statement "If we choose the session id to be 3 or 7 byte we 
-would not need the "hack" for the packets with
-session id." ?
+On 30.12.2013 18:31, Arne Schwabe wrote:
+> For negoating the packet format the client would submit something like
+> IV_CLNT_SUPPORT 1 or similar (look at the IV_SNAPPY, IV_LZO for
+> compression) to tell the server the supported format and the server
+> would push a packet-format 1 or something similar like that. For a first
+> prototype implementation having only the packet-format 1 is probably
+> good enough.
 
-I am currently at very beginning, so questions might look odd.
+I'm sorry, but this a bit too much for me to help in this case. If support
+for testing is needed, I will do that!
 
-1) "3 or 7" - does it mean byte's ordinal number in packet or length of 
-session id in bytes?
+--=20
+With kind regards,
+Andr=C3=A9 Valentin
+Projektkoordination / Systemadministration
 
-2) What you mean by "hack"? Do you mean new packet format or something else?
+MarcanT GmbH, Ravensberger Str. 10 G, D - 33602 Bielefeld
+Fon: +49 (521) 95945-0 | Fax -18
+URL: http://www.marcant.net | http://www.global-m2m.com
 
-3) I am trying to comprehend protocol format reading 
-http://openvpn.net/index.php/open-source/documentation/security-
-overview.html and looking at wireshark capture results. Where exactly 
-session id field should be placed?
-
--Lev
-
+Gesch=C3=A4ftsf=C3=BChrer: Thorsten Hojas
+Handelsregister: AG Bielefeld, HRB 35827 USt-ID Nr.: DE 190203238
+___________________________________________________________
+CONFIDENTIALITY NOTICE
+The contents of this email are confidential to the ordinary user of the
+email address to which it was addressed and may also be privileged. If
+you are not the addressee of this email you may not copy, forward,
+disclose or otherwise use it or any part of it in any form whatsoever.
+If you have received this email in error please email the sender by
+replying to this message.
 
