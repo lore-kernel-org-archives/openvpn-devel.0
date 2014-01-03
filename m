@@ -1,10 +1,12 @@
-Message-ID: <52C6E39C.7020809@...1227...>
-Date: Fri, 03 Jan 2014 17:21:48 +0100
+Message-ID: <52C6E3FE.2080801@...1227...>
+Date: Fri, 03 Jan 2014 17:23:26 +0100
 From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
 References: <1388613479-22377-1-git-send-email-gert@...1296...>
-In-Reply-To: <1388613479-22377-1-git-send-email-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Implement LZ4 compression.
+	<1388613479-22377-2-git-send-email-gert@...1296...>
+In-Reply-To: <1388613479-22377-2-git-send-email-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH 2/2] Provide LZ4 sources in src/compat/
+ and use if no system lz4 library found.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,21 +20,16 @@ Content-Transfer-Encoding: quoted-printable
 To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
 Am 01.01.14 22:57, schrieb Gert Doering:
-> Implement LZ4 compression, similar to the existing snappy / push-peer-info
-> model: a LZ4 capable client will send IV_LZ4=3D1 to the server, and the
-> algorithm is selected by pushing "compress lz4" back.
->
-> LZ4 does not compress as well as LZO or Snappy, but needs far less CPU
-> and is much faster, thus better suited for mobile devices.  See
-> https://code.google.com/p/lz4/ for more details.
->
-> LZ4 include and library path can be specified by specifying LZ4_LIBS=3D...
-> and LZ4_CFLAGS=3D... on the configure command line.
-ACK. To the patch. I have only lightly tested it but it work in my test
-setup. Before commiting you should fix the LX4 typo.
+> Bundle lz4.c and lz4.h from http://code.google.com/p/lz4/ (r109) as
+> src/compat/compat-lz4.[ch], and use that (via #define NEED_COMPAT_LZ4)
+> if autoconf cannot find lz4.h or -llz4 in the system.
 
-Arne
+ACK from me. Also:
 
+<cron2> plaisthos: one of the problems with lz4 is that no distribution
+is shipping a liblz4 yet, and that the original tarball also doesn't
+even try to build a library, it just builds an executable - so
+"installing a library" is more painful than for snappy or lzo
 
 
 
