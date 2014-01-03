@@ -1,12 +1,12 @@
-Message-ID: <52C6AECC.9040204@...1847...>
-Date: Fri, 03 Jan 2014 13:36:28 +0100
-From: Andre Valentin <avalentin@...1847...>
+Message-ID: <52C6B86D.6070503@...1227...>
+Date: Fri, 03 Jan 2014 14:17:33 +0100
+From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
-References: <8c01c399-7f0c-477d-9bbe-dab589231ffc@...1848...>	<52B75C6B.9080100@...1847...>	<52B76494.5010903@...1847...>	<20131223113229.GB161@...1296...>	<52B84C1F.8010500@...1847...>	<CAHqXQkMpp9ayVdfgnyvvFjUy-HcmS0BYO--N_SDEbOUDUE9zbw@...278...>
-	<52C1ADF7.2050702@...1227...>
-In-Reply-To: <52C1ADF7.2050702@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v3] Floating: Add support for floating
- in TLS mode
+References: <20131230205032.GH226@...1296...>	<1388607026-12297-1-git-send-email-steffan@...1856...>
+	<1388607026-12297-7-git-send-email-steffan@...1856...>
+In-Reply-To: <1388607026-12297-7-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH 6/6] Disable export ciphers by default
+ for OpenSSL builds.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,40 +15,20 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
-Hi!
+Am 01.01.14 21:10, schrieb Steffan Karger:
+> Export ciphers are deliberately weak ciphers, and not fully supported by
+> OpenVPN since ephemeral RSA support has been removed a few commits ago.
+> This commit removes them from the default cipher list to avoid confusion.
+>
+> PolarSSL does not support export ciphers, so no action required there.
+>
+ACK. But isn't is better to use good to do the !EXP just in case and for
+consistency for PolarSSL as well.
 
-On 30.12.2013 18:31, Arne Schwabe wrote:
-> For negoating the packet format the client would submit something like
-> IV_CLNT_SUPPORT 1 or similar (look at the IV_SNAPPY, IV_LZO for
-> compression) to tell the server the supported format and the server
-> would push a packet-format 1 or something similar like that. For a first
-> prototype implementation having only the packet-format 1 is probably
-> good enough.
+Arne
 
-I'm sorry, but this a bit too much for me to help in this case. If support
-for testing is needed, I will do that!
-
---=20
-With kind regards,
-Andr=C3=A9 Valentin
-Projektkoordination / Systemadministration
-
-MarcanT GmbH, Ravensberger Str. 10 G, D - 33602 Bielefeld
-Fon: +49 (521) 95945-0 | Fax -18
-URL: http://www.marcant.net | http://www.global-m2m.com
-
-Gesch=C3=A4ftsf=C3=BChrer: Thorsten Hojas
-Handelsregister: AG Bielefeld, HRB 35827 USt-ID Nr.: DE 190203238
-___________________________________________________________
-CONFIDENTIALITY NOTICE
-The contents of this email are confidential to the ordinary user of the
-email address to which it was addressed and may also be privileged. If
-you are not the addressee of this email you may not copy, forward,
-disclose or otherwise use it or any part of it in any form whatsoever.
-If you have received this email in error please email the sender by
-replying to this message.
 
