@@ -1,9 +1,10 @@
-Date: Mon, 6 Jan 2014 12:25:09 +0100 (CET)
-Message-Id: <201401061125.s06BP97E010926@...1295...>
+Date: Mon, 6 Jan 2014 12:25:13 +0100 (CET)
+Message-Id: <201401061125.s06BPD7U025457@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1388613479-22377-1-git-send-email-gert@...1296...>
-References: <1388613479-22377-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Implement LZ4 compression.
+In-Reply-To: <1388613479-22377-2-git-send-email-gert@...1296...>
+References: <1388613479-22377-2-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Provide LZ4 sources in
+	src/compat/ and use if no system lz4 library found.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,16 +20,16 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Patch has been applied to the master branch.
 
-commit 40efb6359aff0e4805c0439acd6e899c687ef058
+commit 4308f2374361f56b2049ccc5884cddd58d24b1e3
 Author: Gert Doering
-Date:   Wed Jan 1 22:57:58 2014 +0100
+Date:   Wed Jan 1 22:57:59 2014 +0100
 
-     Implement LZ4 compression.
+     Provide LZ4 sources in src/compat/ and use if no system lz4 library found.
 
      Signed-off-by: Gert Doering <gert@...1296...>
      Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1388613479-22377-1-git-send-email-gert@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8153
+     Message-Id: <1388613479-22377-2-git-send-email-gert@...1296...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8154
 
 
 --
