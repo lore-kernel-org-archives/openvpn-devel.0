@@ -1,8 +1,11 @@
-Message-ID: <52CC1A28.8080500@...515...>
-Date: Tue, 07 Jan 2014 17:15:52 +0200
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <52CD24EA.6090904@...1227...>
+Date: Wed, 08 Jan 2014 11:14:02 +0100
+From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Topics for Thursday's community meeting
+References: <1384698620-27946-1-git-send-email-gert@...1296...>
+In-Reply-To: <1384698620-27946-1-git-send-email-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Make code and documentation for
+ --remote-random-hostname consistent.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,34 +14,18 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
-
-We're having an IRC meeting on Thursday, starting at 18:00 UTC on
-#openvpn-devel@...1422... Current topic list is here:
-
-<https://community.openvpn.net/openvpn/wiki/Topics-2014-01-09>
-
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
-
-In case you can't attend the meeting, please feel free to make comments
-on the topics by responding to this email or to the summary email sent
-after the meeting. Whenever possible, we'll also respond to existing,
-related email threads.
-
-NOTE: It's required to use a registered Freenode IRC nickname to join
-#openvpn-devel - look here for details:
-
-<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
+Am 17.11.13 15:30, schrieb Gert Doering:
+> Documentation examples, description and code were disagreeing on what
+> this option actually does.  Now they will all agree that it will
+> *prepend* a random-byte string to the hostname name before resolving
+> to work around DNS caching (needs a "*" wildcard record in the zone).
+>
+> Fix trac #143
+>
+>
+ACK
 
