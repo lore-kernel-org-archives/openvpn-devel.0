@@ -1,13 +1,14 @@
-Message-ID: <52D003F2.5050109@...1227...>
-Date: Fri, 10 Jan 2014 15:30:10 +0100
-From: Arne Schwabe <arne@...1227...>
-MIME-Version: 1.0
+Date: Fri, 10 Jan 2014 16:54:03 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140110155403.GF226@...1296...>
 References: <52CFF667.7080600@...1790...> <52CFFAF4.8050306@...1227...>
 	<20140110140728.GD226@...1296...>
-In-Reply-To: <20140110140728.GD226@...1296...>
+	<52D003F2.5050109@...1227...>
+Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="vr1MLFSrBbdJfC6DIA9dV0anLFqlHooXm"
+	protocol="application/pgp-signature"; boundary="367OTzzFqQya5wJv"
+Content-Disposition: inline
+In-Reply-To: <52D003F2.5050109@...1227...>
 Subject: Re: [Openvpn-devel] git master proto udp6+multihome is broken
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,56 +18,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
+To: Arne Schwabe <arne@...1227...>
 Cc: Tore Anderson <tore@...1790...>, openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---vr1MLFSrBbdJfC6DIA9dV0anLFqlHooXm
-Content-Type: text/plain; charset="ISO-8859-1"
+--367OTzzFqQya5wJv
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Am 10.01.14 15:07, schrieb Gert Doering:
-> Hi,
->
-> On Fri, Jan 10, 2014 at 02:51:48PM +0100, Arne Schwabe wrote:
->> That is very weird. I would expect it to fail for both cases in the same
->> way. The codepath should trigger the same ASSERT(0) in both cases (or
->> work in both).=20
-> ... unless something is overwriting to->ai_family, for example by copying
-> a too-large address structure.  There is a trac bug about --multihome that
-> says we're using the wrong size (#327) which could be an indication.
->
-> (I have not yet investigated #327 more closely - that one is about=20
-> sendmsg(), but maybe we do bad things on receive as well)
->
-But
+Hi,
 
-[AF_INET6]::ffff:87.238.42.150:47707
+On Fri, Jan 10, 2014 at 03:30:10PM +0100, Arne Schwabe wrote:
+> But
+>=20
+> [AF_INET6]::ffff:87.238.42.150:47707
+>=20
+> and=20
+>=20
+> [AF_INET6]2a02:c0:100:0:9e8e:99ff:fed1:5243:56277
+>=20
+> should be same the same size and handled both the same way from OpenVPN s=
+ince they are both IPv6.
 
-and=20
+Good point.  So why are we ASSERT(0)ing?
 
-[AF_INET6]2a02:c0:100:0:9e8e:99ff:fed1:5243:56277
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-should be same the same size and handled both the same way from OpenVPN sin=
-ce they are both IPv6.
-
-Arne
-
-
-
---vr1MLFSrBbdJfC6DIA9dV0anLFqlHooXm
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--367OTzzFqQya5wJv
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.14 (Darwin)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+Version: GnuPG v1.4.13 (NetBSD)
 
-iEYEARECAAYFAlLQA/gACgkQe8+cMNS4zReHUgCgkgXXIz+Puzn9aPgTpCA/zJWu
-vHoAoIcnUcgRPN0VFOioZ7ikKo/jqq8t
-=a/u4
+iQCVAwUBUtAXm6kuBuNlUUl1AQLzBwP/Yy4zrurQEkxvn/MEDn8VuyiFX9V8bXLS
+2lekaV31agU4XXLt6wIQHrQV9b1bNOUsJJZQZdgcsQXo+hDMVU5uVtrYJBUrg+Px
+1gD36gAHvFjfzbQIM1LhaJYnzBtdCIjBF0hn4E+sluvG4VbSbQJwINhIRyUNt/B/
+4jDOvMX6DAg=
+=hyqw
 -----END PGP SIGNATURE-----
 
---vr1MLFSrBbdJfC6DIA9dV0anLFqlHooXm--
+--367OTzzFqQya5wJv--
 
