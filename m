@@ -1,9 +1,9 @@
-Message-ID: <52CFFAF4.8050306@...1227...>
-Date: Fri, 10 Jan 2014 14:51:48 +0100
-From: Arne Schwabe <arne@...1227...>
+Message-ID: <52CFFD1C.6040100@...1790...>
+Date: Fri, 10 Jan 2014 15:01:00 +0100
+From: Tore Anderson <tore@...1790...>
 MIME-Version: 1.0
-References: <52CFF667.7080600@...1790...>
-In-Reply-To: <52CFF667.7080600@...1790...>
+References: <52CFF667.7080600@...1790...> <20140110134947.GC226@...1296...>
+In-Reply-To: <20140110134947.GC226@...1296...>
 Subject: Re: [Openvpn-devel] git master proto udp6+multihome is broken
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,32 +15,15 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-To: Tore Anderson <tore@...1790...>, openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 10.01.14 14:32, schrieb Tore Anderson:
-> If I connect to an openvpn server using "proto udp6" and "multihome", it
-> instantly crashes with an assertion failure:
->
-> Jan 10 14:25:58 greed ovpn-server[9905]: 2a02:c0:100:0:9e8e:99ff:fed1:5243 TLS: Initial packet from [AF_INET6]2a02:c0:100:0:9e8e:99ff:fed1:5243:56277 (via 2a02:c0:1001:100::145%eth0), sid=31dd697b d84bd1bc
-> Jan 10 14:25:58 greed ovpn-server[9905]: 2a02:c0:100:0:9e8e:99ff:fed1:5243 Assertion failed at socket.c:2878
-> Jan 10 14:25:58 greed ovpn-server[9905]: 2a02:c0:100:0:9e8e:99ff:fed1:5243 Exiting due to fatal error
->
-> This works with openvpn 2.3.2 so it's a regression.
->
-> However it works to connect to the same server with the exact same
-> config if the client is using IPv4 (assuming you connect to the primary
-> IPv4 address, because multihome doesn't actually work in this case, cf.
-> ticket #306):
->
-> Jan 10 14:27:54 greed ovpn-server[10251]: ::ffff:87.238.42.150 TLS: Initial packet from [AF_INET6]::ffff:87.238.42.150:47707, sid=6b38f3f6 fa385236
-> Jan 10 14:27:54 greed ovpn-server[10251]: ::ffff:87.238.42.150 VERIFY OK: depth=1, C=KG, ST=NA, L=BISHKEK, O=OpenVPN-TEST, emailAddress=me@...430...
-> [...]
->
->
-That is very weird. I would expect it to fail for both cases in the same
-way. The codepath should trigger the same ASSERT(0) in both cases (or
-work in both). Can you forward a copy of your server configuration to
-me? Then I will try to reproduce that problem.
+* Gert Doering
 
-Arne
+> Just to be sure I understand: it works for "proto udp6" if you do *not*
+> use --multihome on the server?
+
+Correct. Apologies for being unclear.
+
+Tore
 
