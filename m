@@ -1,19 +1,8 @@
-Date: Fri, 10 Jan 2014 09:50:42 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20140110085041.GB226@...1296...>
-References: <1354303076-13606-1-git-send-email-arne@...1227...>
-	<1354303076-13606-10-git-send-email-arne@...1227...>
-	<50CC4FB8.8040005@...1790...> <20121215120924.GU22465@...1296...>
-	<50CEDE97.6020808@...515...> <51C580F4.8040804@...1790...>
-	<20131129195713.GN161@...1296...> <529C421B.3060104@...1790...>
-	<52CFA2C5.6000907@...1790...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="4KXkm8CArhzjwJ+m"
-Content-Disposition: inline
-In-Reply-To: <52CFA2C5.6000907@...1790...>
-Subject: Re: [Openvpn-devel] [PATCH 10/10] Implement dual stack client
-	support for OpenVPN
+Message-ID: <52CFF667.7080600@...1790...>
+Date: Fri, 10 Jan 2014 14:32:23 +0100
+From: Tore Anderson <tore@...1790...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] git master proto udp6+multihome is broken
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,45 +11,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Tore Anderson <tore@...1790...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
---4KXkm8CArhzjwJ+m
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+If I connect to an openvpn server using "proto udp6" and "multihome", it
+instantly crashes with an assertion failure:
 
-Hi,
+Jan 10 14:25:58 greed ovpn-server[9905]: 2a02:c0:100:0:9e8e:99ff:fed1:5243 TLS: Initial packet from [AF_INET6]2a02:c0:100:0:9e8e:99ff:fed1:5243:56277 (via 2a02:c0:1001:100::145%eth0), sid=31dd697b d84bd1bc
+Jan 10 14:25:58 greed ovpn-server[9905]: 2a02:c0:100:0:9e8e:99ff:fed1:5243 Assertion failed at socket.c:2878
+Jan 10 14:25:58 greed ovpn-server[9905]: 2a02:c0:100:0:9e8e:99ff:fed1:5243 Exiting due to fatal error
 
-On Fri, Jan 10, 2014 at 08:35:33AM +0100, Tore Anderson wrote:
-> https://git.gnome.org/browse/network-manager-openvpn/commit/?id=3D77115c5=
-377e009220c3c98102450f92d3a7f6f9e
->=20
-> This will likely go into Fedora 20.
+This works with openvpn 2.3.2 so it's a regression.
 
-Woot!  This is great news indeed :-)
+However it works to connect to the same server with the exact same
+config if the client is using IPv4 (assuming you connect to the primary
+IPv4 address, because multihome doesn't actually work in this case, cf.
+ticket #306):
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Jan 10 14:27:54 greed ovpn-server[10251]: ::ffff:87.238.42.150 TLS: Initial packet from [AF_INET6]::ffff:87.238.42.150:47707, sid=6b38f3f6 fa385236
+Jan 10 14:27:54 greed ovpn-server[10251]: ::ffff:87.238.42.150 VERIFY OK: depth=1, C=KG, ST=NA, L=BISHKEK, O=OpenVPN-TEST, emailAddress=me@...430...
+[...]
 
---4KXkm8CArhzjwJ+m
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
-
-iQCVAwUBUs+0YakuBuNlUUl1AQJvFgP+K2f7leU391uz2FRk7kAhyVYQiGvp3WXe
-5ejaGOb188klJ1uhyUCWppQe7zichQ/1UVh0S3O8lX4nrIcy8/cWLw62UrG+TEmL
-QbiMQuFcysM0+fcBaPcMDuA7Aij/LY9J2fBxiQm4YGdojewmxvejkbg/uU5XKM8k
-p2R6knxg5ac=
-=xt1I
------END PGP SIGNATURE-----
-
---4KXkm8CArhzjwJ+m--
+Tore
 
