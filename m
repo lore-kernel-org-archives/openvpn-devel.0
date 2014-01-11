@@ -1,12 +1,14 @@
-Message-ID: <52D08C75.8020903@...1790...>
-Date: Sat, 11 Jan 2014 01:12:37 +0100
-From: Tore Anderson <tore@...1790...>
-MIME-Version: 1.0
-References: <52CFF667.7080600@...1790...>
-	<52CFFAF4.8050306@...1227...>	<52CFFDA4.4060601@...1790...>
-	<52D07F70.8030609@...1227...> <52D08946.6010906@...1790...>
-	<52D08AC6.7080808@...1227...>
-In-Reply-To: <52D08AC6.7080808@...1227...>
+Date: Sat, 11 Jan 2014 10:48:37 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140111094837.GJ226@...1296...>
+References: <52CFF667.7080600@...1790...> <52CFFAF4.8050306@...1227...>
+	<52CFFDA4.4060601@...1790...> <52D07F70.8030609@...1227...>
+	<52D08946.6010906@...1790...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="KLR62ZwG+3BuLtMl"
+Content-Disposition: inline
+In-Reply-To: <52D08946.6010906@...1790...>
 Subject: Re: [Openvpn-devel] git master proto udp6+multihome is broken
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,36 +18,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: Tore Anderson <tore@...1790...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-* Arne Schwabe
+--KLR62ZwG+3BuLtMl
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-> Listening on multiple sockets not yet implemented. But a server having
-> proto udp6 should get IPv6 mapped IPv4 clients working. What is
-> happening/not working for you?
+Hi,
 
-"multihome" doesn't work, the OpenVPN server responds from its primary
-IPv4 address (the one the OS selects as the default source for routing
-towards the client), rather than the IPv4 address it was contacted on.
+On Sat, Jan 11, 2014 at 12:59:02AM +0100, Tore Anderson wrote:
+> FWIW: Now I also got to test git master with what I wanted to in the
+> first place, namely to see whether or not all the nice dualstack changes
+> had also made "multihome" work for IPv4-mapped clients coming in to the
+> server on an udp6 socket (ticket #306). Unfortunately that's still
+> broken, and it seems that for a server process "proto udp" is still
+> IPv4-only. So it doesn't appear to be possible to get a functioning
+> dual-stacked UDP server (that has multiple addresses/interfaces) at the
+> moment.
 
-So the initial two packets look like this:
+I *thought* that both proto udp and proto udp6 would create an IPv6 socket
+bound to :: with IPV6_V6ONLY set to 0 (=3D accepting IPv4 and IPv6 packets
+to any address).  Only "proto udp4" should listen to 0.0.0.0.
 
-01:07:47.896447 IP 84.209.244.191.38878 > 87.238.35.253.1194: UDP, length 14
-01:07:47.897423 IP 87.238.35.145.1194 > 84.209.244.191.38878: UDP, length 26
+(There's a catch to it, IIRC - *BSD will show the socket as "udp46" in
+this case, while linux will still just display "udp6", even if it *does*
+"46" on it)
 
-The client (84.209.244.191) expects the response packet to come from the
-address it contacted as --remote (87.238.35.253), but instead the server
-responds from 87.238.35.145 which is its primary address. Doesn't work,
-after some retransmissions and reconnect attempts the client gives up.
+Now, --multihome is a different issue - I accept that this isn't working
+right in various scenarios, and we need to fix this.  But at least dual-
+stacked servers with "proto udp" are expected to work.
 
-The server logs the following:
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Jan 11 01:07:47 greed ovpn-server[10222]: ::ffff:84.209.244.191 TLS: Initial packet from [AF_INET6]::ffff:84.209.244.191:38878 (via 2a02:c0:1001:100::253%eth0), sid=98e4314f 9ea08578
+--KLR62ZwG+3BuLtMl
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-I find the "via 2a02:c0:1001:100::253%eth0" part interesting, as that's
-not even the primary IPv6 address of the interface.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
 
-Tore
+iQCVAwUBUtETdKkuBuNlUUl1AQL1AQQAt5B6eo1H0uFHzZyBWMb4Ee0VzexdZmpp
+bfBHw4pGlYtfp++s/Lfm7TG789twfCWagXZ/6P321ilKrcXPDxrk6j/Z5YvunfzD
+AlIgNCbFe71HHwJfYodCX8jIoAw/IRT6trnYLXNUT3QJ8DI/hw68C0CErwRy4AP7
+KYiqkRkloSE=
+=1/+8
+-----END PGP SIGNATURE-----
+
+--KLR62ZwG+3BuLtMl--
 
