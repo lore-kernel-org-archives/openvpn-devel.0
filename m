@@ -1,17 +1,12 @@
-Message-ID: <52D154B7.5070802@...1227...>
-Date: Sat, 11 Jan 2014 15:27:03 +0100
-From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
-References: <52CFF667.7080600@...1790...> <52CFFAF4.8050306@...1227...>
-	<52CFFDA4.4060601@...1790...> <52D07F70.8030609@...1227...>
-	<52D08946.6010906@...1790...> <52D08AC6.7080808@...1227...>
-	<52D08C75.8020903@...1790...> <52D1408B.6070902@...1227...>
-	<20140111130723.GM226@...1296...>
-In-Reply-To: <20140111130723.GM226@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="0USdBoaLfhBOEPmXePw5I9QqDRjHOqHqB"
-Subject: Re: [Openvpn-devel] git master proto udp6+multihome is broken
+In-Reply-To: <1389441036-12538-1-git-send-email-gert@...1296...>
+References: <1389441036-12538-1-git-send-email-gert@...1296...>
+Date: Sat, 11 Jan 2014 16:56:32 +0100
+Message-ID: <CAA1AbxKd_eEV0q=-XdWPtd+GLsHKgsZAJN7A0UZWNA1=te1VpA@...278...>
+From: Steffan Karger <steffan@...1856...>
+Content-Type: multipart/alternative; boundary=001a11c36decf8feb204efb3e240
+Subject: Re: [Openvpn-devel] [PATCH v2] Document issue with --chroot,
+ /dev/urandom and PolarSSL.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,47 +16,123 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Gert Doering <gert@...1296...>
-Cc: Tore Anderson <tore@...1790...>, openvpn-devel@lists.sourceforge.net
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---0USdBoaLfhBOEPmXePw5I9QqDRjHOqHqB
-Content-Type: text/plain; charset="ISO-8859-1"
+--001a11c36decf8feb204efb3e240
+Content-Type: text/plain; charset=ISO-8859-1
+
+ACK
+
+-Steffan
+On 11 Jan 2014 12:51, "Gert Doering" <gert@...1296...> wrote:
+
+> See trac#218
+>
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>  doc/openvpn.8 | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+>
+> diff --git a/doc/openvpn.8 b/doc/openvpn.8
+> index 7736c63..f694080 100644
+> --- a/doc/openvpn.8
+> +++ b/doc/openvpn.8
+> @@ -2097,6 +2097,16 @@ In many cases, the
+>  parameter can point to an empty directory, however
+>  complications can result when scripts or restarts
+>  are executed after the chroot operation.
+> +
+> +Note: if OpenVPN is built using the PolarSSL SSL
+> +library,
+> +.B \-\-chroot
+> +will only work if a /dev/urandom device node is available
+> +inside the chroot directory
+> +.B dir.
+> +This is due to the way PolarSSL works (it wants to open
+> +/dev/urandom every time randomness is needed, not just once
+> +at startup) and nothing OpenVPN can influence.
+>  .\"*********************************************************
+>  .TP
+>  .B \-\-setcon context
+> --
+> 1.8.3.2
+>
+>
+>
+> ------------------------------------------------------------------------------
+> CenturyLink Cloud: The Leader in Enterprise Cloud Services.
+> Learn Why More Businesses Are Choosing CenturyLink Cloud For
+> Critical Workloads, Development Environments & Everything In Between.
+> Get a Quote or Start a Free Trial Today.
+>
+> http://pubads.g.doubleclick.net/gampad/clk?id=119420431&iu=/4140/ostg.clktrk
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
+
+--001a11c36decf8feb204efb3e240
+Content-Type: text/html; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-Am 11.01.14 14:07, schrieb Gert Doering:
-> Hi,
->
-> On Sat, Jan 11, 2014 at 02:00:59PM +0100, Arne Schwabe wrote:
->>> Jan 11 01:07:47 greed ovpn-server[10222]: ::ffff:84.209.244.191 TLS: In=
-itial packet from [AF_INET6]::ffff:84.209.244.191:38878 (via 2a02:c0:1001:1=
-00::253%eth0), sid=3D98e4314f 9ea08578
->>>
->>> I find the "via 2a02:c0:1001:100::253%eth0" part interesting, as that's
->>> not even the primary IPv6 address of the interface.
->> Yeah. We are probably out of luck at this point without implemting a
->> socket for v4 and a socket for v6. If the operating system does not give
->> us a valid incoming interface/ip combination, we cannot fix that later.
-> Where's that "via" coming from?  Is that the local socket address that
-> IPV6_PKTINFO (etc) told us the UDP packet was addressed to?
->
-Yes.
+<p dir=3D"ltr">ACK</p>
+<p dir=3D"ltr">-Steffan</p>
+<div class=3D"gmail_quote">On 11 Jan 2014 12:51, &quot;Gert Doering&quot; &=
+lt;<a href=3D"mailto:gert@...1296...">gert@...1296...</a>&gt; wrote:<br typ=
+e=3D"attribution"><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .=
+8ex;border-left:1px #ccc solid;padding-left:1ex">
+See trac#218<br>
+<br>
+Signed-off-by: Gert Doering &lt;<a href=3D"mailto:gert@...1296...">gert@...493...=
+1296...</a>&gt;<br>
+---<br>
+=A0doc/openvpn.8 | 10 ++++++++++<br>
+=A01 file changed, 10 insertions(+)<br>
+<br>
+diff --git a/doc/openvpn.8 b/doc/openvpn.8<br>
+index 7736c63..f694080 100644<br>
+--- a/doc/openvpn.8<br>
++++ b/doc/openvpn.8<br>
+@@ -2097,6 +2097,16 @@ In many cases, the<br>
+=A0parameter can point to an empty directory, however<br>
+=A0complications can result when scripts or restarts<br>
+=A0are executed after the chroot operation.<br>
++<br>
++Note: if OpenVPN is built using the PolarSSL SSL<br>
++library,<br>
++.B \-\-chroot<br>
++will only work if a /dev/urandom device node is available<br>
++inside the chroot directory<br>
++.B dir.<br>
++This is due to the way PolarSSL works (it wants to open<br>
++/dev/urandom every time randomness is needed, not just once<br>
++at startup) and nothing OpenVPN can influence.<br>
+=A0.\&quot;*********************************************************<br>
+=A0.TP<br>
+=A0.B \-\-setcon context<br>
+--<br>
+1.8.3.2<br>
+<br>
+<br>
+---------------------------------------------------------------------------=
+---<br>
+CenturyLink Cloud: The Leader in Enterprise Cloud Services.<br>
+Learn Why More Businesses Are Choosing CenturyLink Cloud For<br>
+Critical Workloads, Development Environments &amp; Everything In Between.<b=
+r>
+Get a Quote or Start a Free Trial Today.<br>
+<a href=3D"http://pubads.g.doubleclick.net/gampad/clk?id=3D119420431&amp;iu=
+=3D/4140/ostg.clktrk" target=3D"_blank">http://pubads.g.doubleclick.net/gam=
+pad/clk?id=3D119420431&amp;iu=3D/4140/ostg.clktrk</a><br>
+_______________________________________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...1199...=
+sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" targ=
+et=3D"_blank">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a=
+><br>
+</blockquote></div>
 
-Arne
-
-
---0USdBoaLfhBOEPmXePw5I9QqDRjHOqHqB
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.14 (Darwin)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
-
-iEYEARECAAYFAlLRVL8ACgkQe8+cMNS4zRejTQCfR2aDFjRBE4JjsLQyIX85Xe7w
-sVEAoPM5lkQU8MVVH5F1BEwgQQvxJP41
-=uD+c
------END PGP SIGNATURE-----
-
---0USdBoaLfhBOEPmXePw5I9QqDRjHOqHqB--
+--001a11c36decf8feb204efb3e240--
 
