@@ -1,10 +1,7 @@
-Date: Sun, 12 Jan 2014 15:35:13 +0100 (CET)
-Message-Id: <201401121435.s0CEZD93008308@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1389441036-12538-1-git-send-email-gert@...1296...>
-References: <1389441036-12538-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Document issue with --chroot,
-	/dev/urandom and PolarSSL.
+From: Steffan Karger <steffan@...1856...>
+Date: Sun, 12 Jan 2014 20:39:29 +0100
+Message-Id: <1389555572-6210-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Fix some compiler warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +12,11 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master and release/2.3 branch.
+The following three patches fix some compiler warnings. Changes are rather
+small and should not change behaviour (except for a little extra logging).
 
-commit b238a1f2d4b2cdcfc844689b33fd3ac43ed31c1c (master)
-commit 2600680ec2fd3cc27d7222154a637995fd90330f (release/2.3)
-
-Author: Gert Doering
-Date:   Sat Jan 11 12:50:36 2014 +0100
-
-     Document issue with --chroot, /dev/urandom and PolarSSL.
-
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1389441036-12538-1-git-send-email-gert@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8213
-
-
---
-kind regards,
-
-Gert Doering
+-Steffan
 
 
