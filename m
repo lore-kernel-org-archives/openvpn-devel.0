@@ -1,11 +1,11 @@
-Date: Mon, 13 Jan 2014 19:58:23 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20140113185822.GV226@...1296...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="EFrEOWQ9ye2lTNjK"
-Content-Disposition: inline
-Subject: [Openvpn-devel] RFD: <net/route.h> and struct route (trac #340)
+Date: Mon, 13 Jan 2014 22:54:34 +0100
+Message-Id: <1389650074-18455-2-git-send-email-gert@...1296...>
+In-Reply-To: <1389650074-18455-1-git-send-email-gert@...1296...>
+References: <20140113185822.GV226@...1296...>
+	<1389650074-18455-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH 2/2] Replace copied structure elements with
+	including <net/route.h>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,71 +14,144 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
---EFrEOWQ9ye2lTNjK
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+The code for FreeBSD, Dragonfly, OpenBSD and NetBSD contained copies
+of structures from <net/route.h> (struct rt_msghdr in particular).
 
-Hi,
+OpenBSD changed some structure elements, making OpenVPN incompatible,
+depending on the specific OpenBSD version.  Clean up: remove copied
+definitions, replace by including <net/route.h> directly - this could
+not be done originally due to a conflict with "struct route" in OpenVPN
+and <net/route.h>, cleaned up by the previous commit.
 
-there's an open bug in trac
+Tested on FreeBSD 9.1-RELEASE, NetBSD 5.1, OpenBSD 4.9 (route.c compiles
+with no warnings, and "openvpn --show-gateway" works, which is the only
+part of the code that uses the structures in question).
 
-https://community.openvpn.net/openvpn/ticket/340
+Fix trac #340
 
-that asks us to remove structures used in route.c that were copy-pasted
-from <net/route.h>, because OpenBSD will change some structure elements,
-leading to incompatibility with OpenVPN, and include <net/route.h> instead.
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/route.c | 95 ++---------------------------------------------------
+ 1 file changed, 2 insertions(+), 93 deletions(-)
 
-This makes sense, from a portability perspective, even if it needs
-careful testing across all supported platforms to see whether everything
-affected still works (this seems to primarily be the default gateway
-querying code, get-default_gateway()).
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index d6344b9..d397f11 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -2611,53 +2611,7 @@ get_default_gateway (struct route_gateway_info *rgi)
+ #include <sys/types.h>
+ #include <sys/socket.h>
+ #include <netinet/in.h>
+-
+-/* all of this is taken from <net/route.h> in FreeBSD */
+-#define RTA_DST     0x1
+-#define RTA_GATEWAY 0x2
+-#define RTA_NETMASK 0x4
+-
+-#define RTM_GET     0x4
+-#define RTM_VERSION 5
+-
+-#define RTF_UP      0x1
+-#define RTF_GATEWAY 0x2
+-
+-/*
+- * These numbers are used by reliable protocols for determining
+- * retransmission behavior and are included in the routing structure.
+- */
+-struct rt_metrics {
+-        u_long  rmx_locks;      /* Kernel must leave these values alone */
+-        u_long  rmx_mtu;        /* MTU for this path */
+-        u_long  rmx_hopcount;   /* max hops expected */
+-        u_long  rmx_expire;     /* lifetime for route, e.g. redirect */
+-        u_long  rmx_recvpipe;   /* inbound delay-bandwidth product */
+-        u_long  rmx_sendpipe;   /* outbound delay-bandwidth product */
+-        u_long  rmx_ssthresh;   /* outbound gateway buffer limit */
+-        u_long  rmx_rtt;        /* estimated round trip time */
+-        u_long  rmx_rttvar;     /* estimated rtt variance */
+-        u_long  rmx_pksent;     /* packets sent using this route */
+-        u_long  rmx_filler[4];  /* will be used for T/TCP later */
+-};
+-
+-/*
+- * Structures for routing messages.
+- */
+-struct rt_msghdr {
+-        u_short rtm_msglen;     /* to skip over non-understood messages */
+-        u_char  rtm_version;    /* future binary compatibility */
+-        u_char  rtm_type;       /* message type */
+-        u_short rtm_index;      /* index for associated ifp */
+-        int     rtm_flags;      /* flags, incl. kern & message, e.g. DONE */
+-        int     rtm_addrs;      /* bitmask identifying sockaddrs in msg */
+-        pid_t   rtm_pid;        /* identify sender */
+-        int     rtm_seq;        /* for sender to identify action */
+-        int     rtm_errno;      /* why failed */
+-        int     rtm_use;        /* from rtentry */
+-        u_long  rtm_inits;      /* which metrics we are initializing */
+-        struct  rt_metrics rtm_rmx; /* metrics themselves */
+-};
++#include <net/route.h>
+ 
+ struct {
+   struct rt_msghdr m_rtm;
+@@ -2976,52 +2930,7 @@ get_default_gateway (struct route_gateway_info *rgi)
+ #include <sys/types.h>
+ #include <sys/socket.h>
+ #include <netinet/in.h>
+-
+-/* all of this is taken from <net/route.h> in OpenBSD 3.6 */
+-#define RTA_DST		0x1	/* destination sockaddr present */
+-#define RTA_GATEWAY	0x2	/* gateway sockaddr present */
+-#define RTA_NETMASK	0x4	/* netmask sockaddr present */
+-
+-#define RTM_GET		0x4	/* Report Metrics */
+-
+-#define RTM_VERSION	3	/* Up the ante and ignore older versions */
+-
+-#define	RTF_UP		0x1		/* route usable */
+-#define	RTF_GATEWAY	0x2		/* destination is a gateway */
+-
+-/*
+- * Huge version for userland compatibility.
+- */
+-struct rt_metrics {
+-	u_long	rmx_locks;	/* Kernel must leave these values alone */
+-	u_long	rmx_mtu;	/* MTU for this path */
+-	u_long	rmx_hopcount;	/* max hops expected */
+-	u_long	rmx_expire;	/* lifetime for route, e.g. redirect */
+-	u_long	rmx_recvpipe;	/* inbound delay-bandwidth product */
+-	u_long	rmx_sendpipe;	/* outbound delay-bandwidth product */
+-	u_long	rmx_ssthresh;	/* outbound gateway buffer limit */
+-	u_long	rmx_rtt;	/* estimated round trip time */
+-	u_long	rmx_rttvar;	/* estimated rtt variance */
+-	u_long	rmx_pksent;	/* packets sent using this route */
+-};
+-
+-/*
+- * Structures for routing messages.
+- */
+-struct rt_msghdr {
+-	u_short	rtm_msglen;	/* to skip over non-understood messages */
+-	u_char	rtm_version;	/* future binary compatibility */
+-	u_char	rtm_type;	/* message type */
+-	u_short	rtm_index;	/* index for associated ifp */
+-	int	rtm_flags;	/* flags, incl. kern & message, e.g. DONE */
+-	int	rtm_addrs;	/* bitmask identifying sockaddrs in msg */
+-	pid_t	rtm_pid;	/* identify sender */
+-	int	rtm_seq;	/* for sender to identify action */
+-	int	rtm_errno;	/* why failed */
+-	int	rtm_use;	/* from rtentry */
+-	u_long	rtm_inits;	/* which metrics we are initializing */
+-	struct	rt_metrics rtm_rmx; /* metrics themselves */
+-};
++#include <net/route.h>
+ 
+ struct {
+   struct rt_msghdr m_rtm;
+-- 
+1.8.3.2
 
-There is a catch to it: <net/route.h> defines a "struct route", while
-OpenVPN's route.h also has a "struct route", which are wildly different,
-so including <net/route.h> would require is to change all occurrences
-of "struct route" to "struct route_ipv4" or such.  Which we can do,
-and I think it makes sense (we have "struct route_ipv6" for IPv6, so
-that would avoid the conflict while still aligning IPv4/IPv6 somewhat).
-
-Now comes the catch: git master/2.4 only, or 2.3.3?
-
-
-It's not exactly a bugfix, but is needed for portability, and since 2.3.x
-will be around a while, it would be good to have there.
-
-Also, changing it in master and 2.3.3 would make Arne's and my life much=20
-easier in future should we have to fix a bug relating to (then)=20
-"struct openvpn_route", as we wouldn't be able to cherry-pick master->2.3
-anymore otherwise...
-
-
-So I'm tempted to go for "git master and 2.3.3", but want to put this
-up for discussion here.
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---EFrEOWQ9ye2lTNjK
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
-
-iQCVAwUBUtQ3TqkuBuNlUUl1AQLgIgQArOXFAR4Ph26CiSbh5Exgze4Wv/Bhm2uD
-iujL4zusCJM+gKy3ePau/z3Q6VZsnyDe0RBvDD4jJ0tPZPxWUpCc4Hk5vLcrq5v2
-bOLPLsfcowKjgEZqjhA/XKU3I5hJ3F3VaMepZ5QBghiXOkE+jjvsoJQdnqafF5ka
-r5d619mQwZ8=
-=x0p2
------END PGP SIGNATURE-----
-
---EFrEOWQ9ye2lTNjK--
 
