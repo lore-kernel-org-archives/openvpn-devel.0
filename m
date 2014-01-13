@@ -1,10 +1,11 @@
-Date: Sun, 12 Jan 2014 23:08:59 +0100 (CET)
-Message-Id: <201401122208.s0CM8xGD012274@...1295...>
+Date: Mon, 13 Jan 2014 19:58:23 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1389555572-6210-4-git-send-email-steffan@...1856...>
-References: <1389555572-6210-4-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix compiler warnings in
-	ssl_polarssl.c
+Message-ID: <20140113185822.GV226@...1296...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="EFrEOWQ9ye2lTNjK"
+Content-Disposition: inline
+Subject: [Openvpn-devel] RFD: <net/route.h> and struct route (trac #340)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +14,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK.
+--EFrEOWQ9ye2lTNjK
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Your patch has been applied to the master branch.
+Hi,
 
-commit 860d4d06cd66ed1fcbaea41c239962ab9316832d
-Author: Steffan Karger
-Date:   Sun Jan 12 20:39:32 2014 +0100
+there's an open bug in trac
 
-     Fix compiler warnings in ssl_polarssl.c
+https://community.openvpn.net/openvpn/ticket/340
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1389555572-6210-4-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8225
-     Signed-off-by: Gert Doering <gert@...1296...>
+that asks us to remove structures used in route.c that were copy-pasted
+from <net/route.h>, because OpenBSD will change some structure elements,
+leading to incompatibility with OpenVPN, and include <net/route.h> instead.
+
+This makes sense, from a portability perspective, even if it needs
+careful testing across all supported platforms to see whether everything
+affected still works (this seems to primarily be the default gateway
+querying code, get-default_gateway()).
+
+There is a catch to it: <net/route.h> defines a "struct route", while
+OpenVPN's route.h also has a "struct route", which are wildly different,
+so including <net/route.h> would require is to change all occurrences
+of "struct route" to "struct route_ipv4" or such.  Which we can do,
+and I think it makes sense (we have "struct route_ipv6" for IPv6, so
+that would avoid the conflict while still aligning IPv4/IPv6 somewhat).
+
+Now comes the catch: git master/2.4 only, or 2.3.3?
 
 
---
-kind regards,
+It's not exactly a bugfix, but is needed for portability, and since 2.3.x
+will be around a while, it would be good to have there.
 
-Gert Doering
+Also, changing it in master and 2.3.3 would make Arne's and my life much=20
+easier in future should we have to fix a bug relating to (then)=20
+"struct openvpn_route", as we wouldn't be able to cherry-pick master->2.3
+anymore otherwise...
 
+
+So I'm tempted to go for "git master and 2.3.3", but want to put this
+up for discussion here.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--EFrEOWQ9ye2lTNjK
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBUtQ3TqkuBuNlUUl1AQLgIgQArOXFAR4Ph26CiSbh5Exgze4Wv/Bhm2uD
+iujL4zusCJM+gKy3ePau/z3Q6VZsnyDe0RBvDD4jJ0tPZPxWUpCc4Hk5vLcrq5v2
+bOLPLsfcowKjgEZqjhA/XKU3I5hJ3F3VaMepZ5QBghiXOkE+jjvsoJQdnqafF5ka
+r5d619mQwZ8=
+=x0p2
+-----END PGP SIGNATURE-----
+
+--EFrEOWQ9ye2lTNjK--
 
