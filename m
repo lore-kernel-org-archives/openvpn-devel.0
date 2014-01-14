@@ -1,10 +1,14 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon, 13 Jan 2014 22:54:33 +0100
-Message-Id: <1389650074-18455-1-git-send-email-gert@...1296...>
-In-Reply-To: <20140113185822.GV226@...1296...>
+Message-ID: <52D51737.1040201@...1114...>
+Date: Tue, 14 Jan 2014 11:53:43 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
 References: <20140113185822.GV226@...1296...>
-Subject: [Openvpn-devel] [PATCH 1/2] Rename "struct route" to "struct
-	route_ipv4"
+In-Reply-To: <20140113185822.GV226@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="pedkf8tDaojmKa9RvIGTp6lefcxl4kBiQ"
+Subject: Re: [Openvpn-devel] RFD: <net/route.h> and struct route (trac #340)
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,262 +17,93 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-To fix trac #340, we need to rename our "struct route" to avoid a
-collision with "struct route" from <net/route.h> on *BSD.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--pedkf8tDaojmKa9RvIGTp6lefcxl4kBiQ
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-No functional changes.
+On 13/01/14 19:58, Gert Doering wrote:
+> Hi,
+>=20
+> there's an open bug in trac
+>=20
+> https://community.openvpn.net/openvpn/ticket/340
+>=20
+> that asks us to remove structures used in route.c that were copy-pasted
+> from <net/route.h>, because OpenBSD will change some structure elements,
+> leading to incompatibility with OpenVPN, and include <net/route.h> instea=
+d.
+>=20
+> This makes sense, from a portability perspective, even if it needs
+> careful testing across all supported platforms to see whether everything
+> affected still works (this seems to primarily be the default gateway
+> querying code, get-default_gateway()).
+>=20
+> There is a catch to it: <net/route.h> defines a "struct route", while
+> OpenVPN's route.h also has a "struct route", which are wildly different,
+> so including <net/route.h> would require is to change all occurrences
+> of "struct route" to "struct route_ipv4" or such.  Which we can do,
+> and I think it makes sense (we have "struct route_ipv6" for IPv6, so
+> that would avoid the conflict while still aligning IPv4/IPv6 somewhat).
+>=20
+> Now comes the catch: git master/2.4 only, or 2.3.3?
+>=20
+>=20
+> It's not exactly a bugfix, but is needed for portability, and since 2.3.x
+> will be around a while, it would be good to have there.
+>=20
+> Also, changing it in master and 2.3.3 would make Arne's and my life much=
+=20
+> easier in future should we have to fix a bug relating to (then)=20
+> "struct openvpn_route", as we wouldn't be able to cherry-pick master->2.3
+> anymore otherwise...
+>=20
+>=20
+> So I'm tempted to go for "git master and 2.3.3", but want to put this
+> up for discussion here.
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/route.c | 36 ++++++++++++++++++------------------
- src/openvpn/route.h | 10 +++++-----
- src/openvpn/tun.c   |  6 +++---
- 3 files changed, 26 insertions(+), 26 deletions(-)
+Generally speaking, I'd prefer as few changes to the 2.3 branch as
+possible.  Try to let it be bugfixes mostly.  This is also to encourage
+users to move over to 2.4 ASAP when that's ready, with more new
+features.  It also helps stability and maintainability within the
+OpenVPN project.
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index f051dd3..d6344b9 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -49,7 +49,7 @@
- #define METRIC_NOT_USED ((DWORD)-1)
- #endif
- 
--static void delete_route (struct route *r, const struct tuntap *tt, unsigned int flags, const struct route_gateway_info *rgi, const struct env_set *es);
-+static void delete_route (struct route_ipv4 *r, const struct tuntap *tt, unsigned int flags, const struct route_gateway_info *rgi, const struct env_set *es);
- 
- static void get_bypass_addresses (struct route_bypass *rb, const unsigned int flags);
- 
-@@ -150,7 +150,7 @@ struct route_list *
- new_route_list (const int max_routes, struct gc_arena *a)
- {
-   struct route_list *ret;
--  ALLOC_VAR_ARRAY_CLEAR_GC (ret, struct route_list, struct route, max_routes, a);
-+  ALLOC_VAR_ARRAY_CLEAR_GC (ret, struct route_list, struct route_ipv4, max_routes, a);
-   ret->capacity = max_routes;
-   return ret;
- }
-@@ -165,7 +165,7 @@ new_route_ipv6_list (const int max_routes, struct gc_arena *a)
- }
- 
- static const char *
--route_string (const struct route *r, struct gc_arena *gc)
-+route_string (const struct route_ipv4 *r, struct gc_arena *gc)
- {
-   struct buffer out = alloc_buf_gc (256, gc);
-   buf_printf (&out, "ROUTE network %s netmask %s gateway %s",
-@@ -267,7 +267,7 @@ is_special_addr (const char *addr_str)
- }
- 
- static bool
--init_route (struct route *r,
-+init_route (struct route_ipv4 *r,
- 	    struct addrinfo **network_list,
- 	    const struct route_option *ro,
- 	    const struct route_list *rl)
-@@ -484,7 +484,7 @@ void
- clear_route_list (struct route_list *rl)
- {
-   const int capacity = rl->capacity;
--  const size_t rl_size = array_mult_safe (sizeof(struct route), capacity, sizeof(struct route_list));
-+  const size_t rl_size = array_mult_safe (sizeof(struct route_ipv4), capacity, sizeof(struct route_list));
-   memset(rl, 0, rl_size);
-   rl->capacity = capacity;
- }
-@@ -519,7 +519,7 @@ add_block_local_item (struct route_list *rl,
-       && rl->rgi.gateway.netmask < 0xFFFFFFFF
-       && (rl->n)+2 <= rl->capacity)
-     {
--      struct route r;
-+      struct route_ipv4 r;
-       unsigned int l2;
- 
-       /* split a route into two smaller blocking routes, and direct them to target */
-@@ -649,7 +649,7 @@ init_route_list (struct route_list *rl,
-     for (i = 0; i < opt->n; ++i)
-       {
-         struct addrinfo* netlist;
--	struct route r;
-+	struct route_ipv4 r;
- 
- 	if (!init_route (&r,
- 			 &netlist,
-@@ -760,7 +760,7 @@ add_route3 (in_addr_t network,
- 	    const struct route_gateway_info *rgi,
- 	    const struct env_set *es)
- {
--  struct route r;
-+  struct route_ipv4 r;
-   CLEAR (r);
-   r.flags = RT_DEFINED;
-   r.network = network;
-@@ -778,7 +778,7 @@ del_route3 (in_addr_t network,
- 	    const struct route_gateway_info *rgi,
- 	    const struct env_set *es)
- {
--  struct route r;
-+  struct route_ipv4 r;
-   CLEAR (r);
-   r.flags = RT_DEFINED|RT_ADDED;
-   r.network = network;
-@@ -1028,7 +1028,7 @@ add_routes (struct route_list *rl, struct route_ipv6_list *rl6, const struct tun
-       
-       for (i = 0; i < rl->n; ++i)
- 	{
--	  struct route *r = &rl->routes[i];
-+	  struct route_ipv4 *r = &rl->routes[i];
- 	  check_subnet_conflict (r->network, r->netmask, "route");
- 	  if (flags & ROUTE_DELETE_FIRST)
- 	    delete_route (r, tt, flags, &rl->rgi, es);
-@@ -1060,7 +1060,7 @@ delete_routes (struct route_list *rl, struct route_ipv6_list *rl6,
-       int i;
-       for (i = rl->n - 1; i >= 0; --i)
- 	{
--	  struct route * r = &rl->routes[i];
-+	  struct route_ipv4 * r = &rl->routes[i];
- 	  delete_route (r, tt, flags, &rl->rgi, es);
- 	}
-       rl->iflags &= ~RL_ROUTES_ADDED;
-@@ -1154,7 +1154,7 @@ print_default_gateway(const int msglevel, const struct route_gateway_info *rgi)
- #endif
- 
- static void
--print_route (const struct route *r, int level)
-+print_route (const struct route_ipv4 *r, int level)
- {
-   struct gc_arena gc = gc_new ();
-   if (r->flags & RT_DEFINED)
-@@ -1171,7 +1171,7 @@ print_routes (const struct route_list *rl, int level)
- }
- 
- static void
--setenv_route (struct env_set *es, const struct route *r, int i)
-+setenv_route (struct env_set *es, const struct route_ipv4 *r, int i)
- {
-   struct gc_arena gc = gc_new ();
-   if (r->flags & RT_DEFINED)
-@@ -1288,7 +1288,7 @@ is_on_link (const int is_local_route, const unsigned int flags, const struct rou
- }
- 
- void
--add_route (struct route *r,
-+add_route (struct route_ipv4 *r,
- 	   const struct tuntap *tt,
- 	   unsigned int flags,
- 	   const struct route_gateway_info *rgi, /* may be NULL */
-@@ -1741,7 +1741,7 @@ add_route_ipv6 (struct route_ipv6 *r6, const struct tuntap *tt, unsigned int fla
- }
- 
- static void
--delete_route (struct route *r,
-+delete_route (struct route_ipv4 *r,
- 	      const struct tuntap *tt,
- 	      unsigned int flags,
- 	      const struct route_gateway_info *rgi,
-@@ -2246,7 +2246,7 @@ get_default_gateway (struct route_gateway_info *rgi)
- }
- 
- static DWORD
--windows_route_find_if_index (const struct route *r, const struct tuntap *tt)
-+windows_route_find_if_index (const struct route_ipv4 *r, const struct tuntap *tt)
- {
-   struct gc_arena gc = gc_new ();
-   DWORD ret = TUN_ADAPTER_INDEX_INVALID;
-@@ -2291,7 +2291,7 @@ windows_route_find_if_index (const struct route *r, const struct tuntap *tt)
- }
- 
- bool
--add_route_ipapi (const struct route *r, const struct tuntap *tt, DWORD adapter_index)
-+add_route_ipapi (const struct route_ipv4 *r, const struct tuntap *tt, DWORD adapter_index)
- {
-   struct gc_arena gc = gc_new ();
-   bool ret = false;
-@@ -2365,7 +2365,7 @@ add_route_ipapi (const struct route *r, const struct tuntap *tt, DWORD adapter_i
- }
- 
- bool
--del_route_ipapi (const struct route *r, const struct tuntap *tt)
-+del_route_ipapi (const struct route_ipv4 *r, const struct tuntap *tt)
- {
-   struct gc_arena gc = gc_new ();
-   bool ret = false;
-diff --git a/src/openvpn/route.h b/src/openvpn/route.h
-index a40de32..fe9b461 100644
---- a/src/openvpn/route.h
-+++ b/src/openvpn/route.h
-@@ -110,7 +110,7 @@ struct route_ipv6_option_list {
-   struct route_ipv6_option routes_ipv6[EMPTY_ARRAY_SIZE];
- };
- 
--struct route {
-+struct route_ipv4 {
- # define RT_DEFINED        (1<<0)
- # define RT_ADDED          (1<<1)
- # define RT_METRIC_DEFINED (1<<2)
-@@ -190,7 +190,7 @@ struct route_list {
-   unsigned int flags;     /* RG_x flags */
-   int capacity;
-   int n;
--  struct route routes[EMPTY_ARRAY_SIZE];
-+  struct route_ipv4 routes[EMPTY_ARRAY_SIZE];
- };
- 
- #if P2MP
-@@ -223,7 +223,7 @@ struct route_ipv6_list *new_route_ipv6_list (const int max_routes, struct gc_are
- void add_route_ipv6 (struct route_ipv6 *r, const struct tuntap *tt, unsigned int flags, const struct env_set *es);
- void delete_route_ipv6 (const struct route_ipv6 *r, const struct tuntap *tt, unsigned int flags, const struct env_set *es);
- 
--void add_route (struct route *r,
-+void add_route (struct route_ipv4 *r,
- 		const struct tuntap *tt,
- 		unsigned int flags,
- 		const struct route_gateway_info *rgi,
-@@ -301,8 +301,8 @@ void print_routes (const struct route_list *rl, int level);
- 
- void show_routes (int msglev);
- bool test_routes (const struct route_list *rl, const struct tuntap *tt);
--bool add_route_ipapi (const struct route *r, const struct tuntap *tt, DWORD adapter_index);
--bool del_route_ipapi (const struct route *r, const struct tuntap *tt);
-+bool add_route_ipapi (const struct route_ipv4 *r, const struct tuntap *tt, DWORD adapter_index);
-+bool del_route_ipapi (const struct route_ipv4 *r, const struct tuntap *tt);
- 
- #else
- static inline bool test_routes (const struct route_list *rl, const struct tuntap *tt) { return true; }
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index a300275..672486e 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -909,7 +909,7 @@ do_ifconfig (struct tuntap *tt,
-       if (!tun && tt->topology == TOP_SUBNET)
- 	{
- 	  /* Add a network route for the local tun interface */
--	  struct route r;
-+	  struct route_ipv4 r;
- 	  CLEAR (r);      
- 	  r.flags = RT_DEFINED | RT_METRIC_DEFINED;
- 	  r.network = tt->local & tt->remote_netmask;
-@@ -1106,7 +1106,7 @@ do_ifconfig (struct tuntap *tt,
-       /* Add a network route for the local tun interface */
-       if (!tun && tt->topology == TOP_SUBNET)
- 	{
--	  struct route r;
-+	  struct route_ipv4 r;
- 	  CLEAR (r);
- 	  r.flags = RT_DEFINED;
- 	  r.network = tt->local & tt->remote_netmask;
-@@ -1172,7 +1172,7 @@ do_ifconfig (struct tuntap *tt,
- 	/* Add a network route for the local tun interface */
-       if (!tun && tt->topology == TOP_SUBNET)
-         {
--          struct route r;
-+          struct route_ipv4 r;
-           CLEAR (r);
-           r.flags = RT_DEFINED;
-           r.network = tt->local & tt->remote_netmask;
--- 
-1.8.3.2
+Arne's OpenVPN for Android seems to always have been more experimental
+and bleeding edge than OpenVPN Connect.  So unless Arne screams back at
+me telling me I'm wrong, I believe Arne will be one of the first ones to
+move over to the 2.4/master codebase, thus not making things that
+difficult for him.  But Arne is the one who can fully answer this.  If
+he says it will be more complicated, then let it go into 2.3 too.
 
+Having all that said.  Looking at your patches, they seem clean enough
+and I'm not terrified by it.  I'd expect compile errors from our
+buildslaves if this breaks something.
+
+So I'd vote for master instantly.  And then 2.3 if really needed, after
+it has been tested in master for a little while.
+
+
+--=20
+kind regards,
+
+David Sommerseth
+
+
+--pedkf8tDaojmKa9RvIGTp6lefcxl4kBiQ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+
+iEYEARECAAYFAlLVFzkACgkQDC186MBRfrpKxQCeLcc9FiUcQYFGQ8iQMTblxKt/
+8GUAoJgM5zaib9DXQduKt9cJ+mvYrLlX
+=R8Tz
+-----END PGP SIGNATURE-----
+
+--pedkf8tDaojmKa9RvIGTp6lefcxl4kBiQ--
 
