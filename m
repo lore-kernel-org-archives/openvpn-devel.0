@@ -1,13 +1,13 @@
-Message-ID: <52D5A65F.2060807@...1227...>
-Date: Tue, 14 Jan 2014 22:04:31 +0100
-From: Arne Schwabe <arne@...1227...>
-MIME-Version: 1.0
+Date: Wed, 15 Jan 2014 09:29:42 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140115082942.GN226@...1296...>
 References: <20140113185822.GV226@...1296...>
-	<52D51737.1040201@...1114...>
-In-Reply-To: <52D51737.1040201@...1114...>
+	<52D51737.1040201@...1114...> <52D5A65F.2060807@...1227...>
+Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="NRiKngGLN1vTaNDqBIXvwb8nAxLvt2npr"
+	protocol="application/pgp-signature"; boundary="dQ2UWBmeJhPxzxhA"
+Content-Disposition: inline
+In-Reply-To: <52D5A65F.2060807@...1227...>
 Subject: Re: [Openvpn-devel] RFD: <net/route.h> and struct route (trac #340)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,50 +17,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net, Gert Doering <gert@...1296...>
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---NRiKngGLN1vTaNDqBIXvwb8nAxLvt2npr
-Content-Type: text/plain; charset="ISO-8859-1"
+--dQ2UWBmeJhPxzxhA
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-> Generally speaking, I'd prefer as few changes to the 2.3 branch as
-> possible.  Try to let it be bugfixes mostly.  This is also to encourage
-> users to move over to 2.4 ASAP when that's ready, with more new
-> features.  It also helps stability and maintainability within the
-> OpenVPN project.
->
-> Arne's OpenVPN for Android seems to always have been more experimental
-> and bleeding edge than OpenVPN Connect.  So unless Arne screams back at
-> me telling me I'm wrong, I believe Arne will be one of the first ones to
-> move over to the 2.4/master codebase, thus not making things that
-> difficult for him.  But Arne is the one who can fully answer this.  If
-> he says it will be more complicated, then let it go into 2.3 too.
-I am already on 2.4/master codebase. I might consider tracking
-release/2.4 in the future but definitively not release/2.3. (With all
-the bugfixes/patches I need/want on Android it would be almost -master
-anyway).
+Hi,
 
-I have not really an opinoion about 2.3 and what should go in there. At
-the moment it feels like release/2.3 is a "baby" master since almost all
-changes are cherry picked into it.
+On Tue, Jan 14, 2014 at 10:04:31PM +0100, Arne Schwabe wrote:
+> I have not really an opinoion about 2.3 and what should go in there. At
+> the moment it feels like release/2.3 is a "baby" master since almost all
+> changes are cherry picked into it.
 
-Arne
+My current "rules" for application to release/2.3 are:
 
+ - obvious bugfixes
+ - changes important for long-term usability of 2.3
+   (I think the main examples are TLS version negotiation & PolarSSL 1.2)
 
---NRiKngGLN1vTaNDqBIXvwb8nAxLvt2npr
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+what does not get into there is
+
+ - fundamental rewrites (dual-stack patches, preresolve patch)
+ - large new functionality (the android patchset, the windows service pipe,=
+ ...)
+
+so there *is* a difference :-) - but as long as we're mostly committing
+bugfixes, it indeed looks as if everything goes into both branches.
+
+These days, there's "lots of bugfixes", while I'm working my way through=20
+trac...
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--dQ2UWBmeJhPxzxhA
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.14 (Darwin)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+Version: GnuPG v1.4.13 (NetBSD)
 
-iEYEARECAAYFAlLVpl8ACgkQe8+cMNS4zReE4gCfb73fwgUfK8ENuvmwNd0GYKJy
-PKYAoNpGeC1WOEp7TS7lk9pa1lirxXsK
-=bo4x
+iQCVAwUBUtZG9qkuBuNlUUl1AQLHWAP9Eg2xIB1H3ihHpotgiERTkqRZaB/qKRps
+NW+ZBUt13UEp5UcunrXim0Z4sQYdgN3wMcUc9yoQiccoETWORmgXaoGI7QTOrYDh
+a/XECZ3t9SdtfXZzn/biPXtfgMphh0xq+64FcYq2VPb9oE6Xls/YAbIuN8S8ArT2
+BWaPcSxDiaw=
+=XJRJ
 -----END PGP SIGNATURE-----
 
---NRiKngGLN1vTaNDqBIXvwb8nAxLvt2npr--
+--dQ2UWBmeJhPxzxhA--
 
