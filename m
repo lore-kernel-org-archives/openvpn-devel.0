@@ -1,8 +1,10 @@
-From: davids@...1347...
-Date: Wed, 15 Jan 2014 17:36:04 +0100
-Message-Id: <1389803764-5879-1-git-send-email-davids@...1347...>
-Subject: [Openvpn-devel] [PATCH] Adjusted autotools files to build more
-	cleanly on newer autoconf/automake versions
+Date: Thu, 16 Jan 2014 21:36:55 +0100 (CET)
+Message-Id: <201401162036.s0GKatr8005552@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1389650074-18455-1-git-send-email-gert@...1296...>
+References: <1389650074-18455-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Rename 'struct route' to
+	'struct route_ipv4'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,70 +15,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: David Sommerseth <davids@...1347...>
+Patch has been applied to the master and release/2.3 branches.
 
-Signed-off-by: David Sommerseth <davids@...1347...>
----
- configure.ac            | 8 ++++----
- src/openvpn/Makefile.am | 2 +-
- 2 files changed, 5 insertions(+), 5 deletions(-)
+commit b57e005b8f232760081875937a53e8e7d235faa6 (master)
+commit 07b5c1d02579b5e897a0e5e0c80f0ba0098220d7 (release/2.3)
 
-diff --git a/configure.ac b/configure.ac
-index 636d4e2..ec8b96b 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -680,7 +680,7 @@ fi
- 
- case "${with_mem_check}" in
- 	valgrind)
--		AC_CHECK_HEADER(
-+		AC_CHECK_HEADERS(
- 			[valgrind/memcheck.h],
- 			[
- 				CFLAGS="${CFLAGS} -g -fno-inline"
-@@ -694,7 +694,7 @@ case "${with_mem_check}" in
- 		)
- 		;;
- 	dmalloc)
--		AC_CHECK_HEADER(
-+		AC_CHECK_HEADERS(
- 			[dmalloc.h],
- 			[AC_CHECK_LIB(
- 				[dmalloc],
-@@ -923,7 +923,7 @@ if test "$enable_snappy" = "yes" && test "$enable_comp_stub" = "no"; then
- 
-     saved_CFLAGS="${CFLAGS}"
-     CFLAGS="${CFLAGS} ${SNAPPY_CFLAGS}"
--    AC_CHECK_HEADER(snappy-c.h,
-+    AC_CHECK_HEADERS(snappy-c.h,
-        ,
-        [
- 	   AC_MSG_RESULT([Snappy headers not found.])
-@@ -962,7 +962,7 @@ if test "$enable_lz4" = "yes" && test "$enable_comp_stub" = "no"; then
- 
-     saved_CFLAGS="${CFLAGS}"
-     CFLAGS="${CFLAGS} ${LZ4_CFLAGS}"
--    AC_CHECK_HEADER(lz4.h,
-+    AC_CHECK_HEADERS(lz4.h,
-        ,
-        [
- 	   AC_MSG_RESULT([LZ4 headers not found.])
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index 0b79e10..fd593c5 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -18,7 +18,7 @@ EXTRA_DIST = \
- 	openvpn.vcxproj \
- 	openvpn.vcxproj.filters
- 
--INCLUDES = \
-+AM_CPPFLAGS = \
- 	-I$(top_srcdir)/include \
- 	-I$(top_srcdir)/src/compat
- 
--- 
-1.8.5.2
+Author: Gert Doering
+Date:   Mon Jan 13 22:54:33 2014 +0100
+
+     Rename 'struct route' to 'struct route_ipv4'
+
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <1389650074-18455-1-git-send-email-gert@...1296...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8231
+
+
+--
+kind regards,
+
+Gert Doering
 
 
