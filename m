@@ -1,10 +1,10 @@
-Date: Thu, 16 Jan 2014 21:36:55 +0100 (CET)
-Message-Id: <201401162036.s0GKatr8005552@...1295...>
+Date: Thu, 16 Jan 2014 21:36:58 +0100 (CET)
+Message-Id: <201401162036.s0GKawPf029821@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1389650074-18455-1-git-send-email-gert@...1296...>
-References: <1389650074-18455-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Rename 'struct route' to
-	'struct route_ipv4'
+In-Reply-To: <1389650074-18455-2-git-send-email-gert@...1296...>
+References: <1389650074-18455-2-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Replace copied structure
+	elements with including <net/route.h>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,18 +20,18 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Patch has been applied to the master and release/2.3 branches.
 
-commit b57e005b8f232760081875937a53e8e7d235faa6 (master)
-commit 07b5c1d02579b5e897a0e5e0c80f0ba0098220d7 (release/2.3)
+commit 615fb9ef36310f85fd6171301128a12740444455 (master)
+commit 15e0d0f5674bfe9a2de17095c6273b15b0eeec22 (release/2.3)
 
 Author: Gert Doering
-Date:   Mon Jan 13 22:54:33 2014 +0100
+Date:   Mon Jan 13 22:54:34 2014 +0100
 
-     Rename 'struct route' to 'struct route_ipv4'
+     Replace copied structure elements with including <net/route.h>
 
      Signed-off-by: Gert Doering <gert@...1296...>
      Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1389650074-18455-1-git-send-email-gert@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8231
+     Message-Id: <1389650074-18455-2-git-send-email-gert@...1296...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8230
 
 
 --
