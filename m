@@ -1,13 +1,14 @@
-Message-ID: <52D9722D.3040401@...1227...>
-Date: Fri, 17 Jan 2014 19:10:53 +0100
+Message-ID: <52D9723F.6060002@...1227...>
+Date: Fri, 17 Jan 2014 19:11:11 +0100
 From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
 References: <1389972638-8006-1-git-send-email-heiko.hund@...1489...>
-In-Reply-To: <1389972638-8006-1-git-send-email-heiko.hund@...1489...>
+	<1389972638-8006-2-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <1389972638-8006-2-git-send-email-heiko.hund@...1489...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="uq5MKUc3TkVlrhQmRBAkf2WKksPH7gBA1"
-Subject: Re: [Openvpn-devel] [PATCH] make sure sa_family_t is defined
+	boundary="TUDs8GJBsRjcMIWXbvHs8bkM5VHx1MeQi"
+Subject: Re: [Openvpn-devel] [PATCH] convert struct signal_info element
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,20 +20,20 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Heiko Hund <heiko.hund@...1489...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---uq5MKUc3TkVlrhQmRBAkf2WKksPH7gBA1
+--TUDs8GJBsRjcMIWXbvHs8bkM5VHx1MeQi
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
 Am 17.01.14 16:30, schrieb Heiko Hund:
-> On Windows there's no sa_family_t. This patch defines it in
-> syshead.h is configure did not find it in the system headers.
-
-ACK.
+> This one place was forgotten when the elements type was changed
+> from bool to int in the dual stack patch 23d61c56.
+>
+ACK
 
 Arne
 
 
---uq5MKUc3TkVlrhQmRBAkf2WKksPH7gBA1
+--TUDs8GJBsRjcMIWXbvHs8bkM5VHx1MeQi
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -41,10 +42,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.14 (Darwin)
 Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
 
-iEYEARECAAYFAlLZcjQACgkQe8+cMNS4zRcGQgCcCMXFmn9LdcCApVfi+K54iVtC
-qz8AmQGoB/sv37mbQcv/Q44rTUPIHZNS
-=WtMr
+iEYEARECAAYFAlLZcj8ACgkQe8+cMNS4zReg0QCcCCOflsLy7RkLO6QUSnpnLxNx
+OzgAoMCjcRJwUnvJbVX5JkAZJ0WQDWe8
+=8K+m
 -----END PGP SIGNATURE-----
 
---uq5MKUc3TkVlrhQmRBAkf2WKksPH7gBA1--
+--TUDs8GJBsRjcMIWXbvHs8bkM5VHx1MeQi--
 
