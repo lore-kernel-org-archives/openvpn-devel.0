@@ -1,10 +1,8 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Fri, 17 Jan 2014 16:30:38 +0100
-Message-ID: <1389972638-8006-2-git-send-email-heiko.hund@...1489...>
-In-Reply-To: <1389972638-8006-1-git-send-email-heiko.hund@...1489...>
-References: <1389972638-8006-1-git-send-email-heiko.hund@...1489...>
+Date: Fri, 17 Jan 2014 16:30:37 +0100
+Message-ID: <1389972638-8006-1-git-send-email-heiko.hund@...1489...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] convert struct signal_info element
+Subject: [Openvpn-devel] [PATCH] make sure sa_family_t is defined
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,27 +15,50 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This one place was forgotten when the elements type was changed
-from bool to int in the dual stack patch 23d61c56.
+On Windows there's no sa_family_t. This patch defines it in
+syshead.h is configure did not find it in the system headers.
 
 Signed-off-by: Heiko Hund <heiko.hund@...1489...>
 ---
- src/openvpn/win32.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ configure.ac          |    6 ++++++
+ src/openvpn/syshead.h |    7 +++++++
+ 2 files changed, 13 insertions(+), 0 deletions(-)
 
-diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index f35c96b..7c89a5a 100644
---- a/src/openvpn/win32.c
-+++ b/src/openvpn/win32.c
-@@ -517,7 +517,7 @@ win32_signal_get (struct win32_signal *ws)
-       if (ret)
- 	{
- 	  siginfo_static.signal_received = ret;
--	  siginfo_static.hard = true;
-+	  siginfo_static.source = SIG_SOURCE_HARD;
- 	}
-     }
-   return ret;
+diff --git a/configure.ac b/configure.ac
+index 636d4e2..65dbc25 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -501,6 +501,12 @@ AC_CHECK_TYPE(
+ 	[[${SOCKET_INCLUDES}]]
+ )
+ AC_CHECK_TYPE(
++        [sa_family_t],
++        [AC_DEFINE([HAVE_SA_FAMILY_T], [1], [struct in_pktinfo needed for IP_PKTINFO support])],
++        ,
++        [[${SOCKET_INCLUDES}]]
++)
++AC_CHECK_TYPE(
+ 	[struct sockaddr_in6],
+ 	,
+ 	[AC_MSG_ERROR([struct sockaddr_in6 not found, needed for ipv6 transport support.])],
+diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
+index ab6fa01..4050d54 100644
+--- a/src/openvpn/syshead.h
++++ b/src/openvpn/syshead.h
+@@ -426,6 +426,13 @@
+ #endif
+ 
+ /*
++ * Define type sa_family_t if it isn't defined in the socket headers
++ */
++#ifndef HAVE_SA_FAMILY_T
++typedef unsigned short sa_family_t;
++#endif
++
++/*
+  * Disable ESEC
+  */
+ #if 0
 -- 
 1.7.9
 
