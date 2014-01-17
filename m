@@ -1,10 +1,10 @@
-Date: Thu, 16 Jan 2014 21:36:58 +0100 (CET)
-Message-Id: <201401162036.s0GKawPf029821@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1389650074-18455-2-git-send-email-gert@...1296...>
-References: <1389650074-18455-2-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Replace copied structure
-	elements with including <net/route.h>
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Fri, 17 Jan 2014 16:30:38 +0100
+Message-ID: <1389972638-8006-2-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <1389972638-8006-1-git-send-email-heiko.hund@...1489...>
+References: <1389972638-8006-1-git-send-email-heiko.hund@...1489...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] convert struct signal_info element
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +15,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master and release/2.3 branches.
+This one place was forgotten when the elements type was changed
+from bool to int in the dual stack patch 23d61c56.
 
-commit 615fb9ef36310f85fd6171301128a12740444455 (master)
-commit 15e0d0f5674bfe9a2de17095c6273b15b0eeec22 (release/2.3)
+Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+---
+ src/openvpn/win32.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-Author: Gert Doering
-Date:   Mon Jan 13 22:54:34 2014 +0100
-
-     Replace copied structure elements with including <net/route.h>
-
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1389650074-18455-2-git-send-email-gert@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8230
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index f35c96b..7c89a5a 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -517,7 +517,7 @@ win32_signal_get (struct win32_signal *ws)
+       if (ret)
+ 	{
+ 	  siginfo_static.signal_received = ret;
+-	  siginfo_static.hard = true;
++	  siginfo_static.source = SIG_SOURCE_HARD;
+ 	}
+     }
+   return ret;
+-- 
+1.7.9
 
 
