@@ -1,8 +1,13 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Fri, 17 Jan 2014 16:30:37 +0100
-Message-ID: <1389972638-8006-1-git-send-email-heiko.hund@...1489...>
+Message-ID: <52D9722D.3040401@...1227...>
+Date: Fri, 17 Jan 2014 19:10:53 +0100
+From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] make sure sa_family_t is defined
+References: <1389972638-8006-1-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <1389972638-8006-1-git-send-email-heiko.hund@...1489...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="uq5MKUc3TkVlrhQmRBAkf2WKksPH7gBA1"
+Subject: Re: [Openvpn-devel] [PATCH] make sure sa_family_t is defined
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,55 +16,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Heiko Hund <heiko.hund@...1489...>, openvpn-devel@lists.sourceforge.net
 
-On Windows there's no sa_family_t. This patch defines it in
-syshead.h is configure did not find it in the system headers.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--uq5MKUc3TkVlrhQmRBAkf2WKksPH7gBA1
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Heiko Hund <heiko.hund@...1489...>
----
- configure.ac          |    6 ++++++
- src/openvpn/syshead.h |    7 +++++++
- 2 files changed, 13 insertions(+), 0 deletions(-)
+Am 17.01.14 16:30, schrieb Heiko Hund:
+> On Windows there's no sa_family_t. This patch defines it in
+> syshead.h is configure did not find it in the system headers.
 
-diff --git a/configure.ac b/configure.ac
-index 636d4e2..65dbc25 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -501,6 +501,12 @@ AC_CHECK_TYPE(
- 	[[${SOCKET_INCLUDES}]]
- )
- AC_CHECK_TYPE(
-+        [sa_family_t],
-+        [AC_DEFINE([HAVE_SA_FAMILY_T], [1], [struct in_pktinfo needed for IP_PKTINFO support])],
-+        ,
-+        [[${SOCKET_INCLUDES}]]
-+)
-+AC_CHECK_TYPE(
- 	[struct sockaddr_in6],
- 	,
- 	[AC_MSG_ERROR([struct sockaddr_in6 not found, needed for ipv6 transport support.])],
-diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index ab6fa01..4050d54 100644
---- a/src/openvpn/syshead.h
-+++ b/src/openvpn/syshead.h
-@@ -426,6 +426,13 @@
- #endif
- 
- /*
-+ * Define type sa_family_t if it isn't defined in the socket headers
-+ */
-+#ifndef HAVE_SA_FAMILY_T
-+typedef unsigned short sa_family_t;
-+#endif
-+
-+/*
-  * Disable ESEC
-  */
- #if 0
--- 
-1.7.9
+ACK.
 
+Arne
+
+
+--uq5MKUc3TkVlrhQmRBAkf2WKksPH7gBA1
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.14 (Darwin)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+
+iEYEARECAAYFAlLZcjQACgkQe8+cMNS4zRcGQgCcCMXFmn9LdcCApVfi+K54iVtC
+qz8AmQGoB/sv37mbQcv/Q44rTUPIHZNS
+=WtMr
+-----END PGP SIGNATURE-----
+
+--uq5MKUc3TkVlrhQmRBAkf2WKksPH7gBA1--
 
