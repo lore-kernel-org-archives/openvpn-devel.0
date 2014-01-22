@@ -1,12 +1,9 @@
-From: Steffan Karger <steffan.karger@...1435...>
-Date: Tue, 21 Jan 2014 14:48:01 +0100
-Message-ID: <1CED409804E2164C8104F9E623B08B9015519E5889@...1436...>
-References: <1389803764-5879-1-git-send-email-davids@...1347...>
-In-Reply-To: <1389803764-5879-1-git-send-email-davids@...1347...>
-Content-Language: en-US
+Date: Wed, 22 Jan 2014 09:27:29 +0100
+From: Thomas Veerman <thomas.veerman@...1862...>
+Message-ID: <etPan.52df80ec.2901d82.13bb7@...1863...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] Adjusted autotools files to build
-	more	cleanly on newer autoconf/automake versions
+Content-Type: multipart/alternative; boundary="52df80f1_8138641_13bb7"
+Subject: [Openvpn-devel] [PATCH] Update expiry date in management event loop
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,97 +12,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+To: openvpn-devel@lists.sourceforge.net
+
+--52df80f1_8138641_13bb7
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-To: "davids@...1347..." <davids@...1347...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
-ACK
+When there are events from the management console with an interval shorter
+than 1 second, the event loop never stops as it keeps resetting event_wait.
+---
+=C2=A0src/openvpn/manage.c | 3 ++-
+=C2=A01 file changed, 2 insertions(+), 1 deletion(-)
 
--Steffan
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 22dbe13..42a87c2 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -2922,7 +2922,8 @@ management_event_loop_n_seconds (struct management *m=
+an, int sec)
+=C2=A0	 =C2=A0 =C2=A0man_check_for_signals (&signal_received);
+=C2=A0	 =C2=A0if (signal_received)
+=C2=A0	 =C2=A0 =C2=A0return;
+-	} while (expire);
++ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0update_time();
++	} while (expire && expire > now);
+=C2=A0
+=C2=A0 =C2=A0 =C2=A0 =C2=A0/* revert state */
+=C2=A0 =C2=A0 =C2=A0 =C2=A0man->persist.standalone_disabled =3D standalone_=
+disabled_save;
+--=C2=A0
+1.7.12.4 (Apple Git-37)
 
-> -----Original Message-----
-> From: davids@...1347... [mailto:davids@...1347...]
-> Sent: woensdag 15 januari 2014 17:36
-> To: openvpn-devel@lists.sourceforge.net
-> Subject: [Openvpn-devel] [PATCH] Adjusted autotools files to build more
-> cleanly on newer autoconf/automake versions
->=20
-> From: David Sommerseth <davids@...1347...>
->=20
-> Signed-off-by: David Sommerseth <davids@...1347...>
-> ---
->  configure.ac            | 8 ++++----
->  src/openvpn/Makefile.am | 2 +-
->  2 files changed, 5 insertions(+), 5 deletions(-)
->=20
-> diff --git a/configure.ac b/configure.ac index 636d4e2..ec8b96b 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -680,7 +680,7 @@ fi
->=20
->  case "${with_mem_check}" in
->  	valgrind)
-> -		AC_CHECK_HEADER(
-> +		AC_CHECK_HEADERS(
->  			[valgrind/memcheck.h],
->  			[
->  				CFLAGS=3D"${CFLAGS} -g -fno-inline"
-> @@ -694,7 +694,7 @@ case "${with_mem_check}" in
->  		)
->  		;;
->  	dmalloc)
-> -		AC_CHECK_HEADER(
-> +		AC_CHECK_HEADERS(
->  			[dmalloc.h],
->  			[AC_CHECK_LIB(
->  				[dmalloc],
-> @@ -923,7 +923,7 @@ if test "$enable_snappy" =3D "yes" && test
-> "$enable_comp_stub" =3D "no"; then
->=20
->      saved_CFLAGS=3D"${CFLAGS}"
->      CFLAGS=3D"${CFLAGS} ${SNAPPY_CFLAGS}"
-> -    AC_CHECK_HEADER(snappy-c.h,
-> +    AC_CHECK_HEADERS(snappy-c.h,
->         ,
->         [
->  	   AC_MSG_RESULT([Snappy headers not found.]) @@ -962,7 +962,7 @@
-> if test "$enable_lz4" =3D "yes" && test "$enable_comp_stub" =3D "no"; then
->=20
->      saved_CFLAGS=3D"${CFLAGS}"
->      CFLAGS=3D"${CFLAGS} ${LZ4_CFLAGS}"
-> -    AC_CHECK_HEADER(lz4.h,
-> +    AC_CHECK_HEADERS(lz4.h,
->         ,
->         [
->  	   AC_MSG_RESULT([LZ4 headers not found.]) diff --git
-> a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am index
-> 0b79e10..fd593c5 100644
-> --- a/src/openvpn/Makefile.am
-> +++ b/src/openvpn/Makefile.am
-> @@ -18,7 +18,7 @@ EXTRA_DIST =3D \
->  	openvpn.vcxproj \
->  	openvpn.vcxproj.filters
->=20
-> -INCLUDES =3D \
-> +AM_CPPFLAGS =3D \
->  	-I$(top_srcdir)/include \
->  	-I$(top_srcdir)/src/compat
->=20
-> --
-> 1.8.5.2
->=20
->=20
-> -----------------------------------------------------------------------
-> -------
-> CenturyLink Cloud: The Leader in Enterprise Cloud Services.
-> Learn Why More Businesses Are Choosing CenturyLink Cloud For
-> Critical Workloads, Development Environments & Everything In Between.
-> Get a Quote or Start a Free Trial Today.
-> http://pubads.g.doubleclick.net/gampad/clk?id=3D119420431&iu=3D/4140/ostg=
-.c
-> lktrk
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--52df80f1_8138641_13bb7
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+<html><head><style>body{font-family:Helvetica,Arial;font-size:13px}</style>=
+</head><body style=3D"word-wrap: break-word; -webkit-nbsp-mode: space; -web=
+kit-line-break: after-white-space; "><div id=3D"bloop_customfont" style=3D"=
+font-family:Helvetica,Arial;font-size:13px; color: rgba(0,0,0,1.0); margin:=
+ 0px; line-height: auto;"><div id=3D"bloop_customfont" style=3D"margin: 0px=
+; ">When there are events from the management console with an interval shor=
+ter</div><div id=3D"bloop_customfont" style=3D"margin: 0px; ">than 1 second=
+, the event loop never stops as it keeps resetting event_wait.</div><div id=
+=3D"bloop_customfont" style=3D"margin: 0px; ">---</div><div id=3D"bloop_cus=
+tomfont" style=3D"margin: 0px; ">&nbsp;src/openvpn/manage.c | 3 ++-</div><d=
+iv id=3D"bloop_customfont" style=3D"margin: 0px; ">&nbsp;1 file changed, 2 =
+insertions(+), 1 deletion(-)</div><div id=3D"bloop_customfont" style=3D"mar=
+gin: 0px; "><br></div><div id=3D"bloop_customfont" style=3D"margin: 0px; ">=
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c</div><div id=3D"bl=
+oop_customfont" style=3D"margin: 0px; ">index 22dbe13..42a87c2 100644</div>=
+<div id=3D"bloop_customfont" style=3D"margin: 0px; ">--- a/src/openvpn/mana=
+ge.c</div><div id=3D"bloop_customfont" style=3D"margin: 0px; ">+++ b/src/op=
+envpn/manage.c</div><div id=3D"bloop_customfont" style=3D"margin: 0px; ">@@=
+ -2922,7 +2922,8 @@ management_event_loop_n_seconds (struct management *man=
+, int sec)</div><div id=3D"bloop_customfont" style=3D"margin: 0px; ">&nbsp;=
+<span class=3D"Apple-tab-span" style=3D"white-space:pre">	</span> &nbsp; &n=
+bsp;man_check_for_signals (&amp;signal_received);</div><div id=3D"bloop_cus=
+tomfont" style=3D"margin: 0px; ">&nbsp;<span class=3D"Apple-tab-span" style=
+=3D"white-space:pre">	</span> &nbsp;if (signal_received)</div><div id=3D"bl=
+oop_customfont" style=3D"margin: 0px; ">&nbsp;<span class=3D"Apple-tab-span=
+" style=3D"white-space:pre">	</span> &nbsp; &nbsp;return;</div><div id=3D"b=
+loop_customfont" style=3D"margin: 0px; ">-<span class=3D"Apple-tab-span" st=
+yle=3D"white-space:pre">	</span>} while (expire);</div><div id=3D"bloop_cus=
+tomfont" style=3D"margin: 0px; ">+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;update=
+_time();</div><div id=3D"bloop_customfont" style=3D"margin: 0px; ">+<span c=
+lass=3D"Apple-tab-span" style=3D"white-space:pre">	</span>} while (expire &=
+amp;&amp; expire &gt; now);</div><div id=3D"bloop_customfont" style=3D"marg=
+in: 0px; ">&nbsp;</div><div id=3D"bloop_customfont" style=3D"margin: 0px; "=
+>&nbsp; &nbsp; &nbsp; &nbsp;/* revert state */</div><div id=3D"bloop_custom=
+font" style=3D"margin: 0px; ">&nbsp; &nbsp; &nbsp; &nbsp;man-&gt;persist.st=
+andalone_disabled =3D standalone_disabled_save;</div><div id=3D"bloop_custo=
+mfont" style=3D"margin: 0px; ">--&nbsp;</div><div id=3D"bloop_customfont" s=
+tyle=3D"margin: 0px; ">1.7.12.4 (Apple Git-37)</div><div id=3D"bloop_custom=
+font" style=3D"margin: 0px; "><br></div></div></body></html>=
+
+--52df80f1_8138641_13bb7--
+
 
