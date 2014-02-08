@@ -1,7 +1,13 @@
-From: Dmitrij Tejblum <dt@...1411...>
-Date: Sat,  8 Feb 2014 19:33:49 +0400
-Message-Id: <1391873629-14388-1-git-send-email-dt@...1411...>
-Subject: [Openvpn-devel] [PATCH] Fix is_ipv6 in case of tap interface.
+Date: Sat, 8 Feb 2014 18:45:29 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140208174529.GS16637@...1296...>
+References: <1391873629-14388-1-git-send-email-dt@...1411...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="/dFl7e5Y0zcWrcPL"
+Content-Disposition: inline
+In-Reply-To: <1391873629-14388-1-git-send-email-dt@...1411...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix is_ipv6 in case of tap interface.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,34 +16,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Dmitrij Tejblum <dt@...1411...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-While checking a packet on a TAP interface, is_ipv_X() in proto.c
-insist that the ethertype must be OPENVPN_ETH_P_IPV4, even if
-the protocol is IPv6. So the protocol never match, and, thus,
-mssfix doesn't work for IPv6 on TAP interface. Fix that.
+--/dFl7e5Y0zcWrcPL
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Signed-off-by: Dmitrij Tejblum <dt@...1411...>
----
- src/openvpn/proto.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi,
 
-diff --git a/src/openvpn/proto.c b/src/openvpn/proto.c
-index b437f1a..7b58e6a 100644
---- a/src/openvpn/proto.c
-+++ b/src/openvpn/proto.c
-@@ -60,7 +60,7 @@ is_ipv_X ( int tunnel_type, struct buffer *buf, int ip_ver )
- 	  + sizeof (struct openvpn_iphdr)))
- 	return false;
-       eh = (const struct openvpn_ethhdr *) BPTR (buf);
--      if (ntohs (eh->proto) != OPENVPN_ETH_P_IPV4)
-+      if (ntohs (eh->proto) != (ip_ver == 6 ? OPENVPN_ETH_P_IPV6 : OPENVPN_ETH_P_IPV4))
- 	return false;
-       offset = sizeof (struct openvpn_ethhdr);
-     }
--- 
-1.8.3.4 (Apple Git-47)
+On Sat, Feb 08, 2014 at 07:33:49PM +0400, Dmitrij Tejblum wrote:
+> While checking a packet on a TAP interface, is_ipv_X() in proto.c
+> insist that the ethertype must be OPENVPN_ETH_P_IPV4, even if
+> the protocol is IPv6. So the protocol never match, and, thus,
+> mssfix doesn't work for IPv6 on TAP interface. Fix that.
 
+Yeah.  Thanks, it certainly looks like an oversight on my side when
+implementing mssfix for IPv6 (I don't use TAP and our test framework
+for TAP isn't doing anything yet that would be affected by mssfix).
+
+Will test & integrate.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--/dFl7e5Y0zcWrcPL
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBUvZtOakuBuNlUUl1AQKltQP+IwddEfDHA3thfNTKxzoHK3D/lKvKxslp
+WfEYsxFgyKZ50BIfwkUdeY+fcUFE0OHNkPZCuAeKD5iXRJ7gagtRdXhrEmoI/O9K
+jAtSbAmUXUoP2ujeckGHm7kzuSSTEuBa8ZFu++GsPjhpba1fTEMHj1zNkm77IxId
+3OFHOfGruSA=
+=E0DO
+-----END PGP SIGNATURE-----
+
+--/dFl7e5Y0zcWrcPL--
 
