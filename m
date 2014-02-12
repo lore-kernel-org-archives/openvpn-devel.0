@@ -1,11 +1,8 @@
-Message-ID: <52FB6415.9080300@...515...>
-Date: Wed, 12 Feb 2014 14:07:49 +0200
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <52FB8539.6050501@...1867...>
+Date: Wed, 12 Feb 2014 15:29:13 +0100
+From: Matej Gregr <igregr@...1867...>
 MIME-Version: 1.0
-References: <1384698620-27946-1-git-send-email-gert@...1296...>
-	<52FB3BBF.5060003@...1294...>
-In-Reply-To: <52FB3BBF.5060003@...1294...>
-Subject: Re: [Openvpn-devel] openvpn 2.3 and windows nsi
+Subject: [Openvpn-devel] ios tun api
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,137 +11,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: "e.lohmann@...1294..." <e.lohmann@...1294...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-2
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Hello,
+  sorry, if this is not the right mailing list.
 
-The OpenVPN Windows buildsystem has changed greatly since 2.2.2. Look
-here for current build documentation:
+I am looking for information about unofficial tun api for IOS. There are
+information [1] that there are several apps using this api, however
+there are some restrictions from the Apple side (it is available only
+for few developers). As far as I know, the Openvpn is using this API for
+the Openvpn connect app. Could You please share information who should
+we contact for access the api? We would like to use it for the academic
+research. I assume, that contact Apple using the developer account will
+not be enough. Answers on and off list are appreciated.
 
-<https://community.openvpn.net/openvpn/wiki/BuildingUsingGenericBuildsystem>
+Thanks,
 
-The wiki page above links to instructions and scripts for bootstrapping
-a new cross-compile box.
+Matej
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
-
-> Hi,
->
-> in the sources of openvpn_2.2.2.zip there were under /win the nsi scripts=
-, in=20
-> the sources of openvpn 2.3.2 it's missing.
-> Do I have to crosscompile it under linux to get this folder?
->
-> We like to make some changes to the nsi installer scripts, to roll out ow=
-n=20
-> configfiles etc.
->
-> Thanks for help, Eike
->
->
-> Am 17.11.2013 15:30, schrieb Gert Doering:
->> Documentation examples, description and code were disagreeing on what
->> this option actually does.  Now they will all agree that it will
->> *prepend* a random-byte string to the hostname name before resolving
->> to work around DNS caching (needs a "*" wildcard record in the zone).
->>
->> Fix trac #143
->>
->> Signed-off-by: Gert Doering <gert@...1296...>
->> ---
->>   doc/openvpn.8      |  2 +-
->>   src/openvpn/misc.c | 27 +++++++++------------------
->>   2 files changed, 10 insertions(+), 19 deletions(-)
->>
->> diff --git a/doc/openvpn.8 b/doc/openvpn.8
->> index b53d383..3e2e1a4 100644
->> --- a/doc/openvpn.8
->> +++ b/doc/openvpn.8
->> @@ -271,7 +271,7 @@ failover capability.
->>   .\"*********************************************************
->>   .TP
->>   .B \-\-remote-random-hostname
->> -Add a random string (6 characters) to first DNS label of hostname to pr=
-event
->> +Prepend a random string (6 bytes, 12 hex characters) to hostname to pre=
-vent
->>   DNS caching.  For example, "foo.bar.gov" would be modified to
->>   "<random-chars>.foo.bar.gov".
->>   .\"*********************************************************
->> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
->> index 4688444..7483184 100644
->> --- a/src/openvpn/misc.c
->> +++ b/src/openvpn/misc.c
->> @@ -926,32 +926,23 @@ create_temp_file (const char *directory, const cha=
-r *prefix, struct gc_arena *gc
->>   }
->>=20=20=20
->>   /*
->> - * Add a random string to first DNS label of hostname to prevent DNS ca=
-ching.
->> + * Prepend a random string to hostname to prevent DNS caching.
->>    * For example, foo.bar.gov would be modified to <random-chars>.foo.ba=
-r.gov.
->> - * Of course, this requires explicit support in the DNS server.
->> + * Of course, this requires explicit support in the DNS server (wildcar=
-d).
->>    */
->>   const char *
->>   hostname_randomize(const char *hostname, struct gc_arena *gc)
->>   {
->>   # define n_rnd_bytes 6
->>=20=20=20
->> -  char *hst =3D string_alloc(hostname, gc);
->> -  char *dot =3D strchr(hst, '.');
->> +  uint8_t rnd_bytes[n_rnd_bytes];
->> +  const char *rnd_str;
->> +  struct buffer hname =3D alloc_buf_gc (strlen(hostname)+sizeof(rnd_byt=
-es)*2+4, gc);
->>=20=20=20
->> -  if (dot)
->> -    {
->> -      uint8_t rnd_bytes[n_rnd_bytes];
->> -      const char *rnd_str;
->> -      struct buffer hname =3D alloc_buf_gc (strlen(hostname)+sizeof(rnd=
-_bytes)*2+4, gc);
->> -
->> -      *dot++ =3D '\0';
->> -      prng_bytes (rnd_bytes, sizeof (rnd_bytes));
->> -      rnd_str =3D format_hex_ex (rnd_bytes, sizeof (rnd_bytes), 40, 0, =
-NULL, gc);
->> -      buf_printf(&hname, "%s-0x%s.%s", hst, rnd_str, dot);
->> -      return BSTR(&hname);
->> -    }
->> -  else
->> -    return hostname;
->> +  prng_bytes (rnd_bytes, sizeof (rnd_bytes));
->> +  rnd_str =3D format_hex_ex (rnd_bytes, sizeof (rnd_bytes), 40, 0, NULL=
-, gc);
->> +  buf_printf(&hname, "%s.%s", rnd_str, hostname);
->> +  return BSTR(&hname);
->>   # undef n_rnd_bytes
->>   }
->>=20=20=20
->
-> -------------------------------------------------------------------------=
------
-> Android apps run on BlackBerry 10
-> Introducing the new BlackBerry 10.2.1 Runtime for Android apps.
-> Now with support for Jelly Bean, Bluetooth, Mapview and more.
-> Get your Android app in front of a whole new audience.  Start now.
-> http://pubads.g.doubleclick.net/gampad/clk?id=3D124407151&iu=3D/4140/ostg=
-.clktrk
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
+[1]
+http://blog.michael.kuron-germany.de/2010/09/ios-4-1-undocumented-vpn-api-used-by-cisco-anyconnect/
 
