@@ -1,20 +1,11 @@
-Date: Mon, 10 Feb 2014 10:35:43 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20140210093543.GX16637@...1296...>
-References: <52F6E3AF.1080400@...1030...>
-	<20140209115057.GT16637@...1296...>
-	<CAAbSJMUyKqqup1-nBuUsXNVuaaj93YWg0JxcqeBicU1QhtTrkw@...278...>
-	<20140209151951.GU16637@...1296...>
-	<52F7A006.4010302@...1227...>
-	<CAAbSJMWyDjSNdXM6AZPDeevAtR=bBg8C1sbUBY+64hLri2oOLg@...278...>
-	<52F7AB7E.7000502@...1227...> <52F8981A.7030603@...1030...>
-	<CAAbSJMUE4rkDbuTQ=zzY1pg8v4d7eC2TZ58pTAJC6k-N3yM0gw@...278...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="xU0InBYDQy8cK3qi"
-Content-Disposition: inline
-In-Reply-To: <CAAbSJMUE4rkDbuTQ=zzY1pg8v4d7eC2TZ58pTAJC6k-N3yM0gw@...278...>
-Subject: Re: [Openvpn-devel] --local, --lport and --bind
+Message-ID: <52FB3BBF.5060003@...1294...>
+Date: Wed, 12 Feb 2014 10:15:43 +0100
+From: Eike Lohmann <e.lohmann@...1294...>
+MIME-Version: 1.0
+References: <1384698620-27946-1-git-send-email-gert@...1296...>
+In-Reply-To: <1384698620-27946-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] openvpn 2.3 and windows nsi
+Reply-To: e.lohmann@...1294...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,49 +14,95 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Mickael Chazaux <mickael.chazaux@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
---xU0InBYDQy8cK3qi
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
 Hi,
 
-On Mon, Feb 10, 2014 at 10:30:25AM +0100, Mickael Chazaux wrote:
-> > So, can I use this undocumented option to allow the OS to determine a
-> > random port for me?
-> It works at least on version 2.2.1.
+in the sources of openvpn_2.2.2.zip there were under /win the nsi scripts, in 
+the sources of openvpn 2.3.2 it's missing.
+Do I have to crosscompile it under linux to get this folder?
 
-Then it will also work in 2.3.x, but it might have been broken by the
-changes introduced by the dual stack patches in git master (-> 2.4).  We
-need to test this.
+We like to make some changes to the nsi installer scripts, to roll out own 
+configfiles etc.
 
-And then document :-)
+Thanks for help, Eike
 
-gert
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Am 17.11.2013 15:30, schrieb Gert Doering:
+> Documentation examples, description and code were disagreeing on what
+> this option actually does.  Now they will all agree that it will
+> *prepend* a random-byte string to the hostname name before resolving
+> to work around DNS caching (needs a "*" wildcard record in the zone).
+>
+> Fix trac #143
+>
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>   doc/openvpn.8      |  2 +-
+>   src/openvpn/misc.c | 27 +++++++++------------------
+>   2 files changed, 10 insertions(+), 19 deletions(-)
+>
+> diff --git a/doc/openvpn.8 b/doc/openvpn.8
+> index b53d383..3e2e1a4 100644
+> --- a/doc/openvpn.8
+> +++ b/doc/openvpn.8
+> @@ -271,7 +271,7 @@ failover capability.
+>   .\"*********************************************************
+>   .TP
+>   .B \-\-remote-random-hostname
+> -Add a random string (6 characters) to first DNS label of hostname to prevent
+> +Prepend a random string (6 bytes, 12 hex characters) to hostname to prevent
+>   DNS caching.  For example, "foo.bar.gov" would be modified to
+>   "<random-chars>.foo.bar.gov".
+>   .\"*********************************************************
+> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+> index 4688444..7483184 100644
+> --- a/src/openvpn/misc.c
+> +++ b/src/openvpn/misc.c
+> @@ -926,32 +926,23 @@ create_temp_file (const char *directory, const char *prefix, struct gc_arena *gc
+>   }
+>   
+>   /*
+> - * Add a random string to first DNS label of hostname to prevent DNS caching.
+> + * Prepend a random string to hostname to prevent DNS caching.
+>    * For example, foo.bar.gov would be modified to <random-chars>.foo.bar.gov.
+> - * Of course, this requires explicit support in the DNS server.
+> + * Of course, this requires explicit support in the DNS server (wildcard).
+>    */
+>   const char *
+>   hostname_randomize(const char *hostname, struct gc_arena *gc)
+>   {
+>   # define n_rnd_bytes 6
+>   
+> -  char *hst = string_alloc(hostname, gc);
+> -  char *dot = strchr(hst, '.');
+> +  uint8_t rnd_bytes[n_rnd_bytes];
+> +  const char *rnd_str;
+> +  struct buffer hname = alloc_buf_gc (strlen(hostname)+sizeof(rnd_bytes)*2+4, gc);
+>   
+> -  if (dot)
+> -    {
+> -      uint8_t rnd_bytes[n_rnd_bytes];
+> -      const char *rnd_str;
+> -      struct buffer hname = alloc_buf_gc (strlen(hostname)+sizeof(rnd_bytes)*2+4, gc);
+> -
+> -      *dot++ = '\0';
+> -      prng_bytes (rnd_bytes, sizeof (rnd_bytes));
+> -      rnd_str = format_hex_ex (rnd_bytes, sizeof (rnd_bytes), 40, 0, NULL, gc);
+> -      buf_printf(&hname, "%s-0x%s.%s", hst, rnd_str, dot);
+> -      return BSTR(&hname);
+> -    }
+> -  else
+> -    return hostname;
+> +  prng_bytes (rnd_bytes, sizeof (rnd_bytes));
+> +  rnd_str = format_hex_ex (rnd_bytes, sizeof (rnd_bytes), 40, 0, NULL, gc);
+> +  buf_printf(&hname, "%s.%s", rnd_str, hostname);
+> +  return BSTR(&hname);
+>   # undef n_rnd_bytes
+>   }
+>   
 
---xU0InBYDQy8cK3qi
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
-
-iQCVAwUBUvidb6kuBuNlUUl1AQLPtgP/Wz9lhX3x91b25Jn05Zi6Mvk4+mHRKDz0
-sXStmwnf/My39jY8st4DY3RQbURwZ6ASlJcHsoapdzqy/S/2LDQJTbB0GeQLrlV1
-vdLlQ+xGeE3pWWuBWWOBzEuIY9H0wgz5u3LTivod9HeIqf11lKnwr2VW4Xq2bGbT
-UQYoaGLys8s=
-=tsFf
------END PGP SIGNATURE-----
-
---xU0InBYDQy8cK3qi--
 
