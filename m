@@ -1,11 +1,13 @@
-Message-ID: <52FBA795.6030500@...1867...>
-Date: Wed, 12 Feb 2014 17:55:49 +0100
-From: Matej Gregr <igregr@...1867...>
+Message-ID: <530259CD.4030104@...1227...>
+Date: Mon, 17 Feb 2014 19:49:49 +0100
+From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
-References: <52FB8539.6050501@...1867...>
-	<20140212153804.GN16637@...1296...>
-In-Reply-To: <20140212153804.GN16637@...1296...>
-Subject: Re: [Openvpn-devel] ios tun api
+References: <1391000624-15092-1-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <1391000624-15092-1-git-send-email-heiko.hund@...1489...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="F2iwC0DSmGFsLgnfXMDor1Ke2CejBRqpm"
+Subject: Re: [Openvpn-devel] [PATCH] grow route lists dynamically
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,40 +16,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Heiko Hund <heiko.hund@...1489...>, openvpn-devel@lists.sourceforge.net
 
-Hi Gert,
-   thanks a lot for the info!
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--F2iwC0DSmGFsLgnfXMDor1Ke2CejBRqpm
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-M.
+Am 29.01.14 14:03, schrieb Heiko Hund:
+> This removes the need for the --max-routes option. Instead of
+> allocating a fixed size array for the route(-option)s they are
+> managed in linked lists instead.
+>
+>
+ACK but with two changes
 
-On 02/12/2014 04:38 PM, Gert Doering wrote:
-> HI,
->
-> On Wed, Feb 12, 2014 at 03:29:13PM +0100, Matej Gregr wrote:
->> I am looking for information about unofficial tun api for IOS.
->
-> The problem is that API information is only available under NDA, so
-> "the open source openvpn people" actually don't know anything specific.
->
-> OpenVPN 3 has a module that can access the API, as OpenVPN tech (the
-> commercial arm of OpenVPN) has signed the NDA with Apple - but this
-> leads to "there is an OpenVPN binary for iOS in the store, but the
-> source code that uses the API must not be made publically available
-> either".
->
-> So - most of us don't really know anything, and the few that do are not
-> permitted to talk about it.  Sorry about that - you'll have to talk to
-> Apple (but I don't even know who would be a good contact, they are very
-> secretive about things).
->
-> Or just use the VPN API on Android.  It's publically documented :-) (and
-> pretty broken in 4.4, but at least, open source...)
->
-> gert
->
+- adding a comment to the copy method that this does a shallow copy with
+two lists with the same tail
+- struct route* next should be struct route_ipv4 *next in the route_ipv4
+struct.
 
+Arne
+
+
+--F2iwC0DSmGFsLgnfXMDor1Ke2CejBRqpm
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.14 (Darwin)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+
+iEYEARECAAYFAlMCWdMACgkQe8+cMNS4zRdisgCgsidXdqwOBRKxIupgAw3TSyfv
+50EAmwb3mIL9AHQhCU1Sa5M7XvBrRudt
+=c8A+
+-----END PGP SIGNATURE-----
+
+--F2iwC0DSmGFsLgnfXMDor1Ke2CejBRqpm--
 
