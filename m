@@ -1,17 +1,9 @@
-Message-ID: <53028516.3090505@...1227...>
-Date: Mon, 17 Feb 2014 22:54:30 +0100
-From: Arne Schwabe <arne@...1227...>
+Message-ID: <5302AADC.80801@...277...>
+Date: Tue, 18 Feb 2014 01:35:40 +0100
+From: pietrek -- <pietrek.j@...277...>
 MIME-Version: 1.0
-References: <52CFF667.7080600@...1790...>
-	<52CFFAF4.8050306@...1227...>	<52CFFDA4.4060601@...1790...>
-	<52D07F70.8030609@...1227...>	<52D08946.6010906@...1790...>
-	<20140119140416.GP226@...1296...>	<530262FB.7080206@...1790...>
-	<20140217213435.GS16637@...1296...>
-In-Reply-To: <20140217213435.GS16637@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="4KRFQNpAbR0ssn2v0wvKBJnmSE9UVpXfn"
-Subject: Re: [Openvpn-devel] git master proto udp6+multihome is broken
+Content-Type: multipart/mixed; boundary="------------050203020108010602010101"
+Subject: [Openvpn-devel] ECDH support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,47 +12,168 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, Tore Anderson <tore@...1790...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---4KRFQNpAbR0ssn2v0wvKBJnmSE9UVpXfn
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------050203020108010602010101
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-
->> This happens both with today's git master and with 2.3.2. BTW Arne's
->> patch to socket.c that fixes the assert crash we originally discussed
->> still isn't included in git master, has it been forgotten about?
-> ISTR that Arne wrote something about "this is a quick fix, will send a
-> proper patch later".  Then we lost a bit of momentum :-(
->
-I did more socket cleanup to remove the offending variable that triggers
-that problem:
-
-https://github.com/schwabe/openvpn/commit/94a142d4e8bd09f8a7af4287516c0c341=
-64ce1f4
-
-but the patchset is only really tested in client mode and not server
-mode and therefore I have not sent it to openvpn-devel yet.
-
-Arne
+Hi all,
+It's my first contribution, so I could make some mistakes ;)
+In attached patch I added ECDH support to openvpn with openssl.
+Eliptic Curves generation is, in contrast to Diffie-Hellman very fast, 
+so I do it on every server initialization.
+         Piotr Jarosz
 
 
+--------------050203020108010602010101
+Content-Type: text/x-patch;
+ name="ecdh.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="ecdh.patch"
 
---4KRFQNpAbR0ssn2v0wvKBJnmSE9UVpXfn
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 9e21d5a..c8581e3 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -578,6 +578,7 @@ static const char usage_message[] =
+   "--dh file       : File containing Diffie Hellman parameters\n"
+   "                  in .pem format (for --tls-server only).\n"
+   "                  Use \"openssl dhparam -out dh1024.pem 1024\" to generate.\n"
++  "--ecdh curve    : Eliptic curve ECDH parameters\n"
+   "--cert file     : Local certificate in .pem format -- must be signed\n"
+   "                  by a Certificate Authority in --ca file.\n"
+   "--extra-certs file : one or more PEM certs that complete the cert chain.\n"
+@@ -1607,6 +1608,7 @@ show_settings (const struct options *o)
+   SHOW_STR (ca_file);
+   SHOW_STR (ca_path);
+   SHOW_STR (dh_file);
++  SHOW_STR (ecdh_curve);
+   SHOW_STR (cert_file);
+ 
+ #ifdef MANAGMENT_EXTERNAL_KEY
+@@ -2176,7 +2178,8 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
+ 
+   if (options->tls_server)
+     {
+-      notnull (options->dh_file, "DH file (--dh)");
++      if ( !options->dh_file && !options->ecdh_curve  )
++             msg(M_USAGE, "You must specify DH file (--dh) or ECDH curve name( --ecdh )");
+     }
+   if (options->tls_server || options->tls_client)
+     {
+@@ -2308,6 +2311,7 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
+       MUST_BE_UNDEF (ca_file);
+       MUST_BE_UNDEF (ca_path);
+       MUST_BE_UNDEF (dh_file);
++      MUST_BE_UNDEF (ecdh_curve);
+       MUST_BE_UNDEF (cert_file);
+       MUST_BE_UNDEF (priv_key_file);
+ #ifndef ENABLE_CRYPTO_POLARSSL
+@@ -2702,7 +2706,8 @@ options_postprocess_filechecks (struct options *options)
+ 
+   /* ** SSL/TLS/crypto related files ** */
+ #ifdef ENABLE_SSL
+-  errs |= check_file_access (CHKACC_FILE|CHKACC_INLINE, options->dh_file, R_OK, "--dh");
++  if ( options->dh_file )
++      errs |= check_file_access (CHKACC_FILE|CHKACC_INLINE, options->dh_file, R_OK, "--dh");
+   errs |= check_file_access (CHKACC_FILE|CHKACC_INLINE, options->ca_file, R_OK, "--ca");
+   errs |= check_file_access_chroot (options->chroot_dir, CHKACC_FILE, options->ca_path, R_OK, "--capath");
+   errs |= check_file_access (CHKACC_FILE|CHKACC_INLINE, options->cert_file, R_OK, "--cert");
+@@ -6530,6 +6535,11 @@ add_option (struct options *options,
+ 	  options->dh_file_inline = p[2];
+ 	}
+     }
++  else if (streq (p[0], "ecdh") && p[1])
++    {
++      VERIFY_PERMISSION (OPT_P_GENERAL);
++      options->ecdh_curve = p[1];
++    }
+   else if (streq (p[0], "cert") && p[1])
+     {
+       VERIFY_PERMISSION (OPT_P_GENERAL);
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index bf232f4..abf6971 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -508,6 +508,7 @@ struct options
+   const char *ca_file;
+   const char *ca_path;
+   const char *dh_file;
++  const char *ecdh_curve;
+   const char *cert_file;
+   const char *extra_certs_file;
+   const char *priv_key_file;
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index c61701a..3a84428 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -474,7 +474,10 @@ init_ssl (const struct options *options, struct tls_root_ctx *new_ctx)
+   if (options->tls_server)
+     {
+       tls_ctx_server_new(new_ctx);
+-      tls_ctx_load_dh_params(new_ctx, options->dh_file, options->dh_file_inline);
++      if ( options->dh_file )
++          tls_ctx_load_dh_params(new_ctx, options->dh_file, options->dh_file_inline);
++         else
++          tls_ctx_load_ecdh_params(new_ctx, options->ecdh_curve );
+     }
+   else				/* if client */
+     {
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index a6fc3bd..37e811a 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -186,6 +186,15 @@ void tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file,
+     const char *dh_file_inline);
+ 
+ /**
++ * Generate ECDH Parameters, and load them into the library-specific
++ * TLS context.
++ *
++ * @param ctx           TLS context to use
++ * @param dh_curve      Eliptic Curve name
++ */
++void tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *ecdh_curve );
++
++/**
+  * Load PKCS #12 file for key, cert and (optionally) CA certs, and add to
+  * library-specific TLS context.
+  *
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index f079652..4381a99 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -329,6 +329,26 @@ tls_ctx_load_dh_params (struct tls_root_ctx *ctx, const char *dh_file,
+   DH_free (dh);
+ }
+ 
++void
++tls_ctx_load_ecdh_params (struct tls_root_ctx *ctx,const char *ecdh_curve )
++{
++  EC_KEY *ecdh;
++  
++  int nid = OBJ_sn2nid( ecdh_curve );
++  if ( nid == NID_undef )
++      msg (M_SSLERR, "Invalid ECDH curve name '%s'", ecdh_curve );
++  
++  /* generate EC parameters */
++  ecdh = EC_KEY_new_by_curve_name( nid );
++  if ( !ecdh )
++     msg (M_SSLERR, "Cannot create ECDH params of curve %s", ecdh_curve );
++  
++  msg (D_TLS_DEBUG_LOW, "ECDH params of curve %s initialized", ecdh_curve );
++  
++  if ( !SSL_CTX_set_tmp_ecdh(ctx->ctx,ecdh) )
++      msg (M_SSLERR, "SSL_CTX_set_tmp_ecdh");
++}
++
+ int
+ tls_ctx_load_pkcs12(struct tls_root_ctx *ctx, const char *pkcs12_file,
+     const char *pkcs12_file_inline,
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.14 (Darwin)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
 
-iEYEARECAAYFAlMChRYACgkQe8+cMNS4zRfFYQCfTggmw+VtsGgP++v0c/RtZzIa
-7xgAoIiw154d5xI9UeSV8eOZ7YZui4bc
-=bYNy
------END PGP SIGNATURE-----
-
---4KRFQNpAbR0ssn2v0wvKBJnmSE9UVpXfn--
+--------------050203020108010602010101--
 
