@@ -1,9 +1,13 @@
-Message-ID: <530340C4.5060702@...277...>
-Date: Tue, 18 Feb 2014 12:15:16 +0100
-From: pietrek -- <pietrek.j@...277...>
-MIME-Version: 1.0
+Date: Tue, 18 Feb 2014 12:50:15 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140218115015.GW16637@...1296...>
 References: <5302AADC.80801@...277...> <20140218085500.GU16637@...1296...>
-In-Reply-To: <20140218085500.GU16637@...1296...>
+	<530340C4.5060702@...277...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="xh9GJMgkD8Kj4g3J"
+Content-Disposition: inline
+In-Reply-To: <530340C4.5060702@...277...>
 Subject: Re: [Openvpn-devel] ECDH support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,29 +17,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: pietrek -- <pietrek.j@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--xh9GJMgkD8Kj4g3J
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-> Could you describe in a bit more detail what your patch does?  I don't
-> really understand the openssl innards well enough, but am curious.
->
-> *If* I understand it correctly, what it does is provide keying material
-> (ECDH) to support EC for the TLS handshake, right?  And there isn't actually
-> anything in OpenVPN needed (besides provide keying material) as that's
-> all "inside OpenSSL".
-Yes, openssl does everything for us. I just added option to config.
+On Tue, Feb 18, 2014 at 12:15:16PM +0100, pietrek -- wrote:
+> > Which parts of the key handshake does it cover?  Signature/Certificates,
+> > or *only* DH?
+> Handshake only, EC certificates worked for me without doing anything.
+> Also, DH didn't work with EC certificates( no such cipher ).
 
-> So how do you create the key material?
-I used function EC_KEY_new_by_curve_name to generate eliptic curve parameters of type specyfied in config file.
+I see.
 
-> Which parts of the key handshake does it cover?  Signature/Certificates,
-> or *only* DH?
-Handshake only, EC certificates worked for me without doing anything.
-Also, DH didn't work with EC certificates( no such cipher ).
+Seems what we need as well is a README file that explains about EC crypto,
+as in=20
 
-    Piotr Jarosz
+ - how do I generate and use an EC certificate?
+ - how do I use an EC curve for DH?
+ - how do I use EC for session keying?
 
+because otherwise our users will be even more confused than I am.
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--xh9GJMgkD8Kj4g3J
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBUwNI96kuBuNlUUl1AQLvgwP/VGJRbw9nUB2/yMNNV+xWz0KacLNVIqm3
+0u65vWRd3wOd3OuDv+ntIAL/LqXcmg1tHZbLpHqClnAWywa21pEhsvIW9G5aZoLb
+n65+IGJzE9sAHwbjADa0JJeLFwHVVaK5priHClj+Rc3epdkAn7fXGSkH9C0iKCPQ
++8m8sHYjisQ=
+=fv62
+-----END PGP SIGNATURE-----
+
+--xh9GJMgkD8Kj4g3J--
 
