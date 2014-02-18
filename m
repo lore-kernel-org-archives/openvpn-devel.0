@@ -1,11 +1,12 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Tue, 18 Feb 2014 15:11:29 +0100
-Message-ID: <1959796.tNIKqpFhcQ@...1526...>
-In-Reply-To: <530259CD.4030104@...1227...>
-References: <1391000624-15092-1-git-send-email-heiko.hund@...1489...>
-	<530259CD.4030104@...1227...>
+Message-ID: <53037CD4.7020700@...277...>
+Date: Tue, 18 Feb 2014 16:31:32 +0100
+From: pietrek -- <pietrek.j@...277...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] grow route lists dynamically
+References: <5302AADC.80801@...277...> <20140218085500.GU16637@...1296...>
+	<530340C4.5060702@...277...>
+	<20140218115015.GW16637@...1296...>
+In-Reply-To: <20140218115015.GW16637@...1296...>
+Subject: Re: [Openvpn-devel] ECDH support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,21 +15,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi Arne
+On 02/18/14 12:50, Gert Doering wrote:
+> Hi,
+>
+> On Tue, Feb 18, 2014 at 12:15:16PM +0100, pietrek -- wrote:
+>>> Which parts of the key handshake does it cover?  Signature/Certificates,
+>>> or *only* DH?
+>> Handshake only, EC certificates worked for me without doing anything.
+>> Also, DH didn't work with EC certificates( no such cipher ).
+> I see.
+>
+> Seems what we need as well is a README file that explains about EC crypto,
+> as in
+>
+>   - how do I generate and use an EC certificate?
+>   - how do I use an EC curve for DH?
+>   - how do I use EC for session keying?
+>
+> because otherwise our users will be even more confused than I am.
+>
+> gert
+>
+Hi Gert,
+Usage of EC curves is very simple. You can use them for certificates as 
+well as RSA, but are smaller and generate faster.
+Full list of curves you can get typing:
+openssl ecparam -list_curves
+> - how do I generate and use an EC certificate?
+openssl ecparam -out ec.key -name sect571r1 -genkey
+You can also extract public key:
+openssl ec -in ec.key -pubout -out ec.pubkey
+Now it ec.key can be used to generate certificate as well as RSA.
+> - how do I use an EC curve for DH?
+Simply add to openvpn server.conf line:
+ecdh sect571r1
+( I have created this option in my patch )
+> - how do I use EC for session keying?
+I've never seen eliptic curve as a key for session.
+We use them for key negotiation or in certificates.
 
-On Monday 17 February 2014 19:49:49 Arne Schwabe wrote:
-> ACK but with two changes
-> 
-> - adding a comment to the copy method that this does a shallow copy with
-> two lists with the same tail
-> - struct route* next should be struct route_ipv4 *next in the route_ipv4
-> struct.
+Piotr Jarosz
 
-Thanks for the review. I will post an updated patch.
-
-Heiko
 
