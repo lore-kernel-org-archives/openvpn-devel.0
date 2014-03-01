@@ -1,10 +1,14 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Sat,  1 Mar 2014 15:36:15 +0100
-Message-Id: <1393684575-28112-3-git-send-email-steffan@...1856...>
-In-Reply-To: <1393684575-28112-1-git-send-email-steffan@...1856...>
+Date: Sat, 1 Mar 2014 16:34:16 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140301153416.GX16637@...1296...>
 References: <1393684575-28112-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH 2/2] Disable unsupported TLS cipher modes by
-	default, cleans --show-tls output.
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Ii9siWAzEV4u1Tqd"
+Content-Disposition: inline
+In-Reply-To: <1393684575-28112-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH] Clean up --show-tls output for OpenSSL
+	builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,35 +17,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This explicitly disables a number of tls ciphers that OpenVPN has currently
-no support for. OpenSSL will automatically detect this during negotiation,
-but --show-tls would erroneously show a number of unsupported ciphers.
+--Ii9siWAzEV4u1Tqd
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- src/openvpn/ssl_openssl.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Hi,
 
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index f079652..c7531d9 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -219,8 +219,8 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
- {
-   if (ciphers == NULL)
-     {
--      /* Use sane default */
--      if(!SSL_CTX_set_cipher_list(ctx->ctx, "DEFAULT:!EXP"))
-+      /* Use sane default (disable export, and unsupported cipher modes) */
-+      if(!SSL_CTX_set_cipher_list(ctx->ctx, "DEFAULT:!EXP:!PSK:!SRP"))
-         msg(M_SSLERR, "Failed to set default TLS cipher list.");
-       return;
-     }
--- 
-1.8.3.2
+On Sat, Mar 01, 2014 at 03:36:13PM +0100, Steffan Karger wrote:
+> The following two (small) patches are usability improvements.
 
+is this master-only, or does it make sense for 2.3 as well?
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--Ii9siWAzEV4u1Tqd
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBUxH9+KkuBuNlUUl1AQLeJAQAvrvKkPxL0ymiIeYk3zdmCE0qZuYsTrsu
+P/ndJTbzsVExi557lV15gX4cMNuvs82mUZVUFRAgCQCtiNgdb2CFXXVWl9gDN/em
+1dY5q24Pb5Gu0xJwI17Pl0hcaKjcqdbjsS4tWs3Sfx4F8+8oZDIZho0/kO2ElSjM
+RvRLx/pcnms=
+=jCFi
+-----END PGP SIGNATURE-----
+
+--Ii9siWAzEV4u1Tqd--
 
