@@ -1,12 +1,10 @@
-Message-ID: <53124C7B.5020509@...1856...>
-Date: Sat, 01 Mar 2014 22:09:15 +0100
-From: Steffan Karger <steffan@...1856...>
+From: Vladimir Kamarzin <vvk@...1868...>
+In-Reply-To: <1393929449-423915-1-git-send-email-vvk@...1868...>
+References: <1393929449-423915-1-git-send-email-vvk@...1868...>
 MIME-Version: 1.0
-References: <1393684575-28112-1-git-send-email-steffan@...1856...>
-	<20140301153416.GX16637@...1296...>
-In-Reply-To: <20140301153416.GX16637@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Clean up --show-tls output for OpenSSL
- builds
+Message-Id: <12561393929895@...1869...>
+Date: Tue, 04 Mar 2014 16:44:55 +0600
+Subject: Re: [Openvpn-devel] [PATCH] Extract MAC addresses from ARP packets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,23 +13,11 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+Tested on versions 2.2 and 2.3, patch applies to git master branch. I'm not sure this functionality should be wrapped with #ifdef.
 
-On 01-03-14 16:34, Gert Doering wrote:
-> On Sat, Mar 01, 2014 at 03:36:13PM +0100, Steffan Karger wrote:
->> The following two (small) patches are usability improvements.
-> 
-> is this master-only, or does it make sense for 2.3 as well?
-
-Good point, I forgot to mention:
-1/2 Makes sense for 2.3 too, 2.3 contains the same translation table and
-the patch will also suppress useless warnings.
-2/2 Makes no sense for 2.3, 2.3 does not have the default cipher list.
-
--Steffan
+Waiting for comments and your opinion regarding this change.
 
