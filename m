@@ -1,10 +1,17 @@
-Message-ID: <53164A63.8020209@...277...>
-Date: Tue, 04 Mar 2014 22:49:23 +0100
-From: pietrek -- <pietrek.j@...277...>
 MIME-Version: 1.0
-References: <5302AADC.80801@...277...>	<20140218085500.GU16637@...1296...>	<530340C4.5060702@...277...>	<20140218115015.GW16637@...1296...>	<5304AFE4.2050702@...277...>	<530917A4.4050905@...1528...>	<53093043.9080808@...277...>	<5309B31C.50208@...1856...>	<530A9219.8050809@...277...>	<530BE62F.4090709@...1856...>	<530E48C2.5090209@...277...>
-	<530E5529.9080204@...1856...>
-In-Reply-To: <530E5529.9080204@...1856...>
+In-Reply-To: <53164A63.8020209@...277...>
+References: <5302AADC.80801@...277...> <20140218085500.GU16637@...1296...>
+	<530340C4.5060702@...277...>
+	<20140218115015.GW16637@...1296...>
+	<5304AFE4.2050702@...277...> <530917A4.4050905@...1528...>
+	<53093043.9080808@...277...> <5309B31C.50208@...1856...>
+	<530A9219.8050809@...277...>
+	<530BE62F.4090709@...1856...> <530E48C2.5090209@...277...>
+	<530E5529.9080204@...1856...> <53164A63.8020209@...277...>
+From: Steffan Karger <steffan@...1856...>
+Date: Tue, 4 Mar 2014 23:48:01 +0100
+Message-ID: <CAA1AbxJC3_z5RvAkcRNhyy9m=OBheDDQ=8LVw18SwsS2QV4H6g@...278...>
+Content-Type: multipart/alternative; boundary=047d7b6702ff79b84004f3cfb3b8
 Subject: Re: [Openvpn-devel] [Patch] ECDH support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,83 +21,99 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: pietrek -- <pietrek.j@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--047d7b6702ff79b84004f3cfb3b8
+Content-Type: text/plain; charset=ISO-8859-1
 
 Hi,
-I agree with you that admin may be confused if he won't specify --dh 
-option and server will work but refusing some clients.
-He could just forget adding this option or don't know it's neccessary.
-I think we could add option "--dh none"  or "--no-dh". It may be 
-specified, if user knows what he's doing.
-Option --no-ecdh( or --ecdh none ) could be useful if user does not want 
-to use ECDH for some reason.
-Also, to avoid unexpected behaviour like fallback into RSA, we could 
-force openssl to use DH or ECDH only.
 
-Piotr Jarosz
+On Tue, Mar 4, 2014 at 10:49 PM, pietrek -- <pietrek.j@...277...> wrote:
 
-On 02/26/14 21:57, Steffan Karger wrote:
-> Hi,
->
-> On 26-02-14 21:04, pietrek -- wrote:
->> I tested what would happen if any key exchange protocol will be specified.
->> It works as I expected: connection failed with error: 'no such cipher'.
->> So session cannot work without ECDH and DH.
->> Also, if OpenSSL would accept it, it would be an invitatation for men in
->> the middle ;)
->>
->> For clients without ECDH connection will just fail.
-> Interesting, with the current setup and OpenSSL behaviour (at least up
-> to OpenSSL 1.0.1) you are right. Since commit 813aa55 (last January),
-> where ephemeral RSA support was dropped, OpenVPN knows no other way for
-> key exchange but DH (and ECDH after the updates). Without that, OpenVPN
-> would fall back to RSA for key exchange, which is not directly
-> vulnerable to man-in-the-middle attacks, but it would mean falling back
-> to less secure cipher suites.
->
-> However, we completely depend on OpenSSL being incapable of doing some
-> sort of key exchange automatically, which I think is a bit risky. If we
-> can make absolutely sure OpenSSL will not fall back, we might be able to
-> remove the requirement for the DH-file from a security perspective.
->
->> In my opinion forcing users to specify DH key isn no longer neccessary,
->> because this file generates
->> long and protection against men in the middle attack is as strong as the
->> weakest encryption algorithm
->> so if DH will be weaker than ECDH curve, even the best curve won't
->> improve security against such attack.
-> OpenSSL prefers ECDH over DH, so if both client and server support it,
-> the connection would not use DH. A user who does not trust DH anymore
-> could specifiy something like --tls-cipher DEFAULT:\!DH:\!EXP to
-> explicitly forbid usage of DH.
->
-> I agree that the DH-file generation is not one of OpenVPN's most
-> user-friendly features, but a server administrator has to it just once
-> and clients are not bothered by it at all.
->
-> Furthermore, I expect that if we would make it 'too easy' to create
-> ECDH-only servers many people would run into trouble when one of their
-> peers has an older version of OpenVPN (of which there are a *lot*) and
-> gets the "no shared cipher" error. An administrator diving into the
-> crypto, specifying explicitly to not trust DH should be able to cope
-> with that, but new users probably do not.
->
-> To conclude, I agree with you that the restriction on the DH-file should
-> eventually disappear, I just think right now is a bit premature.
->
-> -Steffan
->
-> ------------------------------------------------------------------------------
-> Flow-based real-time traffic analytics software. Cisco certified tool.
-> Monitor traffic, SLAs, QoS, Medianet, WAAS etc. with NetFlow Analyzer
-> Customize your own dashboards, set traffic alerts and generate reports.
-> Network behavioral analysis & security monitoring. All-in-one tool.
-> http://pubads.g.doubleclick.net/gampad/clk?id=126839071&iu=/4140/ostg.clktrk
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> [...]
 
+I think we could add option "--dh none"  or "--no-dh". It may be
+> specified, if user knows what he's doing.
+>
+
+I like that idea. It offers a migration path for users that really want to
+skip the DH-stuff. I'd vote for "--dh '[none]'", as it does not add a new
+option (openvpn has more then enough options ;) ), and is hard to
+accidentally supply as a file name.
+
+This is more a usability thing then a crypto thing, so I'd like to hear
+more opinions on this.
+
+
+> Option --no-ecdh( or --ecdh none ) could be useful if user does not want
+> to use ECDH for some reason.
+>
+
+I do not like this one. A user gets ECDH initialisation for free, and if a
+power user really wants to disable ECDH, (s)he can use --tls-cipher
+"DEFAULT:!EXP:!ECDH" or something like that. An explicit extra option adds
+code, while it is not needed for the functionality.
+
+
+> Also, to avoid unexpected behaviour like fallback into RSA, we could
+> force openssl to use DH or ECDH only.
+>
+
+Do you have any idea on how to achieve this, other than setting explicit
+tls-cipher lists? The cipher list has a limited interface, which would
+result in actively maintaining a list of 'approved' ciphers within the
+OpenVPN codebase. I would not like to do that.
+
+Regards,
+-Steffan
+
+--047d7b6702ff79b84004f3cfb3b8
+Content-Type: text/html; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi,<br><div><div class=3D"gmail_extra"><br><div class=3D"g=
+mail_quote">On Tue, Mar 4, 2014 at 10:49 PM, pietrek -- <span dir=3D"ltr">&=
+lt;<a href=3D"mailto:pietrek.j@...277..." target=3D"_blank">pietrek.j@...1664...=
+7...</a>&gt;</span> wrote:<br>
+
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex">[...]</blockquote><blockquote class=3D"gmail=
+_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:=
+1ex">
+
+I think we could add option &quot;--dh none&quot; =A0or &quot;--no-dh&quot;=
+. It may be<br>
+specified, if user knows what he&#39;s doing.<br></blockquote><div><br></di=
+v><div>I like that idea. It offers a migration path for users that really w=
+ant to skip the DH-stuff. I&#39;d vote for &quot;--dh &#39;[none]&#39;&quot=
+;, as it does not add a new option (openvpn has more then enough options ;)=
+ ), and is hard to accidentally supply as a file name.<br>
+
+<br>This is more a usability thing then a crypto thing, so I&#39;d like to =
+hear more opinions on this.<br></div><div>=A0</div><blockquote class=3D"gma=
+il_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-lef=
+t:1ex">
+
+
+Option --no-ecdh( or --ecdh none ) could be useful if user does not want<br>
+to use ECDH for some reason.<br></blockquote><div><br></div><div>I do not l=
+ike this one. A user gets ECDH initialisation for free, and if a power user=
+ really wants to disable ECDH, (s)he can use --tls-cipher &quot;DEFAULT:!EX=
+P:!ECDH&quot; or something like that. An explicit extra option adds code, w=
+hile it is not needed for the functionality.<br>
+
+</div><div>=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0=
+ .8ex;border-left:1px #ccc solid;padding-left:1ex">
+Also, to avoid unexpected behaviour like fallback into RSA, we could<br>
+force openssl to use DH or ECDH only.<br></blockquote><div><br></div><div>D=
+o you have any idea on how to achieve this, other than setting explicit tls=
+-cipher lists? The cipher list has a limited interface, which would result =
+in actively maintaining a list of &#39;approved&#39; ciphers within the Ope=
+nVPN codebase. I would not like to do that.<br>
+
+<br></div><div>Regards,<br></div><div>-Steffan<br></div></div></div></div><=
+/div>
+
+--047d7b6702ff79b84004f3cfb3b8--
 
