@@ -1,10 +1,13 @@
-From: Vladimir Kamarzin <vvk@...1868...>
-In-Reply-To: <53163C6D.7050801@...1227...>
+Date: Wed, 5 Mar 2014 13:21:13 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140305122113.GT16637@...1296...>
 References: <1393929449-423915-1-git-send-email-vvk@...1868...>
-	<53163C6D.7050801@...1227...>
-MIME-Version: 1.0
-Message-Id: <283911394015829@...1871...>
-Date: Wed, 05 Mar 2014 16:37:09 +0600
+	<53163C6D.7050801@...1227...> <283911394015829@...1871...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="PryeMBWNihx6Jibm"
+Content-Disposition: inline
+In-Reply-To: <283911394015829@...1871...>
 Subject: Re: [Openvpn-devel] [PATCH] Extract MAC addresses from ARP packets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,40 +17,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Vladimir Kamarzin <vvk@...1868...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-05.03.2014, 02:49, "Arne Schwabe" <arne@...1227...>:
+--PryeMBWNihx6Jibm
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-> OpenVPN basically just emulates a learning switch. Learning switches
-> also don't need these special logic. If your setup does not work with
-> OpenVPN then either
->
-> a) it won't work with a learning switch either or
-> b) OpenVPN learning switch implementation has a bug
->
-> I would like to have either a) confirmed or b) fixed than to included a
-> band aid.
+Hi,
 
-My setup does work with learning switches (tested before openvpn). So it looks like openvpn behavior not 100% the same.
+On Wed, Mar 05, 2014 at 04:37:09PM +0600, Vladimir Kamarzin wrote:
+> 5. Switch (S) does not know where is 00:00:00:22:22:22, so it sends this =
+packet to all ports
 
-Example setup contains following:
-- S: switch
-- A: generic network host, 192.168.0.1/24
-- B: special device which provides access to C, 192.168.0.2/24 and MAC 00:00:00:11:11:11
-- C: special device that we want access, 192.168.0.3/24, MAC 00:00:00:22:22:22
+Yeah, I think that's the difference.  We don't do unicast flooding ("send
+frames to unknown unicast destinations to every single port") because
+bandwidth on the VPN is limited & more expensive.
 
-Plug scheme: (A) and (B) are plugged to (S). (C) is plugged to (B). ARP handling for (B) is performed by (C).
+Adding it would solve the issue at hand, but I'm not convinced that you'll
+be happy with the end - it might actually end up saturating VPN links and
+making users unhappy if you have "much flooded traffic" (which happens in
+some of the networks).
 
-Here is step-by-step scheme how it works:
-1. (A) wants to "ping" (C). So it sends ARP request "who has 192.168.0.3 tell 192.168.0.1" with broadcast destination in ethernet frame. Switch forwards this packet to all ports.
-2. (B) receives ARP request and generates reply: "192.168.0.3 is at 00:00:00:22:22:22". Although MAC in ethernet header is 00:00:00:11:11:11!
-3. Switch (S) see this reply and learns 00:00:00:11:11:11 to it MAC address table. (A) see this reply and add entry to ARP cache: 192.168.0.3 -> 00:00:00:22:22:22
-4. (A) sends unicast packet (ICMP echo request) to 192.168.0.3, with ethernet destination address 00:00:00:22:22:22
-5. Switch (S) does not know where is 00:00:00:22:22:22, so it sends this packet to all ports
-6. (C) receives ICMP echo request and generates ICMP echo reply. Ethernet header now contains 00:00:00:22:22:22.
-7. Switch see frame with src 00:00:00:22:22:22 and learns it. All happy, traffic passes.
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-In openvpn case, it looks like there is no step 5, so probably it is a bug. So I better should fix this instead of doing tricks with ARP.
+--PryeMBWNihx6Jibm
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBUxcWuakuBuNlUUl1AQJnrAP9Er+6/mUBC77xCYXmkfHiB3K1Llrs3I6o
+Y4/iBoeAnvMUXRj6UzPOjN6KufjfwcLJhBAl6P55EKJALT4F0QCNQY6xO7JznqRa
+vW95/4nb/kM4XxWiWns5qpKG9XHbbVQ+WCO4svfZcuvWLOpP0SQ65iInhrc8PFuP
+VYqbST2ijK8=
+=wqGR
+-----END PGP SIGNATURE-----
+
+--PryeMBWNihx6Jibm--
 
