@@ -1,8 +1,8 @@
-From: Abdullah Alshalan <aalshala@...1837...>
-Message-Id: <20A288CF-1387-4616-B6C4-9DAEADAB02A7@...1837...>
-Date: Thu, 13 Mar 2014 14:37:05 -0700
-Mime-Version: 1.0 (Mac OS X Mail 7.2 \(1874\))
-Subject: [Openvpn-devel] TLS (SSL) handshake upon reconnecting
+Message-ID: <5322C73E.3070602@...515...>
+Date: Fri, 14 Mar 2014 11:09:18 +0200
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Tap-windows NDIS 6 driver now on GitHub
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,21 +11,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
-I have a few questions about OpenVPN and I would appreciate if you can answ=
-er whatever you can.
+Hi all,
 
-1- Does OpenVPN use a lightweight SSL handshake upon automatic reconnection=
-?=20
-2- If so, when does OpenVPN do a full handshake vs. lightweight (abbreviate=
-d) handshake?=20
-3- Does it renogotiate the master key upon reconnection?
-4- In a mobile environment, would it be better to replace openssl with WTLS=
-? what's your take on that?
+The NDIS 6 version of the tap-windows driver is now available in source
+code form:
 
-Thank you,
-Abdullah
+<https://github.com/OpenVPN/tap-windows6>
+
+The license is the same as that of the old driver (GPLv2). I will
+integrate this new driver with experimental OpenVPN 2.3.2 installers
+soon. The plan is to maintain both NDIS 5 and NDIS 6 drivers for a
+while, because Windows XP lacks NDIS 6 support.
+
+From what I've gathered NDIS 5 support will be removed in Windows 8.2.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+
