@@ -1,11 +1,11 @@
-Date: Mon, 17 Mar 2014 20:12:36 +0100 (CET)
-Message-Id: <201403171912.s2HJCaS4003327@...1295...>
+Date: Mon, 17 Mar 2014 20:12:42 +0100 (CET)
+Message-Id: <201403171912.s2HJCgt6027162@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1395060345-30870-1-git-send-email-arne@...1227...>
-References: <1395060345-30870-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix warning for max-routes: do
-	not quit when parsing an old configuration. Format the
-	message to be more like the other deprecated options
+In-Reply-To: <1395017376-24554-1-git-send-email-james@...515...>
+References: <1395017376-24554-1-git-send-email-james@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Set SSL_OP_NO_TICKET flag in
+	SSL context for OpenSSL builds,
+	to disable TLS stateless session resumption.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,22 +16,22 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: James Yonan <james@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK. Patch has been applied to the master branch (no reason to apply to 2.3
-as it fixes a change introduced in master only).
+Your patch has been applied to the master and release/2.3 branches.
 
-commit 4affd9c98636e6c83aad4f0e7859a29f66898b72 (master)
+commit 25f4d4b49bff342fd9dd54cd22f14c9de49e9f8b (master)
+commit 058e889d186c616c648802da2eadf0380086bd6e (release/2.3)
 
-Author: Arne Schwabe
-Date:   Mon Mar 17 13:45:45 2014 +0100
+Author: James Yonan
+Date:   Sun Mar 16 18:49:36 2014 -0600
 
-     Fix warning for max-routes: do not quit when parsing an old configuration. Format the message to be more like the other deprecated options
+     Set SSL_OP_NO_TICKET flag in SSL context for OpenSSL builds, to disable TLS stateless session resumption.
 
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1395060345-30870-1-git-send-email-arne@...1227...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8354
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <1395017376-24554-1-git-send-email-james@...515...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8346
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
