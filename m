@@ -1,8 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Mon, 17 Mar 2014 13:56:53 +0100
-Message-Id: <1395061013-1802-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Introduce safety check for http proxy
-	options
+Date: Mon, 17 Mar 2014 20:12:30 +0100 (CET)
+Message-Id: <201403171912.s2HJCUOD028891@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1395061013-1802-1-git-send-email-arne@...1227...>
+References: <1395061013-1802-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Introduce safety check for http
+	proxy options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,27 +15,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
----
- src/openvpn/options.c | 3 +++
- 1 file changed, 3 insertions(+)
+ACK.  Patch has been applied to the master and release/2.3 branches.
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index d69e28f..d4c8196 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -1986,6 +1986,9 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
- #ifdef ENABLE_HTTP_PROXY
-   if ((ce->http_proxy_options) && ce->proto != PROTO_TCP_CLIENT)
-     msg (M_USAGE, "--http-proxy MUST be used in TCP Client mode (i.e. --proto tcp-client)");
-+  if ((ce->http_proxy_options) && !ce->http_proxy_options->server)
-+    msg (M_USAGE, "--http-proxy not specified but other http proxy options present");
-+
- #endif
- 
- #if defined(ENABLE_HTTP_PROXY) && defined(ENABLE_SOCKS)
--- 
-1.8.5.2 (Apple Git-48)
+commit 087b510365d9aad8f656a8fb0cc07d51511be9d0 (master)
+commit 74d53c9bf986d835e1862aa3989fac186b5d76f3 (release/2.3)
+
+Author: Arne Schwabe
+Date:   Mon Mar 17 13:56:53 2014 +0100
+
+     Introduce safety check for http proxy options
+
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1395061013-1802-1-git-send-email-arne@...1227...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8353
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
