@@ -1,9 +1,11 @@
 From: Steffan Karger <steffan.karger@...1435...>
-Date: Mon, 17 Mar 2014 11:08:24 +0100
-Message-ID: <1CED409804E2164C8104F9E623B08B90155646CEF6@...1436...>
+Date: Mon, 17 Mar 2014 11:45:15 +0100
+Message-ID: <1CED409804E2164C8104F9E623B08B90155646CF52@...1436...>
 References: <1395017376-24554-1-git-send-email-james@...515...>
 	<20140317083335.GB16637@...1296...>
-In-Reply-To: <20140317083335.GB16637@...1296...>
+	<1CED409804E2164C8104F9E623B08B90155646CEF6@...1436...>
+	<5326D101.1030802@...1114...>
+In-Reply-To: <5326D101.1030802@...1114...>
 Content-Language: en-US
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] [PATCH] Set SSL_OP_NO_TICKET flag in
@@ -19,42 +21,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>, James Yonan <james@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Gert Doering <gert@...1296...>, James Yonan <james@...515...>
 
 Hi,
 
 > -----Original Message-----
-> From: Gert Doering [mailto:gert@...1296...]
-> Sent: maandag 17 maart 2014 9:34
+> From: David Sommerseth [mailto:openvpn.list@...1114...]
+> Sent: maandag 17 maart 2014 11:40
 > Subject: Re: [Openvpn-devel] [PATCH] Set SSL_OP_NO_TICKET flag in SSL
 > context for OpenSSL builds, to disable TLS stateless session
 > resumption.
 >=20
-> Hi,
->=20
-> On Sun, Mar 16, 2014 at 06:49:36PM -0600, James Yonan wrote:
-> > OpenVPN doesn't want or need SSL session renegotiation or resumption,
-> > as it handles renegotiation on its own.
+> On 17/03/14 11:08, Steffan Karger wrote:
+> > I think this should go into all releases we'll do from now on.
 > >
-> > For this reason, OpenVPN always disables the SSL session cache:
-> >
-> > SSL_CTX_set_session_cache_mode (ctx, SSL_SESS_CACHE_OFF)
-> >
-> > However, even with the above code, stateless session resumption is
-> > still possible unless explicitly disabled with the SSL_OP_NO_TICKET
-> > flag.  This patch does this.
+> > Also, ACK on the patch. Together with SSL_SESS_CACHE_OFF, this seems
+> > to fully disable TLS session renegotiation and resumption.
 >=20
-> I assume this should go into all OpenVPN branches, that is, master,
-> 2.3, and if we ever do another 2.2, into that one as well?
->=20
-> (not ACKing or NAKing the patch itself, this is not my field of
-> expertise)
+> This patch only covers OpenSSL.  Is there an equivalent for PolarSSL as
+> well?  Or isn't it needed at all on PolarSSL?
 
-I think this should go into all releases we'll do from now on.
-
-Also, ACK on the patch. Together with SSL_SESS_CACHE_OFF, this seems to ful=
-ly disable TLS session renegotiation and resumption.
+PolarSSL disables session renegotiation by default (sane defaults ftw!), an=
+d OpenVPN does not enable it. So there's nothing to fix for PolarSSL.
 
 -Steffan
 
