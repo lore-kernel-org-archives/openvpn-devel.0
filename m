@@ -1,10 +1,11 @@
-Date: Mon, 17 Mar 2014 20:12:30 +0100 (CET)
-Message-Id: <201403171912.s2HJCUOD028891@...1295...>
+Date: Mon, 17 Mar 2014 20:12:36 +0100 (CET)
+Message-Id: <201403171912.s2HJCaS4003327@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1395061013-1802-1-git-send-email-arne@...1227...>
-References: <1395061013-1802-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Introduce safety check for http
-	proxy options
+In-Reply-To: <1395060345-30870-1-git-send-email-arne@...1227...>
+References: <1395060345-30870-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix warning for max-routes: do
+	not quit when parsing an old configuration. Format the
+	message to be more like the other deprecated options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,19 +19,19 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.  Patch has been applied to the master and release/2.3 branches.
+ACK. Patch has been applied to the master branch (no reason to apply to 2.3
+as it fixes a change introduced in master only).
 
-commit 087b510365d9aad8f656a8fb0cc07d51511be9d0 (master)
-commit 74d53c9bf986d835e1862aa3989fac186b5d76f3 (release/2.3)
+commit 4affd9c98636e6c83aad4f0e7859a29f66898b72 (master)
 
 Author: Arne Schwabe
-Date:   Mon Mar 17 13:56:53 2014 +0100
+Date:   Mon Mar 17 13:45:45 2014 +0100
 
-     Introduce safety check for http proxy options
+     Fix warning for max-routes: do not quit when parsing an old configuration. Format the message to be more like the other deprecated options
 
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1395061013-1802-1-git-send-email-arne@...1227...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8353
+     Message-Id: <1395060345-30870-1-git-send-email-arne@...1227...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8354
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
