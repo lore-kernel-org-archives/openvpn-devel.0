@@ -1,9 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 21 Mar 2014 14:18:34 +0100
-Message-Id: <1395407925-25518-2-git-send-email-arne@...1227...>
+Date: Fri, 21 Mar 2014 14:18:39 +0100
+Message-Id: <1395407925-25518-7-git-send-email-arne@...1227...>
 In-Reply-To: <1395407925-25518-1-git-send-email-arne@...1227...>
 References: <1395407925-25518-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 01/12] Fix connecting to localhost on Android
+Subject: [Openvpn-devel] [PATCH 06/12] Fix for server selecting address
+	family
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,94 +17,55 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Do not protect the link socket when connecting to localhost. Also only call the protect function on valid socket
 ---
- src/openvpn/socket.c | 21 ++++++++++++++++++---
- src/openvpn/socket.h | 17 +++++++++++++++++
- 2 files changed, 35 insertions(+), 3 deletions(-)
+ src/openvpn/socket.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
 diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 100eedd..91c6af0 100644
+index bf793f4..97f6756 100644
 --- a/src/openvpn/socket.c
 +++ b/src/openvpn/socket.c
-@@ -689,17 +689,24 @@ create_socket (struct link_socket *sock)
- 
-     /* set socket to --mark packets with given value */
-     socket_set_mark (sock->sd, sock->mark);
-+}
- 
- #ifdef TARGET_ANDROID
-+static void protect_fd_nonlocal (int fd, const struct sockaddr* addr)
-+{
-   /* pass socket FD to management interface to pass on to VPNService API
-    * as "protected socket" (exempt from being routed into tunnel)
-    */
-+  if (addr_local (addr)) {
-+    msg(M_DEBUG, "Address is local, not protecting socket fd %d", fd);
-+    return;
-+  }
- 
--  management->connection.fdtosend = sock->sd;
-+  msg(M_DEBUG, "Protecting socket fd %d", fd);
-+  management->connection.fdtosend = fd;
-   management_android_control (management, "PROTECTFD", __func__);
--#endif
+@@ -1509,21 +1509,10 @@ create_new_socket (struct link_socket* sock)
+       /* clear destination set by set_actual_address */
+       CLEAR(sock->info.lsa->actual.dest);
+     }
+-
+-  /*
+-   * Create the socket early if socket should be bound
+-   */
+-  if (sock->bind_local)
+-    {
+-      create_socket (sock);
+-
+-      if (sock->bind_local)
+-          bind_local(sock);
+-    }
 -
  }
-+#endif
  
- /*
-  * Functions used for establishing a TCP stream connection.
-@@ -935,6 +942,10 @@ openvpn_connect (socket_descriptor_t sd,
- {
-   int status = 0;
  
-+#ifdef TARGET_ANDROID
-+  protect_fd_nonlocal(sd, remote);
-+#endif
 +
- #ifdef CONNECT_NONBLOCK
-   set_nonblock (sd);
-   status = connect (sd, remote, af_addr_size(remote->sa_family));
-@@ -1788,6 +1799,10 @@ link_socket_init_phase2 (struct link_socket *sock,
- 	  phase2_socks_client (sock, sig_info);
- #endif
- 	}
-+#ifdef TARGET_ANDROID
-+      if (sock->sd != -1)
-+	protect_fd_nonlocal (sock->sd, &sock->info.lsa->actual.dest.addr.sa);
-+#endif
-       if (sig_info && sig_info->signal_received)
- 	goto done;
-     }
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index e0e0fff..191668f 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -598,6 +598,23 @@ addr_defined (const struct openvpn_sockaddr *addr)
-     default: return 0;
-   }
- }
+ /* bind socket if necessary */
+ void
+ link_socket_init_phase1 (struct link_socket *sock,
+@@ -1946,6 +1935,17 @@ link_socket_init_phase2 (struct link_socket *sock,
+       /* If socket has not already been created create it now */
+       if (sock->sd == SOCKET_UNDEFINED)
+ 	{
++          /* If we have no --remote and have still not figured out the
++           * protocol family to use we will use the first of the bind */
++          if (sock->bind_local && sock->info.lsa->bind_local
++              && !sock->info.lsa->actual.ai_family && !sock->remote_host)
++          {
++            msg (M_WARN, "Could not determine IPv4/IPv6 protocol. Using %s",
++                 addr_family_name(sock->info.lsa->bind_local->ai_family));
++            set_actual_address(&sock->info.lsa->actual, sock->info.lsa->bind_local);
 +
-+static inline bool
-+addr_local (const struct sockaddr *addr)
-+{
-+    if (!addr)
-+	return false;
-+    switch (addr->sa_family) {
-+	case AF_INET:
-+	    return ((const struct sockaddr_in*)addr)->sin_addr.s_addr == htonl(INADDR_LOOPBACK);
-+	case AF_INET6:
-+	    return  IN6_IS_ADDR_LOOPBACK(&((const struct sockaddr_in6*)addr)->sin6_addr);
-+	default:
-+	    return false;
-+    }
-+}
++          }
 +
-+
- static inline bool
- addr_defined_ipi (const struct link_socket_actual *lsa)
- {
+ 	  if (sock->info.lsa->actual.ai_family)
+ 	    {
+ 	      create_socket (sock);
 -- 
 1.8.5.2 (Apple Git-48)
 
