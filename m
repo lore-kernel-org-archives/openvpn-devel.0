@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 21 Mar 2014 14:18:39 +0100
-Message-Id: <1395407925-25518-7-git-send-email-arne@...1227...>
+Date: Fri, 21 Mar 2014 14:18:45 +0100
+Message-Id: <1395407925-25518-13-git-send-email-arne@...1227...>
 In-Reply-To: <1395407925-25518-1-git-send-email-arne@...1227...>
 References: <1395407925-25518-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 06/12] Fix for server selecting address
-	family
+Subject: [Openvpn-devel] [PATCH 12/12] Fix client-nat only working is also
+	mss-fix is specified.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,55 +17,44 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+Also make sure that with this fix compiling without ENABLE_CLIENT_NAT does not result in always checking the ip header
 ---
- src/openvpn/socket.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ src/openvpn/forward.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index bf793f4..97f6756 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -1509,21 +1509,10 @@ create_new_socket (struct link_socket* sock)
-       /* clear destination set by set_actual_address */
-       CLEAR(sock->info.lsa->actual.dest);
-     }
--
--  /*
--   * Create the socket early if socket should be bound
--   */
--  if (sock->bind_local)
--    {
--      create_socket (sock);
--
--      if (sock->bind_local)
--          bind_local(sock);
--    }
--
- }
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 0ec00f3..453ab3f 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1017,6 +1017,10 @@ process_ip_header (struct context *c, unsigned int flags, struct buffer *buf)
+   if (!c->options.passtos)
+     flags &= ~PIPV4_PASSTOS;
+ #endif
++#ifdef ENABLE_CLIENT_NAT
++  if (!c->options.client_nat)
++    flags &= ~PIPV4_CLIENT_NAT;
++#endif
+   if (!c->options.route_gateway_via_dhcp)
+     flags &= ~PIPV4_EXTRACT_DHCP_ROUTER;
  
- 
-+
- /* bind socket if necessary */
- void
- link_socket_init_phase1 (struct link_socket *sock,
-@@ -1946,6 +1935,17 @@ link_socket_init_phase2 (struct link_socket *sock,
-       /* If socket has not already been created create it now */
-       if (sock->sd == SOCKET_UNDEFINED)
+@@ -1026,11 +1030,14 @@ process_ip_header (struct context *c, unsigned int flags, struct buffer *buf)
+        * The --passtos and --mssfix options require
+        * us to examine the IPv4 header.
+        */
++      if (flags & (PIP_MSSFIX|PIPV4_EXTRACT_DHCP_ROUTER
+ #if PASSTOS_CAPABILITY
+-      if (flags & (PIPV4_PASSTOS|PIP_MSSFIX))
+-#else
+-      if (flags & PIP_MSSFIX)
++                   | PIPV4_PASSTOS
++#endif
++#ifdef ENABLE_CLIENT_NAT
++                   | PIPV4_CLIENT_NAT
+ #endif
++                   ))
  	{
-+          /* If we have no --remote and have still not figured out the
-+           * protocol family to use we will use the first of the bind */
-+          if (sock->bind_local && sock->info.lsa->bind_local
-+              && !sock->info.lsa->actual.ai_family && !sock->remote_host)
-+          {
-+            msg (M_WARN, "Could not determine IPv4/IPv6 protocol. Using %s",
-+                 addr_family_name(sock->info.lsa->bind_local->ai_family));
-+            set_actual_address(&sock->info.lsa->actual, sock->info.lsa->bind_local);
-+
-+          }
-+
- 	  if (sock->info.lsa->actual.ai_family)
- 	    {
- 	      create_socket (sock);
+ 	  struct buffer ipbuf = *buf;
+ 	  if (is_ipv4 (TUNNEL_TYPE (c->c1.tuntap), &ipbuf))
 -- 
 1.8.5.2 (Apple Git-48)
 
