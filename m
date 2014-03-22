@@ -1,10 +1,10 @@
-Date: Sat, 22 Mar 2014 18:37:36 +0100 (CET)
-Message-Id: <201403221737.s2MHbarW000184@...1295...>
+Date: Sat, 22 Mar 2014 19:17:53 +0100 (CET)
+Message-Id: <201403221817.s2MIHrZ9017576@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1395407925-25518-3-git-send-email-arne@...1227...>
-References: <1395407925-25518-3-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Move the initialization of the
-	environment to the top so c2.es is initialized
+In-Reply-To: <1395407925-25518-4-git-send-email-arne@...1227...>
+References: <1395407925-25518-4-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Workaround broken Android 4.4
+	VpnService API for persist-tun mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,25 +18,24 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK, with the explanation given on IRC:
+ACK.  This has limited impact on "the core" as it's all #ifdef ANDROID
+only - and is obviously necessary changes, as well contained as possible.
 
-13:54 <@plai> that patch is FOSDEM last year time
-13:58 <@plai> Something could fail with an msg (M_FATAL, which calls then 
-              openvpn_exit with calls the exit script hook, which fails if the 
-              env is not available
+I have amended the commit message somewhat to make it more clear what
+the patch does.
 
+Patch has been applied to the master branch.
 
-Your patch has been applied to the master branch.
+commit c058cbffc182b6618182a3ff8b13c66d01ce937d
 
-commit ac1c2f259b44d1229a65a3e639b09d57a4e2a53b
 Author: Arne Schwabe
-Date:   Fri Mar 21 14:18:35 2014 +0100
+Date:   Fri Mar 21 14:18:36 2014 +0100
 
-     Move the initialization of the environment to the top so c2.es is initialized
+     Workaround broken Android 4.4 VpnService API for persist-tun mode
 
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1395407925-25518-3-git-send-email-arne@...1227...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8372
+     Message-Id: <1395407925-25518-4-git-send-email-arne@...1227...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8373
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
