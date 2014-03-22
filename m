@@ -1,15 +1,10 @@
-Date: Fri, 21 Mar 2014 19:51:04 +0100
+Date: Sat, 22 Mar 2014 18:37:36 +0100 (CET)
+Message-Id: <201403221737.s2MHbarW000184@...1295...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20140321185104.GU16637@...1296...>
-References: <1387279299-24755-1-git-send-email-arne@...1227...>
-	<20131217130205.GX161@...1296...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Tp5pVI73MC2cHD9F"
-Content-Disposition: inline
-In-Reply-To: <20131217130205.GX161@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Implement an easy parsable log output
-	that allows access to flags of the log message
+In-Reply-To: <1395407925-25518-3-git-send-email-arne@...1227...>
+References: <1395407925-25518-3-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Move the initialization of the
+	environment to the top so c2.es is initialized
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,66 +13,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---Tp5pVI73MC2cHD9F
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+ACK, with the explanation given on IRC:
 
-Hi,
+13:54 <@plai> that patch is FOSDEM last year time
+13:58 <@plai> Something could fail with an msg (M_FATAL, which calls then 
+              openvpn_exit with calls the exit script hook, which fails if the 
+              env is not available
 
-On Tue, Dec 17, 2013 at 02:02:06PM +0100, Gert Doering wrote:
-> On Tue, Dec 17, 2013 at 12:21:39PM +0100, Arne Schwabe wrote:
-> > @@ -2273,6 +2273,12 @@ otherwise would be prepended. In particular, thi=
-s applies to
-> >  log messages sent to stdout.
-> >  .\"*********************************************************
-> >  .TP
-> > +.B \-\-machine-readable-output
-> > +Always write timestamps and message flags to log messages, even when t=
-hey
-> > +otherwise would not be prefixed. In particular, this applies to
-> > +log messages sent to stdout.
-> > +.\"*********************************************************
-> > +.TP
->=20
-> I'm fine with it, but I'd like a bit more review by others - is this
-> good enough?  Does it cover all corner cases?
->=20
-> It certainly looks nice on the "OpenVPN for Android" App if you can use
-> the slider to increase/decrease the log level for an already-happened
-> openvpn connection, in real time :-)
 
-Just FTR, as nobody has complained about this, I'm ACKing it now and
-merging it.
+Your patch has been applied to the master branch.
 
-We *could* use a bit more of your attention in reviewing code, not only
-in lengthy what-if discussions... :-)
+commit ac1c2f259b44d1229a65a3e639b09d57a4e2a53b
+Author: Arne Schwabe
+Date:   Fri Mar 21 14:18:35 2014 +0100
 
-gert
+     Move the initialization of the environment to the top so c2.es is initialized
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1395407925-25518-3-git-send-email-arne@...1227...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8372
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---Tp5pVI73MC2cHD9F
-Content-Type: application/pgp-signature
-Content-Disposition: inline
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
+--
+kind regards,
 
-iQCVAwUBUyyKGKkuBuNlUUl1AQIJ6gP9F0q0qRCLODTctIpGp7XscqSMiahsornY
-hLcbZqm+9O2+8L0Hwhh30iT0xqgPECDIT52IFbN3Y/ogAnirKrYMPSaNvTF56nJ0
-NvoSVQzTCs43U+I0ABD5BHjZHLuqCQTwVyqDtl2eqcS+wMeUDq/fJrOe0vFCQE1t
-JG5ikDjXs4w=
-=eyuX
------END PGP SIGNATURE-----
+Gert Doering
 
---Tp5pVI73MC2cHD9F--
 
