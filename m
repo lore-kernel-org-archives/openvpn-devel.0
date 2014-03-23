@@ -1,9 +1,10 @@
-Date: Sun, 23 Mar 2014 20:24:14 +0100 (CET)
-Message-Id: <201403231924.s2NJOEJM013622@...1295...>
+Date: Sun, 23 Mar 2014 21:50:40 +0100 (CET)
+Message-Id: <201403232050.s2NKoex1026708@...1295...>
 From: Gert Doering <gert@...1296...>
-Subject: [PATCH applied] Re: =?unknown-8bit?q?Don=E2=80=99t?= show the connection profile store in options->ce if there is a connection_list defined.
-In-Reply-To: <1395407925-25518-8-git-send-email-arne@...1227...>
-References: <1395407925-25518-8-git-send-email-arne@...1227...>
+In-Reply-To: <1395407925-25518-9-git-send-email-arne@...1227...>
+References: <1395407925-25518-9-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add gateway and device to
+	android control messages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,19 +18,22 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK. "Makes sense" :-)
+ACK, on the basis of "this is all happening inside #ifdef ANDROID, and
+from the description on IRC" (necessary to enable the GUI to properly
+exclude routes-to-eth0 by recognizing routes-to-eth0 in the first place,
+like the vpn gateway in the "redirect-gateway" case).
 
-Your patch has been applied to the master branch.
+Patch has been applied to the master branch.
 
-commit 98e24cc7e8ce3dafada43e46aef32a3d6a7a4f27
+commit 928e341073cbe5aef4496e0b55aae5c6335b1fc3
 Author: Arne Schwabe
-Date:   Fri Mar 21 14:18:40 2014 +0100
+Date:   Fri Mar 21 14:18:41 2014 +0100
 
-     Don't show the connection profile store in options->ce if there is a connection_list defined.
+     Add gateway and device to android control messages
 
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1395407925-25518-8-git-send-email-arne@...1227...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8377
+     Message-Id: <1395407925-25518-9-git-send-email-arne@...1227...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8368
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
