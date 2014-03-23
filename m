@@ -1,10 +1,10 @@
-Date: Sun, 23 Mar 2014 22:04:38 +0100 (CET)
-Message-Id: <201403232104.s2NL4cVi019388@...1295...>
+Date: Sun, 23 Mar 2014 22:13:32 +0100 (CET)
+Message-Id: <201403232113.s2NLDWNW028186@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1395582781-27966-1-git-send-email-steffan@...1856...>
-References: <1395582781-27966-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Bump minimum OpenSSL version to
-	0.9.8
+In-Reply-To: <1393684575-28112-2-git-send-email-steffan@...1856...>
+References: <1393684575-28112-2-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add openssl-specific common
+	cipher list names to ssl.c.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,18 +18,20 @@ Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+Your patch has been applied to the master and release/2.3 branch.
 
-commit 69a6b0c388fe1f463ab59cc8e414a4c5c635ab79
+commit 0146fd00c3bd70a470290be7be27ee75db2db63b (master)
+commit a39ceebc4f7cf05f07941556c9d11430cf855e22 (master)
+
 Author: Steffan Karger
-Date:   Sun Mar 23 14:53:01 2014 +0100
+Date:   Sat Mar 1 15:36:14 2014 +0100
 
-     Bump minimum OpenSSL version to 0.9.8
+     Add openssl-specific common cipher list names to ssl.c.
 
      Signed-off-by: Steffan Karger <steffan@...1856...>
      Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1395582781-27966-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8392
+     Message-Id: <1393684575-28112-2-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8316
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
