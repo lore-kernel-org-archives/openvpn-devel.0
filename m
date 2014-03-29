@@ -1,8 +1,12 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Fri, 28 Mar 2014 11:07:01 +0100
-Message-Id: <1396001222-5033-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Fix man page and OSCP script:
-	tls_serial_{n} is decimal
+MIME-Version: 1.0
+In-Reply-To: <1396001222-5033-1-git-send-email-arne@...1227...>
+References: <1396001222-5033-1-git-send-email-arne@...1227...>
+From: Steffan Karger <steffan@...1856...>
+Date: Sun, 30 Mar 2014 00:48:37 +0100
+Message-ID: <CAA1AbxJCv9ff7XHv1GKtCPuB-Hc5Lv33ufPfqcTraNpFnJf7fw@...278...>
+Content-Type: multipart/alternative; boundary=001a11c29acc35d29804f5c77628
+Subject: Re: [Openvpn-devel] [PATCH] Fix man page and OSCP script:
+ tls_serial_{n} is decimal
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,49 +15,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Commit 7d5e26cbb53 fixed extracting serial but did not change the format,
-which always has been decimal. This patch fixes the manpage and
-OSCP.sh script to conform with the implementation.
----
- contrib/OCSP_check/OCSP_check.sh | 2 +-
- doc/openvpn.8                    | 6 +++---
- 2 files changed, 4 insertions(+), 4 deletions(-)
+--001a11c29acc35d29804f5c77628
+Content-Type: text/plain; charset=ISO-8859-1
 
-diff --git a/contrib/OCSP_check/OCSP_check.sh b/contrib/OCSP_check/OCSP_check.sh
-index 847be45..7e9e1e8 100644
---- a/contrib/OCSP_check/OCSP_check.sh
-+++ b/contrib/OCSP_check/OCSP_check.sh
-@@ -97,7 +97,7 @@ if [ $check_depth -eq -1 ] || [ $cur_depth -eq $check_depth ]; then
-                     "$nonce" \
-                     -CAfile "$verify" \
-                     -url "$ocsp_url" \
--                    -serial "0x${serial}" 2>/dev/null)
-+                    -serial "${serial}" 2>/dev/null)
- 
-     if [ $? -eq 0 ]; then
-       # check that it's good
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 3a58317..6dc3f87 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -6080,9 +6080,9 @@ where
- is the verification level.  Only set for TLS connections.  Set prior
- to execution of
- .B \-\-tls-verify
--script. This is in the form of a hex string like "37AB46E0", which is
--suitable for doing serial-based OCSP queries (with OpenSSL, you have
--to prepend "0x" to the string). If something goes wrong while reading
-+script. This is in the form of a decimal string like "933971680", which is
-+suitable for doing serial-based OCSP queries (with OpenSSL, do not
-+prepend "0x" to the string) If something goes wrong while reading
- the value from the certificate it will be an empty string, so your
- code should check that.
- See the contrib/OCSP_check/OCSP_check.sh script for an example.
--- 
-1.8.5.2 (Apple Git-48)
+Hi,
 
+On Fri, Mar 28, 2014 at 11:07 AM, Arne Schwabe <arne@...1227...> wrote:
+
+> Commit 7d5e26cbb53 fixed extracting serial but did not change the format,
+> which always has been decimal. This patch fixes the manpage and
+> OSCP.sh script to conform with the implementation.
+> ---
+> [diff]
+>
+
+NACK, because glancing over the code tells me PolarSSL builds do use hex
+strings. So this fixes the inconsistency between implementation and manpage
+for OpenSSL builds, but adds inconsistency for PolarSSL builds.
+
+I see three options here:
+1 - Leave the difference, explain in the manpage.
+2 - Change PolarSSL builds to use dec representation
+3 - Change OpenSSL builds to use hax representation
+
+I tend towards "just update the manpage". Changing PolarSSL builds to dec
+needs changes in PolarSSL, or manually parsing the serial in OpenVPN.
+Changing OpenSSL builds to hex is trivial but breaks backward
+compatibility. Any other opinions?
+
+-Steffan
+
+--001a11c29acc35d29804f5c77628
+Content-Type: text/html; charset=ISO-8859-1
+
+<div dir="ltr">Hi,<br><div><div class="gmail_extra"><br><div class="gmail_quote">On Fri, Mar 28, 2014 at 11:07 AM, Arne Schwabe <span dir="ltr">&lt;<a href="mailto:arne@...1227..." target="_blank">arne@...1227...</a>&gt;</span> wrote:<br>
+
+<blockquote class="gmail_quote" style="margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><div>Commit 7d5e26cbb53 fixed extracting serial but did not change the format,<br>
+which always has been decimal. This patch fixes the manpage and<br>
+OSCP.sh script to conform with the implementation.<br>
+---<br></div>
+[diff]<span class=""><font color="#888888"><br>
+</font></span></blockquote><div><div><div><br>NACK, because glancing over the code tells me PolarSSL builds 
+do use hex strings. So this fixes the inconsistency between 
+implementation and manpage for OpenSSL builds, but adds inconsistency 
+for PolarSSL builds.<br><br></div>I see three options here:<br>1 - Leave the difference, explain in the manpage.<br></div><div>2 - Change PolarSSL builds to use dec representation<br></div><div>3 - Change OpenSSL builds to use hax representation<br>
+
+<br></div><div>I
+ tend towards &quot;just update the manpage&quot;. Changing PolarSSL builds to dec
+ needs changes in PolarSSL, or manually parsing the serial in OpenVPN. Changing
+ OpenSSL builds to hex is trivial but breaks backward compatibility.  Any other opinions?<br><br></div>-Steffan <br></div></div></div></div></div>
+
+--001a11c29acc35d29804f5c77628--
 
