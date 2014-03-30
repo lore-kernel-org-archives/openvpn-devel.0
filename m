@@ -1,9 +1,15 @@
-Date: Sun, 30 Mar 2014 15:44:13 +0200 (CEST)
-Message-Id: <201403301344.s2UDiD3O003513@...1295...>
+Date: Sun, 30 Mar 2014 15:46:19 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1396181376-32022-1-git-send-email-gert@...1296...>
-References: <1396181376-32022-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix crash when using --inetd.
+Message-ID: <20140330134619.GT16637@...1296...>
+References: <1396001222-5033-1-git-send-email-arne@...1227...>
+	<CAA1AbxJCv9ff7XHv1GKtCPuB-Hc5Lv33ufPfqcTraNpFnJf7fw@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="8Mfcnc8eRzVGEeu4"
+Content-Disposition: inline
+In-Reply-To: <CAA1AbxJCv9ff7XHv1GKtCPuB-Hc5Lv33ufPfqcTraNpFnJf7fw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix man page and OSCP script:
+	tls_serial_{n} is decimal
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,29 +18,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Patch has been applied to the master branch.
+--8Mfcnc8eRzVGEeu4
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-commit 1ba6f427d3ea361b9859cff9cbf4d1887240ed6f (master)
+Hi,
 
-Author: Gert Doering
-Date:   Sun Mar 30 14:09:36 2014 +0200
+On Sun, Mar 30, 2014 at 12:48:37AM +0100, Steffan Karger wrote:
+> 3 - Change OpenSSL builds to use hax representation
 
-     Fix crash when using --inetd.
+I tend toward this one - user visible behaviour shouldn't change (unless
+unavoidable) depending on SSL library used.
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1396181376-32022-1-git-send-email-gert@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8412
+So for me this boils down to "how many users are relying on the current
+behaviour, which is not what the docs say it should be"?
 
+gert
 
---
-kind regards,
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Gert Doering
+--8Mfcnc8eRzVGEeu4
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBUzggK6kuBuNlUUl1AQJVEAP+L/BHDrW7z013dtyl5xULTYyoUoH2R2U4
+F0fgmHTwxZ5L0gtDZ+WfgDCX4f9JRfIxjzi7way/5xUmwoInkC6V3osGJVG/1+Nn
+ZDEpLzVgUIS6VninCOWR7/wqNaqKKN0a92YFvX2AUHimKC4/ky41btGYEx0GVmCR
+7m7xmEQR9KA=
+=B4oa
+-----END PGP SIGNATURE-----
+
+--8Mfcnc8eRzVGEeu4--
 
