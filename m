@@ -1,15 +1,9 @@
-Content-Type: multipart/signed;
-	boundary="Apple-Mail=_0A423AE2-6172-402B-985E-B7E47E7D351A";
-	protocol="application/pgp-signature"; micalg=pgp-sha1
-Mime-Version: 1.0 (Mac OS X Mail 7.2 \(1874\))
-From: Eric Crist <ecrist@...1286...>
-In-Reply-To: <CAA1AbxJCv9ff7XHv1GKtCPuB-Hc5Lv33ufPfqcTraNpFnJf7fw@...278...>
-Date: Sat, 29 Mar 2014 19:24:36 -0500
-Message-Id: <083C1B4C-B2E2-4205-B290-9C0BB6751C48@...1286...>
-References: <1396001222-5033-1-git-send-email-arne@...1227...>
-	<CAA1AbxJCv9ff7XHv1GKtCPuB-Hc5Lv33ufPfqcTraNpFnJf7fw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix man page and OSCP script:
-	tls_serial_{n} is decimal
+Resent-Message-Id: <201403301211.s2UCBhT2025604@...1295...>
+From: Gert Doering <gert@...1296...>
+Date: Sun, 30 Mar 2014 14:09:36 +0200
+Message-Id: <1396181376-32022-1-git-send-email-gert@...1296...>
+Resent-To: openvpn-devel@lists.sourceforge.net
+Subject: [Openvpn-devel] [PATCH] Fix crash when using --inetd.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,68 +12,91 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---Apple-Mail=_0A423AE2-6172-402B-985E-B7E47E7D351A
-X-Eric-Conspiracy: There is no conspiracy.
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Change "local" argument to socket_do_listen() to avoid calling
+"local->ai_addr" in the caller for the "do_listen == FALSE" case,
+in which case it could be NULL.
 
-On Mar 29, 2014, at 18:48:37, Steffan Karger <steffan@...1856...> wrote:
+Also, ensure "ai" is always initialized in socket_listen_accept() for
+the "!remote_dynamic" case - otherwise it will sometimes(!) crash in
+addrlist_match() later on.
 
-> Hi,
->=20
-> On Fri, Mar 28, 2014 at 11:07 AM, Arne Schwabe <arne@...1227...> wrote:
-> Commit 7d5e26cbb53 fixed extracting serial but did not change the format,
-> which always has been decimal. This patch fixes the manpage and
-> OSCP.sh script to conform with the implementation.
-> ---
-> [diff]
->=20
-> NACK, because glancing over the code tells me PolarSSL builds do use hex =
-strings. So this fixes the inconsistency between implementation and manpage=
- for OpenSSL builds, but adds inconsistency for PolarSSL builds.
->=20
-> I see three options here:
-> 1 - Leave the difference, explain in the manpage.
-> 2 - Change PolarSSL builds to use dec representation
-> 3 - Change OpenSSL builds to use hax representation
->=20
-> I tend towards "just update the manpage". Changing PolarSSL builds to dec=
- needs changes in PolarSSL, or manually parsing the serial in OpenVPN. Chan=
-ging OpenSSL builds to hex is trivial but breaks backward compatibility. An=
-y other opinions?
->=20
-> -Steffan=20
+Get rid of spurious operator precedence warning concerning GETADDR_CACHE_MASK.
+
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/socket.c | 11 ++++++-----
+ src/openvpn/socket.h |  2 +-
+ 2 files changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index b769171..7deef0a 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -917,15 +917,16 @@ static void protect_fd_nonlocal (int fd, const struct sockaddr* addr)
+  */
+ static void
+ socket_do_listen (socket_descriptor_t sd,
+-		  const struct sockaddr *local,
++		  const struct addrinfo *local,
+ 		  bool do_listen,
+ 		  bool do_set_nonblock)
+ {
+   struct gc_arena gc = gc_new ();
+   if (do_listen)
+     {
++      ASSERT(local);
+       msg (M_INFO, "Listening for incoming TCP connection on %s", 
+-	   print_sockaddr (local, &gc));
++	   print_sockaddr (local->ai_addr, &gc));
+       if (listen (sd, 1))
+ 	msg (M_ERR, "TCP: listen() failed");
+     }
+@@ -1018,7 +1019,7 @@ socket_listen_accept (socket_descriptor_t sd,
+   int new_sd = SOCKET_UNDEFINED;
+ 
+   CLEAR (*act);
+-  socket_do_listen (sd, local->ai_addr, do_listen, true);
++  socket_do_listen (sd, local, do_listen, true);
+ 
+   while (true)
+     {
+@@ -1053,7 +1054,7 @@ socket_listen_accept (socket_descriptor_t sd,
+ 
+       if (socket_defined (new_sd))
+ 	{
+-          struct addrinfo* ai;
++          struct addrinfo* ai = NULL;
+           if(remote_dynamic)
+               openvpn_getaddrinfo(0, remote_dynamic, NULL, 1, NULL,
+                                     remote_verify.addr.sa.sa_family, &ai);
+@@ -1775,7 +1776,7 @@ phase2_tcp_server (struct link_socket *sock, const char *remote_dynamic,
+       break;
+     case LS_MODE_TCP_LISTEN:
+       socket_do_listen (sock->sd,
+-			sock->info.lsa->bind_local->ai_addr,
++			sock->info.lsa->bind_local,
+ 			true,
+ 			false);
+       break;
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index f27e9a9..bffa039 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -524,7 +524,7 @@ bool unix_socket_get_peer_uid_gid (const socket_descriptor_t sd, int *uid, int *
+ #define GETADDR_PASSIVE               (1<<10)
+ #define GETADDR_DATAGRAM              (1<<11)
+ 
+-#define GETADDR_CACHE_MASK		GETADDR_DATAGRAM|GETADDR_PASSIVE
++#define GETADDR_CACHE_MASK		(GETADDR_DATAGRAM|GETADDR_PASSIVE)
+ 
+ in_addr_t getaddr (unsigned int flags,
+ 		   const char *hostname,
+-- 
+1.8.3.2
 
 
-I agree with Steffan on this.  I think it'd be better to just explain the d=
-ifference in the man page and let it be.
-
------
-Eric F Crist
-
---Apple-Mail=_0A423AE2-6172-402B-985E-B7E47E7D351A
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename=signature.asc
-X-Eric-Conspiracy: There is no conspiracy.
-Content-Type: application/pgp-signature;
-	name=signature.asc
-Content-Description: Message signed with OpenPGP using GPGMail
-
------BEGIN PGP SIGNATURE-----
-Comment: GPGTools - http://gpgtools.org
-
-iQEcBAEBAgAGBQJTN2REAAoJEHKWQhk5DQ0ODRYIAMMY20kOM/LpwXVL78mYalo8
-xOsScMT0wi3exMwrW+KDbu3n2su8vGIcEGPE52H3rQzJ+6p/toVv9bzCbRro3eGe
-qyUwn60r8j3TYYEd+EIcRl9OQk73HbxcTLCbbte7zV4uYIQcVPjVg+9sQ1mkD868
-WIQm2kEO3yjE2e7OHWcFRwpROnyblQPUddOsbltQckV4MTDlJ++qFNCKVaeuCxmU
-mD3b0Tnzz4OffvFyAgLkDKHByzv1qTUfr1gZ2Anw+gFELbMTnb2pYXGSgEuvA0MG
-zqobR5y0qvZtV9uD1IuTWOvTPLRyxLZJJjQOsutLOW27m6j9ZwsuXsKvGEm3o2Y=
-=xIVp
------END PGP SIGNATURE-----
-
---Apple-Mail=_0A423AE2-6172-402B-985E-B7E47E7D351A--
 
