@@ -1,15 +1,12 @@
-Date: Sun, 30 Mar 2014 15:46:19 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20140330134619.GT16637@...1296...>
-References: <1396001222-5033-1-git-send-email-arne@...1227...>
-	<CAA1AbxJCv9ff7XHv1GKtCPuB-Hc5Lv33ufPfqcTraNpFnJf7fw@...278...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="8Mfcnc8eRzVGEeu4"
-Content-Disposition: inline
-In-Reply-To: <CAA1AbxJCv9ff7XHv1GKtCPuB-Hc5Lv33ufPfqcTraNpFnJf7fw@...278...>
+Message-ID: <53391C5C.90705@...1147...>
+Date: Mon, 31 Mar 2014 09:42:20 +0200
+From: Jan Just Keijser <janjust@...1147...>
+MIME-Version: 1.0
+References: <1396001222-5033-1-git-send-email-arne@...1227...>	<CAA1AbxJCv9ff7XHv1GKtCPuB-Hc5Lv33ufPfqcTraNpFnJf7fw@...278...>
+	<20140330134619.GT16637@...1296...>
+In-Reply-To: <20140330134619.GT16637@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH] Fix man page and OSCP script:
-	tls_serial_{n} is decimal
+ tls_serial_{n} is decimal
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,47 +15,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---8Mfcnc8eRzVGEeu4
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+On 30/03/14 15:46, Gert Doering wrote:
+> Hi,
+>
+> On Sun, Mar 30, 2014 at 12:48:37AM +0100, Steffan Karger wrote:
+>> 3 - Change OpenSSL builds to use hax representation
+> I tend toward this one - user visible behaviour shouldn't change (unless
+> unavoidable) depending on SSL library used.
+>
+> So for me this boils down to "how many users are relying on the current
+> behaviour, which is not what the docs say it should be"?
+>
+>
+I've posted a script to verify CRLs
+   http://www.nikhef.nl/~janjust/vpn/OpenVPN2-Cookbook/verify-crls.sh
+which relies on the XX:XX:XX format ... I could change that, of course, 
+but I am not sure how many people are actually using that script.
+Printing the serial in hex format would make it more difficult to do a 
+CRL check, however, as the openssl tools by default use the XX:XX:XX format.
 
-Hi,
+JM2CW,
 
-On Sun, Mar 30, 2014 at 12:48:37AM +0100, Steffan Karger wrote:
-> 3 - Change OpenSSL builds to use hax representation
+JJK
 
-I tend toward this one - user visible behaviour shouldn't change (unless
-unavoidable) depending on SSL library used.
 
-So for me this boils down to "how many users are relying on the current
-behaviour, which is not what the docs say it should be"?
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---8Mfcnc8eRzVGEeu4
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
-
-iQCVAwUBUzggK6kuBuNlUUl1AQJVEAP+L/BHDrW7z013dtyl5xULTYyoUoH2R2U4
-F0fgmHTwxZ5L0gtDZ+WfgDCX4f9JRfIxjzi7way/5xUmwoInkC6V3osGJVG/1+Nn
-ZDEpLzVgUIS6VninCOWR7/wqNaqKKN0a92YFvX2AUHimKC4/ky41btGYEx0GVmCR
-7m7xmEQR9KA=
-=B4oa
------END PGP SIGNATURE-----
-
---8Mfcnc8eRzVGEeu4--
 
