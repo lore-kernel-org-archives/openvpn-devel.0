@@ -1,10 +1,10 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Tue, 1 Apr 2014 12:06:43 +0200
-Message-ID: <1396346803-31772-1-git-send-email-heiko.hund@...1489...>
-In-Reply-To: <1392746395-19246-1-git-send-email-heiko.hund@...1489...>
-References: <1392746395-19246-1-git-send-email-heiko.hund@...1489...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] fix route struct name
+Date: Tue, 1 Apr 2014 15:17:19 +0200 (CEST)
+Message-Id: <201404011317.s31DHJFG024837@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <5339EFFC.6090908@...1856...>
+References: <5339EFFC.6090908@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: configure.ac: use CPPFLAGS for
+	SSL_OP_NO_TICKET check
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +15,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This slipped in with commit d0085293.
+Your patch has been applied to the master branch.
 
-Signed-off-by: Heiko Hund <heiko.hund@...1489...>
----
- src/openvpn/route.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+commit e38f554cd4b956f6eedd56c7a76a3ba7c84ad824
+Author: Steffan Karger
+Date:   Tue Apr 1 00:33:55 2014 +0200
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 13eed5f..825ea47 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -2117,7 +2117,7 @@ test_routes (const struct route_list *rl, const struct tuntap *tt)
- 
-       if (rl)
- 	{
--	  struct route *r;
-+	  struct route_ipv4 *r;
- 	  for (r = rl->routes, len = 0; r; r = r->next, ++len)
- 	    test_route_helper (&ret, &count, &good, &ambig, adapters, r->gateway);
- 
--- 
-1.7.9.5
+     configure.ac: use CPPFLAGS for SSL_OP_NO_TICKET check
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Message-Id: <5339EFFC.6090908@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8419
+     Acked-by: Heiko Hund <heiko.hund@...1489...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
