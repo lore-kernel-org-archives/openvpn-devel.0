@@ -1,13 +1,10 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Tue, 1 Apr 2014 11:27:11 +0200
-Message-ID: <1549051.GdQZOEKbS3@...1526...>
-In-Reply-To: <5339EFFC.6090908@...1856...>
-References: <1395017376-24554-1-git-send-email-james@...515...>
-	<1443881.kcztAJWLkP@...1526...> <5339EFFC.6090908@...1856...>
+Date: Tue, 1 Apr 2014 12:06:43 +0200
+Message-ID: <1396346803-31772-1-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <1392746395-19246-1-git-send-email-heiko.hund@...1489...>
+References: <1392746395-19246-1-git-send-email-heiko.hund@...1489...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] Set SSL_OP_NO_TICKET flag in SSL
-	context for OpenSSL builds,
-	to disable TLS stateless session resumption.
+Subject: [Openvpn-devel] [PATCH] fix route struct name
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,17 +13,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-On Tuesday 01 April 2014 00:45:16 Steffan Karger wrote:
-> The attached patch fixes your problem, but if there is someone around
-> with a better idea (and, preferrably, patch) to fix it, I'm all ears!
+This slipped in with commit d0085293.
 
-ACK, fixes the problem indeed, without introducing a new set of flags even.
+Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+---
+ src/openvpn/route.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks
-Heiko
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 13eed5f..825ea47 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -2117,7 +2117,7 @@ test_routes (const struct route_list *rl, const struct tuntap *tt)
+ 
+       if (rl)
+ 	{
+-	  struct route *r;
++	  struct route_ipv4 *r;
+ 	  for (r = rl->routes, len = 0; r; r = r->next, ++len)
+ 	    test_route_helper (&ret, &count, &good, &ambig, adapters, r->gateway);
+ 
+-- 
+1.7.9.5
+
 
