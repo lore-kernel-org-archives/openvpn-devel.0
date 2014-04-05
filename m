@@ -1,12 +1,10 @@
-Message-ID: <533B1D86.8060000@...515...>
-Date: Tue, 01 Apr 2014 14:11:50 -0600
-From: James Yonan <james@...515...>
+Message-ID: <DUB406-EAS360901156442BD9B81F63FE16E0@...512...>
 MIME-Version: 1.0
-References: <1396001222-5033-1-git-send-email-arne@...1227...>	<CAA1AbxJCv9ff7XHv1GKtCPuB-Hc5Lv33ufPfqcTraNpFnJf7fw@...278...>
-	<20140330134619.GT16637@...1296...>
-In-Reply-To: <20140330134619.GT16637@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix man page and OSCP script:
- tls_serial_{n} is decimal
+From: Farhad Jamshidi <src_jamshidi@...1878...>
+Date: Sat, 5 Apr 2014 03:32:43 +0000
+Content-Type: multipart/alternative;
+	boundary="_F82B1CBE-0397-4F8E-8370-504F175DCBA7_"
+Subject: [Openvpn-devel] (no subject)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,49 +13,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: "=?utf-8?Q?openvpn-devel@lists.sourceforge.net?=" <openvpn-devel@lists.sourceforge.net>
 
-On 30/03/2014 07:46, Gert Doering wrote:
-> Hi,
->
-> On Sun, Mar 30, 2014 at 12:48:37AM +0100, Steffan Karger wrote:
->> 3 - Change OpenSSL builds to use hax representation
->
-> I tend toward this one - user visible behaviour shouldn't change (unless
-> unavoidable) depending on SSL library used.
->
-> So for me this boils down to "how many users are relying on the current
-> behaviour, which is not what the docs say it should be"?
+--_F82B1CBE-0397-4F8E-8370-504F175DCBA7_
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-I think the problem here is that historically, going back as far as 2005 
-(commit 6fbf66fad3367b24fd6743bcd50254902fd9c8d5), tls_serial_n has 
-always given the serial number as decimal, and the documentation never 
-indicated that the serial number was hex.
+DQoNCg0KDQoNCg0KDQpTZW50IGZyb20gV2luZG93cyBNYWls
 
-Commit 7ae5fb20d7dc52641ef853b896dffc0f283d16d2 in early 2011 added 
-support for large serial numbers using BN_bn2dec, but the format was 
-still decimal.
+--_F82B1CBE-0397-4F8E-8370-504F175DCBA7_
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-Now it looks like there was an alternative tls_serial_n implementation 
-committed in 2010 (7d5e26cbb53e2700c966e6b6e815f0c824da8956) that 
-changed the implementation to hex, but the code was later reverted, 
-however unfortunately the comment in openvpn.8 that tls_serial_n is hex 
-remained from that commit until now.
+CjxodG1sPgo8aGVhZD4KPG1ldGEgbmFtZT0iZ2VuZXJhdG9yIiBjb250ZW50PSJXaW5kb3dzIE1h
+aWwgMTcuNS45NjAwLjIwNDEzIj4KPHN0eWxlIGRhdGEtZXh0ZXJuYWxzdHlsZT0idHJ1ZSI+PCEt
+LQpwLk1zb0xpc3RQYXJhZ3JhcGgsIGxpLk1zb0xpc3RQYXJhZ3JhcGgsIGRpdi5Nc29MaXN0UGFy
+YWdyYXBoIHsKbWFyZ2luLXRvcDowaW47Cm1hcmdpbi1yaWdodDowaW47Cm1hcmdpbi1ib3R0b206
+MGluOwptYXJnaW4tbGVmdDouNWluOwptYXJnaW4tYm90dG9tOi4wMDAxcHQ7Cn0KcC5Nc29Ob3Jt
+YWwsIGxpLk1zb05vcm1hbCwgZGl2Lk1zb05vcm1hbCB7Cm1hcmdpbjowaW47Cm1hcmdpbi1ib3R0
+b206LjAwMDFwdDsKfQpwLk1zb0xpc3RQYXJhZ3JhcGhDeFNwRmlyc3QsIGxpLk1zb0xpc3RQYXJh
+Z3JhcGhDeFNwRmlyc3QsIGRpdi5Nc29MaXN0UGFyYWdyYXBoQ3hTcEZpcnN0LCAKcC5Nc29MaXN0
+UGFyYWdyYXBoQ3hTcE1pZGRsZSwgbGkuTXNvTGlzdFBhcmFncmFwaEN4U3BNaWRkbGUsIGRpdi5N
+c29MaXN0UGFyYWdyYXBoQ3hTcE1pZGRsZSwgCnAuTXNvTGlzdFBhcmFncmFwaEN4U3BMYXN0LCBs
+aS5Nc29MaXN0UGFyYWdyYXBoQ3hTcExhc3QsIGRpdi5Nc29MaXN0UGFyYWdyYXBoQ3hTcExhc3Qg
+ewptYXJnaW4tdG9wOjBpbjsKbWFyZ2luLXJpZ2h0OjBpbjsKbWFyZ2luLWJvdHRvbTowaW47Cm1h
+cmdpbi1sZWZ0Oi41aW47Cm1hcmdpbi1ib3R0b206LjAwMDFwdDsKbGluZS1oZWlnaHQ6MTE1JTsK
+fQotLT48L3N0eWxlPjwvaGVhZD4KPGJvZHkgZGlyPSJsdHIiPgo8ZGl2IGRhdGEtZXh0ZXJuYWxz
+dHlsZT0iZmFsc2UiIGRpcj0ibHRyIiBzdHlsZT0iZm9udC1mYW1pbHk6ICdDYWxpYnJpJywgJ0Fy
+aWFsJywgJ1NlZ29lIFVJJywgJ01laXJ5bycsICdNaWNyb3NvZnQgWWFIZWkgVUknLCAnTWljcm9z
+b2Z0IEpoZW5nSGVpIFVJJywgJ01hbGd1biBHb3RoaWMnO2ZvbnQtc2l6ZToxMnB0OyI+PGRpdj48
+YnI+PC9kaXY+PGRpdiBkYXRhLXNpZ25hdHVyZWJsb2NrPSJ0cnVlIj48ZGl2Pjxicj48L2Rpdj48
+ZGl2PlNlbnQgZnJvbSBXaW5kb3dzIE1haWw8L2Rpdj48ZGl2Pjxicj48L2Rpdj48L2Rpdj48L2Rp
+dj4KPC9ib2R5Pgo8L2h0bWw+Cg==
 
-So a lot of code out there is assuming n is decimal, including some of 
-our own code at OpenVPN Tech.
-
-I would vote for preserving decimal behavior and updating the docs to 
-reflect this.
-
-It's unfortunate that PolarSSL is using hex, and I'm wondering how 
-disruptive it would be to the PolarSSL user base if we change this to 
-decimal.
-
-I would tend to agree that the behavior should be consistent, regardless 
-of underlying SSL library.
-
-James
+--_F82B1CBE-0397-4F8E-8370-504F175DCBA7_--
 
