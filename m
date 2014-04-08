@@ -1,13 +1,10 @@
-Message-ID: <5343FF41.3080406@...1879...>
-Date: Tue, 08 Apr 2014 15:53:05 +0200
-From: =?ISO-8859-1?Q?Enno_Gr=F6per?= <groepeen@...1879...>
+Message-ID: <5344111D.3080408@...515...>
+Date: Tue, 08 Apr 2014 18:09:17 +0300
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <5343BCAB.3040102@...1790...>
-	<0LikyX-1X9YfO48dR-00d2sy@...1825...>	<1CED409804E2164C8104F9E623B08B90170093CD3A@...1436...>	<5343E392.1010803@...1800...>
-	<1CED409804E2164C8104F9E623B08B90170093CE96@...1436...>
-In-Reply-To: <1CED409804E2164C8104F9E623B08B90170093CE96@...1436...>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature";
-	micalg=sha1; boundary="------------ms030009040100090609090705"
+References: <5343BCAB.3040102@...1790...>	<0LikyX-1X9YfO48dR-00d2sy@...1825...>	<1CED409804E2164C8104F9E623B08B90170093CD3A@...1436...>	<5343E392.1010803@...1800...>	<1CED409804E2164C8104F9E623B08B90170093CE96@...1436...>
+	<5343FF41.3080406@...1879...>
+In-Reply-To: <5343FF41.3080406@...1879...>
 Subject: Re: [Openvpn-devel] Heartbleed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,142 +14,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
-This is a cryptographically signed message in MIME format.
-
---------------ms030009040100090609090705
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
+To: =?ISO-8859-1?Q?Enno_Gr=F6per?= <groepeen@...1879...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
 
-Am 08.04.2014 15:42, schrieb Steffan Karger:
->> Perhaps a dumb question, but if the server instance is linked
->> against an older version of openssl (9.8.x), but the client is
->> compiled and linked against the vulnerable version, is it still an
->> issue for both sides, or is the client going to leak private
->> information ?
+> Hi,
 >
-> The client can then leak keys (both private master key and session
-> keys), which completely breaks your secure connection, for that
-> client.
+> Am 08.04.2014 15:42, schrieb Steffan Karger:
+>>> Perhaps a dumb question, but if the server instance is linked
+>>> against an older version of openssl (9.8.x), but the client is
+>>> compiled and linked against the vulnerable version, is it still an
+>>> issue for both sides, or is the client going to leak private
+>>> information ?
+>> The client can then leak keys (both private master key and session
+>> keys), which completely breaks your secure connection, for that
+>> client.
+>>
+>> So when the server is not vulnerable, each client has to be attacked
+>> individually, and not-vulnerable clients have a secure connection to
+>> the server. As long as there are vulnerable clients, you should
+>> consider those as potentially malicious, and thus you should consider
+>> the network as insecure.
+> Then OpenVPN should release new Windows Versions.
+> The current binaries are linked against OpenSSL (ssleay32.dll,=20
+> libeay32.dll) 1.0.1.5 (-> 1.0.1e).
 >
-> So when the server is not vulnerable, each client has to be attacked
-> individually, and not-vulnerable clients have a secure connection to
-> the server. As long as there are vulnerable clients, you should
-> consider those as potentially malicious, and thus you should consider
-> the network as insecure.
-Then OpenVPN should release new Windows Versions.
-The current binaries are linked against OpenSSL (ssleay32.dll,=20
-libeay32.dll) 1.0.1.5 (-> 1.0.1e).
+>
+Hi all,
 
-Greetings,
-Enno
+We'll try to push OpenVPN 2.3.3 out today. The Windows installer will
+contain OpenSSL 1.0.1g which fixes this particular problem. In addition
+several other small changes and enhancements will be included.
 
 --=20
-Enno Gr=F6per
-groepeen@...1879... - Raum 2'325, Rudower Chaussee 26
-Tel. +49.(0)30.2093.70053  Fax +49.(0)30.2093.2959
-Humboldt-Universit=E4t zu Berlin - http://www.hu-berlin.de/
-ZE Computer- und Medienservice - http://www.cms.hu-berlin.de/
-Unter den Linden 6, D-10099 Berlin, Germany
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
+irc freenode net: mattock
 
---------------ms030009040100090609090705
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIO+jCC
-BHQwggNcoAMCAQICCQCJkBEVWD6HmzANBgkqhkiG9w0BAQsFADBxMQswCQYDVQQGEwJERTEc
-MBoGA1UEChMTRGV1dHNjaGUgVGVsZWtvbSBBRzEfMB0GA1UECxMWVC1UZWxlU2VjIFRydXN0
-IENlbnRlcjEjMCEGA1UEAxMaRGV1dHNjaGUgVGVsZWtvbSBSb290IENBIDIwHhcNMTQwMjEx
-MTMxMTQ1WhcNMTkwNzA5MjM1OTAwWjBaMQswCQYDVQQGEwJERTETMBEGA1UEChMKREZOLVZl
-cmVpbjEQMA4GA1UECxMHREZOLVBLSTEkMCIGA1UEAxMbREZOLVZlcmVpbiBQQ0EgR2xvYmFs
-IC0gRzAxMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6ZvDZ4X5Da71jVTDllA1
-PWLpbkztlNcAW5UidNQg6zSP1uzAMQQLmYHiphTSUqAoI4SLdIkEXlvg4njBeMsWyyg1OXst
-kEXQ7aAAeny/Sg4bAMOG6VwrMRF7DPOCJEOMHDiLamgAmu7cT3ir0sYTm3at7t4m6O8Br3QP
-wQmi9mvOvdPNFDBP9eXjpMhim4IaAycwDQJlYE3t0QkjKpY1WCfTdsZxtpAdxO3/NYZ9bzOz
-2w/FEcKKg6GUXUFr2NIQ9Uz9ylGs2b3vkoO72uuLFlZWQ8/h1RM9ph8nMM1JVNvJEzSacXXF
-bOqnC5j5IZ0nrz6jOTlIaoytyZn7wxLyvQIDAQABo4IBJDCCASAwDgYDVR0PAQH/BAQDAgEG
-MB0GA1UdDgQWBBRJt8bP6D0ff+pEexMp9/EKcD7eZDAfBgNVHSMEGDAWgBQxw3kbuvVT1xfg
-iXotF2wKsyudMzASBgNVHRMBAf8ECDAGAQH/AgECMD8GA1UdHwQ4MDYwNKAyoDCGLmh0dHA6
-Ly9vY3NwMDMzNi50ZWxlc2VjLmRlL3JsL0RUX1JPT1RfQ0FfMi5jcmwweQYIKwYBBQUHAQEE
-bTBrMCwGCCsGAQUFBzABhiBodHRwOi8vb2NzcDAzMzYudGVsZXNlYy5kZS9vY3NwcjA7Bggr
-BgEFBQcwAoYvaHR0cDovL29jc3AwMzM2LnRlbGVzZWMuZGUvY3J0L0RUX1JPT1RfQ0FfMi5j
-ZXIwDQYJKoZIhvcNAQELBQADggEBACwvqeBeQy8FcNxRlXVdgI47DMFjWFSBMIOcXalRh8m2
-1w8runhIJGBCzPGi4jPhMh4ym1ETlXnGtazQJO0YFLwvKuovq7ITrEkdXgALBBhqmmXU6Ec1
-vK7t33S22PGAUGWgxtojm41TR8psu0DJlV1OYHor5LtmQFWvtjPB6iMhbvxUnd0zQm5Ma9Xk
-w/LqBrdaMmoyRXS2tW/+6v8cY6q7iNH4WK8gfo+///b3OHeLGrZQP609R3lGw1e0F2KHvZ6j
-NiUHaCSqIvL2rynsN6UUma66AWCGdS1hFbp4loe1ks/hUJGeWToV7J5axob8KD5mutTZNa+t
-PEkihYfub48wggT0MIID3KADAgECAgQLYjSPMA0GCSqGSIb3DQEBBQUAMFoxCzAJBgNVBAYT
-AkRFMRMwEQYDVQQKEwpERk4tVmVyZWluMRAwDgYDVQQLEwdERk4tUEtJMSQwIgYDVQQDExtE
-Rk4tVmVyZWluIFBDQSBHbG9iYWwgLSBHMDEwHhcNMDcxMTIwMTAyOTIxWhcNMTkwNjMwMDAw
-MDAwWjBoMQswCQYDVQQGEwJERTEoMCYGA1UEChMfSHVtYm9sZHQtVW5pdmVyc2l0YWV0IHp1
-IEJlcmxpbjEOMAwGA1UEAxMFSFUtQ0ExHzAdBgkqhkiG9w0BCQEWEHBraUBodS1iZXJsaW4u
-ZGUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDrDEHXsCiMAG9HusSRHy/fB+q4
-nVEAYHH0GG/SlCKz3yQIlpphg7VyylzTOd8QA5wGT2UGFv+xZ9XXcoUoNyJvtaVjWwUEcIkB
-saSlw1N+qn96dO0Nk7NcVTNc6Pn6VxofCfqq3YdDuhp+bzB8+n1593fKRHMJaFtnsrej+QII
-wfDkPF72drg51AJerCnoeGmbH0IYerZI9bGtFmp1knOZ+GYNXfJViCEi7Ic3+MNOiuyGSLel
-YXc4UemiTXDT0so8NRlF0dnNS3tkhlgTB2+NUAokCwfIqPOsBJF8cmBe8lAsQ1wEnA8Zd8kY
-xJePcBxL0KPBB20yXIOxTgPlFXgFAgMBAAGjggGyMIIBrjASBgNVHRMBAf8ECDAGAQH/AgEB
-MAsGA1UdDwQEAwIBBjAdBgNVHQ4EFgQUH/UsPvdAqy6QoGrT4nle8nbNg3QwHwYDVR0jBBgw
-FoAUSbfGz+g9H3/qRHsTKffxCnA+3mQwGwYDVR0RBBQwEoEQcGtpQGh1LWJlcmxpbi5kZTCB
-iAYDVR0fBIGAMH4wPaA7oDmGN2h0dHA6Ly9jZHAxLnBjYS5kZm4uZGUvZ2xvYmFsLXJvb3Qt
-Y2EvcHViL2NybC9jYWNybC5jcmwwPaA7oDmGN2h0dHA6Ly9jZHAyLnBjYS5kZm4uZGUvZ2xv
-YmFsLXJvb3QtY2EvcHViL2NybC9jYWNybC5jcmwwgaIGCCsGAQUFBwEBBIGVMIGSMEcGCCsG
-AQUFBzAChjtodHRwOi8vY2RwMS5wY2EuZGZuLmRlL2dsb2JhbC1yb290LWNhL3B1Yi9jYWNl
-cnQvY2FjZXJ0LmNydDBHBggrBgEFBQcwAoY7aHR0cDovL2NkcDIucGNhLmRmbi5kZS9nbG9i
-YWwtcm9vdC1jYS9wdWIvY2FjZXJ0L2NhY2VydC5jcnQwDQYJKoZIhvcNAQEFBQADggEBAE7c
-A7Ng37NUQ8kskc/Xb45rvDOELZqOLVIYuQ8epieXbt3b4XFeA6jbin6sLu9Lne0saMTjUR+T
-ASA75zLgn2ZSm1OUOpreC/ORHwL3liXjd+Zh3kcmtn5apBNV13CHGc4EJjR/6hb5GZ7JtHpN
-gMBD4HIrqu7oMU8FFCkh6O6fLvmOObQRnNw/Blkn6DE5tDrtG0zGIWToijqNZF2nLjSYMnf0
-0XW0moAXGj7eFIpVFNWzWX8wvXaUuZOr62CuL1ssERAvA2hoKMaGfZo4xgkHRF3lrfWluJcR
-ktXggHKVZ3n/Lc19v2rfH6LWVcjTm76gner2jHg9u64pTdVYieAwggWGMIIEbqADAgECAgcV
-VTLhkUfRMA0GCSqGSIb3DQEBBQUAMGgxCzAJBgNVBAYTAkRFMSgwJgYDVQQKEx9IdW1ib2xk
-dC1Vbml2ZXJzaXRhZXQgenUgQmVybGluMQ4wDAYDVQQDEwVIVS1DQTEfMB0GCSqGSIb3DQEJ
-ARYQcGtpQGh1LWJlcmxpbi5kZTAeFw0xMzAzMDUwOTA1MjFaFw0xNjAzMDQwOTA1MjFaMIGh
-MQswCQYDVQQGEwJERTEoMCYGA1UEChMfSHVtYm9sZHQtVW5pdmVyc2l0YWV0IHp1IEJlcmxp
-bjE3MDUGA1UECxMuWmVudHJhbGVpbnJpY2h0dW5nIENvbXB1dGVyLSB1bmQgTWVkaWVuc2Vy
-dmljZTEYMBYGCgmSJomT8ixkAQETCGdyb2VwZWVuMRUwEwYDVQQDEwxFbm5vIEdyb2VwZXIw
-ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCxwEHuymdWtogIsEVV74Y/w5VnqH/b
-Zov4Vy+Q/U2AT3X9ZT78tIGSfdpx9gFyvyKLeGMOeVpkCPTkxdyRA5EF54CESJQPCirNxzP2
-JKnFO0XLXHR/ZVoRpHjZrmbmVPAX8+CD4v2FoxUy4P6Yq7h4Vd2k4dJExmaQ+6h5wjff8BNP
-j4ne0jW2/zFjSNCz5qO2p4fMjSKpAQcV/mxah12c+0SFVH9Q1AA/xkZGXOTnH/bbZLuXwzPP
-NnmMP20ly4IUIz6B7DoF51ISnCBb3R8SaS+rNgiDX+boRM4oJfZzDVfp2EF77gY0S2UmyshK
-VlQG66uqScXRKkcNU7shm+zvAgMBAAGjggH5MIIB9TAvBgNVHSAEKDAmMBEGDysGAQQBga0h
-giwBAQQDADARBg8rBgEEAYGtIYIsAgEEAwAwCQYDVR0TBAIwADALBgNVHQ8EBAMCBeAwHQYD
-VR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMB0GA1UdDgQWBBTKACnY84J/29kF34QI/12a
-DoUvczAfBgNVHSMEGDAWgBQf9Sw+90CrLpCgatPieV7yds2DdDAkBgNVHREEHTAbgRlncm9l
-cGVlbkBjbXMuaHUtYmVybGluLmRlMIGDBgNVHR8EfDB6MDugOaA3hjVodHRwOi8vY2RwMS5w
-Y2EuZGZuLmRlL2h1LWJlcmxpbi1jYS9wdWIvY3JsL2NhY3JsLmNybDA7oDmgN4Y1aHR0cDov
-L2NkcDIucGNhLmRmbi5kZS9odS1iZXJsaW4tY2EvcHViL2NybC9jYWNybC5jcmwwgZ4GCCsG
-AQUFBwEBBIGRMIGOMEUGCCsGAQUFBzAChjlodHRwOi8vY2RwMS5wY2EuZGZuLmRlL2h1LWJl
-cmxpbi1jYS9wdWIvY2FjZXJ0L2NhY2VydC5jcnQwRQYIKwYBBQUHMAKGOWh0dHA6Ly9jZHAy
-LnBjYS5kZm4uZGUvaHUtYmVybGluLWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDANBgkqhkiG
-9w0BAQUFAAOCAQEAh8jx+jg2aCtWj0VhyHmNQ78wpABZoi7xsY0Wt94k4Gl5lt2v+6UMIqyI
-dtyHgFy1w45z4/gAvJwP79gGfQLtqT8+OYc5y4W8kl8Pxe1IB0GQuXWzrkQU+wmflaeWxQsX
-cu+6yftw2w4gJLTns1XZATLJUE09K4UeNxUNIn0KACo+c7Z1ZKd9SLLub30S6LSIc/kVOsLX
-Gn2uVVPhEDSLZZsc8RwM8eJILLIG+7SKnnqSiAmJ2BztDDU61qa6OrRQozqmz8tlY0Ny/eqV
-R8mMkzciEzNkipZw3D8v/mgXmcxcKzEt7FegJ9qtNryRjELM+g1KmXo+5JmnyMtiN0+BLjGC
-A3UwggNxAgEBMHMwaDELMAkGA1UEBhMCREUxKDAmBgNVBAoTH0h1bWJvbGR0LVVuaXZlcnNp
-dGFldCB6dSBCZXJsaW4xDjAMBgNVBAMTBUhVLUNBMR8wHQYJKoZIhvcNAQkBFhBwa2lAaHUt
-YmVybGluLmRlAgcVVTLhkUfRMAkGBSsOAwIaBQCgggHXMBgGCSqGSIb3DQEJAzELBgkqhkiG
-9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MDQwODEzNTMwNVowIwYJKoZIhvcNAQkEMRYEFDP4
-vfdx34GJRRkfb5MaAF9dH+WxMGwGCSqGSIb3DQEJDzFfMF0wCwYJYIZIAWUDBAEqMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcNAwICAUAwBwYF
-Kw4DAgcwDQYIKoZIhvcNAwICASgwgYIGCSsGAQQBgjcQBDF1MHMwaDELMAkGA1UEBhMCREUx
-KDAmBgNVBAoTH0h1bWJvbGR0LVVuaXZlcnNpdGFldCB6dSBCZXJsaW4xDjAMBgNVBAMTBUhV
-LUNBMR8wHQYJKoZIhvcNAQkBFhBwa2lAaHUtYmVybGluLmRlAgcVVTLhkUfRMIGEBgsqhkiG
-9w0BCRACCzF1oHMwaDELMAkGA1UEBhMCREUxKDAmBgNVBAoTH0h1bWJvbGR0LVVuaXZlcnNp
-dGFldCB6dSBCZXJsaW4xDjAMBgNVBAMTBUhVLUNBMR8wHQYJKoZIhvcNAQkBFhBwa2lAaHUt
-YmVybGluLmRlAgcVVTLhkUfRMA0GCSqGSIb3DQEBAQUABIIBADHUiDWJ5WEnS+e15AQJ6gXD
-C5XLaAM4toRmliUua2pDadjnqC00DxiaqXICkPTM1HIOBAs7WTE04yc6kuQL0lJ0H8rtSlTO
-Oca/im5XIHAVjj7JCockc0vId3fqyYYlsRnQE14KxSM7uOAmU8BFZmFbD0/nL8zr4hhj4FhB
-k4OduG5yVVdCnmQeLZCypJGXX5L0mFuXtvoOLCbrXgbUpw3wiso6jiTBw/nAm54fjECooDob
-Q6Hy0IA9zk3CrgpM1CKFOndcc+Kew4ndSwzMHlrBZpzpDf7zIgYQFuaez3WWbtmzlhWDAqSs
-yUXk5VNgZ64+4GP7s8mXdM31lio5uSoAAAAAAAA=
---------------ms030009040100090609090705--
 
