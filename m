@@ -1,13 +1,15 @@
-Message-ID: <53455A10.9060909@...1435...>
-Date: Wed, 9 Apr 2014 16:32:48 +0200
-From: Adriaan de Jong <dejong@...1435...>
 MIME-Version: 1.0
-References: <5343BCAB.3040102@...1790...>
-	<0LikyX-1X9YfO48dR-00d2sy@...1825...>	<1CED409804E2164C8104F9E623B08B90170093CD3A@...1436...>	<5343E392.1010803@...1800...>	<1CED409804E2164C8104F9E623B08B90170093CE96@...1436...>	<5343FF41.3080406@...1879...>
-	<5344111D.3080408@...515...>	<5344145F.3010702@...515...>
-	<53442B8A.2030105@...515...>	<CAFHpkQE-6kqi+RT4oF_F+4YULRd=NtJ3rCNK-YR+JrGM47s-sw@...278...>	<53450525.4010704@...1227...>	<CAFHpkQEuf35w0CuEDvYrRARZR2-vmcZQAh6eA=8q=XkdertD-w@...278...>	<53450887.5060703@...1227...>
-	<CAFHpkQFm3v5G-yZohqE2CFoBK7VOx9TcKttG2akaOOt2m+FHVg@...278...>
-In-Reply-To: <CAFHpkQFm3v5G-yZohqE2CFoBK7VOx9TcKttG2akaOOt2m+FHVg@...278...>
+Date: Wed, 09 Apr 2014 16:23:58 +0200
+From: Marcel Herrguth <mherrguth@...1888...>
+In-Reply-To: <53442B8A.2030105@...515...>
+References: " <5343BCAB.3040102@...1790...>"
+	<0LikyX-1X9YfO48dR-00d2sy@...1825...>
+	<1CED409804E2164C8104F9E623B08B90170093CD3A@...1436...>
+	<5343E392.1010803@...1800...>
+	<1CED409804E2164C8104F9E623B08B90170093CE96@...1436...> "
+	<5343FF41.3080406@...1879...>" <5344111D.3080408@...515...>
+	<5344145F.3010702@...515...> <53442B8A.2030105@...515...>
+Message-ID: <e8b072783c0f47e303ab64416eba9b8e@...1889...>
 Subject: Re: [Openvpn-devel] Heartbleed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,40 +19,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="KOI8-R"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-On 9-4-2014 10:49, =E9=CC=D8=D1 =FB=C9=D0=C9=C3=C9=CE wrote:
-> I did not say "nobind protects from everything", but I did mean that
-> clients with "nobind" are more protected in case of non patched
-> openssl library shipped with (old) openvpn windows installer.
->
->
-> if server is patched (what is rather easy thing comparing to hundreds
-> windows users), nobody can steal server ssl cert, sniffering traffic
-> is useless in that case. mitm type attack is also useless when you
-> have no server cert. the only thing you can attack is client, and if
-> he uses "nobind", it looks rather good.
->
-> 2014-04-09 14:44 GMT+06:00 Arne Schwabe <arne@...1227...>:
->> Am 09.04.14 10:32, schrieb =E9=CC=D8=D1 =FB=C9=D0=C9=C3=C9=CE:
->>> I used to think that client without "nobind" option binds to 1194/udp
->>> (we encountered that issue with multiple openvpn connection on the
->>> same machine), so, "nobind" tells openvpn instance not to bind to
->>> udp/1194, and so, only openvpn server can exploit heartbleed
->>> vulnerability, but not any attacker.
->>>
->> Yes the server can attack you. Or any man in the middle attack including
->> ARP spoofing/DNS spoofing etc.
->>
->> If you see nobind that as protection basically you don't need a VPN.
->>
->> Arne
->>
-I don't see the difference between nobind and bind. As soon as you
-connect to the server, a MITM attack or an attack by the server is
-possible.
+Hello,
 
-Adriaan
+Am 8.4.2014 19:02, schrieb Samuli Seppänen:
+> An updated installer (I004) with OpenSSL 1.0.1g is now out:
+> 
+> <http://openvpn.net/index.php/download/community-downloads.html>
+> 
+> I smoketested the installers on Windows 7 64-bit and WinXP 32-bit.
+> 
+
+just wanted to give Feedback...
+I am running the new version on my Windows Server 2008R2 x64 since about
+a day now and it runs just fine :>
+
+Thank you again.
+
+Best regards
+Marcel
+
+-- 
+www.mrgeneration.de - The home of Anime
+Marcel Herrguth   Tel: 0176/65 92 44 85
+Klüberstr. 25
+12249 Berlin, Germany
+
+The home of Anime @
+Facebook:https://www.facebook.com/mrgeneration.de
+Twitter: https://twitter.com/Mr_Generation
+
 
