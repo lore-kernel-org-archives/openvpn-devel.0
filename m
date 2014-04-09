@@ -1,9 +1,13 @@
-Message-ID: <53451ACE.1020300@...515...>
-Date: Wed, 09 Apr 2014 13:02:54 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <53452245.9020103@...1294...>
+Date: Wed, 09 Apr 2014 12:34:45 +0200
+From: Eike Lohmann <e.lohmann@...1294...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Regarding pkcs11 support in our Debian/Ubuntu
-	packages
+References: <1CED409804E2164C8104F9E623B08B90170093CD3A@...1436...>	<5343E392.1010803@...1800...>	<1CED409804E2164C8104F9E623B08B90170093CE96@...1436...>	<5343FF41.3080406@...1879...>	<5344111D.3080408@...515...>
+	<5344145F.3010702@...515...>	<53442B8A.2030105@...515...>	<CAFHpkQE-6kqi+RT4oF_F+4YULRd=NtJ3rCNK-YR+JrGM47s-sw@...278...>	<53450525.4010704@...1227...>	<CAFHpkQEuf35w0CuEDvYrRARZR2-vmcZQAh6eA=8q=XkdertD-w@...278...>
+	<20140409084530.GQ16637@...1296...>
+In-Reply-To: <20140409084530.GQ16637@...1296...>
+Subject: Re: [Openvpn-devel] Heartbleed
+Reply-To: e.lohmann@...1294...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,27 +16,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi all,
 
-It OpenVPN 2.3.3 requires libpkcs11-helper 1.11 or newer. What this
-means is that unless I patch the OpenVPN sources I won't be able to
-provide Debian/Ubuntu packages with pkcs11 support except for Ubuntu
-14.04 which has 1.11 in default repos.
-
-So, is anyone using pkcs11 with the Debian packages I've provided? If
-not, I will simply remove pkcs11 support and be done with it. I could
-patch the openvpn sources to allow an older libpkcs11, but I'm not sure
-if that would cause problems elsewhere.
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
+Am 09.04.2014 10:45, schrieb Gert Doering:
+> This is not trivial to set up, and might not be worth for every client
+> out there - but if you're truly concerned about your data, upgrade the
+> client, revoke the old key+certificate, reissue new keys.
+How does revokation Lists work with openvpn?
 
 
