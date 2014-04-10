@@ -1,18 +1,11 @@
-Date: Thu, 10 Apr 2014 16:29:37 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20140410142937.GZ16637@...1296...>
-References: <20140406083549.GG16637@...1296...>
-	<20140406085311.GH16637@...1296...>
-	<20140407201711.GN16637@...1296...>
-	<53430F50.4040709@...1227...>
-	<20140408191204.GH16637@...1296...>
-	<5346A91B.8070505@...1227...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="CK5rkE5r1uaV/Nls"
-Content-Disposition: inline
-In-Reply-To: <5346A91B.8070505@...1227...>
-Subject: Re: [Openvpn-devel] getaddrinfo() confusion / way forward?
+Message-ID: <5346C9A6.2010807@...1147...>
+Date: Thu, 10 Apr 2014 18:41:10 +0200
+From: Jan Just Keijser <janjust@...1147...>
+MIME-Version: 1.0
+References: <1CED409804E2164C8104F9E623B08B90170093CD3A@...1436...>	<5343E392.1010803@...1800...>	<1CED409804E2164C8104F9E623B08B90170093CE96@...1436...>	<5343FF41.3080406@...1879...>	<5344111D.3080408@...515...>	<5344145F.3010702@...515...>	<53442B8A.2030105@...515...>	<CAFHpkQE-6kqi+RT4oF_F+4YULRd=NtJ3rCNK-YR+JrGM47s-sw@...278...>	<53450525.4010704@...1227...>	<CAFHpkQEuf35w0CuEDvYrRARZR2-vmcZQAh6eA=8q=XkdertD-w@...278...>	<20140409084530.GQ16637@...1296...>
+	<53452245.9020103@...1294...>
+In-Reply-To: <53452245.9020103@...1294...>
+Subject: Re: [Openvpn-devel] Heartbleed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,58 +14,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: e.lohmann@...1294..., openvpn-devel@lists.sourceforge.net
 
---CK5rkE5r1uaV/Nls
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+On 09/04/14 12:34, Eike Lohmann wrote:
+> Am 09.04.2014 10:45, schrieb Gert Doering:
+>> This is not trivial to set up, and might not be worth for every client
+>> out there - but if you're truly concerned about your data, upgrade the
+>> client, revoke the old key+certificate, reissue new keys.
+> How does revokation Lists work with openvpn?
+>
+>
+- revoke a certificate and generate a CRL using easy-rsa's 'revoke-full' 
+(or your preferred solution for PKI)
+- add
+   crl-verify <full path to crl.pem file>
+to your server config
+- restart openvpn
 
-Hi,
+you can also use a directory containing .r0 files if you have multiple 
+CAs + CRLs that you need to support.
 
-On Thu, Apr 10, 2014 at 04:22:19PM +0200, Arne Schwabe wrote:
-> Am 08.04.14 21:12, schrieb Gert Doering:
-> > Well, it's an interesting turn of events :-) - I'll commit that with
-> > you as an author, and signed-off-by: lines from both of us.  OK?
-> Okay for me.
 
-Committed, and pushed.
+HTH,
 
-commit 891636cb397e02d6e283da7e1926a5ca6cd11b02
-Author: Arne Schwabe <arne@...1227...>
-Date:   Mon Apr 7 22:12:05 2014 +0200
+JJK
 
-    Work around Solaris getaddrinfo() returing ai_protocol=3D0
-...
-    Signed-off-by: Gert Doering <gert@...1296...>
-    Signed-off-by: Arne Schwabe <arne@...1227...>
-    Acked-by: Gert Doering <gert@...1296...>
-    Acked-by: Arne Schwabe <arne@...1227...>
-
-"close cooperation" :-)
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---CK5rkE5r1uaV/Nls
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
-
-iQCVAwUBU0aq0akuBuNlUUl1AQLl9AP+Mr0VIXB3PgAiYvXCWTQhRVyMLO0dC5EF
-LYLeLQ9DkNF9eNw7XbztVNPvQckAyKIOreHk3Ge3OfbUa/891rbTfQvEZ9Y3oyva
-y1X0tywABHjhOTTB+slEBjbeIMZaMjAO0a3F3P9zlFtpZqniglu8+oCwqo9lSToa
-a88+k35fCnA=
-=k/Hd
------END PGP SIGNATURE-----
-
---CK5rkE5r1uaV/Nls--
 
