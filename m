@@ -1,10 +1,11 @@
-Message-ID: <25014025.40055.1397123169966.JavaMail.root@...1893...>
+Date: Thu, 10 Apr 2014 12:05:18 +0200
+From: Cedric <cedric+openvpn@...1891...>
+Message-ID: <20140410100518.GD3739@...1890...>
+References: <20140409232527.GA3061@...1890...>
+	<20140410081524.GK16637@...1296...>
 MIME-Version: 1.0
-From: Lisa Minogue <lminogue@...1892...>
-Date: Thu, 10 Apr 2014 11:46:09 +0200 (CEST)
-Subject: [Openvpn-devel] Regarding pkcs11 support in our Debian/Ubuntu
-	packages
-Reply-To: Lisa Minogue <lminogue@...1892...>
+In-Reply-To: <20140410081524.GK16637@...1296...>
+Subject: Re: [Openvpn-devel] BUG: Windows netsh interface ipv6 delete address
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,22 +14,23 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-I would prefer that Samuli patches pkcs11 for Debian/Ubuntu. I am sure patches for pkcs11 exist for other Linux distros. So why should Debian/Ubuntu be left out? In addition Ubuntu is the most popular among Linux distros.
 
-How long does it take for Samuli to issue the pkcs11 patch for Debian/Ubuntu? One week? Two weeks? One month? We can wait so long as we know that a quality patch is available at the end of the wait.
+> On Thu, Apr 10, 2014 at 01:25:27AM +0200, Cedric wrote:
+> > I get an error on latest release 2.3.3 (and previous ones), on windows 8.1.
+> 
+> How I hate windows...  the very same netsh call is working perfectly fine
+> on XP, Vista, Win7 (no idea about 8, won't touch that).
 
-Is it difficult to patch pkcs11 for Debian/Ubuntu compared to patching for other Linux distros? That could be the reason Samuli decided not to patch for Debian/Ubuntu.
+I confirm delete works with store=active on win7
 
-It is the OpenSSL "Heartbleed" bug that leads to Samuli being so busy over the past few days. We appreciate his time and effort spent on rolling out new versions of OpenVPN software.
+I don't have access to a vista or XP to test right now :(
 
-Regards.
+Cedric
 
-Leroy
------------------------------------------------------
-Mail.be, WebMail and Virtual Office
-http://www.mail.be
 
