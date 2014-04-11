@@ -1,13 +1,12 @@
-Message-ID: <53479E74.3070704@...1847...>
-Date: Fri, 11 Apr 2014 09:49:08 +0200
-From: =?ISO-8859-1?Q?Andr=E9_Valentin?= <avalentin@...1847...>
+Message-ID: <53479EEA.30101@...515...>
+Date: Fri, 11 Apr 2014 10:51:06 +0300
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <53453C16.1060307@...515...> <53479638.5080408@...1847...>
-	<53479805.80007@...515...>
-In-Reply-To: <53479805.80007@...515...>
+References: <OF7AFFE883.637D6835-ONC1257CB7.0026D00A-C1257CB7.0028D9C2@...1846...>
+In-Reply-To: <OF7AFFE883.637D6835-ONC1257CB7.0026D00A-C1257CB7.0028D9C2@...1846...>
 Content-Type: multipart/alternative;
-	boundary="------------060104020606040809000902"
-Subject: Re: [Openvpn-devel] OpenVPN 2.3.3 released
+	boundary="------------080701070903000108020005"
+Subject: Re: [Openvpn-devel] Q: Multi threading and roadmap
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,99 +15,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "arno.odermatt@...1845..." <arno.odermatt@...1845...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is a multi-part message in MIME format.
---------------060104020606040809000902
+--------------080701070903000108020005
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Samuli!
+Interestingly OpenVPN 3.x already exists, although not in the exact form
+described on the Roadmap wiki page. At the moment it's client-only and
+primarily used in various OpenVPN Tech clients (Android, iOS). There is
+a fairly recent source code snapshot available, but there are no
+development versions yet. The 3.x client does support multithreading.
 
-Thnaks for the hint. I thought there were some serious problems :-(
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-Andr=E9
-
-On 11.04.2014 09:21, Samuli Sepp=E4nen wrote:
-> Urgh. It seems that the CloudFlare issue is still present to some degree.=
- What you can do now is get the files from this alternative location:
->
-> <http://build.openvpn.net/downloads/releases>
->
-> Samuli
->
->> Hi!
->>
->> I'm a bit confused because I get a 404 if I try to download the source o=
-r the windows binary ?!
->> An error or should I wait just a bit longer?
->>
->> Kind regards,
->>
->> Andr=E9
->>
->> On 09.04.2014 14:24, Samuli Sepp=E4nen wrote:
->>> The OpenVPN community project team is proud to release OpenVPN 2.3.3. It
->>> can be downloaded from here:
->>>
->>> <http://openvpn.net/index.php/open-source/downloads.html>
->>>
->>> This release contains a number of bug fixes, small enhancements and
->>> changes aimed at improving long-term compatibility with newer OpenVPN
->>> versions. In addition, the Windows installer is bundled with an updated
->>> OpenVPN-GUI and more importantly includes OpenSSL 1.0.0g that fixes the
->>> very serious heartbleed vulnerability:
->>>
->>> <http://heartbleed.com/>
->>> <https://community.openvpn.net/openvpn/wiki/heartbleed>
->>>
->>> All Windows users of OpenVPN 2.3-rc2-I001 through OpenVPN 2.3.2-I003
->>> should upgrade their installations immediately.
->>>
->>> A full list of changes is available here:
->>>
->>> <https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn23>
->>>
->>> The changelog is also attached to this email.
->>>
->>> For generic help use these support channels:
->>>
->>> - Official documentation:
->>> <http://openvpn.net/index.php/open-source/documentation/howto.html>
->>> - Wiki: <https://community.openvpn.net>
->>> - Forums: <https://forums.openvpn.net>
->>> - User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
->>> - User IRC channel: #openvpn at irc.freenode.net
->>>
->>> Please report bugs and ask development questions here:
->>>
->>> - Bug tracker and Wiki: <https://community.openvpn.net>
->>> - Developer mailing list: <http://sourceforge.net/mail/?group_id=3D4897=
-8>
->>> - Developer IRC channel: #openvpn-devel at irc.freenode.net (requires
->>>   Freenode registration)
->>>
->>>
->>>
->>> -----------------------------------------------------------------------=
--------
->>> Put Bad Developers to Shame
->>> Dominate Development with Jenkins Continuous Integration
->>> Continuously Automate Build, Test & Deployment=20
->>> Start a new project now. Try Jenkins in the cloud.
->>> http://p.sf.net/sfu/13600_Cloudbees
->>>
->>>
->>> _______________________________________________
->>> Openvpn-devel mailing list
->>> Openvpn-devel@lists.sourceforge.net
->>> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->>
->
->
+irc freenode net: mattock
 
 
---------------060104020606040809000902
+
+> Hi,
+>
+> I found the roadmap
+> https://community.openvpn.net/openvpn/wiki/RoadMap, where the thoughts
+> about**Monolithic architecture vs. "scaling OpenVPN across threads"
+> have been discussed.
+>
+> Will the aspects of OpenVPN (3.x??)  to be capable to run in multi
+> thread mode be available some when soon?
+>
+> Thank you for any reply
+>
+>
+>
+>
+>
+>
+>
+> ******************************************************
+> Notice: The information contained in this message is intended only for
+> use of the individual(s) named above and may contain confidential,
+> proprietary or legally privileged information. No confidentiality or
+> privilege is waived or lost by any mistransmission. If you are not the
+> intended recipient of this message you are hereby notified that you
+> must not use, disseminate , copy it in any form or take any action in
+> reliance of it. If you have received this message in error please
+> delete it and any copies of it and notify the sender immediately.
+> *******************************************************
+
+
+
+--------------080701070903000108020005
 Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 
@@ -118,108 +78,72 @@ Content-Transfer-Encoding: 7bit
       http-equiv="Content-Type">
   </head>
   <body bgcolor="#FFFFFF" text="#000000">
-    <div class="moz-cite-prefix">Hi Samuli!<br>
+    <div class="moz-cite-prefix">Interestingly OpenVPN 3.x already
+      exists, although not in the exact form described on the Roadmap
+      wiki page. At the moment it's client-only and primarily used in
+      various OpenVPN Tech clients (Android, iOS). There is a fairly
+      recent source code snapshot available, but there are no
+      development versions yet. The 3.x client does support
+      multithreading.<br>
+      <pre class="moz-signature" cols="72">-- 
+Samuli Sepp&auml;nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock</pre>
       <br>
-      Thnaks for the hint. I thought there were some serious problems
-      :-(<br>
       <br>
-      Andr&eacute;<br>
-      <br>
-      On 11.04.2014 09:21, Samuli Sepp&auml;nen wrote:<br>
     </div>
-    <blockquote cite="mid:53479805.80007@...515..." type="cite">
-      <meta http-equiv="Content-Type" content="text/html;
-        charset=ISO-8859-1">
-      <div class="moz-cite-prefix">Urgh. It seems that the CloudFlare
-        issue is still present to some degree. What you can do now is
-        get the files from this alternative location:<br>
-        <br>
-        <a moz-do-not-send="true" class="moz-txt-link-rfc2396E"
-          href="http://build.openvpn.net/downloads/releases">&lt;http://build.openvpn.net/downloads/releases&gt;</a><br>
-        <br>
-        Samuli<br>
-        <br>
-      </div>
-      <blockquote cite="mid:53479638.5080408@...1847..." type="cite">
-        <div class="moz-cite-prefix">Hi!<br>
-          <br>
-          I'm a bit confused because I get a 404 if I try to download
-          the source or the windows binary ?!<br>
-          An error or should I wait just a bit longer?<br>
-          <br>
-          Kind regards,<br>
-          <br>
-          Andr&eacute;<br>
-          <br>
-          On 09.04.2014 14:24, Samuli Sepp&auml;nen wrote:<br>
-        </div>
-        <blockquote cite="mid:53453C16.1060307@...515..." type="cite">
-          <pre wrap="">The OpenVPN community project team is proud to release OpenVPN 2.3.3. It
-can be downloaded from here:
-
-<a moz-do-not-send="true" class="moz-txt-link-rfc2396E" href="http://openvpn.net/index.php/open-source/downloads.html">&lt;http://openvpn.net/index.php/open-source/downloads.html&gt;</a>
-
-This release contains a number of bug fixes, small enhancements and
-changes aimed at improving long-term compatibility with newer OpenVPN
-versions. In addition, the Windows installer is bundled with an updated
-OpenVPN-GUI and more importantly includes OpenSSL 1.0.0g that fixes the
-very serious heartbleed vulnerability:
-
-<a moz-do-not-send="true" class="moz-txt-link-rfc2396E" href="http://heartbleed.com/">&lt;http://heartbleed.com/&gt;</a>
-<a moz-do-not-send="true" class="moz-txt-link-rfc2396E" href="https://community.openvpn.net/openvpn/wiki/heartbleed">&lt;https://community.openvpn.net/openvpn/wiki/heartbleed&gt;</a>
-
-All Windows users of OpenVPN 2.3-rc2-I001 through OpenVPN 2.3.2-I003
-should upgrade their installations immediately.
-
-A full list of changes is available here:
-
-<a moz-do-not-send="true" class="moz-txt-link-rfc2396E" href="https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn23">&lt;https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn23&gt;</a>
-
-The changelog is also attached to this email.
-
-For generic help use these support channels:
-
-- Official documentation:
-<a moz-do-not-send="true" class="moz-txt-link-rfc2396E" href="http://openvpn.net/index.php/open-source/documentation/howto.html">&lt;http://openvpn.net/index.php/open-source/documentation/howto.html&gt;</a>
-- Wiki: <a moz-do-not-send="true" class="moz-txt-link-rfc2396E" href="https://community.openvpn.net">&lt;https://community.openvpn.net&gt;</a>
-- Forums: <a moz-do-not-send="true" class="moz-txt-link-rfc2396E" href="https://forums.openvpn.net">&lt;https://forums.openvpn.net&gt;</a>
-- User mailing list: <a moz-do-not-send="true" class="moz-txt-link-rfc2396E" href="http://sourceforge.net/mail/?group_id=48978">&lt;http://sourceforge.net/mail/?group_id=48978&gt;</a>
-- User IRC channel: #openvpn at irc.freenode.net
-
-Please report bugs and ask development questions here:
-
-- Bug tracker and Wiki: <a moz-do-not-send="true" class="moz-txt-link-rfc2396E" href="https://community.openvpn.net">&lt;https://community.openvpn.net&gt;</a>
-- Developer mailing list: <a moz-do-not-send="true" class="moz-txt-link-rfc2396E" href="http://sourceforge.net/mail/?group_id=48978">&lt;http://sourceforge.net/mail/?group_id=48978&gt;</a>
-- Developer IRC channel: #openvpn-devel at irc.freenode.net (requires
-  Freenode registration)
-
-</pre>
-          <br>
-          <fieldset class="mimeAttachmentHeader"></fieldset>
-          <br>
-          <pre wrap="">------------------------------------------------------------------------------
-Put Bad Developers to Shame
-Dominate Development with Jenkins Continuous Integration
-Continuously Automate Build, Test &amp; Deployment 
-Start a new project now. Try Jenkins in the cloud.
-<a moz-do-not-send="true" class="moz-txt-link-freetext" href="http://p.sf.net/sfu/13600_Cloudbees">http://p.sf.net/sfu/13600_Cloudbees</a></pre>
-          <br>
-          <fieldset class="mimeAttachmentHeader"></fieldset>
-          <br>
-          <pre wrap="">_______________________________________________
-Openvpn-devel mailing list
-<a moz-do-not-send="true" class="moz-txt-link-abbreviated" href="mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@lists.sourceforge.net</a>
-<a moz-do-not-send="true" class="moz-txt-link-freetext" href="https://lists.sourceforge.net/lists/listinfo/openvpn-devel">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a>
-</pre>
-        </blockquote>
-        <br>
-      </blockquote>
+    <blockquote
+cite="mid:OF7AFFE883.637D6835-ONC1257CB7.0026D00A-C1257CB7.0028D9C2@...1846..."
+      type="cite"><font face="sans-serif" size="2">Hi,</font>
       <br>
       <br>
+      <font face="sans-serif" size="2">I found the roadmap </font><a
+        moz-do-not-send="true"
+        href="https://community.openvpn.net/openvpn/wiki/RoadMap"><font
+          face="sans-serif" size="2">https://community.openvpn.net/openvpn/wiki/RoadMap</font></a><font
+        face="sans-serif" size="2">,
+        where the thoughts about<b> </b>Monolithic architecture vs. "</font><font
+        face="Verdana" size="2">scaling
+        OpenVPN across threads</font><font size="3"> </font><font
+        face="sans-serif" size="2">"
+        have been discussed.</font>
+      <br>
+      <br>
+      <font face="sans-serif" size="2">Will the aspects of OpenVPN
+        (3.x??)
+        &nbsp;to be capable to run in multi thread mode be available some
+        when
+        soon?</font>
+      <br>
+      <br>
+      <font face="sans-serif" size="2">Thank you for any reply</font>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <font face="sans-serif" size="2"><br>
+      </font>
+      <br>
+      <br clear="all">
+      ******************************************************<br>
+      Notice: The information contained in this message is intended only
+      for use of the individual(s) named above and may contain
+      confidential, proprietary or legally privileged information. No
+      confidentiality or privilege is waived or lost by any
+      mistransmission. If you are not the intended recipient of this
+      message you are hereby notified that you must not use, disseminate
+      , copy it in any form or take any action in reliance of it. If you
+      have received this message in error please delete it and any
+      copies of it and notify the sender immediately.<br>
+      *******************************************************<br>
     </blockquote>
+    <br>
     <br>
   </body>
 </html>
 
---------------060104020606040809000902--
+--------------080701070903000108020005--
 
