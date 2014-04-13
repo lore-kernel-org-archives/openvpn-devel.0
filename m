@@ -1,10 +1,9 @@
 From: Kevin Cernekee <cernekee@...277...>
-Date: Sat, 12 Apr 2014 22:16:54 -0700
-Message-Id: <1397366216-657-2-git-send-email-cernekee@...277...>
+Date: Sat, 12 Apr 2014 22:16:55 -0700
+Message-Id: <1397366216-657-3-git-send-email-cernekee@...277...>
 In-Reply-To: <1397366216-657-1-git-send-email-cernekee@...277...>
 References: <1397366216-657-1-git-send-email-cernekee@...277...>
-Subject: [Openvpn-devel] [PATCH 1/3] Add S_NOWAIT and S_SETPGRP flags to
-	openvpn_execve
+Subject: [Openvpn-devel] [PATCH 2/3] Move MTU field into struct tuntap
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,60 +16,82 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is to let openvpn_execve be used to create a process that runs in
-the background, and return its PID so that its process group can be nuked
-on exit.
+open_tun() will need to access this value, so we'll store it alongside
+the IP/netmask addresses.
 
 Signed-off-by: Kevin Cernekee <cernekee@...277...>
 ---
- src/openvpn/misc.c |    9 ++++++++-
- src/openvpn/misc.h |    6 ++++--
- 2 files changed, 12 insertions(+), 3 deletions(-)
+ src/openvpn/init.c |    5 +++--
+ src/openvpn/tun.c  |    2 +-
+ src/openvpn/tun.h  |    2 +-
+ 3 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 7483184..a8018ff 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -308,6 +308,11 @@ openvpn_execve (const struct argv *a, const struct env_set *es, const unsigned i
-           pid = fork ();
-           if (pid == (pid_t)0) /* child side */
-             {
-+              if (flags & S_SETPGRP)
-+                {
-+                  if (setpgid (0, getpid ()) == -1)
-+                    msg (M_WARN | M_ERRNO, "openvpn_execve: setpgid failed");
-+                }
-               execve (cmd, argv, envp);
-               exit (127);
-             }
-@@ -315,7 +320,9 @@ openvpn_execve (const struct argv *a, const struct env_set *es, const unsigned i
-             msg (M_ERR, "openvpn_execve: unable to fork");
-           else /* parent side */
-             {
--              if (waitpid (pid, &ret, 0) != pid)
-+              if (flags & S_NOWAIT)
-+                ret = (int)pid;
-+              else if (waitpid (pid, &ret, 0) != pid)
-                 ret = -1;
-             }
-         }
-diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
-index 41748bd..5b7aeee 100644
---- a/src/openvpn/misc.h
-+++ b/src/openvpn/misc.h
-@@ -86,8 +86,10 @@ void write_pid (const struct pid_state *state);
- void warn_if_group_others_accessible(const char* filename);
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index c2907cd..139c625 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1448,6 +1448,7 @@ do_open_tun (struct context *c)
+ 	do_init_route_ipv6_list (&c->options, c->c1.route_ipv6_list, false, c->c2.es);
  
- /* system flags */
--#define S_SCRIPT (1<<0)
--#define S_FATAL  (1<<1)
-+#define S_SCRIPT    (1<<0)
-+#define S_FATAL     (1<<1)
-+#define S_NOWAIT    (1<<2)
-+#define S_SETPGRP   (1<<3)
+       /* do ifconfig */
++      c->c1.tuntap->mtu = TUN_MTU_SIZE (&c->c2.frame);
+       if (!c->options.ifconfig_noexec
+ 	  && ifconfig_order () == IFCONFIG_BEFORE_TUN_OPEN)
+ 	{
+@@ -1457,7 +1458,7 @@ do_open_tun (struct context *c)
+ 						c->options.dev_type,
+ 						c->options.dev_node,
+ 						&gc);
+-	  do_ifconfig (c->c1.tuntap, guess, TUN_MTU_SIZE (&c->c2.frame), c->c2.es);
++	  do_ifconfig (c->c1.tuntap, guess, c->c2.es);
+ 	}
  
- const char *system_error_message (int, struct gc_arena *gc);
+       /* possibly add routes */
+@@ -1482,7 +1483,7 @@ do_open_tun (struct context *c)
+       if (!c->options.ifconfig_noexec
+ 	  && ifconfig_order () == IFCONFIG_AFTER_TUN_OPEN)
+ 	{
+-	  do_ifconfig (c->c1.tuntap, c->c1.tuntap->actual_name, TUN_MTU_SIZE (&c->c2.frame), c->c2.es);
++	  do_ifconfig (c->c1.tuntap, c->c1.tuntap->actual_name, c->c2.es);
+ 	}
  
+       /* run the up script */
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 4df271d..31bb583 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -631,10 +631,10 @@ void delete_route_connected_v6_net(struct tuntap * tt,
+ void
+ do_ifconfig (struct tuntap *tt,
+ 	     const char *actual,    /* actual device name */
+-	     int tun_mtu,
+ 	     const struct env_set *es)
+ {
+   struct gc_arena gc = gc_new ();
++  int tun_mtu = tt->mtu;
+ 
+   if (tt->did_ifconfig_setup)
+     {
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index 631b53c..1b510d0 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -150,6 +150,7 @@ struct tuntap
+   in_addr_t local;
+   in_addr_t remote_netmask;
+   in_addr_t broadcast;
++  int mtu;
+ 
+   struct in6_addr local_ipv6;
+   struct in6_addr remote_ipv6;
+@@ -243,7 +244,6 @@ void init_tun_post (struct tuntap *tt,
+ 
+ void do_ifconfig (struct tuntap *tt,
+ 		  const char *actual,    /* actual device name */
+-		  int tun_mtu,
+ 		  const struct env_set *es);
+ 
+ bool is_dev_type (const char *dev, const char *dev_type, const char *match_type);
 -- 
 1.7.9.5
 
