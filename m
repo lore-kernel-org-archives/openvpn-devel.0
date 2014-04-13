@@ -1,16 +1,9 @@
-Date: Sun, 13 Apr 2014 21:17:59 +0200
+Date: Sun, 13 Apr 2014 21:23:01 +0200 (CEST)
+Message-Id: <201404131923.s3DJN12r000327@...1295...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20140413191759.GY16637@...1296...>
-References: <1397389435-20170-1-git-send-email-gert@...1296...>
-	<20140413115257.GO16637@...1296...>
-	<20140413130102.GR16637@...1296...>
-	<534A9635.2090704@...1227...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="1aK428jFOAUOzjjs"
-Content-Disposition: inline
-In-Reply-To: <534A9635.2090704@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix SOCKSv5 method selection
+In-Reply-To: <20140413130102.GR16637@...1296...>
+References: <20140413130102.GR16637@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix SOCKSv5 method selection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,61 +12,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: Yawning Angel <yawning@...1897...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Yawning Angel <yawning@...1897...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---1aK428jFOAUOzjjs
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Patch has been applied to the master and release/2.3 branches (with some
+small amendments to fix MSVC compilation and "const" rules as pointed
+out by Arne Schwabe).
 
-Hi,
+commit 2903eba5dfe35c981329a833845e24de3882161a (master)
+commit 34df13fdb65242b81c9006ee8ac83be4cc3f9e09 (release/2.3)
 
-On Sun, Apr 13, 2014 at 03:50:45PM +0200, Arne Schwabe wrote:
-> Am 13.04.14 15:01, schrieb Gert Doering:
-> > On Sun, Apr 13, 2014 at 01:52:57PM +0200, Gert Doering wrote:
-> >> I'll amend that when committing.
-> > Here is the patch with the MSVC build change, plus some changes to the
-> > commit message to point to the pull request and trac.
-> >
-> ACK from me for the patch. It looks reasonable and if the change breaks
-> configs than these configs were fishy to begin with.
->=20
-> Please compile test the const ssize_t size; size =3D ... split. I think
-> you need to drop the const keyword.
+Author: Yawning Angel
+Date:   Mon Mar 10 03:47:58 2014 +0000
 
-Thanks.  Right you are, if the line is split, the "const" will give a
-compile error at assignment time.  Learned something new today...
+     Fix SOCKSv5 method selection
 
-Build and t_client tested, including the tcp- and udp-socks-tests (but
-only "with no authentication", as my test bed doesn't have a socks proxy
-with auth).
+     URL: https://github.com/OpenVPN/openvpn/pull/14
+     Acked-by: Gert Doering <gert@...1296...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20140413130102.GR16637@...1296...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8488
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-### test run 1d: 'tcp4 / socks proxy / p2pm / top net30' ###
-### test run 2d: 'UDP4 / socks proxy [on TCP!] / p2pm / top net30' ###
 
-gert
+--
+kind regards,
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Gert Doering
 
---1aK428jFOAUOzjjs
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
-
-iQCVAwUBU0ri56kuBuNlUUl1AQJsjAQAhUQVhMELLYnSOZ4JbtnoD+bRvrpK2BbM
-oSPaLWOa/A2ZG6l8lCzE//hx/KzHES+OMcnDgYSKqzoxAsIeFd9DiIlTQIz04FAk
-U5dWVUzUK5olwyBRAOBSCAvhHoU21IQTpakbpPFAYKsqeyeEaeWmMc2Gx7Kot2a3
-NJn0QvIHf7A=
-=ryWJ
------END PGP SIGNATURE-----
-
---1aK428jFOAUOzjjs--
 
