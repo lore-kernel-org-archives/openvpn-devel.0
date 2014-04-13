@@ -1,9 +1,10 @@
-Date: Sun, 13 Apr 2014 21:23:01 +0200 (CEST)
-Message-Id: <201404131923.s3DJN12r000327@...1295...>
+Date: Sun, 13 Apr 2014 21:37:05 +0200 (CEST)
+Message-Id: <201404131937.s3DJb5AU010713@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20140413130102.GR16637@...1296...>
-References: <20140413130102.GR16637@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix SOCKSv5 method selection
+In-Reply-To: <20140413170648.GU16637@...1296...>
+References: <20140413170648.GU16637@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: IPv6 address/route delete fix
+	for Win8
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,27 +15,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Yawning Angel <yawning@...1897...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master and release/2.3 branches (with some
-small amendments to fix MSVC compilation and "const" rules as pointed
-out by Arne Schwabe).
+Patch has been applied to the master and release/2.3 branches.
 
-commit 2903eba5dfe35c981329a833845e24de3882161a (master)
-commit 34df13fdb65242b81c9006ee8ac83be4cc3f9e09 (release/2.3)
+commit 4b4fac9184fcea1eab4f4223309211780cee188a (master)
+commit 22e834bee82b046e753d74ee374299720d0ec0bb (release/2.3)
 
-Author: Yawning Angel
-Date:   Mon Mar 10 03:47:58 2014 +0000
+Author: Gert Doering
+Date:   Sun Apr 13 13:12:02 2014 +0200
 
-     Fix SOCKSv5 method selection
+     IPv6 address/route delete fix for Win8
 
-     URL: https://github.com/OpenVPN/openvpn/pull/14
-     Acked-by: Gert Doering <gert@...1296...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20140413130102.GR16637@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8488
      Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Cedric Tabary <cedric+openvpn@...1891...>
+     Message-Id: <20140413170648.GU16637@...1296...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8499
 
 
 --
