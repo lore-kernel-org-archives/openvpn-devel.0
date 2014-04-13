@@ -1,10 +1,14 @@
-References: <20140413152613.GT16637@...1296...>
-Mime-Version: 1.0 (1.0)
-In-Reply-To: <20140413152613.GT16637@...1296...>
-Message-Id: <BB9236F0-66B5-4482-9228-D92F769DBA1D@...1286...>
-From: Eric Crist <ecrist@...1286...>
-Date: Sun, 13 Apr 2014 11:05:22 -0500
-Subject: Re: [Openvpn-devel] RFD: ssl library version numbers
+MIME-Version: 1.0
+In-Reply-To: <534AAAEC.7050105@...1227...>
+References: <1397366216-657-1-git-send-email-cernekee@...277...>
+	<20140413104705.GL16637@...1296...>
+	<CAJiQ=7DYg6PnTJ0piiUDKaT5wefVBxvPH3ZPHANQxOgWeDHjPg@...278...>
+	<534AAAEC.7050105@...1227...>
+From: Kevin Cernekee <cernekee@...277...>
+Date: Sun, 13 Apr 2014 09:31:11 -0700
+Message-ID: <CAJiQ=7COCWVzV1pq+ek8zimj65CdB0UM8S+1om1k8p_75yDjRA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 0/3] Support non-root operation using
+	ocproxy
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,71 +17,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Love it. Report always=20
+On Sun, Apr 13, 2014 at 8:19 AM, Arne Schwabe <arne@...1227...> wrote:
+> You could look at the TARGET_ANDROID. That uses the management interface and
+> fds over unix socket to achieve something similar.
 
-> On Apr 13, 2014, at 10:26 AM, Gert Doering <gert@...1296...> wrote:
->=20
-> Hi,
->=20
-> OpenVPN does not currently report the version of the SSL library it is
-> using - which I'm not sure whether it's by design or just because nobody
-> ever added it.  Anyway, right now I think we need it, to help future
-> cases.
->=20
-> There are a few questions that go along with that, which I want to discuss
-> here :-)
->=20
-> - shall we report compile-time versions as well, or only run-time version?
->=20
->  Like:
->=20
->    OpenSSL compile version=3D'OpenSSL 1.0.1f 6 Jan 2014'
->        library version=3D'OpenSSL 1.0.1g 7 Apr 2014'
->=20
->  (this is on one of my test systems where I discovered an old OpenSSL
->  installation, and upgraded *after* I built the OpenVPN binary)
->=20
->  While I always like seeing numbers, I think the compile-time version is
->  not actually that useful - if the ABI is not compatible, it will break,
->  and if it is, the library version is what is relevant.
->=20
-> - how do I get the library version for PolarSSL?
->=20
-> - shall we report the library version to the server, e.g. in the form of
->=20
->   IV_SSL=3DOpenSSL 1.0.1f
->   IV_SSL=3DPolarSSL 1.2.8
->=20
->  as a sysadmin on the server side, I'd welcome this ("show me what my
->  users are running").  From a security geek side, I'm not sure whether
->  there is potential for abuse, so "please give me your input"
->=20
-> - if we report it, do we want to report it always (as IV_VER) or only
->  if --push-peer-info is set?
->=20
-> feedback, please! :-)
->=20
-> gert
-> --=20
-> USENET is *not* the non-clickable part of WWW!
->                                                           //www.muc.de/~g=
-ert/
-> Gert Doering - Munich, Germany                             gert@...1296...
-> fax: +49-89-35655025                        gert@...1297...
-> -------------------------------------------------------------------------=
------
-> Put Bad Developers to Shame
-> Dominate Development with Jenkins Continuous Integration
-> Continuously Automate Build, Test & Deployment=20
-> Start a new project now. Try Jenkins in the cloud.
-> http://p.sf.net/sfu/13600_Cloudbees
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+Do you think it would be feasible to enable TARGET_ANDROID by default
+in the Linux OpenVPN builds, and change the logic so that if the user
+passes e.g. "--android" it will accept commands over the management
+socket instead of using the standard CLI?
+
+This would not work with ocproxy as-is, but I could write a wrapper program.
+
+Let me know if you think it's worth putting together a patch set.
+
+
+BTW, here is an example of how my current patch works with an existing
+OpenVPN service:
+
+$ ./src/openvpn/openvpn --config /tmp/vpnbook/vpnbook-us1-udp25000.ovpn \
+        --verb 0 --script-security 2 \
+        --dev "|/usr/bin/ocproxy -D 12345" &
+Sun Apr 13 08:46:44 2014 WARNING: file '/tmp/vpnbook/user.txt' is
+group or others accessible
+Sun Apr 13 08:46:44 2014 WARNING: No server certificate verification
+method has been enabled.  See http://openvpn.net/howto.html#mitm for
+more info.
+Sun Apr 13 08:46:44 2014 WARNING: this configuration may cache
+passwords in memory -- use the auth-nocache option to prevent this
+
+$ SOCKS5_SERVER=127.0.0.1:12345 socksify links -source ipchicken.com |
+grep -A1 Address
+            Address:
+            198.7.62.204            </font></td>
+
+
+Using port forwarding with "ocproxy -L", socksify, or FoxyProxy,
+individual connections / applications / URLs can be seamlessly
+forwarded over different VPN links.  Or, if I omit the --dev option,
+OpenVPN will fall back to standard "create tunX" behavior.
 
