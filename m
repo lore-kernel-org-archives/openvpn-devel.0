@@ -1,9 +1,14 @@
-From: Kevin Cernekee <cernekee@...277...>
-Date: Sat, 12 Apr 2014 22:16:55 -0700
-Message-Id: <1397366216-657-3-git-send-email-cernekee@...277...>
-In-Reply-To: <1397366216-657-1-git-send-email-cernekee@...277...>
-References: <1397366216-657-1-git-send-email-cernekee@...277...>
-Subject: [Openvpn-devel] [PATCH 2/3] Move MTU field into struct tuntap
+Date: Sun, 13 Apr 2014 12:40:46 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140413104046.GK16637@...1296...>
+References: <12223459.75082.1397360537380.JavaMail.root@...1893...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="fsa4OW4MtKwB4lU6"
+Content-Disposition: inline
+In-Reply-To: <12223459.75082.1397360537380.JavaMail.root@...1893...>
+Subject: Re: [Openvpn-devel] Openvpn 2.3.3 (community edition) and "Socks V5
+	method selection"
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,87 +17,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Lisa Minogue <lminogue@...1892...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-open_tun() will need to access this value, so we'll store it alongside
-the IP/netmask addresses.
+--fsa4OW4MtKwB4lU6
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Signed-off-by: Kevin Cernekee <cernekee@...277...>
----
- src/openvpn/init.c |    5 +++--
- src/openvpn/tun.c  |    2 +-
- src/openvpn/tun.h  |    2 +-
- 3 files changed, 5 insertions(+), 4 deletions(-)
+Hi,
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index c2907cd..139c625 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1448,6 +1448,7 @@ do_open_tun (struct context *c)
- 	do_init_route_ipv6_list (&c->options, c->c1.route_ipv6_list, false, c->c2.es);
- 
-       /* do ifconfig */
-+      c->c1.tuntap->mtu = TUN_MTU_SIZE (&c->c2.frame);
-       if (!c->options.ifconfig_noexec
- 	  && ifconfig_order () == IFCONFIG_BEFORE_TUN_OPEN)
- 	{
-@@ -1457,7 +1458,7 @@ do_open_tun (struct context *c)
- 						c->options.dev_type,
- 						c->options.dev_node,
- 						&gc);
--	  do_ifconfig (c->c1.tuntap, guess, TUN_MTU_SIZE (&c->c2.frame), c->c2.es);
-+	  do_ifconfig (c->c1.tuntap, guess, c->c2.es);
- 	}
- 
-       /* possibly add routes */
-@@ -1482,7 +1483,7 @@ do_open_tun (struct context *c)
-       if (!c->options.ifconfig_noexec
- 	  && ifconfig_order () == IFCONFIG_AFTER_TUN_OPEN)
- 	{
--	  do_ifconfig (c->c1.tuntap, c->c1.tuntap->actual_name, TUN_MTU_SIZE (&c->c2.frame), c->c2.es);
-+	  do_ifconfig (c->c1.tuntap, c->c1.tuntap->actual_name, c->c2.es);
- 	}
- 
-       /* run the up script */
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 4df271d..31bb583 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -631,10 +631,10 @@ void delete_route_connected_v6_net(struct tuntap * tt,
- void
- do_ifconfig (struct tuntap *tt,
- 	     const char *actual,    /* actual device name */
--	     int tun_mtu,
- 	     const struct env_set *es)
- {
-   struct gc_arena gc = gc_new ();
-+  int tun_mtu = tt->mtu;
- 
-   if (tt->did_ifconfig_setup)
-     {
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index 631b53c..1b510d0 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -150,6 +150,7 @@ struct tuntap
-   in_addr_t local;
-   in_addr_t remote_netmask;
-   in_addr_t broadcast;
-+  int mtu;
- 
-   struct in6_addr local_ipv6;
-   struct in6_addr remote_ipv6;
-@@ -243,7 +244,6 @@ void init_tun_post (struct tuntap *tt,
- 
- void do_ifconfig (struct tuntap *tt,
- 		  const char *actual,    /* actual device name */
--		  int tun_mtu,
- 		  const struct env_set *es);
- 
- bool is_dev_type (const char *dev, const char *dev_type, const char *match_type);
--- 
-1.7.9.5
+On Sun, Apr 13, 2014 at 05:42:17AM +0200, Lisa Minogue wrote:
+> I would like to know if the latest version of Openvpn 2.3.3 (community ed=
+ition) has incorporated the fix for "Socks V5 method selection" flaw?=20
 
+Does the release notes indicates so?
+
+> If not, when does Openvpn plan to incorporate it?
+>=20
+> For more information please click the following links:
+>=20
+> https://lists.torproject.org/pipermail/tor-dev/2014-March/006427.html
+> https://github.com/Yawning/openvpn/commit/7474f1acfc
+
+I think it just dropped in my priority list a bit...
+
+Reporting this in lots of places that are fully inappropriate, like
+the *users* list (instead of the devel list), the *security* list=20
+(it is not a security vulnerability, just two silly programs not=20
+talking properly to each other), and the forum (which is also primarily
+targeted to *users*) is not exactly the way to get the sort of attention
+that you want.
+
+(You're lucky insofar as someone more reasonable has opened a trac ticket
+for that already, trac#377)
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--fsa4OW4MtKwB4lU6
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBU0pprqkuBuNlUUl1AQJMowP8C5q8/5CDjswDaZ1HtLo+DHxUjYdfN+s0
+0+WQsIcSB0WB5UH9PQw6biwFV1Z6pk6iWyfLPkVjwr1zd+uVdYtA+RA50Eo9ah4c
+CyQtSoI3G6TgwWVyP5Nydobu80toYgBA22nWj/oUdBQPJUfqC+qhsjtddIlwO6yl
+ffImUFpgPHk=
+=Q8gv
+-----END PGP SIGNATURE-----
+
+--fsa4OW4MtKwB4lU6--
 
