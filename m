@@ -1,15 +1,7 @@
-Date: Sun, 13 Apr 2014 13:29:42 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20140413112942.GN16637@...1296...>
-References: <20140413111500.GM16637@...1296...>
-	<534A72C8.1020203@...1227...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="REDQ9bXMXAvhQ/8c"
-Content-Disposition: inline
-In-Reply-To: <534A72C8.1020203@...1227...>
-Subject: Re: [Openvpn-devel] github pull 15 / Fix typo in build script to
-	use LDFLAGS
+Date: Sun, 13 Apr 2014 13:43:55 +0200
+Message-Id: <1397389435-20170-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Fix SOCKSv5 method selection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,59 +10,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: kangsterizer <kang@...1896...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---REDQ9bXMXAvhQ/8c
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: Yawning Angel <yawning@...1897...>
 
-Hi,
+So, RFC 1928 doesn't say anything about the METHODS field in the Method
+Selection message being ordered in terms of preference or anything, and
+the server is free to pick any of the METHODS offered by the client.
 
-On Sun, Apr 13, 2014 at 01:19:36PM +0200, Arne Schwabe wrote:
-> Am 13.04.14 13:15, schrieb Gert Doering:
-> > From 553ca06af9e9c2daa8acfa36988aac0b8ed5dab4 Mon Sep 17 00:00:00 2001
-> > From: kangsterizer <kang@...1896...>
-> > Date: Thu, 10 Apr 2014 11:23:24 -0700
-> > Subject: [PATCH] Fix typo in build script to use LDFLAGS
+Always sending a Method Selection message with NO AUTHENTICATION REQUIRED
+and USERNAME/PASSWORD set is broken on two fronts:
 
-Applied to master and release/2.3
+ * If the OpenVPN client can't handle the server picking USERNAME/PASSWORD
+   due to the credentials being missing, it shouldn't offer it to the server.
 
-commit a95358af543b9106f4ef481e4556d1d03459d058 (master)
-commit e8d8e50f4da33af6e81675174fcfbf0fd8642b91 (release/2.3)
+ * If the OpenVPN client has credentials, then it should always attempt to
+   authenticate.  This is a security product.  "You can misconfigure it and
+   it will work" is not acceptable.  Setting a username/password when the
+   SOCKS server doesn't require/support that as an option is the user not
+   configuring it correctly, and should be treated as such.
 
-Author: kangsterizer <kang@...1896...>
-Date:   Sun Apr 13 13:15:00 2014 +0200
+Also verify that the SOCKS server returned the auth that was requested.
+---
+ src/openvpn/socks.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-    Fix typo in sample build script to use LDFLAGS
-=20=20=20=20
-    Came in as github pull request #15
-=20=20=20=20
-    Signed-off-by: Gert Doering <gert@...1296...>
-    Acked-By: Arne Schwabe <arne@...1227...>
+diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c
+index 1551da8..5cd27ac 100644
+--- a/src/openvpn/socks.c
++++ b/src/openvpn/socks.c
+@@ -190,9 +190,12 @@ socks_handshake (struct socks_proxy_info *p,
+   int len = 0;
+   const int timeout_sec = 5;
+ 
+-  /* VER = 5, NMETHODS = 2, METHODS = [0 (no auth), 2 (plain login)] */
+-  const ssize_t size = send (sd, "\x05\x02\x00\x02", 4, MSG_NOSIGNAL);
+-  if (size != 4)
++  /* VER = 5, NMETHODS = 1, METHODS = [0 (no auth)] */
++  char method_sel[3] = { 0x05, 0x01, 0x00 };
++  if (p->authfile[0])
++      method_sel[2] = 0x02; /* METHODS = [2 (plain login)] */
++  const ssize_t size = send (sd, method_sel, sizeof (method_sel), MSG_NOSIGNAL);
++  if (size != sizeof (method_sel))
+     {
+       msg (D_LINK_ERRORS | M_ERRNO, "socks_handshake: TCP port write failed on send()");
+       return false;
+@@ -252,6 +255,13 @@ socks_handshake (struct socks_proxy_info *p,
+       return false;
+     }
+ 
++  /* validate that the auth method returned is the one sent */
++  if (buf[1] != method_sel[2])
++    {
++      msg (D_LINK_ERRORS, "socks_handshake: Socks proxy returned unexpected auth");
++      return false;
++    }
++
+   /* select the appropriate authentication method */
+   switch (buf[1])
+     {
+-- 
+1.8.3.2
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---REDQ9bXMXAvhQ/8c
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
-
-iQCVAwUBU0p1JqkuBuNlUUl1AQJDUQP/WjkWSoiBUDpM/0HH1ehVqdm7TSjDBcvu
-fNYrqJk70d+QoaG6Kf9vJ2PtyxRAUsPfP6Hnw03tCM3h9Uv80Ibg/9Z12+DGOe5k
-VVpKZOH10SiRjxatUwHbtYjaC8f1FtHLhPrVEPbgSoGwKonTjyMVfInLm6x1Swk/
-Pwx6ksMjqy4=
-=8oEy
------END PGP SIGNATURE-----
-
---REDQ9bXMXAvhQ/8c--
 
