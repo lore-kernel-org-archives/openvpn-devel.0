@@ -1,15 +1,14 @@
-Date: Sun, 13 Apr 2014 15:48:01 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20140413134801.GS16637@...1296...>
-References: <20140409232527.GA3061@...1890...>
-	<20140413125641.GQ16637@...1296...>
-	<20140413133920.GA28182@...1890...>
-Mime-Version: 1.0
+Message-ID: <534A9635.2090704@...1227...>
+Date: Sun, 13 Apr 2014 15:50:45 +0200
+From: Arne Schwabe <arne@...1227...>
+MIME-Version: 1.0
+References: <1397389435-20170-1-git-send-email-gert@...1296...>	<20140413115257.GO16637@...1296...>
+	<20140413130102.GR16637@...1296...>
+In-Reply-To: <20140413130102.GR16637@...1296...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="8I9yi/IyADoiQZtC"
-Content-Disposition: inline
-In-Reply-To: <20140413133920.GA28182@...1890...>
-Subject: Re: [Openvpn-devel] BUG: Windows netsh interface ipv6 delete address
+	protocol="application/pgp-signature";
+	boundary="ks8m1fg6NAna4LLbgwgoKFhRN01nBHDxw"
+Subject: Re: [Openvpn-devel] [PATCH] Fix SOCKSv5 method selection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,49 +17,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Cedric Tabary <cedric+openvpn@...1891...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Cc: Yawning Angel <yawning@...1897...>
 
---8I9yi/IyADoiQZtC
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--ks8m1fg6NAna4LLbgwgoKFhRN01nBHDxw
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Am 13.04.14 15:01, schrieb Gert Doering:
+> Hi,
+>
+> On Sun, Apr 13, 2014 at 01:52:57PM +0200, Gert Doering wrote:
+>> I'll amend that when committing.
+> Here is the patch with the MSVC build change, plus some changes to the
+> commit message to point to the pull request and trac.
+>
+>
+ACK from me for the patch. It looks reasonable and if the change breaks
+configs than these configs were fishy to begin with.
 
-On Sun, Apr 13, 2014 at 03:39:20PM +0200, Cedric Tabary wrote:
-> Bug is still there in this build,
-> I think you patched the route removal but not the ipv6 address removal
-> on the interface itself.
+Please compile test the const ssize_t size; size =3D ... split. I think
+you need to drop the const keyword.
 
-Oh.  I need to learn to read...  indeed, I patched route removal only.
+Arne
 
-Will send a new patch + installer tonight.
 
-Sorry,
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---8I9yi/IyADoiQZtC
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+--ks8m1fg6NAna4LLbgwgoKFhRN01nBHDxw
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
+Version: GnuPG v1.4.14 (Darwin)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
 
-iQCVAwUBU0qVkKkuBuNlUUl1AQKbBgP9HXOd5jMHBX3PnDvBTZXW6GKWmQ7oTpJD
-MFlbL6tpfxfsOpQ008oHhKrbXOougI0kLD/cD148kDCi0xkKAmg44CLzl3lavhcg
-ut7IaKsvPSrrWZ+DeQcC9JpfJkwU9NtdRIuvaTgy6tuqFWMEhsnreW+aWimmoqKr
-W5XHb4JOHh0=
-=jnKz
+iEYEARECAAYFAlNKljUACgkQe8+cMNS4zRff7gCglYaqIF6csTCGZS97qzV07DFx
+K0EAoNpsYgsUZIehh2cKsysOP/7p3aOV
+=zhKx
 -----END PGP SIGNATURE-----
 
---8I9yi/IyADoiQZtC--
+--ks8m1fg6NAna4LLbgwgoKFhRN01nBHDxw--
 
