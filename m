@@ -1,11 +1,13 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Mon, 14 Apr 2014 10:25:52 +0200
-Message-ID: <1821671.rErRBddWlW@...1526...>
-In-Reply-To: <1397409842-3056-1-git-send-email-pzborowski@...1345...>
-References: <1397409842-3056-1-git-send-email-pzborowski@...1345...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] fixed typo in tray tooltip (polish
-	language)
+Date: Mon, 14 Apr 2014 10:28:58 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140414082858.GB16637@...1296...>
+References: <534B98A4.7020806@...515...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="QxZFNEeb3qw+Nk/i"
+Content-Disposition: inline
+In-Reply-To: <534B98A4.7020806@...515...>
+Subject: Re: [Openvpn-devel] OpenVPN PolarSSL builds?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,18 +16,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Piotr Zborowski <pzborowski@...1345...>, Piotr Zborowski <pzborowski@...277...>
+To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Sunday 13 April 2014 17:24:02 Piotr Zborowski wrote:
->  res/openvpn-gui-res-pl.rc | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+--QxZFNEeb3qw+Nk/i
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Thanks. I've applied it to the repo, but have not pushed it, yet. Will be 
-contained in the next openvpn installer.
+Hi,
 
-Heiko
+On Mon, Apr 14, 2014 at 11:13:24AM +0300, Samuli Sepp=E4nen wrote:
+> Currently all of the binary builds we provide[*] are linked to OpenSSL.
+> Would having both OpenSSL and PolarSSL builds make sense (e.g. starting
+> with 2.4)?
 
+I think it would be a nice option.  We could even start with 2.3.4 with
+that, at least for windows... (if PolarSSL can be cross-compiled for
+windows...)
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--QxZFNEeb3qw+Nk/i
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBU0ucSqkuBuNlUUl1AQJJVwP/a/I9sp+yIK4gXyJ82x2hmwn0JDtP+6nD
+E59+dTyy9dXnkdLJjSphM9uEOfIxpTO2wjtO0uzrvi0CYwgGlOvtKxNJuLk8OEle
+WJTCt13E6yi+SWKJ9c2SLLGfp40DpEMSL8gODuHXMtIMPiboHLyTXJnFTyu7Onqy
+XDT+mKmIuRI=
+=HM4u
+-----END PGP SIGNATURE-----
+
+--QxZFNEeb3qw+Nk/i--
 
