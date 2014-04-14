@@ -1,11 +1,15 @@
-Date: Mon, 14 Apr 2014 11:39:10 +0200
-From: Alberto Gonzalez Iniesta <agi@...64...>
-Message-ID: <20140414093910.GW13903@...1894...>
+Date: Mon, 14 Apr 2014 11:42:23 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140414094223.GH16637@...1296...>
 References: <534B98A4.7020806@...515...>
 	<20140414082858.GB16637@...1296...>
-	<534BA0EE.1050103@...515...>
-MIME-Version: 1.0
-In-Reply-To: <534BA0EE.1050103@...515...>
+	<534BA045.50503@...1435...> <534BA2CB.3030300@...515...>
+	<20140414092928.GV13903@...1894...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="mLpLBONkrWOwHKmY"
+Content-Disposition: inline
+In-Reply-To: <20140414092928.GV13903@...1894...>
 Subject: Re: [Openvpn-devel] OpenVPN PolarSSL builds?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,54 +19,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-On Mon, Apr 14, 2014 at 11:48:46AM +0300, Samuli Sepp=E4nen wrote:
->=20
-> > Hi,
-> >
-> > On Mon, Apr 14, 2014 at 11:13:24AM +0300, Samuli Sepp=E4nen wrote:
-> >> Currently all of the binary builds we provide[*] are linked to OpenSSL.
-> >> Would having both OpenSSL and PolarSSL builds make sense (e.g. starting
-> >> with 2.4)?
-> > I think it would be a nice option.  We could even start with 2.3.4 with
-> > that, at least for windows... (if PolarSSL can be cross-compiled for
-> > windows...)
-> >
-> I think the "cross-compile on Windows" part is the trickiest part. That
-> said, on Debian/Ubuntu we'd probably need to use some package name
-> tricks like:
->=20
-> "openvpn" (a metapackage)
-> "openvpn_openssl", provides openvpn (=3Dopenvpn+openssl)
-> "openvpn_polarssl", provides openvpn (=3Dopenvpn+polarssl)
->=20
-> Agi: do you have any suggestions on how to best handle this kind of
-> scenario?
+--mLpLBONkrWOwHKmY
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-The same source package could produce the three packages. Build with
-openssl, clean, build with polarssl. It will require some hacks, but
-should be doable and clean enough. Will look at it next week. BTW,
-openvpn-openssl & openvpn-polarssl (underscores not valid in package
-names :-)
+Hi,
 
-> Also, if we don't wish maintain our own set of PolarSSL .deb packages
-> we'd have to limit ourselves to fairly recent Debian/Ubuntu versions.
+On Mon, Apr 14, 2014 at 11:29:28AM +0200, Alberto Gonzalez Iniesta wrote:
+> There're already packages for PolarSSL in Debian (and thus, in Ubuntu).
+> So I don't think there's need to maintain different ones.
 
-When can always try to backport current polar packages to older distro
-releases. Currently:
-Squeeze: 1.2.9
-Wheezy: 1.2.9
-Jessie/sid: 1.3.4
+What's Debian's stance on PolarSSL 1.2.x vs. 1.3.x?  This is something
+that had me worried for a while, as they are plain incompatible - so
+if we finally merge Steffan's patch for Polar 1.3.x support to git master,
+different OpenVPN versions will require different PolarSSL versions as
+well
 
+  openvpn 2.3.x -> needs PolarSSL 1.2.x, will not build or run with 1.3.x
+  openvpn 2.4.x -> needs PolarSSL 1.3.x, will not build or run with 1.2.x
 
+(the decision to not-support PolarSSL 1.2.x in parallel to 1.3.x saves
+OpenVPN a lot of #ifdefs in our code, but pushes the burden to the
+distribution maintainers)
+
+gert
 --=20
-Alberto Gonzalez Iniesta    | Formaci=F3n, consultor=EDa y soporte t=E9cnico
-mailto/sip: agi@...64... | en GNU/Linux y software libre
-Encrypted mail preferred    | http://inittab.com
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Key fingerprint =3D 5347 CBD8 3E30 A9EB 4D7D  4BF2 009B 3375 6B9A AA55
+--mLpLBONkrWOwHKmY
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBU0utf6kuBuNlUUl1AQIq7QP9Fqiu50K+vOnHdxN2QR/xGWBMLCn5X/oo
+baC6OksBdWuIcOl4FGB1BkYo4AzVTbc1euHkVSCrcTTAdnyNnltlHzfmNGPhIdEC
+sF85jafeeElkQARDRIm/BFtLi4Q2eQVhQhQfXBv/yB8hZwGsU9wozCFWZUEp7c1X
+o/truwxgDeg=
+=K4JG
+-----END PGP SIGNATURE-----
+
+--mLpLBONkrWOwHKmY--
 
