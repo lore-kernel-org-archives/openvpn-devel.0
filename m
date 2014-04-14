@@ -1,14 +1,16 @@
-Date: Mon, 14 Apr 2014 12:20:22 +0200
-From: Alberto Gonzalez Iniesta <agi@...64...>
-Message-ID: <20140414102022.GF13903@...1894...>
-References: <534B98A4.7020806@...515...>
-	<20140414082858.GB16637@...1296...> <534BA045.50503@...1435...>
-	<534BA2CB.3030300@...515...>
-	<20140414092928.GV13903@...1894...>
-	<20140414094223.GH16637@...1296...>
 MIME-Version: 1.0
-In-Reply-To: <20140414094223.GH16637@...1296...>
-Subject: Re: [Openvpn-devel] OpenVPN PolarSSL builds?
+In-Reply-To: <534B8BF9.2060405@...1147...>
+References: <1397366216-657-1-git-send-email-cernekee@...277...>
+	<20140413104705.GL16637@...1296...>
+	<CAJiQ=7DYg6PnTJ0piiUDKaT5wefVBxvPH3ZPHANQxOgWeDHjPg@...278...>
+	<534AAAEC.7050105@...1227...>
+	<CAJiQ=7COCWVzV1pq+ek8zimj65CdB0UM8S+1om1k8p_75yDjRA@...278...>
+	<534B8BF9.2060405@...1147...>
+From: Kevin Cernekee <cernekee@...277...>
+Date: Mon, 14 Apr 2014 09:15:51 -0700
+Message-ID: <CAJiQ=7Betr-bq68_1yKCufkqgrDj+RBxM482isuAxkqzPoeVxQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 0/3] Support non-root operation using
+	ocproxy
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,40 +19,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Jan Just Keijser <janjust@...1147...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Mon, Apr 14, 2014 at 11:42:23AM +0200, Gert Doering wrote:
-> Hi,
->=20
-> On Mon, Apr 14, 2014 at 11:29:28AM +0200, Alberto Gonzalez Iniesta wrote:
-> > There're already packages for PolarSSL in Debian (and thus, in Ubuntu).
-> > So I don't think there's need to maintain different ones.
->=20
-> What's Debian's stance on PolarSSL 1.2.x vs. 1.3.x?  This is something
-> that had me worried for a while, as they are plain incompatible - so
-> if we finally merge Steffan's patch for Polar 1.3.x support to git master,
-> different OpenVPN versions will require different PolarSSL versions as
-> well
->=20
->   openvpn 2.3.x -> needs PolarSSL 1.2.x, will not build or run with 1.3.x
->   openvpn 2.4.x -> needs PolarSSL 1.3.x, will not build or run with 1.2.x
->=20
-> (the decision to not-support PolarSSL 1.2.x in parallel to 1.3.x saves
-> OpenVPN a lot of #ifdefs in our code, but pushes the burden to the
-> distribution maintainers)
+On Mon, Apr 14, 2014 at 12:19 AM, Jan Just Keijser <janjust@...1147...> wrote:
+> I'd vote against enabling TARGET_ANDROID by default
 
-I guess the best solution would be to go for 1.3.x support and backport
-polarssl to Squeeze and Wheezy. I could contact the polarssl maintainer
-to see how doable that is.
+This would not be my first choice either, but it would allow non-root
+processes to set up a fully functional VPN connection on Linux hosts
+without a special build.
 
+If I'm going to have to make a special build anyway, I'll just apply
+my three patches locally.  It's working for me now and I posted
+packages in my Ubuntu PPA.  But that is somewhat inconvenient to
+maintain, and it doesn't benefit other OpenVPN users (almost all of
+whom are using binaries built from the official sources).
 
---=20
-Alberto Gonzalez Iniesta    | Formaci=F3n, consultor=EDa y soporte t=E9cnico
-mailto/sip: agi@...64... | en GNU/Linux y software libre
-Encrypted mail preferred    | http://inittab.com
+> there's a reason the code is split into
+> TARGET_LINUX
+> TARGET_FREEBSD
+> TARGET_SOLARIS
+> etc and I'd say you're asking for trouble if you enable two TARGETs on
+> one platform.
 
-Key fingerprint =3D 5347 CBD8 3E30 A9EB 4D7D  4BF2 009B 3375 6B9A AA55
+Yes, the way the code is currently written, enabling more than one
+TARGET_* option is a problem.
+
+But, stepping back a bit, does Android really need its own TARGET?  Or
+can it be treated as a special operating mode on a standard
+TARGET_LINUX build?  Any Linux host, Android or PC, should be able to
+pass its traffic over either tunX or over a file descriptor passed in
+from outside.  It would be nice if this choice was available at
+runtime.
+
+> I do like the idea of not needing root access to run openvpn - esp windows
+> users could benefit from this, as they're not always allowed to install the
+> tap-win adapter.
+
+There are also a number of cases where it is useful to have
+fine-grained control over which applications use the VPN connection,
+e.g.
+
+https://pay.reddit.com/r/techsupport/comments/22x2oo/routing_clients_through_vpn_connected_through/
+
+I don't know if my solution is necessarily the best option for this
+user, but it's something to consider at least...
+
+> Then again, it goes against the UNIX/Linux philosophy that
+> each tool (e.g. openvpn) should do one thing and it should do it well. By
+> adding patches like this left and right we're steering away from that
+> philosophy.
+
+We could always split {route,tun,lladdr}.c into a separate program and
+invoke it with "openvpn --dev '|tunhelper'".  :-)
 
