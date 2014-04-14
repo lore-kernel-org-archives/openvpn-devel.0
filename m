@@ -1,10 +1,12 @@
-Message-ID: <534B8A45.8040006@...1147...>
-Date: Mon, 14 Apr 2014 09:12:05 +0200
+Message-ID: <534B8BF9.2060405@...1147...>
+Date: Mon, 14 Apr 2014 09:19:21 +0200
 From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-References: <20140413152613.GT16637@...1296...>
-In-Reply-To: <20140413152613.GT16637@...1296...>
-Subject: Re: [Openvpn-devel] RFD: ssl library version numbers
+References: <1397366216-657-1-git-send-email-cernekee@...277...>	<20140413104705.GL16637@...1296...>	<CAJiQ=7DYg6PnTJ0piiUDKaT5wefVBxvPH3ZPHANQxOgWeDHjPg@...278...>	<534AAAEC.7050105@...1227...>
+	<CAJiQ=7COCWVzV1pq+ek8zimj65CdB0UM8S+1om1k8p_75yDjRA@...278...>
+In-Reply-To: <CAJiQ=7COCWVzV1pq+ek8zimj65CdB0UM8S+1om1k8p_75yDjRA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 0/3] Support non-root operation using
+ ocproxy
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,83 +17,45 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
+To: Kevin Cernekee <cernekee@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Hi Gert,
+Hi
 
-Gert Doering wrote:
-> Hi,
+Kevin Cernekee wrote:
+> On Sun, Apr 13, 2014 at 8:19 AM, Arne Schwabe <arne@...1227...> wrote:
+>   
+>> You could look at the TARGET_ANDROID. That uses the management interface and
+>> fds over unix socket to achieve something similar.
+>>     
 >
-> OpenVPN does not currently report the version of the SSL library it is
-> using - which I'm not sure whether it's by design or just because nobody
-> ever added it.  Anyway, right now I think we need it, to help future
-> cases.
->
-> There are a few questions that go along with that, which I want to discuss
-> here :-)
->
-> - shall we report compile-time versions as well, or only run-time version?
->
->   Like:
->
-> 	OpenSSL compile version='OpenSSL 1.0.1f 6 Jan 2014'
-> 		library version='OpenSSL 1.0.1g 7 Apr 2014'
->
->   (this is on one of my test systems where I discovered an old OpenSSL
->   installation, and upgraded *after* I built the OpenVPN binary)
->
->   While I always like seeing numbers, I think the compile-time version is
->   not actually that useful - if the ABI is not compatible, it will break,
->   and if it is, the library version is what is relevant.
+> Do you think it would be feasible to enable TARGET_ANDROID by default
+> in the Linux OpenVPN builds, and change the logic so that if the user
+> passes e.g. "--android" it will accept commands over the management
+> socket instead of using the standard CLI?
 >
 >   
-+1 for this; I'd go for runtime versions only , although it might be an 
-interesting debug flag to get the compile time version as well - it 
-might aid in debugging cases where the ABI is supposed to be compatible, 
-but isn't .
-> - how do I get the library version for PolarSSL?
+I'd vote against enabling TARGET_ANDROID by default - there's a reason 
+the code is split into
+  TARGET_LINUX
+  TARGET_FREEBSD
+  TARGET_SOLARIS
+etc and I'd say you're asking for trouble if you enable two TARGETs on 
+one platform.
+
+> This would not work with ocproxy as-is, but I could write a wrapper program.
 >
 >   
-void version_get_string_full( char *string )
+I do like the idea of not needing root access to run openvpn - esp 
+windows users could benefit from this, as they're not always allowed to 
+install the tap-win adapter. Then again, it goes against the UNIX/Linux 
+philosophy that each tool (e.g. openvpn) should do one thing and it 
+should do it well. By adding patches like this left and right we're 
+steering away from that philosophy.
 
 
-> - shall we report the library version to the server, e.g. in the form of
->
->    IV_SSL=OpenSSL 1.0.1f
->    IV_SSL=PolarSSL 1.2.8
->
->   as a sysadmin on the server side, I'd welcome this ("show me what my
->   users are running").  From a security geek side, I'm not sure whether
->   there is potential for abuse, so "please give me your input"
->
->   
-
-> - if we report it, do we want to report it always (as IV_VER) or only
->   if --push-peer-info is set?
->
->   
-we're reporting the openvpn version info anyway, so adding the SSL lib 
-version would not change much; if it is only returned when 
---push-peer-info is set then there shouldn't be any privacy/security 
-concerns, esp if the info is given *AFTER* the initial connection is 
-made (i.e. after the first certificate handshake).
-
-
-while we're at it : if we're printing out (not reporting) the version 
-number of the SSL lib, why not also print out the version numbers of the 
-other libs
-- zlib
-- pkcs11-helper
-- snappy?
-
-this is what 'curl' does and it has saved me debugging time in some 
-strange cases.
-
-JM2CW,
+cheers,
 
 JJK
-
-
 
 
