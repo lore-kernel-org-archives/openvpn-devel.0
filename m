@@ -1,6 +1,6 @@
-Message-ID: <534BA045.50503@...1435...>
-Date: Mon, 14 Apr 2014 10:45:57 +0200
-From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <534BA0EE.1050103@...515...>
+Date: Mon, 14 Apr 2014 11:48:46 +0300
+From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
 References: <534B98A4.7020806@...515...>
 	<20140414082858.GB16637@...1296...>
@@ -16,41 +16,39 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
 
-On 04/14/2014 10:28 AM, Gert Doering wrote:
+> Hi,
+>
 > On Mon, Apr 14, 2014 at 11:13:24AM +0300, Samuli Sepp=E4nen wrote:
 >> Currently all of the binary builds we provide[*] are linked to OpenSSL.
 >> Would having both OpenSSL and PolarSSL builds make sense (e.g. starting
 >> with 2.4)?
->=20
 > I think it would be a nice option.  We could even start with 2.3.4 with
 > that, at least for windows... (if PolarSSL can be cross-compiled for
 > windows...)
+>
+I think the "cross-compile on Windows" part is the trickiest part. That
+said, on Debian/Ubuntu we'd probably need to use some package name
+tricks like:
 
-PolarSSL works just fine on Windows, OpenVPN-NL already ships for
-Windows, using PolarSSL.
+"openvpn" (a metapackage)
+"openvpn_openssl", provides openvpn (=3Dopenvpn+openssl)
+"openvpn_polarssl", provides openvpn (=3Dopenvpn+polarssl)
 
-I would really like to release 'vanilla' polarssl-builds too. Make it
-easy for people to pick their favourite SSL library.
+Agi: do you have any suggestions on how to best handle this kind of
+scenario?
 
-However, what about PolarSSL itself? For Windows we just put it in the
-installer. But what about the other platforms? It's less commonly
-available in the distro's, and because of the (at least up to now)
-volatile API's, the rather not unlikely that users get version clashes.
-So, options:
- * Just supply openvpn builds, let users deal with polarssl versioning
-themselves
- * Provide PolarSSL packages too (do we already do that for other libs?)
- * Statically compile in PolarSSL (like OpenVPN-NL does)
+Also, if we don't wish maintain our own set of PolarSSL .deb packages
+we'd have to limit ourselves to fairly recent Debian/Ubuntu versions.
 
-I think providing PolarSSL packages too is the neatest, but I'm not sure
-on the work involved in maintaining those. Samuli, any thoughts on this?
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
--Steffan
-
-
+irc freenode net: mattock
 
 
