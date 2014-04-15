@@ -1,15 +1,13 @@
-Message-ID: <534D7BF6.6050200@...1114...>
-Date: Tue, 15 Apr 2014 20:35:34 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <20140413152613.GT16637@...1296...>	<20140414193422.GN16637@...1296...>	<534C42AB.7040700@...1114...>
-	<20140415074239.GR16637@...1296...>
-In-Reply-To: <20140415074239.GR16637@...1296...>
+Date: Tue, 15 Apr 2014 21:31:32 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140415193132.GY16637@...1296...>
+References: <20140415110052.GB25405@...1296...>
+Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="4eEaOHE292GeRdaE5Nwi08jX2b3kEVxDe"
-Subject: Re: [Openvpn-devel] RFD: ssl library version numbers
-Reply-To: openvpn-devel@lists.sourceforge.net
+	protocol="application/pgp-signature"; boundary="0I3XpSxCEfqL2LaD"
+Content-Disposition: inline
+In-Reply-To: <20140415110052.GB25405@...1296...>
+Subject: Re: [Openvpn-devel] RFD: "--ignore-ipv6-failure" switch
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,73 +16,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---4eEaOHE292GeRdaE5Nwi08jX2b3kEVxDe
-Content-Type: text/plain; charset="ISO-8859-1"
+--0I3XpSxCEfqL2LaD
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 15/04/14 09:42, Gert Doering wrote:> HI,
->
-> On Mon, Apr 14, 2014 at 10:18:51PM +0200, David Sommerseth wrote:
->> Regarding your patch - the PolarSSL stuff
->>
->> +char *
->> +get_ssl_library_version(void)
->> +{
->> +    static char polar_version[30];	/* "at least 18 bytes in size" */
->> +    version_get_string_full( polar_version );
->> +    return polar_version;
->> +}
->>
->> version_get_string_full() is crappy due to the "at least 18 bytes".
->> That's ugly.  Can we please ensure that we at least adds a NULL
->> termination in polar_version[29] after version_get_string_full() ...
->> just to reduce the risk somewhat, in case it suddenly gets longer.  Then
->> it should (hopefully) be somewhat harder to get a buffer information
-leak.
->
-> Different approach:
->
-> char *
-> get_ssl_library_version(void)
-> {
->     static char polar_version[30];
->     unsigned int pv =3D version_get_number();
->     sprintf( polar_version, "PolarSSL %d.%d.%d",
->                 (pv>>24)&0xff, (pv>>16)&0xff, (pv>>8)&0xff );
->     return polar_version;
-> }
->
-> this is well-defined (polarssl/version.h), and guaranteed to not overflow.
+Hi,
 
-I like this.  I know that Paul has promised to never exceed 18 bytes.
-But you never know what some distros might do.  They may modify these
-strings to provide more fine grained info.  But this approach above will
-actually always be far more predictable.
+On Tue, Apr 15, 2014 at 01:00:52PM +0200, Gert Doering wrote:
+> a few of my users are driving me nuts, by unchecking "[ ] IPv6" in their
+> windows TAP adapter settings, and then complaining that their OpenVPN
+> is not connecting to this customers' server properly (because netsh.exe
+> fails to add an IPv6 address, and this is considered fatal).
 
+Turns out that this wasn't the actual problem, but the problem was=20
+"gui not run as administrator".
 
---
-kind regards,
+Which actually moves the issue (for me) towards=20
 
-David Sommerseth
+ - why can't we report a useful message if netsh.exe fails due to lack of
+   permission?
 
+ - why do we happily ignore IPv4 route.exe failures due to lack of=20
+   permission?  (Which means that the IPv4 case actually hides the problem,
+   the GUI and OpenVPN pretend that "all worked!" but if you try to connect
+   something behind the VPN, the routes are just not there...)
 
+Hrm.
 
---4eEaOHE292GeRdaE5Nwi08jX2b3kEVxDe
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--0I3XpSxCEfqL2LaD
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+Version: GnuPG v1.4.13 (NetBSD)
 
-iEYEARECAAYFAlNNe/gACgkQDC186MBRfrqfggCgotW4cW9apzdNjbXiOS1jrxR2
-aWUAn1gu3YA0NsibvTuP991OBO6iOrzl
-=49wP
+iQCVAwUBU02JFKkuBuNlUUl1AQJbBgQApz1xzzpywEx0TIuiADiW6ORdvGJ3ANn5
+KMZaTlNaQelB4dlOhhAgRwYTA+5TW7VRouoMJBQlMEXmRMzpEgJng8Yfuc2g9z+2
+Eucr4zocBnJooiAisWNGH04WMAH9N2loB0NnM1QlsAPhEUs5WfkVErjkswZgKMdr
+rY7py30+lOk=
+=hCVe
 -----END PGP SIGNATURE-----
 
---4eEaOHE292GeRdaE5Nwi08jX2b3kEVxDe--
+--0I3XpSxCEfqL2LaD--
 
