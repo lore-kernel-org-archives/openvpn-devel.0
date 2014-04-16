@@ -1,13 +1,8 @@
-Date: Tue, 15 Apr 2014 21:31:32 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20140415193132.GY16637@...1296...>
-References: <20140415110052.GB25405@...1296...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="0I3XpSxCEfqL2LaD"
-Content-Disposition: inline
-In-Reply-To: <20140415110052.GB25405@...1296...>
-Subject: Re: [Openvpn-devel] RFD: "--ignore-ipv6-failure" switch
+From: Holger Kummert <Holger.Kummert@...1516...>
+Date: Wed, 16 Apr 2014 12:48:35 +0200
+Message-ID: <1397645317-20116-1-git-send-email-Holger.Kummert@...1516...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Fixes for HTTP proxy authentication with NTLM
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,58 +11,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
---0I3XpSxCEfqL2LaD
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hello,
 
-Hi,
+one of our customers reported that the NTLM authentication of OpenVPN doesn't 
+work. I checked that and found that both NTLM versions didn't work against a
+Win2008 server.  The configuration seemed a bit confusing because an
+'auth-method' could only be set if an 'authfile' was given (ok, 'stdin' worked also).
 
-On Tue, Apr 15, 2014 at 01:00:52PM +0200, Gert Doering wrote:
-> a few of my users are driving me nuts, by unchecking "[ ] IPv6" in their
-> windows TAP adapter settings, and then complaining that their OpenVPN
-> is not connecting to this customers' server properly (because netsh.exe
-> fails to add an IPv6 address, and this is considered fatal).
+When I inspected the code I noticed that both auto-modes for authentication and
+the retry mechanism were handled by one single variable (p->options.auth_retry).
+In order to fix the general working and to straighten the configuration and internal 
+handling I created two patches:
 
-Turns out that this wasn't the actual problem, but the problem was=20
-"gui not run as administrator".
 
-Which actually moves the issue (for me) towards=20
+[PATCH 1/2] Get NTLMv1 and NTLMv2 up and running
 
- - why can't we report a useful message if netsh.exe fails due to lack of
-   permission?
+This patch fixes several problems found in the ntlm-code:
+Apply UTF-16 conversion where needed, introduce a proper conversion from UTF-8 to
+UTF-16 (the former one worked only for ASCII chars), fix ntlm2 (the assumed length
+for the ntlm2-blob was wrong).
 
- - why do we happily ignore IPv4 route.exe failures due to lack of=20
-   permission?  (Which means that the IPv4 case actually hides the problem,
-   the GUI and OpenVPN pretend that "all worked!" but if you try to connect
-   something behind the VPN, the routes are just not there...)
 
-Hrm.
+[PATCH 2/2] http-proxy: Separate settings for user interaction and authentication auto-behavior
 
-gert
+Here a backward compatible re-structuring of the configuration for 'http-proxy' is
+introduced: The interact setting (whether the user is prompted for the credentials
+again after an auth error) is put into a new keyword. This is now disjoined from
+the auth method. The new syntax is like:
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+   http-proxy server port [authfile | 'interact'] [ auth-method ]
 
---0I3XpSxCEfqL2LaD
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+     auth-method := auto | auto-nct | basic | digest | ntlm | ntlm2
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
+The behavior of auth-method == auto or auto-nct works as follows:
+If the server requests an authentication method the credentials are
+asked from the user.
+The new behaviour treats the server request for 'NTLM' in the following way:
+The NTLMv2 algorithm is tried first (in order to push higher security). Only
+if this fails NTLMv1 will be used. If this also fails the user is asked
+for the credentials again depending on the configuration.
+  
 
-iQCVAwUBU02JFKkuBuNlUUl1AQJbBgQApz1xzzpywEx0TIuiADiW6ORdvGJ3ANn5
-KMZaTlNaQelB4dlOhhAgRwYTA+5TW7VRouoMJBQlMEXmRMzpEgJng8Yfuc2g9z+2
-Eucr4zocBnJooiAisWNGH04WMAH9N2loB0NnM1QlsAPhEUs5WfkVErjkswZgKMdr
-rY7py30+lOk=
-=hCVe
------END PGP SIGNATURE-----
+Any opinions?
 
---0I3XpSxCEfqL2LaD--
+
+Best regards,
+Holger
+
 
