@@ -1,11 +1,8 @@
-Message-ID: <534EFC3C.7010503@...1856...>
-Date: Wed, 16 Apr 2014 23:55:08 +0200
-From: Steffan Karger <steffan@...1856...>
+Message-ID: <534F142C.1010707@...515...>
+Date: Wed, 16 Apr 2014 17:37:16 -0600
+From: James Yonan <james@...515...>
 MIME-Version: 1.0
-References: <1397663021-18815-1-git-send-email-davids@...1347...>
-In-Reply-To: <1397663021-18815-1-git-send-email-davids@...1347...>
-Subject: Re: [Openvpn-devel] [PATCH] Improve error reporting on file access
- to --client-config-dir and --ccd-exclusive
+Subject: [Openvpn-devel] possible socks authentication issue?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,34 +11,16 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+Someone on the Tor lists is claiming that OpenVPN isn't implementing 
+SOCKSv5 authentication correctly:
 
-On 16-04-14 17:43, davids@...1347... wrote:
-> When a client connects, the test_file() function is used to check if a client
-> config file has been prepared.  And if not, it continues without trying to read
-> it.  So, if the privileges of the running OpenVPN process is not allowed to
-> open and read an existing file, OpenVPN will treat this as a non-existing file
-> without saying anything.  This is clearly wrong.  So this patch adds an warning
-> message in the OpenVPN log if it could not open the file due to lack of
-> permissions.
+https://lists.torproject.org/pipermail/tor-dev/2014-March/006427.html
 
-Makes sense. Feature ACK.
+Any ideas?
 
-> This will work fine on all *nix based OSes.  Windows however reports 'no such
-> file or directory' (errno=2/-ENOENT) even on privilege access errors when the
-> directory this file resides is too restrictive.  But there is no easy way to
-> work around that.  However, I believe that the initial sanity checking at
-> startup will catch that one, as it will check if the directories it needs
-> exists.
-
-I see you're using errno for Windows builds. OpenVPN also has
-openvpn_errno(), which expands to errno on *nix OSes, but to
-GetLastError() for Windows. I'm not familiar with the details, but maybe
-using openvpn_errno() fixes the Windows ENOENT?
-
--Steffan
+James
 
