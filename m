@@ -1,13 +1,13 @@
-Date: Thu, 17 Apr 2014 09:08:13 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20140417070812.GN16637@...1296...>
-References: <534F142C.1010707@...515...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="GA5jH4yfUe2bmJec"
-Content-Disposition: inline
-In-Reply-To: <534F142C.1010707@...515...>
-Subject: Re: [Openvpn-devel] possible socks authentication issue?
+Message-ID: <534F898A.3060607@...515...>
+Date: Thu, 17 Apr 2014 01:58:02 -0600
+From: James Yonan <james@...515...>
+MIME-Version: 1.0
+References: <1396001222-5033-1-git-send-email-arne@...1227...>	<CAA1AbxJCv9ff7XHv1GKtCPuB-Hc5Lv33ufPfqcTraNpFnJf7fw@...278...>
+	<20140330134619.GT16637@...1296...>
+In-Reply-To: <20140330134619.GT16637@...1296...>
+Content-Type: multipart/mixed; boundary="------------080703070507050605040305"
+Subject: Re: [Openvpn-devel] [PATCH] Fix man page and OSCP script:
+ tls_serial_{n} is decimal
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,55 +16,91 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: James Yonan <james@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---GA5jH4yfUe2bmJec
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+This is a multi-part message in MIME format.
+--------------080703070507050605040305
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi,
+On 30/03/2014 07:46, Gert Doering wrote:
+> Hi,
+>
+> On Sun, Mar 30, 2014 at 12:48:37AM +0100, Steffan Karger wrote:
+>> 3 - Change OpenSSL builds to use hax representation
+>
+> I tend toward this one - user visible behaviour shouldn't change (unless
+> unavoidable) depending on SSL library used.
+>
+> So for me this boils down to "how many users are relying on the current
+> behaviour, which is not what the docs say it should be"?
 
-On Wed, Apr 16, 2014 at 05:37:16PM -0600, James Yonan wrote:
-> Someone on the Tor lists is claiming that OpenVPN isn't implementing=20
-> SOCKSv5 authentication correctly:
->=20
-> https://lists.torproject.org/pipermail/tor-dev/2014-March/006427.html
->=20
-> Any ideas?
+If we keep the current behavior (PolarSSL serial numbers are hex while 
+OpenSSL are decimal) then we should at least mark the serial number when 
+it's hex, so client software can distinguish it.
 
-commit 2903eba5dfe35c981329a833845e24de3882161a
-Author: Yawning Angel <yawning@...1897...>
-Date:   Mon Mar 10 03:47:58 2014 +0000
+This very simple patch does that.
 
-    Fix SOCKSv5 method selection
-...
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/8488
+James
 
-:-)
+--------------080703070507050605040305
+Content-Type: text/plain; charset=UTF-8; x-mac-type="0"; x-mac-creator="0";
+	name="0001-tls_serial_-n-value-should-be-distinguishable-as-hex.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename*0="0001-tls_serial_-n-value-should-be-distinguishable-as-hex.pa";
+	filename*1="tch"
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+From a8f0d219d4edd1e95520cc40d27a0cd79cace2c2 Mon Sep 17 00:00:00 2001
+From: James Yonan <james@...515...>
+Date: Wed, 16 Apr 2014 21:29:42 -0600
+Subject: [PATCH] tls_serial_{n} value should be distinguishable as hex or
+ decimal.
 
---GA5jH4yfUe2bmJec
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+To accomplish this, prepend 'x' before hex serial numbers, so they
+can be distinguished from decimal serial numbers.  For example:
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
+  tls_serial_1 = "x4D:9B:7C:94"
 
-iQCVAwUBU0993KkuBuNlUUl1AQI2JgP/dVref2ZyfKNd71Md2fxLNPp9B1pwPrM5
-tGQBBBUbC8uTxctIbjRIqOerRuNQi6QXAgxtn3mb2+FP+0VIDqPqWnje9hi/4IgZ
-YXZG5S3ebvSdSLjO3X+YhSMMhYdJGt7rcWnBJ/+5vm4Bp+i8g5rAdZt28zEhxeh3
-K9EPgjxzH6Y=
-=3ZpT
------END PGP SIGNATURE-----
+is equivalent to:
 
---GA5jH4yfUe2bmJec--
+  tls_serial_1 = "1302035604"
+
+Currently, only PolarSSL generates hex serial numbers while
+OpenSSL returns decimal serial numbers.
+
+RFC 5280, published in 2008, decrees that serial numbers can be
+up to 20 bytes long, hence it is necessary to support SSL
+libraries that return the serial number as a hex string.
+
+Signed-off-by: James Yonan <james@...515...>
+---
+ src/openvpn/ssl_verify_polarssl.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/src/openvpn/ssl_verify_polarssl.c b/src/openvpn/ssl_verify_polarssl.c
+index 1b2990c..4367eb1 100644
+--- a/src/openvpn/ssl_verify_polarssl.c
++++ b/src/openvpn/ssl_verify_polarssl.c
+@@ -127,11 +127,12 @@ char *
+ backend_x509_get_serial (x509_crt *cert, struct gc_arena *gc)
+ {
+   char *buf = NULL;
+-  size_t len = cert->serial.len * 3 + 1;
++  size_t len = cert->serial.len * 3;
+ 
+-  buf = gc_malloc(len, true, gc);
++  buf = gc_malloc(len+1, true, gc);
+ 
+-  if(x509_serial_gets(buf, len-1, &cert->serial) < 0)
++  buf[0] = 'x';
++  if(x509_serial_gets(buf+1, len, &cert->serial) < 0)
+     buf = NULL;
+ 
+   return buf;
+-- 
+1.8.5.3
+
+
+--------------080703070507050605040305--
 
