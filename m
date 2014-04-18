@@ -1,11 +1,13 @@
-Message-ID: <535136F5.6080406@...1435...>
-Date: Fri, 18 Apr 2014 16:30:13 +0200
-From: Steffan Karger <steffan.karger@...1435...>
-MIME-Version: 1.0
-References: <20140413152613.GT16637@...1296...>	<20140414193422.GN16637@...1296...>	<534C42AB.7040700@...1114...>	<20140415074239.GR16637@...1296...>
-	<20140416152456.GI16637@...1296...>
-In-Reply-To: <20140416152456.GI16637@...1296...>
-Subject: Re: [Openvpn-devel] RFD: ssl library version numbers
+Date: Fri, 18 Apr 2014 23:05:22 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140418210522.GE16637@...1296...>
+References: <1397645317-20116-1-git-send-email-Holger.Kummert@...1516...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="PZifSn3kqWtw9nOX"
+Content-Disposition: inline
+In-Reply-To: <1397645317-20116-1-git-send-email-Holger.Kummert@...1516...>
+Subject: Re: [Openvpn-devel] Fixes for HTTP proxy authentication with NTLM
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,19 +16,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Holger Kummert <Holger.Kummert@...1516...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 04/16/2014 05:24 PM, Gert Doering wrote:
-> OK, here's the full patch with this version.
+--PZifSn3kqWtw9nOX
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-One minor remark: if you add an extra * to the /* of the comment above
-get_ssl_library_version(void), the comment becomes a doxygen comment and
-will be included in the generated doxygen.
+Hi,
 
-Otherwise, ACK.
+On Wed, Apr 16, 2014 at 12:48:35PM +0200, Holger Kummert wrote:
+> Any opinions?
 
--Steffan
+Any easy way to test this, without having a Windows domain around?
 
+(I already run a number of test cases from my t_client test sets using
+socks proxy, http proxy, http proxy to ipv4 hosts over ipv6, ..., and
+if I could "easily" add a proxy with NTML auth to that mix, it would help=20
+ensure that we're not accidentially breaking things)
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--PZifSn3kqWtw9nOX
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBU1GTkqkuBuNlUUl1AQLcbAP/S65c3rZP9TS/SpCDYJ83EoMKd4PZH8QD
+ejqIpWjayhsz6CTdJjIeh/lGdXJBm6tCi0ozj0w3ixnLUb2ye94ShwXAKclcMo8I
+0oVT8NZTfHM9ocr8hVCJBSFiVR6wC6vHkQwFwz+br+HChP0c1V+fNHQrlnlIgl2y
+mhhxWTLNn10=
+=03zj
+-----END PGP SIGNATURE-----
+
+--PZifSn3kqWtw9nOX--
 
