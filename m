@@ -1,10 +1,7 @@
-Message-ID: <56408.109.81.184.65.1397980655.squirrel@...1899...>
-Date: Sun, 20 Apr 2014 09:57:35 +0200 (CEST)
-From: "Daniel Kubec" <niel@...1898...>
-MIME-Version: 1.0
-Content-Type: multipart/mixed;boundary="----=_20140420095735_63829"
-Subject: [Openvpn-devel] [PATCH] Keying Material Exporters [RFC 5705]
-Reply-To: niel@...1898...
+From: Gert Doering <gert@...1296...>
+Date: Sun, 20 Apr 2014 20:41:01 +0200
+Message-Id: <1398019261-30180-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Minor t_client.sh cleanups
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,165 +10,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-------=_20140420095735_63829
-Content-Type: text/plain; charset="ISO-8859-2"
-Content-Transfer-Encoding: quoted-printable
+- remove built tests/t_client.sh script on "make clean"
+- ignore Linux iproute2 "ssthresh <n>" output that sometimes shows up
+  in "ip -6 route show" and breaks before/after comparison
 
-TLS Keying Material Exporters [RFC 5705 ] allow
-additional keying material to be derived from existing TLS channel. This
-exported keying material can then be used for a variety of purposes.
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ Makefile.am          | 2 +-
+ tests/t_client.sh.in | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-TLS allows client and server to establish keying material for use in the
-upper layers between the TLS end-points. Channel Bindings is straitforward
-and well-defined mechanism how to authenticate other layers.
-
-Following two attributes were added primary for the possible plugins
-extensions.
-
-Attribute
-
-tls_ekm: Exported Keying Material
-
-Configuration
-
-EKM is generated when *.ovpn contains following for each TLS negotiation.
-
-example.ovpn:
-{
-# TLS Keying Material Exporter [RFC 5705]
-#
-# Note that exporter labels have the potential to collide with existing PRF
-# labels.  In order to prevent this, labels SHOULD begin with "EXPORTER".
-keying-material-exporter-label "EXPORTER_OPENVPN"
-
-# Export len bytes of keying material (min. 20)
-keying-material-exporter-length 20
-}
-
-Use Cases:
-
-1) Authentication of upper layers (like Kerberos etc)
-
-2) Authentication of VPN's TLS channel using QRCODE and device such as
-   smartphones.
-
-   (Instead of user/pass dialog TLS VPN client could show for example QRCODE
-    based on keying material derivate)
-
-3) Authentication of Binding Key in confidental side-channel can be also us=
-ed
-   and avoid/detect MITM (MITM provides his public key and that's reason why
-   authentication of binding key will fail)=
-
-------=_20140420095735_63829
-Content-Type: application/octet-stream; name="openvpn-ekm.patch"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="openvpn-ekm.patch"
-
-ZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL2luaXQuYyBiL3NyYy9vcGVudnBuL2luaXQuYwppbmRl
-eCBjMjkwN2NkLi43ODcwZDEwIDEwMDY0NAotLS0gYS9zcmMvb3BlbnZwbi9pbml0LmMKKysrIGIv
-c3JjL29wZW52cG4vaW5pdC5jCkBAIC0yMzA3LDYgKzIzMDcsMTMgQEAgZG9faW5pdF9jcnlwdG9f
-dGxzIChzdHJ1Y3QgY29udGV4dCAqYywgY29uc3QgdW5zaWduZWQgaW50IGZsYWdzKQogICAgICBs
-ZW5ndGggcHJlZml4ICovCiAgIHNvY2tldF9hZGp1c3RfZnJhbWVfcGFyYW1ldGVycyAoJnRvLmZy
-YW1lLCBvcHRpb25zLT5jZS5wcm90byk7CiAKKyAgLyogQ2hlY2tpbmcgZm9yIHJlcXVpcmVkIHBh
-cmFtZXRlcnMgZm9yIENoYW5uZWwgQmluZGluZ3MgKi8KKyAgdG8uZWttX3NpemUgPSBvcHRpb25z
-LT5rZXlpbmdfbWF0ZXJpYWxfZXhwb3J0ZXJfbGVuZ3RoOworCisgIHRvLmVrbV9sYWJlbCA9ICh1
-aW50OF90KilvcHRpb25zLT5rZXlpbmdfbWF0ZXJpYWxfZXhwb3J0ZXJfbGFiZWw7CisgIHRvLmVr
-bV9sYWJlbF9zaXplID0gdG8uZWttX2xhYmVsID8gc3RybGVuKHRvLmVrbV9sYWJlbCkgOiAwOwor
-ICB0by5la21fdXNlZCA9ICh0by5la21fbGFiZWxfc2l6ZSAmJiB0by5la21fc2l6ZSA+PSAyMCkg
-PyB0cnVlIDogZmFsc2U7CisKICAgLyoKICAgICogSW5pdGlhbGl6ZSBPcGVuVlBOJ3MgbWFzdGVy
-IFRMUy1tb2RlIG9iamVjdC4KICAgICovCkBAIC0yMzE1LDYgKzIzMjIsNyBAQCBkb19pbml0X2Ny
-eXB0b190bHMgKHN0cnVjdCBjb250ZXh0ICpjLCBjb25zdCB1bnNpZ25lZCBpbnQgZmxhZ3MpCiAK
-ICAgaWYgKGZsYWdzICYgQ0ZfSU5JVF9UTFNfQVVUSF9TVEFOREFMT05FKQogICAgIGMtPmMyLnRs
-c19hdXRoX3N0YW5kYWxvbmUgPSB0bHNfYXV0aF9zdGFuZGFsb25lX2luaXQgKCZ0bywgJmMtPmMy
-LmdjKTsKKwogfQogCiBzdGF0aWMgdm9pZApkaWZmIC0tZ2l0IGEvc3JjL29wZW52cG4vb3B0aW9u
-cy5jIGIvc3JjL29wZW52cG4vb3B0aW9ucy5jCmluZGV4IDE4Y2IzNTQuLjUzMjNjZDcgMTAwNjQ0
-Ci0tLSBhL3NyYy9vcGVudnBuL29wdGlvbnMuYworKysgYi9zcmMvb3BlbnZwbi9vcHRpb25zLmMK
-QEAgLTY5NjYsNiArNjk2NiwyNCBAQCBhZGRfb3B0aW9uIChzdHJ1Y3Qgb3B0aW9ucyAqb3B0aW9u
-cywKICAgICAgIG9wdGlvbnMtPnBlcnNpc3RfbW9kZSA9IDE7CiAgICAgfQogI2VuZGlmCisgIGVs
-c2UgaWYgKHN0cmVxIChwWzBdLCAia2V5aW5nLW1hdGVyaWFsLWV4cG9ydGVyLWxhYmVsIikgJiYg
-cFsxXSkKKyAgICB7CisgICAgICBpZiAoc3RybmNtcChwWzFdLCAiRVhQT1JURVIiLCA4KSkKKyAg
-ICAgICAgeworICAgICAgICAgIG1zZyAobXNnbGV2ZWwsICJrZXlpbmcgbWF0ZXJpYWwgZXhwb3J0
-ZXIgbGFiZWxzIFNIT1VMRCBiZWdpbiB3aXRoIFwiRVhQT1JURVJcIiIpOworICAgICAgICAgIGdv
-dG8gZXJyOworICAgICAgICB9CisgICAgICBWRVJJRllfUEVSTUlTU0lPTiAoT1BUX1BfR0VORVJB
-TCk7CisKKyAgICAgIG9wdGlvbnMtPmtleWluZ19tYXRlcmlhbF9leHBvcnRlcl9sYWJlbCA9IHBb
-MV07CisgICAgfQorICBlbHNlIGlmIChzdHJlcSAocFswXSwgImtleWluZy1tYXRlcmlhbC1leHBv
-cnRlci1sZW5ndGgiKSkKKyAgICB7CisgICAgICBpbnQgbGVuID0gcG9zaXRpdmVfYXRvaSAocFsx
-XSk7CisgICAgICBWRVJJRllfUEVSTUlTU0lPTiAoT1BUX1BfR0VORVJBTCk7CisKKyAgICAgIG9w
-dGlvbnMtPmtleWluZ19tYXRlcmlhbF9leHBvcnRlcl9sZW5ndGggPSBsZW47CisgICAgfQogICBl
-bHNlCiAgICAgewogICAgICAgaW50IGk7CmRpZmYgLS1naXQgYS9zcmMvb3BlbnZwbi9vcHRpb25z
-LmggYi9zcmMvb3BlbnZwbi9vcHRpb25zLmgKaW5kZXggZWMxZDA5MS4uZjU2MDlmOSAxMDA2NDQK
-LS0tIGEvc3JjL29wZW52cG4vb3B0aW9ucy5oCisrKyBiL3NyYy9vcGVudnBuL29wdGlvbnMuaApA
-QCAtMzAsMjYgKzMwLDI4IEBACiAjaWZuZGVmIE9QVElPTlNfSAogI2RlZmluZSBPUFRJT05TX0gK
-IAorLyoKKyAqIE1heGltdW0gbnVtYmVyIG9mIHBhcmFtZXRlcnMgYXNzb2NpYXRlZCB3aXRoIGFu
-IG9wdGlvbiwKKyAqIGluY2x1ZGluZyB0aGUgb3B0aW9uIG5hbWUgaXRzZWxmLgorICovCisKKyNk
-ZWZpbmUgTUFYX1BBUk1TIDE2CisKICNpbmNsdWRlICJiYXNpYy5oIgogI2luY2x1ZGUgImNvbW1v
-bi5oIgogI2luY2x1ZGUgIm10dS5oIgogI2luY2x1ZGUgInJvdXRlLmgiCiAjaW5jbHVkZSAidHVu
-LmgiCiAjaW5jbHVkZSAic29ja2V0LmgiCisjaW5jbHVkZSAiY29tcC5oIgorI2luY2x1ZGUgInNz
-bF9jb21tb24uaCIKICNpbmNsdWRlICJwbHVnaW4uaCIKICNpbmNsdWRlICJtYW5hZ2UuaCIKICNp
-bmNsdWRlICJwcm94eS5oIgotI2luY2x1ZGUgImNvbXAuaCIKICNpbmNsdWRlICJwdXNobGlzdC5o
-IgogI2luY2x1ZGUgImNsaW5hdC5oIgogCiAvKgotICogTWF4aW11bSBudW1iZXIgb2YgcGFyYW1l
-dGVycyBhc3NvY2lhdGVkIHdpdGggYW4gb3B0aW9uLAotICogaW5jbHVkaW5nIHRoZSBvcHRpb24g
-bmFtZSBpdHNlbGYuCi0gKi8KLSNkZWZpbmUgTUFYX1BBUk1TIDE2Ci0KLS8qCiAgKiBNYXggc2l6
-ZSBvZiBvcHRpb25zIGxpbmUgYW5kIHBhcmFtZXRlci4KICAqLwogI2RlZmluZSBPUFRJT05fUEFS
-TV9TSVpFIDI1NgpAQCAtNjAwLDYgKzYwMiwxMCBAQCBzdHJ1Y3Qgb3B0aW9ucwogICBib29sIHNo
-b3dfbmV0X3VwOwogICBpbnQgcm91dGVfbWV0aG9kOwogI2VuZGlmCisKKyAgLyogS2V5aW5nIE1h
-dGVyaWFsIEV4cG9ydGVycyBbUkZDIDU3MDVdICovCisgIGNvbnN0IGNoYXIgKmtleWluZ19tYXRl
-cmlhbF9leHBvcnRlcl9sYWJlbDsKKyAgaW50IGtleWluZ19tYXRlcmlhbF9leHBvcnRlcl9sZW5n
-dGg7CiB9OwogCiAjZGVmaW5lIHN0cmVxKHgsIHkpICghc3RyY21wKCh4KSwgKHkpKSkKZGlmZiAt
-LWdpdCBhL3NyYy9vcGVudnBuL3NzbC5jIGIvc3JjL29wZW52cG4vc3NsLmMKaW5kZXggZDRhY2Mw
-Zi4uYzIzNDQ2YSAxMDA2NDQKLS0tIGEvc3JjL29wZW52cG4vc3NsLmMKKysrIGIvc3JjL29wZW52
-cG4vc3NsLmMKQEAgLTIxMjYsNiArMjEyNiwxMSBAQCBrZXlfbWV0aG9kXzJfcmVhZCAoc3RydWN0
-IGJ1ZmZlciAqYnVmLCBzdHJ1Y3QgdGxzX211bHRpICptdWx0aSwgc3RydWN0IHRsc19zZXNzaQog
-ICAgKi8KICAgaWYgKGtzLT5hdXRoZW50aWNhdGVkICYmIHBsdWdpbl9kZWZpbmVkIChzZXNzaW9u
-LT5vcHQtPnBsdWdpbnMsIE9QRU5WUE5fUExVR0lOX1RMU19GSU5BTCkpCiAgICAgeworCisgICAg
-ICAvKiBFeHBvcnRlZCBLZXlpbmcgTWF0ZXJpYWwgW1JGQyA1NzA1XSAqLyAgICAKKyAgICAgIGlm
-IChzZXNzaW9uLT5vcHQtPmVrbV91c2VkKSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgCisgICAgICAgIHNldGVudl9zdHIgKHNlc3Npb24tPm9wdC0+ZXMsICJ0
-bHNfZWttIiwgZm9ybWF0X2hleCAoc2Vzc2lvbi0+ZWttLCBzZXNzaW9uLT5la21fc2l6ZSwgMCwg
-JmdjKSk7CisKICAgICAgIGlmIChwbHVnaW5fY2FsbCAoc2Vzc2lvbi0+b3B0LT5wbHVnaW5zLCBP
-UEVOVlBOX1BMVUdJTl9UTFNfRklOQUwsIE5VTEwsIE5VTEwsIHNlc3Npb24tPm9wdC0+ZXMpICE9
-IE9QRU5WUE5fUExVR0lOX0ZVTkNfU1VDQ0VTUykKIAlrcy0+YXV0aGVudGljYXRlZCA9IGZhbHNl
-OwogICAgIH0KZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL3NzbF9jb21tb24uaCBiL3NyYy9vcGVu
-dnBuL3NzbF9jb21tb24uaAppbmRleCAwNGJhNzg5Li4zYWY1ZDkzIDEwMDY0NAotLS0gYS9zcmMv
-b3BlbnZwbi9zc2xfY29tbW9uLmgKKysrIGIvc3JjL29wZW52cG4vc3NsX2NvbW1vbi5oCkBAIC0z
-MTQsNiArMzE0LDEyIEBAIHN0cnVjdCB0bHNfb3B0aW9ucwogCiAgIC8qIC0tZ3JlbWxpbiBiaXRz
-ICovCiAgIGludCBncmVtbGluOworCisgIC8qIEtleWluZyBNYXRlcmlhbCBFeHBvcnRlciBbUkZD
-IDU3MDVdIHBhcmFtZXRlcnMgKi8KKyAgdWludDhfdCAqZWttX2xhYmVsOworICBpbnQgZWttX2xh
-YmVsX3NpemU7CisgIGJvb2wgZWttX3VzZWQ7IC8qIHRydWUgd2hlbiBLZXlpbmcgTWF0ZXJpYWwg
-c2hvdWxkIGJlIGV4cG9ydGVkICovCisgIGludCBla21fc2l6ZTsKIH07CiAKIC8qKiBAYWRkdG9n
-cm91cCBjb250cm9sX3Byb2Nlc3NvcgpAQCAtMzU5LDYgKzM2NSwxNiBAQCBzdHJ1Y3QgdGxzX3Nl
-c3Npb24KICAgc3RydWN0IGNyeXB0b19vcHRpb25zIHRsc19hdXRoOwogICBzdHJ1Y3QgcGFja2V0
-X2lkIHRsc19hdXRoX3BpZDsKIAorICAvKiBudW1iZXIgb2YgbmVnb3RpYXRpb25zIGZvciB0aGlz
-IHNlc3Npb24gKi8KKyAgdW5zaWduZWQgaW50IG5lZ290aWF0aW9uczsKKworICAvKiBjaGFubmVs
-X2lkIGlkZW50aWZpZXMgVExTIHNlc3Npb24gYWNyb3NzIChyZSluZWdvdGlhdGlvbnMgKi8KKyAg
-dWludDhfdCBjaGFubmVsX2lkWzMyXTsKKworICAvKiBFeHBvcnRlZCBLZXlpbmcgTWF0ZXJpYWwg
-W1JGQyA1NzA1XSAqLworICB1aW50OF90ICpla207CisgIGludCBla21fc2l6ZTsKKwogICBpbnQg
-aW5pdGlhbF9vcGNvZGU7CQkvKiBvdXIgaW5pdGlhbCBQXyBvcGNvZGUgKi8KICAgc3RydWN0IHNl
-c3Npb25faWQgc2Vzc2lvbl9pZDsJLyogb3VyIHJhbmRvbSBzZXNzaW9uIElEICovCiAgIGludCBr
-ZXlfaWQ7CQkJLyogaW5jcmVtZW50cyB3aXRoIGVhY2ggc29mdCByZXNldCAoZm9yIGtleSByZW5l
-Z290aWF0aW9uKSAqLwpkaWZmIC0tZ2l0IGEvc3JjL29wZW52cG4vc3NsX29wZW5zc2wuYyBiL3Ny
-Yy9vcGVudnBuL3NzbF9vcGVuc3NsLmMKaW5kZXggMGI2M2UyNi4uNGRkNTg4ZiAxMDA2NDQKLS0t
-IGEvc3JjL29wZW52cG4vc3NsX29wZW5zc2wuYworKysgYi9zcmMvb3BlbnZwbi9zc2xfb3BlbnNz
-bC5jCkBAIC0xNTQsNiArMTU0LDMwIEBAIGluZm9fY2FsbGJhY2sgKElORk9fQ0FMTEJBQ0tfU1NM
-X0NPTlNUIFNTTCAqIHMsIGludCB3aGVyZSwgaW50IHJldCkKIAkgICBTU0xfYWxlcnRfdHlwZV9z
-dHJpbmdfbG9uZyAocmV0KSwKIAkgICBTU0xfYWxlcnRfZGVzY19zdHJpbmdfbG9uZyAocmV0KSk7
-CiAgICAgfQorICBlbHNlIGlmICh3aGVyZSAmIFNTTF9DQl9IQU5EU0hBS0VfRE9ORSkKKyAgICB7
-CisgICAgICBzdHJ1Y3QgdGxzX3Nlc3Npb24gKnRsczsKKyAgICAgIHRscyA9IChzdHJ1Y3QgdGxz
-X3Nlc3Npb24gKilTU0xfZ2V0X2V4X2RhdGEgKHMsIG15ZGF0YV9pbmRleCk7CisKKyAgICAgIGlm
-ICh0bHMtPm9wdC0+ZWttX3VzZWQgPT0gZmFsc2UpCisgICAgICAgIGdvdG8gZG9uZTsKKworICAg
-ICAgaWYgKHRscy0+ZWttKQorICAgICAgICBmcmVlKHRscy0+ZWttKTsKKworICAgICAgdGxzLT5l
-a21fc2l6ZSA9IHRscy0+b3B0LT5la21fc2l6ZTsKKyAgICAgIHRscy0+ZWttID0gZ2NfbWFsbG9j
-ICh0bHMtPmVrbV9zaXplLCB0cnVlLCBOVUxMKTsKKworICAgICAgU1NMX2V4cG9ydF9rZXlpbmdf
-bWF0ZXJpYWwoKFNTTCAqKXMsIAorICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdGxz
-LT5la20sIAorICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdGxzLT5la21fc2l6ZSwg
-CisgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0bHMtPm9wdC0+ZWttX2xhYmVsLAor
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdGxzLT5vcHQtPmVrbV9sYWJlbF9zaXpl
-LCAKKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIE5VTEwsIDAsIDApOworCitkb25l
-OgorICAgICAgbXNnIChEX0hBTkRTSEFLRV9WRVJCT1NFLCAiU1NMIEhhbmRzaGFrZSBkb25lLiIp
-OworICAgIH0KIH0KIAogLyoK
-------=_20140420095735_63829--
+diff --git a/Makefile.am b/Makefile.am
+index 1a30aa5..66d9f23 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -41,7 +41,7 @@ MAINTAINERCLEANFILES = \
+ 	$(srcdir)/config.guess $(srcdir)/config.sub
+ 
+ CLEANFILES = \
+-	config-version.h
++	config-version.h tests/t_client.sh
+ 
+ EXTRA_DIST = \
+ 	contrib \
+diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in
+index 6c9de6c..52c5ed1 100755
+--- a/tests/t_client.sh.in
++++ b/tests/t_client.sh.in
+@@ -103,7 +103,7 @@ get_ifconfig_route()
+ 	echo "-- linux iproute2 --"
+ 	@IPROUTE@ addr show     | grep -v valid_lft
+ 	@IPROUTE@ route show
+-	@IPROUTE@ -o -6 route show | grep -v ' cache' | sed -E -e 's/ expires [0-9]*sec//' -e 's/ (mtu|hoplimit|cwnd) [0-9]+//g' -e 's/ (rtt|rttvar) [0-9]+ms//g'
++	@IPROUTE@ -o -6 route show | grep -v ' cache' | sed -E -e 's/ expires [0-9]*sec//' -e 's/ (mtu|hoplimit|cwnd|ssthresh) [0-9]+//g' -e 's/ (rtt|rttvar) [0-9]+ms//g'
+ 	return
+     fi
+ 
+-- 
+1.8.3.2
 
 
