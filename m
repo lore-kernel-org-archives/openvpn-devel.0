@@ -1,12 +1,10 @@
-Message-ID: <53528943.3090205@...1435...>
-Date: Sat, 19 Apr 2014 16:33:39 +0200
-From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <56408.109.81.184.65.1397980655.squirrel@...1899...>
+Date: Sun, 20 Apr 2014 09:57:35 +0200 (CEST)
+From: "Daniel Kubec" <niel@...1898...>
 MIME-Version: 1.0
-References: <1393530007-6225-1-git-send-email-steffan.karger@...1435...>	<53502E71.8070503@...515...>
-	<53511F74.3010708@...1435...>
-In-Reply-To: <53511F74.3010708@...1435...>
-Content-Type: multipart/mixed; boundary="------------050002000300060906010601"
-Subject: Re: [Openvpn-devel] [PATCH] PolarSSL 1.3
+Content-Type: multipart/mixed;boundary="----=_20140420095735_63829"
+Subject: [Openvpn-devel] [PATCH] Keying Material Exporters [RFC 5705]
+Reply-To: niel@...1898...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,952 +15,163 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
---------------050002000300060906010601
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+------=_20140420095735_63829
+Content-Type: text/plain; charset="ISO-8859-2"
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
+TLS Keying Material Exporters [RFC 5705 ] allow
+additional keying material to be derived from existing TLS channel. This
+exported keying material can then be used for a variety of purposes.
 
-On 04/18/2014 02:49 PM, Steffan Karger wrote:
-> On 04/17/2014 09:41 PM, James Yonan wrote:
->> I'm not sure I understand the (SIZE_MAX - hashlen) > asn_len part. 
->> Wouldn't this always be true for reasonable values of hashlen and asn_len?
-> 
-> This should indeed always be true for reasonable input.
+TLS allows client and server to establish keying material for use in the
+upper layers between the TLS end-points. Channel Bindings is straitforward
+and well-defined mechanism how to authenticate other layers.
 
-Ouch, James was totally right. This would always be true, but should
-always be *false* for reasonable input; the check has to be the other
-way around. Attached the same two patches, except for that single
-character...
+Following two attributes were added primary for the possible plugins
+extensions.
 
-On the positive side: I've added my management-external-key test to my
-vanilla-openvpn tests too, so I should catch regressions more easily now.
+Attribute
 
--Steffan
+tls_ekm: Exported Keying Material
 
---------------050002000300060906010601
-Content-Type: text/x-patch; name="0001-Upgrade-to-PolarSSL-1.3.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment; filename="0001-Upgrade-to-PolarSSL-1.3.patch"
+Configuration
 
-From 4fa6fbfd1e1d2937b7aae689bccb24e59279416b Mon Sep 17 00:00:00 2001
-From: Steffan Karger <steffan.karger@...1435...>
-Date: Tue, 4 Feb 2014 13:57:15 +0100
-Subject: [PATCH 1/2] Upgrade to PolarSSL 1.3
+EKM is generated when *.ovpn contains following for each TLS negotiation.
 
-This removes support for PolarSSL 1.2. The mimimum version of PolarSSL required
-is now 1.3.3. The upgrade brings OpenVPN-with-PolarSSL:
-* Support for EC-crypto in TLS (but not yet for external pkcs11/management keys)
-* Support for AES-NI (if PolarSSL is compiled with AES-NI support)
+example.ovpn:
+{
+# TLS Keying Material Exporter [RFC 5705]
+#
+# Note that exporter labels have the potential to collide with existing PRF
+# labels.  In order to prevent this, labels SHOULD begin with "EXPORTER".
+keying-material-exporter-label "EXPORTER_OPENVPN"
 
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
----
- configure.ac                      |   4 +-
- src/openvpn/crypto_polarssl.c     |   7 +-
- src/openvpn/pkcs11_polarssl.c     |  13 +--
- src/openvpn/ssl_polarssl.c        | 202 ++++++++++++++++++++------------------
- src/openvpn/ssl_polarssl.h        |   7 +-
- src/openvpn/ssl_verify.c          |   6 +-
- src/openvpn/ssl_verify_backend.h  |   4 +-
- src/openvpn/ssl_verify_openssl.c  |   4 +-
- src/openvpn/ssl_verify_polarssl.c | 109 +++++++-------------
- src/openvpn/ssl_verify_polarssl.h |   6 +-
- 10 files changed, 167 insertions(+), 195 deletions(-)
+# Export len bytes of keying material (min. 20)
+keying-material-exporter-length 20
+}
 
-diff --git a/configure.ac b/configure.ac
-index 0c2abb9..ea35d73 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -844,13 +844,13 @@ if test "${with_crypto_library}" = "polarssl" ; then
- #include <polarssl/version.h>
- 			]],
- 			[[
--#if POLARSSL_VERSION_NUMBER < 0x01020A00 || POLARSSL_VERSION_NUMBER >= 0x01030000
-+#if POLARSSL_VERSION_NUMBER < 0x01030300 || POLARSSL_VERSION_NUMBER >= 0x01040000
- #error invalid version
- #endif
- 			]]
- 		)],
- 		[AC_MSG_RESULT([ok])],
--		[AC_MSG_ERROR([PolarSSL 1.2.x required and must be 1.2.10 or later])]
-+		[AC_MSG_ERROR([PolarSSL 1.3.x required and must be 1.3.3 or later])]
- 	)
- 
- 	polarssl_with_pkcs11="no"
-diff --git a/src/openvpn/crypto_polarssl.c b/src/openvpn/crypto_polarssl.c
-index 1f27d6c..7dc8aa5 100644
---- a/src/openvpn/crypto_polarssl.c
-+++ b/src/openvpn/crypto_polarssl.c
-@@ -466,7 +466,12 @@ int cipher_ctx_mode (const cipher_context_t *ctx)
- 
- int cipher_ctx_reset (cipher_context_t *ctx, uint8_t *iv_buf)
- {
--  return 0 == cipher_reset(ctx, iv_buf);
-+  int retval = cipher_reset(ctx);
-+
-+  if (0 == retval)
-+    retval = cipher_set_iv(ctx, iv_buf, ctx->cipher_info->iv_size);
-+
-+  return 0 == retval;
- }
- 
- int cipher_ctx_update (cipher_context_t *ctx, uint8_t *dst, int *dst_len,
-diff --git a/src/openvpn/pkcs11_polarssl.c b/src/openvpn/pkcs11_polarssl.c
-index 03b2bab..be4e973 100644
---- a/src/openvpn/pkcs11_polarssl.c
-+++ b/src/openvpn/pkcs11_polarssl.c
-@@ -40,6 +40,7 @@
- #include "errlevel.h"
- #include "pkcs11_backend.h"
- #include <polarssl/pkcs11.h>
-+#include <polarssl/x509.h>
- 
- int
- pkcs11_init_tls_session(pkcs11h_certificate_t certificate,
-@@ -78,14 +79,14 @@ pkcs11_certificate_dn (pkcs11h_certificate_t cert, struct gc_arena *gc)
-   char *ret = NULL;
-   char dn[1024] = {0};
- 
--  x509_cert polar_cert = {0};
-+  x509_crt polar_cert = {0};
- 
-   if (pkcs11_x509_cert_init(&polar_cert, cert)) {
-       msg (M_FATAL, "PKCS#11: Cannot retrieve PolarSSL certificate object");
-       goto cleanup;
-   }
- 
--  if (-1 == x509parse_dn_gets (dn, sizeof(dn), &polar_cert.subject)) {
-+  if (-1 == x509_dn_gets (dn, sizeof(dn), &polar_cert.subject)) {
-       msg (M_FATAL, "PKCS#11: PolarSSL cannot parse subject");
-       goto cleanup;
-   }
-@@ -93,7 +94,7 @@ pkcs11_certificate_dn (pkcs11h_certificate_t cert, struct gc_arena *gc)
-   ret = string_alloc(dn, gc);
- 
- cleanup:
--  x509_free(&polar_cert);
-+  x509_crt_free(&polar_cert);
- 
-   return ret;
- }
-@@ -104,14 +105,14 @@ pkcs11_certificate_serial (pkcs11h_certificate_t cert, char *serial,
- {
-   int ret = 1;
- 
--  x509_cert polar_cert = {0};
-+  x509_crt polar_cert = {0};
- 
-   if (pkcs11_x509_cert_init(&polar_cert, cert)) {
-       msg (M_FATAL, "PKCS#11: Cannot retrieve PolarSSL certificate object");
-       goto cleanup;
-   }
- 
--  if (-1 == x509parse_serial_gets (serial, serial_len, &polar_cert.serial)) {
-+  if (-1 == x509_serial_gets (serial, serial_len, &polar_cert.serial)) {
-       msg (M_FATAL, "PKCS#11: PolarSSL cannot parse serial");
-       goto cleanup;
-   }
-@@ -119,7 +120,7 @@ pkcs11_certificate_serial (pkcs11h_certificate_t cert, char *serial,
-   ret = 0;
- 
- cleanup:
--  x509_free(&polar_cert);
-+  x509_crt_free(&polar_cert);
- 
-   return ret;
- }
-diff --git a/src/openvpn/ssl_polarssl.c b/src/openvpn/ssl_polarssl.c
-index 9dc4e87..55a60a3 100644
---- a/src/openvpn/ssl_polarssl.c
-+++ b/src/openvpn/ssl_polarssl.c
-@@ -45,12 +45,12 @@
- #include "manage.h"
- #include "ssl_common.h"
- 
--#include <polarssl/sha2.h>
- #include <polarssl/havege.h>
- 
- #include "ssl_verify_polarssl.h"
- #include <polarssl/error.h>
- #include <polarssl/pem.h>
-+#include <polarssl/sha256.h>
- 
- void
- tls_init_lib()
-@@ -74,10 +74,10 @@ tls_ctx_server_new(struct tls_root_ctx *ctx)
-   CLEAR(*ctx);
- 
-   ALLOC_OBJ_CLEAR(ctx->dhm_ctx, dhm_context);
--  ALLOC_OBJ_CLEAR(ctx->priv_key, rsa_context);
-+  ALLOC_OBJ_CLEAR(ctx->priv_key, pk_context);
- 
--  ALLOC_OBJ_CLEAR(ctx->ca_chain, x509_cert);
--  ALLOC_OBJ_CLEAR(ctx->crt_chain, x509_cert);
-+  ALLOC_OBJ_CLEAR(ctx->ca_chain, x509_crt);
-+  ALLOC_OBJ_CLEAR(ctx->crt_chain, x509_crt);
- 
- 
-   ctx->endpoint = SSL_IS_SERVER;
-@@ -91,10 +91,10 @@ tls_ctx_client_new(struct tls_root_ctx *ctx)
-   CLEAR(*ctx);
- 
-   ALLOC_OBJ_CLEAR(ctx->dhm_ctx, dhm_context);
--  ALLOC_OBJ_CLEAR(ctx->priv_key, rsa_context);
-+  ALLOC_OBJ_CLEAR(ctx->priv_key, pk_context);
- 
--  ALLOC_OBJ_CLEAR(ctx->ca_chain, x509_cert);
--  ALLOC_OBJ_CLEAR(ctx->crt_chain, x509_cert);
-+  ALLOC_OBJ_CLEAR(ctx->ca_chain, x509_crt);
-+  ALLOC_OBJ_CLEAR(ctx->crt_chain, x509_crt);
- 
-   ctx->endpoint = SSL_IS_CLIENT;
-   ctx->initialised = true;
-@@ -105,13 +105,13 @@ tls_ctx_free(struct tls_root_ctx *ctx)
- {
-   if (ctx)
-     {
--      rsa_free(ctx->priv_key);
-+      pk_free(ctx->priv_key);
-       free(ctx->priv_key);
- 
--      x509_free(ctx->ca_chain);
-+      x509_crt_free(ctx->ca_chain);
-       free(ctx->ca_chain);
- 
--      x509_free(ctx->crt_chain);
-+      x509_crt_free(ctx->crt_chain);
-       free(ctx->crt_chain);
- 
-       dhm_free(ctx->dhm_ctx);
-@@ -215,12 +215,12 @@ tls_ctx_load_dh_params (struct tls_root_ctx *ctx, const char *dh_file,
- {
-   if (!strcmp (dh_file, INLINE_FILE_TAG) && dh_file_inline)
-     {
--      if (0 != x509parse_dhm(ctx->dhm_ctx, dh_file_inline, strlen(dh_file_inline)))
-+      if (0 != dhm_parse_dhm(ctx->dhm_ctx, dh_file_inline, strlen(dh_file_inline)))
- 	msg (M_FATAL, "Cannot read inline DH parameters");
-   }
- else
-   {
--    if (0 != x509parse_dhmfile(ctx->dhm_ctx, dh_file))
-+    if (0 != dhm_parse_dhmfile(ctx->dhm_ctx, dh_file))
-       msg (M_FATAL, "Cannot read DH parameters from file %s", dh_file);
-   }
- 
-@@ -255,13 +255,13 @@ tls_ctx_load_cert_file (struct tls_root_ctx *ctx, const char *cert_file,
- 
-   if (!strcmp (cert_file, INLINE_FILE_TAG) && cert_file_inline)
-     {
--      if (0 != x509parse_crt(ctx->crt_chain, cert_file_inline,
-+      if (0 != x509_crt_parse(ctx->crt_chain, cert_file_inline,
- 	  strlen(cert_file_inline)))
-         msg (M_FATAL, "Cannot load inline certificate file");
-     }
-   else
-     {
--      if (0 != x509parse_crtfile(ctx->crt_chain, cert_file))
-+      if (0 != x509_crt_parse_file(ctx->crt_chain, cert_file))
- 	msg (M_FATAL, "Cannot load certificate file %s", cert_file);
-     }
- }
-@@ -276,26 +276,27 @@ tls_ctx_load_priv_file (struct tls_root_ctx *ctx, const char *priv_key_file,
- 
-   if (!strcmp (priv_key_file, INLINE_FILE_TAG) && priv_key_file_inline)
-     {
--      status = x509parse_key(ctx->priv_key,
-+      status = pk_parse_key(ctx->priv_key,
- 	  priv_key_file_inline, strlen(priv_key_file_inline),
- 	  NULL, 0);
-+
-       if (POLARSSL_ERR_PEM_PASSWORD_REQUIRED == status)
- 	{
- 	  char passbuf[512] = {0};
- 	  pem_password_callback(passbuf, 512, 0, NULL);
--	  status = x509parse_key(ctx->priv_key,
-+	  status = pk_parse_key(ctx->priv_key,
- 	      priv_key_file_inline, strlen(priv_key_file_inline),
- 	      (unsigned char *) passbuf, strlen(passbuf));
- 	}
-     }
-   else
-     {
--      status = x509parse_keyfile(ctx->priv_key, priv_key_file, NULL);
-+      status = pk_parse_keyfile(ctx->priv_key, priv_key_file, NULL);
-       if (POLARSSL_ERR_PEM_PASSWORD_REQUIRED == status)
- 	{
- 	  char passbuf[512] = {0};
- 	  pem_password_callback(passbuf, 512, 0, NULL);
--	  status = x509parse_keyfile(ctx->priv_key, priv_key_file, passbuf);
-+	  status = pk_parse_keyfile(ctx->priv_key, priv_key_file, passbuf);
- 	}
-     }
-   if (0 != status)
-@@ -338,30 +339,48 @@ tls_ctx_use_external_private_key (struct tls_root_ctx *ctx,
- 
-   /* Most of the initialization happens in key_state_ssl_init() */
-   ALLOC_OBJ_CLEAR (ctx->external_key, struct external_context);
--  ctx->external_key->signature_length = ctx->crt_chain->rsa.len;
-+  ctx->external_key->signature_length = pk_get_len(&ctx->crt_chain->pk);
- 
-   return 1;
- }
- 
-+/**
-+ * external_pkcs1_sign implements a PolarSSL rsa_sign_func callback, that uses
-+ * the management interface to request an RSA signature for the supplied hash.
-+ *
-+ * @param ctx_voidptr   Management external key context.
-+ * @param f_rng         (Unused)
-+ * @param p_rng         (Unused)
-+ * @param mode          RSA mode (should be RSA_PRIVATE).
-+ * @param md_alg        Message digest ('hash') algorithm type.
-+ * @param hashlen       Length of hash (overridden by length specified by md_alg
-+ *                      if md_alg != POLARSSL_MD_NONE).
-+ * @param hash          The digest ('hash') to sign. Should have a size
-+ *                      matching the length of md_alg (if != POLARSSL_MD_NONE),
-+ *                      or hashlen otherwise.
-+ * @param sig           Buffer that returns the signature. Should be at least of
-+ *                      size ctx->signature_length.
-+ *
-+ * @return 0 on success, non-zero polarssl error code on failure.
-+ */
- static inline int external_pkcs1_sign( void *ctx_voidptr,
-     int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, int mode,
--    int hash_id, unsigned int hashlen, const unsigned char *hash,
-+    md_type_t md_alg, unsigned int hashlen, const unsigned char *hash,
-     unsigned char *sig )
- {
-   struct external_context * const ctx = ctx_voidptr;
-   char *in_b64 = NULL;
-   char *out_b64 = NULL;
-   int rv;
--  unsigned char * const p = sig;
--  size_t asn_len;
-+  unsigned char *p = sig;
-+  size_t asn_len = 0, oid_size = 0, sig_len = 0;
-+  const char *oid = NULL;
- 
--  ASSERT(NULL != ctx);
-+  if( NULL == ctx )
-+    return POLARSSL_ERR_RSA_BAD_INPUT_DATA;
- 
--  if (RSA_PRIVATE != mode)
--    {
--      rv = POLARSSL_ERR_RSA_BAD_INPUT_DATA;
--      goto done;
--    }
-+  if( RSA_PRIVATE != mode )
-+    return POLARSSL_ERR_RSA_BAD_INPUT_DATA;
- 
-   /*
-    * Support a wide range of hashes. TLSv1.1 and before only need SIG_RSA_RAW,
-@@ -369,67 +388,54 @@ static inline int external_pkcs1_sign( void *ctx_voidptr,
-    *
-    * This code has been taken from PolarSSL pkcs11_sign(), under the GPLv2.0+.
-    */
--  switch( hash_id )
--  {
--      case SIG_RSA_RAW:
--          asn_len = 0;
--          memcpy( p, hash, hashlen );
--          break;
--
--      case SIG_RSA_MD2:
--          asn_len = OID_SIZE(ASN1_HASH_MDX);
--          memcpy( p, ASN1_HASH_MDX, asn_len );
--          memcpy( p + asn_len, hash, hashlen );
--          p[13] = 2; break;
--
--      case SIG_RSA_MD4:
--          asn_len = OID_SIZE(ASN1_HASH_MDX);
--          memcpy( p, ASN1_HASH_MDX, asn_len );
--          memcpy( p + asn_len, hash, hashlen );
--          p[13] = 4; break;
--
--      case SIG_RSA_MD5:
--          asn_len = OID_SIZE(ASN1_HASH_MDX);
--          memcpy( p, ASN1_HASH_MDX, asn_len );
--          memcpy( p + asn_len, hash, hashlen );
--          p[13] = 5; break;
--
--      case SIG_RSA_SHA1:
--          asn_len = OID_SIZE(ASN1_HASH_SHA1);
--          memcpy( p, ASN1_HASH_SHA1, asn_len );
--          memcpy( p + 15, hash, hashlen );
--          break;
--
--      case SIG_RSA_SHA224:
--          asn_len = OID_SIZE(ASN1_HASH_SHA2X);
--          memcpy( p, ASN1_HASH_SHA2X, asn_len );
--          memcpy( p + asn_len, hash, hashlen );
--          p[1] += hashlen; p[14] = 4; p[18] += hashlen; break;
--
--      case SIG_RSA_SHA256:
--          asn_len = OID_SIZE(ASN1_HASH_SHA2X);
--          memcpy( p, ASN1_HASH_SHA2X, asn_len );
--          memcpy( p + asn_len, hash, hashlen );
--          p[1] += hashlen; p[14] = 1; p[18] += hashlen; break;
--
--      case SIG_RSA_SHA384:
--          asn_len = OID_SIZE(ASN1_HASH_SHA2X);
--          memcpy( p, ASN1_HASH_SHA2X, asn_len );
--          memcpy( p + asn_len, hash, hashlen );
--          p[1] += hashlen; p[14] = 2; p[18] += hashlen; break;
--
--      case SIG_RSA_SHA512:
--          asn_len = OID_SIZE(ASN1_HASH_SHA2X);
--          memcpy( p, ASN1_HASH_SHA2X, asn_len );
--          memcpy( p + asn_len, hash, hashlen );
--          p[1] += hashlen; p[14] = 3; p[18] += hashlen; break;
--
--  /* End of copy */
--      default:
--          rv = POLARSSL_ERR_RSA_BAD_INPUT_DATA;
--	  goto done;
-+  if( md_alg != POLARSSL_MD_NONE )
-+    {
-+      const md_info_t *md_info = md_info_from_type( md_alg );
-+      if( md_info == NULL )
-+        return( POLARSSL_ERR_RSA_BAD_INPUT_DATA );
-+
-+      if( oid_get_oid_by_md( md_alg, &oid, &oid_size ) != 0 )
-+        return( POLARSSL_ERR_RSA_BAD_INPUT_DATA );
-+
-+      hashlen = md_get_size( md_info );
-+      asn_len = 10 + oid_size;
-+    }
-+
-+  sig_len = ctx->signature_length;
-+  if ( (SIZE_MAX - hashlen) < asn_len || (hashlen + asn_len) > sig_len )
-+    return POLARSSL_ERR_RSA_BAD_INPUT_DATA;
-+
-+  if( md_alg != POLARSSL_MD_NONE )
-+    {
-+      /*
-+       * DigestInfo ::= SEQUENCE {
-+       *   digestAlgorithm DigestAlgorithmIdentifier,
-+       *   digest Digest }
-+       *
-+       * DigestAlgorithmIdentifier ::= AlgorithmIdentifier
-+       *
-+       * Digest ::= OCTET STRING
-+       */
-+      *p++ = ASN1_SEQUENCE | ASN1_CONSTRUCTED;
-+      *p++ = (unsigned char) ( 0x08 + oid_size + hashlen );
-+      *p++ = ASN1_SEQUENCE | ASN1_CONSTRUCTED;
-+      *p++ = (unsigned char) ( 0x04 + oid_size );
-+      *p++ = ASN1_OID;
-+      *p++ = oid_size & 0xFF;
-+      memcpy( p, oid, oid_size );
-+      p += oid_size;
-+      *p++ = ASN1_NULL;
-+      *p++ = 0x00;
-+      *p++ = ASN1_OCTET_STRING;
-+      *p++ = hashlen;
-+
-+      /* Determine added ASN length */
-+      asn_len = p - sig;
-   }
- 
-+  /* Copy the hash to be signed */
-+  memcpy( p, hash, hashlen );
-+
-   /* convert 'from' to base64 */
-   if (openvpn_base64_encode (sig, asn_len + hashlen, &in_b64) <= 0)
-     {
-@@ -456,7 +462,7 @@ static inline int external_pkcs1_sign( void *ctx_voidptr,
- 
-   rv = 0;
- 
-- done:
-+done:
-   if (in_b64)
-     free (in_b64);
-   if (out_b64)
-@@ -482,14 +488,14 @@ void tls_ctx_load_ca (struct tls_root_ctx *ctx, const char *ca_file,
- 
-   if (ca_file && !strcmp (ca_file, INLINE_FILE_TAG) && ca_file_inline)
-     {
--      if (0 != x509parse_crt(ctx->ca_chain, (unsigned char *) ca_file_inline,
--          strlen(ca_file_inline)))
-+      if (0 != x509_crt_parse(ctx->ca_chain, (unsigned char *) ca_file_inline,
-+	  strlen(ca_file_inline)))
- 	msg (M_FATAL, "Cannot load inline CA certificates");
-     }
-   else
-     {
-       /* Load CA file for verifying peer supplied certificate */
--      if (0 != x509parse_crtfile(ctx->ca_chain, ca_file))
-+      if (0 != x509_crt_parse_file(ctx->ca_chain, ca_file))
- 	msg (M_FATAL, "Cannot load CA certificate file %s", ca_file);
-     }
- }
-@@ -503,14 +509,14 @@ tls_ctx_load_extra_certs (struct tls_root_ctx *ctx, const char *extra_certs_file
- 
-   if (!strcmp (extra_certs_file, INLINE_FILE_TAG) && extra_certs_file_inline)
-     {
--      if (0 != x509parse_crt(ctx->crt_chain,
-+      if (0 != x509_crt_parse(ctx->crt_chain,
-           (unsigned char *) extra_certs_file_inline,
--          strlen(extra_certs_file_inline)))
-+	  strlen(extra_certs_file_inline)))
-         msg (M_FATAL, "Cannot load inline extra-certs file");
-     }
-   else
-     {
--      if (0 != x509parse_crtfile(ctx->crt_chain, extra_certs_file))
-+      if (0 != x509_crt_parse_file(ctx->crt_chain, extra_certs_file))
- 	msg (M_FATAL, "Cannot load extra-certs file: %s", extra_certs_file);
-     }
- }
-@@ -633,9 +639,9 @@ void tls_ctx_personalise_random(struct tls_root_ctx *ctx)
- 
-   if (NULL != ctx->crt_chain)
-     {
--      x509_cert *cert = ctx->crt_chain;
-+      x509_crt *cert = ctx->crt_chain;
- 
--      sha2(cert->tbs.p, cert->tbs.len, sha256_hash, false);
-+      sha256(cert->tbs.p, cert->tbs.len, sha256_hash, false);
-       if ( 0 != memcmp(old_sha256_hash, sha256_hash, sizeof(sha256_hash)))
- 	{
- 	  ctr_drbg_update(cd_ctx, sha256_hash, 32);
-@@ -1021,7 +1027,7 @@ key_state_read_plaintext (struct key_state_ssl *ks, struct buffer *buf,
- void
- print_details (struct key_state_ssl * ks_ssl, const char *prefix)
- {
--  const x509_cert *cert;
-+  const x509_crt *cert;
-   char s1[256];
-   char s2[256];
- 
-@@ -1034,7 +1040,7 @@ print_details (struct key_state_ssl * ks_ssl, const char *prefix)
-   cert = ssl_get_peer_cert(ks_ssl->ctx);
-   if (cert != NULL)
-     {
--      openvpn_snprintf (s2, sizeof (s2), ", " counter_format " bit RSA", (counter_type) cert->rsa.len * 8);
-+      openvpn_snprintf (s2, sizeof (s2), ", %zu bit key", pk_get_size(&cert->pk));
-     }
- 
-   msg (D_HANDSHAKE, "%s%s", s1, s2);
-diff --git a/src/openvpn/ssl_polarssl.h b/src/openvpn/ssl_polarssl.h
-index fc9aa78..b80a509 100644
---- a/src/openvpn/ssl_polarssl.h
-+++ b/src/openvpn/ssl_polarssl.h
-@@ -33,6 +33,7 @@
- #include "syshead.h"
- 
- #include <polarssl/ssl.h>
-+#include <polarssl/x509_crt.h>
- 
- #if defined(ENABLE_PKCS11)
- #include <polarssl/pkcs11.h>
-@@ -64,9 +65,9 @@ struct tls_root_ctx {
-     int endpoint; 		/**< Whether or not this is a server or a client */
- 
-     dhm_context *dhm_ctx;	/**< Diffie-Helmann-Merkle context */
--    x509_cert *crt_chain;	/**< Local Certificate chain */
--    x509_cert *ca_chain;	/**< CA chain for remote verification */
--    rsa_context *priv_key;	/**< Local private key */
-+    x509_crt *crt_chain;	/**< Local Certificate chain */
-+    x509_crt *ca_chain;		/**< CA chain for remote verification */
-+    pk_context *priv_key;	/**< Local private key */
- #if defined(ENABLE_PKCS11)
-     pkcs11_context *priv_key_pkcs11;	/**< PKCS11 private key */
- #endif
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 765b886..7a9a56e 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -431,7 +431,7 @@ verify_cert_set_env(struct env_set *es, openvpn_x509_cert_t *peer_cert, int cert
-   }
- 
-   /* export serial number as environmental variable */
--  serial = x509_get_serial(peer_cert, &gc);
-+  serial = backend_x509_get_serial(peer_cert, &gc);
-   openvpn_snprintf (envname, sizeof(envname), "tls_serial_%d", cert_depth);
-   setenv_str (es, envname, serial);
- 
-@@ -558,7 +558,7 @@ verify_check_crl_dir(const char *crl_dir, openvpn_x509_cert_t *cert)
-   int fd = -1;
-   struct gc_arena gc = gc_new();
- 
--  char *serial = x509_get_serial(cert, &gc);
-+  char *serial = backend_x509_get_serial(cert, &gc);
- 
-   if (!openvpn_snprintf(fn, sizeof(fn), "%s%c%s", crl_dir, OS_SPECIFIC_DIRSEP, serial))
-     {
-@@ -610,7 +610,7 @@ verify_cert(struct tls_session *session, openvpn_x509_cert_t *cert, int cert_dep
-   string_replace_leading (subject, '-', '_');
- 
-   /* extract the username (default is CN) */
--  if (SUCCESS != x509_get_username (common_name, TLS_USERNAME_LEN,
-+  if (SUCCESS != backend_x509_get_username (common_name, TLS_USERNAME_LEN,
-       opt->x509_username_field, cert))
-     {
-       if (!cert_depth)
-diff --git a/src/openvpn/ssl_verify_backend.h b/src/openvpn/ssl_verify_backend.h
-index 7d2aae6..fa4369d 100644
---- a/src/openvpn/ssl_verify_backend.h
-+++ b/src/openvpn/ssl_verify_backend.h
-@@ -109,7 +109,7 @@ unsigned char *x509_get_sha1_hash (openvpn_x509_cert_t *cert, struct gc_arena *g
-  *
-  * @return 		\c FAILURE, \c or SUCCESS
-  */
--result_t x509_get_username (char *common_name, int cn_len,
-+result_t backend_x509_get_username (char *common_name, int cn_len,
-     char * x509_username_field, openvpn_x509_cert_t *peer_cert);
- 
- /*
-@@ -122,7 +122,7 @@ result_t x509_get_username (char *common_name, int cn_len,
-  *
-  * @return 		The certificate's serial number.
-  */
--char *x509_get_serial (openvpn_x509_cert_t *cert, struct gc_arena *gc);
-+char *backend_x509_get_serial (openvpn_x509_cert_t *cert, struct gc_arena *gc);
- 
- /*
-  * Save X509 fields to environment, using the naming convention:
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
-index cd2006f..a9205f3 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -202,7 +202,7 @@ extract_x509_field_ssl (X509_NAME *x509, const char *field_name, char *out,
- }
- 
- result_t
--x509_get_username (char *common_name, int cn_len,
-+backend_x509_get_username (char *common_name, int cn_len,
-     char * x509_username_field, X509 *peer_cert)
- {
- #ifdef ENABLE_X509ALTUSERNAME
-@@ -220,7 +220,7 @@ x509_get_username (char *common_name, int cn_len,
- }
- 
- char *
--x509_get_serial (openvpn_x509_cert_t *cert, struct gc_arena *gc)
-+backend_x509_get_serial (openvpn_x509_cert_t *cert, struct gc_arena *gc)
- {
-   ASN1_INTEGER *asn1_i;
-   BIGNUM *bignum;
-diff --git a/src/openvpn/ssl_verify_polarssl.c b/src/openvpn/ssl_verify_polarssl.c
-index e5ccd90..1b2990c 100644
---- a/src/openvpn/ssl_verify_polarssl.c
-+++ b/src/openvpn/ssl_verify_polarssl.c
-@@ -38,12 +38,13 @@
- #if defined(ENABLE_SSL) && defined(ENABLE_CRYPTO_POLARSSL)
- 
- #include "ssl_verify.h"
-+#include <polarssl/oid.h>
- #include <polarssl/sha1.h>
- 
- #define MAX_SUBJECT_LENGTH 256
- 
- int
--verify_callback (void *session_obj, x509_cert *cert, int cert_depth,
-+verify_callback (void *session_obj, x509_crt *cert, int cert_depth,
-     int *flags)
- {
-   struct tls_session *session = (struct tls_session *) session_obj;
-@@ -88,8 +89,8 @@ verify_callback (void *session_obj, x509_cert *cert, int cert_depth,
- #endif
- 
- result_t
--x509_get_username (char *cn, int cn_len,
--    char *x509_username_field, x509_cert *cert)
-+backend_x509_get_username (char *cn, int cn_len,
-+    char *x509_username_field, x509_crt *cert)
- {
-   x509_name *name;
- 
-@@ -100,7 +101,7 @@ x509_get_username (char *cn, int cn_len,
-   /* Find common name */
-   while( name != NULL )
-   {
--      if( memcmp( name->oid.p, OID_CN, OID_SIZE(OID_CN) ) == 0)
-+      if( memcmp( name->oid.p, OID_AT_CN, OID_SIZE(OID_AT_CN) ) == 0)
- 	break;
- 
-       name = name->next;
-@@ -123,21 +124,21 @@ x509_get_username (char *cn, int cn_len,
- }
- 
- char *
--x509_get_serial (x509_cert *cert, struct gc_arena *gc)
-+backend_x509_get_serial (x509_crt *cert, struct gc_arena *gc)
- {
-   char *buf = NULL;
-   size_t len = cert->serial.len * 3 + 1;
- 
-   buf = gc_malloc(len, true, gc);
- 
--  if(x509parse_serial_gets(buf, len-1, &cert->serial) < 0)
-+  if(x509_serial_gets(buf, len-1, &cert->serial) < 0)
-     buf = NULL;
- 
-   return buf;
- }
- 
- unsigned char *
--x509_get_sha1_hash (x509_cert *cert, struct gc_arena *gc)
-+x509_get_sha1_hash (x509_crt *cert, struct gc_arena *gc)
- {
-   unsigned char *sha1_hash = gc_malloc(SHA_DIGEST_LENGTH, false, gc);
-   sha1(cert->tbs.p, cert->tbs.len, sha1_hash);
-@@ -145,14 +146,14 @@ x509_get_sha1_hash (x509_cert *cert, struct gc_arena *gc)
- }
- 
- char *
--x509_get_subject(x509_cert *cert, struct gc_arena *gc)
-+x509_get_subject(x509_crt *cert, struct gc_arena *gc)
- {
-   char tmp_subject[MAX_SUBJECT_LENGTH] = {0};
-   char *subject = NULL;
- 
-   int ret = 0;
- 
--  ret = x509parse_dn_gets( tmp_subject, MAX_SUBJECT_LENGTH-1, &cert->subject );
-+  ret = x509_dn_gets( tmp_subject, MAX_SUBJECT_LENGTH-1, &cert->subject );
-   if (ret > 0)
-     {
-       /* Allocate the required space for the subject */
-@@ -182,70 +183,28 @@ x509_setenv (struct env_set *es, int cert_depth, openvpn_x509_cert_t *cert)
-   while( name != NULL )
-     {
-       char name_expand[64+8];
-+      const char *shortname;
- 
--      if( name->oid.len == 2 && memcmp( name->oid.p, OID_X520, 2 ) == 0 )
-+      if( 0 == oid_get_attr_short_name(&name->oid, &shortname) )
- 	{
--	  switch( name->oid.p[2] )
--	    {
--	    case X520_COMMON_NAME:
--		openvpn_snprintf (name_expand, sizeof(name_expand), "X509_%d_CN",
--		    cert_depth); break;
--
--	    case X520_COUNTRY:
--		openvpn_snprintf (name_expand, sizeof(name_expand), "X509_%d_C",
--		    cert_depth); break;
--
--	    case X520_LOCALITY:
--		openvpn_snprintf (name_expand, sizeof(name_expand), "X509_%d_L",
--		    cert_depth); break;
--
--	    case X520_STATE:
--		openvpn_snprintf (name_expand, sizeof(name_expand), "X509_%d_ST",
--		    cert_depth); break;
--
--	    case X520_ORGANIZATION:
--		openvpn_snprintf (name_expand, sizeof(name_expand), "X509_%d_O",
--		    cert_depth); break;
--
--	    case X520_ORG_UNIT:
--		openvpn_snprintf (name_expand, sizeof(name_expand), "X509_%d_OU",
--		    cert_depth); break;
--
--	    default:
--		openvpn_snprintf (name_expand, sizeof(name_expand),
--		    "X509_%d_0x%02X", cert_depth, name->oid.p[2]);
--		break;
--	    }
-+	  openvpn_snprintf (name_expand, sizeof(name_expand), "X509_%d_%s",
-+	      cert_depth, shortname);
- 	}
--	else if( name->oid.len == 8 && memcmp( name->oid.p, OID_PKCS9, 8 ) == 0 )
--	  {
--	    switch( name->oid.p[8] )
--	      {
--		case PKCS9_EMAIL:
--		  openvpn_snprintf (name_expand, sizeof(name_expand),
--		      "X509_%d_emailAddress", cert_depth); break;
--
--		default:
--		  openvpn_snprintf (name_expand, sizeof(name_expand),
--		      "X509_%d_0x%02X", cert_depth, name->oid.p[8]);
--		  break;
--	      }
--	  }
--	else
--	  {
--	    openvpn_snprintf (name_expand, sizeof(name_expand), "X509_%d_\?\?",
--		cert_depth);
--	  }
--
--	for( i = 0; i < name->val.len; i++ )
-+      else
-+	{
-+	  openvpn_snprintf (name_expand, sizeof(name_expand), "X509_%d_\?\?",
-+	      cert_depth);
-+	}
-+
-+      for( i = 0; i < name->val.len; i++ )
- 	{
--	    if( i >= (int) sizeof( s ) - 1 )
--		break;
-+	  if( i >= (int) sizeof( s ) - 1 )
-+	      break;
- 
--	    c = name->val.p[i];
--	    if( c < 32 || c == 127 || ( c > 128 && c < 160 ) )
--		 s[i] = '?';
--	    else s[i] = c;
-+	  c = name->val.p[i];
-+	  if( c < 32 || c == 127 || ( c > 128 && c < 160 ) )
-+	       s[i] = '?';
-+	  else s[i] = c;
- 	}
- 	s[i] = '\0';
- 
-@@ -259,7 +218,7 @@ x509_setenv (struct env_set *es, int cert_depth, openvpn_x509_cert_t *cert)
- }
- 
- result_t
--x509_verify_ns_cert_type(const x509_cert *cert, const int usage)
-+x509_verify_ns_cert_type(const x509_crt *cert, const int usage)
- {
-   if (usage == NS_CERT_CHECK_NONE)
-     return SUCCESS;
-@@ -274,7 +233,7 @@ x509_verify_ns_cert_type(const x509_cert *cert, const int usage)
- }
- 
- result_t
--x509_verify_cert_ku (x509_cert *cert, const unsigned * const expected_ku,
-+x509_verify_cert_ku (x509_crt *cert, const unsigned * const expected_ku,
-     int expected_len)
- {
-   result_t fFound = FAILURE;
-@@ -307,7 +266,7 @@ x509_verify_cert_ku (x509_cert *cert, const unsigned * const expected_ku,
- }
- 
- result_t
--x509_verify_cert_eku (x509_cert *cert, const char * const expected_oid)
-+x509_verify_cert_eku (x509_crt *cert, const char * const expected_oid)
- {
-   result_t fFound = FAILURE;
- 
-@@ -357,7 +316,7 @@ x509_verify_cert_eku (x509_cert *cert, const char * const expected_oid)
- }
- 
- result_t
--x509_write_pem(FILE *peercert_file, x509_cert *peercert)
-+x509_write_pem(FILE *peercert_file, x509_crt *peercert)
- {
-     msg (M_WARN, "PolarSSL does not support writing peer certificate in PEM format");
-     return FAILURE;
-@@ -367,12 +326,12 @@ x509_write_pem(FILE *peercert_file, x509_cert *peercert)
-  * check peer cert against CRL
-  */
- result_t
--x509_verify_crl(const char *crl_file, x509_cert *cert, const char *subject)
-+x509_verify_crl(const char *crl_file, x509_crt *cert, const char *subject)
- {
-   result_t retval = FAILURE;
-   x509_crl crl = {0};
- 
--  if (x509parse_crlfile(&crl, crl_file) != 0)
-+  if (x509_crl_parse_file(&crl, crl_file) != 0)
-     {
-       msg (M_ERR, "CRL: cannot read CRL from file %s", crl_file);
-       goto end;
-@@ -387,7 +346,7 @@ x509_verify_crl(const char *crl_file, x509_cert *cert, const char *subject)
-       goto end;
-     }
- 
--  if (0 != x509parse_revoked(cert, &crl))
-+  if (0 != x509_crt_revoked(cert, &crl))
-     {
-       msg (D_HANDSHAKE, "CRL CHECK FAILED: %s is REVOKED", subject);
-       goto end;
-diff --git a/src/openvpn/ssl_verify_polarssl.h b/src/openvpn/ssl_verify_polarssl.h
-index b259081..b5157ed 100644
---- a/src/openvpn/ssl_verify_polarssl.h
-+++ b/src/openvpn/ssl_verify_polarssl.h
-@@ -33,11 +33,11 @@
- #include "syshead.h"
- #include "misc.h"
- #include "manage.h"
--#include <polarssl/x509.h>
-+#include <polarssl/x509_crt.h>
- 
- #ifndef __OPENVPN_X509_CERT_T_DECLARED
- #define __OPENVPN_X509_CERT_T_DECLARED
--typedef x509_cert openvpn_x509_cert_t;
-+typedef x509_crt openvpn_x509_cert_t;
- #endif
- 
- /** @name Function for authenticating a new connection from a remote OpenVPN peer
-@@ -72,7 +72,7 @@ typedef x509_cert openvpn_x509_cert_t;
-  *
-  * @return The return value is 0 unless a fatal error occurred.
-  */
--int verify_callback (void *session_obj, x509_cert *cert, int cert_depth,
-+int verify_callback (void *session_obj, x509_crt *cert, int cert_depth,
-     int *flags);
- 
- /** @} name Function for authenticating a new connection from a remote OpenVPN peer */
--- 
-1.8.3.2
+Use Cases:
 
+1) Authentication of upper layers (like Kerberos etc)
 
---------------050002000300060906010601
-Content-Type: text/x-patch;
-	name="0002-Improve-error-reporting-during-key-cert-loading-with.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename*0="0002-Improve-error-reporting-during-key-cert-loading-with.pa";
-	filename*1="tch"
+2) Authentication of VPN's TLS channel using QRCODE and device such as
+   smartphones.
 
-From 6a09fd63d84e867e9dae7b9af9133c9b07e9e0f6 Mon Sep 17 00:00:00 2001
-From: Steffan Karger <steffan.karger@...1435...>
-Date: Tue, 4 Feb 2014 13:58:05 +0100
-Subject: [PATCH 2/2] Improve error reporting during key/cert loading with
- PolarSSL.
+   (Instead of user/pass dialog TLS VPN client could show for example QRCODE
+    based on keying material derivate)
 
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
----
- src/openvpn/ssl_polarssl.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
+3) Authentication of Binding Key in confidental side-channel can be also us=
+ed
+   and avoid/detect MITM (MITM provides his public key and that's reason why
+   authentication of binding key will fail)=
 
-diff --git a/src/openvpn/ssl_polarssl.c b/src/openvpn/ssl_polarssl.c
-index 55a60a3..de52fa5 100644
---- a/src/openvpn/ssl_polarssl.c
-+++ b/src/openvpn/ssl_polarssl.c
-@@ -261,8 +261,13 @@ tls_ctx_load_cert_file (struct tls_root_ctx *ctx, const char *cert_file,
-     }
-   else
-     {
--      if (0 != x509_crt_parse_file(ctx->crt_chain, cert_file))
--	msg (M_FATAL, "Cannot load certificate file %s", cert_file);
-+      int retval = x509_crt_parse_file(ctx->crt_chain, cert_file);
-+      if (0 != retval)
-+	{
-+	  char errstr[128];
-+	  polarssl_strerror(retval, errstr, sizeof(errstr));
-+	  msg (M_FATAL, "Cannot load certificate file %s (%s)", cert_file, errstr);
-+	}
-     }
- }
- 
-@@ -495,8 +500,13 @@ void tls_ctx_load_ca (struct tls_root_ctx *ctx, const char *ca_file,
-   else
-     {
-       /* Load CA file for verifying peer supplied certificate */
--      if (0 != x509_crt_parse_file(ctx->ca_chain, ca_file))
--	msg (M_FATAL, "Cannot load CA certificate file %s", ca_file);
-+      int retval = x509_crt_parse_file(ctx->ca_chain, ca_file);
-+      if (0 != retval)
-+	{
-+	  char errstr[128];
-+	  polarssl_strerror(retval, errstr, sizeof(errstr));
-+	  msg (M_FATAL, "Cannot load CA certificate file %s (%s)", ca_file, errstr);
-+	}
-     }
- }
- 
--- 
-1.8.3.2
+------=_20140420095735_63829
+Content-Type: application/octet-stream; name="openvpn-ekm.patch"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="openvpn-ekm.patch"
 
+ZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL2luaXQuYyBiL3NyYy9vcGVudnBuL2luaXQuYwppbmRl
+eCBjMjkwN2NkLi43ODcwZDEwIDEwMDY0NAotLS0gYS9zcmMvb3BlbnZwbi9pbml0LmMKKysrIGIv
+c3JjL29wZW52cG4vaW5pdC5jCkBAIC0yMzA3LDYgKzIzMDcsMTMgQEAgZG9faW5pdF9jcnlwdG9f
+dGxzIChzdHJ1Y3QgY29udGV4dCAqYywgY29uc3QgdW5zaWduZWQgaW50IGZsYWdzKQogICAgICBs
+ZW5ndGggcHJlZml4ICovCiAgIHNvY2tldF9hZGp1c3RfZnJhbWVfcGFyYW1ldGVycyAoJnRvLmZy
+YW1lLCBvcHRpb25zLT5jZS5wcm90byk7CiAKKyAgLyogQ2hlY2tpbmcgZm9yIHJlcXVpcmVkIHBh
+cmFtZXRlcnMgZm9yIENoYW5uZWwgQmluZGluZ3MgKi8KKyAgdG8uZWttX3NpemUgPSBvcHRpb25z
+LT5rZXlpbmdfbWF0ZXJpYWxfZXhwb3J0ZXJfbGVuZ3RoOworCisgIHRvLmVrbV9sYWJlbCA9ICh1
+aW50OF90KilvcHRpb25zLT5rZXlpbmdfbWF0ZXJpYWxfZXhwb3J0ZXJfbGFiZWw7CisgIHRvLmVr
+bV9sYWJlbF9zaXplID0gdG8uZWttX2xhYmVsID8gc3RybGVuKHRvLmVrbV9sYWJlbCkgOiAwOwor
+ICB0by5la21fdXNlZCA9ICh0by5la21fbGFiZWxfc2l6ZSAmJiB0by5la21fc2l6ZSA+PSAyMCkg
+PyB0cnVlIDogZmFsc2U7CisKICAgLyoKICAgICogSW5pdGlhbGl6ZSBPcGVuVlBOJ3MgbWFzdGVy
+IFRMUy1tb2RlIG9iamVjdC4KICAgICovCkBAIC0yMzE1LDYgKzIzMjIsNyBAQCBkb19pbml0X2Ny
+eXB0b190bHMgKHN0cnVjdCBjb250ZXh0ICpjLCBjb25zdCB1bnNpZ25lZCBpbnQgZmxhZ3MpCiAK
+ICAgaWYgKGZsYWdzICYgQ0ZfSU5JVF9UTFNfQVVUSF9TVEFOREFMT05FKQogICAgIGMtPmMyLnRs
+c19hdXRoX3N0YW5kYWxvbmUgPSB0bHNfYXV0aF9zdGFuZGFsb25lX2luaXQgKCZ0bywgJmMtPmMy
+LmdjKTsKKwogfQogCiBzdGF0aWMgdm9pZApkaWZmIC0tZ2l0IGEvc3JjL29wZW52cG4vb3B0aW9u
+cy5jIGIvc3JjL29wZW52cG4vb3B0aW9ucy5jCmluZGV4IDE4Y2IzNTQuLjUzMjNjZDcgMTAwNjQ0
+Ci0tLSBhL3NyYy9vcGVudnBuL29wdGlvbnMuYworKysgYi9zcmMvb3BlbnZwbi9vcHRpb25zLmMK
+QEAgLTY5NjYsNiArNjk2NiwyNCBAQCBhZGRfb3B0aW9uIChzdHJ1Y3Qgb3B0aW9ucyAqb3B0aW9u
+cywKICAgICAgIG9wdGlvbnMtPnBlcnNpc3RfbW9kZSA9IDE7CiAgICAgfQogI2VuZGlmCisgIGVs
+c2UgaWYgKHN0cmVxIChwWzBdLCAia2V5aW5nLW1hdGVyaWFsLWV4cG9ydGVyLWxhYmVsIikgJiYg
+cFsxXSkKKyAgICB7CisgICAgICBpZiAoc3RybmNtcChwWzFdLCAiRVhQT1JURVIiLCA4KSkKKyAg
+ICAgICAgeworICAgICAgICAgIG1zZyAobXNnbGV2ZWwsICJrZXlpbmcgbWF0ZXJpYWwgZXhwb3J0
+ZXIgbGFiZWxzIFNIT1VMRCBiZWdpbiB3aXRoIFwiRVhQT1JURVJcIiIpOworICAgICAgICAgIGdv
+dG8gZXJyOworICAgICAgICB9CisgICAgICBWRVJJRllfUEVSTUlTU0lPTiAoT1BUX1BfR0VORVJB
+TCk7CisKKyAgICAgIG9wdGlvbnMtPmtleWluZ19tYXRlcmlhbF9leHBvcnRlcl9sYWJlbCA9IHBb
+MV07CisgICAgfQorICBlbHNlIGlmIChzdHJlcSAocFswXSwgImtleWluZy1tYXRlcmlhbC1leHBv
+cnRlci1sZW5ndGgiKSkKKyAgICB7CisgICAgICBpbnQgbGVuID0gcG9zaXRpdmVfYXRvaSAocFsx
+XSk7CisgICAgICBWRVJJRllfUEVSTUlTU0lPTiAoT1BUX1BfR0VORVJBTCk7CisKKyAgICAgIG9w
+dGlvbnMtPmtleWluZ19tYXRlcmlhbF9leHBvcnRlcl9sZW5ndGggPSBsZW47CisgICAgfQogICBl
+bHNlCiAgICAgewogICAgICAgaW50IGk7CmRpZmYgLS1naXQgYS9zcmMvb3BlbnZwbi9vcHRpb25z
+LmggYi9zcmMvb3BlbnZwbi9vcHRpb25zLmgKaW5kZXggZWMxZDA5MS4uZjU2MDlmOSAxMDA2NDQK
+LS0tIGEvc3JjL29wZW52cG4vb3B0aW9ucy5oCisrKyBiL3NyYy9vcGVudnBuL29wdGlvbnMuaApA
+QCAtMzAsMjYgKzMwLDI4IEBACiAjaWZuZGVmIE9QVElPTlNfSAogI2RlZmluZSBPUFRJT05TX0gK
+IAorLyoKKyAqIE1heGltdW0gbnVtYmVyIG9mIHBhcmFtZXRlcnMgYXNzb2NpYXRlZCB3aXRoIGFu
+IG9wdGlvbiwKKyAqIGluY2x1ZGluZyB0aGUgb3B0aW9uIG5hbWUgaXRzZWxmLgorICovCisKKyNk
+ZWZpbmUgTUFYX1BBUk1TIDE2CisKICNpbmNsdWRlICJiYXNpYy5oIgogI2luY2x1ZGUgImNvbW1v
+bi5oIgogI2luY2x1ZGUgIm10dS5oIgogI2luY2x1ZGUgInJvdXRlLmgiCiAjaW5jbHVkZSAidHVu
+LmgiCiAjaW5jbHVkZSAic29ja2V0LmgiCisjaW5jbHVkZSAiY29tcC5oIgorI2luY2x1ZGUgInNz
+bF9jb21tb24uaCIKICNpbmNsdWRlICJwbHVnaW4uaCIKICNpbmNsdWRlICJtYW5hZ2UuaCIKICNp
+bmNsdWRlICJwcm94eS5oIgotI2luY2x1ZGUgImNvbXAuaCIKICNpbmNsdWRlICJwdXNobGlzdC5o
+IgogI2luY2x1ZGUgImNsaW5hdC5oIgogCiAvKgotICogTWF4aW11bSBudW1iZXIgb2YgcGFyYW1l
+dGVycyBhc3NvY2lhdGVkIHdpdGggYW4gb3B0aW9uLAotICogaW5jbHVkaW5nIHRoZSBvcHRpb24g
+bmFtZSBpdHNlbGYuCi0gKi8KLSNkZWZpbmUgTUFYX1BBUk1TIDE2Ci0KLS8qCiAgKiBNYXggc2l6
+ZSBvZiBvcHRpb25zIGxpbmUgYW5kIHBhcmFtZXRlci4KICAqLwogI2RlZmluZSBPUFRJT05fUEFS
+TV9TSVpFIDI1NgpAQCAtNjAwLDYgKzYwMiwxMCBAQCBzdHJ1Y3Qgb3B0aW9ucwogICBib29sIHNo
+b3dfbmV0X3VwOwogICBpbnQgcm91dGVfbWV0aG9kOwogI2VuZGlmCisKKyAgLyogS2V5aW5nIE1h
+dGVyaWFsIEV4cG9ydGVycyBbUkZDIDU3MDVdICovCisgIGNvbnN0IGNoYXIgKmtleWluZ19tYXRl
+cmlhbF9leHBvcnRlcl9sYWJlbDsKKyAgaW50IGtleWluZ19tYXRlcmlhbF9leHBvcnRlcl9sZW5n
+dGg7CiB9OwogCiAjZGVmaW5lIHN0cmVxKHgsIHkpICghc3RyY21wKCh4KSwgKHkpKSkKZGlmZiAt
+LWdpdCBhL3NyYy9vcGVudnBuL3NzbC5jIGIvc3JjL29wZW52cG4vc3NsLmMKaW5kZXggZDRhY2Mw
+Zi4uYzIzNDQ2YSAxMDA2NDQKLS0tIGEvc3JjL29wZW52cG4vc3NsLmMKKysrIGIvc3JjL29wZW52
+cG4vc3NsLmMKQEAgLTIxMjYsNiArMjEyNiwxMSBAQCBrZXlfbWV0aG9kXzJfcmVhZCAoc3RydWN0
+IGJ1ZmZlciAqYnVmLCBzdHJ1Y3QgdGxzX211bHRpICptdWx0aSwgc3RydWN0IHRsc19zZXNzaQog
+ICAgKi8KICAgaWYgKGtzLT5hdXRoZW50aWNhdGVkICYmIHBsdWdpbl9kZWZpbmVkIChzZXNzaW9u
+LT5vcHQtPnBsdWdpbnMsIE9QRU5WUE5fUExVR0lOX1RMU19GSU5BTCkpCiAgICAgeworCisgICAg
+ICAvKiBFeHBvcnRlZCBLZXlpbmcgTWF0ZXJpYWwgW1JGQyA1NzA1XSAqLyAgICAKKyAgICAgIGlm
+IChzZXNzaW9uLT5vcHQtPmVrbV91c2VkKSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgCisgICAgICAgIHNldGVudl9zdHIgKHNlc3Npb24tPm9wdC0+ZXMsICJ0
+bHNfZWttIiwgZm9ybWF0X2hleCAoc2Vzc2lvbi0+ZWttLCBzZXNzaW9uLT5la21fc2l6ZSwgMCwg
+JmdjKSk7CisKICAgICAgIGlmIChwbHVnaW5fY2FsbCAoc2Vzc2lvbi0+b3B0LT5wbHVnaW5zLCBP
+UEVOVlBOX1BMVUdJTl9UTFNfRklOQUwsIE5VTEwsIE5VTEwsIHNlc3Npb24tPm9wdC0+ZXMpICE9
+IE9QRU5WUE5fUExVR0lOX0ZVTkNfU1VDQ0VTUykKIAlrcy0+YXV0aGVudGljYXRlZCA9IGZhbHNl
+OwogICAgIH0KZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL3NzbF9jb21tb24uaCBiL3NyYy9vcGVu
+dnBuL3NzbF9jb21tb24uaAppbmRleCAwNGJhNzg5Li4zYWY1ZDkzIDEwMDY0NAotLS0gYS9zcmMv
+b3BlbnZwbi9zc2xfY29tbW9uLmgKKysrIGIvc3JjL29wZW52cG4vc3NsX2NvbW1vbi5oCkBAIC0z
+MTQsNiArMzE0LDEyIEBAIHN0cnVjdCB0bHNfb3B0aW9ucwogCiAgIC8qIC0tZ3JlbWxpbiBiaXRz
+ICovCiAgIGludCBncmVtbGluOworCisgIC8qIEtleWluZyBNYXRlcmlhbCBFeHBvcnRlciBbUkZD
+IDU3MDVdIHBhcmFtZXRlcnMgKi8KKyAgdWludDhfdCAqZWttX2xhYmVsOworICBpbnQgZWttX2xh
+YmVsX3NpemU7CisgIGJvb2wgZWttX3VzZWQ7IC8qIHRydWUgd2hlbiBLZXlpbmcgTWF0ZXJpYWwg
+c2hvdWxkIGJlIGV4cG9ydGVkICovCisgIGludCBla21fc2l6ZTsKIH07CiAKIC8qKiBAYWRkdG9n
+cm91cCBjb250cm9sX3Byb2Nlc3NvcgpAQCAtMzU5LDYgKzM2NSwxNiBAQCBzdHJ1Y3QgdGxzX3Nl
+c3Npb24KICAgc3RydWN0IGNyeXB0b19vcHRpb25zIHRsc19hdXRoOwogICBzdHJ1Y3QgcGFja2V0
+X2lkIHRsc19hdXRoX3BpZDsKIAorICAvKiBudW1iZXIgb2YgbmVnb3RpYXRpb25zIGZvciB0aGlz
+IHNlc3Npb24gKi8KKyAgdW5zaWduZWQgaW50IG5lZ290aWF0aW9uczsKKworICAvKiBjaGFubmVs
+X2lkIGlkZW50aWZpZXMgVExTIHNlc3Npb24gYWNyb3NzIChyZSluZWdvdGlhdGlvbnMgKi8KKyAg
+dWludDhfdCBjaGFubmVsX2lkWzMyXTsKKworICAvKiBFeHBvcnRlZCBLZXlpbmcgTWF0ZXJpYWwg
+W1JGQyA1NzA1XSAqLworICB1aW50OF90ICpla207CisgIGludCBla21fc2l6ZTsKKwogICBpbnQg
+aW5pdGlhbF9vcGNvZGU7CQkvKiBvdXIgaW5pdGlhbCBQXyBvcGNvZGUgKi8KICAgc3RydWN0IHNl
+c3Npb25faWQgc2Vzc2lvbl9pZDsJLyogb3VyIHJhbmRvbSBzZXNzaW9uIElEICovCiAgIGludCBr
+ZXlfaWQ7CQkJLyogaW5jcmVtZW50cyB3aXRoIGVhY2ggc29mdCByZXNldCAoZm9yIGtleSByZW5l
+Z290aWF0aW9uKSAqLwpkaWZmIC0tZ2l0IGEvc3JjL29wZW52cG4vc3NsX29wZW5zc2wuYyBiL3Ny
+Yy9vcGVudnBuL3NzbF9vcGVuc3NsLmMKaW5kZXggMGI2M2UyNi4uNGRkNTg4ZiAxMDA2NDQKLS0t
+IGEvc3JjL29wZW52cG4vc3NsX29wZW5zc2wuYworKysgYi9zcmMvb3BlbnZwbi9zc2xfb3BlbnNz
+bC5jCkBAIC0xNTQsNiArMTU0LDMwIEBAIGluZm9fY2FsbGJhY2sgKElORk9fQ0FMTEJBQ0tfU1NM
+X0NPTlNUIFNTTCAqIHMsIGludCB3aGVyZSwgaW50IHJldCkKIAkgICBTU0xfYWxlcnRfdHlwZV9z
+dHJpbmdfbG9uZyAocmV0KSwKIAkgICBTU0xfYWxlcnRfZGVzY19zdHJpbmdfbG9uZyAocmV0KSk7
+CiAgICAgfQorICBlbHNlIGlmICh3aGVyZSAmIFNTTF9DQl9IQU5EU0hBS0VfRE9ORSkKKyAgICB7
+CisgICAgICBzdHJ1Y3QgdGxzX3Nlc3Npb24gKnRsczsKKyAgICAgIHRscyA9IChzdHJ1Y3QgdGxz
+X3Nlc3Npb24gKilTU0xfZ2V0X2V4X2RhdGEgKHMsIG15ZGF0YV9pbmRleCk7CisKKyAgICAgIGlm
+ICh0bHMtPm9wdC0+ZWttX3VzZWQgPT0gZmFsc2UpCisgICAgICAgIGdvdG8gZG9uZTsKKworICAg
+ICAgaWYgKHRscy0+ZWttKQorICAgICAgICBmcmVlKHRscy0+ZWttKTsKKworICAgICAgdGxzLT5l
+a21fc2l6ZSA9IHRscy0+b3B0LT5la21fc2l6ZTsKKyAgICAgIHRscy0+ZWttID0gZ2NfbWFsbG9j
+ICh0bHMtPmVrbV9zaXplLCB0cnVlLCBOVUxMKTsKKworICAgICAgU1NMX2V4cG9ydF9rZXlpbmdf
+bWF0ZXJpYWwoKFNTTCAqKXMsIAorICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdGxz
+LT5la20sIAorICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdGxzLT5la21fc2l6ZSwg
+CisgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0bHMtPm9wdC0+ZWttX2xhYmVsLAor
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdGxzLT5vcHQtPmVrbV9sYWJlbF9zaXpl
+LCAKKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIE5VTEwsIDAsIDApOworCitkb25l
+OgorICAgICAgbXNnIChEX0hBTkRTSEFLRV9WRVJCT1NFLCAiU1NMIEhhbmRzaGFrZSBkb25lLiIp
+OworICAgIH0KIH0KIAogLyoK
+------=_20140420095735_63829--
 
---------------050002000300060906010601--
 
