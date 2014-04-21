@@ -1,10 +1,12 @@
-Date: Mon, 21 Apr 2014 13:16:22 +0200 (CEST)
-Message-Id: <201404211116.s3LBGMW4018081@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1398064204-26476-3-git-send-email-james@...515...>
-References: <1398064204-26476-3-git-send-email-james@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Use native strtoull() with MSVC
-	2013.
+Message-ID: <53550084.2070404@...1227...>
+Date: Mon, 21 Apr 2014 13:27:00 +0200
+From: Arne Schwabe <arne@...1227...>
+MIME-Version: 1.0
+References: <1398064204-26476-1-git-send-email-james@...515...>
+	<1398064204-26476-2-git-send-email-james@...515...>
+In-Reply-To: <1398064204-26476-2-git-send-email-james@...515...>
+Subject: Re: [Openvpn-devel] [PATCH 2/4] Added PIP_OPT_MASK for
+ process_ip_header fast exit path.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,33 +15,22 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: James Yonan <james@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: James Yonan <james@...515...>, openvpn-devel@lists.sourceforge.net
 
-ACK (you're the one who builds most with MSVC anyway, so you know).
+On 21.04.2014 09:10, James Yonan wrote:
+> Define PIP_OPT_MASK to represent all flags of interest to
+> process_ip_header, so that it can have a fast exit path
+> if no flags are set.
 
-Your patch has been applied to the master and release/23 branches.
+I haven't look at the code but if remember  correctly, this method does 
+not get passed the actual flags but the flags should *potientially* be 
+checked.
 
-commit 6b8e2f4a8143a7260a06b6999dcb21c4c72fc620 (master)
-commit 040b306f58fa0cc175c66ed67f390c0a289ddd4e (release/2.3)
+See also my never reviewed patch: 
+http://thread.gmane.org/gmane.network.openvpn.devel/7532
 
-Author: James Yonan
-Date:   Mon Apr 21 01:10:03 2014 -0600
-
-     Use native strtoull() with MSVC 2013.
-
-     Signed-off-by: James Yonan <james@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1398064204-26476-3-git-send-email-james@...515...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8561
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+Arne
 
 
