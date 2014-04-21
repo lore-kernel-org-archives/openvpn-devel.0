@@ -1,11 +1,8 @@
-Message-ID: <53550214.9080607@...1227...>
-Date: Mon, 21 Apr 2014 13:33:40 +0200
-From: Arne Schwabe <arne@...1227...>
-MIME-Version: 1.0
-References: <1398064204-26476-1-git-send-email-james@...515...>
-In-Reply-To: <1398064204-26476-1-git-send-email-james@...515...>
-Subject: Re: [Openvpn-devel] [PATCH 1/4] Added "remote-override" config
-	directive.
+From: Steffan Karger <steffan@...1856...>
+Date: Mon, 21 Apr 2014 13:37:18 +0200
+Message-Id: <1398080238-19662-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Fix build system to accept non-system
+	crypto library locations for plugins.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,18 +11,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: James Yonan <james@...515...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-On 21.04.2014 09:10, James Yonan wrote:
-> remote-override <alt-remote> -- replace the hostname in all remote
-> directives with alt-remote.
->
-Just a question. How does remote-override differ from ip-remote-hint? 
-Both options seem to have the same effect aside from very subtle 
-differences. Perhaps we should add this as an alias for the already 
-existing option.
+Flags like {OPEN,POLAR}SSL_CFLAGS were used by the core build, but not by
+the plugins. However, all plugins include openvpn-plugin.h, which need
+crypto/ssl headers.
 
-Arne
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/plugins/auth-pam/Makefile.am  | 5 +++--
+ src/plugins/down-root/Makefile.am | 3 ++-
+ 2 files changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/src/plugins/auth-pam/Makefile.am b/src/plugins/auth-pam/Makefile.am
+index 701a749..2aef311 100644
+--- a/src/plugins/auth-pam/Makefile.am
++++ b/src/plugins/auth-pam/Makefile.am
+@@ -8,8 +8,9 @@ MAINTAINERCLEANFILES = \
+ 	$(srcdir)/Makefile.in
+ 
+ AM_CFLAGS = \
+-	-I$(top_srcdir)/include
+-	$(PLUGIN_AUTH_PAM_CFLAGS)
++	-I$(top_srcdir)/include \
++	$(PLUGIN_AUTH_PAM_CFLAGS) \
++	$(OPTIONAL_CRYPTO_CFLAGS)
+ 
+ if ENABLE_PLUGIN_AUTH_PAM
+ plugin_LTLIBRARIES = openvpn-plugin-auth-pam.la
+diff --git a/src/plugins/down-root/Makefile.am b/src/plugins/down-root/Makefile.am
+index 064aa30..7ca5a4e 100644
+--- a/src/plugins/down-root/Makefile.am
++++ b/src/plugins/down-root/Makefile.am
+@@ -8,7 +8,8 @@ MAINTAINERCLEANFILES = \
+ 	$(srcdir)/Makefile.in
+ 
+ AM_CFLAGS = \
+-	-I$(top_srcdir)/include
++	-I$(top_srcdir)/include \
++	$(OPTIONAL_CRYPTO_CFLAGS)
+ 
+ if ENABLE_PLUGIN_DOWN_ROOT
+ plugin_LTLIBRARIES = openvpn-plugin-down-root.la
+-- 
+1.8.3.2
+
 
