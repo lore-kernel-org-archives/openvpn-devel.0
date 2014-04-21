@@ -1,7 +1,8 @@
-From: Gert Doering <gert@...1296...>
-Date: Sun, 20 Apr 2014 20:41:01 +0200
-Message-Id: <1398019261-30180-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH] Minor t_client.sh cleanups
+From: James Yonan <james@...515...>
+Date: Mon, 21 Apr 2014 01:10:01 -0600
+Message-Id: <1398064204-26476-1-git-send-email-james@...515...>
+Subject: [Openvpn-devel] [PATCH 1/4] Added "remote-override" config
+	directive.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,44 +14,58 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: James Yonan <james@...515...>
 
-- remove built tests/t_client.sh script on "make clean"
-- ignore Linux iproute2 "ssthresh <n>" output that sometimes shows up
-  in "ip -6 route show" and breaks before/after comparison
+remote-override <alt-remote> -- replace the hostname in all remote
+directives with alt-remote.
 
-Signed-off-by: Gert Doering <gert@...1296...>
+Merged from OpenVPN 2.1
+
+Signed-off-by: James Yonan <james@...515...>
 ---
- Makefile.am          | 2 +-
- tests/t_client.sh.in | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ src/openvpn/options.c | 7 ++++++-
+ src/openvpn/options.h | 2 ++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/Makefile.am b/Makefile.am
-index 1a30aa5..66d9f23 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -41,7 +41,7 @@ MAINTAINERCLEANFILES = \
- 	$(srcdir)/config.guess $(srcdir)/config.sub
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 4af2974..1739460 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -4512,6 +4512,11 @@ add_option (struct options *options,
+ 	goto err;
+     }
+ #endif
++  else if (streq (p[0], "remote-override") && p[1])
++    {
++      VERIFY_PERMISSION (OPT_P_GENERAL);
++      options->remote_override = p[1];
++    }
+   else if (streq (p[0], "remote") && p[1])
+     {
+       struct remote_entry re;
+@@ -4520,7 +4525,7 @@ add_option (struct options *options,
+       re.af=0;
  
- CLEANFILES = \
--	config-version.h
-+	config-version.h tests/t_client.sh
+       VERIFY_PERMISSION (OPT_P_GENERAL|OPT_P_CONNECTION);
+-      re.remote = p[1];
++      re.remote = options->remote_override ? options->remote_override : p[1];
+       if (p[2])
+ 	{
+ 	  re.remote_port = p[2];
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index ec1d091..1775c02 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -222,6 +222,8 @@ struct options
  
- EXTRA_DIST = \
- 	contrib \
-diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in
-index 6c9de6c..52c5ed1 100755
---- a/tests/t_client.sh.in
-+++ b/tests/t_client.sh.in
-@@ -103,7 +103,7 @@ get_ifconfig_route()
- 	echo "-- linux iproute2 --"
- 	@IPROUTE@ addr show     | grep -v valid_lft
- 	@IPROUTE@ route show
--	@IPROUTE@ -o -6 route show | grep -v ' cache' | sed -E -e 's/ expires [0-9]*sec//' -e 's/ (mtu|hoplimit|cwnd) [0-9]+//g' -e 's/ (rtt|rttvar) [0-9]+ms//g'
-+	@IPROUTE@ -o -6 route show | grep -v ' cache' | sed -E -e 's/ expires [0-9]*sec//' -e 's/ (mtu|hoplimit|cwnd|ssthresh) [0-9]+//g' -e 's/ (rtt|rttvar) [0-9]+ms//g'
- 	return
-     fi
+   struct remote_host_store *rh_store;
  
++  const char *remote_override;
++
+   bool remote_random;
+   const char *ipchange;
+   const char *dev;
 -- 
-1.8.3.2
+1.8.5.5
 
 
